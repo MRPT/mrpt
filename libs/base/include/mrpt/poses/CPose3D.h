@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -20,8 +20,8 @@ namespace mrpt
 {
 namespace poses
 {
-	class BASE_IMPEXP CPose3DQuat;
-	class BASE_IMPEXP CPose3DRotVec;
+	class CPose3DQuat;
+	class CPose3DRotVec;
 
 	DEFINE_SERIALIZABLE_PRE( CPose3D )
 
@@ -235,7 +235,7 @@ namespace poses
 		inline void composePoint(double lx,double ly,double lz, float &gx, float &gy, float &gz ) const {
 			double ggx, ggy,ggz;
 			composePoint(lx,ly,lz,ggx,ggy,ggz);
-			gx = ggx; gy = ggy; gz = ggz;
+			gx = static_cast<float>(ggx); gy = static_cast<float>(ggy); gz = static_cast<float>(ggz);
 		}
 
 		/**  Computes the 3D point L such as \f$ L = G \ominus this \f$.
@@ -254,7 +254,7 @@ namespace poses
 			inverseComposePoint(g.x,g.y,g.z, l.x,l.y,l.z);
 		}
 
-		/** \overload for 2D points \exception If the z component of the result is greater than some epsilon */
+		/** overload for 2D points \exception If the z component of the result is greater than some epsilon */
 		inline void inverseComposePoint(const mrpt::math::TPoint2D &g, mrpt::math::TPoint2D &l, const double eps=1e-6) const {
 			double lz;
 			inverseComposePoint(g.x,g.y,0, l.x,l.y,lz);

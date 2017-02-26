@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -66,10 +66,15 @@
 // A list of sensor labels (and the times they appear) in the currently loaded rawlog.
 struct TInfoPerSensorLabel
 {
-	TInfoPerSensorLabel() : occurences(0), first(INVALID_TIMESTAMP) ,last(INVALID_TIMESTAMP)
+	TInfoPerSensorLabel() : max_ellapsed_tim_between_obs(.0), first(INVALID_TIMESTAMP) ,last(INVALID_TIMESTAMP)
 	{}
-	size_t					occurences;
-	mrpt::system::TTimeStamp	first,last;
+	std::vector<double> timOccurs;
+	double max_ellapsed_tim_between_obs;
+	mrpt::system::TTimeStamp first,last;
+
+	size_t getOccurences() const;
+	void addOcurrence(mrpt::system::TTimeStamp obs_tim, mrpt::system::TTimeStamp first_dataset_tim);
+
 };
 
 
@@ -252,6 +257,7 @@ private:
     void OnMenuItem3DObsRecoverParams(wxCommandEvent& event);
     void Onslid3DcamConfCmdScrollChanged(wxScrollEvent& event);
     void OnMenuItemImportBremenDLRLog(wxCommandEvent& event);
+    void OnMenuRenameSingleObs(wxCommandEvent& event);
     //*)
 
     //(*Identifiers(xRawLogViewerFrame)
@@ -278,6 +284,9 @@ private:
     static const long ID_BUTTON1;
     static const long ID_PANEL18;
     static const long ID_TEXTCTRL2;
+    static const long ID_CUSTOM6;
+    static const long ID_PANEL25;
+    static const long ID_SPLITTERWINDOW2;
     static const long ID_TEXTCTRL3;
     static const long ID_NOTEBOOK3;
     static const long ID_PANEL6;
@@ -349,6 +358,7 @@ private:
     static const long ID_MENUITEM14;
     static const long ID_MENUITEM51;
     static const long ID_MENUITEM69;
+    static const long ID_MENUITEM91;
     static const long ID_MENUITEM15;
     static const long ID_MENUITEM70;
     static const long ID_MENUITEM16;
@@ -459,13 +469,16 @@ private:
     wxMenu* Menu20;
     wxMenuItem* MenuItem71;
     mpWindow* plotAct2D_PHI;
+    wxMenuItem* MenuItem86;
     wxMenu* MenuItem20;
+    wxSplitterWindow* SplitterWindow2;
     wxMenuItem* MenuItem46;
     wxStaticBitmapPopup* bmpObsStereoLeft;
     wxMenuItem* MenuItem4;
     wxMenuItem* MenuItem76;
     wxPanel* pn_Action;
     wxMenuItem* MenuItem14;
+    wxPanel* Panel11;
     wxMenuItem* MenuItem36;
     wxCustomButton* btnToolbarOpen;
     wxMenuItem* mnuItemEnable3DCamAutoGenPoints;
@@ -502,6 +515,7 @@ private:
     wxPanel* Panel3;
     wxStaticLine* StaticLine4;
     wxStaticLine* StaticLine2;
+    mpWindow* plotRawlogSensorTimes;
     wxMenuItem* MenuItem72;
     wxMenuItem* MenuItem44;
     wxPanel* pn_CObservationBearingRange;
@@ -585,16 +599,14 @@ private:
 
 	void showNextTip(bool forceShow = false);
 
-    // Layers for the 2D graphs:
-    mpFXYVector     *lyScan2D, *lyRangeBearingLandmarks;
-    mpFXYVector     *lyAction2D_XY,*lyAction2D_PHI;
+	// Layers for the 2D graphs:
+	mpFXYVector     *lyScan2D, *lyRangeBearingLandmarks;
+	mpFXYVector     *lyAction2D_XY,*lyAction2D_PHI;
 
-    wxImageList     *imgList;     // Image list for the tree view:
-
-
-    wxFileHistory	m_fileHistory;
+	wxImageList     *imgList;     // Image list for the tree view:
 
 
+	wxFileHistory	m_fileHistory;
 
 	std::map<std::string,TInfoPerSensorLabel>	listOfSensorLabels;
 

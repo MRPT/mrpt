@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -44,6 +44,7 @@ char hexCharToInt(char n)
 						CCANBusReader
 -------------------------------------------------------------*/
 CCANBusReader::CCANBusReader() :
+	mrpt::utils::COutputLogger("CCANBusReader"),
 	m_com_port(),
 	m_mySerialPort( NULL ),
 	m_com_baudRate(57600),
@@ -268,7 +269,7 @@ bool CCANBusReader::tryToOpenComms(std::string *err_msg)
 		std::string s = "[CCANBusReader] Error trying to open CANBusReader at port ";
 		s+= e.what();
 		if (err_msg) *err_msg=s;
-		printf_debug(s.c_str());
+		MRPT_LOG_ERROR_STREAM << s;
 		return false;
 	}
 }
@@ -401,7 +402,7 @@ bool CCANBusReader::waitContinuousSampleFrame(
 		catch (std::exception &e)
 		{
 			// Disconnected?
-			printf_debug("[CCANBusReader::waitContinuousSampleFrame] Disconnecting due to comms error: %s\n", e.what());
+			MRPT_LOG_ERROR_STREAM << "[waitContinuousSampleFrame] Disconnecting due to comms error: " << e.what();
 			return false;
 		}
 

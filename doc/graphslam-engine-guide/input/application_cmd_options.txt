@@ -1,0 +1,42 @@
+--disable-visuals
+  Disable Visualization - Overrides related visualize* directives of the
+  .ini file
+
+--list-optimizers
+  List (all) available graphslam optimizer classes
+
+--list-regs
+  List (all) available registration decider classes
+
+--list-edge-regs
+  List available edge registration decider classes
+
+--list-node-regs
+  List available node registration decider classes
+
+-o <CLevMarqGSO>,  --optimizer <CLevMarqGSO>
+  Specify GraphSlam Optimizer
+
+-e <CICPCriteriaERD>,  --edge-reg <CICPCriteriaERD>
+  Specify Edge registration decider
+
+-n <CICPCriteriaNRD>,  --node-reg <CICPCriteriaNRD>
+  Specify Node registration decider
+
+-g <contents.rawlog.GT.txt>,  --ground-truth <contents.rawlog.GT.txt>
+  Ground-truth textfile
+
+-r <contents.rawlog>,  --rawlog <contents.rawlog>
+  Rawlog dataset file
+
+-i <config.ini>,  --ini_file <config.ini>
+  .ini configuration file
+
+--,  --ignore_rest
+  Ignores the rest of the labeled arguments following this flag.
+
+--version
+  Displays version information and exits.
+
+-h,  --help
+  Displays usage information and exits.

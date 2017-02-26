@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -90,15 +90,17 @@ public:
 	EIGEN_STRONG_INLINE Scalar& get_unsafe(const size_t row, const size_t col) { //-V659
 #ifdef _DEBUG
 		return derived()(row,col);
-#endif
+#else
 		return derived().coeffRef(row,col);
+#endif
 	}
 	/** Sets an element  (Use with caution, bounds are not checked!) */
 	EIGEN_STRONG_INLINE void set_unsafe(const size_t row, const size_t col, const Scalar val) {
 #ifdef _DEBUG
 		derived()(row,col) = val;
-#endif
+#else
 		derived().coeffRef(row,col) = val;
+#endif
 	}
 
 	/** Insert an element at the end of the container (for 1D vectors/arrays) */
@@ -613,25 +615,6 @@ public:
 		*this = A*B;
 	}
 
-
-	/** Matrix left divide: RES = A<sup>-1</sup> * this , with A being squared (using the Eigen::ColPivHouseholderQR method) */
-	template<class MAT2,class MAT3 >
-	EIGEN_STRONG_INLINE void leftDivideSquare(const MAT2 &A, MAT3 &RES) const
-	{
-		Eigen::ColPivHouseholderQR<PlainObject> QR = A.colPivHouseholderQr();
-		if (!QR.isInvertible()) throw std::runtime_error("leftDivideSquare: Matrix A is not invertible");
-		RES = QR.inverse() * (*this);
-	}
-
-	/** Matrix right divide: RES = this * B<sup>-1</sup>, with B being squared  (using the Eigen::ColPivHouseholderQR method)  */
-	template<class MAT2,class MAT3 >
-	EIGEN_STRONG_INLINE void rightDivideSquare(const MAT2 &B, MAT3 &RES) const
-	{
-		Eigen::ColPivHouseholderQR<PlainObject> QR = B.colPivHouseholderQr();
-		if (!QR.isInvertible()) throw std::runtime_error("rightDivideSquare: Matrix B is not invertible");
-		RES = (*this) * QR.inverse();
-	}
-
 	/** @} */  // end multiply functions
 
 
@@ -641,17 +624,19 @@ public:
 	/** [For square matrices only] Compute the eigenvectors and eigenvalues (sorted), both returned as matrices: eigenvectors are the columns in "eVecs", and eigenvalues in ascending order as the diagonal of "eVals".
 	  *   \note Warning: Only the real part of complex eigenvectors and eigenvalues are returned.
 	  *   \sa eigenVectorsSymmetric, eigenVectorsVec
+	  *  \return false on error
 	  */
 	template <class MATRIX1,class MATRIX2>
-	EIGEN_STRONG_INLINE void eigenVectors( MATRIX1 & eVecs, MATRIX2 & eVals ) const;
+	EIGEN_STRONG_INLINE bool eigenVectors( MATRIX1 & eVecs, MATRIX2 & eVals ) const;
 	// Implemented in eigen_plugins_impl.h (can't be here since Eigen::SelfAdjointEigenSolver isn't defined yet at this point.
 
 	/** [For square matrices only] Compute the eigenvectors and eigenvalues (sorted), eigenvectors are the columns in "eVecs", and eigenvalues are returned in in ascending order in the vector "eVals".
 	  *   \note Warning: Only the real part of complex eigenvectors and eigenvalues are returned.
 	  *   \sa eigenVectorsSymmetric, eigenVectorsVec
+	  *  \return false on error
 	  */
 	template <class MATRIX1,class VECTOR1>
-	EIGEN_STRONG_INLINE void eigenVectorsVec( MATRIX1 & eVecs, VECTOR1 & eVals ) const;
+	EIGEN_STRONG_INLINE bool eigenVectorsVec( MATRIX1 & eVecs, VECTOR1 & eVals ) const;
 	// Implemented in eigen_plugins_impl.h
 
 	/** [For square matrices only] Compute the eigenvectors and eigenvalues (sorted), and return only the eigenvalues in the vector "eVals".

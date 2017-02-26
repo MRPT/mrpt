@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -30,7 +30,7 @@ using namespace std;
 // ------------------------------------------------------
 double grid_test_1(int a1, int a2)
 {
-	COccupancyGridMap2D		gridMap(-20,20,-20,20, 0.05);
+	COccupancyGridMap2D		gridMap(-20,20,-20,20, 0.05f);
 
 	// test 1: getcell
 	// ----------------------------------------
@@ -47,7 +47,7 @@ double grid_test_1(int a1, int a2)
 
 double grid_test_2(int a1, int a2)
 {
-	COccupancyGridMap2D		gridMap(-20,20,-20,20, 0.05);
+	COccupancyGridMap2D		gridMap(-20,20,-20,20, 0.05f);
 	// test 2: setcell
 	// ----------------------------------------
 	const long N = 10000000;
@@ -64,7 +64,7 @@ double grid_test_2(int a1, int a2)
 
 double grid_test_3(int a1, int a2)
 {
-	COccupancyGridMap2D		gridMap(-20,20,-20,20, 0.05);
+	COccupancyGridMap2D		gridMap(-20,20,-20,20, 0.05f);
 	const long N = 1000000;
 	float	p=0.57f;
 
@@ -79,7 +79,7 @@ double grid_test_3(int a1, int a2)
 
 double grid_test_4(int a1, int a2)
 {
-	COccupancyGridMap2D		gridMap(-20,20,-20,20, 0.05);
+	COccupancyGridMap2D		gridMap(-20,20,-20,20, 0.05f);
 
 	// test 4: updateCell_fast
 	// ----------------------------------------
@@ -107,13 +107,9 @@ double grid_test_5_6(int a1, int a2)
 	CObservation2DRangeScan	scan1;
 	scan1.aperture = M_PIf;
 	scan1.rightToLeft = true;
-	scan1.validRange.resize( sizeof(SCAN_RANGES_1)/sizeof(SCAN_RANGES_1[0]) );
-	scan1.scan.resize( sizeof(SCAN_RANGES_1)/sizeof(SCAN_RANGES_1[0]) );
+	scan1.loadFromVectors( sizeof(SCAN_RANGES_1)/sizeof(SCAN_RANGES_1[0]), SCAN_RANGES_1,SCAN_VALID_1 );
 
-	memcpy( &scan1.scan[0], SCAN_RANGES_1, sizeof(SCAN_RANGES_1) );
-	memcpy( &scan1.validRange[0], SCAN_VALID_1, sizeof(SCAN_VALID_1) );
-
-	COccupancyGridMap2D		gridmap(-20,20,-20,20, 0.05);
+	COccupancyGridMap2D		gridmap(-20,20,-20,20, 0.05f);
 	gridmap.insertionOptions.wideningBeamsWithDistance = a1!=0;
 	const long N = 3000;
 	CTicTac tictac;
@@ -132,7 +128,7 @@ double grid_test_5_6(int a1, int a2)
 
 double grid_test_7(int a1, int a2)
 {
-	COccupancyGridMap2D		gridmap(-20,20,-20,20, 0.05);
+	COccupancyGridMap2D		gridmap(-20,20,-20,20, 0.05f);
 	CTicTac tictac;
 
 	gridmap.resizeGrid(-30,30,-40,40);
@@ -148,13 +144,9 @@ double grid_test_8(int a1, int a2)
 	CObservation2DRangeScan	scan1;
 	scan1.aperture = M_PIf;
 	scan1.rightToLeft = true;
-	scan1.validRange.resize( sizeof(SCAN_RANGES_1)/sizeof(SCAN_RANGES_1[0]) );
-	scan1.scan.resize( sizeof(SCAN_RANGES_1)/sizeof(SCAN_RANGES_1[0]) );
+	scan1.loadFromVectors( sizeof(SCAN_RANGES_1)/sizeof(SCAN_RANGES_1[0]), SCAN_RANGES_1,SCAN_VALID_1 );
 
-	memcpy( &scan1.scan[0], SCAN_RANGES_1, sizeof(SCAN_RANGES_1) );
-	memcpy( &scan1.validRange[0], SCAN_VALID_1, sizeof(SCAN_VALID_1) );
-
-	COccupancyGridMap2D		gridmap(-20,20,-20,20, 0.05);
+	COccupancyGridMap2D		gridmap(-20,20,-20,20, 0.05f);
 
 	// test 8: Likelihood computation
 	const long N = 5000;
@@ -184,11 +176,7 @@ double grid_test_9(int a1, int a2)
 	CObservation2DRangeScan	scan1;
 	scan1.aperture = M_PIf;
 	scan1.rightToLeft = true;
-	scan1.validRange.resize( sizeof(SCAN_RANGES_1)/sizeof(SCAN_RANGES_1[0]) );
-	scan1.scan.resize( sizeof(SCAN_RANGES_1)/sizeof(SCAN_RANGES_1[0]) );
-	memcpy( &scan1.scan[0], SCAN_RANGES_1, sizeof(SCAN_RANGES_1) );
-	memcpy( &scan1.validRange[0], SCAN_VALID_1, sizeof(SCAN_VALID_1) );
-
+	scan1.loadFromVectors( sizeof(SCAN_RANGES_1)/sizeof(SCAN_RANGES_1[0]), SCAN_RANGES_1,SCAN_VALID_1 );
 
 	CSimplePointsMap  gridmap;
 	CSimplePointsMap  pt_map2;
@@ -205,7 +193,7 @@ double grid_test_9(int a1, int a2)
 
 	TMatchingParams matchParams;
 	TMatchingExtraResults matchExtraResults;
-	matchParams.maxDistForCorrespondence = 0.10;
+	matchParams.maxDistForCorrespondence = 0.10f;
 	matchParams.maxAngularDistForCorrespondence = 0;
 
 	CTicTac	 tictac;

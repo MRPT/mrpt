@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -20,7 +20,8 @@ namespace mrpt
 {
 	namespace hwdrivers
 	{
-		/** A C++ interface to Velodyne laser scanners (HDL-64, HDL-32, VLP-16), working on Windows and Linux.
+		/** A C++ interface to Velodyne laser scanners (HDL-64, HDL-32, VLP-16), working on Linux and Windows. 
+		  * (Using this class requires WinPCap as a run-time dependency in Windows).
 		  * It can receive data from real devices via an Ethernet connection or parse a WireShark PCAP file for offline processing.
 		  * The choice of online vs. offline operation is taken upon calling \a initialize(): if a PCAP input file has been defined,
 		  * offline operation takes place and network is not listened for incomming packets.
@@ -60,8 +61,8 @@ namespace mrpt
 		  * These parameters can be set programatically (see methods of this class), or via a configuration file with CGenericSensor::loadConfig() (see example config file section below).
 		  *
 		  * <h2>About timestamps:</h2><hr>
-		  *  Generated observations timestamp are, by default, set from the computer clock as UDP packets are received.
-		  *  *TODO* Set from sensor timestamp.
+		  *  Each gathered observation of type mrpt::obs::CObservationVelodyneScan is populated with two timestamps, one for the local PC timestamp and,
+		  *  if available, another one for the GPS-stamped timestamp. Refer to the observation docs for details.
 		  *
 		  * <h2>Format of parameters for loading from a .ini file</h2><hr>
 		  *  \code
@@ -80,6 +81,9 @@ namespace mrpt
 		  *   # if only one scanner is present (no IP filtering)
 		  *   #device_ip       = XXX.XXX.XXX.XXX
 		  *
+		  *   #rpm             = 600        // Sensor RPM (Default: unchanged). Requires setting `device_ip`
+		  *   #return_type     = STRONGEST  // Any of: 'STRONGEST', 'LAST', 'DUAL' (Default: unchanged). Requires setting `device_ip`
+		  * 
 		  *   # ---- Offline operation ----
 		  *   # If uncommented, this class will read from the PCAP instead of connecting and listeling
 		  *   # for online network packets.
@@ -127,6 +131,15 @@ namespace mrpt
 				HDL32 = 2,
 				HDL64 = 3
 			};
+
+			/** LIDAR return type */
+			enum return_type_t {
+				UNCHANGED = 0,
+				STRONGEST,
+				LAST,
+				DUAL
+			};
+
 			/** Hard-wired properties of LIDARs depending on the model */
 			struct HWDRIVERS_IMPEXP TModelProperties {
 				double maxRange;
@@ -144,6 +157,7 @@ namespace mrpt
 			double        m_pos_packets_min_period; //!< Default: 0.5 seconds
 			double        m_pos_packets_timing_timeout; //!< Default: 30 seconds
 			std::string   m_device_ip;  //!< Default: "" (no IP-based filtering)
+			bool          m_pcap_verbose; //!< Default: true Output PCAP Info msgs
 			std::string   m_pcap_input_file; //!< Default: "" (do not operate from an offline file)
 			std::string   m_pcap_output_file; //!< Default: "" (do not dump to an offline file)
 			mrpt::poses::CPose3D m_sensorPose;
@@ -190,6 +204,9 @@ namespace mrpt
 			void setDeviceIP(const std::string & ip) { m_device_ip = ip; }
 			const std::string &getDeviceIP() const { return m_device_ip; }
 
+			/** Enables/disables PCAP info messages to console (default: true) */
+			void setPCAPVerbosity(const bool verbose) { m_pcap_verbose = verbose; }
+
 			/** Enables reading from a PCAP file instead of live UDP packet listening */
 			void setPCAPInputFile(const std::string &pcap_file) { m_pcap_input_file = pcap_file; }
 			const std::string & getPCAPInputFile() const { return m_pcap_input_file; }
@@ -204,6 +221,25 @@ namespace mrpt
 			const mrpt::obs:: VelodyneCalibration & getCalibration() const { return m_velodyne_calib; }
 			void setCalibration(const mrpt::obs::VelodyneCalibration & calib) { m_velodyne_calib=calib; }
 			bool loadCalibrationFile(const std::string & velodyne_xml_calib_file_path ); //!< Returns false on error. \sa mrpt::obs::VelodyneCalibration::loadFromXMLFile()
+
+			/** Changes among STRONGEST, LAST, DUAL return types (via HTTP post interface).
+			  * Can be called at any instant, before or after initialize().
+			  * Requires setting a device IP address.
+			  * \return false on error */
+			bool setLidarReturnType(return_type_t ret_type);
+
+			/** Changes Lidar RPM (valid range: 300-600) (via HTTP post interface).
+			  * Can be called at any instant, before or after initialize().
+			  * Requires setting a device IP address.
+			  * \return false on error*/
+			bool setLidarRPM(int rpm);
+
+			/** Switches the LASER on/off (saves energy when not measuring) (via HTTP post interface).
+			* Can be called at any instant, before or after initialize().
+			* Requires setting a device IP address.
+			* \return false on error*/
+			bool setLidarOnOff(bool on);
+
 			/** @} */
 
 			/** Polls the UDP port for incoming data packets. The user *must* call this method in a timely fashion to grab data as it it generated by the device. 
@@ -269,6 +305,10 @@ namespace mrpt
 
 		mrpt::obs::gnss::Message_NMEA_RMC m_last_gps_rmc;
 		mrpt::system::TTimeStamp          m_last_gps_rmc_age;
+		int           m_lidar_rpm;
+		return_type_t m_lidar_return;
+
+		bool internal_send_http_post(const std::string &post_data);
 
 		}; // end of class
 	} // end of namespace
@@ -284,6 +324,19 @@ namespace mrpt
 				m_map.insert(hwdrivers::CVelodyneScanner::VLP16,  "VLP16");
 				m_map.insert(hwdrivers::CVelodyneScanner::HDL32,  "HDL32");
 				m_map.insert(hwdrivers::CVelodyneScanner::HDL64,  "HDL64");
+			}
+		};
+
+		template <>
+		struct TEnumTypeFiller<hwdrivers::CVelodyneScanner::return_type_t>
+		{
+			typedef hwdrivers::CVelodyneScanner::return_type_t enum_t;
+			static void fill(bimap<enum_t, std::string>  &m_map)
+			{
+				m_map.insert(hwdrivers::CVelodyneScanner::UNCHANGED, "UNCHANGED");
+				m_map.insert(hwdrivers::CVelodyneScanner::STRONGEST, "STRONGEST");
+				m_map.insert(hwdrivers::CVelodyneScanner::LAST, "LAST");
+				m_map.insert(hwdrivers::CVelodyneScanner::DUAL, "DUAL");
 			}
 		};
 	} // End of namespace

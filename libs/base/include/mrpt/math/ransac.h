@@ -2,14 +2,14 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 #ifndef  mrpt_ransac_H
 #define  mrpt_ransac_H
 
-#include <mrpt/utils/CDebugOutputCapable.h>
+#include <mrpt/utils/COutputLogger.h>
 #include <mrpt/math/CMatrixD.h>
 #include <set>
 
@@ -27,9 +27,13 @@ namespace mrpt
 		  *  \sa mrpt::math::ModelSearch, a more versatile RANSAC implementation where models can be anything else, not only matrices.
 		  */
 		template <typename NUMTYPE = double>
-		class BASE_IMPEXP RANSAC_Template : public mrpt::utils::CDebugOutputCapable
+		class BASE_IMPEXP RANSAC_Template : public mrpt::utils::COutputLogger
 		{
 		public:
+			RANSAC_Template() :
+				mrpt::utils::COutputLogger("RANSAC_Template")
+			{
+			}
 
 			/** The type of the function passed to mrpt::math::ransac - See the documentation for that method for more info. */
 			typedef void (*TRansacFitFunctor)(
@@ -57,8 +61,9 @@ namespace mrpt
 			  *
 			  *  This implementation is highly inspired on Peter Kovesi's MATLAB scripts (http://www.csse.uwa.edu.au/~pk).
 			  * \return false if no good solution can be found, true on success.
+			  * \note [MRPT 1.5.0] `verbose` parameter has been removed, supersedded by COutputLogger settings.
 			  */
-			static bool execute(
+			bool execute(
 				const CMatrixTemplateNumeric<NUMTYPE>	  &data,
 				TRansacFitFunctor			fit_func,
 				TRansacDistanceFunctor  	dist_func,
@@ -67,10 +72,9 @@ namespace mrpt
 				const unsigned int			minimumSizeSamplesToFit,
 				mrpt::vector_size_t			&out_best_inliers,
 				CMatrixTemplateNumeric<NUMTYPE> &out_best_model,
-				bool						verbose = false,
 				const double                prob_good_sample = 0.999,
 				const size_t				maxIter = 2000
-				);
+				) const;
 
 		}; // end class
 

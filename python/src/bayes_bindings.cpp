@@ -3,17 +3,40 @@
 
 /* MRPT */
 #include <mrpt/utils/CLoadableOptions.h>
+
+#include <mrpt/bayes/CProbabilityParticle.h>
 #include <mrpt/bayes/CParticleFilter.h>
 #include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/bayes/CKalmanFilterCapable.h>
+
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CSensoryFrame.h>
+
+#include <mrpt/poses/CPose2D.h>
+#include <mrpt/poses/CPose3D.h>
+
 #include <mrpt/math/lightweight_geom_data.h>
 
 /* namespaces */
 using namespace boost::python;
+using namespace mrpt::poses;
 using namespace mrpt::bayes;
 using namespace mrpt::utils;
+
+// aux typedefs
+namespace mrpt { namespace bayes {
+    typedef std::deque<CProbabilityParticle<CPose2D> > CParticle2DList;
+    typedef std::deque<CProbabilityParticle<CPose3D> > CParticle3DList;
+} }
+
+// CParticleFilter
+CParticleFilter::TParticleFilterStats CParticleFilter_executeOn(CParticleFilter& self, CParticleFilterCapable& obj, const mrpt::obs::CActionCollectionPtr action, const mrpt::obs::CSensoryFramePtr observation)
+{
+    CParticleFilter::TParticleFilterStats stats;
+    self.executeOn(obj, action.pointer(), observation.pointer(), &stats);
+    return stats;
+}
+// end of CParticleFilter
 
 
 // exporter
@@ -22,10 +45,16 @@ void export_bayes()
     // map namespace to be submodule of mrpt package
     MAKE_SUBMODULE(bayes)
 
+    // CParticleFilterCapable
+    {
+        scope s = class_<CParticleFilterCapable, boost::noncopyable>("CParticleFilterCapable", no_init)
+        ;
+    }
+
     // CParticleFilter
     {
-        scope s = class_<CParticleFilter>("CParticleFilter", init<CParticleFilter>())
-            .def("executeOn", &CParticleFilter::executeOn)
+        scope s = class_<CParticleFilter, bases<CParticleFilterCapable> >("CParticleFilter", init<>())
+            .def("executeOn", &CParticleFilter_executeOn)
             .def_readwrite("m_options", &CParticleFilter::m_options)
         ;
 
@@ -56,7 +85,6 @@ void export_bayes()
             .def_readwrite("resamplingMethod", &CParticleFilter::TParticleFilterOptions::resamplingMethod)
             .def_readwrite("max_loglikelihood_dyn_range", &CParticleFilter::TParticleFilterOptions::max_loglikelihood_dyn_range)
             .def_readwrite("pfAuxFilterStandard_FirstStageWeightsMonteCarlo", &CParticleFilter::TParticleFilterOptions::pfAuxFilterStandard_FirstStageWeightsMonteCarlo)
-            .def_readwrite("verbose", &CParticleFilter::TParticleFilterOptions::verbose)
             .def_readwrite("pfAuxFilterOptimal_MLE", &CParticleFilter::TParticleFilterOptions::pfAuxFilterOptimal_MLE)
         ;
 
@@ -64,6 +92,27 @@ void export_bayes()
         class_<CParticleFilter::TParticleFilterStats>("TParticleFilterStats", init<>())
             .def_readwrite("ESS_beforeResample", &CParticleFilter::TParticleFilterStats::ESS_beforeResample)
             .def_readwrite("weightsVariance_beforeResample", &CParticleFilter::TParticleFilterStats::weightsVariance_beforeResample)
+        ;
+    }
+
+    // CParticleList
+    {
+        class_<CParticle2DList>("CParticle2DList", init<>())
+            .def("__len__", &CParticle2DList::size)
+            .def("clear", &CParticle2DList::clear)
+            .def("append", &StlListLike<CParticle2DList>::add, with_custodian_and_ward<1, 2>()) // to let container keep value
+            .def("__getitem__", &StlListLike<CParticle2DList>::get, return_value_policy<copy_non_const_reference>())
+            .def("__setitem__", &StlListLike<CParticle2DList>::set, with_custodian_and_ward<1, 2>()) // to let container keep value
+            .def("__delitem__", &StlListLike<CParticle2DList>::del)
+        ;
+
+        class_<CParticle3DList>("CParticle3DList", init<>())
+            .def("__len__", &CParticle3DList::size)
+            .def("clear", &CParticle3DList::clear)
+            .def("append", &StlListLike<CParticle3DList>::add, with_custodian_and_ward<1, 2>()) // to let container keep value
+            .def("__getitem__", &StlListLike<CParticle3DList>::get, return_value_policy<copy_non_const_reference>())
+            .def("__setitem__", &StlListLike<CParticle3DList>::set, with_custodian_and_ward<1, 2>()) // to let container keep value
+            .def("__delitem__", &StlListLike<CParticle3DList>::del)
         ;
     }
 }

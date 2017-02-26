@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -109,11 +109,8 @@ CImage::CImage( const CImage &o ) :
 CImage& CImage::operator = (const CImage& o)
 {
 	MRPT_START
-
 	if (this==&o) return *this;
-
 	releaseIpl();
-
 	m_imgIsExternalStorage = o.m_imgIsExternalStorage;
 	m_imgIsReadOnly = false;
 
@@ -128,9 +125,7 @@ CImage& CImage::operator = (const CImage& o)
 	{ 	// An externally stored image:
 		m_externalFile = o.m_externalFile;
 	}
-
 	return *this;
-
 	MRPT_END
 }
 
@@ -158,7 +153,7 @@ void CImage::copyFromForceLoad(const CImage &o)
 	{
 		// Load from that file:
 		if (!this->loadFromFile( o.getExternalStorageFileAbsolutePath() ))
-			THROW_TYPED_EXCEPTION_CUSTOM_MSG1("Error loading externally-stored image from: %s", o.getExternalStorageFileAbsolutePath().c_str() ,CExceptionExternalImageNotFound);
+			THROW_TYPED_EXCEPTION_FMT(CExceptionExternalImageNotFound,"Error loading externally-stored image from: %s", o.getExternalStorageFileAbsolutePath().c_str());
 	}
 	else
 	{	// It's not external storage.
@@ -172,9 +167,7 @@ void CImage::copyFromForceLoad(const CImage &o)
 void CImage::copyFastFrom( CImage &o )
 {
 	MRPT_START
-
 	if (this==&o) return;
-
 	if (o.m_imgIsExternalStorage)
 	{
 		// Just copy the reference to the ext. file:
@@ -214,15 +207,10 @@ CImage::CImage( void *iplImage ) :
 
 #if MRPT_HAS_OPENCV
 	if (!iplImage)
-	{
 		changeSize( 1, 1, 1, true );
-	}
 	else
-	{
 		img = cvCloneImage( (IplImage*) iplImage );
-	}
 #endif
-
 	MRPT_END
 }
 
@@ -288,16 +276,21 @@ void  CImage::changeSize(
  ---------------------------------------------------------------*/
 bool  CImage::loadFromFile( const std::string& fileName, int isColor )
 {
-    MRPT_START
-
-	releaseIpl();
+	MRPT_START
 
 #if MRPT_HAS_OPENCV
-    return (NULL!= (img=cvLoadImage(fileName.c_str(),isColor) ));
+	IplImage* newImg = cvLoadImage(fileName.c_str(),isColor);
+	if (newImg!=NULL) {
+		releaseIpl();
+		img = newImg;
+		return true;
+	} else {
+		return false;
+	}
 #else
 	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
 #endif
-    MRPT_END
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -332,9 +325,7 @@ void  CImage::loadFromIplImage( void* iplImage )
 {
 	MRPT_START
 	ASSERT_(iplImage!=NULL)
-
 	releaseIpl();
-
 	if (iplImage)
 	{
 #if MRPT_HAS_OPENCV
@@ -343,7 +334,6 @@ void  CImage::loadFromIplImage( void* iplImage )
 		THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
 #endif
 	}
-
 	MRPT_END
 }
 
@@ -353,9 +343,7 @@ void  CImage::loadFromIplImage( void* iplImage )
 void  CImage::setFromIplImageReadOnly( void* iplImage )
 {
 	MRPT_START
-
 	releaseIpl();
-
 #if MRPT_HAS_OPENCV
 	ASSERT_(iplImage!=NULL)
 	ASSERTMSG_(iplImage!=this->img,"Trying to assign read-only to itself.")
@@ -368,7 +356,6 @@ void  CImage::setFromIplImageReadOnly( void* iplImage )
 #endif
 	m_imgIsReadOnly = true;
 	m_imgIsExternalStorage=false;
-
 	MRPT_END
 }
 
@@ -408,10 +395,8 @@ void  CImage::loadFromMemoryBuffer(
 
 #if MRPT_HAS_OPENCV
 	resize(width,height,color ? 3:1, true);
-
 	m_imgIsReadOnly = false;
 	m_imgIsExternalStorage=false;
-
 
 	if (color && swapRedBlue)
 	{
@@ -449,7 +434,6 @@ void  CImage::loadFromMemoryBuffer(
 			for (unsigned int y=0;y<height;y++)
 			{
 				memcpy( ptr_dest, ptr_src, bytes_per_row );
-
 				ptr_src+=bytes_per_row;
 				ptr_dest+=bytes_per_row_out;
 			}
@@ -458,7 +442,6 @@ void  CImage::loadFromMemoryBuffer(
 #else
 	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENCV=0 !");
 #endif
-
 	MRPT_END
 }
 
@@ -1827,12 +1810,12 @@ void  CImage::cross_correlation_FFT(
 			float	r1 = I1_R.get_unsafe(y,x);
 			float	r2 = I2_R.get_unsafe(y,x);
 
-			float	i1 = I1_I.get_unsafe(y,x);
-			float	i2 = I2_I.get_unsafe(y,x);
+			float	ii1 = I1_I.get_unsafe(y,x);
+			float	ii2 = I2_I.get_unsafe(y,x);
 
-			float	den = square(r1)+square(i1);
-			I2_R.set_unsafe(y,x, (r1*r2+i1*i2)/den);
-			I2_I.set_unsafe(y,x, (i2*r1-r2*i1)/den);
+			float	den = square(r1)+square(ii1);
+			I2_R.set_unsafe(y,x, (r1*r2+ii1*ii2)/den);
+			I2_I.set_unsafe(y,x, (ii2*r1-r2*ii1)/den);
 		}
 
 //	I2_R.saveToTextFile("DIV_R.txt");
@@ -1931,11 +1914,11 @@ void CImage::unload() const MRPT_NO_THROWS
 void CImage::releaseIpl(bool thisIsExternalImgUnload) MRPT_NO_THROWS
 {
 #if MRPT_HAS_OPENCV
-    if (img && !m_imgIsReadOnly)
-    {
+	if (img && !m_imgIsReadOnly)
+	{
 		IplImage *ptr=(IplImage*)img;
-	    cvReleaseImage( &ptr );
-    }
+		cvReleaseImage( &ptr );
+	}
 	img = NULL;
 	m_imgIsReadOnly = false;
 	if (!thisIsExternalImgUnload)
@@ -1968,7 +1951,7 @@ void CImage::makeSureImageIsLoaded() const throw (std::exception,utils::CExcepti
 		m_externalFile = tmpFile;
 
 		if (!ret)
-			THROW_TYPED_EXCEPTION_CUSTOM_MSG1("Error loading externally-stored image from: %s", wholeFile.c_str() ,CExceptionExternalImageNotFound);
+			THROW_TYPED_EXCEPTION_FMT(CExceptionExternalImageNotFound,"Error loading externally-stored image from: %s", wholeFile.c_str());
 	}
 	else THROW_EXCEPTION("img is NULL in a non-externally stored image.");
 }
@@ -2234,7 +2217,7 @@ void CImage::scaleImage( unsigned int width, unsigned int height, TInterpolation
 {
 #if MRPT_HAS_OPENCV
 	makeSureImageIsLoaded();   // For delayed loaded images stored externally
-    ASSERT_(img!=NULL);
+	ASSERT_(img!=NULL);
 	IplImage *srcImg = getAs<IplImage>();	// Source Image
 
 	if( static_cast<unsigned int>(srcImg->width) == width && static_cast<unsigned int>(srcImg->height) == height )
@@ -2342,7 +2325,7 @@ bool CImage::drawChessboardCorners(
 
 	if (cornerCoords.size()!=check_size_x*check_size_y) return false;
 
-	IplImage* img = this->getAs<IplImage>();
+	IplImage* ipl = this->getAs<IplImage>();
 
 	unsigned int x, y,i;
 	CvPoint prev_pt = cvPoint(0, 0);
@@ -2369,17 +2352,17 @@ bool CImage::drawChessboardCorners(
 			pt.x = cvRound( cornerCoords[i].x);
 			pt.y = cvRound( cornerCoords[i].y);
 
-			if( i != 0 ) cvLine( img, prev_pt, pt, color, lines_width );
+			if( i != 0 ) cvLine(ipl, prev_pt, pt, color, lines_width );
 
-			cvLine( img,
+			cvLine(ipl,
 					  cvPoint( pt.x - r, pt.y - r ),
 					  cvPoint( pt.x + r, pt.y + r ), color, lines_width );
-			cvLine( img,
+			cvLine(ipl,
 					  cvPoint( pt.x - r, pt.y + r),
 					  cvPoint( pt.x + r, pt.y - r), color, lines_width );
 
 			if (r>0)
-				cvCircle( img, pt, r+1, color );
+				cvCircle(ipl, pt, r+1, color );
 			prev_pt = pt;
 
 			// Text label with the corner index in the first and last corners:
@@ -2769,7 +2752,6 @@ bool CImage::loadTGA(const std::string& fileName, mrpt::utils::CImage &out_RGB, 
 		std::cerr << "[CImage::loadTGA] Only 32 bpp format supported!\n";
 		return false;
 	}
-
 
 	unsigned char desc;
 	desc = stream.get();

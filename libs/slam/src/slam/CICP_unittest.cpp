@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -59,16 +59,12 @@ protected:
 		CObservation2DRangeScan	scan1;
 		scan1.aperture = M_PIf;
 		scan1.rightToLeft = true;
-		scan1.validRange.resize( SCANS_SIZE );
-		scan1.scan.resize(SCANS_SIZE);
-		ASSERT_( sizeof(SCAN_RANGES_1) == sizeof(float)*SCANS_SIZE );
 
-		memcpy( &scan1.scan[0], SCAN_RANGES_1, sizeof(SCAN_RANGES_1) );
-		memcpy( &scan1.validRange[0], SCAN_VALID_1, sizeof(SCAN_VALID_1) );
+		ASSERT_( sizeof(SCAN_RANGES_1) == sizeof(float)*SCANS_SIZE );
+		scan1.loadFromVectors(SCANS_SIZE, SCAN_RANGES_1, SCAN_VALID_1 );
 
 		CObservation2DRangeScan	scan2 = scan1;
-		memcpy( &scan2.scan[0], SCAN_RANGES_2, sizeof(SCAN_RANGES_2) );
-		memcpy( &scan2.validRange[0], SCAN_VALID_2, sizeof(SCAN_VALID_2) );
+		scan2.loadFromVectors(SCANS_SIZE, SCAN_RANGES_2, SCAN_VALID_2 );
 
 		// Build the points maps from the scans:
 		m1.insertObservation( &scan1 );
@@ -188,14 +184,14 @@ TEST_F(ICPTests, RayTracingICP3D)
 	{
 		CSetOfObjectsPtr origin1= opengl::stock_objects::CornerXYZ();
 		origin1->setPose(viewpoint1);
-		origin1->setScale(0.6);
+		origin1->setScale(0.6f);
 		scene1->insert( origin1 );
 		scene2->insert( origin1 );
 	}
 	{
 		CSetOfObjectsPtr origin2= opengl::stock_objects::CornerXYZ();
 		origin2->setPose(viewpoint2);
-		origin2->setScale(0.6);
+		origin2->setScale(0.6f);
 		scene1->insert( origin2 );
 		scene2->insert( origin2 );
 	}
@@ -236,7 +232,7 @@ TEST_F(ICPTests, RayTracingICP3D)
 	CICP	icp;
 	CICP::TReturnInfo	icp_info;
 
-	icp.options.thresholdDist = 0.40;
+	icp.options.thresholdDist = 0.40f;
 	icp.options.thresholdAng = 0;
 
 	CPose3DPDFPtr pdf= icp.Align3D(

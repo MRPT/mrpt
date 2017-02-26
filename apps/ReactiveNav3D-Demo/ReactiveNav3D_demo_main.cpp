@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -17,9 +17,9 @@ using namespace mrpt::math;
 
 const char *default_cfg_txt =
 	"; ---------------------------------------------------------------\n"
-	"; FILE: Reactive Parameters.txt\n"
+	"; FILE: ReactiveParameters.txt\n"
 	";\n"
-	";  MJT @ JUIN-2013\n"
+	";  MJT @ JUNE-2013\n"
 	"; ---------------------------------------------------------------\n\n\n"
 
 	"[ROBOT_CONFIG]\n"
@@ -107,10 +107,24 @@ const char *default_cfg_txt =
 	"; To modify them change this included files, and the method CMyReactInterface::loadmaps() if necessary \n"
 	"MAP_RESOLUTION = 0.02 \n\n\n"
 
+	"[GLOBAL_CONFIG] \n"
+	"robotMax_V_mps = 0.70			; Speed limits - mps \n"
+	"robotMax_W_degps = 60			; dps \n"
 
-	"[NAVIGATION_CONFIG] \n"
 	"; 0: VFF,  1: ND \n"
 	"HOLONOMIC_METHOD = 1 \n\n"
+
+
+	"DIST_TO_TARGET_FOR_SENDING_EVENT = 0.5	; Minimum distance to target for sending the end event. Set to 0 to send it just on navigation end \n\n"
+
+	"[ReactiveParams] \n"
+	"robotMax_V_mps = 0.70			; Speed limits - mps \n"
+	"robotMax_W_degps = 60			; dps \n"
+	"MAX_REFERENCE_DISTANCE = 2		; Marks the maximum distance regarded by the reactive navigator (m) \n"
+
+	"X0 = 2						; Initial location (meters) \n"
+	"Y0 = 0 \n"
+	"PHI0 = -90					; In degrees \n"
 
 	";	Parameters for the navigation \n"
 	"; ---------------------------------------------------- \n"
@@ -122,57 +136,34 @@ const char *default_cfg_txt =
 	"; 5: Hysteresis \n"
 	"; 6: Security Distance \n\n"
 
-	"DIST_TO_TARGET_FOR_SENDING_EVENT = 0.5	; Minimum distance to target for sending the end event. Set to 0 to send it just on navigation end \n\n"
-
-	"X0 = 2						; Initial location (meters) \n"
-	"Y0 = 0 \n"
-	"PHI0 = -90					; In degrees \n"
-	"VMAX_MPS = 0.70			; Speed limits - mps \n"
-	"WMAX_DEGPS = 60			; dps \n"
-	"SPEEDFILTER_TAU = 0.1		; The 'TAU' time constant of a first order lowpass filter for speed commands (s) \n"
-	"ROBOTMODEL_DELAY = 0		; un-used param, must be present for compat. with old mrpt versions \n"
-	"ROBOTMODEL_TAU = 0			; un-used param, must be present for compat. with old mrpt versions \n"
-	"MAX_DISTANCE_PTG = 2		; Marks the maximum distance regarded by the reactive navigator (m) \n"
-	"GRID_RESOLUTION = 0.02 	; Resolutions used to build the collision_grid \n\n\n"
-
-
-
 	";	PTGs	.All of them has the same fields to fill, but they don't use all of them. \n"
 	";----------------------------------------------------------------------------------- \n"
-	";	Types:	1 - Circular arcs \n"
-	";			2 - alpha - A, Trajectories with asymptotical heading \n"
-	";			3 - C|C,S, R = vmax/wmax, Trajectories to move backward and then forward \n"
-	";			4 - C|C,s, like PTG 3, but if t > threshold -> v = w = 0 \n"
-	";			5 - CS, Trajectories with a minimum turning radius \n"
-	";			6 - alpha - SP, Trajectories built upon a spiral segment \n"
-	";			7 - \n\n"
-
 	"PTG_COUNT = 3			;Number of path models used \n\n"
 
-	"PTG1_TYPE = 1 \n"
-	"PTG1_NALFAS = 121 \n"
-	"PTG1_VMAX = 0.5 \n"
-	"PTG1_WMAX = 45 \n"
+	"PTG1_TYPE = CPTG_DiffDrive_C \n"
+	"PTG1_resolution = 0.02      # Look-up-table cell size or resolution (in meters)\n"
+	"PTG1_refDistance= 2.0      # Max distance to account for obstacles \n"
+	"PTG1_num_paths = 121 \n"
+	"PTG1_v_max_mps = 0.5 \n"
+	"PTG1_w_max_dps = 45 \n"
 	"PTG1_K = 1 \n"
-	"PTG1_AV = 57.3 \n"
-	"PTG1_AW = 57.3 \n\n"
 
-	"PTG2_TYPE = 2 \n"
-	"PTG2_NALFAS = 121 \n"
-	"PTG2_VMAX = 0.5 \n"
-	"PTG2_WMAX = 55 \n"
-	"PTG2_K = 1.0 \n"
-	"PTG2_AV = 57.3 \n"
-	"PTG2_AW = 57.3 \n\n"
+	"PTG2_TYPE = CPTG_DiffDrive_alpha \n"
+	"PTG2_resolution = 0.05      # Look-up-table cell size or resolution (in meters)\n"
+	"PTG2_refDistance= 2.0      # Max distance to account for obstacles \n"
+	"PTG2_num_paths = 121 \n"
+	"PTG2_v_max_mps = 0.5 \n"
+	"PTG2_w_max_dps = 55 \n"
+	"PTG2_cte_a0v_deg = 57.3 \n"
+	"PTG2_cte_a0w_deg = 57.3 \n\n"
 
-	"PTG3_TYPE = 5 \n"
-	"PTG3_NALFAS = 121 \n"
-	"PTG3_VMAX = 0.5 \n"
-	"PTG3_WMAX = 45 \n"
+	"PTG3_TYPE = CPTG_DiffDrive_CS  \n"
+	"PTG3_resolution = 0.02      # Look-up-table cell size or resolution (in meters)\n"
+	"PTG3_refDistance= 2.0      # Max distance to account for obstacles \n"
+	"PTG3_num_paths = 121 \n"
+	"PTG3_v_max_mps = 0.5 \n"
+	"PTG3_w_max_dps = 45 \n"
 	"PTG3_K = 1.0 \n"
-	"PTG3_AV = 57.3 \n"
-	"PTG3_AW = 57.3 \n\n\n"
-
 
 
 	";	Parameters for the 'Nearness diagram' Holonomic method \n"
@@ -345,20 +336,21 @@ int main(int num_arg, char *argv[])
 				if (moving_target == 1)
 				{
 					moving_target = 0;
-					const CAbstractReactiveNavigationSystem::TNavigationParams  nav_params = ReactInterface.createNewTarget(last_Target_Pos.x, last_Target_Pos.y, 0.3, 0);
+					const CAbstractNavigator::TNavigationParams  nav_params = ReactInterface.createNewTarget(last_Target_Pos.x, last_Target_Pos.y, 0.3f, 0);
 					rn3d.navigate(&nav_params);
 				}
 			}
 
 			//Execute navigation
 			rn3d.navigationStep();
-			ReactInterface.robotSim.simulateInterval( reactive_period.Tac() );
+			ReactInterface.robotSim.simulateOneTimeStep( reactive_period.Tac() );
 			reactive_period.Tic();
 
 			if ((rn3d.IDLE == rn3d.getCurrentState())||(rn3d.SUSPENDED == rn3d.getCurrentState()))
 			{
 				CSimplePointsMap auxpoints;
-				ReactInterface.senseObstacles( auxpoints );
+				mrpt::system::TTimeStamp auxpoints_time;
+				ReactInterface.senseObstacles( auxpoints, auxpoints_time);
 			}
 			ReactInterface.updateScene();
 			mrpt::system::sleep(5);
@@ -405,4 +397,3 @@ int main(int num_arg, char *argv[])
 		return -1;
 	}
 }
-

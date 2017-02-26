@@ -1,6 +1,5 @@
 /* bindings */
 #include "bindings.h"
-#include "utils_bindings.h"
 
 /* MRPT */
 #include <mrpt/opengl/CRenderizable.h>
@@ -9,8 +8,12 @@
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/CEllipsoid.h>
 #include <mrpt/opengl/COpenGLScene.h>
+
 #include <mrpt/poses/CPose3DPDF.h>
+
 #include <mrpt/math/CMatrix.h>
+
+// #include <mrpt/utils/TColor.h>
 
 /* namespaces */
 using namespace boost::python;
@@ -19,34 +22,6 @@ using namespace mrpt::poses;
 using namespace mrpt::math;
 
 // CRenderizable
-struct CRenderizableWrap : CRenderizable, wrapper<CRenderizable>
-{
-    CObject *duplicate() const
-    {
-        return this->get_override("duplicate")();
-    }
-
-    void writeToStream(mrpt::utils::CStream &out, int *getVersion) const
-    {
-        this->get_override("writeToStream")(out, getVersion);
-    }
-
-    void readFromStream(mrpt::utils::CStream &in, int version)
-    {
-        this->get_override("readFromStream")(in, version);
-    }
-
-    void render() const
-    {
-        this->get_override("render")();
-    }
-
-    void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const
-    {
-        this->get_override("getBoundingBox")(bb_min, bb_max);
-    }
-};
-
 void CRenderizable_setPose(CRenderizable &self, mrpt::poses::CPose3D pose)
 {
     self.setPose(pose);
@@ -61,6 +36,18 @@ void CRenderizable_setLocation2(CRenderizable &self, float x, float y, float z)
 {
     self.setLocation(x, y, z);
 }
+
+void CRenderizable_setColor1(CRenderizable &self, mrpt::utils::TColorf& c)
+{
+    self.setColor(c);
+}
+
+void CRenderizable_setColor2(CRenderizable &self, double r, double g, double b, double alpha=1.0)
+{
+    self.setColor(r, g, b, alpha);
+}
+
+BOOST_PYTHON_FUNCTION_OVERLOADS(CRenderizable_setColor2_overloads, CRenderizable_setColor2, 4, 5)
 // end of CRenderizable
 
 // COpenGLScene
@@ -130,7 +117,7 @@ void export_opengl()
     {
         MAKE_PTR(CRenderizable)
 
-        class_<CRenderizableWrap, boost::noncopyable>("CRenderizable", "The base class of 3D objects that can be directly rendered through OpenGL.", no_init)
+        class_<CRenderizable, boost::noncopyable>("CRenderizable", "The base class of 3D objects that can be directly rendered through OpenGL.", no_init)
             .def("setPose", &CRenderizable_setPose, args("o"), "Set the 3D pose from a mrpt::poses::CPose3D object.")
             .def("setLocation", &CRenderizable_setLocation1, args("point3D"), "Changes the location of the object, keeping untouched the orientation.")
             .def("setLocation", &CRenderizable_setLocation2, args("x", "y", "z"), "Changes the location of the object, keeping untouched the orientation.")
@@ -140,6 +127,8 @@ void export_opengl()
             .def("getPoseYaw", &CRenderizable::getPoseYaw, "Rotation relative to parent coordinate origin, in **DEGREES**.")
             .def("getPosePitch", &CRenderizable::getPosePitch, "Rotation relative to parent coordinate origin, in **DEGREES**.")
             .def("getPoseRoll", &CRenderizable::getPoseRoll, "Rotation relative to parent coordinate origin, in **DEGREES**.")
+            .def("setColor", &CRenderizable_setColor1, "Set the color of this object.")
+            .def("setColor", &CRenderizable_setColor2, CRenderizable_setColor2_overloads()) // "Set the color components of this object (R,G,B,Alpha, in the range 0-1).")
         ;
     }
 
@@ -157,7 +146,7 @@ void export_opengl()
         MAKE_PTR_BASE(CSetOfObjects, CRenderizable)
 
         class_<CSetOfObjects, boost::noncopyable, bases<CRenderizable> >("CSetOfObjects", "A set of objects, which are referenced to the coordinates framework established in this object.", no_init)
-            .def("Create", &CSetOfObjects::Create).staticmethod("Create")
+            MAKE_CREATE(CSetOfObjects)
         ;
     }
 
@@ -166,7 +155,7 @@ void export_opengl()
         MAKE_PTR_BASE(CSetOfLines, CRenderizable)
 
         class_<CSetOfLines, boost::noncopyable, bases<CRenderizable> >("CSetOfLines", "A set of independent lines (or segments), one line with its own start and end positions (X,Y,Z).", no_init)
-            .def("Create", &CSetOfLines_Create).staticmethod("Create")
+            .def("Create", &CSetOfLines_Create, "Create smart pointer from class.").staticmethod("Create")
             .def("appendLine", &CSetOfLines_appendLine, args("x0", "y0", "z0", "x1", "y1", "z1"), "Appends a line to the set, given the coordinates of its bounds.")
         ;
     }
@@ -176,7 +165,7 @@ void export_opengl()
         MAKE_PTR_BASE(CEllipsoid, CRenderizable)
 
         class_<CEllipsoid, boost::noncopyable, bases<CRenderizable> >("CEllipsoid", "A 2D ellipse or 3D ellipsoid, depending on the size of the m_cov matrix (2x2 or 3x3).", no_init)
-            .def("Create", &CEllipsoid_Create).staticmethod("Create")
+            .def("Create", &CEllipsoid_Create, "Create smart pointer from class.").staticmethod("Create")
             .def("setFromPosePDF", CEllipsoid_setFromPosePDF)
         ;
     }
@@ -186,9 +175,9 @@ void export_opengl()
         MAKE_PTR(COpenGLScene)
 
         class_<COpenGLScene>("COpenGLScene", "This class allows the user to create, load, save, and render 3D scenes using OpenGL primitives.", init<>("Constructor."))
-            .def("Create", &COpenGLScene::Create).staticmethod("Create")
             .def("insert", &COpenGLScene_insert, COpenGLScene_insert_overloads()) //, "Insert a new object into the scene, in the given viewport (by default, into the \"main\" viewport).")
             .def("clear", &COpenGLScene::clear, COpenGLScene_clear_overloads()) //, "Clear the list of objects and viewports in the scene, deleting objects' memory, and leaving just the default viewport with the default values.")
+            MAKE_CREATE(COpenGLScene)
         ;
     }
 }

@@ -688,7 +688,7 @@ int ReapThreadProc(void* params)
 
   void** state = (void**)params;
   libusb_device_handle* dev_handle = (libusb_device_handle*)state[0];
-  const int endpoint = (int)state[1];
+  const int endpoint = reinterpret_cast<int>(state[1]);
   delete[](state);
 
   libusb_device::TMapIsocTransfers& isocTransfers = *(dev_handle->dev->isoTransfers);

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -1151,7 +1151,7 @@ local unsigned bi_reverse(code, len)
     unsigned code; /* the value to invert */
     int len;       /* its bit length */
 {
-    register unsigned res = 0;
+    unsigned res = 0;
     do {
         res |= code & 1;
         code >>= 1, res <<= 1;

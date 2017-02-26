@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -11,16 +11,15 @@
 
 #include <mrpt/opengl/CRenderizable.h>		// Include these before windows.h!!
 #include <mrpt/opengl/gl_utils.h>
-#include <mrpt/synch.h>
+#include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/utils/CStringList.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPose3D.h>
+#include <mrpt/utils/CStream.h>
 
 #include "opengl_internals.h"
-
-#include <mrpt/utils/CStartUpClassesRegister.h>
 
 using namespace std;
 using namespace mrpt;
@@ -29,9 +28,6 @@ using namespace mrpt::utils;
 using namespace mrpt::synch;
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE( CRenderizable, CSerializable, mrpt::opengl )
-
-extern CStartUpClassesRegister  mrpt_opengl_class_reg;
-const int dumm = mrpt_opengl_class_reg.do_nothing(); // Avoid compiler removing this class in static linking
 
 #define MAX_GL_TEXTURE_IDS       0x10000
 #define MAX_GL_TEXTURE_IDS_MASK  0x0FFFF
@@ -49,7 +45,7 @@ private:
 public:
 	std::vector<bool>		freeTextureNames;
 	unsigned int			next_free_texture;
-	synch::CCriticalSection	cs;
+	synch::CCriticalSectionRecursive	cs;
 
 	static TOpenGLNameBooker & instance()
 	{
@@ -94,7 +90,7 @@ unsigned int CRenderizable::getNewTextureNumber()
 		ret = ret % MAX_GL_TEXTURE_IDS_MASK;
 
 		if (++tries>=MAX_GL_TEXTURE_IDS)
-			THROW_EXCEPTION_CUSTOM_MSG1("Maximum number of textures (%u) excedeed! (are you deleting them?)", (unsigned int)MAX_GL_TEXTURE_IDS);
+			THROW_EXCEPTION_FMT("Maximum number of textures (%u) excedeed! (are you deleting them?)", (unsigned int)MAX_GL_TEXTURE_IDS);
 	}
 
 	booker.freeTextureNames[ret] = true; // mark as used.
@@ -220,7 +216,7 @@ void  CRenderizable::readFromStreamRender(mrpt::utils::CStream &in)
 			}
 			break;
 		default:
-			THROW_EXCEPTION_CUSTOM_MSG1("Can't parse CRenderizable standard data field: corrupt data stream or format in a newer MRPT format? (serialization version=%u)",static_cast<unsigned int>(serialization_version))
+			THROW_EXCEPTION_FMT("Can't parse CRenderizable standard data field: corrupt data stream or format in a newer MRPT format? (serialization version=%u)",static_cast<unsigned int>(serialization_version))
 		};
 	}
 	else

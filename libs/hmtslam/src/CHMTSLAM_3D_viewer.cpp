@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -34,7 +34,7 @@ void CHMTSLAM::thread_3D_viewer(  )
 	{
 		// Start thread:
 		// -------------------------
-		obj->printf_debug("[thread_3D_viewer] Thread started (ID=0x%08lX)\n", mrpt::system::getCurrentThreadId() );
+		obj->logFmt(mrpt::utils::LVL_DEBUG,"[thread_3D_viewer] Thread started (ID=0x%08lX)\n", mrpt::system::getCurrentThreadId() );
 
 		// --------------------------------------------
 		//    The main loop
@@ -49,7 +49,7 @@ void CHMTSLAM::thread_3D_viewer(  )
 		// -------------------------
 		time_t timCreat,timExit; double timCPU=0;
 		try { mrpt::system::getCurrentThreadTimes( timCreat,timExit,timCPU); } catch(...) {};
-		obj->printf_debug("[thread_3D_viewer] Thread finished. CPU time used:%.06f secs \n",timCPU);
+		obj->logFmt(mrpt::utils::LVL_DEBUG,"[thread_3D_viewer] Thread finished. CPU time used:%.06f secs \n",timCPU);
 		obj->m_terminationFlag_3D_viewer = true;
 
 	}
@@ -59,7 +59,7 @@ void CHMTSLAM::thread_3D_viewer(  )
 
 		// Release semaphores:
 
-		obj->printf_debug( (char*)e.what() );
+		obj->logFmt(mrpt::utils::LVL_ERROR,"%s", e.what() );
 
 		// DEBUG: Terminate application:
 		obj->m_terminateThreads	= true;
@@ -69,10 +69,9 @@ void CHMTSLAM::thread_3D_viewer(  )
 	{
 		obj->m_terminationFlag_3D_viewer = true;
 
-		obj->printf_debug("\n---------------------- EXCEPTION CAUGHT! ---------------------\n");
-		obj->printf_debug(" In CHierarchicalMappingFramework::thread_3D_viewer. Unexpected runtime error!!\n");
-
-		// Release semaphores:
+		obj->logFmt(mrpt::utils::LVL_ERROR,
+			"\n---------------------- EXCEPTION CAUGHT! ---------------------\n"
+			" In CHierarchicalMappingFramework::thread_3D_viewer. Unexpected runtime error!!\n");
 
 		// DEBUG: Terminate application:
 		obj->m_terminateThreads	= true;

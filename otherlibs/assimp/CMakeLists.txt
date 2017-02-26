@@ -29,7 +29,7 @@ execute_process(
 
 if(NOT GIT_COMMIT_HASH)
   set(GIT_COMMIT_HASH 0)
-endif(NOT GIT_COMMIT_HASH)
+endif()
 
 configure_file(
   ${${PROJECT_NAME}_SOURCE_DIR}/revision.h.in
@@ -111,7 +111,7 @@ IF ( ASSIMP_ENABLE_BOOST_WORKAROUND )
 	MESSAGE( STATUS "Building a non-boost version of Assimp." )
 ELSE ( ASSIMP_ENABLE_BOOST_WORKAROUND )
 	SET( Boost_DETAILED_FAILURE_MSG ON )
-	SET( Boost_ADDITIONAL_VERSIONS "1.47" "1.47.0" "1.48.0" "1.48" "1.49" "1.49.0" "1.50" "1.50.0" "1.51" "1.51.0" "1.52.0" "1.53.0" "1.54.0" "1.55" )	
+	SET( Boost_ADDITIONAL_VERSIONS "1.47" "1.47.0" "1.48.0" "1.48" "1.49" "1.49.0" "1.50" "1.50.0" "1.51" "1.51.0" "1.52.0" "1.53.0" "1.54.0" "1.55" )
 	FIND_PACKAGE( Boost )
 	IF ( NOT Boost_FOUND )
 		MESSAGE( FATAL_ERROR
@@ -130,7 +130,7 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/assimp-config-version.cmake.in" "${C
 #install(FILES "${CMAKE_CURRENT_BINARY_DIR}/assimp-config.cmake"             "${CMAKE_CURRENT_BINARY_DIR}/assimp-config-version.cmake" DESTINATION "${ASSIMP_LIB_INSTALL_DIR}/cmake/assimp-${ASSIMP_VERSION_MAJOR}.${ASSIMP_VERSION_MINOR}" COMPONENT ${LIBASSIMP-DEV_COMPONENT})
 
 SET ( ASSIMP_NO_EXPORT OFF CACHE BOOL
-	"Disable Assimp's export functionality." 
+	"Disable Assimp's export functionality."
 )
 
 # Search for external dependencies, and build them from source if not found
@@ -148,7 +148,7 @@ if( NOT ZLIB_FOUND )
   set(ZLIB_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/contrib/zlib ${CMAKE_CURRENT_BINARY_DIR}/contrib/zlib)
 else(NOT ZLIB_FOUND)
   ADD_DEFINITIONS(-DASSIMP_BUILD_NO_OWN_ZLIB)
-endif(NOT ZLIB_FOUND)
+endif()
 INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIR})
 
 # Search for unzip
@@ -159,14 +159,14 @@ endif (PKG_CONFIG_FOUND)
 IF ( ASSIMP_NO_EXPORT )
 	ADD_DEFINITIONS( -DASSIMP_BUILD_NO_EXPORT)
 	MESSAGE( STATUS "Build an import-only version of Assimp." )
-ENDIF( ASSIMP_NO_EXPORT )
+ENDIF( )
 
 # if(CMAKE_CL_64)
 # 	set(ASSIMP_BUILD_ARCHITECTURE "amd64")
 # else(CMAKE_CL_64)
 # 	set(ASSIMP_BUILD_ARCHITECTURE "x86")
-# endif(CMAKE_CL_64)
-SET ( ASSIMP_BUILD_ARCHITECTURE "" CACHE STRING 
+# endif()
+SET ( ASSIMP_BUILD_ARCHITECTURE "" CACHE STRING
 	"describe the current architecture."
 )
 IF    ( ASSIMP_BUILD_ARCHITECTURE STREQUAL "")
@@ -175,7 +175,7 @@ ELSE  ( ASSIMP_BUILD_ARCHITECTURE STREQUAL "")
 ENDIF ( ASSIMP_BUILD_ARCHITECTURE STREQUAL "")
 
 # ${CMAKE_GENERATOR}
-SET ( ASSIMP_BUILD_COMPILER "" CACHE STRING 
+SET ( ASSIMP_BUILD_COMPILER "" CACHE STRING
 	"describe the current compiler."
 )
 IF    ( ASSIMP_BUILD_COMPILER STREQUAL "")
@@ -211,7 +211,7 @@ IF ( WIN32 )
 	SET ( ASSIMP_BUILD_TESTS ON CACHE BOOL
 		"If the test suite for Assimp is built in addition to the library."
 	)
-	
+
 	IF ( ASSIMP_BUILD_TESTS )
 		ADD_SUBDIRECTORY( test/ )
 	ENDIF ( ASSIMP_BUILD_TESTS )
@@ -221,7 +221,7 @@ IF(MSVC)
 	SET ( ASSIMP_INSTALL_PDB ON CACHE BOOL
 		"Install MSVC debug files."
 	)
-ENDIF(MSVC)
+ENDIF()
 
 if(CMAKE_CPACK_COMMAND AND UNIX AND ASSIMP_OPT_BUILD_PACKAGES)
   # Packing information

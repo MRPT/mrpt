@@ -33,7 +33,7 @@
 						<object class="wxTextCtrl" name="ID_TEXTCTRL1" variable="edKL" member="yes">
 							<value>7.00e-6</value>
 						</object>
-						<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+						<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 						<border>5</border>
 						<option>1</option>
 					</object>
@@ -57,7 +57,7 @@
 						<object class="wxTextCtrl" name="ID_TEXTCTRL2" variable="edKR" member="yes">
 							<value>7.00e-6</value>
 						</object>
-						<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+						<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 						<border>5</border>
 						<option>1</option>
 					</object>
@@ -81,7 +81,7 @@
 						<object class="wxTextCtrl" name="ID_TEXTCTRL3" variable="edD" member="yes">
 							<value>0.41</value>
 						</object>
-						<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+						<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 						<border>5</border>
 						<option>1</option>
 					</object>
@@ -94,7 +94,7 @@
 						<option>1</option>
 					</object>
 				</object>
-				<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+				<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 				<option>1</option>
 			</object>
 			<object class="sizeritem">
@@ -125,7 +125,7 @@
 						<option>1</option>
 					</object>
 				</object>
-				<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+				<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 				<option>1</option>
 			</object>
 		</object>

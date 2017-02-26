@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -13,23 +13,16 @@
 #include <mrpt/obs.h>
 
 #include <mrpt/utils/CSerializable.h>
-#include <mrpt/utils/CStartUpClassesRegister.h>
-
+#include <mrpt/utils/initializer.h>
 
 using namespace mrpt::obs;
 using namespace mrpt::maps;
 using namespace mrpt::utils;
 
-void registerAllClasses_mrpt_obs();
 
-CStartUpClassesRegister  mrpt_obs_class_reg(&registerAllClasses_mrpt_obs);
-
-
-/*---------------------------------------------------------------
-					registerAllClasses_mrpt_obs
-  ---------------------------------------------------------------*/
-void registerAllClasses_mrpt_obs()
+MRPT_INITIALIZER(registerAllClasses_mrpt_obs)
 {
+#if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
 	registerClass( CLASS_ID( CSensoryFrame ) );
 	registerClassCustomName( "CSensorialFrame", CLASS_ID( CSensoryFrame ) );
 
@@ -56,6 +49,7 @@ void registerAllClasses_mrpt_obs()
 	registerClass( CLASS_ID( CObservationStereoImagesFeatures ) );
 	//registerClass( CLASS_ID( CObservationVisualLandmarks ) );
 	registerClass( CLASS_ID( CObservation6DFeatures) );
+	registerClass( CLASS_ID( CObservationRobotPose) );
 	registerClass( CLASS_ID( CObservationCANBusJ1939 ) );
 	registerClass( CLASS_ID( CObservationRawDAQ ) );
 
@@ -73,6 +67,5 @@ void registerAllClasses_mrpt_obs()
 	registerClass( CLASS_ID( CObservationSkeleton ) );
 
 	registerClass( CLASS_ID( TMapGenericParams ) );
-
+#endif
 }
-

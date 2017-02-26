@@ -6,7 +6,7 @@
 IF(CMAKE_MRPT_HAS_WXWIDGETS)
 	LIST(APPEND gui_EXTRA_SRCS		"${MRPT_SOURCE_DIR}/libs/gui/src/mathplots/*.cpp" "${MRPT_SOURCE_DIR}/libs/gui/include/mrpt/otherlibs/mathplot/*.h")
 	LIST(APPEND gui_EXTRA_SRCS_NAME 	"mathplot" "mathplot")
-ENDIF(CMAKE_MRPT_HAS_WXWIDGETS)
+ENDIF()
 
 
 # Embedded freeglut?
@@ -17,7 +17,7 @@ IF(CMAKE_MRPT_HAS_OPENGL_GLUT AND NOT CMAKE_MRPT_HAS_GLUT_SYSTEM)
 	#ENDIF(NOT BUILD_SHARED_LIBS)
 	#ADD_DEFINITIONS(/DFREEGLUT_STATIC)
 	INCLUDE_DIRECTORIES("${MRPT_LIBS_ROOT}/opengl/include/otherlibs/freeglut/")
-ENDIF(CMAKE_MRPT_HAS_OPENGL_GLUT AND NOT CMAKE_MRPT_HAS_GLUT_SYSTEM)
+ENDIF()
 
 # Embedded version of freeglut-2.4.0 for Windows:
 # It's already in mrpt-opengl, we need its include headers:
@@ -26,11 +26,11 @@ IF (WIN32)
 	LIST(APPEND gui_EXTRA_SRCS_NAME "freeglut-headers")
 	# It's in the **opengl** lib tree:
 	include_directories("${MRPT_LIBS_ROOT}/opengl/src/freeglut-2.4.0/")
-ENDIF (WIN32)
+ENDIF ()
 
 IF(CMAKE_MRPT_HAS_OPENCV)
 	INCLUDE_DIRECTORIES(${OpenCV_INCLUDE_DIR} ${OpenCV_INCLUDE_DIRS} ${OPENCV_INCLUDE_DIRS} ${OPENCV_INCLUDEDIR})
-ENDIF(CMAKE_MRPT_HAS_OPENCV)
+ENDIF()
 
 
 #---------------------------------------------
@@ -38,29 +38,28 @@ ENDIF(CMAKE_MRPT_HAS_OPENCV)
 #---------------------------------------------
 define_mrpt_lib(
 	# Lib name
-	gui 		
+	gui
 	# Dependencies: None
 	mrpt-opengl
-	mrpt-base		
+	mrpt-base
 	)
 
-IF(BUILD_mrpt-gui) 
+IF(BUILD_mrpt-gui)
 	# Ignore precompiled headers in some sources:
 	IF(MRPT_ENABLE_PRECOMPILED_HDRS)
 		IF (MSVC)
 			set_source_files_properties(
-				${mathplot_FILES} 
+				${mathplot_FILES}
 				${freeglut_FILES}
 				PROPERTIES COMPILE_FLAGS "/Y-")
-		ENDIF (MSVC)
-	ENDIF(MRPT_ENABLE_PRECOMPILED_HDRS)
+		ENDIF ()
+	ENDIF()
 
 	IF(CMAKE_MRPT_HAS_WXWIDGETS)
 		target_link_libraries(mrpt-gui ${wxWidgets_LIBRARIES})
-	ENDIF(CMAKE_MRPT_HAS_WXWIDGETS)
-	
+	ENDIF()
+
 	IF(CMAKE_MRPT_HAS_OPENCV)
 		target_link_libraries(mrpt-gui ${OpenCV_LIBRARIES})
-	ENDIF(CMAKE_MRPT_HAS_OPENCV)
-ENDIF(BUILD_mrpt-gui) 
-
+	ENDIF()
+ENDIF()

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -12,7 +12,7 @@
 
 #include <mrpt/hwdrivers/CSerialPort.h>
 #include <mrpt/hwdrivers/CPtuBase.h>
-#include <mrpt/utils/CDebugOutputCapable.h>
+#include <mrpt/utils/COutputLogger.h>
 
 namespace mrpt
 {
@@ -22,7 +22,7 @@ namespace mrpt
 		  * control a Tilt Unit model DT-80, working in radians .
 		  * \ingroup mrpt_hwdrivers_grp
 		  */
-		class HWDRIVERS_IMPEXP CTuMicos : public CPtuBase, public mrpt::utils::CDebugOutputCapable
+		class HWDRIVERS_IMPEXP CTuMicos : public CPtuBase, public mrpt::utils::COutputLogger
 		{
 
 		public:

@@ -2,18 +2,19 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 #ifndef  CDebugOutputCapable_H
 #define  CDebugOutputCapable_H
 
-#include <mrpt/base/link_pragmas.h>
+#include <mrpt/utils/COutputLogger.h>
 
-/*---------------------------------------------------------------
-	Class
-  ---------------------------------------------------------------*/
+#if !defined(MRPT_DISABLE_WARN_DEPRECATED_DEBUG_OUTPUT_CAPABLE)
+MRPT_WARNING("`CDebugOutputCapable.h` is deprecated since MRPT 1.5.0, please use `mrpt/utils/COutputLogger.h` instead")
+#endif
+
 namespace mrpt
 {
 	namespace utils
@@ -26,17 +27,18 @@ namespace mrpt
 		  *  In addition, this class will send all the messages from "printf_debug" to the Visual Studio "Output Window" in debug mode (obviously, this is a feature only enabled under Windows).
 		  *
 		  *  See CDebugOutputCapable::printf_debug.
+		  * \note Deprecated since MRPT 1.5.0, please use COutputLogger instead. This class will be removed in future releases.
 		 * \ingroup mrpt_base_grp
 		 */
-		class BASE_IMPEXP CDebugOutputCapable
+		class BASE_IMPEXP CDebugOutputCapable : public mrpt::utils::COutputLogger
 		{
 		public:
 			/** Default initialization */
-			CDebugOutputCapable() { }
+			CDebugOutputCapable(const std::string &logName = std::string("log")) : mrpt::utils::COutputLogger(logName) { }
 			virtual ~CDebugOutputCapable() { }
 
 			/** Sends a formated text to "debugOut" if not NULL, or to cout otherwise. */
-			static void printf_debug( const char *frmt, ... );
+			void printf_debug( const char *frmt, ... ) const MRPT_printf_format_check(2,3);
 
 		}; // End of class def.
 

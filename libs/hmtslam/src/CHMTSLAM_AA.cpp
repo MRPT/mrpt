@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -53,7 +53,7 @@ CHMTSLAM::TMessageLSLAMfromAAPtr CHMTSLAM::areaAbstraction(
 	for (TPoseIDList::const_iterator newID=newPoseIDs.begin();newID!=newPoseIDs.end();++newID)
 	{
 		// Add a new node to the graph:
-		obj->printf_debug("[thread_AA] Processing new pose ID: %u\n", static_cast<unsigned>( *newID ) );
+		obj->logFmt(mrpt::utils::LVL_DEBUG, "[thread_AA] Processing new pose ID: %u\n", static_cast<unsigned>( *newID ) );
 
 		// Get SF & pose pdf for the new pose.
 		const CSensoryFrame			*sf;

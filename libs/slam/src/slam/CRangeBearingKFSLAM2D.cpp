@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -731,8 +731,8 @@ CRangeBearingKFSLAM2D::TOptions::TOptions() :
 	data_assoc_IC_ml_threshold	(0.0)
 
 {
-	stds_Q_no_odo[0]=0.10;
-	stds_Q_no_odo[1]=0.10;
+	stds_Q_no_odo[0]=0.10f;
+	stds_Q_no_odo[1]=0.10f;
 	stds_Q_no_odo[2]=DEG2RAD(4.0f);
 }
 

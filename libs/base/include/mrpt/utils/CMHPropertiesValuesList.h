@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -14,9 +14,6 @@
 #include <mrpt/system/string_utils.h>
 #include <cstdio>
 
-/*---------------------------------------------------------------
-	Class
-  ---------------------------------------------------------------*/
 namespace mrpt
 {
     namespace utils
@@ -170,7 +167,7 @@ namespace mrpt
                 }
                 // Not found:
                 if (raiseExceptionIfNotFound)
-                    THROW_EXCEPTION_CUSTOM_MSG1("Property '%s' not found", propertyName );
+                    THROW_EXCEPTION_FMT("Property '%s' not found", propertyName );
                 return false;
                 MRPT_END
             }

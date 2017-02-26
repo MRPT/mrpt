@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -74,6 +74,8 @@ CSimplePointsMap::~CSimplePointsMap()
  ---------------------------------------------------------------*/
 void CSimplePointsMap::reserve(size_t newLength)
 {
+	newLength = mrpt::utils::length2length4N(newLength);
+
 	x.reserve( newLength );
 	y.reserve( newLength );
 	z.reserve( newLength );
@@ -83,6 +85,7 @@ void CSimplePointsMap::reserve(size_t newLength)
 //  and old contents are not changed.
 void CSimplePointsMap::resize(size_t newLength)
 {
+	this->reserve(newLength); // to ensure 4N capacity
 	x.resize( newLength, 0 );
 	y.resize( newLength, 0 );
 	z.resize( newLength, 0 );
@@ -93,6 +96,7 @@ void CSimplePointsMap::resize(size_t newLength)
 //  and leaving all points to default values.
 void CSimplePointsMap::setSize(size_t newLength)
 {
+	this->reserve(newLength); // to ensure 4N capacity
 	x.assign( newLength, 0);
 	y.assign( newLength, 0);
 	z.assign( newLength, 0);
@@ -156,7 +160,7 @@ void  CSimplePointsMap::readFromStream(mrpt::utils::CStream &in, int version)
 			uint32_t n;
 			in >> n;
 
-			x.resize(n); y.resize(n); z.resize(n);
+			this->resize(n);
 
 			if (n>0)
 			{
@@ -192,9 +196,7 @@ void  CSimplePointsMap::readFromStream(mrpt::utils::CStream &in, int version)
 			uint32_t n;
 			in >> n;
 
-			x.resize(n);
-			y.resize(n);
-			z.resize(n);
+			this->resize(n);
 
 			if (n>0)
 			{
@@ -223,7 +225,7 @@ void  CSimplePointsMap::readFromStream(mrpt::utils::CStream &in, int version)
 					else
 					{
 						std::vector<uint32_t>  dummy_pointWeight(n);
-						in.ReadBufferFixEndianness((unsigned long*)(&dummy_pointWeight[0]),n);
+						in.ReadBufferFixEndianness(&dummy_pointWeight[0],n);
 					}
 				}
 			}

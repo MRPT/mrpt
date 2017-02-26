@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -138,6 +138,8 @@ namespace obs
 		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const MRPT_OVERRIDE { out_sensorPose = sensorPose; } // See base class docs
 		void setSensorPose( const mrpt::poses::CPose3D &newSensorPose ) MRPT_OVERRIDE { sensorPose = newSensorPose; } // See base class docs
 		void getDescriptionAsText(std::ostream &o) const MRPT_OVERRIDE; // See base class docs
+
+		mrpt::system::TTimeStamp getOriginalReceivedTimeStamp() const MRPT_OVERRIDE; // See base class docs
 		/** @} */
 
 		/** @name Deprecated, backwards compatible (MRPT <1.4.0) data and types
@@ -167,8 +169,11 @@ namespace obs
 
 		/** @name Utilities
 		  * @{ */
-		static bool GPS_time_to_UTC(uint16_t gps_week,double gps_sec, mrpt::system::TTimeParts &utc_out); //!< Return false on invalid input data
-		static bool GPS_time_to_UTC(uint16_t gps_week,double gps_sec, mrpt::system::TTimeStamp &utc_out); //!< Return false on invalid input data
+		static bool GPS_time_to_UTC(
+			uint16_t gps_week,double gps_sec,
+			const int leap_seconds_count /**< [in] GPS to UTC time number of leap seconds (normally grabbed from satellital live data) */,
+			mrpt::system::TTimeStamp &utc_out /**< [out] UTC timestamp */ ); //!< Return false on invalid input data
+		static bool GPS_time_to_UTC(uint16_t gps_week,double gps_sec,const int leap_seconds_count, mrpt::system::TTimeParts &utc_out); //!< \overload
 		/** @} */
 	}; // End of class def.
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CObservationGPS , CObservation, OBS_IMPEXP)

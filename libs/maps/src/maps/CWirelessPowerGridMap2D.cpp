@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -43,11 +43,11 @@ void CWirelessPowerGridMap2D::TMapDefinition::loadFromConfigFile_map_specific(co
 {
 	// [<sectionNamePrefix>+"_creationOpts"]
 	const std::string sSectCreation = sectionNamePrefix+string("_creationOpts");
-	MRPT_LOAD_CONFIG_VAR(min_x, float,   source,sSectCreation);
-	MRPT_LOAD_CONFIG_VAR(max_x, float,   source,sSectCreation);
-	MRPT_LOAD_CONFIG_VAR(min_y, float,   source,sSectCreation);
-	MRPT_LOAD_CONFIG_VAR(max_y, float,   source,sSectCreation);
-	MRPT_LOAD_CONFIG_VAR(resolution, float,   source,sSectCreation);
+	MRPT_LOAD_CONFIG_VAR(min_x, double ,   source,sSectCreation);
+	MRPT_LOAD_CONFIG_VAR(max_x, double ,   source,sSectCreation);
+	MRPT_LOAD_CONFIG_VAR(min_y, double ,   source,sSectCreation);
+	MRPT_LOAD_CONFIG_VAR(max_y, double ,   source,sSectCreation);
+	MRPT_LOAD_CONFIG_VAR(resolution, double ,   source,sSectCreation);
 	mapType = source.read_enum<CWirelessPowerGridMap2D::TMapRepresentation>(sSectCreation,"mapType",mapType);
 
 	insertionOpts.loadFromConfigFile(source, sectionNamePrefix+string("_insertOpts") );
@@ -56,11 +56,11 @@ void CWirelessPowerGridMap2D::TMapDefinition::loadFromConfigFile_map_specific(co
 void CWirelessPowerGridMap2D::TMapDefinition::dumpToTextStream_map_specific(mrpt::utils::CStream &out) const
 {
 	out.printf("MAP TYPE                                  = %s\n", mrpt::utils::TEnumType<CWirelessPowerGridMap2D::TMapRepresentation>::value2name(mapType).c_str() );
-	LOADABLEOPTS_DUMP_VAR(min_x         , float);
-	LOADABLEOPTS_DUMP_VAR(max_x         , float);
-	LOADABLEOPTS_DUMP_VAR(min_y         , float);
-	LOADABLEOPTS_DUMP_VAR(max_y         , float);
-	LOADABLEOPTS_DUMP_VAR(resolution         , float);
+	LOADABLEOPTS_DUMP_VAR(min_x         , double );
+	LOADABLEOPTS_DUMP_VAR(max_x         , double );
+	LOADABLEOPTS_DUMP_VAR(min_y         , double );
+	LOADABLEOPTS_DUMP_VAR(max_y         , double );
+	LOADABLEOPTS_DUMP_VAR(resolution         , double );
 
 	this->insertionOpts.dumpToTextStream(out);
 }
@@ -82,11 +82,11 @@ IMPLEMENTS_SERIALIZABLE(CWirelessPowerGridMap2D, CRandomFieldGridMap2D,mrpt::map
   ---------------------------------------------------------------*/
 CWirelessPowerGridMap2D::CWirelessPowerGridMap2D(
 	TMapRepresentation	mapType,
-	float		x_min,
-	float		x_max,
-	float		y_min,
-	float		y_max,
-	float		resolution ) :
+	double x_min,
+	double x_max,
+	double y_min,
+	double y_max,
+	double resolution ) :
 		CRandomFieldGridMap2D(mapType, x_min,x_max,y_min,y_max,resolution ),
 		insertionOptions()
 {
@@ -187,18 +187,13 @@ double	 CWirelessPowerGridMap2D::internal_computeObservationLikelihood(
 void  CWirelessPowerGridMap2D::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
-		*version = 4;
+		*version = 5;
 	else
 	{
-		uint32_t	n;
+		dyngridcommon_writeToStream(out);
 
-		// Save the dimensions of the grid:
-		out << m_x_min << m_x_max << m_y_min << m_y_max;
-		out << m_resolution;
-		out << static_cast<uint32_t>(m_size_x) << static_cast<uint32_t>(m_size_y);
-
-		// To assure compatibility: The size of each cell:
-		n = static_cast<uint32_t>(sizeof( TRandomFieldCell ));
+		// To ensure compatibility: The size of each cell:
+		uint32_t n = static_cast<uint32_t>(sizeof( TRandomFieldCell ));
 		out << n;
 
 		// Save the map contents:
@@ -259,17 +254,12 @@ void  CWirelessPowerGridMap2D::readFromStream(mrpt::utils::CStream &in, int vers
 	case 2:
 	case 3:
 	case 4:
+	case 5:
 		{
-			uint32_t	n,i,j;
+			dyngridcommon_readFromStream(in, version<5);
 
-			// Load the dimensions of the grid:
-			in >> m_x_min >> m_x_max >> m_y_min >> m_y_max;
-			in >> m_resolution;
-			in >> i >> j;
-			m_size_x = i;
-			m_size_y = j;
-
-			// To assure compatibility: The size of each cell:
+			// To ensure compatibility: The size of each cell:
+			uint32_t	n;
 			in >> n;
 
 			if (version<2)
@@ -374,49 +364,6 @@ void  CWirelessPowerGridMap2D::TInsertionOptions::loadFromConfigFile(
 	internal_loadFromConfigFile_common(iniFile,section);
 }
 
-
-
-/*---------------------------------------------------------------
-					getAsBitmapFile
- ---------------------------------------------------------------*/
-void  CWirelessPowerGridMap2D::getAsBitmapFile(mrpt::utils::CImage &out_img) const
-{
-	MRPT_START
-
-	// Nothing special in this derived class:
-	CRandomFieldGridMap2D::getAsBitmapFile(out_img);
-
-	MRPT_END
-}
-
-
-/*---------------------------------------------------------------
-					saveMetricMapRepresentationToFile
-  ---------------------------------------------------------------*/
-void  CWirelessPowerGridMap2D::saveMetricMapRepresentationToFile(
-	const std::string	&filNamePrefix ) const
-{
-	MRPT_START
-
-	// Nothing special in this derived class:
-	CRandomFieldGridMap2D::saveMetricMapRepresentationToFile(filNamePrefix);
-
-	MRPT_END
-}
-
-/*---------------------------------------------------------------
-					saveAsMatlab3DGraph
-  ---------------------------------------------------------------*/
-void  CWirelessPowerGridMap2D::saveAsMatlab3DGraph(const std::string  &filName) const
-{
-	MRPT_START
-
-	// Nothing special in this derived class:
-	CRandomFieldGridMap2D::saveAsMatlab3DGraph(filName);
-
-	MRPT_END
-}
-
 /*---------------------------------------------------------------
 						getAs3DObject
 ---------------------------------------------------------------*/
@@ -424,8 +371,6 @@ void  CWirelessPowerGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&ou
 {
 	MRPT_START
 	if (!genericMapParams.enableSaveAs3DObject) return;
-
 	CRandomFieldGridMap2D::getAs3DObject(outObj);
-
 	MRPT_END
 }

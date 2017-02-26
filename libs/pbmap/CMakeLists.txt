@@ -13,11 +13,10 @@ IF(CMAKE_MRPT_HAS_PCL)
 		mrpt-base
 		)
 
-	IF(BUILD_mrpt-pbmap) 
+	IF(BUILD_mrpt-pbmap)
 		target_link_libraries(mrpt-pbmap ${PCL_LIBRARIES})
-	ENDIF(BUILD_mrpt-pbmap)
+	ENDIF()
 
 ELSE(CMAKE_MRPT_HAS_PCL)
 	SET(BUILD_mrpt-pbmap "OFF" CACHE BOOL "Build the library mrpt-pbmap" FORCE)
-ENDIF(CMAKE_MRPT_HAS_PCL)
-
+ENDIF()

@@ -7,9 +7,9 @@ INCLUDE(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CM
 #
 #  October 2007, Jose Luis Blanco <jlblanco@ctima.uma.es>
 #-----------------------------------------------------------------
-PROJECT(RawLogGrabber)
+PROJECT(rawlog-grabber)
 
-#MESSAGE(STATUS "Makefile for application: /apps/rawlog-grabber ")
+
 
 
 # Allow optional rawlog-grabber (compile-time) plug-ins:
@@ -21,7 +21,7 @@ PROJECT(RawLogGrabber)
 #    DIR/rawloggrabber_plugin.cmake  - Define the variable RAWLOGGRABBER_PLUGIN_LIBS
 #
 #  The preprocessor define "RAWLOGGRABBER_PLUGIN" will be defined.
-#   
+#
 SET(RAWLOGGRABBER_PLUGIN_DIR "" CACHE PATH "Path to a rawlog-grabber plug-in directory (empty: don't use)")
 MARK_AS_ADVANCED(RAWLOGGRABBER_PLUGIN_DIR)
 
@@ -39,7 +39,7 @@ if (NOT "${RAWLOGGRABBER_PLUGIN_DIR}" STREQUAL "")
 				INCLUDE("${RAWLOGGRABBER_PLUGIN_DIR}/rawloggrabber_plugin.cmake")
 				MESSAGE(STATUS "rawlog-grabber plug-in libs: ${RAWLOGGRABBER_PLUGIN_LIBS}")
 			ENDIF (EXISTS "${RAWLOGGRABBER_PLUGIN_DIR}/rawloggrabber_plugin.cmake")
-			
+
 			MESSAGE(STATUS "Successful detection of rawlog-grabber plug-in directory: ${RAWLOGGRABBER_PLUGIN_DIR}")
 		endif (NOT EXISTS "${RAWLOGGRABBER_PLUGIN_DIR}/register.cpp")
 	else (EXISTS "${RAWLOGGRABBER_PLUGIN_DIR}")
@@ -53,24 +53,20 @@ endif (NOT "${RAWLOGGRABBER_PLUGIN_DIR}" STREQUAL "")
 # TARGET:
 # ---------------------------------------------
 # Define the executable target:
-ADD_EXECUTABLE(rawlog-grabber
+ADD_EXECUTABLE(${PROJECT_NAME}
                rawloggrabber_main.cpp
 			   ${aux_srcs}
 			   ${aux_hdrs}
 			    ${MRPT_VERSION_RC_FILE}
 			   )
 
-SET(TMP_TARGET_NAME "rawlog-grabber")
-
-
-
 # Add the required libraries for linking:
-TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${MRPT_LINKER_LIBS_RELorDEB} ) 
-TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} mrpt-hwdrivers${MRPT_LINKER_LIBS_POSTFIX} ${RAWLOGGRABBER_PLUGIN_LIBS} )
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${MRPT_LINKER_LIBS_RELorDEB} )
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} mrpt-hwdrivers${MRPT_LINKER_LIBS_POSTFIX} ${RAWLOGGRABBER_PLUGIN_LIBS} )
 
 # Dependencies on MRPT libraries:
-#  Just mention the top-level dependency, the rest will be detected automatically, 
+#  Just mention the top-level dependency, the rest will be detected automatically,
 #  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
-DeclareAppDependencies(${TMP_TARGET_NAME} mrpt-hwdrivers mrpt-obs)
+DeclareAppDependencies(${PROJECT_NAME} mrpt-hwdrivers mrpt-obs)
 
-DeclareAppForInstall(${TMP_TARGET_NAME})
+DeclareAppForInstall(${PROJECT_NAME})

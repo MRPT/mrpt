@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -17,6 +17,7 @@ namespace mrpt
   namespace nav
   {
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE(CLogFileRecord_ND, CHolonomicLogFileRecord, NAV_IMPEXP)
+	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE(CHolonomicND, CAbstractHolonomicReactiveMethod, NAV_IMPEXP )
 
 	/** \addtogroup nav_holo Holonomic navigation methods
 	  * \ingroup mrpt_nav_grp
@@ -31,6 +32,7 @@ namespace mrpt
 	 * These are the optional parameters of the method which can be set by means of a configuration file passed to the constructor or to CHolonomicND::initialize() or directly in \a CHolonomicND::options
 	 *
 	 * \code
+	 * # Section name can be changed via setConfigFileSectionName()
 	 * [ND_CONFIG]
 	 * factorWeights=1.0 0.5 2.0 0.4
 	 * // 1: Free space
@@ -50,33 +52,15 @@ namespace mrpt
 	 */
 	class NAV_IMPEXP CHolonomicND : public CAbstractHolonomicReactiveMethod
 	{
+		DEFINE_SERIALIZABLE( CHolonomicND )
 	public:
-		MRPT_MAKE_ALIGNED_OPERATOR_NEW
-	public:
-		 /**  Initialize the parameters of the navigator, from some configuration file, or default values if set to NULL.
-		   */
-		 CHolonomicND( const mrpt::utils::CConfigFileBase *INI_FILE = NULL );
+		 /**  Initialize the parameters of the navigator, from some configuration file, or default values if set to NULL */
+		CHolonomicND( const mrpt::utils::CConfigFileBase *INI_FILE = NULL );
 
-		 /** This method performs the holonomic navigation itself.
-		   *  \param target [IN] The relative location (x,y) of target point.
-		   *  \param obstacles [IN] Distance to obstacles from robot location (0,0). First index refers to -PI direction, and last one to +PI direction. Distances can be dealed as "meters", although they are "pseudometers", see note below.
-		   *  \param maxRobotSpeed [IN] Maximum robot speed, in "pseudometers/sec". See note below.
-		   *  \param desiredDirection [OUT] The desired motion direction, in the range [-PI,PI]
-		   *  \param desiredSpeed [OUT] The desired motion speed in that direction, in "pseudometers"/sec. (See note below)
-		   *  \param logRecord [IN/OUT] A placeholder for a pointer to a log record with extra info about the execution. Set to NULL if not required. User <b>must free memory</b> using "delete logRecord" after using it.
-		   *
-		   *  NOTE: With "pseudometers" we refer to the distance unit in TP-Space, thus:
-		   *     <br><center><code>pseudometer<sup>2</sup>= meter<sup>2</sup> + (rad * r)<sup>2</sup></code><br></center>
-		   */
-		 void  navigate(	const mrpt::math::TPoint2D &target,
-							const std::vector<float>	&obstacles,
-							double			maxRobotSpeed,
-							double			&desiredDirection,
-							double			&desiredSpeed,
-							CHolonomicLogFileRecordPtr &logRecord );
+		// See base class docs
+		void navigate(const NavInput & ni, NavOutput &no) MRPT_OVERRIDE;
 
-		 /** The structure used to store a detected gap in obstacles.
-		   */
+		/** The structure used to store a detected gap in obstacles. */
 		struct TGap
 		{
 			unsigned int  ini;
@@ -88,8 +72,7 @@ namespace mrpt
 
 		typedef std::vector<TGap> TGapArray;
 
-		/** The set of posible situations for each trajectory. (mrpt::utils::TEnumType works with this enum)
-		  */
+		/** The set of posible situations for each trajectory. (mrpt::utils::TEnumType works with this enum) */
 		enum TSituations
 		{
 			SITUATION_TARGET_DIRECTLY = 1,
@@ -98,12 +81,9 @@ namespace mrpt
 			SITUATION_NO_WAY_FOUND
 		};
 
-		/**  Initialize the parameters of the navigator.
-		  */
-		void  initialize( const mrpt::utils::CConfigFileBase &INI_FILE )
-		{
-			options.loadFromConfigFile(INI_FILE, std::string("ND_CONFIG"));
-		}
+		/**  Initialize the parameters of the navigator. */
+		void  initialize(const mrpt::utils::CConfigFileBase &INI_FILE) MRPT_OVERRIDE;
+		virtual void saveConfigFile(mrpt::utils::CConfigFileBase &c) const MRPT_OVERRIDE; // See base class docs
 
 		/** Algorithm options */
 		struct NAV_IMPEXP TOptions : public mrpt::utils::CLoadableOptions
@@ -129,7 +109,7 @@ namespace mrpt
 		/**  Find gaps in the obtacles.
 		  */
 		void  gapsEstimator(
-			const std::vector<float>         & obstacles,
+			const std::vector<double>         & obstacles,
 			const mrpt::math::TPoint2D  & in_target,
 			TGapArray                   & gaps );
 
@@ -137,7 +117,7 @@ namespace mrpt
 		/** Search the best gap.
 		  */
 		void  searchBestGap(
-			const std::vector<float>         & in_obstacles,
+			const std::vector<double>         & in_obstacles,
 			const double                  in_maxObsRange,
 			const TGapArray             & in_gaps,
 			const mrpt::math::TPoint2D  & in_target,
@@ -152,19 +132,20 @@ namespace mrpt
 		void  calcRepresentativeSectorForGap(
 			TGap                        & gap,
 			const mrpt::math::TPoint2D  & target,
-			const std::vector<float>         & obstacles);
+			const std::vector<double>         & obstacles);
 
 		/** Evaluate each gap:
 		  */
 		void  evaluateGaps(
-			const std::vector<float> & in_obstacles,
-			const float          in_maxObsRange,
+			const std::vector<double> & in_obstacles,
+			const double          in_maxObsRange,
 			const TGapArray     & in_gaps,
 			const unsigned int	  TargetSector,
 			const float          TargetDist,
 			std::vector<double>       & out_gaps_evaluation );
 
 	}; // end of CHolonomicND
+	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CHolonomicND, CAbstractHolonomicReactiveMethod, NAV_IMPEXP )
 
 	/** A class for storing extra information about the execution of
 	 *    CHolonomicND navigation.

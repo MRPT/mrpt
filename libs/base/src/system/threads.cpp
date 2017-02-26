@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -13,7 +13,7 @@
 #include <mrpt/system/string_utils.h>
 
 #include <mrpt/utils/CTicTac.h>
-#include <mrpt/synch.h>
+#include <mrpt/synch/CSemaphore.h>
 
 #ifdef MRPT_OS_WINDOWS
     #include <conio.h>
@@ -28,12 +28,13 @@
     #include <termios.h>
     #include <unistd.h>
     #include <sys/select.h>
-    #include <sys/time.h>
+	#include <sys/time.h>
     #include <time.h>
 	#include <unistd.h>
 	#include <utime.h>
 	#include <errno.h>
 	#include <signal.h>
+	#include <string.h> // strerror()
 #endif
 
 #include <fstream>
@@ -262,30 +263,34 @@ void BASE_IMPEXP mrpt::system::changeThreadPriority(
 		threadHandle.idThread;
 	#endif
 
-	int policy;
+	int ret, policy;
 	struct sched_param param;
 
-	if (pthread_getschedparam(tid,&policy,&param)) {
-		cerr << "[mrpt::system::changeThreadPriority] Warning: Failed call to pthread_getschedparam" << endl;
+	if (0!=(ret=pthread_getschedparam(tid,&policy,&param))) {
+		cerr << "[mrpt::system::changeThreadPriority] Warning: Failed call to pthread_getschedparam (error: `" << strerror(ret) << "`)" << endl;
 		return;
 	}
+
+	policy = SCHED_RR;
+	int min_prio = sched_get_priority_min(policy), max_prio = sched_get_priority_max(policy);
+	if (min_prio<0) min_prio=1; // Just in case of error to calls above (!)
+	if (max_prio<0) max_prio=99;
 
 	int prio = 0;
 	switch(priority)
 	{
-		case tpLowests: prio=40; break;
-		case tpLower : prio=41; break;
-		case tpLow : prio=49; break;
-		case tpNormal: prio=50; break;
-		case tpHigh : prio=51; break;
-		case tpHigher: prio=55; break;
-		case tpHighest: prio=60; break;
+		case tpLowests: prio=min_prio; break;
+		case tpLower :  prio=(max_prio+3*min_prio)/4; break;
+		case tpLow :    prio=(max_prio+2*min_prio)/3; break;
+		case tpNormal:  prio=(max_prio+min_prio  )/2; break;
+		case tpHigh :   prio=(2*max_prio+min_prio)/3; break;
+		case tpHigher:  prio=(3*max_prio+min_prio)/4; break;
+		case tpHighest: prio=max_prio; break;
 	}
 
 	param.sched_priority = prio;
-
-	if (pthread_setschedparam(tid, policy, &param)) {
-		cerr << "[mrpt::system::changeThreadPriority] Warning: Failed call to pthread_getschedparam" << endl;
+	if (0!=(ret=pthread_setschedparam(tid, policy, &param))) {
+		cerr << "[mrpt::system::changeThreadPriority] Warning: Failed call to pthread_setschedparam (error: `" << strerror(ret) << "`)" << endl;
 		return;
 	}
 
@@ -310,8 +315,21 @@ void BASE_IMPEXP mrpt::system::changeCurrentProcessPriority( TProcessPriority pr
 	}
 	SetPriorityClass( GetCurrentProcess(), dwPri );
 #else
-	MRPT_UNUSED_PARAM(priority);
-    cout << "[mrpt::system::changeCurrentProcessPriority] Warning: Not implemented in Linux yet" << endl;
+	int nice_val;
+	switch (priority)
+	{
+	case ppIdle:     nice_val =+19; break;
+	case ppNormal:   nice_val =  0; break;
+	case ppHigh:     nice_val =-10; break;
+	case ppVeryHigh: nice_val =-20; break;
+	default:
+		THROW_EXCEPTION("Invalid priority value");
+	}
+	errno=0;
+	const int ret = nice(nice_val);
+	if (ret==-1 && errno==EPERM) {
+		std::cerr << "[mrpt::system::changeCurrentProcessPriority] Error calling nice(): Not enough permissions.\n";
+	}
 #endif
 }
 
@@ -522,7 +540,7 @@ void mrpt::system::terminateThread(TThreadHandle &threadHandle) MRPT_NO_THROWS
 	if (threadHandle.isClear()) return; // done
 
 #ifdef MRPT_OS_WINDOWS
-	TerminateThread(threadHandle.hThread,-1);
+	TerminateThread(threadHandle.hThread, DWORD(-1));
 #elif defined(MRPT_OS_APPLE)
 	pthread_cancel(reinterpret_cast<pthread_t>(threadHandle.idThread));
 #else
@@ -530,4 +548,3 @@ void mrpt::system::terminateThread(TThreadHandle &threadHandle) MRPT_NO_THROWS
 #endif
 	threadHandle.clear();
 }
-

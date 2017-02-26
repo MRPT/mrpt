@@ -2,10 +2,16 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
+
+/**
+ * Execute the iterating closest point algorithm (ICP) on a hardcoded pair of
+ * laser data. The algorithm computes the transformation (translation and
+ * rotation) for aligning the 2 sets of laser scans and plots the
+ */
 
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
@@ -62,18 +68,17 @@ void TestICP()
 
 	// Load scans:
 	CObservation2DRangeScan	scan1;
-	scan1.aperture = M_PIf;
-	scan1.rightToLeft = true;
-	scan1.validRange.resize( SCANS_SIZE );
-	scan1.scan.resize(SCANS_SIZE);
+    scan1.aperture = M_PIf;
+    scan1.rightToLeft = true;
 	ASSERT_( sizeof(SCAN_RANGES_1) == sizeof(float)*SCANS_SIZE );
 
-	memcpy( &scan1.scan[0], SCAN_RANGES_1, sizeof(SCAN_RANGES_1) );
-	memcpy( &scan1.validRange[0], SCAN_VALID_1, sizeof(SCAN_VALID_1) );
-
+    /**
+     * Copy the  float scan laser arrays to the corresponding members of the
+     * CObservation2DRangeScan instances
+     */
+    scan1.loadFromVectors(SCANS_SIZE, SCAN_RANGES_1,SCAN_VALID_1);
 	CObservation2DRangeScan	scan2 = scan1;
-	memcpy( &scan2.scan[0], SCAN_RANGES_2, sizeof(SCAN_RANGES_2) );
-	memcpy( &scan2.validRange[0], SCAN_VALID_2, sizeof(SCAN_VALID_2) );
+    scan2.loadFromVectors(SCANS_SIZE, SCAN_RANGES_2,SCAN_VALID_2);
 
 	// Build the points maps from the scans:
 	m1.insertObservation( &scan1 );
@@ -86,10 +91,20 @@ void TestICP()
 #endif
 
 	// -----------------------------------------------------
+
+    /**
+     * user-set parameters for the icp algorithm.
+     * For a full list of the available options check the online tutorials
+     * page:
+     * http://www.mrpt.org/Iterative_Closest_Point_(ICP)_and_other_matching_algorithms
+    */
+
+    //	select which algorithm version to use
 //	ICP.options.ICP_algorithm = icpLevenbergMarquardt;
 //	ICP.options.ICP_algorithm = icpClassic;
 	ICP.options.ICP_algorithm = (TICPAlgorithm)ICP_method;
 
+    // configuration options for the icp algorithm
 	ICP.options.maxIterations			= 100;
 	ICP.options.thresholdAng			= DEG2RAD(10.0f);
 	ICP.options.thresholdDist			= 0.75f;
@@ -100,6 +115,13 @@ void TestICP()
 	ICP.options.dumpToConsole();
 	// -----------------------------------------------------
 
+    /**
+     * Scans alignment procedure.
+     * Given an initial guess (initialPose) and the maps to be aligned, the
+     * algorithm returns the probability density function (pdf) of the alignment
+     * Additional arguments are provided to investigate the performance of the
+     * algorithm
+     */
 	CPose2D		initialPose(0.8f,0.0f,(float)DEG2RAD(0.0f));
 
 	CPosePDFPtr pdf = ICP.Align(
@@ -128,6 +150,10 @@ void TestICP()
 
 	//cout << "Covariance of estimation (MATLAB format): " << endl << gPdf.cov.inMatlabFormat()  << endl;
 
+    /**
+     * Save the results for potential postprocessing (in txt and in matlab
+     * format)
+     */
 	cout << "-> Saving reference map as scan1.txt" << endl;
 	m1.save2D_to_text_file("scan1.txt");
 
@@ -138,7 +164,6 @@ void TestICP()
 	CSimplePointsMap m2_trans = m2;
 	m2_trans.changeCoordinatesReference( gPdf.mean );
 	m2_trans.save2D_to_text_file("scan2_trans.txt");
-
 
 	cout << "-> Saving MATLAB script for drawing 2D ellipsoid as view_ellip.m" << endl;
 	CMatrixFloat COV22 =  CMatrixFloat( CMatrixDouble( gPdf.cov ));
@@ -154,6 +179,10 @@ void TestICP()
 
 	// If we have 2D windows, use'em:
 #if MRPT_HAS_WXWIDGETS
+    /**
+     * Plotting the icp results:
+     * Aligned maps + transformation uncertainty ellipsis
+     */
 	if (!skip_window)
 	{
 		gui::CDisplayWindowPlots	win("ICP results");
@@ -206,4 +235,3 @@ int main(int argc, char **argv)
 		return -1;
 	}
 }
-

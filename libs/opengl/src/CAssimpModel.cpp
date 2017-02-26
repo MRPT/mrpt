@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -443,14 +443,15 @@ void recursive_render (const aiScene *sc, const aiNode* nd,const std::vector<uns
 				int vertexIndex = face->mIndices[i];	// get group index for current index
 				if(mesh->mColors[0] != NULL)
 					Color4f(&mesh->mColors[0][vertexIndex]);
-				if(mesh->mNormals != NULL)
 
 				if(mesh->HasTextureCoords(0))		//HasTextureCoords(texture_coordinates_set)
 				{
 					glTexCoord2f(mesh->mTextureCoords[0][vertexIndex].x, 1 - mesh->mTextureCoords[0][vertexIndex].y); //mTextureCoords[channel][vertex]
 				}
 
-				glNormal3fv(&mesh->mNormals[vertexIndex].x);
+				if (mesh->mNormals) {
+					glNormal3fv(&mesh->mNormals[vertexIndex].x);
+				}
 				glVertex3fv(&mesh->mVertices[vertexIndex].x);
 			}
 			glEnd();
@@ -507,7 +508,9 @@ void load_textures(
 
 	/* create and fill array with GL texture ids */
 	textureIds.resize(numTextures);
-	glGenTextures(numTextures, &textureIds[0]); /* Texture name generation */
+	if (numTextures) {
+		glGenTextures(numTextures, &textureIds[0]); /* Texture name generation */
+	}
 
 	/* get iterator */
 	std::map<std::string,CAssimpModel::TInfoPerTexture>::iterator itr = textureIdMap.begin();

@@ -23,7 +23,7 @@
 							<help>New scene</help>
 							<handler function="OnNewScene" entry="EVT_BUTTON" />
 						</object>
-						<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+						<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 						<border>1</border>
 						<option>1</option>
 					</object>
@@ -37,7 +37,7 @@
 							<help>Open a &quot;3Dscene&quot; file...</help>
 							<handler function="OnOpenFile" entry="EVT_BUTTON" />
 						</object>
-						<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+						<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 						<border>1</border>
 						<option>1</option>
 					</object>
@@ -59,7 +59,7 @@
 							<help>Open previous file in directory...</help>
 							<handler function="OnPrevious" entry="EVT_BUTTON" />
 						</object>
-						<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+						<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 						<border>1</border>
 						<option>1</option>
 					</object>
@@ -73,7 +73,7 @@
 							<help>Open next file in directory...</help>
 							<handler function="OnNext" entry="EVT_BUTTON" />
 						</object>
-						<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+						<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 						<border>1</border>
 						<option>1</option>
 					</object>
@@ -87,7 +87,7 @@
 							<help>Open a &quot;3Dscene&quot; file...</help>
 							<handler function="OnReload" entry="EVT_BUTTON" />
 						</object>
-						<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+						<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 						<border>1d</border>
 						<option>1</option>
 					</object>
@@ -109,7 +109,7 @@
 							<help>View the options of 3DSceneViewer</help>
 							<handler function="OnMenuOptions" entry="EVT_BUTTON" />
 						</object>
-						<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+						<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 						<border>1</border>
 						<option>1</option>
 					</object>
@@ -124,7 +124,7 @@
 							<help>Toogle projective/orthogonal view...</help>
 							<handler function="OnbtnOrthoClicked" entry="EVT_TOGGLEBUTTON" />
 						</object>
-						<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+						<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 						<border>1</border>
 						<option>1</option>
 					</object>
@@ -139,7 +139,7 @@
 							<help>Play consecutive files in the current directory</help>
 							<handler function="OnbtnAutoplayClicked" entry="EVT_TOGGLEBUTTON" />
 						</object>
-						<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+						<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 						<border>1</border>
 						<option>1</option>
 					</object>
@@ -154,7 +154,7 @@
 							<help>Start capturing screenshots to a directory...</help>
 							<handler function="OnBtnRecordClicked" entry="EVT_TOGGLEBUTTON" />
 						</object>
-						<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+						<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 						<border>1</border>
 						<option>1</option>
 					</object>
@@ -176,7 +176,7 @@
 							<help>Show program information</help>
 							<handler function="OnAbout" entry="EVT_BUTTON" />
 						</object>
-						<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+						<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 						<border>1</border>
 						<option>1</option>
 					</object>
@@ -190,12 +190,12 @@
 							<help>Close the application</help>
 							<handler function="OnQuit" entry="EVT_BUTTON" />
 						</object>
-						<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+						<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 						<border>1</border>
 						<option>1</option>
 					</object>
 				</object>
-				<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+				<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 				<option>1</option>
 			</object>
 		</object>

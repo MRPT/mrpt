@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -26,6 +26,30 @@ using namespace std;
 
 IMPLEMENTS_SERIALIZABLE( CMesh, CRenderizableDisplayList, mrpt::opengl )
 
+CMesh::CMesh(bool enableTransparency, float xMin, float xMax, float yMin, float yMax) :
+	m_textureImage(0, 0),
+	m_enableTransparency(enableTransparency),
+	m_colorFromZ(false),
+	m_isWireFrame(false),
+	m_isImage(false),
+	Z(0, 0), mask(0, 0), U(0, 0), V(0, 0), C(0, 0), C_r(0, 0), C_g(0, 0), C_b(0, 0),
+	m_colorMap(mrpt::utils::cmHOT),
+	m_modified_Z(true),
+	m_modified_Image(false),
+	xMin(xMin), xMax(xMax), yMin(yMin), yMax(yMax),
+	trianglesUpToDate(false)
+{
+	m_color.A = 255;
+	m_color.R = 0;
+	m_color.G = 0;
+	m_color.B = 150;
+}
+
+CMesh::~CMesh()
+{
+}
+
+
 CMeshPtr CMesh::Create(bool enableTransparency, float xMin, float xMax , float yMin , float yMax  )
 {
 	return CMeshPtr( new CMesh( enableTransparency, xMin ,xMax , yMin ,yMax ) );
@@ -41,27 +65,32 @@ void CMesh::updateTriangles() const	{
 	const size_t rows=Z.getRowCount();
 
 	actualMesh.clear();
+	if (cols == 0 && rows == 0)
+		return; // empty mesh
+
+	ASSERT_(cols>0 && rows>0)
+	ASSERT_(xMax>xMin&&yMax>yMin)
+
 	// we have 1 more row & col of vertices than of triangles:
 	vertex_normals.assign((1+cols)*(1+rows), std::pair<TPoint3D,size_t>(TPoint3D(0,0,0),0) );
 
-	float cR[3],cG[3],cB[3];
-	if ((m_colorFromZ)||(m_isImage)) updateColorsMatrix();
-	else	{
+	float cR[3], cG[3], cB[3], cA[3];
+	cA[0] = cA[1] = cA[2] = m_color.A / 255.f;
+
+	if ((m_colorFromZ) || (m_isImage)) {
+		updateColorsMatrix();
+	} else {
 		cR[0]=cR[1]=cR[2]=m_color.R/255.f;
 		cG[0]=cG[1]=cG[2]=m_color.G/255.f;
 		cB[0]=cB[1]=cB[2]=m_color.B/255.f;
 	}
 
-	ASSERT_(cols>0&&rows>0)
-	ASSERT_(xMax>xMin&&yMax>yMin)
 
 	bool useMask=false;
 	if (mask.getColCount()!=0&&mask.getRowCount()!=0)	{
 		ASSERT_(mask.getColCount()==cols&&mask.getRowCount()==rows);
 		useMask=true;
 	}
-	//const float sCellX=(xMax-xMin)/(cols-1);
-	//const float sCellY=(yMax-yMin)/(rows-1);
 	const float sCellX=(xMax-xMin)/(rows-1);
 	const float sCellY=(yMax-yMin)/(cols-1);
 
@@ -91,6 +120,8 @@ void CMesh::updateTriangles() const	{
 			tri.x[1]=tri.x[2];
 			tri.y[1]=tri.y[0];
 			tri.z[1]=Z(iX+1,iY);
+			for (int i=0;i<3;i++) tri.a[i] = cA[i];  // Assign alpha channel
+
 			if (m_colorFromZ)	{
 				colormap(m_colorMap,C(iX,iY),tri.r[0],tri.g[0],tri.b[0]);
 				colormap(m_colorMap,C(iX+1,iY),tri.r[1],tri.g[1],tri.b[1]);
@@ -220,6 +251,7 @@ void CMesh::updateTriangles() const	{
 void CMesh::render_dl() const	{
 #if MRPT_HAS_OPENGL_GLUT
 	if (m_enableTransparency)	{
+		glDisable(GL_DEPTH_TEST);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 	}	else	{
@@ -254,6 +286,7 @@ void CMesh::render_dl() const	{
 	if (!m_isWireFrame) glEnd();
 	glDisable(GL_BLEND);
 	glDisable(GL_NORMALIZE);
+	glEnable(GL_DEPTH_TEST);
 #endif
 }
 
@@ -384,21 +417,19 @@ void  CMesh::readFromStream(mrpt::utils::CStream &in,int version)
 
 
 void CMesh::updateColorsMatrix() const
-{
+{	
 	if ((!m_modified_Z)&&(!m_modified_Image)) return;
 
 	CRenderizableDisplayList::notifyChange();
 
 	if (m_isImage)
-	{
+	{	
 		const size_t cols = m_textureImage.getWidth();
 		const size_t rows = m_textureImage.getHeight();
 
 		if ((cols != Z.getColCount())||(rows != Z.getRowCount()))
-		{
 			printf("\nTexture Image and Z sizes have to be equal");
 
-		}
 		else if (m_textureImage.isColor())
 		{
 			C_r.setSize(rows, cols);
@@ -416,37 +447,43 @@ void CMesh::updateColorsMatrix() const
 	{
 		const size_t cols = Z.getColCount();
 		const size_t rows = Z.getRowCount();
-
 		C.setSize(rows,cols);
 
-		// Color is proportional to difference between height of a cell and
-		//  the mean of the nearby cells MEANS:
+		//Color is proportional to height:
 		C = Z;
-		// Was: C.normalize(0.01f,0.99f);
-		// Reimplemented like this to ignore masked-out cells:
-		float val_max = -std::numeric_limits<float>::max(), val_min =  std::numeric_limits<float>::max();
 
-		bool any_valid =false;
-		for (size_t c=0;c<cols;c++) {
-			for (size_t r=0;r<rows;r++) {
-				if (!mask(r,c)) continue;
-				any_valid = true;
-				const float val = C(r,c);
-				mrpt::utils::keep_max(val_max,val);
-				mrpt::utils::keep_min(val_min,val);
-			}
-		}
-		if (any_valid)
+		//If mask is empty -> Normalize the whole mesh
+		if (mask.empty())
+			C.normalize(0.01f,0.99f);
+
+		//Else -> Normalize color ignoring masked-out cells:
+		else
 		{
-			float minMaxDelta = val_max - val_min;
-			if (minMaxDelta==0) minMaxDelta = 1;
-			const float minMaxDelta_ = 1.0f/minMaxDelta;
-			C.array() = (C.array()-val_min)*minMaxDelta_;
+			float val_max = -std::numeric_limits<float>::max(), val_min =  std::numeric_limits<float>::max();
+			bool any_valid =false;
+
+			for (size_t c=0;c<cols;c++) 
+				for (size_t r=0;r<rows;r++)
+				{
+					if (!mask(r,c)) continue;
+					any_valid = true;
+					const float val = C(r,c);
+					mrpt::utils::keep_max(val_max,val);
+					mrpt::utils::keep_min(val_min,val);
+				}
+
+			if (any_valid)
+			{
+				float minMaxDelta = val_max - val_min;
+				if (minMaxDelta==0) minMaxDelta = 1;
+				const float minMaxDelta_ = 1.0f/minMaxDelta;
+				C.array() = (C.array()-val_min)*minMaxDelta_;
+			}
 		}
 	}
 
 	m_modified_Image = false;
-	m_modified_Z = false; // Done
+	m_modified_Z = false;
 	trianglesUpToDate=false;
 }
 

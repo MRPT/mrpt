@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -10,15 +10,14 @@
 #include "maps-precomp.h" // Precomp header
 
 #include <mrpt/maps/CHeightGridMap2D.h>
-#include <mrpt/obs/CObservation2DRangeScan.h>
-#include <mrpt/obs/CObservationVelodyneScan.h>
-#include <mrpt/maps/CSimplePointsMap.h>
-#include <mrpt/system/os.h>
+#include <mrpt/utils/CConfigFileBase.h> // MRPT_LOAD_CONFIG_VAR()
+#include <mrpt/poses/CPose3D.h>
 #include <mrpt/utils/stl_serialization.h>
-#include <mrpt/utils/CTicTac.h>
-#include <mrpt/utils/color_maps.h>
 #include <mrpt/opengl/CMesh.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
+
+//#include <mrpt/system/os.h>
+//#include <mrpt/utils/color_maps.h>
 #include <mrpt/utils/CStream.h>
 
 using namespace mrpt::maps;
@@ -31,7 +30,7 @@ using namespace std;
 
 
 //  =========== Begin of Map definition ============
-MAP_DEFINITION_REGISTER("CHeightGridMap2D,beaconMap", mrpt::maps::CHeightGridMap2D)
+MAP_DEFINITION_REGISTER("CHeightGridMap2D,heightMap,dem", mrpt::maps::CHeightGridMap2D)
 
 CHeightGridMap2D::TMapDefinition::TMapDefinition() :
 	min_x(-2),
@@ -47,11 +46,11 @@ void CHeightGridMap2D::TMapDefinition::loadFromConfigFile_map_specific(const mrp
 {
 	// [<sectionNamePrefix>+"_creationOpts"]
 	const std::string sSectCreation = sectionNamePrefix+string("_creationOpts");
-	MRPT_LOAD_CONFIG_VAR(min_x, float,   source,sSectCreation);
-	MRPT_LOAD_CONFIG_VAR(max_x, float,   source,sSectCreation);
-	MRPT_LOAD_CONFIG_VAR(min_y, float,   source,sSectCreation);
-	MRPT_LOAD_CONFIG_VAR(max_y, float,   source,sSectCreation);
-	MRPT_LOAD_CONFIG_VAR(resolution, float,   source,sSectCreation);
+	MRPT_LOAD_CONFIG_VAR(min_x, double,   source,sSectCreation);
+	MRPT_LOAD_CONFIG_VAR(max_x, double,   source,sSectCreation);
+	MRPT_LOAD_CONFIG_VAR(min_y, double,   source,sSectCreation);
+	MRPT_LOAD_CONFIG_VAR(max_y, double,   source,sSectCreation);
+	MRPT_LOAD_CONFIG_VAR(resolution, double,   source,sSectCreation);
 	mapType = source.read_enum<CHeightGridMap2D::TMapRepresentation>(sSectCreation,"mapType",mapType);
 
 	insertionOpts.loadFromConfigFile(source, sectionNamePrefix+string("_insertOpts") );
@@ -59,11 +58,11 @@ void CHeightGridMap2D::TMapDefinition::loadFromConfigFile_map_specific(const mrp
 
 void CHeightGridMap2D::TMapDefinition::dumpToTextStream_map_specific(mrpt::utils::CStream &out) const
 {
-	LOADABLEOPTS_DUMP_VAR(min_x         , float);
-	LOADABLEOPTS_DUMP_VAR(max_x         , float);
-	LOADABLEOPTS_DUMP_VAR(min_y         , float);
-	LOADABLEOPTS_DUMP_VAR(max_y         , float);
-	LOADABLEOPTS_DUMP_VAR(resolution         , float);
+	LOADABLEOPTS_DUMP_VAR(min_x         , double);
+	LOADABLEOPTS_DUMP_VAR(max_x         , double);
+	LOADABLEOPTS_DUMP_VAR(min_y         , double);
+	LOADABLEOPTS_DUMP_VAR(max_y         , double);
+	LOADABLEOPTS_DUMP_VAR(resolution         , double);
 	out.printf("MAP TYPE                                  = %s\n", mrpt::utils::TEnumType<CHeightGridMap2D::TMapRepresentation>::value2name(mapType).c_str() );
 
 	this->insertionOpts.dumpToTextStream(out);
@@ -88,11 +87,9 @@ bool mrpt::global_settings::HEIGHTGRIDMAP_EXPORT3D_AS_MESH = true;
   ---------------------------------------------------------------*/
 CHeightGridMap2D::CHeightGridMap2D(
 	TMapRepresentation	mapType,
-	float		x_min,
-	float		x_max,
-	float		y_min,
-	float		y_max,
-	float		resolution ) :
+	double x_min, double x_max,
+	double y_min, double y_max, 
+	double resolution ) :
 		CDynamicGrid<THeightGridmapCell>( x_min,x_max,y_min,y_max,resolution ),
 		insertionOptions(),
 		m_mapType(mapType)
@@ -115,88 +112,34 @@ bool  CHeightGridMap2D::isEmpty() const
 	return false;
 }
 
-/*---------------------------------------------------------------
-						insertObservation
-  ---------------------------------------------------------------*/
-bool  CHeightGridMap2D::internal_insertObservation(
-	const CObservation	*obs,
-	const CPose3D			*robotPose )
+bool CHeightGridMap2D::insertIndividualPoint(const double x,const double y,const double z, const CHeightGridMap2D_Base::TPointInsertParams & params)
 {
-	MRPT_START
+	THeightGridmapCell *cell = cellByPos(x,y);
+	if(!cell) return false; // Out of the map: Ignore if we've not resized before.
 
-	CPose3D robotPose3D;  // Default: 0,0,0
-
-	if (robotPose)
-		robotPose3D = (*robotPose);
-
-	// Points to insert:
-	CSimplePointsMap	thePointsMoved;
-
-	if ( IS_CLASS(obs, CObservation2DRangeScan ))
+	if (!insertionOptions.filterByHeight || (z>=insertionOptions.z_min && z<=insertionOptions.z_max ) )
 	{
-		/********************************************************************
-					OBSERVATION TYPE: CObservation2DRangeScan
-		********************************************************************/
-		const CObservation2DRangeScan	*o = static_cast<const CObservation2DRangeScan*>( obs );
-
-		// Create points map, if not created yet:
-		CPointsMap::TInsertionOptions	opts;
-		opts.minDistBetweenLaserPoints = insertionOptions.minDistBetweenPointsWhenInserting;
-		const CPointsMap	*thePoints = o->buildAuxPointsMap<mrpt::maps::CPointsMap>( &opts );
-
-		// And rotate to the robot pose:
-		thePointsMoved.changeCoordinatesReference( *thePoints, robotPose3D );
-	}
-	else
-	if ( IS_CLASS(obs, CObservationVelodyneScan ))
-	{
-		/********************************************************************
-					OBSERVATION TYPE: CObservationVelodyneScan
-		********************************************************************/
-		const CObservationVelodyneScan *o = static_cast<const CObservationVelodyneScan*>( obs );
-
-		// Create points map, if not created yet:
-		thePointsMoved.insertionOptions.minDistBetweenLaserPoints = insertionOptions.minDistBetweenPointsWhenInserting;
-		thePointsMoved.loadFromVelodyneScan(*o,&robotPose3D);
-	}
-
-	// Factorized insertion of points, for different observation classes:
-	if (!thePointsMoved.empty())
-	{
-		const size_t N = thePointsMoved.size();
-
-		for (size_t i=0;i<N;i++)
+		cell->u += z;
+		cell->v += z*z;
+		if (!cell->w)
 		{
-			float x,y,z;
-			thePointsMoved.getPoint(i, x,y,z);
+			cell->h = z;	// First observation
+			cell->w = 1;
+		}
+		else
+		{
+			float W = cell->w++;	// W = N-1
+			cell->h = (cell->h*W + z)/cell->w;
+			if (W > 0)
+				cell->var = 1/(W) * (cell->v - pow(cell->u,2)/cell->w);
+		}
+	} // end if really inserted
+	return true;
+}
 
-			THeightGridmapCell *cell = cellByPos(x,y);
-			if(!cell) continue; // Out of the map: Ignore if we've not resized before.
-
-			if (!insertionOptions.filterByHeight || (z>=insertionOptions.z_min && z<=insertionOptions.z_max ) )
-			{
-				cell->u += z;
-				cell->v += z*z;
-				if (!cell->w)
-				{
-					cell->h = z;	// First observation
-					cell->w = 1;
-				}
-				else
-				{
-					float W = cell->w++;	// W = N-1
-					cell->h = (cell->h*W + z)/cell->w;
-					if (W > 0)
-						cell->var = 1/(W) * (cell->v - pow(cell->u,2)/cell->w);
-				}
-			} // end if really inserted
-		} // end for i
-
-		return true; // Done, new points inserted
-	}
-
-	return false; // No insertion done
-	MRPT_END
+bool CHeightGridMap2D::internal_insertObservation(const CObservation *obs, const CPose3D *robotPose )
+{
+	return dem_internal_insertObservation(obs,robotPose);
 }
 
 
@@ -218,18 +161,13 @@ double	 CHeightGridMap2D::internal_computeObservationLikelihood(
 void  CHeightGridMap2D::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
-		*version = 2;
+		*version = 3;
 	else
 	{
-		uint32_t	n;
-
-		// Save the dimensions of the grid:
-		out << m_x_min << m_x_max << m_y_min << m_y_max;
-		out << m_resolution;
-		out << static_cast<uint32_t>(m_size_x) << static_cast<uint32_t>(m_size_y);
+		dyngridcommon_writeToStream(out);
 
 		// To assure compatibility: The size of each cell:
-		n = static_cast<uint32_t>(sizeof( THeightGridmapCell ));
+		uint32_t n = static_cast<uint32_t>(sizeof( THeightGridmapCell ));
 		out << n;
 
 		// Save the map contents:
@@ -259,17 +197,11 @@ void  CHeightGridMap2D::readFromStream(mrpt::utils::CStream &in, int version)
 	case 0:
 	case 1:
 	case 2:
+	case 3:
 		{
-			uint32_t	n,i,j;
-
-			// Load the dimensions of the grid:
-			in >> m_x_min >> m_x_max >> m_y_min >> m_y_max;
-			in >> m_resolution;
-			in >> i >> j;
-			m_size_x = i;
-			m_size_y = j;
-
-			// To assure compatibility: The size of each cell:
+			dyngridcommon_readFromStream(in, version<3);
+			// To ensure compatibility: The size of each cell:
+			uint32_t	n;
 			in >> n;
 			ASSERT_( n == static_cast<uint32_t>( sizeof( THeightGridmapCell ) ));
 
@@ -314,7 +246,6 @@ CHeightGridMap2D::TInsertionOptions::TInsertionOptions() :
 	filterByHeight				( false ),
 	z_min						( -0.5  ),
 	z_max						(  0.5  ),
-	minDistBetweenPointsWhenInserting ( 0 ),
 	colorMap( cmJET )
 {
 }
@@ -328,7 +259,6 @@ void  CHeightGridMap2D::TInsertionOptions::dumpToTextStream(mrpt::utils::CStream
 	out.printf("filterByHeight                          = %c\n", filterByHeight ? 'y':'n');
 	out.printf("z_min                                   = %f\n", z_min);
 	out.printf("z_max                                   = %f\n", z_max);
-	out.printf("minDistBetweenPointsWhenInserting       = %f\n", minDistBetweenPointsWhenInserting);
 	out.printf("colormap                                = %s\n", colorMap == cmJET ? "jet" : "grayscale");
 	out.printf("\n");
 }
@@ -343,13 +273,12 @@ void  CHeightGridMap2D::TInsertionOptions::loadFromConfigFile(
 	MRPT_LOAD_CONFIG_VAR( filterByHeight,	bool, iniFile, section )
 	MRPT_LOAD_CONFIG_VAR( z_min,			float, iniFile, section )
 	MRPT_LOAD_CONFIG_VAR( z_max,			float, iniFile, section )
-	MRPT_LOAD_CONFIG_VAR( minDistBetweenPointsWhenInserting, float, iniFile, section )
 	string aux = iniFile.read_string(section, "colorMap", "jet");
 
 	if(strCmp(aux,"jet") )
-        colorMap = cmJET;
-    else if(strCmp(aux,"grayscale") )
-        colorMap = cmGRAYSCALE;
+		colorMap = cmJET;
+	else if(strCmp(aux,"grayscale") )
+		colorMap = cmGRAYSCALE;
 }
 
 /*---------------------------------------------------------------
@@ -437,107 +366,6 @@ void  CHeightGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) 
 	}
 }
 
-/** Computes the minimum and maximum height in the grid.
-  * \return False if there is no observed cell yet.
-  */
-bool CHeightGridMap2D::getMinMaxHeight(float &z_min, float &z_max) const
-{
-	bool any = false;
-	z_min = z_max = 0;
-	for (size_t x=0;x<m_size_x;x++)
-		for (size_t y=0;y<m_size_y;y++)
-		{
-			const THeightGridmapCell *c = cellByIndex(x,y);
-			ASSERTDEB_(c)
-			if (c->w)
-			{
-				if (!any)
-				{
-					// First:
-					any = true;
-					z_min = z_max = c->h;
-				}
-				else
-				{
-					mrpt::utils::keep_max(z_max , c->h );
-					mrpt::utils::keep_min(z_min , c->h );
-				}
-			}
-		}
-	return any;
-}
-
-
-/*---------------------------------------------------------------
-					auxParticleFilterCleanUp
-  Gets the intersection between a 3D line and a Height Grid map
-   (taking into account the different heights of each individual cell).
- ---------------------------------------------------------------*/
-bool CHeightGridMap2D::intersectLine3D(const TLine3D &ray, TObject3D &obj) const
-{
-	MRPT_START
-
-	obj = TObject3D();
-
-	float z_min,z_max;
-	if (!getMinMaxHeight(z_min,z_max))
-		return false;
-
-
-	// 1st: intersections with 2 horizontal planes at the grid Z limits:
-	const TPlane horz_plane_above(TPoint3D(0,0,z_max+1),TPoint3D(1,0,z_max+1),TPoint3D(0,1,z_max+1));
-	const TPlane horz_plane_below(TPoint3D(0,0,z_min-1),TPoint3D(1,0,z_min-1),TPoint3D(0,1,z_min-1));
-	TPoint3D pt_ab,pt_be;
-	{
-		TObject3D int_ab,int_be;
-		intersect(ray,horz_plane_above, int_ab);
-		intersect(ray,horz_plane_below, int_be);
-
-		if (!int_ab.getPoint(pt_ab) || !int_be.getPoint(pt_be))
-			return false;
-	}
-
-	// Now, go from pt_ab -> pt_be doing "ray-tracing" and find the collision with a cell:
-	TPoint3D  pt = pt_ab;
-	TPoint3D  Apt = pt_be-pt_ab;
-	const double totalDist = Apt.norm();
-	if (totalDist==0) return false;
-	// The step:
-	Apt*= this->m_resolution * 0.99/totalDist;
-
-	TPoint3D Apt_half=Apt;
-	Apt_half*=0.5;
-
-	const size_t N = ceil(totalDist/m_resolution);
-
-	for (size_t i=0;i<N;i++)
-	{
-		// Mid point between this and next step:
-		const TPoint3D  testPt = pt + Apt_half;
-		// get its height in the grid:
-		const THeightGridmapCell *cell = cellByPos(testPt.x,testPt.y);
-		if (cell && cell->w)
-		{
-			// Do we go thru the cell?
-			if ( cell->h >= std::min(pt.z,pt.z+Apt.z) && cell->h < std::max(pt.z,pt.z+Apt.z) )
-			{
-				// yes:
-				TPoint3D colPt(testPt.x,testPt.y,cell->h);
-				obj = TObject3D(colPt);
-				return true;
-			}
-		}
-		pt+=Apt;
-	}
-
-	// No collision found!
-	return false;
-
-	// None found:
-	MRPT_END
-}
-
-
 /** Return the number of cells with at least one height data inserted. */
 size_t CHeightGridMap2D::countObservedCells() const
 {
@@ -557,15 +385,41 @@ size_t CHeightGridMap2D::countObservedCells() const
 	};
 }
 
+double CHeightGridMap2D::dem_get_resolution() const {
+	return m_resolution;
+}
+size_t CHeightGridMap2D::dem_get_size_x() const {
+	return m_size_x;
+}
+size_t CHeightGridMap2D::dem_get_size_y() const {
+	return m_size_y;
+}
+bool CHeightGridMap2D::dem_get_z_by_cell(const size_t cx, const size_t cy, double &z_out) const {
+	const THeightGridmapCell *cell = cellByIndex(cx,cy);
+	if (cell && cell->w) {
+		z_out = cell->h;
+		return true;
+	} else return false;
+}
+bool CHeightGridMap2D::dem_get_z(const double x, const double y, double &z_out) const
+{
+	const THeightGridmapCell *cell = cellByPos(x,y);
+	if (cell && cell->w) {
+		z_out = cell->h;
+		return true;
+	} else {
+		return false;
+	}
+}
+void CHeightGridMap2D::dem_update_map() {
+	// Nothing to do in this class: estimate is always up-to-date
+}
 
-float  CHeightGridMap2D::compute3DMatchingRatio(
-	const mrpt::maps::CMetricMap						*otherMap,
-	const CPose3D							&otherMapPose,
-	float									maxDistForCorr,
-	float									maxMahaDistForCorr
-	) const
+float  CHeightGridMap2D::compute3DMatchingRatio(const mrpt::maps::CMetricMap *otherMap, const mrpt::poses::CPose3D &otherMapPose, const TMatchingRatioParams &params) const
 {
 	MRPT_UNUSED_PARAM(otherMap); MRPT_UNUSED_PARAM(otherMapPose);
-	MRPT_UNUSED_PARAM(maxDistForCorr); MRPT_UNUSED_PARAM(maxMahaDistForCorr);
+	MRPT_UNUSED_PARAM(params); 
 	return 0;
 }
+
+

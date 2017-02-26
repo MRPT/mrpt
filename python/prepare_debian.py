@@ -139,7 +139,7 @@ copyright_content = [
     'Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/',
     'Upstream-Name: mrpt-python-bindings',
     'Upstream-Contact: Peter Rudolph <semael23@gmail.com>',
-    'Source: https://github.com/jlblancoc/mrpt',
+    'Source: https://github.com/MRPT/mrpt',
     '',
     'Files: *',
     'Copyright: 2014-2015 Peter Rudolph',

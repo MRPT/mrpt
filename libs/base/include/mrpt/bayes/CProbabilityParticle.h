@@ -2,12 +2,14 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 #ifndef CPROBABILITYPARTICLE_H
 #define CPROBABILITYPARTICLE_H
+
+#include <mrpt/utils/copy_ptr.h>
 
 namespace mrpt
 {
@@ -25,54 +27,11 @@ namespace bayes
 	struct CProbabilityParticle
 	{
 	public:
-		/** The data associated with this particle.
-		 */
-		T *d;
+		mrpt::utils::copy_ptr<T> d;   //!< The data associated with this particle. The use of copy_ptr<> allows relying on compiler-generated copy ctor, etc.
+		double log_w; //!< The (logarithmic) weight value for this particle.
 
-		/** The (logarithmic) weight value for this particle.
-		 */
-		double log_w;
-
-		/** Default constructor:
-		 */
-		CProbabilityParticle() : d(NULL), log_w(0)
-		{
-		}
-
-		/** Copy constructor:
-		 */
-		CProbabilityParticle(const CProbabilityParticle &o) : d(NULL), log_w(o.log_w)
-		{
-			if (o.d)
-			{
-				// Copy
-				d = new T(*o.d);
-			}
-		}
-
-		/** Copy operator
-		  */
- 		CProbabilityParticle<T> & operator =(const CProbabilityParticle &o)
-		{
-			if (this == &o) return *this;
-			log_w = o.log_w;
-			if (o.d)
-			{
-				// Copy semantic:
-				if (d)
-					*d = *o.d;			// Copy using the object "operator =".
-				else d = new T(*o.d);	// Create a new object from the copy constructor
-			}
-			else
-			{
-				if (d)
-				{
-					delete d;
-					d = NULL;
-				}
-			}
-			return *this;
-		}
+		/** Default constructor */
+		CProbabilityParticle() : d(), log_w(.0) {}
 	};
 
 	} // end namespace

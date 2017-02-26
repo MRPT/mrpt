@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -198,6 +198,31 @@ void  TMatchingPairList::squareErrorVector(
 		*xx = qx + ccos * corresp->other_x - csin * corresp->other_y;
 		*yy = qy + csin * corresp->other_x + ccos * corresp->other_y;
 		*e_i = square( corresp->this_x - *xx ) + square( corresp->this_y - *yy );
+	}
+}
+
+void TMatchingPairList::filterUniqueRobustPairs(const size_t num_elements_this_map, TMatchingPairList &out_filtered_list) const
+{
+	std::vector<TMatchingPairConstPtr> bestMatchForThisMap(num_elements_this_map, TMatchingPairConstPtr(nullptr));
+	out_filtered_list.clear();
+
+	// 1) Go through all the correspondences and keep the best corresp.
+	//    for each "global map" (this) point.
+	for (auto &c : *this)
+	{
+		if (bestMatchForThisMap[c.this_idx] == nullptr ||  // first one
+			c.errorSquareAfterTransformation < bestMatchForThisMap[c.this_idx]->errorSquareAfterTransformation // or better
+			)
+		{
+			bestMatchForThisMap[c.this_idx] = &c;
+		}
+	}
+
+	//   2) Go again through the list of correspondences and remove those
+	//       who are not the best one for their corresponding global map.
+	for (auto &c : *this) {
+		if (bestMatchForThisMap[c.this_idx] == &c)
+			out_filtered_list.push_back(c); // Add to the output
 	}
 }
 

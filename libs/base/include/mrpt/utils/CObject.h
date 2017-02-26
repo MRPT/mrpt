@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -64,7 +64,7 @@ namespace mrpt
 
 		/** Register a class into the MRPT internal list of "CSerializable" descendents.
 		  *  Used internally in the macros DEFINE_SERIALIZABLE, etc...
-		  * \sa getAllRegisteredClasses, CStartUpClassesRegister
+		  * \sa getAllRegisteredClasses
 		  */
 		void BASE_IMPEXP registerClass(const mrpt::utils::TRuntimeClassId* pNewClass);
 
@@ -76,6 +76,10 @@ namespace mrpt
 		  * \sa registerClass, findRegisteredClass
 		  */
 		std::vector<const mrpt::utils::TRuntimeClassId*> BASE_IMPEXP getAllRegisteredClasses();
+
+		/** Like getAllRegisteredClasses(), but filters the list to only include children clases of a given base one.
+		  * \sa getAllRegisteredClasses(), getAllRegisteredClassesChildrenOf()  */
+		std::vector<const TRuntimeClassId*> BASE_IMPEXP getAllRegisteredClassesChildrenOf(const TRuntimeClassId* parent_id);
 
 		/** Return info about a given class by its name, or NULL if the class is not registered
 		  * \sa registerClass, getAllRegisteredClasses
@@ -188,8 +192,8 @@ namespace mrpt
 				typedef class_name value_type; \
 				inline class_name##Ptr() : base_name##Ptr(static_cast<base_name*>(NULL)) { } \
 				inline explicit class_name##Ptr(class_name* p) : base_name##Ptr( static_cast<base_name*>(p) ) { } \
-				inline explicit class_name##Ptr(const base_name##Ptr & p) : base_name##Ptr(p) { ASSERTMSG_( p->GetRuntimeClass()->derivedFrom(#class_name),::mrpt::format("Wrong typecasting of smart pointers: %s -> %s",p->GetRuntimeClass()->className, #class_name) )  } \
-				inline explicit class_name##Ptr(const mrpt::utils::CObjectPtr & p) : base_name##Ptr(p) { ASSERTMSG_( p->GetRuntimeClass()->derivedFrom(#class_name),::mrpt::format("Wrong typecasting of smart pointers: %s -> %s",p->GetRuntimeClass()->className, #class_name) )  } \
+				inline explicit class_name##Ptr(const base_name##Ptr & p) : base_name##Ptr(p) { if(!p.null()) ASSERTMSG_( p->GetRuntimeClass()->derivedFrom(#class_name),::mrpt::format("Wrong typecasting of smart pointers: %s -> %s",p->GetRuntimeClass()->className, #class_name) )  } \
+				inline explicit class_name##Ptr(const mrpt::utils::CObjectPtr & p) : base_name##Ptr(p) { if(!p.null())ASSERTMSG_( p->GetRuntimeClass()->derivedFrom(#class_name),::mrpt::format("Wrong typecasting of smart pointers: %s -> %s",p->GetRuntimeClass()->className, #class_name) )  } \
 				inline void setFromPointerDoNotFreeAtDtor(const class_name* p) { this->set(const_cast<mrpt::utils::CObject*>(static_cast<const mrpt::utils::CObject*>(p))); m_holder->increment(); } \
 				/*! Return the internal plain C++ pointer */ \
 				inline class_name * pointer() { return dynamic_cast<class_name*>(base_name##Ptr::pointer()); } \
@@ -288,6 +292,11 @@ namespace mrpt
 				{ return CLASS_ID(class_name); }
 
 		/** @}  */   // end of RTTI
+
+		/** Register all pending classes - to be called just before de-serializing an object, for example.
+		  * After calling this method, pending_class_registers_modified is set to false until pending_class_registers() is invoked.
+ 		  */
+		void BASE_IMPEXP registerAllPendingClasses();
 
 	} // End of namespace
 } // End of namespace

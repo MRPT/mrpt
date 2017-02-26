@@ -1,0 +1,7 @@
+graphslam-engine [--disable-visuals] [--list-optimizers]
+                 [--list-regs] [--list-edge-regs]
+                 [--list-node-regs][-o <CLevMarqGSO>][-e
+                 <CICPCriteriaERD>][-n <CICPCriteriaNRD>][-g
+                 <contents.rawlog.GT.txt>][-r <contents.rawlog>] [-i
+                 <config.ini>] [--][--version] [-h]
+

@@ -19,11 +19,19 @@
 #define MAKE_PTR(class_name) class_<class_name##Ptr>(STRINGIFY(class_name##Ptr), "class_name smart pointer type", no_init)\
     .def("ctx", &class_name##Ptr_get_ctx, return_internal_reference<>())\
     .def("ctx", &class_name##Ptr_set_ctx)\
+    .def("pointer", &class_name##Ptr_pointer, return_internal_reference<>())\
+;\
+
+#define MAKE_PTR_NAMED(class_name, ptr_name) class_<class_name##Ptr>(STRINGIFY(ptr_name##Ptr), "class_name smart pointer type", no_init)\
+    .def("ctx", &class_name##Ptr_get_ctx, return_internal_reference<>())\
+    .def("ctx", &class_name##Ptr_set_ctx)\
+    .def("pointer", &class_name##Ptr_pointer, return_internal_reference<>())\
 ;\
 
 #define MAKE_PTR_BASE(class_name, base_name) class_<class_name##Ptr, bases<base_name##Ptr> >(STRINGIFY(class_name##Ptr), "class_name smart pointer type", no_init)\
     .def("ctx", &class_name##Ptr_get_ctx, return_internal_reference<>())\
     .def("ctx", &class_name##Ptr_set_ctx)\
+    .def("pointer", &class_name##Ptr_pointer, return_internal_reference<>())\
 ;\
 
 #define MAKE_CREATE(class_name) .def("Create", &class_name::Create, "Create smart pointer from class.").staticmethod("Create")
@@ -34,6 +42,7 @@
 
 #define MAKE_PTR_CTX(class_name) class_name& class_name##Ptr_get_ctx(class_name##Ptr& self) { return *self; }\
 void class_name##Ptr_set_ctx(class_name##Ptr& self, class_name& ctx) { *self = ctx; }\
+class_name* class_name##Ptr_pointer(class_name##Ptr& self) { return self.pointer(); }\
 
 #define MAKE_AS_STR(class_name) std::string class_name##_asString(class_name& self)\
 {\
@@ -65,24 +74,21 @@ template<class T>
 struct StlListLike
 {
     typedef typename T::value_type V;
-    static V& get(T & x, int i)
+    static V& get(T & x, uint i)
     {
-        if( i<0 ) i+=x.size();
-        if( i>=0 && i<x.size() ) return x[i];
+        if(i<x.size() ) return x[i];
         IndexError();
         // only for removing the return-type warning; code is never reached:
         return x[0];
     }
-    static void set(T & x, int i, V const& v)
+    static void set(T & x, uint i, V const& v)
     {
-        if( i<0 ) i+=x.size();
-        if( i>=0 && i<x.size() ) x[i]=v;
+        if(i<x.size() ) x[i]=v;
         else IndexError();
     }
-    static void del(T & x, int i)
+    static void del(T & x, uint i)
     {
-        if( i<0 ) i+=x.size();
-        if( i>=0 && i<x.size() ) x.erase(x.begin() + i);
+        if(i<x.size() ) x.erase(x.begin() + i);
         else IndexError();
     }
     static void add(T & x, V const& v)
@@ -106,6 +112,14 @@ void export_poses_stl();
 void export_system();
 void export_utils();
 void export_utils_stl();
+void export_kinematics();
 void export_bayes();
+void export_pnp();
+
+#ifdef ROS_EXTENSIONS
+// time conversion
+boost::python::object TTimeStamp_to_ROS_Time(boost::python::long_ timestamp);
+boost::python::long_ TTimeStamp_from_ROS_Time(boost::python::object ros_time);
+#endif
 
 #endif

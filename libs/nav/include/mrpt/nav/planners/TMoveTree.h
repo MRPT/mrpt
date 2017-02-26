@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -79,7 +79,6 @@ namespace mrpt
 				const std::set<mrpt::utils::TNodeID> *ignored_nodes = NULL
 				) const
 			{
-				MRPT_TODO("Optimize this query with KD-tree!")
 				ASSERT_(!m_nodes.empty())
 
 				double min_d = std::numeric_limits<double>::max();
@@ -225,13 +224,13 @@ namespace mrpt
 			}
 			double distance(const TNodeSE2_TP &src, const TNodeSE2_TP& dst) const
 			{
-				float d;
+				double d;
 				int   k;
 				mrpt::poses::CPose2D relPose(mrpt::poses::UNINITIALIZED_POSE);
 				relPose.inverseComposeFrom(mrpt::poses::CPose2D(dst.state),mrpt::poses::CPose2D(src.state));
 				bool tp_point_is_exact = m_ptg.inverseMap_WS2TP(relPose.x(),relPose.y(),k,d);
 				if (tp_point_is_exact)
-				     return d * m_ptg.refDistance; // de-normalize distance
+				     return d * m_ptg.getRefDistance(); // de-normalize distance
 				else return std::numeric_limits<double>::max(); // not in range: we can't evaluate this distance!
 			}
 			PoseDistanceMetric(const mrpt::nav::CParameterizedTrajectoryGenerator &ptg) : m_ptg(ptg) {}

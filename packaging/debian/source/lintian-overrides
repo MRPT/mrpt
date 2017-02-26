@@ -1,0 +1,4 @@
+mrpt source: pear-package-without-pkg-php-tools-builddep
+# It is not a real pear package, but a ROS (ros.org) package, but Lintian 
+# gets the latter for the former.
+

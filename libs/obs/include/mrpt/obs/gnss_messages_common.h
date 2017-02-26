@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -33,7 +33,8 @@ struct OBS_IMPEXP gnss_message {
 	bool isOfClass() const { return isOfType(MSG_CLASS::msg_type); }
 
 	static gnss_message* readAndBuildFromStream(mrpt::utils::CStream &in); //!< Load from binary stream and creates object detecting its type (class factory). Launches an exception upon error
-	static gnss_message* Factory(const gnss_message_type_t msg_id); //!< Creates message
+	static gnss_message* Factory(const gnss_message_type_t msg_id); //!< Creates message \return NULL on unknown msg type
+	static bool FactoryKnowsMsgType(const gnss_message_type_t msg_id); //!< Returns true if Factory() has a registered constructor for this msg type
 
 	virtual void dumpToStream( mrpt::utils::CStream &out ) const = 0; //!< Dumps the contents of the observation in a human-readable form to a given output stream \sa dumpToConsole()
 	void dumpToConsole(std::ostream &o = std::cout) const; //!< Dumps the contents of the observation in a human-readable form to an std::ostream (default=console)

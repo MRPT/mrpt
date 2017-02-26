@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -12,6 +12,17 @@
 #include <mrpt/config.h>
 #include <mrpt/utils/compiler_fixes.h>
 #include <mrpt/base/link_pragmas.h>  // DLL import/export definitions
+
+#if defined( __clang__ ) && defined( MRPT_OS_APPLE )
+   //no include
+#elif defined( __GNUC__ )
+#if ( __GNUC__ * 100 + __GNUC_MINOR__ >= 402 )
+#  include <ext/atomicity.h>
+#else
+#  include <bits/atomicity.h>
+#endif
+#endif
+
 
 namespace mrpt
 {
@@ -26,7 +37,9 @@ namespace synch
 class BASE_IMPEXP CAtomicCounter
 {
 public:
-#ifdef MRPT_OS_WINDOWS
+#if defined( __GNUC__ ) && !defined( MRPT_OS_APPLE )
+	typedef _Atomic_word atomic_num_t;
+#elif defined(_WIN32) // mostly for MSVC in Windows
 	typedef long atomic_num_t;
 #else
 	typedef int atomic_num_t;

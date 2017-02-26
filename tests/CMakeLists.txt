@@ -10,28 +10,41 @@ SET(EXECUTABLE_OUTPUT_PATH "${${PROJECT_NAME}_BINARY_DIR}")
 # Fix a "bug" in VS11 (MSVC 2012):
 if(MSVC)
 	add_definitions(-D_VARIADIC_MAX=10)
-endif(MSVC)
+endif()
 
 # -----------------------------
 # Add the "make test" target:
 # -----------------------------
 ADD_CUSTOM_TARGET(test)
+ADD_CUSTOM_TARGET(tests_build_all)
 if(ENABLE_SOLUTION_FOLDERS)
 	set_target_properties(test PROPERTIES FOLDER "unit tests")
-endif(ENABLE_SOLUTION_FOLDERS)
+	set_target_properties(tests_build_all PROPERTIES FOLDER "unit tests")
+endif()
+IF (UNIX)
+	ADD_CUSTOM_TARGET(test_gdb)
+ENDIF()
+
+
+ADD_DEFINITIONS(-DCMAKE_MRPT_GLOBAL_UNITTEST_SRC_DIR="${MRPT_SOURCE_DIR}")
 
 # Tests based on Google gtest:
 # -----------------------------
 
 # Include gtest from embeded lib:
 IF (NOT CMAKE_MRPT_HAS_GTEST_SYSTEM)
-	INCLUDE_DIRECTORIES("${CMAKE_MRPT_GTEST_SRC_DIR}/fused-src/")
-ENDIF(NOT CMAKE_MRPT_HAS_GTEST_SYSTEM)
+	INCLUDE_DIRECTORIES("${CMAKE_MRPT_GTEST_SRC_DIR}/include/")
+ENDIF()
 
 # If using system library, add C++ flags:
 IF (NOT "${CMAKE_GTEST_CFLAGS}" STREQUAL "")
 	ADD_DEFINITIONS(${CMAKE_GTEST_CFLAGS})
-ENDIF (NOT "${CMAKE_GTEST_CFLAGS}" STREQUAL "")
+ENDIF ()
+
+# Fix issue #367: undefined reference to symbol on tests linking
+IF(NOT MSVC)
+    SET(CMAKE_THREAD_LIBS_INIT ${CMAKE_THREAD_LIBS_INIT} "-lpthread")
+ENDIF()
 
 
 get_property(LST_LIB_TESTS GLOBAL PROPERTY "MRPT_TEST_LIBS")
@@ -48,12 +61,12 @@ FOREACH(_TSTLIB ${LST_LIB_TESTS})
 	# Add the required libraries for linking:
 IF (CMAKE_MRPT_HAS_GTEST_SYSTEM)
 	# System vesion:
-	TARGET_LINK_LIBRARIES(test_${_TSTLIB} ${MRPT_LINKER_LIBS_RELorDEB} gtest)
-ELSE (CMAKE_MRPT_HAS_GTEST_SYSTEM)
+	TARGET_LINK_LIBRARIES(test_${_TSTLIB} ${MRPT_LINKER_LIBS_RELorDEB} gtest ${CMAKE_THREAD_LIBS_INIT})
+ELSE ()
 	# Own version:
-	TARGET_LINK_LIBRARIES(test_${_TSTLIB} ${MRPT_LINKER_LIBS_RELorDEB} mrptgtest) 
+	TARGET_LINK_LIBRARIES(test_${_TSTLIB} ${MRPT_LINKER_LIBS_RELorDEB} mrptgtest ${CMAKE_THREAD_LIBS_INIT})
 	ADD_DEPENDENCIES(test_${_TSTLIB} mrptgtest)  # Assure the MRPT library is updated:
-ENDIF (CMAKE_MRPT_HAS_GTEST_SYSTEM)
+ENDIF ()
 
 
 	set_target_properties(test_${_TSTLIB} PROPERTIES "COMPILE_DEFINITIONS" "MRPT_TEST_LIB=${_TSTLIB}")
@@ -74,20 +87,27 @@ ENDIF (CMAKE_MRPT_HAS_GTEST_SYSTEM)
 			TARGET_LINK_LIBRARIES(test_${_TSTLIB} ${_DEPLIB})
 		ENDIF(NOT _LIB_HDRONLY)
 	ENDFOREACH(_DEPLIB)
-	
 
-	
+
+
 	# Run it:
 	GET_TARGET_PROPERTY(GENERATED_EXE test_${_TSTLIB} LOCATION)
-	ADD_CUSTOM_TARGET(run_tests_${_TSTLIB} COMMAND "${GENERATED_EXE}" "${MRPT_SOURCE_DIR}")
+	ADD_CUSTOM_TARGET(run_tests_${_TSTLIB} COMMAND "${GENERATED_EXE}")
 	ADD_DEPENDENCIES(run_tests_${_TSTLIB} test_${_TSTLIB})
 	ADD_DEPENDENCIES(test run_tests_${_TSTLIB})
+	ADD_DEPENDENCIES(tests_build_all test_${_TSTLIB})
+
+IF (UNIX)
+	# test_gdb
+	ADD_CUSTOM_TARGET(run_tests_${_TSTLIB}_gdb
+	COMMAND "gdb" "-batch" "-ex" "\"run\"" "-ex" "\"bt\"" "-return-child-result" "${GENERATED_EXE}")
+	ADD_DEPENDENCIES(run_tests_${_TSTLIB}_gdb test_${_TSTLIB})
+	ADD_DEPENDENCIES(test_gdb run_tests_${_TSTLIB}_gdb)
+ENDIF()
 
 if(ENABLE_SOLUTION_FOLDERS)
 	set_target_properties(test_${_TSTLIB} PROPERTIES FOLDER "unit tests")
 	set_target_properties(run_tests_${_TSTLIB} PROPERTIES FOLDER "unit tests")
-endif(ENABLE_SOLUTION_FOLDERS)
-	
+endif()
+
 ENDFOREACH(_TSTLIB)
-
-

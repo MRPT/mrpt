@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -45,7 +45,7 @@ void CHMTSLAM::perform_TLC(
 
 	synch::CCriticalSectionLocker locker ( &LMH.m_robotPosesGraph.lock );
 
-	printf_debug("[perform_TLC] TLC of areas: %u <-> %u \n",(unsigned)Ai, (unsigned)Ae );
+	logFmt(mrpt::utils::LVL_DEBUG, "[perform_TLC] TLC of areas: %u <-> %u \n",(unsigned)Ai, (unsigned)Ae );
 
 	// * Verify a1 \in LMH & a2 \notin LMH
 	// ----------------------------------------------------------------------
@@ -157,7 +157,7 @@ void CHMTSLAM::perform_TLC(
 		for (size_t i=0;i<pi.pdf.size();i++)
 		{
 			// Transport coordinates:
-			CPose3D  &p = *pi.pdf.m_particles[i].d;
+			const CPose3D  &p = *pi.pdf.m_particles[i].d;
 			LMH.m_particles[i].d->robotPoses[poseId] = AeRefInLMH + p;
 			//pi.sf.insertObservationsInto( &LMH.m_particles[i].d->metricMaps, pi.pdf.m_particles[i].d );
 		}

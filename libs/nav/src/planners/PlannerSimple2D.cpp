@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -272,7 +272,7 @@ void  PlannerSimple2D::computePath(
 		pathcells_y.push_back(y);
 
 		// Follow the "negative gradient" toward the origin:
-		static char	dx=0,dy=0;
+		static signed char	dx=0,dy=0;
 		if ((c=grid[x-1+size_x*y])<v)		{ v=c; dx=-1; dy= 0; }
 		if ((c=grid[x+1+size_x*y])<v)		{ v=c; dx= 1; dy= 0; }
 		if ((c=grid[x+size_x*(y-1)])<v)	{ v=c; dx= 0; dy=-1; }
@@ -314,7 +314,7 @@ void  PlannerSimple2D::computePath(
 		pathcells_y.push_back(y);
 
 		// Follow the "positive gradient" toward the target:
-		static char	dx=0,dy=0;
+		static signed char	dx=0,dy=0;
 		c=grid[x-1+size_x*y];  if (c>v && c!=CELL_OBSTACLE)		{ v=c; dx=-1; dy= 0; }
 		c=grid[x+1+size_x*y];  if (c>v && c!=CELL_OBSTACLE)		{ v=c; dx= 1; dy= 0; }
 		c=grid[x+size_x*(y-1)]; if (c>v && c!=CELL_OBSTACLE)	{ v=c; dx= 0; dy=-1; }

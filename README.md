@@ -1,12 +1,21 @@
 The MRPT project 
 ====================================================
-[![Build Status](https://travis-ci.org/MRPT/mrpt.png?branch=master)](https://travis-ci.org/MRPT/mrpt)
-[![BSD3 License](http://img.shields.io/badge/license-BSD3-brightgreen.svg)](https://github.com/MRPT/mrpt/blob/master/doc/LICENSE.txt) 
-[![Join the chat at https://gitter.im/MRPT/mrpt](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/MRPT/mrpt)
-[![GitHub release](https://img.shields.io/github/release/MRPT/mrpt.svg)](https://github.com/MRPT/mrpt/releases)
+<table>
+<tr>
+<td align="center" valign="top"> <a href="https://travis-ci.org/MRPT/mrpt"><img alt="Travis status" src="https://travis-ci.org/MRPT/mrpt.png?branch=master"></a>
+<br>
+GNU/Linux & OSX</td>
+<td valign="top"> <a href="https://github.com/MRPT/mrpt/releases"><img alt="GitHub release" src="https://img.shields.io/github/release/MRPT/mrpt.svg"></a> </td>
+<td valign="top"> <a href="https://github.com/MRPT/mrpt/blob/master/doc/LICENSE.txt"><img alt="BSD3 License" src="http://img.shields.io/badge/license-BSD3-brightgreen.svg"></a></td>
+<td valign="top"> <a href="https://www.codacy.com/app/joseluisblancoc/mrpt?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=MRPT/mrpt&amp;utm_campaign=Badge_Grade"><img alt="Code quality" src="https://api.codacy.com/project/badge/Grade/028dad14271644389387919721ae306b"></a></td>
+<td valign="top"> <a href="https://gitter.im/MRPT/mrpt"><img alt="[Join the chat at https://gitter.im/MRPT/mrpt" src="https://badges.gitter.im/Join%20Chat.svg"></a> </td>
+<td valign="top"> <a href="https://coveralls.io/github/MRPT/mrpt?branch=master"><img alt="Coverage Status" src="https://coveralls.io/repos/github/MRPT/mrpt/badge.svg?branch=master"></a> </td>
+</tr>
+</table>
 
 1. Introduction
 ------------------------------------------------------------------------------
+<img align="right" src="https://mrpt.github.io/imgs/mrpt-videos-mix2.gif">
 
 Mobile Robot Programming Toolkit (MRPT) provides C++ libraries aimed at researchers
 in mobile robotics and computer vision. Libraries include [SLAM solutions](http://www.mrpt.org/List_of_SLAM_algorithms), [3D(6D) geometry](http://www.mrpt.org/tutorials/programming/maths-and-geometry/2d_3d_geometry/), [SE(2)/SE(3) Lie groups](http://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf), 
@@ -15,15 +24,13 @@ Bayesian inference ([Kalman filters](http://www.mrpt.org/Kalman_Filters), [parti
 MRPT also provides GUI apps for [Stereo camera calibration](http://www.mrpt.org/list-of-mrpt-apps/application-kinect-stereo-calib/), [dataset inspection](http://www.mrpt.org/list-of-mrpt-apps/rawlogviewer/), 
 and [much more](http://www.mrpt.org/list-of-mrpt-apps/).
 
-[![ReactiveNav2D](https://raw.githubusercontent.com/MRPT/mrpt/master/doc/video-screenshots/reactivenav2d.jpg)](https://www.youtube.com/watch?v=qSMs5rnmwTM&index=9&list=PLOJ3GF0x2_eX7TXG_ZyDgEIJdNcuB193X) [![6D-EKF-SLAM](https://raw.githubusercontent.com/MRPT/mrpt/master/doc/video-screenshots/ekf6d.jpg)](https://www.youtube.com/watch?v=eOkzd_i_-ps&index=6&list=PLOJ3GF0x2_eX7TXG_ZyDgEIJdNcuB193X)
-[![ReactiveNav3D](https://raw.githubusercontent.com/MRPT/mrpt/master/doc/video-screenshots/reactivenav3d.jpg)](https://www.youtube.com/watch?v=CXdZ4CjWFuU&index=2&list=PLOJ3GF0x2_eX7TXG_ZyDgEIJdNcuB193X) [![NavLogViewer](https://raw.githubusercontent.com/MRPT/mrpt/master/doc/video-screenshots/navlogviewer.jpg)](https://www.youtube.com/watch?v=6Dp-tr7yR1k&list=PLOJ3GF0x2_eXj35SYVa4-n2-E_zW6klfR&index=2)
-
 2. Resources
 ------------------------------------------------------------------------------
   * Download the latest unstable code with: `git clone https://github.com/MRPT/mrpt.git --depth 1`
   * Ask questions at: [this Google group](http://www.mrpt.org/forum/) or at [stackoverflow](http://stackoverflow.com/search?q=mrpt) (please, use the tag `mrpt`!)
   * [Main project website](http://www.mrpt.org/), including [sources and Windows installer downloads](http://www.mrpt.org/download-mrpt/)
   * [C++ API reference](http://reference.mrpt.org/)
+  * ROS packages: [mrpt_navigation](http://wiki.ros.org/mrpt_navigation), [mrpt_slam](http://wiki.ros.org/mrpt_slam)
   * [Bindings documentation](https://github.com/MRPT/mrpt/wiki) (Python, Matlab)
   * Source code for [dozens of examples](http://www.mrpt.org/tutorials/mrpt-examples/)
   * Example configuration files for  MRPT applications can be found at: 

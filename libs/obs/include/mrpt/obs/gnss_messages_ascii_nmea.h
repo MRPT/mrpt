@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -68,6 +68,27 @@ struct OBS_IMPEXP Message_NMEA_GGA : public gnss_message
 	bool getAllFieldValues( std::ostream &o ) const MRPT_OVERRIDE;
 };
 
+/** NMEA datum: GLL. \sa mrpt::obs::CObservationGPS  */
+struct OBS_IMPEXP Message_NMEA_GLL : public gnss_message
+{
+	GNSS_MESSAGE_BINARY_BLOCK(&fields,sizeof(fields))
+	enum { msg_type = NMEA_GLL };  //!< Static msg type (member expected by templates)
+	Message_NMEA_GLL() : gnss_message((gnss_message_type_t)msg_type)
+	{}
+	struct OBS_IMPEXP content_t
+	{
+		UTC_time UTCTime; //!< The GPS sensor measured timestamp (in UTC time)
+		double   latitude_degrees; //!< The measured latitude, in degrees (North:+ , South:-)
+		double   longitude_degrees; //!< The measured longitude, in degrees (East:+ , West:-)
+		int8_t    validity_char; //!< This will be: 'A'=OK or 'V'=void
+		content_t();
+	};
+	content_t  fields; //!< Message content, accesible by individual fields
+	void dumpToStream( mrpt::utils::CStream &out ) const MRPT_OVERRIDE; // See docs in base
+	bool getAllFieldDescriptions( std::ostream &o ) const MRPT_OVERRIDE;
+	bool getAllFieldValues( std::ostream &o ) const MRPT_OVERRIDE;
+};
+
 /** NMEA datum: RMC. \sa mrpt::obs::CObservationGPS   */
 struct OBS_IMPEXP Message_NMEA_RMC : public gnss_message
 {
@@ -98,6 +119,50 @@ struct OBS_IMPEXP Message_NMEA_RMC : public gnss_message
 	bool getAllFieldValues( std::ostream &o ) const MRPT_OVERRIDE;
 };
 
+/** NMEA datum: VTG. \sa mrpt::obs::CObservationGPS  */
+struct OBS_IMPEXP Message_NMEA_VTG : public gnss_message
+{
+	GNSS_MESSAGE_BINARY_BLOCK(&fields,sizeof(fields))
+	enum { msg_type = NMEA_VTG };  //!< Static msg type (member expected by templates)
+	Message_NMEA_VTG() : gnss_message((gnss_message_type_t)msg_type)
+	{}
+	struct OBS_IMPEXP content_t
+	{
+		double  true_track, magnetic_track; //!< Degrees
+		double  ground_speed_knots, ground_speed_kmh;
+		content_t();
+	};
+	content_t  fields; //!< Message content, accesible by individual fields
+	void dumpToStream( mrpt::utils::CStream &out ) const MRPT_OVERRIDE; // See docs in base
+	bool getAllFieldDescriptions( std::ostream &o ) const MRPT_OVERRIDE;
+	bool getAllFieldValues( std::ostream &o ) const MRPT_OVERRIDE;
+};
+
+/** NMEA datum: ZDA. \sa mrpt::obs::CObservationGPS   */
+struct OBS_IMPEXP Message_NMEA_ZDA : public gnss_message
+{
+	GNSS_MESSAGE_BINARY_BLOCK(&fields,sizeof(fields))
+	enum { msg_type = NMEA_ZDA };  //!< Static msg type (member expected by templates)
+	Message_NMEA_ZDA() : gnss_message((gnss_message_type_t)msg_type)
+	{}
+
+	struct OBS_IMPEXP content_t
+	{
+		UTC_time  UTCTime;  //!< The GPS sensor measured timestamp (in UTC time)
+		uint8_t   date_day;      //!< 1-31
+		uint8_t   date_month;    //!< 1-12
+		uint16_t  date_year;     //!< 2000-...
+		content_t();
+	};
+	content_t  fields; //!< Message content, accesible by individual fields
+
+	mrpt::system::TTimeStamp getDateTimeAsTimestamp() const; //!< Build an MRPT UTC timestamp with the year/month/day + hour/minute/sec of this observation.
+	mrpt::system::TTimeStamp getDateAsTimestamp() const; //!< Build an MRPT timestamp with the year/month/day of this observation.
+
+	void dumpToStream( mrpt::utils::CStream &out ) const MRPT_OVERRIDE; // See docs in base
+	bool getAllFieldDescriptions( std::ostream &o ) const MRPT_OVERRIDE;
+	bool getAllFieldValues( std::ostream &o ) const MRPT_OVERRIDE;
+};
 #pragma pack(pop) // End of pack = 1
 } } } // End of namespaces
 

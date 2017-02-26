@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -180,9 +180,9 @@ int_upsample (j_decompress_ptr cinfo, jpeg_component_info * compptr,
 {
   my_upsample_ptr upsample = (my_upsample_ptr) cinfo->upsample;
   JSAMPARRAY output_data = *output_data_ptr;
-  register JSAMPROW inptr, outptr;
-  register JSAMPLE invalue;
-  register int h;
+  JSAMPROW inptr, outptr;
+  JSAMPLE invalue;
+  int h;
   JSAMPROW outend;
   int h_expand, v_expand;
   int inrow, outrow;
@@ -223,8 +223,8 @@ h2v1_upsample (j_decompress_ptr cinfo, jpeg_component_info * ,
 	       JSAMPARRAY input_data, JSAMPARRAY * output_data_ptr)
 {
   JSAMPARRAY output_data = *output_data_ptr;
-  register JSAMPROW inptr, outptr;
-  register JSAMPLE invalue;
+  JSAMPROW inptr, outptr;
+  JSAMPLE invalue;
   JSAMPROW outend;
   int inrow;
 
@@ -251,8 +251,8 @@ h2v2_upsample (j_decompress_ptr cinfo, jpeg_component_info * ,
 	       JSAMPARRAY input_data, JSAMPARRAY * output_data_ptr)
 {
   JSAMPARRAY output_data = *output_data_ptr;
-  register JSAMPROW inptr, outptr;
-  register JSAMPLE invalue;
+  JSAMPROW inptr, outptr;
+  JSAMPLE invalue;
   JSAMPROW outend;
   int inrow, outrow;
 
@@ -294,9 +294,9 @@ h2v1_fancy_upsample (j_decompress_ptr cinfo, jpeg_component_info * compptr,
 		     JSAMPARRAY input_data, JSAMPARRAY * output_data_ptr)
 {
   JSAMPARRAY output_data = *output_data_ptr;
-  register JSAMPROW inptr, outptr;
-  register int invalue;
-  register JDIMENSION colctr;
+  JSAMPROW inptr, outptr;
+  int invalue;
+  JDIMENSION colctr;
   int inrow;
 
   for (inrow = 0; inrow < cinfo->max_v_samp_factor; inrow++) {
@@ -335,13 +335,13 @@ h2v2_fancy_upsample (j_decompress_ptr cinfo, jpeg_component_info * compptr,
 		     JSAMPARRAY input_data, JSAMPARRAY * output_data_ptr)
 {
   JSAMPARRAY output_data = *output_data_ptr;
-  register JSAMPROW inptr0, inptr1, outptr;
+  JSAMPROW inptr0, inptr1, outptr;
 #if BITS_IN_JSAMPLE == 8
-  register int thiscolsum, lastcolsum, nextcolsum;
+  int thiscolsum, lastcolsum, nextcolsum;
 #else
-  register INT32 thiscolsum, lastcolsum, nextcolsum;
+  INT32 thiscolsum, lastcolsum, nextcolsum;
 #endif
-  register JDIMENSION colctr;
+  JDIMENSION colctr;
   int inrow, outrow, v;
 
   inrow = outrow = 0;

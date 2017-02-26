@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -24,8 +24,6 @@ using namespace mrpt::utils;
 using namespace std;
 
 IMPLEMENTS_GENERIC_SENSOR(CGPSInterface,mrpt::hwdrivers)
-
-MRPT_TODO("new parse unit tests") // Example cmds: https://www.sparkfun.com/datasheets/GPS/NMEA%20Reference%20Manual-Rev2.1-Dec07.pdf
 
 struct TParsersRegistry
 {
@@ -49,6 +47,7 @@ private:
                 Constructor
    ----------------------------------------------------- */
 CGPSInterface::CGPSInterface() :
+	mrpt::utils::COutputLogger("CGPSInterface"),
 	m_data_stream(NULL),    // Typically a CSerialPort created by this class, but may be set externally.
 	m_data_stream_cs(NULL),
 	m_data_stream_is_external(false),
@@ -329,7 +328,7 @@ void  CGPSInterface::doProcess()
 	catch (std::exception &)
 	{
 		// ERROR:
-		printf_debug("[CGPSInterface::doProcess] Error reading stream of data: Closing communications\n");
+		MRPT_LOG_ERROR("[CGPSInterface::doProcess] Error reading stream of data: Closing communications\n");
 		if(stream_serial) {
 			CCriticalSectionLocker lock(m_data_stream_cs);
 			stream_serial->close();
@@ -341,14 +340,10 @@ void  CGPSInterface::doProcess()
 	// Try to parse incomming data as messages:
 	parseBuffer( );
 	
-	// Decide whether to push out a new observation:
-	bool do_append_obs = false;
-	if (m_customInit.empty())
-	{   // General case:
-		do_append_obs = ( !m_just_parsed_messages.messages.empty() );
-	}
-	else
+	// Decide whether to push out a new observation in old legacy mode.
+	if (!m_customInit.empty())
 	{	// "Advanced" (RTK,mmGPS) device  (kept for backwards-compatibility)
+		bool do_append_obs = false;
 		// FAMD
 		// Append observation if:
 		// 0. the timestamp seems to be correct!
@@ -378,10 +373,11 @@ void  CGPSInterface::doProcess()
 			// don't append observation until we have both data
 			do_append_obs = ( m_just_parsed_messages.has_GGA_datum && m_just_parsed_messages.has_RMC_datum );
 		} // end-else
+
+		if (do_append_obs)
+			flushParsedMessagesNow();
 	}
 
-	if (do_append_obs)
-		flushParsedMessagesNow();
 }
 
 //!< Queue out now the messages in \a m_just_parsed_messages, leaving it empty
@@ -392,8 +388,6 @@ void  CGPSInterface::flushParsedMessagesNow()
 	if (m_sensorLabelAppendMsgType)
 	     m_just_parsed_messages.sensorLabel = m_sensorLabel + string("_")+ m_just_parsed_messages.sensorLabel;
 	else m_just_parsed_messages.sensorLabel = m_sensorLabel;
-
-
 	// Add observation to the output queue:
 	CObservationGPSPtr newObs = CObservationGPS::Create();
 	m_just_parsed_messages.swap(*newObs);
@@ -433,6 +427,8 @@ void  CGPSInterface::parseBuffer()
 			{
 				m_rx_buffer.pop(); // Not the start of a frame, skip 1 byte
 			}
+			if (m_customInit.empty() /* If we are not in old legacy mode */ && !m_just_parsed_messages.messages.empty() )
+				flushParsedMessagesNow();
 		} while (m_rx_buffer.size()>=min_bytes);
 	} // end one parser mode ----------
 	else
@@ -455,6 +451,9 @@ void  CGPSInterface::parseBuffer()
 
 			if (all_parsers_want_to_skip)
 				m_rx_buffer.pop(); // Not the start of a frame, skip 1 byte
+
+			if (m_customInit.empty() /* If we are not in old legacy mode */ && !m_just_parsed_messages.messages.empty() )
+				flushParsedMessagesNow();
 		} while (m_rx_buffer.size()>=global_min_bytes_max);
 	} // end AUTO mode ----
 }

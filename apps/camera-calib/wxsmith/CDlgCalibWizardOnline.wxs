@@ -29,12 +29,12 @@
 										<option>1</option>
 									</object>
 								</object>
-								<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+								<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 								<border>5</border>
 								<option>1</option>
 							</object>
 						</object>
-						<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+						<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 						<option>1</option>
 					</object>
 					<object class="sizeritem">
@@ -91,7 +91,7 @@
 														<option>1</option>
 													</object>
 												</object>
-												<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+												<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 												<option>1</option>
 											</object>
 										</object>
@@ -108,7 +108,7 @@
 											</content>
 											<default>-1</default>
 										</object>
-										<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+										<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 										<border>2</border>
 										<option>1</option>
 									</object>
@@ -154,7 +154,7 @@
 														<option>1</option>
 													</object>
 												</object>
-												<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+												<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 												<option>1</option>
 											</object>
 										</object>
@@ -172,7 +172,7 @@
 										<option>1</option>
 									</object>
 								</object>
-								<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+								<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 								<option>1</option>
 							</object>
 						</object>
@@ -221,11 +221,11 @@
 										<option>1</option>
 									</object>
 								</object>
-								<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+								<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 								<option>1</option>
 							</object>
 						</object>
-						<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+						<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 						<border>5</border>
 						<option>1</option>
 					</object>
@@ -239,12 +239,12 @@
 							</font>
 							<style>wxTE_MULTILINE|wxTE_READONLY|wxHSCROLL|wxVSCROLL</style>
 						</object>
-						<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+						<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 						<border>5</border>
 						<option>1</option>
 					</object>
 				</object>
-				<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+				<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 				<option>1</option>
 			</object>
 			<object class="sizeritem">
@@ -289,7 +289,7 @@
 								<option>1</option>
 							</object>
 						</object>
-						<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+						<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 						<option>1</option>
 					</object>
 					<object class="sizeritem">
@@ -303,7 +303,7 @@
 						<option>1</option>
 					</object>
 				</object>
-				<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+				<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 				<option>1</option>
 			</object>
 		</object>

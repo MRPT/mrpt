@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -44,7 +44,7 @@ CFileStream::CFileStream( const string &fileName, TFileOpenModes mode_ ) : m_f()
 	// Try to open the file:
 	m_f.open(fileName.c_str(), mode);
 	if (!m_f.is_open())
-		THROW_EXCEPTION_CUSTOM_MSG1( "Error creating/opening: '%s'",fileName.c_str() );
+		THROW_EXCEPTION_FMT( "Error creating/opening: '%s'",fileName.c_str() );
 	MRPT_END
 }
 

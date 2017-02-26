@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -148,34 +148,34 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent,wx
     btnLoadMap = new wxCustomButton(this,ID_BUTTON1,_("Load map..."),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FOLDER")),wxART_MAKE_CLIENT_ID_FROM_STR(wxString(wxEmptyString))),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON1"));
     btnLoadMap->SetBitmapDisabled(btnLoadMap->CreateBitmapDisabled(btnLoadMap->GetBitmapLabel()));
     btnLoadMap->SetBitmapMargin(wxSize(2,4));
-    BoxSizer1->Add(btnLoadMap, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
+    BoxSizer1->Add(btnLoadMap, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 1);
     btnHelp = new wxCustomButton(this,ID_BUTTON2,_("About..."),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_QUESTION")),wxART_MAKE_CLIENT_ID_FROM_STR(wxString(wxEmptyString))),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON2"));
     btnHelp->SetBitmapDisabled(btnHelp->CreateBitmapDisabled(btnHelp->GetBitmapLabel()));
     btnHelp->SetBitmapMargin(wxSize(5,4));
-    BoxSizer1->Add(btnHelp, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
+    BoxSizer1->Add(btnHelp, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 1);
     btnQuit = new wxCustomButton(this,ID_BUTTON3,_("Exit"),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_QUIT")),wxART_MAKE_CLIENT_ID_FROM_STR(wxString(wxEmptyString))),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON3"));
     btnQuit->SetBitmapDisabled(btnQuit->CreateBitmapDisabled(btnQuit->GetBitmapLabel()));
-    BoxSizer1->Add(btnQuit, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
-    FlexGridSizer4->Add(BoxSizer1, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    BoxSizer1->Add(btnQuit, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 1);
+    FlexGridSizer4->Add(BoxSizer1, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
     BoxSizer2 = new wxBoxSizer(wxHORIZONTAL);
     btnPlaceRobot = new wxCustomButton(this,ID_BUTTON6,_("Place robot..."),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FIND")),wxART_MAKE_CLIENT_ID_FROM_STR(wxString(wxEmptyString))),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON6"));
     btnPlaceRobot->SetBitmapDisabled(btnPlaceRobot->CreateBitmapDisabled(btnPlaceRobot->GetBitmapLabel()));
     btnPlaceRobot->SetBitmapMargin(wxSize(2,4));
-    BoxSizer2->Add(btnPlaceRobot, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
+    BoxSizer2->Add(btnPlaceRobot, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 2);
     btnPlaceTarget = new wxCustomButton(this,ID_BUTTON7,_("Set target..."),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FIND")),wxART_MAKE_CLIENT_ID_FROM_STR(wxString(wxEmptyString))),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON7"));
     btnPlaceTarget->SetBitmapDisabled(btnPlaceTarget->CreateBitmapDisabled(btnPlaceTarget->GetBitmapLabel()));
     btnPlaceTarget->SetBitmapMargin(wxSize(2,4));
-    BoxSizer2->Add(btnPlaceTarget, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
+    BoxSizer2->Add(btnPlaceTarget, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 2);
     btnStart = new wxCustomButton(this,ID_BUTTON4,_("START"),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_GO_FORWARD")),wxART_MAKE_CLIENT_ID_FROM_STR(wxString(wxEmptyString))),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON4"));
     btnStart->SetBitmapDisabled(btnStart->CreateBitmapDisabled(btnStart->GetBitmapLabel()));
     btnStart->SetBitmapMargin(wxSize(2,4));
-    BoxSizer2->Add(btnStart, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
+    BoxSizer2->Add(btnStart, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 2);
     btnStop = new wxCustomButton(this,ID_BUTTON5,_("STOP"),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_CROSS_MARK")),wxART_MAKE_CLIENT_ID_FROM_STR(wxString(wxEmptyString))),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON5"));
     btnStop->SetBitmapDisabled(btnStop->CreateBitmapDisabled(btnStop->GetBitmapLabel()));
     btnStop->SetBitmapMargin(wxSize(2,4));
-    BoxSizer2->Add(btnStop, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
-    FlexGridSizer4->Add(BoxSizer2, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
-    FlexGridSizer2->Add(FlexGridSizer4, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    BoxSizer2->Add(btnStop, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 2);
+    FlexGridSizer4->Add(BoxSizer2, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
+    FlexGridSizer2->Add(FlexGridSizer4, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
     Notebook1 = new wxNotebook(this, ID_NOTEBOOK1, wxDefaultPosition, wxDefaultSize, 0, _T("ID_NOTEBOOK1"));
     Panel1 = new wxPanel(Notebook1, ID_PANEL1, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL1"));
     FlexGridSizer7 = new wxFlexGridSizer(1, 2, 0, 0);
@@ -190,17 +190,17 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent,wx
     FlexGridSizer7->Add(rbHoloMethod, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     edHoloParams = new wxTextCtrl(Panel1, ID_TEXTCTRL1, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER|wxTE_PROCESS_TAB|wxTE_MULTILINE|wxVSCROLL|wxHSCROLL|wxALWAYS_SHOW_SB, wxDefaultValidator, _T("ID_TEXTCTRL1"));
     edHoloParams->SetMinSize(wxSize(-1,100));
-    wxFont edHoloParamsFont(8,wxTELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+    wxFont edHoloParamsFont(8,wxFONTFAMILY_TELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,wxEmptyString,wxFONTENCODING_DEFAULT);
     edHoloParams->SetFont(edHoloParamsFont);
-    FlexGridSizer7->Add(edHoloParams, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
+    FlexGridSizer7->Add(edHoloParams, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 2);
     Panel1->SetSizer(FlexGridSizer7);
     FlexGridSizer7->Fit(Panel1);
     FlexGridSizer7->SetSizeHints(Panel1);
     Panel2 = new wxPanel(Notebook1, ID_PANEL2, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL2"));
     Notebook1->AddPage(Panel1, _("Configuration"), true);
     Notebook1->AddPage(Panel2, _("Stats"), false);
-    FlexGridSizer2->Add(Notebook1, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
-    FlexGridSizer1->Add(FlexGridSizer2, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    FlexGridSizer2->Add(Notebook1, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 2);
+    FlexGridSizer1->Add(FlexGridSizer2, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
     FlexGridSizer3 = new wxFlexGridSizer(2, 2, 0, 0);
     FlexGridSizer3->AddGrowableCol(0);
     FlexGridSizer3->AddGrowableCol(1);
@@ -210,20 +210,20 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent,wx
     StaticText1 = new wxStaticText(this, ID_STATICTEXT1, _("[Local view]"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT1"));
     FlexGridSizer3->Add(StaticText1, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     m_plot3D = new CMyGLCanvas(this,ID_XY_GLCANVAS,wxDefaultPosition,wxSize(450,350),wxTAB_TRAVERSAL,_T("ID_XY_GLCANVAS"));
-    FlexGridSizer3->Add(m_plot3D, 1, wxALL|wxEXPAND|wxFIXED_MINSIZE|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
+    FlexGridSizer3->Add(m_plot3D, 1, wxALL|wxEXPAND|wxFIXED_MINSIZE|wxALIGN_LEFT|wxALIGN_TOP, 1);
     FlexGridSizer5 = new wxFlexGridSizer(2, 1, 0, 0);
     FlexGridSizer5->AddGrowableCol(0);
     FlexGridSizer5->AddGrowableRow(0);
     m_plotScan = new CMyGLCanvas(this,ID_CUSTOM1,wxDefaultPosition,wxSize(150,150),wxTAB_TRAVERSAL,_T("ID_CUSTOM1"));
-    FlexGridSizer5->Add(m_plotScan, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
+    FlexGridSizer5->Add(m_plotScan, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 1);
     edInfoLocalView = new wxTextCtrl(this, ID_TEXTCTRL2, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY|wxTE_DONTWRAP|wxALWAYS_SHOW_SB, wxDefaultValidator, _T("ID_TEXTCTRL2"));
     edInfoLocalView->SetMinSize(wxSize(-1,50));
     edInfoLocalView->SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE));
-    wxFont edInfoLocalViewFont(8,wxTELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+    wxFont edInfoLocalViewFont(8,wxFONTFAMILY_TELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,wxEmptyString,wxFONTENCODING_DEFAULT);
     edInfoLocalView->SetFont(edInfoLocalViewFont);
-    FlexGridSizer5->Add(edInfoLocalView, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
-    FlexGridSizer3->Add(FlexGridSizer5, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
-    FlexGridSizer1->Add(FlexGridSizer3, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    FlexGridSizer5->Add(edInfoLocalView, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 2);
+    FlexGridSizer3->Add(FlexGridSizer5, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
+    FlexGridSizer1->Add(FlexGridSizer3, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
     SetSizer(FlexGridSizer1);
     MenuBar1 = new wxMenuBar();
     Menu1 = new wxMenu();
@@ -304,7 +304,7 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent,wx
 
 	gl_robot = mrpt::opengl::CSetOfObjects::Create();
 	{
-		mrpt::opengl::CCylinderPtr obj = mrpt::opengl::CCylinder::Create(0.2,0.1,0.9);
+		mrpt::opengl::CCylinderPtr obj = mrpt::opengl::CCylinder::Create(0.2f,0.1f,0.9f);
 		obj->setColor_u8( TColor::red );
 		gl_robot->insert( obj );
 	}
@@ -328,10 +328,10 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent,wx
 	gl_target = mrpt::opengl::CSetOfObjects::Create();
 	{
 		mrpt::opengl::CArrowPtr obj;
-		obj = mrpt::opengl::CArrow::Create( 1,0,0,  0.2,0,0, 0.4,0.05, 0.15 ); obj->setColor_u8( TColor(0,0,255) ); gl_target->insert(obj);
-		obj = mrpt::opengl::CArrow::Create(-1,0,0, -0.2,0,0, 0.4,0.05, 0.15 ); obj->setColor_u8( TColor(0,0,255) ); gl_target->insert(obj);
-		obj = mrpt::opengl::CArrow::Create( 0,1,0,  0,0.2,0, 0.4,0.05, 0.15 ); obj->setColor_u8( TColor(0,0,255) ); gl_target->insert(obj);
-		obj = mrpt::opengl::CArrow::Create(0,-1,0,  0,-0.2,0, 0.4,0.05, 0.15 ); obj->setColor_u8( TColor(0,0,255) ); gl_target->insert(obj);
+		obj = mrpt::opengl::CArrow::Create( 1,0,0,  0.2f,0,0, 0.4f,0.05f, 0.15f ); obj->setColor_u8( TColor(0,0,255) ); gl_target->insert(obj);
+		obj = mrpt::opengl::CArrow::Create(-1,0,0, -0.2f,0,0, 0.4f,0.05f, 0.15f ); obj->setColor_u8( TColor(0,0,255) ); gl_target->insert(obj);
+		obj = mrpt::opengl::CArrow::Create( 0,1,0,  0,0.2f,0, 0.4f,0.05f, 0.15f ); obj->setColor_u8( TColor(0,0,255) ); gl_target->insert(obj);
+		obj = mrpt::opengl::CArrow::Create(0,-1,0,  0,-0.2f,0, 0.4f,0.05f, 0.15f ); obj->setColor_u8( TColor(0,0,255) ); gl_target->insert(obj);
 		m_plot3D->m_openGLScene->insert(gl_target);
 	}
 
@@ -339,16 +339,16 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent,wx
 		m_gl_placing_nav_target = opengl::CSetOfObjects::Create();
 
 		mrpt::opengl::CArrowPtr obj;
-		obj = mrpt::opengl::CArrow::Create( 1,0,0,  0.2,0,0, 0.4,0.05, 0.15 ); obj->setColor_u8( TColor(0,0,255) ); m_gl_placing_nav_target->insert(obj);
-		obj = mrpt::opengl::CArrow::Create(-1,0,0, -0.2,0,0, 0.4,0.05, 0.15 ); obj->setColor_u8( TColor(0,0,255) ); m_gl_placing_nav_target->insert(obj);
-		obj = mrpt::opengl::CArrow::Create( 0,1,0,  0,0.2,0, 0.4,0.05, 0.15 ); obj->setColor_u8( TColor(0,0,255) ); m_gl_placing_nav_target->insert(obj);
-		obj = mrpt::opengl::CArrow::Create(0,-1,0,  0,-0.2,0, 0.4,0.05, 0.15 ); obj->setColor_u8( TColor(0,0,255) ); m_gl_placing_nav_target->insert(obj);
+		obj = mrpt::opengl::CArrow::Create( 1,0,0,  0.2f,0,0, 0.4f,0.05f, 0.15f ); obj->setColor_u8( TColor(0,0,255) ); m_gl_placing_nav_target->insert(obj);
+		obj = mrpt::opengl::CArrow::Create(-1,0,0, -0.2f,0,0, 0.4f,0.05f, 0.15f ); obj->setColor_u8( TColor(0,0,255) ); m_gl_placing_nav_target->insert(obj);
+		obj = mrpt::opengl::CArrow::Create( 0,1,0,  0,0.2f,0, 0.4f,0.05f, 0.15f ); obj->setColor_u8( TColor(0,0,255) ); m_gl_placing_nav_target->insert(obj);
+		obj = mrpt::opengl::CArrow::Create(0,-1,0,  0,-0.2f,0, 0.4f,0.05f, 0.15f ); obj->setColor_u8( TColor(0,0,255) ); m_gl_placing_nav_target->insert(obj);
 		m_gl_placing_nav_target->setVisibility(false); // Start invisible.
 		m_plot3D->m_openGLScene->insert(m_gl_placing_nav_target);
 	}
 	{	// Sign of "replacing the robot":
 		m_gl_placing_robot = opengl::CSetOfObjects::Create();
-		mrpt::opengl::CCylinderPtr obj = mrpt::opengl::CCylinder::Create(0.2,0.1,0.9);
+		mrpt::opengl::CCylinderPtr obj = mrpt::opengl::CCylinder::Create(0.2f,0.1f,0.9f);
 		obj->setColor_u8( TColor(255,0,0, 120) );
 		m_gl_placing_robot->insert(obj);
 
@@ -370,7 +370,7 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent,wx
 
 	// 2D view ==============
 	{
-		mrpt::opengl::CGridPlaneXYPtr obj = mrpt::opengl::CGridPlaneXY::Create(-1,1.001, -1,1.001, 0, 1);
+		mrpt::opengl::CGridPlaneXYPtr obj = mrpt::opengl::CGridPlaneXY::Create(-1,1.001f, -1,1.001f, 0, 1);
 		obj->setColor_u8(TColor(30,30,30,50));
 		m_plotScan->m_openGLScene->insert( obj );
 	}
@@ -392,7 +392,7 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent,wx
 	gl_rel_target->insertPoint(0,0,0);
 	m_plotScan->m_openGLScene->insert(gl_rel_target);
 
-	m_plotScan->m_openGLScene->insert( mrpt::opengl::stock_objects::CornerXYSimple(0.1,2) );
+	m_plotScan->m_openGLScene->insert( mrpt::opengl::stock_objects::CornerXYSimple(0.1f,2) );
 
 	gl_nd_gaps = mrpt::opengl::CSetOfLines::Create();
 	gl_nd_gaps->setLineWidth(2);
@@ -407,7 +407,7 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent,wx
 	m_plotScan->cameraPointingX=0;
 	m_plotScan->cameraPointingY=0;
 	m_plotScan->cameraPointingZ=0;
-	m_plotScan->cameraZoomDistance = 2.2;
+	m_plotScan->cameraZoomDistance = 2.2f;
 	m_plotScan->cameraElevationDeg = 90;
 	m_plotScan->cameraAzimuthDeg = -90;
 	m_plotScan->cameraIsProjective = false;
@@ -571,7 +571,7 @@ void holonomic_navigator_demoFrame::simulateOneStep(double time_step)
 	// Simulate 360deg range scan:
 	CObservation2DRangeScan      simulatedScan;
 
-	simulatedScan.aperture = M_2PI;
+	simulatedScan.aperture = M_2PIf;
 	simulatedScan.rightToLeft = true;
 	simulatedScan.maxRange = m_simul_options.MAX_SENSOR_RADIUS;
 	simulatedScan.sensorPose = CPose2D(0,0,0);
@@ -581,7 +581,7 @@ void holonomic_navigator_demoFrame::simulateOneStep(double time_step)
 	gl_scan3D->setScan( simulatedScan );  // Draw real scan in 3D view
 
 	// Normalize:
-	for (size_t j=0;j<simulatedScan.scan.size();j++) simulatedScan.scan[j] /= simulatedScan.maxRange;
+	for (size_t j=0;j<simulatedScan.scan.size();j++) simulatedScan.setScanRange(j, simulatedScan.getScanRange(j) / simulatedScan.maxRange);
 
 	gl_scan2D->setScan( simulatedScan ); // Draw scaled scan in right-hand view
 
@@ -589,22 +589,25 @@ void holonomic_navigator_demoFrame::simulateOneStep(double time_step)
 	mrpt::math::TPoint2D relTargetPose = mrpt::math::TPoint2D( mrpt::poses::CPoint2D(m_targetPoint) - mrpt::poses::CPose2D(m_robotPose) );
 	relTargetPose*= 1.0/simulatedScan.maxRange;     // Normalized relative target:
 
-	double desiredDirection,desiredSpeed;
-	mrpt::nav::CHolonomicLogFileRecordPtr  out_log;
-
 	//tictac.Tic();
-	this->m_holonomicMethod->navigate(
-		relTargetPose,
-		simulatedScan.scan,
-		m_simul_options.ROBOT_MAX_SPEED,
-		desiredDirection,
-		desiredSpeed,
-		out_log );
-	// Tac
+	CAbstractHolonomicReactiveMethod::NavOutput no;
+	CAbstractHolonomicReactiveMethod::NavInput ni;
+	ni.target = relTargetPose;
+	
+	ni.obstacles.resize(simulatedScan.getScanSize());
+	for (unsigned int i = 0; i < ni.obstacles.size(); i++)
+		ni.obstacles[i] = simulatedScan.getScanRange(i);
+
+	ni.maxRobotSpeed = m_simul_options.ROBOT_MAX_SPEED;
+	ni.maxObstacleDist = m_simul_options.MAX_SENSOR_RADIUS;
+
+	this->m_holonomicMethod->navigate(ni, no);
+
+	mrpt::nav::CHolonomicLogFileRecordPtr  out_log = no.logRecord;
 
 	// Move robot:
-	m_robotPose.x += cos(desiredDirection) * desiredSpeed * time_step;
-	m_robotPose.y += sin(desiredDirection) * desiredSpeed * time_step;
+	m_robotPose.x += cos(no.desiredDirection) * no.desiredSpeed * time_step;
+	m_robotPose.y += sin(no.desiredDirection) * no.desiredSpeed * time_step;
 
 	// Update path graph:
 	const TPoint3D  cur_pt(m_robotPose.x,m_robotPose.y,0.01);
@@ -650,10 +653,10 @@ void holonomic_navigator_demoFrame::simulateOneStep(double time_step)
 	}
 
 	// Movement direction:
-	const double d = desiredSpeed/m_simul_options.ROBOT_MAX_SPEED;
+	const double d = no.desiredSpeed/m_simul_options.ROBOT_MAX_SPEED;
 	gl_line_direction->setLineCoords(
 		0,0,0,
-		cos(desiredDirection) * d, sin(desiredDirection) * d, 0 );
+		cos(no.desiredDirection) * d, sin(no.desiredDirection) * d, 0 );
 
 
 }

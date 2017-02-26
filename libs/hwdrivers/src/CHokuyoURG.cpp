@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -36,7 +36,6 @@ CHokuyoURG::CHokuyoURG() :
 	m_motorSpeed_rpm(0),
 	m_sensorPose(0,0,0),
 	m_rx_buffer(40000),
-	m_verbose(true),
 	m_highSensMode(false),
 	m_reduced_fov(0),
 	m_com_port(""),
@@ -45,7 +44,8 @@ CHokuyoURG::CHokuyoURG() :
 	m_I_am_owner_serial_port(false),
 	m_timeStartUI( 0 ),
 	m_timeStartSynchDelay(0),
-	m_disable_firmware_timestamp(false)
+	m_disable_firmware_timestamp(false),
+	m_intensity(false)
 {
 	m_sensorLabel = "Hokuyo";
 }
@@ -95,7 +95,12 @@ void  CHokuyoURG::doProcessSimple(
 	int				nRanges = m_lastRange-m_firstRange+1;
 	int				expectedSize = nRanges*3 + 4;
 
-    m_state = ssWorking;
+	if(m_intensity)
+	{
+		expectedSize += nRanges*3;
+	}
+
+	m_state = ssWorking;
 	if (!receiveResponse( m_lastSentMeasCmd.c_str(), rcv_status0,rcv_status1, (char*)&rcv_data[0], rcv_dataLength ) )
 	{
 		// No new data
@@ -116,8 +121,7 @@ void  CHokuyoURG::doProcessSimple(
 
 	if ( expectedSize!=rcv_dataLength )
 	{
-		if (m_verbose)
-			printf_debug("[CHokuyoURG::doProcess] ERROR: Expecting %u data bytes, received %u instead!\n",expectedSize,rcv_dataLength);
+		MRPT_LOG_DEBUG_FMT("[CHokuyoURG::doProcess] ERROR: Expecting %u data bytes, received %u instead!\n",expectedSize,rcv_dataLength);
 		hardwareError = true;
 		return;
 	}
@@ -160,19 +164,30 @@ void  CHokuyoURG::doProcessSimple(
 	outObservation.sensorPose = m_sensorPose;
 	outObservation.sensorLabel = m_sensorLabel;
 
-	outObservation.scan.resize(nRanges);
-	outObservation.validRange.resize(nRanges);
+	outObservation.resizeScan(nRanges);
 	char		*ptr = (char*) &rcv_data[4];
+
+	if(m_intensity)
+		outObservation.setScanHasIntensity(true);
+
 	for (int i=0;i<nRanges;i++)
 	{
-		int		b1 = (*ptr++)-0x30;
-		int		b2 = (*ptr++)-0x30;
-		int		b3 = (*ptr++)-0x30;
+		int b1 = (*ptr++)-0x30;
+		int b2 = (*ptr++)-0x30;
+		int b3 = (*ptr++)-0x30;
 
-		int		range_mm = ( (b1 << 12) | (b2 << 6) | b3);
+		int range_mm = ( (b1 << 12) | (b2 << 6) | b3);
 
-		outObservation.scan[i]			= range_mm * 0.001f;
-		outObservation.validRange[i]	= range_mm>=20;
+		outObservation.setScanRange(i, range_mm * 0.001f );
+		outObservation.setScanRangeValidity(i, range_mm>=20 &&  (outObservation.scan[i] <= outObservation.maxRange) );
+
+		if(m_intensity)
+		{
+			int b4 = (*ptr++)-0x30;
+			int b5 = (*ptr++)-0x30;
+			int b6 = (*ptr++)-0x30;
+			outObservation.setScanIntensity(i, ( (b4 << 12) | (b5 << 6) | b6) );
+		}
 	}
 
 	// Do filter:
@@ -218,9 +233,8 @@ void  CHokuyoURG::loadConfig_sensorSpecific(
 	ASSERTMSG_(m_com_port.empty() || m_ip_dir.empty(), "Both COM_port and IP_DIR set! Please, define only one of them.");
 	if (!m_ip_dir.empty()) { ASSERTMSG_(m_port_dir,"A TCP/IP port number `PORT_DIR` must be specified for Ethernet connection"); }
 
-	
-
 	m_disable_firmware_timestamp = configSource.read_bool(iniSection, "disable_firmware_timestamp", m_disable_firmware_timestamp);
+	m_intensity = configSource.read_bool(iniSection,"intensity",m_intensity),
 
 	// Parent options:
 	C2DRangeFinderAbstract::loadCommonParams(configSource, iniSection);
@@ -356,7 +370,7 @@ bool  CHokuyoURG::setHighBaudrate()
 
 	if (!checkCOMisOpen()) return false;
 
-	printf_debug("[CHokuyoURG::setHighBaudrate] Changing baudrate to 115200...");
+	MRPT_LOG_DEBUG("[CHokuyoURG::setHighBaudrate] Changing baudrate to 115200...");
 
 	// Send command:
 	os::strcpy(cmd,20, "SS115200\x0A");
@@ -378,7 +392,7 @@ bool  CHokuyoURG::setHighBaudrate()
 		return false;
 	}
 
-	printf_debug("OK\n");
+	MRPT_LOG_DEBUG("OK\n");
 	return true;
 }
 
@@ -573,7 +587,7 @@ bool  CHokuyoURG::enableSCIP20()
 
 	if (!checkCOMisOpen()) return false;
 
-	printf_debug("[CHokuyoURG::enableSCIP20] Changing protocol to SCIP2.0...");
+	MRPT_LOG_DEBUG("[CHokuyoURG::enableSCIP20] Changing protocol to SCIP2.0...");
 
 	// Send command:
 	os::strcpy(cmd,20, "SCIP2.0\x0A");
@@ -597,7 +611,7 @@ bool  CHokuyoURG::enableSCIP20()
 	}
 
 
-	printf_debug("OK\n");
+	MRPT_LOG_DEBUG("OK\n");
 	return true;
 }
 
@@ -614,7 +628,7 @@ bool  CHokuyoURG::switchLaserOn()
 
 	if (!checkCOMisOpen()) return false;
 
-	printf_debug("[CHokuyoURG::switchLaserOn] Switching laser ON...");
+	MRPT_LOG_DEBUG("[CHokuyoURG::switchLaserOn] Switching laser ON...");
 
 	// Send command:
 	os::strcpy(cmd,20, "BM\x0A");
@@ -636,7 +650,7 @@ bool  CHokuyoURG::switchLaserOn()
 		return false;
 	}
 
-	printf_debug("OK\n");
+	MRPT_LOG_DEBUG("OK\n");
 
 	return true;
 }
@@ -654,7 +668,7 @@ bool  CHokuyoURG::switchLaserOff()
 
 	if (!checkCOMisOpen()) return false;
 
-	printf_debug("[CHokuyoURG::switchLaserOff] Switching laser OFF...");
+	MRPT_LOG_DEBUG("[CHokuyoURG::switchLaserOff] Switching laser OFF...");
 
 	// Send command:
 	os::strcpy(cmd,20, "QT\x0A");
@@ -676,7 +690,7 @@ bool  CHokuyoURG::switchLaserOff()
 		return false;
 	}
 
-	printf_debug("OK\n");
+	MRPT_LOG_DEBUG("OK\n");
 	return true;
 }
 
@@ -693,7 +707,7 @@ bool  CHokuyoURG::setMotorSpeed(int motoSpeed_rpm)
 
 	if (!checkCOMisOpen()) return false;
 
-	printf_debug("[CHokuyoURG::setMotorSpeed] Setting to %i rpm...",motoSpeed_rpm);
+	MRPT_LOG_DEBUG_FMT("[CHokuyoURG::setMotorSpeed] Setting to %i rpm...",motoSpeed_rpm);
 
 	// Send command:
 	int		motorSpeedCode = (600 - motoSpeed_rpm) / 6;
@@ -722,7 +736,7 @@ bool  CHokuyoURG::setMotorSpeed(int motoSpeed_rpm)
 		return false;
 	}
 
-	printf_debug("OK\n");
+	MRPT_LOG_DEBUG("OK\n");
 	return true;
 }
 
@@ -739,7 +753,7 @@ bool  CHokuyoURG::setHighSensitivityMode(bool enabled)
 
 	if (!checkCOMisOpen()) return false;
 
-	printf_debug("[CHokuyoURG::setHighSensitivityMode] Setting HS mode to: %s...", enabled ? "true":"false" );
+	MRPT_LOG_DEBUG_FMT("[CHokuyoURG::setHighSensitivityMode] Setting HS mode to: %s...", enabled ? "true":"false" );
 
 	// Send command:
 	os::sprintf(cmd,20, "HS%i\x0A",enabled ? 1:0);
@@ -761,10 +775,18 @@ bool  CHokuyoURG::setHighSensitivityMode(bool enabled)
 		return false;
 	}
 
-	printf_debug("OK\n");
+	MRPT_LOG_DEBUG("OK\n");
 	return true;
 }
 
+/*-------------------------------------------------------------
+                                                setIntensityMode
+-------------------------------------------------------------*/
+bool  CHokuyoURG::setIntensityMode(bool enabled)
+{
+	m_intensity = enabled;
+	return true;
+}
 
 /*-------------------------------------------------------------
 						displayVersionInfo
@@ -779,7 +801,7 @@ bool  CHokuyoURG::displayVersionInfo( )
 
 	if (!checkCOMisOpen()) return false;
 
-	printf_debug("[CHokuyoURG::displayVersionInfo] Asking info...");
+	MRPT_LOG_DEBUG("[CHokuyoURG::displayVersionInfo] Asking info...");
 
 	// Send command:
 	os::sprintf(cmd,20, "VV\x0A");
@@ -801,7 +823,7 @@ bool  CHokuyoURG::displayVersionInfo( )
 		return false;
 	}
 
-	printf_debug("OK\n");
+	MRPT_LOG_DEBUG("OK\n");
 
 	// PRINT:
 	for (int i=0;i<rcv_dataLength;i++)
@@ -811,10 +833,10 @@ bool  CHokuyoURG::displayVersionInfo( )
 	}
 	rcv_data[rcv_dataLength]=0;
 
-	printf_debug("\n------------- HOKUYO Scanner: Version Information ------\n");
-	printf_debug(rcv_data);
-	printf_debug("-------------------------------------------------------\n\n");
-
+	MRPT_LOG_INFO_FMT(
+		"\n------------- HOKUYO Scanner: Version Information ------\n"
+		"%s\n"
+		"-------------------------------------------------------\n\n",rcv_data);
 	return true;
 }
 
@@ -831,7 +853,7 @@ bool  CHokuyoURG::displaySensorInfo( TSensorInfo * out_data)
 
 	if (!checkCOMisOpen()) return false;
 
-	printf_debug("[CHokuyoURG::displaySensorInfo] Asking for info...");
+	MRPT_LOG_DEBUG("[CHokuyoURG::displaySensorInfo] Asking for info...");
 
 	// Send command:
 	os::sprintf(cmd,20, "PP\x0A");
@@ -853,7 +875,7 @@ bool  CHokuyoURG::displaySensorInfo( TSensorInfo * out_data)
 		return false;
 	}
 
-	printf_debug("OK\n");
+	MRPT_LOG_DEBUG("OK\n");
 
 	// PRINT:
 	for (int i=0;i<rcv_dataLength;i++)
@@ -863,9 +885,10 @@ bool  CHokuyoURG::displaySensorInfo( TSensorInfo * out_data)
 	}
 	rcv_data[rcv_dataLength]=0;
 
-	printf_debug("\n------------- HOKUYO Scanner: Product Information ------\n");
-	printf_debug(rcv_data);
-	printf_debug("-------------------------------------------------------\n\n");
+	MRPT_LOG_INFO_FMT(
+		"\n------------- HOKUYO Scanner: Product Information  ------\n"
+		"%s\n"
+		"-------------------------------------------------------\n\n",rcv_data);
 
 	// Parse the data:
 	if (out_data)
@@ -925,10 +948,13 @@ bool  CHokuyoURG::startScanningMode()
 
 	if (!checkCOMisOpen()) return false;
 
-	printf_debug("[CHokuyoURG::startScanningMode] Starting scanning mode...");
+	MRPT_LOG_DEBUG("[CHokuyoURG::startScanningMode] Starting scanning mode...");
 
 	// Send command:
-	os::sprintf(cmd,50, "MD%04u%04u01000\x0A", m_firstRange,m_lastRange);
+	if(m_intensity)
+		os::sprintf(cmd,50, "ME%04u%04u01000\x0A", m_firstRange,m_lastRange);
+	else
+		os::sprintf(cmd,50, "MD%04u%04u01000\x0A", m_firstRange,m_lastRange);
 	toWrite = 16;
 
 	m_lastSentMeasCmd = cmd;
@@ -949,7 +975,7 @@ bool  CHokuyoURG::startScanningMode()
 		return false;
 	}
 
-	printf_debug("OK\n");
+	MRPT_LOG_DEBUG("OK\n");
 	return true;
 }
 
@@ -1037,6 +1063,7 @@ bool  CHokuyoURG::checkCOMisOpen()
 			// Try to open the serial port:
 			CClientTCPSocket	*theCOM = new CClientTCPSocket();
 
+			printf("[CHokuyoURG] Connecting to %s:%u...\n", m_ip_dir.c_str(), m_port_dir);
 			theCOM->connect( m_ip_dir, m_port_dir );
 
 			if (!theCOM->isConnected())
@@ -1128,5 +1155,3 @@ void CHokuyoURG::purgeBuffers()
 		}
 	}
 }
-
-

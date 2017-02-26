@@ -86,6 +86,18 @@ MAKE_GETITEM(TPose3D, double)
 MAKE_SETITEM(TPose3D, double)
 // end of TPose3D
 
+// TTwist2D
+MAKE_AS_STR(TTwist2D)
+MAKE_GETITEM(TTwist2D, double)
+MAKE_SETITEM(TTwist2D, double)
+// end of TTwist2D
+
+// TTwist3D
+MAKE_AS_STR(TTwist3D)
+MAKE_GETITEM(TTwist3D, double)
+MAKE_SETITEM(TTwist3D, double)
+// end of TTwist2D
+
 // TPose3DQuat
 MAKE_AS_STR(TPose3DQuat)
 MAKE_GETITEM(TPose3DQuat, double)
@@ -95,6 +107,9 @@ MAKE_SETITEM(TPose3DQuat, double)
 // CMatrix
 MAKE_FIXED_DOUBLE_MATRIX_GETSET(3, 3)
 MAKE_FIXED_DOUBLE_MATRIX_GETSET(6, 6)
+
+// TODO: add conversion from/to list for convenience
+
 // end of CMatrix
 
 // re-implement inline functions, otherwise they are not included inside pymrpt.so

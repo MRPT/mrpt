@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -13,7 +13,7 @@
 #include <mrpt/utils/CImage.h>
 #include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/utils/CConfigFileMemory.h>
-#include <mrpt/synch.h>
+#include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/gui/keycodes.h>
 
 #include <mrpt/gui/link_pragmas.h>
@@ -66,6 +66,10 @@ namespace mrpt
 {
 	namespace gui
 	{
+		/** \addtogroup mrpt_gui_wxutils Utilities for MRPT-wxWidgets interfacing (in #include <mrpt/gui/WxUtils.h>)
+		  * \ingroup mrpt_gui_grp
+
+			* @{ */
 #if MRPT_HAS_WXWIDGETS
 
 
@@ -292,7 +296,7 @@ namespace mrpt
 		}
 
 #endif
-
+		/** @} */
     } // End of namespace
 } // End of namespace
 

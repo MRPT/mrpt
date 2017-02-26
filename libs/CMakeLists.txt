@@ -1,5 +1,12 @@
 project(ALL_MRPT_LIBS)
 
+SET(DISABLE_MRPT_AUTO_CLASS_REGISTRATION OFF CACHE BOOL "Enable to reduce the footprint of MRPT statically libraries linked; caution: all deserialized classes must be registered by hand by the user!")
+MARK_AS_ADVANCED(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
+IF(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
+	ADD_DEFINITIONS(-DDISABLE_MRPT_AUTO_CLASS_REGISTRATION)
+ENDIF()
+
+
 # -----------------------------------------------
 # 1) Enumerate al subdirectories under "libs/"
 # -----------------------------------------------

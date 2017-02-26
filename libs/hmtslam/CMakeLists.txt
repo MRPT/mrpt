@@ -10,11 +10,11 @@ define_mrpt_lib(
 	mrpt-vision
 	mrpt-maps
 	mrpt-base
-	mrpt-obs 
+	mrpt-obs
 	mrpt-opengl
+  mrpt-gui
 	)
 
-IF(BUILD_mrpt-hmtslam) 
+IF(BUILD_mrpt-hmtslam)
 
-ENDIF(BUILD_mrpt-hmtslam) 
-
+ENDIF() 

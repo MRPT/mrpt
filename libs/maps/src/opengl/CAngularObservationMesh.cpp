@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -294,13 +294,13 @@ public:
 	CSetOfLinesPtr &lins;
 	const CPoint3D &pDist;
 	std::vector<double> pitchs;
-	FAddUntracedLines(CSetOfLinesPtr &l,const CPoint3D &p,const vector<double> &pi):lins(l),pDist(p),pitchs()	{
+	FAddUntracedLines(CSetOfLinesPtr &l,const CPoint3D &p,const std::vector<double> &pi):lins(l),pDist(p),pitchs()	{
 		pitchs.reserve(pi.size());
-		for (vector<double>::const_reverse_iterator it=pi.rbegin();it!=pi.rend();++it) pitchs.push_back(*it);
+		for (std::vector<double>::const_reverse_iterator it=pi.rbegin();it!=pi.rend();++it) pitchs.push_back(*it);
 	}
 	void operator()(const CObservation2DRangeScan& obs)	{
 		size_t hm=obs.scan.size();
-		for (vector<char>::const_iterator it=obs.validRange.begin();it!=obs.validRange.end();++it) if (*it) hm--;
+		for (std::vector<char>::const_iterator it=obs.validRange.begin();it!=obs.validRange.end();++it) if (*it) hm--;
 		lins->reserve(hm);
 		for (size_t i=0;i<obs.scan.size();i++) if (!obs.validRange[i])	{
 			double yaw=obs.aperture*((static_cast<double>(i)/static_cast<double>(obs.scan.size()-1))-0.5);

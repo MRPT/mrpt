@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -23,20 +23,16 @@ using namespace mrpt::poses;
 using namespace mrpt::utils;
 
 
-/*---------------------------------------------------------------
-					Constructor
-  ---------------------------------------------------------------*/
 CMetricMapBuilder::CMetricMapBuilder() :
-	critZoneChangingMap(),
-	options()
+	mrpt::utils::COutputLogger("CMetricMapBuilder"),
+	options(this->m_min_verbosity_level)
 {
+	MRPT_LOG_DEBUG("CMetricMapBuilder ctor.");
 }
 
-/*---------------------------------------------------------------
-					Destructor
-  ---------------------------------------------------------------*/
 CMetricMapBuilder::~CMetricMapBuilder()
 {
+	MRPT_LOG_DEBUG("CMetricMapBuilder dtor.");
 }
 
 /*---------------------------------------------------------------
@@ -45,6 +41,7 @@ Clear all elements of the maps, and reset localization to (0,0,0deg).
   ---------------------------------------------------------------*/
 void  CMetricMapBuilder::clear()
 {
+	MRPT_LOG_DEBUG("CMetricMapBuilder::clear() called.");
 	CSimpleMap			dummyMap;
 	CPosePDFGaussian				dummyPose;
 
@@ -63,7 +60,7 @@ void  CMetricMapBuilder::loadCurrentMapFromFile(const std::string &fileName)
 	// New file??
 	if ( mrpt::system::fileExists( fileName ) )
 	{
-		std::cout << "[CMetricMapBuilder::loadCurrentMapFromFile] Loading current map from '" << fileName << "' ..." << std::endl;
+		MRPT_LOG_INFO_STREAM << "[CMetricMapBuilder::loadCurrentMapFromFile] Loading current map from '" << fileName << "' ..." << std::endl;
 		CFileGZInputStream		f( fileName);
 
 		// Load from file:
@@ -71,7 +68,7 @@ void  CMetricMapBuilder::loadCurrentMapFromFile(const std::string &fileName)
 	}
 	else
 	{	// Is a new file, start with an empty map:
-		std::cout << "[CMetricMapBuilder::loadCurrentMapFromFile] Starting new empty map, since file was not found:'" << fileName << "' ..." << std::endl;
+		MRPT_LOG_WARN_STREAM << "[CMetricMapBuilder::loadCurrentMapFromFile] Loading current map from '" << fileName << "' ..." << std::endl;
 		map.clear();
 	}
 
@@ -87,6 +84,8 @@ void  CMetricMapBuilder::saveCurrentMapToFile(const std::string &fileName, bool 
 	// get current map:
 	CSimpleMap		curmap;
 	getCurrentlyBuiltMap(curmap);
+
+	MRPT_LOG_INFO_STREAM << "[CMetricMapBuilder::saveCurrentMapToFile] Saving current map to '" << fileName << "' ..." << std::endl;
 
 	// Save to file:
 	if (compressGZ)

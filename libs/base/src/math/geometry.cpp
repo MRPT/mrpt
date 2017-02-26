@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -20,53 +20,13 @@
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/utils/stl_serialization.h>
 
-
-
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace std;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 
-double mrpt::math::geometryEpsilon=1e-3;
-
-/*---------------------------------------------------------------
-	Returns the minimum distance between a point and a line.
-  ---------------------------------------------------------------*/
-double  math::minimumDistanceFromPointToSegment(
-		const double &	Px,
-		const double &	Py,
-		const double &	x1,
-		const double &	y1,
-		const double &	x2,
-		const double &	y2,
-		double	&out_x,
-		double	&out_y)
-{
-	closestFromPointToSegment(Px,Py,x1,y1,x2,y2,out_x,out_y);
-	return distanceBetweenPoints(Px,Py,out_x,out_y);
-}
-
-/*---------------------------------------------------------------
-	Returns the minimum distance between a point and a line.
-  ---------------------------------------------------------------*/
-double  math::minimumDistanceFromPointToSegment(
-		const double &	Px,
-		const double &	Py,
-		const double &	x1,
-		const double &	y1,
-		const double &	x2,
-		const double &	y2,
-		float   &out_x,
-		float   &out_y)
-{
-	double ox,oy;
-	closestFromPointToSegment(Px,Py,x1,y1,x2,y2,ox,oy);
-	out_x = ox;
-	out_y = oy;
-	return distanceBetweenPoints(Px,Py,ox,oy);
-}
-
+double mrpt::math::geometryEpsilon=1e-5;
 
 /*---------------------------------------------------------------
 	Returns the closest point to a segment
@@ -172,10 +132,10 @@ double math::closestSquareDistanceFromPointToLine(
 						Intersect
   ---------------------------------------------------------------*/
 bool  math::SegmentsIntersection(
-			const double &	x1,const double &	y1,
-			const double &	x2,const double &	y2,
-			const double &	x3,const double &	y3,
-			const double &	x4,const double &	y4,
+			const double x1,const double y1,
+			const double x2,const double y2,
+			const double x3,const double y3,
+			const double x4,const double y4,
 			double	&ix,double  &iy)
 {
 	double		UpperX,UpperY,LowerX,LowerY,Ax,Bx,Cx,Ay,By,Cy,d,f,e,Ratio;
@@ -267,16 +227,16 @@ bool  math::SegmentsIntersection(
 						Intersect
   ---------------------------------------------------------------*/
 bool  math::SegmentsIntersection(
-			const double &	x1,const double &	y1,
-			const double &	x2,const double &	y2,
-			const double &	x3,const double &	y3,
-			const double &	x4,const double &	y4,
+			const double x1,const double y1,
+			const double x2,const double y2,
+			const double x3,const double y3,
+			const double x4,const double y4,
 			float &ix,float &iy)
 {
 	double x,y;
 	bool b = SegmentsIntersection(x1,y1,x2,y2,x3,y3,x4,y4,x,y);
-	ix = x;
-	iy = y;
+	ix = static_cast<float>(x);
+	iy = static_cast<float>(y);
 	return b;
 }
 
@@ -711,7 +671,7 @@ bool math::intersect(const TLine3D &r1,const TLine3D &r2,TObject3D &obj)	{
 		d[c1[i]]=r2.pBase[c1[i]]-r1.pBase[c1[i]];
 		d[c2[i]]=r2.pBase[c2[i]]-r1.pBase[c2[i]];
 		u=(r1.director[c1[i]]*d[c2[i]]-r1.director[c2[i]]*d[c1[i]])/sysDet;
-		for (size_t i=0;i<3;i++) p[i]=r2.pBase[i]+u*r2.director[i];
+		for (size_t k=0;k<3;k++) p[k]=r2.pBase[k]+u*r2.director[k];
 		if (r1.contains(p))	{
 			obj=p;
 			return true;
@@ -1255,8 +1215,9 @@ inline char fromObject(const TObject2D &obj)	{
 	}
 }
 
-bool math::intersect(const TPolygon2D &p1,const TPolygon2D &p2,TObject2D &obj)	{
+bool math::intersect(const TPolygon2D &/*p1*/,const TPolygon2D &/*p2*/,TObject2D &/*obj*/)	{
 	THROW_EXCEPTION("TODO");
+#if 0
 	return false;	//TODO
 
 	CSparseMatrixTemplate<TObject2D> intersections=CSparseMatrixTemplate<TObject2D>(p1.size(),p2.size());
@@ -1297,6 +1258,7 @@ bool math::intersect(const TPolygon2D &p1,const TPolygon2D &p2,TObject2D &obj)	{
 
 	/* ¿Seguir? */
 	return false;
+#endif
 }
 
 bool math::intersect(const TPolygon3D &p1,const TSegment3D &s2,TObject3D &obj)	{
@@ -1798,7 +1760,7 @@ bool depthFirstSearch(const CSparseMatrixTemplate<unsigned char> &mat,std::vecto
 		if (!match) continue;
 		else if (firstOrNonPresent(i,current))	{
 			bool s1p,s2p;
-			if ((s1p=(!(match&3)))) match>>=2;
+			if (true==(s1p=(!(match&3)))) match>>=2;
 			s2p=!(match&1);
 			if (current.size()>=2&&current[0].seg1==i)	{
 				if (s2p!=current[0].seg1Point)	{

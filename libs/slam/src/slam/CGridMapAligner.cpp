@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -345,11 +345,11 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 		else
 		{
 			outInfo.noRobustEstimation = noRobustEst;
-			printf_debug("[CGridMapAligner] Overall estimation(%u corrs, total: %u): (%.03f,%.03f,%.03fdeg)\n",
+			MRPT_LOG_INFO( mrpt::format("[CGridMapAligner] Overall estimation(%u corrs, total: %u): (%.03f,%.03f,%.03fdeg)\n",
 				corrsCount,(unsigned)correspondences.size(),
 				outInfo.noRobustEstimation.x(),
 				outInfo.noRobustEstimation.y(),
-				RAD2DEG(outInfo.noRobustEstimation.phi() ));
+				RAD2DEG(outInfo.noRobustEstimation.phi() )) );
 
 			// The list of SOG modes & their corresponding sub-sets of matchings:
 			typedef mrpt::aligned_containers<mrpt::utils::TMatchingPairList, CPosePDFSOG::TGaussianMode>::map_t  TMapMatchingsToPoseMode;
@@ -392,7 +392,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 				// Simplify the SOG by merging close modes:
 				// -------------------------------------------------
 				size_t nB = pdf_SOG->size();
-				outInfo.sog1 = pdf_SOG; outInfo.sog1.make_unique();
+				outInfo.sog1 = pdf_SOG;
 
 				// Keep only the most-likely Gaussian mode:
 				CPosePDFSOG::TGaussianMode best_mode;
@@ -408,11 +408,9 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 
 				pdf_SOG->clear();
 				pdf_SOG->push_back( best_mode );
-				outInfo.sog2 = pdf_SOG; outInfo.sog2.make_unique();
+				outInfo.sog2 = pdf_SOG;
 
-				size_t nA = pdf_SOG->size();
-
-				printf_debug("[CGridMapAligner] amRobustMatch: %u SOG modes reduced to %u (most-likely) (min.inliers=%u)\n", (unsigned int)nB, (unsigned int)nA, min_inliers );
+				MRPT_LOG_INFO_STREAM << "[CGridMapAligner] amRobustMatch: "<< nB << " SOG modes reduced to "<< pdf_SOG->size() << " (most-likely) (min.inliers="<< min_inliers << ")\n";
 
 			} // end of amRobustMatch
 			else
@@ -752,15 +750,15 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 				// Simplify the SOG by merging close modes:
 				// -------------------------------------------------
 				size_t nB = pdf_SOG->size();
-				outInfo.sog1 = pdf_SOG; outInfo.sog1.make_unique();
+				outInfo.sog1 = pdf_SOG;
 
 				CTicTac	merge_clock;
 				pdf_SOG->mergeModes( options.maxKLd_for_merge,false);
 				const double merge_clock_tim = merge_clock.Tac();
 
-				outInfo.sog2 = pdf_SOG; outInfo.sog2.make_unique();
+				outInfo.sog2 = pdf_SOG;
 				size_t nA = pdf_SOG->size();
-				printf_debug("[CGridMapAligner] amModifiedRANSAC: %u SOG modes merged to %u in %.03fsec\n", (unsigned int)nB, (unsigned int)nA, merge_clock_tim );
+				MRPT_LOG_INFO(mrpt::format("[CGridMapAligner] amModifiedRANSAC: %u SOG modes merged to %u in %.03fsec\n", (unsigned int)nB, (unsigned int)nA, merge_clock_tim ) );
 
 			} // end of amModifiedRANSAC
 
@@ -851,11 +849,10 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 				} // end for i
 
 				// Merge:
-				outInfo.sog3 = pdf_SOG; outInfo.sog3.make_unique();
+				outInfo.sog3 = pdf_SOG;
 
 				pdf_SOG->mergeModes( options.maxKLd_for_merge, false );
-				//size_t nAA = pdf_SOG->size();
-				//printf_debug("[CGridMapAligner] Debug: %u SOG modes merged after ICP\n", (unsigned int)nAA );
+				MRPT_LOG_DEBUG_STREAM << "[CGridMapAligner] " << pdf_SOG->size() << " SOG modes merged after ICP.";
 
 			} // end multimapX
 
@@ -866,10 +863,10 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 
 	// Copy the output info if requested:
 	// -------------------------------------------------
+	MRPT_TODO("Refactor `info` so it is polymorphic and can use dynamic_cast<> here");
 	if (info)
 	{
 		TReturnInfo* info_ = static_cast<TReturnInfo*>(info);
-		ASSERT_( info_->cbSize == sizeof(TReturnInfo) );
 		*info_ = outInfo;
 	}
 

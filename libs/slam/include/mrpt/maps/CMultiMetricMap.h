@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -15,6 +15,7 @@
 #include <mrpt/maps/CGasConcentrationGridMap2D.h>
 #include <mrpt/maps/CWirelessPowerGridMap2D.h>
 #include <mrpt/maps/CHeightGridMap2D.h>
+#include <mrpt/maps/CHeightGridMap2D_MRF.h>
 #include <mrpt/maps/CReflectivityGridMap2D.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/maps/CColouredPointsMap.h>
@@ -25,6 +26,7 @@
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/TEnumType.h>
+#include <mrpt/utils/poly_ptr_ptr.h>
 #include <mrpt/obs/obs_frwds.h>
 
 #include <mrpt/slam/link_pragmas.h>
@@ -51,7 +53,8 @@ namespace maps
 	 *		- mrpt::maps::CGasConcentrationGridMap2D: For gas concentration maps.
 	 *		- mrpt::maps::CWirelessPowerGridMap2D: For wifi power maps.
 	 *		- mrpt::maps::CBeaconMap: For range-only SLAM.
-	 *		- mrpt::maps::CHeightGridMap2D: For maps of height for each (x,y) location.
+	 *		- mrpt::maps::CHeightGridMap2D: For elevation maps of height for each (x,y) location (Digital elevation model, DEM)
+	 *		- mrpt::maps::CHeightGridMap2D_MRF: DEMs as Markov Random Field (MRF)
 	 *		- mrpt::maps::CReflectivityGridMap2D: For maps of "reflectivity" for each (x,y) location.
 	 *		- mrpt::maps::CColouredPointsMap: For point map with color.
 	 *		- mrpt::maps::CWeightedPointsMap: For point map with weights (capable of "fusing").
@@ -130,14 +133,14 @@ namespace maps
 		 * \param obs The observation.
 		 * \sa computeObservationLikelihood
 		 */
-		bool internal_canComputeObservationLikelihood( const mrpt::obs::CObservation *obs );
+		bool internal_canComputeObservationLikelihood( const mrpt::obs::CObservation *obs ) const MRPT_OVERRIDE;
 		// See docs in base class
-		double	 internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom );
+		double	 internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom ) MRPT_OVERRIDE;
 
 	public:
 		/** @name Access to internal list of maps: direct list, iterators, utility methods and proxies
 		    @{ */
-		typedef std::deque<mrpt::maps::CMetricMapPtr> TListMaps;
+		typedef std::deque< mrpt::utils::poly_ptr_ptr<mrpt::maps::CMetricMapPtr> > TListMaps;
 
 		/** The list of MRPT metric maps in this object. Use dynamic_cast or smart pointer-based downcast to access maps by their actual type.
 		  * You can directly manipulate this list. Helper methods to initialize it are described in the docs of CMultiMetricMap 
@@ -169,7 +172,7 @@ namespace maps
 			for (const_iterator it = begin();it!=end();++it)
 				if ( (*it)->GetRuntimeClass()->derivedFrom( class_ID ) )
 					if (foundCount++ == ith)
-						return typename T::SmartPtr(*it);
+						return typename T::SmartPtr(it->get_ptr());
 			return typename T::SmartPtr();	// Not found: return empty smart pointer
 		}
 
@@ -181,27 +184,33 @@ namespace maps
 		{
 			typedef typename SELECTED_CLASS_PTR::value_type* ptr_t;
 			typedef const typename SELECTED_CLASS_PTR::value_type* const_ptr_t;
-			ProxyFilterContainerByClass(CONTAINER &source) : m_source(source) {}
+			ProxyFilterContainerByClass(CONTAINER &source) : m_source(&source) {}
+			ProxyFilterContainerByClass(ProxyFilterContainerByClass<SELECTED_CLASS_PTR, CONTAINER>& ) : m_source() {} // m_source init in parent copy ctor
 
+			ProxyFilterContainerByClass<SELECTED_CLASS_PTR, CONTAINER>& operator=(const ProxyFilterContainerByClass<SELECTED_CLASS_PTR, CONTAINER>&o) { return *this; } // Do nothing, we must keep refs to our own parent
+#if (__cplusplus>199711L)
+			ProxyFilterContainerByClass(ProxyFilterContainerByClass<SELECTED_CLASS_PTR, CONTAINER>&& ) : m_source() {}  // m_source init in parent copy ctor
+			ProxyFilterContainerByClass<SELECTED_CLASS_PTR, CONTAINER>& operator=(ProxyFilterContainerByClass<SELECTED_CLASS_PTR, CONTAINER>&&o) { return *this; } // Do nothing, we must keep refs to our own parent
+#endif
 			bool empty() const { return size()==0; }
 			size_t size() const {
 				size_t cnt=0;
-				for(typename CONTAINER::const_iterator it=m_source.begin();it!=m_source.end();++it)
+				for(typename CONTAINER::const_iterator it=m_source->begin();it!=m_source->end();++it)
 					if ( dynamic_cast<const_ptr_t>(it->pointer()) )
 						cnt++;
 				return cnt;
 			}
 			SELECTED_CLASS_PTR operator [](size_t index) const {
 				size_t cnt=0;
-				for(typename CONTAINER::const_iterator it=m_source.begin();it!=m_source.end();++it)
+				for(typename CONTAINER::const_iterator it=m_source->begin();it!=m_source->end();++it)
 					if ( dynamic_cast<const_ptr_t>(it->pointer()) ) 
-						if (cnt++ == index) { return SELECTED_CLASS_PTR(*it); }
+						if (cnt++ == index) { return SELECTED_CLASS_PTR(it->get_ptr()); }
 				throw std::out_of_range("Index is out of range");
 			}
 			template <typename ELEMENT>
-			void push_back(const ELEMENT &element) { m_source.push_back(element); }
+			void push_back(const ELEMENT &element) { m_source->push_back(element); }
 		private:
-			CONTAINER & m_source;
+			CONTAINER * m_source;
 		}; // end ProxyFilterContainerByClass
 
 		/** A proxy like ProxyFilterContainerByClass, but it directly appears as if 
@@ -212,7 +221,14 @@ namespace maps
 			typedef typename SELECTED_CLASS_PTR::value_type pointee_t;
 			typedef typename SELECTED_CLASS_PTR::value_type* ptr_t;
 			typedef const typename SELECTED_CLASS_PTR::value_type* const_ptr_t;
-			ProxySelectorContainerByClass(CONTAINER &source) : m_source(source) {}
+			ProxySelectorContainerByClass(CONTAINER &source) : m_source(&source) {}
+			ProxySelectorContainerByClass(ProxySelectorContainerByClass<SELECTED_CLASS_PTR, CONTAINER>& ) : m_source() {} // m_source init in parent copy ctor
+			ProxySelectorContainerByClass<SELECTED_CLASS_PTR, CONTAINER>& operator=(const ProxySelectorContainerByClass<SELECTED_CLASS_PTR, CONTAINER>&o) { return *this; } // Do nothing, we must keep refs to our own parent
+#if (__cplusplus>199711L)
+			ProxySelectorContainerByClass(ProxySelectorContainerByClass<SELECTED_CLASS_PTR, CONTAINER>&& ) : m_source() {} // m_source init in parent copy ctor
+			ProxySelectorContainerByClass<SELECTED_CLASS_PTR, CONTAINER>& operator=(ProxySelectorContainerByClass<SELECTED_CLASS_PTR, CONTAINER>&&o) { return *this; } // Do nothing, we must keep refs to our own parent
+#endif
+
 			operator const SELECTED_CLASS_PTR & () const { internal_update_ref(); return m_ret; }
 			operator bool() const { internal_update_ref(); return m_ret.present(); }
 			bool present() const { internal_update_ref(); return m_ret.present(); }
@@ -228,12 +244,12 @@ namespace maps
 				else throw std::runtime_error("Tried to derefer NULL pointer");
 			}
 		private:
-			CONTAINER & m_source;
+			CONTAINER * m_source;
 			mutable SELECTED_CLASS_PTR m_ret;
 			void internal_update_ref() const {
-				for(typename CONTAINER::const_iterator it=m_source.begin();it!=m_source.end();++it) {
+				for(typename CONTAINER::const_iterator it=m_source->begin();it!=m_source->end();++it) {
 					if ( dynamic_cast<const_ptr_t>(it->pointer()) ) {
-						m_ret=SELECTED_CLASS_PTR(*it);
+						m_ret=SELECTED_CLASS_PTR(it->get_ptr());
 						return;
 					}
 				}
@@ -249,6 +265,7 @@ namespace maps
 		ProxyFilterContainerByClass<mrpt::maps::CGasConcentrationGridMap2DPtr,TListMaps> m_gasGridMaps;   //!< STL-like proxy to access this kind of maps in \ref maps
 		ProxyFilterContainerByClass<mrpt::maps::CWirelessPowerGridMap2DPtr,TListMaps>    m_wifiGridMaps;   //!< STL-like proxy to access this kind of maps in \ref maps
 		ProxyFilterContainerByClass<mrpt::maps::CHeightGridMap2DPtr,TListMaps>           m_heightMaps;   //!< STL-like proxy to access this kind of maps in \ref maps
+		ProxyFilterContainerByClass<mrpt::maps::CHeightGridMap2D_MRFPtr,TListMaps>       m_heightMRFMaps;   //!< STL-like proxy to access this kind of maps in \ref maps
 		ProxyFilterContainerByClass<mrpt::maps::CReflectivityGridMap2DPtr,TListMaps>     m_reflectivityMaps;   //!< STL-like proxy to access this kind of maps in \ref maps
 		ProxySelectorContainerByClass<mrpt::maps::CColouredPointsMapPtr,TListMaps>       m_colourPointsMap; //!< Proxy that looks like a smart pointer to the first matching object in \ref maps
 		ProxySelectorContainerByClass<mrpt::maps::CWeightedPointsMapPtr,TListMaps>       m_weightedPointsMap; //!< Proxy that looks like a smart pointer to the first matching object in \ref maps
@@ -262,9 +279,14 @@ namespace maps
 		 *  If initializers is NULL, no internal map will be created.
 		 */
 		CMultiMetricMap(const mrpt::maps::TSetOfMetricMapInitializers	*initializers = NULL);
-		CMultiMetricMap(const mrpt::maps::CMultiMetricMap &other );  //!< Copy constructor
-		mrpt::maps::CMultiMetricMap &operator = ( const mrpt::maps::CMultiMetricMap &other ); //!< Copy operator from "other" object.
-		virtual ~CMultiMetricMap( ); //!< Destructor.
+
+		CMultiMetricMap(const CMultiMetricMap &o);
+		CMultiMetricMap& operator =(const CMultiMetricMap &o);
+
+#if (__cplusplus>199711L)
+		CMultiMetricMap(CMultiMetricMap &&o);
+		CMultiMetricMap& operator =(CMultiMetricMap &&o);
+#endif
 
 		/** Sets the list of internal map according to the passed list of map initializers (Current maps' content will be deleted!) */
 		void  setListOfMaps( const mrpt::maps::TSetOfMetricMapInitializers	*initializers );
@@ -282,12 +304,7 @@ namespace maps
 			mrpt::maps::TMatchingExtraResults & extraResults ) const MRPT_OVERRIDE;
 
 		/** See the definition in the base class: Calls in this class become a call to every single map in this set. */
-		float  compute3DMatchingRatio(
-				const mrpt::maps::CMetricMap						*otherMap,
-				const mrpt::poses::CPose3D							&otherMapPose,
-				float									maxDistForCorr = 0.10f,
-				float									maxMahaDistForCorr = 2.0f
-				) const MRPT_OVERRIDE;
+		float compute3DMatchingRatio(const mrpt::maps::CMetricMap *otherMap, const mrpt::poses::CPose3D &otherMapPose, const TMatchingRatioParams &params) const MRPT_OVERRIDE;
 
 		/** The implementation in this class just calls all the corresponding method of the contained metric maps */
 		void  saveMetricMapRepresentationToFile(const std::string	&filNamePrefix ) const MRPT_OVERRIDE;
@@ -295,7 +312,7 @@ namespace maps
 		/** This method is called at the end of each "prediction-update-map insertion" cycle within "mrpt::slam::CMetricMapBuilderRBPF::processActionObservation".
 		  *  This method should normally do nothing, but in some cases can be used to free auxiliary cached variables.
 		  */
-		void  auxParticleFilterCleanUp();
+		void  auxParticleFilterCleanUp() MRPT_OVERRIDE;
 
 		/** Returns a 3D object representing the map.
 		  */
@@ -304,8 +321,8 @@ namespace maps
 		/** If the map is a simple point map or it's a multi-metric map that contains EXACTLY one simple point map, return it.
 			* Otherwise, return NULL
 			*/
-		virtual const mrpt::maps::CSimplePointsMap * getAsSimplePointsMap() const;
-		virtual       mrpt::maps::CSimplePointsMap * getAsSimplePointsMap();
+		virtual const mrpt::maps::CSimplePointsMap * getAsSimplePointsMap() const MRPT_OVERRIDE;
+		virtual       mrpt::maps::CSimplePointsMap * getAsSimplePointsMap() MRPT_OVERRIDE;
 
 		/** An auxiliary variable that can be used freely by the users (this will be copied to other maps using the copy constructor, copy operator, streaming,etc) The default value is 0.
 		  */

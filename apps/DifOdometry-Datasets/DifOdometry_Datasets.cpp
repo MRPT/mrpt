@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -35,8 +35,8 @@ using namespace mrpt::poses;
 
 void CDifodoDatasets::loadConfiguration(const utils::CConfigFileBase &ini )
 {	
-	fovh = M_PI*62.5/180.0;	//Larger FOV because depth is registered with color
-	fovv = M_PI*48.5/180.0;
+	fovh = M_PIf*62.5f/180.0f;	//Larger FOV because depth is registered with color
+	fovv = M_PIf*48.5f/180.0f;
 	cam_mode = 1;
 	fast_pyramid = false;
 	downsample = ini.read_int("DIFODO_CONFIG", "downsample", 2, true);
@@ -203,14 +203,14 @@ void CDifodoDatasets::initializeScene()
 	scene->insert( camera_gt );
 
 	//Frustum
-	opengl::CFrustumPtr FOV = opengl::CFrustum::Create(0.3, 2, 57.3*fovh, 57.3*fovv, 1.f, true, false);
+	opengl::CFrustumPtr FOV = opengl::CFrustum::Create(0.3f, 2, 57.3f*fovh, 57.3f*fovv, 1.f, true, false);
 	FOV->setColor(0.7,0.7,0.7);
 	FOV->setPose(gt_pose);
 	scene->insert( FOV );
 
 	//Reference gt
 	CSetOfObjectsPtr reference_gt = stock_objects::CornerXYZ();
-	reference_gt->setScale(0.2);
+	reference_gt->setScale(0.2f);
 	reference_gt->setPose(gt_pose);
 	scene->insert( reference_gt );
 

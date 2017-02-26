@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -19,6 +19,7 @@ MRPT_WARNING("Including <mrpt/obs.h> makes compilation much slower, consider inc
 // Observations:
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/obs/CObservation2DRangeScanWithUncertainty.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/CObservationRGBD360.h>
 #include <mrpt/obs/CObservationRange.h>
@@ -28,6 +29,7 @@ MRPT_WARNING("Including <mrpt/obs.h> makes compilation much slower, consider inc
 #include <mrpt/obs/CObservationStereoImagesFeatures.h>
 #include <mrpt/obs/CObservationBeaconRanges.h>
 #include <mrpt/obs/CObservation6DFeatures.h>
+#include <mrpt/obs/CObservationRobotPose.h>
 #include <mrpt/obs/CObservationGasSensors.h>
 #include <mrpt/obs/CObservationGPS.h>
 #include <mrpt/obs/CObservationBatteryState.h>

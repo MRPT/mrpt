@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -60,16 +60,15 @@ void CServerTCPSocket::setupSocket(
 	desiredIP.sin_addr.s_addr	= inet_addr( IPaddress.c_str() );
 	desiredIP.sin_port			= htons((unsigned short)listenPort);
 
-	if( int(INVALID_SOCKET) == ::bind(m_serverSock,(struct sockaddr *)(&desiredIP),sizeof(desiredIP)) )
+	if( INVALID_SOCKET == ::bind(m_serverSock,(struct sockaddr *)(&desiredIP),sizeof(desiredIP)) )
 		THROW_EXCEPTION( getLastErrorStr() );
 
 	// Put in listen mode:
 	// ----------------------------
-	if ( int(INVALID_SOCKET) ==  listen(m_serverSock,maxConnectionsWaiting) )
+	if ( INVALID_SOCKET ==  listen(m_serverSock,maxConnectionsWaiting) )
 		THROW_EXCEPTION( getLastErrorStr() );
 
-	if (m_verbose)
-		printf_debug("[CServerTCPSocket::CServerTCPSocket] Listening at %s:%i\n",IPaddress.c_str(), listenPort );
+	MRPT_LOG_DEBUG( format("[CServerTCPSocket] Listening at %s:%i\n",IPaddress.c_str(), listenPort ));
 
 	MRPT_END
 }
@@ -114,7 +113,7 @@ CClientTCPSocket *  CServerTCPSocket::accept( int timeout_ms )
 	}
 
 	// Wait for READ flag (meaning incoming connections):
-	if (m_verbose)	printf_debug("[CServerTCPSocket::accept] Waiting incoming connections\n" );
+	MRPT_LOG_DEBUG("[CServerTCPSocket::accept] Waiting incoming connections");
 
 	int selRet = ::select(
 					 m_serverSock+1,// __nfds
@@ -123,7 +122,7 @@ CClientTCPSocket *  CServerTCPSocket::accept( int timeout_ms )
 					 NULL,			// Wait for except.
 					 ptrTimeout);	// Timeout
 
-	if( selRet==int(INVALID_SOCKET))
+	if( selRet==INVALID_SOCKET)
 	{
 	    fprintf(stderr,"%s\n", getLastErrorStr().c_str());
 		return NULL;
@@ -131,14 +130,14 @@ CClientTCPSocket *  CServerTCPSocket::accept( int timeout_ms )
 
 	if (selRet==0)
 	{
-		if (m_verbose)	printf_debug("[CServerTCPSocket::accept] Timeout waiting incoming connections\n" );
+		MRPT_LOG_WARN("[CServerTCPSocket::accept] Timeout waiting incoming connections\n" );
 
 		// Timeout:
 		return NULL;
 	}
 	else
 	{
-		if (m_verbose)	printf_debug("[CServerTCPSocket::accept] Incoming connection accepted\n" );
+		MRPT_LOG_DEBUG("[CServerTCPSocket::accept] Incoming connection accepted\n" );
 
 		// We have a new connection:
 		CClientTCPSocket	*ret = new CClientTCPSocket();
@@ -151,7 +150,7 @@ CClientTCPSocket *  CServerTCPSocket::accept( int timeout_ms )
 			(struct sockaddr*)&otherPart,
 			&otherPartSize );
 
-		if (aceptdSock==int(INVALID_SOCKET))
+		if (aceptdSock==INVALID_SOCKET)
 		{
 			fprintf(stderr,"%s\n",getLastErrorStr().c_str());
 			delete ret;
@@ -163,10 +162,9 @@ CClientTCPSocket *  CServerTCPSocket::accept( int timeout_ms )
 		ret->m_remotePartIP = std::string( inet_ntoa( otherPart.sin_addr ) );
 		ret->m_remotePartPort = ntohs( otherPart.sin_port );
 
-		if ( m_verbose )
-			printf_debug("[CServerTCPSocket::accept] Conection accepted from %s:%u\n",
+		MRPT_LOG_DEBUG(format("[CServerTCPSocket::accept] Conection accepted from %s:%u\n",
 				ret->m_remotePartIP.c_str(),
-				ret->m_remotePartPort );
+				ret->m_remotePartPort ) );
 
 		return ret;
 	}

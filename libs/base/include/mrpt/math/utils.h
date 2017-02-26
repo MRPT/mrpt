@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -20,6 +20,13 @@ namespace mrpt
 	 */
 	namespace math
 	{
+		/**\brief Absolute difference between two numbers */
+		template< typename T >
+		T absDiff(const T& lhs, const T& rhs)
+		{
+  			return lhs>rhs ? lhs-rhs : rhs-lhs;
+		}
+
 		/** \addtogroup container_ops_grp
 		  * @{ */
 

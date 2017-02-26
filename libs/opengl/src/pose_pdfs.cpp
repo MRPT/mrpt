@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -106,7 +106,7 @@ CSetOfObjectsPtr CSetOfObjects::posePDF2opengl(const CPosePDF &o)
 
 		for (size_t i=0;i<p->size();++i)
 		{
-			const mrpt::poses::CPose2D *po = p->m_particles[i].d;
+			const mrpt::poses::CPose2D *po = p->m_particles[i].d.get();
 			pnts->insertPoint(po->x(), po->y(), 0);
 			lins->appendLine(
 				po->x(), po->y(), 0,

@@ -10,40 +10,25 @@ REM                              Jose Luis Blanco, 2012
 REM =========================================================
 
 REM  === THIS IS WHERE OpenCV SOURCE TREE IS FROM THE CWD ===
-set OPENCV_BASE_DIR=opencv-current-src
+set OPENCV_BASE_DIR=opencv
+set OPENCV_CONTRIB_DIR=opencv_contrib
 
 REM =================== SET ALL IMPORTANT PATHS ===================
 
-set msvc9_DIR=C:\Program Files (x86)\Microsoft Visual Studio 9.0
-set msvc10_DIR=C:\Program Files (x86)\Microsoft Visual Studio 10.0
-set msvc11_DIR=D:\Program Files (x86)\Microsoft Visual Studio 11.0
-set msvc12_DIR=D:\Program Files (x86)\Microsoft Visual Studio 12.0
+set msvc11_DIR=C:\Program Files (x86)\Microsoft Visual Studio 11.0
+set msvc12_DIR=C:\Program Files (x86)\Microsoft Visual Studio 12.0
+set msvc14_DIR=C:\Program Files (x86)\Microsoft Visual Studio 14.0
 REM MinGW directories will be: %MINGW_ROOT%-32 and %MINGW_ROOT%-64  
 REM  (NOTE: Use "/" for paths in this one)
 set MINGW_ROOT=d:/MinGW
 set MINGW_ROOT_BKSLH=d:\MinGW
-set CMAKE_DIR=D:\Program Files (x86)\CMake 2.8\bin
+set CMAKE_DIR=C:\Program Files (x86)\CMake\bin\
 REM ==============================================================
 
 del BUILD_ALL_OPENCV.bat 2> NUL
 
-REM msvc9 ========================
-set COMP=msvc9
-set ARCHN=32
-call :subGen
-
-set ARCHN=64
-call :subGen
-
-REM msvc10 ========================
-set COMP=msvc10
-set ARCHN=32
-call :subGen
-
-set ARCHN=64
-call :subGen
-
 REM msvc11 ========================
+:gen11
 set COMP=msvc11
 set ARCHN=32
 call :subGen
@@ -52,6 +37,7 @@ set ARCHN=64
 call :subGen
 
 REM msvc12 ========================
+:gen12
 set COMP=msvc12
 set ARCHN=32
 call :subGen
@@ -59,6 +45,16 @@ call :subGen
 set ARCHN=64
 call :subGen
 
+REM msvc14 ========================
+:gen14
+set COMP=msvc14
+set ARCHN=32
+call :subGen
+
+set ARCHN=64
+call :subGen
+
+goto End
 
 :MINGW_PARTS
 REM MinGW ========================
@@ -87,10 +83,12 @@ if %COMP%==msvc9 set MSVC_DIR=%msvc9_DIR%
 if %COMP%==msvc10 set MSVC_DIR=%msvc10_DIR%
 if %COMP%==msvc11 set MSVC_DIR=%msvc11_DIR%
 if %COMP%==msvc12 set MSVC_DIR=%msvc12_DIR%
+if %COMP%==msvc14 set MSVC_DIR=%msvc14_DIR%
 if %COMP%==msvc9 set CMAKE_GEN=Visual Studio 9 2008
-if %COMP%==msvc10 set CMAKE_GEN=Visual Studio 10
-if %COMP%==msvc11 set CMAKE_GEN=Visual Studio 11
-if %COMP%==msvc12 set CMAKE_GEN=Visual Studio 12
+if %COMP%==msvc10 set CMAKE_GEN=Visual Studio 10 2010
+if %COMP%==msvc11 set CMAKE_GEN=Visual Studio 11 2012
+if %COMP%==msvc12 set CMAKE_GEN=Visual Studio 12 2013
+if %COMP%==msvc14 set CMAKE_GEN=Visual Studio 14 2015
 if %ARCHN%==64 set CMAKE_GEN=%CMAKE_GEN% Win64
 
 set CMAKE_EXTRA1=
@@ -131,14 +129,14 @@ if %COMP%==mingw echo %MINGW_ROOT_BKSLH%-%ARCHN%\bin\mingw32-make -j4 >> AUTOBUI
 
 REM ---------------- Call CMake ----------------
 call %PATH_FIL%
-set ALL_PARAMS=-DBUILD_EXAMPLES=OFF -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -DWITH_CUDA=OFF
+set ALL_PARAMS=-DBUILD_EXAMPLES=OFF -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -DWITH_CUDA=OFF -DOPENCV_EXTRA_MODULES_PATH=../%OPENCV_CONTRIB_DIR%/modules -DBUILD_opencv_aruco=OFF -DBUILD_opencv_bioinspired=OFF -DBUILD_opencv_contrib_world=OFF -DBUILD_opencv_fuzzy=OFF -DBUILD_opencv_latentsvm=OFF -DBUILD_opencv_photo=OFF -DBUILD_opencv_rgbd=OFF -DBUILD_opencv_stitching=OFF -DBUILD_opencv_superres=OFF -DBUILD_opencv_ts=OFF -DBUILD_opencv_world=OFF -DBUILD_opencv_xobjdetect=OFF -DBUILD_opencv_xphoto=OFF
 
 REM Create Project:
 echo on
-cmake ../%OPENCV_BASE_DIR% -G "%CMAKE_GEN%" %ALL_PARAMS% %CMAKE_EXTRA1% %CMAKE_EXTRA2% %CMAKE_EXTRA3% 
+"%CMAKE_DIR%\cmake.exe" ../%OPENCV_BASE_DIR% -G "%CMAKE_GEN%" %ALL_PARAMS% %CMAKE_EXTRA1% %CMAKE_EXTRA2% %CMAKE_EXTRA3% 
 
 REM and insist to make sure all vars have been fixed:
-cmake . %ALL_PARAMS%
+"%CMAKE_DIR%\cmake.exe" . %ALL_PARAMS%
 echo off
 
 

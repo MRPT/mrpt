@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -21,6 +21,7 @@
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservationGPS.h>
 #include <mrpt/poses/CPointPDFGaussian.h>
+#include <mrpt/obs/CObservationRobotPose.h>
 #include <mrpt/obs/CObservationBeaconRanges.h>
 #include <mrpt/obs/CObservationVisualLandmarks.h>
 #include <mrpt/system/os.h>
@@ -328,8 +329,10 @@ double	 CLandmarksMap::internal_computeObservationLikelihood(
 					const float	expectedRange = point3D.distanceTo( beacon3D );
 					float	sensedDist    = it->sensedDistance;
 					if (sensedDist<0) sensedDist=0;
-					
-					ret += (-0.5f*square( ( expectedRange - sensedDist  ) / likelihoodOptions.beaconRangesStd ));
+
+					float sensorStd = likelihoodOptions.beaconRangesUseObservationStd ?
+						o->stdError : likelihoodOptions.beaconRangesStd;
+					ret += (-0.5f*square( ( expectedRange - sensedDist  ) / sensorStd ));
 					found = true;
 				}
 			}
@@ -348,6 +351,41 @@ double	 CLandmarksMap::internal_computeObservationLikelihood(
 		return ret;
 
 	} // end of likelihood of CObservationBeaconRanges
+	else
+	if ( CLASS_ID(CObservationRobotPose)==obs->GetRuntimeClass() )
+	{
+		/********************************************************************
+
+				OBSERVATION TYPE: CObservationRobotPose
+
+				Lik. between "this" and "robotPose";
+
+		********************************************************************/
+		const CObservationRobotPose 	*o = static_cast<const CObservationRobotPose*>( obs );
+
+		// Compute the 3D position of the sensor:
+		CPose3D sensorPose3D = robotPose3D + o->sensorPose;
+
+		// Compute the likelihood according to mahalanobis distance between poses:
+		CMatrixD dij(1,6), Cij(6,6), Cij_1;
+		dij(0,0) =          o->pose.mean.x()     - sensorPose3D.x();
+		dij(0,1) =          o->pose.mean.y()     - sensorPose3D.y();
+		dij(0,2) =          o->pose.mean.z()     - sensorPose3D.z();
+		dij(0,3) = wrapToPi(o->pose.mean.roll()  - sensorPose3D.roll());
+		dij(0,4) = wrapToPi(o->pose.mean.pitch() - sensorPose3D.pitch());
+		dij(0,5) = wrapToPi(o->pose.mean.yaw()   - sensorPose3D.yaw());
+
+		// Equivalent covariance from "i" to "j":
+		Cij = CMatrixDouble(o->pose.cov);
+		Cij_1 = Cij.inv();
+
+		double distMahaFlik2 =  dij.multiply_HCHt_scalar(Cij_1); //( dij * Cij_1 * (~dij) )(0,0);
+		double ret = -0.5f * distMahaFlik2;
+
+		MRPT_CHECK_NORMAL_NUMBER(ret);
+		return ret;
+
+	} // end of likelihood of CObservation
 	else
 	if ( CLASS_ID(CObservationGPS)==obs->GetRuntimeClass() )
 	{
@@ -1698,10 +1736,10 @@ void 	CLandmarksMap::TCustomSequenceLandmarks::push_back( const CLandmark	&l)
 	// Resize grid if necesary:
 	vector_int		dummyEmpty;
 
-	m_grid.resize(	min( m_grid.getXMin(),(float)l.pose_mean.x-0.1f ),
-					max( m_grid.getXMax(),(float)l.pose_mean.x+0.1f ),
-					min( m_grid.getYMin(),(float)l.pose_mean.y-0.1f ),
-					max( m_grid.getYMax(),(float)l.pose_mean.y+0.1f ),
+	m_grid.resize(	min( m_grid.getXMin(),l.pose_mean.x-0.1 ),
+					max( m_grid.getXMax(),l.pose_mean.x+0.1 ),
+					min( m_grid.getYMin(),l.pose_mean.y-0.1 ),
+					max( m_grid.getYMax(),l.pose_mean.y+0.1 ),
 					dummyEmpty );
 
 	m_landmarks.push_back( l );
@@ -1752,10 +1790,10 @@ void 	CLandmarksMap::TCustomSequenceLandmarks::hasBeenModified(unsigned int indx
 	vector_int		dummyEmpty;
 
 	// Resize grid if necesary:
-	m_grid.resize(	min( m_grid.getXMin(),(float)m_landmarks[indx].pose_mean.x ),
-					max( m_grid.getXMax(),(float)m_landmarks[indx].pose_mean.x ),
-					min( m_grid.getYMin(),(float)m_landmarks[indx].pose_mean.y ),
-					max( m_grid.getYMax(),(float)m_landmarks[indx].pose_mean.y ),
+	m_grid.resize(	min( m_grid.getXMin(),m_landmarks[indx].pose_mean.x ),
+					max( m_grid.getXMax(),m_landmarks[indx].pose_mean.x ),
+					min( m_grid.getYMin(),m_landmarks[indx].pose_mean.y ),
+					max( m_grid.getYMax(),m_landmarks[indx].pose_mean.y ),
 					dummyEmpty );
 
 	// Add to the grid:
@@ -1770,8 +1808,8 @@ void 	CLandmarksMap::TCustomSequenceLandmarks::hasBeenModifiedAll()
 
 	TSequenceLandmarks::iterator	it;
 	unsigned int					idx;
-	float							min_x=-10.0f, max_x=10.0f;
-	float							min_y=-10.0f, max_y=10.0f;
+	double    min_x=-10.0, max_x=10.0;
+	double    min_y=-10.0, max_y=10.0;
 	vector_int						dummyEmpty;
 
 	// Clear cells:
@@ -1780,10 +1818,10 @@ void 	CLandmarksMap::TCustomSequenceLandmarks::hasBeenModifiedAll()
 	// Resize the grid to the outer limits of landmarks:
 	for (idx=0,it=m_landmarks.begin();it!=m_landmarks.end();idx++,it++)
 	{
-		min_x = min(min_x, (float)it->pose_mean.x);
-		max_x = max(max_x, (float)it->pose_mean.x);
-		min_y = min(min_y, (float)it->pose_mean.y);
-		max_y = max(max_y, (float)it->pose_mean.y);
+		min_x = min(min_x, it->pose_mean.x);
+		max_x = max(max_x, it->pose_mean.x);
+		min_y = min(min_y, it->pose_mean.y);
+		max_y = max(max_y, it->pose_mean.y);
 	}
 	m_grid.resize(min_x,max_x,min_y,max_y,dummyEmpty );
 
@@ -2126,12 +2164,11 @@ CLandmarksMap::TLikelihoodOptions::TLikelihoodOptions() :
 	SIFTs_mahaDist_std				( 4.0f ),
 	SIFTnullCorrespondenceDistance  ( 4.0f ),
 	SIFTs_decimation				( 1 ),
+	SIFT_feat_options				( vision::featSIFT ),
 	beaconRangesStd					( 0.08f ),
-	alphaRatio						( 1.0f ),
-	beaconMaxRange					( 20.0f ),
+	beaconRangesUseObservationStd	(false),
 	GPSOrigin						(),
-	GPS_sigma						( 1.0f ),
-	SIFT_feat_options				( vision::featSIFT )
+	GPS_sigma						( 1.0f )
 {
 }
 
@@ -2160,8 +2197,8 @@ void  CLandmarksMap::TLikelihoodOptions::dumpToTextStream(mrpt::utils::CStream	&
 	out.printf("SIFTs_decimation                        = %i\n",SIFTs_decimation);
 	out.printf("SIFTnullCorrespondenceDistance          = %f\n",SIFTnullCorrespondenceDistance);
 	out.printf("beaconRangesStd                         = %f\n",beaconRangesStd);
-	out.printf("alphaRatio                              = %f\n",alphaRatio);
-	out.printf("beaconMaxRange                          = %f\n",beaconMaxRange);
+	out.printf("beaconRangesUseObservationStd           = %c\n",beaconRangesUseObservationStd ? 'Y':'N');
+
 
 	out.printf("GPSOrigin:LATITUDE                      = %f\n",GPSOrigin.latitude);
 	out.printf("GPSOrigin:LONGITUDE                     = %f\n",GPSOrigin.longitude);
@@ -2203,8 +2240,7 @@ void  CLandmarksMap::TLikelihoodOptions::loadFromConfigFile(
 	GPS_sigma						= iniFile.read_float(section.c_str(),"GPSSigma",GPS_sigma);
 
 	beaconRangesStd					= iniFile.read_float(section.c_str(),"beaconRangesStd",beaconRangesStd);
-	alphaRatio						= iniFile.read_float(section.c_str(),"alphaRatio",alphaRatio);
-	beaconMaxRange					= iniFile.read_float(section.c_str(),"beaconMaxRange",beaconMaxRange);
+	beaconRangesUseObservationStd	= iniFile.read_bool(section.c_str(),"beaconRangesUseObservationStd",beaconRangesUseObservationStd);
 
 	SIFT_feat_options.loadFromConfigFile(iniFile,section);
 }
@@ -2328,6 +2364,8 @@ void  CLandmarksMap::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj )cons
 		ellip->setQuantiles(3.0);
 		ellip->set3DsegmentsCount(10);
 		ellip->setColor(0,0,1);
+		ellip->setName(mrpt::format("LM.ID=%u",static_cast<unsigned int>(it->ID) ));
+		ellip->enableShowName(true);
 
 		outObj->insert( ellip );
 	}
@@ -2381,14 +2419,8 @@ const CLandmark* 	CLandmarksMap::TCustomSequenceLandmarks::getByBeaconID( unsign
  * \return The matching ratio [0,1]
  * \sa computeMatchingWith2D
  ----------------------------------------------------------------*/
-float  CLandmarksMap::compute3DMatchingRatio(
-		const mrpt::maps::CMetricMap						*otherMap2,
-		const CPose3D							&otherMapPose,
-		float									maxDistForCorr,
-		float									maxMahaDistForCorr
-		) const
+float  CLandmarksMap::compute3DMatchingRatio(const mrpt::maps::CMetricMap *otherMap2, const mrpt::poses::CPose3D &otherMapPose, const TMatchingRatioParams &params) const
 {
-	MRPT_UNUSED_PARAM(maxDistForCorr);
 	MRPT_START
 
 	// Compare to a similar map only:
@@ -2459,7 +2491,7 @@ float  CLandmarksMap::compute3DMatchingRatio(
 
 			float	distMaha = sqrt(  d.multiply_HCHt_scalar(COV.inv()) );  //(d*COV.inv()*(~d))(0,0) );
 
-			if (distMaha<maxMahaDistForCorr )
+			if (distMaha<params.maxMahaDistForCorr )
 			{
 				// Now test the SIFT descriptors:
 				if ( !itThis->features.empty() && !itOther->features.empty() &&

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -99,7 +99,7 @@ LOCAL(void)
 expand_bottom_edge (JSAMPARRAY image_data, JDIMENSION num_cols,
 		    int input_rows, int output_rows)
 {
-  register int row;
+  int row;
 
   for (row = input_rows; row < output_rows; row++) {
     jcopy_sample_rows(image_data, input_rows-1, image_data, row,

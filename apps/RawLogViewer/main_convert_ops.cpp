@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -284,7 +284,7 @@ void xRawLogViewerFrame::OnMenuLossLessDecimate(wxCommandEvent& event)
 	} // end for i each entry
 
 	// Clear the list only (objects already deleted)
-	rawlog.clearWithoutDelete();
+	rawlog.clear();
 
 	// Copy as new log:
 	rawlog = newRawLog;
@@ -785,38 +785,41 @@ void xRawLogViewerFrame::OnMenuResortByTimestamp(wxCommandEvent& event)
 {
 	WX_START_TRY
 
+	bool useSensorTimestamp = (wxYES==wxMessageBox( _("Yes: use sensor-based UTC timestamp. No: use computer-based timestamp, when available."), _("Which timestamp to use?"),wxYES_NO, this ));
+
 	wxBusyCursor        waitCursor;
 
 
 	// First, build an ordered list of "times"->"indexes":
 	// ------------------------------------------------------
 	std::multimap<TTimeStamp,size_t>	ordered_times;
-    size_t  i, n = rawlog.size();
+	size_t  i, n = rawlog.size();
 
-    for (i=0;i<n;i++)
-    {
-        switch ( rawlog.getType(i) )
-        {
-        default:
+	for (i=0;i<n;i++)
+	{
+		switch ( rawlog.getType(i) )
+		{
+		default:
 			wxMessageBox(_("Error: this command is for rawlogs without sensory frames."));
 			return;
-            break;
+			break;
 
-        case CRawlog::etObservation:
-            {
-                CObservationPtr o = rawlog.getAsObservation(i);
+		case CRawlog::etObservation:
+			{
+				CObservationPtr o = rawlog.getAsObservation(i);
 
-                if (o->timestamp == INVALID_TIMESTAMP)
-                {
-                	wxMessageBox( wxString::Format(_("Error: Element %u does not have a valid timestamp."),(unsigned int)i) );
-                	return;
-                }
+				TTimeStamp tim = useSensorTimestamp ? o->getTimeStamp() : o->getOriginalReceivedTimeStamp();
 
-				ordered_times.insert(  multimap<TTimeStamp,size_t>::value_type(o->timestamp,i));
-            }
-            break;
-        } // end switch type
-    } // end for i
+				if (tim == INVALID_TIMESTAMP) {
+					wxMessageBox( wxString::Format(_("Error: Element %u does not have a valid timestamp."),(unsigned int)i) );
+					return;
+				}
+
+				ordered_times.insert(  multimap<TTimeStamp,size_t>::value_type(tim,i));
+			}
+			break;
+		} // end switch type
+	} // end for i
 
 	// Now create the new ordered rawlog
 	// ------------------------------------------------------

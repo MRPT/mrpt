@@ -2,18 +2,19 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
 
 #include <mrpt/nav/reactive/CReactiveNavigationSystem3D.h>
+#include <mrpt/nav/reactive/CRobot2NavInterfaceForSimulator.h>
 #include <mrpt/opengl.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>
 #include <mrpt/utils/CObserver.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
-#include <mrpt/utils/CRobotSimulator.h>
+#include <mrpt/kinematics/CVehicleSimul_DiffDriven.h>
 #include <mrpt/gui.h>
 #include <mrpt/utils/round.h>
 #include "map2_1.xpm"
@@ -29,6 +30,7 @@ using namespace mrpt::obs;
 using namespace mrpt::gui;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
+using namespace mrpt::kinematics;
 
 class MyObserver : public mrpt::utils::CObserver
 {
@@ -76,7 +78,7 @@ public:
 		TPoint3D p1,p2,pint(0,0,0);
 		TObject3D pintobj;
 		TPlane ground(0,0,1,0);
-		vector <float> x, y, z;
+		std::vector <float> x, y, z;
 
 		m_points.getAllPoints(x,y,z,1);
 		p2.x = kinectrelpose[0];
@@ -111,7 +113,7 @@ public:
 		TPoint3D p1,p2,pint(0,0,0);
 		TObject3D pintobj;
 		TPlane ceiling(0,0,1,-height);
-		vector <float> x, y, z;
+		std::vector <float> x, y, z;
 
 		m_points.getAllPoints(x,y,z,1);
 
@@ -164,7 +166,7 @@ public:
 
 
 
-	void KinectScan(const std::vector<mrpt::maps::COccupancyGridMap2D> &m_maps, const std::vector<float> &heights, const mrpt::poses::CPose3D &robotpose, const mrpt::poses::CPose3D &kinectrelpose)
+	void KinectScan(const std::vector<mrpt::maps::COccupancyGridMap2D> &m_maps, const std::vector<double> &heights, const mrpt::poses::CPose3D &robotpose, const mrpt::poses::CPose3D &kinectrelpose)
 	{
 		unsigned int acc_factor = std::max(1,mrpt::utils::round<double>(80.0/m_columns));
 		float h = 0, incrz;
@@ -250,7 +252,7 @@ public:
 		return dividend;
 	}
 
-	void updateObsGrids(float incrx, float incry, float phi, const std::vector<CRobotKinects> &kinects, const std::vector<float> &heights )
+	void updateObsGrids(float incrx, float incry, float phi, const std::vector<CRobotKinects> &kinects, const std::vector<double> &heights )
 	{
 		using namespace std;
 		using mrpt::utils::square;
@@ -364,7 +366,7 @@ public:
 			}
 
 			//The likelihood values of the grid are updated
-			float angle_cell, dif_angle, rango = M_PI/6 - 0.05;
+			float angle_cell, dif_angle, rango = M_PIf/6 - 0.05f;
 
 			for (unsigned int i=0; i<num_col; i++)
 			{
@@ -405,14 +407,19 @@ public:
 };
 
 
-class CMyReactInterface : public CReactiveInterfaceImplementation
+class CMyReactInterface : public mrpt::nav::CRobot2NavInterfaceForSimulator_DiffDriven
 {
 public:
+	CVehicleSimul_DiffDriven        robotSim;
+
+	CMyReactInterface() : 
+		CRobot2NavInterfaceForSimulator_DiffDriven(this->robotSim)
+	{
+	}
 
 	CPose2D							new_pose;
 	CPose2D							last_pose;
 	CPose2D							target;
-	CRobotSimulator					robotSim;
 	mrpt::nav::TRobotShape		robotShape;
 	std::vector <mrpt::maps::COccupancyGridMap2D>	maps;
 	std::vector <TRobotLaser>			lasers;
@@ -421,26 +428,18 @@ public:
 	gui::CDisplayWindow3D			window;
 	COpenGLScenePtr					scene;
 	
-	bool getCurrentPoseAndSpeeds( poses::CPose2D &curPose, float &curV, float &curW)
+	bool getCurrentPoseAndSpeeds( mrpt::math::TPose2D &curPose, mrpt::math::TTwist2D &curVel, mrpt::system::TTimeStamp &timestamp) MRPT_OVERRIDE
 	{
-		robotSim.getRealPose( curPose );
-		curV = robotSim.getV();
-		curW = robotSim.getW();
+		curPose = robotSim.getCurrentGTPose();
+		curVel  = robotSim.getCurrentGTVel();
+		timestamp = mrpt::system::now();
 		return true;
 	}
 
-
-	bool changeSpeeds( float v, float w )
-	{
-		robotSim.movementCommand(v,w);
-		return true;
-	}
-
-
-	bool senseObstacles( mrpt::maps::CSimplePointsMap 	&obstacles )
+	bool senseObstacles( mrpt::maps::CSimplePointsMap 	&obstacles, mrpt::system::TTimeStamp &timestamp ) MRPT_OVERRIDE
 	{
 		last_pose = new_pose;
-		robotSim.getRealPose(new_pose);
+		new_pose = robotSim.getCurrentGTPose();
 		CPose3D robotpose3d(new_pose[0], new_pose[1], 0, new_pose[2], 0, 0);
 		CPose3D kinectrelpose(0,0,0,0,0,0);
 
@@ -454,6 +453,7 @@ public:
 
 			obstacles.insertObservation(&lasers[i].m_scan);
 		}
+		timestamp = mrpt::system::now();
 
 		//Depth scans
 		for (unsigned int i=0; i<kinects.size();i++)
@@ -462,7 +462,7 @@ public:
 			kinectrelpose.y(kinects[i].m_yrel);
 			kinectrelpose.z(kinects[i].m_zrel);
 			kinectrelpose.setYawPitchRoll(kinects[i].m_phi, 0, 0);
-			kinects[i].KinectScan(maps, robotShape.heights, robotpose3d, kinectrelpose);
+			kinects[i].KinectScan(maps, robotShape.getHeights(), robotpose3d, kinectrelpose);
 			obstacles.insertAnotherMap(&kinects[i].m_points, CPose3D(0,0,0,0,0,0));
 		}
 
@@ -471,7 +471,7 @@ public:
 		{
 			float incrx = new_pose[0] - last_pose[0];
 			float incry = new_pose[1] - last_pose[1];
-			stm.updateObsGrids(incrx, incry, float(new_pose.phi()), kinects, robotShape.heights);
+			stm.updateObsGrids(incrx, incry, float(new_pose.phi()), kinects, robotShape.getHeights());
 			obstacles.insertAnotherMap(&stm.grid_points, CPose3D(0,0,0,0,0,0));
 		}
 
@@ -484,7 +484,7 @@ public:
 		COccupancyGridMap2D grid;
 		CImage myImg;
 		//int family = ini.read_int("MAP_CONFIG","FAMILY", 1, true);
-		float resolution = ini.read_float("MAP_CONFIG","MAP_RESOLUTION", 0.02, true);
+		float resolution = ini.read_float("MAP_CONFIG","MAP_RESOLUTION", 0.02f, true);
 		//int num_maps = ini.read_int("MAP_CONFIG","NUM_MAPS", 1, true);
 
 		//Maps are loaded here. Different maps can be loaded changing these lines
@@ -506,7 +506,7 @@ public:
 	void loadConfiguration( const utils::CConfigFileBase &ini )
 	{
 		unsigned int num_lasers, num_kinects, num_levels;
-		std::vector <float> lasercoord, xaux, yaux;;
+		std::vector<double> lasercoord, xaux, yaux;
 
 
 		//Read lasers params
@@ -514,11 +514,11 @@ public:
 		lasers.resize(num_lasers);
 		for (unsigned int i=1;i<=num_lasers;i++)
 		{
-			ini.read_vector("LASER_CONFIG",format("LASER%d_POSE",i), std::vector<float> (0), lasercoord , true);
+			ini.read_vector("LASER_CONFIG",format("LASER%d_POSE",i), std::vector<double> (0), lasercoord , true);
 			mrpt::obs::CObservation2DRangeScan &scan = lasers[i-1].m_scan;
 			scan.maxRange = ini.read_float("LASER_CONFIG",format("LASER%d_MAX_RANGE",i), 50, true);
-			scan.aperture = ini.read_float("LASER_CONFIG",format("LASER%d_APERTURE",i), M_PI, true);
-			scan.stdError = ini.read_float("LASER_CONFIG",format("LASER%d_STD_ERROR",i), 0.05, true);
+			scan.aperture = ini.read_float("LASER_CONFIG",format("LASER%d_APERTURE",i), M_PIf, true);
+			scan.stdError = ini.read_float("LASER_CONFIG",format("LASER%d_STD_ERROR",i), 0.05f, true);
 			scan.sensorPose.setFromValues(lasercoord[0],lasercoord[1],lasercoord[2],lasercoord[3],lasercoord[4],lasercoord[5]);
 			lasers[i-1].m_level = ini.read_int("LASER_CONFIG",format("LASER%d_LEVEL",i), 1, true);
 			lasers[i-1].m_segments = ini.read_int("LASER_CONFIG",format("LASER%d_SEGMENTS",i), 181, true);
@@ -541,44 +541,45 @@ public:
 			kinects[i-1].m_pitch_angle = DEG2RAD(ini.read_float("KINECT_CONFIG",format("KINECT%d_PITCH",i), 0, true));
 			kinects[i-1].m_rows = ini.read_int("KINECT_CONFIG",format("KINECT%d_ROWS",i), 10, true);
 			kinects[i-1].m_columns = ini.read_int("KINECT_CONFIG",format("KINECT%d_COLUMNS",i), 10, true);
-			kinects[i-1].m_std_error = ini.read_float("KINECT_CONFIG",format("KINECT%d_STD_ERROR",i), 0.05, true);
+			kinects[i-1].m_std_error = ini.read_float("KINECT_CONFIG",format("KINECT%d_STD_ERROR",i), 0.05f, true);
 		}
 
 		//Read config params which describe the robot shape
 		num_levels = ini.read_int("ROBOT_CONFIG","HEIGHT_LEVELS", 1, true);
-		robotShape.polygons.resize(num_levels);
-		robotShape.heights.resize(num_levels);
+		robotShape.resize(num_levels);
 		for (unsigned int i=1;i<=num_levels;i++)
 		{
-			robotShape.heights[i-1] = ini.read_float("ROBOT_CONFIG",format("LEVEL%d_HEIGHT",i), 1, true);
-			ini.read_vector("ROBOT_CONFIG",format("LEVEL%d_VECTORX",i), std::vector<float> (0), xaux, false);
-			ini.read_vector("ROBOT_CONFIG",format("LEVEL%d_VECTORY",i), std::vector<float> (0), yaux, false);
+			robotShape.setHeight(i-1, ini.read_double("ROBOT_CONFIG",format("LEVEL%d_HEIGHT",i), 1.0, true) );
+			robotShape.setRadius(i-1, ini.read_double("ROBOT_CONFIG",format("LEVEL%d_RADIUS",i), 0.5, false) );
+			ini.read_vector("ROBOT_CONFIG",format("LEVEL%d_VECTORX",i), std::vector<double> (0), xaux, false);
+			ini.read_vector("ROBOT_CONFIG",format("LEVEL%d_VECTORY",i), std::vector<double> (0), yaux, false);
 			ASSERT_(xaux.size() == yaux.size());
 			for (unsigned int j=0;j<xaux.size();j++)
 			{
-				robotShape.polygons[i-1].AddVertex(xaux[j], yaux[j]);
+				robotShape.polygon(i-1).AddVertex(xaux[j], yaux[j]);
 			}
 		}
 
 		//Read other params associated with the robot model and its navigation
-		float tau = 0.f; //ini.read_float("NAVIGATION_CONFIG","ROBOTMODEL_TAU", 0, true);
-		float delay = 0.f; //ini.read_float("NAVIGATION_CONFIG","ROBOTMODEL_DELAY", 0, true);
-		float x_ini = ini.read_float("NAVIGATION_CONFIG","X0", 0, true);
-		float y_ini = ini.read_float("NAVIGATION_CONFIG","Y0", 0, true);
-		float phi_ini = DEG2RAD(ini.read_float("NAVIGATION_CONFIG","PHI0", 0, true));
+		//CRobot2NavInterface_DiffDriven::loadConfigFile(ini, "ReactiveParams");
+		float tau = 0.f; //ini.read_float("ReactiveParams","ROBOTMODEL_TAU", 0, true);
+		float delay = 0.f; //ini.read_float("ReactiveParams","ROBOTMODEL_DELAY", 0, true);
+		float x_ini = ini.read_float("ReactiveParams","X0", 0, true);
+		float y_ini = ini.read_float("ReactiveParams","Y0", 0, true);
+		float phi_ini = DEG2RAD(ini.read_float("ReactiveParams","PHI0", 0, true));
 		robotSim.setDelayModelParams(tau, delay);
 		robotSim.resetStatus();
 		robotSim.setOdometryErrors(0);
-		robotSim.setRealPose(CPose2D(x_ini, y_ini, phi_ini));
+		robotSim.setCurrentGTPose(mrpt::math::TPose2D(x_ini, y_ini, phi_ini));
 
 		//Read the "short term memory" parameters
 		stm.is_active = ini.read_bool("STM_CONFIG","Stm_active", 0, 1);
-		float grid_length = ini.read_float("STM_CONFIG","Obs_grid_length", 0.8, 1);
-		float grid_resolution = ini.read_float("STM_CONFIG","Obs_grid_resolution", 0.1, 1);
-		stm.vision_limit = ini.read_float("STM_CONFIG","Vision_limit", 0.6, 1);
-		stm.likelihood_incr = ini.read_float("STM_CONFIG","Pos_likelihood_incr", 0.55, 1);
-		stm.likelihood_decr = ini.read_float("STM_CONFIG","Neg_likelihood_incr", 0.45, 1);
-		stm.occupancy_threshold = ini.read_float("STM_CONFIG","Occupancy_threshold", 0.8, 1);
+		float grid_length = ini.read_float("STM_CONFIG","Obs_grid_length", 0.8f, 1);
+		float grid_resolution = ini.read_float("STM_CONFIG","Obs_grid_resolution", 0.1f, 1);
+		stm.vision_limit = ini.read_float("STM_CONFIG","Vision_limit", 0.6f, 1);
+		stm.likelihood_incr = ini.read_float("STM_CONFIG","Pos_likelihood_incr", 0.55f, 1);
+		stm.likelihood_decr = ini.read_float("STM_CONFIG","Neg_likelihood_incr", 0.45f, 1);
+		stm.occupancy_threshold = ini.read_float("STM_CONFIG","Occupancy_threshold", 0.8f, 1);
 
 		if (stm.is_active)
 		{
@@ -596,10 +597,7 @@ public:
 
 	void initializeScene()
 	{
-		CPose3D robotpose3d;
-		robotpose3d.x(robotSim.getX());
-		robotpose3d.y(robotSim.getY());
-		robotpose3d.setYawPitchRoll(robotSim.getPHI(),0,0);
+		CPose3D robotpose3d = CPose2D(robotSim.getCurrentGTPose());
 
 
 		//The display window is created
@@ -641,7 +639,7 @@ public:
 
 		//The target is inserted
 		{
-			CDiskPtr obj = opengl::CDisk::Create(0.4, 0.3);
+			CDiskPtr obj = opengl::CDisk::Create(0.4f, 0.3f);
 			obj->setLocation(0, 0, 0);
 			obj->setColor(0.2,0.3,0.9);
 			scene->insert( obj );
@@ -650,14 +648,14 @@ public:
 		//The robot is inserted
 		{
 			float h;
-			for (unsigned int i=0; i<robotShape.heights.size(); i++)
+			for (unsigned int i=0; i<robotShape.size(); i++)
 			{
 				if (i == 0) {h = 0;}
-				else {h = robotShape.heights[i-1] + h;}
+				else {h = robotShape.getHeight(i-1) + h;}
 
 				robotpose3d.z(h);
 				CPolyhedronPtr obj;
-				obj = opengl::CPolyhedron::CreateCustomPrism(robotShape.polygons[i], robotShape.heights[i]);
+				obj = opengl::CPolyhedron::CreateCustomPrism(robotShape.polygon(i), robotShape.getHeight(i));
 				obj->setName(format("Level%d",i+1));
 				obj->setPose(robotpose3d);
 				obj->setColor(0.2,0.5,0.2,1);
@@ -669,7 +667,8 @@ public:
 
 		//One scan is simulated
 		CSimplePointsMap	auxpoints;
-		this->senseObstacles( auxpoints );
+		mrpt::system::TTimeStamp auxpoints_time;
+		this->senseObstacles( auxpoints, auxpoints_time);
 
 		robotpose3d.z() = 0;
 		//The laserscans are inserted
@@ -746,21 +745,18 @@ public:
 	void updateScene()
 	{
 		scene = window.get3DSceneAndLock();
-		CPose3D robotpose3d;
+		CPose3D robotpose3d = CPose2D(robotSim.getCurrentGTPose());
 		CRenderizablePtr obj;
-		robotpose3d.x(robotSim.getX());
-		robotpose3d.y(robotSim.getY());
-		robotpose3d.setYawPitchRoll(robotSim.getPHI(),0,0);
-
+		
 		//The robot pose is updated
 		{
 			float h=0;
-			for (unsigned int i=0; i<robotShape.heights.size();i++)
+			for (unsigned int i=0; i<robotShape.size();i++)
 			{
 				obj = scene->getByName(format("Level%d",i+1));
 
 				if (i == 0) {h = 0;}
-				else { h = robotShape.heights[i-1] + h;}
+				else { h = robotShape.getHeight(i-1) + h;}
 
 				robotpose3d.z(h);
 				obj->setPose(robotpose3d);
@@ -824,19 +820,18 @@ public:
 	}
 
 
-	CAbstractReactiveNavigationSystem::TNavigationParams createNewTarget(float x,
-					float y, float targetAllowedDistance, bool targetIsRelative = 0)
+	CAbstractNavigator::TNavigationParams createNewTarget(float x,
+					float y, float targetAllowedDistance, bool targetIsRelative = false)
 	{
-		CPose2D robotpose;
-		CAbstractReactiveNavigationSystem::TNavigationParams navparams;
-		navparams.target = mrpt::math::TPoint2D(x,y);
+		CAbstractNavigator::TNavigationParams navparams;
+		navparams.target = mrpt::math::TPose2D(x,y,0);
 		navparams.targetAllowedDistance = targetAllowedDistance;
 		navparams.targetIsRelative = targetIsRelative;
-		if (targetIsRelative == 0)
-			target = CPose2D(x, y, 0);
+		if (!targetIsRelative)
+			target = mrpt::math::TPose2D(x, y, 0);
 		else
 		{
-			robotSim.getRealPose(robotpose);
+			CPose2D robotpose = robotSim.getCurrentGTPose();
 			target = CPose2D(x ,y, 0) + robotpose;
 		}
 		return navparams;

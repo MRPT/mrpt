@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -43,7 +43,7 @@ void CHMTSLAM::thread_TBI()
 	{
 		// Start thread:
 		// -------------------------
-		obj->printf_debug("[thread_TBI] Thread started (ID=0x%08lX)\n", mrpt::system::getCurrentThreadId() );
+		obj->logFmt(mrpt::utils::LVL_DEBUG, "[thread_TBI] Thread started (ID=0x%08lX)\n", mrpt::system::getCurrentThreadId() );
 
 		// --------------------------------------------
 		//    The main loop
@@ -58,7 +58,7 @@ void CHMTSLAM::thread_TBI()
 		// -------------------------
 		time_t timCreat,timExit; double timCPU=0;
 		try { mrpt::system::getCurrentThreadTimes( timCreat,timExit,timCPU); } catch(...) {};
-		obj->printf_debug("[thread_TBI] Thread finished. CPU time used:%.06f secs \n",timCPU);
+		obj->logFmt(mrpt::utils::LVL_DEBUG, "[thread_TBI] Thread finished. CPU time used:%.06f secs \n",timCPU);
 		obj->m_terminationFlag_TBI = true;
 
 	}
@@ -68,7 +68,7 @@ void CHMTSLAM::thread_TBI()
 
 		// Release semaphores:
 
-		obj->printf_debug( (char*)e.what() );
+		obj->logFmt(mrpt::utils::LVL_ERROR, "%s", e.what() );
 
 		// DEBUG: Terminate application:
 		obj->m_terminateThreads	= true;
@@ -79,8 +79,9 @@ void CHMTSLAM::thread_TBI()
 	{
 		obj->m_terminationFlag_TBI = true;
 
-		obj->printf_debug("\n---------------------- EXCEPTION CAUGHT! ---------------------\n");
-		obj->printf_debug(" In CHierarchicalMappingFramework::thread_TBI. Unexpected runtime error!!\n");
+		obj->logFmt(mrpt::utils::LVL_ERROR, 
+			"\n---------------------- EXCEPTION CAUGHT! ---------------------\n"
+			" In CHierarchicalMappingFramework::thread_TBI. Unexpected runtime error!!\n");
 
 		// Release semaphores:
 
@@ -123,9 +124,7 @@ CHMTSLAM::TMessageLSLAMfromTBIPtr CHMTSLAM::TBI_main_method(
 	const CHMHMapNodePtr currentArea = obj->m_map.getNodeByID( areaID );
 	ASSERT_(currentArea);
 
-	mrpt::system::setConsoleColor(CONCOL_BLUE);
-	obj->printf_debug("[TBI] Request for area id=%i\n",(int)areaID);
-	mrpt::system::setConsoleColor(CONCOL_NORMAL);
+	obj->logFmt(mrpt::utils::LVL_DEBUG, "[TBI] Request for area id=%i\n",(int)areaID);
 
 	// --------------------------------------------------------
 	// 1) Use bounding-boxes to get a first list of candidates
@@ -164,7 +163,7 @@ CHMTSLAM::TMessageLSLAMfromTBIPtr CHMTSLAM::TBI_main_method(
 					a->first,	// To
 					LMH_ID );
 
-			obj->printf_debug("[TBI] %i-%i -> overlap prob=%f\n",(int)areaID,(int)a->first,match);
+			obj->logFmt(mrpt::utils::LVL_DEBUG, "[TBI] %i-%i -> overlap prob=%f\n",(int)areaID,(int)a->first,match);
 
 			if (match>0.9)
 			{
@@ -230,9 +229,7 @@ CHMTSLAM::TMessageLSLAMfromTBIPtr CHMTSLAM::TBI_main_method(
 	for (set<CHMHMapNode::TNodeID>::const_iterator it=lstNodesToErase.begin();it!=lstNodesToErase.end();++it)
 		msg->loopClosureData.erase(*it);
 
-	mrpt::system::setConsoleColor(CONCOL_BLUE);
-	obj->printf_debug("[TBI_main] Done. %u candidates found.\n",(unsigned int)msg->loopClosureData.size() );
-	mrpt::system::setConsoleColor(CONCOL_NORMAL);
+	obj->logFmt(mrpt::utils::LVL_DEBUG, "[TBI_main] Done. %u candidates found.\n",(unsigned int)msg->loopClosureData.size() );
 
 	return msg;
 	MRPT_END

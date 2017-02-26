@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -23,7 +23,7 @@ namespace mrpt { namespace utils {
 }
 
 // Load test datalog
-TEST(ReactiveNavTests, LoadNavLogFile)
+TEST(NavTests, LoadNavLogFile)
 {
 	const string navlog_file = MRPT_GLOBAL_UNITTEST_SRC_DIR + string("/tests/serialize_test_data.reactivenavlog");
 	if (!mrpt::system::fileExists(navlog_file))

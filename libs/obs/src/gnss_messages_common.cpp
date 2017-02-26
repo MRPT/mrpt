@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -20,6 +20,9 @@ using namespace mrpt::obs::gnss;
 	/* ====== NMEA ======  */ \
 	DOFOR(NMEA_GGA) \
 	DOFOR(NMEA_RMC) \
+	DOFOR(NMEA_ZDA) \
+	DOFOR(NMEA_VTG) \
+	DOFOR(NMEA_GLL) \
 	/* ====== TopCon mmGPS ====== */  \
 	DOFOR(TOPCON_PZS) \
 	DOFOR(TOPCON_SATS) \
@@ -50,7 +53,17 @@ gnss_message*  gnss_message::Factory(const gnss_message_type_t msg_id)
 	default:
 		return NULL;
 	};
-
+#undef DOFOR
+}
+bool gnss_message::FactoryKnowsMsgType(const gnss_message_type_t msg_id)
+{
+#define DOFOR(_MSG_ID)  case _MSG_ID: return true;
+	switch (msg_id)
+	{
+		LIST_ALL_MSGS
+	default:
+		return false;
+	};
 #undef DOFOR
 }
 
@@ -93,9 +106,8 @@ gnss_message* gnss_message::readAndBuildFromStream(mrpt::utils::CStream &in)
 	int32_t msg_id;
 	in >> msg_id;
 	gnss_message* msg = gnss_message::Factory(static_cast<gnss_message_type_t>(msg_id) );
-	MRPT_TODO("Attemp to recognize generic frames implemented in a newer version of mrpt:")
 	if (!msg)
-		THROW_EXCEPTION_CUSTOM_MSG1("Error deserializing gnss_message: unknown message type '%i'",static_cast<int>(msg_id));
+		THROW_EXCEPTION_FMT("Error deserializing gnss_message: unknown message type '%i'",static_cast<int>(msg_id));
 	msg->internal_readFromStream(in);
 	return msg;
 }

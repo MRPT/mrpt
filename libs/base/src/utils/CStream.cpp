@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -13,9 +13,7 @@
 #include <mrpt/system/os.h>
 #include <mrpt/system/os.h>
 #include <mrpt/utils/CSerializable.h>
-#include <mrpt/utils/CStartUpClassesRegister.h>
 #include <mrpt/utils/types_math.h> // CVector* types
-#include <mrpt/synch.h>
 
 #include <map>
 #include <iostream>
@@ -84,7 +82,8 @@ void  CStream::WriteBuffer(const void *Buffer, size_t Count)
 		CStream& utils::operator<<(mrpt::utils::CStream&out, const T &a) \
 		{ \
 			T b; \
-			mrpt::utils::reverseBytes(a,b); \
+			::memcpy(&b,&a,sizeof(b)); \
+			mrpt::utils::reverseBytesInPlace(b); \
 			out.WriteBuffer( (void*)&b, sizeof(b) ); \
 			return out; \
 		} \
@@ -92,7 +91,8 @@ void  CStream::WriteBuffer(const void *Buffer, size_t Count)
 		{ \
 			T b; \
 			in.ReadBuffer( (void*)&b, sizeof(a) ); \
-			mrpt::utils::reverseBytes(b,a); \
+			mrpt::utils::reverseBytesInPlace(b); \
+			::memcpy(&a,&b,sizeof(b)); \
 			return in; \
 		}
 #else
@@ -166,12 +166,21 @@ CStream& utils::operator << (mrpt::utils::CStream&out, const std::string &str)
 void CStream::WriteObject(const  CSerializable *o )
 {
     MRPT_START
-	ASSERT_(o!=NULL)
+
 
 	int		version;
 
 	// First, the "classname".
- 	const char *className = o->GetRuntimeClass()->className;
+	const char *className;
+	if(o != NULL)
+	{
+		className = o->GetRuntimeClass()->className;
+	}
+	else
+	{
+		className = "nullptr";	
+	}
+	
 	int8_t  classNamLen = strlen(className);
 	int8_t  classNamLen_mod = classNamLen | 0x80;
 
@@ -179,15 +188,17 @@ void CStream::WriteObject(const  CSerializable *o )
 	this->WriteBuffer( className, classNamLen);
 
 	// Next, the version number:
-	o->writeToStream(*this, &version);
+	if(o != NULL)
+	{
+		o->writeToStream(*this, &version);
+		ASSERT_(version>=0 && version<255);
 
-	ASSERT_(version>=0 && version<255);
+		int8_t	actualVersion = int8_t(version);
+		(*this) << actualVersion;
 
-	int8_t	actualVersion = int8_t(version);
-	(*this) << actualVersion;
-
-	// Next, the object data.
-	o->writeToStream(*this, NULL);
+		// Next, the object data.
+		o->writeToStream(*this, NULL);
+	}
 
 	// In MRPT 0.5.5 a end flag is introduced:
 	static const uint8_t    endFlag = SERIALIZATION_END_FLAG;
@@ -342,13 +353,8 @@ CStream& utils::operator>>(mrpt::utils::CStream&in, char *s)
 //#define CSTREAM_VERBOSE     1
 #define CSTREAM_VERBOSE     0
 
-extern CStartUpClassesRegister  mrpt_base_class_reg;
-
-const int dumm = mrpt_base_class_reg.do_nothing(); // Avoid compiler removing this class in static linking
-
-
 template <bool EXISTING_OBJ>
-CSerializable* CStream::internal_ReadObject(CSerializable *existingObj)
+void CStream::internal_ReadObject(CSerializablePtr &newObj,CSerializable *existingObj)
 {
 	// Automatically register all classes when the first one is registered.
 	registerAllPendingClasses();
@@ -400,9 +406,8 @@ CSerializable* CStream::internal_ReadObject(CSerializable *existingObj)
 			ASSERT_(version_old>=0 && version_old<255);
 			version = int8_t(version_old);
 		}
-		else
+		else if (strClassName != "nullptr" && sizeof(version)!=ReadBuffer( (void*)&version, sizeof(version) ))
 		{
-			if (sizeof(version)!=ReadBuffer( (void*)&version, sizeof(version) ))
 				THROW_EXCEPTION("Cannot read object streaming version from stream!");
 		}
 
@@ -415,15 +420,18 @@ CSerializable* CStream::internal_ReadObject(CSerializable *existingObj)
 		if (EXISTING_OBJ)
 		{	// (Existing object)
 			// Now, compare to existing class:
-			ASSERT_(existingObj)
-			const TRuntimeClassId	*id  = existingObj->GetRuntimeClass();
-			const TRuntimeClassId	*id2 = findRegisteredClass(strClassName);
-			if (!id2) THROW_EXCEPTION_CUSTOM_MSG1("Stored object has class '%s' which is not registered!",strClassName.c_str());
-			if ( id!=id2 ) THROW_EXCEPTION(format("Stored class does not match with existing object!!:\n Stored: %s\n Expected: %s", id2->className,id->className ));
-			// It matches, OK
-			obj = existingObj;
+			if(strClassName != "nullptr")
+			{
+				ASSERT_(existingObj)
+				const TRuntimeClassId	*id  = existingObj->GetRuntimeClass();
+				const TRuntimeClassId	*id2 = findRegisteredClass(strClassName);
+				if (!id2) THROW_EXCEPTION_FMT("Stored object has class '%s' which is not registered!",strClassName.c_str());
+				if ( id!=id2 ) THROW_EXCEPTION(format("Stored class does not match with existing object!!:\n Stored: %s\n Expected: %s", id2->className,id->className ));
+				// It matches, OK
+				obj = existingObj;
+			}
 		}
-		else
+		else if (strClassName != "nullptr")
 		{	// (New object)
 			// Get the mapping to the "TRuntimeClassId*" in the registered classes table:
 			const TRuntimeClassId *classId = findRegisteredClass( strClassName );
@@ -434,20 +442,22 @@ CSerializable* CStream::internal_ReadObject(CSerializable *existingObj)
 				THROW_EXCEPTION(msg)
 			}
 			obj = static_cast<CSerializable*>(classId->createObject());
+			newObj = CSerializablePtr(obj);
 		}
 
-		// Go on, read it:
-		obj->readFromStream( *this, (int)version );
-
+		if(strClassName != "nullptr")
+		{
+			// Go on, read it:
+			obj->readFromStream( *this, (int)version );
+		}
 		// Check end flag (introduced in MRPT 0.5.5)
 		if (!isOldFormat)
 		{
 			uint8_t	endFlag;
 			if (sizeof(endFlag)!=ReadBuffer( (void*)&endFlag, sizeof(endFlag) )) THROW_EXCEPTION("Cannot read object streaming version from stream!");
-			if (endFlag!=SERIALIZATION_END_FLAG) THROW_EXCEPTION_CUSTOM_MSG1("end-flag missing: There is a bug in the deserialization method of class: '%s'",strClassName.c_str());
+			if (endFlag!=SERIALIZATION_END_FLAG) THROW_EXCEPTION_FMT("end-flag missing: There is a bug in the deserialization method of class: '%s'",strClassName.c_str());
 		}
-
-		return obj;
+		ASSERT_(!EXISTING_OBJ || strClassName != "nullptr");
 	}
 	catch (std::bad_alloc &)
 	{
@@ -475,7 +485,9 @@ CSerializable* CStream::internal_ReadObject(CSerializable *existingObj)
  ---------------------------------------------------------------*/
 CSerializablePtr CStream::ReadObject()
 {
-	return CSerializablePtr( internal_ReadObject<false>() );
+	CSerializablePtr ret;
+	internal_ReadObject<false>(ret, NULL);
+	return ret;
 }
 
 /*---------------------------------------------------------------
@@ -485,7 +497,8 @@ CSerializablePtr CStream::ReadObject()
  ---------------------------------------------------------------*/
 void CStream::ReadObject(CSerializable *existingObj)
 {
-	internal_ReadObject<true>(existingObj);
+	CSerializablePtr dummy;
+	internal_ReadObject<true>(dummy,existingObj);
 }
 
 /*---------------------------------------------------------------
@@ -540,19 +553,26 @@ CStream &utils::operator>>(mrpt::utils::CStream &s,std::vector<std::string> &vec
 /*-------------------------------------------------------------
 					sendMessage
 -------------------------------------------------------------*/
-void  CStream::sendMessage( const utils::CMessage &msg)
+void  CStream::sendMessage(const utils::CMessage &msg)
 {
 	MRPT_START
 
-	unsigned char	buf[1024];
+	unsigned char	buf[0x10100];
 	unsigned int	nBytesTx = 0;
 
-	ASSERT_(msg.content.size()<256);
+	const bool msg_format_is_tiny = msg.content.size() < 256;
 
 	// Build frame -------------------------------------
-	buf[nBytesTx++] = 0x69;
+	buf[nBytesTx++] = msg_format_is_tiny ? 0x69 : 0x79;
 	buf[nBytesTx++] = (unsigned char)(msg.type);
-	buf[nBytesTx++] = (unsigned char)msg.content.size();
+
+	if (msg_format_is_tiny) {
+		buf[nBytesTx++] = (unsigned char)msg.content.size();
+	} else {
+		buf[nBytesTx++] = msg.content.size() & 0xff;      // lo
+		buf[nBytesTx++] = (msg.content.size()>>8) & 0xff; // hi
+	}
+
 	if (!msg.content.empty())
 		memcpy(	buf+nBytesTx, &msg.content[0], msg.content.size() );
 	nBytesTx += (unsigned char)msg.content.size();
@@ -574,29 +594,34 @@ bool  CStream::receiveMessage( utils::CMessage &msg )
 	unsigned int		nBytesInFrame=0;
 	unsigned long		nBytesToRx=0;
 	unsigned char		tries = 2;
-	unsigned int		nB = 0;
+	unsigned int		payload_len = 0;
+	unsigned int		expectedLen = 0;
 
 	for (;;)
 	{
-		if (nBytesInFrame<3)
+		if (nBytesInFrame<4)
 			nBytesToRx = 1;
 		else
 		{
-			if( nBytesInFrame == 3 && buf[0] == 0x79 )
-				nBytesToRx = 1;
-			else
+			if (buf[0] == 0x69) 
 			{
-				if( buf[0] == 0x69 )
-					nBytesToRx = (buf[2]+4) - nBytesInFrame;
-				if( buf[0] == 0x79 )
-				{
-					nB = (unsigned int)(buf[2]<<8) + (unsigned int)buf[3]; // Length of the content
-					nBytesToRx = (nB + 5) - nBytesInFrame;
-				}
-			} // end else
+				payload_len = buf[2];
+				expectedLen = payload_len + 4;
+			}
+			else if( buf[0] == 0x79 )
+			{
+				payload_len = MAKEWORD16B(buf[3] /*low*/, buf[2] /*hi*/); // Length of the content
+				expectedLen = payload_len + 5;
+			}
+			nBytesToRx = expectedLen - nBytesInFrame;
 		} // end else
 
-		unsigned long nBytesRx = ReadBufferImmediate(&buf[nBytesInFrame], nBytesToRx);
+		unsigned long nBytesRx = 0; 
+		try {
+			nBytesRx = ReadBufferImmediate(&buf[nBytesInFrame], nBytesToRx);
+		}
+		catch (...) {
+		}
 
 		// No more data! (read timeout is already included in the call to "Read")
 		if (!nBytesRx)
@@ -611,12 +636,6 @@ bool  CStream::receiveMessage( utils::CMessage &msg )
 		{
 			// Is a new byte for the frame:
 			nBytesInFrame += nBytesRx;
-
-			unsigned int expectedLen = 0;
-
-			if (buf[0]==0x69)
-					expectedLen = buf[2]+4;
-			else	expectedLen = nB+4;
 
 			if (nBytesInFrame == expectedLen )
 			{
@@ -636,15 +655,15 @@ bool  CStream::receiveMessage( utils::CMessage &msg )
 					msg.type = buf[1];
 					if( buf[0] == 0x69 )
 					{
-						msg.content.resize( buf[2] );
+						msg.content.resize(payload_len);
 						if (!msg.content.empty())
-							memcpy( &msg.content[0], &buf[3], buf[2] );
+							memcpy( &msg.content[0], &buf[3], payload_len);
 					} // end if
 					if ( buf[0] == 0x79 )
 					{
-						msg.content.resize( nB );
+						msg.content.resize(payload_len);
 						if (!msg.content.empty())
-							memcpy( &msg.content[0], &buf[4], nB );
+							memcpy( &msg.content[0], &buf[4], payload_len);
 					} // end if
 					return true;
 				}

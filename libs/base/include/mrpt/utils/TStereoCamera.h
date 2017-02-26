@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -63,7 +63,7 @@ namespace mrpt
 			  *  \exception std::exception on missing fields
 			  */
 			void loadFromConfigFile(const std::string &section, const mrpt::utils::CConfigFileBase &cfg );
-			/** \overload This signature is consistent with the rest of MRPT APIs */
+			/** overload This signature is consistent with the rest of MRPT APIs */
 			inline void loadFromConfigFile(const mrpt::utils::CConfigFileBase &cfg,const std::string &section) { loadFromConfigFile(section,cfg); }
 
 			/** Dumps all the parameters as a multi-line string, with the same format than \a saveToConfigFile.  \sa saveToConfigFile */

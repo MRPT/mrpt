@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -171,12 +171,7 @@ namespace maps
 		 /**** END FAMD *****/
 
 		// See docs in base class
-		float  compute3DMatchingRatio(
-				const mrpt::maps::CMetricMap						*otherMap,
-				const mrpt::poses::CPose3D							&otherMapPose,
-				float									maxDistForCorr = 0.10f,
-				float									maxMahaDistForCorr = 2.0f
-				) const MRPT_OVERRIDE;
+		float compute3DMatchingRatio(const mrpt::maps::CMetricMap *otherMap, const mrpt::poses::CPose3D &otherMapPose, const TMatchingRatioParams &params) const MRPT_OVERRIDE;
 
 		 /** With this struct options are provided to the observation insertion process.
 		  */
@@ -270,62 +265,56 @@ namespace maps
 		 struct VISION_IMPEXP  TLikelihoodOptions : public utils::CLoadableOptions
 		 {
 		 public:
-			/** Initilization of default parameters
-			 */
-			 TLikelihoodOptions();
+			TLikelihoodOptions();
 
-			 void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
-			 void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
+			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
+			void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
 
-			 /** The number of rays from a 2D range scan will be decimated by this factor (default = 1, no decimation) */
-			 unsigned int	rangeScan2D_decimation;
-			 double			SIFTs_sigma_euclidean_dist;
-			 double			SIFTs_sigma_descriptor_dist;
-			 float			SIFTs_mahaDist_std;
-			 float			SIFTnullCorrespondenceDistance;
-			 /** Considers 1 out of "SIFTs_decimation" visual landmarks in the observation during the likelihood computation. */
-			 int			SIFTs_decimation;
-			 /** The standard deviation used for Beacon ranges likelihood (default=0.08). */
-			 float			beaconRangesStd;
-			 /** The ratio between gaussian and uniform distribution (default=1). */
-			 float			alphaRatio;
-			 /** Maximun reliable beacon range value (default=20) */
-			 float			beaconMaxRange;
+			/** @name Parameters for: 2D LIDAR scans 
+			  * @{ */
+			unsigned int rangeScan2D_decimation; //!< The number of rays from a 2D range scan will be decimated by this factor (default = 1, no decimation)
+			/** @} */
+
+			/** @name Parameters for: images
+			  * @{ */
+			double  SIFTs_sigma_euclidean_dist;
+			double  SIFTs_sigma_descriptor_dist;
+			float   SIFTs_mahaDist_std;
+			float   SIFTnullCorrespondenceDistance;
+			int     SIFTs_decimation; //!< Considers 1 out of "SIFTs_decimation" visual landmarks in the observation during the likelihood computation.
+			/** Parameters of the SIFT feature detector/descriptors while inserting images in the landmark map.
+			  *  \note There exists another \a SIFT_feat_options field in the \a insertionOptions member.
+			  *  \note All parameters of this field can be loaded from a config file. See mrpt::vision::CFeatureExtraction::TOptions for the names of the expected fields. */
+			mrpt::vision::CFeatureExtraction::TOptions  SIFT_feat_options;
+			/** @} */
+
+			/** @name Parameters for: Range-only observation
+			  * @{ */
+			float  beaconRangesStd; //!< The standard deviation used for Beacon ranges likelihood (default=0.08) [meters] \sa beaconRangesUseObservationStd
+			bool   beaconRangesUseObservationStd; //!< (Default: false) If true, `beaconRangesStd` is ignored and each individual `CObservationBeaconRanges::stdError` field is used instead.
+			/** @} */
+			
+			/** @name Parameters for: GPS readings
+			  * @{ */
+
 			/** This struct store de GPS longitude, latitude (in degrees ) and altitude (in meters) for the first GPS observation
-			  * compose with de sensor position on the robot.
-			 */
+			  * compose with de sensor position on the robot */
 			struct VISION_IMPEXP TGPSOrigin
 			{
 			public:
 				TGPSOrigin();
-
 				double	longitude;   //!< degrees
 				double	latitude;    //!< degrees
 				double	altitude;    //!< meters
-
-				/** Estas tres opciones sirven para encajar mapas de GPS con posiciones absolutas con
-				  *  mapas de otros sensores (como laser :D) se obtienen facilmente con el programa matlab  map_matching
-				  *   ang : Map rotation (deg)
-				  *   x_shift: Desplazamiento en x relativo al robot (en metros)
-				  *   y_shift: Desplazamiento en y relativo al robot (en metros)
-			      */
-				double	ang,
-						x_shift,
-						y_shift;
-
+				/** These 3 params allow rotating and shifting GPS coordinates with other 2D maps (e.g. gridmaps). 
+				  * - ang : Map rotation [deg]
+				  * - x_shift, y_shift: (x,y) offset [m] */
+				double	ang, x_shift, y_shift;
 				unsigned int min_sat; //!< Minimum number of sats to take into account the data
-
 			} GPSOrigin;
 
-			/** A constant "sigma" for GPS localization data (in meters)
-			  */
-			float			GPS_sigma;
-
-			/** Parameters of the SIFT feature detector/descriptors while inserting images in the landmark map.
-			  *  \note There exists another \a SIFT_feat_options field in the \a insertionOptions member.
-			  *  \note All parameters of this field can be loaded from a config file. See mrpt::vision::CFeatureExtraction::TOptions for the names of the expected fields.
-			  */
-			mrpt::vision::CFeatureExtraction::TOptions  SIFT_feat_options;
+			float GPS_sigma; //!< A constant "sigma" for GPS localization data (in meters)
+			/** @} */
 
 		 } likelihoodOptions;
 

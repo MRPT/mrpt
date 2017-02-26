@@ -2,7 +2,7 @@
 |                     Mobile Robot Programming Toolkit (MRPT)               |
 |                          http://www.mrpt.org/                             |
 |                                                                           |
-| Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+| Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
 | See: http://www.mrpt.org/Authors - All rights reserved.                   |
 | Released under BSD License. See details in http://www.mrpt.org/License    |
 +---------------------------------------------------------------------------+ */
@@ -24,7 +24,7 @@ namespace mrpt
 			using namespace std;
 			MRPT_START
 
-				m_timLogger.enable(KF_options.enable_profiler || KF_options.verbose);
+			m_timLogger.enable(KF_options.enable_profiler);
 			m_timLogger.enter("KF:complete_step");
 
 			ASSERT_(size_t(m_xkk.size())==m_pkk.getColCount())
@@ -51,7 +51,7 @@ namespace mrpt
 
 			KFArray_VEH xv( &m_xkk[0] );  // Vehicle pose
 
-			bool skipPrediction=false; // Wether to skip the prediction step (in SLAM this is desired for the first iteration...)
+			bool skipPrediction=false; // Whether to skip the prediction step (in SLAM this is desired for the first iteration...)
 
 			// Update mean: xv will have the updated pose until we update it in the filterState later.
 			//  This is to maintain a copy of the last robot pose in the state vector, required for the Jacobian computation.
@@ -208,7 +208,7 @@ namespace mrpt
 				if (!missing_predictions_to_add.empty())
 				{
 					const size_t nNew = missing_predictions_to_add.size();
-					printf_debug("[KF] *Performance Warning*: %u LMs were not correctly predicted by OnPreComputingPredictions()\n",static_cast<unsigned int>(nNew));
+					MRPT_LOG_WARN_STREAM << "[KF] *Performance Warning*: " <<nNew <<  " LMs were not correctly predicted by OnPreComputingPredictions().";
 
 					ASSERTDEB_(FEAT_SIZE!=0)
 						for (size_t j=0;j<nNew;j++)
@@ -393,7 +393,7 @@ namespace mrpt
 							data_association.begin(),
 							data_association.end(),
 							mapIndicesForKFUpdate.begin(),
-							binder1st<equal_to<int> >(equal_to<int>(),-1) ) ) );
+							bind1st(equal_to<int>(),-1) ) ) );
 
 						const size_t N_upd = (FEAT_SIZE==0) ?
 							1 : 	// Non-SLAM problems: Just one observation for the entire system.
@@ -1001,18 +1001,14 @@ namespace mrpt
 
 			m_timLogger.leave("KF:complete_step");
 
-			if (KF_options.verbose)
-			{
-				printf_debug("[KF] %u LMs | Pr: %.2fms | Pr.Obs: %.2fms | Obs.DA: %.2fms | Upd: %.2fms\n",
-					static_cast<unsigned int>(getNumberOfLandmarksInTheMap()),
-					1e3*tim_pred,
-					1e3*tim_pred_obs,
-					1e3*tim_obs_DA,
-					1e3*tim_update
-					);
-			}
+			MRPT_LOG_DEBUG( mrpt::format("[KF] %u LMs | Pr: %.2fms | Pr.Obs: %.2fms | Obs.DA: %.2fms | Upd: %.2fms\n",
+				static_cast<unsigned int>(getNumberOfLandmarksInTheMap()),
+				1e3*tim_pred,
+				1e3*tim_pred_obs,
+				1e3*tim_obs_DA,
+				1e3*tim_update
+				) );
 			MRPT_END
-
 		} // End of "runOneKalmanIteration"
 
 

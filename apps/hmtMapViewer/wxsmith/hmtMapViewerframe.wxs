@@ -35,12 +35,12 @@
 												</font>
 												<style>wxALIGN_CENTRE</style>
 											</object>
-											<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+											<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 											<border>5</border>
 											<option>1</option>
 										</object>
 									</object>
-									<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+									<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 									<option>1</option>
 								</object>
 								<object class="sizeritem">
@@ -61,12 +61,12 @@
 											<option>1</option>
 										</object>
 									</object>
-									<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+									<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 									<option>1</option>
 								</object>
 							</object>
 						</object>
-						<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+						<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 						<option>1</option>
 					</object>
 					<object class="sizeritem">
@@ -83,7 +83,7 @@
 											<style>wxTR_LINES_AT_ROOT|wxTR_MULTIPLE|wxTR_DEFAULT_STYLE|wxVSCROLL|wxHSCROLL</style>
 											<handler function="OntreeViewSelectionChanged" entry="EVT_TREE_SEL_CHANGED" />
 										</object>
-										<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+										<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 										<option>1</option>
 									</object>
 								</object>
@@ -102,16 +102,16 @@
 												<sysfont>wxSYS_OEM_FIXED_FONT</sysfont>
 												<relativesize>1.000000</relativesize>
 											</font>
-											<style>wxTE_AUTO_SCROLL|wxTE_PROCESS_ENTER|wxTE_PROCESS_TAB|wxTE_MULTILINE|wxTE_READONLY|wxHSCROLL|wxVSCROLL</style>
+											<style>wxTE_PROCESS_ENTER|wxTE_PROCESS_TAB|wxTE_MULTILINE|wxTE_READONLY|wxHSCROLL|wxVSCROLL</style>
 										</object>
-										<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+										<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 										<border>1</border>
 										<option>1</option>
 									</object>
 								</object>
 							</object>
 						</object>
-						<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+						<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 						<option>1</option>
 					</object>
 				</object>
@@ -150,7 +150,7 @@
 												<growablerows>0</growablerows>
 											</object>
 										</object>
-										<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+										<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 										<option>1</option>
 									</object>
 								</object>
@@ -182,13 +182,13 @@
 												<growablerows>0</growablerows>
 											</object>
 										</object>
-										<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+										<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 										<option>1</option>
 									</object>
 								</object>
 							</object>
 						</object>
-						<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+						<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 						<option>1</option>
 					</object>
 				</object>

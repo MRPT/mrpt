@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -21,10 +21,11 @@ using namespace mrpt::utils;
 /*---------------------------------------------------------------
 						Default Constructor
   ---------------------------------------------------------------*/
-CParticleFilter::CParticleFilter() : m_options()
+CParticleFilter::CParticleFilter() :
+	mrpt::utils::COutputLogger("CParticleFilter"),
+	m_options()
 {
 }
-
 
 /*---------------------------------------------------------------
 					executeOn
@@ -82,8 +83,7 @@ void  CParticleFilter::executeOn(
 	{
 		if (obj.ESS() < m_options.BETA)
 		{
-			if (m_options.verbose)
-				printf_debug("[PF] Resampling particles (ESS was %.02f)\n", obj.ESS());
+			MRPT_LOG_DEBUG(mrpt::format("Resampling particles (ESS was %.02f)\n", obj.ESS()));
 			obj.performResampling( m_options );	// Resample
 		}
 	}
@@ -105,7 +105,6 @@ CParticleFilter::TParticleFilterOptions::TParticleFilterOptions() :
 	resamplingMethod		( prMultinomial ),
 	max_loglikelihood_dyn_range ( 15 ),
 	pfAuxFilterStandard_FirstStageWeightsMonteCarlo ( false ),
-	verbose	(false),
 	pfAuxFilterOptimal_MLE(false)
 {
 }
@@ -166,7 +165,6 @@ void  CParticleFilter::TParticleFilterOptions::loadFromConfigFile(
 	MRPT_LOAD_CONFIG_VAR(powFactor,double,						iniFile,section.c_str());
 	MRPT_LOAD_CONFIG_VAR(max_loglikelihood_dyn_range,double,	iniFile,section.c_str());
 	ASSERT_(max_loglikelihood_dyn_range>=0)
-	MRPT_LOAD_CONFIG_VAR(verbose,bool,	iniFile,section.c_str());
 
 
 	MRPT_LOAD_CONFIG_VAR_CAST_NO_DEFAULT(PF_algorithm,int,TParticleFilterAlgorithm,			iniFile,section.c_str());

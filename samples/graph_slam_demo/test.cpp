@@ -2,13 +2,13 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/random.h>
-#include <mrpt/graphslam.h>
+#include <mrpt/graphslam/levmarq.h>
 #include <mrpt/system/threads.h> // sleep()
 #include <mrpt/gui.h>
 #include <mrpt/opengl/CSetOfObjects.h>
@@ -39,10 +39,16 @@ const double STD4EDGES_COV_MATRIX       = 10;
 const double ERROR_IN_INCOMPATIBLE_EDGE = 0.3; // ratio [0,1]
 
 
-// Auxiliary class to add a new edge to the graph. The edge is annotated with the relative position of the two nodes
+/** 
+ * Generic struct template
+ * Auxiliary class to add a new edge to the graph. The edge is annotated with the relative position of the two nodes
+ */
 template <class GRAPH,bool EDGES_ARE_PDF = GRAPH::edge_t::is_PDF_val> struct EdgeAdders;
 
-// Non-PDF version:
+/**
+ * Specific templates based on the above EdgeAdders template
+ * Non-PDF version:
+ */
 template <class GRAPH> struct EdgeAdders<GRAPH,false>
 {
 	static const int DIM = GRAPH::edge_t::type_value::static_size;
@@ -50,7 +56,14 @@ template <class GRAPH> struct EdgeAdders<GRAPH,false>
 
 	static void addEdge(TNodeID from, TNodeID to, const typename GRAPH::global_poses_t &real_poses,GRAPH &graph, const cov_t &COV_MAT)
 	{
-		typename GRAPH::edge_t RelativePose(real_poses.find(to)->second - real_poses.find(from)->second);
+    /** 
+     * No covariance argument here (although it is passed in the function
+     * declaration above)
+     * See also : https://groups.google.com/d/msg/mrpt-users/Sr9LSydArgY/vRNM5V_uA-oJ 
+     * for a more detailed explanation on how it is treated
+     */
+		typename GRAPH::edge_t RelativePose(
+        real_poses.find(to)->second - real_poses.find(from)->second);
 		graph.insertEdge(from,to, RelativePose );
 	}
 };
@@ -63,12 +76,13 @@ template <class GRAPH> struct EdgeAdders<GRAPH,true>
 	static void addEdge(TNodeID from, TNodeID to, const typename GRAPH::global_poses_t &real_poses,GRAPH &graph, const cov_t &COV_MAT)
 	{
 		typename GRAPH::edge_t RelativePose(
-			real_poses.find(to)->second - real_poses.find(from)->second,
-			COV_MAT);
+        real_poses.find(to)->second - real_poses.find(from)->second, 
+        COV_MAT);
 		graph.insertEdge(from,to, RelativePose );
 	}
 };
 
+// Container to handle the propagation of the square root error of the problem
 vector<double>  log_sq_err_evolution;
 
 // This example lives inside this template class, which can be instanced for different kind of graphs (see main()):
@@ -95,9 +109,13 @@ struct ExampleDemoGraphSLAM
 		// The graph: nodes + edges:
 		my_graph_t  graph;
 
-		// The global poses of each node (without covariance):
+		// The global poses of the graph nodes (without covariance):
 		typename my_graph_t::global_poses_t  real_node_poses;
 
+    /**
+     * Initialize the PRNG from the given random seed.
+     * Method used to initially randomise the generator
+     */
 		randomGenerator.randomize(123);
 
 		// ----------------------------
@@ -107,7 +125,9 @@ struct ExampleDemoGraphSLAM
 		const double DIST_THRES = 7;
 		const double NODES_XY_MAX = 20;
 
-
+    /**
+     * First add all the nodes (so that, when I add edges, I can refer to them
+     */
 		for (TNodeID j=0;j<N_VERTEX;j++)
 		{
 			// Use evenly distributed nodes:
@@ -126,11 +146,21 @@ struct ExampleDemoGraphSLAM
 		}
 
 
-		// Add some edges
+		/** 
+     * Add some edges
+     * Also initialize the information matrix used for EACH constraint. For
+     * simplicity the same information matrix is used for each one of the edges. 
+     * This information matrix is RELATIVE to each constraint/edge (not in
+     * global ref. frame)
+     * see also: https://groups.google.com/d/msg/mrpt-users/Sr9LSydArgY/wYFeU2BXr4kJ 
+     */
 		typedef EdgeAdders<my_graph_t> edge_adder_t;
 		typename edge_adder_t::cov_t   inf_matrix;
 		inf_matrix.unit(edge_adder_t::cov_t::RowsAtCompileTime, square(1.0/STD4EDGES_COV_MATRIX));
 
+    /**
+     * add the edges using the node ids added to the graph before
+     */
 		for (TNodeID i=0;i<N_VERTEX;i++)
 		{
 			for (TNodeID j=i+1;j<N_VERTEX;j++)
@@ -140,14 +170,15 @@ struct ExampleDemoGraphSLAM
 			}
 		}
 
-		// Add an additional edge to deforme the graph?
+		// Add an additional edge to deform the graph?
 		if (add_extra_tightening_edge)
 		{
 			//inf_matrix.unit(square(1.0/(STD4EDGES_COV_MATRIX)));
 			edge_adder_t::addEdge(0,N_VERTEX/2,real_node_poses,graph,inf_matrix);
 
 			// Tweak this last node to make it incompatible with the rest:
-			typename my_graph_t::edge_t &ed = graph.edges.find(make_pair<TNodeID,TNodeID>(0,N_VERTEX/2))->second; // It must exist, don't check errors...
+			// It must exist, don't check errors...
+			typename my_graph_t::edge_t &ed = graph.edges.find(make_pair(TNodeID(0), TNodeID(N_VERTEX/2) ))->second;
 			ed.getPoseMean().x( (1-ERROR_IN_INCOMPATIBLE_EDGE) * ed.getPoseMean().x() );
 		}
 

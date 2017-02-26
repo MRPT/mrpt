@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -18,7 +18,7 @@
 //*)
 
 #include "_DSceneViewerMain.h"
-#include "../wx-common/CMyRedirector.h"
+#include <mrpt/gui/CMyRedirector.h>
 
 #include <mrpt/system/os.h>
 #include <mrpt/utils/utils_defs.h>
@@ -68,17 +68,17 @@ CAboutBox::CAboutBox(wxWindow* parent,wxWindowID id)
     FlexGridSizer2->AddGrowableRow(0);
     FlexGridSizer2->AddGrowableRow(1);
     lbProgName = new wxStaticText(this, ID_STATICTEXT1, _("Title"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT1"));
-    wxFont lbProgNameFont(22,wxSWISS,wxFONTSTYLE_NORMAL,wxBOLD,false,_T("Times New Roman"),wxFONTENCODING_DEFAULT);
+    wxFont lbProgNameFont(22,wxSWISS,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_BOLD,false,_T("Times New Roman"),wxFONTENCODING_DEFAULT);
     lbProgName->SetFont(lbProgNameFont);
     FlexGridSizer2->Add(lbProgName, 1, wxALL|wxALIGN_BOTTOM|wxALIGN_CENTER_HORIZONTAL, 5);
     lbBuild = new wxStaticText(this, ID_STATICTEXT2, _("Label"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT2"));
     FlexGridSizer2->Add(lbBuild, 1, wxALL|wxALIGN_TOP|wxALIGN_CENTER_HORIZONTAL, 5);
-    FlexGridSizer4->Add(FlexGridSizer2, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    FlexGridSizer4->Add(FlexGridSizer2, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
     StaticBitmap1 = new wxStaticBitmap(this, ID_STATICBITMAP1, wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("IMG_MRPT_LOGO")),wxART_OTHER), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICBITMAP1"));
     FlexGridSizer4->Add(StaticBitmap1, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    FlexGridSizer1->Add(FlexGridSizer4, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
+    FlexGridSizer1->Add(FlexGridSizer4, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 1);
     StaticLine1 = new wxStaticLine(this, ID_STATICLINE1, wxPoint(3,86), wxSize(627,2), wxLI_HORIZONTAL, _T("ID_STATICLINE1"));
-    FlexGridSizer1->Add(StaticLine1, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer1->Add(StaticLine1, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
     Notebook1 = new wxNotebook(this, ID_NOTEBOOK1, wxPoint(6,91), wxSize(625,250), 0, _T("ID_NOTEBOOK1"));
     TextCtrl2 = new wxTextCtrl(Notebook1, ID_TEXTCTRL4, _("Keyboard shortcuts:\nCursor Right  : See next file in the current directory.\nCursor Left   : See previous file in the current directory.\n\n\nMouse shortcuts:\nLeft Button + Move                    : Orbit camera\nLeft Button + Ctrl + Move             : Look around\nShift + Left Button + Move Vertical   : Zoom in/out\nShift + Left Button + Move Horizontal : Move along the Z axis\nWheel                                 : Zoom in/out\n"), wxPoint(4,24), wxSize(545,222), wxTE_MULTILINE|wxTE_READONLY|wxTE_AUTO_URL, wxDefaultValidator, _T("ID_TEXTCTRL4"));
     wxFont TextCtrl2Font(10,wxSWISS,wxFONTSTYLE_NORMAL,wxNORMAL,false,_T("Courier New"),wxFONTENCODING_DEFAULT);
@@ -96,7 +96,7 @@ CAboutBox::CAboutBox(wxWindow* parent,wxWindowID id)
     Notebook1->AddPage(lbInfo, _("Information"), false);
     Notebook1->AddPage(lbLicense, _("License"), false);
     Notebook1->AddPage(TextCtrl1, _("Tutorial"), false);
-    FlexGridSizer1->Add(Notebook1, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer1->Add(Notebook1, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
     Button1 = new wxButton(this, ID_BUTTON1, _("OK"), wxPoint(250,345), wxSize(76,26), 0, wxDefaultValidator, _T("ID_BUTTON1"));
     FlexGridSizer1->Add(Button1, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     SetSizer(FlexGridSizer1);

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -26,11 +26,10 @@
 #include "hmtslam-precomp.h" // Precomp header
 
 #include <mrpt/utils/CFileStream.h>
-#include <mrpt/utils/CStartUpClassesRegister.h>
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/utils/stl_serialization.h>
 #include <mrpt/system/filesystem.h>
-#include <mrpt/synch.h>
+#include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/utils/CMemoryStream.h>
 
 #include <mrpt/system/os.h>
@@ -46,10 +45,6 @@ using namespace std;
 
 
 IMPLEMENTS_SERIALIZABLE(CHMTSLAM, CSerializable,mrpt::hmtslam)
-
-
-extern CStartUpClassesRegister  mrpt_hmtslam_class_reg;
-const int dumm = mrpt_hmtslam_class_reg.do_nothing(); // Avoid compiler removing this class in static linking
 
 
 // Initialization of static members:
@@ -105,13 +100,13 @@ CHMTSLAM::~CHMTSLAM()
 
 	// Wait for threads:
 	// ----------------------------------
-	printf_debug("[CHMTSLAM::destructor] Waiting for threads end...\n");
+	MRPT_LOG_DEBUG("[CHMTSLAM::destructor] Waiting for threads end...\n");
 
 	mrpt::system::joinThread( m_hThread_3D_viewer );
 	mrpt::system::joinThread( m_hThread_LSLAM );
 	mrpt::system::joinThread( m_hThread_TBI );
 
-	printf_debug("[CHMTSLAM::destructor] All threads finished.\n");
+	MRPT_LOG_DEBUG("[CHMTSLAM::destructor] All threads finished.\n");
 
 	// Save the resulting H.Map if logging
 	// --------------------------------------
@@ -131,12 +126,11 @@ CHMTSLAM::~CHMTSLAM()
 		}
 		catch(std::exception &e)
 		{
-			printf_debug("Ignoring exception at ~CHMTSLAM():\n");
-			printf_debug(e.what());
+			MRPT_LOG_WARN(mrpt::format("Ignoring exception at ~CHMTSLAM():\n%s",e.what()));
 		}
 		catch(...)
 		{
-			printf_debug("Ignoring untyped exception at ~CHMTSLAM()");
+			MRPT_LOG_WARN("Ignoring untyped exception at ~CHMTSLAM()");
 		}
 	}
 
@@ -480,7 +474,7 @@ void  CHMTSLAM::initializeEmptyMap()
 		}
 		break;
 	default:
-		THROW_EXCEPTION_CUSTOM_MSG1("Invalid selection for LSLAM method: %i",(int)m_options.SLAM_METHOD );
+		THROW_EXCEPTION_FMT("Invalid selection for LSLAM method: %i",(int)m_options.SLAM_METHOD );
 	};
 
 	// ------------------------------------
@@ -586,7 +580,7 @@ CTopLCDetectorBase* CHMTSLAM::loopClosureDetector_factory(const std::string  &na
 	MRPT_START
 	std::map<std::string,TLopLCDetectorFactory>::const_iterator it=m_registeredLCDetectors.find( name );
 	if (it==m_registeredLCDetectors.end())
-		THROW_EXCEPTION_CUSTOM_MSG1("Invalid value for TLC_detectors: %s", name.c_str() );
+		THROW_EXCEPTION_FMT("Invalid value for TLC_detectors: %s", name.c_str() );
 	return it->second(this);
 	MRPT_END
 }

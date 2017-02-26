@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -100,7 +100,7 @@ void Run_HMT_SLAM()
 	rawlogFileName = cfgFile.read_string("HMT-SLAM","rawlog_file",std::string("log.rawlog"));
 	unsigned int	rawlog_offset = cfgFile.read_int("HMT-SLAM","rawlog_offset",0);
 
-	mapping.printf_debug("RAWLOG FILE: \n%s\n",rawlogFileName.c_str());
+	mapping.logFmt(mrpt::utils::LVL_INFO, "RAWLOG FILE: \n%s\n",rawlogFileName.c_str());
 
 	const std::string OUT_DIR =  cfgFile.read_string("HMT-SLAM","LOG_OUTPUT_DIR", "HMT_SLAM_OUTPUT");
 
@@ -108,7 +108,7 @@ void Run_HMT_SLAM()
 	ASSERT_FILE_EXISTS_( rawlogFileName )
 	CFileGZInputStream	 rawlogFile( rawlogFileName);
 
-	mapping.printf_debug("---------------------------------------------------\n\n");
+	mapping.logFmt(mrpt::utils::LVL_INFO, "---------------------------------------------------\n\n");
 
 
 	// Set relative path for externally-stored images in rawlogs:
@@ -181,22 +181,22 @@ void Run_HMT_SLAM()
 				}
 		} // (rawlogEntry>=rawlog_offset)
 
-		mapping.printf_debug("======== Rawlog entries processed: %i ========\n", rawlogEntry);
+		mapping.logFmt(mrpt::utils::LVL_INFO, "======== Rawlog entries processed: %i ========\n", rawlogEntry);
 
         step++;
 
 	};	// end "while(1)"
 
-	mapping.printf_debug("********* Application finished!! 3 seconds to exit... **********\n");
+	mapping.logFmt(mrpt::utils::LVL_INFO, "********* Application finished!! 3 seconds to exit... **********\n");
 	sleep(1000);
-	mapping.printf_debug("********* Application finished!! 2 seconds to exit... **********\n");
+	mapping.logFmt(mrpt::utils::LVL_INFO, "********* Application finished!! 2 seconds to exit... **********\n");
 	sleep(1000);
-	mapping.printf_debug("********* Application finished!! 1 second to exit... **********\n");
+	mapping.logFmt(mrpt::utils::LVL_INFO, "********* Application finished!! 1 second to exit... **********\n");
 	sleep(1000);
 
 	{
 		string final_file = OUT_DIR+string("/final_map.hmtslam");
-		mapping.printf_debug("\n Saving FINAL HMT-MAP to file: %s\n",final_file.c_str());
+		mapping.logFmt(mrpt::utils::LVL_WARN, "\n Saving FINAL HMT-MAP to file: %s\n",final_file.c_str());
 		CFileGZOutputStream	fil(final_file);
 		mapping.saveState( fil );
 	}

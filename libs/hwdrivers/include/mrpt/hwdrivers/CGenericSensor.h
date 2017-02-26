@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -105,8 +105,8 @@ namespace mrpt
 			TListObservations				m_objList;		//!< The queue of objects to be returned by getObservations
 
 			/** Used in registerClass */
-			static std::map< std::string , const TSensorClassId *>	m_knownClasses;
-
+			typedef std::map< std::string , const TSensorClassId *> registered_sensor_classes_t;
+			static registered_sensor_classes_t & get_registered_sensor_classes(); //!< Access to singleton
 
 		protected:
 			/** @name Common settings to any sensor, loaded in "loadConfig"

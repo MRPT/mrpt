@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -136,7 +136,7 @@ namespace mrpt
 			/** Adds a new point given its coordinates and color (colors range is [0,1]) */
 			virtual void  insertPoint( float x, float y, float z, float R, float G, float B ) MRPT_OVERRIDE;
 			// The following overloads must be repeated here (from CPointsMap) due to the shadowing of the above "insertPoint()"
-			/// \overload of \a insertPoint()
+			/// \overload
 			inline void  insertPoint( const mrpt::poses::CPoint3D &p ) { insertPoint(p.x(),p.y(),p.z()); }
 			/// \overload
 			inline void  insertPoint( const mrpt::math::TPoint3D &p ) { insertPoint(p.x,p.y,p.z); }

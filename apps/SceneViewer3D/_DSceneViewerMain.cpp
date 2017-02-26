@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -64,6 +64,10 @@
 #include <mrpt/opengl/CAngularObservationMesh.h>	// It's in lib mrpt-maps
 
 #include <mrpt/maps/CColouredPointsMap.h>
+#include <mrpt/maps/CPointsMap.h>
+#if MRPT_HAS_LIBLAS
+#	include <mrpt/maps/CPointsMap_liblas.h>
+#endif
 
 // A custom Art provider for customizing the icons:
 class MyArtProvider : public wxArtProvider
@@ -156,6 +160,9 @@ void saveLastUsedDirectoryToCfgFile(const std::string &fil)
 
 void CMyGLCanvas::OnRenderError( const wxString &str )
 {
+	if (!logWin)
+		logWin = new wxLogWindow(this, wxT("Log window"), false);
+
 	wxLogError(str);
 	logWin->Show();
 }
@@ -177,17 +184,15 @@ void CMyGLCanvas::OnPostRenderSwapBuffers(double At, wxPaintDC &dc)
 		int w,h;
 		dc.GetSize(&w, &h);
 
-		// create a memory DC and bitmap to capture the DC
-		wxMemoryDC memDC;
-		wxBitmap memBmp(w, h);
-		memDC.SelectObject(memBmp);
-		memDC.Blit(0,0, w,h, &dc, 0,0);
+		//Save image directly from OpenGL
+		CImage frame(w, h, 3, false);
+		glReadBuffer(GL_FRONT);
+		glReadPixels(0, 0, w, h, GL_BGR_EXT, GL_UNSIGNED_BYTE, frame(0,0) );
 
 		string fileName( format("%s/screenshot_%07i.png",capturingDir.c_str(),captureCount++) );
 
-		memBmp.SaveFile(_U(fileName.c_str()),wxBITMAP_TYPE_PNG);
+		frame.saveToFile(fileName);
 	}
-
 
 	// Estimate FPS:
 	// --------------------------
@@ -373,8 +378,6 @@ END_EVENT_TABLE()
 _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent,wxWindowID id)
 	: m_travelling_start_time(INVALID_TIMESTAMP), maxv(0)
 {
-	//wxLogNull logQuiet;  // There're some issues with the toolbar icons.. just ignore them
-	logWin = new wxLogWindow(this,wxT("Log window"),false);
 	theWindow = this;
 
 	// Load my custom icons:
@@ -412,54 +415,54 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent,wxWindowID id)
     btnNew = new wxCustomButton(this,ID_BUTTON1,_("  New  "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_NORMAL_FILE")),wxART_TOOLBAR),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON1"));
     btnNew->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_NORMAL_FILE")),wxART_TOOLBAR));
     btnNew->SetMargins(wxSize(5,5));
-    FlexGridSizer2->Add(btnNew, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
+    FlexGridSizer2->Add(btnNew, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 1);
     btnToolbarOpen = new wxCustomButton(this,ID_BUTTON2,_("  Open... "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FILE_OPEN")),wxART_TOOLBAR),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON2"));
     btnToolbarOpen->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FILE_OPEN")),wxART_TOOLBAR));
     btnToolbarOpen->SetMargins(wxSize(5,5));
-    FlexGridSizer2->Add(btnToolbarOpen, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
+    FlexGridSizer2->Add(btnToolbarOpen, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 1);
     StaticLine1 = new wxStaticLine(this, ID_STATICLINE1, wxDefaultPosition, wxSize(50,-1), wxLI_HORIZONTAL, _T("ID_STATICLINE1"));
     FlexGridSizer2->Add(StaticLine1, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
     btnPrev = new wxCustomButton(this,ID_BUTTON3,_("  Previous  "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_GO_BACK")),wxART_TOOLBAR),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON3"));
     btnPrev->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_GO_BACK")),wxART_TOOLBAR));
     btnPrev->SetMargins(wxSize(5,5));
-    FlexGridSizer2->Add(btnPrev, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
+    FlexGridSizer2->Add(btnPrev, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 1);
     btnNext = new wxCustomButton(this,ID_BUTTON4,_("  Next  "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_GO_FORWARD")),wxART_TOOLBAR),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON4"));
     btnNext->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_GO_FORWARD")),wxART_TOOLBAR));
     btnNext->SetMargins(wxSize(5,5));
-    FlexGridSizer2->Add(btnNext, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
+    FlexGridSizer2->Add(btnNext, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 1);
     btnReload = new wxCustomButton(this,ID_BUTTON5,_("  Reload  "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_REDO")),wxART_TOOLBAR),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON5"));
     btnReload->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_REDO")),wxART_TOOLBAR));
     btnReload->SetMargins(wxSize(5,5));
-    FlexGridSizer2->Add(btnReload, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, wxDLG_UNIT(this,wxSize(1,0)).GetWidth());
+    FlexGridSizer2->Add(btnReload, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, wxDLG_UNIT(this,wxSize(1,0)).GetWidth());
     StaticLine2 = new wxStaticLine(this, ID_STATICLINE2, wxDefaultPosition, wxSize(50,-1), wxLI_HORIZONTAL, _T("ID_STATICLINE2"));
     FlexGridSizer2->Add(StaticLine2, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
     btnOptions = new wxCustomButton(this,ID_BUTTON6,_("  Options  "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FIND")),wxART_TOOLBAR),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON6"));
     btnOptions->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FIND")),wxART_TOOLBAR));
     btnOptions->SetMargins(wxSize(5,5));
-    FlexGridSizer2->Add(btnOptions, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
+    FlexGridSizer2->Add(btnOptions, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 1);
     btnOrtho = new wxCustomButton(this,ID_BUTTON7,_("  Ortho  "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_TICK_MARK")),wxART_TOOLBAR),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_TOGGLE|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON7"));
     btnOrtho->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_TICK_MARK")),wxART_TOOLBAR));
     btnOrtho->SetMargins(wxSize(5,5));
-    FlexGridSizer2->Add(btnOrtho, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
+    FlexGridSizer2->Add(btnOrtho, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 1);
     btnAutoplay = new wxCustomButton(this,ID_BUTTON8,_("  Autoplay  "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_REMOVABLE")),wxART_TOOLBAR),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_TOGGLE|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON8"));
     btnAutoplay->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_REMOVABLE")),wxART_TOOLBAR));
     btnAutoplay->SetMargins(wxSize(5,5));
-    FlexGridSizer2->Add(btnAutoplay, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
+    FlexGridSizer2->Add(btnAutoplay, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 1);
     btnCapture = new wxCustomButton(this,ID_BUTTON9,_("  Capture  "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_HARDDISK")),wxART_TOOLBAR),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_TOGGLE|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON9"));
     btnCapture->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_HARDDISK")),wxART_TOOLBAR));
     btnCapture->SetMargins(wxSize(5,5));
-    FlexGridSizer2->Add(btnCapture, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
+    FlexGridSizer2->Add(btnCapture, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 1);
     StaticLine3 = new wxStaticLine(this, ID_STATICLINE3, wxDefaultPosition, wxSize(50,-1), wxLI_HORIZONTAL, _T("ID_STATICLINE3"));
     FlexGridSizer2->Add(StaticLine3, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
     btnAbout = new wxCustomButton(this,ID_BUTTON10,_("  About..."),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_HELP_BOOK")),wxART_TOOLBAR),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON10"));
     btnAbout->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_HELP_BOOK")),wxART_TOOLBAR));
     btnAbout->SetMargins(wxSize(5,5));
-    FlexGridSizer2->Add(btnAbout, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
+    FlexGridSizer2->Add(btnAbout, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 1);
     btnQuit = new wxCustomButton(this,ID_BUTTON11,_("  Quit  "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_QUIT")),wxART_TOOLBAR),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON11"));
     btnQuit->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_QUIT")),wxART_TOOLBAR));
     btnQuit->SetMargins(wxSize(5,5));
-    FlexGridSizer2->Add(btnQuit, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
-    FlexGridSizer1->Add(FlexGridSizer2, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    FlexGridSizer2->Add(btnQuit, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 1);
+    FlexGridSizer1->Add(FlexGridSizer2, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
     SetSizer(FlexGridSizer1);
     MenuBar1 = new wxMenuBar();
     Menu1 = new wxMenu();
@@ -606,7 +609,7 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent,wxWindowID id)
 #if wxCHECK_VERSION(2, 9, 0)
 	m_canvas->SetMinClientSize( wxSize(100,100));
 #endif
-    FlexGridSizer1->Add(m_canvas, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    FlexGridSizer1->Add(m_canvas, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
 
 	// Load an empty scene:
     wxCommandEvent dummEvent;
@@ -1188,11 +1191,10 @@ void _DSceneViewerFrame::OnMenuItem14Selected(wxCommandEvent& event)
 	int w,h;
 	dc.GetSize(&w, &h);
 
-	// create a memory DC and bitmap to capture the DC
-	wxMemoryDC memDC;
-	wxBitmap memBmp(w, h);
-	memDC.SelectObject(memBmp);
-	memDC.Blit(0,0, w,h, &dc, 0,0);
+	//Save image directly from OpenGL
+	CImage frame(w, h, 3, false);
+	glReadBuffer(GL_FRONT);
+	glReadPixels(0, 0, w, h, GL_BGR_EXT, GL_UNSIGNED_BYTE, frame(0,0) );
 
 	// Save:
 	wxString caption = wxT("Save snapshot to file");
@@ -1205,7 +1207,7 @@ void _DSceneViewerFrame::OnMenuItem14Selected(wxCommandEvent& event)
 	if (dialog.ShowModal() != wxID_OK)
 		return;
 
-	memBmp.SaveFile( dialog.GetPath(), wxBITMAP_TYPE_PNG);
+	frame.saveToFile( std::string(dialog.GetPath().mb_str()) );
 }
 
 
@@ -1766,6 +1768,7 @@ void _DSceneViewerFrame::OnmnuImportLASSelected(wxCommandEvent& event)
 {
 	try
 	{
+#if MRPT_HAS_LIBLAS
 		wxFileDialog dialog(
 			this,
 			_("Choose the LAS file to import"),
@@ -1799,12 +1802,12 @@ void _DSceneViewerFrame::OnmnuImportLASSelected(wxCommandEvent& event)
 			gl_points_col = opengl::CPointCloudColoured::Create();
 
 		mrpt::maps::CColouredPointsMap pts_map;
-		mrpt::maps::CPointsMap::LAS_HeaderInfo  las_hdr;
+		mrpt::maps::LAS_HeaderInfo  las_hdr;
 
 		bool res;
 		{
 			wxBusyCursor  busy;
-			res = pts_map.loadLASFile(fil,las_hdr);
+			res = mrpt::maps::loadLASFile(pts_map,fil,las_hdr);
 		}
 
 		if (!res)
@@ -1912,7 +1915,10 @@ void _DSceneViewerFrame::OnmnuImportLASSelected(wxCommandEvent& event)
 			_("File info"),
 			wxOK,
 			this);
-    }
+#else
+		throw std::runtime_error("MRPT was built without libLAS support!");
+#endif
+	}
     catch(std::exception &e)
     {
         wxMessageBox( _U(e.what()), _("Exception"), wxOK, this);

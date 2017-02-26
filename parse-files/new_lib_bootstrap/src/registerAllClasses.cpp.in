@@ -12,22 +12,14 @@
 #define MRPT_NO_WARN_BIG_HDR   // In this register file is the only place where it makes sense to include *all* headers.
 #include <mrpt/@name@.h>
 
-#include <mrpt/utils/CStartUpClassesRegister.h>
+#include <mrpt/utils/initializer.h>
 
 
 using namespace mrpt::@name@;
 using namespace mrpt::utils;
 
-void registerAllClasses_mrpt_@name@();
-
-CStartUpClassesRegister  mrpt_@name@_class_reg(&registerAllClasses_mrpt_@name@);
-
-/*---------------------------------------------------------------
-					registerAllClasses_mrpt_@name@
-  ---------------------------------------------------------------*/
-void registerAllClasses_mrpt_@name@()
+MRPT_INITIALIZER(registerAllClasses_mrpt_@name@
 {
 //	registerClass( CLASS_ID( XXXX ) );
 
 }
-

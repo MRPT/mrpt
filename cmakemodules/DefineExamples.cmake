@@ -64,6 +64,7 @@ IF(BUILD_EXAMPLES)
 		se3
 		csparse_demo
 		threadsPipe
+    dirs_files_manipulation
 		)
 	SET(CMAKE_EXAMPLE_DEPS mrpt-base)
 	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
@@ -114,7 +115,6 @@ IF(BUILD_EXAMPLES)
 		RangeOnlyLocalization_RejectionSampling
 		benchmark-gridmaps
 		gridMapLikelihoodCharacterization
-		gridRawlogSimulator
 		gauss_img_filtering
 		test-compress
 		spline_interpolation
@@ -249,7 +249,6 @@ IF(BUILD_EXAMPLES)
 			eNeck_test
 			cameraCaptureAskDialog
 			eNosesRealtime_test
-			IRBoard_test
 			phidgetProximitySensor
 			NIDAQ_test
 			)
@@ -260,7 +259,6 @@ IF(BUILD_EXAMPLES)
 	        # === Depending on: maps & hwdrivers ===
 	        #  list of examples for each directory:
 	        SET(LIST_EXAMPLES_IN_THIS_DIR
-			ptuHokuyo
 			swissranger_cam_demo
 			SICK_laser_serial_test
 			SICK_laser_test
@@ -302,7 +300,7 @@ IF(BUILD_EXAMPLES)
 
 
 	ENDIF(BUILD_HWDRIVERS)
-	
+
 	# === OPENNI2 examples ===
 	IF (MRPT_HAS_OPENNI2)
 		SET(LIST_EXAMPLES_IN_THIS_DIR
@@ -311,12 +309,12 @@ IF(BUILD_EXAMPLES)
 			openNI2_driver_demo
 			openNI2_2d-icp-slam
 			openNI2_to_rawlog)
-			
+
 		SET(CMAKE_EXAMPLE_DEPS mrpt-base mrpt-hwdrivers mrpt-gui mrpt-opengl mrpt-maps)
 		SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS} "\${OPENNI2_LIBRARIES}")
 		GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 	ENDIF(MRPT_HAS_OPENNI2)
-	
+
 	# === PbMap examples ===
 	IF(BUILD_mrpt-pbmap)
 		ADD_SAMPLES_DIRECTORY(pbmap-examples)
@@ -328,7 +326,7 @@ IF(BUILD_EXAMPLES)
 #		SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
 #		GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 	ENDIF(BUILD_mrpt-pbmap)
-	
+
 	# === Navigation examples ===
 	IF(BUILD_mrpt-nav)
 		SET(LIST_EXAMPLES_IN_THIS_DIR
@@ -338,7 +336,7 @@ IF(BUILD_EXAMPLES)
 		SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
 		GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 	ENDIF(BUILD_mrpt-nav)
-	
+
 
 	# Generate the CMakeLists.txt in the "/samples" directory
 	SET(CMAKE_COMMANDS_INCLUDE_EXAMPLE_DIRS ${CMAKE_COMMANDS_INCLUDE_EXAMPLE_DIRS_ROOT})

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -45,12 +45,12 @@ using namespace mrpt::obs;
 //------------------------------------------------------------------------
 CFaceDetection::CFaceDetection() :
 	m_end_threads(false),
-	m_enter_checkIfFaceRegions(0,1,"enter_checkIfFaceRegions"),
-	m_enter_checkIfFacePlaneCov(0,1,"enter_checkIfFacePlaneCov"),
-	m_enter_checkIfDiagonalSurface(0,1,"enter_checkIfDiagonalSurface"),
-	m_leave_checkIfFaceRegions(0,1,"leave_checkIfFaceRegions"),
-	m_leave_checkIfFacePlaneCov(0,1,"leave_checkIfFacePlaneCov"),
-	m_leave_checkIfDiagonalSurface(0,1,"leave_checkIfDiagonalSurface")
+	m_enter_checkIfFaceRegions(0,1),
+	m_enter_checkIfFacePlaneCov(0,1),
+	m_enter_checkIfDiagonalSurface(0,1),
+	m_leave_checkIfFaceRegions(0,1),
+	m_leave_checkIfFacePlaneCov(0,1),
+	m_leave_checkIfDiagonalSurface(0,1)
 {
 	m_measure.numPossibleFacesDetected = 0;
 	m_measure.numRealFacesDetected = 0;
@@ -1436,7 +1436,7 @@ void CFaceDetection::experimental_viewFacePointsAndEigenVects(  const vector<CAr
 
 	mrpt::opengl::COpenGLScenePtr scene = win3D.get3DSceneAndLock();
 
-	CSpherePtr sphere = CSphere::Create(0.005);
+	CSpherePtr sphere = CSphere::Create(0.005f);
 	sphere->setLocation( center );
 	sphere->setColor( TColorf(0,1,0) );
 	scene->insert( sphere );
@@ -1520,7 +1520,7 @@ void CFaceDetection::experimental_viewRegions( const vector<TPoint3D> regions[9]
 		for ( size_t i = 0; i < 3; i++ )
 			for ( size_t j = 0; j < 3; j++ )
 			{
-				CSpherePtr sphere = CSphere::Create(0.005);
+				CSpherePtr sphere = CSphere::Create(0.005f);
 				sphere->setLocation( meanPos[i][j] );
 				sphere->setColor( TColorf(0,1,0) );
 				scene->insert( sphere );
@@ -1563,7 +1563,7 @@ void CFaceDetection::experimental_viewRegions( const vector<TPoint3D> regions[9]
 	pntsMap.setAllPoints( xs, ys, zs );
 
 	int cont = 0;
-	float colors[9][3] = {{1,0,0},{0,1,0},{0,0,1},{1,1,0},{1,0,1},{0,1,1},{0.5,0.25,0},{0.5,0,0.25},{0,0.35,0.5}};
+	float colors[9][3] = {{1,0,0},{0,1,0},{0,0,1},{1,1,0},{1,0,1},{0,1,1},{0.5f,0.25f,0},{0.5f,0,0.25f},{0,0.35f,0.5f}};
 	for ( size_t i = 0; i < 9; i++ )
 	{
 		float R = colors[i][0];
@@ -1612,7 +1612,7 @@ void CFaceDetection::experimental_segmentFace( const CObservation3DRangeScan &fa
 	mrpt::utils::CImage  img;
 	// Normalize the image
 	CMatrixFloat  range2D = m_lastFaceDetected.rangeImage;
-	range2D *= 1.0/5;
+	range2D *= 1.0f/5;
 	img.setFromMatrix(range2D);
 
 	// INITIALIZATION

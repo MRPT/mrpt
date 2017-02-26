@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -108,11 +108,12 @@ void  CSickLaserUSB::doProcessSimple(
 	outObservation.stdError = 0.003f;
 	outObservation.sensorPose = m_sensorPose;
 
-	outObservation.scan = ranges;
-	outObservation.validRange.resize(ranges.size());
+	outObservation.resizeScan(ranges.size());
 
-	for (size_t i=0;i<ranges.size();i++)
-		outObservation.validRange[i] = (outObservation.scan[i] <= outObservation.maxRange);
+	for (size_t i=0;i<ranges.size();i++) {
+		outObservation.setScanRange(i, ranges[i]);
+		outObservation.setScanRangeValidity(i, (ranges[i] <= outObservation.maxRange) );
+	}
 
 	// Do filter:
 	C2DRangeFinderAbstract::filterByExclusionAreas( outObservation );
@@ -179,13 +180,12 @@ bool  CSickLaserUSB::checkControllerIsConnected()
 		m_usbConnection->SetLatencyTimer(1);		// 1ms, the minimum
 		mrpt::system::sleep(10);
 
-		printf_debug("[CSickLaserUSB] USB DEVICE S/N:'%s' OPEN SUCCESSFULLY!!!\n",m_serialNumber.c_str() );
+		MRPT_LOG_INFO_FMT("[CSickLaserUSB] USB DEVICE S/N:'%s' OPEN SUCCESSFULLY!!!\n",m_serialNumber.c_str() );
 		return true;
 	}
 	catch(std::exception &e)
 	{
-		printf_debug(e.what());
-		printf_debug("[CSickLaserUSB] ERROR TRYING TO OPEN USB DEVICE S/N:'%s'\n",m_serialNumber.c_str() );
+		MRPT_LOG_ERROR_FMT("[CSickLaserUSB] ERROR TRYING TO OPEN USB DEVICE S/N:'%s'\n%s",m_serialNumber.c_str(),e.what() );
 		return false;
 	}
 }
@@ -226,7 +226,7 @@ bool  CSickLaserUSB::waitContinuousSampleFrame(
 		catch (std::exception &e)
 		{
 			// Disconnected?
-			printf_debug("[CSickLaserUSB::waitContinuousSampleFrame] Disconnecting due to comms error: %s\n", e.what());
+			MRPT_LOG_ERROR_FMT("[CSickLaserUSB::waitContinuousSampleFrame] Disconnecting due to comms error: %s\n", e.what());
 			m_usbConnection->Close();
 			m_timeStartUI = 0;
 			return false;

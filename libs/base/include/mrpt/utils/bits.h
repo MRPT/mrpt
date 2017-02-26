@@ -2,16 +2,21 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
 #pragma once
 
+#include <mrpt/config.h>
+
 #define _USE_MATH_DEFINES // (For VS to define M_PI, etc. in cmath)
 #include <cmath> // floor()
-#include <algorithm> // reverse()
+#include <string>
+#include <mrpt/base/link_pragmas.h>
+#include <mrpt/utils/mrpt_macros.h>
+#include <mrpt/utils/mrpt_stdint.h>
 
 /** This is the global namespace for all Mobile Robot Programming Toolkit (MRPT) libraries. */
 namespace mrpt
@@ -39,7 +44,7 @@ namespace mrpt
 		{
 			if (dim==1) return m.getRowCount();
 			else if (dim==2) return m.getColCount();
-			else THROW_EXCEPTION_CUSTOM_MSG1("size: Queried matrix dimension must be 1 or 2. Called with i=%i",dim);
+			else THROW_EXCEPTION_FMT("size: Queried matrix dimension must be 1 or 2. Called with i=%i",dim);
 		}
 	}
 
@@ -92,7 +97,18 @@ namespace mrpt
 
 		/** Returns the sign of X as "0", "1" or "-1" */
 		template <typename T>
-		inline int signWithZero(T x)	{ return x==0?0:sign(x);}
+		inline int signWithZero(T x)	{ return (x==0 || x==-0)?0:sign(x);}
+
+		/** Returns the lowest, possitive among two numbers. If both are non-positive (<=0), the lowest one is returned. */
+		template <typename T>
+		T lowestPositive(const T a, const T b)
+		{
+			if (a > 0 && a <= b)
+				return a; // a positive and smaller than b
+			else if (b > 0)
+			     return b;  // b is positive and either smaller than a or a is negative
+			else return a; // at least b is negative, we might not have an answer
+		}
 
 		/** Efficient and portable evaluation of the absolute difference of two unsigned integer values
 		  * (but will also work for signed and floating point types) */
@@ -121,11 +137,20 @@ namespace mrpt
 		inline const R* getAs(const SMART_PTR &o) { return static_cast<const R*>( & (*o) ); }
 
 		/** Reverse the order of the bytes of a given type (useful for transforming btw little/big endian)  */
-		template <class T> inline void reverseBytesInPlace(T& v_in_out)
-		{
-			unsigned char *ptr = reinterpret_cast<unsigned char*>(&v_in_out);
-			std::reverse(ptr,ptr+sizeof(T));
-		}
+		void BASE_IMPEXP reverseBytesInPlace(bool& v_in_out);
+		void BASE_IMPEXP reverseBytesInPlace(uint8_t& v_in_out);
+		void BASE_IMPEXP reverseBytesInPlace(int8_t& v_in_out);
+		void BASE_IMPEXP reverseBytesInPlace(uint16_t& v_in_out);
+		void BASE_IMPEXP reverseBytesInPlace(int16_t& v_in_out);
+		void BASE_IMPEXP reverseBytesInPlace(uint32_t& v_in_out);
+		void BASE_IMPEXP reverseBytesInPlace(int32_t& v_in_out);
+		void BASE_IMPEXP reverseBytesInPlace(uint64_t& v_in_out);
+		void BASE_IMPEXP reverseBytesInPlace(int64_t& v_in_out);
+		void BASE_IMPEXP reverseBytesInPlace(float& v_in_out);
+		void BASE_IMPEXP reverseBytesInPlace(double& v_in_out);
+#ifdef HAVE_LONG_DOUBLE
+		void BASE_IMPEXP reverseBytesInPlace(long double& v_in_out);
+#endif
 
 		/** Reverse the order of the bytes of a given type (useful for transforming btw little/big endian)  */
 		template <class T> inline void reverseBytes(const T &v_in, T& v_out)
@@ -140,11 +165,24 @@ namespace mrpt
 		inline void keep_min(T &var,  const K test_val) {
 			if (test_val<var) var = test_val;
 		}
-
 		/** If the second argument is above the first one, set the first argument to this higher value. */
 		template <typename T,typename K>
 		inline void keep_max(T &var,  const K test_val) {
 			if (test_val>var) var = test_val;
+		}
+		/** Saturate the value of var (the variable gets modified) so it does not get out of [min,max]. */
+		template <typename T>
+		inline void saturate(T &var, const T sat_min, const T sat_max) {
+			if (var>sat_max) var = sat_max;
+			if (var<sat_min) var = sat_min;
+		}
+		/** Like saturate() but it returns the value instead of modifying the variable */
+		template <typename T>
+		inline T saturate_val(const T &value, const T sat_min, const T sat_max) {
+			T var=value;
+			if (var>sat_max) var = sat_max;
+			if (var<sat_min) var = sat_min;
+			return var;
 		}
 
 		/** Calls "delete" to free an object only if the pointer is not NULL, then set the pointer to NULL. */
@@ -159,6 +197,22 @@ namespace mrpt
 		/** Like calling a std::vector<>'s clear() method, but really forcing deallocating the memory. */
 		template <class VECTOR_T>
 		inline void vector_strong_clear(VECTOR_T & v) { VECTOR_T dummy; dummy.swap(v); }
+
+		/** Returns the smaller number >=len such that it's a multiple of 4 */
+		template <typename T>
+		T length2length4N(T len) {
+			if (0!=(len & 0x03)) len+= (4 - (len & 0x03));
+			return len;
+		}
+
+#define SELBYTE0(v)  (v & 0xff)
+#define SELBYTE1(v)  ((v>>8) & 0xff)
+#define SELBYTE2(v)  ((v>>16) & 0xff)
+#define SELBYTE3(v)  ((v>>24) & 0xff)
+
+#define MAKEWORD16B(__LOBYTE,__HILOBYTE)  ((__LOBYTE) | ((__HILOBYTE)<<8))
+#define MAKEWORD32B(__LOWORD16,__HIWORD16)  ((__LOWORD16) | ((__HIWORD16)<<16))
+#define MAKEWORD64B(__LOWORD32,__HIWORD32)  ((__LOWORD32) | ((__HIWORD32)<<32))
 
 	} // End of namespace
 } // end of namespace

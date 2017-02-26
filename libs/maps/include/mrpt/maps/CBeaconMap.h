@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -13,7 +13,6 @@
 #include <mrpt/maps/CBeacon.h>
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/math/CMatrix.h>
-#include <mrpt/utils/CDynamicGrid.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/obs/obs_frwds.h>
 
@@ -98,15 +97,9 @@ namespace maps
 		}
 
 		// See docs in base class
-		float  compute3DMatchingRatio(
-				const mrpt::maps::CMetricMap	*otherMap,
-				const mrpt::poses::CPose3D		&otherMapPose,
-				float				maxDistForCorr = 0.10f,
-				float				maxMahaDistForCorr = 2.0f
-				) const MRPT_OVERRIDE;
+		float compute3DMatchingRatio(const mrpt::maps::CMetricMap *otherMap, const mrpt::poses::CPose3D &otherMapPose, const TMatchingRatioParams &params) const MRPT_OVERRIDE;
 
-		 /** With this struct options are provided to the likelihood computations.
-		  */
+		 /** With this struct options are provided to the likelihood computations */
 		 struct MAPS_IMPEXP TLikelihoodOptions : public utils::CLoadableOptions
 		 {
 		 public:

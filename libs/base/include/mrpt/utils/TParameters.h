@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -14,6 +14,9 @@
 #include <cstdio>
 #include <map>
 #include <string>
+#include <sstream>
+#include <iostream>
+#include <stdexcept>
 
 namespace mrpt
 {
@@ -90,12 +93,12 @@ namespace mrpt
 			inline T & operator[](const std::string &s) { return BASE::operator[](s); }
 
 			/** Dumps to console the output from getAsString() */
-			inline void dumpToConsole() const { ::fputs(getAsString(),stdout); }
+			inline void dumpToConsole() const { ::fputs(getAsString().c_str(),stdout); }
 
-			/** Returns a multi-like string representation of the parameters like : 'nam   = val\nnam2   = val2...' */
+			/** Returns a multi-line string representation of the parameters like : 'nam   = val\nnam2   = val2...' */
 			inline std::string getAsString() const { std::string s; getAsString(s); return s; }
 
-			/** Returns a multi-like string representation of the parameters like : 'nam   = val\nnam2   = val2...' */
+			/** Returns a multi-line string representation of the parameters like : 'nam   = val\nnam2   = val2...' */
 			void getAsString(std::string &s) const {
 				size_t maxStrLen = 10;
 				for (typename BASE::const_iterator it=BASE::begin();it!=BASE::end();++it) maxStrLen = std::max(maxStrLen, it->first.size() );

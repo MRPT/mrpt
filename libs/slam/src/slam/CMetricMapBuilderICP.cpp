@@ -2,14 +2,12 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
 #include "slam-precomp.h"   // Precompiled headers
-
-
 
 #include <mrpt/slam/CICP.h>
 #include <mrpt/slam/CMetricMapBuilderICP.h>
@@ -31,8 +29,10 @@ using namespace mrpt::math;
 /*---------------------------------------------------------------
 		 Constructor
   ---------------------------------------------------------------*/
-CMetricMapBuilderICP::CMetricMapBuilderICP()
+CMetricMapBuilderICP::CMetricMapBuilderICP() : 
+	ICP_options(m_min_verbosity_level)
 {
+	this->setLoggerName("CMetricMapBuilderICP");
 	this->initialize( CSimpleMap() );
 }
 
@@ -53,15 +53,29 @@ CMetricMapBuilderICP::~CMetricMapBuilderICP()
 /*---------------------------------------------------------------
 							Options
   ---------------------------------------------------------------*/
-CMetricMapBuilderICP::TConfigParams::TConfigParams() :
+CMetricMapBuilderICP::TConfigParams::TConfigParams(mrpt::utils::VerbosityLevel &parent_verbosity_level) :
 	matchAgainstTheGrid( false ),
 	insertionLinDistance(1.0),
 	insertionAngDistance(DEG2RAD(30)),
 	localizationLinDistance(0.20),
 	localizationAngDistance(DEG2RAD(30)),
 	minICPgoodnessToAccept(0.40),
+	verbosity_level(parent_verbosity_level),
 	mapInitializers()
 {
+}
+
+CMetricMapBuilderICP::TConfigParams &CMetricMapBuilderICP::TConfigParams::operator=(const CMetricMapBuilderICP::TConfigParams &other){
+	matchAgainstTheGrid     = other.matchAgainstTheGrid;
+	insertionLinDistance    = other.insertionLinDistance;
+	insertionAngDistance    = other.insertionAngDistance;
+	localizationLinDistance = other.localizationLinDistance;
+	localizationAngDistance = other.localizationAngDistance;
+	minICPgoodnessToAccept  = other.minICPgoodnessToAccept;
+//	We can't copy a reference type
+//	verbosity_level         = other.verbosity_level;
+	mapInitializers         = other.mapInitializers;
+	return *this;
 }
 
 void  CMetricMapBuilderICP::TConfigParams::loadFromConfigFile(
@@ -73,6 +87,7 @@ void  CMetricMapBuilderICP::TConfigParams::loadFromConfigFile(
 	MRPT_LOAD_CONFIG_VAR_DEGREES(insertionAngDistance,source,section)
 	MRPT_LOAD_CONFIG_VAR(localizationLinDistance, double	,source,section)
 	MRPT_LOAD_CONFIG_VAR_DEGREES(localizationAngDistance, source,section)
+	verbosity_level = source.read_enum<mrpt::utils::VerbosityLevel>(section,"verbosity_level", verbosity_level );
 
 	MRPT_LOAD_CONFIG_VAR(minICPgoodnessToAccept, double	,source,section)
 
@@ -82,6 +97,15 @@ void  CMetricMapBuilderICP::TConfigParams::loadFromConfigFile(
 
 void  CMetricMapBuilderICP::TConfigParams::dumpToTextStream( CStream	&out) const
 {
+	out.printf("\n----------- [CMetricMapBuilderICP::TConfigParams] ------------ \n\n");
+
+	out.printf("insertionLinDistance                    = %f m\n", insertionLinDistance );
+	out.printf("insertionAngDistance                    = %f deg\n", RAD2DEG(insertionAngDistance) );
+	out.printf("localizationLinDistance                 = %f m\n", localizationLinDistance );
+	out.printf("localizationAngDistance                 = %f deg\n", RAD2DEG(localizationAngDistance) );
+	out.printf("verbosity_level                         = %s\n", mrpt::utils::TEnumType<mrpt::utils::VerbosityLevel>::value2name(verbosity_level).c_str());
+
+	out.printf("  Now showing 'mapsInitializers':\n");
 	mapInitializers.dumpToTextStream(out);
 }
 
@@ -105,6 +129,7 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 	// Is it an odometry observation??
 	if (IS_CLASS(obs,CObservationOdometry))
 	{
+		MRPT_LOG_DEBUG("processObservation(): obs is CObservationOdometry");
 		m_there_has_been_an_odometry = true;
 
 		const CObservationOdometryPtr odo = CObservationOdometryPtr(obs);
@@ -114,7 +139,7 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 		bool    pose_before_valid = m_lastPoseEst.getLatestRobotPose(pose_before);
 
 		// Move our estimation:
-		m_lastPoseEst.processUpdateNewOdometry( odo->odometry, odo->timestamp, odo->hasVelocities, odo->velocityLin, odo->velocityAng  );
+		m_lastPoseEst.processUpdateNewOdometry(odo->odometry, odo->timestamp, odo->hasVelocities, odo->velocityLocal);
 
 		if (pose_before_valid)
 		{
@@ -122,24 +147,30 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 			CPose2D pose_after;
 			if (m_lastPoseEst.getLatestRobotPose(pose_after))
 				this->accumulateRobotDisplacementCounters(pose_after);
+			MRPT_LOG_DEBUG_STREAM << "processObservation(): obs is CObservationOdometry, new post_after=" << pose_after;
 		}
 	} // end it's odometry
 	else
 	{
 		// Current robot pose given the timestamp of the observation (this can include a small extrapolation
 		//  using the latest known robot velocities):
-		CPose2D		initialEstimatedRobotPose;
+		TPose2D		initialEstimatedRobotPose;
 		{
-			float v,w;
+			mrpt::math::TTwist2D  robotVelLocal, robotVelGlobal;
 			if (obs->timestamp!=INVALID_TIMESTAMP)
 			{
-				if (!m_lastPoseEst.getCurrentEstimate(initialEstimatedRobotPose,v,w, obs->timestamp))
+				MRPT_LOG_DEBUG("processObservation(): extrapolating pose from latest pose and new observation timestamp...");
+				if (!m_lastPoseEst.getCurrentEstimate(initialEstimatedRobotPose,robotVelLocal,robotVelGlobal, obs->timestamp))
 				{	// couldn't had a good extrapolation estimate... we'll have to live with the latest pose:
 					m_lastPoseEst.getLatestRobotPose(initialEstimatedRobotPose);
+					MRPT_LOG_WARN("processObservation(): new pose extrapolation failed, using last pose as is.");
 				}
 			}
-			else
+			else 
+			{
+				MRPT_LOG_WARN("processObservation(): invalid observation timestamp.");
 				m_lastPoseEst.getLatestRobotPose(initialEstimatedRobotPose);
+			}
 		}
 
 		// To know the total path length:
@@ -157,6 +188,8 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 			m_distSinceLastICP.lin < std::min(ICP_options.localizationLinDistance,ICP_options.insertionLinDistance) &&
 			m_distSinceLastICP.ang < std::min(ICP_options.localizationAngDistance,ICP_options.insertionAngDistance);
 
+		MRPT_LOG_DEBUG_STREAM << "processObservation(): skipping ICP pose correction due to small odometric displacement? : " << (we_skip_ICP_pose_correction ? "YES":"NO");
+
 		CICP::TReturnInfo	icpReturn;
 		bool				can_do_icp=false;
 
@@ -165,20 +198,17 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 		if (ICP_options.matchAgainstTheGrid && !metricMap.m_gridMaps.empty() )
 		{
 			matchWith = static_cast<CMetricMap*>(metricMap.m_gridMaps[0].pointer());
+			MRPT_LOG_DEBUG("processObservation(): matching against gridmap.");
 		}
 		else
 		{
 			ASSERTMSG_( metricMap.m_pointsMaps.size(), "No points map in multi-metric map." )
 			matchWith = static_cast<CMetricMap*>(metricMap.m_pointsMaps[0].pointer());
+			MRPT_LOG_DEBUG("processObservation(): matching against point map.");
 		}
 		ASSERT_(matchWith!=NULL)
 
-		if (we_skip_ICP_pose_correction)
-		{
-			if (options.verbose)
-				printf("[CMetricMapBuilderICP] Skipping ICP pose correction...\n" );
-		}
-		else
+		if (!we_skip_ICP_pose_correction)
 		{
 			m_there_has_been_an_odometry = false;
 
@@ -238,26 +268,22 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 					CPosePDFGaussian  pEst2D;
 					pEst2D.copyFrom( *pestPose );
 
-					m_lastPoseEst.processUpdateNewPoseLocalization( TPose2D(pEst2D.mean), pEst2D.cov, obs->timestamp );
+					m_lastPoseEst.processUpdateNewPoseLocalization( TPose2D(pEst2D.mean), obs->timestamp );
 					m_lastPoseEst_cov = pEst2D.cov;
 
 					m_distSinceLastICP.updatePose(pEst2D.mean);
 
 
 					// Debug output to console:
-					if (options.verbose)
-					{
-						cout << "[CMetricMapBuilderICP]  " << previousKnownRobotPose << "->" << pEst2D.getMeanVal() << std::endl;
-						cout << format("[CMetricMapBuilderICP]   Fit:%.1f%% Itr:%i In %.02fms \n",
+					MRPT_LOG_INFO_STREAM << "processObservation: previousPose="<<previousKnownRobotPose << "-> currentPose=" << pEst2D.getMeanVal() << std::endl;
+					MRPT_LOG_INFO( format("[CMetricMapBuilderICP]   Fit:%.1f%% Itr:%i In %.02fms \n",
 							icpReturn.goodness*100,
 							icpReturn.nIterations,
-							1000*runningTime );
-					}
+							1000*runningTime ) );
 				}
 				else
 				{
-					if (options.verbose)
-						cout << "[CMetricMapBuilderICP]  Ignoring ICP of low quality: " << icpReturn.goodness*100 << std::endl;
+					MRPT_LOG_WARN_STREAM << "Ignoring ICP of low quality: " << icpReturn.goodness*100 << std::endl;
 				}
 
 				// Compute the transversed length:
@@ -267,6 +293,10 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 				this->accumulateRobotDisplacementCounters(currentKnownRobotPose); //currentKnownRobotPose - previousKnownRobotPose);
 
 			} // end we can do ICP.
+			else
+			{
+				MRPT_LOG_WARN_STREAM << "Cannot do ICP: empty pointmap or not suitable gridmap...\n";
+			}
 
 		} // else, we do ICP pose correction
 
@@ -292,14 +322,13 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 		if (matchWith && matchWith->isEmpty())
 			update = true;
 
-		// ----------------------------------------------------------
-		// ----------------------------------------------------------
+		MRPT_LOG_DEBUG_STREAM << "update map: " << (update ? "YES":"NO") << " options.enableMapUpdating: " << (options.enableMapUpdating ? "YES":"NO");
+
 		if ( options.enableMapUpdating && update)
 		{
 			CTicTac tictac;
 
-			if (options.verbose)
-				tictac.Tic();
+			tictac.Tic();
 
 			// Insert the observation:
 			CPose2D  currentKnownRobotPose;
@@ -312,11 +341,12 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 			resetRobotDisplacementCounters(currentKnownRobotPose);
 			//m_distSinceLastInsertion[obs->sensorLabel].updatePose(currentKnownRobotPose);
 
-			if (options.verbose)
-				printf("[CMetricMapBuilderICP] Updating map from pose %s\n",currentKnownRobotPose.asString().c_str());
+			MRPT_LOG_INFO(mrpt::format("Updating map from pose %s\n",currentKnownRobotPose.asString().c_str()));
 
 			CPose3D		estimatedPose3D(currentKnownRobotPose);
-			metricMap.insertObservationPtr(obs,&estimatedPose3D);
+			const bool anymap_update = metricMap.insertObservationPtr(obs,&estimatedPose3D);
+			if (!anymap_update)
+				MRPT_LOG_WARN_STREAM << "**No map was updated** after inserting an observation of type `"<< obs->GetRuntimeClass()->className << "`";
 
 			// Add to the vector of "poses"-"SFs" pairs:
 			CPosePDFGaussian	posePDF(currentKnownRobotPose);
@@ -327,11 +357,8 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 
 			SF_Poses_seq.insert( pose3D, sf );
 
-			if (options.verbose)
-				printf("[CMetricMapBuilderICP] Map updated OK!! In %.03fms\n",tictac.Tac()*1000.0f );
+			MRPT_LOG_INFO_STREAM << "Map updated OK. Done in " << mrpt::system::formatTimeInterval( tictac.Tac() ) << std::endl;
 		}
-
-
 
 	} // end other observation
 
@@ -448,7 +475,7 @@ void  CMetricMapBuilderICP::initialize(
 	m_lastPoseEst.reset();
 
 	if (x0)
-		m_lastPoseEst.processUpdateNewPoseLocalization( x0->getMeanVal(), CMatrixDouble33(), mrpt::system::now() );
+		m_lastPoseEst.processUpdateNewPoseLocalization( x0->getMeanVal(), mrpt::system::now() );
 
 	for (size_t i=0;i<SF_Poses_seq.size();i++)
 	{
@@ -465,8 +492,7 @@ void  CMetricMapBuilderICP::initialize(
 		SF->insertObservationsInto( &metricMap, &estimatedPose3D );
 	}
 
-	if (options.verbose)
-		printf("[CMetricMapBuilderICP::loadCurrentMapFromFile] OK\n");
+	MRPT_LOG_INFO("loadCurrentMapFromFile() OK.\n");
 
 	MRPT_END
 }
@@ -497,10 +523,7 @@ void  CMetricMapBuilderICP::getCurrentlyBuiltMap(CSimpleMap &out_map) const
 
 }
 
-/*---------------------------------------------------------------
-						getCurrentlyBuiltMetricMap
-  ---------------------------------------------------------------*/
-CMultiMetricMap*   CMetricMapBuilderICP::getCurrentlyBuiltMetricMap()
+const CMultiMetricMap*  CMetricMapBuilderICP::getCurrentlyBuiltMetricMap() const
 {
 	return &metricMap;
 }

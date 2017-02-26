@@ -2,21 +2,19 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 #ifndef  CLevenbergMarquardt_H
 #define  CLevenbergMarquardt_H
 
-#include <mrpt/utils/CDebugOutputCapable.h>
+#include <mrpt/utils/COutputLogger.h>
 #include <mrpt/utils/types_math.h>
 #include <mrpt/math/num_jacobian.h>
 #include <mrpt/utils/printf_vector.h>
+#include <mrpt/math/ops_containers.h>
 
-/*---------------------------------------------------------------
-	Class
-  ---------------------------------------------------------------*/
 namespace mrpt
 {
 namespace math
@@ -30,13 +28,16 @@ namespace math
 	 * \ingroup mrpt_base_grp
 	 */
 	template <typename VECTORTYPE = Eigen::VectorXd, class USERPARAM = VECTORTYPE >
-	class CLevenbergMarquardtTempl : public mrpt::utils::CDebugOutputCapable
+	class CLevenbergMarquardtTempl : public mrpt::utils::COutputLogger
 	{
 	public:
 		typedef typename VECTORTYPE::Scalar  NUMTYPE;
 		typedef Eigen::Matrix<NUMTYPE,Eigen::Dynamic,Eigen::Dynamic>  matrix_t;
 		typedef VECTORTYPE vector_t;
 
+		CLevenbergMarquardtTempl() : 
+			mrpt::utils::COutputLogger("CLevenbergMarquardt")
+		{}
 
 		/** The type of the function passed to execute. The user must supply a function which evaluates the error of a given point in the solution space.
 		  *  \param x The state point under examination.
@@ -79,14 +80,14 @@ namespace math
 		  * \a x_increment_adder Is an optional functor which may replace the Euclidean "x_new = x + x_increment" at the core of the incremental optimizer by
 		  *     any other operation. It can be used for example, in on-manifold optimizations.
 		  */
-		static void	execute(
+		void execute(
 			VECTORTYPE			&out_optimal_x,
 			const VECTORTYPE	&x0,
 			TFunctorEval		functor,
 			const VECTORTYPE	&increments,
 			const USERPARAM		&userParam,
 			TResultInfo			&out_info,
-			bool				verbose = false,
+			mrpt::utils::VerbosityLevel verbosity = mrpt::utils::LVL_INFO,
 			const size_t		maxIter = 200,
 			const NUMTYPE		tau = 1e-3,
 			const NUMTYPE		e1 = 1e-8,
@@ -101,6 +102,8 @@ namespace math
 			using namespace std;
 
 			MRPT_START
+
+			this->setMinLoggingLevel(verbosity);
 
 			VECTORTYPE &x=out_optimal_x; // Var rename
 
@@ -125,7 +128,7 @@ namespace math
 
 			// Start iterations:
 			bool	found = math::norm_inf(g)<=e1;
-			if (verbose && found)	printf_debug("[LM] End condition: math::norm_inf(g)<=e1 :%f\n",math::norm_inf(g));
+			if (found) logFmt(mrpt::utils::LVL_INFO, "End condition: math::norm_inf(g)<=e1 :%f\n",math::norm_inf(g));
 
 			NUMTYPE	lambda = tau * out_info.H.maximumDiagonal();
 			size_t  iter = 0;
@@ -156,13 +159,13 @@ namespace math
 				double h_lm_n2 = math::norm(h_lm);
 				double x_n2 = math::norm(x);
 
-				if (verbose) printf_debug( (format("[LM] Iter: %u x:",(unsigned)iter)+ sprintf_vector(" %f",x) + std::string("\n")).c_str() );
+				logFmt(mrpt::utils::LVL_DEBUG, "Iter:%u x=%s\n",(unsigned)iter,sprintf_vector(" %f",x).c_str() );
 
 				if (h_lm_n2<e2*(x_n2+e2))
 				{
 					// Done:
 					found = true;
-					if (verbose) printf_debug("[LM] End condition: %e < %e\n", h_lm_n2, e2*(x_n2+e2) );
+					logFmt(mrpt::utils::LVL_INFO, "End condition: %e < %e\n", h_lm_n2, e2*(x_n2+e2) );
 				}
 				else
 				{
@@ -194,7 +197,7 @@ namespace math
 						J.multiply_Atb(f_x, g);
 
 						found = math::norm_inf(g)<=e1;
-						if (verbose && found)	printf_debug("[LM] End condition: math::norm_inf(g)<=e1 : %e\n", math::norm_inf(g) );
+						if (found) logFmt(mrpt::utils::LVL_INFO, "End condition: math::norm_inf(g)<=e1 : %e\n", math::norm_inf(g) );
 
 						lambda *= max(0.33, 1-pow(2*l-1,3) );
 						v = 2;

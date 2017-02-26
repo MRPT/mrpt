@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -20,9 +20,9 @@
 	extern "C"
 	{
 	#define _MSC_STDINT_H_    // We already have pstdint.h in MRPT
-	#include <avformat.h>
-	#include <avcodec.h>
-	#include <swscale.h>
+	#include <libavformat/avformat.h>
+	#include <libavcodec/avcodec.h>
+	#include <libswscale/swscale.h>
 	}
 #endif
 

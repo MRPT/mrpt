@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -159,12 +159,12 @@ int main(int argc, char ** argv)
         CActionRobotMovement2D::TMotionModelOptions   opts;
         CPoint3D                null3D(0,0,0);
         opts.modelSelection = CActionRobotMovement2D::mmGaussian;
-	opts.gausianModel.a1=0;
-	opts.gausianModel.a2=0;
-	opts.gausianModel.a3=0;
-	opts.gausianModel.a4=0;
-	opts.gausianModel.minStdXY = odometryNoiseXY_std;
-	opts.gausianModel.minStdPHI = DEG2RAD( 0.002f );
+	opts.gaussianModel.a1=0;
+	opts.gaussianModel.a2=0;
+	opts.gaussianModel.a3=0;
+	opts.gaussianModel.a4=0;
+	opts.gaussianModel.minStdXY = odometryNoiseXY_std;
+	opts.gaussianModel.minStdPHI = DEG2RAD( 0.002f );
 
         os::sprintf(auxStr,sizeof(auxStr),"%s/%s",outDir.c_str(),outFile.c_str());
         CFileOutputStream     fil(auxStr);

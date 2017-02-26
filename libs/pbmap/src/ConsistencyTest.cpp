@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -659,7 +659,8 @@ Eigen::Matrix4f ConsistencyTest::estimatePoseRANSAC( std::map<unsigned, unsigned
 //  Eigen::Matrix4f best_model;
   CMatrixDouble best_model;
 
-  math::RANSAC::execute(planeCorresp,
+  math::RANSAC ransac_executer;
+  ransac_executer.execute(planeCorresp,
                         ransacPlaneAlignment_fit,
                         ransac3Dplane_distance,
                         ransac3Dplane_degenerate,

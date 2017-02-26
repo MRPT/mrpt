@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -163,7 +163,7 @@ void do_simulation()
 		CActionRobotMovement2D::TMotionModelOptions	odo_opts;
 
 		odo_opts.modelSelection = CActionRobotMovement2D::mmGaussian;
-		//odo_opts.gausianModel.
+		//odo_opts.gaussianModel.
 
 		CPose2D	last_pose( GT(0,1),GT(0,2),GT(0,3) );
 		CPose2D	real_pose = last_pose;
@@ -184,7 +184,7 @@ void do_simulation()
 			CSensoryFramePtr sf = CSensoryFrame::Create();
 
 			CObservation2DRangeScanPtr the_scan = CObservation2DRangeScan::Create();
-			the_scan->aperture = M_PI;
+			the_scan->aperture = M_PIf;
 			the_scan->timestamp = mrpt::system::now();
 			the_grid.laserScanSimulator( *the_scan, real_pose, 0.5f, LASER_N_RANGES, LASER_STD_ERROR, 1, LASER_BEARING_STD_ERROR );
 			sf->insert(the_scan);
@@ -216,9 +216,9 @@ void simulOdometry(
 	last_pose = real_pose;
 
 	// Noise:
-	Apose.x_incr( randomGenerator.drawGaussian1D_normalized() * odo_opts.gausianModel.minStdXY );
-	Apose.y_incr( randomGenerator.drawGaussian1D_normalized() * odo_opts.gausianModel.minStdXY );
-	Apose.phi_incr( randomGenerator.drawGaussian1D_normalized() * odo_opts.gausianModel.minStdPHI );
+	Apose.x_incr( randomGenerator.drawGaussian1D_normalized() * odo_opts.gaussianModel.minStdXY );
+	Apose.y_incr( randomGenerator.drawGaussian1D_normalized() * odo_opts.gaussianModel.minStdXY );
+	Apose.phi_incr( randomGenerator.drawGaussian1D_normalized() * odo_opts.gaussianModel.minStdPHI );
 	Apose.normalizePhi();
 }
 

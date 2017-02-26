@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -11,8 +11,8 @@
 
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/utils/CListOfClasses.h>
-#include <mrpt/utils/CDebugOutputCapable.h>
-#include <mrpt/synch.h>
+#include <mrpt/utils/COutputLogger.h>
+#include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/maps/CSimpleMap.h>
@@ -32,21 +32,14 @@ namespace slam
 	 *
 	 * \sa CMetricMap  \ingroup metric_slam_grp
 	 */
-	class SLAM_IMPEXP CMetricMapBuilder : public mrpt::utils::CDebugOutputCapable
+	class SLAM_IMPEXP CMetricMapBuilder : public mrpt::utils::COutputLogger
 	{
 	protected:
-		/** Critical zones
-		  */
-		synch::CCriticalSection	critZoneChangingMap;
-
-		/** Enter critical section for map updating:
-		  */
+		mrpt::synch::CCriticalSection   critZoneChangingMap; //!< Critical zones
+		/** Enter critical section for map updating */
 		inline void  enterCriticalSection() { critZoneChangingMap.enter(); }
-
-		/** Leave critical section for map updating:
-		  */
+		/** Leave critical section for map updating */
 		inline void  leaveCriticalSection() { critZoneChangingMap.leave(); }
-
 	public:
 		CMetricMapBuilder();           //!< Constructor
 		virtual ~CMetricMapBuilder( ); //!< Destructor.
@@ -77,7 +70,7 @@ namespace slam
 		virtual unsigned int  getCurrentlyBuiltMapSize() = 0;
 
 		/** Returns the map built so far. NOTE that for efficiency a pointer to the internal object is passed, DO NOT delete nor modify the object in any way, if desired, make a copy of ir with "duplicate()". */
-		virtual mrpt::maps::CMultiMetricMap*   getCurrentlyBuiltMetricMap() = 0;
+		virtual const mrpt::maps::CMultiMetricMap*   getCurrentlyBuiltMetricMap() const = 0;
 
 		/** A useful method for debugging: the current map (and/or poses) estimation is dumped to an image file.
 		  * \param file The output file name
@@ -106,14 +99,15 @@ namespace slam
 		/** Options for the algorithm */
 		struct SLAM_IMPEXP TOptions
 		{
-			TOptions() : verbose(true),
-						 enableMapUpdating(true),
-						 debugForceInsertion(false),
-						 alwaysInsertByClass()
+			TOptions(mrpt::utils::VerbosityLevel &verb_level_ref ) :
+				verbosity_level (verb_level_ref),
+				enableMapUpdating(true),
+				debugForceInsertion(false),
+				alwaysInsertByClass()
 			{
 			}
 
-			bool	verbose;             //!< If true shows debug information in the console, default is true.
+			mrpt::utils::VerbosityLevel & verbosity_level;
 			bool	enableMapUpdating;   //!< Enable map updating, default is true.
 			bool	debugForceInsertion; //!< Always insert into map. Default is false: detect if necesary.
 
@@ -125,14 +119,12 @@ namespace slam
 			  * \sa mrpt::utils::CListOfClasses
 			  */
 			mrpt::utils::CListOfClasses		alwaysInsertByClass;
-
 		};
 
 		TOptions options;
 
 		public: 
 			MRPT_MAKE_ALIGNED_OPERATOR_NEW 
-
 	}; // End of class def.
 
 	} // End of namespace

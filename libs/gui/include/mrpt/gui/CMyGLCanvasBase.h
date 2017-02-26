@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -11,6 +11,7 @@
 #define CMyGLCanvas_H
 
 #include <mrpt/opengl/opengl_fonts.h>
+#include <mrpt/opengl/CTextMessageCapable.h>
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/gui/link_pragmas.h>
 
@@ -56,7 +57,9 @@ namespace mrpt
 		  *  There is a filter to control the user capability of moving the camera with the mouse. See OnUserManuallyMovesCamera
 		  * \ingroup mrpt_gui_grp
 		  */
-		class GUI_IMPEXP CMyGLCanvasBase: public wxGLCanvas
+		class GUI_IMPEXP CMyGLCanvasBase :
+			public wxGLCanvas, 
+			public mrpt::opengl::CTextMessageCapable
 		{
 		public:
 			CMyGLCanvasBase( wxWindow *parent, wxWindowID id = wxID_ANY,

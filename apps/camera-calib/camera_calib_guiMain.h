@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -51,6 +51,7 @@ class camera_calib_guiDialog: public wxDialog
         void OnlbFilesSelect(wxCommandEvent& event);
         void OnbtnManualRectClick(wxCommandEvent& event);
         void OnbtnCaptureNowClick(wxCommandEvent& event);
+        void OnbtnPoseEstimateNowClick(wxCommandEvent& event);
         void OnbtnSaveImagesClick(wxCommandEvent& event);
         void OncbZoomSelect(wxCommandEvent& event);
         //*)
@@ -88,6 +89,7 @@ class camera_calib_guiDialog: public wxDialog
         static const long ID_XY_GLCANVAS;
         static const long ID_PANEL1;
         static const long ID_NOTEBOOK1;
+        static const long ID_BUTTON10;
         //*)
 
         //(*Declarations(camera_calib_guiDialog)
@@ -109,6 +111,7 @@ class camera_calib_guiDialog: public wxDialog
         wxChoice* cbZoom;
         wxPanel* Panel1;
         wxButton* btnCaptureNow;
+        wxButton* btnPoseEstimateNow;
         wxStaticText* StaticText1;
         wxTextCtrl* txtLog;
         wxStaticText* StaticText3;

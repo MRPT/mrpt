@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -14,8 +14,38 @@
 #include <sstream> // ostringstream
 #include <stdexcept> // logic_error
 
+/**  MRPT_CHECK_GCC_VERSION(MAJ,MIN) */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+#	define MRPT_CHECK_GCC_VERSION( major, minor ) ( ( __GNUC__ > (major) )  || ( __GNUC__ == (major) && __GNUC_MINOR__ >= (minor) ) )
+#else
+#	define MRPT_CHECK_GCC_VERSION( major, minor ) 0
+#endif
+
+/** MRPT_CHECK_VISUALC_VERSION(Version) Version=8 for 2005, 9=2008, 10=2010, 11=2012, 12=2013, 14=2015 */
+#ifndef _MSC_VER
+#   define MRPT_VISUALC_VERSION(major) 0
+#   define MRPT_CHECK_VISUALC_VERSION(major) 0
+#else
+   /* (From wxWidgets macros):
+   Things used to be simple with the _MSC_VER value and the version number
+   increasing in lock step, but _MSC_VER value of 1900 is VC14 and not the
+   non existing (presumably for the superstitious reasons) VC13, so we now
+   need to account for this with an extra offset.
+   */
+#   define MRPT_VISUALC_VERSION(major) ( (6 + (major >= 14 ? (-1) : 0) + major) * 100 )
+#   define MRPT_CHECK_VISUALC_VERSION(major) ( _MSC_VER >= MRPT_VISUALC_VERSION(major) )
+#endif
+
+#ifndef __has_feature
+#	define __has_feature(x) 0  // Compatibility with non-clang compilers.
+#endif
+#ifndef __has_extension
+#	define __has_extension __has_feature // Compatibility with pre-3.0 compilers.
+#endif
+
+
 /** Does the compiler support C++11? */
-#if (__cplusplus>199711L || (defined(_MSC_VER) && (_MSC_VER >= 1700)) )
+#if (__cplusplus>199711L || MRPT_CHECK_VISUALC_VERSION(11) )
 #	define MRPT_HAS_CXX11  1
 #else
 #	define MRPT_HAS_CXX11  0
@@ -27,24 +57,44 @@
 #else
 #	define MRPT_OVERRIDE
 #endif
-// A cross-compiler definition for "deprecated"-warnings
-#if defined(__GNUC__) && (__GNUC__ - 0 > 3 || (__GNUC__ - 0 == 3 && __GNUC_MINOR__ - 0 >= 2))
-   /* gcc >= 3.2 */
-#   define MRPT_DEPRECATED_PRE(_MSG)
-	// The "message" is not supported yet in GCC (JL: wait for gcc 4.4??)
-	//#   define MRPT_DEPRECATED_POST(_MSG) __attribute__ ((deprecated(_MSG)))
-#   define MRPT_DEPRECATED_POST(_MSG) __attribute__ ((deprecated))
-# elif defined(_MSC_VER) && (_MSC_VER >= 1300)
-  /* msvc >= 7 */
-#   define MRPT_DEPRECATED_PRE(_MSG)  __declspec(deprecated (_MSG))
-#   define MRPT_DEPRECATED_POST(_MSG)
-# else
-#  define MRPT_DEPRECATED_PRE(_MSG)
-#  define MRPT_DEPRECATED_POST(_MSG)
-# endif
 
-/** Usage: MRPT_DECLARE_DEPRECATED_FUNCTION("Use XX instead", void myFunc(double)); */
-#define MRPT_DECLARE_DEPRECATED_FUNCTION(__MSG, __FUNC) MRPT_DEPRECATED_PRE(__MSG) __FUNC MRPT_DEPRECATED_POST(__MSG)
+/** C++11 deleted function declarations */
+#if MRPT_CHECK_VISUALC_VERSION(12) || __has_extension(cxx_deleted_functions) || (MRPT_CHECK_GCC_VERSION(4,4) && MRPT_HAS_CXX11)
+#	define MRPT_DELETED_FUNC   =delete
+#else
+#	define MRPT_DELETED_FUNC
+#endif
+
+/** C++11 noexcept: Used after member declarations */
+#if MRPT_CHECK_VISUALC_VERSION(14) || __has_extension(cxx_noexcept) || (MRPT_CHECK_GCC_VERSION(4,6) && MRPT_HAS_CXX11)
+#	define MRPT_NO_THROWS noexcept
+#else
+#	define MRPT_NO_THROWS  throw()
+#endif
+
+/** C++11 unique_ptr<> */
+#if MRPT_CHECK_VISUALC_VERSION(10) || (MRPT_CHECK_GCC_VERSION(4,4) || defined(__clang__)) && (MRPT_HAS_CXX11 || defined(__GXX_EXPERIMENTAL_CXX0X__))
+#	define MRPT_HAS_UNIQUE_PTR  1
+#else
+#	define MRPT_HAS_UNIQUE_PTR  0
+#endif
+
+// A cross-compiler definition for "deprecated"-warnings
+/** Usage: MRPT_DEPRECATED("Use XX instead") void myFunc(double); */
+#if defined(__clang__) && defined(__has_extension)
+#	if __has_extension(attribute_deprecated_with_message)
+#		define MRPT_DEPRECATED(msg) __attribute__((deprecated(msg)))
+#	else
+#		define MRPT_DEPRECATED(msg) __attribute__((deprecated))
+#	endif
+#elif MRPT_CHECK_GCC_VERSION(4, 5)
+#	define MRPT_DEPRECATED(msg) __attribute__((deprecated(msg)))
+#elif MRPT_CHECK_VISUALC_VERSION(8)
+#	define MRPT_DEPRECATED(msg) __declspec(deprecated("deprecated: " msg))
+#else
+#	define MRPT_DEPRECATED(msg) 
+#endif
+
 
 /** Declare MRPT_TODO(message)  */
 #if defined(_MSC_VER)
@@ -77,10 +127,6 @@
 #	define MRPT_scanf_format_check(_FMT_,_VARARGS_)
 #endif
 
-/** Used after member declarations */
-#define MRPT_NO_THROWS		throw()
-
-
 // A cross-compiler definition for aligned memory structures:
 #if defined(_MSC_VER)
 	#define MRPT_ALIGN16 __declspec(align(16))
@@ -94,9 +140,7 @@
 #endif
 
 /** A macro for obtaining the name of the current function:  */
-#if defined(__BORLANDC__)
-		#define	__CURRENT_FUNCTION_NAME__	__FUNC__
-#elif defined(_MSC_VER) && (_MSC_VER>=1300)
+#if defined(_MSC_VER) && (_MSC_VER>=1300)
 		#define	__CURRENT_FUNCTION_NAME__	__FUNCTION__
 #else
 		#define	__CURRENT_FUNCTION_NAME__	__PRETTY_FUNCTION__
@@ -105,7 +149,7 @@
 /** \def THROW_EXCEPTION(msg)
  * \param msg This can be a char*, a std::string, or a literal string.
  * Defines a unified way of reporting exceptions
- * \sa MRPT_TRY_START, MRPT_TRY_END, THROW_EXCEPTION_CUSTOM_MSG1
+ * \sa MRPT_TRY_START, MRPT_TRY_END, THROW_EXCEPTION_FMT
  */
 #define THROW_EXCEPTION(msg)	\
 	{\
@@ -116,22 +160,11 @@
 		throw std::logic_error( auxCompStr.str() );\
 	}\
 
-/** \def THROW_EXCEPTION_CUSTOM_MSG1
-  * \param e The caught exception.
-  *	\param msg Is a char* or literal string.
-  */
-#define THROW_EXCEPTION_CUSTOM_MSG1(msg,param1)	\
-	{\
-		std::ostringstream auxCompStr;\
-		auxCompStr << "\n\n =============== MRPT EXCEPTION =============\n";\
-		auxCompStr << __CURRENT_FUNCTION_NAME__ << ", line " << __LINE__ << ":\n";\
-		auxCompStr << mrpt::format(msg,param1)<< std::endl; \
-		throw std::logic_error( auxCompStr.str() );\
-	}\
-
+#define THROW_EXCEPTION_FMT(_FORMAT_STRING,...) \
+	THROW_EXCEPTION(mrpt::format(_FORMAT_STRING,__VA_ARGS__))
 
 /** \def THROW_TYPED_EXCEPTION(msg,exceptionClass)
- * Defines a unified way of reporting exceptions of type different from "std::exception"
+ * Defines a unified way of reporting exceptions of type different than "std::exception"
  * \sa MRPT_TRY_START, MRPT_TRY_END
  */
 #define THROW_TYPED_EXCEPTION(msg,exceptionClass)	\
@@ -143,34 +176,19 @@
 		throw exceptionClass( auxCompStr.str() );\
 	}\
 
-/** \def THROW_EXCEPTION_CUSTOM_MSG1
-  * \param e The caught exception.
-  *	\param msg Is a char* or literal string.
-  */
-#define THROW_TYPED_EXCEPTION_CUSTOM_MSG1(msg,param1,exceptionClass)	\
-	{\
-		std::ostringstream auxCompStr;\
-		auxCompStr << "\n\n =============== MRPT EXCEPTION =============\n";\
-		auxCompStr << __CURRENT_FUNCTION_NAME__ << ", line " << __LINE__ << ":\n";\
-		auxCompStr << mrpt::format(msg,param1)<< std::endl; \
-		throw exceptionClass( auxCompStr.str() );\
-	}\
-
+#define THROW_TYPED_EXCEPTION_FMT(exceptionClass,_FORMAT_STRING,...)	\
+	THROW_TYPED_EXCEPTION(mrpt::format(_FORMAT_STRING,__VA_ARGS__), exceptionClass)
 
 /** \def THROW_STACKED_EXCEPTION
  * \sa MRPT_TRY_START, MRPT_TRY_END
  */
 #define THROW_STACKED_EXCEPTION(e)	\
 	{\
-		std::string str( e.what() );\
-		if (str.find("MRPT stack trace")==std::string::npos) \
-		{ \
-			str+= __CURRENT_FUNCTION_NAME__;\
-			str+= mrpt::format(", line %i:\n", __LINE__ );\
-			throw std::logic_error( str );\
-		} \
-		else throw std::logic_error( e.what() );\
-	}\
+		std::string _tse_str( e.what() );\
+		_tse_str+= __CURRENT_FUNCTION_NAME__;\
+		_tse_str+= mrpt::format(", line %i:\n", __LINE__ );\
+		throw std::logic_error( _tse_str );\
+	}
 
 /** \def THROW_STACKED_EXCEPTION_CUSTOM_MSG
   * \param e The caught exception.
@@ -226,7 +244,7 @@
 	}
 
 // Static asserts: use compiler version if we have a modern GCC (>=4.3) or MSVC (>=2010) version, otherwise rely on custom implementation:
-#if (defined(_MSC_VER) && (_MSC_VER>=1600 /*VS2010*/)) || (defined(__GNUC__) && __cplusplus>=201100L )
+#if MRPT_CHECK_VISUALC_VERSION(10) || __has_extension(cxx_static_assert) || (MRPT_CHECK_GCC_VERSION(4,3) && MRPT_HAS_CXX11)
 	#define MRPT_COMPILE_TIME_ASSERT(expression) static_assert(expression,#expression);
 #else
 	// The following macro is based on dclib:
@@ -386,9 +404,6 @@
 #	define MRPT_scanf_format_check(_FMT_,_VARARGS_)
 #endif
 
-
-/** Used after member declarations */
-#define MRPT_NO_THROWS		throw()
 
 /** Tells the compiler we really want to inline that function */
 #if (defined _MSC_VER) || (defined __INTEL_COMPILER)

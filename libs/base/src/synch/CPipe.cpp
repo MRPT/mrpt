@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -27,26 +27,24 @@ using namespace mrpt::synch;
 // ------------------  CPipe ------------------
 
 /** Creates a new pipe and returns the read & write end-points as newly allocated objects. */
-void CPipe::createPipe(std::auto_ptr<CPipeReadEndPoint>& outReadPipe,std::auto_ptr<CPipeWriteEndPoint>& outWritePipe)
+void CPipe::initializePipe(CPipeReadEndPoint& outReadPipe, CPipeWriteEndPoint& outWritePipe)
 {
-	outReadPipe  = std::auto_ptr<CPipeReadEndPoint>(new CPipeReadEndPoint);
-	outWritePipe = std::auto_ptr<CPipeWriteEndPoint>(new CPipeWriteEndPoint);
 #	ifdef MRPT_OS_WINDOWS
 	// Win32 pipes
 	HANDLE hRead, hWrite;
 	if (!CreatePipe(&hRead, &hWrite, NULL, 0))
 		THROW_EXCEPTION("Win32 error creating pipe endpoints!")
 
-	outReadPipe->m_pipe_file = hRead;
-	outWritePipe->m_pipe_file = hWrite;
+	outReadPipe.m_pipe_file = hRead;
+	outWritePipe.m_pipe_file = hWrite;
 #else
 	// UNIX pipes
 	int fds[2];
 	if (::pipe(fds))
 		THROW_EXCEPTION("Unix error creating pipe endpoints!")
 
-	outReadPipe->m_pipe_file = fds[0];
-	outWritePipe->m_pipe_file = fds[1];
+	outReadPipe.m_pipe_file = fds[0];
+	outWritePipe.m_pipe_file = fds[1];
 #endif
 }
 
@@ -111,16 +109,16 @@ CPipeBaseEndPoint::CPipeBaseEndPoint(const std::string &serialized)
 std::string CPipeBaseEndPoint::serialize()
 {
 	ASSERTMSG_(m_pipe_file!=0, "Pipe is closed, can't serialize!")
-	std::string ret;
+	std::stringstream ss;
 #ifdef MRPT_OS_WINDOWS
 	// Win32 pipes
-	ret = mrpt::format("%" PRIu64 ,reinterpret_cast<uint64_t>(m_pipe_file) );
+	ss << reinterpret_cast<uint64_t>(m_pipe_file);
 #else
 	// UNIX pipes
-	ret= mrpt::format("%i",m_pipe_file);
+	ss << m_pipe_file;
 #endif
 	m_pipe_file=0; // We don't own this file anymore...
-	return ret;
+	return ss.str();
 }
 
 // Methods that don't make sense in pipes:

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -41,6 +41,7 @@ TEST(CVelodyneScanner, sample_vlp16_dataset)
 	velodyne.setPCAPInputFile(fil);
 	velodyne.setPCAPInputFileReadOnce(true);
 	velodyne.enableVerbose(false);
+	velodyne.setPCAPVerbosity(false);
 
 	velodyne.initialize();
 
@@ -51,11 +52,13 @@ TEST(CVelodyneScanner, sample_vlp16_dataset)
 		mrpt::obs::CObservationVelodyneScanPtr scan;
 		mrpt::obs::CObservationGPSPtr          gps;
 		rx_ok = velodyne.getNextObservation(scan,gps);
-		if (scan) nScans++;
+		if (scan) { nScans++;
+		scan->generatePointCloud();
+		}
 		if (gps)  nGPS++;
 	};
-	EXPECT_EQ(nScans,4);
-	EXPECT_GT(nGPS,0);
+	EXPECT_EQ(nScans,4U);
+	EXPECT_GT(nGPS,0U);
 }
 
 TEST(CVelodyneScanner, sample_hdl32_dataset)
@@ -74,10 +77,12 @@ TEST(CVelodyneScanner, sample_hdl32_dataset)
 	velodyne.setPCAPInputFile(fil);
 	velodyne.setPCAPInputFileReadOnce(true);
 	velodyne.enableVerbose(false);
+	velodyne.setPCAPVerbosity(false);
 
 	velodyne.initialize();
 
-	size_t nScans = 0, nGPS=0;
+	size_t nScans = 0;
+//	size_t nGPS=0;
 	bool rx_ok = true;
 	for (size_t i=0;i<1000 && rx_ok;i++)
 	{
@@ -87,7 +92,7 @@ TEST(CVelodyneScanner, sample_hdl32_dataset)
 		if (scan) nScans++;
 //		if (gps)  nGPS++;
 	};
-	EXPECT_EQ(nScans,3);
+	EXPECT_EQ(nScans,3U);
 }
 
 #endif // MRPT_HAS_LIBPCAP

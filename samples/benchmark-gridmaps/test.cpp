@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -56,12 +56,8 @@ void BenchmarkGridmaps()
 	CObservation2DRangeScan	scan1;
 	scan1.aperture = M_PIf;
 	scan1.rightToLeft = true;
-	scan1.validRange.resize( SCANS_SIZE );
-	scan1.scan.resize(SCANS_SIZE);
 	ASSERT_( sizeof(SCAN_RANGES_1) == sizeof(float)*SCANS_SIZE );
-
-	memcpy( &scan1.scan[0], SCAN_RANGES_1, sizeof(SCAN_RANGES_1) );
-	memcpy( &scan1.validRange[0], SCAN_VALID_1, sizeof(SCAN_VALID_1) );
+    scan1.loadFromVectors( SCANS_SIZE, SCAN_RANGES_1, SCAN_VALID_1);
 
 #if 1
 		CRawlog	rawlog;
@@ -302,4 +298,3 @@ int main(int argc, char **argv)
 		return -1;
 	}
 }
-

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -48,7 +48,9 @@ namespace maps
 	 *   - mrpt::obs::CObservationRange: IRs, Sonars, etc.
 	 *   - mrpt::obs::CObservationVelodyneScan
 	 *
-	 * If built against liblas, this class also provides method for loading and saving in the standard LAS LiDAR point cloud format: saveLASFile(), loadLASFile()
+	 * Loading and saving in the standard LAS LiDAR point cloud format is supported by installing `libLAS` and including the
+	 * header `<mrpt/maps/CPointsMaps_liblas.h>` in your program. Since MRPT 1.5.0 there is no need to build MRPT against libLAS to use this feature.
+	 * See LAS functions in \ref mrpt_maps_liblas_grp.
 	 *
 	 * \sa CMetricMap, CPoint, mrpt::utils::CSerializable
 	  * \ingroup mrpt_maps_grp
@@ -91,7 +93,6 @@ namespace maps
 	 public:
 		 CPointsMap();            //!< Ctor
 		 virtual ~CPointsMap();   //!< Virtual destructor.
-
 
 		// --------------------------------------------
 		/** @name Pure virtual interfaces to be implemented by any class derived from CPointsMap
@@ -199,7 +200,7 @@ namespace maps
 			void writeToStream(mrpt::utils::CStream &out) const;		//!< Binary dump to stream - for usage in derived classes' serialization
 			void readFromStream(mrpt::utils::CStream &in);			//!< Binary dump to stream - for usage in derived classes' serialization
 
-			double 		sigma_dist; //!< Sigma (standard deviation, in meters) of the exponential used to model the likelihood (default= 0.5meters)
+            double 		sigma_dist; //!< Sigma squared (variance, in meters) of the exponential used to model the likelihood (default= 0.5^2 meters)
 			double 		max_corr_distance; //!< Maximum distance in meters to consider for the numerator divided by "sigma_dist", so that each point has a minimum (but very small) likelihood to avoid underflows (default=1.0 meters)
 			uint32_t	decimation; //!< Speed up the likelihood computation by considering only one out of N rays (default=10)
 		 };
@@ -274,43 +275,6 @@ namespace maps
 		/** Load the point cloud from a PCL PCD file (requires MRPT built against PCL) \return false on any error */
 		virtual bool loadPCDFile(const std::string &filename);
 
-
-		/** Optional settings for saveLASFile() */
-		struct MAPS_IMPEXP LAS_WriteParams
-		{
-			// None.
-		};
-
-		/** Optional settings for loadLASFile() */
-		struct MAPS_IMPEXP LAS_LoadParams
-		{
-			// None.
-		};
-
-		/** Extra information gathered from the LAS file header */
-		struct MAPS_IMPEXP LAS_HeaderInfo
-		{
-			std::string FileSignature;
-			std::string SystemIdentifier;
-			std::string SoftwareIdentifier;
-			std::string project_guid;
-			std::string spatial_reference_proj4;  //!< Proj.4 string describing the Spatial Reference System.
-			uint16_t    creation_year;//!< Creation date (Year number)
-			uint16_t    creation_DOY; //!< Creation day of year
-
-			LAS_HeaderInfo() : creation_year(0),creation_DOY(0)
-			{}
-		};
-
-		/** Save the point cloud as an ASPRS LAS binary file (requires MRPT built against liblas). Refer to http://www.liblas.org/
-		  * \return false on any error */
-		virtual bool saveLASFile(const std::string &filename, const LAS_WriteParams & params = LAS_WriteParams() ) const;
-
-		/** Load the point cloud from an ASPRS LAS binary file (requires MRPT built against liblas). Refer to http://www.liblas.org/
-		  * \note Color (RGB) information will be taken into account if using the derived class mrpt::maps::CColouredPointsMap
-		  * \return false on any error */
-		virtual bool loadLASFile(const std::string &filename, LAS_HeaderInfo &out_headerInfo, const LAS_LoadParams &params = LAS_LoadParams() );
-
 		/** @} */ // End of: File input/output methods
 		// --------------------------------------------------
 
@@ -361,12 +325,12 @@ namespace maps
 			mark_as_modified();
 		}
 		/// \overload
-		inline void  setPoint(size_t index,mrpt::math::TPoint2D &p) {  setPoint(index,p.x,p.y,0); }
+		inline void  setPoint(size_t index, const mrpt::math::TPoint2D &p) {  setPoint(index,p.x,p.y,0); }
 		/// \overload
-		inline void  setPoint(size_t index,mrpt::math::TPoint3D &p)  { setPoint(index,p.x,p.y,p.z); }
+		inline void  setPoint(size_t index, const mrpt::math::TPoint3D &p)  { setPoint(index,p.x,p.y,p.z); }
 		/// \overload
 		inline void  setPoint(size_t index,float x, float y) { setPoint(index,x,y,0); }
-		/// \overload (RGB data is ignored in classes without color information)
+		/// overload (RGB data is ignored in classes without color information)
 		virtual void setPoint(size_t index,float x, float y, float z, float R, float G, float B)
 		{
 			MRPT_UNUSED_PARAM(R); MRPT_UNUSED_PARAM(G); MRPT_UNUSED_PARAM(B);
@@ -417,14 +381,19 @@ namespace maps
 			MRPT_END
 		}
 
-		inline void getAllPoints(std::vector<mrpt::math::TPoint3D> &ps,size_t decimation=1) const	{
+		/** Gets all points as a STL-like container.
+		  * \tparam CONTAINER Any STL-like container of mrpt::math::TPoint3D, mrpt::math::TPoint3Df or anything having members `x`,`y`,`z`.
+		  * Note that this method is not efficient for large point clouds. Fastest methods are getPointsBuffer() or getPointsBufferRef_x(), getPointsBufferRef_y(), getPointsBufferRef_z()
+		  */
+		template <class CONTAINER>
+		void getAllPoints(CONTAINER &ps,size_t decimation=1) const	{
 			std::vector<float> dmy1,dmy2,dmy3;
 			getAllPoints(dmy1,dmy2,dmy3,decimation);
 			ps.resize(dmy1.size());
 			for (size_t i=0;i<dmy1.size();i++)	{
-				ps[i].x=static_cast<double>(dmy1[i]);
-				ps[i].y=static_cast<double>(dmy2[i]);
-				ps[i].z=static_cast<double>(dmy3[i]);
+				ps[i].x=dmy1[i];
+				ps[i].y=dmy2[i];
+				ps[i].z=dmy3[i];
 			}
 		}
 
@@ -448,9 +417,9 @@ namespace maps
 		  * classes (color, weight, etc) are left to their default values
 		  */
 		inline void  insertPoint( float x, float y, float z=0 ) { insertPointFast(x,y,z); mark_as_modified(); }
-		/// \overload of \a insertPoint()
+		/// \overload
 		inline void  insertPoint( const mrpt::math::TPoint3D &p ) { insertPoint(p.x,p.y,p.z); }
-		/// \overload (RGB data is ignored in classes without color information)
+		/// overload (RGB data is ignored in classes without color information)
 		virtual void  insertPoint( float x, float y, float z, float R, float G, float B )
 		{
 			MRPT_UNUSED_PARAM(R); MRPT_UNUSED_PARAM(G); MRPT_UNUSED_PARAM(B);
@@ -531,18 +500,11 @@ namespace maps
 			TMatchingExtraResults & extraResults ) const MRPT_OVERRIDE;
 
 		// See docs in base class
-		float  compute3DMatchingRatio(
-				const mrpt::maps::CMetricMap						*otherMap,
-				const mrpt::poses::CPose3D							&otherMapPose,
-				float									maxDistForCorr = 0.10f,
-				float									maxMahaDistForCorr = 2.0f
-				) const MRPT_OVERRIDE;
-
+		float compute3DMatchingRatio(const mrpt::maps::CMetricMap *otherMap, const mrpt::poses::CPose3D &otherMapPose, const TMatchingRatioParams &params) const MRPT_OVERRIDE;
 
 		/** Computes the matchings between this and another 3D points map.
 		   This method matches each point in the other map with the centroid of the 3 closest points in 3D
 		   from this map (if the distance is below a defined threshold).
-
 		 * \param  otherMap					  [IN] The other map to compute the matching with.
 		 * \param  otherMapPose				  [IN] The pose of the other map as seen from "this".
 		 * \param  maxDistForCorrespondence   [IN] Maximum 2D linear distance between two points to be matched.
@@ -803,9 +765,15 @@ namespace maps
 			}
 			return true;
 		}
-
-
 		/** @} */
+
+		/** Users normally don't need to call this. Called by this class or children classes, set m_largestDistanceFromOriginIsUpdated=false, invalidates the kd-tree cache, and such. */
+		inline void mark_as_modified() const
+		{
+			m_largestDistanceFromOriginIsUpdated=false;
+			m_boundingBoxIsUpdated = false;
+			kdtree_mark_as_outdated();
+		}
 
 	protected:
 		std::vector<float>     x,y,z;        //!< The point coordinates
@@ -824,15 +792,6 @@ namespace maps
 
 		mutable bool	m_boundingBoxIsUpdated;
 		mutable float   m_bb_min_x,m_bb_max_x, m_bb_min_y,m_bb_max_y, m_bb_min_z,m_bb_max_z;
-
-
-		/** Called only by this class or children classes, set m_largestDistanceFromOriginIsUpdated=false and such. */
-		inline void mark_as_modified() const
-		{
-			m_largestDistanceFromOriginIsUpdated=false;
-			m_boundingBoxIsUpdated = false;
-			kdtree_mark_as_outdated();
-		}
 
 		/** This is a common version of CMetricMap::insertObservation() for point maps (actually, CMetricMap::internal_insertObservation),
 		  *   so derived classes don't need to worry implementing that method unless something special is really necesary.

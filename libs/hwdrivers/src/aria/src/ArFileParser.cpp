@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -16,7 +16,7 @@
 
 AREXPORT ArFileParser::ArFileParser(const char *baseDirectory)
 {
-  myRemainderHandler = NULL;
+  myRemainderHandler.reset();
   setBaseDirectory(baseDirectory);
   resetCounters();
 }
@@ -29,7 +29,6 @@ AREXPORT ArFileParser::~ArFileParser(void)
 AREXPORT bool ArFileParser::addHandler(
 	const char *keyword, ArRetFunctor1<bool, ArArgumentBuilder *> *functor)
 {
-  std::map<std::string, HandlerCBType *, ArStrCaseCmpOp>::iterator it;
   if (keyword == NULL)
   {
     if (myRemainderHandler != NULL)
@@ -39,19 +38,19 @@ AREXPORT bool ArFileParser::addHandler(
     }
     else
     {
-      delete myRemainderHandler;
-      myRemainderHandler = new HandlerCBType(functor);
+      myRemainderHandler.reset( new HandlerCBType(functor) );
       return true;
     }
   }
 
-  if ((it = myMap.find(keyword)) != myMap.end())
+  auto it = myMap.find(keyword);
+  if (it!= myMap.end())
   {
     ArLog::log(ArLog::Verbose, "There is already a functor to handle keyword '%s'", keyword);
     return false;
   }
   ArLog::log(ArLog::Verbose, "keyword '%s' handler added", keyword);
-  myMap[keyword] = new HandlerCBType(functor);
+  myMap[keyword].reset( new HandlerCBType(functor) );
   return true;
 }
 
@@ -65,7 +64,6 @@ AREXPORT bool ArFileParser::addHandlerWithError(
 	const char *keyword,
 	ArRetFunctor3<bool, ArArgumentBuilder *, char *, size_t> *functor)
 {
-  std::map<std::string, HandlerCBType *, ArStrCaseCmpOp>::iterator it;
   if (keyword == NULL)
   {
     if (myRemainderHandler != NULL)
@@ -75,37 +73,35 @@ AREXPORT bool ArFileParser::addHandlerWithError(
     }
     else
     {
-      delete myRemainderHandler;
-      myRemainderHandler = new HandlerCBType(functor);
+      myRemainderHandler.reset( new HandlerCBType(functor) );
       return true;
     }
   }
-
-  if ((it = myMap.find(keyword)) != myMap.end())
+  auto it = myMap.find(keyword);
+  if (it != myMap.end())
   {
     ArLog::log(ArLog::Verbose, "There is already a functor to handle keyword '%s'", keyword);
     return false;
   }
   ArLog::log(ArLog::Verbose, "keyword '%s' handler added", keyword);
-  myMap[keyword] = new HandlerCBType(functor);
+  myMap[keyword].reset( new HandlerCBType(functor) );
   return true;
 }
 
 AREXPORT bool ArFileParser::remHandler(const char *keyword,
 				       bool logIfCannotFind)
 {
-  std::map<std::string, HandlerCBType *, ArStrCaseCmpOp>::iterator it;
-  HandlerCBType *handler;
+  std::shared_ptr<HandlerCBType> handler;
 
   if (myRemainderHandler != NULL && keyword == NULL)
   {
-    delete myRemainderHandler;
-    myRemainderHandler = NULL;
+    myRemainderHandler.reset();
     ArLog::log(ArLog::Verbose, "Functor for remainder handler removed");
     return true;
   }
 
-  if ((it = myMap.find(keyword)) == myMap.end())
+  auto it = myMap.find(keyword);
+  if (it == myMap.end())
   {
     if (logIfCannotFind)
       ArLog::log(ArLog::Normal, "There is no keyword '%s' to remove.",
@@ -115,7 +111,7 @@ AREXPORT bool ArFileParser::remHandler(const char *keyword,
   ArLog::log(ArLog::Verbose, "keyword '%s' removed", keyword);
   handler = (*it).second;
   myMap.erase(it);
-  delete handler;
+  handler.reset();
   remHandler(keyword, false);
   return true;
 
@@ -124,26 +120,21 @@ AREXPORT bool ArFileParser::remHandler(const char *keyword,
 AREXPORT bool ArFileParser::remHandler(
 	ArRetFunctor1<bool, ArArgumentBuilder *> *functor)
 {
-  std::map<std::string, HandlerCBType *, ArStrCaseCmpOp>::iterator it;
-  HandlerCBType *handler;
-
   if (myRemainderHandler != NULL && myRemainderHandler->haveFunctor(functor))
   {
-    delete myRemainderHandler;
-    myRemainderHandler = NULL;
+    myRemainderHandler.reset();
     ArLog::log(ArLog::Verbose, "Functor for remainder handler removed");
     return true;
   }
 
-  for (it = myMap.begin(); it != myMap.end(); it++)
+  for (auto it = myMap.begin(); it != myMap.end(); it++)
   {
     if ((*it).second->haveFunctor(functor))
     {
       ArLog::log(ArLog::Verbose, "Functor for keyword '%s' removed.",
 		 (*it).first.c_str());
-      handler = (*it).second;
+      (*it).second.reset();
       myMap.erase(it);
-      delete handler;
       remHandler(functor);
       return true;
     }
@@ -155,26 +146,21 @@ AREXPORT bool ArFileParser::remHandler(
 AREXPORT bool ArFileParser::remHandler(
 	ArRetFunctor3<bool, ArArgumentBuilder *, char *, size_t> *functor)
 {
-  std::map<std::string, HandlerCBType *, ArStrCaseCmpOp>::iterator it;
-  HandlerCBType *handler;
-
   if (myRemainderHandler != NULL && myRemainderHandler->haveFunctor(functor))
   {
-    delete myRemainderHandler;
-    myRemainderHandler = NULL;
+    myRemainderHandler.reset();
     ArLog::log(ArLog::Verbose, "Functor for remainder handler removed");
     return true;
   }
 
-  for (it = myMap.begin(); it != myMap.end(); it++)
+  for (auto it = myMap.begin(); it != myMap.end(); it++)
   {
     if ((*it).second->haveFunctor(functor))
     {
       ArLog::log(ArLog::Verbose, "Functor for keyword '%s' removed.",
 		 (*it).first.c_str());
-      handler = (*it).second;
+      (*it).second.reset();
       myMap.erase(it);
-      delete handler;
       remHandler(functor);
       return true;
     }
@@ -225,8 +211,7 @@ AREXPORT bool ArFileParser::parseLine(char *line,
   size_t len;
   size_t i;
   bool noArgs;
-  std::map<std::string, HandlerCBType *, ArStrCaseCmpOp>::iterator it;
-  HandlerCBType *handler;
+  std::shared_ptr<HandlerCBType> handler;
 
   myLineNumber++;
   noArgs = false;
@@ -328,7 +313,8 @@ AREXPORT bool ArFileParser::parseLine(char *line,
   // some other handler they're using)
   bool usingRemainder = false;
   // see if we have a handler for the keyword
-  if ((it = myMap.find(keyword)) != myMap.end())
+  auto it = myMap.find(keyword);
+  if ( it != myMap.end())
   {
     //printf("have handler for keyword %s\n", keyword);
     // we have a handler, so pull that out

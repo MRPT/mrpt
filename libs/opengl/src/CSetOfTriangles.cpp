@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -80,6 +80,30 @@ void   CSetOfTriangles::render_dl() const
 #endif
 }
 
+static void triangle_writeToStream(mrpt::utils::CStream &o, const CSetOfTriangles::TTriangle &t)
+{
+	o.WriteBufferFixEndianness(t.x,3);
+	o.WriteBufferFixEndianness(t.y,3);
+	o.WriteBufferFixEndianness(t.z,3);
+
+	o.WriteBufferFixEndianness(t.r,3);
+	o.WriteBufferFixEndianness(t.g,3);
+	o.WriteBufferFixEndianness(t.b,3);
+	o.WriteBufferFixEndianness(t.a,3);
+}
+static void triangle_readFromStream(mrpt::utils::CStream &i, CSetOfTriangles::TTriangle &t)
+{
+	i.ReadBufferFixEndianness(t.x,3);
+	i.ReadBufferFixEndianness(t.y,3);
+	i.ReadBufferFixEndianness(t.z,3);
+
+	i.ReadBufferFixEndianness(t.r,3);
+	i.ReadBufferFixEndianness(t.g,3);
+	i.ReadBufferFixEndianness(t.b,3);
+	i.ReadBufferFixEndianness(t.a,3);
+}
+
+
 /*---------------------------------------------------------------
    Implements the writing to a CStream capability of
      CSerializable objects
@@ -94,8 +118,8 @@ void  CSetOfTriangles::writeToStream(mrpt::utils::CStream &out,int *version) con
 		writeToStreamRender(out);
 		uint32_t	n = (uint32_t)m_triangles.size();
 		out << n;
-		if (n)
-			out.WriteBuffer( &m_triangles[0], n*sizeof(TTriangle) );
+		for (size_t i=0;i<n;i++)
+			triangle_writeToStream(out,m_triangles[i]);
 
 		// Version 1:
 		out << m_enableTransparency;
@@ -117,8 +141,8 @@ void  CSetOfTriangles::readFromStream(mrpt::utils::CStream &in,int version)
 			uint32_t	n;
 			in >> n;
 			m_triangles.assign(n,TTriangle());
-			if (n)
-				in.ReadBufferFixEndianness( &m_triangles[0], n );
+			for (size_t i=0;i<n;i++)
+				triangle_readFromStream(in,m_triangles[i]);
 
 			if (version>=1)
 					in >> m_enableTransparency;

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -36,7 +36,7 @@ namespace mrpt
 			struct node_annotations_empty {  };
 		}
 
-		/** A directed graph of pose constraints, with edges being the relative pose between pairs of nodes indentified by their numeric IDs (of type mrpt::utils::TNodeID).
+		/** A directed graph of pose constraints, with edges being the relative poses between pairs of nodes identified by their numeric IDs (of type mrpt::utils::TNodeID).
 		  *  A link or edge between two nodes "i" and "j", that is, the pose \f$ p_{ij} \f$, holds the relative position of "j" with respect to "i".
 		  *   These poses are stored in the edges in the format specified by the template argument CPOSE. Users should employ the following derived classes
 		  *   depending on the desired representation of edges:
@@ -96,10 +96,10 @@ namespace mrpt
 				template <typename ARG1,typename ARG2> inline global_pose_t(const ARG1 &a1,const ARG2 &a2) : constraint_no_pdf_t(a1,a2) { }
 			};
 
-			/** A map from pose IDs to their global coordinates estimates, with uncertainty */
+			/** A map from pose IDs to their global coordinate estimates, with uncertainty */
 			typedef typename MAPS_IMPLEMENTATION::template map<mrpt::utils::TNodeID,CPOSE>     global_poses_pdf_t;
 
-			/** A map from pose IDs to their global coordinates estimates, without uncertainty (the "most-likely value") */
+			/** A map from pose IDs to their global coordinate estimates, without uncertainty (the "most-likely value") */
 			typedef typename MAPS_IMPLEMENTATION::template map<mrpt::utils::TNodeID,global_pose_t> global_poses_t;
 
 			/** @} */
@@ -113,7 +113,7 @@ namespace mrpt
 			  */
 			global_poses_t  nodes;
 
-			/** The ID of the node that is the origin of coordinates, used as reference by all coordinates in \nodes. By default, root is the ID "0". */
+			/** The ID of the node that is the origin of coordinates, used as reference by all coordinates in \a nodes. By default, root is the ID "0". */
 			mrpt::utils::TNodeID         root;
 
 			/** False (default) if an edge i->j stores the normal relative pose of j as seen from i: \f$ \Delta_i^j = j \ominus i \f$
@@ -169,7 +169,7 @@ namespace mrpt
 			  */
 			inline size_t collapseDuplicatedEdges() { return detail::graph_ops<self_t>::graph_of_poses_collapse_dup_edges(this); }
 
-			/** Computes the overall square error from all the pose constraints (edges) with respect to the global poses in \nodes
+			/** Computes the overall square error from all the pose constraints (edges) with respect to the global poses in \a nodes
 			  *  If \a ignoreCovariances is false, the squared Mahalanobis distance will be computed instead of the straight square error.
 			  * \sa getEdgeSquareError
 			  * \exception std::exception On global poses not in \a nodes
@@ -182,13 +182,13 @@ namespace mrpt
 				return sqErr;
 			}
 
-			/** Computes the square error of one pose constraints (edge) with respect to the global poses in \nodes
+			/** Computes the square error of one pose constraints (edge) with respect to the global poses in \a nodes
 			  *  If \a ignoreCovariances is false, the squared Mahalanobis distance will be computed instead of the straight square error.
 			  * \exception std::exception On global poses not in \a nodes
 			  */
 			inline double getEdgeSquareError(const typename BASE::edges_map_t::const_iterator &itEdge, bool ignoreCovariances = true) const { return detail::graph_ops<self_t>::graph_edge_sqerror(this,itEdge,ignoreCovariances); }
 
-			/** Computes the square error of one pose constraints (edge) with respect to the global poses in \nodes
+			/** Computes the square error of one pose constraints (edge) with respect to the global poses in \a nodes
 			  *  If \a ignoreCovariances is false, the squared Mahalanobis distance will be computed instead of the straight square error.
 			  * \exception std::exception On edge not existing or global poses not in \a nodes
 			  */
@@ -207,7 +207,7 @@ namespace mrpt
 				edges_store_inverse_poses = false;
 			}
 
-			/** Return number of nodes in the list \nodes of global coordinates (may be differente that all nodes appearing in edges)
+			/** Return number of nodes in the list \a nodes of global coordinates (may be different that all nodes appearing in edges)
 			  * \sa mrpt::graphs::CDirectedGraph::countDifferentNodesInEdges
 			  */
 			inline size_t nodeCount() const { return nodes.size(); }

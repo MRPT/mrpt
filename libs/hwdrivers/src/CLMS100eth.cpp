@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -40,6 +40,7 @@ CLMS100Eth::CLMS100Eth(string _ip, unsigned int _port):
         m_maxRange(20.0),
         m_beamApperture(.25*M_PI/180.0)
 {
+	setVerbosityLevel(mrpt::utils::LVL_DEBUG);
 }
 
 CLMS100Eth::~CLMS100Eth()
@@ -68,7 +69,7 @@ void CLMS100Eth::loadConfig_sensorSpecific( const mrpt::utils::CConfigFileBase &
     pose_x = configSource.read_float(iniSection,"pose_x",0,false);
     pose_y = configSource.read_float(iniSection,"pose_y",0,false);
     pose_z = configSource.read_float(iniSection,"pose_z",0,false);
-    pose_yaw = configSource.read_float(iniSection,"pose_yax",0,false);
+    pose_yaw = configSource.read_float(iniSection,"pose_yaw",0,false);
     pose_pitch = configSource.read_float(iniSection,"pose_pitch",0,false);
     pose_roll = configSource.read_float(iniSection,"pose_roll",0,false);
 	m_ip = configSource.read_string(iniSection, "ip_address", "192.168.0.1", false);
@@ -89,8 +90,7 @@ bool CLMS100Eth::checkIsConnected(void)
             m_client.connect(m_ip, m_port);
         }catch(std::exception &e)
         {
-            printf_debug(e.what());
-            printf_debug("[CLMS100ETH] ERROR TRYING TO OPEN Ethernet DEVICE");
+			MRPT_LOG_ERROR_FMT("[CLMS100ETH] ERROR TRYING TO OPEN Ethernet DEVICE:\n%s",e.what());
             return false;
         }
     }
@@ -128,8 +128,8 @@ bool CLMS100Eth::turnOn()
                 size_t read = m_client.readAsync(msgIn, 100, 1000, 1000);  //18
 
                 msgIn[read-1] = 0;
-                printf_debug("read : %d\n",read);
-                printf_debug("message : %s\n",string(&msgIn[1]).c_str());
+				MRPT_LOG_DEBUG_FMT("read : %u\n",(unsigned int)read);
+                MRPT_LOG_DEBUG_FMT("message : %s\n",string(&msgIn[1]).c_str());
 
                 if(!read) return false;
             }
@@ -141,8 +141,8 @@ bool CLMS100Eth::turnOn()
                 size_t read = m_client.readAsync(msgIn, 100, 1000, 1000);
 
                 msgIn[read-1] = 0;
-                printf_debug("read : %d\n",read);
-                printf_debug("message : %s\n",string(&msgIn[1]).c_str());
+				MRPT_LOG_DEBUG_FMT("read : %u\n",(unsigned int)read);
+				MRPT_LOG_DEBUG_FMT("message : %s\n",string(&msgIn[1]).c_str());
 
                 if(!read) return false;
             }
@@ -154,8 +154,8 @@ bool CLMS100Eth::turnOn()
                 size_t read = m_client.readAsync(msgIn, 100, 1000, 1000);
 
                 msgIn[read-1] = 0;
-                printf_debug("read : %d\n",read);
-                printf_debug("message : %s\n",string(&msgIn[1]).c_str());
+				MRPT_LOG_DEBUG_FMT("read : %u\n",(unsigned int)read);
+				MRPT_LOG_DEBUG_FMT("message : %s\n",string(&msgIn[1]).c_str());
 
                 if(!read) return false;
             }
@@ -166,7 +166,7 @@ bool CLMS100Eth::turnOn()
                 size_t read = m_client.readAsync(msgIn, 100, 1000, 1000);
 
                 msgIn[read-1] = 0;
-                printf_debug("message : %s\n",string(&msgIn[1]).c_str());
+                MRPT_LOG_DEBUG_FMT("message : %s\n",string(&msgIn[1]).c_str());
                 if(!read) return false;
             }
             {
@@ -178,15 +178,15 @@ bool CLMS100Eth::turnOn()
                     sleep(10000);
 
                     msgIn[read-1] = 0;
-                    printf_debug("message : %s\n",&msgIn[1]);
-                    printf_debug("%c\n", msgIn[11]);
+                    MRPT_LOG_DEBUG_FMT("message : %s\n",&msgIn[1]);
+                    MRPT_LOG_DEBUG_FMT("%c\n", msgIn[11]);
                     if(!read) return false;
                 } while(msgIn[11] != '7');
             }
             m_turnedOn = true;
         }catch(std::exception &e)
         {
-            printf_debug(e.what());
+			MRPT_LOG_ERROR_FMT("%s",e.what());
             return false;
         }
     }else
@@ -209,7 +209,7 @@ void CLMS100Eth::generateCmd(const char *cmd)
 {
     if(strlen(cmd) > 995)
     {
-        printf_debug("la commande est trop longue\n");
+        MRPT_LOG_ERROR("Error: command is too long.");
         return;
     }
     m_cmd = format("%c%s%c",0x02,cmd,0x03);
@@ -250,7 +250,7 @@ bool CLMS100Eth::decodeScan(char* buff, CObservation2DRangeScan& outObservation)
 				THROW_EXCEPTION("Contamination error on LMS100");
 				return false;
 			}
-            printf_debug("STATUS Ok.\n");
+            MRPT_LOG_DEBUG("STATUS Ok.\n");
             break;
         case 21 :
             if(strcmp(next, "DIST1"))
@@ -258,21 +258,21 @@ bool CLMS100Eth::decodeScan(char* buff, CObservation2DRangeScan& outObservation)
                 THROW_EXCEPTION("LMS100 is not configured to send distances.");
                 return false;
             }
-            printf_debug("Distance : OK\n");
+            MRPT_LOG_DEBUG("Distance : OK\n");
             break;
         case 22 :
             //factor = strtod(next, NULL);
             break;
         case 26 :
             scanCount = strtoul(next, NULL, 16);
-            printf_debug("Scan Count : %d\n", scanCount);
+            MRPT_LOG_DEBUG_FMT("Scan Count : %d\n", scanCount);
             break;
         default :
                 break;
     }
         next = strtok(NULL, " ", &tmp);
     }
-    outObservation.aperture = APPERTURE;
+    outObservation.aperture = (float)APPERTURE;
     outObservation.rightToLeft = false;
     outObservation.stdError = 0.012f;
     outObservation.sensorPose = m_sensorPose;
@@ -281,14 +281,14 @@ bool CLMS100Eth::decodeScan(char* buff, CObservation2DRangeScan& outObservation)
 	outObservation.timestamp				= mrpt::system::getCurrentTime();
 	outObservation.sensorLabel             = m_sensorLabel;
 
-	outObservation.scan.clear();
-	outObservation.validRange.clear();
+	outObservation.resizeScan(scanCount);
     unsigned int i;
     for(i = 0 ; i < scanCount && next; i++, next = strtok(NULL, " ", &tmp))
     {
-        outObservation.scan.push_back(double(strtoul(next, NULL, 16))/1000.0);
-        outObservation.validRange.push_back(outObservation.scan[i] <= outObservation.maxRange);
+		outObservation.setScanRange(i, double(strtoul(next, NULL, 16))/1000.0);
+		outObservation.setScanRangeValidity(i, outObservation.getScanRange(i) <= outObservation.maxRange);
     }
+	outObservation.resizeScan( i );
     return i>=scanCount;
 }
 
@@ -325,7 +325,7 @@ void CLMS100Eth::doProcessSimple(bool &outThereIsObservation, CObservation2DRang
     {
         hardwareError = true;
         outThereIsObservation = false;
-        printf_debug("doProcessSimple failed\n");
+        MRPT_LOG_ERROR("doProcessSimple failed\n");
     }
 }
 

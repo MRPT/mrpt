@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -1946,7 +1946,7 @@ uint32_t XsDataPacket_status(const XsDataPacket* thisPtr)
 }
 
 /*! \relates XsDataPacket
-	\brief Returns wether the %XsDataPacket contains a statusbyte
+	\brief Returns whether the %XsDataPacket contains a statusbyte
 	\returns Returns true if this packet contains a statusbyte
 */
 int XsDataPacket_containsStatusByte(const XsDataPacket* thisPtr)

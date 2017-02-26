@@ -12,25 +12,29 @@ REM                              Jose Luis Blanco, 2011-15
 REM =========================================================
 
 REM  === THIS IS WHERE MRPT SOURCE TREE IS FROM THE CWD ===
+set MRPT_SRC_DIR=c:/code/mrpt
 set MRPT_BASE_DIR=mrpt
 
 REM =================== SET ALL IMPORTANT PATHS ===================
 
-set msvc9_DIR=E:\Program Files (x86)\Microsoft Visual Studio 9.0
-rem set msvc10_DIR=E:\Program Files (x86)\Microsoft Visual Studio 10.0
-set msvc11_DIR=E:\Archivos de programa (x86)\Microsoft Visual Studio 11.0
-set msvc12_DIR=E:\Archivos de programa (x86)\Microsoft Visual Studio 12.0
+set msvc11_DIR=C:\Program Files (x86)\Microsoft Visual Studio 11.0
+set msvc12_DIR=C:\Program Files (x86)\Microsoft Visual Studio 12.0
+set msvc14_DIR=C:\Program Files (x86)\Microsoft Visual Studio 14.0
 
-set CMAKE_DIR=E:\Program Files (x86)\CMake\bin\
-set LIBUSBDIR=E:\code\libusb-win32-bin-1.2.6.0
+set CMAKE_DIR=C:\Program Files (x86)\CMake\bin\
+set LIBUSBDIR=D:\code\libusb-win32-bin-1.2.6.0
 REM MinGW directories will be: %MINGW_ROOT%-32 and %MINGW_ROOT%-64  
 REM  (NOTE: Use "/" for paths in this one)
-set MINGW_ROOT=E:/MinGW
-set MINGW_ROOT_BKSLH=E:\MinGW
-REM === wxWidgets directory base name will be: %WX_ROOT%-win%ARCHN%-%COMP%
-set WX_ROOT=E:/code/wxWidgets-3.0.2
+set MINGW_ROOT=D:/MinGW
+set MINGW_ROOT_BKSLH=D:\MinGW
+REM === wxWidgets directory base name will be: %WX_ROOT%
+set WX_ROOT=D:/code/wxWidgets-3.0.2
 REM MSVC Redistributables: %MSVC_REDIST_BASE_DIR%/%COMP%/vcredist_%ARCH%.exe
-set MSVC_REDIST_BASE_DIR=E:/code/MSVC_Redist
+set MSVC_REDIST_BASE_DIR=D:/code/MSVC_Redist
+
+REM WinPCAP
+set PCAP_ROOT=D:/code/WpdPack
+
 
 REM Since mrpt 1.3.0 we can build against libusb (for libfreenect) and will work in all systems (even w/o drivers)
 set KINECT=1
@@ -38,6 +42,7 @@ set KINECT=1
 REM ==============================================================
 
 REM msvc11 ========================
+:gen11
 set COMP=msvc11
 
 set ARCHN=32
@@ -46,6 +51,7 @@ set ARCHN=64
 call :subGen
 
 REM msvc12 ========================
+:gen12
 set COMP=msvc12
 
 set ARCHN=32
@@ -54,7 +60,17 @@ set ARCHN=64
 call :subGen
 
 
+REM msvc14 ========================
+:gen14
+set COMP=msvc14
+set ARCHN=32
+call :subGen
+
+set ARCHN=64
+call :subGen
+
 goto End
+
 :MINGW_PARTS
 REM MinGW ========================
 set COMP=mingw
@@ -75,7 +91,7 @@ set DIR=%MRPT_BASE_DIR%-%COMP%-%ARCH%
 if %ARCHN%==32 set ARCH_NAME=x86
 if %ARCHN%==64 set ARCH_NAME=amd64
 
-set WXDIR=%WX_ROOT%-%COMP%-%ARCH%
+set WXDIR=%WX_ROOT%
 
 set MSVC_REDIST=%MSVC_REDIST_BASE_DIR%/%COMP%/vcredist_%ARCH%.exe
 
@@ -85,19 +101,30 @@ if %COMP%==msvc9 set MSVC_DIR=%msvc9_DIR%
 if %COMP%==msvc10 set MSVC_DIR=%msvc10_DIR%
 if %COMP%==msvc11 set MSVC_DIR=%msvc11_DIR%
 if %COMP%==msvc12 set MSVC_DIR=%msvc12_DIR%
+if %COMP%==msvc14 set MSVC_DIR=%msvc14_DIR%
 if %COMP%==msvc9 set CMAKE_GEN=Visual Studio 9 2008
 if %COMP%==msvc10 set CMAKE_GEN=Visual Studio 10 2010
 if %COMP%==msvc11 set CMAKE_GEN=Visual Studio 11 2012
 if %COMP%==msvc12 set CMAKE_GEN=Visual Studio 12 2013
+if %COMP%==msvc14 set CMAKE_GEN=Visual Studio 14 2015
 if %ARCHN%==64 set CMAKE_GEN=%CMAKE_GEN% Win64
 
 set CMAKE_EXTRA1=-DINSTALL_MSVC_REDISTRIBUTABLE=%MSVC_REDIST%
 set CMAKE_EXTRA2=
 set CMAKE_EXTRA3=
 
-set FFMPEGDIR=E:/code/ffmpeg-win%ARCHN%-dev
-if %ARCHN%==32 set WXLIBDIR=%WXDIR%/lib/vc_dll
-if %ARCHN%==64 set WXLIBDIR=%WXDIR%/lib/vc_x64_dll
+if %COMP%==msvc11 set WXLIB_DIR=vc110
+if %COMP%==msvc12 set WXLIB_DIR=vc120
+if %COMP%==msvc14 set WXLIB_DIR=vc140
+if %ARCHN%==64 set WXLIB_DIR=%WXLIB_DIR%_x64
+
+
+set FFMPEGDIR=D:/code/ffmpeg-win%ARCHN%-dev
+set WXLIBDIR=%WXDIR%/lib/%WXLIB_DIR%_dll
+
+set PCAP_LIB=%PCAP_ROOT%/Lib/
+if %ARCHN%==64 set PCAP_LIB=%PCAP_LIB%/x64
+set PCAP_LIB=%PCAP_LIB%/wpcap.lib 
 
 GOTO :subGen_common
 
@@ -109,7 +136,7 @@ set CMAKE_EXTRA1=-DCMAKE_C_COMPILER=%MINGW_ROOT%-%ARCHN%/bin/gcc.exe
 set CMAKE_EXTRA2=-DCMAKE_CXX_COMPILER=%MINGW_ROOT%-%ARCHN%/bin/g++.exe
 set CMAKE_EXTRA3=-DCMAKE_MAKE_PROGRAM=%MINGW_ROOT%-%ARCHN%/bin/mingw32-make.exe
 
-set FFMPEGDIR=E:/code/ffmpeg-win%ARCHN%-dev
+set FFMPEGDIR=d:/code/ffmpeg-win%ARCHN%-dev
 set WXLIBDIR=%WXDIR%/lib/gcc_lib
 
 REM Common part to all compilers -----------
@@ -125,19 +152,19 @@ set PATH_FIL=%PATH_FIL%.bat
 if NOT %COMP%==mingw set EXTRA_MINGW_PATHS=
 if %COMP%==mingw set EXTRA_MINGW_PATHS=;%MINGW_ROOT_BKSLH%-%ARCHN%\bin
 
-echo SET PATH=C:\Windows\system32;C:\Windows%EXTRA_MINGW_PATHS%;C:\Program Files\TortoiseSVN\bin;E:\code\opencv-%COMP%-%ARCH%\bin\Release;E:\code\opencv-%COMP%-%ARCH%\bin\Debug;%WXLIBDIR%;%FFMPEGDIR%/bin;%LIBUSBDIR%\bin\%ARCH_NAME%;%CMAKE_DIR%;%CD%\bin\Release;%CD%\bin\Debug > %PATH_FIL%
+echo SET PATH=C:\Windows\system32;C:\Windows%EXTRA_MINGW_PATHS%;C:\Program Files\TortoiseSVN\bin;d:\code\opencv-%COMP%-%ARCH%\bin\Release;d:\code\opencv-%COMP%-%ARCH%\bin\Debug;%WXLIBDIR%;%FFMPEGDIR%/bin;%LIBUSBDIR%\bin\%ARCH_NAME%;%CMAKE_DIR%;%CD%\bin\Release;%CD%\bin\Debug > %PATH_FIL%
 if NOT %COMP%==mingw echo call "%MSVC_DIR%\VC\vcvarsall.bat" %ARCH_NAME% >> %PATH_FIL%
 
 echo call %PATH_FIL% > AUTOBUILD.bat
 rem ----- COMPILE ----- 
-if NOT %COMP%==mingw echo call ..\%MRPT_BASE_DIR%\scripts\automated_build_msvc_binary_package.bat ..\%MRPT_BASE_DIR%\ >> AUTOBUILD.bat
+if NOT %COMP%==mingw echo call %MRPT_SRC_DIR%\scripts\automated_build_msvc_binary_package.bat %MRPT_SRC_DIR% >> AUTOBUILD.bat
 if %COMP%==mingw echo %MINGW_ROOT_BKSLH%-%ARCHN%\bin\mingw32-make test -j4 >> AUTOBUILD.bat
 if %COMP%==mingw echo %MINGW_ROOT_BKSLH%-%ARCHN%\bin\mingw32-make -j4 >> AUTOBUILD.bat
 if %COMP%==mingw echo %MINGW_ROOT_BKSLH%-%ARCHN%\bin\mingw32-make package >> AUTOBUILD.bat
 
 REM ---------------- Call CMake ----------------
 call %PATH_FIL%
-set ALL_PARAMS=-DDISABLE_SWISSRANGER_3DCAM_LIBS=ON -DDISABLE_PCL=ON -DDISABLE_NationalInstruments=ON -DOpenCV_DIR=E:/code/opencv-%COMP%-%ARCH% -DMRPT_HAS_FFMPEG_WIN32=ON -DFFMPEG_WIN32_ROOT_DIR=%FFMPEGDIR% -DwxWidgets_ROOT_DIR=%WXDIR% -DwxWidgets_LIB_DIR=%WXLIBDIR%
+set ALL_PARAMS=-DDISABLE_SWISSRANGER_3DCAM_LIBS=ON -DDISABLE_PCL=ON -DDISABLE_NationalInstruments=ON -DOpenCV_DIR=d:/code/opencv-%COMP%-%ARCH% -DMRPT_HAS_FFMPEG_WIN32=ON -DFFMPEG_WIN32_ROOT_DIR=%FFMPEGDIR% -DwxWidgets_ROOT_DIR=%WXDIR% -DwxWidgets_LIB_DIR=%WXLIBDIR% -DPCAP_ROOT_DIR=%PCAP_ROOT% -DPCAP_INCLUDE_DIR=%PCAP_ROOT%/include -DPCAP_LIBRARY=%PCAP_LIB%
 
 if %ARCHN%==32 set LIBUSBLIB=%LIBUSBDIR%\lib\msvc\libusb.lib 
 if %ARCHN%==64 set LIBUSBLIB=%LIBUSBDIR%\lib\msvc_x64\libusb.lib 
@@ -146,7 +173,7 @@ if %KINECT%==1 set ALL_PARAMS=%ALL_PARAMS% -DBUILD_KINECT=ON -DBUILD_KINECT_USE_
 
 REM Create Project:
 echo on
-"%CMAKE_DIR%\cmake.exe" ../%MRPT_BASE_DIR% -G "%CMAKE_GEN%" %ALL_PARAMS% -Wno-dev %CMAKE_EXTRA1% %CMAKE_EXTRA2% %CMAKE_EXTRA3%
+"%CMAKE_DIR%\cmake.exe" %MRPT_SRC_DIR% -G "%CMAKE_GEN%" %ALL_PARAMS% -Wno-dev %CMAKE_EXTRA1% %CMAKE_EXTRA2% %CMAKE_EXTRA3%
 
 REM and insist to make sure wxWidgets and other vars have been fixed:
 "%CMAKE_DIR%\cmake.exe" . -Wno-dev %ALL_PARAMS%

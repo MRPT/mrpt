@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -12,9 +12,6 @@
 #include <mrpt/utils/CStream.h>
 #include <mrpt/utils/safe_pointers.h>
 
-/*---------------------------------------------------------------
-	Class
-  ---------------------------------------------------------------*/
 namespace mrpt
 {
 namespace utils
@@ -79,6 +76,16 @@ namespace utils
 			m_alloc_block_size = alloc_block_size;
 		}
 	}; // End of class def.
+
+	namespace internal {
+		struct BASE_IMPEXP TFreeFnDataForZMQ
+		{
+			CMemoryStream *buf;
+			bool do_free;
+			TFreeFnDataForZMQ() : buf(NULL), do_free(true) { }
+		};
+		void BASE_IMPEXP free_fn_for_zmq(void *data, void *hint); //!< Used in mrpt_send_to_zmq(). `hint` points to a `TFreeFnDataForZMQ` struct, to be freed here.
+	}
 	} // End of namespace
 } // end of namespace
 #endif

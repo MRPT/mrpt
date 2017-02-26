@@ -319,7 +319,7 @@ SET( Obj_SRCS
 	ObjFileParser.cpp
 	ObjFileParser.h
 	ObjTools.h
-	
+
 	ObjExporter.h
 	ObjExporter.cpp
 )
@@ -581,14 +581,14 @@ SET( ConvertUTF_SRCS
 )
 SOURCE_GROUP( ConvertUTF FILES ${ConvertUTF_SRCS})
 
-SET( Clipper_SRCS 
+SET( Clipper_SRCS
 	../contrib/clipper/clipper.hpp
 	../contrib/clipper/clipper.cpp
 )
 SOURCE_GROUP( Clipper FILES ${Clipper_SRCS})
 
 
-SET( Poly2Tri_SRCS 
+SET( Poly2Tri_SRCS
 	../contrib/poly2tri/poly2tri/common/shapes.cc
 	../contrib/poly2tri/poly2tri/common/shapes.h
 	../contrib/poly2tri/poly2tri/common/utils.h
@@ -618,8 +618,8 @@ if(MSVC10)
 	OPTION( VC10_STDINT_FIX "Fix for VC10 Compiler regarding pstdint.h redefinition errors" OFF )
 	if( VC10_STDINT_FIX )
 		ADD_DEFINITIONS( -D_STDINT )
-	endif( VC10_STDINT_FIX )
-endif(MSVC10)
+	endif( )
+endif()
 
 ADD_DEFINITIONS( -DASSIMP_BUILD_DLL_EXPORT )
 
@@ -682,7 +682,7 @@ SET( assimp_src
 	${IFC_SRCS}
 	${XGL_SRCS}
 	${FBX_SRCS}
-	
+
 	# Third-party libraries
 	${IrrXML_SRCS}
 	${ConvertUTF_SRCS}
@@ -694,7 +694,7 @@ SET( assimp_src
 
 	${PUBLIC_HEADERS}
 	${COMPILER_HEADERS}
-	
+
 	# Old precompiled header
 	# (removed because the precompiled header is not updated when visual studio switch configuration which leads to failed compilation.
 	# Moreover it's a drag to recompile assimp entirely each time a modification is made to one of the included header, which is definitely counter-productive.)
@@ -711,14 +711,14 @@ INSTALL(TARGETS assimp
 	RUNTIME DESTINATION ${MRPT_PREFIX_INSTALL}bin  COMPONENT Libraries
 	LIBRARY DESTINATION ${MRPT_PREFIX_INSTALL}${CMAKE_INSTALL_LIBDIR} COMPONENT Libraries
 	ARCHIVE DESTINATION ${MRPT_PREFIX_INSTALL}${CMAKE_INSTALL_LIBDIR} COMPONENT Libraries  # WAS: lib${LIB_SUFFIX}
-	)			
-			
+	)
+
 SET_PROPERTY(TARGET assimp PROPERTY DEBUG_POSTFIX ${ASSIMP_DEBUG_POSTFIX})
 
 TARGET_LINK_LIBRARIES(assimp ${ZLIB_LIBRARIES})
 SET_TARGET_PROPERTIES( assimp PROPERTIES
 	VERSION ${ASSIMP_VERSION}
-	SOVERSION ${ASSIMP_SOVERSION} # use full version 
+	SOVERSION ${ASSIMP_SOVERSION} # use full version
     OUTPUT_NAME assimp${ASSIMP_LIBRARY_SUFFIX}
 )
 

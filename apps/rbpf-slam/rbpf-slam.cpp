@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -29,6 +29,7 @@
 #include <mrpt/system/threads.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
+#include <mrpt/poses/CPosePDFGaussian.h>
 
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
@@ -51,22 +52,25 @@ using namespace std;
 /*****************************************************
 			Config params
  *****************************************************/
-std::string				INI_FILENAME;
-std::string				RAWLOG_FILE;
-unsigned int			rawlog_offset;
-std::string				OUT_DIR_STD;
-const char				*OUT_DIR;
-int						LOG_FREQUENCY;
-bool					GENERATE_LOG_JOINT_H;
-bool					GENERATE_LOG_INFO;
-bool					SAVE_POSE_LOG;
-bool					SAVE_MAP_IMAGES;
-bool					SAVE_3D_SCENE;
-bool					CAMERA_3DSCENE_FOLLOWS_ROBOT;
+std::string  INI_FILENAME;
+std::string  RAWLOG_FILE;
+unsigned int rawlog_offset;
+std::string  OUT_DIR_STD;
+const char *OUT_DIR;
+int  LOG_FREQUENCY;
+bool GENERATE_LOG_JOINT_H;
+bool GENERATE_LOG_INFO;
+bool SAVE_POSE_LOG;
+bool SAVE_MAP_IMAGES;
+bool SAVE_3D_SCENE;
+bool CAMERA_3DSCENE_FOLLOWS_ROBOT;
 
-bool					SHOW_PROGRESS_IN_WINDOW;
-int                     SHOW_PROGRESS_IN_WINDOW_DELAY_MS;
-int PROGRESS_WINDOW_WIDTH=600, PROGRESS_WINDOW_HEIGHT=500;
+bool SHOW_PROGRESS_IN_WINDOW;
+int  SHOW_PROGRESS_IN_WINDOW_DELAY_MS;
+int  PROGRESS_WINDOW_WIDTH=600, PROGRESS_WINDOW_HEIGHT=500;
+
+std::string         METRIC_MAP_CONTINUATION_GRIDMAP_FILE; // .gridmap file
+mrpt::math::TPose2D METRIC_MAP_CONTINUATION_START_POSE;
 
 // Forward declaration.
 void MapBuilding_RBPF();
@@ -116,10 +120,14 @@ int main(int argc, char **argv)
 		CAMERA_3DSCENE_FOLLOWS_ROBOT = iniFile.read_bool("MappingApplication","CAMERA_3DSCENE_FOLLOWS_ROBOT", true);
 		SHOW_PROGRESS_IN_WINDOW = iniFile.read_bool("MappingApplication","SHOW_PROGRESS_IN_WINDOW", false);
 		SHOW_PROGRESS_IN_WINDOW_DELAY_MS = iniFile.read_int("MappingApplication","SHOW_PROGRESS_IN_WINDOW_DELAY_MS",1);
+		METRIC_MAP_CONTINUATION_GRIDMAP_FILE = iniFile.read_string("MappingApplication","METRIC_MAP_CONTINUATION_GRIDMAP_FILE","");
+
+		METRIC_MAP_CONTINUATION_START_POSE.x = iniFile.read_double("MappingApplication","METRIC_MAP_CONTINUATION_START_POSE_X",.0);
+		METRIC_MAP_CONTINUATION_START_POSE.y = iniFile.read_double("MappingApplication","METRIC_MAP_CONTINUATION_START_POSE_Y",.0);
+		METRIC_MAP_CONTINUATION_START_POSE.phi = DEG2RAD( iniFile.read_double("MappingApplication","METRIC_MAP_CONTINUATION_START_POSE_PHI_DEG",.0) );
 
 		MRPT_LOAD_CONFIG_VAR(PROGRESS_WINDOW_WIDTH, int,  iniFile, "MappingApplication");
 		MRPT_LOAD_CONFIG_VAR(PROGRESS_WINDOW_HEIGHT, int,  iniFile, "MappingApplication");
-
 
 		// easier!
 		OUT_DIR = OUT_DIR_STD.c_str();
@@ -197,12 +205,40 @@ void MapBuilding_RBPF()
 	// ---------------------------------
 	CMetricMapBuilderRBPF mapBuilder( rbpfMappingOptions );
 
+	// handle the case of metric map continuation
+	if ( !METRIC_MAP_CONTINUATION_GRIDMAP_FILE.empty() )
+	{
+		CSimpleMap       dummySimpleMap;
+		CPosePDFGaussian startPose;
+
+		startPose.mean.x( METRIC_MAP_CONTINUATION_START_POSE.x );
+		startPose.mean.y( METRIC_MAP_CONTINUATION_START_POSE.y );
+		startPose.mean.phi( METRIC_MAP_CONTINUATION_START_POSE.phi );
+		startPose.cov.setZero();
+
+		mrpt::maps::COccupancyGridMap2D gridmap;
+		{
+			mrpt::utils::CFileGZInputStream f(METRIC_MAP_CONTINUATION_GRIDMAP_FILE);
+			f >> gridmap;
+		}
+
+		mapBuilder.initialize(dummySimpleMap,&startPose);
+
+		for (CMultiMetricMapPDF::CParticleList::iterator it=mapBuilder.mapPDF.m_particles.begin();it!=mapBuilder.mapPDF.m_particles.end();++it) {
+			CRBPFParticleData* part_d = it->d.get();
+			CMultiMetricMap &mmap = part_d->mapTillNow;
+			mrpt::maps::COccupancyGridMap2DPtr it_grid = mmap.getMapByClass<mrpt::maps::COccupancyGridMap2D>();
+			ASSERTMSG_(it_grid.present(), "No gridmap in multimetric map definition, but metric map continuation was set (!)" );
+			it_grid->copyMapContentFrom( gridmap );
+		}
+	}
+
 	// ---------------------------------
 	//   CMetricMapBuilder::TOptions
 	// ---------------------------------
-	mapBuilder.options.verbose					= true;
+	//mapBuilder.setVerbosityLevel(  mrpt::utils::LVL_DEBUG );  // default value: as loaded from config file
 	mapBuilder.options.enableMapUpdating		= true;
-    mapBuilder.options.debugForceInsertion		= false;
+	mapBuilder.options.debugForceInsertion		= false;
 
 	randomGenerator.randomize();
 
@@ -334,17 +370,17 @@ void MapBuilding_RBPF()
 
 			if (0==(step % LOG_FREQUENCY))
 			{
-				CMultiMetricMap		*mostLikMap = mapBuilder.mapPDF.getCurrentMostLikelyMetricMap();
+				const CMultiMetricMap *mostLikMap = mapBuilder.mapPDF.getCurrentMostLikelyMetricMap();
 
 				if (GENERATE_LOG_INFO)
 				{
-
 					printf("Saving info log information...");
 
 					tictac_JH.Tic();
 
-					ASSERT_( mapBuilder.getCurrentlyBuiltMetricMap()->m_gridMaps.size()>0 );
-					COccupancyGridMap2DPtr grid = mapBuilder.getCurrentlyBuiltMetricMap()->m_gridMaps[0];
+					const CMultiMetricMap * avrMap = mapBuilder.mapPDF.getAveragedMetricMapEstimation();
+					ASSERT_(avrMap->m_gridMaps.size()>0 );
+					COccupancyGridMap2DPtr grid = avrMap->m_gridMaps[0];
 					grid->computeEntropy( entropy );
 
 					grid->saveAsBitmapFile(format("%s/EMMI_gridmap_%03u.bmp",OUT_DIR,step));
@@ -564,7 +600,7 @@ void MapBuilding_RBPF()
 	filOut << finalMap;
 
 	// Save gridmap extend (if exists):
-	CMultiMetricMap		*mostLikMap = mapBuilder.mapPDF.getCurrentMostLikelyMetricMap();
+	const CMultiMetricMap *mostLikMap = mapBuilder.mapPDF.getCurrentMostLikelyMetricMap();
 	if (mostLikMap->m_gridMaps.size()>0)
 	{
 		CMatrix		auxMat(1,4);

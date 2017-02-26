@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -130,10 +130,10 @@ namespace mrpt
 			  */
 			void trackFeatures(const mrpt::utils::CImage &old_img,const mrpt::utils::CImage &new_img,TSimpleFeatureList &inout_featureList );
 
-			/** \overload with subpixel precision */
+			/** overload with subpixel precision */
 			void trackFeatures(const mrpt::utils::CImage &old_img,const mrpt::utils::CImage &new_img,TSimpleFeaturefList &inout_featureList );
 
-			/** \overload This overload version uses the old (and much slower) CFeatureList  */
+			/** overload This overload version uses the old (and much slower) CFeatureList  */
 			void trackFeatures(const mrpt::utils::CImage &old_img,const mrpt::utils::CImage &new_img,CFeatureList &inout_featureList );
 
 			/** A wrapper around the basic trackFeatures() method, but keeping the original list of features unmodified and returns the tracked ones in a new list. */

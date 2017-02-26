@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -45,13 +45,13 @@ CIniEditor::CIniEditor(wxWindow* parent,wxWindowID id,const wxPoint& pos,const w
 	FlexGridSizer2->Add(btnOK, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	btnCancel = new wxButton(this, ID_BUTTON2, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON2"));
 	FlexGridSizer2->Add(btnCancel, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer1->Add(FlexGridSizer2, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+	FlexGridSizer1->Add(FlexGridSizer2, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
 	edText = new wxTextCtrl(this, ID_TEXTCTRL1, wxEmptyString, wxDefaultPosition, wxSize(516,372), wxTE_MULTILINE|wxHSCROLL|wxVSCROLL | wxTE_PROCESS_TAB, wxDefaultValidator, _T("ID_TEXTCTRL1"));
 	wxFont edTextFont = wxSystemSettings::GetFont(wxSYS_OEM_FIXED_FONT);
 	if ( !edTextFont.Ok() ) edTextFont = wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
 	edTextFont.SetPointSize((int)(edTextFont.GetPointSize() * 1.000000));
 	edText->SetFont(edTextFont);
-	FlexGridSizer1->Add(edText, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	FlexGridSizer1->Add(edText, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
 	SetSizer(FlexGridSizer1);
 	FlexGridSizer1->Fit(this);
 	FlexGridSizer1->SetSizeHints(this);

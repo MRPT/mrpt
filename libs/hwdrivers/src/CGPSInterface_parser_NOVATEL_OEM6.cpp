@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -14,15 +14,18 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/hwdrivers/CGPSInterface.h>
 #include <mrpt/utils/CMemoryStream.h>
+#include <mrpt/utils/crc.h>
 
 using namespace mrpt::hwdrivers;
 using namespace mrpt::obs;
 using namespace std;
 
-MRPT_TODO("check crc")
-
 bool  CGPSInterface::implement_parser_NOVATEL_OEM6(size_t &out_minimum_rx_buf_to_decide)
 {
+	// to be grabbed from the last Message_NV_OEM6_IONUTC msg
+	static uint32_t num_leap_seconds = getenv("MRPT_HWDRIVERS_DEFAULT_LEAP_SECONDS")==NULL ? 
+		18 : atoi(getenv("MRPT_HWDRIVERS_DEFAULT_LEAP_SECONDS"));
+
 	using namespace mrpt::obs::gnss;
 
 	out_minimum_rx_buf_to_decide = sizeof(nv_oem6_short_header_t);
@@ -66,14 +69,19 @@ bool  CGPSInterface::implement_parser_NOVATEL_OEM6(size_t &out_minimum_rx_buf_to
 		m_rx_buffer.pop_many(reinterpret_cast<uint8_t*>(&buf[0]), sizeof(hdr));
 		m_rx_buffer.pop_many(reinterpret_cast<uint8_t*>(&buf[sizeof(hdr)]), hdr.msg_len + 4 /*crc*/ );
 
+		// Check CRC:
+		const uint32_t crc_computed = mrpt::utils::compute_CRC32(&buf[0], expected_total_msg_len-4);
+		const uint32_t crc_read = 
+			(buf[expected_total_msg_len-1] << 24) | 
+			(buf[expected_total_msg_len-2] << 16) | 
+			(buf[expected_total_msg_len-3] << 8) | 
+			(buf[expected_total_msg_len-4] << 0);
+		if (crc_read!=crc_computed)
+			return false; // skip 1 byte, we dont recognize this format
+
 		// Deserialize the message:
 		// 1st, test if we have a specific data structure for this msg_id:
-		bool use_generic_container;
-		{
-			gnss_message* dummy = gnss_message::Factory( (gnss_message_type_t)(NV_OEM6_MSG2ENUM + hdr.msg_id ) );
-			use_generic_container = (dummy==NULL);
-			delete dummy;
-		}
+		const bool use_generic_container = !gnss_message::FactoryKnowsMsgType( (gnss_message_type_t)(NV_OEM6_MSG2ENUM + hdr.msg_id ) );
 		// ------ Serialization format:
 		//const int32_t msg_id = message_type;
 		//out << msg_id;
@@ -96,9 +104,7 @@ bool  CGPSInterface::implement_parser_NOVATEL_OEM6(size_t &out_minimum_rx_buf_to
 		}
 		m_just_parsed_messages.messages[msg->message_type] = msg;
 		m_just_parsed_messages.originalReceivedTimestamp = mrpt::system::now();
-		
-		MRPT_TODO("check UTC time conversion!")
-		if (!CObservationGPS::GPS_time_to_UTC(hdr.week,hdr.ms_in_week*1e-3,m_just_parsed_messages.timestamp))
+		if (!CObservationGPS::GPS_time_to_UTC(hdr.week,hdr.ms_in_week*1e-3,num_leap_seconds, m_just_parsed_messages.timestamp))
 			m_just_parsed_messages.timestamp =  mrpt::system::now();
 		else m_just_parsed_messages.has_satellite_timestamp = true;
 
@@ -127,14 +133,19 @@ bool  CGPSInterface::implement_parser_NOVATEL_OEM6(size_t &out_minimum_rx_buf_to
 		m_rx_buffer.pop_many(reinterpret_cast<uint8_t*>(&buf[0]), sizeof(hdr));
 		m_rx_buffer.pop_many(reinterpret_cast<uint8_t*>(&buf[sizeof(hdr)]), hdr.msg_len + 4 /*crc*/ );
 
+		// Check CRC:
+		const uint32_t crc_computed = mrpt::utils::compute_CRC32(&buf[0], expected_total_msg_len-4);
+		const uint32_t crc_read = 
+			(buf[expected_total_msg_len-1] << 24) | 
+			(buf[expected_total_msg_len-2] << 16) | 
+			(buf[expected_total_msg_len-3] << 8) | 
+			(buf[expected_total_msg_len-4] << 0);
+		if (crc_read!=crc_computed)
+			return false; // skip 1 byte, we dont recognize this format
+
 		// Deserialize the message:
 		// 1st, test if we have a specific data structure for this msg_id:
-		bool use_generic_container;
-		{
-			gnss_message* dummy = gnss_message::Factory( (gnss_message_type_t)(NV_OEM6_MSG2ENUM + hdr.msg_id ) );
-			use_generic_container = (dummy==NULL);
-			delete dummy;
-		}
+		const bool use_generic_container = !gnss_message::FactoryKnowsMsgType( (gnss_message_type_t)(NV_OEM6_MSG2ENUM + hdr.msg_id ) );
 		// ------ Serialization format:
 		//const int32_t msg_id = message_type;
 		//out << msg_id;
@@ -157,8 +168,13 @@ bool  CGPSInterface::implement_parser_NOVATEL_OEM6(size_t &out_minimum_rx_buf_to
 		}
 		m_just_parsed_messages.messages[msg->message_type] = msg;
 		m_just_parsed_messages.originalReceivedTimestamp = mrpt::system::now();
-		MRPT_TODO("check UTC time conversion!")
-		if (!CObservationGPS::GPS_time_to_UTC(hdr.week,hdr.ms_in_week*1e-3,m_just_parsed_messages.timestamp))
+		{
+			// Detect NV_OEM6_IONUTC msgs to learn about the current leap seconds:
+			const gnss::Message_NV_OEM6_IONUTC *ionutc = dynamic_cast<const gnss::Message_NV_OEM6_IONUTC *>(msg.get());
+			if (ionutc) 
+				num_leap_seconds = ionutc->fields.deltat_ls;
+		}
+		if (!CObservationGPS::GPS_time_to_UTC(hdr.week,hdr.ms_in_week*1e-3,num_leap_seconds,m_just_parsed_messages.timestamp))
 			m_just_parsed_messages.timestamp =  mrpt::system::now();
 		else m_just_parsed_messages.has_satellite_timestamp = true;
 

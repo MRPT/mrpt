@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -104,6 +104,7 @@ CMyGLCanvas_DisplayWindow3D::CMyGLCanvas_DisplayWindow3D(
 {
 	m_win3D = win3D;
 	Connect(wxEVT_CHAR,(wxObjectEventFunction)&CMyGLCanvas_DisplayWindow3D::OnCharCustom);
+	Connect(wxEVT_CHAR_HOOK,(wxObjectEventFunction)&CMyGLCanvas_DisplayWindow3D::OnCharCustom);
 
 	Connect(wxEVT_LEFT_DOWN,(wxObjectEventFunction)&CMyGLCanvas_DisplayWindow3D::OnMouseDown);
 	Connect(wxEVT_RIGHT_DOWN,(wxObjectEventFunction)&CMyGLCanvas_DisplayWindow3D::OnMouseDown);
@@ -160,6 +161,7 @@ void CMyGLCanvas_DisplayWindow3D::OnMouseDown(wxMouseEvent& event)
 			m_win3D->publishEvent( mrptEventMouseDown(m_win3D, TPixelCoord(event.GetX(), event.GetY()), event.LeftDown(), event.RightDown() ) );
 		} catch(...) { }
 	}
+
 	event.Skip(); // so it's processed by the wx system!
 }
 
@@ -203,28 +205,24 @@ void CMyGLCanvas_DisplayWindow3D::OnPostRenderSwapBuffers(double At, wxPaintDC &
 	{
 		int w,h;
 		dc.GetSize(&w, &h);
-
-		// create a memory DC and bitmap to capture the DC
-		wxMemoryDC memDC;
-		wxBitmap memBmp(w, h);
-		memDC.SelectObject(memBmp);
-		memDC.Blit(0,0, w,h, &dc, 0,0);
+			
+		//Save image directly from OpenGL - It could also use 4 channels and save with GL_BGRA_EXT
+		CImagePtr frame(new CImage(w, h, 3, false));
+		glReadBuffer(GL_FRONT);
+		glReadPixels(0, 0, w, h, GL_BGR_EXT, GL_UNSIGNED_BYTE, (*frame)(0,0) );
 
 		if (!grabFile.empty())
 		{
-			memBmp.SaveFile( _U(grabFile.c_str()) , wxBITMAP_TYPE_PNG );
+			frame->saveToFile(grabFile);
 			m_win3D->internal_emitGrabImageEvent(grabFile);
 		}
 
 		if (m_win3D->isCapturingImgs())
 		{
-			wxImage img = memBmp.ConvertToImage();
-			CImagePtr pimg = mrpt::gui::wxImage2MRPTImagePtr(img);
-
 			{
 				mrpt::synch::CCriticalSectionLocker	lock(& m_win3D->m_last_captured_img_cs );
-				m_win3D->m_last_captured_img = pimg;
-				pimg.clear_unique();
+				m_win3D->m_last_captured_img = frame;
+				frame.clear_unique();
 			}
 		}
 	}
@@ -399,7 +397,7 @@ CDisplayWindow3D::CDisplayWindow3D(
 	unsigned int		initialWindowWidth,
 	unsigned int		initialWindowHeight )
 	: CBaseGUIWindow(static_cast<void*>(this),300,399, windowCaption),
-      m_csAccess3DScene("m_csAccess3DScene"),
+      m_csAccess3DScene(),
       m_grab_imgs_prefix(),
       m_grab_imgs_idx(0),
       m_is_capturing_imgs(false),
@@ -1030,4 +1028,19 @@ void CDisplayWindow3D::setImageView_fast(mrpt::utils::CImage &img)
 	m_csAccess3DScene.leave();
 }
 
+
+CDisplayWindow3DLocker::CDisplayWindow3DLocker(CDisplayWindow3D &win, mrpt::opengl::COpenGLScenePtr &out_scene_ptr) :
+	m_win(win)
+{
+	out_scene_ptr = m_win.get3DSceneAndLock();
+}
+CDisplayWindow3DLocker::CDisplayWindow3DLocker(CDisplayWindow3D &win) : 
+	m_win(win)
+{
+	m_win.get3DSceneAndLock();
+}
+CDisplayWindow3DLocker::~CDisplayWindow3DLocker()
+{
+	m_win.unlockAccess3DScene();
+}
 

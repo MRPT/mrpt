@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -511,7 +511,7 @@ bool  CBeaconMap::internal_insertObservation( const mrpt::obs::CObservation *obs
 								{
 									if ( it->log_w < (maxW-insertionOptions.MC_thresholdNegligible) )
 									{
-										delete it->d; it->d=NULL;
+										it->d.reset();
 										it = beac->m_locationMC.m_particles.erase( it );
 									}
 									else ++it;
@@ -1123,15 +1123,8 @@ void  CBeaconMap::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const
  * \return The matching ratio [0,1]
  * \sa computeMatchingWith2D
  ----------------------------------------------------------------*/
-float  CBeaconMap::compute3DMatchingRatio(
-    const mrpt::maps::CMetricMap								*otherMap2,
-    const CPose3D							&otherMapPose,
-    float									maxDistForCorr,
-    float									maxMahaDistForCorr ) const
+float CBeaconMap::compute3DMatchingRatio(const mrpt::maps::CMetricMap *otherMap2, const mrpt::poses::CPose3D &otherMapPose, const TMatchingRatioParams &params) const
 {
-	MRPT_UNUSED_PARAM(maxDistForCorr);
-	MRPT_UNUSED_PARAM(maxMahaDistForCorr);
-
 	MRPT_START
 
 	// Compare to a similar map only:

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -13,7 +13,8 @@
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/system/threads.h>
 #include <mrpt/config.h>
-#include <mrpt/synch.h>
+#include <mrpt/synch/CSemaphore.h>
+#include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/utils/types_math.h>
 #include <mrpt/gui/gui_frwds.h>
@@ -24,12 +25,6 @@
 #include <map>
 
 #if MRPT_HAS_WXWIDGETS
-
-// This is to prevent wxWidgets to include winsock.h, and
-//  later the user to include winsock2.h, what leads to conflicts:
-//#ifdef HAVE_WINSOCK2_H
-//# include <winsock2.h>
-//#endif
 
 #include <wx/sizer.h>
 #include <wx/statbmp.h>
