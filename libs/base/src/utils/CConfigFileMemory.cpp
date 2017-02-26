@@ -24,6 +24,12 @@ using namespace std;
 
 #define THE_INI  static_cast<CSimpleIniA*>(m_ini.get())
 
+#define multilinestring(a,b) {\
+	std::string::const_iterator it;\
+	for(it = a.begin();it != a.end(); ++it){\
+	if(*it != '\\'){b += *it;}\
+	else{ ++it;}}}		 
+
 /*---------------------------------------------------------------
 					Constructor
  ---------------------------------------------------------------*/
@@ -93,7 +99,9 @@ void CConfigFileMemory::setContent(  const utils::CStringList &stringList  )
  ---------------------------------------------------------------*/
 void CConfigFileMemory::setContent(  const std::string &str )
 {
-    THE_INI->Load( str.c_str(), str.size() );
+    std::string aux;
+    multilinestring(str, aux);
+    THE_INI->Load( aux.c_str(), aux.size() );
 }
 
 /*---------------------------------------------------------------

@@ -68,8 +68,6 @@ TEST(CConfigFileMemory, setFromString)
 
 TEST(CConfigFileMemory, readMultiLineStrings)
 {
-	MRPT_TODO("Implement me!");
-
 	// Being able of read 
 	const std::string sampleCfgTxt =
 		"[test]\n"
@@ -83,7 +81,5 @@ TEST(CConfigFileMemory, readMultiLineStrings)
 	cfg.setContent(sampleCfgTxt);
 
 	// ..
-	
+	EXPECT_EQ(cfg.read_string("test","key_str",""),std::string("this is a long value that can be split into several linesbut read as a single line."));	
 }
-
-
