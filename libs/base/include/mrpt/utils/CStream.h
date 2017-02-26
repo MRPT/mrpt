@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -20,9 +20,9 @@ namespace mrpt
 {
 	namespace utils
 	{
-		class BASE_IMPEXP CSerializable;
-		struct BASE_IMPEXP  CSerializablePtr;
-		class BASE_IMPEXP CMessage;
+		class CSerializable;
+		struct CSerializablePtr;
+		class CMessage;
 
 		/** This base class is used to provide a unified interface to
 		 *    files,memory buffers,..Please see the derived classes. This class is
@@ -57,7 +57,7 @@ namespace mrpt
 			/** A common template code for both versions of CStream::ReadObject()
 			  * - EXISTING_OBJ=true  -> read in the object passed as argument
 			  * - EXISTING_OBJ=false -> build a new object and return it */
-			template <bool EXISTING_OBJ> CSerializable* internal_ReadObject(CSerializable *existingObj = NULL);
+			template <bool EXISTING_OBJ> void internal_ReadObject(CSerializablePtr &newObj, CSerializable *existingObj = NULL);
 
 		public:
 			/* Constructor
@@ -147,10 +147,6 @@ namespace mrpt
 			#endif
 			}
 
-
-			/** Copies a specified number of bytes from one stream to another. */
-			size_t  CopyFrom(mrpt::utils::CStream* Source, size_t Count);
-
 			/** Introduces a pure virtual method for moving to a specified position in the streamed resource.
 			 *   he Origin parameter indicates how to interpret the Offset parameter. Origin should be one of the following values:
 			 *	- sFromBeginning	(Default) Offset is from the beginning of the resource. Seek moves to the position Offset. Offset must be >= 0.
@@ -193,23 +189,30 @@ namespace mrpt
 			CStream& operator >> (CSerializablePtr &pObj);
 			CStream& operator >> (CSerializable &obj);
 
-
+			/** Read a value from a stream stored in a type different of the target variable, making the conversion via static_cast. Useful for coding backwards compatible de-serialization blocks */
+			template <typename STORED_TYPE, typename CAST_TO_TYPE>
+			void ReadAsAndCastTo(CAST_TO_TYPE &read_here) {
+				STORED_TYPE var;
+				(*this) >> var;
+				read_here = static_cast<CAST_TO_TYPE>(var);
+			}
 
 			/** Writes a string to the stream in a textual form.
 			  * \sa CStdOutStream
 			  */
 			virtual int printf(const char *fmt,...) MRPT_printf_format_check(2,3);  // The first argument (1) is "this" !!!
 
-			/** Prints a vector in the format [A,B,C,...] using CStream::printf, and the fmt string for <b>each</b> vector element. */
-			template <typename T>
-			void printf_vector(const char *fmt, const std::vector<T> &V )
+			/** Prints a vector in the format [A,B,C,...] using CStream::printf, and the fmt string for <b>each</b> vector element `T`.
+			  * \tparam CONTAINER_TYPE can be any vector<T>, deque<T> or alike. */
+			template <typename CONTAINER_TYPE>
+			void printf_vector(const char *fmt, const CONTAINER_TYPE &V, char separator = ',' )
 			{
 				this->printf("[");
-				size_t N = V.size();
+				const size_t N = V.size();
 				for (size_t i=0;i<N;i++)
 				{
 					this->printf(fmt,V[i]);
-					if (i!=(N-1)) this->printf(",");
+					if (i!=(N-1)) this->printf("%c",separator);
 				}
 				this->printf("]");
 			}

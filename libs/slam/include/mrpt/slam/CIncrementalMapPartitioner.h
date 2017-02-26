@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -10,7 +10,7 @@
 #ifndef CINCREMENTALMAPPARTITIONER_H
 #define CINCREMENTALMAPPARTITIONER_H
 
-#include <mrpt/utils/CDebugOutputCapable.h>
+#include <mrpt/utils/COutputLogger.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/maps/CSimplePointsMap.h>
@@ -30,19 +30,14 @@ namespace slam
 	  *   observations taken at some poses/nodes.
 	  * \ingroup mrpt_slam_grp
 	  */
-	class SLAM_IMPEXP  CIncrementalMapPartitioner : public mrpt::utils::CDebugOutputCapable, public mrpt::utils::CSerializable
+	class SLAM_IMPEXP  CIncrementalMapPartitioner : public mrpt::utils::COutputLogger, public mrpt::utils::CSerializable
 	{
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CIncrementalMapPartitioner )
 
 	public:
-		/** Constructor:
-		  */
-		CIncrementalMapPartitioner( );
-
-		/** Destructor:
-		  */
-		virtual ~CIncrementalMapPartitioner();
+		CIncrementalMapPartitioner( ); //!< ctor
+		virtual ~CIncrementalMapPartitioner(); //!< dtor
 
 		/** Initialization: Start of a new map, new internal matrices,...
 		  */

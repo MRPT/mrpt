@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -98,7 +98,12 @@ CGasConcentrationGridMap2D::CGasConcentrationGridMap2D(
 		CRandomFieldGridMap2D(mapType, x_min,x_max,y_min,y_max,resolution ),
 		insertionOptions()
 {
-	// Set the grid to initial values (and adjusts the KF covariance matrix!)
+	// Override defaults:
+	insertionOptions.GMRF_saturate_min = 0;
+	insertionOptions.GMRF_saturate_max = 1;
+	insertionOptions.GMRF_lambdaObsLoss = 1.0;
+
+	// Set the grid to initial values (and adjust covariance matrices,...)
 	//  Also, calling clear() is mandatory to end initialization of our base class (read note in CRandomFieldGridMap2D::CRandomFieldGridMap2D)
 	CMetricMap::clear();
 
@@ -272,18 +277,13 @@ double	 CGasConcentrationGridMap2D::internal_computeObservationLikelihood(
 void  CGasConcentrationGridMap2D::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
-		*version = 4;
+		*version = 5;
 	else
 	{
-		uint32_t	n;
-
-		// Save the dimensions of the grid:
-		out << m_x_min << m_x_max << m_y_min << m_y_max;
-		out << m_resolution;
-		out << static_cast<uint32_t>(m_size_x) << static_cast<uint32_t>(m_size_y);
+		dyngridcommon_writeToStream(out);
 
 		// To assure compatibility: The size of each cell:
-		n = static_cast<uint32_t>(sizeof( TGasConcentrationCell ));
+		uint32_t n = static_cast<uint32_t>(sizeof( TRandomFieldCell ));
 		out << n;
 
 		// Save the map contents:
@@ -343,17 +343,12 @@ void  CGasConcentrationGridMap2D::readFromStream(mrpt::utils::CStream &in, int v
 	case 2:
 	case 3:
 	case 4:
+	case 5:
 		{
-			uint32_t	n,i,j;
-
-			// Load the dimensions of the grid:
-			in >> m_x_min >> m_x_max >> m_y_min >> m_y_max;
-			in >> m_resolution;
-			in >> i >> j;
-			m_size_x = i;
-			m_size_y = j;
+			dyngridcommon_readFromStream(in, version<5);
 
 			// To assure compatibility: The size of each cell:
+			uint32_t	n;
 			in >> n;
 
 			if (version<2)
@@ -374,7 +369,7 @@ void  CGasConcentrationGridMap2D::readFromStream(mrpt::utils::CStream &in, int v
 			}
 			else
 			{
-				ASSERT_EQUAL_( n , static_cast<uint32_t>( sizeof( TGasConcentrationCell ) ));
+				ASSERT_EQUAL_( n , static_cast<uint32_t>( sizeof( TRandomFieldCell ) ));
 				// Load the map contents:
 				in >> n;
 				m_map.resize(n);
@@ -439,10 +434,10 @@ CGasConcentrationGridMap2D::TInsertionOptions::TInsertionOptions() :
 	gasSensorType				( 0x0000 ),		//By default use the mean between all e-nose sensors
 	windSensorLabel				( "windSensor" ),
 	useWindInformation			( false ),		//By default dont use wind
-	std_windNoise_phi			( 0.2 ),
-	std_windNoise_mod			( 0.2 ),
-	default_wind_direction		( 0.0 ),
-	default_wind_speed			( 1.0 )
+	std_windNoise_phi			( 0.2f ),
+	std_windNoise_mod			( 0.2f ),
+	default_wind_direction		( 0.0f ),
+	default_wind_speed			( 1.0f )
 {
 }
 
@@ -522,56 +517,13 @@ void  CGasConcentrationGridMap2D::TInsertionOptions::loadFromConfigFile(
 
 
 /*---------------------------------------------------------------
-					getAsBitmapFile
- ---------------------------------------------------------------*/
-void  CGasConcentrationGridMap2D::getAsBitmapFile(mrpt::utils::CImage &out_img) const
-{
-	MRPT_START
-
-	// Nothing special in this derived class:
-	CRandomFieldGridMap2D::getAsBitmapFile(out_img);
-
-	MRPT_END
-}
-
-
-/*---------------------------------------------------------------
-					saveMetricMapRepresentationToFile
-  ---------------------------------------------------------------*/
-void  CGasConcentrationGridMap2D::saveMetricMapRepresentationToFile(
-	const std::string	&filNamePrefix ) const
-{
-	MRPT_START
-
-	// Nothing special in this derived class:
-	CRandomFieldGridMap2D::saveMetricMapRepresentationToFile(filNamePrefix);
-
-	MRPT_END
-}
-
-/*---------------------------------------------------------------
-					saveAsMatlab3DGraph
-  ---------------------------------------------------------------*/
-void  CGasConcentrationGridMap2D::saveAsMatlab3DGraph(const std::string  &filName) const
-{
-	MRPT_START
-
-	// Nothing special in this derived class:
-	CRandomFieldGridMap2D::saveAsMatlab3DGraph(filName);
-
-	MRPT_END
-}
-
-/*---------------------------------------------------------------
 						getAs3DObject
 ---------------------------------------------------------------*/
 void  CGasConcentrationGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj) const
 {
 	MRPT_START
 	if (!genericMapParams.enableSaveAs3DObject) return;
-
 	CRandomFieldGridMap2D::getAs3DObject(outObj);
-
 	MRPT_END
 }
 
@@ -584,9 +536,7 @@ void  CGasConcentrationGridMap2D::getAs3DObject(
 {
 	MRPT_START
 	if (!genericMapParams.enableSaveAs3DObject) return;
-
 	CRandomFieldGridMap2D::getAs3DObject(meanObj,varObj);
-
 	MRPT_END
 }
 
@@ -596,7 +546,7 @@ void  CGasConcentrationGridMap2D::getAs3DObject(
 void  CGasConcentrationGridMap2D::getWindAs3DObject( mrpt::opengl::CSetOfObjectsPtr &windObj) const
 {
 	//Return an arrow map of the wind state (module(color) and direction).
-	float scale = 0.2;
+	float scale = 0.2f;
 	size_t arrow_separation = 5;	//distance between arrows, expresed as times the cell resolution
 
 
@@ -909,9 +859,9 @@ bool CGasConcentrationGridMap2D::build_Gaussian_Wind_Grid()
 	std::string filename = format("Gaussian_Wind_Weights_res(%f)_stdPhi(%f)_stdR(%f).gz",LUT.resolution,LUT.std_phi,LUT.std_r);
 
 	// Fixed Params:
-	LUT.phi_inc = M_PI/8;									//Increment in the wind Angle. (rad)
+	LUT.phi_inc = M_PIf/8;									//Increment in the wind Angle. (rad)
 	LUT.phi_count = round(2*M_PI/LUT.phi_inc)+1;			//Number of angles to generate
-	LUT.r_inc = 0.1;										//Increment in the wind Module. (m)
+	LUT.r_inc = 0.1f;										//Increment in the wind Module. (m)
 	LUT.max_r = 2;											//maximum distance (m) to simulate
 	LUT.r_count = round(LUT.max_r/LUT.r_inc)+1;				//Number of wind modules to simulate
 

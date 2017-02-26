@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -119,11 +119,12 @@ void  CSickLaserSerial::doProcessSimple(
 	outObservation.stdError = 0.003f;
 	outObservation.sensorPose = m_sensorPose;
 
-	outObservation.scan = ranges;
-	outObservation.validRange.resize(ranges.size());
+	outObservation.resizeScan(ranges.size());
 
-	for (size_t i=0;i<ranges.size();i++)
-		outObservation.validRange[i] = (outObservation.scan[i] <= outObservation.maxRange);
+	for (size_t i=0;i<ranges.size();i++) {
+		outObservation.setScanRange( i, ranges[i] );
+		outObservation.setScanRangeValidity(i,  (outObservation.scan[i] <= outObservation.maxRange) );
+	}
 
 	// Do filter:
 	C2DRangeFinderAbstract::filterByExclusionAreas( outObservation );
@@ -266,7 +267,7 @@ bool CSickLaserSerial::tryToOpenComms(std::string *err_msg)
 		std::string s = "[CSickLaserSerial] Error trying to open SICK at port ";
 		s+= e.what();
 		if (err_msg) *err_msg=s;
-		printf_debug(s.c_str());
+		MRPT_LOG_ERROR(s);
 		return false;
 	}
 }
@@ -309,7 +310,7 @@ bool  CSickLaserSerial::waitContinuousSampleFrame(
 		catch (std::exception &e)
 		{
 			// Disconnected?
-			printf_debug("[CSickLaserSerial::waitContinuousSampleFrame] Disconnecting due to comms error: %s\n", e.what());
+			MRPT_LOG_ERROR_FMT("[CSickLaserSerial::waitContinuousSampleFrame] Disconnecting due to comms error: %s\n", e.what());
 			//m_usbConnection->Close();
 			return false;
 		}

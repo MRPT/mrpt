@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -10,7 +10,7 @@
 #define CHMTSLAM_H
 
 #include <mrpt/synch/CCriticalSection.h>
-#include <mrpt/utils/CDebugOutputCapable.h>
+#include <mrpt/utils/COutputLogger.h>
 #include <mrpt/utils/CMessageQueue.h>
 #include <mrpt/system/threads.h>
 
@@ -56,12 +56,12 @@ namespace mrpt
 		 * \sa CHierarchicalMHMap
 		  * \ingroup mrpt_hmtslam_grp
 		 */
-		class HMTSLAM_IMPEXP CHMTSLAM : public mrpt::utils::CDebugOutputCapable, public mrpt::utils::CSerializable
+		class HMTSLAM_IMPEXP CHMTSLAM : public mrpt::utils::COutputLogger, public mrpt::utils::CSerializable
 		{
-			friend class HMTSLAM_IMPEXP CLocalMetricHypothesis;
-			friend class HMTSLAM_IMPEXP CLSLAM_RBPF_2DLASER;
-			friend class HMTSLAM_IMPEXP CTopLCDetector_GridMatching;
-			friend class HMTSLAM_IMPEXP CTopLCDetector_FabMap;
+			friend class CLocalMetricHypothesis;
+			friend class CLSLAM_RBPF_2DLASER;
+			friend class CTopLCDetector_GridMatching;
+			friend class CTopLCDetector_FabMap;
 
 			// This must be added to any CSerializable derived class:
 			DEFINE_SERIALIZABLE( CHMTSLAM )
@@ -338,7 +338,7 @@ namespace mrpt
 			  */
 			CHMTSLAM( );
 
-			CHMTSLAM(const CHMTSLAM &) { THROW_EXCEPTION("This object cannot be copied."); }
+			CHMTSLAM(const CHMTSLAM &) : mrpt::utils::COutputLogger() { THROW_EXCEPTION("This object cannot be copied."); }
 			const CHMTSLAM& operator =(const CHMTSLAM &) { THROW_EXCEPTION("This object cannot be copied."); }
 
 			/** Destructor
@@ -460,7 +460,7 @@ namespace mrpt
 		  */
 		class HMTSLAM_IMPEXP CLSLAMAlgorithmBase
 		{
-			friend class HMTSLAM_IMPEXP CLocalMetricHypothesis;
+			friend class CLocalMetricHypothesis;
 		protected:
 			mrpt::utils::safe_ptr<CHMTSLAM>	m_parent;
 
@@ -511,7 +511,7 @@ namespace mrpt
 		  */
 		class HMTSLAM_IMPEXP CLSLAM_RBPF_2DLASER : public CLSLAMAlgorithmBase
 		{
-			friend class HMTSLAM_IMPEXP CLocalMetricHypothesis;
+			friend class CLocalMetricHypothesis;
 
 		public:
 			/** Constructor

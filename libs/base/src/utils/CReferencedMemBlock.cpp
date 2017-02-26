@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -13,11 +13,8 @@
 
 using namespace mrpt::utils;
 
-/*---------------------------------------------------------------
-						constructor
----------------------------------------------------------------*/
 CReferencedMemBlock::CReferencedMemBlock(size_t mem_block_size) :
-	base_t( new std::vector<char>(mem_block_size) )
+	m_data( new std::vector<char>(mem_block_size) )
 {
 }
 
@@ -25,11 +22,17 @@ CReferencedMemBlock::~CReferencedMemBlock()
 {
 }
 
-/*---------------------------------------------------------------
-						resize
----------------------------------------------------------------*/
 void CReferencedMemBlock::resize(size_t mem_block_size)
 {
-	this->operator ->()->resize(mem_block_size);
+	m_data->resize(mem_block_size);
 }
 
+unsigned int CReferencedMemBlock::alias_count() const 
+{
+	return m_data.alias_count(); 
+}
+
+void CReferencedMemBlock::clear() 
+{
+	m_data.clear(); 
+}

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -173,7 +173,7 @@ CSimpleDatabaseTablePtr  CSimpleDatabase::getTable(const std::string &tableName)
 	if (it!=m_tables.end())
 		return it->second;
 
-	THROW_EXCEPTION_CUSTOM_MSG1("Table '%s' was not found",tableName.c_str())
+	THROW_EXCEPTION_FMT("Table '%s' was not found",tableName.c_str())
 
 	MRPT_END
 }
@@ -284,7 +284,7 @@ size_t CSimpleDatabaseTable::fieldIndex(const char *fieldName) const
 		if (!os::_strcmpi(fieldName,field_names[i].c_str()))
 			return (int)i;
 
-	THROW_EXCEPTION_CUSTOM_MSG1("fieldIndex: Field '%s' not found",fieldName);
+	THROW_EXCEPTION_FMT("fieldIndex: Field '%s' not found",fieldName);
 
 	MRPT_END
 }
@@ -558,7 +558,7 @@ void CSimpleDatabase::dropTable(const std::string &tableName)
 
 	iterator it = m_tables.find(tableName);
 	if (it==m_tables.end())
-		THROW_EXCEPTION_CUSTOM_MSG1("Table '%s' was not found",tableName.c_str())
+		THROW_EXCEPTION_FMT("Table '%s' was not found",tableName.c_str())
 
 	m_tables.erase(it);
 
@@ -579,12 +579,12 @@ void CSimpleDatabase::renameTable(
 
 	iterator it = m_tables.find(tableName);
 	if (it==m_tables.end())
-		THROW_EXCEPTION_CUSTOM_MSG1("Table '%s' was not found",tableName.c_str())
+		THROW_EXCEPTION_FMT("Table '%s' was not found",tableName.c_str())
 
 	{
 		iterator itNew = m_tables.find(newTableName);
 		if (itNew !=m_tables.end())
-			THROW_EXCEPTION_CUSTOM_MSG1("A table with the name '%s' already exists",newTableName.c_str())
+			THROW_EXCEPTION_FMT("A table with the name '%s' already exists",newTableName.c_str())
 	}
 
 	CSimpleDatabaseTablePtr tb = it->second;

@@ -2,10 +2,18 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
+
+/**
+ * rayTrace
+ * Ray tracing is a technique for generating an image by tracing the path of
+ * light through pixels in an image plane and simulating the effects of its
+ * encounters with virtual objects
+ *
+ */
 
 #include <mrpt/gui.h>
 #include <mrpt/random.h>
@@ -62,6 +70,10 @@ CPose3D randomPose()	{
 	return CPose3D(MYRANDG(2*RANDOM_POSE_DISTANCE,-RANDOM_POSE_DISTANCE),MYRANDG(2*RANDOM_POSE_DISTANCE,-RANDOM_POSE_DISTANCE),MYRANDG(2*RANDOM_POSE_DISTANCE,-RANDOM_POSE_DISTANCE),MYRAND1(),MYRAND1(),MYRAND1());
 }
 
+/**
+ * Call configRandom given the address of an object and assign random pose and
+ * color to it
+ */
 void configRandom(CRenderizablePtr &obj)	{
 	obj->setColor(MYRAND1(),MYRAND1(),MYRAND1(),MYRANDG(0.75,0.25));
 	obj->setPose(randomPose());
@@ -81,24 +93,30 @@ void guideLines(const CPose3D &base,CSetOfLinesPtr &lines,float dist)	{
 
 //Add objects at your will to check results
 void generateObjects(CSetOfObjectsPtr &world)	{
+    // create object, give it a random pose/color, insert it in the world
 	CDiskPtr dsk=CDisk::Create();
 	dsk->setDiskRadius(MYRANDG(5,5),MYRANDG(5));
 	configRandom(dsk);
 	world->insert(dsk);
+
 	CSpherePtr sph=CSphere::Create(MYRANDG(5,1));
 	configRandom(sph);
 	world->insert(sph);
+
 	CTexturedPlanePtr pln=CTexturedPlane::Create(MYRANDG(10,-10),MYRANDG(10),MYRANDG(10,-10),MYRANDG(10));
 	configRandom(pln);
 	world->insert(pln);
+
 	for (size_t i=0;i<5;i++)	{
 		CPolyhedronPtr poly=CPolyhedron::CreateRandomPolyhedron(MYRANDG(2,2));
 		configRandom(poly);
 		world->insert(poly);
 	}
+
 	CCylinderPtr cil=CCylinder::Create(MYRANDG(3.0,3.0),MYRANDG(3.0,1.0),MYRANDG(2.0f,3.0f),50,1);
 	configRandom(cil);
 	world->insert(cil);
+
 	CEllipsoidPtr ell=CEllipsoid::Create();
 	CMatrixDouble md=CMatrixDouble(3,3);
 	for (size_t i=0;i<3;i++) md(i,i)=MYRANDG(8.0,1.0);

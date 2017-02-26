@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -103,10 +103,11 @@ namespace mrpt
 
 			//NOTE: replace with mem_fun_ref(&CSerializable::clear_unique)
 			/** An object for making smart pointers unique (ie, making copies if necessary), intended for being used in STL algorithms. */
+			template <typename T>
 			struct ObjectClearUnique {
-				typedef mrpt::utils::CObjectPtr argument_type;
+				typedef T argument_type;
 				typedef void result_type;
-				inline void operator()(mrpt::utils::CObjectPtr &ptr)
+				inline void operator()(T &ptr)
 				{
 					ptr.clear_unique();
 				}

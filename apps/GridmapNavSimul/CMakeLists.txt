@@ -21,34 +21,26 @@ IF(CMAKE_MRPT_HAS_WXWIDGETS AND CMAKE_MRPT_HAS_OPENGL_GLUT)
 		)
 	IF(WIN32)
 		SET(SRCS ${SRCS} resource.rc)
-	ENDIF(WIN32)
+	ENDIF()
 
 	# Define the executable target:
-	ADD_EXECUTABLE(GridmapNavSimul WIN32 ${SRCS}  ${MRPT_VERSION_RC_FILE})
-
-	SET(TMP_TARGET_NAME "GridmapNavSimul")
-
-	
+	ADD_EXECUTABLE(${PROJECT_NAME} WIN32 ${SRCS}  ${MRPT_VERSION_RC_FILE})
 
 	# Add the required libraries for linking:
 	INCLUDE_DIRECTORIES( ${wxWidgets_INCLUDE_DIRS} )
-	TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${wxWidgets_LIBRARIES} )
+	TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${wxWidgets_LIBRARIES} )
 
-	TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${MRPT_LINKER_LIBS})
-
-	IF(UNIX)
-		TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} mrpt-hwdrivers)
-	ENDIF(UNIX)
+	TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${MRPT_LINKER_LIBS})
 
 	# Dependencies on MRPT libraries:
-	#  Just mention the top-level dependency, the rest will be detected automatically, 
+	#  Just mention the top-level dependency, the rest will be detected automatically,
 	#  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
-	DeclareAppDependencies(${TMP_TARGET_NAME} mrpt-maps mrpt-hwdrivers)
+        DeclareAppDependencies(${PROJECT_NAME} mrpt-maps mrpt-hwdrivers mrpt-kinematics)
 
-	DeclareAppForInstall(${TMP_TARGET_NAME})
+	DeclareAppForInstall(${PROJECT_NAME})
 
-	AppStartMenuLink(${TMP_TARGET_NAME} "Gridmap navigation dataset generator")   # Add link to the Start menu (in Windows Installable packages)
-		
+	AppStartMenuLink(${PROJECT_NAME} "Gridmap navigation dataset generator")   # Add link to the Start menu (in Windows Installable packages)
+
 
 ELSE()
 	# ----------------------------------------------------------------------------------
@@ -56,4 +48,3 @@ ELSE()
 	# ----------------------------------------------------------------------------------
     MESSAGE(STATUS "wxWidgets and/or GL/GLUT not found!: **This target will not be included in the Makefiles**")
 ENDIF()
-

@@ -2,10 +2,15 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
+
+/**
+ * random
+ * The example demonstrates the use of the random library.
+ */
 
 #include <mrpt/utils.h>
 #include <mrpt/gui.h>
@@ -21,6 +26,7 @@ using namespace mrpt::random;
 using namespace mrpt::system;
 using namespace std;
 
+// not run by default. Uncomment corresponding line in the main function.
 void TestHist()
 {
 	CHistogram              hist(0.0,100.0,10u);
@@ -120,7 +126,7 @@ void TestRandomGenerators()
 
 		randomGenerator.drawGaussianMultivariateMany(v1,10000,cov,&Mean);
 
-#if 0
+#if 0 
 		CVectorDouble m;
 		CMatrixDouble c;
 		mrpt::math::meanAndCov(v1,m,c);

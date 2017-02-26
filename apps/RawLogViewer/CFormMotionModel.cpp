@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -23,6 +23,7 @@
 #include <wx/busyinfo.h>
 #include <wx/log.h>
 #include <wx/textdlg.h>
+#include <mrpt/gui/wx28-fixes.h>
 
 // General global variables:
 #include <mrpt/utils/CFileGZInputStream.h>
@@ -51,6 +52,7 @@ CActionRobotMovement2D::TMotionModelOptions		options;
 //(*IdInit(CFormMotionModel)
 const long CFormMotionModel::ID_STATICTEXT1 = wxNewId();
 const long CFormMotionModel::ID_BUTTON1 = wxNewId();
+const long CFormMotionModel::ID_HYPERLINKCTRL1 = wxNewId();
 const long CFormMotionModel::ID_STATICTEXT4 = wxNewId();
 const long CFormMotionModel::ID_TEXTCTRL1 = wxNewId();
 const long CFormMotionModel::ID_STATICTEXT2 = wxNewId();
@@ -135,6 +137,7 @@ CFormMotionModel::CFormMotionModel(wxWindow* parent,wxWindowID id)
     //(*Initialize(CFormMotionModel)
     wxStaticBoxSizer* boxRanges;
     wxFlexGridSizer* FlexGridSizer10;
+    wxFlexGridSizer* FlexGridSizer3;
     wxFlexGridSizer* FlexGridSizer9;
 
     Create(parent, wxID_ANY, _("Modify motion model parameters"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxMAXIMIZE_BOX, _T("wxID_ANY"));
@@ -146,87 +149,91 @@ CFormMotionModel::CFormMotionModel(wxWindow* parent,wxWindowID id)
     FlexGridSizer2 = new wxFlexGridSizer(3, 1, 0, 0);
     FlexGridSizer2->AddGrowableCol(0);
     FlexGridSizer2->AddGrowableRow(1);
-    FlexGridSizer4 = new wxFlexGridSizer(1, 2, 0, 0);
+    FlexGridSizer4 = new wxFlexGridSizer(2, 2, 0, 0);
     FlexGridSizer4->AddGrowableCol(1);
     StaticText1 = new wxStaticText(this, ID_STATICTEXT1, _("Select the motion model and its parameters:"), wxPoint(9,12), wxDefaultSize, 0, _T("ID_STATICTEXT1"));
-    FlexGridSizer4->Add(StaticText1, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer4->Add(StaticText1, 1, wxALL|wxEXPAND, 2);
     btnOk = new wxButton(this, ID_BUTTON1, _("CLOSE"), wxPoint(338,9), wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON1"));
     btnOk->SetToolTip(_("Closes & cancel the dialog"));
     FlexGridSizer4->Add(btnOk, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
-    FlexGridSizer2->Add(FlexGridSizer4, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    HyperlinkCtrl1 = new wxHyperlinkCtrl(this, ID_HYPERLINKCTRL1, _("http://www.mrpt.org/tutorials/programming/odometry-and-motion-models/probabilistic_motion_models/"), _("http://www.mrpt.org/tutorials/programming/odometry-and-motion-models/probabilistic_motion_models/"), wxDefaultPosition, wxDefaultSize, wxHL_CONTEXTMENU|wxHL_ALIGN_CENTRE|wxNO_BORDER, _T("ID_HYPERLINKCTRL1"));
+    FlexGridSizer4->Add(HyperlinkCtrl1, 1, wxALL|wxEXPAND, 1);
+    FlexGridSizer2->Add(FlexGridSizer4, 1, wxALL|wxEXPAND, 0);
     PageControl1 = new wxNotebook(this, ID_NOTEBOOK1, wxDefaultPosition, wxDefaultSize, 0, _T("ID_NOTEBOOK1"));
     Panel2 = new wxPanel(PageControl1, ID_PANEL2, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL2"));
-    FlexGridSizer3 = new wxFlexGridSizer(6, 3, 0, 0);
-    StaticText4 = new wxStaticText(Panel2, ID_STATICTEXT4, _("Ratio motion to x/y std.dev (alfa_1)="), wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT, _T("ID_STATICTEXT4"));
-    FlexGridSizer3->Add(StaticText4, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer3 = new wxFlexGridSizer(2, 1, 0, 0);
+    FlexGridSizer11 = new wxFlexGridSizer(7, 3, 0, 0);
+    StaticText4 = new wxStaticText(Panel2, ID_STATICTEXT4, _("Ratio motion to x/y std.dev (alpha_1)="), wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT, _T("ID_STATICTEXT4"));
+    FlexGridSizer11->Add(StaticText4, 1, wxALL|wxEXPAND, 5);
     edG_A1 = new wxTextCtrl(Panel2, ID_TEXTCTRL1, _("0.01"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL1"));
-    FlexGridSizer3->Add(edG_A1, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer11->Add(edG_A1, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     StaticText2 = new wxStaticText(Panel2, ID_STATICTEXT2, _("(meter/meter)"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT2"));
-    FlexGridSizer3->Add(StaticText2, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    StaticText3 = new wxStaticText(Panel2, ID_STATICTEXT3, _("Ratio rotation to phi std.dev (alfa_2)="), wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT, _T("ID_STATICTEXT3"));
-    FlexGridSizer3->Add(StaticText3, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer11->Add(StaticText2, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    StaticText3 = new wxStaticText(Panel2, ID_STATICTEXT3, _("Ratio rotation to x/y std.dev (alpha_2)="), wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT, _T("ID_STATICTEXT3"));
+    FlexGridSizer11->Add(StaticText3, 1, wxALL|wxEXPAND, 5);
     edG_A2 = new wxTextCtrl(Panel2, ID_TEXTCTRL2, _("0.001"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL2"));
-    FlexGridSizer3->Add(edG_A2, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer11->Add(edG_A2, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     StaticText5 = new wxStaticText(Panel2, ID_STATICTEXT5, _("(meter/deg)"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT5"));
-    FlexGridSizer3->Add(StaticText5, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    StaticText6 = new wxStaticText(Panel2, ID_STATICTEXT6, _("Ratio motion to phi std.dev (alfa_3)="), wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT, _T("ID_STATICTEXT6"));
-    FlexGridSizer3->Add(StaticText6, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer11->Add(StaticText5, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    StaticText6 = new wxStaticText(Panel2, ID_STATICTEXT6, _("Ratio motion x/y to phi std.dev (alpha_3)="), wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT, _T("ID_STATICTEXT6"));
+    FlexGridSizer11->Add(StaticText6, 1, wxALL|wxEXPAND, 5);
     edG_A3 = new wxTextCtrl(Panel2, ID_TEXTCTRL3, _("1.0"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL3"));
-    FlexGridSizer3->Add(edG_A3, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer11->Add(edG_A3, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     StaticText7 = new wxStaticText(Panel2, ID_STATICTEXT7, _("(deg/meter)"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT7"));
-    FlexGridSizer3->Add(StaticText7, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    StaticText26 = new wxStaticText(Panel2, ID_STATICTEXT26, _("Ratio rotation to phi std.dev (alfa_4)="), wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT, _T("ID_STATICTEXT26"));
-    FlexGridSizer3->Add(StaticText26, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer11->Add(StaticText7, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    StaticText26 = new wxStaticText(Panel2, ID_STATICTEXT26, _("Ratio rotation to phi std.dev (alpha_4)="), wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT, _T("ID_STATICTEXT26"));
+    FlexGridSizer11->Add(StaticText26, 1, wxALL|wxEXPAND, 5);
     edG_A4 = new wxTextCtrl(Panel2, ID_TEXTCTRL15, _("0.05"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL15"));
-    FlexGridSizer3->Add(edG_A4, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer11->Add(edG_A4, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     StaticText27 = new wxStaticText(Panel2, ID_STATICTEXT27, _("(deg/deg)"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT27"));
-    FlexGridSizer3->Add(StaticText27, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer11->Add(StaticText27, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     StaticText8 = new wxStaticText(Panel2, ID_STATICTEXT8, _("Minimum std.dev. of x/y (min_std_XY)="), wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT, _T("ID_STATICTEXT8"));
-    FlexGridSizer3->Add(StaticText8, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer11->Add(StaticText8, 1, wxALL|wxEXPAND, 5);
     edMinStdXY = new wxTextCtrl(Panel2, ID_TEXTCTRL4, _("0.010"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL4"));
-    FlexGridSizer3->Add(edMinStdXY, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer11->Add(edMinStdXY, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     StaticText9 = new wxStaticText(Panel2, ID_STATICTEXT9, _("(meters)"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT9"));
-    FlexGridSizer3->Add(StaticText9, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer11->Add(StaticText9, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     StaticText10 = new wxStaticText(Panel2, ID_STATICTEXT10, _("Minimum std.dev. of phi (min_std_PHI)="), wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT, _T("ID_STATICTEXT10"));
-    FlexGridSizer3->Add(StaticText10, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer11->Add(StaticText10, 1, wxALL|wxEXPAND, 5);
     edMinStdPHI = new wxTextCtrl(Panel2, ID_TEXTCTRL5, _("0.2"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL5"));
-    FlexGridSizer3->Add(edMinStdPHI, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer11->Add(edMinStdPHI, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     StaticText11 = new wxStaticText(Panel2, ID_STATICTEXT11, _("(degrees)"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT11"));
-    FlexGridSizer3->Add(StaticText11, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer11->Add(StaticText11, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     btnResetGauss = new wxButton(Panel2, ID_BUTTON10, _("Reset default values"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON10"));
-    FlexGridSizer3->Add(btnResetGauss, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer11->Add(btnResetGauss, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     btnGaussOK = new wxButton(Panel2, ID_BUTTON2, _("Apply"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON2"));
     btnGaussOK->SetDefault();
     btnGaussOK->SetFocus();
-    wxFont btnGaussOKFont(10,wxSWISS,wxFONTSTYLE_NORMAL,wxBOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+    wxFont btnGaussOKFont(10,wxFONTFAMILY_SWISS,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_BOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
     btnGaussOK->SetFont(btnGaussOKFont);
-    FlexGridSizer3->Add(btnGaussOK, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    FlexGridSizer11->Add(btnGaussOK, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
     btnSimulate = new wxButton(Panel2, ID_BUTTON8, _("Draw samples"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON8"));
-    FlexGridSizer3->Add(btnSimulate, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer11->Add(btnSimulate, 1, wxALL|wxEXPAND, 5);
+    FlexGridSizer3->Add(FlexGridSizer11, 1, wxALL|wxEXPAND, 0);
     Panel2->SetSizer(FlexGridSizer3);
     FlexGridSizer3->Fit(Panel2);
     FlexGridSizer3->SetSizeHints(Panel2);
     Panel3 = new wxPanel(PageControl1, ID_PANEL3, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL3"));
-    FlexGridSizer5 = new wxFlexGridSizer(6, 3, 0, 0);
-    StaticText12 = new wxStaticText(Panel3, ID_STATICTEXT12, _("alfa1_rot_rot="), wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT, _T("ID_STATICTEXT12"));
+    FlexGridSizer5 = new wxFlexGridSizer(8, 3, 0, 0);
+    StaticText12 = new wxStaticText(Panel3, ID_STATICTEXT12, _("alpha1_rot_rot="), wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT, _T("ID_STATICTEXT12"));
     FlexGridSizer5->Add(StaticText12, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
     edA1 = new wxTextCtrl(Panel3, ID_TEXTCTRL6, _("0.05"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL6"));
     FlexGridSizer5->Add(edA1, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     StaticText13 = new wxStaticText(Panel3, ID_STATICTEXT13, _("(degs/deg)"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT13"));
     FlexGridSizer5->Add(StaticText13, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    StaticText14 = new wxStaticText(Panel3, ID_STATICTEXT14, _("alfa2_rot_trans="), wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT, _T("ID_STATICTEXT14"));
+    StaticText14 = new wxStaticText(Panel3, ID_STATICTEXT14, _("alpha2_rot_trans="), wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT, _T("ID_STATICTEXT14"));
     FlexGridSizer5->Add(StaticText14, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
     edA2 = new wxTextCtrl(Panel3, ID_TEXTCTRL7, _("4"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL7"));
     FlexGridSizer5->Add(edA2, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     StaticText15 = new wxStaticText(Panel3, ID_STATICTEXT15, _("(degs/meter)"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT15"));
     FlexGridSizer5->Add(StaticText15, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    StaticText16 = new wxStaticText(Panel3, ID_STATICTEXT16, _("alfa3_trans_trans="), wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT, _T("ID_STATICTEXT16"));
+    StaticText16 = new wxStaticText(Panel3, ID_STATICTEXT16, _("alpha3_trans_trans="), wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT, _T("ID_STATICTEXT16"));
     FlexGridSizer5->Add(StaticText16, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
     edA3 = new wxTextCtrl(Panel3, ID_TEXTCTRL8, _("0.01"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL8"));
     FlexGridSizer5->Add(edA3, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     StaticText17 = new wxStaticText(Panel3, ID_STATICTEXT17, _("(meters/meter)"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT17"));
     FlexGridSizer5->Add(StaticText17, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    StaticText18 = new wxStaticText(Panel3, ID_STATICTEXT18, _("alfa4_trans_rot="), wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT, _T("ID_STATICTEXT18"));
+    StaticText18 = new wxStaticText(Panel3, ID_STATICTEXT18, _("alpha4_trans_rot="), wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT, _T("ID_STATICTEXT18"));
     FlexGridSizer5->Add(StaticText18, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
     edA4 = new wxTextCtrl(Panel3, ID_TEXTCTRL9, _("0.0001"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL9"));
     FlexGridSizer5->Add(edA4, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
@@ -255,7 +262,7 @@ CFormMotionModel::CFormMotionModel(wxWindow* parent,wxWindowID id)
     btnThrunOk = new wxButton(Panel3, ID_BUTTON3, _("Apply"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON3"));
     btnThrunOk->SetDefault();
     btnThrunOk->SetFocus();
-    wxFont btnThrunOkFont(10,wxSWISS,wxFONTSTYLE_NORMAL,wxBOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+    wxFont btnThrunOkFont(10,wxFONTFAMILY_SWISS,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_BOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
     btnThrunOk->SetFont(btnThrunOkFont);
     FlexGridSizer5->Add(btnThrunOk, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
     btnSimulateThrun = new wxButton(Panel3, ID_BUTTON9, _("Draw samples"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON9"));
@@ -265,12 +272,12 @@ CFormMotionModel::CFormMotionModel(wxWindow* parent,wxWindowID id)
     FlexGridSizer5->SetSizeHints(Panel3);
     PageControl1->AddPage(Panel2, _("Gaussian model"), false);
     PageControl1->AddPage(Panel3, _("Thrun\'s book model"), false);
-    FlexGridSizer2->Add(PageControl1, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
+    FlexGridSizer2->Add(PageControl1, 1, wxALL|wxEXPAND, 1);
     BoxSizer3 = new wxBoxSizer(wxHORIZONTAL);
     StaticBoxSizer1 = new wxStaticBoxSizer(wxHORIZONTAL, this, _("Apply to:"));
     BoxSizer4 = new wxBoxSizer(wxVERTICAL);
     BoxSizer5 = new wxBoxSizer(wxHORIZONTAL);
-    FlexGridSizer6 = new wxFlexGridSizer(2, 5, 0, 0);
+    FlexGridSizer6 = new wxFlexGridSizer(3, 5, 0, 0);
     FlexGridSizer6->AddGrowableCol(2);
     rbLoaded = new wxRadioButton(this, ID_RADIOBUTTON1, _("Loaded rawlog"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_RADIOBUTTON1"));
     FlexGridSizer6->Add(rbLoaded, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
@@ -294,16 +301,16 @@ CFormMotionModel::CFormMotionModel(wxWindow* parent,wxWindowID id)
     edRangeTo = new wxTextCtrl(this, ID_TEXTCTRL20, _("0"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL20"));
     edRangeTo->Disable();
     FlexGridSizer10->Add(edRangeTo, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    FlexGridSizer9->Add(FlexGridSizer10, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
-    boxRanges->Add(FlexGridSizer9, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
-    FlexGridSizer6->Add(boxRanges, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer9->Add(FlexGridSizer10, 1, wxALL|wxEXPAND, 0);
+    boxRanges->Add(FlexGridSizer9, 1, wxALL|wxEXPAND, 0);
+    FlexGridSizer6->Add(boxRanges, 1, wxALL|wxEXPAND, 5);
     FlexGridSizer6->Add(-1,-1,1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     rbFile = new wxRadioButton(this, ID_RADIOBUTTON2, _("Rawlog in file:"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_RADIOBUTTON2"));
     FlexGridSizer6->Add(rbFile, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
     StaticText22 = new wxStaticText(this, ID_STATICTEXT22, _("Input file:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT22"));
     FlexGridSizer6->Add(StaticText22, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
     txtInputFile = new wxTextCtrl(this, ID_TEXTCTRL11, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL11"));
-    FlexGridSizer6->Add(txtInputFile, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer6->Add(txtInputFile, 1, wxALL|wxEXPAND, 5);
     btnPickInput = new wxButton(this, ID_BUTTON4, _("Select..."), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON4"));
     FlexGridSizer6->Add(btnPickInput, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 0);
     btnGetFromFile = new wxButton(this, ID_BUTTON7, _("<-- Get model"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON7"));
@@ -312,15 +319,15 @@ CFormMotionModel::CFormMotionModel(wxWindow* parent,wxWindowID id)
     StaticText23 = new wxStaticText(this, ID_STATICTEXT23, _("Output file:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT23"));
     FlexGridSizer6->Add(StaticText23, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
     txtOutputFile = new wxTextCtrl(this, ID_TEXTCTRL12, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL12"));
-    FlexGridSizer6->Add(txtOutputFile, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer6->Add(txtOutputFile, 1, wxALL|wxEXPAND, 5);
     btnPickOut = new wxButton(this, ID_BUTTON5, _("Select..."), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON5"));
     FlexGridSizer6->Add(btnPickOut, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
-    BoxSizer5->Add(FlexGridSizer6, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
-    BoxSizer4->Add(BoxSizer5, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
-    StaticBoxSizer1->Add(BoxSizer4, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 0);
-    BoxSizer3->Add(StaticBoxSizer1, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
-    FlexGridSizer2->Add(BoxSizer3, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
-    FlexGridSizer1->Add(FlexGridSizer2, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    BoxSizer5->Add(FlexGridSizer6, 1, wxALL|wxEXPAND, 0);
+    BoxSizer4->Add(BoxSizer5, 1, wxALL|wxEXPAND, 0);
+    StaticBoxSizer1->Add(BoxSizer4, 1, wxALL|wxEXPAND, 0);
+    BoxSizer3->Add(StaticBoxSizer1, 1, wxALL|wxEXPAND, 0);
+    FlexGridSizer2->Add(BoxSizer3, 1, wxALL|wxEXPAND, 0);
+    FlexGridSizer1->Add(FlexGridSizer2, 1, wxALL|wxEXPAND, 0);
     FlexGridSizer7 = new wxFlexGridSizer(5, 1, 0, 0);
     FlexGridSizer7->AddGrowableCol(0);
     FlexGridSizer7->AddGrowableRow(2);
@@ -342,18 +349,19 @@ CFormMotionModel::CFormMotionModel(wxWindow* parent,wxWindowID id)
     Panel1->SetSizer(FlexGridSizer8);
     FlexGridSizer8->Fit(Panel1);
     FlexGridSizer8->SetSizeHints(Panel1);
-    FlexGridSizer7->Add(Panel1, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    FlexGridSizer7->Add(Panel1, 1, wxALL|wxEXPAND, 0);
     StaticText24 = new wxStaticText(this, ID_STATICTEXT24, _("Random samples (X-Y view):"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT24"));
-    FlexGridSizer7->Add(StaticText24, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    FlexGridSizer7->Add(StaticText24, 1, wxALL|wxEXPAND, 0);
     plotSamplesXY = new mpWindow(this,ID_CUSTOM1,wxDefaultPosition,wxSize(313,327),0);
-    FlexGridSizer7->Add(plotSamplesXY, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    FlexGridSizer7->Add(plotSamplesXY, 1, wxALL|wxEXPAND, 0);
     StaticText28 = new wxStaticText(this, ID_STATICTEXT28, _("Random samples (PHI view):"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT28"));
-    FlexGridSizer7->Add(StaticText28, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    FlexGridSizer7->Add(StaticText28, 1, wxALL|wxEXPAND, 0);
     plotSamplesPHI = new mpWindow(this,ID_CUSTOM2,wxDefaultPosition,wxSize(336,130),0);
-    FlexGridSizer7->Add(plotSamplesPHI, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
-    FlexGridSizer1->Add(FlexGridSizer7, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    FlexGridSizer7->Add(plotSamplesPHI, 1, wxALL|wxEXPAND, 0);
+    FlexGridSizer1->Add(FlexGridSizer7, 1, wxALL|wxEXPAND, 0);
     SetSizer(FlexGridSizer1);
-    FlexGridSizer1->SetSizeHints(this);
+    SetSizer(FlexGridSizer1);
+    Layout();
 
     Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&CFormMotionModel::OnbtnOkClick);
     Connect(ID_BUTTON10,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&CFormMotionModel::OnbtnResetGaussClick);
@@ -406,12 +414,12 @@ void CFormMotionModel::loadFromGaussian()
 {
     // Gaussian selected:
     options.modelSelection = CActionRobotMovement2D::mmGaussian;
-    options.gausianModel.a1  = atof( edG_A1->GetValue().mb_str() );
-    options.gausianModel.a2  = atof( edG_A2->GetValue().mb_str() ) * 180/M_PIf;
-    options.gausianModel.a3  = atof( edG_A3->GetValue().mb_str() ) * M_PIf/180;
-    options.gausianModel.a4  = atof( edG_A4->GetValue().mb_str() );
-    options.gausianModel.minStdXY = atof( edMinStdXY->GetValue().mb_str() );
-    options.gausianModel.minStdPHI = DEG2RAD(atof( edMinStdPHI->GetValue().mb_str() ));
+    options.gaussianModel.a1  = atof( edG_A1->GetValue().mb_str() );
+    options.gaussianModel.a2  = atof( edG_A2->GetValue().mb_str() ) * 180/M_PIf;
+    options.gaussianModel.a3  = atof( edG_A3->GetValue().mb_str() ) * M_PIf/180;
+    options.gaussianModel.a4  = atof( edG_A4->GetValue().mb_str() );
+    options.gaussianModel.minStdXY = atof( edMinStdXY->GetValue().mb_str() );
+    options.gaussianModel.minStdPHI = DEG2RAD(atof( edMinStdPHI->GetValue().mb_str() ));
 }
 
 void CFormMotionModel::loadFromThrun()
@@ -578,7 +586,7 @@ void CFormMotionModel::applyToRawlogFile()
             }
             else
             {   // Unknown class:
-                THROW_EXCEPTION_CUSTOM_MSG1( "Unexpected class found in the file: '%s'",newObj->GetRuntimeClass()->className );
+                THROW_EXCEPTION_FMT( "Unexpected class found in the file: '%s'",newObj->GetRuntimeClass()->className );
             }
         }
         catch (exception &e)
@@ -721,22 +729,22 @@ void CFormMotionModel::showOptionsInDialog()
     {
         PageControl1->ChangeSelection(0);
 
-        sprintf(str,"%.8f",options.gausianModel.a1 );
+        sprintf(str,"%.8f",options.gaussianModel.a1 );
         edG_A1->SetValue( _U(str) );
 
-        sprintf(str,"%.8f",options.gausianModel.a2 * M_PIf/180 );
+        sprintf(str,"%.8f",options.gaussianModel.a2 * M_PIf/180 );
         edG_A2->SetValue( _U(str) );
 
-        sprintf(str,"%.8f",options.gausianModel.a3 * 180/M_PIf );
+        sprintf(str,"%.8f",options.gaussianModel.a3 * 180/M_PIf );
         edG_A3->SetValue( _U(str) );
 
-        sprintf(str,"%.8f",options.gausianModel.a4 );
+        sprintf(str,"%.8f",options.gaussianModel.a4 );
         edG_A4->SetValue( _U(str) );
 
-        sprintf(str,"%.8f",options.gausianModel.minStdXY);
+        sprintf(str,"%.8f",options.gaussianModel.minStdXY);
         edMinStdXY->SetValue( _U(str) );
 
-        sprintf(str,"%.8f",RAD2DEG( options.gausianModel.minStdPHI ));
+        sprintf(str,"%.8f",RAD2DEG( options.gaussianModel.minStdPHI ));
         edMinStdPHI->SetValue( _U(str) );
     }
     else
@@ -928,7 +936,7 @@ void CFormMotionModel::OnbtnGetFromFileClick(wxCommandEvent& event)
             }
             else
             {   // Unknown class:
-                THROW_EXCEPTION_CUSTOM_MSG1("Unexpected class found in the file: '%s'",newObj->GetRuntimeClass()->className);
+                THROW_EXCEPTION_FMT("Unexpected class found in the file: '%s'",newObj->GetRuntimeClass()->className);
             }
 
         newObj.clear();  // FREE MEMORY!

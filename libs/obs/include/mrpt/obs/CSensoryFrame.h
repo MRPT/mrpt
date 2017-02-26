@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -196,11 +196,11 @@ namespace mrpt
 			  */
 			typedef std::deque<CObservationPtr>::const_iterator	const_iterator;
 
-			/** Returns a iterator to the first observation: this is an example of usage:
+			/** Returns a constant iterator to the first observation: this is an example of usage:
 			  * \code
 			  *   CSensoryFrame  sf;
 			  *   ...
-			  *   for (CSensoryFrame::iterator it=sf.begin();it!=sf.end();++it)
+			  *   for (CSensoryFrame::const_iterator it=sf.begin();it!=sf.end();++it)
 			  *	  {
 			  *      (*it)->... // (*it) is a "CObservation*"
 			  *   }
@@ -209,11 +209,11 @@ namespace mrpt
 			  */
 			const_iterator begin() const { return m_observations.begin(); }
 
-			/** Returns a iterator to the end of the list of observations: this is an example of usage:
+			/** Returns a constant iterator to the end of the list of observations: this is an example of usage:
 			  * \code
 			  *   CSensoryFrame  sf;
 			  *   ...
-			  *   for (CSensoryFrame::iterator it=sf.begin();it!=sf.end();++it)
+			  *   for (CSensoryFrame::const_iterator it=sf.begin();it!=sf.end();++it)
 			  *	  {
 			  *      (*it)->... // (*it) is a "CObservation*"
 			  *   }

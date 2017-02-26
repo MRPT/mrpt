@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -15,6 +15,7 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/math/CPolygon.h>
+#include <mrpt/utils/ContainerReadOnlyProxyAccessor.h>
 
 // Add for declaration of mexplus::from template specialization
 DECLARE_MEXPLUS_FROM( mrpt::obs::CObservation2DRangeScan )
@@ -29,8 +30,10 @@ namespace obs
 	  *  The data structures are generic enough to hold a wide variety of 2D scanners and "3D" planar rotating 2D lasers.
 	  *
 	  *  These are the most important data fields:
-	  *    - CObservation2DRangeScan::scan -> A vector of float values with all the range measurements (in meters).
-	  *    - CObservation2DRangeScan::validRange -> A vector (of <b>identical size</b> than <i>scan<i>), has non-zeros for those ranges than are valid (i.e. will be zero for non-reflected rays, etc.)
+	  *    - These three fields are private data member (since MRPT 1.5.0) for safety and to ensure data consistency. Read them with the backwards-compatible proxies `scan`, `intensity`, `validRange` or (preferred) with the new `get_*`, `set_*` and `resize()` methods:
+	  *      - CObservation2DRangeScan::scan -> A vector of float values with all the range measurements (in meters).
+	  *      - CObservation2DRangeScan::validRange -> A vector (of <b>identical size</b> to <i>scan<i>), has non-zeros for those ranges than are valid (i.e. will be zero for non-reflected rays, etc.)
+	  *      - CObservation2DRangeScan::intensity -> A vector (of <b>identical size</b> to <i>scan<i>) a unitless int values representing the relative strength of each return. Higher values indicate a more intense return. This is useful for filtering out low intensity(noisy) returns or detecting intense landmarks.
 	  *    - CObservation2DRangeScan::aperture -> The field-of-view of the scanner, in radians (typically, M_PI = 180deg).
 	  *    - CObservation2DRangeScan::sensorPose -> The 6D location of the sensor on the robot reference frame (default=at the origin).
 	  *
@@ -43,22 +46,38 @@ namespace obs
 		DEFINE_SERIALIZABLE( CObservation2DRangeScan )
 		// This must be added for declaration of MEX-related functions
 		DECLARE_MEX_CONVERSION
+	private:
+		std::vector<float>   m_scan; //!< The range values of the scan, in meters. Must have same length than \a validRange
+		std::vector<int32_t> m_intensity; //!< The intensity values of the scan. If available, must have same length than \a validRange
+		std::vector<char>    m_validRange;  //!< It's false (=0) on no reflected rays, referenced to elements in \a scan
+		bool                 m_has_intensity; //!< Whether the intensity values are present or not. If not, space is saved during serialization.
 
-	 public:
+	public:
 		typedef std::vector<mrpt::math::CPolygon> TListExclusionAreas; //!< Used in filterByExclusionAreas
 		typedef std::vector<std::pair<mrpt::math::CPolygon,std::pair<double,double> > > TListExclusionAreasWithRanges; //!< Used in filterByExclusionAreas
 
-		/** Default constructor */
-		CObservation2DRangeScan( );
-
-		/** Destructor */
-		virtual ~CObservation2DRangeScan( );
-
+		CObservation2DRangeScan(); //!< Default constructor
+		CObservation2DRangeScan(const CObservation2DRangeScan &o); //!< copy ctor
+		virtual ~CObservation2DRangeScan(); //!< Destructor
 
 		/** @name Scan data
 		    @{ */
-		std::vector<float>   scan; //!< The range values of the scan, in meters. Must have same length than \a validRange 
-		std::vector<char>    validRange;  //!< It's false (=0) on no reflected rays, referenced to elements in \a scan
+		void resizeScan(const size_t len); //!< Resizes all data vectors to allocate a given number of scan rays
+		void resizeScanAndAssign(const size_t len, const float rangeVal, const bool rangeValidity, const int32_t rangeIntensity = 0); //!< Resizes all data vectors to allocate a given number of scan rays and assign default values.
+		size_t getScanSize() const; //!< Get number of scan rays
+
+		mrpt::utils::ContainerReadOnlyProxyAccessor<std::vector<float> > scan; //!< The range values of the scan, in meters. Must have same length than \a validRange
+		float getScanRange(const size_t i) const;
+		void setScanRange(const size_t i, const float val);
+
+		mrpt::utils::ContainerReadOnlyProxyAccessor<std::vector<int32_t> >   intensity; //!< The intensity values of the scan. If available, must have same length than \a validRange
+		int32_t getScanIntensity(const size_t i) const;
+		void setScanIntensity(const size_t i, const int val);
+
+		mrpt::utils::ContainerReadOnlyProxyAccessor<std::vector<char> >  validRange;  //!< It's false (=0) on no reflected rays, referenced to elements in \a scan
+		bool  getScanRangeValidity(const size_t i) const;
+		void setScanRangeValidity(const size_t i, const bool val);
+
 		float                aperture; //!< The "aperture" or field-of-view of the range finder, in radians (typically M_PI = 180 degrees).
 		bool                 rightToLeft; //!< The scanning direction: true=counterclockwise; false=clockwise
 		float                maxRange; //!< The maximum range allowed by the device, in meters (e.g. 80m, 50m,...)
@@ -69,7 +88,9 @@ namespace obs
 
 		void getScanProperties(T2DScanProperties& p) const;  //!< Fill out a T2DScanProperties structure with the parameters of this scan
 		/** @} */
-		
+
+		void loadFromVectors(size_t nRays, const float *scanRanges, const char *scanValidity );
+
 		/** @name Cached points map
 		    @{  */
 	protected:
@@ -77,9 +98,7 @@ namespace obs
 		  *  It's a generic smart pointer to avoid depending here in the library mrpt-obs on classes on other libraries.
 		  */
 		mutable mrpt::maps::CMetricMapPtr  m_cachedMap;
-
 		void internal_buildAuxPointsMap( const void *options = NULL ) const;  //!< Internal method, used from buildAuxPointsMap()
-
 	public:
 
 		/** Returns the cached points map representation of the scan, if already build with buildAuxPointsMap(), or NULL otherwise.
@@ -116,6 +135,9 @@ namespace obs
 		  */
 		bool isPlanarScan(const double tolerance = 0) const;
 
+		bool hasIntensity() const; //!< Return true if scan has intensity
+		void setScanHasIntensity(bool setHasIntensityFlag); //!< Marks this scan as having or not intensity data.
+
 		// See base class docs
 		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const MRPT_OVERRIDE { out_sensorPose = sensorPose; }
 		void setSensorPose( const mrpt::poses::CPose3D &newSensorPose ) MRPT_OVERRIDE { sensorPose = newSensorPose; }
@@ -144,9 +166,7 @@ namespace obs
 	}; // End of class def.
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CObservation2DRangeScan, CObservation, OBS_IMPEXP)
 
-
 	} // End of namespace
-
 	namespace utils
 	{
 		// Specialization must occur in the same namespace

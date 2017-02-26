@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -14,6 +14,8 @@
 #include "ArArgumentParser.h"
 #include "ArFunctor.h"
 #include "ariaUtil.h"
+#include <memory>
+
 
 /// Class for parsing files more easily
 /**
@@ -46,11 +48,11 @@ public:
   /// Destructor
   AREXPORT ~ArFileParser(void);
   /// Adds a functor to handle a keyword that wants an easily parsable string
-  AREXPORT bool addHandler(const char *keyword, 
+  AREXPORT bool addHandler(const char *keyword,
 			   ArRetFunctor1<bool, ArArgumentBuilder *> *functor);
   /// Adds a functor to handle a keyword that wants an easily parsable string and returns error messages
-  AREXPORT bool addHandlerWithError(const char *keyword, 
-			   ArRetFunctor3<bool, ArArgumentBuilder *, 
+  AREXPORT bool addHandlerWithError(const char *keyword,
+			   ArRetFunctor3<bool, ArArgumentBuilder *,
 				    char *, size_t> *functor);
   /// Removes a handler for a keyword
   AREXPORT bool remHandler(const char *keyword, bool logIfCannotFind = true);
@@ -59,12 +61,12 @@ public:
   /// Removes any handlers with this functor
   AREXPORT bool remHandler(
 	  ArRetFunctor3<bool, ArArgumentBuilder *, char *, size_t> *functor);
-  /* this shouldn't be needed and would be inelegant with the new scheme, 
+  /* this shouldn't be needed and would be inelegant with the new scheme,
      if someone needs it let us know and I'll update it somehow
   /// Gets handler data for some keyword
   AREXPORT ArRetFunctor1<bool, ArArgumentBuilder *> *getHandler(const char *keyword);
   */
-  
+
   /// The function to parse a file
   AREXPORT bool parseFile(const char *fileName, bool continueOnErrors = true,
 			  bool noFileNotFoundMessage = false,
@@ -78,16 +80,16 @@ public:
    * @param continueOnErrors a bool set to true if parsing should continue
    * even after an error is detected
   **/
-  AREXPORT bool parseFile(FILE *file, char *buffer, int bufferLength, 
-			  bool continueOnErrors = true, 
+  AREXPORT bool parseFile(FILE *file, char *buffer, int bufferLength,
+			  bool continueOnErrors = true,
 			  char *errorBuffer = NULL, size_t errorBufferLen = 0);
 
   /// Gets the base directory
   AREXPORT const char *getBaseDirectory(void) const;
   /// Sets the base directory
   AREXPORT void setBaseDirectory(const char *baseDirectory);
-  /// Function to parse a single line 
-  AREXPORT bool parseLine(char *line, char *errorBuffer = NULL, 
+  /// Function to parse a single line
+  AREXPORT bool parseLine(char *line, char *errorBuffer = NULL,
 			  size_t errorBufferLen = 0);
   /// Function to reset counters
   AREXPORT void resetCounters(void);
@@ -107,34 +109,34 @@ protected:
       myCallback = functor;
     }
     ~HandlerCBType() {}
-    bool call(ArArgumentBuilder *arg, char *errorBuffer, 
-	      size_t errorBufferLen) 
-    { 
-      if (myCallbackWithError != NULL) 
+    bool call(ArArgumentBuilder *arg, char *errorBuffer,
+	      size_t errorBufferLen)
+    {
+      if (myCallbackWithError != NULL)
 	return myCallbackWithError->invokeR(arg, errorBuffer, errorBufferLen);
-      else if (myCallback != NULL) 
-	return myCallback->invokeR(arg); 
+      else if (myCallback != NULL)
+	return myCallback->invokeR(arg);
       // if we get here there's a problem
       ArLog::log(ArLog::Terse, "ArFileParser: Horrible problem with process callbacks");
       return false;
     }
     bool haveFunctor(
 	    ArRetFunctor3<bool, ArArgumentBuilder *, char *, size_t> *functor)
-    { 
-      if (myCallbackWithError == functor) 
-	return true; 
-      else 
-	return false; 
+    {
+      if (myCallbackWithError == functor)
+	return true;
+      else
+	return false;
     }
     bool haveFunctor(ArRetFunctor1<bool, ArArgumentBuilder *> *functor)
-    { 
-      if (myCallback == functor) 
-	return true; 
-      else 
-	return false; 
+    {
+      if (myCallback == functor)
+	return true;
+      else
+	return false;
     }
-    const char *getName(void) 
-    { 
+    const char *getName(void)
+    {
       if (myCallbackWithError != NULL)
 	return myCallbackWithError->getName();
       else if (myCallback != NULL)
@@ -149,11 +151,9 @@ protected:
   };
   int myLineNumber;
   std::string myBaseDir;
-  std::map<std::string, HandlerCBType *, ArStrCaseCmpOp> myMap;
+  std::map<std::string, std::shared_ptr<HandlerCBType>, ArStrCaseCmpOp> myMap;
   // handles that NULL case
-  HandlerCBType *myRemainderHandler;
+  std::shared_ptr<HandlerCBType> myRemainderHandler;
 };
 
 #endif // ARFILEPARSER_H
-
-

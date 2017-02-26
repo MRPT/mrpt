@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -10,8 +10,8 @@
 #define C2DRangeFinderAbstract_H
 
 #include <mrpt/utils/CStream.h>
-#include <mrpt/synch.h>
-#include <mrpt/utils/CDebugOutputCapable.h>
+#include <mrpt/synch/CCriticalSection.h>
+#include <mrpt/utils/COutputLogger.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/hwdrivers/link_pragmas.h>
@@ -35,7 +35,7 @@ namespace mrpt
 		  * \sa hwdrivers::CSerialPort
 		  * \ingroup mrpt_hwdrivers_grp
 		  */
-		class HWDRIVERS_IMPEXP C2DRangeFinderAbstract : public mrpt::utils::CDebugOutputCapable, public mrpt::hwdrivers::CGenericSensor
+		class HWDRIVERS_IMPEXP C2DRangeFinderAbstract : public mrpt::utils::COutputLogger, public mrpt::hwdrivers::CGenericSensor
 		{
 		private:
 			mrpt::obs::CObservation2DRangeScan	m_lastObservation;

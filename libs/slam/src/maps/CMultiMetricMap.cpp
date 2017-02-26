@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -12,7 +12,6 @@
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/maps/CMultiMetricMap.h>
-#include <mrpt/utils/CStartUpClassesRegister.h>
 #include <mrpt/utils/metaprogramming.h>
 #include <mrpt/utils/CStream.h>
 
@@ -23,9 +22,6 @@ using namespace mrpt::obs;
 using namespace mrpt::utils::metaprogramming;
 
 IMPLEMENTS_SERIALIZABLE( CMultiMetricMap, CMetricMap, mrpt::maps )
-
-extern CStartUpClassesRegister  mrpt_slam_class_reg;
-const int dumm = mrpt_slam_class_reg.do_nothing(); // Avoid compiler removing this class in static linking
 
 // ------------------------------------------------------------------------
 // A few words explaining how all this works:
@@ -134,7 +130,7 @@ struct MapGetAs3DObject
 
 	template <typename PTR>
 	inline void operator()(PTR &ptr) {
-		if (ptr.present()) ptr->getAs3DObject(obj_gl);
+		if (ptr) ptr->getAs3DObject(obj_gl);
 	}
 }; // end of MapGetAs3DObject
 
@@ -144,7 +140,7 @@ struct MapAuxPFCleanup
 
 	template <typename PTR>
 	inline void operator()(PTR &ptr) {
-		if (ptr.present()) ptr->auxParticleFilterCleanUp();
+		if (ptr) ptr->auxParticleFilterCleanUp();
 	}
 }; // end of MapAuxPFCleanup
 
@@ -160,29 +156,32 @@ struct MapIsEmpty
 
 	template <typename PTR>
 	inline void operator()(PTR &ptr) {
-		if (ptr.present())
+		if (ptr)
 			is_empty = is_empty && ptr->isEmpty();
 	}
 }; // end of MapIsEmpty
 
 // ------------------- End of map-operations helper templates -------------------
 
+#define ALL_PROXIES_INIT \
+	m_pointsMaps(maps), \
+	m_gridMaps(maps), \
+	m_octoMaps(maps), \
+	m_colourOctoMaps(maps), \
+	m_gasGridMaps(maps), \
+	m_wifiGridMaps(maps), \
+	m_heightMaps(maps), \
+	m_heightMRFMaps(maps), \
+	m_reflectivityMaps(maps), \
+	m_colourPointsMap(maps), \
+	m_weightedPointsMap(maps), \
+	m_landmarksMap(maps), \
+	m_beaconMap(maps)
 
 // Ctor
 CMultiMetricMap::CMultiMetricMap(const TSetOfMetricMapInitializers *initializers) :
 	maps(),
-	m_pointsMaps(maps),
-	m_gridMaps(maps),
-	m_octoMaps(maps),
-	m_colourOctoMaps(maps),
-	m_gasGridMaps(maps),
-	m_wifiGridMaps(maps),
-	m_heightMaps(maps),
-	m_reflectivityMaps(maps),
-	m_colourPointsMap(maps),
-	m_weightedPointsMap(maps),
-	m_landmarksMap(maps),
-	m_beaconMap(maps),
+	ALL_PROXIES_INIT,
 	m_ID(0)
 {
 	MRPT_START
@@ -190,25 +189,35 @@ CMultiMetricMap::CMultiMetricMap(const TSetOfMetricMapInitializers *initializers
 	MRPT_END
 }
 
-// Copy ctor
-CMultiMetricMap::CMultiMetricMap(const mrpt::maps::CMultiMetricMap &other ) :
-	maps(),
-	m_pointsMaps(maps),
-	m_gridMaps(maps),
-	m_octoMaps(maps),
-	m_colourOctoMaps(maps),
-	m_gasGridMaps(maps),
-	m_wifiGridMaps(maps),
-	m_heightMaps(maps),
-	m_reflectivityMaps(maps),
-	m_colourPointsMap(maps),
-	m_weightedPointsMap(maps),
-	m_landmarksMap(maps),
-	m_beaconMap(maps),
-	m_ID(0)
+CMultiMetricMap::CMultiMetricMap(const CMultiMetricMap &o) :
+	maps(o.maps),
+	ALL_PROXIES_INIT,
+	m_ID(o.m_ID)
 {
-	*this = other;	// Call the "=" operator
 }
+
+CMultiMetricMap& CMultiMetricMap::operator =(const CMultiMetricMap &o)
+{
+	maps = o.maps;
+	m_ID = o.m_ID;
+	return *this;
+}
+
+#if (__cplusplus>199711L)
+CMultiMetricMap::CMultiMetricMap(CMultiMetricMap &&o) :
+	maps(std::move(o.maps)),
+	ALL_PROXIES_INIT,
+	m_ID(o.m_ID)
+{
+}
+
+CMultiMetricMap& CMultiMetricMap::operator =(CMultiMetricMap &&o)
+{
+	maps = std::move(o.maps);
+	m_ID = o.m_ID;
+	return *this;
+}
+#endif
 
 /*---------------------------------------------------------------
 			setListOfMaps
@@ -250,40 +259,11 @@ void  CMultiMetricMap::internal_clear()
 	MapExecutor::run(*this, op);
 }
 
-/*---------------------------------------------------------------
-		Copy constructor
-  ---------------------------------------------------------------*/
-mrpt::maps::CMultiMetricMap & CMultiMetricMap::operator = ( const CMultiMetricMap &other )
-{
-	MRPT_START
-
-	if (this == &other) return *this;			// Who knows! :-)
-
-	m_ID	  = other.m_ID;
-
-	// Copy all maps and then make_unique() to really duplicate the objects:
-	this->maps = other.maps;
-	// invoke make_unique() operation on each smart pointer:
-	ObjectMakeUnique op;
-	MapExecutor::run(*this, op);
-
-	return *this;
-	MRPT_END
-}
-
-/*---------------------------------------------------------------
-		Destructor
-  ---------------------------------------------------------------*/
-CMultiMetricMap::~CMultiMetricMap()
-{
-	deleteAllMaps();
-}
-
 // Deletes all maps and clears the internal lists of maps (with clear_unique(), so user copies remain alive)
 void  CMultiMetricMap::deleteAllMaps()
 {
 	// Clear smart pointers:
-	ObjectClearUnique op_clear_unique;
+	ObjectClearUnique<mrpt::utils::poly_ptr_ptr<mrpt::maps::CMetricMapPtr> > op_clear_unique;
 	MapExecutor::run(*this, op_clear_unique);
 
 	// Clear list:
@@ -328,7 +308,7 @@ void  CMultiMetricMap::readFromStream(mrpt::utils::CStream &in, int version)
 			uint32_t  n;
 			in >> n;
 			this->maps.resize(n);
-			for_each( maps.begin(), maps.end(), ObjectReadFromStream(&in) );
+			for_each( maps.begin(), maps.end(), ObjectReadFromStreamToPtrs<mrpt::maps::CMetricMapPtr>(&in) );
 
 		} break;
 	default:
@@ -352,7 +332,7 @@ double	 CMultiMetricMap::internal_computeObservationLikelihood(
 }
 
 // Read docs in base class
-bool CMultiMetricMap::internal_canComputeObservationLikelihood( const CObservation *obs )
+bool CMultiMetricMap::internal_canComputeObservationLikelihood( const CObservation *obs ) const
 {
 	bool can_comp;
 
@@ -433,12 +413,7 @@ void  CMultiMetricMap::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) c
 }
 
 // See docs in base class
-float  CMultiMetricMap::compute3DMatchingRatio(
-		const mrpt::maps::CMetricMap								*otherMap,
-		const CPose3D							&otherMapPose,
-		float									maxDistForCorr,
-		float									maxMahaDistForCorr
-		) const
+float  CMultiMetricMap::compute3DMatchingRatio(const mrpt::maps::CMetricMap *otherMap, const mrpt::poses::CPose3D &otherMapPose, const TMatchingRatioParams &params) const
 {
 	MRPT_START
 
@@ -448,7 +423,7 @@ float  CMultiMetricMap::compute3DMatchingRatio(
 	{
 		const mrpt::maps::CMetricMap * m = maps[idx].pointer();
 		ASSERT_(m)
-		accumResult += m->compute3DMatchingRatio( otherMap, otherMapPose,maxDistForCorr,maxMahaDistForCorr );
+		accumResult += m->compute3DMatchingRatio( otherMap, otherMapPose,params);
 	}
 
 	// Return average:
@@ -495,5 +470,5 @@ CSimplePointsMap * CMultiMetricMap::getAsSimplePointsMap()
 mrpt::maps::CMetricMapPtr CMultiMetricMap::getMapByIndex(size_t idx) const
 {
 	ASSERT_BELOW_(idx,maps.size())
-	return maps[idx];
+	return maps[idx].get_ptr();
 }

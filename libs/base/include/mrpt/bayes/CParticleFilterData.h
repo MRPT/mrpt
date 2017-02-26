@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -37,13 +37,13 @@ namespace bayes
 
 		double getW(size_t i) const MRPT_OVERRIDE
 		{
-			if (i>=derived().m_particles.size()) THROW_EXCEPTION_CUSTOM_MSG1("Index %i is out of range!",(int)i);
+			if (i>=derived().m_particles.size()) THROW_EXCEPTION_FMT("Index %i is out of range!",(int)i);
 			return derived().m_particles[i].log_w;
 		}
 
 		void setW(size_t i, double w) MRPT_OVERRIDE
 		{
-			if (i>=derived().m_particles.size()) THROW_EXCEPTION_CUSTOM_MSG1("Index %i is out of range!",(int)i);
+			if (i>=derived().m_particles.size()) THROW_EXCEPTION_FMT("Index %i is out of range!",(int)i);
 			derived().m_particles[i].log_w = w;
 		}
 
@@ -118,10 +118,7 @@ namespace bayes
 				for (j=lastIndxOld;j<sorted_idx;j++)
 				{
 					if (!oldParticlesReused[j])	/* If reused we can not delete that memory! */
-					{
-						delete derived().m_particles[j].d;
-						derived().m_particles[j].d = NULL;
-					}
+						derived().m_particles[j].d.reset();
 				}
 
 				/* For the next iteration:*/
@@ -132,30 +129,26 @@ namespace bayes
 				if (!oldParticlesReused[sorted_idx])
 				{
 					/* Reuse the data from the particle: */
-					parts[i].d = derived().m_particles[ sorted_idx ].d;
+					parts[i].d.reset( derived().m_particles[ sorted_idx ].d.get() );
 					oldParticlesReused[sorted_idx]=true;
 				}
 				else
 				{
 					/* Make a copy of the particle's data: */
-					ASSERT_( derived().m_particles[ sorted_idx ].d != NULL);
-					parts[i].d = new typename Derived::CParticleDataContent( *derived().m_particles[ sorted_idx ].d );
+					ASSERT_( derived().m_particles[ sorted_idx ].d );
+					parts[i].d.reset(new typename Derived::CParticleDataContent(*derived().m_particles[sorted_idx].d));
 				}
 			}
 			/* Free memory of unused particles */
-			for (itSrc=derived().m_particles.begin(),oldPartIt=oldParticlesReused.begin();itSrc!=derived().m_particles.end();itSrc++,oldPartIt++)
-				if (! *oldPartIt )
-				{
-					delete itSrc->d;
-					itSrc->d = NULL;
-				}
+			for (itSrc = derived().m_particles.begin(), oldPartIt = oldParticlesReused.begin(); itSrc != derived().m_particles.end(); itSrc++, oldPartIt++)
+				if (!*oldPartIt)
+					itSrc->d.reset();
 			/* Copy the pointers only to the final destination */
 			derived().m_particles.resize( parts.size() );
 			for (itSrc=parts.begin(),itDest=derived().m_particles.begin(); itSrc!=parts.end(); itSrc++, itDest++ )
 			{
 				itDest->log_w = itSrc->log_w;
-				itDest->d = itSrc->d;
-				itSrc->d = NULL;
+				itDest->d.move_from(itSrc->d);
 			}
 			parts.clear();
 			MRPT_END
@@ -184,24 +177,12 @@ namespace bayes
 		CParticleList  m_particles;	//!< The array of particles
 
 		/** Default constructor */
-		CParticleFilterData() : m_particles(0)
-		{ }
+		CParticleFilterData() : m_particles(0) {}
 
-		/** Free the memory of all the particles and reset the array "m_particles" to length zero.
-		  */
+		/** Free the memory of all the particles and reset the array "m_particles" to length zero  */
 		void clearParticles()
 		{
-			MRPT_START
-			for (typename CParticleList::iterator it=m_particles.begin();it!=m_particles.end();++it)
-				if (it->d) delete it->d;
 			m_particles.clear();
-			MRPT_END
-		}
-
-		/** Virtual destructor */
-		virtual ~CParticleFilterData()
-		{
-			clearParticles();
 		}
 
 		/** Dumps the sequence of particles and their weights to a stream (requires T implementing CSerializable).
@@ -234,7 +215,7 @@ namespace bayes
 			for (it=m_particles.begin();it!=m_particles.end();++it)
 			{
 				in >> it->log_w;
-				it->d = new T();
+				it->d.reset(new T());
 				in >> *it->d;
 			}
 			MRPT_END

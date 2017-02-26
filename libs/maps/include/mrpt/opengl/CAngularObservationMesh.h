@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -361,9 +361,11 @@ namespace opengl	{
 				o.maxRange=10000;
 				o.sensorPose=pNew;
 				o.deltaPitch=0;
-				o.scan.resize(values.size());
-				for (size_t i=0;i<values.size();i++) o.scan[i]=values[i];
-				o.validRange=valid;
+				o.resizeScan(values.size());
+				for (size_t i=0;i<values.size();i++) {
+					o.setScanRange(i, values[i]);
+					o.setScanRangeValidity(i, valid[i]!=0);
+				}
 				vObs.push_back(o);
 			}
 		};

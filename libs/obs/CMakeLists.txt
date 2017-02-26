@@ -17,7 +17,7 @@ LIST(APPEND obs_EXTRA_SRCS_NAME
 
 # Minimal XMLParser:
 INCLUDE_DIRECTORIES("${MRPT_LIBS_ROOT}/base/src/utils/")  # Notice the "src", not "include": these are private hdrs
-IF (MSVC AND BUILD_SHARED_LIBS)  # No need to reinclude these sources (already in mrpt-base) if building static libs or if in GCC
+IF (WIN32 AND BUILD_SHARED_LIBS)  # No need to reinclude these sources (already in mrpt-base) if building static libs or if in GCC
 	LIST(APPEND obs_EXTRA_SRCS		"${MRPT_LIBS_ROOT}/base/src/utils/xmlparser/*.cpp" "${MRPT_LIBS_ROOT}/base/src/utils/xmlparser/*.h")
 	LIST(APPEND obs_EXTRA_SRCS_NAME 	"utils/xmlparser" "utils/xmlparser")
 	SET(OBS_HAS_LOCAL_XMLPARSER 1)

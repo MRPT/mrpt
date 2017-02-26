@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -94,6 +94,68 @@ bool Message_NMEA_GGA::getAllFieldValues( std::ostream &o ) const
 }
 
 // ---------------------------------------
+Message_NMEA_GLL::content_t::content_t() :
+	UTCTime(),
+	latitude_degrees(0),
+	longitude_degrees(0),
+	validity_char('V')
+{ }
+
+void Message_NMEA_GLL::dumpToStream( mrpt::utils::CStream &out ) const
+{
+	out.printf("[NMEA GLL datum]\n");
+	out.printf("  Longitude: %.09f deg  Latitude: %.09f deg Validity: '%c'\n",
+		fields.longitude_degrees,
+		fields.latitude_degrees,
+		fields.validity_char );
+	out.printf("  UTC time-stamp: %02u:%02u:%02.03f\n",
+		fields.UTCTime.hour,
+		fields.UTCTime.minute,
+		fields.UTCTime.sec);
+}
+
+bool Message_NMEA_GLL::getAllFieldDescriptions( std::ostream &o ) const
+{
+	o << "lon_deg lat_deg hour min sec validity";
+	return true;
+}
+bool Message_NMEA_GLL::getAllFieldValues( std::ostream &o ) const
+{
+	o << mrpt::format("%.09f %.09f %02u %02u %02.03f %u",
+		fields.longitude_degrees,
+		fields.latitude_degrees,
+		fields.UTCTime.hour,
+		fields.UTCTime.minute,
+		fields.UTCTime.sec,
+		static_cast<unsigned int>(fields.validity_char=='A' ? 1:0)
+		);
+	return true;
+}
+
+// ---------------------------------------
+Message_NMEA_VTG::content_t::content_t() :
+	true_track(), magnetic_track(),ground_speed_knots(), ground_speed_kmh()
+{ }
+
+void Message_NMEA_VTG::dumpToStream( mrpt::utils::CStream &out ) const
+{
+	out.printf("[NMEA VTG datum]\n");
+	out.printf("  True track: %.03f deg  Magnetic track: %.03f deg\n",fields.true_track, fields.magnetic_track);
+	out.printf("  Ground speed: %.03f knots  %.03f km/h\n",fields.ground_speed_knots, fields.ground_speed_kmh);
+}
+
+bool Message_NMEA_VTG::getAllFieldDescriptions( std::ostream &o ) const
+{
+	o << "true_track mag_track gnd_speed_knots gnd_speed_kmh";
+	return true;
+}
+bool Message_NMEA_VTG::getAllFieldValues( std::ostream &o ) const
+{
+	o << mrpt::format("%.09f %.09f %.09f %.09f",fields.true_track, fields.magnetic_track, fields.ground_speed_knots, fields.ground_speed_kmh);
+	return true;
+}
+
+// ---------------------------------------
 Message_NMEA_RMC::content_t::content_t() :
 	UTCTime(),
 	validity_char('V'),
@@ -114,8 +176,7 @@ mrpt::system::TTimeStamp Message_NMEA_RMC::getDateAsTimestamp() const
 	using namespace mrpt::system;
 
 	// Detect current century:
-	uint16_t years_century;
-	{
+	uint16_t years_century; {
 		TTimeParts dec_parts;
 		timestampToParts(now(), dec_parts);
 		years_century = (dec_parts.year/100)*100;
@@ -131,7 +192,6 @@ mrpt::system::TTimeStamp Message_NMEA_RMC::getDateAsTimestamp() const
 	parts.year  = years_century + fields.date_year;
 
 	return buildTimestampFromParts(parts);
-
 }
 
 void Message_NMEA_RMC::dumpToStream( mrpt::utils::CStream &out ) const
@@ -159,23 +219,75 @@ void Message_NMEA_RMC::dumpToStream( mrpt::utils::CStream &out ) const
 
 bool Message_NMEA_RMC::getAllFieldDescriptions( std::ostream &o ) const
 {
-	o << "lon_deg lat_deg hour min sec speed_knots direction_deg";
+	o << "lon_deg lat_deg hour min sec speed_knots direction_deg year month day";
 	return true;
 }
 bool Message_NMEA_RMC::getAllFieldValues( std::ostream &o ) const
 {
-	o << mrpt::format("%.09f %.09f %02u %02u %02.03f %.05f %.03f",
+	o << mrpt::format("%.09f %.09f %02u %02u %02.03f %.05f %.03f %02u %02u %02u",
 		fields.longitude_degrees,
 		fields.latitude_degrees,
 		fields.UTCTime.hour,
 		fields.UTCTime.minute,
 		fields.UTCTime.sec,
 		fields.speed_knots,
-		fields.direction_degrees
+		fields.direction_degrees,
+		fields.date_year,
+		fields.date_month,
+		fields.date_day
 		);
 	return true;
 }
 
+// ---------------------------------------
+Message_NMEA_ZDA::content_t::content_t() :
+	UTCTime(), date_day(),date_month(),date_year()
+{ }
 
+void Message_NMEA_ZDA::dumpToStream( mrpt::utils::CStream &out ) const
+{
+	out.printf("[NMEA ZDA datum]\n");
+	out.printf(" UTC time-stamp: %02u:%02u:%02.03f\n",
+		fields.UTCTime.hour,
+		fields.UTCTime.minute,
+		fields.UTCTime.sec
+		);
+	out.printf(" Date (DD/MM/YY): %02u/%02u/%04u\n ",
+		(unsigned)fields.date_day,(unsigned)fields.date_month, (unsigned)fields.date_year);
+}
 
+bool Message_NMEA_ZDA::getAllFieldDescriptions( std::ostream &o ) const
+{
+	o << "year month day hour minute second";
+	return true;
+}
+bool Message_NMEA_ZDA::getAllFieldValues( std::ostream &o ) const
+{
+	o << mrpt::format("%04u %02u %02u %02u %02u %.05f",
+		fields.date_year,
+		fields.date_month,
+		fields.date_day,
+		fields.UTCTime.hour,
+		fields.UTCTime.minute,
+		fields.UTCTime.sec);
+	return true;
+}
 
+mrpt::system::TTimeStamp Message_NMEA_ZDA::getDateTimeAsTimestamp() const
+{
+	return fields.UTCTime.getAsTimestamp( this->getDateAsTimestamp() );
+}
+
+//!< Build an MRPT timestamp with the year/month/day of this observation.
+mrpt::system::TTimeStamp Message_NMEA_ZDA::getDateAsTimestamp() const
+{
+	using namespace mrpt::system;
+	TTimeParts parts;
+	parts.second = 
+	parts.minute = 
+	parts.hour = 0;
+	parts.day   = fields.date_day;
+	parts.month = fields.date_month;
+	parts.year  = fields.date_year;
+	return buildTimestampFromParts(parts);
+}

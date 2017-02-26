@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -170,7 +170,7 @@ namespace mrpt
 		} // end detail
 
 		/** Creates a new thread from a function (or static method) with one generic parameter.
-		  *  This function creates, and start, a new thread running some code given by a function.
+		  *  This function creates, and starts a new thread running some code given by a function.
 		  *  The thread function should end by returning as normal.
 		  * \param func The function with the code to run in the thread.
 		  * \param param The parameter to be passed to the new thread function.
@@ -191,7 +191,7 @@ namespace mrpt
 		}
 
 		/** Creates a new thread running a non-static method (so it will have access to "this") from another method of the same class - with one generic parameter.
-		  *  This function creates, and start, a new thread running some code given by a function.
+		  *  This function creates, and starts a new thread running some code given by a function.
 		  *  The thread function should end by returning as normal.
 		  *  Example of usage:
 		  *
@@ -260,7 +260,9 @@ namespace mrpt
 				time_t			&exitTime,
 				double			&cpuTime );
 
-		/** Change the priority of the given thread.
+		/** Change the priority of the given thread - for Windows, see also changeCurrentProcessPriority()
+		  * - Windows: This is equivalent to [SetThreadPriority()](https://msdn.microsoft.com/en-us/library/windows/desktop/ms686277(v=vs.85).aspx) (read the docs there)
+		  * - Linux (pthreads): May require `root` permissions! This sets the Round Robin scheduler with the given priority level. Read [sched_setscheduler](http://linux.die.net/man/2/sched_setscheduler).
 		  * \sa createThread, changeCurrentProcessPriority
 		  */
 		void BASE_IMPEXP changeThreadPriority( const TThreadHandle &threadHandle, TThreadPriority priority );
@@ -269,6 +271,8 @@ namespace mrpt
 		void BASE_IMPEXP terminateThread( TThreadHandle &threadHandle) MRPT_NO_THROWS;
 
 		/** Change the priority of the given process (it applies to all the threads, plus independent modifiers for each thread).
+		  *  - Windows: See [SetPriorityClass](https://msdn.microsoft.com/es-es/library/windows/desktop/ms686219(v=vs.85).aspx)
+		  *  - Linux (pthreads): Requires `root` permissions to increase process priority! Internally it calls [nice()](http://linux.die.net/man/3/nice), so it has no effect if changeThreadPriority() was called and a SCHED_RR is already active.
 		  * \sa createThread, changeThreadPriority
 		  */
 		void BASE_IMPEXP changeCurrentProcessPriority( TProcessPriority priority );

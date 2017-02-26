@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -84,7 +84,7 @@ namespace mrpt
 			CRenderizable&  setColorB_u8(const uint8_t b) MRPT_OVERRIDE	{m_color.B=b; notifyChange(); return *this;}	//!<Color components in the range [0,255] \return a ref to this
 			CRenderizable&  setColorA_u8(const uint8_t a) MRPT_OVERRIDE	{m_color.A=a; notifyChange(); return *this;}	//!<Color components in the range [0,255] \return a ref to this
 			CRenderizable& setColor_u8( const mrpt::utils::TColor &c) MRPT_OVERRIDE { CRenderizable::setColor_u8(c); notifyChange(); return *this; } //!< Changes the default object color \return a ref to this
-
+			inline CRenderizable& setColor_u8( uint8_t R, uint8_t G, uint8_t B, uint8_t A=255) { CRenderizable::setColor_u8(R,G,B,A);  notifyChange(); return *this; }	//!<Color components in the range [0,255] \return a ref to this
 			/** @} */
 
 		};

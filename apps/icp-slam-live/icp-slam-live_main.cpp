@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -248,7 +248,7 @@ void MapBuilding_ICP_Live(const string &INI_FILENAME)
 	// ---------------------------------
 	//   CMetricMapBuilder::TOptions
 	// ---------------------------------
-	mapBuilder.options.verbose = true;
+	mapBuilder.setVerbosityLevel( mrpt::utils::LVL_DEBUG);
 
 	mapBuilder.ICP_params.dumpToConsole();
 	mapBuilder.ICP_options.dumpToConsole();
@@ -310,6 +310,7 @@ void MapBuilding_ICP_Live(const string &INI_FILENAME)
 			{
 				mrpt::synch::CCriticalSectionLocker csl(&cs_global_list_obs);
 				obs_copy = global_list_obs;
+				global_list_obs.clear();
 			}
 			// Keep the most recent laser scan:
 			for (mrpt::hwdrivers::CGenericSensor::TListObservations::reverse_iterator it = obs_copy.rbegin();!observation && it != obs_copy.rend();++it)
@@ -502,7 +503,7 @@ void MapBuilding_ICP_Live(const string &INI_FILENAME)
 	printf("Dumping final map in binary format to: %s\n", str.c_str() );
 	mapBuilder.saveCurrentMapToFile(str);
 
-	CMultiMetricMap  *finalPointsMap = mapBuilder.getCurrentlyBuiltMetricMap();
+	const CMultiMetricMap  *finalPointsMap = mapBuilder.getCurrentlyBuiltMetricMap();
 	str = format("%s/_finalmaps_.txt",OUT_DIR);
 	printf("Dumping final metric maps to %s_XXX\n", str.c_str() );
 	finalPointsMap->saveMetricMapRepresentationToFile( str );

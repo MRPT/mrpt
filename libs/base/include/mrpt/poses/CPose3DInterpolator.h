@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -24,8 +24,12 @@ namespace mrpt
 
 		typedef std::pair<mrpt::system::TTimeStamp, mrpt::poses::CPose3D> TTimePosePair;
 
-		/** A trajectory in time and in 6D (CPose3D) that interpolates using splines the intervals between a set of given time-referenced poses.
-		  *   To insert new points into the sequence, use the "insert" method, and for getting an interpolated point, use "interpolate" method. For example:
+		/** This class stores a time-stamped trajectory in SE(3) (CPose3D poses). 
+		  *  It can also interpolate SE(3) poses over time using linear, splines or SLERP interpolation, as set in CPose3DInterpolator::setInterpolationMethod()
+		  *  Usage: 
+		  *   - Insert new poses into the sequence with CPose3DInterpolator::insert()
+		  *   - Query an exact/interpolated pose with CPose3DInterpolator::interpolate().
+		  * Example:
 		  * \code
 		  * CPose3DInterpolator		path;
 		  *

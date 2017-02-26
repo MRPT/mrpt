@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -36,7 +36,7 @@ void sem_thread_example(int id)
 	MRPT_UNUSED_PARAM(id);
 #endif // DEBUG_OUT
 
-		CSemaphore  sem(1,1,"/mrpt-demo-sem");
+		CSemaphore  sem(1,1);
 #ifdef DEBUG_OUT
     cout << mrpt::format("[thread_example2 %i, ID:%lu] Object created...\n", id, getCurrentThreadId()); cout.flush();
 #endif // DEBUG_OUT
@@ -65,12 +65,12 @@ void sem_thread_example(int id)
 }
 
 template <int num_threads,int initial_sem_count>
-void my_CSemaphore_named()
+void my_CSemaphore()
 {
 	std::vector<TThreadHandle>  threads;
 
 	// Create a named semaphore:
-	CSemaphore  sem(initial_sem_count /*init val*/,5*num_threads /*max val*/,"mrpt-demo-sem1");
+	CSemaphore  sem(initial_sem_count /*init val*/,5*num_threads /*max val*/);
 
     mrpt::system::sleep(1000);
 
@@ -82,19 +82,8 @@ void my_CSemaphore_named()
 		joinThread( threads[i] );
 }
 
-TEST(Synch, CSemaphore_named )
+TEST(Synch, CSemaphore)
 {
-	try
-	{
-		{ // Probe if this kernel version doesn't support named semaphores (it will raise an exception just for this simple construction)
-			CSemaphore  sem(1 /*init val*/,2 /*max val*/,"mrpt-probe-sem");
-		} // ----
-
-		launchTestWithTimeout(my_CSemaphore_named<6,1>, 5.0, "CSemaphore named: #threads=6, init count=1");
-		launchTestWithTimeout(my_CSemaphore_named<10,5>, 5.0, "CSemaphore named: #threads=10, init count=5");
-	}
-	catch (std::exception &)
-	{
-		std::cerr << "*Skipping test* It seems the kernel doesn't support named semaphores in this platform\n";
-	}
+	launchTestWithTimeout(my_CSemaphore<6,1>, 5.0, "CSemaphore: #threads=6, init count=1");
+	launchTestWithTimeout(my_CSemaphore<10,5>, 5.0, "CSemaphore: #threads=10, init count=5");
 }

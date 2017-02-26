@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -12,7 +12,6 @@
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/CTimeLogger.h>
-#include <mrpt/utils/CStartUpClassesRegister.h>
 #include <mrpt/system/os.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/utils/CStream.h>
@@ -61,9 +60,6 @@ IMPLEMENTS_VIRTUAL_SERIALIZABLE(CPointsMap, CMetricMap,mrpt::maps)
 float CPointsMap::COLOR_3DSCENE_R = 0;
 float CPointsMap::COLOR_3DSCENE_G = 0;
 float CPointsMap::COLOR_3DSCENE_B = 1;
-
-extern CStartUpClassesRegister  mrpt_maps_class_reg;
-const int dumm = mrpt_maps_class_reg.do_nothing(); // Avoid compiler removing this class in static linking
 
 /*---------------------------------------------------------------
 						Constructor
@@ -349,8 +345,8 @@ void CPointsMap::determineMatching2D(
 	correspondences.reserve(nLocalPoints);
 	extraResults.correspondencesRatio = 0;
 
-    TMatchingPairList _correspondences;
-    _correspondences.reserve(nLocalPoints);
+	TMatchingPairList _correspondences;
+	_correspondences.reserve(nLocalPoints);
 
 	// Hay mapa global?
 	if (!nGlobalPoints) return;  // No
@@ -384,6 +380,8 @@ void CPointsMap::determineMatching2D(
 
 	// We'll assume that the real allocated memory in the source buffers at least have room for a maximum
 	//  of 3 more floats, and pad with zeroes there (yeah, fuck correct-constness....)
+	// JLBC OCT/2016: resize() methods in maps have been modified to enforce capacities to be 4*N by design, 
+	// but will leave this code here just in case (for some edge cases?)
 	if ( otherMap->x.capacity()<nLocalPoints_4align ||
 		 otherMap->y.capacity()<nLocalPoints_4align )
 	{
@@ -535,39 +533,12 @@ void CPointsMap::determineMatching2D(
 	//  led to just one correspondence for each "local map" point, but
 	//  many of them may have as corresponding pair the same "global point"!!
 	// -------------------------------------------------------------------------
-	if (params.onlyUniqueRobust)
-	{
-		//if (!params.onlyKeepTheClosest)  THROW_EXCEPTION("ERROR: onlyKeepTheClosest must be also set to true when onlyUniqueRobust=true.")
-
-		vector<TMatchingPairPtr>	bestMatchForThisMap( nGlobalPoints, TMatchingPairPtr(NULL) );
-		TMatchingPairList::iterator it;
-
-		//   1) Go through all the correspondences and keep the best corresp.
-		//       for each "global map" (this) point.
-		for (it=_correspondences.begin();it!=_correspondences.end();++it)
-		{
-			if (!bestMatchForThisMap[it->this_idx])
-			{
-				bestMatchForThisMap[it->this_idx] = &(*it);
-			}
-			else
-			{
-				if ( it->errorSquareAfterTransformation < bestMatchForThisMap[it->this_idx]->errorSquareAfterTransformation )
-					bestMatchForThisMap[it->this_idx] = &(*it);
-			}
-		}
-
-		//   2) Go again through the list of correspondences and remove those
-		//       who are not the best one for their corresponding global map.
-		for (it=_correspondences.begin();it!=_correspondences.end(); ++it)
-		{
-			if ( bestMatchForThisMap[it->this_idx] != &(*it) )
-                correspondences.push_back( *it );   				// Add to the output
-		}
-	} // end of additional consistency filer for "onlyKeepTheClosest"
-	else
-	{
-	    correspondences.swap(_correspondences);
+	if (params.onlyUniqueRobust) {
+		ASSERTMSG_(params.onlyKeepTheClosest, "ERROR: onlyKeepTheClosest must be also set to true when onlyUniqueRobust=true.");
+		_correspondences.filterUniqueRobustPairs(nGlobalPoints,correspondences);
+	}
+	else {
+		correspondences.swap(_correspondences);
 	}
 
 	// If requested, copy sum of squared distances to output pointer:
@@ -682,7 +653,7 @@ void CPointsMap::TInsertionOptions::readFromStream(mrpt::utils::CStream &in)
 
 
 CPointsMap::TLikelihoodOptions::TLikelihoodOptions() :
-	sigma_dist          ( 0.05 ),
+    sigma_dist          ( 0.0025 ),
 	max_corr_distance   ( 1.0 ),
 	decimation          ( 10 )
 {
@@ -792,32 +763,13 @@ void  CPointsMap::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const
 	outObj->insert(obj);
 }
 
-
-/*---------------------------------------------------------------
-   Computes the ratio in [0,1] of correspondences between "this" and the "otherMap" map, whose 6D pose relative to "this" is "otherMapPose"
- *   In the case of a multi-metric map, this returns the average between the maps. This method always return 0 for grid maps.
- * \param  otherMap					  [IN] The other map to compute the matching with.
- * \param  otherMapPose				  [IN] The 6D pose of the other map as seen from "this".
- * \param  maxDistForCorr			  [IN] The minimum distance between 2 non-probabilistic map elements for counting them as a correspondence.
- * \param  maxMahaDistForCorr		  [IN] The minimum Mahalanobis distance between 2 probabilistic map elements for counting them as a correspondence.
- *
- * \return The matching ratio [0,1]
- * \sa determineMatching2D
----------------------------------------------------------------*/
-float  CPointsMap::compute3DMatchingRatio(
-		const mrpt::maps::CMetricMap								*otherMap2,
-		const CPose3D							&otherMapPose,
-		float									maxDistForCorr,
-		float									maxMahaDistForCorr
-		) const
+float  CPointsMap::compute3DMatchingRatio(const mrpt::maps::CMetricMap *otherMap2, const mrpt::poses::CPose3D &otherMapPose, const TMatchingRatioParams &mrp) const
 {
-	MRPT_UNUSED_PARAM(maxMahaDistForCorr);
-
 	TMatchingPairList     correspondences;
 	TMatchingParams       params;
 	TMatchingExtraResults extraResults;
 
-	params.maxDistForCorrespondence = maxDistForCorr;
+	params.maxDistForCorrespondence = mrp.maxDistForCorr;
 
 	this->determineMatching3D(
 		otherMap2->getAsSimplePointsMap(),
@@ -969,6 +921,8 @@ void CPointsMap::boundingBox(
 
 			// We'll assume that the real allocated memory in the source buffers at least have room for a maximum
 			//  of 3 more floats, and pad with zeroes there (yeah, fuck correct-constness....)
+			// JLBC OCT/2016: resize() methods in maps have been modified to enforce capacities to be 4*N by design, 
+			// but will leave this code here just in case (for some edge cases?)
 			if ( x.capacity()<nPoints_4align ||
 				 y.capacity()<nPoints_4align ||
 				 z.capacity()<nPoints_4align )
@@ -1088,20 +1042,14 @@ void  CPointsMap::determineMatching3D(
 	correspondences.clear();
 	correspondences.reserve(nLocalPoints);
 
-    TMatchingPairList _correspondences;
+	TMatchingPairList _correspondences;
 	_correspondences.reserve(nLocalPoints);
 
-	// Hay mapa global?
-	if (!nGlobalPoints) return;  // No
+	// Empty maps?  Nothing to do
+	if (!nGlobalPoints || !nLocalPoints) return;
 
-	// Hay mapa local?
-	if (!nLocalPoints)  return;  // No
-
-	// Solo hacer matching si existe alguna posibilidad de que
-	//  los dos mapas se toquen:
-	// -----------------------------------------------------------
-
-	// Transladar y rotar ya todos los puntos locales
+	// Try to do matching only if the bounding boxes have some overlap:
+	// Transform all local points:
 	vector<float> x_locals(nLocalPoints), y_locals(nLocalPoints), z_locals(nLocalPoints);
 
 	for (unsigned int localIdx=params.offset_other_map_points;localIdx<nLocalPoints;localIdx+=params.decimation_other_map_points)
@@ -1136,8 +1084,7 @@ void  CPointsMap::determineMatching3D(
 	if (local_x_min>global_x_max ||
 		local_x_max<global_x_min ||
 		local_y_min>global_y_max ||
-		local_y_max<global_y_min) return;	// No hace falta hacer matching,
-											//   porque es de CERO.
+		local_y_max<global_y_min) return;	// No need to compute: matching is ZERO.
 
 	// Loop for each point in local map:
 	// --------------------------------------------------
@@ -1201,39 +1148,12 @@ void  CPointsMap::determineMatching3D(
 	//  led to just one correspondence for each "local map" point, but
 	//  many of them may have as corresponding pair the same "global point"!!
 	// -------------------------------------------------------------------------
-	if (params.onlyUniqueRobust)
-	{
-		if (!params.onlyKeepTheClosest)  THROW_EXCEPTION("ERROR: onlyKeepTheClosest must be also set to true when onlyUniqueRobust=true.")
-
-		vector<TMatchingPairPtr>	bestMatchForThisMap( nGlobalPoints, TMatchingPairPtr(NULL) );
-		TMatchingPairList::iterator it;
-
-		//   1) Go through all the correspondences and keep the best corresp.
-		//       for each "global map" (this) point.
-		for (it=_correspondences.begin();it!=_correspondences.end();++it)
-		{
-			if (!bestMatchForThisMap[it->this_idx])
-			{
-				bestMatchForThisMap[it->this_idx] = &(*it);
-			}
-			else
-			{
-				if ( it->errorSquareAfterTransformation < bestMatchForThisMap[it->this_idx]->errorSquareAfterTransformation )
-					bestMatchForThisMap[it->this_idx] = &(*it);
-			}
-		}
-
-		//   2) Go again through the list of correspondences and remove those
-		//       who are not the best one for their corresponding global map.
-		for (it=_correspondences.begin();it!=_correspondences.end(); ++it)
-		{
-			if ( bestMatchForThisMap[it->this_idx] != &(*it) )
-				correspondences.push_back(*it); 				// Add to the output
-		}
-	} // end of additional consistency filer for "onlyKeepTheClosest"
-	else
-	{
-	    correspondences.swap(_correspondences);
+	if (params.onlyUniqueRobust) {
+		ASSERTMSG_(params.onlyKeepTheClosest, "ERROR: onlyKeepTheClosest must be also set to true when onlyUniqueRobust=true.");
+		_correspondences.filterUniqueRobustPairs(nGlobalPoints,correspondences);
+	}
+	else {
+		correspondences.swap(_correspondences);
 	}
 
 	// If requested, copy sum of squared distances to output pointer:

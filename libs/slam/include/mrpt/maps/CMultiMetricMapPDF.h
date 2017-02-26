@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -45,8 +45,8 @@ namespace maps
 		{
 		}
 
-		CMultiMetricMap			mapTillNow;
-		std::deque<mrpt::math::TPose3D>		robotPath;
+		CMultiMetricMap                 mapTillNow;
+		std::deque<mrpt::math::TPose3D> robotPath;
 	};
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CRBPFParticleData, mrpt::utils::CSerializable, SLAM_IMPEXP )
 
@@ -71,26 +71,23 @@ namespace maps
 		DEFINE_SERIALIZABLE( CMultiMetricMapPDF )
 
 	protected:
-		/** The PF algorithm implementation.
-		  */
+		// PF algorithm implementations:
 		void  prediction_and_update_pfStandardProposal(
 			const mrpt::obs::CActionCollection	* action,
 			const mrpt::obs::CSensoryFrame		* observation,
-			const bayes::CParticleFilter::TParticleFilterOptions &PF_options );
-
-		/** The PF algorithm implementation.
-		  */
+			const bayes::CParticleFilter::TParticleFilterOptions &PF_options ) MRPT_OVERRIDE;
 		void  prediction_and_update_pfOptimalProposal(
 			const mrpt::obs::CActionCollection	* action,
 			const mrpt::obs::CSensoryFrame		* observation,
-			const bayes::CParticleFilter::TParticleFilterOptions &PF_options );
-
-		/** The PF algorithm implementation.
-		  */
+			const bayes::CParticleFilter::TParticleFilterOptions &PF_options ) MRPT_OVERRIDE;
 		void  prediction_and_update_pfAuxiliaryPFOptimal(
 			const mrpt::obs::CActionCollection	* action,
 			const mrpt::obs::CSensoryFrame		* observation,
-			const bayes::CParticleFilter::TParticleFilterOptions &PF_options );
+			const bayes::CParticleFilter::TParticleFilterOptions &PF_options ) MRPT_OVERRIDE;
+		void  prediction_and_update_pfAuxiliaryPFStandard(
+			const mrpt::obs::CActionCollection	* action,
+			const mrpt::obs::CSensoryFrame		* observation,
+			const bayes::CParticleFilter::TParticleFilterOptions &PF_options ) MRPT_OVERRIDE;
 
 
 	private:
@@ -98,18 +95,8 @@ namespace maps
 		mrpt::maps::CMultiMetricMap			averageMap;
 		bool					averageMapIsUpdated;
 
-		/** The SFs and their corresponding pose estimations:
-		 */
-		mrpt::maps::CSimpleMap	SFs;
-
-		/** A mapping between indexes in the SFs to indexes in the robot paths from particles.
-		  */
-		std::vector<uint32_t>	SF2robotPath;
-
-
-		/** Entropy aux. function
-		  */
-		float  H(float p);
+		mrpt::maps::CSimpleMap  SFs; //!< The SFs and their corresponding pose estimations
+		std::vector<uint32_t>   SF2robotPath; //!< A mapping between indexes in the SFs to indexes in the robot paths from particles.
 
 	public:
 
@@ -158,15 +145,9 @@ namespace maps
 			const mrpt::maps::TSetOfMetricMapInitializers		    *mapsInitializers = NULL,
 			const TPredictionParams						    *predictionOptions = NULL );
 
-		/** Destructor
-		 */
-		virtual ~CMultiMetricMapPDF();
-
 		/** Clear all elements of the maps, and restore all paths to a single starting pose */
 		void  clear( const mrpt::poses::CPose2D &initialPose );
-
-		/** Clear all elements of the maps, and restore all paths to a single starting pose */
-		void  clear( const mrpt::poses::CPose3D &initialPose );
+		void  clear( const mrpt::poses::CPose3D &initialPose ); //!< \overload
 
 		 /** Returns the estimate of the robot pose as a particles PDF for the instant of time "timeStep", from 0 to N-1.
 		  * \sa getEstimatedPosePDF
@@ -181,20 +162,21 @@ namespace maps
 		void  getEstimatedPosePDF( mrpt::poses::CPose3DPDFParticles	&out_estimation ) const;
 
 		/** Returns the weighted averaged map based on the current best estimation. If you need a persistent copy of this object, please use "CSerializable::duplicate" and use the copy.
+		  * \sa Almost 100% sure you would prefer the best current map, given by getCurrentMostLikelyMetricMap()
 		  */
-		CMultiMetricMap * getCurrentMetricMapEstimation( );
+		const CMultiMetricMap * getAveragedMetricMapEstimation();
 
-		/** Returns a pointer to the current most likely map (associated to the most likely particle).
-		  */
-		CMultiMetricMap  * getCurrentMostLikelyMetricMap( );
+		/** Returns a pointer to the current most likely map (associated to the most likely particle) */
+		const CMultiMetricMap  * getCurrentMostLikelyMetricMap() const;
 
 		/** Get the number of CSensoryFrame inserted into the internal member SFs */
 		size_t  getNumberOfObservationsInSimplemap() const { return SFs.size(); }
 
 		/** Insert an observation to the map, at each particle's pose and to each particle's metric map.
 		  * \param sf The SF to be inserted
+		  * \return true if any may was updated, false otherwise
 		  */
-		void  insertObservation(mrpt::obs::CSensoryFrame	&sf);
+		bool  insertObservation(mrpt::obs::CSensoryFrame	&sf);
 
 		/** Return the path (in absolute coordinate poses) for the i'th particle.
 		  * \exception On index out of bounds
@@ -217,43 +199,38 @@ namespace maps
 		  */
 		void  saveCurrentPathEstimationToTextFile( const std::string  &fil );
 
-		/** An index [0,1] measuring how much information an observation aports to the map (Typ. threshold=0.07)
-		  */
-		float						newInfoIndex;
-
 	 private:
-		/** Rebuild the "expected" grid map. Used internally, do not call
-		  */
+		/** Rebuild the "expected" grid map. Used internally, do not call  */
 		void  rebuildAverageMap();
 
-
+		float newInfoIndex; //!< An index [0,1] measuring how much information an observation aports to the map (Typ. threshold=0.07)
 
 	public:
 			/** \name Virtual methods that the PF_implementations assume exist.
 			    @{ */
 
 			/** Return a pointer to the last robot pose in the i'th particle (or NULL if it's a path and it's empty). */
-			const mrpt::math::TPose3D * getLastPose(const size_t i) const;
+			const mrpt::math::TPose3D * getLastPose(const size_t i) const MRPT_OVERRIDE;
 
 			void PF_SLAM_implementation_custom_update_particle_with_new_pose(
 				CParticleDataContent *particleData,
-				const mrpt::math::TPose3D &newPose) const;
+				const mrpt::math::TPose3D &newPose) const MRPT_OVERRIDE;
 
 			// The base implementation is fine for this class.
 			// void PF_SLAM_implementation_replaceByNewParticleSet( ...
 
 			bool PF_SLAM_implementation_doWeHaveValidObservations(
 				const CParticleList	&particles,
-				const mrpt::obs::CSensoryFrame *sf) const;
+				const mrpt::obs::CSensoryFrame *sf) const MRPT_OVERRIDE;
 
-			bool PF_SLAM_implementation_skipRobotMovement() const;
+			bool PF_SLAM_implementation_skipRobotMovement() const MRPT_OVERRIDE;
 
 			/** Evaluate the observation likelihood for one particle at a given location */
 			double PF_SLAM_computeObservationLikelihoodForParticle(
 				const mrpt::bayes::CParticleFilter::TParticleFilterOptions	&PF_options,
 				const size_t			particleIndexForMap,
 				const mrpt::obs::CSensoryFrame		&observation,
-				const mrpt::poses::CPose3D			&x ) const;
+				const mrpt::poses::CPose3D			&x ) const MRPT_OVERRIDE;
 			/** @} */
 
 

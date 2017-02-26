@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -20,7 +20,7 @@
 #include <mrpt/utils/aligned_containers.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/stl_containers_utils.h>
-#include <mrpt/utils/CDebugOutputCapable.h>
+#include <mrpt/utils/COutputLogger.h>
 #include <mrpt/utils/stl_containers_utils.h> // find_in_vector
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/CFileOutputStream.h>
@@ -52,9 +52,9 @@ namespace mrpt
 		  */
 		struct TKF_options : public mrpt::utils::CLoadableOptions
 		{
-			TKF_options() :
+			TKF_options( mrpt::utils::VerbosityLevel &verb_level_ref ) :
 				method      	( kfEKFNaive),
-				verbose     	( false ),
+				verbosity_level (verb_level_ref),
 				IKF_iterations 	( 5 ),
 				enable_profiler	(false),
 				use_analytic_transition_jacobian	(true),
@@ -67,7 +67,7 @@ namespace mrpt
 			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &iniFile,const std::string &section) MRPT_OVERRIDE
 			{
 				method = iniFile.read_enum<TKFMethod>(section,"method", method );
-				MRPT_LOAD_CONFIG_VAR( verbose, bool    , iniFile, section  );
+				verbosity_level = iniFile.read_enum<mrpt::utils::VerbosityLevel>(section,"verbosity_level", verbosity_level );
 				MRPT_LOAD_CONFIG_VAR( IKF_iterations, int , iniFile, section  );
 				MRPT_LOAD_CONFIG_VAR( enable_profiler, bool    , iniFile, section  );
 				MRPT_LOAD_CONFIG_VAR( use_analytic_transition_jacobian, bool    , iniFile, section  );
@@ -81,7 +81,7 @@ namespace mrpt
 			{
 				out.printf("\n----------- [TKF_options] ------------ \n\n");
 				out.printf("method                                  = %s\n", mrpt::utils::TEnumType<TKFMethod>::value2name(method).c_str() );
-				out.printf("verbose                                 = %c\n", verbose ? 'Y':'N');
+				out.printf("verbosity_level                         = %s\n", mrpt::utils::TEnumType<mrpt::utils::VerbosityLevel>::value2name(verbosity_level).c_str());
 				out.printf("IKF_iterations                          = %i\n", IKF_iterations);
 				out.printf("enable_profiler                         = %c\n", enable_profiler ? 'Y':'N');
 				out.printf("\n");
@@ -89,7 +89,7 @@ namespace mrpt
 
 
 			TKFMethod	method;				//!< The method to employ (default: kfEKFNaive)
-			bool		verbose; 		//!< If set to true timing and other information will be dumped during the execution (default=false)
+			mrpt::utils::VerbosityLevel & verbosity_level;
 			int 		IKF_iterations;	//!< Number of refinement iterations, only for the IKF method.
 			bool		enable_profiler;//!< If enabled (default=false), detailed timing information will be dumped to the console thru a CTimerLog at the end of the execution.
 			bool		use_analytic_transition_jacobian;	//!< (default=true) If true, OnTransitionJacobian will be called; otherwise, the Jacobian will be estimated from a numeric approximation by calling several times to OnTransitionModel.
@@ -157,7 +157,7 @@ namespace mrpt
 	 	 * \ingroup mrpt_bayes_grp
 		 */
 		template <size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE, typename KFTYPE = double>
-		class CKalmanFilterCapable : public mrpt::utils::CDebugOutputCapable
+		class CKalmanFilterCapable : public mrpt::utils::COutputLogger
 		{
 		public:
 			static inline size_t get_vehicle_size() { return VEH_SIZE; }
@@ -451,7 +451,11 @@ namespace mrpt
 			 */
 
 		public:
-			CKalmanFilterCapable() : m_user_didnt_implement_jacobian(true) {} //!< Default constructor
+			CKalmanFilterCapable() : 
+				mrpt::utils::COutputLogger("CKalmanFilterCapable"),
+				KF_options(this->m_min_verbosity_level),
+				m_user_didnt_implement_jacobian(true) 
+			{} //!< Default constructor
 			virtual ~CKalmanFilterCapable() {}  //!< Destructor
 
 			mrpt::utils::CTimeLogger &getProfiler() { return m_timLogger; }

@@ -3,7 +3,7 @@
 #
 #             ** File generated automatically, do not modify **
 #
-#  Usage from an external project: 
+#  Usage from an external project:
 #   In your CMakeLists.txt, add these lines:
 #
 #    FIND_PACKAGE( MRPT REQUIRED )  # Default: Use mrpt-slam & mrpt-topography
@@ -12,7 +12,7 @@
 #
 #    TARGET_LINK_LIBRARIES(MY_TARGET_NAME ${MRPT_LIBRARIES})
 #
-#   
+#
 #   The libraries or "modules" which can be included are
 #   (see the full list and description in: http://www.mrpt.org/Libraries )
 #     - base           --> libmrpt-base
@@ -25,12 +25,12 @@
 #    - MRPT_LIBRARIES        : The list of libraries to links against.
 #    - MRPT_LIBS             : Like MRPT_LIBRARIES, for backward compat.
 #    - MRPT_INCLUDE_DIRS     : The list of include directories
-#    - MRTP_LINK_DIRECTORIES : The list of link directories
-#    - MRPT_VERSION          : The MRPT version (e.g. "1.0.0"). 
+#    - MRPT_LINK_DIRECTORIES : The list of link directories
+#    - MRPT_VERSION          : The MRPT version (e.g. "1.0.0").
 #    - MRPT_VERSION_{MAJOR,MINOR,PATCH}: 3 variables for the version parts
 #
 #   Optional input variables:
-#    - MRPT_DONT_USE_DBG_LIBS: If defined at input, before the 
+#    - MRPT_DONT_USE_DBG_LIBS: If defined at input, before the
 #         "FIND_PACKAGE(MRPT...)", and set to "1", the release libraries
 #         will be used even for linking against "Debug" CMake builds.
 #
@@ -65,18 +65,18 @@ SET(MRPT_INCLUDE_DIRS "@THE_INCLUDE_DIRECTORIES@")
 SET(MRPT_LINK_DIRECTORIES "@THE_LINK_DIRECTORIES@")
 
 # ======================================================
-# Include directories where Eigen3 headers are... if 
+# Include directories where Eigen3 headers are... if
 #  they are not embedded under mrpt-base headers:
 # ======================================================
 IF (NOT @MRPT_CONFIGFILE_IS_INSTALL@ OR NOT @EIGEN_USE_EMBEDDED_VERSION_BOOL@)
 	INCLUDE_DIRECTORIES("@MRPT_EIGEN_INCLUDE_DIR@")
 	LIST(APPEND MRPT_INCLUDE_DIRS "@MRPT_EIGEN_INCLUDE_DIR@")
-ENDIF (NOT @MRPT_CONFIGFILE_IS_INSTALL@ OR NOT @EIGEN_USE_EMBEDDED_VERSION_BOOL@)
+ENDIF ()
 
 # If using GCC and -Wall, eigen3 headers raise some warnings: silent them:
 IF(CMAKE_COMPILER_IS_GNUCXX)
 	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-long-long -Wno-variadic-macros")
-ENDIF(CMAKE_COMPILER_IS_GNUCXX)
+ENDIF()
 
 
 # ======================================================
@@ -87,19 +87,19 @@ LIST(APPEND MRPT_INCLUDE_DIRS ${MRPT_CONFIG_DIR})
 
 # OpenCV library:
 IF(@CMAKE_MRPT_HAS_OPENCV_SYSTEM@)    # CMAKE_MRPT_HAS_OPENCV_SYSTEM
-	# Using system opencv lib: 
+	# Using system opencv lib:
 	# Users must link against OpenCV only if MRPT is not a dynamic library:
 	IF (NOT @CMAKE_MRPT_BUILD_SHARED_LIB_ONOFF@)  # CMAKE_MRPT_BUILD_SHARED_LIB
 		LINK_DIRECTORIES("@OPENCV_LIBDIR@")  # OPENCV_LIBDIR
 		LIST(APPEND MRPT_LINK_DIRECTORIES "@OPENCV_LIBDIR@")
-	ENDIF (NOT @CMAKE_MRPT_BUILD_SHARED_LIB_ONOFF@)
-ENDIF(@CMAKE_MRPT_HAS_OPENCV_SYSTEM@)
+	ENDIF ()
+ENDIF()
 
 # Suitesparse lib (only if present as a system lib)
 IF(@CMAKE_MRPT_HAS_SUITESPARSE_SYSTEM@)    # CMAKE_MRPT_HAS_SUITESPARSE_SYSTEM
 	INCLUDE_DIRECTORIES("@SuiteSparse_INCLUDE_DIRS@") # SuiteSparse_INCLUDE_DIRS
 	LIST(APPEND MRPT_INCLUDE_DIRS "@SuiteSparse_INCLUDE_DIRS@")
-ENDIF(@CMAKE_MRPT_HAS_SUITESPARSE_SYSTEM@)
+ENDIF()
 
 
 
@@ -109,15 +109,15 @@ ENDIF(@CMAKE_MRPT_HAS_SUITESPARSE_SYSTEM@)
 # ==========================================================
 IF ("${MRPT_FIND_COMPONENTS}" STREQUAL "")
 	SET(MRPT_FIND_COMPONENTS slam topography)
-ENDIF ("${MRPT_FIND_COMPONENTS}" STREQUAL "")
+ENDIF ()
 
 # ======================================================
 # The list of MRPT libs/modules in this build
 # ======================================================
 SET(ALL_MRPT_LIBS "@ALL_MRPT_LIBS@")
-#  Start of DECLARE_LIBS_DEPS 
+#  Start of DECLARE_LIBS_DEPS
 @DECLARE_LIBS_DEPS@
-#  End of DECLARE_LIBS_DEPS 
+#  End of DECLARE_LIBS_DEPS
 
 #  Start of DECLARE_LIBS_HDR_ONLY
 @DECLARE_LIBS_HDR_ONLY@
@@ -136,19 +136,19 @@ FOREACH(_MOD ${MRPT_FIND_COMPONENTS})
 	IF (NOT "${_LIB_DEP}" STREQUAL "")
 		#MESSAGE(STATUS "ADD: ${_LIB_DEP}")
 		LIST(APPEND FINAL_LIST_COMPONENTS ${_LIB_DEP})
-	ENDIF (NOT "${_LIB_DEP}" STREQUAL "")
+	ENDIF ()
 
 	# Add lib itself:
 	IF (NOT "${_NAM}" STREQUAL "mrpt-core")
 		LIST(APPEND FINAL_LIST_COMPONENTS ${_NAM})
-	ENDIF (NOT "${_NAM}" STREQUAL "mrpt-core")
-ENDFOREACH(_MOD)
+	ENDIF ()
+ENDFOREACH()
 SET(MRPT_FIND_COMPONENTS ${FINAL_LIST_COMPONENTS})
 list(REMOVE_DUPLICATES MRPT_FIND_COMPONENTS)
 
 # ======================================================
 # Check:
-#  All libraries must exist in the MRPT build. 
+#  All libraries must exist in the MRPT build.
 #  Compare "MRPT_FIND_COMPONENTS" against "ALL_MRPT_LIBS":
 # ======================================================
 #MESSAGE(STATUS "LIBS: ${ALL_MRPT_LIBS}")
@@ -156,8 +156,8 @@ FOREACH(MRPTLIB ${MRPT_FIND_COMPONENTS})
 	list(FIND ALL_MRPT_LIBS "${MRPTLIB}" _LIB_IDX)
 	IF (_LIB_IDX EQUAL -1)
 		MESSAGE(FATAL_ERROR "ERROR: MRPT_FIND_COMPONENTS contains '${MRPTLIB}', not built in mrpt (built ones: ${ALL_MRPT_LIBS})")
-	ENDIF (_LIB_IDX EQUAL -1)
-ENDFOREACH(MRPTLIB)
+	ENDIF ()
+ENDFOREACH()
 #MESSAGE(STATUS "MRPT_FIND_COMPONENTS: ${MRPT_FIND_COMPONENTS}")
 
 
@@ -176,23 +176,23 @@ FOREACH(MRPTLIB ${MRPT_FIND_COMPONENTS})
 	INCLUDE_DIRECTORIES("${MRPT_LIBS_INCL_DIR}/${MRPTLIB}/include")
 	LIST(APPEND MRPT_INCLUDE_DIRS "${MRPT_LIBS_INCL_DIR}/${MRPTLIB}/include")
 
-	# List of link libs only needed in GCC. In MSVC we use pragma link libs.
-	IF(NOT MSVC AND NOT BORLAND)
-		# If the required lib is header-only, don't add to the list of libs to link!
-		get_property(_LIB_HDRONLY GLOBAL PROPERTY "mrpt-${MRPTLIB}_LIB_IS_HEADERS_ONLY")
-		IF(NOT _LIB_HDRONLY)
-			IF(NOT MRPT_DONT_USE_DBG_LIBS)
-				LIST(APPEND MRPT_LIBRARIES  optimized mrpt-${MRPTLIB}@MRPT_DLL_VERSION_POSTFIX@ debug mrpt-${MRPTLIB}@MRPT_DLL_VERSION_POSTFIX@-dbg)
-			ELSE(NOT MRPT_DONT_USE_DBG_LIBS)
-				LIST(APPEND MRPT_LIBRARIES  mrpt-${MRPTLIB}@MRPT_DLL_VERSION_POSTFIX@)
-			ENDIF(NOT MRPT_DONT_USE_DBG_LIBS)
-		ENDIF(NOT _LIB_HDRONLY)
-	ENDIF(NOT MSVC AND NOT BORLAND)
-	
+	# List of libs to link against:
+	# If the required lib is header-only, don't add to the list of libs to link!
+	get_property(_LIB_HDRONLY GLOBAL PROPERTY "mrpt-${MRPTLIB}_LIB_IS_HEADERS_ONLY")
+	IF(NOT _LIB_HDRONLY)
+		IF(NOT MRPT_DONT_USE_DBG_LIBS)
+			LIST(APPEND MRPT_LIBRARIES
+				optimized @MRPT_LIB_PREFIX@mrpt-${MRPTLIB}@MRPT_DLL_VERSION_POSTFIX@
+				debug     @MRPT_LIB_PREFIX@mrpt-${MRPTLIB}@MRPT_DLL_VERSION_POSTFIX@-dbg)
+		ELSE()
+			LIST(APPEND MRPT_LIBRARIES  @MRPT_LIB_PREFIX@mrpt-${MRPTLIB}@MRPT_DLL_VERSION_POSTFIX@)
+		ENDIF()
+	ENDIF()
+
 	IF(MRPTLIB MATCHES "hwdrivers")
 		SET(MRPT_COMP_HWDRIVERS 1)
-	ENDIF(MRPTLIB MATCHES "hwdrivers")
-ENDFOREACH(MRPTLIB)
+	ENDIF()
+ENDFOREACH()
 
 # Handle special cases:
 # libs for ffmpeg in win32 (only if building static libs)
@@ -200,9 +200,9 @@ IF(MRPT_COMP_HWDRIVERS AND NOT @CMAKE_MRPT_BUILD_SHARED_LIB_ONOFF@)
 	IF(@MRPT_HAS_FFMPEG_WIN32@ MATCHES "ON")  # MRPT_HAS_FFMPEG_WIN32
 		FOREACH(FFMPGLIB "@MRPT_FFMPEG_LIBS_TO_LINK@")
 			LIST(APPEND MRPT_LIBRARIES general "${FFMPGLIB}")
-		ENDFOREACH(FFMPGLIB)
-	ENDIF(@MRPT_HAS_FFMPEG_WIN32@ MATCHES "ON")
-ENDIF(MRPT_COMP_HWDRIVERS AND NOT @CMAKE_MRPT_BUILD_SHARED_LIB_ONOFF@)
+		ENDFOREACH()
+	ENDIF()
+ENDIF()
 
 # ======================================================
 # Support for wxWidgets: We only need wx libs at user
@@ -213,9 +213,9 @@ IF(@CMAKE_MRPT_HAS_WXWIDGETS@ AND NOT @CMAKE_MRPT_BUILD_SHARED_LIB_ONOFF@)  # CM
 
 	IF(CMAKE_BUILD_TYPE MATCHES "Debug")
 		SET(wxWidgets_USE_DEBUG "ON")
-	ELSE(CMAKE_BUILD_TYPE MATCHES "Debug")
+	ELSE()
 		SET(wxWidgets_USE_REL_AND_DBG "ON")
-	ENDIF(CMAKE_BUILD_TYPE MATCHES "Debug")
+	ENDIF()
 
 	FIND_PACKAGE(wxWidgets)
 	IF(wxWidgets_FOUND)
@@ -227,16 +227,16 @@ IF(@CMAKE_MRPT_HAS_WXWIDGETS@ AND NOT @CMAKE_MRPT_BUILD_SHARED_LIB_ONOFF@)  # CM
 
 		IF(MSVC)
 			ADD_DEFINITIONS(-DwxUSE_NO_MANIFEST=1)
-		ENDIF(MSVC)
+		ENDIF()
 
 		LIST(APPEND MRPT_LIBRARIES ${wxWidgets_LIBRARIES})
 		IF(MSVC)
 			ADD_DEFINITIONS(-D_CRT_SECURE_NO_WARNINGS)
-		ENDIF(MSVC)
-	ELSE(wxWidgets_FOUND)
+		ENDIF()
+	ELSE()
 		MESSAGE("Warning: MRPT was compiled with wxWidgets, but CMake is not able to locate wxWidgets automatically. Please, set wxWidgets_ROOT_DIR to the lib directory manually.\n You can safely ignore this warning if you don't intend to use MRPT GUI classes or wxWidgets directly from your application.")
-	ENDIF(wxWidgets_FOUND)
-ENDIF(@CMAKE_MRPT_HAS_WXWIDGETS@ AND NOT @CMAKE_MRPT_BUILD_SHARED_LIB_ONOFF@)
+	ENDIF()
+ENDIF()
 
 # ======================================================
 # Support for Bumblebee
@@ -247,8 +247,8 @@ IF(WIN32 AND NOT @CMAKE_MRPT_BUILD_SHARED_LIB_ONOFF@)
 		LINK_DIRECTORIES("@BUMBLEBEE_TRICLOPS_ROOT_DIR@/lib")
 		LIST(APPEND MRPT_LINK_DIRECTORIES "@BUMBLEBEE_PGR_FLYCAPTURE_ROOT_DIR@/lib")
 		LIST(APPEND MRPT_LINK_DIRECTORIES "@BUMBLEBEE_TRICLOPS_ROOT_DIR@/lib")
-	ENDIF(@CMAKE_MRPT_HAS_BUMBLEBEE@)
-ENDIF(WIN32 AND NOT @CMAKE_MRPT_BUILD_SHARED_LIB_ONOFF@)
+	ENDIF()
+ENDIF()
 
 # ======================================================
 # Link directories to add to the user project:

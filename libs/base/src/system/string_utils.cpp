@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -138,22 +138,23 @@ mrpt::system::unitsFormat(const double val,int nDecimalDigits, bool middle_space
 {
 	char	prefix;
 	double	mult;
+	const double aVal = std::abs(val);
 
-	if (val>=1e12)
+	if (aVal >=1e12)
 		{mult=1e-12; prefix='T';}
-	else if (val>=1e9)
+	else if (aVal >=1e9)
 		{mult=1e-9; prefix='G';}
-	else if (val>=1e6)
+	else if (aVal >=1e6)
 		{mult=1e-6; prefix='M';}
-	else if (val>=1e3)
+	else if (aVal >=1e3)
 		{mult=1e-3; prefix='K';}
-	else if (val>=1)
+	else if (aVal >=1)
 		{mult=1; prefix=' ';}
-	else if (val>=1e-3)
+	else if (aVal >=1e-3)
 		{mult=1e+3; prefix='m';}
-	else if (val>=1e-6)
+	else if (aVal >=1e-6)
 		{mult=1e+6; prefix='u';}
-	else if (val>=1e-9)
+	else if (aVal >=1e-9)
 		{mult=1e+9; prefix='n';}
 	else
 		{mult=1e+12; prefix='p';}

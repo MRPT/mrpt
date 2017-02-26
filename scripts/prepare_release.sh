@@ -30,9 +30,9 @@ echo "MRPT_VERSION_STR: ${MRPT_VERSION_STR}"
 echo "MRPT_DEBSRC_DIR: ${MRPT_DEBSRC_DIR}"
 
 # Prepare a directory for building the debian package:
-# 
+#
 rm -fR $MRPT_DEB_DIR
-mkdir -p ${MRPT_DEBSRC_DIR} 
+mkdir -p ${MRPT_DEBSRC_DIR}
 
 # Export / copy sources to target dir:
 if [ -d "$MRPTSRC/.git" ];
@@ -60,12 +60,14 @@ then
 	gzip ${MRPT_DEBSRC_DIR}/doc/mrpt-book.ps
 fi
 
-# Try to compile guide now:
-make -C $MRPTSRC/doc/pbmap-guide/
-if [ -f $MRPTSRC/doc/pbmap-guide/pbmap-guide.pdf ];
-then
-	cp $MRPTSRC/doc/pbmap-guide/pbmap-guide.pdf ${MRPT_DEBSRC_DIR}/doc/
-fi
+# Try to compile guides now:
+for guide in {pbmap-guide,graphslam-engine-guide}; do
+    make -C $MRPTSRC/doc/$guide/
+    if [ -f $MRPTSRC/doc/$guide/$guide.pdf ];
+    then
+	    cp $MRPTSRC/doc/$guide/$guide.pdf ${MRPT_DEBSRC_DIR}/doc/
+    fi
+done
 
 #printf "Generating mrpt.spec ..."
 #eval "echo \"`cat mrpt.spec.in`\"" > ${MRPT_DEBSRC_DIR}/mrpt.spec

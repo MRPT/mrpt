@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -38,6 +38,7 @@ IMPLEMENTS_SERIALIZABLE(CIncrementalMapPartitioner, CSerializable,mrpt::slam)
 						Constructor
   ---------------------------------------------------------------*/
 CIncrementalMapPartitioner::CIncrementalMapPartitioner( ) :
+	COutputLogger("CIncrementalMapPartitioner"),
 	options(),
 	m_individualFrames(),
 	m_individualMaps(),
@@ -116,18 +117,18 @@ void CIncrementalMapPartitioner::clear()
 
 	m_A.setSize(0,0);
 
-	m_individualFrames.clear();	// Liberar el mapa hasta ahora:
+	m_individualFrames.clear();	// Free the map...
 
 	// Free individual maps:
 	//for (deque_serializable<mrpt::maps::CMultiMetricMap>::iterator it=m_individualMaps.begin();it!=m_individualMaps.end();++it)	delete (*it);
 	m_individualMaps.clear();
 
-	m_last_partition.clear();		// Borrar las ultimas particiones
-	m_modified_nodes.clear();		//  y estos nodos a actualizar...
+	m_last_partition.clear();		// Delete last partitions
+	m_modified_nodes.clear();		// Delete modified nodes
 }
 
 /*---------------------------------------------------------------
-						Constructor
+						addMapFrame
   ---------------------------------------------------------------*/
 unsigned int CIncrementalMapPartitioner::addMapFrame(
 	const CSensoryFramePtr &frame,
@@ -182,6 +183,10 @@ unsigned int CIncrementalMapPartitioner::addMapFrame(
 	newMetricMap.m_pointsMaps[0]->insertionOptions.minDistBetweenLaserPoints = 0.20f;
 	options.minDistForCorrespondence = max(options.minDistForCorrespondence,1.3f*newMetricMap.m_pointsMaps[0]->insertionOptions.minDistBetweenLaserPoints);
 
+	TMatchingRatioParams mrp;
+	mrp.maxDistForCorr = options.minDistForCorrespondence;
+	mrp.maxMahaDistForCorr = options.minMahaDistForCorrespondence;
+
 	// JLBC,17/AGO/2006: "m_individualMaps" were created from the robot pose, but it is
 	//   more convenient now to save them as the robot being at (0,0,0).
 
@@ -199,7 +204,7 @@ unsigned int CIncrementalMapPartitioner::addMapFrame(
 	m_individualFrames.insert(robotPose, frame);
 	// Already added to "m_individualMaps" above
 
-	// Ampliar la matriz de adyacencias:
+	// Expand the adjacency matrix
 	// -----------------------------------------------------------------
 	n = m_A.getColCount();
 	n++;
@@ -208,9 +213,9 @@ unsigned int CIncrementalMapPartitioner::addMapFrame(
 	ASSERT_(m_individualMaps.size() == n);
 	ASSERT_(m_individualFrames.size() == n);
 
-	// Ajustar tamaño del vector de nodos modificados:
+	// Adjust size of vector containing the modified nodes
 	// ---------------------------------------------------
-	// El nuevo evidentemente debe ser tenido en cuenta:
+	// The new must be taken into account as well.
 	m_modified_nodes.push_back(true);
 
 	// Methods to compute adjacency matrix:
@@ -219,10 +224,10 @@ unsigned int CIncrementalMapPartitioner::addMapFrame(
 	// ------------------------------------------------------------------------------
 	bool useMapOrSF = options.useMapMatching;
 
-	// Calcular los nuevos matchings y meterlos en la matriz:
+	// Calculate the new matches - put them in the matrix
 	// ----------------------------------------------------------------
 	//for (i=n-1;i<n;i++)
-	i=n-1;   // Solo ejecutar para "i=n-1" la ultima fila/columna que esta vacia
+	i=n-1;   // Execute procedure until "i=n-1"; Last row/column is empty
 	{
 		// Get node "i":
 		m_individualFrames.get(i, posePDF_i, sf_i);
@@ -245,11 +250,7 @@ unsigned int CIncrementalMapPartitioner::addMapFrame(
 			// Compute matching ratio:
 			if (useMapOrSF)
 			{
-				m_A(i,j) = map_i->compute3DMatchingRatio(
-					map_j,
-					relPose,
-					options.minDistForCorrespondence,
-					options.minMahaDistForCorrespondence );
+				m_A(i,j) = map_i->compute3DMatchingRatio(map_j,relPose,mrp);
 			}
 			else
 			{
@@ -262,7 +263,7 @@ unsigned int CIncrementalMapPartitioner::addMapFrame(
 	} // for i
 
 
-	for (i=0;i<n-1;i++)  // Solo ejecutar para "i=n-1" la ultima fila/columna que esta vacia
+	for (i=0;i<n-1;i++) // Execute procedure until "i=n-1"; Last row/column is empty
 	{
 		// Get node "i":
 		m_individualFrames.get(i, posePDF_i, sf_i);
@@ -285,11 +286,7 @@ unsigned int CIncrementalMapPartitioner::addMapFrame(
 			// Compute matching ratio:
 			if (useMapOrSF)
 			{
-				m_A(i,j) = map_i->compute3DMatchingRatio(
-					map_j,
-					CPose3D(relPose),
-					options.minDistForCorrespondence,
-					options.minMahaDistForCorrespondence );
+				m_A(i,j) = map_i->compute3DMatchingRatio(map_j,CPose3D(relPose),mrp);
 			}
 			else
 			{
@@ -308,11 +305,11 @@ unsigned int CIncrementalMapPartitioner::addMapFrame(
 		for (j=i+1;j<n;j++)
 			m_A(i,j) = m_A(j,i) = 0.5f * (m_A(i,j) + m_A(j,i) );
 
-	/* DEBUG: Guardar la matriz: * /
+	/* DEBUG: Save the matrix: * /
 	A.saveToTextFile("debug_matriz.txt",1);
 	/ **/
 
-	// Añadir a la lista de nodos modificados los nodos afectados:
+	// Add the affected nodes to the list of modified ones
 	// -----------------------------------------------------------------
 	for (i=0;i<n;i++)
 		m_modified_nodes[i] = m_A(i,n-1) > 0;
@@ -353,7 +350,7 @@ unsigned int CIncrementalMapPartitioner::addMapFrame(
 }
 
 /*---------------------------------------------------------------
-						Constructor
+						updatePartitions
   ---------------------------------------------------------------*/
   void CIncrementalMapPartitioner::updatePartitions(
 	  vector<vector_uint> &partitions )
@@ -363,16 +360,15 @@ unsigned int CIncrementalMapPartitioner::addMapFrame(
 	unsigned int			i,j;
 	unsigned int			n_nodes;
 	unsigned int			n_clusters_last;
-	vector_uint				mods;	// La lista con los nodos que finalmente seran reagrupados
+	vector_uint				mods;	// The list of nodes that will have been regrouped
 	vector_bool				last_parts_are_mods;
 
-	n_nodes = m_modified_nodes.size();			// El numero de nodos (scans) en total:
-	n_clusters_last = m_last_partition.size();	// El numero de clusters en la ult. particion:
+	n_nodes = m_modified_nodes.size();			// total number of nodes (scans)
+	n_clusters_last = m_last_partition.size();	// Number of clusters in the last partition
 
 	last_parts_are_mods.resize( n_clusters_last );
 
-	// Si un solo scan de un cluster se ve afectado, su cluster completo
-	//   se vera afectado:
+	// If a single scan of the cluster is affected, the whole cluster is affected
 	// -------------------------------------------------------------------
 	for (i=0;i<n_clusters_last;i++)
 	{
@@ -387,13 +383,13 @@ unsigned int CIncrementalMapPartitioner::addMapFrame(
 
 		last_parts_are_mods[i] = true;
 
-		// Si ha cambiado, marcar todos sus nodos:
+		// If changed mark all the nodes
 		if (last_parts_are_mods[i])
 			for (j=0;j<p.size();j++)
 				m_modified_nodes[ p[j] ] = true;
 	}
 
-	// Cuantos nodos en total entran en el algoritmo de particionado??
+	// How many nodes are going to be partitioned?
 	mods.clear();
 	for (i=0;i<n_nodes;i++)
 		if ( m_modified_nodes[i] )
@@ -404,8 +400,8 @@ unsigned int CIncrementalMapPartitioner::addMapFrame(
 	if (mods.size()>0)
 	{
 
-		// Construir sub-matriz de adyacencias con solo los nodos que tengan
-		//   que ser reagrupados:
+		// Construct submatrix of adjacencies only with the nodes that are going
+		// to be regrouped
 		// -------------------------------------------------------------------
 		CMatrix		A_mods;
 		A_mods.setSize(mods.size(),mods.size());
@@ -417,7 +413,7 @@ unsigned int CIncrementalMapPartitioner::addMapFrame(
 			}
 		}
 
-		// Las particiones de los nodos modificados:
+		// Partitions of the modified nodes
 		vector<vector_uint>		mods_parts;
 		mods_parts.clear();
 
@@ -432,19 +428,19 @@ unsigned int CIncrementalMapPartitioner::addMapFrame(
 			false /* verbose */
 			);
 
-		// Mezclar los resultados con los clusters que no se tocaron y devolverlos
+		// Aggregate the results with the clusters that were not used and return them
 		// --------------------------------------------------------------------------
 		partitions.clear();
 
-		// 1) Añadir las particiones que no han cambiado:
+		// 1) Add the partitions that have not been modified
 		// -----------------------------------------------
 		for (i=0;i<m_last_partition.size();i++)
 			if (!last_parts_are_mods[i])
 				partitions.push_back( m_last_partition[i] );
 
 
-		// 2) Añadir las particiones actualizadas:
-		//  ¡¡ CUIDADO: Hay que traducir los indices !!
+		// 2) Add the modified partitions
+		// WARNING: Translate the indices acordingly
 		// -----------------------------------------------
 		for (i=0;i<mods_parts.size();i++)
 		{
@@ -457,11 +453,11 @@ unsigned int CIncrementalMapPartitioner::addMapFrame(
 		}
 	}
 
-	// Todos los nodos estan actualizados ahora:
+	// Update all nodes
 	for (i=0;i<n_nodes;i++)
 		m_modified_nodes[i] = false;
 
-	// Guardar particion para tenerla en cuenta en la siguiente iteracion:
+	// Save partition so that we take it into account in the next iteration
 	// ------------------------------------------------------------------------
 	size_t n = partitions.size();
 	m_last_partition.resize(n);
@@ -634,7 +630,7 @@ void CIncrementalMapPartitioner::getAs3DScene(
 		i_pdf->getMean(i_mean);
 
 		opengl::CSpherePtr   i_sph = opengl::CSphere::Create();
-		i_sph->setRadius(0.02);
+		i_sph->setRadius(0.02f);
 		i_sph->setColor(0,0,1);
 
 		if (!renameIndexes)

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -270,18 +270,18 @@ int main ( int argc, char** argv )
 			const string sRGBfile = mrpt::format("%i_rgb.png", frame );
 
 			utils::CImage iimage(width,height,CH_RGB);
-			for (int yc = 0; yc < height; ++yc)
+			for (unsigned int yc = 0; yc < height; ++yc)
 			{
 				const openni::DepthPixel*  pDepth = (const openni::DepthPixel* )pDepthRow;
 				const openni::RGB888Pixel* pRgb   = (const openni::RGB888Pixel*)pRgbRow;
-				for (int xc = 0; xc < width; ++xc, ++pDepth, ++pRgb)
+				for (unsigned int xc = 0; xc < width; ++xc, ++pDepth, ++pRgb)
 				{
-            int _x = xc;
-            if(isMirror){
-              _x = width -_x - 1;
-            }
-            obs.rangeImage (yc, _x) = (*pDepth)*1.0/1000;
-            iimage.setPixel(_x, yc, (pRgb->r<<16)+(pRgb->g<<8)+pRgb->b);
+					int _x = xc;
+					if(isMirror){
+					  _x = width -_x - 1;
+					}
+					obs.rangeImage (yc, _x) = (*pDepth)*1.0/1000;
+					iimage.setPixel(_x, yc, (pRgb->r<<16)+(pRgb->g<<8)+pRgb->b);
 
 					//obs.intensityImage.setPixel(xc,yc,(*pRgb));
 

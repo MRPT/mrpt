@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -10,7 +10,7 @@
 #define CCANBusReader_H
 
 #include <mrpt/obs/CObservationCANBusJ1939.h>
-#include <mrpt/utils/CDebugOutputCapable.h>
+#include <mrpt/utils/COutputLogger.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/hwdrivers/CSerialPort.h>
 
@@ -50,7 +50,7 @@ namespace mrpt
 		  * \sa C2DRangeFinderAbstract
 		  * \ingroup mrpt_hwdrivers_grp
 		  */
-		class HWDRIVERS_IMPEXP CCANBusReader : public mrpt::utils::CDebugOutputCapable, public CGenericSensor
+		class HWDRIVERS_IMPEXP CCANBusReader : public mrpt::utils::COutputLogger, public CGenericSensor
 		{
 			DEFINE_GENERIC_SENSOR(CCANBusReader)
 

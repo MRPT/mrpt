@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -46,6 +46,7 @@ namespace mrpt
 		protected:
 
 			bool		m_enableTransparency;
+			bool		m_antiAliasing;
 			bool		m_showEdges;
 			bool		m_showFaces;
 			bool		m_showVertices;
@@ -70,6 +71,7 @@ namespace mrpt
 		public:
 
 			void enableTransparency(bool v)		{ m_enableTransparency = v; CRenderizableDisplayList::notifyChange(); }
+			void enableAntiAliasing(bool v)		{ m_antiAliasing = v; CRenderizableDisplayList::notifyChange(); }
 			void enableShowEdges(bool v) 		{ m_showEdges = v; CRenderizableDisplayList::notifyChange(); }
 			void enableShowFaces(bool v) 		{ m_showFaces = v; CRenderizableDisplayList::notifyChange(); }
 			void enableShowVertices(bool v)		{ m_showVertices = v; CRenderizableDisplayList::notifyChange(); }
@@ -115,28 +117,10 @@ namespace mrpt
 
 
 		private:
-			/** Constructor
-			  */
-			CMesh3D(bool enableTransparency = false, bool enableShowEdges = true, bool enableShowFaces = true, bool enableShowVertices = false) :
-				m_enableTransparency(enableTransparency),
-				m_showEdges(enableShowEdges),
-				m_showFaces(enableShowFaces),
-				m_showVertices(enableShowVertices),
-				m_computeNormals(true),
-				m_lineWidth( 2.f ),
-				m_pointSize( 6.f ),
-				m_colorMap( mrpt::utils::cmJET )
-			{
-				m_color.R = 1.f; m_color.G = 0.f; m_color.B = 0.f; m_color.A = 1.f;
-				edge_color[0] = 0.9f; edge_color[1] = 0.9f; edge_color[2] = 0.9f; edge_color[3] = 1.f;
-				face_color[0] = 0.7f; face_color[1] = 0.7f; face_color[2] = 0.8f; face_color[3] = 1.f;
-				vert_color[0] = 0.3f; vert_color[1] = 0.3f; vert_color[2] = 0.3f; vert_color[3] = 1.f;
-				m_num_faces = 0;
-				m_num_verts = 0;
-			}
-			/** Private, virtual destructor: only can be deleted from smart pointers
-			  */
-			virtual ~CMesh3D() { }
+			/** Constructor */
+			CMesh3D(bool enableTransparency = false, bool antiAliasing = false, bool enableShowEdges = true, bool enableShowFaces = true, bool enableShowVertices = false);
+			/** Private, virtual destructor: only can be deleted from smart pointers  */
+			virtual ~CMesh3D();
 
 		};
 		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CMesh3D, CRenderizableDisplayList, OPENGL_IMPEXP )

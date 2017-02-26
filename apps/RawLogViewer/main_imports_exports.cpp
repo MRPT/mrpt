@@ -2,14 +2,14 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
 #include "xRawLogViewerMain.h"
 
-#include "../wx-common/CMyRedirector.h"
+#include <mrpt/gui/CMyRedirector.h>
 
 #include <wx/msgdlg.h>
 #include <wx/filedlg.h>
@@ -166,14 +166,13 @@ void xRawLogViewerFrame::OnImportCARMEN(wxCommandEvent& event)
 			int		scanSize = atoi(str);
 			goToNextToken(str);
 
-			obsScan->scan.resize(scanSize,0);
-			obsScan->validRange.resize(scanSize,true);
+			obsScan->resizeScanAndAssign(scanSize,0, true);
 
 			for (int q =0;q<scanSize;q++)
 			{
-				obsScan->scan[q] = atof(str);
+				obsScan->setScanRange(q, atof(str));
 				goToNextToken(str);
-				obsScan->validRange[q] = obsScan->scan[q] < maxValidLaserRange;
+				obsScan->setScanRangeValidity(q, obsScan->scan[q] < maxValidLaserRange );
 			}
 
 			// Read odometry:
@@ -1098,10 +1097,20 @@ void xRawLogViewerFrame::saveImportedLogToRawlog(
 				CObservation2DRangeScanPtr obs = CObservation2DRangeScan::Create();
 				newObs = obs;
 
-				obs->aperture = M_PI;
+				obs->aperture = M_PIf;
 				obs->rightToLeft = true;
-				obs->scan = it->second.data;
-				obs->validRange.resize( it->second.data.size() );
+				obs->resizeScan(it->second.data.size());
+				for (size_t i=0;i<it->second.data.size();i++) {
+					float v = it->second.data[i];
+					bool valid = true;
+					if (v < 0 || fabs(v-81.19)<0.01 || fabs(v-8.191)<0.01)
+					{
+						v=.0f;
+						valid=false;
+					}
+					obs->setScanRange(i, v);
+					obs->setScanRangeValidity(i,valid);
+				}
 				obs->deltaPitch = -DEG2RAD(it->second.endElev - it->second.startElev);
 
 				obs->sensorPose.setFromValues(
@@ -1110,22 +1119,6 @@ void xRawLogViewerFrame::saveImportedLogToRawlog(
 					-DEG2RAD(it->second.startElev) ,
 					0
 				);
-
-				vector<float>::iterator q;
-				vector<char>::iterator v;
-
-				for (q=obs->scan.begin(),v=obs->validRange.begin();q!=obs->scan.end();q++,v++)
-				{
-					if (*q < 0 || fabs(*q-81.19)<0.01 || fabs(*q-8.191)<0.01)
-					{
-						*q=0;
-						*v = false;
-					}
-					else
-					{
-						*v = true;
-					}
-				}
 			}
 			break;
 
@@ -1696,8 +1689,8 @@ Units are m and radian.
 				obs->timestamp = cur_timestamp;
 				obs->minSensorDistance = 0;
 				obs->maxSensorDistance = 100;
-				obs->sensor_std_yaw = 1e-4;
-				obs->sensor_std_range = 1e-2;
+				obs->sensor_std_yaw = 1e-4f;
+				obs->sensor_std_range = 1e-2f;
 				obs->sensor_std_pitch = 0; // Is a 2D sensor
 				obs->fieldOfView_pitch = 0;
 				obs->fieldOfView_yaw = DEG2RAD(180);
@@ -1729,12 +1722,12 @@ Units are m and radian.
 			CActionRobotMovement2D  act_mov;
 			CActionRobotMovement2D::TMotionModelOptions odoParams;
 			odoParams.modelSelection = CActionRobotMovement2D::mmGaussian;
-			odoParams.gausianModel.a1 =
-			odoParams.gausianModel.a2 =
-			odoParams.gausianModel.a3 =
-			odoParams.gausianModel.a4 = 0;
-			odoParams.gausianModel.minStdXY  = std::sqrt( atof(words[5].c_str())+atof(words[7].c_str()) );
-			odoParams.gausianModel.minStdPHI = std::sqrt( atof(words[10].c_str()) );
+			odoParams.gaussianModel.a1 =
+			odoParams.gaussianModel.a2 =
+			odoParams.gaussianModel.a3 =
+			odoParams.gaussianModel.a4 = 0;
+			odoParams.gaussianModel.minStdXY  = std::sqrt( atof(words[5].c_str())+atof(words[7].c_str()) );
+			odoParams.gaussianModel.minStdPHI = std::sqrt( atof(words[10].c_str()) );
 
 			act_mov.computeFromOdometry(odoIncr,odoParams);
 			act_mov.timestamp = cur_timestamp;

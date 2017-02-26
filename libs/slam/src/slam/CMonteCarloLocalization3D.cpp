@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -76,6 +76,7 @@ using namespace mrpt::slam;
 CMonteCarloLocalization3D::CMonteCarloLocalization3D( size_t M ) :
 	CPose3DPDFParticles(M)
 {
+	this->setLoggerName("CMonteCarloLocalization3D");
 }
 
 /*---------------------------------------------------------------
@@ -222,9 +223,7 @@ void CMonteCarloLocalization3D::PF_SLAM_implementation_replaceByNewParticleSet(
 	//   Old are in "m_particles"
 	//   New are in "newParticles", "newParticlesWeight","newParticlesDerivedFromIdx"
 	// ---------------------------------------------------------------------------------
-	// Free old m_particles:
-	for (size_t i=0;i<old_particles.size();i++)
-			mrpt::utils::delete_safe( old_particles[ i ].d );
+	// Free old m_particles (automatically done via smart ptr)
 
 	// Copy into "m_particles"
 	const size_t N = newParticles.size();
@@ -232,7 +231,7 @@ void CMonteCarloLocalization3D::PF_SLAM_implementation_replaceByNewParticleSet(
 	for (size_t i=0;i<N;i++)
 	{
 		old_particles[i].log_w = newParticlesWeight[i];
-		old_particles[i].d = new CPose3D( newParticles[i] );
+		old_particles[i].d.reset(new CPose3D(newParticles[i]));
 	}
 }
 

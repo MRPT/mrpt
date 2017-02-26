@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -87,10 +87,10 @@ namespace mrpt
 		  */
 		bool BASE_IMPEXP directoryExists(const std::string& fileName);
 
-		/** Replace invalid filename chars by underscores ('_').
-		  *  Invalid chars are identified by those not being alphanumeric or: ".-#%$&()+[]{}"
+		/** Replace invalid filename chars by underscores ('_') or any other user-given char.
+		  *  Invalid chars are: '<','>',':','"','/','\\','|','?','*'
 		  */
-		std::string BASE_IMPEXP fileNameStripInvalidChars( const std::string &filename);
+		std::string BASE_IMPEXP fileNameStripInvalidChars( const std::string &filename, const char replacement_to_invalid_chars = '_');
 
 		/** Replace the filename extension by another one.
 		  *  Example:

@@ -2,14 +2,14 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 #ifndef CDetectorDoorCrossing_H
 #define CDetectorDoorCrossing_H
 
-#include <mrpt/utils/CDebugOutputCapable.h>
+#include <mrpt/utils/COutputLogger.h>
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/obs/CSensoryFrame.h>
@@ -28,7 +28,7 @@ namespace detectors
      *
 	 * \sa CPointsMap   \ingroup mrpt_slam_grp
 	 */
-	class DETECTORS_IMPEXP CDetectorDoorCrossing : public utils::CDebugOutputCapable
+	class DETECTORS_IMPEXP CDetectorDoorCrossing : public mrpt::utils::COutputLogger
 	{
 	public:
 		/** The constructor. See options for customizing the default parameters.

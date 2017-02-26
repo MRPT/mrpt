@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -23,6 +23,7 @@ using namespace mrpt::hwdrivers;
 						Constructor
 -------------------------------------------------------------*/
 C2DRangeFinderAbstract::C2DRangeFinderAbstract() :
+	mrpt::utils::COutputLogger("C2DRangeFinderAbstract"),
 	m_lastObservation		( ),
 	m_lastObservationIsNew	( false ),
 	m_hardwareError			( false ),

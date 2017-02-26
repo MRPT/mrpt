@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -182,7 +182,7 @@ void Test_Kinect()
 
 	// Set of parameters common to any tracker implementation:
 	// To see all the existing params and documentation, see mrpt::vision::CGenericFeatureTracker
-	//  http://reference.mrpt.org/svn/structmrpt_1_1vision_1_1_c_generic_feature_tracker.html
+	//  http://reference.mrpt.org/devel/structmrpt_1_1vision_1_1_c_generic_feature_tracker.html
 	tracker->extra_params["add_new_features"]             = 1;   // track, AND ALSO, add new features
 	tracker->extra_params["add_new_feat_min_separation"]  = 25;
 	tracker->extra_params["add_new_feat_max_features"]    = 150;
@@ -226,7 +226,7 @@ void Test_Kinect()
 
 	const double aspect_ratio =  480.0 / 640.0; // kinect.getRowCount() / double( kinect.getColCount() );
 
-	mrpt::opengl::CSetOfObjectsPtr gl_cur_cam_corner = mrpt::opengl::stock_objects::CornerXYZSimple(0.4,4);
+	mrpt::opengl::CSetOfObjectsPtr gl_cur_cam_corner = mrpt::opengl::stock_objects::CornerXYZSimple(0.4f,4);
 
 	opengl::COpenGLViewportPtr viewInt;
 	{
@@ -367,12 +367,12 @@ void Test_Kinect()
 					params.ransac_maxSetSizePct = 6.0 / corrs.size();
 
 					mrpt::tfest::TSE3RobustResult results;
-					bool register_ok = false; 
+					bool register_ok = false;
 					try {
 						mrpt::tfest::se3_l2_robust(corrs, params, results);
 						register_ok = true;
-					} catch (std::exception &) {  
-						/* Cannot find a minimum number of matches, inconsistent parameters due to very reduced numberof matches,etc. */ 
+					} catch (std::exception &) {
+						/* Cannot find a minimum number of matches, inconsistent parameters due to very reduced numberof matches,etc. */
 					}
 
 					const CPose3D relativePose = results.transformation;
@@ -500,7 +500,7 @@ void Test_Kinect()
 				gl_keyframes->clear();
 				for (size_t i=0;i<camera_key_frames_path.size();i++)
 				{
-					CSetOfObjectsPtr obj = mrpt::opengl::stock_objects::CornerXYZSimple(0.3,3);
+					CSetOfObjectsPtr obj = mrpt::opengl::stock_objects::CornerXYZSimple(0.3f,3);
 					obj->setPose( camera_key_frames_path[i]);
 					gl_keyframes->insert(obj);
 				}

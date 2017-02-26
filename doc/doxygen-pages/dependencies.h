@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -51,12 +51,16 @@
 	<td align="center" > Optional </td>
 </tr>
 <tr>
-	<td align="center" > \ref dep-libusb "libfusb" </td>
+	<td align="center" > \ref dep-libusb "libusb" </td>
 	<td align="center" > Optional (needed for Kinect) </td>
 </tr>
 <tr>
+	<td align="center" > \ref dep-libzmq "libzmq (ZeroMQ)" </td>
+	<td align="center" > Optional (*) (Network transport layer) </td>
+</tr>
+<tr>
 	<td align="center" > \ref  dep-pcl "pcl" </td>
-	<td align="center" > Optional </td>
+	<td align="center" > Optional (*) </td>
 </tr>
 <tr>
 	<td align="center" > \ref  dep-liblas "LAS (liblas)" </td>
@@ -69,5 +73,8 @@
 </table>
 </center>
 
-*/
+<b>Note:</b> (*) means that the functionality is header-only. This means that
+will be available even if MRPT is built without those libraries, but the user
+program includes both, the external library, and MRPT headers.
 
+*/

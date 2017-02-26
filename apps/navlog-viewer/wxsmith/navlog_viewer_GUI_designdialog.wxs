@@ -13,7 +13,7 @@
 				<object class="wxPanel" name="ID_PANEL1" variable="Panel_AUX" member="yes">
 					<object class="wxFlexGridSizer" variable="FlexGridSizer2" member="no">
 						<cols>1</cols>
-						<rows>2</rows>
+						<rows>3</rows>
 						<growablecols>0</growablecols>
 						<object class="sizeritem">
 							<object class="wxFlexGridSizer" variable="FlexGridSizer3" member="no">
@@ -30,7 +30,7 @@
 										<maxsize>-1,-1</maxsize>
 										<handler function="OnbtnLoadClick" entry="EVT_BUTTON" />
 									</object>
-									<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+									<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 									<border>5</border>
 									<option>1</option>
 								</object>
@@ -44,10 +44,9 @@
 								</object>
 								<object class="sizeritem">
 									<object class="wxTextCtrl" name="ID_TEXTCTRL1" variable="edLogFile" member="yes">
-										<size>213,27</size>
-										<style>wxTE_READONLY</style>
+										<style>wxTE_MULTILINE|wxTE_READONLY</style>
 									</object>
-									<flag>wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+									<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 									<border>5</border>
 									<option>1</option>
 								</object>
@@ -61,7 +60,7 @@
 										<maxsize>-1,-1</maxsize>
 										<handler function="OnbtnHelpClick" entry="EVT_BUTTON" />
 									</object>
-									<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+									<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 									<border>5</border>
 									<option>1</option>
 								</object>
@@ -75,7 +74,7 @@
 										<maxsize>-1,-1</maxsize>
 										<handler function="OnbtnQuitClick" entry="EVT_BUTTON" />
 									</object>
-									<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+									<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 									<border>5</border>
 									<option>1</option>
 								</object>
@@ -117,13 +116,13 @@
 													</object>
 													<object class="sizeritem">
 														<object class="wxFlexGridSizer" variable="FlexGridSizer7" member="no">
-															<cols>3</cols>
+															<cols>2</cols>
 															<object class="sizeritem">
 																<object class="wxButton" name="ID_BUTTON4" variable="btnPlay" member="yes">
 																	<label>Play</label>
 																	<handler function="OnbtnPlayClick" entry="EVT_BUTTON" />
 																</object>
-																<flag>wxALL|wxALIGN_LEFT|wxALIGN_TOP</flag>
+																<flag>wxALL|wxALIGN_TOP|wxALIGN_CENTER_HORIZONTAL</flag>
 																<border>5</border>
 																<option>1</option>
 															</object>
@@ -133,7 +132,24 @@
 																	<enabled>0</enabled>
 																	<handler function="OnbtnStopClick" entry="EVT_BUTTON" />
 																</object>
-																<flag>wxALL|wxALIGN_LEFT|wxALIGN_TOP</flag>
+																<flag>wxALL|wxALIGN_TOP|wxALIGN_CENTER_HORIZONTAL</flag>
+																<border>5</border>
+																<option>1</option>
+															</object>
+															<object class="sizeritem">
+																<object class="wxStaticText" name="ID_STATICTEXT9" variable="StaticText6" member="yes">
+																	<label>Animation delay (ms):</label>
+																</object>
+																<flag>wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL</flag>
+																<border>5</border>
+																<option>1</option>
+															</object>
+															<object class="sizeritem">
+																<object class="wxTextCtrl" name="ID_TEXTCTRL3" variable="edAnimDelayMS" member="yes">
+																	<value>50</value>
+																	<size>55,21</size>
+																</object>
+																<flag>wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
 																<border>5</border>
 																<option>1</option>
 															</object>
@@ -193,7 +209,7 @@
 																	<label>0</label>
 																	<size>80,-1</size>
 																</object>
-																<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+																<flag>wxALL|wxALIGN_LEFT|wxALIGN_TOP</flag>
 																<border>5</border>
 																<option>1</option>
 															</object>
@@ -210,37 +226,7 @@
 																	<label>-</label>
 																	<size>80,-1</size>
 																</object>
-																<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
-																<border>5</border>
-																<option>1</option>
-															</object>
-															<object class="sizeritem">
-																<object class="wxCheckBox" name="ID_CHECKBOX1" variable="cbDrawShapePath" member="yes">
-																	<label>Draw shape along path</label>
-																	<checked>1</checked>
-																</object>
-																<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
-																<border>5</border>
-																<option>1</option>
-															</object>
-															<object class="spacer">
-																<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
-																<border>5</border>
-																<option>1</option>
-															</object>
-															<object class="sizeritem">
-																<object class="wxStaticText" name="ID_STATICTEXT8" variable="StaticText5" member="yes">
-																	<label>Shape draw min. dist:</label>
-																</object>
-																<flag>wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL</flag>
-																<border>5</border>
-																<option>1</option>
-															</object>
-															<object class="sizeritem">
-																<object class="wxTextCtrl" name="ID_TEXTCTRL2" variable="edShapeMinDist" member="yes">
-																	<value>1.0</value>
-																</object>
-																<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+																<flag>wxALL|wxALIGN_LEFT|wxALIGN_TOP</flag>
 																<border>5</border>
 																<option>1</option>
 															</object>
@@ -250,21 +236,116 @@
 													<option>1</option>
 												</object>
 											</object>
-											<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
-											<border>5</border>
+											<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
+											<border>2</border>
 											<option>1</option>
 										</object>
 										<object class="sizeritem">
-											<object class="wxButton" name="ID_BUTTON6" variable="btnMoreOps" member="yes">
-												<label>More...</label>
-												<handler function="OnbtnMoreOpsClick" entry="EVT_BUTTON" />
+											<object class="wxRadioBox" name="ID_RADIOBOX1" variable="rbPerPTGPlots" member="yes">
+												<label>Per PTG plots:</label>
+												<content>
+													<item>TP-Obstacles only</item>
+													<item>+ final scores</item>
+													<item>+ preliminary scores</item>
+												</content>
+												<default>-1</default>
+												<style>wxRA_HORIZONTAL</style>
+												<handler function="OnrbPerPTGPlotsSelect" entry="EVT_RADIOBOX" />
 											</object>
-											<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
-											<border>5</border>
+											<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
+											<border>2</border>
 											<option>1</option>
 										</object>
 									</object>
-									<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+									<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
+									<option>1</option>
+								</object>
+							</object>
+							<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
+							<option>1</option>
+						</object>
+						<object class="sizeritem">
+							<object class="wxFlexGridSizer" variable="FlexGridSizer8" member="no">
+								<cols>3</cols>
+								<growablecols>0,1</growablecols>
+								<object class="sizeritem">
+									<object class="wxCheckBox" name="ID_CHECKBOX1" variable="cbDrawShapePath" member="yes">
+										<label>Draw shape along path</label>
+										<checked>1</checked>
+										<handler function="OncbGlobalFrameClick" entry="EVT_CHECKBOX" />
+									</object>
+									<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+									<border>5</border>
+									<option>1</option>
+								</object>
+								<object class="sizeritem">
+									<object class="wxCheckBox" name="ID_CHECKBOX2" variable="cbGlobalFrame" member="yes">
+										<label>Represent in global frame</label>
+										<checked>1</checked>
+										<handler function="OncbGlobalFrameClick" entry="EVT_CHECKBOX" />
+									</object>
+									<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+									<border>5</border>
+									<option>1</option>
+								</object>
+								<object class="sizeritem">
+									<object class="wxCheckBox" name="ID_CHECKBOX3" variable="cbShowRelPoses" member="yes">
+										<label>Show delays model-based poses</label>
+										<checked>1</checked>
+										<handler function="OncbGlobalFrameClick" entry="EVT_CHECKBOX" />
+									</object>
+									<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+									<border>5</border>
+									<option>1</option>
+								</object>
+								<object class="sizeritem">
+									<object class="wxCheckBox" name="ID_CHECKBOX4" variable="cbShowAllDebugEntries" member="yes">
+										<label>Show all debug fields</label>
+										<checked>1</checked>
+										<handler function="OncbGlobalFrameClick" entry="EVT_CHECKBOX" />
+									</object>
+									<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+									<border>5</border>
+									<option>1</option>
+								</object>
+								<object class="sizeritem">
+									<object class="wxCheckBox" name="ID_CHECKBOX5" variable="cbShowXY" member="yes">
+										<label>Show cursor (X,Y) pos</label>
+										<handler function="OncbShowXYClick" entry="EVT_CHECKBOX" />
+									</object>
+									<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+									<border>5</border>
+									<option>1</option>
+								</object>
+								<object class="spacer">
+									<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+									<border>5</border>
+									<option>1</option>
+								</object>
+								<object class="sizeritem">
+									<object class="wxStaticText" name="ID_STATICTEXT8" variable="StaticText5" member="yes">
+										<label>Shape draw min. dist:</label>
+									</object>
+									<flag>wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL</flag>
+									<border>5</border>
+									<option>1</option>
+								</object>
+								<object class="sizeritem">
+									<object class="wxTextCtrl" name="ID_TEXTCTRL2" variable="edShapeMinDist" member="yes">
+										<value>1.0</value>
+										<size>55,21</size>
+									</object>
+									<flag>wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL</flag>
+									<border>5</border>
+									<option>1</option>
+								</object>
+								<object class="sizeritem">
+									<object class="wxButton" name="ID_BUTTON6" variable="btnMoreOps" member="yes">
+										<label>More...</label>
+										<handler function="OnbtnMoreOpsClick" entry="EVT_BUTTON" />
+									</object>
+									<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+									<border>5</border>
 									<option>1</option>
 								</object>
 							</object>
@@ -273,7 +354,7 @@
 						</object>
 					</object>
 				</object>
-				<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+				<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 				<option>1</option>
 			</object>
 		</object>
@@ -285,9 +366,17 @@
 			<handler function="OntimAutoloadTrigger" entry="EVT_TIMER" />
 		</object>
 		<object class="wxMenu" variable="mnuMoreOps" member="yes">
+			<object class="wxMenuItem" name="ID_MENUITEM2" variable="mnuSeePTGParams" member="yes">
+				<label>See PTG params...</label>
+				<handler function="OnmnuSeePTGParamsSelected" entry="EVT_MENU" />
+			</object>
 			<object class="wxMenuItem" name="ID_MENUITEM1" variable="mnuMatlabPlots" member="yes">
 				<label>Export map plot to MATLAB...</label>
 				<handler function="OnmnuMatlabPlotsSelected" entry="EVT_MENU" />
+			</object>
+			<object class="wxMenuItem" name="ID_MENUITEM3" variable="mnuSaveScoreMatrix" member="no">
+				<label>Save score matrices...</label>
+				<handler function="OnmnuSaveScoreMatrixSelected" entry="EVT_MENU" />
 			</object>
 		</object>
 	</object>

@@ -8,13 +8,16 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('rawlog', help='Rawlog file.')
 parser.add_argument('-c', '--config', help='Config file.')
-parser.add_argument('-o', '--output', help='Output occupancy grid as .png file.')
+parser.add_argument('-o', '--output', help='Save occupancy grid as .gridmap file.')
+parser.add_argument('-i', '--image', help='Save occupancy grid as image (.png, .bmp) file.')
+parser.add_argument('-r', '--resolution', help='Window resolution. Default: 800x600')
 args = parser.parse_args()
 
 # get filenames from args
 rawlog_filename = args.rawlog
 config_filename = args.config
 output_filename = args.output
+image_filename = args.image
 
 # load .rawlog
 rawlog_file = pymrpt.utils.CFileGZInputStream(rawlog_filename)
@@ -26,8 +29,15 @@ if config_filename:
 options.dumpToConsole()
 map_builder = pymrpt.slam.CMetricMapBuilderRBPF(options)
 
+# get window resolution
+if args.resolution: resolution_str = args.resolution
+else: resolution_str = '800x600'
+
 # gui
-win3D = pymrpt.gui.CDisplayWindow3D()
+try:
+    win3D = pymrpt.gui.CDisplayWindow3D("rbpf_slam", int(resolution_str.split('x')[0]), int(resolution_str.split('x')[1]))
+except:
+    win3D = pymrpt.gui.CDisplayWindow3D("rbpf_slam", 800, 600)
 
 # loop
 entry = 0
@@ -60,6 +70,7 @@ while True:
             x = float(p.x)
             y = float(p.y)
             z = float(p.z)
+    lines_object.ctx().setColor(pymrpt.utils.TColorf(1.,0.,0.))
 
     # get ellipsoids at time t
     dummy_path = map_builder.mapPDF.getPath(0)
@@ -70,6 +81,7 @@ while True:
         pose_particles = map_builder.mapPDF.getEstimatedPosePDFAtTime(k);
         ellipsoid_object = pymrpt.opengl.CEllipsoid.Create()
         ellipsoid_object.ctx().setFromPosePDF(pose_particles)
+        ellipsoid_object.ctx().setColor(pymrpt.utils.TColorf(0.,1.,0.))
         ellipsoid_objects.append(ellipsoid_object)
 
     # update gui
@@ -88,11 +100,12 @@ while True:
 simple_map = map_builder.getCurrentlyBuiltMap()
 occ_map = pymrpt.maps.COccupancyGridMap2D()
 occ_map.loadFromSimpleMap(simple_map)
-if not output_filename:
-    output_filename = 'occ_grid.png'
-occ_map.saveAsBitmapFile(output_filename)
-
-print 'Saved map as {}'.format(output_filename)
+if output_filename:
+    occ_map.saveAsBitmapFile(output_filename)
+    print 'Saved map as {}'.format(output_filename)
+if image_filename:
+    occ_map.saveAsBitmapFile(image_filename)
+    print 'Saved map image as {}'.format(output_filename)
 print
 print 'Done.'
 raw_input('Press key to quit.')

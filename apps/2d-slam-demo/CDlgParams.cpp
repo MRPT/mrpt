@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -142,7 +142,7 @@ CDlgParams::CDlgParams(wxWindow* parent,wxWindowID id,const wxPoint& pos,const w
 	edIKFiters = new wxSpinCtrl(this, ID_SPINCTRL1, _T("3"), wxDefaultPosition, wxSize(39,23), 0, 1, 30, 3, _T("ID_SPINCTRL1"));
 	edIKFiters->SetValue(_T("3"));
 	FlexGridSizer4->Add(edIKFiters, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer3->Add(FlexGridSizer4, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+	FlexGridSizer3->Add(FlexGridSizer4, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
 	rbIKFdavison = new wxRadioButton(this, ID_RADIOBUTTON4, _("IKF (one scalar at a time)"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_RADIOBUTTON4"));
 	FlexGridSizer3->Add(rbIKFdavison, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
 	FlexGridSizer3->Add(-1,-1,1, wxALL|wxALIGN_LEFT|wxALIGN_TOP, 5);
@@ -157,7 +157,7 @@ CDlgParams::CDlgParams(wxWindow* parent,wxWindowID id,const wxPoint& pos,const w
 	cbJacobObs->SetValue(false);
 	FlexGridSizer3->Add(cbJacobObs, 1, wxALL|wxALIGN_LEFT|wxALIGN_TOP, 5);
 	FlexGridSizer3->Add(-1,-1,1, wxALL|wxALIGN_LEFT|wxALIGN_TOP, 5);
-	StaticBoxSizer1->Add(FlexGridSizer3, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+	StaticBoxSizer1->Add(FlexGridSizer3, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
 	FlexGridSizer16->Add(StaticBoxSizer1, 1, wxALL|wxALIGN_LEFT|wxALIGN_TOP, 5);
 	StaticBoxSizer3 = new wxStaticBoxSizer(wxHORIZONTAL, this, _("Robot motion "));
 	FlexGridSizer10 = new wxFlexGridSizer(0, 2, 0, 0);
@@ -178,7 +178,7 @@ CDlgParams::CDlgParams(wxWindow* parent,wxWindowID id,const wxPoint& pos,const w
 	FlexGridSizer10->Add(StaticText6, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
 	edStdOdomPhi = new wxTextCtrl(this, ID_TEXTCTRL6, _("Text"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL6"));
 	FlexGridSizer10->Add(edStdOdomPhi, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	StaticBoxSizer3->Add(FlexGridSizer10, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+	StaticBoxSizer3->Add(FlexGridSizer10, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
 	FlexGridSizer16->Add(StaticBoxSizer3, 1, wxALL|wxALIGN_LEFT|wxALIGN_TOP, 5);
 	StaticBoxSizer5 = new wxStaticBoxSizer(wxHORIZONTAL, this, _("Data association "));
 	panelDA = new wxPanel(this, ID_PANEL1, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL1"));
@@ -246,18 +246,18 @@ CDlgParams::CDlgParams(wxWindow* parent,wxWindowID id,const wxPoint& pos,const w
 	edSeed = new wxSpinCtrl(this, ID_SPINCTRL3, _T("-1"), wxDefaultPosition, wxSize(61,23), 0, -1, 10000000, -1, _T("ID_SPINCTRL3"));
 	edSeed->SetValue(_T("-1"));
 	FlexGridSizer7->Add(edSeed, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer6->Add(FlexGridSizer7, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	FlexGridSizer6->Add(FlexGridSizer7, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
 	rbMapFile = new wxRadioButton(this, ID_RADIOBUTTON7, _("Text file..."), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_RADIOBUTTON7"));
 	FlexGridSizer6->Add(rbMapFile, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
 	FlexGridSizer8 = new wxFlexGridSizer(0, 3, 0, 0);
 	FlexGridSizer8->AddGrowableCol(0);
 	edMapFile = new wxTextCtrl(this, ID_TEXTCTRL2, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL2"));
-	FlexGridSizer8->Add(edMapFile, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	FlexGridSizer8->Add(edMapFile, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
 	btnBrowse = new wxButton(this, ID_BUTTON3, _("Browse..."), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON3"));
 	FlexGridSizer8->Add(btnBrowse, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer6->Add(FlexGridSizer8, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer5->Add(FlexGridSizer6, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
-	StaticBoxSizer2->Add(FlexGridSizer5, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+	FlexGridSizer6->Add(FlexGridSizer8, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
+	FlexGridSizer5->Add(FlexGridSizer6, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
+	StaticBoxSizer2->Add(FlexGridSizer5, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
 	FlexGridSizer17->Add(StaticBoxSizer2, 1, wxALL|wxALIGN_LEFT|wxALIGN_TOP, 5);
 	StaticBoxSizer4 = new wxStaticBoxSizer(wxHORIZONTAL, this, _("Robot sensor "));
 	FlexGridSizer12 = new wxFlexGridSizer(0, 1, 0, 0);
@@ -266,7 +266,7 @@ CDlgParams::CDlgParams(wxWindow* parent,wxWindowID id,const wxPoint& pos,const w
 	cbSensorDistin = new wxCheckBox(this, ID_CHECKBOX1, _("Sensor distingishes landmarks (Checked: avoids data association problem)"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX1"));
 	cbSensorDistin->SetValue(false);
 	FlexGridSizer13->Add(cbSensorDistin, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer12->Add(FlexGridSizer13, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+	FlexGridSizer12->Add(FlexGridSizer13, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
 	FlexGridSizer14 = new wxFlexGridSizer(0, 4, 0, 0);
 	StaticText11 = new wxStaticText(this, ID_STATICTEXT11, _("Range noise sigma (m):"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT11"));
 	FlexGridSizer14->Add(StaticText11, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
@@ -288,7 +288,7 @@ CDlgParams::CDlgParams(wxWindow* parent,wxWindowID id,const wxPoint& pos,const w
 	FlexGridSizer14->Add(StaticText10, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
 	edFOV = new wxTextCtrl(this, ID_TEXTCTRL12, _("Text"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL12"));
 	FlexGridSizer14->Add(edFOV, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer12->Add(FlexGridSizer14, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+	FlexGridSizer12->Add(FlexGridSizer14, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
 	StaticText13 = new wxStaticText(this, ID_STATICTEXT13, _("Sensor pose on the robot:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT13"));
 	FlexGridSizer12->Add(StaticText13, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	FlexGridSizer15 = new wxFlexGridSizer(0, 3, 0, 0);
@@ -304,7 +304,7 @@ CDlgParams::CDlgParams(wxWindow* parent,wxWindowID id,const wxPoint& pos,const w
 	FlexGridSizer15->Add(edSenY, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	edSenPhi = new wxTextCtrl(this, ID_TEXTCTRL11, _("Text"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL11"));
 	FlexGridSizer15->Add(edSenPhi, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer12->Add(FlexGridSizer15, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+	FlexGridSizer12->Add(FlexGridSizer15, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
 	StaticBoxSizer7 = new wxStaticBoxSizer(wxHORIZONTAL, this, _(" Spurious readings: "));
 	FlexGridSizer20 = new wxFlexGridSizer(1, 2, 0, 0);
 	FlexGridSizer20->AddGrowableCol(1);
@@ -324,7 +324,7 @@ CDlgParams::CDlgParams(wxWindow* parent,wxWindowID id,const wxPoint& pos,const w
 	FlexGridSizer20->Add(FlexGridSizer21, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_BOTTOM, 0);
 	StaticBoxSizer7->Add(FlexGridSizer20, 1, wxALL|wxALIGN_LEFT|wxALIGN_BOTTOM, 0);
 	FlexGridSizer12->Add(StaticBoxSizer7, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_BOTTOM, 2);
-	StaticBoxSizer4->Add(FlexGridSizer12, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+	StaticBoxSizer4->Add(FlexGridSizer12, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
 	FlexGridSizer17->Add(StaticBoxSizer4, 1, wxALL|wxALIGN_LEFT|wxALIGN_TOP, 5);
 	StaticBoxSizer6 = new wxStaticBoxSizer(wxHORIZONTAL, this, _("Uncertainty models over-estimation"));
 	FlexGridSizer18 = new wxFlexGridSizer(1, 2, 0, 0);

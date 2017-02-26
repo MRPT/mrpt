@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -49,11 +49,6 @@ namespace mrpt
 			  metricMaps( mapsInitializers ),
 			  robotPoses()
 			{
-			}
-
-			virtual ~CLSLAMParticleData()
-			{
-				robotPoses.clear();
 			}
 
 			mrpt::maps::CMultiMetricMap            metricMaps;
@@ -201,13 +196,13 @@ namespace mrpt
 			void  prediction_and_update_pfAuxiliaryPFOptimal(
 				const mrpt::obs::CActionCollection	* action,
 				const mrpt::obs::CSensoryFrame		* observation,
-				const bayes::CParticleFilter::TParticleFilterOptions &PF_options );
+				const bayes::CParticleFilter::TParticleFilterOptions &PF_options ) MRPT_OVERRIDE;
 
 			/** The PF algorithm implementation.  */
 			void  prediction_and_update_pfOptimalProposal(
 				const mrpt::obs::CActionCollection	* action,
 				const mrpt::obs::CSensoryFrame		* observation,
-				const bayes::CParticleFilter::TParticleFilterOptions &PF_options );
+				const bayes::CParticleFilter::TParticleFilterOptions &PF_options ) MRPT_OVERRIDE;
 			/** @}
 			 */
 

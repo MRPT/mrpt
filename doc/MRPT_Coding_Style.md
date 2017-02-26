@@ -38,3 +38,5 @@ Enable **viewing whitespaces** in your editor to prevent errors (`CTRL+SHIFT+8` 
         };
 
 * In general, typedefs will use lowercase with underscores, e.g. `typedef std::vector<int> vector_int;`
+ 
+* If a packed structure is defined (i.e. `#pragma pack(push,1) ... #pragma pack(pop)`), it will be much safer to make all fields protected and offer accessor methods. In this way, we avoid alignment errors in some processor architectures.

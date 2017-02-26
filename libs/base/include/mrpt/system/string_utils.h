@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -54,11 +54,11 @@ namespace mrpt
 		/**  Removes leading and trailing spaces */
 		std::string BASE_IMPEXP trim(const std::string &str);
 
-		/** Returns a lower-case version of a string.
+		/** Returns a upper-case version of a string.
 		  * \sa lowerCase  */
 		std::string  BASE_IMPEXP upperCase(const std::string& str);
 
-		/** Returns an upper-case version of a string.
+		/** Returns an lower-case version of a string.
 		  * \sa upperCase  */
 		std::string  BASE_IMPEXP lowerCase(const std::string& str);
 

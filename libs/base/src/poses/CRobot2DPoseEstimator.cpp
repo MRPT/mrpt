@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -53,14 +53,12 @@ void CRobot2DPoseEstimator::reset()
 	m_loc_odo_ref	= TPose2D(0,0,0);
 	m_last_odo		= TPose2D(0,0,0);
 
-	m_robot_v    = 0;
-	m_robot_w    = 0;
+	m_robot_vel_local = TTwist2D(.0, .0, .0);
 }
 
 /** Updates the filter so the pose is tracked to the current time */
 void CRobot2DPoseEstimator::processUpdateNewPoseLocalization(
 	const TPose2D &newPose,
-	const CMatrixDouble33 &newPoseCov,
 	TTimeStamp cur_tim)
 {
 	CCriticalSectionLocker   lock(&m_cs);
@@ -68,16 +66,12 @@ void CRobot2DPoseEstimator::processUpdateNewPoseLocalization(
 	// Overwrite old localization data:
 	m_last_loc_time	= cur_tim;
 	m_last_loc		= newPose;
-	m_last_loc_cov  = newPoseCov;
 
 	// And create interpolated odometry data to work as "reference pose":
 	if (m_last_odo_time!=INVALID_TIMESTAMP)
 	{
 		const double dT = timeDifference(m_last_odo_time,cur_tim);
-		extrapolateRobotPose(
-			m_last_odo,m_robot_v,m_robot_w,
-			dT,
-			m_loc_odo_ref);
+		extrapolateRobotPose(m_last_odo,m_robot_vel_local,dT,m_loc_odo_ref);
 	}
 }
 
@@ -86,8 +80,8 @@ void CRobot2DPoseEstimator::processUpdateNewOdometry(
 	const TPose2D &newGlobalOdometry,
 	TTimeStamp cur_tim,
 	bool hasVelocities,
-	float v,
-	float w)
+	const mrpt::math::TTwist2D &velLocal
+	)
 {
 	MRPT_START
 
@@ -102,28 +96,13 @@ void CRobot2DPoseEstimator::processUpdateNewOdometry(
 	// First, update velocities:
 	if (hasVelocities)
 	{
-		m_robot_v = v;
-		m_robot_w = w;
+		m_robot_vel_local = velLocal;
 	}
 	else
-	{
-		if (m_last_odo_time!=INVALID_TIMESTAMP)
-		{
-			// make something up!
-			const double dT = timeDifference(m_last_odo_time,cur_tim);
-			ASSERTMSG_(dT>0, "timestamp must be newer than the last one")
-
-			m_robot_w = mrpt::math::angDistance(m_last_odo.phi,newGlobalOdometry.phi)/dT;
-			m_robot_v = ::hypot(newGlobalOdometry.x-m_last_odo.x, newGlobalOdometry.y-m_last_odo.y)/dT;
-			// sign of v:
-			if (fabs(atan2(newGlobalOdometry.y-m_last_odo.y,newGlobalOdometry.x-m_last_odo.x))>0.5*M_PI)
-				m_robot_v *=-1;
-		}
-		else
-		{	// Nothing we can do here...
-			m_robot_v = 0;
-			m_robot_w = 0;
-		}
+	{ // Note: JLBC 23/Nov/2016: I have removed an estimation of velocity from increments of odometry
+		// because it was really bad. Just don't make up things: if the user doesn't provide us velocities,
+		// we don't use velocities.
+		m_robot_vel_local = TTwist2D(.0, .0, .0);
 	}
 
 	// And now times & odo:
@@ -133,40 +112,44 @@ void CRobot2DPoseEstimator::processUpdateNewOdometry(
 	MRPT_END
 }
 
-/** get the current estimate
-* \return true is the estimate can be trusted. False if the real observed data is too old.
-*/
+bool CRobot2DPoseEstimator::getCurrentEstimate(mrpt::math::TPose2D &pose, mrpt::math::TTwist2D &velLocal, mrpt::math::TTwist2D &velGlobal, mrpt::system::TTimeStamp tim_query) const
+{
+	if (m_last_odo_time == INVALID_TIMESTAMP || m_last_loc_time == INVALID_TIMESTAMP)
+		return false;
+
+	const double dTimeLoc = timeDifference(m_last_loc_time, tim_query);
+	if (dTimeLoc>params.max_localiz_age)
+		return false;
+
+	//  Overall estimate:
+	// last_loc (+) [ last_odo (-) odo_ref ] (+) extrapolation_from_vw
+	const TPose2D p = TPose2D(CPose2D(m_last_loc) + (CPose2D(m_last_odo) - CPose2D(m_loc_odo_ref)));
+
+	// Add the extrapolation:
+	const double dTimeOdo = timeDifference(m_last_odo_time, tim_query);
+	if (dTimeOdo >params.max_odometry_age)
+		return false;
+
+	extrapolateRobotPose(p, m_robot_vel_local,dTimeOdo,pose);
+
+	// Constant speed model:
+	velLocal = m_robot_vel_local;
+	velGlobal = velLocal;
+	velGlobal.rotate(pose.phi);
+
+	return true;
+}
+
 bool CRobot2DPoseEstimator::getCurrentEstimate(
 	TPose2D &pose, float &v, float &w,
 	TTimeStamp tim_query
 	) const
 {
-	if (m_last_odo_time==INVALID_TIMESTAMP || m_last_loc_time==INVALID_TIMESTAMP )
-		return false;
-
-	const double dTimeLoc = timeDifference(m_last_loc_time,tim_query);
-	if (dTimeLoc>params.max_localiz_age)
-		return false;
-
-	// Constant speed model:
-	v = m_robot_v;
-	w = m_robot_w;
-
-	//  Overall estimate:
-	// last_loc (+) [ last_odo (-) odo_ref ] (+) extrapolation_from_vw
-	const TPose2D p = TPose2D(  CPose2D(m_last_loc) + ( CPose2D(m_last_odo) - CPose2D(m_loc_odo_ref) ) );
-
-	// Add the extrapolation:
-	const double dTimeOdo = timeDifference(m_last_odo_time,tim_query);
-	if (dTimeOdo >params.max_odometry_age)
-		return false;
-
-	extrapolateRobotPose(
-		p,m_robot_v,m_robot_w,
-		dTimeOdo,
-		pose);
-
-	return true;
+	mrpt::math::TTwist2D velLocal, velGlobal;
+	bool ret = getCurrentEstimate(pose, velLocal, velGlobal, tim_query);
+	v = velLocal.vx;
+	w = velLocal.omega;
+	return ret;
 }
 
 /** get the current estimate
@@ -197,28 +180,29 @@ bool CRobot2DPoseEstimator::getLatestRobotPose(TPose2D &pose) const
 //  with velocities (v,w) after a time delay "delta_time".
 void CRobot2DPoseEstimator::extrapolateRobotPose(
 	const TPose2D &p,
-	const float v,
-	const float w,
+	const mrpt::math::TTwist2D &velLocal,
 	const double delta_time,
 	TPose2D &new_p)
 {
-	if (v==0 && w==0)
+	if (velLocal.vx==0 && velLocal.vy ==0 && velLocal.omega == 0)
 	{	// Still
 		new_p = p;
 	}
 	else
-	if (w==0)
-	{	// Straight
-		const double len = delta_time*v;
-		new_p.x = p.x + cos(p.phi)*len;
-		new_p.y = p.y + sin(p.phi)*len;
-		new_p.phi = p.phi;
+	if (std::abs(velLocal.vy)>1e-2)
+	{	// non-Ackermann-like vehicle: extrapolate as a straight line:
+		const TPoint2D dp=TPoint2D(delta_time*velLocal.vx, delta_time*velLocal.vy);
+		TPoint2D pg;
+		CPose2D(p).composePoint(dp, pg);
+		new_p.x = pg.x;
+		new_p.y = pg.y;
+		new_p.phi = p.phi + delta_time * velLocal.omega;
 	}
 	else
 	{
-		// generic arc:
-		const double R = v/w; // Radius
-		const double theta = w*delta_time; // traversed arc
+		// vy==0, assume we are in a Ackermann-like steering vehicle: compute an arc:
+		const double R = velLocal.vx / velLocal.omega; // Radius
+		const double theta = velLocal.omega*delta_time; // traversed arc
 		const double cc = cos(p.phi);
 		const double ss = sin(p.phi);
 
@@ -234,9 +218,12 @@ void CRobot2DPoseEstimator::extrapolateRobotPose(
 bool CRobot2DPoseEstimator::getCurrentEstimate( mrpt::poses::CPose2D &pose, float &v, float &w, mrpt::system::TTimeStamp tim_query) const
 {
 	mrpt::math::TPose2D  p;
-	bool ret = getCurrentEstimate(p,v,w,tim_query);
+	mrpt::math::TTwist2D velLocal, velGlobal;
+	bool ret = getCurrentEstimate(p, velLocal, velGlobal, tim_query);
 	if (ret)
 		pose = CPose2D(p);
+	v = velLocal.vx;
+	w = velLocal.omega;
 	return ret;
 }
 

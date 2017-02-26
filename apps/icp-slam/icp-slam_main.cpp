@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -159,7 +159,7 @@ void MapBuilding_ICP(const string &INI_FILENAME, const string &override_rawlog_f
 	// ---------------------------------
 	//   CMetricMapBuilder::TOptions
 	// ---------------------------------
-	mapBuilder.options.verbose = true;
+	mapBuilder.setVerbosityLevel( LVL_DEBUG );
     mapBuilder.options.alwaysInsertByClass.fromString( iniFile.read_string("MappingApplication","alwaysInsertByClass","") );
 
 
@@ -473,7 +473,7 @@ void MapBuilding_ICP(const string &INI_FILENAME, const string &override_rawlog_f
 	printf("Dumping final map in binary format to: %s\n", str.c_str() );
 	mapBuilder.saveCurrentMapToFile(str);
 
-	CMultiMetricMap  *finalPointsMap = mapBuilder.getCurrentlyBuiltMetricMap();
+	const CMultiMetricMap  *finalPointsMap = mapBuilder.getCurrentlyBuiltMetricMap();
 	str = format("%s/_finalmaps_.txt",OUT_DIR);
 	printf("Dumping final metric maps to %s_XXX\n", str.c_str() );
 	finalPointsMap->saveMetricMapRepresentationToFile( str );

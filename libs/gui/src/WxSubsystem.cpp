@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -30,7 +30,7 @@
 //   at the end:
 //  ** (MRPT:11711): CRITICAL **: giop_thread_request_push: assertion `tdata != NULL' failed
 // ------------------------------------------------------------------------
-#define WXSHUTDOWN_DO_IT_CLEAN
+//#define WXSHUTDOWN_DO_IT_CLEAN
 
 #if MRPT_HAS_WXWIDGETS
 
@@ -785,36 +785,34 @@ bool CDisplayWindow_WXAPP::OnInit()
 	//  the default wxWidgets settings. (JL @ Sep-2009)
 	wxSetlocale(LC_NUMERIC, wxString(wxT("C")) );
 
-    wxInitAllImageHandlers();
+	wxInitAllImageHandlers();
 
-    //cout << "[wxApp::OnInit] wxApplication OnInit called." << endl;
+	//cout << "[wxApp::OnInit] wxApplication OnInit called." << endl;
 
-    // Create a dummy frame:
-    WxSubsystem::CWXMainFrame* Frame = new WxSubsystem::CWXMainFrame(0);
-    Frame->Hide();
+	// Create a dummy frame:
+	WxSubsystem::CWXMainFrame* Frame = new WxSubsystem::CWXMainFrame(0);
+	Frame->Hide();
 
-    // We are ready!!
-    //cout << "[wxMainThread] Signaling semaphore." << endl;
-    WxSubsystem::GetWxMainThreadInstance().m_semWxMainThreadReady.release();
+	// We are ready!!
+	//cout << "[wxMainThread] Signaling semaphore." << endl;
+	WxSubsystem::GetWxMainThreadInstance().m_semWxMainThreadReady.release();
 
-    return true;
+	return true;
 }
 
 // This will be called when all the windows / frames are closed.
 int CDisplayWindow_WXAPP::OnExit()
 {
-	CCriticalSectionLocker	lock(& WxSubsystem::GetWxMainThreadInstance().m_csWxMainThreadId );
-
 #ifdef WXSUBSYSTEM_VERBOSE
-    cout << "[wxApp::OnExit] wxApplication OnExit called." << endl;
+	cout << "[wxApp::OnExit] wxApplication OnExit called." << endl;
 #endif
 
-    wxApp::OnExit();
-    CleanUp();
+	CCriticalSectionLocker	lock(& WxSubsystem::GetWxMainThreadInstance().m_csWxMainThreadId );
 
+	wxApp::OnExit();
+	CleanUp();
 	//WxSubsystem::GetWxMainThreadInstance().m_wxMainThreadId.clear(); // Moved to wxMainThread()
-
-    return 0;
+	return 0;
 }
 
 
@@ -827,7 +825,7 @@ void WxSubsystem::waitWxShutdownsIfNoWindows()
 	#ifdef WXSUBSYSTEM_VERBOSE
 		cout << "[WxSubsystem::waitWxShutdownsIfNoWindows] Doing a quick sleep() and returning.\n";
 	#endif
-	mrpt::system::sleep(50);
+	mrpt::system::sleep(100);
 	return;
 #else
 	// Just let know a global object that, at its destruction, it must  ....
@@ -881,7 +879,7 @@ extern CDisplayWindow_WXAPP& wxGetApp();
 
 // Aux. funcs used in WxSubsystem::wxMainThread
 // --------------------------------------------------
-int mrpt_wxEntryReal(int& argc, char **argv)
+int mrpt_wxEntryReal(int argc, char **argv)
 {
 	// library initialization
 	if ( !wxEntryStart(argc, argv) )
@@ -932,11 +930,10 @@ void WxSubsystem::wxMainThread()
 {
 	MRPT_START
 
-    // Prepare wxWidgets:
-    int argc=1;
-    char **argv = new char* [2];
-    argv[0]=strdup("./MRPT");
-    argv[1]=NULL;
+	// Prepare wxWidgets:
+	int argc=1;
+	static const char *dummy_prog_name = "./MRPT";
+	char *argv[2] = { const_cast<char*>(dummy_prog_name), NULL };
 
 #ifdef WXSUBSYSTEM_VERBOSE
     cout << "[wxMainThread] Starting..." << endl;
@@ -956,10 +953,6 @@ void WxSubsystem::wxMainThread()
 		// JLBC OCT2008: wxWidgets little hack to enable console/gui mixed applications:
 		wxApp::SetInitializerFunction( (wxAppInitializerFunction) mrpt_wxCreateApp );
 		mrpt_wxEntryReal(argc,argv);
-
-
-//		free(argv[0]);
-//		delete[]argv;
 
 #ifdef WXSUBSYSTEM_VERBOSE
 	    cout << "[wxMainThread] Finished" << endl;
@@ -986,8 +979,6 @@ void WxSubsystem::wxMainThread()
 #endif
 		WxSubsystem::GetWxMainThreadInstance().m_semWxMainThreadReady.release();
 
-//		free(argv[0]);
-//		delete[]argv;
 	}
 
 	MRPT_END
@@ -1016,10 +1007,11 @@ WxSubsystem::TWxMainThreadData::TWxMainThreadData() :
  ---------------------------------------------------------------*/
 bool WxSubsystem::createOneInstanceMainThread()
 {
-	CCriticalSectionLocker	lock(&GetWxMainThreadInstance().m_csWxMainThreadId);
+	WxSubsystem::TWxMainThreadData & wxmtd = WxSubsystem::GetWxMainThreadInstance();
+	CCriticalSectionLocker	lock(&wxmtd.m_csWxMainThreadId);
 
 	wxAppConsole *app_con = wxApp::GetInstance();
-	if (app_con && GetWxMainThreadInstance().m_wxMainThreadId.isClear())
+	if (app_con && wxmtd.m_wxMainThreadId.isClear())
 	{
 		// We are NOT in a console application: There is already a wxApp instance running and it's not us.
 		WxSubsystem::isConsoleApp = false;
@@ -1039,10 +1031,13 @@ bool WxSubsystem::createOneInstanceMainThread()
 	{
 		//cout << "[createOneInstanceMainThread] Mode: Console." << endl;
 		WxSubsystem::isConsoleApp = true;
-		if (GetWxMainThreadInstance().m_wxMainThreadId.isClear())
+		if (wxmtd.m_wxMainThreadId.isClear())
 		{
+#ifdef WXSUBSYSTEM_VERBOSE
+		printf("[WxSubsystem::createOneInstanceMainThread] Launching wxMainThread() thread...\n");
+#endif
 			// Create a thread for message processing there:
-			GetWxMainThreadInstance().m_wxMainThreadId = system::createThread( wxMainThread );
+			wxmtd.m_wxMainThreadId = system::createThread( wxMainThread );
 
 			int maxTimeout =
 #ifdef _DEBUG
@@ -1056,7 +1051,7 @@ bool WxSubsystem::createOneInstanceMainThread()
 			if (envVal)
 				maxTimeout = atoi(envVal);
 
-			if(! GetWxMainThreadInstance().m_semWxMainThreadReady.waitForSignal(maxTimeout) )  // A few secs should be enough...
+			if(! wxmtd.m_semWxMainThreadReady.waitForSignal(maxTimeout) )  // A few secs should be enough...
 			{
 				cerr << "[WxSubsystem::createOneInstanceMainThread] Timeout waiting wxApplication to start up!" << endl;
 				return false;

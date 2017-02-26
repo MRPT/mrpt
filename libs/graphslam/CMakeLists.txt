@@ -1,15 +1,20 @@
 #---------------------------------------------
 # Macro declared in "DeclareMRPTLib.cmake":
 #---------------------------------------------
-define_mrpt_lib_header_only(
+define_mrpt_lib(
 	# Lib name
 	graphslam
 	# Dependencies
-	mrpt-graphs
 	mrpt-base
+	mrpt-graphs
+	mrpt-gui
+	mrpt-maps
+	mrpt-obs
+	mrpt-opengl
+	mrpt-slam
+	mrpt-vision
 	)
 
-IF(BUILD_mrpt-graphslam) 
+IF(BUILD_mrpt-graphslam)
 
-ENDIF(BUILD_mrpt-graphslam) 
-
+ENDIF()

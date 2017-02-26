@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -73,6 +73,7 @@ void   CTexturedPlane::render_texturedobj() const
 	m_tex_y_min = 0;
 	m_tex_y_max = 1.0f-((float)m_pad_y_bottom) / r_height;
 
+	glDisable(GL_CULL_FACE);
 	glBegin(GL_QUADS);
 
 	glTexCoord2d(m_tex_x_min,m_tex_y_min);

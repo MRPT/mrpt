@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -10,7 +10,7 @@
 #define CGRAPHPARTITIONER_H
 
 #include <mrpt/utils/utils_defs.h>
-#include <mrpt/utils/CDebugOutputCapable.h>
+#include <mrpt/utils/COutputLogger.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/ops_matrices.h>
 
@@ -33,7 +33,7 @@ namespace mrpt
 		 * \note Prior to MRPT 1.0.0 this class wasn't a template and provided static variables for debugging, which were removed since that version.
 		 */
 		template <class GRAPH_MATRIX, typename num_t = typename GRAPH_MATRIX::Scalar>
-		class CGraphPartitioner : public mrpt::utils::CDebugOutputCapable
+		class CGraphPartitioner : public mrpt::utils::COutputLogger
 		{
 		public:
 			/** Performs the spectral recursive partition into K-parts for a given graph.

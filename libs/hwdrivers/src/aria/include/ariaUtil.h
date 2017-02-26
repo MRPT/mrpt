@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -24,6 +24,8 @@
 #if defined(_WIN32) || defined(WIN32)
 #include <sys/timeb.h>
 #include <sys/stat.h>
+#include <winsock2.h> // required before windows.h
+#include <windows.h> // timeGetTime()
 #else
 #include <sys/types.h>
 #include <sys/stat.h>

@@ -1,0 +1,104 @@
+=head1 NAME
+
+image2gridmap - Convert any image into an MRPT .gridmap file
+
+=head1 SYNOPSIS
+
+image2gridmap  [-w] [--py <0.0>] [--px <0.0>] [--cy <0.0>] [--cx <0.0>]
+               -r <0.1> [-o <map.gridmap.gz>] -i <map_image.png> [--]
+               [--version] [-h]
+
+=head1 USAGE EXAMPLES
+
+B<Minimal call to convert an image into a gridmap, (0,0) being at image center:>
+
+image2gridmap -i I<map.png> --res 0.10
+
+B<Use custom (0,0) location with pixel coords. of (0,0):>
+
+image2gridmap -i I<map.png> --res 0.10 --px 120 --py 100
+
+B<Use custom (0,0) location coordinates of image center:>
+
+image2gridmap -i I<map.png> --res 0.10 --cx -25.10 --cy 14.50
+
+
+=head1 DESCRIPTION
+
+B<image2gridmap> is a command-line application to convert arbitrary grayscale
+images into MRPT `.gridmap.gz` files. A `.gridmap.gz` file is just a
+gz-compressed file containing the serialization of an object of type
+`mrpt::maps::COccupancyGridMap2D`.
+
+
+USAGE:
+
+   image2gridmap  [-w] [--py <0.0>] [--px <0.0>] [--cy <0.0>] [--cx <0.0>]
+                  -r <0.1> [-o <map.gridmap.gz>] -i <map_image.png> [--]
+                  [--version] [-h]
+
+Where:
+
+   -w,  --overwrite
+     Force overwrite target file without prompting.
+
+   --py <0.0>
+     (Use either --cx or --px) Pixel verticl coordinate of the origin of
+     coordinates in the image
+
+   --px <0.0>
+     (Use either --cx or --px) Pixel horizontal coordinate of the origin of
+     coordinates in the image
+
+   --cy <0.0>
+     (Use either --cy or --py) Y coordinate of the image central pixel
+     (Default:0)
+
+   --cx <0.0>
+     (Use either --cx or --px) X coordinate of the image central pixel
+     (Default:0)
+
+   -r <0.1>,  --res <0.1>
+     (required)  Resolution: size (in meters) of one pixel in the image
+     (required)
+
+   -o <map.gridmap.gz>,  --output <map.gridmap.gz>
+     Name of the output file (*.gridmap, *.gridmap.gz)
+
+   -i <map_image.png>,  --input <map_image.png>
+     (required)  Input image file (required) (*.png,*.jpg,...)
+
+   --,  --ignore_rest
+     Ignores the rest of the labeled arguments following this flag.
+
+   --version
+     Displays version information and exits.
+
+   -h,  --help
+     Displays usage information and exits.
+
+
+=head1 BUGS
+
+Please report bugs at https://github.com/MRPT/mrpt/issues
+
+=head1 SEE ALSO
+
+The application wiki page at http://www.mrpt.org/Applications
+
+=head1 AUTHORS
+
+B<image2gridmap> is part of the Mobile Robot Programming Toolkit (MRPT), and
+was originally written by Jose Luis Blanco.
+
+This manual page was written by Jose Luis Blanco <joseluisblancoc@gmail.com>.
+
+=head1 COPYRIGHT
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the BSD License.
+
+On Debian GNU/Linux systems, the complete text of the BSD License can be
+found in `/usr/share/common-licenses/BSD'.
+
+=cut

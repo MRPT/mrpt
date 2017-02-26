@@ -1,8 +1,0 @@
-version: 1.3.3.{build}
-configuration: Debug, Release
-platform:
-- x86
-- x64
-shallow_clone: true
-build:
-  verbosity: minimal

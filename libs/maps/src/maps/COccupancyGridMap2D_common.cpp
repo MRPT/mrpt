@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -124,6 +124,24 @@ COccupancyGridMap2D::~COccupancyGridMap2D()
 	freeMap();
 }
 
+void COccupancyGridMap2D::copyMapContentFrom(const COccupancyGridMap2D &o)
+{
+	freeMap();
+	resolution = o.resolution;
+	x_min = o.x_min;
+	x_max = o.x_max;
+	y_min = o.y_min;
+	y_max = o.y_max;
+	size_x = o.size_x;
+	size_y = o.size_y;
+	map = o.map;
+
+	m_basis_map.clear();
+	m_voronoi_diagram.clear();
+
+	precomputedLikelihoodToBeRecomputed = true;
+	m_is_empty=o.m_is_empty;
+}
 
 /*---------------------------------------------------------------
 						setSize
@@ -750,15 +768,10 @@ float  COccupancyGridMap2D::computePathCost( float x1, float y1, float x2, float
 	else	return 0;
 }
 
-float  COccupancyGridMap2D::compute3DMatchingRatio(
-	const mrpt::maps::CMetricMap						*otherMap,
-	const CPose3D							&otherMapPose,
-	float									maxDistForCorr ,
-	float									maxMahaDistForCorr
-	) const
+float  COccupancyGridMap2D::compute3DMatchingRatio(const mrpt::maps::CMetricMap *otherMap, const mrpt::poses::CPose3D &otherMapPose, const TMatchingRatioParams &params) const
 {
 	MRPT_UNUSED_PARAM(otherMap); MRPT_UNUSED_PARAM(otherMapPose);
-	MRPT_UNUSED_PARAM(maxDistForCorr); MRPT_UNUSED_PARAM(maxMahaDistForCorr);
+	MRPT_UNUSED_PARAM(params);
 	return 0;
 }
 

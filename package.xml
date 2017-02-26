@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<!-- This is a ROS package file, intended to allow MRPT to be built
+     side-by-side to real ROS packages in a catkin environment.
+     Real MRPT ROS packages are found elsewhere: https://github.com/mrpt-ros-pkg
+-->
+<package format="2">
+  <name>mrpt</name>
+  <version>1.4.0</version>
+  <description>
+    Mobile Robot Programming Toolkit (MRPT) provides C++ libraries aimed at researchers
+    in mobile robotics and computer vision. Libraries include 3D(6D) geometry, SE(2)/SE(3) Lie groups,
+    probability density functions (pdfs) over points, landmarks, poses and maps,
+    Bayesian inference (Kalman filters, particle filters), image processing, obstacle
+    avoidance, etc.
+    MRPT also provides GUI apps for Stereo camera calibration, dataset inspection,
+    and much more.
+  </description>
+
+  <author     email="joseluisblancoc@gmail.com">Jose-Luis Blanco-Claraco</author>
+  <maintainer email="joseluisblancoc@gmail.com">Jose-Luis Blanco-Claraco</maintainer>
+
+  <url type="website">http://www.mrpt.org/</url>
+  <url type="bugtracker">https://github.com/MRPT/mrpt/issues</url>
+
+  <license>BSD</license>
+
+  <buildtool_depend>cmake</buildtool_depend>
+
+  <export>
+    <build_type>cmake</build_type>
+  </export>
+</package>

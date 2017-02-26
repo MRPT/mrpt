@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -13,6 +13,7 @@
 #include <mrpt/utils/CImage.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/obs/TRangeImageFilter.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/math/CPolygon.h>
@@ -26,18 +27,45 @@ namespace mrpt
 {
 namespace obs
 {
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservation3DRangeScan, CObservation,OBS_IMPEXP )
+	/** Used in CObservation3DRangeScan::project3DPointsFromDepthImageInto() */
+	struct OBS_IMPEXP T3DPointsProjectionParams
+	{
+		bool takeIntoAccountSensorPoseOnRobot;           //!< (Default: false) If false, local (sensor-centric) coordinates of points are generated. Otherwise, points are transformed with \a sensorPose. Furthermore, if provided, those coordinates are transformed with \a robotPoseInTheWorld
+		const mrpt::poses::CPose3D *robotPoseInTheWorld; //!< (Default: NULL) Read takeIntoAccountSensorPoseOnRobot
+		bool PROJ3D_USE_LUT; //!< (Default:true) [Only used when `range_is_depth`=true] Whether to use a Look-up-table (LUT) to speed up the conversion. It's thread safe in all situations <b>except</b> when you call this method from different threads <b>and</b> with different camera parameter matrices. In all other cases, it is a good idea to left it enabled.
+		bool USE_SSE2; //!< (Default:true) If possible, use SSE2 optimized code.
+		bool MAKE_DENSE; //!< (Default:true) set to false if you want to preserve the organization of the point cloud
+		T3DPointsProjectionParams() :  takeIntoAccountSensorPoseOnRobot(false), robotPoseInTheWorld(NULL), PROJ3D_USE_LUT(true),USE_SSE2(true), MAKE_DENSE(true)
+		{}
+	};
+	/** Used in CObservation3DRangeScan::convertTo2DScan() */
+	struct OBS_IMPEXP T3DPointsTo2DScanParams
+	{
+		std::string  sensorLabel;    //!< The sensor label that will have the newly created observation.
+		double angle_sup, angle_inf; //!< (Default=5 degrees) [Only if use_origin_sensor_pose=false] The upper & lower half-FOV angle (in radians).
+		double z_min,z_max;          //!< (Default:-inf, +inf) [Only if use_origin_sensor_pose=true] Only obstacle points with Z coordinates within the range [z_min,z_max] will be taken into account.
+		double oversampling_ratio;   //!< (Default=1.2=120%) How many more laser scans rays to create (read docs for CObservation3DRangeScan::convertTo2DScan()).
+		
+		/** (Default:false) If `false`, the conversion will be such that the 2D observation pose on the robot coincides with that in the original 3D range scan. 
+		  * If `true`, the sensed points will be "reprojected" as seen from a sensor pose at the robot/vehicle frame origin  (and angle_sup, angle_inf will be ignored) */
+		bool use_origin_sensor_pose;
+
+		T3DPointsTo2DScanParams();
+	};
 
 	namespace detail {
 		// Implemented in CObservation3DRangeScan_project3D_impl.h
 		template <class POINTMAP>
-		void project3DPointsFromDepthImageInto(CObservation3DRangeScan    & src_obs,POINTMAP                   & dest_pointcloud,const bool                   takeIntoAccountSensorPoseOnRobot,const mrpt::poses::CPose3D * robotPoseInTheWorld,const bool                   PROJ3D_USE_LUT);
+		void project3DPointsFromDepthImageInto(mrpt::obs::CObservation3DRangeScan & src_obs,POINTMAP & dest_pointcloud, const mrpt::obs::T3DPointsProjectionParams & projectParams, const mrpt::obs::TRangeImageFilterParams &filterParams);
 	}
+
+	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservation3DRangeScan, CObservation,OBS_IMPEXP )
 
 	/** Declares a class derived from "CObservation" that encapsules a 3D range scan measurement, as from a time-of-flight range camera or any other RGBD sensor.
 	 *
 	 *  This kind of observations can carry one or more of these data fields:
-	 *    - 3D point cloud (as float's).
+	 *    - 3D point cloud (as float's). 
+	 *    - Each 3D point has its associated (u,v) pixel coordinates in \a points3D_idxs_x & \a points3D_idxs_y (New in MRPT 1.4.0)
 	 *    - 2D range image (as a matrix): Each entry in the matrix "rangeImage(ROW,COLUMN)" contains a distance or a depth (in meters), depending on \a range_is_depth.
 	 *    - 2D intensity (grayscale or RGB) image (as a mrpt::utils::CImage): For SwissRanger cameras, a logarithmic A-law compression is used to convert the original 16bit intensity to a more standard 8bit graylevel.
 	 *    - 2D confidence image (as a mrpt::utils::CImage): For each pixel, a 0x00 and a 0xFF mean the lowest and highest confidence levels, respectively.
@@ -87,7 +115,7 @@ namespace obs
 	 *    find out if the image was grabbed from the visible (RGB) or IR channels.
 	 *
 	 *  3D point clouds can be generated at any moment after grabbing with CObservation3DRangeScan::project3DPointsFromDepthImage() and CObservation3DRangeScan::project3DPointsFromDepthImageInto(), provided the correct
-	 *   calibration parameters.
+	 *   calibration parameters. Note that project3DPointsFromDepthImage() will store the point cloud in sensor-centric local coordinates. Use project3DPointsFromDepthImageInto() to directly obtain vehicle or world coordinates.
 	 *
 	 *  Example of how to assign labels to pixels (for object segmentation, semantic information, etc.):
 	 *
@@ -104,6 +132,7 @@ namespace obs
 	 *  \note Starting at serialization version 5 (MRPT 0.9.5+), the new field \a range_is_depth
 	 *  \note Starting at serialization version 6 (MRPT 0.9.5+), the new field \a intensityImageChannel
 	 *  \note Starting at serialization version 7 (MRPT 1.3.1+), new fields for semantic labeling
+	 *  \note Since MRPT 1.5.0, external files format can be selected at runtime with `CObservation3DRangeScan::EXTERNALS_AS_TEXT`
 	 *
 	 * \sa mrpt::hwdrivers::CSwissRanger3DCamera, mrpt::hwdrivers::CKinect, CObservation
 	 * \ingroup mrpt_obs_grp
@@ -167,31 +196,45 @@ namespace obs
 		  *
 		  *  The color of each point is determined by projecting the 3D local point into the RGB image using \a cameraParamsIntensity.
 		  *
-		  *  By default the local coordinates of points are directly stored into the local map, but if indicated so in \a takeIntoAccountSensorPoseOnRobot
+		  *  By default the local (sensor-centric) coordinates of points are directly stored into the local map, but if indicated so in \a takeIntoAccountSensorPoseOnRobot
 		  *  the points are transformed with \a sensorPose. Furthermore, if provided, those coordinates are transformed with \a robotPoseInTheWorld
 		  *
-		  * \param[in] PROJ3D_USE_LUT (Only when range_is_depth=true) Whether to use a Look-up-table (LUT) to speed up the conversion. It's thread safe in all situations <b>except</b> when you call this method from different threads <b>and</b> with different camera parameter matrices. In all other cases, it's a good idea to left it enabled.
 		  * \tparam POINTMAP Supported maps are all those covered by mrpt::utils::PointCloudAdapter (mrpt::maps::CPointsMap and derived, mrpt::opengl::CPointCloudColoured, PCL point clouds,...)
 		  *
 		  * \note In MRPT < 0.9.5, this method always assumes that ranges were in Kinect-like format.
 		  */
 		template <class POINTMAP>
+		inline void project3DPointsFromDepthImageInto(POINTMAP & dest_pointcloud, const T3DPointsProjectionParams & projectParams, const TRangeImageFilterParams &filterParams = TRangeImageFilterParams() ) {
+			detail::project3DPointsFromDepthImageInto<POINTMAP>(*this,dest_pointcloud,projectParams, filterParams);
+		}
+
+		template <class POINTMAP>
+		MRPT_DEPRECATED("DEPRECATED: Use the other method signature with structured parameters instead.")
 		inline void project3DPointsFromDepthImageInto(
 			POINTMAP                   & dest_pointcloud,
 			const bool takeIntoAccountSensorPoseOnRobot,
 			const mrpt::poses::CPose3D *robotPoseInTheWorld=NULL,
-			const bool PROJ3D_USE_LUT=true)
+			const bool PROJ3D_USE_LUT=true,
+			const mrpt::math::CMatrix * rangeMask_min = NULL
+			)
 		{
-			detail::project3DPointsFromDepthImageInto<POINTMAP>(*this,dest_pointcloud,takeIntoAccountSensorPoseOnRobot,robotPoseInTheWorld,PROJ3D_USE_LUT);
+			T3DPointsProjectionParams pp; 
+			pp.takeIntoAccountSensorPoseOnRobot = takeIntoAccountSensorPoseOnRobot;
+			pp.robotPoseInTheWorld = robotPoseInTheWorld;
+			pp.PROJ3D_USE_LUT = PROJ3D_USE_LUT;
+			TRangeImageFilterParams fp;
+			fp.rangeMask_min=rangeMask_min;
+			detail::project3DPointsFromDepthImageInto<POINTMAP>(*this,dest_pointcloud,pp,fp);
 		}
 
-		/** This method is equivalent to \c project3DPointsFromDepthImageInto() storing the projected 3D points (without color, in local coordinates) in this same class.
-		  *  For new code it's recommended to use instead \c project3DPointsFromDepthImageInto() which is much more versatile.
-		  */
+		/** This method is equivalent to \c project3DPointsFromDepthImageInto() storing the projected 3D points (without color, in local sensor-centric coordinates) in this same class.
+		  *  For new code it's recommended to use instead \c project3DPointsFromDepthImageInto() which is much more versatile. */
 		inline void project3DPointsFromDepthImage(const bool PROJ3D_USE_LUT=true) {
-			this->project3DPointsFromDepthImageInto(*this,false,NULL,PROJ3D_USE_LUT);
+			T3DPointsProjectionParams p;
+			p.takeIntoAccountSensorPoseOnRobot = false;
+			p.PROJ3D_USE_LUT = PROJ3D_USE_LUT;
+			this->project3DPointsFromDepthImageInto(*this,p);
 		}
-
 
 		/** Convert this 3D observation into an "equivalent 2D fake laser scan", with a configurable vertical FOV.
 		  *
@@ -211,32 +254,45 @@ namespace obs
 		  *  Obviously, a requisite for calling this method is the 3D observation having range data,
 		  *  i.e. hasRangeImage must be true. It's not needed to have RGB data nor the raw 3D point clouds
 		  *  for this method to work.
+		  *  
+		  *  If `scanParams.use_origin_sensor_pose` is `true`, the points will be projected to 3D and then reprojected 
+		  *  as seen from a different sensorPose at the vehicle frame origin. Otherwise (the default), the output 2D observation will share the sensorPose of the input 3D scan 
+		  *  (using a more efficient algorithm that avoids trigonometric functions).
 		  *
 		  *  \param[out] out_scan2d The resulting 2D equivalent scan.
-		  *  \param[in] sensorLabel The sensor label that will have the newly created observation.
-		  *  \param[in] angle_sup (Default=5deg) The upper half-FOV angle (in radians)
-		  *  \param[in] angle_sup (Default=5deg) The lower half-FOV angle (in radians)
-		  *  \param[in] oversampling_ratio (Default=1.2=120%) How many more laser scans rays to create (read above).
 		  *
-		  * \sa The example in http://www.mrpt.org/Example_Kinect_To_2D_laser_scan
+		  * \sa The example in http://www.mrpt.org/tutorials/mrpt-examples/example-kinect-to-2d-laser-demo/
 		  */
+		void convertTo2DScan(mrpt::obs::CObservation2DRangeScan & out_scan2d, const T3DPointsTo2DScanParams &scanParams, const TRangeImageFilterParams &filterParams = TRangeImageFilterParams() );
+
+		MRPT_DEPRECATED("DEPRECATED: Use the other method signature with structured parameters instead.")
 		void convertTo2DScan(
 			mrpt::obs::CObservation2DRangeScan & out_scan2d,
 			const std::string       & sensorLabel,
 			const double angle_sup = mrpt::utils::DEG2RAD(5),
 			const double angle_inf = mrpt::utils::DEG2RAD(5),
-			const double oversampling_ratio = 1.2 );
+			const double oversampling_ratio = 1.2,
+			const mrpt::math::CMatrix * rangeMask_min = NULL
+			);
 
+		/** Whether external files (3D points, range and confidence) are to be 
+		  * saved as `.txt` text files (MATLAB compatible) or `*.bin` binary (faster).
+		  * Loading always will determine the type by inspecting the file extension.
+		  * \note Default=false
+		  **/
+		static bool EXTERNALS_AS_TEXT;
 
-		bool hasPoints3D; 								//!< true means the field points3D contains valid data.
-		std::vector<float> points3D_x;   //!< If hasPoints3D=true, the X coordinates of the 3D point cloud detected by the camera. \sa resizePoints3DVectors
-		std::vector<float> points3D_y;   //!< If hasPoints3D=true, the Y coordinates of the 3D point cloud detected by the camera. \sa resizePoints3DVectors
-		std::vector<float> points3D_z;   //!< If hasPoints3D=true, the Z coordinates of the 3D point cloud detected by the camera. \sa resizePoints3DVectors
+		/** \name Point cloud
+		  * @{ */
+		bool hasPoints3D; //!< true means the field points3D contains valid data.
+		std::vector<float> points3D_x,points3D_y,points3D_z;  //!< If hasPoints3D=true, the (X,Y,Z) coordinates of the 3D point cloud detected by the camera. \sa resizePoints3DVectors
+		std::vector<uint16_t> points3D_idxs_x, points3D_idxs_y; //!< //!< If hasPoints3D=true, the (x,y) pixel coordinates for each (X,Y,Z) point in \a points3D_x, points3D_y, points3D_z
 
 		/** Use this method instead of resizing all three \a points3D_x, \a points3D_y & \a points3D_z to allow the usage of the internal memory pool. */
 		void resizePoints3DVectors(const size_t nPoints);
+		/** @} */
 
-		/** \name 3D points external storage functions
+		/** \name Point cloud external storage functions
 		  * @{ */
 		inline bool points3D_isExternallyStored() const { return m_points3D_external_stored; }
 		inline std::string points3D_getExternalStorageFile() const { return m_points3D_external_file; }
@@ -246,7 +302,7 @@ namespace obs
 				points3D_getExternalStorageFileAbsolutePath(tmp);
 				return tmp;
 		}
-		void points3D_convertToExternalStorage( const std::string &fileName, const std::string &use_this_base_dir ); //!< Users won't normally want to call this, it's only used from internal MRPT programs.
+		void points3D_convertToExternalStorage( const std::string &fileName, const std::string &use_this_base_dir ); //!< Users won't normally want to call this, it's only used from internal MRPT programs. \sa EXTERNALS_AS_TEXT
 		/** @} */
 
 		/** \name Range (depth) image
@@ -268,7 +324,7 @@ namespace obs
 				rangeImage_getExternalStorageFileAbsolutePath(tmp);
 				return tmp;
 		}
-		void rangeImage_convertToExternalStorage( const std::string &fileName, const std::string &use_this_base_dir ); //!< Users won't normally want to call this, it's only used from internal MRPT programs.
+		void rangeImage_convertToExternalStorage( const std::string &fileName, const std::string &use_this_base_dir ); //!< Users won't normally want to call this, it's only used from internal MRPT programs. \sa EXTERNALS_AS_TEXT
 		/** Forces marking this observation as non-externally stored - it doesn't anything else apart from reseting the corresponding flag (Users won't normally want to call this, it's only used from internal MRPT programs) */
 		void rangeImage_forceResetExternalStorage() { m_rangeImage_external_stored=false; }
 		/** @} */
@@ -330,7 +386,7 @@ namespace obs
 			/** Mark the pixel(row,col) as classified in the category \a label_idx, which may be in the range 0 to MAX_NUM_LABELS-1 
 			  * Note that 0 is a valid label index, it does not mean "no label" \sa unsetLabel, unsetAll */
 			virtual void setLabel(const int row, const int col, uint8_t label_idx) =0;
-            virtual void getLabels( const int row, const int col, uint8_t &labels ) =0;
+			virtual void getLabels( const int row, const int col, uint8_t &labels ) =0;
 			/** For the pixel(row,col), removes its classification into the category \a label_idx, which may be in the range 0 to 7 
 			  * Note that 0 is a valid label index, it does not mean "no label" \sa setLabel, unsetAll */
 			virtual void unsetLabel(const int row, const int col, uint8_t label_idx)=0;
@@ -343,12 +399,11 @@ namespace obs
 			void writeToStream(mrpt::utils::CStream &out) const;
 			static TPixelLabelInfoBase* readAndBuildFromStream(mrpt::utils::CStream &in);
 
-            /// std stream interface
-            friend std::ostream& operator<<( std::ostream& out, const TPixelLabelInfoBase& obj )
-            {
-                obj.Print( out );
-                return out;
-            }
+			/// std stream interface
+			friend std::ostream& operator<<( std::ostream& out, const TPixelLabelInfoBase& obj ){
+				obj.Print( out );
+				return out;
+			}
 
 			TPixelLabelInfoBase(unsigned int BITFIELD_BYTES_) : 
 				BITFIELD_BYTES (BITFIELD_BYTES_)
@@ -362,7 +417,7 @@ namespace obs
 		protected:
 			virtual void internal_readFromStream(mrpt::utils::CStream &in) = 0;
 			virtual void internal_writeToStream(mrpt::utils::CStream &out) const = 0;
-            virtual void Print( std::ostream& ) const =0;
+			virtual void Print( std::ostream& ) const =0;
 		};
 		typedef stlplus::smart_ptr<TPixelLabelInfoBase>  TPixelLabelInfoPtr;  //!< Used in CObservation3DRangeScan::pixelLabels
 
@@ -497,7 +552,7 @@ namespace obs
 		void getDescriptionAsText(std::ostream &o) const MRPT_OVERRIDE;
 
 		void swap(CObservation3DRangeScan &o);	//!< Very efficient method to swap the contents of two observations.
-
+		/** Extract a ROI of the 3D observation as a new one. \note PixelLabels are *not* copied to the output subimage. */
 		void getZoneAsObs( CObservation3DRangeScan &obs, const unsigned int &r1, const unsigned int &r2, const unsigned int &c1, const unsigned int &c2 );
 
 		/** A Levenberg-Marquart-based optimizer to recover the calibration parameters of a 3D camera given a range (depth) image and the corresponding 3D point cloud.
@@ -578,6 +633,12 @@ namespace obs
 				m_obj.points3D_y[idx]=y;
 				m_obj.points3D_z[idx]=z;
 			}
+			/** Set XYZ coordinates of i'th point */
+			inline void setInvalidPoint(const size_t idx)
+			{
+				THROW_EXCEPTION("mrpt::obs::CObservation3DRangeScan requires needs to be dense");
+			}
+
 		}; // end of PointCloudAdapter<CObservation3DRangeScan>
 	}
 } // End of namespace

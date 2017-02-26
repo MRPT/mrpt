@@ -35,45 +35,31 @@ IF(CMAKE_MRPT_HAS_WXWIDGETS)
 	 main_show_selected_object.cpp
 	 CRawlogTreeView.cpp	CRawlogTreeView.h
 	 CFormBatchSensorPose.cpp  CFormBatchSensorPose.h
-	 CIniEditor.cpp 		CIniEditor.h	 
-	 ../wx-common/CMyRedirector.h
+	 CIniEditor.cpp 		CIniEditor.h
 	 )
-	 
+
 	IF(WIN32)
 		SET(SRCS ${SRCS} resource.rc)
-	ENDIF(WIN32)
+	ENDIF()
 
 	INCLUDE_DIRECTORIES("${MRPT_SOURCE_DIR}/otherlibs/wxThings/")
 
 	# Define the executable target:
-	ADD_EXECUTABLE(RawLogViewer WIN32 ${SRCS} ${MRPT_VERSION_RC_FILE})
-
-	SET(TMP_TARGET_NAME "RawLogViewer")
-
-
-	
+	ADD_EXECUTABLE(${PROJECT_NAME} WIN32 ${SRCS} ${MRPT_VERSION_RC_FILE})
 
 	# Add the required libraries for linking:
-	TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${wxWidgets_LIBRARIES} )
-	TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${MRPT_LINKER_LIBS})
+	TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${wxWidgets_LIBRARIES} )
+	TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${MRPT_LINKER_LIBS})
 
-	TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} mrptwxthings)
-	ADD_DEPENDENCIES(${TMP_TARGET_NAME} mrptwxthings)
+	TARGET_LINK_LIBRARIES(${PROJECT_NAME} mrptwxthings)
+	ADD_DEPENDENCIES(${PROJECT_NAME} mrptwxthings)
 
 	# Dependencies on MRPT libraries:
-	#  Just mention the top-level dependency, the rest will be detected automatically, 
+	#  Just mention the top-level dependency, the rest will be detected automatically,
 	#  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
-	DeclareAppDependencies(${TMP_TARGET_NAME} mrpt-slam mrpt-gui mrpt-topography)
-	
-	IF(BUILD_STEREOSLAM)
-		ADD_DEFINITIONS(-DRAWLOGVIEWER_HAS_STEREOSLAM)
-		DeclareAppDependencies(${TMP_TARGET_NAME} mrpt-stereoslam)
-	ENDIF(BUILD_STEREOSLAM)	
-
-	DeclareAppForInstall(${TMP_TARGET_NAME})
-
-	AppStartMenuLink(${TMP_TARGET_NAME} "RawLog (dataset) viewer")   # Add link to the Start menu (in Windows Installable packages)
-
+	DeclareAppDependencies(${PROJECT_NAME} mrpt-slam mrpt-gui mrpt-topography)
+	DeclareAppForInstall(${PROJECT_NAME})
+	AppStartMenuLink(${PROJECT_NAME} "RawLog (dataset) viewer")   # Add link to the Start menu (in Windows Installable packages)
 
 ELSE()
 	# ----------------------------------------------------------------------------------
@@ -81,5 +67,3 @@ ELSE()
 	# ----------------------------------------------------------------------------------
     MESSAGE(STATUS "wxWidgets not found!: **This target will not be included in the Makefiles**")
 ENDIF()
-
-

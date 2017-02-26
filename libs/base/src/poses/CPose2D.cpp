@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -188,7 +188,7 @@ void CPose2D::composePoint(const mrpt::math::TPoint2D &l, mrpt::math::TPoint2D &
 	this->composePoint(l.x,l.y, g.x,g.y);
 }
 
-/** \overload \f$ G = P \oplus L \f$ with G and L being 3D points and P this 2D pose (the "z" coordinate remains unmodified) */
+/** overload \f$ G = P \oplus L \f$ with G and L being 3D points and P this 2D pose (the "z" coordinate remains unmodified) */
 void CPose2D::composePoint(const mrpt::math::TPoint3D &l, mrpt::math::TPoint3D &g) const
 {
 	this->composePoint(l.x,l.y,l.z, g.x,g.y,g.z);
@@ -202,6 +202,16 @@ void CPose2D::composePoint(double lx,double ly,double lz, double &gx, double &gy
 	gz = lz;
 }
 
+void CPose2D::inverseComposePoint(const double gx,const double gy, double &lx,double &ly) const
+{
+	update_cached_cos_sin();
+
+	const double Ax = gx - m_coords[0];
+	const double Ay = gy - m_coords[1];
+
+	lx = Ax * m_cosphi + Ay * m_sinphi;
+	ly =-Ax * m_sinphi + Ay * m_cosphi;
+}
 
 /*---------------------------------------------------------------
 The operator u'="this"+u is the pose/point compounding operator.
@@ -234,7 +244,7 @@ void CPose2D::inverseComposeFrom(const CPose2D& A, const CPose2D& B )
  Scalar sum of components: This is diferent from poses
    composition, which is implemented as "+" operators in "CPose" derived classes.
  ---------------------------------------------------------------*/
-void CPose2D::AddComponents(CPose2D &p)
+void CPose2D::AddComponents(const CPose2D &p)
 {
 	m_coords[0]+=p.m_coords[0];
 	m_coords[1]+=p.m_coords[1];

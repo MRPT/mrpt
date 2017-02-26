@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -209,7 +209,10 @@ bool CColouredOctoMap::internal_insertObservation(const mrpt::obs::CObservation 
 
 		// Project 3D points & color:
 		mrpt::opengl::CPointCloudColouredPtr pts = mrpt::opengl::CPointCloudColoured::Create();
-		const_cast<CObservation3DRangeScan*>(o)->project3DPointsFromDepthImageInto(*pts,true,robotPose);
+		T3DPointsProjectionParams proj_params;
+		proj_params.PROJ3D_USE_LUT = true;
+		proj_params.robotPoseInTheWorld = robotPose;
+		const_cast<CObservation3DRangeScan*>(o)->project3DPointsFromDepthImageInto(*pts,proj_params);
 
 		// Sensor_pose = robot_pose (+) sensor_pose_on_robot
 		CPose3D sensorPose(UNINITIALIZED_POSE);

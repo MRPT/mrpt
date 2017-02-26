@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -13,7 +13,7 @@
 #include <mrpt/obs/CObservationGPS.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/hwdrivers/CSerialPort.h>
-#include <mrpt/utils/CDebugOutputCapable.h>
+#include <mrpt/utils/COutputLogger.h>
 #include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/utils/TEnumType.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
@@ -37,7 +37,7 @@ namespace mrpt
 		  *  - `NONE`: Do not try to parse the messages into CObservation's. Only useful if combined with `raw_dump_file_prefix`
 		  *  - `AUTO`: Try to automatically identify the format of incomming data.
 		  *  - `NMEA` (NMEA 0183, ASCII messages): Default parser. Supported frames: GGA, RMC,... See full list of messages in children of mrpt::obs::gnss::gnss_message
-		  *  - `NOVATEL_OEM6` (Novatel OEM6, binary frames): Supported frames: BESTPOS,... See full list of messages in children of mrpt::obs::gnss::gnss_message
+		  *  - `NOVATEL_OEM6` (Novatel OEM6, binary frames): Supported frames: BESTPOS,... Note that receiving a correct IONUTC msg is required for a correct timestamping of subsequent frames. See full list of messages in children of mrpt::obs::gnss::gnss_message
 		  *
 		  * See available parameters below, and an example config file for rawlog-grabber [here](https://github.com/MRPT/mrpt/blob/master/share/mrpt/config_files/rawlog-grabber/gps.ini)
 		  *
@@ -107,7 +107,7 @@ namespace mrpt
 		  * \sa CGPS_NTRIP, CNTRIPEmitter, mrpt::obs::CObservationGPS 
 		  * \ingroup mrpt_hwdrivers_grp
 		  */
-		class HWDRIVERS_IMPEXP CGPSInterface : public utils::CDebugOutputCapable, public CGenericSensor
+		class HWDRIVERS_IMPEXP CGPSInterface : public mrpt::utils::COutputLogger, public CGenericSensor
 		{
 			DEFINE_GENERIC_SENSOR(CGPSInterface)
 
@@ -162,6 +162,10 @@ namespace mrpt
 			bool isEnabledSetupCommandsAppendCRLF() const;
 
 			void enableAppendMsgTypeToSensorLabel(bool enable) { m_sensorLabelAppendMsgType = enable; }
+
+			/** If set to non-empty, RAW GPS serial data will be also dumped to a separate file. */
+			void setRawDumpFilePrefix(const std::string &filePrefix) { m_raw_dump_file_prefix=filePrefix; }
+			std::string getRawDumpFilePrefix() const { return m_raw_dump_file_prefix; }
 
 			/** Send a custom data block to the GNSS device right now. Can be used to change its behavior online as needed. 
 			  \return false on communication error */

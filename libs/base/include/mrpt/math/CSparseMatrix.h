@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -389,7 +389,7 @@ namespace mrpt
 				/** Return the vector from a back-substitution step that solves: Ux=b. Vectors can be Eigen::VectorXd or mrpt::math::CVectorDouble   */
 				void backsub(const Eigen::VectorXd &b, Eigen::VectorXd &result_x) const;
 
-				/** \overload for double pointers which assume the user has reserved the output memory for \a result */
+				/** overload for double pointers which assume the user has reserved the output memory for \a result */
 				void backsub(const double *b, double *result, const size_t N) const;
 
 				/** Update the Cholesky factorization from an updated vesion of the original input, square definite-positive sparse matrix.

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -35,7 +35,7 @@
 #include "../wx-common/mrpt_logo.xpm"
 #include "imgs/app_icon_gridmapsimul.xpm"
 
-#include "../wx-common/CMyRedirector.h"
+#include <mrpt/gui/CMyRedirector.h>
 #include "CAboutBox.h"
 
 #include <mrpt/system/filesystem.h>
@@ -46,6 +46,14 @@
 #include <mrpt/opengl/CPlanarLaserScan.h>
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/utils/CTimeLogger.h>
+
+//#define DO_SCAN_LIKELIHOOD_DEBUG
+
+#ifdef DO_SCAN_LIKELIHOOD_DEBUG
+#	include <mrpt/gui/CDisplayWindowPlots.h>
+#	include <mrpt/math/data_utils.h>
+#endif
 
 #if !wxUSE_GLCANVAS
 #error "OpenGL required: set wxUSE_GLCANVAS to 1 and rebuild wxWidgets"
@@ -91,7 +99,7 @@ wxBitmap MyArtProvider::CreateBitmap(const wxArtID& id,
 #include <mrpt/gui/CMyGLCanvasBase.h>
 
 #include <mrpt/utils/CTicTac.h>
-#include <mrpt/utils/CRobotSimulator.h>
+#include <mrpt/kinematics/CVehicleSimul_DiffDriven.h>
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/obs/CActionRobotMovement2D.h>
@@ -116,9 +124,9 @@ using namespace mrpt::poses;
 using namespace std;
 
 
-CRobotSimulator			the_robot(0,0);
-COccupancyGridMap2D		the_grid;
-CJoystick				joystick;
+mrpt::kinematics::CVehicleSimul_DiffDriven  the_robot;
+COccupancyGridMap2D          the_grid;
+CJoystick                    joystick;
 
 StdVector_CPose2D		robot_path_GT, robot_path_ODO;
 CPose2D					lastOdo, pose_start;
@@ -178,13 +186,14 @@ void CMyGLCanvas::OnPostRenderSwapBuffers(double At, wxPaintDC &dc)
 
 void CMyGLCanvas::OnPostRender()
 {
-	CPose2D p;
-	the_robot.getRealPose(p);
+	CPose2D p = the_robot.getCurrentGTPose();
 
 	string s = format("Pose: (%.03f,%.03f,%.02fdeg)", p.x(),p.y(), RAD2DEG(p.phi()) );
 	mrpt::opengl::CRenderizable::renderTextBitmap( 20,20, s.c_str(), 1,0,0 , MRPT_GLUT_BITMAP_HELVETICA_18);
 
-	s = format("V=%.03fm/s  W=%.02fdeg/s", the_robot.getV(), RAD2DEG(the_robot.getW()) );
+
+	const mrpt::math::TTwist2D vel_local = the_robot.getCurrentGTVelLocal();
+	s = format("V=%.03fm/s  W=%.02fdeg/s", vel_local.vx, RAD2DEG(vel_local.omega) );
 	mrpt::opengl::CRenderizable::renderTextBitmap( 20,45, s.c_str(), 1,0,0 , MRPT_GLUT_BITMAP_HELVETICA_18);
 }
 
@@ -332,7 +341,7 @@ gridmapSimulFrame::gridmapSimulFrame(wxWindow* parent,wxWindowID id)
     FlexGridSizer5->Add(edStdNoiseAng, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     btnSetLaser = new wxButton(Panel3, ID_BUTTON5, _("Apply"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON5"));
     FlexGridSizer5->Add(btnSetLaser, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
-    StaticBoxSizer1->Add(FlexGridSizer5, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    StaticBoxSizer1->Add(FlexGridSizer5, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
     FlexGridSizer12->Add(StaticBoxSizer1, 1, wxALL|wxEXPAND|wxALIGN_TOP|wxALIGN_CENTER_HORIZONTAL, 5);
     StaticBoxSizer6 = new wxStaticBoxSizer(wxHORIZONTAL, Panel3, _(" Decimation: "));
     FlexGridSizer13 = new wxFlexGridSizer(0, 2, 0, 0);
@@ -342,9 +351,9 @@ gridmapSimulFrame::gridmapSimulFrame(wxWindow* parent,wxWindowID id)
     edDecimate = new wxSpinCtrl(Panel3, ID_SPINCTRL1, _T("1"), wxDefaultPosition, wxDefaultSize, 0, 1, 100, 1, _T("ID_SPINCTRL1"));
     edDecimate->SetValue(_T("1"));
     FlexGridSizer13->Add(edDecimate, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    StaticBoxSizer6->Add(FlexGridSizer13, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
-    FlexGridSizer12->Add(StaticBoxSizer6, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    FlexGridSizer4->Add(FlexGridSizer12, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    StaticBoxSizer6->Add(FlexGridSizer13, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
+    FlexGridSizer12->Add(StaticBoxSizer6, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
+    FlexGridSizer4->Add(FlexGridSizer12, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
     FlexGridSizer7 = new wxFlexGridSizer(0, 1, 0, 0);
     FlexGridSizer7->AddGrowableCol(0);
     StaticBoxSizer3 = new wxStaticBoxSizer(wxHORIZONTAL, Panel3, _("Odometry errors"));
@@ -373,18 +382,18 @@ gridmapSimulFrame::gridmapSimulFrame(wxWindow* parent,wxWindowID id)
     FlexGridSizer9->Add(StaticText14, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
     edAps = new wxTextCtrl(Panel3, ID_TEXTCTRL11, _("10e-4"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL11"));
     FlexGridSizer9->Add(edAps, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    StaticBoxSizer3->Add(FlexGridSizer9, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    StaticBoxSizer3->Add(FlexGridSizer9, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
     FlexGridSizer7->Add(StaticBoxSizer3, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     StaticBoxSizer5 = new wxStaticBoxSizer(wxHORIZONTAL, Panel3, _(" Re-simulate "));
     FlexGridSizer11 = new wxFlexGridSizer(0, 1, 0, 0);
     FlexGridSizer11->AddGrowableCol(0);
     StaticText4 = new wxStaticText(Panel3, ID_STATICTEXT4, _("Select an existing ground truth (GT) file and \nthe corresponding scans will be simulated \nagain with the current laser sensor errors."), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT4"));
-    FlexGridSizer11->Add(StaticText4, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer11->Add(StaticText4, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
     btnResimulate = new wxButton(Panel3, ID_BUTTON4, _("Re-simulate..."), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON4"));
     FlexGridSizer11->Add(btnResimulate, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    StaticBoxSizer5->Add(FlexGridSizer11, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
-    FlexGridSizer7->Add(StaticBoxSizer5, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    FlexGridSizer4->Add(FlexGridSizer7, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    StaticBoxSizer5->Add(FlexGridSizer11, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
+    FlexGridSizer7->Add(StaticBoxSizer5, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
+    FlexGridSizer4->Add(FlexGridSizer7, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
     StaticBoxSizer2 = new wxStaticBoxSizer(wxHORIZONTAL, Panel3, _("Controls"));
     FlexGridSizer8 = new wxFlexGridSizer(0, 1, 0, 0);
     cbJoy = new wxCheckBox(Panel3, ID_CHECKBOX1, _("Use joystick"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX1"));
@@ -399,13 +408,13 @@ gridmapSimulFrame::gridmapSimulFrame(wxWindow* parent,wxWindowID id)
     wxTextCtrl *edInput = new wxTextCtrl(Panel3, ID_TEXTCTRL_INPUT, _(""), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL_INPUT"));
     FlexGridSizer8->Add(edInput, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
 
-    StaticBoxSizer2->Add(FlexGridSizer8, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    StaticBoxSizer2->Add(FlexGridSizer8, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
     FlexGridSizer4->Add(StaticBoxSizer2, 1, wxALL|wxALIGN_LEFT|wxALIGN_TOP, 5);
     btnExit = new wxButton(Panel3, ID_BUTTON6, _("Exit"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON6"));
     FlexGridSizer4->Add(btnExit, 1, wxALL|wxALIGN_LEFT|wxALIGN_TOP, 5);
     Panel3->SetSizer(FlexGridSizer4);
     FlexGridSizer4->SetSizeHints(Panel3);
-    FlexGridSizer3->Add(Panel3, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    FlexGridSizer3->Add(Panel3, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
     Panel4 = new wxPanel(Panel2, ID_PANEL4, wxDefaultPosition, wxSize(622,55), wxTAB_TRAVERSAL, _T("ID_PANEL4"));
     FlexGridSizer6 = new wxFlexGridSizer(0, 1, 0, 0);
     FlexGridSizer6->AddGrowableCol(0);
@@ -421,7 +430,7 @@ gridmapSimulFrame::gridmapSimulFrame(wxWindow* parent,wxWindowID id)
     StaticText5 = new wxStaticText(Panel5, ID_STATICTEXT5, _("Output rawlog:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT5"));
     FlexGridSizer10->Add(StaticText5, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
     edOutFile = new wxTextCtrl(Panel5, ID_TEXTCTRL4, _("./simul.rawlog"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL4"));
-    FlexGridSizer10->Add(edOutFile, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer10->Add(edOutFile, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
     btnExplore = new wxButton(Panel5, ID_BUTTON3, _("Browse..."), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON3"));
     FlexGridSizer10->Add(btnExplore, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 
@@ -436,19 +445,19 @@ gridmapSimulFrame::gridmapSimulFrame(wxWindow* parent,wxWindowID id)
     FlexGridSizer10->Add(StaticText15, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
     edOutGT = new wxTextCtrl(Panel5, ID_TEXTCTRL12, _("./simul.rawlog.GT.txt"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL12"));
     edOutGT->Disable();
-    FlexGridSizer10->Add(edOutGT, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer10->Add(edOutGT, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
     Panel5->SetSizer(FlexGridSizer10);
     FlexGridSizer10->Fit(Panel5);
     FlexGridSizer10->SetSizeHints(Panel5);
-    StaticBoxSizer4->Add(Panel5, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
-    FlexGridSizer6->Add(StaticBoxSizer4, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    StaticBoxSizer4->Add(Panel5, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
+    FlexGridSizer6->Add(StaticBoxSizer4, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
     Panel4->SetSizer(FlexGridSizer6);
     FlexGridSizer6->SetSizeHints(Panel4);
-    FlexGridSizer3->Add(Panel4, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    FlexGridSizer3->Add(Panel4, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
     Panel2->SetSizer(FlexGridSizer3);
     FlexGridSizer3->Fit(Panel2);
     FlexGridSizer3->SetSizeHints(Panel2);
-    FlexGridSizer2->Add(Panel2, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    FlexGridSizer2->Add(Panel2, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
     Panel1->SetSizer(FlexGridSizer2);
     FlexGridSizer2->SetSizeHints(Panel1);
     panelGL = new wxPanel(SplitterWindow1, ID_PANEL5, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL5"));
@@ -459,7 +468,7 @@ gridmapSimulFrame::gridmapSimulFrame(wxWindow* parent,wxWindowID id)
     flexGL->Fit(panelGL);
     flexGL->SetSizeHints(panelGL);
     SplitterWindow1->SplitHorizontally(Panel1, panelGL);
-    FlexGridSizer1->Add(SplitterWindow1, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    FlexGridSizer1->Add(SplitterWindow1, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
     SetSizer(FlexGridSizer1);
     timRun.SetOwner(this, ID_TIMER1);
     timRun.Start(10, true);
@@ -502,7 +511,7 @@ gridmapSimulFrame::gridmapSimulFrame(wxWindow* parent,wxWindowID id)
     {
 		wxImage img(virtual_map1_xpm);
 		CImage *myImg = wxImage2MRPTImage(img);
-		the_grid.loadFromBitmap( *myImg, 0.03 );
+		the_grid.loadFromBitmap( *myImg, 0.03f );
 		delete myImg;
     }
 
@@ -511,7 +520,7 @@ gridmapSimulFrame::gridmapSimulFrame(wxWindow* parent,wxWindowID id)
 	m_canvas = new CMyGLCanvas( panelGL, wxID_ANY, wxDefaultPosition, wxDefaultSize );
 	panelGL->SetMinSize( wxSize(200,200) );
 	m_canvas->SetMinSize( wxSize(200,200) );
-	flexGL->Add(m_canvas, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+	flexGL->Add(m_canvas, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
 
 	m_canvas->cameraPointingX = 0;
 	m_canvas->cameraPointingY = 0;
@@ -588,7 +597,7 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 	tictac.Tic();
 
 	// Simul robot:
-	the_robot.simulateInterval(At);
+	the_robot.simulateOneTimeStep(At);
 
 	try
 	{
@@ -601,10 +610,11 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 			if (joystick.getJoystickPosition(0,x,y,z,btns))
 			{
 				const float V_MAX_ACC = 1;
-				const float W_MAX_ACC = DEG2RAD(45.0f);
+				const float W_MAX_ACC =
+						DEG2RAD(45.0f);
 
-				float v = the_robot.getV();
-				float w = the_robot.getW();
+				const mrpt::math::TTwist2D vel_local = the_robot.getCurrentGTVelLocal();
+				double v = vel_local.vx, w = vel_local.omega;
 
 				v -= y* V_MAX_ACC*At;
 				w -= x* W_MAX_ACC*At;
@@ -616,10 +626,10 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 				}
 
 				if (btns.size()>=2 && btns[1])
-					m_canvas->cameraZoomDistance *= 0.99;
+					m_canvas->cameraZoomDistance *= 0.99f;
 
 				if (btns.size()>=3 && btns[2])
-					m_canvas->cameraZoomDistance *= 1.01;
+					m_canvas->cameraZoomDistance *= 1.01f;
 
 				the_robot.movementCommand(v,w);
 			}
@@ -630,8 +640,8 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 			const float V_MAX_ACC = 1;
 			const float W_MAX_ACC = DEG2RAD(45.0f);
 
-			float v = the_robot.getV();
-			float w = the_robot.getW();
+			const mrpt::math::TTwist2D vel_local = the_robot.getCurrentGTVelLocal();
+			double v = vel_local.vx, w = vel_local.omega;
 
 			float x=0,y=0;
 
@@ -661,8 +671,7 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 			last_pressed_key=0;
 		}
 
-		CPose2D p;
-		the_robot.getRealPose(p);
+		CPose2D p = the_robot.getCurrentGTPose();
 
 		// Simulate scan:
 		mrpt::obs::CObservation2DRangeScan the_scan;
@@ -672,7 +681,42 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 		the_scan.aperture = LASER_APERTURE;
 		the_scan.stdError = LASER_STD_ERROR;
 
-		the_grid.laserScanSimulator( the_scan, p, 0.5f, LASER_N_RANGES, LASER_STD_ERROR, 1, LASER_BEARING_STD_ERROR );
+		static mrpt::utils::CTimeLogger timlog;
+
+		timlog.enter("laserScanSimulator");
+		the_grid.laserScanSimulator( the_scan, p, 0.6f, LASER_N_RANGES, LASER_STD_ERROR, 1, LASER_BEARING_STD_ERROR );
+		timlog.leave("laserScanSimulator");
+
+#ifdef DO_SCAN_LIKELIHOOD_DEBUG
+		{
+			timlog.enter("laserScanSimulatorWithUncertainty");
+			COccupancyGridMap2D::TLaserSimulUncertaintyParams  ssu_params;
+			COccupancyGridMap2D::TLaserSimulUncertaintyResult  ssu_out;
+
+			ssu_params.robotPose.mean = p;
+			ssu_params.robotPose.cov << square(0.25) , 0.0 , 0.0 , 0.0 , square(0.25) , 0.0 , 0.0 , 0.0 , square(DEG2RAD(5.0));
+
+			the_grid.laserScanSimulatorWithUncertainty(ssu_params, ssu_out);
+			timlog.leave("laserScanSimulatorWithUncertainty");
+
+#if 1
+			static mrpt::gui::CDisplayWindowPlots win;
+
+			win.plot(ssu_out.scanWithUncert.rangeScan.scan, "3k-", "mean");
+			win.plot(the_scan.scan, "r-", "obs");
+
+			Eigen::VectorXd ci1 = ssu_out.scanWithUncert.rangesMean + 3*ssu_out.scanWithUncert.rangesCovar.diagonal().array().sqrt().matrix();
+			Eigen::VectorXd ci2 = ssu_out.scanWithUncert.rangesMean - 3*ssu_out.scanWithUncert.rangesCovar.diagonal().array().sqrt().matrix();
+			win.plot(ci1, "k-", "CI+");
+			win.plot(ci2, "k-", "CI-");
+
+			const double LIK = ssu_out.scanWithUncert.evaluateScanLikelihood(the_scan);
+			win.setWindowTitle( mrpt::format("LIK: %.05f",LIK) );
+
+			win.axis_fit();
+#endif
+		}
+#endif
 
 		// Save rawlog?
 		// ----------------------------
@@ -722,8 +766,7 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 				const bool  is_sf_format = cbRawlogSFformat->GetValue();
 
 				const TTimeStamp	tim_now = mrpt::system::now();
-				CPose2D  odo_now;
-				the_robot.getOdometry(odo_now);
+				CPose2D  odo_now = the_robot.getCurrentOdometricPose();
 
 				if(is_sf_format)
 				{
@@ -760,8 +803,7 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 					odo_obs.odometry = odo_now;
 
 					odo_obs.hasVelocities = true;
-					odo_obs.velocityLin = the_robot.getV();
-					odo_obs.velocityAng = the_robot.getW();
+					odo_obs.velocityLocal = the_robot.getCurrentGTVelLocal();
 
 					outs << odo_obs << the_scan;
 				}
@@ -841,8 +883,8 @@ void gridmapSimulFrame::OnbtnStartClick(wxCommandEvent& event)
 	gl_path_GT->clear();
 	gl_path_ODO->clear();
 
-	the_robot.getRealPose( pose_start );
-	the_robot.resetOdometry( CPose2D(0,0,0) );
+	pose_start = the_robot.getCurrentGTPose( );
+	the_robot.setCurrentOdometricPose( TPose2D(0,0,0) );
 	lastOdo = CPose2D(0,0,0);
 
 
@@ -869,7 +911,6 @@ void gridmapSimulFrame::OnbtnStartClick(wxCommandEvent& event)
 		Ax_err_bias, Ax_err_std,
 		Ay_err_bias, Ay_err_std,
 		Aphi_err_bias, Aphi_err_std );
-
 
 	// Get decimation:
 	decimation = edDecimate->GetValue();

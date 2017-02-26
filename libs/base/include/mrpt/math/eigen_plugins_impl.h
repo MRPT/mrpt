@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -58,26 +58,30 @@ namespace internal_mrpt
 	};
 }
 
-/** Compute the eigenvectors and eigenvalues, both returned as matrices: eigenvectors are the columns, and eigenvalues
+/** Compute the eigenvectors and eigenvalues, both returned as matrices: eigenvectors are the columns, and eigenvalues. \return false on error.
   */
 template <class Derived>
 template <class MATRIX1,class MATRIX2>
-EIGEN_STRONG_INLINE void Eigen::MatrixBase<Derived>::eigenVectors( MATRIX1 & eVecs, MATRIX2 & eVals ) const
+EIGEN_STRONG_INLINE bool Eigen::MatrixBase<Derived>::eigenVectors( MATRIX1 & eVecs, MATRIX2 & eVals ) const
 {
 	Matrix<Scalar,Dynamic,1> evals;
-	eigenVectorsVec(eVecs,evals);
+	if (!eigenVectorsVec(eVecs,evals))
+		return false;
 	eVals.resize(evals.size(),evals.size());
 	eVals.setZero();
 	eVals.diagonal()=evals;
+	return true;
 }
 
 /** Compute the eigenvectors and eigenvalues, both returned as matrices: eigenvectors are the columns, and eigenvalues
   */
 template <class Derived>
 template <class MATRIX1,class VECTOR1>
-EIGEN_STRONG_INLINE void Eigen::MatrixBase<Derived>::eigenVectorsVec( MATRIX1 & eVecs, VECTOR1 & eVals ) const
+EIGEN_STRONG_INLINE bool Eigen::MatrixBase<Derived>::eigenVectorsVec( MATRIX1 & eVecs, VECTOR1 & eVals ) const
 {
 	Eigen::EigenSolver< Derived > es(*this, true);
+	if (es.info()!=Eigen::Success)
+		return false;
 	eVecs = es.eigenvectors().real(); // Keep only the real part of complex matrix
 	eVals = es.eigenvalues().real(); // Keep only the real part of complex matrix
 
@@ -95,6 +99,7 @@ EIGEN_STRONG_INLINE void Eigen::MatrixBase<Derived>::eigenVectorsVec( MATRIX1 & 
 		sortedEigs.col(i)=eVecs.col(D[i].second);
 	}
 	eVecs = sortedEigs;
+	return true;
 }
 
 /** Compute the eigenvectors and eigenvalues, both returned as matrices: eigenvectors are the columns, and eigenvalues
@@ -274,7 +279,7 @@ void Eigen::MatrixBase<Derived>::saveToTextFile(
 #else
 		char *strTime = asctime(timeinfo);
 #endif
-		fprintf(f,"%% File generated with MRPT %s at %s\n%%-----------------------------------------------------------------\n",
+		fprintf(f,"%% File generated with %s at %s\n%%-----------------------------------------------------------------\n",
 			mrpt::system::MRPT_getVersion().c_str(),
 			strTime);
 	}
@@ -328,7 +333,7 @@ void Eigen::MatrixBase<Derived>::loadFromTextFile(std::istream &f)
 			while ( ptr[0] && ptr!=ptrEnd )
 			{
 				// Find next number: (non white-space character):
-				while (ptr[0] && (ptr[0]==' ' || ptr[0]=='\t' || ptr[0]=='\r' || ptr[0]=='\n'))
+				while (ptr[0] && (ptr[0]==' ' || ptr[0]==',' || ptr[0]=='\t' || ptr[0]=='\r' || ptr[0]=='\n'))
 					ptr++;
 				if (fil.size()<=i)	fil.resize(fil.size()+ (fil.size()>>1));
 				// Convert to "double":

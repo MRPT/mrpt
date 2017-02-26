@@ -67,7 +67,7 @@ IF(WIN32)
 			INSTALL(FILES "${F}" DESTINATION bin)
 		ENDFOREACH(F)
 	ENDIF (EXISTS "${FFMPEG_WIN32_ROOT_DIR}/bin")
-
+	
 	# Extra optional DLLs to be installed in the "bin" folder:
 	file(TO_CMAKE_PATH "$ENV{MRPT_EXTRA_DLLS_TO_INSTALL}" MRPT_EXTRA_DLLS_TO_INSTALL)
 	IF (NOT "${MRPT_EXTRA_DLLS_TO_INSTALL}" STREQUAL "")
@@ -94,7 +94,6 @@ ELSE(WIN32)
 	IF (NOT IS_DEBIAN_DBG_PKG)
 		INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/doc/html" DESTINATION ${mrpt_doc_INSTALL_PREFIX}share/doc/mrpt-doc/  )
 		INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/samples" DESTINATION ${mrpt_doc_INSTALL_PREFIX}share/doc/mrpt-doc/  )
-		INSTALL(FILES "${MRPT_SOURCE_DIR}/doc/mrpt_example1.tar.gz" DESTINATION ${mrpt_doc_INSTALL_PREFIX}share/doc/mrpt-doc/ )
 		IF(EXISTS "${MRPT_SOURCE_DIR}/doc/mrpt-book.ps.gz")
 			INSTALL(FILES "${MRPT_SOURCE_DIR}/doc/mrpt-book.ps.gz" DESTINATION ${mrpt_doc_INSTALL_PREFIX}share/doc/mrpt-doc/ )
 		ENDIF(EXISTS "${MRPT_SOURCE_DIR}/doc/mrpt-book.ps.gz")

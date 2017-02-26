@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -13,9 +13,6 @@
 #include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/utils/safe_pointers.h>
 
-/*---------------------------------------------------------------
-	Class
-  ---------------------------------------------------------------*/
 namespace mrpt
 {
 namespace utils
@@ -58,6 +55,8 @@ namespace utils
 
 		/** Dumps the changes to the physical configuration file now, not waiting until destruction. */
 		void writeNow();
+
+		void discardSavingChanges(); //!< Discard saving (current) changes to physical file upon destruction
 
 		/** Returns the file currently open by this object. */
 		std::string getAssociatedFile() const { return m_file; }

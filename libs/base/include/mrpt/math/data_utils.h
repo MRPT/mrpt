@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -45,7 +45,8 @@ namespace mrpt
 			const size_t N = X.size();
 			Eigen::Matrix<typename MAT::Scalar,Eigen::Dynamic,1> X_MU(N);
 			for (size_t i=0;i<N;i++) X_MU[i]=X[i]-MU[i];
-			return multiply_HCHt_scalar(X_MU, COV.inv() );
+			const Eigen::Matrix<typename MAT::Scalar,Eigen::Dynamic,1>  z = COV.llt().solve(X_MU);
+			return z.dot(z);
 			MRPT_END
 		}
 
@@ -112,7 +113,7 @@ namespace mrpt
 		mahalanobisDistance2(const VECTORLIKE &delta_mu,const MATRIXLIKE &cov)
 		{
 			ASSERTDEB_(cov.isSquare())
-			ASSERTDEB_(cov.getColCount()==delta_mu.size())
+			ASSERTDEB_(size_t(cov.getColCount())==size_t(delta_mu.size()))
 			return multiply_HCHt_scalar(delta_mu,cov.inverse());
 		}
 

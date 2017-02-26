@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -12,18 +12,12 @@
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/obs/CAction.h>
 #include <mrpt/obs/CObservation.h>
-#include <mrpt/utils/CStartUpClassesRegister.h>
 
 using namespace mrpt::utils;
 using namespace mrpt::obs;
 using namespace mrpt::system;
 using namespace mrpt::hwdrivers;
 using namespace std;
-
-map< std::string , const TSensorClassId *>	CGenericSensor::m_knownClasses;
-
-extern CStartUpClassesRegister  mrpt_hwdrivers_class_reg;
-const int dumm = mrpt_hwdrivers_class_reg.do_nothing(); // Avoid compiler removing this class in static linking
 
 /*-------------------------------------------------------------
 						Constructor
@@ -37,7 +31,7 @@ CGenericSensor::CGenericSensor() :
 	m_state( ssInitializing ),
 	m_verbose(false),
 	m_path_for_external_images	(),
-	m_external_images_format	("jpg"),
+	m_external_images_format	("png"),
 	m_external_images_jpeg_quality (95)
 {
 	const char * sVerbose = getenv("MRPT_HWDRIVERS_VERBOSE");
@@ -101,8 +95,6 @@ void CGenericSensor::getObservations( TListObservations	&lstObjects )
 }
 
 
-extern void registerAllClasses_mrpt_hwdrivers();
-
 /*-------------------------------------------------------------
 
 						createSensor
@@ -110,19 +102,25 @@ extern void registerAllClasses_mrpt_hwdrivers();
 -------------------------------------------------------------*/
 CGenericSensor* CGenericSensor::createSensor(const std::string &className)
 {
-	registerAllClasses_mrpt_hwdrivers();	// make sure all sensors are registered.
-
-	std::map< std::string , const TSensorClassId *>::iterator it=m_knownClasses.find(className);
-	return it==m_knownClasses.end() ? NULL : it->second->ptrCreateObject();
+	registered_sensor_classes_t & regs = get_registered_sensor_classes();
+	const registered_sensor_classes_t::iterator it=regs.find(className);
+	return it==regs.end() ? NULL : it->second->ptrCreateObject();
 }
 
+// Singleton
+CGenericSensor::registered_sensor_classes_t & CGenericSensor::get_registered_sensor_classes()
+{
+	static registered_sensor_classes_t reg;
+	return reg;
+}
 
 /*-------------------------------------------------------------
 						registerClass
 -------------------------------------------------------------*/
 void CGenericSensor::registerClass(const TSensorClassId* pNewClass)
 {
-	m_knownClasses[ pNewClass->className ] = pNewClass;
+	registered_sensor_classes_t & regs = get_registered_sensor_classes();
+	regs[ pNewClass->className ] = pNewClass;
 }
 
 
@@ -148,5 +146,3 @@ void  CGenericSensor::loadConfig(
 
 	MRPT_END
 }
-
-

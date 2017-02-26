@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -42,14 +42,16 @@ void TestLM()
 	initial_x[0] = 1.4;	// x
 	initial_x[1] = 2.5;	// y
 
-	increments_x.resize(2, 0.0001 );
+	increments_x.resize(2);
+	increments_x.setConstant(0.0001);
 
 	double T;
 	size_t  N = 1;
 
+	CLevenbergMarquardt lm;
 	tictac.Tic();
 	for (size_t k=0;k<N;k++)
-		CLevenbergMarquardt::execute(optimal_x, initial_x, myFunction, increments_x, y, info  );
+		lm.execute(optimal_x, initial_x, myFunction, increments_x, y, info  );
 
 	T = tictac.Tac() / N;
 

@@ -2,34 +2,28 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
 #include "base-precomp.h"  // Precompiled headers
 
+#define MRPT_DISABLE_WARN_DEPRECATED_DEBUG_OUTPUT_CAPABLE
 #include <mrpt/utils/CDebugOutputCapable.h>
 #include <mrpt/system/memory.h>
 #include <mrpt/system/os.h>
 
-#ifdef MRPT_OS_WINDOWS
-	#define WIN32_LEAN_AND_MEAN
-	#include <windows.h>
-#endif
-
 #include <vector>
 #include <cstdarg>
-#include <iostream>
 
 using namespace mrpt::utils;
 using namespace mrpt::system;
 
-
 /*---------------------------------------------------------------
 					printf_debug
  ---------------------------------------------------------------*/
-void CDebugOutputCapable::printf_debug( const char *fmt, ... )
+void CDebugOutputCapable::printf_debug( const char *fmt, ... ) const
 {
 	if (!fmt) return;
 
@@ -50,9 +44,6 @@ void CDebugOutputCapable::printf_debug( const char *fmt, ... )
 	}
 
 	// Output:
-	std::cout << &buffer[0];
-
-#ifdef _MSC_VER
-	OutputDebugStringA(&buffer[0]);
-#endif
+	std::string s(&buffer[0]);
+	COutputLogger::logStr(LVL_INFO, s);
 }

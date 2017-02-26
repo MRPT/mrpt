@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -36,16 +36,8 @@ namespace maps
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CWirelessPowerGridMap2D )
 	public:
-		/** Constructor
-		  */
-		CWirelessPowerGridMap2D(
-			TMapRepresentation	mapType = mrKernelDM,
-            float				x_min = -2,
-			float				x_max = 2,
-			float				y_min = -2,
-			float				y_max = 2,
-			float				resolution = 0.1
-			);
+		/** Constructor */
+		CWirelessPowerGridMap2D(TMapRepresentation mapType = mrKernelDM, double x_min = -2, double x_max = 2, double y_min = -2, double y_max = 2, double resolution = 0.1);
 
 		/** Destructor */
 		virtual ~CWirelessPowerGridMap2D();
@@ -63,20 +55,7 @@ namespace maps
 
 		} insertionOptions;
 
-
-		/** Returns an image just as described in \a saveAsBitmapFile */
-		virtual void  getAsBitmapFile(mrpt::utils::CImage &out_img) const MRPT_OVERRIDE;
-
-		/** The implementation in this class just calls all the corresponding method of the contained metric maps */
-		void  saveMetricMapRepresentationToFile(const std::string &filNamePrefix) const MRPT_OVERRIDE;
-
-		/** Save a matlab ".m" file which represents as 3D surfaces the mean and a given confidence level for the concentration of each cell.
-		  *  This method can only be called in a KF map model  */
-		void  saveAsMatlab3DGraph(const std::string  &filName) const MRPT_OVERRIDE;
-
-		/** Returns a 3D object representing the map.
-		  */
-		void getAs3DObject(mrpt::opengl::CSetOfObjectsPtr &outObj) const MRPT_OVERRIDE;
+		void getAs3DObject(mrpt::opengl::CSetOfObjectsPtr &outObj) const MRPT_OVERRIDE; //!< Returns a 3D object representing the map 
 
 	protected:
 		/** Get the part of the options common to all CRandomFieldGridMap2D classes */
@@ -90,7 +69,7 @@ namespace maps
 		double internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom ) MRPT_OVERRIDE;
 
 		MAP_DEFINITION_START(CWirelessPowerGridMap2D,MAPS_IMPEXP)
-			float	min_x,max_x,min_y,max_y,resolution;	//!< See CWirelessPowerGridMap2D::CWirelessPowerGridMap2D
+			double min_x,max_x,min_y,max_y,resolution;	//!< See CWirelessPowerGridMap2D::CWirelessPowerGridMap2D
 			mrpt::maps::CWirelessPowerGridMap2D::TMapRepresentation	mapType;	//!< The kind of map representation (see CWirelessPowerGridMap2D::CWirelessPowerGridMap2D)
 			mrpt::maps::CWirelessPowerGridMap2D::TInsertionOptions	insertionOpts;
 		MAP_DEFINITION_END(CWirelessPowerGridMap2D,MAPS_IMPEXP)

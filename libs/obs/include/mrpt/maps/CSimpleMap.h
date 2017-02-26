@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -35,40 +35,27 @@ namespace maps
 	{
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CSimpleMap )
-
 	public:
-		/** Constructor
-		  */
-		CSimpleMap();
+		CSimpleMap(); //!< Default constructor (empty map)
+		CSimpleMap( const CSimpleMap &o ); //!< Copy constructor
+		virtual ~CSimpleMap(); //!< Destructor:
+		CSimpleMap & operator = ( const CSimpleMap& o); //!< Copy
 
-		/** Copy constructor
-		  */
-		CSimpleMap( const CSimpleMap &o );
-
-		/** Copy constructor
-		  */
-		CSimpleMap & operator = ( const CSimpleMap& o);
-
-		/**  Destructor:
-		  */
-		virtual ~CSimpleMap();
+		/** \name Map access and modification
+		  * @{ */
 
 		/** Save this object to a .simplemap binary file (compressed with gzip)
 		  * \sa loadFromFile
-		  * \return false on any error.
-		  */
+		  * \return false on any error. */
 		bool saveToFile(const std::string &filName) const;
 
 		/** Load the contents of this object from a .simplemap binary file (possibly compressed with gzip)
 		  * \sa saveToFile
-		  * \return false on any error.
-		  */
+		  * \return false on any error. */
 		bool loadFromFile(const std::string &filName);
 
-
-		/** Returns the pairs count.
-		  */
-		size_t size() const;
+		size_t size() const; //!< Returns the count of pairs (pose,sensory data)
+		bool empty() const;  //!< Returns size()!=0
 
 		/** Access to the i'th pair, first one is index '0'. NOTE: This method
 		  *  returns pointers to the objects inside the list, nor a copy of them,
@@ -128,15 +115,15 @@ namespace maps
 		  */
 		void  insert( const mrpt::poses::CPosePDF *in_posePDF, const mrpt::obs::CSensoryFramePtr &in_SF );
 
-		/** Remove all stored pairs.
-		  * \sa remove
-		  */
-		void  clear();
+		void  clear(); //!< Remove all stored pairs.  \sa remove
 
 		/** Change the coordinate origin of all stored poses, for consistency with future new poses to enter in the system. */
 		void changeCoordinatesOrigin( const mrpt::poses::CPose3D  &newOrigin );
 
+		/** @} */
 
+		/** \name Iterators API
+		  * @{ */
 		typedef std::pair<mrpt::poses::CPose3DPDFPtr,mrpt::obs::CSensoryFramePtr> TPosePDFSensFramePair;
 		typedef std::deque<TPosePDFSensFramePair> TPosePDFSensFramePairList;
 
@@ -144,7 +131,6 @@ namespace maps
 		typedef TPosePDFSensFramePairList::iterator 		iterator;
 		typedef TPosePDFSensFramePairList::reverse_iterator reverse_iterator;
 		typedef TPosePDFSensFramePairList::const_reverse_iterator const_reverse_iterator;
-
 
 		inline const_iterator begin() const 	{ return m_posesObsPairs.begin(); }
 		inline const_iterator end() const 		{ return m_posesObsPairs.end(); }
@@ -155,6 +141,7 @@ namespace maps
 		inline const_reverse_iterator rend() const 		{ return m_posesObsPairs.rend(); }
 		inline reverse_iterator rbegin() 				{ return m_posesObsPairs.rbegin(); }
 		inline reverse_iterator rend() 					{ return m_posesObsPairs.rend(); }
+		/** @} */
 
 	private:
 		/** The stored data */
@@ -165,5 +152,4 @@ namespace maps
 
 	} // End of namespace
 } // End of namespace
-
 #endif

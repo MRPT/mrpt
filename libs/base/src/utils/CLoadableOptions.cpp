@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -19,8 +19,6 @@ using namespace mrpt::utils;
 
 CStdOutStream	loadable_opts_my_cout;
 const int LOADABLEOPTS_COLUMN_WIDTH   = 41;  // Until the "=" in each row.
-
-//MRPT_TODO("Reimplement with an internal registry of variables, etc..")
 
 void  CLoadableOptions::loadFromConfigFileName(
 	const std::string		&config_file,

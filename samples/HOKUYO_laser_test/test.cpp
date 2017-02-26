@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -82,6 +82,10 @@ void Test_HOKUYO()
 		laser.setIPandPort( ip, port );
 
 	}
+	string intensity;
+	cout << endl << endl << "Enable intensity [y/n]:";
+	getline(cin,intensity);
+	laser.setIntensityMode(mrpt::system::lowerCase(intensity) == "y");
 
 	// Config: Use defaults + selected port ( serial or ethernet )
 
@@ -123,6 +127,18 @@ void Test_HOKUYO()
 				RAD2DEG(obs.aperture),
 				FPS,
 				obs.scan[obs.scan.size()/2]);
+
+			if(obs.hasIntensity())
+			{
+				size_t i;
+				std::cout << "[ ";
+				for(i = 0; i < obs.intensity.size()-1; i++)
+				{
+					std::cout << obs.intensity[i] << ",\t";
+					if(i%10==9) std::cout << std::endl;
+				}
+				std::cout << obs.intensity[i] << " ]" << std::endl;
+			}
 
 			obs.sensorPose = CPose3D(0,0,0);
 

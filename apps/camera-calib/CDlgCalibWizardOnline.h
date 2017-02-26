@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -22,11 +22,13 @@
 #include <wx/textctrl.h>
 #include <wx/radiobox.h>
 #include <wx/timer.h>
+
+#include <wx/choice.h>
 //*)
 
 #include <mrpt/vision/chessboard_camera_calib.h>
 #include <mrpt/hwdrivers/CCameraSensor.h>
-#include "../wx-common/CMyRedirector.h"
+#include <mrpt/gui/CMyRedirector.h>
 
 
 class CDlgCalibWizardOnline: public wxDialog
@@ -61,6 +63,7 @@ class CDlgCalibWizardOnline: public wxDialog
 		wxStaticText* StaticText6;
 		wxTextCtrl* edLengthX;
 		wxButton* btnStart;
+    		wxChoice* pnpSelect;
 		//*)
 
 	protected:
@@ -87,6 +90,7 @@ class CDlgCalibWizardOnline: public wxDialog
 		static const long ID_BUTTON3;
 		static const long ID_CUSTOM1;
 		static const long ID_TIMER1;
+		static const long ID_CHOICE1;
 		//*)
 
 	private:

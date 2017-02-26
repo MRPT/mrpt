@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -16,7 +16,7 @@
 #include <mrpt/opengl/CAxis.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
 
-#include "../wx-common/CMyRedirector.h"
+#include <mrpt/gui/CMyRedirector.h>
 
 #define MRPT_NO_WARN_BIG_HDR // It's ok to include ALL hdrs here.
 #include <mrpt/obs.h>
@@ -72,6 +72,25 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 			CObservationPtr obs( sel_obj );
 			obs->load();
 			obs->getDescriptionAsText(cout);
+
+			// Special cases:
+			if ( IS_CLASS(sel_obj, CObservation2DRangeScan) )
+			{
+				CObservation2DRangeScanPtr obs_scan2d = CObservation2DRangeScanPtr(sel_obj);
+
+				mrpt::maps::CSimplePointsMap pts;
+				pts.insertionOptions.minDistBetweenLaserPoints = .0;
+
+				pts.loadFromRangeScan(*obs_scan2d);
+
+				cout << "2D coordinates of valid points (wrt to robot/vehicle frame, " << pts.size() << " points)\n";
+				cout << "pts=[";
+				const std::vector<float> & xs = pts.getPointsBufferRef_x();
+				const std::vector<float> & ys = pts.getPointsBufferRef_y();
+				for (size_t i=0;i<xs.size();i++) cout << format("%7.04f %7.04f;", xs[i],ys[i] );
+				cout << "]\n\n";
+			}
+
 			curSelectedObservation = CObservationPtr( sel_obj );
 		}
 		if ( classID->derivedFrom( CLASS_ID( CAction ) ) )
@@ -175,7 +194,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 
 			if (act->poseChange->GetRuntimeClass()==CLASS_ID(CPosePDFParticles))
 			{
-				CPosePDFParticlesPtr aux = CPosePDFParticlesPtr( act->poseChange );
+				CPosePDFParticlesPtr aux = CPosePDFParticlesPtr( act->poseChange.get_ptr() );
 				cout << format (" (Particle count = %u)\n", (unsigned)aux->m_particles.size() );
 			}
 			cout << endl;
@@ -203,7 +222,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 
 			if (act->hasVelocities)
 			{
-				cout << format(" Velocity info: v=%.03f m/s  w=%.03f deg/s\n", act->velocityLin, RAD2DEG(act->velocityAng) );
+				cout << format(" Velocity info: v=%s\n", act->velocityLocal.asString().c_str());
 			}
 			else    cout << "Velocity info: Not available!\n";
 
@@ -284,15 +303,16 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 			obs->load(); // Make sure the 3D point cloud, etc... are all loaded in memory.
 
 			const bool generate3Donthefly = !obs->hasPoints3D && mnuItemEnable3DCamAutoGenPoints->IsChecked();
-			if (generate3Donthefly)
-			{
-				obs->project3DPointsFromDepthImage();
+			if (generate3Donthefly) {
+				mrpt::obs::T3DPointsProjectionParams pp;
+				pp.takeIntoAccountSensorPoseOnRobot = false;
+				obs->project3DPointsFromDepthImageInto(*obs, pp );
 			}
 
 			if (generate3Donthefly)
 				cout << "NOTICE: The stored observation didn't contain 3D points, but these have been generated on-the-fly just for visualization purposes.\n"
 				"(You can disable this behavior from the menu Sensors->3D depth cameras\n\n";
-														
+
 			// Update 3D view ==========
 #if RAWLOGVIEWER_HAS_3D
 			this->m_gl3DRangeScan->m_openGLScene->clear();
@@ -311,8 +331,10 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 				if (confThreshold==0) // This includes when there is no confidence image.
 				{
 					pointMap.insertionOptions.minDistBetweenLaserPoints = 0; // don't drop any point
-					pointMap.insertObservation(obs.pointer());
+					pointMap.insertObservation(obs.pointer());  // This transform points into vehicle-frame
 					pnts->loadFromPointsMap(&pointMap);
+
+					pnts->setPose( mrpt::poses::CPose3D() ); // No need to further transform 3D points
 				}
 				else
 				{
@@ -340,12 +362,12 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 								pnts->push_back(obs_xs[i],obs_ys[i],obs_zs[i],1,1,1);
 						}
 					}
+					// Translate the 3D cloud since sensed points are relative to the camera, but the camera may be translated wrt the robot (our 0,0,0 here):
+					pnts->setPose( obs->sensorPose );
 				}
 
 				pnts->setPointSize(4.0);
 
-				// Translate the 3D cloud since sensed points are relative to the camera, but the camera may be translated wrt the robot (our 0,0,0 here):
-				pnts->setPose( obs->sensorPose );
 			}
 			this->m_gl3DRangeScan->m_openGLScene->insert(pnts);
 			this->m_gl3DRangeScan->Refresh();

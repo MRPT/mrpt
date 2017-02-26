@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -15,6 +15,7 @@
 
 #include "camera_calib_guiMain.h"
 #include "CDlgCalibWizardOnline.h"
+#include "CDlgPoseEst.h"
 
 //(*InternalHeaders(camera_calib_guiDialog)
 #include <wx/settings.h>
@@ -33,6 +34,12 @@
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/stock_objects.h>
 
+#include <fstream>
+#include <iostream>
+
+#include <Eigen/Dense>
+#include <mrpt/vision/pnp_algos.h>
+
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::math;
@@ -40,7 +47,7 @@ using namespace mrpt::vision;
 using namespace mrpt::gui;
 using namespace std;
 
-#include "../wx-common/CMyRedirector.h"
+#include <mrpt/gui/CMyRedirector.h>
 
 #include "CAboutBox.h"
 
@@ -116,6 +123,7 @@ const long camera_calib_guiDialog::ID_PANEL3 = wxNewId();
 const long camera_calib_guiDialog::ID_XY_GLCANVAS = wxNewId();
 const long camera_calib_guiDialog::ID_PANEL1 = wxNewId();
 const long camera_calib_guiDialog::ID_NOTEBOOK1 = wxNewId();
+const long camera_calib_guiDialog::ID_BUTTON10 = wxNewId();
 //*)
 
 BEGIN_EVENT_TABLE(camera_calib_guiDialog,wxDialog)
@@ -172,20 +180,24 @@ camera_calib_guiDialog::camera_calib_guiDialog(wxWindow* parent,wxWindowID id)
 	btnCaptureNow = new wxButton(this, ID_BUTTON8, _("Grab now..."), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON8"));
 	wxFont btnCaptureNowFont(wxDEFAULT,wxDEFAULT,wxFONTSTYLE_NORMAL,wxBOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
 	btnCaptureNow->SetFont(btnCaptureNowFont);
-	FlexGridSizer5->Add(btnCaptureNow, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+  	FlexGridSizer5->Add(btnCaptureNow, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
+	btnPoseEstimateNow = new wxButton(this, ID_BUTTON10, _("Pose Est. now..."), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON10"));
+	wxFont btnPoseEstimateNowFont(wxDEFAULT,wxDEFAULT,wxFONTSTYLE_NORMAL,wxFONTWEIGHT_BOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+	btnPoseEstimateNow->SetFont(btnPoseEstimateNowFont);
+	FlexGridSizer5->Add(btnPoseEstimateNow, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
 	Button11 = new wxButton(this, ID_BUTTON1, _("Add image(s)..."), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON1"));
-	FlexGridSizer5->Add(Button11, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	FlexGridSizer5->Add(Button11, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
 	Button22 = new wxButton(this, ID_BUTTON2, _("Clear all"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON2"));
-	FlexGridSizer5->Add(Button22, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	FlexGridSizer5->Add(Button22, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
 	btnSaveImages = new wxButton(this, ID_BUTTON9, _("Save all..."), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON9"));
 	btnSaveImages->Disable();
-	FlexGridSizer5->Add(btnSaveImages, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	FlexGridSizer5->Add(btnSaveImages, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
 	FlexGridSizer4->Add(FlexGridSizer5, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
 	FlexGridSizer15 = new wxFlexGridSizer(1, 2, 0, 0);
 	FlexGridSizer15->AddGrowableCol(0);
 	FlexGridSizer15->AddGrowableRow(0);
 	lbFiles = new wxListBox(this, ID_LISTBOX1, wxDefaultPosition, wxSize(294,84), 0, 0, wxLB_ALWAYS_SB|wxVSCROLL|wxHSCROLL|wxALWAYS_SHOW_SB, wxDefaultValidator, _T("ID_LISTBOX1"));
-	FlexGridSizer15->Add(lbFiles, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	FlexGridSizer15->Add(lbFiles, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
 	FlexGridSizer16 = new wxFlexGridSizer(0, 1, 0, 0);
 	StaticText5 = new wxStaticText(this, ID_STATICTEXT5, _("Zoom:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT5"));
 	FlexGridSizer16->Add(StaticText5, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
@@ -200,10 +212,10 @@ camera_calib_guiDialog::camera_calib_guiDialog(wxWindow* parent,wxWindowID id)
 	cbZoom->Append(_("400%"));
 	cbZoom->Append(_("500%"));
 	FlexGridSizer16->Add(cbZoom, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer15->Add(FlexGridSizer16, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
-	FlexGridSizer4->Add(FlexGridSizer15, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
-	StaticBoxSizer1->Add(FlexGridSizer4, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
-	FlexGridSizer2->Add(StaticBoxSizer1, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
+	FlexGridSizer15->Add(FlexGridSizer16, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
+	FlexGridSizer4->Add(FlexGridSizer15, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
+	StaticBoxSizer1->Add(FlexGridSizer4, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
+	FlexGridSizer2->Add(StaticBoxSizer1, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 2);
 	StaticBoxSizer3 = new wxStaticBoxSizer(wxHORIZONTAL, this, _("Checkerboard detection parameters"));
 	FlexGridSizer6 = new wxFlexGridSizer(2, 2, 0, 0);
 	FlexGridSizer6->AddGrowableCol(0);
@@ -212,15 +224,15 @@ camera_calib_guiDialog::camera_calib_guiDialog(wxWindow* parent,wxWindowID id)
 	FlexGridSizer17 = new wxFlexGridSizer(1, 4, 0, 0);
 	StaticText1 = new wxStaticText(this, ID_STATICTEXT1, _("In X:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT1"));
 	FlexGridSizer17->Add(StaticText1, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	edSizeX = new wxSpinCtrl(this, ID_SPINCTRL1, _T("5"), wxDefaultPosition, wxSize(50,-1), 0, 1, 200, 5, _T("ID_SPINCTRL1"));
-	edSizeX->SetValue(_T("5"));
+	edSizeX = new wxSpinCtrl(this, ID_SPINCTRL1, _T("9"), wxDefaultPosition, wxSize(50,-1), 0, 1, 200, 5, _T("ID_SPINCTRL1"));
+	edSizeX->SetValue(_T("9"));
 	FlexGridSizer17->Add(edSizeX, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	StaticText2 = new wxStaticText(this, ID_STATICTEXT2, _("In Y:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT2"));
 	FlexGridSizer17->Add(StaticText2, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	edSizeY = new wxSpinCtrl(this, ID_SPINCTRL2, _T("8"), wxDefaultPosition, wxSize(50,-1), 0, 1, 200, 8, _T("ID_SPINCTRL2"));
-	edSizeY->SetValue(_T("8"));
+	edSizeY = new wxSpinCtrl(this, ID_SPINCTRL2, _T("6"), wxDefaultPosition, wxSize(50,-1), 0, 1, 200, 8, _T("ID_SPINCTRL2"));
+	edSizeY->SetValue(_T("6"));
 	FlexGridSizer17->Add(edSizeY, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	StaticBoxSizer4->Add(FlexGridSizer17, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+	StaticBoxSizer4->Add(FlexGridSizer17, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
 	FlexGridSizer6->Add(StaticBoxSizer4, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 2);
 	wxString __wxRadioBoxChoices_1[2] =
 	{
@@ -228,24 +240,24 @@ camera_calib_guiDialog::camera_calib_guiDialog(wxWindow* parent,wxWindowID id)
 		_("Scaramuzza et al.\'s")
 	};
 	rbMethod = new wxRadioBox(this, ID_RADIOBOX1, _(" Detector method: "), wxDefaultPosition, wxDefaultSize, 2, __wxRadioBoxChoices_1, 1, 0, wxDefaultValidator, _T("ID_RADIOBOX1"));
-	FlexGridSizer6->Add(rbMethod, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
+	FlexGridSizer6->Add(rbMethod, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 2);
 	StaticBoxSizer5 = new wxStaticBoxSizer(wxHORIZONTAL, this, _(" Size of quads (in mm): "));
 	FlexGridSizer18 = new wxFlexGridSizer(1, 4, 0, 0);
 	StaticText3 = new wxStaticText(this, ID_STATICTEXT3, _("In X:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT3"));
 	FlexGridSizer18->Add(StaticText3, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	edLengthX = new wxTextCtrl(this, ID_TEXTCTRL1, _("40.0"), wxDefaultPosition, wxSize(40,-1), 0, wxDefaultValidator, _T("ID_TEXTCTRL1"));
+	edLengthX = new wxTextCtrl(this, ID_TEXTCTRL1, _("25.0"), wxDefaultPosition, wxSize(40,-1), 0, wxDefaultValidator, _T("ID_TEXTCTRL1"));
 	FlexGridSizer18->Add(edLengthX, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	StaticText6 = new wxStaticText(this, ID_STATICTEXT6, _("In Y:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT6"));
 	FlexGridSizer18->Add(StaticText6, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	edLengthY = new wxTextCtrl(this, ID_TEXTCTRL3, _("40.0"), wxDefaultPosition, wxSize(40,-1), 0, wxDefaultValidator, _T("ID_TEXTCTRL3"));
+	edLengthY = new wxTextCtrl(this, ID_TEXTCTRL3, _("25.0"), wxDefaultPosition, wxSize(40,-1), 0, wxDefaultValidator, _T("ID_TEXTCTRL3"));
 	FlexGridSizer18->Add(edLengthY, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	StaticBoxSizer5->Add(FlexGridSizer18, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+	StaticBoxSizer5->Add(FlexGridSizer18, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
 	FlexGridSizer6->Add(StaticBoxSizer5, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 2);
 	cbNormalize = new wxCheckBox(this, ID_CHECKBOX1, _("Normalize image"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX1"));
 	cbNormalize->SetValue(true);
 	FlexGridSizer6->Add(cbNormalize, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	StaticBoxSizer3->Add(FlexGridSizer6, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
-	FlexGridSizer2->Add(StaticBoxSizer3, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
+	StaticBoxSizer3->Add(FlexGridSizer6, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
+	FlexGridSizer2->Add(StaticBoxSizer3, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 2);
 	StaticBoxSizer2 = new wxStaticBoxSizer(wxHORIZONTAL, this, _("Calibration"));
 	FlexGridSizer7 = new wxFlexGridSizer(2, 1, 0, 0);
 	FlexGridSizer7->AddGrowableCol(0);
@@ -258,8 +270,8 @@ camera_calib_guiDialog::camera_calib_guiDialog(wxWindow* parent,wxWindowID id)
 	if ( !txtLogFont.Ok() ) txtLogFont = wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
 	txtLogFont.SetPointSize(9);
 	txtLog->SetFont(txtLogFont);
-	FlexGridSizer9->Add(txtLog, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer7->Add(FlexGridSizer9, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+	FlexGridSizer9->Add(txtLog, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
+	FlexGridSizer7->Add(FlexGridSizer9, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
 	FlexGridSizer8 = new wxFlexGridSizer(2, 3, 0, 0);
 	FlexGridSizer8->AddGrowableCol(0);
 	FlexGridSizer8->AddGrowableCol(1);
@@ -267,20 +279,20 @@ camera_calib_guiDialog::camera_calib_guiDialog(wxWindow* parent,wxWindowID id)
 	btnRunCalib->SetDefault();
 	wxFont btnRunCalibFont(wxDEFAULT,wxDEFAULT,wxFONTSTYLE_NORMAL,wxBOLD,false,wxEmptyString,wxFONTENCODING_DEFAULT);
 	btnRunCalib->SetFont(btnRunCalibFont);
-	FlexGridSizer8->Add(btnRunCalib, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	FlexGridSizer8->Add(btnRunCalib, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
 	btnSave = new wxButton(this, ID_BUTTON6, _("Save matrices..."), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON6"));
-	FlexGridSizer8->Add(btnSave, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	FlexGridSizer8->Add(btnSave, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
 	FlexGridSizer8->Add(-1,-1,1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	btnManualRect = new wxButton(this, ID_BUTTON7, _("Manual params..."), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON7"));
-	FlexGridSizer8->Add(btnManualRect, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	FlexGridSizer8->Add(btnManualRect, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
 	btnAbout = new wxButton(this, ID_BUTTON5, _("About"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON5"));
-	FlexGridSizer8->Add(btnAbout, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	FlexGridSizer8->Add(btnAbout, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
 	btnClose = new wxButton(this, ID_BUTTON4, _("Quit"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON4"));
-	FlexGridSizer8->Add(btnClose, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer7->Add(FlexGridSizer8, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
-	StaticBoxSizer2->Add(FlexGridSizer7, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
-	FlexGridSizer2->Add(StaticBoxSizer2, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
-	FlexGridSizer1->Add(FlexGridSizer2, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+	FlexGridSizer8->Add(btnClose, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
+	FlexGridSizer7->Add(FlexGridSizer8, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
+	StaticBoxSizer2->Add(FlexGridSizer7, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
+	FlexGridSizer2->Add(StaticBoxSizer2, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 2);
+	FlexGridSizer1->Add(FlexGridSizer2, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
 	FlexGridSizer3 = new wxFlexGridSizer(1, 1, 0, 0);
 	FlexGridSizer3->AddGrowableCol(0);
 	FlexGridSizer3->AddGrowableRow(0);
@@ -298,7 +310,7 @@ camera_calib_guiDialog::camera_calib_guiDialog(wxWindow* parent,wxWindowID id)
 	ScrolledWindow2->SetSizer(FlexGridSizer11);
 	FlexGridSizer11->Fit(ScrolledWindow2);
 	FlexGridSizer11->SetSizeHints(ScrolledWindow2);
-	FlexGridSizer13->Add(ScrolledWindow2, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+	FlexGridSizer13->Add(ScrolledWindow2, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
 	Panel2->SetSizer(FlexGridSizer13);
 	FlexGridSizer13->Fit(Panel2);
 	FlexGridSizer13->SetSizeHints(Panel2);
@@ -315,7 +327,7 @@ camera_calib_guiDialog::camera_calib_guiDialog(wxWindow* parent,wxWindowID id)
 	ScrolledWindow3->SetSizer(FlexGridSizer14);
 	FlexGridSizer14->Fit(ScrolledWindow3);
 	FlexGridSizer14->SetSizeHints(ScrolledWindow3);
-	FlexGridSizer10->Add(ScrolledWindow3, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+	FlexGridSizer10->Add(ScrolledWindow3, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
 	Panel3->SetSizer(FlexGridSizer10);
 	FlexGridSizer10->Fit(Panel3);
 	FlexGridSizer10->SetSizeHints(Panel3);
@@ -324,15 +336,15 @@ camera_calib_guiDialog::camera_calib_guiDialog(wxWindow* parent,wxWindowID id)
 	FlexGridSizer12->AddGrowableCol(0);
 	FlexGridSizer12->AddGrowableRow(0);
 	m_3Dview = new CMyGLCanvas(Panel1,ID_XY_GLCANVAS,wxDefaultPosition,wxSize(-1,300),wxTAB_TRAVERSAL,_T("ID_XY_GLCANVAS"));
-	FlexGridSizer12->Add(m_3Dview, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+	FlexGridSizer12->Add(m_3Dview, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
 	Panel1->SetSizer(FlexGridSizer12);
 	FlexGridSizer12->Fit(Panel1);
 	FlexGridSizer12->SetSizeHints(Panel1);
 	Notebook1->AddPage(Panel2, _("Original Image"), false);
 	Notebook1->AddPage(Panel3, _("Rectified image and reprojected points"), true);
 	Notebook1->AddPage(Panel1, _("3D view"), false);
-	FlexGridSizer3->Add(Notebook1, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
-	FlexGridSizer1->Add(FlexGridSizer3, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+	FlexGridSizer3->Add(Notebook1, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 2);
+	FlexGridSizer1->Add(FlexGridSizer3, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
 	SetSizer(FlexGridSizer1);
 	FlexGridSizer1->Fit(this);
 	FlexGridSizer1->SetSizeHints(this);
@@ -348,6 +360,7 @@ camera_calib_guiDialog::camera_calib_guiDialog(wxWindow* parent,wxWindowID id)
 	Connect(ID_BUTTON7,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&camera_calib_guiDialog::OnbtnManualRectClick);
 	Connect(ID_BUTTON5,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&camera_calib_guiDialog::OnbtnAboutClick);
 	Connect(ID_BUTTON4,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&camera_calib_guiDialog::OnbtnCloseClick);
+	Connect(ID_BUTTON10,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&camera_calib_guiDialog::OnbtnPoseEstimateNowClick);
 	//*)
 
 
@@ -728,7 +741,7 @@ void camera_calib_guiDialog::show3Dview()
 			mrpt::opengl::CSetOfObjectsPtr	cor = mrpt::opengl::stock_objects::CornerXYZ();
 			cor->setName( mrpt::system::extractFileName(it->first) );
 			cor->enableShowName(true);
-			cor->setScale(0.1);
+			cor->setScale(0.1f);
 			cor->setPose( it->second.reconstructed_camera_pose );
 
 			scene->insert( cor );
@@ -796,7 +809,7 @@ void camera_calib_guiDialog::OnbtnManualRectClick(wxCommandEvent& event)
 
 void camera_calib_guiDialog::OnbtnCaptureNowClick(wxCommandEvent& event)
 {
-    CDlgCalibWizardOnline dlg(this);
+  	CDlgCalibWizardOnline dlg(this);
 
 	// Set pattern params:
 	dlg.edLengthX->SetValue( this->edLengthX->GetValue() );
@@ -821,6 +834,35 @@ void camera_calib_guiDialog::OnbtnCaptureNowClick(wxCommandEvent& event)
 	this->updateListOfImages();
 
 
+}
+
+void camera_calib_guiDialog::OnbtnPoseEstimateNowClick(wxCommandEvent& event)
+{
+	// Compute pose using PnP Algorithms toolkit
+
+  	CDlgPoseEst dlg(this);
+
+	// Set pattern params:
+	dlg.edLengthX->SetValue( this->edLengthX->GetValue() );
+	dlg.edLengthY->SetValue( this->edLengthY->GetValue() );
+	dlg.edSizeX->SetValue( this->edSizeX->GetValue() );
+	dlg.edSizeY->SetValue( this->edSizeY->GetValue() );
+	dlg.cbNormalize->SetValue( this->cbNormalize->GetValue() );
+
+
+	// Run:
+	dlg.ShowModal();
+
+	// Get params:
+	this->edLengthX->SetValue( dlg.edLengthX->GetValue() );
+	this->edLengthY->SetValue( dlg.edLengthY->GetValue() );
+	this->edSizeX->SetValue( dlg.edSizeX->GetValue() );
+	this->edSizeY->SetValue( dlg.edSizeY->GetValue() );
+	this->cbNormalize->SetValue( dlg.cbNormalize->GetValue() );
+
+	// Get images:
+	lst_images = dlg.m_calibFrames;
+	this->updateListOfImages();
 }
 
 void camera_calib_guiDialog::OnbtnSaveImagesClick(wxCommandEvent& event)

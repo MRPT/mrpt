@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -48,6 +48,16 @@ namespace mrpt
 			float sumSqrDist;           //!< The sum of all matched points squared distances.If undesired, set to NULL, as default.
 
 			TMatchingExtraResults() : correspondencesRatio(0),sumSqrDist(0)
+			{}
+		};
+
+		/** Parameters for CMetricMap::compute3DMatchingRatio() */
+		struct OBS_IMPEXP TMatchingRatioParams
+		{
+			float maxDistForCorr;     //!< (Default: 0.10f) The minimum distance between 2 non-probabilistic map elements for counting them as a correspondence.
+			float maxMahaDistForCorr; //!< (Default: 2.0f) The minimum Mahalanobis distance between 2 probabilistic map elements for counting them as a correspondence.
+
+			TMatchingRatioParams() : maxDistForCorr(0.10f), maxMahaDistForCorr(2.0f)
 			{}
 		};
 

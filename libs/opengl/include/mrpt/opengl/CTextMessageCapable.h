@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -57,7 +57,7 @@ namespace mrpt
 				const mrpt::opengl::TOpenGLFont font = mrpt::opengl::MRPT_GLUT_BITMAP_TIMES_ROMAN_24
 				);
 
-			/// \overload with more font parameters - refer to mrpt::opengl::gl_utils::glDrawText()
+			/// overload with more font parameters - refer to mrpt::opengl::gl_utils::glDrawText()
 			void addTextMessage(
 				const double x_frac,
 				const double y_frac,

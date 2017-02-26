@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -10,7 +10,7 @@
 #include "nav-precomp.h" // Precomp header
 
 #include <mrpt/nav/planners/PlannerRRT_SE2_TPS.h>
-#include <mrpt/nav/tpspace/motion_planning_utils.h>
+#include <mrpt/nav/tpspace/CPTG_DiffDrive_CollisionGridBased.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/random.h>
 #include <mrpt/system/filesystem.h>
@@ -29,6 +29,25 @@ using namespace mrpt::math;
 using namespace mrpt::poses;
 using namespace std;
 
+MRPT_TODO("Optimize getNearestNode() with KD-tree!")
+
+PlannerRRT_SE2_TPS::TAlgorithmParams::TAlgorithmParams() :
+	robot_shape_circular_radius(0.30),
+	ptg_cache_files_directory("."),
+	goalBias(0.05),
+	maxLength(1.0),
+	minDistanceBetweenNewNodes(0.10),
+	minAngBetweenNewNodes(mrpt::utils::DEG2RAD(15)),
+	ptg_verbose(true),
+	save_3d_log_freq(0)
+{
+	robot_shape.push_back(mrpt::math::TPoint2D(-0.5, -0.5));
+	robot_shape.push_back(mrpt::math::TPoint2D(0.8, -0.4));
+	robot_shape.push_back(mrpt::math::TPoint2D(0.8, 0.4));
+	robot_shape.push_back(mrpt::math::TPoint2D(-0.5, 0.5));
+}
+
+
 PlannerRRT_SE2_TPS::PlannerRRT_SE2_TPS() :
 	m_initialized(false)
 {
@@ -39,84 +58,48 @@ void PlannerRRT_SE2_TPS::loadConfig(const mrpt::utils::CConfigFileBase &ini, con
 {
 	// Robot shape:
 	// ==========================
+	// polygonal shape
 	{
 		// Robot shape is a bit special to load:
-		const std::string sShape = ini.read_string(sSect,"robot_shape","",true);
-		CMatrixDouble mShape;
-		if (!mShape.fromMatlabStringFormat(sShape))
-			THROW_EXCEPTION_CUSTOM_MSG1("Error parsing robot_shape matrix: '%s'",sShape.c_str());
-		ASSERT_(size(mShape,1)==2)
-		ASSERT_(size(mShape,2)>=3)
+		params.robot_shape.clear(); 
+		const std::string sShape = ini.read_string(sSect,"robot_shape","");
+		if (!sShape.empty())
+		{
+			CMatrixDouble mShape;
+			if (!mShape.fromMatlabStringFormat(sShape))
+				THROW_EXCEPTION_FMT("Error parsing robot_shape matrix: '%s'", sShape.c_str());
+			ASSERT_(size(mShape, 1) == 2);
+			ASSERT_(size(mShape, 2) >= 3);
 
-		params.robot_shape.clear();
-		for (size_t i=0;i<size(mShape,2);i++)
-			params.robot_shape.push_back(TPoint2D(mShape(0,i),mShape(1,i)));
+			for (size_t i = 0; i < size(mShape, 2); i++)
+				params.robot_shape.push_back(TPoint2D(mShape(0, i), mShape(1, i)));
+		}
 	}
+	// circular shape
+	params.robot_shape_circular_radius = ini.read_double(sSect, "robot_shape_circular_radius", 0.0);
 
 	// Load PTG tables:
 	// ==========================
 	m_PTGs.clear();
 
 	const size_t PTG_COUNT = ini.read_int(sSect,"PTG_COUNT",0, true );  //load the number of PTGs
-	const float refDistance = ini.read_float(sSect,"MAX_REFERENCE_DISTANCE",5 );  //attempt to read a parameter from the file, otherwise it return the default value
-	const float colGridRes = ini.read_float(sSect,"GRID_RESOLUTION",0.02f );
-
 	for ( unsigned int n=0;n<PTG_COUNT;n++ )
 	{
-		// load ptg_parameters of this PTG:
-
-		TParameters<double> ptg_parameters;
-		ptg_parameters["ref_distance"] = refDistance;
-		ptg_parameters["resolution"]   = colGridRes;
-		ptg_parameters["PTG_type"]	= ini.read_int(sSect,format("PTG%u_Type", n ),1, true );
-		ptg_parameters["v_max"]		= ini.read_float(sSect,format("PTG%u_v_max_mps", n ), 5, true);
-		ptg_parameters["w_max"]		= DEG2RAD(ini.read_float(sSect,format("PTG%u_w_max_gps", n ), 0, true));
-		ptg_parameters["K"]			= ini.read_int(sSect,format("PTG%u_K", n ), 1, false);
-		ptg_parameters["cte_a0v"]	= DEG2RAD( ini.read_float(sSect,format("PTG%u_cte_a0v_deg", n ), 0, false) );
-		ptg_parameters["cte_a0w"]	= DEG2RAD( ini.read_float(sSect,format("PTG%u_cte_a0w_deg", n ), 0, false) );
-		const int nAlfas = ini.read_int(sSect,format("PTG%u_nAlfas", n ),100, true );
-#if 0
-		cout << "PTRRT_Navigator::initializePTG - message: READ : ref_distance   " << ptg_parameters["ref_distance"] << " [m] " << endl;
-		cout << "PTRRT_Navigator::initializePTG - message: READ : resolution     " << ptg_parameters["resolution"] << " [m] " << endl;
-		cout << "PTRRT_Navigator::initializePTG - message: READ : PTG_type       " << ptg_parameters["PTG_type"] << endl;
-		cout << "PTRRT_Navigator::initializePTG - message: READ : v_max          " << ptg_parameters["v_max"] << " [m/s] " << endl;
-		cout << "PTRRT_Navigator::initializePTG - message: READ : w_max          " << ptg_parameters["w_max"] << " [rad/s] "  << endl;
-		cout << "PTRRT_Navigator::initializePTG - message: READ : K              " << ptg_parameters["K"] << endl;
-		cout << "PTRRT_Navigator::initializePTG - message: READ : cte_a0v        " << ptg_parameters["cte_a0v"] << endl;
-		cout << "PTRRT_Navigator::initializePTG - message: READ : cte_a0w        " << ptg_parameters["cte_a0w"] << endl;
-		cout << "PTRRT_Navigator::initializePTG - message: READ : nAlfas         " << nAlfas << "\n\n" << endl;
-#endif
-
 		// Generate it:
-		m_PTGs.push_back( CParameterizedTrajectoryGeneratorPtr( CParameterizedTrajectoryGenerator::CreatePTG(ptg_parameters) ) );
-
-		const float min_dist = 0.015f;
-		const float max_time = 75.0;
-
-		{
-			mrpt::utils::CTimeLoggerEntry tle(m_timelogger,"PTG.simulateTrajectories");
-
-			m_PTGs[n]->simulateTrajectories(
-				nAlfas,       // alphas,
-				max_time,     // max.tim,
-				refDistance,  // max.dist,
-				10*refDistance/min_dist, // max.n,
-				0.5e-3,       // diferencial_t
-				15e-3         // min_dist
-				);
-		}
+		const std::string sPTGName = ini.read_string(sSect,format("PTG%u_Type", n ),"", true );
+		m_PTGs.push_back( CParameterizedTrajectoryGeneratorPtr( CParameterizedTrajectoryGenerator::CreatePTG(sPTGName,ini,sSect,format("PTG%u_", n)) ) );
 	}
-
 }
 
 /** Must be called after setting all params (see `loadConfig()`) and before calling `solve()` */
 void PlannerRRT_SE2_TPS::initialize()
 {
-	ASSERT_ABOVEEQ_(params.robot_shape.size(),3);
 	ASSERTMSG_(!m_PTGs.empty(),"No PTG was defined! At least one must be especified.");
 
 	// Convert to CPolygon for API requisites:
 	mrpt::math::CPolygon poly_robot_shape;
+	poly_robot_shape.clear();
+	if (!params.robot_shape.empty())
 	{
 		vector<double> xm,ym;
 		params.robot_shape.getPlotData(xm,ym);
@@ -125,12 +108,27 @@ void PlannerRRT_SE2_TPS::initialize()
 
 	for (size_t i=0;i<m_PTGs.size();i++)
 	{
-		mrpt::utils::CTimeLoggerEntry tle(m_timelogger, "build_PTG_collision_grids");
+		mrpt::utils::CTimeLoggerEntry tle(m_timelogger, "PTG_initialization");
 
-		mrpt::nav::build_PTG_collision_grids(
-			m_PTGs[i].pointer(),
-			poly_robot_shape,
-			mrpt::format("TPRRT_PTG_%03u.dat.gz",static_cast<unsigned int>(i)),
+		// Polygonal robot shape?
+		{
+			mrpt::nav::CPTG_DiffDrive_CollisionGridBased * diff_ptg = dynamic_cast<mrpt::nav::CPTG_DiffDrive_CollisionGridBased *>(m_PTGs[i].pointer());
+			if (diff_ptg) {
+				ASSERTMSG_(!poly_robot_shape.empty(), "No polygonal robot shape specified, and PTG requires one!");
+				diff_ptg->setRobotShape(poly_robot_shape);
+			}
+		}
+		// Circular robot shape?
+		{
+			mrpt::nav::CPTG_RobotShape_Circular *ptg = dynamic_cast<mrpt::nav::CPTG_RobotShape_Circular *>(m_PTGs[i].pointer());
+			if (ptg) {
+				ASSERTMSG_(params.robot_shape_circular_radius>0, "No circular robot shape specified, and PTG requires one!");
+				ptg->setRobotShapeRadius(params.robot_shape_circular_radius);
+			}
+		}
+
+		m_PTGs[i]->initialize(
+			mrpt::format("%s/TPRRT_PTG_%03u.dat.gz", params.ptg_cache_files_directory.c_str(), static_cast<unsigned int>(i)),
 			params.ptg_verbose
 			);
 	}
@@ -150,9 +148,14 @@ void PlannerRRT_SE2_TPS::solve(
 
 	// Calc maximum vehicle shape radius:
 	double max_veh_radius=0.;
-	for (size_t i=0;i<params.robot_shape.size();i++)
-		mrpt::utils::keep_max(max_veh_radius, params.robot_shape[i].norm() );
-	ASSERT_ABOVE_(max_veh_radius,0.0);
+	if (!params.robot_shape.empty())
+	{
+		for (size_t i = 0; i < params.robot_shape.size(); i++)
+			mrpt::utils::keep_max(max_veh_radius, params.robot_shape[i].norm());
+		ASSERT_ABOVE_(max_veh_radius, 0.0);
+	}
+	if (params.robot_shape_circular_radius>0)
+		mrpt::utils::keep_max(max_veh_radius, params.robot_shape_circular_radius);
 
 	// [Algo `tp_space_rrt`: Line 1]: Init tree adding the initial pose
 	if (result.move_tree.getAllNodes().empty())
@@ -263,15 +266,15 @@ void PlannerRRT_SE2_TPS::solve(
 
 			// [Algo `tp_space_rrt`: Line 7]: Relative target in TP-Space
 			// ------------------------------------------------------------
-			const float D_max = std::min(static_cast<float>(params.maxLength), m_PTGs[idxPTG]->refDistance );
+			const double D_max = std::min(params.maxLength, m_PTGs[idxPTG]->getRefDistance() );
 
-			float d_rand; // Coordinates in TP-space
+			double d_rand; // Coordinates in TP-space
 			int   k_rand; // k_rand is the index of target_alpha in PTGs corresponding to a specific d_rand
 			//bool tp_point_is_exact =
 			m_PTGs[idxPTG]->inverseMap_WS2TP(
 				x_rand_rel.x(), x_rand_rel.y(),
 				k_rand, d_rand );
-			d_rand *= m_PTGs[idxPTG]->refDistance; // distance to target, in "real meters"
+			d_rand *= m_PTGs[idxPTG]->getRefDistance(); // distance to target, in "real meters"
 
 			float d_free;
 			//bool local_obs_ok = false; // Just for 3D log files: indicates whether obstacle points have been recomputed
@@ -279,10 +282,10 @@ void PlannerRRT_SE2_TPS::solve(
 			// [Algo `tp_space_rrt`: Line 8]: TP-Obstacles
 			// ------------------------------------------------------------
 			// Transform obstacles as seen from x_nearest_node -> TP_obstacles
-			vector<float> TP_Obstacles;
-			const double MAX_DIST_FOR_OBSTACLES = 1.5*m_PTGs[idxPTG]->refDistance; // Maximum Euclidean distance (radius) for considering obstacles around the current robot pose
+			double TP_Obstacles_k_rand = .0; //vector<double> TP_Obstacles;
+			const double MAX_DIST_FOR_OBSTACLES = 1.5*m_PTGs[idxPTG]->getRefDistance(); // Maximum Euclidean distance (radius) for considering obstacles around the current robot pose
 			
-			ASSERT_ABOVE_(m_PTGs[idxPTG]->refDistance,1.1*max_veh_radius); // Make sure the PTG covers at least a bit more than the vehicle shape!! (should be much, much higher)
+			ASSERT_ABOVE_(m_PTGs[idxPTG]->getRefDistance(),1.1*max_veh_radius); // Make sure the PTG covers at least a bit more than the vehicle shape!! (should be much, much higher)
 
 			{
 				CTimeLoggerEntry tle(m_timelogger,"PT_RRT::solve.changeCoordinatesReference");
@@ -290,14 +293,13 @@ void PlannerRRT_SE2_TPS::solve(
 				//local_obs_ok=true;
 			}
 			{
-				MRPT_TODO("Speed-up: Write a new spaceTransformer() for just one k-direction of interest")
 				CTimeLoggerEntry tle(m_timelogger,"PT_RRT::solve.SpaceTransformer");
-				spaceTransformer(m_local_obs, m_PTGs[idxPTG].pointer(), MAX_DIST_FOR_OBSTACLES,  TP_Obstacles );
+				spaceTransformerOneDirectionOnly(k_rand, m_local_obs, m_PTGs[idxPTG].pointer(), MAX_DIST_FOR_OBSTACLES, TP_Obstacles_k_rand);
 			}
 
 			// directions k_rand in TP_obstacles[k_rand] = d_free
 			// this is the collision free distance to the TP_target
-			d_free = TP_Obstacles[k_rand];
+			d_free = TP_Obstacles_k_rand; // TP_Obstacles[k_rand];
 
 			// [Algo `tp_space_rrt`: Line 10]: d_new
 			// ------------------------------------------------------------
@@ -316,16 +318,18 @@ void PlannerRRT_SE2_TPS::solve(
 			{
 				// [Algo `tp_space_rrt`: Line 14]: PTG function
 				// ------------------------------------------------------------
-				float x,y,phi,t;//, v, w;
-				float v,w;
-
 				//given d_rand and k_rand provides x,y,phi of the point in c-space
-				m_PTGs[idxPTG]->getCPointWhen_d_Is(d_new, k_rand,  x,y,phi,t,&v,&w);
-				phi=mrpt::math::wrapToPi(phi); // wrap to [-pi,pi] -->avoid out of bounds errors
+				uint32_t nStep;
+				m_PTGs[idxPTG]->getPathStepForDist(k_rand, d_new, nStep);
+
+				mrpt::math::TPose2D rel_pose;
+				m_PTGs[idxPTG]->getPathPose(k_rand, nStep, rel_pose);
+
+				mrpt::math::wrapToPiInPlace(rel_pose.phi); // wrap to [-pi,pi] -->avoid out of bounds errors
 
 				// [Algo `tp_space_rrt`: Line 15]: pose composition
 				// ------------------------------------------------------------
-				const mrpt::poses::CPose2D new_state_rel(x, y, phi);
+				const mrpt::poses::CPose2D new_state_rel(rel_pose);
 				mrpt::poses::CPose2D new_state = x_nearest_pose+new_state_rel; //compose the new_motion as the last nmotion and the new state
 				//log_new_state_ptr = &new_state;
 
@@ -514,18 +518,12 @@ void PlannerRRT_SE2_TPS::spaceTransformer(
 	const mrpt::maps::CSimplePointsMap &in_obstacles,
 	const mrpt::nav::CParameterizedTrajectoryGenerator *in_PTG,
 	const double MAX_DIST,
-	std::vector<float> &out_TPObstacles
+	std::vector<double> &out_TPObstacles
 	)
 {
 	using namespace mrpt::nav;
 	try
 	{
-		const size_t Ki = in_PTG->getAlfaValuesCount();  //getAlfaValuesCount is 0!
-
-		// check space already reserved to TP-Obstacles:
-		if ( size_t(out_TPObstacles.size()) != Ki )
-			out_TPObstacles.resize( Ki );
-
 		// Take "k_rand"s and "distances" such that the collision hits the obstacles
 		// in the "grid" of the given PT
 		// --------------------------------------------------------------------
@@ -534,16 +532,8 @@ void PlannerRRT_SE2_TPS::spaceTransformer(
 		// = in_obstacles.getPointsCount();
 		in_obstacles.getPointsBuffer(nObs, obs_xs, obs_ys, obs_zs);
 
-		for (size_t k_rand=0;k_rand<Ki;k_rand++)
-		{
-			// Initiate at the max distance or up to abs(phi)=pi
-			out_TPObstacles[k_rand] = in_PTG->refDistance;
-			// If you just turned 180deg, end there:
-			float phi = in_PTG->GetCPathPoint_phi(k_rand,in_PTG->getPointsCountInCPath_k(k_rand)-1);
-
-			if (fabs(phi) >= M_PI* 0.95 )
-				out_TPObstacles[k_rand]= in_PTG->GetCPathPoint_d(k_rand,in_PTG->getPointsCountInCPath_k(k_rand)-1);
-		}
+		// Init obs ranges: 
+		in_PTG->initTPObstacles(out_TPObstacles);
 
 		for (size_t obs=0;obs<nObs;obs++)
 		{
@@ -553,12 +543,7 @@ void PlannerRRT_SE2_TPS::spaceTransformer(
 			if (std::abs(ox)>MAX_DIST || std::abs(oy)>MAX_DIST)
 				continue;   // ignore this obstacle: anyway, I don't know how to map it to TP-Obs!
 
-			const CParameterizedTrajectoryGenerator::TCollisionCell & cell = in_PTG->m_collisionGrid.getTPObstacle(ox,oy);
-
-			// Keep the minimum distance:
-			for (CParameterizedTrajectoryGenerator::TCollisionCell::const_iterator i=cell.begin();i!=cell.end();i++)
-				if ( i->second < out_TPObstacles[ i->first ] )
-					out_TPObstacles[i->first] = i->second;
+			in_PTG->updateTPObstacle(ox, oy, out_TPObstacles);
 		}
 
 		// Leave distances in out_TPObstacles un-normalized ([0,1]), so they just represent real distances in meters.
@@ -578,6 +563,57 @@ void PlannerRRT_SE2_TPS::spaceTransformer(
 	}
 }
 
+void PlannerRRT_SE2_TPS::spaceTransformerOneDirectionOnly(
+	const int tp_space_k_direction,
+	const mrpt::maps::CSimplePointsMap &in_obstacles,
+	const mrpt::nav::CParameterizedTrajectoryGenerator *in_PTG,
+	const double MAX_DIST,
+	double &out_TPObstacle_k
+)
+{
+	using namespace mrpt::nav;
+	try
+	{
+		// Take "k_rand"s and "distances" such that the collision hits the obstacles
+		// in the "grid" of the given PT
+		// --------------------------------------------------------------------
+		size_t nObs;
+		const float *obs_xs, *obs_ys, *obs_zs;
+		// = in_obstacles.getPointsCount();
+		in_obstacles.getPointsBuffer(nObs, obs_xs, obs_ys, obs_zs);
+
+		// Init obs ranges: 
+		in_PTG->initTPObstacleSingle(tp_space_k_direction, out_TPObstacle_k);
+
+		for (size_t obs = 0; obs<nObs; obs++)
+		{
+			const float ox = obs_xs[obs];
+			const float oy = obs_ys[obs];
+
+			if (std::abs(ox)>MAX_DIST || std::abs(oy)>MAX_DIST)
+				continue;   // ignore this obstacle: anyway, I don't know how to map it to TP-Obs!
+
+			in_PTG->updateTPObstacleSingle(ox, oy, tp_space_k_direction, out_TPObstacle_k);
+		}
+
+		// Leave distances in out_TPObstacles un-normalized ([0,1]), so they just represent real distances in meters.
+	}
+	catch (std::exception &e)
+	{
+		cerr << "[PT_RRT::SpaceTransformer] Exception:" << endl;
+		cerr << e.what() << endl;
+	}
+	catch (...)
+	{
+		cerr << "\n[PT_RRT::SpaceTransformer] Unexpected exception!:\n";
+		cerr << format("*in_PTG = %p\n", (void*)in_PTG);
+		if (in_PTG)
+			cerr << format("PTG = %s\n", in_PTG->getDescription().c_str());
+		cerr << endl;
+	}
+}
+
+
 void PlannerRRT_SE2_TPS::renderMoveTree(
 	mrpt::opengl::COpenGLScene &scene,
 	const PlannerRRT_SE2_TPS::TPlannerInput  &pi,
@@ -592,16 +628,36 @@ void PlannerRRT_SE2_TPS::renderMoveTree(
 		gl_veh_shape->setLineWidth(options.vehicle_line_width);
 		gl_veh_shape->setColor_u8(options.color_vehicle );
 		
-		double max_veh_radius=0;
-		gl_veh_shape->appendLine(
-			params.robot_shape[0].x,params.robot_shape[0].y, 0,
-			params.robot_shape[1].x,params.robot_shape[1].y, 0);
-		for (size_t i=2;i<=params.robot_shape.size();i++)
+		double max_veh_radius = 0.;
+		if (!params.robot_shape.empty())
 		{
-			const size_t idx=i % params.robot_shape.size();
-			mrpt::utils::keep_max(max_veh_radius, params.robot_shape[idx].norm() );
-			gl_veh_shape->appendLineStrip(params.robot_shape[idx].x,params.robot_shape[idx].y,0);
+			gl_veh_shape->appendLine(
+				params.robot_shape[0].x, params.robot_shape[0].y, 0,
+				params.robot_shape[1].x, params.robot_shape[1].y, 0);
+			for (size_t i = 2; i <= params.robot_shape.size(); i++)
+			{
+				const size_t idx = i % params.robot_shape.size();
+				mrpt::utils::keep_max(max_veh_radius, params.robot_shape[idx].norm());
+				gl_veh_shape->appendLineStrip(params.robot_shape[idx].x, params.robot_shape[idx].y, 0);
+			}
+		} 
+		else if (params.robot_shape_circular_radius>0)
+		{
+			const int NUM_VERTICES = 10;
+			const double R = params.robot_shape_circular_radius;
+			for (int i = 0; i <= NUM_VERTICES; i++)
+			{
+				const size_t idx  = i % NUM_VERTICES;
+				const size_t idxn = (i+1) % NUM_VERTICES;
+				const double ang  = idx  * 2 * M_PI / (NUM_VERTICES - 1);
+				const double angn = idxn * 2 * M_PI / (NUM_VERTICES - 1);
+				gl_veh_shape->appendLine(
+					R*cos(ang), R*sin(ang), 0,
+					R*cos(angn), R*sin(angn), 0);
+			}
+			mrpt::utils::keep_max(max_veh_radius, R);
 		}
+
 		xyzcorners_scale = max_veh_radius * 0.5;
 	}
 	// Override with user scale?

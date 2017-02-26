@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -68,7 +68,7 @@ namespace mrpt
 			/** Internal method called by computeObservationLikelihood() */
 			virtual double internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom ) = 0;
 			/** Internal method called by canComputeObservationLikelihood() */
-			virtual bool internal_canComputeObservationLikelihood( const mrpt::obs::CObservation *obs )
+			virtual bool internal_canComputeObservationLikelihood( const mrpt::obs::CObservation *obs ) const
 			{
 				MRPT_UNUSED_PARAM(obs);
 				return true; // Unless implemented otherwise, assume we can always compute the likelihood.
@@ -133,10 +133,10 @@ namespace mrpt
 			 * \param obs The observation.
 			 * \sa computeObservationLikelihood, genericMapParams.enableObservationLikelihood
 			 */
-			virtual bool canComputeObservationLikelihood( const mrpt::obs::CObservation *obs );
+			virtual bool canComputeObservationLikelihood( const mrpt::obs::CObservation *obs ) const;
 
 			/** \overload */
-			bool canComputeObservationLikelihood( const mrpt::obs::CObservationPtr &obs );
+			bool canComputeObservationLikelihood( const mrpt::obs::CObservationPtr &obs ) const;
 
 			/** Returns the sum of the log-likelihoods of each individual observation within a mrpt::obs::CSensoryFrame.
 			 *
@@ -151,17 +151,14 @@ namespace mrpt
 			 * \param sf The observations.
 			 * \sa canComputeObservationLikelihood
 			 */
-			bool canComputeObservationsLikelihood( const mrpt::obs::CSensoryFrame &sf );
+			bool canComputeObservationsLikelihood( const mrpt::obs::CSensoryFrame &sf ) const;
 
 			/** Constructor */
 			CMetricMap();
 
-			/** Destructor */
-			virtual ~CMetricMap();
-
 			/** Computes the matching between this and another 2D point map, which includes finding:
-			 *		- The set of points pairs in each map
-			 *		- The mean squared distance between corresponding pairs.
+			 *   - The set of points pairs in each map
+			 *   - The mean squared distance between corresponding pairs.
 			 *
 			 *   The algorithm is:
 			 *		- For each point in "otherMap":
@@ -212,20 +209,13 @@ namespace mrpt
 
 			/** Computes the ratio in [0,1] of correspondences between "this" and the "otherMap" map, whose 6D pose relative to "this" is "otherMapPose"
 			 *   In the case of a multi-metric map, this returns the average between the maps. This method always return 0 for grid maps.
-			 * \param  otherMap					  [IN] The other map to compute the matching with.
-			 * \param  otherMapPose				  [IN] The 6D pose of the other map as seen from "this".
-			 * \param  maxDistForCorr			  [IN] The minimum distance between 2 non-probabilistic map elements for counting them as a correspondence.
-			 * \param  maxMahaDistForCorr		  [IN] The minimum Mahalanobis distance between 2 probabilistic map elements for counting them as a correspondence.
-			 *
+			 * \param  otherMap      [IN] The other map to compute the matching with.
+			 * \param  otherMapPose  [IN] The 6D pose of the other map as seen from "this".
+			 * \param  params        [IN] Matching parameters
 			 * \return The matching ratio [0,1]
 			 * \sa determineMatching2D
 			 */
-			virtual float  compute3DMatchingRatio(
-				const mrpt::maps::CMetricMap								*otherMap,
-				const mrpt::poses::CPose3D							&otherMapPose,
-				float									maxDistForCorr = 0.10f,
-				float									maxMahaDistForCorr = 2.0f
-			) const;
+			virtual float compute3DMatchingRatio(const mrpt::maps::CMetricMap *otherMap, const mrpt::poses::CPose3D &otherMapPose, const TMatchingRatioParams &params) const;
 
 			/** This virtual method saves the map to a file "filNamePrefix"+< some_file_extension >, as an image or in any other applicable way (Notice that other methods to save the map may be implemented in classes implementing this virtual interface). */
 			virtual void  saveMetricMapRepresentationToFile(const std::string	&filNamePrefix) const = 0;

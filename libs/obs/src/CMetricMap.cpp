@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -28,11 +28,6 @@ IMPLEMENTS_VIRTUAL_SERIALIZABLE(CMetricMap, CSerializable, mrpt::maps)
 
 CMetricMap::CMetricMap()
 {
-}
-
-CMetricMap::~CMetricMap()
-{
-
 }
 
 /** Erase all the contents of the map */
@@ -96,7 +91,7 @@ double CMetricMap::computeObservationLikelihood( const CObservation *obs, const 
 /*---------------------------------------------------------------
 				canComputeObservationLikelihood
   ---------------------------------------------------------------*/
-bool CMetricMap::canComputeObservationsLikelihood( const CSensoryFrame &sf )
+bool CMetricMap::canComputeObservationsLikelihood( const CSensoryFrame &sf ) const
 {
 	bool can = false;
 	for (CSensoryFrame::const_iterator it=sf.begin();!can && it!=sf.end();++it)
@@ -130,7 +125,7 @@ bool CMetricMap::insertObservationPtr(
 	MRPT_END
 }
 
-bool CMetricMap::canComputeObservationLikelihood( const CObservationPtr &obs ) {
+bool CMetricMap::canComputeObservationLikelihood( const CObservationPtr &obs ) const {
 	return canComputeObservationLikelihood(obs.pointer());
 }
 
@@ -170,17 +165,11 @@ void CMetricMap::determineMatching3D(
 }
 
 
-float  CMetricMap::compute3DMatchingRatio(
-	const mrpt::maps::CMetricMap								*otherMap,
-	const CPose3D							&otherMapPose,
-	float									maxDistForCorr,
-	float									maxMahaDistForCorr
-) const
+float  CMetricMap::compute3DMatchingRatio(const mrpt::maps::CMetricMap *otherMap, const mrpt::poses::CPose3D &otherMapPose, const TMatchingRatioParams &params) const
 {
 	MRPT_UNUSED_PARAM(otherMap);
 	MRPT_UNUSED_PARAM(otherMapPose);
-	MRPT_UNUSED_PARAM(maxDistForCorr);
-	MRPT_UNUSED_PARAM(maxMahaDistForCorr);
+	MRPT_UNUSED_PARAM(params);
 	MRPT_START
 	THROW_EXCEPTION("Virtual method not implemented in derived class.")
 	MRPT_END
@@ -197,7 +186,7 @@ float CMetricMap::squareDistanceToClosestCorrespondence(
 	MRPT_END
 }
 
-bool CMetricMap::canComputeObservationLikelihood( const mrpt::obs::CObservation *obs ) 
+bool CMetricMap::canComputeObservationLikelihood( const mrpt::obs::CObservation *obs ) const
 { 
 	if (genericMapParams.enableObservationLikelihood)
 			return internal_canComputeObservationLikelihood(obs); 

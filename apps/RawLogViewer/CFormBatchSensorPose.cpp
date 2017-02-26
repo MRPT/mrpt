@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -70,10 +70,10 @@ CFormBatchSensorPose::CFormBatchSensorPose(wxWindow* parent,wxWindowID id)
 	FlexGridSizer2->Add(StaticText1, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
 	edText = new wxTextCtrl(this, ID_TEXTCTRL1, _("//  Any file in the format used by rawlog-grabber can be used here\n//  The name of the sections [xxx] can be arbitrary and \n//   independent of the sensor label. \n// ----------------------------------------------------------------\n\n//  SENSOR 1\n[OneCamera]\nsensorLabel\t\t= CAMERA1\n\npose_x\t\t\t= 0    ; position on the robot (meters)\npose_y\t\t\t= 0\npose_z\t\t\t= 0.5\npose_yaw\t\t= 0\t   ; Angles in degrees\npose_pitch\t\t= 0\npose_roll\t\t= 0\n\n//  SENSOR 2\n[AnotherSensor]\nsensorLabel\t\t= SICK_LASER\n\npose_x\t\t\t= 0.2    ; position on the robot (meters)\npose_y\t\t\t= 0\npose_z\t\t\t= 0.3\npose_yaw\t\t= 0\t   ; Angles in degrees\npose_pitch\t\t= 0\npose_roll\t\t= 0\n\n"), wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxHSCROLL|wxVSCROLL|wxALWAYS_SHOW_SB, wxDefaultValidator, _T("ID_TEXTCTRL1"));
 	edText->SetMinSize(wxSize(500,300));
-	wxFont edTextFont(9,wxTELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,_T("FreeMono"),wxFONTENCODING_DEFAULT);
+	wxFont edTextFont(9,wxFONTFAMILY_TELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,_T("FreeMono"),wxFONTENCODING_DEFAULT);
 	edText->SetFont(edTextFont);
-	FlexGridSizer2->Add(edText, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer1->Add(FlexGridSizer2, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+	FlexGridSizer2->Add(edText, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
+	FlexGridSizer1->Add(FlexGridSizer2, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
 	FlexGridSizer3 = new wxFlexGridSizer(0, 5, 0, 0);
 	FlexGridSizer3->AddGrowableCol(1);
 	btnOpen = new wxBitmapButton(this, ID_BITMAPBUTTON1, wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FILE_OPEN")),wxART_BUTTON), wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW, wxDefaultValidator, _T("ID_BITMAPBUTTON1"));
@@ -85,7 +85,7 @@ CFormBatchSensorPose::CFormBatchSensorPose(wxWindow* parent,wxWindowID id)
 	FlexGridSizer3->Add(btnApply, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	btnCancel = new wxButton(this, ID_BUTTON2, _("Cancel"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON2"));
 	FlexGridSizer3->Add(btnCancel, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-	FlexGridSizer1->Add(FlexGridSizer3, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+	FlexGridSizer1->Add(FlexGridSizer3, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
 	SetSizer(FlexGridSizer1);
 	FlexGridSizer1->SetSizeHints(this);
 	Center();

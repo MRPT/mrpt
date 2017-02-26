@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -232,7 +232,7 @@ hmt_slam_guiFrame::hmt_slam_guiFrame(wxWindow* parent,wxWindowID id)  :
     StaticText6 = new wxStaticText(panConfig, ID_STATICTEXT6, _("More parameters:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT6"));
     FlexGridSizer18->Add(StaticText6, 1, wxALL|wxALIGN_BOTTOM|wxALIGN_CENTER_HORIZONTAL, 5);
     edRestParams = new wxTextCtrl(panConfig, ID_TEXTCTRL2, _("//====================================================\n//               HMT-SLAM\n// Here come global parameters for the app.\n//====================================================\n[HMT-SLAM]\n\n// The directory where the log files will be saved (left in blank if no log is required)\nLOG_OUTPUT_DIR\t= LOG_HTMSLAM_MALAGA\n\nrawlog_offset\t= 0\t\t// Whether to skip some rawlog entries \nLOG_FREQUENCY\t= 20\t// The frequency of log files generation:\nLOG_SHOW3D\t\t= 1\nrandom_seed\t\t= 1234\t// 0:Randomize, !=0:use that seed.\n\n// --------------------------------\n// Local SLAM method selection:\n//   1: RBPF_2DLASER\n// --------------------------------\nSLAM_METHOD=1\n\n//SLAM_MIN_DIST_BETWEEN_OBS=1.0\t\t// Map updates threshold (meters)\n//SLAM_MIN_HEADING_BETWEEN_OBS_DEG=50\t// Map updates threshold (degrees)\n\nSLAM_MIN_DIST_BETWEEN_OBS=1.25\t\t// Map updates threshold (meters)\nSLAM_MIN_HEADING_BETWEEN_OBS_DEG=30\t// Map updates threshold (degrees)\n\nMIN_ODOMETRY_STD_XY\t\t= 0.05\t\t// Minimum sigma in odometry increments (meters)\nMIN_ODOMETRY_STD_PHI\t= 2\t\t\t// Minimum sigma in odometry increments (deg)\n\n// Loop closure detectors:\n// gridmaps\n// images\nTLC_DETECTORS=gridmaps\n\n// ====================================================\n//          TLC_GRIDMATCHING\n//\n//  Top. Loop-closure detector based on grid-matching\n// ====================================================\n[TLC_GRIDMATCHING]\nfeatsPerSquareMeter\t\t= 0.012\n\nthreshold_max\t\t\t= 0.20 \t\t// For considering candidate matches\nthreshold_delta\t\t\t= 0.09\n\nransac_prob_good_inliers = 0.9999999999  // Prob. of a good inliers (for the number of iterations).\n\nmaxKLd_for_merge        = 0.9\t\t// Merge of close SOG modes\n\nmin_ICP_goodness\t= 0.25\nmax_ICP_mahadist\t= 20 //10 // The maximum Mahalanobis distance between the initial and final poses in the ICP not to discard the hypothesis (default=10)\n\nransac_minSetSizeRatio\t= 0.15 // 0.20\n\nransac_mahalanobisDistanceThreshold\t= 6\t\t// amRobust method only\nransac_chi2_quantile\t= 0.5 \t\t\t\t// amModifiedRANSAC method only\n\nsave_feat_coors\t\t\t= 0\t\t// Dump correspondences to grid_feats\ndebug_save_map_pairs\t= 1\t\t// Save the pair of maps with the best correspondences\ndebug_show_corrs\t\t= 0\t\t// Debug output of graphs\n\n\n// ----------------------------------------------------------\n// All the params of the feature detectors/descriptors\n// ----------------------------------------------------------\nfeatsType\t\t\t= 1\t\t// 0: KLT, 1: Harris, 3: SIFT, 4: SURF\n\n// The feature descriptor to use: 0=detector already has descriptor, \n//  1= SIFT, 2=SURF, 4=Spin images, 8=Polar images, 16=log-polar images \nfeature_descriptor\t\t= 8\n\npatchSize\t\t\t= 0   \t// Not needed\n\nKLTOptions.min_distance\t\t= 6\t\t\t// Pixels\nKLTOptions.threshold\t\t= 0.01 // 0.10  // 0.20\n\nharrisOptions.min_distance\t= 6\t\t\t// Pixels\nharrisOptions.threshold \t= 0.10  // 0.20\n\nSIFTOptions.implementation\t= 3\t\t\t// Hess\n\nSURFOptions.rotation_invariant\t= 1\t\t// 0=64 dims, 1=128dims\n\nSpinImagesOptions.hist_size_distance\t= 10 \nSpinImagesOptions.hist_size_intensity\t= 10 \nSpinImagesOptions.radius\t\t\t= 20\n\nPolarImagesOptions.bins_angle\t\t\t= 8\nPolarImagesOptions.bins_distance\t\t= 6\nPolarImagesOptions.radius\t\t\t= 40\n\nLogPolarImagesOptions.radius\t\t\t= 20\nLogPolarImagesOptions.num_angles\t\t= 8\n\n\n\n// ====================================================\n//\n//            \tPARTICLE_FILTER\n//\n//  Parameters of the PARTICLE FILTER within each LMH,\n//   invoked & implemented in CLSLAM_RBPF_2DLASER\n// ====================================================\n[PARTICLE_FILTER]\n//----------------------------------------------------------------------------------\n// The Particle Filter algorithm:\n//\t0: pfStandardProposal\n//\t1: pfAuxiliaryPFStandard\n//\t2: pfOptimalProposal      *** (ICP,...)\n//\t3: pfAuxiliaryPFOptimal\t  *** (Optimal SAMPLING)\n//\n// See: http://www.mrpt.org/Particle_Filters\n//----------------------------------------------------------------------------------\nPF_algorithm=3\n\nadaptiveSampleSize\t= 0\t\t// 0: Fixed # of particles, 1: KLD adaptive\n\n//----------------------------------------------------------------------------------\n// The Particle Filter Resampling method:\n//\t0: prMultinomial\n//\t1: prResidual\n//\t2: prStratified\n//\t3: prSystematic\n//\n// See: /docs/html/topic_resampling.html or     http://www.mrpt.org/    topic_resampling.html\n//----------------------------------------------------------------------------------\nresamplingMethod=0\npfAuxFilterOptimal_MaximumSearchSamples = 250\t\t// For PF algorithm=3\n\nsampleSize\t= 5\t\t// Number of particles (for fixed number algorithms)\nBETA\t\t= 0.50\t// Resampling ESS threshold\t\npowFactor\t= 0.01\t\t\t// A \"power factor\" for updating weights\t\t\t\n\n\n// ====================================================\n//\t\tGRAPH_CUT\n//\n//  Params for Area Abstraction (AA)\n// ====================================================\n[GRAPH_CUT]\npartitionThreshold                    = 0.6     // In the range [0,1]. Lower gives larger clusters.\nminDistForCorrespondence              = 0.50\nuseMapMatching                        = 1\nminimumNumberElementsEachCluster      = 5\n\n// ====================================================\n//\n//            MULTIMETRIC MAP CONFIGURATION\n//\n//  The params for creating the metric maps for \n//   each LMH.\n// ====================================================\n[MetricMaps]\n// Creation of maps:\noccupancyGrid_count\t\t\t= 1\ngasGrid_count\t\t\t\t= 0\nlandmarksMap_count\t\t\t= 0\nbeaconMap_count\t\t\t\t= 0\npointsMap_count\t\t\t\t= 1\n\n// Selection of map for likelihood: (fuseAll=-1,occGrid=0, points=1,landmarks=2,gasGrid=3)\nlikelihoodMapSelection\t\t= 0\n\n// Enables (1) / Disables (0) insertion into specific maps:\nenableInsertion_pointsMap\t= 1\nenableInsertion_landmarksMap= 1\nenableInsertion_beaconMap\t= 1\nenableInsertion_gridMaps\t= 1\nenableInsertion_gasGridMaps\t= 1\n\n// ====================================================\n//   MULTIMETRIC MAP: OccGrid #00\n// ====================================================\n// Creation Options for OccupancyGridMap 00:\n[MetricMaps_occupancyGrid_00_creationOpts]\nresolution=0.07\ndisableSaveAs3DObject=0\n\n\n// Insertion Options for OccupancyGridMap 00:\n[MetricMaps_occupancyGrid_00_insertOpts]\nmapAltitude\t\t\t\t\t\t\t= 0\nuseMapAltitude\t\t\t\t\t\t= 0\nmaxDistanceInsertion\t\t\t\t= 35\nmaxOccupancyUpdateCertainty\t\t\t= 0.60\nconsiderInvalidRangesAsFreeSpace\t= 1\nminLaserScanNoiseStd\t\t\t\t= 0.001\nhorizontalTolerance\t\t\t\t\t= 0.9 // In degrees\n\nCFD_features_gaussian_size\t\t\t= 3\nCFD_features_median_size\t\t\t= 3\n\n\n// Likelihood Options for OccupancyGridMap 00:\n[MetricMaps_occupancyGrid_00_likelihoodOpts]\nlikelihoodMethod\t\t\t\t= 4  // 0=MI, 1=Beam Model, 2=RSLC, 3=Cells Difs, 4=LF_Thrun, 5=LF_II\nLF_decimation\t\t\t\t\t= 4\nLF_stdHit\t\t\t\t\t\t= 0.10\nLF_maxCorrsDistance\t\t\t\t= 0.50\nLF_zHit\t\t\t\t\t\t\t= 0.999\nLF_zRandom\t\t\t\t\t\t= 0.001\nLF_maxRange\t\t\t\t\t\t= 60\nLF_alternateAverageMethod\t\t= 0\nenableLikelihoodCache\t\t\t= 1\n\n// ====================================================\n//   MULTIMETRIC MAP: PointMap #00\n// ====================================================\n// Creation Options for Pointsmap 00:\n// Creation Options for OccupancyGridMap 00:\n[MetricMaps_PointsMap_00_creationOpts]\ndisableSaveAs3DObject=0\n\n[MetricMaps_PointsMap_00_insertOpts]\nminDistBetweenLaserPoints=0.05  // The minimum distance between points (in 3D): If two points are too close, one of them is not inserted into the map.\nisPlanarMap=0                   // If set to true, only HORIZONTAL (i.e. XY plane) measurements will be inserted in the map. Default value is false, thus 3D maps are generated\n"), wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER|wxTE_PROCESS_TAB|wxTE_MULTILINE|wxHSCROLL|wxALWAYS_SHOW_SB, wxDefaultValidator, _T("ID_TEXTCTRL2"));
-    wxFont edRestParamsFont(8,wxTELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+    wxFont edRestParamsFont(8,wxFONTFAMILY_TELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,wxEmptyString,wxFONTENCODING_DEFAULT);
     edRestParams->SetFont(edRestParamsFont);
     FlexGridSizer18->Add(edRestParams, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_BOTTOM, 1);
     FlexGridSizer16->Add(FlexGridSizer18, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_BOTTOM, 0);
@@ -281,7 +281,7 @@ hmt_slam_guiFrame::hmt_slam_guiFrame(wxWindow* parent,wxWindowID id)  :
     wxFont StaticText5Font = wxSystemSettings::GetFont(wxSYS_SYSTEM_FONT);
     if ( !StaticText5Font.Ok() ) StaticText5Font = wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
     StaticText5Font.SetPointSize((int)(StaticText5Font.GetPointSize() * 1.000000));
-    StaticText5Font.SetWeight(wxBOLD);
+    StaticText5Font.SetWeight(wxFONTWEIGHT_BOLD);
     StaticText5->SetFont(StaticText5Font);
     BoxSizer3->Add(StaticText5, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     FlexGridSizer8->Add(BoxSizer3, 1, wxALL|wxALIGN_BOTTOM|wxALIGN_CENTER_HORIZONTAL, 0);
@@ -329,7 +329,7 @@ hmt_slam_guiFrame::hmt_slam_guiFrame(wxWindow* parent,wxWindowID id)  :
     wxFont StaticText3Font = wxSystemSettings::GetFont(wxSYS_SYSTEM_FONT);
     if ( !StaticText3Font.Ok() ) StaticText3Font = wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
     StaticText3Font.SetPointSize((int)(StaticText3Font.GetPointSize() * 1.000000));
-    StaticText3Font.SetWeight(wxBOLD);
+    StaticText3Font.SetWeight(wxFONTWEIGHT_BOLD);
     StaticText3->SetFont(StaticText3Font);
     FlexGridSizer10->Add(StaticText3, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     Panel7 = new wxPanel(Panel6, ID_PANEL11, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL11"));
@@ -341,7 +341,7 @@ hmt_slam_guiFrame::hmt_slam_guiFrame(wxWindow* parent,wxWindowID id)  :
     Panel7->SetSizer(FlexGridSizer11);
     FlexGridSizer11->Fit(Panel7);
     FlexGridSizer11->SetSizeHints(Panel7);
-    FlexGridSizer10->Add(Panel7, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    FlexGridSizer10->Add(Panel7, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
     Panel6->SetSizer(FlexGridSizer10);
     FlexGridSizer10->SetSizeHints(Panel6);
     Panel10 = new wxPanel(SplitterWindow2, ID_PANEL12, wxDefaultPosition, wxSize(100,100), wxTAB_TRAVERSAL, _T("ID_PANEL12"));
@@ -353,7 +353,7 @@ hmt_slam_guiFrame::hmt_slam_guiFrame(wxWindow* parent,wxWindowID id)  :
     wxFont StaticText4Font = wxSystemSettings::GetFont(wxSYS_SYSTEM_FONT);
     if ( !StaticText4Font.Ok() ) StaticText4Font = wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
     StaticText4Font.SetPointSize((int)(StaticText4Font.GetPointSize() * 1.000000));
-    StaticText4Font.SetWeight(wxBOLD);
+    StaticText4Font.SetWeight(wxFONTWEIGHT_BOLD);
     StaticText4->SetFont(StaticText4Font);
     FlexGridSizer12->Add(StaticText4, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     Panel11 = new wxPanel(Panel10, ID_PANEL13, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL13"));
@@ -365,11 +365,11 @@ hmt_slam_guiFrame::hmt_slam_guiFrame(wxWindow* parent,wxWindowID id)  :
     Panel11->SetSizer(FlexGridSizer13);
     FlexGridSizer13->Fit(Panel11);
     FlexGridSizer13->SetSizeHints(Panel11);
-    FlexGridSizer12->Add(Panel11, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    FlexGridSizer12->Add(Panel11, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
     Panel10->SetSizer(FlexGridSizer12);
     FlexGridSizer12->SetSizeHints(Panel10);
     SplitterWindow2->SplitHorizontally(Panel6, Panel10);
-    BoxSizer1->Add(SplitterWindow2, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    BoxSizer1->Add(SplitterWindow2, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
     Panel4->SetSizer(BoxSizer1);
     BoxSizer1->Fit(Panel4);
     BoxSizer1->SetSizeHints(Panel4);

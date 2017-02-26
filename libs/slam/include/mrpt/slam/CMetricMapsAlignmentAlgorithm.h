@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -12,7 +12,7 @@
 #include <mrpt/maps/CPointsMap.h>
 #include <mrpt/poses/poses_frwds.h>
 
-#include <mrpt/utils/CDebugOutputCapable.h>
+#include <mrpt/utils/COutputLogger.h>
 
 #include <mrpt/slam/link_pragmas.h>
 
@@ -23,16 +23,14 @@ namespace slam
 	/** A base class for any algorithm able of maps alignment. There are two methods
 	 *   depending on an PDF or a single 2D Pose value is available as initial guess for the methods.
      *
-	 * \sa CPointsMap, utils::CDebugOutputCapable  \ingroup mrpt_slam_grp 
+	 * \sa CPointsMap, \ingroup mrpt_slam_grp 
 	 */
-	class SLAM_IMPEXP  CMetricMapsAlignmentAlgorithm : public mrpt::utils::CDebugOutputCapable
+	class SLAM_IMPEXP  CMetricMapsAlignmentAlgorithm : public mrpt::utils::COutputLogger
 	{
 	public:
-        /** Destructor
-          */
-        virtual ~CMetricMapsAlignmentAlgorithm()
-        {
-        }
+		CMetricMapsAlignmentAlgorithm() : mrpt::utils::COutputLogger("CMetricMapsAlignmentAlgorithm") {}
+		/** Dtor */
+		virtual ~CMetricMapsAlignmentAlgorithm() { }
 
 		/** The method for aligning a pair of metric maps, aligning only 2D + orientation.
 		 *   The meaning of some parameters and the kind of the maps to be aligned are implementation dependant,

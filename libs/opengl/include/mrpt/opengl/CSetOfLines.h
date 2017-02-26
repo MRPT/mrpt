@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -21,6 +21,7 @@ namespace mrpt
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CSetOfLines, CRenderizableDisplayList, OPENGL_IMPEXP )
 
 		/** A set of independent lines (or segments), one line with its own start and end positions (X,Y,Z).
+		  * Optionally, the vertices can be also shown as dots.
 		  *  \sa opengl::COpenGLScene
 		  *
 		  *  <div align="center">
@@ -36,8 +37,9 @@ namespace mrpt
 			DEFINE_SERIALIZABLE( CSetOfLines )
 		protected:
 			std::vector<mrpt::math::TSegment3D> mSegments;
-			float	mLineWidth;
+			float   mLineWidth;
 			bool    m_antiAliasing;
+			float   m_verticesPointSize; //!< 0: means hidden
 		public:
 			/**
 			  * Clear the list of segments
@@ -59,6 +61,9 @@ namespace mrpt
 			float getLineWidth() const {
 				return mLineWidth;
 			}
+			float getVerticesPointSize() const;
+			/** Enable showing vertices as dots if size_points>0 */
+			void setVerticesPointSize(const float size_points);
 			/**
 			  * Appends a line to the set.
 			  */

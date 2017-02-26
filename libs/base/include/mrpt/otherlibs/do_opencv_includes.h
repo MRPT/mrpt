@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -41,7 +41,7 @@
 #		endif
 #		include <opencv2/calib3d/calib3d.hpp>
 #		include <opencv2/objdetect/objdetect.hpp>
-//#		include <opencv2/core/eigen.hpp>  // Removed: opencv 2.3 had this file broken in Ubuntu (??)
+//#		include <opencv2/core/eigen.hpp>  // Removed: opencv 2.3 had this file broken in Ubuntu 14.04 Trusty (??)
 #		// These ones dissapeared in 3.0.0:  <opencv2/legacy/{legacy,compat}.hpp>  // CvImage
 #		if (MRPT_OPENCV_VERSION_NUM>=0x240)
 #		include <opencv2/opencv_modules.hpp>

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -11,22 +11,16 @@
 
 #define MRPT_NO_WARN_BIG_HDR
 #include <mrpt/maps.h>
-#include <mrpt/utils/CStartUpClassesRegister.h>
+#include <mrpt/utils/initializer.h>
 
 using namespace mrpt::utils;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
 using namespace mrpt::opengl;
 
-void registerAllClasses_mrpt_maps();
-
-CStartUpClassesRegister  mrpt_maps_class_reg(&registerAllClasses_mrpt_maps);
-
-/*---------------------------------------------------------------
-					registerAllClasses_mrpt_maps
-  ---------------------------------------------------------------*/
-void registerAllClasses_mrpt_maps()
+MRPT_INITIALIZER(registerAllClasses_mrpt_maps)
 {
+#if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
 	registerClass( CLASS_ID( CBeacon ) );
 	registerClass( CLASS_ID( CBeaconMap ) );
 
@@ -37,7 +31,9 @@ void registerAllClasses_mrpt_maps()
 	registerClass( CLASS_ID( COccupancyGridMap2D ) );
 	registerClass( CLASS_ID( CGasConcentrationGridMap2D ) );
 	registerClass( CLASS_ID( CWirelessPowerGridMap2D ) );
+	registerClass( CLASS_ID( CRandomFieldGridMap3D ) );
 	registerClass( CLASS_ID( CHeightGridMap2D ) );
+	registerClass( CLASS_ID( CHeightGridMap2D_MRF ) );
 	registerClass( CLASS_ID( CReflectivityGridMap2D ) );
 
 	registerClass( CLASS_ID( COctoMap ) );
@@ -46,5 +42,6 @@ void registerAllClasses_mrpt_maps()
 
 	registerClass( CLASS_ID( CAngularObservationMesh ) );
 	registerClass( CLASS_ID( CPlanarLaserScan ) ) ;
+#endif
 }
 

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -20,8 +20,6 @@ namespace mrpt
 namespace maps
 {
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CGasConcentrationGridMap2D , CRandomFieldGridMap2D, MAPS_IMPEXP )
-
-	typedef TRandomFieldCell TGasConcentrationCell;  //!< Defined for backward compatibility only (mrpt <0.9.5)
 
 	/** CGasConcentrationGridMap2D represents a PDF of gas concentrations over a 2D area.
 	  *
@@ -81,36 +79,21 @@ namespace maps
 
 		} insertionOptions;
 
-
-		/** Returns an image just as described in \a saveAsBitmapFile */
-		virtual void getAsBitmapFile(mrpt::utils::CImage &out_img) const MRPT_OVERRIDE;
-
-		/** The implementation in this class just calls all the corresponding method of the contained metric maps  */
-		virtual void saveMetricMapRepresentationToFile(const std::string &filNamePrefix) const MRPT_OVERRIDE;
-
-		/** Save a matlab ".m" file which represents as 3D surfaces the mean and a given confidence level for the concentration of each cell.
-		  *  This method can only be called in a KF map model  */
-		virtual void  saveAsMatlab3DGraph(const std::string  &filName) const MRPT_OVERRIDE;
-
 		/** Returns a 3D object representing the map */
 		virtual void getAs3DObject( mrpt::opengl::CSetOfObjectsPtr &outObj ) const MRPT_OVERRIDE;
 
 		/** Returns two 3D objects representing the mean and variance maps */
 		virtual void  getAs3DObject ( mrpt::opengl::CSetOfObjectsPtr	&meanObj, mrpt::opengl::CSetOfObjectsPtr	&varObj ) const MRPT_OVERRIDE;
 
-		/** Returns the 3D object representing the wind grid information
-		 */
+		/** Returns the 3D object representing the wind grid information */
 		void  getWindAs3DObject( mrpt::opengl::CSetOfObjectsPtr &windObj) const;
 
 		 /** Increase the kf_std of all cells from the m_map
-		 *	This mehod is usually called by the main_map to simulate loss of confidence in measurements when time passes
-		 */
+		 *	This mehod is usually called by the main_map to simulate loss of confidence in measurements when time passes */
 		virtual void increaseUncertainty(const double STD_increase_value);
 
-		 /** Implements the transition model of the gasConcentration map using the information of the wind maps.
-		 */
+		 /** Implements the transition model of the gasConcentration map using the information of the wind maps  */
 		bool simulateAdvection(const double &STD_increase_value);
-
 
 		// Params for the estimation of the gaussian volume in a cell.
 		struct MAPS_IMPEXP TGaussianCell

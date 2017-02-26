@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -32,8 +32,6 @@ namespace mrpt
 			public mrpt::poses::CPose3DPDFParticles,
 			public PF_implementation<mrpt::poses::CPose3D,CMonteCarloLocalization3D>
 		{
-			//template <class PARTICLE_TYPE, class MYSELF> friend class PF_implementation;
-
 		public:
 			TMonteCarloLocalizationParams	options; //!< MCL parameters
 

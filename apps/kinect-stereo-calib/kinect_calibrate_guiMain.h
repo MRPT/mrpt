@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -40,13 +40,14 @@
 
 #include <wx/config.h>  // wxConfig
 
-#include "../wx-common/CMyRedirector.h"
+#include <mrpt/gui/CMyRedirector.h>
 
 #include <mrpt/utils.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/opengl.h>
 #include <mrpt/system/threads.h>
 #include <mrpt/vision/chessboard_stereo_camera_calib.h>
+#include <mrpt/synch/CThreadSafeVariable.h>
 
 // Thread for grabbing: Do this is another thread so we divide rendering and grabbing
 //   and exploit multicore CPUs.

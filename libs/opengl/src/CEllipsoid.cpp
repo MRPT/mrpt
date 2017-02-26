@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -202,8 +202,7 @@ void  CEllipsoid::readFromStream(mrpt::utils::CStream &in,int version)
 
 			// Update cov. matrix cache:
 			m_prevComputedCov = m_cov;
-			m_cov.eigenVectors(m_eigVec,m_eigVal);
-			m_eigVal = m_eigVal.array().sqrt().matrix();
+			setCovMatrix(m_cov);
 
 		} break;
 	default:
@@ -276,9 +275,13 @@ void CEllipsoid::setCovMatrix( const mrpt::math::CMatrixDouble &m, int resizeToS
 	{
 		// Not null matrix: compute the eigen-vectors & values:
 		m_prevComputedCov = m_cov;
-		m_cov.eigenVectors(m_eigVec,m_eigVal);
-		m_eigVal = m_eigVal.array().sqrt().matrix();
-		// Do the scale at render to avoid recomputing the m_eigVal for different m_quantiles
+		if (m_cov.eigenVectors(m_eigVec,m_eigVal)) {
+			m_eigVal = m_eigVal.array().sqrt().matrix();
+			// Do the scale at render to avoid recomputing the m_eigVal for different m_quantiles
+		} else {
+			m_eigVec.zeros(3,3);
+			m_eigVal.zeros(3,3);
+		}
 	}
 
 

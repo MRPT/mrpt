@@ -68,8 +68,6 @@ TEST(CConfigFileMemory, setFromString)
 
 TEST(CConfigFileMemory, readMultiLineStrings)
 {
-	//MRPT_TODO("Implement me!");
-
 	// Being able of read 
 	const std::string sampleCfgTxt =
 		"[test]\n"

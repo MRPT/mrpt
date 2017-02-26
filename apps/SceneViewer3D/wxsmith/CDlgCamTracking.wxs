@@ -18,7 +18,7 @@
 							<label>Load...</label>
 							<handler function="OnbtnLoadClick" entry="EVT_BUTTON" />
 						</object>
-						<flag>wxALL|wxALIGN_TOP|wxALIGN_BOTTOM</flag>
+						<flag>wxALL|wxALIGN_LEFT|wxALIGN_TOP</flag>
 						<border>5</border>
 						<option>1</option>
 					</object>
@@ -27,12 +27,12 @@
 							<label>Save...</label>
 							<handler function="OnbtnSaveClick" entry="EVT_BUTTON" />
 						</object>
-						<flag>wxALL|wxALIGN_TOP|wxALIGN_BOTTOM</flag>
+						<flag>wxALL|wxALIGN_LEFT|wxALIGN_TOP</flag>
 						<border>5</border>
 						<option>1</option>
 					</object>
 					<object class="spacer">
-						<flag>wxALL|wxALIGN_TOP|wxALIGN_BOTTOM</flag>
+						<flag>wxALL|wxALIGN_LEFT|wxALIGN_TOP</flag>
 						<border>5</border>
 						<option>1</option>
 					</object>
@@ -41,12 +41,12 @@
 							<label>Grab current</label>
 							<handler function="OnbtnGrabClick" entry="EVT_BUTTON" />
 						</object>
-						<flag>wxALL|wxALIGN_TOP|wxALIGN_BOTTOM</flag>
+						<flag>wxALL|wxALIGN_LEFT|wxALIGN_TOP</flag>
 						<border>5</border>
 						<option>1</option>
 					</object>
 				</object>
-				<flag>wxALL|wxEXPAND|wxALIGN_TOP|wxALIGN_BOTTOM</flag>
+				<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 				<option>1</option>
 			</object>
 			<object class="sizeritem">
@@ -57,7 +57,7 @@
 						<object class="wxCheckBox" name="ID_CHECKBOX1" variable="cbConstVel" member="yes">
 							<label>Ignore time, with constant velocity (m/s):</label>
 						</object>
-						<flag>wxALL|wxALIGN_TOP|wxALIGN_BOTTOM</flag>
+						<flag>wxALL|wxALIGN_LEFT|wxALIGN_TOP</flag>
 						<border>5</border>
 						<option>1</option>
 					</object>
@@ -65,12 +65,12 @@
 						<object class="wxTextCtrl" name="ID_TEXTCTRL1" variable="edVel" member="yes">
 							<value>0.2</value>
 						</object>
-						<flag>wxALL|wxALIGN_TOP|wxALIGN_BOTTOM</flag>
+						<flag>wxALL|wxALIGN_LEFT|wxALIGN_TOP</flag>
 						<border>5</border>
 						<option>1</option>
 					</object>
 					<object class="spacer">
-						<flag>wxALL|wxALIGN_TOP|wxALIGN_BOTTOM</flag>
+						<flag>wxALL|wxALIGN_LEFT|wxALIGN_TOP</flag>
 						<border>5</border>
 						<option>1</option>
 					</object>
@@ -79,7 +79,7 @@
 							<label>START</label>
 							<handler function="OnbtnStartClick" entry="EVT_BUTTON" />
 						</object>
-						<flag>wxALL|wxALIGN_TOP|wxALIGN_BOTTOM</flag>
+						<flag>wxALL|wxALIGN_LEFT|wxALIGN_TOP</flag>
 						<border>5</border>
 						<option>1</option>
 					</object>
@@ -89,29 +89,20 @@
 							<enabled>0</enabled>
 							<handler function="OnbtnStopClick" entry="EVT_BUTTON" />
 						</object>
-						<flag>wxALL|wxALIGN_TOP|wxALIGN_BOTTOM</flag>
+						<flag>wxALL|wxALIGN_LEFT|wxALIGN_TOP</flag>
 						<border>5</border>
 						<option>1</option>
 					</object>
 				</object>
-				<flag>wxALL|wxEXPAND|wxALIGN_TOP|wxALIGN_BOTTOM|wxALIGN_CENTER_HORIZONTAL</flag>
+				<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 				<option>1</option>
 			</object>
 			<object class="sizeritem">
 				<object class="wxGrid" name="ID_GRID1" variable="gridPoses" member="yes">
 					<cols>7</cols>
-					<collabels>
-						<item>t (sec)</item>
-						<item>x</item>
-						<item>y</item>
-						<item>z</item>
-						<item>yaw (deg)</item>
-						<item>pitch (deg)</item>
-						<item>roll (deg)</item>
-					</collabels>
 					<minsize>600,200</minsize>
 				</object>
-				<flag>wxALL|wxEXPAND|wxALIGN_TOP|wxALIGN_BOTTOM</flag>
+				<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 				<border>5</border>
 				<option>1</option>
 			</object>
@@ -123,12 +114,12 @@
 							<label>Close</label>
 							<handler function="OnbtnCloseClick" entry="EVT_BUTTON" />
 						</object>
-						<flag>wxALL|wxALIGN_TOP|wxALIGN_BOTTOM</flag>
+						<flag>wxALL|wxALIGN_LEFT|wxALIGN_TOP</flag>
 						<border>5</border>
 						<option>1</option>
 					</object>
 				</object>
-				<flag>wxALL|wxALIGN_RIGHT|wxALIGN_TOP|wxALIGN_BOTTOM</flag>
+				<flag>wxALL|wxALIGN_RIGHT|wxALIGN_TOP</flag>
 				<option>1</option>
 			</object>
 		</object>

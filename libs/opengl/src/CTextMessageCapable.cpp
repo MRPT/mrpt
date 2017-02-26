@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -152,7 +152,7 @@ bool CTextMessageCapable::updateTextMessage(const size_t  unique_index, const st
 }
 
 
-/// \overload with more font parameters - refer to mrpt::opengl::gl_utils::glDrawText()
+/// overload with more font parameters - refer to mrpt::opengl::gl_utils::glDrawText()
 void CTextMessageCapable::addTextMessage(
 	const double x_frac,
 	const double y_frac,

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -105,7 +105,7 @@ void CDirectoryExplorer::explore(
 			if (stat( newEntry.wholePath.c_str(),&statDat ))
 			{
 				FindClose(h);
-				THROW_EXCEPTION_CUSTOM_MSG1("Cannot get stat for file: '%s'",newEntry.wholePath.c_str())
+				THROW_EXCEPTION_FMT("Cannot get stat for file: '%s'",newEntry.wholePath.c_str())
 			}
 
 			newEntry.modTime    = statDat.st_mtime;
@@ -152,7 +152,7 @@ void CDirectoryExplorer::explore(
 			if (stat( newEntry.wholePath.c_str(),&statDat ))
 			{
 				closedir(dir);
-				THROW_EXCEPTION_CUSTOM_MSG1("Cannot get stat for file: '%s'",newEntry.wholePath.c_str())
+				THROW_EXCEPTION_FMT("Cannot get stat for file: '%s'",newEntry.wholePath.c_str())
 			}
 
 			newEntry.modTime    = statDat.st_mtime;

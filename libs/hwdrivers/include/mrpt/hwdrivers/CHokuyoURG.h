@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -18,7 +18,7 @@ namespace mrpt
 {
 	namespace hwdrivers
 	{
-		/** This software driver implements the protocol SCIP-2.0 for interfacing HOKUYO URG, UTM and UXM laser scanners (USB or Ethernet)
+		/** This software driver implements the protocol SCIP-2.0 for interfacing HOKUYO URG/UTM/UXM/UST laser scanners (USB or Ethernet).
 		  *  Refer to the example code [HOKUYO_laser_test](http://www.mrpt.org/tutorials/mrpt-examples/example_hokuyo_urgutm_laser_scanner/) 
 		  *  and to example rawlog-grabber [config files](https://github.com/MRPT/mrpt/tree/master/share/mrpt/config_files/rawlog-grabber)
 		  *
@@ -85,7 +85,6 @@ namespace mrpt
 
 			std::string     m_lastSentMeasCmd; //!< The last sent measurement command (MDXXX), including the last 0x0A.
 
-			bool 			m_verbose;
 			bool			m_highSensMode;  //!< High sensitivity [HS] mode (default: false)
 			mrpt::gui::CDisplayWindow3DPtr m_win;
 
@@ -198,8 +197,11 @@ namespace mrpt
 			  */
 			bool  setHighSensitivityMode(bool enabled);
 
-			void setVerbose(bool enable = true) { m_verbose = enable; }
-
+			/** If true scans will capture intensity. (default: false)
+			  * Should not be called while scanning.
+			  * \return false on any error
+			  */
+			bool  setIntensityMode(bool enabled);
 
 		protected:
 			/** Returns true if there is a valid stream bound to the laser scanner, otherwise it first try to open the serial port "m_com_port"
@@ -222,6 +224,7 @@ namespace mrpt
 			int                      m_timeStartSynchDelay;  //!< Counter to discard to first few packets before setting the correspondence between device and computer timestamps.
 			mrpt::system::TTimeStamp m_timeStartTT;
 			bool                     m_disable_firmware_timestamp;
+			bool                     m_intensity;  //!< Get intensity from lidar scan (default: false)
 
 			/** See the class documentation at the top for expected parameters */
 			void  loadConfig_sensorSpecific(

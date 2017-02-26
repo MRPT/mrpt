@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -44,22 +44,22 @@ void CReflectivityGridMap2D::TMapDefinition::loadFromConfigFile_map_specific(con
 {
 	// [<sectionNamePrefix>+"_creationOpts"]
 	const std::string sSectCreation = sectionNamePrefix+string("_creationOpts");
-	MRPT_LOAD_CONFIG_VAR(min_x, float,   source,sSectCreation);
-	MRPT_LOAD_CONFIG_VAR(max_x, float,   source,sSectCreation);
-	MRPT_LOAD_CONFIG_VAR(min_y, float,   source,sSectCreation);
-	MRPT_LOAD_CONFIG_VAR(max_y, float,   source,sSectCreation);
-	MRPT_LOAD_CONFIG_VAR(resolution, float,   source,sSectCreation);
+	MRPT_LOAD_CONFIG_VAR(min_x, double,   source,sSectCreation);
+	MRPT_LOAD_CONFIG_VAR(max_x, double,   source,sSectCreation);
+	MRPT_LOAD_CONFIG_VAR(min_y, double,   source,sSectCreation);
+	MRPT_LOAD_CONFIG_VAR(max_y, double,   source,sSectCreation);
+	MRPT_LOAD_CONFIG_VAR(resolution, double,   source,sSectCreation);
 
 	insertionOpts.loadFromConfigFile(source, sectionNamePrefix+string("_insertOpts") );
 }
 
 void CReflectivityGridMap2D::TMapDefinition::dumpToTextStream_map_specific(mrpt::utils::CStream &out) const
 {
-	LOADABLEOPTS_DUMP_VAR(min_x         , float);
-	LOADABLEOPTS_DUMP_VAR(max_x         , float);
-	LOADABLEOPTS_DUMP_VAR(min_y         , float);
-	LOADABLEOPTS_DUMP_VAR(max_y         , float);
-	LOADABLEOPTS_DUMP_VAR(resolution         , float);
+	LOADABLEOPTS_DUMP_VAR(min_x         , double);
+	LOADABLEOPTS_DUMP_VAR(max_x         , double);
+	LOADABLEOPTS_DUMP_VAR(min_y         , double);
+	LOADABLEOPTS_DUMP_VAR(max_y         , double);
+	LOADABLEOPTS_DUMP_VAR(resolution         , double);
 
 	this->insertionOpts.dumpToTextStream(out);
 }
@@ -83,11 +83,9 @@ CLogOddsGridMapLUT<CReflectivityGridMap2D::cell_t>  CReflectivityGridMap2D::m_lo
 						Constructor
   ---------------------------------------------------------------*/
 CReflectivityGridMap2D::CReflectivityGridMap2D(
-	float		x_min,
-	float		x_max,
-	float		y_min,
-	float		y_max,
-	float		resolution ) :
+	double x_min, double x_max,
+	double y_min, double y_max,
+	double resolution ) :
 		CDynamicGrid<int8_t>( x_min,x_max,y_min,y_max,resolution ),
 		insertionOptions()
 {
@@ -150,10 +148,10 @@ bool  CReflectivityGridMap2D::internal_insertObservation(
 		if (!cell)
 		{
 			// We need to resize the grid!
-			const float new_x_min = std::min( m_x_min, (float)sensor_pose.x());
-			const float new_y_min = std::min( m_y_min, (float)sensor_pose.y());
-			const float new_x_max = std::min( m_x_max, (float)sensor_pose.x());
-			const float new_y_max = std::min( m_y_max, (float)sensor_pose.y());
+			const double new_x_min = std::min( m_x_min, sensor_pose.x());
+			const double new_y_min = std::min( m_y_min, sensor_pose.y());
+			const double new_x_max = std::min( m_x_max, sensor_pose.x());
+			const double new_y_max = std::min( m_y_max, sensor_pose.y());
 
 			const int8_t default_cell = m_logodd_lut.p2l(0.5);
 			resize(new_x_min,new_x_max, new_y_min,new_y_max, default_cell , 2.0 /* addit. margin */ );
@@ -221,13 +219,10 @@ double	 CReflectivityGridMap2D::internal_computeObservationLikelihood(
 void  CReflectivityGridMap2D::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
-		*version = 1;
+		*version = 2;
 	else
 	{
-		// Save the dimensions of the grid:
-		out << m_x_min << m_x_max << m_y_min << m_y_max;
-		out << m_resolution;
-		out << static_cast<uint32_t>(m_size_x) << static_cast<uint32_t>(m_size_y);
+		dyngridcommon_writeToStream(out);
 
 		// Map cells:
 		const uint32_t n = static_cast<uint32_t>(m_map.size());
@@ -251,17 +246,12 @@ void  CReflectivityGridMap2D::readFromStream(mrpt::utils::CStream &in, int versi
 	{
 	case 0:
 	case 1:
+	case 2:
 		{
-			uint32_t	n,i,j;
-
-			// Load the dimensions of the grid:
-			in >> m_x_min >> m_x_max >> m_y_min >> m_y_max;
-			in >> m_resolution;
-			in >> i >> j;
-			m_size_x = i;
-			m_size_y = j;
+			dyngridcommon_readFromStream(in, version<2);
 
 			// Map cells:
+			uint32_t n;
 			in >> n;
 			m_map.resize(n);
 			if (n)
@@ -409,14 +399,9 @@ void  CReflectivityGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&out
 	MRPT_END
 }
 
-float  CReflectivityGridMap2D::compute3DMatchingRatio(
-	const mrpt::maps::CMetricMap						*otherMap,
-	const CPose3D							&otherMapPose,
-	float									maxDistForCorr,
-	float									maxMahaDistForCorr
-	) const
+float  CReflectivityGridMap2D::compute3DMatchingRatio(const mrpt::maps::CMetricMap *otherMap, const mrpt::poses::CPose3D &otherMapPose, const TMatchingRatioParams &params) const
 {
 	MRPT_UNUSED_PARAM(otherMap); MRPT_UNUSED_PARAM(otherMapPose);
-	MRPT_UNUSED_PARAM(maxDistForCorr); MRPT_UNUSED_PARAM(maxMahaDistForCorr);
+	MRPT_UNUSED_PARAM(params);
 	return 0;
 }

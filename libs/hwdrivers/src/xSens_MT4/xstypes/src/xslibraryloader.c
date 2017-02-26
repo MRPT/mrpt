@@ -2,17 +2,17 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 #include "xslibraryloader.h"
 #include "xsstring.h"
 
-#ifdef __GNUC__
+#if !defined(_WIN32)
 #include <dlfcn.h>
-#elif defined(_MSC_VER)
-#include <Windows.h>
+#else
+#include <windows.h>
 #endif
 
 /*! \brief Dynamically load a library
@@ -24,11 +24,11 @@
 */
 int XsLibraryLoader_load(XsLibraryLoader* thisp, const XsString* libraryName)
 {
-#ifdef __GNUC__
+#if !defined(_WIN32)
 	if (XsLibraryLoader_isLoaded(thisp))
 		return 0;
 	thisp->m_handle = dlopen(libraryName->m_data, RTLD_LAZY);
-#elif defined(_MSC_VER)
+#else
 	wchar_t *libraryNameW;
 	XsSize required;
 	if (XsLibraryLoader_isLoaded(thisp))
@@ -53,9 +53,9 @@ int XsLibraryLoader_load(XsLibraryLoader* thisp, const XsString* libraryName)
 */
 void* XsLibraryLoader_resolve(const XsLibraryLoader* thisp, const char* functionName)
 {
-#ifdef __GNUC__
+#if !defined(_WIN32)
 	return dlsym(thisp->m_handle, functionName);
-#elif defined(_MSC_VER)
+#else
 	return GetProcAddress(thisp->m_handle, functionName);
 #endif
 }
@@ -71,9 +71,9 @@ int XsLibraryLoader_unload(XsLibraryLoader* thisp)
 	thisp->m_handle = NULL;
 	if (handle)
 	{
-#ifdef __GNUC__
+#if !defined(_WIN32)
 		return dlclose(handle) == 0;
-#elif defined(_MSC_VER)
+#else
 		return FreeLibrary(handle) != 0;
 #endif
 	}
@@ -95,9 +95,9 @@ int XsLibraryLoader_isLoaded(const XsLibraryLoader* thisp)
 */
 void XsLibraryLoader_getErrorString(XsString* error)
 {
-#ifdef __GNUC__
+#if !defined(_WIN32)
 	XsString_assignCharArray(error, dlerror());
-#elif defined(_MSC_VER)
+#else
 	LPTSTR errorText = NULL;
 	(void)FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM
 			|FORMAT_MESSAGE_ALLOCATE_BUFFER

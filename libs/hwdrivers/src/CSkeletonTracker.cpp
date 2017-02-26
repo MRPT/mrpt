@@ -125,7 +125,7 @@ void CSkeletonTracker::processPreviewNone()
 			body->setName("body");
 			for(int i = 0; i < NUM_JOINTS; ++i)
 			{
-				CSpherePtr sph = CSphere::Create(0.03);
+				CSpherePtr sph = CSphere::Create(0.03f);
 				sph->setColor(0,1,0);
 				sph->setName( jointNames[i] );
 				body->insert(sph);
@@ -287,7 +287,7 @@ void CSkeletonTracker::processPreview(const mrpt::obs::CObservationSkeletonPtr &
 			body->setName("body");
 			for(int i = 0; i < NUM_JOINTS; ++i)
 			{
-				CSpherePtr sph = CSphere::Create(0.03);
+				CSpherePtr sph = CSphere::Create(0.03f);
 				sph->setColor(0,1,0);
 				sph->setName( jointNames[i] );
 				body->insert(sph);

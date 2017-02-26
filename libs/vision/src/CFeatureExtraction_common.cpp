@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -246,7 +246,7 @@ void  CFeatureExtraction::computeDescriptors(
 	}
 
 	if (!nDescComputed)
-		THROW_EXCEPTION_CUSTOM_MSG1("No known descriptor value found in in_descriptor_list=%u",(unsigned)in_descriptor_list)
+		THROW_EXCEPTION_FMT("No known descriptor value found in in_descriptor_list=%u",(unsigned)in_descriptor_list)
 
 	MRPT_END
 }
@@ -315,7 +315,7 @@ CFeatureExtraction::TOptions::TOptions(const TFeatureType _featsType) :
 	ORBOptions.extract_patch			= false;
 	ORBOptions.min_distance				= 0;
 	ORBOptions.n_levels					= 8;
-	ORBOptions.scale_factor				= 1.2;
+	ORBOptions.scale_factor				= 1.2f;
 
 	// SpinImages Options:
 	SpinImagesOptions.hist_size_distance  = 10;

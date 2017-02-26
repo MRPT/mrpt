@@ -7,7 +7,7 @@ INCLUDE(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CM
 #
 #  October 2007, Jose Luis Blanco <jlblanco@ctima.uma.es>
 #-----------------------------------------------------------------
-PROJECT(mrpt_performance)
+PROJECT(mrpt-performance)
 
 
 # ---------------------------------------------
@@ -18,7 +18,7 @@ ADD_DEFINITIONS(-DMRPT_DATASET_DIR="${MRPT_SOURCE_DIR}/share/mrpt/datasets")
 ADD_DEFINITIONS(-DMRPT_DOC_PERF_DIR="${MRPT_SOURCE_DIR}/doc/perf-data")
 
 # Define the executable target:
-ADD_EXECUTABLE(mrpt-performance
+ADD_EXECUTABLE(${PROJECT_NAME}
 	perf-main.cpp
 	common.h
 	run_build_tables.h
@@ -36,20 +36,18 @@ ADD_EXECUTABLE(mrpt-performance
 	perf-poses.cpp
 	perf-random.cpp
 	perf-scan_matching.cpp
+	perf-CObservation3DRangeScan.cpp
+	perf-atan2lut.cpp
 	 ${MRPT_VERSION_RC_FILE}
 	)
 
-SET(TMP_TARGET_NAME "mrpt-performance")
-
-
-
 # Add the required libraries for linking:
-TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${MRPT_LINKER_LIBS})
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${MRPT_LINKER_LIBS})
 
 # Dependencies on MRPT libraries:
 #  Just mention the top-level dependency, the rest will be detected automatically,
 #  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
-DeclareAppDependencies(${TMP_TARGET_NAME} mrpt-slam mrpt-gui mrpt-tfest mrpt-graphs mrpt-graphslam)
+DeclareAppDependencies(${PROJECT_NAME} mrpt-slam mrpt-gui mrpt-tfest mrpt-graphs mrpt-graphslam)
 
 
-DeclareAppForInstall(${TMP_TARGET_NAME})
+DeclareAppForInstall(${PROJECT_NAME})

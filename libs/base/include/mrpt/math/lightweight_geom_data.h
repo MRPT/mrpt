@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -353,6 +353,35 @@ namespace math	{
 		 static size_t size() { return 3; }
 	};
 
+	/** XYZ point (double) + Intensity(u8) \sa mrpt::math::TPoint3D */ 
+	struct BASE_IMPEXP TPointXYZIu8 {
+		mrpt::math::TPoint3D pt;
+		uint8_t intensity;
+		inline TPointXYZIu8() : pt(), intensity(0) {}
+		inline TPointXYZIu8(double x,double y,double z, uint8_t intensity_val) : pt(x,y,z),intensity(intensity_val) {}
+	};
+	/** XYZ point (double) + RGB(u8) \sa mrpt::math::TPoint3D */ 
+	struct BASE_IMPEXP TPointXYZRGBu8 {
+		mrpt::math::TPoint3D pt;
+		uint8_t R,G,B;
+		inline TPointXYZRGBu8() : pt(), R(0),G(0),B(0) {}
+		inline TPointXYZRGBu8(double x,double y,double z, uint8_t R_val, uint8_t G_val, uint8_t B_val) : pt(x,y,z),R(R_val),G(G_val),B(B_val) {}
+	};
+	/** XYZ point (float) + Intensity(u8) \sa mrpt::math::TPoint3D */ 
+	struct BASE_IMPEXP TPointXYZfIu8 {
+		mrpt::math::TPoint3Df pt;
+		uint8_t intensity;
+		inline TPointXYZfIu8() : pt(), intensity(0) {}
+		inline TPointXYZfIu8(float x,float y,float z, uint8_t intensity_val) : pt(x,y,z),intensity(intensity_val) {}
+	};
+	/** XYZ point (float) + RGB(u8) \sa mrpt::math::TPoint3D */ 
+	struct BASE_IMPEXP TPointXYZfRGBu8 {
+		mrpt::math::TPoint3Df pt;
+		uint8_t R,G,B;
+		inline TPointXYZfRGBu8() : pt(), R(0),G(0),B(0) {}
+		inline TPointXYZfRGBu8(float x,float y,float z, uint8_t R_val, uint8_t G_val, uint8_t B_val) : pt(x,y,z),R(R_val),G(G_val),B(B_val) {}
+	};
+
 	/**
 	  * Lightweight 3D pose (three spatial coordinates, plus three angular coordinates). Allows coordinate access using [] operator.
 	  * \sa mrpt::poses::CPose3D
@@ -651,7 +680,7 @@ namespace math	{
 		/**
 		  * Constructor from 2D object. Sets the z to zero.
 		  */
-		TSegment3D(const TSegment2D &s):point1(s.point1),point2(s.point2)	{}
+		explicit TSegment3D(const TSegment2D &s):point1(s.point1),point2(s.point2)	{}
 
 		bool operator<(const TSegment3D &s) const;
 	};
@@ -826,10 +855,8 @@ namespace math	{
 		  * Fast default constructor. Initializes to garbage.
 		  */
 		TLine3D()	{}
-		/**
-		  * Implicit constructor from 2D object. Zeroes the z.
-		  */
-		TLine3D(const TLine2D &l);
+		/** Constructor from 2D object. Zeroes the z. */
+		explicit TLine3D(const TLine2D &l);
 	};
 
 	/**
@@ -951,68 +978,29 @@ namespace math	{
 	  */
 	class BASE_IMPEXP TPolygon2D:public std::vector<TPoint2D>	{
 	public:
-		/**
-		  * Distance to a point.
-		  */
-		double distance(const TPoint2D &point) const;
-		/**
-		  * Check whether a point is inside the polygon.
-		  */
-		bool contains(const TPoint2D &point) const;
-		/**
-		  * Gets as set of segments, instead of points.
-		  */
-		void getAsSegmentList(std::vector<TSegment2D> &v) const;
-		/**
-		  * Projects into 3D space, zeroing the z.
-		  */
-		void generate3DObject(TPolygon3D &p) const;
-		/**
-		  * Polygon's central point.
-		  */
-		void getCenter(TPoint2D &p) const;
-		/**
-		  * Checks whether is convex.
-		  */
-		bool isConvex() const;
-		/**
-		  * Erase repeated vertices.
-		  * \sa removeRedundantVertices
-		  */
-		void removeRepeatedVertices();
-		/**
-		  * Erase every redundant vertex from the polygon, saving space.
-		  * \sa removeRepeatedVertices
-		  */
-		void removeRedundantVertices();
-		/**
-		  * Gets plot data, ready to use on a 2D plot.
-		  * \sa mrpt::gui::CDisplayWindowPlots
-		  */
-		void getPlotData(std::vector<double> &x,std::vector<double> &y) const;
-		/**
-		  * Default constructor.
-		  */
-		TPolygon2D():std::vector<TPoint2D>()	{}
-		/**
-		  * Constructor for a given number of vertices, intializing them as garbage.
-		  */
+		double distance(const TPoint2D &point) const;            //!< Distance to a point (always >=0)
+		bool contains(const TPoint2D &point) const;              //!< Check whether a point is inside (or within geometryEpsilon of a polygon edge). This works for concave or convex polygons.
+		void getAsSegmentList(std::vector<TSegment2D> &v) const; //!< Gets as set of segments, instead of points.
+		void generate3DObject(TPolygon3D &p) const;              //!< Projects into 3D space, zeroing the z.
+		void getCenter(TPoint2D &p) const;                       //!< Polygon's central point.
+		bool isConvex() const;                                   //!< Checks whether is convex.
+		void removeRepeatedVertices();   //!< Erase repeated vertices.  \sa removeRedundantVertices
+		void removeRedundantVertices();  //!< Erase every redundant vertex from the polygon, saving space. \sa removeRepeatedVertices
+		void getPlotData(std::vector<double> &x,std::vector<double> &y) const; //!< Gets plot data, ready to use on a 2D plot. \sa mrpt::gui::CDisplayWindowPlots
+		void getBoundingBox(TPoint2D &min_coords, TPoint2D&max_coords) const;  //!< Get polygon bounding box. \exception On empty polygon
+		/** Default constructor  */
+		TPolygon2D():std::vector<TPoint2D>() {}
+		/** Constructor for a given number of vertices, intializing them as garbage. */
 		explicit TPolygon2D(size_t N):std::vector<TPoint2D>(N)	{}
-		/**
-		  * Implicit constructor from a vector of 2D points.
-		  */
+		/** Implicit constructor from a vector of 2D points */
 		TPolygon2D(const std::vector<TPoint2D> &v):std::vector<TPoint2D>(v)	{}
-		/**
-		  * Constructor from a 3D object.
-		  */
+		/** Constructor from a 3D object. */
 		explicit TPolygon2D(const TPolygon3D &p);
-		/**
-		  * Static method to create a regular polygon, given its size and radius.
+		/** Static method to create a regular polygon, given its size and radius.
 		  * \throw std::logic_error if radius is near zero or the number of edges is less than three.
 		  */
 		static void createRegularPolygon(size_t numEdges,double radius,TPolygon2D &poly);
-		/**
-		  * Static method to create a regular polygon from its size and radius. The center will correspond to the given pose.
+		/** Static method to create a regular polygon from its size and radius. The center will correspond to the given pose.
 		  * \throw std::logic_error if radius is near zero or the number of edges is less than three.
 		  */
 		static inline void createRegularPolygon(size_t numEdges,double radius,TPolygon2D &poly,const mrpt::poses::CPose2D &pose);
@@ -1024,74 +1012,32 @@ namespace math	{
 	  */
 	class BASE_IMPEXP TPolygon3D:public std::vector<TPoint3D>	{
 	public:
-		/**
-		  * Distance to point.
-		  */
-		double distance(const TPoint3D &point) const;
-		/**
-		  * Check whether a point is inside the polygon.
-		  */
-		bool contains(const TPoint3D &point) const;
-		/**
-		  * Gets as set of segments, instead of set of points.
-		  */
-		void getAsSegmentList(std::vector<TSegment3D> &v) const;
-		/**
-		  * Gets a plane which contains the polygon. Returns false if the polygon is skew and cannot be fit inside a plane.
-		  */
-		bool getPlane(TPlane &p) const;
-		/**
-		  * Gets the best fitting plane, disregarding whether the polygon actually fits inside or not.
-		  * \sa getBestFittingPlane
-		  */
+		double distance(const TPoint3D &point) const;  //!< Distance to point (always >=0)
+		bool contains(const TPoint3D &point) const;    //!< Check whether a point is inside (or within geometryEpsilon of a polygon edge). This works for concave or convex polygons.
+		void getAsSegmentList(std::vector<TSegment3D> &v) const; //!< Gets as set of segments, instead of set of points.
+		bool getPlane(TPlane &p) const; //!< Gets a plane which contains the polygon. Returns false if the polygon is skew and cannot be fit inside a plane.
+		/** Gets the best fitting plane, disregarding whether the polygon actually fits inside or not. \sa getBestFittingPlane */
 		void getBestFittingPlane(TPlane &p) const;
-		/**
-		  * Projects into a 2D space, discarding the z.
-		  * \get getPlane,isSkew
-		  */
+		/** Projects into a 2D space, discarding the z. \sa getPlane,isSkew */
 		inline void generate2DObject(TPolygon2D &p) const	{
 			p=TPolygon2D(*this);
 		}
-		/**
-		  * Get polygon's central point.
-		  */
-		void getCenter(TPoint3D &p) const;
-		/**
-		  * Check whether the polygon is skew. Returns true if there doesn't exist a plane in which the polygon can fit.
-		  * \sa getBestFittingPlane
-		  */
-		bool isSkew() const;
-		/**
-		  * Remove polygon's repeated vertices.
-		  */
-		void removeRepeatedVertices();
-		/**
-		  * Erase every redundant vertex, thus saving space.
-		  */
-		void removeRedundantVertices();
-		/**
-		  * Default constructor. Creates a polygon with no vertices.
-		  */
+		void getCenter(TPoint3D &p) const; //!< Get polygon's central point.
+		bool isSkew() const; //!< Check whether the polygon is skew. Returns true if there doesn't exist a plane in which the polygon can fit. \sa getBestFittingPlane
+		void removeRepeatedVertices(); //!< Remove polygon's repeated vertices.
+		void removeRedundantVertices(); //!< Erase every redundant vertex, thus saving space.
+		/** Default constructor. Creates a polygon with no vertices.  */
 		TPolygon3D():std::vector<TPoint3D>()	{}
-		/**
-		  * Constructor for a given size. Creates a polygon with a fixed number of vertices, which are initialized to garbage.
-		  */
+		/** Constructor for a given size. Creates a polygon with a fixed number of vertices, which are initialized to garbage. */
 		explicit TPolygon3D(size_t N):std::vector<TPoint3D>(N)	{}
-		/**
-		  * Implicit constructor from a 3D points vector.
-		  */
+		/** Implicit constructor from a 3D points vector. */
 		TPolygon3D(const std::vector<TPoint3D> &v):std::vector<TPoint3D>(v)	{}
-		/**
-		  * Constructor from a 2D object. Zeroes the z.
-		  */
-		TPolygon3D(const TPolygon2D &p);
-		/**
-		  * Static method to create a regular polygon, given its size and radius.
-		  * \throw std::logic_error if number of edges is less than three, or radius is near zero.
-		  */
+		/** Constructor from a 2D object. Zeroes the z. */
+		explicit TPolygon3D(const TPolygon2D &p);
+		/** Static method to create a regular polygon, given its size and radius.
+		  * \throw std::logic_error if number of edges is less than three, or radius is near zero. */
 		static void createRegularPolygon(size_t numEdges,double radius,TPolygon3D &poly);
-		/**
-		  * Static method to create a regular polygon, given its size and radius. The center will be located on the given pose.
+		/** Static method to create a regular polygon, given its size and radius. The center will be located on the given pose.
 		  * \throw std::logic_error if number of edges is less than three, or radius is near zero.
 		  */
 		static inline void createRegularPolygon(size_t numEdges,double radius,TPolygon3D &poly,const mrpt::poses::CPose3D &pose);
@@ -1647,53 +1593,122 @@ namespace math	{
 		static void getPolygons(const std::vector<TObject3D> &objs,std::vector<TPolygon3D> &polys,std::vector<TObject3D> &remainder);
 	};
 
+	/** 2D twist: 2D velocity vector (vx,vy) + planar angular velocity (omega)
+	  * \sa mrpt::math::TTwist3D, mrpt::math::TPose2D
+	  */
+	struct BASE_IMPEXP TTwist2D {
+		enum { static_size = 3 };
+		double vx,vy; //!< Velocity components: X,Y (m/s)
+		double omega; //!< Angular velocity (rad/s)
+
+		/** Constructor from components */
+		inline TTwist2D(double vx_,double vy_,double omega_):vx(vx_),vy(vy_),omega(omega_) {}
+		/** Default fast constructor. Initializes to garbage  */
+		inline TTwist2D()	{}
+		/** Coordinate access using operator[]. Order: vx,vy,vphi */
+		inline double &operator[](size_t i)	{ switch (i) { case 0: return vx; case 1: return vy; case 2: return omega; default: throw std::out_of_range("index out of range");  } }
+		/** Coordinate access using operator[]. Order: vx,vy,vphi */
+		inline const double &operator[](size_t i) const	{ switch (i) { case 0: return vx; case 1: return vy; case 2: return omega; default: throw std::out_of_range("index out of range");  } }
+		/** Transformation into vector */
+		inline void getAsVector(std::vector<double> &v) const	{
+			v.resize(3);
+			v[0]=vx; v[1]=vy; v[2]=omega;
+		}
+		/** Transform the (vx,vy) components for a counterclockwise rotation of `ang` radians. */
+		void rotate(const double ang);
+		 /** Returns a human-readable textual representation of the object (eg: "[vx vy omega]", omega in deg/s)
+		   * \sa fromString
+		   */
+		void asString(std::string &s) const;
+		inline std::string asString() const { std::string s; asString(s); return s; }
+
+		 /** Set the current object value from a string generated by 'asString' (eg: "[0.02 1.04 -45.0]" )
+		   * \sa asString
+		   * \exception std::exception On invalid format
+		   */
+		 void fromString(const std::string &s);
+		 static size_t size() { return 3; }
+	};
+
+	/** 3D twist: 3D velocity vector (vx,vy,vz) + angular velocity (wx,wy,wz)
+	  * \sa mrpt::math::TTwist2D, mrpt::math::TPose3D
+	  */
+	struct BASE_IMPEXP TTwist3D {
+		enum { static_size = 6 };
+		double vx,vy,vz; //!< Velocity components: X,Y (m/s)
+		double wx,wy,wz; //!< Angular velocity (rad/s)
+
+		/** Constructor from components */
+		inline TTwist3D(double vx_,double vy_,double vz_,double wx_,double wy_,double wz_):vx(vx_),vy(vy_),vz(vz_),wx(wx_),wy(wy_),wz(wz_) {}
+		/** Default fast constructor. Initializes to garbage  */
+		inline TTwist3D()	{}
+		/** Coordinate access using operator[]. Order: vx,vy,vphi */
+		inline double &operator[](size_t i)	{ switch (i) { case 0: return vx; case 1: return vy; case 2: return vz; case 3: return wx;  case 4: return wy;  case 5: return wz; default: throw std::out_of_range("index out of range");  } }
+		/** Coordinate access using operator[]. Order: vx,vy,vphi */
+		inline const double &operator[](size_t i) const	{ switch (i) { case 0: return vx; case 1: return vy; case 2: return vz; case 3: return wx;  case 4: return wy;  case 5: return wz; default: throw std::out_of_range("index out of range");  } }
+		/** Transformation into vector */
+		inline void getAsVector(std::vector<double> &v) const	{
+			v.resize(6);
+			for (int i=0;i<6;i++) v[i]=(*this)[i];
+		}
+		 /** Returns a human-readable textual representation of the object (eg: "[vx vy vz wx wy wz]", omegas in deg/s)
+		   * \sa fromString
+		   */
+		void asString(std::string &s) const;
+		inline std::string asString() const { std::string s; asString(s); return s; }
+
+		/** Transform all 6 components for a change of reference frame from "A" to 
+		  * another frame "B" whose rotation with respect to "A" is given by `rot`. The translational part of the pose is ignored */
+		void rotate(const mrpt::poses::CPose3D & rot);
+
+		 /** Set the current object value from a string generated by 'asString' (eg: "[vx vy vz wx wy wz]" )
+		   * \sa asString
+		   * \exception std::exception On invalid format
+		   */
+		 void fromString(const std::string &s);
+		 static size_t size() { return 3; }
+	};
 
 
-	//Streaming functions
-	/** TPoint2D binary input. */
+	// Binary streaming functions
 	BASE_IMPEXP mrpt::utils::CStream& operator>>(mrpt::utils::CStream& in,mrpt::math::TPoint2D &o);
-	/** TPoint2D binary output.  */
 	BASE_IMPEXP mrpt::utils::CStream& operator<<(mrpt::utils::CStream& out,const mrpt::math::TPoint2D &o);
-	/** TPoint3D binary input. */
+
 	BASE_IMPEXP mrpt::utils::CStream& operator>>(mrpt::utils::CStream& in,mrpt::math::TPoint3D &o);
-	/** TPoint3D binary output. */
 	BASE_IMPEXP mrpt::utils::CStream& operator<<(mrpt::utils::CStream& out,const mrpt::math::TPoint3D &o);
-	/** TPose2D binary input. */
+
 	BASE_IMPEXP mrpt::utils::CStream& operator>>(mrpt::utils::CStream& in,mrpt::math::TPose2D &o);
-	/**TPose2D binary output. */
 	BASE_IMPEXP mrpt::utils::CStream& operator<<(mrpt::utils::CStream& out,const mrpt::math::TPose2D &o);
-	/** TPose3D binary input. */
+
 	BASE_IMPEXP mrpt::utils::CStream& operator>>(mrpt::utils::CStream& in,mrpt::math::TPose3D &o);
-	/** TPose3D binary output. */
 	BASE_IMPEXP mrpt::utils::CStream& operator<<(mrpt::utils::CStream& out,const mrpt::math::TPose3D &o);
-	/**TSegment2D binary input. */
+
 	BASE_IMPEXP mrpt::utils::CStream &operator>>(mrpt::utils::CStream &in,mrpt::math::TSegment2D &s);
-	/** TSegment2D binary output. */
 	BASE_IMPEXP mrpt::utils::CStream &operator<<(mrpt::utils::CStream &out,const mrpt::math::TSegment2D &s);
-	/**TLine2D binary input. */
+
 	BASE_IMPEXP mrpt::utils::CStream &operator>>(mrpt::utils::CStream &in,mrpt::math::TLine2D &l);
-	/** TLine2D binary output. */
 	BASE_IMPEXP mrpt::utils::CStream &operator<<(mrpt::utils::CStream &out,const mrpt::math::TLine2D &l);
-	/** TObject2D binary input. */
+
 	BASE_IMPEXP mrpt::utils::CStream &operator>>(mrpt::utils::CStream &in,mrpt::math::TObject2D &o);
-	/** TObject2D binary input. */
 	BASE_IMPEXP mrpt::utils::CStream &operator<<(mrpt::utils::CStream &out,const mrpt::math::TObject2D &o);
-	/** TSegment3D binary input. */
+
 	BASE_IMPEXP mrpt::utils::CStream &operator>>(mrpt::utils::CStream &in,mrpt::math::TSegment3D &s);
-	/**TSegment3D binary output. */
 	BASE_IMPEXP mrpt::utils::CStream &operator<<(mrpt::utils::CStream &out,const mrpt::math::TSegment3D &s);
-	/** TLine3D binary input. */
+
 	BASE_IMPEXP mrpt::utils::CStream &operator>>(mrpt::utils::CStream &in,mrpt::math::TLine3D &l);
-	/** TLine3D binary output. */
 	BASE_IMPEXP mrpt::utils::CStream &operator<<(mrpt::utils::CStream &out,const mrpt::math::TLine3D &l);
-	/** TPlane binary input. */
+
 	BASE_IMPEXP mrpt::utils::CStream &operator>>(mrpt::utils::CStream &in,mrpt::math::TPlane &p);
-	/** TPlane binary output. */
 	BASE_IMPEXP mrpt::utils::CStream &operator<<(mrpt::utils::CStream &out,const mrpt::math::TPlane &p);
-	/** TObject3D binary input. */
+
 	BASE_IMPEXP mrpt::utils::CStream &operator>>(mrpt::utils::CStream &in,mrpt::math::TObject3D &o);
-	/** TObject3D binary output. */
-	BASE_IMPEXP mrpt::utils::CStream &operator<<(mrpt::utils::CStream &out,const mrpt::math::TObject3D &o);
+	BASE_IMPEXP mrpt::utils::CStream &operator<<(mrpt::utils::CStream &out,const mrpt::math::TObject3D &o); 
+
+	BASE_IMPEXP mrpt::utils::CStream& operator>>(mrpt::utils::CStream& in,mrpt::math::TTwist2D &o);
+	BASE_IMPEXP mrpt::utils::CStream& operator<<(mrpt::utils::CStream& out,const mrpt::math::TTwist2D &o);
+
+	BASE_IMPEXP mrpt::utils::CStream& operator>>(mrpt::utils::CStream& in,mrpt::math::TTwist3D &o);
+	BASE_IMPEXP mrpt::utils::CStream& operator<<(mrpt::utils::CStream& out,const mrpt::math::TTwist3D &o);
 
 	/** @} */ // end of grouping
 
@@ -1715,6 +1730,8 @@ namespace math	{
 		MRPT_DECLARE_TTYPENAME_NAMESPACE(TPlane,mrpt::math)
 		MRPT_DECLARE_TTYPENAME_NAMESPACE(TPolygon3D,mrpt::math)
 		MRPT_DECLARE_TTYPENAME_NAMESPACE(TObject3D,mrpt::math)
+		MRPT_DECLARE_TTYPENAME_NAMESPACE(TTwist2D,mrpt::math)
+		MRPT_DECLARE_TTYPENAME_NAMESPACE(TTwist3D,mrpt::math)
 
 	} // end of namespace utils
 

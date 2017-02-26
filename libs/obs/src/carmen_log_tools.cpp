@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -63,25 +63,26 @@ bool mrpt::obs::carmen_log_parse_line(
 
 		if (! (S >> obsLaser->sensorLabel
 			    >> laser_type >> start_angle >> obsLaser->aperture >> angular_resolution >> obsLaser->maxRange >> accuracy >> remission_mode ) )
-			THROW_EXCEPTION_CUSTOM_MSG1("Error parsing line from CARMEN log (params):\n'%s'\n", line.c_str() )
+			THROW_EXCEPTION_FMT("Error parsing line from CARMEN log (params):\n'%s'\n", line.c_str() )
 
 		size_t nRanges;
 		S >> nRanges;
 
-		obsLaser->scan.resize(nRanges);
-		obsLaser->validRange.resize(nRanges);
+		obsLaser->resizeScan(nRanges);
 
 		for(size_t i=0;i<nRanges;i++)
 		{
-			if (! (S >> obsLaser->scan[i]) )
-				THROW_EXCEPTION_CUSTOM_MSG1("Error parsing line from CARMEN log (ranges):\n'%s'\n", line.c_str() )
+			float range;
+			if (! (S >> range) )
+				THROW_EXCEPTION_FMT("Error parsing line from CARMEN log (ranges):\n'%s'\n", line.c_str() );
+			obsLaser->setScanRange(i, range);
 			// Valid value?
-			obsLaser->validRange[i] =  (obsLaser->scan[i]>=obsLaser->maxRange || obsLaser->scan[i]<=0 ) ? 0 : 1;
+			obsLaser->setScanRangeValidity(i,  (obsLaser->scan[i]>=obsLaser->maxRange || obsLaser->scan[i]<=0 ) );
 		}
 
 		size_t remmision_count;
 		if (! (S >> remmision_count) )
-			THROW_EXCEPTION_CUSTOM_MSG1("Error parsing line from CARMEN log (remmision_count):\n'%s'\n", line.c_str() )
+			THROW_EXCEPTION_FMT("Error parsing line from CARMEN log (remmision_count):\n'%s'\n", line.c_str() )
 
 		vector<double> remission;
 		remission.resize(remmision_count);
@@ -89,7 +90,7 @@ bool mrpt::obs::carmen_log_parse_line(
 		for(size_t i=0; i<remmision_count; i++)
 		{
 			if (! (S >> remission[i]) )
-				THROW_EXCEPTION_CUSTOM_MSG1("Error parsing line from CARMEN log (remmision vals):\n'%s'\n", line.c_str() )
+				THROW_EXCEPTION_FMT("Error parsing line from CARMEN log (remmision vals):\n'%s'\n", line.c_str() )
 		}
 
 		mrpt::math::TPose2D  globalLaserPose;
@@ -97,7 +98,7 @@ bool mrpt::obs::carmen_log_parse_line(
 
 		if (! ( S  >> globalLaserPose.x >> globalLaserPose.y >> globalLaserPose.phi
 				>> globalRobotPose.x >> globalRobotPose.y >> globalRobotPose.phi ) )
-					THROW_EXCEPTION_CUSTOM_MSG1("Error parsing line from CARMEN log (poses):\n'%s'\n", line.c_str() )
+					THROW_EXCEPTION_FMT("Error parsing line from CARMEN log (poses):\n'%s'\n", line.c_str() )
 
 		// Compute pose of laser on the robot:
 		obsLaser->sensorPose = CPose3D( CPose2D(globalLaserPose) - CPose2D(globalRobotPose) );
@@ -144,7 +145,7 @@ bool mrpt::obs::carmen_log_parse_line(
 		size_t  nRanges;
 
 		if (! (S >> obsLaser->sensorLabel >> nRanges) )
-			THROW_EXCEPTION_CUSTOM_MSG1("Error parsing line from CARMEN log (params):\n'%s'\n", line.c_str() )
+			THROW_EXCEPTION_FMT("Error parsing line from CARMEN log (params):\n'%s'\n", line.c_str() )
 
 		// Params:
 		{
@@ -165,22 +166,23 @@ bool mrpt::obs::carmen_log_parse_line(
 			obsLaser->aperture = DEG2RAD(resolutionDeg) * nRanges;
 		}
 
-		obsLaser->scan.resize(nRanges);
-		obsLaser->validRange.resize(nRanges);
+		obsLaser->resizeScan(nRanges);
 
 		for(size_t i=0;i<nRanges;i++)
 		{
-			if (! (S >> obsLaser->scan[i]) )
-				THROW_EXCEPTION_CUSTOM_MSG1("Error parsing line from CARMEN log (ranges):\n'%s'\n", line.c_str() )
+			float range;
+			if (! (S >> range) )
+				THROW_EXCEPTION_FMT("Error parsing line from CARMEN log (ranges):\n'%s'\n", line.c_str() );
+			obsLaser->setScanRange(i,range);
 			// Valid value?
-			obsLaser->validRange[i] =  (obsLaser->scan[i]>=obsLaser->maxRange || obsLaser->scan[i]<=0 ) ? 0 : 1;
+			obsLaser->setScanRangeValidity(i, (obsLaser->scan[i]>=obsLaser->maxRange || obsLaser->scan[i]<=0 ) );
 		}
 
 		mrpt::math::TPose2D  globalLaserPose;
 		mrpt::math::TPose2D  globalRobotPose;
 		if (! ( S  >> globalLaserPose.x >> globalLaserPose.y >> globalLaserPose.phi
 				>> globalRobotPose.x >> globalRobotPose.y >> globalRobotPose.phi ) )
-					THROW_EXCEPTION_CUSTOM_MSG1("Error parsing line from CARMEN log (poses):\n'%s'\n", line.c_str() )
+					THROW_EXCEPTION_FMT("Error parsing line from CARMEN log (poses):\n'%s'\n", line.c_str() )
 
 		// Compute pose of laser on the robot:
 		obsLaser->sensorPose = CPose3D( CPose2D(globalLaserPose) - CPose2D(globalRobotPose) );
@@ -221,7 +223,7 @@ bool mrpt::obs::carmen_log_parse_line(
 		S >> key; // This is "PARAM"
 
 		if (! (S >> key >> val) )
-			THROW_EXCEPTION_CUSTOM_MSG1("Error parsing line from CARMEN log (PARAM):\n'%s'\n", line.c_str() )
+			THROW_EXCEPTION_FMT("Error parsing line from CARMEN log (PARAM):\n'%s'\n", line.c_str() )
 
 		if (!key.empty() && !val.empty() )
 

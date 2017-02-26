@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -202,7 +202,18 @@ uint64_t CMemoryStream::getPosition()
  ---------------------------------------------------------------*/
 void  CMemoryStream::Clear()
 {
-	resize(0);
+	if (!m_read_only)
+	{
+		resize(0);
+	}
+	else
+	{
+		m_memory=0;
+		m_size = 0;
+		m_position=0;
+		m_bytesWritten=0;
+		m_read_only = false;
+	}
 }
 
 /*---------------------------------------------------------------
@@ -268,3 +279,11 @@ bool CMemoryStream::loadBufferFromFile( const std::string &file_name )
 	}
 }
 
+
+// Used in mrpt_send_to_zmq(). `hint` points to a `TFreeFnDataForZMQ` struct, to be freed here.
+void mrpt::utils::internal::free_fn_for_zmq(void * /* data*/, void *hint)
+{
+	mrpt::utils::internal::TFreeFnDataForZMQ* fd = reinterpret_cast<mrpt::utils::internal::TFreeFnDataForZMQ*>(hint);
+	if (fd->do_free) delete fd->buf;
+	delete fd;
+}

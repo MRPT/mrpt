@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -43,15 +43,6 @@ namespace mrpt
 			  * \param M The number of m_particles.
 			  */
 			CPose3DPDFParticles( size_t M = 1 );
-
-			/** Copy constructor */
-			inline CPose3DPDFParticles( const CPose3DPDFParticles& obj ) :
-				CPose3DPDF(),
-				CParticleFilterData<CPose3D>()
-			{
-				copyFrom( obj );
-			}
-			virtual ~CPose3DPDFParticles();//!< Destructor
 
 			void copyFrom(const CPose3DPDF &o) MRPT_OVERRIDE; //!< Copy operator, translating if necesary (for example, between m_particles and gaussian representations)
 

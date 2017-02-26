@@ -19,22 +19,22 @@ emptyARGS=1
 errARGS=0
 
 while getopts 'chrlwsdo' OPTION
-do 
+do
 	case "$OPTION" in
 	c) 	outCHM="YES"
 		genHTML="YES"
 		MRPT_USE_SEARCHENGINE="NO"
-		emptyARGS=0 
+		emptyARGS=0
 			;;
 	h)	outHTML="YES"
 		genHTML="YES"
 		emptyARGS=0
 			;;
 	r)	genRTF="YES"
-		emptyARGS=0 
+		emptyARGS=0
 			;;
 	l)	genLATEX="YES"
-		emptyARGS=0 
+		emptyARGS=0
 			;;
 	w)	includeCounter="YES"
 			;;
@@ -61,7 +61,7 @@ then
 	exit 1
 fi
 
-# List of directories with header files (.h) and individual files to 
+# List of directories with header files (.h) and individual files to
 # generate doc from.
 #  Paths relative to "$MRPT_ROOT"
 # -------------------------------------------------------------------
@@ -70,13 +70,15 @@ EIGEN_BASE_DIR="$CUR_DIR/otherlibs/eigen3/Eigen"
 EIGEN_EXTRA_DIR="$CUR_DIR/otherlibs/eigen3/unsupported/Eigen"
 EXTRA_INDIV_FILES=`find libs -name '*SSE*.cpp' | xargs -I FIL printf "$CUR_DIR/FIL "`
 EIGEN_INDIV_FILES="$EIGEN_BASE_DIR/Array  $EIGEN_BASE_DIR/Cholesky  $EIGEN_BASE_DIR/Core  $EIGEN_BASE_DIR/Dense  $EIGEN_BASE_DIR/Eigen  $EIGEN_BASE_DIR/Eigenvalues  $EIGEN_BASE_DIR/Geometry  $EIGEN_BASE_DIR/Householder  $EIGEN_BASE_DIR/Jacobi  $EIGEN_BASE_DIR/LeastSquares  $EIGEN_BASE_DIR/LU  $EIGEN_BASE_DIR/QR  $EIGEN_BASE_DIR/Sparse  $EIGEN_BASE_DIR/SVD $EIGEN_EXTRA_DIR/AdolcForward $EIGEN_EXTRA_DIR/AlignedVector3 $EIGEN_EXTRA_DIR/AutoDiff $EIGEN_EXTRA_DIR/BVH $EIGEN_EXTRA_DIR/CholmodSupport $EIGEN_EXTRA_DIR/FFT $EIGEN_EXTRA_DIR/IterativeSolvers $EIGEN_EXTRA_DIR/MatrixFunctions $EIGEN_EXTRA_DIR/MoreVectorization $EIGEN_EXTRA_DIR/MPRealSupport $EIGEN_EXTRA_DIR/NonLinearOptimization $EIGEN_EXTRA_DIR/NumericalDiff $EIGEN_EXTRA_DIR/OpenGLSupport $EIGEN_EXTRA_DIR/Polynomials $EIGEN_EXTRA_DIR/Skyline $EIGEN_EXTRA_DIR/SparseExtra $EIGEN_EXTRA_DIR/SuperLUSupport $EIGEN_EXTRA_DIR/UmfPackSupport"
+VISION_EXTRA_DIR="$CUR_DIR/libs/vision/src/pnp"
+VISION_CITATION_FILES="$CUR_DIR/doc/pnp_algos.bib"
 if ( [ "$skipMAINMRPTDOCS" -eq "0" ] )
 then
 	MRPT_LIST_DIRECTORIES=$(echo $CUR_DIR/doc/doxygen-pages $CUR_DIR/libs/*/include/)
 else
 	MRPT_LIST_DIRECTORIES=$(echo $CUR_DIR/doc/doxygen-pages)
 fi
-MRPT_LIST_INPUT="$MRPT_LIST_DIRECTORIES $EXTRA_INDIV_FILES $EIGEN_INDIV_FILES"
+MRPT_LIST_INPUT="$MRPT_LIST_DIRECTORIES $EXTRA_INDIV_FILES $EIGEN_INDIV_FILES $VISION_EXTRA_DIR"
 
 MRPT_EXAMPLE_PATH="$CUR_DIR/samples/ $CUR_DIR/share/mrpt/config_files/"
 
@@ -95,13 +97,13 @@ fi
 #  "Linux"
 #  other...
 #
-#  We will directly execute HHC.exe only in the case of CYGWIN, or 
+#  We will directly execute HHC.exe only in the case of CYGWIN, or
 #  through "wine" otherwise.
 #-------------------------------------------------------------------
 SYS_NAME=`uname -s`
 MATCH_COUNT=`expr index "$SYS_NAME" 'GW'`
 
-echo 
+echo
 if [ $MATCH_COUNT -eq 0 ]
 then
 	SYSTEM_TYPE="Linux"
@@ -130,7 +132,9 @@ echo "--------------------------------------------------------------------"
 sleep 2
 
 # Obtain the SVN number:
-if [ "$skipSVN" = "NO" ]
+MRPT_SVN_NUMBER=""
+
+if [ -d .svn ]
 then
 	printf "Obtaining SVN number (This may take a *while* the first time, be patient)...\n"
 	printf "Running svnversion..."
@@ -145,8 +149,23 @@ then
 		MRPT_SVN_NUMBER = ""
 	fi
 	printf "OK (%s)\n" $MRPT_SVN_NUMBER
-else
-	MRPT_SVN_NUMBER=""
+fi
+
+if [ -d .git ]
+then
+	printf "Obtaining Git commit id...\n"
+	printf "Running..."
+	MRPT_SVN_NUMBER="Git: `git log --pretty=format:'%h %cd' -n 1`"
+
+	if [ $? -ne 0 ]
+	then
+		#echo "ERROR: svnversion returns an error code! Is SVN installed in the system???"
+		#echo " You can use the argument -s to skip SVN number extraction. See README."
+		#exit 1
+		echo "WARNING: git returns an error code! Is git installed in the system???"
+		MRPT_SVN_NUMBER = ""
+	fi
+	printf "OK (%s)\n" "$MRPT_SVN_NUMBER"
 fi
 
 # Build the complete library name:
@@ -172,11 +191,12 @@ cp images/*.* html/
 cp html_postbuild/*.* html/
 
 # Build & copy PDF manuals:
-cd pbmap-guide
-make 2> /dev/null
-mv *.pdf ..
-cd ..
-
+for dir in ./{pbmap-guide,graphslam-engine-guide}; do
+    cd $dir
+    make 2> /dev/null
+    mv *.pdf ..
+    cd ..
+done
 
 rm html/*.pdf 2> /dev/null
 cp *.pdf html/ 2> /dev/null
@@ -200,7 +220,7 @@ mkdir doc/chm
 CHM_FILENAME="libMRPT-$MRPT_VERSION_STR.chm"
 
 # Create the DOXYGEN scripts by replacing constant values:
-#  We parse the file doxygen_project.txt.in into the 
+#  We parse the file doxygen_project.txt.in into the
 #  file doxygen_project.txt, by replacing:
 #
 #   $MRPT_COMPLETE_NAME
@@ -219,11 +239,11 @@ printf "Generating the html footer..."
 
 if [ "$includeCounter" = "YES" ]
 then
-	WEB_COUNTER_STR='<script type="text/javascript"> var sc_project=2835288; var sc_invisible=0; var sc_partition=28; var sc_security="862cd600";</script> <script type="text/javascript" src="http://www.statcounter.com/counter/counter_xhtml.js"></script><noscript> <div class="statcounter"><img class="statcounter" src="http://c29.statcounter.com/2835288/0/862cd600/0/" alt="free html hit counter" ></div></noscript>' 
-	
+	WEB_COUNTER_STR='<script type="text/javascript"> var sc_project=2835288; var sc_invisible=0; var sc_partition=28; var sc_security="862cd600";</script> <script type="text/javascript" src="http://www.statcounter.com/counter/counter_xhtml.js"></script><noscript> <div class="statcounter"><img class="statcounter" src="http://c29.statcounter.com/2835288/0/862cd600/0/" alt="free html hit counter" ></div></noscript>'
+
 	# Note: The trailing "$" is to allow escaping the single quotes like in ANSI C:
 	GOOGLE_ANALYTICS_STR=$'<script type="text/javascript"> var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www."); document.write(unescape("%3Cscript src=\'" + gaJsHost + "google-analytics.com/ga.js\' type=\'text/javascript\'%3E%3C/script%3E")); </script> <script type="text/javascript"> try{ var pageTracker = _gat._getTracker("UA-21128561-2"); pageTracker._trackPageview(); } catch(err) {} </script>'
-	
+
 	SOURCEFORGE_LOGO="<small>Hosted on:</small><br><a href=\"http://sourceforge.net\"><img src=\"http://sflogo.sourceforge.net/sflogo.php?group_id=205280&amp;type=1\" width=\"88\" height=\"31\" border=\"0\" alt=\"SourceForge.net Logo\" ></a>"
 else
 	WEB_COUNTER_STR=""
@@ -253,7 +273,7 @@ then
 	cd html
 	mv -f $FILES_TO_SAVE ../
 	cd ..
-	
+
 	# Remove all:
 	rm html/*.html > /dev/null  2>&1
 	rm html/*.png > /dev/null  2>&1
@@ -266,5 +286,3 @@ cd ..
 
 # Keep a valid command at the end to assure that ERRORLEVEL is "0" when executing the script in Windows
 printf "Done!\n\n"
-
-

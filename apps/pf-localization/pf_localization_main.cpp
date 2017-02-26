@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -48,6 +48,9 @@
 #include <mrpt/opengl/CEllipsoid.h>
 #include <mrpt/opengl/CDisk.h>
 #include <mrpt/opengl/stock_objects.h>
+
+#include <mrpt/gui/CDisplayWindowPlots.h>
+#include <mrpt/math/data_utils.h>
 
 using namespace mrpt;
 using namespace mrpt::slam;
@@ -118,39 +121,42 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 {
 	ASSERT_FILE_EXISTS_(ini_fil)
 
-	CConfigFile	iniFile(ini_fil);
+	CConfigFile	cfg(ini_fil);
 
 	vector_int			particles_count;	// Number of initial particles (if size>1, run the experiments N times)
 
 	// Load configuration:
 	// -----------------------------------------
-	string iniSectionName ( "LocalizationExperiment" );
+	const string sect("LocalizationExperiment");
 
 
 	// Mandatory entries:
-	iniFile.read_vector(iniSectionName, "particles_count", vector_int(1,0), particles_count, /*Fail if not found*/true );
-	string		OUT_DIR_PREFIX		= iniFile.read_string(iniSectionName,"logOutput_dir","", /*Fail if not found*/true );
-
+	cfg.read_vector(sect, "particles_count", vector_int(1,0), particles_count, /*Fail if not found*/true );
+	string		OUT_DIR_PREFIX		= cfg.read_string(sect,"logOutput_dir","", /*Fail if not found*/true );
 
 	string		RAWLOG_FILE;
 	if (cmdline_rawlog_file.empty())
-		 RAWLOG_FILE = iniFile.read_string(iniSectionName,"rawlog_file","", /*Fail if not found*/true );
+		 RAWLOG_FILE = cfg.read_string(sect,"rawlog_file","", /*Fail if not found*/true );
 	else RAWLOG_FILE = cmdline_rawlog_file;
 
 	// Non-mandatory entries:
-	string		MAP_FILE			= iniFile.read_string(iniSectionName,"map_file","" );
-	size_t		rawlog_offset		= iniFile.read_int(iniSectionName,"rawlog_offset",0);
-	string		GT_FILE				= iniFile.read_string(iniSectionName,"ground_truth_path_file","");
-	int		NUM_REPS			= iniFile.read_int(iniSectionName,"experimentRepetitions",1);
-	int		SCENE3D_FREQ		= iniFile.read_int(iniSectionName,"3DSceneFrequency",10);
-	bool 		SCENE3D_FOLLOW = iniFile.read_bool(iniSectionName,"3DSceneFollowRobot",true);
-	unsigned int	testConvergenceAt   = iniFile.read_int(iniSectionName,"experimentTestConvergenceAtStep",-1);
+	string		MAP_FILE			= cfg.read_string(sect,"map_file","" );
+	size_t		rawlog_offset		= cfg.read_int(sect,"rawlog_offset",0);
+	string		GT_FILE				= cfg.read_string(sect,"ground_truth_path_file","");
+	int		NUM_REPS			= cfg.read_int(sect,"experimentRepetitions",1);
+	int		SCENE3D_FREQ		= cfg.read_int(sect,"3DSceneFrequency",10);
+	bool 		SCENE3D_FOLLOW = cfg.read_bool(sect,"3DSceneFollowRobot",true);
+	unsigned int	testConvergenceAt   = cfg.read_int(sect,"experimentTestConvergenceAtStep",-1);
 
-	bool    	SAVE_STATS_ONLY = iniFile.read_bool(iniSectionName,"SAVE_STATS_ONLY",false);
+	bool  SAVE_STATS_ONLY = cfg.read_bool(sect,"SAVE_STATS_ONLY",false);
+	bool  DO_RELIABILITY_ESTIMATE=false;
+	bool  DO_SCAN_LIKELIHOOD_DEBUG = false;
+	MRPT_LOAD_CONFIG_VAR(DO_RELIABILITY_ESTIMATE, bool, cfg, sect);
+	MRPT_LOAD_CONFIG_VAR(DO_SCAN_LIKELIHOOD_DEBUG, bool, cfg, sect);
 
-	bool 		SHOW_PROGRESS_3D_REAL_TIME = iniFile.read_bool(iniSectionName,"SHOW_PROGRESS_3D_REAL_TIME",false);
-	int			SHOW_PROGRESS_3D_REAL_TIME_DELAY_MS = iniFile.read_int(iniSectionName,"SHOW_PROGRESS_3D_REAL_TIME_DELAY_MS",1);
-	double 		STATS_CONF_INTERVAL = iniFile.read_double(iniSectionName,"STATS_CONF_INTERVAL",0.2);
+	bool 		SHOW_PROGRESS_3D_REAL_TIME = cfg.read_bool(sect,"SHOW_PROGRESS_3D_REAL_TIME",false);
+	int			SHOW_PROGRESS_3D_REAL_TIME_DELAY_MS = cfg.read_int(sect,"SHOW_PROGRESS_3D_REAL_TIME_DELAY_MS",1);
+	double 		STATS_CONF_INTERVAL = cfg.read_double(sect,"STATS_CONF_INTERVAL",0.2);
 
 #if !MRPT_HAS_WXWIDGETS
 	SHOW_PROGRESS_3D_REAL_TIME = false;
@@ -160,24 +166,24 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 	//  Only used for observations-only rawlogs:
 	CActionRobotMovement2D::TMotionModelOptions dummy_odom_params;
 	dummy_odom_params.modelSelection = CActionRobotMovement2D::mmGaussian;
-	dummy_odom_params.gausianModel.minStdXY  = iniFile.read_double("DummyOdometryParams","minStdXY",0.04);
-	dummy_odom_params.gausianModel.minStdPHI = DEG2RAD(iniFile.read_double("DummyOdometryParams","minStdPHI", 2.0));
+	dummy_odom_params.gaussianModel.minStdXY  = cfg.read_double("DummyOdometryParams","minStdXY",0.04);
+	dummy_odom_params.gaussianModel.minStdPHI = DEG2RAD(cfg.read_double("DummyOdometryParams","minStdPHI", 2.0));
 
 
 	// PF-algorithm Options:
 	// ---------------------------
 	CParticleFilter::TParticleFilterOptions		pfOptions;
-	pfOptions.loadFromConfigFile( iniFile, "PF_options" );
+	pfOptions.loadFromConfigFile( cfg, "PF_options" );
 
 	// PDF Options:
 	// ------------------
 	TMonteCarloLocalizationParams	pdfPredictionOptions;
-	pdfPredictionOptions.KLD_params.loadFromConfigFile( iniFile, "KLD_options");
+	pdfPredictionOptions.KLD_params.loadFromConfigFile( cfg, "KLD_options");
 
 	// Metric map options:
 	// -----------------------------
 	TSetOfMetricMapInitializers				mapList;
-	mapList.loadFromConfigFile( iniFile,"MetricMap");
+	mapList.loadFromConfigFile( cfg,"MetricMap");
 
 
 
@@ -242,7 +248,7 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 		}
 		else
 		{
-			THROW_EXCEPTION_CUSTOM_MSG1("Map file has unknown extension: '%s'",mapExt.c_str());
+			THROW_EXCEPTION_FMT("Map file has unknown extension: '%s'",mapExt.c_str());
 		}
 
 	}
@@ -273,10 +279,10 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 	COpenGLScene			scene;
 
 	float init_PDF_min_x=0, init_PDF_min_y=0, init_PDF_max_x=0,init_PDF_max_y=0;
-	MRPT_LOAD_CONFIG_VAR(init_PDF_min_x,float, iniFile,iniSectionName)
-	MRPT_LOAD_CONFIG_VAR(init_PDF_min_y,float, iniFile,iniSectionName)
-	MRPT_LOAD_CONFIG_VAR(init_PDF_max_x,float, iniFile,iniSectionName)
-	MRPT_LOAD_CONFIG_VAR(init_PDF_max_y,float, iniFile,iniSectionName)
+	MRPT_LOAD_CONFIG_VAR(init_PDF_min_x,float, cfg,sect)
+	MRPT_LOAD_CONFIG_VAR(init_PDF_min_y,float, cfg,sect)
+	MRPT_LOAD_CONFIG_VAR(init_PDF_max_x,float, cfg,sect)
+	MRPT_LOAD_CONFIG_VAR(init_PDF_max_y,float, cfg,sect)
 
 	// Gridmap / area of initial uncertainty:
 	COccupancyGridMap2D::TEntropyInfo	gridInfo;
@@ -284,35 +290,28 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 	{
 		metricMap.m_gridMaps[0]->computeEntropy( gridInfo );
 		printf("The gridmap has %.04fm2 observed area, %u observed cells\n", gridInfo.effectiveMappedArea, (unsigned) gridInfo.effectiveMappedCells );
+	}
+	else {
+		gridInfo.effectiveMappedArea = (init_PDF_max_x-init_PDF_min_x)*(init_PDF_max_y-init_PDF_min_y);
+	}
 
-		{
-			scene.insert( mrpt::opengl::CGridPlaneXY::Create(-50,50,-50,50,0,5) );
+	{
+		scene.insert( mrpt::opengl::CGridPlaneXY::Create(-50,50,-50,50,0,5) );
 
-			CSetOfObjectsPtr gl_obj = CSetOfObjects::Create();
-			metricMap.getAs3DObject(gl_obj);
-			scene.insert(gl_obj);
-		}
+		CSetOfObjectsPtr gl_obj = CSetOfObjects::Create();
+		metricMap.getAs3DObject(gl_obj);
+		scene.insert(gl_obj);
 
 		if (SHOW_PROGRESS_3D_REAL_TIME)
 		{
 			COpenGLScenePtr ptrScene = win3D->get3DSceneAndLock();
 
-			ptrScene->insert( mrpt::opengl::CGridPlaneXY::Create(-50,50,-50,50,0,5) );
-
-			CSetOfObjectsPtr gl_obj = CSetOfObjects::Create();
-			metricMap.getAs3DObject(gl_obj);
 			ptrScene->insert(gl_obj);
-
 			ptrScene->enableFollowCamera(true);
 
 			win3D->unlockAccess3DScene();
 		}
 	}
-	else
-	{
-		gridInfo.effectiveMappedArea = (init_PDF_max_x-init_PDF_min_x)*(init_PDF_max_y-init_PDF_min_y);
-	}
-
 
 	for ( vector_int::iterator itNum = particles_count.begin(); itNum!=particles_count.end(); ++itNum )
 	{
@@ -396,22 +395,22 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 			// Initialize the PDF:
 			// -----------------------------
 			tictac.Tic();
-			if ( !iniFile.read_bool(iniSectionName,"init_PDF_mode",false, /*Fail if not found*/true) )
+			if ( !cfg.read_bool(sect,"init_PDF_mode",false, /*Fail if not found*/true) )
 				pdf.resetUniformFreeSpace(
 					metricMap.m_gridMaps[0].pointer(),
 					0.7f,
 					PARTICLE_COUNT,
 					init_PDF_min_x,init_PDF_max_x,
 					init_PDF_min_y,init_PDF_max_y,
-					DEG2RAD(iniFile.read_float(iniSectionName,"init_PDF_min_phi_deg",-180)),
-					DEG2RAD(iniFile.read_float(iniSectionName,"init_PDF_max_phi_deg",180))
+					DEG2RAD(cfg.read_float(sect,"init_PDF_min_phi_deg",-180)),
+					DEG2RAD(cfg.read_float(sect,"init_PDF_max_phi_deg",180))
 					);
 			else
 				pdf.resetUniform(
 					init_PDF_min_x,init_PDF_max_x,
 					init_PDF_min_y,init_PDF_max_y,
-					DEG2RAD(iniFile.read_float(iniSectionName,"init_PDF_min_phi_deg",-180)),
-					DEG2RAD(iniFile.read_float(iniSectionName,"init_PDF_max_phi_deg",180)),
+					DEG2RAD(cfg.read_float(sect,"init_PDF_min_phi_deg",-180)),
+					DEG2RAD(cfg.read_float(sect,"init_PDF_max_phi_deg",180)),
 					PARTICLE_COUNT
 					);
 
@@ -526,6 +525,17 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 								mrpt::utils::TColorf(.8f,.8f,.8f),
 								"mono", 15, mrpt::opengl::NICE, 6003 );
 
+							{
+								CRenderizablePtr grid_ground = ptrScene->getByName("ground_lines");
+								if (!grid_ground)
+								{
+									grid_ground = mrpt::opengl::CGridPlaneXY::Create(-50,50,-50,50,0,5);
+									grid_ground->setName("ground_lines");
+									ptrScene->insert(grid_ground);
+									ptrScene->insert( stock_objects::CornerXYZSimple(1.0f,3.0f) );
+								}
+							}
+
 							// The Ground Truth (GT):
 							if (GT.getRowCount()>0)
 							{
@@ -536,7 +546,7 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 									GTpt->setName( "GT" );
 									GTpt->setColor(0,0,0, 0.9);
 
-									getAs<CDisk>(GTpt)->setDiskRadius(0.04);
+									getAs<CDisk>(GTpt)->setDiskRadius(0.04f);
 									ptrScene->insert( GTpt );
 								}
 
@@ -588,16 +598,14 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 								}
 
 								CSimplePointsMap	map;
-								static CSimplePointsMap	last_map;
 
 								CPose3D				robotPose3D( meanPose );
 
 								map.clear();
 								observations->insertObservationsInto( &map );
 
-								getAs<CPointCloud>(scanPts)->loadFromPointsMap( &last_map );
+								getAs<CPointCloud>(scanPts)->loadFromPointsMap( &map );
 								getAs<CPointCloud>(scanPts)->setPose( robotPose3D );
-								last_map = map;
 							}
 
 							// The camera:
@@ -686,26 +694,90 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 					covergenceErrors.push_back( expectedPose.distanceTo( pdfEstimation ) );
 #endif
 
+					CPosePDFGaussian current_pdf_gaussian;
+					pdf.getCovarianceAndMean(current_pdf_gaussian.cov,current_pdf_gaussian.mean);
+
 					// Text output:
 					// ----------------------------------------
 					if (!SAVE_STATS_ONLY)
 					{
 						cout << "    Odometry est: " << odometryEstimation << "\n";
-						cout << "         PDF est: " << pdfEstimation << ", ESS (B.R.)= " << PF_stats.ESS_beforeResample << "\n";
+						cout << "         PDF est: " << pdfEstimation << ", ESS (B.R.)= " << PF_stats.ESS_beforeResample << " tr(cov): " << std::sqrt(current_pdf_gaussian.cov.trace()) << "\n";
 						if (GT.getRowCount()>0)
 							cout << "    Ground truth: " << expectedPose << "\n";
 					}
 
-					pdf.getCovariance(cov);
+					// Evaluate the "reliability" of the pose estimation 
+					// (for now, only for 2D laser scans + grid maps)
+					double obs_reliability_estim = .0;
+					if (DO_RELIABILITY_ESTIMATE)
+					{
+						// We need: a gridmap & a 2D LIDAR:
+						CObservation2DRangeScanPtr obs_scan;
+						if (observations) obs_scan = observations->getObservationByClass<CObservation2DRangeScan>(0); // Get the 0'th scan, if several are present.
+						COccupancyGridMap2DPtr gridmap = metricMap.getMapByClass<COccupancyGridMap2D>();
+						if (obs_scan && gridmap) // We have both, go on:
+						{
+							// Simulate scan + uncertainty:
+							COccupancyGridMap2D::TLaserSimulUncertaintyParams  ssu_params;
+							COccupancyGridMap2D::TLaserSimulUncertaintyResult  ssu_out;
+							ssu_params.method = COccupancyGridMap2D::sumUnscented;
+							//ssu_params.UT_alpha = 0.99;
+							//obs_scan->stdError = 0.07;
+							//obs_scan->maxRange = 10.0;
+
+							ssu_params.robotPose = current_pdf_gaussian;
+							ssu_params.aperture = obs_scan->aperture;
+							ssu_params.rangeNoiseStd = obs_scan->stdError;
+							ssu_params.nRays = obs_scan->scan.size();
+							ssu_params.rightToLeft = obs_scan->rightToLeft;
+							ssu_params.sensorPose = obs_scan->sensorPose;
+							ssu_params.maxRange = obs_scan->maxRange;
+
+							gridmap->laserScanSimulatorWithUncertainty(ssu_params, ssu_out);
+
+							// Evaluate reliability:
+							CObservation2DRangeScanWithUncertainty::TEvalParams evalParams;
+							//evalParams.prob_outliers = 0.40;
+							//evalParams.max_prediction_std_dev = 1.0;
+							obs_reliability_estim = ssu_out.scanWithUncert.evaluateScanLikelihood(*obs_scan,evalParams);
+							
+							if (DO_SCAN_LIKELIHOOD_DEBUG) 
+							{
+								static mrpt::gui::CDisplayWindowPlots win;
+
+								std::vector<float> ranges_mean, ranges_obs;
+								for (size_t i=0;i<ssu_out.scanWithUncert.rangeScan.scan.size(); i++)
+									ranges_mean.push_back(ssu_out.scanWithUncert.rangeScan.scan[i]);
+								for (size_t i=0;i<obs_scan->scan.size(); i++)
+									ranges_obs.push_back(obs_scan->scan[i]);
+
+								win.plot(ranges_mean, "3k-", "mean");
+								win.plot(ranges_obs, "r-", "obs");
+
+								Eigen::VectorXd ci1 = ssu_out.scanWithUncert.rangesMean + 3*ssu_out.scanWithUncert.rangesCovar.diagonal().array().sqrt().matrix();
+								Eigen::VectorXd ci2 = ssu_out.scanWithUncert.rangesMean - 3*ssu_out.scanWithUncert.rangesCovar.diagonal().array().sqrt().matrix();
+								win.plot(ci1, "k-", "CI+");
+								win.plot(ci2, "k-", "CI-");
+
+								win.setWindowTitle( mrpt::format("obs_reliability_estim: %f",obs_reliability_estim) );
+								win.axis_fit();
+							}
+						}
+						cout << "    Reliability measure [0-1]: " << obs_reliability_estim << "\n";
+					}
 
 					if (!SAVE_STATS_ONLY)
 					{
-			                        f_cov_est.printf("%e\n",sqrt(cov.det()) );
-			                        f_pf_stats.printf("%u %e %e\n",
+						f_cov_est.printf("%e\n",sqrt(cov.det()) );
+						f_pf_stats.printf("%u %e %e %f %f\n",
 							(unsigned int)pdf.size(),
 							PF_stats.ESS_beforeResample,
-							PF_stats.weightsVariance_beforeResample );
-			                        f_odo_est.printf("%f %f %f\n",odometryEstimation.x(),odometryEstimation.y(),odometryEstimation.phi());
+							PF_stats.weightsVariance_beforeResample,
+							obs_reliability_estim,
+							sqrt(current_pdf_gaussian.cov.det())
+							);
+						f_odo_est.printf("%f %f %f\n",odometryEstimation.x(),odometryEstimation.y(),odometryEstimation.phi());
 					}
 
 					CPose2D meanPose;
@@ -716,7 +788,7 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 					{
 						// Generate 3D scene:
 						// ------------------------------
-						MRPT_TODO("Someday I should clean up this mess, since two different 3D scenes are built -> refactor code")
+						//MRPT_TODO("Someday I should clean up this mess, since two different 3D scenes are built -> refactor code")
 
 						// The Ground Truth (GT):
 						if (GT.getRowCount()>0)
@@ -729,7 +801,7 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 								GTpt->setName( "GT" );
 								GTpt->setColor(0,0,0, 0.9);
 
-								getAs<CDisk>(GTpt)->setDiskRadius(0.04);
+								getAs<CDisk>(GTpt)->setDiskRadius(0.04f);
 								scene.insert( GTpt );
 							}
 
@@ -780,16 +852,14 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 							}
 
 							CSimplePointsMap	map;
-							static CSimplePointsMap	last_map;
 
 							CPose3D				robotPose3D( meanPose );
 
 							map.clear();
 							observations->insertObservationsInto( &map );
 
-							getAs<CPointCloud>(scanPts)->loadFromPointsMap( &last_map );
+							getAs<CPointCloud>(scanPts)->loadFromPointsMap( &map );
 							getAs<CPointCloud>(scanPts)->setPose( robotPose3D );
-							last_map = map;
 						}
 
 						// The camera:
@@ -826,17 +896,11 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 					if (!SAVE_STATS_ONLY && SCENE3D_FREQ!=-1 && (step % SCENE3D_FREQ)==0)
 					{
 						// Save 3D scene:
-						CFileGZOutputStream(format("%s/progress_%03u.3Dscene",sOUT_DIR_3D.c_str(),(unsigned)step)) << scene;
+						CFileGZOutputStream(format("%s/progress_%05u.3Dscene",sOUT_DIR_3D.c_str(),(unsigned)step)) << scene;
 
 						// Generate text files for matlab:
 						// ------------------------------------
-						pdf.saveToTextFile(format("%s/particles_%03u.txt",sOUT_DIR_PARTS.c_str(),(unsigned)step));
-
-						if (IS_CLASS(*observations->begin(),CObservation2DRangeScan))
-						{
-							CObservation2DRangeScanPtr o = CObservation2DRangeScanPtr( *observations->begin() );
-							vectorToTextFile(o->scan , format("%s/observation_scan_%03u.txt",sOUT_DIR_PARTS.c_str(),(unsigned)step) );
-						}
+						pdf.saveToTextFile(format("%s/particles_%05u.txt",sOUT_DIR_PARTS.c_str(),(unsigned)step));
 					}
 
 				} // end if rawlog_offset

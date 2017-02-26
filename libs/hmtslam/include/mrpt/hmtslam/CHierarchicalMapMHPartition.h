@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -15,7 +15,7 @@
 
 #include <mrpt/poses/CPose3DPDFSOG.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
-#include <mrpt/utils/CDebugOutputCapable.h>
+#include <mrpt/utils/COutputLogger.h>
 #include <mrpt/opengl/opengl_frwds.h>
 
 #include <map>
@@ -31,7 +31,7 @@ namespace mrpt
 		 * \sa CHierarchicalMHMap, CHMHMapArc, CHMHMapNode
 		  * \ingroup mrpt_hmtslam_grp
 		 */
-		class HMTSLAM_IMPEXP CHierarchicalMapMHPartition : public mrpt::utils::CDebugOutputCapable
+		class HMTSLAM_IMPEXP CHierarchicalMapMHPartition : public mrpt::utils::COutputLogger
 		{
 		protected:
 			/** The internal list of nodes and arcs in the whole hierarchical model.
@@ -206,8 +206,7 @@ namespace mrpt
 				bool						&isInverted ) const;
 
 
-			 /** Returns wether two nodes are "neightbour", i.e. have a direct arc between them
-			   */
+			 /** Returns whether two nodes are "neightbour", i.e. have a direct arc between them  */
 			bool areNodesNeightbour(
 				const CHMHMapNode::TNodeID	&node1,
 				const CHMHMapNode::TNodeID	&node2,

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -17,66 +17,31 @@
 #include <mrpt/math/math_frwds.h>  // forward declarations
 #include <mrpt/math/wrap2pi.h>
 
-/*---------------------------------------------------------------
-	Class
-  ---------------------------------------------------------------*/
 namespace mrpt
 {
 	namespace math
 	{
-		using std::vector;
-
 		/** \addtogroup geometry_grp Geometry: lines, planes, intersections, SLERP, "lightweight" point & pose classes
 		  *  \ingroup mrpt_base_grp
 		  * @{ */
 
-		/**
-		  * Global epsilon to overcome small precision errors
-		  */
-		extern double BASE_IMPEXP geometryEpsilon;
+		extern double BASE_IMPEXP geometryEpsilon; //!< Global epsilon to overcome small precision errors (Default=1e-5)
 
-		/**
-		  * Slightly heavyweight type to speed-up calculations with polygons in 3D
+		/** Slightly heavyweight type to speed-up calculations with polygons in 3D
 		  * \sa TPolygon3D,TPlane
 		  */
 		class BASE_IMPEXP TPolygonWithPlane	{
 		public:
-			/**
-			  * Actual polygon.
-			  */
-			TPolygon3D poly;
-			/**
-			  * Plane containing the polygon.
-			  */
-			TPlane plane;
-			/**
-			  * Plane's pose.
-			  * \sa inversePose
-			  */
-			mrpt::poses::CPose3D pose;
-			/**
-			  * Plane's inverse pose.
-			  * \sa pose
-			  */
-			mrpt::poses::CPose3D inversePose;
-			/**
-			  * Polygon, after being projected to the plane using inversePose.
-			  * \sa inversePose
-			  */
-			TPolygon2D poly2D;
-			/**
-			  * Constructor. Takes a polygon and computes each parameter.
-			  */
-			TPolygonWithPlane(const TPolygon3D &p);
-			/**
-			  * Basic constructor. Needed to create containers.
-			  * \sa TPolygonWithPlane(const TPolygon3D &)
-			  */
+			TPolygon3D poly; //!< Actual polygon.
+			TPlane plane; //!< Plane containing the polygon.
+			mrpt::poses::CPose3D pose; //!< Plane's pose.  \sa inversePose
+			mrpt::poses::CPose3D inversePose; //!< Plane's inverse pose. \sa pose
+			TPolygon2D poly2D; //!< Polygon, after being projected to the plane using inversePose. \sa inversePose
+			TPolygonWithPlane(const TPolygon3D &p); //!< Constructor. Takes a polygon and computes each parameter.
+			/** Basic constructor. Needed to create containers  \sa TPolygonWithPlane(const TPolygon3D &) */
 			TPolygonWithPlane()	{}
-			/**
-			  * Static method for vectors. Takes a set of polygons and creates every TPolygonWithPlane
-			  */
-			static void getPlanes(const vector<TPolygon3D> &oldPolys,vector<TPolygonWithPlane> &newPolys);
+			/** Static method for vectors. Takes a set of polygons and creates every TPolygonWithPlane  */
+			static void getPlanes(const std::vector<TPolygon3D> &oldPolys,std::vector<TPolygonWithPlane> &newPolys);
 		};
 
 		/** @name Simple intersection operations, relying basically on geometrical operations.
@@ -305,48 +270,29 @@ namespace mrpt
 		/** @name Projections
 			@{
 		 */
-		/**
-		  * Uses the given pose 3D to project a point into a new base.
-		  */
+		/** Uses the given pose 3D to project a point into a new base */
 		inline void project3D(const TPoint3D &point, const mrpt::poses::CPose3D &newXYpose,TPoint3D &newPoint)	{
 			newXYpose.composePoint(point.x,point.y,point.z,newPoint.x,newPoint.y,newPoint.z);
 		}
-		/**
-		  * Uses the given pose 3D to project a segment into a new base.
-		  */
+		/** Uses the given pose 3D to project a segment into a new base  */
 		inline void project3D(const TSegment3D &segment,const mrpt::poses::CPose3D &newXYpose,TSegment3D &newSegment)	{
 			project3D(segment.point1,newXYpose,newSegment.point1);
 			project3D(segment.point2,newXYpose,newSegment.point2);
 		}
-		/**
-		  * Uses the given pose 3D to project a line into a new base.
-		  */
-		void BASE_IMPEXP project3D(const TLine3D &line,const mrpt::poses::CPose3D &newXYpose,TLine3D &newLine);
-		/**
-		  * Uses the given pose 3D to project a plane into a new base.
-		  */
-		void BASE_IMPEXP project3D(const TPlane &plane,const mrpt::poses::CPose3D &newXYpose,TPlane &newPlane);
-		/**
-		  * Uses the given pose 3D to project a polygon into a new base.
-		  */
-		void BASE_IMPEXP project3D(const TPolygon3D &polygon,const mrpt::poses::CPose3D &newXYpose,TPolygon3D &newPolygon);
-		/**
-		  * Uses the given pose 3D to project any 3D object into a new base.
-		  */
-		void BASE_IMPEXP project3D(const TObject3D &object,const mrpt::poses::CPose3D &newXYPose,TObject3D &newObject);
 
-		/**
-		  * Projects any 3D object into the plane's base, using its inverse pose. If the object is exactly inside the plane, this projection will zero its Z coordinates.
-		  */
+		void BASE_IMPEXP project3D(const TLine3D &line,const mrpt::poses::CPose3D &newXYpose,TLine3D &newLine); //!< Uses the given pose 3D to project a line into a new base
+		void BASE_IMPEXP project3D(const TPlane &plane,const mrpt::poses::CPose3D &newXYpose,TPlane &newPlane); //!< Uses the given pose 3D to project a plane into a new base
+		void BASE_IMPEXP project3D(const TPolygon3D &polygon,const mrpt::poses::CPose3D &newXYpose,TPolygon3D &newPolygon); //!< Uses the given pose 3D to project a polygon into a new base
+		void BASE_IMPEXP project3D(const TObject3D &object,const mrpt::poses::CPose3D &newXYPose,TObject3D &newObject); //!< Uses the given pose 3D to project any 3D object into a new base.
+
+		/** Projects any 3D object into the plane's base, using its inverse pose. If the object is exactly inside the plane, this projection will zero its Z coordinates */
 		template<class T> void project3D(const T &obj,const TPlane &newXYPlane,T &newObj)	{
 			mrpt::poses::CPose3D pose;
 			TPlane(newXYPlane).getAsPose3D(pose);
 			project3D(obj,-pose,newObj);
 		}
 
-		/**
-		  * Projects any 3D object into the plane's base, using its inverse pose and forcing the position of the new coordinates origin. If the object is exactly inside the plane, this projection will zero its Z coordinates.
-		  */
+		/** Projects any 3D object into the plane's base, using its inverse pose and forcing the position of the new coordinates origin. If the object is exactly inside the plane, this projection will zero its Z coordinates  */
 		template<class T> void project3D(const T &obj,const TPlane &newXYPlane,const TPoint3D &newOrigin,T &newObj)	{
 			mrpt::poses::CPose3D pose;
 			//TPlane(newXYPlane).getAsPose3DForcingOrigin(newOrigin,pose);
@@ -354,43 +300,28 @@ namespace mrpt
 			project3D(obj,-pose,newObj);
 		}
 
-		/**
-		  * Projects a set of 3D objects into the plane's base.
-		  */
+		/** Projects a set of 3D objects into the plane's base. */
 		template<class T> void project3D(const std::vector<T> &objs,const mrpt::poses::CPose3D &newXYpose,std::vector<T> &newObjs)	{
 			size_t N=objs.size();
 			newObjs.resize(N);
 			for (size_t i=0;i<N;i++) project3D(objs[i],newXYpose,newObjs[i]);
 		}
 
-		/**
-		  * Uses the given pose 2D to project a point into a new base.
-		  */
+		/** Uses the given pose 2D to project a point into a new base. */
 		void BASE_IMPEXP project2D(const TPoint2D &point,const mrpt::poses::CPose2D &newXpose,TPoint2D &newPoint);
 
-		/**
-		  * Uses the given pose 2D to project a segment into a new base.
-		  */
+		/** Uses the given pose 2D to project a segment into a new base  */
 		inline void project2D(const TSegment2D &segment,const mrpt::poses::CPose2D &newXpose,TSegment2D &newSegment)	{
 			project2D(segment.point1,newXpose,newSegment.point1);
 			project2D(segment.point2,newXpose,newSegment.point2);
 		}
 
-		/**
-		  * Uses the given pose 2D to project a line into a new base.
-		  */
-		void BASE_IMPEXP project2D(const TLine2D &line,const mrpt::poses::CPose2D &newXpose,TLine2D &newLine);
-		/**
-		  * Uses the given pose 2D to project a polygon into a new base.
-		  */
-		void BASE_IMPEXP project2D(const TPolygon2D &polygon,const mrpt::poses::CPose2D &newXpose,TPolygon2D &newPolygon);
-		/**
-		  * Uses the given pose 2D to project any 2D object into a new base.
-		  */
-		void BASE_IMPEXP project2D(const TObject2D &object,const mrpt::poses::CPose2D &newXpose,TObject2D &newObject);
 
-		/**
-		  * Projects any 2D object into the line's base, using its inverse pose. If the object is exactly inside the line, this projection will zero its Y coordinate.
+		void BASE_IMPEXP project2D(const TLine2D &line,const mrpt::poses::CPose2D &newXpose,TLine2D &newLine); //!< Uses the given pose 2D to project a line into a new base
+		void BASE_IMPEXP project2D(const TPolygon2D &polygon,const mrpt::poses::CPose2D &newXpose,TPolygon2D &newPolygon); //!< Uses the given pose 2D to project a polygon into a new base.
+		void BASE_IMPEXP project2D(const TObject2D &object,const mrpt::poses::CPose2D &newXpose,TObject2D &newObject); //!< Uses the given pose 2D to project any 2D object into a new base
+
+		/** Projects any 2D object into the line's base, using its inverse pose. If the object is exactly inside the line, this projection will zero its Y coordinate.
 		  * \tparam CPOSE2D set to mrpt::poses::CPose2D
 		  */
 		template<class T,class CPOSE2D> void project2D(const T &obj,const TLine2D &newXLine,T &newObj)	{
@@ -399,8 +330,7 @@ namespace mrpt
 			project2D(obj,CPOSE2D(0,0,0)-pose,newObj);
 		}
 
-		/**
-		  * Projects any 2D object into the line's base, using its inverse pose and forcing the position of the new coordinate origin. If the object is exactly inside the line, this projection will zero its Y coordinate.
+		/** Projects any 2D object into the line's base, using its inverse pose and forcing the position of the new coordinate origin. If the object is exactly inside the line, this projection will zero its Y coordinate.
 		  * \tparam CPOSE2D set to mrpt::poses::CPose2D
 		  */
 		template<class T,class CPOSE2D> void project2D(const T &obj,const TLine2D &newXLine,const TPoint2D &newOrigin,T &newObj)	{
@@ -409,9 +339,7 @@ namespace mrpt
 			project2D(obj,CPOSE2D(0,0,0)-pose,newObj);
 		}
 
-		/**
-		  * Projects a set of 2D objects into the line's base.
-		  */
+		/** Projects a set of 2D objects into the line's base */
 		template<class T> void project2D(const std::vector<T> &objs,const mrpt::poses::CPose2D &newXpose,std::vector<T> &newObjs)	{
 			size_t N=objs.size();
 			newObjs.resize(N);
@@ -423,86 +351,46 @@ namespace mrpt
 		/** @name Polygon intersections. These operations rely more on spatial reasoning than in raw numerical operations.
 			@{
 		 */
-		/**
-		  * Gets the intersection between a 2D polygon and a 2D segment.
-		  * \sa TObject2D
-		  */
+		/** Gets the intersection between a 2D polygon and a 2D segment. \sa TObject2D  */
 		bool BASE_IMPEXP intersect(const TPolygon2D &p1,const TSegment2D &s2,TObject2D &obj);
-		/**
-		  * Gets the intersection between a 2D polygon and a 2D line.
-		  * \sa TObject2D
-		  */
+		/** Gets the intersection between a 2D polygon and a 2D line. \sa TObject2D  */
 		bool BASE_IMPEXP intersect(const TPolygon2D &p1,const TLine2D &r2,TObject2D &obj);
-		/**
-		  * Gets the intersection between two 2D polygons.
-		  * \sa TObject2D
-		  */
+		/** Gets the intersection between two 2D polygons. \sa TObject2D */
 		bool BASE_IMPEXP intersect(const TPolygon2D &p1,const TPolygon2D &p2,TObject2D &obj);
-		/**
-		  * Gets the intersection between a 2D segment and a 2D polygon.
-		  * \sa TObject2D
-		  */
+		/** Gets the intersection between a 2D segment and a 2D polygon.  \sa TObject2D  */
 		inline bool intersect(const TSegment2D &s1,const TPolygon2D &p2,TObject2D &obj)	{
 			return intersect(p2,s1,obj);
 		}
-		/**
-		  * Gets the intersection between a 2D line and a 2D polygon.
-		  * \sa TObject2D
-		  */
+		/** Gets the intersection between a 2D line and a 2D polygon.\sa TObject2D */
 		inline bool intersect(const TLine2D &r1,const TPolygon2D &p2,TObject2D &obj)	{
 			return intersect(p2,r1,obj);
 		}
-		/**
-		  * Gets the intersection between a 3D polygon and a 3D segment.
-		  * \sa TObject3D
-		  */
+		/** Gets the intersection between a 3D polygon and a 3D segment. \sa TObject3D  */
 		bool BASE_IMPEXP intersect(const TPolygon3D &p1,const TSegment3D &s2,TObject3D &obj);
-		/**
-		  * Gets the intersection between a 3D polygon and a 3D line.
-		  * \sa TObject3D
-		  */
+		/** Gets the intersection between a 3D polygon and a 3D line. \sa TObject3D  */
 		bool BASE_IMPEXP intersect(const TPolygon3D &p1,const TLine3D &r2,TObject3D &obj);
-		/**
-		  * Gets the intersection between a 3D polygon and a plane.
-		  * \sa TObject3D
-		  */
+		/** Gets the intersection between a 3D polygon and a plane. \sa TObject3D */
 		bool BASE_IMPEXP intersect(const TPolygon3D &p1,const TPlane &p2,TObject3D &obj);
-		/**
-		  * Gets the intersection between two 3D polygons.
-		  * \sa TObject3D
-		  */
+		/** Gets the intersection between two 3D polygons. \sa TObject3D */
 		bool BASE_IMPEXP intersect(const TPolygon3D &p1,const TPolygon3D &p2,TObject3D &obj);
-		/**
-		  * Gets the intersection between a 3D segment and a 3D polygon.
-		  * \sa TObject3D
-		  */
+		/** Gets the intersection between a 3D segment and a 3D polygon. \sa TObject3D */
 		inline bool intersect(const TSegment3D &s1,const TPolygon3D &p2,TObject3D &obj)	{
 			return intersect(p2,s1,obj);
 		}
-		/**
-		  * Gets the intersection between a 3D line and a 3D polygon.
-		  * \sa TObject3D
-		  */
+		/** Gets the intersection between a 3D line and a 3D polygon.\sa TObject3D  */
 		inline bool intersect(const TLine3D &r1,const TPolygon3D &p2,TObject3D &obj)	{
 			return intersect(p2,r1,obj);
 		}
-		/**
-		  * Gets the intersection between a plane and a 3D polygon.
-		  * \sa TObject3D
-		  */
+		/** Gets the intersection between a plane and a 3D polygon. \sa TObject3D */
 		inline bool intersect(const TPlane &p1,const TPolygon3D &p2,TObject3D &obj)	{
 			return intersect(p2,p1,obj);
 		}
 
-		/**
-		  * Gets the intersection between two sets of 3D polygons. The intersection is returned as an sparse matrix with each pair of polygons' intersections, and the return value is the amount of intersections found.
-		  * \sa TObject3D,CSparseMatrixTemplate
-		  */
+		/** Gets the intersection between two sets of 3D polygons. The intersection is returned as an sparse matrix with each pair of polygons' intersections, and the return value is the amount of intersections found.
+		  * \sa TObject3D,CSparseMatrixTemplate */
 		size_t BASE_IMPEXP intersect(const std::vector<TPolygon3D> &v1,const std::vector<TPolygon3D> &v2,CSparseMatrixTemplate<TObject3D> &objs);
-		/**
-		  * Gets the intersection between two sets of 3D polygons. The intersection is returned as a vector with every intersection found, and the return value is the amount of intersections found.
-		  * \sa TObject3D
-		  */
+		/** Gets the intersection between two sets of 3D polygons. The intersection is returned as a vector with every intersection found, and the return value is the amount of intersections found.
+		  * \sa TObject3D */
 		size_t BASE_IMPEXP intersect(const std::vector<TPolygon3D> &v1,const std::vector<TPolygon3D> &v2,std::vector<TObject3D> &objs);
 		/** @}
 		 */
@@ -510,10 +398,8 @@ namespace mrpt
 		/** @name Other intersections
 			@{
 		 */
-		/**
-		  * Gets the intersection between vectors of geometric objects and returns it in a sparse matrix of either TObject2D or TObject3D.
-		  * \sa TObject2D,TObject3D,CSparseMatrix
-		  */
+		/** Gets the intersection between vectors of geometric objects and returns it in a sparse matrix of either TObject2D or TObject3D.
+		  * \sa TObject2D,TObject3D,CSparseMatrix */
 		template<class T,class U,class O> size_t intersect(const std::vector<T> &v1,const std::vector<U> &v2,CSparseMatrixTemplate<O> &objs)	{
 			size_t M=v1.size(),N=v2.size();
 			O obj;
@@ -523,10 +409,8 @@ namespace mrpt
 			return objs.getNonNullElements();
 		}
 
-		/**
-		  * Gets the intersection between vectors of geometric objects and returns it in a vector of either TObject2D or TObject3D.
-		  * \sa TObject2D,TObject3D
-		  */
+		/** Gets the intersection between vectors of geometric objects and returns it in a vector of either TObject2D or TObject3D.
+		  * \sa TObject2D,TObject3D */
 		template<class T,class U,class O> size_t intersect(const std::vector<T> &v1,const std::vector<U> &v2,std::vector<O> objs)	{
 			objs.resize(0);
 			O obj;
@@ -537,13 +421,9 @@ namespace mrpt
 			return objs.size();
 		}
 
-		/**
-		  * Gets the intersection between any pair of 2D objects.
-		  */
+		/** Gets the intersection between any pair of 2D objects.*/
 		bool BASE_IMPEXP intersect(const TObject2D &o1,const TObject2D &o2,TObject2D &obj);
-		/**
-		  * Gets the intersection between any pair of 3D objects.
-		  */
+		/** Gets the intersection between any pair of 3D objects.*/
 		bool BASE_IMPEXP intersect(const TObject3D &o1,const TObject3D &o2,TObject3D &obj);
 		/** @}
 		 */
@@ -551,79 +431,34 @@ namespace mrpt
 		/** @name Distances
 			@{
 		 */
-		/**
-		  * Gets the distance between two points in a 2D space.
-		  */
-		double BASE_IMPEXP distance(const TPoint2D &p1,const TPoint2D &p2);
-		/**
-		  * Gets the distance between two points in a 3D space.
-		  */
-		double BASE_IMPEXP distance(const TPoint3D &p1,const TPoint3D &p2);
-		/**
-		  * Gets the distance between two lines in a 2D space.
-		  */
-		double BASE_IMPEXP distance(const TLine2D &r1,const TLine2D &r2);
-		/**
-		  * Gets the distance between two lines in a 3D space.
-		  */
-		double BASE_IMPEXP distance(const TLine3D &r1,const TLine3D &r2);
-		/**
-		  * Gets the distance between two planes. It will be zero if the planes are not parallel.
-		  */
-		double BASE_IMPEXP distance(const TPlane &p1,const TPlane &p2);
-
-		/**
-		  * Gets the distance between two polygons in a 2D space.
-		  */
-		double BASE_IMPEXP distance(const TPolygon2D &p1,const TPolygon2D &p2);
-		/**
-		  * Gets the distance between a polygon and a segment in a 2D space.
-		  */
-		double BASE_IMPEXP distance(const TPolygon2D &p1,const TSegment2D &s2);
-		/**
-		  * Gets the distance between a segment and a polygon in a 2D space.
-		  */
+		double BASE_IMPEXP distance(const TPoint2D &p1,const TPoint2D &p2); //!< Gets the distance between two points in a 2D space.
+		double BASE_IMPEXP distance(const TPoint3D &p1,const TPoint3D &p2); //!< Gets the distance between two points in a 3D space.
+		double BASE_IMPEXP distance(const TLine2D &r1,const TLine2D &r2); //!<  Gets the distance between two lines in a 2D space.
+		double BASE_IMPEXP distance(const TLine3D &r1,const TLine3D &r2); //!<  Gets the distance between two lines in a 3D space.
+		double BASE_IMPEXP distance(const TPlane &p1,const TPlane &p2); //!<  Gets the distance between two planes. It will be zero if the planes are not parallel.
+		double BASE_IMPEXP distance(const TPolygon2D &p1,const TPolygon2D &p2);//!< Gets the distance between two polygons in a 2D space.
+		double BASE_IMPEXP distance(const TPolygon2D &p1,const TSegment2D &s2);//!< Gets the distance between a polygon and a segment in a 2D space.
+		/** Gets the distance between a segment and a polygon in a 2D space. */
 		inline double distance(const TSegment2D &s1,const TPolygon2D &p2)	{
 			return distance(p2,s1);
 		}
-		/**
-		  * Gets the distance between a polygon and a line in a 2D space.
-		  */
-		double BASE_IMPEXP distance(const TPolygon2D &p1,const TLine2D &l2);
+		double BASE_IMPEXP distance(const TPolygon2D &p1,const TLine2D &l2);//!< Gets the distance between a polygon and a line in a 2D space.
 		inline double distance(const TLine2D &l1,const TPolygon2D &p2)	{
 			return distance(p2,l1);
 		}
-		/**
-		  * Gets the distance between two polygons in a 3D space.
-		  */
-		double BASE_IMPEXP distance(const TPolygon3D &p1,const TPolygon3D &p2);
-		/**
-		  * Gets the distance between a polygon and a segment in a 3D space.
-		  */
-		double BASE_IMPEXP distance(const TPolygon3D &p1,const TSegment3D &s2);
-		/**
-		  * Gets the distance between a segment and a polygon in a 3D space.
-		  */
+		double BASE_IMPEXP distance(const TPolygon3D &p1,const TPolygon3D &p2);//!< Gets the distance between two polygons in a 3D space.
+		double BASE_IMPEXP distance(const TPolygon3D &p1,const TSegment3D &s2);//!< Gets the distance between a polygon and a segment in a 3D space.
+		/** Gets the distance between a segment and a polygon in a 3D space.*/
 		inline double distance(const TSegment3D &s1,const TPolygon3D &p2)	{
 			return distance(p2,s1);
 		}
-		/**
-		  * Gets the distance between a polygon and a line in a 3D space.
-		  */
-		double BASE_IMPEXP distance(const TPolygon3D &p1,const TLine3D &l2);
-		/**
-		  * Gets the distance between a line and a polygon in a 3D space.
-		  */
+		double BASE_IMPEXP distance(const TPolygon3D &p1,const TLine3D &l2); //!< Gets the distance between a polygon and a line in a 3D space.
+		/** Gets the distance between a line and a polygon in a 3D space */
 		inline double distance(const TLine3D &l1,const TPolygon3D &p2)	{
 			return distance(p2,l1);
 		}
-		/**
-		  * Gets the distance between a polygon and a plane.
-		  */
-		double BASE_IMPEXP distance(const TPolygon3D &po,const TPlane &pl);
-		/**
-		  * Gets the distance between a plane and a polygon.
-		  */
+		double BASE_IMPEXP distance(const TPolygon3D &po,const TPlane &pl);//!< Gets the distance between a polygon and a plane.
+		/** Gets the distance between a plane and a polygon.*/
 		inline double distance(const TPlane &pl,const TPolygon3D &po)	{
 			return distance(po,pl);
 		}
@@ -633,13 +468,9 @@ namespace mrpt
 		/** @name Bound checkers
 			@{
 		 */
-		/**
-		  * Gets the rectangular bounds of a 2D polygon or set of 2D points.
-		  */
+		/** Gets the rectangular bounds of a 2D polygon or set of 2D points */
 		void BASE_IMPEXP getRectangleBounds(const std::vector<TPoint2D> &poly,TPoint2D &pMin,TPoint2D &pMax);
-		/**
-		  * Gets the prism bounds of a 3D polygon or set of 3D points.
-		  */
+		/** Gets the prism bounds of a 3D polygon or set of 3D points. */
 		void BASE_IMPEXP getPrismBounds(const std::vector<TPoint3D> &poly,TPoint3D &pMin,TPoint3D &pMax);
 		/** @}
 		 */
@@ -737,12 +568,12 @@ namespace mrpt
 		/**
 		  * Splits a 2D polygon into convex components.
 		  */
-		bool BASE_IMPEXP splitInConvexComponents(const TPolygon2D &poly,vector<TPolygon2D> &components);
+		bool BASE_IMPEXP splitInConvexComponents(const TPolygon2D &poly,std::vector<TPolygon2D> &components);
 		/**
 		  * Splits a 3D polygon into convex components.
 		  * \throw std::logic_error if the polygon can't be fit into a plane.
 		  */
-		bool BASE_IMPEXP splitInConvexComponents(const TPolygon3D &poly,vector<TPolygon3D> &components);
+		bool BASE_IMPEXP splitInConvexComponents(const TPolygon3D &poly,std::vector<TPolygon3D> &components);
 
 		/**
 		  * Gets the bisector of a 2D segment.
@@ -766,12 +597,12 @@ namespace mrpt
 		  * Fast ray tracing method using polygons' properties.
 		  * \sa CRenderizable::rayTrace
 		  */
-		bool BASE_IMPEXP traceRay(const vector<TPolygonWithPlane> &vec,const mrpt::poses::CPose3D &pose,double &dist);
+		bool BASE_IMPEXP traceRay(const std::vector<TPolygonWithPlane> &vec,const mrpt::poses::CPose3D &pose,double &dist);
 		/**
 		  * Fast ray tracing method using polygons' properties.
 		  * \sa CRenderizable::rayTrace
 		  */
-		inline bool traceRay(const vector<TPolygon3D> &vec,const mrpt::poses::CPose3D &pose,double &dist)	{
+		inline bool traceRay(const std::vector<TPolygon3D> &vec,const mrpt::poses::CPose3D &pose,double &dist)	{
 			std::vector<TPolygonWithPlane> pwp;
 			TPolygonWithPlane::getPlanes(vec,pwp);
 			return traceRay(pwp,pose,dist);
@@ -810,7 +641,7 @@ namespace mrpt
 			v_out[2] =  v0[0]*v1[1] - v0[1]*v1[0];
 		}
 
-		//! \overload (returning a vector of size 3 by value).
+		//! overload (returning a vector of size 3 by value).
 		template<class VEC1,class VEC2>
 		inline Eigen::Matrix<double,3,1> crossProduct3D(const VEC1 &v0,const VEC2 &v1)	{
 			Eigen::Matrix<double,3,1> vOut;
@@ -888,31 +719,6 @@ namespace mrpt
 			return abs(v1[2]*v2[0]-v2[2]*v1[0])<geometryEpsilon;
 		}
 
-		/** Computes the closest point from a given point to a segment, and returns that minimum distance.
-		  */
-		double BASE_IMPEXP minimumDistanceFromPointToSegment(
-				const double &	Px,
-				const double &	Py,
-				const double &	x1,
-				const double &	y1,
-				const double &	x2,
-				const double &	y2,
-				double &	out_x,
-				double &	out_y);
-
-		/** Computes the closest point from a given point to a segment, and returns that minimum distance.
-		  */
-		double BASE_IMPEXP minimumDistanceFromPointToSegment(
-				const double &	Px,
-				const double &	Py,
-				const double &	x1,
-				const double &	y1,
-				const double &	x2,
-				const double &	y2,
-				float &	out_x,
-				float &	out_y);
-
-
 		/** Computes the closest point from a given point to a segment.
 		  * \sa closestFromPointToLine
 		  */
@@ -974,22 +780,43 @@ namespace mrpt
 			return square(x1-x2)+square(y1-y2)+square(z1-z2);
 		}
 
+		/** Computes the closest point from a given point to a segment, and returns that minimum distance.
+		  */
+		template <typename T>
+		double minimumDistanceFromPointToSegment(
+			const double Px,
+			const double Py,
+			const double x1,
+			const double y1,
+			const double x2,
+			const double y2,
+			T & out_x,
+			T & out_y)
+		{
+			double ox, oy;
+			closestFromPointToSegment(Px, Py, x1, y1, x2, y2, ox, oy);
+			out_x = static_cast<T>(ox);
+			out_y = static_cast<T>(oy);
+			return distanceBetweenPoints(Px, Py, ox, oy);
+		}
+
+
 		/** Returns the intersection point, and if it exists, between two segments.
 		  */
 		bool  BASE_IMPEXP SegmentsIntersection(
-					const double &	x1,const double &	y1,
-					const double &	x2,const double &	y2,
-					const double &	x3,const double &	y3,
-					const double &	x4,const double &	y4,
+					const double x1,const double y1,
+					const double x2,const double y2,
+					const double x3,const double y3,
+					const double x4,const double y4,
 					double &ix,double &iy);
 
 		/** Returns the intersection point, and if it exists, between two segments.
 		  */
 		bool  BASE_IMPEXP SegmentsIntersection(
-					const double &	x1,const double &	y1,
-					const double &	x2,const double &	y2,
-					const double &	x3,const double &	y3,
-					const double &	x4,const double &	y4,
+					const double x1,const double y1,
+					const double x2,const double y2,
+					const double x3,const double y3,
+					const double x4,const double y4,
 					float &ix,float &iy);
 
 		/** Returns true if the 2D point (px,py) falls INTO the given polygon.
@@ -1047,7 +874,7 @@ namespace mrpt
 							double &x,   double &y,   double &z,
 							double &dist);
 
-		/** Returns wether two rotated rectangles intersect.
+		/** Returns whether two rotated rectangles intersect.
 		 *  The first rectangle is not rotated and given by (R1_x_min,R1_x_max)-(R1_y_min,R1_y_max).
 		 *  The second rectangle is given is a similar way, but it is internally rotated according
 		 *   to the given coordinates translation (R2_pose_x,R2_pose_y,R2_pose_phi(radians)), relative

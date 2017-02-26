@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -83,8 +83,7 @@ void theMainThing()
 		obsScan.aperture = 0;
 		obsScan.maxRange = 80.0f;
 		obsScan.rightToLeft = true;
-		obsScan.validRange.resize(1,1);
-		obsScan.scan.resize(1,0);
+        obsScan.resizeScanAndAssign(1, 0.0, true);
 	}
 
 	// Set options:

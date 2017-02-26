@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -124,7 +124,7 @@ namespace mrpt
 				const size_t nNodes = m_lstNode_IDs.size();
 
 				if ( m_lstNode_IDs.find(source_node_ID)==m_lstNode_IDs.end() )
-					THROW_EXCEPTION_CUSTOM_MSG1("Cannot find the source node_ID=%u in the graph",static_cast<unsigned int>(source_node_ID));
+					THROW_EXCEPTION_FMT("Cannot find the source node_ID=%u in the graph",static_cast<unsigned int>(source_node_ID));
 
 				// Init:
 				// m_distances: already initialized to infinity by default.
