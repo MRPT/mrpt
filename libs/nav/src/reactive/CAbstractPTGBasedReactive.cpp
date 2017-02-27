@@ -746,7 +746,7 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 
 	// Factor 1: Free distance for the chosen PTG and "alpha" in the TP-Space:
 	// ----------------------------------------------------------------------
-	double & colfree = cm.props["colision_free_distance"];
+	double & colfree = cm.props["collision_free_distance"];
 	if (move_k == target_k && target_d_norm>.0 && in_TPObstacles[move_k]>target_d_norm+0.05 /*small margin*/) {
 		// If we head straight to target, don't count the possible collisions ahead:
 		colfree = mrpt::utils::saturate_val(in_TPObstacles[move_k] / (target_d_norm + 0.05 /* give a minimum margin */), 0.0, 1.0);
@@ -914,17 +914,6 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 	// -----------------------------------------------------
 	double &clearance = cm.props["clearance"];
 	clearance = in_clearance.getClearance(move_k, target_d_norm*1.01, false /* spot, dont interpolate */ );
-
-#if 0 // ->leave this to the multiobjective optimizer
-	// Don't trust PTG continuation if we are too close to obstacles:
-	if (this_is_PTG_continuation &&
-		std::min(eval_factors[SCOREIDX_COLISION_FREE_DISTANCE], eval_factors[SCOREIDX_CLEARANCE]) < params_abstract_ptg_navigator.min_normalized_free_space_for_ptg_continuation)
-	{
-		newLogRec.additional_debug_msgs["PTG_eval"] = "PTG-continuation not allowed, too close to obstacles.";
-		cm.speed = -0.01; // this enforces a 0 global evaluation score
-		return;
-	}
-#endif
 
 	// Factor: ETA (Estimated Time of Arrival to target or to closest obstacle, whatever it's first)
 	// -----------------------------------------------------
