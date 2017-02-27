@@ -2072,7 +2072,7 @@ public:
      *                      the NULL byte will be converted.
      * @return              -1 cast to size_t on a conversion error.
      */
-    size_t SizeFromStore(
+    virtual size_t SizeFromStore(
         const char *    a_pInputData,
         size_t          a_uInputDataLen)
     {
@@ -2096,7 +2096,7 @@ public:
      * @return              true if all of the input data was successfully
      *                      converted.
      */
-    bool ConvertFromStore(
+    virtual bool ConvertFromStore(
         const char *    a_pInputData,
         size_t          a_uInputDataLen,
         SI_CHAR *       a_pOutputData,
@@ -2157,6 +2157,46 @@ public:
     }
 };
 
+/** MRPT custom INI file parser to allow minimal file preprocessing:
+* - multiline entries via an end-of-line backslash ('\')
+*/
+struct My_IniFileParser : public SI_ConvertA<char>
+{
+	My_IniFileParser(bool a_bStoreIsUtf8) : SI_ConvertA<char>(a_bStoreIsUtf8) { }
+
+	/* copy and assignment */
+	My_IniFileParser(const My_IniFileParser & rhs) { SI_ConvertA<char>::operator=(rhs); }
+	My_IniFileParser & operator=(const My_IniFileParser & rhs) {
+		SI_ConvertA<char>::operator=(rhs);
+		return *this;
+	}
+
+	virtual size_t SizeFromStore(
+		const char *    a_pInputData,
+		size_t          a_uInputDataLen) MRPT_OVERRIDE
+	{
+		(void)a_pInputData;
+		SI_ASSERT(a_uInputDataLen != (size_t)-1);
+
+		// ASCII/MBCS/UTF-8 needs no conversion
+		return a_uInputDataLen;
+	}
+
+	virtual bool ConvertFromStore(
+		const char *    a_pInputData,
+		size_t          a_uInputDataLen,
+		char *       a_pOutputData,
+		size_t          a_uOutputDataSize) MRPT_OVERRIDE
+	{
+		// ASCII/MBCS/UTF-8 needs no conversion
+		if (a_uInputDataLen > a_uOutputDataSize) {
+			return false;
+		}
+		::memcpy(a_pOutputData, a_pInputData, a_uInputDataLen);
+		return true;
+	}
+
+};
 
 // ---------------------------------------------------------------------------
 //                              SI_CONVERT_GENERIC
@@ -2734,6 +2774,8 @@ typedef CSimpleIniTempl<char,
     SI_NoCase<char>,SI_ConvertA<char> >                 CSimpleIniA;
 typedef CSimpleIniTempl<char,
     SI_Case<char>,SI_ConvertA<char> >                   CSimpleIniCaseA;
+
+typedef CSimpleIniTempl<char, SI_NoCase<char>, My_IniFileParser> MRPT_CSimpleIni;
 
 #if defined(SI_CONVERT_ICU)
 typedef CSimpleIniTempl<UChar,
