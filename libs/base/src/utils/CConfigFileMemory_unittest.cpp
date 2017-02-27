@@ -8,7 +8,10 @@
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/utils/CConfigFileMemory.h>
+#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/system/filesystem.h>
 #include <gtest/gtest.h>
+#include <fstream>
 
 using namespace mrpt;
 using namespace mrpt::utils;
@@ -66,20 +69,38 @@ TEST(CConfigFileMemory, setFromString)
 	EXPECT_EQ(cfg.read_string("test","key_str",""),std::string("pepe"));
 }
 
+// Being able of read 
+const std::string sampleCfgTxt =
+"[test]\n"
+"key_str = this is a \\\n"
+"long value that can be \\\n"
+"split into several lines \\\n"
+"but read as a single line. \n";
+;
+const std::string expectedStr = std::string("this is a long value that can be split into several lines but read as a single line.");
+
 TEST(CConfigFileMemory, readMultiLineStrings)
 {
-	// Being able of read 
-	const std::string sampleCfgTxt =
-		"[test]\n"
-		"key_str = this is a \\\n"
-		"long value that can be \\\n"
-		"split into several lines\\\n"
-		"but read as a single line. \n";
-		;
-
 	CConfigFileMemory cfg;
 	cfg.setContent(sampleCfgTxt);
 
-	// ..
-	EXPECT_EQ(cfg.read_string("test","key_str",""),std::string("this is a long value that can be split into several linesbut read as a single line."));	
+	const std::string readStr = cfg.read_string("test", "key_str", "");
+	EXPECT_EQ(readStr, expectedStr);
+}
+
+TEST(CConfigFile, readMultiLineStrings)
+{
+	const std::string tmpFile = mrpt::system::getTempFileName();
+	{
+		std::ofstream f;
+		f.open(tmpFile.c_str(), std::ofstream::out);
+		EXPECT_TRUE(f.is_open());
+		f << sampleCfgTxt;
+		f.close();
+	}
+
+	CConfigFile cfg(tmpFile);
+
+	const std::string readStr = cfg.read_string("test", "key_str", "");
+	EXPECT_EQ(readStr, expectedStr);
 }
