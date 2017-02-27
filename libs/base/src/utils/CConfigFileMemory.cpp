@@ -9,8 +9,6 @@
 
 #include "base-precomp.h"  // Precompiled headers
 
-
-
 #include <mrpt/utils/CConfigFileMemory.h>
 #include <mrpt/system/os.h>
 
@@ -21,14 +19,7 @@ using namespace mrpt::utils;
 using namespace mrpt::utils::simpleini;
 using namespace std;
 
-
-#define THE_INI  static_cast<CSimpleIniA*>(m_ini.get())
-
-#define multilinestring(a,b) {\
-	std::string::const_iterator it;\
-	for(it = a.begin();it != a.end(); ++it){\
-	if(*it != '\\'){b += *it;}\
-	else{ ++it;}}}		 
+#define THE_INI  static_cast<MRPT_CSimpleIni*>(m_ini.get())
 
 /*---------------------------------------------------------------
 					Constructor
@@ -36,7 +27,7 @@ using namespace std;
 CConfigFileMemory::CConfigFileMemory( const utils::CStringList &stringList )
 {
 	// Create the object:
-    m_ini = (void*) new CSimpleIniA();
+    m_ini = (void*) new MRPT_CSimpleIni();
 
     // Load the strings:
     std::string aux;
@@ -50,7 +41,7 @@ CConfigFileMemory::CConfigFileMemory( const utils::CStringList &stringList )
 CConfigFileMemory::CConfigFileMemory( const std::string &str )
 {
 	// Create the object:
-    m_ini = (void*) new CSimpleIniA();
+    m_ini = (void*) new MRPT_CSimpleIni();
 
     // Load the strings:
     THE_INI->Load( str.c_str(), str.size() );
@@ -62,14 +53,14 @@ CConfigFileMemory::CConfigFileMemory( const std::string &str )
 CConfigFileMemory::CConfigFileMemory()
 {
 	// Create the empty object:
-    m_ini = (void*) new CSimpleIniA();
+    m_ini = (void*) new MRPT_CSimpleIni();
 }
 
 /** Copy constructor */
 CConfigFileMemory::CConfigFileMemory(const CConfigFileMemory& o)
 {
 	// Create the empty object:
-    m_ini = (void*) new CSimpleIniA();
+    m_ini = (void*) new MRPT_CSimpleIni();
 	(*this) = o;
 }
 
@@ -77,7 +68,7 @@ CConfigFileMemory::CConfigFileMemory(const CConfigFileMemory& o)
 CConfigFileMemory& CConfigFileMemory::operator = (const CConfigFileMemory& o)
 {
 	std::string  str;
-	static_cast<const CSimpleIniA*>(o.m_ini.get())->Save(str);
+	static_cast<const MRPT_CSimpleIni*>(o.m_ini.get())->Save(str);
 	THE_INI->Load(str.c_str(),str.size());
 	return *this;
 }
@@ -99,9 +90,7 @@ void CConfigFileMemory::setContent(  const utils::CStringList &stringList  )
  ---------------------------------------------------------------*/
 void CConfigFileMemory::setContent(  const std::string &str )
 {
-    std::string aux;
-    multilinestring(str, aux);
-    THE_INI->Load( aux.c_str(), aux.size() );
+    THE_INI->Load( str.c_str(), str.size() );
 }
 
 /*---------------------------------------------------------------
@@ -109,7 +98,7 @@ void CConfigFileMemory::setContent(  const std::string &str )
  ---------------------------------------------------------------*/
 void CConfigFileMemory::getContent( std::string &str ) const
 {
-	((CSimpleIniA*)(m_ini.get()))->Save( str, false );
+	((MRPT_CSimpleIni*)(m_ini.get()))->Save( str, false );
 }
 
 /*---------------------------------------------------------------
@@ -146,7 +135,7 @@ std::string  CConfigFileMemory::readString(
     MRPT_START
     const char *defVal = failIfNotFound ? NULL :defaultStr.c_str();
 
-    const char *aux = static_cast<const CSimpleIniA*>(m_ini.get())->GetValue(
+    const char *aux = static_cast<const MRPT_CSimpleIni*>(m_ini.get())->GetValue(
         section.c_str(),
         name.c_str(),
         defVal,
@@ -172,10 +161,10 @@ std::string  CConfigFileMemory::readString(
  ---------------------------------------------------------------*/
 void CConfigFileMemory::getAllSections( vector_string	&sections ) const
 {
-	CSimpleIniA::TNamesDepend	names;
-	static_cast<const CSimpleIniA*>(m_ini.get())->GetAllSections(names);
+	MRPT_CSimpleIni::TNamesDepend	names;
+	static_cast<const MRPT_CSimpleIni*>(m_ini.get())->GetAllSections(names);
 
-	CSimpleIniA::TNamesDepend::iterator		n;
+	MRPT_CSimpleIni::TNamesDepend::iterator		n;
 	vector_string::iterator		s;
 	sections.resize(names.size());
 	for (n=names.begin(),s=sections.begin(); n!=names.end();++n,++s)
@@ -188,10 +177,10 @@ void CConfigFileMemory::getAllSections( vector_string	&sections ) const
  ---------------------------------------------------------------*/
 void CConfigFileMemory::getAllKeys( const string &section, vector_string	&keys ) const
 {
-	CSimpleIniA::TNamesDepend	names;
-	static_cast<const CSimpleIniA*>(m_ini.get())->GetAllKeys(section.c_str(), names);
+	MRPT_CSimpleIni::TNamesDepend	names;
+	static_cast<const MRPT_CSimpleIni*>(m_ini.get())->GetAllKeys(section.c_str(), names);
 
-	CSimpleIniA::TNamesDepend::iterator		n;
+	MRPT_CSimpleIni::TNamesDepend::iterator		n;
 	vector_string::iterator		s;
 	keys.resize(names.size());
 	for ( n = names.begin(), s = keys.begin(); n!=names.end();++n,++s)
