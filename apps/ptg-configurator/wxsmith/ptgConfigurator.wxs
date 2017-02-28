@@ -44,7 +44,7 @@
 										</object>
 										<object class="sizeritem">
 											<object class="wxStaticText" name="ID_STATICTEXT5" variable="StaticText5" member="yes">
-												<label>then clhange params. as desired and click `Initialize PTG`</label>
+												<label>then change params as desired and click `Initialize PTG`</label>
 											</object>
 											<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
 											<border>5</border>
