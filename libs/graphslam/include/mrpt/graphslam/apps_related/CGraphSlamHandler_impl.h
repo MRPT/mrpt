@@ -99,7 +99,7 @@ void CGraphSlamHandler<GRAPH_T>::initOutputDir(
 
 	// current time vars - handy in the rest of the function.
 	mrpt::system::TTimeStamp cur_date(getCurrentTime());
-	string cur_date_str(dateTimeToString(cur_date));
+	string cur_date_str(timeToString(cur_date));
 	string cur_date_validstr(fileNameStripInvalidChars(cur_date_str));
 
 	// Determine what to do with existing results if previous output directory
@@ -373,6 +373,7 @@ void CGraphSlamHandler<GRAPH_T>::saveMap(const std::string& fname) {
 	mrpt::maps::COccupancyGridMap2DPtr map =
 		mrpt::maps::COccupancyGridMap2D::Create();
 	m_engine->getMap(map);
+	//map->saveAsBitmapFile(fname); // doesn't work.
 	map->saveMetricMapRepresentationToFile(fname);
 }
 

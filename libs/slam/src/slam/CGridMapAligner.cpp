@@ -332,7 +332,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 
 		// Compute the estimation using ALL the correspondences (NO ROBUST):
 		// ----------------------------------------------------------------------
-		mrpt::math::TPose2D noRobustEst; 
+		mrpt::math::TPose2D noRobustEst;
 		if (! mrpt::tfest::se2_l2(correspondences,noRobustEst) )
 		{
 			// There's no way to match the maps! e.g. no correspondences
