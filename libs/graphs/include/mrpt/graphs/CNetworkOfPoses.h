@@ -689,9 +689,6 @@ namespace mrpt
 				ASSERTMSG_(!groupA.empty(), "\ngroupA is empty.");
 				ASSERTMSG_(!groupB.empty(), "\ngroupB is empty.");
 
-				// TODO - verify that the nodes of the partitions are in strictly ascending order
-
-
 				// assertion - non-overlapping groups
 				ASSERTMSG_(
 						*groupA.rend() < *groupB.rbegin() ||
