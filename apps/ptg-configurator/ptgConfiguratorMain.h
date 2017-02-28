@@ -84,12 +84,13 @@ class ptgConfiguratorframe: public wxFrame
         static const long ID_STATICTEXT1;
         static const long ID_CHOICE1;
         static const long ID_STATICTEXT5;
+        static const long ID_BUTTON1;
         static const long ID_STATICTEXT2;
         static const long ID_SPINCTRL1;
-        static const long ID_BUTTON1;
         static const long ID_CHECKBOX1;
         static const long ID_STATICTEXT4;
         static const long ID_TEXTCTRL5;
+        static const long ID_BUTTON5;
         static const long ID_CHECKBOX3;
         static const long ID_SLIDER1;
         static const long ID_SPINCTRL2;
@@ -106,7 +107,7 @@ class ptgConfiguratorframe: public wxFrame
         static const long ID_TEXTCTRL7;
         static const long ID_BUTTON4;
         static const long ID_TEXTCTRL1;
-        static const long ID_BUTTON5;
+        static const long ID_TEXTCTRL2;
         static const long ID_PANEL1;
         static const long ID_XY_GLCANVAS;
         static const long ID_CHECKBOX5;
@@ -138,7 +139,6 @@ class ptgConfiguratorframe: public wxFrame
         static const long ID_CUSTOM10;
         static const long ID_PANEL6;
         static const long ID_NOTEBOOK1;
-        static const long ID_TEXTCTRL2;
         static const long idMenuQuit;
         static const long idMenuAbout;
         static const long ID_STATUSBAR1;
