@@ -222,7 +222,7 @@ int main()
 		cout << endl << "Now running detection of lines..." << endl << endl;
 		TestRANSACLines();
 
-		win.clear();
+		win.reset();
 
 		return 0;
 	} catch (std::exception &e)
