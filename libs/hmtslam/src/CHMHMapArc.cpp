@@ -46,9 +46,9 @@ CHMHMapArcPtr CHMHMapArc::Create(
 	{
 		parent->onArcAddition(obj);
 		CHMHMapNodePtr node;
-		if ( (node = parent->getNodeByID(from)).present() )
+		if ( (node = parent->getNodeByID(from)))
 			node->onArcAddition(obj);
-		if ( (node = parent->getNodeByID(to)).present() )
+		if ( (node = parent->getNodeByID(to)))
 			node->onArcAddition(obj);
 	}
 	return obj;
@@ -103,9 +103,9 @@ CHMHMapArc::~CHMHMapArc()
 {
 	CHMHMapNodePtr node;
 	// To the nodes:
-	if ((node = m_parent->getNodeByID(m_nodeFrom)).present())
+	if ((node = m_parent->getNodeByID(m_nodeFrom)))
 		node->onArcDestruction(this);
-	if ((node = m_parent->getNodeByID(m_nodeTo)).present())
+	if ((node = m_parent->getNodeByID(m_nodeTo)))
 		node->onArcDestruction(this);
 
 	// To the graph:
@@ -161,22 +161,22 @@ void  CHMHMapArc::readFromStream(mrpt::utils::CStream &in, int version)
 			CHMHMapArcPtr myPtr;
 			for (TArcList::const_iterator it = m_parent->m_arcs.begin();it != m_parent->m_arcs.end();++it)
 			{
-				if (it->pointer()==this)
+				if (it->get()==this)
 				{
 					myPtr = *it;
 					break;
 				}
 			}
-			ASSERTMSG_(myPtr.present(),"I cannot be found in my parent HMT map!")
+			ASSERTMSG_(myPtr,"I cannot be found in my parent HMT map!")
 
 			CHMHMapNodePtr node;
 			// It's not necessary since at ::Create this is already done (but...check!)
 			//m_parent->onArcAddition(this);  
 
 			// To the nodes:
-			if ((node = m_parent->getNodeByID(m_nodeFrom)).present())
+			if ((node = m_parent->getNodeByID(m_nodeFrom)))
 				node->onArcAddition(myPtr);
-			if ((node = m_parent->getNodeByID(m_nodeTo)).present())
+			if ((node = m_parent->getNodeByID(m_nodeTo)))
 				node->onArcAddition(myPtr);
 
 		} break;

@@ -206,7 +206,7 @@ int main(int argc, char **argv)
 
 						CActionCollection	acts;
 						acts.insert(*act);
-						act.clear_unique();
+						act.reset();
 
 						out_file << acts;
 					}
@@ -257,7 +257,7 @@ int main(int argc, char **argv)
 
 						CActionCollection	acts;
 						acts.insert(*act);
-						act.clear_unique();
+						act.reset();
 
 						out_file << acts;
 					}
@@ -437,7 +437,7 @@ void SensorThread(TThreadParams params)
 				sleep(At_rem_ms);
 		}
 
-		sensor.clear();
+		sensor.reset();
 		cout << format("[thread_%s] Closing...",params.sensor_label.c_str()) << endl;
 	}
 	catch (std::exception &e)

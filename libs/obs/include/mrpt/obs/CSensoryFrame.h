@@ -84,7 +84,7 @@ namespace mrpt
 			  */
 			template <class POINTSMAP>
 			inline const POINTSMAP* getAuxPointsMap() const {
-				return static_cast<POINTSMAP*>(m_cachedMap.pointer());
+				return static_cast<POINTSMAP*>(m_cachedMap.get());
 			}
 
 			/** Returns a cached points map representing this laser scan, building it upon the first call.
@@ -98,7 +98,7 @@ namespace mrpt
 			template <class POINTSMAP>
 			inline const POINTSMAP	*buildAuxPointsMap( const void *options = NULL ) const {
 				internal_buildAuxPointsMap(options);
-				return static_cast<POINTSMAP*>(m_cachedMap.pointer());
+				return static_cast<POINTSMAP*>(m_cachedMap.get());
 			}
 
 			/** @} */
@@ -140,7 +140,7 @@ namespace mrpt
 			  */
 			 inline bool  insertObservationsInto( mrpt::maps::CMetricMapPtr &theMap, const mrpt::poses::CPose3D *robotPose = NULL ) const
 			 {
-				 return insertObservationsInto(theMap.pointer(), robotPose);
+				 return insertObservationsInto(theMap.get(), robotPose);
 			 }
 
 

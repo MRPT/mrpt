@@ -37,7 +37,7 @@ namespace mrpt
 
 			inline void detectObjects(const mrpt::obs::CObservationPtr obs, vector_detectable_object &detected) 
 			{ 
-				detectObjects_Impl(obs.pointer(), detected); 
+				detectObjects_Impl(obs.get(), detected); 
 			};
 
 			inline void detectObjects( const mrpt::obs::CObservation *obs, vector_detectable_object &detected)

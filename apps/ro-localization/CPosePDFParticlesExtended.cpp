@@ -963,7 +963,7 @@ double  CPosePDFParticlesExtended::auxiliarComputeObservationLikelihood(
 	// For each observation:
 	for (CSensoryFrame::const_iterator it=observation->begin();it!=observation->end();++it)
 	{
-		const CObservation	*obser = it->pointer();
+		const CObservation	*obser = it->get();
 		CObservationBeaconRanges	obserDumm;
 
 		// JLBC: 20/ABR/2007 -> UWB offset from extended state vector

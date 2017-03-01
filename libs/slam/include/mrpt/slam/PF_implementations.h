@@ -51,7 +51,7 @@ namespace mrpt
 			{
 				{
 					mrpt::obs::CActionRobotMovement2DPtr	robotMovement2D = actions->getBestMovementEstimation();
-					if (robotMovement2D.present())
+					if (robotMovement2D)
 					{
 						if (m_accumRobotMovement3DIsValid) THROW_EXCEPTION("Mixing 2D and 3D actions is not allowed.")
 
@@ -167,7 +167,7 @@ namespace mrpt
 				{
 					mrpt::obs::CActionRobotMovement2DPtr	robotMovement2D = actions->getBestMovementEstimation();
 					// If there is no 2D action, look for a 3D action:
-					if (robotMovement2D.present())
+					if (robotMovement2D)
 					{
 						m_movementDrawer.setPosePDF( robotMovement2D->poseChange.get_ptr() );
 						motionModelMeanIncr = robotMovement2D->poseChange->getMeanVal();

@@ -492,8 +492,8 @@ void xRawLogViewerFrame::OnMenuDistanceBtwGPSs(wxCommandEvent& event)
 
                 dists.push_back(d);
 
-                last_GPS1.clear_unique();
-                last_GPS2.clear_unique();
+                last_GPS1.reset();
+                last_GPS2.reset();
             }
         }
     } // end for

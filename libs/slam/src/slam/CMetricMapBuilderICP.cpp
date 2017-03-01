@@ -124,7 +124,7 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 	if (metricMap.m_pointsMaps.empty() && metricMap.m_gridMaps.empty())
 		throw std::runtime_error("Neither grid maps nor points map: Have you called initialize() after setting ICP_options.mapInitializers?");
 
-	ASSERT_(obs.present())
+	ASSERT_(obs)
 
 	// Is it an odometry observation??
 	if (IS_CLASS(obs,CObservationOdometry))
@@ -197,13 +197,13 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 		CMetricMap   *matchWith = NULL;
 		if (ICP_options.matchAgainstTheGrid && !metricMap.m_gridMaps.empty() )
 		{
-			matchWith = static_cast<CMetricMap*>(metricMap.m_gridMaps[0].pointer());
+			matchWith = static_cast<CMetricMap*>(metricMap.m_gridMaps[0].get());
 			MRPT_LOG_DEBUG("processObservation(): matching against gridmap.");
 		}
 		else
 		{
 			ASSERTMSG_( metricMap.m_pointsMaps.size(), "No points map in multi-metric map." )
-			matchWith = static_cast<CMetricMap*>(metricMap.m_pointsMaps[0].pointer());
+			matchWith = static_cast<CMetricMap*>(metricMap.m_pointsMaps[0].get());
 			MRPT_LOG_DEBUG("processObservation(): matching against point map.");
 		}
 		ASSERT_(matchWith!=NULL)

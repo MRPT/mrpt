@@ -157,7 +157,7 @@ void thread_grabbing(TThreadParam &p)
 					catch (std::exception &e) {
 						throw std::runtime_error( string("\nError reading from dataset file (EOF?):\n")+string(e.what()) );
 					}
-					ASSERT_(obs.present())
+					ASSERT_(obs)
 				} while (!IS_CLASS(obs,CObservation3DRangeScan));
 
 				// We have one observation:

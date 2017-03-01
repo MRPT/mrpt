@@ -458,7 +458,7 @@ int main(int argc, char **argv)
 		// do it:
 		const int ret = DoTrackingDemo(cam, last_arg_is_save_video);
 
-		win.clear();
+		win.reset();
 		mrpt::system::sleep(150); // give time to close GUI threads
 		return ret;
 	}

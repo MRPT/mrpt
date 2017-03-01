@@ -398,8 +398,8 @@ void TestParticlesLocalization()
 
 				PF.executeOn(
 						pdf,
-						action.pointer(),			// Action
-						observations.pointer(),	// Obs.
+						action.get(),			// Action
+						observations.get(),	// Obs.
 						&PF_stats		// Output statistics
 						);
 				printf(" Done! in %.03fms, ESS=%f\n", 1000.0f*tictac.Tac(), pdf.ESS());
@@ -537,7 +537,7 @@ void TestParticlesLocalization()
 					opengl::CRenderizablePtr obj = sceneTR->getByName( "part" );
 					opengl::CPointCloudPtr parts;
 
-					if( !obj.present() )
+					if( !obj )
 						parts = opengl::CPointCloud::Create();
 					else
 						parts = CPointCloudPtr(obj);
@@ -555,7 +555,7 @@ void TestParticlesLocalization()
 					for (size_t i=0;i<pdf.size();i++)
 						parts->setPoint(i,pdf.m_particles[i].d->pose.x(),pdf.m_particles[i].d->pose.y(), 0);
 
-					if( !obj.present() )
+					if( !obj )
 					{
 						scene->insert( parts );
 	#ifdef	SHOW_REAL_TIME_3D
@@ -568,7 +568,7 @@ void TestParticlesLocalization()
 	#ifdef	SHOW_REAL_TIME_3D
 					obj = sceneTR->getByName( "cov" );
 					opengl::CEllipsoidPtr ellip;
-					if( !obj.present() )
+					if( !obj )
 						ellip = opengl::CEllipsoid::Create();
 					else
 						ellip = CEllipsoidPtr(obj);
@@ -584,7 +584,7 @@ void TestParticlesLocalization()
 					ellip->setCovMatrix(cov, 2);
 					ellip->setName("cov");
 
-					if( !obj.present() )
+					if( !obj )
 					{
 						scene->insert( ellip );
 	#ifdef	SHOW_REAL_TIME_3D
@@ -596,7 +596,7 @@ void TestParticlesLocalization()
 					// The laser scan:
 					obj = sceneTR->getByName( "laser" );
 					opengl::CPointCloudPtr scanPts;
-					if( !obj.present() )
+					if( !obj )
 						scanPts = opengl::CPointCloud::Create();
 					else
 						scanPts = CPointCloudPtr(obj);
@@ -611,7 +611,7 @@ void TestParticlesLocalization()
 					observations->insertObservationsInto( &map, &robotPose3D );
 					scanPts->loadFromPointsMap( &map );
 
-					if( !obj.present() )
+					if( !obj )
 					{
 						scene->insert( scanPts );
 						sceneTR->insert( scanPts );
@@ -619,7 +619,7 @@ void TestParticlesLocalization()
 
 					// Beacon range spheres:
 					CObservationBeaconRangesPtr dist=  observations->getObservationByClass<CObservationBeaconRanges>();
-					if ( metricMap.m_landmarksMap && dist.present() && !dist->sensedData.empty() )
+					if ( metricMap.m_landmarksMap && dist && !dist->sensedData.empty() )
 					{
 						for (size_t k=0;k<dist->sensedData.size();k++)
 						{
@@ -631,7 +631,7 @@ void TestParticlesLocalization()
 									opengl::CRenderizablePtr obj = sceneTR->getByName( beacon_name );
 									opengl::CDiskPtr sphere;
 
-									if( !obj.present() )
+									if( !obj )
 										sphere = opengl::CDisk::Create();
 									else
 										sphere = CDiskPtr(obj);
@@ -654,7 +654,7 @@ void TestParticlesLocalization()
 								if (R>0) R=sqrt(R); else R=0.08f;
 								sphere->setDiskRadius(R+0.08f, R-0.08f);
 
-								if( !obj.present() )
+								if( !obj )
 								{
 									scene->insert( sphere );
 
@@ -672,7 +672,7 @@ void TestParticlesLocalization()
 						opengl::CRenderizablePtr obj = sceneTR->getByName( "franc" );
 						opengl::CSpherePtr sphere;
 
-						if( !obj.present() )
+						if( !obj )
 							sphere = opengl::CSphere::Create();
 						else
 							sphere = opengl::CSpherePtr(obj);
@@ -681,7 +681,7 @@ void TestParticlesLocalization()
 						sphere->setName( "franc");
 
 						CObservationBeaconRangesPtr dist= observations->getObservationByClass<CObservationBeaconRanges>();
-						if (dist.present())
+						if (dist)
 						{
 							sphere->setLocation(
 								dist->auxEstimatePose.x(),
@@ -689,7 +689,7 @@ void TestParticlesLocalization()
 								0.05f );
 						}
 
-						if( !obj.present() )
+						if( !obj )
 						{
 							scene->insert( sphere );
 							sceneTR->insert( sphere );
@@ -703,7 +703,7 @@ void TestParticlesLocalization()
 						opengl::CRenderizablePtr obj = sceneTR->getByName( "mean_parts" );
 						opengl::CSpherePtr sphere;
 
-						if( !obj.present() )
+						if( !obj )
 							sphere = opengl::CSphere::Create();
 						else
 							sphere = opengl::CSpherePtr(obj);
@@ -717,7 +717,7 @@ void TestParticlesLocalization()
 
 						sphere->setLocation( pdfEstimation.x(), pdfEstimation.y(), 0.05);
 
-						if( !obj.present() )
+						if( !obj )
 						{
 							scene->insert( sphere );
 	#ifdef	SHOW_REAL_TIME_3D
@@ -733,7 +733,7 @@ void TestParticlesLocalization()
 						opengl::CRenderizablePtr obj = sceneTR->getByName( "GT" );
 						opengl::CSpherePtr sphere;
 
-						if( !obj.present() )
+						if( !obj )
 							sphere = opengl::CSphere::Create();
 						else
 							sphere = opengl::CSpherePtr(obj);
@@ -749,7 +749,7 @@ void TestParticlesLocalization()
 						cout << "GT robot pose: " << GT_Pose << endl;
 
 
-						if( !obj.present() )
+						if( !obj )
 						{
 							scene->insert( sphere );
 	#ifdef	SHOW_REAL_TIME_3D
@@ -762,13 +762,13 @@ void TestParticlesLocalization()
 					//GPS pose
 					{
 						CObservationGPSPtr o = observations->getObservationByClass<CObservationGPS>();
-						if (o.present() && metricMap.m_landmarksMap)
+						if (o && metricMap.m_landmarksMap)
 						{
 							opengl::CRenderizablePtr obj = sceneTR->getByName( "gps" );
 							opengl::CEllipsoidPtr sphere;
 							double x,y;
 
-							if( !obj.present() )
+							if( !obj )
 								sphere = opengl::CEllipsoid::Create();
 							else
 								sphere = opengl::CEllipsoidPtr(obj);
@@ -789,7 +789,7 @@ void TestParticlesLocalization()
 							r(1,1)=9;
 							r(0,0)=9;
 							sphere->setCovMatrix(r);
-							if( !obj.present() )
+							if( !obj )
 							{
 								scene->insert( sphere );
 								sceneTR->insert( sphere );
@@ -798,13 +798,13 @@ void TestParticlesLocalization()
 					}
 					{
 						CObservationGPSPtr o = observations->getObservationByClass<CObservationGPS>();
-						if (o.present())
+						if (o)
 						{
 							opengl::CRenderizablePtr obj = sceneTR->getByName( "gps_CENTER" );
 							opengl::CSpherePtr sphere;
 							double x,y;
 
-							if( !obj.present() )
+							if( !obj )
 								sphere = opengl::CSphere::Create();
 							else
 								sphere = opengl::CSpherePtr(obj);
@@ -821,7 +821,7 @@ void TestParticlesLocalization()
 									0);
 							}
 							sphere->setRadius(0.5);
-							if( !obj.present() )
+							if( !obj )
 							{
 								scene->insert( sphere );
 								sceneTR->insert( sphere );

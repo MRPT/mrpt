@@ -110,7 +110,7 @@ namespace obs
 		  */
 		template <class POINTSMAP>
 		inline const POINTSMAP* getAuxPointsMap() const {
-			return static_cast<const POINTSMAP*>(m_cachedMap.pointer());
+			return static_cast<const POINTSMAP*>(m_cachedMap.get());
 		}
 
 		/** Returns a cached points map representing this laser scan, building it upon the first call.
@@ -123,8 +123,8 @@ namespace obs
 		  */
 		template <class POINTSMAP>
 		inline const POINTSMAP	*buildAuxPointsMap( const void *options = NULL ) const {
-			if (!m_cachedMap.present()) internal_buildAuxPointsMap(options);
-			return static_cast<const POINTSMAP*>(m_cachedMap.pointer());
+			if (!m_cachedMap) internal_buildAuxPointsMap(options);
+			return static_cast<const POINTSMAP*>(m_cachedMap.get());
 		}
 
 		/** @} */

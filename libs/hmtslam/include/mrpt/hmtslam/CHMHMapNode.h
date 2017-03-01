@@ -66,9 +66,9 @@ namespace mrpt
 			  */
 			void  onArcDestruction(CHMHMapArc *arc);
 
-			/** Event handler for arc addition: It should be only called for arcs from/to this node, altought other cases have no effects.
+			/** Event handler for arc addition: It should be only called for arcs from/to this node, although other cases have no effects.
 			  */
-			void  onArcAddition(CHMHMapArcPtr &arc);
+			void  onArcAddition(const CHMHMapArcPtr &arc);
 
 			/** The hierarchical graph in which this object is into.
 			  */

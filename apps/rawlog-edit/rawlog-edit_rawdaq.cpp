@@ -93,7 +93,7 @@ DECLARE_OP_FUNCTION(op_export_rawdaq_txt)
             if (!IS_CLASS(o, CObservationRawDAQ ) )
 				return true;
 
-            const CObservationRawDAQ* obs = CObservationRawDAQPtr(o).pointer();
+            const CObservationRawDAQ* obs = CObservationRawDAQPtr(o).get();
 
 			map<string, FILE*>::const_iterator  it = lstFiles.find( obs->sensorLabel );
 

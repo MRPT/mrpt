@@ -53,7 +53,7 @@ DECLARE_OP_FUNCTION(op_export_enose_txt)
 			if (!IS_CLASS(o, CObservationGasSensors ) )
 				return true;
 
-			const CObservationGasSensors* obs = CObservationGasSensorsPtr(o).pointer();
+			const CObservationGasSensors* obs = CObservationGasSensorsPtr(o).get();
 
 			map<string, FILE*>::const_iterator  it = lstFiles.find( obs->sensorLabel );
 

@@ -165,7 +165,7 @@ void CKinematicChain::getAs3DObject(
 	mrpt::aligned_containers<mrpt::poses::CPose3D>::vector_t *out_all_poses
 	) const
 {
-	ASSERT_(obj.present())
+	ASSERT_(obj)
 	const size_t N=m_links.size();
 
 	// Recompute current poses:

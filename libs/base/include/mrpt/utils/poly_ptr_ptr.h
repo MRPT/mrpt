@@ -54,40 +54,40 @@ namespace mrpt
 			/** move ctor */
 			poly_ptr_ptr(poly_ptr_ptr && o) {
 				m_smartptr = o.m_smartptr;
-				o.m_smartptr.clear_unique();
+				o.m_smartptr.reset();
 			}
 			/** move operator */
 			poly_ptr_ptr<T> &operator =(poly_ptr_ptr<T> && o) {
 				if (this == &o) return *this;
 				m_smartptr = o.m_smartptr;
-				o.m_smartptr.clear_unique();
+				o.m_smartptr.reset();
 				return *this;
 			}
 #endif
 			~poly_ptr_ptr() {}
 
-			typename T::value_type * pointer() {
-				if (m_smartptr) return m_smartptr.pointer();
+			typename T::value_type * get() {
+				if (m_smartptr) return m_smartptr.get();
 				else throw std::runtime_error("dereferencing NULL poly_ptr");
 			}
-			const typename T::value_type * pointer() const {
-				if (m_smartptr) return m_smartptr.pointer();
+			const typename T::value_type * get() const {
+				if (m_smartptr) return m_smartptr.get();
 				else throw std::runtime_error("dereferencing NULL poly_ptr");
 			}
 
-			typename T::value_type * operator->() { return pointer(); }
-			const typename T::value_type * operator->() const { return pointer(); }
+			typename T::value_type * operator->() { return get(); }
+			const typename T::value_type * operator->() const { return get(); }
 
-			typename T::value_type& operator*(void) { return *pointer(); }
-			const typename T::value_type& operator*(void) const { return *pointer(); }
+			typename T::value_type& operator*(void) { return *get(); }
+			const typename T::value_type& operator*(void) const { return * get(); }
 
-			operator bool() const { return m_smartptr.present(); }
-			bool operator!(void) const { return !m_smartptr.present(); }
+			operator bool() const { return m_smartptr ? true : false; }
+			bool operator!(void) const { return !m_smartptr(); }
 
 			const T & get_ptr() const { return m_smartptr; }
 			T & get_ptr() { return m_smartptr; }
 
-			void clear_unique() { m_smartptr.clear_unique();  }
+			void reset() { m_smartptr.reset();  }
 		private:
 			T m_smartptr;
 		};

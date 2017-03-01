@@ -210,7 +210,7 @@ void CStream::WriteObject(const  CSerializable *o )
 
 CStream& CStream::operator << (const CSerializablePtr & pObj)
 {
-	WriteObject(pObj.pointer());
+	WriteObject(pObj.get());
 	return *this;
 }
 

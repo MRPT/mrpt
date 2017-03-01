@@ -241,7 +241,7 @@ void MapBuilding_ICP(const string &INI_FILENAME, const string &override_rawlog_f
 		if (! CRawlog::getActionObservationPairOrObservation( rawlogFile, action, observations, observation, rawlogEntry) )
 			break; // file EOF
 
-		const bool isObsBasedRawlog = observation.present();
+		const bool isObsBasedRawlog = observation ? true : false;
 		std::vector<mrpt::obs::CObservation2DRangeScanPtr> lst_current_laser_scans;   // Just for drawing in 3D views
 
 		if (rawlogEntry>=rawlog_offset)
@@ -322,7 +322,7 @@ void MapBuilding_ICP(const string &INI_FILENAME, const string &override_rawlog_f
 			}
 
 			// Save a 3D scene view of the mapping process:
-			if (0==(step % LOG_FREQUENCY) || (SAVE_3D_SCENE || win3D.present()))
+			if (0==(step % LOG_FREQUENCY) || (SAVE_3D_SCENE || win3D))
 			{
                 CPose3D robotPose;
 				mapBuilder.getCurrentPoseEstimation()->getMean(robotPose);

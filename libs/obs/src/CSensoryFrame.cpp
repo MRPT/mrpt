@@ -57,7 +57,7 @@ CSensoryFrame & CSensoryFrame::operator =( const CSensoryFrame &o)
 
 	m_observations = o.m_observations;
 
-	m_cachedMap.clear(); 
+	m_cachedMap.reset();
 
 	return *this;
 
@@ -80,7 +80,7 @@ CSensoryFrame::~CSensoryFrame()
 void  CSensoryFrame::clear()
 {
 	m_observations.clear();
-	m_cachedMap.clear();
+	m_cachedMap.reset();
 }
 
 /*---------------------------------------------------------------
@@ -141,7 +141,7 @@ void  CSensoryFrame::readFromStream(mrpt::utils::CStream &in,int version)
 
 	};
 
-	m_cachedMap.clear();
+	m_cachedMap.reset();
 
 	MRPT_END
 }
@@ -153,7 +153,7 @@ void  CSensoryFrame::readFromStream(mrpt::utils::CStream &in,int version)
 void CSensoryFrame::operator += (const CSensoryFrame &sf)
 {
 	MRPT_UNUSED_PARAM(sf);
-	m_cachedMap.clear();
+	m_cachedMap.reset();
 	for (const_iterator it = begin();it!=end();++it)
 	{
 		CObservationPtr newObs = *it;
@@ -167,7 +167,7 @@ void CSensoryFrame::operator += (const CSensoryFrame &sf)
   ---------------------------------------------------------------*/
 void CSensoryFrame::operator += (const CObservationPtr &obs)
 {
-	m_cachedMap.clear();
+	m_cachedMap.reset();
 	m_observations.push_back( obs );
 }
 
@@ -176,7 +176,7 @@ void CSensoryFrame::operator += (const CObservationPtr &obs)
   ---------------------------------------------------------------*/
 void CSensoryFrame::push_back(const CObservationPtr &obs)
 {
-	m_cachedMap.clear();
+	m_cachedMap.reset();
 	m_observations.push_back( obs );
 }
 
@@ -185,7 +185,7 @@ void CSensoryFrame::push_back(const CObservationPtr &obs)
   ---------------------------------------------------------------*/
 void CSensoryFrame::insert(const CObservationPtr &obs)
 {
-	m_cachedMap.clear();
+	m_cachedMap.reset();
 	m_observations.push_back( obs );
 }
 
@@ -197,9 +197,9 @@ void CSensoryFrame::eraseByIndex(const size_t &idx)
 	MRPT_START
 	if (idx>=size()) THROW_EXCEPTION_FMT("Index %u out of range.", static_cast<unsigned>(idx) );
 
-	m_cachedMap.clear();
+	m_cachedMap.reset();
 	iterator it = begin()+idx;
-	ASSERT_(it->present());
+	ASSERT_(!*it);
 	//delete (*it);
 	m_observations.erase( it );
 	MRPT_END
@@ -228,7 +228,7 @@ CSensoryFrame::iterator CSensoryFrame::erase( const iterator &it)
 	MRPT_START
 	ASSERT_(it!=end())
 
-	m_cachedMap.clear();
+	m_cachedMap.reset();
 
 	return m_observations.erase(it);
 	MRPT_END
@@ -261,7 +261,7 @@ void CSensoryFrame::moveFrom( CSensoryFrame &sf )
 {
 	copy(sf.m_observations.begin(),sf.m_observations.end(), back_inserter(m_observations) );
 	sf.m_observations.clear();
-	m_cachedMap.clear();
+	m_cachedMap.reset();
 }
 
 /*---------------------------------------------------------------
@@ -286,7 +286,7 @@ void CSensoryFrame::eraseByLabel(const std::string &label)
 		}
 		else it++;
 	}
-	m_cachedMap.clear();
+	m_cachedMap.reset();
 }
 
 namespace mrpt
@@ -308,9 +308,10 @@ void CSensoryFrame::internal_buildAuxPointsMap( const void *options ) const
 	if (!ptr_internal_build_points_map_from_scan2D)
 		throw std::runtime_error("[CSensoryFrame::buildAuxPointsMap] ERROR: This function needs linking against mrpt-maps.\n");
 
+	MRPT_TODO("Make this a dynamic cast");
 	for (const_iterator it = begin();it!=end();++it)
 		if (IS_CLASS(*it,CObservation2DRangeScan))
-			(*ptr_internal_build_points_map_from_scan2D)( *((CObservation2DRangeScan*)it->pointer()),m_cachedMap, options);
+			(*ptr_internal_build_points_map_from_scan2D)( *((CObservation2DRangeScan*)it->get()),m_cachedMap, options);
 }
 
 

@@ -418,7 +418,7 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 	if (m_init_timestamp == INVALID_TIMESTAMP) {
 		MRPT_LOG_DEBUG_STREAM << "execGraphSlamStep: first run";
 
-		if (observation.present()) {
+		if (observation) {
 			MRPT_LOG_DEBUG_STREAM << "Observation only dataset!";
 			m_observation_only_dataset = true; // false by default
 			m_init_timestamp = observation->timestamp;
@@ -477,7 +477,7 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 	// current timestamp - to be filled depending on the format
 	mrpt::system::TTimeStamp timestamp;
 
-	if (observation.present()) {
+	if (observation) {
 		// Read a single observation from the rawlog
 		// (Format #2 rawlog file)
 
@@ -673,11 +673,11 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 
 	// 3DRangeScans viewports update
 	if (mrpt::system::strCmpI(m_GT_file_format, "rgbd_tum")) {
-		if (m_enable_range_viewport && !m_last_laser_scan3D.null()) {
+		if (m_enable_range_viewport && m_last_laser_scan3D) {
 			this->updateRangeImageViewport();
 		}
 
-		if (m_enable_intensity_viewport && !m_last_laser_scan3D.null()) {
+		if (m_enable_intensity_viewport && m_last_laser_scan3D) {
 			this->updateIntensityImageViewport();
 		}
 	}
@@ -753,7 +753,7 @@ void CGraphSlamEngine<GRAPH_t>::computeOccupancyGridMap2D() const {
 		mrpt::obs::CObservation2DRangeScanPtr curr_laser_scan = it->second;
 		pose_t curr_pose;
 
-		bool laser_scan_exists = !curr_laser_scan.null();
+		bool laser_scan_exists = curr_laser_scan ? true : false;
 
 		bool pose_found = true;
 		typename mrpt::graphs::CNetworkOfPoses2DInf::global_poses_t::const_iterator
@@ -767,7 +767,7 @@ void CGraphSlamEngine<GRAPH_t>::computeOccupancyGridMap2D() const {
 
 		if (laser_scan_exists && pose_found) {
 			CPose3D pose_3d(curr_pose);
-			gridmap.insertObservation(curr_laser_scan.pointer(), &pose_3d);
+			gridmap.insertObservation(curr_laser_scan.get(), &pose_3d);
 		}
 	}
 
@@ -1656,7 +1656,7 @@ void CGraphSlamEngine<GRAPH_t>::updateMapVisualization(
 				m_nodes_to_laser_scans2D.find(*node_it);
 
 		// make sure that the laser scan exists and is valid
-		if (search != m_nodes_to_laser_scans2D.end() && !(search->second.null())) {
+		if (search != m_nodes_to_laser_scans2D.end() && search->second) {
 			scan_content = search->second;
 
 			CObservation2DRangeScan scan_decimated;
@@ -1669,7 +1669,7 @@ void CGraphSlamEngine<GRAPH_t>::updateMapVisualization(
 			CRenderizablePtr obj = scene->getByName(scan_name.str());
 
 			CSetOfObjectsPtr scan_obj;
-			if (obj.null()) {
+			if (!obj) {
 				MRPT_LOG_DEBUG_STREAM << "CSetOfObjects for nodeID " << *node_it <<
 					"doesn't exist. Creating it...";
 

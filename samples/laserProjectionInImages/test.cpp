@@ -154,8 +154,8 @@ void TestLaser2Imgs()
 			} // end if
 		} // end for
 
-		action.clear_unique();
-		observations.clear_unique();
+		action.reset();
+		observations.reset();
 
 		wind.showImage(image);
 

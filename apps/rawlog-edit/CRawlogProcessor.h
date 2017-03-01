@@ -101,9 +101,9 @@ namespace mrpt
 					OnPostProcess(actions,SF,obs);
 
 					// Clear read objects:
-					actions.clear_unique();
-					SF.clear_unique();
-					obs.clear_unique();
+					actions.reset();
+					SF.reset();
+					obs.reset();
 
 					if (!process_ret)
 					{
@@ -216,7 +216,7 @@ namespace mrpt
 			{
 				if (!tellIfThisObsPasses(obs))
 				{
-					obs.clear(); // Free object (all aliases)
+					obs.reset(); // Free object (all aliases)
 					m_entries_removed++;
 				}
 				m_entries_parsed++;
@@ -239,7 +239,7 @@ namespace mrpt
 					mrpt::obs::CSensoryFrame::iterator it = SF->begin();
 					while (it!=SF->end())
 					{
-						if ( (*it).present() )
+						if ( *it )
 							it++;
 						else it = SF->erase(it);
 					}

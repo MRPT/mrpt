@@ -567,7 +567,7 @@ void filter_swapColors(
 
             if (IS_CLASS(obs,CObservationImage))
             {
-                CObservationImage       *o = (CObservationImage*) obs.pointer();
+                CObservationImage       *o = (CObservationImage*) obs.get();
                 if (o->image.isColor())
                 {
                     swapColors( o->image );
@@ -577,7 +577,7 @@ void filter_swapColors(
             else
                 if (IS_CLASS(obs,CObservationStereoImages))
                 {
-                    CObservationStereoImages    *o = (CObservationStereoImages*) obs.pointer();
+                    CObservationStereoImages    *o = (CObservationStereoImages*) obs.get();
                     if (o->imageLeft.isColor())
                     {
                         swapColors( o->imageLeft );
@@ -829,7 +829,7 @@ void CFormEdit::executeOperationOnRawlog( TRawlogFilter operation, const char *e
 
                 // Process & save:
                 if (!isInMemory || (countLoop>=first && countLoop<=last) )
-                    operation(NULL,sf.pointer(),changes );
+                    operation(NULL,sf.get(),changes );
 
                 if (!isInMemory)  (*out_fil) << *sf;
             }
@@ -841,7 +841,7 @@ void CFormEdit::executeOperationOnRawlog( TRawlogFilter operation, const char *e
 
                 // Process & save:
                 if (!isInMemory || (countLoop>=first && countLoop<=last) )
-                    operation(NULL,dummy_sf.pointer(),changes );
+                    operation(NULL,dummy_sf.get(),changes );
 
 				// Still there?
 				if (dummy_sf->size()==1)
@@ -865,7 +865,7 @@ void CFormEdit::executeOperationOnRawlog( TRawlogFilter operation, const char *e
 
                 // Process & save:
                 if (!isInMemory || (countLoop>=first && countLoop<=last) )
-                    operation((CActionCollection*)acts.pointer(),NULL,changes);
+                    operation((CActionCollection*)acts.get(),NULL,changes);
 
                 if (!isInMemory)  (*out_fil) << *acts;
             }
@@ -897,7 +897,7 @@ void CFormEdit::executeOperationOnRawlog( TRawlogFilter operation, const char *e
         // Delete only if processing file
         if (newObj && !isInMemory)
         {
-            newObj.clear();
+            newObj.reset();
         }
 
     } // end while keep loading
@@ -1012,7 +1012,7 @@ void leave_horizontalScans(
 
             if ( IS_CLASS(obs, CObservation2DRangeScan ) )
             {
-            	CObservation2DRangeScan *o = static_cast<CObservation2DRangeScan*>( obs.pointer() );
+            	CObservation2DRangeScan *o = static_cast<CObservation2DRangeScan*>( obs.get() );
 
             	if (fabs( o->sensorPose.pitch() )>minPitchToDeleteLaserScan )
             	{

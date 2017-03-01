@@ -101,14 +101,13 @@ void utils::StringToObject(const std::string &str, CSerializablePtr &obj)
 {
 	MRPT_START
 
-	obj.clear_unique();
 	if (str.empty()) return;
 
 	CMemoryStream	tmp;
 	size_t			n;
 	size_t			i,lastIdx;
 
-	obj.clear_unique();
+	obj.reset();
 
 	n = str.size();
 
@@ -190,7 +189,7 @@ void utils::OctetVectorToObject(const vector_byte & in_data, CSerializablePtr &o
 {
 	try
 	{
-		obj.clear_unique();
+		obj.reset();
 
 		if (in_data.empty()) return;
 
@@ -250,7 +249,7 @@ void utils::RawStringToObject(const std::string & in_data, CSerializablePtr &obj
 {
 	try
 	{
-		obj.clear_unique();
+		obj.reset();
 
 		if (in_data.empty()) return;
 

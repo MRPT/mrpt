@@ -411,7 +411,7 @@ namespace mrpt
 
 		}; // end class
 
-		typedef stlplus::smart_ptr<CCameraSensor>    CCameraSensorPtr; //!< A smart pointer to a CCameraSensor
+		typedef std::shared_ptr<CCameraSensor>    CCameraSensorPtr; //!< A smart pointer to a CCameraSensor
 
 		/** Used only from MRPT apps: Use with caution since "panel" MUST be a "mrpt::gui::CPanelCameraSelection *"
 		  */

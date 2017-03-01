@@ -73,7 +73,7 @@ void  CMessage::deserializeIntoNewObject( CSerializablePtr &obj )
 		// Try to parse data into a new object:
 		obj = auxStream.ReadObject( );
 	}
-	else obj.clear_unique();
+	else obj.reset();
 
 
 	MRPT_END

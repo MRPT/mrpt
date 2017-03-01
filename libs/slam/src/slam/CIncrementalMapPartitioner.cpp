@@ -254,7 +254,7 @@ unsigned int CIncrementalMapPartitioner::addMapFrame(
 			}
 			else
 			{
-				//m_A(i,j) = sf_i->likelihoodWith(sf_j.pointer());
+				//m_A(i,j) = sf_i->likelihoodWith(sf_j.get());
 				m_A(i,j) = observationsOverlap(sf_i, sf_j, &relPose );
 			}
 
@@ -290,7 +290,7 @@ unsigned int CIncrementalMapPartitioner::addMapFrame(
 			}
 			else
 			{
-				//m_A(i,j) = sf_i->likelihoodWith(sf_j.pointer());
+				//m_A(i,j) = sf_i->likelihoodWith(sf_j.get());
 				m_A(i,j) = observationsOverlap(sf_i, sf_j, &relPose );
 			}
 		} // for j

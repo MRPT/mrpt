@@ -209,14 +209,14 @@ void CDlgCalibWizardOnline::OnbtnStartClick(wxCommandEvent& event)
 {
 	// Try to open the camera:
 	if (m_video)
-		m_video.clear();
+		m_video.reset();
 
 	m_video = mrpt::hwdrivers::prepareVideoSourceFromPanel(m_panelCamera);
 	if (!m_video) return;
 
 	// Launch thread:
 	// --------------------------
-	m_threadImgToProcess.clear();
+	m_threadImgToProcess.reset();
 	m_threadMustClose = false;
 	m_threadResults.clear();
 	m_threadResultsComputed=true;  // To start a new detection
@@ -239,7 +239,7 @@ void CDlgCalibWizardOnline::OnbtnStartClick(wxCommandEvent& event)
 
 void CDlgCalibWizardOnline::OnbtnStopClick(wxCommandEvent& event)
 {
-	m_video.clear();
+	m_video.reset();
 
 	btnStart->Enable();
 	btnStop->Disable();

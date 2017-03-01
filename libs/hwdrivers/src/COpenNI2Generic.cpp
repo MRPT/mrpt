@@ -36,7 +36,7 @@ using namespace std;
 
 
 // Initialize static member
-std::vector<stlplus::smart_ptr<COpenNI2Generic::CDevice> > COpenNI2Generic::vDevices = std::vector<stlplus::smart_ptr<COpenNI2Generic::CDevice> >();
+std::vector<std::shared_ptr<COpenNI2Generic::CDevice> > COpenNI2Generic::vDevices = std::vector<std::shared_ptr<COpenNI2Generic::CDevice> >();
 int COpenNI2Generic::numInstances = 0;
 
 #if MRPT_HAS_OPENNI2

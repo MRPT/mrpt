@@ -348,7 +348,7 @@ void  CObservation3DRangeScan::readFromStream(mrpt::utils::CStream &in, int vers
 				intensityImageChannel = CH_VISIBLE;
 			}
 
-			pixelLabels.clear_unique(); // Remove existing data first (_unique() is to leave alive any user copies of the shared pointer).
+			pixelLabels.reset(); // Remove existing data first (_unique() is to leave alive any user copies of the shared pointer).
 			if (version>=7)
 			{
 

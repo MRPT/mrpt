@@ -334,7 +334,7 @@ bool CRawlog::readActionObservationPair(
 	try
 	{
 		// Load pose change from the rawlog:
-		action.clear_unique();
+		action.reset();
 		while (!action)
 		{
 			CSerializablePtr obj;
@@ -345,13 +345,13 @@ bool CRawlog::readActionObservationPair(
 			}
 			else
 			{
-				obj.clear();
+				obj.reset();
 			}
 			rawlogEntry++;
 		};
 
 		// Load sensory frame from the rawlog:
-		observations.clear_unique();
+		observations.reset();
 		while (!observations)
 		{
 			CSerializablePtr obj;
@@ -362,7 +362,7 @@ bool CRawlog::readActionObservationPair(
 			}
 			else
 			{
-				obj.clear();
+				obj.reset();
 			}
 			rawlogEntry++;
 		}
@@ -397,9 +397,9 @@ bool CRawlog::getActionObservationPairOrObservation(
 	try
 	{
 		// Load pose change from the rawlog:
-		observations.clear_unique();
-		observation.clear_unique();
-		action.clear_unique();
+		observations.reset();
+		observation.reset();
+		action.reset();
 		while (!action)
 		{
 			CSerializablePtr obj;
@@ -415,12 +415,12 @@ bool CRawlog::getActionObservationPairOrObservation(
 				return true;
 			}
 			else
-				obj.clear();
+				obj.reset();
 			rawlogEntry++;
 		};
 
 		// Load sensory frame from the rawlog:
-		observations.clear_unique();
+		observations.reset();
 		while (!observations)
 		{
 			CSerializablePtr obj;

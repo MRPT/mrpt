@@ -209,7 +209,7 @@ void  CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 		CActionRobotMovement2DPtr	robotMovement2D = actions->getBestMovementEstimation();
 
 		// If there is no 2D action, look for a 3D action:
-		if (robotMovement2D.present())
+		if (robotMovement2D)
 		{
 			robotActionSampler.setPosePDF( robotMovement2D->poseChange.get_ptr() );
 			motionModelMeanIncr = robotMovement2D->poseChange->getMeanVal();
@@ -297,7 +297,7 @@ void  CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 					sf->insertObservationsInto( &localMapPoints );
 				}
 
-				map_to_align_to = partIt->d->mapTillNow.m_gridMaps[0].pointer();
+				map_to_align_to = partIt->d->mapTillNow.m_gridMaps[0].get();
 			}
 			else
 			if (options.pfOptimalProposal_mapSelection==3)  // Map of points
@@ -314,11 +314,11 @@ void  CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 					sf->insertObservationsInto( &localMapPoints );
 				}
 
-				map_to_align_to = partIt->d->mapTillNow.m_pointsMaps[0].pointer();
+				map_to_align_to = partIt->d->mapTillNow.m_pointsMaps[0].get();
 			}
 			else
 			{
-				ASSERT_( partIt->d->mapTillNow.m_landmarksMap.present() );
+				ASSERT_( partIt->d->mapTillNow.m_landmarksMap );
 
 				// Build local map of LMs.
 				if (!built_map_lms)
@@ -327,7 +327,7 @@ void  CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 					sf->insertObservationsInto( &localMapLandmarks );
 				}
 
-				map_to_align_to = partIt->d->mapTillNow.m_landmarksMap.pointer();
+				map_to_align_to = partIt->d->mapTillNow.m_landmarksMap.get();
 			}
 
 			ASSERT_(map_to_align_to!=NULL);
@@ -408,7 +408,7 @@ void  CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 			// --------------------------------------------------------
 			/** \todo Add paper ref!
 			  */
-			ASSERT_( partIt->d->mapTillNow.m_beaconMap.present() );
+			ASSERT_( partIt->d->mapTillNow.m_beaconMap );
 			CBeaconMapPtr beacMap = partIt->d->mapTillNow.m_beaconMap;
 
 			updateStageAlreadyDone = true; // We'll also update the weight of the particle here
@@ -468,7 +468,7 @@ void  CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 			{
 				if ( IS_CLASS( (*itObs),CObservationBeaconRanges) )
 				{
-					const CObservationBeaconRanges *obs = static_cast<const CObservationBeaconRanges*> (itObs->pointer());
+					const CObservationBeaconRanges *obs = static_cast<const CObservationBeaconRanges*> (itObs->get());
 					deque<CObservationBeaconRanges::TMeasurement>::const_iterator itRanges;
 					for (itRanges=obs->sensedData.begin();itRanges!=obs->sensedData.end();itRanges++)
 					{
@@ -547,7 +547,7 @@ void  CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 							(itBeacs)->generateObservationModelDistribution(
 								sensedRange,
 								newObsModel,
-								beacMap.pointer(),        			 // The beacon map, for options
+								beacMap.get(),        			 // The beacon map, for options
 								itObs->sensorLocationOnRobot,// Sensor location on robot
 								centerPositionPrior,
 								centerPositionPriorRadius );
@@ -922,7 +922,7 @@ double CMultiMetricMapPDF::PF_SLAM_computeObservationLikelihoodForParticle(
 	CMultiMetricMap *map = const_cast<CMultiMetricMap *>(&m_particles[particleIndexForMap].d->mapTillNow);
 	double	ret = 0;
 	for (CSensoryFrame::const_iterator it=observation.begin();it!=observation.end();++it)
-		ret += map->computeObservationLikelihood( (CObservation*)it->pointer(), x );
+		ret += map->computeObservationLikelihood( (CObservation*)it->get(), x );
 	return ret;
 }
 

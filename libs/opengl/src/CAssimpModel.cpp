@@ -138,7 +138,7 @@ CAssimpModel::CAssimpModel() :
 	m_bbox_max(0,0,0),
 	m_textures_loaded(false)
 {
-	m_assimp_scene.set( new TImplAssimp() );
+	m_assimp_scene = std::make_shared<TImplAssimp>();
 }
 
 CAssimpModel::~CAssimpModel()
@@ -152,7 +152,7 @@ CAssimpModel::~CAssimpModel()
 void   CAssimpModel::clear()
 {
 	CRenderizableDisplayList::notifyChange();
-	m_assimp_scene.set( new TImplAssimp() );
+	m_assimp_scene = std::make_shared<TImplAssimp>();
 	m_modelPath.clear();
 	m_textures_loaded = false;
 
@@ -529,8 +529,8 @@ void load_textures(
 
 		ipt.img_rgb = mrpt::utils::CImage::Create();
 		ipt.img_alpha = mrpt::utils::CImage::Create();
-		mrpt::utils::CImage *img_rgb = ipt.img_rgb.pointer();
-		mrpt::utils::CImage *img_a = ipt.img_alpha.pointer();
+		mrpt::utils::CImage *img_rgb = ipt.img_rgb.get();
+		mrpt::utils::CImage *img_a = ipt.img_alpha.get();
 
 		// Load images:
 		// TGA is handled specially since it's not supported by OpenCV:

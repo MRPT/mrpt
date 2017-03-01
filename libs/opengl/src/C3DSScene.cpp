@@ -525,7 +525,7 @@ C3DSScene::C3DSScene() :
 	m_bbox_max(0,0,0),
 	m_enable_extra_lighting(false)
 {
-	m_3dsfile.set( new TImpl3DS() );
+	m_3dsfile = std::make_shared<TImpl3DS>();
 }
 
 C3DSScene::~C3DSScene()
@@ -539,7 +539,7 @@ C3DSScene::~C3DSScene()
 void   C3DSScene::clear()
 {
 	CRenderizableDisplayList::notifyChange();
-	m_3dsfile.set( new TImpl3DS() );
+	m_3dsfile = std::make_shared<TImpl3DS>();
 }
 
 void C3DSScene::loadFrom3DSFile( const std::string &filepath )

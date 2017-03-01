@@ -108,8 +108,8 @@ double icp_test_1(int a1, int a2)
 //		printf("\n---------------- STEP %u | RAWLOG ENTRY %u ----------------\n",step, (unsigned)rawlogEntry);
 
 		// Free memory:
-		action.clear_unique();
-		observations.clear_unique();
+		action.reset();
+		observations.reset();
 	}
 
 #if 0

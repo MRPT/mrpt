@@ -74,7 +74,7 @@ DECLARE_OP_FUNCTION(op_export_gps_gas_kml)
 		{
 			if (IS_CLASS(o, CObservationGPS ) )
 			{
-				obs = CObservationGPSPtr(o).pointer();
+				obs = CObservationGPSPtr(o).get();
 				if (!obs->has_GGA_datum)
 				{	
 					obs = NULL;
@@ -84,7 +84,7 @@ DECLARE_OP_FUNCTION(op_export_gps_gas_kml)
 			}
 			else if (IS_CLASS(o, CObservationGasSensors ) )
 			{
-				obsGas = CObservationGasSensorsPtr(o).pointer();
+				obsGas = CObservationGasSensorsPtr(o).get();
 				if (obsGas->m_readings.size() < 1)
 				{
 					cout << "Empty Gas Sensor" << endl;

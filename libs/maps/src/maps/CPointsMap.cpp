@@ -1475,7 +1475,7 @@ void internal_build_points_map_from_scan2D(const mrpt::obs::CObservation2DRangeS
 	out_map = CSimplePointsMap::Create();
 
 	if (insertOps)
-		static_cast<CSimplePointsMap*>(out_map.pointer())->insertionOptions = *static_cast<const CPointsMap::TInsertionOptions*>(insertOps);
+		static_cast<CSimplePointsMap*>(out_map.get())->insertionOptions = *static_cast<const CPointsMap::TInsertionOptions*>(insertOps);
 
 	out_map->insertObservation(&obs,NULL);
 }

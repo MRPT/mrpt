@@ -575,8 +575,8 @@ CCameraSensor::~CCameraSensor()
 {
 	close();
 
-	m_preview_win1.clear();
-	m_preview_win2.clear();
+	m_preview_win1.reset();
+	m_preview_win2.reset();
 }
 /* -----------------------------------------------------
 				getNextFrame
@@ -759,7 +759,7 @@ void CCameraSensor::getNextFrame( vector<CSerializablePtr> & out_obs )
 		// Read in a loop until we found at least one image:
 		//  Assign to: obs && stObs
 		CSerializablePtr  newObs;
-		while (!obs.present() && !stObs.present() && !obs3D.present())
+		while (!obs && !stObs && !obs3D)
 		{
 			*m_cap_rawlog  >> newObs;
 			if (IS_DERIVED( newObs, CObservation) )
