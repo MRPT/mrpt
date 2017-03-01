@@ -397,7 +397,7 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 			tictac.Tic();
 			if ( !cfg.read_bool(sect,"init_PDF_mode",false, /*Fail if not found*/true) )
 				pdf.resetUniformFreeSpace(
-					metricMap.m_gridMaps[0].pointer(),
+					metricMap.m_gridMaps[0].get(),
 					0.7f,
 					PARTICLE_COUNT,
 					init_PDF_min_x,init_PDF_max_x,
@@ -660,8 +660,8 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 
 						PF.executeOn(
 							pdf,
-							action.pointer(),			// Action
-							observations.pointer(),	// Obs.
+							action.get(),			// Action
+							observations.get(),	// Obs.
 							&PF_stats		// Output statistics
 							);
 

@@ -88,9 +88,9 @@ DECLARE_OP_FUNCTION(op_info)
 			}
 
 			// Clear read objects:
-			actions.clear_unique();
-			SF.clear_unique();
-			obs.clear_unique();
+			actions.reset();
+			SF.reset();
+			obs.reset();
 
 			return true; // No error.
 		}

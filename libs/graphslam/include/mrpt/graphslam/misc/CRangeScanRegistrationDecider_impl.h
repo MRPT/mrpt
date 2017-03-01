@@ -143,7 +143,7 @@ bool CRangeScanRegistrationDecider<GRAPH_t>::convert3DTo2DRangeScan(
 
 	bool success = false;
 	// if it doesn't exist, create it
-	if ( (*scan2D_out).null() ) {
+	if ( !*scan2D_out ) {
 		*scan2D_out = mrpt::obs::CObservation2DRangeScan::Create();
 	}
 

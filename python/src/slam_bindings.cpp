@@ -172,22 +172,22 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(CRangeBearingKFSLAM2D_saveMapAndPath2DRep
 // CMonteCarloLocalization2D
 void CMonteCarloLocalization2D_prediction_and_update_pfStandardProposal(CMonteCarloLocalization2D& self, const mrpt::obs::CActionCollectionPtr action, const mrpt::obs::CSensoryFramePtr observation, const CParticleFilter::TParticleFilterOptions &PF_options)
 {
-    self.prediction_and_update_pfStandardProposal(action.pointer(), observation.pointer(), PF_options);
+    self.prediction_and_update_pfStandardProposal(action.get(), observation.get(), PF_options);
 }
 
 void CMonteCarloLocalization2D_prediction_and_update_pfAuxiliaryPFStandard(CMonteCarloLocalization2D& self, const mrpt::obs::CActionCollectionPtr action, const mrpt::obs::CSensoryFramePtr observation, const CParticleFilter::TParticleFilterOptions &PF_options)
 {
-    self.prediction_and_update_pfAuxiliaryPFStandard(action.pointer(), observation.pointer(), PF_options);
+    self.prediction_and_update_pfAuxiliaryPFStandard(action.get(), observation.get(), PF_options);
 }
 
 void CMonteCarloLocalization2D_prediction_and_update_pfAuxiliaryPFOptimal(CMonteCarloLocalization2D& self, const mrpt::obs::CActionCollectionPtr action, const mrpt::obs::CSensoryFramePtr observation, const CParticleFilter::TParticleFilterOptions &PF_options)
 {
-    self.prediction_and_update_pfAuxiliaryPFOptimal(action.pointer(), observation.pointer(), PF_options);
+    self.prediction_and_update_pfAuxiliaryPFOptimal(action.get(), observation.get(), PF_options);
 }
 
 void CMonteCarloLocalization2D_prediction_and_update(CMonteCarloLocalization2D& self, const mrpt::obs::CActionCollectionPtr action, const mrpt::obs::CSensoryFramePtr observation, const CParticleFilter::TParticleFilterOptions &PF_options)
 {
-    self.prediction_and_update(action.pointer(), observation.pointer(), PF_options);
+    self.prediction_and_update(action.get(), observation.get(), PF_options);
 }
 
 CPose2D CMonteCarloLocalization2D_getMean(CMonteCarloLocalization2D& self)
@@ -258,22 +258,22 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(CMonteCarloLocalization2D_performResampli
 // CMonteCarloLocalization3D
 void CMonteCarloLocalization3D_prediction_and_update_pfStandardProposal(CMonteCarloLocalization3D& self, const mrpt::obs::CActionCollectionPtr action, const mrpt::obs::CSensoryFramePtr observation, const CParticleFilter::TParticleFilterOptions &PF_options)
 {
-    self.prediction_and_update_pfStandardProposal(action.pointer(), observation.pointer(), PF_options);
+    self.prediction_and_update_pfStandardProposal(action.get(), observation.get(), PF_options);
 }
 
 void CMonteCarloLocalization3D_prediction_and_update_pfAuxiliaryPFStandard(CMonteCarloLocalization3D& self, const mrpt::obs::CActionCollectionPtr action, const mrpt::obs::CSensoryFramePtr observation, const CParticleFilter::TParticleFilterOptions &PF_options)
 {
-    self.prediction_and_update_pfAuxiliaryPFStandard(action.pointer(), observation.pointer(), PF_options);
+    self.prediction_and_update_pfAuxiliaryPFStandard(action.get(), observation.get(), PF_options);
 }
 
 void CMonteCarloLocalization3D_prediction_and_update_pfAuxiliaryPFOptimal(CMonteCarloLocalization3D& self, const mrpt::obs::CActionCollectionPtr action, const mrpt::obs::CSensoryFramePtr observation, const CParticleFilter::TParticleFilterOptions &PF_options)
 {
-    self.prediction_and_update_pfAuxiliaryPFOptimal(action.pointer(), observation.pointer(), PF_options);
+    self.prediction_and_update_pfAuxiliaryPFOptimal(action.get(), observation.get(), PF_options);
 }
 
 void CMonteCarloLocalization3D_prediction_and_update(CMonteCarloLocalization3D& self, const mrpt::obs::CActionCollectionPtr action, const mrpt::obs::CSensoryFramePtr observation, const CParticleFilter::TParticleFilterOptions &PF_options)
 {
-    self.prediction_and_update(action.pointer(), observation.pointer(), PF_options);
+    self.prediction_and_update(action.get(), observation.get(), PF_options);
 }
 
 CPose3D CMonteCarloLocalization3D_getMean(CMonteCarloLocalization3D& self)

@@ -112,7 +112,7 @@ void PlannerRRT_SE2_TPS::initialize()
 
 		// Polygonal robot shape?
 		{
-			mrpt::nav::CPTG_DiffDrive_CollisionGridBased * diff_ptg = dynamic_cast<mrpt::nav::CPTG_DiffDrive_CollisionGridBased *>(m_PTGs[i].pointer());
+			mrpt::nav::CPTG_DiffDrive_CollisionGridBased * diff_ptg = dynamic_cast<mrpt::nav::CPTG_DiffDrive_CollisionGridBased *>(m_PTGs[i].get());
 			if (diff_ptg) {
 				ASSERTMSG_(!poly_robot_shape.empty(), "No polygonal robot shape specified, and PTG requires one!");
 				diff_ptg->setRobotShape(poly_robot_shape);
@@ -120,7 +120,7 @@ void PlannerRRT_SE2_TPS::initialize()
 		}
 		// Circular robot shape?
 		{
-			mrpt::nav::CPTG_RobotShape_Circular *ptg = dynamic_cast<mrpt::nav::CPTG_RobotShape_Circular *>(m_PTGs[i].pointer());
+			mrpt::nav::CPTG_RobotShape_Circular *ptg = dynamic_cast<mrpt::nav::CPTG_RobotShape_Circular *>(m_PTGs[i].get());
 			if (ptg) {
 				ASSERTMSG_(params.robot_shape_circular_radius>0, "No circular robot shape specified, and PTG requires one!");
 				ptg->setRobotShapeRadius(params.robot_shape_circular_radius);
@@ -294,7 +294,7 @@ void PlannerRRT_SE2_TPS::solve(
 			}
 			{
 				CTimeLoggerEntry tle(m_timelogger,"PT_RRT::solve.SpaceTransformer");
-				spaceTransformerOneDirectionOnly(k_rand, m_local_obs, m_PTGs[idxPTG].pointer(), MAX_DIST_FOR_OBSTACLES, TP_Obstacles_k_rand);
+				spaceTransformerOneDirectionOnly(k_rand, m_local_obs, m_PTGs[idxPTG].get(), MAX_DIST_FOR_OBSTACLES, TP_Obstacles_k_rand);
 			}
 
 			// directions k_rand in TP_obstacles[k_rand] = d_free
@@ -777,7 +777,7 @@ void PlannerRRT_SE2_TPS::renderMoveTree(
 			{
 				// Draw actual PT path between parent and children nodes:
 				ASSERT_(node.edge_to_parent)
-				const mrpt::nav::CParameterizedTrajectoryGenerator * ptg = m_PTGs[node.edge_to_parent->ptg_index].pointer();
+				const mrpt::nav::CParameterizedTrajectoryGenerator * ptg = m_PTGs[node.edge_to_parent->ptg_index].get();
 
 				// Create the path shape, in relative coords to the parent node:
 				mrpt::opengl::CSetOfLinesPtr obj = mrpt::opengl::CSetOfLines::Create();

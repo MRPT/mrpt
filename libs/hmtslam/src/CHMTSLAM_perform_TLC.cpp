@@ -127,9 +127,9 @@ void CHMTSLAM::perform_TLC(
 		TArcList lstArcs;
 		m_map.getNodeByID(Ai)->getArcs(lstArcs);
 		for(TArcList::iterator arc=lstArcs.begin();arc!=lstArcs.end();++arc)
-			arc->clear(); // The "delete" will automatically remove the entry in "m_map". Other smrtpnts will be cleared too.
+			arc->reset(); // The "delete" will automatically remove the entry in "m_map". Other smrtpnts will be cleared too.
 
-		m_map.getNodeByID(Ai).clear();	// The "delete" will automatically remove the entry in "m_map"
+		m_map.getNodeByID(Ai).reset();	// The "delete" will automatically remove the entry in "m_map"
 	}
 
 

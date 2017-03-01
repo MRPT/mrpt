@@ -356,7 +356,7 @@ void CFormPlayVideo::OnbtnPlayClick(wxCommandEvent& event)
 
             if (IS_CLASS(obj,CSensoryFrame))
             {
-                doDelay = showSensoryFrame(obj.pointer(), nImgs);
+                doDelay = showSensoryFrame(obj.get(), nImgs);
             }
             else if (IS_DERIVED(obj,CObservation))
             {
@@ -366,7 +366,7 @@ void CFormPlayVideo::OnbtnPlayClick(wxCommandEvent& event)
             }
 
             // Free the loaded object!
-            if (fil) obj.clear();
+            if (fil) obj.reset();
 
             // Update UI
             if ((count++)%100==0)
@@ -806,7 +806,7 @@ void CFormPlayVideo::OnprogressBarCmdScrollChanged(wxScrollEvent& event)
 			size_t dummy = 0;
 
 			CSensoryFramePtr sf = rawlog.getAsObservations(idx);
-			showSensoryFrame(sf.pointer(), dummy);
+			showSensoryFrame(sf.get(), dummy);
 			edIndex->SetValue(idx);
 		}
 		else if (rawlog.getType(idx)==CRawlog::etObservation)

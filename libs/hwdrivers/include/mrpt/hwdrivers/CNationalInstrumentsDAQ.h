@@ -14,6 +14,7 @@
 #include <mrpt/utils/COutputLogger.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/synch/CPipe.h>
+#include <mrpt/synch/atomic_incr.h>
 #include <mrpt/system/threads.h>
 #include <list>
 #include <memory>

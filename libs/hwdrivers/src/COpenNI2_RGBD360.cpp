@@ -222,8 +222,8 @@ void COpenNI2_RGBD360::getNextObservation(
 		}
 		else
 		{
-			if (m_win_range[sensor_id]) m_win_range[sensor_id].clear();
-			if (m_win_int[sensor_id]) m_win_int[sensor_id].clear();
+			if (m_win_range[sensor_id]) m_win_range[sensor_id].reset();
+			if (m_win_int[sensor_id]) m_win_int[sensor_id].reset();
 		}
 	}
 	cout << "getNextObservation took " << 1000*tictac.Tac() << "ms\n";

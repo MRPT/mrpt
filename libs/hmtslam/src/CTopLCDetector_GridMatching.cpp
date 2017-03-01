@@ -75,16 +75,16 @@ CPose3DPDFPtr CTopLCDetector_GridMatching::computeTopologicalObservationModel(
 
 	// Do the map align:
 	CPosePDFPtr alignRes = gridAligner.Align(
-		hMapCur.pointer(),   // "ref" as seen from "cur"...The order is critical!!!
-		hMapRef.pointer(),  
+		hMapCur.get(),   // "ref" as seen from "cur"...The order is critical!!!
+		hMapRef.get(),  
 		initEstimate,
 		NULL,
 		&info);
 
 #if 0
 	{
-		hMapCur->m_gridMaps[0]->saveAsBitmapFileWithLandmarks("map1.png", info.landmarks_map1.pointer());
-		hMapRef->m_gridMaps[0]->saveAsBitmapFileWithLandmarks("map2.png", info.landmarks_map2.pointer());
+		hMapCur->m_gridMaps[0]->saveAsBitmapFileWithLandmarks("map1.png", info.landmarks_map1.get());
+		hMapRef->m_gridMaps[0]->saveAsBitmapFileWithLandmarks("map2.png", info.landmarks_map2.get());
 	}
 #endif
 

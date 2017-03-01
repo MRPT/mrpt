@@ -573,9 +573,9 @@ void CFormChangeSensorPositions::executeOperationOnRawlog( TRawlogFilter operati
                 CSensoryFramePtr sf(newObj);
 
                 // Process & save:
-				operation(NULL,sf.pointer(),changes );
+				operation(NULL,sf.get(),changes );
 
-				if (!isInMemory)  (*out_fil) << *sf.pointer();
+				if (!isInMemory)  (*out_fil) << *sf.get();
             }
             else if ( newObj->GetRuntimeClass() == CLASS_ID(CActionCollection))
             {
@@ -583,7 +583,7 @@ void CFormChangeSensorPositions::executeOperationOnRawlog( TRawlogFilter operati
                 CActionCollectionPtr acts =CActionCollectionPtr( newObj );
 
                 // Process & save:
-				operation( (CActionCollection*)acts.pointer(),NULL,changes);
+				operation( (CActionCollection*)acts.get(),NULL,changes);
 
                 if (!isInMemory)  (*out_fil) << *acts;
             }
@@ -629,7 +629,7 @@ void CFormChangeSensorPositions::executeOperationOnRawlog( TRawlogFilter operati
         // Delete only if processing file
         if (newObj && !isInMemory)
         {
-            newObj.clear();
+            newObj.reset();
         }
 
     } // end while keep loading

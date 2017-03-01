@@ -65,7 +65,7 @@ DECLARE_OP_FUNCTION(op_generate_pcd)
 					CColouredPointsMap  map;
 					map.insertionOptions.minDistBetweenLaserPoints = 0;
 
-					map.insertObservation(obs3D.pointer());
+					map.insertObservation(obs3D.get());
 					if (!map.savePCDFile(label_time,false /* not bin format*/))
 						throw std::runtime_error(string("ERROR: While saving file: ")+label_time);
 					entries_done++;
@@ -79,7 +79,7 @@ DECLARE_OP_FUNCTION(op_generate_pcd)
 				CSimplePointsMap map;
 				map.insertionOptions.minDistBetweenLaserPoints = 0;
 
-				map.insertObservation(obs2D.pointer());
+				map.insertObservation(obs2D.get());
 				if (!map.savePCDFile(label_time,false /* not bin format*/))
 					throw std::runtime_error(string("ERROR: While saving file: ")+label_time);
 				entries_done++;

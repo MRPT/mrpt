@@ -123,7 +123,7 @@ void CRandomFieldGridMap3D::internal_initialize(bool erase_prev_contents)
 	m_mrf_factors_activeObs.resize(nodeCount); // Alloc space for obs
 	m_gmrf.initialize(nodeCount);
 
-	ConnectivityDescriptor * custom_connectivity = m_gmrf_connectivity.pointer(); // Use a raw ptr to avoid the cost in the inner loops
+	ConnectivityDescriptor * custom_connectivity = m_gmrf_connectivity.get(); // Use a raw ptr to avoid the cost in the inner loops
 
 	size_t cx = 0, cy = 0, cz = 0;
 	for (size_t j = 0; j<nodeCount; j++)

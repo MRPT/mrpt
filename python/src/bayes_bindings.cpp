@@ -33,7 +33,7 @@ namespace mrpt { namespace bayes {
 CParticleFilter::TParticleFilterStats CParticleFilter_executeOn(CParticleFilter& self, CParticleFilterCapable& obj, const mrpt::obs::CActionCollectionPtr action, const mrpt::obs::CSensoryFramePtr observation)
 {
     CParticleFilter::TParticleFilterStats stats;
-    self.executeOn(obj, action.pointer(), observation.pointer(), &stats);
+    self.executeOn(obj, action.get(), observation.get(), &stats);
     return stats;
 }
 // end of CParticleFilter

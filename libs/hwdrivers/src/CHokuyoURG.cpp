@@ -65,7 +65,7 @@ CHokuyoURG::~CHokuyoURG()
 	}
 
 	// FAMD
-    m_win.clear(); // clear window
+    m_win.reset();
 }
 
 /*-------------------------------------------------------------

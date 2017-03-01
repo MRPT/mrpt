@@ -232,7 +232,7 @@ void  CObservation2DRangeScan::readFromStream(mrpt::utils::CStream &in, int vers
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
 	};
 
-	m_cachedMap.clear();
+	m_cachedMap.reset();
 }
 
 /*---------------------------------------------------------------

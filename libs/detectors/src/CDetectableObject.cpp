@@ -38,6 +38,6 @@ void CDetectable3D::writeToStream(mrpt::utils::CStream &, int *) const
 }
 
 CDetectable3D::CDetectable3D( const CDetectable2DPtr &object2d )
-	: CDetectable2D( object2d.pointer() ), m_z(0)
+	: CDetectable2D( object2d.get() ), m_z(0)
 { 
 }

@@ -215,7 +215,7 @@ CRenderizablePtr	COpenGLScene::getByName( const string &str, const string &viewp
 	MRPT_UNUSED_PARAM(viewportName);
 	CRenderizablePtr obj;
 	for (TListViewports::iterator it=m_viewports.begin();it!=m_viewports.end();++it)
-		if ( (obj = (*it)->getByName(str) ).present() )
+		if ( (obj = (*it)->getByName(str) ) )
 			break;
 	return obj;
 }
@@ -286,7 +286,7 @@ void COpenGLScene::removeObject( const CRenderizablePtr &obj, const std::string 
 	MRPT_START
 
 	COpenGLViewportPtr view = getViewport(viewportName);
-	ASSERT_(view.present());
+	ASSERT_(view);
 	view->removeObject(obj);
 
 	MRPT_END
@@ -331,7 +331,7 @@ bool COpenGLScene::loadFromFile(const std::string &fil)
 void COpenGLScene::getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max,const std::string &vpn) const
 {
 	COpenGLViewportPtr vp = this->getViewport(vpn);
-	ASSERTMSG_(vp.present(), "No opengl viewport exists with the given name")
+	ASSERTMSG_(vp, "No opengl viewport exists with the given name")
 
 	return vp->getBoundingBox(bb_min, bb_max);
 }

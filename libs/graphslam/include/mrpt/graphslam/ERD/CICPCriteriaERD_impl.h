@@ -82,7 +82,7 @@ template<class GRAPH_t> bool CICPCriteriaERD<GRAPH_t>::updateState(
 		this->logFmt(LVL_DEBUG, "New node has been registered!");
 	}
 
-	if (observation.present()) { // observation-only rawlog format
+	if (observation) { // observation-only rawlog format
 		if (IS_CLASS(observation, CObservation2DRangeScan)) {
 			m_last_laser_scan2D =
 				static_cast<mrpt::obs::CObservation2DRangeScanPtr>(observation);
@@ -109,13 +109,13 @@ template<class GRAPH_t> bool CICPCriteriaERD<GRAPH_t>::updateState(
 		// New node has been registered.
 		// add the last laser_scan
 		if (registered_new_node) {
-			if (!m_last_laser_scan2D.null()) {
+			if (m_last_laser_scan2D) {
 				m_nodes_to_laser_scans2D[m_graph->nodeCount()-1] = m_last_laser_scan2D;
 				this->logFmt(LVL_DEBUG,
 						"Added laser scans of nodeID: %lu",
 						m_graph->nodeCount()-1);
 			}
-			if (!m_last_laser_scan3D.null()) {
+			if (m_last_laser_scan3D) {
 				m_nodes_to_laser_scans3D[m_graph->nodeCount()-1] = m_last_laser_scan3D;
 				this->logFmt(LVL_DEBUG,
 						"Added laser scans of nodeID: %lu",
@@ -520,14 +520,14 @@ void CICPCriteriaERD<GRAPH_t>::updateVisuals() {
 
 	// update laser scan visual
 	if (m_win && params.visualize_laser_scans &&
-			(!m_last_laser_scan2D.null() || !m_fake_laser_scan2D.null())) {
+			(m_last_laser_scan2D || m_fake_laser_scan2D)) {
 		COpenGLScenePtr scene = m_win->get3DSceneAndLock();
 
 		CRenderizablePtr obj = scene->getByName("laser_scan_viz");
 		CPlanarLaserScanPtr laser_scan_viz = static_cast<CPlanarLaserScanPtr>(obj);
 
 		// if fake 2D exists use it
-		if (!m_fake_laser_scan2D.null()) {
+		if (m_fake_laser_scan2D) {
 			laser_scan_viz->setScan(*m_fake_laser_scan2D);
 		}
 		else {
@@ -571,7 +571,7 @@ void CICPCriteriaERD<GRAPH_t>::checkIfInvalidDataset(
 	using namespace mrpt::utils;
 	using namespace mrpt::obs;
 
-	if (observation.present()) { // FORMAT #2
+	if (observation) { // FORMAT #2
 		if (IS_CLASS(observation, CObservation2DRangeScan) ||
 				IS_CLASS(observation, CObservation3DRangeScan)) {
 			m_checked_for_usuable_dataset = true;

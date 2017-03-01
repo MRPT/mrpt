@@ -170,14 +170,14 @@ namespace mrpt
 			size_t  foundCount = 0;
 			const mrpt::utils::TRuntimeClassId*	class_ID = T::classinfo;
 			for (CListOpenGLObjects::const_iterator it = m_objects.begin();it!=m_objects.end();++it)
-				if (  (*it).present() && (*it)->GetRuntimeClass()->derivedFrom( class_ID ) )
+				if (  *it && (*it)->GetRuntimeClass()->derivedFrom( class_ID ) )
 					if (foundCount++ == ith)
 						return typename T::SmartPtr(*it);
 
 			// If not found directly, search recursively:
 			for (CListOpenGLObjects::const_iterator it=m_objects.begin();it!=m_objects.end();++it)
 			{
-				if ( (*it).present() && (*it)->GetRuntimeClass() == CLASS_ID_NAMESPACE(CSetOfObjects,mrpt::opengl))
+				if ( *it && (*it)->GetRuntimeClass() == CLASS_ID_NAMESPACE(CSetOfObjects,mrpt::opengl))
 				{
 					typename T::SmartPtr o = CSetOfObjectsPtr(*it)->getByClass<T>(ith);
 					if (o) return o;

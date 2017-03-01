@@ -428,7 +428,7 @@ void Run_KF_SLAM( CConfigFile &cfgFile, const std::string &rawlogFileName )
 				const CObservationBearingRangePtr obs = observations->getObservationByClass<CObservationBearingRange>();
 				if (obs)
 				{
-					const CObservationBearingRange* obsRB = obs.pointer();
+					const CObservationBearingRange* obsRB = obs.get();
 					const double tim = mrpt::system::timestampToDouble( obsRB->timestamp );
 
 					for (size_t i=0;i<obsRB->sensedData.size();i++)
@@ -465,7 +465,7 @@ void Run_KF_SLAM( CConfigFile &cfgFile, const std::string &rawlogFileName )
 				const CObservationBearingRangePtr obs = observations->getObservationByClass<CObservationBearingRange>();
 				if (obs)
 				{
-					const CObservationBearingRange* obsRB = obs.pointer();
+					const CObservationBearingRange* obsRB = obs.get();
 					const double tim = mrpt::system::timestampToDouble( obsRB->timestamp );
 
 					std::map<double,std::vector<int> >::const_iterator itDA = GT_DA.find( tim );
@@ -553,7 +553,7 @@ void Run_KF_SLAM( CConfigFile &cfgFile, const std::string &rawlogFileName )
 			}
 
 			// Save 3D view of the filter state:
-			if (win3d.present() || ( SAVE_3D_SCENES && !(step % SAVE_LOG_FREQUENCY) ) )
+			if (win3d || ( SAVE_3D_SCENES && !(step % SAVE_LOG_FREQUENCY) ) )
 			{
 				COpenGLScenePtr   scene3D = COpenGLScene::Create();
 				{
@@ -672,7 +672,7 @@ void Run_KF_SLAM( CConfigFile &cfgFile, const std::string &rawlogFileName )
 					scene3D->insert( objs );
 				}
 
-				if (win3d.present())
+				if (win3d)
 				{
 					mrpt::opengl::COpenGLScenePtr &scn = win3d->get3DSceneAndLock();
 					scn = scene3D;
@@ -726,8 +726,8 @@ void Run_KF_SLAM( CConfigFile &cfgFile, const std::string &rawlogFileName )
 
 			// Free rawlog items memory:
 			// --------------------------------------------
-			action.clear_unique();
-			observations.clear_unique();
+			action.reset();
+			observations.reset();
 
 		} // (rawlogEntry>=rawlog_offset)
 

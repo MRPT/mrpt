@@ -74,7 +74,7 @@ bool CFixedIntervalsNRD<GRAPH_t>::updateState(
 	// don't use the measurements in this implementation
 	MRPT_UNUSED_PARAM(observations);
 
-	if (observation.present()) { // FORMAT #2
+	if (observation) { // FORMAT #2
 		m_observation_only_rawlog = true;
 
 		if (IS_CLASS(observation, CObservationOdometry)) {
@@ -200,7 +200,7 @@ void CFixedIntervalsNRD<GRAPH_t>::checkIfInvalidDataset(
 	MRPT_UNUSED_PARAM(observations);
 	MRPT_UNUSED_PARAM(action);
 
-	if (observation.present()) { // FORMAT #2
+	if (observation) { // FORMAT #2
 		if (IS_CLASS(observation, CObservationOdometry)) {
 			m_checked_for_usuable_dataset = true;
 			return;

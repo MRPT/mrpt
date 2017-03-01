@@ -198,14 +198,14 @@ void CScanAnimation::RebuildMaps()
 		if (rawlog.getType(idx)==CRawlog::etSensoryFrame)
 		{
 			CSensoryFramePtr sf = rawlog.getAsObservations(idx);
-			BuildMapAndRefresh(sf.pointer());
+			BuildMapAndRefresh(sf.get());
 		}
 		else
 		if (rawlog.getType(idx)==CRawlog::etObservation)
 		{
 			CSensoryFramePtr sf = CSensoryFrame::Create();
 			sf->insert( rawlog.getAsObservation(idx) );
-			BuildMapAndRefresh(sf.pointer());
+			BuildMapAndRefresh(sf.get());
 		}
 	}
 
@@ -297,7 +297,7 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame *sf)
 			pointMap.colorScheme.scheme = CColouredPointsMap::cmFromIntensityImage;
 			pointMap.insertionOptions.minDistBetweenLaserPoints = 0;
 
-			pointMap.insertObservation( obs.pointer() );
+			pointMap.insertObservation( obs.get() );
 
 			// Already in the map with the same sensor label?
 			TListGlObjects::iterator it_gl = m_gl_objects.find(sNameInMap);

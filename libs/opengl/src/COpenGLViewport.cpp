@@ -255,7 +255,7 @@ void  COpenGLViewport::render( const int render_width, const int render_height  
 				//  - libcvd, by Edward Rosten http://www.edwardrosten.com/cvd/
 				//  - PTAM, by Klein & Murray http://www.robots.ox.ac.uk/~gk/PTAM/
 
-				const mrpt::utils::CImage *img = m_imageview_img.pointer();
+				const mrpt::utils::CImage *img = m_imageview_img.get();
 
 				const int img_w = img->getWidth();
 				const int img_h = img->getHeight();
@@ -329,7 +329,7 @@ void  COpenGLViewport::render( const int render_width, const int render_height  
 					THROW_EXCEPTION_FMT("Cloned viewport '%s' not found in parent COpenGLScene",m_clonedViewport.c_str());
 
 				objectsToRender = &view->m_objects;
-				viewForGetCamera = m_isClonedCamera ? view.pointer() : const_cast<COpenGLViewport*>(this);
+				viewForGetCamera = m_isClonedCamera ? view.get() : const_cast<COpenGLViewport*>(this);
 			}
 			else
 			{	// Normal case: render our own objects:
@@ -342,7 +342,7 @@ void  COpenGLViewport::render( const int render_width, const int render_height  
 			CRenderizablePtr cam_ptr = viewForGetCamera->getByClass<CCamera>();
 
 			CCamera *myCamera=NULL;
-			if (cam_ptr.present())
+			if (cam_ptr)
 			{
 				myCamera = getAs<CCamera>(cam_ptr);
 			}
@@ -646,7 +646,7 @@ CRenderizablePtr COpenGLViewport::getByName( const string &str )
 		else if ( (*it)->GetRuntimeClass() == CLASS_ID_NAMESPACE(CSetOfObjects,opengl))
 		{
 			CRenderizablePtr ret = getAs<CSetOfObjects>(*it)->getByName(str);
-			if (ret.present())
+			if (ret)
 				return ret;
 		}
 	}
@@ -700,7 +700,7 @@ void COpenGLViewport::dumpListOfObjects( utils::CStringList  &lst )
 void COpenGLViewport::removeObject( const CRenderizablePtr &obj )
 {
 	for (CListOpenGLObjects::iterator	it=m_objects.begin();it!=m_objects.end();++it)
-		if (it->pointer() == obj.pointer())
+		if (*it == obj)
 		{
 			m_objects.erase(it);
 			return;
@@ -861,7 +861,7 @@ void COpenGLViewport::setNormalMode()
 {
 	// If this was a m_isImageView, remove the quad object:
 	if (m_isImageView && m_imageview_img)
-		m_imageview_img.clear();
+		m_imageview_img.reset();
 
 	m_isCloned=false;
 	m_isClonedCamera=false;
@@ -885,7 +885,7 @@ void COpenGLViewport::internal_setImageView_fast(const mrpt::utils::CImage &img,
 	m_isImageView = true;
 
 	// Update texture image:
-	mrpt::utils::CImage *my_img = m_imageview_img.pointer();
+	mrpt::utils::CImage *my_img = m_imageview_img.get();
 
 	if (!is_fast)
 	      *my_img = img;

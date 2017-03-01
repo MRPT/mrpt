@@ -142,7 +142,7 @@ void CLSLAM_RBPF_2DLASER::processOneLMH(
 	// ------------------------------------------------
 	CParticleFilter		pf;
 	pf.m_options = m_parent->m_options.pf_options;
-	pf.executeOn( *LMH, actions.pointer(), sf.pointer() );
+	pf.executeOn( *LMH, actions.get(), sf.get() );
 
 	// 3) The appearance observation: update the log likelihood
 	// ...
@@ -197,7 +197,7 @@ void CLSLAM_RBPF_2DLASER::processOneLMH(
 			synch::CCriticalSectionLocker	lock( &m_parent->m_topLCdets_cs );
 
 			for (std::deque<CTopLCDetectorBase*>::iterator it=m_parent->m_topLCdets.begin();it!=m_parent->m_topLCdets.end();++it)
-				(*it)->OnNewPose( newlyAddedPose, sf.pointer() );
+				(*it)->OnNewPose( newlyAddedPose, sf.get() );
 		}
 
 
@@ -837,9 +837,9 @@ void  CLSLAM_RBPF_2DLASER::prediction_and_update_pfOptimalProposal(
 			CMetricMap *mapalign;
 
 			if (!part.d->metricMaps.m_pointsMaps.empty())
-				mapalign = part.d->metricMaps.m_pointsMaps[0].pointer();
+				mapalign = part.d->metricMaps.m_pointsMaps[0].get();
 			else if (!part.d->metricMaps.m_gridMaps.empty())
-				mapalign = part.d->metricMaps.m_gridMaps[0].pointer();
+				mapalign = part.d->metricMaps.m_gridMaps[0].get();
 			else
 				THROW_EXCEPTION("There is no point or grid map. At least one needed for ICP.");
 

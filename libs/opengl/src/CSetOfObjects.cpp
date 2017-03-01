@@ -126,7 +126,7 @@ CSetOfObjects::~CSetOfObjects()
 
 void CSetOfObjects::insert( const CRenderizablePtr &newObject )
 {
-	ASSERTMSG_(newObject.pointer() != this, "Error: Trying to insert container into itself!");
+	ASSERTMSG_(newObject.get() != this, "Error: Trying to insert container into itself!");
 	m_objects.push_back(newObject);
 }
 
@@ -164,7 +164,7 @@ void CSetOfObjects::dumpListOfObjects( utils::CStringList  &lst )
 void CSetOfObjects::removeObject( const CRenderizablePtr &obj )
 {
 	for (CListOpenGLObjects::iterator it=m_objects.begin();it!=m_objects.end();++it)
-		if (it->pointer() == obj.pointer())
+		if (*it == obj)
 		{
 			m_objects.erase(it);
 			return;
@@ -239,7 +239,7 @@ CRenderizablePtr CSetOfObjects::getByName( const string &str )
 		else if ( (*it)->GetRuntimeClass() == CLASS_ID_NAMESPACE(CSetOfObjects,opengl))
 		{
 			CRenderizablePtr ret = getAs<CSetOfObjects>(*it)->getByName(str);
-			if (ret.present())
+			if (ret)
 				return ret;
 		}
 	}

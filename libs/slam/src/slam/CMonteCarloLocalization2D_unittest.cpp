@@ -177,7 +177,7 @@ void run_test_pf_localization(CPose2D &meanPose, CMatrixDouble33 &cov)
 			tictac.Tic();
 			if ( !iniFile.read_bool(iniSectionName,"init_PDF_mode",false, /*Fail if not found*/true) )
 				pdf.resetUniformFreeSpace(
-					metricMap.m_gridMaps[0].pointer(),
+					metricMap.m_gridMaps[0].get(),
 					0.7f,
 					PARTICLE_COUNT ,
 					iniFile.read_float(iniSectionName,"init_PDF_min_x",0,true),
@@ -239,8 +239,8 @@ void run_test_pf_localization(CPose2D &meanPose, CMatrixDouble33 &cov)
 
 						PF.executeOn(
 							pdf,
-							action.pointer(),			// Action
-							observations.pointer(),	// Obs.
+							action.get(),			// Action
+							observations.get(),	// Obs.
 							&PF_stats		// Output statistics
 							);
 

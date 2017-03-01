@@ -135,7 +135,7 @@ namespace mrpt
 				for (TListViewports::const_iterator it = m_viewports.begin();it!=m_viewports.end();++it)
 				{
 					typename T::SmartPtr o = (*it)->getByClass<T>(ith);
-					if (o.present()) return o;
+					if (o) return o;
 				}
 				return typename T::SmartPtr();	// Not found: return empty smart pointer
 				MRPT_END

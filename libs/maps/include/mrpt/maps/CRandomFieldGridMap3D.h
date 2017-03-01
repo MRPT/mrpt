@@ -162,7 +162,7 @@ namespace maps
 				double &out_edge_information          //!< Must output here the inverse of the variance of the constraint edge.
 			) = 0;
 		};
-		typedef stlplus::smart_ptr<ConnectivityDescriptor> ConnectivityDescriptorPtr;
+		typedef std::shared_ptr<ConnectivityDescriptor> ConnectivityDescriptorPtr;
 
 		/** Sets a custom object to define the connectivity between voxels. Must call clear() or setSize() afterwards for the changes to take place. */
 		void setVoxelsConnectivity(const ConnectivityDescriptorPtr &new_connectivity_descriptor);

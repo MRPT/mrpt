@@ -189,7 +189,7 @@ void CHMTSLAM::thread_LSLAM()
 
 
 				// Free the object.
-				nextObject.clear_unique();
+				nextObject.reset();
 
 
 				// -----------------------------------------------------------
@@ -755,7 +755,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 
 							if (!arc->m_annotations.size())
 							{
-								arc.clear();
+								arc.reset();
 							}
 
 						} // end of adjust arcs
@@ -767,10 +767,10 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 						TArcList arcs;
 						node->getArcs(arcs);
 						for (TArcList::iterator a=arcs.begin();a!=arcs.end();++a)
-							a->clear();
+							a->reset();
 					}
 
-					node.clear();  // And finally, delete the node.
+					node.reset();  // And finally, delete the node.
 				} // end of "node" still exist in HMAP.
 			}
 
@@ -1188,7 +1188,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 							if (! arc->m_annotations.getAnyHypothesis(ARC_ANNOTATION_DELTA) )
 							{
 								logFmt(mrpt::utils::LVL_INFO,"[LSLAM_proc_msg_AA] Deleting empty arc: %lu-%lu\n", (long unsigned)nodeFromID, (long unsigned) nodeToID);
-								arc.clear();
+								arc.reset();
 							}
 						}
 					}

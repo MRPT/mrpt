@@ -412,7 +412,7 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent&)
 	else if (IS_DERIVED(obj_ref,CObservation))
 	{
 		CObservationPtr	obs_ref = CObservationPtr(obj_ref);
-		refMap->insertObservation(obs_ref.pointer());
+		refMap->insertObservation(obs_ref.get());
 	}
 	else THROW_EXCEPTION("Unexpected runtime class found.");
 
@@ -425,7 +425,7 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent&)
 	else if (obj_new->GetRuntimeClass()->derivedFrom(CLASS_ID(CObservation)))
 	{
 		CObservationPtr	obs_new = CObservationPtr(obj_new);
-		newMapPt.insertObservation(obs_new.pointer());
+		newMapPt.insertObservation(obs_new.get());
 	}
 	else THROW_EXCEPTION("Unexpected runtime class found.");
 

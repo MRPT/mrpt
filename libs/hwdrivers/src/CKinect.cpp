@@ -628,8 +628,8 @@ void CKinect::getNextObservation(
 	}
 	else
 	{
-		if (m_win_range) m_win_range.clear();
-		if (m_win_int) m_win_int.clear();
+		if (m_win_range) m_win_range.reset();
+		if (m_win_int) m_win_int.reset();
 	}
 }
 

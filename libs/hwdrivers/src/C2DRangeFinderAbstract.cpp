@@ -92,7 +92,7 @@ void C2DRangeFinderAbstract::doProcess()
 		m_state = ssWorking;
 
 		appendObservation( m_nextObservation );
-		m_nextObservation.clear_unique(); // Create a new object in the next call
+		m_nextObservation.reset(); // Create a new object in the next call
 	}
 }
 

@@ -163,7 +163,7 @@ int main(int argc, char**argv)
 					{
 						new_map = mrpt::maps::CSimplePointsMap::Create();
 						// new_map->insertionOptions.minDistBetweenLaserPoints = 0;
-						new_map->insertObservation(obs.pointer());
+						new_map->insertObservation(obs.get());
 					}
 
 					if (new_map)

@@ -238,7 +238,7 @@ void  CMultiMetricMap::setListOfMaps( const mrpt::maps::TSetOfMetricMapInitializ
 		for (TSetOfMetricMapInitializers::const_iterator it = initializers->begin();it!=initializers->end();++it)
 		{
 			// Create map from the list of all params:
-			mrpt::maps::CMetricMap *theMap = mmr.factoryMapObjectFromDefinition(*it->pointer());
+			mrpt::maps::CMetricMap *theMap = mmr.factoryMapObjectFromDefinition(*it->get());
 			ASSERT_(theMap)
 
 			// Add to the list of maps:
@@ -259,12 +259,12 @@ void  CMultiMetricMap::internal_clear()
 	MapExecutor::run(*this, op);
 }
 
-// Deletes all maps and clears the internal lists of maps (with clear_unique(), so user copies remain alive)
+// Deletes all maps and clears the internal lists of maps (with reset(), so user copies remain alive)
 void  CMultiMetricMap::deleteAllMaps()
 {
 	// Clear smart pointers:
-	ObjectClearUnique<mrpt::utils::poly_ptr_ptr<mrpt::maps::CMetricMapPtr> > op_clear_unique;
-	MapExecutor::run(*this, op_clear_unique);
+	ObjectClearUnique<mrpt::utils::poly_ptr_ptr<mrpt::maps::CMetricMapPtr> > op_reset;
+	MapExecutor::run(*this, op_reset);
 
 	// Clear list:
 	maps.clear();
@@ -389,7 +389,7 @@ void  CMultiMetricMap::saveMetricMapRepresentationToFile(const std::string	&filN
 
 	for (size_t idx=0;idx<maps.size();idx++)
 	{
-		const mrpt::maps::CMetricMap * m = maps[idx].pointer();
+		const mrpt::maps::CMetricMap * m = maps[idx].get();
 		ASSERT_(m)
 
 		std::string fil = filNamePrefix;
@@ -421,7 +421,7 @@ float  CMultiMetricMap::compute3DMatchingRatio(const mrpt::maps::CMetricMap *oth
 
 	for (size_t idx=0;idx<maps.size();idx++)
 	{
-		const mrpt::maps::CMetricMap * m = maps[idx].pointer();
+		const mrpt::maps::CMetricMap * m = maps[idx].get();
 		ASSERT_(m)
 		accumResult += m->compute3DMatchingRatio( otherMap, otherMapPose,params);
 	}
@@ -453,7 +453,7 @@ const CSimplePointsMap * CMultiMetricMap::getAsSimplePointsMap() const
 	MRPT_START
 	ASSERT_(m_pointsMaps.size()==1 || m_pointsMaps.size()==0)
 	if (m_pointsMaps.empty()) return NULL;
-	else return m_pointsMaps[0].pointer();
+	else return m_pointsMaps[0].get();
 	MRPT_END
 }
 CSimplePointsMap * CMultiMetricMap::getAsSimplePointsMap()
@@ -461,7 +461,7 @@ CSimplePointsMap * CMultiMetricMap::getAsSimplePointsMap()
 	MRPT_START
 	ASSERT_(m_pointsMaps.size()==1 || m_pointsMaps.size()==0)
 	if (m_pointsMaps.empty()) return NULL;
-	else return m_pointsMaps[0].pointer();
+	else return m_pointsMaps[0].get();
 	MRPT_END
 }
 

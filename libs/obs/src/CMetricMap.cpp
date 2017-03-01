@@ -78,7 +78,7 @@ double CMetricMap::computeObservationsLikelihood(
 {
 	double lik = 0;
 	for (CSensoryFrame::const_iterator it=sf.begin();it!=sf.end();++it)
-		lik += computeObservationLikelihood( it->pointer(), takenFrom );
+		lik += computeObservationLikelihood( it->get(), takenFrom );
 
 	return lik;
 }
@@ -95,7 +95,7 @@ bool CMetricMap::canComputeObservationsLikelihood( const CSensoryFrame &sf ) con
 {
 	bool can = false;
 	for (CSensoryFrame::const_iterator it=sf.begin();!can && it!=sf.end();++it)
-		can = can || canComputeObservationLikelihood( it->pointer()  );
+		can = can || canComputeObservationLikelihood( it->get()  );
 	return can;
 }
 
@@ -120,13 +120,13 @@ bool CMetricMap::insertObservationPtr(
 	const CPose3D *robotPose)
 {
 	MRPT_START
-	if (!obs.present()) { THROW_EXCEPTION("Trying to pass a null pointer."); }
-	return insertObservation(obs.pointer(),robotPose);
+	if (!obs) { THROW_EXCEPTION("Trying to pass a null pointer."); }
+	return insertObservation(obs.get(),robotPose);
 	MRPT_END
 }
 
 bool CMetricMap::canComputeObservationLikelihood( const CObservationPtr &obs ) const {
-	return canComputeObservationLikelihood(obs.pointer());
+	return canComputeObservationLikelihood(obs.get());
 }
 
 void  CMetricMap::determineMatching2D(

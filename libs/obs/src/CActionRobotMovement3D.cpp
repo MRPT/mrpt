@@ -143,7 +143,7 @@ void  CActionRobotMovement3D::computeFromOdometry_model6DOF(
 	static CPose3D			nullPose(0,0,0,0,0,0);
 
 	mrpt::poses::CPose3DPDFPtr poseChangeTemp = CPose3DPDFParticles::Create();
-	aux = static_cast<CPose3DPDFParticles*>( poseChangeTemp.pointer() );
+	aux = static_cast<CPose3DPDFParticles*>( poseChangeTemp.get() );
 
 	// Set the number of particles:
 	aux->resetDeterministic(nullPose, o.mm6DOFModel.nParticlesCount );
