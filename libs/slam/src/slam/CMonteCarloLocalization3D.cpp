@@ -194,7 +194,7 @@ double CMonteCarloLocalization3D::PF_SLAM_computeObservationLikelihoodForParticl
 	// For each observation:
 	double ret = 1;
 	for (CSensoryFrame::const_iterator it=observation.begin();it!=observation.end();++it)
-		ret += map->computeObservationLikelihood( it->pointer(), x );	// Compute the likelihood:
+		ret += map->computeObservationLikelihood( it->get(), x );	// Compute the likelihood:
 
 	// Done!
 	return ret;

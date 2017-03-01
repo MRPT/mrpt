@@ -60,8 +60,8 @@ CRangeBearingKFSLAM::CRangeBearingKFSLAM( ) :
   ---------------------------------------------------------------*/
 void CRangeBearingKFSLAM::reset( )
 {
-	m_action.clear_unique();
-	m_SF.clear_unique();
+	m_action.reset();
+	m_SF.reset();
 	m_IDs.clear();
 	m_SFs.clear();
 	mapPartitioner.clear();

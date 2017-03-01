@@ -45,7 +45,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 {
 	WX_START_TRY
 
-	if (sel_obj.present())
+	if (sel_obj)
 	{
 		// -----------------------------------------------------------
 		// 	Write to the memo:
@@ -111,7 +111,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 			// The plot:
 			mrpt::maps::CSimplePointsMap  dummMap;
 			dummMap.insertionOptions.minDistBetweenLaserPoints = 0;
-			dummMap.insertObservation( obs.pointer() );
+			dummMap.insertObservation( obs.get() );
 
 			vector<float>    Xs,Ys;
 			dummMap.getAllPoints(Xs,Ys);
@@ -331,7 +331,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 				if (confThreshold==0) // This includes when there is no confidence image.
 				{
 					pointMap.insertionOptions.minDistBetweenLaserPoints = 0; // don't drop any point
-					pointMap.insertObservation(obs.pointer());  // This transform points into vehicle-frame
+					pointMap.insertObservation(obs.get());  // This transform points into vehicle-frame
 					pnts->loadFromPointsMap(&pointMap);
 
 					pnts->setPose( mrpt::poses::CPose3D() ); // No need to further transform 3D points

@@ -76,7 +76,7 @@ void TestVideoBuildPyr()
 		double W = W0;
 		for (size_t i=0;i<N_OCTAVES;i++)
 		{
-			COpenGLViewport *vw = gl_views[i].pointer();
+			COpenGLViewport *vw = gl_views[i].get();
 			vw->setViewportPosition(X,.0, W,1.);
 			//cout << "Created viewport " << i << " at X=" << X << " with Width=" << W << endl;
 			X+=W;
@@ -144,7 +144,7 @@ void TestVideoBuildPyr()
 
 				for (size_t i=0;i<N_OCTAVES;i++)
 				{
-					COpenGLViewport *vw = gl_views[i].pointer();
+					COpenGLViewport *vw = gl_views[i].get();
 					vw->setImageView(imgpyr.images[i]);
 				}
 

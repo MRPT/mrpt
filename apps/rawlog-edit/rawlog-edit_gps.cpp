@@ -61,7 +61,7 @@ DECLARE_OP_FUNCTION(op_export_gps_kml)
 			if (!IS_CLASS(o, CObservationGPS ) )
 				return true;
 
-			const CObservationGPS* obs = CObservationGPSPtr(o).pointer();
+			const CObservationGPS* obs = CObservationGPSPtr(o).get();
 
 			if (!obs->has_GGA_datum)
 				return true; // Nothing to do...
@@ -381,7 +381,7 @@ DECLARE_OP_FUNCTION(op_export_gps_txt)
 			if (!IS_CLASS(o, CObservationGPS ) )
 				return true;
 
-			const CObservationGPS* obs = CObservationGPSPtr(o).pointer();
+			const CObservationGPS* obs = CObservationGPSPtr(o).get();
 
 			map<string, FILE*>::const_iterator  it = lstFiles.find( obs->sensorLabel );
 
@@ -590,7 +590,7 @@ DECLARE_OP_FUNCTION(op_export_gps_all)
 			if (!IS_CLASS(o, CObservationGPS ) )
 				return true;
 
-			const CObservationGPS* obs = CObservationGPSPtr(o).pointer();
+			const CObservationGPS* obs = CObservationGPSPtr(o).get();
 
 			for (CObservationGPS::message_list_t::const_iterator it=obs->messages.begin();it!=obs->messages.end();++it)
 			{

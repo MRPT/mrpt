@@ -251,7 +251,7 @@ bool CVelodyneScanner::getNextObservation(
 				if (rx_pkt_start_angle < m_rx_scan->scan_packets.rbegin()->blocks[0].rotation )
 				{
 					outScan = m_rx_scan;
-					m_rx_scan.clear_unique();
+					m_rx_scan.reset();
 
 					if (m_pcap) {
 						// Keep the reader from blowing through the file.

@@ -53,7 +53,7 @@ DECLARE_OP_FUNCTION(op_export_odometry_txt)
 			if (!IS_CLASS(o, CObservationOdometry ) )
 				return true;
 
-			const CObservationOdometry* obs = CObservationOdometryPtr(o).pointer();
+			const CObservationOdometry* obs = CObservationOdometryPtr(o).get();
 
 			map<string, FILE*>::const_iterator  it = lstFiles.find( obs->sensorLabel );
 
@@ -177,7 +177,7 @@ DECLARE_OP_FUNCTION(op_recalc_odometry)
 			if (!IS_CLASS(o, CObservationOdometry ) )
 				return true;
 
-			CObservationOdometry* obs = CObservationOdometryPtr(o).pointer();
+			CObservationOdometry* obs = CObservationOdometryPtr(o).get();
 
 			if (!obs->hasEncodersInfo)
 				throw std::runtime_error("CObservationOdometry entry does not contain encoder info, cannot recalculate odometry!"); 

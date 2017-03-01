@@ -81,7 +81,7 @@ void CTopLCDetector_FabMap::OnNewPose(
 
 	size_t n = 0;
 	CObservationImagePtr obsIm;
-	while ( (obsIm = SF->getObservationByClass<CObservationImage>(n)).present() )
+	while ( (obsIm = SF->getObservationByClass<CObservationImage>(n)) )
 	{
 		string path;
 		obsIm->image.getExternalStorageFileAbsolutePath(path);

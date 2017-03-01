@@ -53,7 +53,7 @@ DECLARE_OP_FUNCTION(op_export_imu_txt)
 			if (!IS_CLASS(o, CObservationIMU ) )
 				return true;
 
-			const CObservationIMU* obs = CObservationIMUPtr(o).pointer();
+			const CObservationIMU* obs = CObservationIMUPtr(o).get();
 
 			map<string, FILE*>::const_iterator  it = lstFiles.find( obs->sensorLabel );
 

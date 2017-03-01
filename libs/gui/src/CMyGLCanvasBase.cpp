@@ -241,7 +241,7 @@ CMyGLCanvasBase::CMyGLCanvasBase(wxWindow *parent, wxWindowID id,const wxPoint& 
 
 CMyGLCanvasBase::~CMyGLCanvasBase()
 {
-	m_openGLScene.clear_unique();
+	m_openGLScene.reset();
 	delete_safe(m_gl_context);
 }
 

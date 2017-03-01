@@ -61,7 +61,7 @@ void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) cons
 			out << *infoPerPTG[i].HLFR;
 
 			// Version 9: Removed security distances. Added optional field with PTG info.
-			const bool there_is_ptg_data = infoPerPTG[i].ptg.present();
+			const bool there_is_ptg_data = infoPerPTG[i].ptg ? true : false;
 			out << there_is_ptg_data;
 			if (there_is_ptg_data)
 				out << infoPerPTG[i].ptg;
@@ -190,7 +190,7 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 
 				if (version>=9) // Extra PTG info
 				{
-					infoPerPTG[i].ptg.clear();
+					infoPerPTG[i].ptg.reset();
 
 					bool there_is_ptg_data;
 					in >> there_is_ptg_data;

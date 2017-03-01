@@ -60,7 +60,7 @@ namespace mrpt
 			virtual void  dumpToTextStream_map_specific(mrpt::utils::CStream	&out) const = 0;
 		}; // end TMetricMapInitializer
 
-		typedef stlplus::smart_ptr_clone<TMetricMapInitializer> TMetricMapInitializerPtr; //!< Smart pointer to TMetricMapInitializer 
+		typedef std::shared_ptr<TMetricMapInitializer> TMetricMapInitializerPtr; //!< Smart pointer to TMetricMapInitializer
 
 		/** A set of TMetricMapInitializer structures, passed to the constructor CMultiMetricMap::CMultiMetricMap
 		  *  See the comments for TSetOfMetricMapInitializers::loadFromConfigFile, and "CMultiMetricMap::setListOfMaps" for

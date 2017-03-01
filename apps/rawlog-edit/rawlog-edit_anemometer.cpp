@@ -53,7 +53,7 @@ DECLARE_OP_FUNCTION(op_export_anemometer_txt)
 			if (!IS_CLASS(o, CObservationWindSensor ) )
 				return true;
 
-			const CObservationWindSensor* obs = CObservationWindSensorPtr(o).pointer();
+			const CObservationWindSensor* obs = CObservationWindSensorPtr(o).get();
 
 			map<string, FILE*>::const_iterator  it = lstFiles.find( obs->sensorLabel );
 

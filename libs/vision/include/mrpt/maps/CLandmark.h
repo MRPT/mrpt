@@ -76,7 +76,7 @@ namespace mrpt
 			/** Gets the type of the first feature in its feature vector. The vector must not be empty.
 			  */
 			mrpt::vision::TFeatureType getType() const
-			{ ASSERT_( !features.empty() ); ASSERT_(features[0].present()) return features[0]->type; }
+			{ ASSERT_( !features.empty() ); ASSERT_(features[0]) return features[0]->type; }
 
 			/** Creates one feature in the vector "features", calling the appropriate constructor of the smart pointer, so after calling this method "features[0]" is a valid pointer to a CFeature object.
 			  */

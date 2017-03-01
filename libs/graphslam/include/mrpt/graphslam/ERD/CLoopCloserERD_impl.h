@@ -100,7 +100,7 @@ bool CLoopCloserERD<GRAPH_t>::updateState(
 	}
 
 	// update last laser scan to use
-	if (observation.present()) { // observation-only rawlog format
+	if (observation) { // observation-only rawlog format
 		if (IS_CLASS(observation, CObservation2DRangeScan)) {
 			m_last_laser_scan2D = 
 				static_cast<mrpt::obs::CObservation2DRangeScanPtr>(observation);
@@ -246,9 +246,9 @@ bool CLoopCloserERD<GRAPH_t>::getICPEdge(
 	}
 
 	// what if invalid Laser Scans?
-	//ASSERT_(from_laser_scan.present());
-	//ASSERT_(to_laser_scan.present());
-	if (!from_laser_scan.present() || !to_laser_scan.present()) {
+	//ASSERT_(from_laser_scan());
+	//ASSERT_(to_laser_scan());
+	if (!from_laser_scan || !to_laser_scan) {
 		MRPT_LOG_DEBUG_STREAM <<
 			"Either node #" << from <<
 			"or node #" << to <<
@@ -1468,7 +1468,7 @@ void CLoopCloserERD<GRAPH_t>::updateLaserScansVisualization() {
 	MRPT_START;
 
 	// update laser scan visual
-	if (m_laser_params.visualize_laser_scans && !m_last_laser_scan2D.null()) {
+	if (m_laser_params.visualize_laser_scans && m_last_laser_scan2D) {
 		mrpt::opengl::COpenGLScenePtr scene = m_win->get3DSceneAndLock();
 
 		mrpt::opengl::CRenderizablePtr obj = scene->getByName("laser_scan_viz");
@@ -1669,7 +1669,7 @@ void CLoopCloserERD<GRAPH_t>::checkIfInvalidDataset(
 	MRPT_UNUSED_PARAM(action);
 	using namespace mrpt::obs;
 
-	if (observation.present()) { // FORMAT #2
+	if (observation) { // FORMAT #2
 		if (IS_CLASS(observation, CObservation2DRangeScan)) {
 			m_checked_for_usuable_dataset = true;
 			return;
@@ -1809,7 +1809,7 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitions(bool full_update /* = false */
 	// laserScan to the partitioner object
 	for (nodes_to_scans2D_t::const_iterator it = nodes_to_scans.begin();
 			it != nodes_to_scans.end(); ++it) {
-		if ((it->second).null()) { continue; } // if laserScan invalid go to next...
+		if (!it->second) { continue; } // if laserScan invalid go to next...
 
 		// find pose of node, if it exists...
 		typename GRAPH_t::global_poses_t::const_iterator search;

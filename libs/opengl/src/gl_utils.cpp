@@ -40,8 +40,8 @@ void gl_utils::renderSetOfObjects(const CListOpenGLObjects &objectsToRender)
 	{
 		for (itP=objectsToRender.begin();itP!=objectsToRender.end();++itP)
 		{
-			if (!itP->present()) continue;
-			const CRenderizable * it = itP->pointer(); // Use plain pointers, faster than smart pointers:
+			if (!*itP) continue;
+			const CRenderizable * it = itP->get(); // Use plain pointers, faster than smart pointers:
 			if (!it->isVisible()) continue;
 
 			// 3D coordinates transformation:

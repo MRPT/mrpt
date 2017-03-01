@@ -29,10 +29,10 @@ void CReferencedMemBlock::resize(size_t mem_block_size)
 
 unsigned int CReferencedMemBlock::alias_count() const 
 {
-	return m_data.alias_count(); 
+	return m_data.use_count(); 
 }
 
 void CReferencedMemBlock::clear() 
 {
-	m_data.clear(); 
+	m_data.reset(); 
 }

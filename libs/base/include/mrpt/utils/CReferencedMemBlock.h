@@ -11,9 +11,7 @@
 
 #include <mrpt/base/link_pragmas.h>
 #include <vector>
-
-// STL+ library:
-#include <mrpt/otherlibs/stlplus/smart_ptr.hpp>
+#include <memory>
 
 namespace mrpt
 {
@@ -38,13 +36,13 @@ namespace mrpt
 
 			template <class T> T* getAsPtr()
 			{
-				if (!m_data.present()) throw std::runtime_error("Trying to access to an uninitialized memory block");
+				if (!m_data) throw std::runtime_error("Trying to access to an uninitialized memory block");
 				if (m_data->empty()) throw std::runtime_error("Trying to access to a memory block of size 0");
 				return reinterpret_cast<T*>(&((*m_data)[0]));
 			}
 			template <class T> const T* getAsPtr() const
 			{
-				if (!m_data.present()) throw std::runtime_error("Trying to access to an uninitialized memory block");
+				if (!m_data) throw std::runtime_error("Trying to access to an uninitialized memory block");
 				if (m_data->empty()) throw std::runtime_error("Trying to access to a memory block of size 0");
 				return reinterpret_cast<const T*>(&((*m_data)[0]));
 			}
@@ -56,7 +54,7 @@ namespace mrpt
 			/** Frees the underlying memory block */
 			void clear();
 		protected:
-			stlplus::smart_ptr< std::vector<char> > m_data;
+			std::shared_ptr< std::vector<char> > m_data;
 		}; // End of class
 
 	} // End of namespace

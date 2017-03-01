@@ -196,14 +196,14 @@ namespace maps
 			size_t size() const {
 				size_t cnt=0;
 				for(typename CONTAINER::const_iterator it=m_source->begin();it!=m_source->end();++it)
-					if ( dynamic_cast<const_ptr_t>(it->pointer()) )
+					if ( dynamic_cast<const_ptr_t>(it->get()) )
 						cnt++;
 				return cnt;
 			}
 			SELECTED_CLASS_PTR operator [](size_t index) const {
 				size_t cnt=0;
 				for(typename CONTAINER::const_iterator it=m_source->begin();it!=m_source->end();++it)
-					if ( dynamic_cast<const_ptr_t>(it->pointer()) ) 
+					if ( dynamic_cast<const_ptr_t>(it->get()) ) 
 						if (cnt++ == index) { return SELECTED_CLASS_PTR(it->get_ptr()); }
 				throw std::out_of_range("Index is out of range");
 			}
@@ -230,17 +230,16 @@ namespace maps
 #endif
 
 			operator const SELECTED_CLASS_PTR & () const { internal_update_ref(); return m_ret; }
-			operator bool() const { internal_update_ref(); return m_ret.present(); }
-			bool present() const { internal_update_ref(); return m_ret.present(); }
-			ptr_t pointer(){ internal_update_ref(); return m_ret.pointer(); }
+			explicit operator bool() const { internal_update_ref(); return m_ret ? true : false; }
+			ptr_t get(){ internal_update_ref(); return m_ret.get(); }
 			ptr_t operator ->() const {
 				internal_update_ref();
-				if (m_ret.present()) return m_ret.pointer();
+				if (m_ret) return m_ret.get();
 				else throw std::runtime_error("Tried to derefer NULL pointer");
 			}
 			pointee_t & operator *() const {
 				internal_update_ref();
-				if (m_ret.present()) return *m_ret.pointer();
+				if (m_ret) return *m_ret.get();
 				else throw std::runtime_error("Tried to derefer NULL pointer");
 			}
 		private:
@@ -248,7 +247,7 @@ namespace maps
 			mutable SELECTED_CLASS_PTR m_ret;
 			void internal_update_ref() const {
 				for(typename CONTAINER::const_iterator it=m_source->begin();it!=m_source->end();++it) {
-					if ( dynamic_cast<const_ptr_t>(it->pointer()) ) {
+					if ( dynamic_cast<const_ptr_t>(it->get()) ) {
 						m_ret=SELECTED_CLASS_PTR(it->get_ptr());
 						return;
 					}

@@ -124,11 +124,11 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 		multimap1 = static_cast<const CMultiMetricMap*>(mm1);
 		multimap2 = static_cast<const CMultiMetricMap*>(mm2);
 
-		ASSERT_(multimap1->m_gridMaps.size() && multimap1->m_gridMaps[0].present());
-		ASSERT_(multimap2->m_gridMaps.size() && multimap2->m_gridMaps[0].present());
+		ASSERT_(multimap1->m_gridMaps.size() && multimap1->m_gridMaps[0]);
+		ASSERT_(multimap2->m_gridMaps.size() && multimap2->m_gridMaps[0]);
 
-		m1 = multimap1->m_gridMaps[0].pointer();
-		m2 = multimap2->m_gridMaps[0].pointer();
+		m1 = multimap1->m_gridMaps[0].get();
+		m2 = multimap2->m_gridMaps[0].get();
 	}
 	else if ( IS_CLASS(mm1, COccupancyGridMap2D) && IS_CLASS(mm2, COccupancyGridMap2D) )
 	{
@@ -797,7 +797,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 			// --------------------------------------------------------------------
 			if (multimap1 && multimap2 &&
 				!multimap1->m_pointsMaps.empty() && !multimap2->m_pointsMaps.empty() &&
-				multimap1->m_pointsMaps[0].present() && multimap2->m_pointsMaps[0].present() )
+				multimap1->m_pointsMaps[0] && multimap2->m_pointsMaps[0] )
 			{
 				CSimplePointsMapPtr		pnts1 = multimap1->m_pointsMaps[0];
 				CSimplePointsMapPtr		pnts2 = multimap2->m_pointsMaps[0];
@@ -816,7 +816,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 				outInfo.icp_goodness_all_sog_modes.clear();
 				for (CPosePDFSOG::iterator i=pdf_SOG->begin();i!=pdf_SOG->end(); ++cnt)
 				{
-					CPosePDFPtr icp_est = icp.Align(pnts1.pointer(),pnts2.pointer(),(i)->mean,NULL,&icpInfo);
+					CPosePDFPtr icp_est = icp.Align(pnts1.get(),pnts2.get(),(i)->mean,NULL,&icpInfo);
 
 					//(i)->cov(0,0) += square( 0.05 );
 					//(i)->cov(1,1) += square( 0.05 );

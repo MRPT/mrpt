@@ -355,7 +355,7 @@ namespace obs
 		/** Returns true if the field CObservation3DRangeScan::pixelLabels contains a non-NULL smart pointer. 
 		  * To enhance a 3D point cloud with labeling info, just assign an appropiate object to \a pixelLabels
 		  */
-		bool hasPixelLabels() const { return pixelLabels.present(); }
+		bool hasPixelLabels() const { return pixelLabels ? true: false; }
 
 		/** Virtual interface to all pixel-label information structs. See CObservation3DRangeScan::pixelLabels */
 		struct OBS_IMPEXP TPixelLabelInfoBase
@@ -419,7 +419,7 @@ namespace obs
 			virtual void internal_writeToStream(mrpt::utils::CStream &out) const = 0;
 			virtual void Print( std::ostream& ) const =0;
 		};
-		typedef stlplus::smart_ptr<TPixelLabelInfoBase>  TPixelLabelInfoPtr;  //!< Used in CObservation3DRangeScan::pixelLabels
+		typedef std::shared_ptr<TPixelLabelInfoBase>  TPixelLabelInfoPtr;  //!< Used in CObservation3DRangeScan::pixelLabels
 
 		template <unsigned int BYTES_REQUIRED_> 
 		struct TPixelLabelInfo : public TPixelLabelInfoBase

@@ -82,7 +82,7 @@ namespace mrpt
 				~TImplAssimp();
 				void	*scene;	//!< aiScene*
 			};
-			stlplus::smart_ptr<TImplAssimp>	m_assimp_scene;
+			std::shared_ptr<TImplAssimp>	m_assimp_scene;
 
 			mrpt::math::TPoint3D   m_bbox_min, m_bbox_max; //!< Bounding box
 

@@ -10,9 +10,6 @@
 #include <vector>
 #include <deque>
 
-/* smart_ptr */
-#include <mrpt/otherlibs/stlplus/smart_ptr.hpp>
-
 /* macros */
 #define STRINGIFY(str) #str
 
@@ -42,7 +39,7 @@
 
 #define MAKE_PTR_CTX(class_name) class_name& class_name##Ptr_get_ctx(class_name##Ptr& self) { return *self; }\
 void class_name##Ptr_set_ctx(class_name##Ptr& self, class_name& ctx) { *self = ctx; }\
-class_name* class_name##Ptr_pointer(class_name##Ptr& self) { return self.pointer(); }\
+class_name* class_name##Ptr_pointer(class_name##Ptr& self) { return self.get(); }\
 
 #define MAKE_AS_STR(class_name) std::string class_name##_asString(class_name& self)\
 {\

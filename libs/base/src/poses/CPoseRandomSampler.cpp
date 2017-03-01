@@ -145,11 +145,11 @@ void CPoseRandomSampler::setPosePDF( const CPose3DPDF *pdf )
 }
 
 void CPoseRandomSampler::setPosePDF( const CPose3DPDFPtr &pdf ) { 
-	setPosePDF(pdf.pointer()); 
+	setPosePDF(pdf.get()); 
 }
 
 void CPoseRandomSampler::setPosePDF( const CPosePDFPtr &pdf ) { 
-	setPosePDF(pdf.pointer()); 
+	setPosePDF(pdf.get()); 
 }
 
 /*---------------------------------------------------------------

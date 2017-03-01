@@ -149,7 +149,7 @@ void SensorThread(TThreadParams params)
 			if (At_rem_ms>0)
 				mrpt::system::sleep(At_rem_ms);
 		}
-		sensor.clear();
+		sensor.reset();
 		cout << format("[thread_%s] Closing...",params.section_name.c_str()) << endl;
 	}
 	catch (std::exception &e) {
@@ -314,14 +314,14 @@ void MapBuilding_ICP_Live(const string &INI_FILENAME)
 			}
 			// Keep the most recent laser scan:
 			for (mrpt::hwdrivers::CGenericSensor::TListObservations::reverse_iterator it = obs_copy.rbegin();!observation && it != obs_copy.rend();++it)
-				if (it->second.present() && IS_CLASS(it->second,CObservation2DRangeScan))
+				if (it->second && IS_CLASS(it->second,CObservation2DRangeScan))
 					observation = CObservation2DRangeScanPtr(it->second);
 
 			// Save all of them to rawlog for optional post-processing:
 			if (out_rawlog.fileOpenCorrectly())
 			{
 				for (mrpt::hwdrivers::CGenericSensor::TListObservations::iterator it = obs_copy.begin();it != obs_copy.end();++it)
-					if (it->second.present() && IS_CLASS(it->second,CObservation2DRangeScan))
+					if (it->second && IS_CLASS(it->second,CObservation2DRangeScan))
 						out_rawlog << *it->second;
 			}
 		}
@@ -371,7 +371,7 @@ void MapBuilding_ICP_Live(const string &INI_FILENAME)
 		}
 
 		// Save a 3D scene view of the mapping process:
-		if (0==(step % LOG_FREQUENCY) || (SAVE_3D_SCENE || win3D.present()))
+		if (0==(step % LOG_FREQUENCY) || (SAVE_3D_SCENE || win3D))
 		{
 			CPose3D robotPose;
 			mapBuilder.getCurrentPoseEstimation()->getMean(robotPose);

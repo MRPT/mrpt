@@ -113,7 +113,7 @@ void xRawLogViewerFrame::OnMenuCompactRawlog(wxCommandEvent& event)
 					*lastSF = *newSF;
 				}
 				// Ok, done:
-				lastSF.clear_unique();
+				lastSF.reset();
 			}
 		}
 		else if (it.getType()==CRawlog::etSensoryFrame)
@@ -137,7 +137,7 @@ void xRawLogViewerFrame::OnMenuCompactRawlog(wxCommandEvent& event)
 				{
 					lastSF = sf;
 					ASSERT_(lastSF);
-					lastAct.clear_unique();
+					lastAct.reset();
 				}
 				else
 				{
@@ -261,7 +261,7 @@ void xRawLogViewerFrame::OnMenuLossLessDecimate(wxCommandEvent& event)
 
 				// INSERT OBSERVATIONS:
 				newRawLog.addObservationsMemoryReference( accum_sf );
-				accum_sf.clear_unique();
+				accum_sf.reset();
 
 				// INSERT ACTIONS:
 				CActionCollection	actsCol;
@@ -279,7 +279,7 @@ void xRawLogViewerFrame::OnMenuLossLessDecimate(wxCommandEvent& event)
 			THROW_EXCEPTION("This operation implemented for SF-based rawlogs only.");
 
 		// Delete object
-		obj.clear_unique();
+		obj.reset();
 
 	} // end for i each entry
 
@@ -402,7 +402,7 @@ void xRawLogViewerFrame::OnMenuLossLessDecFILE(wxCommandEvent& event)
 
 					// INSERT OBSERVATIONS:
 					f_out << *accum_sf;
-					accum_sf.clear_unique();
+					accum_sf.reset();
 
 					// INSERT ACTIONS:
 					CActionCollectionPtr actsCol = CActionCollection::Create();
@@ -416,7 +416,7 @@ void xRawLogViewerFrame::OnMenuLossLessDecFILE(wxCommandEvent& event)
 						accumMovement = CPose2D(0,0,0);
 					}
 					f_out << *actsCol;
-					actsCol.clear_unique();
+					actsCol.reset();
 				}
 			}
 			else if ( newObj->GetRuntimeClass() == CLASS_ID(CActionCollection) )
@@ -617,7 +617,7 @@ void xRawLogViewerFrame::OnMenuConvertExternallyStored(wxCommandEvent& event)
 			f_out << *newObj;
 
 			// Free memory:
-			newObj.clear_unique();
+			newObj.reset();
 		}
 		catch (exception &e)
 		{
@@ -752,7 +752,7 @@ void xRawLogViewerFrame::OnMenuConvertObservationOnly(wxCommandEvent& event)
 			}
 
 			// Free memory:
-			newObj.clear_unique();
+			newObj.reset();
 		}
 		catch (exception &e)
 		{
@@ -883,7 +883,7 @@ void xRawLogViewerFrame::OnMenuShiftTimestampsByLabel(wxCommandEvent& event)
 				for (size_t k=0;k<the_labels.size();k++)
 				{
 					size_t idx = 0;
-					while ( (o=sf->getObservationBySensorLabel(the_labels[k],idx++)).present() )
+					while ( (o=sf->getObservationBySensorLabel(the_labels[k],idx++)) )
 					{
 						o->timestamp += DeltaTime;
 						nChanges++;
@@ -1009,7 +1009,7 @@ void xRawLogViewerFrame::OnMenuConvertSF(wxCommandEvent& event)
 					new_rawlog.addActions(acts);
 
 					last_sf_odo = cur_sf_odo;
-					cur_sf_odo.clear_unique();
+					cur_sf_odo.reset();
 
 
 					SF_new.clear();

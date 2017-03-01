@@ -228,7 +228,7 @@ void MapBuilding_RBPF()
 			CRBPFParticleData* part_d = it->d.get();
 			CMultiMetricMap &mmap = part_d->mapTillNow;
 			mrpt::maps::COccupancyGridMap2DPtr it_grid = mmap.getMapByClass<mrpt::maps::COccupancyGridMap2D>();
-			ASSERTMSG_(it_grid.present(), "No gridmap in multimetric map definition, but metric map continuation was set (!)" );
+			ASSERTMSG_(it_grid, "No gridmap in multimetric map definition, but metric map continuation was set (!)" );
 			it_grid->copyMapContentFrom( gridmap );
 		}
 	}
@@ -587,8 +587,8 @@ void MapBuilding_RBPF()
 		printf("\n---------------- STEP %u | RAWLOG ENTRY %u ----------------\n",step, (unsigned)rawlogEntry);
 
 		// Free memory:
-		action.clear_unique();
-		observations.clear_unique();
+		action.reset();
+		observations.reset();
 	}; // end while
 
 	printf("\n---------------- END!! (total time: %.03f sec) ----------------\n",tictacGlobal.Tac());
