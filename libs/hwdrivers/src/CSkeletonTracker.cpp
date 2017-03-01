@@ -93,7 +93,7 @@ CSkeletonTracker::~CSkeletonTracker()
 	delete[] skl_states; m_skeletons_ptr = NULL;
 	delete user_tracker; m_userTracker_ptr = NULL;
 #endif
-	if(m_win) m_win.clear();
+	if(m_win) m_win.reset();
 }
 
 /*-------------------------------------------------------------

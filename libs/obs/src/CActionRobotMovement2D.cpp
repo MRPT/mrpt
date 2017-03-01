@@ -427,7 +427,7 @@ void  CActionRobotMovement2D::computeFromOdometry_modelGaussian(
 	// ---------------------------
 	poseChange = CPosePDFGaussian::Create();
 	CPosePDFGaussian		*aux;
-	aux = static_cast<CPosePDFGaussian*>( poseChange.pointer() );
+	aux = static_cast<CPosePDFGaussian*>( poseChange.get() );
 
 	// See http://www.mrpt.org/Probabilistic_Motion_Models
 	// -----------------------------------
@@ -477,7 +477,7 @@ void  CActionRobotMovement2D::computeFromOdometry_modelThrun(
 	static CPose2D			nullPose(0,0,0);
 
 	poseChange = CPosePDFParticles::Create();
-	aux = static_cast<CPosePDFParticles*>( poseChange.pointer() );
+	aux = static_cast<CPosePDFParticles*>( poseChange.get() );
 
 	// Set the number of particles:
 	aux->resetDeterministic(nullPose, o.thrunModel.nParticlesCount );
@@ -614,7 +614,7 @@ void  CActionRobotMovement2D::prepareFastDrawSingleSample_modelGaussian() const
 
 	CMatrixDouble33		D;
 
-	const CPosePDFGaussian*		gPdf = static_cast<const CPosePDFGaussian*> (poseChange.pointer());
+	const CPosePDFGaussian*		gPdf = static_cast<const CPosePDFGaussian*> (poseChange.get());
 	const CMatrixDouble33		&cov = gPdf->cov;
 
 	m_fastDrawGauss_M = gPdf->mean;

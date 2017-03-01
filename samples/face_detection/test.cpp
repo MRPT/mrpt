@@ -193,7 +193,7 @@ void TestCamera3DFaceDetection( CCameraSensorPtr cam )
 		win3D.get3DSceneAndLock();
 		CColouredPointsMap pntsMap;
 		pntsMap.colorScheme.scheme = CColouredPointsMap::cmFromIntensityImage;
-		pntsMap.loadFromRangeScan(*(o.pointer()));		
+		pntsMap.loadFromRangeScan(*(o.get()));		
 
 		gl_points->loadFromPointsMap(&pntsMap);
 		win3D.unlockAccess3DScene();

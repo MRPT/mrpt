@@ -294,7 +294,7 @@ void CRawlogTreeView::OnDraw(wxDC& dc)
 			// According to class ID:
 			m_rawlog->getAsGeneric( d.index );  // Just to assure it's on memory
 
-			if (d.data.present())
+			if (d.data)
 			{
 				// Icon:
 				icon = iconIndexFromClass( d.data->GetRuntimeClass() );
@@ -373,7 +373,7 @@ void CRawlogTreeView::OnDraw(wxDC& dc)
 			int y = i*ROW_HEIGHT;	// y= bottom of that row
 			TNodeData  &d = m_tree_nodes[i];
 
-			if (d.data.present())
+			if (d.data)
 			{
 				TTimeStamp	t_this = INVALID_TIMESTAMP;
 				if ( d.data->GetRuntimeClass()->derivedFrom( CLASS_ID(CObservation) ) )

@@ -113,7 +113,8 @@ void  CHierarchicalMHMap::readFromStream(mrpt::utils::CStream &in, int version)
 			for (i=0;i<n;i++)
             {
 				 // This insert the node in my internal list via the callback method
-				CHMHMapArcPtr arc = CHMHMapArc::Create( CHMHMapNodePtr(),CHMHMapNodePtr(), THypothesisIDSet() ,this);
+				CHMHMapNodePtr p1, p2;
+				CHMHMapArcPtr arc = CHMHMapArc::Create( p1, p2, THypothesisIDSet() ,this);
             	in >> *arc;
             }
 
@@ -135,7 +136,7 @@ void  CHierarchicalMHMap::onNodeDestruction(CHMHMapNode *node)
 	it = m_nodes.find( node->getID() );
 
 	if (it!=m_nodes.end())
-		if ( node == it->second.pointer() )
+		if ( node == it->second.get() )
 			m_nodes.erase( it );
 }
 
@@ -343,7 +344,7 @@ void  CHierarchicalMHMap::dumpAsXMLfile(std::string fileName) const
 			size_t j=tableannots->appendRecord();
 			tableannots->set(j,"id",format("%u",static_cast<unsigned int>(j)));
 			tableannots->set(j,"annotation-type",ann->name.c_str());
-			ASSERT_(ann->value.present())
+			ASSERT_(ann->value)
 			string  str;
 			if (IS_CLASS(ann->value,CPoint2D))
 			{
@@ -352,7 +353,7 @@ void  CHierarchicalMHMap::dumpAsXMLfile(std::string fileName) const
 			}
 			else
 			{
-				str=ObjectToString(ann->value.pointer());
+				str=ObjectToString(ann->value.get());
 			}
 			tableannots->set(j,"annotation-value",str);
 			if (tablenodes->get(j,"annotation-list")==".")

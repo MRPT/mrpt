@@ -168,12 +168,12 @@ void CMyGLCanvas_DisplayWindow3D::OnMouseDown(wxMouseEvent& event)
 
 CMyGLCanvas_DisplayWindow3D::~CMyGLCanvas_DisplayWindow3D()
 {
-	m_openGLScene.clear_unique();	// Avoid the base class to free this object (it's freed by CDisplayWindow3D)
+	m_openGLScene.reset();	// Avoid the base class to free this object (it's freed by CDisplayWindow3D)
 }
 
 void CMyGLCanvas_DisplayWindow3D::OnPreRender()
 {
-    if (m_openGLScene) m_openGLScene.clear_unique();
+    if (m_openGLScene) m_openGLScene.reset();
 
 	COpenGLScenePtr ptrScene = m_win3D->get3DSceneAndLock();
 	if (ptrScene)
@@ -183,7 +183,7 @@ void CMyGLCanvas_DisplayWindow3D::OnPreRender()
 void CMyGLCanvas_DisplayWindow3D::OnPostRender()
 {
 	// Avoid the base class to free this object (it's freed by CDisplayWindow3D)
-	m_openGLScene.clear_unique();
+	m_openGLScene.reset();
 	m_win3D->unlockAccess3DScene();
 
 	// If any, draw the 2D text messages:
@@ -222,7 +222,7 @@ void CMyGLCanvas_DisplayWindow3D::OnPostRenderSwapBuffers(double At, wxPaintDC &
 			{
 				mrpt::synch::CCriticalSectionLocker	lock(& m_win3D->m_last_captured_img_cs );
 				m_win3D->m_last_captured_img = frame;
-				frame.clear_unique();
+				frame.reset();
 			}
 		}
 	}

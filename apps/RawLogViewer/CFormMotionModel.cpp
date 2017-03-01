@@ -553,12 +553,12 @@ void CFormMotionModel::applyToRawlogFile()
             // Check type:
             if ( newObj->GetRuntimeClass() == CLASS_ID(CRawlog))
             {
-                newObj.clear();
+                newObj.reset();
                 THROW_EXCEPTION("File is a 'CRawlog' object. Please save it as a sequence of actions/observations.")
             }
             else if ( newObj->GetRuntimeClass() == CLASS_ID(CSensoryFrame))
             {
-                newObj.clear();
+                newObj.reset();
             }
             else if ( newObj->GetRuntimeClass() == CLASS_ID(CActionCollection))
             {
@@ -582,7 +582,7 @@ void CFormMotionModel::applyToRawlogFile()
                 }
 
                 out_fil << acts;
-                newObj.clear();
+                newObj.reset();
             }
             else
             {   // Unknown class:
@@ -939,7 +939,7 @@ void CFormMotionModel::OnbtnGetFromFileClick(wxCommandEvent& event)
                 THROW_EXCEPTION_FMT("Unexpected class found in the file: '%s'",newObj->GetRuntimeClass()->className);
             }
 
-        newObj.clear();  // FREE MEMORY!
+        newObj.reset();  // FREE MEMORY!
 
         if (nLoaded++>MAX_READ_FOR_MODEL_SEARCH)
             keepLoading=false;

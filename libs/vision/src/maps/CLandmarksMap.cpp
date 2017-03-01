@@ -1122,7 +1122,7 @@ void  CLandmarksMap::computeMatchingWith3DLandmarks(
 					if (thisIt->getType()==featSIFT &&
 						thisIt->features.size() == otherIt->features.size() &&
 						!thisIt->features.empty() &&
-						thisIt->features[0].present() && otherIt->features[0].present() &&
+						thisIt->features[0] && otherIt->features[0] &&
 						thisIt->features[0]->descriptors.SIFT.size()==otherIt->features[0]->descriptors.SIFT.size()
 						)
 					{
@@ -1342,7 +1342,7 @@ bool  CLandmarksMap::saveToTextFile(std::string file)
 
 		if (it->getType() == featSIFT)
 		{
-			ASSERT_( !it->features.empty() && it->features[0].present() )
+			ASSERT_( !it->features.empty() && it->features[0] )
 
 			for (unsigned int i=0;i<it->features[0]->descriptors.SIFT.size();i++)
 				os::fprintf(f," %u ",it->features[0]->descriptors.SIFT[i]);
@@ -1951,7 +1951,7 @@ double	 CLandmarksMap::computeLikelihood_SIFT_LandmarkMap( CLandmarksMap		*theMa
 							{
 								distDesc = 0;
 								ASSERT_( !lm1->features.empty() && !lm2->features.empty() )
-								ASSERT_( lm1->features[0].present() && lm2->features[0].present() )
+								ASSERT_( lm1->features[0] && lm2->features[0] )
 								ASSERT_( lm1->features[0]->descriptors.SIFT.size() == lm2->features[0]->descriptors.SIFT.size() )
 
 								for ( it1 = lm1->features[0]->descriptors.SIFT.begin(), it2 = lm2->features[0]->descriptors.SIFT.begin(); it1!=lm1->features[0]->descriptors.SIFT.end(); it1++, it2++)

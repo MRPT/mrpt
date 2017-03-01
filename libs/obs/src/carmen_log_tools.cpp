@@ -54,7 +54,7 @@ bool mrpt::obs::carmen_log_parse_line(
 		S.str(line);
 
 		CObservation2DRangeScanPtr obsLaser_ptr = CObservation2DRangeScan::Create();
-		CObservation2DRangeScan* obsLaser = obsLaser_ptr.pointer(); // Faster access
+		CObservation2DRangeScan* obsLaser = obsLaser_ptr.get(); // Faster access
 
 		// Parse:
 		int 	laser_type; //  SICK_LMS = 0, SICK_PLS = 1, HOKUYO_URG = 2, SIMULATED_LASER = 3,
@@ -139,7 +139,7 @@ bool mrpt::obs::carmen_log_parse_line(
 		S.str(line);
 
 		CObservation2DRangeScanPtr obsLaser_ptr = CObservation2DRangeScan::Create();
-		CObservation2DRangeScan* obsLaser = obsLaser_ptr.pointer(); // Faster access
+		CObservation2DRangeScan* obsLaser = obsLaser_ptr.get(); // Faster access
 
 		// Parse:
 		size_t  nRanges;

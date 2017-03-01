@@ -42,7 +42,7 @@ namespace mrpt
 			typename std::list<T>::iterator find_ptr_to( const PTR ptr )
 			{
 				for (typename std::list<T>::iterator it=std::list<T>::begin();it!=std::list<T>::end();it++)
-					if (it->pointer()==ptr)
+					if (it->get()==ptr)
 						return it;
 				return std::list<T>::end();
 			}

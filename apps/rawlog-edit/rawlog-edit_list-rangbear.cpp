@@ -52,7 +52,7 @@ DECLARE_OP_FUNCTION(op_list_rangebearing)
 			if (IS_CLASS(obs, CObservationBearingRange ) )
 			{
 				const CObservationBearingRangePtr obsRB_ = CObservationBearingRangePtr(obs);
-				const CObservationBearingRange * obsRB = obsRB_.pointer();
+				const CObservationBearingRange * obsRB = obsRB_.get();
 
 				const double tim = mrpt::system::timestampToDouble( obsRB->timestamp );
 

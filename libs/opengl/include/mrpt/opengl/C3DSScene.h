@@ -81,7 +81,7 @@ namespace mrpt
 
 			/** An internal pointer to the lib3ds library's object of type "Lib3dsFile"
 			  */
-			stlplus::smart_ptr<TImpl3DS>	m_3dsfile;
+			std::shared_ptr<TImpl3DS>	m_3dsfile;
 
 			/** Scale of the object */
 			//double	m_scale_x,m_scale_y,m_scale_z;

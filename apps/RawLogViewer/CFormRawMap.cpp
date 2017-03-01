@@ -423,7 +423,7 @@ void CFormRawMap::OnbtnGenerateClick(wxCommandEvent& )
 
 	if( !theMap.m_pointsMaps.empty() )
 		thePntsMap = theMap.m_pointsMaps[0];
-	else if (theMap.m_colourPointsMap.present())
+	else if (theMap.m_colourPointsMap)
 		thePntsMap = theMap.m_colourPointsMap;
 
     wxBusyCursor    waitCursor;
@@ -503,7 +503,7 @@ void CFormRawMap::OnbtnGenerateClick(wxCommandEvent& )
 		case CRawlog::etObservation:
 			{
 				// Always, process odometry:
-				const CObservation* obs = rawlog.getAsObservation(i).pointer();
+				const CObservation* obs = rawlog.getAsObservation(i).get();
 				if (IS_CLASS(obs,CObservationOdometry))
 				{
 					const CObservationOdometry* obsOdo = static_cast<const CObservationOdometry*>(obs);
@@ -513,7 +513,7 @@ void CFormRawMap::OnbtnGenerateClick(wxCommandEvent& )
 				if (( (i>>1) % decimate)==0)
 				{
 					CPose3D		dumPose(curPose);
-					theMap.insertObservation( rawlog.getAsObservation(i).pointer(), &dumPose );
+					theMap.insertObservation( rawlog.getAsObservation(i).get(), &dumPose );
 					last_tim = rawlog.getAsObservation(i)->timestamp;
 				}
 				addNewPathEntry=true;
@@ -870,7 +870,7 @@ void CFormRawMap::OnGenerateFromRTK(wxCommandEvent& )
 
 	if( !theMap.m_pointsMaps.empty() )
 		thePntsMap = theMap.m_pointsMaps[0];
-	else if (theMap.m_colourPointsMap.present())
+	else if (theMap.m_colourPointsMap)
 		thePntsMap = theMap.m_colourPointsMap;
 
 	// An (aprox) estimate of the final size of the map (great improve in speed!)
@@ -918,7 +918,7 @@ void CFormRawMap::OnGenerateFromRTK(wxCommandEvent& )
 					size_t &dec_cnt = decim_count[o->sensorLabel];
 
 					if ( (++dec_cnt % decimate)==0)
-						theMap.insertObservation( o.pointer(), &p );
+						theMap.insertObservation( o.get(), &p );
 				}
             }
             break;

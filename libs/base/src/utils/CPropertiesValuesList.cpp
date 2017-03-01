@@ -41,10 +41,10 @@ void  CPropertiesValuesList::writeToStream(mrpt::utils::CStream &out, int *out_V
 			out << m_properties[i].name.c_str();
 
 			// Object:
-			isNull = m_properties[i].value.present() ? 1:0;
+			isNull = m_properties[i].value ? 1:0;
 			out << isNull;
 
-			if (m_properties[i].value.present())
+			if (m_properties[i].value)
 				out << *m_properties[i].value;
 		}
 	}
@@ -79,7 +79,7 @@ void  CPropertiesValuesList::readFromStream(mrpt::utils::CStream &in, int versio
 				in >> isNull;
 
 				if (isNull)
-					m_properties[i].value.set(  static_cast<CSerializable*>(NULL) );
+					m_properties[i].value.reset(  static_cast<CSerializable*>(NULL) );
 				else
 					in >> m_properties[i].value;
 			}
@@ -168,7 +168,7 @@ void  CPropertiesValuesList::set(const std::string &propertyName, const CSeriali
 		{
 			// Delete current contents:
 			// Copy new value:
-			if (!obj)	it->value.clear_unique();
+			if (!obj)	it->value.reset();
 			else		it->value = obj; //->duplicate();
 			return;
 		}

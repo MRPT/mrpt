@@ -38,7 +38,7 @@ namespace mrpt {
 				const CFeatureList::iterator itFeatEnd = featureList.end();
 				for (CFeatureList::iterator itFeat = featureList.begin(); itFeat!=itFeatEnd ;  ++itFeat)
 				{
-					CFeature* ft = itFeat->pointer();
+					CFeature* ft = itFeat->get();
 					if (ft->track_status!=status_TRACKED)
 						continue; // Skip if it's not correctly tracked.
 
@@ -116,7 +116,7 @@ namespace mrpt {
 			{
 				for (CFeatureList::iterator itFeat = featureList.begin(); itFeat != featureList.end();  ++itFeat)
 				{
-					CFeature* ft = itFeat->pointer();
+					CFeature* ft = itFeat->get();
 					if (ft->track_status!=status_TRACKED)
 						continue; // Skip if it's not correctly tracked.
 

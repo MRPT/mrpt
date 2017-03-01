@@ -54,7 +54,7 @@ namespace mrpt
 			struct ObjectClear2 {
 				template<typename T>
 				inline void operator()(T &ptr){
-					ptr.clear();
+					ptr.reset();
 				}
 			};
 
@@ -62,7 +62,7 @@ namespace mrpt
 			struct ObjectClearSecond {
 				template<typename T>
 				inline void operator()(T obj) {
-					obj.second.clear();
+					obj.second.reset();
 				}
 			};
 
@@ -101,7 +101,7 @@ namespace mrpt
 				}
 			};
 
-			//NOTE: replace with mem_fun_ref(&CSerializable::clear_unique)
+			//NOTE: replace with mem_fun_ref(&CSerializable::reset)
 			/** An object for making smart pointers unique (ie, making copies if necessary), intended for being used in STL algorithms. */
 			template <typename T>
 			struct ObjectClearUnique {
@@ -109,7 +109,7 @@ namespace mrpt
 				typedef void result_type;
 				inline void operator()(T &ptr)
 				{
-					ptr.clear_unique();
+					ptr.reset();
 				}
 			};
 

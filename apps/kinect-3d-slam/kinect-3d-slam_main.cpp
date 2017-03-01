@@ -403,7 +403,7 @@ void Test_Kinect()
 							cout << "Adding new key-frame: pose="<< new_keyframe_global << endl;
 
 							// Update global map: append another map at a given position:
-							globalPtsMap.insertObservation(last_obs.pointer(),&new_keyframe_global);
+							globalPtsMap.insertObservation(last_obs.get(),&new_keyframe_global);
 							win3D.get3DSceneAndLock();
 								gl_points_map->loadFromPointsMap(&globalPtsMap);
 							win3D.unlockAccess3DScene();
@@ -427,7 +427,7 @@ void Test_Kinect()
 
 				// Update global map:
 				globalPtsMap.clear();
-				globalPtsMap.insertObservation(last_obs.pointer() );
+				globalPtsMap.insertObservation(last_obs.get() );
 
 				win3D.get3DSceneAndLock();
 					gl_points_map->loadFromPointsMap(&globalPtsMap);

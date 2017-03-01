@@ -567,8 +567,8 @@ void do_grid_align()
 						const double dErr = P1.distanceTo(P2);
 						dErrs[i2]=dErr;
 
-						ASSERT_(!l1->features.empty() && l1->features[0].present())
-						ASSERT_(!l2->features.empty() && l2->features[0].present())
+						ASSERT_(!l1->features.empty() && l1->features[0])
+						ASSERT_(!l2->features.empty() && l2->features[0])
 
 						D[i2] = l1->features[0]->descriptorDistanceTo( *l2->features[0] );
 					}
@@ -607,8 +607,8 @@ void do_grid_align()
 				{
 					COccupancyGridMap2D::saveAsBitmapTwoMapsWithCorrespondences(
 						"GT_corrs.png",
-						grid1.pointer(),
-						grid2.pointer(),
+						grid1.get(),
+						grid2.get(),
 						gt_corrs );
 					mrpt::system::pause();
 				}

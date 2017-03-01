@@ -82,7 +82,7 @@ void  CMHPropertiesValuesList::readFromStream(mrpt::utils::CStream &in, int vers
 				in >> isNull;
 
 				if (isNull)
-					m_properties[i].value.clear();
+					m_properties[i].value.reset();
 				else
 					in >> m_properties[i].value;
 

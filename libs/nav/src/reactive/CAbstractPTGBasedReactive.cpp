@@ -895,8 +895,8 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 	{
 		mrpt::kinematics::CVehicleVelCmdPtr desired_cmd;
 		desired_cmd = cm.PTG->directionToMotionCommand(move_k);
-		const mrpt::kinematics::CVehicleVelCmd *ptr1 = m_last_vel_cmd.pointer();
-		const mrpt::kinematics::CVehicleVelCmd *ptr2 = desired_cmd.pointer();
+		const mrpt::kinematics::CVehicleVelCmd *ptr1 = m_last_vel_cmd.get();
+		const mrpt::kinematics::CVehicleVelCmd *ptr2 = desired_cmd.get();
 		if(typeid(*ptr1) == typeid(*ptr2)){
 			ASSERT_EQUAL_(m_last_vel_cmd->getVelCmdLength(), desired_cmd->getVelCmdLength());
 
@@ -1370,7 +1370,7 @@ void CAbstractPTGBasedReactive::loadConfigFile(const mrpt::utils::CConfigFileBas
 	}
 	else
 	{
-		m_WS_filter.clear_unique();
+		m_WS_filter.reset();
 	}
 
 	// Movement chooser:
@@ -1414,7 +1414,7 @@ void CAbstractPTGBasedReactive::saveConfigFile(mrpt::utils::CConfigFileBase & c)
 		const auto lst = mrpt::utils::getAllRegisteredClassesChildrenOf(CLASS_ID(CAbstractHolonomicReactiveMethod));
 		for (const auto &cl : lst) {
 			mrpt::utils::CObjectPtr obj = mrpt::utils::CObjectPtr(cl->createObject());
-			CAbstractHolonomicReactiveMethod * holo = dynamic_cast<CAbstractHolonomicReactiveMethod *>(obj.pointer());
+			CAbstractHolonomicReactiveMethod * holo = dynamic_cast<CAbstractHolonomicReactiveMethod *>(obj.get());
 			if (holo) {
 				holo->saveConfigFile(c);
 			}
@@ -1433,7 +1433,7 @@ void CAbstractPTGBasedReactive::saveConfigFile(mrpt::utils::CConfigFileBase & c)
 		const auto lst = mrpt::utils::getAllRegisteredClassesChildrenOf(CLASS_ID(CMultiObjectiveMotionOptimizerBase));
 		for (const auto &cl : lst) {
 			mrpt::utils::CObjectPtr obj = mrpt::utils::CObjectPtr(cl->createObject());
-			CMultiObjectiveMotionOptimizerBase * momo = dynamic_cast<CMultiObjectiveMotionOptimizerBase *>(obj.pointer());
+			CMultiObjectiveMotionOptimizerBase * momo = dynamic_cast<CMultiObjectiveMotionOptimizerBase *>(obj.get());
 			if (momo) {
 				momo->saveConfigFile(c);
 			}

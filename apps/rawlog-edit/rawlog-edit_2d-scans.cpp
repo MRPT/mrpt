@@ -53,7 +53,7 @@ DECLARE_OP_FUNCTION(op_export_2d_scans_txt)
 			if (!IS_CLASS(o, CObservation2DRangeScan ) )
 				return true;
 
-			const CObservation2DRangeScan* obs = CObservation2DRangeScanPtr(o).pointer();
+			const CObservation2DRangeScan* obs = CObservation2DRangeScanPtr(o).get();
 
 			map<string, FILE*>::const_iterator  it = lstFiles.find( obs->sensorLabel );
 

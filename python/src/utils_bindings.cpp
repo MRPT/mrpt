@@ -21,12 +21,12 @@ using namespace mrpt::utils;
 // CStream
 void CStream_ReadObject(CStream& self, CSerializablePtr& obj)
 {
-    self.ReadObject(obj.pointer());
+    self.ReadObject(obj.get());
 }
 
 void CStream_WriteObject(CStream& self, CSerializablePtr& obj)
 {
-    self.WriteObject(obj.pointer());
+    self.WriteObject(obj.get());
 }
 // end of CStream
 

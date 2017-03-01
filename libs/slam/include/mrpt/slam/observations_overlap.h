@@ -39,7 +39,7 @@ namespace mrpt
 			const mrpt::obs::CObservationPtr & o2,
 			const mrpt::poses::CPose3D *pose_o2_wrt_o1 = NULL ) 
 		{
-			return observationsOverlap(o1.pointer(), o2.pointer(), pose_o2_wrt_o1 );
+			return observationsOverlap(o1.get(), o2.get(), pose_o2_wrt_o1 );
 		}
 			
 		/** Estimates the "overlap" or "matching ratio" of two set of observations (range [0,1]), possibly taking into account their relative positions.
@@ -60,7 +60,7 @@ namespace mrpt
 			const mrpt::obs::CSensoryFramePtr &sf2,
 			const mrpt::poses::CPose3D *pose_sf2_wrt_sf1 = NULL )
 		{
-			return observationsOverlap(*sf1.pointer(), *sf2.pointer(), pose_sf2_wrt_sf1);
+			return observationsOverlap(*sf1.get(), *sf2.get(), pose_sf2_wrt_sf1);
 		}
 
 		/** @} */

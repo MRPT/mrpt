@@ -209,7 +209,7 @@ CHMTSLAM::TMessageLSLAMfromTBIPtr CHMTSLAM::TBI_main_method(
 				candidate->second.log_lik += this_log_lik;
 
 				// This is because not all LC detector MUST return a pose PDF (i.e. image-based detectors)
-				if (pdf.present())
+				if (pdf)
 				{
 					ASSERT_( IS_CLASS(pdf, CPose3DPDFSOG ) );
 					CPose3DPDFSOGPtr SOG = CPose3DPDFSOGPtr( pdf );

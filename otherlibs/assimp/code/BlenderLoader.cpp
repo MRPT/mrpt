@@ -321,7 +321,7 @@ void BlenderImporter::ExtractScene(Scene& out, const FileDatabase& file)
 #ifndef ASSIMP_BUILD_BLENDER_NO_STATS
 	DefaultLogger::get()->info((format(),
 		"(Stats) Fields read: "	,file.stats().fields_read,
-		", pointers resolved: "	,file.stats().pointers_resolved,  
+		", pointers resolved: "	,file.stats().gets_resolved,  
 		", cache hits: "        ,file.stats().cache_hits,  
 		", cached objects: "	,file.stats().cached_objects
 	));

@@ -172,7 +172,7 @@ void CMyGLCanvas::OnPreRender()
 	// This was used to receive scenes from a TCP stream, but it's not used anymore now:
 	// Do we have to update the scene??
 //	synch::CCriticalSectionLocker   lock( &critSec_UpdateScene );
-//	if (newOpenGLScene) { m_openGLScene.clear_unique(); m_openGLScene = newOpenGLScene; newOpenGLScene.clear_unique(); }
+//	if (newOpenGLScene) { m_openGLScene.reset(); m_openGLScene = newOpenGLScene; newOpenGLScene.reset(); }
 }
 
 void CMyGLCanvas::OnPostRenderSwapBuffers(double At, wxPaintDC &dc)
@@ -750,7 +750,7 @@ void _DSceneViewerFrame::loadFromFile( const std::string &fil, bool isInASequenc
 
 			CCameraPtr cam = m_canvas->m_openGLScene->getByClass<CCamera>();
 
-			bool  camIsCCameraObj = cam.present();
+			bool  camIsCCameraObj = cam ? true : false;
 			if ( !camIsCCameraObj )
 				cam = CCameraPtr( new CCamera( view->getCamera() ) );
 
@@ -1397,7 +1397,7 @@ void _DSceneViewerFrame::OnmnuItemShowCloudOctreesSelected(wxCommandEvent& event
 
 				m_canvas->m_openGLScene->visitAllObjects( func_get_octbb );
 
-				aux_gl_octrees_bb.clear_unique();
+				aux_gl_octrees_bb.reset();
 			}
 		}
 
@@ -1441,12 +1441,12 @@ void _DSceneViewerFrame::OnMenuItemImportPLYPointCloud(wxCommandEvent& event)
 		if (dlgPLY.rbClass->GetSelection()==0)
 		{
 		     gl_points     = opengl::CPointCloud::Create();
-			 ply_obj = gl_points.pointer();
+			 ply_obj = gl_points.get();
 		}
 		else
 		{
 			gl_points_col = opengl::CPointCloudColoured::Create();
-			ply_obj = gl_points_col.pointer();
+			ply_obj = gl_points_col.get();
 		}
 
 		CStringList file_comments, file_info;
@@ -1740,7 +1740,7 @@ void _DSceneViewerFrame::OnmnuSelectByClassSelected(wxCommandEvent& event)
 void _DSceneViewerFrame::OnmnuSelectionDeleteSelected(wxCommandEvent& event)
 {
 	for (size_t i=0;i<m_selected_gl_objects.size();i++)
-		m_selected_gl_objects[i].clear();
+		m_selected_gl_objects[i].reset();
     Refresh(false);
 }
 

@@ -1185,7 +1185,7 @@ void navlog_viewer_GUI_designDialog::OnmnuMatlabPlotsSelected(wxCommandEvent& ev
 	for (size_t i=0;i<N;i++)
 	{
         const CLogFileRecordPtr logsptr = CLogFileRecordPtr( m_logdata[i] );
-        const CLogFileRecord * logptr = logsptr.pointer();
+        const CLogFileRecord * logptr = logsptr.get();
 
 		const CPose2D robotPose = logptr->robotOdometryPose;
 		CPose2D observationBasePose = robotPose;
@@ -1305,12 +1305,12 @@ void navlog_viewer_GUI_designDialog::OnmnuSaveScoreMatrixSelected(wxCommandEvent
 	for (size_t i=0;i<N;i++)
 	{
 		const CLogFileRecordPtr logsptr = CLogFileRecordPtr( m_logdata[i] );
-		const CLogFileRecord * logptr = logsptr.pointer();
+		const CLogFileRecord * logptr = logsptr.get();
 
 		for (size_t iPTG = 0; iPTG<logptr->infoPerPTG.size(); iPTG++)
 		{
 			const CHolonomicLogFileRecordPtr & hlog = logptr->infoPerPTG[iPTG].HLFR;
-			if (!hlog.present()) continue;
+			if (!hlog) continue;
 
 			const mrpt::math::CMatrixD * dirs_scores = hlog->getDirectionScores();
 			if (!dirs_scores || dirs_scores->getRowCount()<2) continue;
@@ -1398,7 +1398,7 @@ void navlog_viewer_GUI_designDialog::OnmnuMatlabExportPaths(wxCommandEvent & eve
 	for (size_t i = 0; i<N; i++)
 	{
 		const CLogFileRecordPtr logsptr = CLogFileRecordPtr(m_logdata[i]);
-		const CLogFileRecord * logptr = logsptr.pointer();
+		const CLogFileRecord * logptr = logsptr.get();
 
 		{
 			const auto it = logptr->timestamps.find("tim_start_iteration");

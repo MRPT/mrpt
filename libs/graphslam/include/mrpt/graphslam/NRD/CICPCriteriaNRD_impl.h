@@ -103,7 +103,7 @@ bool CICPCriteriaNRD<GRAPH_t>::updateState(
 
 	bool registered_new_node = false;
 
-	if (observation.present()) { // Observation-Only Rawlog
+	if (observation) { // Observation-Only Rawlog
 		// delegate the action to the method responsible
 		if (IS_CLASS(observation, CObservation2DRangeScan) ) { // 2D
 			mrpt::obs::CObservation2DRangeScanPtr curr_laser_scan =
@@ -175,7 +175,7 @@ bool CICPCriteriaNRD<GRAPH_t>::updateState2D(
 	bool registered_new_node = false;
 
 	m_curr_laser_scan2D = scan2d;
-	if (m_last_laser_scan2D.null()) {
+	if (!m_last_laser_scan2D) {
 		// initialize the last_laser_scan here - afterwards updated inside the
 		// checkRegistrationCondition*D method
 		m_last_laser_scan2D = m_curr_laser_scan2D;
@@ -283,7 +283,7 @@ bool CICPCriteriaNRD<GRAPH_t>::updateState3D(
 	m_curr_laser_scan3D->load();
 	m_curr_laser_scan3D->project3DPointsFromDepthImage();
 
-	if (m_last_laser_scan3D.null()) {
+	if (!m_last_laser_scan3D) {
 		// initialize the last_laser_scan here - afterwards updated inside the
 		// checkRegistrationCondition*D method
 		m_last_laser_scan3D = m_curr_laser_scan3D;

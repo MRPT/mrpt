@@ -1148,7 +1148,7 @@ xRawLogViewerFrame::~xRawLogViewerFrame()
 
 
 	// Close extra windows, if any:
-	winGPSPath.clear();
+	winGPSPath.reset();
 
 }
 
@@ -1600,8 +1600,8 @@ void xRawLogViewerFrame::rebuildTreeView()
 	int				countLoop=0;
 
 	Notebook1->ChangeSelection( 0 );
-	curSelectedObservation.clear_unique();// = NULL;
-	curSelectedObject.clear_unique(); // = NULL;
+	curSelectedObservation.reset();// = NULL;
+	curSelectedObject.reset(); // = NULL;
 
 	wxProgressDialog    progDia(
 		wxT("Constructing the tree view"),
@@ -2580,7 +2580,7 @@ void xRawLogViewerFrame::OnFileSaveImages(wxCommandEvent& event)
 					THROW_EXCEPTION("Unknown class found in the file!");
 				}
 
-			newObj.clear();
+			newObj.reset();
 		}
 		catch (exception &e)
 		{
@@ -2630,12 +2630,12 @@ void wxStaticBitmapPopup::OnPopupSaveImage(wxCommandEvent& event)
 
 		if (IS_CLASS(curSelectedObservation,CObservationImage))
 		{
-			CObservationImage	*obs = (CObservationImage*) curSelectedObservation.pointer();
+			CObservationImage	*obs = (CObservationImage*) curSelectedObservation.get();
 			imgToSave = &obs->image;
 		}
 		else if ( IS_CLASS(curSelectedObservation,CObservationStereoImages) )
 		{
-			CObservationStereoImages *obs = (CObservationStereoImages*) curSelectedObservation.pointer();
+			CObservationStereoImages *obs = (CObservationStereoImages*) curSelectedObservation.get();
 
 			switch(theMainWindow->Notebook2->GetSelection())
 			{
@@ -2646,7 +2646,7 @@ void wxStaticBitmapPopup::OnPopupSaveImage(wxCommandEvent& event)
 		}
 		else if ( IS_CLASS(curSelectedObservation,CObservation3DRangeScan) )
 		{
-			CObservation3DRangeScan *obs = (CObservation3DRangeScan*) curSelectedObservation.pointer();
+			CObservation3DRangeScan *obs = (CObservation3DRangeScan*) curSelectedObservation.get();
 			obs->load();
 			switch(theMainWindow->nb_3DObsChannels->GetSelection())
 			{
@@ -2704,12 +2704,12 @@ void wxStaticBitmapPopup::OnPopupLoadImage(wxCommandEvent& event)
 
 		if (IS_CLASS(curSelectedObservation,CObservationImage))
 		{
-			CObservationImage	*obs = (CObservationImage*) curSelectedObservation.pointer();
+			CObservationImage	*obs = (CObservationImage*) curSelectedObservation.get();
 			imgToLoad = &obs->image;
 		}
 		else if ( IS_CLASS(curSelectedObservation,CObservationStereoImages) )
 		{
-			CObservationStereoImages *obs = (CObservationStereoImages*) curSelectedObservation.pointer();
+			CObservationStereoImages *obs = (CObservationStereoImages*) curSelectedObservation.get();
 
 			switch (theMainWindow->Notebook2->GetSelection())
 			{
@@ -2828,7 +2828,7 @@ void xRawLogViewerFrame::OnDecimateRecords(wxCommandEvent& event)
 
 				// INSERT OBSERVATION:
 				newRawLog.addObservationsMemoryReference( last_sf );
-				last_sf.clear_unique(); // = NULL;
+				last_sf.reset(); // = NULL;
 
 				// INSERT ACTIONS:
 				CActionCollection	actsCol;
@@ -2849,7 +2849,7 @@ void xRawLogViewerFrame::OnDecimateRecords(wxCommandEvent& event)
 		}
 
 		// Delete object?
-		if (objToBeDeleted) obj.clear_unique(); //delete obj;
+		if (objToBeDeleted) obj.reset(); //delete obj;
 
 	} // end for i each entry
 
@@ -3907,7 +3907,7 @@ void xRawLogViewerFrame::OnRecomputeOdometry(wxCommandEvent& event)
 				if (rawlog.getAsGeneric(i)->GetRuntimeClass() == CLASS_ID(CObservationOdometry ))
 				{
 					CObservationOdometryPtr obs = CObservationOdometryPtr(rawlog.getAsGeneric(i));
-					CObservationOdometry*odo = obs.pointer();
+					CObservationOdometry*odo = obs.get();
 					if (!odo->hasEncodersInfo)
 					{
 						wxMessageBox( _U( format("An odometry measurement was found at entry %i which does not\ncontain encoders info: Cannot recompute odometry without this information!",(unsigned)i).c_str() ) );
@@ -4207,7 +4207,7 @@ void xRawLogViewerFrame::OnMenuRenameSensor(wxCommandEvent& event)
             {
                 CSensoryFramePtr sf = rawlog.getAsObservations(i);
 				CObservationPtr o;
-				while ( (o=sf->getObservationBySensorLabel(the_label,0)).present() )
+				while ( (o=sf->getObservationBySensorLabel(the_label,0)) )
 				{
 					o->sensorLabel = the_new_label;
 					nChanges++;
@@ -5326,7 +5326,7 @@ void xRawLogViewerFrame::OnMenuRegenerateOdometryTimes(wxCommandEvent& event)
 						if (lastOdo && lastObsTime!=INVALID_TIMESTAMP)
 						{	// Do average:
 							lastOdo->timestamp = (lastObsTime>>1)+(thisObsTime>>1);
-							lastOdo.clear_unique();
+							lastOdo.reset();
 							nChanges++;
 						}
 						lastObsTime = thisObsTime;
