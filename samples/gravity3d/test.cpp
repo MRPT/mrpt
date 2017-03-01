@@ -251,7 +251,7 @@ void simulateGravity( vector<TMass> &objs, double At)
 		objs[newObj].radius = M2R * pow( newMass, 1.0/3.0);
 		objs[newObj].obj3d->setRadius( objs[newObj].radius );
 
-		objs[i].obj3d.clear(); // Delete Sphere
+		objs[i].obj3d.reset(); // Delete Sphere
 		objs.erase(objs.begin()+i);
 	}
 

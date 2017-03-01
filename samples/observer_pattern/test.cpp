@@ -75,7 +75,7 @@ void TestObserverPattern()
 	map1->insertObservation(&obs);
 
 	// Destroy
-	map1.clear();
+	map1.reset();
 }
 
 int main()
