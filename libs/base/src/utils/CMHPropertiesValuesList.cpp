@@ -174,8 +174,7 @@ void  CMHPropertiesValuesList::set(
 		{
 			// Delete current contents:
 			// Copy new value:
-			it->value = obj;
-			it->value.make_unique();
+			it->value.reset(obj->clone());
 
 			//if (!obj)	it->value.clear();
 			//else		it->value = obj; //->duplicate();
@@ -287,7 +286,7 @@ CMHPropertiesValuesList::CMHPropertiesValuesList( const CMHPropertiesValuesList&
 	m_properties ( o.m_properties )
 {
 	for (std::vector<TPropertyValueIDTriplet>::iterator it=m_properties.begin();it!=m_properties.end();++it)
-		it->value.make_unique();
+		it->value.reset(it->value->clone());
 }
 
 /*---------------------------------------------------------------
@@ -300,7 +299,7 @@ CMHPropertiesValuesList & CMHPropertiesValuesList::operator =( const CMHProperti
 	m_properties = o.m_properties;
 
 	for (std::vector<TPropertyValueIDTriplet>::iterator it=m_properties.begin();it!=m_properties.end();++it)
-		it->value.make_unique();
+		it->value.reset(it->value->clone());
 	return *this;
 }
 

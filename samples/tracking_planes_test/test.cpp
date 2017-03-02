@@ -1228,7 +1228,7 @@ int main()
 				feat->y			= boot[i]->y;
 				feat->ID = i;
 				feat->type = featKLT;
-				feat.make_unique();
+				feat.reset(feat->clone());
 			flow_klt.push_back(feat);
 			points[0][i].x = feat->x;
 			points[0][i].y = feat->y;

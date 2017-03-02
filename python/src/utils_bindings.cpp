@@ -47,7 +47,9 @@ double mrpt_utils_RAD2DEG(double rad) { return mrpt::utils::RAD2DEG(rad); }
 // end of Utils
 
 // smart pointer contents
-MAKE_PTR_CTX(CObject)
+CObject& CObjectPtr_get_ctx(CObject::Ptr& self) { return *self; }
+void     CObjectPtr_set_ctx(CObject::Ptr& self, const CObject &ctx) { *self = ctx; }
+CObject* CObjectPtr_pointer(CObject::Ptr& self) { return self.get(); }
 MAKE_PTR_CTX(CSerializable)
 
 
@@ -70,7 +72,10 @@ void export_utils()
 
     // CObject
     {
-        MAKE_PTR(CObject)
+        class_<CObject::Ptr>("CObjectPtr", "class_name smart pointer type", no_init)
+            .def("ctx", &CObjectPtr_get_ctx, return_internal_reference<>())
+            .def("ctx", &CObjectPtr_set_ctx)
+            .def("pointer", &CObjectPtr_pointer, return_internal_reference<>());
 
         class_<CObject, boost::noncopyable>("CObject", no_init)
             .def("duplicate", &CObject::duplicate, return_value_policy<manage_new_object>(), "Returns a copy of the object, indepently of its class.")
@@ -115,13 +120,15 @@ void export_utils()
 
     // CConfigFile
     {
-        class_<CConfigFile, bases<CConfigFileBase> >("CConfigFile", init<optional<std::string> >())
-        ;
+        class_<CConfigFile, bases<CConfigFileBase> >("CConfigFile", init<optional<std::string> >());
     }
 
     // CSerializable
     {
-        MAKE_PTR_BASE(CSerializable, CObject)
+        class_<CSerializablePtr, bases<CObject::Ptr> >("CSerializablePtr", "class_name smart pointer type", no_init)
+            .def("ctx", &CSerializablePtr_get_ctx, return_internal_reference<>())
+            .def("ctx", &CSerializablePtr_set_ctx)
+            .def("pointer", &CSerializablePtr_pointer, return_internal_reference<>());
 
         class_<CSerializable, boost::noncopyable, bases<CObject> >("CSerializable", no_init)
         ;
