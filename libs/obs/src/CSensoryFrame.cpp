@@ -157,7 +157,7 @@ void CSensoryFrame::operator += (const CSensoryFrame &sf)
 	for (const_iterator it = begin();it!=end();++it)
 	{
 		CObservationPtr newObs = *it;
-		newObs.make_unique();
+		newObs.reset(newObs->clone());
 		m_observations.push_back( newObs ); //static_cast<CObservation*>( (*it)->duplicate()) );
 	}
 }

@@ -999,7 +999,7 @@ void CFeatureList::copyListFrom( const CFeatureList &otherList )
     for( it1 = otherList.begin(), it2 = this->begin(); it1 != otherList.end(); ++it1, ++it2 )
     {
         *it2 = *it1;
-	it2->make_unique();
+	(*it2).reset((*it2)->clone());
     }
 } // end-copyListFrom
 
