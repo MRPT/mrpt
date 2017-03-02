@@ -177,7 +177,7 @@ void  CMHPropertiesValuesList::set(
 			it->value.reset(obj->clone());
 
 			//if (!obj)	it->value.clear();
-			//else		it->value = obj; //->duplicate();
+			//else		it->value = obj; //->clone();
 			return;
 		}
 	}

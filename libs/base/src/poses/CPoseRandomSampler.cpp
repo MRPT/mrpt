@@ -64,7 +64,7 @@ void CPoseRandomSampler::setPosePDF( const CPosePDF *pdf )
     MRPT_START
 
     clear();
-    m_pdf2D = static_cast<CPosePDF*>( pdf->duplicate() );
+    m_pdf2D = static_cast<CPosePDF*>( pdf->clone() );
 
     // According to the PDF type:
     if ( IS_CLASS(m_pdf2D,CPosePDFGaussian ) )
@@ -109,7 +109,7 @@ void CPoseRandomSampler::setPosePDF( const CPose3DPDF *pdf )
     MRPT_START
 
     clear();
-    m_pdf3D = static_cast<CPose3DPDF*>( pdf->duplicate() );
+    m_pdf3D = static_cast<CPose3DPDF*>( pdf->clone() );
 
     // According to the PDF type:
     if ( IS_CLASS(m_pdf3D,CPose3DPDFGaussian ) )

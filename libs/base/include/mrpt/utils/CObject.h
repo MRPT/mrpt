@@ -102,8 +102,6 @@ namespace mrpt
 		 *    keeping referencing count smart pointers to objects of that class. By default the base class of all these smart pointers is CObject::Ptr.
 		 * \sa  mrpt::utils::CSerializable \ingroup mrpt_base_grp
 		 */
-
-
 		class BASE_IMPEXP CObject
 		{
 		protected:
@@ -119,14 +117,11 @@ namespace mrpt
 				return CLASS_ID(CObject);
 			}
 
-			/** Returns a copy of the object, indepently of its class. */
-			virtual CObject *duplicate() const = 0;
-
 			/** Returns a copy of the object, indepently of its class, as a smart pointer (the newly created object will exist as long as any copy of this smart pointer). */
 			inline mrpt::utils::CObject::Ptr duplicateGetSmartPtr() const;
 
-			/** Cloning interface for smart pointers */
-			inline CObject *clone() const { return duplicate(); }
+			/** Returns a deep copy (clone) of the object, indepently of its class. */
+			virtual CObject *clone() const = 0;
 
 			virtual ~CObject() {  }
 
@@ -136,7 +131,7 @@ namespace mrpt
 		  * \note Declared as a class instead of a typedef to avoid multiple defined symbols when linking dynamic libs.
 		  * \ingroup mrpt_base_grp
 		  */
-		inline mrpt::utils::CObject::Ptr CObject::duplicateGetSmartPtr() const { return mrpt::utils::CObject::Ptr( this->duplicate() ); }
+		inline mrpt::utils::CObject::Ptr CObject::duplicateGetSmartPtr() const { return mrpt::utils::CObject::Ptr( this->clone() ); }
 
 
 		/** Just like DEFINE_MRPT_OBJECT but with DLL export/import linkage keywords. Note: The replication of macro arguments is to avoid errors with empty macro arguments */
@@ -154,7 +149,7 @@ namespace mrpt
 			_VIRTUAL_LINKAGE_ const mrpt::utils::TRuntimeClassId* GetRuntimeClass() const MRPT_OVERRIDE; \
 			_STATIC_LINKAGE_ mrpt::utils::CObject* CreateObject(); \
 			_STATIC_LINKAGE_ class_name##Ptr Create(); \
-			_VIRTUAL_LINKAGE_ mrpt::utils::CObject *duplicate() const MRPT_OVERRIDE; \
+			_VIRTUAL_LINKAGE_ mrpt::utils::CObject *clone() const MRPT_OVERRIDE; \
 			/*! @} */ \
 		public: \
 			MRPT_MAKE_ALIGNED_OPERATOR_NEW \
@@ -253,7 +248,7 @@ namespace mrpt
 			const mrpt::utils::TRuntimeClassId* NameSpace::class_name::GetRuntimeClass() const \
 			{ return CLASS_ID_NAMESPACE(class_name,NameSpace); } \
 			mrpt::utils::CLASSINIT NameSpace::class_name::_init_##class_name(CLASS_ID(base)); \
-			mrpt::utils::CObject * NameSpace::class_name::duplicate() const \
+			mrpt::utils::CObject * NameSpace::class_name::clone() const \
 			{ return static_cast<mrpt::utils::CObject*>( new NameSpace::class_name(*this) ); }
 
 

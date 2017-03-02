@@ -169,7 +169,7 @@ void  CPropertiesValuesList::set(const std::string &propertyName, const CSeriali
 			// Delete current contents:
 			// Copy new value:
 			if (!obj)	it->value.reset();
-			else		it->value = obj; //->duplicate();
+			else		it->value = obj; //->clone();
 			return;
 		}
 	}

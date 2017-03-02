@@ -391,7 +391,7 @@ void  CHierarchicalMHMap::dumpAsXMLfile(std::string fileName) const
 			tableannots->set(i,"id",format("%u",static_cast<unsigned int>(i)));
 			tableannots->set(i,"annotation-type",ann->name.c_str());
 
-			// CSerializable *o=ann->value->duplicate();  // JL: duplicate???
+			// CSerializable *o=ann->value->clone();  // JL: duplicate???
 		//	tableannots->set(i,"annotation-value",ObjectToString(o));
 		}
 	}

@@ -132,7 +132,7 @@ of type CMetricMapBuilderRBPF  */
 		  */
 		void  getCurrentlyBuiltMap(mrpt::maps::CSimpleMap &out_map) const;
 
-		/** Returns the map built so far. NOTE that for efficiency a pointer to the internal object is passed, DO NOT delete nor modify the object in any way, if desired, make a copy of ir with "duplicate()".
+		/** Returns the map built so far. NOTE that for efficiency a pointer to the internal object is passed, DO NOT delete nor modify the object in any way, if desired, make a copy of ir with "clone()".
 		  */
 		const mrpt::maps::CMultiMetricMap* getCurrentlyBuiltMetricMap() const;
 
