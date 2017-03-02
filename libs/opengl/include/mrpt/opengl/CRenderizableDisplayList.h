@@ -67,15 +67,8 @@ namespace mrpt
 			CRenderizableDisplayList();
 			virtual ~CRenderizableDisplayList();
 
-			/** Interface for the stlplus smart pointer class. */
-			inline CRenderizableDisplayList * clone() const
-			{
-				return static_cast<CRenderizableDisplayList*>( this->clone() );
-			}
-
 			/** Render the object, regenerating the display list if needed, otherwise just calling it. */
 			void render() const MRPT_OVERRIDE;
-
 
 			/** @name Changes the appearance of the object to render (methods from CRenderizable that need to be redefined)
 			    @{ */
