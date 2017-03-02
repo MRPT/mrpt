@@ -14,15 +14,12 @@
 # ----------------------------------------------------------------------------
 PROJECT(MRPT)
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8.7)
-
 # -------------------------
 #        Setup CMake
 # -------------------------
-#include(cmakemodules/script_init_cmake.cmake REQUIRED)		# CMake tweaks
-# Allow empty endif() and such with CMake 2.4.
-SET(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS 1)
-
+CMAKE_MINIMUM_REQUIRED(VERSION 3.1)
+set (CMAKE_CXX_STANDARD 11)  # Require C++11 (C++14?)
+SET(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS 1) # Allow empty endif() and such (since CMake 2.4)
 if(COMMAND cmake_policy)
 	# We don't want to mix relative and absolute paths in linker lib lists.
 	cmake_policy(SET CMP0003 NEW)
@@ -38,7 +35,6 @@ if(COMMAND cmake_policy)
 	if(POLICY CMP0043)
 		cmake_policy(SET CMP0043 OLD) #  Ignore COMPILE_DEFINITIONS_<Config> properties.
 	endif()
-
 endif()
 # -------------------------
 
@@ -456,13 +452,6 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
  		#SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pedantic")
 	ENDIF()
 
-	# Enable C++11 features in GCC 4.7+
-	IF (NOT CMAKE_MRPT_GCC_VERSION LESS 47)
-		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-	ELSEIF(NOT CMAKE_MRPT_GCC_VERSION LESS 46)
-		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
-	ENDIF ()
-
 	# Parallel stdlibc++?
 	IF(MRPT_ENABLE_LIBSTD_PARALLEL_MODE)
 		SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} -D_GLIBCXX_PARALLEL -fopenmp")
@@ -481,9 +470,6 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
 
 	# Use "modern" C99 ! ;-)
  	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
-
-	# Use modern C++11
- 	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 	IF(NOT APPLE) # any reason for not using it in all platforms?
 	# Use the libstdc++ lib vs. libc++, to avoid some build errors in MacOS
