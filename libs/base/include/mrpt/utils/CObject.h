@@ -21,7 +21,6 @@ namespace mrpt
 		/** @name RTTI classes and functions
 		    @{ */
 		class BASE_IMPEXP CObject;
-		class BASE_IMPEXP CObjectPtr;
 
 		/** A structure that holds runtime class type information. Use CLASS_ID(<class_name>) to get a reference to the class_name's TRuntimeClassId descriptor.
 		  * \ingroup mrpt_base_grp
@@ -100,7 +99,7 @@ namespace mrpt
 
 		/** The virtual base class of all MRPT classes with a unified RTTI system.
 		 *   For each class named <code>CMyClass</code>, a new type named <code>CMyClassPtr</code> will be created as a smart pointer suitable for
-		 *    keeping referencing count smart pointers to objects of that class. By default the base class of all these smart pointers is CObjectPtr.
+		 *    keeping referencing count smart pointers to objects of that class. By default the base class of all these smart pointers is CObject::Ptr.
 		 * \sa  mrpt::utils::CSerializable \ingroup mrpt_base_grp
 		 */
 
@@ -110,6 +109,8 @@ namespace mrpt
 		protected:
 			static  mrpt::utils::TRuntimeClassId* _GetBaseClass();
 		public:
+			using Ptr = std::shared_ptr<CObject>;
+			using ConstPtr = std::shared_ptr<const CObject>;
 			static const mrpt::utils::TRuntimeClassId classCObject;
 
 			/** Returns information about the class of an object in runtime. */
@@ -122,7 +123,7 @@ namespace mrpt
 			virtual CObject *duplicate() const = 0;
 
 			/** Returns a copy of the object, indepently of its class, as a smart pointer (the newly created object will exist as long as any copy of this smart pointer). */
-			inline mrpt::utils::CObjectPtr duplicateGetSmartPtr() const;
+			inline mrpt::utils::CObject::Ptr duplicateGetSmartPtr() const;
 
 			/** Cloning interface for smart pointers */
 			inline CObject *clone() const { return duplicate(); }
@@ -135,18 +136,7 @@ namespace mrpt
 		  * \note Declared as a class instead of a typedef to avoid multiple defined symbols when linking dynamic libs.
 		  * \ingroup mrpt_base_grp
 		  */
-		class BASE_IMPEXP CObjectPtr : public std::shared_ptr<CObject>
-		{
-			typedef std::shared_ptr<CObject> BASE;
-		public:
-			inline CObjectPtr() : BASE() {}
-			explicit inline CObjectPtr(const CObject& data) :  BASE(data.clone()) {}
-			explicit inline CObjectPtr(CObject* data) :  BASE(data) { }
-			inline CObjectPtr& operator=(const CObject& data) { BASE::operator=(std::shared_ptr<CObject>(data.clone())); return *this; }
-			inline CObjectPtr& operator=(const CObjectPtr& r) { BASE::operator=(r); return *this; }
-			inline void make_unique() {reset(get()->clone());}
-		};
-		inline mrpt::utils::CObjectPtr CObject::duplicateGetSmartPtr() const { return mrpt::utils::CObjectPtr( this->duplicate() ); }
+		inline mrpt::utils::CObject::Ptr CObject::duplicateGetSmartPtr() const { return mrpt::utils::CObject::Ptr( this->duplicate() ); }
 
 
 		/** Just like DEFINE_MRPT_OBJECT but with DLL export/import linkage keywords. Note: The replication of macro arguments is to avoid errors with empty macro arguments */
@@ -195,7 +185,7 @@ namespace mrpt
 				inline class_name##Ptr() : base_name##Ptr(static_cast<base_name*>(NULL)) { } \
 				inline explicit class_name##Ptr(class_name* p) : base_name##Ptr( static_cast<base_name*>(p) ) { } \
 				inline explicit class_name##Ptr(const base_name##Ptr & p) : base_name##Ptr(p) { if(p) ASSERTMSG_( p->GetRuntimeClass()->derivedFrom(#class_name),::mrpt::format("Wrong typecasting of smart pointers: %s -> %s",p->GetRuntimeClass()->className, #class_name) )  } \
-				inline explicit class_name##Ptr(const mrpt::utils::CObjectPtr & p) : base_name##Ptr(p) { if(p)ASSERTMSG_( p->GetRuntimeClass()->derivedFrom(#class_name),::mrpt::format("Wrong typecasting of smart pointers: %s -> %s",p->GetRuntimeClass()->className, #class_name) )  } \
+				inline explicit class_name##Ptr(const mrpt::utils::CObject::Ptr & p) : base_name##Ptr(p) { if(p)ASSERTMSG_( p->GetRuntimeClass()->derivedFrom(#class_name),::mrpt::format("Wrong typecasting of smart pointers: %s -> %s",p->GetRuntimeClass()->className, #class_name) )  } \
 				/*! Return the internal plain C++ pointer */ \
 				inline class_name * get() { return dynamic_cast<class_name*>(base_name##Ptr::get()); } \
 				/*! Return the internal plain C++ pointer (const) */ \
@@ -223,19 +213,19 @@ namespace mrpt
 		/**  This declaration must be inserted in all CObject classes definition, after the class declaration. */
 		#define DEFINE_MRPT_OBJECT_POST_CUSTOM_LINKAGE2(class_name,class_name_LINKAGE_) \
 			/*! The smart pointer type for the associated class */ \
-			struct class_name_LINKAGE_##Ptr : public mrpt::utils::CObjectPtr \
+			struct class_name_LINKAGE_##Ptr : public mrpt::utils::CObject::Ptr \
 			{ \
-				inline class_name##Ptr() : mrpt::utils::CObjectPtr(static_cast<mrpt::utils::CObject*>(NULL)) { } \
-				inline explicit class_name##Ptr(class_name* p) : mrpt::utils::CObjectPtr( static_cast<mrpt::utils::CObject*>(p) ) { } \
-				inline explicit class_name##Ptr(const mrpt::utils::CObjectPtr & p) : mrpt::utils::CObjectPtr(p) { ASSERTMSG_( p->GetRuntimeClass()->derivedFrom(#class_name),::mrpt::format("Wrong typecasting of smart pointers: %s -> %s",p->GetRuntimeClass()->className, #class_name) )  } \
+				inline class_name##Ptr() : mrpt::utils::CObject::Ptr(static_cast<mrpt::utils::CObject*>(NULL)) { } \
+				inline explicit class_name##Ptr(class_name* p) : mrpt::utils::CObject::Ptr( static_cast<mrpt::utils::CObject*>(p) ) { } \
+				inline explicit class_name##Ptr(const mrpt::utils::CObject::Ptr & p) : mrpt::utils::CObject::Ptr(p) { ASSERTMSG_( p->GetRuntimeClass()->derivedFrom(#class_name),::mrpt::format("Wrong typecasting of smart pointers: %s -> %s",p->GetRuntimeClass()->className, #class_name) )  } \
 				/*! Return the internal plain C++ pointer */ \
-				inline class_name * get() { return dynamic_cast<class_name*>(mrpt::utils::CObjectPtr::get()); } \
+				inline class_name * get() { return dynamic_cast<class_name*>(mrpt::utils::CObject::Ptr::get()); } \
 				/*! Return the internal plain C++ pointer (const) */ \
-				inline const class_name * get() const { return dynamic_cast<const class_name*>(mrpt::utils::CObjectPtr::get()); } \
-				inline class_name* operator ->(void) { return dynamic_cast<class_name*>( mrpt::utils::CObjectPtr::operator ->() ); } \
-				inline const class_name* operator ->(void) const { return dynamic_cast<const class_name*>( mrpt::utils::CObjectPtr::operator ->() ); } \
-				inline class_name& operator *(void) { return *dynamic_cast<class_name*>( mrpt::utils::CObjectPtr::operator ->() ); } \
-				inline const class_name& operator *(void) const { return *dynamic_cast<const class_name*>( mrpt::utils::CObjectPtr::operator ->() ); } \
+				inline const class_name * get() const { return dynamic_cast<const class_name*>(mrpt::utils::CObject::Ptr::get()); } \
+				inline class_name* operator ->(void) { return dynamic_cast<class_name*>( mrpt::utils::CObject::Ptr::operator ->() ); } \
+				inline const class_name* operator ->(void) const { return dynamic_cast<const class_name*>( mrpt::utils::CObject::Ptr::operator ->() ); } \
+				inline class_name& operator *(void) { return *dynamic_cast<class_name*>( mrpt::utils::CObject::Ptr::operator ->() ); } \
+				inline const class_name& operator *(void) const { return *dynamic_cast<const class_name*>( mrpt::utils::CObject::Ptr::operator ->() ); } \
 			};
 
 		/**  This declaration must be inserted in all CObject classes definition, before the class declaration.

@@ -113,7 +113,7 @@ CPropertiesValuesList::CPropertiesValuesList(const CPropertiesValuesList &o) :
 	m_properties	( o.m_properties )
 {
 	for (std::vector<TPropertyValuePair>::iterator it=m_properties.begin();it!=m_properties.end();++it)
-		it->value.make_unique();
+		it->value.reset(it->value->clone());
 }
 
 /*---------------------------------------------------------------
@@ -125,7 +125,7 @@ CPropertiesValuesList & CPropertiesValuesList::operator = (const CPropertiesValu
 
 	m_properties = o.m_properties;
 	for (std::vector<TPropertyValuePair>::iterator it=m_properties.begin();it!=m_properties.end();++it)
-		it->value.make_unique();
+		it->value.reset(it->value->clone());
 	return *this;
 }
 

@@ -32,7 +32,7 @@ void TestSmartPointers()
 	cout << "p3d: " << *p3D << endl;
 
 	// We can cast a smart pointer to a base class:
-	CObjectPtr pBase = p3D;
+	CObject::Ptr pBase = p3D;
 
 	// We can cast a base smart pointer to a pointer to a derived class:
 	CPose3DPtr p3Dbis = CPose3DPtr( pBase );
