@@ -22,7 +22,7 @@
 *     - `ptr.make_unique()` does no longer exists, and does not make sense (read above).
 *     - `ptr.pointer()` --> `ptr.get()`
 *  - `mrpt::utils::CObject`
-*     - `clone()` method has been removed, since its functionality is redundant with `clone()`.
+*     - `duplicate()` method has been removed, since its functionality is redundant with `clone()`.
 *
 *
 * **Optional changes**
