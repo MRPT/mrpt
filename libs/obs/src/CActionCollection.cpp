@@ -38,7 +38,7 @@ CActionCollection::CActionCollection() : m_actions()
   ---------------------------------------------------------------*/
 CActionCollection::CActionCollection(CAction &a ) : m_actions()
 {
-	m_actions.push_back( CActionPtr( static_cast<CAction*>(a.duplicate()) ) );
+	m_actions.push_back( CActionPtr( static_cast<CAction*>(a.clone()) ) );
 }
 
 /*---------------------------------------------------------------
@@ -115,7 +115,7 @@ size_t  CActionCollection::size()
  ---------------------------------------------------------------*/
 void  CActionCollection::insert(CAction	&action)
 {
-	m_actions.push_back( CActionPtr( static_cast<CAction*>( action.duplicate() )) );
+	m_actions.push_back( CActionPtr( static_cast<CAction*>( action.clone() )) );
 }
 
 

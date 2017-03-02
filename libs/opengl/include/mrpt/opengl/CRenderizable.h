@@ -147,7 +147,7 @@ namespace mrpt
 			/** Interface for the stlplus smart pointer class. */
 			inline CRenderizable * clone() const
 			{
-				return static_cast<CRenderizable*>( this->duplicate() );
+				return static_cast<CRenderizable*>( this->clone() );
 			}
 
 			/** Implements the rendering of 3D objects in each class derived from CRenderizable.

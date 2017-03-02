@@ -70,7 +70,7 @@ namespace mrpt
 			/** Interface for the stlplus smart pointer class. */
 			inline CRenderizableDisplayList * clone() const
 			{
-				return static_cast<CRenderizableDisplayList*>( this->duplicate() );
+				return static_cast<CRenderizableDisplayList*>( this->clone() );
 			}
 
 			/** Render the object, regenerating the display list if needed, otherwise just calling it. */

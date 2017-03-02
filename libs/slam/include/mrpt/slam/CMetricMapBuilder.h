@@ -69,7 +69,7 @@ namespace slam
 		/** Returns just how many sensory-frames are stored in the currently build map. */
 		virtual unsigned int  getCurrentlyBuiltMapSize() = 0;
 
-		/** Returns the map built so far. NOTE that for efficiency a pointer to the internal object is passed, DO NOT delete nor modify the object in any way, if desired, make a copy of ir with "duplicate()". */
+		/** Returns the map built so far. NOTE that for efficiency a pointer to the internal object is passed, DO NOT delete nor modify the object in any way, if desired, make a copy of ir with "clone()". */
 		virtual const mrpt::maps::CMultiMetricMap*   getCurrentlyBuiltMetricMap() const = 0;
 
 		/** A useful method for debugging: the current map (and/or poses) estimation is dumped to an image file.
