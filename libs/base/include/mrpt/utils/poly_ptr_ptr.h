@@ -29,25 +29,21 @@ namespace mrpt
 		public:
 			/** Ctor from a smart pointer; makes deep copy. */
 			poly_ptr_ptr(const T &ptr) {
-				m_smartptr = ptr;
-				m_smartptr.make_unique();
+				m_smartptr.reset(ptr->clone());
 			}
 			/** Default ctor; init to nullptr. */
 			poly_ptr_ptr() {}
 			/** copy ctor: makes a copy of the object via `clone()` */
 			poly_ptr_ptr(const poly_ptr_ptr<T> & o) {
-				m_smartptr = o.m_smartptr;
-				m_smartptr.make_unique();
+				m_smartptr.reset(o.m_smartptr->clone());
 			}
 			poly_ptr_ptr<T> & operator =(const poly_ptr_ptr<T> &o) {
 				if (this == &o) return *this;
-				m_smartptr = o.m_smartptr;
-				m_smartptr.make_unique();
+				m_smartptr.reset(o.m_smartptr->clone());
 				return *this;
 			}
 			poly_ptr_ptr<T> & operator =(const T &o_ptr) {
-				m_smartptr = o_ptr;
-				m_smartptr.make_unique();
+				m_smartptr.reset(o_ptr->clone());
 				return *this;
 			}
 #if (__cplusplus>199711L)

@@ -1413,7 +1413,7 @@ void CAbstractPTGBasedReactive::saveConfigFile(mrpt::utils::CConfigFileBase & c)
 		// save options of ALL known methods:
 		const auto lst = mrpt::utils::getAllRegisteredClassesChildrenOf(CLASS_ID(CAbstractHolonomicReactiveMethod));
 		for (const auto &cl : lst) {
-			mrpt::utils::CObjectPtr obj = mrpt::utils::CObjectPtr(cl->createObject());
+			mrpt::utils::CObject::Ptr obj = mrpt::utils::CObject::Ptr(cl->createObject());
 			CAbstractHolonomicReactiveMethod * holo = dynamic_cast<CAbstractHolonomicReactiveMethod *>(obj.get());
 			if (holo) {
 				holo->saveConfigFile(c);
@@ -1432,7 +1432,7 @@ void CAbstractPTGBasedReactive::saveConfigFile(mrpt::utils::CConfigFileBase & c)
 		// save options of ALL known methods:
 		const auto lst = mrpt::utils::getAllRegisteredClassesChildrenOf(CLASS_ID(CMultiObjectiveMotionOptimizerBase));
 		for (const auto &cl : lst) {
-			mrpt::utils::CObjectPtr obj = mrpt::utils::CObjectPtr(cl->createObject());
+			mrpt::utils::CObject::Ptr obj = mrpt::utils::CObject::Ptr(cl->createObject());
 			CMultiObjectiveMotionOptimizerBase * momo = dynamic_cast<CMultiObjectiveMotionOptimizerBase *>(obj.get());
 			if (momo) {
 				momo->saveConfigFile(c);
