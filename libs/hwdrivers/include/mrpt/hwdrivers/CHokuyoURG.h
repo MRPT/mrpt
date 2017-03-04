@@ -122,7 +122,7 @@ namespace mrpt
 			  *  It also optionally saves all the information in an user supplied data structure "out_data".
 			  * \return false on any error
 			  */
-			bool  displaySensorInfo( CHokuyoURG::TSensorInfo * out_data = NULL );
+			bool  displaySensorInfo( CHokuyoURG::TSensorInfo * out_data = nullptr );
 
 			/** Start the scanning mode, using parameters stored in the object (loaded from the .ini file)
 			  * After this command the device will start to send scans until "switchLaserOff" is called.

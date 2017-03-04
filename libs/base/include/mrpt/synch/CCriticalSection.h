@@ -44,7 +44,7 @@ namespace mrpt
 
 			std::string		m_name;
 		public:
-			CCriticalSection(const char *name = NULL);   //!< Ctor
+			CCriticalSection(const char *name = nullptr);   //!< Ctor
 			virtual  ~CCriticalSection();   //!< Dtor
 
 			void  enter() const MRPT_OVERRIDE; //!< Enter. \exception If the calling thread already possesses this critical section (it would be a dead-lock).
@@ -92,7 +92,7 @@ namespace mrpt
 
 		public:
 			/** Constructor: enters the critical section.
-			  * \note [Since MRPT 0.9.6] The pointer can be NULL, in which case no action at all will be taken.
+			  * \note [Since MRPT 0.9.6] The pointer can be nullptr, in which case no action at all will be taken.
 			  */
 			CCriticalSectionLocker( const CAbstractMutex *cs  );
 

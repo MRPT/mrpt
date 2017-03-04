@@ -63,7 +63,7 @@ namespace mrpt
 			struct const_iterator
 			{
 			public:
-				const_iterator() : m_vec(NULL), m_parent(NULL), m_idx_outer(0), m_idx_inner(0) {}
+				const_iterator() : m_vec(nullptr), m_parent(nullptr), m_idx_outer(0), m_idx_inner(0) {}
 				const_iterator(const VECTOR_T &vec, const self_t &parent, int idx_outer, int idx_inner) : m_vec(const_cast<VECTOR_T*>(&vec)), m_parent(const_cast<self_t*>(&parent)), m_idx_outer(idx_outer), m_idx_inner(idx_inner) {}
 				const_iterator & operator = (const const_iterator& o) { m_vec = o.m_vec; m_idx_outer = o.m_idx_outer; m_idx_inner = o.m_idx_inner; return *this; }
 				bool operator == (const const_iterator& o) const { return m_vec == o.m_vec && m_idx_outer == o.m_idx_outer && m_idx_inner == o.m_idx_inner; }

@@ -54,24 +54,24 @@ namespace mrpt
 			inline void   setMemoryPoolMaxSize(const size_t maxNumEntries) { m_maxPoolEntries = maxNumEntries; }
 
 			/** Construct-on-first-use (~singleton) pattern: Return the unique instance of this class for a given template arguments,
-			  *  or NULL if it was once created but it's been destroyed (which means we're in the program global destruction phase).
+			  *  or nullptr if it was once created but it's been destroyed (which means we're in the program global destruction phase).
 			  */
 			static CGenericMemoryPool<DATA_PARAMS,POOLABLE_DATA> * getInstance(const size_t max_pool_entries = 5)
 			{
 				static bool was_destroyed = false;
 				static CGenericMemoryPool<DATA_PARAMS,POOLABLE_DATA> inst(max_pool_entries, was_destroyed);
-				return was_destroyed ? NULL : &inst;
+				return was_destroyed ? nullptr : &inst;
 			}
 
 			/** Request a block of data which fulfils the size requirements stated in \a params.
 			  *  Notice that the decision on the suitability of each pool'ed block is done by DATA_PARAMS::isSuitable().
-			  *  \return The block of data, or NULL if none suitable was found in the pool.
+			  *  \return The block of data, or nullptr if none suitable was found in the pool.
 			  *  \note It is a responsibility of the user to free with "delete" the "POOLABLE_DATA" object itself once the memory has been extracted from its elements.
 			  */
 			POOLABLE_DATA * request_memory(const DATA_PARAMS &params)
 			{
 				// A quick check first:
-				if (m_pool.empty()) return NULL;
+				if (m_pool.empty()) return nullptr;
 
 				mrpt::synch::CCriticalSectionLocker lock( &m_pool_cs );
 				for (typename TList::iterator it=m_pool.begin();it!=m_pool.end();++it) {
@@ -82,7 +82,7 @@ namespace mrpt
 						return ret;
 					}
 				}
-				return NULL;
+				return nullptr;
 			}
 
 			/** Saves the passed data block (characterized by \a params) to the pool.

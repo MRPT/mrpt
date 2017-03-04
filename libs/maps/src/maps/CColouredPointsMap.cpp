@@ -637,7 +637,7 @@ void CColouredPointsMap::PLY_import_set_vertex_count(const size_t N)
 }
 
 /** In a base class, will be called after PLY_import_set_vertex_count() once for each loaded point.
-  *  \param pt_color Will be NULL if the loaded file does not provide color info.
+  *  \param pt_color Will be nullptr if the loaded file does not provide color info.
   */
 void CColouredPointsMap::PLY_import_set_vertex(const size_t idx, const mrpt::math::TPoint3Df &pt, const mrpt::utils::TColorf *pt_color)
 {
@@ -647,7 +647,7 @@ void CColouredPointsMap::PLY_import_set_vertex(const size_t idx, const mrpt::mat
 }
 
 /** In a base class, will be called after PLY_export_get_vertex_count() once for each exported point.
-  *  \param pt_color Will be NULL if the loaded file does not provide color info.
+  *  \param pt_color Will be nullptr if the loaded file does not provide color info.
   */
 void CColouredPointsMap::PLY_export_get_vertex(
 	const size_t idx,

@@ -119,19 +119,19 @@ namespace octomap {
 
     /**
      *  Search node at specified depth given a 3d point (depth=0: search full tree depth)
-     *  @return pointer to node if found, NULL otherwise
+     *  @return pointer to node if found, nullptr otherwise
      */
     NODE* search(double x, double y, double z, unsigned int depth = 0) const;
 
     /**
      *  Search node at specified depth given a 3d point (depth=0: search full tree depth)
-     *  @return pointer to node if found, NULL otherwise
+     *  @return pointer to node if found, nullptr otherwise
      */
     NODE* search(const point3d& value, unsigned int depth = 0) const;
 
     /**
      *  Search a node at specified depth given an addressing key (depth=0: search full tree depth)
-     *  @return pointer to node if found, NULL otherwise
+     *  @return pointer to node if found, nullptr otherwise
      */
     NODE* search(const OcTreeKey& key, unsigned int depth = 0) const;
 

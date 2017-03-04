@@ -200,7 +200,7 @@ void CStereoRectifyMap::setFromCamParams(const mrpt::utils::TStereoCamera & para
 				R1, R2, P1, P2, Q,
 				m_alpha,
 				trg_size, // Size() by default=no resize
-				NULL,NULL, // Out ROIs
+				nullptr,nullptr, // Out ROIs
 				m_enable_both_centers_coincide ? cv::CALIB_ZERO_DISPARITY : 0
 												 );
 #else

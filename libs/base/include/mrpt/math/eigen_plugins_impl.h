@@ -249,7 +249,7 @@ void Eigen::MatrixBase<Derived>::saveToTextFile(
 {
 #if defined(_MSC_VER) && (_MSC_VER>=1400) // Use a secure version in Visual Studio 2005+
 	FILE *f;
-	if (0!=::fopen_s(&f,file.c_str(),"wt")) f= NULL;
+    if (0!=::fopen_s(&f,file.c_str(),"wt")) f= nullptr;
 #else
 	FILE *f= ::fopen(file.c_str(),"wt");
 #endif
@@ -266,7 +266,7 @@ void Eigen::MatrixBase<Derived>::saveToTextFile(
 #if defined(_MSC_VER) && (_MSC_VER>=1400) // Use a secure version in Visual Studio 2005+
 		struct tm   timeinfo_data;
 		struct tm * timeinfo;
-		if (0!=::localtime_s(&timeinfo_data,&rawtime)) timeinfo=NULL;
+        if (0!=::localtime_s(&timeinfo_data,&rawtime)) timeinfo=nullptr;
 		else timeinfo = &timeinfo_data;
 #else
 		struct tm * timeinfo = ::localtime(&rawtime);
@@ -327,7 +327,7 @@ void Eigen::MatrixBase<Derived>::loadFromTextFile(std::istream &f)
 		{
 			// Parse row to floats:
 			const char *ptr = str.c_str();
-			char *ptrEnd = NULL;
+            char *ptrEnd = nullptr;
 			size_t i=0;
 			// Process each number in this row:
 			while ( ptr[0] && ptr!=ptrEnd )
@@ -343,7 +343,7 @@ void Eigen::MatrixBase<Derived>::loadFromTextFile(std::istream &f)
 				{
 					i++;	// Yes
 					ptr = ptrEnd;
-					ptrEnd = NULL;
+                    ptrEnd = nullptr;
 				}
 			}; // end while procesing this row
 

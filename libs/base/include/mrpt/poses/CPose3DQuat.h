@@ -109,15 +109,15 @@ namespace poses
 		  * \sa composeFrom, inverseComposePoint
 		  */
 		void composePoint(const double lx,const double ly,const double lz,double &gx,double &gy,double &gz,
-			 mrpt::math::CMatrixFixedNumeric<double,3,3>  *out_jacobian_df_dpoint = NULL,
-			 mrpt::math::CMatrixFixedNumeric<double,3,7>  *out_jacobian_df_dpose = NULL ) const;
+			 mrpt::math::CMatrixFixedNumeric<double,3,3>  *out_jacobian_df_dpoint = nullptr,
+			 mrpt::math::CMatrixFixedNumeric<double,3,7>  *out_jacobian_df_dpose = nullptr ) const;
 
 		/**  Computes the 3D point L such as \f$ L = G \ominus this \f$.
 		  * \sa composePoint, composeFrom
 		  */
 		void inverseComposePoint(const double gx,const double gy,const double gz,double &lx,double &ly,double &lz,
-			 mrpt::math::CMatrixFixedNumeric<double,3,3>  *out_jacobian_df_dpoint = NULL,
-			 mrpt::math::CMatrixFixedNumeric<double,3,7>  *out_jacobian_df_dpose = NULL ) const;
+			 mrpt::math::CMatrixFixedNumeric<double,3,3>  *out_jacobian_df_dpoint = nullptr,
+			 mrpt::math::CMatrixFixedNumeric<double,3,7>  *out_jacobian_df_dpose = nullptr ) const;
 
 		/**  Computes the 3D point G such as \f$ G = this \oplus L \f$.
 		  *  POINT1 and POINT1 can be anything supporing [0],[1],[2].
@@ -229,15 +229,15 @@ namespace poses
 
         /** Computes the spherical coordinates of a 3D point as seen from the 6D pose specified by this object.
           *  For the coordinate system see the top of this page.
-		  *  If the matrix pointers are not NULL, the Jacobians will be also computed for the range-yaw-pitch variables wrt the passed 3D point and this 7D pose.
+		  *  If the matrix pointers are not nullptr, the Jacobians will be also computed for the range-yaw-pitch variables wrt the passed 3D point and this 7D pose.
           */
         void sphericalCoordinates(
             const mrpt::math::TPoint3D &point,
             double &out_range,
             double &out_yaw,
             double &out_pitch,
-			mrpt::math::CMatrixFixedNumeric<double,3,3> *out_jacob_dryp_dpoint = NULL,
-			mrpt::math::CMatrixFixedNumeric<double,3,7> *out_jacob_dryp_dpose = NULL
+			mrpt::math::CMatrixFixedNumeric<double,3,3> *out_jacob_dryp_dpoint = nullptr,
+			mrpt::math::CMatrixFixedNumeric<double,3,7> *out_jacob_dryp_dpose = nullptr
 			) const;
 
 	public:
@@ -284,7 +284,7 @@ namespace poses
 			inline void check_limits(bool allow_end = false) const
 			{
 	#ifdef _DEBUG
-				ASSERTMSG_(m_obj!=NULL,"non initialized iterator");
+				ASSERTMSG_(m_obj!=nullptr,"non initialized iterator");
 				if (m_cur_idx> (allow_end ? 7u : 6u) ) THROW_EXCEPTION("Index out of range in iterator.")
 	#else
 				MRPT_UNUSED_PARAM(allow_end);
@@ -293,7 +293,7 @@ namespace poses
 		public:
 			inline bool operator <(const iterator &it2) const { return m_cur_idx < it2.m_cur_idx; }
 			inline bool operator >(const iterator &it2) const { return m_cur_idx > it2.m_cur_idx; }
-			inline iterator() : m_obj(NULL),m_cur_idx(0) { }
+			inline iterator() : m_obj(nullptr),m_cur_idx(0) { }
 			inline iterator(CPose3DQuat &obj, size_t start_idx) : m_obj(&obj),m_cur_idx(start_idx) {  check_limits(true); /*Dont report as error an iterator to end()*/ }
 			inline CPose3DQuat::reference operator*() const	{  check_limits();  return (*m_obj)[m_cur_idx];  }
 			inline iterator &operator++() {
@@ -351,7 +351,7 @@ namespace poses
 			inline void check_limits(bool allow_end = false) const
 			{
 	#ifdef _DEBUG
-				ASSERTMSG_(m_obj!=NULL,"non initialized iterator");
+				ASSERTMSG_(m_obj!=nullptr,"non initialized iterator");
 				if (m_cur_idx> (allow_end ? 7u : 6u) ) THROW_EXCEPTION("Index out of range in iterator.")
 	#else
 				MRPT_UNUSED_PARAM(allow_end);
@@ -360,7 +360,7 @@ namespace poses
 		public:
 			inline bool operator <(const const_iterator &it2) const { return m_cur_idx < it2.m_cur_idx; }
 			inline bool operator >(const const_iterator &it2) const { return m_cur_idx > it2.m_cur_idx; }
-			inline const_iterator() : m_obj(NULL),m_cur_idx(0) { }
+			inline const_iterator() : m_obj(nullptr),m_cur_idx(0) { }
 			inline const_iterator(const CPose3DQuat &obj, size_t start_idx) : m_obj(&obj),m_cur_idx(start_idx) {  check_limits(true); /*Dont report as error an iterator to end()*/ }
 			inline CPose3DQuat::const_reference operator*() const	{  check_limits();  return (*m_obj)[m_cur_idx];  }
 			inline const_iterator &operator++() {

@@ -32,7 +32,7 @@ CBaseGUIWindow::CBaseGUIWindow(void* winobj_voidptr, int CMD_CREATE_WIN, int CMD
 	  m_semThreadReady(0,1),
 	  m_semWindowDestroyed(0,1),
 	  m_caption(initial_caption),
-	  m_hwnd(NULL),
+	  m_hwnd(nullptr),
   	  m_keyPushed(false),
 	  m_keyPushedCode(0),
 	  m_keyPushedModifier(MRPTKMOD_NONE)
@@ -145,7 +145,7 @@ void CBaseGUIWindow::destroyWxWindow()
 void CBaseGUIWindow::notifyChildWindowDestruction()
 {
     //cout << "[CBaseGUIWindow::notifyChildWindowDestruction] Called." << endl;
-    m_hwnd = NULL;
+    m_hwnd = nullptr;
 }
 
 /*---------------------------------------------------------------
@@ -211,7 +211,7 @@ int  CBaseGUIWindow::getPushedKey(mrptKeyModifier *out_pushModifier)
  ---------------------------------------------------------------*/
 bool CBaseGUIWindow::isOpen()
 {
-    return m_hwnd!=NULL;
+    return m_hwnd!=nullptr;
 }
 
 /*---------------------------------------------------------------

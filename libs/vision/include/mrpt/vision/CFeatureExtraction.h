@@ -283,7 +283,7 @@ namespace mrpt
 				const int threshold = 20,
 				bool append_to_list = false,
 				uint8_t octave = 0,
-				std::vector<size_t> * out_feats_index_by_row = NULL );
+				std::vector<size_t> * out_feats_index_by_row = nullptr );
 
 			/** Just like \a detectFeatures_SSE2_FASTER9() for another version of the detector.
 			  * \ingroup mrptvision_features */
@@ -293,7 +293,7 @@ namespace mrpt
 				const int threshold = 20,
 				bool append_to_list = false,
 				uint8_t octave = 0,
-				std::vector<size_t> * out_feats_index_by_row = NULL );
+				std::vector<size_t> * out_feats_index_by_row = nullptr );
 
 			/** Just like \a detectFeatures_SSE2_FASTER9() for another version of the detector.
 			  * \ingroup mrptvision_features */
@@ -303,7 +303,7 @@ namespace mrpt
 				const int threshold = 20,
 				bool append_to_list = false,
 				uint8_t octave = 0,
-				std::vector<size_t> * out_feats_index_by_row = NULL );
+				std::vector<size_t> * out_feats_index_by_row = nullptr );
 
 			/** @} */
 
@@ -462,7 +462,7 @@ namespace mrpt
 				unsigned int			init_ID = 0,
 				unsigned int			nDesiredFeatures = 0,
 				const TImageROI			    & ROI = TImageROI(),
-				const mrpt::math::CMatrixBool           * mask= NULL) const;
+				const mrpt::math::CMatrixBool           * mask= nullptr) const;
 
 			/** Edward's "FASTER & Better" detector, N=9,10,12 */
 			void  extractFeaturesFASTER_N(

@@ -26,7 +26,7 @@
 static void * run(void *arg)
 {
   ArThread *t=(ArThread*)arg;
-  void *ret=NULL;
+  void *ret=nullptr;
 
   if (t->getBlockAllSignals())
     ArSignalHandler::blockCommonThisThread();
@@ -89,7 +89,7 @@ ArThread * ArThread::self()
   if (iter != ourThreads.end())
     return((*iter).second);
   else
-    return(NULL);
+    return(nullptr);
 }
 
 void ArThread::cancelAll()

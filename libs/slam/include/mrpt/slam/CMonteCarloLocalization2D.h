@@ -58,7 +58,7 @@ namespace mrpt
 			  * \param phi_min The limits of the area to look for free cells.
 			  * \param phi_max The limits of the area to look for free cells.
 			  *  \sa resetDeterm32inistic
-			  * \exception std::exception On any error (no free cell found in map, map=NULL, etc...)
+			  * \exception std::exception On any error (no free cell found in map, map=nullptr, etc...)
 			  */
 			void  resetUniformFreeSpace(
 				mrpt::maps::COccupancyGridMap2D		*theMap,
@@ -116,7 +116,7 @@ namespace mrpt
 		//protected:
 			/** \name Virtual methods that the PF_implementations assume exist.
 			    @{ */
-			/** Return a pointer to the last robot pose in the i'th particle (or NULL if it's a path and it's empty). */
+			/** Return a pointer to the last robot pose in the i'th particle (or nullptr if it's a path and it's empty). */
 			const mrpt::math::TPose3D * getLastPose(const size_t i) const;
 
 			void PF_SLAM_implementation_custom_update_particle_with_new_pose(

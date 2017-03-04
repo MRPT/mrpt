@@ -155,13 +155,13 @@ namespace maps
 		 /** Insert the observation information into this map.
 		  *
 		  * \param obs The observation
-		  * \param robotPose The 3D pose of the robot mobile base in the map reference system, or NULL (default) if you want to use CPose2D(0,0,deg)
+		  * \param robotPose The 3D pose of the robot mobile base in the map reference system, or nullptr (default) if you want to use CPose2D(0,0,deg)
 		  *
 		  *  After successfull execution, "lastObservationInsertionInfo" is updated.
 		  *
 		  * \sa insertionOptions, CObservation::insertObservationInto
 		  */
-		 virtual bool  internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = NULL ) MRPT_OVERRIDE;
+		 virtual bool  internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = nullptr ) MRPT_OVERRIDE;
 
 	public:
 		/** Read-only access to the raw cell contents (cells are in log-odd units) */
@@ -281,10 +281,10 @@ namespace maps
 		}
 
 		/** Access to a "row": mainly used for drawing grid as a bitmap efficiently, do not use it normally */
-		inline  cellType *getRow( int cy ) { if (cy<0 || static_cast<unsigned int>(cy)>=size_y) return NULL; else return &map[0+cy*size_x]; }
+		inline  cellType *getRow( int cy ) { if (cy<0 || static_cast<unsigned int>(cy)>=size_y) return nullptr; else return &map[0+cy*size_x]; }
 
 		/** Access to a "row": mainly used for drawing grid as a bitmap efficiently, do not use it normally */
-		inline  const cellType *getRow( int cy ) const { if (cy<0 || static_cast<unsigned int>(cy)>=size_y) return NULL; else return &map[0+cy*size_x]; }
+		inline  const cellType *getRow( int cy ) const { if (cy<0 || static_cast<unsigned int>(cy)>=size_y) return nullptr; else return &map[0+cy*size_x]; }
 
 		/** Change the contents [0,1] of a cell, given its coordinates */
 		inline void   setPos(float x,float y,float value) { setCell(x2idx(x),y2idx(y),value); }
@@ -641,17 +641,17 @@ namespace maps
 
 		/** Computes the likelihood [0,1] of a set of points, given the current grid map as reference.
 		  * \param pm The points map
-		  * \param relativePose The relative pose of the points map in this map's coordinates, or NULL for (0,0,0).
+		  * \param relativePose The relative pose of the points map in this map's coordinates, or nullptr for (0,0,0).
 		  *  See "likelihoodOptions" for configuration parameters.
 		  */
-		double	 computeLikelihoodField_Thrun( const CPointsMap	*pm, const mrpt::poses::CPose2D *relativePose = NULL);
+		double	 computeLikelihoodField_Thrun( const CPointsMap	*pm, const mrpt::poses::CPose2D *relativePose = nullptr);
 
 		/** Computes the likelihood [0,1] of a set of points, given the current grid map as reference.
 		  * \param pm The points map
-		  * \param relativePose The relative pose of the points map in this map's coordinates, or NULL for (0,0,0).
+		  * \param relativePose The relative pose of the points map in this map's coordinates, or nullptr for (0,0,0).
 		  *  See "likelihoodOptions" for configuration parameters.
 		  */
-		double	 computeLikelihoodField_II( const CPointsMap	*pm, const mrpt::poses::CPose2D *relativePose = NULL);
+		double	 computeLikelihoodField_II( const CPointsMap	*pm, const mrpt::poses::CPose2D *relativePose = nullptr);
 
 		/** Saves the gridmap as a graphical file (BMP,PNG,...).
 		 * The format will be derived from the file extension (see  CImage::saveToFile )

@@ -146,7 +146,7 @@ void CRandomFieldGridMap3D::internal_initialize(bool erase_prev_contents)
 			ASSERT_(i<nodeCount);
 
 			double edge_lamdba = .0;
-			if (custom_connectivity != NULL)
+			if (custom_connectivity != nullptr)
 			{
 				const bool is_connected = custom_connectivity->getEdgeInformation(
 					this,

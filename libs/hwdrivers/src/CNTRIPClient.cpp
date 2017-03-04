@@ -336,7 +336,7 @@ bool CNTRIPClient::retrieveListOfMountpoints(
 		out_errmsg,
 		port,
 		auth_user,auth_pass,
-		&http_code,&my_headers,NULL,
+		&http_code,&my_headers,nullptr,
 		6000
 		);
 

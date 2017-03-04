@@ -72,7 +72,7 @@ void CRangeBearingKFSLAM::reset( )
 	m_xkk.assign(get_vehicle_size(),0);	// State: 6D pose (x,y,z)=(0,0,0)
 	m_xkk[3]=1.0;  // (qr,qx,qy,qz)=(1,0,0,0)
 
-	// Initial cov:  NULL diagonal -> perfect knowledge.
+	// Initial cov:  nullptr diagonal -> perfect knowledge.
 	m_pkk.setSize(get_vehicle_size(),get_vehicle_size());
 	m_pkk.zeros();
 	// -----------------------

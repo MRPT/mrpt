@@ -47,7 +47,7 @@ namespace mrpt
 				bool also_to_console=true,
 				bool also_cerr = true,
 				bool append_file = false,
-				int bufferSize = 1000 ) : m_of(), sbOld(NULL),sbOld_cerr(NULL),m_also_to_console(also_to_console), m_cs()
+				int bufferSize = 1000 ) : m_of(), sbOld(nullptr),sbOld_cerr(nullptr),m_also_to_console(also_to_console), m_cs()
 			{
 				// Open the file:
 				std::ios_base::openmode  openMode = std::ios_base::binary | std::ios_base::out;
@@ -79,7 +79,7 @@ namespace mrpt
 				sync();
 				// Restore normal output:
 				std::cout.rdbuf(sbOld);
-				if (sbOld_cerr!=NULL) std::cerr.rdbuf( sbOld_cerr );
+				if (sbOld_cerr!=nullptr) std::cerr.rdbuf( sbOld_cerr );
 				if (pbase()) delete[] pbase();
 			}
 

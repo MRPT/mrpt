@@ -27,7 +27,7 @@ using namespace mrpt;
 using namespace mrpt::utils;
 
 // The configuration file:
-CConfigFile      *iniFile=NULL;
+CConfigFile      *iniFile=nullptr;
 
 
 
@@ -70,7 +70,7 @@ bool _DSceneViewerApp::OnInit()
 int _DSceneViewerApp::OnExit()
 {
     delete iniFile;
-    iniFile = NULL;
+    iniFile = nullptr;
 
     return 0;
 }

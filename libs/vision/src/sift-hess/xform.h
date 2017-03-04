@@ -52,7 +52,7 @@ correspondences.
 @param n number of points in both \a pts and \a mpts
 
 @return Should return a transformation matrix that transforms each point in
-	\a pts to the corresponding point in \a mpts or NULL on failure.
+	\a pts to the corresponding point in \a mpts or nullptr on failure.
 */
 typedef CvMat* (*ransac_xform_fn)( CvPoint2D64f* pts, CvPoint2D64f* mpts,
 								  int n );
@@ -107,9 +107,9 @@ model fitting with applications to image analysis and automated cartography.
 	between putative correspondences for a given transform
 @param err_tol correspondences within this distance of each other are
 	considered as inliers for a given transform
-@param inliers if not NULL, output as an array of pointers to the final
+@param inliers if not nullptr, output as an array of pointers to the final
 	set of inliers
-@param n_in if not NULL, output as the final number of inliers
+@param n_in if not nullptr, output as the final number of inliers
 
 @return Returns a transformation matrix computed using RANSAC or NULL
 	on error or if an acceptable transform could not be computed.
@@ -132,7 +132,7 @@ Intended for use as a ransac_xform_fn.
 
 @return Returns the \f$3 \times 3\f$ least-squares planar homography
 	matrix that transforms points in \a pts to their corresponding points
-	in \a mpts or NULL if fewer than 4 correspondences were provided
+	in \a mpts or nullptr if fewer than 4 correspondences were provided
 */
 extern CvMat* lsq_homog( CvPoint2D64f* pts, CvPoint2D64f* mpts, int n );
 

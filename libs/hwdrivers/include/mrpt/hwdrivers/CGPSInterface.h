@@ -144,7 +144,7 @@ namespace mrpt
 			  * The stream object is not deleted. It is the user responsibility to keep that object allocated during the entire life of this object.
 			  * \note Call before CGenericSensor::initialize()
 			  */
-			void bindStream(mrpt::utils::CStream * external_stream, mrpt::synch::CCriticalSection *csOptionalExternalStream = NULL );
+			void bindStream(mrpt::utils::CStream * external_stream, mrpt::synch::CCriticalSection *csOptionalExternalStream = nullptr );
 
 			bool useExternCOM() const { return m_data_stream_is_external; }
 			bool useExternalStream() const { return m_data_stream_is_external; }

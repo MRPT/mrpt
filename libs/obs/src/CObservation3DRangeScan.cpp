@@ -1145,7 +1145,7 @@ CObservation3DRangeScan::TPixelLabelInfoBase* CObservation3DRangeScan::TPixelLab
 			in >> bitfield_bytes;
 
 			// Hand-made class factory. May be a good solution if there will be not too many different classes:
-			CObservation3DRangeScan::TPixelLabelInfoBase *new_obj = NULL;
+			CObservation3DRangeScan::TPixelLabelInfoBase *new_obj = nullptr;
 			switch (bitfield_bytes)
 			{
 			case 1: new_obj = new CObservation3DRangeScan::TPixelLabelInfo<1>(); break;

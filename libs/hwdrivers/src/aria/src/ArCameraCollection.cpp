@@ -33,13 +33,13 @@ AREXPORT bool ArCameraCollection::addCamera(const char *cameraName,
 											                      const char *displayName,
 											                      const char *displayType)
 {
-  if (cameraName == NULL) {
+  if (cameraName == nullptr) {
     return false;
   }
 
   lock();
   CameraInfo *info = findCameraInfo(cameraName);
-  if (info != NULL) {
+  if (info != nullptr) {
     unlock();
     return false;
   }
@@ -48,8 +48,8 @@ AREXPORT bool ArCameraCollection::addCamera(const char *cameraName,
 
   info->myCameraName = cameraName;
   info->myCameraType = cameraType;
-  info->myDisplayName = ((displayName != NULL) ? displayName : cameraName);
-  info->myDisplayType = ((displayType != NULL) ? displayType : cameraType);
+  info->myDisplayName = ((displayName != nullptr) ? displayName : cameraName);
+  info->myDisplayType = ((displayType != nullptr) ? displayType : cameraType);
 
   myCameraToInfoMap[cameraName] = info;
 
@@ -61,7 +61,7 @@ AREXPORT bool ArCameraCollection::addCamera(const char *cameraName,
 
 AREXPORT bool ArCameraCollection::removeCamera(const char *cameraName)
 {
-  if (cameraName == NULL) {
+  if (cameraName == nullptr) {
     return false;
   }
   lock();
@@ -74,7 +74,7 @@ AREXPORT bool ArCameraCollection::removeCamera(const char *cameraName)
   }
 
   delete iter->second;
-  iter->second = NULL;
+  iter->second = nullptr;
 
   myCameraToInfoMap.erase(iter);
 
@@ -92,19 +92,19 @@ AREXPORT bool ArCameraCollection::addCameraCommand(const char *cameraName,
 												                           const char *cameraCommandName,
                                                    int requestInterval)
 {
-  if (command == NULL) {
+  if (command == nullptr) {
     return false;
   }
   lock();
 
   CameraInfo *cameraInfo = findCameraInfo(cameraName);
-  if (cameraInfo == NULL) {
+  if (cameraInfo == nullptr) {
     unlock();
     return false;
   }
 
   CommandInfo *info = findCommandInfo(cameraName, command);
-  if (info != NULL) {
+  if (info != nullptr) {
     unlock();
     return false;
   }
@@ -131,7 +131,7 @@ AREXPORT bool ArCameraCollection::removeCameraCommand(const char *cameraName,
   lock();
 
   CameraInfo *info = findCameraInfo(cameraName);
-  if (info == NULL) {
+  if (info == nullptr) {
     unlock();
     return false;
   }
@@ -145,7 +145,7 @@ AREXPORT bool ArCameraCollection::removeCameraCommand(const char *cameraName,
   }
 
   delete iter->second;
-  iter->second = NULL;
+  iter->second = nullptr;
 
   info->myCommandToInfoMap.erase(iter);
 
@@ -163,13 +163,13 @@ AREXPORT bool ArCameraCollection::addParameter(const char *cameraName,
 {
   lock();
   CameraInfo *camInfo = findCameraInfo(cameraName);
-  if ((camInfo == NULL) || (param.getName() == NULL)) {
+  if ((camInfo == nullptr) || (param.getName() == nullptr)) {
     unlock();
     return false;
   }
 
   ParamInfo *info = findParamInfo(cameraName, param.getName());
-  if (info != NULL) {
+  if (info != nullptr) {
     unlock();
     return false;
   }
@@ -191,7 +191,7 @@ AREXPORT bool ArCameraCollection::removeParameter(const char *cameraName,
 {
   lock();
   CameraInfo *camInfo = findCameraInfo(cameraName);
-  if ((camInfo == NULL) || (paramName == NULL)) {
+  if ((camInfo == nullptr) || (paramName == nullptr)) {
     unlock();
     return false;
   }
@@ -231,12 +231,12 @@ AREXPORT void ArCameraCollection::getCameraNames(std::list<std::string> &outList
 
 AREXPORT const char *ArCameraCollection::getCameraType(const char *cameraName)
 {
-  const char *type = NULL;
+  const char *type = nullptr;
 
   lock();
 
   CameraInfo *info = findCameraInfo(cameraName);
-  if (info != NULL) {
+  if (info != nullptr) {
     type = info->myCameraType.c_str();
   }
   unlock();
@@ -248,12 +248,12 @@ AREXPORT const char *ArCameraCollection::getCameraType(const char *cameraName)
 
 AREXPORT const char *ArCameraCollection::getDisplayName(const char *cameraName)
 {
-  const char *displayName = NULL;
+  const char *displayName = nullptr;
 
   lock();
 
   CameraInfo *info = findCameraInfo(cameraName);
-  if (info != NULL) {
+  if (info != nullptr) {
     displayName = info->myDisplayName.c_str();
   }
   unlock();
@@ -265,12 +265,12 @@ AREXPORT const char *ArCameraCollection::getDisplayName(const char *cameraName)
 
 AREXPORT const char *ArCameraCollection::getDisplayType(const char *cameraName)
 {
-  const char *displayType = NULL;
+  const char *displayType = nullptr;
 
   lock();
 
   CameraInfo *info = findCameraInfo(cameraName);
-  if (info != NULL) {
+  if (info != nullptr) {
     displayType = info->myDisplayType.c_str();
   }
   unlock();
@@ -287,7 +287,7 @@ AREXPORT void ArCameraCollection::getCameraCommands(const char *cameraName,
   outList.clear();
 
   CameraInfo *info = findCameraInfo(cameraName);
-  if (info != NULL) {
+  if (info != nullptr) {
     for (std::map<std::string, CommandInfo*>::iterator iter = info->myCommandToInfoMap.begin();
         iter != info->myCommandToInfoMap.end();
         iter++) {
@@ -304,12 +304,12 @@ AREXPORT void ArCameraCollection::getCameraCommands(const char *cameraName,
 AREXPORT const char *ArCameraCollection::getCommandName(const char *cameraName,
 														                            const char *command)
 {
-  const char *cameraCommandName = NULL;
+  const char *cameraCommandName = nullptr;
 
   lock();
 
   CommandInfo *info = findCommandInfo(cameraName, command);
-  if (info != NULL) {
+  if (info != nullptr) {
     cameraCommandName = info->myCameraCommandName.c_str();
   } // end if info found
 
@@ -328,7 +328,7 @@ AREXPORT int ArCameraCollection::getRequestInterval(const char *cameraName,
   lock();
 
   CommandInfo *info = findCommandInfo(cameraName, command);
-  if (info != NULL) {
+  if (info != nullptr) {
     interval = info->myRequestInterval;
   } // end if info found
 
@@ -347,7 +347,7 @@ AREXPORT void ArCameraCollection::getParameterNames
   outList.clear();
 
   CameraInfo *info = findCameraInfo(cameraName);
-  if (info != NULL) {
+  if (info != nullptr) {
     for (std::map<std::string, ParamInfo*>::iterator iter = info->myParamToInfoMap.begin();
          iter != info->myParamToInfoMap.end();
          iter++) {
@@ -367,7 +367,7 @@ AREXPORT bool ArCameraCollection::getParameter(const char *cameraName,
   lock();
 
   ParamInfo *info = findParamInfo(cameraName, parameterName);
-  if (info == NULL) {
+  if (info == nullptr) {
     unlock();
     return false;
   }
@@ -386,13 +386,13 @@ AREXPORT bool ArCameraCollection::setParameter(const char *cameraName,
   lock();
 
   ParamInfo *info = findParamInfo(cameraName, param.getName());
-  if (info == NULL) {
+  if (info == nullptr) {
     unlock();
     return false;
   }
   info->myParam = param;
 
-  if (info->mySource != NULL) {
+  if (info->mySource != nullptr) {
     info->mySource->setParameter(param);
   }
 
@@ -410,7 +410,7 @@ AREXPORT bool ArCameraCollection::exists(const char *cameraName)
 
   unlock();
 
-  return (info != NULL);
+  return (info != nullptr);
 
 } // end method exists
 
@@ -418,7 +418,7 @@ AREXPORT bool ArCameraCollection::exists(const char *cameraName)
 AREXPORT bool ArCameraCollection::exists(const char *cameraName,
 				         const char *command)
 {
-  if ((cameraName == NULL) || (command == NULL)) {
+  if ((cameraName == nullptr) || (command == nullptr)) {
     return false;
   }
 
@@ -428,7 +428,7 @@ AREXPORT bool ArCameraCollection::exists(const char *cameraName,
 
   unlock();
 
-  return (info != NULL);
+  return (info != nullptr);
 
 } // end method exists
 
@@ -436,7 +436,7 @@ AREXPORT bool ArCameraCollection::exists(const char *cameraName,
 AREXPORT bool ArCameraCollection::parameterExists(const char *cameraName,
 					          const char *paramName)
 {
-  if ((cameraName == NULL) || (paramName == NULL)) {
+  if ((cameraName == nullptr) || (paramName == nullptr)) {
     return false;
   }
   lock();
@@ -445,7 +445,7 @@ AREXPORT bool ArCameraCollection::parameterExists(const char *cameraName,
 
   unlock();
 
-  return (info != NULL);
+  return (info != nullptr);
 
 }
 
@@ -474,7 +474,7 @@ AREXPORT void ArCameraCollection::endUpdate()
 AREXPORT bool ArCameraCollection::addModifiedCB(ArFunctor *functor,
                                                 ArListPos::Pos position)
 {
-  if (functor == NULL) {
+  if (functor == nullptr) {
     return false;
   }
 
@@ -507,7 +507,7 @@ AREXPORT bool ArCameraCollection::addModifiedCB(ArFunctor *functor,
 
 AREXPORT bool ArCameraCollection::removeModifiedCB(ArFunctor *functor)
 {
-  if (functor == NULL) {
+  if (functor == nullptr) {
     return false;
   }
 
@@ -525,11 +525,11 @@ AREXPORT bool ArCameraCollection::removeModifiedCB(ArFunctor *functor)
 
 ArCameraCollection::CameraInfo *ArCameraCollection::findCameraInfo(const char *cameraName)
 {
-  if (cameraName == NULL) {
-    return NULL;
+  if (cameraName == nullptr) {
+    return nullptr;
   }
 
-  CameraInfo *info = NULL;
+  CameraInfo *info = nullptr;
 
   std::map<std::string, CameraInfo*>::iterator iter =
                                             myCameraToInfoMap.find(cameraName);
@@ -548,11 +548,11 @@ ArCameraCollection::CommandInfo *ArCameraCollection::findCommandInfo
                                                          const char *commandName)
 {
   CameraInfo *cameraInfo = findCameraInfo(cameraName);
-  if (cameraInfo == NULL) {
-    return NULL;
+  if (cameraInfo == nullptr) {
+    return nullptr;
   }
 
-  CommandInfo *info = NULL;
+  CommandInfo *info = nullptr;
 
   std::map<std::string, CommandInfo*>::iterator iter =
                                      cameraInfo->myCommandToInfoMap.find(commandName);
@@ -570,11 +570,11 @@ ArCameraCollection::ParamInfo *ArCameraCollection::findParamInfo
                                                        const char *paramName)
 {
   CameraInfo *cameraInfo = findCameraInfo(cameraName);
-  if (cameraInfo == NULL) {
-    return NULL;
+  if (cameraInfo == nullptr) {
+    return nullptr;
   }
 
-  ParamInfo *info = NULL;
+  ParamInfo *info = nullptr;
 
   std::map<std::string, ParamInfo*>::iterator iter =
                                      cameraInfo->myParamToInfoMap.find(paramName);
@@ -639,7 +639,7 @@ ArCameraCollection::CommandInfo::~CommandInfo()
 
 
 ArCameraCollection::ParamInfo::ParamInfo() :
-  mySource(NULL),
+  mySource(nullptr),
   myParam()
 {
 }

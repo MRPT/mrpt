@@ -85,14 +85,14 @@ namespace mrpt
 				m_msgs.push( msg );
 			}
 
-			/** Retrieve the next message in the queue, or NULL if there is no message.
+			/** Retrieve the next message in the queue, or nullptr if there is no message.
 			  *  The user MUST call "delete" with the returned object after use.
 			  */
 			inline T *get( )
 			{
 				mrpt::synch::CCriticalSectionLocker locker( &m_csQueue );
 				if (m_msgs.empty())
-					return NULL;
+					return nullptr;
 				else
 				{
 					T *ret = m_msgs.front();
@@ -101,7 +101,7 @@ namespace mrpt
 				}
 			}
 
-			/** Skip all old messages in the queue and directly return the last one (the most recent, at the bottom of the queue), or NULL if there is no message.
+			/** Skip all old messages in the queue and directly return the last one (the most recent, at the bottom of the queue), or nullptr if there is no message.
 			  *  \note The memory of all skipped messages is freed with "delete".
 			  *  \note The user MUST call "delete" with the returned object after use.
 			  */
@@ -109,7 +109,7 @@ namespace mrpt
 			{
 				mrpt::synch::CCriticalSectionLocker locker( &m_csQueue );
 				if (m_msgs.empty())
-					return NULL;
+					return nullptr;
 				else
 				{
 					for (;;)

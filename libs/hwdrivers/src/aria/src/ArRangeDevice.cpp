@@ -60,35 +60,35 @@ AREXPORT ArRangeDevice::ArRangeDevice(size_t currentBufferSize,
   myCumulativeBuffer(cumulativeBufferSize),
   myFilterCB(this, &ArRangeDevice::filterCallback)
 {
-  myRobot = NULL;
+  myRobot = nullptr;
   myName = name;
   myMaxRange = maxRange;
-  myRawReadings = NULL;
-  myAdjustedRawReadings = NULL;
+  myRawReadings = nullptr;
+  myAdjustedRawReadings = nullptr;
   setMaxSecondsToKeepCurrent(maxSecondsToKeepCurrent);
   setMaxSecondsToKeepCumulative(maxSecondsToKeepCumulative);
   setMaxDistToKeepCumulative(maxDistToKeepCumulative);
-  myCurrentDrawingData = NULL;
+  myCurrentDrawingData = nullptr;
   myOwnCurrentDrawingData = false;
-  myCumulativeDrawingData = NULL;
+  myCumulativeDrawingData = nullptr;
   myOwnCumulativeDrawingData = false;
   myIsLocationDependent = locationDependent;
 }
 
 AREXPORT ArRangeDevice::~ArRangeDevice()
 {
-  if (myRobot != NULL)
+  if (myRobot != nullptr)
     myRobot->remSensorInterpTask(&myFilterCB);
-  if (myCurrentDrawingData != NULL && myOwnCurrentDrawingData)
+  if (myCurrentDrawingData != nullptr && myOwnCurrentDrawingData)
   {
     delete myCurrentDrawingData;
-    myCurrentDrawingData = NULL;
+    myCurrentDrawingData = nullptr;
     myOwnCurrentDrawingData = false;
   }
-  if (myCumulativeDrawingData != NULL && myOwnCumulativeDrawingData)
+  if (myCumulativeDrawingData != nullptr && myOwnCumulativeDrawingData)
   {
     delete myCumulativeDrawingData;
-    myCumulativeDrawingData = NULL;
+    myCumulativeDrawingData = nullptr;
     myOwnCumulativeDrawingData = false;
   }
 }
@@ -104,12 +104,12 @@ AREXPORT void ArRangeDevice::setRobot(ArRobot *robot)
   char buf[512];
   sprintf(buf, "filter %s", getName());
 
-  if (myRobot != NULL)
+  if (myRobot != nullptr)
     myRobot->remSensorInterpTask(&myFilterCB);
 
   myRobot = robot;
 
-  if (myRobot != NULL)
+  if (myRobot != nullptr)
     myRobot->addSensorInterpTask(buf, 100, &myFilterCB);
 }
 
@@ -241,11 +241,11 @@ AREXPORT double ArRangeDevice::currentReadingPolar(double startAngle,
 						   double *angle) const
 {
   ArPose pose;
-  if (myRobot != NULL)
+  if (myRobot != nullptr)
     pose = myRobot->getPose();
   else
     {
-      ArLog::log(ArLog::Normal, "ArRangeDevice %s: NULL robot, won't get polar reading correctly", getName());
+      ArLog::log(ArLog::Normal, "ArRangeDevice %s: nullptr robot, won't get polar reading correctly", getName());
       pose.setPose(0, 0);
     }
   return myCurrentBuffer.getClosestPolar(startAngle, endAngle, 
@@ -280,11 +280,11 @@ AREXPORT double ArRangeDevice::cumulativeReadingPolar(double startAngle,
 						      double *angle) const
 {
   ArPose pose;
-  if (myRobot != NULL)
+  if (myRobot != nullptr)
     pose = myRobot->getPose();
   else
     {
-      ArLog::log(ArLog::Normal, "ArRangeDevice %s: NULL robot, won't get polar reading correctly", getName());
+      ArLog::log(ArLog::Normal, "ArRangeDevice %s: nullptr robot, won't get polar reading correctly", getName());
       pose.setPose(0, 0);
     }
   return myCumulativeBuffer.getClosestPolar(startAngle, endAngle, 
@@ -310,11 +310,11 @@ AREXPORT double ArRangeDevice::currentReadingBox(double x1, double y1,
 						 ArPose *pose) const
 {
   ArPose robotPose;
-  if (myRobot != NULL)
+  if (myRobot != nullptr)
       robotPose = myRobot->getPose();
   else
     {
-      ArLog::log(ArLog::Normal, "ArRangeDevice %s: NULL robot, won't get reading box correctly", getName());
+      ArLog::log(ArLog::Normal, "ArRangeDevice %s: nullptr robot, won't get reading box correctly", getName());
       robotPose.setPose(0, 0);
     }
   return myCurrentBuffer.getClosestBox(x1, y1, x2, y2, robotPose,
@@ -339,11 +339,11 @@ AREXPORT double ArRangeDevice::cumulativeReadingBox(double x1, double y1,
 						 ArPose *pose) const
 {
   ArPose robotPose;
-  if (myRobot != NULL)
+  if (myRobot != nullptr)
     robotPose = myRobot->getPose();
   else
     {
-      ArLog::log(ArLog::Normal, "ArRangeDevice %s: NULL robot, won't get reading box correctly", getName());
+      ArLog::log(ArLog::Normal, "ArRangeDevice %s: nullptr robot, won't get reading box correctly", getName());
       robotPose.setPose(0, 0);
     }
   return myCumulativeBuffer.getClosestBox(x1, y1, x2, y2, 
@@ -376,7 +376,7 @@ AREXPORT std::vector<ArSensorReading> *ArRangeDevice::getRawReadingsAsVector(voi
   std::list<ArSensorReading *>::const_iterator it;
   myRawReadingsVector.clear();
   // if we don't have any return an empty list
-  if (myRawReadings == NULL)
+  if (myRawReadings == nullptr)
     return &myRawReadingsVector;
   myRawReadingsVector.reserve(myRawReadings->size());
   for (it = myRawReadings->begin(); it != myRawReadings->end(); it++)
@@ -394,7 +394,7 @@ AREXPORT std::vector<ArSensorReading> *ArRangeDevice::getAdjustedRawReadingsAsVe
   std::list<ArSensorReading *>::const_iterator it;
   myAdjustedRawReadingsVector.clear();
   // if we don't have any return an empty list
-  if (myAdjustedRawReadings == NULL)
+  if (myAdjustedRawReadings == nullptr)
     return &myRawReadingsVector;
   myAdjustedRawReadingsVector.reserve(myRawReadings->size());
   for (it = myAdjustedRawReadings->begin(); 
@@ -409,10 +409,10 @@ AREXPORT std::vector<ArSensorReading> *ArRangeDevice::getAdjustedRawReadingsAsVe
 AREXPORT void ArRangeDevice::setCurrentDrawingData(ArDrawingData *data, 
 						   bool takeOwnershipOfData)
 {
-  if (myCurrentDrawingData != NULL && myOwnCurrentDrawingData)
+  if (myCurrentDrawingData != nullptr && myOwnCurrentDrawingData)
   {
     delete myCurrentDrawingData;
-    myCurrentDrawingData = NULL;
+    myCurrentDrawingData = nullptr;
     myOwnCurrentDrawingData = false;
   }
   myCurrentDrawingData = data; 
@@ -422,10 +422,10 @@ AREXPORT void ArRangeDevice::setCurrentDrawingData(ArDrawingData *data,
 AREXPORT  void ArRangeDevice::setCumulativeDrawingData(ArDrawingData *data, 
 						      bool takeOwnershipOfData)
 {
-  if (myCumulativeDrawingData != NULL && myOwnCumulativeDrawingData)
+  if (myCumulativeDrawingData != nullptr && myOwnCumulativeDrawingData)
   {
     delete myCumulativeDrawingData;
-    myCumulativeDrawingData = NULL;
+    myCumulativeDrawingData = nullptr;
     myOwnCumulativeDrawingData = false;
   }
   myCumulativeDrawingData = data; 
@@ -440,13 +440,13 @@ AREXPORT void ArRangeDevice::adjustRawReadings(bool interlaced)
   // correct for (note that if we don't have a delay to correct for
   // but have already been adjusting (ie someone changed the delay)
   // we'll just keep adjusting)
-  if (myRawReadings == NULL || myRobot == NULL || 
-      (myAdjustedRawReadings == NULL && myRobot->getOdometryDelay() == 0))
+  if (myRawReadings == nullptr || myRobot == nullptr || 
+      (myAdjustedRawReadings == nullptr && myRobot->getOdometryDelay() == 0))
     return;
   
 
   // if we don't already have a list then make one
-  if (myAdjustedRawReadings == NULL)
+  if (myAdjustedRawReadings == nullptr)
     myAdjustedRawReadings = new std::list<ArSensorReading *>;
   
   // if we've already adjusted these readings then don't do it again

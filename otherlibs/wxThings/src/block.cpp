@@ -594,7 +594,7 @@ bool wxBlockIntSelection::SelectBlock( const wxBlockInt &block, bool combineNow,
     wxArrayBlockInt extraBlocks;
     wxArrayBlockInt *extra = &extraBlocks;
 
-    if (addedBlocks != NULL)
+    if (addedBlocks != nullptr)
     {
         addedBlocks->Clear();
         extra = addedBlocks;

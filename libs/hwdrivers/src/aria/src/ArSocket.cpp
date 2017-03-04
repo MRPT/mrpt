@@ -20,7 +20,7 @@
 
 void ArSocket::internalInit(void)
 {
-  myCloseFunctor = NULL;
+  myCloseFunctor = nullptr;
   myStringAutoEcho = true;
   myStringEcho = false;
   myStringPosLast = 0;
@@ -101,7 +101,7 @@ AREXPORT int ArSocket::write(const void *buff, size_t len)
   FD_SET(myFD, &fdSet);
 
 
-  if (select(myFD + 1, NULL, &fdSet, NULL, &tval) <= 0)
+  if (select(myFD + 1, nullptr, &fdSet, nullptr, &tval) <= 0)
     return 0;
 
   int ret;
@@ -142,7 +142,7 @@ AREXPORT int ArSocket::read(void *buff, size_t len, unsigned int msWait)
     tval.tv_usec = (msWait % 1000) * 1000;
     FD_ZERO(&fdSet);
     FD_SET(myFD, &fdSet);
-    if (select(myFD + 1, &fdSet, NULL, NULL, &tval) <= 0)
+    if (select(myFD + 1, &fdSet, nullptr, nullptr, &tval) <= 0)
       return 0;
   }
   ret = ::recv(myFD, (char*)buff, len, 0);
@@ -187,7 +187,7 @@ void ArSocket::setIPString(void)
 {
   unsigned char *bytes;
   bytes = (unsigned char *)inAddr();
-  if (bytes != NULL)
+  if (bytes != nullptr)
     sprintf(myIPString, "%d.%d.%d.%d", bytes[0], bytes[1], bytes[2], bytes[3]);
 }
 
@@ -199,7 +199,7 @@ void ArSocket::setIPString(void)
 
      @return Data read, or an empty string (first character will be '\\0')
        if no data was read.  If there was an error reading from the socket,
-       NULL is returned.
+       nullptr is returned.
   **/
 
 AREXPORT char *ArSocket::readString(void)
@@ -255,7 +255,7 @@ AREXPORT char *ArSocket::readString(void)
     else if (n == 0)
     {
       myReadStringMutex.unlock();
-      return NULL;
+      return nullptr;
     }
     else // which means (n < 0)
     {
@@ -279,14 +279,14 @@ AREXPORT char *ArSocket::readString(void)
 #endif
       perror("Error in reading from network");
       myReadStringMutex.unlock();
-      return NULL;
+      return nullptr;
     }
   }
   // if they want a 0 length string
   ArLog::log(ArLog::Normal, "Some trouble in ArSocket::readString to %s", getIPString());
   writeString("String too long");
   myReadStringMutex.unlock();
-  return NULL;
+  return nullptr;
 }
 
 void ArSocket::doStringEcho(void)

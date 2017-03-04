@@ -140,7 +140,7 @@ bool VelodyneCalibration::loadFromXMLText(const std::string & xml_file_contents)
 	try
 	{
 		XMLResults 	results;
-		XMLNode 	root = XMLNode::parseString(xml_file_contents.c_str(), NULL, &results );
+		XMLNode 	root = XMLNode::parseString(xml_file_contents.c_str(), nullptr, &results );
 
 		if (results.error != eXMLErrorNone) {
 			cerr << "[VelodyneCalibration::loadFromXMLText] Error parsing XML content: " <<
@@ -164,7 +164,7 @@ bool VelodyneCalibration::loadFromXMLFile(const std::string & velodyne_calibrati
 	try
 	{
 		XMLResults 	results;
-		XMLNode 	root = XMLNode::parseFile( velodyne_calibration_xml_filename.c_str(), NULL, &results );
+		XMLNode 	root = XMLNode::parseFile( velodyne_calibration_xml_filename.c_str(), nullptr, &results );
 
 		if (results.error != eXMLErrorNone) {
 			cerr << "[VelodyneCalibration::loadFromXMLFile] Error loading XML file: " <<

@@ -68,8 +68,8 @@ END_DECLARE_EVENT_TYPES()
 class WXDLLIMPEXP_THINGS wxFileBrowserEvent : public wxCommandEvent
 {
 public:
-    wxFileBrowserEvent( wxEventType commandType = wxEVT_NULL,
-                        wxFileBrowser *fileBrowser = NULL,
+    wxFileBrowserEvent( wxEventType commandType = wxEVT_nullptr,
+                        wxFileBrowser *fileBrowser = nullptr,
                         wxWindowID id = wxID_ANY );
 
     wxFileBrowserEvent( const wxFileBrowserEvent &event ) : wxCommandEvent(event) {}
@@ -219,7 +219,7 @@ public :
     wxArrayInt GetSelectedListItems() const;
     // Get the wxFileData items that are selected in the list control
     wxArrayFileData GetSelectedListFileData() const;
-    // Get the currently focused list item or NULL if none selected
+    // Get the currently focused list item or nullptr if none selected
     wxFileData *GetFocusedListItem() const;
 
     // Create a wxFileData from a wxFileName

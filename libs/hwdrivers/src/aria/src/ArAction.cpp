@@ -16,7 +16,7 @@
 
 AREXPORT ArAction::ArAction(const char *name, const char *description)
 {
-  myRobot = NULL;
+  myRobot = nullptr;
   myNumArgs = 0;
   myName = name;
   myDescription = description;
@@ -25,7 +25,7 @@ AREXPORT ArAction::ArAction(const char *name, const char *description)
 
 AREXPORT ArAction::~ArAction()
 {
-  if (myRobot != NULL)
+  if (myRobot != nullptr)
     myRobot->remAction(this);
 }
 
@@ -58,7 +58,7 @@ AREXPORT ArArg *ArAction::getArg(int number)
   if (it != myArgumentMap.end())
     return &(*it).second;
   else
-    return NULL;
+    return nullptr;
 }
 
 AREXPORT const ArArg *ArAction::getArg(int number) const
@@ -69,7 +69,7 @@ AREXPORT const ArArg *ArAction::getArg(int number) const
   if (it != myArgumentMap.end())
     return &(*it).second;
   else
-    return NULL;
+    return nullptr;
 }
 
 /**
@@ -105,7 +105,7 @@ AREXPORT void ArAction::log(bool verbose) const
   const ArActionDesired *desired;
 
   ArLog::log(ArLog::Terse, "Action %s isActive %d", getName(), myIsActive);
-  if (myIsActive && (desired = getDesired()) != NULL)
+  if (myIsActive && (desired = getDesired()) != nullptr)
     desired->log();
   if (!verbose)
     return;
@@ -126,7 +126,7 @@ AREXPORT void ArAction::log(bool verbose) const
     for (i = 0; i < getNumArgs(); i++) 
     {
       arg = getArg(i);
-      if (arg == NULL)
+      if (arg == nullptr)
 	continue;
       arg->log();
     }

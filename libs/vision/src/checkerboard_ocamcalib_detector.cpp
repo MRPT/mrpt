@@ -199,8 +199,8 @@ int cvFindChessboardCorners3( const mrpt::utils::CImage & img_, CvSize pattern_s
 	mrpt::utils::CImage thresh_img_save(img.getWidth(),img.getHeight(), CH_GRAY ); //  = cvCreateMat( img->rows, img->cols, CV_8UC1 );
 
 	// JL: Move these constructors out of the loops:
-	IplConvKernel *kernel_cross = cvCreateStructuringElementEx(3,3,1,1,CV_SHAPE_CROSS,NULL);
-	IplConvKernel *kernel_rect = cvCreateStructuringElementEx(3,3,1,1,CV_SHAPE_RECT,NULL);
+	IplConvKernel *kernel_cross = cvCreateStructuringElementEx(3,3,1,1,CV_SHAPE_CROSS,nullptr);
+	IplConvKernel *kernel_rect = cvCreateStructuringElementEx(3,3,1,1,CV_SHAPE_RECT,nullptr);
 
 	static int kernel_diag1_vals[9] = {
 		1,0,0,
@@ -735,7 +735,7 @@ double median(const std::vector<double> &vec)
 void icvCleanFoundConnectedQuads( std::vector<CvCBQuadPtr> &quad_group, const CvSize &pattern_size )
 {
 #if CV_MAJOR_VERSION==1
-	CvMemStorage* temp_storage = NULL;
+	CvMemStorage* temp_storage = nullptr;
 #else
 	cv::MemStorage temp_storage;  // JL: "Modernized" to use C++ STL stuff.
 #endif
@@ -1922,11 +1922,11 @@ int mrAugmentBestRun(
 				newQuad->labeled		= false;				//do it right afterwards
 
 				// We only know one neighbor for shure, initialize rest with
-				// the NULL pointer
+				// the nullptr pointer
 				newQuad->neighbors[closest_corner_idx]		= cur_quad;
-				newQuad->neighbors[(closest_corner_idx+1)%4].reset(); //	= NULL;
-				newQuad->neighbors[(closest_corner_idx+2)%4].reset(); //	= NULL;
-				newQuad->neighbors[(closest_corner_idx+3)%4].reset(); //	= NULL;
+				newQuad->neighbors[(closest_corner_idx+1)%4].reset(); //	= nullptr;
+				newQuad->neighbors[(closest_corner_idx+2)%4].reset(); //	= nullptr;
+				newQuad->neighbors[(closest_corner_idx+3)%4].reset(); //	= nullptr;
 
 				for (int j = 0; j < 4; j++)
 				{

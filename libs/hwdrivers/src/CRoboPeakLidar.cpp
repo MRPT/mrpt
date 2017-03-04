@@ -36,7 +36,7 @@ using namespace std;
 CRoboPeakLidar::CRoboPeakLidar() :
 	m_com_port(""),
 	m_com_port_baudrate(115200),
-	m_rplidar_drv(NULL)
+	m_rplidar_drv(nullptr)
 {
 	m_sensorLabel = "RPLidar";
 }
@@ -54,7 +54,7 @@ void CRoboPeakLidar::disconnect()
 {
 #if MRPT_HAS_ROBOPEAK_LIDAR
 	RPlidarDriver::DisposeDriver(RPLIDAR_DRV);
-	m_rplidar_drv=NULL;
+	m_rplidar_drv=nullptr;
 #endif
 }
 

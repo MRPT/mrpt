@@ -113,7 +113,7 @@ void renameDirContents() {
   // finally rename the directory itself
   cout << "Renaming directory " << dir_name << " to: " <<
     dir_name << string_to_add << endl;
-  string* err_msg = NULL; // flag for catching the error msg if any..
+  string* err_msg = nullptr; // flag for catching the error msg if any..
   success = renameFile(dir_name, 
       dir_name+string_to_add, err_msg);
   if (success) {

@@ -26,7 +26,7 @@ AREXPORT ArSickPacketReceiver::ArSickPacketReceiver(
 {
   myAllocatePackets = allocatePackets;
   myReceivingAddress = receivingAddress;
-  myDeviceConn = NULL;
+  myDeviceConn = nullptr;
   myUseBase0Address = useBase0Address;
 }
 
@@ -66,7 +66,7 @@ AREXPORT ArDeviceConnection *ArSickPacketReceiver::getDeviceConnection(void)
 
 /**
     @param msWait how long to block for the start of a packet, nonblocking if 0
-    @return NULL if there are no packets in alloted time, otherwise a pointer
+    @return nullptr if there are no packets in alloted time, otherwise a pointer
     to the packet received, if allocatePackets is true than the place that
     called this function owns the packet and should delete the packet when
     done... if allocatePackets is false then nothing must store a pointer to
@@ -92,10 +92,10 @@ AREXPORT ArSickPacket *ArSickPacketReceiver::receivePacket(
   int numRead;
 
 
-  if (myDeviceConn == NULL ||
+  if (myDeviceConn == nullptr ||
       myDeviceConn->getStatus() != ArDeviceConnection::STATUS_OPEN)
   {
-    return NULL;
+    return nullptr;
   }
 
   timeDone.setToNow();
@@ -110,7 +110,7 @@ AREXPORT ArSickPacket *ArSickPacketReceiver::receivePacket(
     {
       if (state == STATE_START)
       {
-	return NULL;
+	return nullptr;
       }
       else
       {
@@ -195,7 +195,7 @@ AREXPORT ArSickPacket *ArSickPacketReceiver::receivePacket(
 	  lastDataRead.setToNow();
 	if (lastDataRead.mSecTo() < -100)
 	{
-	  return NULL;
+	  return nullptr;
 	}
 	count += numRead;
       }
@@ -229,7 +229,7 @@ AREXPORT ArSickPacket *ArSickPacketReceiver::receivePacket(
   } while (timeDone.mSecTo() >= 0 || state != STATE_START);
 
   //printf("finished the loop...\n");
-  return NULL;
+  return nullptr;
 
 }
 

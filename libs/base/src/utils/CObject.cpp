@@ -27,8 +27,8 @@ using namespace mrpt::system;
  ---------------------------------------------------------------*/
 bool TRuntimeClassId::derivedFrom(const TRuntimeClassId* pBaseClass) const
 {
-	ASSERT_(this != NULL)
-	ASSERT_(pBaseClass != NULL)
+	ASSERT_(this != nullptr)
+	ASSERT_(pBaseClass != nullptr)
 
 	// The same class??
 	if (pBaseClass==this)
@@ -39,12 +39,12 @@ bool TRuntimeClassId::derivedFrom(const TRuntimeClassId* pBaseClass) const
 
 	// Check heritage:
 	const TRuntimeClassId* pClassThis = this;
-	while (pClassThis != NULL)
+	while (pClassThis != nullptr)
 	{
 		if (pClassThis == pBaseClass)	return true;
 
 		if (pClassThis->getBaseClass)	pClassThis = (*pClassThis->getBaseClass)();
-		else	pClassThis = NULL; // The root class
+		else	pClassThis = nullptr; // The root class
 	}
 
 	// Parent class not found
@@ -56,13 +56,13 @@ bool TRuntimeClassId::derivedFrom(const TRuntimeClassId* pBaseClass) const
  ---------------------------------------------------------------*/
 bool TRuntimeClassId::derivedFrom(const char* pBaseClass_name) const
 {
-	ASSERT_(this != NULL)
+	ASSERT_(this != nullptr)
 
 	// Automatically register all pending classes, just in case:
 	registerAllPendingClasses();
 
 	const TRuntimeClassId* pBaseClass = findRegisteredClass(pBaseClass_name);
-	ASSERTMSG_(pBaseClass != NULL, format("Class %s not registered??",pBaseClass_name) )
+	ASSERTMSG_(pBaseClass != nullptr, format("Class %s not registered??",pBaseClass_name) )
 
 	// The same class??
 	if (pBaseClass==this)
@@ -70,12 +70,12 @@ bool TRuntimeClassId::derivedFrom(const char* pBaseClass_name) const
 
 	// Check heritage:
 	const TRuntimeClassId* pClassThis = this;
-	while (pClassThis != NULL)
+	while (pClassThis != nullptr)
 	{
 		if (pClassThis == pBaseClass)	return true;
 
 		if (pClassThis->getBaseClass)	pClassThis = (*pClassThis->getBaseClass)();
-		else	pClassThis = NULL; // The root class
+		else	pClassThis = nullptr; // The root class
 	}
 
 	// Parent class not found
@@ -91,7 +91,7 @@ CObject* TRuntimeClassId::createObject() const
 	if (! ptrCreateObject )
 	{
 		perror("[TRuntimeClassId::createObject] Trying to create an object with not dynamic constructor\n");
-		return NULL;
+		return nullptr;
 	}
 
 	try
@@ -113,12 +113,12 @@ CObject* TRuntimeClassId::createObject() const
    ----------------------------------------------------------------------- */
 TRuntimeClassId* CObject::_GetBaseClass()
 {
-	return NULL;
+	return nullptr;
 }
 
 const struct TRuntimeClassId CObject::classCObject =
 {
 	"CObject",
-	NULL,
+	nullptr,
 	NULL
 };

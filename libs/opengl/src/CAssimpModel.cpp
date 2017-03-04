@@ -94,7 +94,7 @@ void  CAssimpModel::writeToStream(mrpt::utils::CStream &out,int *version) const
 	{
 		writeToStreamRender(out);
 
-		const bool empty = m_assimp_scene->scene!=NULL;
+		const bool empty = m_assimp_scene->scene!=nullptr;
 		out << empty;
 
 		if (!empty)
@@ -214,7 +214,7 @@ void CAssimpModel::getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoi
 }
 
 
-CAssimpModel::TImplAssimp::TImplAssimp() : scene(NULL)
+CAssimpModel::TImplAssimp::TImplAssimp() : scene(nullptr)
 {
 }
 
@@ -227,7 +227,7 @@ CAssimpModel::TImplAssimp::~TImplAssimp()
 		// keeps internal resources until the scene is freed again. Not
 		// doing so can cause severe resource leaking.
 		aiReleaseImport( (aiScene*) scene);
-		scene=NULL;
+		scene=nullptr;
 	}
 #endif
 }
@@ -413,12 +413,12 @@ void recursive_render (const aiScene *sc, const aiNode* nd,const std::vector<uns
 		apply_material(sc->mMaterials[mesh->mMaterialIndex],textureIds,textureIdMap);
 
 
-		if(mesh->mNormals == NULL)
+		if(mesh->mNormals == nullptr)
 			glDisable(GL_LIGHTING);
 		else
 			glEnable(GL_LIGHTING);
 
-		if(mesh->mColors[0] != NULL)
+		if(mesh->mColors[0] != nullptr)
 			glEnable(GL_COLOR_MATERIAL);
 		else
 			glDisable(GL_COLOR_MATERIAL);
@@ -441,7 +441,7 @@ void recursive_render (const aiScene *sc, const aiNode* nd,const std::vector<uns
 			for(i = 0; i < face->mNumIndices; i++)		// go through all vertices in face
 			{
 				int vertexIndex = face->mIndices[i];	// get group index for current index
-				if(mesh->mColors[0] != NULL)
+				if(mesh->mColors[0] != nullptr)
 					Color4f(&mesh->mColors[0][vertexIndex]);
 
 				if(mesh->HasTextureCoords(0))		//HasTextureCoords(texture_coordinates_set)
@@ -497,7 +497,7 @@ void load_textures(
 			if (texFound == AI_SUCCESS)
 			{
 				CAssimpModel::TInfoPerTexture &ipt = textureIdMap[path.data];
-				ipt.id_idx = std::string::npos; //fill map with textures, pointers still NULL yet
+				ipt.id_idx = std::string::npos; //fill map with textures, pointers still nullptr yet
 				texIndex++;
 			}
 			else break;

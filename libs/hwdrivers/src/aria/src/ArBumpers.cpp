@@ -38,7 +38,7 @@ AREXPORT ArBumpers::ArBumpers(size_t currentBufferSize, size_t cumulativeBufferS
 
 AREXPORT ArBumpers::~ArBumpers()
 {
-  if (myRobot != NULL)
+  if (myRobot != nullptr)
     {
       myRobot->remSensorInterpTask(&myProcessCB);
       myRobot->remRangeDevice(this);
@@ -48,7 +48,7 @@ AREXPORT ArBumpers::~ArBumpers()
 AREXPORT void ArBumpers::setRobot(ArRobot *robot)
 {
   myRobot = robot;
-  if (myRobot != NULL)
+  if (myRobot != nullptr)
     myRobot->addSensorInterpTask(myName.c_str(), 10, &myProcessCB);
   ArRangeDevice::setRobot(robot);
 }

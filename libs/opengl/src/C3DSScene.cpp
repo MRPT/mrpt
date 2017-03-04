@@ -186,7 +186,7 @@ void render_node(Lib3dsNode *node, Lib3dsFile	*file)
     }
 
     mesh = lib3ds_file_mesh_by_name(file, node->data.object.morph);
-    if( mesh == NULL )
+    if( mesh == nullptr )
       mesh = lib3ds_file_mesh_by_name(file, node->name);
 
     if (!mesh->user.d) {
@@ -214,7 +214,7 @@ void render_node(Lib3dsNode *node, Lib3dsFile	*file)
           Lib3dsFace *f=&mesh->faceL[p];
           Lib3dsMaterial *mat=0;
 #ifdef	USE_SDL
-          Player_texture *pt = NULL;
+          Player_texture *pt = nullptr;
           int tex_mode = 0;
 #endif
           if (f->material[0]) {
@@ -254,7 +254,7 @@ void render_node(Lib3dsNode *node, Lib3dsFile	*file)
 #endif
 
 #else
-                  pt->bitmap = NULL;
+                  pt->bitmap = nullptr;
                   fputs("3dsplayer: Warning: No image loading support, skipping texture.\n", stderr);
 #endif // USE_SDL
                   if (pt->bitmap) {	// could image be loaded ?
@@ -264,7 +264,7 @@ void render_node(Lib3dsNode *node, Lib3dsFile	*file)
                     //int upload_format = GL_RED; // safe choice, shows errors
 #ifdef USE_SDL
                     int bytespp = pt->bitmap->format->BytesPerPixel;
-                    void *pixel = NULL;
+                    void *pixel = nullptr;
                     glGenTextures(1, &pt->tex_id);
 #ifdef	DEBUG
                     printf("Uploading texture to OpenGL, id %d, at %d bytepp\n",
@@ -284,7 +284,7 @@ void render_node(Lib3dsNode *node, Lib3dsFile	*file)
                     glBindTexture(GL_TEXTURE_2D, pt->tex_id);
                     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
                       TEX_XSIZE, TEX_YSIZE, 0,
-                      GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+                      GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
                     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
                     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
                     glTexParameteri(GL_TEXTURE_2D,
@@ -334,10 +334,10 @@ void render_node(Lib3dsNode *node, Lib3dsFile	*file)
             }
             oldmat = mat;
           }
-          else if (mat != NULL && mat->texture1_map.name[0])
+          else if (mat != nullptr && mat->texture1_map.name[0])
           {
             //Lib3dsTextureMap *tex = &mat->texture1_map;
-            //if (tex != NULL && tex->user.p != NULL)
+            //if (tex != nullptr && tex->user.p != nullptr)
             //{
             //  pt = (Player_texture *)tex->user.p;
             //  tex_mode = pt->valid;
@@ -409,12 +409,12 @@ void light_update(Lib3dsLight *l,Lib3dsFile	*file)
   ln = lib3ds_file_node_by_name(file, l->name, LIB3DS_LIGHT_NODE);
   sn = lib3ds_file_node_by_name(file, l->name, LIB3DS_SPOT_NODE);
 
-  if( ln != NULL ) {
+  if( ln != nullptr ) {
     memcpy(l->color, ln->data.light.col, sizeof(Lib3dsRgb));
     memcpy(l->position, ln->data.light.pos, sizeof(Lib3dsVector));
   }
 
-  if( sn != NULL )
+  if( sn != nullptr )
     memcpy(l->spot, sn->data.spot.pos, sizeof(Lib3dsVector));
 }
 
@@ -582,7 +582,7 @@ void C3DSScene::loadFrom3DSFile( const std::string &filepath )
   /* No nodes?  Fabricate nodes to display all the meshes. */
   if( !file->nodes )
   {
-    for(Lib3dsMesh *mesh = file->meshes; mesh != NULL; mesh = mesh->next)
+    for(Lib3dsMesh *mesh = file->meshes; mesh != nullptr; mesh = mesh->next)
     {
       Lib3dsNode *node = lib3ds_node_new_object();
       strcpy(node->name, mesh->name);
@@ -622,7 +622,7 @@ void C3DSScene::loadFrom3DSFile( const std::string &filepath )
 
   /* No lights in the file?  Add some. */
 
-  if (file->lights == NULL)
+  if (file->lights == nullptr)
   {
     Lib3dsLight *light;
 
@@ -691,7 +691,7 @@ void C3DSScene::getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3
 }
 
 
-C3DSScene::TImpl3DS::TImpl3DS() : file(NULL)
+C3DSScene::TImpl3DS::TImpl3DS() : file(nullptr)
 {
 }
 
@@ -700,7 +700,7 @@ C3DSScene::TImpl3DS::~TImpl3DS()
 	if (file)
 	{
 		lib3ds_file_free( (Lib3dsFile*) file);
-		file= NULL;
+		file= nullptr;
 	}
 }
 

@@ -182,27 +182,27 @@ namespace mrpt
 			struct GUI_IMPEXP TRequestToWxMainThread
 			{
 				TRequestToWxMainThread() :
-					source2D		( NULL ),
-					source3D		( NULL ),
-					sourcePlots		( NULL ),
+					source2D		( nullptr ),
+					source3D		( nullptr ),
+					sourcePlots		( nullptr ),
 					sourceCameraSelectDialog(false),
-					voidPtr			(NULL),
-					voidPtr2		(NULL),
+					voidPtr			(nullptr),
+					voidPtr2		(nullptr),
 					x				(400),
 					y				(400),
 					boolVal			(false)
 				{ }
 
-				/** Only one of source* can be non-NULL, indicating the class that generated the request. */
+				/** Only one of source* can be non-nullptr, indicating the class that generated the request. */
 				mrpt::gui::CDisplayWindow    *source2D;
 
-				/** Only one of source* can be non-NULL, indicating the class that generated the request. */
+				/** Only one of source* can be non-nullptr, indicating the class that generated the request. */
 				mrpt::gui::CDisplayWindow3D  *source3D;
 
-				/** Only one of source* can be non-NULL, indicating the class that generated the request. */
+				/** Only one of source* can be non-nullptr, indicating the class that generated the request. */
 				mrpt::gui::CDisplayWindowPlots *sourcePlots;
 
-				/** Only one of source* can be non-NULL, indicating the class that generated the request. */
+				/** Only one of source* can be non-nullptr, indicating the class that generated the request. */
 				bool sourceCameraSelectDialog;
 
 				/** Parameters, depending on OPCODE.
@@ -260,7 +260,7 @@ namespace mrpt
 
 			};
 
-			/** Thread-safe method to return the next pending request, or NULL if there is none (After usage, FREE the memory!)
+			/** Thread-safe method to return the next pending request, or nullptr if there is none (After usage, FREE the memory!)
 			  */
 			static TRequestToWxMainThread  * popPendingWxRequest();
 

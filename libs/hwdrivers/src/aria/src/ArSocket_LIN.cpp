@@ -253,7 +253,7 @@ bool ArSocket::open(int port, Type type, const char *openOnIP)
       !hostAddr("localhost", mySin.sin_addr))
     return(false); */
 
-  if (openOnIP != NULL)
+  if (openOnIP != nullptr)
   {
 
     if (!hostAddr(openOnIP, mySin.sin_addr))
@@ -340,7 +340,7 @@ bool ArSocket::findValidPort(int startPort, const char *openOnIP)
     */
     setIPString();
 
-    if (openOnIP != NULL)
+    if (openOnIP != nullptr)
     {
 
       if (!hostAddr(openOnIP, mySin.sin_addr))
@@ -416,7 +416,7 @@ bool ArSocket::close()
 {
   if (myFD != -1)
     ArLog::log(ArLog::Verbose, "Closing socket");
-  if (myCloseFunctor != NULL)
+  if (myCloseFunctor != nullptr)
     myCloseFunctor->invoke();
   if (myDoClose && ::close(myFD))
   {
@@ -457,7 +457,7 @@ bool ArSocket::setLinger(int time)
 
 bool ArSocket::setBroadcast()
 {
-  if (setsockopt(myFD, SOL_SOCKET, SO_BROADCAST, NULL, 0) != 0)
+  if (setsockopt(myFD, SOL_SOCKET, SO_BROADCAST, nullptr, 0) != 0)
   {
     myErrorStr="Failure to setsockopt BROADCAST";
     perror("setsockopt");

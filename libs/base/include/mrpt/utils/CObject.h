@@ -28,7 +28,7 @@ namespace mrpt
 		struct BASE_IMPEXP TRuntimeClassId
 		{
 			const char* className;
-			/** Create an object of the related class, or NULL if it is virtual. */
+			/** Create an object of the related class, or nullptr if it is virtual. */
 			mrpt::utils::CObject*			(*ptrCreateObject)();
 			/** Gets the base class runtime id. */
 			const TRuntimeClassId*		(*getBaseClass)();
@@ -63,7 +63,7 @@ namespace mrpt
 		  * \sa getAllRegisteredClasses(), getAllRegisteredClassesChildrenOf()  */
 		std::vector<const TRuntimeClassId*> BASE_IMPEXP getAllRegisteredClassesChildrenOf(const TRuntimeClassId* parent_id);
 
-		/** Return info about a given class by its name, or NULL if the class is not registered
+		/** Return info about a given class by its name, or nullptr if the class is not registered
 		  * \sa registerClass, getAllRegisteredClasses
 		  */
 		const TRuntimeClassId BASE_IMPEXP * findRegisteredClass(const std::string &className);
@@ -182,7 +182,7 @@ namespace mrpt
 			struct class_name_LINKAGE_##Ptr : public base_name##Ptr \
 			{ \
 				typedef class_name value_type; \
-				inline class_name##Ptr() : base_name##Ptr(static_cast<base_name*>(NULL)) { } \
+				inline class_name##Ptr() : base_name##Ptr(static_cast<base_name*>(nullptr)) { } \
 				inline explicit class_name##Ptr(class_name* p) : base_name##Ptr( static_cast<base_name*>(p) ) { } \
 				inline explicit class_name##Ptr(const base_name##Ptr & p) : base_name##Ptr(p) { if(p) ASSERTMSG_( p->GetRuntimeClass()->derivedFrom(#class_name),::mrpt::format("Wrong typecasting of smart pointers: %s -> %s",p->GetRuntimeClass()->className, #class_name) )  } \
 				inline explicit class_name##Ptr(const mrpt::utils::CObject::Ptr & p) : base_name##Ptr(p) { if(p)ASSERTMSG_( p->GetRuntimeClass()->derivedFrom(#class_name),::mrpt::format("Wrong typecasting of smart pointers: %s -> %s",p->GetRuntimeClass()->className, #class_name) )  } \
@@ -215,7 +215,7 @@ namespace mrpt
 			/*! The smart pointer type for the associated class */ \
 			struct class_name_LINKAGE_##Ptr : public mrpt::utils::CObject::Ptr \
 			{ \
-				inline class_name##Ptr() : mrpt::utils::CObject::Ptr(static_cast<mrpt::utils::CObject*>(NULL)) { } \
+				inline class_name##Ptr() : mrpt::utils::CObject::Ptr(static_cast<mrpt::utils::CObject*>(nullptr)) { } \
 				inline explicit class_name##Ptr(class_name* p) : mrpt::utils::CObject::Ptr( static_cast<mrpt::utils::CObject*>(p) ) { } \
 				inline explicit class_name##Ptr(const mrpt::utils::CObject::Ptr & p) : mrpt::utils::CObject::Ptr(p) { ASSERTMSG_( p->GetRuntimeClass()->derivedFrom(#class_name),::mrpt::format("Wrong typecasting of smart pointers: %s -> %s",p->GetRuntimeClass()->className, #class_name) )  } \
 				/*! Return the internal plain C++ pointer */ \
@@ -277,7 +277,7 @@ namespace mrpt
 			const mrpt::utils::TRuntimeClassId* class_name::_GetBaseClass() \
 				{ return CLASS_ID(base_class_name); } \
 			const mrpt::utils::TRuntimeClassId class_name::class##class_name = { \
-				#class_name, NULL, &class_name::_GetBaseClass }; \
+				#class_name, nullptr, &class_name::_GetBaseClass }; \
 			const mrpt::utils::TRuntimeClassId* class_name::GetRuntimeClass() const \
 				{ return CLASS_ID(class_name); }
 

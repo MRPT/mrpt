@@ -20,15 +20,15 @@ CGraphSlamEngine<GRAPH_t>::CGraphSlamEngine(
 		const std::string& config_file,
 		const std::string rawlog_fname/* ="" */,
 		const std::string fname_GT /* ="" */,
-		mrpt::graphslam::CWindowManager* win_manager /* = NULL */,
-		mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_t>* node_reg /* = NULL */,
-		mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_t>* edge_reg /* = NULL */,
-		mrpt::graphslam::optimizers::CGraphSlamOptimizer<GRAPH_t>* optimizer /* = NULL */
+		mrpt::graphslam::CWindowManager* win_manager /* = nullptr */,
+		mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_t>* node_reg /* = nullptr */,
+		mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_t>* edge_reg /* = nullptr */,
+		mrpt::graphslam::optimizers::CGraphSlamOptimizer<GRAPH_t>* optimizer /* = nullptr */
 		):
 	m_node_registrar(node_reg),
 	m_edge_registrar(edge_reg),
 	m_optimizer(optimizer),
-	m_enable_visuals(win_manager != NULL),
+	m_enable_visuals(win_manager != nullptr),
 	m_config_fname(config_file),
 	m_rawlog_fname(rawlog_fname),
 	m_fname_GT(fname_GT),
@@ -134,15 +134,15 @@ void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 		m_win_observer = m_win_manager->observer;
 	}
 	else {
-		m_win = NULL;
-		m_win_observer = NULL;
+		m_win = nullptr;
+		m_win_observer = nullptr;
 
 		MRPT_LOG_WARN_STREAM << "Visualization is off. Running on headless mode";
 	}
 
 	// set the CDisplayWindowPlots pointer to null for starters, we don't know if
 	// we are using it
-	m_win_plot = NULL;
+	m_win_plot = nullptr;
 
 	m_observation_only_dataset = false;
 	m_request_to_exit = false;
@@ -699,7 +699,7 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 template<class GRAPH_t>
 void CGraphSlamEngine<GRAPH_t>::getOccupancyGridMap2D(
 		mrpt::maps::COccupancyGridMap2D* map_ptr,
-		mrpt::system::TTimeStamp* acquisition_time /* = NULL */) const {
+		mrpt::system::TTimeStamp* acquisition_time /* = nullptr */) const {
 	MRPT_START;
 	ASSERT_(map_ptr);
 
@@ -999,7 +999,7 @@ void CGraphSlamEngine<GRAPH_t>::initOutputDir(
 					// rename the whole directory to DATE_TIME_${OUTPUT_DIR_NAME}
 					string dst_fname = output_dir_fname + cur_date_validstr;
 					MRPT_LOG_INFO_STREAM << "Renaming directory to: " << dst_fname;
-					string* error_msg = NULL;
+					string* error_msg = nullptr;
 					bool did_rename = renameFile(output_dir_fname,
 							dst_fname,
 							error_msg);
@@ -1200,7 +1200,7 @@ template<class GRAPH_t>
 void CGraphSlamEngine<GRAPH_t>::readGTFileNavSimulOutput(
 		const std::string& fname_GT,
 		std::vector<pose_t>* gt_poses,
-		std::vector<mrpt::system::TTimeStamp>* gt_timestamps /* = NULL */) {
+		std::vector<mrpt::system::TTimeStamp>* gt_timestamps /* = nullptr */) {
 	MRPT_START;
 	using namespace std;
 	using namespace mrpt::utils;
@@ -1253,7 +1253,7 @@ template<class GRAPH_t>
 void CGraphSlamEngine<GRAPH_t>::readGTFileRGBD_TUM(
 		const std::string& fname_GT,
 		std::vector<pose_t>* gt_poses,
-		std::vector<mrpt::system::TTimeStamp>* gt_timestamps/*= NULL */) {
+		std::vector<mrpt::system::TTimeStamp>* gt_timestamps/*= nullptr */) {
 	MRPT_START;
 	using namespace std;
 	using namespace mrpt::utils;
@@ -2103,7 +2103,7 @@ void CGraphSlamEngine<GRAPH_t>::TRGBDInfoFileParams::parseFile() {
 
 template<class GRAPH_t>
 void CGraphSlamEngine<GRAPH_t>::saveGraph(
-		const std::string* fname_in /*= NULL */) const {
+		const std::string* fname_in /*= nullptr */) const {
 	MRPT_START;
 	using namespace mrpt::utils;
 
@@ -2124,7 +2124,7 @@ void CGraphSlamEngine<GRAPH_t>::saveGraph(
 
 template<class GRAPH_t>
 void CGraphSlamEngine<GRAPH_t>::save3DScene(
-		const std::string* fname_in /* = NULL */) const {
+		const std::string* fname_in /* = nullptr */) const {
 	MRPT_START;
 	ASSERTMSG_(m_enable_visuals,
 			"\nsave3DScene was called even though enable_visuals flag is off.\nExiting...\n");

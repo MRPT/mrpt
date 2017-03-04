@@ -86,8 +86,8 @@ MRPT_START
 
 		// Pyramids
 		// JL: It seems that cache'ing the pyramids of previous images doesn't really improve the efficiency (!?!?)
-		IplImage* pPyr = NULL;
-		IplImage* cPyr = NULL;
+		IplImage* pPyr = nullptr;
+		IplImage* cPyr = nullptr;
 
 		int	flags = 0;
 

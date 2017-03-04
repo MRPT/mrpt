@@ -31,8 +31,8 @@ CObservationStereoImages::CObservationStereoImages( void *iplImageLeft,void *ipl
 	imageLeft( UNINITIALIZED_IMAGE ),
 	imageRight( UNINITIALIZED_IMAGE ),
 	imageDisparity( UNINITIALIZED_IMAGE ),
-	hasImageDisparity( iplImageDisparity!=NULL ),
-	hasImageRight( iplImageRight!=NULL )
+	hasImageDisparity( iplImageDisparity!=nullptr ),
+	hasImageRight( iplImageRight!=nullptr )
 {
 	if (iplImageLeft)
 		ownMemory ? imageLeft.setFromIplImage(iplImageLeft) : imageLeft.loadFromIplImage(iplImageLeft);

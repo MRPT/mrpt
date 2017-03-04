@@ -46,7 +46,7 @@ using namespace Assimp;
 // ---------------------------------------------------------------------------------------------
 void ScenePreprocessor::ProcessScene ()
 {
-	ai_assert(scene != NULL);
+	ai_assert(scene != nullptr);
 
 	// Process all meshes
 	for (unsigned int i = 0; i < scene->mNumMeshes;++i)

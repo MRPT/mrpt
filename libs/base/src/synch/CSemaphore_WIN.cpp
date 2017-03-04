@@ -33,7 +33,7 @@ CSemaphore::CSemaphore(
 	MRPT_START
 
 	HANDLE hSem = CreateSemaphoreA(
-		NULL,			// pointer to security attributes
+		nullptr,			// pointer to security attributes
 		initialCount,	// initial count
 		maxCount,		// maximum count
 		NULL /*name*/ );

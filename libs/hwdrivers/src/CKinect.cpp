@@ -82,8 +82,8 @@ CKinect::CKinect()  :
 	m_preview_decim_counter_rgb(0),
 
 #if MRPT_HAS_KINECT_FREENECT
-	m_f_ctx(NULL), // The "freenect_context", or NULL if closed
-	m_f_dev(NULL), // The "freenect_device", or NULL if closed
+	m_f_ctx(nullptr), // The "freenect_context", or nullptr if closed
+	m_f_dev(nullptr), // The "freenect_device", or nullptr if closed
 	m_tim_latest_depth(0),
 	m_tim_latest_rgb(0),
 	m_latest_obs_cs("m_latest_obs_cs"),
@@ -243,7 +243,7 @@ void  CKinect::loadConfig_sensorSpecific(
 bool CKinect::isOpen() const
 {
 #if MRPT_HAS_KINECT_FREENECT
-	return f_dev != NULL;
+	return f_dev != nullptr;
 #else
 	return false;
 #endif
@@ -377,7 +377,7 @@ void CKinect::open()
 
 #if MRPT_HAS_KINECT_FREENECT  // ----> libfreenect
 	// Try to open the device:
-	if (freenect_init(f_ctx_ptr, NULL) < 0)
+	if (freenect_init(f_ctx_ptr, nullptr) < 0)
 		THROW_EXCEPTION("freenect_init() failed")
 
 	freenect_set_log_level(f_ctx,
@@ -459,11 +459,11 @@ void CKinect::close()
 		freenect_stop_video(f_dev);
 		freenect_close_device(f_dev);
 	}
-	m_f_dev = NULL;
+	m_f_dev = nullptr;
 
 	if (f_ctx)
 		freenect_shutdown(f_ctx);
-	m_f_ctx = NULL;
+	m_f_ctx = nullptr;
 #endif // MRPT_HAS_KINECT_FREENECT
 }
 

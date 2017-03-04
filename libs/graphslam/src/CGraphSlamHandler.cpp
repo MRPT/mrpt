@@ -15,10 +15,10 @@
 CGraphSlamHandler::CGraphSlamHandler() {
 	using namespace mrpt::system;
 
-	this->logger = NULL;
-	win_manager = NULL;
-	win_observer = NULL;
-	win = NULL;
+	this->logger = nullptr;
+	win_manager = nullptr;
+	win_observer = nullptr;
+	win = nullptr;
 }
 
 //////////////////////////////////////////////////////////////////////////////

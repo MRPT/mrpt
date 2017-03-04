@@ -53,14 +53,14 @@ public:
 	void setRawIo(bool enable);
 	bool getRawIo(void);
 
-	virtual XsResultValue writeData(const XsByteArray& data, XsSize* written = NULL);
+	virtual XsResultValue writeData(const XsByteArray& data, XsSize* written = nullptr);
 	virtual XsResultValue readData(XsSize maxLength, XsByteArray& data);
 	using IoInterface::waitForData;
 
 	//lint -e1411 inherited definitions are also available (see above)
-	XsResultValue writeData(XsSize length, const void *data, XsSize* written = NULL);
-	XsResultValue readData(XsSize maxLength, void *data, XsSize* length = NULL);
-	XsResultValue waitForData(XsSize maxLength, void *data, XsSize* length = NULL);
+	XsResultValue writeData(XsSize length, const void *data, XsSize* written = nullptr);
+	XsResultValue readData(XsSize maxLength, void *data, XsSize* length = nullptr);
+	XsResultValue waitForData(XsSize maxLength, void *data, XsSize* length = nullptr);
 	//lint +e1411
 
 	void getPortName(XsString& portname) const;

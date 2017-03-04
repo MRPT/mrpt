@@ -122,7 +122,7 @@ BEGIN_EVENT_TABLE(robotic_arm_kinematicsFrame,wxFrame)
 END_EVENT_TABLE()
 
 
-robotic_arm_kinematicsFrame *the_win=NULL;
+robotic_arm_kinematicsFrame *the_win=nullptr;
 
 
 robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(wxWindow* parent,wxWindowID id)

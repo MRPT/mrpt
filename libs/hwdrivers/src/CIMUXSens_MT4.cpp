@@ -58,12 +58,12 @@ using namespace std;
 	class DeviceClass
 	{
 	public:
-		DeviceClass() : m_streamInterface(NULL) { }
+		DeviceClass() : m_streamInterface(nullptr) { }
 		~DeviceClass()
 		{
 			if (m_streamInterface) {
 				delete m_streamInterface;
-				m_streamInterface=NULL;
+				m_streamInterface=nullptr;
 			}
 		}
 
@@ -331,8 +331,8 @@ CIMUXSens_MT4::CIMUXSens_MT4( ) :
 	m_timeStartUI   (0),
 	m_timeStartTT   (0),
 	m_sensorPose    (),
-	m_dev_ptr       (NULL),
-	m_devid_ptr     (NULL)
+	m_dev_ptr       (nullptr),
+	m_devid_ptr     (nullptr)
 {
 	m_sensorLabel = "XSensMTi_MT4";
 
@@ -352,10 +352,10 @@ CIMUXSens_MT4::~CIMUXSens_MT4()
 #if MRPT_HAS_xSENS_MT4
 	my_xsens_device.close();
 	delete static_cast<DeviceClass*>(m_dev_ptr);
-	m_dev_ptr=NULL;
+	m_dev_ptr=nullptr;
 
 	delete static_cast<XsDeviceId*>(m_devid_ptr);
-	m_devid_ptr=NULL;
+	m_devid_ptr=nullptr;
 #endif
 }
 

@@ -109,7 +109,7 @@ public:
      int output_error;
      
      // Call the fill-reducing routine from METIS 
-     output_error = METIS_NodeND(&m, m_indexPtr.data(), m_innerIndices.data(), NULL, NULL, perm.data(), iperm.data());
+     output_error = METIS_NodeND(&m, m_indexPtr.data(), m_innerIndices.data(), nullptr, nullptr, perm.data(), iperm.data());
      
     if(output_error != METIS_OK) 
     {

@@ -77,7 +77,7 @@ namespace mrpt
 			mrpt::vision::TFramePosesVec                       & frame_poses,
 			mrpt::vision::TLandmarkLocationsVec                & landmark_points,
 			const mrpt::utils::TParametersDouble & extra_params = mrpt::utils::TParametersDouble(),
-			const mrpt::vision::TBundleAdjustmentFeedbackFunctor user_feedback = NULL
+			const mrpt::vision::TBundleAdjustmentFeedbackFunctor user_feedback = nullptr
 			);
 
 
@@ -121,7 +121,7 @@ namespace mrpt
 			const bool  frame_poses_are_inverse,
 			const bool  use_robust_kernel = true,
 			const double kernel_param = 3.0,
-			std::vector<double> * out_kernel_1st_deriv = NULL
+			std::vector<double> * out_kernel_1st_deriv = nullptr
 			);
 
 		//! \overload
@@ -134,7 +134,7 @@ namespace mrpt
 			const bool  frame_poses_are_inverse,
 			const bool  use_robust_kernel = true,
 			const double kernel_param = 3.0,
-			std::vector<double> * out_kernel_1st_deriv = NULL
+			std::vector<double> * out_kernel_1st_deriv = nullptr
 			);
 
 

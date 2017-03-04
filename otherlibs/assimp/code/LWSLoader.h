@@ -87,7 +87,7 @@ struct NodeDesc
 		,	lightType (0)
 		,	lightFalloffType (0)
 		,	lightConeAngle (45.f)
-		,	parent_resolved (NULL)
+		,	parent_resolved (nullptr)
 	{}
 
 	enum {

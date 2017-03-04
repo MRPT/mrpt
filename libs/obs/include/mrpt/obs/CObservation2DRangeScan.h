@@ -98,10 +98,10 @@ namespace obs
 		  *  It's a generic smart pointer to avoid depending here in the library mrpt-obs on classes on other libraries.
 		  */
 		mutable mrpt::maps::CMetricMapPtr  m_cachedMap;
-		void internal_buildAuxPointsMap( const void *options = NULL ) const;  //!< Internal method, used from buildAuxPointsMap()
+		void internal_buildAuxPointsMap( const void *options = nullptr ) const;  //!< Internal method, used from buildAuxPointsMap()
 	public:
 
-		/** Returns the cached points map representation of the scan, if already build with buildAuxPointsMap(), or NULL otherwise.
+		/** Returns the cached points map representation of the scan, if already build with buildAuxPointsMap(), or nullptr otherwise.
 		  * Usage:
 		  *  \code
 		  *    mrpt::maps::CPointsMap *map = obs->getAuxPointsMap<mrpt::maps::CPointsMap>();
@@ -114,15 +114,15 @@ namespace obs
 		}
 
 		/** Returns a cached points map representing this laser scan, building it upon the first call.
-		  * \param options Can be NULL to use default point maps' insertion options, or a pointer to a "CPointsMap::TInsertionOptions" structure to override some params.
+		  * \param options Can be nullptr to use default point maps' insertion options, or a pointer to a "CPointsMap::TInsertionOptions" structure to override some params.
 		  * Usage:
 		  *  \code
-		  *    mrpt::maps::CPointsMap *map = obs->buildAuxPointsMap<mrpt::maps::CPointsMap>(&options or NULL);
+		  *    mrpt::maps::CPointsMap *map = obs->buildAuxPointsMap<mrpt::maps::CPointsMap>(&options or nullptr);
 		  *  \endcode
 		  * \sa getAuxPointsMap
 		  */
 		template <class POINTSMAP>
-		inline const POINTSMAP	*buildAuxPointsMap( const void *options = NULL ) const {
+		inline const POINTSMAP	*buildAuxPointsMap( const void *options = nullptr ) const {
 			if (!m_cachedMap) internal_buildAuxPointsMap(options);
 			return static_cast<const POINTSMAP*>(m_cachedMap.get());
 		}

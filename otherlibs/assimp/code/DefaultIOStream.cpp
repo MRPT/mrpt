@@ -63,7 +63,7 @@ size_t DefaultIOStream::Read(void* pvBuffer,
 	size_t pSize, 
 	size_t pCount)
 {
-	ai_assert(NULL != pvBuffer && 0 != pSize && 0 != pCount);
+	ai_assert(nullptr != pvBuffer && 0 != pSize && 0 != pCount);
 	return (mFile ? ::fread(pvBuffer, pSize, pCount, mFile) : 0);
 }
 
@@ -72,7 +72,7 @@ size_t DefaultIOStream::Write(const void* pvBuffer,
 	size_t pSize,
 	size_t pCount)
 {
-	ai_assert(NULL != pvBuffer && 0 != pSize && 0 != pCount);
+	ai_assert(nullptr != pvBuffer && 0 != pSize && 0 != pCount);
 	return (mFile ? ::fwrite(pvBuffer, pSize, pCount, mFile) : 0);
 }
 

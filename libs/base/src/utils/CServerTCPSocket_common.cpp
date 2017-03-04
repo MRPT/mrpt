@@ -90,7 +90,7 @@ CClientTCPSocket *  CServerTCPSocket::accept( int timeout_ms )
 {
 	MRPT_START
 
-	if( m_serverSock == INVALID_SOCKET) return NULL;
+	if( m_serverSock == INVALID_SOCKET) return nullptr;
 
 	struct timeval	timeoutSelect;
 	struct timeval	*ptrTimeout;
@@ -103,7 +103,7 @@ CClientTCPSocket *  CServerTCPSocket::accept( int timeout_ms )
 	// The timeout:
 	if (timeout_ms<0)
 	{
-		ptrTimeout = NULL;
+		ptrTimeout = nullptr;
 	}
 	else
 	{
@@ -118,14 +118,14 @@ CClientTCPSocket *  CServerTCPSocket::accept( int timeout_ms )
 	int selRet = ::select(
 					 m_serverSock+1,// __nfds
 					 &sockArr,		// Wait for read
-					 NULL,			// Wait for write
-					 NULL,			// Wait for except.
+					 nullptr,			// Wait for write
+					 nullptr,			// Wait for except.
 					 ptrTimeout);	// Timeout
 
 	if( selRet==INVALID_SOCKET)
 	{
 	    fprintf(stderr,"%s\n", getLastErrorStr().c_str());
-		return NULL;
+		return nullptr;
 	}
 
 	if (selRet==0)
@@ -133,7 +133,7 @@ CClientTCPSocket *  CServerTCPSocket::accept( int timeout_ms )
 		MRPT_LOG_WARN("[CServerTCPSocket::accept] Timeout waiting incoming connections\n" );
 
 		// Timeout:
-		return NULL;
+		return nullptr;
 	}
 	else
 	{
@@ -154,7 +154,7 @@ CClientTCPSocket *  CServerTCPSocket::accept( int timeout_ms )
 		{
 			fprintf(stderr,"%s\n",getLastErrorStr().c_str());
 			delete ret;
-			return NULL;
+			return nullptr;
 		}
 
 		ret->m_hSock = aceptdSock;

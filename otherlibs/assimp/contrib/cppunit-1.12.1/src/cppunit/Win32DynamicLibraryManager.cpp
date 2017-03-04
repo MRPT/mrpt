@@ -47,18 +47,18 @@ DynamicLibraryManager::getLastErrorDetail() const
       FORMAT_MESSAGE_ALLOCATE_BUFFER | 
       FORMAT_MESSAGE_FROM_SYSTEM | 
       FORMAT_MESSAGE_IGNORE_INSERTS,
-      NULL,
+      nullptr,
       GetLastError(),
       MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
       (LPSTR) &lpMsgBuf,
       0,
-      NULL 
+      nullptr 
   );
 
   std::string message = (LPCSTR)lpMsgBuf;
 
   // Display the string.
-//  ::MessageBoxA( NULL, (LPCSTR)lpMsgBuf, "Error", MB_OK | MB_ICONINFORMATION );
+//  ::MessageBoxA( nullptr, (LPCSTR)lpMsgBuf, "Error", MB_OK | MB_ICONINFORMATION );
 
   // Free the buffer.
   ::LocalFree( lpMsgBuf );

@@ -363,53 +363,53 @@ void  CNationalInstrumentsDAQ::initialize()
 				ASSERTMSG_(tf.ai.physicalChannelCount>0, "ai.physicalChannelCount is zero! Please, define it correctly.")
 
 				MRPT_DAQmx_ErrChk(MRPT_DAQmxCreateAIVoltageChan(taskHandle,
-					tf.ai.physicalChannel.c_str(),NULL,
+					tf.ai.physicalChannel.c_str(),nullptr,
 					daqmx_defstr2num(tf.ai.terminalConfig),
-					tf.ai.minVal, tf.ai.maxVal,DAQmx_Val_Volts,NULL));
+					tf.ai.minVal, tf.ai.maxVal,DAQmx_Val_Volts,nullptr));
 			}
 			if (tf.has_ao) {
 				ASSERTMSG_(tf.ao.physicalChannelCount>0, "ai.physicalChannelCount is zero! Please, define it correctly.")
 
 				MRPT_DAQmx_ErrChk(MRPT_DAQmxCreateAOVoltageChan(taskHandle,
-					tf.ao.physicalChannel.c_str(),NULL,
-					tf.ao.minVal, tf.ao.maxVal,DAQmx_Val_Volts,NULL));
+					tf.ao.physicalChannel.c_str(),nullptr,
+					tf.ao.minVal, tf.ao.maxVal,DAQmx_Val_Volts,nullptr));
 			}
 			if (tf.has_di) {
 				MRPT_DAQmx_ErrChk(MRPT_DAQmxCreateDIChan(taskHandle,
-					tf.di.line.c_str(),NULL,DAQmx_Val_ChanPerLine));
+					tf.di.line.c_str(),nullptr,DAQmx_Val_ChanPerLine));
 			}
 			if (tf.has_do) {
 				MRPT_DAQmx_ErrChk(MRPT_DAQmxCreateDOChan(taskHandle,
-					tf.douts.line.c_str(),NULL,DAQmx_Val_ChanPerLine));
+					tf.douts.line.c_str(),nullptr,DAQmx_Val_ChanPerLine));
 			}
 			if (tf.has_ci_period) {
 				MRPT_DAQmx_ErrChk(MRPT_DAQmxCreateCIPeriodChan(taskHandle,
-					tf.ci_period.counter.c_str(),NULL,
+					tf.ci_period.counter.c_str(),nullptr,
 					tf.ci_period.minVal, tf.ci_period.maxVal,
 					daqmx_defstr2num(tf.ci_period.units),
 					daqmx_defstr2num(tf.ci_period.edge),
 					DAQmx_Val_LowFreq1Ctr,
 					tf.ci_period.measTime,
-					tf.ci_period.divisor,NULL));
+					tf.ci_period.divisor,nullptr));
 			}
 			if (tf.has_ci_count_edges) {
 				MRPT_DAQmx_ErrChk(MRPT_DAQmxCreateCICountEdgesChan(taskHandle,
-					tf.ci_count_edges.counter.c_str(),NULL,
+					tf.ci_count_edges.counter.c_str(),nullptr,
 					daqmx_defstr2num(tf.ci_count_edges.edge),
 					tf.ci_count_edges.initialCount,
 					daqmx_defstr2num(tf.ci_count_edges.countDirection)));
 			}
 			if (tf.has_ci_pulse_width) {
 				MRPT_DAQmx_ErrChk(MRPT_DAQmxCreateCIPulseWidthChan(taskHandle,
-					tf.ci_pulse_width.counter.c_str(),NULL,
+					tf.ci_pulse_width.counter.c_str(),nullptr,
 					tf.ci_pulse_width.minVal, tf.ci_pulse_width.maxVal,
 					daqmx_defstr2num(tf.ci_pulse_width.units),
 					daqmx_defstr2num(tf.ci_pulse_width.startingEdge),
-					NULL));
+					nullptr));
 			}
 			if (tf.has_ci_lin_encoder) {
 				MRPT_DAQmx_ErrChk(MRPT_DAQmxCreateCILinEncoderChan(taskHandle,
-					tf.ci_lin_encoder.counter.c_str(),NULL,
+					tf.ci_lin_encoder.counter.c_str(),nullptr,
 					daqmx_defstr2num(tf.ci_lin_encoder.decodingType),
 					tf.ci_lin_encoder.ZidxEnable,
 					tf.ci_lin_encoder.ZidxVal,
@@ -417,11 +417,11 @@ void  CNationalInstrumentsDAQ::initialize()
 					daqmx_defstr2num(tf.ci_lin_encoder.units),
 					tf.ci_lin_encoder.distPerPulse, 
 					tf.ci_lin_encoder.initialPos,
-					NULL));
+					nullptr));
 			}
 			if (tf.has_ci_ang_encoder) {
 				MRPT_DAQmx_ErrChk(MRPT_DAQmxCreateCIAngEncoderChan(taskHandle,
-					tf.ci_ang_encoder.counter.c_str(),NULL,
+					tf.ci_ang_encoder.counter.c_str(),nullptr,
 					daqmx_defstr2num(tf.ci_ang_encoder.decodingType),
 					tf.ci_ang_encoder.ZidxEnable,
 					tf.ci_ang_encoder.ZidxVal,
@@ -429,11 +429,11 @@ void  CNationalInstrumentsDAQ::initialize()
 					daqmx_defstr2num(tf.ci_ang_encoder.units),
 					tf.ci_ang_encoder.pulsesPerRev, 
 					tf.ci_ang_encoder.initialAngle,
-					NULL));
+					nullptr));
 			}
 			if (tf.has_co_pulses) {
 				MRPT_DAQmx_ErrChk(MRPT_DAQmxCreateCOPulseChanFreq(taskHandle,
-					tf.co_pulses.counter.c_str(),NULL,
+					tf.co_pulses.counter.c_str(),nullptr,
 					DAQmx_Val_Hz,
 					daqmx_defstr2num(tf.co_pulses.idleState),
 					tf.co_pulses.initialDelay,
@@ -478,7 +478,7 @@ void  CNationalInstrumentsDAQ::initialize()
 		catch (std::exception const &e)
 		{
 			std::cerr << "[CNationalInstrumentsDAQ] Error:" << std::endl << e.what() << std::endl;
-			if( ipt.taskHandle!=NULL )
+			if( ipt.taskHandle!=nullptr )
 			{
 				TaskHandle  &taskHandle= *reinterpret_cast<TaskHandle*>(&ipt.taskHandle);
 				MRPT_DAQmxStopTask(taskHandle);
@@ -537,7 +537,7 @@ void CNationalInstrumentsDAQ::stop()
 
 		MRPT_DAQmxStopTask(taskHandle);
 		MRPT_DAQmxClearTask(taskHandle);
-		taskHandle=NULL;
+		taskHandle=nullptr;
 	}
 #endif
 }
@@ -668,7 +668,7 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask &ipt)
 					taskHandle,
 					ipt.task.samplesPerChannelToRead,timeout, obs.AIN_interleaved ? DAQmx_Val_GroupByScanNumber : DAQmx_Val_GroupByChannel,
 					&dBuf[0],dBuf.size(),
-					&pointsReadPerChan,NULL))<0 && err!=DAQmxErrorSamplesNotYetAvailable) 
+					&pointsReadPerChan,nullptr))<0 && err!=DAQmxErrorSamplesNotYetAvailable) 
 				{
 					MRPT_DAQmx_ErrChk(err)
 				}
@@ -689,7 +689,7 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask &ipt)
 					taskHandle,
 					ipt.task.samplesPerChannelToRead,timeout, DAQmx_Val_GroupByChannel,
 					&u8Buf[0],u8Buf.size(),
-					&pointsReadPerChan,NULL))<0 && err!=DAQmxErrorSamplesNotYetAvailable) 
+					&pointsReadPerChan,nullptr))<0 && err!=DAQmxErrorSamplesNotYetAvailable) 
 				{
 					MRPT_DAQmx_ErrChk(err)
 				}
@@ -709,7 +709,7 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask &ipt)
 					taskHandle,
 					totalSamplesToRead,timeout,
 					&dBuf[0],dBuf.size(),
-					&pointsReadPerChan,NULL))<0 && err!=DAQmxErrorSamplesNotYetAvailable) 
+					&pointsReadPerChan,nullptr))<0 && err!=DAQmxErrorSamplesNotYetAvailable) 
 				{
 					MRPT_DAQmx_ErrChk(err)
 				}
@@ -773,7 +773,7 @@ void CNationalInstrumentsDAQ::writeAnalogOutputTask(size_t task_index, size_t nS
 		taskHandle,
 		nSamplesPerChannel,FALSE,timeout, groupedByChannel ? DAQmx_Val_GroupByChannel : DAQmx_Val_GroupByScanNumber,
 		const_cast<float64*>(volt_values),
-		&samplesWritten, NULL) )
+		&samplesWritten, nullptr) )
 	{
 		MRPT_DAQmx_ErrChk(err)
 	}
@@ -801,7 +801,7 @@ void CNationalInstrumentsDAQ::writeDigitalOutputTask(size_t task_index, bool lin
 	if (err =  MRPT_DAQmxWriteDigitalLines(
 		taskHandle,
 		nSamplesPerChannel,FALSE,timeout, DAQmx_Val_GroupByScanNumber,
-		&dat,&samplesWritten,NULL) )
+		&dat,&samplesWritten,nullptr) )
 	{
 		MRPT_DAQmx_ErrChk(err)
 	}

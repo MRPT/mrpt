@@ -68,7 +68,7 @@ namespace mrpt
 			double        robust_kernel_param; //!< The parameter of the robust kernel, in pixels (only if use_robust_kernel=true) (Default=10)
 
 
-			TSteroCalibCallbackFunctor  callback; //!< If set to !=NULL, this function will be called within each Lev-Marq. iteration (don't do heavy stuff here since performance will degrade)
+			TSteroCalibCallbackFunctor  callback; //!< If set to !=nullptr, this function will be called within each Lev-Marq. iteration (don't do heavy stuff here since performance will degrade)
 			void * callback_user_param; //!< If using a callback function, you can use this to pass custom data to your callback.
 
 			// Ctor: Set default values

@@ -373,7 +373,7 @@ namespace mrpt
 				const std::string	  &iniSection );
 
 		private:
-			// Only one of these will be !=NULL at a time ===========
+			// Only one of these will be !=nullptr at a time ===========
 			CImageGrabber_OpenCV      * m_cap_cv;		//!< The OpenCV capture object.
 			CImageGrabber_dc1394      * m_cap_dc1394;	//!< The dc1394 capture object.
 			CImageGrabber_FlyCapture2 * m_cap_flycap;     //!< The FlyCapture2 object

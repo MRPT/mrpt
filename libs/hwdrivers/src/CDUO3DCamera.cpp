@@ -275,14 +275,14 @@ static void CALLBACK DUOCallback(const PDUOFrame pFrameData, void *pUserData)
 /** Default constructor. */
 CDUO3DCamera::CDUO3DCamera() :
 	m_options(TCaptureOptions_DUO3D()),
-	m_duo(NULL)
+	m_duo(nullptr)
 {
 #if MRPT_HAS_DUO3D
 	m_duo = new DUOInstance[1];
-	M_DUO_VALUE = NULL;  // m_duo = NULL;
+	M_DUO_VALUE = nullptr;  // m_duo = nullptr;
 
-	m_pframe_data = NULL;
-	m_evFrame = CreateEvent(NULL, FALSE, FALSE, NULL);
+	m_pframe_data = nullptr;
+	m_evFrame = CreateEvent(nullptr, FALSE, FALSE, nullptr);
 #else
 	THROW_EXCEPTION("MRPT has been compiled with 'MRPT_BUILD_DUO3D'=OFF, so this class cannot be used.");
 #endif
@@ -290,14 +290,14 @@ CDUO3DCamera::CDUO3DCamera() :
 
 /** Custom initialization and start grabbing constructor. */
 CDUO3DCamera::CDUO3DCamera( const TCaptureOptions_DUO3D & options ) :
-	m_duo(NULL)
+	m_duo(nullptr)
 {
 #if MRPT_HAS_DUO3D
 	m_duo = new DUOInstance[1];
-	M_DUO_VALUE = NULL;  // m_duo = NULL;
+	M_DUO_VALUE = nullptr;  // m_duo = nullptr;
 
-	m_pframe_data = NULL;
-	m_evFrame = CreateEvent(NULL, FALSE, FALSE, NULL);
+	m_pframe_data = nullptr;
+	m_evFrame = CreateEvent(nullptr, FALSE, FALSE, nullptr);
 	this->open( options );
 #else
 	THROW_EXCEPTION("MRPT has been compiled with 'MRPT_BUILD_DUO3D'=OFF, so this class cannot be used.");
@@ -309,7 +309,7 @@ CDUO3DCamera::~CDUO3DCamera()
 {
 #if MRPT_HAS_DUO3D
 	this->close();
-	if (m_duo) { delete[] M_DUO_PTR; m_duo=NULL;}
+	if (m_duo) { delete[] M_DUO_PTR; m_duo=nullptr;}
 #endif
 } // end-destructor
 
@@ -497,7 +497,7 @@ void CDUO3DCamera::close()
 	if( !M_DUO_VALUE ) return;
 	StopDUO( M_DUO_VALUE );
 	CloseDUO( M_DUO_VALUE );
-	M_DUO_VALUE = NULL;
+	M_DUO_VALUE = nullptr;
 #endif
 } // end-close
 
@@ -505,18 +505,18 @@ void CDUO3DCamera::close()
 void* CDUO3DCamera::m_get_duo_frame()
 {
 #if MRPT_HAS_DUO3D
-	if( M_DUO_VALUE == NULL ) return 0;
+	if( M_DUO_VALUE == nullptr ) return 0;
 	if(WaitForSingleObject( m_evFrame, 1000 ) == WAIT_OBJECT_0) return m_pframe_data;
-	else return NULL;
+	else return nullptr;
 #else
-	return NULL; // return something to silent compiler warnings.
+	return nullptr; // return something to silent compiler warnings.
 #endif
 }
 
 void CDUO3DCamera::m_set_exposure(float value)
 {
 #if MRPT_HAS_DUO3D
-	if( M_DUO_VALUE == NULL ) return;
+	if( M_DUO_VALUE == nullptr ) return;
 	SetDUOExposure( M_DUO_VALUE, value );
 #endif
 }
@@ -524,7 +524,7 @@ void CDUO3DCamera::m_set_exposure(float value)
 void CDUO3DCamera::m_set_gain(float value)
 {
 #if MRPT_HAS_DUO3D
-	if( M_DUO_VALUE == NULL ) return;
+	if( M_DUO_VALUE == nullptr ) return;
 	SetDUOGain( M_DUO_VALUE, value );
 #endif
 }
@@ -532,7 +532,7 @@ void CDUO3DCamera::m_set_gain(float value)
 void CDUO3DCamera::m_set_led(float value)
 {
 #if MRPT_HAS_DUO3D
-	if( M_DUO_VALUE == NULL ) return;
+	if( M_DUO_VALUE == nullptr ) return;
 	SetDUOLedPWM( M_DUO_VALUE, value );
 #endif
 }

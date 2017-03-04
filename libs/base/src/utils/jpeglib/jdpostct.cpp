@@ -22,7 +22,7 @@ typedef struct {
    * For two-pass color quantization, we need a full-image buffer;
    * for one-pass operation, a strip buffer is sufficient.
    */
-  jvirt_sarray_ptr whole_image;	/* virtual array, or NULL if one-pass */
+  jvirt_sarray_ptr whole_image;	/* virtual array, or nullptr if one-pass */
   JSAMPARRAY buffer;		/* strip buffer, or current strip of virtual */
   JDIMENSION strip_height;	/* buffer size in rows */
   /* for two-pass mode only: */
@@ -74,7 +74,7 @@ start_pass_dpost (j_decompress_ptr cinfo, J_BUF_MODE pass_mode)
        * color quantization; in that case, jinit_d_post_controller did not
        * allocate a strip buffer.  Use the virtual-array buffer as workspace.
        */
-      if (post->buffer == NULL) {
+      if (post->buffer == nullptr) {
 	post->buffer = (*cinfo->mem->access_virt_sarray)
 	  ((j_common_ptr) cinfo, post->whole_image,
 	   (JDIMENSION) 0, post->strip_height, TRUE);
@@ -89,13 +89,13 @@ start_pass_dpost (j_decompress_ptr cinfo, J_BUF_MODE pass_mode)
 #ifdef QUANT_2PASS_SUPPORTED
   case JBUF_SAVE_AND_PASS:
     /* First pass of 2-pass quantization */
-    if (post->whole_image == NULL)
+    if (post->whole_image == nullptr)
       ERREXIT(cinfo, JERR_BAD_BUFFER_MODE);
     post->pub.post_process_data = post_process_prepass;
     break;
   case JBUF_CRANK_DEST:
     /* Second pass of 2-pass quantization */
-    if (post->whole_image == NULL)
+    if (post->whole_image == nullptr)
       ERREXIT(cinfo, JERR_BAD_BUFFER_MODE);
     post->pub.post_process_data = post_process_2pass;
     break;
@@ -174,7 +174,7 @@ post_process_prepass (j_decompress_ptr cinfo,
   if (post->next_row > old_next_row) {
     num_rows = post->next_row - old_next_row;
     (*cinfo->cquantize->color_quantize) (cinfo, post->buffer + old_next_row,
-					 (JSAMPARRAY) NULL, (int) num_rows);
+					 (JSAMPARRAY) nullptr, (int) num_rows);
     *out_row_ctr += num_rows;
   }
 
@@ -249,8 +249,8 @@ jinit_d_post_controller (j_decompress_ptr cinfo, boolean need_full_buffer)
 				SIZEOF(my_post_controller));
   cinfo->post = (struct jpeg_d_post_controller *) post;
   post->pub.start_pass = start_pass_dpost;
-  post->whole_image = NULL;	/* flag for no virtual arrays */
-  post->buffer = NULL;		/* flag for no strip buffer */
+  post->whole_image = nullptr;	/* flag for no virtual arrays */
+  post->buffer = nullptr;		/* flag for no strip buffer */
 
   /* Create the quantization buffer, if needed */
   if (cinfo->quantize_colors) {

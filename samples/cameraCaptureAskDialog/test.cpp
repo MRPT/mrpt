@@ -48,7 +48,7 @@ void TestCameraCaptureAsk()
 		mrpt::obs::CObservationPtr  obs = cam->getNextFrame();
 		ASSERT_(obs);
 
-		CImage *img = NULL;
+		CImage *img = nullptr;
 
 		if (IS_CLASS(obs,CObservationImage))
 		{

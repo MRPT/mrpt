@@ -435,8 +435,8 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent&)
 	// Delete all existing draw layers:
 	plotMaps->DelAllLayers(true,false);
 
-	mpBitmapLayer	*lyRefGrid = NULL;
-	mpFXYVector	    *lyRefPt   = NULL;
+        mpBitmapLayer	*lyRefGrid = nullptr;
+        mpFXYVector	    *lyRefPt   = nullptr;
 	if (useGridMap)
 	{
 		lyRefGrid = new mpBitmapLayer();
@@ -610,7 +610,7 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent&)
 
 			}
 
-			//delete poseEst; poseEst=NULL;
+                        //delete poseEst; poseEst=nullptr;
 
 			if (isAnimation)
 			{

@@ -254,7 +254,7 @@ void COccupancyGridMap2D::laserScanSimulatorWithUncertainty(
 			&func_laserSimul_callback,  // void  (*functor)(const VECTORLIKE1 &x,const USERPARAM &fixed_param, VECTORLIKE3 &y)
 			simulData,                  // const USERPARAM &fixed_param,
 			out_results.scanWithUncert.rangesMean, out_results.scanWithUncert.rangesCovar,
-			NULL, // elem_do_wrap2pi,
+			nullptr, // elem_do_wrap2pi,
 			in_params.UT_alpha, in_params.UT_kappa, in_params.UT_beta // alpha, K, beta
 			);
 		break;

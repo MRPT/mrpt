@@ -63,7 +63,7 @@ class TestResultCollector;
 class CPPUNIT_API TextTestRunner : public CPPUNIT_NS::TestRunner
 {
 public:
-  TextTestRunner( Outputter *outputter =NULL );
+  TextTestRunner( Outputter *outputter =nullptr );
 
   virtual ~TextTestRunner();
 

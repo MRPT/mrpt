@@ -39,7 +39,7 @@ namespace rp{ namespace arch{ namespace net{
 
 raw_serial::raw_serial()
     : rp::hal::serial_rxtx()
-    , _serial_handle(NULL)
+    , _serial_handle(nullptr)
     , _baudrate(0)
     , _flags(0)
 {
@@ -76,7 +76,7 @@ bool raw_serial::open(const char * portname, _u32 baudrate, _u32 flags)
         portname,
         GENERIC_READ | GENERIC_WRITE,
         0,
-        NULL,
+        nullptr,
         OPEN_EXISTING,
         FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED,
         NULL
@@ -146,9 +146,9 @@ int raw_serial::senddata(const unsigned char * data, size_t size)
     DWORD w_len = 0, o_len = -1;
     if (!isOpened()) return ANS_DEV_ERR;
 
-    if (data == NULL || size ==0) return 0;
+    if (data == nullptr || size ==0) return 0;
     
-    if(ClearCommError(_serial_handle, &error, NULL) && error > 0)
+    if(ClearCommError(_serial_handle, &error, nullptr) && error > 0)
         PurgeComm(_serial_handle, PURGE_TXABORT | PURGE_TXCLEAR);
 
     if(!WriteFile(_serial_handle, data, size, &w_len, &_wo))
@@ -231,7 +231,7 @@ int raw_serial::waitfordata(size_t data_count, _u32 timeout, size_t * returned_s
     DWORD msk,length;
     size_t dummy_length;
 
-    if (returned_size==NULL) returned_size=(size_t *)&dummy_length;
+    if (returned_size==nullptr) returned_size=(size_t *)&dummy_length;
 
     
     if ( isOpened()) {
@@ -331,9 +331,9 @@ void raw_serial::_init()
     memset(&_wo, 0, sizeof(_wo));
     memset(&_wait_o, 0, sizeof(_wait_o));
 
-    _ro.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-    _wo.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-    _wait_o.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+    _ro.hEvent = CreateEvent(nullptr, TRUE, FALSE, nullptr);
+    _wo.hEvent = CreateEvent(nullptr, TRUE, FALSE, nullptr);
+    _wait_o.hEvent = CreateEvent(nullptr, TRUE, FALSE, nullptr);
 
     _portName[0] = 0;
 }

@@ -72,9 +72,9 @@ namespace mrpt
 			}
 
 			/** In a base class, will be called after PLY_import_set_vertex_count() once for each loaded point.
-			  *  \param pt_color Will be NULL if the loaded file does not provide color info.
+			  *  \param pt_color Will be nullptr if the loaded file does not provide color info.
 			  */
-			virtual void PLY_import_set_vertex(const size_t idx, const mrpt::math::TPoint3Df &pt, const mrpt::utils::TColorf *pt_color = NULL) MRPT_OVERRIDE;
+			virtual void PLY_import_set_vertex(const size_t idx, const mrpt::math::TPoint3Df &pt, const mrpt::utils::TColorf *pt_color = nullptr) MRPT_OVERRIDE;
 			/** @} */
 
 			/** @name PLY Export virtual methods to implement in base classes
@@ -295,7 +295,7 @@ namespace mrpt
 		template <class POINTSMAP>
 		void CPointCloud::loadFromPointsMap( const POINTSMAP *themap)
 		{
-			ASSERT_(themap!=NULL)
+			ASSERT_(themap!=nullptr)
 			mrpt::utils::PointCloudAdapter<CPointCloud>     pc_dst(*this);
 			const mrpt::utils::PointCloudAdapter<POINTSMAP> pc_src(*themap);
 			const size_t N=pc_src.size();

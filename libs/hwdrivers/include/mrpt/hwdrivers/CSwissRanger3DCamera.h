@@ -211,7 +211,7 @@ namespace mrpt
 			bool		m_preview_window; //!< Show preview window while grabbing
 			mrpt::gui::CDisplayWindowPtr  m_win_range, m_win_int;
 
-			void *m_cam;  //!< opaque handler to SRCAM. NULL means it's not open yet.
+			void *m_cam;  //!< opaque handler to SRCAM. nullptr means it's not open yet.
 			
 			mrpt::utils::TCamera  	m_cameraParams; 
 

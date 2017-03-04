@@ -128,7 +128,7 @@ namespace maps
 		void deleteAllMaps(); //!< Deletes all maps and clears the internal lists of maps (with clear_unique(), so user copies remain alive)
 		void internal_clear() MRPT_OVERRIDE; //!< Clear all elements of the map.
 		// See base class docs
-		bool internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = NULL ) MRPT_OVERRIDE;
+		bool internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = nullptr ) MRPT_OVERRIDE;
 		/** Returns true if any of the inner maps is able to compute a sensible likelihood function for this observation.
 		 * \param obs The observation.
 		 * \sa computeObservationLikelihood
@@ -157,7 +157,7 @@ namespace maps
 		/** Gets the i-th map \exception std::runtime_error On out-of-bounds */
 		mrpt::maps::CMetricMapPtr getMapByIndex(size_t idx) const;
 
-		/** Returns the i'th observation of a given class (or of a descendant class), or NULL if there is no such observation in the array.
+		/** Returns the i'th observation of a given class (or of a descendant class), or nullptr if there is no such observation in the array.
 		  *  Example:
 		  * \code
 		  *  CObservationImagePtr obs = m_SF->getObservationByClass<CObservationImage>();
@@ -235,12 +235,12 @@ namespace maps
 			ptr_t operator ->() const {
 				internal_update_ref();
 				if (m_ret) return m_ret.get();
-				else throw std::runtime_error("Tried to derefer NULL pointer");
+				else throw std::runtime_error("Tried to derefer nullptr pointer");
 			}
 			pointee_t & operator *() const {
 				internal_update_ref();
 				if (m_ret) return *m_ret.get();
-				else throw std::runtime_error("Tried to derefer NULL pointer");
+				else throw std::runtime_error("Tried to derefer nullptr pointer");
 			}
 		private:
 			CONTAINER * m_source;
@@ -275,9 +275,9 @@ namespace maps
 
 		/** Constructor.
 		 * \param initializers One internal map will be created for each entry in this "TSetOfMetricMapInitializers" struct.
-		 *  If initializers is NULL, no internal map will be created.
+		 *  If initializers is nullptr, no internal map will be created.
 		 */
-		CMultiMetricMap(const mrpt::maps::TSetOfMetricMapInitializers	*initializers = NULL);
+		CMultiMetricMap(const mrpt::maps::TSetOfMetricMapInitializers	*initializers = nullptr);
 
 		CMultiMetricMap(const CMultiMetricMap &o);
 		CMultiMetricMap& operator =(const CMultiMetricMap &o);

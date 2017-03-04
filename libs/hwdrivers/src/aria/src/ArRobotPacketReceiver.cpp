@@ -32,7 +32,7 @@ AREXPORT ArRobotPacketReceiver::ArRobotPacketReceiver(bool allocatePackets,
   myPacket(sync1, sync2)
 {
   myAllocatePackets = allocatePackets;
-  myDeviceConn = NULL;
+  myDeviceConn = nullptr;
   mySync1 = sync1;
   mySync2 = sync2;
 }
@@ -77,7 +77,7 @@ AREXPORT ArDeviceConnection *ArRobotPacketReceiver::getDeviceConnection(void)
 
 /**
     @param msWait how long to block for the start of a packet, nonblocking if 0
-    @return NULL if there are no packets in alloted time, otherwise a pointer
+    @return nullptr if there are no packets in alloted time, otherwise a pointer
     to the packet received, if allocatePackets is true than the place that 
     called this function owns the packet and should delete the packet when 
     done... if allocatePackets is false then nothing must store a pointer to
@@ -106,12 +106,12 @@ AREXPORT ArRobotPacket *ArRobotPacketReceiver::receivePacket(
   else
     packet = &myPacket;
 
-  if (packet == NULL || myDeviceConn == NULL || 
+  if (packet == nullptr || myDeviceConn == nullptr || 
       myDeviceConn->getStatus() != ArDeviceConnection::STATUS_OPEN)
   {
     if (myAllocatePackets)
       delete packet;
-    return NULL;
+    return nullptr;
   }
   
   timeDone.setToNow();
@@ -135,7 +135,7 @@ AREXPORT ArRobotPacket *ArRobotPacketReceiver::receivePacket(
     {
       if (myAllocatePackets)
 	delete packet;
-      return NULL;
+      return nullptr;
     }
   }      
   
@@ -152,7 +152,7 @@ AREXPORT ArRobotPacket *ArRobotPacketReceiver::receivePacket(
             {
               if (myAllocatePackets)
                 delete packet;
-              return NULL;
+              return nullptr;
             }
           else
             {
@@ -217,7 +217,7 @@ AREXPORT ArRobotPacket *ArRobotPacketReceiver::receivePacket(
                 if (myAllocatePackets)
                   delete packet;
 		//printf("Bad time taken reading\n");
-                return NULL;
+                return nullptr;
               }
             count += numRead;
           }
@@ -253,7 +253,7 @@ AREXPORT ArRobotPacket *ArRobotPacketReceiver::receivePacket(
   //printf("finished the loop...\n");
   if (myAllocatePackets)
     delete packet;
-  return NULL;
+  return nullptr;
 
 }
 

@@ -30,27 +30,27 @@ void XsWinUsb::initLibrary()
 	if (!m_libraryLoader->isLoaded())
 		m_libraryLoader->load("winusb.dll");
 
-	m_winUsb.AbortPipe = NULL;
-	m_winUsb.Initialize = NULL;
-	m_winUsb.Free = NULL;
-	m_winUsb.GetAssociatedInterface = NULL;
-	m_winUsb.GetDescriptor = NULL;
-	m_winUsb.QueryInterfaceSettings = NULL;
-	m_winUsb.QueryDeviceInformation = NULL;
-	m_winUsb.SetCurrentAlternateSetting = NULL;
-	m_winUsb.GetCurrentAlternateSetting = NULL;
-	m_winUsb.QueryPipe = NULL;
-	m_winUsb.SetPipePolicy = NULL;
-	m_winUsb.GetPipePolicy = NULL;
-	m_winUsb.ReadPipe = NULL;
-	m_winUsb.WritePipe = NULL;
-	m_winUsb.ControlTransfer = NULL;
-	m_winUsb.ResetPipe = NULL;
-	m_winUsb.AbortPipe = NULL;
-	m_winUsb.FlushPipe = NULL;
-	m_winUsb.SetPowerPolicy = NULL;
-	m_winUsb.GetPowerPolicy = NULL;
-	m_winUsb.GetOverlappedResult = NULL;
+	m_winUsb.AbortPipe = nullptr;
+	m_winUsb.Initialize = nullptr;
+	m_winUsb.Free = nullptr;
+	m_winUsb.GetAssociatedInterface = nullptr;
+	m_winUsb.GetDescriptor = nullptr;
+	m_winUsb.QueryInterfaceSettings = nullptr;
+	m_winUsb.QueryDeviceInformation = nullptr;
+	m_winUsb.SetCurrentAlternateSetting = nullptr;
+	m_winUsb.GetCurrentAlternateSetting = nullptr;
+	m_winUsb.QueryPipe = nullptr;
+	m_winUsb.SetPipePolicy = nullptr;
+	m_winUsb.GetPipePolicy = nullptr;
+	m_winUsb.ReadPipe = nullptr;
+	m_winUsb.WritePipe = nullptr;
+	m_winUsb.ControlTransfer = nullptr;
+	m_winUsb.ResetPipe = nullptr;
+	m_winUsb.AbortPipe = nullptr;
+	m_winUsb.FlushPipe = nullptr;
+	m_winUsb.SetPowerPolicy = nullptr;
+	m_winUsb.GetPowerPolicy = nullptr;
+	m_winUsb.GetOverlappedResult = nullptr;
 
 	if (m_libraryLoader->isLoaded())
 	{
@@ -494,7 +494,7 @@ BOOL XsWinUsb::GetPowerPolicy(WINUSB_INTERFACE_HANDLE InterfaceHandle,ULONG Poli
 	The caller can specify that an event object is manually reset in the standard windows OVERLAPPED structure. If an automatic reset event object is used, the event handle must not be specified in any other wait operation in the interval between starting the overlapped operation and the call to \a GetOverlappedResult. For example, the event object is sometimes specified in one of the wait routines to wait for the operation to be completed. When the wait routine returns, the system sets an auto-reset event's state to nonsignaled, and a successive call to \a GetOverlappedResult with the bWait parameter set to TRUE causes the function to be blocked indefinitely.
 	If the bWait parameter is TRUE, GetOverlappedResult determines whether the pending operation has been completed by waiting for the event object to be in the signaled state.
 
-	If the hEvent member of the standard windows OVERLAPPED structure is NULL, the system uses the state of the file handle to signal when the operation has been completed. Do not use file handles for this purpose. It is better to use an event object because of the confusion that can occur when multiple concurrent overlapped operations are performed on the same file. In this situation, you cannot know which operation caused the state of the object to be signaled.
+	If the hEvent member of the standard windows OVERLAPPED structure is nullptr, the system uses the state of the file handle to signal when the operation has been completed. Do not use file handles for this purpose. It is better to use an event object because of the confusion that can occur when multiple concurrent overlapped operations are performed on the same file. In this situation, you cannot know which operation caused the state of the object to be signaled.
 
 	\param[in]	InterfaceHandle	An initialized usb handle, see \a Initialize
 	\param[in]	Overlapped	A pointer to a standard windows OVERLAPPED structure that was specified when the overlapped operation was started.

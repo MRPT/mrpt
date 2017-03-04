@@ -209,7 +209,7 @@ double feature_extraction_test_FAST( int N, int h )
 				threshold,  \
 				false /*don't append*/, \
 				0 /* octave */, \
-				ROW_INDEX ? &feats_index_by_row : NULL \
+                ROW_INDEX ? &feats_index_by_row : nullptr \
 				); \
 		} \
 		const double T = tictac.Tac()/N; \

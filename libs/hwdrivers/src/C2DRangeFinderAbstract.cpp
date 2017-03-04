@@ -29,7 +29,7 @@ C2DRangeFinderAbstract::C2DRangeFinderAbstract() :
 	m_hardwareError			( false ),
 	m_nextObservation		(),
 	m_showPreview           ( false ),
-	m_stream				( NULL  )
+	m_stream				( nullptr  )
 {
 }
 

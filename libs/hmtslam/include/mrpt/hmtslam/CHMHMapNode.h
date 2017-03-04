@@ -78,14 +78,14 @@ namespace mrpt
 			/** Private constructor (see ::Create class factory)
 			  */
 			CHMHMapNode(
-				CHierarchicalMHMap		*parent = NULL,
+				CHierarchicalMHMap		*parent = nullptr,
 				const THypothesisIDSet	&hyps = THypothesisIDSet() );
 
 		public:
 			/** Class factory
 			  */
 			static CHMHMapNodePtr Create(
-				CHierarchicalMHMap		*parent = NULL,
+				CHierarchicalMHMap		*parent = nullptr,
 				const THypothesisIDSet	&hyps = THypothesisIDSet() );
 
 			/** Destructor

@@ -33,13 +33,13 @@ struct CRIT_SECT_WIN
 ---------------------------------------------------------------*/
 CCriticalSection::CCriticalSection( const char *name )
 {
-	m_debugOut = NULL; //&utils::stdOut;
+	m_debugOut = nullptr; //&utils::stdOut;
 
 	m_data.resize( sizeof(CRIT_SECT_WIN) + 30 );
 
 	InitializeCriticalSection( & m_data.getAsPtr<CRIT_SECT_WIN>()->cs );
 
-	if (name!=NULL)
+	if (name!=nullptr)
 		m_name = name;
 	else
 		m_name = "Unnamed";

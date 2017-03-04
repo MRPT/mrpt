@@ -24,7 +24,7 @@ public:
   /// Constructor
   AREXPORT ArRobotConfigPacketReader(ArRobot *robot, 
 				     bool onlyOneRequest = false,
-				     ArFunctor *packetedArrivedCB = NULL);
+				     ArFunctor *packetedArrivedCB = nullptr);
   /// Destructor
   AREXPORT ~ArRobotConfigPacketReader();
   /// Request a packet.. true if we could, false if onlyOneRequest already done

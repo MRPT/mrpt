@@ -31,7 +31,7 @@ namespace mrpt
 {
 	namespace slam
 	{
-		/** Fills out a "TPoseBin3D" variable, given a path hypotesis and (if not set to NULL) a new pose appended at the end, using the KLD params in "options". */
+		/** Fills out a "TPoseBin3D" variable, given a path hypotesis and (if not set to nullptr) a new pose appended at the end, using the KLD params in "options". */
 		template <>
 		void KLF_loadBinFromParticle(
 			mrpt::slam::detail::TPoseBin3D &outBin,
@@ -94,7 +94,7 @@ const TPose3D* CMonteCarloLocalization3D::getLastPose(const size_t i) const
 {
 	if (i>=m_particles.size()) THROW_EXCEPTION("Particle index out of bounds!");
 	static TPose3D auxHolder;
-	ASSERTDEB_(m_particles[i].d!=NULL)
+	ASSERTDEB_(m_particles[i].d!=nullptr)
 	auxHolder = TPose3D(*m_particles[i].d);
 	return &auxHolder;
 }

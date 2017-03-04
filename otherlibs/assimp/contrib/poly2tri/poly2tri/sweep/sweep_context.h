@@ -103,15 +103,15 @@ struct Basin {
   double width;
   bool left_highest;
 
-  Basin() : left_node(NULL), bottom_node(NULL), right_node(NULL), width(0.0), left_highest(false)
+  Basin() : left_node(nullptr), bottom_node(nullptr), right_node(nullptr), width(0.0), left_highest(false)
   {
   }
 
   void Clear()
   {
-    left_node = NULL;
-    bottom_node = NULL;
-    right_node = NULL;
+    left_node = nullptr;
+    bottom_node = nullptr;
+    right_node = nullptr;
     width = 0.0;
     left_highest = false;
   }
@@ -121,7 +121,7 @@ struct EdgeEvent {
   Edge* constrained_edge;
   bool right;
 
-  EdgeEvent() : constrained_edge(NULL), right(false)
+  EdgeEvent() : constrained_edge(nullptr), right(false)
   {
   }
 };

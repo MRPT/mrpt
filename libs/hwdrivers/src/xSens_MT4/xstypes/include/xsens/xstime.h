@@ -50,7 +50,7 @@ namespace XsTime {
 	static const XsTimeStamp& timeStampMax = XsTime_timeStampMax;
 
 	//! \copydoc XsTime_getTimeOfDay
-	inline uint32_t getTimeOfDay(tm* date_ = NULL, time_t* secs_ = NULL)
+	inline uint32_t getTimeOfDay(tm* date_ = nullptr, time_t* secs_ = nullptr)
 	{
 		return XsTime_getTimeOfDay(date_ , secs_);
 	}

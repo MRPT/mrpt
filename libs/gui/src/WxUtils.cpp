@@ -292,7 +292,7 @@ wxMRPTImageControl::wxMRPTImageControl(
 	wxWindow *parent,
 	wxWindowID winID,
 	int x, int y, int width, int height
-	) : m_img(NULL)
+	) : m_img(nullptr)
 {
 	this->Create(parent,winID,wxPoint(x,y),wxSize(width,height));
 
@@ -309,7 +309,7 @@ wxMRPTImageControl::~wxMRPTImageControl()
 	if (m_img)
 	{
 		delete m_img;
-		m_img=NULL;
+		m_img=nullptr;
 	}
 }
 
@@ -332,7 +332,7 @@ void wxMRPTImageControl::AssignImage(wxBitmap *img)
 	if (m_img)
 	{
 		delete m_img;
-		m_img=NULL;
+		m_img=nullptr;
 	}
 
 	m_img = img;
@@ -346,7 +346,7 @@ void wxMRPTImageControl::AssignImage(const mrpt::utils::CImage &img)
 	if (m_img)
 	{
 		delete m_img;
-		m_img=NULL;
+		m_img=nullptr;
 	}
 
 	m_img = wxImg;

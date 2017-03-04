@@ -152,7 +152,7 @@ bool  mrpt::system::directoryExists(const std::string& _path)
 bool  mrpt::system::createDirectory( const string &dirName )
 {
 #ifdef MRPT_OS_WINDOWS
-	bool rc = 0!=CreateDirectoryA( dirName.c_str(), NULL);
+	bool rc = 0!=CreateDirectoryA( dirName.c_str(), nullptr);
 	return (rc || GetLastError()==ERROR_ALREADY_EXISTS);
 #else
     int ret = mkdir( dirName.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH );

@@ -132,14 +132,14 @@ namespace mrpt
 			/** Copy constructor, makes a full copy of the original image contents (unless it was externally stored, in that case, this new image will just point to the same image file). */
 			CImage( const CImage &o );
 
-			/** Fast constructor that leaves the image uninitialized (the internal IplImage pointer set to NULL).
+			/** Fast constructor that leaves the image uninitialized (the internal IplImage pointer set to nullptr).
 			  *  Use only when you know the image will be soon be assigned another image.
 			  *  Example of usage:
 			  *   \code
 			  *    CImage myImg(UNINITIALIZED_IMAGE);
 			  *   \endcode
 			  */
-			inline CImage(TConstructorFlags_CImage ) : img(NULL),m_imgIsReadOnly(false), m_imgIsExternalStorage(false)
+			inline CImage(TConstructorFlags_CImage ) : img(nullptr),m_imgIsReadOnly(false), m_imgIsExternalStorage(false)
 			{ }
 
 			/** Fast constructor of a grayscale version of another image, making a <b>reference</b> to the original image if it already was in grayscale, or otherwise creating a new grayscale image and converting the original image into it.
@@ -152,7 +152,7 @@ namespace mrpt
 			  *     }
 			  *   \endcode
 			  */
-			inline CImage(const CImage& other_img, TConstructorFlags_CImage constructor_flag) : img(NULL),m_imgIsReadOnly(false), m_imgIsExternalStorage(false)
+			inline CImage(const CImage& other_img, TConstructorFlags_CImage constructor_flag) : img(nullptr),m_imgIsReadOnly(false), m_imgIsExternalStorage(false)
 			{
 				MRPT_UNUSED_PARAM(constructor_flag);
 				if( other_img.isColor() ) other_img.grayscale(*this);
@@ -168,7 +168,7 @@ namespace mrpt
 			  * \sa setFromMatrix
 			  */
 			template <typename Derived>
-			explicit inline CImage(const Eigen::MatrixBase<Derived> &m, bool matrix_is_normalized) : img(NULL),m_imgIsReadOnly(false), m_imgIsExternalStorage(false)
+			explicit inline CImage(const Eigen::MatrixBase<Derived> &m, bool matrix_is_normalized) : img(nullptr),m_imgIsReadOnly(false), m_imgIsExternalStorage(false)
 			{
 				this->setFromMatrix(m,matrix_is_normalized);
 			}
@@ -358,7 +358,7 @@ namespace mrpt
 			* \param u_max The u coordinate where find the maximun cross correlation value.
 			* \param v_max The v coordinate where find the maximun cross correlation value
 			* \param max_val The maximun value of cross correlation which we can find
-			* \param out_corr_image  If a !=NULL pointer is provided, it will be saved here the correlation image. The size of the output image is (this_width-patch_width+1, this_height-patch_height+1 )
+			* \param out_corr_image  If a !=nullptr pointer is provided, it will be saved here the correlation image. The size of the output image is (this_width-patch_width+1, this_height-patch_height+1 )
 			*  Note: By default, the search area is the whole (this) image.
 			* (by AJOGD @ MAR-2007)
 			*/
@@ -371,7 +371,7 @@ namespace mrpt
 				int					v_search_ini=-1,
 				int					u_search_size=-1,
 				int					v_search_size=-1,
-				CImage				*out_corr_image = NULL
+				CImage				*out_corr_image = nullptr
 				)const;
 
 			/**	Computes the correlation matrix between this image and another one.
@@ -935,7 +935,7 @@ namespace mrpt
 					TImageChannels	nChannels,
 					bool			originTopLeft );
 
-			/** Release the internal IPL image, if not NULL or read-only. */
+			/** Release the internal IPL image, if not nullptr or read-only. */
 			void releaseIpl(bool thisIsExternalImgUnload = false) MRPT_NO_THROWS;
 
 			/** Checks if the image is of type "external storage", and if so and not loaded yet, load it. */

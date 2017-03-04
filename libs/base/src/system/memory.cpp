@@ -42,7 +42,7 @@ void* mrpt::system::os::aligned_malloc(size_t bytes, size_t alignment)
         return _aligned_malloc(bytes,alignment);
 #   endif
 #elif defined(HAVE_POSIX_MEMALIGN)
-	void *ptr=NULL;
+	void *ptr=nullptr;
 	int ret = posix_memalign(&ptr,alignment,bytes);
 	if (ret) THROW_EXCEPTION("posix_memalign returned an error.");
 	return ptr;
@@ -54,7 +54,7 @@ void* mrpt::system::os::aligned_malloc(size_t bytes, size_t alignment)
 
 /** Frees a memory block reserved by aligned_malloc.
   * \param alignment The desired alignment, typ. 8 or 16 bytes. 1 means no alignment required.
-  * If old_ptr is NULL, a new block will be reserved from scratch.
+  * If old_ptr is nullptr, a new block will be reserved from scratch.
   * \sa aligned_malloc, aligned_free
   */
 void* mrpt::system::os::aligned_realloc(void* old_ptr, size_t bytes, size_t alignment)
@@ -135,7 +135,7 @@ void mrpt::system::os::aligned_free(void* p)
 
 				CAuxPSAPI_Loader()
 				{
-					m_ptr = NULL;
+					m_ptr = nullptr;
 
 					m_dll = LoadLibraryA("PSAPI.DLL");
 					if (m_dll)
@@ -148,8 +148,8 @@ void mrpt::system::os::aligned_free(void* p)
 					if (m_dll)
 					{
 						FreeLibrary(m_dll);
-						m_dll = NULL;
-						m_ptr = NULL;
+						m_dll = nullptr;
+						m_ptr = nullptr;
 					}
 				}
 

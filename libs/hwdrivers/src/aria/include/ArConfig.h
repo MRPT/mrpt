@@ -40,7 +40,7 @@ class ArConfig
 {
 public:
   /// Constructor
-  AREXPORT ArConfig(const char *baseDirectory = NULL,
+  AREXPORT ArConfig(const char *baseDirectory = nullptr,
 		                bool noBlanksBetweenParams = false,
 		                bool ignoreBounds = false,
 		                bool failOnBadSection = false,
@@ -56,28 +56,28 @@ public:
 
   /// Stores an optional config and robot name to be used in log messages.
   AREXPORT virtual void setConfigName(const char *configName,
-                                      const char *robotName = NULL);
+                                      const char *robotName = nullptr);
 
   /// Parse a config file
   AREXPORT bool parseFile(const char *fileName,
                           bool continueOnError = false,
 			                    bool noFileNotFoundMessage = false,
-			                    char *errorBuffer = NULL,
+			                    char *errorBuffer = nullptr,
 			                    size_t errorBufferLen = 0,
-                          std::list<std::string> *sectionsToParse = NULL);
+                          std::list<std::string> *sectionsToParse = nullptr);
 
   /// Write out a config file
   AREXPORT bool writeFile(const char *fileName,
                          bool append = false,
-			                   std::set<std::string> *alreadyWritten = NULL,
+			                   std::set<std::string> *alreadyWritten = nullptr,
 			                   bool writePriorities = false,
-                         std::list<std::string> *sectionsToWrite = NULL);
+                         std::list<std::string> *sectionsToWrite = nullptr);
 
   /// Command to add a parameter to the given section with given priority
   AREXPORT bool addParam(const ArConfigArg &arg,
                          const char *sectionName = "",
 			 ArPriority::Priority priority = ArPriority::NORMAL,
-                         const char *displayHint = NULL);
+                         const char *displayHint = nullptr);
 
   /// Command to add a new comment to the given section with given priority
   AREXPORT bool addComment(const char *comment, const char *sectionName = "",
@@ -116,19 +116,19 @@ public:
 	  ArRetFunctor2<bool, char *, size_t> *functor);
   /// Call the processFileCBs
   AREXPORT bool callProcessFileCallBacks(bool continueOnError,
-					 char *errorBuffer = NULL,
+					 char *errorBuffer = nullptr,
 					 size_t errorBufferLen = 0);
   /// This parses the argument given (for parser or other use)
   AREXPORT bool parseArgument(ArArgumentBuilder *arg,
-			      char *errorBuffer = NULL,
+			      char *errorBuffer = nullptr,
 			      size_t errorBufferLen = 0);
   /// This parses the section change (for parser or other use)
   AREXPORT bool parseSection(ArArgumentBuilder *arg,
-			      char *errorBuffer = NULL,
+			      char *errorBuffer = nullptr,
 			      size_t errorBufferLen = 0);
   /// This parses an unknown argument (so we can save it)
   AREXPORT bool parseUnknown(ArArgumentBuilder *arg,
-			     char *errorBuffer = NULL,
+			     char *errorBuffer = nullptr,
 			     size_t errorBufferLen = 0);
   /// Get the base directory
   AREXPORT const char *getBaseDirectory(void) const;
@@ -145,14 +145,14 @@ public:
   /// Use an argument parser to change the config
   AREXPORT bool parseArgumentParser(ArArgumentParser *parser,
 				    bool continueOnError = false,
-				    char *errorBuffer = NULL,
+				    char *errorBuffer = nullptr,
 				    size_t errorBufferLen = 0);
 
   /// Get the sections themselves (use only if you know what to do)
   AREXPORT std::list<ArConfigSection *> *getSections(void);
 
   /// Find the section with the given name.
-  /// @return section object, or NULL if not found.
+  /// @return section object, or nullptr if not found.
   AREXPORT ArConfigSection *findSection(const char *sectionName) const;
   /// Set the log level used when loading or reloading the configuration
   /*AREXPORT*/void setProcessFileCallbacksLogLevel(ArLog::LogLevel level)
@@ -207,19 +207,19 @@ protected:
 	    ArRetFunctor2<bool, char *, size_t> *functor)
     {
       myCallbackWithError = functor;
-      myCallback = NULL;
+      myCallback = nullptr;
     }
     ProcessFileCBType(ArRetFunctor<bool> *functor)
     {
-      myCallbackWithError = NULL;
+      myCallbackWithError = nullptr;
       myCallback = functor;
     }
     ~ProcessFileCBType() {}
     bool call(char *errorBuffer, size_t errorBufferLen)
     {
-      if (myCallbackWithError != NULL)
+      if (myCallbackWithError != nullptr)
 	return myCallbackWithError->invokeR(errorBuffer, errorBufferLen);
-      else if (myCallback != NULL)
+      else if (myCallback != nullptr)
 	return myCallback->invokeR();
       // if we get here there's a problem
       ArLog::log(ArLog::Terse, "ArConfig: Horrible problem with process callbacks");
@@ -241,13 +241,13 @@ protected:
     }
     const char *getName(void)
     {
-      if (myCallbackWithError != NULL)
+      if (myCallbackWithError != nullptr)
 	return myCallbackWithError->getName();
-      else if (myCallback != NULL)
+      else if (myCallback != nullptr)
 	return myCallback->getName();
       // if we get here there's a problem
       ArLog::log(ArLog::Terse, "ArConfig: Horrible problem with process callback names");
-      return NULL;
+      return nullptr;
     }
     protected:
     ArRetFunctor2<bool, char *, size_t> *myCallbackWithError;
@@ -295,8 +295,8 @@ protected:
 class ArConfigSection
 {
 public:
-  AREXPORT ArConfigSection(const char *name = NULL,
-						   const char *comment = NULL);
+  AREXPORT ArConfigSection(const char *name = nullptr,
+						   const char *comment = nullptr);
   AREXPORT virtual ~ArConfigSection();
   AREXPORT ArConfigSection(const ArConfigSection &section);
   AREXPORT ArConfigSection &operator=(const ArConfigSection &section);
@@ -313,7 +313,7 @@ public:
   void setComment(const char *comment) { myComment = comment; }
   bool addFlags(const char *flags) { myFlags->add(flags); return true; }
   AREXPORT bool remFlag(const char *dataFlag);
-  /// Finds a parameter item in this section with the given name.  Returns NULL if not found.
+  /// Finds a parameter item in this section with the given name.  Returns nullptr if not found.
   AREXPORT ArConfigArg *findParam(const char *paramName);
   /// Removes a string holder for this param, returns true if it found one
   AREXPORT bool remStringHolder(const char *paramName);

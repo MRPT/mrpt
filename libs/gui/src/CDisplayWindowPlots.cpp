@@ -110,8 +110,8 @@ CWindowDialogPlots::CWindowDialogPlots(
 	m_plot->Connect(wxEVT_CHAR,(wxObjectEventFunction)&CWindowDialogPlots::OnChar,0,this);
 	m_plot->Connect(wxEVT_MOTION,(wxObjectEventFunction)&CWindowDialogPlots::OnMouseMove,0,this);
 
-	m_plot->Connect(wxEVT_LEFT_DOWN,(wxObjectEventFunction)&CWindowDialogPlots::OnMouseDown,NULL,this);
-	m_plot->Connect(wxEVT_RIGHT_DOWN,(wxObjectEventFunction)&CWindowDialogPlots::OnMouseDown,NULL,this);
+	m_plot->Connect(wxEVT_LEFT_DOWN,(wxObjectEventFunction)&CWindowDialogPlots::OnMouseDown,nullptr,this);
+	m_plot->Connect(wxEVT_RIGHT_DOWN,(wxObjectEventFunction)&CWindowDialogPlots::OnMouseDown,nullptr,this);
 
     // Increment number of windows:
     //int winCount =
@@ -175,7 +175,7 @@ void CWindowDialogPlots::OnClose(wxCloseEvent& event)
 	} catch(...){}
 	if (!allow_close) return; // Don't process this close event.
 
-	// Set the m_hwnd=NULL in our parent object.
+	// Set the m_hwnd=nullptr in our parent object.
     m_winPlots->notifyChildWindowDestruction();
 
     // Decrement number of windows:
@@ -487,7 +487,7 @@ void CWindowDialogPlots::image(
 	wxImage *ii = static_cast<wxImage *>(theWxImage);
 	theLayer->SetBitmap( *ii, x0,y0,w,h );
 
-	delete ii;theWxImage=NULL;
+	delete ii;theWxImage=nullptr;
 
 	if (updateAtTheEnd) m_plot->Refresh();
 }
@@ -512,8 +512,8 @@ CDisplayWindowPlots::CDisplayWindowPlots(
 		m_holdon	(false),
 		m_holdon_just_disabled(false),
 		m_holdon_cnt(0),
-		m_callback(NULL),
-		m_callback_param (NULL)
+		m_callback(nullptr),
+		m_callback_param (nullptr)
 {
 	CBaseGUIWindow::createWxWindow(initialWidth,initialHeight);
 }
@@ -1061,7 +1061,7 @@ void CDisplayWindowPlots::addPopupMenuEntry(
  ---------------------------------------------------------------*/
 void CDisplayWindowPlots::setMenuCallback(TCallbackMenu userFunction,void* userParam )
 {
-	ASSERT_(userFunction!=NULL)
+	ASSERT_(userFunction!=nullptr)
 	m_callback = userFunction;
 	m_callback_param =userParam;
 }

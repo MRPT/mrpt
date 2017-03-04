@@ -129,8 +129,8 @@ class GRAPHSLAM_IMPEXP CWindowManager : public mrpt::utils::COutputLogger {
     void initCWindowManager() {
   		m_fetched_displaywindow_pointer = false;
   		m_fetched_observer_pointer= false;
-			win = NULL;
-			observer = NULL;
+			win = nullptr;
+			observer = nullptr;
 
     	m_offset_y_step = 20.0;
     	m_index_text_step = 1;

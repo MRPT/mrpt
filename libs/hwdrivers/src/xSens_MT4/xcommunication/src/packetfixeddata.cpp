@@ -19,9 +19,9 @@
 /*! \brief Default constructor, creates an empty (invalid) object
 */
 PacketFixedData::PacketFixedData()
-	: m_infoList(NULL)
-	, m_formatList(NULL)
-	, m_idList(NULL)
+	: m_infoList(nullptr)
+	, m_formatList(nullptr)
+	, m_idList(nullptr)
 	, m_xm(false)
 	, m_itemCount(0)
 {
@@ -33,9 +33,9 @@ PacketFixedData::PacketFixedData()
 	\param count The number of devices whose metadata is stored in the object
 */
 PacketFixedData::PacketFixedData(uint16_t count)
-	: m_infoList(NULL)
-	, m_formatList(NULL)
-	, m_idList(NULL)
+	: m_infoList(nullptr)
+	, m_formatList(nullptr)
+	, m_idList(nullptr)
 	, m_xm(false)
 	, m_itemCount(count)
 {
@@ -49,9 +49,9 @@ PacketFixedData::PacketFixedData(uint16_t count)
 	\param p The object to copy the contents from
 */
 PacketFixedData::PacketFixedData(const PacketFixedData& p)
-	: m_infoList(NULL)
-	, m_formatList(NULL)
-	, m_idList(NULL)
+	: m_infoList(nullptr)
+	, m_formatList(nullptr)
+	, m_idList(nullptr)
 	, m_xm(false)
 	, m_itemCount(0)
 {
@@ -85,9 +85,9 @@ void PacketFixedData::operator = (const PacketFixedData& data)
 	delete[] m_formatList;
 	delete[] m_idList;
 	delete[] m_infoList;
-	m_formatList = NULL;
-	m_idList = NULL;
-	m_infoList = NULL;
+	m_formatList = nullptr;
+	m_idList = nullptr;
+	m_infoList = nullptr;
 
 	m_itemCount = data.m_itemCount;
 	m_formatList = new XsDataFormat[data.m_itemCount];

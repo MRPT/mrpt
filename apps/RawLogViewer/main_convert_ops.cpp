@@ -61,7 +61,7 @@ void xRawLogViewerFrame::OnMenuCompactRawlog(wxCommandEvent& event)
 	wxTheApp->Yield();  // Let the app. process messages
 
 	CActionRobotMovement2DPtr lastAct;
-	CSensoryFramePtr        lastSF; //  = NULL;
+        CSensoryFramePtr        lastSF; //  = nullptr;
 
 	unsigned counter_loops = 0;
 	unsigned nActionsDel = 0;

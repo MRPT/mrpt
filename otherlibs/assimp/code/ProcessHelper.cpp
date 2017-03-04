@@ -151,7 +151,7 @@ float ComputePositionEpsilon(const aiMesh* const* pMeshes, size_t num)
 // -------------------------------------------------------------------------------
 unsigned int GetMeshVFormatUnique(const aiMesh* pcMesh)
 {
-	ai_assert(NULL != pcMesh);
+	ai_assert(nullptr != pcMesh);
 
 	// FIX: the hash may never be 0. Otherwise a comparison against
 	// nullptr could be successful
@@ -187,7 +187,7 @@ unsigned int GetMeshVFormatUnique(const aiMesh* pcMesh)
 VertexWeightTable* ComputeVertexBoneWeightTable(const aiMesh* pMesh)
 {
 	if (!pMesh || !pMesh->mNumVertices || !pMesh->mNumBones) {
-		return NULL;
+		return nullptr;
 	}
 
 	VertexWeightTable* avPerVertexWeights = new VertexWeightTable[pMesh->mNumVertices];

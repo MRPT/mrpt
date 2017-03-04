@@ -730,8 +730,8 @@ void CFormEdit::executeOperationOnRawlog( TRawlogFilter operation, const char *e
 
     unsigned int   	processMax;
     bool			isInMemory;
-    CFileGZInputStream 	*in_fil=NULL;
-    CFileGZOutputStream	*out_fil=NULL;
+    CFileGZInputStream 	*in_fil=nullptr;
+    CFileGZOutputStream	*out_fil=nullptr;
     size_t			first=0,last=0;
 
     if (rbLoaded->GetValue())
@@ -829,7 +829,7 @@ void CFormEdit::executeOperationOnRawlog( TRawlogFilter operation, const char *e
 
                 // Process & save:
                 if (!isInMemory || (countLoop>=first && countLoop<=last) )
-                    operation(NULL,sf.get(),changes );
+                    operation(nullptr,sf.get(),changes );
 
                 if (!isInMemory)  (*out_fil) << *sf;
             }
@@ -841,7 +841,7 @@ void CFormEdit::executeOperationOnRawlog( TRawlogFilter operation, const char *e
 
                 // Process & save:
                 if (!isInMemory || (countLoop>=first && countLoop<=last) )
-                    operation(NULL,dummy_sf.get(),changes );
+                    operation(nullptr,dummy_sf.get(),changes );
 
 				// Still there?
 				if (dummy_sf->size()==1)
@@ -865,7 +865,7 @@ void CFormEdit::executeOperationOnRawlog( TRawlogFilter operation, const char *e
 
                 // Process & save:
                 if (!isInMemory || (countLoop>=first && countLoop<=last) )
-                    operation((CActionCollection*)acts.get(),NULL,changes);
+                    operation((CActionCollection*)acts.get(),nullptr,changes);
 
                 if (!isInMemory)  (*out_fil) << *acts;
             }

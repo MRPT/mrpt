@@ -297,7 +297,7 @@ void MapBuilding_RBPF()
 	std::deque<CObservationWirelessPowerPtr>	wifiObservations;
 	CPose3D  odoPose(0,0,0);
 
-	CDisplayWindow3D    *win3D = NULL;
+    CDisplayWindow3D    *win3D = nullptr;
 
     if (SHOW_PROGRESS_IN_WINDOW)
     {
@@ -526,7 +526,7 @@ void MapBuilding_RBPF()
                 {
                     // Free scene:
                     delete scene;
-                    scene=NULL;
+                    scene=nullptr;
                 }
 				*/
 
@@ -617,7 +617,7 @@ void MapBuilding_RBPF()
 	os::sprintf(strFil,1000,"%s/most_likely_path.txt",OUT_DIR);
 	f_pathPart = os::fopen(strFil,"wt");
 
-	ASSERT_( f_pathPart != NULL );
+    ASSERT_( f_pathPart != nullptr );
 
 	std::deque<TPose3D>				outPath;
 	std::deque<TPose3D>::iterator	itPath;
@@ -640,7 +640,7 @@ void MapBuilding_RBPF()
 	{
 	    mrpt::system::pause();
 	    delete win3D;
-	    win3D=NULL;
+        win3D=nullptr;
 	}
 
 	MRPT_END

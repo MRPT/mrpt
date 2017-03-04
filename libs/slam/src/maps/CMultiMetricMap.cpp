@@ -232,7 +232,7 @@ void  CMultiMetricMap::setListOfMaps( const mrpt::maps::TSetOfMetricMapInitializ
 	internal::TMetricMapTypesRegistry & mmr = internal::TMetricMapTypesRegistry::Instance();
 
 	// Do we have any initializer?
-	if (initializers!=NULL)
+	if (initializers!=nullptr)
 	{
 		// Process each entry in the "initializers" and create maps accordingly:
 		for (TSetOfMetricMapInitializers::const_iterator it = initializers->begin();it!=initializers->end();++it)
@@ -245,7 +245,7 @@ void  CMultiMetricMap::setListOfMaps( const mrpt::maps::TSetOfMetricMapInitializ
 			this->maps.push_back( mrpt::maps::CMetricMapPtr(theMap) );
 		}
 
-	} // end if initializers!=NULL
+	} // end if initializers!=nullptr
 
 	MRPT_END
 }
@@ -452,7 +452,7 @@ const CSimplePointsMap * CMultiMetricMap::getAsSimplePointsMap() const
 {
 	MRPT_START
 	ASSERT_(m_pointsMaps.size()==1 || m_pointsMaps.size()==0)
-	if (m_pointsMaps.empty()) return NULL;
+	if (m_pointsMaps.empty()) return nullptr;
 	else return m_pointsMaps[0].get();
 	MRPT_END
 }
@@ -460,7 +460,7 @@ CSimplePointsMap * CMultiMetricMap::getAsSimplePointsMap()
 {
 	MRPT_START
 	ASSERT_(m_pointsMaps.size()==1 || m_pointsMaps.size()==0)
-	if (m_pointsMaps.empty()) return NULL;
+	if (m_pointsMaps.empty()) return nullptr;
 	else return m_pointsMaps[0].get();
 	MRPT_END
 }

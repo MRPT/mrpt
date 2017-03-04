@@ -149,13 +149,13 @@ AREXPORT bool ArSerialConnection::openSimple(void)
 }
 
 /**
-   @param port The serial port to connect to, or NULL which defaults to 
+   @param port The serial port to connect to, or nullptr which defaults to 
    COM1 for windows and /dev/ttyS0 for linux
    @see getOpenMessage
 */
 AREXPORT void ArSerialConnection::setPort(const char *port)
 {
-  if (port == NULL)
+  if (port == nullptr)
     myPortName = "/dev/ttyS0";
   else
     myPortName = port;
@@ -170,7 +170,7 @@ AREXPORT const char * ArSerialConnection::getPort(void)
 }
 
 /**
-   @param port The serial port to connect to, or NULL which defaults to 
+   @param port The serial port to connect to, or nullptr which defaults to 
    COM1 for windows and /dev/ttyS0 for linux
    @return 0 for success, otherwise one of the open enums
    @see getOpenMessage
@@ -401,7 +401,7 @@ AREXPORT int ArSerialConnection::read(const char *data, unsigned int size,
 	tp.tv_usec = (timeLeft % 1000) * 1000;
 	FD_ZERO(&fdset);
 	FD_SET(myPort,&fdset);
-	if (select(myPort+1,&fdset,NULL,NULL,&tp) <= 0) 
+	if (select(myPort+1,&fdset,nullptr,nullptr,&tp) <= 0) 
 	  return bytesRead;
 	if ((n = ::read(myPort, const_cast<char *>(data)+bytesRead, 
 			size-bytesRead)) == -1)

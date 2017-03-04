@@ -350,7 +350,7 @@ bool mrpt::compress::zip::compress_gz_data_block(
 			in_data.size()+1000,
 			in_data.size()+1000,
 			0,
-			NULL);
+			nullptr);
 		if (hPipe==INVALID_HANDLE_VALUE) THROW_EXCEPTION("Error creating named pipe for gz-file compression");
 	#else
 		// Unix:
@@ -379,15 +379,15 @@ bool mrpt::compress::zip::compress_gz_data_block(
 		{
 		#ifdef MRPT_OS_WINDOWS
 			// Read (windows)
-			const size_t N = GetFileSize(hPipe,NULL);
+			const size_t N = GetFileSize(hPipe,nullptr);
 			if (N)
 			{
 				out_gz_data.resize(N);
 				DWORD nRead;
-				SetFilePointer(hPipe,0,NULL, FILE_BEGIN);
+				SetFilePointer(hPipe,0,nullptr, FILE_BEGIN);
 				if (N)
 				{
-					ReadFile(hPipe,&out_gz_data[0],N,&nRead,NULL);
+					ReadFile(hPipe,&out_gz_data[0],N,&nRead,nullptr);
 					retVal= nRead == N;
 				}
 			}

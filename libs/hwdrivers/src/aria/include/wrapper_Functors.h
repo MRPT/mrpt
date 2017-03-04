@@ -34,7 +34,7 @@ public:
   }
 
   virtual void invoke() { 
-    PyObject* r = PyObject_CallObject(pyFunction, NULL);
+    PyObject* r = PyObject_CallObject(pyFunction, nullptr);
     if(!r) {
       fputs("** ArPyFunctor: Error calling Python function: ", stderr);
       PyErr_Print();
@@ -60,7 +60,7 @@ public:
   }
 
   virtual bool invokeR() {
-    PyObject* r = PyObject_CallObject(pyFunction, NULL);  
+    PyObject* r = PyObject_CallObject(pyFunction, nullptr);  
     if(!r) {
       fputs("** ArPyRetFunctor_Bool: Error calling Python function: ", stderr);
       PyErr_Print();

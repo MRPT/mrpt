@@ -30,8 +30,8 @@ namespace mrpt
 		void KLF_loadBinFromParticle(
 			BINTYPE				&outBin,
 			const TKLDParams  	&opts,
-			const PARTICLETYPE 	*currentParticleValue = NULL,
-			const mrpt::math::TPose3D		*newPoseToBeInserted = NULL );
+			const PARTICLETYPE 	*currentParticleValue = nullptr,
+			const mrpt::math::TPose3D		*newPoseToBeInserted = nullptr );
 
 
 		/** A set of common data shared by PF implementations for both SLAM and localization
@@ -148,7 +148,7 @@ namespace mrpt
 			/** \name Virtual methods that the PF_implementations assume exist.
 			    @{ */
 
-			/** Return a pointer to the last robot pose in the i'th particle (or NULL if it's a path and it's empty). */
+			/** Return a pointer to the last robot pose in the i'th particle (or nullptr if it's a path and it's empty). */
 			virtual const  mrpt::math::TPose3D * getLastPose(const size_t i) const = 0;
 
 			virtual void PF_SLAM_implementation_custom_update_particle_with_new_pose(

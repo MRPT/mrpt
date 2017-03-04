@@ -146,7 +146,7 @@ jpeg_stdio_dest (j_compress_ptr cinfo, CStream * out)
    * manager serially with the same JPEG object, because their private object
    * sizes may be different.  Caveat programmer.
    */
-  if (cinfo->dest == NULL) {	/* first time for this JPEG object? */
+  if (cinfo->dest == nullptr) {	/* first time for this JPEG object? */
 	cinfo->dest = (jpeg_destination_mgr *)
 		(*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_PERMANENT,
 				  sizeof(mrpt_destination_mgr));
@@ -334,7 +334,7 @@ jpeg_stdio_src (j_decompress_ptr cinfo, CStream * in)
    * This makes it unsafe to use this manager and a different source
    * manager serially with the same JPEG object.  Caveat programmer.
    */
-  if (cinfo->src == NULL)
+  if (cinfo->src == nullptr)
   {	/* first time for this JPEG object? */
 	cinfo->src = (mrpt_jpeg_source_mgr *)
 		(*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_PERMANENT,
@@ -353,7 +353,7 @@ jpeg_stdio_src (j_decompress_ptr cinfo, CStream * in)
   src->pub.term_source = term_source;
   src->in = in;
   src->pub.bytes_in_buffer = 0; /* forces fill_input_buffer on first read */
-  src->pub.next_input_byte = NULL; /* until buffer loaded */
+  src->pub.next_input_byte = nullptr; /* until buffer loaded */
 }
 
 // ---------------------------------------------------------------------------------------

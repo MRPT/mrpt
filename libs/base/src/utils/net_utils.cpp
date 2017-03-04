@@ -415,7 +415,7 @@ struct TDNSThreadData
 	synch::CSemaphore   sem_solved;
 	synch::CSemaphore	sem_caller_quitted;   // This is needed in order to the thread to wait for deleting this struct!
 	std::string			in_servername;
-	CThreadSafeVariable<std::string>  out_solved_ip;  // Will be set to NULL by the caller if the function returns.
+    CThreadSafeVariable<std::string>  out_solved_ip;  // Will be set to nullptr by the caller if the function returns.
 };
 
 void thread_DNS_solver_async(TDNSThreadData &dat); // Frd decl.
@@ -521,11 +521,11 @@ std::string mrpt::utils::net::getLastSocketErrorStr()
 {
 #ifdef MRPT_OS_WINDOWS
 	const int errnum = WSAGetLastError();
-	char * s = NULL;
+    char * s = nullptr;
 	FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, 
-		NULL, errnum,
+		nullptr, errnum,
 		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-		(LPSTR)&s, 0, NULL);
+        (LPSTR)&s, 0, nullptr);
 	const std::string str = mrpt::format("%s [errno=%d]",s,errnum);
 	LocalFree(s);
 	return str;

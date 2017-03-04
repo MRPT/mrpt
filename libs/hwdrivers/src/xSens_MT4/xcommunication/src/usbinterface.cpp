@@ -393,8 +393,8 @@ UsbInterface::UsbInterface() :
 	d->m_deviceHandle = 0;
 	d->m_portname[0] = 0;
 	#ifdef LOG_RX_TX
-		d->rx_log = NULL;
-		d->tx_log = NULL;
+		d->rx_log = nullptr;
+		d->tx_log = nullptr;
 	#endif
 	#ifdef USE_WINUSB
 		d->m_threadHandle = INVALID_HANDLE_VALUE;
@@ -403,10 +403,10 @@ UsbInterface::UsbInterface() :
 		d->m_usbHandle[1] = 0;
 		for (int i = 0; i < d->m_oCount; ++i)
 		{
-			d->m_waitEvents[i] = ::CreateEvent(NULL, TRUE, FALSE, NULL);
+			d->m_waitEvents[i] = ::CreateEvent(nullptr, TRUE, FALSE, nullptr);
 			::ResetEvent(d->m_waitEvents[i]);
 		}
-		d->m_quitEvent = ::CreateEvent(NULL, TRUE, FALSE, NULL);
+		d->m_quitEvent = ::CreateEvent(nullptr, TRUE, FALSE, nullptr);
 		::ResetEvent(d->m_quitEvent);
 		d->m_readIdx = 0;
 //		d->m_offset = 0;
@@ -446,12 +446,12 @@ XsResultValue UsbInterface::closeUsb(void)
 {
 	//lint --e{534}
 #ifdef LOG_RX_TX
-	if (d->rx_log != NULL)
+	if (d->rx_log != nullptr)
 		fclose(d->rx_log);
-	if (d->tx_log != NULL)
+	if (d->tx_log != nullptr)
 		fclose(d->tx_log);
-	d->rx_log = NULL;
-	d->tx_log = NULL;
+	d->rx_log = nullptr;
+	d->tx_log = nullptr;
 #endif
 	if (!isOpen())
 		return d->m_lastResult = XRV_NOPORTOPEN;
@@ -471,15 +471,15 @@ XsResultValue UsbInterface::closeUsb(void)
 	flushData();
 	if(d->m_usbHandle[0]) {
 		d->m_winUsb.Free(d->m_usbHandle[0]);
-		d->m_usbHandle[0] = NULL;
+		d->m_usbHandle[0] = nullptr;
 	}
 	if(d->m_usbHandle[1]) {
 		d->m_winUsb.Free(d->m_usbHandle[1]);
-		d->m_usbHandle[1] = NULL;
+		d->m_usbHandle[1] = nullptr;
 	}
 	if (d->m_deviceHandle) {
 		CloseHandle(d->m_deviceHandle);
-		d->m_deviceHandle = NULL;
+		d->m_deviceHandle = nullptr;
 	}
 #else
 	flushData();
@@ -495,7 +495,7 @@ XsResultValue UsbInterface::closeUsb(void)
 	}
 
 	UsbInterfacePrivate::getContextManager().m_libUsb.close(d->m_deviceHandle);
-	d->m_deviceHandle = NULL;
+	d->m_deviceHandle = nullptr;
 
 	UsbInterfacePrivate::getContextManager().m_libUsb.unref_device(dev);
 	d->m_interface = -1;
@@ -556,7 +556,7 @@ uint32_t UsbInterface::getTimeout (void) const
 //! Return whether the USB communication port is open or not.
 bool UsbInterface::isOpen (void) const
 {
-	return d->m_deviceHandle != NULL;
+	return d->m_deviceHandle != nullptr;
 }
 
 /*! \brief Open a communication channel to the given USB port name. */
@@ -580,14 +580,14 @@ XsResultValue UsbInterface::open(const XsPortInfo &portInfo, uint32_t, uint32_t)
 	d->m_deviceHandle = CreateFileA(portInfo.portName().c_str(),
 		GENERIC_WRITE | GENERIC_READ,
 		FILE_SHARE_WRITE | FILE_SHARE_READ,
-		NULL,
+		nullptr,
 		OPEN_EXISTING,
 		FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED,
-		NULL);
+		nullptr);
 
 	if (d->m_deviceHandle == INVALID_HANDLE_VALUE)
 	{
-		d->m_deviceHandle = NULL;
+		d->m_deviceHandle = nullptr;
 		return (d->m_lastResult = XRV_PORTNOTFOUND);
 	}
 
@@ -692,8 +692,8 @@ XsResultValue UsbInterface::open(const XsPortInfo &portInfo, uint32_t, uint32_t)
 
 	XsResultValue xrv = XRV_OK;
 	int result;
-	libusb_device *device = NULL;
-	for (int i = 0; i < listLength && device == NULL; ++i) {
+	libusb_device *device = nullptr;
+	for (int i = 0; i < listLength && device == nullptr; ++i) {
 		libusb_device *dev = deviceList[i];
 		if (UsbInterfacePrivate::getContextManager().m_libUsb.get_bus_number(dev) != bus || UsbInterfacePrivate::getContextManager().m_libUsb.get_device_address(dev) != address)
 			continue;
@@ -829,7 +829,7 @@ XsResultValue UsbInterface::readData (const XsSize maxLength, void *data, XsSize
 {
 	JLTRACE(gJournal, "maxLength=" << maxLength << ", data=0x" << data << ", length=0x" << length);
 	XsSize ln;
-	if (length == NULL)
+	if (length == nullptr)
 		length = &ln;
 
 	if (!isOpen())
@@ -863,7 +863,7 @@ XsResultValue UsbInterface::readData (const XsSize maxLength, void *data, XsSize
 #ifdef LOG_RX_TX
 	if (*length > 0)
 	{
-		if (d->rx_log == NULL)
+		if (d->rx_log == nullptr)
 		{
 			char fname[XS_MAX_FILENAME_LENGTH];
 			sprintf(fname,"rx_USB%03u_%03u.log", usbBus(), usbAddress());
@@ -959,7 +959,7 @@ XsResultValue UsbInterface::waitForData(const XsSize maxLength, void* data, XsSi
 	char *bdata = (char *)data;
 
 	XsSize ln;
-	if (length == NULL)
+	if (length == nullptr)
 		length = &ln;
 	uint32_t eTime = XsTime::getTimeOfDay() + timeout;
 	XsSize newLength = 0;
@@ -1004,7 +1004,7 @@ XsResultValue UsbInterface::writeData(const XsByteArray& data, XsSize* written)
 XsResultValue UsbInterface::writeData(const XsSize length, const void *data, XsSize* written)
 {
 	XsSize bytes;
-	if (written == NULL)
+	if (written == nullptr)
 		written = &bytes;
 
 	if (!isOpen())
@@ -1019,7 +1019,7 @@ XsResultValue UsbInterface::writeData(const XsSize length, const void *data, XsS
 		(uint8_t*)data,
 		(ULONG)length,
 		&dataWritten,
-		NULL);	//lint !e534
+		nullptr);	//lint !e534
 
 	*written = dataWritten;
 #else
@@ -1041,7 +1041,7 @@ XsResultValue UsbInterface::writeData(const XsSize length, const void *data, XsS
 #ifdef LOG_RX_TX
 	if (*written > 0)
 	{
-		if (d->tx_log == NULL)
+		if (d->tx_log == nullptr)
 		{
 			char fname[XS_MAX_FILENAME_LENGTH];
 			sprintf(fname,"tx_USB%03u_%03u.log", usbBus(), usbAddress());

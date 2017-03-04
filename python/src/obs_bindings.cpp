@@ -495,7 +495,7 @@ void export_obs()
             .def("insert", &CSensoryFrame::insert, "Inserts a new observation to the list.")
             .def("size", &CSensoryFrame::size, "Returns the number of observations in the list")
             .def("eraseByIndex", &CSensoryFrame::eraseByIndex, "Removes the i'th observation in the list (0=first).")
-            .def("getAuxPointsMap", &CSensoryFrame_getAuxPointsMap, return_internal_reference<>(), "Returns the cached points map representation of the scan, if already build with buildAuxPointsMap(), or NULL otherwise.")
+            .def("getAuxPointsMap", &CSensoryFrame_getAuxPointsMap, return_internal_reference<>(), "Returns the cached points map representation of the scan, if already build with buildAuxPointsMap(), or nullptr otherwise.")
             .def("buildAuxPointsMap", &CSensoryFrame_buildAuxPointsMap, return_internal_reference<>(), "Returns a cached points map representing this laser scan, building it upon the first call.")
             MAKE_CREATE(CSensoryFrame)
         ;

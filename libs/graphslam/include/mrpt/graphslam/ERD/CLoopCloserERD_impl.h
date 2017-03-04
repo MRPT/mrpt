@@ -29,9 +29,9 @@ template<class GRAPH_t>
 void CLoopCloserERD<GRAPH_t>::initCLoopCloserERD() {
 	MRPT_START;
 
-	m_win = NULL;
-	m_win_manager = NULL;
-	m_graph = NULL;
+	m_win = nullptr;
+	m_win_manager = nullptr;
+	m_graph = nullptr;
 
 	m_initialized_visuals = false;
 	m_visualize_curr_node_covariance = false;
@@ -931,7 +931,7 @@ typename CLoopCloserERD<GRAPH_t>::TPath*
 CLoopCloserERD<GRAPH_t>::queryOptimalPath(const mrpt::utils::TNodeID node) const {
 	MRPT_START;
 
-	TPath* path = NULL;
+	TPath* path = nullptr;
 	typename std::map<mrpt::utils::TNodeID, TPath*>::const_iterator search;
 	search = m_node_optimal_paths.find(node);
 	if (search != m_node_optimal_paths.end()) {
@@ -1048,7 +1048,7 @@ popMinUncertaintyPath(std::set<TPath*>* pool_of_paths) const {
 	using namespace std;
 
 	//cout << "Determinants: ";
-	TPath* optimal_path = NULL;
+	TPath* optimal_path = nullptr;
 	double curr_determinant = 0;
 	for (typename std::set<TPath*>::const_iterator it =pool_of_paths->begin();
 			it != pool_of_paths->end(); ++it) {

@@ -82,7 +82,7 @@ namespace utils
 		{
 			CMemoryStream *buf;
 			bool do_free;
-			TFreeFnDataForZMQ() : buf(NULL), do_free(true) { }
+			TFreeFnDataForZMQ() : buf(nullptr), do_free(true) { }
 		};
 		void BASE_IMPEXP free_fn_for_zmq(void *data, void *hint); //!< Used in mrpt_send_to_zmq(). `hint` points to a `TFreeFnDataForZMQ` struct, to be freed here.
 	}

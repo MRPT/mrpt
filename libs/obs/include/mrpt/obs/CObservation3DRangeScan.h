@@ -31,11 +31,11 @@ namespace obs
 	struct OBS_IMPEXP T3DPointsProjectionParams
 	{
 		bool takeIntoAccountSensorPoseOnRobot;           //!< (Default: false) If false, local (sensor-centric) coordinates of points are generated. Otherwise, points are transformed with \a sensorPose. Furthermore, if provided, those coordinates are transformed with \a robotPoseInTheWorld
-		const mrpt::poses::CPose3D *robotPoseInTheWorld; //!< (Default: NULL) Read takeIntoAccountSensorPoseOnRobot
+		const mrpt::poses::CPose3D *robotPoseInTheWorld; //!< (Default: nullptr) Read takeIntoAccountSensorPoseOnRobot
 		bool PROJ3D_USE_LUT; //!< (Default:true) [Only used when `range_is_depth`=true] Whether to use a Look-up-table (LUT) to speed up the conversion. It's thread safe in all situations <b>except</b> when you call this method from different threads <b>and</b> with different camera parameter matrices. In all other cases, it is a good idea to left it enabled.
 		bool USE_SSE2; //!< (Default:true) If possible, use SSE2 optimized code.
 		bool MAKE_DENSE; //!< (Default:true) set to false if you want to preserve the organization of the point cloud
-		T3DPointsProjectionParams() :  takeIntoAccountSensorPoseOnRobot(false), robotPoseInTheWorld(NULL), PROJ3D_USE_LUT(true),USE_SSE2(true), MAKE_DENSE(true)
+		T3DPointsProjectionParams() :  takeIntoAccountSensorPoseOnRobot(false), robotPoseInTheWorld(nullptr), PROJ3D_USE_LUT(true),USE_SSE2(true), MAKE_DENSE(true)
 		{}
 	};
 	/** Used in CObservation3DRangeScan::convertTo2DScan() */
@@ -213,9 +213,9 @@ namespace obs
 		inline void project3DPointsFromDepthImageInto(
 			POINTMAP                   & dest_pointcloud,
 			const bool takeIntoAccountSensorPoseOnRobot,
-			const mrpt::poses::CPose3D *robotPoseInTheWorld=NULL,
+			const mrpt::poses::CPose3D *robotPoseInTheWorld=nullptr,
 			const bool PROJ3D_USE_LUT=true,
-			const mrpt::math::CMatrix * rangeMask_min = NULL
+			const mrpt::math::CMatrix * rangeMask_min = nullptr
 			)
 		{
 			T3DPointsProjectionParams pp; 
@@ -272,7 +272,7 @@ namespace obs
 			const double angle_sup = mrpt::utils::DEG2RAD(5),
 			const double angle_inf = mrpt::utils::DEG2RAD(5),
 			const double oversampling_ratio = 1.2,
-			const mrpt::math::CMatrix * rangeMask_min = NULL
+			const mrpt::math::CMatrix * rangeMask_min = nullptr
 			);
 
 		/** Whether external files (3D points, range and confidence) are to be 

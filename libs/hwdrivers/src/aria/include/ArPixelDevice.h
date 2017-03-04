@@ -54,7 +54,7 @@ class ArPixelDevice
     myYFOV = y_fov;
     myName = name;
 
-    mySensorData = NULL;
+    mySensorData = nullptr;
     
     if (!allocateSensorDataMemory()) 
     {
@@ -68,7 +68,7 @@ class ArPixelDevice
   /// Base destructor
   AREXPORT virtual ~ArPixelDevice()
   {
-    if (mySensorData != NULL)
+    if (mySensorData != nullptr)
     {
       for (int i=0; i < myXSize; i++)
       {
@@ -90,7 +90,7 @@ class ArPixelDevice
     }
     else 
     {
-      return NULL;
+      return nullptr;
     }
   }
   /// Get the dimension of the grid in the x direction
@@ -128,14 +128,14 @@ protected:
       return false;
     }
     mySensorData = new DataObject**[myXSize];
-    if (mySensorData == NULL)
+    if (mySensorData == nullptr)
     {
       ArLog::log(ArLog::Normal, "Cannot allocate memory for ArPixelDevice %s", getName());
       return false;
     }
     for (int i=0; i < myXSize; i++)
     {
-      if ((mySensorData[i] = new DataObject*[myYSize]) == NULL)
+      if ((mySensorData[i] = new DataObject*[myYSize]) == nullptr)
       {
 	ArLog::log(ArLog::Normal, "Cannot allocate memory for ArPixelDevice %s", getName());
 	return false;

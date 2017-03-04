@@ -36,7 +36,7 @@ bool slamdemoApp::OnInit()
 	// Process command line args?
 	bool gotoGUI = true;
 
-	win = new slamdemoFrame(NULL);
+        win = new slamdemoFrame(nullptr);
 
 	if (argc>1)
 		gotoGUI = doCommandLineProcess();
@@ -51,7 +51,7 @@ bool slamdemoApp::OnInit()
 	else
 	{
 		delete win;
-		win=NULL;
+                win=nullptr;
 		return false; // Exit now.
 	}
 }

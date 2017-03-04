@@ -134,7 +134,7 @@ double mrpt::vision::bundle_adj_full(
 					 INV_POSES_BOOL, // are poses inverse?
 					 use_robust_kernel,
 					 kernel_param,
-					 use_robust_kernel ? &kernel_1st_deriv : NULL );
+					 use_robust_kernel ? &kernel_1st_deriv : nullptr );
 	profiler.leave("reprojectionResiduals");
 
 	MRPT_CHECK_NORMAL_NUMBER(res)
@@ -158,7 +158,7 @@ double mrpt::vision::bundle_adj_full(
 	aligned_containers<Array_P>::vector_t       eps_point (num_free_points, arrP_zeros);
 
 	profiler.enter("build_gradient_Hessians");
-	ba_build_gradient_Hessians(observations,residual_vec,jac_data_vec, H_f,eps_frame,H_p,eps_point, num_fix_frames, num_fix_points, use_robust_kernel ? &kernel_1st_deriv : NULL  );
+	ba_build_gradient_Hessians(observations,residual_vec,jac_data_vec, H_f,eps_frame,H_p,eps_point, num_fix_frames, num_fix_points, use_robust_kernel ? &kernel_1st_deriv : nullptr  );
 	profiler.leave("build_gradient_Hessians");
 
 	double nu = 2;
@@ -406,7 +406,7 @@ double mrpt::vision::bundle_adj_full(
 								 INV_POSES_BOOL, // are poses inverse?
 								 use_robust_kernel,
 								 kernel_param,
-								 use_robust_kernel ? &new_kernel_1st_deriv : NULL );
+								 use_robust_kernel ? &new_kernel_1st_deriv : nullptr );
 			profiler.leave("reprojectionResiduals");
 
 			MRPT_CHECK_NORMAL_NUMBER(res_new)
@@ -439,7 +439,7 @@ double mrpt::vision::bundle_adj_full(
 				eps_point.assign(num_free_points, arrP_zeros);
 
 				profiler.enter("build_gradient_Hessians");
-				ba_build_gradient_Hessians(observations,residual_vec,jac_data_vec,H_f,eps_frame,H_p,eps_point, num_fix_frames, num_fix_points, use_robust_kernel ? &kernel_1st_deriv : NULL );
+				ba_build_gradient_Hessians(observations,residual_vec,jac_data_vec,H_f,eps_frame,H_p,eps_point, num_fix_frames, num_fix_points, use_robust_kernel ? &kernel_1st_deriv : nullptr );
 				profiler.leave("build_gradient_Hessians");
 
 				stop = norm_inf(g)<=eps;

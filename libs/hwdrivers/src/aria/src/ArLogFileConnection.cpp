@@ -19,8 +19,8 @@
 AREXPORT ArLogFileConnection::ArLogFileConnection()
 {
   myStatus = STATUS_NEVER_OPENED;
-  myLogFile = NULL;
-  myFD = NULL;
+  myLogFile = nullptr;
+  myFD = nullptr;
   stopAfter = 1;
   strcpy(myName, "random");
   strcpy(myType, "amigo");
@@ -29,14 +29,14 @@ AREXPORT ArLogFileConnection::ArLogFileConnection()
 
 AREXPORT ArLogFileConnection::~ArLogFileConnection()
 {
-  if (myFD != NULL)
+  if (myFD != nullptr)
     fclose(myFD);
 }
 
 
 AREXPORT void ArLogFileConnection::setLogFile(const char *fname)
 {
-  if (fname == NULL)
+  if (fname == nullptr)
     myLogFile = "robot.log";
   else
     myLogFile = fname;
@@ -51,7 +51,7 @@ AREXPORT bool ArLogFileConnection::openSimple(void)
 }
 
 /**
-   @param fname the file to connect to, if NULL (default) then robot.log
+   @param fname the file to connect to, if nullptr (default) then robot.log
    @return 0 for success, otherwise one of the open enums
    @see getOpenMessage
 */
@@ -65,20 +65,20 @@ AREXPORT int ArLogFileConnection::internalOpen(void)
 {
   havePose = false;
   myFD = fopen(myLogFile, "r");
-  if (myFD == NULL)
+  if (myFD == nullptr)
     {
       myStatus = STATUS_OPEN_FAILED;
       return OPEN_FILE_NOT_FOUND;
     }
 
   char buf[100];
-  if (fgets(buf,100,myFD) != NULL)
+  if (fgets(buf,100,myFD) != nullptr)
     {
       if (strncmp(buf, "// Saphira log file", 19) != 0)
         {
           myStatus = STATUS_OPEN_FAILED;
           fclose(myFD);
-          myFD = NULL;
+          myFD = nullptr;
           return OPEN_NOT_A_LOG_FILE;
         }
     }
@@ -86,12 +86,12 @@ AREXPORT int ArLogFileConnection::internalOpen(void)
     {
       myStatus = STATUS_OPEN_FAILED;
       fclose(myFD);
-      myFD = NULL;
+      myFD = nullptr;
       return OPEN_NOT_A_LOG_FILE;
     }
 
   // Set the robot pose
-  if (fgets(buf,100,myFD) != NULL)
+  if (fgets(buf,100,myFD) != nullptr)
     {
       if (strncmp(buf, "// Robot position", 17) == 0)  // have a position!
         {
@@ -130,9 +130,9 @@ AREXPORT const char * ArLogFileConnection::getOpenMessage(int messageNumber)
 AREXPORT bool ArLogFileConnection::close(void)
 {
   myStatus = STATUS_CLOSED_NORMALLY;
-  if (myFD != NULL)
+  if (myFD != nullptr)
     fclose(myFD);
-  myFD = NULL;
+  myFD = nullptr;
   return true;
 }
 
@@ -160,10 +160,10 @@ AREXPORT int ArLogFileConnection::read(const char *data, unsigned int size,
       return 0;
     }
 
-  if (myFD != NULL)
+  if (myFD != nullptr)
     {
       char line[1000];
-      if (fgets(line, 1000, myFD) == NULL) // done with file, close
+      if (fgets(line, 1000, myFD) == nullptr) // done with file, close
         {
           close();
           return -1;

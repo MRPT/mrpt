@@ -50,7 +50,7 @@ Packet::Packet(uint16_t items, bool xbus)
 	PACKETLOG("Create Packet %p\n",this);
 
 	m_itemCount = items;
-	m_infoList = NULL;
+	m_infoList = nullptr;
 	m_formatList = new CmtDataFormat[m_itemCount];
 	m_toa = 0;
 	m_rtc = 0;
@@ -68,7 +68,7 @@ Packet::~Packet()
 //////////////////////////////////////////////////////////////////////////////////////////
 CmtDataFormat Packet::getDataFormat(const uint16_t index) const
 {
-	if (index >= m_itemCount || m_formatList == NULL)
+	if (index >= m_itemCount || m_formatList == nullptr)
 	{
 		CmtDataFormat temp;
 		return temp;
@@ -174,7 +174,7 @@ uint16_t Packet::getFPValueSize(const uint16_t index) const
 // Return the data size.
 uint16_t Packet::getDataSize(const uint16_t index) const
 {
-	if (m_infoList == NULL)
+	if (m_infoList == nullptr)
 	{
 		// allocate list
 		m_infoList = new PacketInfo[m_itemCount];
@@ -1268,8 +1268,8 @@ Packet::Packet(const Packet& pack)
 	PACKETLOG("Create new packet from Packet %p\n",&pack);
 
 	m_itemCount = 0;
-	m_formatList = NULL;
-	m_infoList = NULL;
+	m_formatList = nullptr;
+	m_infoList = nullptr;
 	*this = pack;
 }
 

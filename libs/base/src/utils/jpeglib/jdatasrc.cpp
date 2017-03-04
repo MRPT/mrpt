@@ -183,7 +183,7 @@ jpeg_stdio_src (j_decompress_ptr cinfo, FILE * infile)
    * This makes it unsafe to use this manager and a different source
    * manager serially with the same JPEG object.  Caveat programmer.
    */
-  if (cinfo->src == NULL) {	/* first time for this JPEG object? */
+  if (cinfo->src == nullptr) {	/* first time for this JPEG object? */
     cinfo->src = (struct jpeg_source_mgr *)
       (*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_PERMANENT,
 				  SIZEOF(my_source_mgr));
@@ -201,5 +201,5 @@ jpeg_stdio_src (j_decompress_ptr cinfo, FILE * infile)
   src->pub.term_source = term_source;
   src->infile = infile;
   src->pub.bytes_in_buffer = 0; /* forces fill_input_buffer on first read */
-  src->pub.next_input_byte = NULL; /* until buffer loaded */
+  src->pub.next_input_byte = nullptr; /* until buffer loaded */
 }

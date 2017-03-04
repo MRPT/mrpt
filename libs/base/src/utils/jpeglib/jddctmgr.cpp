@@ -84,7 +84,7 @@ start_pass (j_decompress_ptr cinfo)
   int ci, i;
   jpeg_component_info *compptr;
   int method = 0;
-  inverse_DCT_method_ptr method_ptr = NULL;
+  inverse_DCT_method_ptr method_ptr = nullptr;
   JQUANT_TBL * qtbl;
 
   for (ci = 0, compptr = cinfo->comp_info; ci < cinfo->num_components;
@@ -145,7 +145,7 @@ start_pass (j_decompress_ptr cinfo)
     if (! compptr->component_needed || idct->cur_method[ci] == method)
       continue;
     qtbl = compptr->quant_table;
-    if (qtbl == NULL)		/* happens if no data yet for component */
+    if (qtbl == nullptr)		/* happens if no data yet for component */
       continue;
     idct->cur_method[ci] = method;
     switch (method) {

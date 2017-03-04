@@ -261,16 +261,16 @@ bool CLMS100Eth::decodeScan(char* buff, CObservation2DRangeScan& outObservation)
             MRPT_LOG_DEBUG("Distance : OK\n");
             break;
         case 22 :
-            //factor = strtod(next, NULL);
+            //factor = strtod(next, nullptr);
             break;
         case 26 :
-            scanCount = strtoul(next, NULL, 16);
+            scanCount = strtoul(next, nullptr, 16);
             MRPT_LOG_DEBUG_FMT("Scan Count : %d\n", scanCount);
             break;
         default :
                 break;
     }
-        next = strtok(NULL, " ", &tmp);
+        next = strtok(nullptr, " ", &tmp);
     }
     outObservation.aperture = (float)APPERTURE;
     outObservation.rightToLeft = false;
@@ -283,9 +283,9 @@ bool CLMS100Eth::decodeScan(char* buff, CObservation2DRangeScan& outObservation)
 
 	outObservation.resizeScan(scanCount);
     unsigned int i;
-    for(i = 0 ; i < scanCount && next; i++, next = strtok(NULL, " ", &tmp))
+    for(i = 0 ; i < scanCount && next; i++, next = strtok(nullptr, " ", &tmp))
     {
-		outObservation.setScanRange(i, double(strtoul(next, NULL, 16))/1000.0);
+		outObservation.setScanRange(i, double(strtoul(next, nullptr, 16))/1000.0);
 		outObservation.setScanRangeValidity(i, outObservation.getScanRange(i) <= outObservation.maxRange);
     }
 	outObservation.resizeScan( i );

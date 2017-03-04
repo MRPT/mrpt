@@ -109,12 +109,12 @@ namespace mrpt
 			  *   the latest pushed key, see
 			  *
 			  * \param ignoreControlKeys If set to false, any push of shift, cmd, control, etc... will make this method to return.
-			  * \param out_pushModifier If set to !=NULL, the modifiers of the key stroke will be saved here.
+			  * \param out_pushModifier If set to !=nullptr, the modifiers of the key stroke will be saved here.
 			  * \return The virtual key code, as defined in mrptKeyCode (a replication of wxWidgets key codes).
 			  *
 			  * \sa getPushedKey, Key codes in the enum mrptKeyCode
 			  */
-			int  waitForKey(bool ignoreControlKeys = true, mrptKeyModifier *out_pushModifier=NULL);
+			int  waitForKey(bool ignoreControlKeys = true, mrptKeyModifier *out_pushModifier=nullptr);
 
 			/** Returns true if a key has been pushed, without blocking waiting for a new key being pushed.
 			  * \sa waitForKey, clearKeyHitFlag
@@ -127,12 +127,12 @@ namespace mrpt
 			void  clearKeyHitFlag() { m_keyPushed = false; }
 
 			/** Returns the latest pushed key, or 0 if there is no new key stroke.
-			  * \param out_pushModifier If set to !=NULL, the modifiers of the key stroke will be saved here.
+			  * \param out_pushModifier If set to !=nullptr, the modifiers of the key stroke will be saved here.
 			  * \return The virtual key code, as defined in <mrpt/gui/keycodes.h> (a replication of wxWidgets key codes).
 			  *
 			  * \sa keyHit, waitForKey
 			  */
-			int getPushedKey(mrptKeyModifier *out_pushModifier=NULL);
+			int getPushedKey(mrptKeyModifier *out_pushModifier=nullptr);
 
 
 		}; // End of class def.

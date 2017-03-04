@@ -83,7 +83,7 @@ extern "C" {
 #endif
 
 	//! Start a function as a thread
-	#define xsStartThread(func,param,pid)	CreateThread(NULL,0,(LPTHREAD_START_ROUTINE) func,param,0,pid)
+	#define xsStartThread(func,param,pid)	CreateThread(nullptr,0,(LPTHREAD_START_ROUTINE) func,param,0,pid)
 
 	XSTYPES_DLL_API void xsNameThisThread(const char* threadName);
 

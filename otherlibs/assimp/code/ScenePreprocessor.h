@@ -64,7 +64,7 @@ public:
 	/** Default c'tpr. Use SetScene() to assign a scene to the object.
 	 */
 	ScenePreprocessor()	
-		:	scene	(NULL)
+		:	scene	(nullptr)
 	{}
 
 	/** Constructs the object and assigns a specific scene to it

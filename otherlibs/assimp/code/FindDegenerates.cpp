@@ -184,13 +184,13 @@ evil_jump_outside:
 				if (&face_src != &face_dest) {
 					// clear source
 					face_src.mNumIndices = 0;
-					face_src.mIndices = NULL;
+					face_src.mIndices = nullptr;
 				}
 			}
 			else {
 				// Otherwise delete it if we don't need this face
 				delete[] face_src.mIndices;
-				face_src.mIndices = NULL;
+				face_src.mIndices = nullptr;
 				face_src.mNumIndices = 0;
 			}
 		}

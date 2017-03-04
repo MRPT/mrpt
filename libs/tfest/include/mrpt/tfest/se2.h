@@ -36,7 +36,7 @@ namespace mrpt
 		  *
 		  * \param[in] in_correspondences The set of correspondences.
 		  * \param[out] out_transformation The pose that minimizes the mean-square-error between all the correspondences.
-		  * \param[out] out_estimateCovariance If provided (!=NULL) this will contain on return a 3x3 covariance matrix with the NORMALIZED optimal estimate uncertainty. This matrix must be multiplied by \f$\sigma^2_p\f$, the variance of matched points in \f$x\f$ and \f$y\f$ (see paper http://www.mrpt.org/Paper:Occupancy_Grid_Matching)
+		  * \param[out] out_estimateCovariance If provided (!=nullptr) this will contain on return a 3x3 covariance matrix with the NORMALIZED optimal estimate uncertainty. This matrix must be multiplied by \f$\sigma^2_p\f$, the variance of matched points in \f$x\f$ and \f$y\f$ (see paper http://www.mrpt.org/Paper:Occupancy_Grid_Matching)
 		  * \return True if there are at least two correspondences, or false if one or none, thus we cannot establish any correspondence.
 		  * \sa robustRigidTransformation
 		  *
@@ -50,7 +50,7 @@ namespace mrpt
 		bool TFEST_IMPEXP se2_l2(
 			const mrpt::utils::TMatchingPairList  & in_correspondences,
 			mrpt::math::TPose2D                   & out_transformation,
-			mrpt::math::CMatrixDouble33           * out_estimateCovariance = NULL );
+			mrpt::math::CMatrixDouble33           * out_estimateCovariance = nullptr );
 
 		/** \overload */
 		bool TFEST_IMPEXP se2_l2(
@@ -99,8 +99,8 @@ namespace mrpt
 				ransac_min_nSimulations( 1500 ),
 				max_rmse_to_end(0),
 				verbose(false),
-				user_individual_compat_callback(NULL),
-				user_individual_compat_callback_userdata(NULL)
+				user_individual_compat_callback(nullptr),
+				user_individual_compat_callback_userdata(nullptr)
 			{
 			}
 		};

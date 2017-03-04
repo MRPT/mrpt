@@ -159,11 +159,11 @@ jpeg_make_d_derived_tbl (j_decompress_ptr cinfo, boolean isDC, int tblno,
     ERREXIT1(cinfo, JERR_NO_HUFF_TABLE, tblno);
   htbl =
     isDC ? cinfo->dc_huff_tbl_ptrs[tblno] : cinfo->ac_huff_tbl_ptrs[tblno];
-  if (htbl == NULL)
+  if (htbl == nullptr)
     ERREXIT1(cinfo, JERR_NO_HUFF_TABLE, tblno);
 
   /* Allocate a workspace if we haven't already done so. */
-  if (*pdtbl == NULL)
+  if (*pdtbl == nullptr)
     *pdtbl = (d_derived_tbl *)
       (*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_IMAGE,
 				  SIZEOF(d_derived_tbl));
@@ -636,6 +636,6 @@ jinit_huff_decoder (j_decompress_ptr cinfo)
 
   /* Mark tables unallocated */
   for (i = 0; i < NUM_HUFF_TBLS; i++) {
-    entropy->dc_derived_tbls[i] = entropy->ac_derived_tbls[i] = NULL;
+    entropy->dc_derived_tbls[i] = entropy->ac_derived_tbls[i] = nullptr;
   }
 }

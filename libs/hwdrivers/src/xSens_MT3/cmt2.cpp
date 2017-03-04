@@ -44,7 +44,7 @@ namespace xsens {
 //////////////////////////////////////////////////////////////////////////////////////////
 int32_t findValidMessage(const uint8_t* buffer, const uint16_t bufferLength)
 {
-	MessageHeader* hdr = NULL;
+	MessageHeader* hdr = nullptr;
 	uint16_t pre = 0;
 	uint16_t target;
 	bool extended;
@@ -109,8 +109,8 @@ int32_t findValidMessage(const uint8_t* buffer, const uint16_t bufferLength)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Default constructor, initializes all members to their default values.
 Cmt2s::Cmt2s() :
-	m_onMessageReceived(NULL),
-	m_onMessageSent(NULL)
+	m_onMessageReceived(nullptr),
+	m_onMessageSent(nullptr)
 {
 	m_lastResult = XRV_OK;
 	m_readBufferCount = 0;
@@ -288,7 +288,7 @@ XsensResultValue Cmt2s::readMessage(Message* rcv)
 		if (rcv->loadFromString(m_readBuffer,(uint16_t) target) == XRV_OK)
 		{
 			CMT2LOG("L2: readMessage OK\n");
-			if (m_onMessageReceived != NULL)
+			if (m_onMessageReceived != nullptr)
 			{
 				CmtBinaryData* bytes = (CmtBinaryData*) malloc(sizeof(CmtBinaryData));
 				bytes->m_size = target;
@@ -472,7 +472,7 @@ XsensResultValue Cmt2s::waitForMessage(Message* rcv, const uint8_t msgId, uint32
 		if (rcv->loadFromString(m_readBuffer,(uint16_t) target) == XRV_OK)
 		{
 			CMT2LOG("L2: waitForMessage received msg Id x%02x while expecting x%02x, msg size=%u\n",(uint32_t) rcv->getMessageId(),(uint32_t) msgId,target);
-			if (m_onMessageReceived != NULL)
+			if (m_onMessageReceived != nullptr)
 			{
 				CmtBinaryData* bytes = (CmtBinaryData*) malloc(sizeof(CmtBinaryData));
 				bytes->m_size = target;
@@ -561,7 +561,7 @@ XsensResultValue Cmt2s::writeMessage(Message* msg)
 		return (m_lastResult = XRV_ERROR);
 	}
 
-	if (m_onMessageSent != NULL)
+	if (m_onMessageSent != nullptr)
 	{
 		CmtBinaryData* bytes = (CmtBinaryData*) malloc(sizeof(CmtBinaryData));
 		bytes->m_size = msg->getTotalMessageSize();

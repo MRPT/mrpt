@@ -15,7 +15,7 @@
 #include "ariaInternal.h"
 
 AREXPORT ArRobotParams::ArRobotParams() :
-  ArConfig(NULL, true),
+  ArConfig(nullptr, true),
   myIRUnitGetFunctor(this, &ArRobotParams::getIRUnits),
   myIRUnitSetFunctor(this, &ArRobotParams::parseIRUnit),
   mySonarUnitGetFunctor(this, &ArRobotParams::getSonarUnits),
@@ -328,5 +328,5 @@ AREXPORT bool ArRobotParams::save(void)
   sprintf(buf, "%sparams/", Aria::getDirectory());
   setBaseDirectory(buf);
   sprintf(buf, "%s.p", getSubClassName());
-  return writeFile(buf, false, NULL, false);
+  return writeFile(buf, false, nullptr, false);
 }

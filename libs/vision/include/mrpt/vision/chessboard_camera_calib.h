@@ -54,7 +54,7 @@ namespace mrpt
 		  * \param intrinsicParams [OUT] The 3x3 intrinsic parameters matrix. See http://www.mrpt.org/Camera_Parameters
 		  * \param distortionParams [OUT] The 1x4 vector of distortion parameters: k1 k2 p1 p2. See http://www.mrpt.org/Camera_Parameters
 		  * \param normalize_image [IN] Select OpenCV flag
-		  * \param out_MSE  [OUT] If set to !=NULL, the mean square error of the reprojection will be stored here (in pixel units).
+		  * \param out_MSE  [OUT] If set to !=nullptr, the mean square error of the reprojection will be stored here (in pixel units).
 		  * \param skipDrawDetectedImgs [IN] Whether to skip the generation of the undistorted and detected images in each TImageCalibData
 		  * \param useScaramuzzaAlternativeDetector [IN] Whether to use an alternative detector. See CImage::findChessboardCorners for more deatails and references.
 		  * \sa The <a href="http://www.mrpt.org/Application:camera-calib-gui" >camera-calib-gui application</a> is a user-friendly GUI to this class.
@@ -69,7 +69,7 @@ namespace mrpt
 			double        check_squares_length_Y_meters,
 			mrpt::utils::TCamera   &out_camera_params,
 			bool		normalize_image = true,
-			double            *out_MSE = NULL,
+			double            *out_MSE = nullptr,
 			bool               skipDrawDetectedImgs = false,
 			bool			   useScaramuzzaAlternativeDetector = false
 			);
@@ -83,7 +83,7 @@ namespace mrpt
 		  * \param intrinsicParams [OUT] The 3x3 intrinsic parameters matrix. See http://www.mrpt.org/Camera_Parameters
 		  * \param distortionParams [OUT] The 1x4 vector of distortion parameters: k1 k2 p1 p2. See http://www.mrpt.org/Camera_Parameters
 		  * \param normalize_image [IN] Select OpenCV flag
-		  * \param out_MSE  [OUT] If set to !=NULL, the mean square error of the reprojection will be stored here (in pixel units).
+		  * \param out_MSE  [OUT] If set to !=nullptr, the mean square error of the reprojection will be stored here (in pixel units).
 		  * \param skipDrawDetectedImgs [IN] Whether to skip the generation of the undistorted and detected images in each TImageCalibData
 		  * \param useScaramuzzaAlternativeDetector [IN] Whether to use an alternative detector. See CImage::findChessboardCorners for more deatails and references.
 		  * \sa The <a href="http://www.mrpt.org/Application:camera-calib-gui" >camera-calib-gui application</a> is a user-friendly GUI to this class.
@@ -99,7 +99,7 @@ namespace mrpt
 			mrpt::math::CMatrixDouble33			&intrinsicParams,
 			std::vector<double>		&distortionParams,
 			bool		normalize_image = true,
-			double            *out_MSE = NULL,
+			double            *out_MSE = nullptr,
 			bool               skipDrawDetectedImgs = false,
 			bool			   useScaramuzzaAlternativeDetector = false
 			);

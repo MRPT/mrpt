@@ -147,13 +147,13 @@ string                     		loadedFileName = "noname.rawlog";
 float                           timeToLoad =0;
 double							experimentLenght=0;
 
-xRawLogViewerFrame				*theMainWindow = NULL;
+xRawLogViewerFrame				*theMainWindow = nullptr;
 
 extern CConfigFile              *iniFile;
 
 // As a global variable to keep the user selections in memory.
-CFormRawMap                     *formRawMap = NULL;
-CScanMatching       			*scanMatchingDialog=NULL;
+CFormRawMap                     *formRawMap = nullptr;
+CScanMatching       			*scanMatchingDialog=nullptr;
 
 extern string              global_fileToOpen;
 
@@ -1142,9 +1142,9 @@ xRawLogViewerFrame::~xRawLogViewerFrame()
 
 	// Destroy dialogs:
 	delete formRawMap;
-	formRawMap = NULL;
+        formRawMap = nullptr;
 	delete scanMatchingDialog;
-	scanMatchingDialog = NULL;
+        scanMatchingDialog = nullptr;
 
 
 	// Close extra windows, if any:
@@ -1600,8 +1600,8 @@ void xRawLogViewerFrame::rebuildTreeView()
 	int				countLoop=0;
 
 	Notebook1->ChangeSelection( 0 );
-	curSelectedObservation.reset();// = NULL;
-	curSelectedObject.reset(); // = NULL;
+        curSelectedObservation.reset();// = nullptr;
+        curSelectedObject.reset(); // = nullptr;
 
 	wxProgressDialog    progDia(
 		wxT("Constructing the tree view"),
@@ -2148,7 +2148,7 @@ void xRawLogViewerFrame::OnGenOdoLaser(wxCommandEvent& event)
 	FILE	*f_odo = os::fopen( fil_odo, "wt");
 	ASSERT_(f_odo)
 
-	FILE	*f_odo_times = NULL;
+        FILE	*f_odo_times = nullptr;
 	if (genTimes)
 	{
 		f_odo_times = os::fopen( fil_odo_times, "wt");
@@ -2223,7 +2223,7 @@ void xRawLogViewerFrame::OnGenOdoLaser(wxCommandEvent& event)
 						CObservation2DRangeScanPtr obs = sf->getObservationByIndexAs<CObservation2DRangeScanPtr>(k);
 
 						// Get files from list, or create them the first time:
-						std::pair<FILE*,std::pair<FILE*,FILE*> > *files=NULL;
+                                                std::pair<FILE*,std::pair<FILE*,FILE*> > *files=nullptr;
 						std::map<string , std::pair<FILE*,std::pair<FILE*,FILE*> > >::iterator it;
 						if ((it = lstFiles.find(obs->sensorLabel)) == lstFiles.end())
 						{
@@ -2274,7 +2274,7 @@ void xRawLogViewerFrame::OnGenOdoLaser(wxCommandEvent& event)
 					CObservation2DRangeScanPtr obs = CObservation2DRangeScanPtr( o );
 
 					// Get files from list, or create them the first time:
-					std::pair<FILE*,std::pair<FILE*,FILE*> > *files=NULL;
+                                        std::pair<FILE*,std::pair<FILE*,FILE*> > *files=nullptr;
 					std::map<string , std::pair<FILE*,std::pair<FILE*,FILE*> > >::iterator it;
 					if ((it = lstFiles.find(obs->sensorLabel)) == lstFiles.end())
 					{
@@ -2624,7 +2624,7 @@ void wxStaticBitmapPopup::OnPopupSaveImage(wxCommandEvent& event)
 		if (!theMainWindow || !theMainWindow->curSelectedObservation) return;
 		CObservationPtr curSelectedObservation = theMainWindow->curSelectedObservation;
 
-		CImage *imgToSave = NULL;
+                CImage *imgToSave = nullptr;
 
 		cout << "[xRawLogViewerFrame::OnPopupSaveImage] Current observation class: " << curSelectedObservation->GetRuntimeClass()->className << endl;
 
@@ -2700,7 +2700,7 @@ void wxStaticBitmapPopup::OnPopupLoadImage(wxCommandEvent& event)
 		if (!theMainWindow || !theMainWindow->curSelectedObservation) return;
 		CObservationPtr curSelectedObservation = theMainWindow->curSelectedObservation;
 
-		CImage *imgToLoad = NULL;
+                CImage *imgToLoad = nullptr;
 
 		if (IS_CLASS(curSelectedObservation,CObservationImage))
 		{
@@ -2828,7 +2828,7 @@ void xRawLogViewerFrame::OnDecimateRecords(wxCommandEvent& event)
 
 				// INSERT OBSERVATION:
 				newRawLog.addObservationsMemoryReference( last_sf );
-				last_sf.reset(); // = NULL;
+                                last_sf.reset(); // = nullptr;
 
 				// INSERT ACTIONS:
 				CActionCollection	actsCol;
@@ -3541,9 +3541,9 @@ void xRawLogViewerFrame::OnRecalculateActionsICP(wxCommandEvent& event)
 	CICP::TReturnInfo		icpInfo;
 
 	// The 2 SFs and the action between:
-	CSensoryFramePtr		SF_ref;// = NULL;
-	CSensoryFramePtr		SF_new;// = NULL;
-	CActionCollectionPtr	act_between;// = NULL;
+        CSensoryFramePtr		SF_ref;// = nullptr;
+        CSensoryFramePtr		SF_new;// = nullptr;
+        CActionCollectionPtr	act_between;// = nullptr;
 
 	CPosePDFPtr	poseEst;
 	float     runTime;
@@ -5078,7 +5078,7 @@ void xRawLogViewerFrame::OnMenuRegenerateTimestampBySF(wxCommandEvent& event)
 // Used below. Must be at global scope for usage within STL.
 struct TImageToSaveData
 {
-	TImageToSaveData() : img(NULL) { }
+        TImageToSaveData() : img(nullptr) { }
 	TImageToSaveData(mrpt::utils::CImage *_img,const char* str) : img(_img),channel_desc(str) { }
 	mrpt::utils::CImage *img;
 	std::string          channel_desc; // LEFT, RIGHT, etc...

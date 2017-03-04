@@ -68,9 +68,9 @@ void  CSparseMatrix::copy_fast(cs  * const sm)
 	sparse_matrix.x = sm->x;
 
 	// Mark source as empty:
-	sm->i=NULL;
-	sm->p=NULL;
-	sm->x=NULL;
+	sm->i=nullptr;
+	sm->p=nullptr;
+	sm->x=nullptr;
 }
 
 /** Fast swap contents with another sparse matrix */
@@ -229,7 +229,7 @@ void CSparseMatrix::cs2dense(const cs& SM, CMatrixDouble &d_M)
 	}
 	else
 	{	// Column compressed format:
-		ASSERT_(SM.x)  // JL: Could it be NULL and be OK???
+		ASSERT_(SM.x)  // JL: Could it be nullptr and be OK???
 
 		for (int j = 0 ; j < SM.n ; j++)
         {
@@ -302,7 +302,7 @@ bool CSparseMatrix::saveToTextFile_sparse(const std::string &filName)
 	}
 	else
 	{	// Column compressed format:
-          ASSERT_(sparse_matrix.x)  // JL: Could it be NULL and be OK???
+          ASSERT_(sparse_matrix.x)  // JL: Could it be nullptr and be OK???
 
           for (int j = 0 ; j < sparse_matrix.n ; j++)
           {
@@ -327,8 +327,8 @@ bool CSparseMatrix::saveToTextFile_sparse(const std::string &filName)
 *  \exception mrpt::math::CExceptionNotDefPos On non-semidefinite-positive matrix as input.
 */
 CSparseMatrix::CholeskyDecomp::CholeskyDecomp(const CSparseMatrix &SM) :
-	m_symbolic_structure	(NULL),
-	m_numeric_structure		(NULL),
+	m_symbolic_structure	(nullptr),
+	m_numeric_structure		(nullptr),
 	m_originalSM			(&SM)
 {
 	ASSERT_(SM.getColCount()==SM.getRowCount())
@@ -399,7 +399,7 @@ void CSparseMatrix::CholeskyDecomp::update(const CSparseMatrix &new_SM)
 
 	// Release old data:
 	cs_nfree(m_numeric_structure);
-	m_numeric_structure = NULL;
+	m_numeric_structure = nullptr;
 
 	// numeric decomposition:
 	m_numeric_structure = cs_chol(&m_originalSM->sparse_matrix,m_symbolic_structure);

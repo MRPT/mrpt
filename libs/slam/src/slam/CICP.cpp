@@ -43,9 +43,9 @@ The method for aligning a pair of 2D points map.
 * \param m1			[IN] The first map
 * \param m2			[IN] The second map. The pose of this map respect to m1 is to be estimated.
 * \param grossEst		[IN] An initial gross estimation for the displacement. If a given algorithm doesn't need it, set to <code>CPose2D(0,0,0)</code> for example.
-* \param pdf			[IN/OUT] A pointer to a CPosePDF pointer, initially set to NULL for this method to create the object. For greater efficiency, this object can be left undeleted and passed again to the method. When <b>not used anymore remember to delete it</b> using <code>delete pdf;</code>
-* \param runningTime	[OUT] A pointer to a container for obtaining the algorithm running time in seconds, or NULL if you don't need it.
-* \param info			[OUT] See derived classes for details, or NULL if it isn't needed.
+* \param pdf			[IN/OUT] A pointer to a CPosePDF pointer, initially set to nullptr for this method to create the object. For greater efficiency, this object can be left undeleted and passed again to the method. When <b>not used anymore remember to delete it</b> using <code>delete pdf;</code>
+* \param runningTime	[OUT] A pointer to a container for obtaining the algorithm running time in seconds, or nullptr if you don't need it.
+* \param info			[OUT] See derived classes for details, or nullptr if it isn't needed.
 *
 * \sa CPointsMapAlignmentAlgorithm
   ---------------------------------------------------------------*/
@@ -884,9 +884,9 @@ The method for aligning a pair of 2D points map.
 * \param m1			[IN] The first map
 * \param m2			[IN] The second map. The pose of this map respect to m1 is to be estimated.
 * \param grossEst		[IN] An initial gross estimation for the displacement. If a given algorithm doesn't need it, set to <code>CPose2D(0,0,0)</code> for example.
-* \param pdf			[IN/OUT] A pointer to a CPosePDF pointer, initially set to NULL for this method to create the object. For greater efficiency, this object can be left undeleted and passed again to the method. When <b>not used anymore remember to delete it</b> using <code>delete pdf;</code>
-* \param runningTime	[OUT] A pointer to a container for obtaining the algorithm running time in seconds, or NULL if you don't need it.
-* \param info			[OUT] See derived classes for details, or NULL if it isn't needed.
+* \param pdf			[IN/OUT] A pointer to a CPosePDF pointer, initially set to nullptr for this method to create the object. For greater efficiency, this object can be left undeleted and passed again to the method. When <b>not used anymore remember to delete it</b> using <code>delete pdf;</code>
+* \param runningTime	[OUT] A pointer to a container for obtaining the algorithm running time in seconds, or nullptr if you don't need it.
+* \param info			[OUT] See derived classes for details, or nullptr if it isn't needed.
 *
 * \sa CPointsMapAlignmentAlgorithm
   ---------------------------------------------------------------*/

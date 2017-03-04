@@ -45,8 +45,8 @@ namespace mrpt
 					const mrpt::maps::CMetricMap		*m1,
 					const mrpt::maps::CMetricMap		*m2,
 					const mrpt::poses::CPosePDFGaussian	&initialEstimationPDF,
-					float					*runningTime = NULL,
-					void					*info = NULL );
+					float					*runningTime = nullptr,
+					void					*info = nullptr );
 
 			/** Private member, implements both, the "robustMatch" and the newer "modifiedRANSAC" algorithms.
 			  */
@@ -54,8 +54,8 @@ namespace mrpt
 					const mrpt::maps::CMetricMap		*m1,
 					const mrpt::maps::CMetricMap		*m2,
 					const mrpt::poses::CPosePDFGaussian	&initialEstimationPDF,
-					float					*runningTime = NULL,
-					void					*info = NULL );
+					float					*runningTime = nullptr,
+					void					*info = nullptr );
 
 			COccupancyGridMapFeatureExtractor	m_grid_feat_extr; //!< Grid map features extractor
 		public:
@@ -181,8 +181,8 @@ namespace mrpt
 			 * \param m1			[IN] The first map (Must be a mrpt::maps::CMultiMetricMap class)
 			 * \param m2			[IN] The second map (Must be a mrpt::maps::CMultiMetricMap class)
 			 * \param initialEstimationPDF	[IN] (IGNORED IN THIS ALGORITHM!)
-			 * \param runningTime	[OUT] A pointer to a container for obtaining the algorithm running time in seconds, or NULL if you don't need it.
-			 * \param info			[OUT] A pointer to a CAlignerFromMotionDraws::TReturnInfo struct, or NULL if result information are not required.
+			 * \param runningTime	[OUT] A pointer to a container for obtaining the algorithm running time in seconds, or nullptr if you don't need it.
+			 * \param info			[OUT] A pointer to a CAlignerFromMotionDraws::TReturnInfo struct, or nullptr if result information are not required.
 			 *
 			 * \note The returned PDF depends on the selected alignment method:
 			 *		- "amRobustMatch" --> A "poses::CPosePDFSOG" object.
@@ -195,9 +195,9 @@ namespace mrpt
 					const mrpt::maps::CMetricMap		*m1,
 					const mrpt::maps::CMetricMap		*m2,
 					const mrpt::poses::CPosePDFGaussian	&initialEstimationPDF,
-					float					*runningTime = NULL,
+					float					*runningTime = nullptr,
 
-					void					*info = NULL );
+					void					*info = nullptr );
 
 
 			/** Not applicable in this class, will launch an exception. */
@@ -205,8 +205,8 @@ namespace mrpt
 					const mrpt::maps::CMetricMap		*m1,
 					const mrpt::maps::CMetricMap		*m2,
 					const mrpt::poses::CPose3DPDFGaussian	&initialEstimationPDF,
-					float					*runningTime = NULL,
-					void					*info = NULL );
+					float					*runningTime = nullptr,
+					void					*info = nullptr );
 			
 		};
 

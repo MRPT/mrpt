@@ -26,7 +26,7 @@ namespace mrpt
 		{
 #ifdef MRPT_OS_WINDOWS
 			TThreadHandle()  :  //!< Sets the handle to a predefined value meaning it is uninitialized.
-				hThread(NULL),
+				hThread(nullptr),
 				idThread(0)
 			{
 			}
@@ -37,7 +37,7 @@ namespace mrpt
 			void clear()
 			{
 				idThread = 0;
-				hThread  = NULL;
+				hThread  = nullptr;
 			}
 			void			*hThread;		//!< The thread "HANDLE"
 # if  defined(HAVE_OPENTHREAD) // defined(_MSC_VER) && (_MSC_VER>=1400)

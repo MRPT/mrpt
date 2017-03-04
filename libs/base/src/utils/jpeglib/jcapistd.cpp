@@ -78,7 +78,7 @@ jpeg_write_scanlines (j_compress_ptr cinfo, JSAMPARRAY scanlines,
     WARNMS(cinfo, JWRN_TOO_MUCH_DATA);
 
   /* Call progress monitor hook if present */
-  if (cinfo->progress != NULL) {
+  if (cinfo->progress != nullptr) {
     cinfo->progress->pass_counter = (long) cinfo->next_scanline;
     cinfo->progress->pass_limit = (long) cinfo->image_height;
     (*cinfo->progress->progress_monitor) ((j_common_ptr) cinfo);
@@ -123,7 +123,7 @@ jpeg_write_raw_data (j_compress_ptr cinfo, JSAMPIMAGE data,
   }
 
   /* Call progress monitor hook if present */
-  if (cinfo->progress != NULL) {
+  if (cinfo->progress != nullptr) {
     cinfo->progress->pass_counter = (long) cinfo->next_scanline;
     cinfo->progress->pass_limit = (long) cinfo->image_height;
     (*cinfo->progress->progress_monitor) ((j_common_ptr) cinfo);

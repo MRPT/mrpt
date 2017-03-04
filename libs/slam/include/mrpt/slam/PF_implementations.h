@@ -47,7 +47,7 @@ namespace mrpt
 		{
 			MYSELF *me = static_cast<MYSELF*>(this);
 
-			if (actions!=NULL)	// A valid action?
+			if (actions!=nullptr)	// A valid action?
 			{
 				{
 					mrpt::obs::CActionRobotMovement2DPtr	robotMovement2D = actions->getBestMovementEstimation();
@@ -84,7 +84,7 @@ namespace mrpt
 				}
 			}
 
-			const bool SFhasValidObservations = (sf==NULL) ? false : PF_SLAM_implementation_doWeHaveValidObservations(me->m_particles,sf);
+			const bool SFhasValidObservations = (sf==nullptr) ? false : PF_SLAM_implementation_doWeHaveValidObservations(me->m_particles,sf);
 
 			// All the things we need?
 			if (! ((m_accumRobotMovement2DIsValid || m_accumRobotMovement3DIsValid) && SFhasValidObservations))

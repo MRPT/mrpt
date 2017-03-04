@@ -103,7 +103,7 @@ BEGIN_EVENT_TABLE(hmt_slam_guiFrame,wxFrame)
 END_EVENT_TABLE()
 
 hmt_slam_guiFrame::hmt_slam_guiFrame(wxWindow* parent,wxWindowID id)  :
-	m_hmtslam(NULL)
+        m_hmtslam(nullptr)
 {
 	// Load my custom icons:
 #if wxCHECK_VERSION(2, 8, 0)
@@ -584,7 +584,7 @@ void hmt_slam_guiFrame::rebuildTreeView()
 	treeView->SetQuickBestSize(true);
 
 	// Root element & Areas:
-	wxTreeItemId root = treeView->AddRoot(_("Areas"),0,-1,NULL);
+        wxTreeItemId root = treeView->AddRoot(_("Areas"),0,-1,nullptr);
 
 	CHierarchicalMHMap::const_iterator it;
 	size_t i;

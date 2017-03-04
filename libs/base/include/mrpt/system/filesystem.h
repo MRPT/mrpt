@@ -49,7 +49,7 @@ namespace mrpt
 		/** Renames a file - If the target path is different and the filesystem allows it, it will be moved to the new location.
 		  * \return false on any error. In that case, if a pointer to a receiver string is passed in error_msg, a description of the error is saved there.
 		  */
-		bool BASE_IMPEXP renameFile( const std::string &oldFileName, const std::string &newFileName,  std::string *error_msg=NULL );
+		bool BASE_IMPEXP renameFile( const std::string &oldFileName, const std::string &newFileName,  std::string *error_msg=nullptr );
 
 		/** Delete all the files in a given directory (nothing done if directory does not exists, or path is a file).
 		  * \sa deleteFile
@@ -120,7 +120,7 @@ namespace mrpt
 		bool BASE_IMPEXP copyFile(
 			const std::string &sourceFile,
 			const std::string &targetFile,
-			std::string *outErrStr = NULL,
+			std::string *outErrStr = nullptr,
 			bool copyAttribs = true );
 
 		/** @} */

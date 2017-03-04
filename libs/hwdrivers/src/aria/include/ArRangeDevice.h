@@ -80,19 +80,19 @@ public:
   /// Gets the closest current reading in the given polar region
   AREXPORT virtual double currentReadingPolar(double startAngle, 
 					      double endAngle,
-					      double *angle = NULL) const;
+					      double *angle = nullptr) const;
   /// Gets the closest cumulative reading in the given polar region
   AREXPORT virtual double cumulativeReadingPolar(double startAngle, 
 						 double endAngle,
-						 double *angle = NULL) const;
+						 double *angle = nullptr) const;
   /// Gets the closest current reading from the given box region
   AREXPORT virtual double currentReadingBox(double x1, double y1, double x2,
 					    double y2, 
-					    ArPose *readingPos = NULL) const;
+					    ArPose *readingPos = nullptr) const;
   /// Gets the closest current reading from the given box region
   AREXPORT virtual double cumulativeReadingBox(double x1, double y1, double x2,
 					       double y2, 
-					       ArPose *readingPos = NULL) const;
+					       ArPose *readingPos = nullptr) const;
 #ifndef SWIG
   /** @brief Gets the current range buffer
    *  @swigomit See getCurrentBufferAsVector()

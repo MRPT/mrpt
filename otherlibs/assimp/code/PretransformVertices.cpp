@@ -460,7 +460,7 @@ void PretransformVertices::Execute( aiScene* pScene)
 			delete mesh->mBones[a];
 
 		delete[] mesh->mBones;
-		mesh->mBones = NULL;
+		mesh->mBones = nullptr;
 	}
 
 	// now build a list of output meshes
@@ -491,7 +491,7 @@ void PretransformVertices::Execute( aiScene* pScene)
 			ApplyTransform(pScene->mMeshes[i],*reinterpret_cast<aiMatrix4x4*>( pScene->mMeshes[i]->mBones ));
 
 			// prevent improper destruction
-			pScene->mMeshes[i]->mBones    = NULL;
+			pScene->mMeshes[i]->mBones    = nullptr;
 			pScene->mMeshes[i]->mNumBones = 0;
 		}
 	}
@@ -558,22 +558,22 @@ void PretransformVertices::Execute( aiScene* pScene)
 			{
 				aiMesh* mesh = pScene->mMeshes[i];
 				mesh->mNumBones = 0;
-				mesh->mBones    = NULL;
+				mesh->mBones    = nullptr;
 
 				// we're reusing the face index arrays. avoid destruction
 				for (unsigned int a = 0; a < mesh->mNumFaces; ++a) {
 					mesh->mFaces[a].mNumIndices = 0;
-					mesh->mFaces[a].mIndices = NULL;
+					mesh->mFaces[a].mIndices = nullptr;
 				}
 
 				delete mesh;
 
 				// Invalidate the contents of the old mesh array. We will most
 				// likely have less output meshes now, so the last entries of 
-				// the mesh array are not overridden. We set them to NULL to 
+				// the mesh array are not overridden. We set them to nullptr to 
 				// make sure the developer gets notified when his application
 				// attempts to access these fields ...
-				mesh = NULL;
+				mesh = nullptr;
 			}
 
 			// It is impossible that we have more output meshes than 
@@ -590,7 +590,7 @@ void PretransformVertices::Execute( aiScene* pScene)
 		delete pScene->mAnimations[i];
 	delete[] pScene->mAnimations;
 
-	pScene->mAnimations    = NULL;
+	pScene->mAnimations    = nullptr;
 	pScene->mNumAnimations = 0;
 
 	// --- we need to keep all cameras and lights 
@@ -598,7 +598,7 @@ void PretransformVertices::Execute( aiScene* pScene)
 	{
 		aiCamera* cam = pScene->mCameras[i];
 		const aiNode* nd = pScene->mRootNode->FindNode(cam->mName);
-		ai_assert(NULL != nd);
+		ai_assert(nullptr != nd);
 
 		// multiply all properties of the camera with the absolute
 		// transformation of the corresponding node
@@ -611,7 +611,7 @@ void PretransformVertices::Execute( aiScene* pScene)
 	{
 		aiLight* l = pScene->mLights[i];
 		const aiNode* nd = pScene->mRootNode->FindNode(l->mName);
-		ai_assert(NULL != nd);
+		ai_assert(nullptr != nd);
 
 		// multiply all properties of the camera with the absolute
 		// transformation of the corresponding node
