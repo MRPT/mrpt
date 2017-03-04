@@ -47,8 +47,8 @@ The method for aligning a pair of 2D points map.
 * \param m1			[IN] The first map
 * \param m2			[IN] The second map. The pose of this map respect to m1 is to be estimated.
 * \param grossEst		[IN] IGNORED
-* \param runningTime	[OUT] A pointer to a container for obtaining the algorithm running time in seconds, or NULL if you don't need it.
-* \param info			[OUT] See derived classes for details, or NULL if it isn't needed.
+* \param runningTime	[OUT] A pointer to a container for obtaining the algorithm running time in seconds, or nullptr if you don't need it.
+* \param info			[OUT] See derived classes for details, or nullptr if it isn't needed.
 *
 * \sa CPointsMapAlignmentAlgorithm
   ---------------------------------------------------------------*/
@@ -102,7 +102,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 	mrpt::utils::TMatchingPairList			&correspondences = outInfo.correspondences; // Use directly this placeholder to save 1 variable & 1 copy.
 	mrpt::utils::TMatchingPairList			largestConsensusCorrs;
 
-	CTicTac									*tictac=NULL;
+	CTicTac									*tictac=nullptr;
 
 	CPose2D									grossEst = initialEstimationPDF.mean;
 
@@ -114,10 +114,10 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 
 	// Asserts:
 	// -----------------
-	const CMultiMetricMap			*multimap1 = NULL;
-	const CMultiMetricMap			*multimap2 = NULL;
-	const COccupancyGridMap2D		*m1 = NULL;
-	const COccupancyGridMap2D		*m2 = NULL;
+	const CMultiMetricMap			*multimap1 = nullptr;
+	const CMultiMetricMap			*multimap2 = nullptr;
+	const COccupancyGridMap2D		*m1 = nullptr;
+	const COccupancyGridMap2D		*m2 = nullptr;
 
 	if (IS_CLASS(mm1, CMultiMetricMap) && IS_CLASS(mm2, CMultiMetricMap) )
 	{
@@ -767,7 +767,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 			if (options.debug_save_map_pairs)
 			{
 				static unsigned int NN = 0;
-				static const COccupancyGridMap2D	*lastM1 = NULL;
+				static const COccupancyGridMap2D	*lastM1 = nullptr;
 				if (lastM1!=m1) {
 					lastM1=m1; NN=0;
 				}
@@ -816,7 +816,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 				outInfo.icp_goodness_all_sog_modes.clear();
 				for (CPosePDFSOG::iterator i=pdf_SOG->begin();i!=pdf_SOG->end(); ++cnt)
 				{
-					CPosePDFPtr icp_est = icp.Align(pnts1.get(),pnts2.get(),(i)->mean,NULL,&icpInfo);
+					CPosePDFPtr icp_est = icp.Align(pnts1.get(),pnts2.get(),(i)->mean,nullptr,&icpInfo);
 
 					//(i)->cov(0,0) += square( 0.05 );
 					//(i)->cov(1,1) += square( 0.05 );
@@ -897,7 +897,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_correlation(
 
 //#define	CORRELATION_SHOW_DEBUG
 
-	CTicTac						*tictac = NULL;
+	CTicTac						*tictac = nullptr;
 
 	// Asserts:
 	// -----------------

@@ -117,8 +117,8 @@ bool Q3Shader::LoadShader(ShaderData& fill, const std::string& pFile,IOSystem* i
 	CommentRemover::RemoveLineComments("//",&_buff[0]);
 	const char* buff = &_buff[0];
 
-	Q3Shader::ShaderDataBlock* curData = NULL;
-	Q3Shader::ShaderMapBlock*  curMap  = NULL;
+	Q3Shader::ShaderDataBlock* curData = nullptr;
+	Q3Shader::ShaderMapBlock*  curMap  = nullptr;
 
 	// read line per line
 	for (;SkipSpacesAndLineEnd(&buff);SkipLine(&buff)) {
@@ -181,7 +181,7 @@ bool Q3Shader::LoadShader(ShaderData& fill, const std::string& pFile,IOSystem* i
 						else if (*buff == '}') {
 							++buff;
 							// close this map section
-							curMap = NULL;
+							curMap = nullptr;
 							break;
 						}
 					}
@@ -189,7 +189,7 @@ bool Q3Shader::LoadShader(ShaderData& fill, const std::string& pFile,IOSystem* i
 				}
 				else if (*buff == '}') {
 					++buff;
-					curData = NULL;					
+					curData = nullptr;					
 					break;
 				}
 
@@ -265,7 +265,7 @@ bool Q3Shader::LoadSkin(SkinData& fill, const std::string& pFile,IOSystem* io)
 // Convert Q3Shader to material
 void Q3Shader::ConvertShaderToMaterial(aiMaterial* out, const ShaderDataBlock& shader)
 {
-	ai_assert(NULL != out);
+	ai_assert(nullptr != out);
 
 	/*  IMPORTANT: This is not a real conversion. Actually we're just guessing and
 	 *  hacking around to build an aiMaterial that looks nearly equal to the
@@ -544,9 +544,9 @@ bool MD3Importer::ReadMultipartFile()
 		const std::string upper = path + "upper" + suffix + ".md3";
 		const std::string head  = path + "head"  + suffix + ".md3";
 
-		aiScene* scene_upper = NULL;
-		aiScene* scene_lower = NULL;
-		aiScene* scene_head = NULL;
+		aiScene* scene_upper = nullptr;
+		aiScene* scene_lower = nullptr;
+		aiScene* scene_head = nullptr;
 		std::string failure;
 
 		aiNode* tag_torso, *tag_head;
@@ -556,7 +556,7 @@ bool MD3Importer::ReadMultipartFile()
 
 		// ensure we won't try to load ourselves recursively
 		BatchLoader::PropertyMap props;
-		SetGenericProperty( props.ints, AI_CONFIG_IMPORT_MD3_HANDLE_MULTIPART, 0, NULL);
+		SetGenericProperty( props.ints, AI_CONFIG_IMPORT_MD3_HANDLE_MULTIPART, 0, nullptr);
 
 		// now read these three files
 		BatchLoader batch(mIOHandler);
@@ -722,7 +722,7 @@ void MD3Importer::InternReadFile( const std::string& pFile,
 	boost::scoped_ptr<IOStream> file( pIOHandler->Open( pFile));
 
 	// Check whether we can read from the file
-	if( file.get() == NULL)
+	if( file.get() == nullptr)
 		throw DeadlyImportError( "Failed to open MD3 file " + pFile + ".");
 
 	// Check whether the md3 file is large enough to contain the header
@@ -848,7 +848,7 @@ void MD3Importer::InternReadFile( const std::string& pFile,
 		aiMesh* pcMesh = pScene->mMeshes[iNum];
 
 		std::string _texture_name;
-		const char* texture_name = NULL;
+		const char* texture_name = nullptr;
 
 		// Check whether we have a texture record for this surface in the .skin file
 		std::list< Q3Shader::SkinData::TextureEntry >::iterator it = std::find( 
@@ -870,7 +870,7 @@ void MD3Importer::InternReadFile( const std::string& pFile,
 			ConvertPath(texture_name,header_name,convertedPath);
 		}
 
-		const Q3Shader::ShaderDataBlock* shader = NULL;
+		const Q3Shader::ShaderDataBlock* shader = nullptr;
 
 		// Now search the current shader for a record with this name (
 		// excluding texture file extension)

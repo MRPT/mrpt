@@ -42,7 +42,7 @@ TEST(NavTests, PTGs_tests)
 		// Factory:
 		const string sPTGName = cfg.read_string("PTG_UNIT_TESTS",format("PTG%u_Type", n ),"", true );
 		PTGs[n] = CParameterizedTrajectoryGenerator::CreatePTG(sPTGName,cfg,"PTG_UNIT_TESTS", format("PTG%u_",n) );
-		EXPECT_TRUE(PTGs[n]!=NULL) << "Failed creating PTG #" << n << endl;
+		EXPECT_TRUE(PTGs[n]!=nullptr) << "Failed creating PTG #" << n << endl;
 
 		try
 		{

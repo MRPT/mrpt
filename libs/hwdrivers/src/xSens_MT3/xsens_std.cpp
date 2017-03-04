@@ -54,7 +54,7 @@ const char* xsensResultText(const XsensResultValue result)
 		case XRV_COULDNOTREADSETTINGS:	return "A required settings file could not be opened or is missing some data";
 		case XRV_NODATA:				return "No data available";
 		case XRV_READONLY:				return "Tried to change a read-only value";
-		case XRV_NULLPTR:				return "Invalid NULL pointer supplied";
+		case XRV_NULLPTR:				return "Invalid nullptr pointer supplied";
 		case XRV_INSUFFICIENTDATA:		return "Insufficient data supplied";
 		case XRV_BUSY:					return "Busy processing, try again later";
 		case XRV_INVALIDINSTANCE:		return "Invalid instance called";

@@ -37,7 +37,7 @@ namespace mrpt
 			CDebugOutputCapable(const std::string &logName = std::string("log")) : mrpt::utils::COutputLogger(logName) { }
 			virtual ~CDebugOutputCapable() { }
 
-			/** Sends a formated text to "debugOut" if not NULL, or to cout otherwise. */
+			/** Sends a formated text to "debugOut" if not nullptr, or to cout otherwise. */
 			void printf_debug( const char *frmt, ... ) const MRPT_printf_format_check(2,3);
 
 		}; // End of class def.

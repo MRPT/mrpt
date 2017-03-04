@@ -369,7 +369,7 @@ jinit_merged_upsampler (j_decompress_ptr cinfo)
     upsample->pub.upsample = merged_1v_upsample;
     upsample->upmethod = h2v1_merged_upsample;
     /* No spare row needed */
-    upsample->spare_row = NULL;
+    upsample->spare_row = nullptr;
   }
 
   build_ycc_rgb_table(cinfo);

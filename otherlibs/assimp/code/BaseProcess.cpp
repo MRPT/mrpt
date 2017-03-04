@@ -67,7 +67,7 @@ BaseProcess::~BaseProcess()
 // ------------------------------------------------------------------------------------------------
 void BaseProcess::ExecuteOnScene( Importer* pImp)
 {
-	ai_assert(NULL != pImp && NULL != pImp->Pimpl()->mScene);
+	ai_assert(nullptr != pImp && nullptr != pImp->Pimpl()->mScene);
 
 	progress = pImp->GetProgressHandler();
 	ai_assert(progress);
@@ -87,7 +87,7 @@ void BaseProcess::ExecuteOnScene( Importer* pImp)
 
 		// and kill the partially imported data
 		delete pImp->Pimpl()->mScene;
-		pImp->Pimpl()->mScene = NULL;
+		pImp->Pimpl()->mScene = nullptr;
 	}
 }
 

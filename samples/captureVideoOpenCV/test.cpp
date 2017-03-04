@@ -30,7 +30,7 @@ std::string AVI_TO_OPEN;
 
 void TestCapture_OpenCV()
 {
-	CImageGrabber_OpenCV	*capture = NULL;
+	CImageGrabber_OpenCV	*capture = nullptr;
 
 	if (LIVE_CAM)
 	{

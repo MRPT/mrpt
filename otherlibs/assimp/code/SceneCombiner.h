@@ -56,8 +56,8 @@ namespace Assimp	{
 struct AttachmentInfo
 {
 	AttachmentInfo()
-		:	scene			(NULL)
-		,	attachToNode	(NULL)
+		:	scene			(nullptr)
+		,	attachToNode	(nullptr)
 	{}
 
 	AttachmentInfo(aiScene* _scene, aiNode* _attachToNode)
@@ -73,8 +73,8 @@ struct AttachmentInfo
 struct NodeAttachmentInfo
 {
 	NodeAttachmentInfo()
-		:	node			(NULL)
-		,	attachToNode	(NULL)
+		:	node			(nullptr)
+		,	attachToNode	(nullptr)
 		,	resolved		(false)
 		,	src_idx			(SIZE_MAX)
 	{}
@@ -139,7 +139,7 @@ struct BoneWithHash : public std::pair<uint32_t,aiString*>	{
 struct SceneHelper
 {
 	SceneHelper ()
-		: scene		(NULL)
+		: scene		(nullptr)
 		, idlen		(0)
 	{
 		id[0] = 0;
@@ -189,7 +189,7 @@ public:
 	/** Merges two or more scenes.
 	 *
 	 *  @param dest  Receives a pointer to the destination scene. If the
-	 *    pointer doesn't point to NULL when the function is called, the
+	 *    pointer doesn't point to nullptr when the function is called, the
 	 *    existing scene is cleared and refilled.
 	 *  @param src Non-empty list of scenes to be merged. The function
 	 *    deletes the input scenes afterwards. There may be duplicate scenes.
@@ -204,7 +204,7 @@ public:
 	 *  position in the node graph of the masteer scene.
 	 *
 	 *  @param dest Receives a pointer to the destination scene. If the
-	 *    pointer doesn't point to NULL when the function is called, the
+	 *    pointer doesn't point to nullptr when the function is called, the
 	 *    existing scene is cleared and refilled.
 	 *  @param master Master scene. It will be deleted afterwards. All 
 	 *    other scenes will be inserted in its node graph.
@@ -298,7 +298,7 @@ public:
 	 *
 	 *  @param master Master scene
 	 *  @param srcList List of source scenes along with their attachment
-	 *    points. If an attachment point is NULL (or does not exist in
+	 *    points. If an attachment point is nullptr (or does not exist in
 	 *    the master graph), a scene is attached to the root of the master
 	 *    graph (as an additional child node)
 	 *  @duplicates List of duplicates. If elem[n] == n the scene is not
@@ -325,7 +325,7 @@ public:
 	 *
 	 *  Only the first hierarchy layer is copied. All pointer members of
 	 *  aiScene are shared by source and destination scene.  If the
-	 *    pointer doesn't point to NULL when the function is called, the
+	 *    pointer doesn't point to nullptr when the function is called, the
 	 *    existing scene is cleared and refilled.
 	 *  @param dest Receives a pointer to the destination scene
 	 *  @param src Source scene - remains unmodified.

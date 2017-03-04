@@ -208,7 +208,7 @@ private:
 					// is supposed to have. If there is none, add another node to 
 					// preserve the name - people might have scripts etc. that rely
 					// on specific node names.
-					aiNode* name_carrier = NULL;
+					aiNode* name_carrier = nullptr;
 					BOOST_FOREACH(aiNode* prenode, nodes_chain) {
 						if ( !strcmp(prenode->mName.C_Str(), original_name.c_str()) ) {
 							name_carrier = prenode;
@@ -427,7 +427,7 @@ private:
 		}
 
 		ai_assert(false);
-		return NULL;
+		return nullptr;
 	}
 
 
@@ -470,7 +470,7 @@ private:
 		}
 
 		ai_assert(false);
-		return NULL;
+		return nullptr;
 	}
 
 
@@ -951,7 +951,7 @@ private:
 					binormals = &tempBinormals;
 				}
 				else {
-					binormals = NULL;	
+					binormals = nullptr;	
 				}
 			}
 
@@ -1000,7 +1000,7 @@ private:
 			ConvertMaterialForMesh(out_mesh,model,mesh,mindices[0]);
 		}
 
-		if(doc.Settings().readWeights && mesh.DeformerSkin() != NULL) {
+		if(doc.Settings().readWeights && mesh.DeformerSkin() != nullptr) {
 			ConvertWeights(out_mesh, model, mesh, node_global_transform, NO_MATERIAL_SEPARATION);
 		}
 
@@ -1041,7 +1041,7 @@ private:
 		const std::vector<aiVector3D>& vertices = mesh.GetVertices();
 		const std::vector<unsigned int>& faces = mesh.GetFaceIndexCounts();
 
-		const bool process_weights = doc.Settings().readWeights && mesh.DeformerSkin() != NULL;
+		const bool process_weights = doc.Settings().readWeights && mesh.DeformerSkin() != nullptr;
 
 		unsigned int count_faces = 0;
 		unsigned int count_vertices = 0;
@@ -1101,7 +1101,7 @@ private:
 					binormals = &tempBinormals;
 				}
 				else {
-					binormals = NULL;	
+					binormals = nullptr;	
 				}
 			}
 
@@ -1218,7 +1218,7 @@ private:
 	void ConvertWeights(aiMesh* out, const Model& model, const MeshGeometry& geo, 
 		const aiMatrix4x4& node_global_transform = aiMatrix4x4(),
 		unsigned int materialIndex = NO_MATERIAL_SEPARATION, 
-		std::vector<unsigned int>* outputVertStartIndices = NULL)
+		std::vector<unsigned int>* outputVertStartIndices = nullptr)
 	{
 		ai_assert(geo.DeformerSkin());
 
@@ -2064,7 +2064,7 @@ private:
 
 		// sanity check whether the input is ok
 #ifdef ASSIMP_BUILD_DEBUG
-		{ const Object* target = NULL;
+		{ const Object* target = nullptr;
 		BOOST_FOREACH(const AnimationCurveNode* node, curves) {
 			if(!target) {
 				target = node->Target();
@@ -2073,7 +2073,7 @@ private:
 		}}
 #endif
 
-		const AnimationCurveNode* curve_node = NULL;
+		const AnimationCurveNode* curve_node = nullptr;
 		BOOST_FOREACH(const AnimationCurveNode* node, curves) {
 			ai_assert(node);
 
@@ -2893,7 +2893,7 @@ private:
 	{
 		ai_assert(!out->mMeshes && !out->mNumMeshes);
 
-		// note: the trailing () ensures initialization with NULL - not
+		// note: the trailing () ensures initialization with nullptr - not
 		// many C++ users seem to know this, so pointing it out to avoid
 		// confusion why this code works.
 

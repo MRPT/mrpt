@@ -52,7 +52,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace Assimp {
 
 	void Bitmap::Save(aiTexture* texture, IOStream* file) {
-		if(file != NULL) {
+		if(file != nullptr) {
 			Header header;
 			DIB dib;
 

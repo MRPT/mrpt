@@ -57,7 +57,7 @@ CInterfaceFTDI::CInterfaceFTDI() :
 #endif
 
 #if MRPT_FTDI_VERSION>=0x120
-	libusb_init(NULL);
+	libusb_init(nullptr);
 #endif
 	MRPT_TRY_END;
 }
@@ -78,10 +78,10 @@ CInterfaceFTDI::~CInterfaceFTDI()
 
 	// Free mem:
 	delete[] ctx;
-	ctx = NULL;
+	ctx = nullptr;
 #endif
 #if MRPT_FTDI_VERSION>=0x120
-	libusb_exit(NULL);
+	libusb_exit(nullptr);
 #endif
 }
 
@@ -121,7 +121,7 @@ void  CInterfaceFTDI::OpenBySerialNumber( const std::string &serialNumber )
 	ListAllDevices( lstDevs );
 
 	// Look for the one we want:
-	void 	*myDev = NULL;
+	void 	*myDev = nullptr;
 
 	for (TFTDIDeviceList::iterator it=lstDevs.begin();it!=lstDevs.end();++it)
 	{
@@ -169,7 +169,7 @@ void CInterfaceFTDI::ListAllDevices( TFTDIDeviceList &outList )
 	// Use libusb-1.0 
 
 	libusb_device **list;
-	ssize_t nDevices = libusb_get_device_list(NULL,&list);
+	ssize_t nDevices = libusb_get_device_list(nullptr,&list);
 
 	for (unsigned int i = 0; i < nDevices; i++) {
 		libusb_device *device = list[i];
@@ -229,7 +229,7 @@ void CInterfaceFTDI::ListAllDevices( TFTDIDeviceList &outList )
 			recursive_fill_list_devices( dev, outList ); // Process this node and its children:
 
 #endif
-	if (getenv("VERBOSE")!=NULL)
+	if (getenv("VERBOSE")!=nullptr)
 	{
 		printf("[CInterfaceFTDI::ListAllDevices] List: \n");
 		for (std::deque<TFTDIDevice>::const_iterator i=outList.begin();i!=outList.end();++i)
@@ -271,7 +271,7 @@ void CInterfaceFTDI::recursive_fill_list_devices( void *usb_device_structure , T
 			if ((strLen=usb_get_string_simple(hUSB, dev->descriptor.iManufacturer, manufacturer, sizeof(manufacturer))) <=0)
 			{
 				cerr << "Couldn't open " << (int)dev->descriptor.iManufacturer << endl;
-				//usb_close(hUSB); hUSB=NULL;
+				//usb_close(hUSB); hUSB=nullptr;
 			}
 			else
 			{
@@ -286,7 +286,7 @@ void CInterfaceFTDI::recursive_fill_list_devices( void *usb_device_structure , T
 			char 	description[3000];
 			if ((strLen=usb_get_string_simple(hUSB, dev->descriptor.iProduct, description, sizeof(description))) <=0)
 			{
-				//usb_close(hUSB); hUSB=NULL;
+				//usb_close(hUSB); hUSB=nullptr;
 			}
 			else
 			{
@@ -300,7 +300,7 @@ void CInterfaceFTDI::recursive_fill_list_devices( void *usb_device_structure , T
 			char 	serial[300];
 			if ((strLen=usb_get_string_simple(hUSB, dev->descriptor.iSerialNumber, serial, sizeof(serial))) <=0)
 			{
-				//usb_close(hUSB); hUSB=NULL;
+				//usb_close(hUSB); hUSB=nullptr;
 			}
 			else
 			{
@@ -382,7 +382,7 @@ bool  CInterfaceFTDI::isOpen()
 {
 #if MRPT_HAS_FTDI
 	ftdi_context *ctx = static_cast<ftdi_context *>(m_ftdi_context);
-	return ctx->usb_dev != NULL;
+	return ctx->usb_dev != nullptr;
 #else
 	return false;
 #endif
@@ -398,7 +398,7 @@ void  CInterfaceFTDI::Close()
 	if (ctx->usb_dev)
 	{
 		ftdi_usb_close( ctx );
-		ctx->usb_dev = NULL;
+		ctx->usb_dev = nullptr;
 	}
 
 	// To assure this is as a "reset", re-init the ftdi context again:

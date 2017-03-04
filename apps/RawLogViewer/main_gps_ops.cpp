@@ -119,7 +119,7 @@ void xRawLogViewerFrame::OnMenuDrawGPSPath(wxCommandEvent& event)
 		}
 
 		// If we had a GPS obs, process it:
-		const mrpt::obs::gnss::Message_NMEA_GGA *gga = NULL;
+                const mrpt::obs::gnss::Message_NMEA_GGA *gga = nullptr;
 		if (obs && obs->hasMsgClass<mrpt::obs::gnss::Message_NMEA_GGA>()) {
 			gga = &obs->getMsgByClass<mrpt::obs::gnss::Message_NMEA_GGA>();
 		}
@@ -197,11 +197,11 @@ void fixGPStimestamp(CObservationGPSPtr &obs, CVectorDouble &time_changes, std::
 	CObservationGPS::TUTCTime	theTime;
 	bool  hasTime=false;
 
-	const gnss::Message_NMEA_GGA *gga = NULL;
+        const gnss::Message_NMEA_GGA *gga = nullptr;
 	if (obs && obs->hasMsgClass<gnss::Message_NMEA_GGA>()) {
 		gga = &obs->getMsgByClass<gnss::Message_NMEA_GGA>();
 	}
-	const gnss::Message_NMEA_RMC *rmc = NULL;
+        const gnss::Message_NMEA_RMC *rmc = nullptr;
 	if (obs && obs->hasMsgClass<gnss::Message_NMEA_RMC>()) {
 		rmc = &obs->getMsgByClass<gnss::Message_NMEA_RMC>();
 	}

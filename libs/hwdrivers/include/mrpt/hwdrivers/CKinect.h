@@ -367,8 +367,8 @@ namespace mrpt
 			mrpt::gui::CDisplayWindowPtr  m_win_range, m_win_int;
 
 #if MRPT_HAS_KINECT_FREENECT
-			void *m_f_ctx;  //!< The "freenect_context", or NULL if closed
-			void *m_f_dev;  //!< The "freenect_device", or NULL if closed
+			void *m_f_ctx;  //!< The "freenect_context", or nullptr if closed
+			void *m_f_dev;  //!< The "freenect_device", or nullptr if closed
 
 			// Data fields for use with the callback function:
 			mrpt::obs::CObservation3DRangeScan  m_latest_obs;

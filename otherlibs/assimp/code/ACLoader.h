@@ -224,7 +224,7 @@ private:
 		std::vector<aiMesh*>& meshes,
 		std::vector<aiMaterial*>& outMaterials,
 		const std::vector<Material>& materials,
-		aiNode* parent = NULL);
+		aiNode* parent = nullptr);
 
 	// -------------------------------------------------------------------
 	/** Convert a material

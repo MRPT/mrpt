@@ -155,16 +155,16 @@ namespace mrpt
 			  */
 			CSparseMatrix(const size_t nRows=0, const size_t nCols=0);
 
-			/** A good way to initialize a sparse matrix from a list of non NULL elements.
+            /** A good way to initialize a sparse matrix from a list of non nullptr elements.
 			  *  This constructor takes all the non-zero entries in "data" and builds a column-compressed sparse representation.
 			  */
 			template <typename T>
 			inline CSparseMatrix(const CSparseMatrixTemplate<T> & data)
 			{
 				ASSERTMSG_(!data.empty(), "Input data must contain at least one non-zero element.")
-				sparse_matrix.i = NULL; // This is to know they shouldn't be tried to free()
-				sparse_matrix.p = NULL;
-				sparse_matrix.x = NULL;
+                sparse_matrix.i = nullptr; // This is to know they shouldn't be tried to free()
+                sparse_matrix.p = nullptr;
+                sparse_matrix.x = nullptr;
 
 				// 1) Create triplet matrix
 				CSparseMatrix  triplet(data.getRowCount(),data.getColCount());

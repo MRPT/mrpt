@@ -46,7 +46,7 @@ void TestParameters()
 			"threshold",	3.05,
 			"altitude",		100.0,  // *VERY IMPORTANT* If you put "100" here it will be an "int" and it will crash!!! Make sure all params are doubles!!
 			"level",		-1.0,
-			NULL );
+                        nullptr );
 
 		MyCoolFunction(p);
 	}

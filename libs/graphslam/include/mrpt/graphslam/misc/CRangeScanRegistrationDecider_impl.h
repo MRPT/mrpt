@@ -17,8 +17,8 @@ void CRangeScanRegistrationDecider<GRAPH_t>::getICPEdge(
 		const mrpt::obs::CObservation2DRangeScan& from,
 		const mrpt::obs::CObservation2DRangeScan& to,
 		constraint_t* rel_edge,
-		const mrpt::poses::CPose2D* initial_pose_in/* = NULL */,
-		mrpt::slam::CICP::TReturnInfo* icp_info/* = NULL */) {
+		const mrpt::poses::CPose2D* initial_pose_in/* = nullptr */,
+		mrpt::slam::CICP::TReturnInfo* icp_info/* = nullptr */) {
 	MRPT_START;
 
 	mrpt::maps::CSimplePointsMap m1,m2;
@@ -55,8 +55,8 @@ void CRangeScanRegistrationDecider<GRAPH_t>::getICPEdge(
 		const mrpt::obs::CObservation3DRangeScan& from,
 		const mrpt::obs::CObservation3DRangeScan& to,
 		constraint_t* rel_edge,
-		const mrpt::poses::CPose2D* initial_pose_in /* =NULL */,
-		mrpt::slam::CICP::TReturnInfo* icp_info /* =NULL */) {
+		const mrpt::poses::CPose2D* initial_pose_in /* =nullptr */,
+		mrpt::slam::CICP::TReturnInfo* icp_info /* =nullptr */) {
 	MRPT_START;
 
 	ASSERTMSG_(from.hasRangeImage,
@@ -96,7 +96,7 @@ void CRangeScanRegistrationDecider<GRAPH_t>::getICPEdge(
 		rel_edge->copyFrom(*pdf);
 	}
 	else {
-		rel_edge = NULL;
+		rel_edge = nullptr;
 	}
 
 	// if given, fill the TReturnInfo Struct

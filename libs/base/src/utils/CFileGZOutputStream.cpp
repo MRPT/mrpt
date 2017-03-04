@@ -31,7 +31,7 @@ using namespace std;
 							Constructor
  ---------------------------------------------------------------*/
 CFileGZOutputStream::CFileGZOutputStream( const string	&fileName ) :
-	m_f(NULL)
+	m_f(nullptr)
 {
 	MRPT_START
 	if (!open(fileName))
@@ -43,7 +43,7 @@ CFileGZOutputStream::CFileGZOutputStream( const string	&fileName ) :
 				Constructor
  ---------------------------------------------------------------*/
 CFileGZOutputStream::CFileGZOutputStream( ) :
-	m_f(NULL)
+	m_f(nullptr)
 {
 }
 
@@ -58,7 +58,7 @@ bool CFileGZOutputStream::open( const string	&fileName, int compress_level )
 
 	// Open gz stream:
 	m_f = gzopen(fileName.c_str(),format("wb%i",compress_level).c_str() );
-	return m_f != NULL;
+	return m_f != nullptr;
 
 	MRPT_END
 }
@@ -79,7 +79,7 @@ void CFileGZOutputStream::close()
 	if (m_f)
 	{
 		gzclose(THE_GZFILE);
-		m_f = NULL;
+		m_f = nullptr;
 	}
 }
 
@@ -117,7 +117,7 @@ uint64_t CFileGZOutputStream::getPosition()
  ---------------------------------------------------------------*/
 bool  CFileGZOutputStream::fileOpenCorrectly()
 {
-	return m_f!=NULL;
+	return m_f!=nullptr;
 }
 
 #endif  // MRPT_HAS_GZ_STREAMS

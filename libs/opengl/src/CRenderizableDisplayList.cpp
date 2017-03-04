@@ -50,10 +50,10 @@ void deleteSingleton()
     if (TAuxDLData::m_pInstance)
     {
         delete TAuxDLData::m_pInstance;
-        TAuxDLData::m_pInstance = NULL;
+        TAuxDLData::m_pInstance = nullptr;
     }
 }
-TAuxDLData* TAuxDLData::m_pInstance = NULL;
+TAuxDLData* TAuxDLData::m_pInstance = nullptr;
 
 // Default constructor:
 CRenderizableDisplayList::CRenderizableDisplayList() :

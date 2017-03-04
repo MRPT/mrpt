@@ -52,14 +52,14 @@ AREXPORT bool ArSerialConnection::openSimple(void)
 }
 
 /**
-   @param port The serial port to connect to, or NULL which defaults to
+   @param port The serial port to connect to, or nullptr which defaults to
    COM1 for windows and /dev/ttyS0 for linux
    @return 0 for success, otherwise one of the open enums
    @see getOpenMessage
 */
 AREXPORT void ArSerialConnection::setPort(const char *port)
 {
-  if (port == NULL)
+  if (port == nullptr)
     myPortName = "COM1";
   else
     myPortName = port;
@@ -74,7 +74,7 @@ AREXPORT const char * ArSerialConnection::getPort(void)
 }
 
 /**
-   @param port The serial port to connect to, or NULL which defaults to
+   @param port The serial port to connect to, or nullptr which defaults to
    COM1 for windows and /dev/ttyS0 for linux
    @return 0 for success, otherwise one of the open enums
    @see getOpenMessage
@@ -102,10 +102,10 @@ AREXPORT int ArSerialConnection::internalOpen(void)
   myPort = CreateFileA(myPortName.c_str(),
 		      GENERIC_READ | GENERIC_WRITE,
 		      0,	/* exclusive access  */
-		      NULL,	/* no security attrs */
+		      nullptr,	/* no security attrs */
 		      OPEN_EXISTING,
 		      0,
-		      NULL );
+		      nullptr );
 
   if (myPort == INVALID_HANDLE_VALUE) {
     ArLog::log(ArLog::Terse,
@@ -276,7 +276,7 @@ AREXPORT int ArSerialConnection::write(const char *data, unsigned int size)
 
   if (myPort != INVALID_HANDLE_VALUE && myStatus == STATUS_OPEN)
   {
-    if (!WriteFile(myPort, data, size, &ret, NULL))
+    if (!WriteFile(myPort, data, size, &ret, nullptr))
     {
       ArLog::log(ArLog::Terse, "ArSerialConnection::write: Error on writing.");
       perror("ArSerialConnection::write:");
@@ -320,7 +320,7 @@ AREXPORT int ArSerialConnection::read(const char *data, unsigned int size,
       numToRead = size;
     else
       numToRead = stat.cbInQue;
-    if (ReadFile( myPort, (void *)data, numToRead, &ret, NULL))
+    if (ReadFile( myPort, (void *)data, numToRead, &ret, nullptr))
     {
       return (int)ret;
     }

@@ -45,7 +45,7 @@ void clear_memory()
 	for( map< int, CDisplayWindowPlots* >::iterator iter = Win_map.begin(); iter != Win_map.end(); ++iter )
 	{
 		delete iter->second;
-		iter->second = NULL;
+		iter->second = nullptr;
 	}
 }
 

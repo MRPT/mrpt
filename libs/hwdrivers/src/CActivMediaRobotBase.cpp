@@ -42,9 +42,9 @@ CActivMediaRobotBase::CActivMediaRobotBase() :
 	m_robotBaud			( 115200 ),
 	m_firstIncreOdometry(true),
 	m_enableSonars		(false),
-	m_robot				(NULL),
-	m_sonarDev			(NULL),
-	m_simpleConnector	(NULL),
+	m_robot				(nullptr),
+	m_sonarDev			(nullptr),
+	m_simpleConnector	(nullptr),
 	m_lastTimeSonars	(0),
 	m_enableJoyControl 	(false),
     m_joy_max_v			(0.20f),
@@ -83,9 +83,9 @@ CActivMediaRobotBase::~CActivMediaRobotBase()
 	disconnectAndDisableMotors();
 
 	// Destroy object:
-	m_simpleConnector = NULL;
-	m_robot = NULL;
-	m_sonarDev = NULL;
+	m_simpleConnector = nullptr;
+	m_robot = nullptr;
+	m_sonarDev = nullptr;
 
 	// Shutdown ARIA threads:
 	Aria::shutdown();
@@ -156,7 +156,7 @@ void CActivMediaRobotBase::initialize()
 	args[0] = (char*)"mrpt";
 	args[1] = (char*)"-robotPort";	args[2] = strCOM2;
 	args[3] = (char*)"-robotBaud"; args[4] = strBaud;
-	args[5] = NULL;
+	args[5] = nullptr;
 	nArgs = 5;
 
 	if (m_simpleConnector) delete (ArSimpleConnector*)m_simpleConnector;
@@ -335,7 +335,7 @@ void CActivMediaRobotBase::disconnectAndDisableMotors()
 void CActivMediaRobotBase::doProcess()
 {
 #if MRPT_HAS_ARIA
-	ASSERTMSG_(THE_ROBOT!=NULL, "Robot is not connected")
+	ASSERTMSG_(THE_ROBOT!=nullptr, "Robot is not connected")
 
 	TTimeStamp tnow = mrpt::system::now();
 
@@ -463,7 +463,7 @@ void CActivMediaRobotBase::changeOdometry(const mrpt::poses::CPose2D &newOdometr
 void CActivMediaRobotBase::getOdometry(poses::CPose2D &out_odom)
 {
 #if MRPT_HAS_ARIA
-	ASSERTMSG_(THE_ROBOT!=NULL, "Robot is not connected")
+	ASSERTMSG_(THE_ROBOT!=nullptr, "Robot is not connected")
 	THE_ROBOT->lock();
 
 	ArPose	pose = THE_ROBOT->getEncoderPose();
@@ -490,7 +490,7 @@ void CActivMediaRobotBase::getOdometryFull(
 	)
 {
 #if MRPT_HAS_ARIA
-	ASSERTMSG_(THE_ROBOT!=NULL, "Robot is not connected")
+	ASSERTMSG_(THE_ROBOT!=nullptr, "Robot is not connected")
 	THE_ROBOT->lock();
 
 	// Odometry:
@@ -527,7 +527,7 @@ void CActivMediaRobotBase::getOdometryIncrement(
 	)
 {
 #if MRPT_HAS_ARIA
-	ASSERTMSG_(THE_ROBOT!=NULL, "Robot is not connected")
+	ASSERTMSG_(THE_ROBOT!=nullptr, "Robot is not connected")
 	THE_ROBOT->lock();
 
 	static CPose2D	last_pose;
@@ -586,7 +586,7 @@ void CActivMediaRobotBase::getOdometryIncrement(
 void CActivMediaRobotBase::getSonarsReadings( bool &thereIsObservation, CObservationRange	&obs )
 {
 #if MRPT_HAS_ARIA
-	ASSERTMSG_(THE_ROBOT!=NULL, "Robot is not connected")
+	ASSERTMSG_(THE_ROBOT!=nullptr, "Robot is not connected")
 	THE_ROBOT->lock();
 
 	obs.minSensorDistance = 0;
@@ -654,7 +654,7 @@ void CActivMediaRobotBase::getSonarsReadings( bool &thereIsObservation, CObserva
 void CActivMediaRobotBase::getBatteryCharge( double &out_batery_volts )
 {
 #if MRPT_HAS_ARIA
-	ASSERTMSG_(THE_ROBOT!=NULL, "Robot is not connected")
+	ASSERTMSG_(THE_ROBOT!=nullptr, "Robot is not connected")
 	THE_ROBOT->lock();
 		out_batery_volts = THE_ROBOT->getBatteryVoltageNow();
 	THE_ROBOT->unlock();
@@ -670,7 +670,7 @@ void CActivMediaRobotBase::getBatteryCharge( double &out_batery_volts )
 void CActivMediaRobotBase::getRealBatteryCharge( double &out_batery_volts )
 {
 #if MRPT_HAS_ARIA
-	ASSERTMSG_(THE_ROBOT!=NULL, "Robot is not connected")
+	ASSERTMSG_(THE_ROBOT!=nullptr, "Robot is not connected")
 	THE_ROBOT->lock();
 	out_batery_volts = THE_ROBOT->getRealBatteryVoltage();
 	THE_ROBOT->unlock();
@@ -748,7 +748,7 @@ CActivMediaRobotBase::TRobotDescription::TRobotDescription() :
 void CActivMediaRobotBase::getRobotInformation(CActivMediaRobotBase::TRobotDescription &info)
 {
 #if MRPT_HAS_ARIA
-	ASSERTMSG_(THE_ROBOT!=NULL, "Robot is not connected")
+	ASSERTMSG_(THE_ROBOT!=nullptr, "Robot is not connected")
 
 	THE_ROBOT->lock();
 
@@ -770,7 +770,7 @@ void CActivMediaRobotBase::getRobotInformation(CActivMediaRobotBase::TRobotDescr
 void CActivMediaRobotBase::getBumpers(vector_bool &bumper_state)
 {
 #if MRPT_HAS_ARIA
-	ASSERTMSG_(THE_ROBOT!=NULL, "Robot is not connected")
+	ASSERTMSG_(THE_ROBOT!=nullptr, "Robot is not connected")
 
 	THE_ROBOT->lock();
 

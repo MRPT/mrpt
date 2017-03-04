@@ -316,7 +316,7 @@ namespace mrpt
 		*/
 		inline void rpy(T &roll, T &pitch, T &yaw) const
 		{
-			rpy_and_jacobian(roll,pitch,yaw,static_cast<mrpt::math::CMatrixDouble*>(NULL));
+            rpy_and_jacobian(roll,pitch,yaw,static_cast<mrpt::math::CMatrixDouble*>(nullptr));
 		}
 
 		/**	Return the yaw, pitch & roll angles associated to quaternion, and (optionally) the 3x4 Jacobian of the transformation.
@@ -325,7 +325,7 @@ namespace mrpt
 		  * \sa rpy
 		*/
 		template <class MATRIXLIKE>
-		void rpy_and_jacobian(T &roll, T &pitch, T &yaw, MATRIXLIKE *out_dr_dq = NULL, bool resize_out_dr_dq_to3x4 = true ) const
+        void rpy_and_jacobian(T &roll, T &pitch, T &yaw, MATRIXLIKE *out_dr_dq = nullptr, bool resize_out_dr_dq_to3x4 = true ) const
 		{
 			using mrpt::utils::square;
 			using std::sqrt;

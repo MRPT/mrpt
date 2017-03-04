@@ -134,7 +134,7 @@ struct Node
 	std::vector<Node*> mChildren;
 	std::vector<Mesh*> mMeshes;
 
-	Node() { mParent = NULL; }
+	Node() { mParent = nullptr; }
 	Node( Node* pParent) { mParent = pParent; }
 	~Node() 
 	{
@@ -185,7 +185,7 @@ struct Scene
 	std::vector<Animation*> mAnims;
 	unsigned int mAnimTicksPerSecond;
 
-	Scene() { mRootNode = NULL; mAnimTicksPerSecond = 0; }
+	Scene() { mRootNode = nullptr; mAnimTicksPerSecond = 0; }
 	~Scene()
 	{
 		delete mRootNode;

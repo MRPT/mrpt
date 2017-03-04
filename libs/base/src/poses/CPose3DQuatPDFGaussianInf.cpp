@@ -209,7 +209,7 @@ void	 CPose3DQuatPDFGaussianInf::inverse(CPose3DQuatPDF &o) const
 	// COV:
 	CMatrixFixedNumeric<double,3,7>  df_dpose(UNINITIALIZED_MATRIX);
 	double lx,ly,lz;
-	mean.inverseComposePoint(0,0,0,lx,ly,lz, NULL, &df_dpose);
+	mean.inverseComposePoint(0,0,0,lx,ly,lz, nullptr, &df_dpose);
 
 
 	CMatrixFixedNumeric<double,7,7>  jacob;

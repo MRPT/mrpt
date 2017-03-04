@@ -65,7 +65,7 @@ int32_t IntList::deserialize(const char* str)
 
 int32_t IntList::serialize(char* buffer) const
 {
-	if (buffer != NULL)
+	if (buffer != nullptr)
 	{
 		*((uint32_t*) buffer) = m_count;
 		memcpy(buffer+4,m_data,m_count*4);
@@ -121,7 +121,7 @@ int32_t IntList::writeToString(char* buffer) const
 	char* buf = buffer;
 	char fake[128];
 	uint32_t written = 0;
-	if (buffer == NULL)
+	if (buffer == nullptr)
 		buf = fake;
 	written = sprintf(buf,"%lu:",(long unsigned)m_count);
 	if (buf != fake)
@@ -140,7 +140,7 @@ int32_t IntList::writeToStringHex(char* buffer) const
 	char* buf = buffer;
 	char fake[128];
 	uint32_t written = 0;
-	if (buffer == NULL)
+	if (buffer == nullptr)
 		buf = fake;
 	written = sprintf(buf,"%lu:",static_cast<long unsigned>(m_count));
 	if (buf != fake)

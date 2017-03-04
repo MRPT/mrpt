@@ -152,7 +152,7 @@ void BlenderModifierShowcase::ApplyModifiers(aiNode& out, ConversionData& conv_d
 				modifier->DoIt(out,conv_data,*boost::static_pointer_cast<const ElemBase>(cur),in,orig_object);
 				cnt++;
 
-				curgod = NULL;
+				curgod = nullptr;
 				break;
 			}
 		}

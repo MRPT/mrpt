@@ -127,7 +127,7 @@ namespace octomap {
      *
      * @param id unique ID of OcTree
      * @param res resolution of OcTree
-     * @return pointer to newly created OcTree (empty). NULL if the ID is unknown!
+     * @return pointer to newly created OcTree (empty). nullptr if the ID is unknown!
      */
     static AbstractOcTree* createTree(const std::string id, double res);
 

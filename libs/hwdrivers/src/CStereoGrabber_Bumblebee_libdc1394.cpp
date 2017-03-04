@@ -17,7 +17,7 @@ using namespace mrpt::obs;
 using namespace mrpt::hwdrivers;
 
 CStereoGrabber_Bumblebee_libdc1394::CStereoGrabber_Bumblebee_libdc1394(uint64_t cameraGUID, uint16_t cameraUnit, double   frameRate) :
-	m_firewire_capture(NULL),
+	m_firewire_capture(nullptr),
 	m_bInitialized(false)
 {
 	MRPT_TRY_START
@@ -56,7 +56,7 @@ CStereoGrabber_Bumblebee_libdc1394::~CStereoGrabber_Bumblebee_libdc1394()
 	if (m_firewire_capture)
 	{
 		delete m_firewire_capture;
-		m_firewire_capture = NULL;
+		m_firewire_capture = nullptr;
 	}
 }
 

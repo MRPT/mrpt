@@ -47,7 +47,7 @@ public:
 	/** Constructor
 	  */
     CRawlogTreeView(
-		wxWindow* parent=NULL,
+                wxWindow* parent=nullptr,
 		wxWindowID id = -1,
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize,
@@ -119,7 +119,7 @@ protected:
 		}
 
 		uint8_t				level;		//!< Hierarchy level: 0,1,2.
-		mrpt::utils::CSerializablePtr	data;	//!< The object, or NULL
+                mrpt::utils::CSerializablePtr	data;	//!< The object, or nullptr
 		size_t		index;
 	};
 

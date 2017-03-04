@@ -190,12 +190,12 @@ namespace mrpt
 			/** Compute the 3D ray corresponding to a given pixel; this can be used to allow the user to pick and select 3D objects by clicking onto the 2D image.
 			  *  \param x_coord Horizontal coordinate with the usual meaning (0:left of the viewport, W-1: right border).
 			  *  \param y_coord Horizontal coordinate with the usual meaning (0:top of the viewport, H-1: right border).
-			  * \param out_cameraPose If not NULL, will have the camera 3D pose as a mrpt::poses::CPose3D. See also
+			  * \param out_cameraPose If not nullptr, will have the camera 3D pose as a mrpt::poses::CPose3D. See also
 			  * \note (x,y) refer to VIEWPORT coordinates. Take into account this when viewports do not extend to the whole window size.
 			  * \note x and y are double instead of integers to allow sub-pixel precision.
 			  * \sa getCurrentCameraPose
 			  */
-			void get3DRayForPixelCoord( const double x_coord, const double y_coord, mrpt::math::TLine3D &out_ray, mrpt::poses::CPose3D *out_cameraPose=NULL ) const;
+			void get3DRayForPixelCoord( const double x_coord, const double y_coord, mrpt::math::TLine3D &out_ray, mrpt::poses::CPose3D *out_cameraPose=nullptr ) const;
 
 			/** @} */ // end of Change or read viewport properties
 			// ------------------------------------------------------
@@ -227,11 +227,11 @@ namespace mrpt
 			  */
 			void getCurrentCameraPose( mrpt::poses::CPose3D &out_cameraPose ) const;
 
-			/** Returns the first object with a given name, or NULL if not found.
+			/** Returns the first object with a given name, or nullptr if not found.
 			  */
 			CRenderizablePtr getByName( const std::string &str );
 
-			 /** Returns the i'th object of a given class (or of a descendant class), or NULL (an empty smart pointer) if not found.
+			 /** Returns the i'th object of a given class (or of a descendant class), or nullptr (an empty smart pointer) if not found.
 			   *  Example:
 			   * \code
 					CSpherePtr obs = view.getByClass<CSphere>();
@@ -288,7 +288,7 @@ namespace mrpt
 		protected:
 			/** Constructor, invoked from COpenGLScene only.
 			  */
-			COpenGLViewport( COpenGLScene *parent=NULL, const std::string &name=std::string("") );
+			COpenGLViewport( COpenGLScene *parent=nullptr, const std::string &name=std::string("") );
 
 			/** Initializes all textures in the scene (See opengl::CTexturedPlane::loadTextureInOpenGL)
 			  */

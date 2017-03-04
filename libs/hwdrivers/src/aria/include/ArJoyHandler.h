@@ -61,7 +61,7 @@ class ArJoyHandler
   /// Returns if the joystick was successfully initialized or not
   /*AREXPORT*/ bool haveJoystick(void) { return myInitialized; }
   /// Gets the adjusted reading, as floats, between -1.0 and 1.0
-  AREXPORT void getDoubles(double *x, double *y, double *z = NULL);
+  AREXPORT void getDoubles(double *x, double *y, double *z = nullptr);
   /// Gets the button
   AREXPORT bool getButton(unsigned int button);
   /// Returns true if we definitely have a Z axis (we don't know in windows unless it moves)
@@ -71,7 +71,7 @@ class ArJoyHandler
   /*AREXPORT*/void setSpeeds(int x, int y, int z = 0)
     { myTopX = x; myTopY = y; myTopZ = z; }
   /// Gets the adjusted reading, as integers, based on the setSpeed
-  AREXPORT void getAdjusted(int *x, int *y, int *z = NULL);
+  AREXPORT void getAdjusted(int *x, int *y, int *z = nullptr);
 
   /// Gets the number of axes the joystick has
   AREXPORT unsigned int getNumAxes(void);
@@ -90,7 +90,7 @@ class ArJoyHandler
   AREXPORT void endCal(void);
   /// Gets the unfilitered reading, mostly for internal use, maybe
   /// useful for Calibration
-  AREXPORT void getUnfiltered(int *x, int *y, int *z = NULL);
+  AREXPORT void getUnfiltered(int *x, int *y, int *z = nullptr);
   /// Gets the stats for the joystick, useful after calibrating to save values
   AREXPORT void getStats(int *maxX, int *minX, int *maxY, int *minY,
 		 int *cenX, int *cenY);

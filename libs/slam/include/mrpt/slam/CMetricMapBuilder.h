@@ -48,10 +48,10 @@ namespace slam
 		/** @name Pure virtual methods to implement in any particular SLAM algorithm
 		    @{ */
 
-		/** Initialize the method, starting with a known location PDF "x0"(if supplied, set to NULL to left unmodified) and a given fixed, past map. */
+		/** Initialize the method, starting with a known location PDF "x0"(if supplied, set to nullptr to left unmodified) and a given fixed, past map. */
 		virtual void  initialize(
 			const mrpt::maps::CSimpleMap &initialMap = mrpt::maps::CSimpleMap(),
-			mrpt::poses::CPosePDF *x0 = NULL
+			mrpt::poses::CPosePDF *x0 = nullptr
 			) = 0;
 
 		/** Returns a copy of the current best pose estimation as a pose PDF. */

@@ -63,11 +63,11 @@ public:
 	{
 		return (static_cast<T *>(data)->*PROC)();
 	}
-	static Thread create(thread_proc_t proc, void * data = NULL );
+	static Thread create(thread_proc_t proc, void * data = nullptr );
 
 public:
     ~Thread() { }
-    Thread():  _data(NULL),_func(NULL),_handle(0)  {}
+    Thread():  _data(nullptr),_func(nullptr),_handle(0)  {}
     _word_size_t getHandle(){ return _handle;}
     u_result terminate();
     void *getData() { return _data;}

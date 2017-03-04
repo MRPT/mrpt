@@ -54,7 +54,7 @@ ArMutex::~ArMutex()
 */
 int ArMutex::lock() 
 {
-  if (myLog && ArThread::self() != NULL)
+  if (myLog && ArThread::self() != nullptr)
     ArLog::log(ArLog::Terse, "Locking %s from thread %s %d pid %d", 
 	       myLogName.c_str(),
 	       ArThread::self()->getThreadName(), 
@@ -118,7 +118,7 @@ int ArMutex::tryLock()
 
 int ArMutex::unlock() 
 {
-  if (myLog && ArThread::self() != NULL)
+  if (myLog && ArThread::self() != nullptr)
     ArLog::log(ArLog::Terse, "Unlocking %s from thread %s %d pid %d", 
 	       myLogName.c_str(),
 	       ArThread::self()->getThreadName(), 
@@ -155,5 +155,5 @@ AREXPORT const char *ArMutex::getError(int messageNumber) const
   if ((it = myStrMap.find(messageNumber)) != myStrMap.end())
     return (*it).second.c_str();
   else
-    return NULL;
+    return nullptr;
 }

@@ -67,7 +67,7 @@ void	CTicTac::Tic()
 	QueryPerformanceCounter(&l[1]);
 #else
 	struct timeval* ts = TIMEVAL_NUMS;
-    gettimeofday( &ts[0], NULL);
+    gettimeofday( &ts[0], nullptr);
 #endif
 }
 
@@ -83,7 +83,7 @@ double	CTicTac::Tac()
 	return (l[2].QuadPart-l[1].QuadPart)/static_cast<double>(l[0].QuadPart);
 #else
 	struct timeval* ts = TIMEVAL_NUMS;
-    gettimeofday( &ts[1], NULL);
+    gettimeofday( &ts[1], nullptr);
 
     return ( ts[1].tv_sec - ts[0].tv_sec) +
            1e-6*(  ts[1].tv_usec - ts[0].tv_usec );

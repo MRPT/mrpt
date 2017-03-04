@@ -19,7 +19,7 @@ using namespace mrpt::utils;
 void CPointCloudFilterByDistance::filter(
 	mrpt::maps::CPointsMap * pc,       //!< [in,out] The input pointcloud, which will be modified upon return after filtering.
 	const mrpt::system::TTimeStamp pc_timestamp,     //!< [in] The timestamp of the input pointcloud
-	const mrpt::poses::CPose3D & cur_pc_pose,  //!< [in] If NULL, the PC is assumed to be given in global coordinates. Otherwise, it will be transformed from local coordinates to global using this transformation.
+	const mrpt::poses::CPose3D & cur_pc_pose,  //!< [in] If nullptr, the PC is assumed to be given in global coordinates. Otherwise, it will be transformed from local coordinates to global using this transformation.
 	TExtraFilterParams * params                      //!< [in,out] additional in/out parameters
 )
 {

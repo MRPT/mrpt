@@ -38,8 +38,8 @@ void CEdgeCounter::initCEdgeCounter() {
 
 	m_unique_edges = 0;
 
-	m_win = NULL;
-	m_win_manager = NULL;
+	m_win = nullptr;
+	m_win_manager = nullptr;
 
 }
 

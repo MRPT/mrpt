@@ -89,7 +89,7 @@ bool ScalarFactorGraph::eraseConstraint(const FactorBase &c)
 */
 void ScalarFactorGraph::updateEstimation(
 	Eigen::VectorXd & solved_x_inc,                 //!< Output increment of the current estimate. Caller must add this vector to current state vector to obtain the optimal estimation.
-	Eigen::VectorXd * solved_variances  //!< If !=NULL, the covariance of the estimate will be stored here.
+	Eigen::VectorXd * solved_variances  //!< If !=nullptr, the covariance of the estimate will be stored here.
 )
 {
 	ASSERTMSG_(m_numNodes>0, "numNodes=0. Have you called initialize()?");

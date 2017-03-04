@@ -73,7 +73,7 @@ typedef enum /*! \cond NODOXYGEN */ _XsensResultValue_ /*! \endcond */ {
 	,XRV_COULDNOTREADSETTINGS	= 271	//!< A required settings file could not be opened or is missing some data
 	,XRV_NODATA				= 272	//!< No data is available
 	,XRV_READONLY			= 273	//!< Tried to change a read-only value
-	,XRV_NULLPTR			= 274	//!< Tried to supply a NULL value where it is not allowed
+	,XRV_NULLPTR			= 274	//!< Tried to supply a nullptr value where it is not allowed
 	,XRV_INSUFFICIENTDATA	= 275	//!< Insufficient data was supplied to a function
 	,XRV_BUSY				= 276	//!< Busy processing, try again later
 	,XRV_INVALIDINSTANCE	= 277	//!< Invalid instance called
@@ -113,18 +113,18 @@ typedef enum /*! \cond NODOXYGEN */ _XsensResultValue_ /*! \endcond */ {
 /*! \cond NODOXYGEN */
 #ifndef DELNUL
 //! This macro deletes a pointer and sets it to NULL
-#define DELNUL(ptr)		{ delete ptr; ptr = NULL; }
-//! This macro deletes a pointer if it is not NULL and then sets it to NULL
-#define CHKDELNUL(ptr)	{ if (ptr != NULL) { delete ptr; ptr = NULL; } }
+#define DELNUL(ptr)		{ delete ptr; ptr = nullptr; }
+//! This macro deletes a pointer if it is not nullptr and then sets it to NULL
+#define CHKDELNUL(ptr)	{ if (ptr != nullptr) { delete ptr; ptr = nullptr; } }
 //! This macro deletes a multi-object pointer and sets it to NULL
-#define LSTDELNUL(ptr)		{ delete[] ptr; ptr = NULL; }
-//! This macro deletes a multi-object pointer if it is not NULL and then sets it to NULL
-#define LSTCHKDELNUL(ptr)	{ if (ptr != NULL) { delete[] ptr; ptr = NULL; } }
+#define LSTDELNUL(ptr)		{ delete[] ptr; ptr = nullptr; }
+//! This macro deletes a multi-object pointer if it is not nullptr and then sets it to NULL
+#define LSTCHKDELNUL(ptr)	{ if (ptr != nullptr) { delete[] ptr; ptr = nullptr; } }
 
 //! This macro frees a pointer and then sets it to NULL
-#define FREENUL(ptr)	{ free(ptr); ptr = NULL; }
-//! This macro frees a pointer if it is not NULL and then sets it to NULL
-#define CHKFREENUL(ptr)	{ if (ptr != NULL) { free(ptr); ptr = NULL; } }
+#define FREENUL(ptr)	{ free(ptr); ptr = nullptr; }
+//! This macro frees a pointer if it is not nullptr and then sets it to NULL
+#define CHKFREENUL(ptr)	{ if (ptr != nullptr) { free(ptr); ptr = nullptr; } }
 #endif
 /*! \endcond */
 

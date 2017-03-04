@@ -1515,7 +1515,7 @@ void CFaceDetection::experimental_viewRegions( const vector<TPoint3D> regions[9]
 
 	mrpt::opengl::COpenGLScenePtr scene = win3D.get3DSceneAndLock();
 
-	if ( meanPos != NULL )
+	if ( meanPos != nullptr )
 	{
 		for ( size_t i = 0; i < 3; i++ )
 			for ( size_t j = 0; j < 3; j++ )

@@ -178,7 +178,7 @@ AREXPORT double ArRangeBuffer::getClosestPolarInList(
   }
   if (!foundOne)
     return maxRange;
-  if (angle != NULL)
+  if (angle != nullptr)
     *angle = closeTh;
   if (closest > maxRange)
     return maxRange;
@@ -288,7 +288,7 @@ AREXPORT double ArRangeBuffer::getClosestBoxInList(
       }
     }
   }
-  if (readingPos != NULL)
+  if (readingPos != nullptr)
     *readingPos = closestPos;
   if (closest > maxRange)
     return maxRange;

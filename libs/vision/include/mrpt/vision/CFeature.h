@@ -242,7 +242,7 @@ namespace mrpt
 			*   \param x [IN] The query point x-coordinate
 			*   \param y [IN] The query point y-coordinate
 			*   \param max_dist [IN/OUT] At input: The maximum distance to search for. At output: The actual distance to the feature.
-			*  \return A reference to the found feature, or a NULL smart pointer if none found.
+			*  \return A reference to the found feature, or a nullptr smart pointer if none found.
 			*  \note See also all the available KD-tree search methods, listed in mrpt::math::KDTreeCapable
 			*/
 			CFeaturePtr nearest( const float x, const float y, double &max_dist ) const;

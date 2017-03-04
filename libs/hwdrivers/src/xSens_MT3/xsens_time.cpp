@@ -33,12 +33,12 @@ uint32_t getTimeOfDay(tm* date_, time_t* secs_)
 
 	_ftime(&tp); //_ftime32_s(&tp);
 
-	if (date_ != NULL)
+	if (date_ != nullptr)
 	{
 		time_t tin = tp.time; //__time32_t tin = tp.time;
 		*date_ = *localtime(&tin); // _localtime32_s(date_,&tin);
 	}
-	if (secs_ != NULL)
+	if (secs_ != nullptr)
 		secs_[0] = tp.time;
 
 	// 86400 = 24*60*60 = secs in a day, this gives us the seconds since midnight
@@ -54,7 +54,7 @@ uint32_t getTimeOfDay(tm* date_, time_t* secs_)
 	struct timeval tv;
  	timespec  tp;
  
-  gettimeofday(&tv, NULL);
+  gettimeofday(&tv, nullptr);
   tp.tv_sec = tv.tv_sec;
   tp.tv_nsec = tv.tv_usec*1000;
 # else
@@ -62,10 +62,10 @@ uint32_t getTimeOfDay(tm* date_, time_t* secs_)
 	clock_gettime(CLOCK_REALTIME, &tp); // compile with -lrt
 # endif
 
-	if (date_ != NULL)
+	if (date_ != nullptr)
 		localtime_r(&tp.tv_sec,date_);
 
-	if (secs_ != NULL)
+	if (secs_ != nullptr)
 		secs_[0] = tp.tv_sec;
 
 	// 86400 = 24*60*60 = secs in a day, this gives us the seconds since midnight
@@ -98,7 +98,7 @@ TimeStamp timeStampNow(void)
 {
 	TimeStamp ms;
 	time_t s;
-	ms = (TimeStamp) getTimeOfDay(NULL,&s);
+	ms = (TimeStamp) getTimeOfDay(nullptr,&s);
 	ms = (ms % 1000) + (((TimeStamp)s)*1000);
 
 	return ms;

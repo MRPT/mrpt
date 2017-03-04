@@ -517,7 +517,7 @@ void camera_calib_guiDialog::OnbtnRunCalibClick(wxCommandEvent& event)
 		check_squares_length_Y_meters,
 		camera_params,
 		normalize_image,
-		NULL /* MSE */,
+                nullptr /* MSE */,
 		false /* skip draw */,
 		useScaramuzzaAlternativeDetector);
 

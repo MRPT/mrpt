@@ -208,7 +208,7 @@ typedef my_cquantizer * my_cquantize_ptr;
  * initialized to zeroes by start_pass.
  * An output_buf parameter is required by the method signature, but no data
  * is actually output (in fact the buffer controller is probably passing a
- * NULL pointer).
+ * nullptr pointer).
  */
 
 METHODDEF(void)
@@ -264,12 +264,12 @@ typedef box * boxptr;
 LOCAL(boxptr)
 find_biggest_color_pop (boxptr boxlist, int numboxes)
 /* Find the splittable box with the largest color population */
-/* Returns NULL if no splittable boxes remain */
+/* Returns nullptr if no splittable boxes remain */
 {
   boxptr boxp;
   int i;
   long maxc = 0;
-  boxptr which = NULL;
+  boxptr which = nullptr;
   
   for (i = 0, boxp = boxlist; i < numboxes; i++, boxp++) {
     if (boxp->colorcount > maxc && boxp->volume > 0) {
@@ -284,12 +284,12 @@ find_biggest_color_pop (boxptr boxlist, int numboxes)
 LOCAL(boxptr)
 find_biggest_volume (boxptr boxlist, int numboxes)
 /* Find the splittable box with the largest (scaled) volume */
-/* Returns NULL if no splittable boxes remain */
+/* Returns nullptr if no splittable boxes remain */
 {
   boxptr boxp;
   int i;
   INT32 maxv = 0;
-  boxptr which = NULL;
+  boxptr which = nullptr;
   
   for (i = 0, boxp = boxlist; i < numboxes; i++, boxp++) {
     if (boxp->volume > maxv) {
@@ -430,7 +430,7 @@ median_cut (j_decompress_ptr cinfo, boxptr boxlist, int numboxes,
     } else {
       b1 = find_biggest_volume(boxlist, numboxes);
     }
-    if (b1 == NULL)		/* no splittable boxes left! */
+    if (b1 == nullptr)		/* no splittable boxes left! */
       break;
     b2 = &boxlist[numboxes];	/* where new box will go */
     /* Copy the color bounds to the new box. */
@@ -1191,13 +1191,13 @@ start_pass_2_quant (j_decompress_ptr cinfo, boolean is_pre_scan)
       size_t arraysize = (size_t) ((cinfo->output_width + 2) *
 				   (3 * SIZEOF(FSERROR)));
       /* Allocate Floyd-Steinberg workspace if we didn't already. */
-      if (cquantize->fserrors == NULL)
+      if (cquantize->fserrors == nullptr)
 	cquantize->fserrors = (FSERRPTR) (*cinfo->mem->alloc_large)
 	  ((j_common_ptr) cinfo, JPOOL_IMAGE, arraysize);
       /* Initialize the propagated errors to zero. */
       jzero_far((void FAR *) cquantize->fserrors, arraysize);
       /* Make the error-limit table if we didn't already. */
-      if (cquantize->error_limiter == NULL)
+      if (cquantize->error_limiter == nullptr)
 	init_error_limit(cinfo);
       cquantize->on_odd_row = FALSE;
     }
@@ -1244,8 +1244,8 @@ jinit_2pass_quantizer (j_decompress_ptr cinfo)
   cinfo->cquantize = (struct jpeg_color_quantizer *) cquantize;
   cquantize->pub.start_pass = start_pass_2_quant;
   cquantize->pub.new_color_map = new_color_map_2_quant;
-  cquantize->fserrors = NULL;	/* flag optional arrays not allocated */
-  cquantize->error_limiter = NULL;
+  cquantize->fserrors = nullptr;	/* flag optional arrays not allocated */
+  cquantize->error_limiter = nullptr;
 
   /* Make sure jdmaster didn't give me a case I can't handle */
   if (cinfo->out_color_components != 3)
@@ -1278,7 +1278,7 @@ jinit_2pass_quantizer (j_decompress_ptr cinfo)
       ((j_common_ptr) cinfo,JPOOL_IMAGE, (JDIMENSION) desired, (JDIMENSION) 3);
     cquantize->desired = desired;
   } else
-    cquantize->sv_colormap = NULL;
+    cquantize->sv_colormap = nullptr;
 
   /* Only F-S dithering or no dithering is supported. */
   /* If user asks for ordered dither, give him F-S. */

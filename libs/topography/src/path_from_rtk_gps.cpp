@@ -119,14 +119,14 @@ void  mrpt::topography::path_from_rtk_gps(
 	// Look for the 2 observations:
 	// ------------------------------------------
 #if MRPT_HAS_WXWIDGETS
-	wxProgressDialog    *progDia=NULL;
+	wxProgressDialog    *progDia=nullptr;
 	if (isGUI)
 	{
 		progDia = new wxProgressDialog(
 			wxT("Building map"),
 			wxT("Getting GPS observations..."),
 			(int)(last-first+1), // range
-			NULL, // parent
+			nullptr, // parent
 			wxPD_CAN_ABORT |
 			wxPD_APP_MODAL |
 			wxPD_SMOOTH |
@@ -205,7 +205,7 @@ void  mrpt::topography::path_from_rtk_gps(
 	if (progDia)
 	{
 		delete progDia;
-		progDia=NULL;
+		progDia=nullptr;
 	}
 #endif
 
@@ -352,14 +352,14 @@ void  mrpt::topography::path_from_rtk_gps(
 
 
 #if MRPT_HAS_WXWIDGETS
-	wxProgressDialog    *progDia3=NULL;
+	wxProgressDialog    *progDia3=nullptr;
 	if (isGUI)
 	{
 		progDia3 = new wxProgressDialog(
 			wxT("Building map"),
 			wxT("Estimating 6D path..."),
 			N_GPSs, // range
-			NULL, // parent
+			nullptr, // parent
 			wxPD_CAN_ABORT |
 			wxPD_APP_MODAL |
 			wxPD_SMOOTH |
@@ -498,7 +498,7 @@ void  mrpt::topography::path_from_rtk_gps(
 	if (progDia3)
 	{
 		delete progDia3;
-		progDia3=NULL;
+		progDia3=nullptr;
 	}
 #endif
 

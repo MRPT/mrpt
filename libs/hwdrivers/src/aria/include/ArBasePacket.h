@@ -45,7 +45,7 @@
     matter much as this same packet class should be used on both sides.
 
     Uses of this class that don't get newed and deleted a lot can just go
-    ahead and use the constructor with buf = NULL, as this will have the
+    ahead and use the constructor with buf = nullptr, as this will have the
     packet manage its own memory, making life easier.
 
 */
@@ -56,7 +56,7 @@ public:
   /// Constructor
   AREXPORT ArBasePacket(ArTypes::UByte2 bufferSize = 0,
     ArTypes::UByte2 headerLength = 0,
-    char * buf = NULL,
+    char * buf = nullptr,
     ArTypes::UByte2 footerLength = 0);
 
   /// Destructor

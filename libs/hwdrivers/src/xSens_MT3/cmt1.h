@@ -165,7 +165,7 @@ public:
 		\param length		The number of bytes placed into \c data.
 	*/
 	XsensResultValue readData (const uint32_t maxLength, uint8_t* data,
-								uint32_t* length = NULL);
+								uint32_t* length = nullptr);
 	//! Set the callback function for when bytes have been received
 	XsensResultValue setCallbackFunction(CmtCallbackSelector tp, int32_t instance, CmtCallbackFunction func, void* param);
 	/*! \brief Set the default timeout value to use in blocking operations.
@@ -184,7 +184,7 @@ public:
 		in the class should be used.
 	*/
 	XsensResultValue waitForData (const uint32_t maxLength, uint8_t* data,
-								uint32_t* length = NULL);
+								uint32_t* length = nullptr);
 	/*! \brief Write the data to the serial port.
 
 		The function writes the given data to the connected COM port.

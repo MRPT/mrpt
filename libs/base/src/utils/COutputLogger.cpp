@@ -83,7 +83,7 @@ void COutputLogger::logFmt(const VerbosityLevel level, const char* fmt, ...) con
 	// see MRPT/libs/base/src/utils/CDeugOutputCapable.cpp for the iniitial
 	// implementtion
 
-	// check for NULL pointer
+	// check for nullptr pointer
 	if (!fmt) return;
 
 	// initialize the va_list and let generateStringFromFormat do the work
@@ -143,7 +143,7 @@ std::string COutputLogger::getLogAsString() const{
 	this->getLogAsString(str);
 	return str;
 }
-void COutputLogger::writeLogToFile(const std::string* fname_in /* = NULL */) const {
+void COutputLogger::writeLogToFile(const std::string* fname_in /* = nullptr */) const {
 	// determine the filename - open it
 	std::string fname;
 	if (fname_in) {
@@ -250,7 +250,7 @@ void COutputLogger::TMsg::dumpToConsole() const {
 
 void COutputLogger::logRegisterCallback(output_logger_callback_t  userFunc, void *userParam )
 {
-	ASSERT_(userFunc!=NULL);
+	ASSERT_(userFunc!=nullptr);
 	TCallbackEntry cbe;
 	cbe.func = userFunc;
 	cbe.userParam = userParam;
@@ -259,7 +259,7 @@ void COutputLogger::logRegisterCallback(output_logger_callback_t  userFunc, void
 
 void COutputLogger::logDeregisterCallback(output_logger_callback_t  userFunc, void *userParam )
 {
-	ASSERT_(userFunc!=NULL);
+	ASSERT_(userFunc!=nullptr);
 	TCallbackEntry cbe;
 	cbe.func = userFunc;
 	cbe.userParam = userParam;

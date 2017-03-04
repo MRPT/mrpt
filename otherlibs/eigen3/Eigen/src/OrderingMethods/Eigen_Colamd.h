@@ -284,7 +284,7 @@ inline Index colamd_recommended ( Index nnz, Index n_row, Index n_col)
  * be properly set to their defaults by the future version of
  * colamd_set_defaults, so that the code that calls colamd will
  * not need to change, assuming that you either use
- * colamd_set_defaults, or pass a (double *) NULL pointer as the
+ * colamd_set_defaults, or pass a (double *) nullptr pointer as the
  * knobs array to colamd or symamd.
  * 
  * \param knobs parameter settings for colamd

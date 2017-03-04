@@ -128,7 +128,7 @@ void CAbstractPTGBasedReactive::enableLogFile(bool enable)
 				MRPT_LOG_DEBUG("[CAbstractPTGBasedReactive::enableLogFile] Stopping logging.");
 				// Close file:
 				delete m_logFile;
-				m_logFile = NULL;
+				m_logFile = nullptr;
 			}
 			else return;	// Already disabled.
 		}
@@ -238,7 +238,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 	const size_t nPTGs = this->getPTG_count();
 
 	// Whether to worry about log files:
-	const bool fill_log_record = (m_logFile!=NULL || m_enableKeepLogRecords);
+	const bool fill_log_record = (m_logFile!=nullptr || m_enableKeepLogRecords);
 	CLogFileRecord newLogRec;
 	newLogRec.infoPerPTG.resize(nPTGs+1); /* +1: [N] is the "NOP cmdvel" option; not to be present in all log entries. */
 
@@ -1258,7 +1258,7 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
 	} // end "valid_TP"
 
 	// Logging:
-	const bool fill_log_record = (m_logFile != NULL || m_enableKeepLogRecords);
+	const bool fill_log_record = (m_logFile != nullptr || m_enableKeepLogRecords);
 	if (fill_log_record)
 	{
 		CLogFileRecord::TInfoPerPTG &ipp = newLogRec.infoPerPTG[idx_in_log_infoPerPTGs];

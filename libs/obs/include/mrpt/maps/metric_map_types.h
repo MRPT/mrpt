@@ -45,7 +45,7 @@ namespace mrpt
 		struct OBS_IMPEXP TMatchingExtraResults
 		{
 			float correspondencesRatio; //!< The ratio [0,1] of points in otherMap with at least one correspondence.
-			float sumSqrDist;           //!< The sum of all matched points squared distances.If undesired, set to NULL, as default.
+			float sumSqrDist;           //!< The sum of all matched points squared distances.If undesired, set to nullptr, as default.
 
 			TMatchingExtraResults() : correspondencesRatio(0),sumSqrDist(0)
 			{}

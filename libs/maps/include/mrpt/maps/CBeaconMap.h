@@ -56,7 +56,7 @@ namespace maps
 
 		// See docs in base class
 		virtual void  internal_clear() MRPT_OVERRIDE;
-		virtual bool  internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = NULL ) MRPT_OVERRIDE;
+		virtual bool  internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = nullptr ) MRPT_OVERRIDE;
 		double	 internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom ) MRPT_OVERRIDE;
 
 	public:
@@ -249,8 +249,8 @@ namespace maps
 
 		void getAs3DObject(mrpt::opengl::CSetOfObjectsPtr &outObj) const MRPT_OVERRIDE; //!< Returns a 3D object representing the map.
 
-		const CBeacon * getBeaconByID( CBeacon::TBeaconID  id ) const; //!< Returns a pointer to the beacon with the given ID, or NULL if it does not exist.
-		CBeacon * getBeaconByID( CBeacon::TBeaconID  id ); 		//!< Returns a pointer to the beacon with the given ID, or NULL if it does not exist.
+		const CBeacon * getBeaconByID( CBeacon::TBeaconID  id ) const; //!< Returns a pointer to the beacon with the given ID, or nullptr if it does not exist.
+		CBeacon * getBeaconByID( CBeacon::TBeaconID  id ); 		//!< Returns a pointer to the beacon with the given ID, or nullptr if it does not exist.
 
 
 		MAP_DEFINITION_START(CBeaconMap,MAPS_IMPEXP)

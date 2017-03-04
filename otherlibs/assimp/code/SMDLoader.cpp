@@ -434,7 +434,7 @@ void SMDImporter::CreateOutputMeshes()
 // add bone child nodes
 void SMDImporter::AddBoneChildren(aiNode* pcNode, uint32_t iParent)
 {
-	ai_assert(NULL != pcNode && 0 == pcNode->mNumChildren && NULL == pcNode->mChildren);
+        ai_assert(nullptr != pcNode && 0 == pcNode->mNumChildren && nullptr == pcNode->mChildren);
 
 	// first count ...
 	for (unsigned int i = 0; i < asBones.size();++i)
@@ -688,7 +688,7 @@ void SMDImporter::ParseFile()
 	{
 		if(!SkipSpacesAndLineEnd(szCurrent,&szCurrent)) break;
 
-		// "version <n> \n", <n> should be 1 for hl and hl² SMD files
+		// "version <n> \n", <n> should be 1 for hl and hlï¿½ SMD files
 		if (TokenMatch(szCurrent,"version",7))
 		{
 			if(!SkipSpaces(szCurrent,&szCurrent)) break;

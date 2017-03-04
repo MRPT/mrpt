@@ -454,8 +454,8 @@ process_data_crank_post (j_decompress_ptr cinfo,
 			 JSAMPARRAY output_buf, JDIMENSION *out_row_ctr,
 			 JDIMENSION out_rows_avail)
 {
-  (*cinfo->post->post_process_data) (cinfo, (JSAMPIMAGE) NULL,
-				     (JDIMENSION *) NULL, (JDIMENSION) 0,
+  (*cinfo->post->post_process_data) (cinfo, (JSAMPIMAGE) nullptr,
+				     (JDIMENSION *) nullptr, (JDIMENSION) 0,
 				     output_buf, out_row_ctr, out_rows_avail);
 }
 

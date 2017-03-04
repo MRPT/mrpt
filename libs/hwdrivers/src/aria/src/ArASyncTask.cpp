@@ -18,7 +18,7 @@
 
 
 AREXPORT ArASyncTask::ArASyncTask() :
-  myFunc(this, &ArASyncTask::runThread, NULL)
+  myFunc(this, &ArASyncTask::runThread, nullptr)
 {
 }
 

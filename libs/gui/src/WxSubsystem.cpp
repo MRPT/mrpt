@@ -44,10 +44,10 @@ using namespace std;
 synch::CCriticalSection  	WxSubsystem::CWXMainFrame::cs_windowCount;
 int                       	WxSubsystem::CWXMainFrame::m_windowCount = 0;
 
-std::queue<WxSubsystem::TRequestToWxMainThread*> * WxSubsystem::listPendingWxRequests = NULL;
-synch::CCriticalSection             * WxSubsystem::cs_listPendingWxRequests = NULL;
+std::queue<WxSubsystem::TRequestToWxMainThread*> * WxSubsystem::listPendingWxRequests = nullptr;
+synch::CCriticalSection             * WxSubsystem::cs_listPendingWxRequests = nullptr;
 
-volatile WxSubsystem::CWXMainFrame* WxSubsystem::CWXMainFrame::oneInstance = NULL;
+volatile WxSubsystem::CWXMainFrame* WxSubsystem::CWXMainFrame::oneInstance = nullptr;
 volatile bool WxSubsystem::isConsoleApp = true;
 
 WxSubsystem::CAuxWxSubsystemShutdowner  WxSubsystem::global_wxsubsystem_shutdown;
@@ -98,7 +98,7 @@ public:
 	static const long ID_BTN_OK;
 	static const long ID_BTN_CANCEL;
 
-	CDialogAskUserForCamera() : wxDialog(NULL,wxID_ANY,wxT("Select image source"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE, wxDialogNameStr)
+	CDialogAskUserForCamera() : wxDialog(nullptr,wxID_ANY,wxT("Select image source"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE, wxDialogNameStr)
 	{
 		wxFlexGridSizer *f1 = new wxFlexGridSizer(2, 1, 0, 0);
 		panel = new mrpt::gui::CPanelCameraSelection(this, wxID_ANY);
@@ -183,11 +183,11 @@ WxSubsystem::CWXMainFrame::~CWXMainFrame()
 	cout << "[CWXMainFrame] Destructor." << endl;
 #endif
 	delete m_theTimer;
-	oneInstance=NULL;
+	oneInstance=nullptr;
 
 	// Purge all pending requests:
 	TRequestToWxMainThread *msg;
-	while (NULL!=(msg= popPendingWxRequest()))
+	while (nullptr!=(msg= popPendingWxRequest()))
 		delete[] msg;
 
 }
@@ -225,7 +225,7 @@ int WxSubsystem::CWXMainFrame::notifyWindowDestruction()
 	return ret;
 }
 
-/** Thread-safe method to return the next pending request, or NULL if there is none (After usage, FREE the memory!)
+/** Thread-safe method to return the next pending request, or nullptr if there is none (After usage, FREE the memory!)
   */
 WxSubsystem::TRequestToWxMainThread * WxSubsystem::popPendingWxRequest()
 {
@@ -239,7 +239,7 @@ WxSubsystem::TRequestToWxMainThread * WxSubsystem::popPendingWxRequest()
 
     // Is empty?
     if (listPendingWxRequests->empty())
-        return NULL;
+        return nullptr;
 
     TRequestToWxMainThread *ret=listPendingWxRequests->front();
     listPendingWxRequests->pop(); // Remove from the queue
@@ -286,7 +286,7 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 #endif
 
         // For each pending request:
-        while ( NULL != (msg = popPendingWxRequest() ) )
+        while ( nullptr != (msg = popPendingWxRequest() ) )
 		{
             // Process it:
             switch (msg->OPCODE)
@@ -886,7 +886,7 @@ int mrpt_wxEntryReal(int argc, char **argv)
 	{
 #if wxUSE_LOG
 		// flush any log messages explaining why we failed
-		delete wxLog::SetActiveTarget(NULL);
+		delete wxLog::SetActiveTarget(nullptr);
 #endif
 		return -1;
 	}
@@ -933,7 +933,7 @@ void WxSubsystem::wxMainThread()
 	// Prepare wxWidgets:
 	int argc=1;
 	static const char *dummy_prog_name = "./MRPT";
-	char *argv[2] = { const_cast<char*>(dummy_prog_name), NULL };
+	char *argv[2] = { const_cast<char*>(dummy_prog_name), nullptr };
 
 #ifdef WXSUBSYSTEM_VERBOSE
     cout << "[wxMainThread] Starting..." << endl;
@@ -988,7 +988,7 @@ WxSubsystem::TWxMainThreadData& WxSubsystem::GetWxMainThreadInstance()
 {
 	//static TWxMainThreadData dat;
 	// Create as dynamic memory, since it'll be deleted in CAuxWxSubsystemShutdowner:
-	static TWxMainThreadData *dat=NULL;
+	static TWxMainThreadData *dat=nullptr;
 	static bool first_creat = true;
 	if (!dat && first_creat) { first_creat=false; dat = new TWxMainThreadData; }
 	return *dat;

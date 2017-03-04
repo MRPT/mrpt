@@ -42,12 +42,12 @@ namespace obs
 		  *   may be asymmetric.
 		  *
 		  * \param anotherObs The other observation to compute likelihood with.
-		  * \param anotherObsPose If known, the belief about the robot pose when the other observation was taken can be supplied here, or NULL if it is unknown.
+		  * \param anotherObsPose If known, the belief about the robot pose when the other observation was taken can be supplied here, or nullptr if it is unknown.
 		  *
 		  * \return Returns a likelihood measurement, in the range [0,1].
 		  *	\exception std::exception On any error, as another observation being of an invalid class.
 		  */
-		 float  likelihoodWith( const mrpt::obs::CObservation *anotherObs, const mrpt::poses::CPosePDF *anotherObsPose = NULL ) const;
+		 float  likelihoodWith( const mrpt::obs::CObservation *anotherObs, const mrpt::poses::CPosePDF *anotherObsPose = nullptr ) const;
 
 		// See base class docs
 		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const MRPT_OVERRIDE { out_sensorPose = refCameraPose; }

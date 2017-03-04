@@ -15,7 +15,7 @@
 
 AREXPORT ArConfigGroup::ArConfigGroup(const char *baseDirectory)
 {
-  if (baseDirectory != NULL)
+  if (baseDirectory != nullptr)
     myBaseDirectory = baseDirectory;
   else
     myBaseDirectory = "";

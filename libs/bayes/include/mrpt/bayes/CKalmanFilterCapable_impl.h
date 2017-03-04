@@ -721,7 +721,7 @@ namespace mrpt
 						size_t nKF_iterations = KF_options.IKF_iterations;
 
 						// To avoid wasting time, if we are doing 1 iteration only, do not reserve memory for this matrix:
-						KFMatrix		*saved_Pkk=NULL;
+						KFMatrix		*saved_Pkk=nullptr;
 						if (nKF_iterations>1)
 						{
 							// Create a copy of Pkk for later restoring it at the beginning of each iteration:

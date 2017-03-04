@@ -36,7 +36,7 @@ namespace mrpt
 
 			/** This method must compute the topological observation model.
 			  * \param out_log_lik The output, a log-likelihood.
-			  * \return NULL (empty smart pointer), or a PDF of the estimated translation between the two areas (can be a multi-modal PDF).
+			  * \return nullptr (empty smart pointer), or a PDF of the estimated translation between the two areas (can be a multi-modal PDF).
 			  */
 			mrpt::poses::CPose3DPDFPtr computeTopologicalObservationModel(
 				const THypothesisID		&hypID,

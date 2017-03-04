@@ -47,7 +47,7 @@ public:
 
     Locker(){
 #ifdef _WIN32
-        _lock = NULL;
+        _lock = nullptr;
 #endif
         init();
     }
@@ -89,7 +89,7 @@ public:
         {
             timespec wait_time;
             timeval now;
-            gettimeofday(&now,NULL);
+            gettimeofday(&now,nullptr);
 
             wait_time.tv_sec = timeout/1000 + now.tv_sec;
             wait_time.tv_nsec = (timeout%1000)*1000000 + now.tv_usec*1000;
@@ -141,9 +141,9 @@ protected:
     void    init()
     {
 #ifdef _WIN32
-        _lock = CreateMutex(NULL,FALSE,NULL);
+        _lock = CreateMutex(nullptr,FALSE,nullptr);
 #else
-        pthread_mutex_init(&_lock, NULL);
+        pthread_mutex_init(&_lock, nullptr);
 #endif
     }
 
@@ -153,7 +153,7 @@ protected:
 #ifdef _WIN32
 
         if (_lock) CloseHandle(_lock);
-        _lock = NULL;
+        _lock = nullptr;
 #else
         pthread_mutex_destroy(&_lock);
 #endif

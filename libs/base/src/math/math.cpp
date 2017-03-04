@@ -1478,10 +1478,10 @@ void  math::dft2_complex(
 
 		// Transform to format compatible with C routines:
 		// ------------------------------------------------------------
-		static FFT_TYPE	**a=NULL;
-		static FFT_TYPE	*t= NULL;
-		static int	*ip=NULL;
-		static FFT_TYPE	*w=NULL;
+		static FFT_TYPE	**a=nullptr;
+		static FFT_TYPE	*t= nullptr;
+		static int	*ip=nullptr;
+		static FFT_TYPE	*w=nullptr;
 
 		// Reserve memory
 		// --------------------------------------
@@ -1587,10 +1587,10 @@ void  math::idft2_complex(
 
 		// Transform to format compatible with C routines:
 		// ------------------------------------------------------------
-		static FFT_TYPE	**a=NULL;
-		static FFT_TYPE			*t=NULL;
-		static int				*ip=NULL;
-		static FFT_TYPE		*w=NULL;
+		static FFT_TYPE	**a=nullptr;
+		static FFT_TYPE			*t=nullptr;
+		static int				*ip=nullptr;
+		static FFT_TYPE		*w=nullptr;
 
 		// Reserve memory
 		// --------------------------------------
@@ -1771,10 +1771,10 @@ bool math::loadVector( CFileStream &f, ::std::vector<int> &d)
 
     d.clear();
 	nextTok = mrpt::system::strtok( (char*)s,delim,&context);
-	while (nextTok != NULL)
+	while (nextTok != nullptr)
 	{
 		d.push_back( atoi(nextTok) );
-		nextTok = mrpt::system::strtok (NULL,delim,&context);
+		nextTok = mrpt::system::strtok (nullptr,delim,&context);
 	};
 
     return true;
@@ -1795,10 +1795,10 @@ bool math::loadVector( CFileStream &f, ::std::vector<double> &d)
 
     d.clear();
 	nextTok = mrpt::system::strtok( (char*)s,delim,&context);
-	while (nextTok != NULL)
+	while (nextTok != nullptr)
 	{
 		d.push_back( atof(nextTok) );
-		nextTok = mrpt::system::strtok (NULL,delim,&context);
+		nextTok = mrpt::system::strtok (nullptr,delim,&context);
 	};
 
     return true;

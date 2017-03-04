@@ -414,7 +414,7 @@ void  CHierarchicalMHMap::dumpAsXMLfile(std::string fileName) const
 			s= format("   [HYPO ID #%02i] Annotation '%s' Class: ", (int)ann->ID, ann->name.c_str() );
 			if ( ann->value )
 					s+= string(ann->value->GetRuntimeClass()->className);
-			else	s+= "(NULL)";
+			else	s+= "(nullptr)";
 
 			st << s;
 
@@ -468,7 +468,7 @@ void  CHierarchicalMHMap::dumpAsXMLfile(std::string fileName) const
 			s= format("   [HYPO ID #%02i] Annotation '%s' Class: ", (int)ann->ID, ann->name.c_str() );
 			if ( ann->value )
 					s+= string(ann->value->GetRuntimeClass()->className);
-			else	s+= "(NULL)";
+			else	s+= "(nullptr)";
 
 			st << s;
 

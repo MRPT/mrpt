@@ -30,28 +30,28 @@ void XsLibUsb::initLibrary()
 	if (!m_libraryLoader->isLoaded())
 		m_libraryLoader->load("libusb-1.0.so");
 
-	m_libUsb.init = NULL;
-	m_libUsb.exit = NULL;
-	m_libUsb.open = NULL;
-	m_libUsb.close = NULL;
-	m_libUsb.kernel_driver_active = NULL;
-	m_libUsb.attach_kernel_driver = NULL;
-	m_libUsb.detach_kernel_driver = NULL;
-	m_libUsb.ref_device = NULL;
-	m_libUsb.unref_device = NULL;
-	m_libUsb.claim_interface = NULL;
-	m_libUsb.release_interface = NULL;
-	m_libUsb.get_active_config_descriptor = NULL;
-	m_libUsb.free_config_descriptor = NULL;
-	m_libUsb.get_bus_number = NULL;
-	m_libUsb.get_device = NULL;
-	m_libUsb.get_device_address = NULL;
-	m_libUsb.get_device_descriptor = NULL;
-	m_libUsb.get_device_list = NULL;
-	m_libUsb.free_device_list = NULL;
-	m_libUsb.get_string_descriptor_ascii = NULL;
-	m_libUsb.bulk_transfer = NULL;
-	m_libUsb.set_debug = NULL;
+	m_libUsb.init = nullptr;
+	m_libUsb.exit = nullptr;
+	m_libUsb.open = nullptr;
+	m_libUsb.close = nullptr;
+	m_libUsb.kernel_driver_active = nullptr;
+	m_libUsb.attach_kernel_driver = nullptr;
+	m_libUsb.detach_kernel_driver = nullptr;
+	m_libUsb.ref_device = nullptr;
+	m_libUsb.unref_device = nullptr;
+	m_libUsb.claim_interface = nullptr;
+	m_libUsb.release_interface = nullptr;
+	m_libUsb.get_active_config_descriptor = nullptr;
+	m_libUsb.free_config_descriptor = nullptr;
+	m_libUsb.get_bus_number = nullptr;
+	m_libUsb.get_device = nullptr;
+	m_libUsb.get_device_address = nullptr;
+	m_libUsb.get_device_descriptor = nullptr;
+	m_libUsb.get_device_list = nullptr;
+	m_libUsb.free_device_list = nullptr;
+	m_libUsb.get_string_descriptor_ascii = nullptr;
+	m_libUsb.bulk_transfer = nullptr;
+	m_libUsb.set_debug = nullptr;
 
 	if (m_libraryLoader->isLoaded())
 	{
@@ -99,7 +99,7 @@ int XsLibUsb::init(libusb_context **ctx)
 }
 
 /*! \brief Deinitialize libusb. Should be called after closing all open devices and before your application terminates.
-	\param ctx the context to deinitialize, or NULL for the default context
+	\param ctx the context to deinitialize, or nullptr for the default context
 */
 void XsLibUsb::exit(libusb_context *ctx)
 {
@@ -223,7 +223,7 @@ libusb_device * XsLibUsb::ref_device(libusb_device *dev)
 	if (m_libUsb.ref_device)
 		return m_libUsb.ref_device(dev);
 	else
-		return NULL;
+		return nullptr;
 }
 
 /*! \brief Decrement the reference count of a device.
@@ -309,7 +309,7 @@ int XsLibUsb::get_active_config_descriptor(libusb_device *dev,	struct libusb_con
 
 /*! \brief Free a configuration descriptor obtained from libusb_get_active_config_descriptor() or libusb_get_config_descriptor().
 
-	It is safe to call this function with a NULL config parameter, in which case the function simply returns.
+	It is safe to call this function with a nullptr config parameter, in which case the function simply returns.
 
 	\param config the configuration descriptor to free
 */
@@ -343,7 +343,7 @@ libusb_device * XsLibUsb::get_device(libusb_device_handle *dev_handle)
 	if (m_libUsb.get_device)
 		return m_libUsb.get_device(dev_handle);
 	else
-		return NULL;
+		return nullptr;
 }
 
 /*! \brief Get the address of the device on the bus it is connected to.
@@ -387,7 +387,7 @@ int XsLibUsb::get_device_descriptor(libusb_device *dev, struct libusb_device_des
 	the resultant list. The list is actually one element larger, as it is
 	NULL-terminated.
 
-	\param ctx the context to operate on, or NULL for the default context
+	\param ctx the context to operate on, or nullptr for the default context
 	\param list output location for a list of devices. Must be later freed with libusb_free_device_list().
 	\returns The number of devices in the outputted list, or any LIBUSB_ERROR code to errors encountered by the backend.
 */
@@ -491,7 +491,7 @@ int XsLibUsb::bulk_transfer(libusb_device_handle *dev_handle,	unsigned char endp
 	If libusb was compiled with verbose debug message logging, this function
 	does nothing: you'll always get messages from all levels.
 
-	\param ctx the context to operate on, or NULL for the default context
+	\param ctx the context to operate on, or nullptr for the default context
 	\param level debug level to set
 */
 void XsLibUsb::set_debug(libusb_context *ctx, int level)

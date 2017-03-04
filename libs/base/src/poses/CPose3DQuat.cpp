@@ -342,11 +342,11 @@ void CPose3DQuat::sphericalCoordinates(
 	mrpt::math::CMatrixFixedNumeric<double,3,7> *out_jacob_dryp_dpose
 	) const
 {
-	const bool comp_jacobs = out_jacob_dryp_dpoint!=NULL || out_jacob_dryp_dpose!=NULL;
+	const bool comp_jacobs = out_jacob_dryp_dpoint!=nullptr || out_jacob_dryp_dpose!=nullptr;
 
     // Pass to coordinates as seen from this 6D pose:
-	CMatrixFixedNumeric<double,3,3> jacob_dinv_dpoint, *ptr_ja1 = comp_jacobs ? &jacob_dinv_dpoint : NULL;
-	CMatrixFixedNumeric<double,3,7> jacob_dinv_dpose,  *ptr_ja2 = comp_jacobs ? &jacob_dinv_dpose : NULL;
+	CMatrixFixedNumeric<double,3,3> jacob_dinv_dpoint, *ptr_ja1 = comp_jacobs ? &jacob_dinv_dpoint : nullptr;
+	CMatrixFixedNumeric<double,3,7> jacob_dinv_dpose,  *ptr_ja2 = comp_jacobs ? &jacob_dinv_dpose : nullptr;
 
 	TPoint3D local;
 	this->inverseComposePoint(point.x,point.y,point.z, local.x,local.y,local.z,ptr_ja1,ptr_ja2);

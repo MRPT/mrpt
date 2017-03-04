@@ -61,7 +61,7 @@ CHokuyoURG::~CHokuyoURG()
 
 		if (m_I_am_owner_serial_port)
 			delete m_stream;
-		m_stream = NULL;
+		m_stream = nullptr;
 	}
 
 	// FAMD
@@ -255,7 +255,7 @@ bool  CHokuyoURG::turnOn()
 	{
 		CSerialPort* COM = dynamic_cast<CSerialPort*>(m_stream);
 
-		if (COM!=NULL)
+		if (COM!=nullptr)
 		{
 			// It is a COM:
 			COM->setConfig( 19200 );
@@ -276,7 +276,7 @@ bool  CHokuyoURG::turnOn()
 			COM->setConfig( 19200 );
 		}
 
-		if (COM!=NULL)
+		if (COM!=nullptr)
 		{
 			// Set 115200 baud rate:
 			setHighBaudrate();
@@ -289,7 +289,7 @@ bool  CHokuyoURG::turnOn()
 		CClientTCPSocket* COM = dynamic_cast<CClientTCPSocket*>(m_stream);
 
 
-		if ( COM!=NULL )
+		if ( COM!=nullptr )
 		{
 			// Assure the laser is off and quiet:
 			switchLaserOff();
@@ -451,7 +451,7 @@ bool  CHokuyoURG::receiveResponse(
 {
 	if (!checkCOMisOpen()) return false;
 
-    ASSERT_(sentCmd_forEchoVerification!=NULL);
+    ASSERT_(sentCmd_forEchoVerification!=nullptr);
 
 	try
 	{
@@ -895,33 +895,33 @@ bool  CHokuyoURG::displaySensorInfo( TSensorInfo * out_data)
 	{
 		const char *ptr;
 
-		if ( NULL != (ptr=strstr(rcv_data,"DMAX:")) )
+		if ( nullptr != (ptr=strstr(rcv_data,"DMAX:")) )
 				out_data->d_max = 0.001 * atoi( ptr+5 );
 		else	cerr << "[CHokuyoURG::displayVersionInfo] Parse error: didn't find DMAX" << endl;
 
-		if ( NULL != (ptr=strstr(rcv_data,"DMIN:")) )
+		if ( nullptr != (ptr=strstr(rcv_data,"DMIN:")) )
 				out_data->d_min= 0.001 * atoi( ptr+5 );
 		else	cerr << "[CHokuyoURG::displayVersionInfo] Parse error: didn't find DMIN" << endl;
 
-		if ( NULL != (ptr=strstr(rcv_data,"ARES:")) )
+		if ( nullptr != (ptr=strstr(rcv_data,"ARES:")) )
 				out_data->scans_per_360deg= atoi( ptr+5 );
 		else	cerr << "[CHokuyoURG::displayVersionInfo] Parse error: didn't find ARES" << endl;
 
-		if ( NULL != (ptr=strstr(rcv_data,"SCAN:")) )
+		if ( nullptr != (ptr=strstr(rcv_data,"SCAN:")) )
 				out_data->motor_speed_rpm= atoi( ptr+5 );
 		else	cerr << "[CHokuyoURG::displayVersionInfo] Parse error: didn't find SCAN" << endl;
 
-		if ( NULL != (ptr=strstr(rcv_data,"AMIN:")) )
+		if ( nullptr != (ptr=strstr(rcv_data,"AMIN:")) )
 				out_data->scan_first= atoi( ptr+5 );
 		else	cerr << "[CHokuyoURG::displayVersionInfo] Parse error: didn't find AMIN" << endl;
-		if ( NULL != (ptr=strstr(rcv_data,"AMAX:")) )
+		if ( nullptr != (ptr=strstr(rcv_data,"AMAX:")) )
 				out_data->scan_last= atoi( ptr+5 );
 		else	cerr << "[CHokuyoURG::displayVersionInfo] Parse error: didn't find AMAX" << endl;
-		if ( NULL != (ptr=strstr(rcv_data,"AFRT:")) )
+		if ( nullptr != (ptr=strstr(rcv_data,"AFRT:")) )
 				out_data->scan_front= atoi( ptr+5 );
 		else	cerr << "[CHokuyoURG::displayVersionInfo] Parse error: didn't find AFRT" << endl;
 
-		if ( NULL != (ptr=strstr(rcv_data,"MODL:")) )
+		if ( nullptr != (ptr=strstr(rcv_data,"MODL:")) )
 		{
 			char aux[30];
 			memcpy( aux, ptr+5, 8 );
@@ -994,7 +994,7 @@ bool  CHokuyoURG::checkCOMisOpen()
 			// Has the port been disconected (USB serial ports)??
 			CClientTCPSocket* COM = dynamic_cast<CClientTCPSocket*>(m_stream);
 
-			if (COM!=NULL)
+			if (COM!=nullptr)
 			{
 				if (COM->isConnected())
 					return true;
@@ -1024,7 +1024,7 @@ bool  CHokuyoURG::checkCOMisOpen()
 		{
 			// Has the port been disconected (USB serial ports)??
 			CSerialPort* COM = dynamic_cast<CSerialPort*>(m_stream);
-			if (COM!=NULL)
+			if (COM!=nullptr)
 			{
 				if (COM->isOpen())
 					return true;
@@ -1130,7 +1130,7 @@ void CHokuyoURG::purgeBuffers()
 	if ( m_ip_dir.empty() )
 	{
 		CSerialPort* COM = dynamic_cast<CSerialPort*>(m_stream);
-		if (COM!=NULL)
+		if (COM!=nullptr)
 		{
 			COM->purgeBuffers();
 		}

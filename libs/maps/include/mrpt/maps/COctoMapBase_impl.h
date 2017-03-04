@@ -253,7 +253,7 @@ namespace mrpt
 		COctoMapBase<OCTREE,OCTREE_NODE>::TInsertionOptions::TInsertionOptions() :
 			maxrange (-1.),
 			pruning  (true),
-			m_parent (NULL),
+			m_parent (nullptr),
 			// Default values from octomap:
 			occupancyThres (0.5),
 			probHit(0.7),

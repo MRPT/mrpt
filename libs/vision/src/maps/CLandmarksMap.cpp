@@ -1633,14 +1633,14 @@ double  CLandmarksMap::computeLikelihood_RSLC_2007( const CLandmarksMap  *s, con
 
 		// For each landmark in this map: Compute its correspondence likelihood
 		//   and conditioned observation likelihood:
-		//itClosest = NULL;
+		//itClosest = nullptr;
 
 		// Look at landmarks in sourronding cells only:
 		for (cx=cx_1;cx<=cx_2;cx++)
 	    for (cy=cy_1;cy<=cy_2;cy++)
 		{
 			corrs = grid->cellByIndex( cx, cy );
-			ASSERT_( corrs!=NULL );
+			ASSERT_( corrs!=nullptr );
 			if (!corrs->empty())
 			for (vector_int::iterator	it=corrs->begin();it!=corrs->end();++it)
 			{
@@ -1687,7 +1687,7 @@ double  CLandmarksMap::computeLikelihood_RSLC_2007( const CLandmarksMap  *s, con
 			printf("\n lik=%e\n closestObstacleInLine=%e\n measured range=%e\n",lik,closestObstacleInLine, itOther->descriptors.SIFT[1]);
 			if (itClosest)
 					printf(" closest=(%.03f,%.03f)\n", itClosest->pose_mean.x, itClosest->pose_mean.y);
-			else	printf(" closest=NULL\n");
+			else	printf(" closest=nullptr\n");
 
 			printf(" P(no corrs)=%e\n",	PrNoCorr );
 			mrpt::system::pause();
@@ -2015,10 +2015,10 @@ double	 CLandmarksMap::computeLikelihood_SIFT_LandmarkMap( CLandmarksMap		*theMa
 		lik = 1.0f;
 
 		// Check if the Matches are inserted into the function
-		if ( correspondences == NULL )
+		if ( correspondences == nullptr )
 			THROW_EXCEPTION( "When using this method with SIFTLikelihoodMethod = 1, TMatchingPairList *correspondence can not be NULL" );
 
-		if ( otherCorrespondences == NULL )
+		if ( otherCorrespondences == nullptr )
 			THROW_EXCEPTION( "When using this method with SIFTLikelihoodMethod = 1, std::vector<bool> *otherCorrespondences can not be NULL" );
 
 		for ( itCorr = correspondences->begin(); itCorr != correspondences->end(); itCorr++ )
@@ -2385,7 +2385,7 @@ const CLandmark* 	CLandmarksMap::TCustomSequenceLandmarks::getByID( CLandmark::T
 		if( m_landmarks[indx].ID == ID )
 			return &m_landmarks[indx];
 	}
-	return NULL;
+	return nullptr;
 }
 
 //CLandmark* 	CLandmarksMap::TCustomSequenceLandmarks::getByID( CLandmark::TLandmarkID ID )
@@ -2395,7 +2395,7 @@ const CLandmark* 	CLandmarksMap::TCustomSequenceLandmarks::getByID( CLandmark::T
 //		if( m_landmarks[indx].ID == ID )
 //			return &m_landmarks[indx];
 //	}
-//	return NULL;
+//	return nullptr;
 //}
 
 const CLandmark* 	CLandmarksMap::TCustomSequenceLandmarks::getByBeaconID( unsigned int ID ) const
@@ -2405,7 +2405,7 @@ const CLandmark* 	CLandmarksMap::TCustomSequenceLandmarks::getByBeaconID( unsign
 		if( m_landmarks[indx].ID == ID )
 			return &m_landmarks[indx];
 	}
-	return NULL;
+	return nullptr;
 }
 
 /*---------------------------------------------------------------
@@ -2424,7 +2424,7 @@ float  CLandmarksMap::compute3DMatchingRatio(const mrpt::maps::CMetricMap *other
 	MRPT_START
 
 	// Compare to a similar map only:
-	const CLandmarksMap	*otherMap = NULL;
+	const CLandmarksMap	*otherMap = nullptr;
 
 	if ( otherMap2->GetRuntimeClass() == CLASS_ID(CLandmarksMap) )
 		otherMap = static_cast<const CLandmarksMap*>( otherMap2 );

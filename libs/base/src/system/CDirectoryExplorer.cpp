@@ -136,7 +136,7 @@ void CDirectoryExplorer::explore(
 		THROW_EXCEPTION("Error starting exploration! (does path exist?)");
 
 
-	while((ent = readdir(dir)) != NULL)
+	while((ent = readdir(dir)) != nullptr)
 	{
 		if ( strcmp(ent->d_name,".") && strcmp(ent->d_name,"..") )
 		{

@@ -94,7 +94,7 @@ typedef struct {
   unsigned int length_limit_APPn[16];
 
   /* Status of COM/APPn marker saving */
-  jpeg_saved_marker_ptr cur_marker;	/* NULL if not processing a marker */
+  jpeg_saved_marker_ptr cur_marker;	/* nullptr if not processing a marker */
   unsigned int bytes_read;		/* data bytes read so far in marker */
   /* Note: cur_marker is not linked into marker_list until it's all read. */
 } my_marker_reader;
@@ -266,7 +266,7 @@ get_sof (j_decompress_ptr cinfo, boolean is_prog, boolean is_arith)
   if (length != (cinfo->num_components * 3))
     ERREXIT(cinfo, JERR_BAD_LENGTH);
 
-  if (cinfo->comp_info == NULL)	/* do only once, even if suspend */
+  if (cinfo->comp_info == nullptr)	/* do only once, even if suspend */
     cinfo->comp_info = (jpeg_component_info *) (*cinfo->mem->alloc_small)
 			((j_common_ptr) cinfo, JPOOL_IMAGE,
 			 cinfo->num_components * SIZEOF(jpeg_component_info));
@@ -466,7 +466,7 @@ get_dht (j_decompress_ptr cinfo)
     if (index < 0 || index >= NUM_HUFF_TBLS)
       ERREXIT1(cinfo, JERR_DHT_INDEX, index);
 
-    if (*htblptr == NULL)
+    if (*htblptr == nullptr)
       *htblptr = jpeg_alloc_huff_table((j_common_ptr) cinfo);
   
     MEMCOPY((*htblptr)->bits, bits, SIZEOF((*htblptr)->bits));
@@ -504,7 +504,7 @@ get_dqt (j_decompress_ptr cinfo)
     if (n >= NUM_QUANT_TBLS)
       ERREXIT1(cinfo, JERR_DQT_INDEX, n);
       
-    if (cinfo->quant_tbl_ptrs[n] == NULL)
+    if (cinfo->quant_tbl_ptrs[n] == nullptr)
       cinfo->quant_tbl_ptrs[n] = jpeg_alloc_quant_table((j_common_ptr) cinfo);
     quant_ptr = cinfo->quant_tbl_ptrs[n];
 
@@ -741,7 +741,7 @@ save_marker (j_decompress_ptr cinfo)
   INT32 length = 0;
   INPUT_VARS(cinfo);
 
-  if (cur_marker == NULL) {
+  if (cur_marker == nullptr) {
     /* begin reading a marker */
     INPUT_2BYTES(cinfo, length, return FALSE);
     length -= 2;
@@ -758,7 +758,7 @@ save_marker (j_decompress_ptr cinfo)
       cur_marker = (jpeg_saved_marker_ptr)
 	(*cinfo->mem->alloc_large) ((j_common_ptr) cinfo, JPOOL_IMAGE,
 				    SIZEOF(struct jpeg_marker_struct) + limit);
-      cur_marker->next = NULL;
+      cur_marker->next = nullptr;
       cur_marker->marker = (UINT8) cinfo->unread_marker;
       cur_marker->original_length = (unsigned int) length;
       cur_marker->data_length = limit;
@@ -771,7 +771,7 @@ save_marker (j_decompress_ptr cinfo)
     } else {
       /* deal with bogus length word */
       bytes_read = data_length = 0;
-      data = NULL;
+      data = nullptr;
     }
   } else {
     /* resume reading a marker */
@@ -794,13 +794,13 @@ save_marker (j_decompress_ptr cinfo)
   }
 
   /* Done reading what we want to read */
-  if (cur_marker != NULL) {	/* will be NULL if bogus length word */
+  if (cur_marker != nullptr) {	/* will be nullptr if bogus length word */
     /* Add new marker to end of list */
-    if (cinfo->marker_list == NULL) {
+    if (cinfo->marker_list == nullptr) {
       cinfo->marker_list = cur_marker;
     } else {
       jpeg_saved_marker_ptr prev = cinfo->marker_list;
-      while (prev->next != NULL)
+      while (prev->next != nullptr)
 	prev = prev->next;
       prev->next = cur_marker;
     }
@@ -809,7 +809,7 @@ save_marker (j_decompress_ptr cinfo)
     length = cur_marker->original_length - data_length;
   }
   /* Reset to initial state for next marker */
-  marker->cur_marker = NULL;
+  marker->cur_marker = nullptr;
 
   /* Process the marker if interesting; else just make a generic trace msg */
   switch (cinfo->unread_marker) {
@@ -1238,13 +1238,13 @@ reset_marker_reader (j_decompress_ptr cinfo)
 {
   my_marker_ptr marker = (my_marker_ptr) cinfo->marker;
 
-  cinfo->comp_info = NULL;		/* until allocated by get_sof */
+  cinfo->comp_info = nullptr;		/* until allocated by get_sof */
   cinfo->input_scan_number = 0;		/* no SOS seen yet */
   cinfo->unread_marker = 0;		/* no pending marker */
   marker->pub.saw_SOI = FALSE;		/* set internal state too */
   marker->pub.saw_SOF = FALSE;
   marker->pub.discarded_bytes = 0;
-  marker->cur_marker = NULL;
+  marker->cur_marker = nullptr;
 }
 
 

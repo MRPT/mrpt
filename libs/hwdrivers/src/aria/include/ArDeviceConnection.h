@@ -54,7 +54,7 @@ class ArDeviceConnection
      @see read, write
   */
   /*AREXPORT*/virtual int writePacket(ArBasePacket *packet)
-    { if (packet == NULL || packet->getLength() == 0) return 0;
+    { if (packet == nullptr || packet->getLength() == 0) return 0;
     return write(packet->getBuf(), packet->getLength()); }
   /// Writes data to connection
   /**

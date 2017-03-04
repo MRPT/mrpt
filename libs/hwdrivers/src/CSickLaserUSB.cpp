@@ -34,7 +34,7 @@ using namespace mrpt::poses;
 						CSickLaserUSB
 -------------------------------------------------------------*/
 CSickLaserUSB::CSickLaserUSB() :
-	m_usbConnection( NULL ),
+	m_usbConnection( nullptr ),
 	m_serialNumber ( "LASER001" ),
 	m_timeStartUI  ( 0 )
 {
@@ -50,7 +50,7 @@ CSickLaserUSB::CSickLaserUSB() :
 CSickLaserUSB::~CSickLaserUSB()
 {
 	delete m_usbConnection;
-	m_usbConnection = NULL;
+	m_usbConnection = nullptr;
 }
 
 /*-------------------------------------------------------------

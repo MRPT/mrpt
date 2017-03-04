@@ -67,7 +67,7 @@ CMultiMetricMapPDF::CMultiMetricMapPDF(
 	clear(nullPose);
 
 	// If provided, copy the whole set of params now:
-	if (predictionOptions!=NULL)
+	if (predictionOptions!=nullptr)
 		options = *predictionOptions;
 }
 
@@ -239,7 +239,7 @@ const TPose3D* CMultiMetricMapPDF::getLastPose(const size_t i) const
 
 	if (n)
 			return &m_particles[i].d->robotPath[n-1];
-	else	return NULL;
+	else	return nullptr;
 }
 
 const CMultiMetricMap * CMultiMetricMapPDF::getAveragedMetricMapEstimation( )

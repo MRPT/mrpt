@@ -58,7 +58,7 @@ namespace mrpt
 			double limit_max,
 			size_t number_bins,
 			bool do_normalization = false,
-			std::vector<double> *out_bin_centers = NULL)
+            std::vector<double> *out_bin_centers = nullptr)
 		{
 			mrpt::math::CHistogram	H( limit_min, limit_max, number_bins );
 			std::vector<double> ret(number_bins);

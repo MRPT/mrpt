@@ -64,11 +64,11 @@ CRawlogTreeView::CRawlogTreeView(
 	long style,
 	const wxString& name) :
 		wxScrolledWindow(parent,id,pos,size,style | wxVSCROLL | wxFULL_REPAINT_ON_RESIZE ,name),
-		m_rawlog(NULL),
-		m_imageList(NULL),
+                m_rawlog(nullptr),
+                m_imageList(nullptr),
 		m_selectedItem(-1),
-		m_event_select_change(NULL),
-		m_win_parent(NULL),
+                m_event_select_change(nullptr),
+                m_win_parent(nullptr),
 		m_rawlog_start(INVALID_TIMESTAMP),
 		m_rawlog_last(INVALID_TIMESTAMP),
 		m_tree_nodes()

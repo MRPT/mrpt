@@ -758,7 +758,7 @@ struct IntMaterial_MDL7
 	// provide a constructor for our own convenience
 	IntMaterial_MDL7()
 	{
-		pcMat = NULL;
+		pcMat = nullptr;
 		iOldMatIndices[0] = iOldMatIndices[1] = 0;
 	}
 
@@ -824,10 +824,10 @@ struct IntGroupInfo_MDL7
 	//! Default constructor
 	IntGroupInfo_MDL7()		
 		:	iIndex(0)
-		,	pcGroup(NULL)
-		,	pcGroupUVs(NULL)
-		,	pcGroupTris(NULL)
-		,	pcGroupVerts(NULL)
+		,	pcGroup(nullptr)
+		,	pcGroupUVs(nullptr)
+		,	pcGroupTris(nullptr)
+		,	pcGroupVerts(nullptr)
 		{}
 
 	//! Construction from an existing group header
@@ -857,7 +857,7 @@ struct IntGroupInfo_MDL7
 struct IntGroupData_MDL7
 {
 	IntGroupData_MDL7()
-		: pcFaces(NULL), bNeed2UV(false)
+		: pcFaces(nullptr), bNeed2UV(false)
 	{}
 
 	//! Array of faces that belong to the group

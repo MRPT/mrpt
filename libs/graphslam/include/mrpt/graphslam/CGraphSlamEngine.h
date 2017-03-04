@@ -221,7 +221,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 * // TODO add the deciders/optimizer
 		 *
 		 *
-		 * \note If a NULL CWindowManager pointer is porovided, the application
+		 * \note If a nullptr CWindowManager pointer is porovided, the application
 		 * runs on <em> headless mode </em>. In this case, no visual feedback is
 		 * given but application receives a big boost in performance
 		 */
@@ -229,10 +229,10 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 				const std::string& config_file,
 				const std::string rawlog_fname="",
 				const std::string fname_GT="",
-				mrpt::graphslam::CWindowManager* win_manager=NULL,
-				mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_t>* node_reg=NULL,
-				mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_t>* edge_reg=NULL,
-				mrpt::graphslam::optimizers::CGraphSlamOptimizer<GRAPH_t>* optimizer=NULL
+				mrpt::graphslam::CWindowManager* win_manager=nullptr,
+				mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_t>* node_reg=nullptr,
+				mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_t>* edge_reg=nullptr,
+				mrpt::graphslam::optimizers::CGraphSlamOptimizer<GRAPH_t>* optimizer=nullptr
 				);
 		/**\brief Default Destructor. */
 		~CGraphSlamEngine();
@@ -258,7 +258,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 *
 		 * \sa save3DScene, http://www.mrpt.org/Robotics_file_formats
 		 */
-		void saveGraph(const std::string* fname_in=NULL) const;
+		void saveGraph(const std::string* fname_in=nullptr) const;
 		/**\brief Wrapper method around the COpenGLScene::saveToFile method.
 		 *
 		 * \param[in] Name of the generated graph file - Defaults to "output_graph" if not
@@ -266,7 +266,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 *
 		 * \sa saveGraph
 		 */
-		void save3DScene(const std::string* fname_in=NULL) const;
+		void save3DScene(const std::string* fname_in=nullptr) const;
 		/**\brief Read the configuration variables from the <em>.ini file</em> specified by
 		 * the user.
 		 * Method is automatically called, upon CGraphSlamEngine initialization
@@ -299,7 +299,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 * \sa computeOccupancyGridMap2D
 		 */
 		void getOccupancyGridMap2D(mrpt::maps::COccupancyGridMap2D* map_ptr,
-				mrpt::system::TTimeStamp* acquisition_time=NULL) const;
+				mrpt::system::TTimeStamp* acquisition_time=nullptr) const;
 		/**\brief	Compute the occupancy gridmap of the environment based on the
 		 * recorded measurements.
 		 *
@@ -366,7 +366,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		static void readGTFileNavSimulOutput(
 				const std::string& fname_GT,
 				std::vector<pose_t>* gt_poses,
-				std::vector<mrpt::system::TTimeStamp>* gt_timestamps=NULL);
+				std::vector<mrpt::system::TTimeStamp>* gt_timestamps=nullptr);
 		/**\brief Parse the ground truth .txt file and fill in the corresponding
 		 * m_GT_poses vector. The poses returned are given with regards to the
 		 * MRPT reference frame.
@@ -388,7 +388,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		static void readGTFileRGBD_TUM(
 				const std::string& fname_GT,
 				std::vector<pose_t>* gt_poses,
-				std::vector<mrpt::system::TTimeStamp>* gt_timestamps=NULL);
+				std::vector<mrpt::system::TTimeStamp>* gt_timestamps=nullptr);
 		/**\brief Generate and write to a corresponding report for each of the
 		 * respective self/decider/optimizer classes.
 		 *

@@ -58,11 +58,11 @@ namespace mrpt
 			  */
 			void  clear();
 
-			/** Returns the value of the property (case insensitive), or NULL if it does not exist.
+			/** Returns the value of the property (case insensitive), or nullptr if it does not exist.
 			  */
 			CSerializablePtr get(const std::string &propertyName) const;
 
-			/** Sets/change the value of the property (case insensitive), making a copy of the object (or setting it to NULL if it is the passed value)
+			/** Sets/change the value of the property (case insensitive), making a copy of the object (or setting it to nullptr if it is the passed value)
 			  */
 			void  set(const std::string &propertyName,const CSerializablePtr &obj);
 

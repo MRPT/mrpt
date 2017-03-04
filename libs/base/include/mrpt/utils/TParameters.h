@@ -31,12 +31,12 @@ namespace mrpt
 		  *  \endcode
 		  *
 		  *  A default list of parameters can be passed to the constructor as a sequence
-		  *   of pairs "name, value", which MUST end in a NULL name string. Names MUST BE "const char*"
+		  *   of pairs "name, value", which MUST end in a nullptr name string. Names MUST BE "const char*"
 		  *   (that is, "old plain strings" are OK), not std::string objects!.
 		  *  See this example:
 		  *
 		  *  \code
-		  *    TParameters<double> p("par1",2.0, "par2",-4.5, "par3",9.0, NULL); // MUST end with a NULL
+		  *    TParameters<double> p("par1",2.0, "par2",-4.5, "par3",9.0, nullptr); // MUST end with a NULL
 		  *  \endcode
 		  *
 		  *  <b>VERY IMPORTANT:</b> If you use the NULL-ended constructor above, make sure all the values are of the proper

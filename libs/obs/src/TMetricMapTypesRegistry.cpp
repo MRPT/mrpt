@@ -37,8 +37,8 @@ size_t TMetricMapTypesRegistry::doRegister(const std::string &names,MapDefCtorFu
 mrpt::maps::TMetricMapInitializer* TMetricMapTypesRegistry::factoryMapDefinition(const std::string &className) const 
 {
 	TListRegisteredMaps::const_iterator it=m_registry.find(className);
-	if (it==m_registry.end()) return NULL;
-	ASSERT_(it->second.first!=NULL)
+	if (it==m_registry.end()) return nullptr;
+	ASSERT_(it->second.first!=nullptr)
 	return (*it->second.first)();
 }
 
@@ -50,7 +50,7 @@ mrpt::maps::CMetricMap* TMetricMapTypesRegistry::factoryMapObjectFromDefinition(
 		THROW_EXCEPTION_FMT("[TMetricMapTypesRegistry] Error: Cannot create map of unregistered map type '%s'",mi.getMetricMapClassType()->className); 
 	}
 
-	ASSERT_(it->second.second!=NULL)
+	ASSERT_(it->second.second!=nullptr)
 	mrpt::maps::CMetricMap* theMap = (*it->second.second)(mi);
 
 	// Common params for all maps:

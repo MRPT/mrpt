@@ -47,7 +47,7 @@ jpeg_start_decompress (j_decompress_ptr cinfo)
       for (;;) {
 	int retcode;
 	/* Call progress monitor hook if present */
-	if (cinfo->progress != NULL)
+	if (cinfo->progress != nullptr)
 	  (*cinfo->progress->progress_monitor) ((j_common_ptr) cinfo);
 	/* Absorb some more input */
 	retcode = (*cinfo->inputctl->consume_input) (cinfo);
@@ -56,7 +56,7 @@ jpeg_start_decompress (j_decompress_ptr cinfo)
 	if (retcode == JPEG_REACHED_EOI)
 	  break;
 	/* Advance progress counter if appropriate */
-	if (cinfo->progress != NULL &&
+	if (cinfo->progress != nullptr &&
 	    (retcode == JPEG_ROW_COMPLETED || retcode == JPEG_REACHED_SOS)) {
 	  if (++cinfo->progress->pass_counter >= cinfo->progress->pass_limit) {
 	    /* jdmaster underestimated number of scans; ratchet up one scan */
@@ -100,14 +100,14 @@ output_pass_setup (j_decompress_ptr cinfo)
     while (cinfo->output_scanline < cinfo->output_height) {
       JDIMENSION last_scanline;
       /* Call progress monitor hook if present */
-      if (cinfo->progress != NULL) {
+      if (cinfo->progress != nullptr) {
 	cinfo->progress->pass_counter = (long) cinfo->output_scanline;
 	cinfo->progress->pass_limit = (long) cinfo->output_height;
 	(*cinfo->progress->progress_monitor) ((j_common_ptr) cinfo);
       }
       /* Process some data */
       last_scanline = cinfo->output_scanline;
-      (*cinfo->main->process_data) (cinfo, (JSAMPARRAY) NULL,
+      (*cinfo->main->process_data) (cinfo, (JSAMPARRAY) nullptr,
 				    &cinfo->output_scanline, (JDIMENSION) 0);
       if (cinfo->output_scanline == last_scanline)
 	return FALSE;		/* No progress made, must suspend */
@@ -155,7 +155,7 @@ jpeg_read_scanlines (j_decompress_ptr cinfo, JSAMPARRAY scanlines,
   }
 
   /* Call progress monitor hook if present */
-  if (cinfo->progress != NULL) {
+  if (cinfo->progress != nullptr) {
     cinfo->progress->pass_counter = (long) cinfo->output_scanline;
     cinfo->progress->pass_limit = (long) cinfo->output_height;
     (*cinfo->progress->progress_monitor) ((j_common_ptr) cinfo);
@@ -188,7 +188,7 @@ jpeg_read_raw_data (j_decompress_ptr cinfo, JSAMPIMAGE data,
   }
 
   /* Call progress monitor hook if present */
-  if (cinfo->progress != NULL) {
+  if (cinfo->progress != nullptr) {
     cinfo->progress->pass_counter = (long) cinfo->output_scanline;
     cinfo->progress->pass_limit = (long) cinfo->output_height;
     (*cinfo->progress->progress_monitor) ((j_common_ptr) cinfo);

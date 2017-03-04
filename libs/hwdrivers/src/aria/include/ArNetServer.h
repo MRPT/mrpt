@@ -46,7 +46,7 @@ public:
   /// Initializes the server
   AREXPORT bool open(ArRobot *robot, unsigned int port, 
 		     const char *password, bool multipleClients = true,
-		     const char *openOnIP = NULL);
+		     const char *openOnIP = nullptr);
 
   /// Closes the server
   AREXPORT void close(void);

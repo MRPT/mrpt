@@ -558,7 +558,7 @@ gridmapSimulFrame::gridmapSimulFrame(wxWindow* parent,wxWindowID id)
 	gl_robot->insert(gl_scan);
 
 	// Redirect all keystrokes in this box to the gl canvas:
-	edInput->Connect(wxEVT_CHAR,(wxObjectEventFunction)&CMyGLCanvas::OnCharCustom, NULL, m_canvas );
+        edInput->Connect(wxEVT_CHAR,(wxObjectEventFunction)&CMyGLCanvas::OnCharCustom, nullptr, m_canvas );
 
 	// fix sizes:
 	SplitterWindow1->SetMinSize(wxSize(200,200));

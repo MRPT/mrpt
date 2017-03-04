@@ -207,7 +207,7 @@ namespace mrpt
 
 		protected:
 			/** Used from the LSLAM thread to retrieve the next object from the queue.
-			  * \return The object, or NULL if empty.
+			  * \return The object, or nullptr if empty.
 			  */
 			mrpt::utils::CSerializablePtr getNextObjectFromInputQueue();
 
@@ -479,8 +479,8 @@ namespace mrpt
 			  *   map when required.
 			  *
 			  * \param LMH   The local metric hypothesis which must be updated by this SLAM algorithm.
-			  * \param act   The action to process (or NULL).
-			  * \param sf    The observations to process (or NULL).
+			  * \param act   The action to process (or nullptr).
+			  * \param sf    The observations to process (or nullptr).
 			  */
 			virtual void processOneLMH(
 				CLocalMetricHypothesis	*LMH,
@@ -528,8 +528,8 @@ namespace mrpt
 			  *   map when required.
 			  *
 			  * \param LMH   The local metric hypothesis which must be updated by this SLAM algorithm.
-			  * \param act   The action to process (or NULL).
-			  * \param sf    The observations to process (or NULL).
+			  * \param act   The action to process (or nullptr).
+			  * \param sf    The observations to process (or nullptr).
 			  */
 			void processOneLMH(
 				CLocalMetricHypothesis	*LMH,
@@ -568,12 +568,12 @@ namespace mrpt
 			};
 
 
-			/** Fills out a "TPathBin" variable, given a path hypotesis and (if not set to NULL) a new pose appended at the end, using the KLD params in "options".
+			/** Fills out a "TPathBin" variable, given a path hypotesis and (if not set to nullptr) a new pose appended at the end, using the KLD params in "options".
 				*/
 			void  loadTPathBinFromPath(
 				TPathBin	&outBin,
-				TMapPoseID2Pose3D *path = NULL,
-				mrpt::poses::CPose2D  *newPose = NULL );
+				TMapPoseID2Pose3D *path = nullptr,
+				mrpt::poses::CPose2D  *newPose = nullptr );
 
 			/** Checks if a given "TPathBin" element is already into a set of them, and return its index (first one is 0), or -1 if not found.
 				*/

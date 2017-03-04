@@ -42,7 +42,7 @@ using namespace mrpt::obs;
 using namespace mrpt::poses;
 using namespace std;
 
-const bool hwdrivers_verbose = (getenv("MRPT_HWDRIVERS_VERBOSE")!=NULL) && atoi(getenv("MRPT_HWDRIVERS_VERBOSE"))!=0;
+const bool hwdrivers_verbose = (getenv("MRPT_HWDRIVERS_VERBOSE")!=nullptr) && atoi(getenv("MRPT_HWDRIVERS_VERBOSE"))!=0;
 
 const std::string GLOBAL_SECTION_NAME = "global";
 
@@ -310,7 +310,7 @@ int main(int argc, char **argv)
 				// ---------------------------
 				//  DO NOT USE SENSORY-FRAMES
 				// ---------------------------
-				CObservationIMUPtr imu; // Default:NULL
+                CObservationIMUPtr imu; // Default:nullptr
 
 				for (CGenericSensor::TListObservations::iterator it=copy_of_global_list_obs.begin();it!=copy_of_global_list_obs.end();++it)
 				{

@@ -23,7 +23,7 @@ using namespace std;
 							Constructor
  ---------------------------------------------------------------*/
 CMemoryStream::CMemoryStream() :
-	m_memory		(NULL),
+	m_memory		(nullptr),
 	m_size		(0),
 	m_position	(0),
 	m_bytesWritten(0),
@@ -38,7 +38,7 @@ CMemoryStream::CMemoryStream() :
 CMemoryStream::CMemoryStream(
 	const void *data,
 	const uint64_t nBytesInData )  :
-	m_memory		(NULL),
+	m_memory		(nullptr),
 	m_size		(0),
 	m_position	(0),
 	m_bytesWritten(0),
@@ -46,7 +46,7 @@ CMemoryStream::CMemoryStream(
 	m_read_only (false)
 {
 	MRPT_START
-	ASSERT_(data!=NULL);
+	ASSERT_(data!=nullptr);
 
 	// Set data:
 	resize( nBytesInData );
@@ -94,7 +94,7 @@ void CMemoryStream::resize(uint64_t newSize)
 	{	// Free buffer:
 		if (m_memory.get())
 			free(m_memory.get());
-		m_memory=NULL;
+		m_memory=nullptr;
 		m_size=0;
 		m_position=0;
 	}

@@ -36,7 +36,7 @@ CGyroKVHDSP3000::CGyroKVHDSP3000( ) :
 
 	m_state = ssInitializing;
 	m_sensorLabel = "KVH_DSP3000";
-	m_serialPort = NULL;
+	m_serialPort = nullptr;
 
 }
 
@@ -71,7 +71,7 @@ void CGyroKVHDSP3000::doProcess()
 	CObservationIMUPtr observationGyro = CObservationIMU::Create();
 	observationGyro->timestamp = mrpt::system::now();
 
-	msg = m_serialPort->ReadString(-1,NULL,"\n");
+	msg = m_serialPort->ReadString(-1,nullptr,"\n");
 
 	observationGyro->sensorPose = m_sensorPose;
 	observationGyro->sensorLabel = m_sensorLabel;

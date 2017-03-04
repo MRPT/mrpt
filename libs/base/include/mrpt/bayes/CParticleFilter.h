@@ -130,9 +130,9 @@ namespace mrpt
 			 *    The member CParticleFilter::m_options must be set before calling this to settle the algorithm parameters.
 			 *
 			 * \param obj           The object representing the probability distribution function (PDF) which apply the particle filter algorithm to.
-			 * \param action		A pointer to an action in the form of a CActionCollection, or NULL if there is no action.
-			 * \param observation	A pointer to observations in the form of a CSensoryFrame, or NULL if there is no observation.
-			 * \param stats An output structure for gathering statistics of the particle filter execution, or set to NULL if you do not need it (see CParticleFilter::TParticleFilterStats).
+             * \param action		A pointer to an action in the form of a CActionCollection, or nullptr if there is no action.
+             * \param observation	A pointer to observations in the form of a CSensoryFrame, or nullptr if there is no observation.
+             * \param stats An output structure for gathering statistics of the particle filter execution, or set to nullptr if you do not need it (see CParticleFilter::TParticleFilterStats).
 			 *
 			 * \sa CParticleFilterCapable, executeOn
 			 */
@@ -140,7 +140,7 @@ namespace mrpt
 				CParticleFilterCapable 			&obj,
 				const mrpt::obs::CActionCollection   *action,
 				const mrpt::obs::CSensoryFrame	    *observation,
-				TParticleFilterStats	        *stats = NULL);
+                TParticleFilterStats	        *stats = nullptr);
 
 
 			/** The options to be used in the PF, must be set before executing any step of the particle filter.

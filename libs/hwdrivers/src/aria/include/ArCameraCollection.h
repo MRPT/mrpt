@@ -77,9 +77,9 @@ public:
    * and non-NULL
    * @param cameraType the char * type of the camera (e.g. VCC4 or Omni)
    * @param displayName the char * string to be displayed for the 
-   * camera name; if NULL, then the cameraName is used instead
+   * camera name; if nullptr, then the cameraName is used instead
    * @param displayType the char * string to be displayed for the 
-   * camera type; if NULL, then the cameraType is used instead
+   * camera type; if nullptr, then the cameraType is used instead
    * @return bool true if the camera was successfully added; false,
    * otherwise.
   **/
@@ -139,7 +139,7 @@ public:
    * parameter is to be added.  The camera must have already been 
    * installed in the collection via the addCamera() method.
    * @param source the ArCameraParameterSource * that is to be notified
-   * when the parameter value is changed; if NULL, then no notification
+   * when the parameter value is changed; if nullptr, then no notification
    * @param param the ArConfigArg parameter to be added; the parameter
    * name must be unique for this camera.  (Parameter names may be 
    * reused across different cameras though.)
@@ -175,7 +175,7 @@ public:
   /// Returns the type of the specified camera.
   /**
    * @param cameraName the unique char * name of the camera
-   * @return char * the type of the specified camera; NULL if the camera was 
+   * @return char * the type of the specified camera; nullptr if the camera was 
    * not found in the collection
   **/
   AREXPORT virtual const char *getCameraType(const char *cameraName);
@@ -184,7 +184,7 @@ public:
   /**
    * @param cameraName the unique char * name of the camera
    * @return char * the string to be displayed as the name of the specified camera; 
-   * NULL if the camera was not found in the collection
+   * nullptr if the camera was not found in the collection
   **/
   AREXPORT virtual const char *getDisplayName(const char *cameraName);
 
@@ -192,7 +192,7 @@ public:
   /**
    * @param cameraName the unique char * name of the camera
    * @return char * the string to be displayed as the type of the specified camera; 
-   * NULL if the camera was not found in the collection
+   * nullptr if the camera was not found in the collection
   **/
   AREXPORT virtual const char *getDisplayType(const char *cameraName);
 
@@ -212,7 +212,7 @@ public:
    * @param cameraName the unique char * name of the camera
    * @param command the char * name of the generic command to be retrieved
    * @return char * the unique command (or network packet) name for the generic
-   * command on the specified camera; NULL, if the camera does not support the 
+   * command on the specified camera; nullptr, if the camera does not support the 
    * generic command
   **/
   AREXPORT virtual const char *getCommandName(const char *cameraName,

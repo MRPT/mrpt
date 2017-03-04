@@ -17,8 +17,8 @@
 /**
    @param robot the robot to log information from
 
-   @param fileName if NULL then the file name is detered by the
-   config, if not NULL then the file name data is put into, if the
+   @param fileName if nullptr then the file name is detered by the
+   config, if not nullptr then the file name data is put into, if the
    filename is used then the data log file is opened in append mode
    not in write mode, so it'll append to whats there (if you want to
    separate this by runs you need to do it on your own by removing or
@@ -31,13 +31,13 @@ AREXPORT ArDataLogger::ArDataLogger(ArRobot *robot, const char *fileName) :
   myUserTaskCB(this, &ArDataLogger::userTask)
 {
   myRobot = robot;
-  if (fileName == NULL || fileName[0] == '\0')
+  if (fileName == nullptr || fileName[0] == '\0')
     myPermanentFileName = "";
   else
     myPermanentFileName = fileName;
   myRobot->addUserTask("DataLogger", 50, &myUserTaskCB);
   myRobot->requestIOPackets();
-  myConfig = NULL; //JLBC false;
+  myConfig = nullptr; //JLBC false;
   myAddToConfigAtConnect = false;
   myAddedToConfig = false;
   myConfigLogging = false;
@@ -45,15 +45,15 @@ AREXPORT ArDataLogger::ArDataLogger(ArRobot *robot, const char *fileName) :
   myConfigFileName[0] = '\0';
   myOpenedFileName[0] = '\0';
   myAnalogCount = 0;
-  myAnalogEnabled = NULL;
+  myAnalogEnabled = nullptr;
   myAnalogVoltageCount = 0;
-  myAnalogVoltageEnabled = NULL;
+  myAnalogVoltageEnabled = nullptr;
   myDigInCount = 0;
-  myDigInEnabled = NULL;
+  myDigInEnabled = nullptr;
   myDigOutCount = 0;
-  myDigOutEnabled = NULL;
+  myDigOutEnabled = nullptr;
   myStringsCount = 0;
-  //myStringsEnabled = NULL;
+  //myStringsEnabled = nullptr;
 
   myLogVoltage = false;
   myLogLeftVel = false;
@@ -69,7 +69,7 @@ AREXPORT ArDataLogger::ArDataLogger(ArRobot *robot, const char *fileName) :
   myLogCorrectedEncoderPose = false;
   myLogEncoders = false;
 
-  myFile = NULL;
+  myFile = nullptr;
 }
 
 AREXPORT ArDataLogger::~ArDataLogger(void)
@@ -79,7 +79,7 @@ AREXPORT ArDataLogger::~ArDataLogger(void)
 
 AREXPORT void ArDataLogger::addToConfig(ArConfig *config)
 {
-  if (config == NULL || myAddedToConfig)
+  if (config == nullptr || myAddedToConfig)
     return;
   myConfig = config;
   if (!myRobot->isConnected())
@@ -209,31 +209,31 @@ AREXPORT void ArDataLogger::connectCallback(void)
   int i;
   ArLog::log(ArLog::Verbose, "ArDataLogger::connectCallback");
   // out with the old memory
-  if (myAnalogEnabled != NULL)
+  if (myAnalogEnabled != nullptr)
   {
     delete myAnalogEnabled;
-    myAnalogEnabled = NULL;
+    myAnalogEnabled = nullptr;
   }
-  if (myAnalogVoltageEnabled != NULL)
+  if (myAnalogVoltageEnabled != nullptr)
   {
     delete myAnalogVoltageEnabled;
-    myAnalogVoltageEnabled = NULL;
+    myAnalogVoltageEnabled = nullptr;
   }
-  if (myDigInEnabled != NULL)
+  if (myDigInEnabled != nullptr)
   {
     delete myDigInEnabled;
-    myDigInEnabled = NULL;
+    myDigInEnabled = nullptr;
   }
-  if (myDigOutEnabled != NULL)
+  if (myDigOutEnabled != nullptr)
   {
     delete myDigOutEnabled;
-    myDigOutEnabled = NULL;
+    myDigOutEnabled = nullptr;
   }
   /*
-  if (myStringsEnabled != NULL)
+  if (myStringsEnabled != nullptr)
   {
     delete myStringsEnabled;
-    myStringsEnabled = NULL;
+    myStringsEnabled = nullptr;
   }
   */
   // see how much memory we need
@@ -289,16 +289,16 @@ AREXPORT bool ArDataLogger::processFile(char *errorBuffer,
   myMutex.lock();
   // if our file name is different and we're not using a permanent
   // file name or if we're disabled close the old one
-  if ((strcmp(myOpenedFileName, myConfigFileName) != 0 && myFile != NULL &&
+  if ((strcmp(myOpenedFileName, myConfigFileName) != 0 && myFile != nullptr &&
        myPermanentFileName.size() == 0) ||
-       (myFile != NULL && !myConfigLogging))
+       (myFile != nullptr && !myConfigLogging))
   {
     ArLog::log(ArLog::Normal, "Closed data log file '%s'", myOpenedFileName);
     fclose(myFile);
-    myFile = NULL;
+    myFile = nullptr;
   }
   // try to open the file
-  if (myConfigLogging && myFile == NULL)
+  if (myConfigLogging && myFile == nullptr)
   {
     if (myPermanentFileName.size() == 0  && strlen(myConfigFileName) == 0)
     {
@@ -308,7 +308,7 @@ AREXPORT bool ArDataLogger::processFile(char *errorBuffer,
     }
     if (myPermanentFileName.size() > 0)
     {
-      if ((myFile = fopen(myPermanentFileName.c_str(), "a")) != NULL)
+      if ((myFile = fopen(myPermanentFileName.c_str(), "a")) != nullptr)
       {
 	ArLog::log(ArLog::Normal, "Opened data log file '%s'",
 		   myPermanentFileName.c_str());
@@ -324,7 +324,7 @@ AREXPORT bool ArDataLogger::processFile(char *errorBuffer,
     else
     {
       // if we couldn't open it fail
-      if ((myFile = fopen(myConfigFileName, "w")) != NULL)
+      if ((myFile = fopen(myConfigFileName, "w")) != nullptr)
       {
 	strcpy(myOpenedFileName, myConfigFileName);
 	ArLog::log(ArLog::Normal, "Opened data log file '%s'",
@@ -335,7 +335,7 @@ AREXPORT bool ArDataLogger::processFile(char *errorBuffer,
 	ArLog::log(ArLog::Normal, "Could not open data log file '%s'",
 		   myConfigFileName);
 	myMutex.unlock();
-	if (errorBuffer != NULL)
+	if (errorBuffer != nullptr)
 	  snprintf(errorBuffer, errorBufferLen, "DataLogFileName of '%s' cannot be opened", myConfigFileName);
 	return false;
       }
@@ -419,7 +419,7 @@ AREXPORT void ArDataLogger::userTask(void)
 {
   myMutex.lock();
   // if we don't need to do anything just return
-  if (myFile == NULL || myLastLogged.secSince() < myConfigLogInterval)
+  if (myFile == nullptr || myLastLogged.secSince() < myConfigLogInterval)
   {
     myMutex.unlock();
     return;
@@ -428,7 +428,7 @@ AREXPORT void ArDataLogger::userTask(void)
   int j;
   int val;
 
-  fprintf(myFile, "%ld", time(NULL));
+  fprintf(myFile, "%ld", time(nullptr));
 
   char *buf;
   buf = new char[myMaxMaxLength];
@@ -548,6 +548,6 @@ AREXPORT void ArDataLogger::addString(
   myStringsCount++;
   myMutex.unlock();
   if (myAddedToConfig)
-    processFile(NULL, 0);
+    processFile(nullptr, 0);
 }
 

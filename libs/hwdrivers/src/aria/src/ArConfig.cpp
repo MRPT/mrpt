@@ -53,9 +53,9 @@ AREXPORT ArConfig::ArConfig(const char *baseDirectory,
 
   myProcessFileCBList(),
   myNoBlanksBetweenParams(noBlanksBetweenParams),
-  mySectionsToParse(NULL),
+  mySectionsToParse(nullptr),
   myBaseDirectory(),
-  myParser(NULL),
+  myParser(nullptr),
   mySections(),
   myParserCB(this, &ArConfig::parseArgument),
   mySectionCB(this, &ArConfig::parseSection),
@@ -68,7 +68,7 @@ AREXPORT ArConfig::ArConfig(const char *baseDirectory,
     }*/
   addParserHandlers();
 
-  myArgumentParser = NULL;
+  myArgumentParser = nullptr;
   mySaveUnknown = saveUnknown;
   setBaseDirectory(baseDirectory);
   myIgnoreBounds = ignoreBounds;
@@ -100,13 +100,13 @@ AREXPORT ArConfig::ArConfig(const ArConfig &config) :
   myProcessFileCBList(),    // TODO: Copy? (don't think we need to)
   myNoBlanksBetweenParams(config.myNoBlanksBetweenParams),
   myBaseDirectory(),
-  myParser(NULL),
+  myParser(nullptr),
   mySections(),
   myParserCB(this, &ArConfig::parseArgument),
   mySectionCB(this, &ArConfig::parseSection),
   myUnknownCB(this, &ArConfig::parseUnknown)
 {
-  myArgumentParser = NULL;
+  myArgumentParser = nullptr;
   setBaseDirectory(config.getBaseDirectory());
   myIgnoreBounds = config.myIgnoreBounds;
   myFailOnBadSection = config.myFailOnBadSection;
@@ -155,7 +155,7 @@ AREXPORT ArConfig &ArConfig::operator=(const ArConfig &config)
     //     myParser
     //     myParserCB
     //     mySectionCB
-    myArgumentParser = NULL;
+    myArgumentParser = nullptr;
     setBaseDirectory(config.getBaseDirectory());
     myNoBlanksBetweenParams = config.myNoBlanksBetweenParams;
     myIgnoreBounds = config.myIgnoreBounds;
@@ -201,8 +201,8 @@ AREXPORT ArConfig &ArConfig::operator=(const ArConfig &config)
 AREXPORT void ArConfig::setConfigName(const char *configName,
                                       const char *robotName)
 {
-  myConfigName = ((configName != NULL) ? configName : "");
-  myRobotName = ((robotName != NULL) ? robotName : "");
+  myConfigName = ((configName != nullptr) ? configName : "");
+  myRobotName = ((robotName != nullptr) ? robotName : "");
   myLogPrefix = "";
 
   if (!myRobotName.empty()) {
@@ -219,7 +219,7 @@ AREXPORT void ArConfig::setConfigName(const char *configName,
 
 AREXPORT void ArConfig::log(bool isSummary)
 {
-  std::list<ArConfigArg> *params = NULL;
+  std::list<ArConfigArg> *params = nullptr;
 
   ArLog::log(ArLog::Normal,
 	           "%slog",
@@ -231,8 +231,8 @@ AREXPORT void ArConfig::log(bool isSummary)
   {
     params = (*it)->getParams();
 
-    if (params == NULL) {
-      ArLog::log(ArLog::Normal, "    Section %s has NULL params",
+    if (params == nullptr) {
+      ArLog::log(ArLog::Normal, "    Section %s has nullptr params",
                  (*it)->getName());
 
       continue;
@@ -274,7 +274,7 @@ AREXPORT void ArConfig::clearSections(void)
   }
   // Clear this just in case...
   delete mySectionsToParse;
-  mySectionsToParse = NULL;
+  mySectionsToParse = nullptr;
 
   IFDEBUG2(ArLog::log(ArLog::Verbose,
                      "%sclearSections() end",
@@ -304,7 +304,7 @@ void ArConfig::addParserHandlers(void)
        it++)
   {
     params = (*it)->getParams();
-    if (params == NULL)
+    if (params == nullptr)
       continue;
     for (pit = params->begin(); pit != params->end(); pit++)
     {
@@ -318,7 +318,7 @@ void ArConfig::addParserHandlers(void)
   }
 
   // add our parser for unknown params
-  if (!myParser.addHandlerWithError(NULL, &myUnknownCB)) {
+  if (!myParser.addHandlerWithError(nullptr, &myUnknownCB)) {
     IFDEBUG(ArLog::log(ArLog::Verbose,
 	        "%sCould not add unknown param parser (probably unimportant)",
           myLogPrefix.c_str()));
@@ -334,7 +334,7 @@ AREXPORT void ArConfig::setSectionComment(const char *sectionName,
 {
   ArConfigSection *section = findSection(sectionName);
 
-  if (section == NULL)
+  if (section == nullptr)
   {
     ArLog::log(ArLog::Verbose, "%sMaking new section '%s' (for comment)",
                myLogPrefix.c_str(), sectionName);
@@ -356,7 +356,7 @@ AREXPORT bool ArConfig::addSectionFlags(const char *sectionName,
 {
   ArConfigSection *section = findSection(sectionName);
 
-  if (section == NULL)
+  if (section == nullptr)
   {
     ArLog::log(ArLog::Verbose, "%sMaking new section '%s' (flags)",
                myLogPrefix.c_str(), sectionName);
@@ -379,7 +379,7 @@ AREXPORT bool ArConfig::remSectionFlag(const char *sectionName,
 {
   ArConfigSection *section = findSection(sectionName);
 
-  if (section == NULL)
+  if (section == nullptr)
     return false;
 
   section->remFlag(flag);
@@ -400,7 +400,7 @@ AREXPORT bool ArConfig::addParam(const ArConfigArg &arg,
   ArConfigSection *section = findSection(sectionName);
 
   //printf("SECTION '%s' name '%s' desc '%s'\n", sectionName, arg.getName(), arg.getDescription());
-  if (section == NULL)
+  if (section == nullptr)
   {
     ArLog::log(ArLog::Verbose, "ArConfigArg %s: Making new section '%s' (for param)",
                myLogPrefix.c_str(), sectionName);
@@ -410,7 +410,7 @@ AREXPORT bool ArConfig::addParam(const ArConfigArg &arg,
 
   std::list<ArConfigArg> *params = section->getParams();
 
-  if (params == NULL)
+  if (params == nullptr)
   {
     ArLog::log(ArLog::Terse, "%sSomething has gone hideously wrong in ArConfig::addParam",
                myLogPrefix.c_str());
@@ -435,7 +435,7 @@ AREXPORT bool ArConfig::addParam(const ArConfigArg &arg,
     // this section is our own, if its not then note we have
     // duplicates
     if (strlen(arg.getName()) > 0 &&
-	(*sectionIt)->findParam(arg.getName()) != NULL &&
+	(*sectionIt)->findParam(arg.getName()) != nullptr &&
 	strcasecmp((*sectionIt)->getName(), section->getName()) != 0)
     {
       ArLog::log(ArLog::Verbose,
@@ -492,7 +492,7 @@ AREXPORT bool ArConfig::addComment(const char *comment, const char *sectionName,
 
    @param arg Should contain the 'Section' keyword as its "extra" string, and section name as argument(s).
 
-   @param errorBuffer if this is NULL it is ignored, otherwise the
+   @param errorBuffer if this is nullptr it is ignored, otherwise the
    string for the error is put into the buffer, the first word should
    be the parameter that has trouble
 
@@ -502,13 +502,13 @@ AREXPORT bool ArConfig::parseSection(ArArgumentBuilder *arg,
 				      char *errorBuffer,
 				      size_t errorBufferLen)
 {
-  if (myFailOnBadSection && errorBuffer != NULL)
+  if (myFailOnBadSection && errorBuffer != nullptr)
     errorBuffer[0] = '\0';
 
   std::list<ArConfigSection *>::iterator sectionIt;
-  ArConfigSection *section = NULL;
+  ArConfigSection *section = nullptr;
 
-  if (myFailOnBadSection && errorBuffer != NULL)
+  if (myFailOnBadSection && errorBuffer != nullptr)
     errorBuffer[0] = '\0';
   for (sectionIt = mySections.begin();
        sectionIt != mySections.end();
@@ -518,7 +518,7 @@ AREXPORT bool ArConfig::parseSection(ArArgumentBuilder *arg,
     if (ArUtil::strcasecmp(section->getName(), arg->getFullString()) == 0)
     {
       bool isParseSection = true;
-      if (mySectionsToParse != NULL) {
+      if (mySectionsToParse != nullptr) {
         isParseSection = false;
         for (std::list<std::string>::iterator sIter = mySectionsToParse->begin();
              sIter != mySectionsToParse->end();
@@ -611,7 +611,7 @@ AREXPORT bool ArConfig::parseSection(ArArgumentBuilder *arg,
    @param arg Obtain parameter name from this object's "extra string"
    and value(s) from its argument(s).
 
-   @param errorBuffer If this is NULL it is ignored, otherwise the
+   @param errorBuffer If this is nullptr it is ignored, otherwise the
    string for the error is put into the buffer, the first word should
    be the parameter that has trouble
 
@@ -623,9 +623,9 @@ AREXPORT bool ArConfig::parseArgument(ArArgumentBuilder *arg,
 {
   std::list<ArConfigSection *>::iterator sectionIt;
   std::list<ArConfigArg>::iterator paramIt;
-  ArConfigSection *section = NULL;
-  std::list<ArConfigArg> *params = NULL;
-  ArConfigArg *param = NULL;
+  ArConfigSection *section = nullptr;
+  std::list<ArConfigArg> *params = nullptr;
+  ArConfigArg *param = nullptr;
   int valInt = 0;
   double valDouble = 0;
   bool valBool = false;
@@ -668,7 +668,7 @@ AREXPORT bool ArConfig::parseArgument(ArArgumentBuilder *arg,
   // see if we found this parameter
   bool found = false;
 
-  if (errorBuffer != NULL)
+  if (errorBuffer != nullptr)
     errorBuffer[0] = '\0';
   for (sectionIt = mySections.begin();
        sectionIt != mySections.end();
@@ -694,7 +694,7 @@ AREXPORT bool ArConfig::parseArgument(ArArgumentBuilder *arg,
 	param = &(*paramIt);
 	if (param->getType() != ArConfigArg::STRING &&
 	    param->getType() != ArConfigArg::FUNCTOR &&
-	    arg->getArg(0) == NULL)
+	    arg->getArg(0) == nullptr)
 	{
 	  IFDEBUG(ArLog::log(ArLog::Verbose, "%sparameter '%s' has no argument.",
                         myLogPrefix.c_str(),
@@ -716,7 +716,7 @@ AREXPORT bool ArConfig::parseArgument(ArArgumentBuilder *arg,
                  "%sparameter '%s' is an integer parameter but was given non-integer argument of '%s'",
                  myLogPrefix.c_str(), param->getName(), arg->getArg(0));
 	    ret = false;
-	    if (errorBuffer != NULL)
+	    if (errorBuffer != nullptr)
 	      snprintf(errorBuffer, errorBufferLen, "%s is an integer parameter but was given non-integer argument of '%s'", param->getName(), arg->getArg(0));
 	    continue;
 	  }
@@ -742,7 +742,7 @@ AREXPORT bool ArConfig::parseArgument(ArArgumentBuilder *arg,
 	  {
 	    ArLog::log(ArLog::Terse, "%sparameter '%s' is a double parameter but was given non-double argument of '%s'",
                  myLogPrefix.c_str(), param->getName(), arg->getArg(0));
-	    if (errorBuffer != NULL)
+	    if (errorBuffer != nullptr)
 	      snprintf(errorBuffer, errorBufferLen, "%s is a double parameter but was given non-double argument of '%s'", param->getName(), arg->getArg(0));
 
 	    ret = false;
@@ -771,7 +771,7 @@ AREXPORT bool ArConfig::parseArgument(ArArgumentBuilder *arg,
 	    ArLog::log(ArLog::Terse, "%sparameter '%s' is a bool parameter but was given non-bool argument of '%s'",
                  myLogPrefix.c_str(), param->getName(), arg->getArg(0));
 	    ret = false;
-	    if (errorBuffer != NULL)
+	    if (errorBuffer != nullptr)
 	      snprintf(errorBuffer, errorBufferLen, "%s is a bool parameter but was given non-bool argument of '%s'", param->getName(), arg->getArg(0));
 	    continue;
 	  }
@@ -804,7 +804,7 @@ AREXPORT bool ArConfig::parseArgument(ArArgumentBuilder *arg,
       ArLog::log(ArLog::Verbose, "%sCould not set string parameter '%s' to '%s'",
            myLogPrefix.c_str(),
 		       param->getName(), param->getString());
-	    if (errorBuffer != NULL && errorBuffer[0] == '\0')
+	    if (errorBuffer != nullptr && errorBuffer[0] == '\0')
 	      snprintf(errorBuffer, errorBufferLen, "%s could not be set to '%s'.", param->getName(), arg->getFullString());
 
 	    ret = false;
@@ -825,7 +825,7 @@ AREXPORT bool ArConfig::parseArgument(ArArgumentBuilder *arg,
                  myLogPrefix.c_str(),
 		              param->getName(), arg->getFullString());
 	    // if it didn't put in an error message make one
-	    if (errorBuffer != NULL && errorBuffer[0] == '\0')
+	    if (errorBuffer != nullptr && errorBuffer[0] == '\0')
 	      snprintf(errorBuffer, errorBufferLen, "%s could not be set to '%s'.", param->getName(), arg->getFullString());
 	    ret = false;
 	    continue;
@@ -857,7 +857,7 @@ AREXPORT bool ArConfig::parseArgument(ArArgumentBuilder *arg,
 
    @param arg Obtain parameter name from this argument builder's "exra" string and value(s) from its argument(s).
 
-   @param errorBuffer if this is NULL it is ignored, otherwise the
+   @param errorBuffer if this is nullptr it is ignored, otherwise the
    string for the error is put into the buffer, the first word should
    be the parameter that has trouble
 
@@ -908,11 +908,11 @@ AREXPORT bool ArConfig::parseUnknown(ArArgumentBuilder *arg,
    @param noFileNotFoundMessage if the file isn't found and this param
    is true it won't complain, otherwise it will
 
-   @param errorBuffer If an error occurs and this is not NULL, copy a description of the error into this buffer
+   @param errorBuffer If an error occurs and this is not nullptr, copy a description of the error into this buffer
 
    @param errorBufferLen the length of @a errorBuffer
 
-   @param sectionsToParse if NULL, then parse all sections; otherwise,
+   @param sectionsToParse if nullptr, then parse all sections; otherwise,
    a list of the section names that should be parsed (sections not in
    the list are ignored)
  **/
@@ -930,11 +930,11 @@ AREXPORT bool ArConfig::parseFile(const char *fileName,
   else
     myFileName = "";
 
-  if (errorBuffer != NULL)
+  if (errorBuffer != nullptr)
     errorBuffer[0] = '\0';
 
   delete mySectionsToParse; // Should be null, but just in case...
-  mySectionsToParse = NULL;
+  mySectionsToParse = nullptr;
 
   copySectionsToParse(sectionsToParse);
 
@@ -942,23 +942,23 @@ AREXPORT bool ArConfig::parseFile(const char *fileName,
   ret = myParser.parseFile(fileName, continueOnErrors, noFileNotFoundMessage);
 
   // set our pointers so we don't copy anymore into/over it
-  if (errorBuffer != NULL && errorBuffer[0] != '\0')
+  if (errorBuffer != nullptr && errorBuffer[0] != '\0')
   {
-    errorBuffer = NULL;
+    errorBuffer = nullptr;
     errorBufferLen = 0;
   }
   //printf("file %s\n", ArUtil::convertBool(ret));
 
   // if we have a parser and haven't failed (or we continue on errors)
   // then parse the arguments from the parser
-  if (myArgumentParser != NULL && (ret || continueOnErrors))
+  if (myArgumentParser != nullptr && (ret || continueOnErrors))
     ret = parseArgumentParser(myArgumentParser, continueOnErrors,
 			      errorBuffer, errorBufferLen) && ret;
 
   // set our pointers so we don't copy anymore into/over it
-  if (errorBuffer != NULL && errorBuffer[0] != '\0')
+  if (errorBuffer != nullptr && errorBuffer[0] != '\0')
   {
-    errorBuffer = NULL;
+    errorBuffer = nullptr;
     errorBufferLen = 0;
   }
   //printf("parser %s\n", ArUtil::convertBool(ret));
@@ -970,15 +970,15 @@ AREXPORT bool ArConfig::parseFile(const char *fileName,
 					  errorBufferLen) && ret;
   // copy our error if we have one and haven't copied in yet
   // set our pointers so we don't copy anymore into/over it
-  if (errorBuffer != NULL && errorBuffer[0] != '\0')
+  if (errorBuffer != nullptr && errorBuffer[0] != '\0')
   {
-    errorBuffer = NULL;
+    errorBuffer = nullptr;
     errorBufferLen = 0;
   }
 
   // Done with the temp parsing info, so delete it...
   delete mySectionsToParse;
-  mySectionsToParse = NULL;
+  mySectionsToParse = nullptr;
 
   //printf("callbacks %s\n", ArUtil::convertBool(ret));
   return ret;
@@ -989,14 +989,14 @@ AREXPORT bool ArConfig::parseFile(const char *fileName,
 
    @param append if true then text will be appended to the file if it exists, otherwise any existing file will be overwritten.
 
-   @param alreadyWritten if non-NULL, a list of strings that have already been
+   @param alreadyWritten if non-nullptr, a list of strings that have already been
    written out, don't write it again if it's in this list; when
    something is written by this function, then it is put it into this list
 
    @param writePriorities if this is true then priorities will be written, if it
    is false they will not be
 
-   @param sectionsToWrite if NULL, then write all sections; otherwise,
+   @param sectionsToWrite if nullptr, then write all sections; otherwise,
    a list of the section names that should be written
  **/
 AREXPORT bool ArConfig::writeFile(const char *fileName,
@@ -1009,7 +1009,7 @@ AREXPORT bool ArConfig::writeFile(const char *fileName,
 
   std::set<std::string> writtenSet;
   std::set<std::string> *written;
-  if (alreadyWritten != NULL)
+  if (alreadyWritten != nullptr)
     written = alreadyWritten;
   else
     written = &writtenSet;
@@ -1034,7 +1034,7 @@ AREXPORT bool ArConfig::writeFile(const char *fileName,
   else
     mode = "w";
 
-  if ((file = fopen(realFileName.c_str(), mode.c_str())) == NULL)
+  if ((file = fopen(realFileName.c_str(), mode.c_str())) == nullptr)
   {
     ArLog::log(ArLog::Terse, "%sCannot open file '%s' for writing",
 	       myLogPrefix.c_str(), realFileName.c_str());
@@ -1043,12 +1043,12 @@ AREXPORT bool ArConfig::writeFile(const char *fileName,
 
   bool firstSection = true;
   std::list<ArConfigSection *>::iterator sectionIt;
-  ArConfigSection *section = NULL;
+  ArConfigSection *section = nullptr;
 
   // first write out the generic section (ie sectionless stuff, mostly
   // for backwards compatibility)
-  if ( ((section = findSection("")) != NULL) &&
-       (sectionsToWrite == NULL) )
+  if ( ((section = findSection("")) != nullptr) &&
+       (sectionsToWrite == nullptr) )
   {
     if (!firstSection)
       fprintf(file, "\n");
@@ -1065,7 +1065,7 @@ AREXPORT bool ArConfig::writeFile(const char *fileName,
     if (strcmp(section->getName(), "") == 0)
       continue;
 
-    if (sectionsToWrite != NULL) {
+    if (sectionsToWrite != nullptr) {
       bool isSectionFound = false;
       for (std::list<std::string>::iterator swIter = sectionsToWrite->begin();
            swIter != sectionsToWrite->end();
@@ -1105,23 +1105,23 @@ AREXPORT void ArConfig::writeSection(ArConfigSection *section, FILE *file,
   unsigned int startCommentColumn = 25;
 
   std::list<ArArgumentBuilder *>::const_iterator argIt;
-  const std::list<ArArgumentBuilder *> *argList = NULL;
+  const std::list<ArArgumentBuilder *> *argList = nullptr;
 
 
   std::list<ArConfigArg>::iterator paramIt;
-  std::list<ArConfigArg> *params = NULL;
-  ArConfigArg *param = NULL;
+  std::list<ArConfigArg> *params = nullptr;
+  ArConfigArg *param = nullptr;
 
   /// clear out our written ones between sections
   alreadyWritten->clear();
 
-  if (section->getName() != NULL && strlen(section->getName()) > 0)
+  if (section->getName() != nullptr && strlen(section->getName()) > 0)
   {
     //fprintf(file, "; %s\n", section->getName());
     fprintf(file, "Section %s\n", section->getName());
   }
   sprintf(line, "; ");
-  if (section->getComment() != NULL && strlen(section->getComment()) > 0)
+  if (section->getComment() != nullptr && strlen(section->getComment()) > 0)
   {
     ArArgumentBuilder descr;
     descr.add(section->getComment());
@@ -1156,11 +1156,11 @@ AREXPORT void ArConfig::writeSection(ArConfigSection *section, FILE *file,
       continue;
     }
 
-    if (alreadyWritten != NULL &&
+    if (alreadyWritten != nullptr &&
 	      param->getType() != ArConfigArg::DESCRIPTION_HOLDER &&
 	      alreadyWritten->find(param->getName()) != alreadyWritten->end())
       continue;
-    else if (alreadyWritten != NULL &&
+    else if (alreadyWritten != nullptr &&
 	     param->getType() != ArConfigArg::DESCRIPTION_HOLDER)
     {
       alreadyWritten->insert(param->getName());
@@ -1172,7 +1172,7 @@ AREXPORT void ArConfig::writeSection(ArConfigSection *section, FILE *file,
     {
       // put the comments in the file first
       sprintf(line, "; ");
-      if (param->getDescription() != NULL &&
+      if (param->getDescription() != nullptr &&
         strlen(param->getDescription()) > 0)
       {
         ArArgumentBuilder descr;
@@ -1198,12 +1198,12 @@ AREXPORT void ArConfig::writeSection(ArConfigSection *section, FILE *file,
       }
       // now put in the values
       argList = param->getArgsWithFunctor();
-	  if (argList != NULL)
+	  if (argList != nullptr)
         for (argIt = argList->begin(); argIt != argList->end(); argIt++)
         {
           // if there's a space in the name then quote the param name
-          if (strchr(param->getName(), ' ') != NULL ||
-            strchr(param->getName(), '\t') != NULL)
+          if (strchr(param->getName(), ' ') != nullptr ||
+            strchr(param->getName(), '\t') != nullptr)
             fprintf(file, "\"%s\" %s\n", param->getName(),
             (*argIt)->getFullString());
           else
@@ -1227,8 +1227,8 @@ AREXPORT void ArConfig::writeSection(ArConfigSection *section, FILE *file,
     }
 
     // if there's a space in the name then quote the param name
-    if (strchr(param->getName(), ' ') != NULL ||
-      strchr(param->getName(), '\t') != NULL)
+    if (strchr(param->getName(), ' ') != nullptr ||
+      strchr(param->getName(), '\t') != nullptr)
       sprintf(line, "\"%s\"", param->getName());
     else
       sprintf(line, "%s", param->getName());
@@ -1300,7 +1300,7 @@ AREXPORT void ArConfig::writeSection(ArConfigSection *section, FILE *file,
     }
 
     // if we have a description to put in, put it in with word wrap
-    if (param->getDescription() != NULL &&
+    if (param->getDescription() != nullptr &&
       strlen(param->getDescription()) > 0)
     {
       ArArgumentBuilder descr;
@@ -1347,7 +1347,7 @@ AREXPORT const char *ArConfig::getBaseDirectory(void) const
 
 AREXPORT void ArConfig::setBaseDirectory(const char *baseDirectory)
 {
-  if (baseDirectory != NULL && strlen(baseDirectory) > 0)
+  if (baseDirectory != nullptr && strlen(baseDirectory) > 0)
     myBaseDirectory = baseDirectory;
   else
     myBaseDirectory = "";
@@ -1474,7 +1474,7 @@ AREXPORT bool ArConfig::callProcessFileCallBacks(bool continueOnErrors,
   // allocate one.
 
   // empty the buffer, we're only going to put the first error in it
-  if (errorBuffer != NULL && errorBufferLen > 0)
+  if (errorBuffer != nullptr && errorBufferLen > 0)
     errorBuffer[0] = '\0';
 
   ArLog::log(level, "%sProcessing file", myLogPrefix.c_str());
@@ -1483,7 +1483,7 @@ AREXPORT bool ArConfig::callProcessFileCallBacks(bool continueOnErrors,
        ++it)
   {
     callback = (*it).second;
-    if (callback->getName() != NULL && callback->getName()[0] != '\0')
+    if (callback->getName() != nullptr && callback->getName()[0] != '\0')
       ArLog::log(level, "%sProcessing functor '%s' (%d)",
                  myLogPrefix.c_str(),
 		             callback->getName(), -(*it).first);
@@ -1497,15 +1497,15 @@ AREXPORT bool ArConfig::callProcessFileCallBacks(bool continueOnErrors,
 
       // if there is an error buffer and it got filled get rid of our
       // pointer to it
-      if (errorBuffer != NULL && errorBuffer[0] != '\0')
+      if (errorBuffer != nullptr && errorBuffer[0] != '\0')
       {
-	errorBuffer = NULL;
+	errorBuffer = nullptr;
 	errorBufferLen = 0;
       }
       ret = false;
       if (!continueOnErrors)
       {
-	if (callback->getName() != NULL && callback->getName()[0] != '\0')
+	if (callback->getName() != nullptr && callback->getName()[0] != '\0')
 	  ArLog::log(ArLog::Normal, "ArConfig: Failed, stopping because the '%s' process file callback failed",
 		     callback->getName());
 	else
@@ -1514,7 +1514,7 @@ AREXPORT bool ArConfig::callProcessFileCallBacks(bool continueOnErrors,
       }
       else
       {
-	if (callback->getName() != NULL && callback->getName()[0] != '\0')
+	if (callback->getName() != nullptr && callback->getName()[0] != '\0')
 	  ArLog::log(ArLog::Normal, "ArConfig: Failed but continuing, the '%s' process file callback failed",
 		     callback->getName());
 	else
@@ -1569,9 +1569,9 @@ AREXPORT bool ArConfig::parseArgumentParser(ArArgumentParser *parser,
 {
   std::list<ArConfigSection *>::iterator sectionIt;
   std::list<ArConfigArg>::iterator paramIt;
-  ArConfigSection *section = NULL;
-  ArConfigArg *param = NULL;
-  std::list<ArConfigArg> *params = NULL;
+  ArConfigSection *section = nullptr;
+  ArConfigArg *param = nullptr;
+  std::list<ArConfigArg> *params = nullptr;
 
   bool ret;
   size_t i;
@@ -1582,11 +1582,11 @@ AREXPORT bool ArConfig::parseArgumentParser(ArArgumentParser *parser,
 
   for (i = 0; i < parser->getArgc(); i++)
   {
-    if (parser->getArg(i) == NULL)
+    if (parser->getArg(i) == nullptr)
     {
       ArLog::log(ArLog::Terse, "%sset up wrong (parseArgumentParser broken).",
                  myLogPrefix.c_str());
-      if (errorBuffer != NULL)
+      if (errorBuffer != nullptr)
         strncpy(errorBuffer,
         "ArConfig set up wrong (parseArgumentParser broken).",
         errorBufferLen);
@@ -1667,8 +1667,8 @@ AREXPORT bool ArConfig::parseArgumentParser(ArArgumentParser *parser,
 
 AREXPORT ArConfigSection *ArConfig::findSection(const char *sectionName) const
 {
-  ArConfigSection *section = NULL;
-  ArConfigSection *tempSection = NULL;
+  ArConfigSection *section = nullptr;
+  ArConfigSection *tempSection = nullptr;
 
   for (std::list<ArConfigSection *>::const_iterator sectionIt = mySections.begin();
        sectionIt != mySections.end();
@@ -1686,8 +1686,8 @@ AREXPORT ArConfigSection *ArConfig::findSection(const char *sectionName) const
 
 void ArConfig::copySectionsToParse(std::list<std::string> *from)
 {
-  mySectionsToParse = NULL;
-  if (from != NULL) {
+  mySectionsToParse = nullptr;
+  if (from != nullptr) {
     mySectionsToParse = new std::list<std::string>();
     for (std::list<std::string>::const_iterator spIter = from->begin();
          spIter != from->end();
@@ -1772,7 +1772,7 @@ AREXPORT ArConfigSection::ArConfigSection(const char *name,
 					  const char *comment)
 {
   myName = name;
-  if (comment != NULL)
+  if (comment != nullptr)
     myComment = comment;
   else
     myComment = "";
@@ -1827,8 +1827,8 @@ AREXPORT ArConfigSection::~ArConfigSection()
 
 AREXPORT ArConfigArg *ArConfigSection::findParam(const char *paramName)
 {
-  ArConfigArg *param = NULL;
-  ArConfigArg *tempParam = NULL;
+  ArConfigArg *param = nullptr;
+  ArConfigArg *tempParam = nullptr;
 
   for (std::list<ArConfigArg>::iterator pIter = myParams.begin();
        pIter != myParams.end();
@@ -1851,7 +1851,7 @@ AREXPORT ArConfigArg *ArConfigSection::findParam(const char *paramName)
 
 AREXPORT bool ArConfigSection::remStringHolder(const char *paramName)
 {
-  ArConfigArg *tempParam = NULL;
+  ArConfigArg *tempParam = nullptr;
 
   for (std::list<ArConfigArg>::iterator pIter = myParams.begin();
        pIter != myParams.end();
@@ -1861,7 +1861,7 @@ AREXPORT bool ArConfigSection::remStringHolder(const char *paramName)
     tempParam = &(*pIter);
     // pay attention to only string holders
     if (tempParam->getType() != ArConfigArg::STRING_HOLDER ||
-	paramName == NULL || paramName[0] == '\0')
+	paramName == nullptr || paramName[0] == '\0')
       continue;
     if (ArUtil::strcasecmp(tempParam->getName(), paramName) == 0)
     {

@@ -476,7 +476,7 @@ public:
     
     // Uniformly distributed random number generation in [0,1] using
     // Mersenne-Twister algorithm by default.
-    // Use parameter to setup seed, e.g.: random((unsigned)time(NULL))
+    // Use parameter to setup seed, e.g.: random((unsigned)time(nullptr))
     // Check urandom() for more precise control.
     friend const mpreal random(unsigned int seed);
 
@@ -1727,7 +1727,7 @@ inline std::string toString(T t, std::ios_base & (*f)(std::ios_base&))
 
 inline std::string mpreal::toString(const std::string& format) const
 {
-    char *s = NULL;
+    char *s = nullptr;
     std::string out;
 
     if( !format.empty() )
@@ -1763,7 +1763,7 @@ inline std::string mpreal::toString(int n, int b, mp_rnd_t mode) const
 
 #else
 
-    char *s, *ns = NULL; 
+    char *s, *ns = nullptr; 
     size_t slen, nslen;
     mp_exp_t exp;
     std::string out;
@@ -1777,10 +1777,10 @@ inline std::string mpreal::toString(int n, int b, mp_rnd_t mode) const
     if(mpfr_zero_p(mp)) return "0";
     if(mpfr_nan_p(mp))  return "NaN";
 
-    s  = mpfr_get_str(NULL, &exp, b, 0, mp, mode);
-    ns = mpfr_get_str(NULL, &exp, b, (std::max)(0,n), mp, mode);
+    s  = mpfr_get_str(nullptr, &exp, b, 0, mp, mode);
+    ns = mpfr_get_str(nullptr, &exp, b, (std::max)(0,n), mp, mode);
 
-    if(s!=NULL && ns!=NULL)
+    if(s!=nullptr && ns!=nullptr)
     {
         slen  = strlen(s);
         nslen = strlen(ns);
@@ -1877,7 +1877,7 @@ inline std::ostream& mpreal::output(std::ostream& os) const
     else
         format << "R*e";
 
-    char *s = NULL;
+    char *s = nullptr;
     if(!(mpfr_asprintf(&s, format.str().c_str(),
                         mpfr::mpreal::get_default_rnd(),
                         mpfr_srcptr())
@@ -2569,7 +2569,7 @@ inline const mpreal urandom (gmp_randstate_t& state, mp_rnd_t rnd_mode = mpreal:
 inline const mpreal grandom (gmp_randstate_t& state, mp_rnd_t rnd_mode = mpreal::get_default_rnd())
 {
     mpreal x;
-    mpfr_grandom(x.mp, NULL, state, rnd_mode);
+    mpfr_grandom(x.mp, nullptr, state, rnd_mode);
     return x;
 }
 

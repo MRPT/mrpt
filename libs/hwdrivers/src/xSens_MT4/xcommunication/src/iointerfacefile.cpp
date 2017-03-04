@@ -195,20 +195,20 @@ XsResultValue IoInterfaceFile::create (const XsString& filename)
 #else
 	m_handle = fopen(filename.c_str(), "w+b");	// open for update (r/w)
 #endif
-	if (m_handle == NULL)
+	if (m_handle == nullptr)
 		return m_lastResult = XRV_OUTPUTCANNOTBEOPENED;
 
 	bool fail = false;
 #ifdef _WIN32
 	wchar_t fullpath[XS_MAX_FILENAME_LENGTH];
-	if (_wfullpath(fullpath,filename.toStdWString().c_str(),XS_MAX_FILENAME_LENGTH) == NULL)
+	if (_wfullpath(fullpath,filename.toStdWString().c_str(),XS_MAX_FILENAME_LENGTH) == nullptr)
 		fail = true;
 #else
 	// based on the assumption that this doesn't concern the serial port, handle
 	// it the same way using realpath(). Apparently realpath() doesn't require a
 	// maximum length. One would possibly want to write a wrapper for it.
 	char fullpath[XS_MAX_FILENAME_LENGTH*2];
-	if (realpath(filename.c_str(), fullpath) == NULL)
+	if (realpath(filename.c_str(), fullpath) == nullptr)
 		fail = true;
 #endif
 	m_filename = XsString(fullpath);
@@ -559,7 +559,7 @@ XsResultValue IoInterfaceFile::open(const XsString& filename, bool createNew, bo
 #else
 		m_handle = fopen(filename.c_str(), "r+b");	// open for update (r/w)
 #endif
-	if (m_handle == NULL)
+	if (m_handle == nullptr)
 	{
 		if (createNew)
 #ifdef _win32
@@ -577,18 +577,18 @@ XsResultValue IoInterfaceFile::open(const XsString& filename, bool createNew, bo
 			m_readOnly = true;
 		}
 	}
-	if (m_handle == NULL)
+	if (m_handle == nullptr)
 		return m_lastResult = XRV_INPUTCANNOTBEOPENED;
 
 	bool fail = false;
 #ifdef _WIN32
 	wchar_t fullpath[XS_MAX_FILENAME_LENGTH];
-	if (_wfullpath(fullpath,filename.toStdWString().c_str(),XS_MAX_FILENAME_LENGTH) == NULL)
+	if (_wfullpath(fullpath,filename.toStdWString().c_str(),XS_MAX_FILENAME_LENGTH) == nullptr)
 		fail = true;
 #else
 	// use the same trick again.
 	char fullpath[XS_MAX_FILENAME_LENGTH*2];
-	if (realpath(filename.c_str(), fullpath) == NULL)
+	if (realpath(filename.c_str(), fullpath) == nullptr)
 		fail = true;
 #endif
 	m_filename = XsString(fullpath);
@@ -810,7 +810,7 @@ XsResultValue IoInterfaceFile::getLastResult(void) const
 */
 bool IoInterfaceFile::isOpen(void) const
 {
-	return m_handle != NULL;
+	return m_handle != nullptr;
 }
 
 /*! \brief Return whether the file is readonly or not.

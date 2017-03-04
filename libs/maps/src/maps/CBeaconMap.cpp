@@ -204,7 +204,7 @@ double	 CBeaconMap::internal_computeObservationLikelihood(
 			// Look for the beacon in this map:
 			beac=getBeaconByID( it_obs->beaconID );
 
-			if (beac!=NULL &&
+			if (beac!=nullptr &&
 				it_obs->sensedDistance > 0 &&
 				!isNaN(it_obs->sensedDistance))
 			{
@@ -1128,7 +1128,7 @@ float CBeaconMap::compute3DMatchingRatio(const mrpt::maps::CMetricMap *otherMap2
 	MRPT_START
 
 	// Compare to a similar map only:
-	const CBeaconMap	*otherMap = NULL;
+	const CBeaconMap	*otherMap = nullptr;
 
 	if ( otherMap2->GetRuntimeClass() == CLASS_ID(CBeaconMap) )
 		otherMap = static_cast<const CBeaconMap*>( otherMap2);
@@ -1163,7 +1163,7 @@ const CBeacon * CBeaconMap::getBeaconByID( CBeacon::TBeaconID  id ) const
 	for (const_iterator	it=m_beacons.begin();it!=m_beacons.end();++it)
 		if (it->m_ID==id)
 			return &(*it);
-	return NULL;
+	return nullptr;
 }
 
 /*---------------------------------------------------------------
@@ -1174,7 +1174,7 @@ CBeacon * CBeaconMap::getBeaconByID( CBeacon::TBeaconID  id )
 	for (iterator	it=m_beacons.begin();it!=m_beacons.end();++it)
 		if (it->m_ID==id)
 			return &(*it);
-	return NULL;
+	return nullptr;
 }
 
 /*---------------------------------------------------------------
@@ -1187,7 +1187,7 @@ void CBeaconMap::saveToTextFile(const string &fil) const
 {
 	MRPT_START
 	FILE	*f = os::fopen(fil.c_str(),"wt");
-	ASSERT_(f!=NULL);
+	ASSERT_(f!=nullptr);
 
 	CPoint3D		p;
 	CMatrixDouble33 C;

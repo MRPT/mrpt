@@ -144,7 +144,7 @@ int raw_serial::senddata(const unsigned char * data, size_t size)
 // FIXME: non-block io should be used
     if (!isOpened()) return 0;
 
-    if (data == NULL || size ==0) return 0;
+    if (data == nullptr || size ==0) return 0;
     
     size_t tx_len = 0;
     required_tx_cnt = 0;
@@ -196,7 +196,7 @@ int raw_serial::waitforrecv(_u32 timeout, size_t * returned_size)
 int raw_serial::waitfordata(size_t data_count, _u32 timeout, size_t * returned_size)
 {
     size_t length = 0;
-    if (returned_size==NULL) returned_size=(size_t *)&length;
+    if (returned_size==nullptr) returned_size=(size_t *)&length;
     *returned_size = 0;
 
     int max_fd;
@@ -224,7 +224,7 @@ int raw_serial::waitfordata(size_t data_count, _u32 timeout, size_t * returned_s
     while ( isOpened() )
     {
         /* Do the select */
-        int n = ::select(max_fd, &input_set, NULL, NULL, &timeout_val);
+        int n = ::select(max_fd, &input_set, nullptr, nullptr, &timeout_val);
 
         if (n < 0)
         {

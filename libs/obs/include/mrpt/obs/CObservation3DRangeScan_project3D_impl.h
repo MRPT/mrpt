@@ -319,8 +319,8 @@ namespace detail {
 			for (int r=0;r<H;r++)
 			{
 				const float *D_ptr = &rangeImage.coeffRef(r,0);  // Matrices are 16-aligned
-				const float *Dgt_ptr = !filterParams.rangeMask_min ? NULL : &filterParams.rangeMask_min->coeffRef(r,0);
-				const float *Dlt_ptr = !filterParams.rangeMask_max ? NULL : &filterParams.rangeMask_max->coeffRef(r,0);
+				const float *Dgt_ptr = !filterParams.rangeMask_min ? nullptr : &filterParams.rangeMask_min->coeffRef(r,0);
+				const float *Dlt_ptr = !filterParams.rangeMask_max ? nullptr : &filterParams.rangeMask_max->coeffRef(r,0);
 
 				for (int c=0;c<W_4;c++)
 				{

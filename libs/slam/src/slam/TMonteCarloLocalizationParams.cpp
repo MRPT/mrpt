@@ -20,7 +20,7 @@ using namespace std;
 					TMonteCarloLocalizationParams
  ---------------------------------------------------------------*/
 TMonteCarloLocalizationParams::TMonteCarloLocalizationParams() :
-	metricMap(NULL),
+	metricMap(nullptr),
 	metricMaps(),
 	KLD_params()
 {

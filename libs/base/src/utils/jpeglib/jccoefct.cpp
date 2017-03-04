@@ -103,18 +103,18 @@ start_pass_coef (j_compress_ptr cinfo, J_BUF_MODE pass_mode)
 
   switch (pass_mode) {
   case JBUF_PASS_THRU:
-    if (coef->whole_image[0] != NULL)
+    if (coef->whole_image[0] != nullptr)
       ERREXIT(cinfo, JERR_BAD_BUFFER_MODE);
     coef->pub.compress_data = compress_data;
     break;
 #ifdef FULL_COEF_BUFFER_SUPPORTED
   case JBUF_SAVE_AND_PASS:
-    if (coef->whole_image[0] == NULL)
+    if (coef->whole_image[0] == nullptr)
       ERREXIT(cinfo, JERR_BAD_BUFFER_MODE);
     coef->pub.compress_data = compress_first_pass;
     break;
   case JBUF_CRANK_DEST:
-    if (coef->whole_image[0] == NULL)
+    if (coef->whole_image[0] == nullptr)
       ERREXIT(cinfo, JERR_BAD_BUFFER_MODE);
     coef->pub.compress_data = compress_output;
     break;
@@ -331,7 +331,7 @@ compress_first_pass (j_compress_ptr cinfo, JSAMPIMAGE input_buf)
  * The data is obtained from the virtual arrays and fed to the entropy coder.
  * Returns TRUE if the iMCU row is completed, FALSE if suspended.
  *
- * NB: input_buf is ignored; it is likely to be a NULL pointer.
+ * NB: input_buf is ignored; it is likely to be a nullptr pointer.
  */
 
 METHODDEF(boolean)
@@ -441,6 +441,6 @@ jinit_c_coef_controller (j_compress_ptr cinfo, boolean need_full_buffer)
     for (i = 0; i < C_MAX_BLOCKS_IN_MCU; i++) {
       coef->MCU_buffer[i] = buffer + i;
     }
-    coef->whole_image[0] = NULL; /* flag for no virtual arrays */
+    coef->whole_image[0] = nullptr; /* flag for no virtual arrays */
   }
 }

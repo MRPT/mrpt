@@ -129,7 +129,7 @@ namespace mrpt
 		 * \param[in] zmq_socket The zmq socket object.
 		 * \param[in] dont_wait If true, will fail if there is no data ready to
 		 *  be read. If false (default) this function will block until data arrives.
-		 * \param[out] rx_obj_length_in_bytes If non-NULL, the object length will be stored here.
+		 * \param[out] rx_obj_length_in_bytes If non-nullptr, the object length will be stored here.
 		 * \return An empty smart pointer if there was any error. The received
 		 *  object if all went OK.
 		 * \note Including `<mrpt/utils/serialization_zmq.h>` requires libzmq to be
@@ -141,7 +141,7 @@ namespace mrpt
 		 * \note See examples of usage in https://github.com/MRPT/mrpt/tree/master/doc/mrpt-zeromq-example
 		 */
 		template <typename ZMQ_SOCKET_TYPE>
-		mrpt::utils::CSerializablePtr mrpt_recv_from_zmq(ZMQ_SOCKET_TYPE zmq_socket, bool dont_wait = false, size_t * rx_obj_length_in_bytes = NULL)
+		mrpt::utils::CSerializablePtr mrpt_recv_from_zmq(ZMQ_SOCKET_TYPE zmq_socket, bool dont_wait = false, size_t * rx_obj_length_in_bytes = nullptr)
 		{
 			CMemoryStream	target_buf;
 			mrpt::utils::CSerializablePtr obj;
@@ -161,7 +161,7 @@ namespace mrpt
 			* \note See examples of usage in https://github.com/MRPT/mrpt/tree/master/doc/mrpt-zeromq-example
 		  */
 		template <typename ZMQ_SOCKET_TYPE>
-		bool mrpt_recv_from_zmq_into(ZMQ_SOCKET_TYPE zmq_socket, mrpt::utils::CSerializable &target_object, bool dont_wait = false, size_t * rx_obj_length_in_bytes = NULL)
+		bool mrpt_recv_from_zmq_into(ZMQ_SOCKET_TYPE zmq_socket, mrpt::utils::CSerializable &target_object, bool dont_wait = false, size_t * rx_obj_length_in_bytes = nullptr)
 		{
 			CMemoryStream	target_buf;
 			std::vector<zmq_msg_t*> lst_msgs_to_close;

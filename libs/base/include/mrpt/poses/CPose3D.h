@@ -214,9 +214,9 @@ namespace poses
 		  *  \param  If set to true, the Jacobian "out_jacobian_df_dpose" uses a fastest linearized appoximation (valid only for small rotations!).
 		  */
 		void composePoint(double lx,double ly,double lz, double &gx, double &gy, double &gz,
-			mrpt::math::CMatrixFixedNumeric<double,3,3>  *out_jacobian_df_dpoint=NULL,
-			mrpt::math::CMatrixFixedNumeric<double,3,6>  *out_jacobian_df_dpose=NULL,
-			mrpt::math::CMatrixFixedNumeric<double,3,6>  *out_jacobian_df_dse3=NULL,
+			mrpt::math::CMatrixFixedNumeric<double,3,3>  *out_jacobian_df_dpoint=nullptr,
+			mrpt::math::CMatrixFixedNumeric<double,3,6>  *out_jacobian_df_dpose=nullptr,
+			mrpt::math::CMatrixFixedNumeric<double,3,6>  *out_jacobian_df_dse3=nullptr,
 			bool use_small_rot_approx = false) const;
 
 		/** An alternative, slightly more efficient way of doing \f$ G = P \oplus L \f$ with G and L being 3D points and P this 6D pose.
@@ -245,9 +245,9 @@ namespace poses
 		  * \sa composePoint, composeFrom
 		  */
 		void inverseComposePoint(const double gx,const double gy,const double gz,double &lx,double &ly,double &lz,
-			mrpt::math::CMatrixFixedNumeric<double,3,3>  *out_jacobian_df_dpoint=NULL,
-			mrpt::math::CMatrixFixedNumeric<double,3,6>  *out_jacobian_df_dpose=NULL,
-			mrpt::math::CMatrixFixedNumeric<double,3,6>  *out_jacobian_df_dse3=NULL ) const;
+			mrpt::math::CMatrixFixedNumeric<double,3,3>  *out_jacobian_df_dpoint=nullptr,
+			mrpt::math::CMatrixFixedNumeric<double,3,6>  *out_jacobian_df_dpose=nullptr,
+			mrpt::math::CMatrixFixedNumeric<double,3,6>  *out_jacobian_df_dse3=nullptr ) const;
 
 		/** \overload */
 		inline void inverseComposePoint(const mrpt::math::TPoint3D &g, mrpt::math::TPoint3D &l) const {
@@ -404,7 +404,7 @@ namespace poses
 		  */
 		void getAsQuaternion(
 			mrpt::math::CQuaternionDouble &q,
-			mrpt::math::CMatrixFixedNumeric<double,4,3>   *out_dq_dr = NULL
+			mrpt::math::CMatrixFixedNumeric<double,4,3>   *out_dq_dr = nullptr
 			) const;
 
 		inline const double &operator[](unsigned int i) const

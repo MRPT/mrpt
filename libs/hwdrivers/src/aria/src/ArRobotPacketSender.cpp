@@ -22,7 +22,7 @@ AREXPORT ArRobotPacketSender::ArRobotPacketSender(unsigned char sync1,
 						  unsigned char sync2) :
   myPacket(sync1, sync2)
 {
-  myDeviceConn = NULL;
+  myDeviceConn = nullptr;
 }
 
 /**
@@ -57,7 +57,7 @@ AREXPORT ArDeviceConnection *ArRobotPacketSender::getDeviceConnection(void)
 
 bool ArRobotPacketSender::connValid(void)
 {
-  return (myDeviceConn != NULL && 
+  return (myDeviceConn != nullptr && 
 	  myDeviceConn->getStatus() == ArDeviceConnection::STATUS_OPEN);
 }
 

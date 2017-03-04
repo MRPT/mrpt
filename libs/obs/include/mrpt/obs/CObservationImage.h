@@ -41,10 +41,10 @@ namespace obs
 
 	 public:
 		/** Constructor.
-		 * \param iplImage An OpenCV "IplImage*" object with the image to be loaded in the member "image", or NULL (default) for an empty image.
+		 * \param iplImage An OpenCV "IplImage*" object with the image to be loaded in the member "image", or nullptr (default) for an empty image.
 		 *
 		 */
-		CObservationImage( void *iplImage = NULL );
+		CObservationImage( void *iplImage = nullptr );
 
 		 /** The pose of the camera on the robot
 		  */

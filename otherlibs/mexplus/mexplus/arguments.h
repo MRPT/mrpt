@@ -102,7 +102,7 @@ public:
                  int option_size = 0,
                  ...) {
     Definition* definition = &definitions_["default"];
-    definition->mandatories.resize(mandatory_size, NULL);
+    definition->mandatories.resize(mandatory_size, nullptr);
     va_list variable_list;
     va_start(variable_list, option_size);
     fillOptionalDefinition(option_size, &definition->optionals, variable_list);
@@ -205,7 +205,7 @@ private:
                               va_list variable_list) {
     for (int i = 0; i < option_size; ++i) {
       const char* option_name = va_arg(variable_list, const char*);
-      (*optionals)[std::string(option_name)] = NULL;
+      (*optionals)[std::string(option_name)] = nullptr;
     }
   }
   /** Try to parse one definition or return false on failure.

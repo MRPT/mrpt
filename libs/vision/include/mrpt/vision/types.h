@@ -157,8 +157,8 @@ namespace mrpt
 			  * \param old2new_camIDs If provided, the mapping from old to new IDs is stored here.
 			  * \param old2new_lmIDs If provided, the mapping from old to new IDs is stored here. */
 			void compressIDs(
-				std::map<TCameraPoseID,TCameraPoseID>  *old2new_camIDs=NULL,
-				std::map<TLandmarkID,TLandmarkID>      *old2new_lmIDs=NULL );
+				std::map<TCameraPoseID,TCameraPoseID>  *old2new_camIDs=nullptr,
+				std::map<TLandmarkID,TLandmarkID>      *old2new_lmIDs=nullptr );
 
 		};
 

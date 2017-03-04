@@ -96,8 +96,8 @@ class CRangeScanRegistrationDecider {
 			const mrpt::obs::CObservation2DRangeScan& from,
 			const mrpt::obs::CObservation2DRangeScan& to,
 			constraint_t* rel_edge,
-			const mrpt::poses::CPose2D* initial_pose=NULL,
-			mrpt::slam::CICP::TReturnInfo* icp_info=NULL);
+			const mrpt::poses::CPose2D* initial_pose=nullptr,
+			mrpt::slam::CICP::TReturnInfo* icp_info=nullptr);
 	/**\brief Align the 3D range scans provided and find the potential edge that
 	 * can transform the one into the other.
 	 *
@@ -109,8 +109,8 @@ class CRangeScanRegistrationDecider {
 			const mrpt::obs::CObservation3DRangeScan& from,
 			const mrpt::obs::CObservation3DRangeScan& to,
 			constraint_t* rel_edge,
-			const mrpt::poses::CPose2D* initial_pose=NULL,
-			mrpt::slam::CICP::TReturnInfo* icp_info=NULL);
+			const mrpt::poses::CPose2D* initial_pose=nullptr,
+			mrpt::slam::CICP::TReturnInfo* icp_info=nullptr);
 	/**\brief Reduce the size of the given CPointsMap by keeping one out of
 	 * "keep_point_every" points.
 	 *
@@ -128,7 +128,7 @@ class CRangeScanRegistrationDecider {
 	 */
 	bool convert3DTo2DRangeScan(
 			/*from = */ mrpt::obs::CObservation3DRangeScanPtr& scan3D_in,
-			/*to   = */ mrpt::obs::CObservation2DRangeScanPtr* scan2D_out=NULL);
+			/*to   = */ mrpt::obs::CObservation2DRangeScanPtr* scan2D_out=nullptr);
 
 	struct TParams: public mrpt::utils::CLoadableOptions {
 		public:

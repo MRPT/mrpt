@@ -26,11 +26,11 @@ namespace obs {
 		  *
 		  * \note Default value:true */
 		bool rangeCheckBetween;
-		/** (Default: NULL) If provided, each data range will be tested to be greater-than (rangeMask_min) or less-than (rangeMask_max) each element in these matrices
+		/** (Default: nullptr) If provided, each data range will be tested to be greater-than (rangeMask_min) or less-than (rangeMask_max) each element in these matrices
 		  * for each direction (row,col). Values of 0.0f mean no filtering at those directions.
 			* If both `rangeMask_min` and `rangeMask_max` are provided, the joint filtering operation is determined by `rangeCheckBetween` */
 		const mrpt::math::CMatrix * rangeMask_min, * rangeMask_max;
-		TRangeImageFilterParams() : rangeCheckBetween(true), rangeMask_min(NULL), rangeMask_max(NULL)
+		TRangeImageFilterParams() : rangeCheckBetween(true), rangeMask_min(nullptr), rangeMask_max(nullptr)
 		{}
 	};
 

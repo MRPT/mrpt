@@ -35,8 +35,8 @@ AREXPORT ArSick::ArSick(size_t currentBufferSize, size_t cumulativeBufferSize,
   myCurrentReadings = new std::list<ArSensorReading *>;
   myRawReadings = myCurrentReadings;
   myIter = myAssembleReadings->begin();
-  myConn = NULL;
-  myRobot = NULL;
+  myConn = nullptr;
+  myRobot = nullptr;
   myStartConnect = false;
   myRunningOnRobot = false;
   switchState(STATE_NONE);
@@ -72,7 +72,7 @@ AREXPORT ArSick::ArSick(size_t currentBufferSize, size_t cumulativeBufferSize,
 
 AREXPORT ArSick::~ArSick()
 {
-  if (myRobot != NULL)
+  if (myRobot != nullptr)
   {
     myRobot->remRangeDevice(this);
     myRobot->remPacketHandler(&mySimPacketHandler);
@@ -263,7 +263,7 @@ AREXPORT ArTime ArSick::getLastReadingTime(void)
 AREXPORT void ArSick::setRobot(ArRobot *robot)
 {
   myRobot = robot;
-  if (myRobot != NULL)
+  if (myRobot != nullptr)
   {
     myRobot->addPacketHandler(&mySimPacketHandler, ArListPos::LAST);
     myRobot->addSensorInterpTask("sick", 90, &mySensorInterpCB);
@@ -368,7 +368,7 @@ AREXPORT void ArSick::configureShort(bool useSim, BaudRate baud,
 
   myRealConfigured = false;
   // if we're connected, just have this set things
-  if (myRobot != NULL && myRobot->isConnected())
+  if (myRobot != nullptr && myRobot->isConnected())
     robotConnectCallback();
 }
 
@@ -545,9 +545,9 @@ AREXPORT bool ArSick::simPacketHandler(ArRobotPacket *packet)
     // We have in all the readings, now sort 'em and update the current ones
     filterReadings();
 
-    if (myTimeLastSickPacket != time(NULL))
+    if (myTimeLastSickPacket != time(nullptr))
       {
-	myTimeLastSickPacket = time(NULL);
+	myTimeLastSickPacket = time(nullptr);
 	mySickPacCount = mySickPacCurrentCount;
 	mySickPacCurrentCount = 0;
       }
@@ -780,7 +780,7 @@ AREXPORT int ArSick::internalConnectHandler(void)
   case STATE_INIT:
     if (myConn->getStatus() != ArDeviceConnection::STATUS_OPEN)
     {
-      if ((conn = dynamic_cast<ArSerialConnection *>(myConn)) != NULL)
+      if ((conn = dynamic_cast<ArSerialConnection *>(myConn)) != nullptr)
       {
 	conn->setBaud(9600);
       }
@@ -824,7 +824,7 @@ AREXPORT int ArSick::internalConnectHandler(void)
     }
     break;
   case STATE_WAIT_FOR_POWER_ON:
-    while ((packet = mySickPacketReceiver.receivePacket()) != NULL)
+    while ((packet = mySickPacketReceiver.receivePacket()) != nullptr)
     {
       if (packet->getID() == 0x90)
       {
@@ -899,7 +899,7 @@ AREXPORT int ArSick::internalConnectHandler(void)
     }
     break;
   case STATE_WAIT_FOR_CONFIGURE_ACK:
-    while ((packet = mySickPacketReceiver.receivePacket()) != NULL)
+    while ((packet = mySickPacketReceiver.receivePacket()) != nullptr)
     {
       if (packet->getID() == 0xbb)
       {
@@ -977,7 +977,7 @@ AREXPORT int ArSick::internalConnectHandler(void)
     }
     break;
   case STATE_WAIT_FOR_INSTALL_MODE_ACK:
-    while ((packet = mySickPacketReceiver.receivePacket()) != NULL)
+    while ((packet = mySickPacketReceiver.receivePacket()) != nullptr)
     {
       if (packet->getID() == 0xa0)
       {
@@ -1171,7 +1171,7 @@ AREXPORT int ArSick::internalConnectHandler(void)
     }
     break;
   case STATE_WAIT_FOR_SET_MODE_ACK:
-    while ((packet = mySickPacketReceiver.receivePacket()) != NULL)
+    while ((packet = mySickPacketReceiver.receivePacket()) != nullptr)
     {
       if (packet->getID() == 0xF7)
       {
@@ -1234,7 +1234,7 @@ AREXPORT int ArSick::internalConnectHandler(void)
     }
     break;
   case STATE_WAIT_FOR_START_ACK:
-    while ((packet = mySickPacketReceiver.receivePacket()) != NULL)
+    while ((packet = mySickPacketReceiver.receivePacket()) != nullptr)
     {
       if (packet->getID() == 0xa0)
       {
@@ -1509,7 +1509,7 @@ AREXPORT void ArSick::dropConnection(void)
        it != myDisconnectOnErrorCBList.end();
        it++)
     (*it)->invoke();
-  if (myConn != NULL)
+  if (myConn != nullptr)
     myConn->close();
 }
 
@@ -1523,7 +1523,7 @@ AREXPORT void ArSick::failedConnect(void)
        it != myFailedConnectCBList.end();
        it++)
     (*it)->invoke();
-  if (myConn != NULL)
+  if (myConn != nullptr)
     myConn->close();
 }
 
@@ -1588,7 +1588,7 @@ AREXPORT bool ArSick::disconnect(bool doNotLockRobotForSim)
     (*it)->invoke();
   if (myUseSim)
   {
-    if (myRobot == NULL)
+    if (myRobot == nullptr)
       return false;
     if (!doNotLockRobotForSim)
       myRobot->lock();
@@ -1601,7 +1601,7 @@ AREXPORT bool ArSick::disconnect(bool doNotLockRobotForSim)
   else
   {
     myConnLock.lock();
-    while (mySickPacketReceiver.receivePacket() != NULL);
+    while (mySickPacketReceiver.receivePacket() != nullptr);
     myPacket.empty();
     myPacket.uByteToBuf(0x20);
     myPacket.uByteToBuf(0x25);
@@ -1658,7 +1658,7 @@ AREXPORT bool ArSick::blockingConnect(void)
   // if we're talking to a real laser
   else
   {
-    if (myConn == NULL)
+    if (myConn == nullptr)
     {
       ArLog::log(ArLog::Terse, "ArSick: Invalid device connection, cannot connect.");
       return false; // Nobody ever set the device connection.
@@ -1724,7 +1724,7 @@ AREXPORT bool ArSick::asyncConnect(void)
 **/
 AREXPORT bool ArSick::runOnRobot(void)
 {
-  if (myRobot == NULL)
+  if (myRobot == nullptr)
     return false;
   else
   {
@@ -1900,9 +1900,9 @@ AREXPORT void ArSick::processPacket(ArSickPacket *packet, ArPose pose,
     myLastReading.setToNow();
     filterReadings();
 
-    if (myTimeLastSickPacket != time(NULL))
+    if (myTimeLastSickPacket != time(nullptr))
     {
-      myTimeLastSickPacket = time(NULL);
+      myTimeLastSickPacket = time(nullptr);
       mySickPacCount = mySickPacCurrentCount;
       mySickPacCurrentCount = 0;
     }
@@ -1924,7 +1924,7 @@ AREXPORT void ArSick::runOnce(bool lockRobot)
   ArPose pose2;
   ArPose encoderPose;
 
-  if (myProcessImmediately && myRobot != NULL)
+  if (myProcessImmediately && myRobot != nullptr)
   {
     if (lockRobot)
       myRobot->lock();
@@ -1955,11 +1955,11 @@ AREXPORT void ArSick::runOnce(bool lockRobot)
     myConnLock.unlock();
     lockDevice();
     // if we're attached to a robot and have a packet
-    if (myRobot != NULL && packet != NULL && !myProcessImmediately)
+    if (myRobot != nullptr && packet != nullptr && !myProcessImmediately)
     {
       myPackets.push_back(packet);
     }
-    else if (myRobot != NULL && packet != NULL && myProcessImmediately)
+    else if (myRobot != nullptr && packet != nullptr && myProcessImmediately)
     {
       unlockDevice();
       if (lockRobot && myInterpolation)
@@ -1979,7 +1979,7 @@ AREXPORT void ArSick::runOnce(bool lockRobot)
       lockDevice();
       processPacket(packet, pose, encoderPose, counter, false, ArPose());
     }
-    else if (packet != NULL) // if there's no robot
+    else if (packet != nullptr) // if there's no robot
     {
       processPacket(packet, pose, encoderPose, 0, false, ArPose());
       delete packet;
@@ -1992,9 +1992,9 @@ AREXPORT void ArSick::runOnce(bool lockRobot)
 
 AREXPORT int ArSick::getSickPacCount()
 {
-  if (myTimeLastSickPacket == time(NULL))
+  if (myTimeLastSickPacket == time(nullptr))
     return mySickPacCount;
-  if (myTimeLastSickPacket == time(NULL) - 1)
+  if (myTimeLastSickPacket == time(nullptr) - 1)
     return mySickPacCurrentCount;
   return 0;
 }
@@ -2260,7 +2260,7 @@ AREXPORT void *ArSick::runThread(void *arg)
   }
   unlockDevice();
 
-  return NULL;
+  return nullptr;
 }
 
 /**

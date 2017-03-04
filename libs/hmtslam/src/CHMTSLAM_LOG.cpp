@@ -32,8 +32,8 @@ using namespace std;
 	  between near observations and an EKF. A part of HMT-SLAM
 
 \param LMH   The local metric hypothesis which must be updated by this SLAM algorithm.
-\param act   The action to process (or NULL).
-\param sf    The observations to process (or NULL).
+\param act   The action to process (or nullptr).
+\param sf    The observations to process (or nullptr).
 
 --------------------------------------------------------------- */
 void CHMTSLAM::generateLogFiles(unsigned int nIteration)
@@ -48,7 +48,7 @@ void CHMTSLAM::generateLogFiles(unsigned int nIteration)
 	tictac.Tic();
 
 	THypothesisID	bestHypoID;
-	CLocalMetricHypothesis  *bestLMH = NULL;
+	CLocalMetricHypothesis  *bestLMH = nullptr;
 	{
 		CCriticalSectionLocker  locker( &m_LMHs_cs );
 
@@ -72,7 +72,7 @@ void CHMTSLAM::generateLogFiles(unsigned int nIteration)
 					bestLMH = & it->second;
 				}
 			}
-			ASSERT_(bestLMH!=NULL)
+			ASSERT_(bestLMH!=nullptr)
 
 			bestHypoID = bestLMH->m_ID;
 

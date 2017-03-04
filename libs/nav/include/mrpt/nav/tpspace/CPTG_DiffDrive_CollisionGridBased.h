@@ -120,8 +120,8 @@ protected:
 				unsigned int	max_n,
 				float			diferencial_t,
 				float			min_dist,
-				float			*out_max_acc_v = NULL,
-				float			*out_max_acc_w = NULL);
+				float			*out_max_acc_v = nullptr,
+				float			*out_max_acc_w = nullptr);
 
 		/**  A list of all the pairs (alpha,distance) such as the robot collides at that cell.
 		  *  - map key   (uint16_t) -> alpha value (k)

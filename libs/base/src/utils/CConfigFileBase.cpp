@@ -90,7 +90,7 @@ int  CConfigFileBase::read_int(const std::string &section, const std::string &na
 uint64_t CConfigFileBase::read_uint64_t(const std::string &section, const std::string &name, uint64_t defaultValue, bool failIfNotFound ) const
 {
 	string s = readString(section,name,format("%lu",(long unsigned int)defaultValue),failIfNotFound);
-	return mrpt::system::os::_strtoull(s.c_str(),NULL, 0);
+	return mrpt::system::os::_strtoull(s.c_str(),nullptr, 0);
 }
 
 /*---------------------------------------------------------------

@@ -56,7 +56,7 @@ namespace mrpt
 
 		private:
 
-			bool tryToOpenComms(std::string *err_msg=NULL);	//!< Tries to open the com port and setup all the LMS protocol. Returns true if OK or already open.
+			bool tryToOpenComms(std::string *err_msg=nullptr);	//!< Tries to open the com port and setup all the LMS protocol. Returns true if OK or already open.
 			bool waitContinuousSampleFrame(
                     uint8_t &out_prio,
                     uint8_t &out_pdu_format,
@@ -84,7 +84,7 @@ namespace mrpt
 			uint8_t			m_received_frame_buffer[2000];
 
 			std::string		m_com_port;		//!< If set to non-empty, the serial port will be attempted to be opened automatically when this class is first used to request data from the laser.
-			CSerialPort		*m_mySerialPort; //!< Will be !=NULL only if I created it, so I must destroy it at the end.
+			CSerialPort		*m_mySerialPort; //!< Will be !=nullptr only if I created it, so I must destroy it at the end.
 			int             m_com_baudRate; //!< Baudrate: 9600, 38400, 500000
 			unsigned int    m_nTries_connect; //!< Default = 1
 			unsigned int    m_nTries_current;

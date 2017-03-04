@@ -299,7 +299,7 @@ void C3DWindowDialog::OnClose(wxCloseEvent& event)
 	if (!allow_close) return; // Don't process this close event.
 
 	//	cout << "[C3DWindowDialog::OnClose]" << endl;
-    // Set the m_hwnd=NULL in our parent object.
+    // Set the m_hwnd=nullptr in our parent object.
     m_win3D->notifyChildWindowDestruction();
 
     // Decrement number of windows:

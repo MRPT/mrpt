@@ -547,7 +547,7 @@ Curve* Curve :: Convert(const IFC::IfcCurve& curve,ConversionData& conv)
 	}
 
 	// XXX OffsetCurve2D, OffsetCurve3D not currently supported
-	return NULL;
+	return nullptr;
 }
 
 #ifdef ASSIMP_BUILD_DEBUG

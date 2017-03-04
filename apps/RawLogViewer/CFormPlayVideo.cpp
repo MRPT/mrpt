@@ -321,7 +321,7 @@ void CFormPlayVideo::OnbtnPlayClick(wxCommandEvent& event)
         else
         {
             // Use the loaded rawlog:
-            fil = NULL;
+            fil = nullptr;
         }
 
         size_t      nImgs=0,count=0;
@@ -497,7 +497,7 @@ bool CFormPlayVideo::showSensoryFrame(void *SF, size_t &nImgs)
     bool  	orderByY   = cbOrderByY->GetValue();
 
     // Find an image to show:
-    CImage  *imgShow = NULL;
+    CImage  *imgShow = nullptr;
 
     // Displayed images:
     //displayedImgs.resize(3);
@@ -513,7 +513,7 @@ bool CFormPlayVideo::showSensoryFrame(void *SF, size_t &nImgs)
 	// Monocular images:
 	{
 		wxPanel *thePanel;
-		wxStaticText *theLabel = NULL;
+                wxStaticText *theLabel = nullptr;
 
 		for (int img_idx_sf=0;img_idx_sf<3;img_idx_sf++) // Up to 3 images maximum:
 		{

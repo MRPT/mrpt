@@ -51,8 +51,8 @@ namespace mrpt
 	{
 		DEFINE_SERIALIZABLE( CHolonomicFullEval )
 	public:
-		/**  Initialize the parameters of the navigator, from some configuration file, or default values if set to NULL */
-		CHolonomicFullEval( const mrpt::utils::CConfigFileBase *INI_FILE = NULL );
+		/**  Initialize the parameters of the navigator, from some configuration file, or default values if set to nullptr */
+		CHolonomicFullEval( const mrpt::utils::CConfigFileBase *INI_FILE = nullptr );
 
 		// See base class docs
 		void navigate(const NavInput & ni, NavOutput &no) MRPT_OVERRIDE;

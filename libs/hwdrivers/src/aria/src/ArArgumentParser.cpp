@@ -26,7 +26,7 @@ AREXPORT ArArgumentParser::ArArgumentParser(int *argc, char **argv)
   myArgc = argc;
   myArgv = argv;
   myUsingBuilder = false;
-  myBuilder = NULL;
+  myBuilder = nullptr;
   myOwnBuilder = false;
 
   myEmptyArg[0] = '\0';
@@ -48,7 +48,7 @@ AREXPORT ArArgumentParser::~ArArgumentParser()
   if (myOwnBuilder)
   {
     delete myBuilder;
-    myBuilder = NULL;
+    myBuilder = nullptr;
   }
 }
 
@@ -154,7 +154,7 @@ AREXPORT bool ArArgumentParser::checkParameterArgumentString(
   char *param;
   param = checkParameterArgument(argument, returnFirst);
 
-  if (param == NULL)
+  if (param == nullptr)
   {
     if (wasReallySet)
       *wasReallySet = false;
@@ -241,7 +241,7 @@ AREXPORT bool ArArgumentParser::checkParameterArgumentBool(char *argument,
   char *param;
   param = checkParameterArgument(argument, returnFirst);
 
-  if (param == NULL)
+  if (param == nullptr)
   {
     if (wasReallySet)
       *wasReallySet = false;
@@ -344,7 +344,7 @@ AREXPORT bool ArArgumentParser::checkParameterArgumentInteger(
 
   param = checkParameterArgument(argument, returnFirst);
 
-  if (param == NULL)
+  if (param == nullptr)
   {
     if (wasReallySet)
       *wasReallySet = false;
@@ -393,7 +393,7 @@ AREXPORT bool ArArgumentParser::checkParameterArgumentFloat(
 	char *argument, float *dest, bool *wasReallySet, bool returnFirst)
 {
   char *param = checkParameterArgument(argument, returnFirst);
-  if (param == NULL)
+  if (param == nullptr)
   {
     if (wasReallySet) *wasReallySet = false;
     return true;
@@ -429,9 +429,9 @@ AREXPORT bool ArArgumentParser::checkParameterArgumentFloat(
    @param ... the extra string to feed into the argument for
    parsing (like printf)
 
-   @return NULL if the argument wasn't found, the argument after the
+   @return nullptr if the argument wasn't found, the argument after the
    one given if the argument was found, or a string with the first
-   char as NULL again if the argument after the one given isn't there
+   char as nullptr again if the argument after the one given isn't there
  **/
 AREXPORT char *ArArgumentParser::checkParameterArgumentVar(char *argument, ...)
 {
@@ -451,8 +451,8 @@ AREXPORT char *ArArgumentParser::checkParameterArgumentVar(char *argument, ...)
    (default is false, use true if you want to use the same parameter
    multiple times)
 
-   @return NULL if the argument wasn't found; the value given after the
-   found argument; or at empty string (with a NULL first character) if
+   @return nullptr if the argument wasn't found; the value given after the
+   found argument; or at empty string (with a nullptr first character) if
    the argument was found but no value followed the argument flag.
 **/
 AREXPORT char * ArArgumentParser::checkParameterArgument(const char *argument,
@@ -483,14 +483,14 @@ AREXPORT char * ArArgumentParser::checkParameterArgument(const char *argument,
       // remove our argument
       removeArg(i);
       // if we have a return remove that one too
-      if (ret != NULL && ret != myEmptyArg)
+      if (ret != nullptr && ret != myEmptyArg)
 	removeArg(i);
       // now see if there are any more, if so return that
       if (returnFirst)
       {
 	return ret;
       }
-      else if ((retRecursive = checkParameterArgument(argument)) != NULL)
+      else if ((retRecursive = checkParameterArgument(argument)) != nullptr)
       {
 	return retRecursive;
       }
@@ -501,7 +501,7 @@ AREXPORT char * ArArgumentParser::checkParameterArgument(const char *argument,
       }
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 void ArArgumentParser::removeArg(size_t which)
@@ -543,7 +543,7 @@ AREXPORT char** ArArgumentParser::getArgv(void) const
 AREXPORT const char* ArArgumentParser::getArg(size_t whichArg) const
 {
   if (whichArg >= getArgc())
-    return NULL;
+    return nullptr;
   else
     return getArgv()[whichArg];
 }
@@ -602,7 +602,7 @@ AREXPORT void ArArgumentParser::loadDefaultArguments(int position)
   {
     str = (*it).c_str();
     // see if its an environmental variable
-    if (!(*bIt) && (argumentsPtr = getenv(str)) != NULL)
+    if (!(*bIt) && (argumentsPtr = getenv(str)) != nullptr)
     {
       ArArgumentBuilder compressed;
       compressed.add(argumentsPtr);

@@ -53,7 +53,7 @@ double graphslam_levmarq_solve(int nVertices, int N)
 		graphslam::optimize_graph_spa_levmarq(
 			graph0,
 			levmarq_info,
-			NULL,
+            nullptr,
 			params
 			);
 		timer.leave("test");

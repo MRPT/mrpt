@@ -22,7 +22,7 @@ AREXPORT ArCondition::ArCondition() :
   myCount(0)
 {
   myCond=CreateEvent(0, FALSE, FALSE, 0);
-  if (myCond == NULL)
+  if (myCond == nullptr)
   {
     ArLog::log(ArLog::Terse, "ArCondition::ArCondition: Unknown error trying to create the condition.");
     myFailedInit=true;
@@ -132,5 +132,5 @@ AREXPORT const char *ArCondition::getError(int messageNumber) const
   if ((it = ourStrMap.find(messageNumber)) != ourStrMap.end())
     return (*it).second.c_str();
   else
-    return NULL;
+    return nullptr;
 }

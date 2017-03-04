@@ -92,7 +92,7 @@ namespace mrpt
 			MRPT_END
 		}
 
-		/** Computes the mahalanobis distance between two *non-independent* Gaussians (or independent if CROSS_COV12=NULL), given the two covariance matrices and the vector with the difference of their means.
+        /** Computes the mahalanobis distance between two *non-independent* Gaussians (or independent if CROSS_COV12=nullptr), given the two covariance matrices and the vector with the difference of their means.
 		  *  \f[ d = \sqrt{ \Delta_\mu^\top (\Sigma_1 + \Sigma_2 - 2 \Sigma_12 )^{-1} \Delta_\mu } \f]
 		  */
 		template<class VECTORLIKE,class MAT1,class MAT2,class MAT3> inline typename VECTORLIKE::Scalar
@@ -182,7 +182,7 @@ namespace mrpt
 			const MATLIKE2 	&COV2,
 			T 				&maha2_out,
 			T 				&intprod_out,
-			const MATLIKE1	*CROSS_COV12=NULL
+            const MATLIKE1	*CROSS_COV12=nullptr
 			)
 		{
 			const size_t vector_dim = mean_diffs.size();
@@ -242,9 +242,9 @@ namespace mrpt
 		  * \param elements Any kind of vector of vectors/arrays, eg. std::vector<mrpt::math::CVectorDouble>, with all the input samples, each sample in a "row".
 		  * \param covariances Output estimated covariance; it can be a fixed/dynamic matrix or a matrixview.
 		  * \param means Output estimated mean; it can be CVectorDouble/CArrayDouble, etc...
-		  * \param weights_mean If !=NULL, it must point to a vector of size()==number of elements, with normalized weights to take into account for the mean.
-		  * \param weights_cov If !=NULL, it must point to a vector of size()==number of elements, with normalized weights to take into account for the covariance.
-		  * \param elem_do_wrap2pi If !=NULL; it must point to an array of "bool" of size()==dimension of each element, stating if it's needed to do a wrap to [-pi,pi] to each dimension.
+          * \param weights_mean If !=nullptr, it must point to a vector of size()==number of elements, with normalized weights to take into account for the mean.
+          * \param weights_cov If !=nullptr, it must point to a vector of size()==number of elements, with normalized weights to take into account for the covariance.
+          * \param elem_do_wrap2pi If !=nullptr; it must point to an array of "bool" of size()==dimension of each element, stating if it's needed to do a wrap to [-pi,pi] to each dimension.
 		  * \sa This method is used in mrpt::math::unscented_transform_gaussian
 		  * \ingroup stats_grp
 		  */
@@ -255,7 +255,7 @@ namespace mrpt
 			VECTORLIKE &means,
 			const VECTORLIKE2 *weights_mean,
 			const VECTORLIKE3 *weights_cov,
-			const bool *elem_do_wrap2pi = NULL
+            const bool *elem_do_wrap2pi = nullptr
 			)
 		{
 			ASSERTMSG_(elements.size()!=0,"No samples provided, so there is no way to deduce the output size.")
@@ -290,7 +290,7 @@ namespace mrpt
 					for (size_t j=0;j<nElms;j++)
 					{
 						double ang = elements[j][i];
-						const double w   = weights_mean!=NULL ? (*weights_mean)[j] : NORM;
+                        const double w   = weights_mean!=nullptr ? (*weights_mean)[j] : NORM;
 						if (fabs( ang )>0.5*M_PI)
 						{	// LEFT HALF: 0,2pi
 							if (ang<0) ang = (M_2PI + ang);
@@ -348,13 +348,13 @@ namespace mrpt
 		  * \param elements Any kind of vector of vectors/arrays, eg. std::vector<mrpt::math::CVectorDouble>, with all the input samples, each sample in a "row".
 		  * \param covariances Output estimated covariance; it can be a fixed/dynamic matrix or a matrixview.
 		  * \param means Output estimated mean; it can be CVectorDouble/CArrayDouble, etc...
-		  * \param elem_do_wrap2pi If !=NULL; it must point to an array of "bool" of size()==dimension of each element, stating if it's needed to do a wrap to [-pi,pi] to each dimension.
+          * \param elem_do_wrap2pi If !=nullptr; it must point to an array of "bool" of size()==dimension of each element, stating if it's needed to do a wrap to [-pi,pi] to each dimension.
 		  * \ingroup stats_grp
 		  */
 		template<class VECTOR_OF_VECTORS, class MATRIXLIKE,class VECTORLIKE>
-		void covariancesAndMean(const VECTOR_OF_VECTORS &elements,MATRIXLIKE &covariances,VECTORLIKE &means, const bool *elem_do_wrap2pi = NULL)
+        void covariancesAndMean(const VECTOR_OF_VECTORS &elements,MATRIXLIKE &covariances,VECTORLIKE &means, const bool *elem_do_wrap2pi = nullptr)
 		{   // The function below is inline-expanded here:
-			covariancesAndMeanWeighted<VECTOR_OF_VECTORS,MATRIXLIKE,VECTORLIKE,CVectorDouble,CVectorDouble>(elements,covariances,means,NULL,NULL,elem_do_wrap2pi);
+            covariancesAndMeanWeighted<VECTOR_OF_VECTORS,MATRIXLIKE,VECTORLIKE,CVectorDouble,CVectorDouble>(elements,covariances,means,nullptr,nullptr,elem_do_wrap2pi);
 		}
 
 

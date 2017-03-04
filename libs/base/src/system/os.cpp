@@ -163,7 +163,7 @@ string mrpt::system::MRPT_getCompilationDate()
 	unsigned long epoch = strtoul(source_date_epoch, &endptr, 10);
 	if (epoch==0 || ((errno == ERANGE && (epoch == std::numeric_limits<unsigned long>::max() || epoch == 0)) || (errno != 0 && epoch == 0))) {
 		// Last resort:
- 		now = time(NULL);
+ 		now = time(nullptr);
 	}
 	else {
 		now = epoch;
@@ -257,7 +257,7 @@ FILE * os::fopen(const char *fileName,const char *mode) MRPT_NO_THROWS
 	// Use a secure version in Visual Studio 2005:
 	FILE	*f;
 	if ( 0 != ::fopen_s(&f,fileName,mode) )
-			return NULL;
+			return nullptr;
 	else	return f;
 #else
 	// Use standard version:
@@ -270,7 +270,7 @@ FILE * os::fopen(const char *fileName,const char *mode) MRPT_NO_THROWS
 ---------------------------------------------------------------*/
 void os::fclose(FILE *f)
 {
-	if (!f) THROW_EXCEPTION("Trying to close a NULL 'FILE*' descriptor")
+	if (!f) THROW_EXCEPTION("Trying to close a nullptr 'FILE*' descriptor")
 	::fclose(f);
 }
 
@@ -573,7 +573,7 @@ std::string mrpt::system::find_mrpt_shared_dir()
 			case 2:
 			{
 				char curExe[4096];
-				GetModuleFileNameA(NULL,curExe, sizeof(curExe));
+				GetModuleFileNameA(nullptr,curExe, sizeof(curExe));
 				
 				dir = mrpt::system::extractFileDirectory(std::string(curExe)) + "/../share/mrpt/";
 			}

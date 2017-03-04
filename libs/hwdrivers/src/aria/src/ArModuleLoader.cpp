@@ -107,7 +107,7 @@ AREXPORT ArModuleLoader::Status ArModuleLoader::load(const char *modName,
 
   handle=dlopen(name.c_str(), RTLD_NOW | RTLD_GLOBAL);
 
-  if (!handle || dlerror() != NULL)
+  if (!handle || dlerror() != nullptr)
   {
     if (!quiet)
       ArLog::log(ArLog::Terse, "Failure to load module '%s': %s",
@@ -124,7 +124,7 @@ AREXPORT ArModuleLoader::Status ArModuleLoader::load(const char *modName,
 #ifndef _MSC_VER
   #pragma GCC diagnostic pop
 #endif
-  if (!func || dlerror() != NULL)
+  if (!func || dlerror() != nullptr)
   {
     if (!quiet)
       ArLog::log(ArLog::Terse, "No module initializer for %s.", modName);

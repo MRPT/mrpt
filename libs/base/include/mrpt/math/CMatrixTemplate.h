@@ -70,7 +70,7 @@ namespace mrpt
 			  */
 			void realloc(size_t row, size_t col, bool newElementsToZero = false)
 			{
-				if (row!=m_Rows || col!=m_Cols || m_Val==NULL)
+                if (row!=m_Rows || col!=m_Cols || m_Val==nullptr)
 				{
 					size_t	r;
 					bool    doZeroColumns   = newElementsToZero && (col>m_Cols);
@@ -82,7 +82,7 @@ namespace mrpt
 
 					// Realloc the vector of pointers:
 					if (!row)
-							{ mrpt::system::os::aligned_free(m_Val); m_Val=NULL; }
+                            { mrpt::system::os::aligned_free(m_Val); m_Val=nullptr; }
 					else	m_Val = static_cast<T**> (mrpt::system::os::aligned_realloc(m_Val, sizeof(T*) * row, 16 ) );
 
 					// How many new rows/cols?
@@ -139,19 +139,19 @@ namespace mrpt
 			}
 
 			/** Constructors */
-			CMatrixTemplate (const CMatrixTemplate& m) : m_Val(NULL),m_Rows(0),m_Cols(0)
+            CMatrixTemplate (const CMatrixTemplate& m) : m_Val(nullptr),m_Rows(0),m_Cols(0)
 			{
 				(*this) = m;
 			}
 
-			CMatrixTemplate (size_t row = 1, size_t col = 1) :  m_Val(NULL),m_Rows(0),m_Cols(0)
+            CMatrixTemplate (size_t row = 1, size_t col = 1) :  m_Val(nullptr),m_Rows(0),m_Cols(0)
 			{
 				realloc(row,col);
 			}
 
 			/** Copy constructor & crop from another matrix
 			*/
-			CMatrixTemplate (const CMatrixTemplate& m, const size_t cropRowCount, const size_t cropColCount) : m_Val(NULL),m_Rows(0),m_Cols(0)
+            CMatrixTemplate (const CMatrixTemplate& m, const size_t cropRowCount, const size_t cropColCount) : m_Val(nullptr),m_Rows(0),m_Cols(0)
 			{
 				ASSERT_(m.m_Rows>=cropRowCount)
 				ASSERT_(m.m_Cols>=cropColCount)
@@ -170,7 +170,7 @@ namespace mrpt
 			  * \endcode
 			  */
 			template <typename V, size_t N>
-			CMatrixTemplate (size_t row, size_t col, V (&theArray)[N] ) :  m_Val(NULL),m_Rows(0),m_Cols(0)
+            CMatrixTemplate (size_t row, size_t col, V (&theArray)[N] ) :  m_Val(nullptr),m_Rows(0),m_Cols(0)
 			{
 				MRPT_COMPILE_TIME_ASSERT(N!=0)
 				realloc(row,col);
@@ -184,7 +184,7 @@ namespace mrpt
 			/** Constructor from a given size and a STL container (std::vector, std::list,...) with the initial values. The vector length must match cols x row.
 			*/
 			template <typename V>
-			CMatrixTemplate(size_t row, size_t col, const V &theVector ) :  m_Val(NULL),m_Rows(0),m_Cols(0)
+            CMatrixTemplate(size_t row, size_t col, const V &theVector ) :  m_Val(nullptr),m_Rows(0),m_Cols(0)
 			{
 				const size_t N = theVector.size();
 				realloc(row,col);

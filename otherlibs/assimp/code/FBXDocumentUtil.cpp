@@ -104,7 +104,7 @@ boost::shared_ptr<const PropertyTable> GetPropertyTable(const Document& doc,
 {
 	const Element* const Properties70 = sc["Properties70"];
 	boost::shared_ptr<const PropertyTable> templateProps = boost::shared_ptr<const PropertyTable>(
-		static_cast<const PropertyTable*>(NULL));
+		static_cast<const PropertyTable*>(nullptr));
 
 	if(templateName.length()) {
 		PropertyTemplateMap::const_iterator it = doc.Templates().find(templateName); 

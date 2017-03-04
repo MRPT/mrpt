@@ -29,8 +29,8 @@ using namespace mrpt::random;
         Constructor
   ---------------------------------------------------------------*/
 CPoseRandomSampler::CPoseRandomSampler() :
-    m_pdf2D(NULL),
-    m_pdf3D(NULL),
+    m_pdf2D(nullptr),
+    m_pdf3D(nullptr),
     m_fastdraw_gauss_Z3(),
 	m_fastdraw_gauss_Z6(),
     m_fastdraw_gauss_M_2D(),

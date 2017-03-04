@@ -113,7 +113,7 @@ void HMPImporter::InternReadFile( const std::string& pFile,
 	boost::scoped_ptr<IOStream> file( pIOHandler->Open( pFile));
 
 	// Check whether we can read from the file
-	if( file.get() == NULL)
+	if( file.get() == nullptr)
 		throw DeadlyImportError( "Failed to open HMP file " + pFile + ".");
 
 	// Check whether the HMP file is large enough to contain
@@ -391,7 +391,7 @@ void HMPImporter::CreateOutputFaceList(unsigned int width,unsigned int height)
 	aiVector3D* pcVertOut = pcVertices;
 	aiVector3D* pcNorOut = pcNormals;
 
-	aiVector3D* pcUVs = pcMesh->mTextureCoords[0] ? new aiVector3D[pcMesh->mNumVertices] : NULL;
+	aiVector3D* pcUVs = pcMesh->mTextureCoords[0] ? new aiVector3D[pcMesh->mNumVertices] : nullptr;
 	aiVector3D* pcUVOut(pcUVs);
 
 	// Build the terrain square
@@ -441,7 +441,7 @@ void HMPImporter::CreateOutputFaceList(unsigned int width,unsigned int height)
 void HMPImporter::ReadFirstSkin(unsigned int iNumSkins, const unsigned char* szCursor,
 	const unsigned char** szCursorOut)
 {
-	ai_assert(0 != iNumSkins && NULL != szCursor);
+	ai_assert(0 != iNumSkins && nullptr != szCursor);
 
 	// read the type of the skin ...
 	// sometimes we need to skip 12 bytes here, I don't know why ...
@@ -489,8 +489,8 @@ void HMPImporter::ReadFirstSkin(unsigned int iNumSkins, const unsigned char* szC
 void HMPImporter::GenerateTextureCoords(
 	const unsigned int width, const unsigned int height)
 {
-	ai_assert(NULL != pScene->mMeshes && NULL != pScene->mMeshes[0] &&
-		      NULL != pScene->mMeshes[0]->mTextureCoords[0]);
+	ai_assert(nullptr != pScene->mMeshes && nullptr != pScene->mMeshes[0] &&
+		      nullptr != pScene->mMeshes[0]->mTextureCoords[0]);
 
 	aiVector3D* uv = pScene->mMeshes[0]->mTextureCoords[0];
 

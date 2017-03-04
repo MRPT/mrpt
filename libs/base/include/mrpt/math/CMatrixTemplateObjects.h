@@ -19,7 +19,7 @@ namespace math
  *    This class allows a very efficient representation of sparse matrixes where each cell is an arbitrary C++ class, 
  *    but its use must carefully observe the following rules:
  *			- The type in the template especialization MUST be a class with a proper default constructor.
- *			- Initially all entries are set to NULL pointers.
+ *			- Initially all entries are set to nullptr.
  *			- Pointers can be manually asigned, or automatically created through a call to "CMatrixTemplateObjects<T>::allocAllObjects"
  *			- Independently of how pointers are asigned, memory will be free by destroying objects for each non-NULL entry in the matrix. In some special situations, the user can indicate not to free those objects by calling "CMatrixTemplateObjects<T>::setDestroyBehavior", then it is up to the user to free the memory. In all cases the default behavior is to free the memory.
  *			- Asignament operator with matrixes will COPY THE POINTERS, thus a copy of objects is not performed.
@@ -47,7 +47,7 @@ public:
 	{
 		for (size_t i=0; i < CMatrixTemplate<T*>::getRowCount(); i++)
 			for (size_t j=0; j < CMatrixTemplate<T*>::getColCount(); j++)
-				CMatrixTemplate<T*>::m_Val[i][j] = NULL;
+                CMatrixTemplate<T*>::m_Val[i][j] = nullptr;
 	}
 
 	/** Changes the size of matrix
@@ -66,16 +66,16 @@ public:
 			freeAllObjects();
 	}
 
-	/** Delete all the objects in the matrix and set all entries to NULL pointers.
+    /** Delete all the objects in the matrix and set all entries to nullptr.
 	  */
 	void  freeAllObjects()
 	{
 		for (size_t i=0; i < CMatrixTemplate<T*>::getRowCount(); i++)
 			for (size_t j=0; j < CMatrixTemplate<T*>::getColCount(); j++)
-				if (CMatrixTemplate<T*>::m_Val[i][j]!=NULL)
+                if (CMatrixTemplate<T*>::m_Val[i][j]!=nullptr)
 				{
 					delete CMatrixTemplate<T*>::m_Val[i][j];
-					CMatrixTemplate<T*>::m_Val[i][j] = NULL;
+                    CMatrixTemplate<T*>::m_Val[i][j] = nullptr;
 				}
 	}
 
@@ -106,7 +106,7 @@ public:
 	{
 		for (size_t i=0; i < CMatrixTemplate<T*>::getRowCount(); i++)
 			for (size_t j=0; j < CMatrixTemplate<T*>::getColCount(); j++)
-				if (NULL==CMatrixTemplate<T*>::m_Val[i][j])
+                if (nullptr==CMatrixTemplate<T*>::m_Val[i][j])
 					CMatrixTemplate<T*>::m_Val[i][j] = new T();
 	}
 

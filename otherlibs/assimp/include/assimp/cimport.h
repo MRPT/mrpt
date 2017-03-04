@@ -97,14 +97,14 @@ typedef int aiBool;
  * The data is intended to be read-only, it stays property of the ASSIMP 
  * library and will be stable until aiReleaseImport() is called. After you're 
  * done with it, call aiReleaseImport() to free the resources associated with 
- * this file. If the import fails, NULL is returned instead. Call 
+ * this file. If the import fails, nullptr is returned instead. Call 
  * aiGetErrorString() to retrieve a human-readable error text.
  * @param pFile Path and filename of the file to be imported, 
- *   expected to be a null-terminated c-string. NULL is not a valid value.
+ *   expected to be a null-terminated c-string. nullptr is not a valid value.
  * @param pFlags Optional post processing steps to be executed after 
  *   a successful import. Provide a bitwise combination of the 
  *   #aiPostProcessSteps flags.
- * @return Pointer to the imported data or NULL if the import failed. 
+ * @return Pointer to the imported data or nullptr if the import failed. 
  */
 ASSIMP_API const C_STRUCT aiScene* aiImportFile( 
 	const char* pFile, 
@@ -118,17 +118,17 @@ ASSIMP_API const C_STRUCT aiScene* aiImportFile(
  * The data is intended to be read-only, it stays property of the ASSIMP 
  * library and will be stable until aiReleaseImport() is called. After you're 
  * done with it, call aiReleaseImport() to free the resources associated with 
- * this file. If the import fails, NULL is returned instead. Call 
+ * this file. If the import fails, nullptr is returned instead. Call 
  * aiGetErrorString() to retrieve a human-readable error text.
  * @param pFile Path and filename of the file to be imported, 
- *   expected to be a null-terminated c-string. NULL is not a valid value.
+ *   expected to be a null-terminated c-string. nullptr is not a valid value.
  * @param pFlags Optional post processing steps to be executed after 
  *   a successful import. Provide a bitwise combination of the
  *   #aiPostProcessSteps flags.
  * @param pFS aiFileIO structure. Will be used to open the model file itself
- *   and any other files the loader needs to open.  Pass NULL to use the default
+ *   and any other files the loader needs to open.  Pass nullptr to use the default
  *   implementation.
- * @return Pointer to the imported data or NULL if the import failed.  
+ * @return Pointer to the imported data or nullptr if the import failed.  
  * @note Include <aiFileIO.h> for the definition of #aiFileIO.
  */
 ASSIMP_API const C_STRUCT aiScene* aiImportFileEx( 
@@ -154,7 +154,7 @@ ASSIMP_API const C_STRUCT aiScene* aiImportFileExWithProperties(
  * If the call succeeds, the contents of the file are returned as a pointer to an
  * aiScene object. The returned data is intended to be read-only, the importer keeps 
  * ownership of the data and will destroy it upon destruction. If the import fails, 
- * NULL is returned.
+ * nullptr is returned.
  * A human-readable error description can be retrieved by calling aiGetErrorString(). 
  * @param pBuffer Pointer to the file data
  * @param pLength Length of pBuffer, in bytes
@@ -169,7 +169,7 @@ ASSIMP_API const C_STRUCT aiScene* aiImportFileExWithProperties(
  *   completely the request, the library continues and tries to determine the file
  *   format on its own, a task that may or may not be successful. 
  *   Check the return value, and you'll know ...
- * @return A pointer to the imported data, NULL if the import failed.
+ * @return A pointer to the imported data, nullptr if the import failed.
  *
  * @note This is a straightforward way to decode models from memory
  * buffers, but it doesn't handle model formats that spread their 
@@ -228,14 +228,14 @@ ASSIMP_API const C_STRUCT aiScene* aiApplyPostProcessing(
  *    struct aiLogStream c;
  *    c = aiGetPredefinedLogStream(aiDefaultLogStream_FILE,"log.txt");
  *    aiAttachLogStream(&c);
- *    c = aiGetPredefinedLogStream(aiDefaultLogStream_STDOUT,NULL);
+ *    c = aiGetPredefinedLogStream(aiDefaultLogStream_STDOUT,nullptr);
  *    aiAttachLogStream(&c);
  *  @endcode
  *
  *  @param pStreams One of the #aiDefaultLogStream enumerated values. 
  *  @param file Solely for the #aiDefaultLogStream_FILE flag: specifies the file to write to.
- *    Pass NULL for all other flags.
- *  @return The log stream. callback is set to NULL if something went wrong.
+ *    Pass nullptr for all other flags.
+ *  @return The log stream. callback is set to nullptr if something went wrong.
  */
 ASSIMP_API C_STRUCT aiLogStream aiGetPredefinedLogStream(
 	C_ENUM aiDefaultLogStream pStreams,
@@ -289,7 +289,7 @@ ASSIMP_API void aiDetachAllLogStreams(void);
 /** Releases all resources associated with the given import process.
  *
  * Call this function after you're done with the imported data.
- * @param pScene The imported data to release. NULL is a valid value.
+ * @param pScene The imported data to release. nullptr is a valid value.
  */
 ASSIMP_API void aiReleaseImport( 
 	const C_STRUCT aiScene* pScene);
@@ -298,7 +298,7 @@ ASSIMP_API void aiReleaseImport(
 /** Returns the error text of the last failed import process. 
  *
  * @return A textual description of the error that occurred at the last
- * import process. NULL if there was no error. There can't be an error if you
+ * import process. nullptr if there was no error. There can't be an error if you
  * got a non-NULL #aiScene from #aiImportFile/#aiImportFileEx/#aiApplyPostProcessing.
  */
 ASSIMP_API const char* aiGetErrorString();
@@ -319,7 +319,7 @@ ASSIMP_API aiBool aiIsExtensionSupported(
  * If a file extension is contained in the list this does, of course, not
  * mean that ASSIMP is able to load all files with this extension.
  * @param szOut String to receive the extension list.
- * Format of the list: "*.3ds;*.obj;*.dae". NULL is not a valid parameter.
+ * Format of the list: "*.3ds;*.obj;*.dae". nullptr is not a valid parameter.
  */
 ASSIMP_API void aiGetExtensionList(
 	C_STRUCT aiString* szOut);

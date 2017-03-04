@@ -53,7 +53,7 @@ RPlidarDriver * RPlidarDriver::CreateDriver(_u32 drivertype)
     case DRIVER_TYPE_SERIALPORT:
         return new RPlidarDriverSerialImpl();
     default:
-        return NULL;
+        return nullptr;
     }
 }
 

@@ -20,7 +20,7 @@ IMPLEMENTS_VIRTUAL_SERIALIZABLE(CAbstractHolonomicReactiveMethod, CSerializable,
 
 
 CAbstractHolonomicReactiveMethod::CAbstractHolonomicReactiveMethod(const std::string &defaultCfgSectionName) :
-	m_associatedPTG(NULL),
+	m_associatedPTG(nullptr),
 	m_enableApproachTargetSlowDown(true),
 	m_cfgSectionName(defaultCfgSectionName)
 {
@@ -55,7 +55,7 @@ CAbstractHolonomicReactiveMethod * CAbstractHolonomicReactiveMethod::Create(cons
 
 		// Factory:
 		const mrpt::utils::TRuntimeClassId *classId = mrpt::utils::findRegisteredClass( className );
-		if (!classId) return NULL;
+		if (!classId) return nullptr;
 
 		CAbstractHolonomicReactiveMethod *holo = dynamic_cast<CAbstractHolonomicReactiveMethod*>( classId->createObject() );
 		return holo;

@@ -65,7 +65,7 @@ public:
    * and a device connection for that GPS.
    * See ArGPS for instructions on using it.
    *
-   * @return NULL if there was an error creating a GPS object or an error
+   * @return nullptr if there was an error creating a GPS object or an error
    * creating and opening its device connection. Otherwise, return the new GPS
    * object.  
    */

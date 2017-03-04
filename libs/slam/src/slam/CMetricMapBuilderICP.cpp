@@ -194,7 +194,7 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 		bool				can_do_icp=false;
 
 		// Select the map to match with ....
-		CMetricMap   *matchWith = NULL;
+		CMetricMap   *matchWith = nullptr;
 		if (ICP_options.matchAgainstTheGrid && !metricMap.m_gridMaps.empty() )
 		{
 			matchWith = static_cast<CMetricMap*>(metricMap.m_gridMaps[0].get());
@@ -206,7 +206,7 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 			matchWith = static_cast<CMetricMap*>(metricMap.m_pointsMaps[0].get());
 			MRPT_LOG_DEBUG("processObservation(): matching against point map.");
 		}
-		ASSERT_(matchWith!=NULL)
+		ASSERT_(matchWith!=nullptr)
 
 		if (!we_skip_ICP_pose_correction)
 		{

@@ -30,9 +30,9 @@ using namespace mrpt::hwdrivers;
  -------------------------------------------------------------*/
 CStereoGrabber_SVS::CStereoGrabber_SVS( int cameraIndex, const TCaptureOptions_SVS &options ) :
         m_bInitialized(false),
-        m_videoObject(NULL),
-        m_stereoImage(NULL),
-        m_disparityParams(NULL),
+        m_videoObject(nullptr),
+        m_stereoImage(nullptr),
+        m_disparityParams(nullptr),
         m_resolutionX( options.frame_width ),
         m_resolutionY( options.frame_height ),
         m_procesOnChip(options.m_procesOnChip),
@@ -204,7 +204,7 @@ bool  CStereoGrabber_SVS::getStereoObservation( mrpt::obs::CObservationStereoIma
                     // Create the object to be return (it will have a fresh timestamp if it's created now and here):
                     CObservationStereoImages ret_obj(
                                             cvCloneImage( ImageLeft ),  // Create a new IplImage* which will be owned by the observation object.
-                                            NULL /*has no right*/,
+                                            nullptr /*has no right*/,
                                             ImageDisparity,
                                             true /* own the memory, so we don't have to free it here */);
 
@@ -234,7 +234,7 @@ bool  CStereoGrabber_SVS::getStereoObservation( mrpt::obs::CObservationStereoIma
                     // Create the object to be return (it will have a fresh timestamp if it's created now and here):
                     CObservationStereoImages ret_obj(
                                             cvCloneImage( ImageLeft ),  // Create a new IplImage* which will be owned by the observation object.
-                                            NULL /*has no right*/,
+                                            nullptr /*has no right*/,
                                             ImageDisparity,
                                             true /* own the memory, so we don't have to free it here */);
 
@@ -252,7 +252,7 @@ bool  CStereoGrabber_SVS::getStereoObservation( mrpt::obs::CObservationStereoIma
                     CObservationStereoImages ret_obj(
                                             cvCloneImage( ImageLeft ),  // Create a new IplImage* which will be owned by the observation object.
                                             cvCloneImage( ImageRight ),
-                                            NULL /*has no disparity*/,
+                                            nullptr /*has no disparity*/,
                                             true /* own the memory, so we don't have to free it here */);
 
                     out_observation.swap(ret_obj); // Send as output (faster than a "=").

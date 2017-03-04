@@ -64,7 +64,7 @@ typedef std::vector<CvPoint2D32f> CvPoint2D32fVector;
 
 //Sequence has a pointer to an image, and a list of triangle-patches, a list of patch-indices and a mask that contain all triangles.
 struct img_seq_data {
-	img_seq_data() : img(NULL), mask(NULL)
+	img_seq_data() : img(nullptr), mask(nullptr)
 	{
 	}
 

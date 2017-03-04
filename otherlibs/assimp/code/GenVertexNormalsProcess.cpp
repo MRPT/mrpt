@@ -109,7 +109,7 @@ void GenVertexNormalsProcess::Execute( aiScene* pScene)
 // Executes the post processing step on the given imported data.
 bool GenVertexNormalsProcess::GenMeshVertexNormals (aiMesh* pMesh, unsigned int meshIndex)
 {
-	if (NULL != pMesh->mNormals)
+	if (nullptr != pMesh->mNormals)
 		return false;
 
 	// If the mesh consists of lines and/or points but not of
@@ -151,7 +151,7 @@ bool GenVertexNormalsProcess::GenMeshVertexNormals (aiMesh* pMesh, unsigned int 
 
 	// Set up a SpatialSort to quickly find all vertices close to a given position
 	// check whether we can reuse the SpatialSort of a previous step.
-	SpatialSort* vertexFinder = NULL;
+	SpatialSort* vertexFinder = nullptr;
 	SpatialSort  _vertexFinder;
 	float posEpsilon = 1e-5f;
 	if (shared)	{

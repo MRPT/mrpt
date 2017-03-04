@@ -19,7 +19,7 @@ struct XsQuaternion;
 #ifdef __cplusplus
 extern "C" {
 #else
-#define XSMATRIX_INITIALIZER	{ NULL, 0, 0, 0, XSDF_Managed }
+#define XSMATRIX_INITIALIZER	{ nullptr, 0, 0, 0, XSDF_Managed }
 typedef struct XsMatrix XsMatrix;
 #endif
 

@@ -545,7 +545,7 @@ void STEP::LazyObject::LazyInit() const
 	const char* acopy = args;
 	boost::shared_ptr<const EXPRESS::LIST> conv_args = EXPRESS::LIST::Parse(acopy,STEP::SyntaxError::LINE_NOT_SPECIFIED,&db.GetSchema());
 	delete[] args;
-	args = NULL;
+	args = nullptr;
 
 	// if the converter fails, it should throw an exception, but it should never return NULL
 	try {

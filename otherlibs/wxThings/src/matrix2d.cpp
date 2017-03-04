@@ -52,7 +52,7 @@ wxMatrix2DRefData::wxMatrix2DRefData()
 {
     m_width  = 0;
     m_height = 0;
-    m_data   = (double*)NULL;
+    m_data   = (double*)nullptr;
     m_static = false;
 }
 
@@ -111,7 +111,7 @@ bool wxMatrix2D::Create(int width, int height, bool zero)
 
 bool wxMatrix2D::Create(int width, int height, const double *data)
 {
-    wxCHECK_MSG((width > 0)&&(height > 0)&&(data != (double*)NULL), false,
+    wxCHECK_MSG((width > 0)&&(height > 0)&&(data != (double*)nullptr), false,
                 wxT("Invalid wxMatrix2D size or data is NULL"));
 
     UnRef();
@@ -134,7 +134,7 @@ bool wxMatrix2D::Create(int width, int height, const double *data)
 
 bool wxMatrix2D::Create(int width, int height, double *data, bool static_data)
 {
-    wxCHECK_MSG((width > 0)&&(height > 0)&&(data != (double*)NULL), false,
+    wxCHECK_MSG((width > 0)&&(height > 0)&&(data != (double*)nullptr), false,
                 wxT("Invalid wxMatrix2D size or data is NULL"));
 
     UnRef();
@@ -189,7 +189,7 @@ void wxMatrix2D::Destroy()
 
 bool wxMatrix2D::Ok() const
 {
-    return M_MATRIXDATA != NULL;
+    return M_MATRIXDATA != nullptr;
 }
 
 bool wxMatrix2D::IsEqual(const wxMatrix2D& matrix) const
@@ -371,7 +371,7 @@ bool wxMatrix2D::Reshape(int width, int height)
 
 double* wxMatrix2D::GetData() const
 {
-    wxCHECK_MSG( Ok(), (double*)NULL, wxT("invalid matrix, wxMatrix2D::GetData()"));
+    wxCHECK_MSG( Ok(), (double*)nullptr, wxT("invalid matrix, wxMatrix2D::GetData()"));
     return M_MATRIXDATA->m_data;
 }
 
@@ -827,7 +827,7 @@ bool wxMatrix2D::LoadFile( const wxString &filename, const wxArrayInt *cols )
 
     int sizeof_data = 4000;
     double *data = (double*)malloc(sizeof_data*sizeof(double));
-    if (data == (double*)NULL) return false;
+    if (data == (double*)nullptr) return false;
 
     wxString line_str, num_str;
 

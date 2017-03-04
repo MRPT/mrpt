@@ -71,7 +71,7 @@ namespace octomap {
     ScanNode (Pointcloud* _scan, pose6d _pose, uint64_t _id)
       : scan(_scan), pose(_pose), id(_id) {}
     ScanNode ()
-      : scan(NULL) {}
+      : scan(nullptr) {}
 
     ~ScanNode();
 
@@ -159,7 +159,7 @@ namespace octomap {
 
     ScanEdge* addEdge(uint64_t first_id, uint64_t second_id);
 
-    /// will return NULL if node was not found
+    /// will return nullptr if node was not found
     ScanNode* getNodeByID(uint64_t id);
 
     /// \return true when an edge between first_id and second_id exists

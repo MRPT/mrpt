@@ -328,7 +328,7 @@ protected:
 	/** Load the bone list of a MDL7 file
 	 * \return If the bones could be loaded successfully, a valid
 	 *   array containing pointers to a temporary bone
-	 *   representation. NULL if the bones could not be loaded.
+	 *   representation. nullptr if the bones could not be loaded.
 	 */
 	MDL::IntBone_MDL7** LoadBones_3DGS_MDL7();
 

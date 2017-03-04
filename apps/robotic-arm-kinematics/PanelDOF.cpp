@@ -51,8 +51,8 @@ PanelDOF::PanelDOF(wxWindow* parent,wxWindowID id)
 	FlexGridSizer1->SetSizeHints(this);
 	//*)
 
-	Connect( ID_SLIDER1,wxEVT_SCROLL_TOP|wxEVT_SCROLL_BOTTOM|wxEVT_SCROLL_LINEUP|wxEVT_SCROLL_LINEDOWN|wxEVT_SCROLL_PAGEUP|wxEVT_SCROLL_PAGEDOWN|wxEVT_SCROLL_THUMBTRACK|wxEVT_SCROLL_THUMBRELEASE|wxEVT_SCROLL_CHANGED,(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnSliderDOFScroll, NULL,the_win );
-	Connect(ID_SLIDER1,wxEVT_COMMAND_SLIDER_UPDATED,(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnSliderDOFScroll, NULL,the_win);
+        Connect( ID_SLIDER1,wxEVT_SCROLL_TOP|wxEVT_SCROLL_BOTTOM|wxEVT_SCROLL_LINEUP|wxEVT_SCROLL_LINEDOWN|wxEVT_SCROLL_PAGEUP|wxEVT_SCROLL_PAGEDOWN|wxEVT_SCROLL_THUMBTRACK|wxEVT_SCROLL_THUMBRELEASE|wxEVT_SCROLL_CHANGED,(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnSliderDOFScroll, nullptr,the_win );
+        Connect(ID_SLIDER1,wxEVT_COMMAND_SLIDER_UPDATED,(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnSliderDOFScroll, nullptr,the_win);
     //Connect(ID_SLIDER1,wxEVT_SCROLL_CHANGED,(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnSliderScroll);
 }
 

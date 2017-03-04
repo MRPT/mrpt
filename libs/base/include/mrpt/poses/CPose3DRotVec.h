@@ -169,8 +169,8 @@ namespace poses
 		  *  See <a href="http://www.mrpt.org/6D_poses:equivalences_compositions_and_uncertainty" >this report</a> for mathematical details.
 		  */
 		void composePoint(double lx,double ly,double lz, double &gx, double &gy, double &gz,
-			mrpt::math::CMatrixFixedNumeric<double,3,3>  *out_jacobian_df_dpoint=NULL,
-			mrpt::math::CMatrixFixedNumeric<double,3,6>  *out_jacobian_df_dpose=NULL) const;
+			mrpt::math::CMatrixFixedNumeric<double,3,3>  *out_jacobian_df_dpoint=nullptr,
+			mrpt::math::CMatrixFixedNumeric<double,3,6>  *out_jacobian_df_dpose=nullptr) const;
 
 		/** An alternative, slightly more efficient way of doing \f$ G = P \oplus L \f$ with G and L being 3D points and P this 6D pose.
 		  * \note local_point is passed by value to allow global and local point to be the same variable
@@ -185,16 +185,16 @@ namespace poses
 		  * \sa composePoint, composeFrom
 		  */
 		void inverseComposePoint(const double gx,const double gy,const double gz,double &lx,double &ly,double &lz,
-			mrpt::math::CMatrixFixedNumeric<double,3,3>  *out_jacobian_df_dpoint=NULL,
-			mrpt::math::CMatrixFixedNumeric<double,3,6>  *out_jacobian_df_dpose=NULL) const;
+			mrpt::math::CMatrixFixedNumeric<double,3,3>  *out_jacobian_df_dpoint=nullptr,
+			mrpt::math::CMatrixFixedNumeric<double,3,6>  *out_jacobian_df_dpose=nullptr) const;
 
 		/**  Makes "this = A (+) B"; this method is slightly more efficient than "this= A + B;" since it avoids the temporary object.
 		  *  \note A or B can be "this" without problems.
 		  */
 		void composeFrom(const CPose3DRotVec& A,
                          const CPose3DRotVec& B,
-                         mrpt::math::CMatrixFixedNumeric<double,6,6>  *out_jacobian_drvtC_drvtA=NULL,
-                         mrpt::math::CMatrixFixedNumeric<double,6,6>  *out_jacobian_drvtC_drvtB=NULL);
+                         mrpt::math::CMatrixFixedNumeric<double,6,6>  *out_jacobian_drvtC_drvtA=nullptr,
+                         mrpt::math::CMatrixFixedNumeric<double,6,6>  *out_jacobian_drvtC_drvtB=nullptr);
 
 
 		/**  Convert this RVT into a quaternion + XYZ

@@ -129,7 +129,7 @@ namespace mrpt
 
 			// See docs in base class
 			void  internal_clear() MRPT_OVERRIDE;
-			bool  internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = NULL ) MRPT_OVERRIDE;
+			bool  internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = nullptr ) MRPT_OVERRIDE;
 			double internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom ) MRPT_OVERRIDE;
 
 			MAP_DEFINITION_START(CHeightGridMap2D,MAPS_IMPEXP)

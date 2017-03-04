@@ -295,7 +295,7 @@ Derived& PardisoImpl<Derived>::compute(const MatrixType& a)
   Index error;
   error = internal::pardiso_run_selector<Index>::run(m_pt, 1, 1, m_type, 12, m_size,
                                                      m_matrix.valuePtr(), m_matrix.outerIndexPtr(), m_matrix.innerIndexPtr(),
-                                                     m_perm.data(), 0, m_iparm.data(), m_msglvl, NULL, NULL);
+                                                     m_perm.data(), 0, m_iparm.data(), m_msglvl, nullptr, nullptr);
 
   manageErrorCode(error);
   m_analysisIsOk = true;
@@ -318,7 +318,7 @@ Derived& PardisoImpl<Derived>::analyzePattern(const MatrixType& a)
   Index error;
   error = internal::pardiso_run_selector<Index>::run(m_pt, 1, 1, m_type, 11, m_size,
                                                      m_matrix.valuePtr(), m_matrix.outerIndexPtr(), m_matrix.innerIndexPtr(),
-                                                     m_perm.data(), 0, m_iparm.data(), m_msglvl, NULL, NULL);
+                                                     m_perm.data(), 0, m_iparm.data(), m_msglvl, nullptr, nullptr);
   
   manageErrorCode(error);
   m_analysisIsOk = true;
@@ -338,7 +338,7 @@ Derived& PardisoImpl<Derived>::factorize(const MatrixType& a)
   Index error;  
   error = internal::pardiso_run_selector<Index>::run(m_pt, 1, 1, m_type, 22, m_size,
                                                      m_matrix.valuePtr(), m_matrix.outerIndexPtr(), m_matrix.innerIndexPtr(),
-                                                     m_perm.data(), 0, m_iparm.data(), m_msglvl, NULL, NULL);
+                                                     m_perm.data(), 0, m_iparm.data(), m_msglvl, nullptr, nullptr);
   
   manageErrorCode(error);
   m_factorizationIsOk = true;

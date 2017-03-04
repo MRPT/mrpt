@@ -173,7 +173,7 @@ void COpenGLViewport::insert( const CRenderizablePtr &newObject )
 void  COpenGLViewport::render( const int render_width, const int render_height  ) const
 {
 #if MRPT_HAS_OPENGL_GLUT
-	const CRenderizable *it = NULL; // Declared here for usage in the "catch"
+	const CRenderizable *it = nullptr; // Declared here for usage in the "catch"
 	try
 	{
 		// Change viewport:
@@ -322,7 +322,7 @@ void  COpenGLViewport::render( const int render_width, const int render_height  
 
 			if (m_isCloned)
 			{	// Clone: render someone's else objects.
-				ASSERT_(m_parent.get()!=NULL);
+				ASSERT_(m_parent.get()!=nullptr);
 
 				COpenGLViewportPtr view = m_parent->getViewport( m_clonedViewport );
 				if (!view)
@@ -341,7 +341,7 @@ void  COpenGLViewport::render( const int render_width, const int render_height  
 			// 1st: if there is a CCamera in the scene:
 			CRenderizablePtr cam_ptr = viewForGetCamera->getByClass<CCamera>();
 
-			CCamera *myCamera=NULL;
+			CCamera *myCamera=nullptr;
 			if (cam_ptr)
 			{
 				myCamera = getAs<CCamera>(cam_ptr);
@@ -515,7 +515,7 @@ void  COpenGLViewport::render( const int render_width, const int render_height  
 	catch(exception &e)
 	{
 		string		msg;
-		if (it!=NULL)
+		if (it!=nullptr)
 				msg = format("Exception while rendering a class '%s'\n%s", it->GetRuntimeClass()->className, e.what() );
 		else	msg = format("Exception while rendering:\n%s", e.what() );
 

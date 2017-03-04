@@ -65,16 +65,16 @@ public:
 
   /// Initialize the module. The module should use the supplied ArRobot pointer
   /**
-     @param robot Robot this module should attach to, can be NULL for
+     @param robot Robot this module should attach to, can be nullptr for
      none, so make sure you handle that case
 
      @param modArgument an optional string argument to the module,
-     this defaults to NULL, you'll need to cast this to whatever you
+     this defaults to nullptr, you'll need to cast this to whatever you
      want it to be... you'll want to document this clearly with the
      module
   **/
   AREXPORT virtual bool init(ArRobot *robot, 
-			     void *argument = NULL) = 0;
+			     void *argument = nullptr) = 0;
 
   /// Close down the module and have it exit
   AREXPORT virtual bool exit() = 0;
@@ -109,7 +109,7 @@ protected:
 extern "C" {\
 ArModule *__AriaModule__=&mod; \
 _declspec(dllexport) bool \
-ariaInitModule(ArRobot *robot, void *argument = NULL) \
+ariaInitModule(ArRobot *robot, void *argument = nullptr) \
 { \
   if (__AriaModule__) \
   { \
@@ -131,7 +131,7 @@ _declspec(dllexport) bool ariaExitModule() \
 #define ARDEF_MODULE(mod) \
 ArModule *__AriaModule__=&mod; \
 extern "C" {\
-bool ariaInitModule(ArRobot *robot, void *argument = NULL) \
+bool ariaInitModule(ArRobot *robot, void *argument = nullptr) \
 { \
   if (__AriaModule__) \
   { \

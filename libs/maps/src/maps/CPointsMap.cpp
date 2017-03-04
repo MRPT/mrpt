@@ -261,7 +261,7 @@ void  CPointsMap::getPointsBuffer( size_t &outPointsCount, const float *&xs, con
 	}
 	else
 	{
-		xs = ys = zs = NULL;
+		xs = ys = zs = nullptr;
 	}
 }
 
@@ -1477,7 +1477,7 @@ void internal_build_points_map_from_scan2D(const mrpt::obs::CObservation2DRangeS
 	if (insertOps)
 		static_cast<CSimplePointsMap*>(out_map.get())->insertionOptions = *static_cast<const CPointsMap::TInsertionOptions*>(insertOps);
 
-	out_map->insertObservation(&obs,NULL);
+	out_map->insertObservation(&obs,nullptr);
 }
 
 struct TAuxLoadFunctor
@@ -1496,7 +1496,7 @@ TAuxLoadFunctor  dummy_loader;  // used just to set "ptr_internal_build_points_m
 // ================================ PLY files import & export virtual methods ================================
 
 /** In a base class, will be called after PLY_import_set_vertex_count() once for each loaded point.
-  *  \param pt_color Will be NULL if the loaded file does not provide color info.
+  *  \param pt_color Will be nullptr if the loaded file does not provide color info.
   */
 void CPointsMap::PLY_import_set_vertex(const size_t idx, const mrpt::math::TPoint3Df &pt, const mrpt::utils::TColorf *pt_color)
 {
@@ -1511,7 +1511,7 @@ size_t CPointsMap::PLY_export_get_vertex_count() const
 }
 
 /** In a base class, will be called after PLY_export_get_vertex_count() once for each exported point.
-  *  \param pt_color Will be NULL if the loaded file does not provide color info.
+  *  \param pt_color Will be nullptr if the loaded file does not provide color info.
   */
 void CPointsMap::PLY_export_get_vertex(
 	const size_t idx,
@@ -1905,7 +1905,7 @@ bool  CPointsMap::internal_insertObservation(
 			auxMap.insertionOptions = insertionOptions;
 			auxMap.insertionOptions.addToExistingPointsMap = false;
 			auxMap.loadFromVelodyneScan(*o,&robotPose3D);
-			fuseWith(&auxMap, insertionOptions.minDistBetweenLaserPoints,  NULL /* rather than &checkForDeletion which we don't need for 3D observations */ );
+			fuseWith(&auxMap, insertionOptions.minDistBetweenLaserPoints,  nullptr /* rather than &checkForDeletion which we don't need for 3D observations */ );
 		}
 		else {
 			// Don't fuse: Simply add

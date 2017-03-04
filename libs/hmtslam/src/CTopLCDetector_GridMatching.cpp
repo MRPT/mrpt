@@ -34,7 +34,7 @@ CTopLCDetector_GridMatching::~CTopLCDetector_GridMatching()
 
 /** This method must compute the topological observation model.
   * \param out_log_lik The output, a log-likelihood.
-  * \return NULL, or a PDF of the estimated translation between the two areas (can be a multi-modal PDF).
+  * \return nullptr, or a PDF of the estimated translation between the two areas (can be a multi-modal PDF).
   */
 CPose3DPDFPtr CTopLCDetector_GridMatching::computeTopologicalObservationModel(
 	const THypothesisID		&hypID,
@@ -78,7 +78,7 @@ CPose3DPDFPtr CTopLCDetector_GridMatching::computeTopologicalObservationModel(
 		hMapCur.get(),   // "ref" as seen from "cur"...The order is critical!!!
 		hMapRef.get(),  
 		initEstimate,
-		NULL,
+		nullptr,
 		&info);
 
 #if 0

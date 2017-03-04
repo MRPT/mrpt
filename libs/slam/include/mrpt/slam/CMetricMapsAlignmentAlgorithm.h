@@ -42,8 +42,8 @@ namespace slam
 		 * \param m1			[IN] The first map
 		 * \param m2			[IN] The second map. The pose of this map respect to m1 is to be estimated.
 		 * \param grossEst		[IN] An initial gross estimation for the displacement. If a given algorithm doesn't need it, set to <code>CPose2D(0,0,0)</code> for example.
-		 * \param runningTime	[OUT] A pointer to a container for obtaining the algorithm running time in seconds, or NULL if you don't need it.
-		 * \param info			[OUT] See derived classes for details, or NULL if it isn't needed.
+		 * \param runningTime	[OUT] A pointer to a container for obtaining the algorithm running time in seconds, or nullptr if you don't need it.
+		 * \param info			[OUT] See derived classes for details, or nullptr if it isn't needed.
 		 *
 		 * \return A smart pointer to the output estimated pose PDF.
 		 * \sa CICP
@@ -52,8 +52,8 @@ namespace slam
 				const mrpt::maps::CMetricMap		*m1,
 				const mrpt::maps::CMetricMap		*m2,
 				const mrpt::poses::CPose2D			&grossEst,
-				float					*runningTime = NULL,
-				void					*info = NULL );
+				float					*runningTime = nullptr,
+				void					*info = nullptr );
 
         /** The virtual method for aligning a pair of metric maps, aligning only 2D + orientation.
 		 *   The meaning of some parameters are implementation dependant,
@@ -67,8 +67,8 @@ namespace slam
 		 * \param m1			[IN] The first map (MUST BE A COccupancyGridMap2D  derived class)
 		 * \param m2			[IN] The second map. (MUST BE A CPointsMap derived class) The pose of this map respect to m1 is to be estimated.
 		 * \param initialEstimationPDF	[IN] An initial gross estimation for the displacement.
-		 * \param runningTime	[OUT] A pointer to a container for obtaining the algorithm running time in seconds, or NULL if you don't need it.
-		 * \param info			[OUT] See derived classes for details, or NULL if it isn't needed.
+		 * \param runningTime	[OUT] A pointer to a container for obtaining the algorithm running time in seconds, or nullptr if you don't need it.
+		 * \param info			[OUT] See derived classes for details, or nullptr if it isn't needed.
 		 *
 		 * \return A smart pointer to the output estimated pose PDF.
 		 * \sa CICP
@@ -77,8 +77,8 @@ namespace slam
 				const mrpt::maps::CMetricMap		*m1,
 				const mrpt::maps::CMetricMap		*m2,
 				const mrpt::poses::CPosePDFGaussian	&initialEstimationPDF,
-				float					*runningTime = NULL,
-				void					*info = NULL ) = 0;
+				float					*runningTime = nullptr,
+				void					*info = nullptr ) = 0;
 
 
 		/** The method for aligning a pair of metric maps, aligning the full 6D pose.
@@ -91,8 +91,8 @@ namespace slam
 		 * \param m1			[IN] The first map
 		 * \param m2			[IN] The second map. The pose of this map respect to m1 is to be estimated.
 		 * \param grossEst		[IN] An initial gross estimation for the displacement. If a given algorithm doesn't need it, set to <code>CPose3D(0,0,0)</code> for example.
-		 * \param runningTime	[OUT] A pointer to a container for obtaining the algorithm running time in seconds, or NULL if you don't need it.
-		 * \param info			[OUT] See derived classes for details, or NULL if it isn't needed.
+		 * \param runningTime	[OUT] A pointer to a container for obtaining the algorithm running time in seconds, or nullptr if you don't need it.
+		 * \param info			[OUT] See derived classes for details, or nullptr if it isn't needed.
 		 *
 		 * \return A smart pointer to the output estimated pose PDF.
 		 * \sa CICP
@@ -101,8 +101,8 @@ namespace slam
 				const mrpt::maps::CMetricMap		*m1,
 				const mrpt::maps::CMetricMap		*m2,
 				const mrpt::poses::CPose3D			&grossEst,
-				float					*runningTime = NULL,
-				void					*info = NULL );
+				float					*runningTime = nullptr,
+				void					*info = nullptr );
 
         /** The virtual method for aligning a pair of metric maps, aligning the full 6D pose.
 		 *   The meaning of some parameters are implementation dependant,
@@ -116,8 +116,8 @@ namespace slam
 		 * \param m1			[IN] The first map (MUST BE A COccupancyGridMap2D  derived class)
 		 * \param m2			[IN] The second map. (MUST BE A CPointsMap derived class) The pose of this map respect to m1 is to be estimated.
 		 * \param initialEstimationPDF	[IN] An initial gross estimation for the displacement.
-		 * \param runningTime	[OUT] A pointer to a container for obtaining the algorithm running time in seconds, or NULL if you don't need it.
-		 * \param info			[OUT] See derived classes for details, or NULL if it isn't needed.
+		 * \param runningTime	[OUT] A pointer to a container for obtaining the algorithm running time in seconds, or nullptr if you don't need it.
+		 * \param info			[OUT] See derived classes for details, or nullptr if it isn't needed.
 		 *
 		 * \return A smart pointer to the output estimated pose PDF.
 		 * \sa CICP
@@ -126,8 +126,8 @@ namespace slam
 				const mrpt::maps::CMetricMap		*m1,
 				const mrpt::maps::CMetricMap		*m2,
 				const mrpt::poses::CPose3DPDFGaussian	&initialEstimationPDF,
-				float					*runningTime = NULL,
-				void					*info = NULL ) = 0;
+				float					*runningTime = nullptr,
+				void					*info = nullptr ) = 0;
 
 
 	};

@@ -48,17 +48,17 @@ public:
     
     Event(bool isAutoReset = true, bool isSignal = false)
 #ifdef _WIN32
-        : _event(NULL)
+        : _event(nullptr)
 #else
         : _is_signalled(isSignal)
         , _isAutoReset(isAutoReset)
 #endif
     {
 #ifdef _WIN32
-        _event = CreateEvent(NULL, isAutoReset?FALSE:TRUE, isSignal?TRUE:FALSE, NULL); 
+        _event = CreateEvent(nullptr, isAutoReset?FALSE:TRUE, isSignal?TRUE:FALSE, nullptr); 
 #else
-        pthread_mutex_init(&_cond_locker, NULL);
-        pthread_cond_init(&_cond_var, NULL);
+        pthread_mutex_init(&_cond_locker, nullptr);
+        pthread_cond_init(&_cond_var, nullptr);
 #endif
     }
 
@@ -121,7 +121,7 @@ public:
                 {
                     timespec wait_time;
                     timeval now;
-                    gettimeofday(&now,NULL);
+                    gettimeofday(&now,nullptr);
 
                     wait_time.tv_sec = timeout/1000 + now.tv_sec;
                     wait_time.tv_nsec = (timeout%1000)*1000000ULL + now.tv_usec*1000;

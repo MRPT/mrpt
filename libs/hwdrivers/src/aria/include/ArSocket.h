@@ -102,7 +102,7 @@ public:
   /** Open a server port
 	  @param openOnIP If given, only check ports open on the interface accociated with this address (Linux only)
   */
-  AREXPORT bool open(int port, Type type, const char *openOnIP = NULL);
+  AREXPORT bool open(int port, Type type, const char *openOnIP = nullptr);
 
   /// Simply create a port.
   AREXPORT bool create(Type type);
@@ -111,7 +111,7 @@ public:
       @param startPort first port to try
 	  @param openOnIP If given, only check ports open on the interface accociated with this address (Linux only)
   */
-  AREXPORT bool findValidPort(int startPort, const char *openOnIP = NULL);
+  AREXPORT bool findValidPort(int startPort, const char *openOnIP = nullptr);
 
   /// Connect the socket to the given address
   AREXPORT bool connectTo(const char *host, int port);

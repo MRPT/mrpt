@@ -68,7 +68,7 @@ public:
     /** @brief Set device connection to use */
     /*AREXPORT*/ void setDeviceConnection(ArDeviceConnection* deviceConn) { myDevice = deviceConn; }
 
-    /** @brief Return device connection in use (or NULL if none) */
+    /** @brief Return device connection in use (or nullptr if none) */
     /*AREXPORT*/ ArDeviceConnection* getDeviceConnection(ArDeviceConnection* deviceConn) const { return myDevice; }
 
 
@@ -218,19 +218,19 @@ protected:
     /* Read a doubleing point number out of a std::string, if possible.
      * @return true if the string was nonempty and @a target was modified.
      */
-    bool readFloatFromString(std::string& str, double* target, double(*convf)(double) = NULL);
+    bool readFloatFromString(std::string& str, double* target, double(*convf)(double) = nullptr);
 
     /* Read an unsigned short integer out of a std::string, if possible.
      * @return true if the string was nonempty and @a target was modified.
      */
-    bool readUShortFromString(std::string& str, unsigned short* target, unsigned short (*convf)(unsigned short) = NULL);
+    bool readUShortFromString(std::string& str, unsigned short* target, unsigned short (*convf)(unsigned short) = nullptr);
 
 
     /* Read a double from a member of a vector of strings, if it exists. */
-    bool readFloatFromStringVec(std::vector<std::string>* vec, size_t i, double* target, double (*convf)(double) = NULL);
+    bool readFloatFromStringVec(std::vector<std::string>* vec, size_t i, double* target, double (*convf)(double) = nullptr);
 
     /* Read a double from a member of a vector of strings, if it exists. */
-    bool readUShortFromStringVec(std::vector<std::string>* vec, size_t i, unsigned short* target, unsigned short (*convf)(unsigned short) = NULL);
+    bool readUShortFromStringVec(std::vector<std::string>* vec, size_t i, unsigned short* target, unsigned short (*convf)(unsigned short) = nullptr);
 
     /* Convert DDDMM.MMMM to decimal degrees */
     static double gpsDegminToDegrees(double degmin);

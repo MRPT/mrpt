@@ -56,8 +56,8 @@ string jointNames[] = {
 					CSkeletonTracker
 -------------------------------------------------------------*/
 CSkeletonTracker::CSkeletonTracker( ) :
-	m_skeletons_ptr		(NULL),
-	m_userTracker_ptr	(NULL),
+	m_skeletons_ptr		(nullptr),
+	m_userTracker_ptr	(nullptr),
 	m_timeStartUI		(0),
 	m_timeStartTT		(0),
 	m_sensorPose		(),
@@ -90,8 +90,8 @@ CSkeletonTracker::~CSkeletonTracker()
 {
 #if MRPT_HAS_OPENNI2 && MRPT_HAS_NITE2
 	nite::NiTE::shutdown();	// close tracker
-	delete[] skl_states; m_skeletons_ptr = NULL;
-	delete user_tracker; m_userTracker_ptr = NULL;
+	delete[] skl_states; m_skeletons_ptr = nullptr;
+	delete user_tracker; m_userTracker_ptr = nullptr;
 #endif
 	if(m_win) m_win.reset();
 }
