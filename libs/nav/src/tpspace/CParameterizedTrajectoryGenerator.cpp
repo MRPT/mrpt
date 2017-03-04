@@ -338,7 +338,6 @@ void CParameterizedTrajectoryGenerator::evalClearanceSingleObstacle(const double
 	ASSERT_(numPathSteps >  inout_realdist2clearance.size());
 
 	const double numStepsPerIncr = (numPathSteps - 1.0) / (inout_realdist2clearance.size());
-	const double threshold_distant_obstacle = 5 * this->getApproxRobotRadius();
 
 	double step_pointer_dbl = 0.0;
 
@@ -371,10 +370,6 @@ void CParameterizedTrajectoryGenerator::evalClearanceSingleObstacle(const double
 		else
 		{
 			// The obstacle is not a direct collision.
-			// Ignore it if it's way ahead of the current robot pose:
-			if (::hypot(oxl, oyl)> threshold_distant_obstacle)
-				continue;
-
 			const double this_clearance_norm = this_clearance / this->refDistance;
 
 			// Update minimum in output structure

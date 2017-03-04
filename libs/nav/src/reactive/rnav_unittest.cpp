@@ -147,6 +147,9 @@ void run_rnav_test(
 
 	EXPECT_LT((TPoint2D(robot_simul.getCurrentGTPose()) - nav_target).norm(), 0.4);
 	EXPECT_TRUE(rnav.getCurrentState() == CAbstractNavigator::IDLE);
+
+	const_cast<mrpt::utils::CTimeLogger&>(rnav.getTimeLogger()).clear(true); // do not show timelog table to console
+	const_cast<mrpt::utils::CTimeLogger&>(rnav.getDelaysTimeLogger()).clear(true);
 }
 
 const TPoint2D no_obs_trg(2.0, 0.4), no_obs_topleft(-10, 10), no_obs_bottomright(10, -10);

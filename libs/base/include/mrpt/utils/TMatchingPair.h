@@ -59,6 +59,7 @@ namespace mrpt
 
 
 		typedef TMatchingPair*  TMatchingPairPtr;
+		typedef TMatchingPair const *  TMatchingPairConstPtr;
 
 		/** A list of TMatchingPair
 		 * \ingroup mrpt_base_grp
@@ -111,6 +112,11 @@ namespace mrpt
 
 			/** Test whether the given pair "p" is within the pairings */
 			bool contains (const TMatchingPair &p) const;
+
+			/** Creates a filtered list of pairings with those ones which have a single correspondence which coincides 
+			  * in both directions, i.e. the best pairing of element `i` in map `this` is the best match for element `j` in map `other`, 
+			  * and viceversa*/
+			void filterUniqueRobustPairs(const size_t num_elements_this_map, TMatchingPairList &out_filtered_list) const;
 		};
 
 		/** A comparison operator, for sorting lists of TMatchingPair's, first order by this_idx, if equals, by other_idx   */

@@ -151,6 +151,7 @@ void CAbstractNavigator::saveConfigFile(mrpt::utils::CConfigFileBase & c) const
 void CAbstractNavigator::navigationStep()
 {
 	mrpt::synch::CCriticalSectionLocker csl(&m_nav_cs);
+	mrpt::utils::CTimeLoggerEntry tle(m_timlog_delays, "CAbstractNavigator::navigationStep()");
 
 	const TState prevState = m_navigationState;
 	switch ( m_navigationState )

@@ -44,10 +44,10 @@ namespace kinematics
 
 		/** See base class docs.
 		 * Tecognizes these parameters: `robotMax_V_mps`, `robotMax_W_degps` */
-		void cmdVel_limits(const mrpt::kinematics::CVehicleVelCmd &prev_vel_cmd, const double beta, const TVelCmdParams &params)  MRPT_OVERRIDE;
+		double cmdVel_limits(const mrpt::kinematics::CVehicleVelCmd &prev_vel_cmd, const double beta, const TVelCmdParams &params)  MRPT_OVERRIDE;
 
 	private:
-		void filter_max_vw(double &v, double &w, const TVelCmdParams &p);
+		double filter_max_vw(double &v, double &w, const TVelCmdParams &p);
 	};
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(CVehicleVelCmd_DiffDriven, CVehicleVelCmd, KINEMATICS_IMPEXP)
 

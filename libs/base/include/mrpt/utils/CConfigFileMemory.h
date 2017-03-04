@@ -19,6 +19,8 @@ namespace mrpt
 namespace utils
 {
 	/** This class implements a config file-like interface over a memory-stored string list.
+	*
+	 * Use base class `CConfigFileBase`'s methods `read_{int,float,double,string,...}()` and `write()` to actually read and write values.
 	 * \ingroup mrpt_base_grp
 	  */
 	class BASE_IMPEXP CConfigFileMemory : public CConfigFileBase
