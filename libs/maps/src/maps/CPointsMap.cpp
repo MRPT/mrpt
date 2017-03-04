@@ -345,8 +345,8 @@ void CPointsMap::determineMatching2D(
 	correspondences.reserve(nLocalPoints);
 	extraResults.correspondencesRatio = 0;
 
-    TMatchingPairList _correspondences;
-    _correspondences.reserve(nLocalPoints);
+	TMatchingPairList _correspondences;
+	_correspondences.reserve(nLocalPoints);
 
 	// Hay mapa global?
 	if (!nGlobalPoints) return;  // No
@@ -533,39 +533,12 @@ void CPointsMap::determineMatching2D(
 	//  led to just one correspondence for each "local map" point, but
 	//  many of them may have as corresponding pair the same "global point"!!
 	// -------------------------------------------------------------------------
-	if (params.onlyUniqueRobust)
-	{
-		//if (!params.onlyKeepTheClosest)  THROW_EXCEPTION("ERROR: onlyKeepTheClosest must be also set to true when onlyUniqueRobust=true.")
-
-		vector<TMatchingPairPtr>	bestMatchForThisMap( nGlobalPoints, TMatchingPairPtr(NULL) );
-		TMatchingPairList::iterator it;
-
-		//   1) Go through all the correspondences and keep the best corresp.
-		//       for each "global map" (this) point.
-		for (it=_correspondences.begin();it!=_correspondences.end();++it)
-		{
-			if (!bestMatchForThisMap[it->this_idx])
-			{
-				bestMatchForThisMap[it->this_idx] = &(*it);
-			}
-			else
-			{
-				if ( it->errorSquareAfterTransformation < bestMatchForThisMap[it->this_idx]->errorSquareAfterTransformation )
-					bestMatchForThisMap[it->this_idx] = &(*it);
-			}
-		}
-
-		//   2) Go again through the list of correspondences and remove those
-		//       who are not the best one for their corresponding global map.
-		for (it=_correspondences.begin();it!=_correspondences.end(); ++it)
-		{
-			if ( bestMatchForThisMap[it->this_idx] != &(*it) )
-                correspondences.push_back( *it );   				// Add to the output
-		}
-	} // end of additional consistency filer for "onlyKeepTheClosest"
-	else
-	{
-	    correspondences.swap(_correspondences);
+	if (params.onlyUniqueRobust) {
+		ASSERTMSG_(params.onlyKeepTheClosest, "ERROR: onlyKeepTheClosest must be also set to true when onlyUniqueRobust=true.");
+		_correspondences.filterUniqueRobustPairs(nGlobalPoints,correspondences);
+	}
+	else {
+		correspondences.swap(_correspondences);
 	}
 
 	// If requested, copy sum of squared distances to output pointer:
@@ -1069,20 +1042,14 @@ void  CPointsMap::determineMatching3D(
 	correspondences.clear();
 	correspondences.reserve(nLocalPoints);
 
-    TMatchingPairList _correspondences;
+	TMatchingPairList _correspondences;
 	_correspondences.reserve(nLocalPoints);
 
-	// Hay mapa global?
-	if (!nGlobalPoints) return;  // No
+	// Empty maps?  Nothing to do
+	if (!nGlobalPoints || !nLocalPoints) return;
 
-	// Hay mapa local?
-	if (!nLocalPoints)  return;  // No
-
-	// Solo hacer matching si existe alguna posibilidad de que
-	//  los dos mapas se toquen:
-	// -----------------------------------------------------------
-
-	// Transladar y rotar ya todos los puntos locales
+	// Try to do matching only if the bounding boxes have some overlap:
+	// Transform all local points:
 	vector<float> x_locals(nLocalPoints), y_locals(nLocalPoints), z_locals(nLocalPoints);
 
 	for (unsigned int localIdx=params.offset_other_map_points;localIdx<nLocalPoints;localIdx+=params.decimation_other_map_points)
@@ -1117,8 +1084,7 @@ void  CPointsMap::determineMatching3D(
 	if (local_x_min>global_x_max ||
 		local_x_max<global_x_min ||
 		local_y_min>global_y_max ||
-		local_y_max<global_y_min) return;	// No hace falta hacer matching,
-											//   porque es de CERO.
+		local_y_max<global_y_min) return;	// No need to compute: matching is ZERO.
 
 	// Loop for each point in local map:
 	// --------------------------------------------------
@@ -1182,39 +1148,12 @@ void  CPointsMap::determineMatching3D(
 	//  led to just one correspondence for each "local map" point, but
 	//  many of them may have as corresponding pair the same "global point"!!
 	// -------------------------------------------------------------------------
-	if (params.onlyUniqueRobust)
-	{
-		if (!params.onlyKeepTheClosest)  THROW_EXCEPTION("ERROR: onlyKeepTheClosest must be also set to true when onlyUniqueRobust=true.")
-
-		vector<TMatchingPairPtr>	bestMatchForThisMap( nGlobalPoints, TMatchingPairPtr(NULL) );
-		TMatchingPairList::iterator it;
-
-		//   1) Go through all the correspondences and keep the best corresp.
-		//       for each "global map" (this) point.
-		for (it=_correspondences.begin();it!=_correspondences.end();++it)
-		{
-			if (!bestMatchForThisMap[it->this_idx])
-			{
-				bestMatchForThisMap[it->this_idx] = &(*it);
-			}
-			else
-			{
-				if ( it->errorSquareAfterTransformation < bestMatchForThisMap[it->this_idx]->errorSquareAfterTransformation )
-					bestMatchForThisMap[it->this_idx] = &(*it);
-			}
-		}
-
-		//   2) Go again through the list of correspondences and remove those
-		//       who are not the best one for their corresponding global map.
-		for (it=_correspondences.begin();it!=_correspondences.end(); ++it)
-		{
-			if ( bestMatchForThisMap[it->this_idx] != &(*it) )
-				correspondences.push_back(*it); 				// Add to the output
-		}
-	} // end of additional consistency filer for "onlyKeepTheClosest"
-	else
-	{
-	    correspondences.swap(_correspondences);
+	if (params.onlyUniqueRobust) {
+		ASSERTMSG_(params.onlyKeepTheClosest, "ERROR: onlyKeepTheClosest must be also set to true when onlyUniqueRobust=true.");
+		_correspondences.filterUniqueRobustPairs(nGlobalPoints,correspondences);
+	}
+	else {
+		correspondences.swap(_correspondences);
 	}
 
 	// If requested, copy sum of squared distances to output pointer:

@@ -59,7 +59,9 @@
 			- New function mrpt::utils::net::http_request()
 			- New function mrpt::system::now_double()
 			- New function mrpt::utils::getAllRegisteredClassesChildrenOf()
-			- Safer CClassRegistry: detect and raise exception on attempts to duplicated class registration.
+			- Safer CClassRegistry: detect and warn on attempts to duplicated class registration.
+			- New class mrpt::math::CRuntimeCompiledExpression
+			- mrpt::utils::CConfigFile and mrpt::utils::CConfigFileMemory now can parse config files with end-of-line backslash to split long strings into several lines.
 		- \ref mrpt_bayes_grp
 			- [API change] `verbose` is no longer a field of mrpt::bayes::CParticleFilter::TParticleFilterOptions. Use the setVerbosityLevel() method of the CParticleFilter class itself.
 			- [API change] mrpt::bayes::CProbabilityParticle (which affects all PF-based classes in MRPT) has been greatly simplified via usage of the new mrpt::utils::copy_ptr<> pointee-copy-semantics smart pointer.
@@ -70,6 +72,7 @@
 			- New class mrpt::gui::CDisplayWindow3DLocker for exception-safe 3D scene lock in 3D windows.
 		- \ref mrpt_hwdrivers_grp
 			- Using rplidar newest SDK 1.5.6 instead of 1.4.3, which support rplidar A1 and rplidar A2
+			- mrpt::hwdrivers::CNTRIPEmitter can now also dump raw NTRIP data to a file
 		- \ref mrpt_kinematics_grp
 			- New classes for 2D robot simulation:
 				- mrpt::kinematics::CVehicleSimul_DiffDriven
@@ -144,6 +147,7 @@
 		- Fix wrong units for negative numbers in mrpt::system::unitsFormat()
 		- Fix potential thread-unsafe conditions while inserting a mrpt::obs::CObservation2DRangeScan into a pointmap with SSE2 optimizations enabled.
 		- CStream: Fix memory leak if an exception (e.g. EOF) is found during object deserialization.
+		- Fix a bug in the `onlyUniqueRobust` option for point cloud matching (affecting CICP, etc.). Thanks [Shuo](https://github.com/ygzhangsoya)!
 
 <hr>
 <a name="1.4.0">
@@ -768,7 +772,7 @@
 					- mrpt::opengl::CSetOfLines
 			- [mrpt-reactivenav]
 				- Much code of mrpt::reactivenav classes have undergone a clean-up, slight optimizations and a translation of old Spanish names/comments to English - <a href="http://code.google.com/p/mrpt/source/detail?r=2939" >r2939</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2942" >r2942</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2958" >r2958</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3091" >r3091</a>
-				- mrpt::reactivenav::CParameterizedTrajectoryGenerator::CColisionGrid now has a more maintainable binary serialization format - <a href="http://code.google.com/p/mrpt/source/detail?r=2939" >r2939</a>
+				- mrpt::reactivenav::CParameterizedTrajectoryGenerator::CCollisionGrid now has a more maintainable binary serialization format - <a href="http://code.google.com/p/mrpt/source/detail?r=2939" >r2939</a>
 				- mrpt::reactivenav::CParameterizedTrajectoryGenerator::debugDumpInFiles() now also saves text files which can be used to visualize PTGs from MATLAB (see scripts/viewPTG.m) - <a href="http://code.google.com/p/mrpt/source/detail?r=3009" >r3009</a>
 				- mrpt::reactivenav::CHolonomicVFF and mrpt::reactivenav::CHolonomicND now have more configurable parameters, loadable from config files. See their documentation.
 				- Repulsive forces from obstacles in mrpt::reactivenav::CHolonomicVFF are now automatically normalized wrt the density of the 360deg view of obstacles and forces follow a "1/range" law instead of the old "exp(-range)".

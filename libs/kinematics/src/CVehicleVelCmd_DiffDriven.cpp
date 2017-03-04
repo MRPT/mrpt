@@ -100,13 +100,15 @@ void CVehicleVelCmd_DiffDriven::cmdVel_scale(double vel_scale)
 	ang_vel *= vel_scale;
 }
 
-void CVehicleVelCmd_DiffDriven::cmdVel_limits(const mrpt::kinematics::CVehicleVelCmd &prev_vel_cmd, const double beta, const TVelCmdParams &params)
+double CVehicleVelCmd_DiffDriven::cmdVel_limits(const mrpt::kinematics::CVehicleVelCmd &prev_vel_cmd, const double beta, const TVelCmdParams &params)
 {
 	ASSERT_(params.robotMax_V_mps>0);
 	ASSERT_(params.robotMax_W_radps>0);
 	const mrpt::kinematics::CVehicleVelCmd_DiffDriven *prevcmd = dynamic_cast<const mrpt::kinematics::CVehicleVelCmd_DiffDriven*>(&prev_vel_cmd);
 	ASSERTMSG_(prevcmd, "Expected prevcmd of type `CVehicleVelCmd_DiffDriven`");
-	filter_max_vw(lin_vel, ang_vel, params);
+
+	double speed_scale = filter_max_vw(lin_vel, ang_vel, params);
+
 	if (std::abs(lin_vel) < 0.01) // i.e. new behavior is nearly a pure rotation
 	{ // thus, it's OK to blend the rotational component
 		ang_vel = beta*ang_vel + (1 - beta)*prevcmd->ang_vel;
@@ -118,18 +120,22 @@ void CVehicleVelCmd_DiffDriven::cmdVel_limits(const mrpt::kinematics::CVehicleVe
 		lin_vel = beta*lin_vel + (1 - beta)*prevcmd->lin_vel;   // blend new v value
 		ang_vel = ratio * lin_vel;  // ensure new w implements expected path curvature
 
-		filter_max_vw(lin_vel, ang_vel, params);
+		speed_scale*= filter_max_vw(lin_vel, ang_vel, params);
 	}
+
+	return speed_scale;
 }
 
-void CVehicleVelCmd_DiffDriven::filter_max_vw(double &v, double &w, const TVelCmdParams &p)
+double CVehicleVelCmd_DiffDriven::filter_max_vw(double &v, double &w, const TVelCmdParams &p)
 {
+	double speed_scale = 1.0;
 	// Ensure maximum speeds:
 	if (std::abs(v) > p.robotMax_V_mps) {
 		// Scale:
 		const double F = std::abs(p.robotMax_V_mps / v);
 		v *= F;
 		w *= F;
+		speed_scale *= F;
 	}
 
 	if (std::abs(w) > p.robotMax_W_radps) {
@@ -137,6 +143,9 @@ void CVehicleVelCmd_DiffDriven::filter_max_vw(double &v, double &w, const TVelCm
 		const double F = std::abs(p.robotMax_W_radps / w);
 		v *= F;
 		w *= F;
+		speed_scale *= F;
 	}
+	return speed_scale;
+
 }
 

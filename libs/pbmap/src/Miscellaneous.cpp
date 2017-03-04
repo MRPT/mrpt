@@ -16,6 +16,8 @@
 
 #if MRPT_HAS_PCL
 
+#include <mrpt/pbmap/Miscellaneous.h>
+
 using namespace mrpt::pbmap;
 
 #define SMALL_NUM  0.00000001 // anything that avoids division overflow

@@ -12,10 +12,8 @@
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/utils/CObject.h>
-#include <mrpt/utils/pimpl.h>
+#include <mrpt/math/CRuntimeCompiledExpression.h>
 #include <mrpt/nav/link_pragmas.h>
-
-PIMPL_FORWARD_DECLARATION(namespace exprtk { template <typename T> class expression; })
 
 namespace mrpt
 {
@@ -80,11 +78,6 @@ namespace mrpt
 
 		protected:
 			CMultiObjectiveMotionOptimizerBase(TParamsBase & params);
-			struct NAV_IMPEXP TCompiledFormulaWrapper
-			{
-				TCompiledFormulaWrapper();
-				PIMPL_DECLARE_TYPE(exprtk::expression<double>, compiled_formula);
-			};
 
 		private:
 			// This virtual method is called by decide().
@@ -92,8 +85,8 @@ namespace mrpt
 
 			TParamsBase & m_params_base;
 
-			std::map<std::string, TCompiledFormulaWrapper> m_score_exprs;  //!< score names -> score compiled expressions
-			std::vector<TCompiledFormulaWrapper>  m_movement_assert_exprs;
+			std::map<std::string, mrpt::math::CRuntimeCompiledExpression> m_score_exprs;  //!< score names -> score compiled expressions
+			std::vector<mrpt::math::CRuntimeCompiledExpression>  m_movement_assert_exprs;
 			std::map<std::string, double>     m_expr_vars;
 
 		};

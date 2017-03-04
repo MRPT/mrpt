@@ -9,6 +9,7 @@ GNU/Linux & OSX</td>
 <td valign="top"> <a href="https://github.com/MRPT/mrpt/blob/master/doc/LICENSE.txt"><img alt="BSD3 License" src="http://img.shields.io/badge/license-BSD3-brightgreen.svg"></a></td>
 <td valign="top"> <a href="https://www.codacy.com/app/joseluisblancoc/mrpt?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=MRPT/mrpt&amp;utm_campaign=Badge_Grade"><img alt="Code quality" src="https://api.codacy.com/project/badge/Grade/028dad14271644389387919721ae306b"></a></td>
 <td valign="top"> <a href="https://gitter.im/MRPT/mrpt"><img alt="[Join the chat at https://gitter.im/MRPT/mrpt" src="https://badges.gitter.im/Join%20Chat.svg"></a> </td>
+<td valign="top"> <a href="https://coveralls.io/github/MRPT/mrpt?branch=master"><img alt="Coverage Status" src="https://coveralls.io/repos/github/MRPT/mrpt/badge.svg?branch=master"></a> </td>
 </tr>
 </table>
 
