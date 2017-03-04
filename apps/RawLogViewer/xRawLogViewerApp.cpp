@@ -33,7 +33,7 @@ using namespace mrpt::system;
 using namespace std;
 
 // The configuration file:
-CConfigFile      *iniFile=NULL;
+CConfigFile      *iniFile=nullptr;
 
 bool xRawLogViewerApp::OnInit()
 {
@@ -74,7 +74,7 @@ bool xRawLogViewerApp::OnInit()
 int xRawLogViewerApp::OnExit()
 {
     delete iniFile;
-    iniFile = NULL;
+    iniFile = nullptr;
 
     return 0;
 }

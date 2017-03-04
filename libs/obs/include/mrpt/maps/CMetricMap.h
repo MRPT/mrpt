@@ -63,7 +63,7 @@ namespace mrpt
 			/** Internal method called by insertObservation() */
 			virtual bool  internal_insertObservation(
 				const mrpt::obs::CObservation *obs,
-				const mrpt::poses::CPose3D *robotPose = NULL ) = 0;
+				const mrpt::poses::CPose3D *robotPose = nullptr ) = 0;
 
 			/** Internal method called by computeObservationLikelihood() */
 			virtual double internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom ) = 0;
@@ -107,14 +107,14 @@ namespace mrpt
 			/** Insert the observation information into this map. This method must be implemented
 			 *    in derived classes.
 			 * \param obs The observation
-			 * \param robotPose The 3D pose of the robot mobile base in the map reference system, or NULL (default) if you want to use the origin.
+			 * \param robotPose The 3D pose of the robot mobile base in the map reference system, or nullptr (default) if you want to use the origin.
 			 *
 			 * \sa CObservation::insertObservationInto
 			 */
-			bool  insertObservation(const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = NULL );
+			bool  insertObservation(const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = nullptr );
 
 			/** A wrapper for smart pointers, just calls the non-smart pointer version. */
-			bool  insertObservationPtr(const mrpt::obs::CObservationPtr &obs, const mrpt::poses::CPose3D *robotPose = NULL );
+			bool  insertObservationPtr(const mrpt::obs::CObservationPtr &obs, const mrpt::poses::CPose3D *robotPose = nullptr );
 
 			/** Computes the log-likelihood of a given observation given an arbitrary robot 3D pose.
 			 *
@@ -237,8 +237,8 @@ namespace mrpt
 			/** If the map is a simple points map or it's a multi-metric map that contains EXACTLY one simple points map, return it.
 			  * Otherwise, return NULL
 			  */
-			virtual const mrpt::maps::CSimplePointsMap * getAsSimplePointsMap() const { return NULL; }
-			virtual       mrpt::maps::CSimplePointsMap * getAsSimplePointsMap()       { return NULL; }
+			virtual const mrpt::maps::CSimplePointsMap * getAsSimplePointsMap() const { return nullptr; }
+			virtual       mrpt::maps::CSimplePointsMap * getAsSimplePointsMap()       { return nullptr; }
 
 		}; // End of class def.
 		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CMetricMap, mrpt::utils::CSerializable, OBS_IMPEXP )

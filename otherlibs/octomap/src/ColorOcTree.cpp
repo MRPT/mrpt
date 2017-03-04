@@ -122,7 +122,7 @@ namespace octomap {
       delete children[i];
     }
     delete[] children;
-    children = NULL;
+    children = nullptr;
     return true;
   }
 

@@ -56,7 +56,7 @@ namespace mrpt
 				typedef typename LIST_OF_VECTORS1::value_type TInnerVector;
 				typedef typename LIST_OF_VECTORS2::value_type TInnerVectorCenters;
 				std::vector<typename TInnerVector::value_type> raw_vals;
-				typename TInnerVector::value_type *trg_ptr=NULL;
+                typename TInnerVector::value_type *trg_ptr=nullptr;
 				for (typename LIST_OF_VECTORS1::const_iterator it=it_first;it!=it_end;++it)
 				{
 					if (it==it_first)
@@ -108,7 +108,7 @@ namespace mrpt
 		  *  \param k [IN] Number of cluster to look for.
 		  *  \param points [IN] The list of N input points. It can be any STL-like containers of std::vector<float/double>, for example a std::vector<mrpt::math::CVectorDouble>, a std::list<CVectorFloat>, etc...
 		  *  \param assignments [OUT] At output it will have a number [0,k-1] for each of the N input points.
-		  *  \param out_centers [OUT] If not NULL, at output will have the centers of each group. Can be of any of the supported types of "points", but the basic coordinates should be float or double exactly as in "points".
+          *  \param out_centers [OUT] If not nullptr, at output will have the centers of each group. Can be of any of the supported types of "points", but the basic coordinates should be float or double exactly as in "points".
 		  *  \param attempts [IN] Number of attempts.
 		  *
 		  * \sa A more advanced algorithm, see: kmeanspp
@@ -119,7 +119,7 @@ namespace mrpt
 			const size_t k,
 			const LIST_OF_VECTORS1 & points,
 			std::vector<int>  &assignments,
-			LIST_OF_VECTORS2 *out_centers = NULL,
+            LIST_OF_VECTORS2 *out_centers = nullptr,
 			const size_t attempts = 3
 			)
 		{
@@ -136,7 +136,7 @@ namespace mrpt
 		  *  \param k [IN] Number of cluster to look for.
 		  *  \param points [IN] The list of N input points. It can be any STL-like containers of std::vector<float/double>, for example a std::vector<mrpt::math::CVectorDouble>, a std::list<CVectorFloat>, etc...
 		  *  \param assignments [OUT] At output it will have a number [0,k-1] for each of the N input points.
-		  *  \param out_centers [OUT] If not NULL, at output will have the centers of each group. Can be of any of the supported types of "points", but the basic coordinates should be float or double exactly as in "points".
+          *  \param out_centers [OUT] If not nullptr, at output will have the centers of each group. Can be of any of the supported types of "points", but the basic coordinates should be float or double exactly as in "points".
 		  *  \param attempts [IN] Number of attempts.
 		  *
 		  * \sa The standard kmeans algorithm, see: kmeans
@@ -147,7 +147,7 @@ namespace mrpt
 			const size_t k,
 			const LIST_OF_VECTORS1 & points,
 			std::vector<int>  &assignments,
-			LIST_OF_VECTORS2 *out_centers = NULL,
+            LIST_OF_VECTORS2 *out_centers = nullptr,
 			const size_t attempts = 3
 			)
 		{

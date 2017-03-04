@@ -20,7 +20,7 @@
  */
 AREXPORT ArRobotPacket::ArRobotPacket(unsigned char sync1,
 				      unsigned char sync2) :
-    ArBasePacket(265, 4, NULL, 2)
+    ArBasePacket(265, 4, nullptr, 2)
 {
   mySync1 = sync1;
   mySync2 = sync2;

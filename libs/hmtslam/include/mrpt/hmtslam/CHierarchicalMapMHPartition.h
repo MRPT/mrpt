@@ -73,27 +73,27 @@ namespace mrpt
 			  */
 			size_t arcCount() const;
 
-			/** Returns the first node in the graph, or NULL if it does not exist.
+			/** Returns the first node in the graph, or nullptr if it does not exist.
 			  * \return A pointer to the object. DO NOT DELETE this object, if you want to modify it in someway, first obtain a copy by invoking "CSerializable::duplicate"
 			  */
 			CHMHMapNodePtr  getFirstNode();
 
-			/** Returns the node with the given ID, or NULL if it does not exist.
+			/** Returns the node with the given ID, or nullptr if it does not exist.
 			  * \return A pointer to the object. DO NOT DELETE this object, if you want to modify it in someway, first obtain a copy by invoking "CSerializable::duplicate"
 			  */
 			CHMHMapNodePtr  getNodeByID(CHMHMapNode::TNodeID	id);
 
-			/** Returns the node with the given ID, or NULL if it does not exist.
+			/** Returns the node with the given ID, or nullptr if it does not exist.
 			  * \return A pointer to the object. DO NOT DELETE this object, if you want to modify it in someway, first obtain a copy by invoking "CSerializable::duplicate"
 			  */
 			const CHMHMapNodePtr  getNodeByID(CHMHMapNode::TNodeID	id) const;
 
-			/** Returns the node with the given label (case insensitive) for some given hypothesis ID, or NULL if it does not exist.
+			/** Returns the node with the given label (case insensitive) for some given hypothesis ID, or nullptr if it does not exist.
 			  * \return A pointer to the object. DO NOT DELETE this object, if you want to modify it in someway, first obtain a copy by invoking "CSerializable::duplicate"
 			  */
 			CHMHMapNodePtr  getNodeByLabel(const std::string &label, const THypothesisID &hypothesisID );
 
-			/** Returns the node with the given label (case insensitive) for some given hypothesis ID, or NULL if it does not exist.
+			/** Returns the node with the given label (case insensitive) for some given hypothesis ID, or nullptr if it does not exist.
 			  * \return A pointer to the object. DO NOT DELETE this object, if you want to modify it in someway, first obtain a copy by invoking "CSerializable::duplicate"
 			  */
 			const CHMHMapNodePtr  getNodeByLabel(const std::string &label, const THypothesisID &hypothesisID) const;
@@ -196,7 +196,7 @@ namespace mrpt
 				TArcList					&ret) const;
 
 			 /** Returns the first arc between a pair of nodes of a given type, and if it is in the opposite direction.
-			   * \return The arc, or NULL if not found.
+			   * \return The arc, or nullptr if not found.
 			   */
 			CHMHMapArcPtr findArcOfTypeBetweenNodes(
 				const CHMHMapNode::TNodeID	&node1id,
@@ -211,7 +211,7 @@ namespace mrpt
 				const CHMHMapNode::TNodeID	&node1,
 				const CHMHMapNode::TNodeID	&node2,
 				const THypothesisID				&hypothesisID,
-				const char					*requiredAnnotation=NULL ) const;
+				const char					*requiredAnnotation=nullptr ) const;
 
 			 /** This methods implements a Lu&Milios-like globally optimal estimation for the global coordinates of all the nodes in the graph according to all available arcs with relative pose information.
 			   * Global coordinates will be computed relative to the node "idReferenceNode".

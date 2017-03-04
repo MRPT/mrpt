@@ -80,7 +80,7 @@ bool CVideoFileWriter::open(
 
 	m_img_size = frameSize;
 
-	return m_video.get() != NULL;
+	return m_video.get() != nullptr;
 #else
 	std::cerr << "[CVideoFileWriter::open] ERROR: MRPT was compiled without OpenCV support "  << std::endl;
 	return false;
@@ -96,7 +96,7 @@ void CVideoFileWriter::close()
 #if MRPT_HAS_OPENCV
 	if (!M_WRITER) return;
 	cvReleaseVideoWriter( M_WRITER_PTR );
-	*M_WRITER_PTR = NULL;
+	*M_WRITER_PTR = nullptr;
 #endif
 }
 
@@ -106,7 +106,7 @@ void CVideoFileWriter::close()
 bool CVideoFileWriter::isOpen() const
 {
 #if MRPT_HAS_OPENCV
-	return (M_WRITER!=NULL);
+	return (M_WRITER!=nullptr);
 #else
 	return false;
 #endif

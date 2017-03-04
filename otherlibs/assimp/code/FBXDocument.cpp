@@ -80,7 +80,7 @@ LazyObject::~LazyObject()
 const Object* LazyObject::Get(bool dieOnError)
 {
 	if(IsBeingConstructed() || FailedToConstruct()) {
-		return NULL;
+		return nullptr;
 	}
 
 	if (object.get()) {
@@ -205,7 +205,7 @@ const Object* LazyObject::Get(bool dieOnError)
 		if(!DefaultLogger::isNullLogger()) {
 			DefaultLogger::get()->error(ex.what());
 		}
-		return NULL;
+		return nullptr;
 	}
 
 	if (!object.get()) {
@@ -449,7 +449,7 @@ void Document::ReadPropertyTemplates()
 			const Element* Properties70 = (*sc)["Properties70"];
 			if(Properties70) {
 				boost::shared_ptr<const PropertyTable> props = boost::make_shared<const PropertyTable>(
-					*Properties70,boost::shared_ptr<const PropertyTable>(static_cast<const PropertyTable*>(NULL))
+					*Properties70,boost::shared_ptr<const PropertyTable>(static_cast<const PropertyTable*>(nullptr))
 				);
 
 				templates[oname+"."+pname] = props;
@@ -529,7 +529,7 @@ const std::vector<const AnimationStack*>& Document::AnimationStacks() const
 LazyObject* Document::GetObject(uint64_t id) const
 {
 	ObjectMap::const_iterator it = objects.find(id);
-	return it == objects.end() ? NULL : (*it).second;
+	return it == objects.end() ? nullptr : (*it).second;
 }
 
 #define MAX_CLASSNAMES 6
@@ -588,7 +588,7 @@ std::vector<const Connection*> Document::GetConnectionsSequenced(uint64_t id, bo
 		for (size_t i = 0; i < c; ++i) {
 			ai_assert(classnames[i]);
 			if(static_cast<size_t>(std::distance(key.begin(),key.end())) == lenghts[i] && !strncmp(classnames[i],obtype,lenghts[i])) {
-				obtype = NULL;
+				obtype = nullptr;
 				break;
 			}
 		}

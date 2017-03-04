@@ -141,7 +141,7 @@ void CMyGLCanvasBase::OnMouseMove(wxMouseEvent& event)
 		OnUserManuallyMovesCamera(cameraPointingX, cameraPointingY, cameraPointingZ, cameraZoomDistance, cameraElevationDeg, cameraAzimuthDeg);
 
 #if wxCHECK_VERSION(2,9,5)
-		wxTheApp->SafeYieldFor(NULL,wxEVT_CATEGORY_TIMER);
+		wxTheApp->SafeYieldFor(nullptr,wxEVT_CATEGORY_TIMER);
 #endif
 		Refresh(false);
 
@@ -162,7 +162,7 @@ void CMyGLCanvasBase::OnMouseMove(wxMouseEvent& event)
 		OnUserManuallyMovesCamera(cameraPointingX, cameraPointingY, cameraPointingZ, cameraZoomDistance, cameraElevationDeg, cameraAzimuthDeg);
 
 #if wxCHECK_VERSION(2,9,5)
-		wxTheApp->SafeYieldFor(NULL,wxEVT_CATEGORY_TIMER);
+		wxTheApp->SafeYieldFor(nullptr,wxEVT_CATEGORY_TIMER);
 #endif
 		Refresh(false);
 	}
@@ -189,7 +189,7 @@ static int WX_GL_ATTR_LIST[] = { WX_GL_DOUBLEBUFFER, WX_GL_RGBA, WX_GL_DEPTH_SIZ
 
 CMyGLCanvasBase::CMyGLCanvasBase(wxWindow *parent, wxWindowID id,const wxPoint& pos, const wxSize& size, long style, const wxString& name) :
 		wxGLCanvas(parent, id, WX_GL_ATTR_LIST, pos, size, style|wxFULL_REPAINT_ON_RESIZE , name ),
-        m_gl_context(NULL),
+        m_gl_context(nullptr),
         m_init(false),
         m_mouseLastX(0),m_mouseLastY(0)
 {
@@ -325,7 +325,7 @@ void CMyGLCanvasBase::Render()
 			// --------------------------------------
 			m_openGLScene->render();
 
-        } // end if "m_openGLScene!=NULL"
+        } // end if "m_openGLScene!=nullptr"
 
 		OnPostRender();
 
@@ -398,7 +398,7 @@ void CMyGLCanvasBase::InitGL()
     	GLUT_INIT_DONE = true;
 
 		int argc=1;
-		char *argv[1] = { NULL };
+		char *argv[1] = { nullptr };
 		glutInit( &argc, argv );
     }
 }

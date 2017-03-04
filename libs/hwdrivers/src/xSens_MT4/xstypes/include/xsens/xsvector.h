@@ -21,7 +21,7 @@ struct XsQuaternion;
 #include <algorithm>
 extern "C" {
 #else
-#define XSVECTOR_INITIALIZER	{ NULL, 0, 0 }
+#define XSVECTOR_INITIALIZER	{ nullptr, 0, 0 }
 typedef struct XsVector XsVector;
 #endif
 

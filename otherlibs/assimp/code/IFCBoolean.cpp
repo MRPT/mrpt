@@ -87,7 +87,7 @@ void ProcessBooleanHalfSpaceDifference(const IfcHalfSpaceSolid* hs, TempMesh& re
 									   const TempMesh& first_operand, 
 									   ConversionData& conv)
 {
-	ai_assert(hs != NULL);
+	ai_assert(hs != nullptr);
 
 	const IfcPlane* const plane = hs->BaseSurface->ToPtr<IfcPlane>();
 	if(!plane) {
@@ -189,7 +189,7 @@ bool IntersectsBoundaryProfile( const IfcVector3& e0, const IfcVector3& e1, cons
 	std::vector<size_t>& intersected_boundary_segments,
 	std::vector<IfcVector3>& intersected_boundary_points,
 	bool half_open = false,
-	bool* e0_hits_border = NULL)
+	bool* e0_hits_border = nullptr)
 {
 	ai_assert(intersected_boundary_segments.empty());
 	ai_assert(intersected_boundary_points.empty());
@@ -322,7 +322,7 @@ void ProcessPolygonalBoundedBooleanHalfSpaceDifference(const IfcPolygonalBounded
 													   const TempMesh& first_operand, 
 													   ConversionData& conv)
 {
-	ai_assert(hs != NULL);
+	ai_assert(hs != nullptr);
 
 	const IfcPlane* const plane = hs->BaseSurface->ToPtr<IfcPlane>();
 	if(!plane) {
@@ -620,7 +620,7 @@ void ProcessBooleanExtrudedAreaSolidDifference(const IfcExtrudedAreaSolid* as, T
 											   const TempMesh& first_operand, 
 											   ConversionData& conv)
 {
-	ai_assert(as != NULL);
+	ai_assert(as != nullptr);
 
 	// This case is handled by reduction to an instance of the quadrify() algorithm.
 	// Obviously, this won't work for arbitrarily complex cases. In fact, the first

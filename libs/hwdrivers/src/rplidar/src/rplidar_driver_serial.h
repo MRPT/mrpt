@@ -84,7 +84,7 @@ protected:
     void     _capsuleToNormal(const rplidar_response_capsule_measurement_nodes_t & capsule, rplidar_response_measurement_node_t *nodebuffer, size_t &nodeCount);
     u_result _waitCapsuledNode(rplidar_response_capsule_measurement_nodes_t & node, _u32 timeout = DEFAULT_TIMEOUT);
     u_result  _cacheCapsuledScanData();
-    u_result _sendCommand(_u8 cmd, const void * payload = NULL, size_t payloadsize = 0);
+    u_result _sendCommand(_u8 cmd, const void * payload = nullptr, size_t payloadsize = 0);
     u_result _waitResponseHeader(rplidar_ans_header_t * header, _u32 timeout = DEFAULT_TIMEOUT);
     u_result _waitSampleRate(rplidar_response_sample_rate_t * res, _u32 timeout = DEFAULT_TIMEOUT);
 

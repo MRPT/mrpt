@@ -46,14 +46,14 @@ public:
   /** Speaks the given text. 
    * @param str The text to speak.
    * @param params Voice selection criteria expression
-   * @param audioOutputCB If not NULL, send synthesized audio data to this
+   * @param audioOutputCB If not nullptr, send synthesized audio data to this
    * callback (may be called several times). Otherwise, play using default
    * AudioCallback, or directly out the speakers
    * @param sampleRate if given, temporarily use this sample rate for this
    * speech, then restore. If 0, use current sample rate.
    */
   AREXPORT virtual bool speak(const char *str, const char* voiceParams, ArRetFunctor2<bool, ArTypes::Byte2*, int>* audioOutputCB, unsigned short sampleRate = 0) = 0;
-  AREXPORT virtual bool speak(const char *str, const char* voiceParams = NULL);
+  AREXPORT virtual bool speak(const char *str, const char* voiceParams = nullptr);
 
   /** Speaks the given string, using current voice and output settings,
    *  taking varargs and a format string (like printf)

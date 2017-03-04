@@ -56,11 +56,11 @@ public:
   /// Gets the closest reading, on a polar system 
   AREXPORT double getClosestPolar(double startAngle, double endAngle, 
 				  ArPose position, unsigned int maxRange,
-				  double *angle = NULL) const;
+				  double *angle = nullptr) const;
   /// Gets the closest reading, from a rectangular box, in robot LOCAL coords
   AREXPORT double getClosestBox(double x1, double y1, double x2, double y2,
 				ArPose position, unsigned int maxRange, 
-				ArPose *readingPos = NULL,
+				ArPose *readingPos = nullptr,
 				ArPose targetPose = ArPose(0, 0, 0)) const;
   /// Applies a transform to the buffer
   AREXPORT void applyTransform(ArTransform trans);

@@ -117,17 +117,17 @@ namespace obs
 			return *dynamic_cast<const MSG_CLASS*>(it->second.get());
 		}
 
-		/** Like CObservationGPS::getMsgByClass() but returns a NULL pointer if message is not found, instead of launching an exception */
+		/** Like CObservationGPS::getMsgByClass() but returns a nullptr pointer if message is not found, instead of launching an exception */
 		template <class MSG_CLASS>
 		MSG_CLASS * getMsgByClassPtr() {
 			message_list_t::iterator it = messages.find(static_cast<gnss::gnss_message_type_t>(MSG_CLASS::msg_type));
-			return it==messages.end() ? reinterpret_cast<MSG_CLASS*>(NULL) : dynamic_cast<MSG_CLASS*>(it->second.get());
+            return it==messages.end() ? static_cast<MSG_CLASS*>(nullptr) : dynamic_cast<MSG_CLASS*>(it->second.get());
 		}
 		/** \overload */
 		template <class MSG_CLASS>
 		const MSG_CLASS * getMsgByClassPtr() const {
 			message_list_t::const_iterator it = messages.find(static_cast<gnss::gnss_message_type_t>(MSG_CLASS::msg_type));
-			return it==messages.end() ? dynamic_cast<MSG_CLASS*>(NULL) : dynamic_cast<MSG_CLASS*>(it->second.get());
+			return it==messages.end() ? dynamic_cast<MSG_CLASS*>(nullptr) : dynamic_cast<MSG_CLASS*>(it->second.get());
 		}
 
 		void dumpToStream( mrpt::utils::CStream &out ) const; //!< Dumps the contents of the observation in a human-readable form to a given output stream \sa dumpToConsole(), getDescriptionAsText()

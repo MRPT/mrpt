@@ -29,7 +29,7 @@ TEST(CGPSInterface, parse_NMEA_GGA)
 		EXPECT_TRUE(parse_ret) << "Failed parse of: " << test_cmd << endl;
 
 		const gnss::Message_NMEA_GGA * msg = obsGPS.getMsgByClassPtr<gnss::Message_NMEA_GGA>();
-		EXPECT_TRUE(msg!=NULL);
+		EXPECT_TRUE(msg!=nullptr);
 		if (!msg) return;
 		EXPECT_NEAR(msg->fields.latitude_degrees, 36+49.76162994/60.0,1e-10);
 		EXPECT_NEAR(msg->fields.longitude_degrees, -(002+24.53709052/60.0),1e-10);
@@ -53,7 +53,7 @@ TEST(CGPSInterface, parse_NMEA_RMC)
 
 	const gnss::Message_NMEA_RMC * msg = obsGPS.getMsgByClassPtr<gnss::Message_NMEA_RMC>();
 
-	EXPECT_TRUE(msg!=NULL);
+	EXPECT_TRUE(msg!=nullptr);
 	if (!msg) return;
 	EXPECT_NEAR(msg->fields.latitude_degrees, 37+ 23.2475/60.0,1e-10);
 	EXPECT_NEAR(msg->fields.longitude_degrees, -(121+58.3416/60.0),1e-10);
@@ -68,7 +68,7 @@ TEST(CGPSInterface, parse_NMEA_GLL)
 
 	const gnss::Message_NMEA_GLL * msg = obsGPS.getMsgByClassPtr<gnss::Message_NMEA_GLL>();
 
-	EXPECT_TRUE(msg!=NULL);
+	EXPECT_TRUE(msg!=nullptr);
 	if (!msg) return;
 	EXPECT_NEAR(msg->fields.latitude_degrees, 37+ 23.2475/60.0,1e-10);
 	EXPECT_NEAR(msg->fields.longitude_degrees, -(121+58.3416/60.0),1e-10);
@@ -83,7 +83,7 @@ TEST(CGPSInterface, parse_NMEA_VTG)
 
 	const gnss::Message_NMEA_VTG * msg = obsGPS.getMsgByClassPtr<gnss::Message_NMEA_VTG>();
 
-	EXPECT_TRUE(msg!=NULL);
+	EXPECT_TRUE(msg!=nullptr);
 	if (!msg) return;
 	EXPECT_NEAR(msg->fields.true_track, 54.7,1e-6);
 	EXPECT_NEAR(msg->fields.magnetic_track, 34.4,1e-6);
@@ -100,7 +100,7 @@ TEST(CGPSInterface, parse_NMEA_ZDA)
 
 	const gnss::Message_NMEA_ZDA * msg = obsGPS.getMsgByClassPtr<gnss::Message_NMEA_ZDA>();
 
-	EXPECT_TRUE(msg!=NULL);
+	EXPECT_TRUE(msg!=nullptr);
 	if (!msg) return;
 	EXPECT_TRUE(msg->fields.date_day==14);
 	EXPECT_TRUE(msg->fields.date_month==10);

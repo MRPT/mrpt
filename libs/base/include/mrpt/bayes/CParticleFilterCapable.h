@@ -94,8 +94,8 @@ namespace bayes
 		void  prepareFastDrawSample(
 			const bayes::CParticleFilter::TParticleFilterOptions &PF_options,
 			TParticleProbabilityEvaluator partEvaluator = defaultEvaluator,
-			const void	* action = NULL,
-			const void	* observation = NULL
+            const void	* action = nullptr,
+            const void	* observation = nullptr
 			) const;
 
 		/** Draws a random sample from the particle filter, in such a way that each particle has a probability proportional to its weight (in the standard PF algorithm).
@@ -141,7 +141,7 @@ namespace bayes
 		 * \param out_max_log_w If provided, will return with the maximum log_w before normalizing, such as new_weights = old_weights - max_log_w.
 		 * \return The max/min ratio of weights ("dynamic range")
 		 */
-		virtual double  normalizeWeights( double *out_max_log_w = NULL ) =0;
+        virtual double  normalizeWeights( double *out_max_log_w = nullptr ) =0;
 
 		/** Returns the normalized ESS (Estimated Sample Size), in the range [0,1].
 		  *  Note that you do NOT need to normalize the weights before calling this.

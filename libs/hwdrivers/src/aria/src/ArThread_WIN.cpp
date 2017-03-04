@@ -25,7 +25,7 @@
 static DWORD WINAPI run(void *arg)
 {
   ArThread *t=(ArThread*)arg;
-  void *ret=NULL;
+  void *ret=nullptr;
 
   if (t->getBlockAllSignals())
     ArSignalHandler::blockCommonThisThread();
@@ -74,7 +74,7 @@ AREXPORT ArThread * ArThread::self()
   if (iter != ourThreads.end())
     return((*iter).second);
   else
-    return(NULL);
+    return(nullptr);
 }
 
 AREXPORT void ArThread::cancelAll()

@@ -278,7 +278,7 @@ void  CFeatureExtraction::selectGoodFeaturesKLT(
 	if( ROI.xMin == 0 && ROI.xMax == 0 && ROI.yMin == 0 && ROI.yMax == 0 )		// Use the whole image (except the borders)
 	{
 		if( options.patchSize == 0 )
-			selectGoodFeaturesKLT( img, feats, init_ID, nDesiredFeatures, NULL );
+			selectGoodFeaturesKLT( img, feats, init_ID, nDesiredFeatures, nullptr );
 		else
 		{
 			// We mask the borders of the image in order to get an appropiate patch (according to the patch size)

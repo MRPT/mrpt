@@ -172,7 +172,7 @@ double mrpt::vision::reprojectionResiduals(
 		const TFramePosesMap::mapped_type        & frame = itF->second;
 		const TLandmarkLocationsMap::mapped_type & point = itP->second;
 
-		double *ptr_1st_deriv = out_kernel_1st_deriv ? &((*out_kernel_1st_deriv)[i]) : NULL;
+		double *ptr_1st_deriv = out_kernel_1st_deriv ? &((*out_kernel_1st_deriv)[i]) : nullptr;
 
 		if (frame_poses_are_inverse)
 			reprojectionResidualsElement<true>(camera_params, OBS, out_residuals[i], frame, point, sum, use_robust_kernel,kernel_param,ptr_1st_deriv);
@@ -218,7 +218,7 @@ double mrpt::vision::reprojectionResiduals(
 		const TFramePosesVec::value_type        & frame = frame_poses[i_f];
 		const TLandmarkLocationsVec::value_type & point = landmark_points[i_p];
 
-		double *ptr_1st_deriv = out_kernel_1st_deriv ? &((*out_kernel_1st_deriv)[i]) : NULL;
+		double *ptr_1st_deriv = out_kernel_1st_deriv ? &((*out_kernel_1st_deriv)[i]) : nullptr;
 
 		if (frame_poses_are_inverse)
 			reprojectionResidualsElement<true>(camera_params, OBS, out_residuals[i], frame, point, sum, use_robust_kernel,kernel_param,ptr_1st_deriv);
@@ -248,7 +248,7 @@ void mrpt::vision::ba_build_gradient_Hessians(
 	MRPT_START
 
 	const size_t N = observations.size();
-	const bool use_robust_kernel = (kernel_1st_deriv!=NULL);
+	const bool use_robust_kernel = (kernel_1st_deriv!=nullptr);
 
 	for (size_t i=0;i<N;i++)
 	{

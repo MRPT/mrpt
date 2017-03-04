@@ -81,11 +81,11 @@ namespace mrpt
 		struct TAuxThreadLaucher
 		{
 	#ifdef MRPT_OS_WINDOWS
-			TAuxThreadLaucher() : ptrFunc(NULL),param(NULL),win_sem(0,10)
+			TAuxThreadLaucher() : ptrFunc(nullptr),param(nullptr),win_sem(0,10)
 			{
 			}
 	#else
-			TAuxThreadLaucher() : ptrFunc(NULL),param(NULL) { };
+			TAuxThreadLaucher() : ptrFunc(nullptr),param(nullptr) { };
 	#endif
 			void    (*ptrFunc) (void *);
 			void    *param;
@@ -113,7 +113,7 @@ namespace mrpt
 	#else
 			// LINUX: We have to free here this memory:
 			delete d;
-			d = NULL;
+			d = nullptr;
 	#endif
 
 			// Now start the user code:
@@ -127,7 +127,7 @@ namespace mrpt
 			{
 				std::cout << "Untyped exception in [auxiliary_thread_launcher_LIN/WIN]!!!\n";
 			}
-			return NULL;
+			return nullptr;
 		}
 
 		void auxiliary_thread_launcher_WIN( void *param )
@@ -165,7 +165,7 @@ mrpt::system::TThreadHandle mrpt::system::detail::createThreadImpl(
 	auxData->win_sem.waitForSignal();
 	threadHandle.idThread = auxData->myWindowsId;
 
-	delete auxData; auxData = NULL;
+	delete auxData; auxData = nullptr;
 
 	return threadHandle;
 
@@ -173,7 +173,7 @@ mrpt::system::TThreadHandle mrpt::system::detail::createThreadImpl(
 	TThreadHandle		threadHandle;
 
     pthread_t   newThreadId;
-    int iRet = pthread_create( &newThreadId,NULL,auxiliary_thread_launcher_LIN,auxData);
+    int iRet = pthread_create( &newThreadId,nullptr,auxiliary_thread_launcher_LIN,auxData);
     ASSERT_(iRet==0);
 
 	threadHandle.idThread = (unsigned long)newThreadId;
@@ -199,9 +199,9 @@ void mrpt::system::joinThread( const TThreadHandle &threadHandle )
 	if (ret!=WAIT_OBJECT_0)
 		cerr << "[mrpt::system::joinThread] Error waiting for thread completion!" << endl;
 #elif defined(MRPT_OS_APPLE)
-	pthread_join(reinterpret_cast<pthread_t>(threadHandle.idThread), NULL);
+	pthread_join(reinterpret_cast<pthread_t>(threadHandle.idThread), nullptr);
 #else
-	pthread_join(threadHandle.idThread, NULL);
+	pthread_join(threadHandle.idThread, nullptr);
 #endif
 }
 
@@ -460,7 +460,7 @@ bool mrpt::system::launchProcess( const std::string & command )
 	memset(&SI,0,sizeof(STARTUPINFOA) );
 	SI.cb = sizeof(STARTUPINFOA);
 
-	if (CreateProcessA( NULL, (LPSTR)command.c_str(), NULL, NULL, true, 0,	NULL, NULL,	&SI, &PI) )
+	if (CreateProcessA( nullptr, (LPSTR)command.c_str(), nullptr, nullptr, true, 0,	nullptr, nullptr,	&SI, &PI) )
 	{
 		// Wait:
 		WaitForSingleObject( PI.hProcess, INFINITE );
@@ -471,7 +471,7 @@ bool mrpt::system::launchProcess( const std::string & command )
 		char str[300];
 		DWORD e = GetLastError();
 
-		FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM,0,e,0,str,sizeof(str), NULL);
+		FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM,0,e,0,str,sizeof(str), nullptr);
 
 		// ERROR:
 		std::cerr << "[launchProcess] Couldn't spawn process. Error msg: " << str << std::endl;
@@ -496,7 +496,7 @@ unsigned int mrpt::system::getNumberOfProcessors()
         if (ret<1) ret=1;
 #elif defined(MRPT_OS_APPLE)
         size_t len=sizeof(int);
-        if(sysctlbyname("hw.logicalcpu", &ret, &len, NULL, 0) != 0)
+        if(sysctlbyname("hw.logicalcpu", &ret, &len, nullptr, 0) != 0)
             ret = 1; // failed
 #else
         // This assumes a Linux kernel 2.6
@@ -528,7 +528,7 @@ void mrpt::system::exitThread() MRPT_NO_THROWS
 #ifdef MRPT_OS_WINDOWS
 	ExitThread(0);
 #else
-	pthread_exit(NULL);
+	pthread_exit(nullptr);
 #endif
 }
 

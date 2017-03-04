@@ -23,7 +23,7 @@ jpeg_CreateDecompress (j_decompress_ptr cinfo, int version, size_t structsize)
   int i;
 
   /* Guard against version mismatches between library and caller. */
-  cinfo->mem = NULL;		/* so jpeg_destroy knows mem mgr not called */
+  cinfo->mem = nullptr;		/* so jpeg_destroy knows mem mgr not called */
   if (version != JPEG_LIB_VERSION)
     ERREXIT2(cinfo, JERR_BAD_LIB_VERSION, JPEG_LIB_VERSION, version);
   if (structsize != SIZEOF(struct jpeg_decompress_struct))
@@ -49,21 +49,21 @@ jpeg_CreateDecompress (j_decompress_ptr cinfo, int version, size_t structsize)
   jinit_memory_mgr((j_common_ptr) cinfo);
 
   /* Zero out pointers to permanent structures. */
-  cinfo->progress = NULL;
-  cinfo->src = NULL;
+  cinfo->progress = nullptr;
+  cinfo->src = nullptr;
 
   for (i = 0; i < NUM_QUANT_TBLS; i++)
-    cinfo->quant_tbl_ptrs[i] = NULL;
+    cinfo->quant_tbl_ptrs[i] = nullptr;
 
   for (i = 0; i < NUM_HUFF_TBLS; i++) {
-    cinfo->dc_huff_tbl_ptrs[i] = NULL;
-    cinfo->ac_huff_tbl_ptrs[i] = NULL;
+    cinfo->dc_huff_tbl_ptrs[i] = nullptr;
+    cinfo->ac_huff_tbl_ptrs[i] = nullptr;
   }
 
   /* Initialize marker processor so application can override methods
    * for COM, APPn markers before calling jpeg_read_header.
    */
-  cinfo->marker_list = NULL;
+  cinfo->marker_list = nullptr;
   jinit_marker_reader(cinfo);
 
   /* And initialize the overall input controller. */
@@ -193,7 +193,7 @@ default_decompress_parms (j_decompress_ptr cinfo)
   cinfo->two_pass_quantize = FALSE;
 #endif
   cinfo->desired_number_of_colors = 256;
-  cinfo->colormap = NULL;
+  cinfo->colormap = nullptr;
   /* Initialize for no mode change in buffered-image mode. */
   cinfo->enable_1pass_quant = FALSE;
   cinfo->enable_external_quant = FALSE;

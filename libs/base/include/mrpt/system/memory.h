@@ -77,7 +77,7 @@ namespace mrpt
 
 			/** Frees a memory block reserved by aligned_malloc.
 			  * \param alignment The desired alignment, typ. 8 or 16 bytes. 1 means no alignment required.
-			  * If old_ptr is NULL, a new block will be reserved from scratch.
+			  * If old_ptr is nullptr, a new block will be reserved from scratch.
 			  * \sa aligned_malloc, aligned_free
 			  */
 			void BASE_IMPEXP  *aligned_realloc(void* old_ptr, size_t bytes, size_t alignment);

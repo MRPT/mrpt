@@ -1180,8 +1180,8 @@ TStereoCalibParams::TStereoCalibParams() :
 	optimize_t1(false),optimize_t2(false),
 	use_robust_kernel(false),
 	robust_kernel_param(10),
-	callback(NULL),
-	callback_user_param(NULL)
+	callback(nullptr),
+	callback_user_param(nullptr)
 {
 }
 

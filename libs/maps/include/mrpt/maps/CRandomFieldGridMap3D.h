@@ -144,7 +144,7 @@ namespace maps
 			const double y_min, const double y_max,
 			const double z_min, const double z_max,
 			const double resolution_xy, const double resolution_z = -1.0,
-			const  TRandomFieldVoxel* fill_value = NULL) MRPT_OVERRIDE;
+			const  TRandomFieldVoxel* fill_value = nullptr) MRPT_OVERRIDE;
 
 		/** Base class for user-supplied objects capable of describing voxels connectivity, used to build prior factors of the MRF graph. \sa setvoxelsConnectivity() */
 		struct MAPS_IMPEXP ConnectivityDescriptor

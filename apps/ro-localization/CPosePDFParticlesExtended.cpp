@@ -380,7 +380,7 @@ void  CPosePDFParticlesExtended::prediction_and_update_pfStandardProposal(
 	// ----------------------------------------------------------------------
 	//						PREDICTION STAGE
 	// ----------------------------------------------------------------------
-	ASSERT_(actions!=NULL);
+    ASSERT_(actions!=nullptr);
 
 	// Find a robot movement estimation:
 	robotMovement = actions->getBestMovementEstimation();
@@ -422,7 +422,7 @@ void  CPosePDFParticlesExtended::prediction_and_update_pfStandardProposal(
 	//						UPDATE STAGE
 	// ----------------------------------------------------------------------
 	M = m_particles.size();
-	if (sf!=NULL)
+    if (sf!=nullptr)
 	{
 		// A map MUST be supplied!
 		ASSERT_(options.metricMap || options.metricMaps.size()>0);
@@ -457,8 +457,8 @@ void  CPosePDFParticlesExtended::prediction_and_update_pfAuxiliaryPFOptimal(
 	// ----------------------------------------------------------------------
 	//							PRELIMINAR CHECKS:
 	// ----------------------------------------------------------------------
-	ASSERT_(sf!=NULL);
-	ASSERT_(actions!=NULL);
+    ASSERT_(sf!=nullptr);
+    ASSERT_(actions!=nullptr);
 
 	robotMovement = actions->getBestMovementEstimation();	// Find a robot movement estimation:
 	if ( !robotMovement )									// Assure one has been found:
@@ -921,7 +921,7 @@ void  CPosePDFParticlesExtended::saveParzenPDFToTextFile(
  ---------------------------------------------------------------*/
 CPosePDFParticlesExtended::TPredictionParams::TPredictionParams()
 {
-	metricMap				= NULL;
+    metricMap				= nullptr;
 
 	KLD_minSampleSize		= 250;
 	KLD_maxSampleSize		= 100000;

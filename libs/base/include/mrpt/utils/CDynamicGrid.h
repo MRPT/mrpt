@@ -60,16 +60,16 @@ namespace mrpt
 			virtual ~CDynamicGrid() { }
 
 			/** Changes the size of the grid, ERASING all previous contents.
-			  * If \a fill_value is left as NULL, the contents of cells may be undefined (some will remain with
+			  * If \a fill_value is left as nullptr, the contents of cells may be undefined (some will remain with
 			  *  their old values, the new ones will have the default cell value, but the location of old values
 			  *  may change wrt their old places).
-			  * If \a fill_value is not NULL, it is assured that all cells will have a copy of that value after resizing.
+			  * If \a fill_value is not nullptr, it is assured that all cells will have a copy of that value after resizing.
 			  * \sa resize, fill
 			  */
 			void  setSize(
 				const double x_min, const double x_max,
 				const double y_min, const double y_max,
-				const double resolution, const T * fill_value = NULL)
+				const double resolution, const T * fill_value = nullptr)
 			{
 				// Adjust sizes to adapt them to full sized cells acording to the resolution:
 				m_x_min = resolution*round(x_min/resolution);
@@ -178,14 +178,14 @@ namespace mrpt
 				m_map.swap(new_map);
 			}
 
-			/** Returns a pointer to the contents of a cell given by its coordinates, or NULL if it is out of the map extensions.
+			/** Returns a pointer to the contents of a cell given by its coordinates, or nullptr if it is out of the map extensions.
 				*/
 			inline T*	cellByPos( double x, double y )
 			{
 				const int cx = x2idx(x);
 				const int cy = y2idx(y);
-				if( cx<0 || cx>=static_cast<int>(m_size_x) ) return NULL;
-				if( cy<0 || cy>=static_cast<int>(m_size_y) ) return NULL;
+				if( cx<0 || cx>=static_cast<int>(m_size_x) ) return nullptr;
+				if( cy<0 || cy>=static_cast<int>(m_size_y) ) return nullptr;
 				return &m_map[ cx + cy*m_size_x ];
 			}
 			/** \overload */
@@ -193,26 +193,26 @@ namespace mrpt
 			{
 				const int cx = x2idx(x);
 				const int cy = y2idx(y);
-				if( cx<0 || cx>=static_cast<int>(m_size_x) ) return NULL;
-				if( cy<0 || cy>=static_cast<int>(m_size_y) ) return NULL;
+				if( cx<0 || cx>=static_cast<int>(m_size_x) ) return nullptr;
+				if( cy<0 || cy>=static_cast<int>(m_size_y) ) return nullptr;
 				return &m_map[ cx + cy*m_size_x ];
 			}
 
-			/** Returns a pointer to the contents of a cell given by its cell indexes, or NULL if it is out of the map extensions.
+			/** Returns a pointer to the contents of a cell given by its cell indexes, or nullptr if it is out of the map extensions.
 				*/
 			inline  T*	cellByIndex( unsigned int cx, unsigned int cy )
 			{
 				if( cx>=m_size_x || cy>=m_size_y)
-						return NULL;
+						return nullptr;
 				else	return &m_map[ cx + cy*m_size_x ];
 			}
 
-			/** Returns a pointer to the contents of a cell given by its cell indexes, or NULL if it is out of the map extensions.
+			/** Returns a pointer to the contents of a cell given by its cell indexes, or nullptr if it is out of the map extensions.
 				*/
 			inline const T* cellByIndex( unsigned int cx, unsigned int cy ) const
 			{
 				if( cx>=m_size_x || cy>=m_size_y)
-						return NULL;
+						return nullptr;
 				else	return &m_map[ cx + cy*m_size_x ];
 			}
 

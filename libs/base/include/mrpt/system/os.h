@@ -53,12 +53,12 @@ namespace mrpt
 			int BASE_IMPEXP vsnprintf(char *buf, size_t bufSize, const char *format, va_list args) MRPT_NO_THROWS;
 
 			/** An OS-independent version of fopen.
-			  * \return It will always return NULL on any error.
+			  * \return It will always return nullptr on any error.
 			  */
 			FILE BASE_IMPEXP *fopen(const char *fileName,const char *mode) MRPT_NO_THROWS;
 
 			/** An OS-independent version of fopen (std::string version)
-			  * \return It will always return NULL on any error.
+			  * \return It will always return nullptr on any error.
 			  */
 			FILE BASE_IMPEXP *fopen(const std::string &fileName,const char *mode) MRPT_NO_THROWS;
 
@@ -67,7 +67,7 @@ namespace mrpt
 			int BASE_IMPEXP fprintf(FILE *fil, const char *format, ...)  MRPT_NO_THROWS MRPT_printf_format_check(2,3);
 
 			/** An OS-independent version of fclose.
-			  * \exception std::exception On trying to close a NULL file descriptor.
+			  * \exception std::exception On trying to close a nullptr file descriptor.
 			  */
 			void BASE_IMPEXP fclose(FILE *f);
 

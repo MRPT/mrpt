@@ -225,10 +225,10 @@ void TCaptureOptions_FlyCapture2::loadOptionsFrom(
 // ---------------------------------------------------------------
 /** Default constructor */
 CImageGrabber_FlyCapture2::CImageGrabber_FlyCapture2() :
-	m_camera(NULL),
-	m_camera_info(NULL),
-	m_img_buffer(NULL),
-	m_triclops(NULL)
+	m_camera(nullptr),
+	m_camera_info(nullptr),
+	m_img_buffer(nullptr),
+	m_triclops(nullptr)
 {
 #if MRPT_HAS_FLYCAPTURE2
 	m_img_buffer = new FlyCapture2::Image();
@@ -237,10 +237,10 @@ CImageGrabber_FlyCapture2::CImageGrabber_FlyCapture2() :
 
 /** Constructor + open */
 CImageGrabber_FlyCapture2::CImageGrabber_FlyCapture2( const TCaptureOptions_FlyCapture2 &options ) :
-	m_camera(NULL),
-	m_camera_info(NULL),
-	m_img_buffer(NULL),
-	m_triclops(NULL)
+	m_camera(nullptr),
+	m_camera_info(nullptr),
+	m_img_buffer(nullptr),
+	m_triclops(nullptr)
 {
 #if MRPT_HAS_FLYCAPTURE2
 	m_img_buffer = new FlyCapture2::Image();
@@ -253,7 +253,7 @@ CImageGrabber_FlyCapture2::~CImageGrabber_FlyCapture2()
 {
 #if MRPT_HAS_FLYCAPTURE2
 	this->close();
-	delete FC2_BUF_IMG; m_img_buffer = NULL;
+	delete FC2_BUF_IMG; m_img_buffer = nullptr;
 #endif
 }
 
@@ -606,8 +606,8 @@ void CImageGrabber_FlyCapture2::close()
 	try { if (m_triclops) delete TRI_CONTEXT; } catch (...) {}
 #endif
 
-	m_camera=NULL;
-	m_camera_info=NULL;
+	m_camera=nullptr;
+	m_camera_info=nullptr;
 
 #else
 	THROW_EXCEPTION("MRPT compiled without support for FlyCapture2")

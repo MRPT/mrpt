@@ -59,13 +59,13 @@ public:
     virtual bool open() = 0;
     virtual void close()  = 0;
     
-    virtual int waitfordata(size_t data_count,_u32 timeout = -1, size_t * returned_size = NULL) = 0;
+    virtual int waitfordata(size_t data_count,_u32 timeout = -1, size_t * returned_size = nullptr) = 0;
 
     virtual int senddata(const unsigned char * data, size_t size) = 0;
     virtual int recvdata(unsigned char * data, size_t size) = 0;
 
-    virtual int waitforsent(_u32 timeout = -1, size_t * returned_size = NULL) = 0;
-    virtual int waitforrecv(_u32 timeout = -1, size_t * returned_size = NULL) = 0;
+    virtual int waitforsent(_u32 timeout = -1, size_t * returned_size = nullptr) = 0;
+    virtual int waitforrecv(_u32 timeout = -1, size_t * returned_size = nullptr) = 0;
 
     virtual size_t rxqueue_count() = 0;
 

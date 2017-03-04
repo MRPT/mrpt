@@ -190,7 +190,7 @@ void SplitLargeMeshesProcess_Triangle::SplitMesh(
 			pcMesh->mNumVertices = iCnt;
 
 			// allocate storage
-			if (pMesh->mVertices != NULL)
+			if (pMesh->mVertices != nullptr)
 				pcMesh->mVertices = new aiVector3D[iCnt];
 
 			if (pMesh->HasNormals())
@@ -261,7 +261,7 @@ void SplitLargeMeshesProcess_Triangle::SplitMesh(
 						if (iSubMeshes-1 == i)
 						{
 							pc->mWeights = bone->mWeights;
-							bone->mWeights = NULL;
+							bone->mWeights = nullptr;
 						}
 						else pc->mWeights = new aiVertexWeight[pc->mNumWeights];
 
@@ -309,7 +309,7 @@ void SplitLargeMeshesProcess_Triangle::SplitMesh(
 					piOut[v] = iIndexOut;
 
 					// copy positions
-					if (pMesh->mVertices != NULL)
+					if (pMesh->mVertices != nullptr)
 						pcMesh->mVertices[iIndexOut] = pMesh->mVertices[iIndex];
 
 					// copy normals

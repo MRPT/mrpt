@@ -52,7 +52,7 @@ namespace bayes
 			return derived().m_particles.size();
 		}
 
-		double normalizeWeights( double *out_max_log_w = NULL ) MRPT_OVERRIDE
+        double normalizeWeights( double *out_max_log_w = nullptr ) MRPT_OVERRIDE
 		{
 			MRPT_START
 			if (derived().m_particles.empty()) return 0;
@@ -240,13 +240,13 @@ namespace bayes
 		const CParticleData * getMostLikelyParticle() const
 		{
 			MRPT_START
-			const CParticleData *ret = NULL;
+            const CParticleData *ret = nullptr;
 			ASSERT_(m_particles.size()>0)
 
 			typename CParticleList::const_iterator	it;
 			for (it=m_particles.begin();it!=m_particles.end();++it)
 			{
-				if (ret==NULL || it->log_w > ret->log_w)
+                if (ret==nullptr || it->log_w > ret->log_w)
 					ret = &(*it);
 			}
 			return ret;

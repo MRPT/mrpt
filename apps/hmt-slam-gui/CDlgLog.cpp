@@ -31,7 +31,7 @@ BEGIN_EVENT_TABLE(CDlgLog,wxDialog)
 END_EVENT_TABLE()
 
 
-hmt_slam_guiFrame  *myParent=NULL;
+hmt_slam_guiFrame  *myParent=nullptr;
 
 CDlgLog::CDlgLog(wxWindow* parent,wxWindowID id,const wxPoint& pos,const wxSize& size)
 {

@@ -111,7 +111,7 @@ void BVHLoader::InternReadFile( const std::string& pFile, aiScene* pScene, IOSys
 
 	// read file into memory
 	boost::scoped_ptr<IOStream> file( pIOHandler->Open( pFile));
-	if( file.get() == NULL)
+	if( file.get() == nullptr)
 		throw DeadlyImportError( "Failed to open file " + pFile + ".");
 
 	size_t fileSize = file->FileSize();
@@ -437,9 +437,9 @@ void BVHLoader::CreateAnimation( aiScene* pScene)
 	anim->mNumChannels = mNodes.size();
 	anim->mChannels = new aiNodeAnim*[anim->mNumChannels];
 
-	// FIX: set the array elements to NULL to ensure proper deletion if an exception is thrown
+	// FIX: set the array elements to nullptr to ensure proper deletion if an exception is thrown
 	for (unsigned int i = 0; i < anim->mNumChannels;++i)
-		anim->mChannels[i] = NULL;
+		anim->mChannels[i] = nullptr;
 
 	for( unsigned int a = 0; a < anim->mNumChannels; a++)
 	{

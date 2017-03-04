@@ -165,18 +165,18 @@ AREXPORT ArArg::~ArArg()
 
 AREXPORT void ArArg::clear(void)
 {
-  myIntPointer = NULL;
-  myDoublePointer = NULL;
-  myBoolPointer = NULL;
-  myPosePointer = NULL;
-  myStringPointer = NULL;
+  myIntPointer = nullptr;
+  myDoublePointer = nullptr;
+  myBoolPointer = nullptr;
+  myPosePointer = nullptr;
+  myStringPointer = nullptr;
   myMinInt = INT_MIN;
   myMaxInt = INT_MAX;
   myMinDouble = -HUGE_VAL;
   myMaxDouble = HUGE_VAL;
   myMaxStrLen = 0;
-  mySetFunctor = NULL;
-  myGetFunctor = NULL;  
+  mySetFunctor = nullptr;
+  myGetFunctor = nullptr;  
   myConfigPrioritySet = false;
   myConfigPriority = ArPriority::NORMAL;
 }
@@ -224,7 +224,7 @@ AREXPORT const char *ArArg::getDescription(void) const
 
 AREXPORT int ArArg::getInt(void) const
 { 
-  if (myIntPointer != NULL)
+  if (myIntPointer != nullptr)
     return *myIntPointer;
   else
     return 0;
@@ -232,7 +232,7 @@ AREXPORT int ArArg::getInt(void) const
 
 AREXPORT double ArArg::getDouble(void) const 
 {
-  if (myDoublePointer != NULL)
+  if (myDoublePointer != nullptr)
     return *myDoublePointer; 
   else
     return 0;
@@ -240,7 +240,7 @@ AREXPORT double ArArg::getDouble(void) const
 
 AREXPORT bool ArArg::getBool(void) const
 {
-  if (myBoolPointer != NULL)
+  if (myBoolPointer != nullptr)
     return *myBoolPointer;
   else
     return false;
@@ -248,16 +248,16 @@ AREXPORT bool ArArg::getBool(void) const
 
 AREXPORT const char *ArArg::getString(void) const
 {
-  if (myStringPointer != NULL)
+  if (myStringPointer != nullptr)
     return myStringPointer;
   else
-    return NULL;
+    return nullptr;
 }
 
 AREXPORT ArPose ArArg::getPose(void) const
 {
   ArPose pose;
-  if (myPosePointer != NULL)
+  if (myPosePointer != nullptr)
     return *myPosePointer;
   else
     return pose;
@@ -265,8 +265,8 @@ AREXPORT ArPose ArArg::getPose(void) const
 
 AREXPORT const std::list<ArArgumentBuilder *> *ArArg::getArgsWithFunctor(void) const
 {
-  if (myGetFunctor == NULL)
-    return NULL;
+  if (myGetFunctor == nullptr)
+    return nullptr;
   else
     return myGetFunctor->invokeR();
 }
@@ -283,9 +283,9 @@ AREXPORT bool ArArg::setInt(int val)
     ArLog::log(ArLog::Normal, "ArArg of %s: setInt value %d above range [%d, %d]", getName(), val, myMinInt, myMaxInt);
     return false;
   }
-  if (myIntPointer == NULL)
+  if (myIntPointer == nullptr)
   {
-    ArLog::log(ArLog::Normal, "ArArg of %s: setInt called with NULL int pointer.", getName());
+    ArLog::log(ArLog::Normal, "ArArg of %s: setInt called with nullptr int pointer.", getName());
   }
   // if we got to here we're good
   *myIntPointer = val;
@@ -304,9 +304,9 @@ AREXPORT bool ArArg::setDouble(double val)
     ArLog::log(ArLog::Normal, "ArArg of %s: setDouble value %g above range [%g, %g]", getName(), val, myMinDouble, myMaxDouble);
     return false;
   }
-  if (myDoublePointer == NULL)
+  if (myDoublePointer == nullptr)
   {
-    ArLog::log(ArLog::Normal, "ArArg of %s: setDouble called with NULL pointer.", getName());
+    ArLog::log(ArLog::Normal, "ArArg of %s: setDouble called with nullptr pointer.", getName());
     return false;
   }
   // if we got to here we're good
@@ -317,9 +317,9 @@ AREXPORT bool ArArg::setDouble(double val)
 
 AREXPORT bool ArArg::setBool(bool val)
 {
-  if (myBoolPointer == NULL)
+  if (myBoolPointer == nullptr)
   {
-    ArLog::log(ArLog::Normal, "ArArg of %s: setBool called with NULL pointer.", getName());
+    ArLog::log(ArLog::Normal, "ArArg of %s: setBool called with nullptr pointer.", getName());
     return false;
   }
   *myBoolPointer = val;
@@ -329,12 +329,12 @@ AREXPORT bool ArArg::setBool(bool val)
 AREXPORT bool ArArg::setString(const char *str)
 {
   size_t len;
-  if (myStringPointer == NULL)
+  if (myStringPointer == nullptr)
   {
-    ArLog::log(ArLog::Normal, "ArArg of %s: setString called with NULL pointer.", getName());
+    ArLog::log(ArLog::Normal, "ArArg of %s: setString called with nullptr pointer.", getName());
     return false;
   }
-  // this is >= so that if it wouldn't have room with NULL that's
+  // this is >= so that if it wouldn't have room with nullptr that's
   // taken care of too
   if ((len = strlen(str)) >= myMaxStrLen)
   {
@@ -347,9 +347,9 @@ AREXPORT bool ArArg::setString(const char *str)
 
 AREXPORT bool ArArg::setPose(ArPose pose)
 {
-  if (myPosePointer == NULL)
+  if (myPosePointer == nullptr)
   {
-    ArLog::log(ArLog::Normal, "ArArg of %s: setPose called with NULL pointer.", getName());
+    ArLog::log(ArLog::Normal, "ArArg of %s: setPose called with nullptr pointer.", getName());
     return false;
   }
   *myPosePointer = pose;
@@ -359,9 +359,9 @@ AREXPORT bool ArArg::setPose(ArPose pose)
 
 AREXPORT bool ArArg::setArgWithFunctor(ArArgumentBuilder *argument)
 {
-  if (mySetFunctor == NULL)
+  if (mySetFunctor == nullptr)
   {
-    ArLog::log(ArLog::Normal, "ArArg of %s: setArgWithFunctor called with NULL pointer.", getName());
+    ArLog::log(ArLog::Normal, "ArArg of %s: setArgWithFunctor called with nullptr pointer.", getName());
     return false;
   }
   return mySetFunctor->invokeR(argument);

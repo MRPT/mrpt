@@ -25,8 +25,8 @@ bool Aria::ourExiting=false;
 std::string Aria::ourDirectory="";
 std::list<ArFunctor*> Aria::ourInitCBs;
 std::list<ArFunctor*> Aria::ourUninitCBs;
-ArKeyHandler *Aria::ourKeyHandler = NULL;
-ArJoyHandler *Aria::ourJoyHandler = NULL;
+ArKeyHandler *Aria::ourKeyHandler = nullptr;
+ArJoyHandler *Aria::ourJoyHandler = nullptr;
 bool Aria::ourInited = false;
 bool Aria::ourRunning = false;
 ArMutex Aria::ourExitCallbacksMutex;
@@ -39,7 +39,7 @@ std::multimap<int, ArFunctor *> Aria::ourLogOptionsCBs;
 #ifndef ARINTERFACE
 std::list<ArRobot*> Aria::ourRobots;
 ArConfig Aria::ourConfig;
-ArRobotJoyHandler *Aria::ourRobotJoyHandler = NULL;
+ArRobotJoyHandler *Aria::ourRobotJoyHandler = nullptr;
 ArStringInfoGroup Aria::ourInfoGroup;
 #endif // ARINTERFACE
 
@@ -84,7 +84,7 @@ AREXPORT void Aria::init(SigHandleMethod method, bool initSockets,
 
   ourRunning = true;
 #ifndef WIN32
-  srand48(time(NULL));
+  srand48(time(nullptr));
 #endif
 
   ArThread::init();
@@ -124,7 +124,7 @@ AREXPORT void Aria::init(SigHandleMethod method, bool initSockets,
 
   if (ourDirectory.length() == 0)
   {
-    if (getenv("ARIA") != NULL)
+    if (getenv("ARIA") != nullptr)
     {
       setDirectory(getenv("ARIA"));
     }
@@ -347,15 +347,15 @@ AREXPORT void Aria::delRobot(ArRobot *robot)
 
 /**
    @param name the name of the robot you want to find
-   @return NULL if there is no robot of that name, otherwise the robot with 
+   @return nullptr if there is no robot of that name, otherwise the robot with 
    that name
 */
 AREXPORT ArRobot *Aria::findRobot(char *name)
 {
   std::string rname;
   std::list<ArRobot *>::iterator it;
-  if (name == NULL)
-    return NULL;
+  if (name == nullptr)
+    return nullptr;
 
   rname = name;
   for (it = ourRobots.begin(); it != ourRobots.end(); it++)
@@ -363,7 +363,7 @@ AREXPORT ArRobot *Aria::findRobot(char *name)
     if ((*it)->getName() == rname)
       return (*it);
   }
-  return NULL;
+  return nullptr;
 
 }
 
@@ -433,7 +433,7 @@ AREXPORT void Aria::signalHandlerCB(int sig)
 AREXPORT void Aria::setDirectory(const char *directory)
 {
   int ind;
-  if (directory != NULL)
+  if (directory != nullptr)
   {
     ourDirectory = directory;
     ind = strlen(directory) - 1;
@@ -538,7 +538,7 @@ AREXPORT bool Aria::parseArgs(void)
   for (it = ourParseArgCBs.rbegin(); it != ourParseArgCBs.rend(); it++)
   {
     callback = (*it).second;
-    if (callback->getName() != NULL && callback->getName()[0] != '\0')
+    if (callback->getName() != nullptr && callback->getName()[0] != '\0')
       ArLog::log(ourParseArgsLogLevel, 
 		 "Aria: Calling parse arg functor '%s' (%d)", 
 		 callback->getName(), (*it).first);

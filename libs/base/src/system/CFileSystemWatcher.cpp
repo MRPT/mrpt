@@ -57,13 +57,13 @@ CFileSystemWatcher::CFileSystemWatcher( const std::string &path ) :
 		path.c_str(),
 		FILE_LIST_DIRECTORY,
 		FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
-		NULL, //security attributes
+		nullptr, //security attributes
 		OPEN_EXISTING,
 		FILE_FLAG_BACKUP_SEMANTICS,
-		NULL);
+		nullptr);
 	if( hDir == INVALID_HANDLE_VALUE )
 	{
-		m_hNotif=NULL;
+		m_hNotif=nullptr;
         THROW_EXCEPTION("FindFirstChangeNotificationA returned error!");
 	}
 
@@ -108,7 +108,7 @@ CFileSystemWatcher::~CFileSystemWatcher( )
 		if (!m_watchThread.isClear())
 			mrpt::system::terminateThread(m_watchThread);
 		CloseHandle(HANDLE(m_hNotif));
-		m_hNotif=NULL;
+		m_hNotif=nullptr;
 	}
 #else
 #	if	MRPT_HAS_INOTIFY
@@ -133,7 +133,7 @@ void CFileSystemWatcher::getChanges( TFileSystemChangeList &out_list )
 
 #ifdef MRPT_OS_WINDOWS
 	// Windows version:
-	ASSERTMSG_(m_hNotif!=NULL,"CFileSystemWatcher was not initialized correctly.")
+	ASSERTMSG_(m_hNotif!=nullptr,"CFileSystemWatcher was not initialized correctly.")
 
 	// Work is done in thread_win32_watch().
 	// Just check for incoming mail:
@@ -170,7 +170,7 @@ void CFileSystemWatcher::getChanges( TFileSystemChangeList &out_list )
 	// Add inotify fd
 	FD_SET (m_fd, &rfds);
 
-	ret = select (m_fd + 1, &rfds, NULL, NULL, &time);
+	ret = select (m_fd + 1, &rfds, nullptr, nullptr, &time);
 	if (ret < 0)
 	{
 		perror ("[CFileSystemWatcher::getChanges] select");
@@ -272,8 +272,8 @@ void CFileSystemWatcher::thread_win32_watch()
 		FILE_NOTIFY_CHANGE_LAST_ACCESS |
 		FILE_NOTIFY_CHANGE_CREATION,
 		&dwRead,
-		NULL,
-		NULL))
+		nullptr,
+		nullptr))
 	{
 		// Interpret read data as FILE_NOTIFY_INFORMATION:
 		// There might be several notifications in the same data block:
@@ -286,9 +286,9 @@ void CFileSystemWatcher::thread_win32_watch()
 			// Extract the name (stored as a WCHAR*) into a UTF-8 std::string:
 			ASSERTMSG_(fni->FileNameLength<10000,"Name length >10K... this is probably an error")
 
-			int reqLen = WideCharToMultiByte(CP_UTF8,0,fni->FileName,fni->FileNameLength >> 1,NULL,0,NULL, NULL);
+			int reqLen = WideCharToMultiByte(CP_UTF8,0,fni->FileName,fni->FileNameLength >> 1,nullptr,0,nullptr, nullptr);
 			std::vector<char> tmpBuf(reqLen);
-			int actLen = WideCharToMultiByte(CP_UTF8,0,fni->FileName,fni->FileNameLength >> 1,&tmpBuf[0],tmpBuf.size(),NULL, NULL);
+			int actLen = WideCharToMultiByte(CP_UTF8,0,fni->FileName,fni->FileNameLength >> 1,&tmpBuf[0],tmpBuf.size(),nullptr, nullptr);
 			ASSERTMSG_(actLen>0,"Error converting filename from WCHAR* to UTF8")
 
 			const std::string filName(&tmpBuf[0],actLen);

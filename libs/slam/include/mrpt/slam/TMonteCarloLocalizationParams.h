@@ -38,7 +38,7 @@ namespace mrpt
 				*/
 			mrpt::maps::CMetricMap *metricMap;
 
-			/** [update stage] Alternative way (if metricMap==NULL): A metric map is supplied for each particle: There must be the same maps here as pose m_particles.
+			/** [update stage] Alternative way (if metricMap==nullptr): A metric map is supplied for each particle: There must be the same maps here as pose m_particles.
 				*/
 			mrpt::maps::TMetricMapList		metricMaps;
 

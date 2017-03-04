@@ -135,7 +135,7 @@ public:
 	IOStream* Open(const char* pFile,const char* pMode = "rb") {
 		aiFile* p = mFileSystem->OpenProc(mFileSystem,pFile,pMode);
 		if (!p) {
-			return NULL;
+			return nullptr;
 		}
 		return new CIOStreamWrapper(p);
 	}

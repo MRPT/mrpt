@@ -97,7 +97,7 @@ initial_setup (j_decompress_ptr cinfo)
     /* Mark component needed, until color conversion says otherwise */
     compptr->component_needed = TRUE;
     /* Mark no quantization table yet saved for component */
-    compptr->quant_table = NULL;
+    compptr->quant_table = nullptr;
   }
 
   /* Compute number of fully interleaved MCU rows. */
@@ -222,12 +222,12 @@ latch_quant_tables (j_decompress_ptr cinfo)
   for (ci = 0; ci < cinfo->comps_in_scan; ci++) {
     compptr = cinfo->cur_comp_info[ci];
     /* No work if we already saved Q-table for this component */
-    if (compptr->quant_table != NULL)
+    if (compptr->quant_table != nullptr)
       continue;
     /* Make sure specified quantization table is present */
     qtblno = compptr->quant_tbl_no;
     if (qtblno < 0 || qtblno >= NUM_QUANT_TBLS ||
-	cinfo->quant_tbl_ptrs[qtblno] == NULL)
+	cinfo->quant_tbl_ptrs[qtblno] == nullptr)
       ERREXIT1(cinfo, JERR_NO_QUANT_TABLE, qtblno);
     /* OK, save away the quantization table */
     qtbl = (JQUANT_TBL *)
@@ -344,7 +344,7 @@ reset_input_controller (j_decompress_ptr cinfo)
   (*cinfo->err->reset_error_mgr) ((j_common_ptr) cinfo);
   (*cinfo->marker->reset_marker_reader) (cinfo);
   /* Reset progression state -- would be cleaner if entropy decoder did this */
-  cinfo->coef_bits = NULL;
+  cinfo->coef_bits = nullptr;
 }
 
 

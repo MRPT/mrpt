@@ -18,14 +18,14 @@ AREXPORT ArTCM2::ArTCM2(ArRobot *robot) :
 {
   myRobot = robot;
   myPacketHandlerCB.setName("ArTCM2");
-  if (myRobot != NULL)
+  if (myRobot != nullptr)
     myRobot->addPacketHandler(&myPacketHandlerCB);
   
 }
 
 AREXPORT ArTCM2::~ArTCM2()
 {
-  if (myRobot != NULL)
+  if (myRobot != nullptr)
     myRobot->remPacketHandler(&myPacketHandlerCB);
 }
 
@@ -46,9 +46,9 @@ AREXPORT bool ArTCM2::packetHandler(ArRobotPacket *packet)
   myCalibrationV = packet->bufToByte();
   myCalibrationM = packet->bufToByte2() / 100.0;
 
-  if (myTimeLastPacket != time(NULL)) 
+  if (myTimeLastPacket != time(nullptr)) 
   {
-      myTimeLastPacket = time(NULL);
+      myTimeLastPacket = time(nullptr);
       myPacCount = myPacCurrentCount;
       myPacCurrentCount = 0;
   }
@@ -58,9 +58,9 @@ AREXPORT bool ArTCM2::packetHandler(ArRobotPacket *packet)
 
 AREXPORT int ArTCM2::getPacCount()
 {
-  if (myTimeLastPacket == time(NULL))
+  if (myTimeLastPacket == time(nullptr))
     return myPacCount;
-  if (myTimeLastPacket == time(NULL) - 1)
+  if (myTimeLastPacket == time(nullptr) - 1)
     return myPacCurrentCount;
   return 0;
 }

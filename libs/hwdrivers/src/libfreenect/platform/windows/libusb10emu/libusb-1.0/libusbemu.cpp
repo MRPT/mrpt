@@ -83,7 +83,7 @@ using namespace libusbemu;
   #define LIBUSB_DEBUG_CMD(cmd)
 #endif//LIBUSBEMU_DEBUG_BUILD
 
-static libusb_context *default_context = NULL;
+static libusb_context *default_context = nullptr;
 
 int libusb_init(libusb_context** context)
 {
@@ -99,7 +99,7 @@ int libusb_init(libusb_context** context)
 	// however, it is wise to emulate such context structure to localize and
   // keep track of any resource and/or internal data structures, as well as
   // to be able to clean-up itself at libusb_exit()
-  if (context == NULL)
+  if (context == nullptr)
     context = &default_context;
 
 	*context = new libusb_context;
@@ -109,7 +109,7 @@ int libusb_init(libusb_context** context)
 
 void libusb_exit(libusb_context* ctx)
 {
-  if (ctx == NULL)
+  if (ctx == nullptr)
     ctx = default_context;
 
   ctx->mutex.Enter();
@@ -118,7 +118,7 @@ void libusb_exit(libusb_context* ctx)
   {
     libusb_context::TMapDevices::iterator itDevice (ctx->devices.begin());
     libusb_device& device (itDevice->second);
-    if (NULL != device.handles)
+    if (nullptr != device.handles)
     {
       // a simple "while(!device.handles->empty())" loop is impossible here
       // because after a call to libusb_close() the device may be already
@@ -150,7 +150,7 @@ void libusb_set_debug(libusb_context *ctx, int level)
 
 ssize_t libusb_get_device_list(libusb_context* ctx, libusb_device*** list)
 {
-  if (ctx == NULL)
+  if (ctx == nullptr)
     ctx = default_context;
 
 	// libusb_device*** list demystified:
@@ -182,19 +182,19 @@ ssize_t libusb_get_device_list(libusb_context* ctx, libusb_device*** list)
   for (int i=0; it!=end; ++it, ++i)
     devlist[i] = &it->second;
   // finalization mark to assist later calls to libusb_free_device_list()
-  devlist[ctx->devices.size()] = NULL;
+  devlist[ctx->devices.size()] = nullptr;
 	// the number of devices in the outputted list, or LIBUSB_ERROR_NO_MEM on memory allocation failure.
 	return(ctx->devices.size());
 }
 
 void libusb_free_device_list(libusb_device** list, int unref_devices)
 {
-  if (NULL == list)
+  if (nullptr == list)
     return;
   if (unref_devices)
   {
     int i (0);
-    while (list[i] != NULL)
+    while (list[i] != nullptr)
     {
       libusbemu_unregister_device(list[i]);
       ++i;
@@ -219,13 +219,13 @@ int libusb_open(libusb_device* dev, libusb_device_handle** handle)
   RAIIMutex lock (dev->ctx->mutex);
 
   usb_dev_handle* usb_handle (usb_open(dev->device));
-  if (NULL == usb_handle)
+  if (nullptr == usb_handle)
   {
     LIBUSBEMU_ERROR_LIBUSBWIN32();
     return(LIBUSB_ERROR_OTHER);
   }
 
-  if (NULL == dev->handles)
+  if (nullptr == dev->handles)
     dev->handles = new libusb_device::TMapHandles;
 
   libusb_device_handle_t dummy = { dev, usb_handle };
@@ -235,7 +235,7 @@ int libusb_open(libusb_device* dev, libusb_device_handle** handle)
   assert((*handle)->handle == usb_handle);
   dev->refcount++;
 
-  if (NULL == dev->isoTransfers)
+  if (nullptr == dev->isoTransfers)
     dev->isoTransfers = new libusb_device::TMapIsocTransfers;
 
 	//0 on success
@@ -363,17 +363,17 @@ libusb_device_handle *libusb_open_device_with_vid_pid(libusb_context *ctx, uint1
 {
 	int num_devices;
 	libusb_device** list;
-	libusb_device_handle *dev_handle = NULL;
+	libusb_device_handle *dev_handle = nullptr;
 
-	if (ctx == NULL)
+	if (ctx == nullptr)
 		ctx = default_context;
 
 	num_devices = libusb_get_device_list(ctx, &list);
 	if (num_devices < 0)
-		return NULL;
+		return nullptr;
 
 	unsigned int i = 0;
-	while (list[i] != NULL) {
+	while (list[i] != nullptr) {
 		struct libusb_device_descriptor desc;
 		int ret = libusb_get_device_descriptor(list[i], &desc);
 		if (ret < 0)
@@ -444,16 +444,16 @@ struct libusb_transfer* libusb_alloc_transfer(int iso_packets)
   transfer.num_iso_packets = iso_packets;
   transfer.iso_packet_desc = new libusb_iso_packet_descriptor [iso_packets];
   memset(transfer.iso_packet_desc, 0, iso_packets*sizeof(libusb_iso_packet_descriptor));
-  // a newly allocated transfer, or NULL on error
+  // a newly allocated transfer, or nullptr on error
   return(&transfer);
 }
 
 void libusb_free_transfer(struct libusb_transfer* transfer)
 {
   // according to the official libusb_free_transfer() documentation:
-  // "It is legal to call this function with a NULL transfer.
+  // "It is legal to call this function with a nullptr transfer.
   //  In this case, the function will simply return safely."
-  if (NULL == transfer)
+  if (nullptr == transfer)
     return;
 
   // according to the official libusb_free_transfer() documentation:
@@ -473,12 +473,12 @@ void libusb_free_transfer(struct libusb_transfer* transfer)
     return;
   }
 
-  if (NULL != transfer->iso_packet_desc)
+  if (nullptr != transfer->iso_packet_desc)
     delete[](transfer->iso_packet_desc);
 
   // according to the official libusb_free_transfer() documentation:
   // "If the LIBUSB_TRANSFER_FREE_BUFFER flag is set and the transfer buffer
-  //  is non-NULL, this function will also free the transfer buffer using the
+  //  is non-nullptr, this function will also free the transfer buffer using the
   //  standard system memory allocator (e.g. free())."
   if (transfer->flags & LIBUSB_TRANSFER_FREE_BUFFER)
     free(transfer->buffer);
@@ -536,7 +536,7 @@ int libusb_submit_transfer(struct libusb_transfer* transfer)
   // within libusb_fill_***_transfer(), but the latter are just convenience
   // functions to fill the transfer data structure: the library client is not
   // forced to call them and could fill the fields directly within the struct.
-  if (NULL == wrapper->usb)
+  if (nullptr == wrapper->usb)
     libusbemu_setup_transfer(wrapper);
 
   libusbemu_clear_transfer(wrapper);
@@ -557,13 +557,13 @@ int libusb_submit_transfer(struct libusb_transfer* transfer)
   libusb_device::TMapIsocTransfers::iterator it = isoTransfers.find(transfer->endpoint);
   if (isoTransfers.end() == it)
   {
-    libusb_device::isoc_handle dummy = { libusb_device::TListTransfers(), NULL };
+    libusb_device::isoc_handle dummy = { libusb_device::TListTransfers(), nullptr };
     it = isoTransfers.insert(std::make_pair(transfer->endpoint, dummy)).first;
   }
   libusb_device::isoc_handle& iso (it->second);
   iso.listTransfers.Append(wrapper);
 
-  if (NULL == iso.poReapThread)
+  if (nullptr == iso.poReapThread)
   {
     void** state = new void* [2];
     state[0] = transfer->dev_handle;
@@ -598,7 +598,7 @@ int libusb_cancel_transfer(struct libusb_transfer* transfer)
 
 int libusbemu_handle_isochronous(libusb_context* ctx, const unsigned int milliseconds)
 {
-  if (ctx == NULL)
+  if (ctx == nullptr)
     ctx = default_context;
 
   //QuickThread::Myself().RaisePriority();
@@ -621,7 +621,7 @@ int libusbemu_handle_isochronous(libusb_context* ctx, const unsigned int millise
 
 int libusb_handle_events(libusb_context* ctx)
 {
-  if (ctx == NULL)
+  if (ctx == nullptr)
     ctx = default_context;
 
   if (failguard::Abort())
@@ -637,7 +637,7 @@ int libusb_handle_events(libusb_context* ctx)
 
 int libusb_handle_events_timeout(libusb_context* ctx, struct timeval* timeout)
 {
-  if (ctx == NULL)
+  if (ctx == nullptr)
     ctx = default_context;
 
   if (failguard::Abort())
@@ -645,7 +645,7 @@ int libusb_handle_events_timeout(libusb_context* ctx, struct timeval* timeout)
 
   RAIIMutex lock (ctx->mutex);
 
-  if (timeout == NULL)
+  if (timeout == nullptr)
     libusbemu_handle_isochronous(ctx, 0);
   else
     libusbemu_handle_isochronous(ctx, (timeout->tv_sec * 1000) + (timeout->tv_usec / 1000));
@@ -801,7 +801,7 @@ int ReapThreadProc(void* params)
     ctx->hDoneDeliveringPool.DetachEvent(&doneDelivering);
   ctx->mutDeliveryPool.Leave();
 
-  poThreadObject = NULL;
+  poThreadObject = nullptr;
 
   LIBUSB_DEBUG_CMD(fprintf(stdout, "Thread execution finished.\n"));
 	return(0);
@@ -836,7 +836,7 @@ int ReapTransfer(transfer_wrapper* wrapper, unsigned int timeout, libusb_device:
     // two possibilities here: either deliver the transfer now or postpone the
     // delivery to keep it in sync with libusb_handle_events(); in the latter
     // case, a destination list must be provided.
-    if (NULL != lstReady)
+    if (nullptr != lstReady)
       lstReady->Append(wrapper);
     else
       libusbemu_deliver_transfer(wrapper);

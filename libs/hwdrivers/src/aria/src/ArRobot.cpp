@@ -82,11 +82,11 @@ AREXPORT ArRobot::ArRobot(const char *name, bool obsolete,
   myEncoderPacketCB.setName("ArRobot::encoderPacket");
   myIOPacketCB.setName("ArRobot::IOPacket");
 
-  myPtz = NULL;
-  myKeyHandler = NULL;
-  myKeyHandlerCB = NULL;
+  myPtz = nullptr;
+  myKeyHandler = nullptr;
+  myKeyHandlerCB = nullptr;
 
-  myConn = NULL;
+  myConn = nullptr;
 
   myOwnTheResolver = false;
 
@@ -113,19 +113,19 @@ AREXPORT ArRobot::ArRobot(const char *name, bool obsolete,
   myTimeoutTime = 8000;
   myStabilizingTime = 0;
   myCounter = 1;
-  myResolver = NULL;
+  myResolver = nullptr;
   myNumSonar = 0;
 
   myRequestedIOPackets = false;
   myRequestedEncoderPackets = false;
-  myEncoderCorrectionCB = NULL;
+  myEncoderCorrectionCB = nullptr;
 
   myCycleChained = true;
 
   myMoveDoneDist = 40;
   myHeadingDoneDiff = 3;
 
-  myOrigRobotConfig = NULL;
+  myOrigRobotConfig = nullptr;
   reset();
   if (normalInit)
     init();
@@ -158,12 +158,12 @@ AREXPORT ArRobot::~ArRobot()
   ArUtil::deleteSetPairs(mySonars.begin(), mySonars.end());
   Aria::delRobot(this);
 
-  if (myKeyHandlerCB != NULL)
+  if (myKeyHandlerCB != nullptr)
     delete myKeyHandlerCB;
 
   for (it = myActions.begin(); it != myActions.end(); ++it)
   {
-    (*it).second->setRobot(NULL);
+    (*it).second->setRobot(nullptr);
   }
 }
 
@@ -246,7 +246,7 @@ AREXPORT void ArRobot::runAsync(bool stopRunIfNotConnected)
 **/
 AREXPORT void ArRobot::stopRunning(bool doDisconnect)
 {
-  if (myKeyHandler != NULL)
+  if (myKeyHandler != nullptr)
     myKeyHandler->restore();
   mySyncLoop.stopRunning();
   myBlockingConnectRun = false;
@@ -285,7 +285,7 @@ void ArRobot::reset(void)
   resetOdometer();
   myInterpolation.reset();
   myEncoderInterpolation.reset();
-  if (myOrigRobotConfig != NULL)
+  if (myOrigRobotConfig != nullptr)
     delete myOrigRobotConfig;
   myOrigRobotConfig = new ArRobotConfigPacketReader(this, true);
   myFirstEncoderPose = true;
@@ -639,7 +639,7 @@ AREXPORT int ArRobot::asyncConnectHandler(bool tryHarderToConnect)
 {
   int ret = 0;
   ArRobotPacket *packet;
-  ArRobotPacket *tempPacket = NULL;
+  ArRobotPacket *tempPacket = nullptr;
   char robotSubType[255];
   int i;
   int len;
@@ -659,7 +659,7 @@ AREXPORT int ArRobot::asyncConnectHandler(bool tryHarderToConnect)
     myAsyncConnectNoPacketCount = 0;
     myAsyncConnectTimesTried = 0;
     reset();
-    if (myConn == NULL)
+    if (myConn == nullptr)
     {
       ArLog::log(ArLog::Terse, "Cannot connect, no connection has been set.");
       failedConnect();
@@ -700,7 +700,7 @@ AREXPORT int ArRobot::asyncConnectHandler(bool tryHarderToConnect)
       myConn->write("WMS2\15", strlen("WMS2\15"));
     }
     // here we're flushing out all previously received packets
-    while ( endTime.mSecTo() > 0 && myReceiver.receivePacket(0) != NULL);
+    while ( endTime.mSecTo() > 0 && myReceiver.receivePacket(0) != nullptr);
 
     myAsyncConnectState = 0;
     return 0;
@@ -710,14 +710,14 @@ AREXPORT int ArRobot::asyncConnectHandler(bool tryHarderToConnect)
   {
     bool handled;
     std::list<ArRetFunctor1<bool, ArRobotPacket *> *>::iterator it;
-    while ((packet = myReceiver.receivePacket(0)) != NULL)
+    while ((packet = myReceiver.receivePacket(0)) != nullptr)
     {
       //printf("0x%x\n", packet->getID());
       for (handled = false, it = myPacketHandlerList.begin();
 	   it != myPacketHandlerList.end() && handled == false;
 	   it++)
       {
-	if ((*it) != NULL && (*it)->invokeR(packet))
+	if ((*it) != nullptr && (*it)->invokeR(packet))
 	  handled = true;
 	else
 	  packet->resetRead();
@@ -799,11 +799,11 @@ AREXPORT int ArRobot::asyncConnectHandler(bool tryHarderToConnect)
     // we aren't using a serial port then don't switch the baud
     if (!myOrigRobotConfig->hasPacketArrived() ||
 	!myOrigRobotConfig->getResetBaud() ||
-	serConn == NULL ||
+	serConn == nullptr ||
 	myParams->getSwitchToBaudRate() == 0)
     {
       // if we're using a serial connection store our baud rate
-      if (serConn != NULL)
+      if (serConn != nullptr)
 	myAsyncConnectStartBaud = serConn->getBaud();
       myAsyncConnectState = 5;
     }
@@ -811,13 +811,13 @@ AREXPORT int ArRobot::asyncConnectHandler(bool tryHarderToConnect)
     else if (!myAsyncConnectSentChangeBaud)
     {
       // if we're using a serial connection store our baud rate
-      if (serConn != NULL)
+      if (serConn != nullptr)
 	myAsyncConnectStartBaud = serConn->getBaud();
 
       int baudNum = -1;
 
       // first suck up all the packets we have now
-      while ((packet = myReceiver.receivePacket(0)) != NULL);
+      while ((packet = myReceiver.receivePacket(0)) != nullptr);
       if (myParams->getSwitchToBaudRate() == 9600)
 	baudNum = 0;
       else if (myParams->getSwitchToBaudRate() == 19200)
@@ -857,7 +857,7 @@ AREXPORT int ArRobot::asyncConnectHandler(bool tryHarderToConnect)
       packet = myReceiver.receivePacket(100);
       com(0);
       // if we got any packet we're good
-      if (packet != NULL)
+      if (packet != nullptr)
       {
 	myAsyncConnectState = 5;
       }
@@ -896,7 +896,7 @@ AREXPORT int ArRobot::asyncConnectHandler(bool tryHarderToConnect)
   //  packet = myReceiver.receivePacket(endTime.mSecTo());
   packet = myReceiver.receivePacket(1000);
 
-  if (packet != NULL)
+  if (packet != nullptr)
   {
     ret = packet->getID();
     //printf("Got a packet %d\n", ret);
@@ -911,9 +911,9 @@ AREXPORT int ArRobot::asyncConnectHandler(bool tryHarderToConnect)
 	if (timeToWait < 0)
 	  timeToWait = 0;
 	tempPacket = myReceiver.receivePacket(timeToWait);
-	if (tempPacket != NULL)
+	if (tempPacket != nullptr)
 	  ArLog::log(ArLog::Verbose, "Got in another packet!");
-	if (tempPacket != NULL && tempPacket->getID() == 50)
+	if (tempPacket != nullptr && tempPacket->getID() == 50)
 	  comInt(ArCommands::CLOSE,1);
       }
       myAsyncConnectState = 0;
@@ -928,13 +928,13 @@ AREXPORT int ArRobot::asyncConnectHandler(bool tryHarderToConnect)
 	if (timeToWait < 0)
 	  timeToWait = 0;
 	tempPacket = myReceiver.receivePacket(timeToWait);
-	if (tempPacket != NULL)
+	if (tempPacket != nullptr)
 	  ArLog::log(ArLog::Verbose, "Got in another packet!");
       }
       */
-      while ((tempPacket = myReceiver.receivePacket(0)) != NULL);
+      while ((tempPacket = myReceiver.receivePacket(0)) != nullptr);
 
-      if (tempPacket != NULL && tempPacket->getID() == 0)
+      if (tempPacket != nullptr && tempPacket->getID() == 0)
 	myAsyncConnectState = 1;
       else
 	myAsyncConnectState = 0;
@@ -989,7 +989,7 @@ AREXPORT int ArRobot::asyncConnectHandler(bool tryHarderToConnect)
     // in different bauds (if its a serial connection)
     if (myAsyncConnectNoPacketCount == 2 &&
 	myAsyncConnectNoPacketCount >= myAsyncConnectTimesTried &&
-	(serConn = dynamic_cast<ArSerialConnection *>(myConn)) != NULL)
+	(serConn = dynamic_cast<ArSerialConnection *>(myConn)) != nullptr)
     {
       int origBaud;
       ArLog::log(ArLog::Normal, "Trying to close possible old connection");
@@ -1023,7 +1023,7 @@ AREXPORT int ArRobot::asyncConnectHandler(bool tryHarderToConnect)
   }
   // if we've connected and have a packet get the connection
   // information from it
-  if (myAsyncConnectState == 3 && packet != NULL)
+  if (myAsyncConnectState == 3 && packet != nullptr)
   {
     char nameBuf[512];
     ArLog::log(ArLog::Terse, "Connected to robot.");
@@ -1069,7 +1069,7 @@ AREXPORT int ArRobot::asyncConnectHandler(bool tryHarderToConnect)
  **/
 AREXPORT bool ArRobot::loadParamFile(const char *file)
 {
-  if (myParams != NULL)
+  if (myParams != nullptr)
     delete myParams;
 
   myParams = new ArRobotGeneric("");
@@ -1131,7 +1131,7 @@ AREXPORT bool ArRobot::madeConnection(void)
   bool loadedNameParam;
   bool hadDefault = true;
 
-  if (myParams != NULL)
+  if (myParams != nullptr)
     delete myParams;
 
   // Find the robot parameters to load and get them into the structure we have
@@ -1337,7 +1337,7 @@ AREXPORT void ArRobot::failedConnect(void)
        it++)
     (*it)->invoke();
 
-  if (myConn != NULL)
+  if (myConn != nullptr)
     myConn->close();
   wakeAllConnOrFailWaitingThreads();
 }
@@ -1375,16 +1375,16 @@ AREXPORT bool ArRobot::disconnect(void)
   ArUtil::sleep(1000);
   if (ret == true)
   {
-    if (myConn != NULL)
+    if (myConn != nullptr)
     {
       ret = myConn->close();
-      if ((serConn = dynamic_cast<ArSerialConnection *>(myConn)) != NULL)
+      if ((serConn = dynamic_cast<ArSerialConnection *>(myConn)) != nullptr)
       	serConn->setBaud(myAsyncConnectStartBaud);
     }
     else
       ret = false;
   }
-  else if (myConn != NULL)
+  else if (myConn != nullptr)
     myConn->close();
 
   return ret;
@@ -1404,7 +1404,7 @@ AREXPORT void ArRobot::dropConnection(void)
        it++)
     (*it)->invoke();
 
-  if (myConn != NULL)
+  if (myConn != nullptr)
     myConn->close();
   return;
 }
@@ -2226,11 +2226,11 @@ AREXPORT bool ArRobot::addUserTask(const char *name, int position,
 				      ArTaskState::State *state)
 {
   ArSyncTask *proc;
-  if (mySyncTaskRoot == NULL)
+  if (mySyncTaskRoot == nullptr)
     return false;
 
   proc = mySyncTaskRoot->findNonRecursive("User Tasks");
-  if (proc == NULL)
+  if (proc == nullptr)
     return false;
 
   proc->addNewLeaf(name, position, functor, state);
@@ -2246,15 +2246,15 @@ AREXPORT void ArRobot::remUserTask(const char *name)
   ArSyncTask *proc;
   ArSyncTask *userProc;
 
-  if (mySyncTaskRoot == NULL)
+  if (mySyncTaskRoot == nullptr)
     return;
 
   proc = mySyncTaskRoot->findNonRecursive("User Tasks");
-  if (proc == NULL)
+  if (proc == nullptr)
     return;
 
   userProc = proc->findNonRecursive(name);
-  if (userProc == NULL)
+  if (userProc == nullptr)
     return;
 
 
@@ -2271,16 +2271,16 @@ AREXPORT void ArRobot::remUserTask(ArFunctor *functor)
   ArSyncTask *proc;
   ArSyncTask *userProc;
 
-  if (mySyncTaskRoot == NULL)
+  if (mySyncTaskRoot == nullptr)
     return;
 
   proc = mySyncTaskRoot->findNonRecursive("User Tasks");
-  if (proc == NULL)
+  if (proc == nullptr)
     return;
 
 
   userProc = proc->findNonRecursive(functor);
-  if (userProc == NULL)
+  if (userProc == nullptr)
     return;
 
 
@@ -2304,11 +2304,11 @@ AREXPORT bool ArRobot::addSensorInterpTask(const char *name, int position,
 					      ArTaskState::State *state)
 {
   ArSyncTask *proc;
-  if (mySyncTaskRoot == NULL)
+  if (mySyncTaskRoot == nullptr)
     return false;
 
   proc = mySyncTaskRoot->findNonRecursive("Sensor Interp");
-  if (proc == NULL)
+  if (proc == nullptr)
     return false;
 
   proc->addNewLeaf(name, position, functor, state);
@@ -2324,15 +2324,15 @@ AREXPORT void ArRobot::remSensorInterpTask(const char *name)
   ArSyncTask *proc;
   ArSyncTask *sensorInterpProc;
 
-  if (mySyncTaskRoot == NULL)
+  if (mySyncTaskRoot == nullptr)
     return;
 
   proc = mySyncTaskRoot->findNonRecursive("Sensor Interp");
-  if (proc == NULL)
+  if (proc == nullptr)
     return;
 
   sensorInterpProc = proc->findNonRecursive(name);
-  if (sensorInterpProc == NULL)
+  if (sensorInterpProc == nullptr)
     return;
 
 
@@ -2349,16 +2349,16 @@ AREXPORT void ArRobot::remSensorInterpTask(ArFunctor *functor)
   ArSyncTask *proc;
   ArSyncTask *sensorInterpProc;
 
-  if (mySyncTaskRoot == NULL)
+  if (mySyncTaskRoot == nullptr)
     return;
 
   proc = mySyncTaskRoot->findNonRecursive("Sensor Interp");
-  if (proc == NULL)
+  if (proc == nullptr)
     return;
 
 
   sensorInterpProc = proc->findNonRecursive(functor);
-  if (sensorInterpProc == NULL)
+  if (sensorInterpProc == nullptr)
     return;
 
 
@@ -2372,11 +2372,11 @@ AREXPORT void ArRobot::remSensorInterpTask(ArFunctor *functor)
 AREXPORT void ArRobot::logUserTasks(void) const
 {
   ArSyncTask *proc;
-  if (mySyncTaskRoot == NULL)
+  if (mySyncTaskRoot == nullptr)
     return;
 
   proc = mySyncTaskRoot->findNonRecursive("User Tasks");
-  if (proc == NULL)
+  if (proc == nullptr)
     return;
 
   proc->log();
@@ -2387,71 +2387,71 @@ AREXPORT void ArRobot::logUserTasks(void) const
 **/
 AREXPORT void ArRobot::logAllTasks(void) const
 {
-  if (mySyncTaskRoot != NULL)
+  if (mySyncTaskRoot != nullptr)
     mySyncTaskRoot->log();
 }
 
 /**
    Finds a user task by its name, searching the entire space of tasks
-   @return NULL if no user task of that name found, otherwise a pointer to
+   @return nullptr if no user task of that name found, otherwise a pointer to
    the ArSyncTask for the first task found with that name
 **/
 AREXPORT ArSyncTask *ArRobot::findUserTask(const char *name)
 {
   ArSyncTask *proc;
-  if (mySyncTaskRoot == NULL)
-    return NULL;
+  if (mySyncTaskRoot == nullptr)
+    return nullptr;
 
   proc = mySyncTaskRoot->findNonRecursive("User Tasks");
-  if (proc == NULL)
-    return NULL;
+  if (proc == nullptr)
+    return nullptr;
 
   return proc->find(name);
 }
 
 /**
    Finds a user task by its functor, searching the entire space of tasks
-   @return NULL if no user task with that functor found, otherwise a pointer
+   @return nullptr if no user task with that functor found, otherwise a pointer
    to the ArSyncTask for the first task found with that functor
 **/
 AREXPORT ArSyncTask *ArRobot::findUserTask(ArFunctor *functor)
 {
   ArSyncTask *proc;
-  if (mySyncTaskRoot == NULL)
-    return NULL;
+  if (mySyncTaskRoot == nullptr)
+    return nullptr;
 
   proc = mySyncTaskRoot->findNonRecursive("User Tasks");
-  if (proc == NULL)
-    return NULL;
+  if (proc == nullptr)
+    return nullptr;
 
   return proc->find(functor);
 }
 
 /**
    Finds a task by its name, searching the entire space of tasks
-   @return NULL if no task of that name found, otherwise a pointer to the
+   @return nullptr if no task of that name found, otherwise a pointer to the
    ArSyncTask for the first task found with that name
 **/
 AREXPORT ArSyncTask *ArRobot::findTask(const char *name)
 {
-  if (mySyncTaskRoot != NULL)
+  if (mySyncTaskRoot != nullptr)
     return mySyncTaskRoot->find(name);
   else
-    return NULL;
+    return nullptr;
 
 }
 
 /**
    Finds a task by its functor, searching the entire space of tasks
-   @return NULL if no task with that functor found, otherwise a pointer
+   @return nullptr if no task with that functor found, otherwise a pointer
    to the ArSyncTask for the first task found with that functor
 **/
 AREXPORT ArSyncTask *ArRobot::findTask(ArFunctor *functor)
 {
-  if (mySyncTaskRoot != NULL)
+  if (mySyncTaskRoot != nullptr)
     return mySyncTaskRoot->find(functor);
   else
-    return NULL;
+    return nullptr;
 
 }
 
@@ -2471,17 +2471,17 @@ AREXPORT ArSyncTask *ArRobot::findTask(ArFunctor *functor)
 
     @param action the action to add
     @param priority what importance to give the action; how to order the actions.  High priority actions are evaluated by the action resolvel before lower priority actions.
-    @return true if the action was successfully added, false on error (e.g. the action was NULL)
+    @return true if the action was successfully added, false on error (e.g. the action was nullptr)
     @sa remAction(ArAction*)
     @sa remAction(const char*)
     @sa findAction(const char*)
 */
 AREXPORT bool ArRobot::addAction(ArAction *action, int priority)
 {
-  if (action == NULL)
+  if (action == nullptr)
   {
     ArLog::log(ArLog::Terse,
-      "ArRobot::addAction: an attempt was made to add a NULL action pointer");
+      "ArRobot::addAction: an attempt was made to add a nullptr action pointer");
     return false;
   }
 
@@ -2571,7 +2571,7 @@ AREXPORT ArAction *ArRobot::findAction(const char *actionName)
     if (strcmp(actionName, act->getName()) == 0)
       return act;
   }
-  return NULL;
+  return nullptr;
 }
 
 /**
@@ -2595,10 +2595,10 @@ AREXPORT void ArRobot::deactivateActions(void)
   ArResolver::ActionMap::iterator amit;
 
   am = getActionMap();
-  if (am == NULL)
+  if (am == nullptr)
   {
     ArLog::log(ArLog::Terse,
-            "ArRobot::deactivateActions: NULL action map... failed.");
+            "ArRobot::deactivateActions: nullptr action map... failed.");
     return;
   }
   for (amit = am->begin(); amit != am->end(); amit++)
@@ -2645,7 +2645,7 @@ AREXPORT void ArRobot::setResolver(ArResolver *resolver)
   if (myOwnTheResolver)
   {
     delete myResolver;
-    myResolver = NULL;
+    myResolver = nullptr;
   }
 
   myResolver = resolver;
@@ -3259,7 +3259,7 @@ AREXPORT bool ArRobot::handlePacket(ArRobotPacket *packet)
        it != myPacketHandlerList.end() && handled == false;
        it++)
   {
-    if ((*it) != NULL && (*it)->invokeR(packet))
+    if ((*it) != nullptr && (*it)->invokeR(packet))
       handled = true;
     else
       packet->resetRead();
@@ -3345,9 +3345,9 @@ AREXPORT void ArRobot::packetHandler(void)
     if we don't have any packets waiting then we chill and wait for
     it, if we got one, just get on with it
   **/
-  packet = NULL;
+  packet = nullptr;
   // read all the packets that are available
-  while ((packet = myReceiver.receivePacket(0)) != NULL)
+  while ((packet = myReceiver.receivePacket(0)) != nullptr)
   {
     if (myPacketsReceivedTracking)
     {
@@ -3362,7 +3362,7 @@ AREXPORT void ArRobot::packetHandler(void)
     handlePacket(packet);
     if ((packet->getID() & 0xf0) == 0x30)
       sipHandled = true;
-    packet = NULL;
+    packet = nullptr;
 
     // if we've taken too long here then break
     if ((getOrigRobotConfig()->hasPacketArrived() &&
@@ -3379,7 +3379,7 @@ AREXPORT void ArRobot::packetHandler(void)
 
   // if we didn't get a sip and we're chained to the sip, wait for the sip
   while (isCycleChained() && !sipHandled && isRunning() &&
-	 (packet = myReceiver.receivePacket(timeToWait)) != NULL)
+	 (packet = myReceiver.receivePacket(timeToWait)) != nullptr)
   {
     if (myPacketsReceivedTracking)
     {
@@ -3423,14 +3423,14 @@ AREXPORT void ArRobot::actionHandler(void)
 {
   ArActionDesired *actDesired;
 
-  if (myResolver == NULL || myActions.size() == 0 || !isConnected())
+  if (myResolver == nullptr || myActions.size() == 0 || !isConnected())
     return;
 
   actDesired = myResolver->resolve(&myActions, this, myLogActions);
 
   myActionDesired.reset();
 
-  if (actDesired == NULL)
+  if (actDesired == nullptr)
     return;
 
   myActionDesired.merge(actDesired);
@@ -3572,7 +3572,7 @@ AREXPORT unsigned int ArRobot::getConnectionCycleMultiplier(void) const
 **/
 AREXPORT void ArRobot::loopOnce(void)
 {
-  if (mySyncTaskRoot != NULL)
+  if (mySyncTaskRoot != nullptr)
     mySyncTaskRoot->run();
 
   incCounter();
@@ -3631,18 +3631,18 @@ AREXPORT bool ArRobot::isRightBreakBeamTriggered(void) const
 
 AREXPORT int ArRobot::getMotorPacCount(void) const
 {
-  if (myTimeLastMotorPacket == time(NULL))
+  if (myTimeLastMotorPacket == time(nullptr))
     return myMotorPacCount;
-  if (myTimeLastMotorPacket == time(NULL) - 1)
+  if (myTimeLastMotorPacket == time(nullptr) - 1)
     return myMotorPacCurrentCount;
   return 0;
 }
 
 AREXPORT int ArRobot::getSonarPacCount(void) const
 {
-  if (myTimeLastSonarPacket == time(NULL))
+  if (myTimeLastSonarPacket == time(nullptr))
     return mySonarPacCount;
-  if (myTimeLastSonarPacket == time(NULL) - 1)
+  if (myTimeLastSonarPacket == time(nullptr) - 1)
     return mySonarPacCurrentCount;
   return 0;
 }
@@ -3661,9 +3661,9 @@ AREXPORT bool ArRobot::processMotorPacket(ArRobotPacket *packet)
     return false;
 
   // upkeep the counting variable
-  if (myTimeLastMotorPacket != time(NULL))
+  if (myTimeLastMotorPacket != time(nullptr))
   {
-    myTimeLastMotorPacket = time(NULL);
+    myTimeLastMotorPacket = time(nullptr);
     myMotorPacCount = myMotorPacCurrentCount;
     myMotorPacCurrentCount = 0;
   }
@@ -3831,7 +3831,7 @@ AREXPORT bool ArRobot::processMotorPacket(ArRobotPacket *packet)
 
   // check if there is a correction callback, if there is get the new
   // heading out of it instead of using the raw encoder heading
-  if (myEncoderCorrectionCB != NULL)
+  if (myEncoderCorrectionCB != nullptr)
   {
     ArPoseWithTime deltaPose(deltaX, deltaY, deltaTh,
 			     packet->getTimeReceived());
@@ -3908,9 +3908,9 @@ AREXPORT void ArRobot::processNewSonar(char number, int range,
     sonar = (*it).second;
     sonar->newData(range, getPose(), getEncoderPose(), getToGlobalTransform(),
 		   getCounter(), timeReceived);
-    if (myTimeLastSonarPacket != time(NULL))
+    if (myTimeLastSonarPacket != time(nullptr))
     {
-      myTimeLastSonarPacket = time(NULL);
+      myTimeLastSonarPacket = time(nullptr);
       mySonarPacCount = mySonarPacCurrentCount;
       mySonarPacCurrentCount = 0;
     }
@@ -4007,7 +4007,7 @@ AREXPORT bool ArRobot::isSonarNew(int num) const
    @param num the sonar number to check, should be between 0 and the number of
    sonar, the function won't fail if a bad number is given, will just return
    false
-   @return NULL if there is no sonar defined for the given number, otherwise
+   @return nullptr if there is no sonar defined for the given number, otherwise
    it returns a pointer to an instance of the ArSensorReading, note that this
    class retains ownership, so the instance pointed to should not be deleted
    and no pointers to it should be stored.  Note that often there will be sonar
@@ -4022,7 +4022,7 @@ AREXPORT ArSensorReading *ArRobot::getSonarReading(int num) const
   if ((it = mySonars.find(num)) != mySonars.end())
     return (*it).second;
   else
-    return NULL;
+    return nullptr;
 }
 
 
@@ -4134,7 +4134,7 @@ AREXPORT int ArRobot::getClosestSonarNumber(double startAngle, double endAngle) 
   for (i = 0; i < getNumSonar(); i++)
   {
     sonar = getSonarReading(i);
-    if (sonar == NULL)
+    if (sonar == nullptr)
     {
       ArLog::log(ArLog::Terse, "Have an empty sonar at number %d, there should be %d sonar.", i, getNumSonar());
       continue;
@@ -4216,7 +4216,7 @@ AREXPORT ArRangeDevice *ArRobot::findRangeDevice(const char *name)
       return device;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 /**
@@ -4236,7 +4236,7 @@ AREXPORT const ArRangeDevice *ArRobot::findRangeDevice(const char *name) const
       return device;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 /**
@@ -4288,7 +4288,7 @@ AREXPORT double ArRobot::checkRangeDevicesCurrentPolar(
   std::list<ArRangeDevice *>::const_iterator it;
   ArRangeDevice *device;
   bool foundOne = false;
-  const ArRangeDevice *closestRangeDevice = NULL;
+  const ArRangeDevice *closestRangeDevice = nullptr;
 
   for (it = myRangeDeviceList.begin(); it != myRangeDeviceList.end(); ++it)
   {
@@ -4321,9 +4321,9 @@ AREXPORT double ArRobot::checkRangeDevicesCurrentPolar(
   }
   if (!foundOne)
     return -1;
-  if (angle != NULL)
+  if (angle != nullptr)
     *angle = closeAngle;
-  if (rangeDevice != NULL)
+  if (rangeDevice != nullptr)
     *rangeDevice = closestRangeDevice;
   return closest;
 
@@ -4352,7 +4352,7 @@ AREXPORT double ArRobot::checkRangeDevicesCumulativePolar(
   std::list<ArRangeDevice *>::const_iterator it;
   ArRangeDevice *device;
   bool foundOne = false;
-  const ArRangeDevice *closestRangeDevice = NULL;
+  const ArRangeDevice *closestRangeDevice = nullptr;
 
   for (it = myRangeDeviceList.begin(); it != myRangeDeviceList.end(); ++it)
   {
@@ -4385,9 +4385,9 @@ AREXPORT double ArRobot::checkRangeDevicesCumulativePolar(
   }
   if (!foundOne)
     return -1;
-  if (angle != NULL)
+  if (angle != nullptr)
     *angle = closeAngle;
-  if (rangeDevice != NULL)
+  if (rangeDevice != nullptr)
     *rangeDevice = closestRangeDevice;
   return closest;
 
@@ -4421,7 +4421,7 @@ AREXPORT double ArRobot::checkRangeDevicesCurrentBox(
   std::list<ArRangeDevice *>::const_iterator it;
   ArRangeDevice *device;
   bool foundOne = false;
-  const ArRangeDevice *closestRangeDevice = NULL;
+  const ArRangeDevice *closestRangeDevice = nullptr;
 
   for (it = myRangeDeviceList.begin(); it != myRangeDeviceList.end(); ++it)
   {
@@ -4452,9 +4452,9 @@ AREXPORT double ArRobot::checkRangeDevicesCurrentBox(
   }
   if (!foundOne)
     return -1;
-  if (readingPos != NULL)
+  if (readingPos != nullptr)
     *readingPos = closestPos;
-  if (rangeDevice != NULL)
+  if (rangeDevice != nullptr)
     *rangeDevice = closestRangeDevice;
   return closest;
 }
@@ -4487,7 +4487,7 @@ AREXPORT double ArRobot::checkRangeDevicesCumulativeBox(
   std::list<ArRangeDevice *>::const_iterator it;
   ArRangeDevice *device;
   bool foundOne = false;
-  const ArRangeDevice *closestRangeDevice = NULL;
+  const ArRangeDevice *closestRangeDevice = nullptr;
 
   for (it = myRangeDeviceList.begin(); it != myRangeDeviceList.end(); ++it)
   {
@@ -4518,9 +4518,9 @@ AREXPORT double ArRobot::checkRangeDevicesCumulativeBox(
   }
   if (!foundOne)
     return -1;
-  if (readingPos != NULL)
+  if (readingPos != nullptr)
     *readingPos = closestPos;
-  if (rangeDevice != NULL)
+  if (rangeDevice != nullptr)
     *rangeDevice = closestRangeDevice;
   return closest;
 }
@@ -4562,7 +4562,7 @@ AREXPORT void ArRobot::moveTo(ArPose pose, bool doCumulative)
   for (i = 0; i < getNumSonar(); i++)
   {
     son = getSonarReading(i);
-    if (son != NULL)
+    if (son != nullptr)
     {
       son->applyTransform(localTransform);
       son->applyTransform(getToGlobalTransform());
@@ -4615,7 +4615,7 @@ AREXPORT void ArRobot::moveTo(ArPose poseTo, ArPose poseFrom,
   for (i = 0; i < getNumSonar(); i++)
   {
     son = getSonarReading(i);
-    if (son != NULL)
+    if (son != nullptr)
     {
       son->applyTransform(localTransform);
       son->applyTransform(getToGlobalTransform());
@@ -4715,7 +4715,7 @@ AREXPORT void ArRobot::applyTransform(ArTransform trans, bool doCumulative)
   for (i = 0; i < getNumSonar(); i++)
   {
     son = getSonarReading(i);
-    if (son != NULL)
+    if (son != nullptr)
       son->applyTransform(trans);
   }
 }
@@ -4732,7 +4732,7 @@ AREXPORT void ArRobot::setName(const char * name)
     int i;
     char buf[1024];
 
- if (name != NULL)
+ if (name != nullptr)
   {
     myName = name;
   }
@@ -4767,7 +4767,7 @@ AREXPORT void ArRobot::setName(const char * name)
    between the previous and current readings.
 
    @param functor an ArRetFunctor1 created as an ArRetFunctor1C, that
-   will be the callback... call this function NULL to clear the
+   will be the callback... call this function nullptr to clear the
    callback @see getEncoderCorrectionCallback
 **/
 
@@ -4780,7 +4780,7 @@ AREXPORT void ArRobot::setEncoderCorrectionCallback(
    This gets the encoderCorrectionCB, see setEncoderCorrectionCallback
    for details.
 
-   @return the callback, or NULL if there isn't one
+   @return the callback, or nullptr if there isn't one
 **/
 AREXPORT ArRetFunctor1<double, ArPoseWithTime> *
 ArRobot::getEncoderCorrectionCallback(void) const
@@ -4947,7 +4947,7 @@ AREXPORT void ArRobot::attachKeyHandler(ArKeyHandler *keyHandler,
 					bool exitOnEscape,
 					bool useExitNotShutdown)
 {
-  if (myKeyHandlerCB != NULL)
+  if (myKeyHandlerCB != nullptr)
     delete myKeyHandlerCB;
   myKeyHandlerCB = new ArFunctorC<ArKeyHandler>(keyHandler,
 					    &ArKeyHandler::checkKeys);

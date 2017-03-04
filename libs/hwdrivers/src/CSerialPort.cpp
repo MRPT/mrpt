@@ -53,7 +53,7 @@ CSerialPort::CSerialPort( const string &portName, bool openNow ) :
 	m_totalTimeout_ms(0),
 	m_interBytesTimeout_ms(0),
 #ifdef MRPT_OS_WINDOWS
-	hCOM(NULL)
+	hCOM(nullptr)
 #else
 	hCOM(-1)   // Not connected
 #endif
@@ -67,7 +67,7 @@ CSerialPort::CSerialPort() :
 	m_totalTimeout_ms(0),
 	m_interBytesTimeout_ms(0),
 #ifdef MRPT_OS_WINDOWS
-	hCOM(NULL)
+	hCOM(nullptr)
 #else
 	hCOM(-1)   // Not connected
 #endif
@@ -106,12 +106,12 @@ void  CSerialPort::open( )
 			m_serialName.c_str(), // Serial Port name
 			GENERIC_READ | GENERIC_WRITE,
 			0,
-			NULL,
+			nullptr,
 			OPEN_EXISTING,
 			0,
 			0)))
 	{
-		hCOM = NULL;
+		hCOM = nullptr;
 		THROW_EXCEPTION_FMT("Error trying to open serial port: %s", m_serialName.c_str());
 	}
 
@@ -183,7 +183,7 @@ void  CSerialPort::open( )
 bool  CSerialPort::isOpen() const
 {
 #ifdef MRPT_OS_WINDOWS
-	return hCOM != NULL;
+	return hCOM != nullptr;
 #else
 	return hCOM != -1;
 #endif
@@ -536,7 +536,7 @@ void  CSerialPort::close(  )
 #ifdef MRPT_OS_WINDOWS
 	if (hCOM)
 		CloseHandle(hCOM);
-	hCOM = NULL;
+	hCOM = nullptr;
 #else
 	if (hCOM<0) return; // Already closed
 
@@ -568,7 +568,7 @@ size_t  CSerialPort::Read(void *Buffer, size_t Count)
 		Buffer,          // Buffer
 		(DWORD)Count,  // Max expected bytes
 		&actuallyRead, // Actually read bytes
-		NULL))
+		nullptr))
 		THROW_EXCEPTION("Error reading from port!");
 
 	return actuallyRead;
@@ -649,7 +649,7 @@ std::string CSerialPort::ReadString(
 	MRPT_TRY_START
 	// Calling ::ReadBuffer() many times would be even worse, so replicate its code here:
 
-	ASSERT_(eol_chars != NULL)
+	ASSERT_(eol_chars != nullptr)
 
 	// Port must be open!
 	if (!isOpen()) THROW_EXCEPTION("The port is not open yet!");
@@ -671,7 +671,7 @@ std::string CSerialPort::ReadString(
 			buf,          // Buffer
 			1,  // Max expected bytes
 			&actuallyRead, // Actually read bytes
-			NULL))
+			nullptr))
 			THROW_EXCEPTION("Error reading from port!");
 
 		if (actuallyRead)
@@ -747,7 +747,7 @@ size_t  CSerialPort::Write(const void *Buffer, size_t Count)
 		Buffer,
 		(DWORD)Count,
 		&actuallyWritten,
-		NULL))
+		nullptr))
 		THROW_EXCEPTION("Error writing to port!");
 	return actuallyWritten;
 #else
@@ -760,7 +760,7 @@ size_t  CSerialPort::Write(const void *Buffer, size_t Count)
 		size_t total_bytes_written = 0;
 		do
 		{
-			gettimeofday(&start, NULL);
+			gettimeofday(&start, nullptr);
 			num_of_bytes_written = write( hCOM,reinterpret_cast<const char*>(Buffer)+total_bytes_written, Count-total_bytes_written );
 			//cout << "wr: " << num_of_bytes_written << " tot: " << total_bytes_written << " of " << Count << " err: " << errno << endl;
 			if (num_of_bytes_written>0)
@@ -775,7 +775,7 @@ size_t  CSerialPort::Write(const void *Buffer, size_t Count)
 				// in the ms range; this could be a problem...
 				int usecs;
 				do {
-				gettimeofday(&end, NULL);
+				gettimeofday(&end, nullptr);
 				usecs= (end.tv_sec - start.tv_sec)*1000000 +
 				  (end.tv_usec - start.tv_usec);
 				} while (usecs < 60);

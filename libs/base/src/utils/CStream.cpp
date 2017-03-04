@@ -44,7 +44,7 @@ CStream::~CStream()
  ---------------------------------------------------------------*/
 size_t  CStream::ReadBuffer(void *Buffer, size_t Count)
 {
-	ASSERT_(Buffer!=NULL)
+	ASSERT_(Buffer!=nullptr)
 	if (Count)
 	{
 		size_t		actuallyRead = Read(Buffer,Count);
@@ -66,7 +66,7 @@ size_t  CStream::ReadBuffer(void *Buffer, size_t Count)
  ---------------------------------------------------------------*/
 void  CStream::WriteBuffer(const void *Buffer, size_t Count)
 {
-	ASSERT_(Buffer!=NULL)
+	ASSERT_(Buffer!=nullptr)
 	if (Count)
 		if ( Count != Write(Buffer,Count) )
 			THROW_EXCEPTION("Cannot write bytes to stream!" );
@@ -172,7 +172,7 @@ void CStream::WriteObject(const  CSerializable *o )
 
 	// First, the "classname".
 	const char *className;
-	if(o != NULL)
+	if(o != nullptr)
 	{
 		className = o->GetRuntimeClass()->className;
 	}
@@ -188,7 +188,7 @@ void CStream::WriteObject(const  CSerializable *o )
 	this->WriteBuffer( className, classNamLen);
 
 	// Next, the version number:
-	if(o != NULL)
+	if(o != nullptr)
 	{
 		o->writeToStream(*this, &version);
 		ASSERT_(version>=0 && version<255);
@@ -197,7 +197,7 @@ void CStream::WriteObject(const  CSerializable *o )
 		(*this) << actualVersion;
 
 		// Next, the object data.
-		o->writeToStream(*this, NULL);
+		o->writeToStream(*this, nullptr);
 	}
 
 	// In MRPT 0.5.5 a end flag is introduced:
@@ -340,7 +340,7 @@ CStream& utils::operator>>(mrpt::utils::CStream&in, std::string &str)
 
 CStream& utils::operator>>(mrpt::utils::CStream&in, char *s)
 {
-	ASSERT_(s!=NULL)
+	ASSERT_(s!=nullptr)
 	uint32_t  l;
 	in >>l;
 	if (l)
@@ -416,7 +416,7 @@ void CStream::internal_ReadObject(CSerializablePtr &newObj,CSerializable *existi
 		cerr << "[CStream::ReadObject] readClassName:" << strClassName << " version: " << version <<  endl;
 #endif
 
-		CSerializable* obj = NULL;
+		CSerializable* obj = nullptr;
 		if (EXISTING_OBJ)
 		{	// (Existing object)
 			// Now, compare to existing class:
@@ -486,7 +486,7 @@ void CStream::internal_ReadObject(CSerializablePtr &newObj,CSerializable *existi
 CSerializablePtr CStream::ReadObject()
 {
 	CSerializablePtr ret;
-	internal_ReadObject<false>(ret, NULL);
+	internal_ReadObject<false>(ret, nullptr);
 	return ret;
 }
 

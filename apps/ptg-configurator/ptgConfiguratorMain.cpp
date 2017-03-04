@@ -61,7 +61,7 @@ wxBitmap MyArtProvider::CreateBitmap(const wxArtID& id,
 #include <mrpt/system/os.h>
 #include <mrpt/utils/CTicTac.h>
 
-mrpt::nav::CParameterizedTrajectoryGenerator  * ptg = NULL;
+mrpt::nav::CParameterizedTrajectoryGenerator  * ptg = nullptr;
 
 
 //(*IdInit(ptgConfiguratorframe)
@@ -591,7 +591,7 @@ ptgConfiguratorframe::~ptgConfiguratorframe()
     //*)
 	if (ptg) {
 		delete ptg;
-		ptg=NULL;
+                ptg=nullptr;
 	}
 }
 
@@ -977,7 +977,7 @@ void ptgConfiguratorframe::loadPlugin()
 		OncbPTGClassSelect(e);
 	}
 #else
-	wxMessageBox( wxT("This feature is only available in GNU/Linux!"), wxT("Error"), wxOK, NULL);
+        wxMessageBox( wxT("This feature is only available in GNU/Linux!"), wxT("Error"), wxOK, nullptr);
 #endif
 }
 

@@ -62,7 +62,7 @@ AREXPORT ArSickLogger::ArSickLogger(ArRobot *robot, ArSick *sick,
   myWrote = false;
   myRobot = robot;
   mySick = sick;
-  if (baseDirectory != NULL && strlen(baseDirectory) > 0)
+  if (baseDirectory != nullptr && strlen(baseDirectory) > 0)
     myBaseDirectory = baseDirectory;
   else
     myBaseDirectory = "";
@@ -89,7 +89,7 @@ AREXPORT ArSickLogger::ArSickLogger(ArRobot *robot, ArSick *sick,
     incr = 1;
   else
     incr = .5;
-  if (myFile != NULL)
+  if (myFile != nullptr)
   {
     const ArRobotParams *params;
     params = robot->getRobotParams();
@@ -135,7 +135,7 @@ AREXPORT ArSickLogger::ArSickLogger(ArRobot *robot, ArSick *sick,
   myNumGoal = 1;
   myLastLoops = 0;
   // only add goals from the keyboard if there's already a keyboard handler
-  if (myAddGoals && (keyHandler = Aria::getKeyHandler()) != NULL)
+  if (myAddGoals && (keyHandler = Aria::getKeyHandler()) != nullptr)
   {
     // now that we have a key handler, add our keys as callbacks, print out big
     // warning messages if they fail
@@ -151,7 +151,7 @@ AREXPORT ArSickLogger::~ArSickLogger()
   myRobot->remUserTask(&myTaskCB);
   myRobot->remPacketHandler(&myLoopPacketHandlerCB);
   myRobot->comStr(94, "");
-  if (myFile != NULL)
+  if (myFile != nullptr)
   {
     fprintf(myFile, "# End of log\n");
     fclose(myFile);
@@ -264,14 +264,14 @@ void ArSickLogger::internalAddGoal(void)
   if (!myAddGoals && !myAddGoalExplicit)
     return;
 
-  if (myJoyHandler != NULL)
+  if (myJoyHandler != nullptr)
     joyButton = (myJoyHandler->getButton(2) ||
 		   myJoyHandler->getButton(3) ||
 		   myJoyHandler->getButton(4));
   else
     joyButton = (myRobot->getFlags() & ArUtil::BIT9);
 
-  if (myRobotJoyHandler != NULL)
+  if (myRobotJoyHandler != nullptr)
     robotJoyButton = myRobotJoyHandler->getButton2();
   else
     robotJoyButton = false;
@@ -311,7 +311,7 @@ void ArSickLogger::internalWriteTags(void)
   // now put the tags into the file
   while (myInfos.size() > 0)
   {
-    if (myFile != NULL)
+    if (myFile != nullptr)
     {
       myWrote = true;
       fprintf(myFile, "%s\n", (*myInfos.begin()).c_str());
@@ -323,7 +323,7 @@ void ArSickLogger::internalWriteTags(void)
   // now put the tags into the file
   while (myTags.size() > 0)
   {
-    if (myFile != NULL)
+    if (myFile != nullptr)
     {
       myWrote = true;
       msec = myStartTime.mSecSince();
@@ -363,7 +363,7 @@ void ArSickLogger::internalTakeReading(void)
     mySick->lockDevice();
     /// use the adjusted raw readings if we can, otherwise just use
     /// the raw readings like before
-    if ((readings = mySick->getAdjustedRawReadings()) != NULL)
+    if ((readings = mySick->getAdjustedRawReadings()) != nullptr)
     {
       usingAdjustedReadings = true;
     }
@@ -372,8 +372,8 @@ void ArSickLogger::internalTakeReading(void)
       usingAdjustedReadings = false;
       readings = mySick->getRawReadings();
     }
-    if (readings == NULL || (it = readings->begin()) == readings->end() ||
-	myFile == NULL)
+    if (readings == nullptr || (it = readings->begin()) == readings->end() ||
+	myFile == nullptr)
     {
       mySick->unlockDevice();
       return;
@@ -496,7 +496,7 @@ void ArSickLogger::internalTakeReading(void)
 
 void ArSickLogger::internalPrintPos(ArPose poseTaken)
 {
-  if (myFile == NULL)
+  if (myFile == nullptr)
     return;
   ArPose encoderPose = myRobot->getEncoderPose();
   ArPose rawEncoderPose = myRobot->getRawEncoderPose();

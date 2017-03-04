@@ -92,7 +92,7 @@ wxBitmap MyArtProvider::CreateBitmap(const wxArtID& id,
 }
 
 // Used for feedback from the glcanvas component to its parent.
-_DSceneViewerFrame		*theWindow=NULL;
+_DSceneViewerFrame		*theWindow=nullptr;
 
 
 #include <mrpt/utils.h>
@@ -141,7 +141,7 @@ bool		showFileNameInViewport = false;
 int         delayBetweenAutoplay = 5;
 
 
-wxLogWindow *logWin=NULL;
+wxLogWindow *logWin=nullptr;
 
 
 void saveLastUsedDirectoryToCfgFile(const std::string &fil)
@@ -628,7 +628,7 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent,wxWindowID id)
 
 _DSceneViewerFrame::~_DSceneViewerFrame()
 {
-	theWindow = NULL;
+        theWindow = nullptr;
 
 	delete m_autoplayTimer;
 
@@ -1436,7 +1436,7 @@ void _DSceneViewerFrame::OnMenuItemImportPLYPointCloud(wxCommandEvent& event)
 
 		opengl::CPointCloudPtr gl_points;
 		opengl::CPointCloudColouredPtr gl_points_col;
-		mrpt::utils::PLY_Importer *ply_obj=NULL;
+                mrpt::utils::PLY_Importer *ply_obj=nullptr;
 
 		if (dlgPLY.rbClass->GetSelection()==0)
 		{

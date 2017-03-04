@@ -226,7 +226,7 @@ namespace mrpt
 
 				return true;
 			}
-			// Save those entries which are not NULL.
+            // Save those entries which are not nullptr.
 			virtual void OnPostProcess(
 				mrpt::obs::CActionCollectionPtr &actions,
 				mrpt::obs::CSensoryFramePtr     &SF,

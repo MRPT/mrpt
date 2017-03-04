@@ -67,7 +67,7 @@ AREXPORT void ArLog::log(LogLevel level, const char *str, ...)
     // put our time in if we want it
     if (ourLoggingTime)
     {
-      now = time(NULL);
+      now = time(nullptr);
       timeStr = ctime(&now);
       // get take just the portion of the time we want
       strncpy(buf, timeStr, timeLen);
@@ -140,7 +140,7 @@ AREXPORT bool ArLog::init(LogType type, LogLevel level, const char *fileName,
     ourFP=stderr;
   else if (type == File)
   {
-    if (fileName != NULL)
+    if (fileName != nullptr)
     {
       if (strcmp(ourFileName.c_str(), fileName) == 0)
       {
@@ -149,7 +149,7 @@ AREXPORT bool ArLog::init(LogType type, LogLevel level, const char *fileName,
       else
       {
 	close();
-	if ((ourFP = fopen(fileName, "w")) == NULL)
+	if ((ourFP = fopen(fileName, "w")) == nullptr)
 	{
 	  ArLog::logNoLock(ArLog::Terse, "ArLog::init: Could not open file %s for logging.", fileName);
 	  ourMutex.unlock();
@@ -161,7 +161,7 @@ AREXPORT bool ArLog::init(LogType type, LogLevel level, const char *fileName,
   }
   else if (type == Colbert)
   {
-    colbertPrint = NULL;
+    colbertPrint = nullptr;
     ourColbertStream = -1;	// use default stream
     if (fileName)
     {  // need to translate fileName to integer index
@@ -261,7 +261,7 @@ AREXPORT void ArLog::logNoLock(LogLevel level, const char *str, ...)
     // put our time in if we want it
     if (ourLoggingTime)
     {
-      now = time(NULL);
+      now = time(nullptr);
       timeStr = ctime(&now);
       // get take just the portion of the time we want
       strncpy(buf, timeStr, timeLen);

@@ -346,7 +346,7 @@ namespace maps
 		virtual unsigned int getPointWeight(size_t index) const { MRPT_UNUSED_PARAM(index); return 1; }
 
 
-		/** Provides a direct access to points buffer, or NULL if there is no points in the map.
+		/** Provides a direct access to points buffer, or nullptr if there is no points in the map.
 		  */
 		void  getPointsBuffer( size_t &outPointsCount, const float *&xs, const float *&ys, const float *&zs ) const;
 
@@ -535,7 +535,7 @@ namespace maps
 		  */
 		virtual void  loadFromRangeScan(
 				const mrpt::obs::CObservation2DRangeScan &rangeScan,
-				const mrpt::poses::CPose3D				  *robotPose = NULL ) = 0;
+				const mrpt::poses::CPose3D				  *robotPose = nullptr ) = 0;
 
 		/** Overload of \a loadFromRangeScan() for 3D range scans (for example, Kinect observations).
 		  *
@@ -549,7 +549,7 @@ namespace maps
 		  */
 		virtual void  loadFromRangeScan(
 				const mrpt::obs::CObservation3DRangeScan &rangeScan,
-				const mrpt::poses::CPose3D				  *robotPose = NULL ) = 0;
+				const mrpt::poses::CPose3D				  *robotPose = nullptr ) = 0;
 
 		/** Like \a loadFromRangeScan() for Velodyne 3D scans. Points are translated and rotated according to the \a sensorPose field in the observation and, if provided, to the \a robotPose parameter.
 		  *
@@ -559,7 +559,7 @@ namespace maps
 		  */
 		void loadFromVelodyneScan(
 			const mrpt::obs::CObservationVelodyneScan & scan,
-			const mrpt::poses::CPose3D				  *robotPose = NULL );
+			const mrpt::poses::CPose3D				  *robotPose = nullptr );
 
 		/** Insert the contents of another map into this one, fusing the previous content with the new one.
 		 *    This means that points very close to existing ones will be "fused", rather than "added". This prevents
@@ -574,7 +574,7 @@ namespace maps
 		void  fuseWith(
 			CPointsMap			*anotherMap,
 			float				minDistForFuse  = 0.02f,
-			std::vector<bool>	*notFusedPoints = NULL);
+			std::vector<bool>	*notFusedPoints = nullptr);
 
 		/** Replace each point \f$ p_i \f$ by \f$ p'_i = b \oplus p_i \f$ (pose compounding operator).
 		  */
@@ -604,8 +604,8 @@ namespace maps
 		/** If the map is a simple points map or it's a multi-metric map that contains EXACTLY one simple points map, return it.
 			* Otherwise, return NULL
 			*/
-		virtual const mrpt::maps::CSimplePointsMap * getAsSimplePointsMap() const MRPT_OVERRIDE { return NULL; }
-		virtual       mrpt::maps::CSimplePointsMap * getAsSimplePointsMap()       MRPT_OVERRIDE { return NULL; }
+		virtual const mrpt::maps::CSimplePointsMap * getAsSimplePointsMap() const MRPT_OVERRIDE { return nullptr; }
+		virtual       mrpt::maps::CSimplePointsMap * getAsSimplePointsMap()       MRPT_OVERRIDE { return nullptr; }
 
 
 		/** This method returns the largest distance from the origin to any of the points, such as a sphere centered at the origin with this radius cover ALL the points in the map (the results are buffered, such as, if the map is not modified, the second call will be much faster than the first one). */
@@ -808,9 +808,9 @@ namespace maps
 		virtual void PLY_import_set_face_count(const size_t N) MRPT_OVERRIDE { MRPT_UNUSED_PARAM(N); }
 
 		/** In a base class, will be called after PLY_import_set_vertex_count() once for each loaded point.
-		  *  \param pt_color Will be NULL if the loaded file does not provide color info.
+		  *  \param pt_color Will be nullptr if the loaded file does not provide color info.
 		  */
-		virtual void PLY_import_set_vertex(const size_t idx, const mrpt::math::TPoint3Df &pt, const mrpt::utils::TColorf *pt_color = NULL) MRPT_OVERRIDE;
+		virtual void PLY_import_set_vertex(const size_t idx, const mrpt::math::TPoint3Df &pt, const mrpt::utils::TColorf *pt_color = nullptr) MRPT_OVERRIDE;
 		/** @} */
 
 		/** @name PLY Export virtual methods to implement in base classes

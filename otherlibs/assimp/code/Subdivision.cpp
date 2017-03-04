@@ -117,7 +117,7 @@ Subdivider* Subdivider::Create (Algorithm algo)
 	};
 
 	ai_assert(false);
-	return NULL; // shouldn't happen
+	return nullptr; // shouldn't happen
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -143,7 +143,7 @@ void CatmullClarkSubdivider::Subdivide (
 	bool discard_input
 	)
 {
-	ai_assert(NULL != smesh && NULL != out);
+	ai_assert(nullptr != smesh && nullptr != out);
 
 	// course, both regions may not overlap
 	assert(smesh<out || smesh+nmesh>out+nmesh);
@@ -153,7 +153,7 @@ void CatmullClarkSubdivider::Subdivide (
 		if (discard_input) {
 			for (size_t s = 0; s < nmesh; ++s) {
 				out[s] = smesh[s];
-				smesh[s] = NULL;
+				smesh[s] = nullptr;
 			}
 		}
 		else {
@@ -183,7 +183,7 @@ void CatmullClarkSubdivider::Subdivide (
 
 			if (discard_input) {
 				out[s] = i;
-				smesh[s] = NULL;
+				smesh[s] = nullptr;
 			}
 			else {
 				SceneCombiner::Copy(out+s,i);
@@ -191,7 +191,7 @@ void CatmullClarkSubdivider::Subdivide (
 			continue;
 		}
 
-		outmeshes.push_back(NULL);inmeshes.push_back(i);
+		outmeshes.push_back(nullptr);inmeshes.push_back(i);
 		maptbl.push_back(s);
 	}
 
@@ -234,7 +234,7 @@ void CatmullClarkSubdivider::InternSubdivide (
 	unsigned int num
 	)
 {
-	ai_assert(NULL != smesh && NULL != out);
+	ai_assert(nullptr != smesh && nullptr != out);
 	INIT_EDGE_HASH_TEMPORARIES();
 
 	// no subdivision requested or end of recursive refinement
@@ -513,7 +513,7 @@ void CatmullClarkSubdivider::InternSubdivide (
 							F += centroids[adj[o]];
 
 							// adj[0] is a global face index - search the face in the mesh list
-							const aiMesh* mp = NULL;
+							const aiMesh* mp = nullptr;
 							size_t nidx;
 
 							if (adj[o] < moffsets[0].first) {

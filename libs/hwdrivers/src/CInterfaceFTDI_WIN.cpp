@@ -163,14 +163,14 @@ CInterfaceFTDI::CInterfaceFTDI()  :
 -------------------------------------------------------------*/
 CInterfaceFTDI::~CInterfaceFTDI()
 {
-	if(m_hmodule != NULL)
+	if(m_hmodule != nullptr)
 	{
 		// Close USB connection:
 		this->Close();
 
 		// Unload FT2XX DLL:
 		FreeLibrary( (HMODULE)m_hmodule );
-		m_hmodule=NULL;
+		m_hmodule=nullptr;
 	}
 }
 
@@ -208,7 +208,7 @@ void	 CInterfaceFTDI::loadDriver()
 	//				Windoze version
 	// ------------------------------------------------------
 	m_hmodule = ::LoadLibraryA("Ftd2xx.dll");
-	if(m_hmodule == NULL)	THROW_EXCEPTION("Error: Cannot load Ftd2xx.dll");
+	if(m_hmodule == nullptr)	THROW_EXCEPTION("Error: Cannot load Ftd2xx.dll");
 
 	m_pWrite = (PtrToWrite)GetProcAddress((HMODULE)m_hmodule, "FT_Write");
 	m_pRead = (PtrToRead)GetProcAddress((HMODULE)m_hmodule, "FT_Read");
@@ -269,7 +269,7 @@ void CInterfaceFTDI::ListAllDevices( TFTDIDeviceList &outList )
 	char				str[100];
 
 	// Get the number of devices:
-	ftdi_listDevices(&nConectedDevices,NULL, 0x80000000);
+	ftdi_listDevices(&nConectedDevices,nullptr, 0x80000000);
 
 	for (size_t i=0;i<nConectedDevices;i++)
 	{

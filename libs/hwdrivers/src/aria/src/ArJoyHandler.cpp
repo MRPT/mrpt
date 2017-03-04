@@ -114,7 +114,7 @@ AREXPORT void ArJoyHandler::getSpeeds(int *x, int *y, int *z)
 {
   *x = myTopX;
   *y = myTopY;
-  if (z != NULL)
+  if (z != nullptr)
     *z = myTopZ;
 }
 
@@ -142,7 +142,7 @@ AREXPORT void ArJoyHandler::getAdjusted(int *x, int *y, int *z)
   {
     *x = ArMath::roundInt(((double)curX) / 128.0 * ((double)myTopX));
     *y = ArMath::roundInt(((double)curY) / 128.0 * ((double)myTopY));
-    if (z != NULL)
+    if (z != nullptr)
       *z = ArMath::roundInt(((double)curZ) / 128.0 * ((double)myTopZ));
     return;
   }
@@ -163,7 +163,7 @@ AREXPORT void ArJoyHandler::getAdjusted(int *x, int *y, int *z)
 	       (double)-myTopY);
   } else 
     *y = 0;
-  if (z != NULL)
+  if (z != nullptr)
     *z = ArMath::roundInt(((double)curZ) / 128.0 * ((double)myTopZ));
   
 }
@@ -192,7 +192,7 @@ AREXPORT void ArJoyHandler::getDoubles(double *x, double *y, double *z)
   {
     *x = ((double)curX) / 128.0;
     *y = ((double)curY) / 128.0;
-    if (z != NULL)
+    if (z != nullptr)
       *z = ((double)curZ) / 128.0;
     return;
   }
@@ -209,7 +209,7 @@ AREXPORT void ArJoyHandler::getDoubles(double *x, double *y, double *z)
     *y = (int)((double)(myCenY - curY)/(double)(myCenY - myMinY));
   } else 
     *y = 0;
-  if (z != NULL)
+  if (z != nullptr)
     *z = curZ;
 }
 
@@ -231,7 +231,7 @@ AREXPORT void ArJoyHandler::getUnfiltered(int *x, int* y, int *z)
   getData();
   *x = myAxes[1];
   *y = myAxes[2];
-  if (z != NULL)
+  if (z != nullptr)
     *z = myAxes[3];
 }
 

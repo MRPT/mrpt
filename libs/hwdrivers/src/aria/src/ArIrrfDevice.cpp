@@ -19,7 +19,7 @@ AREXPORT ArIrrfDevice::ArIrrfDevice(size_t currentBufferSize,
   myPacketHandler(this, &ArIrrfDevice::packetHandler)
 {
   int i;
-  myRobot = NULL;
+  myRobot = nullptr;
   // These numbers haven't been proven, yet.  It will take experimentation to maximize the best results
   myCumulativeMaxRange = 10000;
   myMaxRange = 5000;
@@ -35,7 +35,7 @@ AREXPORT ArIrrfDevice::ArIrrfDevice(size_t currentBufferSize,
 
 AREXPORT ArIrrfDevice::~ArIrrfDevice()
 {
-  if (myRobot != NULL)
+  if (myRobot != nullptr)
   {
     myRobot->remPacketHandler(&myPacketHandler);
     myRobot->remRangeDevice(this);
@@ -45,7 +45,7 @@ AREXPORT ArIrrfDevice::~ArIrrfDevice()
 AREXPORT void ArIrrfDevice::setRobot(ArRobot *robot)
 {
   myRobot = robot;
-  if (myRobot != NULL)
+  if (myRobot != nullptr)
     myRobot->addPacketHandler(&myPacketHandler, ArListPos::LAST);
 }
 
@@ -82,7 +82,7 @@ AREXPORT void ArIrrfDevice::processReadings(void)
       myCumulativeBuffer.beginInvalidationSweep();
       readingList = myCumulativeBuffer.getBuffer();
 
-      if (readingList != NULL)
+      if (readingList != nullptr)
       {
         for (readIt = readingList->begin();
 	     readIt != readingList->end();
@@ -105,7 +105,7 @@ AREXPORT void ArIrrfDevice::processReadings(void)
   ry = myRobot->getY();
 
   myCumulativeBuffer.beginInvalidationSweep();
-  if (readingList != NULL)
+  if (readingList != nullptr)
   {
     for (readIt = readingList->begin(); readIt != readingList->end();readIt++)
     {

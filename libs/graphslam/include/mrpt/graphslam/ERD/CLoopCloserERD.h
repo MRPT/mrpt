@@ -594,7 +594,7 @@ class CLoopCloserERD:
 				const mrpt::utils::TNodeID& from,
 				const mrpt::utils::TNodeID& to,
 				constraint_t* rel_edge,
-				mrpt::slam::CICP::TReturnInfo* icp_info=NULL);
+				mrpt::slam::CICP::TReturnInfo* icp_info=nullptr);
 
 		/**\brief compute the minimum uncertainty of each node position with
 		 * regards to the graph root.
@@ -644,7 +644,7 @@ class CLoopCloserERD:
 		 *
 		 * \param[in] node nodeID for which hte path is going to be returned
 		 *
-		 * \return Optimal path corresponding to the given nodeID or NULL if the
+		 * \return Optimal path corresponding to the given nodeID or nullptr if the
 		 * former is not found.
 		 */
 		TPath* queryOptimalPath(const mrpt::utils::TNodeID node) const;

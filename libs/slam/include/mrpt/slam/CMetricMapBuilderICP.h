@@ -68,12 +68,12 @@ namespace slam
 		 TConfigParams			ICP_options; //!< Options for the ICP-SLAM application \sa ICP_params
 		 CICP::TConfigParams	ICP_params;  //!< Options for the ICP algorithm itself \sa ICP_options
 
-		/** Initialize the method, starting with a known location PDF "x0"(if supplied, set to NULL to left unmodified) and a given fixed, past map.
+		/** Initialize the method, starting with a known location PDF "x0"(if supplied, set to nullptr to left unmodified) and a given fixed, past map.
 		  *  This method MUST be called if using the default constructor, after loading the configuration into ICP_options. In particular, TConfigParams::mapInitializers
 		  */
 		void  initialize(
 			const mrpt::maps::CSimpleMap &initialMap  = mrpt::maps::CSimpleMap(),
-			mrpt::poses::CPosePDF *x0 = NULL
+			mrpt::poses::CPosePDF *x0 = nullptr
 			) MRPT_OVERRIDE;
 
 		/** Returns a copy of the current best pose estimation as a pose PDF.

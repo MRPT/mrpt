@@ -136,7 +136,7 @@ int DoTrackingDemo(CCameraSensorPtr  cam, bool  DO_SAVE_VIDEO)
 
 		if (!obs)
 		{
-			cerr << "*Warning* getNextFrame() returned NULL!\n";
+            cerr << "*Warning* getNextFrame() returned nullptr!\n";
 			mrpt::system::sleep(50);
 			continue;
 		}

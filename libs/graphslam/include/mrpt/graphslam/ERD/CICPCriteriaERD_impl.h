@@ -33,9 +33,9 @@ void CICPCriteriaERD<GRAPH_t>::initCICPCriteriaERD() {
 	MRPT_START;
 	using namespace mrpt::utils;
 
-	m_win = NULL;
-	m_win_manager = NULL;
-	m_graph = NULL;
+	m_win = nullptr;
+	m_win_manager = nullptr;
+	m_graph = nullptr;
 
 	m_initialized_visuals = false;
 	m_just_inserted_loop_closure = false;
@@ -287,7 +287,7 @@ void CICPCriteriaERD<GRAPH_t>::checkRegistrationCondition3D(
 						*prev_laser_scan,
 						*curr_laser_scan,
 						&rel_edge,
-						NULL,
+						nullptr,
 						&icp_info);
 				m_time_logger.leave("CICPCriteriaERD::getICPEdge");
 

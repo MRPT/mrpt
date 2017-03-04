@@ -64,7 +64,7 @@ namespace mrpt
 			unsigned int 	m_COM_baud;	 //!< Default=115200
 
 
-			// Only one of these two streams will be !=NULL and open for each specific eNose board!
+			// Only one of these two streams will be !=nullptr and open for each specific eNose board!
 			/**  FTDI comms pipe (when not in serial port mode) */
 			CInterfaceFTDI	*m_stream_FTDI;
 			/**  Serial port comms */
@@ -74,7 +74,7 @@ namespace mrpt
 			std::vector<float>	enose_poses_x,enose_poses_y,enose_poses_z,enose_poses_yaw,enose_poses_pitch,enose_poses_roll;
 
 			/** Tries to connect to the USB device (if disconnected).
-			  * \return NULL on error, otherwise a stream to be used for comms.
+			  * \return nullptr on error, otherwise a stream to be used for comms.
 			  */
 			mrpt::utils::CStream*	checkConnectionAndConnect();
 

@@ -161,7 +161,7 @@ bool cmtScanPorts(List<CmtPortInfo>& ports,uint32_t baudrate, uint32_t singleSca
 						&DataT,
 						(PBYTE)buffer,
 						256,
-						NULL))
+						nullptr))
 		{
 			// on failure, this is not an Xsens Device
 			// on success, we need to check if the device is an Xsens Device
@@ -187,7 +187,7 @@ bool cmtScanPorts(List<CmtPortInfo>& ports,uint32_t baudrate, uint32_t singleSca
 			char pszPortName[256];
 			DWORD dwSize = 256;
 			DWORD dwType = 0;
-			if ((RegQueryValueExA(hDeviceKey, "PortName", NULL, &dwType, (LPBYTE) pszPortName, &dwSize) == ERROR_SUCCESS) && (dwType == REG_SZ))
+			if ((RegQueryValueExA(hDeviceKey, "PortName", nullptr, &dwType, (LPBYTE) pszPortName, &dwSize) == ERROR_SUCCESS) && (dwType == REG_SZ))
 			{
 				//If it looks like "COMX" then
 				//add it to the array which will be returned
@@ -250,7 +250,7 @@ bool cmtScanPorts(List<CmtPortInfo>& ports,uint32_t baudrate, uint32_t singleSca
 	DIR *dir;
 	struct dirent *entry;
 	
-	if ((dir = opendir("/dev/")) == NULL)
+	if ((dir = opendir("/dev/")) == nullptr)
 		return false;
 	
 	while ((entry = readdir(dir)))

@@ -64,7 +64,7 @@ COpenNI2Generic::COpenNI2Generic() :
 	m_grab_3D_points(true)
 {
 	const char * sVerbose = getenv("MRPT_HWDRIVERS_VERBOSE");
-	m_verbose = (sVerbose!=NULL) && atoi(sVerbose)!=0;
+    m_verbose = (sVerbose!=nullptr) && atoi(sVerbose)!=0;
 	// Start automatically:
 	if (!this->start()) {
 #if MRPT_HAS_OPENNI2
@@ -87,7 +87,7 @@ COpenNI2Generic::COpenNI2Generic(int width, int height, float fps, bool open_str
 	m_grab_3D_points(true)
 {
 	const char * sVerbose = getenv("MRPT_HWDRIVERS_VERBOSE");
-	m_verbose = (sVerbose!=NULL) && atoi(sVerbose)!=0;
+    m_verbose = (sVerbose!=nullptr) && atoi(sVerbose)!=0;
 	// Open?
 	if (open_streams_now) {
 		if (!this->start()) {

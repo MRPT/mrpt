@@ -32,7 +32,7 @@ namespace mrpt
 		  *
 		  * \param[in,out] graph The input edges and output poses.
 		  * \param[out] out_info Some basic output information on the process.
-		  * \param[in] nodes_to_optimize The list of nodes whose global poses are to be optimized. If NULL (default), all the node IDs are optimized (but that marked as \a root in the graph).
+		  * \param[in] nodes_to_optimize The list of nodes whose global poses are to be optimized. If nullptr (default), all the node IDs are optimized (but that marked as \a root in the graph).
 		  * \param[in] extra_params Optional parameters, see below.
 		  * \param[in] functor_feedback Optional: a pointer to a user function can be set here to be called on each LM loop iteration (eg to refresh the current state and error, refresh a GUI, etc.)
 		  *
@@ -56,9 +56,9 @@ namespace mrpt
 		void optimize_graph_spa_levmarq(
 			GRAPH_T & graph,
 			TResultInfoSpaLevMarq                                        & out_info,
-			const std::set<mrpt::utils::TNodeID>            * in_nodes_to_optimize = NULL,
+			const std::set<mrpt::utils::TNodeID>            * in_nodes_to_optimize = nullptr,
 			const mrpt::utils::TParametersDouble            & extra_params = mrpt::utils::TParametersDouble(),
-			typename graphslam_traits<GRAPH_T>::TFunctorFeedback  functor_feedback = NULL
+			typename graphslam_traits<GRAPH_T>::TFunctorFeedback  functor_feedback = nullptr
 			)
 		{
 			using namespace mrpt;
@@ -97,7 +97,7 @@ namespace mrpt
 			// Make list of node IDs to optimize, since the user may want only a subset of them to be optimized:
 			profiler.enter("optimize_graph_spa_levmarq.list_IDs"); // ---------------\  .
 			const set<TNodeID> * nodes_to_optimize;
-			set<TNodeID> nodes_to_optimize_auxlist;  // Used only if in_nodes_to_optimize==NULL
+			set<TNodeID> nodes_to_optimize_auxlist;  // Used only if in_nodes_to_optimize==nullptr
 			if (in_nodes_to_optimize)
 			{
 				nodes_to_optimize = in_nodes_to_optimize;

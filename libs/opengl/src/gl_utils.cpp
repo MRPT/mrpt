@@ -90,7 +90,7 @@ void gl_utils::renderSetOfObjects(const CListOpenGLObjects &objectsToRender)
 				glGetFloatv( GL_CURRENT_RASTER_POSITION, raster_pos);
 				float eye_distance= raster_pos[3];
 
-				void *font=NULL;
+				void *font=nullptr;
 				if (eye_distance<2)
 						font = GLUT_BITMAP_TIMES_ROMAN_24;
 				else if(eye_distance<200)
@@ -260,7 +260,7 @@ void *aux_mrptfont2glutfont(const TOpenGLFont font)
 	}
 #else
 	MRPT_UNUSED_PARAM(font);
-	return NULL;
+	return nullptr;
 #endif
 }
 
@@ -510,7 +510,7 @@ namespace Internal
 		const Char * findChar( const char c ) const {
 			size_t ind = glyphs.find(c);
 			if(ind == string::npos)
-				return NULL;
+				return nullptr;
 			return characters + ind;
 		}
 
@@ -612,7 +612,7 @@ mrpt::utils::TPixelCoordf gl_utils::glDrawText(const std::string& text, const do
 
     // figure out which operation to do on the Char (yes, this is a pointer to member function :)
     void (Internal::Font::* operation)(const char c) const;
-    operation=NULL;
+    operation=nullptr;
     switch(style){
         case FILL: operation = &Internal::Font::fill;
             break;

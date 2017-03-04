@@ -33,7 +33,7 @@ namespace mrpt
 	public:
 		std::vector<std::vector<double> >  dirs_eval; //!< Final [0] and alternative [1..N] evaluation scores for each direction, in the same order of TP-Obstacles. May be not filled by all methods.
 
-		virtual const mrpt::math::CMatrixD * getDirectionScores() const { return NULL; }
+		virtual const mrpt::math::CMatrixD * getDirectionScores() const { return nullptr; }
 	};
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(CHolonomicLogFileRecord, mrpt::utils::CSerializable, NAV_IMPEXP)
 

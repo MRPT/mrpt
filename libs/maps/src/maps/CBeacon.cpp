@@ -374,7 +374,7 @@ void CBeacon::generateObservationModelDistribution(
 	MRPT_START
 
 
-	const CPointPDFSOG *beaconPos=NULL;
+	const CPointPDFSOG *beaconPos=nullptr;
 
 	if ( m_typePDF==pdfGauss )
 	{

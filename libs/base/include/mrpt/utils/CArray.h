@@ -241,8 +241,8 @@ namespace utils
         }
 
         // direct access to data
-        const T* data() const { return NULL; }
-        T* data() { return NULL; }
+        const T* data() const { return nullptr; }
+        T* data() { return nullptr; }
 
         // assignment with type conversion
         template < typename T2 >

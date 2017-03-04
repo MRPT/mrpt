@@ -88,7 +88,7 @@ public:
 	template <typename T> 
 	const T* Get(bool dieOnError = false) {
 		const Object* const ob = Get(dieOnError);
-		return ob ? dynamic_cast<const T*>(ob) : NULL;
+		return ob ? dynamic_cast<const T*>(ob) : nullptr;
 	}
 
 	uint64_t ID() const {
@@ -695,7 +695,7 @@ public:
 
 public:
 
-	/** Get the Skin attached to this geometry or NULL */
+	/** Get the Skin attached to this geometry or nullptr */
 	const Skin* const DeformerSkin() const {
 		return skin;
 	}
@@ -782,7 +782,7 @@ public:
 	  * if the vertex index is not valid. */
 	const unsigned int* ToOutputVertexIndex(unsigned int in_index, unsigned int& count) const {
 		if(in_index >= mapping_counts.size()) {
-			return NULL;
+			return nullptr;
 		}
 
 		ai_assert(mapping_counts.size() == mapping_offsets.size());
@@ -927,7 +927,7 @@ public:
 	wants animations for. If the curve node does not match one of these, std::range_error
 	will be thrown. */
 	AnimationCurveNode(uint64_t id, const Element& element, const std::string& name, const Document& doc,
-		const char* const * target_prop_whitelist = NULL, size_t whitelist_size = 0);
+		const char* const * target_prop_whitelist = nullptr, size_t whitelist_size = 0);
 
 	~AnimationCurveNode();
 
@@ -941,7 +941,7 @@ public:
 
 	const AnimationCurveMap& Curves() const;
 
-	/** Object the curve is assigned to, this can be NULL if the
+	/** Object the curve is assigned to, this can be nullptr if the
 	 *  target object has no DOM representation or could not
 	 *  be read for other reasons.*/
 	const Object* Target() const {
@@ -993,7 +993,7 @@ public:
 	/* the optional whitelist specifies a list of property names for which the caller
 	wants animations for. Curves not matching this list will not be added to the
 	animation layer. */
-	AnimationCurveNodeList Nodes(const char* const * target_prop_whitelist = NULL, size_t whitelist_size = 0) const;
+	AnimationCurveNodeList Nodes(const char* const * target_prop_whitelist = nullptr, size_t whitelist_size = 0) const;
 
 private:
 

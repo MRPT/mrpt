@@ -489,7 +489,7 @@ void CFormChangeSensorPositions::executeOperationOnRawlog( TRawlogFilter operati
 
     int   			processMax;
     bool			isInMemory;
-    CStream 		*in_fil=NULL,*out_fil=NULL;
+    CStream 		*in_fil=nullptr,*out_fil=nullptr;
 
 
 	sensorPoseReadOK = false;
@@ -573,7 +573,7 @@ void CFormChangeSensorPositions::executeOperationOnRawlog( TRawlogFilter operati
                 CSensoryFramePtr sf(newObj);
 
                 // Process & save:
-				operation(NULL,sf.get(),changes );
+                                operation(nullptr,sf.get(),changes );
 
 				if (!isInMemory)  (*out_fil) << *sf.get();
             }
@@ -583,7 +583,7 @@ void CFormChangeSensorPositions::executeOperationOnRawlog( TRawlogFilter operati
                 CActionCollectionPtr acts =CActionCollectionPtr( newObj );
 
                 // Process & save:
-				operation( (CActionCollection*)acts.get(),NULL,changes);
+                                operation( (CActionCollection*)acts.get(),nullptr,changes);
 
                 if (!isInMemory)  (*out_fil) << *acts;
             }
@@ -597,7 +597,7 @@ void CFormChangeSensorPositions::executeOperationOnRawlog( TRawlogFilter operati
 				sf.insert(o);
 
                 // Process & save:
-				operation(NULL,&sf,changes );
+                                operation(nullptr,&sf,changes );
 
 				if (!isInMemory)  (*out_fil) << *o;
             }

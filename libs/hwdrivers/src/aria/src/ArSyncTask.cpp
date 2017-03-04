@@ -26,15 +26,15 @@ AREXPORT ArSyncTask::ArSyncTask(const char *name, ArFunctor *functor,
   myParent = parent;
   myIsDeleting = false;
   setState(ArTaskState::INIT);
-  if (myParent != NULL)
+  if (myParent != nullptr)
   {
     setWarningTimeCB(parent->getWarningTimeCB());
     setNoTimeWarningCB(parent->getNoTimeWarningCB());
   }
   else
   {
-    setWarningTimeCB(NULL);
-    setNoTimeWarningCB(NULL);
+    setWarningTimeCB(nullptr);
+    setNoTimeWarningCB(nullptr);
   }
 }
 
@@ -46,7 +46,7 @@ AREXPORT ArSyncTask::ArSyncTask(const char *name, ArFunctor *functor,
 AREXPORT ArSyncTask::~ArSyncTask()
 {
   myIsDeleting = true;
-  if (myParent != NULL && !myParent->isDeleting())
+  if (myParent != nullptr && !myParent->isDeleting())
     myParent->remove(this);
   
   ArUtil::deleteSetPairs(myMultiMap.begin(), myMultiMap.end());  
@@ -55,7 +55,7 @@ AREXPORT ArSyncTask::~ArSyncTask()
 
 AREXPORT ArTaskState::State ArSyncTask::getState(void)
 {
-  if (myStatePointer != NULL)
+  if (myStatePointer != nullptr)
     return *myStatePointer;
   else
     return myState;
@@ -63,7 +63,7 @@ AREXPORT ArTaskState::State ArSyncTask::getState(void)
 
 AREXPORT void ArSyncTask::setState(ArTaskState::State state)
 {
-  if (myStatePointer != NULL)
+  if (myStatePointer != nullptr)
     *myStatePointer = state;
   else
     myState = state;
@@ -91,10 +91,10 @@ AREXPORT ArSyncTask *ArSyncTask::find(ArFunctor *functor)
   for (it = myMultiMap.begin(); it != myMultiMap.end(); ++it)
   {
     proc = (*it).second;
-    if (proc->find(functor) != NULL)
+    if (proc->find(functor) != nullptr)
       return proc;
   }
-  return NULL;
+  return nullptr;
   
 }
 
@@ -114,10 +114,10 @@ AREXPORT ArSyncTask *ArSyncTask::find(const char *name)
   for (it = myMultiMap.begin(); it != myMultiMap.end(); ++it)
   {
     proc = (*it).second;
-    if (proc->find(name) != NULL)
+    if (proc->find(name) != nullptr)
       return proc;
   }
-  return NULL;
+  return nullptr;
   
 }
 
@@ -137,7 +137,7 @@ AREXPORT ArSyncTask *ArSyncTask::findNonRecursive(const char * name)
     if (strcmp(proc->getName().c_str(), name) == 0)  
       return proc;
   }
-  return NULL;
+  return nullptr;
 }
 
 /**
@@ -156,7 +156,7 @@ AREXPORT ArSyncTask *ArSyncTask::findNonRecursive(ArFunctor *functor)
     if (proc->getFunctor() == functor)
       return proc;
   }
-  return NULL;
+  return nullptr;
 }
 
 /**
@@ -170,7 +170,7 @@ AREXPORT ArSyncTask *ArSyncTask::findNonRecursive(ArFunctor *functor)
 AREXPORT void ArSyncTask::addNewBranch(const char *nameOfNew, int position,
 				       ArTaskState::State *state)
 {
-  ArSyncTask *proc = new ArSyncTask(nameOfNew, NULL, state, this);
+  ArSyncTask *proc = new ArSyncTask(nameOfNew, nullptr, state, this);
   myMultiMap.insert(std::pair<int, ArSyncTask *>(position, proc));
 }
 
@@ -245,11 +245,11 @@ AREXPORT void ArSyncTask::run(void)
   }
   
   runTime.setToNow();
-  if (myFunctor != NULL)
+  if (myFunctor != nullptr)
     myFunctor->invoke();
   
-  if (myNoTimeWarningCB != NULL && !myNoTimeWarningCB->invokeR() && 
-      myFunctor != NULL && myWarningTimeCB != NULL &&
+  if (myNoTimeWarningCB != nullptr && !myNoTimeWarningCB->invokeR() && 
+      myFunctor != nullptr && myWarningTimeCB != nullptr &&
       (took = runTime.mSecSince()) > (signed int)myWarningTimeCB->invokeR())
     ArLog::log(ArLog::Normal, 
 	       "Warning: Task '%s' took %d ms to run (longer than the %d warning time)",

@@ -40,7 +40,7 @@ CSickLaserSerial::CSickLaserSerial() :
 	m_scans_FOV(180),
 	m_scans_res(50),
 	m_com_port(),
-	m_mySerialPort( NULL ),
+	m_mySerialPort( nullptr ),
 	m_com_baudRate(38400),
 	m_nTries_connect(1),
 	m_nTries_current(0),
@@ -70,7 +70,7 @@ CSickLaserSerial::~CSickLaserSerial()
 	if (m_mySerialPort)
 	{
 		delete m_mySerialPort;
-		m_mySerialPort = NULL;
+		m_mySerialPort = nullptr;
 	}
 }
 
@@ -198,7 +198,7 @@ bool CSickLaserSerial::tryToOpenComms(std::string *err_msg)
 	{
 		if (!m_stream)
 		{
-			ASSERT_(m_mySerialPort==NULL);
+			ASSERT_(m_mySerialPort==nullptr);
 
 			// There is no COMMS port open yet...
 			if (!m_com_port.empty())
@@ -214,7 +214,7 @@ bool CSickLaserSerial::tryToOpenComms(std::string *err_msg)
 		// We assure now we have a stream... try to open it, if it's not done yet.
 		bool just_open = false;
 		CSerialPort* COM = dynamic_cast<CSerialPort*>(m_stream);
-		if (COM!=NULL)
+		if (COM!=nullptr)
 		{
 			if (!COM->isOpen())
 			{
@@ -281,7 +281,7 @@ bool  CSickLaserSerial::waitContinuousSampleFrame(
     bool 			&is_mm_mode )
 {
 	CSerialPort* COM = dynamic_cast<CSerialPort*>(m_stream);
-	ASSERTMSG_(COM!=NULL,"No I/O channel bound to this object");
+	ASSERTMSG_(COM!=nullptr,"No I/O channel bound to this object");
 
 	size_t 	nRead,nBytesToRead;
 	size_t	nFrameBytes = 0;
@@ -398,7 +398,7 @@ bool CSickLaserSerial::LMS_setupSerialComms()
     ASSERT_(m_com_baudRate==9600 || m_com_baudRate==38400 || m_com_baudRate==500000);
 
 	CSerialPort* COM = dynamic_cast<CSerialPort*>(m_stream);
-	if (COM==NULL) return true;
+	if (COM==nullptr) return true;
 
     int detected_rate = 0;
 	for (size_t reps=0;!detected_rate && reps<m_nTries_connect;reps++)

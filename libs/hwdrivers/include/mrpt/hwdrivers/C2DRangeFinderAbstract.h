@@ -55,7 +55,7 @@ namespace mrpt
 			mrpt::gui::CDisplayWindow3DPtr m_win;
 
 		protected:
-			utils::CStream					*m_stream;  //!< The I/O channel (will be NULL if not bound).
+			utils::CStream					*m_stream;  //!< The I/O channel (will be nullptr if not bound).
 
 			/** Should be call by derived classes at "loadConfig" (loads exclusion areas AND exclusion angles).
 			  *  This loads a sequence of vertices of a polygon given by its (x,y) coordinates relative to the vehicle, that is, taking into account the "sensorPose".

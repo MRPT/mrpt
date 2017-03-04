@@ -76,7 +76,7 @@ tuple CICP_AlignPDF2(CICP &self, CSimplePointsMap &m1, CSimplePointsMap &m2, CPo
 // CMetricMapBuilder
 struct CMetricMapBuilderWrap : CMetricMapBuilder, wrapper<CMetricMapBuilder>
 {
-    void initialize(const CSimpleMap &initialMap = CSimpleMap(), CPosePDF *x0 = NULL)
+    void initialize(const CSimpleMap &initialMap = CSimpleMap(), CPosePDF *x0 = nullptr)
     {
         this->get_override("initialize")(initialMap, x0);
     }
@@ -406,7 +406,7 @@ void export_slam()
     // CMetricMapBuilderICP
     {
         scope s = class_<CMetricMapBuilderICP, bases<CMetricMapBuilder> >("CMetricMapBuilderICP", init<>())
-            .def("initialize", &CMetricMapBuilderICP_initialize, "Initialize the method, starting with a known location PDF \"x0\"(if supplied, set to NULL to left unmodified) and a given fixed, past map.")
+            .def("initialize", &CMetricMapBuilderICP_initialize, "Initialize the method, starting with a known location PDF \"x0\"(if supplied, set to nullptr to left unmodified) and a given fixed, past map.")
             .def_readwrite("ICP_options", &CMetricMapBuilderICP::ICP_options)
             .def_readwrite("ICP_params", &CMetricMapBuilderICP::ICP_params)
         ;
@@ -428,7 +428,7 @@ void export_slam()
         scope s = class_<CMetricMapBuilderRBPF, bases<CMetricMapBuilder> >("CMetricMapBuilderRBPF", init<CMetricMapBuilderRBPF::TConstructionOptions>())
             .def("getCurrentPoseEstimation", &CMetricMapBuilderRBPF_getCurrentPoseEstimation, "Returns a copy of the current best pose estimation as a pose PDF.")
             .def("drawCurrentEstimationToImage", &CMetricMapBuilderRBPF::drawCurrentEstimationToImage)
-            .def("initialize", &CMetricMapBuilderRBPF_initialize, "Initialize the method, starting with a known location PDF \"x0\"(if supplied, set to NULL to left unmodified) and a given fixed, past map.")
+            .def("initialize", &CMetricMapBuilderRBPF_initialize, "Initialize the method, starting with a known location PDF \"x0\"(if supplied, set to nullptr to left unmodified) and a given fixed, past map.")
             .def("saveCurrentPathEstimationToTextFile", &CMetricMapBuilderRBPF::saveCurrentPathEstimationToTextFile)
             .def("getCurrentJointEntropy", &CMetricMapBuilderRBPF::getCurrentJointEntropy)
             .def_readwrite("mapPDF", &CMetricMapBuilderRBPF::mapPDF)

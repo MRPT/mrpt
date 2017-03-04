@@ -353,7 +353,7 @@ std::string FormatForComparisonFailureMessage(
 
 // UniversalPrinter<T>::Print(value, ostream_ptr) prints the given
 // value to the given ostream.  The caller must ensure that
-// 'ostream_ptr' is not NULL, or the behavior is undefined.
+// 'ostream_ptr' is not nullptr, or the behavior is undefined.
 //
 // We define UniversalPrinter as a class template (as opposed to a
 // function template), as we need to partially specialize it for
@@ -404,7 +404,7 @@ template <typename T>
 void DefaultPrintTo(IsNotContainer /* dummy */,
                     true_type /* is a pointer */,
                     T* p, ::std::ostream* os) {
-  if (p == NULL) {
+  if (p == nullptr) {
     *os << "NULL";
   } else {
     // C++ doesn't allow casting from a function pointer to any object
@@ -802,7 +802,7 @@ template <>
 class UniversalTersePrinter<const char*> {
  public:
   static void Print(const char* str, ::std::ostream* os) {
-    if (str == NULL) {
+    if (str == nullptr) {
       *os << "NULL";
     } else {
       UniversalPrint(string(str), os);
@@ -822,7 +822,7 @@ template <>
 class UniversalTersePrinter<const wchar_t*> {
  public:
   static void Print(const wchar_t* str, ::std::ostream* os) {
-    if (str == NULL) {
+    if (str == nullptr) {
       *os << "NULL";
     } else {
       UniversalPrint(::std::wstring(str), os);

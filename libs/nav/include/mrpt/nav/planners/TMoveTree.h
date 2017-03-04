@@ -56,7 +56,7 @@ namespace mrpt
 			{
 				mrpt::utils::TNodeID node_id;   //!< Duplicated ID (it's also in the map::iterator->first), but put here to make it available in path_t
 				mrpt::utils::TNodeID parent_id; //!< INVALID_NODEID for the root, a valid ID otherwise
-				EDGE_TYPE * edge_to_parent; //!< NULL for root, a valid edge otherwise
+				EDGE_TYPE * edge_to_parent; //!< nullptr for root, a valid edge otherwise
 				NODE_TYPE(mrpt::utils::TNodeID node_id_, mrpt::utils::TNodeID parent_id_, EDGE_TYPE * edge_to_parent_, const NODE_TYPE_DATA &data) : 
 					NODE_TYPE_DATA(data),
 					node_id(node_id_),parent_id(parent_id_),
@@ -75,8 +75,8 @@ namespace mrpt
 			mrpt::utils::TNodeID getNearestNode(
 				const NODE_TYPE_FOR_METRIC &query_pt,
 				const PoseDistanceMetric<NODE_TYPE_FOR_METRIC> &distanceMetricEvaluator,
-				double *out_distance = NULL,
-				const std::set<mrpt::utils::TNodeID> *ignored_nodes = NULL
+				double *out_distance = nullptr,
+				const std::set<mrpt::utils::TNodeID> *ignored_nodes = nullptr
 				) const
 			{
 				ASSERT_(!m_nodes.empty())
@@ -117,7 +117,7 @@ namespace mrpt
 			/** Insert a node without edges (should be used only for a tree root node) */
 			void insertNode(const mrpt::utils::TNodeID node_id, const NODE_TYPE_DATA &node_data) 
 			{
-				m_nodes[node_id] = NODE_TYPE(node_id,INVALID_NODEID, NULL, node_data);
+				m_nodes[node_id] = NODE_TYPE(node_id,INVALID_NODEID, nullptr, node_data);
 			}
 
 			mrpt::utils::TNodeID getNextFreeNodeID() const { return m_nodes.size(); }

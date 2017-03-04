@@ -125,11 +125,11 @@ typedef struct PlyElement
 
 struct PlyFile
 {        /* description of PLY file */
-	PlyFile(FILE* _fp=NULL) :
+    PlyFile(FILE* _fp=nullptr) :
 		fp(_fp),
 		file_type(0),
 		version(0),
-		which_elem(NULL)
+        which_elem(nullptr)
 	{
 	}
 
@@ -213,7 +213,7 @@ Entry:
   file_type  - file type, either ascii or binary
 
 Exit:
-  returns a pointer to a PlyFile, used to refer to this file, or NULL if error
+  returns a pointer to a PlyFile, used to refer to this file, or nullptr if error
 ******************************************************************************/
 
 PlyFile *ply_write(
@@ -222,16 +222,16 @@ PlyFile *ply_write(
   int file_type
 )
 {
-  /* check for NULL file pointer */
-  if (fp == NULL)
-    return (NULL);
+  /* check for nullptr file pointer */
+  if (fp == nullptr)
+    return (nullptr);
 
   /* create a record for this object */
   PlyFile *plyfile = new PlyFile(fp);
 
   plyfile->file_type = file_type;
   plyfile->version = 1.0;
-  //plyfile->other_elems = NULL;
+  //plyfile->other_elems = nullptr;
 
   /* tuck aside the names of the elements */
 
@@ -257,7 +257,7 @@ Entry:
 
 Exit:
   version - version number of PLY file
-  returns a file identifier, used to refer to this file, or NULL if error
+  returns a file identifier, used to refer to this file, or nullptr if error
 ******************************************************************************/
 
 PlyFile *ply_open_for_writing(
@@ -273,15 +273,15 @@ PlyFile *ply_open_for_writing(
   /* open the file for writing */
 
   fp = fopen (name, "w");
-  if (fp == NULL) {
-    return (NULL);
+  if (fp == nullptr) {
+    return (nullptr);
   }
 
   /* create the actual PlyFile structure */
 
   plyfile = ply_write (fp, elem_names, file_type);
-  if (plyfile == NULL)
-    return (NULL);
+  if (plyfile == nullptr)
+    return (nullptr);
 
   /* say what PLY file version number we're writing */
   *version = plyfile->version;
@@ -312,7 +312,7 @@ void ply_describe_element(
 {
   /* look for appropriate element */
   PlyElement *elem = find_element (plyfile, elem_name);
-  if (elem == NULL)
+  if (elem == nullptr)
 	  throw std::runtime_error(format("ply_describe_element: can't find element '%s'",elem_name.c_str()));
 
   elem->num = nelems;
@@ -348,7 +348,7 @@ void ply_describe_property(
 {
   /* look for appropriate element */
   PlyElement *elem = find_element (plyfile, elem_name);
-  if (elem == NULL) {
+  if (elem == nullptr) {
     fprintf(stderr, "ply_describe_property: can't find element '%s'\n",
             elem_name);
     return;
@@ -381,7 +381,7 @@ void ply_element_count(
 
   /* look for appropriate element */
   elem = find_element (plyfile, elem_name);
-  if (elem == NULL)
+  if (elem == nullptr)
 	  throw std::runtime_error(format("ply_element_count: can't find element '%s'",elem_name.c_str()));
 
   elem->num = nelems;
@@ -469,7 +469,7 @@ void ply_put_element_setup(PlyFile *plyfile, const string &elem_name)
   PlyElement *elem;
 
   elem = find_element (plyfile, elem_name);
-  if (elem == NULL)
+  if (elem == nullptr)
 	  throw std::runtime_error(format("ply_elements_setup: can't find element '%s'", elem_name.c_str()));
 
   plyfile->which_elem = elem;
@@ -636,16 +636,16 @@ Entry:
 Exit:
   nelems     - number of elements in object
   elem_names - list of element names
-  returns a pointer to a PlyFile, used to refer to this file, or NULL if error
+  returns a pointer to a PlyFile, used to refer to this file, or nullptr if error
 ******************************************************************************/
 
 PlyFile *ply_read(FILE *fp, vector<string> &elem_names)
 {
   //int found_format = 0;
 
-  /* check for NULL file pointer */
-  if (fp == NULL)
-    return (NULL);
+  /* check for nullptr file pointer */
+  if (fp == nullptr)
+    return (nullptr);
 
   /* create record for this object */
   PlyFile *plyfile = new PlyFile(fp);
@@ -655,7 +655,7 @@ PlyFile *ply_read(FILE *fp, vector<string> &elem_names)
   vector<string> words = get_words (plyfile->fp, orig_line);
 
   if (words.empty() || words[0]!="ply" )
-	return NULL;
+    return nullptr;
 
   while (!words.empty()) {
 
@@ -664,7 +664,7 @@ PlyFile *ply_read(FILE *fp, vector<string> &elem_names)
     if (words[0]=="format")
     {
       if (words.size() != 3)
-        return (NULL);
+        return (nullptr);
       if (words[1]=="ascii")
         plyfile->file_type = PLY_ASCII;
       else if (words[1]=="binary_big_endian")
@@ -672,7 +672,7 @@ PlyFile *ply_read(FILE *fp, vector<string> &elem_names)
       else if (words[1]=="binary_little_endian")
         plyfile->file_type = PLY_BINARY_LE;
       else
-        return (NULL);
+        return (nullptr);
       plyfile->version = atof (words[2].c_str());
       //found_format = 1;
     }
@@ -722,7 +722,7 @@ Exit:
   elem_names - list of element names
   file_type  - file type, either ascii or binary
   version    - version number of PLY file
-  returns a file identifier, used to refer to this file, or NULL if error
+  returns a file identifier, used to refer to this file, or nullptr if error
 ******************************************************************************/
 
 PlyFile *ply_open_for_reading(
@@ -738,8 +738,8 @@ PlyFile *ply_open_for_reading(
   /* open the file for reading */
 
   fp = fopen (filename, "r");
-  if (fp == NULL)
-    return (NULL);
+  if (fp == nullptr)
+    return (nullptr);
 
   /* create the PlyFile data structure */
 
@@ -768,7 +768,7 @@ Entry:
 Exit:
   nelems   - number of elements of this type in the file
   nprops   - number of properties
-  returns a list of properties, or NULL if the file doesn't contain that elem
+  returns a list of properties, or nullptr if the file doesn't contain that elem
 ******************************************************************************/
 
 vector<PlyProperty> ply_get_element_description(
@@ -780,7 +780,7 @@ vector<PlyProperty> ply_get_element_description(
 {
   /* find information about the element */
   PlyElement *elem = find_element (plyfile, elem_name);
-  if (elem == NULL)
+  if (elem == nullptr)
     return vector<PlyProperty>();
 
   nelems = elem->num;
@@ -821,7 +821,7 @@ void ply_get_property(
   /* deposit the property information into the element's description */
 
   prop_ptr = find_property (elem, prop->name, &index);
-  if (prop_ptr == NULL) {
+  if (prop_ptr == nullptr) {
     fprintf (stderr, "Warning:  Can't find property '%s' in element '%s'\n",
              prop->name.c_str(), elem_name.c_str());
     return;
@@ -925,7 +925,7 @@ Exit:
 
 void ply_get_info(PlyFile *ply, float *version, int *file_type)
 {
-  if (ply == NULL)
+  if (ply == nullptr)
     return;
 
   *version = ply->version;
@@ -942,7 +942,7 @@ Entry:
   element - name of element we're looking for
 
 Exit:
-  returns the element, or NULL if not found
+  returns the element, or nullptr if not found
 ******************************************************************************/
 
 PlyElement *find_element(PlyFile *plyfile, const string &element)
@@ -951,7 +951,7 @@ PlyElement *find_element(PlyFile *plyfile, const string &element)
     if ( element == plyfile->elems[i].name)
       return &plyfile->elems[i];
 
-  return (NULL);
+  return (nullptr);
 }
 
 
@@ -964,7 +964,7 @@ Entry:
 
 Exit:
   index - index to position in list
-  returns a pointer to the property, or NULL if not found
+  returns a pointer to the property, or nullptr if not found
 ******************************************************************************/
 
 PlyProperty *find_property(PlyElement *elem, const std::string &prop_name, int *index)
@@ -975,7 +975,7 @@ PlyProperty *find_property(PlyElement *elem, const std::string &prop_name, int *
       return &elem->props[i];
     }
   *index = -1;
-  return (NULL);
+  return (nullptr);
 }
 
 
@@ -991,7 +991,7 @@ void ascii_get_element(PlyFile *plyfile, char *elem_ptr)
 {
   int which_word;
   //FILE *fp = plyfile->fp;
-  char *elem_data,*item=NULL;
+  char *elem_data,*item=nullptr;
   char *item_ptr;
   int item_size;
   int int_val;
@@ -1000,7 +1000,7 @@ void ascii_get_element(PlyFile *plyfile, char *elem_ptr)
   int list_count;
   int store_it;
   char **store_array;
-  char *other_data=NULL;
+  char *other_data=nullptr;
   int other_flag;
 
   /* the kind of element we're reading currently */
@@ -1057,7 +1057,7 @@ void ascii_get_element(PlyFile *plyfile, char *elem_ptr)
 
       if (list_count == 0) {
         if (store_it)
-          *store_array = NULL;
+          *store_array = nullptr;
       }
       else {
         if (store_it) {
@@ -1104,7 +1104,7 @@ Entry:
 void binary_get_element(PlyFile *plyfile, char *elem_ptr)
 {
   FILE *fp = plyfile->fp;
-  char *elem_data,*item=NULL;
+  char *elem_data,*item=nullptr;
   char *item_ptr;
   int item_size=0;
   int int_val;
@@ -1113,7 +1113,7 @@ void binary_get_element(PlyFile *plyfile, char *elem_ptr)
   int list_count;
   int store_it;
   char **store_array;
-  char *other_data=NULL;
+  char *other_data=nullptr;
   int other_flag;
 
   int bin_file_type =  plyfile->file_type;
@@ -1175,7 +1175,7 @@ void binary_get_element(PlyFile *plyfile, char *elem_ptr)
       store_array = (char **) (elem_data + prop->offset);
       if (list_count == 0) {
         if (store_it)
-          *store_array = NULL;
+          *store_array = nullptr;
       }
       else {
         if (store_it) {
@@ -1253,7 +1253,7 @@ Entry:
 Exit:
   nwords    - number of words returned
   orig_line - the original line of characters
-  returns a list of words from the line, or NULL if end-of-file
+  returns a list of words from the line, or nullptr if end-of-file
 ******************************************************************************/
 
 vector<string> get_words(FILE *fp, string&orig_line)
@@ -1263,11 +1263,11 @@ vector<string> get_words(FILE *fp, string&orig_line)
 
   vector<string> words;
 
-  ASSERT_(fp!=NULL)
+  ASSERT_(fp!=nullptr)
 
   /* read in a line */
   char* result = fgets (str, BIG_STRING, fp);
-  if (result == NULL) {
+  if (result == nullptr) {
     orig_line = string();
     return words;
   }
@@ -1654,7 +1654,7 @@ void get_ascii_item(
       break;
 
     case PLY_UINT:
-      *uint_val = strtoul (word, (char **) NULL, 10);
+      *uint_val = strtoul (word, (char **) nullptr, 10);
       *int_val = *uint_val;
       *double_val = *uint_val;
       break;

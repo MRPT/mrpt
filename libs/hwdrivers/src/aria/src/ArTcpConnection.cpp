@@ -58,7 +58,7 @@ AREXPORT void ArTcpConnection::setPort(const char *host, int port)
 {
   myPortNum = port;
 
-  if (host == NULL)
+  if (host == nullptr)
     myHostName = "localhost";
   else
     myHostName = host;
@@ -73,7 +73,7 @@ AREXPORT bool ArTcpConnection::openSimple(void)
 }
 
 /**
-   @param host the host to connect to, if NULL (default) then localhost
+   @param host the host to connect to, if nullptr (default) then localhost
    @param port the port to connect to
    @return 0 for success, otherwise one of the open enums
    @see getOpenMessage

@@ -137,7 +137,7 @@ void  vision::openCV_cross_correlation(
 		);
 
 	// Find the max point:
-	cvMinMaxLoc(result,&mini,&max_val,&min_point,&max_point,NULL);
+	cvMinMaxLoc(result,&mini,&max_val,&min_point,&max_point,nullptr);
 	x_max = max_point.x+x_search_ini+(mrpt::utils::round(patch_w-1)>>1);
 	y_max = max_point.y+y_search_ini+(mrpt::utils::round(patch_h-1)>>1);
 
@@ -2047,7 +2047,7 @@ void vision::computeStereoRectificationMaps(
         R1, R2, P1, P2, Q,
 		alpha,
 		nSize, // Size() by default=no resize
-		NULL,NULL, // Out ROIs
+		nullptr,nullptr, // Out ROIs
 		cv::CALIB_ZERO_DISPARITY
 		);
 #else

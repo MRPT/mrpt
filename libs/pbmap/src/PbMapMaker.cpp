@@ -145,7 +145,7 @@ void readConfigFile(const string &config_file_name)
 
 PbMapMaker::PbMapMaker(const string &config_file) :
     cloudViewer("Cloud Viewer"),
-    mpPbMapLocaliser(NULL),
+    mpPbMapLocaliser(nullptr),
     m_pbmaker_must_stop(false),
     m_pbmaker_finished(false)
 {
@@ -1056,7 +1056,7 @@ void PbMapMaker::viz_cb (pcl::visualization::PCLVisualizer& viz)
       }
 
 
-        if(mpPbMapLocaliser != NULL)
+        if(mpPbMapLocaliser != nullptr)
           if(mpPbMapLocaliser->alignedModelPtr){
             if (!viz.updatePointCloud (mpPbMapLocaliser->alignedModelPtr, "model"))
               viz.addPointCloud (mpPbMapLocaliser->alignedModelPtr, "model");}
@@ -1171,7 +1171,7 @@ void PbMapMaker::viz_cb (pcl::visualization::PCLVisualizer& viz)
 //    }
 
         // Draw recognized plane labels
-        if(mpPbMapLocaliser != NULL)
+        if(mpPbMapLocaliser != nullptr)
           for(map<string, pcl::PointXYZ>::iterator it = mpPbMapLocaliser->foundPlaces.begin(); it != mpPbMapLocaliser->foundPlaces.end(); it++)
             viz.addText3D (it->first, it->second, 0.3, 0.9, 0.9, 0.9, it->first);
 

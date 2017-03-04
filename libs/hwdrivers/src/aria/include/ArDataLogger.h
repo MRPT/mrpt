@@ -31,7 +31,7 @@ class ArDataLogger
 {
 public:
   /// Constructor
-  AREXPORT ArDataLogger(ArRobot *robot, const char *fileName = NULL);
+  AREXPORT ArDataLogger(ArRobot *robot, const char *fileName = nullptr);
   /// Destructor
   AREXPORT ~ArDataLogger();
   /// Adds the data logger information to the config

@@ -34,7 +34,7 @@ LOCAL(void) transdecode_master_selection JPP((j_decompress_ptr cinfo));
  * may reposition the arrays, so don't rely on access_virt_barray() results
  * to stay valid across library calls.)
  *
- * Returns NULL if suspended.  This case need be checked only if
+ * Returns nullptr if suspended.  This case need be checked only if
  * a suspending data source is used.
  */
 
@@ -51,16 +51,16 @@ jpeg_read_coefficients (j_decompress_ptr cinfo)
     for (;;) {
       int retcode;
       /* Call progress monitor hook if present */
-      if (cinfo->progress != NULL)
+      if (cinfo->progress != nullptr)
 	(*cinfo->progress->progress_monitor) ((j_common_ptr) cinfo);
       /* Absorb some more input */
       retcode = (*cinfo->inputctl->consume_input) (cinfo);
       if (retcode == JPEG_SUSPENDED)
-	return NULL;
+	return nullptr;
       if (retcode == JPEG_REACHED_EOI)
 	break;
       /* Advance progress counter if appropriate */
-      if (cinfo->progress != NULL &&
+      if (cinfo->progress != nullptr &&
 	  (retcode == JPEG_ROW_COMPLETED || retcode == JPEG_REACHED_SOS)) {
 	if (++cinfo->progress->pass_counter >= cinfo->progress->pass_limit) {
 	  /* startup underestimated number of scans; ratchet up one scan */
@@ -81,7 +81,7 @@ jpeg_read_coefficients (j_decompress_ptr cinfo)
   }
   /* Oops, improper usage */
   ERREXIT1(cinfo, JERR_BAD_STATE, cinfo->global_state);
-  return NULL;			/* keep compiler happy */
+  return nullptr;			/* keep compiler happy */
 }
 
 
@@ -120,7 +120,7 @@ transdecode_master_selection (j_decompress_ptr cinfo)
   (*cinfo->inputctl->start_input_pass) (cinfo);
 
   /* Initialize progress monitoring. */
-  if (cinfo->progress != NULL) {
+  if (cinfo->progress != nullptr) {
     int nscans;
     /* Estimate number of scans to set pass_limit. */
     if (cinfo->progressive_mode) {

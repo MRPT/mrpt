@@ -57,7 +57,7 @@ public:
   void setForwards(bool forwards) { myForwards = forwards; }
   /// Adds to the ArConfig given, in section, with prefix
   AREXPORT void addToConfig(ArConfig *config, const char *section,
-			    const char *prefix = NULL);
+			    const char *prefix = nullptr);
   /// Sets if we're using locationDependent range devices or not
   bool getUseLocationDependentDevices(void) 
     { return myUseLocationDependentDevices; }

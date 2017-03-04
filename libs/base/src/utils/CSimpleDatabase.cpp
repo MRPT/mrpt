@@ -478,7 +478,7 @@ bool CSimpleDatabase::loadFromXML( const string &fileName )
 	try
 	{
 		XMLResults 	results;
-		XMLNode 	root = XMLNode::parseFile( fileName.c_str(), NULL, &results );
+		XMLNode 	root = XMLNode::parseFile( fileName.c_str(), nullptr, &results );
 
 		if (results.error != eXMLErrorNone)
 		{
@@ -529,7 +529,7 @@ bool CSimpleDatabase::loadFromXML( const string &fileName )
 				for (j=0;j<nFields;j++)
 				{
 					XMLCSTR  str=recNod.getChildNode(t->getFieldName(j).c_str() ).getText();
-					t->set(recIdx,j, str!=NULL ?  string(str) : string() );
+					t->set(recIdx,j, str!=nullptr ?  string(str) : string() );
 				}
 
 			} // end for each record

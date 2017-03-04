@@ -32,7 +32,7 @@ void CPipe::initializePipe(CPipeReadEndPoint& outReadPipe, CPipeWriteEndPoint& o
 #	ifdef MRPT_OS_WINDOWS
 	// Win32 pipes
 	HANDLE hRead, hWrite;
-	if (!CreatePipe(&hRead, &hWrite, NULL, 0))
+	if (!CreatePipe(&hRead, &hWrite, nullptr, 0))
 		THROW_EXCEPTION("Win32 error creating pipe endpoints!")
 
 	outReadPipe.m_pipe_file = hRead;
@@ -134,7 +134,7 @@ size_t  CPipeBaseEndPoint::Read(void *Buffer, size_t Count)
 #if defined(MRPT_OS_WINDOWS)
 	// Win32 pipes
 	DWORD nActuallyRead;
-	if (!ReadFile((HANDLE)m_pipe_file, Buffer, Count,&nActuallyRead, NULL ))
+	if (!ReadFile((HANDLE)m_pipe_file, Buffer, Count,&nActuallyRead, nullptr ))
 		return 0;
 	else return static_cast<size_t>(nActuallyRead);
 #else
@@ -164,7 +164,7 @@ size_t  CPipeBaseEndPoint::Read(void *Buffer, size_t Count)
 			unsigned int curTimeout_us = alreadyRead==0 ? timeout_read_start_us : timeout_read_between_us;
 
 			if (curTimeout_us==0)
-				ptrTimeout = NULL;
+				ptrTimeout = nullptr;
 			else
 			{
 				timeoutSelect.tv_sec = curTimeout_us / 1000000;
@@ -176,8 +176,8 @@ size_t  CPipeBaseEndPoint::Read(void *Buffer, size_t Count)
 			if (::select(
 							 m_pipe_file+1,		// __nfds
 							 &read_fds,		// Wait for read
-							 NULL,			// Wait for write
-							 NULL,			// Wait for except.
+							 nullptr,			// Wait for write
+							 nullptr,			// Wait for except.
 							 ptrTimeout)	// Timeout
 					!= 1)
 			{ // Timeout:
@@ -225,7 +225,7 @@ size_t  CPipeBaseEndPoint::Write(const void *Buffer, size_t Count)
 #ifdef MRPT_OS_WINDOWS
 	// Win32 pipes
 	DWORD nActuallyWritten;
-	if (!WriteFile((HANDLE)m_pipe_file, Buffer, Count,&nActuallyWritten, NULL ))
+	if (!WriteFile((HANDLE)m_pipe_file, Buffer, Count,&nActuallyWritten, nullptr ))
 		return 0;
 	else return static_cast<size_t>(nActuallyWritten);
 #else

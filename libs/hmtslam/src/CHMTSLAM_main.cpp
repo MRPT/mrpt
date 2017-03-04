@@ -77,7 +77,7 @@ CHMTSLAM::CHMTSLAM( )
 
 
 	// Other variables:
-	m_LSLAM_method		= NULL;
+	m_LSLAM_method		= nullptr;
 
 
 	// Register default LC detectors:
@@ -142,7 +142,7 @@ CHMTSLAM::~CHMTSLAM()
 	if (m_LSLAM_method)
 	{
 		delete m_LSLAM_method;
-		m_LSLAM_method = NULL;
+		m_LSLAM_method = nullptr;
 	}
 
 	// Delete TLC-detectors

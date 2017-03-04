@@ -200,9 +200,9 @@ public:
       if there wasn't one... this MUST not block if it is used with
       the default mode of being driven from the sensorInterpHandler,
       since that is on the robot loop.
-      @return packet read in, or NULL if there was no packet read
+      @return packet read in, or nullptr if there was no packet read
    **/
-  /*AREXPORT*/ virtual ArBasePacket *readPacket(void) { return NULL; }
+  /*AREXPORT*/ virtual ArBasePacket *readPacket(void) { return nullptr; }
 
   /// Sends a given packet to the camera (via robot or serial port, depending)
   AREXPORT virtual bool sendPacket(ArBasePacket *packet);

@@ -96,8 +96,8 @@ namespace mrpt
 			CDijkstra(
 				const graph_t  &graph,
 				const TNodeID   source_node_ID,
-				double (*functor_edge_weight)(const graph_t& graph, const TNodeID id_from, const TNodeID id_to, const edge_t &edge) =  NULL,
-				void   (*functor_on_progress)(const graph_t& graph, size_t visitedCount) = NULL
+				double (*functor_edge_weight)(const graph_t& graph, const TNodeID id_from, const TNodeID id_to, const edge_t &edge) =  nullptr,
+				void   (*functor_on_progress)(const graph_t& graph, size_t visitedCount) = nullptr
 				)
 				: m_cached_graph(graph), m_source_node_ID(source_node_ID)
 			{

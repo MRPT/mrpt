@@ -51,7 +51,7 @@ gnss_message*  gnss_message::Factory(const gnss_message_type_t msg_id)
 	{
 		LIST_ALL_MSGS
 	default:
-		return NULL;
+		return nullptr;
 	};
 #undef DOFOR
 }
@@ -113,14 +113,14 @@ gnss_message* gnss_message::readAndBuildFromStream(mrpt::utils::CStream &in)
 }
 
 
-// Ctor (default: NULL pointer)
-gnss_message_ptr::gnss_message_ptr() : ptr(NULL)
+// Ctor (default: nullptr pointer)
+gnss_message_ptr::gnss_message_ptr() : ptr(nullptr)
 {}
 // Ctor:Makes a copy of the pointee
 gnss_message_ptr::gnss_message_ptr(const gnss_message_ptr &o)
 {
 	if (!o.ptr) {
-		ptr=NULL;
+		ptr=nullptr;
 	}
 	else {
 		mrpt::utils::CMemoryStream buf;
@@ -136,7 +136,7 @@ gnss_message_ptr::gnss_message_ptr(const gnss_message* p) :
 }
 void gnss_message_ptr::set(gnss_message* p)
 {
-	if (ptr) { delete ptr; ptr=NULL; }
+	if (ptr) { delete ptr; ptr=nullptr; }
 	ptr = p;
 }
 // Makes a copy of the pointee
@@ -150,7 +150,7 @@ gnss_message_ptr &gnss_message_ptr::operator =(const gnss_message_ptr&o)
 }
 gnss_message_ptr::~gnss_message_ptr()
 {
-	if (ptr) { delete ptr; ptr=NULL; }
+	if (ptr) { delete ptr; ptr=nullptr; }
 }
 
 // ---------------------------------------

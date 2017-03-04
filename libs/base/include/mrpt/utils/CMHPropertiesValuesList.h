@@ -24,7 +24,7 @@ namespace mrpt
         /** Internal triplet for each property in utils::CMHPropertiesValuesList */
         struct BASE_IMPEXP  TPropertyValueIDTriplet
         {
-            TPropertyValueIDTriplet() : name(), value(NULL),ID(0)
+            TPropertyValueIDTriplet() : name(), value(nullptr),ID(0)
             {}
 
             std::string			name;
@@ -67,11 +67,11 @@ namespace mrpt
               */
             void  clear();
 
-            /** Returns the value of the property (case insensitive) for some given hypothesis ID, or a NULL smart pointer if it does not exist.
+            /** Returns the value of the property (case insensitive) for some given hypothesis ID, or a nullptr smart pointer if it does not exist.
               */
             CSerializablePtr  get(const char *propertyName, const int64_t & hypothesis_ID ) const;
 
-            /** Returns the value of the property (case insensitive) for some given hypothesis ID checking its class in runtime, or a NULL smart pointer if it does not exist.
+            /** Returns the value of the property (case insensitive) for some given hypothesis ID checking its class in runtime, or a nullptr smart pointer if it does not exist.
               */
 			template <typename T>
             typename T::SmartPtr getAs(const char *propertyName, const int64_t & hypothesis_ID, bool allowNullPointer = true) const
@@ -91,11 +91,11 @@ namespace mrpt
 			}
 
 
-			/** Returns the value of the property (case insensitive) for the first hypothesis ID found, or NULL if it does not exist.
+			/** Returns the value of the property (case insensitive) for the first hypothesis ID found, or nullptr if it does not exist.
               */
             CSerializablePtr  getAnyHypothesis(const char *propertyName) const;
 
-            /** Sets/change the value of the property (case insensitive) for the given hypothesis ID, making a copy of the object (or setting it to NULL if it is the passed value)
+            /** Sets/change the value of the property (case insensitive) for the given hypothesis ID, making a copy of the object (or setting it to nullptr if it is the passed value)
               * \sa setMemoryReference
               */
             void  set(const char *propertyName, const CSerializablePtr &obj, const int64_t & hypothesis_ID);

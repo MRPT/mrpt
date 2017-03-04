@@ -37,8 +37,8 @@ CImageGrabber_dc1394::CImageGrabber_dc1394(
 	const TCaptureOptions_dc1394 &options,
 	bool  verbose ) :
 		m_bInitialized 		(false),
-		m_dc1394_lib_context(NULL),
-		m_dc1394camera		(NULL),
+		m_dc1394_lib_context(nullptr),
+		m_dc1394camera		(nullptr),
 		m_options			(options)
 {
 	MRPT_START
@@ -371,7 +371,7 @@ bool  CImageGrabber_dc1394::getObservation( mrpt::obs::CObservationImage &out_ob
    if (!m_bInitialized) return false;
 
 #if MRPT_HAS_LIBDC1394_2
-    dc1394video_frame_t *frame=NULL;
+    dc1394video_frame_t *frame=nullptr;
     dc1394error_t err;
 
     err=dc1394_video_set_transmission(THE_CAMERA, DC1394_ON);
@@ -468,7 +468,7 @@ bool  CImageGrabber_dc1394::getObservation( mrpt::obs::CObservationStereoImages 
    if (!m_bInitialized) return false;
 
 #if MRPT_HAS_LIBDC1394_2
-    dc1394video_frame_t *frame=NULL;
+    dc1394video_frame_t *frame=nullptr;
 
 	// get frame from ring buffer:
 	dc1394error_t err=dc1394_capture_dequeue(THE_CAMERA, DC1394_CAPTURE_POLICY_WAIT, &frame);
@@ -609,8 +609,8 @@ void CImageGrabber_dc1394::enumerateCameras( TCameraInfoList &out_list )
 	MRPT_START
 #if MRPT_HAS_LIBDC1394_2
 
-	dc1394_t			* lib_context = NULL;
-	dc1394camera_list_t * list=NULL;
+	dc1394_t			* lib_context = nullptr;
+	dc1394camera_list_t * list=nullptr;
 	out_list.clear();
 
 	try
@@ -673,8 +673,8 @@ void CImageGrabber_dc1394::enumerateCameras( TCameraInfoList &out_list )
 		}
 
 		// Free context:
-		dc1394_free( lib_context ); 	lib_context = NULL;
-		dc1394_camera_free_list(list);  list = NULL;
+		dc1394_free( lib_context ); 	lib_context = nullptr;
+		dc1394_camera_free_list(list);  list = nullptr;
 	}
 	catch(std::exception &e)
 	{

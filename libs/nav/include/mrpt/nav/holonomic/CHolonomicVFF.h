@@ -55,7 +55,7 @@ namespace mrpt
 		DEFINE_SERIALIZABLE( CHolonomicVFF )
 	public:
 		/**  Initialize the parameters of the navigator, from some configuration file, or default values if set to NULL. */
-		CHolonomicVFF(const mrpt::utils::CConfigFileBase *INI_FILE=NULL);
+		CHolonomicVFF(const mrpt::utils::CConfigFileBase *INI_FILE=nullptr);
 
 		// See base class docs
 		void navigate(const NavInput & ni, NavOutput &no) MRPT_OVERRIDE;

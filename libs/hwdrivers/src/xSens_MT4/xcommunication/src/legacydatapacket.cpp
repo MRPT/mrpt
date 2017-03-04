@@ -97,7 +97,7 @@ const LegacyDataPacket& LegacyDataPacket::operator = (const LegacyDataPacket& pa
 		return *this;
 
 	delete m_fixedData;
-	m_fixedData = NULL;
+	m_fixedData = nullptr;
 
 	if (pack.m_fixedData)	// Can be empty
 	{
@@ -123,7 +123,7 @@ LegacyDataPacket::~LegacyDataPacket()
 	try {
 		PACKETLOG("%s destroying %p\n", __FUNCTION__, this);
 		delete m_fixedData;
-		m_fixedData = NULL;
+		m_fixedData = nullptr;
 		PACKETLOG("%s destroyed %p\n", __FUNCTION__, this);
 	}
 	catch (...)
@@ -315,7 +315,7 @@ void LegacyDataPacket::setDeviceId(XsDeviceId deviceid, int32_t index)
 */
 XsDataFormat LegacyDataPacket::dataFormat(int32_t index) const
 {
-	if (!m_fixedData || index >= m_fixedData->m_itemCount || m_fixedData->m_formatList == NULL)
+	if (!m_fixedData || index >= m_fixedData->m_itemCount || m_fixedData->m_formatList == nullptr)
 		return XsDataFormat();
 
 	return m_fixedData->m_formatList[index];
@@ -464,10 +464,10 @@ XsSize LegacyDataPacket::dataSize(int32_t index) const
 void LegacyDataPacket::updateInfoList()
 {
 	assert(m_fixedData);
-	if (m_fixedData->m_infoList != NULL)
+	if (m_fixedData->m_infoList != nullptr)
 	{
 		delete[] m_fixedData->m_infoList;
-		m_fixedData->m_infoList = NULL;
+		m_fixedData->m_infoList = nullptr;
 	}
 
 	assert(m_fixedData->m_itemCount);
@@ -825,7 +825,7 @@ void LegacyDataPacket::updateInfoList()
 */
 PacketFixedData LegacyDataPacket::takePacketFixedData()
 {
-	if (m_fixedData == NULL)
+	if (m_fixedData == nullptr)
 		return PacketFixedData();
 
 	PacketFixedData data(*m_fixedData);

@@ -67,7 +67,7 @@ using namespace std;
 // ------------------------------------------------------
 //				Configuration
 // ------------------------------------------------------
-CConfigFile		*iniFile = NULL;
+CConfigFile		*iniFile = nullptr;
 std::string		iniFileName;
 
 //extern double	likelihood_acumulation;

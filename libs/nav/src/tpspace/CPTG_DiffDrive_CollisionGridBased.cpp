@@ -268,7 +268,7 @@ const CPTG_DiffDrive_CollisionGridBased::TCollisionCell & CPTG_DiffDrive_Collisi
 {
 	static const TCollisionCell  emptyCell;
 	const TCollisionCell *cell = cellByPos(obsX,obsY);
-	return cell!=NULL ? *cell : emptyCell;
+	return cell!=nullptr ? *cell : emptyCell;
 }
 
 /*---------------------------------------------------------------

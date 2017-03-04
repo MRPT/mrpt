@@ -14,7 +14,7 @@
 #define JCONFIG_INCLUDED	/* so that mrpt_jpeglib.h doesn't do it again */
 
 /*
- * We need the NULL macro and size_t typedef.
+ * We need the nullptr macro and size_t typedef.
  * On an ANSI-conforming system it is sufficient to include <stddef.h>.
  * Otherwise, we get them from <stdlib.h> or <stdio.h>; we may have to
  * pull in <sys/types.h> as well.

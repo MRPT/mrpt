@@ -36,9 +36,9 @@ namespace libusbemu {
 template<typename T>
 inline T*& SAFE_DELETE(T*& p)
 {
-  if(NULL != p)
+  if(nullptr != p)
     delete(p);
-  p = NULL;
+  p = nullptr;
   return(p);
 }
 
@@ -57,10 +57,10 @@ struct QuickList
 	{
 		memset(&ini, 0, sizeof(T));
 		memset(&end, 0, sizeof(T));
-		ini.prev = NULL;
+		ini.prev = nullptr;
 		ini.next = &end;
 		end.prev = &ini;
-		end.next = NULL;
+		end.next = nullptr;
 	}
   // copy-constructor is required to be safely used as a plain std::map value
 	QuickList(const QuickList& rhs)
@@ -72,10 +72,10 @@ struct QuickList
     }
 		memset(&ini, 0, sizeof(T));
 		memset(&end, 0, sizeof(T));
-		ini.prev = NULL;
+		ini.prev = nullptr;
 		ini.next = &end;
 		end.prev = &ini;
-		end.next = NULL;
+		end.next = nullptr;
 	}
   ~QuickList() {};
 	const bool Empty() const
@@ -97,14 +97,14 @@ struct QuickList
 	}
 	T* Head() const
 	{
-		T* head (NULL);
+		T* head (nullptr);
 		if (!Empty())
 			head = ini.next;
 		return(head);
 	}
 	T* Last() const
 	{
-		T* last (NULL);
+		T* last (nullptr);
 		if (!Empty())
 			last = end.prev;
 		return(last);
@@ -115,15 +115,15 @@ struct QuickList
 	}
 	static T* Prev(T* node)
 	{
-		T* prev (NULL);
-		if (NULL != node->prev->prev)
+		T* prev (nullptr);
+		if (nullptr != node->prev->prev)
 			prev = node->prev;
 		return(prev);
 	}
 	static T* Next(T* node)
 	{
-		T* next (NULL);
-		if (NULL != node->next->next)
+		T* next (nullptr);
+		if (nullptr != node->next->next)
 			next = node->next;
 		return(next);
 	}
@@ -133,9 +133,9 @@ struct QuickList
       return(false);
 		node->prev->next = node->next;
 		node->next->prev = node->prev;
-		node->prev = NULL;
-		node->next = NULL;
-    node->list = NULL;
+		node->prev = nullptr;
+		node->next = nullptr;
+    node->list = nullptr;
     return(true);
   }
 	static void RemoveNode(T* node)
@@ -146,7 +146,7 @@ struct QuickList
 	}
 	static const bool Orphan(T* node)
 	{
-    return(NULL == node->list);
+    return(nullptr == node->list);
 	}
 };
 
@@ -310,7 +310,7 @@ libusb_device* libusbemu_register_device(libusb_context* ctx, struct usb_device*
 {
   RAIIMutex lock (ctx->mutex);
   // register the device (if not already there) ...
-  libusb_device dummy = { ctx, dev, 0, NULL, NULL };
+  libusb_device dummy = { ctx, dev, 0, nullptr, nullptr };
   libusb_context::TMapDevices::iterator it = ctx->devices.insert(std::make_pair(dev,dummy)).first;
   // ... and increment the reference count
   libusb_device& record (it->second);
@@ -332,7 +332,7 @@ void libusbemu_unregister_device(libusb_device* dev)
   {
     SAFE_DELETE(dev->handles);
     // prior to device deletion, all of its transfer lists must be deleted
-    if (NULL != dev->isoTransfers)
+    if (nullptr != dev->isoTransfers)
     {
       libusb_device::TMapIsocTransfers& allTransfers (*(dev->isoTransfers));
       while (!allTransfers.empty())
@@ -359,7 +359,7 @@ int libusbemu_setup_transfer(transfer_wrapper* wrapper)
 {
   void*& context = wrapper->usb;
   // paranoid check...
-  if (NULL != context)
+  if (nullptr != context)
     return(LIBUSB_ERROR_OTHER);
 
   RAIIMutex lock (wrapper->libusb.dev_handle->dev->ctx->mutex);

@@ -115,7 +115,7 @@ namespace mrpt
 			  */
 			CActionPtr get(size_t index);
 
-			 /** Access to the i'th action of a given class, or a NULL smart pointer if there is no action of that class in the list.
+			 /** Access to the i'th action of a given class, or a nullptr smart pointer if there is no action of that class in the list.
 			   *  Example:
 			   * \code
 					CActionRobotMovement2DPtr obs = acts->getActionByClass<CActionRobotMovement2D>();
@@ -146,12 +146,12 @@ namespace mrpt
 			size_t  size();
 
 			/** Returns the best pose increment estimator in the collection, based on the determinant of its pose change covariance matrix.
-			  * \return The estimation, or NULL if none is available.
+			  * \return The estimation, or nullptr if none is available.
 			  */
 			CActionRobotMovement2DPtr  getBestMovementEstimation() const;
 
 			/** Returns the pose increment estimator in the collection having the specified type.
-			  * \return The estimation, or NULL if none is available.
+			  * \return The estimation, or nullptr if none is available.
 			  */
 			CActionRobotMovement2DPtr  getMovementEstimationByType( CActionRobotMovement2D::TEstimationMethod method);
 

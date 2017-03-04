@@ -150,8 +150,8 @@ namespace mrpt
 			 * \param m1			[IN] The first map (CAN BE A mrpt::poses::CPointsMap derived class or a mrpt::slam::COccupancyGrid2D class)
 			 * \param m2			[IN] The second map. (MUST BE A mrpt::poses::CPointsMap derived class)The pose of this map respect to m1 is to be estimated.
 			 * \param initialEstimationPDF	[IN] An initial gross estimation for the displacement.
-			 * \param runningTime	[OUT] A pointer to a container for obtaining the algorithm running time in seconds, or NULL if you don't need it.
-			 * \param info			[OUT] A pointer to a CICP::TReturnInfo, or NULL if it isn't needed.
+			 * \param runningTime	[OUT] A pointer to a container for obtaining the algorithm running time in seconds, or nullptr if you don't need it.
+			 * \param info			[OUT] A pointer to a CICP::TReturnInfo, or nullptr if it isn't needed.
 			 *
 			 * \return A smart pointer to the output estimated pose PDF.
 			 *
@@ -161,16 +161,16 @@ namespace mrpt
 					const mrpt::maps::CMetricMap		*m1,
 					const mrpt::maps::CMetricMap		*m2,
 					const mrpt::poses::CPosePDFGaussian	&initialEstimationPDF,
-					float					*runningTime = NULL,
-					void					*info = NULL );
+					float					*runningTime = nullptr,
+					void					*info = nullptr );
 
 			// See base class for docs
 			mrpt::poses::CPose3DPDFPtr Align3DPDF(
 					const mrpt::maps::CMetricMap		*m1,
 					const mrpt::maps::CMetricMap		*m2,
 					const mrpt::poses::CPose3DPDFGaussian	&initialEstimationPDF,
-					float					*runningTime = NULL,
-					void					*info = NULL );
+					float					*runningTime = nullptr,
+					void					*info = nullptr );
 
 
 		protected:

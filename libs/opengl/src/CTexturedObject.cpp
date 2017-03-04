@@ -177,7 +177,7 @@ unsigned char *reserveDataBuffer(const size_t len, vector<unsigned char> &data)
 void  CTexturedObject::loadTextureInOpenGL() const
 {
 #if MRPT_HAS_OPENGL_GLUT
-	unsigned char	*dataAligned=NULL;
+	unsigned char	*dataAligned=nullptr;
 	vector<unsigned char>		data;
 
 #	ifdef TEXTUREOBJ_PROFILE_MEM_ALLOC

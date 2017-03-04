@@ -69,13 +69,13 @@ CFFMPEG_InputStream::CFFMPEG_InputStream()
 	m_state.set( new TFFMPEGContext[1] );
 	TFFMPEGContext *ctx = MY_FFMPEG_STATE;
 
-	ctx->pFormatCtx = NULL;
-	ctx->pCodecCtx = NULL;
-	ctx->pCodec = NULL;
+	ctx->pFormatCtx = nullptr;
+	ctx->pCodecCtx = nullptr;
+	ctx->pCodec = nullptr;
 	ctx->videoStream = 0;
-	ctx->pFrame = NULL;
-	ctx->pFrameRGB = NULL;
-	ctx->img_convert_ctx = NULL;
+	ctx->pFrame = nullptr;
+	ctx->pFrameRGB = nullptr;
+	ctx->img_convert_ctx = nullptr;
 
     // Register all formats and codecs
     av_register_all();
@@ -95,7 +95,7 @@ CFFMPEG_InputStream::~CFFMPEG_InputStream()
 
 	// Free context struct. memory
 	delete[] MY_FFMPEG_STATE;
-	m_state.set(NULL);
+	m_state.set(nullptr);
 #endif
 }
 
@@ -106,7 +106,7 @@ bool CFFMPEG_InputStream::isOpen() const
 {
 #if MRPT_HAS_FFMPEG
 	TFFMPEGContext *ctx = MY_FFMPEG_STATE;
-	return ctx->pFormatCtx != NULL;
+	return ctx->pFormatCtx != nullptr;
 #else
 	return false;
 #endif
@@ -127,13 +127,13 @@ bool CFFMPEG_InputStream::openURL( const std::string &url, bool grab_as_grayscal
 
     // Open video file
 #if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(53,2,0)
-     if(avformat_open_input( &ctx->pFormatCtx, url.c_str(), NULL, NULL)!=0)
+     if(avformat_open_input( &ctx->pFormatCtx, url.c_str(), nullptr, nullptr)!=0)
 #else
-     if(av_open_input_file( &ctx->pFormatCtx, url.c_str(), NULL, 0, NULL)!=0)
+     if(av_open_input_file( &ctx->pFormatCtx, url.c_str(), nullptr, 0, nullptr)!=0)
 #endif
 
      {
-          ctx->pFormatCtx = NULL;
+          ctx->pFormatCtx = nullptr;
           std::cerr << "[CFFMPEG_InputStream::openURL] Cannot open video: " << url << std::endl;
                return false;
      }
@@ -141,7 +141,7 @@ bool CFFMPEG_InputStream::openURL( const std::string &url, bool grab_as_grayscal
     // Retrieve stream information
     if (
 #if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(53,35,0)
-		avformat_find_stream_info(ctx->pFormatCtx, NULL)<0
+		avformat_find_stream_info(ctx->pFormatCtx, nullptr)<0
 #else
 		av_find_stream_info(ctx->pFormatCtx)<0
 #endif
@@ -188,7 +188,7 @@ bool CFFMPEG_InputStream::openURL( const std::string &url, bool grab_as_grayscal
 
     // Find the decoder for the video stream
     ctx->pCodec=avcodec_find_decoder(ctx->pCodecCtx->codec_id);
-    if(ctx->pCodec==NULL)
+    if(ctx->pCodec==nullptr)
     {
     	std::cerr << "[CFFMPEG_InputStream::openURL] Codec not found: " << url << std::endl;
         return false;
@@ -196,7 +196,7 @@ bool CFFMPEG_InputStream::openURL( const std::string &url, bool grab_as_grayscal
 
     // Open codec
 #if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(53,6,0)
-    if(avcodec_open2(ctx->pCodecCtx, ctx->pCodec,NULL)<0)
+    if(avcodec_open2(ctx->pCodecCtx, ctx->pCodec,nullptr)<0)
 #else
     if(avcodec_open(ctx->pCodecCtx, ctx->pCodec)<0)
 #endif
@@ -218,7 +218,7 @@ bool CFFMPEG_InputStream::openURL( const std::string &url, bool grab_as_grayscal
 #endif
 
 
-    if(ctx->pFrameRGB==NULL || ctx->pFrame==NULL)
+    if(ctx->pFrameRGB==nullptr || ctx->pFrame==nullptr)
     {
     	std::cerr << "[CFFMPEG_InputStream::openURL] Could not alloc memory for frame buffers: " << url << std::endl;
         return false;
@@ -271,7 +271,7 @@ void CFFMPEG_InputStream::close()
     if (ctx->pCodecCtx)
     {
 		avcodec_close(ctx->pCodecCtx);
-		ctx->pCodecCtx=NULL;
+		ctx->pCodecCtx=nullptr;
     }
 
     // Close the video file
@@ -282,7 +282,7 @@ void CFFMPEG_InputStream::close()
 #else
 		av_close_input_file(ctx->pFormatCtx);
 #endif
-		ctx->pFormatCtx = NULL;
+		ctx->pFormatCtx = nullptr;
     }
 
     // Free frames memory:
@@ -295,7 +295,7 @@ void CFFMPEG_InputStream::close()
 #else
 		av_free(ctx->pFrameRGB);
 #endif
-		ctx->pFrameRGB=NULL;
+		ctx->pFrameRGB=nullptr;
     }
     if (ctx->pFrame)
     {
@@ -304,13 +304,13 @@ void CFFMPEG_InputStream::close()
 #else
 		av_free(ctx->pFrame);
 #endif
-		ctx->pFrame = NULL;
+		ctx->pFrame = nullptr;
     }
 
 	if (ctx->img_convert_ctx)
 	{
 		sws_freeContext( ctx->img_convert_ctx );
-		ctx->img_convert_ctx = NULL;
+		ctx->img_convert_ctx = nullptr;
 	}
 
 #endif
@@ -367,7 +367,7 @@ bool CFFMPEG_InputStream::retrieveFrame( mrpt::utils::CImage &out_img )
 						PIX_FMT_GRAY8 : PIX_FMT_BGR24,
 #endif
 					SWS_BICUBIC,
-					NULL, NULL, NULL);
+					nullptr, nullptr, nullptr);
 
 				sws_scale(
 					ctx->img_convert_ctx,

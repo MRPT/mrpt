@@ -44,5 +44,5 @@ AREXPORT const char * ArDeviceConnection::getStatusMessage(int messageNumber) co
   if ((it = ourStrMap.find(messageNumber)) != ourStrMap.end())
     return (*it).second.c_str();
   else
-    return NULL;
+    return nullptr;
 }

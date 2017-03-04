@@ -45,7 +45,7 @@ namespace mrpt
 			DEFINE_SERIALIZABLE( CLSLAMParticleData )
 
 		public:
-			CLSLAMParticleData( const mrpt::maps::TSetOfMetricMapInitializers *mapsInitializers = NULL ) :
+			CLSLAMParticleData( const mrpt::maps::TSetOfMetricMapInitializers *mapsInitializers = nullptr ) :
 			  metricMaps( mapsInitializers ),
 			  robotPoses()
 			{
@@ -74,7 +74,7 @@ namespace mrpt
 		public:
 			/** Constructor (Default param only used from STL classes)
 			  */
-			CLocalMetricHypothesis( CHMTSLAM  * parent = NULL );
+			CLocalMetricHypothesis( CHMTSLAM  * parent = nullptr );
 
 			/** Destructor
 			  */

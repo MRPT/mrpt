@@ -102,7 +102,7 @@ bool IRRImporter::CanRead( const std::string& pFile, IOSystem* pIOHandler, bool 
 	{
 		/*  If CanRead() is called in order to check whether we
 		 *  support a specific file extension in general pIOHandler
-		 *  might be NULL and it's our duty to return true here.
+		 *  might be nullptr and it's our duty to return true here.
 		 */
 		if (!pIOHandler)return true;
 		const char* tokens[] = {"irr_scene"};
@@ -301,7 +301,7 @@ inline void FindSuitableMultiple(int& angle)
 // ------------------------------------------------------------------------------------------------
 void IRRImporter::ComputeAnimations(Node* root, aiNode* real, std::vector<aiNodeAnim*>& anims)
 {
-	ai_assert(NULL != root && NULL != real);
+	ai_assert(nullptr != root && nullptr != real);
 
 	// XXX totally WIP - doesn't produce proper results, need to evaluate
 	// whether there's any use for Irrlicht's proprietary scene format
@@ -511,7 +511,7 @@ void IRRImporter::ComputeAnimations(Node* root, aiNode* real, std::vector<aiNode
 					// We have no point in the spline. That's bad. Really bad.
 					DefaultLogger::get()->warn("IRR: Spline animators with no points defined");
 
-					delete anim;anim = NULL;
+					delete anim;anim = nullptr;
 					break;
 				}
 				else if (size == 1)	{
@@ -895,7 +895,7 @@ void IRRImporter::InternReadFile( const std::string& pFile,
 	boost::scoped_ptr<IOStream> file( pIOHandler->Open( pFile));
 
 	// Check whether we can read from the file
-	if( file.get() == NULL)
+	if( file.get() == nullptr)
 		throw DeadlyImportError( "Failed to open IRR file " + pFile + "");
 
 	// Construct the irrXML parser
@@ -904,14 +904,14 @@ void IRRImporter::InternReadFile( const std::string& pFile,
 
 	// The root node of the scene
 	Node* root = new Node(Node::DUMMY);
-	root->parent = NULL;
+	root->parent = nullptr;
 	root->name = "<IRRSceneRoot>";
 
 	// Current node parent
 	Node* curParent = root;
 
 	// Scenegraph node we're currently working on
-	Node* curNode = NULL;
+	Node* curNode = nullptr;
 
 	// List of output cameras
 	std::vector<aiCamera*> cameras;
@@ -1038,7 +1038,7 @@ void IRRImporter::InternReadFile( const std::string& pFile,
 					continue;
 				}
 
-				Animator* curAnim = NULL;
+				Animator* curAnim = nullptr;
 
 				// Materials can occur for nearly any type of node
 				if (inMaterials && curNode->type != Node::DUMMY)	{
@@ -1343,7 +1343,7 @@ void IRRImporter::InternReadFile( const std::string& pFile,
 					}
 					else curParent = curParent->parent;
 				}
-				else curNode = NULL;
+				else curNode = nullptr;
 			}
 			// clear all flags
 			else if (!ASSIMP_stricmp(reader->getNodeName(),"materials"))	{

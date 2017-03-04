@@ -90,9 +90,9 @@ void  CFeatureExtraction::extractFeaturesFASTER_N(
 
 	switch (N_fast)
 	{
-	case 9:  fast_corner_detect_9 (IPL,corners, options.FASTOptions.threshold, 0, NULL); type_of_this_feature=featFASTER9; break;
-	case 10: fast_corner_detect_10(IPL,corners, options.FASTOptions.threshold, 0, NULL); type_of_this_feature=featFASTER10; break;
-	case 12: fast_corner_detect_12(IPL,corners, options.FASTOptions.threshold, 0, NULL); type_of_this_feature=featFASTER12; break;
+	case 9:  fast_corner_detect_9 (IPL,corners, options.FASTOptions.threshold, 0, nullptr); type_of_this_feature=featFASTER9; break;
+	case 10: fast_corner_detect_10(IPL,corners, options.FASTOptions.threshold, 0, nullptr); type_of_this_feature=featFASTER10; break;
+	case 12: fast_corner_detect_12(IPL,corners, options.FASTOptions.threshold, 0, nullptr); type_of_this_feature=featFASTER12; break;
 	default:
 		THROW_EXCEPTION("Only the 9,10,12 FASTER detectors are implemented.")
 		break;

@@ -37,7 +37,7 @@ CFBORender::CFBORender( unsigned int width, unsigned int height, const bool skip
 		{
 			// create the context (a little trick)
 			int argc = 1;
-			char *argv[1] = { NULL };
+			char *argv[1] = { nullptr };
 			glutInit(&argc, argv);
 		}
 
@@ -57,10 +57,10 @@ CFBORender::CFBORender( unsigned int width, unsigned int height, const bool skip
 	glBindFramebufferEXT = (PFNGLBINDFRAMEBUFFEREXTPROC)wglGetProcAddress("glBindFramebufferEXT");
 	glFramebufferTexture2DEXT = (PFNGLFRAMEBUFFERTEXTURE2DEXTPROC) wglGetProcAddress("glFramebufferTexture2DEXT");
 
-	ASSERT_(glGenFramebuffersEXT!=NULL)
-	ASSERT_(glDeleteFramebuffersEXT!=NULL)
-	ASSERT_(glBindFramebufferEXT!=NULL)
-	ASSERT_(glFramebufferTexture2DEXT!=NULL)
+	ASSERT_(glGenFramebuffersEXT!=nullptr)
+	ASSERT_(glDeleteFramebuffersEXT!=nullptr)
+	ASSERT_(glBindFramebufferEXT!=nullptr)
+	ASSERT_(glFramebufferTexture2DEXT!=nullptr)
 #endif
 
 	// gen the frambuffer object (FBO), similar manner as a texture
@@ -86,7 +86,7 @@ CFBORender::CFBORender( unsigned int width, unsigned int height, const bool skip
 #	endif
 
 	glBindTexture(texTarget, m_tex);
-	glTexImage2D(texTarget, 0, GL_RGB, m_width, m_height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(texTarget, 0, GL_RGB, m_width, m_height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
 
 	// bind this texture to the current framebuffer obj. as color_attachement_0
 	glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, texTarget, m_tex, 0);
@@ -240,7 +240,7 @@ void CFBORender::resize( unsigned int width, unsigned int height )
 #	endif
 
 	glBindTexture(texTarget, m_tex);
-	glTexImage2D(texTarget, 0, GL_RGB, m_width, m_height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(texTarget, 0, GL_RGB, m_width, m_height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
 
 	//'unbind' the frambuffer object, so subsequent drawing ops are not drawn into the FBO.
 	// '0' means "windowing system provided framebuffer
@@ -264,7 +264,7 @@ int CFBORender::isExtensionSupported( const char* extension )
 
 	MRPT_START
 
-	const GLubyte *extensions = NULL;
+	const GLubyte *extensions = nullptr;
 	const GLubyte *start;
 	GLubyte *where, *terminator;
 

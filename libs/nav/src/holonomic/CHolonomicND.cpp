@@ -31,7 +31,7 @@ CHolonomicND::CHolonomicND(const mrpt::utils::CConfigFileBase *INI_FILE ) :
 	CAbstractHolonomicReactiveMethod("CHolonomicND"),
 	m_last_selected_sector ( std::numeric_limits<unsigned int>::max() )
 {
-	if (INI_FILE!=NULL)
+	if (INI_FILE!=nullptr)
 		initialize( *INI_FILE );
 }
 

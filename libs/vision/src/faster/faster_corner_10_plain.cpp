@@ -34,7 +34,7 @@ void fast_corner_detect_plain_10(const IplImage* i, TSimpleFeatureList &corners,
 		ptr_feat_index_by_row = &(*out_feats_index_by_row)[0];
 	}
 	else {
-		ptr_feat_index_by_row = NULL;
+		ptr_feat_index_by_row = nullptr;
 	}
 
 

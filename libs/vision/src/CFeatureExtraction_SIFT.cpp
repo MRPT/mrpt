@@ -313,13 +313,13 @@ void  CFeatureExtraction::extractFeaturesSIFT(
 			compute_descriptors( features, gauss_pyr, SIFT_DESCR_WIDTH, SIFT_DESCR_HIST_BINS );
 
 			/* sort features by decreasing scale and move from CvSeq to array */
-			cvSeqSort( features, (CvCmpFunc)feature_cmp, NULL );
+			cvSeqSort( features, (CvCmpFunc)feature_cmp, nullptr );
 
 			/* get only the desired features */
 			if( nDesiredFeatures > 0 )
 			{
 				if( nDesiredFeatures < (unsigned int)features->total )
-					cvSeqPopMulti( features, NULL, features->total - nDesiredFeatures );
+					cvSeqPopMulti( features, nullptr, features->total - nDesiredFeatures );
 				else
 					cout << "[Warning] Detected less features than the requested " << features->total << " vs " << nDesiredFeatures << endl;
 			} // end if
@@ -619,7 +619,7 @@ void  CFeatureExtraction::internal_computeSiftDescriptors( const CImage	&in_img,
 			release_pyr( &dog_pyr, octvs, SIFT_INTVLS + 2 );
 
 			/* sort features by decreasing scale and move from CvSeq to array */
-			//cvSeqSort( features, (CvCmpFunc)feature_cmp, NULL );
+			//cvSeqSort( features, (CvCmpFunc)feature_cmp, nullptr );
 			//n = features->total;
 
 			//struct feature** feat;
@@ -628,7 +628,7 @@ void  CFeatureExtraction::internal_computeSiftDescriptors( const CImage	&in_img,
 			//for( i = 0; i < n; i++ )
 			//{
 			//	free( (*feat)[i].feature_data );
-			//	(*feat)[i].feature_data = NULL;
+			//	(*feat)[i].feature_data = nullptr;
 			//}
 
 			//// The number of features must be the same

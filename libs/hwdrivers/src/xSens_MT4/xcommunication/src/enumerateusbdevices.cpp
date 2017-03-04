@@ -46,16 +46,16 @@ bool xsEnumerateUsbDevices(XsPortInfoList& ports)
 
 	HDEVINFO deviceInfo;
 	SP_DEVICE_INTERFACE_DATA interfaceData;
-	PSP_DEVICE_INTERFACE_DETAIL_DATA_A detailData = NULL;
+	PSP_DEVICE_INTERFACE_DETAIL_DATA_A detailData = nullptr;
 
-	deviceInfo = SetupDiGetClassDevs(&guid, NULL, NULL,	DIGCF_PRESENT | DIGCF_DEVICEINTERFACE);
+	deviceInfo = SetupDiGetClassDevs(&guid, nullptr, nullptr,	DIGCF_PRESENT | DIGCF_DEVICEINTERFACE);
 
 	// Initialize variables.
 	interfaceData.cbSize = sizeof(SP_INTERFACE_DEVICE_DATA);
 	int port = 0;
 	for (DWORD dwIndex = 0; port == 0; ++dwIndex)
 	{
-		BOOL bRet = SetupDiEnumDeviceInterfaces( deviceInfo, NULL, &guid, dwIndex, &interfaceData);
+		BOOL bRet = SetupDiEnumDeviceInterfaces( deviceInfo, nullptr, &guid, dwIndex, &interfaceData);
 		if (!bRet)
 		{
 			if (GetLastError() == ERROR_NO_MORE_ITEMS)
@@ -63,7 +63,7 @@ bool xsEnumerateUsbDevices(XsPortInfoList& ports)
 		}
 		else
 		{
-			if (!SetupDiGetDeviceInterfaceDetail(deviceInfo, &interfaceData, NULL, 0, &requiredLength, NULL))
+			if (!SetupDiGetDeviceInterfaceDetail(deviceInfo, &interfaceData, nullptr, 0, &requiredLength, nullptr))
 			{
 				if (GetLastError() != ERROR_INSUFFICIENT_BUFFER)
 				{
@@ -72,7 +72,7 @@ bool xsEnumerateUsbDevices(XsPortInfoList& ports)
 				}
 			}
 			detailData = (PSP_DEVICE_INTERFACE_DETAIL_DATA_A)LocalAlloc(LMEM_FIXED, requiredLength);
-			if (NULL == detailData)
+			if (nullptr == detailData)
 			{
 				SetupDiDestroyDeviceInfoList(deviceInfo);
 				return false;

@@ -58,7 +58,7 @@ CAbstractNavigator::CAbstractNavigator(CRobot2NavInterface &react_iterf_impl) :
 	m_lastNavigationState ( IDLE ),
 	m_navigationEndEventSent(false),
 	m_navigationState     ( IDLE ),
-	m_navigationParams    ( NULL ),
+	m_navigationParams    ( nullptr ),
 	m_lastNavTargetReached(false),
 	m_robot               ( react_iterf_impl ),
 	m_curPoseVel          (),

@@ -125,7 +125,7 @@ public:
 	  * \return true on success. false if the string is malformed, and then the matrix will be resized to 0x0.
 	  * \sa inMatlabFormat, CConfigFile::read_matrix
 	  */
-	bool fromMatlabStringFormat(const std::string &s, std::ostream *dump_errors_here = NULL);
+    bool fromMatlabStringFormat(const std::string &s, std::ostream *dump_errors_here = nullptr);
 	// Method implemented in eigen_plugins_impl.h
 
 	/** Dump matrix in matlab format.
@@ -302,8 +302,8 @@ public:
 		OUTVECT &x,
 		Scalar resolution = Scalar(0.01),
 		size_t maxIterations = 6,
-		int    *out_Iterations = NULL,
-		float  *out_estimatedResolution = NULL ) const
+        int    *out_Iterations = nullptr,
+        float  *out_estimatedResolution = nullptr ) const
 	{
 		// Apply the iterative Power Method:
 		size_t iter=0;

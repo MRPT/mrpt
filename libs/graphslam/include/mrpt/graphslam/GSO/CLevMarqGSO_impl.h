@@ -35,10 +35,10 @@ void CLevMarqGSO<GRAPH_t>::initCLevMarqGSO() {
 
 	using namespace mrpt::utils;
 
-	m_graph = NULL;
-	m_win_manager = NULL;
-	m_win_observer = NULL;
-	m_graph_section = NULL;
+	m_graph = nullptr;
+	m_win_manager = nullptr;
+	m_win_observer = nullptr;
+	m_graph_section = nullptr;
 
 
 	m_first_time_call = false;
@@ -440,7 +440,7 @@ void CLevMarqGSO<GRAPH_t>::_optimizeGraph() {
 
 	bool full_update = opt_params.optimization_distance == -1 || this->checkForLoopClosures();
 	if (full_update) {
-		nodes_to_optimize = NULL;
+		nodes_to_optimize = nullptr;
 		this->logFmt(mrpt::utils::LVL_DEBUG,
 				"Commencing with FULL graph optimization... ");
 	}
@@ -462,7 +462,7 @@ void CLevMarqGSO<GRAPH_t>::_optimizeGraph() {
 	mrpt::graphslam::optimize_graph_spa_levmarq(
 			*m_graph,
 			levmarq_info,
-			nodes_to_optimize,  // List of nodes to optimize. NULL -> all but the root node.
+			nodes_to_optimize,  // List of nodes to optimize. nullptr -> all but the root node.
 			opt_params.cfg,
 			&CLevMarqGSO<GRAPH_t>::levMarqFeedback); // functor feedback
 
@@ -472,7 +472,7 @@ void CLevMarqGSO<GRAPH_t>::_optimizeGraph() {
 
 	// deleting the nodes_to_optimize set
 	delete nodes_to_optimize;
-	nodes_to_optimize = NULL;
+	nodes_to_optimize = nullptr;
 
 	m_time_logger.leave("CLevMarqGSO::_optimizeGraph");
 	MRPT_UNUSED_PARAM(elapsed_time);

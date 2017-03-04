@@ -437,14 +437,14 @@ create_odither_tables (j_decompress_ptr cinfo)
 
   for (i = 0; i < cinfo->out_color_components; i++) {
     nci = cquantize->Ncolors[i]; /* # of distinct values for this color */
-    odither = NULL;		/* search for matching prior component */
+    odither = nullptr;		/* search for matching prior component */
     for (j = 0; j < i; j++) {
       if (nci == cquantize->Ncolors[j]) {
 	odither = cquantize->odither[j];
 	break;
       }
     }
-    if (odither == NULL)	/* need a new table? */
+    if (odither == nullptr)	/* need a new table? */
       odither = make_odither_array(cinfo, nci);
     cquantize->odither[i] = odither;
   }
@@ -770,14 +770,14 @@ start_pass_1_quant (j_decompress_ptr cinfo, boolean is_pre_scan)
     if (! cquantize->is_padded)
       create_colorindex(cinfo);
     /* Create ordered-dither tables if we didn't already. */
-    if (cquantize->odither[0] == NULL)
+    if (cquantize->odither[0] == nullptr)
       create_odither_tables(cinfo);
     break;
   case JDITHER_FS:
     cquantize->pub.color_quantize = quantize_fs_dither;
     cquantize->on_odd_row = FALSE; /* initialize state for F-S dither */
     /* Allocate Floyd-Steinberg workspace if didn't already. */
-    if (cquantize->fserrors[0] == NULL)
+    if (cquantize->fserrors[0] == nullptr)
       alloc_fs_workspace(cinfo);
     /* Initialize the propagated errors to zero. */
     arraysize = (size_t) ((cinfo->output_width + 2) * SIZEOF(FSERROR));
@@ -830,8 +830,8 @@ jinit_1pass_quantizer (j_decompress_ptr cinfo)
   cquantize->pub.start_pass = start_pass_1_quant;
   cquantize->pub.finish_pass = finish_pass_1_quant;
   cquantize->pub.new_color_map = new_color_map_1_quant;
-  cquantize->fserrors[0] = NULL; /* Flag FS workspace not allocated */
-  cquantize->odither[0] = NULL;	/* Also flag odither arrays not allocated */
+  cquantize->fserrors[0] = nullptr; /* Flag FS workspace not allocated */
+  cquantize->odither[0] = nullptr;	/* Also flag odither arrays not allocated */
 
   /* Make sure my internal arrays won't overflow */
   if (cinfo->out_color_components > MAX_Q_COMPS)

@@ -51,11 +51,11 @@ namespace Util {
 
 /* DOM/Parse error reporting - does not return */
 AI_WONT_RETURN void DOMError(const std::string& message, const Token& token) AI_WONT_RETURN_SUFFIX;
-AI_WONT_RETURN void DOMError(const std::string& message, const Element* element = NULL) AI_WONT_RETURN_SUFFIX;
+AI_WONT_RETURN void DOMError(const std::string& message, const Element* element = nullptr) AI_WONT_RETURN_SUFFIX;
 
 // does return
 void DOMWarning(const std::string& message, const Token& token);
-void DOMWarning(const std::string& message, const Element* element = NULL);
+void DOMWarning(const std::string& message, const Element* element = nullptr);
 
 
 // fetch a property table and the corresponding property template 
@@ -72,21 +72,21 @@ inline const T* ProcessSimpleConnection(const Connection& con,
 	bool is_object_property_conn, 
 	const char* name, 
 	const Element& element, 
-	const char** propNameOut = NULL)
+	const char** propNameOut = nullptr)
 {
 	if (is_object_property_conn && !con.PropertyName().length()) {
 		DOMWarning("expected incoming " + std::string(name) +
 			" link to be an object-object connection, ignoring",
 			&element
 			);
-		return NULL;
+		return nullptr;
 	}
 	else if (!is_object_property_conn && con.PropertyName().length()) {
 		DOMWarning("expected incoming " + std::string(name) +
 			" link to be an object-property connection, ignoring",
 			&element
 			);
-		return NULL;
+		return nullptr;
 	}
 
 	if(is_object_property_conn && propNameOut) {
@@ -100,7 +100,7 @@ inline const T* ProcessSimpleConnection(const Connection& con,
 		DOMWarning("failed to read source object for incoming" + std::string(name) +
 			" link, ignoring",
 			&element);
-		return NULL;
+		return nullptr;
 	}
 
 	return dynamic_cast<const T*>(ob);

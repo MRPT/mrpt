@@ -162,7 +162,7 @@ AREXPORT const char * ArSignalHandler::nameSignal(int sig)
 
 AREXPORT void ArSignalHandler::logThread(void)
 {
-  if (ourSignalHandler != NULL)
+  if (ourSignalHandler != nullptr)
     ourSignalHandler->logThreadInfo();
   else
     ArLog::log(ArLog::Normal, "No signal handler thread running");

@@ -71,9 +71,9 @@ bool DropDownPopup::Create(DropDownBase *parent, int style)
 
 void DropDownPopup::Init()
 {
-    m_owner          = NULL;
-    m_childWin       = NULL;
-    m_timer          = NULL;
+    m_owner          = nullptr;
+    m_childWin       = nullptr;
+    m_timer          = nullptr;
     m_popped_handler = false;
 }
 
@@ -99,7 +99,7 @@ void DropDownPopup::StopTimer()
         if (m_timer->IsRunning())
             m_timer->Stop();
         delete m_timer;
-        m_timer = NULL;
+        m_timer = nullptr;
     }
 }
 
@@ -275,8 +275,8 @@ DropDownBase::~DropDownBase()
 
 void DropDownBase::Init()
 {
-    m_popupWin = NULL;
-    m_dropdownButton = NULL;
+    m_popupWin = nullptr;
+    m_dropdownButton = nullptr;
 }
 
 bool DropDownBase::Create( wxWindow* parent, wxWindowID id,
@@ -377,7 +377,7 @@ void DropDownBase::HidePopup()
     {
         m_popupWin->Dismiss();
         m_popupWin->Destroy();
-        m_popupWin = NULL;
+        m_popupWin = nullptr;
     }
 
     m_dropdownButton->Refresh(true);  // MSW help in toolbar

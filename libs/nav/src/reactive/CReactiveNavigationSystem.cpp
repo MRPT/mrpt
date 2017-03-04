@@ -114,7 +114,7 @@ void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBas
 	// ---------------------------------------------
 	// Free previous PTGs:
 	for (size_t i=0;i<PTGs.size();i++)	delete PTGs[i];
-	PTGs.assign(PTG_COUNT,NULL);
+	PTGs.assign(PTG_COUNT,nullptr);
 
 	for ( unsigned int n=0;n<PTG_COUNT;n++)
 	{

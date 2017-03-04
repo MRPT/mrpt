@@ -285,7 +285,7 @@ public:
    *  Example:
    *  @code
    *  struct tm t;
-   *  ArUtil::localtime(time(NULL), &t);
+   *  ArUtil::localtime(time(nullptr), &t);
    *  ArLog::log("Current month is %d.\n", t.tm_mon);
    *  @endcode
    */
@@ -293,7 +293,7 @@ public:
 
 
   /** Call ArUtil::localtime() with the current time obtained by calling
-   * time(NULL).
+   * time(nullptr).
    *  @return false on error (e.g. invalid input), otherwise true.
    */
   AREXPORT static bool localtime(struct tm *result);
@@ -573,20 +573,20 @@ public:
   /**
      Gets the whole position at once, by giving it 2 or 3 pointers to
      doubles.  If you give the function a null pointer for a value it won't
-     try to use the null pointer, so you can pass in a NULL if you don't
-     care about that value.  Also note that th defaults to NULL so you can
+     try to use the null pointer, so you can pass in a nullptr if you don't
+     care about that value.  Also note that th defaults to nullptr so you can
      use this with just x and y.
      @param x a pointer to a double to set the x position to
      @param y a pointer to a double to set the y position to
      @param th a pointer to a double to set the heading to, defaults to NULL
    */
-  void getPose(double *x, double *y, double *th = NULL) const
+  void getPose(double *x, double *y, double *th = nullptr) const
     {
-      if (x != NULL)
+      if (x != nullptr)
 	*x = myX;
-      if (y != NULL)
+      if (y != nullptr)
 	*y = myY;
-      if (th != NULL)
+      if (th != nullptr)
 	*th = myTh;
     }
   /// Finds the distance from this position to the given position
@@ -754,7 +754,7 @@ public:
 #else // if not win32
       struct timeval timeNow;
 
-      if (gettimeofday(&timeNow, NULL) == 0)
+      if (gettimeofday(&timeNow, nullptr) == 0)
       {
 	mySec = timeNow.tv_sec;
 	myMSec = timeNow.tv_usec / 1000;

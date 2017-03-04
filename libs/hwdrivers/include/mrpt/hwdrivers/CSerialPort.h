@@ -139,7 +139,7 @@ namespace mrpt
 			  * \return The read string, without the final
 			  * \exception std::exception On communication errors
 			  */
-			std::string ReadString(const int total_timeout_ms=-1, bool *out_timeout =NULL, const char *eol_chars = "\r\n");
+			std::string ReadString(const int total_timeout_ms=-1, bool *out_timeout =nullptr, const char *eol_chars = "\r\n");
 
 			/** Implements the virtual method responsible for writing to the stream.
 			 *  Write attempts to write up to Count bytes to Buffer, and returns the number of bytes actually written.

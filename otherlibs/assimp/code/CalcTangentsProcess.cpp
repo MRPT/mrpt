@@ -78,7 +78,7 @@ bool CalcTangentsProcess::IsActive( unsigned int pFlags) const
 // Executes the post processing step on the given imported data.
 void CalcTangentsProcess::SetupProperties(const Importer* pImp)
 {
-    ai_assert( NULL != pImp );
+    ai_assert( nullptr != pImp );
 
 	// get the current value of the property
 	configMaxAngle = pImp->GetPropertyFloat(AI_CONFIG_PP_CT_MAX_SMOOTHING_ANGLE,45.f);
@@ -92,7 +92,7 @@ void CalcTangentsProcess::SetupProperties(const Importer* pImp)
 // Executes the post processing step on the given imported data.
 void CalcTangentsProcess::Execute( aiScene* pScene)
 {
-    ai_assert( NULL != pScene );
+    ai_assert( nullptr != pScene );
 
     DefaultLogger::get()->debug("CalcTangentsProcess begin");
 
@@ -130,7 +130,7 @@ bool CalcTangentsProcess::ProcessMesh( aiMesh* pMesh, unsigned int meshIndex)
 	}
 
 	// what we can check, though, is if the mesh has normals and texture coordinates. That's a requirement
-	if( pMesh->mNormals == NULL)
+	if( pMesh->mNormals == nullptr)
 	{
 		DefaultLogger::get()->error("Failed to compute tangents; need normals");
 		return false;
@@ -235,7 +235,7 @@ bool CalcTangentsProcess::ProcessMesh( aiMesh* pMesh, unsigned int meshIndex)
 
 	// create a helper to quickly find locally close vertices among the vertex array
 	// FIX: check whether we can reuse the SpatialSort of a previous step
-	SpatialSort* vertexFinder = NULL;
+	SpatialSort* vertexFinder = nullptr;
 	SpatialSort  _vertexFinder;
 	float posEpsilon;
 	if (shared)

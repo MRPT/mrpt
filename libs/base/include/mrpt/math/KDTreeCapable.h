@@ -676,11 +676,11 @@ namespace mrpt
 			template <int _DIM = -1>
 			struct TKDTreeDataHolder
 			{
-				/** Init the pointer to NULL. */
-				inline TKDTreeDataHolder() : index(NULL),m_dim(_DIM), m_num_points(0) { }
+                /** Init the pointer to nullptr. */
+                inline TKDTreeDataHolder() : index(nullptr),m_dim(_DIM), m_num_points(0) { }
 
 				/** Copy constructor: It actually does NOT copy the kd-tree, a new object will be created if required!   */
-				inline TKDTreeDataHolder(const TKDTreeDataHolder &)  : index(NULL),m_dim(_DIM), m_num_points(0) { }
+                inline TKDTreeDataHolder(const TKDTreeDataHolder &)  : index(nullptr),m_dim(_DIM), m_num_points(0) { }
 
 				/** Copy operator: It actually does NOT copy the kd-tree, a new object will be created if required!  */
 				inline TKDTreeDataHolder& operator =(const TKDTreeDataHolder &o) {
@@ -696,7 +696,7 @@ namespace mrpt
 
 				typedef nanoflann::KDTreeSingleIndexAdaptor<metric_t,Derived, _DIM> kdtree_index_t;
 
-				kdtree_index_t *index;  //!< NULL or the up-to-date index
+                kdtree_index_t *index;  //!< nullptr or the up-to-date index
 
 				std::vector<num_t> query_point;
 				size_t           m_dim;         //!< Dimensionality. typ: 2,3

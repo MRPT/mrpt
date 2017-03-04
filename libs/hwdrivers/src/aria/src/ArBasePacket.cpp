@@ -20,7 +20,7 @@
 /**
 @param bufferSize size of the buffer
 @param headerLength length of the header
-@param buf buffer packet uses, if NULL, instance will allocate memory
+@param buf buffer packet uses, if nullptr, instance will allocate memory
 @param footerLength length of the footer following the data
 */
 AREXPORT ArBasePacket::ArBasePacket(ArTypes::UByte2 bufferSize,
@@ -28,7 +28,7 @@ AREXPORT ArBasePacket::ArBasePacket(ArTypes::UByte2 bufferSize,
                                     char * buf,
                                     ArTypes::UByte2 footerLength)
 {
-  if (buf == NULL && bufferSize > 0)
+  if (buf == nullptr && bufferSize > 0)
   {
     myOwnMyBuf = true;
     myBuf = new char[bufferSize];
@@ -48,7 +48,7 @@ AREXPORT ArBasePacket::ArBasePacket(ArTypes::UByte2 bufferSize,
 
 AREXPORT ArBasePacket::~ArBasePacket()
 {
-  if (myOwnMyBuf && myBuf != NULL)
+  if (myOwnMyBuf && myBuf != nullptr)
     delete[] myBuf;
 }
 
@@ -264,7 +264,7 @@ AREXPORT void ArBasePacket::uByte4ToBuf(ArTypes::UByte4 val)
 */
 AREXPORT void ArBasePacket::strToBuf(const char *str)
 {
-  if (str == NULL) {
+  if (str == nullptr) {
     str = "";
   }
   ArTypes::UByte2 tempLen = strlen(str) + 1;
@@ -302,7 +302,7 @@ If string ends before length it pads the string with NUL ('\\0') characters.
 */
 AREXPORT void ArBasePacket::strToBufPadded(const char *str, int length)
 {
-  if (str == NULL) {
+  if (str == nullptr) {
     str = "";
   }
   ArTypes::UByte2 tempLen = strlen(str);
@@ -331,8 +331,8 @@ AREXPORT void ArBasePacket::strToBufPadded(const char *str, int length)
 */
 AREXPORT void ArBasePacket::dataToBuf(const char *data, int length)
 {
-  if (data == NULL) {
-    ArLog::log(ArLog::Normal, "ArBasePacket::dataToBuf(NULL, %d) cannot add from null address",
+  if (data == nullptr) {
+    ArLog::log(ArLog::Normal, "ArBasePacket::dataToBuf(nullptr, %d) cannot add from null address",
                length);
     return;
   }
@@ -353,8 +353,8 @@ AREXPORT void ArBasePacket::dataToBuf(const char *data, int length)
 */
 AREXPORT void ArBasePacket::dataToBuf(const unsigned char *data, int length)
 {
-  if (data == NULL) {
-    ArLog::log(ArLog::Normal, "ArBasePacket::dataToBuf(NULL, %d) cannot add from null address",
+  if (data == nullptr) {
+    ArLog::log(ArLog::Normal, "ArBasePacket::dataToBuf(nullptr, %d) cannot add from null address",
                length);
     return;
   }
@@ -473,8 +473,8 @@ enough, then the remainder of the string is flushed from the packet.
 */
 AREXPORT void ArBasePacket::bufToStr(char *buf, int len)
 {
-   if (buf == NULL) {
-    ArLog::log(ArLog::Normal, "ArBasePacket::bufToStr(NULL, %d) cannot write to null address",
+   if (buf == nullptr) {
+    ArLog::log(ArLog::Normal, "ArBasePacket::bufToStr(nullptr, %d) cannot write to null address",
                len);
     return;
   }
@@ -531,8 +531,8 @@ from packet
 */
 AREXPORT void ArBasePacket::bufToData(char *data, int length)
 {
-  if (data == NULL) {
-    ArLog::log(ArLog::Normal, "ArBasePacket::bufToData(NULL, %d) cannot write to null address",
+  if (data == nullptr) {
+    ArLog::log(ArLog::Normal, "ArBasePacket::bufToData(nullptr, %d) cannot write to null address",
                length);
     return;
   }
@@ -554,8 +554,8 @@ from packet
 */
 AREXPORT void ArBasePacket::bufToData(unsigned char *data, int length)
 {
-  if (data == NULL) {
-    ArLog::log(ArLog::Normal, "ArBasePacket::bufToData(NULL, %d) cannot write to null address",
+  if (data == nullptr) {
+    ArLog::log(ArLog::Normal, "ArBasePacket::bufToData(nullptr, %d) cannot write to null address",
                length);
     return;
   }

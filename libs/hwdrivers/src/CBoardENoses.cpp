@@ -30,8 +30,8 @@ CBoardENoses::CBoardENoses( ) :
 	m_usbSerialNumber 	("ENOSE001"),
 	m_COM_port			(),
 	m_COM_baud			(115200),
-	m_stream_FTDI		(NULL),
-	m_stream_SERIAL		(NULL)
+	m_stream_FTDI		(nullptr),
+	m_stream_SERIAL		(nullptr)
 {
 	m_sensorLabel = "ENOSE";
 	first_reading = true;
@@ -150,7 +150,7 @@ CStream *CBoardENoses::checkConnectionAndConnect()
 		catch(...)
 		{	// Error opening device:
 			m_stream_FTDI->Close();
-			return NULL;
+			return nullptr;
 		}
 	}
 	else
@@ -172,7 +172,7 @@ CStream *CBoardENoses::checkConnectionAndConnect()
 		catch(...)
 		{	// Error opening device:
 			m_stream_SERIAL->close();
-			return NULL;
+			return nullptr;
 		}
 	}
 }

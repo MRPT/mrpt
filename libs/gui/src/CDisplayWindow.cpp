@@ -46,7 +46,7 @@ const long ID_MENUITEM3 = wxNewId();
 CWindowDialog::wxMRPTImageControl::wxMRPTImageControl(
 	wxWindow *parent,
 	wxWindowID winID,
-	int x, int y, int width, int height ) : m_img(NULL)
+	int x, int y, int width, int height ) : m_img(nullptr)
 {
 	this->Create(parent,winID,wxPoint(x,y),wxSize(width,height));
 
@@ -67,7 +67,7 @@ CWindowDialog::wxMRPTImageControl::~wxMRPTImageControl()
 	if (m_img)
 	{
 		delete m_img;
-		m_img=NULL;
+		m_img=nullptr;
 	}
 }
 
@@ -93,7 +93,7 @@ void CWindowDialog::wxMRPTImageControl::AssignImage(wxBitmap *img)
 	if (m_img)
 	{
 		delete m_img;
-		m_img=NULL;
+		m_img=nullptr;
 	}
 
 	m_img = img;
@@ -179,12 +179,12 @@ CWindowDialog::CWindowDialog(
 	//Connect(wxID_ANY,wxEVT_CHAR,(wxObjectEventFunction)&CWindowDialog::OnChar);
 	Connect(wxEVT_CHAR,(wxObjectEventFunction)&CWindowDialog::OnChar);
 
-	m_image->Connect(wxID_ANY,wxEVT_KEY_DOWN,(wxObjectEventFunction)&CWindowDialog::OnChar,NULL,this);
-	//m_image->Connect(wxEVT_CHAR,(wxObjectEventFunction)&CWindowDialog::OnChar,NULL,this);
-	m_image->Connect(wxEVT_SIZE,(wxObjectEventFunction)&CWindowDialog::OnResize,NULL,this);
+	m_image->Connect(wxID_ANY,wxEVT_KEY_DOWN,(wxObjectEventFunction)&CWindowDialog::OnChar,nullptr,this);
+	//m_image->Connect(wxEVT_CHAR,(wxObjectEventFunction)&CWindowDialog::OnChar,nullptr,this);
+	m_image->Connect(wxEVT_SIZE,(wxObjectEventFunction)&CWindowDialog::OnResize,nullptr,this);
 
-	m_image->Connect(wxEVT_LEFT_DOWN,(wxObjectEventFunction)&CWindowDialog::OnMouseDown,NULL,this);
-	m_image->Connect(wxEVT_RIGHT_DOWN,(wxObjectEventFunction)&CWindowDialog::OnMouseDown,NULL,this);
+	m_image->Connect(wxEVT_LEFT_DOWN,(wxObjectEventFunction)&CWindowDialog::OnMouseDown,nullptr,this);
+	m_image->Connect(wxEVT_RIGHT_DOWN,(wxObjectEventFunction)&CWindowDialog::OnMouseDown,nullptr,this);
 
     // Increment number of windows:
     //int winCount =
@@ -210,7 +210,7 @@ void CWindowDialog::OnClose(wxCloseEvent& event)
 	} catch(...){}
 	if (!allow_close) return; // Don't process this close event.
 
-	// Set the m_hwnd=NULL in our parent object.
+	// Set the m_hwnd=nullptr in our parent object.
     m_win2D->notifyChildWindowDestruction();
 
     // Decrement number of windows:

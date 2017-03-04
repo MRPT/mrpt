@@ -60,7 +60,7 @@ namespace mrpt
 			virtual void  inverse(CPose3DQuatPDF &o) const = 0;
 
 			/** This static method computes the two Jacobians of a pose composition operation $f(x,u)= x \oplus u$
-			  *  \param out_x_oplus_u If set to !=NULL, the result of "x+u" will be stored here (it will be computed internally anyway).
+			  *  \param out_x_oplus_u If set to !=nullptr, the result of "x+u" will be stored here (it will be computed internally anyway).
 			  *  To see the mathematical derivation of the formulas, refer to the technical report here:
 			  *   - http://www.mrpt.org/Probability_Density_Distributions_Over_Spatial_Representations
 			  */
@@ -69,7 +69,7 @@ namespace mrpt
 				const CPose3DQuat &u,
 				mrpt::math::CMatrixDouble77	  &df_dx,
 				mrpt::math::CMatrixDouble77	  &df_du,
-				CPose3DQuat       *out_x_oplus_u=NULL);
+				CPose3DQuat       *out_x_oplus_u=nullptr);
 
 
 			/** Returns a 3D representation of this PDF (it doesn't clear the current contents of out_obj, but append new OpenGL objects to that list)

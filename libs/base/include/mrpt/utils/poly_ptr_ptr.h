@@ -64,11 +64,11 @@ namespace mrpt
 
 			typename T::value_type * get() {
 				if (m_smartptr) return m_smartptr.get();
-				else throw std::runtime_error("dereferencing NULL poly_ptr");
+				else throw std::runtime_error("dereferencing nullptr poly_ptr");
 			}
 			const typename T::value_type * get() const {
 				if (m_smartptr) return m_smartptr.get();
-				else throw std::runtime_error("dereferencing NULL poly_ptr");
+				else throw std::runtime_error("dereferencing nullptr poly_ptr");
 			}
 
 			typename T::value_type * operator->() { return get(); }

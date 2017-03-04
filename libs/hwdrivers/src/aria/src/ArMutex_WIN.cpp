@@ -126,6 +126,6 @@ AREXPORT const char * ArMutex::getError(int messageNumber) const
   if ((it = myStrMap.find(messageNumber)) != myStrMap.end())
     return (*it).second.c_str();
   else
-    return NULL;
+    return nullptr;
 
 }

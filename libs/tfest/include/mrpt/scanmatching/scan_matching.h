@@ -72,7 +72,7 @@ namespace mrpt
 		bool TFEST_IMPEXP leastSquareErrorRigidTransformation(
 			mrpt::utils::TMatchingPairList	&in_correspondences,
 			mrpt::poses::CPose2D							&out_transformation,
-			mrpt::math::CMatrixDouble33					*out_estimateCovariance = NULL);
+			mrpt::math::CMatrixDouble33					*out_estimateCovariance = nullptr);
 
 		/** \deprecated Use functions in mrpt::tfest */
 		MRPT_DEPRECATED("Deprecated: Use mrpt::tfest::se2_l2() instead")
@@ -90,7 +90,7 @@ namespace mrpt
 			unsigned int					ransac_maxSetSize = 20,
 			float							ransac_mahalanobisDistanceThreshold = 3.0f,
 			unsigned int					ransac_nSimulations = 0,
-			mrpt::utils::TMatchingPairList		*out_largestSubSet = NULL,
+			mrpt::utils::TMatchingPairList		*out_largestSubSet = nullptr,
 			bool						ransac_fuseByCorrsMatch = true,
 			float						ransac_fuseMaxDiffXY = 0.01f,
 			float						ransac_fuseMaxDiffPhi = mrpt::utils::DEG2RAD(0.1f),

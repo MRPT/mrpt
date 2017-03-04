@@ -28,14 +28,14 @@ namespace mrpt
 		public:
 			/** Loads from a PLY file.
 			  * \param[in]  filename The filename to open. It can be either in binary or text format.
-			  * \param[out] file_comments If provided (!=NULL) the list of comment strings stored in the file will be returned.
-			  * \param[out] file_obj_info If provided (!=NULL) the list of "object info" strings stored in the file will be returned.
+			  * \param[out] file_comments If provided (!=nullptr) the list of comment strings stored in the file will be returned.
+			  * \param[out] file_obj_info If provided (!=nullptr) the list of "object info" strings stored in the file will be returned.
 			  * \return false on any error in the file format or reading it. To obtain more details on the error you can call getLoadPLYErrorString()
 			  */
 			bool loadFromPlyFile(
 				const std::string         &filename,
-				CStringList  *file_comments = NULL,
-				CStringList  *file_obj_info = NULL );
+				CStringList  *file_comments = nullptr,
+				CStringList  *file_obj_info = nullptr );
 
 			/** Return a description of the error if loadFromPlyFile() returned false, or an empty string if the file was loaded without problems. */
 			std::string getLoadPLYErrorString() const { return m_ply_import_last_error; }
@@ -51,9 +51,9 @@ namespace mrpt
 			virtual void PLY_import_set_face_count(const size_t N) = 0;
 
 			/** In a base class, will be called after PLY_import_set_vertex_count() once for each loaded point.
-			  *  \param pt_color Will be NULL if the loaded file does not provide color info.
+			  *  \param pt_color Will be nullptr if the loaded file does not provide color info.
 			  */
-			virtual void PLY_import_set_vertex(const size_t idx, const mrpt::math::TPoint3Df &pt, const mrpt::utils::TColorf *pt_color = NULL) = 0;
+			virtual void PLY_import_set_vertex(const size_t idx, const mrpt::math::TPoint3Df &pt, const mrpt::utils::TColorf *pt_color = nullptr) = 0;
 
 			/** @} */
 
@@ -73,8 +73,8 @@ namespace mrpt
 		public:
 			/** Saves to a PLY file.
 			  * \param[in]  filename The filename to be saved.
-			  * \param[in] file_comments If provided (!=NULL) the list of comment strings stored in the file will be returned.
-			  * \param[in] file_obj_info If provided (!=NULL) the list of "object info" strings stored in the file will be returned.
+			  * \param[in] file_comments If provided (!=nullptr) the list of comment strings stored in the file will be returned.
+			  * \param[in] file_obj_info If provided (!=nullptr) the list of "object info" strings stored in the file will be returned.
 			  * \return false on any error writing the file. To obtain more details on the error you can call getSavePLYErrorString()
 			  */
 			bool saveToPlyFile(
@@ -97,7 +97,7 @@ namespace mrpt
 			virtual size_t PLY_export_get_face_count() const = 0;
 
 			/** In a base class, will be called after PLY_export_get_vertex_count() once for each exported point.
-			  *  \param pt_color Will be NULL if the loaded file does not provide color info.
+			  *  \param pt_color Will be nullptr if the loaded file does not provide color info.
 			  */
 			virtual void PLY_export_get_vertex(
 				const size_t idx,

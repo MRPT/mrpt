@@ -69,7 +69,7 @@ Property::~Property()
 namespace {
 
 // ------------------------------------------------------------------------------------------------
-// read a typed property out of a FBX element. The return value is NULL if the property cannot be read.
+// read a typed property out of a FBX element. The return value is nullptr if the property cannot be read.
 Property* ReadTypedProperty(const Element& element)
 {
 	ai_assert(element.KeyToken().StringContents() == "P");
@@ -108,7 +108,7 @@ Property* ReadTypedProperty(const Element& element)
 	else if (!strcmp(cs,"double") || !strcmp(cs,"Number") || !strcmp(cs,"KTime") || !strcmp(cs,"Float")) {
 		return new TypedProperty<float>(ParseTokenAsFloat(*tok[4]));
 	}
-	return NULL;
+	return nullptr;
 }
 
 
@@ -194,7 +194,7 @@ const Property* PropertyTable::Get(const std::string& name) const
 				return templateProps->Get(name);
 			}
 
-			return NULL;
+			return nullptr;
 		}
 	}
 	

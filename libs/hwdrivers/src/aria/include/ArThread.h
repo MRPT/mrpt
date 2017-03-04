@@ -91,7 +91,7 @@ public:
   /// Stop the thread
   /*AREXPORT*/ virtual void stopRunning(void) {myRunning=false;}
   /// Join on the thread
-  AREXPORT virtual int join(void **ret=NULL);
+  AREXPORT virtual int join(void **ret=nullptr);
   /// Detatch the thread so it cant be joined
   AREXPORT virtual int detach(void);
   /// Cancel the thread
@@ -143,7 +143,7 @@ protected:
   static MapType ourThreads;
   AREXPORT static ArLog::LogLevel ourLogLevel;
 
-  AREXPORT virtual int doJoin(void **ret=NULL);
+  AREXPORT virtual int doJoin(void **ret=nullptr);
 
   std::string myName;
 

@@ -116,7 +116,7 @@ public:
 	
 		The function reads data from the embedded Cmt1s object. The data is then converted
 		into a Message object.
-		If an error occurred, a NULL pointer is returned and the error code can be
+		If an error occurred, a nullptr pointer is returned and the error code can be
 		retrieved with getLastError().
 	*/
 	XsensResultValue readMessage(Message* rcv);
@@ -142,7 +142,7 @@ public:
 		safe value for the 'all' messages option.
 		
 		\note If an error message is received, the contents are stored in the m_lastResult
-		field and a NULL value is returned immediately.
+		field and a nullptr value is returned immediately.
 	*/
 	XsensResultValue waitForMessage(Message* rcv, const uint8_t msgId, uint32_t timeoutOverride, bool acceptErrorMessage);
 	/*! \brief Send a message over the COM port.

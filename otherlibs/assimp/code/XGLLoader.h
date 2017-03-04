@@ -106,7 +106,7 @@ private:
 		}
 
 		void dismiss() {
-			light = NULL;
+			light = nullptr;
 			meshes_linear.clear();
 			materials_linear.clear();
 			meshes.clear();

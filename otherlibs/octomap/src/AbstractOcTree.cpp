@@ -82,7 +82,7 @@ namespace octomap {
 
     if (!file.is_open()){
       OCTOMAP_ERROR_STR("Filestream to "<< filename << " not open, nothing read.");
-      return NULL;
+      return nullptr;
     } else {
       // TODO: check is_good of finished stream, warn?
       return read(file);
@@ -97,14 +97,14 @@ namespace octomap {
     std::getline(s, line);
     if (line.compare(0,fileHeader.length(), fileHeader) !=0){
       OCTOMAP_ERROR_STR("First line of OcTree file header does not start with \""<< fileHeader);
-      return NULL;
+      return nullptr;
     }
 
     std::string id;
     unsigned size;
     double res;
     if (!AbstractOcTree::readHeader(s, id, size, res))
-      return NULL;
+      return nullptr;
 
 
     // otherwise: values are valid, stream is now at binary data!
@@ -189,7 +189,7 @@ namespace octomap {
     std::map<std::string, AbstractOcTree*>::iterator it = classIDMapping().find(class_name);
     if (it == classIDMapping().end()){
       OCTOMAP_ERROR("Could not create octree of type %s, not in store in classIDMapping\n", class_name.c_str());
-      return NULL;
+      return nullptr;
     } else {
       AbstractOcTree* tree = it->second->create();
 

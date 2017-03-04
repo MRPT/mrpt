@@ -29,9 +29,9 @@ AREXPORT ArFileParser::~ArFileParser(void)
 AREXPORT bool ArFileParser::addHandler(
 	const char *keyword, ArRetFunctor1<bool, ArArgumentBuilder *> *functor)
 {
-  if (keyword == NULL)
+  if (keyword == nullptr)
   {
-    if (myRemainderHandler != NULL)
+    if (myRemainderHandler != nullptr)
     {
       ArLog::log(ArLog::Verbose, "There is already a functor to handle unhandled lines");
       return false;
@@ -64,9 +64,9 @@ AREXPORT bool ArFileParser::addHandlerWithError(
 	const char *keyword,
 	ArRetFunctor3<bool, ArArgumentBuilder *, char *, size_t> *functor)
 {
-  if (keyword == NULL)
+  if (keyword == nullptr)
   {
-    if (myRemainderHandler != NULL)
+    if (myRemainderHandler != nullptr)
     {
       ArLog::log(ArLog::Verbose, "There is already a functor to handle unhandled lines");
       return false;
@@ -93,7 +93,7 @@ AREXPORT bool ArFileParser::remHandler(const char *keyword,
 {
   std::shared_ptr<HandlerCBType> handler;
 
-  if (myRemainderHandler != NULL && keyword == NULL)
+  if (myRemainderHandler != nullptr && keyword == nullptr)
   {
     myRemainderHandler.reset();
     ArLog::log(ArLog::Verbose, "Functor for remainder handler removed");
@@ -120,7 +120,7 @@ AREXPORT bool ArFileParser::remHandler(const char *keyword,
 AREXPORT bool ArFileParser::remHandler(
 	ArRetFunctor1<bool, ArArgumentBuilder *> *functor)
 {
-  if (myRemainderHandler != NULL && myRemainderHandler->haveFunctor(functor))
+  if (myRemainderHandler != nullptr && myRemainderHandler->haveFunctor(functor))
   {
     myRemainderHandler.reset();
     ArLog::log(ArLog::Verbose, "Functor for remainder handler removed");
@@ -146,7 +146,7 @@ AREXPORT bool ArFileParser::remHandler(
 AREXPORT bool ArFileParser::remHandler(
 	ArRetFunctor3<bool, ArArgumentBuilder *, char *, size_t> *functor)
 {
-  if (myRemainderHandler != NULL && myRemainderHandler->haveFunctor(functor))
+  if (myRemainderHandler != nullptr && myRemainderHandler->haveFunctor(functor))
   {
     myRemainderHandler.reset();
     ArLog::log(ArLog::Verbose, "Functor for remainder handler removed");
@@ -177,7 +177,7 @@ AREXPORT ArRetFunctor1<bool, ArArgumentBuilder *> *ArFileParser::getHandler(cons
   if ((it = myMap.find(keyword)) == myMap.end())
   {
     ArLog::log(ArLog::Normal, "There is no keyword handler for '%s'", keyword);
-    return NULL;
+    return nullptr;
   }
 
   return (*it).second;
@@ -185,7 +185,7 @@ AREXPORT ArRetFunctor1<bool, ArArgumentBuilder *> *ArFileParser::getHandler(cons
 */
 AREXPORT void ArFileParser::setBaseDirectory(const char *baseDirectory)
 {
-  if (baseDirectory != NULL && strlen(baseDirectory) > 0)
+  if (baseDirectory != nullptr && strlen(baseDirectory) > 0)
     myBaseDir = baseDirectory;
   else
     myBaseDir = "";
@@ -206,7 +206,7 @@ AREXPORT bool ArFileParser::parseLine(char *line,
 {
   char keyword[512];
   char *choppingPos;
-  char *valueStart=NULL;
+  char *valueStart=nullptr;
   size_t textStart=0;
   size_t len;
   size_t i;
@@ -217,18 +217,18 @@ AREXPORT bool ArFileParser::parseLine(char *line,
   noArgs = false;
 
   // chop out the comments
-  if ((choppingPos = strstr(line, ";")) != NULL)
+  if ((choppingPos = strstr(line, ";")) != nullptr)
     line[choppingPos-line] = '\0';
-  if ((choppingPos = strstr(line, "#")) != NULL)
+  if ((choppingPos = strstr(line, "#")) != nullptr)
     line[choppingPos-line] = '\0';
 
 
 
   // chop out the new line if its there
-  if ((choppingPos = strstr(line, "\n")) != NULL)
+  if ((choppingPos = strstr(line, "\n")) != nullptr)
     line[choppingPos-line] = '\0';
   // chop out the windows new line if its there
-  while ((choppingPos = strstr(line, "\r")) != NULL)
+  while ((choppingPos = strstr(line, "\r")) != nullptr)
     memmove(choppingPos, choppingPos + 1, strlen(line));
 
   // see how long the line is
@@ -328,7 +328,7 @@ AREXPORT bool ArFileParser::parseLine(char *line,
   {
     //printf("no handler for keyword %s\n", keyword);
     // if we have one set it
-    if (myRemainderHandler != NULL)
+    if (myRemainderHandler != nullptr)
     {
       usingRemainder = true;
       handler = myRemainderHandler;
@@ -365,9 +365,9 @@ AREXPORT bool ArFileParser::parseLine(char *line,
     builder.setExtraString(keyword);
 
   // make sure we don't overwrite any errors
-  if (errorBuffer != NULL && errorBuffer[0] != '\0')
+  if (errorBuffer != nullptr && errorBuffer[0] != '\0')
   {
-    errorBuffer = NULL;
+    errorBuffer = nullptr;
     errorBufferLen = 0;
   }
 
@@ -377,7 +377,7 @@ AREXPORT bool ArFileParser::parseLine(char *line,
   {
     // put the line number in the error message (this won't overwrite
     // anything because of the check above
-    if (errorBuffer != NULL)
+    if (errorBuffer != nullptr)
     {
       std::string errorString = errorBuffer;
       snprintf(errorBuffer, errorBufferLen, "Line %d: %s", myLineNumber,
@@ -433,9 +433,9 @@ AREXPORT bool ArFileParser::parseFile(const char *fileName,
 
   //char *buf = new char[4096];
 
-  if ((file = fopen(realFileName.c_str(), "r")) == NULL)
+  if ((file = fopen(realFileName.c_str(), "r")) == nullptr)
   {
-    if (errorBuffer != NULL)
+    if (errorBuffer != nullptr)
       snprintf(errorBuffer, errorBufferLen, "cannot open file %s", fileName);
     if (!noFileNotFoundMessage)
       ArLog::log(ArLog::Terse, "ArFileParser::parseFile: Could not open file %s to parse file.", realFileName.c_str());
@@ -450,7 +450,7 @@ AREXPORT bool ArFileParser::parseFile(const char *fileName,
 
   resetCounters();
   // read until the end of the file
-  while (fgets(line, sizeof(line), file) != NULL)
+  while (fgets(line, sizeof(line), file) != nullptr)
   {
     if (!parseLine(line, errorBuffer, errorBufferLen))
     {
@@ -488,9 +488,9 @@ AREXPORT bool ArFileParser::parseFile(FILE *file, char *buffer,
   if (errorBuffer)
     errorBuffer[0] = '\0';
 
-  if ((file == NULL) || (buffer == NULL) || (bufferLength <= 0))
+  if ((file == nullptr) || (buffer == nullptr) || (bufferLength <= 0))
   {
-    if (errorBuffer != NULL)
+    if (errorBuffer != nullptr)
       snprintf(errorBuffer, errorBufferLen, "parseFile: bad setup");
     return false;
   }
@@ -499,7 +499,7 @@ AREXPORT bool ArFileParser::parseFile(FILE *file, char *buffer,
   resetCounters();
 
   // read until the end of the file
-  while (fgets(buffer, bufferLength, file) != NULL)
+  while (fgets(buffer, bufferLength, file) != nullptr)
   {
     if (!parseLine(buffer, errorBuffer, errorBufferLen))
     {

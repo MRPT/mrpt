@@ -69,8 +69,8 @@ bool find_chessboard_corners_multiple(
 	}
 
 	// JL: Move these constructors out of the loops:
-	IplConvKernel *kernel_cross = cvCreateStructuringElementEx(3,3,1,1,CV_SHAPE_CROSS,NULL);
-	IplConvKernel *kernel_rect = cvCreateStructuringElementEx(3,3,1,1,CV_SHAPE_RECT,NULL);
+	IplConvKernel *kernel_cross = cvCreateStructuringElementEx(3,3,1,1,CV_SHAPE_CROSS,nullptr);
+	IplConvKernel *kernel_rect = cvCreateStructuringElementEx(3,3,1,1,CV_SHAPE_RECT,nullptr);
 
 	static int kernel_diag1_vals[9] = {
 		1,0,0,

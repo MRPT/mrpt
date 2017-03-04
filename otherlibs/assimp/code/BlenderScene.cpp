@@ -258,7 +258,7 @@ template <> void Structure :: Convert<Base> (
 
 		// we know that this is a double-linked, circular list which we never
 		// traverse backwards, so don't bother resolving the back links.
-		cur_dest.prev = NULL;
+		cur_dest.prev = nullptr;
 
 		ReadFieldPtr<ErrorPolicy_Warn>(cur_dest.object,"*object",db);
 

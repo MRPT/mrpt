@@ -17,7 +17,7 @@ class ArConfigGroup
 {
 public:
   /// Constructor
-  AREXPORT ArConfigGroup(const char *baseDirectory = NULL);
+  AREXPORT ArConfigGroup(const char *baseDirectory = nullptr);
   /// Destructor
   AREXPORT ~ArConfigGroup(void);
   /// Adds a config to the group

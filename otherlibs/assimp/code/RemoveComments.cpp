@@ -54,7 +54,7 @@ void CommentRemover::RemoveLineComments(const char* szComment,
 	char* szBuffer, char chReplacement /* = ' ' */)
 {
 	// validate parameters
-	ai_assert(NULL != szComment && NULL != szBuffer && *szComment);
+	ai_assert(nullptr != szComment && nullptr != szBuffer && *szComment);
 
 	const size_t len = strlen(szComment);
 	while (*szBuffer)	{
@@ -78,8 +78,8 @@ void CommentRemover::RemoveMultiLineComments(const char* szCommentStart,
 	char chReplacement)
 {
 	// validate parameters
-	ai_assert(NULL != szCommentStart && NULL != szCommentEnd &&
-		NULL != szBuffer && *szCommentStart && *szCommentEnd);
+	ai_assert(nullptr != szCommentStart && nullptr != szCommentEnd &&
+		nullptr != szBuffer && *szCommentStart && *szCommentEnd);
 
 	const size_t len  = strlen(szCommentEnd);
 	const size_t len2 = strlen(szCommentStart);

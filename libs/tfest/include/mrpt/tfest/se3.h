@@ -85,8 +85,8 @@ namespace mrpt
 				ransac_threshold_scale(0.03),
 				forceScaleToUnity( true),
 				verbose(false),
-				user_individual_compat_callback(NULL),
-				user_individual_compat_callback_userdata(NULL)
+				user_individual_compat_callback(nullptr),
+				user_individual_compat_callback_userdata(nullptr)
 			{
 			}
 		};

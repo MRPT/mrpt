@@ -30,21 +30,21 @@ void XsUdev::initLibrary()
 	if (!m_libraryLoader->isLoaded())
 		m_libraryLoader->load("libudev.so");
 
-	m_uDev.unew = NULL;
-	m_uDev.unref = NULL;
-	m_uDev.device_unref = NULL;
-	m_uDev.enumerate_new = NULL;
-	m_uDev.enumerate_add_match_subsystem = NULL;
-	m_uDev.enumerate_scan_devices = NULL;
-	m_uDev.enumerate_get_list_entry = NULL;
-	m_uDev.enumerate_unref = NULL;
-	m_uDev.list_entry_get_next = NULL;
-	m_uDev.list_entry_get_name = NULL;
-	m_uDev.device_new_from_syspath = NULL;
-	m_uDev.device_get_parent = NULL;
-	m_uDev.device_get_devnode = NULL;
-	m_uDev.device_get_parent_with_subsystem_devtype = NULL;
-	m_uDev.device_get_sysattr_value = NULL;
+	m_uDev.unew = nullptr;
+	m_uDev.unref = nullptr;
+	m_uDev.device_unref = nullptr;
+	m_uDev.enumerate_new = nullptr;
+	m_uDev.enumerate_add_match_subsystem = nullptr;
+	m_uDev.enumerate_scan_devices = nullptr;
+	m_uDev.enumerate_get_list_entry = nullptr;
+	m_uDev.enumerate_unref = nullptr;
+	m_uDev.list_entry_get_next = nullptr;
+	m_uDev.list_entry_get_name = nullptr;
+	m_uDev.device_new_from_syspath = nullptr;
+	m_uDev.device_get_parent = nullptr;
+	m_uDev.device_get_devnode = nullptr;
+	m_uDev.device_get_parent_with_subsystem_devtype = nullptr;
+	m_uDev.device_get_sysattr_value = nullptr;
 
 	if (m_libraryLoader->isLoaded())
 	{
@@ -79,7 +79,7 @@ udev *XsUdev::unew(void)
 	if (m_uDev.unew)
 		return m_uDev.unew();
 	else
-		return NULL;
+		return nullptr;
 }
 
 /*! \brief Drop a reference of the udev library context.
@@ -93,7 +93,7 @@ udev *XsUdev::unref(struct udev *udev)
 	if (m_uDev.unref)
 		return m_uDev.unref(udev);
 	else
-		return NULL;
+		return nullptr;
 }
 
 /*! \brief Drop a reference of a udev device.
@@ -108,7 +108,7 @@ udev_device *XsUdev::device_unref(struct udev_device *udev_device)
 	if (m_uDev.device_unref)
 		return m_uDev.device_unref(udev_device);
 	else
-		return NULL;
+		return nullptr;
 }
 
 /*! \brief Create an enumeration context to scan.
@@ -121,7 +121,7 @@ udev_enumerate *XsUdev::enumerate_new(struct udev *udev)
 	if (m_uDev.enumerate_new)
 		return m_uDev.enumerate_new(udev);
 	else
-		return NULL;
+		return nullptr;
 }
 
 /*! \brief Match only devices belonging to a certain kernel subsystem.
@@ -152,14 +152,14 @@ int XsUdev::enumerate_scan_devices(struct udev_enumerate *udev_enumerate)
 /*! \brief Get the next entry from the list.
 
 	\param list_entry current entry
-	\return udev_list_entry, NULL if no more entries are available.
+	\return udev_list_entry, nullptr if no more entries are available.
 */
 udev_list_entry *XsUdev::list_entry_get_next(struct udev_list_entry *list_entry)
 {
 	if (m_uDev.list_entry_get_next)
 		return m_uDev.list_entry_get_next(list_entry);
 	else
-		return NULL;
+		return nullptr;
 }
 
 /*! \brief Get the first entry of the sorted list of device paths.
@@ -171,7 +171,7 @@ udev_list_entry *XsUdev::enumerate_get_list_entry(struct udev_enumerate *udev_en
 	if (m_uDev.enumerate_get_list_entry)
 		return m_uDev.enumerate_get_list_entry(udev_enumerate);
 	else
-		return NULL;
+		return nullptr;
 }
 
 /*! \brief Drop a reference of an enumeration context.
@@ -187,7 +187,7 @@ udev_enumerate *XsUdev::enumerate_unref(struct udev_enumerate *udev_enumerate)
 	if (m_uDev.enumerate_unref)
 		return m_uDev.enumerate_unref(udev_enumerate);
 	else
-		return NULL;
+		return nullptr;
 }
 
 /*! \brief Get the name of a list entry.
@@ -208,14 +208,14 @@ const char *XsUdev::list_entry_get_name(struct udev_list_entry *list_entry)
 
 	\param udev udev library context
 	\param syspath sys device path including sys directory
-	\return a new udev device, or NULL, if it does not exist
+	\return a new udev device, or nullptr, if it does not exist
 */
 udev_device *XsUdev::device_new_from_syspath(struct udev *udev, const char *syspath)
 {
 	if (m_uDev.device_new_from_syspath)
 		return m_uDev.device_new_from_syspath(udev, syspath);
 	else
-		return NULL;
+		return nullptr;
 }
 
 /*! \brief Find the next parent device, and fill in information from the sys device and the udev database entry.
@@ -226,14 +226,14 @@ udev_device *XsUdev::device_new_from_syspath(struct udev *udev, const char *sysp
 	It can be called as many times as needed, without caring about references.
 
 	\param udev_device: the device to start searching from
-	\return a new udev device, or NULL, if it no parent exist.
+	\return a new udev device, or nullptr, if it no parent exist.
 */
 udev_device *XsUdev::device_get_parent(struct udev_device *udev_device)
 {
 	if (m_uDev.device_get_parent)
 		return m_uDev.device_get_parent(udev_device);
 	else
-		return NULL;
+		return nullptr;
 }
 
 /*! \brief Retrieve the device node file name belonging to the udev device.
@@ -241,7 +241,7 @@ udev_device *XsUdev::device_get_parent(struct udev_device *udev_device)
 	The path is an absolute path, and starts with the device directory.
 
 	\param udev_device udev device
-	\return the device node file name of the udev device, or NULL if no device node exists
+	\return the device node file name of the udev device, or nullptr if no device node exists
 */
 const char *XsUdev::device_get_devnode(struct udev_device *udev_device)
 {
@@ -253,7 +253,7 @@ const char *XsUdev::device_get_devnode(struct udev_device *udev_device)
 
 /*! \brief Find the next parent device, with a matching subsystem and devtypevalue, and fill in information from the sys device and the udev database entry.
 
-	If devtype is NULL, only subsystem is checked, and any devtype will match.
+	If devtype is nullptr, only subsystem is checked, and any devtype will match.
 
 	Returned device is not referenced. It is attached to the child device, and will be cleaned up when the child device is cleaned up.
 
@@ -262,14 +262,14 @@ const char *XsUdev::device_get_devnode(struct udev_device *udev_device)
 	\param udev_device udev device to start searching from
 	\param subsystem the subsystem of the device
 	\param devtype the type (DEVTYPE) of the device
-	\return a new udev device, or NULL if no matching parent exists.
+	\return a new udev device, or nullptr if no matching parent exists.
 */
 udev_device *XsUdev::device_get_parent_with_subsystem_devtype(struct udev_device *udev_device, const char *subsystem, const char *devtype)
 {
 	if (m_uDev.device_get_parent_with_subsystem_devtype)
 		return m_uDev.device_get_parent_with_subsystem_devtype(udev_device, subsystem, devtype);
 	else
-		return NULL;
+		return nullptr;
 }
 
 /*! \brief Get a sys attribute value
@@ -279,7 +279,7 @@ udev_device *XsUdev::device_get_parent_with_subsystem_devtype(struct udev_device
 	\param udev_device udev device
 	\param sysattr attribute name
 
-	\return the content of a sys attribute file, or NULL if there is no sys attribute value.
+	\return the content of a sys attribute file, or nullptr if there is no sys attribute value.
 */
 const char *XsUdev::device_get_sysattr_value(struct udev_device *udev_device, const char *sysattr)
 {

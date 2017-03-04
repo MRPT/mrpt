@@ -43,7 +43,7 @@ namespace mrpt
 {
 	namespace slam
 	{
-		/** Fills out a "TPoseBin2D" variable, given a path hypotesis and (if not set to NULL) a new pose appended at the end, using the KLD params in "options".
+		/** Fills out a "TPoseBin2D" variable, given a path hypotesis and (if not set to nullptr) a new pose appended at the end, using the KLD params in "options".
 			*/
 		template <>
 		void KLF_loadBinFromParticle(
@@ -69,7 +69,7 @@ namespace mrpt
 			}
 		}
 
-		/** Fills out a "TPathBin2D" variable, given a path hypotesis and (if not set to NULL) a new pose appended at the end, using the KLD params in "options".
+		/** Fills out a "TPathBin2D" variable, given a path hypotesis and (if not set to nullptr) a new pose appended at the end, using the KLD params in "options".
 			*/
 		template <>
 		void KLF_loadBinFromParticle(
@@ -78,13 +78,13 @@ namespace mrpt
 			const mrpt::maps::CRBPFParticleData	*currentParticleValue,
 			const TPose3D			*newPoseToBeInserted)
 		{
-			const size_t lenBinPath = (currentParticleValue!=NULL) ? currentParticleValue->robotPath.size() : 0;
+			const size_t lenBinPath = (currentParticleValue!=nullptr) ? currentParticleValue->robotPath.size() : 0;
 
 			// Set the output bin dimensionality:
-			outBin.bins.resize(lenBinPath + (newPoseToBeInserted!=NULL ? 1:0) );
+			outBin.bins.resize(lenBinPath + (newPoseToBeInserted!=nullptr ? 1:0) );
 
 			// Is a path provided??
-			if (currentParticleValue!=NULL)
+			if (currentParticleValue!=nullptr)
 				for (size_t i=0;i<lenBinPath;++i)	// Fill the bin data:
 				{
 					outBin.bins[i].x   = round( currentParticleValue->robotPath[i].x / opts.KLD_binSize_XY );
@@ -93,7 +93,7 @@ namespace mrpt
 				}
 
 			// Is a newPose provided??
-			if (newPoseToBeInserted!=NULL)
+			if (newPoseToBeInserted!=nullptr)
 			{
 				// And append the last pose: the new one:
 				outBin.bins[lenBinPath].x   = round( newPoseToBeInserted->x / opts.KLD_binSize_XY );
@@ -200,7 +200,7 @@ void  CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 
 	CParticleList::iterator		partIt;
 
-	ASSERT_(sf!=NULL)
+	ASSERT_(sf!=nullptr)
 
 	// Find a robot movement estimation:
 	CPose3D						motionModelMeanIncr;	// The mean motion increment:
@@ -281,7 +281,7 @@ void  CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 				//partIt->d->mapTillNow.m_pointsMaps[0]->insertionOptions.matchStaticPointsOnly = false;
 			}
 
-			CMetricMap *map_to_align_to = NULL;
+			CMetricMap *map_to_align_to = nullptr;
 
 			if (options.pfOptimalProposal_mapSelection==0)  // Grid map
 			{
@@ -330,7 +330,7 @@ void  CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 				map_to_align_to = partIt->d->mapTillNow.m_landmarksMap.get();
 			}
 
-			ASSERT_(map_to_align_to!=NULL);
+			ASSERT_(map_to_align_to!=nullptr);
 
 			// Use ICP to align to each particle's map:
 			{
@@ -339,7 +339,7 @@ void  CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 					map_to_align_to,
 					&localMapPoints,
 					CPose2D(initialPoseEstimation),
-					NULL,
+					nullptr,
 					&icpInfo);
 				icpEstimation.copyFrom( *alignEst );
 			}
@@ -790,7 +790,7 @@ void  CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 						newDrawnPosition = newDrawnPose;
 						*/
 					}
-					delete pdfGrid; pdfGrid = NULL;
+					delete pdfGrid; pdfGrid = nullptr;
 
 				} while (repeatGridCalculation);
 
@@ -895,7 +895,7 @@ bool CMultiMetricMapPDF::PF_SLAM_implementation_doWeHaveValidObservations(
 	const CMultiMetricMapPDF::CParticleList	&particles,
 	const CSensoryFrame *sf) const
 {
-	if (sf==NULL) return false;
+	if (sf==nullptr) return false;
 	ASSERT_(!particles.empty())
 	return particles.begin()->d.get()->mapTillNow.canComputeObservationsLikelihood( *sf );
 }

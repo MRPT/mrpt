@@ -433,7 +433,7 @@ public:
   */
   virtual void merge(ArActionDesired *actDesired)
     {
-      if (actDesired == NULL)
+      if (actDesired == nullptr)
 	return;
       myVelDes.merge(&actDesired->myVelDes);
       // if we're already using rot or delt use that, otherwise use what it wants
@@ -486,7 +486,7 @@ public:
   */
   virtual void addAverage(ArActionDesired *actDesired)
     {
-      if (actDesired == NULL)
+      if (actDesired == nullptr)
 	return;
       myVelDes.addAverage(&actDesired->myVelDes);
       // if we're using one of rot or delta heading use that,

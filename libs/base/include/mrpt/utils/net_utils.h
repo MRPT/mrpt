@@ -59,9 +59,9 @@ namespace mrpt
 				int				port = 80,
 				const string	&auth_user = string(),
 				const string	&auth_pass = string(),
-				int				*out_http_responsecode = NULL,
-				mrpt::utils::TParameters<string>  *extra_headers = NULL,
-				mrpt::utils::TParameters<string>  *out_headers = NULL,
+				int				*out_http_responsecode = nullptr,
+				mrpt::utils::TParameters<string>  *extra_headers = nullptr,
+				mrpt::utils::TParameters<string>  *out_headers = nullptr,
 				int  timeout_ms = 1000
 				);
 
@@ -74,9 +74,9 @@ namespace mrpt
 				int				port = 80,
 				const string	&auth_user = string(),
 				const string	&auth_pass = string(),
-				int				*out_http_responsecode = NULL,
-				mrpt::utils::TParameters<string>  *extra_headers = NULL,
-				mrpt::utils::TParameters<string>  *out_headers = NULL,
+				int				*out_http_responsecode = nullptr,
+				mrpt::utils::TParameters<string>  *extra_headers = nullptr,
+				mrpt::utils::TParameters<string>  *out_headers = nullptr,
 				int  timeout_ms = 1000
 				);
 
@@ -91,9 +91,9 @@ namespace mrpt
 				int				port = 80,
 				const string	&auth_user = string(),
 				const string	&auth_pass = string(),
-				int				*out_http_responsecode = NULL,
-				mrpt::utils::TParameters<string>  *extra_headers = NULL,
-				mrpt::utils::TParameters<string>  *out_headers = NULL,
+				int				*out_http_responsecode = nullptr,
+				mrpt::utils::TParameters<string>  *extra_headers = nullptr,
+				mrpt::utils::TParameters<string>  *out_headers = nullptr,
 				int  timeout_ms = 1000
 				);
 

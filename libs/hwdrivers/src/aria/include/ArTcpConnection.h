@@ -26,9 +26,9 @@ class ArTcpConnection: public ArDeviceConnection
   AREXPORT virtual ~ArTcpConnection();
 
   /// Opens a connection to the given host and port
-  AREXPORT int open(const char * host = NULL, int port = 8101);
+  AREXPORT int open(const char * host = nullptr, int port = 8101);
 
-  AREXPORT void setPort(const char *host = NULL, int port = 8101);
+  AREXPORT void setPort(const char *host = nullptr, int port = 8101);
   AREXPORT virtual bool openSimple(void);  
   AREXPORT virtual int getStatus(void);
   AREXPORT virtual bool close(void);

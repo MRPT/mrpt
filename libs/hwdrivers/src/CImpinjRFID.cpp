@@ -148,8 +148,8 @@ bool CImpinjRFID::getObservation( mrpt::obs::CObservationRFID &obs)
 			    continue;
 			}
 			const char ant_port =  *ant_port_ptr;
-			strcpy(epc,mrpt::system::strtok(NULL," ",&tmp));
-			strcpy(rx_pwr,mrpt::system::strtok(NULL, " ",&tmp));
+			strcpy(epc,mrpt::system::strtok(nullptr," ",&tmp));
+			strcpy(rx_pwr,mrpt::system::strtok(nullptr, " ",&tmp));
 
 			// Fill the observation
 			obs.tag_readings.resize(obs.tag_readings.size()+1);  // Alloc space for one more tag obs

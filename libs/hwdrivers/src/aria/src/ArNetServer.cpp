@@ -27,7 +27,7 @@ ArNetServer::ArNetServer(bool addAriaExitCB) :
   myShutdownServerCB(this, &ArNetServer::internalShutdownServer),
   myAriaExitCB(this, &ArNetServer::close)
 {
-  myRobot = NULL;
+  myRobot = nullptr;
   myPort = 0;
   myMultipleClients = false;
   myOpened = false;
@@ -47,13 +47,13 @@ ArNetServer::ArNetServer(bool addAriaExitCB) :
 
 ArNetServer::~ArNetServer()
 {
-  ArSyncTask *rootTask = NULL;
-  ArSyncTask *proc = NULL;
+  ArSyncTask *rootTask = nullptr;
+  ArSyncTask *proc = nullptr;
   // get rid of us running on the robot task
-  if (myRobot != NULL && (rootTask = myRobot->getSyncTaskRoot()) != NULL)
+  if (myRobot != nullptr && (rootTask = myRobot->getSyncTaskRoot()) != nullptr)
   {
     proc = rootTask->findNonRecursive(&myTaskCB);
-    if (proc != NULL)
+    if (proc != nullptr)
       delete proc;
   }
   close();
@@ -66,7 +66,7 @@ ArNetServer::~ArNetServer()
    advanced users)
 
    @param robot the robot that this should be attached to and run in
-   the sync task of or NULL not to run in any robot's task
+   the sync task of or nullptr not to run in any robot's task
 
    @param port the port to start up the service on
 
@@ -81,8 +81,8 @@ AREXPORT bool ArNetServer::open(ArRobot *robot, unsigned int port,
 				const char *password, bool multipleClients,
 				const char *openOnIP)
 {
-  ArSyncTask *rootTask = NULL;
-  ArSyncTask *proc = NULL;
+  ArSyncTask *rootTask = nullptr;
+  ArSyncTask *proc = nullptr;
   std::string taskName;
 
   if (myOpened)
@@ -100,7 +100,7 @@ AREXPORT bool ArNetServer::open(ArRobot *robot, unsigned int port,
   {
     myServerSocket.setLinger(0);
     myServerSocket.setNonBlock();
-    if (openOnIP != NULL)
+    if (openOnIP != nullptr)
       ArLog::log(ArLog::Normal, "ArNetServer opened on port %d on ip %s.", 
 		 myPort, openOnIP);
     else
@@ -116,15 +116,15 @@ AREXPORT bool ArNetServer::open(ArRobot *robot, unsigned int port,
   }
 
   // add ourselves to the robot if we aren't already there
-  if (myRobot != NULL && (rootTask = myRobot->getSyncTaskRoot()) != NULL)
+  if (myRobot != nullptr && (rootTask = myRobot->getSyncTaskRoot()) != nullptr)
   {    
     proc = rootTask->findNonRecursive(&myTaskCB);
-    if (proc == NULL)
+    if (proc == nullptr)
     {
       // toss in a netserver
       taskName = "Net Servers ";
       taskName += myPort;
-      rootTask->addNewLeaf(taskName.c_str(), 60, &myTaskCB, NULL);
+      rootTask->addNewLeaf(taskName.c_str(), 60, &myTaskCB, nullptr);
     }
   }
   return true;
@@ -255,7 +255,7 @@ AREXPORT void ArNetServer::runOnce(void)
   char *str;
   std::list<ArSocket *> removeList;
   std::list<ArSocket *>::iterator it;
-  ArArgumentBuilder *args = NULL;
+  ArArgumentBuilder *args = nullptr;
 
   if (!myOpened)
   {
@@ -299,7 +299,7 @@ AREXPORT void ArNetServer::runOnce(void)
   {
     socket = (*it);
     // read in what the client has to say
-    if ((str = socket->readString()) != NULL)
+    if ((str = socket->readString()) != nullptr)
     {
       if (str[0] == '\0')
 	continue;
@@ -347,7 +347,7 @@ AREXPORT void ArNetServer::runOnce(void)
   {
     socket = (*it);
     // read in what the client has to say
-    while ((str = socket->readString()) != NULL)
+    while ((str = socket->readString()) != nullptr)
     {
       // if this is null then there wasn't anything said
       if (str[0] == '\0')
@@ -360,10 +360,10 @@ AREXPORT void ArNetServer::runOnce(void)
       //args->log();
       parseCommandOnSocket(args, socket);
       delete args;
-      args = NULL;
+      args = nullptr;
     }
-    // if str was NULL we lost connection
-    if (str == NULL)
+    // if str was nullptr we lost connection
+    if (str == nullptr)
     {
       ArLog::log(ArLog::Normal, 
 		 "Connection to %s lost.", socket->getIPString());
@@ -499,7 +499,7 @@ AREXPORT void ArNetServer::internalShutdownServer(char **argv, int argc,
   MRPT_UNUSED_PARAM(socket);
   sendToAllClients("Shutting down server");
   myWantToClose = true;
-  if (myRobot != NULL)
+  if (myRobot != nullptr)
     myRobot->stopRunning();
   
 }

@@ -208,7 +208,7 @@ const aiExportDataBlob* Exporter :: ExportToBlob(  const aiScene* pScene, const 
 {
 	if (pimpl->blob) {
 		delete pimpl->blob;
-		pimpl->blob = NULL;
+		pimpl->blob = nullptr;
 	}
 
 
@@ -219,7 +219,7 @@ const aiExportDataBlob* Exporter :: ExportToBlob(  const aiScene* pScene, const 
 
 	if (AI_SUCCESS != Export(pScene,pFormatId,blobio->GetMagicFileName())) {
 		pimpl->mIOSystem = old;
-		return NULL;
+		return nullptr;
 	}
 
 	pimpl->blob = blobio->GetBlobChain();
@@ -402,7 +402,7 @@ const char* Exporter :: GetErrorString() const
 void Exporter :: FreeBlob( )
 {
 	delete pimpl->blob;
-	pimpl->blob = NULL;
+	pimpl->blob = nullptr;
 
 	pimpl->mError = "";
 }
@@ -419,7 +419,7 @@ const aiExportDataBlob* Exporter :: GetBlob() const
 const aiExportDataBlob* Exporter :: GetOrphanedBlob() const 
 {
 	const aiExportDataBlob* tmp = pimpl->blob;
-	pimpl->blob = NULL;
+	pimpl->blob = nullptr;
 	return tmp;
 }
 
@@ -434,7 +434,7 @@ size_t Exporter :: GetExportFormatCount() const
 const aiExportFormatDesc* Exporter :: GetExportFormatDescription( size_t pIndex ) const 
 {
 	if (pIndex >= GetExportFormatCount()) {
-		return NULL;
+		return nullptr;
 	}
 
 	return &pimpl->mExporters[pIndex].mDescription;

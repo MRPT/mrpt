@@ -29,7 +29,7 @@ namespace utils
 		T *ptr;
 
 	public:
-		safe_ptr_basic() : ptr(NULL) { }
+		safe_ptr_basic() : ptr(nullptr) { }
 		safe_ptr_basic(const safe_ptr_basic<T> &o) : ptr(o.ptr) { }
 		safe_ptr_basic(const T* p) : ptr(const_cast<T*>(p)) { }
 		safe_ptr_basic<T> &operator =(T * p) { ptr = p; return *this; }
@@ -89,8 +89,8 @@ namespace utils
 		T *ptr;
 
 	public:
-		non_copiable_ptr_basic() : ptr(NULL) { }
-		non_copiable_ptr_basic(const non_copiable_ptr_basic<T> &) : ptr(NULL) { THROW_EXCEPTION("Pointer non-copiable..."); }
+		non_copiable_ptr_basic() : ptr(nullptr) { }
+		non_copiable_ptr_basic(const non_copiable_ptr_basic<T> &) : ptr(nullptr) { THROW_EXCEPTION("Pointer non-copiable..."); }
 		non_copiable_ptr_basic(const T* p) : ptr(const_cast<T*>(p)) { }
 		non_copiable_ptr_basic<T> &operator =(T * p) { ptr = p; return *this; }
 
@@ -155,8 +155,8 @@ namespace utils
 		T *ptr;
 
 	public:
-		ignored_copy_ptr() : ptr(NULL) { }
-		ignored_copy_ptr(const ignored_copy_ptr<T> &) : ptr(NULL) { }
+		ignored_copy_ptr() : ptr(nullptr) { }
+		ignored_copy_ptr(const ignored_copy_ptr<T> &) : ptr(nullptr) { }
 		ignored_copy_ptr(const T* p) : ptr(const_cast<T*>(p)) { }
 		ignored_copy_ptr<T> &operator =(T * p) { ptr=p; return *this; }
 
@@ -183,7 +183,7 @@ namespace utils
 	};
 
 
-	/** A wrapper class for pointers that, if copied with the "=" operator, should be set to NULL in the copy.
+	/** A wrapper class for pointers that, if copied with the "=" operator, should be set to nullptr in the copy.
 	  * \sa CReferencedMemBlock, safe_ptr, non_copiable_ptr, copiable_NULL_ptr
 	  * \ingroup mrpt_base_grp
 	  */
@@ -194,12 +194,12 @@ namespace utils
 		T *ptr;
 
 	public:
-		copiable_NULL_ptr_basic() : ptr(NULL) { }
-		copiable_NULL_ptr_basic(const copiable_NULL_ptr_basic<T> &) : ptr(NULL) {  }
+		copiable_NULL_ptr_basic() : ptr(nullptr) { }
+		copiable_NULL_ptr_basic(const copiable_NULL_ptr_basic<T> &) : ptr(nullptr) {  }
 
 		copiable_NULL_ptr_basic<T> &operator =(T * p) { ptr=p; return *this; }
 
-		copiable_NULL_ptr_basic<T> &operator =(const copiable_NULL_ptr_basic<T>&) { ptr=NULL; return *this; }
+		copiable_NULL_ptr_basic<T> &operator =(const copiable_NULL_ptr_basic<T>&) { ptr=nullptr; return *this; }
 
 		virtual ~copiable_NULL_ptr_basic() {  }
 
@@ -216,7 +216,7 @@ namespace utils
 		const T *& operator ->() const  { ASSERT_(ptr); return ptr; }
 	};
 
-	/** A wrapper class for pointers that, if copied with the "=" operator, should be set to NULL in the new copy.
+	/** A wrapper class for pointers that, if copied with the "=" operator, should be set to nullptr in the new copy.
 	  * \sa CReferencedMemBlock, safe_ptr, non_copiable_ptr, copiable_NULL_ptr
 	  * \ingroup mrpt_base_grp
 	  */

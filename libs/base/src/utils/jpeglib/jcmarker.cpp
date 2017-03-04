@@ -148,7 +148,7 @@ emit_dqt (j_compress_ptr cinfo, int index)
   int prec;
   int i;
 
-  if (qtbl == NULL)
+  if (qtbl == nullptr)
     ERREXIT1(cinfo, JERR_NO_QUANT_TABLE, index);
 
   prec = 0;
@@ -193,7 +193,7 @@ emit_dht (j_compress_ptr cinfo, int index, boolean is_ac)
     htbl = cinfo->dc_huff_tbl_ptrs[index];
   }
 
-  if (htbl == NULL)
+  if (htbl == nullptr)
     ERREXIT1(cinfo, JERR_NO_HUFF_TABLE, index);
   
   if (! htbl->sent_table) {
@@ -619,15 +619,15 @@ write_tables_only (j_compress_ptr cinfo)
   emit_marker(cinfo, M_SOI);
 
   for (i = 0; i < NUM_QUANT_TBLS; i++) {
-    if (cinfo->quant_tbl_ptrs[i] != NULL)
+    if (cinfo->quant_tbl_ptrs[i] != nullptr)
       (void) emit_dqt(cinfo, i);
   }
 
   if (! cinfo->arith_code) {
     for (i = 0; i < NUM_HUFF_TBLS; i++) {
-      if (cinfo->dc_huff_tbl_ptrs[i] != NULL)
+      if (cinfo->dc_huff_tbl_ptrs[i] != nullptr)
 	emit_dht(cinfo, i, FALSE);
-      if (cinfo->ac_huff_tbl_ptrs[i] != NULL)
+      if (cinfo->ac_huff_tbl_ptrs[i] != nullptr)
 	emit_dht(cinfo, i, TRUE);
     }
   }

@@ -31,7 +31,7 @@ CEnhancedMetaFile::CEnhancedMetaFile(
 	const std::string &targetFileName,
 	int		scaleFactor ) :
 		m_scale(scaleFactor),
-		m_hFont(NULL),
+		m_hFont(nullptr),
 		m_targetFile(targetFileName)
 {
     m_hdc = (void*) new CImage(CEnhancedMetaFile::LINUX_IMG_WIDTH, CEnhancedMetaFile::LINUX_IMG_HEIGHT );

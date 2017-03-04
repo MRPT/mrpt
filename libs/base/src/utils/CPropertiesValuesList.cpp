@@ -79,7 +79,7 @@ void  CPropertiesValuesList::readFromStream(mrpt::utils::CStream &in, int versio
 				in >> isNull;
 
 				if (isNull)
-					m_properties[i].value.reset(  static_cast<CSerializable*>(NULL) );
+					m_properties[i].value.reset(  static_cast<CSerializable*>(nullptr) );
 				else
 					in >> m_properties[i].value;
 			}

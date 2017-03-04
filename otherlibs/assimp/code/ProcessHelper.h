@@ -322,7 +322,7 @@ class ComputeSpatialSortProcess : public BaseProcess
 {
 	bool IsActive( unsigned int pFlags) const
 	{
-		return NULL != shared && 0 != (pFlags & (aiProcess_CalcTangentSpace | 
+		return nullptr != shared && 0 != (pFlags & (aiProcess_CalcTangentSpace | 
 			aiProcess_GenNormals | aiProcess_JoinIdenticalVertices));
 	}
 
@@ -351,7 +351,7 @@ class DestroySpatialSortProcess : public BaseProcess
 {
 	bool IsActive( unsigned int pFlags) const
 	{
-		return NULL != shared && 0 != (pFlags & (aiProcess_CalcTangentSpace | 
+		return nullptr != shared && 0 != (pFlags & (aiProcess_CalcTangentSpace | 
 			aiProcess_GenNormals | aiProcess_JoinIdenticalVertices));
 	}
 

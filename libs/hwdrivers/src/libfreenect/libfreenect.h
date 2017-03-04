@@ -148,7 +148,7 @@ typedef enum {
  * platform specific USB libraries.
  *
  * @param ctx Address of pointer to freenect context struct to allocate and initialize
- * @param usb_ctx USB context to initialize. Can be NULL if not using multiple contexts.
+ * @param usb_ctx USB context to initialize. Can be nullptr if not using multiple contexts.
  *
  * @return 0 on success, < 0 on error
  */

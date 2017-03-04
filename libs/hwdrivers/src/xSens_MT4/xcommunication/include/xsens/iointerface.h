@@ -70,7 +70,7 @@ public:
 		actually written.
 		\returns XRV_OK if the data was written successfully
 	*/
-	virtual XsResultValue writeData(const XsByteArray& data, XsSize* written = NULL) = 0;
+	virtual XsResultValue writeData(const XsByteArray& data, XsSize* written = nullptr) = 0;
 
 	/*! \brief Read at most \a maxLength bytes from the device into \a data
 		\param maxLength The maximum number of bytes to read. Depending on the device type and timeout

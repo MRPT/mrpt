@@ -664,7 +664,7 @@ reactive_navigator_demoframe::~reactive_navigator_demoframe()
 	m_navMethod.reset();
 
 	delete m_myRedirector;
-	m_myRedirector=NULL;
+        m_myRedirector=nullptr;
 }
 
 void reactive_navigator_demoframe::OnQuit(wxCommandEvent& event)

@@ -161,7 +161,7 @@ namespace slam
 		  */
 		void getAs3DScene(
 			mrpt::opengl::CSetOfObjectsPtr &objs,
-			const std::map< uint32_t, int64_t >  *renameIndexes = NULL
+			const std::map< uint32_t, int64_t >  *renameIndexes = nullptr
 			) const;
 
 	private:

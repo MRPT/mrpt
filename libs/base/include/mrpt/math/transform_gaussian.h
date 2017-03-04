@@ -31,7 +31,7 @@ namespace mrpt
 		  *
 		  *  The parameters alpha, K and beta are the common names of the SUT method, and the default values are those recommended in most papers.
 		  *
-		  * \param elem_do_wrap2pi If !=NULL; it must point to an array of "bool" of size()==dimension of each element, stating if it's needed to do a wrap to [-pi,pi] to each dimension.
+          * \param elem_do_wrap2pi If !=nullptr; it must point to an array of "bool" of size()==dimension of each element, stating if it's needed to do a wrap to [-pi,pi] to each dimension.
 		  * \sa The example in MRPT/samples/unscented_transform_test
 		  * \sa transform_gaussian_montecarlo, transform_gaussian_linear
 		  */
@@ -43,7 +43,7 @@ namespace mrpt
 			const USERPARAM &fixed_param,
 			VECTORLIKE2 &y_mean,
 			MATLIKE2    &y_cov,
-			const bool *elem_do_wrap2pi = NULL,
+            const bool *elem_do_wrap2pi = nullptr,
 			const double alpha = 1e-3,
 			const double K = 0,
 			const double beta = 2.0
@@ -90,7 +90,7 @@ namespace mrpt
 
 		/** Simple Montecarlo-base estimation of the Gaussian distribution of a variable Y=f(X) for an arbitrary function f() provided by the user.
 		  *  The user must supply the function in "functor" which takes points in the X space and returns the mapped point in Y, optionally using an extra, constant parameter ("fixed_param") which remains constant.
-		  * \param out_samples_y If !=NULL, this vector will contain, upon return, the sequence of random samples generated and propagated through the functor().
+          * \param out_samples_y If !=nullptr, this vector will contain, upon return, the sequence of random samples generated and propagated through the functor().
 		  * \sa The example in MRPT/samples/unscented_transform_test
 		  * \sa transform_gaussian_unscented, transform_gaussian_linear
 		  */
@@ -103,7 +103,7 @@ namespace mrpt
 			VECTORLIKE2 &y_mean,
 			MATLIKE2    &y_cov,
 			const size_t  num_samples = 1000,
-			typename mrpt::aligned_containers<VECTORLIKE3>::vector_t   *out_samples_y = NULL
+            typename mrpt::aligned_containers<VECTORLIKE3>::vector_t   *out_samples_y = nullptr
 			)
 		{
 			MRPT_START

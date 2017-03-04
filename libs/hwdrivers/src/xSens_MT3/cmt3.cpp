@@ -646,7 +646,7 @@ XsensResultValue Cmt3::getEMtsData(void* buffer, const CmtDeviceId deviceId)
 		return m_lastResult = XRV_NOPORTOPEN;
 	if (m_readFromFile && !m_logFile.isOpen())
 		return m_lastResult = XRV_NOFILEOPEN;
-	if (buffer == NULL)
+	if (buffer == nullptr)
 		return m_lastResult = XRV_NULLPTR;
 		
 	if (bid == CMT_BID_BROADCAST)
@@ -675,7 +675,7 @@ XsensResultValue Cmt3::getEMtsData(void* buffer, const CmtDeviceId deviceId)
 	else
 		dataIndex = 0;		// when we have a single MT, we should use bank 0
 
-	if (m_eMtsData[dataIndex] == NULL)
+	if (m_eMtsData[dataIndex] == nullptr)
 	{
 		m_eMtsData[dataIndex] = malloc(CMT_EMTS_SIZE);
 
@@ -2726,7 +2726,7 @@ bool Cmt3::isLogFileOpen(const char* filename) const
 
 	if (m_logFile.isOpen())
 	{
-		if (filename != NULL && filename[0] != 0)
+		if (filename != nullptr && filename[0] != 0)
 		{
 			char fn[CMT_MAX_FILENAME_LENGTH];
 			m_logFile.getName(fn);
@@ -2745,7 +2745,7 @@ bool Cmt3::isLogFileOpen(const wchar_t* filename) const
 
 	if (m_logFile.isOpen())
 	{
-		if (filename != NULL && filename[0] != L'\0')
+		if (filename != nullptr && filename[0] != L'\0')
 		{
 			wchar_t fn[CMT_MAX_FILENAME_LENGTH];
 			m_logFile.getName(fn);

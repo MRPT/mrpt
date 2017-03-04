@@ -50,7 +50,7 @@ protected:
 		graphslam::optimize_graph_spa_levmarq(
 			graph,
 			levmarq_info,
-			NULL,
+			nullptr,
 			params
 			);
 

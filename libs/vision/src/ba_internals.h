@@ -205,7 +205,7 @@ namespace mrpt
 		}
 
 		/** Construct the BA linear system.
-		  *  Set kernel_1st_deriv!=NULL if using robust kernel.
+		  *  Set kernel_1st_deriv!=nullptr if using robust kernel.
 		  */
 		void ba_build_gradient_Hessians(
 			const TSequenceFeatureObservations          & observations,

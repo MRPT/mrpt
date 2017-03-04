@@ -71,7 +71,7 @@ enum XsResultValue {
 	,XRV_COULDNOTREADSETTINGS	= 271	//!< 271: A required settings file could not be opened or is missing some data
 	,XRV_NODATA					= 272	//!< 272: No data is available
 	,XRV_READONLY				= 273	//!< 273: Tried to change a read-only value
-	,XRV_NULLPTR				= 274	//!< 274: Tried to supply a NULL value where it is not allowed
+	,XRV_NULLPTR				= 274	//!< 274: Tried to supply a nullptr value where it is not allowed
 	,XRV_INSUFFICIENTDATA		= 275	//!< 275: Insufficient data was supplied to a function
 	,XRV_BUSY					= 276	//!< 276: Busy processing, try again later
 	,XRV_INVALIDINSTANCE		= 277	//!< 277: Invalid instance called

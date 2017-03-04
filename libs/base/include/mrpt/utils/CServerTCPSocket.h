@@ -48,7 +48,7 @@ namespace utils
 		/** Waits for an incoming connection (indefinitely, or with a given timeout)
 		  * The returned object represents the new connection, and MUST BE deleted by the user when no longer needed.
 		  * \param timeout_ms The timeout for the waiting, in milliseconds. Set this to "-1" to disable timeout (i.e. timeout=infinite)
-		  * \return The incoming connection, or NULL on timeout or error.
+		  * \return The incoming connection, or nullptr on timeout or error.
 		  */
 		CClientTCPSocket *  accept( int timeout_ms = -1 );
 

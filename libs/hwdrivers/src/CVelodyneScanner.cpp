@@ -93,10 +93,10 @@ CVelodyneScanner::CVelodyneScanner() :
 	m_device_ip(""),
 	m_pcap_verbose(true),
 	m_last_pos_packet_timestamp(INVALID_TIMESTAMP),
-	m_pcap(NULL),
-	m_pcap_out(NULL),
-	m_pcap_dumper(NULL),
-	m_pcap_bpf_program(NULL),
+	m_pcap(nullptr),
+	m_pcap_out(nullptr),
+	m_pcap_dumper(nullptr),
+	m_pcap_bpf_program(nullptr),
 	m_pcap_file_empty(true),
 	m_pcap_read_once(false),
 	m_pcap_read_fast(false),
@@ -132,7 +132,7 @@ CVelodyneScanner::~CVelodyneScanner( )
 
 #if MRPT_HAS_LIBPCAP
 	delete[] reinterpret_cast<bpf_program*>(m_pcap_bpf_program);
-	m_pcap_bpf_program=NULL;
+	m_pcap_bpf_program=nullptr;
 #endif
 
 }
@@ -422,7 +422,7 @@ void CVelodyneScanner::initialize()
 		char errbuf[PCAP_ERRBUF_SIZE];
 
 		if (m_pcap_verbose) printf("\n[CVelodyneScanner] Opening PCAP file \"%s\"\n", m_pcap_input_file.c_str());
-		if ((m_pcap = pcap_open_offline(m_pcap_input_file.c_str(), errbuf) ) == NULL) {
+		if ((m_pcap = pcap_open_offline(m_pcap_input_file.c_str(), errbuf) ) == nullptr) {
 			THROW_EXCEPTION_FMT("Error opening PCAP file: '%s'",errbuf);
 		}
 
@@ -481,15 +481,15 @@ void CVelodyneScanner::close()
 #if MRPT_HAS_LIBPCAP
 	if (m_pcap) {
 		pcap_close( reinterpret_cast<pcap_t*>(m_pcap) );
-		m_pcap = NULL;
+		m_pcap = nullptr;
 	}
 	if (m_pcap_dumper) {
 		pcap_dump_close(reinterpret_cast<pcap_dumper_t*>(m_pcap_dumper));
-		m_pcap_dumper=NULL;
+		m_pcap_dumper=nullptr;
 	}
 	if (m_pcap_out) {
 		pcap_close( reinterpret_cast<pcap_t*>(m_pcap_out) );
-		m_pcap_out = NULL;
+		m_pcap_out = nullptr;
 	}
 #endif
 	m_initialized=false;
@@ -563,10 +563,10 @@ bool CVelodyneScanner::receivePackets(
 		const string sFileName = m_pcap_output_file + mrpt::system::fileNameStripInvalidChars( sFilePostfix ) + string(".pcap");
 
 		m_pcap_out = pcap_open_dead(DLT_EN10MB, 65535);
-		ASSERTMSG_(m_pcap_out!=NULL, "Error creating PCAP live capture handle");
+		ASSERTMSG_(m_pcap_out!=nullptr, "Error creating PCAP live capture handle");
 
 		printf("\n[CVelodyneScanner] Writing to PCAP file \"%s\"\n", sFileName.c_str());
-		if ((m_pcap_dumper = pcap_dump_open(reinterpret_cast<pcap_t*>(m_pcap_out),sFileName.c_str())) == NULL) {
+		if ((m_pcap_dumper = pcap_dump_open(reinterpret_cast<pcap_t*>(m_pcap_out),sFileName.c_str())) == nullptr) {
 			THROW_EXCEPTION_FMT("Error creating PCAP live dumper: '%s'",errbuf);
 		}
 #else
@@ -579,7 +579,7 @@ bool CVelodyneScanner::receivePackets(
 	{
 		struct pcap_pkthdr header;
 		struct timeval currentTime;
-		gettimeofday(&currentTime, NULL);
+		gettimeofday(&currentTime, nullptr);
 		std::vector<unsigned char> packetBuffer;
 
 		// Data pkt:
@@ -822,7 +822,7 @@ bool CVelodyneScanner::internal_read_PCAP_packet(
 
 		// rewind the file
 		pcap_close( reinterpret_cast<pcap_t*>(m_pcap) );
-		if ((m_pcap = pcap_open_offline(m_pcap_input_file.c_str(), errbuf) ) == NULL) {
+		if ((m_pcap = pcap_open_offline(m_pcap_input_file.c_str(), errbuf) ) == nullptr) {
 			THROW_EXCEPTION_FMT("Error opening PCAP file: '%s'",errbuf);
 		}
 		m_pcap_file_empty = true;              // maybe the file disappeared?
