@@ -43,6 +43,13 @@ std::string CAbstractPTGBasedReactive::TNavigationParamsPTG::getAsText() const
 	return s;
 }
 
+bool CAbstractPTGBasedReactive::TNavigationParamsPTG::isEqual(const CAbstractNavigator::TNavigationParams& rhs) const
+{
+	auto o = dynamic_cast<const CAbstractPTGBasedReactive::TNavigationParamsPTG&>(rhs); // Will never throw, ensured by caller.
+	return CWaypointsNavigator::TNavigationParamsWaypoints::isEqual(rhs) &&
+		restrict_PTG_indices == o.restrict_PTG_indices;
+}
+
 const double ESTIM_LOWPASSFILTER_ALPHA = 0.7;
 
 // Ctor:
@@ -66,8 +73,8 @@ CAbstractPTGBasedReactive::CAbstractPTGBasedReactive(CRobot2NavInterface &react_
 	m_closing_navigator          (false),
 	m_WS_Obstacles_timestamp     (INVALID_TIMESTAMP),
 	m_infoPerPTG_timestamp       (INVALID_TIMESTAMP),
-	m_lastTarget                 (0,0,0),
-	m_navlogfiles_dir(sLogDir)
+	m_navlogfiles_dir            (sLogDir),
+	m_copy_prev_navParams        (nullptr)
 {
 	this->enableLogFile( enableLogFile );
 }
@@ -93,8 +100,9 @@ void CAbstractPTGBasedReactive::preDestructor()
 
 CAbstractPTGBasedReactive::~CAbstractPTGBasedReactive()
 {
-	// Just in case the user didn't call this, call it again to reduce memory leaks to those of the user:
-	this->preDestructor();
+	this->preDestructor(); // ensure the robot is stopped; free dynamic objects
+
+	mrpt::utils::delete_safe(m_copy_prev_navParams);
 }
 
 void CAbstractPTGBasedReactive::initialize()
@@ -272,8 +280,11 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		// Compute target location relative to current robot pose:
 		// ---------------------------------------------------------------------
 		// Detect changes in target since last iteration (for NOP):
-		const bool target_changed_since_last_iteration = m_navigationParams->target != m_lastTarget;
-		m_lastTarget = m_navigationParams->target;
+		const bool target_changed_since_last_iteration = (m_copy_prev_navParams == nullptr) || !(*m_copy_prev_navParams==*m_navigationParams);
+		if (target_changed_since_last_iteration) {
+			mrpt::utils::delete_safe(m_copy_prev_navParams);
+			m_copy_prev_navParams = m_navigationParams->clone();
+		}
 
 		STEP1_InitPTGs(); // Will only recompute if "m_PTGsMustBeReInitialized==true"
 

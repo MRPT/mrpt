@@ -41,6 +41,8 @@ namespace mrpt
 			virtual ~TNavigationParamsWaypoints() { }
 			virtual std::string getAsText() const MRPT_OVERRIDE;
 			virtual TNavigationParams* clone() const MRPT_OVERRIDE { return new TNavigationParamsWaypoints(*this); }
+		protected:
+			virtual bool isEqual(const CAbstractNavigator::TNavigationParams& o) const MRPT_OVERRIDE;
 		};
 
 

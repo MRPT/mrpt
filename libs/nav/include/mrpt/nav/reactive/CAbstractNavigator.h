@@ -70,6 +70,9 @@ namespace mrpt
 			virtual ~TNavigationParams() {}
 			virtual std::string getAsText() const; //!< Gets navigation params as a human-readable format
 			virtual TNavigationParams* clone() const { return new TNavigationParams(*this); }
+		protected:
+			friend bool NAV_IMPEXP operator==(const TNavigationParams&, const TNavigationParams&);
+			virtual bool isEqual(const TNavigationParams& o) const;
 		};
 
 		/** \name Navigation control API
@@ -174,6 +177,9 @@ namespace mrpt
 	public:
 		MRPT_MAKE_ALIGNED_OPERATOR_NEW
 	};
+
+	bool NAV_IMPEXP operator==(const CAbstractNavigator::TNavigationParams&, const CAbstractNavigator::TNavigationParams&);
+
   }
 
 	// Specializations MUST occur at the same namespace:

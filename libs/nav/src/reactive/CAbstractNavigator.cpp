@@ -15,6 +15,7 @@
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/utils/CConfigFileMemory.h>
 #include <limits>
+#include <typeinfo>
 
 using namespace mrpt::nav;
 using namespace std;
@@ -40,6 +41,14 @@ std::string CAbstractNavigator::TNavigationParams::getAsText() const
 	s+= mrpt::format("navparams.targetIsIntermediaryWaypoint = %s\n", targetIsIntermediaryWaypoint ? "YES":"NO");
 
 	return s;
+}
+
+bool CAbstractNavigator::TNavigationParams::isEqual(const CAbstractNavigator::TNavigationParams& o) const
+{
+	return target == o.target &&
+		targetAllowedDistance == o.targetAllowedDistance &&
+		targetIsRelative == o.targetIsRelative &&
+		targetIsIntermediaryWaypoint == o.targetIsIntermediaryWaypoint;
 }
 
 CAbstractNavigator::TRobotPoseVel::TRobotPoseVel() :
@@ -406,3 +415,9 @@ void CAbstractNavigator::TAbstractNavigatorParams::saveToConfigFile(mrpt::utils:
 	MRPT_SAVE_CONFIG_VAR_COMMENT(dist_to_target_for_sending_event, "Default value=0, means use the `targetAllowedDistance` passed by the user in the navigation request.");
 	MRPT_SAVE_CONFIG_VAR_COMMENT(alarm_seems_not_approaching_target_timeout, "navigator timeout (seconds) [Default=30 sec]");
 }
+
+bool mrpt::nav::operator==(const CAbstractNavigator::TNavigationParams& a, const CAbstractNavigator::TNavigationParams&b)
+{
+	return typeid(a) == typeid(b) && a.isEqual(b);
+}
+
