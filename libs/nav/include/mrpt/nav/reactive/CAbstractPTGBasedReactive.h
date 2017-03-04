@@ -63,8 +63,9 @@ namespace mrpt
 			virtual ~TNavigationParamsPTG() { }
 			virtual std::string getAsText() const MRPT_OVERRIDE;
 			virtual TNavigationParams* clone() const MRPT_OVERRIDE { return new TNavigationParamsPTG(*this); }
+		protected:
+			virtual bool isEqual(const CAbstractNavigator::TNavigationParams& o) const MRPT_OVERRIDE;
 		};
-
 
 		/** Constructor.
 		  * \param[in] react_iterf_impl An instance of an object that implement all the required interfaces to read from and control a robot.
@@ -304,10 +305,11 @@ namespace mrpt
 		void deleteHolonomicObjects(); //!< Delete m_holonomicMethod
 		static void robotPoseExtrapolateIncrement(const mrpt::math::TTwist2D & globalVel, const double time_offset, mrpt::poses::CPose2D & out_pose);
 
-		mrpt::math::TPose2D m_lastTarget; //!< To detect changes
 		std::string m_navlogfiles_dir; //!< Default: "./reactivenav.logs"
 
 		double m_expr_var_k, m_expr_var_k_target, m_expr_var_num_paths;
+
+		TNavigationParams  *m_copy_prev_navParams; //!< A copy of last-iteration navparams, used to detect changes
 
 	}; // end of CAbstractPTGBasedReactive
   }

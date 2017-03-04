@@ -30,6 +30,12 @@ std::string CWaypointsNavigator::TNavigationParamsWaypoints::getAsText() const
 	return s;
 }
 
+bool CWaypointsNavigator::TNavigationParamsWaypoints::isEqual(const CAbstractNavigator::TNavigationParams& rhs) const
+{
+	auto o = dynamic_cast<const CWaypointsNavigator::TNavigationParamsWaypoints&>(rhs); // Will never throw, ensured by caller.
+	return CAbstractNavigator::TNavigationParams::isEqual(rhs) &&
+		multiple_targets == o.multiple_targets;
+}
 
 CWaypointsNavigator::CWaypointsNavigator(CRobot2NavInterface &robot_if) :
 	CAbstractNavigator(robot_if)
