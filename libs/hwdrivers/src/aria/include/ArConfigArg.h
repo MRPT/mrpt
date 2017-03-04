@@ -127,20 +127,20 @@ public:
 
 
   /// Sets the argument value, for int arguments
-  AREXPORT bool setInt(int val, char *errorBuffer = NULL,
+  AREXPORT bool setInt(int val, char *errorBuffer = nullptr,
 		       size_t errorBufferLen = 0, bool doNotSet = false);
   /// Sets the argument value, for double arguments
-  AREXPORT bool setDouble(double val, char *errorBuffer = NULL,
+  AREXPORT bool setDouble(double val, char *errorBuffer = nullptr,
 			  size_t errorBufferLen = 0, bool doNotSet = false);
   /// Sets the argument value, for bool arguments
-  AREXPORT bool setBool(bool val, char *errorBuffer = NULL,
+  AREXPORT bool setBool(bool val, char *errorBuffer = nullptr,
 			size_t errorBufferLen = 0, bool doNotSet = false);
   /// Sets the argument value for ArArgumentBuilder arguments
-  AREXPORT bool setString(const char *str, char *errorBuffer = NULL,
+  AREXPORT bool setString(const char *str, char *errorBuffer = nullptr,
 			  size_t errorBufferLen = 0, bool doNotSet = false);
   /// Sets the argument by calling the setFunctor callback
   AREXPORT bool setArgWithFunctor(ArArgumentBuilder *argument, 
-				  char *errorBuffer = NULL,
+				  char *errorBuffer = nullptr,
 				  size_t errorBufferLen = 0,
 				  bool doNotSet = false);
 
@@ -172,7 +172,7 @@ public:
   /// Sets the priority (only used by ArConfig)
   AREXPORT void setConfigPriority(ArPriority::Priority priority);
 
-  /// Returns the display hint for this arg, or NULL if none is defined.
+  /// Returns the display hint for this arg, or nullptr if none is defined.
   AREXPORT const char *getDisplayHint() const;
   /// Sets the display hint for this arg.
   AREXPORT void setDisplayHint(const char *hintText);

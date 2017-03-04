@@ -37,9 +37,9 @@ CEnhancedMetaFile::CEnhancedMetaFile(
 	const std::string &targetFileName,
 	int		scaleFactor ) :
 		m_scale(scaleFactor),
-		m_hFont(NULL)
+		m_hFont(nullptr)
 {
-	m_hdc = CreateEnhMetaFileA( NULL, targetFileName.c_str(), NULL, NULL );
+	m_hdc = CreateEnhMetaFileA( nullptr, targetFileName.c_str(), nullptr, nullptr );
 	if (!m_hdc.get())
 		THROW_EXCEPTION("Can't create EMF file!!!");
 }
@@ -53,7 +53,7 @@ CEnhancedMetaFile::~CEnhancedMetaFile( )
 	if (m_hFont.get())
 	{
 		DeleteObject(m_hFont.get());
-		m_hFont = NULL;
+		m_hFont = nullptr;
 	}
 
 	// Finish EMF:
@@ -119,7 +119,7 @@ void  CEnhancedMetaFile::drawImage(
 			pBmpInfo,
 			DIB_RGB_COLORS);
 
-		ASSERT_(hBitmap!=NULL);
+		ASSERT_(hBitmap!=nullptr);
 
 		BITMAP bm;
 		GetObject(hBitmap,sizeof(bm),&bm);
@@ -176,7 +176,7 @@ void  CEnhancedMetaFile::line(
 
 	HPEN hOldPen = (HPEN) SelectObject( (HDC)m_hdc.get(), hPen );
 
-	MoveToEx( (HDC)m_hdc.get(), x0,y0, NULL );
+	MoveToEx( (HDC)m_hdc.get(), x0,y0, nullptr );
 	LineTo( (HDC)m_hdc.get(), x1,y1);
 
 	SelectObject( (HDC)m_hdc.get(), hOldPen  );

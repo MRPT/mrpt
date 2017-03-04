@@ -29,8 +29,8 @@ CEnoseModular::CEnoseModular( ) :
 	m_usbSerialNumber 	("ENOSE002"),
 	m_COM_port			(),
 	m_COM_baud			(115200),
-	m_stream_FTDI		(NULL),
-	m_stream_SERIAL		(NULL)
+	m_stream_FTDI		(nullptr),
+	m_stream_SERIAL		(nullptr)
 {
 	m_sensorLabel = "EnoseModular";
 	first_reading = true;
@@ -97,7 +97,7 @@ CStream *CEnoseModular::checkConnectionAndConnect()
 		catch(...)
 		{	// Error opening device:
 			m_stream_FTDI->Close();
-			return NULL;
+			return nullptr;
 		}
 	}
 	else
@@ -119,7 +119,7 @@ CStream *CEnoseModular::checkConnectionAndConnect()
 		catch(...)
 		{	// Error opening device:
 			m_stream_SERIAL->close();
-			return NULL;
+			return nullptr;
 		}
 	}
 }

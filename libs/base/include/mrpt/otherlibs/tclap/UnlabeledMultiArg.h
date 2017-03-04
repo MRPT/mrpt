@@ -83,7 +83,7 @@ class UnlabeledMultiArg : public MultiArg<T>
 						   bool req,
 				           const std::string& typeDesc,
 						   bool ignoreable = false,
-				           Visitor* v = NULL );
+                                           Visitor* v = nullptr );
 		/**
 		 * Constructor.
 		 * \param name - The name of the Arg. Note that this is used for
@@ -108,7 +108,7 @@ class UnlabeledMultiArg : public MultiArg<T>
 				           const std::string& typeDesc,
 						   CmdLineInterface& parser,
 						   bool ignoreable = false,
-				           Visitor* v = NULL );
+                                           Visitor* v = nullptr );
 
 		/**
 		 * Constructor.
@@ -130,7 +130,7 @@ class UnlabeledMultiArg : public MultiArg<T>
 						   bool req,
 						   Constraint<T>* constraint,
 						   bool ignoreable = false,
-						   Visitor* v = NULL );
+                                                   Visitor* v = nullptr );
 
 		/**
 		 * Constructor.
@@ -154,7 +154,7 @@ class UnlabeledMultiArg : public MultiArg<T>
 						   Constraint<T>* constraint,
 						   CmdLineInterface& parser,
 						   bool ignoreable = false,
-						   Visitor* v = NULL );
+                                                   Visitor* v = nullptr );
 
 		/**
 		 * Handles the processing of the argument.

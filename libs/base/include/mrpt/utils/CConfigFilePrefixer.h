@@ -57,7 +57,7 @@ namespace utils
 
 		std::string getSectionPrefix() const;
 		std::string getKeyPrefix() const;
-		CConfigFileBase *getBoundConfigFileBase() const;  //!< Returns the currently-bounded config source, or NULL if none.
+		CConfigFileBase *getBoundConfigFileBase() const;  //!< Returns the currently-bounded config source, or nullptr if none.
 
 		virtual ~CConfigFilePrefixer();
 

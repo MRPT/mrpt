@@ -71,7 +71,7 @@ namespace mrpt	{	namespace math	{
 
 		OTHER (*intermediateFun)(const T &);
 		NUM (*errorFun2)(const T &,const OTHER &);
-		inline CMonteCarlo():gen(),valueGenerator(NULL),errorFun1(NULL),intermediateFun(NULL),errorFun2(NULL)	{}
+        inline CMonteCarlo():gen(),valueGenerator(nullptr),errorFun1(nullptr),intermediateFun(nullptr),errorFun2(nullptr)	{}
 		NUM doExperiment(size_t N,double &time,bool showInWindow=false)	{
 			if (!valueGenerator) throw std::logic_error("Value generator function is not set.");
 			std::vector<T> baseData(N);

@@ -136,7 +136,7 @@ struct aiFace
 	//! Default constructor
 	aiFace()
       : mNumIndices( 0 )
-      , mIndices( NULL )
+      , mIndices( nullptr )
 	{
 	}
 
@@ -148,7 +148,7 @@ struct aiFace
 
 	//! Copy constructor. Copy the index array
 	aiFace( const aiFace& o)
-      : mIndices( NULL )
+      : mIndices( nullptr )
 	{
 		*this = o;
 	}
@@ -166,7 +166,7 @@ struct aiFace
 			::memcpy( mIndices, o.mIndices, mNumIndices * sizeof( unsigned int));
 		}
 		else {
-			mIndices = NULL;
+			mIndices = nullptr;
 		}
 		return *this;
 	}
@@ -250,7 +250,7 @@ struct aiBone
 	//! Default constructor
 	aiBone()
       : mNumWeights( 0 )
-      , mWeights( NULL )
+      , mWeights( nullptr )
 	{
 	}
 
@@ -343,11 +343,11 @@ enum aiPrimitiveType
 */
 struct aiAnimMesh
 {
-	/** Replacement for aiMesh::mVertices. If this array is non-NULL, 
+	/** Replacement for aiMesh::mVertices. If this array is non-nullptr, 
 	 *  it *must* contain mNumVertices entries. The corresponding
 	 *  array in the host mesh must be non-NULL as well - animation
 	 *  meshes may neither add or nor remove vertex components (if
-	 *  a replacement array is NULL and the corresponding source
+	 *  a replacement array is nullptr and the corresponding source
 	 *  array is not, the source data is taken instead)*/
 	C_STRUCT aiVector3D* mVertices;
 
@@ -379,18 +379,18 @@ struct aiAnimMesh
 #ifdef __cplusplus
 
 	aiAnimMesh()
-		: mVertices( NULL )
-		, mNormals( NULL )
-		, mTangents( NULL )
-		, mBitangents( NULL )
+		: mVertices( nullptr )
+		, mNormals( nullptr )
+		, mTangents( nullptr )
+		, mBitangents( nullptr )
 		, mNumVertices( 0 )
 	{
 		// fixme consider moving this to the ctor initializer list as well
 		for( unsigned int a = 0; a < AI_MAX_NUMBER_OF_TEXTURECOORDS; a++){
-			mTextureCoords[a] = NULL;
+			mTextureCoords[a] = nullptr;
 		}
 		for( unsigned int a = 0; a < AI_MAX_NUMBER_OF_COLOR_SETS; a++) {
-			mColors[a] = NULL;
+			mColors[a] = nullptr;
 		}
 	}
 	
@@ -411,34 +411,34 @@ struct aiAnimMesh
 	/** Check whether the anim mesh overrides the vertex positions 
 	 *  of its host mesh*/ 
 	bool HasPositions() const {
-		return mVertices != NULL; 
+		return mVertices != nullptr; 
 	}
 
 	/** Check whether the anim mesh overrides the vertex normals
 	 *  of its host mesh*/ 
 	bool HasNormals() const { 
-		return mNormals != NULL; 
+		return mNormals != nullptr; 
 	}
 
 	/** Check whether the anim mesh overrides the vertex tangents
 	 *  and bitangents of its host mesh. As for aiMesh,
 	 *  tangents and bitangents always go together. */ 
 	bool HasTangentsAndBitangents() const { 
-		return mTangents != NULL; 
+		return mTangents != nullptr; 
 	}
 
 	/** Check whether the anim mesh overrides a particular
 	 * set of vertex colors on his host mesh. 
 	 *  @param pIndex 0<index<AI_MAX_NUMBER_OF_COLOR_SETS */ 
 	bool HasVertexColors( unsigned int pIndex) const	{ 
-		return pIndex >= AI_MAX_NUMBER_OF_COLOR_SETS ? false : mColors[pIndex] != NULL; 
+		return pIndex >= AI_MAX_NUMBER_OF_COLOR_SETS ? false : mColors[pIndex] != nullptr; 
 	}
 
 	/** Check whether the anim mesh overrides a particular
 	 * set of texture coordinates on his host mesh. 
 	 *  @param pIndex 0<index<AI_MAX_NUMBER_OF_TEXTURECOORDS */ 
 	bool HasTextureCoords( unsigned int pIndex) const	{ 
-		return pIndex >= AI_MAX_NUMBER_OF_TEXTURECOORDS ? false : mTextureCoords[pIndex] != NULL; 
+		return pIndex >= AI_MAX_NUMBER_OF_TEXTURECOORDS ? false : mTextureCoords[pIndex] != nullptr; 
 	}
 
 #endif
@@ -492,7 +492,7 @@ struct aiMesh
 	C_STRUCT aiVector3D* mVertices;
 
 	/** Vertex normals. 
-	* The array contains normalized vectors, NULL if not present. 
+	* The array contains normalized vectors, nullptr if not present. 
 	* The array is mNumVertices in size. Normals are undefined for
 	* point and line primitives. A mesh consisting of points and
 	* lines only may not have normal vectors. Meshes with mixed
@@ -515,7 +515,7 @@ struct aiMesh
 
 	/** Vertex tangents. 
 	* The tangent of a vertex points in the direction of the positive 
-	* X texture axis. The array contains normalized vectors, NULL if
+	* X texture axis. The array contains normalized vectors, nullptr if
 	* not present. The array is mNumVertices in size. A mesh consisting 
 	* of points and lines only may not have normal vectors. Meshes with 
 	* mixed primitive types (i.e. lines and triangles) may have 
@@ -529,7 +529,7 @@ struct aiMesh
 
 	/** Vertex bitangents. 
 	* The bitangent of a vertex points in the direction of the positive 
-	* Y texture axis. The array contains normalized vectors, NULL if not
+	* Y texture axis. The array contains normalized vectors, nullptr if not
 	* present. The array is mNumVertices in size. 
 	* @note If the mesh contains tangents, it automatically also contains
 	* bitangents.  
@@ -538,14 +538,14 @@ struct aiMesh
 
 	/** Vertex color sets. 
 	* A mesh may contain 0 to #AI_MAX_NUMBER_OF_COLOR_SETS vertex 
-	* colors per vertex. NULL if not present. Each array is
+	* colors per vertex. nullptr if not present. Each array is
 	* mNumVertices in size if present.
 	*/
 	C_STRUCT aiColor4D* mColors[AI_MAX_NUMBER_OF_COLOR_SETS];
 
 	/** Vertex texture coords, also known as UV channels.
 	* A mesh may contain 0 to AI_MAX_NUMBER_OF_TEXTURECOORDS per
-	* vertex. NULL if not present. The array is mNumVertices in size. 
+	* vertex. nullptr if not present. The array is mNumVertices in size. 
 	*/
 	C_STRUCT aiVector3D* mTextureCoords[AI_MAX_NUMBER_OF_TEXTURECOORDS];
 
@@ -614,25 +614,25 @@ struct aiMesh
 		: mPrimitiveTypes( 0 )
 		, mNumVertices( 0 )
 		, mNumFaces( 0 )
-		, mVertices( NULL )
-		, mNormals( NULL )
-		, mTangents( NULL )
-		, mBitangents( NULL )
-		, mFaces( NULL )
+		, mVertices( nullptr )
+		, mNormals( nullptr )
+		, mTangents( nullptr )
+		, mBitangents( nullptr )
+		, mFaces( nullptr )
 		, mNumBones( 0 )
-		, mBones( NULL )
+		, mBones( nullptr )
 		, mMaterialIndex( 0 )
 		, mNumAnimMeshes( 0 )
-		, mAnimMeshes( NULL )
+		, mAnimMeshes( nullptr )
 	{
 		for( unsigned int a = 0; a < AI_MAX_NUMBER_OF_TEXTURECOORDS; a++)
 		{
 			mNumUVComponents[a] = 0;
-			mTextureCoords[a] = NULL;
+			mTextureCoords[a] = nullptr;
 		}
       
 		for( unsigned int a = 0; a < AI_MAX_NUMBER_OF_COLOR_SETS; a++)
-			mColors[a] = NULL;
+			mColors[a] = nullptr;
 	}
 
 	//! Deletes all storage allocated for the mesh
@@ -671,23 +671,23 @@ struct aiMesh
 	//! scene flags are set (such as #AI_SCENE_FLAGS_ANIM_SKELETON_ONLY), 
 	//! this will always be true 
 	bool HasPositions() const 
-		{ return mVertices != NULL && mNumVertices > 0; }
+		{ return mVertices != nullptr && mNumVertices > 0; }
 
 	//! Check whether the mesh contains faces. If no special scene flags
 	//! are set this should always return true
 	bool HasFaces() const 
-		{ return mFaces != NULL && mNumFaces > 0; }
+		{ return mFaces != nullptr && mNumFaces > 0; }
 
 	//! Check whether the mesh contains normal vectors
 	bool HasNormals() const 
-		{ return mNormals != NULL && mNumVertices > 0; }
+		{ return mNormals != nullptr && mNumVertices > 0; }
 
 	//! Check whether the mesh contains tangent and bitangent vectors
 	//! It is not possible that it contains tangents and no bitangents
 	//! (or the other way round). The existence of one of them
 	//! implies that the second is there, too.
 	bool HasTangentsAndBitangents() const 
-		{ return mTangents != NULL && mBitangents != NULL && mNumVertices > 0; }
+		{ return mTangents != nullptr && mBitangents != nullptr && mNumVertices > 0; }
 
 	//! Check whether the mesh contains a vertex color set
 	//! \param pIndex Index of the vertex color set
@@ -696,7 +696,7 @@ struct aiMesh
 		if( pIndex >= AI_MAX_NUMBER_OF_COLOR_SETS) 
 			return false; 
 		else 
-			return mColors[pIndex] != NULL && mNumVertices > 0; 
+			return mColors[pIndex] != nullptr && mNumVertices > 0; 
 	}
 
 	//! Check whether the mesh contains a texture coordinate set
@@ -706,7 +706,7 @@ struct aiMesh
 		if( pIndex >= AI_MAX_NUMBER_OF_TEXTURECOORDS) 
 			return false; 
 		else 
-			return mTextureCoords[pIndex] != NULL && mNumVertices > 0; 
+			return mTextureCoords[pIndex] != nullptr && mNumVertices > 0; 
 	}
 
 	//! Get the number of UV channels the mesh contains
@@ -727,7 +727,7 @@ struct aiMesh
 
 	//! Check whether the mesh contains bones
 	inline bool HasBones() const
-		{ return mBones != NULL && mNumBones > 0; }
+		{ return mBones != nullptr && mNumBones > 0; }
 
 #endif // __cplusplus
 };

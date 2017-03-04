@@ -266,7 +266,7 @@ select_scan_parameters (j_compress_ptr cinfo)
   int ci;
 
 #ifdef C_MULTISCAN_FILES_SUPPORTED
-  if (cinfo->scan_info != NULL) {
+  if (cinfo->scan_info != nullptr) {
     /* Prepare for current scan --- the script is already validated */
     my_master_ptr master = (my_master_ptr) cinfo->master;
     const jpeg_scan_info * scanptr = cinfo->scan_info + master->scan_number;
@@ -464,7 +464,7 @@ prepare_for_pass (j_compress_ptr cinfo)
   master->pub.is_last_pass = (master->pass_number == master->total_passes-1);
 
   /* Set up progress monitor's pass info if present */
-  if (cinfo->progress != NULL) {
+  if (cinfo->progress != nullptr) {
     cinfo->progress->completed_passes = master->pass_number;
     cinfo->progress->total_passes = master->total_passes;
   }
@@ -552,7 +552,7 @@ jinit_c_master_control (j_compress_ptr cinfo, boolean transcode_only)
   /* Validate parameters, determine derived values */
   initial_setup(cinfo);
 
-  if (cinfo->scan_info != NULL) {
+  if (cinfo->scan_info != nullptr) {
 #ifdef C_MULTISCAN_FILES_SUPPORTED
     validate_script(cinfo);
 #else

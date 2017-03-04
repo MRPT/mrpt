@@ -115,7 +115,7 @@ void init_fonts_list()
 ---------------------------------------------------------------*/
 CCanvas::CCanvas() :
 	m_selectedFont("9x15"),
-	m_selectedFontBitmaps(NULL)
+	m_selectedFontBitmaps(nullptr)
 {
 }
 

@@ -154,7 +154,7 @@ AREXPORT int ArCondition::timedWait(unsigned int msecs)
       return(STATUS_MUTEX_FAILED);
   }
 
-  gettimeofday(&tp, NULL);
+  gettimeofday(&tp, nullptr);
   // convert time of day to pthread time structure
   spec.tv_sec = tp.tv_sec;
   spec.tv_nsec = tp.tv_usec * 1000;
@@ -201,5 +201,5 @@ AREXPORT const char * ArCondition::getError(int messageNumber) const
   if ((it = ourStrMap.find(messageNumber)) != ourStrMap.end())
     return (*it).second.c_str();
   else
-    return NULL;
+    return nullptr;
 }

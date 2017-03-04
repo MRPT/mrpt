@@ -159,7 +159,7 @@ bool  CReflectivityGridMap2D::internal_insertObservation(
 			// Now we should get the cell:
 			cell = cellByPos(sensor_pose.x(),sensor_pose.y());
 
-			ASSERTMSG_(cell!=NULL,"cell==NULL even after resizing grid!?")
+			ASSERTMSG_(cell!=nullptr,"cell==nullptr even after resizing grid!?")
 		}
 
 		const int cell_old = static_cast<int>(*cell);

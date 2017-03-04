@@ -17,7 +17,7 @@ struct XsLibraryLoader;
 #ifdef __cplusplus
 extern "C" {
 #else
-#define XSLIBRARYLOADER_INITIALIZER { NULL }
+#define XSLIBRARYLOADER_INITIALIZER { nullptr }
 typedef struct XsLibraryLoader XsLibraryLoader;
 #endif
 
@@ -38,7 +38,7 @@ struct XsLibraryLoader {
 public:
 	/*! \brief Create a library loader */
 	inline XsLibraryLoader() :
-		m_handle(NULL)
+		m_handle(nullptr)
 	{
 		// avoid compiler warnings about
 		// an unused handle. It is used in the c implementations
@@ -72,7 +72,7 @@ public:
 	/*! \brief Resolve a function from the library
 
 	  \param[in] functionName the name of the function to resolve
-	  \return a pointer to the resolved function, NULL if nothing could be resolved
+	  \return a pointer to the resolved function, nullptr if nothing could be resolved
 	*/
 	inline void* resolve(const char *functionName) const
 	{

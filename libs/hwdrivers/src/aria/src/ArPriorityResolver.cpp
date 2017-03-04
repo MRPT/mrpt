@@ -37,8 +37,8 @@ AREXPORT ArActionDesired *ArPriorityResolver::resolve(
   bool printedFirst = true;
   int printedLast=0;
 
-  if (actions == NULL)
-    return NULL;
+  if (actions == nullptr)
+    return nullptr;
 
   myActionDesired.reset();
   averaging.reset();
@@ -46,10 +46,10 @@ AREXPORT ArActionDesired *ArPriorityResolver::resolve(
   for (it = actions->rbegin(); it != actions->rend(); ++it)
   {
     action = (*it).second;
-    if (action != NULL && action->isActive())
+    if (action != nullptr && action->isActive())
     {
       act = action->fire(myActionDesired);
-      if (robot != NULL && act != NULL)
+      if (robot != nullptr && act != nullptr)
 	act->accountForRobotHeading(robot->getTh());
       if (first || (*it).first != lastPriority)
       {
@@ -62,7 +62,7 @@ AREXPORT ArActionDesired *ArPriorityResolver::resolve(
 	lastPriority = (*it).first;
       }
       averaging.addAverage(act);
-      if (logActions && act != NULL && act->isAnythingDesired())
+      if (logActions && act != nullptr && act->isAnythingDesired())
       {
 	if (printedFirst || printedLast != (*it).first)
 	{

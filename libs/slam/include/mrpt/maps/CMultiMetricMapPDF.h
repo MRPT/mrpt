@@ -39,7 +39,7 @@ namespace maps
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CRBPFParticleData )
 	public:
-		CRBPFParticleData( const TSetOfMetricMapInitializers *mapsInitializers = NULL ) :
+		CRBPFParticleData( const TSetOfMetricMapInitializers *mapsInitializers = nullptr ) :
 		  mapTillNow( mapsInitializers ),
 		  robotPath()
 		{
@@ -142,8 +142,8 @@ namespace maps
 		  */
 		CMultiMetricMapPDF(
 			const bayes::CParticleFilter::TParticleFilterOptions    &opts = bayes::CParticleFilter::TParticleFilterOptions(),
-			const mrpt::maps::TSetOfMetricMapInitializers		    *mapsInitializers = NULL,
-			const TPredictionParams						    *predictionOptions = NULL );
+			const mrpt::maps::TSetOfMetricMapInitializers		    *mapsInitializers = nullptr,
+			const TPredictionParams						    *predictionOptions = nullptr );
 
 		/** Clear all elements of the maps, and restore all paths to a single starting pose */
 		void  clear( const mrpt::poses::CPose2D &initialPose );
@@ -209,7 +209,7 @@ namespace maps
 			/** \name Virtual methods that the PF_implementations assume exist.
 			    @{ */
 
-			/** Return a pointer to the last robot pose in the i'th particle (or NULL if it's a path and it's empty). */
+			/** Return a pointer to the last robot pose in the i'th particle (or nullptr if it's a path and it's empty). */
 			const mrpt::math::TPose3D * getLastPose(const size_t i) const MRPT_OVERRIDE;
 
 			void PF_SLAM_implementation_custom_update_particle_with_new_pose(

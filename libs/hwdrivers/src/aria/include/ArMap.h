@@ -412,7 +412,7 @@ class ArMap
 
   /// Reads a map
   AREXPORT bool readFile(const char *fileName,
-			 char *errorBuffer = NULL, size_t errorBufferLen = 0);
+			 char *errorBuffer = nullptr, size_t errorBufferLen = 0);
 
   /// Write out a map file
   AREXPORT bool writeFile(const char *fileName, bool internalCall = false);
@@ -472,7 +472,7 @@ class ArMap
   int getResolution(void) { return myResolution; }
   /// Gets a map object of given name and type if it exists
   AREXPORT ArMapObject *findMapObject(const char *name,
-				      const char *type = NULL);
+				      const char *type = nullptr);
   /// Gets the last time the map objects were changed
   ArTime getMapObjectsChanged(void) { return myMapObjectsChanged; }
   /// Gets the last time the points were changed
@@ -506,7 +506,7 @@ class ArMap
    * @param infoType the int ID of the Info category to be set; must be >= 0
    * and < numInfos;
    * @param infoList the std::list<ArArgumentBuilder *> * that defines the
-   * Info category's contents; NULL to clear the Info
+   * Info category's contents; nullptr to clear the Info
    * @return bool set to true if the contents were successfully set; false,
    * if infoType was invalid
   **/
@@ -645,7 +645,7 @@ protected:
    * If subclasses define additional Info categories, then they must override this
    * method.
    * @param infoType the int ID of the Info category
-   * @return const char * the name of the specified Info category; or NULL if not
+   * @return const char * the name of the specified Info category; or nullptr if not
    * found
   **/
   virtual const char *getInfoName(int infoType);
@@ -772,11 +772,11 @@ public:
 		       const char *iconName, const char *name,
 		       bool hasFromTo, ArPose fromPose, ArPose toPose)
     {
-      if (type != NULL) myType = type;
-      if (name != NULL) myName = name;
+      if (type != nullptr) myType = type;
+      if (name != nullptr) myName = name;
       myPose = pose;
-      if (iconName != NULL) myIconName = iconName;
-      if (fileName != NULL) myFileName = fileName;
+      if (iconName != nullptr) myIconName = iconName;
+      if (fileName != nullptr) myFileName = fileName;
       myHasFromTo = hasFromTo; myFromPose = fromPose;  myToPose = toPose;
       if (myHasFromTo)
       {

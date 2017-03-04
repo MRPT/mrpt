@@ -27,7 +27,7 @@ IMPLEMENTS_SERIALIZABLE( CHolonomicVFF, CAbstractHolonomicReactiveMethod,mrpt::n
 CHolonomicVFF::CHolonomicVFF(const mrpt::utils::CConfigFileBase *INI_FILE) :
 	CAbstractHolonomicReactiveMethod("CHolonomicVFF")
 {
-	if (INI_FILE!=NULL)
+	if (INI_FILE!=nullptr)
 		initialize( *INI_FILE );
 }
 

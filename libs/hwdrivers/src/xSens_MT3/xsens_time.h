@@ -26,9 +26,9 @@ typedef uint64_t TimeStamp;
 /*! \brief A platform-independent clock.
 
 	The function returns the time of day in ms since midnight. If the \c date parameter is
-	non-NULL, corresponding the date is placed in the variable it points to.
+	non-nullptr, corresponding the date is placed in the variable it points to.
 */
-uint32_t getTimeOfDay(tm* date_ = NULL, time_t* secs_ = NULL);
+uint32_t getTimeOfDay(tm* date_ = nullptr, time_t* secs_ = nullptr);
 
 /*! \brief A platform-independent sleep routine.
 

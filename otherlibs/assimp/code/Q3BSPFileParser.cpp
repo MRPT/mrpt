@@ -56,10 +56,10 @@ using namespace Q3BSP;
 Q3BSPFileParser::Q3BSPFileParser( const std::string &rMapName, Q3BSPZipArchive *pZipArchive ) :
 	m_sOffset( 0 ),
 	m_Data(),
-	m_pModel( NULL ),
+	m_pModel( nullptr ),
 	m_pZipArchive( pZipArchive )
 {
-	ai_assert( NULL != m_pZipArchive );
+	ai_assert( nullptr != m_pZipArchive );
 	ai_assert( !rMapName.empty() );
 
 	if ( !readData( rMapName ) )
@@ -70,7 +70,7 @@ Q3BSPFileParser::Q3BSPFileParser( const std::string &rMapName, Q3BSPZipArchive *
 	if ( !parseFile() )
 	{
 		delete m_pModel;
-		m_pModel = NULL;
+		m_pModel = nullptr;
 	}
 }
 
@@ -78,7 +78,7 @@ Q3BSPFileParser::Q3BSPFileParser( const std::string &rMapName, Q3BSPZipArchive *
 Q3BSPFileParser::~Q3BSPFileParser()
 {
 	delete m_pModel;
-	m_pModel = NULL;
+	m_pModel = nullptr;
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -94,7 +94,7 @@ bool Q3BSPFileParser::readData( const std::string &rMapName )
 		return false;
 
 	IOStream *pMapFile = m_pZipArchive->Open( rMapName.c_str() );
-	if ( NULL == pMapFile )
+	if ( nullptr == pMapFile )
 		return false;
 		
 	const size_t size = pMapFile->FileSize();
@@ -207,7 +207,7 @@ void Q3BSPFileParser::getVertices()
 // ------------------------------------------------------------------------------------------------
 void Q3BSPFileParser::getIndices()
 {
-	ai_assert( NULL != m_pModel );
+	ai_assert( nullptr != m_pModel );
 
 	sQ3BSPLump *lump = m_pModel->m_Lumps[ kMeshVerts ];	
 	size_t Offset = (size_t) lump->iOffset;
@@ -219,7 +219,7 @@ void Q3BSPFileParser::getIndices()
 // ------------------------------------------------------------------------------------------------
 void Q3BSPFileParser::getFaces()
 {
-	ai_assert( NULL != m_pModel );
+	ai_assert( nullptr != m_pModel );
 	
 	size_t Offset = m_pModel->m_Lumps[ kFaces ]->iOffset;
 	for ( size_t idx = 0; idx < m_pModel->m_Faces.size(); idx++ )
@@ -234,7 +234,7 @@ void Q3BSPFileParser::getFaces()
 // ------------------------------------------------------------------------------------------------
 void Q3BSPFileParser::getTextures()
 {
-	ai_assert( NULL != m_pModel );
+	ai_assert( nullptr != m_pModel );
 
 	size_t Offset = m_pModel->m_Lumps[ kTextures ]->iOffset;
 	for ( size_t idx=0; idx < m_pModel->m_Textures.size(); idx++ )
@@ -249,7 +249,7 @@ void Q3BSPFileParser::getTextures()
 // ------------------------------------------------------------------------------------------------
 void Q3BSPFileParser::getLightMaps()
 {
-	ai_assert( NULL != m_pModel );
+	ai_assert( nullptr != m_pModel );
 
 	size_t Offset = m_pModel->m_Lumps[kLightmaps]->iOffset;
 	for ( size_t idx=0; idx < m_pModel->m_Lightmaps.size(); idx++ )

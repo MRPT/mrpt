@@ -279,7 +279,7 @@ struct XsString : public XsStringType {
 	{
 		if (empty())
 			return std::wstring();
-		size_t s = XsString_copyToWCharArray(this, NULL, 0);
+		size_t s = XsString_copyToWCharArray(this, nullptr, 0);
 		std::wstring w;
 		w.resize(s-1);
 		s = XsString_copyToWCharArray(this, &w[0], s);

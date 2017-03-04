@@ -171,7 +171,7 @@ namespace mrpt
 			  *  \code
 			  *   CGenericSensorPtr sensor = CGenericSensorPtr( CGenericSensor::createSensor("XXX") );
 			  *  \endcode
-			  * \return A pointer to a new class, or NULL if class name is unknown.
+			  * \return A pointer to a new class, or nullptr if class name is unknown.
 			  */
 			static CGenericSensor* createSensor(const std::string &className);
 

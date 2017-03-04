@@ -38,7 +38,7 @@ bool ArJoyHandler::init(void)
     }
   }
   
-  if ((myUseOld && myOldJoyDesc != NULL) || (!myUseOld && myJoyDesc > 0))
+  if ((myUseOld && myOldJoyDesc != nullptr) || (!myUseOld && myJoyDesc > 0))
   {
     myPhysMax = 255;
     myInitialized = true;
@@ -76,7 +76,7 @@ void ArJoyHandler::getOldData(void)
 {
 #ifdef linux
   int x, y;
-  if (myOldJoyDesc == NULL || !myInitialized || 
+  if (myOldJoyDesc == nullptr || !myInitialized || 
       fread(&myJoyData, 1, JS_RETURN, myOldJoyDesc) != JS_RETURN) 
   {
     myAxes[1] = 0;

@@ -54,7 +54,7 @@ namespace mrpt
 			bool								isGUI=false,
 			bool								disableGPSInterp=false,
 			int									path_smooth_filter_size=2,
-			TPathFromRTKInfo					*outInfo = NULL
+			TPathFromRTKInfo					*outInfo = nullptr
 			);
 			
 			

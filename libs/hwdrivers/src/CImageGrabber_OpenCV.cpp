@@ -187,7 +187,7 @@ CImageGrabber_OpenCV::~CImageGrabber_OpenCV()
 	{
 		CvCapture *cap = M_CAPTURE;
 		cvReleaseCapture( &cap );
-		m_capture = NULL;
+		m_capture = nullptr;
 	}
 #endif
 }
@@ -208,7 +208,7 @@ bool  CImageGrabber_OpenCV::getObservation( mrpt::obs::CObservationImage &out_ob
 	if (!cvGrabFrame(M_CAPTURE))
 		return false;
 
-	IplImage *capImg = NULL;
+	IplImage *capImg = nullptr;
 
 	// JL: Sometimes there're errors in some frames: try not to return an error unless it seems
 	//  there's no way:

@@ -32,7 +32,7 @@ void Test_HTTP_get()
 
 	//CClientTCPSocket::DNS_LOOKUP_TIMEOUT_MS = 5000;
 
-	ERRORCODE_HTTP ret = http_get(url,content,errmsg,80,"","",NULL,NULL,&out_headers);
+	ERRORCODE_HTTP ret = http_get(url,content,errmsg,80,"","",nullptr,nullptr,&out_headers);
 
 	if ( ret != net::erOk )
 	{

@@ -83,9 +83,9 @@ jpeg_copy_critical_parameters (j_decompress_ptr srcinfo,
   dstinfo->CCIR601_sampling = srcinfo->CCIR601_sampling;
   /* Copy the source's quantization tables. */
   for (tblno = 0; tblno < NUM_QUANT_TBLS; tblno++) {
-    if (srcinfo->quant_tbl_ptrs[tblno] != NULL) {
+    if (srcinfo->quant_tbl_ptrs[tblno] != nullptr) {
       qtblptr = & dstinfo->quant_tbl_ptrs[tblno];
-      if (*qtblptr == NULL)
+      if (*qtblptr == nullptr)
 	*qtblptr = jpeg_alloc_quant_table((j_common_ptr) dstinfo);
       MEMCOPY((*qtblptr)->quantval,
 	      srcinfo->quant_tbl_ptrs[tblno]->quantval,
@@ -112,11 +112,11 @@ jpeg_copy_critical_parameters (j_decompress_ptr srcinfo,
      */
     tblno = outcomp->quant_tbl_no;
     if (tblno < 0 || tblno >= NUM_QUANT_TBLS ||
-	srcinfo->quant_tbl_ptrs[tblno] == NULL)
+	srcinfo->quant_tbl_ptrs[tblno] == nullptr)
       ERREXIT1(dstinfo, JERR_NO_QUANT_TABLE, tblno);
     slot_quant = srcinfo->quant_tbl_ptrs[tblno];
     c_quant = incomp->quant_table;
-    if (c_quant != NULL) {
+    if (c_quant != nullptr) {
       for (coefi = 0; coefi < DCTSIZE2; coefi++) {
 	if (c_quant->quantval[coefi] != slot_quant->quantval[coefi])
 	  ERREXIT1(dstinfo, JERR_MISMATCHED_QUANT_TABLE, tblno);
@@ -268,7 +268,7 @@ start_pass_coef (j_compress_ptr cinfo, J_BUF_MODE pass_mode)
  * The data is obtained from the virtual arrays and fed to the entropy coder.
  * Returns TRUE if the iMCU row is completed, FALSE if suspended.
  *
- * NB: input_buf is ignored; it is likely to be a NULL pointer.
+ * NB: input_buf is ignored; it is likely to be a nullptr pointer.
  */
 
 METHODDEF(boolean)

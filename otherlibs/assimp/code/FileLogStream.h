@@ -14,7 +14,7 @@ class FileLogStream :
 	public LogStream
 {
 public:
-	FileLogStream( const char* file, IOSystem* io = NULL );
+	FileLogStream( const char* file, IOSystem* io = nullptr );
 	~FileLogStream();
 	void write( const char* message );
 
@@ -25,7 +25,7 @@ private:
 // ----------------------------------------------------------------------------------
 //	Constructor
 inline FileLogStream::FileLogStream( const char* file, IOSystem* io ) :
-	m_pStream(NULL)
+	m_pStream(nullptr)
 {
 	if ( !file || 0 == *file )
 		return;
@@ -51,7 +51,7 @@ inline FileLogStream::~FileLogStream()
 //	Write method
 inline void FileLogStream::write( const char* message )
 {
-	if (m_pStream != NULL)
+	if (m_pStream != nullptr)
 	{
 		m_pStream->Write(message, sizeof(char), ::strlen(message));
 		m_pStream->Flush();

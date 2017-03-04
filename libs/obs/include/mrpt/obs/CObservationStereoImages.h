@@ -50,12 +50,12 @@ namespace obs
 		CObservationStereoImages( );
 
 		/** Constructor from "IplImage*" images, which could be NULL.
-		  *  The fields hasImageDisparity and hasImageRight will be set to true/false depending on them being !=NULL.
+		  *  The fields hasImageDisparity and hasImageRight will be set to true/false depending on them being !=nullptr.
 		  * Note that the IplImage's will be COPIED, so it's still the caller's reponsibility to free the original images,
 		  *  unless ownMemory is set to true: in that case the IplImage pointers are copied and those IplImage's will be automatically freed by this object.
 		  *
 		  */
-		CObservationStereoImages( void *iplImageLeft, void *iplImageRight, void *iplImageDisparity = NULL, bool ownMemory = false );
+		CObservationStereoImages( void *iplImageLeft, void *iplImageRight, void *iplImageDisparity = nullptr, bool ownMemory = false );
 
 		/** Destructor
 		 */

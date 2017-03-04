@@ -40,7 +40,7 @@ void faster_corner_detect_9(const IplImage* I, mrpt::vision::TSimpleFeatureList 
 		ptr_feat_index_by_row = &(*out_feats_index_by_row)[0];
 	}
 	else {
-		ptr_feat_index_by_row = NULL;
+		ptr_feat_index_by_row = nullptr;
 	}
 
 	const int w = I->width;

@@ -83,12 +83,12 @@ bool DefaultIOSystem::Exists( const char* pFile) const
 // Open a new file with a given path.
 IOStream* DefaultIOSystem::Open( const char* strFile, const char* strMode)
 {
-	ai_assert(NULL != strFile);
-	ai_assert(NULL != strMode);
+	ai_assert(nullptr != strFile);
+	ai_assert(nullptr != strMode);
 
 	FILE* file = ::fopen( strFile, strMode);
-	if( NULL == file) 
-		return NULL;
+	if( nullptr == file) 
+		return nullptr;
 
 	return new DefaultIOStream(file, (std::string) strFile);
 }

@@ -52,7 +52,7 @@ namespace mrpt
 			  */
 			TSIFTDescriptorsKDTreeIndex(const CFeatureList &feats) : 
 				m_adaptor(feats),
-				m_kdtree(NULL),
+				m_kdtree(nullptr),
 				m_feats(feats) 
 			{
 				ASSERT_(!feats.empty() && feats[0]->descriptors.hasDescriptorSIFT())
@@ -76,7 +76,7 @@ namespace mrpt
 			~TSIFTDescriptorsKDTreeIndex() 
 			{
 				delete m_kdtree;
-				m_kdtree=NULL;
+				m_kdtree=nullptr;
 			}
 
 		private:
@@ -109,7 +109,7 @@ namespace mrpt
 			  */
 			TSURFDescriptorsKDTreeIndex(const CFeatureList &feats) : 
 				m_adaptor(feats),
-				m_kdtree(NULL),
+				m_kdtree(nullptr),
 				m_feats(feats) 
 			{
 				ASSERT_(!feats.empty() && feats[0]->descriptors.hasDescriptorSIFT())
@@ -133,7 +133,7 @@ namespace mrpt
 			~TSURFDescriptorsKDTreeIndex() 
 			{
 				delete m_kdtree;
-				m_kdtree=NULL;
+				m_kdtree=nullptr;
 			}
 
 		private:

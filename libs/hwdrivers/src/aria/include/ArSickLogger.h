@@ -41,10 +41,10 @@ public:
   AREXPORT ArSickLogger(ArRobot *robot, ArSick *sick, double distDiff, 
 			double degDiff, const char *fileName, 
 			bool addGoals = false, 
-			ArJoyHandler *joyHandler = NULL,
-			const char *baseDirectory = NULL,
+			ArJoyHandler *joyHandler = nullptr,
+			const char *baseDirectory = nullptr,
 			bool useReflectorValues = false,
-			ArRobotJoyHandler *robotJoyHandler = NULL);
+			ArRobotJoyHandler *robotJoyHandler = nullptr);
   /// Destructor
   AREXPORT virtual ~ArSickLogger();
 #ifndef SWIG
@@ -77,7 +77,7 @@ public:
   void addGoal(void) { myAddGoalExplicit = true; }
   /// Sees if the file was opened successfully
   bool wasFileOpenedSuccessfully(void) 
-    { if (myFile != NULL) return true; else return false; }
+    { if (myFile != nullptr) return true; else return false; }
   /// Gets if we're taking old (sick1:) readings
   bool takingOldReadings(void) { return myOldReadings; }
   /// Sets if we're taking old (sick1:) readings

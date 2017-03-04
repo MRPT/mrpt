@@ -116,7 +116,7 @@ void IRRMeshImporter::InternReadFile( const std::string& pFile,
 	boost::scoped_ptr<IOStream> file( pIOHandler->Open( pFile));
 
 	// Check whether we can read from the file
-	if( file.get() == NULL)
+	if( file.get() == nullptr)
 		throw DeadlyImportError( "Failed to open IRRMESH file " + pFile + "");
 
 	// Construct the irrXML parser
@@ -130,8 +130,8 @@ void IRRMeshImporter::InternReadFile( const std::string& pFile,
 	meshes.reserve    (5);
 
 	// temporary data - current mesh buffer
-	aiMaterial* curMat	= NULL;
-	aiMesh* curMesh		= NULL;
+	aiMaterial* curMat	= nullptr;
+	aiMesh* curMesh		= nullptr;
 	unsigned int curMatFlags = 0;
 
 	std::vector<aiVector3D> curVertices,curNormals,curTangents,curBitangents;
@@ -159,8 +159,8 @@ void IRRMeshImporter::InternReadFile( const std::string& pFile,
 					materials.push_back(curMat); 
 					meshes.push_back(curMesh);  
 				}
-				curMat  = NULL;
-				curMesh = NULL;
+				curMat  = nullptr;
+				curMesh = nullptr;
 
 				curVertices.clear();
 				curColors.clear();
@@ -175,7 +175,7 @@ void IRRMeshImporter::InternReadFile( const std::string& pFile,
 			if (!ASSIMP_stricmp(reader->getNodeName(),"material"))	{
 				if (curMat)	{
 					DefaultLogger::get()->warn("IRRMESH: Only one material description per buffer, please");
-					delete curMat;curMat = NULL;
+					delete curMat;curMat = nullptr;
 				}
 				curMat = ParseMaterial(curMatFlags);
 			}
@@ -187,9 +187,9 @@ void IRRMeshImporter::InternReadFile( const std::string& pFile,
 					// This is possible ... remove the mesh from the list and skip further reading
 					DefaultLogger::get()->warn("IRRMESH: Found mesh with zero vertices");
 
-					delete curMat;curMat = NULL;
+					delete curMat;curMat = nullptr;
 
-					curMesh = NULL;
+					curMesh = nullptr;
 					textMeaning = 0;
 					continue;
 				}
@@ -256,10 +256,10 @@ void IRRMeshImporter::InternReadFile( const std::string& pFile,
 					DefaultLogger::get()->warn("IRRMESH: Found mesh with zero indices");
 
 					// mesh - away
-					delete curMesh; curMesh = NULL;
+					delete curMesh; curMesh = nullptr;
 
 					// material - away
-					delete curMat;curMat = NULL;
+					delete curMat;curMat = nullptr;
 
 					textMeaning = 0;
 					continue;

@@ -198,7 +198,7 @@ CObservationGasSensors::CMOSmodel::CMOSmodel():
 	save_maplog(false),
 	last_Obs(),
 	temporal_Obs(),
-	m_debug_dump(NULL),
+	m_debug_dump(nullptr),
 	decimate_count(1),
 	fixed_incT(0),
 	first_incT(true),

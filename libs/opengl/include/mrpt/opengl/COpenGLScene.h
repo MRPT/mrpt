@@ -94,7 +94,7 @@ namespace mrpt
 			  */
 			COpenGLViewportPtr createViewport( const std::string &viewportName );
 
-			/** Returns the viewport with the given name, or NULL if it does not exist; note that the default viewport is named "main" and initially occupies the entire rendering area.
+			/** Returns the viewport with the given name, or nullptr if it does not exist; note that the default viewport is named "main" and initially occupies the entire rendering area.
 			  */
 			COpenGLViewportPtr getViewport( const std::string &viewportName = std::string("main") ) const;
 
@@ -117,11 +117,11 @@ namespace mrpt
 			  */
 			bool followCamera() const { return m_followCamera; }
 
-			/** Returns the first object with a given name, or NULL (an empty smart pointer) if not found.
+			/** Returns the first object with a given name, or nullptr (an empty smart pointer) if not found.
 			  */
 			CRenderizablePtr	getByName( const std::string &str, const std::string &viewportName = std::string("main") );
 
-			 /** Returns the i'th object of a given class (or of a descendant class), or NULL (an empty smart pointer) if not found.
+			 /** Returns the i'th object of a given class (or of a descendant class), or nullptr (an empty smart pointer) if not found.
 			   *  Example:
 			   * \code
 					CSpherePtr obs = myscene.getByClass<CSphere>();

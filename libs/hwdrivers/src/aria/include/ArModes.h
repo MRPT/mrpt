@@ -268,7 +268,7 @@ class ArModePosition : public ArMode
 {
 public:
   AREXPORT ArModePosition(ArRobot *robot, const char *name, char key,
-			  char key2, ArAnalogGyro *gyro = NULL);
+			  char key2, ArAnalogGyro *gyro = nullptr);
   AREXPORT ~ArModePosition();
   AREXPORT virtual void activate(void);
   AREXPORT virtual void deactivate(void);
@@ -360,7 +360,7 @@ class ArModeActs : public ArMode
 public:
   /// Constructor
   AREXPORT ArModeActs(ArRobot *robot, const char *name, char key, char key2,
-		      ArACTS_1_2 *acts = NULL);
+		      ArACTS_1_2 *acts = nullptr);
   /// Destructor
   AREXPORT virtual ~ArModeActs();
   AREXPORT virtual void activate(void);
@@ -437,7 +437,7 @@ class ArModeTCM2 : public ArMode
 public:
   /// Constructor
   AREXPORT ArModeTCM2(ArRobot *robot, const char *name, char key, char key2,
-		      ArTCM2 *tcm2 = NULL);
+		      ArTCM2 *tcm2 = nullptr);
   /// Destructor
   AREXPORT virtual ~ArModeTCM2();
   AREXPORT virtual void activate(void);

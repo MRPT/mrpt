@@ -60,14 +60,14 @@ namespace maps
 		/** Access to the i'th pair, first one is index '0'. NOTE: This method
 		  *  returns pointers to the objects inside the list, nor a copy of them,
 		  *  so <b>do neither modify them nor delete them</b>.
-		  * NOTE: You can pass a NULL pointer if you dont need one of the two variables to be returned.
+		  * NOTE: You can pass a nullptr pointer if you dont need one of the two variables to be returned.
 		  * \exception std::exception On index out of bounds.
 		  */
 		void  get(size_t index, mrpt::poses::CPose3DPDFPtr &out_posePDF, mrpt::obs::CSensoryFramePtr &out_SF ) const ;
 
 		/** Changes the i'th pair, first one is index '0'.
 		  *  The referenced object is COPIED, so you can freely destroy the object passed as parameter after calling this.
-		  *  If one of the pointers is NULL, the corresponding contents of the current i'th pair is not modified (i.e. if you want just to modify one of the values).
+		  *  If one of the pointers is nullptr, the corresponding contents of the current i'th pair is not modified (i.e. if you want just to modify one of the values).
 		  * \exception std::exception On index out of bounds.
 		  * \sa insert, get, remove
 		  */
@@ -75,7 +75,7 @@ namespace maps
 
 		/** Changes the i'th pair, first one is index '0'.
 		  *  The referenced object is COPIED, so you can freely destroy the object passed as parameter after calling this.
-		  *  If one of the pointers is NULL, the corresponding contents of the current i'th pair is not modified (i.e. if you want just to modify one of the values).
+		  *  If one of the pointers is nullptr, the corresponding contents of the current i'th pair is not modified (i.e. if you want just to modify one of the values).
 		  * This version for 2D PDFs just converts the 2D PDF into 3D before calling the 3D version.
 		  * \exception std::exception On index out of bounds.
 		  * \sa insert, get, remove

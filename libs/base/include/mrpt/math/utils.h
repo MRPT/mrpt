@@ -258,7 +258,7 @@ namespace mrpt
 		{
 #if defined(_MSC_VER) && (_MSC_VER>=1400) // Use a secure version in Visual Studio 2005+
 			FILE *f;
-			if (0!=::fopen_s(&f,sFile.c_str(),"wt")) f= NULL;
+            if (0!=::fopen_s(&f,sFile.c_str(),"wt")) f= nullptr;
 #else
 			FILE *f= ::fopen(sFile.c_str(),"wt");
 #endif

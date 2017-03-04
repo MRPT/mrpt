@@ -83,7 +83,7 @@ inline aiTextureMapMode GetMapMode(LWO::Texture::Wrap in)
 // ------------------------------------------------------------------------------------------------
 bool LWOImporter::HandleTextures(aiMaterial* pcMat, const TextureList& in, aiTextureType type)
 {
-	ai_assert(NULL != pcMat);
+        ai_assert(nullptr != pcMat);
 
 	unsigned int cur = 0, temp = 0;
 	aiString s;
@@ -455,7 +455,7 @@ void LWOImporter::FindUVChannels(LWO::Surface& surf,
 							++extra;
 							out[next++] = i;
 						}
-						// Bäh ... seems not to be used at all. Push to end if enough space is available.
+						// Bï¿½h ... seems not to be used at all. Push to end if enough space is available.
 						else {
 							out[extra++] = i;
 							++num_extra;

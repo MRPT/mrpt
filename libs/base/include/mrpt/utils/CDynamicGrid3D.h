@@ -125,10 +125,10 @@ namespace mrpt
 			}
 
 			/** Changes the size of the grid, ERASING all previous contents.
-			  * If \a fill_value is left as NULL, the contents of cells may be undefined (some will remain with
+			  * If \a fill_value is left as nullptr, the contents of cells may be undefined (some will remain with
 			  *  their old values, the new ones will have the default voxel value, but the location of old values
 			  *  may change wrt their old places).
-			  * If \a fill_value is not NULL, it is assured that all cells will have a copy of that value after resizing.
+			  * If \a fill_value is not nullptr, it is assured that all cells will have a copy of that value after resizing.
 			  * If `resolution_z`<0, the same resolution will be used for all dimensions x,y,z as given in `resolution_xy`
 			  * \sa resize, fill
 			  */
@@ -137,7 +137,7 @@ namespace mrpt
 				const double y_min, const double y_max,
 				const double z_min, const double z_max,
 				const double resolution_xy, const double resolution_z_=-1.0, 
-				const T * fill_value = NULL)
+				const T * fill_value = nullptr)
 			{
 				const double resolution_z = resolution_z_ > 0.0 ? resolution_z_ : resolution_xy;
 
@@ -190,37 +190,37 @@ namespace mrpt
 			}
 				
 
-			/** Returns a pointer to the contents of a voxel given by its coordinates, or NULL if it is out of the map extensions.
+			/** Returns a pointer to the contents of a voxel given by its coordinates, or nullptr if it is out of the map extensions.
 				*/
 			inline T*	cellByPos( double x, double y, double z )
 			{
 				const size_t cidx = cellAbsIndexFromCXCYCZ(x2idx(x), y2idx(y), z2idx(z));
-				if (cidx == INVALID_VOXEL_IDX) return NULL;
+				if (cidx == INVALID_VOXEL_IDX) return nullptr;
 				return &m_map[cidx];
 			}
 			/** \overload */
 			inline const T*	cellByPos( double x, double y, double z ) const
 			{
 				const size_t cidx = cellAbsIndexFromCXCYCZ(x2idx(x), y2idx(y), z2idx(z));
-				if (cidx == INVALID_VOXEL_IDX) return NULL;
+				if (cidx == INVALID_VOXEL_IDX) return nullptr;
 				return &m_map[cidx];
 			}
 
-			/** Returns a pointer to the contents of a voxel given by its voxel indexes, or NULL if it is out of the map extensions.
+			/** Returns a pointer to the contents of a voxel given by its voxel indexes, or nullptr if it is out of the map extensions.
 				*/
 			inline  T*	cellByIndex( unsigned int cx, unsigned int cy, unsigned int cz )
 			{
 				const size_t cidx = cellAbsIndexFromCXCYCZ(cx, cy, cz);
-				if (cidx == INVALID_VOXEL_IDX) return NULL;
+				if (cidx == INVALID_VOXEL_IDX) return nullptr;
 				return &m_map[cidx];
 			}
 
-			/** Returns a pointer to the contents of a voxel given by its voxel indexes, or NULL if it is out of the map extensions.
+			/** Returns a pointer to the contents of a voxel given by its voxel indexes, or nullptr if it is out of the map extensions.
 				*/
 			inline const T* cellByIndex( unsigned int cx, unsigned int cy, unsigned int cz  ) const
 			{
 				const size_t cidx = cellAbsIndexFromCXCYCZ(cx, cy, cz);
-				if (cidx == INVALID_VOXEL_IDX) return NULL;
+				if (cidx == INVALID_VOXEL_IDX) return nullptr;
 				return &m_map[cidx];
 			}
 

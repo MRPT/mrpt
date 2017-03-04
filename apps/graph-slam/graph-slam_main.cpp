@@ -338,7 +338,7 @@ IMPLEMENT_OP_FUNCTION(op_levmarq)
 
 	graphslam::TResultInfoSpaLevMarq  info;
 
-	graphslam::optimize_graph_spa_levmarq(g,info, NULL, params);
+    graphslam::optimize_graph_spa_levmarq(g,info, nullptr, params);
 
 
 	// Output:

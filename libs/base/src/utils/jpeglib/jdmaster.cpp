@@ -303,8 +303,8 @@ master_selection (j_decompress_ptr cinfo)
   master->using_merged_upsample = use_merged_upsample(cinfo);
 
   /* Color quantizer selection */
-  master->quantizer_1pass = NULL;
-  master->quantizer_2pass = NULL;
+  master->quantizer_1pass = nullptr;
+  master->quantizer_2pass = nullptr;
   /* No mode changes if not using buffered-image mode. */
   if (! cinfo->quantize_colors || ! cinfo->buffered_image) {
     cinfo->enable_1pass_quant = FALSE;
@@ -319,8 +319,8 @@ master_selection (j_decompress_ptr cinfo)
       cinfo->enable_1pass_quant = TRUE;
       cinfo->enable_external_quant = FALSE;
       cinfo->enable_2pass_quant = FALSE;
-      cinfo->colormap = NULL;
-    } else if (cinfo->colormap != NULL) {
+      cinfo->colormap = nullptr;
+    } else if (cinfo->colormap != nullptr) {
       cinfo->enable_external_quant = TRUE;
     } else if (cinfo->two_pass_quantize) {
       cinfo->enable_2pass_quant = TRUE;
@@ -399,7 +399,7 @@ master_selection (j_decompress_ptr cinfo)
    * progress monitoring appropriately.  The input step is counted
    * as one pass.
    */
-  if (cinfo->progress != NULL && ! cinfo->buffered_image &&
+  if (cinfo->progress != nullptr && ! cinfo->buffered_image &&
       cinfo->inputctl->has_multiple_scans) {
     int nscans;
     /* Estimate number of scans to set pass_limit. */
@@ -446,7 +446,7 @@ prepare_for_output_pass (j_decompress_ptr cinfo)
     ERREXIT(cinfo, JERR_NOT_COMPILED);
 #endif /* QUANT_2PASS_SUPPORTED */
   } else {
-    if (cinfo->quantize_colors && cinfo->colormap == NULL) {
+    if (cinfo->quantize_colors && cinfo->colormap == nullptr) {
       /* Select new quantization method */
       if (cinfo->two_pass_quantize && cinfo->enable_2pass_quant) {
 	cinfo->cquantize = master->quantizer_2pass;
@@ -472,7 +472,7 @@ prepare_for_output_pass (j_decompress_ptr cinfo)
   }
 
   /* Set up progress monitor's pass info if present */
-  if (cinfo->progress != NULL) {
+  if (cinfo->progress != nullptr) {
     cinfo->progress->completed_passes = master->pass_number;
     cinfo->progress->total_passes = master->pass_number +
 				    (master->pub.is_dummy_pass ? 2 : 1);
@@ -517,7 +517,7 @@ jpeg_new_colormap (j_decompress_ptr cinfo)
     ERREXIT1(cinfo, JERR_BAD_STATE, cinfo->global_state);
 
   if (cinfo->quantize_colors && cinfo->enable_external_quant &&
-      cinfo->colormap != NULL) {
+      cinfo->colormap != nullptr) {
     /* Select 2-pass quantizer for external colormap use */
     cinfo->cquantize = master->quantizer_2pass;
     /* Notify quantizer of colormap change */

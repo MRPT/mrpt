@@ -58,29 +58,29 @@ namespace internal
   
   void eigen_pastix(pastix_data_t **pastix_data, int pastix_comm, int n, int *ptr, int *idx, float *vals, int *perm, int * invp, float *x, int nbrhs, int *iparm, double *dparm)
   {
-    if (n == 0) { ptr = NULL; idx = NULL; vals = NULL; }
-    if (nbrhs == 0) {x = NULL; nbrhs=1;}
+    if (n == 0) { ptr = nullptr; idx = nullptr; vals = nullptr; }
+    if (nbrhs == 0) {x = nullptr; nbrhs=1;}
     s_pastix(pastix_data, pastix_comm, n, ptr, idx, vals, perm, invp, x, nbrhs, iparm, dparm); 
   }
   
   void eigen_pastix(pastix_data_t **pastix_data, int pastix_comm, int n, int *ptr, int *idx, double *vals, int *perm, int * invp, double *x, int nbrhs, int *iparm, double *dparm)
   {
-    if (n == 0) { ptr = NULL; idx = NULL; vals = NULL; }
-    if (nbrhs == 0) {x = NULL; nbrhs=1;}
+    if (n == 0) { ptr = nullptr; idx = nullptr; vals = nullptr; }
+    if (nbrhs == 0) {x = nullptr; nbrhs=1;}
     d_pastix(pastix_data, pastix_comm, n, ptr, idx, vals, perm, invp, x, nbrhs, iparm, dparm); 
   }
   
   void eigen_pastix(pastix_data_t **pastix_data, int pastix_comm, int n, int *ptr, int *idx, std::complex<float> *vals, int *perm, int * invp, std::complex<float> *x, int nbrhs, int *iparm, double *dparm)
   {
-    if (n == 0) { ptr = NULL; idx = NULL; vals = NULL; }
-    if (nbrhs == 0) {x = NULL; nbrhs=1;}
+    if (n == 0) { ptr = nullptr; idx = nullptr; vals = nullptr; }
+    if (nbrhs == 0) {x = nullptr; nbrhs=1;}
     c_pastix(pastix_data, pastix_comm, n, ptr, idx, reinterpret_cast<COMPLEX*>(vals), perm, invp, reinterpret_cast<COMPLEX*>(x), nbrhs, iparm, dparm); 
   }
   
   void eigen_pastix(pastix_data_t **pastix_data, int pastix_comm, int n, int *ptr, int *idx, std::complex<double> *vals, int *perm, int * invp, std::complex<double> *x, int nbrhs, int *iparm, double *dparm)
   {
-    if (n == 0) { ptr = NULL; idx = NULL; vals = NULL; }
-    if (nbrhs == 0) {x = NULL; nbrhs=1;}
+    if (n == 0) { ptr = nullptr; idx = nullptr; vals = nullptr; }
+    if (nbrhs == 0) {x = nullptr; nbrhs=1;}
     z_pastix(pastix_data, pastix_comm, n, ptr, idx, reinterpret_cast<DCOMPLEX*>(vals), perm, invp, reinterpret_cast<DCOMPLEX*>(x), nbrhs, iparm, dparm); 
   }
 

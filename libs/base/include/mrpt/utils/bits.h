@@ -185,12 +185,12 @@ namespace mrpt
 			return var;
 		}
 
-		/** Calls "delete" to free an object only if the pointer is not NULL, then set the pointer to NULL. */
+		/** Calls "delete" to free an object only if the pointer is not nullptr, then set the pointer to NULL. */
 		template <class T>
 		void delete_safe(T *& ptr) {
 			if (ptr) {
 				delete ptr;
-				ptr = NULL;
+				ptr = nullptr;
 			}
 		}
 

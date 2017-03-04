@@ -53,13 +53,13 @@ public:
     virtual void close();
     virtual void flush( _u32 flags);
     
-    virtual int waitfordata(_word_size_t data_count,_u32 timeout = -1, _word_size_t * returned_size = NULL);
+    virtual int waitfordata(_word_size_t data_count,_u32 timeout = -1, _word_size_t * returned_size = nullptr);
 
     virtual int senddata(const unsigned char * data, _word_size_t size);
     virtual int recvdata(unsigned char * data, _word_size_t size);
 
-    virtual int waitforsent(_u32 timeout = -1, _word_size_t * returned_size = NULL);
-    virtual int waitforrecv(_u32 timeout = -1, _word_size_t * returned_size = NULL);
+    virtual int waitforsent(_u32 timeout = -1, _word_size_t * returned_size = nullptr);
+    virtual int waitforrecv(_u32 timeout = -1, _word_size_t * returned_size = nullptr);
 
     virtual size_t rxqueue_count();
 

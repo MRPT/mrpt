@@ -412,11 +412,11 @@ void mySplit ( const string &str)
   // cstr now contains a c-string copy of str
 
   p=strtok (cstr," ");
-  while (p!=NULL)
+  while (p!=nullptr)
   {
     string part( p );
 	rawlogs.push_back( part );
-    p=strtok(NULL," ");
+    p=strtok(nullptr," ");
   }
 
   delete[] cstr;    

@@ -94,9 +94,9 @@ namespace mrpt
 			}
 
 			/** See CPointsMap::loadFromRangeScan() */
-			virtual void  loadFromRangeScan(const mrpt::obs::CObservation2DRangeScan &rangeScan,const mrpt::poses::CPose3D *robotPose = NULL ) MRPT_OVERRIDE;
+			virtual void  loadFromRangeScan(const mrpt::obs::CObservation2DRangeScan &rangeScan,const mrpt::poses::CPose3D *robotPose = nullptr ) MRPT_OVERRIDE;
 			/** See CPointsMap::loadFromRangeScan() */
-			virtual void  loadFromRangeScan(const mrpt::obs::CObservation3DRangeScan &rangeScan,const mrpt::poses::CPose3D *robotPose = NULL ) MRPT_OVERRIDE;
+			virtual void  loadFromRangeScan(const mrpt::obs::CObservation3DRangeScan &rangeScan,const mrpt::poses::CPose3D *robotPose = nullptr ) MRPT_OVERRIDE;
 
 		protected:
 			/** Auxiliary method called from within \a addFrom() automatically, to finish the copying of class-specific data  */
@@ -276,9 +276,9 @@ namespace mrpt
 			/** @name Redefinition of PLY Import virtual methods from CPointsMap
 				@{ */
 			/** In a base class, will be called after PLY_import_set_vertex_count() once for each loaded point.
-			  *  \param pt_color Will be NULL if the loaded file does not provide color info.
+			  *  \param pt_color Will be nullptr if the loaded file does not provide color info.
 			  */
-			virtual void PLY_import_set_vertex(const size_t idx, const mrpt::math::TPoint3Df &pt, const mrpt::utils::TColorf *pt_color = NULL) MRPT_OVERRIDE;
+			virtual void PLY_import_set_vertex(const size_t idx, const mrpt::math::TPoint3Df &pt, const mrpt::utils::TColorf *pt_color = nullptr) MRPT_OVERRIDE;
 
 			/** In a base class, reserve memory to prepare subsequent calls to PLY_import_set_vertex */
 			virtual void PLY_import_set_vertex_count(const size_t N) MRPT_OVERRIDE;

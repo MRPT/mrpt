@@ -25,8 +25,8 @@ template<class GRAPH_t>
 void CFixedIntervalsNRD<GRAPH_t>::initCFixedIntervalsNRD() {
 	using namespace mrpt::utils;
 
-	m_win = NULL;
-	m_graph = NULL;
+	m_win = nullptr;
+	m_graph = nullptr;
 
 	m_prev_registered_node = INVALID_NODEID;
 

@@ -48,8 +48,8 @@ private:
    ----------------------------------------------------- */
 CGPSInterface::CGPSInterface() :
 	mrpt::utils::COutputLogger("CGPSInterface"),
-	m_data_stream(NULL),    // Typically a CSerialPort created by this class, but may be set externally.
-	m_data_stream_cs(NULL),
+	m_data_stream(nullptr),    // Typically a CSerialPort created by this class, but may be set externally.
+	m_data_stream_cs(nullptr),
 	m_data_stream_is_external(false),
 	m_customInit         (),
 	m_rx_buffer          (0x10000),
@@ -143,7 +143,7 @@ CGPSInterface::~CGPSInterface()
 	if (!m_data_stream_is_external)
 	{
 		delete m_data_stream;
-		m_data_stream = NULL;
+		m_data_stream = nullptr;
 	}
 }
 
@@ -157,7 +157,7 @@ void CGPSInterface::bindStream(mrpt::utils::CStream * external_stream, mrpt::syn
 {
 	if (!m_data_stream_is_external) {
 		delete m_data_stream;
-		m_data_stream = NULL;
+		m_data_stream = nullptr;
 	}
 
 	m_data_stream_is_external = true;
@@ -283,7 +283,7 @@ void  CGPSInterface::doProcess()
 		m_state = ssError;
 		THROW_EXCEPTION("Could not open the input stream");
 	}
-	ASSERT_(m_data_stream!=NULL)
+	ASSERT_(m_data_stream!=nullptr)
 	CSerialPort *stream_serial = dynamic_cast<CSerialPort*>(m_data_stream);
 	CClientTCPSocket *stream_tcpip  = dynamic_cast<CClientTCPSocket*>(m_data_stream);
 
@@ -408,7 +408,7 @@ void  CGPSInterface::parseBuffer()
 	if (m_parser == CGPSInterface::NONE) return; // Dont try to parse data
 
 	// Only one parser selected?
-	ptr_parser_t parser_ptr = NULL;
+	ptr_parser_t parser_ptr = nullptr;
 	switch (m_parser)
 	{
 	case CGPSInterface::NMEA:           parser_ptr=&CGPSInterface::implement_parser_NMEA;           break;

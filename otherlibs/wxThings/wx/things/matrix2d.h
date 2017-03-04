@@ -143,7 +143,7 @@ public:
                       const wxString& rowSep = wxT("\n")) const;
 
     // Load a file from disk
-    bool LoadFile( const wxString &filename, const wxArrayInt *cols = NULL );
+    bool LoadFile( const wxString &filename, const wxArrayInt *cols = nullptr );
     wxArrayString m_file_comments;
 
     friend wxMatrix2D operator+(wxMatrix2D &a, wxMatrix2D &b) { return a.Add(b); }

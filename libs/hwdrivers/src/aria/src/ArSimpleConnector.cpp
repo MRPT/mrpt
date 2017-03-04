@@ -60,9 +60,9 @@ AREXPORT ArSimpleConnector::~ArSimpleConnector(void)
 
 void ArSimpleConnector::reset(void)
 {
-  myRobot = NULL;
-  myRemoteHost = NULL;
-  myRobotPort = NULL;
+  myRobot = nullptr;
+  myRemoteHost = nullptr;
+  myRobotPort = nullptr;
   myRemoteRobotTcpPort = 8101;
   myRobotBaud = 9600;
   myRemoteIsSim = false;
@@ -227,7 +227,7 @@ AREXPORT bool ArSimpleConnector::parseLaserArgs(ArArgumentParser *parser,
 {
   char buf[512];
   std::list<LaserData *>::iterator it;
-  LaserData *laserData = NULL;
+  LaserData *laserData = nullptr;
     
   for (it = myLasers.begin(); it != myLasers.end(); it++)
   {
@@ -237,7 +237,7 @@ AREXPORT bool ArSimpleConnector::parseLaserArgs(ArArgumentParser *parser,
       break;
     }
   }
-  if (laserData == NULL)
+  if (laserData == nullptr)
   {
     ArLog::log(ArLog::Terse, "Do not have laser %d", laserNumber);
     return false;
@@ -254,14 +254,14 @@ AREXPORT bool ArSimpleConnector::parseLaserArgs(ArArgumentParser *parser,
     laserData->myConnect = true;
   }
 
-  if (!parser->checkParameterArgumentStringVar(NULL, &laserData->myPort, 
+  if (!parser->checkParameterArgumentStringVar(nullptr, &laserData->myPort, 
 					       "-laserPort%s", buf) ||
-      !parser->checkParameterArgumentStringVar(NULL, &laserData->myPort,
+      !parser->checkParameterArgumentStringVar(nullptr, &laserData->myPort,
 					    "-lp%s", buf) ||
-      !parser->checkParameterArgumentIntegerVar(NULL,
+      !parser->checkParameterArgumentIntegerVar(nullptr,
 	      &laserData->myRemoteTcpPort, 
 	      "-remoteLaserTcpPort%s", buf) ||
-      !parser->checkParameterArgumentIntegerVar(NULL,
+      !parser->checkParameterArgumentIntegerVar(nullptr,
 	      &laserData->myRemoteTcpPort,
 	      "-rltp%s", buf) ||
       !parser->checkParameterArgumentBoolVar(&laserData->myFlippedReallySet,
@@ -278,26 +278,26 @@ AREXPORT bool ArSimpleConnector::parseLaserArgs(ArArgumentParser *parser,
 	      &laserData->myPowerControlledReallySet,
 	      &laserData->myPowerControlled,
 					     "-lpc%s", buf) ||
-      !parser->checkParameterArgumentStringVar(NULL, &laserData->myDegrees,
+      !parser->checkParameterArgumentStringVar(nullptr, &laserData->myDegrees,
 					       "-laserDegrees%s", buf) ||
-      !parser->checkParameterArgumentStringVar(NULL, &laserData->myDegrees,
+      !parser->checkParameterArgumentStringVar(nullptr, &laserData->myDegrees,
 					       "-ld%s", buf) ||
-      !parser->checkParameterArgumentStringVar(NULL, &laserData->myIncrement,
+      !parser->checkParameterArgumentStringVar(nullptr, &laserData->myIncrement,
 					       "-laserIncrement%s", buf) ||
-      !parser->checkParameterArgumentStringVar(NULL, &laserData->myIncrement,
+      !parser->checkParameterArgumentStringVar(nullptr, &laserData->myIncrement,
 					       "-li%s", buf) ||
-      !parser->checkParameterArgumentStringVar(NULL, &laserData->myUnits,
+      !parser->checkParameterArgumentStringVar(nullptr, &laserData->myUnits,
 					       "-laserUnits%s", buf) ||
-      !parser->checkParameterArgumentStringVar(NULL, &laserData->myUnits,
+      !parser->checkParameterArgumentStringVar(nullptr, &laserData->myUnits,
 					       "-lu%s", buf) ||
-      !parser->checkParameterArgumentStringVar(NULL, &laserData->myBits,
+      !parser->checkParameterArgumentStringVar(nullptr, &laserData->myBits,
 					       "-laserReflectorBits%s", buf) ||
-      !parser->checkParameterArgumentStringVar(NULL, &laserData->myBits,
+      !parser->checkParameterArgumentStringVar(nullptr, &laserData->myBits,
 					       "-lrb%s", buf))
   {
     return false;
   }
-  if (laserData->myDegrees == NULL || laserData->myDegrees[0] == '\0')
+  if (laserData->myDegrees == nullptr || laserData->myDegrees[0] == '\0')
     laserData->mySickDegrees = ArSick::DEGREES180;
   else if (strcasecmp(laserData->myDegrees, "180") == 0)
     laserData->mySickDegrees = ArSick::DEGREES180;
@@ -311,7 +311,7 @@ AREXPORT bool ArSimpleConnector::parseLaserArgs(ArArgumentParser *parser,
     return false;
   }
   
-  if (laserData->myIncrement == NULL || laserData->myIncrement[0] == '\0')
+  if (laserData->myIncrement == nullptr || laserData->myIncrement[0] == '\0')
     laserData->mySickIncrement = ArSick::INCREMENT_ONE;
   else if (strcasecmp(laserData->myIncrement, "one") == 0)
     laserData->mySickIncrement = ArSick::INCREMENT_ONE;
@@ -325,7 +325,7 @@ AREXPORT bool ArSimpleConnector::parseLaserArgs(ArArgumentParser *parser,
     return false;
   }
 
-  if (laserData->myUnits == NULL || laserData->myUnits[0] == '\0')
+  if (laserData->myUnits == nullptr || laserData->myUnits[0] == '\0')
     laserData->mySickUnits = ArSick::UNITS_1MM;
   else if (strcasecmp(laserData->myUnits, "1mm") == 0)
     laserData->mySickUnits = ArSick::UNITS_1MM;
@@ -341,7 +341,7 @@ AREXPORT bool ArSimpleConnector::parseLaserArgs(ArArgumentParser *parser,
     return false;
   }
 
-  if (laserData->myBits == NULL || laserData->myBits[0] == '\0')
+  if (laserData->myBits == nullptr || laserData->myBits[0] == '\0')
     laserData->mySickBits = ArSick::BITS_1REFLECTOR;
   else if (strcasecmp(laserData->myBits, "1ref") == 0)
     laserData->mySickBits = ArSick::BITS_1REFLECTOR;
@@ -442,7 +442,7 @@ AREXPORT bool ArSimpleConnector::setupRobot(ArRobot *robot)
   // robot
 
   // see if we're doing remote host or not
-  if (myRemoteHost != NULL)
+  if (myRemoteHost != nullptr)
     myRobotTcpConn.setPort(myRemoteHost, myRemoteRobotTcpPort);
   else
     myRobotTcpConn.setPort("localhost", myRemoteRobotTcpPort);
@@ -452,7 +452,7 @@ AREXPORT bool ArSimpleConnector::setupRobot(ArRobot *robot)
   {
     robot->setDeviceConnection(&myRobotTcpConn);
     // we could get to the sim, so set the robots device connection to the sim
-    if (myRemoteHost != NULL)
+    if (myRemoteHost != nullptr)
     {
       ArLog::log(ArLog::Normal, "Connected to remote host %s through tcp.\n", 
 		 myRemoteHost);
@@ -470,7 +470,7 @@ AREXPORT bool ArSimpleConnector::setupRobot(ArRobot *robot)
   else
   {
     // if we were trying for a remote host and it failed, just exit
-    if (myRemoteHost != NULL)
+    if (myRemoteHost != nullptr)
     {
       ArLog::log(ArLog::Terse, "Could not connect robot to remote host %s, port %d.\n", myRemoteHost, myRemoteRobotTcpPort);
       return false;
@@ -536,7 +536,7 @@ AREXPORT bool ArSimpleConnector::setupLaserArbitrary(ArSick *sick,
 						    int laserNumber)
 {
   std::list<LaserData *>::iterator it;
-  LaserData *laserData = NULL;
+  LaserData *laserData = nullptr;
   const ArRobotParams *params;
     
   for (it = myLasers.begin(); it != myLasers.end(); it++)
@@ -547,13 +547,13 @@ AREXPORT bool ArSimpleConnector::setupLaserArbitrary(ArSick *sick,
       break;
     }
   }
-  if (laserData == NULL)
+  if (laserData == nullptr)
   {
     ArLog::log(ArLog::Terse, "ArSimpleConnector::setupLaser: Do not have laser #%d (parseArgs not called or beyond maximum number of lasers allowed?)", laserNumber);
     return false;
   }
   
-  if (laserData->myNumber == 1 && myRobot != NULL && 
+  if (laserData->myNumber == 1 && myRobot != nullptr && 
       myRobot->isConnected())
   {
     params = myRobot->getRobotParams();
@@ -561,7 +561,7 @@ AREXPORT bool ArSimpleConnector::setupLaserArbitrary(ArSick *sick,
       laserData->myFlipped = params->getLaserFlipped();
     if (!laserData->myPowerControlledReallySet)
       laserData->myPowerControlled = params->getLaserPowerControlled();
-    if (laserData->myPort == NULL || laserData->myPort[0] == '\0')
+    if (laserData->myPort == nullptr || laserData->myPort[0] == '\0')
     {
       if (strcmp(params->getLaserPort(), "COM1") == 0)
 	laserData->myPort = ArUtil::COM1;
@@ -573,7 +573,7 @@ AREXPORT bool ArSimpleConnector::setupLaserArbitrary(ArSick *sick,
 	laserData->myPort = ArUtil::COM4;
       else
       {
-	if (params->getLaserPort() != NULL)
+	if (params->getLaserPort() != nullptr)
 	  laserData->myPort = params->getLaserPort();
 	else
 	  laserData->myPort = ArUtil::COM3;
@@ -586,14 +586,14 @@ AREXPORT bool ArSimpleConnector::setupLaserArbitrary(ArSick *sick,
     
   }
 
-  if (laserData->myPort == NULL || strlen(laserData->myPort) == 0)
+  if (laserData->myPort == nullptr || strlen(laserData->myPort) == 0)
   {
     ArLog::log(ArLog::Normal, "There is no port defined for laser %d", 
 	       laserData->myNumber);
     return false;
   }
   sick->setRangeInformation(laserData->mySickBits, laserData->mySickUnits);
-  if (!myUsingSim && myRemoteHost != NULL && strlen(myRemoteHost) > 0)
+  if (!myUsingSim && myRemoteHost != nullptr && strlen(myRemoteHost) > 0)
     sick->configure(myUsingSim, laserData->myPowerControlled,
 		    laserData->myFlipped,
 		    ArSick::BAUD9600, laserData->mySickDegrees, 
@@ -612,7 +612,7 @@ AREXPORT bool ArSimpleConnector::setupLaserArbitrary(ArSick *sick,
   // set the port, if we need to
   if (!myUsingSim)
   { 
-    if (myRemoteHost != NULL && strlen(myRemoteHost) > 0)
+    if (myRemoteHost != nullptr && strlen(myRemoteHost) > 0)
     { 
       laserData->myTcpConn.setPort(myRemoteHost, 
 				   laserData->myRemoteTcpPort);
@@ -659,7 +659,7 @@ AREXPORT bool ArSimpleConnector::connectLaserArbitrary(ArSick *sick,
 						      int laserNumber)
 {
   std::list<LaserData *>::iterator it;
-  LaserData *laserData = NULL;
+  LaserData *laserData = nullptr;
   
   for (it = myLasers.begin(); it != myLasers.end(); it++)
   {
@@ -669,7 +669,7 @@ AREXPORT bool ArSimpleConnector::connectLaserArbitrary(ArSick *sick,
       break;
     }
   }
-  if (laserData == NULL)
+  if (laserData == nullptr)
   {
     ArLog::log(ArLog::Terse, "Do not have laser %d", laserNumber);
     return false;

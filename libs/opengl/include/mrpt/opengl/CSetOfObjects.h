@@ -82,11 +82,11 @@ namespace mrpt
 			  */
 			void  initializeAllTextures();
 
-			/** Returns the first object with a given name, or a NULL pointer if not found.
+			/** Returns the first object with a given name, or a nullptr pointer if not found.
 			  */
 			CRenderizablePtr getByName( const std::string &str );
 
-			 /** Returns the i'th object of a given class (or of a descendant class), or NULL (an empty smart pointer) if not found.
+			 /** Returns the i'th object of a given class (or of a descendant class), or nullptr (an empty smart pointer) if not found.
 			   *  Example:
 			   * \code
 					CSpherePtr obs = myscene.getByClass<CSphere>();

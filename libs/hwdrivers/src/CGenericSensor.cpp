@@ -35,7 +35,7 @@ CGenericSensor::CGenericSensor() :
 	m_external_images_jpeg_quality (95)
 {
 	const char * sVerbose = getenv("MRPT_HWDRIVERS_VERBOSE");
-	m_verbose = (sVerbose!=NULL) && atoi(sVerbose)!=0;
+	m_verbose = (sVerbose!=nullptr) && atoi(sVerbose)!=0;
 }
 
 /*-------------------------------------------------------------
@@ -104,7 +104,7 @@ CGenericSensor* CGenericSensor::createSensor(const std::string &className)
 {
 	registered_sensor_classes_t & regs = get_registered_sensor_classes();
 	const registered_sensor_classes_t::iterator it=regs.find(className);
-	return it==regs.end() ? NULL : it->second->ptrCreateObject();
+	return it==regs.end() ? nullptr : it->second->ptrCreateObject();
 }
 
 // Singleton

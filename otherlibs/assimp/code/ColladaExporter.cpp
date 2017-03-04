@@ -67,7 +67,7 @@ void ExportSceneCollada(const char* pFile,IOSystem* pIOSystem, const aiScene* pS
 	// Moreover, the path given by some applications is not even consistent with the OS specific type of separator.
 	const char* end_path = std::max(strrchr(pFile, '\\'), strrchr(pFile, '/'));
 
-	if(end_path != NULL) {
+	if(end_path != nullptr) {
 		path = std::string(pFile, end_path + 1 - pFile);
 		file = file.substr(end_path + 1 - pFile, file.npos);
 
@@ -82,7 +82,7 @@ void ExportSceneCollada(const char* pFile,IOSystem* pIOSystem, const aiScene* pS
 
 	// we're still here - export successfully completed. Write result to the given IOSYstem
 	boost::scoped_ptr<IOStream> outfile (pIOSystem->Open(pFile,"wt"));
-	if(outfile == NULL) {
+	if(outfile == nullptr) {
 		throw DeadlyExportError("could not open output .dae file: " + std::string(pFile));
 	}
 
@@ -167,7 +167,7 @@ void ColladaExporter::WriteHeader()
 
 	static const unsigned int date_nb_chars = 20;
 	char date_str[date_nb_chars];
-	std::time_t date = std::time(NULL);
+	std::time_t date = std::time(nullptr);
 	std::strftime(date_str, date_nb_chars, "%Y-%m-%dT%H:%M:%S", std::localtime(&date));
 
 	std::string scene_name = mScene->mRootNode->mName.C_Str();
@@ -259,7 +259,7 @@ void ColladaExporter::WriteTextures() {
 			std::string name = mFile + "_texture_" + (i < 1000 ? "0" : "") + (i < 100 ? "0" : "") + (i < 10 ? "0" : "") + str + "." + ((const char*) texture->achFormatHint);
 
 			boost::scoped_ptr<IOStream> outfile(mIOSystem->Open(mPath + name, "wb"));
-			if(outfile == NULL) {
+			if(outfile == nullptr) {
 				throw DeadlyExportError("could not open output texture file: " + mPath + name);
 			}
 
@@ -284,7 +284,7 @@ void ColladaExporter::ReadMaterialSurface( Surface& poSurface, const aiMaterial*
   {
     aiString texfile;
     unsigned int uvChannel = 0;
-    pSrcMat->GetTexture( pTexture, 0, &texfile, NULL, &uvChannel);
+    pSrcMat->GetTexture( pTexture, 0, &texfile, nullptr, &uvChannel);
 
     std::string index_str(texfile.C_Str());
 
@@ -456,7 +456,7 @@ void ColladaExporter::WriteMaterials()
     if( !materials[a].reflective.texture.empty() ) numTextures++;
 	ReadMaterialSurface( materials[a].transparent, mat, aiTextureType_OPACITY, AI_MATKEY_COLOR_TRANSPARENT);
     if( !materials[a].transparent.texture.empty() ) numTextures++;
-    ReadMaterialSurface( materials[a].normal, mat, aiTextureType_NORMALS, NULL, 0, 0);
+    ReadMaterialSurface( materials[a].normal, mat, aiTextureType_NORMALS, nullptr, 0, 0);
     if( !materials[a].normal.texture.empty() ) numTextures++;
 
 	materials[a].shininess.exist = mat->Get( AI_MATKEY_SHININESS, materials[a].shininess.value) == aiReturn_SUCCESS;

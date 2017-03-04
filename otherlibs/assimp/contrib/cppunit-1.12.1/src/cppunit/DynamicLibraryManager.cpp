@@ -7,7 +7,7 @@ CPPUNIT_NS_BEGIN
 
 
 DynamicLibraryManager::DynamicLibraryManager( const std::string &libraryFileName )
-    : m_libraryHandle( NULL )
+    : m_libraryHandle( nullptr )
     , m_libraryName( libraryFileName )
 {
   loadLibrary( libraryFileName );
@@ -26,7 +26,7 @@ DynamicLibraryManager::findSymbol( const std::string &symbol )
   try
   {
     Symbol symbolPointer = doFindSymbol( symbol );
-    if ( symbolPointer != NULL )
+    if ( symbolPointer != nullptr )
       return symbolPointer;
   }
   catch ( ... )
@@ -36,7 +36,7 @@ DynamicLibraryManager::findSymbol( const std::string &symbol )
   throw DynamicLibraryManagerException( m_libraryName, 
                                         symbol,
                                         DynamicLibraryManagerException::symbolNotFound );
-  return NULL;    // keep compiler happy
+  return nullptr;    // keep compiler happy
 }
 
 
@@ -47,7 +47,7 @@ DynamicLibraryManager::loadLibrary( const std::string &libraryName )
   {
     releaseLibrary();
     m_libraryHandle = doLoadLibrary( libraryName );
-    if ( m_libraryHandle != NULL )
+    if ( m_libraryHandle != nullptr )
       return;
   }
   catch (...)
@@ -63,10 +63,10 @@ DynamicLibraryManager::loadLibrary( const std::string &libraryName )
 void 
 DynamicLibraryManager::releaseLibrary()
 {
-  if ( m_libraryHandle != NULL )
+  if ( m_libraryHandle != nullptr )
   {
     doReleaseLibrary();
-    m_libraryHandle = NULL;
+    m_libraryHandle = nullptr;
   }
 }
 

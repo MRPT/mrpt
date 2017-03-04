@@ -77,7 +77,7 @@ namespace mrpt
 					// Copy all but the m_parent pointer!
 					maxrange = o.maxrange;
 					pruning  = o.pruning;
-					const bool o_has_parent = o.m_parent.get()!=NULL;
+					const bool o_has_parent = o.m_parent.get()!=nullptr;
 					setOccupancyThres( o_has_parent ? o.getOccupancyThres() : o.occupancyThres );
 					setProbHit( o_has_parent ? o.getProbHit() : o.probHit );
 					setProbMiss( o_has_parent ? o.getProbMiss() : o.probMiss );

@@ -75,9 +75,9 @@ namespace mrpt
 				float 	&y,
 				float 	&z,
 				std::vector<bool>	&buttons,
-				int *raw_x_pos=NULL,
-				int	*raw_y_pos=NULL,
-				int *raw_z_pos=NULL );
+				int *raw_x_pos=nullptr,
+				int	*raw_y_pos=nullptr,
+				int *raw_z_pos=nullptr );
 
 			/** Set the axis limit values, for computing a [-1,1] position index easily (Only required to calibrate analog joystick).
 			 *   It seems that these values must been calibrated for each joystick model.

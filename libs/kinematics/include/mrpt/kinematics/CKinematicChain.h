@@ -131,13 +131,13 @@ namespace mrpt
 			  */
 			void getAs3DObject(
 				mrpt::opengl::CSetOfObjectsPtr &inout_gl_obj,
-				mrpt::aligned_containers<mrpt::poses::CPose3D>::vector_t *out_all_poses = NULL
+				mrpt::aligned_containers<mrpt::poses::CPose3D>::vector_t *out_all_poses = nullptr
 				) const;
 
 			/** Read getAs3DObject() for a description.
 			  * \param[out] out_all_poses Optional output vector, will contain the poses in the format of recomputeAllPoses()
 			  */
-			void update3DObject( mrpt::aligned_containers<mrpt::poses::CPose3D>::vector_t *out_all_poses = NULL ) const;
+			void update3DObject( mrpt::aligned_containers<mrpt::poses::CPose3D>::vector_t *out_all_poses = nullptr ) const;
 
 			/** Go thru all the links of the chain and compute the global pose of each link. The "ground" link pose "pose0" defaults to the origin of coordinates,
 			  * but anything else can be passed as the optional argument.

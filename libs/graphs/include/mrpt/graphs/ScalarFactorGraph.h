@@ -88,7 +88,7 @@ namespace graphs
 
 		void updateEstimation(
 			Eigen::VectorXd & solved_x_inc,                       //!< Output increment of the current estimate. Caller must add this vector to current state vector to obtain the optimal estimation.
-			Eigen::VectorXd * solved_variances = NULL //!< If !=NULL, the variances of each estimate will be stored here.
+			Eigen::VectorXd * solved_variances = nullptr //!< If !=nullptr, the variances of each estimate will be stored here.
 		);
 
 		bool isProfilerEnabled() const { return m_enable_profiler; }

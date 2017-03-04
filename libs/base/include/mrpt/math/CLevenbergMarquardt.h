@@ -93,7 +93,7 @@ namespace math
 			const NUMTYPE		e1 = 1e-8,
 			const NUMTYPE		e2 = 1e-8,
 			bool                returnPath =true,
-			TFunctorIncrement	x_increment_adder = NULL
+            TFunctorIncrement	x_increment_adder = nullptr
 			)
 		{
 			using namespace mrpt;

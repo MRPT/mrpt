@@ -436,7 +436,7 @@ void navlog_viewer_GUI_designDialog::loadLogfile(const std::string &filName)
 
 void navlog_viewer_GUI_designDialog::OnbtnHelpClick(wxCommandEvent& event)
 {
-	CAboutBox dlg(NULL); // NULL so it gets centered on the screen
+        CAboutBox dlg(nullptr); // nullptr so it gets centered on the screen
 	dlg.ShowModal();
 }
 

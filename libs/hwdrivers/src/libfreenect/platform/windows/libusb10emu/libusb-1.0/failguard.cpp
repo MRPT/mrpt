@@ -29,7 +29,7 @@ const bool Check()
       {
         failguard::hReaction.Reset();
         failguard::boTriggered = true;
-        new QuickThread(ThreadFailGuardProc, NULL, true);
+        new QuickThread(ThreadFailGuardProc, nullptr, true);
       }
       mutexFailGuard.Leave();
     }

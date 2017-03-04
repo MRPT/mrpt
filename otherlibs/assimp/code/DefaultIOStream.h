@@ -108,7 +108,7 @@ private:
 
 // ----------------------------------------------------------------------------------
 inline DefaultIOStream::DefaultIOStream () : 
-	mFile		(NULL), 
+	mFile		(nullptr), 
 	mFilename	(""),
 	cachedSize	(SIZE_MAX)
 {

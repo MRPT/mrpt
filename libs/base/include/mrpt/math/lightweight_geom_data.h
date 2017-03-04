@@ -1093,7 +1093,7 @@ namespace math	{
 			TLine2D line;
 			TPolygon2D *polygon;
 
-			tobject2d_data_t() : polygon(NULL) { }
+            tobject2d_data_t() : polygon(nullptr) { }
 		}	data;
 		/**
 		  * Destroys the object, releasing the pointer to the content (if any).
@@ -1320,7 +1320,7 @@ namespace math	{
 			TPolygon3D *polygon;
 			TPlane plane;
 
-			tobject3d_data_t() : polygon(NULL) { }
+            tobject3d_data_t() : polygon(nullptr) { }
 		}	data;
 		/**
 		  * Destroys the object and releases the pointer, if any.

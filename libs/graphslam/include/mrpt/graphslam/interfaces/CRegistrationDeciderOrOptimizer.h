@@ -44,7 +44,7 @@ class CRegistrationDeciderOrOptimizer : public mrpt::utils::COutputLogger {
 	public:
 
 		CRegistrationDeciderOrOptimizer():
-			m_win_manager(NULL) {
+			m_win_manager(nullptr) {
 		}
 		/**\brief Generic method for fetching the incremental action-observations (or
 		 * observation-only) measurements

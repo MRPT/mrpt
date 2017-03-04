@@ -66,7 +66,7 @@ void*	ConnectWlanServerW()
 	DWORD dwResult = 0;			// Result of the API call
 	HANDLE hClient;
 	// open connection to server
-    dwResult = WlanOpenHandle(dwMaxClient, NULL, &dwCurVersion, &hClient);
+    dwResult = WlanOpenHandle(dwMaxClient, nullptr, &dwCurVersion, &hClient);
     if (dwResult != ERROR_SUCCESS) {
 		// if an error ocurred
 		std::stringstream excmsg;
@@ -94,15 +94,15 @@ std::vector<PWLAN_INTERFACE_INFO>	ListInterfacesW(HANDLE hClient)
 	// Get a list of the available interfaces
 
 	std::vector<PWLAN_INTERFACE_INFO> outputVector;			// start the output vector
-	PWLAN_INTERFACE_INFO_LIST pIfList = NULL;				// list of WLAN interfaces
-    PWLAN_INTERFACE_INFO pIfInfo = NULL;					// information element for one interface
+	PWLAN_INTERFACE_INFO_LIST pIfList = nullptr;				// list of WLAN interfaces
+    PWLAN_INTERFACE_INFO pIfInfo = nullptr;					// information element for one interface
 	DWORD dwResult = 0;
 
 	int i;
 
 
 	// Call the interface enumeration function of the API
-	dwResult = WlanEnumInterfaces(hClient, NULL, &pIfList);
+	dwResult = WlanEnumInterfaces(hClient, nullptr, &pIfList);
 
 	// check result
     if (dwResult != ERROR_SUCCESS) {
@@ -185,7 +185,7 @@ PWLAN_INTERFACE_INFO GetInterfaceW(std::string guid, HANDLE hClient)
 
 	std::vector<PWLAN_INTERFACE_INFO> ifaceList;						// interface list
 	std::vector<PWLAN_INTERFACE_INFO>::iterator ifaceIter;				// iterator
-	PWLAN_INTERFACE_INFO output = NULL;									// interface info element
+	PWLAN_INTERFACE_INFO output = nullptr;									// interface info element
 
 	// get a list of all the interfaces
 	ifaceList = ListInterfacesW(hClient);
@@ -217,8 +217,8 @@ std::vector<PWLAN_AVAILABLE_NETWORK>	ListNetworksW(PWLAN_INTERFACE_INFO iface, H
 	// Start variables
 
 	DWORD dwResult = 0;
-    PWLAN_AVAILABLE_NETWORK_LIST pBssList = NULL;	// list of available networks
-    PWLAN_AVAILABLE_NETWORK pBssEntry = NULL;		// information element for one interface
+    PWLAN_AVAILABLE_NETWORK_LIST pBssList = nullptr;	// list of available networks
+    PWLAN_AVAILABLE_NETWORK pBssEntry = nullptr;		// information element for one interface
 
 
 	GUID ifaceGuid = iface->InterfaceGuid;			// Get GUID of the interface
@@ -229,10 +229,10 @@ std::vector<PWLAN_AVAILABLE_NETWORK>	ListNetworksW(PWLAN_INTERFACE_INFO iface, H
 
 	// Force a scan (to obtain new data)
 	WLAN_RAW_DATA IeData;
-	WlanScan((HANDLE)hClient, &ifaceGuid, NULL, &IeData, NULL);
+	WlanScan((HANDLE)hClient, &ifaceGuid, nullptr, &IeData, nullptr);
 
 	// Call the Windows API and get a list of the networks available through the interface
-	dwResult = WlanGetAvailableNetworkList((HANDLE)hClient, &ifaceGuid, 0, NULL, &pBssList);
+	dwResult = WlanGetAvailableNetworkList((HANDLE)hClient, &ifaceGuid, 0, nullptr, &pBssList);
 
 	// Check the result of the call
 	if (dwResult != ERROR_SUCCESS) {
@@ -317,7 +317,7 @@ std::vector<std::string>	CWirelessPower::ListInterfaces()
     netname = ::strtok(ifaceread,"\n");
 	while(netname){
         output.push_back(std::string(netname));
-        netname = ::strtok(NULL,"\n");
+        netname = ::strtok(nullptr,"\n");
 	}
 #endif
 
@@ -373,7 +373,7 @@ std::vector<std::string>	CWirelessPower::ListNetworks()
 	netname = ::strtok(listread,"\n");
 	while(netname){
         output.push_back(std::string(netname));
-        netname = ::strtok(NULL,"\n");
+        netname = ::strtok(nullptr,"\n");
 	}
 
 #endif
@@ -449,8 +449,8 @@ int		CWirelessPower::GetPower()
     char *fraction;
 
     ::strtok(powerLine,"=");
-    ::strtok(NULL,"=");
-    fraction = ::strtok(NULL,"=");
+    ::strtok(nullptr,"=");
+    fraction = ::strtok(nullptr,"=");
     strcpy(level,::strtok(fraction,"/"));
 
     free(powerReadL);

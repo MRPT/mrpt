@@ -221,7 +221,7 @@ protected:
 		CMatrixFixedNumeric<double,3,6>  df_dpose;
 
 		TPoint3D pp;
-		p1.composePoint(x,y,z, pp.x,pp.y,pp.z, &df_dpoint, &df_dpose, NULL,  use_aprox );
+		p1.composePoint(x,y,z, pp.x,pp.y,pp.z, &df_dpoint, &df_dpose, nullptr,  use_aprox );
 
 		// Numerical approx:
 		CMatrixFixedNumeric<double,3,3> num_df_dpoint(UNINITIALIZED_MATRIX);
@@ -356,7 +356,7 @@ protected:
 		CMatrixFixedNumeric<double,3,6>  df_dse3;
 
 		TPoint3D pp;
-		p.composePoint(x_l.x,x_l.y,x_l.z, pp.x,pp.y,pp.z, NULL, NULL, &df_dse3);
+		p.composePoint(x_l.x,x_l.y,x_l.z, pp.x,pp.y,pp.z, nullptr, nullptr, &df_dse3);
 
 		// Numerical approx:
 		CMatrixFixedNumeric<double,3,6> num_df_dse3(UNINITIALIZED_MATRIX);
@@ -385,7 +385,7 @@ protected:
 		CMatrixFixedNumeric<double,3,6>  df_dse3;
 
 		TPoint3D pp;
-		p.inverseComposePoint(x_g.x,x_g.y,x_g.z, pp.x,pp.y,pp.z, NULL, NULL, &df_dse3 );
+		p.inverseComposePoint(x_g.x,x_g.y,x_g.z, pp.x,pp.y,pp.z, nullptr, nullptr, &df_dse3 );
 
 		// Numerical approx:
 		CMatrixFixedNumeric<double,3,6> num_df_dse3(UNINITIALIZED_MATRIX);

@@ -46,7 +46,7 @@ char hexCharToInt(char n)
 CCANBusReader::CCANBusReader() :
 	mrpt::utils::COutputLogger("CCANBusReader"),
 	m_com_port(),
-	m_mySerialPort( NULL ),
+	m_mySerialPort( nullptr ),
 	m_com_baudRate(57600),
 	m_nTries_connect(1),
 	m_nTries_current(0),
@@ -75,7 +75,7 @@ CCANBusReader::~CCANBusReader()
 	if (m_mySerialPort)
 	{
 		delete m_mySerialPort;
-		m_mySerialPort = NULL;
+		m_mySerialPort = nullptr;
 	}
 }
 
@@ -206,7 +206,7 @@ bool CCANBusReader::tryToOpenComms(std::string *err_msg)
 		// We assure now we have a stream... try to open it, if it's not done yet.
 		bool just_open = false;
 //		CSerialPort* COM = dynamic_cast<CSerialPort*>(m_stream);
-		if (m_mySerialPort!=NULL)
+		if (m_mySerialPort!=nullptr)
 		{
 			if (!m_mySerialPort->isOpen())
 			{
@@ -360,7 +360,7 @@ bool CCANBusReader::waitContinuousSampleFrame(
     vector<char> &out_raw_frame)
 {
 //	CSerialPort* COM = dynamic_cast<CSerialPort*>(m_stream);
-//	ASSERTMSG_(COM!=NULL,"No I/O channel bound to this object");
+//	ASSERTMSG_(COM!=nullptr,"No I/O channel bound to this object");
 
 	size_t 	nRead,nBytesToRead;
 	size_t	nFrameBytes = 0;
@@ -476,7 +476,7 @@ bool CCANBusReader::setupSerialComms()
     ASSERT_(m_com_baudRate==9600 || m_com_baudRate==38400 || m_com_baudRate == 57600 || m_com_baudRate==500000);
 
 //	CSerialPort* COM = dynamic_cast<CSerialPort*>(m_stream);
-	if (m_mySerialPort==NULL) return true;
+	if (m_mySerialPort==nullptr) return true;
 
     int detected_rate = 0;
 	for (size_t reps=0;!detected_rate && reps<m_nTries_connect;reps++)

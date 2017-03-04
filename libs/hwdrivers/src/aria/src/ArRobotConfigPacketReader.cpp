@@ -143,7 +143,7 @@ AREXPORT bool ArRobotConfigPacketReader::packetHandler(ArRobotPacket *packet)
   myTicksMM = packet->bufToUByte2();
   myShutdownVoltage = packet->bufToUByte2();
 
-  if (myPacketArrivedCB != NULL)
+  if (myPacketArrivedCB != nullptr)
   {
     myPacketArrivedCB->invoke();
   }

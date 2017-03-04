@@ -147,7 +147,7 @@ namespace maps
 			mrpt::poses::CPointPDFSOG	&outPDF,
 			const CBeaconMap *myBeaconMap,
 			const mrpt::poses::CPoint3D	&sensorPnt,
-			const mrpt::math::CMatrixDouble33   *covarianceCompositionToAdd = NULL,
+			const mrpt::math::CMatrixDouble33   *covarianceCompositionToAdd = nullptr,
 			bool  clearPreviousContentsOutPDF = true,
 			const mrpt::poses::CPoint3D &centerPoint = mrpt::poses::CPoint3D(0,0,0),
 			const float &maxDistanceFromCenter = 0

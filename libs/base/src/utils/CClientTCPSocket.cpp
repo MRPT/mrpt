@@ -310,10 +310,10 @@ void CClientTCPSocket::connect(
 
 	int sel_ret = select(
 		m_hSock+1,
-		NULL,			// For read
+		nullptr,			// For read
 		&socket_set,	// For write or *connect done*
 		&socket_set,	// For errors
-		timeout_ms==0 ? NULL : &timer
+		timeout_ms==0 ? nullptr : &timer
 		);
 
 	if (sel_ret == 0) THROW_EXCEPTION( format("Timeout connecting to '%s:%hu':\n%s",remotePartAddress.c_str(),remotePartTCPPort, getLastErrorStr().c_str() ));
@@ -393,7 +393,7 @@ size_t  CClientTCPSocket::readAsync(
 		int curTimeout = alreadyRead==0 ? timeoutStart_ms : timeoutBetween_ms;
 
 		if (curTimeout<0)
-			ptrTimeout = NULL;
+			ptrTimeout = nullptr;
 		else
 		{
 			timeoutSelect.tv_sec = curTimeout / 1000;
@@ -405,8 +405,8 @@ size_t  CClientTCPSocket::readAsync(
 		int selRet = ::select(
 						 m_hSock+1,		// __nfds
 						 &sockArr,		// Wait for read
-						 NULL,			// Wait for write
-						 NULL,			// Wait for except.
+						 nullptr,			// Wait for write
+						 nullptr,			// Wait for except.
 						 ptrTimeout);	// Timeout
 
 		if( selRet==INVALID_SOCKET )
@@ -479,7 +479,7 @@ size_t  CClientTCPSocket::writeAsync(
 	// The timeout:
 	if (timeout_ms<0)
 	{
-		ptrTimeout = NULL;
+		ptrTimeout = nullptr;
 	}
 	else
 	{
@@ -494,9 +494,9 @@ size_t  CClientTCPSocket::writeAsync(
 		// Wait for received data
 		int selRet = ::select(
 						 m_hSock+1,		// __nfds
-						 NULL,			// Wait for read
+						 nullptr,			// Wait for read
 						 &sockArr,		// Wait for write
-						 NULL,			// Wait for except.
+						 nullptr,			// Wait for except.
 						 ptrTimeout);	// Timeout
 
 		if( selRet==INVALID_SOCKET )

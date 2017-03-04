@@ -117,7 +117,7 @@ private:
       ArSystemStatus::invalidate();
       ArUtil::sleep(myRefreshFrequency);
     }
-    return NULL;
+    return nullptr;
   }
 };
 /** @endcond INTERNAL_CLASSES */

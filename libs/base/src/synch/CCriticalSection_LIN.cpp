@@ -38,14 +38,14 @@ struct CRIT_SECT_LIN
 ---------------------------------------------------------------*/
 CCriticalSection::CCriticalSection( const char *name )
 {
-	m_debugOut = NULL; //&UTILS::stdOut;
+	m_debugOut = nullptr; //&UTILS::stdOut;
 
 	m_data.resize( sizeof( CRIT_SECT_LIN ) + 10 );
 
 	pthread_mutex_t cs = PTHREAD_MUTEX_INITIALIZER;
 	m_data.getAsPtr<CRIT_SECT_LIN>()->cs = cs;
 
-	if (name!=NULL)
+	if (name!=nullptr)
             m_name = name;
 	else    m_name = "Unnamed";
 }

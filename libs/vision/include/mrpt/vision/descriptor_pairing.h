@@ -35,8 +35,8 @@ namespace mrpt
 		  *  std::vector<vector_size_t>             pairings_1_to_multi_2;
 		  *  std::vector<std::pair<size_t,size_t> > pairings_1_to_2;
 		  *  mrpt::vision::find_descriptor_pairings(
-		  *     &pairings_1_to_multi_2,   // Can be set to NULL if not needed
-		  *     &pairings_1_to_2,         // Can be set to NULL if not needed
+		  *     &pairings_1_to_multi_2,   // Can be set to nullptr if not needed
+		  *     &pairings_1_to_2,         // Can be set to nullptr if not needed
 		  *     feats1, feats2_kdtree,    // The two sets of features
 		  *     mrpt::vision::descSIFT    // Select descriptor to use
 		  *     // [further optional params]
@@ -59,7 +59,7 @@ namespace mrpt
 		{
 			MRPT_START
 			ASSERT_ABOVEEQ_(max_neighbors,1)
-			ASSERT_(pairings_1_to_multi_2!=NULL || pairings_1_to_2!=NULL)
+			ASSERT_(pairings_1_to_multi_2!=nullptr || pairings_1_to_2!=nullptr)
 
 			typedef typename DESCRIPTOR_KDTREE::kdtree_t::ElementType   KDTreeElementType; // The expected data type of elements for the kd-tree
 			typedef typename DESCRIPTOR_KDTREE::kdtree_t::DistanceType  KDTreeDistanceType; 

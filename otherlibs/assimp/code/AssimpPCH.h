@@ -72,10 +72,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define _AI_CONCAT(a,b)  a ## b
 #define  AI_CONCAT(a,b)  _AI_CONCAT(a,b)
 
-/* Helper macro to set a pointer to NULL in debug builds
+/* Helper macro to set a pointer to nullptr in debug builds
  */
 #if (defined ASSIMP_BUILD_DEBUG)
-#	define AI_DEBUG_INVALIDATE_PTR(x) x = NULL;
+#	define AI_DEBUG_INVALIDATE_PTR(x) x = nullptr;
 #else
 #	define AI_DEBUG_INVALIDATE_PTR(x)
 #endif

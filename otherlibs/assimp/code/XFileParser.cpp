@@ -82,9 +82,9 @@ XFileParser::XFileParser( const std::vector<char>& pBuffer)
 	mMajorVersion = mMinorVersion = 0;
 	mIsBinaryFormat = false;
 	mBinaryNumCount = 0;
-	P = End = NULL;
+	P = End = nullptr;
 	mLineNumber = 0;
-	mScene = NULL;
+	mScene = nullptr;
 
 	// vector to store uncompressed file for INFLATE'd X files
 	std::vector<char> uncompressed;
@@ -169,7 +169,7 @@ XFileParser::XFileParser( const std::vector<char>& pBuffer)
 
 		// build a zlib stream
 		z_stream stream;
-		stream.opaque = NULL;
+		stream.opaque = nullptr;
 		stream.zalloc = &dummy_alloc;
 		stream.zfree  = &dummy_free;
 		stream.data_type = (mIsBinaryFormat ? Z_BINARY : Z_ASCII);
@@ -284,7 +284,7 @@ void XFileParser::ParseFile()
 			ParseDataObjectTemplate();
 		else
 		if( objectName == "Frame")
-			ParseDataObjectFrame( NULL);
+			ParseDataObjectFrame( nullptr);
 		else
 		if( objectName == "Mesh")
 		{
@@ -363,13 +363,13 @@ void XFileParser::ParseDataObjectFrame( Node* pParent)
 	} else
 	{
 		// there might be multiple root nodes
-		if( mScene->mRootNode != NULL)
+		if( mScene->mRootNode != nullptr)
 		{
 			// place a dummy root if not there
 			if( mScene->mRootNode->mName != "$dummy_root")
 			{
 				Node* exroot = mScene->mRootNode;
-				mScene->mRootNode = new Node( NULL);
+				mScene->mRootNode = new Node( nullptr);
 				mScene->mRootNode->mName = "$dummy_root";
 				mScene->mRootNode->mChildren.push_back( exroot);
 				exroot->mParent = mScene->mRootNode;

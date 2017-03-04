@@ -118,7 +118,7 @@ void ImproveCacheLocalityProcess::Execute( aiScene* pScene)
 float ImproveCacheLocalityProcess::ProcessMesh( aiMesh* pMesh, unsigned int meshNum)
 {
 	// TODO: rewrite this to use std::vector or boost::shared_array
-	ai_assert(NULL != pMesh);
+	ai_assert(nullptr != pMesh);
 
 	// Check whether the input data is valid
 	// - there must be vertices and faces 

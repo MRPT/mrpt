@@ -642,7 +642,7 @@ jinit_phuff_decoder (j_decompress_ptr cinfo)
 
   /* Mark derived tables unallocated */
   for (i = 0; i < NUM_HUFF_TBLS; i++) {
-    entropy->derived_tbls[i] = NULL;
+    entropy->derived_tbls[i] = nullptr;
   }
 
   /* Create progression status table */

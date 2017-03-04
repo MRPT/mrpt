@@ -119,7 +119,7 @@ aiMesh* StandardShapes::MakeMesh(const std::vector<aiVector3D>& positions,
 	unsigned int numIndices)
 {
 	if (positions.size() & numIndices || positions.empty() || !numIndices)
-		return NULL;
+		return nullptr;
 
 	// Determine which kinds of primitives the mesh consists of
 	aiMesh* out = new aiMesh();

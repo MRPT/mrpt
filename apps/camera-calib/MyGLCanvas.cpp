@@ -43,7 +43,7 @@ void CMyGLCanvas::OnPreRender()
 	{
 		if (m_openGLScene) delete m_openGLScene;
 		m_openGLScene = newOpenGLScene;
-		newOpenGLScene = NULL;
+                newOpenGLScene = nullptr;
 	}*/
 }
 

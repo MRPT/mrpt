@@ -165,7 +165,7 @@ void goThere(data_st &Pdata, string& response, string& errormsg)
 	while(data->showvideo)
 	{
 		data->Robot.getLastImage2(lastimg);
-		if(lastimg)	//Avoid NULL image
+		if(lastimg)	//Avoid nullptr image
 			win.showImage(lastimg->image);
 		mrpt::system::sleep(50);
 	}

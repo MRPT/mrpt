@@ -336,7 +336,7 @@ void LWSImporter::BuildGraph(aiNode* nd, LWS::NodeDesc& src, std::vector<Attachm
 	if (src.type == LWS::NodeDesc::OBJECT) {
 
 		// If the object is from an external file, get it
-		aiScene* obj = NULL;
+		aiScene* obj = nullptr;
         if (src.path.length() ) {
             obj = batch.GetImport(src.id);
             if (!obj) {
@@ -354,7 +354,7 @@ void LWSImporter::BuildGraph(aiNode* nd, LWS::NodeDesc& src, std::vector<Attachm
 					
                     //Remove first node from obj (the old pivot), reset transform of second node (the mesh node)
                     aiNode* newRootNode = obj->mRootNode->mChildren[0];
-					obj->mRootNode->mChildren[0] = NULL;
+					obj->mRootNode->mChildren[0] = nullptr;
 					delete obj->mRootNode;
 
                     obj->mRootNode = newRootNode;
@@ -433,7 +433,7 @@ void LWSImporter::BuildGraph(aiNode* nd, LWS::NodeDesc& src, std::vector<Attachm
 	resolver.ExtractBindPose(ndAnim->mTransformation);
 
 	// .. and construct animation channels
-	aiNodeAnim* anim = NULL;
+	aiNodeAnim* anim = nullptr;
 
 	if (first != last) {
 		resolver.SetAnimationRange(first,last);
@@ -504,7 +504,7 @@ void LWSImporter::InternReadFile( const std::string& pFile, aiScene* pScene,
 	boost::scoped_ptr<IOStream> file( pIOHandler->Open( pFile, "rb"));
 
 	// Check whether we can read from the file
-	if( file.get() == NULL) {
+	if( file.get() == nullptr) {
 		throw DeadlyImportError( "Failed to open LWS file " + pFile + ".");
 	}
 
@@ -606,7 +606,7 @@ void LWSImporter::InternReadFile( const std::string& pFile, aiScene* pScene,
 			}
 			else d.number = cur_object++;
 			std::string path = FindLWOFile( c );
-			d.id = batch.AddLoadRequest(path,0,NULL);
+			d.id = batch.AddLoadRequest(path,0,nullptr);
 
 			d.path = path;
 			nodes.push_back(d);

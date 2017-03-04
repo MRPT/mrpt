@@ -170,7 +170,7 @@ class BASE_IMPEXP COutputLogger {
 		 *
 		 * \sa dumpToConsole, getAsString
 		 */
-		void writeLogToFile(const std::string* fname_in=NULL) const;
+		void writeLogToFile(const std::string* fname_in=nullptr) const;
 		/** \brief Dump the current contents of the COutputLogger instance in the
 		 * terminal window.
 		 *
@@ -184,8 +184,8 @@ class BASE_IMPEXP COutputLogger {
 		bool logging_enable_console_output; //!< [Default=true] Set it to false in case you don't want the logged messages to be dumped to the output automatically.
 		bool logging_enable_keep_record;    //!< [Default=false] Enables storing all messages into an internal list. \sa writeLogToFile, getLogAsString
 
-		void logRegisterCallback(output_logger_callback_t  userFunc, void *userParam = NULL);
-		void logDeregisterCallback(output_logger_callback_t  userFunc, void *userParam = NULL);
+		void logRegisterCallback(output_logger_callback_t  userFunc, void *userParam = nullptr);
+		void logDeregisterCallback(output_logger_callback_t  userFunc, void *userParam = nullptr);
 		/** @} */
 
 		struct BASE_IMPEXP TCallbackEntry

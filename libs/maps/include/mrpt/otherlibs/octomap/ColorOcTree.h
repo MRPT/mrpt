@@ -91,7 +91,7 @@ namespace octomap {
     }
 
     bool createChild(unsigned int i) {
-      if (children == NULL) allocChildren();
+      if (children == nullptr) allocChildren();
       children[i] = new ColorOcTreeNode();
       return true;
     }
@@ -147,7 +147,7 @@ namespace octomap {
                                  const float& z, const unsigned char& r, 
                                  const unsigned char& g, const unsigned char& b) {
       OcTreeKey key;
-      if (!this->coordToKeyChecked(point3d(x,y,z), key)) return NULL;
+      if (!this->coordToKeyChecked(point3d(x,y,z), key)) return nullptr;
       return setNodeColor(key,r,g,b);
     }
 
@@ -159,7 +159,7 @@ namespace octomap {
                                       const float& z, const unsigned char& r, 
                                       const unsigned char& g, const unsigned char& b) {
       OcTreeKey key;
-      if (!this->coordToKeyChecked(point3d(x,y,z), key)) return NULL;
+      if (!this->coordToKeyChecked(point3d(x,y,z), key)) return nullptr;
       return averageNodeColor(key,r,g,b);
     }
 
@@ -171,7 +171,7 @@ namespace octomap {
                                       const float& z, const unsigned char& r, 
                                       const unsigned char& g, const unsigned char& b) {
       OcTreeKey key;
-      if (!this->coordToKeyChecked(point3d(x,y,z), key)) return NULL;
+      if (!this->coordToKeyChecked(point3d(x,y,z), key)) return nullptr;
       return integrateNodeColor(key,r,g,b);
     }
 

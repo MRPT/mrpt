@@ -143,7 +143,7 @@ void mrpt::utils::registerAllPendingClasses()
 		--pending_class_registers_count();
 
 		// Call it:
-		if((*ptrToPtr)!=NULL)
+		if((*ptrToPtr)!=nullptr)
 		{
 			(*(*ptrToPtr)) ();
 			delete ptrToPtr;

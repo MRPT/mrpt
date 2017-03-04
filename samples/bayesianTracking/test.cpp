@@ -277,7 +277,7 @@ void TestBayesianTracking()
 		SF.insert( obsRangeBear );  // memory freed by SF.
 
 		EKF.getProfiler().enter("PF:complete_step");
-		PF.executeOn(particles, NULL,&SF);  // Process in the PF
+		PF.executeOn(particles, nullptr,&SF);  // Process in the PF
 		EKF.getProfiler().leave("PF:complete_step");
 
 		// Show EKF state:

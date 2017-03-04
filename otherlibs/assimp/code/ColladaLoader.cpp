@@ -95,7 +95,7 @@ bool ColladaLoader::CanRead( const std::string& pFile, IOSystem* pIOHandler, boo
 	if( extension == "xml" || !extension.length() || checkSig)	{
 		/*  If CanRead() is called in order to check whether we
 		 *  support a specific file extension in general pIOHandler
-		 *  might be NULL and it's our duty to return true here.
+		 *  might be nullptr and it's our duty to return true here.
 		 */
 		if (!pIOHandler)return true;
 		const char* tokens[] = {"collada"};
@@ -262,7 +262,7 @@ void ColladaLoader::ResolveNodeInstances( const ColladaParser& pParser, const Co
 	{
 		// find the corresponding node in the library
 		const ColladaParser::NodeLibrary::const_iterator itt = pParser.mNodeLibrary.find((*it).mNode);
-		const Collada::Node* nd = itt == pParser.mNodeLibrary.end() ? NULL : (*itt).second;
+		const Collada::Node* nd = itt == pParser.mNodeLibrary.end() ? nullptr : (*itt).second;
 
 		// FIX for http://sourceforge.net/tracker/?func=detail&aid=3054873&group_id=226462&atid=1067632
 		// need to check for both name and ID to catch all. To avoid breaking valid files,
@@ -426,8 +426,8 @@ void ColladaLoader::BuildMeshesForNode( const ColladaParser& pParser, const Coll
 	// add a mesh for each subgroup in each collada mesh
 	BOOST_FOREACH( const Collada::MeshInstance& mid, pNode->mMeshes)
 	{
-		const Collada::Mesh* srcMesh = NULL;
-		const Collada::Controller* srcController = NULL;
+		const Collada::Mesh* srcMesh = nullptr;
+		const Collada::Controller* srcController = nullptr;
 
 		// find the referred mesh
 		ColladaParser::MeshLibrary::const_iterator srcMeshIt = pParser.mMeshLibrary.find( mid.mMeshOrController);
@@ -466,7 +466,7 @@ void ColladaLoader::BuildMeshesForNode( const ColladaParser& pParser, const Coll
 			std::string meshMaterial;
 			std::map<std::string, Collada::SemanticMappingTable >::const_iterator meshMatIt = mid.mMaterials.find( submesh.mMaterial);
 
-			const Collada::SemanticMappingTable* table = NULL;
+			const Collada::SemanticMappingTable* table = nullptr;
 			if( meshMatIt != mid.mMaterials.end())
 			{
 				table = &meshMatIt->second;
@@ -873,7 +873,7 @@ void ColladaLoader::StoreAnimations( aiScene* pScene, const ColladaParser& pPars
 				combinedAnim->mChannels = new aiNodeAnim*[combinedAnim->mNumChannels];
 				// add the template anim as first channel by moving its aiNodeAnim to the combined animation
 				combinedAnim->mChannels[0] = templateAnim->mChannels[0];
-				templateAnim->mChannels[0] = NULL;
+				templateAnim->mChannels[0] = nullptr;
 				delete templateAnim;
 				// combined animation replaces template animation in the anim array
 				mAnims[a] = combinedAnim;
@@ -883,7 +883,7 @@ void ColladaLoader::StoreAnimations( aiScene* pScene, const ColladaParser& pPars
 				{
 					aiAnimation* srcAnimation = mAnims[collectedAnimIndices[b]];
 					combinedAnim->mChannels[1 + b] = srcAnimation->mChannels[0];
-					srcAnimation->mChannels[0] = NULL;
+					srcAnimation->mChannels[0] = nullptr;
 					delete srcAnimation;
 				}
 
@@ -941,7 +941,7 @@ void ColladaLoader::CreateAnimation( aiScene* pScene, const ColladaParser& pPars
 
 		// find the collada node corresponding to the aiNode
 		const Collada::Node* srcNode = FindNode( pParser.mRootNode, nodeName);
-//		ai_assert( srcNode != NULL);
+//		ai_assert( srcNode != nullptr);
 		if( !srcNode)
 			continue;
 
@@ -1525,7 +1525,7 @@ const Collada::Node* ColladaLoader::FindNode( const Collada::Node* pNode, const 
 			return node;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -1542,7 +1542,7 @@ const Collada::Node* ColladaLoader::FindNodeBySID( const Collada::Node* pNode, c
       return node;
   }
 
-  return NULL;
+  return nullptr;
 }
 
 // ------------------------------------------------------------------------------------------------

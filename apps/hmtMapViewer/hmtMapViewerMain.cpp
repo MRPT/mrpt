@@ -76,7 +76,7 @@ extern CConfigFile      *iniFile;
 
 
 // HMT map to be displayed.
-CHMTSLAM       *hmt_map = NULL;
+CHMTSLAM       *hmt_map = nullptr;
 
 
 
@@ -116,7 +116,7 @@ void CMyGLCanvas::OnPreRender()
 	{
 		if (m_openGLScene) delete m_openGLScene;
 		m_openGLScene = newOpenGLScene;
-		newOpenGLScene = NULL;
+                newOpenGLScene = nullptr;
 	}*/
 }
 
@@ -439,7 +439,7 @@ hmtMapViewerFrame::~hmtMapViewerFrame()
     WX_START_TRY
 
 	delete hmt_map;
-	hmt_map = NULL;
+        hmt_map = nullptr;
 
     WX_END_TRY
 }
@@ -525,7 +525,7 @@ void hmtMapViewerFrame::rebuildTreeView()
 	treeView->SetQuickBestSize(true);
 
 	// Root element & Areas:
-	wxTreeItemId root = treeView->AddRoot(_("Areas"),0,-1,NULL);
+        wxTreeItemId root = treeView->AddRoot(_("Areas"),0,-1,nullptr);
 
 	CHierarchicalMHMap::const_iterator it;
 	size_t i;

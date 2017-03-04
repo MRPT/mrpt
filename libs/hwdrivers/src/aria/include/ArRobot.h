@@ -75,7 +75,7 @@ public:
     CHARGING_FLOAT = 3
   };
   /// Constructor
-  AREXPORT ArRobot(const char * name = NULL, bool ignored = true,
+  AREXPORT ArRobot(const char * name = nullptr, bool ignored = true,
 		   bool doSigHandle=true,
 		   bool normalInit = true, bool addAriaExitCallback = true);
 
@@ -551,29 +551,29 @@ public:
 
   /// Goes through all the range devices and checks them
   AREXPORT double checkRangeDevicesCurrentPolar(
-	  double startAngle, double endAngle, double *angle = NULL,
-	  const ArRangeDevice **rangeDevice = NULL,
+	  double startAngle, double endAngle, double *angle = nullptr,
+	  const ArRangeDevice **rangeDevice = nullptr,
 	  bool useLocationDependentDevices = true) const;
 
   /// Goes through all the range devices and checks them
   AREXPORT double checkRangeDevicesCumulativePolar(
-	  double startAngle, double endAngle, double *angle = NULL,
-	  const ArRangeDevice **rangeDevice = NULL,
+	  double startAngle, double endAngle, double *angle = nullptr,
+	  const ArRangeDevice **rangeDevice = nullptr,
 	  bool useLocationDependentDevices = true) const;
 
 
   // Goes through all the range devices and checks them
   AREXPORT double checkRangeDevicesCurrentBox(
 	  double x1, double y1, double x2, double y2,
-	  ArPose *readingPos = NULL,
-	  const ArRangeDevice **rangeDevice = NULL,
+	  ArPose *readingPos = nullptr,
+	  const ArRangeDevice **rangeDevice = nullptr,
 	  bool useLocationDependentDevices = true) const;
 
   // Goes through all the range devices and checks them
   AREXPORT double checkRangeDevicesCumulativeBox(
 	  double x1, double y1, double x2, double y2,
-	  ArPose *readingPos = NULL,
-	  const ArRangeDevice **rangeDevice = NULL,
+	  ArPose *readingPos = nullptr,
+	  const ArRangeDevice **rangeDevice = nullptr,
 	  bool useLocationDependentDevices = true) const;
 
   /// Sets the camera this robot is using
@@ -647,7 +647,7 @@ public:
   /// Adds a user task to the list of synchronous taskes
   AREXPORT bool addUserTask(const char *name, int position,
 			       ArFunctor *functor,
-			       ArTaskState::State *state = NULL);
+			       ArTaskState::State *state = nullptr);
   /// Removes a user task from the list of synchronous taskes by name
   AREXPORT void remUserTask(const char *name);
   /// Removes a user task from the list of synchronous taskes by functor
@@ -666,7 +666,7 @@ public:
   /// Adds a task under the sensor interp part of the syncronous tasks
   AREXPORT bool addSensorInterpTask(const char *name, int position,
 				       ArFunctor *functor,
-	       			       ArTaskState::State *state = NULL);
+	       			       ArTaskState::State *state = nullptr);
   /// Removes a sensor interp tasks by name
   AREXPORT void remSensorInterpTask(const char *name);
   /// Removes a sensor interp tasks by functor
@@ -683,7 +683,7 @@ public:
   AREXPORT bool remAction(ArAction *action);
   /// Removes an action from the list, by name
   AREXPORT bool remAction(const char *actionName);
-  /// Returns the first (highest priority) action with the given name (or NULL)
+  /// Returns the first (highest priority) action with the given name (or nullptr)
   AREXPORT ArAction *findAction(const char *actionName);
   /// Returns the map of actions... don't do this unless you really
   /// know what you're doing

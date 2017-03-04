@@ -33,7 +33,7 @@ AREXPORT ArSonarDevice::ArSonarDevice(size_t currentBufferSize,
 
 AREXPORT ArSonarDevice::~ArSonarDevice()
 {
-  if (myRobot != NULL)
+  if (myRobot != nullptr)
   {
     myRobot->remSensorInterpTask(&myProcessCB);
     myRobot->remRangeDevice(this);
@@ -43,7 +43,7 @@ AREXPORT ArSonarDevice::~ArSonarDevice()
 AREXPORT void ArSonarDevice::setRobot(ArRobot *robot)
 {
   myRobot = robot;
-  if (myRobot != NULL)
+  if (myRobot != nullptr)
     myRobot->addSensorInterpTask(myName.c_str(), 10, &myProcessCB);
   ArRangeDevice::setRobot(robot);
 }
@@ -57,7 +57,7 @@ AREXPORT void ArSonarDevice::processReadings(void)
   for (i = 0; i < myRobot->getNumSonar(); i++)
   {
     reading = myRobot->getSonarReading(i);
-    if (reading == NULL || !reading->isNew(myRobot->getCounter()))
+    if (reading == nullptr || !reading->isNew(myRobot->getCounter()))
       continue;
     addReading(reading->getX(), reading->getY());
   }
@@ -72,7 +72,7 @@ AREXPORT void ArSonarDevice::processReadings(void)
   rx = myRobot->getX();
   ry = myRobot->getY();
   // walk through the list and see if this makes any old readings bad
-  if (readingList != NULL)
+  if (readingList != nullptr)
     {
       for (it = readingList->begin(); it != readingList->end(); ++it)
 	{
@@ -116,7 +116,7 @@ AREXPORT void ArSonarDevice::addReading(double x, double y)
 
       readingList = myCumulativeBuffer.getBuffer();
       // walk through the list and see if this makes any old readings bad
-      if (readingList != NULL)
+      if (readingList != nullptr)
 	{
 	  for (it = readingList->begin(); it != readingList->end(); ++it)
 	    {

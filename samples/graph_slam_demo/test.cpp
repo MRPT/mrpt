@@ -245,7 +245,7 @@ struct ExampleDemoGraphSLAM
 		graphslam::optimize_graph_spa_levmarq(
 			graph,
 			levmarq_info,
-			NULL,  // List of nodes to optimize. NULL -> all but the root node.
+			nullptr,  // List of nodes to optimize. nullptr -> all but the root node.
 			params,
 			&my_levmarq_feedback<my_graph_t>);
 

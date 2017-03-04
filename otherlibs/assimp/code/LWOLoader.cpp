@@ -124,7 +124,7 @@ void LWOImporter::InternReadFile( const std::string& pFile,
 	boost::scoped_ptr<IOStream> file( pIOHandler->Open( pFile, "rb"));
 
 	// Check whether we can read from the file
-	if( file.get() == NULL)
+	if( file.get() == nullptr)
 		throw DeadlyImportError( "Failed to open LWO file " + pFile + ".");
 
 	if((this->fileSize = (unsigned int)file->FileSize()) < 12)
@@ -285,7 +285,7 @@ void LWOImporter::InternReadFile( const std::string& pFile,
 					mesh->mNumVertices += layer.mFaces[*it].mNumIndices;
 				}
 
-				aiVector3D *nrm = NULL, * pv = mesh->mVertices = new aiVector3D[mesh->mNumVertices];
+				aiVector3D *nrm = nullptr, * pv = mesh->mVertices = new aiVector3D[mesh->mNumVertices];
 				aiFace* pf = mesh->mFaces = new aiFace[mesh->mNumFaces];
 				mesh->mMaterialIndex = i;
 
@@ -393,7 +393,7 @@ void LWOImporter::InternReadFile( const std::string& pFile,
 					}
 					pf->mIndices = face.mIndices;
 					pf->mNumIndices = face.mNumIndices;
-					unsigned int** p = (unsigned int**)&face.mIndices;*p = NULL; // HACK: make sure it won't be deleted
+					unsigned int** p = (unsigned int**)&face.mIndices;*p = nullptr; // HACK: make sure it won't be deleted
 					pf++;
 				}
 
@@ -624,7 +624,7 @@ void LWOImporter::GenerateNodeGraph(std::map<uint16_t,aiNode*>& apcNodes)
 	// Remove a single root node with no meshes assigned to it ... 
 	if (1 == pScene->mRootNode->mNumChildren)	{
 		aiNode* pc = pScene->mRootNode->mChildren[0];
-		pc->mParent = pScene->mRootNode->mChildren[0] = NULL;
+		pc->mParent = pScene->mRootNode->mChildren[0] = nullptr;
 		delete pScene->mRootNode;
 		pScene->mRootNode = pc;
 	}
@@ -915,7 +915,7 @@ inline void CreateNewEntry(std::vector< T >& list, unsigned int srcIdx)
 inline void LWOImporter::DoRecursiveVMAPAssignment(VMapEntry* base, unsigned int numRead, 
 	unsigned int idx, float* data)
 {
-	ai_assert(NULL != data);
+	ai_assert(nullptr != data);
 	LWO::ReferrerList& refList	= mCurLayer->mPointReferrers;
 	unsigned int i;
 

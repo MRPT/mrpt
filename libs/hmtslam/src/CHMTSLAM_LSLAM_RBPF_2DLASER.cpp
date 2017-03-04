@@ -53,8 +53,8 @@ CLSLAM_RBPF_2DLASER::~CLSLAM_RBPF_2DLASER()
 	    over an occupancy grid map. A part of HMT-SLAM.
 
 \param LMH   The local metric hypothesis which must be updated by this SLAM algorithm.
-\param act   The action to process (or NULL).
-\param sf    The observations to process (or NULL).
+\param act   The action to process (or nullptr).
+\param sf    The observations to process (or nullptr).
 
  WE ALREADY HAVE CONTROL OVER THE CRITICAL SECTION OF THE LMHs!
 
@@ -233,7 +233,7 @@ void  CLSLAM_RBPF_2DLASER::prediction_and_update_pfAuxiliaryPFOptimal(
 //	static bool						accumRobotMovementIsValid = false;
 	bool  SFhasValidObservations = false;
 	// A valid action?
-	if (actions!=NULL)
+	if (actions!=nullptr)
 	{
 		CActionRobotMovement2DPtr act = actions->getBestMovementEstimation();	// Find a robot movement estimation:
 		if (!act) THROW_EXCEPTION("Action list does not contain any CActionRobotMovement2D derived object!");
@@ -251,7 +251,7 @@ void  CLSLAM_RBPF_2DLASER::prediction_and_update_pfAuxiliaryPFOptimal(
 		LMH->m_accumRobotMovementIsValid = true;
 	}
 
-	if (sf!=NULL)
+	if (sf!=nullptr)
 	{
 		ASSERT_(LMH->m_particles.size()>0);
 		SFhasValidObservations = (*LMH->m_particles.begin()).d->metricMaps.canComputeObservationsLikelihood( *sf );
@@ -662,7 +662,7 @@ void  CLSLAM_RBPF_2DLASER::loadTPathBinFromPath(
 {
 	size_t	lenBinPath;
 
-	if (path!=NULL)
+	if (path!=nullptr)
 			lenBinPath = path->size();
 	else	lenBinPath = 0;
 
@@ -670,12 +670,12 @@ void  CLSLAM_RBPF_2DLASER::loadTPathBinFromPath(
 	vector_int::iterator				itX,itY,itPHI;
 
 	// Set the output bin dimensionality:
-	outBin.x.resize(lenBinPath + (newPose!=NULL ? 1:0) );
-	outBin.y.resize(lenBinPath + (newPose!=NULL ? 1:0));
-	outBin.phi.resize(lenBinPath + (newPose!=NULL ? 1:0));
+	outBin.x.resize(lenBinPath + (newPose!=nullptr ? 1:0) );
+	outBin.y.resize(lenBinPath + (newPose!=nullptr ? 1:0));
+	outBin.phi.resize(lenBinPath + (newPose!=nullptr ? 1:0));
 
 	// Is a path provided??
-	if (path!=NULL)
+	if (path!=nullptr)
 	{
 		// Fill the bin data:
 		for (itSrc = path->begin(), itX=outBin.x.begin(),itY=outBin.y.begin(),itPHI=outBin.phi.begin();
@@ -689,7 +689,7 @@ void  CLSLAM_RBPF_2DLASER::loadTPathBinFromPath(
 	}
 
 	// Is a newPose provided??
-	if (newPose!=NULL)
+	if (newPose!=nullptr)
 	{
 		// And append the last pose: the new one:
 		outBin.x[lenBinPath]   = (int)round( newPose->x() / m_parent->m_options.KLD_params.KLD_binSize_XY );
@@ -745,7 +745,7 @@ void  CLSLAM_RBPF_2DLASER::prediction_and_update_pfOptimalProposal(
 	// ----------------------------------------------------------------------
 	bool  SFhasValidObservations = false;
 	// A valid action?
-	if (actions!=NULL)
+	if (actions!=nullptr)
 	{
 		CActionRobotMovement2DPtr act = actions->getBestMovementEstimation();	// Find a robot movement estimation:
 		if (!act) THROW_EXCEPTION("Action list does not contain any CActionRobotMovement2D derived object!");
@@ -763,7 +763,7 @@ void  CLSLAM_RBPF_2DLASER::prediction_and_update_pfOptimalProposal(
 		LMH->m_accumRobotMovementIsValid = true;
 	}
 
-	if (sf!=NULL)
+	if (sf!=nullptr)
 	{
 		ASSERT_(LMH->m_particles.size()>0);
 		SFhasValidObservations = (*LMH->m_particles.begin()).d->metricMaps.canComputeObservationsLikelihood( *sf );
@@ -772,7 +772,7 @@ void  CLSLAM_RBPF_2DLASER::prediction_and_update_pfOptimalProposal(
 	// All the needed things?
 	if (!LMH->m_accumRobotMovementIsValid || !SFhasValidObservations)
 		return; // Nothing we can do here...
-	ASSERT_(sf!=NULL);
+	ASSERT_(sf!=nullptr);
 	ASSERT_(!PF_options.adaptiveSampleSize);
 
 	// OK, we have all we need, let's start!
@@ -848,7 +848,7 @@ void  CLSLAM_RBPF_2DLASER::prediction_and_update_pfOptimalProposal(
 				mapalign,
 				&localMapPoints,
 				initialPoseEstimation,
-				NULL,
+				nullptr,
 				&icpInfo);
 
 			icpEstimation.copyFrom( *alignEst );

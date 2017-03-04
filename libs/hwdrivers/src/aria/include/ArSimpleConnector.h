@@ -104,12 +104,12 @@ protected:
   {
   public:
     LaserData(int number) 
-      { myNumber = number; myConnect = false; myPort = NULL; 
+      { myNumber = number; myConnect = false; myPort = nullptr; 
       myRemoteTcpPort = 0; myFlipped = false; myFlippedReallySet = false; 
       myPowerControlled = true; myPowerControlledReallySet = false; 
-      myDegrees = NULL; mySickDegrees = ArSick::DEGREES180; myIncrement = NULL;
-      mySickIncrement = ArSick::INCREMENT_ONE; myUnits = NULL; 
-      mySickUnits = ArSick::UNITS_1MM; myBits = NULL; 
+      myDegrees = nullptr; mySickDegrees = ArSick::DEGREES180; myIncrement = nullptr;
+      mySickIncrement = ArSick::INCREMENT_ONE; myUnits = nullptr; 
+      mySickUnits = ArSick::UNITS_1MM; myBits = nullptr; 
       mySickBits = ArSick::BITS_1REFLECTOR; }
     virtual ~LaserData() {}
     int myNumber;
@@ -162,7 +162,7 @@ protected:
   bool myUsingSim;
   // if we're connecting via tcp (not to the sim), what remote host
   const char *myRemoteHost;
-  // robot port, if there isn't one this'll be NULL, which will just
+  // robot port, if there isn't one this'll be nullptr, which will just
   // be the default of ArUtil::COM1
   const char *myRobotPort;
   // baud for the serial

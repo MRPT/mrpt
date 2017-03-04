@@ -201,7 +201,7 @@ public:
 	// ------------------------------------------------------------------
 	/** @brief Extract a node animation channel
 	 *  @param out Receives a pointer to a newly allocated node anim.
-	 *    If there's just one keyframe defined, *out is set to NULL and
+	 *    If there's just one keyframe defined, *out is set to nullptr and
 	 *    no animation channel is computed.
 	 *  @param flags Any combination of the AI_LWO_ANIM_FLAG_XXX flags.
 	 */

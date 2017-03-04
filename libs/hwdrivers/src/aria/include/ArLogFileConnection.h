@@ -26,9 +26,9 @@ class ArLogFileConnection: public ArDeviceConnection
   AREXPORT virtual ~ArLogFileConnection();
 
   /// Opens a connection to the given host and port
-  AREXPORT int open(const char * fname = NULL);
+  AREXPORT int open(const char * fname = nullptr);
 
-  AREXPORT void setLogFile(const char *fname = NULL);
+  AREXPORT void setLogFile(const char *fname = nullptr);
   AREXPORT virtual bool openSimple(void);  
   AREXPORT virtual int getStatus(void);
   AREXPORT virtual bool close(void);

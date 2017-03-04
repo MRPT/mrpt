@@ -235,7 +235,7 @@ namespace mrpt
 			/** Must be called to have a callback when the user selects one of the user-defined entries in the popup menu.
 			  * \sa addPopupMenuEntry
 			  */
-			void setMenuCallback(TCallbackMenu userFunction, void* userParam = NULL );
+			void setMenuCallback(TCallbackMenu userFunction, void* userParam = nullptr );
 
 
 		}; // End of class def.

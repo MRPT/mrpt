@@ -52,7 +52,7 @@ namespace Q3BSP {
 voidpf IOSystem2Unzip::open(voidpf opaque, const char* filename, int mode) {
 	IOSystem* io_system = (IOSystem*) opaque;
 
-	const char* mode_fopen = NULL;
+	const char* mode_fopen = nullptr;
 	if((mode & ZLIB_FILEFUNC_MODE_READWRITEFILTER)==ZLIB_FILEFUNC_MODE_READ) {
 		mode_fopen = "rb";
 	} else {
@@ -143,7 +143,7 @@ ZipFile::ZipFile(size_t size) : m_Size(size) {
 	
 ZipFile::~ZipFile() {
 	std::free(m_Buffer);
-	m_Buffer = NULL;
+	m_Buffer = nullptr;
 }
 
 size_t ZipFile::Read(void* pvBuffer, size_t pSize, size_t pCount) {
@@ -177,13 +177,13 @@ void ZipFile::Flush() {
 
 // ------------------------------------------------------------------------------------------------
 //	Constructor.
-Q3BSPZipArchive::Q3BSPZipArchive(IOSystem* pIOHandler, const std::string& rFile) : m_ZipFileHandle(NULL), m_ArchiveMap() {
+Q3BSPZipArchive::Q3BSPZipArchive(IOSystem* pIOHandler, const std::string& rFile) : m_ZipFileHandle(nullptr), m_ArchiveMap() {
 	if (! rFile.empty()) {
 		zlib_filefunc_def mapping = IOSystem2Unzip::get(pIOHandler);
 
 		m_ZipFileHandle = unzOpen2(rFile.c_str(), &mapping);
 
-		if(m_ZipFileHandle != NULL) {
+		if(m_ZipFileHandle != nullptr) {
 			mapArchive();
 		}
 	}
@@ -197,26 +197,26 @@ Q3BSPZipArchive::~Q3BSPZipArchive() {
 	}
 	m_ArchiveMap.clear();
 
-	if(m_ZipFileHandle != NULL) {
+	if(m_ZipFileHandle != nullptr) {
 		unzClose(m_ZipFileHandle);
-		m_ZipFileHandle = NULL;
+		m_ZipFileHandle = nullptr;
 	}
 }
 
 // ------------------------------------------------------------------------------------------------
 //	Returns true, if the archive is already open.
 bool Q3BSPZipArchive::isOpen() const {
-	return (m_ZipFileHandle != NULL);
+	return (m_ZipFileHandle != nullptr);
 }
 
 // ------------------------------------------------------------------------------------------------
 //	Returns true, if the filename is part of the archive.
 bool Q3BSPZipArchive::Exists(const char* pFile) const {
-	ai_assert(pFile != NULL);
+	ai_assert(pFile != nullptr);
 
 	bool exist = false;
 
-	if (pFile != NULL) {
+	if (pFile != nullptr) {
 		std::string rFile(pFile);
 		std::map<std::string, ZipFile*>::const_iterator it = m_ArchiveMap.find(rFile);
 
@@ -241,9 +241,9 @@ char Q3BSPZipArchive::getOsSeparator() const {
 // ------------------------------------------------------------------------------------------------
 //	Opens a file, which is part of the archive.
 IOStream *Q3BSPZipArchive::Open(const char* pFile, const char* /*pMode*/) {
-	ai_assert(pFile != NULL);
+	ai_assert(pFile != nullptr);
 
-	IOStream* result = NULL;
+	IOStream* result = nullptr;
 
 	std::map<std::string, ZipFile*>::iterator it = m_ArchiveMap.find(pFile);
 
@@ -257,7 +257,7 @@ IOStream *Q3BSPZipArchive::Open(const char* pFile, const char* /*pMode*/) {
 // ------------------------------------------------------------------------------------------------
 //	Close a filestream.
 void Q3BSPZipArchive::Close(IOStream *pFile) {
-	ai_assert(pFile != NULL);
+	ai_assert(pFile != nullptr);
 
 	// We don't do anything in case the file would be opened again in the future
 }
@@ -276,7 +276,7 @@ void Q3BSPZipArchive::getFileList(std::vector<std::string> &rFileList) {
 bool Q3BSPZipArchive::mapArchive() {
 	bool success = false;
 
-	if(m_ZipFileHandle != NULL) {
+	if(m_ZipFileHandle != nullptr) {
 		if(m_ArchiveMap.empty()) {
 			//	At first ensure file is already open
 			if(unzGoToFirstFile(m_ZipFileHandle) == UNZ_OK) {	
@@ -285,7 +285,7 @@ bool Q3BSPZipArchive::mapArchive() {
 					char filename[FileNameSize];
 					unz_file_info fileInfo;
 
-					if(unzGetCurrentFileInfo(m_ZipFileHandle, &fileInfo, filename, FileNameSize, NULL, 0, NULL, 0) == UNZ_OK) {
+					if(unzGetCurrentFileInfo(m_ZipFileHandle, &fileInfo, filename, FileNameSize, nullptr, 0, nullptr, 0) == UNZ_OK) {
 						// The file has EXACTLY the size of uncompressed_size. In C
 						// you need to mark the last character with '\0', so add
 						// another character

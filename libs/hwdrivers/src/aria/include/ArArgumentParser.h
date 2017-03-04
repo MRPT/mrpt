@@ -49,19 +49,19 @@ public:
   /// Returns the word/argument after given argument
   AREXPORT bool checkParameterArgumentString(const char *argument,  	// Mod JLBC
 					     const char **dest,
-					     bool *wasReallySet = NULL,
+					     bool *wasReallySet = nullptr,
 					     bool returnFirst = false);
   /// Returns the integer after given argument
   AREXPORT bool checkParameterArgumentInteger(const char *argument, int *dest,
-					      bool *wasReallySet = NULL,
+					      bool *wasReallySet = nullptr,
 					      bool returnFirst = false);
   /// Returns the word/argument after given argument
   AREXPORT bool checkParameterArgumentBool(char *argument, bool *dest,
-					   bool *wasReallySet = NULL,
+					   bool *wasReallySet = nullptr,
 					   bool returnFirst = false);
   /// Returns the floating point number after given argument
   AREXPORT bool checkParameterArgumentFloat(char *argument, float *dest,
-                bool *wasReallySet = NULL, bool returnFirst = false);
+                bool *wasReallySet = nullptr, bool returnFirst = false);
   /// Adds a string as a default argument
   AREXPORT void addDefaultArgument(const char *argument, int position = -1);
   /// Adds args from default files and environmental variables

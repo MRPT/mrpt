@@ -40,7 +40,7 @@ namespace mrpt
 			inline mrptEvent() : timestamp(mrpt::system::now()) { }
 
 			template <class EVENTTYPE>
-			inline bool isOfType() const { return dynamic_cast<const EVENTTYPE*>(this)!=NULL; }
+			inline bool isOfType() const { return dynamic_cast<const EVENTTYPE*>(this)!=nullptr; }
 
 			template <class EVENTTYPE>
 			inline const EVENTTYPE* getAs() const { return dynamic_cast<const EVENTTYPE*>(this); }

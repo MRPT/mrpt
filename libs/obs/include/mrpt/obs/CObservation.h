@@ -72,7 +72,7 @@ namespace mrpt
 		*		map->insertObservation(this, robotPose)
 		* \endcode
 		* \param theMap The map where this observation is to be inserted: the map will be updated.
-		* \param robotPose The pose of the robot base for this observation, relative to the target metric map. Set to NULL (default) to use (0,0,0deg)
+		* \param robotPose The pose of the robot base for this observation, relative to the target metric map. Set to nullptr (default) to use (0,0,0deg)
 		*
 		* \return Returns true if the map has been updated, or false if this observations
 		*			has nothing to do with a metric map (for example, a sound observation).
@@ -80,7 +80,7 @@ namespace mrpt
 		* \sa CMetricMap, CMetricMap::insertObservation
 		*/
 		template <class METRICMAP>
-		inline bool insertObservationInto( METRICMAP *theMap, const mrpt::poses::CPose3D *robotPose = NULL ) const
+		inline bool insertObservationInto( METRICMAP *theMap, const mrpt::poses::CPose3D *robotPose = nullptr ) const
 		{
 			return theMap->insertObservation(this,robotPose);
 		}

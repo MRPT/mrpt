@@ -888,7 +888,7 @@ public:
 
     /*! Get the layer by its name (case sensitive).
         @param name The name of the layer to retrieve
-        @return A pointer to the mpLayer object, or NULL if not found.
+        @return A pointer to the mpLayer object, or nullptr if not found.
     */
     mpLayer* GetLayerByName( const wxString &name);
 
@@ -1025,7 +1025,7 @@ public:
         pixel scales are computed accordingly. Also, in this case the passed borders are not saved
         as the "desired borders", since this use will be invoked only when printing.
     */
-    void Fit(double xMin, double xMax, double yMin, double yMax,wxCoord *printSizeX=NULL,wxCoord *printSizeY=NULL);
+    void Fit(double xMin, double xMax, double yMin, double yMax,wxCoord *printSizeX=nullptr,wxCoord *printSizeY=nullptr);
 
     /** Zoom into current view and refresh display
       * @param centerPoint The point (pixel coordinates) that will stay in the same position on the screen after the zoom (by default, the center of the mpWindow).
@@ -1149,7 +1149,7 @@ public:
 
     /** Check if a given point is inside the area of a mpInfoLayer and eventually returns its pointer.
         @param point The position to be checked
-        @return If an info layer is found, returns its pointer, NULL otherwise */
+        @return If an info layer is found, returns its pointer, nullptr otherwise */
     mpInfoLayer* IsInsideInfoLayer(wxPoint& point);
 
 	/** Sets the visibility of a layer by its name.

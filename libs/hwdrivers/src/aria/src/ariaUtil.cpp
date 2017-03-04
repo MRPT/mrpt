@@ -83,7 +83,7 @@ AREXPORT unsigned int ArUtil::getTime(void)
 
 #ifndef WIN32
   struct timeval tv;
-  gettimeofday(&tv,NULL);
+  gettimeofday(&tv,nullptr);
   return tv.tv_usec/1000 + (tv.tv_sec % 1000000)*1000;
 #endif
 }
@@ -543,7 +543,7 @@ AREXPORT bool ArUtil::isOnlyAlphaNumeric(const char *str)
 {
   unsigned int ui;
   unsigned int len;
-  if (str == NULL)
+  if (str == nullptr)
     return true;
   for (ui = 0, len = sizeof(str); ui < len; ui++)
   {
@@ -555,7 +555,7 @@ AREXPORT bool ArUtil::isOnlyAlphaNumeric(const char *str)
 
 AREXPORT bool ArUtil::isStrEmpty(const char *str)
 {
-	if (str == NULL) {
+	if (str == nullptr) {
 		return true;
 	}
 	if (str[0] == '\0') {
@@ -619,7 +619,7 @@ AREXPORT bool ArUtil::getStringFromFile(const char *fileName,
   FILE *strFile;
   unsigned int i;
 
-  if ((strFile = fopen(fileName, "r")) != NULL)
+  if ((strFile = fopen(fileName, "r")) != nullptr)
   {
     char * dumm_ret =fgets(str, strLen, strFile);
     if (!dumm_ret) return false;
@@ -711,8 +711,8 @@ AREXPORT bool ArUtil::getStringFromRegistry(REGKEY root,
   if ((err = RegOpenKeyExA(rootKey, key, 0, KEY_READ, &hkey)) == ERROR_SUCCESS)
   {
     //printf("Got a key\n");
-    if (RegQueryInfoKey(hkey, NULL, NULL, NULL, &numKeys, &longestKey, NULL,
-			&numValues, &longestValue, &longestDataLength, NULL, NULL) == ERROR_SUCCESS)
+    if (RegQueryInfoKey(hkey, nullptr, nullptr, nullptr, &numKeys, &longestKey, nullptr,
+			&numValues, &longestValue, &longestDataLength, nullptr, nullptr) == ERROR_SUCCESS)
     {
 	/*
       printf("Have %d keys longest is %d, have %d values longest name is %d, longest data is %d\n",
@@ -724,7 +724,7 @@ AREXPORT bool ArUtil::getStringFromRegistry(REGKEY root,
       {
 	dataLength = longestDataLength+1;
 	valueLength = longestValue+1;
-	if ((err = RegEnumValueA(hkey, i, valueName, &valueLength, NULL,
+	if ((err = RegEnumValueA(hkey, i, valueName, &valueLength, nullptr,
 				&type, (unsigned char *)data, &dataLength)) == ERROR_SUCCESS)
 	{
 		//printf("Enumed value %d, name is %s, value is %s\n", i, valueName, data);
@@ -948,22 +948,22 @@ AREXPORT bool ArUtil::localtime(const time_t *timep, struct tm *result)
   // TODO make this threadsafe
 #ifdef WIN32
   struct tm *r = ::localtime(timep);
-  if(r == NULL) return false;
+  if(r == nullptr) return false;
   *result = *r;
   return true;
 #else
-  return (::localtime_r(timep, result) != NULL);
+  return (::localtime_r(timep, result) != nullptr);
 #endif
 }
 
 
 /** Call ArUtil::localtime() with the current time obtained by calling
-* time(NULL).
+* time(nullptr).
 *  @return false on error (e.g. invalid input), otherwise true.
 */
 AREXPORT bool ArUtil::localtime(struct tm *result)
 {
-  time_t now = time(NULL);
+  time_t now = time(nullptr);
   return ArUtil::localtime(&now, result);
 }
 
@@ -1036,10 +1036,10 @@ AREXPORT void ArCallbackList::invoke(void)
        it++)
   {
     functor = (*it).second;
-    if (functor == NULL)
+    if (functor == nullptr)
       continue;
 
-    if (functor->getName() != NULL && functor->getName()[0] != '\0')
+    if (functor->getName() != nullptr && functor->getName()[0] != '\0')
       ArLog::log(myLogLevel, "%s: Calling functor '%s' at %d",
 		 myName.c_str(), functor->getName(), -(*it).first);
     else

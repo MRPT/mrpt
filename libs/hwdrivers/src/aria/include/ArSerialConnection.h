@@ -31,12 +31,12 @@ class ArSerialConnection: public ArDeviceConnection
   /** Opens the serial port
    *  @sa ArUtil::COM1, ArUtil::COM2, ArUtil::COM3, ArUtil::COM4
    */
-  AREXPORT int open(const char * port = NULL);
+  AREXPORT int open(const char * port = nullptr);
 
   /** Sets the port this connection will use
    *  @sa ArUtil::COM1, ArUtil::COM2, ArUtil::COM3, ArUtil::COM4
    */
-  AREXPORT void setPort(const char *port = NULL);
+  AREXPORT void setPort(const char *port = nullptr);
 
   /** Gets the port this is using
    *  @sa ArUtil::COM1, ArUtil::COM2, ArUtil::COM3, ArUtil::COM4

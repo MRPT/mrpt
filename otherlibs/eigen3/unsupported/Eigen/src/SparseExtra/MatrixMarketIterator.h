@@ -173,7 +173,7 @@ class MatrixMarketIterator
     {
       m_isvalid = false;
       // Here, we return with the next valid matrix in the folder
-      while ( (m_curs_id = readdir(m_folder_id)) != NULL) {
+      while ( (m_curs_id = readdir(m_folder_id)) != nullptr) {
         m_isvalid = false;
         std::string curfile;
         curfile = m_folder + "/" + m_curs_id->d_name;

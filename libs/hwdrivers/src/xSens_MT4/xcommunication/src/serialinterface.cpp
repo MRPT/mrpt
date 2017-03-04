@@ -71,8 +71,8 @@ SerialInterface::SerialInterface()
 	memset(&m_commState, 0, sizeof(m_commState));
 #endif
 
-	rx_log = NULL;
-	tx_log = NULL;
+	rx_log = nullptr;
+	tx_log = nullptr;
 }
 
 //! Destructor, de-initializes, frees memory allocated for buffers, etc.
@@ -94,12 +94,12 @@ XsResultValue SerialInterface::close(void)
 XsResultValue SerialInterface::closeLive(void)
 {
 #ifdef LOG_RX_TX
-	if (rx_log != NULL)
+	if (rx_log != nullptr)
 		fclose(rx_log);
-	if (tx_log != NULL)
+	if (tx_log != nullptr)
 		fclose(tx_log);
-	rx_log = NULL;
-	tx_log = NULL;
+	rx_log = nullptr;
+	tx_log = nullptr;
 #endif
 	if (!isOpen())
 		return m_lastResult = XRV_NOPORTOPEN;
@@ -121,7 +121,7 @@ XsResultValue SerialInterface::closeLive(void)
 				char buffer[1024];
 				DWORD length;
 				do {
-					if (!::ReadFile(m_handle, buffer, 1024, &length, NULL))
+					if (!::ReadFile(m_handle, buffer, 1024, &length, nullptr))
 						break;
 				} while (length > 0);
 			}
@@ -286,8 +286,8 @@ XsResultValue SerialInterface::open(const XsPortInfo& portInfo,
 
 	// Open port
 	sprintf(winPortName, "\\\\.\\%s", portInfo.portName().c_str());
-	m_handle = CreateFileA(winPortName, GENERIC_READ | GENERIC_WRITE, 0, NULL,
-									OPEN_EXISTING, 0, NULL);
+	m_handle = CreateFileA(winPortName, GENERIC_READ | GENERIC_WRITE, 0, nullptr,
+									OPEN_EXISTING, 0, nullptr);
 	if (m_handle == INVALID_HANDLE_VALUE)
 	{
 		JLDEBUG(gJournal, "Port " << portInfo.portName().toStdString() << " cannot be opened");
@@ -443,7 +443,7 @@ XsResultValue SerialInterface::open(const XsPortInfo& portInfo,
 bool doesFileExist(char* filename)
 {
 	FILE* pf = fopen(filename, "r");
-	if (pf == NULL)
+	if (pf == nullptr)
 		return false;
 	fclose (pf);
 	return true;
@@ -491,7 +491,7 @@ XsResultValue SerialInterface::readData(XsSize maxLength, XsByteArray& data)
 #ifdef _WIN32
 	DWORD length;
 	data.setSize(maxLength);
-	BOOL rres = ::ReadFile(m_handle, data.data(), (DWORD) maxLength, &length, NULL);
+	BOOL rres = ::ReadFile(m_handle, data.data(), (DWORD) maxLength, &length, nullptr);
 	data.pop_back(maxLength-length);
 	JLTRACE(gJournal, "ReadFile result " << rres << ", length " << length);
 
@@ -518,7 +518,7 @@ XsResultValue SerialInterface::readData(XsSize maxLength, XsByteArray& data)
 	timeout.tv_sec = m_timeout/1000;
 	timeout.tv_usec = (m_timeout - (timeout.tv_sec * 1000)) * 1000;
 
-	int res = select(FD_SETSIZE, &fd, NULL, &err, &timeout);
+	int res = select(FD_SETSIZE, &fd, nullptr, &err, &timeout);
 	if (res < 0 || FD_ISSET(m_handle, &err))
 	{
 		data.clear();
@@ -536,7 +536,7 @@ XsResultValue SerialInterface::readData(XsSize maxLength, XsByteArray& data)
 #ifdef LOG_RX_TX
 	if (length > 0)
 	{
-		if (rx_log == NULL)
+		if (rx_log == nullptr)
 		{
 			char fname[XS_MAX_FILENAME_LENGTH];
 #ifdef _WIN32
@@ -631,10 +631,10 @@ XsResultValue SerialInterface::waitForData(XsSize maxLength, XsByteArray& data)
 	JLTRACE(gJournal, "timeout=" << m_timeout << ", maxLength=" << maxLength);
 	uint32_t timeout = m_timeout;
 
-	uint32_t eTime = XsTime_getTimeOfDay(NULL, NULL) + timeout;
+	uint32_t eTime = XsTime_getTimeOfDay(nullptr, nullptr) + timeout;
 //	uint32_t newLength = 0;
 
-	while ((data.size() < maxLength) && (XsTime_getTimeOfDay(NULL, NULL) <= eTime))
+	while ((data.size() < maxLength) && (XsTime_getTimeOfDay(nullptr, nullptr) <= eTime))
 	{
 		XsByteArray raw;
 
@@ -656,7 +656,7 @@ XsResultValue SerialInterface::waitForData(XsSize maxLength, XsByteArray& data)
 XsResultValue SerialInterface::writeData (const XsByteArray& data, XsSize* written)
 {
 	XsSize bytes;
-	if (written == NULL)
+	if (written == nullptr)
 		written = &bytes;
 
 	if (!isOpen())
@@ -666,7 +666,7 @@ XsResultValue SerialInterface::writeData (const XsByteArray& data, XsSize* writt
 
 #ifdef _WIN32
 	DWORD lwritten = 0;
-	if (WriteFile(m_handle, data.data(), (DWORD) data.size(), &lwritten, NULL) == 0)
+	if (WriteFile(m_handle, data.data(), (DWORD) data.size(), &lwritten, nullptr) == 0)
 		return (m_lastResult = XRV_ERROR);
 
 	*written = lwritten;
@@ -681,7 +681,7 @@ XsResultValue SerialInterface::writeData (const XsByteArray& data, XsSize* writt
 #ifdef LOG_RX_TX
 	if (written[0] > 0)
 	{
-		if (tx_log == NULL)
+		if (tx_log == nullptr)
 		{
 			char fname[XS_MAX_FILENAME_LENGTH];
 #ifdef _WIN32
@@ -711,6 +711,6 @@ void SerialInterface::cancelIo() const
 	/* This function is only available on Windows Vista and higher.
 	   When a read action hangs, this function can cancel IO operations from another thread.
 	*/
-	//CancelIoEx(m_handle, NULL);
+	//CancelIoEx(m_handle, nullptr);
 #endif
 }

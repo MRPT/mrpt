@@ -76,7 +76,7 @@ bool MakeLeftHandedProcess::IsActive( unsigned int pFlags) const
 void MakeLeftHandedProcess::Execute( aiScene* pScene)
 {
 	// Check for an existent root node to proceed
-	ai_assert(pScene->mRootNode != NULL);
+	ai_assert(pScene->mRootNode != nullptr);
 	DefaultLogger::get()->debug("MakeLeftHandedProcess begin");
 
 	// recursively convert all the nodes 

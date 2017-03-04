@@ -29,7 +29,7 @@ namespace mrpt
 		double SLAM_IMPEXP observationsOverlap(
 			const mrpt::obs::CObservation* o1,
 			const mrpt::obs::CObservation* o2,
-			const mrpt::poses::CPose3D *pose_o2_wrt_o1 = NULL );
+			const mrpt::poses::CPose3D *pose_o2_wrt_o1 = nullptr );
 
 		/** Estimates the "overlap" or "matching ratio" of two observations (range [0,1]), possibly taking into account their relative positions.
 		  *  \note This is used in mrpt::slam::CIncrementalMapPartitioner
@@ -37,7 +37,7 @@ namespace mrpt
 		inline double observationsOverlap(
 			const mrpt::obs::CObservationPtr & o1,
 			const mrpt::obs::CObservationPtr & o2,
-			const mrpt::poses::CPose3D *pose_o2_wrt_o1 = NULL ) 
+			const mrpt::poses::CPose3D *pose_o2_wrt_o1 = nullptr ) 
 		{
 			return observationsOverlap(o1.get(), o2.get(), pose_o2_wrt_o1 );
 		}
@@ -49,7 +49,7 @@ namespace mrpt
 		double SLAM_IMPEXP observationsOverlap(
 			const mrpt::obs::CSensoryFrame &sf1,
 			const mrpt::obs::CSensoryFrame &sf2,
-			const mrpt::poses::CPose3D *pose_sf2_wrt_sf1 = NULL );
+			const mrpt::poses::CPose3D *pose_sf2_wrt_sf1 = nullptr );
 
 		/** Estimates the "overlap" or "matching ratio" of two set of observations (range [0,1]), possibly taking into account their relative positions.
 		  *   This method computes the average between each of the observations in each SF.
@@ -58,7 +58,7 @@ namespace mrpt
 		inline double observationsOverlap(
 			const mrpt::obs::CSensoryFramePtr &sf1,
 			const mrpt::obs::CSensoryFramePtr &sf2,
-			const mrpt::poses::CPose3D *pose_sf2_wrt_sf1 = NULL )
+			const mrpt::poses::CPose3D *pose_sf2_wrt_sf1 = nullptr )
 		{
 			return observationsOverlap(*sf1.get(), *sf2.get(), pose_sf2_wrt_sf1);
 		}

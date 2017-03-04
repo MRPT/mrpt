@@ -35,7 +35,7 @@ CHMHMapNode::CHMHMapNode(
 	// -----------------------------------------
 	if (m_parent.get())
 	{
-		// Parent will be NULL only in the default constructor for a temporary
+		// Parent will be nullptr only in the default constructor for a temporary
 		//  initialization before loading the object from "readFromStream"
 		m_ID=0;
 		do

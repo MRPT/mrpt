@@ -29,7 +29,7 @@ using namespace std;
 /*---------------------------------------------------------------
 							Constructor
  ---------------------------------------------------------------*/
-CFileGZInputStream::CFileGZInputStream( const string &fileName ) : m_f(NULL)
+CFileGZInputStream::CFileGZInputStream( const string &fileName ) : m_f(nullptr)
 {
 	MRPT_START
 	open(fileName);
@@ -38,7 +38,7 @@ CFileGZInputStream::CFileGZInputStream( const string &fileName ) : m_f(NULL)
 /*---------------------------------------------------------------
 							Constructor
  ---------------------------------------------------------------*/
-CFileGZInputStream::CFileGZInputStream( ) : m_f(NULL)
+CFileGZInputStream::CFileGZInputStream( ) : m_f(nullptr)
 {
 }
 
@@ -58,7 +58,7 @@ bool CFileGZInputStream::open(const std::string &fileName )
 
 	// Open gz stream:
 	m_f = gzopen(fileName.c_str(),"rb");
-	return m_f != NULL;
+	return m_f != nullptr;
 
 	MRPT_END
 }
@@ -71,7 +71,7 @@ void CFileGZInputStream::close()
 	if (m_f)
 	{
 		gzclose(THE_GZFILE);
-		m_f = NULL;
+		m_f = nullptr;
 	}
 }
 
@@ -127,7 +127,7 @@ uint64_t CFileGZInputStream::getPosition()
  ---------------------------------------------------------------*/
 bool  CFileGZInputStream::fileOpenCorrectly()
 {
-	return m_f!=NULL;
+	return m_f!=nullptr;
 }
 
 /*---------------------------------------------------------------

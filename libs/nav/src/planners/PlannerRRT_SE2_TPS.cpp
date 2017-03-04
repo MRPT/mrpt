@@ -305,7 +305,7 @@ void PlannerRRT_SE2_TPS::solve(
 			// ------------------------------------------------------------
 			double d_new = std::min(D_max, d_rand);   //distance of the new candidate state in TP-space
 
-			//mrpt::poses::CPose2D *log_new_state_ptr=NULL; // For graphical logs only
+			//mrpt::poses::CPose2D *log_new_state_ptr=nullptr; // For graphical logs only
 
 #ifdef DO_LOG_TXTS
 			sLogTxt += mrpt::format("tp_idx=%u tp_exact=%c\n d_free: %f d_rand=%f d_new=%f\n",static_cast<unsigned int>(idxPTG), tp_point_is_exact ? 'Y':'N',d_free,d_rand,d_new);

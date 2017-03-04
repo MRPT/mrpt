@@ -51,7 +51,7 @@ namespace mrpt
 
 
 			 /** Event handler to be called just before a node is being destroyed: it should be called only for nodes involved in the arc, altought other cases must be handled without effects
-			  *   When a node involved in the arc is delected, the corresponding pointer in the arc will be set to NULL and the arc is no longer a valid one.
+			  *   When a node involved in the arc is delected, the corresponding pointer in the arc will be set to nullptr and the arc is no longer a valid one.
 			  */
 			 void  onNodeDestruction(CHMHMapNode *node);
 
@@ -62,7 +62,7 @@ namespace mrpt
 				const CHMHMapNode::TNodeID		&from =0,
 				const CHMHMapNode::TNodeID		&to   =0,
 				const THypothesisIDSet			&hyps = THypothesisIDSet(),
-				CHierarchicalMHMap		*parent=NULL);
+				CHierarchicalMHMap		*parent=nullptr);
 
 			/** Alternative constructor, using pointers for convenience.
 			  */
@@ -79,7 +79,7 @@ namespace mrpt
 				const CHMHMapNode::TNodeID		&from,
 				const CHMHMapNode::TNodeID		&to,
 				const THypothesisIDSet			&hyps = THypothesisIDSet(),
-				CHierarchicalMHMap		*parent=NULL);
+				CHierarchicalMHMap		*parent=nullptr);
 
 			/** Alternative constructor, using pointers for convenience.
 			  */

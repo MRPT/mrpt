@@ -130,7 +130,7 @@ namespace mrpt
 				/** Generate a normalized (mean=0, std=1) normally distributed sample.
 				 *  \param likelihood If desired, pass a pointer to a double which will receive the likelihood of the given sample to have been obtained, that is, the value of the normal pdf at the sample value.
 				 */
-				double drawGaussian1D_normalized( double *likelihood = NULL);
+				double drawGaussian1D_normalized( double *likelihood = nullptr);
 
 				/** Generate a normally distributed pseudo-random number.
 				 * \param mean The mean value of desired normal distribution
@@ -174,7 +174,7 @@ namespace mrpt
 				}
 
 				/** Generate multidimensional random samples according to a given covariance matrix.
-				 *  Mean is assumed to be zero if mean==NULL.
+				 *  Mean is assumed to be zero if mean==nullptr.
 				 * \exception std::exception On invalid covariance matrix
 				 * \sa drawGaussianMultivariateMany
 				 */
@@ -182,12 +182,12 @@ namespace mrpt
 				 void  drawGaussianMultivariate(
 					std::vector<T>		&out_result,
 					const mrpt::math::CMatrixTemplateNumeric<T>	&cov,
-					const std::vector<T>*  mean = NULL
+					const std::vector<T>*  mean = nullptr
 					);
 
 
 				/** Generate multidimensional random samples according to a given covariance matrix.
-				 *  Mean is assumed to be zero if mean==NULL.
+				 *  Mean is assumed to be zero if mean==nullptr.
 				 * \exception std::exception On invalid covariance matrix
 				 * \sa drawGaussianMultivariateMany
 				 */
@@ -195,7 +195,7 @@ namespace mrpt
 				 void  drawGaussianMultivariate(
 					VECTORLIKE	&out_result,
 					const COVMATRIX &cov,
-					const VECTORLIKE* mean = NULL
+					const VECTORLIKE* mean = nullptr
 					)
 				{
 					const size_t N = cov.rows();
@@ -232,14 +232,14 @@ namespace mrpt
 				 * \param cov The covariance matrix where to draw the samples from.
 				 * \param desiredSamples The number of samples to generate.
 				 * \param ret The output list of samples
-				 * \param mean The mean, or zeros if mean==NULL.
+				 * \param mean The mean, or zeros if mean==nullptr.
 				 */
 				 template <typename VECTOR_OF_VECTORS,typename COVMATRIX>
 				 void  drawGaussianMultivariateMany(
 					VECTOR_OF_VECTORS	&ret,
 					size_t               desiredSamples,
 					const COVMATRIX     &cov,
-					const typename VECTOR_OF_VECTORS::value_type *mean = NULL )
+					const typename VECTOR_OF_VECTORS::value_type *mean = nullptr )
 				{
 					ASSERT_EQUAL_(cov.cols(),cov.rows())
 					if (mean) ASSERT_EQUAL_(size_t(mean->size()),size_t(cov.cols()))
@@ -414,9 +414,9 @@ namespace mrpt
 			const mrpt::math::CMatrixTemplateNumeric<T>	&cov,
 			size_t							desiredSamples,
 			std::vector< std::vector<T> >	&ret,
-			std::vector<T>					*samplesLikelihoods = NULL)
+			std::vector<T>					*samplesLikelihoods = nullptr)
 		{
-			randomGenerator.drawGaussianMultivariateMany(ret,desiredSamples,cov,static_cast<const std::vector<T>*>(NULL),samplesLikelihoods);
+			randomGenerator.drawGaussianMultivariateMany(ret,desiredSamples,cov,static_cast<const std::vector<T>*>(nullptr),samplesLikelihoods);
 		}
 
 		/** Generate multidimensional random samples according to a given covariance matrix.

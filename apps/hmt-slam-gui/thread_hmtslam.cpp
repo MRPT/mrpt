@@ -33,7 +33,7 @@ void hmt_slam_guiFrame::thread_HMTSLAM()
 
 		bool is_running_slam = false;
 
-		CFileGZInputStream  *fInRawlog = NULL;
+                CFileGZInputStream  *fInRawlog = nullptr;
 		std::string 		OUT_DIR="./HMTSLAM_OUT";
 		unsigned int		rawlogEntry = 0; // step = 0;
 

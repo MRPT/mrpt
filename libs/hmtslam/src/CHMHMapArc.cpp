@@ -30,7 +30,7 @@ CHMHMapArc::CHMHMapArc(
 		m_arcType(ARC_TYPES,DEFAULT_ARC_TYPE ),
 		m_annotations()
 {
-	// parent will be NULL only inside a ">>" operation, as a temporal
+	// parent will be nullptr only inside a ">>" operation, as a temporal
 	//  initialization of an empty object with the default constructor:
 	// To the graph:
 }
@@ -73,7 +73,7 @@ CHMHMapArc::CHMHMapArc(
 	if (from) m_nodeFrom = from->getID();
 	if (to)   m_nodeTo = to->getID();
 
-	// parent will be NULL only inside a ">>" operation, as a temporal
+	// parent will be nullptr only inside a ">>" operation, as a temporal
 	//  initialization of an empty object with the default constructor:
 }
 

@@ -34,7 +34,7 @@ void CICPCriteriaNRD<GRAPH_t>::initCICPCriteriaNRD() {
 	m_use_distance_node_reg = true;
 
 
-	m_graph = NULL;
+	m_graph = nullptr;
 
 	// Current node registration decider *decides* how many nodes are there
 	// currently in the graph (no need to ask m_graph->nodeCount)..
@@ -204,7 +204,7 @@ bool CICPCriteriaNRD<GRAPH_t>::checkRegistrationCondition2D() {
 			*m_last_laser_scan2D,
 			*m_curr_laser_scan2D,
 			&rel_edge,
-			NULL,
+			nullptr,
 			&icp_info);
 
 	// Debugging directives
@@ -311,7 +311,7 @@ bool CICPCriteriaNRD<GRAPH_t>::checkRegistrationCondition3D() {
 			*m_last_laser_scan3D,
 			*m_curr_laser_scan3D,
 			rel_edge,
-			NULL,
+			nullptr,
 			&icp_info);
 
 	// Criterions for updating PDF since last registered node

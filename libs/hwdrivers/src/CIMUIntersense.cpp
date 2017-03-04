@@ -42,7 +42,7 @@ using namespace std;
 					CIMUIntersense
 -------------------------------------------------------------*/
 CIMUIntersense::CIMUIntersense( ) :
-	m_handles_ptr	(NULL),
+	m_handles_ptr	(nullptr),
 	m_timeStartUI	(0),
 	m_timeStartTT	(0),
 	m_sensorPose    (),
@@ -70,7 +70,7 @@ CIMUIntersense::~CIMUIntersense()
 {
 #if MRPT_HAS_INTERSENSE
 	ISD_CloseTracker(0);	// close all the sensors
-	delete[] isense_handles; m_handles_ptr = NULL;
+	delete[] isense_handles; m_handles_ptr = nullptr;
 #endif
 }
 
@@ -212,7 +212,7 @@ void CIMUIntersense::initialize()
 	// ISD_TRACKER_HANDLE              Trackers[ISD_MAX_TRACKERS];
 	DWORD openSuccess = FALSE;
 	cout << "Opening trackers... ";
-	openSuccess = ISD_OpenAllTrackers( (Hwnd)NULL, isense_handles, FALSE, TRUE );
+	openSuccess = ISD_OpenAllTrackers( (Hwnd)nullptr, isense_handles, FALSE, TRUE );
 	if( openSuccess < 1 )
 		cout << "ERROR" << endl;
 	else
@@ -271,7 +271,7 @@ void CIMUIntersense::initialize()
 					{
 						if( false && m_useBuffer )
 						{
-							ISD_RingBufferSetup(isense_handles[i],i,NULL,180);
+							ISD_RingBufferSetup(isense_handles[i],i,nullptr,180);
 							ISD_RingBufferStart(isense_handles[i],i);
 						}
 						

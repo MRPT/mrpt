@@ -74,7 +74,7 @@ inline void ArrayDelete(T**& in, unsigned int& num)
 		delete in[i];
 
 	delete[] in;
-	in = NULL;
+	in = nullptr;
 	num = 0;
 }
 
@@ -102,9 +102,9 @@ bool UpdateNodeGraph(aiNode* node,std::list<aiNode*>& childsOfParent,bool root)
 		{
 			childsOfParent.insert(childsOfParent.end(),mine.begin(),mine.end());
 
-			// set all children to NULL to make sure they are not deleted when we delete ourself
+			// set all children to nullptr to make sure they are not deleted when we delete ourself
 			for (unsigned int i = 0; i < node->mNumChildren;++i)
-				node->mChildren[i] = NULL;
+				node->mChildren[i] = nullptr;
 		}
 		b = true;
 		delete node;
@@ -168,7 +168,7 @@ void RemoveVCProcess::Execute( aiScene* pScene)
 
 		pScene->mNumMaterials = 1;
 		aiMaterial* helper = (aiMaterial*) pScene->mMaterials[0];
-		ai_assert(NULL != helper);
+		ai_assert(nullptr != helper);
 		helper->Clear();
 
 		// gray
@@ -255,7 +255,7 @@ bool RemoveVCProcess::ProcessMesh(aiMesh* pMesh)
 	if (configDeleteFlags & aiComponent_NORMALS && pMesh->mNormals)
 	{
 		delete[] pMesh->mNormals;
-		pMesh->mNormals = NULL;
+		pMesh->mNormals = nullptr;
 		ret = true;
 	}
 
@@ -263,10 +263,10 @@ bool RemoveVCProcess::ProcessMesh(aiMesh* pMesh)
 	if (configDeleteFlags & aiComponent_TANGENTS_AND_BITANGENTS && pMesh->mTangents)
 	{
 		delete[] pMesh->mTangents;
-		pMesh->mTangents = NULL;
+		pMesh->mTangents = nullptr;
 
 		delete[] pMesh->mBitangents;
-		pMesh->mBitangents = NULL;
+		pMesh->mBitangents = nullptr;
 		ret = true;
 	}
 
@@ -278,7 +278,7 @@ bool RemoveVCProcess::ProcessMesh(aiMesh* pMesh)
 		if (configDeleteFlags & aiComponent_TEXCOORDSn(real) || b)
 		{
 			delete pMesh->mTextureCoords[i];
-			pMesh->mTextureCoords[i] = NULL;
+			pMesh->mTextureCoords[i] = nullptr;
 			ret = true;
 
 			if (!b)
@@ -287,7 +287,7 @@ bool RemoveVCProcess::ProcessMesh(aiMesh* pMesh)
 				for (unsigned int a = i+1; a < AI_MAX_NUMBER_OF_TEXTURECOORDS;++a)
 					pMesh->mTextureCoords[a-1] = pMesh->mTextureCoords[a];
 				
-				pMesh->mTextureCoords[AI_MAX_NUMBER_OF_TEXTURECOORDS-1] = NULL;
+				pMesh->mTextureCoords[AI_MAX_NUMBER_OF_TEXTURECOORDS-1] = nullptr;
 				continue;
 			}
 		}
@@ -302,7 +302,7 @@ bool RemoveVCProcess::ProcessMesh(aiMesh* pMesh)
 		if (configDeleteFlags & aiComponent_COLORSn(i) || b)
 		{
 			delete pMesh->mColors[i];
-			pMesh->mColors[i] = NULL;
+			pMesh->mColors[i] = nullptr;
 			ret = true;
 
 			if (!b)
@@ -311,7 +311,7 @@ bool RemoveVCProcess::ProcessMesh(aiMesh* pMesh)
 				for (unsigned int a = i+1; a < AI_MAX_NUMBER_OF_COLOR_SETS;++a)
 					pMesh->mColors[a-1] = pMesh->mColors[a];
 
-				pMesh->mColors[AI_MAX_NUMBER_OF_COLOR_SETS-1] = NULL;
+				pMesh->mColors[AI_MAX_NUMBER_OF_COLOR_SETS-1] = nullptr;
 				continue;
 			}
 		}

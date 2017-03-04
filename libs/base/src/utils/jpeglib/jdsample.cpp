@@ -159,7 +159,7 @@ METHODDEF(void)
 noop_upsample (j_decompress_ptr , jpeg_component_info * ,
 	       JSAMPARRAY , JSAMPARRAY * output_data_ptr)
 {
-  *output_data_ptr = NULL;	/* safety check */
+  *output_data_ptr = nullptr;	/* safety check */
 }
 
 

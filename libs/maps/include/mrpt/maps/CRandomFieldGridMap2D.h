@@ -236,7 +236,7 @@ namespace maps
 		  *  \param[in] connectivity_descriptor Optional user-supplied object that will visit all grid cells to define their connectivity with neighbors and the strength of existing edges. If present, it overrides all options in insertionOptions
 		  * \sa resize
 		  */
-		virtual void setSize(const double x_min, const double x_max, const double y_min, const double y_max, const double resolution, const TRandomFieldCell * fill_value = NULL);
+		virtual void setSize(const double x_min, const double x_max, const double y_min, const double y_max, const double resolution, const TRandomFieldCell * fill_value = nullptr);
 
 		/** Base class for user-supplied objects capable of describing cells connectivity, used to build prior factors of the MRF graph. \sa setCellsConnectivity() */
 		struct MAPS_IMPEXP ConnectivityDescriptor

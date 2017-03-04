@@ -46,7 +46,7 @@ public:
 	const pair<CPolyhedronPtr,CPolyhedronPtr> *polys;
 	vector<TSegment3D> intersection;
 	PIThreadParam(const pair<CPolyhedronPtr,CPolyhedronPtr> &p):polys(&p),intersection()	{}
-	PIThreadParam():polys(NULL),intersection()	{}
+	PIThreadParam():polys(nullptr),intersection()	{}
 	inline static PIThreadParam createObject(const pair<CPolyhedronPtr,CPolyhedronPtr> &p)	{
 		return PIThreadParam(p);
 	}

@@ -232,7 +232,7 @@ wxBmpComboBox::~wxBmpComboBox()
 
 void wxBmpComboBox::Init()
 {
-    m_labelWin = NULL;
+    m_labelWin = nullptr;
     m_frozen = true;
     m_selection = 0;
     m_win_border = 0;

@@ -24,7 +24,7 @@
 /**
    @param argvLen the largest number of arguments we'll parse
 
-   @param extraSpaceChar if not NULL, then this character will also be
+   @param extraSpaceChar if not nullptr, then this character will also be
     used to break up arguments (in addition to whitespace)
 **/
 AREXPORT ArArgumentBuilder::ArArgumentBuilder(size_t argvLen,
@@ -349,7 +349,7 @@ AREXPORT void ArArgumentBuilder::setFullString(const char *str)
 AREXPORT const char* ArArgumentBuilder::getArg(size_t whichArg) const
 {
   if (whichArg >= myArgc)
-    return NULL;
+    return nullptr;
   else
     return myArgv[whichArg];
 }
@@ -364,7 +364,7 @@ AREXPORT void ArArgumentBuilder::log(void) const
 
 AREXPORT bool ArArgumentBuilder::isArgBool(size_t whichArg) const
 {
-  if (whichArg > myArgc || getArg(whichArg) == NULL)
+  if (whichArg > myArgc || getArg(whichArg) == nullptr)
     return false;
 
   if (strcasecmp(getArg(whichArg), "true") == 0 ||
@@ -378,7 +378,7 @@ AREXPORT bool ArArgumentBuilder::isArgBool(size_t whichArg) const
 
 AREXPORT bool ArArgumentBuilder::getArgBool(size_t whichArg) const
 {
-  if (whichArg > myArgc || getArg(whichArg) == NULL)
+  if (whichArg > myArgc || getArg(whichArg) == nullptr)
     return false;
 
   if (strcasecmp(getArg(whichArg), "true") == 0 ||
@@ -393,7 +393,7 @@ AREXPORT bool ArArgumentBuilder::isArgInt(size_t whichArg) const
   const char *str;
   //int ret;
   char *endPtr;
-  if (whichArg > myArgc || getArg(whichArg) == NULL)
+  if (whichArg > myArgc || getArg(whichArg) == nullptr)
     return false;
 
   str = getArg(whichArg);
@@ -410,7 +410,7 @@ AREXPORT int ArArgumentBuilder::getArgInt(size_t whichArg) const
   const char *str;
   int ret;
   char *endPtr;
-  if (whichArg > myArgc || getArg(whichArg) == NULL)
+  if (whichArg > myArgc || getArg(whichArg) == nullptr)
     return 0;
 
   str = getArg(whichArg);
@@ -426,7 +426,7 @@ AREXPORT bool ArArgumentBuilder::isArgDouble(size_t whichArg) const
   const char *str;
   //double ret;
   char *endPtr;
-  if (whichArg > myArgc || getArg(whichArg) == NULL)
+  if (whichArg > myArgc || getArg(whichArg) == nullptr)
     return false;
 
   str = getArg(whichArg);
@@ -455,7 +455,7 @@ AREXPORT double ArArgumentBuilder::getArgDouble(size_t whichArg) const
   const char *str;
   double ret;
   char *endPtr;
-  if (whichArg > myArgc || getArg(whichArg) == NULL)
+  if (whichArg > myArgc || getArg(whichArg) == nullptr)
     return 0;
 
   str = getArg(whichArg);

@@ -41,9 +41,9 @@ private:
   HANDLE hEvent;
 
 public:
-  inline QuickEvent(const bool signaled=false) : hEvent(NULL)
+  inline QuickEvent(const bool signaled=false) : hEvent(nullptr)
   {
-    hEvent = CreateEvent(NULL, TRUE, (BOOL)signaled, NULL);
+    hEvent = CreateEvent(nullptr, TRUE, (BOOL)signaled, nullptr);
   }
   inline ~QuickEvent()
   {
@@ -99,7 +99,7 @@ private:
     {
       State state = *((State*)lpParameter); // clone state (no heap alloc!)
       state.sigclone->Signal(); // done cloning, signal back to creator
-      state.sigclone = NULL;
+      state.sigclone = nullptr;
 
       // start wrapped thread procedure
       DWORD ret = (DWORD)state.routine(state.params);
@@ -119,7 +119,7 @@ private:
 
 public:
   template<typename F>
-  inline QuickThread(F* proc, void* params, const bool auto_release=false) : hThread(NULL)
+  inline QuickThread(F* proc, void* params, const bool auto_release=false) : hThread(nullptr)
   {
     // the 'typename' is required here because of dependent names...
     // MSVC relaxes this constraint, but it goes against the standard.
@@ -136,7 +136,7 @@ public:
     state.sigclone = &hWaitThunkCloneState;
 
     // Ready to issue the thread creation:
-    hThread = CreateThread(NULL, 0, &ThreadWrapper<F>::Thunk, (LPVOID)&state, 0, NULL);
+    hThread = CreateThread(nullptr, 0, &ThreadWrapper<F>::Thunk, (LPVOID)&state, 0, nullptr);
 
     // Wait for the thread thunk to clone the state...
     hWaitThunkCloneState.Wait();
@@ -309,7 +309,7 @@ struct EventList
 
   QuickEvent* operator [] (const unsigned int index)
   {
-    QuickEvent* poEvent (NULL);
+    QuickEvent* poEvent (nullptr);
     mutex.Enter();
       poEvent = m_vEvents[index];
     mutex.Leave();

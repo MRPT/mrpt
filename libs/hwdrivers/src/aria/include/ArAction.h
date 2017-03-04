@@ -60,7 +60,7 @@ public:
       on the resolver's processing of previous, higher-priority actions.
       This is only for the purpose of giving information to the 
       action, changing it has no effect.
-      @return pointer to what this action wants to do, NULL if it wants to do 
+      @return pointer to what this action wants to do, nullptr if it wants to do 
       nothing. Common practice is to keep an ArActionDesired
       object in your action subclass, and return a pointer to
       that object. This avoids the need to create 
@@ -87,9 +87,9 @@ public:
   /// Gets the long description of the action
   AREXPORT virtual const char *getDescription(void) const;
   /// Gets what this action wants to do (for display purposes)
-  /*AREXPORT*/ virtual ArActionDesired *getDesired(void) { return NULL; }
+  /*AREXPORT*/ virtual ArActionDesired *getDesired(void) { return nullptr; }
   /// Gets what this action wants to do (for display purposes)
-  /*AREXPORT*/ virtual const ArActionDesired *getDesired(void) const { return NULL; }
+  /*AREXPORT*/ virtual const ArActionDesired *getDesired(void) const { return nullptr; }
   /// Log information about this action using ArLog.
   AREXPORT virtual void log(bool verbose = true) const;
 

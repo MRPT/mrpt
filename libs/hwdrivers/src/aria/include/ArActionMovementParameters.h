@@ -48,7 +48,7 @@ public:
 			      double rotDecel = 0);
   /// Adds to the ArConfig given, in section, with prefix
   AREXPORT void addToConfig(ArConfig *config, const char *section,
-			    const char *prefix = NULL);
+			    const char *prefix = nullptr);
 protected:
   bool myEnabled;
   bool myEnableOnce;

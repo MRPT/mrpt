@@ -248,7 +248,7 @@ bool CSwissRanger3DCamera::getMesaLibVersion(std::string &out_version) const
 
 bool CSwissRanger3DCamera::isOpen() const
 {
-	return m_cam != NULL;
+	return m_cam != nullptr;
 }
 
 bool CSwissRanger3DCamera::open()
@@ -311,7 +311,7 @@ void CSwissRanger3DCamera::close()
 #if MRPT_HAS_SWISSRANGE
 	if (m_cam)
 		SR_Close(SRCAM(m_cam));
-	m_cam = NULL;
+	m_cam = nullptr;
 #endif
 }
 

@@ -254,7 +254,7 @@ void ArConfigArg::copy(const ArConfigArg &arg)
 
   myIntType = arg.myIntType;
   myOwnPointedTo = arg.myOwnPointedTo;
-  if (arg.myOwnPointedTo && arg.myIntPointer != NULL)
+  if (arg.myOwnPointedTo && arg.myIntPointer != nullptr)
   {
     myIntPointer = new int;
     *myIntPointer = *arg.myIntPointer;
@@ -263,7 +263,7 @@ void ArConfigArg::copy(const ArConfigArg &arg)
   {
     myIntPointer = arg.myIntPointer;
   }
-  if (arg.myOwnPointedTo && arg.myIntShortPointer != NULL)
+  if (arg.myOwnPointedTo && arg.myIntShortPointer != nullptr)
   {
     myIntShortPointer = new short;
     *myIntShortPointer = *arg.myIntShortPointer;
@@ -272,7 +272,7 @@ void ArConfigArg::copy(const ArConfigArg &arg)
   {
     myIntShortPointer = arg.myIntShortPointer;
   }
-  if (arg.myOwnPointedTo && arg.myIntUnsignedShortPointer != NULL)
+  if (arg.myOwnPointedTo && arg.myIntUnsignedShortPointer != nullptr)
   {
     myIntUnsignedShortPointer = new unsigned short;
     *myIntUnsignedShortPointer = *arg.myIntUnsignedShortPointer;
@@ -281,7 +281,7 @@ void ArConfigArg::copy(const ArConfigArg &arg)
   {
     myIntUnsignedShortPointer = arg.myIntUnsignedShortPointer;
   }
-  if (arg.myOwnPointedTo && arg.myIntUnsignedCharPointer != NULL)
+  if (arg.myOwnPointedTo && arg.myIntUnsignedCharPointer != nullptr)
   {
     myIntUnsignedCharPointer = new unsigned char;
     *myIntUnsignedCharPointer = *arg.myIntUnsignedCharPointer;
@@ -290,7 +290,7 @@ void ArConfigArg::copy(const ArConfigArg &arg)
   {
     myIntUnsignedCharPointer = arg.myIntUnsignedCharPointer;
   }
-  if (arg.myOwnPointedTo && arg.myDoublePointer != NULL)
+  if (arg.myOwnPointedTo && arg.myDoublePointer != nullptr)
   {
     myDoublePointer = new double;
     *myDoublePointer = *arg.myDoublePointer;
@@ -299,7 +299,7 @@ void ArConfigArg::copy(const ArConfigArg &arg)
   {
     myDoublePointer = arg.myDoublePointer;
   }
-  if (arg.myOwnPointedTo && arg.myBoolPointer != NULL)
+  if (arg.myOwnPointedTo && arg.myBoolPointer != nullptr)
   {
     myBoolPointer = new bool;
     *myBoolPointer = *arg.myBoolPointer;
@@ -334,25 +334,25 @@ void ArConfigArg::clear(void)
 
   myIntType = INT_NOT;
   myOwnPointedTo = false;
-  if (myOwnPointedTo && myIntPointer != NULL)
+  if (myOwnPointedTo && myIntPointer != nullptr)
     delete myIntPointer;
-  myIntPointer = NULL;
-  if (myOwnPointedTo && myIntShortPointer != NULL)
+  myIntPointer = nullptr;
+  if (myOwnPointedTo && myIntShortPointer != nullptr)
     delete myIntShortPointer;
-  myIntShortPointer = NULL;
-  if (myOwnPointedTo && myIntUnsignedShortPointer != NULL)
+  myIntShortPointer = nullptr;
+  if (myOwnPointedTo && myIntUnsignedShortPointer != nullptr)
     delete myIntUnsignedShortPointer;
-  myIntUnsignedShortPointer = NULL;
-  if (myOwnPointedTo && myIntUnsignedCharPointer != NULL)
+  myIntUnsignedShortPointer = nullptr;
+  if (myOwnPointedTo && myIntUnsignedCharPointer != nullptr)
     delete myIntUnsignedCharPointer;
-  myIntUnsignedCharPointer = NULL;
-  if (myOwnPointedTo && myDoublePointer != NULL)
+  myIntUnsignedCharPointer = nullptr;
+  if (myOwnPointedTo && myDoublePointer != nullptr)
     delete myDoublePointer;
-  myDoublePointer = NULL;
-  if (myOwnPointedTo && myBoolPointer != NULL)
+  myDoublePointer = nullptr;
+  if (myOwnPointedTo && myBoolPointer != nullptr)
     delete myBoolPointer;
-  myBoolPointer = NULL;
-  myStringPointer = NULL;
+  myBoolPointer = nullptr;
+  myStringPointer = nullptr;
   myUsingOwnedString = false;
   myString = "";
   myMinInt = INT_MIN;
@@ -360,8 +360,8 @@ void ArConfigArg::clear(void)
   myMinDouble = -HUGE_VAL;
   myMaxDouble = HUGE_VAL;
   myMaxStrLen = 0;
-  mySetFunctor = NULL;
-  myGetFunctor = NULL;
+  mySetFunctor = nullptr;
+  myGetFunctor = nullptr;
   myConfigPriority = ArPriority::NORMAL;
   myIgnoreBounds = false;
   myDisplayHint = "";
@@ -421,13 +421,13 @@ AREXPORT const char *ArConfigArg::getDescription(void) const
 AREXPORT int ArConfigArg::getInt(void) const
 {
   // only one of these will be valid
-  if (myIntPointer != NULL)
+  if (myIntPointer != nullptr)
     return *myIntPointer;
-  else if (myIntShortPointer != NULL)
+  else if (myIntShortPointer != nullptr)
     return *myIntShortPointer;
-  else if (myIntUnsignedShortPointer != NULL)
+  else if (myIntUnsignedShortPointer != nullptr)
     return *myIntUnsignedShortPointer;
-  else if (myIntUnsignedCharPointer != NULL)
+  else if (myIntUnsignedCharPointer != nullptr)
     return *myIntUnsignedCharPointer;
   else
     return 0;
@@ -435,7 +435,7 @@ AREXPORT int ArConfigArg::getInt(void) const
 
 AREXPORT double ArConfigArg::getDouble(void) const
 {
-  if (myDoublePointer != NULL)
+  if (myDoublePointer != nullptr)
     return *myDoublePointer;
   else
     return 0;
@@ -443,7 +443,7 @@ AREXPORT double ArConfigArg::getDouble(void) const
 
 AREXPORT bool ArConfigArg::getBool(void) const
 {
-  if (myBoolPointer != NULL)
+  if (myBoolPointer != nullptr)
     return *myBoolPointer;
   else
     return false;
@@ -453,16 +453,16 @@ AREXPORT const char *ArConfigArg::getString(void) const
 {
   if (myUsingOwnedString)
     return myString.c_str();
-  else if (myStringPointer != NULL)
+  else if (myStringPointer != nullptr)
     return myStringPointer;
   else
-    return NULL;
+    return nullptr;
 }
 
 AREXPORT const std::list<ArArgumentBuilder *> *ArConfigArg::getArgsWithFunctor(void) const
 {
-  if (myGetFunctor == NULL)
-    return NULL;
+  if (myGetFunctor == nullptr)
+    return nullptr;
   else
     return myGetFunctor->invokeR();
 }
@@ -474,25 +474,25 @@ AREXPORT bool ArConfigArg::setInt(int val, char *errorBuffer,
   if (!myIgnoreBounds && val < myMinInt)
   {
     ArLog::log(ArLog::Normal, "ArConfigArg of %s: setInt value %d below range [%d, %d]", getName(), val, myMinInt, myMaxInt);
-    if (errorBuffer != NULL)
+    if (errorBuffer != nullptr)
       snprintf(errorBuffer, errorBufferLen, "%s value of %d is below minimum of %d.", getName(), val, myMinInt);
     return false;
   }
   if (!myIgnoreBounds && val > myMaxInt)
   {
     ArLog::log(ArLog::Normal, "ArConfigArg of %s: setInt value %d above range [%d, %d]", getName(), val, myMinInt, myMaxInt);
-    if (errorBuffer != NULL)
+    if (errorBuffer != nullptr)
       snprintf(errorBuffer, errorBufferLen, "%s value of %d is above maximum of %d.", getName(), val, myMaxInt);
     return false;
   }
-  if ((myIntType == INT_INT && myIntPointer == NULL) ||
-      (myIntType == INT_SHORT && myIntShortPointer == NULL) ||
+  if ((myIntType == INT_INT && myIntPointer == nullptr) ||
+      (myIntType == INT_SHORT && myIntShortPointer == nullptr) ||
       (myIntType == INT_UNSIGNED_SHORT &&
-       myIntUnsignedShortPointer == NULL) ||
-      (myIntType == INT_UNSIGNED_CHAR && myIntUnsignedCharPointer == NULL))
+       myIntUnsignedShortPointer == nullptr) ||
+      (myIntType == INT_UNSIGNED_CHAR && myIntUnsignedCharPointer == nullptr))
   {
-    ArLog::log(ArLog::Normal, "ArConfigArg of %s: setInt called with NULL int pointer.", getName());
-    if (errorBuffer != NULL)
+    ArLog::log(ArLog::Normal, "ArConfigArg of %s: setInt called with nullptr int pointer.", getName());
+    if (errorBuffer != nullptr)
       snprintf(errorBuffer, errorBufferLen, "%s pointer is NULL.", getName());
     return false;
   }
@@ -510,7 +510,7 @@ AREXPORT bool ArConfigArg::setInt(int val, char *errorBuffer,
     else
     {
       ArLog::log(ArLog::Normal, "ArConfigArg of %s: int is bad type.", getName());
-      if (errorBuffer != NULL)
+      if (errorBuffer != nullptr)
 	snprintf(errorBuffer, errorBufferLen, "%s int is bad type (%d).", getName(), myIntType);
       return false;
     }
@@ -525,21 +525,21 @@ AREXPORT bool ArConfigArg::setDouble(double val, char *errorBuffer,
   if (!myIgnoreBounds && val < myMinDouble)
   {
     ArLog::log(ArLog::Normal, "ArConfigArg of %s: setDouble value %g below range [%g, %g]", getName(), val, myMinDouble, myMaxDouble);
-    if (errorBuffer != NULL)
+    if (errorBuffer != nullptr)
       snprintf(errorBuffer, errorBufferLen, "%s value of %g is below minimum of %g.", getName(), val, myMinDouble);
     return false;
   }
   if (!myIgnoreBounds && val > myMaxDouble)
   {
     ArLog::log(ArLog::Normal, "ArConfigArg of %s: setDouble value %g above range [%g, %g]", getName(), val, myMinDouble, myMaxDouble);
-    if (errorBuffer != NULL)
+    if (errorBuffer != nullptr)
       snprintf(errorBuffer, errorBufferLen, "%s value of %g is above maximum of %g.", getName(), val, myMaxDouble);
     return false;
   }
-  if (myDoublePointer == NULL)
+  if (myDoublePointer == nullptr)
   {
-    ArLog::log(ArLog::Normal, "ArConfigArg of %s: setDouble called with NULL pointer.", getName());
-    if (errorBuffer != NULL)
+    ArLog::log(ArLog::Normal, "ArConfigArg of %s: setDouble called with nullptr pointer.", getName());
+    if (errorBuffer != nullptr)
       snprintf(errorBuffer, errorBufferLen, "%s pointer is NULL.", getName());
     return false;
   }
@@ -554,10 +554,10 @@ AREXPORT bool ArConfigArg::setBool(bool val, char *errorBuffer,
 				   size_t errorBufferLen, bool doNotSet)
 {
   myValueSet = true;
-  if (myBoolPointer == NULL)
+  if (myBoolPointer == nullptr)
   {
-    ArLog::log(ArLog::Normal, "ArConfigArg of %s: setBool called with NULL pointer.", getName());
-    if (errorBuffer != NULL)
+    ArLog::log(ArLog::Normal, "ArConfigArg of %s: setBool called with nullptr pointer.", getName());
+    if (errorBuffer != nullptr)
       snprintf(errorBuffer, errorBufferLen, "%s pointer is NULL.", getName());
     return false;
   }
@@ -576,19 +576,19 @@ AREXPORT bool ArConfigArg::setString(const char *str, char *errorBuffer,
     myString = str;
     return true;
   }
-  if (myStringPointer == NULL)
+  if (myStringPointer == nullptr)
   {
-    ArLog::log(ArLog::Normal, "ArConfigArg of %s: setString called with NULL pointer.", getName());
-    if (errorBuffer != NULL)
+    ArLog::log(ArLog::Normal, "ArConfigArg of %s: setString called with nullptr pointer.", getName());
+    if (errorBuffer != nullptr)
       snprintf(errorBuffer, errorBufferLen, "%s pointer is NULL.", getName());
     return false;
   }
-  // this is >= so that if it wouldn't have room with NULL that's
+  // this is >= so that if it wouldn't have room with nullptr that's
   // taken care of too
   if ((len = strlen(str)) >= myMaxStrLen)
   {
     ArLog::log(ArLog::Normal, "ArConfigArg of %s: setString called with argument %d long, when max length is %d.", getName(), len, myMaxStrLen);
-    if (errorBuffer != NULL)
+    if (errorBuffer != nullptr)
       snprintf(errorBuffer, errorBufferLen, "%s string is %d long when max length is %d.", getName(), (int)len, (int)myMaxStrLen);
     return false;
   }
@@ -604,10 +604,10 @@ AREXPORT bool ArConfigArg::setArgWithFunctor(ArArgumentBuilder *argument,
 {
   myValueSet = true;
   bool ret = true;
-  if (mySetFunctor == NULL)
+  if (mySetFunctor == nullptr)
   {
-    ArLog::log(ArLog::Normal, "ArConfigArg of %s: setArgWithFunctor called with NULL pointer.", getName());
-    if (errorBuffer != NULL)
+    ArLog::log(ArLog::Normal, "ArConfigArg of %s: setArgWithFunctor called with nullptr pointer.", getName());
+    if (errorBuffer != nullptr)
       snprintf(errorBuffer, errorBufferLen, "%s pointer is NULL.", getName());
     return false;
   }
@@ -727,7 +727,7 @@ AREXPORT const char *ArConfigArg::getDisplayHint() const
     return myDisplayHint.c_str();
   }
   else {
-    return NULL;
+    return nullptr;
   }
 } // end method getDisplayHint
 
@@ -782,7 +782,7 @@ AREXPORT const char *ArConfigArg::getDisplayHint() const
 **/
 AREXPORT void ArConfigArg::setDisplayHint(const char *hintText)
 {
-  if (hintText != NULL) {
+  if (hintText != nullptr) {
     myDisplayHint = hintText;
   }
   else {

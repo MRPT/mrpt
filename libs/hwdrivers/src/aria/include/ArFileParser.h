@@ -28,7 +28,7 @@
    there were errors.
 
    One side feature is that you can have ONE handler for the keyword
-   NULL, and if there is a line read that isn't entirely comments or
+   nullptr, and if there is a line read that isn't entirely comments or
    whitespace that handler will be given the line.  There isn't an
    explicit set for them since then there'd be another set of 5 adds.
 
@@ -70,7 +70,7 @@ public:
   /// The function to parse a file
   AREXPORT bool parseFile(const char *fileName, bool continueOnErrors = true,
 			  bool noFileNotFoundMessage = false,
-			  char *errorBuffer = NULL, size_t errorBufferLen = 0);
+			  char *errorBuffer = nullptr, size_t errorBufferLen = 0);
 
   /// Parses an open file; the file is not closed by this method.
   /**
@@ -82,14 +82,14 @@ public:
   **/
   AREXPORT bool parseFile(FILE *file, char *buffer, int bufferLength,
 			  bool continueOnErrors = true,
-			  char *errorBuffer = NULL, size_t errorBufferLen = 0);
+			  char *errorBuffer = nullptr, size_t errorBufferLen = 0);
 
   /// Gets the base directory
   AREXPORT const char *getBaseDirectory(void) const;
   /// Sets the base directory
   AREXPORT void setBaseDirectory(const char *baseDirectory);
   /// Function to parse a single line
-  AREXPORT bool parseLine(char *line, char *errorBuffer = NULL,
+  AREXPORT bool parseLine(char *line, char *errorBuffer = nullptr,
 			  size_t errorBufferLen = 0);
   /// Function to reset counters
   AREXPORT void resetCounters(void);
@@ -101,20 +101,20 @@ protected:
 	    ArRetFunctor3<bool, ArArgumentBuilder *, char *, size_t> *functor)
     {
       myCallbackWithError = functor;
-      myCallback = NULL;
+      myCallback = nullptr;
     }
     HandlerCBType(ArRetFunctor1<bool, ArArgumentBuilder *> *functor)
     {
-      myCallbackWithError = NULL;
+      myCallbackWithError = nullptr;
       myCallback = functor;
     }
     ~HandlerCBType() {}
     bool call(ArArgumentBuilder *arg, char *errorBuffer,
 	      size_t errorBufferLen)
     {
-      if (myCallbackWithError != NULL)
+      if (myCallbackWithError != nullptr)
 	return myCallbackWithError->invokeR(arg, errorBuffer, errorBufferLen);
-      else if (myCallback != NULL)
+      else if (myCallback != nullptr)
 	return myCallback->invokeR(arg);
       // if we get here there's a problem
       ArLog::log(ArLog::Terse, "ArFileParser: Horrible problem with process callbacks");
@@ -137,13 +137,13 @@ protected:
     }
     const char *getName(void)
     {
-      if (myCallbackWithError != NULL)
+      if (myCallbackWithError != nullptr)
 	return myCallbackWithError->getName();
-      else if (myCallback != NULL)
+      else if (myCallback != nullptr)
 	return myCallback->getName();
       // if we get here there's a problem
       ArLog::log(ArLog::Terse, "ArFileParser: Horrible problem with process callback names");
-      return NULL;
+      return nullptr;
     }
     protected:
     ArRetFunctor3<bool, ArArgumentBuilder *, char *, size_t> *myCallbackWithError;
@@ -152,7 +152,7 @@ protected:
   int myLineNumber;
   std::string myBaseDir;
   std::map<std::string, std::shared_ptr<HandlerCBType>, ArStrCaseCmpOp> myMap;
-  // handles that NULL case
+  // handles that nullptr case
   std::shared_ptr<HandlerCBType> myRemainderHandler;
 };
 

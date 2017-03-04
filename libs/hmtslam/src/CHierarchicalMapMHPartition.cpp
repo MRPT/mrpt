@@ -142,7 +142,7 @@ void  CHierarchicalMapMHPartition::saveAreasDiagramForMATLAB(
 	unsigned int	nAreaNodes=0;
 
 	const CHMHMapNode	*refNode = getNodeByID( idReferenceNode );
-	ASSERT_(refNode!=NULL);
+	ASSERT_(refNode!=nullptr);
 	ASSERT_(refNode->nodeType.isType("Area"));
 
 	FILE	*f=os::fopen(filName.c_str(),"wt");
@@ -320,7 +320,7 @@ void  CHierarchicalMapMHPartition::saveAreasDiagramWithEllipsedForMATLAB(
 /*	MRPT_START
 
 	const CHMHMapNode	*refNode = getNodeByID( idReferenceNode );
-	ASSERT_(refNode!=NULL);
+	ASSERT_(refNode!=nullptr);
 	ASSERT_(refNode->nodeType.isType("Area"));
 
 	FILE	*f=os::fopen(filName.c_str(),"wt");
@@ -489,7 +489,7 @@ void  CHierarchicalMapMHPartition::saveGlobalMapForMATLAB(
 	unsigned int	nAreaNodes=0;
 
 	const CHMHMapNode	*refNode = getNodeByID( idReferenceNode );
-	ASSERT_(refNode!=NULL);
+	ASSERT_(refNode!=nullptr);
 	ASSERT_(refNode->nodeType.isType("Area"));
 
 	FILE	*f=os::fopen(filName.c_str(),"wt");
@@ -594,7 +594,7 @@ void  CHierarchicalMapMHPartition::saveGlobalMapForMATLAB(
 
 		CMultiMetricMap		*metricMap = (CMultiMetricMap*) node->annotations.get("hybridMetricMap");
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG)
-		ASSERT_(metricMap!=NULL);
+		ASSERT_(metricMap!=nullptr);
 		ASSERT_(metricMap->m_pointsMap);
 #endif
 		int			n;
@@ -1323,7 +1323,7 @@ void  CHierarchicalMapMHPartition::computeGloballyConsistentNodeCoordinates(
 	graphslam::optimize_graph_spa_levmarq(
 		pose_graph,
 		out_info,
-		NULL,   // Optimize all nodes
+		nullptr,   // Optimize all nodes
 		graphslam_params
 		);
 
@@ -1373,7 +1373,7 @@ void  CHierarchicalMapMHPartition::dumpAsText(utils::CStringList &st) const
 			s= format("   [HYPO ID #%02i] Annotation '%s' Class: ", (int)ann->ID, ann->name.c_str() );
 			if ( ann->value )
 					s+= string(ann->value->GetRuntimeClass()->className);
-			else	s+= "(NULL)";
+			else	s+= "(nullptr)";
 
 			st << s;
 
@@ -1427,7 +1427,7 @@ void  CHierarchicalMapMHPartition::dumpAsText(utils::CStringList &st) const
 			s= format("   [HYPO ID #%02i] Annotation '%s' Class: ", (int)ann->ID, ann->name.c_str() );
 			if ( ann->value )
 					s+= string(ann->value->GetRuntimeClass()->className);
-			else	s+= "(NULL)";
+			else	s+= "(nullptr)";
 
 			st << s;
 

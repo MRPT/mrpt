@@ -88,10 +88,10 @@ AREXPORT bool ArRobotJoyHandler::handleJoystickPacket(ArRobotPacket *packet)
 
 AREXPORT void ArRobotJoyHandler::getDoubles(double *x, double *y, double *z)
 {
-  if (x != NULL)
+  if (x != nullptr)
     *x = myJoyX;
-  if (y != NULL)
+  if (y != nullptr)
     *y = myJoyY;
-  if (z != NULL)
+  if (z != nullptr)
     *z = myThrottle;
 }

@@ -71,11 +71,11 @@ public:
 	 *
 	 * Does nothing if the scene already has mesh data. 
 	 * @param pScene The scene for which a skeleton mesh should be constructed.
-	 * @param root The node to start with. NULL is the scene root
+	 * @param root The node to start with. nullptr is the scene root
 	 * @param bKnobsOnly Set this to true if you don't want the connectors
 	 *   between the knobs representing the nodes.
 	 */
-	SkeletonMeshBuilder( aiScene* pScene, aiNode* root = NULL,
+	SkeletonMeshBuilder( aiScene* pScene, aiNode* root = nullptr,
 		bool bKnobsOnly = false);
 
 protected:

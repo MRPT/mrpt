@@ -47,7 +47,7 @@ namespace mrpt
 			/** A method that parse the data in the message into a new object of (a priori) unknown class.
 			  *  The pointer will contain on return a copy of the reconstructed object. Deleting this object when
 			  *   no longer required is the responsability of the user. Note that previous contents of the pointer
-			  *   will be ignored (it should be NULL).
+			  *   will be ignored (it should be nullptr).
 			  * \except std::exception On corrupt data, unknown serialized objects, unknown serialized object version,...
 			  */
 			void  deserializeIntoNewObject( CSerializablePtr &obj );

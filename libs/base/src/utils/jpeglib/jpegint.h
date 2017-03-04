@@ -166,7 +166,7 @@ struct jpeg_d_coef_controller {
   JMETHOD(void, start_output_pass, (j_decompress_ptr cinfo));
   JMETHOD(int, decompress_data, (j_decompress_ptr cinfo,
 				 JSAMPIMAGE output_buf));
-  /* Pointer to array of coefficient virtual arrays, or NULL if none */
+  /* Pointer to array of coefficient virtual arrays, or nullptr if none */
   jvirt_barray_ptr *coef_arrays;
 };
 

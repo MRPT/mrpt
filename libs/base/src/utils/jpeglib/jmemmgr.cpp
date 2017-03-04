@@ -179,13 +179,13 @@ print_mem_stats (j_common_ptr cinfo, int pool_id)
   fprintf(stderr, "Freeing pool %d, total space = %ld\n",
 	  pool_id, mem->total_space_allocated);
 
-  for (lhdr_ptr = mem->large_list[pool_id]; lhdr_ptr != NULL;
+  for (lhdr_ptr = mem->large_list[pool_id]; lhdr_ptr != nullptr;
        lhdr_ptr = lhdr_ptr->hdr.next) {
     fprintf(stderr, "  Large chunk used %ld\n",
 	    (long) lhdr_ptr->hdr.bytes_used);
   }
 
-  for (shdr_ptr = mem->small_list[pool_id]; shdr_ptr != NULL;
+  for (shdr_ptr = mem->small_list[pool_id]; shdr_ptr != nullptr;
        shdr_ptr = shdr_ptr->hdr.next) {
     fprintf(stderr, "  Small chunk used %ld free %ld\n",
 	    (long) shdr_ptr->hdr.bytes_used,
@@ -257,9 +257,9 @@ alloc_small (j_common_ptr cinfo, int pool_id, size_t sizeofobject)
   /* See if space is available in any existing pool */
   if (pool_id < 0 || pool_id >= JPOOL_NUMPOOLS)
     ERREXIT1(cinfo, JERR_BAD_POOL_ID, pool_id);	/* safety check */
-  prev_hdr_ptr = NULL;
+  prev_hdr_ptr = nullptr;
   hdr_ptr = mem->small_list[pool_id];
-  while (hdr_ptr != NULL) {
+  while (hdr_ptr != nullptr) {
     if (hdr_ptr->hdr.bytes_left >= sizeofobject)
       break;			/* found pool with enough space */
     prev_hdr_ptr = hdr_ptr;
@@ -267,10 +267,10 @@ alloc_small (j_common_ptr cinfo, int pool_id, size_t sizeofobject)
   }
 
   /* Time to make a new pool? */
-  if (hdr_ptr == NULL) {
+  if (hdr_ptr == nullptr) {
     /* min_request is what we need now, slop is what will be leftover */
     min_request = sizeofobject + SIZEOF(small_pool_hdr);
-    if (prev_hdr_ptr == NULL)	/* first pool in class? */
+    if (prev_hdr_ptr == nullptr)	/* first pool in class? */
       slop = first_pool_slop[pool_id];
     else
       slop = extra_pool_slop[pool_id];
@@ -280,7 +280,7 @@ alloc_small (j_common_ptr cinfo, int pool_id, size_t sizeofobject)
     /* Try to get space, if fail reduce slop and try again */
     for (;;) {
       hdr_ptr = (small_pool_ptr) jpeg_get_small(cinfo, min_request + slop);
-      if (hdr_ptr != NULL)
+      if (hdr_ptr != nullptr)
 	break;
       slop /= 2;
       if (slop < MIN_SLOP)	/* give up when it gets real small */
@@ -288,10 +288,10 @@ alloc_small (j_common_ptr cinfo, int pool_id, size_t sizeofobject)
     }
     mem->total_space_allocated += min_request + slop;
     /* Success, initialize the new pool header and add to end of list */
-    hdr_ptr->hdr.next = NULL;
+    hdr_ptr->hdr.next = nullptr;
     hdr_ptr->hdr.bytes_used = 0;
     hdr_ptr->hdr.bytes_left = sizeofobject + slop;
-    if (prev_hdr_ptr == NULL)	/* first pool in class? */
+    if (prev_hdr_ptr == nullptr)	/* first pool in class? */
       mem->small_list[pool_id] = hdr_ptr;
     else
       prev_hdr_ptr->hdr.next = hdr_ptr;
@@ -344,7 +344,7 @@ alloc_large (j_common_ptr cinfo, int pool_id, size_t sizeofobject)
 
   hdr_ptr = (large_pool_ptr) jpeg_get_large(cinfo, sizeofobject +
 					    SIZEOF(large_pool_hdr));
-  if (hdr_ptr == NULL)
+  if (hdr_ptr == nullptr)
     out_of_memory(cinfo, 4);	/* jpeg_get_large failed */
   mem->total_space_allocated += sizeofobject + SIZEOF(large_pool_hdr);
 
@@ -519,7 +519,7 @@ request_virt_sarray (j_common_ptr cinfo, int pool_id, boolean pre_zero,
   result = (jvirt_sarray_ptr) alloc_small(cinfo, pool_id,
 					  SIZEOF(struct jvirt_sarray_control));
 
-  result->mem_buffer = NULL;	/* marks array not yet realized */
+  result->mem_buffer = nullptr;	/* marks array not yet realized */
   result->rows_in_array = numrows;
   result->samplesperrow = samplesperrow;
   result->maxaccess = maxaccess;
@@ -549,7 +549,7 @@ request_virt_barray (j_common_ptr cinfo, int pool_id, boolean pre_zero,
   result = (jvirt_barray_ptr) alloc_small(cinfo, pool_id,
 					  SIZEOF(struct jvirt_barray_control));
 
-  result->mem_buffer = NULL;	/* marks array not yet realized */
+  result->mem_buffer = nullptr;	/* marks array not yet realized */
   result->rows_in_array = numrows;
   result->blocksperrow = blocksperrow;
   result->maxaccess = maxaccess;
@@ -578,16 +578,16 @@ realize_virt_arrays (j_common_ptr cinfo)
    */
   space_per_minheight = 0;
   maximum_space = 0;
-  for (sptr = mem->virt_sarray_list; sptr != NULL; sptr = sptr->next) {
-    if (sptr->mem_buffer == NULL) { /* if not realized yet */
+  for (sptr = mem->virt_sarray_list; sptr != nullptr; sptr = sptr->next) {
+    if (sptr->mem_buffer == nullptr) { /* if not realized yet */
       space_per_minheight += (long) sptr->maxaccess *
 			     (long) sptr->samplesperrow * SIZEOF(JSAMPLE);
       maximum_space += (long) sptr->rows_in_array *
 		       (long) sptr->samplesperrow * SIZEOF(JSAMPLE);
     }
   }
-  for (bptr = mem->virt_barray_list; bptr != NULL; bptr = bptr->next) {
-    if (bptr->mem_buffer == NULL) { /* if not realized yet */
+  for (bptr = mem->virt_barray_list; bptr != nullptr; bptr = bptr->next) {
+    if (bptr->mem_buffer == nullptr) { /* if not realized yet */
       space_per_minheight += (long) bptr->maxaccess *
 			     (long) bptr->blocksperrow * SIZEOF(JBLOCK);
       maximum_space += (long) bptr->rows_in_array *
@@ -619,8 +619,8 @@ realize_virt_arrays (j_common_ptr cinfo)
 
   /* Allocate the in-memory buffers and initialize backing store as needed. */
 
-  for (sptr = mem->virt_sarray_list; sptr != NULL; sptr = sptr->next) {
-    if (sptr->mem_buffer == NULL) { /* if not realized yet */
+  for (sptr = mem->virt_sarray_list; sptr != nullptr; sptr = sptr->next) {
+    if (sptr->mem_buffer == nullptr) { /* if not realized yet */
       minheights = ((long) sptr->rows_in_array - 1L) / sptr->maxaccess + 1L;
       if (minheights <= max_minheights) {
 	/* This buffer fits in memory */
@@ -643,8 +643,8 @@ realize_virt_arrays (j_common_ptr cinfo)
     }
   }
 
-  for (bptr = mem->virt_barray_list; bptr != NULL; bptr = bptr->next) {
-    if (bptr->mem_buffer == NULL) { /* if not realized yet */
+  for (bptr = mem->virt_barray_list; bptr != nullptr; bptr = bptr->next) {
+    if (bptr->mem_buffer == nullptr) { /* if not realized yet */
       minheights = ((long) bptr->rows_in_array - 1L) / bptr->maxaccess + 1L;
       if (minheights <= max_minheights) {
 	/* This buffer fits in memory */
@@ -748,7 +748,7 @@ access_virt_sarray (j_common_ptr cinfo, jvirt_sarray_ptr ptr,
 
   /* debugging check */
   if (end_row > ptr->rows_in_array || num_rows > ptr->maxaccess ||
-      ptr->mem_buffer == NULL)
+      ptr->mem_buffer == nullptr)
     ERREXIT(cinfo, JERR_BAD_VIRTUAL_ACCESS);
 
   /* Make the desired part of the virtual array accessible */
@@ -833,7 +833,7 @@ access_virt_barray (j_common_ptr cinfo, jvirt_barray_ptr ptr,
 
   /* debugging check */
   if (end_row > ptr->rows_in_array || num_rows > ptr->maxaccess ||
-      ptr->mem_buffer == NULL)
+      ptr->mem_buffer == nullptr)
     ERREXIT(cinfo, JERR_BAD_VIRTUAL_ACCESS);
 
   /* Make the desired part of the virtual array accessible */
@@ -930,27 +930,27 @@ free_pool (j_common_ptr cinfo, int pool_id)
     jvirt_sarray_ptr sptr;
     jvirt_barray_ptr bptr;
 
-    for (sptr = mem->virt_sarray_list; sptr != NULL; sptr = sptr->next) {
+    for (sptr = mem->virt_sarray_list; sptr != nullptr; sptr = sptr->next) {
       if (sptr->b_s_open) {	/* there may be no backing store */
 	sptr->b_s_open = FALSE;	/* prevent recursive close if error */
 	(*sptr->b_s_info.close_backing_store) (cinfo, & sptr->b_s_info);
       }
     }
-    mem->virt_sarray_list = NULL;
-    for (bptr = mem->virt_barray_list; bptr != NULL; bptr = bptr->next) {
+    mem->virt_sarray_list = nullptr;
+    for (bptr = mem->virt_barray_list; bptr != nullptr; bptr = bptr->next) {
       if (bptr->b_s_open) {	/* there may be no backing store */
 	bptr->b_s_open = FALSE;	/* prevent recursive close if error */
 	(*bptr->b_s_info.close_backing_store) (cinfo, & bptr->b_s_info);
       }
     }
-    mem->virt_barray_list = NULL;
+    mem->virt_barray_list = nullptr;
   }
 
   /* Release large objects */
   lhdr_ptr = mem->large_list[pool_id];
-  mem->large_list[pool_id] = NULL;
+  mem->large_list[pool_id] = nullptr;
 
-  while (lhdr_ptr != NULL) {
+  while (lhdr_ptr != nullptr) {
     large_pool_ptr next_lhdr_ptr = lhdr_ptr->hdr.next;
     space_freed = lhdr_ptr->hdr.bytes_used +
 		  lhdr_ptr->hdr.bytes_left +
@@ -962,9 +962,9 @@ free_pool (j_common_ptr cinfo, int pool_id)
 
   /* Release small objects */
   shdr_ptr = mem->small_list[pool_id];
-  mem->small_list[pool_id] = NULL;
+  mem->small_list[pool_id] = nullptr;
 
-  while (shdr_ptr != NULL) {
+  while (shdr_ptr != nullptr) {
     small_pool_ptr next_shdr_ptr = shdr_ptr->hdr.next;
     space_freed = shdr_ptr->hdr.bytes_used +
 		  shdr_ptr->hdr.bytes_left +
@@ -996,7 +996,7 @@ self_destruct (j_common_ptr cinfo)
 
   /* Release the memory manager control block too. */
   jpeg_free_small(cinfo, (void *) cinfo->mem, SIZEOF(my_memory_mgr));
-  cinfo->mem = NULL;		/* ensures I will be called only once */
+  cinfo->mem = nullptr;		/* ensures I will be called only once */
 
   jpeg_mem_term(cinfo);		/* system-dependent cleanup */
 }
@@ -1015,7 +1015,7 @@ jinit_memory_mgr (j_common_ptr cinfo)
   int pool;
   size_t test_mac;
 
-  cinfo->mem = NULL;		/* for safety if init fails */
+  cinfo->mem = nullptr;		/* for safety if init fails */
 
   /* Check for configuration errors.
    * SIZEOF(ALIGN_TYPE) should be a power of 2; otherwise, it probably
@@ -1041,7 +1041,7 @@ jinit_memory_mgr (j_common_ptr cinfo)
   /* Attempt to allocate memory manager's control block */
   mem = (my_mem_ptr) jpeg_get_small(cinfo, SIZEOF(my_memory_mgr));
 
-  if (mem == NULL) {
+  if (mem == nullptr) {
     jpeg_mem_term(cinfo);	/* system-dependent cleanup */
     ERREXIT1(cinfo, JERR_OUT_OF_MEMORY, 0);
   }
@@ -1066,11 +1066,11 @@ jinit_memory_mgr (j_common_ptr cinfo)
   mem->pub.max_memory_to_use = max_to_use;
 
   for (pool = JPOOL_NUMPOOLS-1; pool >= JPOOL_PERMANENT; pool--) {
-    mem->small_list[pool] = NULL;
-    mem->large_list[pool] = NULL;
+    mem->small_list[pool] = nullptr;
+    mem->large_list[pool] = nullptr;
   }
-  mem->virt_sarray_list = NULL;
-  mem->virt_barray_list = NULL;
+  mem->virt_sarray_list = nullptr;
+  mem->virt_barray_list = nullptr;
 
   mem->total_space_allocated = SIZEOF(my_memory_mgr);
 
@@ -1086,7 +1086,7 @@ jinit_memory_mgr (j_common_ptr cinfo)
 #ifndef NO_GETENV
   { char * memenv;
 
-    if ((memenv = getenv("JPEGMEM")) != NULL) {
+    if ((memenv = getenv("JPEGMEM")) != nullptr) {
       char ch = 'x';
 
       if (sscanf(memenv, "%ld%c", &max_to_use, &ch) > 0) {

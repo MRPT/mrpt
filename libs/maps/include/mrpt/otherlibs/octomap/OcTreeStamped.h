@@ -75,14 +75,14 @@ namespace octomap {
     }
 
     bool createChild(unsigned int i) {
-      if (children == NULL) allocChildren();
+      if (children == nullptr) allocChildren();
       children[i] = new OcTreeNodeStamped();
       return true;
     }
     
     // timestamp
     inline unsigned int getTimestamp() const { return timestamp; }
-    inline void updateTimestamp() { timestamp = (unsigned int) time(NULL);}
+    inline void updateTimestamp() { timestamp = (unsigned int) time(nullptr);}
     inline void setTimestamp(unsigned int timestamp) {this->timestamp = timestamp; }
 
     // update occupancy and timesteps of inner nodes 

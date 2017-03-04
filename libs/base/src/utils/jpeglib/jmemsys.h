@@ -27,7 +27,7 @@
  * memory.  (Typically the total amount requested through jpeg_get_small is
  * no more than 20K or so; this will be requested in chunks of a few K each.)
  * Behavior should be the same as for the standard library functions malloc
- * and free; in particular, jpeg_get_small must return NULL on failure.
+ * and free; in particular, jpeg_get_small must return nullptr on failure.
  * On most systems, these ARE malloc and free.  jpeg_free_small is passed the
  * size of the object being freed, just in case it's needed.
  * On an 80x86 machine using small-data memory model, these manage near heap.

@@ -101,7 +101,7 @@ LogStream* LogStream::createDefaultStream(aiDefaultLogStream	streams,
 #ifdef WIN32
 		return new Win32DebugLogStream();
 #else
-		return NULL;
+		return nullptr;
 #endif
 
 		// Platform-independent default streams
@@ -110,7 +110,7 @@ LogStream* LogStream::createDefaultStream(aiDefaultLogStream	streams,
 	case aiDefaultLogStream_STDOUT:
 		return new StdOStreamLogStream(std::cout);
 	case aiDefaultLogStream_FILE:
-		return (name && *name ? new FileLogStream(name,io) : NULL);
+		return (name && *name ? new FileLogStream(name,io) : nullptr);
 	default:
 		// We don't know this default log stream, so raise an assertion
 		ai_assert(false);
@@ -118,7 +118,7 @@ LogStream* LogStream::createDefaultStream(aiDefaultLogStream	streams,
 	};
 
 	// For compilers without dead code path detection
-	return NULL;
+	return nullptr;
 }
 
 // ----------------------------------------------------------------------------------
@@ -337,7 +337,7 @@ bool DefaultLogger::detatchStream( LogStream *pStream, unsigned int severity )
 			if ( (*it)->m_uiErrorSeverity == 0 )
 			{
 				// don't delete the underlying stream 'cause the caller gains ownership again
-				(**it).m_pStream = NULL;
+				(**it).m_pStream = nullptr;
 				delete *it;
 				m_StreamArray.erase( it );
 				break;
@@ -374,7 +374,7 @@ DefaultLogger::~DefaultLogger()
 void DefaultLogger::WriteToStreams(const char *message, 
 	ErrorSeverity ErrorSev )
 {
-	ai_assert(NULL != message);
+	ai_assert(nullptr != message);
 
 	// Check whether this is a repeated message
 	if (! ::strncmp( message,lastMsg, lastLen-1))

@@ -151,7 +151,7 @@ unsigned int CIncrementalMapPartitioner::addMapFrame(
 	CPose3D								pose_i, pose_j, relPose;
 	CPose3DPDFPtr						posePDF_i, posePDF_j;
 	CSensoryFramePtr					sf_i, sf_j;
-	CMultiMetricMap						*map_i=NULL,*map_j=NULL;
+	CMultiMetricMap						*map_i=nullptr,*map_j=nullptr;
 	mrpt::utils::TMatchingPairList		corrs;
 	static CPose3D						nullPose(0,0,0);
 

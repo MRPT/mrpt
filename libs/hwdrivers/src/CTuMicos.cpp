@@ -724,7 +724,7 @@ bool CTuMicos::radQuerry(char axis,char command,double &rad) {
 		toRad = false;
 	}
 
-	if ( ( !transmit(command2) ) || (!receive(NULL,response)) ) return false;
+	if ( ( !transmit(command2) ) || (!receive(nullptr,response)) ) return false;
 
 	// If we can convert the result to radians
 	if (toRad) {
@@ -736,7 +736,7 @@ bool CTuMicos::radQuerry(char axis,char command,double &rad) {
 			char *ptr1, *ptr2;
 			char *strContext;
 			ptr1 = mrpt::system::strtok( response, s2, &strContext );
-			ptr2 = mrpt::system::strtok( NULL , s2, &strContext );
+			ptr2 = mrpt::system::strtok( nullptr , s2, &strContext );
 			if (axis == 'l')
 				rad = (long)atof((const char*)ptr1);
 			else

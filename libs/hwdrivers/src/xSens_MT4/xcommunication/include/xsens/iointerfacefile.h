@@ -58,7 +58,7 @@ public:
 	XsResultValue flushData(void);
 	bool isOpen(void) const;
 	XsResultValue getLastResult(void) const;
-	XsResultValue writeData(const XsByteArray& data, XsSize *written = NULL);
+	XsResultValue writeData(const XsByteArray& data, XsSize *written = nullptr);
 	XsResultValue readData(XsSize maxLength, XsByteArray& data);
 	XsResultValue readTerminatedData(XsSize maxLength, unsigned char terminator, XsByteArray& bdata);
 

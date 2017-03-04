@@ -72,7 +72,7 @@ private:
    * 
    * May throw any exceptions (indicates failure).
    * \param libraryName Name of the library to load.
-   * \return Handle of the loaded library. \c NULL indicates failure.
+   * \return Handle of the loaded library. \c nullptr indicates failure.
    */
   LibraryHandle doLoadLibrary( const std::string &libraryName );
 
@@ -88,7 +88,7 @@ private:
    * 
    * May throw any exceptions (indicates failure).
    * \param symbol Name of the symbol exported by the library.
-   * \return Pointer on the symbol. \c NULL indicates failure.
+   * \return Pointer on the symbol. \c nullptr indicates failure.
    */
   Symbol doFindSymbol( const std::string &symbol );
 

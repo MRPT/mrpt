@@ -117,10 +117,10 @@ int _wcsnicmp(const wchar_t* s1, const wchar_t* s2,int count)
 	#if !defined(_LOG_TO_DBVIEW)
 		#ifdef _LOG_TO_STDOUT
 		#else	// !dbview && !stdout
-			FILE* debug_log_fp = NULL;
+			FILE* debug_log_fp = nullptr;
 			int32_t debug_log_valid = 0;
 
-			FILE* debug_qlog_fp = NULL;
+			FILE* debug_qlog_fp = nullptr;
 			int32_t debug_qlog_valid = 0;
 		#endif
 	#endif
@@ -145,7 +145,7 @@ void CMTLOG(const char *str, ...)
 		if (debug_log_valid == 0)
 		{
 			debug_log_fp = fopen("debug_log_cmt.log","w");
-			if (debug_log_fp != NULL)
+			if (debug_log_fp != nullptr)
 				debug_log_valid = 1;
 			else
 				debug_log_valid = -1;
@@ -182,7 +182,7 @@ void CMTLOG(const char *str, ...)
 //////////////////////////////////////////////////////////////////////////////////////////
 // Default constructor, initializes all members to their default values.
 Cmt1s::Cmt1s() :
-	m_onBytesReceived(NULL)
+	m_onBytesReceived(nullptr)
 {
 	m_port = 0;
 	m_isOpen = false;
@@ -192,8 +192,8 @@ Cmt1s::Cmt1s() :
 	m_baudrate = 0;
 
 	#ifdef _LOG_RX_TX
-		rx_log = NULL;
-		tx_log = NULL;
+		rx_log = nullptr;
+		tx_log = nullptr;
 	#endif
 }
 
@@ -209,12 +209,12 @@ Cmt1s::~Cmt1s()
 XsensResultValue Cmt1s::close (void)
 {
 	#ifdef _LOG_RX_TX
-		if (rx_log != NULL)
+		if (rx_log != nullptr)
 			fclose(rx_log);
-		if (tx_log != NULL)
+		if (tx_log != nullptr)
 			fclose(tx_log);
-		rx_log = NULL;
-		tx_log = NULL;
+		rx_log = nullptr;
+		tx_log = nullptr;
 	#endif
 	if (!m_isOpen)
 		return m_lastResult = XRV_NOPORTOPEN;
@@ -232,7 +232,7 @@ XsensResultValue Cmt1s::close (void)
 			char buffer[1024];
 			DWORD length;
 			do {
-				::ReadFile(m_handle, buffer, 1024, &length, NULL);
+				::ReadFile(m_handle, buffer, 1024, &length, nullptr);
 			} while (length > 0);
 		::CloseHandle(m_handle);
 	#else
@@ -341,8 +341,8 @@ XsensResultValue Cmt1s::open(  const char *portName,
 
 	// Open port
 	sprintf(winPortName, "\\\\.\\%s", portName);
-	m_handle = CreateFileA(winPortName, GENERIC_READ | GENERIC_WRITE, 0, NULL,
-									OPEN_EXISTING, 0, NULL);
+	m_handle = CreateFileA(winPortName, GENERIC_READ | GENERIC_WRITE, 0, nullptr,
+									OPEN_EXISTING, 0, nullptr);
 	if (m_handle == INVALID_HANDLE_VALUE)
 	{
 		CMT1LOG("L1: Port cannot be opened\n");
@@ -480,15 +480,15 @@ XsensResultValue Cmt1s::readData (const uint32_t maxLength, uint8_t* data,
 {
 	CMT1LOG("L1: readData, maxlength=%u, length=%p\n",maxLength,length);
 	uint32_t ln;
-	if (length == NULL)
+	if (length == nullptr)
 		length = &ln;
 
 	if (!m_isOpen)
 		return (m_lastResult = XRV_NOPORTOPEN);
 
 #ifdef _WIN32
-	BOOL rres = ::ReadFile(m_handle, data, maxLength, (DWORD*)length, NULL);
-	if (m_onBytesReceived != NULL && *length > 0)
+	BOOL rres = ::ReadFile(m_handle, data, maxLength, (DWORD*)length, nullptr);
+	if (m_onBytesReceived != nullptr && *length > 0)
 	{
 		CmtBinaryData* bytes = (CmtBinaryData*) malloc(sizeof(CmtBinaryData));
 		bytes->m_size = *length;
@@ -512,7 +512,7 @@ XsensResultValue Cmt1s::readData (const uint32_t maxLength, uint8_t* data,
 #ifdef _LOG_RX_TX
 	if (*length > 0)
 	{
-		if (rx_log == NULL)
+		if (rx_log == nullptr)
 		{
 			char fname[CMT_MAX_FILENAME_LENGTH];
 			sprintf(fname,"rx_%03d_%d.log",(int32_t) m_port,m_baudrate);
@@ -594,9 +594,9 @@ XsensResultValue Cmt1s::waitForData (const uint32_t maxLength,
 	uint32_t timeout = m_timeout;
 
 	uint32_t ln;
-	if (length == NULL)
+	if (length == nullptr)
 		length = &ln;
-	uint32_t eTime = getTimeOfDay(NULL) + timeout;
+	uint32_t eTime = getTimeOfDay(nullptr) + timeout;
 	uint32_t newLength = 0;
 
 	*length = 0;
@@ -619,19 +619,19 @@ XsensResultValue Cmt1s::writeData (const uint32_t length,  const uint8_t* data,
 								uint32_t* written)
 {
 	uint32_t bytes;
-	if (written == NULL)
+	if (written == nullptr)
 		written = &bytes;
 
 	if (!m_isOpen)
 		return (m_lastResult = XRV_NOPORTOPEN);
 
 #ifdef _WIN32
-	if (WriteFile(m_handle, data, length, (DWORD*)written, NULL))
+	if (WriteFile(m_handle, data, length, (DWORD*)written, nullptr))
 	{
 #ifdef _LOG_RX_TX
 		if (written[0] > 0)
 		{
-			if (tx_log == NULL)
+			if (tx_log == nullptr)
 			{
 				char fname[CMT_MAX_FILENAME_LENGTH];
 				sprintf(fname,"tx_%03d_%d.log",(int32_t) m_port,m_baudrate);
@@ -785,11 +785,11 @@ XsensResultValue Cmt1f::create (const char* filename)
 
 	//! \test does this work for non-existing files? Or do we need a check and create?
 	m_handle = fopen(filename, "w+b");	// open for update (r/w)
-	if (m_handle == NULL)
+	if (m_handle == nullptr)
 		return m_lastResult = XRV_OUTPUTCANNOTBEOPENED;
 
 	#ifdef _WIN32
-		if (_fullpath(m_filename,filename,CMT_MAX_FILENAME_LENGTH) == NULL)
+		if (_fullpath(m_filename,filename,CMT_MAX_FILENAME_LENGTH) == nullptr)
 		{
 			fclose(m_handle);
 			remove(filename);
@@ -799,7 +799,7 @@ XsensResultValue Cmt1f::create (const char* filename)
 		// based on the assumption that this doesn't concern the serial port, handle
 		// it the same way using realpath(). Apparently realpath() doesn't require a
 		// maximum length. One would possibly want to write a wrapper for it.
-		if (realpath(filename, m_filename) == NULL)
+		if (realpath(filename, m_filename) == nullptr)
         {
             fclose(m_handle);
             remove(filename);
@@ -828,10 +828,10 @@ XsensResultValue Cmt1f::create (const wchar_t* filename)
 #ifdef _WIN32
 	//! \test does this work for non-existing files? Or do we need a check and create?
 	m_handle = _wfopen(filename, L"w+b");	// open for update (r/w)
-	if (m_handle == NULL)
+	if (m_handle == nullptr)
 		return m_lastResult = XRV_OUTPUTCANNOTBEOPENED;
 
-	if (_wfullpath(m_filename_w,filename,CMT_MAX_FILENAME_LENGTH) == NULL)
+	if (_wfullpath(m_filename_w,filename,CMT_MAX_FILENAME_LENGTH) == nullptr)
 	{
 		fclose(m_handle);
 		_wremove(filename);
@@ -1121,7 +1121,7 @@ XsensResultValue Cmt1f::open(const char* filename, const bool create, const bool
 		m_handle = fopen(filename, "rb");	// open for read only (r)
 	else
 		m_handle = fopen(filename, "r+b");	// open for update (r/w)
-	if (m_handle == NULL)
+	if (m_handle == nullptr)
 	{
 		if (create)
 			m_handle = fopen(filename, "w+b");	// create for update (r/w)
@@ -1131,18 +1131,18 @@ XsensResultValue Cmt1f::open(const char* filename, const bool create, const bool
 			m_readOnly = true;
 		}
 	}
-	if (m_handle == NULL)
+	if (m_handle == nullptr)
 		return m_lastResult = XRV_INPUTCANNOTBEOPENED;
 
 	#ifdef _WIN32
-		if (_fullpath(m_filename,filename,CMT_MAX_FILENAME_LENGTH) == NULL)
+		if (_fullpath(m_filename,filename,CMT_MAX_FILENAME_LENGTH) == nullptr)
 		{
 			fclose(m_handle);
 			return m_lastResult = XRV_INVALIDPARAM;
 		}
 	#else
 	    // use the same trick again.
-		if (realpath(filename, m_filename) == NULL)
+		if (realpath(filename, m_filename) == nullptr)
 		{
 		    fclose(m_handle);
 		    return m_lastResult = XRV_INVALIDPARAM;
@@ -1175,7 +1175,7 @@ XsensResultValue Cmt1f::open(const wchar_t* filename, const bool create, const b
 		m_handle = _wfopen(filename, L"rb");	// open for read only (r)
 	else
 		m_handle = _wfopen(filename, L"r+b");	// open for update (r/w)
-	if (m_handle == NULL)
+	if (m_handle == nullptr)
 	{
 		if (create)
 			m_handle = _wfopen(filename, L"w+b");	// create for update (r/w)
@@ -1185,10 +1185,10 @@ XsensResultValue Cmt1f::open(const wchar_t* filename, const bool create, const b
 			m_readOnly = true;
 		}
 	}
-	if (m_handle == NULL)
+	if (m_handle == nullptr)
 		return m_lastResult = XRV_INPUTCANNOTBEOPENED;
 
-	if (_wfullpath(m_filename_w,filename,CMT_MAX_FILENAME_LENGTH) == NULL)
+	if (_wfullpath(m_filename_w,filename,CMT_MAX_FILENAME_LENGTH) == nullptr)
 	{
 		fclose(m_handle);
 		return m_lastResult = XRV_INVALIDPARAM;
@@ -1224,7 +1224,7 @@ XsensResultValue Cmt1f::readData(const uint32_t maxLength, void* data, uint32_t*
 		return m_lastResult = XRV_OK;
 
 	uint32_t len;
-	if (length == NULL)
+	if (length == nullptr)
 		length = &len;
 
 	gotoRead();
@@ -1245,7 +1245,7 @@ XsensResultValue Cmt1f::readData (const uint32_t maxLength, const char terminato
 		return m_lastResult = XRV_NOFILEOPEN;
 
 	uint32_t len;
-	if (length == NULL)
+	if (length == nullptr)
 		length = &len;
 
 	char* data = (char*) dataV;

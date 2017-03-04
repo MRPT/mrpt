@@ -83,7 +83,7 @@ mrpt::system::TTimeStamp  mrpt::system::getCurrentTime( )
 	struct timeval tv;
 	timespec  tim;
 
-	gettimeofday(&tv, NULL);
+	gettimeofday(&tv, nullptr);
 	tim.tv_sec = tv.tv_sec;
 	tim.tv_nsec = tv.tv_usec*1000;
 

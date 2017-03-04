@@ -175,7 +175,7 @@ BEGIN_EVENT_TABLE(kinect_calibrate_guiDialog,wxDialog)
 END_EVENT_TABLE()
 
 kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(wxWindow* parent,wxWindowID id)
-	: m_config(_("kinect-stereo-calib")), m_my_redirector(NULL)
+        : m_config(_("kinect-stereo-calib")), m_my_redirector(nullptr)
 {
 	m_grabstate = gsIdle;
 
@@ -813,7 +813,7 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(wxWindow* parent,wxWindow
 
 kinect_calibrate_guiDialog::~kinect_calibrate_guiDialog()
 {
-	delete m_my_redirector; m_my_redirector = NULL;
+        delete m_my_redirector; m_my_redirector = nullptr;
 
     //(*Destroy(kinect_calibrate_guiDialog)
     //*)

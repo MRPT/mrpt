@@ -103,7 +103,7 @@ void XFileImporter::InternReadFile( const std::string& pFile, aiScene* pScene, I
 {
 	// read file into memory
 	boost::scoped_ptr<IOStream> file( pIOHandler->Open( pFile));
-	if( file.get() == NULL)
+	if( file.get() == nullptr)
 		throw DeadlyImportError( "Failed to open file " + pFile + ".");
 
 	size_t fileSize = file->FileSize();
@@ -134,7 +134,7 @@ void XFileImporter::CreateDataRepresentationFromImport( aiScene* pScene, XFile::
 	ConvertMaterials( pScene, pData->mGlobalMaterials);
 
 	// copy nodes, extracting meshes and materials on the way
-	pScene->mRootNode = CreateNodes( pScene, NULL, pData->mRootNode);
+	pScene->mRootNode = CreateNodes( pScene, nullptr, pData->mRootNode);
 
 	// extract animations
 	CreateAnimations( pScene, pData);
@@ -143,7 +143,7 @@ void XFileImporter::CreateDataRepresentationFromImport( aiScene* pScene, XFile::
 	if( pData->mGlobalMeshes.size() > 0)
 	{
 		// create a root node to hold them if there isn't any, yet
-		if( pScene->mRootNode == NULL)
+		if( pScene->mRootNode == nullptr)
 		{
 			pScene->mRootNode = new aiNode;
 			pScene->mRootNode->mName.Set( "$dummy_node");
@@ -192,7 +192,7 @@ void XFileImporter::CreateDataRepresentationFromImport( aiScene* pScene, XFile::
 aiNode* XFileImporter::CreateNodes( aiScene* pScene, aiNode* pParent, const XFile::Node* pNode)
 {
 	if( !pNode)
-		return NULL;
+		return nullptr;
 
 	// create node
 	aiNode* node = new aiNode;

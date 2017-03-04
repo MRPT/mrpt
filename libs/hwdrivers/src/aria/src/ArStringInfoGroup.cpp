@@ -58,7 +58,7 @@ AREXPORT bool ArStringInfoGroup::addStringInt(
 	    (new ArGlobalFunctor4<char *, ArTypes::UByte2, 
 	     ArRetFunctor<int> *, 
 	     const char *>(&ArStringInfoHolderFunctions::intWrapper, 
-			   (char *)NULL, (ArTypes::UByte2) 0, 
+			   (char *)nullptr, (ArTypes::UByte2) 0, 
 			   functor, format)));
 }
 
@@ -70,7 +70,7 @@ AREXPORT bool ArStringInfoGroup::addStringDouble(
 	    (new ArGlobalFunctor4<char *, ArTypes::UByte2, 
 	     ArRetFunctor<double> *, 
 	     const char *>(&ArStringInfoHolderFunctions::doubleWrapper, 
-			   (char *)NULL, (ArTypes::UByte2) 0, 
+			   (char *)nullptr, (ArTypes::UByte2) 0, 
 			   functor, format)));
 }
 
@@ -83,7 +83,7 @@ AREXPORT bool ArStringInfoGroup::addStringBool(
 	    (new ArGlobalFunctor4<char *, ArTypes::UByte2, 
 	     ArRetFunctor<bool> *, 
 	     const char *>(&ArStringInfoHolderFunctions::boolWrapper, 
-			   (char *)NULL, (ArTypes::UByte2) 0, 
+			   (char *)nullptr, (ArTypes::UByte2) 0, 
 			   functor, format)));
 }
 
@@ -95,7 +95,7 @@ AREXPORT bool ArStringInfoGroup::addStringString(
 	    (new ArGlobalFunctor4<char *, ArTypes::UByte2, 
 	     ArRetFunctor<const char *> *, 
 	     const char *>(&ArStringInfoHolderFunctions::stringWrapper, 
-			   (char *)NULL, (ArTypes::UByte2) 0, 
+			   (char *)nullptr, (ArTypes::UByte2) 0, 
 			   functor, format)));
 }
 

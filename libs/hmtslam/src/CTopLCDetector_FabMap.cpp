@@ -24,7 +24,7 @@ using namespace std;
 
 CTopLCDetector_FabMap::CTopLCDetector_FabMap(CHMTSLAM *hmtslam) : 
 	CTopLCDetectorBase(hmtslam), 
-	m_fabmap(NULL)
+	m_fabmap(nullptr)
 {
 #ifdef HTMSLAM_HAS_FABMAP
 	// Use already loaded options:
@@ -48,13 +48,13 @@ CTopLCDetector_FabMap::~CTopLCDetector_FabMap()
 {
 #ifdef HTMSLAM_HAS_FABMAP
 	delete THE_FABMAP;
-	m_fabmap = NULL;
+	m_fabmap = nullptr;
 #endif
 }
 
 /** This method must compute the topological observation model.
   * \param out_log_lik The output, a log-likelihood.
-  * \return NULL, or a PDF of the estimated translation between the two areas (can be a multi-modal PDF).
+  * \return nullptr, or a PDF of the estimated translation between the two areas (can be a multi-modal PDF).
   */
 CPose3DPDFPtr CTopLCDetector_FabMap::computeTopologicalObservationModel(
 	const THypothesisID		&hypID,

@@ -60,7 +60,7 @@ MakeVerboseFormatProcess::~MakeVerboseFormatProcess()
 // Executes the post processing step on the given imported data.
 void MakeVerboseFormatProcess::Execute( aiScene* pScene)
 {
-	ai_assert(NULL != pScene);
+	ai_assert(nullptr != pScene);
 	DefaultLogger::get()->debug("MakeVerboseFormatProcess begin");
 
 	bool bHas = false;
@@ -79,19 +79,19 @@ void MakeVerboseFormatProcess::Execute( aiScene* pScene)
 // Executes the post processing step on the given imported data.
 bool MakeVerboseFormatProcess::MakeVerboseFormat(aiMesh* pcMesh)
 {
-	ai_assert(NULL != pcMesh);
+	ai_assert(nullptr != pcMesh);
 
 	unsigned int iOldNumVertices = pcMesh->mNumVertices;
 	const unsigned int iNumVerts = pcMesh->mNumFaces*3;
 
 	aiVector3D* pvPositions = new aiVector3D[ iNumVerts ];
 
-	aiVector3D* pvNormals = NULL;
+	aiVector3D* pvNormals = nullptr;
 	if (pcMesh->HasNormals()) 
 	{
 		pvNormals = new aiVector3D[iNumVerts];
 	}
-	aiVector3D* pvTangents = NULL, *pvBitangents = NULL;
+	aiVector3D* pvTangents = nullptr, *pvBitangents = nullptr;
 	if (pcMesh->HasTangentsAndBitangents()) 
 	{
 		pvTangents = new aiVector3D[iNumVerts];
@@ -176,7 +176,7 @@ bool MakeVerboseFormatProcess::MakeVerboseFormat(aiMesh* pcMesh)
 			memcpy(pcMesh->mBones[i]->mWeights,&newWeights[i][0],
 				sizeof(aiVertexWeight) * newWeights[i].size());
 		}
-		else pcMesh->mBones[i]->mWeights = NULL;
+		else pcMesh->mBones[i]->mWeights = nullptr;
 	}
 
 	// delete the old members

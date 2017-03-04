@@ -60,8 +60,8 @@ CIMUXSens::CIMUXSens( ) :
 	m_timeStartUI	(0),
 	m_timeStartTT	(0),
 	m_sensorPose    (),
-	m_cmt3_ptr	(NULL),
-	m_deviceId_ptr	(NULL),
+	m_cmt3_ptr	(nullptr),
+	m_deviceId_ptr	(nullptr),
 	m_toutCounter	(0)
 {
 	m_sensorLabel = "XSensMTi";
@@ -83,8 +83,8 @@ CIMUXSens::~CIMUXSens()
 #if MRPT_HAS_xSENS_MT3
 	cmt3.closePort();
 
-    delete[] &cmt3;     m_cmt3_ptr= NULL;
-    delete[] &deviceId; m_deviceId_ptr = NULL;
+    delete[] &cmt3;     m_cmt3_ptr= nullptr;
+    delete[] &deviceId; m_deviceId_ptr = nullptr;
 #endif
 }
 

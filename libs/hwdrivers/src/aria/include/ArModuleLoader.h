@@ -47,10 +47,10 @@ public:
 
   /// Load an ArModule
   AREXPORT static Status load(const char *modName, ArRobot *robot,
-			      void *modArgument = NULL, bool quiet = false);
+			      void *modArgument = nullptr, bool quiet = false);
   /// Close and then reload an ArModule
   AREXPORT static Status reload(const char *modName, ArRobot *robot,
-				void * modArgument = NULL, bool quiet = false);
+				void * modArgument = nullptr, bool quiet = false);
   /// Close an ArModule
   AREXPORT static Status close(const char *modName, bool quiet = false);
   /// Close all open ArModule

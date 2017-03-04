@@ -70,7 +70,7 @@ void MDLImporter::SearchPalette(const unsigned char** pszColorMap)
 				"It will be used to decode embedded textures in palletized formats.");
 		}
 		delete pcStream;
-		pcStream = NULL;
+		pcStream = nullptr;
 	}
 	*pszColorMap = szColorMap;
 }
@@ -87,7 +87,7 @@ void MDLImporter::FreePalette(const unsigned char* szColorMap)
 // Check whether we can replace a texture with a single color
 aiColor4D MDLImporter::ReplaceTextureWithColor(const aiTexture* pcTexture)
 {
-	ai_assert(NULL != pcTexture);
+	ai_assert(nullptr != pcTexture);
 
 	aiColor4D clrOut;
 	clrOut.r = get_qnan();
@@ -102,7 +102,7 @@ aiColor4D MDLImporter::ReplaceTextureWithColor(const aiTexture* pcTexture)
 	{
 		if (*pcTexel != *(pcTexel-1))
 		{
-			pcTexel = NULL;
+			pcTexel = nullptr;
 			break;
 		}
 		++pcTexel;
@@ -168,7 +168,7 @@ void MDLImporter::CreateTexture_3DGS_MDL4(const unsigned char* szData,
 	unsigned int iType,
 	 unsigned int* piSkip)
 {
-	ai_assert(NULL != piSkip);
+	ai_assert(nullptr != piSkip);
 
 	const MDL::Header *pcHeader = (const MDL::Header*)mBuffer;  //the endianess is allready corrected in the InternReadFile_3DGS_MDL345 function
 
@@ -209,7 +209,7 @@ void MDLImporter::CreateTexture_3DGS_MDL4(const unsigned char* szData,
 		}
 	}
 	else {
-		pcNew->pcData = NULL;
+		pcNew->pcData = nullptr;
 		delete pcNew;
 	}
 	return;
@@ -391,7 +391,7 @@ void MDLImporter::CreateTexture_3DGS_MDL5(const unsigned char* szData,
 	unsigned int iType,
 	unsigned int* piSkip)
 {
-	ai_assert(NULL != piSkip);
+	ai_assert(nullptr != piSkip);
 	bool bNoRead = *piSkip == UINT_MAX;
 
 	// allocate a new texture object
@@ -464,7 +464,7 @@ void MDLImporter::CreateTexture_3DGS_MDL5(const unsigned char* szData,
 		}
 	}
 	else {
-		pcNew->pcData = NULL;
+		pcNew->pcData = nullptr;
 		delete pcNew;
 	}
 	return;
@@ -480,7 +480,7 @@ void MDLImporter::ParseSkinLump_3DGS_MDL7(
 	unsigned int iWidth,
 	unsigned int iHeight)
 {
-	aiTexture* pcNew = NULL;
+	aiTexture* pcNew = nullptr;
 
 	// get the type of the skin
 	unsigned int iMasked = (unsigned int)(iType & 0xF);
@@ -671,7 +671,7 @@ void MDLImporter::ParseSkinLump_3DGS_MDL7(
 	if (is_not_qnan(clrTexture.r))
 	{
 		delete pcNew;
-		pcNew = NULL;
+		pcNew = nullptr;
 	}
 
 	// If an ASCII effect description (HLSL?) is contained in the file,
@@ -761,7 +761,7 @@ void MDLImporter::SkipSkinLump_3DGS_MDL7(
 			ParseTextureColorData(szCurrent,iMasked,&iSkip,&tex);
 
 			// FIX: Important, otherwise the destructor will crash
-			tex.pcData = NULL;
+			tex.pcData = nullptr;
 
 			// skip length of texture data
 			szCurrent += iSkip;
@@ -792,8 +792,8 @@ void MDLImporter::ParseSkinLump_3DGS_MDL7(
 	const unsigned char** szCurrentOut,
 	std::vector<aiMaterial*>& pcMats)
 {
-	ai_assert(NULL != szCurrent);
-	ai_assert(NULL != szCurrentOut);
+	ai_assert(nullptr != szCurrent);
+	ai_assert(nullptr != szCurrentOut);
 
 	*szCurrentOut = szCurrent;
 	BE_NCONST MDL::Skin_MDL7* pcSkin = (BE_NCONST MDL::Skin_MDL7*)szCurrent;

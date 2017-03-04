@@ -54,16 +54,16 @@
    just call addNewBranch or addNewLeaf and you're done.
 
    The state of a task can be stored in the target of a given integer pointer,
-   or if NULL than ArSyncTask will use its own member variable.
+   or if nullptr than ArSyncTask will use its own member variable.
 */
 
 class ArSyncTask
 {
 public:
   /// Constructor, shouldn't ever do a new on anything besides the root node
-  AREXPORT ArSyncTask(const char *name, ArFunctor * functor = NULL, 
-		      ArTaskState::State *state = NULL,
-		      ArSyncTask * parent = NULL);
+  AREXPORT ArSyncTask(const char *name, ArFunctor * functor = nullptr, 
+		      ArTaskState::State *state = nullptr,
+		      ArSyncTask * parent = nullptr);
   /// Destructor
   AREXPORT virtual ~ArSyncTask();
 
@@ -89,11 +89,11 @@ public:
 
   /// Adds a new branch to this instance
   AREXPORT void addNewBranch(const char *nameOfNew, int position, 
-			     ArTaskState::State *state = NULL);
+			     ArTaskState::State *state = nullptr);
   /// Adds a new leaf to this instance
   AREXPORT void addNewLeaf(const char *nameOfNew, int position, 
 			   ArFunctor *functor, 
-			   ArTaskState::State *state = NULL);
+			   ArTaskState::State *state = nullptr);
 
   /// Gets the name of this task
   AREXPORT std::string getName(void);

@@ -76,7 +76,7 @@ protected:
   ArFunctorC<ArMode> myUserTaskCB;
   char myKey;
   char myKey2;
-  // our help callback, its NULL until its initialized
+  // our help callback, its nullptr until its initialized
   static ArGlobalFunctor *ourHelpCB;
   static std::list<ArMode *> ourModes;
 };

@@ -48,7 +48,7 @@ CRandomFieldGridMap2D::CRandomFieldGridMap2D(
 		CDynamicGrid<TRandomFieldCell>( x_min,x_max,y_min,y_max,resolution ),
 		COutputLogger("CRandomFieldGridMap2D"),
 		m_rfgm_run_update_upon_clear(true),
-		m_insertOptions_common( NULL ),
+		m_insertOptions_common( nullptr ),
 		m_mapType(mapType),
 		m_cov(0,0),
 		m_hasToRecoverMeanAndCov(true),
@@ -386,7 +386,7 @@ void  CRandomFieldGridMap2D::internal_clear()
 			else
 			{
 				ConnectivityDescriptor * custom_connectivity = m_gmrf_connectivity.get(); // Use a raw ptr to avoid the cost in the inner loops
-				if (custom_connectivity!=NULL)
+				if (custom_connectivity!=nullptr)
 				     MRPT_LOG_DEBUG("[CRandomFieldGridMap2D::clear] Initiating prior (using user-supplied connectivity pattern)");
 				else MRPT_LOG_DEBUG("[CRandomFieldGridMap2D::clear] Initiating prior (fully connected)");
 
@@ -414,7 +414,7 @@ void  CRandomFieldGridMap2D::internal_clear()
 
 
 						double edge_lamdba = .0;
-						if (custom_connectivity != NULL)
+						if (custom_connectivity != nullptr)
 						{
 							const bool is_connected = custom_connectivity->getEdgeInformation(
 								this,
@@ -542,7 +542,7 @@ void  CRandomFieldGridMap2D::insertObservation_KernelDM_DMV(
 			if (windowValue>minWinValueAtCutOff)
 			{
 				cell = cellByIndex(sensor_cx+Acx,sensor_cy+Acy);
-				ASSERT_( cell!=NULL )
+				ASSERT_( cell!=nullptr )
 
 				cell->dm_mean_w  += windowValue;
 				cell->dm_mean += windowValue * normReading;
@@ -680,7 +680,7 @@ void CRandomFieldGridMap2D::getAsMatrix( mrpt::math::CMatrixDouble &cells_mat) c
 		for (unsigned int x=0;x<m_size_x;x++)
 		{
 			const TRandomFieldCell *cell = cellByIndex(x,y);
-			ASSERT_( cell!=NULL );
+			ASSERT_( cell!=nullptr );
 			double c;
 
 			switch (m_mapType)
@@ -1027,7 +1027,7 @@ void  CRandomFieldGridMap2D::insertObservation_KF(
 	// -------------------------------------------------
 	int						cellIdx = xy2idx( point.x, point.y );
 	TRandomFieldCell	*cell = cellByPos( point.x, point.y );
-	ASSERT_(cell!=NULL);
+	ASSERT_(cell!=nullptr);
 	size_t					N,i,j;
 
 	double		yk = normReading - cell->kf_mean;		// Predicted observation mean
@@ -1286,7 +1286,7 @@ void  CRandomFieldGridMap2D::saveAsMatlab3DGraph(const std::string  &filName) co
 		for (cx=0;cx<m_size_x;cx++)
 		{
 			const TRandomFieldCell	*cell = cellByIndex( cx,cy );
-			ASSERT_( cell!=NULL );
+			ASSERT_( cell!=nullptr );
 			os::fprintf(f,"%e ", cell->kf_mean  );
 		} // for cx
 
@@ -1302,7 +1302,7 @@ void  CRandomFieldGridMap2D::saveAsMatlab3DGraph(const std::string  &filName) co
 		for (cx=0;cx<m_size_x;cx++)
 		{
 			const TRandomFieldCell	*cell = cellByIndex( cx,cy );
-			ASSERT_( cell!=NULL );
+			ASSERT_( cell!=nullptr );
 			os::fprintf(f,"%e ", mrpt::utils::saturate_val(cell->kf_mean + std_times * cell->kf_std , m_insertOptions_common->GMRF_saturate_min, m_insertOptions_common->GMRF_saturate_max) );
 		} // for cx
 
@@ -1318,7 +1318,7 @@ void  CRandomFieldGridMap2D::saveAsMatlab3DGraph(const std::string  &filName) co
 		for (cx=0;cx<m_size_x;cx++)
 		{
 			const TRandomFieldCell	*cell = cellByIndex( cx,cy );
-			ASSERT_(cell!=NULL);
+			ASSERT_(cell!=nullptr);
 			os::fprintf(f,"%e ",  mrpt::utils::saturate_val(cell->kf_mean - std_times * cell->kf_std, m_insertOptions_common->GMRF_saturate_min, m_insertOptions_common->GMRF_saturate_max) );
 		} // for cx
 
@@ -1416,7 +1416,7 @@ void  CRandomFieldGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&mean
 			{
 				for (cx=1;cx<m_size_x;cx++)
 				{
-					const TRandomFieldCell	*cell_xy = cellByIndex( cx,cy ); ASSERT_( cell_xy!=NULL );
+					const TRandomFieldCell	*cell_xy = cellByIndex( cx,cy ); ASSERT_( cell_xy!=nullptr );
 					//mean
 					c = cell_xy->kf_mean;
 					minVal_m = min(minVal_m, c);
@@ -1442,10 +1442,10 @@ void  CRandomFieldGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&mean
 				for (cx=1;cx<m_size_x;cx++)
 				{
 					// Cell values:
-					const TRandomFieldCell	*cell_xy = cellByIndex( cx,cy ); ASSERT_( cell_xy!=NULL );
-					const TRandomFieldCell	*cell_x_1y = cellByIndex( cx-1,cy ); ASSERT_( cell_x_1y!=NULL );
-					const TRandomFieldCell	*cell_xy_1 = cellByIndex( cx,cy-1 ); ASSERT_( cell_xy_1!=NULL );
-					const TRandomFieldCell	*cell_x_1y_1 = cellByIndex( cx-1,cy-1 ); ASSERT_( cell_x_1y_1!=NULL );
+					const TRandomFieldCell	*cell_xy = cellByIndex( cx,cy ); ASSERT_( cell_xy!=nullptr );
+					const TRandomFieldCell	*cell_x_1y = cellByIndex( cx-1,cy ); ASSERT_( cell_x_1y!=nullptr );
+					const TRandomFieldCell	*cell_xy_1 = cellByIndex( cx,cy-1 ); ASSERT_( cell_xy_1!=nullptr );
+					const TRandomFieldCell	*cell_x_1y_1 = cellByIndex( cx-1,cy-1 ); ASSERT_( cell_x_1y_1!=nullptr );
 
 					// MEAN values
 					//-----------------
@@ -1533,7 +1533,7 @@ void  CRandomFieldGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&mean
 			{
 				for (cx=1;cx<m_size_x;cx++)
 				{
-					const TRandomFieldCell	*cell_xy = cellByIndex( cx,cy ); ASSERT_( cell_xy!=NULL );
+					const TRandomFieldCell	*cell_xy = cellByIndex( cx,cy ); ASSERT_( cell_xy!=nullptr );
 					//mean
 					c = computeMeanCellValue_DM_DMV( cell_xy );
 					minVal_m = min(minVal_m, c);
@@ -1559,10 +1559,10 @@ void  CRandomFieldGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&mean
 				for (cx=1;cx<m_size_x;cx++)
 				{
 					// Cell values:
-					const TRandomFieldCell	*cell_xy = cellByIndex( cx,cy ); ASSERT_( cell_xy!=NULL );
-					const TRandomFieldCell	*cell_x_1y = cellByIndex( cx-1,cy ); ASSERT_( cell_x_1y!=NULL );
-					const TRandomFieldCell	*cell_xy_1 = cellByIndex( cx,cy-1 ); ASSERT_( cell_xy_1!=NULL );
-					const TRandomFieldCell	*cell_x_1y_1 = cellByIndex( cx-1,cy-1 ); ASSERT_( cell_x_1y_1!=NULL );
+					const TRandomFieldCell	*cell_xy = cellByIndex( cx,cy ); ASSERT_( cell_xy!=nullptr );
+					const TRandomFieldCell	*cell_x_1y = cellByIndex( cx-1,cy ); ASSERT_( cell_x_1y!=nullptr );
+					const TRandomFieldCell	*cell_xy_1 = cellByIndex( cx,cy-1 ); ASSERT_( cell_xy_1!=nullptr );
+					const TRandomFieldCell	*cell_x_1y_1 = cellByIndex( cx-1,cy-1 ); ASSERT_( cell_x_1y_1!=nullptr );
 
 					// MEAN values
 					//-----------------
@@ -1869,7 +1869,7 @@ void  CRandomFieldGridMap2D::insertObservation_KF2(
 	//const double	res2 = square(m_resolution);
 	const int				cellIdx = xy2idx( point.x, point.y );
 	TRandomFieldCell	*cell = cellByPos( point.x, point.y );
-	ASSERT_(cell!=NULL);
+	ASSERT_(cell!=nullptr);
 
 	// Predicted observation mean
 	double		yk = normReading - cell->kf_mean;
@@ -2147,7 +2147,7 @@ void CRandomFieldGridMap2D::insertObservation_GMRF(
 		//Get index of observed cell
 		const int         cellIdx = xy2idx( point.x, point.y );
 		TRandomFieldCell *cell = cellByPos( point.x, point.y );
-		ASSERT_(cell!=NULL);
+		ASSERT_(cell!=nullptr);
 
 		// Insert observation in the vector of Active Observations
 		TObservationGMRF new_obs(*this);
