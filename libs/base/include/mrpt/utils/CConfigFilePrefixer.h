@@ -30,6 +30,7 @@ namespace utils
 	  *     s1_bar = /dev/ttyUSB0
 	  *   \endcode
 	  *
+	  * See: \ref config_file_format
 	  * \sa CConfigFileBase
 	  * \ingroup mrpt_base_grp
 	  */
