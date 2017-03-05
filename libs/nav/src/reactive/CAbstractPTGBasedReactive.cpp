@@ -858,28 +858,8 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 		}
 	}
 
-	//// Factor 2: Distance in sectors:
-	//// -------------------------------------------
-	////int dif = std::abs(TargetSector - kDirection);
-	////if ( dif > int(nSectors/2)) dif = nSectors - dif;
-	//m_expr_var_k = move_k;
-	//m_expr_var_k_target = target_k;
-	//m_expr_var_num_paths = in_TPObstacles.size();
-
-	//// Was: eval_factors[SCOREIDX_TPS_DIRECTION] = exp(-std::abs( dif / (nSectors/10.0)));
-	//eval_factors[SCOREIDX_TPS_DIRECTION] = PIMPL_GET_CONSTREF(exprtk::expression<double>, m_expr_score2_formula).value();
-
-	// Factor 3: Angle between the robot at the end of the chosen trajectory and the target
-	// -------------------------------------------------------------------------------------
-	//double t_ang = atan2( WS_Target.y - pose.y, WS_Target.x - pose.x );
-	//t_ang -= pose.phi;
-	//mrpt::math::wrapToPiInPlace(t_ang);
-
-	//eval_factors[SCOREIDX_ORIENTATION_AT_END] = exp(-square( t_ang / (0.5*M_PI)) );
-
 	// Factor4: Decrease in euclidean distance between (x,y) and the target:
 	//  Moving away of the target is negatively valued.
-	// ---------------------------------------------------------------------------
 	cm.props["dist_eucl_final"] = std::hypot(WS_Target.x- pose.x, WS_Target.y- pose.y);
 
 	// Factor5: Hysteresis:
