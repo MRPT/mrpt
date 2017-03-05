@@ -379,7 +379,7 @@ void CPTG_Holo_Blend::internal_deinitialize()
 	// Nothing to do in a closed-form PTG.
 }
 
-mrpt::kinematics::CVehicleVelCmdPtr CPTG_Holo_Blend::directionToMotionCommand( uint16_t k) const
+mrpt::kinematics::CVehicleVelCmd::Ptr CPTG_Holo_Blend::directionToMotionCommand( uint16_t k) const
 {
 	const double dir_local = CParameterizedTrajectoryGenerator::index2alpha(k);
 
@@ -389,7 +389,7 @@ mrpt::kinematics::CVehicleVelCmdPtr CPTG_Holo_Blend::directionToMotionCommand( u
 	cmd->ramp_time = internal_get_T_ramp(dir_local);
 	cmd->rot_speed = mrpt::utils::signWithZero(dir_local) * internal_get_w(dir_local);
 
-	return mrpt::kinematics::CVehicleVelCmdPtr(cmd);
+	return mrpt::kinematics::CVehicleVelCmd::Ptr(cmd);
 }
 
 size_t CPTG_Holo_Blend::getPathStepCount(uint16_t k) const
@@ -693,9 +693,9 @@ void CPTG_Holo_Blend::internal_processNewRobotShape()
 	// Nothing to do in a closed-form PTG.
 }
 
-mrpt::kinematics::CVehicleVelCmdPtr CPTG_Holo_Blend::getSupportedKinematicVelocityCommand() const
+mrpt::kinematics::CVehicleVelCmd::Ptr CPTG_Holo_Blend::getSupportedKinematicVelocityCommand() const
 {
-	return mrpt::kinematics::CVehicleVelCmdPtr(new mrpt::kinematics::CVehicleVelCmd_Holo());
+	return mrpt::kinematics::CVehicleVelCmd::Ptr(new mrpt::kinematics::CVehicleVelCmd_Holo());
 }
 
 bool CPTG_Holo_Blend::supportVelCmdNOP() const

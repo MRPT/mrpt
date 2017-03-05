@@ -367,7 +367,7 @@ void  CWirelessPowerGridMap2D::TInsertionOptions::loadFromConfigFile(
 /*---------------------------------------------------------------
 						getAs3DObject
 ---------------------------------------------------------------*/
-void  CWirelessPowerGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const
+void  CWirelessPowerGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjects::Ptr	&outObj ) const
 {
 	MRPT_START
 	if (!genericMapParams.enableSaveAs3DObject) return;

@@ -389,7 +389,7 @@ void  CGPSInterface::flushParsedMessagesNow()
 	     m_just_parsed_messages.sensorLabel = m_sensorLabel + string("_")+ m_just_parsed_messages.sensorLabel;
 	else m_just_parsed_messages.sensorLabel = m_sensorLabel;
 	// Add observation to the output queue:
-	CObservationGPSPtr newObs = CObservationGPS::Create();
+	CObservationGPS::Ptr newObs = CObservationGPS::Create();
 	m_just_parsed_messages.swap(*newObs);
 	CGenericSensor::appendObservation( newObs );
 	m_just_parsed_messages.clear();

@@ -27,6 +27,7 @@ namespace mrpt
 		class MAPS_IMPEXP CPointCloudFilterBase
 		{
 		public:
+			using Ptr = std::shared_ptr<CPointCloudFilterBase>;
 			CPointCloudFilterBase();
 			virtual ~CPointCloudFilterBase();
 
@@ -47,7 +48,6 @@ namespace mrpt
 			) = 0;
 		};
 
-		typedef std::shared_ptr<CPointCloudFilterBase> CPointCloudFilterBasePtr;
 
 	}
 } // End of namespace

@@ -15,6 +15,7 @@
 #include <mrpt/version.h>
 #include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/utils/CFileInputStream.h>
+#include <mrpt/utils/CSerializable.h>
 #include <mrpt/utils/stl_serialization.h>
 #include <mrpt/system/CDirectoryExplorer.h>
 #include <mrpt/system/os.h>

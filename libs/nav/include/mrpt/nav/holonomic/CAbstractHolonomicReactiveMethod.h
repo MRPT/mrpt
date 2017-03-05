@@ -69,7 +69,7 @@ namespace mrpt
 			double    desiredSpeed;     //!< The desired motion speed in that direction, from 0 up to NavInput::maxRobotSpeed
 
 			/** The navigation method will create a log record and store it here via a smart pointer. Input value is ignored. */
-			CHolonomicLogFileRecordPtr  logRecord;
+			CHolonomicLogFileRecord::Ptr  logRecord;
 
 			NavOutput();
 		};

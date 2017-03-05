@@ -60,9 +60,8 @@ namespace mrpt
 			  */
 			bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const MRPT_OVERRIDE;
 
-			static CDiskPtr Create(float radiusOut,float radiusIn,uint32_t slices=50,uint32_t loops=4);
+			static CDisk::Ptr Create(float radiusOut,float radiusIn,uint32_t slices=50,uint32_t loops=4);
 
-		private:
 			/** Constructor
 			  */
 			CDisk():m_radiusIn(0),m_radiusOut(1),m_nSlices(50),m_nLoops(4) {}

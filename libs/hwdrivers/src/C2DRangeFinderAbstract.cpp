@@ -190,16 +190,16 @@ void C2DRangeFinderAbstract::processPreview(const mrpt::obs::CObservation2DRange
 			m_win = mrpt::gui::CDisplayWindow3D::Create( caption, 640, 480 );
 			m_win->setCameraAzimuthDeg(180);
 			m_win->setCameraElevationDeg(90);
-			COpenGLScenePtr &theScene = m_win->get3DSceneAndLock();
-			theScene->insert(CAxisPtr( CAxis::Create(-300,-300,-50, 300,300,50, 1.0, 3, true  ) ));
+			COpenGLScene::Ptr &theScene = m_win->get3DSceneAndLock();
+			theScene->insert(CAxis::Ptr( CAxis::Create(-300,-300,-50, 300,300,50, 1.0, 3, true  ) ));
 			m_win->unlockAccess3DScene();
 		}
 
 		if( m_win && m_win->isOpen() )
 		{
-			COpenGLScenePtr &theScene = m_win->get3DSceneAndLock();
-			opengl::CPlanarLaserScanPtr laser;
-			CRenderizablePtr obj = theScene->getByName("laser");
+			COpenGLScene::Ptr &theScene = m_win->get3DSceneAndLock();
+			opengl::CPlanarLaserScan::Ptr laser;
+			CRenderizable::Ptr obj = theScene->getByName("laser");
 			if( !obj )
 			{
 				laser = opengl::CPlanarLaserScan::Create();
@@ -209,7 +209,7 @@ void C2DRangeFinderAbstract::processPreview(const mrpt::obs::CObservation2DRange
 			}
 			else
 			{
-				laser = CPlanarLaserScanPtr(obj);
+				laser = std::dynamic_pointer_cast<CPlanarLaserScan>(obj);
 				laser->setScan(obs);
 			}
 			m_win->unlockAccess3DScene();

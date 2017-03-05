@@ -303,7 +303,7 @@ void  CHeightGridMap2D_MRF::TInsertionOptions::loadFromConfigFile(
 /*---------------------------------------------------------------
 						getAs3DObject
 ---------------------------------------------------------------*/
-void  CHeightGridMap2D_MRF::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj) const
+void  CHeightGridMap2D_MRF::getAs3DObject( mrpt::opengl::CSetOfObjects::Ptr	&outObj) const
 {
 	MRPT_START
 	if (!genericMapParams.enableSaveAs3DObject) return;
@@ -315,8 +315,8 @@ void  CHeightGridMap2D_MRF::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outOb
 						getAs3DObject
 ---------------------------------------------------------------*/
 void  CHeightGridMap2D_MRF::getAs3DObject(
-	mrpt::opengl::CSetOfObjectsPtr	&meanObj,
-	mrpt::opengl::CSetOfObjectsPtr	&varObj ) const
+	mrpt::opengl::CSetOfObjects::Ptr	&meanObj,
+	mrpt::opengl::CSetOfObjects::Ptr	&varObj ) const
 {
 	MRPT_START
 	if (!genericMapParams.enableSaveAs3DObject) return;

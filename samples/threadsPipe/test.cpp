@@ -37,10 +37,10 @@ void thread_reader(std::unique_ptr<CPipeReadEndPoint> &read_pipe)
 
 		// Read MRPT object from a pipe:
 		// *Note*: If the object class is known in advance, one can avoid smart pointers with ReadObject(&existingObj)
-		CSerializablePtr obj = read_pipe->ReadObject();
+		CSerializable::Ptr obj = read_pipe->ReadObject();
 		if (IS_CLASS(obj,CPose3D))
 		{
-			CPose3DPtr ptrPose = CPose3DPtr(obj);
+			CPose3D::Ptr ptrPose = CPose3D::Ptr(obj);
 			cout << "RX pose: " << *ptrPose << endl;
 		}
 

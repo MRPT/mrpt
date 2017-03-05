@@ -28,7 +28,7 @@ namespace poses
 	 *
 	 *  For convenience, a pose composition is also defined for any
 	 *    PDF derived class, changeCoordinatesReference, in the form of a method rather than an operator.
-     *
+	 *
 	 *  For a similar class for 3D points (without attitude), see CPointPDF
 	 *
 	 *
@@ -94,18 +94,18 @@ namespace poses
 		static inline bool is_PDF() { return is_PDF_val!=0; }
 
 		/** Returns a 3D representation of this PDF (it doesn't clear the current contents of out_obj, but append new OpenGL objects to that list)
-		  * \note Needs the mrpt-opengl library, and using mrpt::opengl::CSetOfObjectsPtr as template argument.
+		  * \note Needs the mrpt-opengl library, and using mrpt::opengl::CSetOfObjects::Ptr as template argument.
 		  * \note By default, ellipsoids for the confidence intervals of  "q=3" are drawn; for more mathematical details, see  CGeneralizedEllipsoidTemplate::setQuantiles()
 		  * \sa mrpt::opengl::CSetOfObjects::posePDF2opengl() for details on pose-to-opengl conversion
 		  */
 		template <class OPENGL_SETOFOBJECTSPTR>
 		inline void getAs3DObject(OPENGL_SETOFOBJECTSPTR &out_obj) const {
-			typedef typename OPENGL_SETOFOBJECTSPTR::value_type SETOFOBJECTS;
+			typedef typename OPENGL_SETOFOBJECTSPTR::element_type SETOFOBJECTS;
 			out_obj->insertCollection( *SETOFOBJECTS::posePDF2opengl(*this) );
 		}
 
 		/** Returns a 3D representation of this PDF.
-		  * \note Needs the mrpt-opengl library, and using mrpt::opengl::CSetOfObjectsPtr as template argument.
+		  * \note Needs the mrpt-opengl library, and using mrpt::opengl::CSetOfObjects::Ptr as template argument.
 		  */
 		template <class OPENGL_SETOFOBJECTSPTR>
 		inline OPENGL_SETOFOBJECTSPTR getAs3DObject() const {

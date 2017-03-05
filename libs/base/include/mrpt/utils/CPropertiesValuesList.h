@@ -31,7 +31,7 @@ namespace mrpt
 			struct BASE_IMPEXP  TPropertyValuePair
 			{
 				std::string			name;
-				CSerializablePtr	value;
+				CSerializable::Ptr	value;
 			};
 			/** The properties list: a map between strings and objects
 			  */
@@ -60,11 +60,11 @@ namespace mrpt
 
 			/** Returns the value of the property (case insensitive), or nullptr if it does not exist.
 			  */
-			CSerializablePtr get(const std::string &propertyName) const;
+			CSerializable::Ptr get(const std::string &propertyName) const;
 
 			/** Sets/change the value of the property (case insensitive), making a copy of the object (or setting it to nullptr if it is the passed value)
 			  */
-			void  set(const std::string &propertyName,const CSerializablePtr &obj);
+			void  set(const std::string &propertyName,const CSerializable::Ptr &obj);
 
 			/** Returns the number of properties in the list
 			  */

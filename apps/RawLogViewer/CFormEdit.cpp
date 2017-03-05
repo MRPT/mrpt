@@ -448,7 +448,7 @@ void filter_delObsByClass(
     {
         for (CSensoryFrame::iterator it=SF->begin();it!=SF->end(); )
         {
-            CObservationPtr obs = *it;
+            CObservation::Ptr obs = *it;
             if (string::npos!=find_in_vector(string(obs->GetRuntimeClass()->className), classNameOfObsToRemove) )
             {
                 // A match: Delete it:
@@ -469,7 +469,7 @@ void filter_remObsByClass(
     {
         for (CSensoryFrame::iterator it=SF->begin();it!=SF->end(); )
         {
-            CObservationPtr obs = *it;
+            CObservation::Ptr obs = *it;
             if (string::npos==find_in_vector(string(obs->GetRuntimeClass()->className), classNameOfObsToRemove) )
             {
                 // A NO match: Delete it:
@@ -563,7 +563,7 @@ void filter_swapColors(
     {
         for (CSensoryFrame::iterator it=SF->begin();it!=SF->end();++it)
         {
-            CObservationPtr obs = *it;
+            CObservation::Ptr obs = *it;
 
             if (IS_CLASS(obs,CObservationImage))
             {
@@ -792,7 +792,7 @@ void CFormEdit::executeOperationOnRawlog( TRawlogFilter operation, const char *e
     string              errorMsg;
     wxString			auxStr;
 
-	CSensoryFramePtr dummy_sf = CSensoryFrame::Create();
+	CSensoryFrame::Ptr dummy_sf = CSensoryFrame::Create();
 
     // Apply changes:
     int 	changes = 0;
@@ -801,7 +801,7 @@ void CFormEdit::executeOperationOnRawlog( TRawlogFilter operation, const char *e
     while ( ( !isInMemory && keepLoading ) ||
             (  isInMemory && countLoop < rawlog.size() ) )
     {
-        CSerializablePtr newObj;
+        CSerializable::Ptr newObj;
         try
         {
             if (isInMemory)
@@ -825,7 +825,7 @@ void CFormEdit::executeOperationOnRawlog( TRawlogFilter operation, const char *e
             else if ( newObj->GetRuntimeClass() == CLASS_ID(CSensoryFrame))
             {
                 // A sensory frame:
-                CSensoryFramePtr sf = CSensoryFramePtr( newObj );
+                CSensoryFrame::Ptr sf = std::dynamic_pointer_cast<CSensoryFrame>( newObj );
 
                 // Process & save:
                 if (!isInMemory || (countLoop>=first && countLoop<=last) )
@@ -837,7 +837,7 @@ void CFormEdit::executeOperationOnRawlog( TRawlogFilter operation, const char *e
             {
                 // A single observation:
 				dummy_sf->clear();
-				dummy_sf->insert( CObservationPtr( newObj ) );
+				dummy_sf->insert( std::dynamic_pointer_cast<CObservation> ( newObj ) );
 
                 // Process & save:
                 if (!isInMemory || (countLoop>=first && countLoop<=last) )
@@ -861,7 +861,7 @@ void CFormEdit::executeOperationOnRawlog( TRawlogFilter operation, const char *e
             else if ( newObj->GetRuntimeClass() == CLASS_ID(CActionCollection))
             {
                 // This is an action:
-                CActionCollectionPtr acts = CActionCollectionPtr( newObj );
+                CActionCollection::Ptr acts = std::dynamic_pointer_cast<CActionCollection>( newObj );
 
                 // Process & save:
                 if (!isInMemory || (countLoop>=first && countLoop<=last) )
@@ -929,7 +929,7 @@ void filter_delObsByLabel(
     {
         for (CSensoryFrame::iterator it=SF->begin();it!=SF->end(); )
         {
-            CObservationPtr obs = *it;
+            CObservation::Ptr obs = *it;
             if (string::npos!=find_in_vector(obs->sensorLabel, labelOfObsToRemove) )
             {
                 // A match: Delete it:
@@ -950,7 +950,7 @@ void filter_NotDelObsByLabel(
     {
         for (CSensoryFrame::iterator it=SF->begin();it!=SF->end(); )
         {
-            CObservationPtr obs = *it;
+            CObservation::Ptr obs = *it;
             if (string::npos==find_in_vector(obs->sensorLabel, labelOfObsToRemove) )
             {
                 // A match: Delete it:
@@ -1008,7 +1008,7 @@ void leave_horizontalScans(
     {
         for (CSensoryFrame::iterator it=SF->begin();it!=SF->end(); )
         {
-            CObservationPtr obs = *it;
+            CObservation::Ptr obs = *it;
 
             if ( IS_CLASS(obs, CObservation2DRangeScan ) )
             {

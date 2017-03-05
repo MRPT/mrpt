@@ -78,7 +78,7 @@ namespace mrpt
 			void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const MRPT_OVERRIDE;
 
 			/** Class factory  */
-			static CGridPlaneXYPtr Create(
+			static CGridPlaneXY::Ptr Create(
 				float xMin,
 				float xMax,
 				float yMin,
@@ -89,7 +89,6 @@ namespace mrpt
 				bool  antiAliasing = true);
 
 
-		private:
 			/** Constructor  */
 			CGridPlaneXY(
 				float xMin = -10,

@@ -113,7 +113,7 @@ TEST(SerializeTestBase, WriteReadToMem)
 				delete o;
 			}
 
-			CSerializablePtr recons;
+			CSerializable::Ptr recons;
 			buf.Seek(0);
 			buf >> recons;
 		}
@@ -228,13 +228,13 @@ TEST(SerializeTestBase, CastSmartPointers)
 	using namespace mrpt::poses;
 
 	// Create:
-	CPose2DPtr p1 = CPose2D::Create();
+	CPose2D::Ptr p1 = CPose2D::Create();
 	// Upcast:
-	mrpt::utils::CSerializablePtr p2 = p1;
+	mrpt::utils::CSerializable::Ptr p2 = p1;
 	// Downcast:
-	mrpt::utils::CSerializablePtr p3 = p2;
+	mrpt::utils::CSerializable::Ptr p3 = p2;
 	// Copy:
-	mrpt::utils::CSerializablePtr p4 = p1;
+	mrpt::utils::CSerializable::Ptr p4 = p1;
 
 	EXPECT_TRUE(IS_CLASS(p1,CPose2D));
 	EXPECT_TRUE(IS_CLASS(p2,CPose2D));

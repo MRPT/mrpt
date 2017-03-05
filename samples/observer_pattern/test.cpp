@@ -55,7 +55,7 @@ protected:
 // ------------------------------------------------------
 void TestObserverPattern()
 {
-	CSimplePointsMapPtr  map1 = CSimplePointsMap::Create();
+	CSimplePointsMap::Ptr  map1 = CSimplePointsMap::Create();
 
 	CObservation2DRangeScan	 obs = getScan();
 

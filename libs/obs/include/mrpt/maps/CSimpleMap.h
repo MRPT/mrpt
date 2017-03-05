@@ -63,7 +63,7 @@ namespace maps
 		  * NOTE: You can pass a nullptr pointer if you dont need one of the two variables to be returned.
 		  * \exception std::exception On index out of bounds.
 		  */
-		void  get(size_t index, mrpt::poses::CPose3DPDFPtr &out_posePDF, mrpt::obs::CSensoryFramePtr &out_SF ) const ;
+		void  get(size_t index, mrpt::poses::CPose3DPDF::Ptr &out_posePDF, mrpt::obs::CSensoryFrame::Ptr &out_SF ) const ;
 
 		/** Changes the i'th pair, first one is index '0'.
 		  *  The referenced object is COPIED, so you can freely destroy the object passed as parameter after calling this.
@@ -71,7 +71,7 @@ namespace maps
 		  * \exception std::exception On index out of bounds.
 		  * \sa insert, get, remove
 		  */
-		void  set(size_t index, const mrpt::poses::CPose3DPDFPtr &in_posePDF, const mrpt::obs::CSensoryFramePtr &in_SF );
+		void  set(size_t index, const mrpt::poses::CPose3DPDF::Ptr &in_posePDF, const mrpt::obs::CSensoryFrame::Ptr &in_SF );
 
 		/** Changes the i'th pair, first one is index '0'.
 		  *  The referenced object is COPIED, so you can freely destroy the object passed as parameter after calling this.
@@ -80,7 +80,7 @@ namespace maps
 		  * \exception std::exception On index out of bounds.
 		  * \sa insert, get, remove
 		  */
-		void  set(size_t index, const mrpt::poses::CPosePDFPtr &in_posePDF, const mrpt::obs::CSensoryFramePtr &in_SF );
+		void  set(size_t index, const mrpt::poses::CPosePDF::Ptr &in_posePDF, const mrpt::obs::CSensoryFrame::Ptr &in_SF );
 
 		/** Deletes the i'th pair, first one is index '0'.
 		  * \exception std::exception On index out of bounds.
@@ -92,16 +92,16 @@ namespace maps
 		void  insert( const mrpt::poses::CPose3DPDF *in_posePDF, const mrpt::obs::CSensoryFrame &in_SF );
 
 		/** Add a new pair to the sequence, making a copy of the smart pointer (it's not made unique). */
-		void  insert( const mrpt::poses::CPose3DPDF *in_posePDF, const mrpt::obs::CSensoryFramePtr &in_SF );
+		void  insert( const mrpt::poses::CPose3DPDF *in_posePDF, const mrpt::obs::CSensoryFrame::Ptr &in_SF );
 
 		/** Add a new pair to the sequence, making a copy of the smart pointer (it's not made unique). */
-		void  insert( const mrpt::poses::CPose3DPDFPtr &in_posePDF, const mrpt::obs::CSensoryFramePtr &in_SF );
+		void  insert( const mrpt::poses::CPose3DPDF::Ptr &in_posePDF, const mrpt::obs::CSensoryFrame::Ptr &in_SF );
 
 		/** Add a new pair to the sequence. The objects are copied, so original ones can be free if desired
 		  *  after insertion.
 		  * This version for 2D PDFs just converts the 2D PDF into 3D before calling the 3D version.
 		  */
-		void  insert( const mrpt::poses::CPosePDFPtr &in_posePDF, const mrpt::obs::CSensoryFramePtr &in_SF );
+		void  insert( const mrpt::poses::CPosePDF::Ptr &in_posePDF, const mrpt::obs::CSensoryFrame::Ptr &in_SF );
 
 		/** Add a new pair to the sequence. The objects are copied, so original ones can be free if desired
 		  *  after insertion.
@@ -113,7 +113,7 @@ namespace maps
 		  *  after insertion.
 		  * This version for 2D PDFs just converts the 2D PDF into 3D before calling the 3D version.
 		  */
-		void  insert( const mrpt::poses::CPosePDF *in_posePDF, const mrpt::obs::CSensoryFramePtr &in_SF );
+		void  insert( const mrpt::poses::CPosePDF *in_posePDF, const mrpt::obs::CSensoryFrame::Ptr &in_SF );
 
 		void  clear(); //!< Remove all stored pairs.  \sa remove
 
@@ -124,7 +124,7 @@ namespace maps
 
 		/** \name Iterators API
 		  * @{ */
-		typedef std::pair<mrpt::poses::CPose3DPDFPtr,mrpt::obs::CSensoryFramePtr> TPosePDFSensFramePair;
+		typedef std::pair<mrpt::poses::CPose3DPDF::Ptr,mrpt::obs::CSensoryFrame::Ptr> TPosePDFSensFramePair;
 		typedef std::deque<TPosePDFSensFramePair> TPosePDFSensFramePairList;
 
 		typedef TPosePDFSensFramePairList::const_iterator 	const_iterator;

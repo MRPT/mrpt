@@ -56,16 +56,16 @@ CTopLCDetector_FabMap::~CTopLCDetector_FabMap()
   * \param out_log_lik The output, a log-likelihood.
   * \return nullptr, or a PDF of the estimated translation between the two areas (can be a multi-modal PDF).
   */
-CPose3DPDFPtr CTopLCDetector_FabMap::computeTopologicalObservationModel(
+CPose3DPDF::Ptr CTopLCDetector_FabMap::computeTopologicalObservationModel(
 	const THypothesisID		&hypID,
-	const CHMHMapNodePtr	&currentArea,
-	const CHMHMapNodePtr	&refArea,
+	const CHMHMapNode::Ptr	&currentArea,
+	const CHMHMapNode::Ptr	&refArea,
 	double					&out_log_lik
 	)
 {
 	MRPT_UNUSED_PARAM(hypID); MRPT_UNUSED_PARAM(currentArea);
 	MRPT_UNUSED_PARAM(refArea); MRPT_UNUSED_PARAM(out_log_lik);
-	return CPose3DPDFPtr();
+	return CPose3DPDF::Ptr();
 }
 
 /** Hook method for being warned about the insertion of a new poses into the maps.
@@ -80,7 +80,7 @@ void CTopLCDetector_FabMap::OnNewPose(
 	vector<string> lstObsImages;
 
 	size_t n = 0;
-	CObservationImagePtr obsIm;
+	CObservationImage::Ptr obsIm;
 	while ( (obsIm = SF->getObservationByClass<CObservationImage>(n)) )
 	{
 		string path;

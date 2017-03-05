@@ -182,7 +182,7 @@ namespace mrpt
 			/** Override of the default 3D scene builder to account for the individual points' color.
 			  * \sa mrpt::global_settings::POINTSMAPS_3DOBJECT_POINTSIZE
 			  */
-			virtual void getAs3DObject( mrpt::opengl::CSetOfObjectsPtr &outObj ) const MRPT_OVERRIDE;
+			virtual void getAs3DObject( mrpt::opengl::CSetOfObjects::Ptr &outObj ) const MRPT_OVERRIDE;
 
 			/** Colour a set of points from a CObservationImage and the global pose of the robot */
 			bool colourFromObservation( const mrpt::obs::CObservationImage &obs, const mrpt::poses::CPose3D &robotPose );

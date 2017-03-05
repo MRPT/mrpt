@@ -9,7 +9,7 @@
 
 // -----------------------------------------------------------------------------------------------------------------------
 // For this example, the rawlog file must contain both laser data and stereo images (only the left one will be considered)
-// It may be used with single image observations -> just employ "CObservationImagePtr" instead of "CObservationStereoImagesPtr"
+// It may be used with single image observations -> just employ "CObservationImage::Ptr" instead of "CObservationStereoImages::Ptr"
 // and access to the contained "image" instead of "imageLeft".
 // -----------------------------------------------------------------------------------------------------------------------
 
@@ -51,8 +51,8 @@ void TestLaser2Imgs()
 	if (!mrpt::system::fileExists(RAWLOG_FILE))
 		THROW_EXCEPTION_FMT("Rawlog file does not exist: %s",RAWLOG_FILE.c_str())
 
-	CActionCollectionPtr	action;
-	CSensoryFramePtr		observations;
+	CActionCollection::Ptr	action;
+	CSensoryFrame::Ptr		observations;
 	size_t					rawlogEntry		= 0;
 	//bool					end 			= false;
 	CDisplayWindow			wind;
@@ -82,8 +82,8 @@ void TestLaser2Imgs()
 
 		// CAMERA............
 		// Get CObservationStereoImages
-		CObservationStereoImagesPtr sImgs;
-		CObservationImagePtr Img;
+		CObservationStereoImages::Ptr sImgs;
+		CObservationImage::Ptr Img;
 
 		sImgs = observations->getObservationByClass<CObservationStereoImages>();
 		if (!sImgs)
@@ -101,7 +101,7 @@ void TestLaser2Imgs()
 
 		// LASER.............
 		// Get CObservationRange2D
-		CObservation2DRangeScanPtr laserScan = observations->getObservationByClass<CObservation2DRangeScan>();
+		CObservation2DRangeScan::Ptr laserScan = observations->getObservationByClass<CObservation2DRangeScan>();
 		if (!laserScan) continue;
 
 		// Get Laser Pose (A) (CPose3D)

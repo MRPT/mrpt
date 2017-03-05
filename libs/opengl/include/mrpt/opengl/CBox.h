@@ -46,7 +46,7 @@ namespace opengl	{
 		
 	public:
 		/** Constructor returning a smart pointer to the newly created object. */
-		static CBoxPtr Create(const mrpt::math::TPoint3D &corner1, const mrpt::math::TPoint3D &corner2, bool  is_wireframe = false, float lineWidth = 1.0 );
+		static CBox::Ptr Create(const mrpt::math::TPoint3D &corner1, const mrpt::math::TPoint3D &corner2, bool  is_wireframe = false, float lineWidth = 1.0 );
 		
 		/** Render
 		  * \sa mrpt::opengl::CRenderizable
@@ -79,7 +79,6 @@ namespace opengl	{
 		void getBoxCorners(mrpt::math::TPoint3D &corner1, mrpt::math::TPoint3D &corner2) const { corner1= m_corner_min; corner2 = m_corner_max; }
 		
 
-	private:
 		/** Basic empty constructor. Set all parameters to default. */ 
 		CBox();
 		
@@ -88,6 +87,7 @@ namespace opengl	{
 		
 		/** Destructor  */ 
 		virtual ~CBox() { }
+	private:
 		
 	};
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(CBox,CRenderizableDisplayList, OPENGL_IMPEXP)

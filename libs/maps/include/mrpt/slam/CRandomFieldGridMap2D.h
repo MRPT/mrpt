@@ -11,5 +11,5 @@
 MRPT_WARNING("*Deprecated header* Please replace with #include <mrpt/maps/CRandomFieldGridMap2D.h>. This backward compatible header will be removed in MRPT 2.0.0")
 namespace mrpt { namespace slam {
 	using mrpt::maps::CRandomFieldGridMap2D;    //!< Backward compatibility
-	using mrpt::maps::CRandomFieldGridMap2DPtr; //!< Backward compatibility
+	using mrpt::maps::CRandomFieldGridMap2D::Ptr; //!< Backward compatibility
 } }

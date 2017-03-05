@@ -599,7 +599,7 @@ namespace maps
 		  *  The color of the points is given by the static variables: COLOR_3DSCENE_R,COLOR_3DSCENE_G,COLOR_3DSCENE_B
 		  * \sa mrpt::global_settings::POINTSMAPS_3DOBJECT_POINTSIZE
 		  */
-		virtual void getAs3DObject( mrpt::opengl::CSetOfObjectsPtr &outObj ) const MRPT_OVERRIDE;
+		virtual void getAs3DObject( mrpt::opengl::CSetOfObjects::Ptr &outObj ) const MRPT_OVERRIDE;
 
 		/** If the map is a simple points map or it's a multi-metric map that contains EXACTLY one simple points map, return it.
 			* Otherwise, return NULL

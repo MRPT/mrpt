@@ -11,5 +11,5 @@
 MRPT_WARNING("*Deprecated header* Please replace with #include <mrpt/maps/CLandmarksMap.h>. This backward compatible header will be removed in MRPT 2.0.0")
 namespace mrpt { namespace slam {
 	typedef mrpt::maps::CLandmarksMap CLandmarksMap;    //!< Backward compatible typedef
-	typedef mrpt::maps::CLandmarksMapPtr CLandmarksMapPtr; //!< Backward compatible typedef
+	typedef mrpt::maps::CLandmarksMap::Ptr CLandmarksMap::Ptr; //!< Backward compatible typedef
 } }

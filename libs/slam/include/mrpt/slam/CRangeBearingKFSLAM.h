@@ -67,8 +67,8 @@ namespace mrpt
 			 *	\param SF The set of observations, must contain at least one CObservationBearingRange
 			 */
 			void  processActionObservation(
-				mrpt::obs::CActionCollectionPtr &action,
-				mrpt::obs::CSensoryFramePtr     &SF );
+				mrpt::obs::CActionCollection::Ptr &action,
+				mrpt::obs::CSensoryFrame::Ptr     &SF );
 
 			/** Returns the complete mean and cov.
 			  *  \param out_robotPose The mean and the 7x7 covariance matrix of the robot 6D pose
@@ -130,7 +130,7 @@ namespace mrpt
 			/** Returns a 3D representation of the landmarks in the map and the robot 3D position according to the current filter state.
 			  *  \param out_objects
 			  */
-			void  getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const;
+			void  getAs3DObject( mrpt::opengl::CSetOfObjects::Ptr	&outObj ) const;
 
 			/** Load options from a ini-like file/text
 			  */
@@ -394,10 +394,10 @@ namespace mrpt
 			 */
 
 			/** Set up by processActionObservation */
-			mrpt::obs::CActionCollectionPtr	m_action;
+			mrpt::obs::CActionCollection::Ptr	m_action;
 
 			/** Set up by processActionObservation */
-			mrpt::obs::CSensoryFramePtr		m_SF;
+			mrpt::obs::CSensoryFrame::Ptr		m_SF;
 
 			/** The mapping between landmark IDs and indexes in the Pkk cov. matrix: */
 			mrpt::utils::bimap<mrpt::maps::CLandmark::TLandmarkID,unsigned int>	m_IDs;

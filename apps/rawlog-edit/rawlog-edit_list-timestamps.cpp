@@ -42,7 +42,7 @@ DECLARE_OP_FUNCTION(op_list_timestamps)
 				throw std::runtime_error("list-timestamps: Cannot open output text file.");
 		}
 
-		bool processOneObservation(CObservationPtr  &obs)
+		bool processOneObservation(CObservation::Ptr  &obs)
 		{
 			m_out << std::fixed <<  mrpt::system::timestampToDouble(obs->timestamp) << " " << obs->sensorLabel << " " << obs->GetRuntimeClass()->className << std::endl;
 			return true;

@@ -78,7 +78,7 @@ namespace mrpt
 			  *   an existing viewport.
 			  * \sa createViewport, getViewport
 			  */
-			void insert( const CRenderizablePtr &newObject, const std::string &viewportName=std::string("main"));
+			void insert( const CRenderizable::Ptr &newObject, const std::string &viewportName=std::string("main"));
 
 			/**
 			  * Inserts a set of objects into the scene, in the given viewport ("main" by default).
@@ -92,11 +92,11 @@ namespace mrpt
 			  *  Names (case-sensitive) cannot be duplicated: if the name provided coincides with an already existing viewport, a pointer to the existing object will be returned.
 			  *  The first, default viewport, is named "main".
 			  */
-			COpenGLViewportPtr createViewport( const std::string &viewportName );
+			COpenGLViewport::Ptr createViewport( const std::string &viewportName );
 
 			/** Returns the viewport with the given name, or nullptr if it does not exist; note that the default viewport is named "main" and initially occupies the entire rendering area.
 			  */
-			COpenGLViewportPtr getViewport( const std::string &viewportName = std::string("main") ) const;
+			COpenGLViewport::Ptr getViewport( const std::string &viewportName = std::string("main") ) const;
 
 			/** Render this scene */
 			void render() const;
@@ -119,32 +119,32 @@ namespace mrpt
 
 			/** Returns the first object with a given name, or nullptr (an empty smart pointer) if not found.
 			  */
-			CRenderizablePtr	getByName( const std::string &str, const std::string &viewportName = std::string("main") );
+			CRenderizable::Ptr	getByName( const std::string &str, const std::string &viewportName = std::string("main") );
 
 			 /** Returns the i'th object of a given class (or of a descendant class), or nullptr (an empty smart pointer) if not found.
 			   *  Example:
 			   * \code
-					CSpherePtr obs = myscene.getByClass<CSphere>();
+					CSphere::Ptr obs = myscene.getByClass<CSphere>();
 			   * \endcode
 			   * By default (ith=0), the first observation is returned.
 			   */
 			 template <typename T>
-			 typename T::SmartPtr getByClass( const size_t &ith = 0 ) const
+			 typename T::Ptr getByClass( const size_t &ith = 0 ) const
 			 {
 				MRPT_START
 				for (TListViewports::const_iterator it = m_viewports.begin();it!=m_viewports.end();++it)
 				{
-					typename T::SmartPtr o = (*it)->getByClass<T>(ith);
+					typename T::Ptr o = (*it)->getByClass<T>(ith);
 					if (o) return o;
 				}
-				return typename T::SmartPtr();	// Not found: return empty smart pointer
+				return typename T::Ptr();	// Not found: return empty smart pointer
 				MRPT_END
 			 }
 
 
 			/** Removes the given object from the scene (it also deletes the object to free its memory).
 			  */
-			void removeObject( const CRenderizablePtr &obj, const std::string &viewportName = std::string("main") );
+			void removeObject( const CRenderizable::Ptr &obj, const std::string &viewportName = std::string("main") );
 
 			/** Initializes all textures in the scene (See opengl::CTexturedPlane::loadTextureInOpenGL)
 			  */
@@ -174,7 +174,7 @@ namespace mrpt
 			void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max, const std::string &vpn=std::string("main") ) const;
 
 			/** Recursive depth-first visit all objects in all viewports of the scene, calling the user-supplied function
-			  *  The passed function must accept only one argument of type "const mrpt::opengl::CRenderizablePtr &"
+			  *  The passed function must accept only one argument of type "const mrpt::opengl::CRenderizable::Ptr &"
 			  */
 			template <typename FUNCTOR>
 			void visitAllObjects( FUNCTOR functor) const
@@ -187,7 +187,7 @@ namespace mrpt
 			}
 
 			/** Recursive depth-first visit all objects in all viewports of the scene, calling the user-supplied function
-			  *  The passed function must accept a first argument of type "const mrpt::opengl::CRenderizablePtr &"
+			  *  The passed function must accept a first argument of type "const mrpt::opengl::CRenderizable::Ptr &"
 			  *  and a second one of type EXTRA_PARAM
 			  */
 			template <typename FUNCTOR,typename EXTRA_PARAM>
@@ -198,18 +198,18 @@ namespace mrpt
 		protected:
 			bool		m_followCamera;
 
-			typedef std::vector<COpenGLViewportPtr> TListViewports;
+			typedef std::vector<COpenGLViewport::Ptr> TListViewports;
 
 			TListViewports		m_viewports;	//!< The list of viewports, indexed by name.
 
 
 			template <typename FUNCTOR>
-			static void internal_visitAllObjects(FUNCTOR functor, const CRenderizablePtr &o)
+			static void internal_visitAllObjects(FUNCTOR functor, const CRenderizable::Ptr &o)
 			{
 				functor(o);
 				if (IS_CLASS(o,CSetOfObjects))
 				{
-					CSetOfObjectsPtr obj = CSetOfObjectsPtr(o);
+					CSetOfObjects::Ptr obj = std::dynamic_pointer_cast<CSetOfObjects>(o);
 					for (CSetOfObjects::const_iterator it=obj->begin();it!=obj->end();++it)
 						internal_visitAllObjects(functor,*it);
 				}
@@ -219,12 +219,12 @@ namespace mrpt
 		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( COpenGLScene, mrpt::utils::CSerializable, OPENGL_IMPEXP )
 		
 			/** Inserts an openGL object into a scene. Allows call chaining. \sa mrpt::opengl::COpenGLScene::insert  */
-		inline COpenGLScenePtr &operator<<(COpenGLScenePtr &s,const CRenderizablePtr &r)	{
+		inline COpenGLScene::Ptr &operator<<(COpenGLScene::Ptr &s,const CRenderizable::Ptr &r)	{
 			s->insert(r);
 			return s;
 		}
 		/**Inserts any iterable collection of openGL objects into a scene, allowing call chaining.  \sa mrpt::opengl::COpenGLScene::insert */
-		template <class T> inline COpenGLScenePtr &operator<<(COpenGLScenePtr &s,const std::vector<T> &v)	{
+		template <class T> inline COpenGLScene::Ptr &operator<<(COpenGLScene::Ptr &s,const std::vector<T> &v)	{
 			s->insert(v.begin(),v.end());
 			return s;
 		}

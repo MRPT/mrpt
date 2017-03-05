@@ -329,16 +329,16 @@ void CDlgPoseEst::OntimCaptureTrigger(wxTimerEvent& event)
 		m_normalize_image = this->cbNormalize->GetValue();
 		m_useScaramuzzaAlternativeDetector = this->rbMethod->GetSelection() == 1;
 
-		CObservationPtr obs = m_video->getNextFrame();
+		CObservation::Ptr obs = m_video->getNextFrame();
 		ASSERT_(obs)
 		ASSERT_(IS_CLASS(obs,CObservationImage) || IS_CLASS(obs,CObservation3DRangeScan) )
 
 		// Convert to an image:
 		if (IS_CLASS(obs,CObservation3DRangeScan))
 		{
-			CObservation3DRangeScanPtr obs3D = CObservation3DRangeScanPtr(obs);
+			CObservation3DRangeScan::Ptr obs3D = std::dynamic_pointer_cast<CObservation3DRangeScan>(obs);
 
-			CObservationImagePtr obsImg = CObservationImage::Create();
+			CObservationImage::Ptr obsImg = CObservationImage::Create();
 			obsImg->timestamp = obs3D->timestamp;
 			ASSERT_(obs3D->hasIntensityImage)
 			obsImg->image = obs3D->intensityImage;
@@ -350,7 +350,7 @@ void CDlgPoseEst::OntimCaptureTrigger(wxTimerEvent& event)
 		CImage  img_to_show;
 
 		// get the observation:
-		CObservationImagePtr  obs_img = CObservationImagePtr(obs);
+		CObservationImage::Ptr  obs_img = std::dynamic_pointer_cast<CObservationImage>(obs);
 
 		bool blankTime = (last_valid != INVALID_TIMESTAMP) && mrpt::system::timeDifference(last_valid,mrpt::system::now())<0.5;
 		if (!blankTime && m_threadResultsComputed && !m_threadResults.empty() )

@@ -50,7 +50,7 @@ string rawlogsDir;
 // ------------------------------------------------------
 //				TestCamera3DFaceDetection
 // ------------------------------------------------------
-void TestCamera3DFaceDetection( CCameraSensorPtr cam )
+void TestCamera3DFaceDetection( CCameraSensor::Ptr cam )
 {
 	CDisplayWindow  win("Live video");
 	CDisplayWindow  win2("FaceDetected");
@@ -65,13 +65,13 @@ void TestCamera3DFaceDetection( CCameraSensorPtr cam )
 	win3D.setCameraZoom(6.0);
 	win3D.setCameraPointingToPoint(2.5,0,0);
 
-	mrpt::opengl::COpenGLScenePtr &scene = win3D.get3DSceneAndLock();
-	mrpt::opengl::COpenGLScenePtr scene2;
+	mrpt::opengl::COpenGLScene::Ptr &scene = win3D.get3DSceneAndLock();
+	mrpt::opengl::COpenGLScene::Ptr scene2;
 
-	mrpt::opengl::CPointCloudColouredPtr gl_points = mrpt::opengl::CPointCloudColoured::Create();
+	mrpt::opengl::CPointCloudColoured::Ptr gl_points = mrpt::opengl::CPointCloudColoured::Create();
 	gl_points->setPointSize(4.5);
 
-	mrpt::opengl::CPointCloudColouredPtr gl_points2 = mrpt::opengl::CPointCloudColoured::Create();
+	mrpt::opengl::CPointCloudColoured::Ptr gl_points2 = mrpt::opengl::CPointCloudColoured::Create();
 	gl_points2->setPointSize(4.5);
 
 	// Create the Opengl object for the point cloud:
@@ -109,10 +109,10 @@ void TestCamera3DFaceDetection( CCameraSensorPtr cam )
 		if( !counter )
 			tictac.Tic();
 
-		CObservation3DRangeScanPtr o;
+		CObservation3DRangeScan::Ptr o;
 		
 		try{
-			o = CObservation3DRangeScanPtr(cam->getNextFrame());
+			o = CObservation3DRangeScan::Ptr(cam->getNextFrame());
 		}
 		catch ( CExceptionEOF &)
 		{
@@ -122,7 +122,7 @@ void TestCamera3DFaceDetection( CCameraSensorPtr cam )
 
 		vector_detectable_object detected;
 
-		//CObservation3DRangeScanPtr o = CObservation3DRangeScanPtr(obs);
+		//CObservation3DRangeScan::Ptr o = CObservation3DRangeScan::Ptr(obs);
 			
 		faceDetector.detectObjects( o, detected );
 				//static int x = 0;			
@@ -132,7 +132,7 @@ void TestCamera3DFaceDetection( CCameraSensorPtr cam )
 			for ( unsigned int i = 0; i < detected.size(); i++ )
 			{
 				ASSERT_( IS_CLASS(detected[i],CDetectable3D ) )
-				CDetectable3DPtr obj = CDetectable3DPtr( detected[i] );
+				CDetectable3D::Ptr obj = CDetectable3D::Ptr( detected[i] );
 
 				if ( showEachDetectedFace )
 				{
@@ -221,7 +221,7 @@ void TestCamera3DFaceDetection( CCameraSensorPtr cam )
 // ------------------------------------------------------
 void TestCameraFaceDetection()
 {
-	CCameraSensorPtr cam = prepareVideoSourceFromUserSelection();
+	CCameraSensor::Ptr cam = prepareVideoSourceFromUserSelection();
 
 	if (!cam)
 	{
@@ -229,7 +229,7 @@ void TestCameraFaceDetection()
 		return;
 	}
 
-	mrpt::obs::CObservationPtr  obs = cam->getNextFrame();
+	mrpt::obs::CObservation::Ptr  obs = cam->getNextFrame();
 	ASSERT_(obs);
 
 	if ( IS_CLASS(obs, CObservation3DRangeScan) )
@@ -250,7 +250,7 @@ void TestCameraFaceDetection()
 		if( !counter )
 			tictac.Tic();
 
-		mrpt::obs::CObservationPtr  obs;
+		mrpt::obs::CObservation::Ptr  obs;
 		try 
 		{
 			obs = cam->getNextFrame();
@@ -266,11 +266,11 @@ void TestCameraFaceDetection()
 			vector_detectable_object detected;
 			faceDetector.detectObjects( obs, detected );
 
-			CObservationImagePtr o = CObservationImagePtr(obs);
+			CObservationImage::Ptr o = CObservationImage::Ptr(obs);
 			for ( unsigned int i = 0; i < detected.size(); i++ )
 			{	
 				ASSERT_( IS_CLASS(detected[i],CDetectable2D ) )
-				CDetectable2DPtr obj = CDetectable2DPtr( detected[i] );
+				CDetectable2D::Ptr obj = CDetectable2D::Ptr( detected[i] );
 				o->image.rectangle( obj->m_x, obj->m_y, obj->m_x+obj->m_width, obj->m_y + obj->m_height, TColor(255,0,0) );
 			}
 
@@ -281,12 +281,12 @@ void TestCameraFaceDetection()
 			vector_detectable_object detected;
 			faceDetector.detectObjects( obs, detected );
 
-			CObservationStereoImagesPtr o=CObservationStereoImagesPtr(obs);
+			CObservationStereoImages::Ptr o=CObservationStereoImages::Ptr(obs);
 
 			for ( unsigned int i = 0; i < detected.size(); i++ )
 			{	
 				ASSERT_( IS_CLASS(detected[i],CDetectable2D ) )
-				CDetectable2DPtr obj = CDetectable2DPtr( detected[i] );
+				CDetectable2D::Ptr obj = CDetectable2D::Ptr( detected[i] );
 				o->imageRight.rectangle( obj->m_x, obj->m_y, obj->m_x+obj->m_width, obj->m_y + obj->m_height, TColor(255,0,0) );
 			}
 
@@ -336,7 +336,7 @@ void TestImagesFaceDetection(int argc, char *argv[])
 		for ( unsigned int i = 0; i < detected.size() ; i++ )
 		{	
 			ASSERT_( IS_CLASS(detected[i],CDetectable2D ) )
-			CDetectable2DPtr obj = CDetectable2DPtr( detected[i] );
+			CDetectable2D::Ptr obj = CDetectable2D::Ptr( detected[i] );
 			img.rectangle( obj->m_x, obj->m_y, obj->m_x+obj->m_width, obj->m_y + obj->m_height, TColor(255,0,0) );
 		}
 
@@ -370,7 +370,7 @@ void BatchMode()
 			if (!counter)
 				tictac.Tic();
 
-			CObservation3DRangeScanPtr o = 	(CObservation3DRangeScanPtr)rawlog.getAsObservation( j );
+			CObservation3DRangeScan::Ptr o = 	(CObservation3DRangeScan::Ptr)rawlog.getAsObservation( j );
 
 			ASSERT_(o);
 

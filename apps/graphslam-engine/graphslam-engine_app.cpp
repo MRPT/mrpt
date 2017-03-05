@@ -197,9 +197,9 @@ int main(int argc, char **argv)
 
 		// Variables initialization
 		CFileGZInputStream rawlog_stream(rawlog_fname);
-		CActionCollectionPtr action;
-		CSensoryFramePtr observations;
-		CObservationPtr observation;
+		CActionCollection::Ptr action;
+		CSensoryFrame::Ptr observations;
+		CObservation::Ptr observation;
 		size_t curr_rawlog_entry;
 
 		// Read the dataset and pass the measurements to CGraphSlamEngine

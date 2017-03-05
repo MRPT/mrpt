@@ -71,13 +71,13 @@ void TestOctoMap()
 
 	mrpt::gui::CDisplayWindow3D  win("OctoMap demo", 640,480);
 
-	mrpt::opengl::COctoMapVoxelsPtr gl_map = mrpt::opengl::COctoMapVoxels::Create();
+	mrpt::opengl::COctoMapVoxels::Ptr gl_map = mrpt::opengl::COctoMapVoxels::Create();
 
 	{
-		mrpt::opengl::COpenGLScenePtr &scene = win.get3DSceneAndLock();
+		mrpt::opengl::COpenGLScene::Ptr &scene = win.get3DSceneAndLock();
 
 		{
-			mrpt::opengl::CGridPlaneXYPtr gl_grid = mrpt::opengl::CGridPlaneXY::Create(-20,20, -20,20, 0, 1);
+			mrpt::opengl::CGridPlaneXY::Ptr gl_grid = mrpt::opengl::CGridPlaneXY::Create(-20,20, -20,20, 0, 1);
 			gl_grid->setColor_u8(mrpt::utils::TColor(0x80,0x80,0x80));
 			scene->insert(gl_grid);
 		}

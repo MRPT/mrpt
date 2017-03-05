@@ -89,13 +89,13 @@ void xRawLogViewerFrame::OnGenerateSeqImgs(wxCommandEvent& event)
 			{
 				case CRawlog::etSensoryFrame:
 				{
-					CSensoryFramePtr SF = rawlog.getAsObservations(countLoop);
+					CSensoryFrame::Ptr SF = rawlog.getAsObservations(countLoop);
 
 					for (unsigned int k=0;k<SF->size();k++)
 					{
 						if (SF->getObservationByIndex(k)->GetRuntimeClass()==CLASS_ID(CObservationStereoImages ) )
 						{
-							CObservationStereoImagesPtr obsSt = SF->getObservationByIndexAs<CObservationStereoImagesPtr>(k);
+							CObservationStereoImages::Ptr obsSt = SF->getObservationByIndexAs<CObservationStereoImages::Ptr>(k);
 							obsSt->imageLeft.saveToFile( format( "%s/img_stereo_%u_left_%05u.%s",outDir.c_str(),k,imgSaved, imgFileExtension.c_str() ) );
 
 							obsSt->imageRight.saveToFile( format("%s/img_stereo_%u_right_%05u.%s",outDir.c_str(),k,imgSaved, imgFileExtension.c_str()) );
@@ -103,7 +103,7 @@ void xRawLogViewerFrame::OnGenerateSeqImgs(wxCommandEvent& event)
 						}
 						if (SF->getObservationByIndex(k)->GetRuntimeClass()==CLASS_ID(CObservationImage ) )
 						{
-							CObservationImagePtr obsIm = SF->getObservationByIndexAs<CObservationImagePtr>(k);
+							CObservationImage::Ptr obsIm = SF->getObservationByIndexAs<CObservationImage::Ptr>(k);
 							obsIm->image.saveToFile( format("%s/img_monocular_%u_%05u.%s",outDir.c_str(),k,imgSaved, imgFileExtension.c_str()) );
 							imgSaved++;
 						}
@@ -113,11 +113,11 @@ void xRawLogViewerFrame::OnGenerateSeqImgs(wxCommandEvent& event)
 
 				case CRawlog::etObservation:
 				{
-					CObservationPtr o = rawlog.getAsObservation(countLoop);
+					CObservation::Ptr o = rawlog.getAsObservation(countLoop);
 
 					if (IS_CLASS(o,CObservationStereoImages) )
 					{
-						CObservationStereoImagesPtr obsSt = CObservationStereoImagesPtr(o);
+						CObservationStereoImages::Ptr obsSt = std::dynamic_pointer_cast<CObservationStereoImages>(o);
 						obsSt->imageLeft.saveToFile( format( "%s/img_stereo_%s_left_%05u.%s",outDir.c_str(), obsSt->sensorLabel.c_str() ,imgSaved, imgFileExtension.c_str() ) );
 
 						obsSt->imageRight.saveToFile( format("%s/img_stereo_%s_right_%05u.%s",outDir.c_str(),obsSt->sensorLabel.c_str(),imgSaved, imgFileExtension.c_str()) );
@@ -126,7 +126,7 @@ void xRawLogViewerFrame::OnGenerateSeqImgs(wxCommandEvent& event)
 					else
 					if (IS_CLASS(o,CObservationImage) )
 					{
-						CObservationImagePtr obsIm = CObservationImagePtr(o);
+						CObservationImage::Ptr obsIm = std::dynamic_pointer_cast<CObservationImage>(o);
 						obsIm->image.saveToFile( format("%s/img_monocular_%s_%05u.%s",outDir.c_str(),obsIm->sensorLabel.c_str(),imgSaved, imgFileExtension.c_str()) );
 						imgSaved++;
 					}
@@ -205,17 +205,17 @@ void xRawLogViewerFrame::OnMenuMono2Stereo(wxCommandEvent& event)
 		{
 			case CRawlog::etSensoryFrame:
 			{
-				CSensoryFramePtr	sf = rawlog.getAsObservations(countLoop);
+				CSensoryFrame::Ptr	sf = rawlog.getAsObservations(countLoop);
 
-				CObservationPtr	obs_l = sf->getObservationBySensorLabel(lb_left);
-				CObservationPtr	obs_r = sf->getObservationBySensorLabel(lb_right);
+				CObservation::Ptr	obs_l = sf->getObservationBySensorLabel(lb_left);
+				CObservation::Ptr	obs_r = sf->getObservationBySensorLabel(lb_right);
 
 				if (obs_l && obs_r)
 				{
-					CObservationImagePtr o_l = CObservationImagePtr( obs_l );
-					CObservationImagePtr o_r = CObservationImagePtr( obs_r );
+					CObservationImage::Ptr o_l = std::dynamic_pointer_cast<CObservationImage>( obs_l );
+					CObservationImage::Ptr o_r = std::dynamic_pointer_cast<CObservationImage>( obs_r );
 
-					CObservationStereoImagesPtr		new_obs = CObservationStereoImages::Create();
+					CObservationStereoImages::Ptr		new_obs = CObservationStereoImages::Create();
 
 					new_obs->timestamp = ( o_l->timestamp + o_r->timestamp ) >> 1;
 					new_obs->sensorLabel = lb_stereo;
@@ -238,7 +238,7 @@ void xRawLogViewerFrame::OnMenuMono2Stereo(wxCommandEvent& event)
 
 			case CRawlog::etObservation:
 			{
-				//CObservationPtr o = rawlog.getAsObservation(countLoop);
+				//CObservation::Ptr o = rawlog.getAsObservation(countLoop);
 				THROW_EXCEPTION("Operation not implemented for observations-only rawlogs. Please convert into SensoryFrame-based first.");
 			}
 			break;
@@ -311,13 +311,13 @@ void xRawLogViewerFrame::OnMenuRectifyImages(wxCommandEvent& event)
 			{
 				case CRawlog::etSensoryFrame:
 				{
-					CSensoryFramePtr SF = rawlog.getAsObservations(countLoop);
+					CSensoryFrame::Ptr SF = rawlog.getAsObservations(countLoop);
 
 					for (unsigned int k=0;k<SF->size();k++)
 					{
 						if (SF->getObservationByIndex(k)->GetRuntimeClass()==CLASS_ID(CObservationImage ) )
 						{
-							CObservationImagePtr obsIm = SF->getObservationByIndexAs<CObservationImagePtr>(k);
+							CObservationImage::Ptr obsIm = SF->getObservationByIndexAs<CObservationImage::Ptr>(k);
 
                             if( obsIm->cameraParams.k1() != 0 || obsIm->cameraParams.k2() != 0 || obsIm->cameraParams.p1()!=0 || obsIm->cameraParams.p2()!=0 )
                             {
@@ -344,11 +344,11 @@ void xRawLogViewerFrame::OnMenuRectifyImages(wxCommandEvent& event)
 
 				case CRawlog::etObservation:
 				{
-					CObservationPtr o = rawlog.getAsObservation(countLoop);
+					CObservation::Ptr o = rawlog.getAsObservation(countLoop);
 
 					if (IS_CLASS(o,CObservationImage) )
 					{
-						CObservationImagePtr obsIm = CObservationImagePtr(o);
+						CObservationImage::Ptr obsIm = std::dynamic_pointer_cast<CObservationImage>(o);
 
 						if( obsIm->cameraParams.k1() != 0 || obsIm->cameraParams.k2() != 0 || obsIm->cameraParams.p1()!=0 || obsIm->cameraParams.p2()!=0 )
                         {
@@ -397,7 +397,7 @@ void xRawLogViewerFrame::OnMenuRectifyImages(wxCommandEvent& event)
 }
 
 
-void renameExternalImageFile(CObservationImagePtr o)
+void renameExternalImageFile(CObservationImage::Ptr o)
 {
 	if (!o->image.isExternallyStored()) return;
 
@@ -420,7 +420,7 @@ void renameExternalImageFile(CObservationImagePtr o)
 
 }
 
-void renameExternalStereoImageFile(CObservationStereoImagesPtr o)
+void renameExternalStereoImageFile(CObservationStereoImages::Ptr o)
 {
 	if (o->imageLeft.isExternallyStored())
 	{
@@ -510,20 +510,20 @@ void xRawLogViewerFrame::OnMenuRenameImageFiles(wxCommandEvent& event)
 			{
 				case CRawlog::etSensoryFrame:
 				{
-					CSensoryFramePtr SF = rawlog.getAsObservations(countLoop);
+					CSensoryFrame::Ptr SF = rawlog.getAsObservations(countLoop);
 
 					for (unsigned int k=0;k<SF->size();k++)
 					{
 						if (IS_CLASS(SF->getObservationByIndex(k),CObservationImage) )
 						{
-							CObservationImagePtr obsIm = SF->getObservationByIndexAs<CObservationImagePtr>(k);
+							CObservationImage::Ptr obsIm = SF->getObservationByIndexAs<CObservationImage::Ptr>(k);
 							renameExternalImageFile(obsIm);
                             N++;
 						} // end if CObservationImage
 						else
 						if (IS_CLASS(SF->getObservationByIndex(k),CObservationStereoImages) )
 						{
-							CObservationStereoImagesPtr obsIm = SF->getObservationByIndexAs<CObservationStereoImagesPtr>(k);
+							CObservationStereoImages::Ptr obsIm = SF->getObservationByIndexAs<CObservationStereoImages::Ptr>(k);
 							renameExternalStereoImageFile(obsIm);
                             N++;
 						} // end if CObservationImage
@@ -533,18 +533,18 @@ void xRawLogViewerFrame::OnMenuRenameImageFiles(wxCommandEvent& event)
 
 				case CRawlog::etObservation:
 				{
-					CObservationPtr o = rawlog.getAsObservation(countLoop);
+					CObservation::Ptr o = rawlog.getAsObservation(countLoop);
 
 					if (IS_CLASS(o,CObservationImage) )
 					{
-						CObservationImagePtr obsIm = CObservationImagePtr(o);
+						CObservationImage::Ptr obsIm = std::dynamic_pointer_cast<CObservationImage>(o);
 						renameExternalImageFile(obsIm);
 						N++;
 					} // end if CObservationImage
 					else
 					if (IS_CLASS(o,CObservationStereoImages) )
 					{
-						CObservationStereoImagesPtr obsIm = CObservationStereoImagesPtr(o);
+						CObservationStereoImages::Ptr obsIm = std::dynamic_pointer_cast<CObservationStereoImages>(o);
 						renameExternalStereoImageFile(obsIm);
 						N++;
 					} // end if CObservationImage

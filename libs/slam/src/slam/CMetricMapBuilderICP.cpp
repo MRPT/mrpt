@@ -115,7 +115,7 @@ void  CMetricMapBuilderICP::TConfigParams::dumpToTextStream( CStream	&out) const
   was processActionObservation, which now is a wrapper to
   this method).
   ---------------------------------------------------------------*/
-void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
+void  CMetricMapBuilderICP::processObservation(const CObservation::Ptr &obs)
 {
 	mrpt::synch::CCriticalSectionLocker lock_cs( &critZoneChangingMap );
 
@@ -132,7 +132,7 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 		MRPT_LOG_DEBUG("processObservation(): obs is CObservationOdometry");
 		m_there_has_been_an_odometry = true;
 
-		const CObservationOdometryPtr odo = CObservationOdometryPtr(obs);
+		const CObservationOdometry::Ptr odo = std::dynamic_pointer_cast<CObservationOdometry>(obs);
 		ASSERT_(odo->timestamp!=INVALID_TIMESTAMP)
 
 		CPose2D pose_before;
@@ -230,7 +230,7 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 				// Use grid altitude:
 				if (IS_CLASS(obs,CObservation2DRangeScan ) )
 				{
-					CObservation2DRangeScanPtr obsLaser = CObservation2DRangeScanPtr(obs);
+					CObservation2DRangeScan::Ptr obsLaser = std::dynamic_pointer_cast<CObservation2DRangeScan>(obs);
 					if ( std::abs( metricMap.m_gridMaps[0]->insertionOptions.mapAltitude - obsLaser->sensorPose.z())<0.01)
 						can_do_icp = sensedPoints.insertObservationPtr(obs);
 				}
@@ -254,7 +254,7 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 
 				ICP.options = ICP_params;
 
-				CPosePDFPtr pestPose= ICP.Align(
+				CPosePDF::Ptr pestPose= ICP.Align(
 					matchWith,					// Map 1
 					&sensedPoints,				// Map 2
 					initialEstimatedRobotPose,	// a first gross estimation of map 2 relative to map 1.
@@ -350,9 +350,9 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 
 			// Add to the vector of "poses"-"SFs" pairs:
 			CPosePDFGaussian	posePDF(currentKnownRobotPose);
-			CPose3DPDFPtr  pose3D = CPose3DPDFPtr( CPose3DPDF::createFrom2D( posePDF ) );
+			CPose3DPDF::Ptr  pose3D = CPose3DPDF::Ptr( CPose3DPDF::createFrom2D( posePDF ) );
 
-			CSensoryFramePtr sf = CSensoryFrame::Create();
+			CSensoryFrame::Ptr sf = CSensoryFrame::Create();
 			sf->insert(obs);
 
 			SF_Poses_seq.insert( pose3D, sf );
@@ -383,12 +383,12 @@ void  CMetricMapBuilderICP::processActionObservation(
 			CSensoryFrame		&in_SF )
 {
 	// 1) process action:
-	CActionRobotMovement2DPtr movEstimation = action.getBestMovementEstimation();
+	CActionRobotMovement2D::Ptr movEstimation = action.getBestMovementEstimation();
 	if (movEstimation)
 	{
 		m_auxAccumOdometry.composeFrom( m_auxAccumOdometry, movEstimation->poseChange->getMeanVal() );
 
-		CObservationOdometryPtr obs = CObservationOdometry::Create();
+		CObservationOdometry::Ptr obs = CObservationOdometry::Create();
 		obs->timestamp = movEstimation->timestamp;
 		obs->odometry = m_auxAccumOdometry;
 		this->processObservation(obs);
@@ -421,13 +421,13 @@ void  CMetricMapBuilderICP::setCurrentMapFile( const char *mapFile )
 /*---------------------------------------------------------------
 						getCurrentPoseEstimation
   ---------------------------------------------------------------*/
-CPose3DPDFPtr CMetricMapBuilderICP::getCurrentPoseEstimation() const
+CPose3DPDF::Ptr CMetricMapBuilderICP::getCurrentPoseEstimation() const
 {
 	CPosePDFGaussian  pdf2D;
 	m_lastPoseEst.getLatestRobotPose(pdf2D.mean);
 	pdf2D.cov = m_lastPoseEst_cov;
 
-	CPose3DPDFGaussianPtr pdf3D = CPose3DPDFGaussian::Create();
+	CPose3DPDFGaussian::Ptr pdf3D = CPose3DPDFGaussian::Create();
 	pdf3D->copyFrom(pdf2D);
 	return pdf3D;
 }
@@ -479,8 +479,8 @@ void  CMetricMapBuilderICP::initialize(
 
 	for (size_t i=0;i<SF_Poses_seq.size();i++)
 	{
-		CPose3DPDFPtr		posePDF;
-		CSensoryFramePtr	SF;
+		CPose3DPDF::Ptr		posePDF;
+		CSensoryFrame::Ptr	SF;
 
 		// Get the SF and its pose:
 		SF_Poses_seq.get(i, posePDF,SF);

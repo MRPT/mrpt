@@ -137,9 +137,9 @@ int main(int argc, char**argv)
 
 		while (!viewer.wasStopped ())
 		{
-			mrpt::obs::CActionCollectionPtr	actions;
-			mrpt::obs::CSensoryFramePtr		SF;
-			mrpt::obs::CObservationPtr			obs;
+			mrpt::obs::CActionCollection::Ptr	actions;
+			mrpt::obs::CSensoryFrame::Ptr		SF;
+			mrpt::obs::CObservation::Ptr			obs;
 
 			if (!rawlog_eof)
 			{
@@ -152,7 +152,7 @@ int main(int argc, char**argv)
 				{
 					// Can generate a point cloud from this data?
 					// TODO: Process Kinect observations differently to extract RGB data.
-					mrpt::maps::CPointsMapPtr  new_map;
+					mrpt::maps::CPointsMap::Ptr  new_map;
 					if (SF)
 					{
 						new_map = mrpt::maps::CSimplePointsMap::Create();

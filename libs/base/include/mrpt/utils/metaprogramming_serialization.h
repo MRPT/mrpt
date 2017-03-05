@@ -26,7 +26,7 @@ namespace mrpt
 				CStream		*m_stream;
 			public:
 				inline ObjectReadFromStream(mrpt::utils::CStream *stream) : m_stream(stream) {  }
-				// T can be CSerializablePtr, CSerializable, or any other class implementing ">>"
+				// T can be CSerializable::Ptr, CSerializable, or any other class implementing ">>"
 				template <typename T> 
 				inline void operator()(T &obj) {
 					(*m_stream) >> obj;
@@ -56,7 +56,7 @@ namespace mrpt
 			public:
 				inline ObjectWriteToStream(mrpt::utils::CStream *stream) : m_stream(stream) {  }
 
-				// T can be CSerializablePtr, CSerializable, or any other class implementing "<<"
+				// T can be CSerializable::Ptr, CSerializable, or any other class implementing "<<"
 				template <typename T>
 				inline void operator()(const T &ptr) {
 					(*m_stream) << ptr;

@@ -38,7 +38,7 @@ DECLARE_OP_FUNCTION(op_remap_timestamps)
 			VERBOSE_COUT << "Applying timestamps remap a*t+b with: a=" << m_a << " b=" << m_b << endl;
 		}
 
-		bool processOneObservation(CObservationPtr  &obs)
+		bool processOneObservation(CObservation::Ptr  &obs)
 		{
 			// T_NEW = a * T_OLD + b
 			const double t = mrpt::system::timestampToDouble( obs->timestamp );
@@ -49,9 +49,9 @@ DECLARE_OP_FUNCTION(op_remap_timestamps)
 
 		// This method can be reimplemented to save the modified object to an output stream.
 		virtual void OnPostProcess(
-			mrpt::obs::CActionCollectionPtr &actions,
-			mrpt::obs::CSensoryFramePtr     &SF,
-			mrpt::obs::CObservationPtr      &obs)
+			mrpt::obs::CActionCollection::Ptr &actions,
+			mrpt::obs::CSensoryFrame::Ptr     &SF,
+			mrpt::obs::CObservation::Ptr      &obs)
 		{
 			ASSERT_((actions && SF) || obs)
 			if (actions)

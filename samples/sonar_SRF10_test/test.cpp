@@ -38,7 +38,7 @@ int main()
 		CTicTac				tictac;
 
 		CDisplayWindow3D	wind("Sonar representation");
-		COpenGLScenePtr		&scene = wind.get3DSceneAndLock();
+		COpenGLScene::Ptr		&scene = wind.get3DSceneAndLock();
 
 		scene->insert( mrpt::opengl::CGridPlaneXY::Create( -20,20,-20,20,0,1 ) );
 		scene->insert( mrpt::opengl::stock_objects::RobotPioneer() );
@@ -88,16 +88,16 @@ int main()
 
 						// Show the distances
 						std::string obj = format("sonar%i",obs.sensedData[i].sensorID);
-						mrpt::opengl::CCylinderPtr sonarRange;
-						mrpt::opengl::CRenderizablePtr objPtr = scene->getByName( obj );
-						if( !objPtr )
+						mrpt::opengl::CCylinder::Ptr sonarRange;
+						mrpt::opengl::CRenderizable::Ptr obj::Ptr = scene->getByName( obj );
+						if( !obj::Ptr )
 						{
 							sonarRange = mrpt::opengl::CCylinder::Create(0.0f,0.0f,1.0f,30,10);
 							sonarRange->setName( obj );
 							scene->insert( sonarRange );
 						}
 						else
-							sonarRange = CCylinderPtr( objPtr );
+							sonarRange = CCylinder::Ptr( obj::Ptr );
 
 						sonarRange->setRadii( 0, tan( obs.sensorConeApperture )*obs.sensedData[i].sensedDistance );
 						sonarRange->setPose( mrpt::poses::CPose3D(obs.sensedData[i].sensorPose)+CPose3D(0,0,0,0,DEG2RAD(90.0),0) );

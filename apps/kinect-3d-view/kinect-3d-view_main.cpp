@@ -54,8 +54,8 @@ struct TThreadParam
 	volatile double tilt_ang_deg;
 	volatile double Hz;
 
-	mrpt::synch::CThreadSafeVariable<CObservation3DRangeScanPtr> new_obs;     // RGB+D (+3D points)
-	mrpt::synch::CThreadSafeVariable<CObservationIMUPtr>         new_obs_imu; // Accelerometers
+	mrpt::synch::CThreadSafeVariable<CObservation3DRangeScan::Ptr> new_obs;     // RGB+D (+3D points)
+	mrpt::synch::CThreadSafeVariable<CObservationIMU::Ptr>         new_obs_imu; // Accelerometers
 };
 
 void thread_grabbing(TThreadParam &p)
@@ -88,8 +88,8 @@ void thread_grabbing(TThreadParam &p)
 		while (!hard_error && !p.quit)
 		{
 			// Grab new observation from the camera:
-			CObservation3DRangeScanPtr  obs     = CObservation3DRangeScan::Create(); // Smart pointers to observations
-			CObservationIMUPtr          obs_imu = CObservationIMU::Create();
+			CObservation3DRangeScan::Ptr  obs     = CObservation3DRangeScan::Create(); // Smart pointers to observations
+			CObservationIMU::Ptr          obs_imu = CObservationIMU::Create();
 
 			kinect.getNextObservation(*obs,*obs_imu,there_is_obs,hard_error);
 
@@ -155,7 +155,7 @@ void Test_Kinect()
 	// Wait until data stream starts so we can say for sure the sensor has been initialized OK:
 	cout << "Waiting for sensor initialization...\n";
 	do {
-		CObservation3DRangeScanPtr possiblyNewObs = thrPar.new_obs.get();
+		CObservation3DRangeScan::Ptr possiblyNewObs = thrPar.new_obs.get();
 		if (possiblyNewObs && possiblyNewObs->timestamp!=INVALID_TIMESTAMP)
 				break;
 		else 	mrpt::system::sleep(10);
@@ -176,17 +176,17 @@ void Test_Kinect()
 	win3D.setCameraPointingToPoint(2.5,0,0);
 
 #if !defined(VIEW_AS_OCTOMAP)
-	mrpt::opengl::CPointCloudColouredPtr gl_points = mrpt::opengl::CPointCloudColoured::Create();
+	mrpt::opengl::CPointCloudColoured::Ptr gl_points = mrpt::opengl::CPointCloudColoured::Create();
 	gl_points->setPointSize(2.5);
 #else
-	mrpt::opengl::COctoMapVoxelsPtr gl_voxels = mrpt::opengl::COctoMapVoxels::Create();
+	mrpt::opengl::COctoMapVoxels::Ptr gl_voxels = mrpt::opengl::COctoMapVoxels::Create();
 #endif
 
 	const double aspect_ratio =  480.0 / 640.0; // kinect.getRowCount() / double( kinect.getColCount() );
 
-	opengl::COpenGLViewportPtr viewRange, viewInt; // Extra viewports for the RGB & D images.
+	opengl::COpenGLViewport::Ptr viewRange, viewInt; // Extra viewports for the RGB & D images.
 	{
-		mrpt::opengl::COpenGLScenePtr &scene = win3D.get3DSceneAndLock();
+		mrpt::opengl::COpenGLScene::Ptr &scene = win3D.get3DSceneAndLock();
 
 		// Create the Opengl object for the point cloud:
 #if !defined(VIEW_AS_OCTOMAP)
@@ -215,12 +215,12 @@ void Test_Kinect()
 	}
 
 
-	CObservation3DRangeScanPtr  last_obs;
-	CObservationIMUPtr          last_obs_imu;
+	CObservation3DRangeScan::Ptr  last_obs;
+	CObservationIMU::Ptr          last_obs_imu;
 
 	while (win3D.isOpen() && !thrPar.quit)
 	{
-		CObservation3DRangeScanPtr possiblyNewObs = thrPar.new_obs.get();
+		CObservation3DRangeScan::Ptr possiblyNewObs = thrPar.new_obs.get();
 		if (possiblyNewObs && possiblyNewObs->timestamp!=INVALID_TIMESTAMP &&
 			(!last_obs  || possiblyNewObs->timestamp!=last_obs->timestamp ) )
 		{

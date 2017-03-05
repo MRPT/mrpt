@@ -101,7 +101,7 @@ void CHMTSLAM::thread_TBI()
 	Topological Bayesian Inference (TBI) process within HMT-SLAM
 
   ---------------------------------------------------------------*/
-CHMTSLAM::TMessageLSLAMfromTBIPtr CHMTSLAM::TBI_main_method(
+CHMTSLAM::TMessageLSLAMfromTBI::Ptr CHMTSLAM::TBI_main_method(
 	CLocalMetricHypothesis	*LMH,
 	const CHMHMapNode::TNodeID &areaID)
 {
@@ -114,14 +114,14 @@ CHMTSLAM::TMessageLSLAMfromTBIPtr CHMTSLAM::TBI_main_method(
 	// Lock the map:
 	synch::CCriticalSectionLocker( &obj->m_map_cs );
 
-	TMessageLSLAMfromTBIPtr msg = TMessageLSLAMfromTBIPtr(new TMessageLSLAMfromTBI());
+	TMessageLSLAMfromTBI::Ptr msg = TMessageLSLAMfromTBI::Ptr(new TMessageLSLAMfromTBI());
 
 	// Fill out easy data:
 	msg->hypothesisID = LMH_ID;
 	msg->cur_area = areaID;
 
 	// get a pointer to the current area:
-	const CHMHMapNodePtr currentArea = obj->m_map.getNodeByID( areaID );
+	const CHMHMapNode::Ptr currentArea = obj->m_map.getNodeByID( areaID );
 	ASSERT_(currentArea);
 
 	obj->logFmt(mrpt::utils::LVL_DEBUG, "[TBI] Request for area id=%i\n",(int)areaID);
@@ -195,11 +195,11 @@ CHMTSLAM::TMessageLSLAMfromTBIPtr CHMTSLAM::TBI_main_method(
 
 				// Proceed:
 				// ----------------------------------------------------------------------------------------------------------------
-				const CHMHMapNodePtr refArea = obj->m_map.getNodeByID( candidate->first );
+				const CHMHMapNode::Ptr refArea = obj->m_map.getNodeByID( candidate->first );
 				double this_log_lik;
 
 				// get the output from this LC detector:
-				CPose3DPDFPtr pdf = (*it)->computeTopologicalObservationModel(
+				CPose3DPDF::Ptr pdf = (*it)->computeTopologicalObservationModel(
 					LMH->m_ID,
 					currentArea,
 					refArea,
@@ -212,7 +212,7 @@ CHMTSLAM::TMessageLSLAMfromTBIPtr CHMTSLAM::TBI_main_method(
 				if (pdf)
 				{
 					ASSERT_( IS_CLASS(pdf, CPose3DPDFSOG ) );
-					CPose3DPDFSOGPtr SOG = CPose3DPDFSOGPtr( pdf );
+					CPose3DPDFSOG::Ptr SOG = std::dynamic_pointer_cast<CPose3DPDFSOG>( pdf );
 
 					// Mix (append) the modes, if any:
 					if (SOG->size()>0)

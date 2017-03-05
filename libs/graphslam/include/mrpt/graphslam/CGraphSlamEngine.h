@@ -325,7 +325,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 * (e.g. pressed ctrl-c), True otherwise
 		 */
 		bool execGraphSlamStep(
-				mrpt::obs::CObservationPtr& observation,
+				mrpt::obs::CObservation::Ptr& observation,
 				size_t& rawlog_entry);
 		/**\brief Main class method responsible for parsing each measurement and
 		 * for executing graphSLAM.
@@ -338,9 +338,9 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 * (e.g. pressed ctrl-c), True otherwise
 		 **/
 		bool execGraphSlamStep(
-				mrpt::obs::CActionCollectionPtr& action,
-				mrpt::obs::CSensoryFramePtr& observations,
-				mrpt::obs::CObservationPtr& observation,
+				mrpt::obs::CActionCollection::Ptr& action,
+				mrpt::obs::CSensoryFrame::Ptr& observations,
+				mrpt::obs::CObservation::Ptr& observation,
 				size_t& rawlog_entry);
 		/**\}*/
 		/**\brief Return a reference to the underlying GRAPH_t instance. */
@@ -495,7 +495,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 */
 		void updateMapVisualization(const GRAPH_t& gr,
 				std::map<mrpt::utils::TNodeID,
-				mrpt::obs::CObservation2DRangeScanPtr> m_nodes_to_laser_scans,
+				mrpt::obs::CObservation2DRangeScan::Ptr> m_nodes_to_laser_scans,
 				bool full_update=false );
 		/**\brief Display the next ground truth position in the visualization window.
 		 *
@@ -693,10 +693,10 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		std::string m_GT_file_format;
 
 		std::map<mrpt::utils::TNodeID,
-			mrpt::obs::CObservation2DRangeScanPtr> m_nodes_to_laser_scans2D;
-		mrpt::obs::CObservation2DRangeScanPtr m_last_laser_scan2D;
+			mrpt::obs::CObservation2DRangeScan::Ptr> m_nodes_to_laser_scans2D;
+		mrpt::obs::CObservation2DRangeScan::Ptr m_last_laser_scan2D;
 
-		mrpt::obs::CObservation3DRangeScanPtr m_last_laser_scan3D;
+		mrpt::obs::CObservation3DRangeScan::Ptr m_last_laser_scan3D;
 
 		/**\name Trajectories colors */
 		/**\{*/
@@ -785,7 +785,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 * \brief Cached version and corresponding flag of occupancy gridmap
 		 */
 		/**\{*/
-		mutable mrpt::maps::COccupancyGridMap2DPtr m_gridmap_cached;
+		mutable mrpt::maps::COccupancyGridMap2D::Ptr m_gridmap_cached;
 		mutable bool m_gridmap_is_cached;
 		/**\brief Timestamp at which the occupancy gridmap was computed
 		 */

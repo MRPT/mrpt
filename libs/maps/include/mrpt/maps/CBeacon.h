@@ -104,7 +104,7 @@ namespace maps
 		void  changeCoordinatesReference( const mrpt::poses::CPose3D &newReferenceBase ) MRPT_OVERRIDE;
 
 		/** Saves a 3D representation of the beacon into a given OpenGL scene  */
-		void  getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const;
+		void  getAs3DObject( mrpt::opengl::CSetOfObjects::Ptr	&outObj ) const;
 
 		/** Gets a set of MATLAB commands which draw the current state of the beacon: */
 		void getAsMatlabDrawCommands( utils::CStringList &out_Str ) const;

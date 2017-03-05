@@ -263,7 +263,7 @@ struct ExampleDemoGraphSLAM
 		graph_render_params1["show_edges"] = 1;
 		graph_render_params1["edge_width"] = 1;
 		graph_render_params1["nodes_corner_scale"] = 1;
-		CSetOfObjectsPtr gl_graph1 = mrpt::opengl::graph_tools::graph_visualize(graph, graph_render_params1 );
+		CSetOfObjects::Ptr gl_graph1 = mrpt::opengl::graph_tools::graph_visualize(graph, graph_render_params1 );
 
 		// The initial noisy graph:
 		TParametersDouble  graph_render_params2;
@@ -272,10 +272,10 @@ struct ExampleDemoGraphSLAM
 		graph_render_params2["show_node_corners"] = 0;
 		graph_render_params2["nodes_point_size"]  = 7;
 
-		CSetOfObjectsPtr gl_graph2 = mrpt::opengl::graph_tools::graph_visualize(graph_initial, graph_render_params2 );
+		CSetOfObjects::Ptr gl_graph2 = mrpt::opengl::graph_tools::graph_visualize(graph_initial, graph_render_params2 );
 
 		graph_render_params2["nodes_point_size"]  = 5;
-		CSetOfObjectsPtr gl_graph5 = mrpt::opengl::graph_tools::graph_visualize(graph, graph_render_params2 );
+		CSetOfObjects::Ptr gl_graph5 = mrpt::opengl::graph_tools::graph_visualize(graph, graph_render_params2 );
 
 		// The ground truth graph:
 		TParametersDouble  graph_render_params3;
@@ -284,8 +284,8 @@ struct ExampleDemoGraphSLAM
 		graph_render_params3["show_edges"] = 1;
 		graph_render_params3["edge_width"] = 3;
 		graph_render_params3["nodes_corner_scale"] = 2;
-		CSetOfObjectsPtr gl_graph3 = mrpt::opengl::graph_tools::graph_visualize(graph_GT, graph_render_params3 );
-		CSetOfObjectsPtr gl_graph4 = mrpt::opengl::graph_tools::graph_visualize(graph_initial, graph_render_params3 );
+		CSetOfObjects::Ptr gl_graph3 = mrpt::opengl::graph_tools::graph_visualize(graph_GT, graph_render_params3 );
+		CSetOfObjects::Ptr gl_graph4 = mrpt::opengl::graph_tools::graph_visualize(graph_initial, graph_render_params3 );
 
 
 		win.addTextMessage(5,5   , "Ground truth: Big corners & thick edges", TColorf(0,0,0), 1000 /* arbitrary, unique text label ID */, MRPT_GLUT_BITMAP_HELVETICA_12 );
@@ -296,7 +296,7 @@ struct ExampleDemoGraphSLAM
 		win2.addTextMessage(5,5+15, "Initial graph: Small corners & thin edges", TColorf(0,0,0), 1001 /* arbitrary, unique text label ID */, MRPT_GLUT_BITMAP_HELVETICA_12 );
 
 		{
-			COpenGLScenePtr &scene = win.get3DSceneAndLock();
+			COpenGLScene::Ptr &scene = win.get3DSceneAndLock();
 			scene->insert(gl_graph1);
 			scene->insert(gl_graph3);
 			scene->insert(gl_graph2);
@@ -306,7 +306,7 @@ struct ExampleDemoGraphSLAM
 		}
 
 		{
-			COpenGLScenePtr &scene = win2.get3DSceneAndLock();
+			COpenGLScene::Ptr &scene = win2.get3DSceneAndLock();
 			scene->insert(gl_graph3);
 			scene->insert(gl_graph4);
 			win2.unlockAccess3DScene();

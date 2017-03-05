@@ -80,13 +80,13 @@ namespace maps
 		} insertionOptions;
 
 		/** Returns a 3D object representing the map */
-		virtual void getAs3DObject( mrpt::opengl::CSetOfObjectsPtr &outObj ) const MRPT_OVERRIDE;
+		virtual void getAs3DObject( mrpt::opengl::CSetOfObjects::Ptr &outObj ) const MRPT_OVERRIDE;
 
 		/** Returns two 3D objects representing the mean and variance maps */
-		virtual void  getAs3DObject ( mrpt::opengl::CSetOfObjectsPtr	&meanObj, mrpt::opengl::CSetOfObjectsPtr	&varObj ) const MRPT_OVERRIDE;
+		virtual void  getAs3DObject ( mrpt::opengl::CSetOfObjects::Ptr	&meanObj, mrpt::opengl::CSetOfObjects::Ptr	&varObj ) const MRPT_OVERRIDE;
 
 		/** Returns the 3D object representing the wind grid information */
-		void  getWindAs3DObject( mrpt::opengl::CSetOfObjectsPtr &windObj) const;
+		void  getWindAs3DObject( mrpt::opengl::CSetOfObjects::Ptr &windObj) const;
 
 		 /** Increase the kf_std of all cells from the m_map
 		 *	This mehod is usually called by the main_map to simulate loss of confidence in measurements when time passes */

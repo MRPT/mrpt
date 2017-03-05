@@ -175,8 +175,8 @@ void do_grid_align()
 	ASSERT_( the_map1.m_gridMaps.size()>=1 );
 	ASSERT_( the_map2.m_gridMaps.size()>=1 );
 
-	COccupancyGridMap2DPtr	grid1 = the_map1.m_gridMaps[0];
-	COccupancyGridMap2DPtr	grid2 = the_map2.m_gridMaps[0];
+	COccupancyGridMap2D::Ptr	grid1 = the_map1.m_gridMaps[0];
+	COccupancyGridMap2D::Ptr	grid2 = the_map2.m_gridMaps[0];
 
 	// ---------------------------------------------
 	//				Options: RANSAC
@@ -230,8 +230,8 @@ void do_grid_align()
 
 			for (unsigned int q=0;q<map2noisy.size();q++)
 			{
-				CPose3DPDFPtr 		PDF;
-				CSensoryFramePtr 	SF;
+				CPose3DPDF::Ptr 		PDF;
+				CSensoryFrame::Ptr 	SF;
 
 				map2noisy.get(q,PDF,SF);
 
@@ -245,7 +245,7 @@ void do_grid_align()
 
 				if (NOISE_IN_LASER)
 				{
-					CObservation2DRangeScanPtr obs = SF->getObservationByClass<CObservation2DRangeScan>();
+					CObservation2DRangeScan::Ptr obs = SF->getObservationByClass<CObservation2DRangeScan>();
 					if (obs)
 					{
 						for (unsigned int k=0;k<obs->scan.size();k++)
@@ -260,7 +260,7 @@ void do_grid_align()
 
 				if (NOISE_IN_POSE)
 				{
-					CPosePDFGaussianPtr newPDF = CPosePDFGaussian::Create();
+					CPosePDFGaussian::Ptr newPDF = CPosePDFGaussian::Create();
 					newPDF->copyFrom(*PDF);
 
 					// Change the pose:
@@ -270,7 +270,7 @@ void do_grid_align()
 					newPDF->mean.normalizePhi();
 
 					// Change into the map:
-					map2noisy.set( q, newPDF, CSensoryFramePtr() );
+					map2noisy.set( q, newPDF, CSensoryFrame::Ptr() );
 
 				} // end of NOISE_IN_POSE
 			}
@@ -300,7 +300,7 @@ void do_grid_align()
 				// --------------------------
 				//        DO ALIGN
 				// --------------------------
-				CPosePDFPtr	parts = gridAlign.Align(
+				CPosePDF::Ptr	parts = gridAlign.Align(
 					&the_map1, &the_map2,
 					CPose2D(0,0,0),
 					&tim,
@@ -313,7 +313,7 @@ void do_grid_align()
 				// Get the mean, or the best Gassian mean in the case of a SOG:
 				if (IS_CLASS(parts,CPosePDFSOG) && MOST_LIKELY_SOG_MODE_ONLY)
 				{
-					CPosePDFSOGPtr pdf_SOG= CPosePDFSOGPtr( parts );
+					CPosePDFSOG::Ptr pdf_SOG= std::dynamic_pointer_cast<CPosePDFSOG>( parts );
 					pdf_SOG->getMostLikelyCovarianceAndMean(estimateCOV,estimateMean);
 				}
 				else
@@ -339,7 +339,7 @@ void do_grid_align()
 				// Save particles:
 				if (IS_CLASS(parts, CPosePDFParticles))
 				{
-					CPosePDFParticlesPtr partsPdf = CPosePDFParticlesPtr( parts );
+					CPosePDFParticles::Ptr partsPdf = std::dynamic_pointer_cast<CPosePDFParticles>( parts );
 
 					partsPdf->saveToTextFile( format("%s/particles_noise_%.03f.txt", RESULTS_DIR.c_str(), STD_NOISE_XY) );
 
@@ -350,7 +350,7 @@ void do_grid_align()
 				else
 				if (IS_CLASS(parts,CPosePDFSOG))
 				{
-					CPosePDFSOGPtr pdf_SOG= CPosePDFSOGPtr( parts );
+					CPosePDFSOG::Ptr pdf_SOG= std::dynamic_pointer_cast<CPosePDFSOG>( parts );
 					printf("SoG has %u modes\n",(unsigned int)pdf_SOG->size());
 
 					pdf_SOG->normalizeWeights();
@@ -374,9 +374,9 @@ void do_grid_align()
 					if (SAVE_SOG_3DSCENE)
 					{
 						COpenGLScene				scene3D;
-						opengl::CSetOfObjectsPtr	thePDF3D = opengl::CSetOfObjects::Create();
+						opengl::CSetOfObjects::Ptr	thePDF3D = opengl::CSetOfObjects::Create();
 						pdf_SOG->getAs3DObject( thePDF3D );
-						opengl::CGridPlaneXYPtr	gridXY	= opengl::CGridPlaneXY::Create(-10,10,-10,10,0,1);
+						opengl::CGridPlaneXY::Ptr	gridXY	= opengl::CGridPlaneXY::Create(-10,10,-10,10,0,1);
 						scene3D.insert( gridXY	);
 						scene3D.insert( thePDF3D );
 						CFileGZOutputStream("_out_SoG.3Dscene") << scene3D;
@@ -431,13 +431,13 @@ void do_grid_align()
 							CPointsMap::COLOR_3DSCENE_R = 0;
 							CPointsMap::COLOR_3DSCENE_G = 0;
 							CPointsMap::COLOR_3DSCENE_B = 1;
-							CSetOfObjectsPtr obj1 = CSetOfObjects::Create();
+							CSetOfObjects::Ptr obj1 = CSetOfObjects::Create();
 							the_map1.getAs3DObject( obj1 );
 
 							CPointsMap::COLOR_3DSCENE_R = 1;
 							CPointsMap::COLOR_3DSCENE_G = 0;
 							CPointsMap::COLOR_3DSCENE_B = 0;
-							CSetOfObjectsPtr obj2 = CSetOfObjects::Create();
+							CSetOfObjects::Ptr obj2 = CSetOfObjects::Create();
 							the_map2.getAs3DObject( obj2 );
 
 							obj2->setPose(x);
@@ -446,7 +446,7 @@ void do_grid_align()
 							scene.insert(obj2);
 
 							// Add also the borders of the maps:
-							CSetOfLinesPtr	lines = CSetOfLines::Create();
+							CSetOfLines::Ptr	lines = CSetOfLines::Create();
 							lines->setLineWidth(3);
 							lines->setColor(0,0,1);
 
@@ -525,8 +525,8 @@ void do_grid_align()
 
 				const bool SAVE_ALSO_COORS_DEBUG_MAPS = false;
 
-				CLandmarksMapPtr lm1 = info.landmarks_map1;
-				CLandmarksMapPtr lm2 = info.landmarks_map2;
+				CLandmarksMap::Ptr lm1 = info.landmarks_map1;
+				CLandmarksMap::Ptr lm2 = info.landmarks_map2;
 
 				// only for the case of non "--match":
 				if (!lm1 && !lm2)

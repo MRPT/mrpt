@@ -104,11 +104,11 @@ void  CDetectorDoorCrossing::process(
 
 	for (i=0;i<options.windowSize;i++)
 	{
-		CActionCollectionPtr	acts = lastObs.getAsAction( i*2+0 );
-		CActionPtr				act = acts->get(0);
+		CActionCollection::Ptr	acts = lastObs.getAsAction( i*2+0 );
+		CAction::Ptr				act = acts->get(0);
 
 		ASSERT_( act->GetRuntimeClass()->derivedFrom( CLASS_ID( CActionRobotMovement2D ) ) )
-		CActionRobotMovement2DPtr action = CActionRobotMovement2DPtr( act );
+		CActionRobotMovement2D::Ptr action = std::dynamic_pointer_cast<CActionRobotMovement2D>( act );
 
 		action->poseChange->getMean(pos);
 
@@ -118,7 +118,7 @@ void  CDetectorDoorCrossing::process(
 		p = p + pos;
 
 		// Add SF to the grid map:
-		CSensoryFramePtr	sf = lastObs.getAsObservations( i*2+1 );
+		CSensoryFrame::Ptr	sf = lastObs.getAsObservations( i*2+1 );
 		CPose3D				pose3D(p);
 		sf->insertObservationsInto( &auxMap, &pose3D );
 	}

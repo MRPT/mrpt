@@ -167,11 +167,8 @@ namespace mrpt
 			ASSERT_ABOVE_(nObservations,0)
 
 			// Cholesky object, as a pointer to reuse it between iterations:
-#if MRPT_HAS_CXX11
+
 			typedef std::unique_ptr<CSparseMatrix::CholeskyDecomp> SparseCholeskyDecompPtr;
-#else
-			typedef std::auto_ptr<CSparseMatrix::CholeskyDecomp> SparseCholeskyDecompPtr;
-#endif
 			SparseCholeskyDecompPtr ptrCh;
 
 			// The list of Jacobians: for each constraint i->j,

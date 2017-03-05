@@ -91,8 +91,8 @@ double icp_test_1(int a1, int a2)
 	// ----------------------------------------------------------
 	//						Map Building
 	// ----------------------------------------------------------
-	CActionCollectionPtr	action;
-	CSensoryFramePtr		observations;
+	CActionCollection::Ptr	action;
+	CSensoryFrame::Ptr		observations;
 
 	for (;;)
 	{

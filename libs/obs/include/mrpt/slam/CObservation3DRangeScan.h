@@ -11,5 +11,5 @@
 MRPT_WARNING("*Deprecated header* Please replace with #include <mrpt/obs/CObservation3DRangeScan.h>. This backward compatible header will be removed in MRPT 2.0.0")
 namespace mrpt { namespace slam {
 	using mrpt::obs::CObservation3DRangeScan;    //!< Backward compatibility
-	using mrpt::obs::CObservation3DRangeScanPtr; //!< Backward compatibility
+	using mrpt::obs::CObservation3DRangeScan::Ptr; //!< Backward compatibility
 } }

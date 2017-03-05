@@ -205,7 +205,6 @@ namespace mrpt
 				m.getAsOctoMapVoxels(*this);
 			}
 
-		private:
 			/** Constructor */
 			COctoMapVoxels();
 			/** Private, virtual destructor: only can be deleted from smart pointers. */

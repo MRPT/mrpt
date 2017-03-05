@@ -88,7 +88,7 @@ void  CFeatureExtraction::extractFeaturesSIFT(
 	// ROI can not be managed properly (yet) with these method, so we extract a subimage
 
 	// use a smart pointer so we just copy the pointer if the image is grayscale, or we'll create a new one if it was RGB:
-	CImage img_grayscale(img, FAST_REF_OR_CONVERT_TO_GRAY); // Was: auxImgPtr;
+	CImage img_grayscale(img, FAST_REF_OR_CONVERT_TO_GRAY); // Was: auxImg::Ptr;
 	if( usingROI )
 	{
 		ASSERT_( ROI.xMin >= 0 && ROI.xMin < ROI.xMax && ROI.xMax < img.getWidth() && ROI.yMin >= 0 && ROI.yMax < img.getHeight() && ROI.yMin < ROI.yMax );
@@ -245,7 +245,7 @@ void  CFeatureExtraction::extractFeaturesSIFT(
 
 			for( size_t i = 0; i < nFeats; i++ )
 			{
-				CFeaturePtr feat	= CFeature::Create();
+				CFeature::Ptr feat	= CFeature::Create();
 
 				feat->type			= featSIFT;			// Type
 				feat->ID			= init_ID + i;		// Identifier
@@ -385,7 +385,7 @@ void  CFeatureExtraction::extractFeaturesSIFT(
 
 				if( options.patchSize==0 || ( (xBorderSup < (int)imgW) && (xBorderInf > 0) && (yBorderSup < (int)imgH) && (yBorderInf > 0) ) )
 				{
-					CFeaturePtr ft		= CFeature::Create();
+					CFeature::Ptr ft		= CFeature::Create();
 					ft->type			= featSIFT;
 					ft->ID				= nextID++;
 					ft->x				= cv_feats[i].pt.x;
@@ -448,7 +448,7 @@ void  CFeatureExtraction::extractFeaturesSIFT(
 
 				if (options.patchSize == 0 || ((xBorderSup < (int)imgW) && (xBorderInf > 0) && (yBorderSup < (int)imgH) && (yBorderInf > 0)))
 				{
-					CFeaturePtr ft = CFeature::Create();
+					CFeature::Ptr ft = CFeature::Create();
 					ft->type = featSIFT;
 					ft->ID = nextID++;
 					ft->x = cv_feats[i].pt.x;
@@ -685,7 +685,7 @@ void CFeatureExtraction::convertCvSeqInCFeatureList( void* features_, CFeatureLi
 	for( int k = 0; k < n; k++ )
 	{
 		thisFeat			= (feature*)cvGetSeqElem( features, k );
-		CFeaturePtr feat	= CFeature::Create();
+		CFeature::Ptr feat	= CFeature::Create();
 		feat->ID			= (TFeatureID)(k + init_ID);
 		feat->x				= usingROI ? thisFeat->x + ROI.xMin : thisFeat->x;
 		feat->y				= usingROI ? thisFeat->y + ROI.yMin : thisFeat->y;

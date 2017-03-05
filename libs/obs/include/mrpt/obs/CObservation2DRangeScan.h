@@ -97,7 +97,7 @@ namespace obs
 		/** A points map, build only under demand by the methods getAuxPointsMap() and buildAuxPointsMap().
 		  *  It's a generic smart pointer to avoid depending here in the library mrpt-obs on classes on other libraries.
 		  */
-		mutable mrpt::maps::CMetricMapPtr  m_cachedMap;
+		mutable mrpt::maps::CMetricMap::Ptr  m_cachedMap;
 		void internal_buildAuxPointsMap( const void *options = nullptr ) const;  //!< Internal method, used from buildAuxPointsMap()
 	public:
 

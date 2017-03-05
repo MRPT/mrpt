@@ -156,8 +156,8 @@ void CSensoryFrame::operator += (const CSensoryFrame &sf)
 	m_cachedMap.reset();
 	for (const_iterator it = begin();it!=end();++it)
 	{
-		CObservationPtr newObs = *it;
-		newObs.reset(newObs->clone());
+		CObservation::Ptr newObs = *it;
+		newObs.reset(dynamic_cast<CObservation *>(newObs->clone()));
 		m_observations.push_back( newObs ); //static_cast<CObservation*>( (*it)->clone()) );
 	}
 }
@@ -165,7 +165,7 @@ void CSensoryFrame::operator += (const CSensoryFrame &sf)
 /*---------------------------------------------------------------
 						operator +=
   ---------------------------------------------------------------*/
-void CSensoryFrame::operator += (const CObservationPtr &obs)
+void CSensoryFrame::operator += (const CObservation::Ptr &obs)
 {
 	m_cachedMap.reset();
 	m_observations.push_back( obs );
@@ -174,7 +174,7 @@ void CSensoryFrame::operator += (const CObservationPtr &obs)
 /*---------------------------------------------------------------
 					push_back
   ---------------------------------------------------------------*/
-void CSensoryFrame::push_back(const CObservationPtr &obs)
+void CSensoryFrame::push_back(const CObservation::Ptr &obs)
 {
 	m_cachedMap.reset();
 	m_observations.push_back( obs );
@@ -183,7 +183,7 @@ void CSensoryFrame::push_back(const CObservationPtr &obs)
 /*---------------------------------------------------------------
 				insert
   ---------------------------------------------------------------*/
-void CSensoryFrame::insert(const CObservationPtr &obs)
+void CSensoryFrame::insert(const CObservation::Ptr &obs)
 {
 	m_cachedMap.reset();
 	m_observations.push_back( obs );
@@ -209,7 +209,7 @@ void CSensoryFrame::eraseByIndex(const size_t &idx)
 /*---------------------------------------------------------------
 					getObservationByIndex
   ---------------------------------------------------------------*/
-CObservationPtr CSensoryFrame::getObservationByIndex( const size_t &idx ) const
+CObservation::Ptr CSensoryFrame::getObservationByIndex( const size_t &idx ) const
 {
 	MRPT_START
 	if (idx>=size()) THROW_EXCEPTION_FMT("Index %u out of range.", static_cast<unsigned>(idx) );
@@ -237,7 +237,7 @@ CSensoryFrame::iterator CSensoryFrame::erase( const iterator &it)
 /*---------------------------------------------------------------
 					getObservationBySensorLabel
   ---------------------------------------------------------------*/
-CObservationPtr CSensoryFrame::getObservationBySensorLabel(
+CObservation::Ptr CSensoryFrame::getObservationBySensorLabel(
 	const std::string &label,
 	const size_t &idx) const
 {
@@ -249,7 +249,7 @@ CObservationPtr CSensoryFrame::getObservationBySensorLabel(
 			if (foundCount++ == idx)
 				return *it;
 
-	return CObservationPtr();
+	return CObservation::Ptr();
 
 	MRPT_END
 }
@@ -295,7 +295,7 @@ namespace mrpt
 	{
 		// Tricky way to call to a library that depends on us, a sort of "run-time" linking:
 		//  ptr_internal_build_points_map_from_scan2D is a functor in "mrpt-obs", set by "mrpt-maps" at its startup.
-		extern void (*ptr_internal_build_points_map_from_scan2D)(const mrpt::obs::CObservation2DRangeScan &obs, mrpt::maps::CMetricMapPtr &out_map, const void *insertOps);
+		extern void (*ptr_internal_build_points_map_from_scan2D)(const mrpt::obs::CObservation2DRangeScan &obs, mrpt::maps::CMetricMap::Ptr &out_map, const void *insertOps);
 	}
 }
 
@@ -308,10 +308,9 @@ void CSensoryFrame::internal_buildAuxPointsMap( const void *options ) const
 	if (!ptr_internal_build_points_map_from_scan2D)
 		throw std::runtime_error("[CSensoryFrame::buildAuxPointsMap] ERROR: This function needs linking against mrpt-maps.\n");
 
-	MRPT_TODO("Make this a dynamic cast");
 	for (const_iterator it = begin();it!=end();++it)
 		if (IS_CLASS(*it,CObservation2DRangeScan))
-			(*ptr_internal_build_points_map_from_scan2D)( *((CObservation2DRangeScan*)it->get()),m_cachedMap, options);
+			(*ptr_internal_build_points_map_from_scan2D)(dynamic_cast<CObservation2DRangeScan&>(*it->get()),m_cachedMap, options);
 }
 
 

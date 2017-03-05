@@ -206,7 +206,7 @@ void  CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 	CPose3D						motionModelMeanIncr;	// The mean motion increment:
 	CPoseRandomSampler			robotActionSampler;
 	{
-		CActionRobotMovement2DPtr	robotMovement2D = actions->getBestMovementEstimation();
+		CActionRobotMovement2D::Ptr	robotMovement2D = actions->getBestMovementEstimation();
 
 		// If there is no 2D action, look for a 3D action:
 		if (robotMovement2D)
@@ -216,7 +216,7 @@ void  CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 		}
 		else
 		{
-			CActionRobotMovement3DPtr	robotMovement3D = actions->getActionByClass<CActionRobotMovement3D>();
+			CActionRobotMovement3D::Ptr	robotMovement3D = actions->getActionByClass<CActionRobotMovement3D>();
 			if (robotMovement3D)
 			{
 				robotActionSampler.setPosePDF( robotMovement3D->poseChange );
@@ -334,7 +334,7 @@ void  CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 
 			// Use ICP to align to each particle's map:
 			{
-				CPosePDFPtr alignEst =
+				CPosePDF::Ptr alignEst =
 				icp.Align(
 					map_to_align_to,
 					&localMapPoints,
@@ -409,7 +409,7 @@ void  CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 			/** \todo Add paper ref!
 			  */
 			ASSERT_( partIt->d->mapTillNow.m_beaconMap );
-			CBeaconMapPtr beacMap = partIt->d->mapTillNow.m_beaconMap;
+			CBeaconMap::Ptr beacMap = partIt->d->mapTillNow.m_beaconMap;
 
 			updateStageAlreadyDone = true; // We'll also update the weight of the particle here
 

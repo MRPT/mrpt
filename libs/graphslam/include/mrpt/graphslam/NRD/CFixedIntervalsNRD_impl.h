@@ -62,9 +62,9 @@ CFixedIntervalsNRD<GRAPH_t>::getCurrentRobotPosEstimation() const {
 
 template<class GRAPH_t>
 bool CFixedIntervalsNRD<GRAPH_t>::updateState(
-		mrpt::obs::CActionCollectionPtr action,
-		mrpt::obs::CSensoryFramePtr observations,
-		mrpt::obs::CObservationPtr observation )  {
+		mrpt::obs::CActionCollection::Ptr action,
+		mrpt::obs::CSensoryFrame::Ptr observations,
+		mrpt::obs::CObservation::Ptr observation )  {
 	MRPT_START;
 	using namespace mrpt::obs;
 	using namespace mrpt::math;
@@ -79,8 +79,8 @@ bool CFixedIntervalsNRD<GRAPH_t>::updateState(
 
 		if (IS_CLASS(observation, CObservationOdometry)) {
 
-			CObservationOdometryPtr obs_odometry =
-				static_cast<CObservationOdometryPtr>(observation);
+			CObservationOdometry::Ptr obs_odometry =
+				std::dynamic_pointer_cast<CObservationOdometry>(observation);
 			// not incremental - gives the absolute odometry reading
 			m_curr_odometry_only_pose = obs_odometry->odometry;
 			this->logFmt(LVL_DEBUG, "Current odometry-only pose: %s",
@@ -96,8 +96,8 @@ bool CFixedIntervalsNRD<GRAPH_t>::updateState(
 		m_observation_only_rawlog = false;
 
 		if (action->getBestMovementEstimation() ) {
-			mrpt::obs::CActionRobotMovement2DPtr robot_move = action->getBestMovementEstimation();
-			mrpt::poses::CPosePDFPtr increment = robot_move->poseChange.get_ptr();
+			mrpt::obs::CActionRobotMovement2D::Ptr robot_move = action->getBestMovementEstimation();
+			mrpt::poses::CPosePDF::Ptr increment = robot_move->poseChange.get_ptr();
 			pose_t increment_pose = increment->getMeanVal();
 			InfMat increment_inf_mat;
 			increment->getInformationMatrix(increment_inf_mat);
@@ -189,9 +189,9 @@ void CFixedIntervalsNRD<GRAPH_t>::setGraphPtr(GRAPH_t* graph) {
 
 template<class GRAPH_t>
 void CFixedIntervalsNRD<GRAPH_t>::checkIfInvalidDataset(
-		mrpt::obs::CActionCollectionPtr action,
-		mrpt::obs::CSensoryFramePtr observations,
-		mrpt::obs::CObservationPtr observation ) {
+		mrpt::obs::CActionCollection::Ptr action,
+		mrpt::obs::CSensoryFrame::Ptr observations,
+		mrpt::obs::CObservation::Ptr observation ) {
 	MRPT_START;
 	using namespace mrpt;
 	using namespace mrpt::obs;

@@ -36,18 +36,18 @@ inline double MYRAND1(size_t prec=64)	{
 	return static_cast<double>(rand()%prec)/static_cast<double>(prec-1);
 }
 
-void randomColor(CRenderizablePtr &obj,double alpha)	{
+void randomColor(CRenderizable::Ptr &obj,double alpha)	{
 	obj->setColor(MYRAND1(),MYRAND1(),MYRAND1(),alpha);
 }
 
 #ifdef USE_THREADS
 class PIThreadParam	{
 public:
-	const pair<CPolyhedronPtr,CPolyhedronPtr> *polys;
+	const pair<CPolyhedron::Ptr,CPolyhedron::Ptr> *polys;
 	vector<TSegment3D> intersection;
-	PIThreadParam(const pair<CPolyhedronPtr,CPolyhedronPtr> &p):polys(&p),intersection()	{}
+	PIThreadParam(const pair<CPolyhedron::Ptr,CPolyhedron::Ptr> &p):polys(&p),intersection()	{}
 	PIThreadParam():polys(nullptr),intersection()	{}
-	inline static PIThreadParam createObject(const pair<CPolyhedronPtr,CPolyhedronPtr> &p)	{
+	inline static PIThreadParam createObject(const pair<CPolyhedron::Ptr,CPolyhedron::Ptr> &p)	{
 		return PIThreadParam(p);
 	}
 };
@@ -72,7 +72,7 @@ public:
 };
 #endif
 
-CSetOfLinesPtr getIntersections(const vector<pair<CPolyhedronPtr,CPolyhedronPtr> > &v)	{
+CSetOfLines::Ptr getIntersections(const vector<pair<CPolyhedron::Ptr,CPolyhedron::Ptr> > &v)	{
 	vector<TSegment3D> sgms;
 	#ifdef USE_THREADS
 		vector<PIThreadParam> pars(v.size());
@@ -83,13 +83,13 @@ CSetOfLinesPtr getIntersections(const vector<pair<CPolyhedronPtr,CPolyhedronPtr>
 		for_each(pars.begin(),pars.end(),AggregatorFunctor(sgms));
 	#else
 		vector<TObject3D> ints,TMP;
-		for (vector<pair<CPolyhedronPtr,CPolyhedronPtr> >::const_iterator it=v.begin();it!=v.end();++it)	{
+		for (vector<pair<CPolyhedron::Ptr,CPolyhedron::Ptr> >::const_iterator it=v.begin();it!=v.end();++it)	{
 			CPolyhedron::getIntersection(it->first,it->second,TMP);
 			ints.insert(ints.end(),TMP.begin(),TMP.end());
 		}
 		TObject3D::getSegments(ints,sgms);
 	#endif
-	CSetOfLinesPtr lns=CSetOfLines::Create(sgms);
+	CSetOfLines::Ptr lns=CSetOfLines::Create(sgms);
 	lns->setLineWidth(9);
 	randomColor(lns,1.0);
 	return lns;
@@ -103,7 +103,7 @@ inline double randomZ(double space=25,size_t prec=64)	{
 	return space*(MYRAND1(prec)-0.5);
 }
 
-pair<CPolyhedronPtr,CPolyhedronPtr> addPairOfPolys(CPolyhedronPtr p1,CPolyhedronPtr p2,CSetOfObjectsPtr &objs,double x,double y)	{
+pair<CPolyhedron::Ptr,CPolyhedron::Ptr> addPairOfPolys(CPolyhedron::Ptr p1,CPolyhedron::Ptr p2,CSetOfObjects::Ptr &objs,double x,double y)	{
 	p1->makeConvexPolygons();
 	p2->makeConvexPolygons();
 #ifdef PAIRED_RANDOM_POSES
@@ -126,13 +126,13 @@ pair<CPolyhedronPtr,CPolyhedronPtr> addPairOfPolys(CPolyhedronPtr p1,CPolyhedron
 void display()	{
 	CDisplayWindow3D window("Polyhedra Intersection demo",640,480);
 	window.resize(640,480);
-	COpenGLScenePtr scene1=COpenGLScene::Create();
-	opengl::CGridPlaneXYPtr plane1=CGridPlaneXY::Create(-25,25,-25,25,0,1);
+	COpenGLScene::Ptr scene1=COpenGLScene::Create();
+	opengl::CGridPlaneXY::Ptr plane1=CGridPlaneXY::Create(-25,25,-25,25,0,1);
 	plane1->setColor(GRID_R,GRID_G,GRID_B);
 	scene1->insert(plane1);
 	scene1->insert(CAxis::Create(-5,-5,-5,5,5,5,2.5,3,true));
-	CSetOfObjectsPtr objs=CSetOfObjects::Create();
-	vector<pair<CPolyhedronPtr,CPolyhedronPtr> > polys;
+	CSetOfObjects::Ptr objs=CSetOfObjects::Create();
+	vector<pair<CPolyhedron::Ptr,CPolyhedron::Ptr> > polys;
 	polys.reserve(16);
 	//Addition of polyhedra. Add more polyhedra at wish, but try to avoid intersections with other pairs, for better visualization.
 	polys.push_back(addPairOfPolys(CPolyhedron::CreateHexahedron(10),CPolyhedron::CreateOctahedron(10),objs,-12.5,-12.5));

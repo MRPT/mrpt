@@ -52,7 +52,7 @@ namespace mrpt
 			bool should_skip_display_list_cache() const  MRPT_OVERRIDE { return m_keepRadiusIndependentEyeDistance; }
 
 			/** Class factory  */
-			static CSpherePtr Create(
+			static CSphere::Ptr Create(
 				float				radius,
 				int					nDivsLongitude = 20,
 				int					nDivsLatitude = 20 );
@@ -67,7 +67,6 @@ namespace mrpt
 			  */
 			bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const MRPT_OVERRIDE;
 
-		private:
 			/** Constructor
 			  */
 			CSphere(

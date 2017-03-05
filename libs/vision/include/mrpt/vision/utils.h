@@ -273,8 +273,8 @@ namespace mrpt
 			  * \param params       [IN]    The intrinsic and extrinsic parameters of the stereo pair.
 			  */
 			void VISION_IMPEXP projectMatchedFeature(
-				const CFeaturePtr                   & leftFeat,
-				const CFeaturePtr                   & rightFeat,
+				const CFeature::Ptr                   & leftFeat,
+				const CFeature::Ptr                   & rightFeat,
 				mrpt::math::TPoint3D                            & p3D,
 				const TStereoSystemParams           & params = TStereoSystemParams() );
 

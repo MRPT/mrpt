@@ -64,7 +64,7 @@ void CHolonomicFullEval::navigate(const NavInput & ni, NavOutput &no)
 	ASSERT_(ni.clearance!=nullptr);
 
 	// Create a log record for returning data.
-	CLogFileRecord_FullEvalPtr log = CLogFileRecord_FullEval::Create();
+	CLogFileRecord_FullEval::Ptr log = CLogFileRecord_FullEval::Create();
 	no.logRecord = log;
 
 	const size_t nDirs = ni.obstacles.size();

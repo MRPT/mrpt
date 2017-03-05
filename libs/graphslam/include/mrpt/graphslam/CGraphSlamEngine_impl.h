@@ -256,9 +256,9 @@ void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 	}
 	// axis
 	if (m_enable_visuals) {
-		COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+		COpenGLScene::Ptr scene = m_win->get3DSceneAndLock();
 
-		CAxisPtr obj = CAxis::Create();
+		CAxis::Ptr obj = CAxis::Create();
 		obj->setFrequency(5);
 		obj->enableTickMarks();
 		obj->setAxisLimits(-10,-10,-10, 10,10,10);
@@ -382,21 +382,21 @@ void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 
 template<class GRAPH_t>
 bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
-		mrpt::obs::CObservationPtr& observation,
+		mrpt::obs::CObservation::Ptr& observation,
 		size_t& rawlog_entry) {
 	using namespace mrpt::obs;
 
-	CActionCollectionPtr action;
-	CSensoryFramePtr observations;
+	CActionCollection::Ptr action;
+	CSensoryFrame::Ptr observations;
 
 	return this->execGraphSlamStep(action, observations, observation, rawlog_entry);
 }
 
 template<class GRAPH_t>
 bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
-		mrpt::obs::CActionCollectionPtr& action,
-		mrpt::obs::CSensoryFramePtr& observations,
-		mrpt::obs::CObservationPtr& observation,
+		mrpt::obs::CActionCollection::Ptr& action,
+		mrpt::obs::CSensoryFrame::Ptr& observations,
+		mrpt::obs::CObservation::Ptr& observation,
 		size_t& rawlog_entry) {
 	MRPT_START;
 
@@ -428,9 +428,9 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 			m_observation_only_dataset = false;
 			if (action->getBestMovementEstimation()) {
 
-				CActionRobotMovement2DPtr robot_move =
+				CActionRobotMovement2D::Ptr robot_move =
 					action->getBestMovementEstimation();
-				CPosePDFPtr increment = robot_move->poseChange.get_ptr();
+				CPosePDF::Ptr increment = robot_move->poseChange.get_ptr();
 				pose_t increment_pose = increment->getMeanVal();
 				m_curr_odometry_only_pose += increment_pose;
 
@@ -485,8 +485,8 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 
 		// odometry
 		if (IS_CLASS(observation, CObservationOdometry)) {
-			CObservationOdometryPtr obs_odometry =
-				static_cast<CObservationOdometryPtr>(observation);
+			CObservationOdometry::Ptr obs_odometry =
+				std::dynamic_pointer_cast<CObservationOdometry>(observation);
 
 			m_curr_odometry_only_pose = obs_odometry->odometry;
 			// add to the odometry vector
@@ -499,12 +499,12 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 		// laser scans
 		else if (IS_CLASS(observation, CObservation2DRangeScan)) {
 			m_last_laser_scan2D =
-				static_cast<mrpt::obs::CObservation2DRangeScanPtr>(observation);
+				std::dynamic_pointer_cast<mrpt::obs::CObservation2DRangeScan>(observation);
 
 		}
 		else if (IS_CLASS(observation, CObservation3DRangeScan)) {
 			m_last_laser_scan3D =
-				static_cast<mrpt::obs::CObservation3DRangeScanPtr>(observation);
+				std::dynamic_pointer_cast<mrpt::obs::CObservation3DRangeScan>(observation);
 
 		}
 	}
@@ -513,9 +513,9 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 		// (Format #1 rawlog file)
 
 		// parse the current action
-		CActionRobotMovement2DPtr robot_move =
+		CActionRobotMovement2D::Ptr robot_move =
 			action->getBestMovementEstimation();
-		CPosePDFPtr increment = robot_move->poseChange.get_ptr();
+		CPosePDF::Ptr increment = robot_move->poseChange.get_ptr();
 		pose_t increment_pose = increment->getMeanVal();
 		m_curr_odometry_only_pose += increment_pose;
 
@@ -745,12 +745,12 @@ void CGraphSlamEngine<GRAPH_t>::computeOccupancyGridMap2D() const {
 
 	// traverse all the nodes - add their laser scans at their corresponding poses
 	for (std::map<mrpt::utils::TNodeID,
-			mrpt::obs::CObservation2DRangeScanPtr>::const_iterator
+			mrpt::obs::CObservation2DRangeScan::Ptr>::const_iterator
 			it = m_nodes_to_laser_scans2D.begin();
 			it != m_nodes_to_laser_scans2D.end(); ++it) {
 
 		TNodeID curr_node = it->first;
-		mrpt::obs::CObservation2DRangeScanPtr curr_laser_scan = it->second;
+		mrpt::obs::CObservation2DRangeScan::Ptr curr_laser_scan = it->second;
 		pose_t curr_pose;
 
 		bool laser_scan_exists = curr_laser_scan ? true : false;
@@ -1058,8 +1058,8 @@ void CGraphSlamEngine<GRAPH_t>::initRangeImageViewport() {
 	ASSERT_(m_enable_visuals);
 	using namespace mrpt::opengl;
 
-	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
-	COpenGLViewportPtr viewp_range;
+	COpenGLScene::Ptr scene = m_win->get3DSceneAndLock();
+	COpenGLViewport::Ptr viewp_range;
 
 	viewp_range = scene->createViewport("viewp_range");
 	double x,y,h,w;
@@ -1089,8 +1089,8 @@ void CGraphSlamEngine<GRAPH_t>::updateRangeImageViewport() {
 	range2D = m_last_laser_scan3D->rangeImage * (1.0f/5.0); // TODO - without the magic number?
 	img.setFromMatrix(range2D);
 
-	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
-	COpenGLViewportPtr viewp_range = scene->getViewport("viewp_range");
+	COpenGLScene::Ptr scene = m_win->get3DSceneAndLock();
+	COpenGLViewport::Ptr viewp_range = scene->getViewport("viewp_range");
 	viewp_range->setImageView(img);
 	m_win->unlockAccess3DScene();
 	m_win->forceRepaint();
@@ -1106,8 +1106,8 @@ void CGraphSlamEngine<GRAPH_t>::initIntensityImageViewport() {
 	ASSERT_(m_enable_visuals);
 	using namespace mrpt::opengl;
 
-	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
-	COpenGLViewportPtr viewp_intensity;
+	COpenGLScene::Ptr scene = m_win->get3DSceneAndLock();
+	COpenGLViewport::Ptr viewp_intensity;
 
 	viewp_intensity = scene->createViewport("viewp_intensity");
 	double x, y, w, h;
@@ -1132,8 +1132,8 @@ void CGraphSlamEngine<GRAPH_t>::updateIntensityImageViewport() {
 	m_last_laser_scan3D->load();
 	img = m_last_laser_scan3D->intensityImage;
 
-	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
-	COpenGLViewportPtr viewp_intensity = scene->getViewport("viewp_intensity");
+	COpenGLScene::Ptr scene = m_win->get3DSceneAndLock();
+	COpenGLViewport::Ptr viewp_intensity = scene->getViewport("viewp_intensity");
 	viewp_intensity->setImageView(img);
 	m_win->unlockAccess3DScene();
 	m_win->forceRepaint();
@@ -1151,8 +1151,8 @@ void CGraphSlamEngine<GRAPH_t>::initCurrPosViewport() {
 	using namespace mrpt::opengl;
 	using namespace mrpt::utils;
 
-	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
-	COpenGLViewportPtr viewp= scene->createViewport("curr_robot_pose_viewport");
+	COpenGLScene::Ptr scene = m_win->get3DSceneAndLock();
+	COpenGLViewport::Ptr viewp= scene->createViewport("curr_robot_pose_viewport");
 	// Add a clone viewport, using [0,1] factor X,Y,Width,Height coordinates:
 	viewp->setCloneView("main");
 	double x,y,h,w;
@@ -1185,8 +1185,8 @@ inline void CGraphSlamEngine<GRAPH_t>::updateCurrPosViewport() {
 
 	pose_t curr_robot_pose = this->getCurrentRobotPosEstimation();
 
-	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
-	COpenGLViewportPtr viewp = scene->getViewport("curr_robot_pose_viewport");
+	COpenGLScene::Ptr scene = m_win->get3DSceneAndLock();
+	COpenGLViewport::Ptr viewp = scene->getViewport("curr_robot_pose_viewport");
 	viewp->getCamera().setPointingAt(CPose3D(curr_robot_pose));
 
 	m_win->unlockAccess3DScene();
@@ -1480,10 +1480,10 @@ void CGraphSlamEngine<GRAPH_t>::toggleOdometryVisualization() {
 	using namespace mrpt::opengl;
 	MRPT_LOG_INFO_STREAM << "Toggling Odometry visualization...";
 
-	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+	COpenGLScene::Ptr scene = m_win->get3DSceneAndLock();
 
 	if (m_visualize_odometry_poses) {
-		CRenderizablePtr obj = scene->getByName("odometry_poses_cloud");
+		CRenderizable::Ptr obj = scene->getByName("odometry_poses_cloud");
 		obj->setVisibility(!obj->isVisible());
 
 		obj = scene->getByName("robot_odometry_poses");
@@ -1506,11 +1506,11 @@ void CGraphSlamEngine<GRAPH_t>::toggleGTVisualization() {
 	using namespace mrpt::utils;
 	MRPT_LOG_INFO_STREAM << "Toggling Ground Truth visualization";
 
-	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+	COpenGLScene::Ptr scene = m_win->get3DSceneAndLock();
 
 	if (m_visualize_GT) {
 
-		CRenderizablePtr obj = scene->getByName("GT_cloud");
+		CRenderizable::Ptr obj = scene->getByName("GT_cloud");
 		obj->setVisibility(!obj->isVisible());
 
 		obj = scene->getByName("robot_GT");
@@ -1534,7 +1534,7 @@ void CGraphSlamEngine<GRAPH_t>::toggleMapVisualization() {
 	using namespace mrpt::utils;
 	MRPT_LOG_INFO_STREAM << "Toggling Map visualization... ";
 
-	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+	COpenGLScene::Ptr scene = m_win->get3DSceneAndLock();
 
 	// get total number of nodes
 	int num_of_nodes;
@@ -1552,7 +1552,7 @@ void CGraphSlamEngine<GRAPH_t>::toggleMapVisualization() {
 		scan_name << "laser_scan_";
 		scan_name << node_cnt;
 
-		CRenderizablePtr obj = scene->getByName(scan_name.str());
+		CRenderizable::Ptr obj = scene->getByName(scan_name.str());
 		// current node may not have laserScans => may not have corresponding obj
 		if (obj) {
 			obj->setVisibility(!obj->isVisible());
@@ -1571,11 +1571,11 @@ void CGraphSlamEngine<GRAPH_t>::toggleEstimatedTrajectoryVisualization() {
 	using namespace mrpt::utils;
 	MRPT_LOG_INFO_STREAM << "Toggling Estimated Trajectory visualization... ";
 
-	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+	COpenGLScene::Ptr scene = m_win->get3DSceneAndLock();
 
 	if (m_visualize_estimated_trajectory) {
 
-		CRenderizablePtr obj = scene->getByName("estimated_traj_setoflines");
+		CRenderizable::Ptr obj = scene->getByName("estimated_traj_setoflines");
 		obj->setVisibility(!obj->isVisible());
 
 		obj = scene->getByName("robot_estimated_traj");
@@ -1609,7 +1609,7 @@ template<class GRAPH_t>
 void CGraphSlamEngine<GRAPH_t>::updateMapVisualization(
 		const GRAPH_t& gr,
 		std::map<mrpt::utils::TNodeID,
-		mrpt::obs::CObservation2DRangeScanPtr> m_nodes_to_laser_scans2D,
+		mrpt::obs::CObservation2DRangeScan::Ptr> m_nodes_to_laser_scans2D,
 		bool full_update /*= false */) {
 	MRPT_START;
 	ASSERT_(m_enable_visuals);
@@ -1650,9 +1650,9 @@ void CGraphSlamEngine<GRAPH_t>::updateMapVisualization(
 		scan_name << *node_it;
 
 		// get the node laser scan
-		CObservation2DRangeScanPtr scan_content;
+		CObservation2DRangeScan::Ptr scan_content;
 		std::map<mrpt::utils::TNodeID,
-			mrpt::obs::CObservation2DRangeScanPtr>::const_iterator search =
+			mrpt::obs::CObservation2DRangeScan::Ptr>::const_iterator search =
 				m_nodes_to_laser_scans2D.find(*node_it);
 
 		// make sure that the laser scan exists and is valid
@@ -1665,10 +1665,10 @@ void CGraphSlamEngine<GRAPH_t>::updateMapVisualization(
 
 			// if the scan doesn't already exist, add it to the scene, otherwise just
 			// adjust its pose
-			COpenGLScenePtr scene = m_win->get3DSceneAndLock();
-			CRenderizablePtr obj = scene->getByName(scan_name.str());
+			COpenGLScene::Ptr scene = m_win->get3DSceneAndLock();
+			CRenderizable::Ptr obj = scene->getByName(scan_name.str());
 
-			CSetOfObjectsPtr scan_obj;
+			CSetOfObjects::Ptr scan_obj;
 			if (!obj) {
 				MRPT_LOG_DEBUG_STREAM << "CSetOfObjects for nodeID " << *node_it <<
 					"doesn't exist. Creating it...";
@@ -1689,7 +1689,7 @@ void CGraphSlamEngine<GRAPH_t>::updateMapVisualization(
 				{
 					stringstream prev_scan_name("");
 					prev_scan_name << "laser_scan_" << *node_it - 1;
-					CRenderizablePtr prev_obj = scene->getByName(prev_scan_name.str());
+					CRenderizable::Ptr prev_obj = scene->getByName(prev_scan_name.str());
 					if (prev_obj) {
 						scan_obj->setVisibility(prev_obj->isVisible());
 					}
@@ -1698,7 +1698,7 @@ void CGraphSlamEngine<GRAPH_t>::updateMapVisualization(
 				scene->insert(scan_obj);
 			}
 			else {
-				scan_obj = static_cast<CSetOfObjectsPtr>(obj);
+				scan_obj = std::dynamic_pointer_cast<CSetOfObjects>(obj);
 			}
 
 			// finally set the pose correctly - as computed by graphSLAM
@@ -1759,7 +1759,7 @@ void CGraphSlamEngine<GRAPH_t>::initGTVisualization() {
 			"Visualization of data was requested but no CDisplayWindow3D pointer was provided");
 
 	// point cloud
-	CPointCloudPtr GT_cloud = CPointCloud::Create();
+	CPointCloud::Ptr GT_cloud = CPointCloud::Create();
 	GT_cloud->setPointSize(1.0);
 	GT_cloud->enablePointSmooth();
 	GT_cloud->enableColorFromX(false);
@@ -1769,7 +1769,7 @@ void CGraphSlamEngine<GRAPH_t>::initGTVisualization() {
 	GT_cloud->setName("GT_cloud");
 
 	// robot model
-	CSetOfObjectsPtr robot_model = stock_objects::RobotPioneer();
+	CSetOfObjects::Ptr robot_model = stock_objects::RobotPioneer();
 	pose_t initial_pose;
 	robot_model->setPose(initial_pose);
 	robot_model->setName("robot_GT");
@@ -1777,7 +1777,7 @@ void CGraphSlamEngine<GRAPH_t>::initGTVisualization() {
 	robot_model->setScale(m_robot_model_size);
 
 	// insert them to the scene
-	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+	COpenGLScene::Ptr scene = m_win->get3DSceneAndLock();
 	scene->insert(GT_cloud);
 	scene->insert(robot_model);
 	m_win->unlockAccess3DScene();
@@ -1808,10 +1808,10 @@ void CGraphSlamEngine<GRAPH_t>::updateGTVisualization() {
 		ASSERT_(m_win &&
 				"Visualization of data was requested but no CDisplayWindow3D pointer was given");
 
-		COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+		COpenGLScene::Ptr scene = m_win->get3DSceneAndLock();
 
-		CRenderizablePtr obj = scene->getByName("GT_cloud");
-		CPointCloudPtr GT_cloud = static_cast<CPointCloudPtr>(obj);
+		CRenderizable::Ptr obj = scene->getByName("GT_cloud");
+		CPointCloud::Ptr GT_cloud = std::dynamic_pointer_cast<CPointCloud>(obj);
 
 		// add the latest GT pose
 		pose_t gt_pose = m_GT_poses[m_GT_poses_index];
@@ -1822,7 +1822,7 @@ void CGraphSlamEngine<GRAPH_t>::updateGTVisualization() {
 
 		// robot model of GT trajectory
 		obj = scene->getByName("robot_GT");
-		CSetOfObjectsPtr robot_obj = static_cast<CSetOfObjectsPtr>(obj);
+		CSetOfObjects::Ptr robot_obj = std::dynamic_pointer_cast<CSetOfObjects>(obj);
 		robot_obj->setPose(gt_pose);
 		m_win->unlockAccess3DScene();
 		m_win->forceRepaint();
@@ -1840,7 +1840,7 @@ void CGraphSlamEngine<GRAPH_t>::initOdometryVisualization() {
 	using namespace mrpt::opengl;
 
 	// point cloud
-	CPointCloudPtr odometry_poses_cloud = CPointCloud::Create();
+	CPointCloud::Ptr odometry_poses_cloud = CPointCloud::Create();
 	odometry_poses_cloud->setPointSize(1.0);
 	odometry_poses_cloud->enablePointSmooth();
 	odometry_poses_cloud->enableColorFromX(false);
@@ -1850,7 +1850,7 @@ void CGraphSlamEngine<GRAPH_t>::initOdometryVisualization() {
 	odometry_poses_cloud->setName("odometry_poses_cloud");
 
 	// robot model
-	CSetOfObjectsPtr robot_model = stock_objects::RobotPioneer();
+	CSetOfObjects::Ptr robot_model = stock_objects::RobotPioneer();
 	pose_t initial_pose;
 	robot_model->setPose(initial_pose);
 	robot_model->setName("robot_odometry_poses");
@@ -1858,7 +1858,7 @@ void CGraphSlamEngine<GRAPH_t>::initOdometryVisualization() {
 	robot_model->setScale(m_robot_model_size);
 
 	// insert them to the scene
-	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+	COpenGLScene::Ptr scene = m_win->get3DSceneAndLock();
 	scene->insert(odometry_poses_cloud);
 	scene->insert(robot_model);
 	m_win->unlockAccess3DScene();
@@ -1884,11 +1884,11 @@ void CGraphSlamEngine<GRAPH_t>::updateOdometryVisualization() {
 			"Visualization of data was requested but no CDisplayWindow3D pointer was given");
 	using namespace mrpt::opengl;
 
-	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+	COpenGLScene::Ptr scene = m_win->get3DSceneAndLock();
 
 	// point cloud
-	CRenderizablePtr obj = scene->getByName("odometry_poses_cloud");
-	CPointCloudPtr odometry_poses_cloud = static_cast<CPointCloudPtr>(obj);
+	CRenderizable::Ptr obj = scene->getByName("odometry_poses_cloud");
+	CPointCloud::Ptr odometry_poses_cloud = std::dynamic_pointer_cast<CPointCloud>(obj);
 	pose_t* odometry_pose = m_odometry_poses.back();
 
 	odometry_poses_cloud->insertPoint(
@@ -1898,7 +1898,7 @@ void CGraphSlamEngine<GRAPH_t>::updateOdometryVisualization() {
 
 	// robot model
 	obj = scene->getByName("robot_odometry_poses");
-	CSetOfObjectsPtr robot_obj = static_cast<CSetOfObjectsPtr>(obj);
+	CSetOfObjects::Ptr robot_obj = std::dynamic_pointer_cast<CSetOfObjects>(obj);
 	robot_obj->setPose(*odometry_pose);
 
 	m_win->unlockAccess3DScene();
@@ -1915,7 +1915,7 @@ void CGraphSlamEngine<GRAPH_t>::initEstimatedTrajectoryVisualization() {
 	using namespace mrpt::utils;
 
 	// SetOfLines
-	CSetOfLinesPtr estimated_traj_setoflines = CSetOfLines::Create();
+	CSetOfLines::Ptr estimated_traj_setoflines = CSetOfLines::Create();
 	estimated_traj_setoflines->setColor_u8(m_estimated_traj_color);
 	estimated_traj_setoflines->setLineWidth(0.5);
 	estimated_traj_setoflines->setName("estimated_traj_setoflines");
@@ -1926,7 +1926,7 @@ void CGraphSlamEngine<GRAPH_t>::initEstimatedTrajectoryVisualization() {
 			/* 2nd */ 0, 0, 0);
 
 	// robot model
-	CSetOfObjectsPtr robot_model = stock_objects::RobotPioneer();
+	CSetOfObjects::Ptr robot_model = stock_objects::RobotPioneer();
 	pose_t initial_pose;
 	robot_model->setPose(initial_pose);
 	robot_model->setName("robot_estimated_traj");
@@ -1934,7 +1934,7 @@ void CGraphSlamEngine<GRAPH_t>::initEstimatedTrajectoryVisualization() {
 	robot_model->setScale(m_robot_model_size);
 
 	// insert objects in the graph
-	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+	COpenGLScene::Ptr scene = m_win->get3DSceneAndLock();
 	if (m_visualize_estimated_trajectory) {
 		scene->insert(estimated_traj_setoflines);
 	}
@@ -1966,13 +1966,13 @@ updateEstimatedTrajectoryVisualization(bool full_update) {
 	mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
 	ASSERT_(m_graph.nodeCount() != 0);
 
-	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+	COpenGLScene::Ptr scene = m_win->get3DSceneAndLock();
 
-	CRenderizablePtr obj;
+	CRenderizable::Ptr obj;
 	if (m_visualize_estimated_trajectory) {
 		// set of lines
 		obj = scene->getByName("estimated_traj_setoflines");
-		CSetOfLinesPtr estimated_traj_setoflines = static_cast<CSetOfLinesPtr>(obj);
+		CSetOfLines::Ptr estimated_traj_setoflines = std::dynamic_pointer_cast<CSetOfLines>(obj);
 
 		// gather set of nodes for which to append lines - all of the nodes in the
 		// graph or just the last inserted..
@@ -2005,7 +2005,7 @@ updateEstimatedTrajectoryVisualization(bool full_update) {
 	// robot model
 	// set the robot position to the last recorded pose in the graph
 	obj = scene->getByName("robot_estimated_traj");
-	CSetOfObjectsPtr robot_obj = static_cast<CSetOfObjectsPtr>(obj);
+	CSetOfObjects::Ptr robot_obj = std::dynamic_pointer_cast<CSetOfObjects>(obj);
 	pose_t curr_estimated_pos = m_graph.nodes[m_graph.nodeCount()-1];
 	robot_obj->setPose(curr_estimated_pos);
 
@@ -2131,12 +2131,12 @@ void CGraphSlamEngine<GRAPH_t>::save3DScene(
 	using namespace mrpt::opengl;
 	using namespace mrpt::utils;
 
-	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+	COpenGLScene::Ptr scene = m_win->get3DSceneAndLock();
 
 	// TODO - what else is there to be excluded from the scene?
 	// remove the CPlanarLaserScan if it exists
 	{
-		CPlanarLaserScanPtr laser_scan;
+		CPlanarLaserScan::Ptr laser_scan;
 		for (; (laser_scan = scene->getByClass<CPlanarLaserScan>()) ;) {
 			MRPT_LOG_DEBUG_STREAM << "Removing CPlanarLaserScan from generated 3DScene...";
 			scene->removeObject(laser_scan);

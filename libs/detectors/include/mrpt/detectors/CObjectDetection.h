@@ -19,7 +19,7 @@ namespace mrpt
 {
 	namespace detectors
 	{
-		typedef std::vector<CDetectableObjectPtr> vector_detectable_object;
+		typedef std::vector<CDetectableObject::Ptr> vector_detectable_object;
 
 		/** \ingroup mrpt_detectors_grp */
 		class DETECTORS_IMPEXP CObjectDetection	
@@ -35,7 +35,7 @@ namespace mrpt
 			/** Initialize the object with parameters loaded from the given config source. */
 			virtual void init(const mrpt::utils::CConfigFileBase &cfg )=0;
 
-			inline void detectObjects(const mrpt::obs::CObservationPtr obs, vector_detectable_object &detected) 
+			inline void detectObjects(const mrpt::obs::CObservation::Ptr obs, vector_detectable_object &detected) 
 			{ 
 				detectObjects_Impl(obs.get(), detected); 
 			};

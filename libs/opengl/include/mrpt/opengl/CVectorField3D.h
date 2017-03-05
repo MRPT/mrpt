@@ -259,7 +259,7 @@ namespace mrpt
 			/**
 				* Class factory
 				*/
-			static CVectorField3DPtr Create(const mrpt::math::CMatrixFloat x_vf_ini, const mrpt::math::CMatrixFloat y_vf_ini, const mrpt::math::CMatrixFloat z_vf_ini, const mrpt::math::CMatrixFloat x_p_ini, const mrpt::math::CMatrixFloat y_p_ini, const mrpt::math::CMatrixFloat z_p_ini);
+			static CVectorField3D::Ptr Create(const mrpt::math::CMatrixFloat x_vf_ini, const mrpt::math::CMatrixFloat y_vf_ini, const mrpt::math::CMatrixFloat z_vf_ini, const mrpt::math::CMatrixFloat x_p_ini, const mrpt::math::CMatrixFloat y_p_ini, const mrpt::math::CMatrixFloat z_p_ini);
 			/** Render
 				*/
 			void  render_dl() const MRPT_OVERRIDE;
@@ -274,7 +274,6 @@ namespace mrpt
 			bool isAntiAliasingEnabled() const { return m_antiAliasing; }
 			bool isColorFromModuleEnabled() const { return m_colorFromModule; }
 
-		private:
 			/** Constructor */
 			CVectorField3D();
 			/** Constructor with a initial set of lines. */

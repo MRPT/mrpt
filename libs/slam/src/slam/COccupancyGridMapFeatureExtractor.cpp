@@ -113,7 +113,7 @@ void COccupancyGridMapFeatureExtractor::extractFeatures(
 	if (it==m_cache.end())
 	{
 		// We have to recompute the features:
-		CLandmarksMapPtr theMap = CLandmarksMap::Create();
+		CLandmarksMap::Ptr theMap = CLandmarksMap::Create();
 
 		uncached_extractFeatures(grid,*theMap,number_of_features,descriptors,feat_options);
 

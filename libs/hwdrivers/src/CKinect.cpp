@@ -156,8 +156,8 @@ void CKinect::doProcess()
 {
 	bool	thereIs, hwError;
 
-	CObservation3DRangeScanPtr newObs     = CObservation3DRangeScan::Create();
-	CObservationIMUPtr         newObs_imu = CObservationIMU::Create();
+	CObservation3DRangeScan::Ptr newObs     = CObservation3DRangeScan::Create();
+	CObservationIMU::Ptr         newObs_imu = CObservationIMU::Create();
 
 	getNextObservation( *newObs, *newObs_imu, thereIs, hwError );
 
@@ -171,7 +171,7 @@ void CKinect::doProcess()
 	{
 		m_state = ssWorking;
 
-		vector<CSerializablePtr> objs;
+		vector<CSerializable::Ptr> objs;
 		if (m_grab_image || m_grab_depth || m_grab_3D_points)  objs.push_back(newObs);
 		if (m_grab_IMU)  objs.push_back(newObs_imu);
 

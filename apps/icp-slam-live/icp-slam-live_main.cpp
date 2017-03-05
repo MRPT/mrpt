@@ -118,7 +118,7 @@ void SensorThread(TThreadParams params)
 	try
 	{
 		string driver_name = params.cfgFile->read_string(params.section_name,"driver","",true);
-		CGenericSensorPtr	sensor = CGenericSensor::createSensorPtr(driver_name);
+		CGenericSensor::Ptr	sensor = CGenericSensor::createSensorPtr(driver_name);
 		if (!sensor)
 			throw std::runtime_error( string("***ERROR***: Class name not recognized: ") + driver_name );
 
@@ -271,7 +271,7 @@ void MapBuilding_ICP_Live(const string &INI_FILENAME)
 	CFileOutputStream  f_path(format("%s/log_estimated_path.txt",OUT_DIR));
 
 	// Create 3D window if requested:
-	mrpt::gui::CDisplayWindow3DPtr	win3D;
+	mrpt::gui::CDisplayWindow3D::Ptr	win3D;
 #if MRPT_HAS_WXWIDGETS
 	if (SHOW_PROGRESS_3D_REAL_TIME)
 	{
@@ -304,7 +304,7 @@ void MapBuilding_ICP_Live(const string &INI_FILENAME)
 
 		// Load sensor LIDAR data from live capture:
 		// --------------------------------------------------
-		CObservation2DRangeScanPtr observation;
+		CObservation2DRangeScan::Ptr observation;
 		{
 			mrpt::hwdrivers::CGenericSensor::TListObservations obs_copy;
 			{
@@ -315,7 +315,7 @@ void MapBuilding_ICP_Live(const string &INI_FILENAME)
 			// Keep the most recent laser scan:
 			for (mrpt::hwdrivers::CGenericSensor::TListObservations::reverse_iterator it = obs_copy.rbegin();!observation && it != obs_copy.rend();++it)
 				if (it->second && IS_CLASS(it->second,CObservation2DRangeScan))
-					observation = CObservation2DRangeScanPtr(it->second);
+					observation = std::dynamic_pointer_cast<CObservation2DRangeScan>(it->second);
 
 			// Save all of them to rawlog for optional post-processing:
 			if (out_rawlog.fileOpenCorrectly())
@@ -340,7 +340,7 @@ void MapBuilding_ICP_Live(const string &INI_FILENAME)
 		}
 
 		// Build list of scans:
-		std::vector<mrpt::obs::CObservation2DRangeScanPtr> lst_current_laser_scans;   // Just for drawing in 3D views
+		std::vector<mrpt::obs::CObservation2DRangeScan::Ptr> lst_current_laser_scans;   // Just for drawing in 3D views
 		if (SHOW_LASER_SCANS_3D) {
 			if (observation) {
 				lst_current_laser_scans.push_back(observation);
@@ -376,12 +376,12 @@ void MapBuilding_ICP_Live(const string &INI_FILENAME)
 			CPose3D robotPose;
 			mapBuilder.getCurrentPoseEstimation()->getMean(robotPose);
 
-			COpenGLScenePtr		scene = COpenGLScene::Create();
+			COpenGLScene::Ptr		scene = COpenGLScene::Create();
 
-			COpenGLViewportPtr view=scene->getViewport("main");
+			COpenGLViewport::Ptr view=scene->getViewport("main");
 			ASSERT_(view);
 
-			COpenGLViewportPtr view_map = scene->createViewport("mini-map");
+			COpenGLViewport::Ptr view_map = scene->createViewport("mini-map");
 			view_map->setBorderSize(2);
 			view_map->setViewportPosition(0.01,0.01,0.35,0.35);
 			view_map->setTransparent(false);
@@ -396,10 +396,10 @@ void MapBuilding_ICP_Live(const string &INI_FILENAME)
 			}
 
 			// The ground:
-			mrpt::opengl::CGridPlaneXYPtr groundPlane = mrpt::opengl::CGridPlaneXY::Create(-200,200,-200,200,0,5);
+			mrpt::opengl::CGridPlaneXY::Ptr groundPlane = mrpt::opengl::CGridPlaneXY::Create(-200,200,-200,200,0,5);
 			groundPlane->setColor(0.4,0.4,0.4);
 			view->insert( groundPlane );
-			view_map->insert( CRenderizablePtr( groundPlane) ); // A copy
+			view_map->insert( CRenderizable::Ptr( groundPlane) ); // A copy
 
 			// The camera pointing to the current robot pose:
 			if (CAMERA_3DSCENE_FOLLOWS_ROBOT)
@@ -414,12 +414,12 @@ void MapBuilding_ICP_Live(const string &INI_FILENAME)
 
 			// The maps:
 			{
-				opengl::CSetOfObjectsPtr obj = opengl::CSetOfObjects::Create();
+				opengl::CSetOfObjects::Ptr obj = opengl::CSetOfObjects::Create();
 				mostLikMap->getAs3DObject( obj );
 				view->insert(obj);
 
 				// Only the point map:
-				opengl::CSetOfObjectsPtr ptsMap = opengl::CSetOfObjects::Create();
+				opengl::CSetOfObjects::Ptr ptsMap = opengl::CSetOfObjects::Create();
 				if (mostLikMap->m_pointsMaps.size())
 				{
 					mostLikMap->m_pointsMaps[0]->getAs3DObject(ptsMap);
@@ -428,16 +428,16 @@ void MapBuilding_ICP_Live(const string &INI_FILENAME)
 			}
 
 			// Draw the robot path:
-			CPose3DPDFPtr posePDF =  mapBuilder.getCurrentPoseEstimation();
+			CPose3DPDF::Ptr posePDF =  mapBuilder.getCurrentPoseEstimation();
 			CPose3D  curRobotPose;
 			posePDF->getMean(curRobotPose);
 			{
-				opengl::CSetOfObjectsPtr obj = opengl::stock_objects::RobotPioneer();
+				opengl::CSetOfObjects::Ptr obj = opengl::stock_objects::RobotPioneer();
 				obj->setPose( curRobotPose );
 				view->insert(obj);
 			}
 			{
-				opengl::CSetOfObjectsPtr obj = opengl::stock_objects::RobotPioneer();
+				opengl::CSetOfObjects::Ptr obj = opengl::stock_objects::RobotPioneer();
 				obj->setPose( curRobotPose );
 				view_map->insert( obj );
 			}
@@ -448,7 +448,7 @@ void MapBuilding_ICP_Live(const string &INI_FILENAME)
 				for (size_t i=0;i<lst_current_laser_scans.size();i++)
 				{
 					// Create opengl object and load scan data from the scan observation:
-					opengl::CPlanarLaserScanPtr obj = opengl::CPlanarLaserScan::Create();
+					opengl::CPlanarLaserScan::Ptr obj = opengl::CPlanarLaserScan::Create();
 					obj->setScan(*lst_current_laser_scans[i]);
 					obj->setPose( curRobotPose );
 					obj->setSurfaceColor(1.0f,0.0f,0.0f, 0.5f);
@@ -467,7 +467,7 @@ void MapBuilding_ICP_Live(const string &INI_FILENAME)
 			// Show 3D?
 			if (win3D)
 			{
-				opengl::COpenGLScenePtr &ptrScene = win3D->get3DSceneAndLock();
+				opengl::COpenGLScene::Ptr &ptrScene = win3D->get3DSceneAndLock();
 				ptrScene = scene;
 
 				win3D->unlockAccess3DScene();

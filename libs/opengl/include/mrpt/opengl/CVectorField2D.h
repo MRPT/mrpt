@@ -191,7 +191,7 @@ namespace mrpt
 			/**
 			  * Class factory
 			  */
-			static CVectorField2DPtr Create(const mrpt::math::CMatrixFloat &Matrix_x, const mrpt::math::CMatrixFloat &Matrix_y, float	xmin=-1, float xmax=1, float ymin=-1, float ymax=1);
+			static CVectorField2D::Ptr Create(const mrpt::math::CMatrixFloat &Matrix_x, const mrpt::math::CMatrixFloat &Matrix_y, float	xmin=-1, float xmax=1, float ymin=-1, float ymax=1);
 			/** Render
 			  */
 			void  render_dl() const MRPT_OVERRIDE;
@@ -203,7 +203,6 @@ namespace mrpt
 			void enableAntiAliasing(bool enable=true) { m_antiAliasing = enable; CRenderizableDisplayList::notifyChange(); }
 			bool isAntiAliasingEnabled() const { return m_antiAliasing; }
 
-		private:
 			/** Constructor */
 			CVectorField2D();
 			/** Constructor with a initial set of lines. */

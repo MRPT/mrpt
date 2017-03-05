@@ -81,7 +81,7 @@ namespace mrpt
 		  *    rendering with mrpt::maps::CMetricMap::getAs3DObject() or alternatively with:
 		  *
 		  *  \code
-		  *    mrpt::opengl::CPointCloudColouredPtr gl_points = mrpt::opengl::CPointCloudColoured::Create();
+		  *    mrpt::opengl::CPointCloudColoured::Ptr gl_points = mrpt::opengl::CPointCloudColoured::Create();
 		  *    gl_points->loadFromPointsMap(&pntsMap);
 		  *  \endcode
 		  *
@@ -232,7 +232,7 @@ namespace mrpt
 			bool		m_preview_window; //!< Show preview window while grabbing
 			size_t 		m_preview_window_decimation; //!< If preview is enabled, only show 1 out of N images.
 			size_t      m_preview_decim_counter_range, m_preview_decim_counter_rgb;
-			mrpt::gui::CDisplayWindowPtr  m_win_range[NUM_SENSORS], m_win_int[NUM_SENSORS];
+			mrpt::gui::CDisplayWindow::Ptr  m_win_range[NUM_SENSORS], m_win_int[NUM_SENSORS];
 
 			double  m_maxRange; //!< Sensor max range (meters)
 

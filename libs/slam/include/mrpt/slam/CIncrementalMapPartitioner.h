@@ -90,7 +90,7 @@ namespace slam
 		  * \return The index of the new pose in the internal list, which will be used to refer to the pose in the future.
 		  * \sa updatePartitions
 		  */
-		unsigned int addMapFrame( const mrpt::obs::CSensoryFramePtr &frame, const mrpt::poses::CPosePDFPtr &robotPose2D );
+		unsigned int addMapFrame( const mrpt::obs::CSensoryFrame::Ptr &frame, const mrpt::poses::CPosePDF::Ptr &robotPose2D );
 
 		/** Add a new frame to the current graph: call this method each time a new observation
 		  *   is added to the map/graph, and whenever you want to update the partitions, call "updatePartitions"
@@ -99,7 +99,7 @@ namespace slam
 		  * \return The index of the new pose in the internal list, which will be used to refer to the pose in the future.
 		  * \sa updatePartitions
 		  */
-		unsigned int addMapFrame( const mrpt::obs::CSensoryFramePtr &frame, const mrpt::poses::CPose3DPDFPtr &robotPose3D );
+		unsigned int addMapFrame( const mrpt::obs::CSensoryFrame::Ptr &frame, const mrpt::poses::CPose3DPDF::Ptr &robotPose3D );
 
 		/** Add a new frame to the current graph: call this method each time a new observation
 		  *   is added to the map/graph, and whenever you want to update the partitions, call "updatePartitions"
@@ -160,7 +160,7 @@ namespace slam
 		  *  The previous contents of "objs" will be discarded
 		  */
 		void getAs3DScene(
-			mrpt::opengl::CSetOfObjectsPtr &objs,
+			mrpt::opengl::CSetOfObjects::Ptr &objs,
 			const std::map< uint32_t, int64_t >  *renameIndexes = nullptr
 			) const;
 

@@ -11,5 +11,5 @@
 MRPT_WARNING("*Deprecated header* Please replace with #include <mrpt/obs/CObservationVisualLandmarks.h>. This backward compatible header will be removed in MRPT 2.0.0")
 namespace mrpt { namespace slam {
 	typedef mrpt::obs::CObservationVisualLandmarks CObservationVisualLandmarks;    //!< Backward compatible typedef
-	typedef mrpt::obs::CObservationVisualLandmarksPtr CObservationVisualLandmarksPtr; //!< Backward compatible typedef
+	typedef mrpt::obs::CObservationVisualLandmarks::Ptr CObservationVisualLandmarks::Ptr; //!< Backward compatible typedef
 } }

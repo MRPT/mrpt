@@ -147,10 +147,10 @@ void do_simulation()
 		{
     		ASSERT_( rawlog.getType(i) == CRawlog::etSensoryFrame );
 
-    		CSensoryFramePtr sf = rawlog.getAsObservations(i);
+    		CSensoryFrame::Ptr sf = rawlog.getAsObservations(i);
     		CPose2D  gt_pose( GT(i/2,1),GT(i/2,2),GT(i/2,3) );
 
-			CObservation2DRangeScanPtr the_scan = sf->getObservationByClass<CObservation2DRangeScan>();
+			CObservation2DRangeScan::Ptr the_scan = sf->getObservationByClass<CObservation2DRangeScan>();
 			the_grid.laserScanSimulator( *the_scan, gt_pose, 0.5f, LASER_N_RANGES, LASER_STD_ERROR, 1, LASER_BEARING_STD_ERROR );
 		}
 	}
@@ -181,9 +181,9 @@ void do_simulation()
 			// simulate scan:
     		real_pose = CPose2D( GT(i,1),GT(i,2),GT(i,3) );
 
-			CSensoryFramePtr sf = CSensoryFrame::Create();
+			CSensoryFrame::Ptr sf = CSensoryFrame::Create();
 
-			CObservation2DRangeScanPtr the_scan = CObservation2DRangeScan::Create();
+			CObservation2DRangeScan::Ptr the_scan = CObservation2DRangeScan::Create();
 			the_scan->aperture = M_PIf;
 			the_scan->timestamp = mrpt::system::now();
 			the_grid.laserScanSimulator( *the_scan, real_pose, 0.5f, LASER_N_RANGES, LASER_STD_ERROR, 1, LASER_BEARING_STD_ERROR );

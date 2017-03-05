@@ -148,7 +148,7 @@ namespace mrpt
 
 
 			/** Class factory  */
-			static CMeshFastPtr Create(bool enableTransparency, float xMin = -1.0f, float xMax = 1.0f, float yMin = -1.0f, float yMax = 1.0f );
+			static CMeshFast::Ptr Create(bool enableTransparency, float xMin = -1.0f, float xMax = 1.0f, float yMin = -1.0f, float yMax = 1.0f );
 
 			/** Render
 			  */
@@ -178,7 +178,6 @@ namespace mrpt
 			}
 
 
-		private:
 			/** Constructor
 			  */
 			CMeshFast( bool enableTransparency = false, float xMin = -1.0f, float xMax = 1.0f, float yMin = -1.0f, float yMax = 1.0f ) :

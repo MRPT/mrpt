@@ -75,7 +75,7 @@ void TestCapture_1394()
 			tictac.Tic();
 		}
 
-		CObservationImagePtr obs= CObservationImage::Create(); // Memory will be freed by SF destructor in each loop.
+		CObservationImage::Ptr obs= CObservationImage::Create(); // Memory will be freed by SF destructor in each loop.
 		if (!capture.getObservation( *obs ))
 		{
 			cerr << "Error retrieving images!" << endl;

@@ -152,13 +152,13 @@ void  COccupancyGridMap2D::getAsImageFiltered(
 /*---------------------------------------------------------------
 				getAs3DObject
   ---------------------------------------------------------------*/
-void  COccupancyGridMap2D::getAs3DObject(mrpt::opengl::CSetOfObjectsPtr	&outSetOfObj ) const
+void  COccupancyGridMap2D::getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr	&outSetOfObj ) const
 {
 	if (!genericMapParams.enableSaveAs3DObject) return;
 
 	MRPT_START
 
-	opengl::CTexturedPlanePtr	outObj = opengl::CTexturedPlane::Create();
+	opengl::CTexturedPlane::Ptr	outObj = opengl::CTexturedPlane::Create();
 
 	outObj->setPlaneCorners(x_min,x_max,y_min,y_max);
 

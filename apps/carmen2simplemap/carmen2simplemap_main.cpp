@@ -95,7 +95,7 @@ int main(int argc, char **argv)
 		// --------------------------------
 		// The main loop
 		// --------------------------------
-		vector<CObservationPtr>  importedObservations;
+		vector<CObservation::Ptr>  importedObservations;
 		mrpt::maps::CSimpleMap  theSimpleMap;
 		const mrpt::system::TTimeStamp  base_timestamp = mrpt::system::now();
 
@@ -113,7 +113,7 @@ int main(int argc, char **argv)
 				//  a "corrected" odometry from some SLAM program, so save it as ground truth:
 				if (importedObservations.size()>1 && IS_CLASS(importedObservations[i], CObservationOdometry) )
 				{
-					CObservationOdometryPtr odo = CObservationOdometryPtr(importedObservations[i]);
+					CObservationOdometry::Ptr odo = std::dynamic_pointer_cast<CObservationOdometry>(importedObservations[i]);
 					gt_pose = TPose2D(odo->odometry);
 					has_gt_pose = true;
 					break;
@@ -123,7 +123,7 @@ int main(int argc, char **argv)
 			// Only if we have a valid pose, save it to the simple map:
 			if (has_gt_pose)
 			{
-				CSensoryFramePtr  SF = CSensoryFrame::Create();
+				CSensoryFrame::Ptr  SF = CSensoryFrame::Create();
 
 				for (size_t i=0;i<importedObservations.size();i++)
 				{
@@ -134,7 +134,7 @@ int main(int argc, char **argv)
 				}
 
 				// Insert (observations, pose) pair:
-				CPosePDFGaussianPtr pos = CPosePDFGaussian::Create();
+				CPosePDFGaussian::Ptr pos = CPosePDFGaussian::Create();
 				pos->mean = gt_pose;
 				theSimpleMap.insert(pos, SF);
 			}

@@ -249,7 +249,7 @@ void CPTG_DiffDrive_CollisionGridBased::simulateTrajectories(
 }
 
 /** In this class, `out_action_cmd` contains: [0]: linear velocity (m/s),  [1]: angular velocity (rad/s) */
-mrpt::kinematics::CVehicleVelCmdPtr CPTG_DiffDrive_CollisionGridBased::directionToMotionCommand(uint16_t k) const
+mrpt::kinematics::CVehicleVelCmd::Ptr CPTG_DiffDrive_CollisionGridBased::directionToMotionCommand(uint16_t k) const
 {
 	float v,w;
 	ptgDiffDriveSteeringFunction( index2alpha(k),0, 0, 0, 0, v, w );
@@ -257,7 +257,7 @@ mrpt::kinematics::CVehicleVelCmdPtr CPTG_DiffDrive_CollisionGridBased::direction
 	mrpt::kinematics::CVehicleVelCmd_DiffDriven * cmd = new mrpt::kinematics::CVehicleVelCmd_DiffDriven();
 	cmd->lin_vel = v;
 	cmd->ang_vel = w;
-	return mrpt::kinematics::CVehicleVelCmdPtr(cmd);
+	return mrpt::kinematics::CVehicleVelCmd::Ptr(cmd);
 }
 
 /*---------------------------------------------------------------
@@ -851,9 +851,9 @@ void CPTG_DiffDrive_CollisionGridBased::internal_writeToStream(mrpt::utils::CStr
 		<< m_trajectory;
 }
 
-mrpt::kinematics::CVehicleVelCmdPtr CPTG_DiffDrive_CollisionGridBased::getSupportedKinematicVelocityCommand() const
+mrpt::kinematics::CVehicleVelCmd::Ptr CPTG_DiffDrive_CollisionGridBased::getSupportedKinematicVelocityCommand() const
 {
-	return mrpt::kinematics::CVehicleVelCmdPtr( new mrpt::kinematics::CVehicleVelCmd_DiffDriven() );
+	return mrpt::kinematics::CVehicleVelCmd::Ptr( new mrpt::kinematics::CVehicleVelCmd_DiffDriven() );
 }
 
 double CPTG_DiffDrive_CollisionGridBased::getPathStepDuration() const

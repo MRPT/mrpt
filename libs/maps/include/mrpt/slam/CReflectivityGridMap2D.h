@@ -11,5 +11,5 @@
 MRPT_WARNING("*Deprecated header* Please replace with #include <mrpt/maps/CReflectivityGridMap2D.h>. This backward compatible header will be removed in MRPT 2.0.0")
 namespace mrpt { namespace slam {
 	using mrpt::maps::CReflectivityGridMap2D;    //!< Backward compatibility
-	using mrpt::maps::CReflectivityGridMap2DPtr; //!< Backward compatibility
+	using mrpt::maps::CReflectivityGridMap2D::Ptr; //!< Backward compatibility
 } }

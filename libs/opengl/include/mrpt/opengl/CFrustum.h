@@ -58,7 +58,7 @@ namespace opengl	{
 
 	public:
 		/** Constructor returning a smart pointer to the newly created object. */
-		static CFrustumPtr Create(float near_distance, float far_distance, float horz_FOV_degrees, float vert_FOV_degrees, float lineWidth = 1.5f, bool draw_lines = true, bool draw_planes = false );
+		static CFrustum::Ptr Create(float near_distance, float far_distance, float horz_FOV_degrees, float vert_FOV_degrees, float lineWidth = 1.5f, bool draw_lines = true, bool draw_planes = false );
 
 		inline void setLineWidth(float width) { m_lineWidth = width; CRenderizableDisplayList::notifyChange(); }
 		inline float getLineWidth() const { return m_lineWidth; }
@@ -98,7 +98,6 @@ namespace opengl	{
 		/** Evaluates the bounding box of this object (including possible children) in the coordinate frame of the object parent. */
 		void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const MRPT_OVERRIDE;
 
-	private:
 		/** Basic empty constructor. Set all parameters to default. */
 		CFrustum();
 		/** Constructor with some parameters  */

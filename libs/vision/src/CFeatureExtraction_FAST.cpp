@@ -185,7 +185,7 @@ void  CFeatureExtraction::extractFeaturesFAST(
 		}
 
 		// All tests passed: add new feature:
-		CFeaturePtr ft		= CFeature::Create();
+		CFeature::Ptr ft		= CFeature::Create();
 		ft->type			= featFAST;
 		ft->ID				= nextID++;
 		ft->x				= kp.pt.x;

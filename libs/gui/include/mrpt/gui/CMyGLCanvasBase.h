@@ -155,7 +155,7 @@ namespace mrpt
 
 			/**  At constructor an empty scene is created. The object is freed at GL canvas destructor.
 			  */
-			mrpt::opengl::COpenGLScenePtr		m_openGLScene;
+			mrpt::opengl::COpenGLScene::Ptr		m_openGLScene;
 
 		protected:
 			wxGLContext *m_gl_context;

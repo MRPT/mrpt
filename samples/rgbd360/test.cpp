@@ -63,8 +63,8 @@ int main ( int argc, char** argv )
     vector<bool> v_stitch_im(num_sensors);
 
 //    cout << "Create windows\n";
-    vector<mrpt::gui::CDisplayWindowPtr> win(num_sensors);
-//    vector<CObservation3DRangeScanPtr> newObs(num_sensors);
+    vector<mrpt::gui::CDisplayWindow::Ptr> win(num_sensors);
+//    vector<CObservation3DRangeScan::Ptr> newObs(num_sensors);
     CObservationRGBD360 newObs;
     for(unsigned i=0; i < num_sensors; i++)
     {
@@ -114,12 +114,12 @@ int main ( int argc, char** argv )
 //    win3D.setFOV(90);
 //    win3D.setCameraPointingToPoint(2.5,0,0);
 //
-//    mrpt::opengl::CPointCloudColouredPtr gl_points = mrpt::opengl::CPointCloudColoured::Create();
+//    mrpt::opengl::CPointCloudColoured::Ptr gl_points = mrpt::opengl::CPointCloudColoured::Create();
 //    gl_points->setPointSize(2.5);
 //
-//    opengl::COpenGLViewportPtr viewInt; // Extra viewports for the RGB images.
+//    opengl::COpenGLViewport::Ptr viewInt; // Extra viewports for the RGB images.
 //    {
-//      mrpt::opengl::COpenGLScenePtr &scene = win3D.get3DSceneAndLock();
+//      mrpt::opengl::COpenGLScene::Ptr &scene = win3D.get3DSceneAndLock();
 //
 //      // Create the Opengl object for the point cloud:
 //      scene->insert( gl_points );
@@ -153,7 +153,7 @@ int main ( int argc, char** argv )
 //    while (!win3D.keyHit())	//Push any key to exit // win3D.isOpen()
 //    {
 ////    cout << "Get new observation\n";
-//      CObservation3DRangeScanPtr newObs = CObservation3DRangeScan::Create();
+//      CObservation3DRangeScan::Ptr newObs = CObservation3DRangeScan::Create();
 //      rgbd360.getNextObservation(*newObs, bObs, bError);
 //
 //      if (bObs && !bError && newObs && newObs->timestamp!=INVALID_TIMESTAMP && newObs->timestamp!=last_obs_tim )

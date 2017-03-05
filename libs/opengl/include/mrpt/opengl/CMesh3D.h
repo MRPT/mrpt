@@ -105,7 +105,7 @@ namespace mrpt
 
 			/** Class factory
 			  */
-			static CMesh3DPtr Create(bool enableTransparency, bool enableShowEdges, bool enableShowFaces, bool enableShowVertices);
+			static CMesh3D::Ptr Create(bool enableTransparency, bool enableShowEdges, bool enableShowFaces, bool enableShowVertices);
 
 			/** Render
 			  */
@@ -116,7 +116,6 @@ namespace mrpt
 			void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const MRPT_OVERRIDE;
 
 
-		private:
 			/** Constructor */
 			CMesh3D(bool enableTransparency = false, bool antiAliasing = false, bool enableShowEdges = true, bool enableShowFaces = true, bool enableShowVertices = false);
 			/** Private, virtual destructor: only can be deleted from smart pointers  */

@@ -45,8 +45,8 @@ namespace mrpt
 		void updateCurrentRobotVel(const mrpt::math::TTwist2D &curVelLocal) MRPT_OVERRIDE;
 
 		/** Converts a discretized "alpha" value into a feasible motion command or action. See derived classes for the meaning of these actions */
-		virtual mrpt::kinematics::CVehicleVelCmdPtr directionToMotionCommand(uint16_t k) const MRPT_OVERRIDE;
-		virtual mrpt::kinematics::CVehicleVelCmdPtr getSupportedKinematicVelocityCommand() const MRPT_OVERRIDE;
+		virtual mrpt::kinematics::CVehicleVelCmd::Ptr directionToMotionCommand(uint16_t k) const MRPT_OVERRIDE;
+		virtual mrpt::kinematics::CVehicleVelCmd::Ptr getSupportedKinematicVelocityCommand() const MRPT_OVERRIDE;
 
 		size_t getPathStepCount(uint16_t k) const MRPT_OVERRIDE;
 		void getPathPose(uint16_t k, uint32_t step, mrpt::math::TPose2D &p) const MRPT_OVERRIDE;

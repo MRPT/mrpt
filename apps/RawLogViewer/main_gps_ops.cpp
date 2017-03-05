@@ -88,29 +88,29 @@ void xRawLogViewerFrame::OnMenuDrawGPSPath(wxCommandEvent& event)
 
 	for (i=0;i<n;i++)
 	{
-		CObservationGPSPtr obs;
+		CObservationGPS::Ptr obs;
 
 		switch ( rawlog.getType(i) )
 		{
 		case CRawlog::etSensoryFrame:
 			{
-				CSensoryFramePtr sf = rawlog.getAsObservations(i);
+				CSensoryFrame::Ptr sf = rawlog.getAsObservations(i);
 
-				CObservationPtr o= sf->getObservationBySensorLabel(the_label);
+				CObservation::Ptr o= sf->getObservationBySensorLabel(the_label);
 				if (o && IS_CLASS(o,CObservationGPS))
 				{
-					obs = CObservationGPSPtr(o);
+					obs = std::dynamic_pointer_cast<CObservationGPS>(o);
 				}
 			}
 			break;
 
 		case CRawlog::etObservation:
 			{
-				CObservationPtr o = rawlog.getAsObservation(i);
+				CObservation::Ptr o = rawlog.getAsObservation(i);
 
 				if ( !os::_strcmpi(o->sensorLabel.c_str(), the_label.c_str()) && IS_CLASS(o,CObservationGPS))
 				{
-					obs = CObservationGPSPtr(o);
+					obs = std::dynamic_pointer_cast<CObservationGPS>(o);
 				}
 			}
 			break;
@@ -159,17 +159,17 @@ void xRawLogViewerFrame::OnMenuDrawGPSPath(wxCommandEvent& event)
 	winGPSPath = CDisplayWindow3D::Create(format("GPS path, %i points (%s) %.03f meters length", int(M), the_label.c_str(), overall_distance ) );
 
 	COpenGLScene scene;
-	CPointCloudPtr  gl_path = CPointCloud::Create();
+	CPointCloud::Ptr  gl_path = CPointCloud::Create();
 	gl_path->setAllPoints(xs,ys,zs);
 	gl_path->setColor(0,0,1);
 
 	gl_path->setPointSize(3);
 
 	scene.insert( gl_path );
-	scene.insert( CGridPlaneXYPtr( CGridPlaneXY::Create(-300,300,-300,300,0,10)));
-	scene.insert( CAxisPtr( CAxis::Create(-300,-300,-50, 300,300,50, 1.0, 3, true  ) ) );
+	scene.insert( CGridPlaneXY::Ptr( CGridPlaneXY::Create(-300,300,-300,300,0,10)));
+	scene.insert( CAxis::Ptr( CAxis::Create(-300,-300,-50, 300,300,50, 1.0, 3, true  ) ) );
 
-	COpenGLScenePtr the_scene = winGPSPath->get3DSceneAndLock();
+	COpenGLScene::Ptr the_scene = winGPSPath->get3DSceneAndLock();
 	*the_scene = scene;
 	winGPSPath->unlockAccess3DScene();
 	winGPSPath->repaint();
@@ -190,7 +190,7 @@ void xRawLogViewerFrame::OnMenuDrawGPSPath(wxCommandEvent& event)
 
 
 
-void fixGPStimestamp(CObservationGPSPtr &obs, CVectorDouble &time_changes, std::map<std::string,double> &DeltaTimes )
+void fixGPStimestamp(CObservationGPS::Ptr &obs, CVectorDouble &time_changes, std::map<std::string,double> &DeltaTimes )
 {
 	if (!obs->has_GGA_datum && !obs->has_RMC_datum) return;
 
@@ -289,13 +289,13 @@ void xRawLogViewerFrame::OnMenuRegenerateGPSTimestamps(wxCommandEvent& event)
 
 		case CRawlog::etSensoryFrame:
 			{
-				CSensoryFramePtr sf = rawlog.getAsObservations(i);
+				CSensoryFrame::Ptr sf = rawlog.getAsObservations(i);
 
 				for (CSensoryFrame::iterator it=sf->begin();it!=sf->end();++it)
 				{
 					if ( (*it)->GetRuntimeClass()==CLASS_ID(CObservationGPS) && find_in_vector( (*it)->sensorLabel, the_labels)!=string::npos )
 					{
-						CObservationGPSPtr obs = CObservationGPSPtr(*it);
+						CObservationGPS::Ptr obs = std::dynamic_pointer_cast<CObservationGPS>(*it);
 						fixGPStimestamp(obs, time_changes, DeltaTimes);
 					}
 				}
@@ -304,11 +304,11 @@ void xRawLogViewerFrame::OnMenuRegenerateGPSTimestamps(wxCommandEvent& event)
 
         case CRawlog::etObservation:
             {
-                CObservationPtr o = rawlog.getAsObservation(i);
+                CObservation::Ptr o = rawlog.getAsObservation(i);
 
 				if (IS_CLASS(o,CObservationGPS) && find_in_vector( o->sensorLabel, the_labels)!=string::npos)
 				{
-					CObservationGPSPtr obs = CObservationGPSPtr(o);
+					CObservationGPS::Ptr obs = std::dynamic_pointer_cast<CObservationGPS>(o);
 					fixGPStimestamp(obs, time_changes, DeltaTimes);
 				}
             }
@@ -369,7 +369,7 @@ void xRawLogViewerFrame::OnMenuDistanceBtwGPSs(wxCommandEvent& event)
     size_t  i, n = rawlog.size();
 
     // Look for the 2 observations:
-    CObservationGPSPtr last_GPS1, last_GPS2;
+    CObservationGPS::Ptr last_GPS1, last_GPS2;
 
     CVectorDouble   dists;
 
@@ -392,11 +392,11 @@ void xRawLogViewerFrame::OnMenuDistanceBtwGPSs(wxCommandEvent& event)
         {
         case CRawlog::etSensoryFrame:
             {
-                CSensoryFramePtr sf = rawlog.getAsObservations(i);
+                CSensoryFrame::Ptr sf = rawlog.getAsObservations(i);
 
                 if (!ref_valid)
                 {
-                	CObservationGPSPtr o = sf->getObservationByClass<CObservationGPS>();
+                	CObservationGPS::Ptr o = sf->getObservationByClass<CObservationGPS>();
                 	if (o && o->has_GGA_datum)
                 	{
 						refCoords = o->getMsgByClass<gnss::Message_NMEA_GGA>().getAsStruct<TGeodeticCoords>();
@@ -404,20 +404,20 @@ void xRawLogViewerFrame::OnMenuDistanceBtwGPSs(wxCommandEvent& event)
                 	}
                 }
 
-                CObservationPtr o1 = sf->getObservationBySensorLabel(gps1);
-                CObservationPtr o2 = sf->getObservationBySensorLabel(gps2);
+                CObservation::Ptr o1 = sf->getObservationBySensorLabel(gps1);
+                CObservation::Ptr o2 = sf->getObservationBySensorLabel(gps2);
 
                 if (o1)
                 {
                     ASSERT_(o1->GetRuntimeClass()==CLASS_ID(CObservationGPS));
-                    CObservationGPSPtr obs = CObservationGPSPtr(o1);
+                    CObservationGPS::Ptr obs = std::dynamic_pointer_cast<CObservationGPS>(o1);
                     if (obs->has_GGA_datum && obs->getMsgByClass<gnss::Message_NMEA_GGA>().fields.fix_quality==4)
                         last_GPS1 = obs;
                 }
                 if (o2)
                 {
                     ASSERT_(o2->GetRuntimeClass()==CLASS_ID(CObservationGPS));
-                    CObservationGPSPtr obs = CObservationGPSPtr(o2);
+                    CObservationGPS::Ptr obs = std::dynamic_pointer_cast<CObservationGPS>(o2);
                     if (obs->has_GGA_datum && obs->getMsgByClass<gnss::Message_NMEA_GGA>().fields.fix_quality==4)
                         last_GPS2 = obs;
                 }
@@ -426,11 +426,11 @@ void xRawLogViewerFrame::OnMenuDistanceBtwGPSs(wxCommandEvent& event)
 
         case CRawlog::etObservation:
             {
-                CObservationPtr o = rawlog.getAsObservation(i);
+                CObservation::Ptr o = rawlog.getAsObservation(i);
 
                 if (!ref_valid && IS_CLASS(o,CObservationGPS))
                 {
-                	CObservationGPSPtr ob = CObservationGPSPtr(o);
+                	CObservationGPS::Ptr ob = std::dynamic_pointer_cast<CObservationGPS>(o);
                 	if (ob && ob->has_GGA_datum)
                 	{
                 		refCoords = ob->getMsgByClass<gnss::Message_NMEA_GGA>().getAsStruct<TGeodeticCoords>();
@@ -442,7 +442,7 @@ void xRawLogViewerFrame::OnMenuDistanceBtwGPSs(wxCommandEvent& event)
                 if (o->sensorLabel == gps1)
                 {
                     ASSERT_(IS_CLASS(o,CObservationGPS));
-                    CObservationGPSPtr obs = CObservationGPSPtr(o);
+                    CObservationGPS::Ptr obs = std::dynamic_pointer_cast<CObservationGPS>(o);
                     if (obs->has_GGA_datum && obs->getMsgByClass<gnss::Message_NMEA_GGA>().fields.fix_quality==4)
                         last_GPS1 = obs;
                 }
@@ -450,7 +450,7 @@ void xRawLogViewerFrame::OnMenuDistanceBtwGPSs(wxCommandEvent& event)
                 if (o->sensorLabel == gps2)
                 {
                     ASSERT_(IS_CLASS(o,CObservationGPS));
-                    CObservationGPSPtr obs = CObservationGPSPtr(o);
+                    CObservationGPS::Ptr obs = std::dynamic_pointer_cast<CObservationGPS>(o);
                     if (obs->has_GGA_datum && obs->getMsgByClass<gnss::Message_NMEA_GGA>().fields.fix_quality==4)
                         last_GPS2 = obs;
                 }
@@ -534,8 +534,8 @@ void xRawLogViewerFrame::OnSummaryGPS(wxCommandEvent& event)
 
 		case CRawlog::etSensoryFrame:
 			{
-			CSensoryFramePtr sf = rawlog.getAsObservations(i);
-			CObservationGPSPtr obs =sf->getObservationByClass<CObservationGPS>();
+			CSensoryFrame::Ptr sf = rawlog.getAsObservations(i);
+			CObservationGPS::Ptr obs =sf->getObservationByClass<CObservationGPS>();
 			if (obs)
 				if (obs->has_GGA_datum)
 				{
@@ -547,10 +547,10 @@ void xRawLogViewerFrame::OnSummaryGPS(wxCommandEvent& event)
 
 		case CRawlog::etObservation:
 			{
-			CObservationPtr o= rawlog.getAsObservation(i);
+			CObservation::Ptr o= rawlog.getAsObservation(i);
 			if (IS_CLASS(o,CObservationGPS))
 			{
-				CObservationGPSPtr obs = CObservationGPSPtr(o);
+				CObservationGPS::Ptr obs = std::dynamic_pointer_cast<CObservationGPS>(o);
 				if (obs)
 					if (obs->has_GGA_datum)
 					{
@@ -670,10 +670,10 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
 			{
 			case CRawlog::etSensoryFrame:
 				{
-					CSensoryFramePtr sf = rawlog.getAsObservations(i);
+					CSensoryFrame::Ptr sf = rawlog.getAsObservations(i);
 
 					size_t  ith_obs = 0;
-					CObservationGPSPtr obs;
+					CObservationGPS::Ptr obs;
 					do
 					{
 						obs = sf->getObservationByClass<CObservationGPS>(ith_obs++);
@@ -763,11 +763,11 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
 
 			case CRawlog::etObservation:
 				{
-					CObservationPtr o = rawlog.getAsObservation(i);
+					CObservation::Ptr o = rawlog.getAsObservation(i);
 
 					if (IS_CLASS(o,CObservationGPS))
 					{
-						CObservationGPSPtr obs = CObservationGPSPtr(o);
+						CObservationGPS::Ptr obs = std::dynamic_pointer_cast<CObservationGPS>(o);
 						if (obs)
 						{
 							map<string, FILE*>::const_iterator  it = lstFiles.find( obs->sensorLabel );
@@ -991,7 +991,7 @@ void filter_delGPSNan(
         	bool del = false;
             if (IS_CLASS(*it,CObservationGPS) )
             {
-            	CObservationGPSPtr o = CObservationGPSPtr(*it);
+            	CObservationGPS::Ptr o = std::dynamic_pointer_cast<CObservationGPS>(*it);
             	if (o->has_GGA_datum &&
 					(mrpt::math::isNaN(o->getMsgByClass<gnss::Message_NMEA_GGA>().fields.latitude_degrees) ||
 					 mrpt::math::isNaN(o->getMsgByClass<gnss::Message_NMEA_GGA>().fields.longitude_degrees) ||

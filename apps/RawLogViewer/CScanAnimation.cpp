@@ -197,13 +197,13 @@ void CScanAnimation::RebuildMaps()
 	{
 		if (rawlog.getType(idx)==CRawlog::etSensoryFrame)
 		{
-			CSensoryFramePtr sf = rawlog.getAsObservations(idx);
+			CSensoryFrame::Ptr sf = rawlog.getAsObservations(idx);
 			BuildMapAndRefresh(sf.get());
 		}
 		else
 		if (rawlog.getType(idx)==CRawlog::etObservation)
 		{
-			CSensoryFramePtr sf = CSensoryFrame::Create();
+			CSensoryFrame::Ptr sf = CSensoryFrame::Create();
 			sf->insert( rawlog.getAsObservation(idx) );
 			BuildMapAndRefresh(sf.get());
 		}
@@ -220,14 +220,14 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame *sf)
 	WX_START_TRY
 
 	// Preprocess: make sure 3D observations are ready:
-	std::vector<CObservation3DRangeScanPtr> obs3D_to_clear;
+	std::vector<CObservation3DRangeScan::Ptr> obs3D_to_clear;
 	for (CSensoryFrame::iterator it=sf->begin();it!=sf->end();++it)
 	{
 		(*it)->load();
 		// force generate 3D point clouds:
 		if (IS_CLASS(*it, CObservation3DRangeScan))
 		{
-			CObservation3DRangeScanPtr o= CObservation3DRangeScanPtr(*it);
+			CObservation3DRangeScan::Ptr o= std::dynamic_pointer_cast<CObservation3DRangeScan>(*it);
 			if (o->hasRangeImage && !o->hasPoints3D)
 			{
 				mrpt::obs::T3DPointsProjectionParams pp;
@@ -258,7 +258,7 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame *sf)
 		const std::string sNameInMap = std::string((*it)->GetRuntimeClass()->className) + (*it)->sensorLabel;
 		if (IS_CLASS(*it,CObservation2DRangeScan))
 		{
-			CObservation2DRangeScanPtr obs = CObservation2DRangeScanPtr(*it);
+			CObservation2DRangeScan::Ptr obs = std::dynamic_pointer_cast<CObservation2DRangeScan>(*it);
 			wereScans = true;
 			if (tim_last==INVALID_TIMESTAMP || tim_last<obs->timestamp)
 				tim_last = obs->timestamp;
@@ -269,13 +269,13 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame *sf)
 			{
 				// Update existing object:
 				TRenderObject &ro = it_gl->second;
-				CPlanarLaserScanPtr(ro.obj)->setScan(*obs);
+				std::dynamic_pointer_cast<CPlanarLaserScan>(ro.obj)->setScan(*obs);
 				ro.timestamp = obs->timestamp;
 			}
 			else
 			{
 				// Create object:
-				CPlanarLaserScanPtr gl_obj = CPlanarLaserScan::Create();
+				CPlanarLaserScan::Ptr gl_obj = CPlanarLaserScan::Create();
 				gl_obj->setScan(*obs);
 
 				TRenderObject ro;
@@ -288,7 +288,7 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame *sf)
 		else
 		if (IS_CLASS(*it,CObservation3DRangeScan))
 		{
-			CObservation3DRangeScanPtr obs = CObservation3DRangeScanPtr(*it);
+			CObservation3DRangeScan::Ptr obs = std::dynamic_pointer_cast<CObservation3DRangeScan>(*it);
 			wereScans = true;
 			if (tim_last==INVALID_TIMESTAMP || tim_last<obs->timestamp)
 				tim_last = obs->timestamp;
@@ -305,14 +305,14 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame *sf)
 			{
 				// Update existing object:
 				TRenderObject &ro = it_gl->second;
-				CPointCloudColouredPtr gl_obj = CPointCloudColouredPtr(ro.obj);
+				CPointCloudColoured::Ptr gl_obj = std::dynamic_pointer_cast<CPointCloudColoured>(ro.obj);
 				gl_obj->loadFromPointsMap(&pointMap);
 				ro.timestamp = obs->timestamp;
 			}
 			else
 			{
 				// Create object:
-				CPointCloudColouredPtr gl_obj = CPointCloudColoured::Create();
+				CPointCloudColoured::Ptr gl_obj = CPointCloudColoured::Create();
 				gl_obj->setPointSize(3.0);
 				gl_obj->loadFromPointsMap(&pointMap);
 
@@ -328,7 +328,7 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame *sf)
 		else
 		if (IS_CLASS(*it,CObservationVelodyneScan))
 		{
-			CObservationVelodyneScanPtr obs = CObservationVelodyneScanPtr(*it);
+			CObservationVelodyneScan::Ptr obs = std::dynamic_pointer_cast<CObservationVelodyneScan>(*it);
 			wereScans = true;
 			if (tim_last==INVALID_TIMESTAMP || tim_last<obs->timestamp)
 				tim_last = obs->timestamp;
@@ -344,14 +344,14 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame *sf)
 			{
 				// Update existing object:
 				TRenderObject &ro = it_gl->second;
-				CPointCloudColouredPtr gl_obj = CPointCloudColouredPtr(ro.obj);
+				CPointCloudColoured::Ptr gl_obj = std::dynamic_pointer_cast<CPointCloudColoured>(ro.obj);
 				gl_obj->loadFromPointsMap(&pointMap);
 				ro.timestamp = obs->timestamp;
 			}
 			else
 			{
 				// Create object:
-				CPointCloudColouredPtr gl_obj = CPointCloudColoured::Create();
+				CPointCloudColoured::Ptr gl_obj = CPointCloudColoured::Create();
 				gl_obj->setPointSize(3.0);
 				gl_obj->loadFromPointsMap(&pointMap);
 

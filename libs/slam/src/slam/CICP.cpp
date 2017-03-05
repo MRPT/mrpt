@@ -49,7 +49,7 @@ The method for aligning a pair of 2D points map.
 *
 * \sa CPointsMapAlignmentAlgorithm
   ---------------------------------------------------------------*/
-CPosePDFPtr CICP::AlignPDF(
+CPosePDF::Ptr CICP::AlignPDF(
     const mrpt::maps::CMetricMap		*m1,
     const mrpt::maps::CMetricMap		*mm2,
     const CPosePDFGaussian	&initialEstimationPDF,
@@ -60,7 +60,7 @@ CPosePDFPtr CICP::AlignPDF(
 
 	CTicTac	tictac;
 	TReturnInfo		outInfo;
-	CPosePDFPtr		resultPDF;
+	CPosePDF::Ptr		resultPDF;
 
 	if (runningTime)  tictac.Tic();
 
@@ -224,7 +224,7 @@ float CICP::kernel(const float &x2, const float &rho2)
 					ICP_Method_Classic
 
   ----------------------------------------------------------------------------*/
-CPosePDFPtr CICP::ICP_Method_Classic(
+CPosePDF::Ptr CICP::ICP_Method_Classic(
 		const mrpt::maps::CMetricMap		*m1,
 		const mrpt::maps::CMetricMap		*mm2,
 		const CPosePDFGaussian	&initialEstimationPDF,
@@ -233,9 +233,9 @@ CPosePDFPtr CICP::ICP_Method_Classic(
 	MRPT_START
 
 	// The result can be either a Gaussian or a SOG:
-	CPosePDFPtr								resultPDF;
-	CPosePDFGaussianPtr						gaussPdf;
-	CPosePDFSOGPtr							SOG;
+	CPosePDF::Ptr								resultPDF;
+	CPosePDFGaussian::Ptr						gaussPdf;
+	CPosePDFSOG::Ptr							SOG;
 
 	size_t  nCorrespondences=0;
 	bool    keepApproaching;
@@ -552,7 +552,7 @@ CPosePDFPtr CICP::ICP_Method_Classic(
 						ICP_Method_LM
 
   ----------------------------------------------------------------------------*/
-CPosePDFPtr CICP::ICP_Method_LM(
+CPosePDF::Ptr CICP::ICP_Method_LM(
 		const mrpt::maps::CMetricMap		*mm1,
 		const mrpt::maps::CMetricMap		*m2,
 		const CPosePDFGaussian	&initialEstimationPDF,
@@ -869,7 +869,7 @@ CPosePDFPtr CICP::ICP_Method_LM(
 
 	} // end of "if m2 is not empty"
 
-	return CPosePDFGaussianPtr( new CPosePDFGaussian(q, C_inv.cast<double>() ) );
+	return CPosePDFGaussian::Ptr( new CPosePDFGaussian(q, C_inv.cast<double>() ) );
 	MRPT_END
 }
 
@@ -890,7 +890,7 @@ The method for aligning a pair of 2D points map.
 *
 * \sa CPointsMapAlignmentAlgorithm
   ---------------------------------------------------------------*/
-CPose3DPDFPtr CICP::Align3DPDF(
+CPose3DPDF::Ptr CICP::Align3DPDF(
     const mrpt::maps::CMetricMap		*m1,
     const mrpt::maps::CMetricMap		*mm2,
     const CPose3DPDFGaussian	&initialEstimationPDF,
@@ -901,7 +901,7 @@ CPose3DPDFPtr CICP::Align3DPDF(
 
 	static CTicTac	tictac;
 	TReturnInfo		outInfo;
-	CPose3DPDFPtr		resultPDF;
+	CPose3DPDF::Ptr		resultPDF;
 
 	if (runningTime)  tictac.Tic();
 
@@ -933,7 +933,7 @@ CPose3DPDFPtr CICP::Align3DPDF(
 
 
 
-CPose3DPDFPtr CICP::ICP3D_Method_Classic(
+CPose3DPDF::Ptr CICP::ICP3D_Method_Classic(
 		const mrpt::maps::CMetricMap		*m1,
 		const mrpt::maps::CMetricMap		*mm2,
 		const CPose3DPDFGaussian &initialEstimationPDF,
@@ -942,8 +942,8 @@ CPose3DPDFPtr CICP::ICP3D_Method_Classic(
 	MRPT_START
 
 	// The result can be either a Gaussian or a SOG:
-	CPose3DPDFPtr								resultPDF;
-	CPose3DPDFGaussianPtr						gaussPdf;
+	CPose3DPDF::Ptr								resultPDF;
+	CPose3DPDFGaussian::Ptr						gaussPdf;
 
 	size_t									nCorrespondences=0;
 	bool									keepApproaching;

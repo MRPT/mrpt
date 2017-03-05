@@ -41,7 +41,7 @@ using namespace std;
 
 
 // Update selected item display:
-void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_obj )
+void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializable::Ptr & sel_obj )
 {
 	WX_START_TRY
 
@@ -69,14 +69,14 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 			// Common data:
 		if ( classID->derivedFrom( CLASS_ID( CObservation ) ) )
 		{
-			CObservationPtr obs( sel_obj );
+			CObservation::Ptr obs( std::dynamic_pointer_cast<CObservation>(sel_obj) );
 			obs->load();
 			obs->getDescriptionAsText(cout);
 
 			// Special cases:
 			if ( IS_CLASS(sel_obj, CObservation2DRangeScan) )
 			{
-				CObservation2DRangeScanPtr obs_scan2d = CObservation2DRangeScanPtr(sel_obj);
+				CObservation2DRangeScan::Ptr obs_scan2d = std::dynamic_pointer_cast<CObservation2DRangeScan>(sel_obj);
 
 				mrpt::maps::CSimplePointsMap pts;
 				pts.insertionOptions.minDistBetweenLaserPoints = .0;
@@ -91,11 +91,11 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 				cout << "]\n\n";
 			}
 
-			curSelectedObservation = CObservationPtr( sel_obj );
+			curSelectedObservation = std::dynamic_pointer_cast<CObservation>( sel_obj );
 		}
 		if ( classID->derivedFrom( CLASS_ID( CAction ) ) )
 		{
-			CActionPtr obs( sel_obj );
+			CAction::Ptr obs(std::dynamic_pointer_cast<CAction>(sel_obj));
 			cout << "Timestamp (UTC): " << dateTimeToString(obs->timestamp) << endl;
 		}
 
@@ -106,7 +106,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 			//              CObservation2DRangeScan
 			// ----------------------------------------------------------------------
 			Notebook1->ChangeSelection( 2 );
-			CObservation2DRangeScanPtr obs = CObservation2DRangeScanPtr( sel_obj );
+			CObservation2DRangeScan::Ptr obs = std::dynamic_pointer_cast<CObservation2DRangeScan>( sel_obj );
 
 			// The plot:
 			mrpt::maps::CSimplePointsMap  dummMap;
@@ -126,7 +126,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 			//              CObservationImage
 			// ----------------------------------------------------------------------
 			Notebook1->ChangeSelection( 3 );
-			CObservationImagePtr obs = CObservationImagePtr( sel_obj );
+			CObservationImage::Ptr obs = std::dynamic_pointer_cast<CObservationImage>( sel_obj );
 				
 			// Get bitmap:
 			// ----------------------
@@ -143,7 +143,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 			//              CObservationStereoImages
 			// ----------------------------------------------------------------------
 			Notebook1->ChangeSelection( 4);
-			CObservationStereoImagesPtr obs = CObservationStereoImagesPtr(sel_obj);
+			CObservationStereoImages::Ptr obs = std::dynamic_pointer_cast<CObservationStereoImages>(sel_obj);
 
 			// Images:
 			// ----------------------
@@ -170,7 +170,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 			// ----------------------------------------------------------------------
 			Notebook1->ChangeSelection( 1 );
 
-			CActionRobotMovement2DPtr act = CActionRobotMovement2DPtr( sel_obj );
+			CActionRobotMovement2D::Ptr act = std::dynamic_pointer_cast<CActionRobotMovement2D>( sel_obj );
 
 			CPose2D			Ap;
 			CMatrixDouble33 mat;
@@ -194,7 +194,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 
 			if (act->poseChange->GetRuntimeClass()==CLASS_ID(CPosePDFParticles))
 			{
-				CPosePDFParticlesPtr aux = CPosePDFParticlesPtr( act->poseChange.get_ptr() );
+				CPosePDFParticles::Ptr aux = std::dynamic_pointer_cast<CPosePDFParticles>( act->poseChange.get_ptr() );
 				cout << format (" (Particle count = %u)\n", (unsigned)aux->m_particles.size() );
 			}
 			cout << endl;
@@ -256,7 +256,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 			//              CObservationBearingRange
 			// ----------------------------------------------------------------------
 			Notebook1->ChangeSelection( 8 );
-			CObservationBearingRangePtr obs = CObservationBearingRangePtr( sel_obj );
+			CObservationBearingRange::Ptr obs = std::dynamic_pointer_cast<CObservationBearingRange>( sel_obj );
 
 			// The plot:
 			size_t nPts = obs->sensedData.size();
@@ -287,7 +287,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 			//              CActionRobotMovement3D
 			// ----------------------------------------------------------------------
 			//Notebook1->ChangeSelection( 1 );
-			CActionRobotMovement3DPtr act = CActionRobotMovement3DPtr( sel_obj );
+			CActionRobotMovement3D::Ptr act = std::dynamic_pointer_cast<CActionRobotMovement3D>( sel_obj );
 			cout << "Robot Movement (as a gaussian pose change):\n";
 			cout << act->poseChange << endl;
 		}
@@ -298,7 +298,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 			//              CObservation3DRangeScan
 			// ----------------------------------------------------------------------
 			Notebook1->ChangeSelection( 9 );
-			CObservation3DRangeScanPtr obs = CObservation3DRangeScanPtr( sel_obj );
+			CObservation3DRangeScan::Ptr obs = std::dynamic_pointer_cast<CObservation3DRangeScan>( sel_obj );
 
 			obs->load(); // Make sure the 3D point cloud, etc... are all loaded in memory.
 
@@ -319,7 +319,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 			//this->m_gl3DRangeScan->m_openGLScene->insert( mrpt::opengl::stock_objects::CornerXYZ() );
 			this->m_gl3DRangeScan->m_openGLScene->insert( mrpt::opengl::CAxis::Create(-20,-20,-20,20,20,20,1,2,true ));
 
-			mrpt::opengl::CPointCloudColouredPtr pnts = mrpt::opengl::CPointCloudColoured::Create();
+			mrpt::opengl::CPointCloudColoured::Ptr pnts = mrpt::opengl::CPointCloudColoured::Create();
 			CColouredPointsMap  pointMap;
 			pointMap.colorScheme.scheme = CColouredPointsMap::cmFromIntensityImage;
 
@@ -437,7 +437,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 			//              CObservationVelodyneScan
 			// ----------------------------------------------------------------------
 			Notebook1->ChangeSelection( 9 );
-			CObservationVelodyneScanPtr obs = CObservationVelodyneScanPtr( sel_obj );
+			CObservationVelodyneScan::Ptr obs = std::dynamic_pointer_cast<CObservationVelodyneScan>( sel_obj );
 			
 			obs->generatePointCloud();
 			// Update 3D view ==========
@@ -446,7 +446,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 			//this->m_gl3DRangeScan->m_openGLScene->insert( mrpt::opengl::stock_objects::CornerXYZ() );
 			this->m_gl3DRangeScan->m_openGLScene->insert( mrpt::opengl::CAxis::Create(-20,-20,-20,20,20,20,1,2,true ));
 
-			mrpt::opengl::CPointCloudColouredPtr pnts = mrpt::opengl::CPointCloudColoured::Create();
+			mrpt::opengl::CPointCloudColoured::Ptr pnts = mrpt::opengl::CPointCloudColoured::Create();
 
 			CColouredPointsMap pntsMap;
 			pntsMap.loadFromVelodyneScan(*obs);
@@ -462,7 +462,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 		}
 
 		if ( classID->derivedFrom( CLASS_ID( CObservation ) ) ) {
-			CObservationPtr obs( sel_obj );
+			CObservation::Ptr obs(std::dynamic_pointer_cast<CObservation>(sel_obj));
 			obs->unload();
 		}
 		} // scope for redirector

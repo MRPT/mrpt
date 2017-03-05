@@ -101,7 +101,6 @@ namespace mrpt
 			  */
 			bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const MRPT_OVERRIDE;
 
-		private:
 			/** Constructor
 			  */
 			CEllipsoid() : m_eigVal(),m_eigVec(),m_prevComputedCov(),

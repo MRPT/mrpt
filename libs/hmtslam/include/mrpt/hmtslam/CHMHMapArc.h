@@ -67,15 +67,15 @@ namespace mrpt
 			/** Alternative constructor, using pointers for convenience.
 			  */
 			CHMHMapArc(
-				CHMHMapNodePtr		&from,
-				CHMHMapNodePtr		&to,
+				CHMHMapNode::Ptr		&from,
+				CHMHMapNode::Ptr		&to,
 				const THypothesisIDSet		&hyps,
 				CHierarchicalMHMap			*parent);
 
 		public:
 			/** Constructor from node IDs
 			  */
-			static CHMHMapArcPtr Create(
+			static CHMHMapArc::Ptr Create(
 				const CHMHMapNode::TNodeID		&from,
 				const CHMHMapNode::TNodeID		&to,
 				const THypothesisIDSet			&hyps = THypothesisIDSet(),
@@ -83,9 +83,9 @@ namespace mrpt
 
 			/** Alternative constructor, using pointers for convenience.
 			  */
-			static CHMHMapArcPtr Create(
-				CHMHMapNodePtr		&from,
-				CHMHMapNodePtr		&to,
+			static CHMHMapArc::Ptr Create(
+				CHMHMapNode::Ptr		&from,
+				CHMHMapNode::Ptr		&to,
 				const THypothesisIDSet		&hyps,
 				CHierarchicalMHMap			*parent);
 

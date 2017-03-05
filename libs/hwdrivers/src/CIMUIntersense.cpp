@@ -105,7 +105,7 @@ void CIMUIntersense::doProcess()
 		// uint32_t nowUI = data.Station[0].TimeStampSeconds*10e6 + data.Station[0].TimeStampMicroSec; 
 		float nowUI = data.Station[0].TimeStamp; // in seconds
 
-		CObservationIMUPtr obs = CObservationIMU::Create();
+		CObservationIMU::Ptr obs = CObservationIMU::Create();
 
 		// euler angles
 		obs->rawMeasurements[IMU_YAW]	= DEG2RAD(data.Station[0].Euler[0]);

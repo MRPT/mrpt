@@ -80,11 +80,11 @@ void Test_SUT()
 	cout << "y_cov: "  << endl << y_cov << endl << endl;
 
 	// 3D view:
-	mrpt::opengl::COpenGLScenePtr scene = mrpt::opengl::COpenGLScene::Create();
+	mrpt::opengl::COpenGLScene::Ptr scene = mrpt::opengl::COpenGLScene::Create();
 	scene->insert( opengl::CGridPlaneXY::Create(-10,10,-10,10, 0, 1));
 
 	{
-		opengl::CEllipsoidPtr el = opengl::CEllipsoid::Create();
+		opengl::CEllipsoid::Ptr el = opengl::CEllipsoid::Create();
 		el->enableDrawSolid3D(false);
 		el->setLocation(y_mean[0],y_mean[1],y_mean[2]);
 		el->setCovMatrix(y_cov);
@@ -117,7 +117,7 @@ void Test_SUT()
 		extractColumnFromVectorOfVectors(i,MC_samples,MC_y[i]);
 
 	{
-		opengl::CEllipsoidPtr el = opengl::CEllipsoid::Create();
+		opengl::CEllipsoid::Ptr el = opengl::CEllipsoid::Create();
 		el->enableDrawSolid3D(false);
 		el->setLocation(y_mean[0],y_mean[1],y_mean[2]);
 		el->setCovMatrix(y_cov);
@@ -154,7 +154,7 @@ void Test_SUT()
 	cout << "y_cov: "  << endl << y_cov << endl;
 
 	{
-		opengl::CEllipsoidPtr el = opengl::CEllipsoid::Create();
+		opengl::CEllipsoid::Ptr el = opengl::CEllipsoid::Create();
 		el->enableDrawSolid3D(false);
 		el->setLocation(y_mean[0],y_mean[1],y_mean[2]);
 		el->setCovMatrix(y_cov);
@@ -173,7 +173,7 @@ void Test_SUT()
 
 
 	// MC-based histograms:
-	mrpt::gui::CDisplayWindowPlotsPtr  winHistos[3];
+	mrpt::gui::CDisplayWindowPlots::Ptr  winHistos[3];
 
 	for (int i=0;i<3;i++)
 	{

@@ -22,8 +22,8 @@ namespace mrpt
 	{
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CRawlog, mrpt::utils::CSerializable, OBS_IMPEXP )
 
-		typedef std::pair<mrpt::system::TTimeStamp, CObservationPtr>		TTimeObservationPair;		//!< For usage with CRawlog classes.
-		typedef std::multimap<mrpt::system::TTimeStamp, CObservationPtr>	TListTimeAndObservations;	//!< For usage with CRawlog classes.
+		typedef std::pair<mrpt::system::TTimeStamp, CObservation::Ptr>		TTimeObservationPair;		//!< For usage with CRawlog classes.
+		typedef std::multimap<mrpt::system::TTimeStamp, CObservation::Ptr>	TListTimeAndObservations;	//!< For usage with CRawlog classes.
 
 
 		/** This class stores a rawlog (robotic datasets) in one of two possible formats:
@@ -55,7 +55,7 @@ namespace mrpt
 			DEFINE_SERIALIZABLE( CRawlog )
 
 		private:
-			typedef	std::vector<mrpt::utils::CSerializablePtr> TListObjects;
+			typedef	std::vector<mrpt::utils::CSerializable::Ptr> TListObjects;
 			TListObjects	m_seqOfActObs;	//!< The list where the objects really are in.
 
 			CObservationComment		m_commentTexts;	//!< Comments of the rawlog.
@@ -105,22 +105,22 @@ namespace mrpt
 			/** Add a set of actions to the sequence, using a smart pointer to the object to add.
 			  * \sa addActions, addObservationsMemoryReference, addObservationMemoryReference
 			  */
-			void  addActionsMemoryReference( const CActionCollectionPtr &action );
+			void  addActionsMemoryReference( const CActionCollection::Ptr &action );
 
 			/** Add a set of observations to the sequence, using a smart pointer to the object to add.
 			  * \sa addObservations, addActionsMemoryReference, addObservationMemoryReference
 			  */
-			void  addObservationsMemoryReference( const CSensoryFramePtr &observations );
+			void  addObservationsMemoryReference( const CSensoryFrame::Ptr &observations );
 
 			/** Add a single observation to the sequence, using a smart pointer to the object to add.
 			  * \sa addObservations, addActionsMemoryReference
 			  */
-			void  addObservationMemoryReference( const CObservationPtr &observation );
+			void  addObservationMemoryReference( const CObservation::Ptr &observation );
 
 			/** Generic add for a smart pointer to a CSerializable object:
 			  * \sa addObservations, addActionsMemoryReference, addObservationMemoryReference
 			  */
-			void  addGenericObject( const mrpt::utils::CSerializablePtr &obj );
+			void  addGenericObject( const mrpt::utils::CSerializable::Ptr &obj );
 
 			/** Load the contents from a file containing one of these possibilities:
 			  *  - A "CRawlog" object.
@@ -159,20 +159,20 @@ namespace mrpt
 			  * \sa size, isAction, getAsObservations, getAsObservation
 			  * \exception std::exception If index is out of bounds
 			  */
-			CActionCollectionPtr  getAsAction( size_t index ) const;
+			CActionCollection::Ptr  getAsAction( size_t index ) const;
 
 			/** Returns the i'th element in the sequence, as being an action, where index=0 is the first object.
 			  *  If it is not an CSensoryFrame, it throws an exception. Do neighter modify nor delete the returned pointer.
 			  * \sa size, isAction, getAsAction, getAsObservation
 			  * \exception std::exception If index is out of bounds
 			  */
-			CSensoryFramePtr  getAsObservations( size_t index ) const;
+			CSensoryFrame::Ptr  getAsObservations( size_t index ) const;
 
 			/** Returns the i'th element in the sequence, being its class whatever.
 			  * \sa size, isAction, getAsAction, getAsObservations
 			  * \exception std::exception If index is out of bounds
 			  */
-			mrpt::utils::CSerializablePtr    getAsGeneric( size_t index ) const;
+			mrpt::utils::CSerializable::Ptr    getAsGeneric( size_t index ) const;
 
 			/** Returns the i'th element in the sequence, as being an observation, where index=0 is the first object.
 			  *  If it is not an CObservation, it throws an exception. Do neighter modify nor delete the returned pointer.
@@ -180,7 +180,7 @@ namespace mrpt
 			  * \sa size, isAction, getAsAction
 			  * \exception std::exception If index is out of bounds
 			  */
-			CObservationPtr  getAsObservation( size_t index ) const;
+			CObservation::Ptr  getAsObservation( size_t index ) const;
 
 
 			/** A normal iterator, plus the extra method "getType" to determine the type of each entry in the sequence. */
@@ -199,7 +199,7 @@ namespace mrpt
 				bool operator == (const iterator& o) {  return m_it == o.m_it; }
 				bool operator != (const iterator& o) {  return m_it != o.m_it; }
 
-				mrpt::utils::CSerializablePtr operator *() { return *m_it; }
+				mrpt::utils::CSerializable::Ptr operator *() { return *m_it; }
 
 				inline iterator  operator ++(int) { iterator aux =*this; m_it++; return aux; }  // Post
 				inline iterator& operator ++()    { m_it++; return *this; }  // Pre
@@ -233,7 +233,7 @@ namespace mrpt
 				bool operator == (const const_iterator& o) {  return m_it == o.m_it; }
 				bool operator != (const const_iterator& o) {  return m_it != o.m_it; }
 
-				const mrpt::utils::CSerializablePtr operator *() const { return *m_it; }
+				const mrpt::utils::CSerializable::Ptr operator *() const { return *m_it; }
 
 				inline const_iterator  operator ++(int) { const_iterator aux =*this; m_it++; return aux; }  // Post
 				inline const_iterator& operator ++()    { m_it++; return *this; }  // Pre
@@ -290,8 +290,8 @@ namespace mrpt
 			  */
 			static bool readActionObservationPair(
 				mrpt::utils::CStream					&inStream,
-				CActionCollectionPtr	&action,
-				CSensoryFramePtr		&observations,
+				CActionCollection::Ptr	&action,
+				CSensoryFrame::Ptr		&observations,
 				size_t			& rawlogEntry );
 
 			/** Reads a consecutive pair action/sensory_frame OR an observation, depending of the rawlog format, from the rawlog opened at some input stream.
@@ -308,9 +308,9 @@ namespace mrpt
 			  */
 			static bool getActionObservationPairOrObservation(
 				mrpt::utils::CStream					&inStream,
-				CActionCollectionPtr	&action,
-				CSensoryFramePtr		&observations,
-				CObservationPtr			&observation,
+				CActionCollection::Ptr	&action,
+				CSensoryFrame::Ptr		&observations,
+				CObservation::Ptr			&observation,
 				size_t			& rawlogEntry );
 
 			/** Gets the next consecutive pair action / observation from the rawlog loaded into this object.
@@ -321,8 +321,8 @@ namespace mrpt
 			  * \sa readActionObservationPair
 			  */
 			bool getActionObservationPair(
-				CActionCollectionPtr  &action,
-				CSensoryFramePtr      &observations,
+				CActionCollection::Ptr  &action,
+				CSensoryFrame::Ptr      &observations,
 				size_t	              &rawlogEntry ) const;
 
 			/** Tries to auto-detect the external-images directory of the given rawlog file.

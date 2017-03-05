@@ -112,11 +112,11 @@ namespace nav
 		virtual bool isBijectiveAt(uint16_t k, uint32_t step) const { return true; }
 
 		/** Converts a discretized "alpha" value into a feasible motion command or action. See derived classes for the meaning of these actions */
-		virtual mrpt::kinematics::CVehicleVelCmdPtr directionToMotionCommand( uint16_t k ) const = 0;
+		virtual mrpt::kinematics::CVehicleVelCmd::Ptr directionToMotionCommand( uint16_t k ) const = 0;
 
 		/** Returns an empty kinematic velocity command object of the type supported by this PTG. 
 		  * Can be queried to determine the expected kinematic interface of the PTG.  */
-		virtual mrpt::kinematics::CVehicleVelCmdPtr getSupportedKinematicVelocityCommand() const = 0;
+		virtual mrpt::kinematics::CVehicleVelCmd::Ptr getSupportedKinematicVelocityCommand() const = 0;
 
 		/** Callback whenever we have new info about the velocity state of the robot right now. May be used by some PTGs and discarded by others.
 		  * \param[in] curVelLocal The current robot velocities in the local frame of reference (+X: forwards, omega: clockwise rotation) */
@@ -303,10 +303,7 @@ protected:
 	}; // end of class
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CParameterizedTrajectoryGenerator, mrpt::utils::CSerializable, NAV_IMPEXP )
 
-
-	typedef std::vector<mrpt::nav::CParameterizedTrajectoryGenerator*>  TListPTGs;      //!< A list of PTGs (bare pointers)
-	typedef std::vector<mrpt::nav::CParameterizedTrajectoryGeneratorPtr>  TListPTGPtr;  //!< A list of PTGs (smart pointers)
-
+	using TListPTGPtr = std::vector<mrpt::nav::CParameterizedTrajectoryGenerator::Ptr>;  //!< A list of PTGs (smart pointers)
 
 	/** Base class for all PTGs using a 2D polygonal robot shape model.
 	 *  \ingroup nav_tpspace

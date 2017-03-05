@@ -68,7 +68,7 @@ namespace mrpt
 
 			/** Event handler for arc addition: It should be only called for arcs from/to this node, although other cases have no effects.
 			  */
-			void  onArcAddition(const CHMHMapArcPtr &arc);
+			void  onArcAddition(const std::shared_ptr<CHMHMapArc> &arc);
 
 			/** The hierarchical graph in which this object is into.
 			  */
@@ -84,7 +84,7 @@ namespace mrpt
 		public:
 			/** Class factory
 			  */
-			static CHMHMapNodePtr Create(
+			static std::shared_ptr<CHMHMapNode> Create(
 				CHierarchicalMHMap		*parent = nullptr,
 				const THypothesisIDSet	&hyps = THypothesisIDSet() );
 
@@ -145,7 +145,7 @@ namespace mrpt
 		/** A map between node IDs and nodes (used in HMT-SLAM).
 		  * \sa CHMTSLAM
 		  */
-		typedef std::map<CHMHMapNode::TNodeID,CHMHMapNodePtr>  TNodeList;
+		typedef std::map<CHMHMapNode::TNodeID,std::shared_ptr<CHMHMapNode>>  TNodeList;
 		typedef mrpt::utils::list_searchable<CHMHMapNode::TNodeID> TNodeIDList;
 		typedef std::set<CHMHMapNode::TNodeID> TNodeIDSet;
 		typedef std::pair<CHMHMapNode::TNodeID,CHMHMapNode::TNodeID>  TPairNodeIDs;

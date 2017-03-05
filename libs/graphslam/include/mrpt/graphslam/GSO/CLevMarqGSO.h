@@ -137,9 +137,9 @@ class CLevMarqGSO:
 		~CLevMarqGSO();
 		void initCLevMarqGSO();
 
-		bool updateState( mrpt::obs::CActionCollectionPtr action,
-				mrpt::obs::CSensoryFramePtr observations,
-				mrpt::obs::CObservationPtr observation );
+		bool updateState( mrpt::obs::CActionCollection::Ptr action,
+				mrpt::obs::CSensoryFrame::Ptr observations,
+				mrpt::obs::CObservation::Ptr observation );
 
 		void setGraphPtr(GRAPH_t* graph);
 		void setWindowManagerPtr(mrpt::graphslam::CWindowManager* win_manager);

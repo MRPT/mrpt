@@ -141,7 +141,7 @@ void CRawlogTreeView::reloadFromRawlog( int hint_rawlog_items )
 			// For containers, go recursively:
 			if ( (*it)->GetRuntimeClass()==CLASS_ID(CSensoryFrame))
 			{
-				CSensoryFramePtr	sf = CSensoryFramePtr( *it );
+				CSensoryFrame::Ptr	sf = std::dynamic_pointer_cast<CSensoryFrame>( *it );
 				for (CSensoryFrame::iterator o=sf->begin();o!=sf->end();++o)
 				{
 					m_tree_nodes.push_back( TNodeData() );
@@ -160,7 +160,7 @@ void CRawlogTreeView::reloadFromRawlog( int hint_rawlog_items )
 			else
 			if ( (*it)->GetRuntimeClass()==CLASS_ID(CActionCollection))
 			{
-				CActionCollectionPtr	acts = CActionCollectionPtr( *it );
+				CActionCollection::Ptr	acts = std::dynamic_pointer_cast<CActionCollection>( *it );
 				for (CActionCollection::iterator a=acts->begin();a!=acts->end();++a)
 				{
 					m_tree_nodes.push_back( TNodeData() );
@@ -179,7 +179,7 @@ void CRawlogTreeView::reloadFromRawlog( int hint_rawlog_items )
 			else
 			if ( (*it)->GetRuntimeClass()->derivedFrom( CLASS_ID(CObservation) ))
 			{
-			    CObservationPtr o = CObservationPtr(*it);
+			    CObservation::Ptr o = std::dynamic_pointer_cast<CObservation>(*it);
                 if (o->timestamp!=INVALID_TIMESTAMP)
                 {
                     m_rawlog_last = o->timestamp;
@@ -310,7 +310,7 @@ void CRawlogTreeView::OnDraw(wxDC& dc)
 				// Sensor label:
 				if ( d.data->GetRuntimeClass()->derivedFrom( CLASS_ID(CObservation) ) )
 				{
-					CObservationPtr obs = CObservationPtr(d.data);
+					CObservation::Ptr obs = std::dynamic_pointer_cast<CObservation>(d.data);
 
 					/*if (first_tim==INVALID_TIMESTAMP)
 					{
@@ -378,7 +378,7 @@ void CRawlogTreeView::OnDraw(wxDC& dc)
 				TTimeStamp	t_this = INVALID_TIMESTAMP;
 				if ( d.data->GetRuntimeClass()->derivedFrom( CLASS_ID(CObservation) ) )
 				{
-					CObservationPtr obs = CObservationPtr(d.data);
+					CObservation::Ptr obs = std::dynamic_pointer_cast<CObservation>(d.data);
 					t_this = obs->timestamp;
 				}
 
@@ -491,7 +491,7 @@ void CRawlogTreeView::SetSelectedItem( int sel_item, bool force_refresh )
 					this,
 					evSelected,
 					sel_item,
-					sel_item>=0 ? m_tree_nodes[sel_item].data : CSerializablePtr()
+					sel_item>=0 ? m_tree_nodes[sel_item].data : CSerializable::Ptr()
 					);
 			}
 		}

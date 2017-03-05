@@ -43,7 +43,7 @@ namespace mrpt
 		  *   // rectify_map.enableBothCentersCoincide(...);
 		  *
 		  *   while (true) {
-		  *     mrpt::obs::CObservationStereoImagesPtr obs_stereo = ... // Grab stereo observation from wherever
+		  *     mrpt::obs::CObservationStereoImages::Ptr obs_stereo = ... // Grab stereo observation from wherever
 		  *
 		  *     // Only once, construct the rectification maps:
 		  *     if (!rectify_map.isSet())

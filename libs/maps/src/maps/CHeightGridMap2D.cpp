@@ -294,13 +294,13 @@ void  CHeightGridMap2D::saveMetricMapRepresentationToFile(
 /*---------------------------------------------------------------
 						getAs3DObject
 ---------------------------------------------------------------*/
-void  CHeightGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const
+void  CHeightGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjects::Ptr	&outObj ) const
 {
 	if (!genericMapParams.enableSaveAs3DObject) return;
 
 	if (mrpt::global_settings::HEIGHTGRIDMAP_EXPORT3D_AS_MESH)
 	{
-		opengl::CMeshPtr	mesh = opengl::CMesh::Create();
+		opengl::CMesh::Ptr	mesh = opengl::CMesh::Create();
 
 		mesh->setGridLimits(m_x_min,m_x_max, m_y_min, m_y_max);
 
@@ -335,7 +335,7 @@ void  CHeightGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) 
 	else
 	{
 		// As points:
-		mrpt::opengl::CPointCloudColouredPtr obj = mrpt::opengl::CPointCloudColoured::Create();
+		mrpt::opengl::CPointCloudColoured::Ptr obj = mrpt::opengl::CPointCloudColoured::Create();
 		obj->setPointSize(2);
 
 		// Find min/max:

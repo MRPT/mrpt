@@ -48,12 +48,12 @@ DECLARE_OP_FUNCTION(op_export_2d_scans_txt)
 		}
 
 		// return false on any error.
-		bool processOneObservation(CObservationPtr  &o)
+		bool processOneObservation(CObservation::Ptr  &o)
 		{
 			if (!IS_CLASS(o, CObservation2DRangeScan ) )
 				return true;
 
-			const CObservation2DRangeScan* obs = CObservation2DRangeScanPtr(o).get();
+			const CObservation2DRangeScan* obs = dynamic_cast<CObservation2DRangeScan *>(o.get());
 
 			map<string, FILE*>::const_iterator  it = lstFiles.find( obs->sensorLabel );
 

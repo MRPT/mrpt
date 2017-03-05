@@ -143,7 +143,7 @@ void Run_HMT_SLAM()
 
 		// Load next object from the rawlog:
 		// ----------------------------------------
-		CSerializablePtr objFromRawlog;
+		CSerializable::Ptr objFromRawlog;
 		try
 		{
 			rawlogFile >> objFromRawlog;
@@ -159,15 +159,15 @@ void Run_HMT_SLAM()
 			// --------------------------------------------
 			if (IS_CLASS(objFromRawlog,CActionCollection))
 			{
-				mapping.pushAction( CActionCollectionPtr( objFromRawlog) ); // Memory will be freed in mapping class
+				mapping.pushAction( std::dynamic_pointer_cast<CActionCollection>( objFromRawlog) ); // Memory will be freed in mapping class
 			}
 			else if (IS_CLASS(objFromRawlog,CSensoryFrame))
 			{
-				mapping.pushObservations( CSensoryFramePtr( objFromRawlog) ); // Memory will be freed in mapping class
+				mapping.pushObservations( std::dynamic_pointer_cast<CSensoryFrame>( objFromRawlog) ); // Memory will be freed in mapping class
 			}
 			else if (IS_CLASS(objFromRawlog,CObservation))
 			{
-				mapping.pushObservation( CObservationPtr( objFromRawlog) ); // Memory will be freed in mapping class
+				mapping.pushObservation( std::dynamic_pointer_cast<CObservation>( objFromRawlog) ); // Memory will be freed in mapping class
 			}
 			else THROW_EXCEPTION("Invalid object class from rawlog!!")
 

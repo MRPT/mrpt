@@ -86,10 +86,10 @@ void TestExtractMatchProjectAndPaint()
 	mrpt::vision::projectMatchedFeatures( mHarris, stereoOptions, outMap );
 
     CDisplayWindow3D    win3D("3D Map");
-    COpenGLScenePtr		&scene3D    = win3D.get3DSceneAndLock();
-	CSetOfObjectsPtr    map3D       = CSetOfObjects::Create();
+    COpenGLScene::Ptr		&scene3D    = win3D.get3DSceneAndLock();
+	CSetOfObjects::Ptr    map3D       = CSetOfObjects::Create();
 	outMap.getAs3DObject( map3D );
-    CGridPlaneXYPtr	gridXY	        = CGridPlaneXY::Create(-10,10,-10,10,0,1);
+    CGridPlaneXY::Ptr	gridXY	        = CGridPlaneXY::Create(-10,10,-10,10,0,1);
 
 	scene3D->insert( gridXY );
 	scene3D->insert( map3D );

@@ -157,7 +157,7 @@ namespace mrpt
 			 *
 			 * \sa CMetricMapsAlignmentAlgorithm, CICP::options, CICP::TReturnInfo
 			 */
-			mrpt::poses::CPosePDFPtr AlignPDF(
+			mrpt::poses::CPosePDF::Ptr AlignPDF(
 					const mrpt::maps::CMetricMap		*m1,
 					const mrpt::maps::CMetricMap		*m2,
 					const mrpt::poses::CPosePDFGaussian	&initialEstimationPDF,
@@ -165,7 +165,7 @@ namespace mrpt
 					void					*info = nullptr );
 
 			// See base class for docs
-			mrpt::poses::CPose3DPDFPtr Align3DPDF(
+			mrpt::poses::CPose3DPDF::Ptr Align3DPDF(
 					const mrpt::maps::CMetricMap		*m1,
 					const mrpt::maps::CMetricMap		*m2,
 					const mrpt::poses::CPose3DPDFGaussian	&initialEstimationPDF,
@@ -180,17 +180,17 @@ namespace mrpt
 			  */
 			float kernel(const float &x2, const float &rho2);
 
-			mrpt::poses::CPosePDFPtr ICP_Method_Classic(
+			mrpt::poses::CPosePDF::Ptr ICP_Method_Classic(
 				const mrpt::maps::CMetricMap		*m1,
 				const mrpt::maps::CMetricMap		*m2,
 				const mrpt::poses::CPosePDFGaussian	&initialEstimationPDF,
 				TReturnInfo				&outInfo );
-			mrpt::poses::CPosePDFPtr ICP_Method_LM(
+			mrpt::poses::CPosePDF::Ptr ICP_Method_LM(
 				const mrpt::maps::CMetricMap		*m1,
 				const mrpt::maps::CMetricMap		*m2,
 				const mrpt::poses::CPosePDFGaussian	&initialEstimationPDF,
 				TReturnInfo				&outInfo );
-			mrpt::poses::CPose3DPDFPtr ICP3D_Method_Classic(
+			mrpt::poses::CPose3DPDF::Ptr ICP3D_Method_Classic(
 				const mrpt::maps::CMetricMap		*m1,
 				const mrpt::maps::CMetricMap		*m2,
 				const mrpt::poses::CPose3DPDFGaussian &initialEstimationPDF,

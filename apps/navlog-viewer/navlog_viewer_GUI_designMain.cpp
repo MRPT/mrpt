@@ -387,7 +387,7 @@ void navlog_viewer_GUI_designDialog::loadLogfile(const std::string &filName)
 	{
 		try
 		{
-			CSerializablePtr obj = f.ReadObject();
+			CSerializable::Ptr obj = f.ReadObject();
 			if (validClasses.find(string(obj->GetRuntimeClass()->className))==validClasses.end())
 			{
 				wxMessageBox(_U(format("Unexpected class found: %s",obj->GetRuntimeClass()->className).c_str()),_("Error loading log:"));
@@ -398,7 +398,7 @@ void navlog_viewer_GUI_designDialog::loadLogfile(const std::string &filName)
 			// generate time stats:
 			if (IS_CLASS(obj,CLogFileRecord))
 			{
-				const CLogFileRecordPtr logptr = CLogFileRecordPtr(obj);
+				const CLogFileRecord::Ptr logptr = std::dynamic_pointer_cast<CLogFileRecord>(obj);
 				const auto it = logptr->timestamps.find("tim_start_iteration");
 				if ( it != logptr->timestamps.end())
 					m_log_last_tim = it->second;
@@ -522,8 +522,8 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 
 	const int i = this->slidLog->GetValue();
 
-	// In the future, we could handle more log classes. For now, only "CLogFileRecordPtr":
-	CLogFileRecordPtr logptr = CLogFileRecordPtr(m_logdata[i]);
+	// In the future, we could handle more log classes. For now, only "CLogFileRecord::Ptr":
+	CLogFileRecord::Ptr logptr = std::dynamic_pointer_cast<CLogFileRecord>(m_logdata[i]);
 	const CLogFileRecord &log = *logptr;
 
 	txtSelectedPTG->SetLabel( wxString::Format(_("%i from [0-%u]"), static_cast<int>(log.nSelectedPTG), static_cast<unsigned int>(log.nPTGs-1) ) );
@@ -534,19 +534,19 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 	// Draw WS-obstacles
 	// --------------------------------
 	{
-		CDisplayWindow3DPtr &win1 = m_mywins3D["WS_obs"];
+		CDisplayWindow3D::Ptr &win1 = m_mywins3D["WS_obs"];
 		if (!win1)  {
 			win1= CDisplayWindow3D::Create("Sensed obstacles",500,400);
 			win1->setPos(600,20);
 			win1->setCameraAzimuthDeg(-90);
 			win1->setCameraElevationDeg(90);
 			{
-				mrpt::opengl::COpenGLScenePtr scene;
+				mrpt::opengl::COpenGLScene::Ptr scene;
 				mrpt::gui::CDisplayWindow3DLocker  locker(*win1,scene);
 
 
 				// XY ground plane:
-				mrpt::opengl::CGridPlaneXYPtr gl_grid = mrpt::opengl::CGridPlaneXY::Create(-20,20, -20,20, 0, 1, 0.75f);
+				mrpt::opengl::CGridPlaneXY::Ptr gl_grid = mrpt::opengl::CGridPlaneXY::Create(-20,20, -20,20, 0, 1, 0.75f);
 				gl_grid->setColor_u8( mrpt::utils::TColor(0xa0a0a0, 0x90) );
 				scene->insert( gl_grid );
 
@@ -557,21 +557,21 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 
 		// Update 3D view:
 		{
-			mrpt::opengl::COpenGLScenePtr scene;
+			mrpt::opengl::COpenGLScene::Ptr scene;
 			mrpt::gui::CDisplayWindow3DLocker  locker(*win1,scene);
 
 			const CVectorFloat shap_x = log.robotShape_x, shap_y = log.robotShape_y;
 
 			// Robot frame of reference:
-			mrpt::opengl::CSetOfObjectsPtr gl_robot_frame;
+			mrpt::opengl::CSetOfObjects::Ptr gl_robot_frame;
 			{
-				mrpt::opengl::CRenderizablePtr gl_rbframe_r = scene->getByName("robot_frame");  // Get or create if new
+				mrpt::opengl::CRenderizable::Ptr gl_rbframe_r = scene->getByName("robot_frame");  // Get or create if new
 				if (!gl_rbframe_r) {
 					gl_robot_frame = mrpt::opengl::CSetOfObjects::Create();
 					gl_robot_frame->setName("robot_frame");
 					scene->insert(gl_robot_frame);
 				} else {
-					gl_robot_frame = mrpt::opengl::CSetOfObjectsPtr(gl_rbframe_r);
+					gl_robot_frame = std::dynamic_pointer_cast<mrpt::opengl::CSetOfObjects>(gl_rbframe_r);
 				}
 				// Global or local coordinates?
 				if (this->cbGlobalFrame->IsChecked()) {
@@ -589,29 +589,29 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 
 			// Extrapolated poses from delay models:
 			{
-				mrpt::opengl::CSetOfObjectsPtr gl_relposes;
-				mrpt::opengl::CRenderizablePtr gl_relposes_r = gl_robot_frame->getByName("relposes");  // Get or create if new
+				mrpt::opengl::CSetOfObjects::Ptr gl_relposes;
+				mrpt::opengl::CRenderizable::Ptr gl_relposes_r = gl_robot_frame->getByName("relposes");  // Get or create if new
 				if (!gl_relposes_r) {
 					gl_relposes = mrpt::opengl::CSetOfObjects::Create();
 					gl_relposes->setName("relposes");
 					gl_robot_frame->insert(gl_relposes);
 				}
 				else {
-					gl_relposes = mrpt::opengl::CSetOfObjectsPtr(gl_relposes_r);
+					gl_relposes = std::dynamic_pointer_cast<mrpt::opengl::CSetOfObjects>(gl_relposes_r);
 				}
 
 				gl_relposes->clear();
 				if (cbShowRelPoses->IsChecked())
 				{
 					{
-						mrpt::opengl::CSetOfObjectsPtr gl_relpose_sense = mrpt::opengl::stock_objects::CornerXYSimple(0.3f, 1);
+						mrpt::opengl::CSetOfObjects::Ptr gl_relpose_sense = mrpt::opengl::stock_objects::CornerXYSimple(0.3f, 1);
 						gl_relpose_sense->setName("sense");
 						gl_relpose_sense->enableShowName(true);
 						gl_relpose_sense->setPose(log.relPoseSense);
 						gl_relposes->insert(gl_relpose_sense);
 					}
 					{
-						mrpt::opengl::CSetOfObjectsPtr gl_relpose_cmdvel = mrpt::opengl::stock_objects::CornerXYSimple(0.3f, 1);
+						mrpt::opengl::CSetOfObjects::Ptr gl_relpose_cmdvel = mrpt::opengl::stock_objects::CornerXYSimple(0.3f, 1);
 						gl_relpose_cmdvel->setName("cmdVel");
 						gl_relpose_cmdvel->enableShowName(true);
 						gl_relpose_cmdvel->setPose(log.relPoseVelCmd);
@@ -622,8 +622,8 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 
 			{
 				// Obstacles: original
-				mrpt::opengl::CPointCloudPtr gl_obs;
-				mrpt::opengl::CRenderizablePtr gl_obs_r = gl_robot_frame->getByName("obs-raw");  // Get or create if new
+				mrpt::opengl::CPointCloud::Ptr gl_obs;
+				mrpt::opengl::CRenderizable::Ptr gl_obs_r = gl_robot_frame->getByName("obs-raw");  // Get or create if new
 				if (!gl_obs_r) {
 					gl_obs = mrpt::opengl::CPointCloud::Create();
 					gl_obs->setName("obs-raw");
@@ -631,7 +631,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 					gl_obs->setColor_u8( mrpt::utils::TColor(0xff,0xff,0x00));
 					gl_robot_frame->insert(gl_obs);
 				} else {
-					gl_obs = mrpt::opengl::CPointCloudPtr(gl_obs_r);
+					gl_obs = dynamic_pointer_cast<mrpt::opengl::CPointCloud>(gl_obs_r);
 				}
 				gl_obs->loadFromPointsMap(&log.WS_Obstacles_original);
 				if (cbShowRelPoses->IsChecked())
@@ -640,8 +640,8 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 			}
 			{
 				// Obstacles: after optional filtering
-				mrpt::opengl::CPointCloudPtr gl_obs;
-				mrpt::opengl::CRenderizablePtr gl_obs_r = gl_robot_frame->getByName("obs");  // Get or create if new
+				mrpt::opengl::CPointCloud::Ptr gl_obs;
+				mrpt::opengl::CRenderizable::Ptr gl_obs_r = gl_robot_frame->getByName("obs");  // Get or create if new
 				if (!gl_obs_r) {
 					gl_obs = mrpt::opengl::CPointCloud::Create();
 					gl_obs->setName("obs");
@@ -650,7 +650,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 					gl_robot_frame->insert(gl_obs);
 				}
 				else {
-					gl_obs = mrpt::opengl::CPointCloudPtr(gl_obs_r);
+					gl_obs = std::dynamic_pointer_cast<mrpt::opengl::CPointCloud>(gl_obs_r);
 				}
 				gl_obs->loadFromPointsMap(&log.WS_Obstacles);
 				if (cbShowRelPoses->IsChecked())
@@ -660,8 +660,8 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 
 			{
 				// Selected PTG path:
-				mrpt::opengl::CSetOfLinesPtr   gl_path;
-				mrpt::opengl::CRenderizablePtr gl_path_r = gl_robot_frame->getByName("path");  // Get or create if new
+				mrpt::opengl::CSetOfLines::Ptr   gl_path;
+				mrpt::opengl::CRenderizable::Ptr gl_path_r = gl_robot_frame->getByName("path");  // Get or create if new
 				if (!gl_path_r) {
 					gl_path = mrpt::opengl::CSetOfLines::Create();
 					gl_path->setName("path");
@@ -669,11 +669,11 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 					gl_path->setColor_u8( mrpt::utils::TColor(0x00,0x00,0xff) );
 					gl_robot_frame->insert(gl_path);
 				} else {
-					gl_path = mrpt::opengl::CSetOfLinesPtr(gl_path_r);
+					gl_path = std::dynamic_pointer_cast<mrpt::opengl::CSetOfLines>(gl_path_r);
 				}
 				if (sel_ptg_idx<int(m_logdata_ptg_paths.size()) && sel_ptg_idx>=0)
 				{
-					mrpt::nav::CParameterizedTrajectoryGeneratorPtr ptg = m_logdata_ptg_paths[sel_ptg_idx];
+					mrpt::nav::CParameterizedTrajectoryGenerator::Ptr ptg = m_logdata_ptg_paths[sel_ptg_idx];
 					if (ptg)
 					{
 						if (!ptg->isInitialized())
@@ -726,8 +726,8 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 						}
 						{
 							// Robot shape:
-							mrpt::opengl::CSetOfLinesPtr   gl_shape;
-							mrpt::opengl::CRenderizablePtr gl_shape_r = gl_robot_frame->getByName("shape");  // Get or create if new
+							mrpt::opengl::CSetOfLines::Ptr   gl_shape;
+							mrpt::opengl::CRenderizable::Ptr gl_shape_r = gl_robot_frame->getByName("shape");  // Get or create if new
 							if (!gl_shape_r) {
 								gl_shape = mrpt::opengl::CSetOfLines::Create();
 								gl_shape->setName("shape");
@@ -735,14 +735,14 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 								gl_shape->setColor_u8( mrpt::utils::TColor(0xff,0x00,0x00) );
 								gl_robot_frame->insert(gl_shape);
 							} else {
-								gl_shape = mrpt::opengl::CSetOfLinesPtr(gl_shape_r);
+								gl_shape = std::dynamic_pointer_cast<mrpt::opengl::CSetOfLines>(gl_shape_r);
 							}
 							gl_shape->clear();
 							ptg->add_robotShape_to_setOfLines(*gl_shape);
 						}
 						{
-							mrpt::opengl::CSetOfLinesPtr   gl_shape;
-							mrpt::opengl::CRenderizablePtr gl_shape_r = gl_robot_frame->getByName("velocity");  // Get or create if new
+							mrpt::opengl::CSetOfLines::Ptr   gl_shape;
+							mrpt::opengl::CRenderizable::Ptr gl_shape_r = gl_robot_frame->getByName("velocity");  // Get or create if new
 							if (!gl_shape_r) {
 								gl_shape = mrpt::opengl::CSetOfLines::Create();
 								gl_shape->setName("velocity");
@@ -750,7 +750,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 								gl_shape->setColor_u8( mrpt::utils::TColor(0x00,0xff,0xff) );
 								gl_robot_frame->insert(gl_shape);
 							} else {
-								gl_shape = mrpt::opengl::CSetOfLinesPtr(gl_shape_r);
+								gl_shape = std::dynamic_pointer_cast<mrpt::opengl::CSetOfLines>(gl_shape_r);
 							}
 							gl_shape->clear();
 							const mrpt::math::TTwist2D &velLocal = log.cur_vel_local;
@@ -761,8 +761,8 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 			}
 			{
 				// Target:
-				mrpt::opengl::CPointCloudPtr   gl_trg;
-				mrpt::opengl::CRenderizablePtr gl_trg_r = gl_robot_frame->getByName("target");  // Get or create if new
+				mrpt::opengl::CPointCloud::Ptr   gl_trg;
+				mrpt::opengl::CRenderizable::Ptr gl_trg_r = gl_robot_frame->getByName("target");  // Get or create if new
 				if (!gl_trg_r) {
 					gl_trg = mrpt::opengl::CPointCloud::Create();
 					gl_trg->setName("target");
@@ -771,7 +771,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 					gl_trg->setColor_u8( mrpt::utils::TColor(0x00,0x00,0x00) );
 					gl_robot_frame->insert(gl_trg);
 				} else {
-					gl_trg = mrpt::opengl::CPointCloudPtr(gl_trg_r);
+					gl_trg = std::dynamic_pointer_cast<mrpt::opengl::CPointCloud>(gl_trg_r);
 				}
 				// Move the map & add a point at (0,0,0) so the name label appears at the target:
 				gl_trg->clear();
@@ -871,7 +871,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 	// --------------------------------
 	for (unsigned int nPTG=0;nPTG<log.infoPerPTG.size();nPTG++)  // log.infoPerPTG.size() may be != nPTGs in the last entry is used for "NOP cmdvel"
 	{
-		CDisplayWindow3DPtr &win = m_mywins3D[format("PTG%u",nPTG)];
+		CDisplayWindow3D::Ptr &win = m_mywins3D[format("PTG%u",nPTG)];
 		if (!win)  {
 			const static int W = 290;
 			const static int H = 270;
@@ -883,7 +883,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 				TColorf(1.0f,1.0f,1.0f),"sans",8, mrpt::opengl::NICE, 0 /*id*/, 1.5,0.1, true /*shadow*/ );
 
 			{
-				mrpt::opengl::COpenGLScenePtr scene;
+				mrpt::opengl::COpenGLScene::Ptr scene;
 				mrpt::gui::CDisplayWindow3DLocker locker(*win, scene);
 
 				scene->insert(mrpt::opengl::CGridPlaneXY::Create(-1.0f, 1.0f, -1.0f, 1.0f, .0f, 1.0f));
@@ -958,7 +958,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 		}
 
 		{
-			mrpt::opengl::COpenGLScenePtr scene;
+			mrpt::opengl::COpenGLScene::Ptr scene;
 			mrpt::gui::CDisplayWindow3DLocker locker(*win, scene);
 
 			// Draw dynamic stuff:
@@ -972,7 +972,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 			{
 				const double aDir = pI.desiredDirection;
 
-				auto gl_obj = mrpt::opengl::CSetOfLinesPtr(scene->getByName("tp_selected_dir"));
+				auto gl_obj = std::dynamic_pointer_cast<mrpt::opengl::CSetOfLines>(scene->getByName("tp_selected_dir"));
 				gl_obj->clear();
 				gl_obj->appendLine(
 					0, 0, 0,
@@ -990,7 +990,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 				ys.push_back(r*sin(a));
 			}
 			{
-				auto gl_obj = mrpt::opengl::CSetOfLinesPtr(scene->getByName("tp_obstacles"));
+				auto gl_obj = std::dynamic_pointer_cast<mrpt::opengl::CSetOfLines>(scene->getByName("tp_obstacles"));
 				gl_obj->clear();
 				if (nAlphas>2)
 				{
@@ -1002,7 +1002,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 
 			// Target:
 			{
-				auto gl_obj = mrpt::opengl::CPointCloudPtr(scene->getByName("tp_target"));
+				auto gl_obj = std::dynamic_pointer_cast<mrpt::opengl::CPointCloud>(scene->getByName("tp_target"));
 				gl_obj->clear();
 				gl_obj->insertPoint(pI.TP_Target.x, pI.TP_Target.y,0);
 
@@ -1010,7 +1010,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 				int tp_target_k=0;
 				if (sel_ptg_idx < int(m_logdata_ptg_paths.size()) && sel_ptg_idx >= 0)
 				{
-					mrpt::nav::CParameterizedTrajectoryGeneratorPtr ptg = m_logdata_ptg_paths[sel_ptg_idx];
+					mrpt::nav::CParameterizedTrajectoryGenerator::Ptr ptg = m_logdata_ptg_paths[sel_ptg_idx];
 					tp_target_k = ptg->alpha2index(ang);
 				}
 
@@ -1021,14 +1021,14 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 
 			// Current robot pt (normally in pure reactive, at (0,0)):
 			{
-				auto gl_obj = mrpt::opengl::CPointCloudPtr(scene->getByName("tp_robot"));
+				auto gl_obj = std::dynamic_pointer_cast<mrpt::opengl::CPointCloud>(scene->getByName("tp_robot"));
 				gl_obj->clear();
 				gl_obj->insertPoint(pI.TP_Robot.x, pI.TP_Robot.y, 0);
 			}
 
 			// Clearance-diagram:
 			{
-				auto gl_obj = mrpt::opengl::CMeshPtr(scene->getByName("tp_clearance"));
+				auto gl_obj = std::dynamic_pointer_cast<mrpt::opengl::CMesh>(scene->getByName("tp_clearance"));
 				if (pI.clearance.raw_clearances.empty())
 					gl_obj->setVisibility(false);
 				else
@@ -1039,8 +1039,8 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 			}
 			// Clearance-diagram:
 			{
-				auto gl_obj1 = mrpt::opengl::CSetOfLinesPtr(scene->getByName("score_phase1"));
-				auto gl_obj2 = mrpt::opengl::CSetOfLinesPtr(scene->getByName("score_phase2"));
+				auto gl_obj1 = std::dynamic_pointer_cast<mrpt::opengl::CSetOfLines>(scene->getByName("score_phase1"));
+				auto gl_obj2 = std::dynamic_pointer_cast<mrpt::opengl::CSetOfLines>(scene->getByName("score_phase2"));
 				const bool visible1 = rbPerPTGPlots->GetSelection() >= 1;
 				const bool visible2 = rbPerPTGPlots->GetSelection() >= 2;
 				gl_obj1->clear();
@@ -1065,7 +1065,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 							pts.push_back( mrpt::math::TPoint2D(r*cos(a), r*sin(a)));
 						}
 
-						mrpt::opengl::CSetOfLinesPtr &gl_obj = iScore == (num_scores-1) ? gl_obj1 : gl_obj2;
+						mrpt::opengl::CSetOfLines::Ptr &gl_obj = iScore == (num_scores-1) ? gl_obj1 : gl_obj2;
 
 						gl_obj->appendLine( pts[0].x, pts[0].y, 0, pts[1].x, pts[1].y, 0);
 						for (size_t i = 2; i < nAlphas; i++)
@@ -1078,7 +1078,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 #if 0
 			if (pI.HLFR && IS_CLASS(pI.HLFR, CLogFileRecord_ND))
 			{
-				CLogFileRecord_NDPtr log_ND = CLogFileRecord_NDPtr(pI.HLFR);
+				CLogFileRecord_ND::Ptr log_ND = CLogFileRecord_ND::Ptr(pI.HLFR);
 				const size_t nGaps = log_ND->gaps_ini.size();
 				ASSERT_( log_ND->gaps_end.size()==nGaps );
 				xs.clear(); ys.clear();
@@ -1108,7 +1108,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 
 	// Draw time cursor in v/w plots:
 	{
-		CDisplayWindowPlotsPtr &win = m_mywins["VW"];
+		CDisplayWindowPlots::Ptr &win = m_mywins["VW"];
 		if (win)
 		{
 			std::vector<double> xs(2),ys(2);
@@ -1184,7 +1184,7 @@ void navlog_viewer_GUI_designDialog::OnmnuMatlabPlotsSelected(wxCommandEvent& ev
     const size_t N = m_logdata.size();
 	for (size_t i=0;i<N;i++)
 	{
-        const CLogFileRecordPtr logsptr = CLogFileRecordPtr( m_logdata[i] );
+        const CLogFileRecord::Ptr logsptr = std::dynamic_pointer_cast<CLogFileRecord>( m_logdata[i] );
         const CLogFileRecord * logptr = logsptr.get();
 
 		const CPose2D robotPose = logptr->robotOdometryPose;
@@ -1265,7 +1265,7 @@ void navlog_viewer_GUI_designDialog::OnmnuSeePTGParamsSelected(wxCommandEvent& e
 
 	for (size_t i=0;i<m_logdata_ptg_paths.size();i++)
 	{
-		mrpt::nav::CParameterizedTrajectoryGeneratorPtr ptg = m_logdata_ptg_paths[i];
+		mrpt::nav::CParameterizedTrajectoryGenerator::Ptr ptg = m_logdata_ptg_paths[i];
 		if (!ptg) continue;
 
 		const std::string sKeyPrefix = mrpt::format("PTG%d_", (int)i );
@@ -1304,12 +1304,12 @@ void navlog_viewer_GUI_designDialog::OnmnuSaveScoreMatrixSelected(wxCommandEvent
 	const size_t N = m_logdata.size();
 	for (size_t i=0;i<N;i++)
 	{
-		const CLogFileRecordPtr logsptr = CLogFileRecordPtr( m_logdata[i] );
+		const CLogFileRecord::Ptr logsptr = std::dynamic_pointer_cast<CLogFileRecord>( m_logdata[i] );
 		const CLogFileRecord * logptr = logsptr.get();
 
 		for (size_t iPTG = 0; iPTG<logptr->infoPerPTG.size(); iPTG++)
 		{
-			const CHolonomicLogFileRecordPtr & hlog = logptr->infoPerPTG[iPTG].HLFR;
+			const CHolonomicLogFileRecord::Ptr & hlog = logptr->infoPerPTG[iPTG].HLFR;
 			if (!hlog) continue;
 
 			const mrpt::math::CMatrixD * dirs_scores = hlog->getDirectionScores();
@@ -1327,7 +1327,7 @@ void navlog_viewer_GUI_designDialog::OnmnuSaveScoreMatrixSelected(wxCommandEvent
 void navlog_viewer_GUI_designDialog::OntimMouseXY(wxTimerEvent& event)
 {
 	// Mouse position at Z=0
-	CDisplayWindow3DPtr &win1 = m_mywins3D["WS_obs"];
+	CDisplayWindow3D::Ptr &win1 = m_mywins3D["WS_obs"];
 	if (!win1) return;
 
 	int lineY = 0, unique_id = 0;
@@ -1397,7 +1397,7 @@ void navlog_viewer_GUI_designDialog::OnmnuMatlabExportPaths(wxCommandEvent & eve
 
 	for (size_t i = 0; i<N; i++)
 	{
-		const CLogFileRecordPtr logsptr = CLogFileRecordPtr(m_logdata[i]);
+		const CLogFileRecord::Ptr logsptr = std::dynamic_pointer_cast<CLogFileRecord>(m_logdata[i]);
 		const CLogFileRecord * logptr = logsptr.get();
 
 		{

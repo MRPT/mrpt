@@ -11,9 +11,10 @@
 
 #include <mrpt/maps/CPointsMap.h>
 #include <mrpt/poses/poses_frwds.h>
+#include <mrpt/poses/CPosePDF.h>
+#include <mrpt/poses/CPose3DPDF.h>
 
 #include <mrpt/utils/COutputLogger.h>
-
 #include <mrpt/slam/link_pragmas.h>
 
 namespace mrpt
@@ -48,7 +49,7 @@ namespace slam
 		 * \return A smart pointer to the output estimated pose PDF.
 		 * \sa CICP
 		 */
-		mrpt::poses::CPosePDFPtr Align(
+		mrpt::poses::CPosePDF::Ptr Align(
 				const mrpt::maps::CMetricMap		*m1,
 				const mrpt::maps::CMetricMap		*m2,
 				const mrpt::poses::CPose2D			&grossEst,
@@ -73,7 +74,7 @@ namespace slam
 		 * \return A smart pointer to the output estimated pose PDF.
 		 * \sa CICP
 		 */
-		virtual mrpt::poses::CPosePDFPtr AlignPDF(
+		virtual mrpt::poses::CPosePDF::Ptr AlignPDF(
 				const mrpt::maps::CMetricMap		*m1,
 				const mrpt::maps::CMetricMap		*m2,
 				const mrpt::poses::CPosePDFGaussian	&initialEstimationPDF,
@@ -97,7 +98,7 @@ namespace slam
 		 * \return A smart pointer to the output estimated pose PDF.
 		 * \sa CICP
 		 */
-		mrpt::poses::CPose3DPDFPtr Align3D(
+		mrpt::poses::CPose3DPDF::Ptr Align3D(
 				const mrpt::maps::CMetricMap		*m1,
 				const mrpt::maps::CMetricMap		*m2,
 				const mrpt::poses::CPose3D			&grossEst,
@@ -122,7 +123,7 @@ namespace slam
 		 * \return A smart pointer to the output estimated pose PDF.
 		 * \sa CICP
 		 */
-		virtual mrpt::poses::CPose3DPDFPtr Align3DPDF(
+		virtual mrpt::poses::CPose3DPDF::Ptr Align3DPDF(
 				const mrpt::maps::CMetricMap		*m1,
 				const mrpt::maps::CMetricMap		*m2,
 				const mrpt::poses::CPose3DPDFGaussian	&initialEstimationPDF,
