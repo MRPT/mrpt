@@ -178,7 +178,7 @@ void  CHMTSLAM::clearInputQueue()
 /*---------------------------------------------------------------
 						pushAction
   ---------------------------------------------------------------*/
-void  CHMTSLAM::pushAction( const CActionCollectionPtr &acts )
+void  CHMTSLAM::pushAction( const CActionCollection::Ptr &acts )
 {
 	if (m_terminateThreads)
 	{
@@ -196,7 +196,7 @@ void  CHMTSLAM::pushAction( const CActionCollectionPtr &acts )
 /*---------------------------------------------------------------
 						pushObservations
   ---------------------------------------------------------------*/
-void  CHMTSLAM::pushObservations( const CSensoryFramePtr &sf )
+void  CHMTSLAM::pushObservations( const CSensoryFrame::Ptr &sf )
 {
 	if (m_terminateThreads)
 	{
@@ -214,7 +214,7 @@ void  CHMTSLAM::pushObservations( const CSensoryFramePtr &sf )
 /*---------------------------------------------------------------
 						pushObservation
   ---------------------------------------------------------------*/
-void  CHMTSLAM::pushObservation( const CObservationPtr &obs )
+void  CHMTSLAM::pushObservation( const CObservation::Ptr &obs )
 {
 	if (m_terminateThreads)
 	{   // Discard it:
@@ -223,7 +223,7 @@ void  CHMTSLAM::pushObservation( const CObservationPtr &obs )
 	}
 
 	// Add a CSensoryFrame with the obs:
-	CSensoryFramePtr sf = CSensoryFrame::Create();
+	CSensoryFrame::Ptr sf = CSensoryFrame::Create();
 	sf->insert(obs);  // memory will be freed when deleting the SF in other thread
 
 	{	// Wait for critical section
@@ -390,9 +390,9 @@ size_t CHMTSLAM::inputQueueSize()
 /*---------------------------------------------------------------
 					getNextObjectFromInputQueue
   ---------------------------------------------------------------*/
-CSerializablePtr CHMTSLAM::getNextObjectFromInputQueue()
+CSerializable::Ptr CHMTSLAM::getNextObjectFromInputQueue()
 {
-	CSerializablePtr obj;
+	CSerializable::Ptr obj;
 
 	{	// Wait for critical section
 		CCriticalSectionLocker  locker( &m_inputQueue_cs);
@@ -428,11 +428,11 @@ void  CHMTSLAM::initializeEmptyMap()
 		m_map.clear();
 
 		// Create a single node for the starting area:
-		CHMHMapNodePtr firstArea = CHMHMapNode::Create( &m_map );
+		CHMHMapNode::Ptr firstArea = CHMHMapNode::Create( &m_map );
 		firstAreaID = firstArea->getID();
 
 		firstArea->m_hypotheses = LMH_hyps;
-		CMultiMetricMapPtr		emptyMap = CMultiMetricMapPtr(new CMultiMetricMap(&m_options.defaultMapsInitializers) );
+		CMultiMetricMap::Ptr		emptyMap = CMultiMetricMap::Ptr(new CMultiMetricMap(&m_options.defaultMapsInitializers) );
 
 		firstArea->m_nodeType.setType( "Area" );
 		firstArea->m_label = generateUniqueAreaLabel();

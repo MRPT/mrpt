@@ -409,13 +409,13 @@ void  CColouredPointsMap::insertPoint( float x, float y, float z, float R, float
 /*---------------------------------------------------------------
 					getAs3DObject
  ---------------------------------------------------------------*/
-void CColouredPointsMap::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const
+void CColouredPointsMap::getAs3DObject( mrpt::opengl::CSetOfObjects::Ptr	&outObj ) const
 {
 	ASSERT_(outObj);
 
 	if (!genericMapParams.enableSaveAs3DObject) return;
 
-	opengl::CPointCloudColouredPtr  obj = opengl::CPointCloudColoured::Create();
+	opengl::CPointCloudColoured::Ptr  obj = opengl::CPointCloudColoured::Create();
 
 	obj->loadFromPointsMap(this);
 	obj->setColor(1,1,1,  1.0);

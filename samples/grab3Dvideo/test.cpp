@@ -27,13 +27,13 @@ void TestDisplay3D()
 {
 	CDisplayWindow3D	win("Example of 3D Scene Visualization - MRPT",640,480);
 
-	COpenGLScenePtr &theScene = win.get3DSceneAndLock();
+	COpenGLScene::Ptr &theScene = win.get3DSceneAndLock();
 
 
 	// Add a clone viewport:
 	if (1)
 	{
-		COpenGLViewportPtr vi= theScene->createViewport("myClone");
+		COpenGLViewport::Ptr vi= theScene->createViewport("myClone");
 		vi->setViewportPosition(0.7,0.05,0.28,0.28);
 		vi->setCloneView("main");
 		vi->setTransparent(true);
@@ -45,13 +45,13 @@ void TestDisplay3D()
 	// Modify the scene:
 	// ------------------------------------------------------
 	{
-		opengl::CGridPlaneXYPtr obj = opengl::CGridPlaneXY::Create(-20,20,-20,20,0,1);
+		opengl::CGridPlaneXY::Ptr obj = opengl::CGridPlaneXY::Create(-20,20,-20,20,0,1);
 		obj->setColor(0.4,0.4,0.4);
 		theScene->insert( obj );
 	}
 
 	{
-		opengl::CAxisPtr obj = opengl::CAxis::Create();
+		opengl::CAxis::Ptr obj = opengl::CAxis::Create();
 		obj->setFrequency(5);
 		obj->enableTickMarks();
 		obj->setAxisLimits(-10,-10,-10, 10,10,10);
@@ -59,7 +59,7 @@ void TestDisplay3D()
 	}
 
 	{
-		opengl::CBoxPtr obj = opengl::CBox::Create();
+		opengl::CBox::Ptr obj = opengl::CBox::Create();
 		obj->setWireframe(false);
 		obj->setColor(1,0,0);
 		obj->setLineWidth(3.0);
@@ -68,7 +68,7 @@ void TestDisplay3D()
 	}
 
 	{
-		opengl::CSpherePtr obj = opengl::CSphere::Create();
+		opengl::CSphere::Ptr obj = opengl::CSphere::Create();
 		obj->setColor(0,0,1);
 		obj->setRadius(0.3);
 		obj->setLocation(0,0,1);
@@ -76,7 +76,7 @@ void TestDisplay3D()
 		theScene->insert( obj );
 	}
 	{
-		opengl::CSpherePtr obj = opengl::CSphere::Create();
+		opengl::CSphere::Ptr obj = opengl::CSphere::Create();
 		obj->setColor(1,0,0);
 		obj->setRadius(0.3);
 		obj->setLocation(-1,-1,1);
@@ -85,7 +85,7 @@ void TestDisplay3D()
 	}
 
 	{
-		opengl::CSpherePtr obj = opengl::CSphere::Create();
+		opengl::CSphere::Ptr obj = opengl::CSphere::Create();
 		obj->setColor(0,1,0);
 		obj->setRadius(0.5);
 		obj->setLocation(0,0,0);
@@ -116,9 +116,9 @@ void TestDisplay3D()
 	while (!end && win.isOpen() )
 	{
 		// Move the scene:
-		COpenGLScenePtr &theScene = win.get3DSceneAndLock();
+		COpenGLScene::Ptr &theScene = win.get3DSceneAndLock();
 
-		opengl::CRenderizablePtr obj1 = theScene->getByName("ball_1");
+		opengl::CRenderizable::Ptr obj1 = theScene->getByName("ball_1");
 		obj1->setLocation(
 			obj1->getPoseX() + cos(obj1->getPoseY()/2)*0.05,
 			obj1->getPoseY() - sin(obj1->getPoseX()/2)*0.09,
@@ -146,7 +146,7 @@ void TestDisplay3D()
 		mrpt::system::sleep(10);
 
 		// Grab frame:
-		mrpt::utils::CImagePtr img = win.getLastWindowImagePtr();
+		mrpt::utils::CImage::Ptr img = win.getLastWindowImagePtr();
 		if (img)
 		{
 			static int i=0;

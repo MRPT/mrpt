@@ -28,7 +28,7 @@ using namespace mrpt::poses;
 using namespace std;
 
 
-mrpt::gui::CDisplayWindow3DPtr  win;
+mrpt::gui::CDisplayWindow3D::Ptr  win;
 
 // ------------------------------------------------------
 //				TestRANSACPlanes
@@ -88,16 +88,16 @@ void TestRANSACPlanes()
 
 	// Show GUI
 	// --------------------------
-	win = mrpt::gui::CDisplayWindow3DPtr( new mrpt::gui::CDisplayWindow3D("RANSAC: 3D planes", 500,500));
+	win = mrpt::gui::CDisplayWindow3D::Ptr( new mrpt::gui::CDisplayWindow3D("RANSAC: 3D planes", 500,500));
 
-	opengl::COpenGLScenePtr scene = opengl::COpenGLScene::Create();
+	opengl::COpenGLScene::Ptr scene = opengl::COpenGLScene::Create();
 
 	scene->insert( opengl::CGridPlaneXY::Create(-20,20,-20,20,0,1) );
 	scene->insert( opengl::stock_objects::CornerXYZ() );
 
 	for (vector<pair<size_t,TPlane> >::iterator p=detectedPlanes.begin();p!=detectedPlanes.end();++p)
 	{
-		opengl::CTexturedPlanePtr glPlane = opengl::CTexturedPlane::Create(-10,10,-10,10);
+		opengl::CTexturedPlane::Ptr glPlane = opengl::CTexturedPlane::Create(-10,10,-10,10);
 
 		CPose3D   glPlanePose;
 		p->second.getAsPose3D( glPlanePose );
@@ -109,7 +109,7 @@ void TestRANSACPlanes()
 	}
 
 	{
-		opengl::CPointCloudPtr  points = opengl::CPointCloud::Create();
+		opengl::CPointCloud::Ptr  points = opengl::CPointCloud::Create();
 		points->setColor(0,0,1);
 		points->setPointSize(3);
 		points->enableColorFromZ();

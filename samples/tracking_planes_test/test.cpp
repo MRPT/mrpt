@@ -971,7 +971,7 @@ CFeatureList ExtractFeaturesFrame1(IplImage *img, CFeatureList &f_out)//, double
 	CFeatureList::iterator		itFeat;
 	for( int i = 0; i < count ; i++ )
 	{
-		CFeaturePtr feat = CFeature::Create();
+		CFeature::Ptr feat = CFeature::Create();
 			feat->x			= points[1][i].x;
 			feat->y			= points[1][i].y;
 			feat->ID = i;
@@ -995,7 +995,7 @@ CFeatureList ExtractFeaturesFrame1(IplImage *img, CFeatureList &f_out)//, double
 
 
 	//double dist=1000;
-	//CFeaturePtr nearest = features.nearest( cvGetReal2D(centers, 0, 0), cvGetReal2D(centers, 0, 1), dist );
+	//CFeature::Ptr nearest = features.nearest( cvGetReal2D(centers, 0, 0), cvGetReal2D(centers, 0, 1), dist );
 	//image.cross(  nearest->x, nearest->y, 0, 'x' );
 
 	cout<< features.size() << " features found\n" <<endl;
@@ -1223,7 +1223,7 @@ int main()
 		count = boot.size();
 		for( i = 0; i < count ; i++ )	//Copy boot to flow_klt
 		{
-			CFeaturePtr feat = CFeature::Create();
+			CFeature::Ptr feat = CFeature::Create();
 				feat->x			= boot[i]->x;
 				feat->y			= boot[i]->y;
 				feat->ID = i;
@@ -1269,7 +1269,7 @@ int main()
 
 	//	for( i = 0; i < count; i++)
 	//	{
-	//		CFeaturePtr feat = CFeature::Create();
+	//		CFeature::Ptr feat = CFeature::Create();
 	//		fscanf_s(file, "%f\t%f", &x, &y);
 	//		feat->x			=  x;
 	//		feat->y			=  y;
@@ -1277,7 +1277,7 @@ int main()
 	//		feat->type = featKLT;
 	//		boot.push_back(feat);
 
-	//		CFeaturePtr feat2 = feat;
+	//		CFeature::Ptr feat2 = feat;
 	//		feat2.make_unique();
 	//		flow_klt.push_back(feat2);
 
@@ -1393,13 +1393,13 @@ int main()
 		//		cvTermCriteria(CV_TERMCRIT_ITER|CV_TERMCRIT_EPS,20,0.03));
 		//	for(i=0; i<numFeatTri; i++)
 		//	{
-		//	CFeaturePtr feat = CFeature::Create();
+		//	CFeature::Ptr feat = CFeature::Create();
 		//					feat->x			= puntos[i].x;
 		//					feat->y			= puntos[i].y;
 		//					feat->ID		= 0;
 		//					feat->type		= featKLT;
 		//					feat_patch_ref[t].push_back(feat);
-		//					CFeaturePtr feat2 = feat;
+		//					CFeature::Ptr feat2 = feat;
 		//					feat2.make_unique();
 		//					feat_patch_vid[t].push_back(feat2);
 		//					patch.cross( feat_patch_ref[t][i]->x, feat_patch_ref[t][i]->y, 255, '+' );
@@ -1556,7 +1556,7 @@ int main()
 
 		//EXPAND THE TRIANGLE
 		//float dir, dist;
-		//CFeaturePtr next;
+		//CFeature::Ptr next;
 		//center.x =100; center.y =100;
 		//while ( distance<5 )
 		//{
@@ -1698,7 +1698,7 @@ int main()
 				//CFeatureList::iterator		itFeat;
 				//for( i = 0; i < count ; i++ )
 				//{
-				//	CFeaturePtr feat = CFeature::Create();
+				//	CFeature::Ptr feat = CFeature::Create();
 				//		feat->x			= points[1][i].x;
 				//		feat->y			= points[1][i].y;
 				//		feat->ID = i;
@@ -1931,7 +1931,7 @@ int main()
 				distance2 = 0;
 				for(i=0; i<countT; i++)
 				{
-					//CFeaturePtr feat = CFeature::Create();
+					//CFeature::Ptr feat = CFeature::Create();
 					//feat->x			= pointsT[1][i].x;
 					//feat->y			= pointsT[1][i].y;
 					//feat->ID		= i;

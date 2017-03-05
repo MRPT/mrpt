@@ -158,7 +158,7 @@ namespace mrpt
 			void getLineByIndex(size_t index,double &x0,double &y0,double &z0,double &x1,double &y1,double &z1) const; 
 
 			/** Class factory */
-			static CSetOfLinesPtr Create(const std::vector<mrpt::math::TSegment3D> &sgms, const bool antiAliasing = true);
+			static CSetOfLines::Ptr Create(const std::vector<mrpt::math::TSegment3D> &sgms, const bool antiAliasing = true);
 
 			/** Render */
 			void  render_dl() const MRPT_OVERRIDE;
@@ -212,7 +212,6 @@ namespace mrpt
 			void enableAntiAliasing(bool enable=true) { m_antiAliasing =enable; CRenderizableDisplayList::notifyChange(); }
 			bool isAntiAliasingEnabled() const { return m_antiAliasing; }
 
-		private:
 			/** Constructor */
 			CSetOfLines();
 			/** Constructor with a initial set of lines. */
@@ -224,14 +223,14 @@ namespace mrpt
 		/** Inserts a set of segments into the list. Allows call chaining.
 		  * \sa mrpt::opengl::CSetOfLines::appendLines
 		  */
-		template<class T> inline CSetOfLinesPtr &operator<<(CSetOfLinesPtr &l,const T &s)	{
+		template<class T> inline CSetOfLines::Ptr &operator<<(CSetOfLines::Ptr &l,const T &s)	{
 			l->appendLines(s.begin(),s.end());
 			return l;
 		}
 		/** Inserts a segment into the list. Allows call chaining.
 		  * \sa mrpt::opengl::CSetOfLines::appendLine(const TSegment &)
 		  */
-		template<> inline CSetOfLinesPtr &operator<<(CSetOfLinesPtr &l,const mrpt::math::TSegment3D &s)	{
+		template<> inline CSetOfLines::Ptr &operator<<(CSetOfLines::Ptr &l,const mrpt::math::TSegment3D &s)	{
 			l->appendLine(s);
 			return l;
 		}

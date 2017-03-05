@@ -55,9 +55,9 @@ class CGraphSlamOptimizer : public mrpt::graphslam::CRegistrationDeciderOrOptimi
 		 * \return True if the optimization procedure was executed.
 		 */
 		virtual bool updateState(
-				mrpt::obs::CActionCollectionPtr action,
-				mrpt::obs::CSensoryFramePtr observations,
-				mrpt::obs::CObservationPtr observation ) = 0;
+				mrpt::obs::CActionCollection::Ptr action,
+				mrpt::obs::CSensoryFrame::Ptr observations,
+				mrpt::obs::CObservation::Ptr observation ) = 0;
 
 	protected:
 		/**\brief method called for optimizing the underlying graph.

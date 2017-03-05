@@ -777,7 +777,7 @@ size_t vision::matchFeatures(
     {
         if( idxLeftList[vCnt] != FEAT_FREE )
         {
-            std::pair<CFeaturePtr, CFeaturePtr> thisMatch;
+            std::pair<CFeature::Ptr, CFeature::Ptr> thisMatch;
 
             bool isGood = true;
             double dp1 = -1.0, dp2 = -1.0;
@@ -967,8 +967,8 @@ void vision::projectMatchedFeatures(
 					projectMatchedFeatures
 -------------------------------------------------------------*/
 void vision::projectMatchedFeature(
-                    const CFeaturePtr           & leftFeat,
-                    const CFeaturePtr           & rightFeat,
+                    const CFeature::Ptr           & leftFeat,
+                    const CFeature::Ptr           & rightFeat,
                     TPoint3D                    & p3D,
                     const TStereoSystemParams   & params )
 {

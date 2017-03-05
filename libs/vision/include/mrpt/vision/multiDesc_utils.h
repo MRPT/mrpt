@@ -40,7 +40,7 @@ namespace mrpt
 		const std::string                        & filename );
 
 	void VISION_IMPEXP insertHashCoeffs(
-		const CFeaturePtr                   & feat,
+		const CFeature::Ptr                   & feat,
 		TQuantizationTable                  & qTable );
 
 	TMultiResMatchingOutput VISION_IMPEXP relocalizeMultiDesc(
@@ -187,8 +187,8 @@ namespace mrpt
 		*/
 	int VISION_IMPEXP computeMoreDescriptors(
 		const mrpt::utils::CImage                    & image,
-		const CFeaturePtr               & inputFeat,
-		CFeaturePtr                     & outputFeat,
+		const CFeature::Ptr               & inputFeat,
+		CFeature::Ptr                     & outputFeat,
 		const bool                      & lowerScales,
 		const TMultiResDescOptions      & opts );
 
@@ -200,8 +200,8 @@ namespace mrpt
 		* \param firstScale   [OUT]   The final scale (within [0 feat1->multiScale.size()-1]) where to look.
 		*/
 	void VISION_IMPEXP setProperScales(
-		const CFeaturePtr               & feat1,
-		const CFeaturePtr               & feat2,
+		const CFeature::Ptr               & feat1,
+		const CFeature::Ptr               & feat2,
 		int                             & firstScale,
 		int                             & lastScale );
 
@@ -227,7 +227,7 @@ namespace mrpt
 	*/
 	bool VISION_IMPEXP computeMultiResolutionDescriptors(
 		const mrpt::utils::CImage                    & image,
-		CFeaturePtr                     & feat,
+		CFeature::Ptr                     & feat,
 		const TMultiResDescOptions      & opts );
 
 	/** Computes the multi-resolution SIFT-like descriptor of a list of features

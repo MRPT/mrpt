@@ -112,8 +112,8 @@ void  CMetricMapBuilderRBPF::processActionObservation(
 
 	// Update the traveled distance estimations:
 	{
-		CActionRobotMovement3DPtr act3D = action.getActionByClass<CActionRobotMovement3D>();
-		CActionRobotMovement2DPtr act2D = action.getActionByClass<CActionRobotMovement2D>();
+		CActionRobotMovement3D::Ptr act3D = action.getActionByClass<CActionRobotMovement3D>();
+		CActionRobotMovement2D::Ptr act2D = action.getActionByClass<CActionRobotMovement2D>();
 		if (act3D)
 		{
 			MRPT_LOG_DEBUG("processActionObservation(): Input action is CActionRobotMovement3D");
@@ -171,7 +171,7 @@ void  CMetricMapBuilderRBPF::processActionObservation(
 		// ------------------------------------------------
 		CActionCollection	fakeActs;
 		{
-			CActionRobotMovement3DPtr act3D = action.getActionByClass<CActionRobotMovement3D>();
+			CActionRobotMovement3D::Ptr act3D = action.getActionByClass<CActionRobotMovement3D>();
 			if (act3D)
 			{
 				CActionRobotMovement3D newAct;
@@ -183,7 +183,7 @@ void  CMetricMapBuilderRBPF::processActionObservation(
 			else
 			{
 				// It must be 2D odometry:
-				CActionRobotMovement2DPtr act2D = action.getActionByClass<CActionRobotMovement2D>();
+				CActionRobotMovement2D::Ptr act2D = action.getActionByClass<CActionRobotMovement2D>();
 				ASSERT_(act2D)
 				CActionRobotMovement2D newAct;
 				newAct.computeFromOdometry( CPose2D(odoIncrementSinceLastLocalization.mean), act2D->motionModelConfiguration );
@@ -279,9 +279,9 @@ void  CMetricMapBuilderRBPF::initialize(
 /*---------------------------------------------------------------
 						getMarkovLocalization
   ---------------------------------------------------------------*/
-CPose3DPDFPtr CMetricMapBuilderRBPF::getCurrentPoseEstimation() const
+CPose3DPDF::Ptr CMetricMapBuilderRBPF::getCurrentPoseEstimation() const
 {
-	CPose3DPDFParticlesPtr posePDF = CPose3DPDFParticles::Create();
+	CPose3DPDFParticles::Ptr posePDF = CPose3DPDFParticles::Create();
 	mapPDF.getEstimatedPosePDF(*posePDF);
 	return posePDF;
 }

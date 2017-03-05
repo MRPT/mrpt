@@ -97,7 +97,7 @@ int main(int argc, char **argv)
 		// --------------------------------
 		// The main loop
 		// --------------------------------
-		vector<CObservationPtr>  importedObservations;
+		vector<CObservation::Ptr>  importedObservations;
 		map<TTimeStamp,TPose2D>  groundTruthPoses;  // If found...
 		unsigned int  nSavedObs = 0;
 
@@ -117,7 +117,7 @@ int main(int argc, char **argv)
 				//  a "corrected" odometry from some SLAM program, so save it as ground truth:
 				if (importedObservations.size()>1 && IS_CLASS(importedObservations[i], CObservationOdometry) )
 				{
-					CObservationOdometryPtr odo = CObservationOdometryPtr(importedObservations[i]);
+					CObservationOdometry::Ptr odo = std::dynamic_pointer_cast<CObservationOdometry>(importedObservations[i]);
 					groundTruthPoses[odo->timestamp] = TPose2D(odo->odometry);
 				}
 			}

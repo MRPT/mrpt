@@ -43,7 +43,7 @@ DECLARE_OP_FUNCTION(op_list_poses)
 				throw std::runtime_error("list-poses: Cannot open output text file.");
 		}
 
-		bool processOneObservation(CObservationPtr  &obs)
+		bool processOneObservation(CObservation::Ptr  &obs)
 		{
 			mrpt::poses::CPose3D pose;
 			obs->getSensorPose(pose);

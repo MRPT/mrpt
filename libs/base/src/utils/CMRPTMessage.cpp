@@ -59,7 +59,7 @@ void  CMessage::deserializeIntoExistingObject( CSerializable *obj )
 /*---------------------------------------------------------------
 				deserializeIntoNewObject
  ---------------------------------------------------------------*/
-void  CMessage::deserializeIntoNewObject( CSerializablePtr &obj )
+void  CMessage::deserializeIntoNewObject( CSerializable::Ptr &obj )
 {
 	MRPT_START
 	CMemoryStream		auxStream;

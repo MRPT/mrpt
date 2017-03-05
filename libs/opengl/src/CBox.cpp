@@ -23,9 +23,9 @@ using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(CBox,CRenderizableDisplayList,mrpt::opengl)
 
-CBoxPtr CBox::Create(const mrpt::math::TPoint3D &corner1, const mrpt::math::TPoint3D &corner2, bool  is_wireframe , float lineWidth)	
+CBox::Ptr CBox::Create(const mrpt::math::TPoint3D &corner1, const mrpt::math::TPoint3D &corner2, bool  is_wireframe , float lineWidth)	
 { 
-	return CBoxPtr(new CBox(corner1,corner2,is_wireframe,lineWidth)); 
+	return CBox::Ptr(new CBox(corner1,corner2,is_wireframe,lineWidth)); 
 }
 CBox::CBox() :
 	m_corner_min(-1,-1,-1),

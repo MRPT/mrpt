@@ -63,7 +63,7 @@ struct TThreadParam
 	volatile double tilt_ang_deg;
 	volatile double Hz;
 
-	mrpt::synch::CThreadSafeVariable<CObservation3DRangeScanPtr> new_obs;
+	mrpt::synch::CThreadSafeVariable<CObservation3DRangeScan::Ptr> new_obs;
 };
 
 void thread_grabbing(TThreadParam &p)
@@ -97,7 +97,7 @@ void thread_grabbing(TThreadParam &p)
 		while (!hard_error && !p.quit)
 		{
 			// Grab new observation from the camera:
-			CObservation3DRangeScanPtr  obs = CObservation3DRangeScan::Create(); // Smart pointer to observation
+			CObservation3DRangeScan::Ptr  obs = CObservation3DRangeScan::Create(); // Smart pointer to observation
 			kinect.getNextObservation(*obs,there_is_obs,hard_error);
 
 			if (!hard_error && there_is_obs)
@@ -157,7 +157,7 @@ void Test_Kinect()
 	// Wait until data stream starts so we can say for sure the sensor has been initialized OK:
 	cout << "Waiting for sensor initialization...\n";
 	do {
-		CObservation3DRangeScanPtr possiblyNewObs = thrPar.new_obs.get();
+		CObservation3DRangeScan::Ptr possiblyNewObs = thrPar.new_obs.get();
 		if (possiblyNewObs && possiblyNewObs->timestamp!=INVALID_TIMESTAMP)
 				break;
 		else 	mrpt::system::sleep(10);
@@ -215,22 +215,22 @@ void Test_Kinect()
 	win3D.setFOV(90);
 	win3D.setCameraPointingToPoint(2.5,0,0);
 
-	mrpt::opengl::CPointCloudColouredPtr gl_points = mrpt::opengl::CPointCloudColoured::Create();
+	mrpt::opengl::CPointCloudColoured::Ptr gl_points = mrpt::opengl::CPointCloudColoured::Create();
 	gl_points->setPointSize(2.5);
 
-	mrpt::opengl::CSetOfObjectsPtr gl_curFeats = mrpt::opengl::CSetOfObjects::Create();
-	mrpt::opengl::CSetOfObjectsPtr gl_keyframes = mrpt::opengl::CSetOfObjects::Create();
+	mrpt::opengl::CSetOfObjects::Ptr gl_curFeats = mrpt::opengl::CSetOfObjects::Create();
+	mrpt::opengl::CSetOfObjects::Ptr gl_keyframes = mrpt::opengl::CSetOfObjects::Create();
 
-	mrpt::opengl::CPointCloudColouredPtr gl_points_map = mrpt::opengl::CPointCloudColoured::Create();
+	mrpt::opengl::CPointCloudColoured::Ptr gl_points_map = mrpt::opengl::CPointCloudColoured::Create();
 	gl_points_map->setPointSize(2.0);
 
 	const double aspect_ratio =  480.0 / 640.0; // kinect.getRowCount() / double( kinect.getColCount() );
 
-	mrpt::opengl::CSetOfObjectsPtr gl_cur_cam_corner = mrpt::opengl::stock_objects::CornerXYZSimple(0.4f,4);
+	mrpt::opengl::CSetOfObjects::Ptr gl_cur_cam_corner = mrpt::opengl::stock_objects::CornerXYZSimple(0.4f,4);
 
-	opengl::COpenGLViewportPtr viewInt;
+	opengl::COpenGLViewport::Ptr viewInt;
 	{
-		mrpt::opengl::COpenGLScenePtr &scene = win3D.get3DSceneAndLock();
+		mrpt::opengl::COpenGLScene::Ptr &scene = win3D.get3DSceneAndLock();
 
 		// Create the Opengl object for the point cloud:
 		scene->insert( gl_points_map );
@@ -262,12 +262,12 @@ void Test_Kinect()
 	CPose3D                     currentCamPose_wrt_last; // wrt last pose in "camera_key_frames_path"
 
 	bool gl_keyframes_must_refresh = true;  // Need to update gl_keyframes from camera_key_frames_path??
-	CObservation3DRangeScanPtr  last_obs;
+	CObservation3DRangeScan::Ptr  last_obs;
 	string str_status, str_status2;
 
 	while (win3D.isOpen() && !thrPar.quit)
 	{
-		CObservation3DRangeScanPtr possiblyNewObs = thrPar.new_obs.get();
+		CObservation3DRangeScan::Ptr possiblyNewObs = thrPar.new_obs.get();
 		if (possiblyNewObs && possiblyNewObs->timestamp!=INVALID_TIMESTAMP &&
 			(!last_obs  || possiblyNewObs->timestamp!=last_obs->timestamp ) )
 		{
@@ -468,7 +468,7 @@ void Test_Kinect()
 					for (map<TFeatureID, TPoint3D>::const_iterator it=curVisibleFeats.begin();it!=curVisibleFeats.end();++it)
 					{
 						static double D = 0.02;
-						mrpt::opengl::CBoxPtr box = mrpt::opengl::CBox::Create(TPoint3D(-D,-D,-D),TPoint3D(D,D,D));
+						mrpt::opengl::CBox::Ptr box = mrpt::opengl::CBox::Create(TPoint3D(-D,-D,-D),TPoint3D(D,D,D));
 						box->setWireframe(true);
 						box->setName(format("%d",int(it->first)));
 						box->enableShowName(true);
@@ -500,7 +500,7 @@ void Test_Kinect()
 				gl_keyframes->clear();
 				for (size_t i=0;i<camera_key_frames_path.size();i++)
 				{
-					CSetOfObjectsPtr obj = mrpt::opengl::stock_objects::CornerXYZSimple(0.3f,3);
+					CSetOfObjects::Ptr obj = mrpt::opengl::stock_objects::CornerXYZSimple(0.3f,3);
 					obj->setPose( camera_key_frames_path[i]);
 					gl_keyframes->insert(obj);
 				}

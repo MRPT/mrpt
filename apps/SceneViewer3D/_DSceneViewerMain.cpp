@@ -656,7 +656,7 @@ void _DSceneViewerFrame::OnNewScene(wxCommandEvent& event)
 	updateTitle();
 
     {
-		mrpt::opengl::CGridPlaneXYPtr obj = mrpt::opengl::CGridPlaneXY::Create( -50,50,-50,50,0,1 );
+		mrpt::opengl::CGridPlaneXY::Ptr obj = mrpt::opengl::CGridPlaneXY::Create( -50,50,-50,50,0,1 );
 	    obj->setColor(0.3,0.3,0.3);
 	    m_canvas->m_openGLScene->insert( obj );
     }
@@ -673,7 +673,7 @@ void _DSceneViewerFrame::OnNewScene(wxCommandEvent& event)
     m_canvas->m_openGLScene->insert( stock_objects::CornerXYZ() );
 
 	// Add a clone viewport:
-	COpenGLViewportPtr vi= m_canvas->m_openGLScene->createViewport("clone");
+	COpenGLViewport::Ptr vi= m_canvas->m_openGLScene->createViewport("clone");
 	vi->setViewportPosition(0.05,0.05,0.2,0.2);
 	vi->setCloneView("main");
 	vi->setCloneCamera(true);
@@ -744,15 +744,15 @@ void _DSceneViewerFrame::loadFromFile( const std::string &fil, bool isInASequenc
         // Change the camera if necesary:
 		if ( m_canvas->m_openGLScene->followCamera() )
 		{
-			COpenGLViewportPtr view = m_canvas->m_openGLScene->getViewport("main");
+			COpenGLViewport::Ptr view = m_canvas->m_openGLScene->getViewport("main");
 			if (!view)
 				THROW_EXCEPTION("Fatal error: there is no 'main' viewport in the 3D scene!");
 
-			CCameraPtr cam = m_canvas->m_openGLScene->getByClass<CCamera>();
+			CCamera::Ptr cam = m_canvas->m_openGLScene->getByClass<CCamera>();
 
 			bool  camIsCCameraObj = cam ? true : false;
 			if ( !camIsCCameraObj )
-				cam = CCameraPtr( new CCamera( view->getCamera() ) );
+				cam = CCamera::Ptr( new CCamera( view->getCamera() ) );
 
 			m_canvas->cameraPointingX = cam->getPointingAtX();
 			m_canvas->cameraPointingY = cam->getPointingAtY();
@@ -956,7 +956,7 @@ void _DSceneViewerFrame::OnInsert3DS(wxCommandEvent& event)
 
 		saveLastUsedDirectoryToCfgFile(fil);
 
-		mrpt::opengl::CAssimpModelPtr	obj3D = mrpt::opengl::CAssimpModel::Create();
+		mrpt::opengl::CAssimpModel::Ptr	obj3D = mrpt::opengl::CAssimpModel::Create();
 		obj3D->loadScene( fil );
 		obj3D->setPose( mrpt::math::TPose3D(0,0,0, DEG2RAD(.0),DEG2RAD(0.),DEG2RAD(90.0) ) );
 		m_canvas->m_openGLScene->insert( obj3D );
@@ -1022,7 +1022,7 @@ void _DSceneViewerFrame::OnTravellingTrigger(wxTimerEvent& event)
 		else
 		{
 			// Change the camera
-			COpenGLViewportPtr view = m_canvas->m_openGLScene->getViewport("main");
+			COpenGLViewport::Ptr view = m_canvas->m_openGLScene->getViewport("main");
 
 			if (!view)
 				THROW_EXCEPTION("Fatal error: there is no 'main' viewport in the 3D scene!");
@@ -1108,7 +1108,7 @@ void _DSceneViewerFrame::OnStartCameraTravelling(wxCommandEvent& event)
 		else
 		{
 			// Change the camera
-			COpenGLViewportPtr view = m_canvas->m_openGLScene->getViewport("main");
+			COpenGLViewport::Ptr view = m_canvas->m_openGLScene->getViewport("main");
 
 			if (!view)
 				THROW_EXCEPTION("Fatal error: there is no 'main' viewport in the 3D scene!");
@@ -1159,7 +1159,7 @@ void _DSceneViewerFrame::OnMenuAddSICK(wxCommandEvent& event)
 {
 	try
 	{
-		mrpt::opengl::CSetOfObjectsPtr obj = mrpt::opengl::stock_objects::RobotPioneer();
+		mrpt::opengl::CSetOfObjects::Ptr obj = mrpt::opengl::stock_objects::RobotPioneer();
 		m_canvas->m_openGLScene->insert( obj );
 		m_canvas->Refresh();
     }
@@ -1247,17 +1247,17 @@ void _DSceneViewerFrame::OnmnuItemChangeMaxPointsPerOctreeNodeSelected(wxCommand
 		wxMessageBox(_("Invalid number!"));
 }
 
-void func_clear_octrees(const mrpt::opengl::CRenderizablePtr &o)
+void func_clear_octrees(const mrpt::opengl::CRenderizable::Ptr &o)
 {
 	if (IS_CLASS(o,CPointCloud))
 	{
-		CPointCloudPtr obj = CPointCloudPtr(o);
+		CPointCloud::Ptr obj = std::dynamic_pointer_cast<CPointCloud>(o);
 		obj->octree_mark_as_outdated();
 	}
 	else
 	if (IS_CLASS(o,CPointCloudColoured))
 	{
-		CPointCloudColouredPtr obj = CPointCloudColouredPtr(o);
+		CPointCloudColoured::Ptr obj = std::dynamic_pointer_cast<CPointCloudColoured>(o);
 		obj->octree_mark_as_outdated();
 	}
 }
@@ -1287,13 +1287,13 @@ struct TSceneStats
 
 TSceneStats sceneStats;
 
-void func_gather_stats(const mrpt::opengl::CRenderizablePtr &o)
+void func_gather_stats(const mrpt::opengl::CRenderizable::Ptr &o)
 {
 	sceneStats.nObjects++;
 
 	if (IS_CLASS(o,CPointCloud))
 	{
-		CPointCloudPtr obj = CPointCloudPtr(o);
+		CPointCloud::Ptr obj = std::dynamic_pointer_cast<CPointCloud>(o);
 		sceneStats.nPoints +=obj->size();
 		sceneStats.nOctreeVisible+=obj->octree_get_visible_nodes();
 		sceneStats.nOctreeTotal+=obj->octree_get_node_count();
@@ -1301,7 +1301,7 @@ void func_gather_stats(const mrpt::opengl::CRenderizablePtr &o)
 	else
 	if (IS_CLASS(o,CPointCloudColoured))
 	{
-		CPointCloudColouredPtr obj = CPointCloudColouredPtr(o);
+		CPointCloudColoured::Ptr obj = std::dynamic_pointer_cast<CPointCloudColoured>(o);
 		sceneStats.nPoints +=obj->size();
 		sceneStats.nOctreeVisible+=obj->octree_get_visible_nodes();
 		sceneStats.nOctreeTotal+=obj->octree_get_node_count();
@@ -1337,22 +1337,22 @@ void _DSceneViewerFrame::OnmnuSceneStatsSelected(wxCommandEvent& event)
 
 
 static const std::string name_octrees_bb_globj = "__3dsceneviewer_gl_octree_bb__";
-CSetOfObjectsPtr aux_gl_octrees_bb;
+CSetOfObjects::Ptr aux_gl_octrees_bb;
 
-void func_get_octbb(const mrpt::opengl::CRenderizablePtr &o)
+void func_get_octbb(const mrpt::opengl::CRenderizable::Ptr &o)
 {
 	if (IS_CLASS(o,CPointCloud))
 	{
-		CPointCloudPtr obj = CPointCloudPtr(o);
-		CSetOfObjectsPtr new_bb = CSetOfObjects::Create();
+		CPointCloud::Ptr obj = std::dynamic_pointer_cast<CPointCloud>(o);
+		CSetOfObjects::Ptr new_bb = CSetOfObjects::Create();
 		obj->octree_get_graphics_boundingboxes(*new_bb);
 		aux_gl_octrees_bb->insert(new_bb );
 	}
 	else
 	if (IS_CLASS(o,CPointCloudColoured))
 	{
-		CPointCloudColouredPtr obj = CPointCloudColouredPtr(o);
-		CSetOfObjectsPtr new_bb = CSetOfObjects::Create();
+		CPointCloudColoured::Ptr obj = std::dynamic_pointer_cast<CPointCloudColoured>(o);
+		CSetOfObjects::Ptr new_bb = CSetOfObjects::Create();
 		obj->octree_get_graphics_boundingboxes(*new_bb);
 		aux_gl_octrees_bb->insert(new_bb );
 	}
@@ -1372,13 +1372,13 @@ void _DSceneViewerFrame::OnmnuItemShowCloudOctreesSelected(wxCommandEvent& event
 			mrpt::synch::CCriticalSectionLocker lock(&critSec_UpdateScene);
 			m_canvas->m_openGLScene->visitAllObjects( &func_gather_stats );
 
-			CSetOfObjectsPtr gl_octrees_bb;
+			CSetOfObjects::Ptr gl_octrees_bb;
 
 			// Get object from scene, or creat upon first usage:
 			{
-				CRenderizablePtr obj = m_canvas->m_openGLScene->getByName(name_octrees_bb_globj);
+				CRenderizable::Ptr obj = m_canvas->m_openGLScene->getByName(name_octrees_bb_globj);
 				if (obj)
-					gl_octrees_bb = CSetOfObjectsPtr(obj);
+					gl_octrees_bb = std::dynamic_pointer_cast<CSetOfObjects>(obj);
 				else
 				{
 					gl_octrees_bb = CSetOfObjects::Create();
@@ -1434,8 +1434,8 @@ void _DSceneViewerFrame::OnMenuItemImportPLYPointCloud(wxCommandEvent& event)
 		if (dlgPLY.ShowModal()!=wxID_OK)
 			return;
 
-		opengl::CPointCloudPtr gl_points;
-		opengl::CPointCloudColouredPtr gl_points_col;
+		opengl::CPointCloud::Ptr gl_points;
+		opengl::CPointCloudColoured::Ptr gl_points_col;
                 mrpt::utils::PLY_Importer *ply_obj=nullptr;
 
 		if (dlgPLY.rbClass->GetSelection()==0)
@@ -1467,7 +1467,7 @@ void _DSceneViewerFrame::OnMenuItemImportPLYPointCloud(wxCommandEvent& event)
 
 			if (dlgPLY.cbXYGrid->GetValue())
 			{
-				mrpt::opengl::CGridPlaneXYPtr obj = mrpt::opengl::CGridPlaneXY::Create( -50,50,-50,50,0,1 );
+				mrpt::opengl::CGridPlaneXY::Ptr obj = mrpt::opengl::CGridPlaneXY::Create( -50,50,-50,50,0,1 );
 				obj->setColor(0.3,0.3,0.3);
 				m_canvas->m_openGLScene->insert( obj );
 			}
@@ -1536,24 +1536,24 @@ void _DSceneViewerFrame::OnMenuItemImportPLYPointCloud(wxCommandEvent& event)
 }
 
 
-struct visitor_export_PLY : public unary_function<mrpt::opengl::CRenderizablePtr,void>
+struct visitor_export_PLY : public unary_function<mrpt::opengl::CRenderizable::Ptr,void>
 {
 	const string &filename;
 	unsigned int &count;
 
 	visitor_export_PLY(const string &fil,unsigned int &counter) : filename(fil), count(counter) { }
 
-	void operator()(const mrpt::opengl::CRenderizablePtr &obj)
+	void operator()(const mrpt::opengl::CRenderizable::Ptr &obj)
 	{
 		if (IS_CLASS(obj,CPointCloud))
 		{
-			CPointCloudPtr o = CPointCloudPtr(obj);
+			CPointCloud::Ptr o = std::dynamic_pointer_cast<CPointCloud>(obj);
 			o->saveToPlyFile(format("%s_%03u.ply",filename.c_str(),++count));
 		}
 		else
 		if (IS_CLASS(obj,CPointCloudColoured))
 		{
-			CPointCloudColouredPtr o = CPointCloudColouredPtr(obj);
+			CPointCloudColoured::Ptr o = std::dynamic_pointer_cast<CPointCloudColoured>(obj);
 			o->saveToPlyFile(format("%s_%03u.ply",filename.c_str(),++count));
 		}
 	}
@@ -1661,23 +1661,23 @@ void _DSceneViewerFrame::OnmnuSelectNoneSelected(wxCommandEvent& event)
 class OpenGlObjectsFilterVirtual
 {
 public:
-	OpenGlObjectsFilterVirtual(std::vector<mrpt::opengl::CRenderizablePtr> &out_list) : m_out_list(out_list) {}
+	OpenGlObjectsFilterVirtual(std::vector<mrpt::opengl::CRenderizable::Ptr> &out_list) : m_out_list(out_list) {}
 
-	virtual void operator()(const mrpt::opengl::CRenderizablePtr &obj)
+	virtual void operator()(const mrpt::opengl::CRenderizable::Ptr &obj)
 	{
 		if (checkObj(obj)) m_out_list.push_back(obj);
 	}
 
-	std::vector<mrpt::opengl::CRenderizablePtr> & m_out_list;
+	std::vector<mrpt::opengl::CRenderizable::Ptr> & m_out_list;
 protected:
-	virtual bool checkObj(const mrpt::opengl::CRenderizablePtr &obj) = 0;
+	virtual bool checkObj(const mrpt::opengl::CRenderizable::Ptr &obj) = 0;
 };
 
 class OpenGlObjectsFilter_ByClass : public OpenGlObjectsFilterVirtual
 {
 public:
 	OpenGlObjectsFilter_ByClass(
-		std::vector<mrpt::opengl::CRenderizablePtr> &out_list,
+		std::vector<mrpt::opengl::CRenderizable::Ptr> &out_list,
 		const vector<const TRuntimeClassId*> &selected_classes)
 		: OpenGlObjectsFilterVirtual(out_list),
 		  m_selected_classes(selected_classes)
@@ -1685,7 +1685,7 @@ public:
 	}
 
 protected:
-	virtual bool checkObj(const mrpt::opengl::CRenderizablePtr &obj)
+	virtual bool checkObj(const mrpt::opengl::CRenderizable::Ptr &obj)
 	{
 		for(size_t i=0;i<m_selected_classes.size();i++) {
 			if (obj->GetRuntimeClass()==m_selected_classes[i])
@@ -1793,8 +1793,8 @@ void _DSceneViewerFrame::OnmnuImportLASSelected(wxCommandEvent& event)
 		if (dlgPLY.ShowModal()!=wxID_OK)
 			return;
 
-		opengl::CPointCloudPtr         gl_points;
-		opengl::CPointCloudColouredPtr gl_points_col;
+		opengl::CPointCloud::Ptr         gl_points;
+		opengl::CPointCloudColoured::Ptr gl_points_col;
 
 		if (dlgPLY.rbClass->GetSelection()==0)
 			gl_points     = opengl::CPointCloud::Create();
@@ -1836,7 +1836,7 @@ void _DSceneViewerFrame::OnmnuImportLASSelected(wxCommandEvent& event)
 
 		if (dlgPLY.cbXYGrid->GetValue())
 		{
-			mrpt::opengl::CGridPlaneXYPtr obj = mrpt::opengl::CGridPlaneXY::Create( bb_min.x,bb_max.x, bb_min.y,bb_max.y, 0, scene_size*0.02 );
+			mrpt::opengl::CGridPlaneXY::Ptr obj = mrpt::opengl::CGridPlaneXY::Create( bb_min.x,bb_max.x, bb_min.y,bb_max.y, 0, scene_size*0.02 );
 			obj->setColor(0.3,0.3,0.3);
 			m_canvas->m_openGLScene->insert( obj );
 		}
@@ -1883,7 +1883,7 @@ void _DSceneViewerFrame::OnmnuImportLASSelected(wxCommandEvent& event)
 		m_canvas->cameraAzimuthDeg   = 45;
 		m_canvas->cameraElevationDeg = 30;
 
-		COpenGLViewportPtr gl_view = m_canvas->m_openGLScene->getViewport();
+		COpenGLViewport::Ptr gl_view = m_canvas->m_openGLScene->getViewport();
 		gl_view->setViewportClipDistances(0.01,10*scene_size);
 
 		loadedFileName = std::string("Imported_")+fil+std::string(".3Dscene");

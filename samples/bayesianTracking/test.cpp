@@ -270,7 +270,7 @@ void TestBayesianTracking()
 
 		// Process with PF:
 		CSensoryFrame SF;
-		CObservationBearingRangePtr obsRangeBear = CObservationBearingRange::Create();
+		CObservationBearingRange::Ptr obsRangeBear = CObservationBearingRange::Create();
 		obsRangeBear->sensedData.resize(1);
 		obsRangeBear->sensedData[0].range = obsRange;
 		obsRangeBear->sensedData[0].yaw   = obsBearing;
@@ -583,7 +583,7 @@ void  CRangeBearingParticleFilter::prediction_and_update_pfStandardProposal(
 		m_particles[i].d->vy += TRANSITION_MODEL_STD_VXY * randomGenerator.drawGaussian1D_normalized();
 	}
 
-	CObservationBearingRangePtr obs = observation->getObservationByClass<CObservationBearingRange>();
+	CObservationBearingRange::Ptr obs = observation->getObservationByClass<CObservationBearingRange>();
 	ASSERT_(obs);
 	ASSERT_(obs->sensedData.size()==1);
 	float obsRange = obs->sensedData[0].range;

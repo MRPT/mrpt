@@ -46,7 +46,7 @@ tuple CICP_AlignPDF1(CICP &self, COccupancyGridMap2D &m1, CSimplePointsMap &m2, 
     float runningTime;
     CICP::TReturnInfo info;
 
-    CPosePDFPtr posePDFPtr = self.AlignPDF(&m1, &m2, initialEstimationPDF, &runningTime, &info);
+    CPosePDF::Ptr posePDFPtr = self.AlignPDF(&m1, &m2, initialEstimationPDF, &runningTime, &info);
     posePDF.copyFrom(*posePDFPtr);
 
     boost::python::list ret_val;
@@ -62,7 +62,7 @@ tuple CICP_AlignPDF2(CICP &self, CSimplePointsMap &m1, CSimplePointsMap &m2, CPo
     float runningTime;
     CICP::TReturnInfo info;
 
-    CPosePDFPtr posePDFPtr = self.AlignPDF(&m1, &m2, initialEstimationPDF, &runningTime, &info);
+    CPosePDF::Ptr posePDFPtr = self.AlignPDF(&m1, &m2, initialEstimationPDF, &runningTime, &info);
     posePDF.copyFrom(*posePDFPtr);
 
     boost::python::list ret_val;
@@ -81,7 +81,7 @@ struct CMetricMapBuilderWrap : CMetricMapBuilder, wrapper<CMetricMapBuilder>
         this->get_override("initialize")(initialMap, x0);
     }
 
-    CPose3DPDFPtr getCurrentPoseEstimation() const
+    CPose3DPDF::Ptr getCurrentPoseEstimation() const
     {
         return this->get_override("getCurrentPoseEstimation")();
     }
@@ -124,9 +124,9 @@ void CMetricMapBuilderRBPF_initialize(CMetricMapBuilderRBPF& self, CSimpleMap& i
     self.initialize(initialMap, &x0);
 }
 
-CPose3DPDFParticlesPtr CMetricMapBuilderRBPF_getCurrentPoseEstimation(CMetricMapBuilderRBPF& self)
+CPose3DPDFParticles::Ptr CMetricMapBuilderRBPF_getCurrentPoseEstimation(CMetricMapBuilderRBPF& self)
 {
-    return (CPose3DPDFParticlesPtr) self.getCurrentPoseEstimation();
+    return std::dynamic_pointer_cast<CPose3DPDFParticles> (self.getCurrentPoseEstimation());
 }
 // end of CMetricMapBuilder
 
@@ -159,9 +159,9 @@ CPosePDFGaussian CRangeBearingKFSLAM2D_getCurrentRobotPose(CRangeBearingKFSLAM2D
     return out_robotPose;
 }
 
-mrpt::opengl::CSetOfObjectsPtr CRangeBearingKFSLAM2D_getAs3DObject(CRangeBearingKFSLAM2D& self)
+mrpt::opengl::CSetOfObjects::Ptr CRangeBearingKFSLAM2D_getAs3DObject(CRangeBearingKFSLAM2D& self)
 {
-    mrpt::opengl::CSetOfObjectsPtr outObj = mrpt::opengl::CSetOfObjects::Create();
+    mrpt::opengl::CSetOfObjects::Ptr outObj = mrpt::opengl::CSetOfObjects::Create();
     self.getAs3DObject(outObj);
     return outObj;
 }
@@ -170,22 +170,22 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(CRangeBearingKFSLAM2D_saveMapAndPath2DRep
 // end of CRangeBearingKFSLAM2D
 
 // CMonteCarloLocalization2D
-void CMonteCarloLocalization2D_prediction_and_update_pfStandardProposal(CMonteCarloLocalization2D& self, const mrpt::obs::CActionCollectionPtr action, const mrpt::obs::CSensoryFramePtr observation, const CParticleFilter::TParticleFilterOptions &PF_options)
+void CMonteCarloLocalization2D_prediction_and_update_pfStandardProposal(CMonteCarloLocalization2D& self, const mrpt::obs::CActionCollection::Ptr action, const mrpt::obs::CSensoryFrame::Ptr observation, const CParticleFilter::TParticleFilterOptions &PF_options)
 {
     self.prediction_and_update_pfStandardProposal(action.get(), observation.get(), PF_options);
 }
 
-void CMonteCarloLocalization2D_prediction_and_update_pfAuxiliaryPFStandard(CMonteCarloLocalization2D& self, const mrpt::obs::CActionCollectionPtr action, const mrpt::obs::CSensoryFramePtr observation, const CParticleFilter::TParticleFilterOptions &PF_options)
+void CMonteCarloLocalization2D_prediction_and_update_pfAuxiliaryPFStandard(CMonteCarloLocalization2D& self, const mrpt::obs::CActionCollection::Ptr action, const mrpt::obs::CSensoryFrame::Ptr observation, const CParticleFilter::TParticleFilterOptions &PF_options)
 {
     self.prediction_and_update_pfAuxiliaryPFStandard(action.get(), observation.get(), PF_options);
 }
 
-void CMonteCarloLocalization2D_prediction_and_update_pfAuxiliaryPFOptimal(CMonteCarloLocalization2D& self, const mrpt::obs::CActionCollectionPtr action, const mrpt::obs::CSensoryFramePtr observation, const CParticleFilter::TParticleFilterOptions &PF_options)
+void CMonteCarloLocalization2D_prediction_and_update_pfAuxiliaryPFOptimal(CMonteCarloLocalization2D& self, const mrpt::obs::CActionCollection::Ptr action, const mrpt::obs::CSensoryFrame::Ptr observation, const CParticleFilter::TParticleFilterOptions &PF_options)
 {
     self.prediction_and_update_pfAuxiliaryPFOptimal(action.get(), observation.get(), PF_options);
 }
 
-void CMonteCarloLocalization2D_prediction_and_update(CMonteCarloLocalization2D& self, const mrpt::obs::CActionCollectionPtr action, const mrpt::obs::CSensoryFramePtr observation, const CParticleFilter::TParticleFilterOptions &PF_options)
+void CMonteCarloLocalization2D_prediction_and_update(CMonteCarloLocalization2D& self, const mrpt::obs::CActionCollection::Ptr action, const mrpt::obs::CSensoryFrame::Ptr observation, const CParticleFilter::TParticleFilterOptions &PF_options)
 {
     self.prediction_and_update(action.get(), observation.get(), PF_options);
 }
@@ -232,9 +232,9 @@ void CMonteCarloLocalization2D_readParticlesFromStream(CMonteCarloLocalization2D
     self.readParticlesFromStream(in);
 }
 
-mrpt::opengl::CSetOfObjectsPtr CMonteCarloLocalization2D_getAs3DObject(CMonteCarloLocalization2D& self)
+mrpt::opengl::CSetOfObjects::Ptr CMonteCarloLocalization2D_getAs3DObject(CMonteCarloLocalization2D& self)
 {
-    mrpt::opengl::CSetOfObjectsPtr outObj = mrpt::opengl::CSetOfObjects::Create();
+    mrpt::opengl::CSetOfObjects::Ptr outObj = mrpt::opengl::CSetOfObjects::Create();
     self.getAs3DObject(outObj);
     return outObj;
 }
@@ -256,22 +256,22 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(CMonteCarloLocalization2D_performResampli
 // end of CMonteCarloLocalization2D
 
 // CMonteCarloLocalization3D
-void CMonteCarloLocalization3D_prediction_and_update_pfStandardProposal(CMonteCarloLocalization3D& self, const mrpt::obs::CActionCollectionPtr action, const mrpt::obs::CSensoryFramePtr observation, const CParticleFilter::TParticleFilterOptions &PF_options)
+void CMonteCarloLocalization3D_prediction_and_update_pfStandardProposal(CMonteCarloLocalization3D& self, const mrpt::obs::CActionCollection::Ptr action, const mrpt::obs::CSensoryFrame::Ptr observation, const CParticleFilter::TParticleFilterOptions &PF_options)
 {
     self.prediction_and_update_pfStandardProposal(action.get(), observation.get(), PF_options);
 }
 
-void CMonteCarloLocalization3D_prediction_and_update_pfAuxiliaryPFStandard(CMonteCarloLocalization3D& self, const mrpt::obs::CActionCollectionPtr action, const mrpt::obs::CSensoryFramePtr observation, const CParticleFilter::TParticleFilterOptions &PF_options)
+void CMonteCarloLocalization3D_prediction_and_update_pfAuxiliaryPFStandard(CMonteCarloLocalization3D& self, const mrpt::obs::CActionCollection::Ptr action, const mrpt::obs::CSensoryFrame::Ptr observation, const CParticleFilter::TParticleFilterOptions &PF_options)
 {
     self.prediction_and_update_pfAuxiliaryPFStandard(action.get(), observation.get(), PF_options);
 }
 
-void CMonteCarloLocalization3D_prediction_and_update_pfAuxiliaryPFOptimal(CMonteCarloLocalization3D& self, const mrpt::obs::CActionCollectionPtr action, const mrpt::obs::CSensoryFramePtr observation, const CParticleFilter::TParticleFilterOptions &PF_options)
+void CMonteCarloLocalization3D_prediction_and_update_pfAuxiliaryPFOptimal(CMonteCarloLocalization3D& self, const mrpt::obs::CActionCollection::Ptr action, const mrpt::obs::CSensoryFrame::Ptr observation, const CParticleFilter::TParticleFilterOptions &PF_options)
 {
     self.prediction_and_update_pfAuxiliaryPFOptimal(action.get(), observation.get(), PF_options);
 }
 
-void CMonteCarloLocalization3D_prediction_and_update(CMonteCarloLocalization3D& self, const mrpt::obs::CActionCollectionPtr action, const mrpt::obs::CSensoryFramePtr observation, const CParticleFilter::TParticleFilterOptions &PF_options)
+void CMonteCarloLocalization3D_prediction_and_update(CMonteCarloLocalization3D& self, const mrpt::obs::CActionCollection::Ptr action, const mrpt::obs::CSensoryFrame::Ptr observation, const CParticleFilter::TParticleFilterOptions &PF_options)
 {
     self.prediction_and_update(action.get(), observation.get(), PF_options);
 }
@@ -318,9 +318,9 @@ void CMonteCarloLocalization3D_readParticlesFromStream(CMonteCarloLocalization3D
     self.readParticlesFromStream(in);
 }
 
-mrpt::opengl::CSetOfObjectsPtr CMonteCarloLocalization3D_getAs3DObject(CMonteCarloLocalization3D& self)
+mrpt::opengl::CSetOfObjects::Ptr CMonteCarloLocalization3D_getAs3DObject(CMonteCarloLocalization3D& self)
 {
-    mrpt::opengl::CSetOfObjectsPtr outObj = mrpt::opengl::CSetOfObjects::Create();
+    mrpt::opengl::CSetOfObjects::Ptr outObj = mrpt::opengl::CSetOfObjects::Create();
     self.getAs3DObject(outObj);
     return outObj;
 }

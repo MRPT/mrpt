@@ -209,7 +209,7 @@ void  CBeacon::changeCoordinatesReference( const CPose3D &newReferenceBase )
 /*---------------------------------------------------------------
 					getAs3DObject
   ---------------------------------------------------------------*/
-void  CBeacon::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const
+void  CBeacon::getAs3DObject( mrpt::opengl::CSetOfObjects::Ptr	&outObj ) const
 {
 	MRPT_START
 
@@ -217,7 +217,7 @@ void  CBeacon::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const
 	{
 	case pdfMonteCarlo:
 		{
-			opengl::CPointCloudPtr obj = opengl::CPointCloud::Create();
+			opengl::CPointCloud::Ptr obj = opengl::CPointCloud::Create();
 			obj->setColor(1,0,0);
 
 			obj->setPointSize(2.5);
@@ -236,7 +236,7 @@ void  CBeacon::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const
 		break;
 	case pdfGauss:
 		{
-			opengl::CEllipsoidPtr obj = opengl::CEllipsoid::Create();
+			opengl::CEllipsoid::Ptr obj = opengl::CEllipsoid::Create();
 
 			obj->setPose(m_locationGauss.mean);
 			obj->setLineWidth(3);
@@ -260,7 +260,7 @@ void  CBeacon::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const
 	default:			THROW_EXCEPTION("ERROR: Invalid 'm_typePDF' value");
 	};
 
-	opengl::CTextPtr obj2 = opengl::CText::Create();
+	opengl::CText::Ptr obj2 = opengl::CText::Create();
 	obj2->setString( format("#%d",static_cast<int>(m_ID)) );
 
 	CPoint3D	meanP;

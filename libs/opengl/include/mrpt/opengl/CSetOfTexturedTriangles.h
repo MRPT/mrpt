@@ -72,7 +72,6 @@ namespace mrpt
 
 			virtual bool traceRay( const mrpt::poses::CPose3D &o,double &dist ) const MRPT_OVERRIDE;
 
-		private:
 			/** Constructor
 			  */
 			CSetOfTexturedTriangles( ) : m_triangles()

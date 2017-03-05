@@ -58,14 +58,13 @@ namespace mrpt
 			void  render_dl() const MRPT_OVERRIDE;
 
 			/** Class factory */
-			static CSimpleLinePtr Create(
+			static CSimpleLine::Ptr Create(
 				float x0,float y0, float z0,
 				float x1,float y1, float z1, float lineWidth = 1 );
 
 			/** Evaluates the bounding box of this object (including possible children) in the coordinate frame of the object parent. */
 			void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const MRPT_OVERRIDE;
 
-		private:
 			/** Constructor
 			  */
 			CSimpleLine(

@@ -109,13 +109,13 @@ void TestRANSAC()
 
 	const size_t nObs=NUM_OBSERVATIONS_TO_SIMUL;
 
-	mrpt::opengl::CPointCloudPtr gl_obs_map = mrpt::opengl::CPointCloud::Create();
-	mrpt::opengl::CPointCloudPtr gl_result = mrpt::opengl::CPointCloud::Create();
-	mrpt::opengl::CSetOfObjectsPtr gl_obs = mrpt::opengl::CSetOfObjects::Create();
-	mrpt::opengl::CSetOfObjectsPtr gl_obs_txts = mrpt::opengl::CSetOfObjects::Create();
-	mrpt::opengl::CSetOfLinesPtr gl_lines = mrpt::opengl::CSetOfLines::Create();
+	mrpt::opengl::CPointCloud::Ptr gl_obs_map = mrpt::opengl::CPointCloud::Create();
+	mrpt::opengl::CPointCloud::Ptr gl_result = mrpt::opengl::CPointCloud::Create();
+	mrpt::opengl::CSetOfObjects::Ptr gl_obs = mrpt::opengl::CSetOfObjects::Create();
+	mrpt::opengl::CSetOfObjects::Ptr gl_obs_txts = mrpt::opengl::CSetOfObjects::Create();
+	mrpt::opengl::CSetOfLines::Ptr gl_lines = mrpt::opengl::CSetOfLines::Create();
 	{
-		mrpt::opengl::COpenGLScenePtr &scene = win.get3DSceneAndLock();
+		mrpt::opengl::COpenGLScene::Ptr &scene = win.get3DSceneAndLock();
 
 		scene->getViewport("main")->setCustomBackgroundColor( TColorf(0.8f,0.8f,0.8f));
 		win.setCameraPointingToPoint( MAP_SIZE_X*0.5, MAP_SIZE_Y*0.5, 0);
@@ -125,7 +125,7 @@ void TestRANSAC()
 		scene->insert( mrpt::opengl::stock_objects::CornerXYZ() );
 
 		//
-		mrpt::opengl::CPointCloudPtr gl_map = mrpt::opengl::CPointCloud::Create();
+		mrpt::opengl::CPointCloud::Ptr gl_map = mrpt::opengl::CPointCloud::Create();
 		gl_map->loadFromPointsMap(&the_map);
 		gl_map->setColor(0,0,1);
 		gl_map->setPointSize(3);
@@ -135,7 +135,7 @@ void TestRANSAC()
 #if SHOW_POINT_LABELS
 		for (size_t i=0;i<the_map.size();i++)
 		{
-			mrpt::opengl::CTextPtr gl_txt = mrpt::opengl::CText::Create( mrpt::format("%u",static_cast<unsigned int>(i)) );
+			mrpt::opengl::CText::Ptr gl_txt = mrpt::opengl::CText::Create( mrpt::format("%u",static_cast<unsigned int>(i)) );
 			double x,y;
 			the_map.getPoint(i,x,y);
 			gl_txt->setLocation(x+0.05,y+0.05,0.01);
@@ -286,7 +286,7 @@ void TestRANSAC()
 
 
 		{
-			//mrpt::opengl::COpenGLScenePtr &scene =
+			//mrpt::opengl::COpenGLScene::Ptr &scene =
 			win.get3DSceneAndLock();
 
 			win.addTextMessage(
@@ -304,7 +304,7 @@ void TestRANSAC()
 			gl_obs_txts->clear();
 			for (size_t i=0;i<nObs;i++)
 			{
-				mrpt::opengl::CTextPtr gl_txt = mrpt::opengl::CText::Create( mrpt::format("%u",static_cast<unsigned int>(i)) );
+				mrpt::opengl::CText::Ptr gl_txt = mrpt::opengl::CText::Create( mrpt::format("%u",static_cast<unsigned int>(i)) );
 				const double x = observations[i].x;
 				const double y = observations[i].y;
 				gl_txt->setLocation(x+0.05,y+0.05,0.01);

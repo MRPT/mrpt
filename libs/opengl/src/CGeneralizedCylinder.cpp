@@ -26,9 +26,9 @@ using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(CGeneralizedCylinder,CRenderizableDisplayList,mrpt::opengl)
 
-CGeneralizedCylinderPtr CGeneralizedCylinder::Create(const std::vector<TPoint3D> &axis,const std::vector<TPoint3D> &generatrix)	
+CGeneralizedCylinder::Ptr CGeneralizedCylinder::Create(const std::vector<TPoint3D> &axis,const std::vector<TPoint3D> &generatrix)	
 {
-	return CGeneralizedCylinderPtr(new CGeneralizedCylinder(axis,generatrix));
+	return CGeneralizedCylinder::Ptr(new CGeneralizedCylinder(axis,generatrix));
 }
 void CGeneralizedCylinder::TQuadrilateral::calculateNormal()	{
 	double ax=points[1].x-points[0].x;
@@ -158,7 +158,7 @@ void CGeneralizedCylinder::readFromStream(mrpt::utils::CStream &in,int version)	
 	CRenderizableDisplayList::notifyChange();
 }
 
-void generatePolygon(CPolyhedronPtr &poly,const vector<TPoint3D> &profile,const CPose3D &pose)	{
+void generatePolygon(CPolyhedron::Ptr &poly,const vector<TPoint3D> &profile,const CPose3D &pose)	{
 	math::TPolygon3D p(profile.size());
 	for (size_t i=0;i<profile.size();i++) pose.composePoint(profile[i].x,profile[i].y,profile[i].z,p[i].x,p[i].y,p[i].z);
 	vector<math::TPolygon3D> convexPolys;
@@ -166,7 +166,7 @@ void generatePolygon(CPolyhedronPtr &poly,const vector<TPoint3D> &profile,const 
 	poly=CPolyhedron::Create(convexPolys);
 }
 
-void CGeneralizedCylinder::getOrigin(CPolyhedronPtr &poly) const	{
+void CGeneralizedCylinder::getOrigin(CPolyhedron::Ptr &poly) const	{
 	if (!meshUpToDate) updateMesh();
 	if (axis.size()<2||generatrix.size()<3) throw std::logic_error("Not enough points.");
 	size_t i=fullyVisible?0:firstSection;
@@ -175,7 +175,7 @@ void CGeneralizedCylinder::getOrigin(CPolyhedronPtr &poly) const	{
 	poly->setColor(getColor());
 }
 
-void CGeneralizedCylinder::getEnd(CPolyhedronPtr &poly) const	{
+void CGeneralizedCylinder::getEnd(CPolyhedron::Ptr &poly) const	{
 	if (!meshUpToDate) updateMesh();
 	if (axis.size()<2||generatrix.size()<3) throw std::logic_error("Not enough points.");
 	size_t i=(fullyVisible?axis.size():lastSection)-1;
@@ -191,7 +191,7 @@ void CGeneralizedCylinder::generateSetOfPolygons(std::vector<TPolygon3D> &res) c
 	for (size_t i=0;i<N;i++) res[i]=polys[i].poly;
 }
 
-void CGeneralizedCylinder::getClosedSection(size_t index1,size_t index2,mrpt::opengl::CPolyhedronPtr &poly) const	{
+void CGeneralizedCylinder::getClosedSection(size_t index1,size_t index2,mrpt::opengl::CPolyhedron::Ptr &poly) const	{
 	if (index1>index2) swap(index1,index2);
 	if (index2>=axis.size()-1) throw std::logic_error("Out of range");
 	CMatrixTemplate<TPoint3D> ROIpoints;

@@ -23,9 +23,9 @@ using namespace std;
 
 IMPLEMENTS_SERIALIZABLE( CSetOfLines, CRenderizableDisplayList, mrpt::opengl )
 
-CSetOfLinesPtr CSetOfLines::Create(const std::vector<TSegment3D> &sgms, const bool antiAliasing)
+CSetOfLines::Ptr CSetOfLines::Create(const std::vector<TSegment3D> &sgms, const bool antiAliasing)
 {
-	return CSetOfLinesPtr(new CSetOfLines(sgms,antiAliasing));
+	return CSetOfLines::Ptr(new CSetOfLines(sgms,antiAliasing));
 }
 /** Constructor */
 CSetOfLines::CSetOfLines()

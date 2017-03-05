@@ -66,13 +66,13 @@ namespace mrpt
 			struct TInfoPerTexture
 			{
 				size_t id_idx; //!< indices in \a m_textureIds. string::npos for non-initialized ones.
-				mrpt::utils::CImagePtr img_rgb, img_alpha;
+				mrpt::utils::CImage::Ptr img_rgb, img_alpha;
 				TInfoPerTexture() : id_idx(std::string::npos) {}
 			};
 
-		private:
 			CAssimpModel( );
 			virtual ~CAssimpModel(); //!< Private, virtual destructor: only can be deleted from smart pointers
+		private:
 
 			/** A container for automatic deletion of lib3ds's scene when the last reference of the smart_ptr's is destroyed.
 			  */

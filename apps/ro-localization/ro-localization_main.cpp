@@ -266,7 +266,7 @@ void TestParticlesLocalization()
 
 			// 3D World
 #ifdef STORE_3D
-			COpenGLScenePtr scene = COpenGLScene::Create();
+			COpenGLScene::Ptr scene = COpenGLScene::Create();
 
 	#ifdef	SHOW_REAL_TIME_3D
 			CDisplayWindow3D		window("ro-localization - Part of MRPT");
@@ -284,11 +284,11 @@ void TestParticlesLocalization()
 				window.grabImagesStart();
 			}
 
-			COpenGLScenePtr sceneTR = window.get3DSceneAndLock();
+			COpenGLScene::Ptr sceneTR = window.get3DSceneAndLock();
 	#endif
 			//World Axis
 			{
-				opengl::CAxisPtr obj = opengl::CAxis::Create(-20,-10,-1,20,10,4,1);
+				opengl::CAxis::Ptr obj = opengl::CAxis::Create(-20,-10,-1,20,10,4,1);
 				obj->enableTickMarks();
 				obj->setColor(0,0,0);
 		#ifdef	SHOW_REAL_TIME_3D
@@ -306,20 +306,20 @@ void TestParticlesLocalization()
 
 	#ifdef	SHOW_REAL_TIME_3D
 				{
-					opengl::CSetOfObjectsPtr obj = opengl::CSetOfObjects::Create();
+					opengl::CSetOfObjects::Ptr obj = opengl::CSetOfObjects::Create();
 					grid2d.getAs3DObject(obj);
 					obj->setLocation(initialPoseExperiment.x(),initialPoseExperiment.y(), 0);
 					sceneTR->insert( obj );
 				}
 	#endif
-				opengl::CSetOfObjectsPtr obj = opengl::CSetOfObjects::Create();
+				opengl::CSetOfObjects::Ptr obj = opengl::CSetOfObjects::Create();
 				grid2d.getAs3DObject(obj);
 				scene->insert( obj );
 			}
 			else
 			// Floor
 			{
-				opengl::CGridPlaneXYPtr obj = opengl::CGridPlaneXY::Create(-20,20,-10,10,0,0.5);
+				opengl::CGridPlaneXY::Ptr obj = opengl::CGridPlaneXY::Create(-20,20,-10,10,0,0.5);
 				obj->setColor(0.4,0.4,0.4);
 		#ifdef	SHOW_REAL_TIME_3D
 				sceneTR->insert( obj );
@@ -333,7 +333,7 @@ void TestParticlesLocalization()
 			{
 				for (size_t k=0;k<metricMap.m_landmarksMap->size();k++)
 				{
-					opengl::CSpherePtr parts = opengl::CSphere::Create();
+					opengl::CSphere::Ptr parts = opengl::CSphere::Create();
 					parts->setColor(1,0,0);
 					parts->setLocation( metricMap.m_landmarksMap->landmarks.get(k)->pose_mean );
 					parts->setRadius(0.2f);
@@ -356,8 +356,8 @@ void TestParticlesLocalization()
 			// -----------------------------
 			//		Particle filter
 			// -----------------------------
-			CActionCollectionPtr action;
-			CSensoryFramePtr observations;
+			CActionCollection::Ptr action;
+			CSensoryFrame::Ptr observations;
 			CPose2D	pdfEstimation;
 
 			while (rawlogEntry<(rawlogEntries-1))
@@ -371,7 +371,7 @@ void TestParticlesLocalization()
 
 				//-------------------FRANCO DATA--------------------
 				{
-					CObservationBeaconRangesPtr beaconPose = observations->getObservationByClass<CObservationBeaconRanges>();
+					CObservationBeaconRanges::Ptr beaconPose = observations->getObservationByClass<CObservationBeaconRanges>();
 					if (beaconPose)
 					{
 						franco_matrix(step,0)=beaconPose->auxEstimatePose.x();
@@ -420,7 +420,7 @@ void TestParticlesLocalization()
 
 					// Create real_ranges row:
 					// ----------------------------
-					CObservationBeaconRangesPtr beaconPose = observations->getObservationByClass<CObservationBeaconRanges>();
+					CObservationBeaconRanges::Ptr beaconPose = observations->getObservationByClass<CObservationBeaconRanges>();
 					if (!sensorPoseOnRobot_valid)
 					{
 						if (beaconPose)
@@ -534,16 +534,16 @@ void TestParticlesLocalization()
 
 					// The particles:
 	#ifdef	SHOW_REAL_TIME_3D
-					opengl::CRenderizablePtr obj = sceneTR->getByName( "part" );
-					opengl::CPointCloudPtr parts;
+					opengl::CRenderizable::Ptr obj = sceneTR->getByName( "part" );
+					opengl::CPointCloud::Ptr parts;
 
 					if( !obj )
 						parts = opengl::CPointCloud::Create();
 					else
-						parts = CPointCloudPtr(obj);
+						parts = std::dynamic_pointer_cast<CPointCloud>(obj);
 	#else
-					opengl::CPointCloudPtr parts = opengl::CPointCloud::Create();
-					opengl::CRenderizablePtr obj;
+					opengl::CPointCloud::Ptr parts = opengl::CPointCloud::Create();
+					opengl::CRenderizable::Ptr obj;
 	#endif
 
 					parts->setColor(0,0,1);
@@ -567,13 +567,13 @@ void TestParticlesLocalization()
 					// The particles' cov:
 	#ifdef	SHOW_REAL_TIME_3D
 					obj = sceneTR->getByName( "cov" );
-					opengl::CEllipsoidPtr ellip;
+					opengl::CEllipsoid::Ptr ellip;
 					if( !obj )
 						ellip = opengl::CEllipsoid::Create();
 					else
-						ellip = CEllipsoidPtr(obj);
+						ellip = std::dynamic_pointer_cast<CEllipsoid>(obj);
 	#else
-					opengl::CEllipsoidPtr ellip =  opengl::CEllipsoid::Create();
+					opengl::CEllipsoid::Ptr ellip =  opengl::CEllipsoid::Create();
 	#endif
 
 					ellip->setColor(1,0,0, 0.6);
@@ -595,11 +595,11 @@ void TestParticlesLocalization()
 	#ifdef	SHOW_REAL_TIME_3D
 					// The laser scan:
 					obj = sceneTR->getByName( "laser" );
-					opengl::CPointCloudPtr scanPts;
+					opengl::CPointCloud::Ptr scanPts;
 					if( !obj )
 						scanPts = opengl::CPointCloud::Create();
 					else
-						scanPts = CPointCloudPtr(obj);
+						scanPts = std::dynamic_pointer_cast<CPointCloud>(obj);
 
 					scanPts->setColor(1,0,0, 0.9);
 					scanPts->enableColorFromZ(false);
@@ -618,7 +618,7 @@ void TestParticlesLocalization()
 					}
 
 					// Beacon range spheres:
-					CObservationBeaconRangesPtr dist=  observations->getObservationByClass<CObservationBeaconRanges>();
+					CObservationBeaconRanges::Ptr dist=  observations->getObservationByClass<CObservationBeaconRanges>();
 					if ( metricMap.m_landmarksMap && dist && !dist->sensedData.empty() )
 					{
 						for (size_t k=0;k<dist->sensedData.size();k++)
@@ -628,16 +628,16 @@ void TestParticlesLocalization()
 							if (lm)
 							{
 								#ifdef	SHOW_REAL_TIME_3D
-									opengl::CRenderizablePtr obj = sceneTR->getByName( beacon_name );
-									opengl::CDiskPtr sphere;
+									opengl::CRenderizable::Ptr obj = sceneTR->getByName( beacon_name );
+									opengl::CDisk::Ptr sphere;
 
 									if( !obj )
 										sphere = opengl::CDisk::Create();
 									else
-										sphere = CDiskPtr(obj);
+										sphere = std::dynamic_pointer_cast<CDisk>(obj);
 								#else
-									opengl::CSpherePtr sphere = opengl::CSphere::Create();
-									opengl::CRenderizablePtr obj;
+									opengl::CSphere::Ptr sphere = opengl::CSphere::Create();
+									opengl::CRenderizable::Ptr obj;
 								#endif
 
 								sphere->setColor(0,0,1, 0.3);
@@ -669,18 +669,18 @@ void TestParticlesLocalization()
 					// Franco Position
 					if (SHOW_3D_FRANCO_POSITION)
 					{
-						opengl::CRenderizablePtr obj = sceneTR->getByName( "franc" );
-						opengl::CSpherePtr sphere;
+						opengl::CRenderizable::Ptr obj = sceneTR->getByName( "franc" );
+						opengl::CSphere::Ptr sphere;
 
 						if( !obj )
 							sphere = opengl::CSphere::Create();
 						else
-							sphere = opengl::CSpherePtr(obj);
+							sphere = std::dynamic_pointer_cast<opengl::CSphere>(obj);
 						sphere->setColor(0,1,0);
 						sphere->setRadius(0.05f);
 						sphere->setName( "franc");
 
-						CObservationBeaconRangesPtr dist= observations->getObservationByClass<CObservationBeaconRanges>();
+						CObservationBeaconRanges::Ptr dist= observations->getObservationByClass<CObservationBeaconRanges>();
 						if (dist)
 						{
 							sphere->setLocation(
@@ -700,16 +700,16 @@ void TestParticlesLocalization()
 					// Mean of particles
 					{
 	#ifdef	SHOW_REAL_TIME_3D
-						opengl::CRenderizablePtr obj = sceneTR->getByName( "mean_parts" );
-						opengl::CSpherePtr sphere;
+						opengl::CRenderizable::Ptr obj = sceneTR->getByName( "mean_parts" );
+						opengl::CSphere::Ptr sphere;
 
 						if( !obj )
 							sphere = opengl::CSphere::Create();
 						else
-							sphere = opengl::CSpherePtr(obj);
+							sphere = std::dynamic_pointer_cast<opengl::CSphere>(obj);
 
 	#else
-						opengl::CSpherePtr sphere = opengl::CSphere::Create();
+						opengl::CSphere::Ptr sphere = opengl::CSphere::Create();
 	#endif
 						sphere->setColor( 0,0,1);
 						sphere->setRadius(0.05f);
@@ -730,15 +730,15 @@ void TestParticlesLocalization()
 					if (groundTruth.getRowCount()>size_t(step))
 					{
 	#ifdef	SHOW_REAL_TIME_3D
-						opengl::CRenderizablePtr obj = sceneTR->getByName( "GT" );
-						opengl::CSpherePtr sphere;
+						opengl::CRenderizable::Ptr obj = sceneTR->getByName( "GT" );
+						opengl::CSphere::Ptr sphere;
 
 						if( !obj )
 							sphere = opengl::CSphere::Create();
 						else
-							sphere = opengl::CSpherePtr(obj);
+							sphere = std::dynamic_pointer_cast<opengl::CSphere>(obj);
 	#else
-						opengl::CSpherePtr sphere = opengl::CSphere::Create();
+						opengl::CSphere::Ptr sphere = opengl::CSphere::Create();
 	#endif
 						sphere->setColor(0,0,0);
 						sphere->setRadius(0.10f);
@@ -761,17 +761,17 @@ void TestParticlesLocalization()
 	#ifdef	SHOW_REAL_TIME_3D
 					//GPS pose
 					{
-						CObservationGPSPtr o = observations->getObservationByClass<CObservationGPS>();
+						CObservationGPS::Ptr o = observations->getObservationByClass<CObservationGPS>();
 						if (o && metricMap.m_landmarksMap)
 						{
-							opengl::CRenderizablePtr obj = sceneTR->getByName( "gps" );
-							opengl::CEllipsoidPtr sphere;
+							opengl::CRenderizable::Ptr obj = sceneTR->getByName( "gps" );
+							opengl::CEllipsoid::Ptr sphere;
 							double x,y;
 
 							if( !obj )
 								sphere = opengl::CEllipsoid::Create();
 							else
-								sphere = opengl::CEllipsoidPtr(obj);
+								sphere = std::dynamic_pointer_cast<opengl::CEllipsoid>(obj);
 
 							sphere->setColor(0,1,1, 0.5);
 							sphere->setName( "gps");
@@ -797,17 +797,17 @@ void TestParticlesLocalization()
 						}
 					}
 					{
-						CObservationGPSPtr o = observations->getObservationByClass<CObservationGPS>();
+						CObservationGPS::Ptr o = observations->getObservationByClass<CObservationGPS>();
 						if (o)
 						{
-							opengl::CRenderizablePtr obj = sceneTR->getByName( "gps_CENTER" );
-							opengl::CSpherePtr sphere;
+							opengl::CRenderizable::Ptr obj = sceneTR->getByName( "gps_CENTER" );
+							opengl::CSphere::Ptr sphere;
 							double x,y;
 
 							if( !obj )
 								sphere = opengl::CSphere::Create();
 							else
-								sphere = opengl::CSpherePtr(obj);
+								sphere = std::dynamic_pointer_cast<opengl::CSphere>(obj);
 							sphere->setColor(0,1,1);
 							sphere->setName("gps_CENTER");
 							if (o->hasMsgClass<mrpt::obs::gnss::Message_NMEA_GGA>())

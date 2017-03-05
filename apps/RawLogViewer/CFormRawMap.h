@@ -123,7 +123,7 @@ public:
 private:
 
 
-	mrpt::gui::CDisplayWindow3DPtr	win3Dmap;
+	mrpt::gui::CDisplayWindow3D::Ptr	win3Dmap;
 
 
     DECLARE_EVENT_TABLE()

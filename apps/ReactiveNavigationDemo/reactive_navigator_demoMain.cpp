@@ -478,7 +478,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
 	// Populate 3D views:
 	// -------------------------------
 	{
-		mrpt::opengl::CGridPlaneXYPtr obj = mrpt::opengl::CGridPlaneXY::Create(-50,50, -50,50, 0, 1);
+		mrpt::opengl::CGridPlaneXY::Ptr obj = mrpt::opengl::CGridPlaneXY::Create(-50,50, -50,50, 0, 1);
 		obj->setColor_u8(TColor(30,30,30,50));
 		m_plot3D->m_openGLScene->insert( obj );
 	}
@@ -491,7 +491,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
 	gl_robot_local = mrpt::opengl::CSetOfObjects::Create();
 	gl_robot = mrpt::opengl::CSetOfObjects::Create();
 	{
-		mrpt::opengl::CSetOfObjectsPtr gl_robot_render = mrpt::opengl::CSetOfObjects::Create();
+		mrpt::opengl::CSetOfObjects::Ptr gl_robot_render = mrpt::opengl::CSetOfObjects::Create();
 		gl_robot_render->setName("robot_render");
 		gl_robot->insert(gl_robot_render);
 	}
@@ -516,7 +516,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
 	gl_target = mrpt::opengl::CSetOfObjects::Create();
 	gl_target->setVisibility(false);
 	{
-		mrpt::opengl::CArrowPtr obj;
+		mrpt::opengl::CArrow::Ptr obj;
 		obj = mrpt::opengl::CArrow::Create( 1,0,0,  0.2f,0,0, 0.4f,0.05f, 0.15f ); obj->setColor_u8( TColor(0,0,255) ); gl_target->insert(obj);
 		obj = mrpt::opengl::CArrow::Create(-1,0,0, -0.2f,0,0, 0.4f,0.05f, 0.15f ); obj->setColor_u8( TColor(0,0,255) ); gl_target->insert(obj);
 		obj = mrpt::opengl::CArrow::Create( 0,1,0,  0,0.2f,0, 0.4f,0.05f, 0.15f ); obj->setColor_u8( TColor(0,0,255) ); gl_target->insert(obj);
@@ -535,7 +535,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
 	{	// Sign of "picking a navigation target":
 		m_gl_placing_nav_target = opengl::CSetOfObjects::Create();
 
-		mrpt::opengl::CArrowPtr obj;
+		mrpt::opengl::CArrow::Ptr obj;
 		obj = mrpt::opengl::CArrow::Create( 1,0,0,  0.2f,0,0, 0.4f,0.05f, 0.15f ); obj->setColor_u8( TColor(0,0,255) ); m_gl_placing_nav_target->insert(obj);
 		obj = mrpt::opengl::CArrow::Create(-1,0,0, -0.2f,0,0, 0.4f,0.05f, 0.15f ); obj->setColor_u8( TColor(0,0,255) ); m_gl_placing_nav_target->insert(obj);
 		obj = mrpt::opengl::CArrow::Create( 0,1,0,  0,0.2f,0, 0.4f,0.05f, 0.15f ); obj->setColor_u8( TColor(0,0,255) ); m_gl_placing_nav_target->insert(obj);
@@ -545,7 +545,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
 	}
 	{	// Sign of "replacing the robot":
 		m_gl_placing_robot = opengl::CSetOfObjects::Create();
-		mrpt::opengl::CSetOfObjectsPtr obj = mrpt::opengl::stock_objects::CornerXYZSimple(1.0,2.0);
+		mrpt::opengl::CSetOfObjects::Ptr obj = mrpt::opengl::stock_objects::CornerXYZSimple(1.0,2.0);
 		obj->setColor_u8( TColor(255,0,0, 120) );
 		m_gl_placing_robot->insert(obj);
 
@@ -555,7 +555,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
 	{	// Sign of "drawing obstacles":
 		m_gl_drawing_obs = opengl::CSetOfObjects::Create();
 
-		mrpt::opengl::CCylinderPtr obj = mrpt::opengl::CCylinder::Create(0.05f, 0.10f,1.0f);
+		mrpt::opengl::CCylinder::Ptr obj = mrpt::opengl::CCylinder::Create(0.05f, 0.10f,1.0f);
 		obj->setColor_u8( mrpt::utils::TColor(0xff,0x00,0x00,0x70) );
 		m_gl_drawing_obs->insert(obj);
 
@@ -588,7 +588,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
 
 	// 2D view ==============
 	{
-		mrpt::opengl::CGridPlaneXYPtr obj = mrpt::opengl::CGridPlaneXY::Create(-1,1.001f, -1,1.001f, 0, 1);
+		mrpt::opengl::CGridPlaneXY::Ptr obj = mrpt::opengl::CGridPlaneXY::Create(-1,1.001f, -1,1.001f, 0, 1);
 		obj->setColor_u8(TColor(30,30,30,50));
 		m_plotLocalView->m_openGLScene->insert( obj );
 	}
@@ -966,7 +966,7 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 		const size_t nObs = lfr.infoPerPTG[sel_PTG].TP_Obstacles.size();
 		if (lfr.infoPerPTG.size()>0 && IS_CLASS(lfr.infoPerPTG[sel_PTG].HLFR, CLogFileRecord_ND))
 		{
-			CLogFileRecord_NDPtr log = CLogFileRecord_NDPtr(lfr.infoPerPTG[sel_PTG].HLFR);
+			CLogFileRecord_ND::Ptr log = std::dynamic_pointer_cast<CLogFileRecord_ND>(lfr.infoPerPTG[sel_PTG].HLFR);
 			const size_t nGaps = log->gaps_ini.size();
 
 			const string sSitu = mrpt::utils::TEnumType<CHolonomicND::TSituations>::value2name(log->situation);
@@ -1100,7 +1100,7 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 		gl_waypoints_clicking->clear();
 		for (const auto &p : m_waypoints_clicked.waypoints)
 		{
-			mrpt::opengl::CDiskPtr gl_pt = mrpt::opengl::CDisk::Create(0.3f,0.2f, 20);
+			mrpt::opengl::CDisk::Ptr gl_pt = mrpt::opengl::CDisk::Create(0.3f,0.2f, 20);
 			gl_pt->setLocation(p.target.x,p.target.y,0.01);
 			gl_pt->setColor_u8(mrpt::utils::TColor(0x00,0x00,0xff));
 			gl_waypoints_clicking->insert(gl_pt);
@@ -1116,7 +1116,7 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 			{
 				const bool is_cur_goal = (int(idx)==wp_status.waypoint_index_current_goal);
 
-				mrpt::opengl::CDiskPtr gl_pt = mrpt::opengl::CDisk::Create(is_cur_goal ? 0.4f : 0.3f,0.2f, 20);
+				mrpt::opengl::CDisk::Ptr gl_pt = mrpt::opengl::CDisk::Create(is_cur_goal ? 0.4f : 0.3f,0.2f, 20);
 				gl_pt->setLocation(p.target.x,p.target.y,0.01);
 				gl_pt->setName(mrpt::format("WayPt #%2u Reach:%s",idx, p.reached ? "YES":"NO"));
 				gl_pt->enableShowName(true);
@@ -1459,12 +1459,12 @@ void create_viz_robot_holo( mrpt::opengl::CSetOfObjects &objs )
 {
 	objs.clear();
 	{
-		mrpt::opengl::CSetOfObjectsPtr gl_xyz = mrpt::opengl::stock_objects::CornerXYZSimple(1.0f, 2.0f);
+		mrpt::opengl::CSetOfObjects::Ptr gl_xyz = mrpt::opengl::stock_objects::CornerXYZSimple(1.0f, 2.0f);
 		gl_xyz->setLocation(0.0,0.0, 1.25);
 		objs.insert( gl_xyz );
 	}
 
-	mrpt::opengl::CCylinderPtr obj = mrpt::opengl::CCylinder::Create(0.36f /*base radius*/,0.20f /*top radius */,1.2f /*height*/);
+	mrpt::opengl::CCylinder::Ptr obj = mrpt::opengl::CCylinder::Create(0.36f /*base radius*/,0.20f /*top radius */,1.2f /*height*/);
 	obj->setColor_u8( TColor::red );
 	objs.insert( obj );
 }
@@ -1494,7 +1494,7 @@ void reactive_navigator_demoframe::OnrbKinTypeSelect(wxCommandEvent& event)
 			m_robotSimul.reset(sim);
 			m_robotSimul2NavInterface.reset( new MyRobot2NavInterface_Diff( *sim, m_latest_obstacles ) );
 			// Opengl viz:
-			create_viz_robot_diff( *mrpt::opengl::CSetOfObjectsPtr( gl_robot->getByName("robot_render") ) );
+			create_viz_robot_diff( *std::dynamic_pointer_cast<mrpt::opengl::CSetOfObjects>( gl_robot->getByName("robot_render") ) );
 			create_viz_robot_diff(*gl_robot_local);
 			gl_robot_local->setScale( 1.0 / m_simul_options.MAX_SENSOR_RADIUS );
 		}
@@ -1505,7 +1505,7 @@ void reactive_navigator_demoframe::OnrbKinTypeSelect(wxCommandEvent& event)
 			m_robotSimul.reset(sim);
 			m_robotSimul2NavInterface.reset( new MyRobot2NavInterface_Holo( *sim, m_latest_obstacles ) );
 			// Opengl viz:
-			create_viz_robot_holo(*mrpt::opengl::CSetOfObjectsPtr( gl_robot->getByName("robot_render") ));
+			create_viz_robot_holo(*std::dynamic_pointer_cast<mrpt::opengl::CSetOfObjects>( gl_robot->getByName("robot_render") ));
 			create_viz_robot_holo(*gl_robot_local);
 			gl_robot_local->setScale( 1.0 / m_simul_options.MAX_SENSOR_RADIUS );
 		}

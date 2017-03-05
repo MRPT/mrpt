@@ -81,7 +81,7 @@ namespace mrpt
 			GYRO_MODE		m_mode;
 			bool 						m_firstInteration;
 				        
-			mrpt::obs::CObservationIMUPtr		m_observationGyro;
+			mrpt::obs::CObservationIMU::Ptr		m_observationGyro;
 
 		public:
 			/** Constructor

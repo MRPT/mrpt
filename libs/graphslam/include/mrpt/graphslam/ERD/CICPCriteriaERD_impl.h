@@ -65,9 +65,9 @@ CICPCriteriaERD<GRAPH_t>::~CICPCriteriaERD() { }
 // //////////////////////////////////
 
 template<class GRAPH_t> bool CICPCriteriaERD<GRAPH_t>::updateState(
-		mrpt::obs::CActionCollectionPtr action,
-		mrpt::obs::CSensoryFramePtr observations,
-		mrpt::obs::CObservationPtr observation ) {
+		mrpt::obs::CActionCollection::Ptr action,
+		mrpt::obs::CSensoryFrame::Ptr observations,
+		mrpt::obs::CObservation::Ptr observation ) {
 	MRPT_START;
 	MRPT_UNUSED_PARAM(action);
 	using namespace mrpt::obs;
@@ -85,14 +85,14 @@ template<class GRAPH_t> bool CICPCriteriaERD<GRAPH_t>::updateState(
 	if (observation) { // observation-only rawlog format
 		if (IS_CLASS(observation, CObservation2DRangeScan)) {
 			m_last_laser_scan2D =
-				static_cast<mrpt::obs::CObservation2DRangeScanPtr>(observation);
+				std::dynamic_pointer_cast<mrpt::obs::CObservation2DRangeScan>(observation);
 
 
 			m_is_using_3DScan = false;
 		}
 		if (IS_CLASS(observation, CObservation3DRangeScan)) {
 			m_last_laser_scan3D =
-				static_cast<mrpt::obs::CObservation3DRangeScanPtr>(observation);
+				std::dynamic_pointer_cast<mrpt::obs::CObservation3DRangeScan>(observation);
 			// just load the range/intensity images - CGraphSlanEngine takes care
 			// of the path
 			m_last_laser_scan3D->load();
@@ -174,9 +174,9 @@ void CICPCriteriaERD<GRAPH_t>::checkRegistrationCondition2D(
 	using namespace mrpt::math;
 
 	mrpt::utils::TNodeID curr_nodeID = m_graph->nodeCount()-1;
-	CObservation2DRangeScanPtr curr_laser_scan;
+	CObservation2DRangeScan::Ptr curr_laser_scan;
 	std::map<mrpt::utils::TNodeID,
-		mrpt::obs::CObservation2DRangeScanPtr>::const_iterator search;
+		mrpt::obs::CObservation2DRangeScan::Ptr>::const_iterator search;
 
 	// search for curr_laser_scan
 	search = m_nodes_to_laser_scans2D.find(curr_nodeID);
@@ -194,7 +194,7 @@ void CICPCriteriaERD<GRAPH_t>::checkRegistrationCondition2D(
 			// get the ICP edge between current and last node
 			constraint_t rel_edge;
 			mrpt::slam::CICP::TReturnInfo icp_info;
-			CObservation2DRangeScanPtr prev_laser_scan;
+			CObservation2DRangeScan::Ptr prev_laser_scan;
 
 			// search for prev_laser_scan
 			search = m_nodes_to_laser_scans2D.find(*node_it);
@@ -255,9 +255,9 @@ void CICPCriteriaERD<GRAPH_t>::checkRegistrationCondition3D(
 	using namespace mrpt::math;
 
 	mrpt::utils::TNodeID curr_nodeID = m_graph->nodeCount()-1;
-	CObservation3DRangeScanPtr curr_laser_scan;
+	CObservation3DRangeScan::Ptr curr_laser_scan;
 	std::map<mrpt::utils::TNodeID,
-		mrpt::obs::CObservation3DRangeScanPtr>::const_iterator search;
+		mrpt::obs::CObservation3DRangeScan::Ptr>::const_iterator search;
 	// search for curr_laser_scan
 	search = m_nodes_to_laser_scans3D.find(curr_nodeID);
 	if (search != m_nodes_to_laser_scans3D.end()) {
@@ -274,7 +274,7 @@ void CICPCriteriaERD<GRAPH_t>::checkRegistrationCondition3D(
 			// get the ICP edge between current and last node
 			constraint_t rel_edge;
 			mrpt::slam::CICP::TReturnInfo icp_info;
-			CObservation3DRangeScanPtr prev_laser_scan;
+			CObservation3DRangeScan::Ptr prev_laser_scan;
 
 			// search for prev_laser_scan
 			search = m_nodes_to_laser_scans3D.find(*node_it);
@@ -395,10 +395,10 @@ void CICPCriteriaERD<GRAPH_t>::toggleLaserScansVisualization() {
 
 	this->logFmt(mrpt::utils::LVL_INFO, "Toggling LaserScans visualization...");
 
-	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+	COpenGLScene::Ptr scene = m_win->get3DSceneAndLock();
 
 	if (params.visualize_laser_scans) {
-		CRenderizablePtr obj = scene->getByName("laser_scan_viz");
+		CRenderizable::Ptr obj = scene->getByName("laser_scan_viz");
 		obj->setVisibility(!obj->isVisible());
 	}
 	else {
@@ -442,9 +442,9 @@ void CICPCriteriaERD<GRAPH_t>::initializeVisuals() {
 
 	// ICP_max_distance disk
 	if (params.ICP_max_distance > 0) {
-		COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+		COpenGLScene::Ptr scene = m_win->get3DSceneAndLock();
 
-		CDiskPtr obj = CDisk::Create();
+		CDisk::Ptr obj = CDisk::Create();
 		pose_t initial_pose;
 		obj->setPose(initial_pose);
 		obj->setName("ICP_max_distance");
@@ -458,9 +458,9 @@ void CICPCriteriaERD<GRAPH_t>::initializeVisuals() {
 
 	// laser scan visualization
 	if (params.visualize_laser_scans) {
-		COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+		COpenGLScene::Ptr scene = m_win->get3DSceneAndLock();
 
-		CPlanarLaserScanPtr laser_scan_viz = mrpt::opengl::CPlanarLaserScan::Create();
+		CPlanarLaserScan::Ptr laser_scan_viz = mrpt::opengl::CPlanarLaserScan::Create();
 		laser_scan_viz->enablePoints(true);
 		laser_scan_viz->enableLine(true);
 		laser_scan_viz->enableSurface(true);
@@ -507,10 +507,10 @@ void CICPCriteriaERD<GRAPH_t>::updateVisuals() {
 
 	// update ICP_max_distance Disk
 	if (m_win && params.ICP_max_distance > 0) {
-		COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+		COpenGLScene::Ptr scene = m_win->get3DSceneAndLock();
 
-		CRenderizablePtr obj = scene->getByName("ICP_max_distance");
-		CDiskPtr disk_obj = static_cast<CDiskPtr>(obj);
+		CRenderizable::Ptr obj = scene->getByName("ICP_max_distance");
+		CDisk::Ptr disk_obj = std::dynamic_pointer_cast<CDisk>(obj);
 
 		disk_obj->setPose(m_graph->nodes[m_graph->nodeCount()-1]);
 
@@ -521,10 +521,10 @@ void CICPCriteriaERD<GRAPH_t>::updateVisuals() {
 	// update laser scan visual
 	if (m_win && params.visualize_laser_scans &&
 			(m_last_laser_scan2D || m_fake_laser_scan2D)) {
-		COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+		COpenGLScene::Ptr scene = m_win->get3DSceneAndLock();
 
-		CRenderizablePtr obj = scene->getByName("laser_scan_viz");
-		CPlanarLaserScanPtr laser_scan_viz = static_cast<CPlanarLaserScanPtr>(obj);
+		CRenderizable::Ptr obj = scene->getByName("laser_scan_viz");
+		CPlanarLaserScan::Ptr laser_scan_viz = std::dynamic_pointer_cast<CPlanarLaserScan>(obj);
 
 		// if fake 2D exists use it
 		if (m_fake_laser_scan2D) {
@@ -563,9 +563,9 @@ bool CICPCriteriaERD<GRAPH_t>::justInsertedLoopClosure() const {
 
 template<class GRAPH_t>
 void CICPCriteriaERD<GRAPH_t>::checkIfInvalidDataset(
-		mrpt::obs::CActionCollectionPtr action,
-		mrpt::obs::CSensoryFramePtr observations,
-		mrpt::obs::CObservationPtr observation ) {
+		mrpt::obs::CActionCollection::Ptr action,
+		mrpt::obs::CSensoryFrame::Ptr observations,
+		mrpt::obs::CObservation::Ptr observation ) {
 	MRPT_START;
 	MRPT_UNUSED_PARAM(action);
 	using namespace mrpt::utils;

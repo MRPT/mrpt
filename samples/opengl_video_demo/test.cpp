@@ -28,7 +28,7 @@ void TestOpenGLVideo()
 	// Show to the user a list of possible camera drivers and creates and open the selected camera.
 	cout << "Please, select the input video file or camera...\n";
 
-	mrpt::hwdrivers::CCameraSensorPtr cam = mrpt::hwdrivers::prepareVideoSourceFromUserSelection();
+	mrpt::hwdrivers::CCameraSensor::Ptr cam = mrpt::hwdrivers::prepareVideoSourceFromUserSelection();
 	if (!cam) return;
 
 	cout << "Video stream open OK\n";
@@ -37,13 +37,13 @@ void TestOpenGLVideo()
 	CDisplayWindow3D	win("Demo of video textures with MRPT's OpenGL objects",640,480);
 
 	// XY Grid
-	opengl::CGridPlaneXYPtr gl_ground = opengl::CGridPlaneXY::Create(-7,7,-7,7,0,1);
+	opengl::CGridPlaneXY::Ptr gl_ground = opengl::CGridPlaneXY::Create(-7,7,-7,7,0,1);
 	gl_ground->setColor(0.7,0.7,0.7);
 
 	// An opengl plane with the video texture
-	opengl::CTexturedPlanePtr gl_plane1 = opengl::CTexturedPlane::Create(0,1,0,0.75); // 4/3 aspect ratio
-	opengl::CTexturedPlanePtr gl_plane2 = opengl::CTexturedPlane::Create(0,1,0,0.75);
-	opengl::CTexturedPlanePtr gl_plane3 = opengl::CTexturedPlane::Create(0,1,0,0.75);
+	opengl::CTexturedPlane::Ptr gl_plane1 = opengl::CTexturedPlane::Create(0,1,0,0.75); // 4/3 aspect ratio
+	opengl::CTexturedPlane::Ptr gl_plane2 = opengl::CTexturedPlane::Create(0,1,0,0.75);
+	opengl::CTexturedPlane::Ptr gl_plane3 = opengl::CTexturedPlane::Create(0,1,0,0.75);
 
 	gl_plane1->setPose(mrpt::poses::CPose3D(0,0,1, DEG2RAD(0), DEG2RAD(0), DEG2RAD(-90)));
 	gl_plane2->setPose(mrpt::poses::CPose3D(1,0,1, DEG2RAD(120), DEG2RAD(0), DEG2RAD(-90)));
@@ -53,7 +53,7 @@ void TestOpenGLVideo()
 
 	// Insert objects in scene:
 	{
-		COpenGLScenePtr &theScene = win.get3DSceneAndLock();
+		COpenGLScene::Ptr &theScene = win.get3DSceneAndLock();
 		theScene->insert( gl_ground );
 		theScene->insert( gl_plane1 );
 		theScene->insert( gl_plane2 );
@@ -70,12 +70,12 @@ void TestOpenGLVideo()
 		mrpt::system::sleep(1);
 
 		// Grab new video frame:
-		CObservationPtr obs = cam->getNextFrame();
+		CObservation::Ptr obs = cam->getNextFrame();
 		if (obs)
 		{
 			if (IS_CLASS(obs,CObservationImage))
 			{
-				CObservationImagePtr o = CObservationImagePtr(obs);
+				CObservationImage::Ptr o = CObservationImage::Ptr(obs);
 				win.get3DSceneAndLock();
 					gl_plane1->assignImage( o->image );
 					gl_plane2->assignImage( o->image );

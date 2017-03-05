@@ -38,11 +38,11 @@ DECLARE_OP_FUNCTION(op_generate_3d_pointclouds)
 			entries_modified = 0;
 		}
 
-		bool processOneObservation(CObservationPtr  &obs)
+		bool processOneObservation(CObservation::Ptr  &obs)
 		{
 			if (IS_CLASS(obs, CObservation3DRangeScan ) )
 			{
-				CObservation3DRangeScanPtr obs3D = CObservation3DRangeScanPtr(obs);
+				CObservation3DRangeScan::Ptr obs3D = std::dynamic_pointer_cast<CObservation3DRangeScan>(obs);
 				if (obs3D->hasRangeImage)
 				{
 					obs3D->load();  // We must be sure that depth has been loaded, if stored separately.
@@ -56,9 +56,9 @@ DECLARE_OP_FUNCTION(op_generate_3d_pointclouds)
 
 		// This method can be reimplemented to save the modified object to an output stream.
 		virtual void OnPostProcess(
-			mrpt::obs::CActionCollectionPtr &actions,
-			mrpt::obs::CSensoryFramePtr     &SF,
-			mrpt::obs::CObservationPtr      &obs)
+			mrpt::obs::CActionCollection::Ptr &actions,
+			mrpt::obs::CSensoryFrame::Ptr     &SF,
+			mrpt::obs::CObservation::Ptr      &obs)
 		{
 			ASSERT_((actions && SF) || obs)
 			if (actions)

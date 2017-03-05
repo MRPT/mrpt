@@ -173,19 +173,19 @@ class holonomic_navigator_demoFrame: public wxFrame
         TCursorPickState                 m_cursorPickState;   //!< The state of the cursor onto the 3D view:
 
 		// ========= Opengl View: Map & robot  =======
-		mrpt::opengl::CSetOfObjectsPtr		gl_grid;
-		mrpt::opengl::CSetOfObjectsPtr		gl_robot, gl_target;
-		mrpt::opengl::CSetOfObjectsPtr		m_gl_placing_nav_target;
-		mrpt::opengl::CSetOfObjectsPtr		m_gl_placing_robot;
-		mrpt::opengl::CDiskPtr		        gl_robot_sensor_range;
-		mrpt::opengl::CSetOfLinesPtr        gl_robot_path;
-		mrpt::opengl::CPlanarLaserScanPtr   gl_scan3D, gl_scan2D;
-		mrpt::opengl::CPointCloudPtr 		gl_path;
+		mrpt::opengl::CSetOfObjects::Ptr		gl_grid;
+		mrpt::opengl::CSetOfObjects::Ptr		gl_robot, gl_target;
+		mrpt::opengl::CSetOfObjects::Ptr		m_gl_placing_nav_target;
+		mrpt::opengl::CSetOfObjects::Ptr		m_gl_placing_robot;
+		mrpt::opengl::CDisk::Ptr		        gl_robot_sensor_range;
+		mrpt::opengl::CSetOfLines::Ptr        gl_robot_path;
+		mrpt::opengl::CPlanarLaserScan::Ptr   gl_scan3D, gl_scan2D;
+		mrpt::opengl::CPointCloud::Ptr 		gl_path;
 
 		// ========= Opengl View: Local view (holonomic)  =======
-		mrpt::opengl::CSimpleLinePtr        gl_line_direction;
-		mrpt::opengl::CPointCloudPtr        gl_rel_target;
-		mrpt::opengl::CSetOfLinesPtr        gl_nd_gaps;
+		mrpt::opengl::CSimpleLine::Ptr        gl_line_direction;
+		mrpt::opengl::CPointCloud::Ptr        gl_rel_target;
+		mrpt::opengl::CSetOfLines::Ptr        gl_nd_gaps;
 
 };
 

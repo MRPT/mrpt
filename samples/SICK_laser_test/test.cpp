@@ -76,7 +76,7 @@ void TestPLS()
 			map.save2D_to_text_file("_out_scan.txt");
 
 /*			COpenGLScene			scene3D;
-			opengl::CPointCloudPtr points = opengl::CPointCloud::Create();
+			opengl::CPointCloud::Ptr points = opengl::CPointCloud::Create();
 			points->loadFromPointsMap(&map);
 			scene3D.insert(points);
 			CFileOutputStream("_out_point_cloud.3Dscene") << scene3D;

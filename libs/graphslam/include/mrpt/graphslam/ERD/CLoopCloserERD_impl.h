@@ -76,9 +76,9 @@ CLoopCloserERD<GRAPH_t>::~CLoopCloserERD() {
 
 template<class GRAPH_t>
 bool CLoopCloserERD<GRAPH_t>::updateState(
-		mrpt::obs::CActionCollectionPtr action,
-		mrpt::obs::CSensoryFramePtr observations,
-		mrpt::obs::CObservationPtr observation ) {
+		mrpt::obs::CActionCollection::Ptr action,
+		mrpt::obs::CSensoryFrame::Ptr observations,
+		mrpt::obs::CObservation::Ptr observation ) {
 	MRPT_START;
 	MRPT_UNUSED_PARAM(action);
 	m_time_logger.enter("updateState");
@@ -103,15 +103,14 @@ bool CLoopCloserERD<GRAPH_t>::updateState(
 	if (observation) { // observation-only rawlog format
 		if (IS_CLASS(observation, CObservation2DRangeScan)) {
 			m_last_laser_scan2D = 
-				static_cast<mrpt::obs::CObservation2DRangeScanPtr>(observation);
-
+				std::dynamic_pointer_cast<mrpt::obs::CObservation2DRangeScan>(observation);
 		}
 	}
 	else { // action-observations format
 		// action part
 
 		// observation part
-		CObservationPtr curr_observation =
+		CObservation::Ptr curr_observation =
 			observations->getObservationByClass<CObservation2DRangeScan>();
 		if (curr_observation) {
 			m_last_laser_scan2D = observations->getObservationByClass<CObservation2DRangeScan>();
@@ -235,7 +234,7 @@ bool CLoopCloserERD<GRAPH_t>::getICPEdge(
 
 	// fetch the relevant laser scans
 	nodes_to_scans2D_t::const_iterator search;
-	CObservation2DRangeScanPtr from_laser_scan, to_laser_scan;
+	CObservation2DRangeScan::Ptr from_laser_scan, to_laser_scan;
 	search = m_nodes_to_laser_scans2D.find(from);
 	if (search != m_nodes_to_laser_scans2D.end()) {
 		from_laser_scan = search->second;
@@ -1207,10 +1206,10 @@ void CLoopCloserERD<GRAPH_t>::initMapPartitionsVisualization() {
 	}
 
 	// just add an empty CSetOfObjects in the scene - going to populate it later
-	CSetOfObjectsPtr map_partitions_obj = CSetOfObjects::Create();
+	CSetOfObjects::Ptr map_partitions_obj = CSetOfObjects::Create();
 	map_partitions_obj->setName("map_partitions");
 
-	COpenGLScenePtr& scene = m_win->get3DSceneAndLock();
+	COpenGLScene::Ptr& scene = m_win->get3DSceneAndLock();
 	scene->insert(map_partitions_obj);
 	m_win->unlockAccess3DScene();
 	m_win->forceRepaint();
@@ -1238,14 +1237,14 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitionsVisualization() {
 
 	// update the partitioning visualization
 	// ////////////////////////////////////////////////////////////
-	COpenGLScenePtr& scene = m_win->get3DSceneAndLock();
+	COpenGLScene::Ptr& scene = m_win->get3DSceneAndLock();
 
 	// fetch the partitions CSetOfObjects
-	CSetOfObjectsPtr map_partitions_obj;
+	CSetOfObjects::Ptr map_partitions_obj;
 	{
-		CRenderizablePtr obj = scene->getByName("map_partitions");
+		CRenderizable::Ptr obj = scene->getByName("map_partitions");
 		// do not check for null ptr - must be properly created in the init* method
-		map_partitions_obj = static_cast<CSetOfObjectsPtr>(obj);
+		map_partitions_obj = std::dynamic_pointer_cast<CSetOfObjects>(obj);
 	}
 
 	int partitionID = 0;
@@ -1269,13 +1268,13 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitionsVisualization() {
 		std::string partition_obj_name = mrpt::format("partition_%d", partitionID);
 		std::string balloon_obj_name = mrpt::format("#%d", partitionID);
 
-		CRenderizablePtr obj = map_partitions_obj->getByName(partition_obj_name);
-		CSetOfObjectsPtr curr_partition_obj;
+		CRenderizable::Ptr obj = map_partitions_obj->getByName(partition_obj_name);
+		CSetOfObjects::Ptr curr_partition_obj;
 		if (obj) {
 			this->logFmt(mrpt::utils::LVL_DEBUG, 
 					"\tFetching CSetOfObjects partition object for partition #%d",
 					partitionID);
-			curr_partition_obj = static_cast<CSetOfObjectsPtr>(obj);
+			curr_partition_obj = std::dynamic_pointer_cast<CSetOfObjects>(obj);
 			if (m_lc_params.LC_check_curr_partition_only) { // make all but the last partition invisible
 				curr_partition_obj->setVisibility(partition_contains_last_node); 
 			}
@@ -1291,7 +1290,7 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitionsVisualization() {
 			}
 
 			this->logFmt(mrpt::utils::LVL_DEBUG, "\t\tCreating a new CSphere balloon object");
-			CSpherePtr balloon_obj = CSphere::Create();
+			CSphere::Ptr balloon_obj = CSphere::Create();
 			balloon_obj->setName(balloon_obj_name);
 			balloon_obj->setRadius(m_lc_params.balloon_radius);
 			balloon_obj->setColor_u8(m_lc_params.balloon_std_color);
@@ -1301,7 +1300,7 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitionsVisualization() {
 
 			// set of lines connecting the graph nodes to the balloon
 			this->logFmt(mrpt::utils::LVL_DEBUG, "\t\tCreating set of lines that will connect to the Balloon");
-			CSetOfLinesPtr connecting_lines_obj = CSetOfLines::Create();
+			CSetOfLines::Ptr connecting_lines_obj = CSetOfLines::Create();
 			connecting_lines_obj->setName("connecting_lines");
 			connecting_lines_obj->setColor_u8(m_lc_params.connecting_lines_color);
 			connecting_lines_obj->setLineWidth(0.1f);
@@ -1323,11 +1322,11 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitionsVisualization() {
 
 		this->logFmt(mrpt::utils::LVL_DEBUG, "\tUpdating the balloon position");
 		// set the balloon properties
-		CSpherePtr balloon_obj;
+		CSphere::Ptr balloon_obj;
 		{
 			// place the partitions baloon at the centroid elevated by a fixed Z value
-			CRenderizablePtr obj = curr_partition_obj->getByName(balloon_obj_name);
-			balloon_obj = static_cast<CSpherePtr>(obj);
+			CRenderizable::Ptr obj = curr_partition_obj->getByName(balloon_obj_name);
+			balloon_obj = std::dynamic_pointer_cast<CSphere>(obj);
 			balloon_obj->setLocation(balloon_location);
 			if (partition_contains_last_node)
 				balloon_obj->setColor_u8(m_lc_params.balloon_curr_color);
@@ -1339,11 +1338,11 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitionsVisualization() {
 		// set the lines connecting the nodes of the partition to the partition
 		// balloon - set it from scratch all the times since the node positions
 		// tend to change according to the dijkstra position estimation
-		CSetOfLinesPtr connecting_lines_obj;
+		CSetOfLines::Ptr connecting_lines_obj;
 		{
 			// place the partitions baloon at the centroid elevated by a fixed Z value
-			CRenderizablePtr obj = curr_partition_obj->getByName("connecting_lines");
-			connecting_lines_obj = static_cast<CSetOfLinesPtr>(obj);
+			CRenderizable::Ptr obj = curr_partition_obj->getByName("connecting_lines");
+			connecting_lines_obj = std::dynamic_pointer_cast<CSetOfLines>(obj);
 
 			connecting_lines_obj->clear();
 
@@ -1372,7 +1371,7 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitionsVisualization() {
 			this->logFmt(mrpt::utils::LVL_DEBUG, "\tRemoving partition %lu", partitionID);
 			std::string partition_obj_name = mrpt::format("partition_%lu", partitionID);
 
-			CRenderizablePtr obj = map_partitions_obj->getByName(partition_obj_name);
+			CRenderizable::Ptr obj = map_partitions_obj->getByName(partition_obj_name);
 			map_partitions_obj->removeObject(obj);
 		}
 	}
@@ -1392,10 +1391,10 @@ void CLoopCloserERD<GRAPH_t>::toggleMapPartitionsVisualization() {
 	using namespace mrpt::opengl;
 
 	this->logFmt(LVL_INFO, "Toggling map partitions  visualization...");
-	mrpt::opengl::COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+	mrpt::opengl::COpenGLScene::Ptr scene = m_win->get3DSceneAndLock();
 
 	if (m_lc_params.visualize_map_partitions) {
-		mrpt::opengl::CRenderizablePtr obj = scene->getByName("map_partitions");
+		mrpt::opengl::CRenderizable::Ptr obj = scene->getByName("map_partitions");
 		obj->setVisibility(!obj->isVisible());
 	}
 	else {
@@ -1440,9 +1439,9 @@ void CLoopCloserERD<GRAPH_t>::initLaserScansVisualization() {
 
 	// laser scan visualization
 	if (m_laser_params.visualize_laser_scans) {
-		mrpt::opengl::COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+		mrpt::opengl::COpenGLScene::Ptr scene = m_win->get3DSceneAndLock();
 
-		mrpt::opengl::CPlanarLaserScanPtr laser_scan_viz = 
+		mrpt::opengl::CPlanarLaserScan::Ptr laser_scan_viz = 
 			mrpt::opengl::CPlanarLaserScan::Create();
 		laser_scan_viz->enablePoints(true);
 		laser_scan_viz->enableLine(true);
@@ -1469,11 +1468,11 @@ void CLoopCloserERD<GRAPH_t>::updateLaserScansVisualization() {
 
 	// update laser scan visual
 	if (m_laser_params.visualize_laser_scans && m_last_laser_scan2D) {
-		mrpt::opengl::COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+		mrpt::opengl::COpenGLScene::Ptr scene = m_win->get3DSceneAndLock();
 
-		mrpt::opengl::CRenderizablePtr obj = scene->getByName("laser_scan_viz");
-		mrpt::opengl::CPlanarLaserScanPtr laser_scan_viz =
-			static_cast<mrpt::opengl::CPlanarLaserScanPtr>(obj);
+		mrpt::opengl::CRenderizable::Ptr obj = scene->getByName("laser_scan_viz");
+		mrpt::opengl::CPlanarLaserScan::Ptr laser_scan_viz =
+			std::dynamic_pointer_cast<mrpt::opengl::CPlanarLaserScan>(obj);
 
 		laser_scan_viz->setScan(*m_last_laser_scan2D);
 
@@ -1509,10 +1508,10 @@ void CLoopCloserERD<GRAPH_t>::toggleLaserScansVisualization() {
 
 	this->logFmt(LVL_INFO, "Toggling LaserScans visualization...");
 
-	mrpt::opengl::COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+	mrpt::opengl::COpenGLScene::Ptr scene = m_win->get3DSceneAndLock();
 
 	if (m_laser_params.visualize_laser_scans) {
-		mrpt::opengl::CRenderizablePtr obj = scene->getByName("laser_scan_viz");
+		mrpt::opengl::CRenderizable::Ptr obj = scene->getByName("laser_scan_viz");
 		obj->setVisibility(!obj->isVisible());
 	}
 	else {
@@ -1601,13 +1600,13 @@ void CLoopCloserERD<GRAPH_t>::initCurrCovarianceVisualization() {
 
 
 	// covariance ellipsis
-	CEllipsoidPtr cov_ellipsis_obj = CEllipsoid::Create();
+	CEllipsoid::Ptr cov_ellipsis_obj = CEllipsoid::Create();
 	cov_ellipsis_obj->setName("cov_ellipsis_obj");
 	cov_ellipsis_obj->setColor_u8(m_curr_node_covariance_color);
 	cov_ellipsis_obj->setLocation(0, 0, 0);
 	//cov_ellipsis_obj->setQuantiles(2.0);
 
-	mrpt::opengl::COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+	mrpt::opengl::COpenGLScene::Ptr scene = m_win->get3DSceneAndLock();
 	scene->insert(cov_ellipsis_obj);
 	m_win->unlockAccess3DScene();
 	m_win->forceRepaint();
@@ -1639,9 +1638,9 @@ void CLoopCloserERD<GRAPH_t>::updateCurrCovarianceVisualization() {
 			"Covariance matrix:\n%s\n"
 			"determinant : %f", ss_mat.str().c_str(), mat.det() );
 
-	mrpt::opengl::COpenGLScenePtr scene = m_win->get3DSceneAndLock();
-	CRenderizablePtr obj = scene->getByName("cov_ellipsis_obj");
-	CEllipsoidPtr cov_ellipsis_obj = static_cast<CEllipsoidPtr>(obj);
+	mrpt::opengl::COpenGLScene::Ptr scene = m_win->get3DSceneAndLock();
+	CRenderizable::Ptr obj = scene->getByName("cov_ellipsis_obj");
+	CEllipsoid::Ptr cov_ellipsis_obj = std::dynamic_pointer_cast<CEllipsoid>(obj);
 
 	// set the pose and corresponding covariance matrix of the ellipsis
 	cov_ellipsis_obj->setLocation(curr_position.x(), curr_position.y(), 0);
@@ -1662,9 +1661,9 @@ bool CLoopCloserERD<GRAPH_t>::justInsertedLoopClosure() const {
 
 template<class GRAPH_t>
 void CLoopCloserERD<GRAPH_t>::checkIfInvalidDataset(
-		mrpt::obs::CActionCollectionPtr action,
-		mrpt::obs::CSensoryFramePtr observations,
-		mrpt::obs::CObservationPtr observation ) {
+		mrpt::obs::CActionCollection::Ptr action,
+		mrpt::obs::CSensoryFrame::Ptr observations,
+		mrpt::obs::CObservation::Ptr observation ) {
 	MRPT_START;
 	MRPT_UNUSED_PARAM(action);
 	using namespace mrpt::obs;
@@ -1821,10 +1820,10 @@ void CLoopCloserERD<GRAPH_t>::updateMapPartitions(bool full_update /* = false */
 		}
 
 		pose_t curr_pose = search->second;
-		mrpt::poses::CPosePDFPtr posePDF(new constraint_t(curr_pose));
+		mrpt::poses::CPosePDF::Ptr posePDF(new constraint_t(curr_pose));
 
 		// laser scan
-		mrpt::obs::CSensoryFramePtr sf = mrpt::obs::CSensoryFrame::Create();
+		mrpt::obs::CSensoryFrame::Ptr sf = mrpt::obs::CSensoryFrame::Create();
 		sf->insert(it->second);
 
 		m_partitioner.addMapFrame(sf, posePDF);

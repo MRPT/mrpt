@@ -11,5 +11,5 @@
 MRPT_WARNING("*Deprecated header* Please replace with #include <mrpt/maps/CSimpleMap.h>. This backward compatible header will be removed in MRPT 2.0.0")
 namespace mrpt { namespace slam {
 	using mrpt::maps::CSimpleMap;    //!< Backward compatibility
-	using mrpt::maps::CSimpleMapPtr; //!< Backward compatibility
+	using mrpt::maps::CSimpleMap::Ptr; //!< Backward compatibility
 } }

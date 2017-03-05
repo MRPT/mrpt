@@ -149,6 +149,7 @@ namespace maps
 		/** Base class for user-supplied objects capable of describing voxels connectivity, used to build prior factors of the MRF graph. \sa setvoxelsConnectivity() */
 		struct MAPS_IMPEXP ConnectivityDescriptor
 		{
+			using Ptr = std::shared_ptr<ConnectivityDescriptor>;
 			//Virtual destructor for polymorphic type.
 			virtual ~ConnectivityDescriptor() {}
 			/** Implement the check of whether node i=(icx,icy,icz) is connected with node j=(jcx,jcy,jcy).
@@ -162,10 +163,9 @@ namespace maps
 				double &out_edge_information          //!< Must output here the inverse of the variance of the constraint edge.
 			) = 0;
 		};
-		typedef std::shared_ptr<ConnectivityDescriptor> ConnectivityDescriptorPtr;
 
 		/** Sets a custom object to define the connectivity between voxels. Must call clear() or setSize() afterwards for the changes to take place. */
-		void setVoxelsConnectivity(const ConnectivityDescriptorPtr &new_connectivity_descriptor);
+		void setVoxelsConnectivity(const ConnectivityDescriptor::Ptr &new_connectivity_descriptor);
 
 		enum TVoxelInterpolationMethod  {
 			gimNearest = 0,
@@ -192,7 +192,7 @@ namespace maps
 		/** Internal: called called after each change of resolution, size, etc. to build the prior factor information */
 		void internal_initialize(bool erase_prev_contents = true);
 
-		ConnectivityDescriptorPtr m_gmrf_connectivity; //!< Empty: default
+		ConnectivityDescriptor::Ptr m_gmrf_connectivity; //!< Empty: default
 
 		mrpt::graphs::ScalarFactorGraph  m_gmrf;
 

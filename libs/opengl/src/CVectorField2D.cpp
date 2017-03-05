@@ -23,9 +23,9 @@ using namespace std;
 
 IMPLEMENTS_SERIALIZABLE( CVectorField2D, CRenderizableDisplayList, mrpt::opengl )
 
-CVectorField2DPtr CVectorField2D::Create(const CMatrixFloat &Matrix_x, const CMatrixFloat &Matrix_y, float xmin, float xmax, float ymin, float ymax)	
+CVectorField2D::Ptr CVectorField2D::Create(const CMatrixFloat &Matrix_x, const CMatrixFloat &Matrix_y, float xmin, float xmax, float ymin, float ymax)	
 {
-	return CVectorField2DPtr(new CVectorField2D( Matrix_x,  Matrix_y, xmin, xmax, ymin, ymax));
+	return CVectorField2D::Ptr(new CVectorField2D( Matrix_x,  Matrix_y, xmin, xmax, ymin, ymax));
 }
 
 /** Constructor */

@@ -32,6 +32,7 @@ namespace mrpt
 		struct OBS_IMPEXP TMetricMapInitializer : public mrpt::utils::CLoadableOptions
 		{
 			friend class TSetOfMetricMapInitializers;
+			using Ptr = std::shared_ptr<TMetricMapInitializer>; //!< Smart pointer to TMetricMapInitializer
 
 			/** Common params for all maps: These are automatically set in TMetricMapTypesRegistry::factoryMapObjectFromDefinition()  */
 			mrpt::maps::TMapGenericParams  genericMapParams;
@@ -46,21 +47,20 @@ namespace mrpt
 			void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
 
 			/** Query the map type (C++ class), as set by the factory method MapDefinition() */
-			const mrpt::utils::TRuntimeClassIdPtr & getMetricMapClassType() const { return metricMapClassType; }
+			const mrpt::utils::TRuntimeClassId::Ptr & getMetricMapClassType() const { return metricMapClassType; }
 
 			/** Looks up in the registry of known map types and call the corresponding `<metric_map_class>::MapDefinition()`. */
 			static TMetricMapInitializer* factory(const std::string &mapClassName);			
 
 		protected:
 			TMetricMapInitializer(const mrpt::utils::TRuntimeClassId* classID );
-			const mrpt::utils::TRuntimeClassIdPtr metricMapClassType; //!< Derived classes set this to CLASS_ID(< class >) where < class > is any CMetricMap derived class.
+			const mrpt::utils::TRuntimeClassId::Ptr metricMapClassType; //!< Derived classes set this to CLASS_ID(< class >) where < class > is any CMetricMap derived class.
 
 			/** Load all map-specific params*/
 			virtual void  loadFromConfigFile_map_specific(const mrpt::utils::CConfigFileBase  &source, const std::string &sectionNamePrefix) = 0;
 			virtual void  dumpToTextStream_map_specific(mrpt::utils::CStream	&out) const = 0;
 		}; // end TMetricMapInitializer
 
-		typedef std::shared_ptr<TMetricMapInitializer> TMetricMapInitializerPtr; //!< Smart pointer to TMetricMapInitializer
 
 		/** A set of TMetricMapInitializer structures, passed to the constructor CMultiMetricMap::CMultiMetricMap
 		  *  See the comments for TSetOfMetricMapInitializers::loadFromConfigFile, and "CMultiMetricMap::setListOfMaps" for
@@ -71,20 +71,20 @@ namespace mrpt
 		class OBS_IMPEXP TSetOfMetricMapInitializers : public mrpt::utils::CLoadableOptions
 		{
 		protected:
-			std::deque<TMetricMapInitializerPtr>	m_list;
+			std::deque<TMetricMapInitializer::Ptr>	m_list;
 
 		public:
 			TSetOfMetricMapInitializers() : m_list()
 			{}
 
 			template <typename MAP_DEFINITION>
-			void push_back( const MAP_DEFINITION &o ) { m_list.push_back( TMetricMapInitializerPtr(new MAP_DEFINITION(o)) ); }
+			void push_back( const MAP_DEFINITION &o ) { m_list.push_back( TMetricMapInitializer::Ptr(new MAP_DEFINITION(o)) ); }
 
-			void push_back( const TMetricMapInitializerPtr &o ) { m_list.push_back(o); }
+			void push_back( const TMetricMapInitializer::Ptr &o ) { m_list.push_back(o); }
 
 			size_t size() const { return m_list.size(); }
-			typedef std::deque<TMetricMapInitializerPtr>::iterator  iterator;
-			typedef std::deque<TMetricMapInitializerPtr>::const_iterator  const_iterator;
+			typedef std::deque<TMetricMapInitializer::Ptr>::iterator  iterator;
+			typedef std::deque<TMetricMapInitializer::Ptr>::const_iterator  const_iterator;
 			iterator begin()       { return m_list.begin(); }
 			iterator end()         { return m_list.end(); }
 			const_iterator begin() const { return m_list.begin(); }

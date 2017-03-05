@@ -104,7 +104,7 @@ void  CHierarchicalMHMap::readFromStream(mrpt::utils::CStream &in, int version)
 			in >> n;
 			for (i=0;i<n;i++)
             {
-				CHMHMapNodePtr node = CHMHMapNode::Create(this); // This insert the node in my internal list via the callback method
+				CHMHMapNode::Ptr node = CHMHMapNode::Create(this); // This insert the node in my internal list via the callback method
             	in >> *node;
             }
 
@@ -113,8 +113,8 @@ void  CHierarchicalMHMap::readFromStream(mrpt::utils::CStream &in, int version)
 			for (i=0;i<n;i++)
             {
 				 // This insert the node in my internal list via the callback method
-				CHMHMapNodePtr p1, p2;
-				CHMHMapArcPtr arc = CHMHMapArc::Create( p1, p2, THypothesisIDSet() ,this);
+				CHMHMapNode::Ptr p1, p2;
+				CHMHMapArc::Ptr arc = CHMHMapArc::Create( p1, p2, THypothesisIDSet() ,this);
             	in >> *arc;
             }
 
@@ -155,7 +155,7 @@ void  CHierarchicalMHMap::onArcDestruction(CHMHMapArc *arc)
 /*---------------------------------------------------------------
 						onNodeAddition
   ---------------------------------------------------------------*/
-void  CHierarchicalMHMap::onNodeAddition(CHMHMapNodePtr &node)
+void  CHierarchicalMHMap::onNodeAddition(CHMHMapNode::Ptr &node)
 {
 	// Check if it is not already in the list:
 	TNodeList::iterator it = m_nodes.find( node->m_ID );
@@ -176,7 +176,7 @@ void  CHierarchicalMHMap::onNodeAddition(CHMHMapNodePtr &node)
 /*---------------------------------------------------------------
 						onArcAddition
   ---------------------------------------------------------------*/
-void  CHierarchicalMHMap::onArcAddition(CHMHMapArcPtr &arc)
+void  CHierarchicalMHMap::onArcAddition(CHMHMapArc::Ptr &arc)
 {
 	// Check if it is not already in the list:
 	TArcList::iterator it = m_arcs.find(arc);
@@ -192,12 +192,12 @@ void  CHierarchicalMHMap::onArcAddition(CHMHMapArcPtr &arc)
 void CHierarchicalMHMap::loadFromXMLfile(std::string fileName)
 {
 	CSimpleDatabase		db;
-	CSimpleDatabaseTablePtr table;
+	CSimpleDatabaseTable::Ptr table;
 	size_t j,numnodes,numarcs;
 
-	std::map<size_t,CHMHMapNodePtr>  nodemap;
-	std::map<size_t,CHMHMapNodePtr>::iterator  nodemapit;
-	typedef std::pair<size_t,CHMHMapNodePtr> IDPair;
+	std::map<size_t,CHMHMapNode::Ptr>  nodemap;
+	std::map<size_t,CHMHMapNode::Ptr>::iterator  nodemapit;
+	typedef std::pair<size_t,CHMHMapNode::Ptr> IDPair;
 
 	std::map<size_t,CHMHMapNode::TNodeID>  nodeanotmap;
 	std::map<size_t,CHMHMapNode::TNodeID>::iterator  nodeanotmapit;
@@ -213,7 +213,7 @@ void CHierarchicalMHMap::loadFromXMLfile(std::string fileName)
 
 		for (j=0;j<numnodes;j++)
 		{
-				CHMHMapNodePtr node;
+				CHMHMapNode::Ptr node;
 				node=CHMHMapNode::Create(this);
 				node->m_label=table->get(j,"nodename");
 				nodemap.insert(IDPair( atoi(table->get(j,"id").c_str()),node)   );
@@ -237,13 +237,13 @@ void CHierarchicalMHMap::loadFromXMLfile(std::string fileName)
 		printf("Loading arcs\n");
 			for (j=0;j<numarcs;j++)
 			{
-				CHMHMapArcPtr arc,arcrev;
+				CHMHMapArc::Ptr arc,arcrev;
 				size_t from,to;
 				from=atoi(table->get(j,"from").c_str());
 				to=atoi(table->get(j,"to").c_str());
 
 
-				CHMHMapNodePtr nodefrom,nodeto;
+				CHMHMapNode::Ptr nodefrom,nodeto;
 				nodemapit=nodemap.find(from);
 				nodefrom=nodemapit->second;
 				std::cout<<"finding nodes"<<std::endl;
@@ -283,10 +283,10 @@ void CHierarchicalMHMap::loadFromXMLfile(std::string fileName)
 				{
 					if (type=="placePose")
 					{
-						CPoint2DPtr o=CPoint2D::Create();
+						CPoint2D::Ptr o=CPoint2D::Create();
 						o->fromString(value);
 
-						CHMHMapNodePtr node=getNodeByID(nodeanotmapit->second);
+						CHMHMapNode::Ptr node=getNodeByID(nodeanotmapit->second);
 
 						node->m_annotations.set(NODE_ANNOTATION_PLACE_POSE,o,COMMON_TOPOLOG_HYP);
 
@@ -305,7 +305,7 @@ void CHierarchicalMHMap::loadFromXMLfile(std::string fileName)
 void  CHierarchicalMHMap::dumpAsXMLfile(std::string fileName) const
 {
 	CSimpleDatabase		db;
-	CSimpleDatabaseTablePtr tablenodes,tablearcs,tableannots;
+	CSimpleDatabaseTable::Ptr tablenodes,tablearcs,tableannots;
 	size_t i;
 
 	tablenodes = db.createTable("nodes");
@@ -348,7 +348,7 @@ void  CHierarchicalMHMap::dumpAsXMLfile(std::string fileName) const
 			string  str;
 			if (IS_CLASS(ann->value,CPoint2D))
 			{
-				CPoint2DPtr o = CPoint2DPtr(ann->value);
+				CPoint2D::Ptr o = std::dynamic_pointer_cast<CPoint2D>(ann->value);
 				o->asString(str);
 			}
 			else
@@ -426,7 +426,7 @@ void  CHierarchicalMHMap::dumpAsXMLfile(std::string fileName) const
 			}
 			else if ( ann->name == NODE_ANNOTATION_POSES_GRAPH )
 			{
-				CRobotPosesGraphPtr posesGraph = it->second->m_annotations.getAs<CRobotPosesGraph>(NODE_ANNOTATION_POSES_GRAPH,ann->ID);
+				CRobotPosesGraph::Ptr posesGraph = it->second->m_annotations.getAs<CRobotPosesGraph>(NODE_ANNOTATION_POSES_GRAPH,ann->ID);
 				ASSERT_(posesGraph);
 
 				st << format("     CRobotPosesGraph has %i poses:",(int)posesGraph->size());
@@ -486,11 +486,11 @@ void  CHierarchicalMHMap::dumpAsXMLfile(std::string fileName) const
 			}
 			else if ( ann->name == ARC_ANNOTATION_DELTA )
 			{
-				CSerializablePtr o = (*it)->m_annotations.get(ARC_ANNOTATION_DELTA, ann->ID );
+				CSerializable::Ptr o = (*it)->m_annotations.get(ARC_ANNOTATION_DELTA, ann->ID );
 				ASSERT_(o);
 
 				CPose3DPDFGaussian relativePoseAcordToArc;
-				relativePoseAcordToArc.copyFrom(*CPose3DPDFPtr(o));
+				relativePoseAcordToArc.copyFrom(*CPose3DPDF::Ptr(o));
 
 				st << format("     VALUE: (%f,%f,%f , %fdeg,%fdeg,%fdeg)",
 					relativePoseAcordToArc.mean.x(),

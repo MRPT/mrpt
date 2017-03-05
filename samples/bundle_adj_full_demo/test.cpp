@@ -101,7 +101,7 @@ void bundle_adj_full_demo(
 }
 // ---------------------------------------------------------
 
-mrpt::opengl::CSetOfObjectsPtr framePosesVecVisualize(
+mrpt::opengl::CSetOfObjects::Ptr framePosesVecVisualize(
 	const TFramePosesVec &poses,
 	const double  len,
 	const double  lineWidth);
@@ -404,18 +404,18 @@ int main(int argc, char **argv)
 		// -------------------------------
 		gui::CDisplayWindow3D  win("Bundle adjustment demo", 800,600);
 
-		COpenGLScenePtr &scene = win.get3DSceneAndLock();
+		COpenGLScene::Ptr &scene = win.get3DSceneAndLock();
 
 
 		{	// Ground plane:
-			CGridPlaneXYPtr obj = CGridPlaneXY::Create(-200,200,-200,200,0, 5);
+			CGridPlaneXY::Ptr obj = CGridPlaneXY::Create(-200,200,-200,200,0, 5);
 			obj->setColor(0.7,0.7,0.7);
 			scene->insert(obj);
 		}
 
 		if (!landmark_points_real.empty())
 		{	// Feature points: ground truth
-			CPointCloudPtr obj =  CPointCloud::Create();
+			CPointCloud::Ptr obj =  CPointCloud::Create();
 			obj->setPointSize(2);
 			obj->setColor(0,0,0);
 			obj->loadFromPointsList(landmark_points_real);
@@ -424,7 +424,7 @@ int main(int argc, char **argv)
 		}
 		if (!landmark_points_noisy.empty())
 		{	// Feature points: noisy
-			CPointCloudPtr obj =  CPointCloud::Create();
+			CPointCloud::Ptr obj =  CPointCloud::Create();
 			obj->setPointSize(4);
 			obj->setColor(0.7,0.2,0.2, 0);
 			obj->loadFromPointsList(landmark_points_noisy);
@@ -433,7 +433,7 @@ int main(int argc, char **argv)
 		}
 
 		{	// Feature points: estimated
-			CPointCloudPtr obj =  CPointCloud::Create();
+			CPointCloud::Ptr obj =  CPointCloud::Create();
 			obj->setPointSize(3);
 			obj->setColor(0,0,1, 1.0);
 			obj->loadFromPointsList(landmark_points);
@@ -475,16 +475,16 @@ int main(int argc, char **argv)
 }
 
 
-mrpt::opengl::CSetOfObjectsPtr framePosesVecVisualize(
+mrpt::opengl::CSetOfObjects::Ptr framePosesVecVisualize(
 	const TFramePosesVec &poses,
 	const double  len,
 	const double  lineWidth)
 {
-	mrpt::opengl::CSetOfObjectsPtr obj = mrpt::opengl::CSetOfObjects::Create();
+	mrpt::opengl::CSetOfObjects::Ptr obj = mrpt::opengl::CSetOfObjects::Create();
 
 	for (size_t i=0;i<poses.size();i++)
 	{
-		CSetOfObjectsPtr corner = opengl::stock_objects::CornerXYZSimple(len, lineWidth);
+		CSetOfObjects::Ptr corner = opengl::stock_objects::CornerXYZSimple(len, lineWidth);
 		CPose3D  p = poses[i];
 		p.x( WORLD_SCALE *p.x() );
 		p.y( WORLD_SCALE *p.y() );

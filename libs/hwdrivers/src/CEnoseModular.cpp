@@ -253,7 +253,7 @@ bool CEnoseModular::getObservation( mrpt::obs::CObservationGasSensors &obs )
 */
 void CEnoseModular::doProcess()
 {
-	CObservationGasSensorsPtr obs= CObservationGasSensors::Create();
+	CObservationGasSensors::Ptr obs= CObservationGasSensors::Create();
 
 	if (getObservation(*obs))
 	{

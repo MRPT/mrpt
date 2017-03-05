@@ -272,7 +272,7 @@ void loadMapInto3DScene(COpenGLScene &scene)
 			maxC=CPoint3D(100,100,0);
 		}
 
-		mrpt::opengl::CGridPlaneXYPtr	gridobj = mrpt::opengl::CGridPlaneXY::Create( minC.x-20, maxC.x+20, minC.y-20, maxC.y+20, minC.z-2, 5 );
+		mrpt::opengl::CGridPlaneXY::Ptr	gridobj = mrpt::opengl::CGridPlaneXY::Create( minC.x-20, maxC.x+20, minC.y-20, maxC.y+20, minC.z-2, 5 );
 		gridobj->setColor(0.3,0.3,0.3, 1);
 		scene.insert( gridobj );
 	}
@@ -287,12 +287,12 @@ void loadMapInto3DScene(COpenGLScene &scene)
 
 	// The robot path:
 	{
-		mrpt::opengl::CSetOfLinesPtr  obj = mrpt::opengl::CSetOfLines::Create();
+		mrpt::opengl::CSetOfLines::Ptr  obj = mrpt::opengl::CSetOfLines::Create();
 
 		obj->setColor(0,1,0, 0.5);
 		obj->setLineWidth(4);
 
-		mrpt::opengl::CSetOfLinesPtr  obj2 = mrpt::opengl::CSetOfLines::Create();
+		mrpt::opengl::CSetOfLines::Ptr  obj2 = mrpt::opengl::CSetOfLines::Create();
 		obj2->setColor(1,0,0, 0.5);
 		obj2->setLineWidth(2);
 
@@ -370,7 +370,7 @@ void loadMapInto3DScene(COpenGLScene &scene)
 	CPointsMap::COLOR_3DSCENE_G =
 	CPointsMap::COLOR_3DSCENE_B = 0.9;
 
-	opengl::CSetOfObjectsPtr objs = opengl::CSetOfObjects::Create();
+	opengl::CSetOfObjects::Ptr objs = opengl::CSetOfObjects::Create();
 	theMap.getAs3DObject( objs );
 	scene.insert( objs );
 }
@@ -415,16 +415,24 @@ void CFormRawMap::OnbtnGenerateClick(wxCommandEvent& )
     // Create a memory "ini file" with the text in the window:
     CConfigFileMemory       configSrc( CStringList( std::string(edOpts->GetValue().mb_str()) ) );
 
-	TSetOfMetricMapInitializers		lstMaps;
-	lstMaps.loadFromConfigFile( configSrc, "map" );
-	theMap.setListOfMaps( &lstMaps );
+    TSetOfMetricMapInitializers		lstMaps;
+    lstMaps.loadFromConfigFile( configSrc, "map" );
+    theMap.setListOfMaps( &lstMaps );
 
-	CPointsMapPtr	thePntsMap;
+    CPointsMap::Ptr thePntsMap;
 
-	if( !theMap.m_pointsMaps.empty() )
-		thePntsMap = theMap.m_pointsMaps[0];
-	else if (theMap.m_colourPointsMap)
-		thePntsMap = theMap.m_colourPointsMap;
+    if( !theMap.m_pointsMaps.empty() )
+    {
+        CSimplePointsMap::Ptr sMap;
+        sMap = theMap.m_pointsMaps[0];
+        thePntsMap = std::dynamic_pointer_cast<CPointsMap>(sMap);
+    }
+    else if (theMap.m_colourPointsMap)
+    {
+        CColouredPointsMap::Ptr colorMap;
+        colorMap = theMap.m_colourPointsMap;
+        thePntsMap = std::dynamic_pointer_cast<CPointsMap>(colorMap);
+    }
 
     wxBusyCursor    waitCursor;
 
@@ -450,9 +458,9 @@ void CFormRawMap::OnbtnGenerateClick(wxCommandEvent& )
     robot_path.clear();
 
     // An (aprox) estimate of the final size of the map (great improve in speed!)
-	if (thePntsMap) thePntsMap->reserve( (last-first+1)*800 );
+    if (thePntsMap) thePntsMap->reserve( (last-first+1)*800 );
 
-	TTimeStamp	last_tim = INVALID_TIMESTAMP;
+    TTimeStamp	last_tim = INVALID_TIMESTAMP;
 
     for (i=first;!abort && i<=last;i++)
     {
@@ -462,16 +470,16 @@ void CFormRawMap::OnbtnGenerateClick(wxCommandEvent& )
         {
 		case CRawlog::etActionCollection:
 			{
-				CActionCollectionPtr    acts = rawlog.getAsAction(i);
+				CActionCollection::Ptr    acts = rawlog.getAsAction(i);
 				CPose2D                 poseIncrement;
 				bool                    poseIncrementLoaded = false;
 
 				for (size_t j=0;j<acts->size();j++)
 				{
-					CActionPtr act = acts->get(j);
+					CAction::Ptr act = acts->get(j);
 					if (act->GetRuntimeClass() == CLASS_ID( CActionRobotMovement2D ))
 					{
-						CActionRobotMovement2DPtr mov = CActionRobotMovement2DPtr( act );
+						CActionRobotMovement2D::Ptr mov = std::dynamic_pointer_cast<CActionRobotMovement2D>( act );
 
 						// Load an odometry estimation, but only if it is the only movement
 						//  estimation source: any other may be a better one:
@@ -730,16 +738,16 @@ void CFormRawMap::OnbtnGeneratePathsClick(wxCommandEvent& )
             {
 			case CRawlog::etActionCollection:
             	{
-					CActionCollectionPtr    acts = rawlog.getAsAction(i);
+					CActionCollection::Ptr    acts = rawlog.getAsAction(i);
 					CPose2D                 poseIncrement;
 					bool                    poseIncrementLoaded = false;
 
 					for (size_t j=0;j<acts->size();j++)
 					{
-						CActionPtr act = acts->get(j);
+						CAction::Ptr act = acts->get(j);
 						if (act->GetRuntimeClass() == CLASS_ID( CActionRobotMovement2D ))
 						{
-							CActionRobotMovement2DPtr mov = CActionRobotMovement2DPtr( act );
+							CActionRobotMovement2D::Ptr mov = std::dynamic_pointer_cast<CActionRobotMovement2D>( act );
 
 							// Load an odometry estimation, but only if it is the only movement
 							//  estimation source: any other may be a better one:
@@ -866,15 +874,23 @@ void CFormRawMap::OnGenerateFromRTK(wxCommandEvent& )
     // --------------------------------------------------
     wxBusyCursor    waitCursor;
 
-	CPointsMapPtr	thePntsMap;
+    CPointsMap::Ptr	thePntsMap;
 
-	if( !theMap.m_pointsMaps.empty() )
-		thePntsMap = theMap.m_pointsMaps[0];
-	else if (theMap.m_colourPointsMap)
-		thePntsMap = theMap.m_colourPointsMap;
+    if( !theMap.m_pointsMaps.empty() )
+    {
+        CSimplePointsMap::Ptr sMap;
+        sMap = theMap.m_pointsMaps[0];
+        thePntsMap = std::dynamic_pointer_cast<CPointsMap>(sMap);
+    }
+    else if (theMap.m_colourPointsMap)
+    {
+        CColouredPointsMap::Ptr colorMap;
+        colorMap = theMap.m_colourPointsMap;
+        thePntsMap = std::dynamic_pointer_cast<CPointsMap>(colorMap);
+    }
 
-	// An (aprox) estimate of the final size of the map (great improve in speed!)
-	if (thePntsMap) thePntsMap->reserve( last-first+1 );
+    // An (aprox) estimate of the final size of the map (great improve in speed!)
+    if (thePntsMap) thePntsMap->reserve( last-first+1 );
 
     size_t count = 0;
     bool	abort = false;
@@ -904,7 +920,7 @@ void CFormRawMap::OnGenerateFromRTK(wxCommandEvent& )
 
         case CRawlog::etObservation:
             {
-                CObservationPtr o = rawlog.getAsObservation(i);
+                CObservation::Ptr o = rawlog.getAsObservation(i);
 
 				// Interpolate:
 				CPose3D		p;
@@ -1158,7 +1174,7 @@ void CFormRawMap::OnbtnSavePathClick(wxCommandEvent& )
 		{
 			if( itRawlog.getType() == mrpt::obs::CRawlog::etObservation )
 			{
-				CObservationPtr obs( *itRawlog );
+				CObservation::Ptr obs(std::dynamic_pointer_cast<CObservation>( *itRawlog ));
 				for( itStr = the_labels.begin(), itOutFiles = outFiles.begin(); itStr != the_labels.end(); itStr++, itOutFiles++ )
 				{
 					if( obs->sensorLabel == *itStr )
@@ -1231,8 +1247,8 @@ void CFormRawMap::OnbtnView3DClick(wxCommandEvent& )
 
 	loadMapInto3DScene(scene);
 
-	win3Dmap = CDisplayWindow3DPtr( new CDisplayWindow3D("Raw-map 3D preview") );
-	COpenGLScenePtr the_scene = win3Dmap->get3DSceneAndLock();
+	win3Dmap = CDisplayWindow3D::Ptr( new CDisplayWindow3D("Raw-map 3D preview") );
+	COpenGLScene::Ptr the_scene = win3Dmap->get3DSceneAndLock();
 	*the_scene = scene;
 	win3Dmap->unlockAccess3DScene();
 	win3Dmap->repaint();

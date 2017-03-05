@@ -67,7 +67,7 @@ struct TThreadParam
 	volatile bool   quit;       //!< In/Out variable: Forces the thread to exit or indicates an error in the thread that caused it to end.
 	volatile double Hz;         //!< Out variable: Approx. capturing rate from the thread.
 
-	mrpt::synch::CThreadSafeVariable<CObservation3DRangeScanPtr> new_obs;  //!< RGB+D (+ optionally, 3D point cloud)
+	mrpt::synch::CThreadSafeVariable<CObservation3DRangeScan::Ptr> new_obs;  //!< RGB+D (+ optionally, 3D point cloud)
 };
 
 // Only for offline operation:
@@ -84,13 +84,13 @@ void thread_grabbing(TThreadParam &p)
 	try
 	{
 #if MRPT_HAS_CXX11
-		typedef std::unique_ptr<CKinect> CKinectPtr;  // This assures automatic destruction
+		typedef std::unique_ptr<CKinect> CKinect::Ptr;  // This assures automatic destruction
 #else
-		typedef std::auto_ptr<CKinect> CKinectPtr;  // This assures automatic destruction
+		typedef std::auto_ptr<CKinect> CKinect::Ptr;  // This assures automatic destruction
 #endif
 
 		// Only one of these will be actually used:
-		CKinectPtr          kinect;
+		CKinect::Ptr          kinect;
 		CFileGZInputStream  dataset;
 
 		mrpt::system::TTimeStamp  dataset_prev_tim     = INVALID_TIMESTAMP;
@@ -100,7 +100,7 @@ void thread_grabbing(TThreadParam &p)
 		{
 			// Online:
 			// ---------------------
-			kinect = CKinectPtr(new CKinect());
+			kinect = CKinect::Ptr(new CKinect());
 
 			// Set params:
 			kinect->enableGrabRGB(true);
@@ -134,7 +134,7 @@ void thread_grabbing(TThreadParam &p)
 				// Grab new observation from the camera:
 				bool there_is_obs=true, hard_error=false;
 
-				CObservation3DRangeScanPtr  obs = CObservation3DRangeScan::Create(); // Smart pointers to observations. Memory pooling is used internally
+				CObservation3DRangeScan::Ptr  obs = CObservation3DRangeScan::Create(); // Smart pointers to observations. Memory pooling is used internally
 				kinect->getNextObservation(*obs,there_is_obs,hard_error);
 
 				if(hard_error)
@@ -148,7 +148,7 @@ void thread_grabbing(TThreadParam &p)
 			else
 			{
 				// Offline:
-				CObservationPtr obs;
+				CObservation::Ptr obs;
 				do
 				{
 					try {
@@ -161,7 +161,7 @@ void thread_grabbing(TThreadParam &p)
 				} while (!IS_CLASS(obs,CObservation3DRangeScan));
 
 				// We have one observation:
-				CObservation3DRangeScanPtr obs3D = CObservation3DRangeScanPtr(obs);
+				CObservation3DRangeScan::Ptr obs3D = CObservation3DRangeScan::Ptr(obs);
 				obs3D->load(); // *Important* This is needed to load the range image if stored as a separate file.
 
 				// Do we have to wait to emulate real-time behavior?
@@ -225,7 +225,7 @@ void Test_KinectOnlineOffline(bool is_online, const string &rawlog_file = string
 	// Wait until data stream starts so we can say for sure the sensor has been initialized OK:
 	cout << "Waiting for sensor initialization...\n";
 	do {
-		CObservation3DRangeScanPtr newObs = thrPar.new_obs.get();
+		CObservation3DRangeScan::Ptr newObs = thrPar.new_obs.get();
 		if (newObs && newObs->timestamp!=INVALID_TIMESTAMP)
 				break;
 		else 	mrpt::system::sleep(10);
@@ -245,12 +245,12 @@ void Test_KinectOnlineOffline(bool is_online, const string &rawlog_file = string
 	win3D.setFOV(90);
 	win3D.setCameraPointingToPoint(2.5,0,0);
 
-	mrpt::opengl::CPointCloudColouredPtr gl_points = mrpt::opengl::CPointCloudColoured::Create();
+	mrpt::opengl::CPointCloudColoured::Ptr gl_points = mrpt::opengl::CPointCloudColoured::Create();
 	gl_points->setPointSize(2.5);
 
-	opengl::COpenGLViewportPtr viewInt; // Extra viewports for the RGB images.
+	opengl::COpenGLViewport::Ptr viewInt; // Extra viewports for the RGB images.
 	{
-		mrpt::opengl::COpenGLScenePtr &scene = win3D.get3DSceneAndLock();
+		mrpt::opengl::COpenGLScene::Ptr &scene = win3D.get3DSceneAndLock();
 
 		// Create the Opengl object for the point cloud:
 		scene->insert( gl_points );
@@ -281,7 +281,7 @@ void Test_KinectOnlineOffline(bool is_online, const string &rawlog_file = string
 
 	while (win3D.isOpen() && !thrPar.quit)
 	{
-		CObservation3DRangeScanPtr newObs = thrPar.new_obs.get();
+		CObservation3DRangeScan::Ptr newObs = thrPar.new_obs.get();
 		if (newObs && newObs->timestamp!=INVALID_TIMESTAMP &&
 			newObs->timestamp!=last_obs_tim )
 		{

@@ -35,21 +35,21 @@ const double POSE_AXIS_SCALE  = 0.1;
 
 /** Returns a representation of a the PDF - this is just an auxiliary function, it's more natural to call
 	*    mrpt::poses::CPosePDF::getAs3DObject     */
-CSetOfObjectsPtr CSetOfObjects::posePDF2opengl(const CPosePDF &o)
+CSetOfObjects::Ptr CSetOfObjects::posePDF2opengl(const CPosePDF &o)
 {
-	CSetOfObjectsPtr outObj = CSetOfObjects::Create();
+	CSetOfObjects::Ptr outObj = CSetOfObjects::Create();
 
 	if (IS_CLASS(&o,CPosePDFSOG))
 	{
 		const CPosePDFSOG *p = static_cast<const CPosePDFSOG*>(&o);
 
-		opengl::CSetOfLinesPtr lins = opengl::CSetOfLines::Create();
+		opengl::CSetOfLines::Ptr lins = opengl::CSetOfLines::Create();
 		lins->setColor(0,0,1,0.6);
 		lins->setLineWidth(POSE_TAIL_WIDTH);
 
 		for (CPosePDFSOG::const_iterator it=p->begin();it!=p->end();++it)
 		{
-			opengl::CEllipsoidPtr ellip = opengl::CEllipsoid::Create();
+			opengl::CEllipsoid::Ptr ellip = opengl::CEllipsoid::Create();
 
 			ellip->setPose( CPose3D((it)->mean.x(), (it)->mean.y(), 0) );
 			ellip->setCovMatrix((it)->cov, 2 /* x y */ );
@@ -70,11 +70,11 @@ CSetOfObjectsPtr CSetOfObjects::posePDF2opengl(const CPosePDF &o)
 	{
 		const CPosePDFGaussian *p = static_cast<const CPosePDFGaussian*>(&o);
 
-		opengl::CSetOfLinesPtr lins = opengl::CSetOfLines::Create();
+		opengl::CSetOfLines::Ptr lins = opengl::CSetOfLines::Create();
 		lins->setColor(POSE_COLOR,0.6);
 		lins->setLineWidth(POSE_TAIL_WIDTH);
 
-		opengl::CEllipsoidPtr ellip = opengl::CEllipsoid::Create();
+		opengl::CEllipsoid::Ptr ellip = opengl::CEllipsoid::Create();
 
 		ellip->setPose( CPose3D(p->mean.x(), p->mean.y(), 0) );
 		ellip->setCovMatrix(p->cov, 2 /* x y */ );
@@ -96,11 +96,11 @@ CSetOfObjectsPtr CSetOfObjects::posePDF2opengl(const CPosePDF &o)
 	{
 		const CPosePDFParticles *p = static_cast<const CPosePDFParticles*>(&o);
 
-		opengl::CPointCloudPtr  pnts = opengl::CPointCloud::Create();
+		opengl::CPointCloud::Ptr  pnts = opengl::CPointCloud::Create();
 		pnts->setColor(POSE_COLOR,0.6);
 		pnts->setPointSize(POSE_POINT_SIZE);
 
-		opengl::CSetOfLinesPtr lins = opengl::CSetOfLines::Create();
+		opengl::CSetOfLines::Ptr lins = opengl::CSetOfLines::Create();
 		lins->setColor(POSE_COLOR,0.6);
 		lins->setLineWidth(POSE_TAIL_WIDTH);
 
@@ -123,9 +123,9 @@ CSetOfObjectsPtr CSetOfObjects::posePDF2opengl(const CPosePDF &o)
 
 /** Returns a representation of a the PDF - this is just an auxiliary function, it's more natural to call
 	*    mrpt::poses::CPointPDF::getAs3DObject     */
-CSetOfObjectsPtr CSetOfObjects::posePDF2opengl(const CPointPDF &o)
+CSetOfObjects::Ptr CSetOfObjects::posePDF2opengl(const CPointPDF &o)
 {
-	CSetOfObjectsPtr outObj = CSetOfObjects::Create();
+	CSetOfObjects::Ptr outObj = CSetOfObjects::Create();
 
 	if (IS_CLASS(&o,CPointPDFSOG))
 	{
@@ -134,7 +134,7 @@ CSetOfObjectsPtr CSetOfObjects::posePDF2opengl(const CPointPDF &o)
 		// For each gaussian node
 		for (CPointPDFSOG::CListGaussianModes::const_iterator it = p->begin(); it!= p->end();++it)
 		{
-			opengl::CEllipsoidPtr obj = opengl::CEllipsoid::Create();
+			opengl::CEllipsoid::Ptr obj = opengl::CEllipsoid::Create();
 
 			obj->setPose( it->val.mean);
 			obj->setCovMatrix(it->val.cov,  it->val.cov(2,2)==0  ?  2:3);
@@ -150,7 +150,7 @@ CSetOfObjectsPtr CSetOfObjects::posePDF2opengl(const CPointPDF &o)
 	{
 		const CPointPDFGaussian *p = static_cast<const CPointPDFGaussian*>(&o);
 
-		CEllipsoidPtr obj = CEllipsoid::Create();
+		CEllipsoid::Ptr obj = CEllipsoid::Create();
 		obj->setLocation(p->mean);
 		obj->setCovMatrix(p->cov,  p->cov(2,2)==0  ?  2:3);
 		obj->setColor(POINT_COLOR);
@@ -162,7 +162,7 @@ CSetOfObjectsPtr CSetOfObjects::posePDF2opengl(const CPointPDF &o)
 	{
 		const CPointPDFParticles *p = static_cast<const CPointPDFParticles*>(&o);
 
-		mrpt::opengl::CPointCloudPtr obj = mrpt::opengl::CPointCloud::Create();
+		mrpt::opengl::CPointCloud::Ptr obj = mrpt::opengl::CPointCloud::Create();
 		const size_t N=p->size();
 
 		obj->resize(N);
@@ -181,9 +181,9 @@ CSetOfObjectsPtr CSetOfObjects::posePDF2opengl(const CPointPDF &o)
 
 /** Returns a representation of a the PDF - this is just an auxiliary function, it's more natural to call
 	*    mrpt::poses::CPose3DPDF::getAs3DObject     */
-CSetOfObjectsPtr CSetOfObjects::posePDF2opengl(const CPose3DPDF &o)
+CSetOfObjects::Ptr CSetOfObjects::posePDF2opengl(const CPose3DPDF &o)
 {
-	CSetOfObjectsPtr outObj = CSetOfObjects::Create();
+	CSetOfObjects::Ptr outObj = CSetOfObjects::Create();
 
 	if (IS_CLASS(&o,CPose3DPDFSOG))
 	{
@@ -192,7 +192,7 @@ CSetOfObjectsPtr CSetOfObjects::posePDF2opengl(const CPose3DPDF &o)
 		// For each gaussian node
 		for (CPose3DPDFSOG::const_iterator it = p->begin(); it!= p->end();++it)
 		{
-			opengl::CEllipsoidPtr obj = opengl::CEllipsoid::Create();
+			opengl::CEllipsoid::Ptr obj = opengl::CEllipsoid::Create();
 
 			obj->setPose( it->val.mean);
 			obj->setCovMatrix(CMatrixDouble(it->val.cov),  it->val.cov(2,2)==0  ?  2:3);
@@ -203,7 +203,7 @@ CSetOfObjectsPtr CSetOfObjects::posePDF2opengl(const CPose3DPDF &o)
 
 			outObj->insert( obj );
 
-			opengl::CSetOfObjectsPtr axes = opengl::stock_objects::CornerXYZ();
+			opengl::CSetOfObjects::Ptr axes = opengl::stock_objects::CornerXYZ();
 			axes->setPose(it->val.mean);
 			axes->setScale(POSE_AXIS_SCALE);
 			outObj->insert(axes);
@@ -214,7 +214,7 @@ CSetOfObjectsPtr CSetOfObjects::posePDF2opengl(const CPose3DPDF &o)
 	{
 		const CPose3DPDFGaussian *p = static_cast<const CPose3DPDFGaussian*>(&o);
 
-		opengl::CEllipsoidPtr obj = opengl::CEllipsoid::Create();
+		opengl::CEllipsoid::Ptr obj = opengl::CEllipsoid::Create();
 
 		obj->setPose( p->mean);
 		obj->setCovMatrix(CMatrixDouble(p->cov),  p->cov(2,2)==0  ?  2:3);
@@ -225,7 +225,7 @@ CSetOfObjectsPtr CSetOfObjects::posePDF2opengl(const CPose3DPDF &o)
 
 		outObj->insert( obj );
 
-		opengl::CSetOfObjectsPtr axes = opengl::stock_objects::CornerXYZ();
+		opengl::CSetOfObjects::Ptr axes = opengl::stock_objects::CornerXYZ();
 		axes->setPose(p->mean);
 		axes->setScale(POSE_AXIS_SCALE);
 		outObj->insert(axes);
@@ -237,7 +237,7 @@ CSetOfObjectsPtr CSetOfObjects::posePDF2opengl(const CPose3DPDF &o)
 
 		for (size_t i=0;i<p->size();i++)
 		{
-			opengl::CSetOfObjectsPtr axes = opengl::stock_objects::CornerXYZSimple(POSE_AXIS_SCALE);
+			opengl::CSetOfObjects::Ptr axes = opengl::stock_objects::CornerXYZSimple(POSE_AXIS_SCALE);
 			axes->setPose(*p->m_particles[i].d);
 			outObj->insert(axes);
 		}
@@ -249,15 +249,15 @@ CSetOfObjectsPtr CSetOfObjects::posePDF2opengl(const CPose3DPDF &o)
 
 /** Returns a representation of a the PDF - this is just an auxiliary function, it's more natural to call
 	*    mrpt::poses::CPose3DQuatPDF::getAs3DObject     */
-CSetOfObjectsPtr CSetOfObjects::posePDF2opengl(const CPose3DQuatPDF &o)
+CSetOfObjects::Ptr CSetOfObjects::posePDF2opengl(const CPose3DQuatPDF &o)
 {
-	CSetOfObjectsPtr outObj = CSetOfObjects::Create();
+	CSetOfObjects::Ptr outObj = CSetOfObjects::Create();
 
 	if (IS_CLASS(&o,CPose3DQuatPDFGaussian))
 	{
 		const CPose3DQuatPDFGaussian *p = static_cast<const CPose3DQuatPDFGaussian*>(&o);
 
-		opengl::CEllipsoidPtr obj = opengl::CEllipsoid::Create();
+		opengl::CEllipsoid::Ptr obj = opengl::CEllipsoid::Create();
 
 		obj->setPose( p->mean);
 		obj->setCovMatrix(CMatrixDouble(p->cov),  p->cov(2,2)==0  ?  2:3);
@@ -268,7 +268,7 @@ CSetOfObjectsPtr CSetOfObjects::posePDF2opengl(const CPose3DQuatPDF &o)
 
 		outObj->insert( obj );
 
-		opengl::CSetOfObjectsPtr axes = opengl::stock_objects::CornerXYZ();
+		opengl::CSetOfObjects::Ptr axes = opengl::stock_objects::CornerXYZ();
 		axes->setPose(CPose3D(p->mean));
 		axes->setScale(POSE_AXIS_SCALE);
 		outObj->insert(axes);

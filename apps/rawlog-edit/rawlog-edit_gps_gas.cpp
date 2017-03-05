@@ -63,39 +63,39 @@ DECLARE_OP_FUNCTION(op_export_gps_gas_kml)
 			
 			maxGasValue = -1.0;
 			minGasValue = 10000;
-            obs = nullptr;
-            obsGas = nullptr;
+			obs = nullptr;
+			obsGas = nullptr;
 			hasGAS = false;
 			hasGPS = false;
 		}
 
 		// return false on any error.
-		bool processOneObservation(CObservationPtr  &o)
+		bool processOneObservation(CObservation::Ptr  &o)
 		{
 			if (IS_CLASS(o, CObservationGPS ) )
 			{
-				obs = CObservationGPSPtr(o).get();
+				obs = dynamic_cast<CObservationGPS *>(o.get());
 				if (!obs->has_GGA_datum)
-				{	
-                    obs = nullptr;
+				{
+					obs = nullptr;
 					return true; // Nothing to do...
 				}
 				hasGPS = true;
 			}
 			else if (IS_CLASS(o, CObservationGasSensors ) )
 			{
-				obsGas = CObservationGasSensorsPtr(o).get();
+				obsGas = dynamic_cast<CObservationGasSensors *>(o.get());
 				if (obsGas->m_readings.size() < 1)
 				{
 					cout << "Empty Gas Sensor" << endl;
-                    obsGas = nullptr;
+					obsGas = nullptr;
 					return true; // Nothing to do...
 				}
 
 				if (obsGas->m_readings[0].readingsVoltage.size() < 1)
 				{
 					cout << "Empty Gas Obs" << endl;
-                    obsGas = nullptr;
+					obsGas = nullptr;
 					return true; // Nothing to do...
 				}
 				//cout << "new observations has: "<< obsGas->m_readings[0].readingsVoltage.size() << " elements." << endl;

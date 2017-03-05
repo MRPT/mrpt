@@ -56,7 +56,7 @@ namespace mrpt
 			struct MAPS_IMPEXP FrameInfo
 			{
 				mrpt::poses::CPose3D  pose;
-				mrpt::maps::CSimplePointsMapPtr pc;
+				mrpt::maps::CSimplePointsMap::Ptr pc;
 
 				MRPT_MAKE_ALIGNED_OPERATOR_NEW
 			};

@@ -14,8 +14,8 @@ namespace mrpt
 {
 	namespace obs
 	{
-		class CObservation; struct CObservationPtr;
-		class CSensoryFrame; struct CSensoryFramePtr;
+		class CObservation;
+		class CSensoryFrame;
 		class CObservation2DRangeScan;
 		class CObservation3DRangeScan;
 		class CObservationVelodyneScan;
@@ -27,7 +27,7 @@ namespace mrpt
 	}
 	namespace maps
 	{
-		class CMetricMap; struct CMetricMapPtr;
+		class CMetricMap;
 		class CPointsMap;
 		class CSimplePointsMap;
 		class CSimpleMap;

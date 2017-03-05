@@ -160,7 +160,7 @@ void goThere(data_st &Pdata, string& response, string& errormsg)
 //Shows the video in the "win" window.
  void videowindow(data_st* data)
 {
-	CObservationImagePtr lastimg;
+	CObservationImage::Ptr lastimg;
 
 	while(data->showvideo)
 	{
@@ -268,7 +268,7 @@ CMatchedFeatureList comp2Matched_lists2(CMatchedFeatureList &list1, CMatchedFeat
 		{
 			if( itVec1->second->ID == itVec2->first->ID )
 			{
-				std::pair<CFeaturePtr,CFeaturePtr> mPair( itVec1, itVec2 );
+				std::pair<CFeature::Ptr,CFeature::Ptr> mPair( itVec1, itVec2 );
 				final_list.insert( mPair );
 			}
 		} // end for itVec2

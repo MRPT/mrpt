@@ -250,8 +250,8 @@ namespace mrpt
 			  * \return true if no error ocurred (even if there was no new observation). false if any communication error occurred.
 			  */
 			bool getNextObservation(
-				mrpt::obs::CObservationVelodyneScanPtr & outScan,
-				mrpt::obs::CObservationGPSPtr          & outGPS
+				mrpt::obs::CObservationVelodyneScan::Ptr & outScan,
+				mrpt::obs::CObservationGPS::Ptr          & outGPS
 				);
 
 			// See docs in parent class
@@ -301,7 +301,7 @@ namespace mrpt
 			mrpt::system::TTimeStamp  & pos_pkt_time, uint8_t  *out_pos_buffer
 			);
 
-		mrpt::obs::CObservationVelodyneScanPtr m_rx_scan; //!< In progress RX scan
+		mrpt::obs::CObservationVelodyneScan::Ptr m_rx_scan; //!< In progress RX scan
 
 		mrpt::obs::gnss::Message_NMEA_RMC m_last_gps_rmc;
 		mrpt::system::TTimeStamp          m_last_gps_rmc_age;

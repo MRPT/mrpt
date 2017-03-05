@@ -76,27 +76,27 @@ namespace mrpt
 			/** Returns the first node in the graph, or nullptr if it does not exist.
 			  * \return A pointer to the object. DO NOT DELETE this object, if you want to modify it in someway, first obtain a copy by invoking "CSerializable::duplicate"
 			  */
-			CHMHMapNodePtr  getFirstNode();
+			CHMHMapNode::Ptr  getFirstNode();
 
 			/** Returns the node with the given ID, or nullptr if it does not exist.
 			  * \return A pointer to the object. DO NOT DELETE this object, if you want to modify it in someway, first obtain a copy by invoking "CSerializable::duplicate"
 			  */
-			CHMHMapNodePtr  getNodeByID(CHMHMapNode::TNodeID	id);
+			CHMHMapNode::Ptr  getNodeByID(CHMHMapNode::TNodeID	id);
 
 			/** Returns the node with the given ID, or nullptr if it does not exist.
 			  * \return A pointer to the object. DO NOT DELETE this object, if you want to modify it in someway, first obtain a copy by invoking "CSerializable::duplicate"
 			  */
-			const CHMHMapNodePtr  getNodeByID(CHMHMapNode::TNodeID	id) const;
+			const CHMHMapNode::Ptr  getNodeByID(CHMHMapNode::TNodeID	id) const;
 
 			/** Returns the node with the given label (case insensitive) for some given hypothesis ID, or nullptr if it does not exist.
 			  * \return A pointer to the object. DO NOT DELETE this object, if you want to modify it in someway, first obtain a copy by invoking "CSerializable::duplicate"
 			  */
-			CHMHMapNodePtr  getNodeByLabel(const std::string &label, const THypothesisID &hypothesisID );
+			CHMHMapNode::Ptr  getNodeByLabel(const std::string &label, const THypothesisID &hypothesisID );
 
 			/** Returns the node with the given label (case insensitive) for some given hypothesis ID, or nullptr if it does not exist.
 			  * \return A pointer to the object. DO NOT DELETE this object, if you want to modify it in someway, first obtain a copy by invoking "CSerializable::duplicate"
 			  */
-			const CHMHMapNodePtr  getNodeByLabel(const std::string &label, const THypothesisID &hypothesisID) const;
+			const CHMHMapNode::Ptr  getNodeByLabel(const std::string &label, const THypothesisID &hypothesisID) const;
 
 			/** Returns a partition of this graph only with nodes at a given level in the hierarchy (0=ground level,1=parent level,etc)
 			   *	- The partition may be empty if no node fulfills the condition.
@@ -198,7 +198,7 @@ namespace mrpt
 			 /** Returns the first arc between a pair of nodes of a given type, and if it is in the opposite direction.
 			   * \return The arc, or nullptr if not found.
 			   */
-			CHMHMapArcPtr findArcOfTypeBetweenNodes(
+			CHMHMapArc::Ptr findArcOfTypeBetweenNodes(
 				const CHMHMapNode::TNodeID	&node1id,
 				const CHMHMapNode::TNodeID	&node2id,
 				const THypothesisID			&hypothesisID,

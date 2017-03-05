@@ -195,7 +195,7 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 					bool there_is_ptg_data;
 					in >> there_is_ptg_data;
 					if (there_is_ptg_data)
-						infoPerPTG[i].ptg = mrpt::nav::CParameterizedTrajectoryGeneratorPtr( in.ReadObject() );
+						infoPerPTG[i].ptg = std::dynamic_pointer_cast<CParameterizedTrajectoryGenerator>( in.ReadObject() );
 				}
 
 				if (version >= 19) {
@@ -245,8 +245,8 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 					std::vector<double> vel;
 					in >> vel;
 					if (vel.size() == 2)
-						cmd_vel = mrpt::kinematics::CVehicleVelCmdPtr(new mrpt::kinematics::CVehicleVelCmd_DiffDriven);
-					else cmd_vel = mrpt::kinematics::CVehicleVelCmdPtr(new mrpt::kinematics::CVehicleVelCmd_Holo);
+						cmd_vel = mrpt::kinematics::CVehicleVelCmd::Ptr(new mrpt::kinematics::CVehicleVelCmd_DiffDriven);
+					else cmd_vel = mrpt::kinematics::CVehicleVelCmd::Ptr(new mrpt::kinematics::CVehicleVelCmd_Holo);
 					for (size_t i = 0; i < cmd_vel->getVelCmdLength(); i++)
 						cmd_vel->setVelCmdElement(i, vel[i]);
 				}
@@ -254,7 +254,7 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 			else {
 				float v, w;
 				in >> v >> w;
-				cmd_vel = mrpt::kinematics::CVehicleVelCmdPtr(new mrpt::kinematics::CVehicleVelCmd_DiffDriven);
+				cmd_vel = mrpt::kinematics::CVehicleVelCmd::Ptr(new mrpt::kinematics::CVehicleVelCmd_DiffDriven);
 				cmd_vel->setVelCmdElement(0, v);
 				cmd_vel->setVelCmdElement(0, w);
 			}

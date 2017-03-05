@@ -245,7 +245,7 @@ class CLoopCloserERD:
 		typedef CLoopCloserERD<GRAPH_t> decider_t; /**< self type - Handy typedef */
 		/**\brief New typedef for splitting the nodes into groups */
 		typedef std::vector<mrpt::vector_uint> partitions_t;
-		typedef std::map<mrpt::utils::TNodeID, mrpt::obs::CObservation2DRangeScanPtr> nodes_to_scans2D_t;
+		typedef std::map<mrpt::utils::TNodeID, mrpt::obs::CObservation2DRangeScan::Ptr> nodes_to_scans2D_t;
 		typedef typename GRAPH_t::edges_map_t::const_iterator edges_citerator;
 		typedef typename GRAPH_t::edges_map_t::iterator edges_iterator;
 
@@ -255,9 +255,9 @@ class CLoopCloserERD:
 		~CLoopCloserERD();
 
 		bool updateState(
-				mrpt::obs::CActionCollectionPtr action,
-				mrpt::obs::CSensoryFramePtr observations,
-				mrpt::obs::CObservationPtr observation );
+				mrpt::obs::CActionCollection::Ptr action,
+				mrpt::obs::CSensoryFrame::Ptr observations,
+				mrpt::obs::CObservation::Ptr observation );
 
 		void setGraphPtr(GRAPH_t* graph);
 		void setWindowManagerPtr(mrpt::graphslam::CWindowManager* win_manager);
@@ -506,9 +506,9 @@ class CLoopCloserERD:
 		void toggleLaserScansVisualization();
 		void dumpVisibilityErrorMsg(std::string viz_flag,
 				int sleep_time=500 /* ms */);
-		void checkIfInvalidDataset(mrpt::obs::CActionCollectionPtr action,
-				mrpt::obs::CSensoryFramePtr observations,
-				mrpt::obs::CObservationPtr observation );
+		void checkIfInvalidDataset(mrpt::obs::CActionCollection::Ptr action,
+				mrpt::obs::CSensoryFrame::Ptr observations,
+				mrpt::obs::CObservation::Ptr observation );
 		/**\brief Split the currently registered graph nodes into partitions.  */
 		void updateMapPartitions(bool full_update=false);
 		/**\brief Initialize the visualization of the map partition objects. */
@@ -683,7 +683,7 @@ class CLoopCloserERD:
 		 */
 		nodes_to_scans2D_t  m_nodes_to_laser_scans2D;
 		/**\brief Keep the last laser scan for visualization purposes */
-		mrpt::obs::CObservation2DRangeScanPtr m_last_laser_scan2D;
+		mrpt::obs::CObservation2DRangeScan::Ptr m_last_laser_scan2D;
 
 		/**\brief Previous partitions vector */
 		partitions_t m_last_partitions;

@@ -34,9 +34,9 @@ class CEmptyNRD:
 		CEmptyNRD();
 		~CEmptyNRD();
 
-		bool updateState( mrpt::obs::CActionCollectionPtr action,
-				mrpt::obs::CSensoryFramePtr observations,
-				mrpt::obs::CObservationPtr observation );
+		bool updateState( mrpt::obs::CActionCollection::Ptr action,
+				mrpt::obs::CSensoryFrame::Ptr observations,
+				mrpt::obs::CObservation::Ptr observation );
 		pose_t getCurrentRobotPosEstimation() const;
 
 	private:
@@ -53,9 +53,9 @@ CEmptyNRD<GRAPH_t>::~CEmptyNRD() { }
 
 template<class GRAPH_t>
 bool CEmptyNRD<GRAPH_t>::updateState(
-		mrpt::obs::CActionCollectionPtr action,
-		mrpt::obs::CSensoryFramePtr observations,
-		mrpt::obs::CObservationPtr observation )  {return false;}
+		mrpt::obs::CActionCollection::Ptr action,
+		mrpt::obs::CSensoryFrame::Ptr observations,
+		mrpt::obs::CObservation::Ptr observation )  {return false;}
 
 template<class GRAPH_t>
 void CEmptyNRD<GRAPH_t>::registerNewNode() { }

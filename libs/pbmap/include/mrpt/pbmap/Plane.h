@@ -162,7 +162,7 @@ namespace pbmap {
     /**!
      *  Convex Hull
     */
-//    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr contourPtr;
+//    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr contour::Ptr;
     std::vector<int32_t> inliers;
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr polygonContourPtr;
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr outerPolygonPtr; // This is going to be deprecated

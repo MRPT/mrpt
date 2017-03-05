@@ -97,7 +97,7 @@ std::string utils::ObjectToString(const CSerializable *o)
 	Used to pass CORBA-like object into a MRPT object.
 		See doc about "Integration with BABEL".
    ----------------------------------------------------------------------- */
-void utils::StringToObject(const std::string &str, CSerializablePtr &obj)
+void utils::StringToObject(const std::string &str, CSerializable::Ptr &obj)
 {
 	MRPT_START
 
@@ -185,7 +185,7 @@ void utils::ObjectToOctetVector(const CSerializable *o, vector_byte & out_vector
 /* -----------------------------------------------------------------------
 				OctetVectorToObject
    ----------------------------------------------------------------------- */
-void utils::OctetVectorToObject(const vector_byte & in_data, CSerializablePtr &obj)
+void utils::OctetVectorToObject(const vector_byte & in_data, CSerializable::Ptr &obj)
 {
 	try
 	{
@@ -245,7 +245,7 @@ void utils::ObjectToRawString(const CSerializable *o, std::string & out_vector)
 /* -----------------------------------------------------------------------
 				RawStringToObject
    ----------------------------------------------------------------------- */
-void utils::RawStringToObject(const std::string & in_data, CSerializablePtr &obj)
+void utils::RawStringToObject(const std::string & in_data, CSerializable::Ptr &obj)
 {
 	try
 	{

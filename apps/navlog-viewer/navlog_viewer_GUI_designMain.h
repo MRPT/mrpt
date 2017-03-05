@@ -34,11 +34,11 @@ class navlog_viewer_GUI_designDialog: public wxFrame //wxDialog
 {
 	private:
 		// App data:
-		std::vector<mrpt::utils::CSerializablePtr>  m_logdata;
-		std::vector<mrpt::nav::CParameterizedTrajectoryGeneratorPtr>  m_logdata_ptg_paths; // Retrieved from the first entry in m_logdata when loading
+		std::vector<mrpt::utils::CSerializable::Ptr>  m_logdata;
+		std::vector<mrpt::nav::CParameterizedTrajectoryGenerator::Ptr>  m_logdata_ptg_paths; // Retrieved from the first entry in m_logdata when loading
 
-		std::map<std::string, mrpt::gui::CDisplayWindowPlotsPtr> m_mywins;
-		std::map<std::string, mrpt::gui::CDisplayWindow3DPtr>    m_mywins3D;
+		std::map<std::string, mrpt::gui::CDisplayWindowPlots::Ptr> m_mywins;
+		std::map<std::string, mrpt::gui::CDisplayWindow3D::Ptr>    m_mywins3D;
 
 		mrpt::system::TTimeStamp m_log_first_tim, m_log_last_tim;
 

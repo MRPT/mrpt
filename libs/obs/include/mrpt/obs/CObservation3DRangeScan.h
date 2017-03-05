@@ -120,8 +120,8 @@ namespace obs
 	 *  Example of how to assign labels to pixels (for object segmentation, semantic information, etc.):
 	 *
 	 * \code
-	 *   // Assume obs of type CObservation3DRangeScanPtr
-	 *   obs->pixelLabels = CObservation3DRangeScan::TPixelLabelInfoPtr( new CObservation3DRangeScan::TPixelLabelInfo<NUM_BYTES>() );
+	 *   // Assume obs of type CObservation3DRangeScan::Ptr
+	 *   obs->pixelLabels = CObservation3DRangeScan::TPixelLabelInfo::Ptr( new CObservation3DRangeScan::TPixelLabelInfo<NUM_BYTES>() );
 	 *   obs->pixelLabels->setSize(ROWS,COLS);
 	 *   obs->pixelLabels->setLabel(col,row, label_idx);   // label_idxs = [0,2^NUM_BYTES-1] 
 	 *   //...
@@ -360,6 +360,7 @@ namespace obs
 		/** Virtual interface to all pixel-label information structs. See CObservation3DRangeScan::pixelLabels */
 		struct OBS_IMPEXP TPixelLabelInfoBase
 		{
+			using Ptr = std::shared_ptr<TPixelLabelInfoBase>; //!< Used in CObservation3DRangeScan::pixelLabels
 			typedef std::map<uint32_t,std::string> TMapLabelID2Name;
 
 			/** The 'semantic' or human-friendly name of the i'th bit in pixelLabels(r,c) can be found in pixelLabelNames[i] as a std::string */
@@ -419,11 +420,11 @@ namespace obs
 			virtual void internal_writeToStream(mrpt::utils::CStream &out) const = 0;
 			virtual void Print( std::ostream& ) const =0;
 		};
-		typedef std::shared_ptr<TPixelLabelInfoBase>  TPixelLabelInfoPtr;  //!< Used in CObservation3DRangeScan::pixelLabels
 
 		template <unsigned int BYTES_REQUIRED_> 
 		struct TPixelLabelInfo : public TPixelLabelInfoBase
 		{
+			using Ptr = std::shared_ptr<TPixelLabelInfo>;
 			enum {
 			      BYTES_REQUIRED = BYTES_REQUIRED_ // ((MAX_LABELS-1)/8)+1 
 			};
@@ -516,7 +517,7 @@ namespace obs
 
 		/** All information about pixel labeling is stored in this (smart pointer to) structure; refer to TPixelLabelInfo for details on the contents 
 		  * User is responsible of creating a new object of the desired data type. It will be automatically (de)serialized no matter its specific type. */
-		TPixelLabelInfoPtr  pixelLabels;
+		TPixelLabelInfoBase::Ptr  pixelLabels;
 
 		/** @} */
 

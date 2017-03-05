@@ -59,7 +59,7 @@ namespace mrpt
 				std::vector<BASE::array_point_t> & out_pts) const MRPT_OVERRIDE;
 		private:
 			double m_underflowMaxRange; 
-
+		public:
 			/** Constructor
 			  */
 			CEllipsoidInverseDepth2D() : m_underflowMaxRange(1e6)

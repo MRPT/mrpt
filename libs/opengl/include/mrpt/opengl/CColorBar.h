@@ -44,7 +44,7 @@ namespace opengl	{
 
 	public:
 		/** Constructor returning a smart pointer to the newly created object. */
-		static CColorBarPtr Create(
+		static CColorBar::Ptr Create(
 			const mrpt::utils::TColormap colormap, //!< The colormap to represent.
 			double width, double height,   //!< size of the color bar
 			double min_col, double max_col,  //!< limits for [0,1] colormap indices
@@ -65,7 +65,6 @@ namespace opengl	{
 		/** Evaluates the bounding box of this object (including possible children) in the coordinate frame of the object parent. */
 		void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const MRPT_OVERRIDE;
 
-	private:
 		/** Basic empty constructor. Set all parameters to default. */ 
 		CColorBar(
 			const mrpt::utils::TColormap colormap = mrpt::utils::cmGRAYSCALE , //!< The colormap to represent.

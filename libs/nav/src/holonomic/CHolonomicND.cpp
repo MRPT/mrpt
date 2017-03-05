@@ -56,7 +56,7 @@ void CHolonomicND::navigate(const NavInput & ni, NavOutput &no)
 	double				evaluation;
 
 	// Create a log record for returning data.
-	CLogFileRecord_NDPtr  log = CLogFileRecord_ND::Create();
+	CLogFileRecord_ND::Ptr  log = CLogFileRecord_ND::Create();
 	no.logRecord = log;
 
 	// Search gaps:
@@ -73,7 +73,7 @@ void CHolonomicND::navigate(const NavInput & ni, NavOutput &no)
 					evaluation,
 					situation,
 					riskEvaluation,
-					log);
+					*log);
 
 	if (situation == SITUATION_NO_WAY_FOUND)
 	{
@@ -298,7 +298,7 @@ void  CHolonomicND::searchBestGap(
 	double                      & out_selEvaluation,
 	TSituations                 & out_situation,
 	double                      & out_riskEvaluation,
-	CLogFileRecord_NDPtr	      log)
+	CLogFileRecord_ND	    & log)
 {
 	// For evaluating the "risk":
 	unsigned int min_risk_eval_sector = 0;
@@ -345,7 +345,7 @@ void  CHolonomicND::searchBestGap(
 				target_dist,
 				gaps_evaluation );
 
-		if (log) log->gaps_eval = gaps_evaluation;
+		log.gaps_eval = gaps_evaluation;
 
 		// D2: is there any gap "beyond" the target (and not too far away)?   (Not used)
 		// ----------------------------------------------------------------

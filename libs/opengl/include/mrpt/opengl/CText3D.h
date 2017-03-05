@@ -95,7 +95,7 @@ namespace mrpt
 			void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const MRPT_OVERRIDE;
 
 			/** Class factory  */
-			static CText3DPtr Create(
+			static CText3D::Ptr Create(
 				const std::string &str,
 				const std::string &fontName = std::string("sans"),
 				const double scale = 1.0,
@@ -103,7 +103,6 @@ namespace mrpt
 				const double text_spacing = 1.5,
 				const double text_kerning = 0.1 );
 
-		private:
 			/** Constructor */
 			CText3D(
 				const std::string &str = std::string(""),

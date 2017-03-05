@@ -91,9 +91,9 @@ int TestStereoCalibrate(int argc, char** argv)
 		{
 			mrpt::gui::CDisplayWindow3D win("Calibration results",1000,480);
 
-			mrpt::opengl::COpenGLViewportPtr view1, view2;
+			mrpt::opengl::COpenGLViewport::Ptr view1, view2;
 			{
-				mrpt::opengl::COpenGLScenePtr &scene = win.get3DSceneAndLock();
+				mrpt::opengl::COpenGLScene::Ptr &scene = win.get3DSceneAndLock();
 				view1 = scene->getViewport("main");
 				view2 = scene->createViewport("right");
 

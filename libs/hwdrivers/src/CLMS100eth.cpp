@@ -332,7 +332,7 @@ void CLMS100Eth::doProcessSimple(bool &outThereIsObservation, CObservation2DRang
 /*-------------------------------------------------------------*/
 void CLMS100Eth::doProcess( )
 {
-	CObservation2DRangeScanPtr obs= CObservation2DRangeScan::Create();
+	CObservation2DRangeScan::Ptr obs= CObservation2DRangeScan::Create();
 	try
 	{
         bool isThereObservation, hwError;

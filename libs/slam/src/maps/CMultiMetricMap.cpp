@@ -122,9 +122,9 @@ struct MapInsertObservation
 
 struct MapGetAs3DObject
 {
-	mrpt::opengl::CSetOfObjectsPtr & obj_gl;
+	mrpt::opengl::CSetOfObjects::Ptr & obj_gl;
 
-	MapGetAs3DObject(mrpt::opengl::CSetOfObjectsPtr &_obj_gl) : obj_gl(_obj_gl)
+	MapGetAs3DObject(mrpt::opengl::CSetOfObjects::Ptr &_obj_gl) : obj_gl(_obj_gl)
 	{
 	}
 
@@ -242,7 +242,7 @@ void  CMultiMetricMap::setListOfMaps( const mrpt::maps::TSetOfMetricMapInitializ
 			ASSERT_(theMap)
 
 			// Add to the list of maps:
-			this->maps.push_back( mrpt::maps::CMetricMapPtr(theMap) );
+			this->maps.push_back( mrpt::maps::CMetricMap::Ptr(theMap) );
 		}
 
 	} // end if initializers!=nullptr
@@ -263,7 +263,7 @@ void  CMultiMetricMap::internal_clear()
 void  CMultiMetricMap::deleteAllMaps()
 {
 	// Clear smart pointers:
-	ObjectClearUnique<mrpt::utils::poly_ptr_ptr<mrpt::maps::CMetricMapPtr> > op_reset;
+	ObjectClearUnique<mrpt::utils::poly_ptr_ptr<mrpt::maps::CMetricMap::Ptr> > op_reset;
 	MapExecutor::run(*this, op_reset);
 
 	// Clear list:
@@ -308,7 +308,7 @@ void  CMultiMetricMap::readFromStream(mrpt::utils::CStream &in, int version)
 			uint32_t  n;
 			in >> n;
 			this->maps.resize(n);
-			for_each( maps.begin(), maps.end(), ObjectReadFromStreamToPtrs<mrpt::maps::CMetricMapPtr>(&in) );
+			for_each( maps.begin(), maps.end(), ObjectReadFromStreamToPtrs<mrpt::maps::CMetricMap::Ptr>(&in) );
 
 		} break;
 	default:
@@ -404,7 +404,7 @@ void  CMultiMetricMap::saveMetricMapRepresentationToFile(const std::string	&filN
 /*---------------------------------------------------------------
 						getAs3DObject
 ---------------------------------------------------------------*/
-void  CMultiMetricMap::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const
+void  CMultiMetricMap::getAs3DObject( mrpt::opengl::CSetOfObjects::Ptr	&outObj ) const
 {
 	MRPT_START
 	MapGetAs3DObject op_get_3D(outObj);
@@ -467,7 +467,7 @@ CSimplePointsMap * CMultiMetricMap::getAsSimplePointsMap()
 
 
 /** Gets the i-th map \exception std::runtime_error On out-of-bounds */
-mrpt::maps::CMetricMapPtr CMultiMetricMap::getMapByIndex(size_t idx) const
+mrpt::maps::CMetricMap::Ptr CMultiMetricMap::getMapByIndex(size_t idx) const
 {
 	ASSERT_BELOW_(idx,maps.size())
 	return maps[idx].get_ptr();

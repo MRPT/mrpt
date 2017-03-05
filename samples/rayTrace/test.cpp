@@ -73,12 +73,12 @@ CPose3D randomPose()	{
  * Call configRandom given the address of an object and assign random pose and
  * color to it
  */
-void configRandom(CRenderizablePtr &obj)	{
+void configRandom(CRenderizable::Ptr &obj)	{
 	obj->setColor(MYRAND1(),MYRAND1(),MYRAND1(),MYRANDG(0.75,0.25));
 	obj->setPose(randomPose());
 }
 
-void guideLines(const CPose3D &base,CSetOfLinesPtr &lines,float dist)	{
+void guideLines(const CPose3D &base,CSetOfLines::Ptr &lines,float dist)	{
 	CPoint3D pDist=CPoint3D(dist,0,0);
 	CPoint3D pps[4];
 	pps[0]=base+pDist;
@@ -91,32 +91,32 @@ void guideLines(const CPose3D &base,CSetOfLinesPtr &lines,float dist)	{
 }
 
 //Add objects at your will to check results
-void generateObjects(CSetOfObjectsPtr &world)	{
+void generateObjects(CSetOfObjects::Ptr &world)	{
     // create object, give it a random pose/color, insert it in the world
-	CDiskPtr dsk=CDisk::Create();
+	CDisk::Ptr dsk=CDisk::Create();
 	dsk->setDiskRadius(MYRANDG(5,5),MYRANDG(5));
 	configRandom(dsk);
 	world->insert(dsk);
 
-	CSpherePtr sph=CSphere::Create(MYRANDG(5,1));
+	CSphere::Ptr sph=CSphere::Create(MYRANDG(5,1));
 	configRandom(sph);
 	world->insert(sph);
 
-	CTexturedPlanePtr pln=CTexturedPlane::Create(MYRANDG(10,-10),MYRANDG(10),MYRANDG(10,-10),MYRANDG(10));
+	CTexturedPlane::Ptr pln=CTexturedPlane::Create(MYRANDG(10,-10),MYRANDG(10),MYRANDG(10,-10),MYRANDG(10));
 	configRandom(pln);
 	world->insert(pln);
 
 	for (size_t i=0;i<5;i++)	{
-		CPolyhedronPtr poly=CPolyhedron::CreateRandomPolyhedron(MYRANDG(2,2));
+		CPolyhedron::Ptr poly=CPolyhedron::CreateRandomPolyhedron(MYRANDG(2,2));
 		configRandom(poly);
 		world->insert(poly);
 	}
 
-	CCylinderPtr cil=CCylinder::Create(MYRANDG(3.0,3.0),MYRANDG(3.0,1.0),MYRANDG(2.0f,3.0f),50,1);
+	CCylinder::Ptr cil=CCylinder::Create(MYRANDG(3.0,3.0),MYRANDG(3.0,1.0),MYRANDG(2.0f,3.0f),50,1);
 	configRandom(cil);
 	world->insert(cil);
 
-	CEllipsoidPtr ell=CEllipsoid::Create();
+	CEllipsoid::Ptr ell=CEllipsoid::Create();
 	CMatrixDouble md=CMatrixDouble(3,3);
 	for (size_t i=0;i<3;i++) md(i,i)=MYRANDG(8.0,1.0);
 	for (size_t i=0;i<3;i++)	{
@@ -132,17 +132,17 @@ void display()	{
 	CDisplayWindow3D window("Ray trace demo",640,480);
 	window.setPos(10,10);
 	mrpt::system::sleep(20);
-	COpenGLScenePtr scene1=COpenGLScene::Create();
-	//COpenGLScenePtr &scene1=window.get3DSceneAndLock();
-	opengl::CGridPlaneXYPtr plane1=CGridPlaneXY::Create(-20,20,-20,20,0,1);
+	COpenGLScene::Ptr scene1=COpenGLScene::Create();
+	//COpenGLScene::Ptr &scene1=window.get3DSceneAndLock();
+	opengl::CGridPlaneXY::Ptr plane1=CGridPlaneXY::Create(-20,20,-20,20,0,1);
 	plane1->setColor(GRID_R,GRID_G,GRID_B);
 	scene1->insert(plane1);
 	scene1->insert(CAxis::Create(-5,-5,-5,5,5,5,2.5,3,true));
-	CSetOfObjectsPtr world=CSetOfObjects::Create();
+	CSetOfObjects::Ptr world=CSetOfObjects::Create();
 	generateObjects(world);
 	scene1->insert(world);
 	CPose3D basePose=randomPose();
-	CAngularObservationMeshPtr aom=CAngularObservationMesh::Create();
+	CAngularObservationMesh::Ptr aom=CAngularObservationMesh::Create();
 	CTicTac t;
 	t.Tic();
 	CAngularObservationMesh::trace2DSetOfRays(scene1,basePose,aom,CAngularObservationMesh::TDoubleRange::CreateFromAmount(-M_PI/2,0,HOW_MANY_PITCHS),CAngularObservationMesh::TDoubleRange::CreateFromAperture(M_PI,HOW_MANY_YAWS));
@@ -150,8 +150,8 @@ void display()	{
 	aom->setColor(0,1,0);
 	aom->setWireframe(true);
 	//Comment to stop showing traced rays and scan range guidelines.
-	CSetOfLinesPtr traced=CSetOfLines::Create();
-	CSetOfLinesPtr guides=CSetOfLines::Create();
+	CSetOfLines::Ptr traced=CSetOfLines::Create();
+	CSetOfLines::Ptr guides=CSetOfLines::Create();
 	aom->getTracedRays(traced);
 	traced->setLineWidth(1.5);
 	traced->setColor(1,0,0);
@@ -161,13 +161,13 @@ void display()	{
 
 	//Uncomment to show also traced rays who got lost.
 	/*
-	CSetOfLinesPtr untraced=CSetOfLines::Create();
+	CSetOfLines::Ptr untraced=CSetOfLines::Create();
 	aom->getUntracedRays(untraced,20);
 	untraced->setLineWidth(1);
 	untraced->setColor(1,1,1,0.5);
 	scene1->insert(untraced);
 	*/
-	CSpherePtr point=CSphere::Create(0.2);
+	CSphere::Ptr point=CSphere::Create(0.2);
 	point->setColor(0,1,0);
 	point->setPose(basePose);
 	scene1->insert(point);
@@ -177,9 +177,9 @@ void display()	{
 	window.get3DSceneAndLock()=scene1;
 	window.unlockAccess3DScene();
 	window.setCameraElevationDeg(25.0f);
-	COpenGLScenePtr &scene2=window2.get3DSceneAndLock();
+	COpenGLScene::Ptr &scene2=window2.get3DSceneAndLock();
 	scene2->insert(aom);
-	opengl::CGridPlaneXYPtr plane2=CGridPlaneXY::Create(-20,20,-20,20,0,1);
+	opengl::CGridPlaneXY::Ptr plane2=CGridPlaneXY::Create(-20,20,-20,20,0,1);
 	plane2->setColor(GRID_R,GRID_G,GRID_B);
 	scene2->insert(plane2);
 	scene2->insert(CAxis::Create(-5,-5,-5,5,5,5,2.5,3,true));

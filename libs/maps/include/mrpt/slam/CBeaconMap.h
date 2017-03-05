@@ -11,5 +11,5 @@
 MRPT_WARNING("*Deprecated header* Please replace with #include <mrpt/maps/CBeaconMap.h>. This backward compatible header will be removed in MRPT 2.0.0")
 namespace mrpt { namespace slam {
 	using mrpt::maps::CBeaconMap;    //!< Backward compatibility
-	using mrpt::maps::CBeaconMapPtr; //!< Backward compatibility
+	using mrpt::maps::CBeaconMap::Ptr; //!< Backward compatibility
 } }

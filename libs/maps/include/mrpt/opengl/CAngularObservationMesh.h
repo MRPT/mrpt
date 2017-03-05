@@ -73,6 +73,7 @@ namespace opengl	{
 					bool negToPos;
 				}	mode2;
 			}	rangeData;
+		public:
 			/**
 			  * Constructor from initial value, final value and range.
 			  */
@@ -97,7 +98,6 @@ namespace opengl	{
 				rangeData.mode2.amount=b;
 				rangeData.mode2.negToPos=c;
 			}
-		public:
 			/**
 			  * Creates a range of values from the initial value, the final value and the increment.
 			  * \throw std::logic_error if the increment is zero.
@@ -201,7 +201,6 @@ namespace opengl	{
 
 	protected:
 		void updateMesh() const; //!< Updates the mesh, if needed. It's a const method, but modifies mutable content.
-		virtual ~CAngularObservationMesh()	{} //!< Empty destructor.
 		mutable std::vector<CSetOfTriangles::TTriangle> triangles; //!< Actual set of triangles to be displayed.
 		void addTriangle(const mrpt::math::TPoint3D &p1,const mrpt::math::TPoint3D &p2,const mrpt::math::TPoint3D &p3) const; //!< Internal method to add a triangle to the mutable mesh.
 		bool mWireframe; //!< Whether the mesh will be displayed wireframe or solid.
@@ -211,11 +210,12 @@ namespace opengl	{
 		mutable mrpt::math::CMatrixB validityMatrix; //!< Scan validity matrix.
 		std::vector<double> pitchBounds; //!< Observation pitch range. When containing exactly two elements, they represent the bounds.
 		std::vector<mrpt::obs::CObservation2DRangeScan> scanSet;  //!< Actual scan set which is used to generate the mesh. 
+	public:
 		/**
 		  * Basic constructor.
 		  */
 		CAngularObservationMesh():mWireframe(true),meshUpToDate(false),mEnableTransparency(true),actualMesh(0,0),validityMatrix(0,0),pitchBounds(),scanSet()	{}
-	public:
+		virtual ~CAngularObservationMesh()	{} //!< Empty destructor.
 		/**
 		  * Returns whether the object is configured as wireframe or solid.
 		  */
@@ -280,7 +280,7 @@ namespace opengl	{
 		  * Gets the mesh as a set of triangles, for displaying them.
 		  * \sa generateSetOfTriangles(std::vector<TPolygon3D> &),mrpt::opengl::CSetOfTriangles,mrpt::opengl::CSetOfTriangles::TTriangle
 		  */
-		void generateSetOfTriangles(CSetOfTrianglesPtr &res) const;
+		void generateSetOfTriangles(CSetOfTriangles::Ptr &res) const;
 		/**
 		  * Returns the scanned points as a 3D point cloud. The target pointmap must be passed as a pointer to allow the use of any derived class.
 		  */
@@ -289,12 +289,12 @@ namespace opengl	{
 		  * Gets a set of lines containing the traced rays, for displaying them.
 		  * \sa getUntracedRays,mrpt::opengl::CSetOfLines
 		  */
-		void getTracedRays(CSetOfLinesPtr &res) const;
+		void getTracedRays(CSetOfLines::Ptr &res) const;
 		/**
 		  * Gets a set of lines containing the untraced rays, up to a specified distance, for displaying them.
 		  * \sa getTracedRays,mrpt::opengl::CSetOfLines
 		  */
-		void getUntracedRays(CSetOfLinesPtr &res,double dist) const;
+		void getUntracedRays(CSetOfLines::Ptr &res,double dist) const;
 		/**
 		  * Gets the mesh as a set of polygons, to work with them.
 		  * \sa generateSetOfTriangles(mrpt::opengl::CSetOfTriangles &)
@@ -339,12 +339,12 @@ namespace opengl	{
 		protected:
 			const T &e;
 			const mrpt::poses::CPose3D &initial;
-			CAngularObservationMeshPtr &caom;
+			CAngularObservationMesh::Ptr &caom;
 			const CAngularObservationMesh::TDoubleRange &yaws;
 			std::vector<mrpt::obs::CObservation2DRangeScan> &vObs;
 			const mrpt::poses::CPose3D &pBase;
 		public:
-			FTrace2D(const T &s,const mrpt::poses::CPose3D &p,CAngularObservationMeshPtr &om,const CAngularObservationMesh::TDoubleRange &y,std::vector<mrpt::obs::CObservation2DRangeScan> &obs,const mrpt::poses::CPose3D &b):e(s),initial(p),caom(om),yaws(y),vObs(obs),pBase(b)	{}
+			FTrace2D(const T &s,const mrpt::poses::CPose3D &p,CAngularObservationMesh::Ptr &om,const CAngularObservationMesh::TDoubleRange &y,std::vector<mrpt::obs::CObservation2DRangeScan> &obs,const mrpt::poses::CPose3D &b):e(s),initial(p),caom(om),yaws(y),vObs(obs),pBase(b)	{}
 			void operator()(double pitch)	{
 				std::vector<double> yValues;
 				yaws.values(yValues);
@@ -375,7 +375,7 @@ namespace opengl	{
 		  * The objective may be a COpenGLScene, a CRenderizable or any children of its.
 		  * \sa mrpt::opengl::CRenderizable,mrpt::opengl::COpenGLScene.
 		  */
-		template<class T> static void trace2DSetOfRays(const T &e,const mrpt::poses::CPose3D &initial,CAngularObservationMeshPtr &caom,const TDoubleRange &pitchs,const TDoubleRange &yaws);
+		template<class T> static void trace2DSetOfRays(const T &e,const mrpt::poses::CPose3D &initial,CAngularObservationMesh::Ptr &caom,const TDoubleRange &pitchs,const TDoubleRange &yaws);
 		/**
 		  * 2D ray tracing (will generate a vectorial mesh inside a plane). Given an object and a range, realizes a scan from the initial pose and stores it in a CObservation2DRangeScan object.
 		  * The objective may be a COpenGLScene, a CRenderizable or any children of its.
@@ -402,7 +402,7 @@ namespace opengl	{
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(CAngularObservationMesh,CRenderizableDisplayList, MAPS_IMPEXP)
 
 	template<class T>
-	void CAngularObservationMesh::trace2DSetOfRays(const T &e,const mrpt::poses::CPose3D &initial,CAngularObservationMeshPtr &caom,const TDoubleRange &pitchs,const TDoubleRange &yaws)	{
+	void CAngularObservationMesh::trace2DSetOfRays(const T &e,const mrpt::poses::CPose3D &initial,CAngularObservationMesh::Ptr &caom,const TDoubleRange &pitchs,const TDoubleRange &yaws)	{
 		std::vector<double> pValues;
 		pitchs.values(pValues);
 		std::vector<mrpt::obs::CObservation2DRangeScan> vObs;

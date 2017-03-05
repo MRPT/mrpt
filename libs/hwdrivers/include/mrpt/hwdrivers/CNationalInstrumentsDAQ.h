@@ -181,7 +181,7 @@ namespace mrpt
 			  *  No observations may be returned if there are not samples enough yet from any task.
 			  */
 			void  readFromDAQ(
-				std::vector<mrpt::obs::CObservationRawDAQPtr> &outObservations,
+				std::vector<mrpt::obs::CObservationRawDAQ::Ptr> &outObservations,
 				bool & hardwareError );
 
 			/** Set voltage outputs to all the outputs in an AOUT task 
@@ -327,7 +327,7 @@ namespace mrpt
 				const std::string	  &iniSection );
 
 		private:
-			std::vector<mrpt::obs::CObservationRawDAQPtr> m_nextObservations; //!< A buffer for doProcess
+			std::vector<mrpt::obs::CObservationRawDAQ::Ptr> m_nextObservations; //!< A buffer for doProcess
 
 			struct TInfoPerTask
 			{

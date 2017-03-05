@@ -41,7 +41,7 @@ struct TMass
 	double	vx,vy,vz;
 	double  mass;
 	double  radius;
-	opengl::CSpherePtr	obj3d;
+	opengl::CSphere::Ptr	obj3d;
 };
 
 void simulateGravity( vector<TMass> &objs, double At);
@@ -59,12 +59,12 @@ void GravityDemo()
 	win.setCameraElevationDeg( 50.0f );
 	win.setCameraZoom( 1000 );
 
-	COpenGLScenePtr &theScene = win.get3DSceneAndLock();
+	COpenGLScene::Ptr &theScene = win.get3DSceneAndLock();
 
 	// Modify the scene:
 	// ------------------------------------------------------
 	{
-		opengl::CGridPlaneXYPtr obj = opengl::CGridPlaneXY::Create(-2000,2000,-2000,2000,0,100);
+		opengl::CGridPlaneXY::Ptr obj = opengl::CGridPlaneXY::Create(-2000,2000,-2000,2000,0,100);
 		obj->setColor(0.3,0.3,0.3);
 		theScene->insert( obj );
 	}
@@ -88,7 +88,7 @@ void GravityDemo()
 		masses[i].vz =  0; //randomGenerator.drawUniform(-V0,V0);
 
 		masses[i].mass = exp( randomGenerator.drawUniform(MASS_MIN,MASS_MAX) );
-		opengl::CSpherePtr & obj = masses[i].obj3d = opengl::CSphere::Create();
+		opengl::CSphere::Ptr & obj = masses[i].obj3d = opengl::CSphere::Create();
 
 		obj->setColor(
 			randomGenerator.drawUniform(0.1,0.9),
@@ -130,7 +130,7 @@ void GravityDemo()
 
 		for (size_t i=0;i<masses.size();i++)
 		{
-			opengl::CSpherePtr & obj = masses[i].obj3d;
+			opengl::CSphere::Ptr & obj = masses[i].obj3d;
 			obj->setLocation( masses[i].x, masses[i].y, masses[i].z );
 		}
 		// IMPORTANT!!! IF NOT UNLOCKED, THE WINDOW WILL NOT BE UPDATED!

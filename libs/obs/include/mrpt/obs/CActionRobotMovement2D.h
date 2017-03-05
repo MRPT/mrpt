@@ -45,7 +45,7 @@ namespace mrpt
 
 			CActionRobotMovement2D(); //!< Constructor
 
-			mrpt::utils::poly_ptr_ptr<mrpt::poses::CPosePDFPtr> poseChange; //!< The 2D pose change probabilistic estimation.
+			mrpt::utils::poly_ptr_ptr<mrpt::poses::CPosePDF::Ptr> poseChange; //!< The 2D pose change probabilistic estimation.
 			/** This is the raw odometry reading, and only is used when "estimationMethod" is "TEstimationMethod::emOdometry" */
 			mrpt::poses::CPose2D					rawOdometryIncrementReading;
 			TEstimationMethod		estimationMethod; //!< This fields indicates the way in which this estimation was obtained.

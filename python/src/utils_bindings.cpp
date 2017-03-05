@@ -19,12 +19,12 @@ using namespace boost::python;
 using namespace mrpt::utils;
 
 // CStream
-void CStream_ReadObject(CStream& self, CSerializablePtr& obj)
+void CStream_ReadObject(CStream& self, CSerializable::Ptr& obj)
 {
     self.ReadObject(obj.get());
 }
 
-void CStream_WriteObject(CStream& self, CSerializablePtr& obj)
+void CStream_WriteObject(CStream& self, CSerializable::Ptr& obj)
 {
     self.WriteObject(obj.get());
 }
@@ -72,13 +72,13 @@ void export_utils()
 
     // CObject
     {
-        class_<CObject::Ptr>("CObjectPtr", "class_name smart pointer type", no_init)
+        class_<CObject::Ptr>("CObject::Ptr", "class_name smart pointer type", no_init)
             .def("ctx", &CObjectPtr_get_ctx, return_internal_reference<>())
             .def("ctx", &CObjectPtr_set_ctx)
             .def("pointer", &CObjectPtr_pointer, return_internal_reference<>());
 
         class_<CObject, boost::noncopyable>("CObject", no_init)
-            .def("duplicate", &CObject::duplicate, return_value_policy<manage_new_object>(), "Returns a copy of the object, indepently of its class.")
+            .def("clone", &CObject::clone, return_value_policy<manage_new_object>(), "Returns a copy of the object, indepently of its class.")
             .def("GetRuntimeClass", &CObject::GetRuntimeClass, return_internal_reference<>(), "Returns information about the class of an object in runtime.")
         ;
     }
@@ -125,7 +125,7 @@ void export_utils()
 
     // CSerializable
     {
-        class_<CSerializablePtr, bases<CObject::Ptr> >("CSerializablePtr", "class_name smart pointer type", no_init)
+        class_<CSerializable::Ptr>("CSerializable::Ptr", "class_name smart pointer type", no_init)
             .def("ctx", &CSerializablePtr_get_ctx, return_internal_reference<>())
             .def("ctx", &CSerializablePtr_set_ctx)
             .def("pointer", &CSerializablePtr_pointer, return_internal_reference<>());

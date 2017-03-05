@@ -459,9 +459,9 @@ void CFormMotionModel::applyToLoadedRawlog()
             if ( rawlog.getType(i)==CRawlog::etActionCollection )
             {
                 // This is an action:
-                CActionCollectionPtr acts = rawlog.getAsAction(i);
+                CActionCollection::Ptr acts = rawlog.getAsAction(i);
 
-                CActionRobotMovement2DPtr firstActionMov = acts->getActionByClass<CActionRobotMovement2D>( );
+                CActionRobotMovement2D::Ptr firstActionMov = acts->getActionByClass<CActionRobotMovement2D>( );
 
                 if (firstActionMov)
                 {
@@ -546,7 +546,7 @@ void CFormMotionModel::applyToRawlogFile()
             wxTheApp->Yield();  // Let the app. process messages
         }
 
-        CSerializablePtr newObj;
+        CSerializable::Ptr newObj;
         try
         {
             in_fil >> newObj;
@@ -563,9 +563,9 @@ void CFormMotionModel::applyToRawlogFile()
             else if ( newObj->GetRuntimeClass() == CLASS_ID(CActionCollection))
             {
                 // This is an action:
-                CActionCollectionPtr acts = CActionCollectionPtr( newObj );
+                CActionCollection::Ptr acts = std::dynamic_pointer_cast<CActionCollection>( newObj );
 
-                CActionRobotMovement2DPtr  firstActionMov = acts->getActionByClass<CActionRobotMovement2D >();
+                CActionRobotMovement2D::Ptr  firstActionMov = acts->getActionByClass<CActionRobotMovement2D >();
                 if (firstActionMov)
                 {
 					if (firstActionMov->estimationMethod==CActionRobotMovement2D::emOdometry)
@@ -694,12 +694,12 @@ void CFormMotionModel::OnbtnGetFromCurrentClick(wxCommandEvent& event)
 {
     WX_START_TRY
 
-    CActionRobotMovement2DPtr acts;
+    CActionRobotMovement2D::Ptr acts;
     for (size_t i=0;!acts && i<rawlog.size() && i<MAX_READ_FOR_MODEL_SEARCH;i++)
     {
     	if ( rawlog.getType(i)==CRawlog::etActionCollection )
         {
-            CActionCollectionPtr actss=rawlog.getAsAction(i);
+            CActionCollection::Ptr actss=rawlog.getAsAction(i);
             acts=actss->getBestMovementEstimation();
         }
     }
@@ -913,19 +913,19 @@ void CFormMotionModel::OnbtnGetFromFileClick(wxCommandEvent& event)
 
     bool                keepLoading=true;
     string              errorMsg;
-    CActionRobotMovement2DPtr acts;
+    CActionRobotMovement2D::Ptr acts;
     int		nLoaded = 0;
 
     while (keepLoading)
     {
-        CSerializablePtr newObj;
+        CSerializable::Ptr newObj;
 
         fil >> newObj;
 
         // Check type:
         if ( newObj->GetRuntimeClass() == CLASS_ID(CActionCollection))
         {
-            acts=CActionCollectionPtr(newObj)->getBestMovementEstimation();
+            acts=std::dynamic_pointer_cast<CActionCollection>(newObj)->getBestMovementEstimation();
             if (acts)
                 keepLoading = false;
         }

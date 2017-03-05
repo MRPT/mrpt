@@ -33,10 +33,10 @@ struct CvContourEx
 
 // Definition Corner Struct
 struct CvCBCorner;
-typedef std::shared_ptr<CvCBCorner> CvCBCornerPtr;
 
 struct CvCBCorner
 {
+	using Ptr = std::shared_ptr<CvCBCorner>;
 	CvCBCorner() : row(-1000),column(-1000), count(0)
 	{}
 
@@ -45,25 +45,25 @@ struct CvCBCorner
 	int				column;			// in the found pattern
 	bool			needsNeighbor;	// Does the corner require a neighbor?
     int				count;			// number of corner neighbors
-    CvCBCornerPtr	neighbors[4];	// pointer to all corner neighbors
+    CvCBCorner::Ptr	neighbors[4];	// pointer to all corner neighbors
 };
 
 
 // Definition Quadrangle Struct
 // This structure stores information about the chessboard quadrange
 struct CvCBQuad;
-typedef std::shared_ptr<CvCBQuad>  CvCBQuadPtr;
 
 struct CvCBQuad
 {
+	using Ptr = std::shared_ptr<CvCBQuad>;
 	CvCBQuad() : count(0),group_idx(0),edge_len(0),labeled(false),area(0.0), area_ratio(1.0)
 	{}
 
-    int				count;							// Number of quad neihbors
-    int				group_idx;						// Quad group ID
-    float			edge_len;						// Smallest side length^2
-    CvCBCornerPtr	corners[4];				//CvCBCorner *corners[4];				// Coordinates of quad corners
-    CvCBQuadPtr		neighbors[4];		// Pointers of quad neighbors
+	int				count;							// Number of quad neihbors
+	int				group_idx;						// Quad group ID
+	float			edge_len;						// Smallest side length^2
+	CvCBCorner::Ptr	corners[4];				//CvCBCorner *corners[4];				// Coordinates of quad corners
+	CvCBQuad::Ptr		neighbors[4];		// Pointers of quad neighbors
 	bool labeled;						// Has this corner been labeled?
 	double          area, area_ratio; 
 };
@@ -88,31 +88,31 @@ bool find_chessboard_corners_multiple(
 //===========================================================================
 // INTERNAL FUNCTION PROTOTYPES
 //===========================================================================
-int icvGenerateQuads( std::vector<CvCBQuadPtr> &quads, std::vector<CvCBCornerPtr> &corners,
+int icvGenerateQuads( std::vector<CvCBQuad::Ptr> &quads, std::vector<CvCBCorner::Ptr> &corners,
                              const mrpt::utils::CImage &img, int flags, int dilation,
 							 bool firstRun );
 
-void mrFindQuadNeighbors2( std::vector<CvCBQuadPtr> &quads, int dilation);
+void mrFindQuadNeighbors2( std::vector<CvCBQuad::Ptr> &quads, int dilation);
 
-int mrAugmentBestRun( std::vector<CvCBQuadPtr> &new_quads, int new_dilation,
-							 std::vector<CvCBQuadPtr> &old_quads, int old_dilation );
+int mrAugmentBestRun( std::vector<CvCBQuad::Ptr> &new_quads, int new_dilation,
+							 std::vector<CvCBQuad::Ptr> &old_quads, int old_dilation );
 
 void icvFindConnectedQuads(
-	std::vector<CvCBQuadPtr> &in_quads,
-	std::vector<CvCBQuadPtr> &out_quad_group,
+	std::vector<CvCBQuad::Ptr> &in_quads,
+	std::vector<CvCBQuad::Ptr> &out_quad_group,
 	const int group_idx,
     const int dilation );
 
-void mrLabelQuadGroup( std::vector<CvCBQuadPtr> &quad_group,  const CvSize &pattern_size, bool firstRun );
+void mrLabelQuadGroup( std::vector<CvCBQuad::Ptr> &quad_group,  const CvSize &pattern_size, bool firstRun );
 
 // Remove quads' extra quads until reached the expected number of quads.
-void icvCleanFoundConnectedQuads( std::vector<CvCBQuadPtr> &quads, const CvSize &pattern_size );
+void icvCleanFoundConnectedQuads( std::vector<CvCBQuad::Ptr> &quads, const CvSize &pattern_size );
 
 // JL: Return 1 on success in finding all the quads, 0 on didn't, -1 on error.
-int myQuads2Points( const std::vector<CvCBQuadPtr> &output_quads, const CvSize &pattern_size, std::vector<CvPoint2D32f> &out_corners);
+int myQuads2Points( const std::vector<CvCBQuad::Ptr> &output_quads, const CvSize &pattern_size, std::vector<CvPoint2D32f> &out_corners);
 
 // JL: Make unique all the (smart pointers-pointed) objects in the list and neighbors lists.
-void quadListMakeUnique( std::vector<CvCBQuadPtr> &quads);
+void quadListMakeUnique( std::vector<CvCBQuad::Ptr> &quads);
 
 // JL: Refactored code from within cvFindChessboardCorners3() and alternative algorithm:
 bool do_special_dilation(mrpt::utils::CImage &thresh_img, const int dilations,

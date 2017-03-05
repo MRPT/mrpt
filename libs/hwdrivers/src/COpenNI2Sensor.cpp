@@ -138,7 +138,7 @@ void COpenNI2Sensor::doProcess()
 
 	bool	thereIs, hwError;
 
-	CObservation3DRangeScanPtr newObs = CObservation3DRangeScan::Create();
+	CObservation3DRangeScan::Ptr newObs = CObservation3DRangeScan::Create();
 
     assert(getNumDevices() > 0);
 	getNextObservation( *newObs, thereIs, hwError );
@@ -153,7 +153,7 @@ void COpenNI2Sensor::doProcess()
 	{
 		m_state = ssWorking;
 
-		std::vector<mrpt::utils::CSerializablePtr> objs;
+		std::vector<mrpt::utils::CSerializable::Ptr> objs;
 		if (m_grab_image || m_grab_depth || m_grab_3D_points)  objs.push_back(newObs);
 
 		appendObservations( objs );

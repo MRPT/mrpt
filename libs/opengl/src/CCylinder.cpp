@@ -22,9 +22,9 @@ using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(CCylinder,CRenderizableDisplayList,mrpt::opengl)
 
-CCylinderPtr CCylinder::Create(const float baseRadius,const float topRadius,const float height,const int slices,const int stacks)	
+CCylinder::Ptr CCylinder::Create(const float baseRadius,const float topRadius,const float height,const int slices,const int stacks)	
 {
-	return CCylinderPtr(new CCylinder(baseRadius,topRadius,height,slices,stacks));
+	return CCylinder::Ptr(new CCylinder(baseRadius,topRadius,height,slices,stacks));
 }
 /*---------------------------------------------------------------
 							render

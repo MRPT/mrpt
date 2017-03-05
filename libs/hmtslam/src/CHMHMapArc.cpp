@@ -35,17 +35,17 @@ CHMHMapArc::CHMHMapArc(
 	// To the graph:
 }
 
-CHMHMapArcPtr CHMHMapArc::Create(
+CHMHMapArc::Ptr CHMHMapArc::Create(
 	const CHMHMapNode::TNodeID		&from,
 	const CHMHMapNode::TNodeID		&to,
 	const THypothesisIDSet			&hyps,
 	CHierarchicalMHMap		*parent) 
 {
-	CHMHMapArcPtr obj = CHMHMapArcPtr(new CHMHMapArc(from,to,hyps,parent));
+	CHMHMapArc::Ptr obj = CHMHMapArc::Ptr(new CHMHMapArc(from,to,hyps,parent));
 	if (parent) 
 	{
 		parent->onArcAddition(obj);
-		CHMHMapNodePtr node;
+		CHMHMapNode::Ptr node;
 		if ( (node = parent->getNodeByID(from)))
 			node->onArcAddition(obj);
 		if ( (node = parent->getNodeByID(to)))
@@ -59,8 +59,8 @@ CHMHMapArcPtr CHMHMapArc::Create(
 						Other constructor
   ---------------------------------------------------------------*/
 CHMHMapArc::CHMHMapArc(
-	CHMHMapNodePtr		&from,
-	CHMHMapNodePtr		&to,
+	CHMHMapNode::Ptr		&from,
+	CHMHMapNode::Ptr		&to,
 	const THypothesisIDSet		&hyps,
 	CHierarchicalMHMap			*parent) :
 		m_hypotheses(hyps),
@@ -77,13 +77,13 @@ CHMHMapArc::CHMHMapArc(
 	//  initialization of an empty object with the default constructor:
 }
 
-CHMHMapArcPtr CHMHMapArc::Create(
-	CHMHMapNodePtr		&from,
-	CHMHMapNodePtr		&to,
+CHMHMapArc::Ptr CHMHMapArc::Create(
+	CHMHMapNode::Ptr		&from,
+	CHMHMapNode::Ptr		&to,
 	const THypothesisIDSet		&hyps,
 	CHierarchicalMHMap			*parent)
 {
-	CHMHMapArcPtr obj = CHMHMapArcPtr(new CHMHMapArc(from,to,hyps,parent));
+	CHMHMapArc::Ptr obj = CHMHMapArc::Ptr(new CHMHMapArc(from,to,hyps,parent));
 	if (parent) 
 	{
 		// To the graph:
@@ -101,7 +101,7 @@ CHMHMapArcPtr CHMHMapArc::Create(
   ---------------------------------------------------------------*/
 CHMHMapArc::~CHMHMapArc()
 {
-	CHMHMapNodePtr node;
+	CHMHMapNode::Ptr node;
 	// To the nodes:
 	if ((node = m_parent->getNodeByID(m_nodeFrom)))
 		node->onArcDestruction(this);
@@ -158,7 +158,7 @@ void  CHMHMapArc::readFromStream(mrpt::utils::CStream &in, int version)
 			m_arcType.setType(type);
 
 			// Find my smart pointer in the HMT map: we MUST have only 1 smrt. pointer pointing to the same object!!			
-			CHMHMapArcPtr myPtr;
+			CHMHMapArc::Ptr myPtr;
 			for (TArcList::const_iterator it = m_parent->m_arcs.begin();it != m_parent->m_arcs.end();++it)
 			{
 				if (it->get()==this)
@@ -169,7 +169,7 @@ void  CHMHMapArc::readFromStream(mrpt::utils::CStream &in, int version)
 			}
 			ASSERTMSG_(myPtr,"I cannot be found in my parent HMT map!")
 
-			CHMHMapNodePtr node;
+			CHMHMapNode::Ptr node;
 			// It's not necessary since at ::Create this is already done (but...check!)
 			//m_parent->onArcAddition(this);  
 
@@ -208,7 +208,7 @@ void TArcList::read( utils::CStream &in )
 	BASE::clear();
 	for (i=0;i<n;i++)
 	{
-		CHMHMapArcPtr theObj = CHMHMapArc::Create();
+		CHMHMapArc::Ptr theObj = CHMHMapArc::Create();
 		in >> *theObj;
 		this->push_back( theObj );
 	}

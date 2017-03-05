@@ -21,7 +21,7 @@ using namespace std;
 
 IMPLEMENTS_SERIALIZABLE( CText3D, CRenderizableDisplayList, mrpt::opengl )
 
-CText3DPtr CText3D::Create(
+CText3D::Ptr CText3D::Create(
 	const std::string &str,
 	const std::string &fontName,
 	const double scale,
@@ -29,7 +29,7 @@ CText3DPtr CText3D::Create(
 	const double text_spacing,
 	const double text_kerning )
 {
-	return CText3DPtr( new CText3D(str,fontName,scale,text_style,text_spacing,text_kerning) );
+	return CText3D::Ptr( new CText3D(str,fontName,scale,text_style,text_spacing,text_kerning) );
 }
 /*---------------------------------------------------------------
 							Constructor

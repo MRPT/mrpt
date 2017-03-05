@@ -160,7 +160,7 @@ void  CActionRobotMovement2D::readFromStream(mrpt::utils::CStream &in, int versi
 			else
 			{
 				// Read the PDF directly from the stream:
-				CPosePDFPtr pc;
+				CPosePDF::Ptr pc;
 				in >> pc;
 				poseChange = pc;
 			}
@@ -226,7 +226,7 @@ void  CActionRobotMovement2D::readFromStream(mrpt::utils::CStream &in, int versi
 			else
 			{
 				// Read the PDF directly from the stream:
-				CPosePDFPtr pc;
+				CPosePDF::Ptr pc;
 				in >> pc;
 				poseChange = pc;
 			}
@@ -274,7 +274,7 @@ void  CActionRobotMovement2D::readFromStream(mrpt::utils::CStream &in, int versi
 			else
 			{
 				// Read the PDF directly from the stream:
-				CPosePDFPtr pc;
+				CPosePDF::Ptr pc;
 				in >> pc;
 				poseChange = pc;
 			}
@@ -297,7 +297,7 @@ void  CActionRobotMovement2D::readFromStream(mrpt::utils::CStream &in, int versi
 		{
 			int32_t	i;
 			{
-				CPosePDFPtr pc;
+				CPosePDF::Ptr pc;
 				in >> pc;
 				poseChange = pc;
 			}

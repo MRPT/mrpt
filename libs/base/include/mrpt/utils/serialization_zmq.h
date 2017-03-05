@@ -141,10 +141,10 @@ namespace mrpt
 		 * \note See examples of usage in https://github.com/MRPT/mrpt/tree/master/doc/mrpt-zeromq-example
 		 */
 		template <typename ZMQ_SOCKET_TYPE>
-		mrpt::utils::CSerializablePtr mrpt_recv_from_zmq(ZMQ_SOCKET_TYPE zmq_socket, bool dont_wait = false, size_t * rx_obj_length_in_bytes = nullptr)
+		mrpt::utils::CSerializable::Ptr mrpt_recv_from_zmq(ZMQ_SOCKET_TYPE zmq_socket, bool dont_wait = false, size_t * rx_obj_length_in_bytes = nullptr)
 		{
 			CMemoryStream	target_buf;
-			mrpt::utils::CSerializablePtr obj;
+			mrpt::utils::CSerializable::Ptr obj;
 			std::vector<zmq_msg_t*> lst_msgs_to_close;
 			if (!mrpt_recv_from_zmq_buf(zmq_socket,lst_msgs_to_close, target_buf,dont_wait,rx_obj_length_in_bytes))
 				return obj;

@@ -247,7 +247,7 @@ namespace maps
 		  */
 		void saveToTextFile(const std::string &fil) const;
 
-		void getAs3DObject(mrpt::opengl::CSetOfObjectsPtr &outObj) const MRPT_OVERRIDE; //!< Returns a 3D object representing the map.
+		void getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr &outObj) const MRPT_OVERRIDE; //!< Returns a 3D object representing the map.
 
 		const CBeacon * getBeaconByID( CBeacon::TBeaconID  id ) const; //!< Returns a pointer to the beacon with the given ID, or nullptr if it does not exist.
 		CBeacon * getBeaconByID( CBeacon::TBeaconID  id ); 		//!< Returns a pointer to the beacon with the given ID, or nullptr if it does not exist.

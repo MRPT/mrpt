@@ -87,7 +87,7 @@ using namespace std;
 
 extern TTimeStamp		rawlog_first_timestamp;
 
-std::vector<CObservationPtr> 	displayedImgs(3);
+std::vector<CObservation::Ptr> 	displayedImgs(3);
 
 
 CFormPlayVideo::CFormPlayVideo(wxWindow* parent,wxWindowID id)
@@ -340,7 +340,7 @@ void CFormPlayVideo::OnbtnPlayClick(wxCommandEvent& event)
         while (m_nowPlaying)
         {
             wxTheApp->Yield();
-            CSerializablePtr obj;
+            CSerializable::Ptr obj;
 
             if (fil)
             {
@@ -361,7 +361,7 @@ void CFormPlayVideo::OnbtnPlayClick(wxCommandEvent& event)
             else if (IS_DERIVED(obj,CObservation))
             {
             	CSensoryFrame	sf;
-            	sf.insert( CObservationPtr(obj) );
+            	sf.insert( std::dynamic_pointer_cast<CObservation>(obj) );
                 doDelay = showSensoryFrame( &sf, nImgs);
             }
 
@@ -517,7 +517,7 @@ bool CFormPlayVideo::showSensoryFrame(void *SF, size_t &nImgs)
 
 		for (int img_idx_sf=0;img_idx_sf<3;img_idx_sf++) // Up to 3 images maximum:
 		{
-			CObservationImagePtr obsImg = sf->getObservationByClass<CObservationImage>(img_idx_sf );
+			CObservationImage::Ptr obsImg = sf->getObservationByClass<CObservationImage>(img_idx_sf );
 			if (!obsImg) break; // No more images, go on...
 
 			// Onto which panel to draw??
@@ -626,7 +626,7 @@ bool CFormPlayVideo::showSensoryFrame(void *SF, size_t &nImgs)
 
 	// Stereo images:
 	{
-        CObservationStereoImagesPtr obsImg2 = sf->getObservationByClass<CObservationStereoImages>();
+        CObservationStereoImages::Ptr obsImg2 = sf->getObservationByClass<CObservationStereoImages>();
         if (obsImg2)
         {
             nImgs++;
@@ -746,7 +746,7 @@ bool CFormPlayVideo::showSensoryFrame(void *SF, size_t &nImgs)
 
 	// 3D range images:
 	{
-        CObservation3DRangeScanPtr obs3D = sf->getObservationByClass<CObservation3DRangeScan>();
+        CObservation3DRangeScan::Ptr obs3D = sf->getObservationByClass<CObservation3DRangeScan>();
         if (obs3D && obs3D->hasIntensityImage)
         {
             nImgs++;
@@ -805,7 +805,7 @@ void CFormPlayVideo::OnprogressBarCmdScrollChanged(wxScrollEvent& event)
 		{
 			size_t dummy = 0;
 
-			CSensoryFramePtr sf = rawlog.getAsObservations(idx);
+			CSensoryFrame::Ptr sf = rawlog.getAsObservations(idx);
 			showSensoryFrame(sf.get(), dummy);
 			edIndex->SetValue(idx);
 		}
@@ -813,7 +813,7 @@ void CFormPlayVideo::OnprogressBarCmdScrollChanged(wxScrollEvent& event)
 		{
 			size_t dummy = 0;
 
-			CObservationPtr o = rawlog.getAsObservation(idx);
+			CObservation::Ptr o = rawlog.getAsObservation(idx);
 
 			CSensoryFrame sf;
 			sf.insert(o);
@@ -837,7 +837,7 @@ void CFormPlayVideo::saveCamImage(int n)
 
 	if (IS_CLASS(displayedImgs[n],CObservationImage))
 	{
-		CObservationImagePtr o = CObservationImagePtr( displayedImgs[n]);
+		CObservationImage::Ptr o = std::dynamic_pointer_cast<CObservationImage>( displayedImgs[n]);
 
 		wxString defaultFilename = _U( format( "%s_%i.jpg",o->sensorLabel.c_str(),m_idxInRawlog ).c_str() );
 		wxFileDialog dialog(this, caption, defaultDir, defaultFilename,wildcard, wxFD_SAVE | wxFD_OVERWRITE_PROMPT );
@@ -850,7 +850,7 @@ void CFormPlayVideo::saveCamImage(int n)
 	}
 	else if (IS_CLASS(displayedImgs[n],CObservationStereoImages))
 	{
-		CObservationStereoImagesPtr o = CObservationStereoImagesPtr( displayedImgs[n]);
+		CObservationStereoImages::Ptr o = std::dynamic_pointer_cast<CObservationStereoImages>( displayedImgs[n]);
 
 		wxString defaultFilename;
 		switch(n)

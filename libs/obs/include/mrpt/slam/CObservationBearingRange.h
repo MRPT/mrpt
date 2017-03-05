@@ -11,5 +11,5 @@
 MRPT_WARNING("*Deprecated header* Please replace with #include <mrpt/obs/CObservationBearingRange.h>. This backward compatible header will be removed in MRPT 2.0.0")
 namespace mrpt { namespace slam {
 	using mrpt::obs::CObservationBearingRange;    //!< Backward compatibility
-	using mrpt::obs::CObservationBearingRangePtr; //!< Backward compatibility
+	using mrpt::obs::CObservationBearingRange::Ptr; //!< Backward compatibility
 } }

@@ -53,9 +53,9 @@ bool find_chessboard_corners_multiple(
 	int flags					=  1;	// not part of the function call anymore!
     //int found					=  0;
 
-	vector<CvCBQuadPtr>		quads;
-    vector<CvCBCornerPtr>	corners;
-	list< vector<CvCBQuadPtr> > good_quad_groups;  // Storage of potential good quad groups found
+	vector<CvCBQuad::Ptr>		quads;
+    vector<CvCBCorner::Ptr>	corners;
+	list< vector<CvCBQuad::Ptr> > good_quad_groups;  // Storage of potential good quad groups found
 
     if( pattern_size.width < 2 || pattern_size.height < 2 )
 	{
@@ -193,7 +193,7 @@ bool find_chessboard_corners_multiple(
 					continue; // Can't be good...
 
 				// Create a subset of the quads with those in the i'th cluster:
-				vector<CvCBQuadPtr> ith_quads;
+				vector<CvCBQuad::Ptr> ith_quads;
 				for (size_t q=0;q<quads.size();q++)
 					if (size_t(assignments[q])==i)
 						ith_quads.push_back(quads[q]);
@@ -211,7 +211,7 @@ bool find_chessboard_corners_multiple(
 				// quadrangles by minimizing the convex hull of the remaining pattern.
 				for( int group_idx = 0; ; group_idx++ )
 				{
-					vector<CvCBQuadPtr>		quad_group;
+					vector<CvCBQuad::Ptr>		quad_group;
 
 					icvFindConnectedQuads( ith_quads , quad_group, group_idx, dilations );
 					if( quad_group.empty() )
@@ -263,7 +263,7 @@ bool find_chessboard_corners_multiple(
 	//  to the expected output data struct, doing a final check to
 	//  remove duplicates:
 	vector<TPoint2D> out_boards_centers; // the center (average) of each output board.
-	for (list<vector<CvCBQuadPtr> >::const_iterator it=good_quad_groups.begin();it!=good_quad_groups.end();++it)
+	for (list<vector<CvCBQuad::Ptr> >::const_iterator it=good_quad_groups.begin();it!=good_quad_groups.end();++it)
 	{
 		// Compute the center of this board:
 		TPoint2D boardCenter(0,0);

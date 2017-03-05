@@ -111,7 +111,7 @@ void CSkeletonTracker::processPreviewNone()
 			string caption = string("Preview of ") + m_sensorLabel;
 			m_win = mrpt::gui::CDisplayWindow3D::Create( caption, 800, 600 );
 			
-			COpenGLScenePtr & scene = m_win->get3DSceneAndLock();
+			COpenGLScene::Ptr & scene = m_win->get3DSceneAndLock();
 			scene->insert( CGridPlaneXZ::Create(-3,3,0,5,-1.5 ) );
 		
 			// set camera parameters
@@ -121,18 +121,18 @@ void CSkeletonTracker::processPreviewNone()
 			m_win->setCameraPointingToPoint(0,0,0);
 			
 			// insert initial body
-			CSetOfObjectsPtr body = CSetOfObjects::Create();
+			CSetOfObjects::Ptr body = CSetOfObjects::Create();
 			body->setName("body");
 			for(int i = 0; i < NUM_JOINTS; ++i)
 			{
-				CSpherePtr sph = CSphere::Create(0.03f);
+				CSphere::Ptr sph = CSphere::Create(0.03f);
 				sph->setColor(0,1,0);
 				sph->setName( jointNames[i] );
 				body->insert(sph);
 			}
 			
 			// insert initial lines
-			CSetOfLinesPtr lines = CSetOfLines::Create();
+			CSetOfLines::Ptr lines = CSetOfLines::Create();
 			lines->setName("lines");
 			lines->setColor(0,0,1);
 			body->insert(lines);
@@ -143,7 +143,7 @@ void CSkeletonTracker::processPreviewNone()
 
 		if( m_win && m_win->isOpen() )
 		{
-			COpenGLScenePtr & scene = m_win->get3DSceneAndLock();
+			COpenGLScene::Ptr & scene = m_win->get3DSceneAndLock();
 			{
 				m_win->addTextMessage( 0.35, 0.9,
 					"Please, adopt this position",
@@ -163,61 +163,61 @@ void CSkeletonTracker::processPreviewNone()
 					const double HEAD_RADIUS	= 0.15*SCALE;
 					const double ALPHA_CH		= 0.8;
 					
-					CSetOfObjectsPtr dummy = CSetOfObjects::Create();
+					CSetOfObjects::Ptr dummy = CSetOfObjects::Create();
 					dummy->setName("dummy");
 					dummy->setPose(math::TPose3D(0,0,0,0,0,DEG2RAD(-90)));
 					{
 						// head
-						CSpherePtr   part = CSphere::Create(HEAD_RADIUS);
+						CSphere::Ptr   part = CSphere::Create(HEAD_RADIUS);
 						part->setColor(1,1,1,ALPHA_CH);
 						part->setPose(math::TPose3D(0,0,0.5*BODY_LENGTH+HEAD_RADIUS,0,0,0));
 						dummy->insert(part);
 					}
 					{
 						// body
-						CCylinderPtr part = CCylinder::Create(BODY_RADIUS,BODY_RADIUS,BODY_LENGTH);
+						CCylinder::Ptr part = CCylinder::Create(BODY_RADIUS,BODY_RADIUS,BODY_LENGTH);
 						part->setColor(1,1,1,ALPHA_CH);
 						part->setPose(math::TPose3D(0,0,-BODY_LENGTH/2,0,0,0));
 						dummy->insert(part);
 					}
 					{
 						// left arm 0
-						CCylinderPtr part = CCylinder::Create(ARM_RADIUS,ARM_RADIUS,ARM_LENGTH);
+						CCylinder::Ptr part = CCylinder::Create(ARM_RADIUS,ARM_RADIUS,ARM_LENGTH);
 						part->setColor(1,1,1,ALPHA_CH);
 						part->setPose(math::TPose3D(-BODY_RADIUS,0,0.5*BODY_LENGTH-ARM_RADIUS,0,DEG2RAD(-90),0));
 						dummy->insert(part);
 					}
 					{
 						// left arm 1
-						CCylinderPtr part = CCylinder::Create(ARM_RADIUS,ARM_RADIUS,ARM_LENGTH);
+						CCylinder::Ptr part = CCylinder::Create(ARM_RADIUS,ARM_RADIUS,ARM_LENGTH);
 						part->setColor(1,1,1,ALPHA_CH);
 						part->setPose(math::TPose3D(-BODY_RADIUS-ARM_LENGTH+ARM_RADIUS,0,0.5*BODY_LENGTH-ARM_RADIUS,0,0,0));
 						dummy->insert(part);
 					}
 					{
 						// right arm 0
-						CCylinderPtr part = CCylinder::Create(ARM_RADIUS,ARM_RADIUS,ARM_LENGTH);
+						CCylinder::Ptr part = CCylinder::Create(ARM_RADIUS,ARM_RADIUS,ARM_LENGTH);
 						part->setColor(1,1,1,ALPHA_CH);
 						part->setPose(math::TPose3D(BODY_RADIUS,0,0.5*BODY_LENGTH-ARM_RADIUS,0,DEG2RAD(90),0));
 						dummy->insert(part);
 					}
 					{
 						// right arm 1
-						CCylinderPtr part = CCylinder::Create(ARM_RADIUS,ARM_RADIUS,ARM_LENGTH);
+						CCylinder::Ptr part = CCylinder::Create(ARM_RADIUS,ARM_RADIUS,ARM_LENGTH);
 						part->setColor(1,1,1,ALPHA_CH);
 						part->setPose(math::TPose3D(BODY_RADIUS+ARM_LENGTH-ARM_RADIUS,0,0.5*BODY_LENGTH-ARM_RADIUS,0,0,0));
 						dummy->insert(part);
 					}
 									{
 						// left leg
-						CCylinderPtr part = CCylinder::Create(LEG_RADIUS,LEG_RADIUS,LEG_LENGTH);
+						CCylinder::Ptr part = CCylinder::Create(LEG_RADIUS,LEG_RADIUS,LEG_LENGTH);
 						part->setColor(1,1,1,ALPHA_CH);
 						part->setPose(math::TPose3D(-BODY_RADIUS+LEG_RADIUS,0,-(0.5*BODY_LENGTH+LEG_LENGTH),0,0,0));
 						dummy->insert(part);
 					}
 					{
 						// right leg
-						CCylinderPtr part = CCylinder::Create(LEG_RADIUS,LEG_RADIUS,LEG_LENGTH);
+						CCylinder::Ptr part = CCylinder::Create(LEG_RADIUS,LEG_RADIUS,LEG_LENGTH);
 						part->setColor(1,1,1,ALPHA_CH);
 						part->setPose(math::TPose3D(BODY_RADIUS-LEG_RADIUS,0,-(0.5*BODY_LENGTH+LEG_LENGTH),0,0,0));
 						dummy->insert(part);
@@ -226,17 +226,17 @@ void CSkeletonTracker::processPreviewNone()
 				} // end-if
 				else
 				{
-					CSetOfObjectsPtr dummy = static_cast<CSetOfObjectsPtr>( scene->getByName("dummy") );
+					CSetOfObjects::Ptr dummy = std::dynamic_pointer_cast<CSetOfObjects>( scene->getByName("dummy") );
 					dummy->setVisibility(true);
 				}
 
 				// update joints positions
-				CSetOfObjectsPtr body = static_cast<CSetOfObjectsPtr>( scene->getByName("body") );
+				CSetOfObjects::Ptr body = std::dynamic_pointer_cast<CSetOfObjects>( scene->getByName("body") );
 				ASSERT_( body )
 							
 				for(int i = 0; i < NUM_JOINTS; ++i)
 				{
-					CSpherePtr s = static_cast<CSpherePtr>( body->getByName( jointNames[i] ) );
+					CSphere::Ptr s = std::dynamic_pointer_cast<CSphere>( body->getByName( jointNames[i] ) );
 					CPoint3D sphPos;
 					if( i == 0 )
 						sphPos = CPoint3D(0,0,0);
@@ -261,7 +261,7 @@ void CSkeletonTracker::processPreviewNone()
 /*-------------------------------------------------------------
 					processPreview
 -------------------------------------------------------------*/
-void CSkeletonTracker::processPreview(const mrpt::obs::CObservationSkeletonPtr & obs)
+void CSkeletonTracker::processPreview(const mrpt::obs::CObservationSkeleton::Ptr & obs)
 {
 	using namespace mrpt::opengl;
 
@@ -273,7 +273,7 @@ void CSkeletonTracker::processPreview(const mrpt::obs::CObservationSkeletonPtr &
 			string caption = string("Preview of ") + m_sensorLabel;
 			m_win = mrpt::gui::CDisplayWindow3D::Create( caption, 800, 600 );
 			
-			COpenGLScenePtr & scene = m_win->get3DSceneAndLock();
+			COpenGLScene::Ptr & scene = m_win->get3DSceneAndLock();
 			scene->insert( CGridPlaneXZ::Create(-3,3,0,5,-1.5 ) );
 		
 			// set camera parameters
@@ -283,18 +283,18 @@ void CSkeletonTracker::processPreview(const mrpt::obs::CObservationSkeletonPtr &
 			m_win->setCameraPointingToPoint(0,0,0);
 			
 			// insert initial body
-			CSetOfObjectsPtr body = CSetOfObjects::Create();
+			CSetOfObjects::Ptr body = CSetOfObjects::Create();
 			body->setName("body");
 			for(int i = 0; i < NUM_JOINTS; ++i)
 			{
-				CSpherePtr sph = CSphere::Create(0.03f);
+				CSphere::Ptr sph = CSphere::Create(0.03f);
 				sph->setColor(0,1,0);
 				sph->setName( jointNames[i] );
 				body->insert(sph);
 			}
 			
 			// insert initial lines
-			CSetOfLinesPtr lines = CSetOfLines::Create();
+			CSetOfLines::Ptr lines = CSetOfLines::Create();
 			lines->setName("lines");
 			lines->setColor(0,0,1);
 			body->insert(lines);
@@ -305,16 +305,16 @@ void CSkeletonTracker::processPreview(const mrpt::obs::CObservationSkeletonPtr &
 
 		if( m_win && m_win->isOpen() )
 		{
-			COpenGLScenePtr & scene = m_win->get3DSceneAndLock();
+			COpenGLScene::Ptr & scene = m_win->get3DSceneAndLock();
 			
 			// remove help text and dummy
 			m_win->clearTextMessages();
-			CSetOfObjectsPtr dummy = static_cast<CSetOfObjectsPtr>( scene->getByName("dummy") );
+			CSetOfObjects::Ptr dummy = std::dynamic_pointer_cast<CSetOfObjects>( scene->getByName("dummy") );
 			if( dummy ) dummy->setVisibility(false);
 
 			{
 				// update joints positions
-				CSetOfObjectsPtr body = static_cast<CSetOfObjectsPtr>( scene->getByName("body") );
+				CSetOfObjects::Ptr body = std::dynamic_pointer_cast<CSetOfObjects>( scene->getByName("body") );
 				ASSERT_( body )
 							
 				for(int i = 0; i < NUM_JOINTS; ++i)
@@ -342,22 +342,22 @@ void CSkeletonTracker::processPreview(const mrpt::obs::CObservationSkeletonPtr &
 						case 14: j = obs->right_foot; break;
 					} // end-switch
 
-					CSpherePtr s = static_cast<CSpherePtr>( body->getByName( jointNames[i] ) );
+					CSphere::Ptr s = std::dynamic_pointer_cast<CSphere>( body->getByName( jointNames[i] ) );
 					s->setPose( mrpt::math::TPose3D(j.x*1e-3,j.y*1e-3,j.z*1e-3,0,0,0) );
 					s->setColor( std::min(1.0,2*(1-j.conf)), std::min(1.0,2*j.conf), 0 );
 					s->setRadius( i == 0 ? 0.07 : 0.03 );
 				} // end-for
 
 				// update lines joining joints
-				CSetOfLinesPtr lines = static_cast<CSetOfLinesPtr>(body->getByName("lines")  );
+				CSetOfLines::Ptr lines = std::dynamic_pointer_cast<CSetOfLines>(body->getByName("lines")  );
 				ASSERT_(lines)
 
 				lines->clear();
 				for(int i = 0; i < NUM_LINES; ++i)
 				{
 					pair<JOINT,JOINT> pair = m_linesToPlot[i];
-					CSpherePtr s0 = static_cast<CSpherePtr>( body->getByName( jointNames[pair.first] ) );
-					CSpherePtr s1 = static_cast<CSpherePtr>( body->getByName( jointNames[pair.second] ) );
+					CSphere::Ptr s0 = dynamic_pointer_cast<CSphere>( body->getByName( jointNames[pair.first] ) );
+					CSphere::Ptr s1 = dynamic_pointer_cast<CSphere>( body->getByName( jointNames[pair.second] ) );
 					ASSERT_(s0 && s1)
 
 					lines->appendLine( 
@@ -414,7 +414,7 @@ void CSkeletonTracker::doProcess()
 		else if( user.getSkeleton().getState() == nite::SKELETON_TRACKED )
 		{
 			cout << "	[Skeleton tracker] User " << user.getId() << " tracked" << endl;
-			CObservationSkeletonPtr obs = CObservationSkeleton::Create();
+			CObservationSkeleton::Ptr obs = CObservationSkeleton::Create();
 
 			// timestamp
 			const uint64_t nowUI = userTrackerFrame.getTimestamp();

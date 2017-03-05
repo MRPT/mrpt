@@ -38,10 +38,10 @@ namespace mrpt
 			  * \param out_log_lik The output, a log-likelihood.
 			  * \return nullptr, or a PDF of the estimated translation between the two areas (should be a SOG PDF): it's the pose of "refArea", relative to "currentArea".
 			  */
-			mrpt::poses::CPose3DPDFPtr computeTopologicalObservationModel(
+			mrpt::poses::CPose3DPDF::Ptr computeTopologicalObservationModel(
 				const THypothesisID		&hypID,
-				const CHMHMapNodePtr	&currentArea,
-				const CHMHMapNodePtr	&refArea,
+				const CHMHMapNode::Ptr	&currentArea,
+				const CHMHMapNode::Ptr	&refArea,
 				double					&out_log_lik
 				 );
 

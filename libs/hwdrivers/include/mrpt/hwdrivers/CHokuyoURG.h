@@ -86,7 +86,7 @@ namespace mrpt
 			std::string     m_lastSentMeasCmd; //!< The last sent measurement command (MDXXX), including the last 0x0A.
 
 			bool			m_highSensMode;  //!< High sensitivity [HS] mode (default: false)
-			mrpt::gui::CDisplayWindow3DPtr m_win;
+			mrpt::gui::CDisplayWindow3D::Ptr m_win;
 
 			/** Enables the SCIP2.0 protocol (this must be called at the very begining!).
 			  * \return false on any error

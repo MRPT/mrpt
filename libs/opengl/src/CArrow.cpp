@@ -28,7 +28,7 @@ using namespace std;
 IMPLEMENTS_SERIALIZABLE( CArrow, CRenderizableDisplayList, mrpt::opengl )
 
 /** Class factory  */
-CArrowPtr CArrow::Create(
+CArrow::Ptr CArrow::Create(
 	float	x0,
 	float	y0,
 	float	z0,
@@ -43,7 +43,7 @@ CArrowPtr CArrow::Create(
 	float	arrow_yaw
 	)
 {
-	return CArrowPtr(new CArrow(x0,y0,z0, x1,y1,z1, headRatio, smallRadius, largeRadius, arrow_roll, arrow_pitch, arrow_yaw ));
+	return CArrow::Ptr(new CArrow(x0,y0,z0, x1,y1,z1, headRatio, smallRadius, largeRadius, arrow_roll, arrow_pitch, arrow_yaw ));
 }
 /*---------------------------------------------------------------
 							render

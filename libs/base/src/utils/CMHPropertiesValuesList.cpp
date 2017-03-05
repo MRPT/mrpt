@@ -127,7 +127,7 @@ void  CMHPropertiesValuesList::clear()
 /*---------------------------------------------------------------
 						get
  ---------------------------------------------------------------*/
-CSerializablePtr  CMHPropertiesValuesList::get(
+CSerializable::Ptr  CMHPropertiesValuesList::get(
 	const char    *propertyName,
 	const int64_t &hypothesis_ID) const
 {
@@ -141,13 +141,13 @@ CSerializablePtr  CMHPropertiesValuesList::get(
 			return it->value;
 
 	// Not found:
-	return CSerializablePtr();
+	return CSerializable::Ptr();
 }
 
 /*---------------------------------------------------------------
 						getAnyHypothesis
  ---------------------------------------------------------------*/
-CSerializablePtr  CMHPropertiesValuesList::getAnyHypothesis(const char *propertyName) const
+CSerializable::Ptr  CMHPropertiesValuesList::getAnyHypothesis(const char *propertyName) const
 {
 	for (std::vector<TPropertyValueIDTriplet>::const_iterator it=m_properties.begin();it!=m_properties.end();++it)
 	{
@@ -155,7 +155,7 @@ CSerializablePtr  CMHPropertiesValuesList::getAnyHypothesis(const char *property
 			return it->value;
 	}
 	// Not found:
-	return CSerializablePtr();
+	return CSerializable::Ptr();
 }
 
 /*---------------------------------------------------------------
@@ -163,7 +163,7 @@ CSerializablePtr  CMHPropertiesValuesList::getAnyHypothesis(const char *property
  ---------------------------------------------------------------*/
 void  CMHPropertiesValuesList::set(
 	const char *propertyName,
-	const CSerializablePtr &obj,
+	const CSerializable::Ptr &obj,
 	const int64_t &hypothesis_ID)
 {
 	MRPT_START
@@ -174,7 +174,7 @@ void  CMHPropertiesValuesList::set(
 		{
 			// Delete current contents:
 			// Copy new value:
-			it->value.reset(obj->clone());
+			it->value.reset(dynamic_cast<CSerializable *>(obj->clone()));
 
 			//if (!obj)	it->value.clear();
 			//else		it->value = obj; //->clone();
@@ -199,7 +199,7 @@ void  CMHPropertiesValuesList::set(
  ---------------------------------------------------------------*/
 void  CMHPropertiesValuesList::setMemoryReference(
 	const char *propertyName,
-	const CSerializablePtr &obj,
+	const CSerializable::Ptr &obj,
 	const int64_t & hypothesis_ID)
 {
 	MRPT_START
@@ -286,7 +286,7 @@ CMHPropertiesValuesList::CMHPropertiesValuesList( const CMHPropertiesValuesList&
 	m_properties ( o.m_properties )
 {
 	for (std::vector<TPropertyValueIDTriplet>::iterator it=m_properties.begin();it!=m_properties.end();++it)
-		it->value.reset(it->value->clone());
+		it->value.reset(dynamic_cast<CSerializable*>(it->value->clone()));
 }
 
 /*---------------------------------------------------------------
@@ -299,7 +299,7 @@ CMHPropertiesValuesList & CMHPropertiesValuesList::operator =( const CMHProperti
 	m_properties = o.m_properties;
 
 	for (std::vector<TPropertyValueIDTriplet>::iterator it=m_properties.begin();it!=m_properties.end();++it)
-		it->value.reset(it->value->clone());
+		it->value.reset(dynamic_cast<CSerializable *>(it->value->clone()));
 	return *this;
 }
 

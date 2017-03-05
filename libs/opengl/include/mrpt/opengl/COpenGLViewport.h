@@ -220,7 +220,7 @@ namespace mrpt
 			/** Insert a new object into the list.
 			  *  The object MUST NOT be deleted, it will be deleted automatically by this object when not required anymore.
 			  */
-			void insert( const CRenderizablePtr &newObject );
+			void insert( const CRenderizable::Ptr &newObject );
 
 			/** Compute the current 3D camera pose.
 			  * \sa get3DRayForPixelCoord
@@ -229,17 +229,17 @@ namespace mrpt
 
 			/** Returns the first object with a given name, or nullptr if not found.
 			  */
-			CRenderizablePtr getByName( const std::string &str );
+			CRenderizable::Ptr getByName( const std::string &str );
 
 			 /** Returns the i'th object of a given class (or of a descendant class), or nullptr (an empty smart pointer) if not found.
 			   *  Example:
 			   * \code
-					CSpherePtr obs = view.getByClass<CSphere>();
+					CSphere::Ptr obs = view.getByClass<CSphere>();
 			   * \endcode
 			   * By default (ith=0), the first observation is returned.
 			   */
 			 template <typename T>
-			 typename T::SmartPtr getByClass( const size_t &ith = 0 ) const
+			 typename T::Ptr getByClass( const size_t &ith = 0 ) const
 			 {
 				MRPT_START
 				size_t  foundCount = 0;
@@ -247,24 +247,24 @@ namespace mrpt
 				for (CListOpenGLObjects::const_iterator it = m_objects.begin();it!=m_objects.end();++it)
 					if ( *it &&  (*it)->GetRuntimeClass()->derivedFrom( class_ID ) )
 						if (foundCount++ == ith)
-							return typename T::SmartPtr(*it);
+							return std::dynamic_pointer_cast<T>(*it);
 
 				// If not found directly, search recursively:
 				for (CListOpenGLObjects::const_iterator it=m_objects.begin();it!=m_objects.end();++it)
 				{
 					if ( *it && (*it)->GetRuntimeClass() == CLASS_ID_NAMESPACE(CSetOfObjects,mrpt::opengl))
 					{
-						typename T::SmartPtr  o = CSetOfObjectsPtr(*it)->getByClass<T>(ith);
+						typename T::Ptr o = std::dynamic_pointer_cast<T>(std::dynamic_pointer_cast<CSetOfObjects>(*it)->getByClass<T>(ith));
 						if (o) return o;
 					}
 				}
-				return typename T::SmartPtr();	// Not found: return empty smart pointer
+				return typename T::Ptr();	// Not found: return empty smart pointer
 				MRPT_END
 			 }
 
 			/** Removes the given object from the scene (it also deletes the object to free its memory).
 			  */
-			void removeObject( const CRenderizablePtr & obj );
+			void removeObject( const CRenderizable::Ptr & obj );
 
 			/** Number of objects contained. */
 			inline size_t  size() const { return m_objects.size(); }
@@ -315,8 +315,8 @@ namespace mrpt
 			bool			m_custom_backgb_color;
 			mrpt::utils::TColorf m_background_color;  //!< used only if m_custom_backgb_color
 			bool			m_isImageView; //!< Set by setImageView
-			//CRenderizablePtr m_imageview_quad ; //!< A mrpt::opengl::CTexturedPlane used after setImageView() is called
-			mrpt::utils::CImagePtr  m_imageview_img; //!< The image to display, after calling \a setImageView()
+			//CRenderizable::Ptr m_imageview_quad ; //!< A mrpt::opengl::CTexturedPlane used after setImageView() is called
+			mrpt::utils::CImage::Ptr  m_imageview_img; //!< The image to display, after calling \a setImageView()
 
 			struct TLastProjectiveMatrixInfo
 			{
@@ -350,7 +350,7 @@ namespace mrpt
 		  * Inserts an openGL object into a viewport. Allows call chaining.
 		  * \sa mrpt::opengl::COpenGLViewport::insert
 		  */
-		inline COpenGLViewportPtr &operator<<(COpenGLViewportPtr &s,const CRenderizablePtr &r)	{
+		inline COpenGLViewport::Ptr &operator<<(COpenGLViewport::Ptr &s,const CRenderizable::Ptr &r)	{
 			s->insert(r);
 			return s;
 		}
@@ -358,8 +358,8 @@ namespace mrpt
 		  * Inserts any iterable set of openGL objects into a viewport. Allows call chaining.
 		  * \sa mrpt::opengl::COpenGLViewport::insert
 		  */
-		inline COpenGLViewportPtr &operator<<(COpenGLViewportPtr &s,const std::vector<CRenderizablePtr> &v)	{
-			for (std::vector<CRenderizablePtr>::const_iterator it=v.begin();it!=v.end();++it) s->insert(*it);
+		inline COpenGLViewport::Ptr &operator<<(COpenGLViewport::Ptr &s,const std::vector<CRenderizable::Ptr> &v)	{
+			for (std::vector<CRenderizable::Ptr>::const_iterator it=v.begin();it!=v.end();++it) s->insert(*it);
 			return s;
 		}
 

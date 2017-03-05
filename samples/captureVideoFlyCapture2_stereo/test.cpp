@@ -86,10 +86,10 @@ void TestCapture_FlyCapture2_stereo()
 
 	int cnt = 0;
 
-	CObservationImagePtr obsL= CObservationImage::Create();  // Memory will be freed by SF destructor in each loop.
+	CObservationImage::Ptr obsL= CObservationImage::Create();  // Memory will be freed by SF destructor in each loop.
 	obsL->sensorLabel="LEFT";
 
-	CObservationImagePtr obsR= CObservationImage::Create();  // Memory will be freed by SF destructor in each loop.
+	CObservationImage::Ptr obsR= CObservationImage::Create();  // Memory will be freed by SF destructor in each loop.
 	obsR->sensorLabel="RIGHT";
 
 	while (!mrpt::system::os::kbhit())

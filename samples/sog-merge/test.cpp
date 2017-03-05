@@ -56,14 +56,14 @@ void Test_SoG_Merge()
 
 	{
 		COpenGLScene	scene;
-		CSetOfObjectsPtr  o = CSetOfObjects::Create();
+		CSetOfObjects::Ptr  o = CSetOfObjects::Create();
 		pdf.getAs3DObject(o);
 		scene.insert(o);
 		scene.insert( CGridPlaneXY::Create(-5,5,-5,5,0,1) );
 		CFileGZOutputStream("sog_before.3Dscene") << scene;
 
 	#if MRPT_HAS_WXWIDGETS
-		COpenGLScenePtr sc = win_before.get3DSceneAndLock();
+		COpenGLScene::Ptr sc = win_before.get3DSceneAndLock();
 		*sc = scene;
 		win_before.unlockAccess3DScene();
 		win_before.setCameraZoom(5);
@@ -83,14 +83,14 @@ void Test_SoG_Merge()
 
 	{
 		COpenGLScene	scene;
-		CSetOfObjectsPtr  o = CSetOfObjects::Create();
+		CSetOfObjects::Ptr  o = CSetOfObjects::Create();
 		pdf.getAs3DObject(o);
 		scene.insert(o);
 		scene.insert( CGridPlaneXY::Create(-5,5,-5,5,0,1) );
 		CFileGZOutputStream("sog_after.3Dscene") << scene;
 
 	#if MRPT_HAS_WXWIDGETS
-		COpenGLScenePtr sc = win_after.get3DSceneAndLock();
+		COpenGLScene::Ptr sc = win_after.get3DSceneAndLock();
 		*sc = scene;
 		win_after.unlockAccess3DScene();
 		win_after.setCameraZoom(5);

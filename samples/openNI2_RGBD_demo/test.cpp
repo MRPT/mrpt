@@ -141,7 +141,7 @@ int main ( int argc, char** argv )
 	//										Create scene
 	//========================================================================================
 	gui::CDisplayWindow3D window;
-	opengl::COpenGLScenePtr	scene;
+	opengl::COpenGLScene::Ptr	scene;
 	mrpt::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE = 1000000;
 	window.setWindowTitle("RGB-D camera frame");
 	window.resize(800,600);
@@ -151,12 +151,12 @@ int main ( int argc, char** argv )
 	window.setCameraElevationDeg(5);
 	scene = window.get3DSceneAndLock();
 
-	opengl::CPointCloudColouredPtr kinectp = opengl::CPointCloudColoured::Create();
+	opengl::CPointCloudColoured::Ptr kinectp = opengl::CPointCloudColoured::Create();
 	kinectp->enablePointSmooth(true);
 	kinectp->setPointSize(2);
 	scene->insert( kinectp );
 
-	opengl::CSetOfObjectsPtr reference = opengl::stock_objects::CornerXYZ();
+	opengl::CSetOfObjects::Ptr reference = opengl::stock_objects::CornerXYZ();
 	reference->setScale(0.4);
 	scene->insert( reference );
 

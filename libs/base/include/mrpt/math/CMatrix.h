@@ -21,7 +21,6 @@ namespace mrpt
 		// Note: instead of the standard "DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE", classes inheriting
 		// from templates need special nasty handling for MSVC DLL exports...
 		DEFINE_MRPT_OBJECT_PRE_CUSTOM_BASE_LINKAGE2(CMatrix, mrpt::utils::CSerializable, CMatrix)
-		BASE_IMPEXP ::mrpt::utils::CStream& operator>>(mrpt::utils::CStream& in, CMatrixPtr &pObj);
 
 		/**  This class is a "CSerializable" wrapper for "CMatrixFloat".
 		 * \note For a complete introduction to Matrices and vectors in MRPT, see: http://www.mrpt.org/Matrices_vectors_arrays_and_Linear_Algebra_MRPT_and_Eigen_classes
@@ -82,6 +81,7 @@ namespace mrpt
 			inline CMatrix(const Eigen::MatrixBase <OtherDerived>& other) : CMatrixTemplateNumeric<float>(other) { }
 
 		}; // end of class definition
+		BASE_IMPEXP ::mrpt::utils::CStream& operator>>(mrpt::utils::CStream& in, CMatrix::Ptr &pObj);
 		DEFINE_MRPT_OBJECT_POST_CUSTOM_BASE_LINKAGE2(CMatrix, mrpt::utils::CSerializable, CMatrix)
 
 	} // End of namespace

@@ -46,13 +46,13 @@ namespace mrpt
 			  */
 			synch::CCriticalSection	m_csChangeStream,m_csLastObservation;
 
-			mrpt::obs::CObservation2DRangeScanPtr		m_nextObservation;		//!< A dynamic object used as buffer in doProcess
+			mrpt::obs::CObservation2DRangeScan::Ptr		m_nextObservation;		//!< A dynamic object used as buffer in doProcess
 
 			mrpt::obs::CObservation2DRangeScan::TListExclusionAreasWithRanges 	m_lstExclusionPolys;	//!< A list of optional exclusion polygons, in coordinates relative to the vehicle, that is, taking into account the "sensorPose".
 			std::vector<std::pair<double,double> >  m_lstExclusionAngles; //!< A list of pairs of angles <init,end> such as all sensor ranges falling in those forbiden angles will be marked as invalid.
 
 			bool            m_showPreview; //!< If true, shows a 3D window with a preview of the grabber data
-			mrpt::gui::CDisplayWindow3DPtr m_win;
+			mrpt::gui::CDisplayWindow3D::Ptr m_win;
 
 		protected:
 			utils::CStream					*m_stream;  //!< The I/O channel (will be nullptr if not bound).

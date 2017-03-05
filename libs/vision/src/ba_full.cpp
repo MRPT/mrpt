@@ -185,11 +185,8 @@ double mrpt::vision::bundle_adj_full(
 	Matrix_PxP   I_muPoint(UNINITIALIZED_MATRIX);
 
 	// Cholesky object, as a pointer to reuse it between iterations:
-#if MRPT_HAS_CXX11
 	typedef std::unique_ptr<CSparseMatrix::CholeskyDecomp> SparseCholDecompPtr;
-#else
-	typedef std::auto_ptr<CSparseMatrix::CholeskyDecomp> SparseCholDecompPtr;
-#endif
+
 	SparseCholDecompPtr ptrCh;
 
 	for (size_t iter=0; iter<max_iters; iter++)
@@ -324,7 +321,7 @@ double mrpt::vision::bundle_adj_full(
 			{
 				profiler.enter("sS:chol");
 				if (!ptrCh.get())
-						ptrCh = SparseCholDecompPtr(new CSparseMatrix::CholeskyDecomp(sS) );
+						ptrCh.reset(new CSparseMatrix::CholeskyDecomp(sS) );
 				else ptrCh.get()->update(sS);
 				profiler.leave("sS:chol");
 

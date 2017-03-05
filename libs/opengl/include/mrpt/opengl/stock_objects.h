@@ -28,7 +28,7 @@ namespace mrpt
 			  *  </table>
 			  *  </div>
 			  */
-			CSetOfObjectsPtr OPENGL_IMPEXP RobotRhodon();
+			CSetOfObjects::Ptr OPENGL_IMPEXP RobotRhodon();
 			
 			/** Returns a representation of RobotGiraff.
 			  *  The generated object must be inserted in a opengl::COpenGLScene or opengl::CSetOfObjects.
@@ -38,7 +38,7 @@ namespace mrpt
 			  *  </table>
 			  *  </div>
 			  */
-			CSetOfObjectsPtr OPENGL_IMPEXP RobotGiraff();
+			CSetOfObjects::Ptr OPENGL_IMPEXP RobotGiraff();
 
 			/** Returns a representation of a Pioneer II mobile base.
 			  *  The generated object must be inserted in a opengl::COpenGLScene or opengl::CSetOfObjects.
@@ -48,7 +48,7 @@ namespace mrpt
 			  *  </table>
 			  *  </div>
 			  */
-			CSetOfObjectsPtr OPENGL_IMPEXP RobotPioneer();
+			CSetOfObjects::Ptr OPENGL_IMPEXP RobotPioneer();
 
 			/** Returns three arrows representing a X,Y,Z 3D corner.
 			  *  The generated object must be inserted in a opengl::COpenGLScene or opengl::CSetOfObjects.
@@ -59,7 +59,7 @@ namespace mrpt
 			  *  </table>
 			  *  </div>
 			  */
-			CSetOfObjectsPtr OPENGL_IMPEXP CornerXYZ(float scale=1.0);
+			CSetOfObjects::Ptr OPENGL_IMPEXP CornerXYZ(float scale=1.0);
 
 			/** Returns three arrows representing a X,Y,Z 3D corner.
 			  *  Differently from CornerXYZ the arrowhead of Z axis ends where the object is placed.
@@ -72,7 +72,7 @@ namespace mrpt
 			  *  </table>
 			  *  </div>
 			  */
-			CSetOfObjectsPtr OPENGL_IMPEXP CornerXYZEye();
+			CSetOfObjects::Ptr OPENGL_IMPEXP CornerXYZEye();
 
 			/** Returns three arrows representing a X,Y,Z 3D corner (just thick lines instead of complex arrows for faster rendering than CornerXYZ).
 			  *  The generated object must be inserted in a opengl::COpenGLScene or opengl::CSetOfObjects.
@@ -83,7 +83,7 @@ namespace mrpt
 			  *  </table>
 			  *  </div>
 			  */
-			CSetOfObjectsPtr OPENGL_IMPEXP CornerXYZSimple(float scale=1.0, float lineWidth=1.0);
+			CSetOfObjects::Ptr OPENGL_IMPEXP CornerXYZSimple(float scale=1.0, float lineWidth=1.0);
 
 			/** Returns two arrows representing a X,Y 2D corner (just thick lines, fast to render).
 			  *  The generated object must be inserted in a opengl::COpenGLScene or opengl::CSetOfObjects.
@@ -94,7 +94,7 @@ namespace mrpt
 			  *  </table>
 			  *  </div>
 			  */
-			CSetOfObjectsPtr OPENGL_IMPEXP CornerXYSimple(float scale=1.0, float lineWidth=1.0);
+			CSetOfObjects::Ptr OPENGL_IMPEXP CornerXYSimple(float scale=1.0, float lineWidth=1.0);
 
 			/** Returns a simple 3D model of a PointGrey Bumblebee stereo camera.
 			  *  The generated object must be inserted in a opengl::COpenGLScene or opengl::CSetOfObjects.
@@ -104,7 +104,7 @@ namespace mrpt
 			  *  </table>
 			  *  </div>
 			  */
-			CSetOfObjectsPtr OPENGL_IMPEXP BumblebeeCamera();
+			CSetOfObjects::Ptr OPENGL_IMPEXP BumblebeeCamera();
 
 			/** Returns a simple 3D model of a Hokuyo URG scanner.
 			  *  The generated object must be inserted in a opengl::COpenGLScene or opengl::CSetOfObjects.
@@ -114,7 +114,7 @@ namespace mrpt
 			  *  </table>
 			  *  </div>
 			  */
-			CSetOfObjectsPtr OPENGL_IMPEXP Hokuyo_URG();
+			CSetOfObjects::Ptr OPENGL_IMPEXP Hokuyo_URG();
 
 			/** Returns a simple 3D model of a Hokuyo UTM scanner.
 			  *  The generated object must be inserted in a opengl::COpenGLScene or opengl::CSetOfObjects.
@@ -124,7 +124,7 @@ namespace mrpt
 			  *  </table>
 			  *  </div>
 			  */
-			CSetOfObjectsPtr OPENGL_IMPEXP Hokuyo_UTM();
+			CSetOfObjects::Ptr OPENGL_IMPEXP Hokuyo_UTM();
 
 			/** Returns a simple 3D model of a househam sprayer.
 			  *  The generated object must be inserted in a opengl::COpenGLScene or opengl::CSetOfObjects.
@@ -134,7 +134,7 @@ namespace mrpt
 			  *  </table>
 			  *  </div>
 			  */
-			CSetOfObjectsPtr OPENGL_IMPEXP Househam_Sprayer();
+			CSetOfObjects::Ptr OPENGL_IMPEXP Househam_Sprayer();
 
 		} // end namespace stock_objects
 	}

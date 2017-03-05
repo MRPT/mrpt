@@ -113,7 +113,7 @@ namespace mrpt
 			  *  The metric maps are *not* included here for convenience, call m_metricMaps.getAs3DScene().
 			  *  The previous contents of "objs" will be discarded
 			  */
-			void getAs3DScene( mrpt::opengl::CSetOfObjectsPtr &objs ) const;
+			void getAs3DScene( mrpt::opengl::CSetOfObjects::Ptr &objs ) const;
 
 			/** Returns the mean of each robot pose in this LMH, as computed from the set of particles.
 			  * \sa getPathParticles, getRelativePose

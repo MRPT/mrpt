@@ -48,8 +48,8 @@ struct TThreadParam
 	volatile int    pushed_key;
 	volatile double Hz;
 
-	mrpt::synch::CThreadSafeVariable<CObservation3DRangeScanPtr> new_obs;     // RGB+D (+3D points)
-	mrpt::synch::CThreadSafeVariable<CObservationIMUPtr>         new_obs_imu; // Accelerometers
+	mrpt::synch::CThreadSafeVariable<CObservation3DRangeScan::Ptr> new_obs;     // RGB+D (+3D points)
+	mrpt::synch::CThreadSafeVariable<CObservationIMU::Ptr>         new_obs_imu; // Accelerometers
 };
 
 void thread_grabbing(TThreadParam &p)
@@ -82,8 +82,8 @@ void thread_grabbing(TThreadParam &p)
 		while (!hard_error && !p.quit)
 		{
 			// Grab new observation from the camera:
-			CObservation3DRangeScanPtr  obs     = CObservation3DRangeScan::Create(); // Smart pointers to observations
-			CObservationIMUPtr          obs_imu = CObservationIMU::Create();
+			CObservation3DRangeScan::Ptr  obs     = CObservation3DRangeScan::Create(); // Smart pointers to observations
+			CObservationIMU::Ptr          obs_imu = CObservationIMU::Create();
 
 			kinect.getNextObservation(*obs,*obs_imu,there_is_obs,hard_error);
 
@@ -135,7 +135,7 @@ void Test_Kinect()
 	// Wait until data stream starts so we can say for sure the sensor has been initialized OK:
 	cout << "Waiting for sensor initialization...\n";
 	do {
-		CObservation3DRangeScanPtr possiblyNewObs = thrPar.new_obs.get();
+		CObservation3DRangeScan::Ptr possiblyNewObs = thrPar.new_obs.get();
 		if (possiblyNewObs && possiblyNewObs->timestamp!=INVALID_TIMESTAMP)
 				break;
 		else 	mrpt::system::sleep(10);
@@ -156,23 +156,23 @@ void Test_Kinect()
 	win3D.setCameraPointingToPoint(2.5,0,0);
 
 	// The 3D point cloud OpenGL object:
-	mrpt::opengl::CPointCloudColouredPtr gl_points = mrpt::opengl::CPointCloudColoured::Create();
+	mrpt::opengl::CPointCloudColoured::Ptr gl_points = mrpt::opengl::CPointCloudColoured::Create();
 	gl_points->setPointSize(2.5);
 
 	// The 2D "laser scan" OpenGL object:
-	mrpt::opengl::CPlanarLaserScanPtr gl_2d_scan = mrpt::opengl::CPlanarLaserScan::Create();
+	mrpt::opengl::CPlanarLaserScan::Ptr gl_2d_scan = mrpt::opengl::CPlanarLaserScan::Create();
 	gl_2d_scan->enablePoints(true);
 	gl_2d_scan->enableLine(true);
 	gl_2d_scan->enableSurface(true);
 	gl_2d_scan->setSurfaceColor(0,0,1, 0.3);  // RGBA
 
-	mrpt::opengl::CFrustumPtr gl_frustum = mrpt::opengl::CFrustum::Create(0.2f, 5.0f, 90.0f, 5.0f, 2.0f, true, true );
+	mrpt::opengl::CFrustum::Ptr gl_frustum = mrpt::opengl::CFrustum::Create(0.2f, 5.0f, 90.0f, 5.0f, 2.0f, true, true );
 
 	const double aspect_ratio =  480.0 / 640.0; // kinect.getRowCount() / double( kinect.getColCount() );
 
-	opengl::COpenGLViewportPtr viewRange, viewInt; // Extra viewports for the RGB & D images.
+	opengl::COpenGLViewport::Ptr viewRange, viewInt; // Extra viewports for the RGB & D images.
 	{
-		mrpt::opengl::COpenGLScenePtr &scene = win3D.get3DSceneAndLock();
+		mrpt::opengl::COpenGLScene::Ptr &scene = win3D.get3DSceneAndLock();
 
 		// Create the Opengl object for the point cloud:
 		scene->insert( gl_points );
@@ -180,12 +180,12 @@ void Test_Kinect()
 		scene->insert( gl_frustum );
 
 		{
-			mrpt::opengl::CGridPlaneXYPtr gl_grid = mrpt::opengl::CGridPlaneXY::Create();
+			mrpt::opengl::CGridPlaneXY::Ptr gl_grid = mrpt::opengl::CGridPlaneXY::Create();
 			gl_grid->setColor(0.6,0.6,0.6);
 			scene->insert( gl_grid );
 		}
 		{
-			mrpt::opengl::CSetOfObjectsPtr gl_corner = mrpt::opengl::stock_objects::CornerXYZ();
+			mrpt::opengl::CSetOfObjects::Ptr gl_corner = mrpt::opengl::stock_objects::CornerXYZ();
 			gl_corner->setScale(0.2);
 			scene->insert(gl_corner);
 		}
@@ -208,12 +208,12 @@ void Test_Kinect()
 	}
 
 
-	CObservation3DRangeScanPtr  last_obs;
-	CObservationIMUPtr          last_obs_imu;
+	CObservation3DRangeScan::Ptr  last_obs;
+	CObservationIMU::Ptr          last_obs_imu;
 
 	while (win3D.isOpen() && !thrPar.quit)
 	{
-		CObservation3DRangeScanPtr possiblyNewObs = thrPar.new_obs.get();
+		CObservation3DRangeScan::Ptr possiblyNewObs = thrPar.new_obs.get();
 		if (possiblyNewObs && possiblyNewObs->timestamp!=INVALID_TIMESTAMP &&
 			(!last_obs  || possiblyNewObs->timestamp!=last_obs->timestamp ) )
 		{
@@ -246,7 +246,7 @@ void Test_Kinect()
 			if (last_obs->hasRangeImage )
 			{
 				// Convert to scan:
-				CObservation2DRangeScanPtr obs_2d = CObservation2DRangeScan::Create();
+				CObservation2DRangeScan::Ptr obs_2d = CObservation2DRangeScan::Create();
 				const float vert_FOV = DEG2RAD( gl_frustum->getVertFOV() );
 
 				mrpt::obs::T3DPointsTo2DScanParams sp;

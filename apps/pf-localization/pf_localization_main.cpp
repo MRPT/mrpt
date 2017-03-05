@@ -266,7 +266,7 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 
 
 	// Create 3D window if requested:
-	CDisplayWindow3DPtr	win3D;
+	CDisplayWindow3D::Ptr	win3D;
 	if (SHOW_PROGRESS_3D_REAL_TIME)
 	{
 		win3D = CDisplayWindow3D::Create("pf-localization - The MRPT project", 1000, 600);
@@ -298,13 +298,13 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 	{
 		scene.insert( mrpt::opengl::CGridPlaneXY::Create(-50,50,-50,50,0,5) );
 
-		CSetOfObjectsPtr gl_obj = CSetOfObjects::Create();
+		CSetOfObjects::Ptr gl_obj = CSetOfObjects::Create();
 		metricMap.getAs3DObject(gl_obj);
 		scene.insert(gl_obj);
 
 		if (SHOW_PROGRESS_3D_REAL_TIME)
 		{
-			COpenGLScenePtr ptrScene = win3D->get3DSceneAndLock();
+			COpenGLScene::Ptr ptrScene = win3D->get3DSceneAndLock();
 
 			ptrScene->insert(gl_obj);
 			ptrScene->enableFollowCamera(true);
@@ -444,9 +444,9 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 
 				// Load pose change from the rawlog:
 				// ----------------------------------------
-				CActionCollectionPtr action;
-				CSensoryFramePtr     observations;
-				CObservationPtr 	 obs;
+				CActionCollection::Ptr action;
+				CSensoryFrame::Ptr     observations;
+				CObservation::Ptr 	 obs;
 
 				if (!CRawlog::getActionObservationPairOrObservation(
 					rawlog_in_stream,      // In stream
@@ -506,7 +506,7 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 							if (rawlogEntry>=2)
 								getGroundTruth(expectedPose, rawlogEntry-2, GT, cur_obs_timestamp );
 
-							COpenGLScenePtr ptrScene = win3D->get3DSceneAndLock();
+							COpenGLScene::Ptr ptrScene = win3D->get3DSceneAndLock();
 
 							win3D->setCameraPointingToPoint(meanPose.x(),meanPose.y(),0);
 
@@ -526,7 +526,7 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 								"mono", 15, mrpt::opengl::NICE, 6003 );
 
 							{
-								CRenderizablePtr grid_ground = ptrScene->getByName("ground_lines");
+								CRenderizable::Ptr grid_ground = ptrScene->getByName("ground_lines");
 								if (!grid_ground)
 								{
 									grid_ground = mrpt::opengl::CGridPlaneXY::Create(-50,50,-50,50,0,5);
@@ -539,7 +539,7 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 							// The Ground Truth (GT):
 							if (GT.getRowCount()>0)
 							{
-								CRenderizablePtr GTpt = ptrScene->getByName("GT");
+								CRenderizable::Ptr GTpt = ptrScene->getByName("GT");
 								if (!GTpt)
 								{
 									GTpt = CDisk::Create();
@@ -556,17 +556,17 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 
 							// The particles:
 							{
-								CRenderizablePtr parts = ptrScene->getByName("particles");
+								CRenderizable::Ptr parts = ptrScene->getByName("particles");
 								if (parts) ptrScene->removeObject(parts);
 
-								CSetOfObjectsPtr p = pdf.getAs3DObject<CSetOfObjectsPtr>();
+								CSetOfObjects::Ptr p = pdf.getAs3DObject<CSetOfObjects::Ptr>();
 								p->setName("particles");
 								ptrScene->insert(p);
 							}
 
 							// The particles' cov:
 							{
-								CRenderizablePtr	ellip = ptrScene->getByName("parts_cov");
+								CRenderizable::Ptr	ellip = ptrScene->getByName("parts_cov");
 								if (!ellip)
 								{
 									ellip = CEllipsoid::Create();
@@ -586,7 +586,7 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 
 							// The laser scan:
 							{
-								CRenderizablePtr scanPts = ptrScene->getByName("scan");
+								CRenderizable::Ptr scanPts = ptrScene->getByName("scan");
 								if (!scanPts)
 								{
 									scanPts = CPointCloud::Create();
@@ -612,7 +612,7 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 							ptrScene->enableFollowCamera(true);
 
 							// Views:
-							COpenGLViewportPtr view1= ptrScene->getViewport("main");
+							COpenGLViewport::Ptr view1= ptrScene->getViewport("main");
 							{
 								CCamera  &cam = view1->getCamera();
 								cam.setAzimuthDegrees(-90);
@@ -622,7 +622,7 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 								cam.setOrthogonal();
 							}
 
-							/*COpenGLViewportPtr view2= ptrScene->createViewport("small_view"); // Create, or get existing one.
+							/*COpenGLViewport::Ptr view2= ptrScene->createViewport("small_view"); // Create, or get existing one.
 							view2->setCloneView("main");
 							view2->setCloneCamera(false);
 							view2->setBorderSize(3);
@@ -671,7 +671,7 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 
 					// Avrg. error:
 					// ----------------------------------------
-					CActionRobotMovement2DPtr best_mov_estim = action->getBestMovementEstimation();
+					CActionRobotMovement2D::Ptr best_mov_estim = action->getBestMovementEstimation();
 					if (best_mov_estim)
 						odometryEstimation = odometryEstimation + best_mov_estim->poseChange->getMeanVal();
 
@@ -713,9 +713,9 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 					if (DO_RELIABILITY_ESTIMATE)
 					{
 						// We need: a gridmap & a 2D LIDAR:
-						CObservation2DRangeScanPtr obs_scan;
+						CObservation2DRangeScan::Ptr obs_scan;
 						if (observations) obs_scan = observations->getObservationByClass<CObservation2DRangeScan>(0); // Get the 0'th scan, if several are present.
-						COccupancyGridMap2DPtr gridmap = metricMap.getMapByClass<COccupancyGridMap2D>();
+						COccupancyGridMap2D::Ptr gridmap = metricMap.getMapByClass<COccupancyGridMap2D>();
 						if (obs_scan && gridmap) // We have both, go on:
 						{
 							// Simulate scan + uncertainty:
@@ -793,7 +793,7 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 						// The Ground Truth (GT):
 						if (GT.getRowCount()>0)
 						{
-							CRenderizablePtr GTpt = scene.getByName("GT");
+							CRenderizable::Ptr GTpt = scene.getByName("GT");
 							if (!GTpt)
 							{
 								GTpt = CDisk::Create();
@@ -810,17 +810,17 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 
 						// The particles:
 						{
-							CRenderizablePtr parts = scene.getByName("particles");
+							CRenderizable::Ptr parts = scene.getByName("particles");
 							if (parts) scene.removeObject(parts);
 
-							CSetOfObjectsPtr p = pdf.getAs3DObject<CSetOfObjectsPtr>();
+							CSetOfObjects::Ptr p = pdf.getAs3DObject<CSetOfObjects::Ptr>();
 							p->setName("particles");
 							scene.insert(p);
 						}
 
 						// The particles' cov:
 						{
-							CRenderizablePtr	ellip = scene.getByName("parts_cov");
+							CRenderizable::Ptr	ellip = scene.getByName("parts_cov");
 							if (!ellip)
 							{
 								ellip = CEllipsoid::Create();
@@ -840,7 +840,7 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 
 						// The laser scan:
 						{
-							CRenderizablePtr scanPts = scene.getByName("scan");
+							CRenderizable::Ptr scanPts = scene.getByName("scan");
 							if (!scanPts)
 							{
 								scanPts = CPointCloud::Create();
@@ -866,7 +866,7 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 						scene.enableFollowCamera(SCENE3D_FOLLOW);
 
 						// Views:
-						COpenGLViewportPtr view1= scene.getViewport("main");
+						COpenGLViewport::Ptr view1= scene.getViewport("main");
 						{
 							CCamera  &cam = view1->getCamera();
 							cam.setAzimuthDegrees(-90);
@@ -876,7 +876,7 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 							cam.setOrthogonal();
 						}
 
-						/*COpenGLViewportPtr view2= scene.createViewport("small_view"); // Create, or get existing one.
+						/*COpenGLViewport::Ptr view2= scene.createViewport("small_view"); // Create, or get existing one.
 						view2->setCloneView("main");
 						view2->setCloneCamera(false);
 						view2->setBorderSize(3);

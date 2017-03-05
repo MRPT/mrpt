@@ -361,13 +361,13 @@ void  CReflectivityGridMap2D::getAsImage(
 /*---------------------------------------------------------------
 						getAs3DObject
 ---------------------------------------------------------------*/
-void  CReflectivityGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outSetOfObj ) const
+void  CReflectivityGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjects::Ptr	&outSetOfObj ) const
 {
 	if (!genericMapParams.enableSaveAs3DObject) return;
 
 	MRPT_START
 
-	opengl::CTexturedPlanePtr	outObj = opengl::CTexturedPlane::Create();
+	opengl::CTexturedPlane::Ptr	outObj = opengl::CTexturedPlane::Create();
 
 	outObj->setPlaneCorners(m_x_min,m_x_max,m_y_min,m_y_max);
 
