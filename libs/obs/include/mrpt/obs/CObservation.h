@@ -21,6 +21,9 @@ namespace mrpt
 	/** This namespace contains representation of robot actions and observations */
 	namespace obs
 	{
+		/** Used for CObservationBearingRange::TMeasurement::beaconID and others. \ingroup mrpt_obs_grp  */
+		#define INVALID_LANDMARK_ID 	(-1)
+
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservation, mrpt::utils::CSerializable, OBS_IMPEXP )
 
 		/** Declares a class that represents any robot's observation.
@@ -99,8 +102,8 @@ namespace mrpt
 		*/
 		void setSensorPose( const mrpt::math::TPose3D &newSensorPose );
 
-		/** Build a detailed, multi-line textual description of the observation contents and dump it to the output stream. 
-		  * \note If overried by derived classes, call base CObservation::getDescriptionAsText() first to show common information. 
+		/** Build a detailed, multi-line textual description of the observation contents and dump it to the output stream.
+		  * \note If overried by derived classes, call base CObservation::getDescriptionAsText() first to show common information.
 		  * \note This is the text that appears in RawLogViewer when selecting an object in the dataset */
 		virtual void getDescriptionAsText(std::ostream &o) const;
 
