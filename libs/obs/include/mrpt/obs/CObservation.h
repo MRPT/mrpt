@@ -21,8 +21,8 @@ namespace mrpt
 	/** This namespace contains representation of robot actions and observations */
 	namespace obs
 	{
-		/** Used for CObservationBearingRange::TMeasurement::beaconID and others. \ingroup mrpt_obs_grp  */
-		#define INVALID_LANDMARK_ID 	(-1)
+		#define INVALID_BEACON_ID  		(-1) //!< Used for CObservationBeaconRange, CBeacon, etc. \ingroup mrpt_obs_grp
+		#define INVALID_LANDMARK_ID 	(-1) //!< Used for CObservationBearingRange::TMeasurement::beaconID and others. \ingroup mrpt_obs_grp
 
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservation, mrpt::utils::CSerializable, OBS_IMPEXP )
 
@@ -70,6 +70,7 @@ namespace mrpt
 		* \return Returns true if the map has been updated, or false if this observations
 		*			has nothing to do with a metric map (for example, a sound observation).
 		*
+		* See: \ref maps_observations
 		* \sa CMetricMap, CMetricMap::insertObservation
 		*/
 		template <class METRICMAP>

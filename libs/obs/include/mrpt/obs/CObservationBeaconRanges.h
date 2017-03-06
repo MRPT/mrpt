@@ -19,11 +19,6 @@ namespace mrpt
 {
 namespace obs
 {
-/** Used for CObservationBeaconRange
- * \ingroup mrpt_obs_grp
-  */
-#define INVALID_BEACON_ID  		(-1)
-
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservationBeaconRanges, CObservation, OBS_IMPEXP  )
 
 	/** Declares a class derived from "CObservation" that represents one (or more) range measurements to labeled beacons.

@@ -229,15 +229,6 @@ void  CLandmarksMap::readFromStream(mrpt::utils::CStream &in, int version)
 
 }
 
-/**** FAMD ****/
-//void  CLandmarksMap::importMapMaxID( CLandmarksMap &sourceMap )
-//{
-//	CLandmarksMap::_mapMaxID = sourceMap._mapMaxID;
-//}
-/**** END FAMD ****/
-
-
-
 /*---------------------------------------------------------------
 					computeObservationLikelihood
   ---------------------------------------------------------------*/
@@ -401,7 +392,7 @@ double	 CLandmarksMap::internal_computeObservationLikelihood(
 		double					x,y;
 		double					earth_radius=6378137;
 
-		if ((o->has_RMC_datum)&&(likelihoodOptions.GPSOrigin.min_sat<=o->getMsgByClass<gnss::Message_NMEA_GGA>().fields.satellitesUsed))
+		if ((o->has_GGA_datum)&&(likelihoodOptions.GPSOrigin.min_sat<=o->getMsgByClass<gnss::Message_NMEA_GGA>().fields.satellitesUsed))
 		{
 			//Compose GPS robot position
 
