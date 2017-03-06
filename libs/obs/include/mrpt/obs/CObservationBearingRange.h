@@ -17,6 +17,11 @@ namespace mrpt
 {
 namespace obs
 {
+/** Used for CObservationBearingRange::TMeasurement::beaconID
+ * \ingroup mrpt_obs_grp
+  */
+#define INVALID_LANDMARK_ID 	(-1)
+
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservationBearingRange , CObservation, OBS_IMPEXP)
 
 	/** This observation represents a number of range-bearing value pairs, each one for a detected landmark, which optionally can have identification IDs.
