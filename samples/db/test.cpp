@@ -17,7 +17,7 @@ using namespace mrpt::utils;
 void TestDB()
 {
 	CSimpleDatabase		db,db2,db3;
-	CSimpleDatabaseTablePtr table;
+	CSimpleDatabaseTable::Ptr table;
 	size_t			i;
 	CTicTac			tictac;
 

@@ -61,8 +61,8 @@ struct TThreadParam
 	volatile double tilt_ang_deg;
 	volatile double Hz;
 
-	mrpt::synch::CThreadSafeVariable<CObservationVelodyneScanPtr> new_obs;     // Raw scans
-	mrpt::synch::CThreadSafeVariable<CObservationGPSPtr>          new_obs_gps; // GPS, if any
+	mrpt::synch::CThreadSafeVariable<CObservationVelodyneScan::Ptr> new_obs;     // Raw scans
+	mrpt::synch::CThreadSafeVariable<CObservationGPS::Ptr>          new_obs_gps; // GPS, if any
 };
 
 void thread_grabbing(TThreadParam &p)
@@ -109,8 +109,8 @@ void thread_grabbing(TThreadParam &p)
 		while (!hard_error && !p.quit)
 		{
 			// Grab new observations from the camera:
-			CObservationVelodyneScanPtr  obs; // (initially empty) Smart pointers to observations
-			CObservationGPSPtr           obs_gps;
+			CObservationVelodyneScan::Ptr  obs; // (initially empty) Smart pointers to observations
+			CObservationGPS::Ptr           obs_gps;
 
 			hard_error = !velodyne.getNextObservation(obs,obs_gps);
 
@@ -175,7 +175,7 @@ int VelodyneView(int argc, char **argv)
 	// Wait until data stream starts so we can say for sure the sensor has been initialized OK:
 	cout << "Waiting for sensor initialization...\n";
 	do {
-		CObservationPtr possiblyNewObs = thrPar.new_obs.get();
+		CObservation::Ptr possiblyNewObs = thrPar.new_obs.get();
 		if (possiblyNewObs && possiblyNewObs->timestamp!=INVALID_TIMESTAMP)
 				break;
 		else 	mrpt::system::sleep(10);
@@ -197,11 +197,11 @@ int VelodyneView(int argc, char **argv)
 	win3D.setCameraZoom(8.0);
 	win3D.setFOV(90);
 	win3D.setCameraPointingToPoint(0,0,0);
-	mrpt::opengl::CPointCloudColouredPtr gl_points = mrpt::opengl::CPointCloudColoured::Create();
+	mrpt::opengl::CPointCloudColoured::Ptr gl_points = mrpt::opengl::CPointCloudColoured::Create();
 	gl_points->setPointSize(2.5);
 
 	{
-		mrpt::opengl::COpenGLScenePtr &scene = win3D.get3DSceneAndLock();
+		mrpt::opengl::COpenGLScene::Ptr &scene = win3D.get3DSceneAndLock();
 
 		// Create the Opengl object for the point cloud:
 		scene->insert( gl_points );
@@ -212,8 +212,8 @@ int VelodyneView(int argc, char **argv)
 		win3D.repaint();
 	}
 
-	CObservationVelodyneScanPtr  last_obs;
-	CObservationGPSPtr           last_obs_gps;
+	CObservationVelodyneScan::Ptr  last_obs;
+	CObservationGPS::Ptr           last_obs_gps;
 	bool view_freeze = false; // for pausing the view
 	CObservationVelodyneScan::TGeneratePointCloudParameters pc_params;
 
@@ -221,8 +221,8 @@ int VelodyneView(int argc, char **argv)
 	{
 		bool do_view_refresh = false;
 
-		CObservationVelodyneScanPtr possiblyNewObs    = thrPar.new_obs.get();
-		CObservationGPSPtr          possiblyNewObsGps = thrPar.new_obs_gps.get();
+		CObservationVelodyneScan::Ptr possiblyNewObs    = thrPar.new_obs.get();
+		CObservationGPS::Ptr          possiblyNewObsGps = thrPar.new_obs_gps.get();
 
 		if (possiblyNewObsGps && possiblyNewObsGps->timestamp!=INVALID_TIMESTAMP &&
 			(!last_obs_gps  || possiblyNewObsGps->timestamp!=last_obs_gps->timestamp ) )

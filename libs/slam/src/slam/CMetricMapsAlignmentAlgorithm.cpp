@@ -23,7 +23,7 @@ using namespace mrpt::poses;
 /*---------------------------------------------------------------
 					Align
   ---------------------------------------------------------------*/
-CPosePDFPtr CMetricMapsAlignmentAlgorithm::Align(
+CPosePDF::Ptr CMetricMapsAlignmentAlgorithm::Align(
     const mrpt::maps::CMetricMap		*m1,
     const mrpt::maps::CMetricMap		*m2,
     const CPose2D			&grossEst,
@@ -37,7 +37,7 @@ CPosePDFPtr CMetricMapsAlignmentAlgorithm::Align(
 /*---------------------------------------------------------------
 					Align3D
   ---------------------------------------------------------------*/
-CPose3DPDFPtr CMetricMapsAlignmentAlgorithm::Align3D(
+CPose3DPDF::Ptr CMetricMapsAlignmentAlgorithm::Align3D(
     const mrpt::maps::CMetricMap		*m1,
     const mrpt::maps::CMetricMap		*m2,
     const CPose3D			&grossEst,

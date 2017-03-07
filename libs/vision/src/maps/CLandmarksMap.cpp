@@ -2326,10 +2326,10 @@ void  CLandmarksMap::saveMetricMapRepresentationToFile( const std::string	&filNa
 
 	// 3D Scene:
 	opengl::COpenGLScene				scene;
-	mrpt::opengl::CSetOfObjectsPtr obj3D = mrpt::opengl::CSetOfObjects::Create();
+	mrpt::opengl::CSetOfObjects::Ptr obj3D = mrpt::opengl::CSetOfObjects::Create();
 	getAs3DObject( obj3D );
 
-	opengl::CGridPlaneXYPtr	objGround = opengl::CGridPlaneXY::Create(-100,100,-100,100,0,1);
+	opengl::CGridPlaneXY::Ptr	objGround = opengl::CGridPlaneXY::Create(-100,100,-100,100,0,1);
 
 	scene.insert(obj3D);
 	scene.insert(objGround);
@@ -2344,7 +2344,7 @@ void  CLandmarksMap::saveMetricMapRepresentationToFile( const std::string	&filNa
 /*---------------------------------------------------------------
  						getAs3DObject
   ---------------------------------------------------------------*/
-void  CLandmarksMap::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj )const
+void  CLandmarksMap::getAs3DObject( mrpt::opengl::CSetOfObjects::Ptr	&outObj )const
 {
 	if (!genericMapParams.enableSaveAs3DObject) return;
 
@@ -2354,7 +2354,7 @@ void  CLandmarksMap::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj )cons
 	CPointPDFGaussian	pointGauss;
 	for (TCustomSequenceLandmarks::const_iterator	it=landmarks.begin();it!=landmarks.end();++it)
 	{
-		opengl::CEllipsoidPtr ellip = opengl::CEllipsoid::Create();
+		opengl::CEllipsoid::Ptr ellip = opengl::CEllipsoid::Create();
 
 		it->getPose( pointGauss );
 
@@ -2432,8 +2432,8 @@ float  CLandmarksMap::compute3DMatchingRatio(const mrpt::maps::CMetricMap *other
 	if (!otherMap) return 0;
 
 	TCustomSequenceLandmarks::const_iterator	    itThis,itOther;
-	std::deque<CPointPDFGaussianPtr>				poses3DThis,poses3DOther;
-	std::deque<CPointPDFGaussianPtr>::iterator	    itPoseThis,itPoseOther;
+	std::deque<CPointPDFGaussian::Ptr>				poses3DThis,poses3DOther;
+	std::deque<CPointPDFGaussian::Ptr>::iterator	    itPoseThis,itPoseOther;
 	CPointPDFGaussian							tempPose;
 	size_t										nThis  = landmarks.size();
 	size_t										nOther = otherMap->landmarks.size();

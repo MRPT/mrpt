@@ -139,12 +139,12 @@ public:
 
 	/** Creates a new table in the DB, initially empty.
 	  */
-	CSimpleDatabaseTablePtr  createTable(const std::string &name);
+	CSimpleDatabaseTable::Ptr  createTable(const std::string &name);
 
 	/** Returns the table with the indicated name
 	  * \exception std::exception On table not found.
 	  */
-	CSimpleDatabaseTablePtr getTable(const std::string &tableName);
+	CSimpleDatabaseTable::Ptr getTable(const std::string &tableName);
 
 	/** Deletes the given table.
 	  * \exception std::exception On table not found.
@@ -161,7 +161,7 @@ public:
 	/** Returns the table by index.
 	  * \exception std::exception On index out of bounds
 	  */
-	CSimpleDatabaseTablePtr getTable(size_t tableIndex);
+	CSimpleDatabaseTable::Ptr getTable(size_t tableIndex);
 
 	/** Returns the tables count in the DB.
 	  */
@@ -188,9 +188,9 @@ public:
 private:
 
 	/** The tables of the DB indexed by their names: */
-	typedef std::map<std::string, CSimpleDatabaseTablePtr>					TTableList;
-	typedef std::map<std::string, CSimpleDatabaseTablePtr>::iterator		iterator;
-	typedef std::map<std::string, CSimpleDatabaseTablePtr>::const_iterator	const_iterator;
+	typedef std::map<std::string, CSimpleDatabaseTable::Ptr>					TTableList;
+	typedef std::map<std::string, CSimpleDatabaseTable::Ptr>::iterator		iterator;
+	typedef std::map<std::string, CSimpleDatabaseTable::Ptr>::const_iterator	const_iterator;
 
 	TTableList	m_tables;
 

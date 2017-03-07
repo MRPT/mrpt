@@ -36,9 +36,9 @@ namespace mrpt
 
 			std::string	m_id; //!< Must be an unique id for each detectable object
 
-			mrpt::obs::CObservationPtr	obs; //!< Observation wich contain the deteted object
+			mrpt::obs::CObservation::Ptr	obs; //!< Observation wich contain the deteted object
 
-			inline void setObservation( mrpt::obs::CObservationPtr newObs ){	obs = newObs;	};
+			inline void setObservation( mrpt::obs::CObservation::Ptr newObs ){	obs = newObs;	};
 
 		}; // End of class
 		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CDetectableObject, mrpt::utils::CSerializable, DETECTORS_IMPEXP )
@@ -94,7 +94,7 @@ namespace mrpt
 
 			CDetectable3D(){};
 
-			CDetectable3D( const CDetectable2DPtr &object2d );
+			CDetectable3D( const CDetectable2D::Ptr &object2d );
 
 			/** Copy pointer content constructor */
 			CDetectable3D( const CDetectable3D *d )

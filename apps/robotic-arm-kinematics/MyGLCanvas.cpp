@@ -38,7 +38,7 @@ void CMyGLCanvas::OnRenderError( const wxString &str )
 
 void CMyGLCanvas::OnPreRender()
 {
-	mrpt::opengl::COpenGLViewportPtr gl_view = m_openGLScene->getViewport("small-view");
+	mrpt::opengl::COpenGLViewport::Ptr gl_view = m_openGLScene->getViewport("small-view");
 	if (gl_view)
 	{
 		mrpt::opengl::CCamera & view_cam = gl_view->getCamera();

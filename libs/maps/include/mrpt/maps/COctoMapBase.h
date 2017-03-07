@@ -192,9 +192,9 @@ namespace mrpt
 			/** Returns a 3D object representing the map.
 				* \sa renderingOptions
 				*/
-			virtual void  getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const MRPT_OVERRIDE
+			virtual void  getAs3DObject( mrpt::opengl::CSetOfObjects::Ptr	&outObj ) const MRPT_OVERRIDE
 			{
-				mrpt::opengl::COctoMapVoxelsPtr gl_obj = mrpt::opengl::COctoMapVoxels::Create();
+				mrpt::opengl::COctoMapVoxels::Ptr gl_obj = mrpt::opengl::COctoMapVoxels::Create();
 				this->getAsOctoMapVoxels(*gl_obj);
 				outObj->insert(gl_obj);
 			}

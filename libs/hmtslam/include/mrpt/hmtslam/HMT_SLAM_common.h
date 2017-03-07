@@ -116,10 +116,10 @@ namespace mrpt
 		/** A class for storing a sequence of arcs (a path).
 		  * \sa CHMTSLAM
 		  */
-		class HMTSLAM_IMPEXP TArcList : public mrpt::utils::list_searchable<mrpt::hmtslam::CHMHMapArcPtr>
+		class HMTSLAM_IMPEXP TArcList : public mrpt::utils::list_searchable<std::shared_ptr<mrpt::hmtslam::CHMHMapArc>>
 		{
 		private:
-			typedef mrpt::utils::list_searchable<mrpt::hmtslam::CHMHMapArcPtr> BASE;
+			typedef mrpt::utils::list_searchable<std::shared_ptr<mrpt::hmtslam::CHMHMapArc>> BASE;
 
 		public:
 			void  debugDump();

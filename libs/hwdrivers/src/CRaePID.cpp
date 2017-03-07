@@ -144,7 +144,7 @@ void CRaePID::doProcess()
 	obsG.m_readings.push_back(obs);
 	obsG.timestamp = mrpt::system::now();
 
-	appendObservation(mrpt::obs::CObservationGasSensorsPtr(new mrpt::obs::CObservationGasSensors(obsG)));
+	appendObservation(mrpt::obs::CObservationGasSensors::Ptr(new mrpt::obs::CObservationGasSensors(obsG)));
 
 }
 

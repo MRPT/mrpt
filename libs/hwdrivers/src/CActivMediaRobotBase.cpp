@@ -353,7 +353,7 @@ void CActivMediaRobotBase::doProcess()
 
 		this->getOdometryFull(odom,vel,w,lticks,rticks);
 
-		CObservationOdometryPtr obsOdom = CObservationOdometry::Create();
+		CObservationOdometry::Ptr obsOdom = CObservationOdometry::Create();
 		obsOdom->sensorLabel = "ACTIVMEDIA_BASE_ODOMETRY";
 		obsOdom->timestamp = mrpt::system::now();
 
@@ -384,7 +384,7 @@ void CActivMediaRobotBase::doProcess()
 			obsSonar.sensorLabel = "ACTIVMEDIA_BASE_SONARS";
 			obsSonar.timestamp = mrpt::system::now();
 
-			this->appendObservation( CObservationRangePtr( new  CObservationRange(obsSonar) ) );	// Send to the output queue
+			this->appendObservation( CObservationRange::Ptr( new  CObservationRange(obsSonar) ) );	// Send to the output queue
 		}
 	}
 

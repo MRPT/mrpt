@@ -20,6 +20,8 @@
 #include <mrpt/maps/metric_map_types.h>
 #include <mrpt/obs/obs_frwds.h>
 #include <mrpt/obs/link_pragmas.h>
+#include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/obs/CObservation.h>
 #include <deque>
 
 namespace mrpt
@@ -114,7 +116,7 @@ namespace mrpt
 			bool  insertObservation(const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = nullptr );
 
 			/** A wrapper for smart pointers, just calls the non-smart pointer version. */
-			bool  insertObservationPtr(const mrpt::obs::CObservationPtr &obs, const mrpt::poses::CPose3D *robotPose = nullptr );
+			bool  insertObservationPtr(const mrpt::obs::CObservation::Ptr &obs, const mrpt::poses::CPose3D *robotPose = nullptr );
 
 			/** Computes the log-likelihood of a given observation given an arbitrary robot 3D pose.
 			 *
@@ -136,7 +138,7 @@ namespace mrpt
 			virtual bool canComputeObservationLikelihood( const mrpt::obs::CObservation *obs ) const;
 
 			/** \overload */
-			bool canComputeObservationLikelihood( const mrpt::obs::CObservationPtr &obs ) const;
+			bool canComputeObservationLikelihood( const mrpt::obs::CObservation::Ptr &obs ) const;
 
 			/** Returns the sum of the log-likelihoods of each individual observation within a mrpt::obs::CSensoryFrame.
 			 *
@@ -222,7 +224,7 @@ namespace mrpt
 
 			/** Returns a 3D object representing the map. 
 			  * \sa genericMapParams, TMapGenericParams::enableSaveAs3DObject */
-			virtual void  getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const = 0;
+			virtual void  getAs3DObject( mrpt::opengl::CSetOfObjects::Ptr	&outObj ) const = 0;
 
 			TMapGenericParams genericMapParams; //!< Common params to all maps
 

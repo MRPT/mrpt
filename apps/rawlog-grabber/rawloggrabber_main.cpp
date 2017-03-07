@@ -198,7 +198,7 @@ int main(int argc, char **argv)
 					// If we have an action, save the SF and start a new one:
 					if (IS_DERIVED(it->second, CAction))
 					{
-						CActionPtr act = CActionPtr( it->second);
+						CAction::Ptr act = std::dynamic_pointer_cast<CAction>( it->second);
 
 						out_file << curSF;
 						cout << "[" << dateTimeToString(now()) << "] Saved SF with " << curSF.size() << " objects." << endl;
@@ -213,9 +213,9 @@ int main(int argc, char **argv)
 					else
 					if (IS_CLASS(it->second,CObservationOdometry) )
 					{
-						CObservationOdometryPtr odom = CObservationOdometryPtr( it->second );
+						CObservationOdometry::Ptr odom = std::dynamic_pointer_cast<CObservationOdometry>( it->second );
 
-						CActionRobotMovement2DPtr act = CActionRobotMovement2D::Create();
+						CActionRobotMovement2D::Ptr act = CActionRobotMovement2D::Create();
 						act->timestamp = odom->timestamp;
 
 						// Compute the increment since the last reading:
@@ -264,7 +264,7 @@ int main(int argc, char **argv)
 					else
 					if (IS_DERIVED(it->second, CObservation) )
 					{
-						CObservationPtr obs = CObservationPtr(it->second);
+						CObservation::Ptr obs = std::dynamic_pointer_cast<CObservation>(it->second);
 
 						// First, check if inserting this OBS into the SF would overflow "SF_max_time_span":
 						if (curSF.size()!=0 && timeDifference( curSF.getObservationByIndex(0)->timestamp, obs->timestamp ) > SF_max_time_span )
@@ -272,7 +272,7 @@ int main(int argc, char **argv)
 							if (hwdrivers_verbose)
 							{
 								// Show GPS mode:
-								CObservationGPSPtr gps;
+								CObservationGPS::Ptr gps;
 								size_t idx=0;
 								do
 								{
@@ -283,7 +283,7 @@ int main(int argc, char **argv)
 								} while (gps);
 
 								// Show IMU angles:
-								CObservationIMUPtr imu = curSF.getObservationByClass<CObservationIMU>();
+								CObservationIMU::Ptr imu = curSF.getObservationByClass<CObservationIMU>();
 								if (imu)
 								{
 									cout << format("   IMU angles (degrees): (yaw,pitch,roll)=(%.06f, %.06f, %.06f)",
@@ -310,7 +310,7 @@ int main(int argc, char **argv)
 				// ---------------------------
 				//  DO NOT USE SENSORY-FRAMES
 				// ---------------------------
-                CObservationIMUPtr imu; // Default:nullptr
+				CObservationIMU::Ptr imu; // Default:nullptr
 
 				for (CGenericSensor::TListObservations::iterator it=copy_of_global_list_obs.begin();it!=copy_of_global_list_obs.end();++it)
 				{
@@ -320,12 +320,12 @@ int main(int argc, char **argv)
 					if (hwdrivers_verbose)
 					{
 						if ( (it->second)->GetRuntimeClass() == CLASS_ID(CObservationGPS) ) {
-							CObservationGPSPtr gps = CObservationGPSPtr( it->second );
+							CObservationGPS::Ptr gps = std::dynamic_pointer_cast<CObservationGPS>( it->second );
 							if (gps->has_GGA_datum)
 								cout << "  GPS mode: " << (int)gps->getMsgByClass<mrpt::obs::gnss::Message_NMEA_GGA>().fields.fix_quality << " label: " << gps->sensorLabel << endl;
 						}
 						else if ( (it->second)->GetRuntimeClass() == CLASS_ID(CObservationIMU) ) {
-							imu = CObservationIMUPtr( it->second );
+							imu = std::dynamic_pointer_cast<CObservationIMU>( it->second );
 						}
 					}
 				}
@@ -389,7 +389,7 @@ void SensorThread(TThreadParams params)
 	{
 		string driver_name = params.cfgFile->read_string(params.sensor_label,"driver","",true);
 
-		CGenericSensorPtr	sensor = CGenericSensor::createSensorPtr(driver_name );
+		CGenericSensor::Ptr	sensor = CGenericSensor::createSensorPtr(driver_name );
 		if (!sensor)
 		{
 			cerr << endl << "***ERROR***: Class name not recognized: " << driver_name << endl;

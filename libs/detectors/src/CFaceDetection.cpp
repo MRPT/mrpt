@@ -167,7 +167,7 @@ void CFaceDetection::detectObjects_Impl(const mrpt::obs::CObservation *obs, vect
 			// Check if all possible detected faces satisfy a serial of constrains
 			for ( unsigned int i = 0; i < localDetected.size(); i++ )
 			{
-				CDetectable2DPtr rec	= CDetectable2DPtr(localDetected[i]);
+				CDetectable2D::Ptr rec	= std::dynamic_pointer_cast<CDetectable2D>(localDetected[i]);
 
 				// Calculate initial and final rows and columns
 				unsigned int r1 = rec->m_y;
@@ -280,8 +280,8 @@ void CFaceDetection::detectObjects_Impl(const mrpt::obs::CObservation *obs, vect
 		// Convert 2d detected objects to 3d
 		for ( unsigned int i = 0; i < localDetected.size(); i++ )
 		{
-			CDetectable3DPtr object3d =
-				CDetectable3DPtr( new CDetectable3D((CDetectable2DPtr)localDetected[i]) );
+			CDetectable3D::Ptr object3d =
+				CDetectable3D::Ptr( new CDetectable3D(std::dynamic_pointer_cast<CDetectable2D>(localDetected[i])));
 			detected.push_back( object3d );
 		}
 
@@ -1344,10 +1344,10 @@ void CFaceDetection::experimental_viewFacePointsScanned( const vector<float> &xs
 	win3D.setCameraZoom(6.0);
 	win3D.setCameraPointingToPoint(2.5,0,0);
 
-	mrpt::opengl::CPointCloudColouredPtr gl_points = mrpt::opengl::CPointCloudColoured::Create();
+	mrpt::opengl::CPointCloudColoured::Ptr gl_points = mrpt::opengl::CPointCloudColoured::Create();
 	gl_points->setPointSize(4.5);
 
-	mrpt::opengl::COpenGLScenePtr scene = win3D.get3DSceneAndLock();
+	mrpt::opengl::COpenGLScene::Ptr scene = win3D.get3DSceneAndLock();
 
 	scene->insert( gl_points );
 	scene->insert( mrpt::opengl::CGridPlaneXY::Create() );
@@ -1376,7 +1376,7 @@ void CFaceDetection::experimental_viewFacePointsScanned( const vector<float> &xs
 		icp.options.thresholdDist = 0.40;
 		icp.options.thresholdAng = 0.40;
 
-		CPose3DPDFPtr pdf= icp.Align3D(
+		CPose3DPDF::Ptr pdf= icp.Align3D(
 		&mapa,    // Map to align
 		&pntsMap,          // Reference map
 		CPose3D(),    // Initial gross estimate
@@ -1431,12 +1431,12 @@ void CFaceDetection::experimental_viewFacePointsAndEigenVects(  const vector<CAr
 	win3D.setCameraZoom(6.0);
 	win3D.setCameraPointingToPoint(2.5,0,0);
 
-	mrpt::opengl::CPointCloudColouredPtr gl_points = mrpt::opengl::CPointCloudColoured::Create();
+	mrpt::opengl::CPointCloudColoured::Ptr gl_points = mrpt::opengl::CPointCloudColoured::Create();
 	gl_points->setPointSize(4.5);
 
-	mrpt::opengl::COpenGLScenePtr scene = win3D.get3DSceneAndLock();
+	mrpt::opengl::COpenGLScene::Ptr scene = win3D.get3DSceneAndLock();
 
-	CSpherePtr sphere = CSphere::Create(0.005f);
+	CSphere::Ptr sphere = CSphere::Create(0.005f);
 	sphere->setLocation( center );
 	sphere->setColor( TColorf(0,1,0) );
 	scene->insert( sphere );
@@ -1455,9 +1455,9 @@ void CFaceDetection::experimental_viewFacePointsAndEigenVects(  const vector<CAr
 	TPoint3D p2( center + E2*eigenVal[1]*100 );
 	TPoint3D p3( center + E3*eigenVal[2]*100 );
 
-	CArrowPtr arrow1 = CArrow::Create( center.x, center.y, center.z, p1.x, p1.y, p1.z );
-	CArrowPtr arrow2 = CArrow::Create( center.x, center.y, center.z, p2.x, p2.y, p2.z );
-	CArrowPtr arrow3 = CArrow::Create( center.x, center.y, center.z, p3.x, p3.y, p3.z );
+	CArrow::Ptr arrow1 = CArrow::Create( center.x, center.y, center.z, p1.x, p1.y, p1.z );
+	CArrow::Ptr arrow2 = CArrow::Create( center.x, center.y, center.z, p2.x, p2.y, p2.z );
+	CArrow::Ptr arrow3 = CArrow::Create( center.x, center.y, center.z, p3.x, p3.y, p3.z );
 
 	arrow1->setColor( TColorf(0,1,0) );
 	arrow2->setColor( TColorf(1,0,0) );
@@ -1471,7 +1471,7 @@ void CFaceDetection::experimental_viewFacePointsAndEigenVects(  const vector<CAr
 	//sgms.push_back( TSegment3D(center,center + E1*eigenVal[0]*100) );
 	//sgms.push_back( TSegment3D(center,center + E2*eigenVal[1]*100) );
 	//sgms.push_back( TSegment3D(center,center + E3*eigenVal[2]*100) );
-	//mrpt::opengl::CSetOfLinesPtr lines = mrpt::opengl::CSetOfLines::Create( sgms );
+	//mrpt::opengl::CSetOfLines::Ptr lines = mrpt::opengl::CSetOfLines::Create( sgms );
 	//lines->setColor(0,0,1,1);
 	//lines->setLineWidth( 10 );
 
@@ -1510,17 +1510,17 @@ void CFaceDetection::experimental_viewRegions( const vector<TPoint3D> regions[9]
 	win3D.setCameraZoom(6.0);
 	win3D.setCameraPointingToPoint(2.5,0,0);
 
-	mrpt::opengl::CPointCloudColouredPtr gl_points = mrpt::opengl::CPointCloudColoured::Create();
+	mrpt::opengl::CPointCloudColoured::Ptr gl_points = mrpt::opengl::CPointCloudColoured::Create();
 	gl_points->setPointSize(6);
 
-	mrpt::opengl::COpenGLScenePtr scene = win3D.get3DSceneAndLock();
+	mrpt::opengl::COpenGLScene::Ptr scene = win3D.get3DSceneAndLock();
 
 	if ( meanPos != nullptr )
 	{
 		for ( size_t i = 0; i < 3; i++ )
 			for ( size_t j = 0; j < 3; j++ )
 			{
-				CSpherePtr sphere = CSphere::Create(0.005f);
+				CSphere::Ptr sphere = CSphere::Create(0.005f);
 				sphere->setLocation( meanPos[i][j] );
 				sphere->setColor( TColorf(0,1,0) );
 				scene->insert( sphere );
@@ -1538,7 +1538,7 @@ void CFaceDetection::experimental_viewRegions( const vector<TPoint3D> regions[9]
 	sgms.push_back( TSegment3D(meanPos[1][1],meanPos[2][2]) );
 	sgms.push_back( TSegment3D(meanPos[2][0],meanPos[1][1]) );
 	sgms.push_back( TSegment3D(meanPos[1][1],meanPos[0][2]) );
-	mrpt::opengl::CSetOfLinesPtr lines = mrpt::opengl::CSetOfLines::Create( sgms );
+	mrpt::opengl::CSetOfLines::Ptr lines = mrpt::opengl::CSetOfLines::Create( sgms );
 	lines->setColor(0,0,1,1);
 	lines->setLineWidth( 10 );
 

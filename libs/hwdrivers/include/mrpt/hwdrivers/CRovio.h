@@ -36,7 +36,7 @@ namespace mrpt
 			bool	m_videothread_initialized_error;
 			bool    m_videothread_finished;
 
-			mrpt::obs::CObservationImagePtr buffer_img;
+			mrpt::obs::CObservationImage::Ptr buffer_img;
 			mrpt::synch::CCriticalSection buffer_img_cs;
 
 
@@ -154,7 +154,7 @@ namespace mrpt
 			  * \return False on error
 			  * \sa retrieve_video, captureImageAsync
 			  */
-			bool getNextImageSync(mrpt::obs::CObservationImagePtr& lastImage );
+			bool getNextImageSync(mrpt::obs::CObservationImage::Ptr& lastImage );
 
 			/** Returns a snapshot from Rovio, if rectified is set true, the returned image is rectified with the parameters of intrinsic_matrix and distortion_matrix.
 			  * This function works asynchronously and does not need to have enabled the live video streaming.

@@ -83,7 +83,7 @@ protected:
 		// -----------------------------------------------------
 		CPose2D		initialPose(0.8f,0.0f,(float)DEG2RAD(0.0f));
 
-		CPosePDFPtr pdf = ICP.Align(
+		CPosePDF::Ptr pdf = ICP.Align(
 			&m1,
 			&m2,
 			initialPose,
@@ -104,21 +104,21 @@ protected:
 		EXPECT_NEAR( good_pose.distanceTo( pdf->getMeanVal() ),0,  0.02);
 	}
 
-	static void generateObjects(CSetOfObjectsPtr &world)
+	static void generateObjects(CSetOfObjects::Ptr &world)
 	{
-		CSpherePtr sph=CSphere::Create(0.5);
+		CSphere::Ptr sph=CSphere::Create(0.5);
 		sph->setLocation(0,0,0);
 		sph->setColor(1,0,0);
 		world->insert(sph);
 
-		CDiskPtr pln= opengl::CDisk::Create();
+		CDisk::Ptr pln= opengl::CDisk::Create();
 		pln->setDiskRadius(2);
 		pln->setPose(CPose3D(0,0,0,0,DEG2RAD(5),DEG2RAD(5)));
 		pln->setColor(0.8,0,0);
 		world->insert(pln);
 
 		{
-			CDiskPtr pln= opengl::CDisk::Create();
+			CDisk::Ptr pln= opengl::CDisk::Create();
 			pln->setDiskRadius(2);
 			pln->setPose(CPose3D(0,0,0,DEG2RAD(30),DEG2RAD(-20),DEG2RAD(-2)));
 			pln->setColor(0.9,0,0);
@@ -158,23 +158,23 @@ TEST_F(ICPTests, RayTracingICP3D)
 	CPose3D SCAN2_POSE_ERROR (0.15,-0.07,0.10, -0.03, 0.1, 0.1 );
 
 	// Create the reference objects:
-	COpenGLScenePtr scene1=COpenGLScene::Create();
-	COpenGLScenePtr scene2=COpenGLScene::Create();
-	COpenGLScenePtr scene3=COpenGLScene::Create();
+	COpenGLScene::Ptr scene1=COpenGLScene::Create();
+	COpenGLScene::Ptr scene2=COpenGLScene::Create();
+	COpenGLScene::Ptr scene3=COpenGLScene::Create();
 
-	opengl::CGridPlaneXYPtr plane1=CGridPlaneXY::Create(-20,20,-20,20,0,1);
+	opengl::CGridPlaneXY::Ptr plane1=CGridPlaneXY::Create(-20,20,-20,20,0,1);
 	plane1->setColor(0.3,0.3,0.3);
 	scene1->insert(plane1);
 	scene2->insert(plane1);
 	scene3->insert(plane1);
 
-	CSetOfObjectsPtr world=CSetOfObjects::Create();
+	CSetOfObjects::Ptr world=CSetOfObjects::Create();
 	generateObjects(world);
 	scene1->insert(world);
 
 	// Perform the 3D scans:
-	CAngularObservationMeshPtr aom1=CAngularObservationMesh::Create();
-	CAngularObservationMeshPtr aom2=CAngularObservationMesh::Create();
+	CAngularObservationMesh::Ptr aom1=CAngularObservationMesh::Create();
+	CAngularObservationMesh::Ptr aom2=CAngularObservationMesh::Create();
 
 	CAngularObservationMesh::trace2DSetOfRays(scene1,viewpoint1,aom1,CAngularObservationMesh::TDoubleRange::CreateFromAperture(M_PI,HOW_MANY_PITCHS),CAngularObservationMesh::TDoubleRange::CreateFromAperture(M_PI,HOW_MANY_YAWS));
 	CAngularObservationMesh::trace2DSetOfRays(scene1,viewpoint2,aom2,CAngularObservationMesh::TDoubleRange::CreateFromAperture(M_PI,HOW_MANY_PITCHS),CAngularObservationMesh::TDoubleRange::CreateFromAperture(M_PI,HOW_MANY_YAWS));
@@ -182,14 +182,14 @@ TEST_F(ICPTests, RayTracingICP3D)
 
 	// Put the viewpoints origins:
 	{
-		CSetOfObjectsPtr origin1= opengl::stock_objects::CornerXYZ();
+		CSetOfObjects::Ptr origin1= opengl::stock_objects::CornerXYZ();
 		origin1->setPose(viewpoint1);
 		origin1->setScale(0.6f);
 		scene1->insert( origin1 );
 		scene2->insert( origin1 );
 	}
 	{
-		CSetOfObjectsPtr origin2= opengl::stock_objects::CornerXYZ();
+		CSetOfObjects::Ptr origin2= opengl::stock_objects::CornerXYZ();
 		origin2->setPose(viewpoint2);
 		origin2->setScale(0.6f);
 		scene1->insert( origin2 );
@@ -209,8 +209,8 @@ TEST_F(ICPTests, RayTracingICP3D)
 	M2_noisy.changeCoordinatesReference( SCAN2_POSE_ERROR );
 
 
-	CSetOfObjectsPtr  PTNS1 = CSetOfObjects::Create();
-	CSetOfObjectsPtr  PTNS2 = CSetOfObjects::Create();
+	CSetOfObjects::Ptr  PTNS1 = CSetOfObjects::Create();
+	CSetOfObjects::Ptr  PTNS2 = CSetOfObjects::Create();
 
 	CPointsMap::COLOR_3DSCENE_R = 1;
 	CPointsMap::COLOR_3DSCENE_G = 0;
@@ -235,7 +235,7 @@ TEST_F(ICPTests, RayTracingICP3D)
 	icp.options.thresholdDist = 0.40f;
 	icp.options.thresholdAng = 0;
 
-	CPose3DPDFPtr pdf= icp.Align3D(
+	CPose3DPDF::Ptr pdf= icp.Align3D(
 		&M2_noisy,    // Map to align
 		&M1,          // Reference map
 		CPose3D(),    // Initial gross estimate

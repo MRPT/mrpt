@@ -113,7 +113,7 @@ CPropertiesValuesList::CPropertiesValuesList(const CPropertiesValuesList &o) :
 	m_properties	( o.m_properties )
 {
 	for (std::vector<TPropertyValuePair>::iterator it=m_properties.begin();it!=m_properties.end();++it)
-		it->value.reset(it->value->clone());
+		it->value.reset(dynamic_cast<CSerializable*>(it->value->clone()));
 }
 
 /*---------------------------------------------------------------
@@ -125,7 +125,7 @@ CPropertiesValuesList & CPropertiesValuesList::operator = (const CPropertiesValu
 
 	m_properties = o.m_properties;
 	for (std::vector<TPropertyValuePair>::iterator it=m_properties.begin();it!=m_properties.end();++it)
-		it->value.reset(it->value->clone());
+		it->value.reset(dynamic_cast<CSerializable *>(it->value->clone()));
 	return *this;
 }
 
@@ -143,7 +143,7 @@ void  CPropertiesValuesList::clear()
 /*---------------------------------------------------------------
 						get
  ---------------------------------------------------------------*/
-CSerializablePtr  CPropertiesValuesList::get(const std::string &propertyName)const
+CSerializable::Ptr  CPropertiesValuesList::get(const std::string &propertyName)const
 {
 	for (std::vector<TPropertyValuePair>::const_iterator it=m_properties.begin();it!=m_properties.end();++it)
 	{
@@ -151,14 +151,14 @@ CSerializablePtr  CPropertiesValuesList::get(const std::string &propertyName)con
 			return it->value;
 	}
 	// Not found:
-	return CSerializablePtr();
+	return CSerializable::Ptr();
 }
 
 
 /*---------------------------------------------------------------
 						set
  ---------------------------------------------------------------*/
-void  CPropertiesValuesList::set(const std::string &propertyName, const CSerializablePtr &obj)
+void  CPropertiesValuesList::set(const std::string &propertyName, const CSerializable::Ptr &obj)
 {
 	MRPT_START
 

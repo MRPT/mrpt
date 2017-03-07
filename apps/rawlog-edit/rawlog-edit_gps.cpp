@@ -56,12 +56,12 @@ DECLARE_OP_FUNCTION(op_export_gps_kml)
 		}
 
 		// return false on any error.
-		bool processOneObservation(CObservationPtr  &o)
+		bool processOneObservation(CObservation::Ptr  &o)
 		{
 			if (!IS_CLASS(o, CObservationGPS ) )
 				return true;
 
-			const CObservationGPS* obs = CObservationGPSPtr(o).get();
+			const CObservationGPS* obs = dynamic_cast<CObservationGPS *>(o.get());
 
 			if (!obs->has_GGA_datum)
 				return true; // Nothing to do...
@@ -376,12 +376,12 @@ DECLARE_OP_FUNCTION(op_export_gps_txt)
 		}
 
 		// return false on any error.
-		bool processOneObservation(CObservationPtr  &o)
+		bool processOneObservation(CObservation::Ptr  &o)
 		{
 			if (!IS_CLASS(o, CObservationGPS ) )
 				return true;
 
-			const CObservationGPS* obs = CObservationGPSPtr(o).get();
+			const CObservationGPS* obs = dynamic_cast<CObservationGPS *>(o.get());
 
 			map<string, FILE*>::const_iterator  it = lstFiles.find( obs->sensorLabel );
 
@@ -585,12 +585,12 @@ DECLARE_OP_FUNCTION(op_export_gps_all)
 		}
 
 		// return false on any error.
-		bool processOneObservation(CObservationPtr  &o)
+		bool processOneObservation(CObservation::Ptr  &o)
 		{
 			if (!IS_CLASS(o, CObservationGPS ) )
 				return true;
 
-			const CObservationGPS* obs = CObservationGPSPtr(o).get();
+			const CObservationGPS* obs = dynamic_cast<CObservationGPS*>(o.get());
 
 			for (CObservationGPS::message_list_t::const_iterator it=obs->messages.begin();it!=obs->messages.end();++it)
 			{

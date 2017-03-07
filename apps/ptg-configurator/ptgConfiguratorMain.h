@@ -230,14 +230,14 @@ class ptgConfiguratorframe: public wxFrame
 		TCursorPickState                 m_cursorPickState;   //!< The state of the cursor onto the 3D view:
 
 		// ========= Opengl View =======
-		mrpt::opengl::COpenGLViewportPtr  gl_view_WS, gl_view_TPSpace;
-		mrpt::opengl::CSetOfObjectsPtr    gl_TPSpace_TP_obstacles;
-		mrpt::opengl::CMeshPtr            gl_TPSpace_clearance, gl_TPSpace_clearance_interp;
-		mrpt::opengl::CCameraPtr          gl_view_TPSpace_cam;
-		mrpt::opengl::CAxisPtr            gl_axis_WS, gl_axis_TPS;
-		mrpt::opengl::CSetOfLinesPtr      gl_robot_ptg_prediction, gl_robot_ptg_prediction_highlight, gl_tp_obstacles;
-		mrpt::opengl::CPointCloudPtr      gl_WS_obs;
-		mrpt::opengl::CPointCloudPtr      gl_WS_target, gl_TP_target, gl_WS_target_reprojected;
+		mrpt::opengl::COpenGLViewport::Ptr  gl_view_WS, gl_view_TPSpace;
+		mrpt::opengl::CSetOfObjects::Ptr    gl_TPSpace_TP_obstacles;
+		mrpt::opengl::CMesh::Ptr            gl_TPSpace_clearance, gl_TPSpace_clearance_interp;
+		mrpt::opengl::CCamera::Ptr          gl_view_TPSpace_cam;
+		mrpt::opengl::CAxis::Ptr            gl_axis_WS, gl_axis_TPS;
+		mrpt::opengl::CSetOfLines::Ptr      gl_robot_ptg_prediction, gl_robot_ptg_prediction_highlight, gl_tp_obstacles;
+		mrpt::opengl::CPointCloud::Ptr      gl_WS_obs;
+		mrpt::opengl::CPointCloud::Ptr      gl_WS_target, gl_TP_target, gl_WS_target_reprojected;
 
 		// 2D plot views:
 		mpFXYVector  *m_graph_head_all, *m_graph_head_indiv;

@@ -74,7 +74,7 @@ private:
 	
 	unsigned int repr_level;
 
-	mrpt::opengl::COpenGLScenePtr	scene;	//!< Opengl scene
+	mrpt::opengl::COpenGLScene::Ptr	scene;	//!< Opengl scene
 
 	// OpenNI variables to manage the camera
 	openni::Status		rc;

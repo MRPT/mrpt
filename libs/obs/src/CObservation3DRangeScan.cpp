@@ -356,7 +356,7 @@ void  CObservation3DRangeScan::readFromStream(mrpt::utils::CStream &in, int vers
 				in >> do_have_labels;
 
 				if (do_have_labels)
-					pixelLabels = TPixelLabelInfoPtr( TPixelLabelInfoBase::readAndBuildFromStream(in) );
+					pixelLabels.reset(TPixelLabelInfoBase::readAndBuildFromStream(in));
 			}
 
 		} break;
@@ -1015,7 +1015,7 @@ void CObservation3DRangeScan::convertTo2DScan(mrpt::obs::CObservation2DRangeScan
 		T3DPointsProjectionParams projParams;
 		projParams.takeIntoAccountSensorPoseOnRobot = true;
 		
-		mrpt::opengl::CPointCloudPtr pc = mrpt::opengl::CPointCloud::Create();
+		mrpt::opengl::CPointCloud::Ptr pc = mrpt::opengl::CPointCloud::Create();
 		this->project3DPointsFromDepthImageInto(*pc, projParams, fp);
 
 		const std::vector<float> & xs = pc->getArrayX(), &ys = pc->getArrayY(), &zs = pc->getArrayZ();

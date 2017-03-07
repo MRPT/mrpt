@@ -48,7 +48,7 @@ void Run_KF_SLAM( CConfigFile &cfgFile, const std::string &rawlogFileName );
 
 // 3D Window (smart pointer) declared here so after an exception it's not
 // immediately closed.
-mrpt::gui::CDisplayWindow3DPtr win3d;
+mrpt::gui::CDisplayWindow3D::Ptr win3d;
 
 
 // ------------------------------------------------------
@@ -355,8 +355,8 @@ void Run_KF_SLAM( CConfigFile &cfgFile, const std::string &rawlogFileName )
 
 	// The main loop:
 	// ---------------------------------------
-	CActionCollectionPtr	action;
-	CSensoryFramePtr		observations;
+	CActionCollection::Ptr	action;
+	CSensoryFrame::Ptr		observations;
 	size_t rawlogEntry = 0, step = 0;
 
 
@@ -425,7 +425,7 @@ void Run_KF_SLAM( CConfigFile &cfgFile, const std::string &rawlogFileName )
 			{
 				const typename ekfslam_t::TDataAssocInfo & da = mapping.getLastDataAssociation();
 
-				const CObservationBearingRangePtr obs = observations->getObservationByClass<CObservationBearingRange>();
+				const CObservationBearingRange::Ptr obs = observations->getObservationByClass<CObservationBearingRange>();
 				if (obs)
 				{
 					const CObservationBearingRange* obsRB = obs.get();
@@ -462,7 +462,7 @@ void Run_KF_SLAM( CConfigFile &cfgFile, const std::string &rawlogFileName )
 			{
 				const typename ekfslam_t::TDataAssocInfo & da = mapping.getLastDataAssociation();
 
-				const CObservationBearingRangePtr obs = observations->getObservationByClass<CObservationBearingRange>();
+				const CObservationBearingRange::Ptr obs = observations->getObservationByClass<CObservationBearingRange>();
 				if (obs)
 				{
 					const CObservationBearingRange* obsRB = obs.get();
@@ -555,16 +555,16 @@ void Run_KF_SLAM( CConfigFile &cfgFile, const std::string &rawlogFileName )
 			// Save 3D view of the filter state:
 			if (win3d || ( SAVE_3D_SCENES && !(step % SAVE_LOG_FREQUENCY) ) )
 			{
-				COpenGLScenePtr   scene3D = COpenGLScene::Create();
+				COpenGLScene::Ptr   scene3D = COpenGLScene::Create();
 				{
-					opengl::CGridPlaneXYPtr grid = opengl::CGridPlaneXY::Create(-1000,1000,-1000,1000,0,5);
+					opengl::CGridPlaneXY::Ptr grid = opengl::CGridPlaneXY::Create(-1000,1000,-1000,1000,0,5);
 					grid->setColor(0.4,0.4,0.4);
 					scene3D->insert( grid );
 				}
 
 				// Robot path:
 				{
-					opengl::CSetOfLinesPtr linesPath = opengl::CSetOfLines::Create();
+					opengl::CSetOfLines::Ptr linesPath = opengl::CSetOfLines::Create();
 					linesPath->setColor(1,0,0);
 
 					TPose3D init_pose;
@@ -580,7 +580,7 @@ void Run_KF_SLAM( CConfigFile &cfgFile, const std::string &rawlogFileName )
 						if (++path_decim>10)
 						{
 							path_decim = 0;
-							mrpt::opengl::CSetOfObjectsPtr xyz = mrpt::opengl::stock_objects::CornerXYZSimple(0.3f,2.0f);
+							mrpt::opengl::CSetOfObjects::Ptr xyz = mrpt::opengl::stock_objects::CornerXYZSimple(0.3f,2.0f);
 							xyz->setPose(CPose3D(*it));
 							scene3D->insert(xyz);
 						}
@@ -589,7 +589,7 @@ void Run_KF_SLAM( CConfigFile &cfgFile, const std::string &rawlogFileName )
 
 					// finally a big corner for the latest robot pose:
 					{
-						mrpt::opengl::CSetOfObjectsPtr xyz = mrpt::opengl::stock_objects::CornerXYZSimple(1.0,2.5);
+						mrpt::opengl::CSetOfObjects::Ptr xyz = mrpt::opengl::stock_objects::CornerXYZSimple(1.0,2.5);
 						xyz->setPose(robotPoseMean3D);
 						scene3D->insert(xyz);
 					}
@@ -604,7 +604,7 @@ void Run_KF_SLAM( CConfigFile &cfgFile, const std::string &rawlogFileName )
 				// Do we have a ground truth?
 				if (size(GT_PATH,2)==6 || size(GT_PATH,2)==3)
 				{
-					opengl::CSetOfLinesPtr GT_path = opengl::CSetOfLines::Create();
+					opengl::CSetOfLines::Ptr GT_path = opengl::CSetOfLines::Create();
 					GT_path->setColor(0,0,0);
 					size_t N = std::min(size(GT_PATH,1), meanPath.size() );
 
@@ -644,7 +644,7 @@ void Run_KF_SLAM( CConfigFile &cfgFile, const std::string &rawlogFileName )
 				{
 					const typename ekfslam_t::TDataAssocInfo & da = mapping.getLastDataAssociation();
 
-					mrpt::opengl::CSetOfLinesPtr lins = mrpt::opengl::CSetOfLines::Create();
+					mrpt::opengl::CSetOfLines::Ptr lins = mrpt::opengl::CSetOfLines::Create();
 					lins->setLineWidth(1.2f);
 					lins->setColor(1,1,1);
 					for (std::map<observation_index_t,prediction_index_t>::const_iterator it=da.results.associations.begin();it!=da.results.associations.end();++it)
@@ -667,14 +667,14 @@ void Run_KF_SLAM( CConfigFile &cfgFile, const std::string &rawlogFileName )
 
 				// The current state of KF-SLAM:
 				{
-					opengl::CSetOfObjectsPtr  objs = opengl::CSetOfObjects::Create();
+					opengl::CSetOfObjects::Ptr  objs = opengl::CSetOfObjects::Create();
 					mapping.getAs3DObject(objs);
 					scene3D->insert( objs );
 				}
 
 				if (win3d)
 				{
-					mrpt::opengl::COpenGLScenePtr &scn = win3d->get3DSceneAndLock();
+					mrpt::opengl::COpenGLScene::Ptr &scn = win3d->get3DSceneAndLock();
 					scn = scene3D;
 
 					// Update text messages:

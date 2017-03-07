@@ -49,10 +49,10 @@ namespace mrpt
 			  * \param out_log_lik The output, a log-likelihood.
 			  * \return nullptr (an empty smart pointer), or a PDF of the estimated translation between the two areas (can be a multi-modal PDF).
 			  */
-			virtual mrpt::poses::CPose3DPDFPtr computeTopologicalObservationModel(
+			virtual mrpt::poses::CPose3DPDF::Ptr computeTopologicalObservationModel(
 				const THypothesisID		&hypID,
-				const CHMHMapNodePtr	&currentArea,
-				const CHMHMapNodePtr	&refArea,
+				const CHMHMapNode::Ptr	&currentArea,
+				const CHMHMapNode::Ptr	&refArea,
 				double					&out_log_lik
 				 ) = 0;
 
@@ -81,10 +81,10 @@ namespace mrpt
 			{
 				MRPT_UNUSED_PARAM(poseID); MRPT_UNUSED_PARAM(SF);
 			}
+			using Ptr = std::shared_ptr<CTopLCDetectorBase>;
 
 		}; // end class
 
-		typedef std::shared_ptr<CTopLCDetectorBase> CTopLCDetectorBasePtr;
 
 	} // end namespace
 } // end namespace

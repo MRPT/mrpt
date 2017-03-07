@@ -50,9 +50,9 @@ DECLARE_OP_FUNCTION(op_info)
 		}
 
 		virtual bool processOneEntry(
-			CActionCollectionPtr &actions,
-			CSensoryFramePtr     &SF,
-			CObservationPtr      &obs)
+			CActionCollection::Ptr &actions,
+			CSensoryFrame::Ptr     &SF,
+			CObservation::Ptr      &obs)
 		{
 			// Rawlog format: Normally only one of both should exist simultaneously!
 			if (actions || SF) has_actSF_format = true;
@@ -63,7 +63,7 @@ DECLARE_OP_FUNCTION(op_info)
 			// Process each observation individually, either from "obs" or each within a "SF":
 			for (size_t idxObs=0; true; idxObs++)
 			{
-				CObservationPtr  obs_indiv;
+				CObservation::Ptr  obs_indiv;
 				if (obs)
 				{
 					if (idxObs>0)  break;

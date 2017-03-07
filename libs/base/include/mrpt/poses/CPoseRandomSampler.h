@@ -1,9 +1,9 @@
 /* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          http://www.mrpt.org/                             |
-   |                                                                           |
+   |			         Mobile Robot Programming Toolkit (MRPT)			   |
+   |						  http://www.mrpt.org/						     |
+   |																		   |
    | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
+   | See: http://www.mrpt.org/Authors - All rights reserved.			       |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 #ifndef CPoseRandomSampler_H
@@ -11,6 +11,8 @@
 
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose2D.h>
+#include <mrpt/poses/CPosePDF.h>
+#include <mrpt/poses/CPose3DPDF.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/math/math_frwds.h>
 
@@ -36,67 +38,67 @@ namespace mrpt
         {
         protected:
 			// Only ONE of these can be not-NULL at a time.
-            CPosePDF*   m_pdf2D;        //!< A local copy of the PDF
-            CPose3DPDF* m_pdf3D;        //!< A local copy of the PDF
+			CPosePDF*   m_pdf2D;        //!< A local copy of the PDF
+			CPose3DPDF* m_pdf3D;        //!< A local copy of the PDF
 
-            mrpt::math::CMatrixDouble33 m_fastdraw_gauss_Z3;
-            mrpt::math::CMatrixDouble66 m_fastdraw_gauss_Z6;
-            CPose2D         m_fastdraw_gauss_M_2D;
-            CPose3D         m_fastdraw_gauss_M_3D;
+			mrpt::math::CMatrixDouble33 m_fastdraw_gauss_Z3;
+			mrpt::math::CMatrixDouble66 m_fastdraw_gauss_Z6;
+			CPose2D         m_fastdraw_gauss_M_2D;
+			CPose3D         m_fastdraw_gauss_M_3D;
 
-            void clear(); //!< Clear internal pdf
+			void clear(); //!< Clear internal pdf
 
 			void do_sample_2D( CPose2D &p ) const;	//!< Used internally: sample from m_pdf2D
 			void do_sample_3D( CPose3D &p ) const;	//!< Used internally: sample from m_pdf3D
 
         public:
-            /** Default constructor */
-            CPoseRandomSampler();
+			/** Default constructor */
+			CPoseRandomSampler();
 
-            /** Destructor */
-            ~CPoseRandomSampler();
+			/** Destructor */
+			~CPoseRandomSampler();
 
-            /** This method must be called to select the PDF from which to draw samples.
-              * \sa drawSample
-              */
-            void setPosePDF( const CPosePDF *pdf );
+			/** This method must be called to select the PDF from which to draw samples.
+			  * \sa drawSample
+			  */
+			void setPosePDF( const CPosePDF *pdf );
 
-            /** This method must be called to select the PDF from which to draw samples.
-              * \sa drawSample
-              */
-            void setPosePDF( const CPosePDFPtr &pdf );
+			/** This method must be called to select the PDF from which to draw samples.
+			  * \sa drawSample
+			  */
+			void setPosePDF( const CPosePDF::Ptr &pdf );
 
-            /** This method must be called to select the PDF from which to draw samples.
-              * \sa drawSample
-              */
-            void setPosePDF( const CPosePDF &pdf ) { setPosePDF(&pdf); }
+			/** This method must be called to select the PDF from which to draw samples.
+			  * \sa drawSample
+			  */
+			void setPosePDF( const CPosePDF &pdf ) { setPosePDF(&pdf); }
 
-            /** This method must be called to select the PDF from which to draw samples.
-              * \sa drawSample
-              */
-            void setPosePDF( const CPose3DPDF *pdf );
+			/** This method must be called to select the PDF from which to draw samples.
+			  * \sa drawSample
+			  */
+			void setPosePDF( const CPose3DPDF *pdf );
 
-            /** This method must be called to select the PDF from which to draw samples.
-              * \sa drawSample
-              */
-            void setPosePDF( const CPose3DPDFPtr &pdf );
+			/** This method must be called to select the PDF from which to draw samples.
+			  * \sa drawSample
+			  */
+			void setPosePDF( const CPose3DPDF::Ptr &pdf );
 
-            /** This method must be called to select the PDF from which to draw samples.
-              * \sa drawSample
-              */
-            void setPosePDF( const CPose3DPDF &pdf ) { setPosePDF(&pdf); }
+			/** This method must be called to select the PDF from which to draw samples.
+			  * \sa drawSample
+			  */
+			void setPosePDF( const CPose3DPDF &pdf ) { setPosePDF(&pdf); }
 
-            /** Generate a new sample from the selected PDF.
-              * \return A reference to the same object passed as argument.
-              * \sa setPosePDF
-              */
-            CPose2D & drawSample( CPose2D &p ) const;
+			/** Generate a new sample from the selected PDF.
+			  * \return A reference to the same object passed as argument.
+			  * \sa setPosePDF
+			  */
+			CPose2D & drawSample( CPose2D &p ) const;
 
-            /** Generate a new sample from the selected PDF.
-              * \return A reference to the same object passed as argument.
-              * \sa setPosePDF
-              */
-            CPose3D & drawSample( CPose3D &p ) const;
+			/** Generate a new sample from the selected PDF.
+			  * \return A reference to the same object passed as argument.
+			  * \sa setPosePDF
+			  */
+			CPose3D & drawSample( CPose3D &p ) const;
 
 			/** Return true if samples can be generated, which only requires a previous call to setPosePDF */
 			bool isPrepared() const;

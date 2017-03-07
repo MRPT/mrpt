@@ -55,7 +55,7 @@ namespace slam
 			) = 0;
 
 		/** Returns a copy of the current best pose estimation as a pose PDF. */
-		virtual mrpt::poses::CPose3DPDFPtr  getCurrentPoseEstimation() const = 0;
+		virtual mrpt::poses::CPose3DPDF::Ptr  getCurrentPoseEstimation() const = 0;
 
 		/** Process a new action and observations pair to update this map: See the description of the class at the top of this page to see a more complete description.
 		 *  \param action The estimation of the incremental pose change in the robot pose.

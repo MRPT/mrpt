@@ -124,7 +124,7 @@ void TestICP()
      */
 	CPose2D		initialPose(0.8f,0.0f,(float)DEG2RAD(0.0f));
 
-	CPosePDFPtr pdf = ICP.Align(
+	CPosePDF::Ptr pdf = ICP.Align(
 		&m1,
 		&m2,
 		initialPose,

@@ -88,18 +88,18 @@ void CHMTSLAM::thread_LSLAM()
 					randomGenerator.randomize(obj->m_options.random_seed);
 
 				// Get the next object from the queue:
-				CSerializablePtr nextObject = obj->getNextObjectFromInputQueue();
+				CSerializable::Ptr nextObject = obj->getNextObjectFromInputQueue();
 				ASSERT_(nextObject);
 
 				// Clasify the new object:
-				CActionCollectionPtr	actions;
-				CSensoryFramePtr		observations;
+				CActionCollection::Ptr	actions;
+				CSensoryFrame::Ptr		observations;
 
 				if (nextObject->GetRuntimeClass() == CLASS_ID(CActionCollection) )
-						actions = CActionCollectionPtr( nextObject );
+						actions = std::dynamic_pointer_cast<CActionCollection>( nextObject );
 				else
 				if (nextObject->GetRuntimeClass() == CLASS_ID(CSensoryFrame) )
-						observations = CSensoryFramePtr( nextObject );
+						observations = std::dynamic_pointer_cast<CSensoryFrame>( nextObject );
 				else	THROW_EXCEPTION("Element in the queue is neither CActionCollection nor CSensoryFrame!!");
 
 
@@ -136,7 +136,7 @@ void CHMTSLAM::thread_LSLAM()
 							tictac.Tic();
 
 							unsigned nPosesToInsert = it->second.m_posesPendingAddPartitioner.size();
-							TMessageLSLAMfromAAPtr msgFromAA = CHMTSLAM::areaAbstraction( &it->second, it->second.m_posesPendingAddPartitioner );
+							TMessageLSLAMfromAA::Ptr msgFromAA = CHMTSLAM::areaAbstraction( &it->second, it->second.m_posesPendingAddPartitioner );
 
 							obj->logFmt(mrpt::utils::LVL_DEBUG,"[AreaAbstraction] Took %.03fms to insert %u new poses.               AA\n", 1000*tictac.Tac(), nPosesToInsert );
 
@@ -166,7 +166,7 @@ void CHMTSLAM::thread_LSLAM()
 								if (obj->m_options.random_seed)
 									randomGenerator.randomize(obj->m_options.random_seed);
 
-								TMessageLSLAMfromTBIPtr msgFromTBI = CHMTSLAM::TBI_main_method(
+								TMessageLSLAMfromTBI::Ptr msgFromTBI = CHMTSLAM::TBI_main_method(
 									&it->second,
 									*areaID );
 
@@ -434,17 +434,17 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 				// Create new area in the H-MAP:
 				CCriticalSectionLocker  locker( &m_map_cs );
 
-				CHMHMapNodePtr newArea = CHMHMapNode::Create( &m_map );
+				CHMHMapNode::Ptr newArea = CHMHMapNode::Create( &m_map );
 
 				// For now, the area exists in this hypothesis only:
 				newArea->m_hypotheses.insert( LMH->m_ID );
 				newArea->m_nodeType.setType( "Area" );
 				newArea->m_label = generateUniqueAreaLabel();
 
-				CMultiMetricMapPtr emptyMap = CMultiMetricMapPtr( new CMultiMetricMap(&m_options.defaultMapsInitializers) );
+				CMultiMetricMap::Ptr emptyMap = CMultiMetricMap::Ptr( new CMultiMetricMap(&m_options.defaultMapsInitializers) );
 				newArea->m_annotations.setMemoryReference( NODE_ANNOTATION_METRIC_MAPS,     emptyMap, 		LMH->m_ID );
 
-				CRobotPosesGraphPtr emptyPoseGraph = CRobotPosesGraph::Create();
+				CRobotPosesGraph::Ptr emptyPoseGraph = CRobotPosesGraph::Create();
 				newArea->m_annotations.setMemoryReference( NODE_ANNOTATION_POSES_GRAPH, emptyPoseGraph, LMH->m_ID );
 
 				// Set ID in list:
@@ -542,7 +542,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 
 				// A node has dissappeared:
 				// Delete the node from the HMT map:
-				CHMHMapNodePtr node = m_map.getNodeByID( *pBef );
+				CHMHMapNode::Ptr node = m_map.getNodeByID( *pBef );
 
 				if (!node)
 				{
@@ -559,12 +559,12 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 					node->getArcs( arcs );
 
 					// 1) First, make a list of nodes WITHIN the LMH with arcs to "a":
-					typedef map<CHMHMapNodePtr,CHMHMapArcPtr> TListNodesArcs;
+					typedef map<CHMHMapNode::Ptr,CHMHMapArc::Ptr> TListNodesArcs;
 					TListNodesArcs	lstWithinLMH;
 
 					for (TArcList::const_iterator a=arcs.begin();a!=arcs.end();++a)
 					{
-						CHMHMapNodePtr nodeB;
+						CHMHMapNode::Ptr nodeB;
 
 						if ( (*a)->getNodeFrom() == *pBef )
 						{ // node to delete is: "from"
@@ -586,10 +586,10 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 					// 2) Now, process:
 					for (TArcList::const_iterator a=arcs.begin();a!=arcs.end();++a)
 					{
-						CHMHMapNodePtr nodeB;
+						CHMHMapNode::Ptr nodeB;
 						bool         dirA2B;
 
-						CHMHMapArcPtr arc = *a;
+						CHMHMapArc::Ptr arc = *a;
 
 						if ( arc->getNodeFrom() == *pBef )
 						{ // node to delete is: "from"
@@ -619,8 +619,8 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 							// --------------------------------------------------------------
 							for (TListNodesArcs::iterator na=lstWithinLMH.begin();na!=lstWithinLMH.end();++na)
 							{
-								CHMHMapNodePtr node_c  = na->first;
-								const CHMHMapArcPtr arc_c_a = na->second;
+								CHMHMapNode::Ptr node_c  = na->first;
+								const CHMHMapArc::Ptr arc_c_a = na->second;
 
 								// Now we have the arc "arc" from "node"<->"nodeB" in the direction "dirA2B", which will be deleted next.
 								// The arc "a<->c", being "node_c" a node within the LMH, is in "arc_c_a".
@@ -637,7 +637,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 								CPose3DPDFGaussian Delta_b_a;
 								TPoseID  refPoseAt_b;
 								{
-									CPose3DPDFGaussianPtr pdf  = arc->m_annotations.getAs<CPose3DPDFGaussian>( ARC_ANNOTATION_DELTA, LMH->m_ID, false );
+									CPose3DPDFGaussian::Ptr pdf  = arc->m_annotations.getAs<CPose3DPDFGaussian>( ARC_ANNOTATION_DELTA, LMH->m_ID, false );
 									TPoseID  refPoseAt_a;
 									if (!dirA2B)
 									{
@@ -669,7 +669,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 								CPose3DPDFGaussian	Delta_a_c;
 								TPoseID  refPoseAt_c;
 								{
-									CPose3DPDFGaussianPtr pdf = arc_c_a->m_annotations.getAs<CPose3DPDFGaussian>( ARC_ANNOTATION_DELTA, LMH->m_ID, false );
+									CPose3DPDFGaussian::Ptr pdf = arc_c_a->m_annotations.getAs<CPose3DPDFGaussian>( ARC_ANNOTATION_DELTA, LMH->m_ID, false );
 									TPoseID  refPoseAt_a;
 									if ( arc_c_a->getNodeTo()==node_c->getID() )
 									{
@@ -711,7 +711,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 								// ------------------------------------------------
 								// Did an arc already exist? Look into existing arcs, in both directions:
 								bool		 arcDeltaIsInverted;
-								CHMHMapArcPtr newArc = m_map.findArcOfTypeBetweenNodes(
+								CHMHMapArc::Ptr newArc = m_map.findArcOfTypeBetweenNodes(
 									nodeB->getID(),  // Source
 									node_c->getID(),		// Target
 									LMH->m_ID,	// Hypos
@@ -733,7 +733,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 
 								if (!arcDeltaIsInverted)
 								{  // arc: b->c
-									newArc->m_annotations.set(ARC_ANNOTATION_DELTA, CPose3DPDFGaussianPtr( new CPose3DPDFGaussian(Delta_b_c) ),LMH->m_ID );
+									newArc->m_annotations.set(ARC_ANNOTATION_DELTA, CPose3DPDFGaussian::Ptr( new CPose3DPDFGaussian(Delta_b_c) ),LMH->m_ID );
 									MRPT_LOG_DEBUG_STREAM << "[LSLAM_proc_msg_AA] Setting arc " << nodeB->getID() << " -> " << node_c->getID() << " : " << Delta_b_c.mean << " cov = " << Delta_b_c.cov.inMatlabFormat() << endl;
 									newArc->m_annotations.setElemental(ARC_ANNOTATION_DELTA_SRC_POSEID, refPoseAt_b ,LMH->m_ID );
 									newArc->m_annotations.setElemental(ARC_ANNOTATION_DELTA_TRG_POSEID, refPoseAt_c ,LMH->m_ID );
@@ -744,7 +744,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 									Delta_b_c.inverse( Delta_b_c_inv );
 
 									MRPT_LOG_DEBUG_STREAM << "[LSLAM_proc_msg_AA] Setting arc " << nodeB->getID() << " <- " << node_c->getID() << " : " << Delta_b_c_inv.mean << " cov = " << Delta_b_c_inv.cov.inMatlabFormat() << endl;
-									newArc->m_annotations.set(ARC_ANNOTATION_DELTA,CPose3DPDFGaussianPtr( new CPose3DPDFGaussian(Delta_b_c_inv)),LMH->m_ID );
+									newArc->m_annotations.set(ARC_ANNOTATION_DELTA,CPose3DPDFGaussian::Ptr( new CPose3DPDFGaussian(Delta_b_c_inv)),LMH->m_ID );
 									newArc->m_annotations.setElemental(ARC_ANNOTATION_DELTA_SRC_POSEID, refPoseAt_c ,LMH->m_ID );
 									newArc->m_annotations.setElemental(ARC_ANNOTATION_DELTA_TRG_POSEID, refPoseAt_b ,LMH->m_ID );
 								}
@@ -827,7 +827,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 				// Get the area for this partition from the graph:
 				// ------------------------------------------------------
 				CHMHMapNode::TNodeID area_a_ID = partIdx2Areas[idx_area_a];
-				CHMHMapNodePtr area_a =  m_map.getNodeByID(area_a_ID);
+				CHMHMapNode::Ptr area_a =  m_map.getNodeByID(area_a_ID);
 				ASSERT_(area_a);
 
 				// Look for the closest area & it's reference pose:
@@ -885,7 +885,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 						area_a->getArcs( arcs );
 						for (TArcList::const_iterator a=arcs.begin();a!=arcs.end();++a)
 						{
-							CHMHMapArcPtr theArc = *a;
+							CHMHMapArc::Ptr theArc = *a;
 							CHMHMapNode::TNodeID nodeFrom = theArc->getNodeFrom();
 							CHMHMapNode::TNodeID nodeTo   = theArc->getNodeTo();
 
@@ -908,7 +908,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 									Anew_old.copyFrom( Anew_old_parts );
 
 									CPose3DPDFGaussian		newDelta;
-									CPose3DPDFGaussianPtr	oldDelta = theArc->m_annotations.getAs<CPose3DPDFGaussian>(ARC_ANNOTATION_DELTA,LMH->m_ID, false );
+									CPose3DPDFGaussian::Ptr	oldDelta = theArc->m_annotations.getAs<CPose3DPDFGaussian>(ARC_ANNOTATION_DELTA,LMH->m_ID, false );
 
 									newDelta = Anew_old + *oldDelta;
 									newDelta.cov.zeros();    // *********** DEBUG !!!!!!!!!!!
@@ -918,7 +918,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 									MRPT_LOG_DEBUG_STREAM<< "[LSLAM_proc_msg_AA] Updating arc " << nodeFrom << " -> " << nodeTo << " OLD: " << oldDelta->mean << " cov = " << oldDelta->cov.inMatlabFormat() << endl;
 									MRPT_LOG_DEBUG_STREAM<< "[LSLAM_proc_msg_AA] Updating arc " << nodeFrom << " -> " << nodeTo << " NEW: " << newDelta.mean << " cov = " << newDelta.cov.inMatlabFormat() << endl;
 
-									theArc->m_annotations.set(ARC_ANNOTATION_DELTA, CPose3DPDFGaussianPtr( new CPose3DPDFGaussian(newDelta)),LMH->m_ID );
+									theArc->m_annotations.set(ARC_ANNOTATION_DELTA, CPose3DPDFGaussian::Ptr( new CPose3DPDFGaussian(newDelta)),LMH->m_ID );
 									theArc->m_annotations.setElemental(ARC_ANNOTATION_DELTA_SRC_POSEID, poseID_trg ,LMH->m_ID );
 								}
 							}
@@ -934,7 +934,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 									CPose3DPDFGaussian Aold_new;
 									Aold_new.copyFrom( Aold_new_parts );
 
-									CPose3DPDFGaussianPtr oldDelta = theArc->m_annotations.getAs<CPose3DPDFGaussian>(ARC_ANNOTATION_DELTA,LMH->m_ID, false );
+									CPose3DPDFGaussian::Ptr oldDelta = theArc->m_annotations.getAs<CPose3DPDFGaussian>(ARC_ANNOTATION_DELTA,LMH->m_ID, false );
 									CPose3DPDFGaussian		newDelta;
 
 									newDelta = *oldDelta + Aold_new;
@@ -946,7 +946,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 									MRPT_LOG_DEBUG_STREAM<< "[LSLAM_proc_msg_AA] Updating arc " << nodeFrom << " <- " << nodeTo << " OLD: " << oldDelta->mean << " cov = " << oldDelta->cov.inMatlabFormat() << endl;
 									MRPT_LOG_DEBUG_STREAM<< "[LSLAM_proc_msg_AA] Updating arc " << nodeFrom << " <- " << nodeTo << " NEW: " << newDelta.mean << " cov = " << newDelta.cov.inMatlabFormat() << endl;
 
-									theArc->m_annotations.set(ARC_ANNOTATION_DELTA,CPose3DPDFGaussianPtr(new CPose3DPDFGaussian(newDelta)),LMH->m_ID );
+									theArc->m_annotations.set(ARC_ANNOTATION_DELTA,CPose3DPDFGaussian::Ptr(new CPose3DPDFGaussian(newDelta)),LMH->m_ID );
 									theArc->m_annotations.setElemental(ARC_ANNOTATION_DELTA_TRG_POSEID, poseID_trg ,LMH->m_ID );
 								}
 							}
@@ -987,7 +987,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 					CHMHMapNode::TNodeID   area_b_ID = partIdx2Areas[idx_area_b];
 					if ( closestDistPoseSrc< 5*m_options.SLAM_MIN_DIST_BETWEEN_OBS )
 					{
-						CHMHMapNodePtr area_b = m_map.getNodeByID( area_b_ID );
+						CHMHMapNode::Ptr area_b = m_map.getNodeByID( area_b_ID );
 						ASSERT_(area_b);
 
 						TPoseID 	poseID_src = POSEID_INVALID;
@@ -1105,7 +1105,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 				// Did an arc already exist?
 				// Look into existing arcs, in both directions:
 				bool		 arcDeltaIsInverted;
-				CHMHMapArcPtr newArc = m_map.findArcOfTypeBetweenNodes(
+				CHMHMapArc::Ptr newArc = m_map.findArcOfTypeBetweenNodes(
 					area_a_ID,
 					area_b_ID,
 					LMH->m_ID,
@@ -1129,7 +1129,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 				if (!arcDeltaIsInverted)
 				{
 					MRPT_LOG_DEBUG_STREAM<< "[LSLAM_proc_msg_AA] Updating int. arc " << area_a_ID << " -> " << area_b_ID << " : " << relPoseGauss.mean << " cov = " << relPoseGauss.cov.inMatlabFormat() << endl;
-					newArc->m_annotations.set(ARC_ANNOTATION_DELTA, CPose3DPDFGaussianPtr(new CPose3DPDFGaussian(relPoseGauss)),LMH->m_ID );
+					newArc->m_annotations.set(ARC_ANNOTATION_DELTA, CPose3DPDFGaussian::Ptr(new CPose3DPDFGaussian(relPoseGauss)),LMH->m_ID );
 					newArc->m_annotations.setElemental(ARC_ANNOTATION_DELTA_SRC_POSEID, area_a_poseID_src ,LMH->m_ID );
 					newArc->m_annotations.setElemental(ARC_ANNOTATION_DELTA_TRG_POSEID, area_b_poseID_trg ,LMH->m_ID );
 				}
@@ -1139,7 +1139,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 					relPoseGauss.inverse(relPoseInv);
 
 					MRPT_LOG_DEBUG_STREAM<< "[LSLAM_proc_msg_AA] Updating int. arc " << area_a_ID << " <- " << area_b_ID << " : " << relPoseInv.mean << " cov = " << relPoseInv.cov.inMatlabFormat() << endl;
-					newArc->m_annotations.set(ARC_ANNOTATION_DELTA,CPose3DPDFGaussianPtr( new CPose3DPDFGaussian(relPoseInv)),LMH->m_ID );
+					newArc->m_annotations.set(ARC_ANNOTATION_DELTA,CPose3DPDFGaussian::Ptr( new CPose3DPDFGaussian(relPoseInv)),LMH->m_ID );
 
 					newArc->m_annotations.setElemental(ARC_ANNOTATION_DELTA_SRC_POSEID, area_b_poseID_trg,LMH->m_ID );
 					newArc->m_annotations.setElemental(ARC_ANNOTATION_DELTA_TRG_POSEID, area_a_poseID_src,LMH->m_ID );
@@ -1162,7 +1162,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 				const CHMHMapNode::TNodeID nodeFromID = *pNei;
 
 				// Follow all arcs of this node:
-				CHMHMapNodePtr nodeFrom=m_map.getNodeByID(nodeFromID);
+				CHMHMapNode::Ptr nodeFrom=m_map.getNodeByID(nodeFromID);
 				ASSERT_(nodeFrom);
 				TArcList lstArcs;
 				nodeFrom->getArcs( lstArcs, "RelativePose", LMH->m_ID );
@@ -1175,7 +1175,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 
 					if (LMH->m_neighbors.find( nodeToID )!=LMH->m_neighbors.end())
 					{
-						CHMHMapArcPtr arc = *a;
+						CHMHMapArc::Ptr arc = *a;
 
 						// Do exist a corresponding entry in "lstAlreadyUpdated"?
 						if ( lstInternalArcsToCreate.end() == lstInternalArcsToCreate.find(TPairNodeIDs( nodeFromID,nodeToID )) &&
@@ -1253,7 +1253,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 		//  Recompose LMH by bringing in all areas with an arc to the
 		//   current area:
 		// -------------------------------------------------------------
-		CHMHMapNodePtr currentArea;
+		CHMHMapNode::Ptr currentArea;
 		{
 			CCriticalSectionLocker  locker( &m_map_cs );
 
@@ -1267,7 +1267,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 			currentArea->getArcs(arcsToCurArea,"RelativePose",LMH->m_ID);
 			for (TArcList::iterator a=arcsToCurArea.begin();a!=arcsToCurArea.end();++a)
 			{
-				const CHMHMapArcPtr arc = (*a);
+				const CHMHMapArc::Ptr arc = (*a);
 				const CHMHMapNode::TNodeID otherAreaID = arc->getNodeFrom()==curAreaID ? arc->getNodeTo():arc->getNodeFrom();
 
 				// If otherArea is out of the LMH, we must bring it in!
@@ -1275,15 +1275,15 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 				{
 					logFmt(mrpt::utils::LVL_INFO,"[LSLAM_proc_msg_AA] Bringing in LMH area %i\n",(int)otherAreaID );
 
-					CHMHMapNodePtr area = m_map.getNodeByID( otherAreaID );
+					CHMHMapNode::Ptr area = m_map.getNodeByID( otherAreaID );
 					ASSERT_(area);
 
-					CRobotPosesGraphPtr pg = area->m_annotations.getAs<CRobotPosesGraph>( NODE_ANNOTATION_POSES_GRAPH, LMH->m_ID, false );
+					CRobotPosesGraph::Ptr pg = area->m_annotations.getAs<CRobotPosesGraph>( NODE_ANNOTATION_POSES_GRAPH, LMH->m_ID, false );
 
 					// Find the coordinate transformation between areas "currentArea"->"area" = Delta_c2a
 					CPose3D	Delta_c2a;		// We are just interested in the mean
 					{
-						CPose3DPDFGaussianPtr pdf = arc->m_annotations.getAs<CPose3DPDFGaussian>( ARC_ANNOTATION_DELTA, LMH->m_ID, false );
+						CPose3DPDFGaussian::Ptr pdf = arc->m_annotations.getAs<CPose3DPDFGaussian>( ARC_ANNOTATION_DELTA, LMH->m_ID, false );
 
 						pdf->getMean( Delta_c2a );
 					}
@@ -1385,13 +1385,13 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 		{
 			COpenGLScene	sceneLSLAM;
 			// Generate the metric maps 3D view...
-			opengl::CSetOfObjectsPtr maps3D = opengl::CSetOfObjects::Create();
+			opengl::CSetOfObjects::Ptr maps3D = opengl::CSetOfObjects::Create();
 			maps3D->setName( "metric-maps" );
 			LMH->getMostLikelyParticle()->d->metricMaps.getAs3DObject( maps3D );
 			sceneLSLAM.insert( maps3D );
 
 			// ...and the robot poses, areas, etc:
-			opengl::CSetOfObjectsPtr LSLAM_3D = opengl::CSetOfObjects::Create();
+			opengl::CSetOfObjects::Ptr LSLAM_3D = opengl::CSetOfObjects::Create();
 			LSLAM_3D->setName("LSLAM_3D");
 			LMH->getAs3DScene( LSLAM_3D );
 			sceneLSLAM.insert( LSLAM_3D );

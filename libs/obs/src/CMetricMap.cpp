@@ -47,8 +47,8 @@ the "poses::CPosePDF" in the CSensFrameProbSequence object.
   ---------------------------------------------------------------*/
 void  CMetricMap::loadFromProbabilisticPosesAndObservations(const mrpt::maps::CSimpleMap &sfSeq )
 {
-	CPose3DPDFPtr		posePDF;
-	CSensoryFramePtr	sf;
+	CPose3DPDF::Ptr		posePDF;
+	CSensoryFrame::Ptr	sf;
 	const size_t n = sfSeq.size();
 
 	// Erase previous contents:
@@ -116,7 +116,7 @@ bool CMetricMap::insertObservation(
 }
 
 bool CMetricMap::insertObservationPtr(
-	const CObservationPtr &obs,
+	const CObservation::Ptr &obs,
 	const CPose3D *robotPose)
 {
 	MRPT_START
@@ -125,7 +125,7 @@ bool CMetricMap::insertObservationPtr(
 	MRPT_END
 }
 
-bool CMetricMap::canComputeObservationLikelihood( const CObservationPtr &obs ) const {
+bool CMetricMap::canComputeObservationLikelihood( const CObservation::Ptr &obs ) const {
 	return canComputeObservationLikelihood(obs.get());
 }
 

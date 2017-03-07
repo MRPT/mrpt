@@ -34,7 +34,7 @@ void TestSLERP()
 {
 	CDisplayWindow3D	win("Example of SLERP animation",640,480);
 
-	COpenGLScenePtr &theScene = win.get3DSceneAndLock();
+	COpenGLScene::Ptr &theScene = win.get3DSceneAndLock();
 
 	win.setCameraAzimuthDeg(-50);
 	win.setCameraElevationDeg(40);
@@ -44,7 +44,7 @@ void TestSLERP()
 	// Modify the scene:
 	// ------------------------------------------------------
 	{
-		opengl::CGridPlaneXYPtr obj = opengl::CGridPlaneXY::Create(-20,20,-20,20,0,1);
+		opengl::CGridPlaneXY::Ptr obj = opengl::CGridPlaneXY::Create(-20,20,-20,20,0,1);
 		obj->setColor(0.4,0.4,0.4);
 		theScene->insert( obj);
 	}
@@ -55,19 +55,19 @@ void TestSLERP()
 
 	{
 		// XYZ corner at A:
-		opengl::CSetOfObjectsPtr obj = opengl::stock_objects::CornerXYZSimple(1.0, 2.0);
+		opengl::CSetOfObjects::Ptr obj = opengl::stock_objects::CornerXYZSimple(1.0, 2.0);
 		obj->setPose(pose_a);
 		theScene->insert(obj);
 	}
 	{
 		// XYZ corner at B:
-		opengl::CSetOfObjectsPtr obj = opengl::stock_objects::CornerXYZSimple(1.0, 2.0);
+		opengl::CSetOfObjects::Ptr obj = opengl::stock_objects::CornerXYZSimple(1.0, 2.0);
 		obj->setPose(pose_b);
 		theScene->insert(obj);
 	}
 	{
 		// SLERP animated corner:
-		opengl::CSetOfObjectsPtr obj = opengl::stock_objects::CornerXYZSimple(1.0, 4.0);
+		opengl::CSetOfObjects::Ptr obj = opengl::stock_objects::CornerXYZSimple(1.0, 4.0);
 		obj->setName("slerp_obj");
 		obj->setPose(pose_a);
 		theScene->insert(obj);
@@ -96,9 +96,9 @@ void TestSLERP()
 		mrpt::math::slerp(pose_a,pose_b,t,pose_interp);
 
 		// Move the scene:
-		COpenGLScenePtr &theScene = win.get3DSceneAndLock();
+		COpenGLScene::Ptr &theScene = win.get3DSceneAndLock();
 
-		opengl::CRenderizablePtr obj1 = theScene->getByName("slerp_obj");
+		opengl::CRenderizable::Ptr obj1 = theScene->getByName("slerp_obj");
 		obj1->setPose(pose_interp);
 
 

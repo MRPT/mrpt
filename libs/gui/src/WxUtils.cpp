@@ -277,9 +277,9 @@ mrpt::utils::CImage * mrpt::gui::wxImage2MRPTImage( const wxImage &img )
 //------------------------------------------------------------------------
 // Convert wxImage -> MRPTImagePtr
 //------------------------------------------------------------------------
-mrpt::utils::CImagePtr mrpt::gui::wxImage2MRPTImagePtr( const wxImage &img )
+mrpt::utils::CImage::Ptr mrpt::gui::wxImage2MRPTImagePtr( const wxImage &img )
 {
-	return mrpt::utils::CImagePtr(wxImage2MRPTImage(img));
+	return mrpt::utils::CImage::Ptr(wxImage2MRPTImage(img));
 }
 
 

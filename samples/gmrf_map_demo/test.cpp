@@ -52,15 +52,15 @@ void Example_GMRF()
 		RESOLUTION /* resolution */
 		);
 
-	mrpt::maps::CGasConcentrationGridMap2D::ConnectivityDescriptorPtr conn =
-		mrpt::maps::CGasConcentrationGridMap2D::ConnectivityDescriptorPtr(
+	mrpt::maps::CGasConcentrationGridMap2D::ConnectivityDescriptor::Ptr conn =
+		mrpt::maps::CGasConcentrationGridMap2D::ConnectivityDescriptor::Ptr(
 			new MyConnectivityVisitor
 		);
 	gasmap.setMinLoggingLevel(mrpt::utils::LVL_DEBUG);
 	gasmap.setCellsConnectivity(conn);
 	gasmap.clear(); // for the connectivity to be taken into account.
 
-	mrpt::opengl::CPointCloudPtr gl_data = mrpt::opengl::CPointCloud::Create();
+	mrpt::opengl::CPointCloud::Ptr gl_data = mrpt::opengl::CPointCloud::Create();
 	gl_data->setPointSize(3.0f);
 
 	for (int i=0;i<20;i++)
@@ -79,12 +79,12 @@ void Example_GMRF()
 	gasmap.updateMapEstimation();
 
 	// 3D view:
-	mrpt::opengl::CSetOfObjectsPtr glObj = mrpt::opengl::CSetOfObjects::Create();
+	mrpt::opengl::CSetOfObjects::Ptr glObj = mrpt::opengl::CSetOfObjects::Create();
 	gasmap.getAs3DObject( glObj );
 
 	mrpt::gui::CDisplayWindow3D win("Map",640,480);
 
-	mrpt::opengl::COpenGLScenePtr &scene = win.get3DSceneAndLock();
+	mrpt::opengl::COpenGLScene::Ptr &scene = win.get3DSceneAndLock();
 	scene->insert(mrpt::opengl::stock_objects::CornerXYZSimple(1.0f, 4.0f) );
 	scene->insert(gl_data);
 	scene->insert( glObj );

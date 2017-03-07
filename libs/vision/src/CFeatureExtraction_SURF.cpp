@@ -100,7 +100,7 @@ void  CFeatureExtraction::extractFeaturesSURF(
 	for(size_t i = 0; i < n_feats; i++ )
 	{
 		// Get the OpenCV SURF point
-		CFeaturePtr ft = CFeature::Create();
+		CFeature::Ptr ft = CFeature::Create();
 		const KeyPoint &point = cv_feats[i];
 
 		const int xBorderInf = (int)floor( point.pt.x - options.patchSize/2 );
@@ -210,7 +210,7 @@ void  CFeatureExtraction::internal_computeSurfDescriptors(
 	for (i=0, itList=in_features.begin();itList!=in_features.end();itList++,i++)
 	{
 		// Get the OpenCV SURF point
-		CFeaturePtr ft = *itList;
+		CFeature::Ptr ft = *itList;
 		const KeyPoint &point = cv_feats[i];
 
 		ft->orientation = point.angle;				// Orientation

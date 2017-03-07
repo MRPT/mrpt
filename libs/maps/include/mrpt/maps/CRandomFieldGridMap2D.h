@@ -241,6 +241,7 @@ namespace maps
 		/** Base class for user-supplied objects capable of describing cells connectivity, used to build prior factors of the MRF graph. \sa setCellsConnectivity() */
 		struct MAPS_IMPEXP ConnectivityDescriptor
 		{
+			using Ptr = std::shared_ptr<ConnectivityDescriptor>;
 			ConnectivityDescriptor();
 			virtual ~ConnectivityDescriptor();
 			
@@ -255,10 +256,9 @@ namespace maps
 				double &out_edge_information          //!< Must output here the inverse of the variance of the constraint edge.
 			) = 0;
 		};
-		typedef std::shared_ptr<ConnectivityDescriptor> ConnectivityDescriptorPtr;
 
 		/** Sets a custom object to define the connectivity between cells. Must call clear() or setSize() afterwards for the changes to take place. */
-		void setCellsConnectivity(const ConnectivityDescriptorPtr &new_connectivity_descriptor);
+		void setCellsConnectivity(const ConnectivityDescriptor::Ptr &new_connectivity_descriptor);
 
 		/** See docs in base class: in this class this always returns 0 */
 		float compute3DMatchingRatio(const mrpt::maps::CMetricMap *otherMap, const mrpt::poses::CPose3D &otherMapPose, const TMatchingRatioParams &params) const MRPT_OVERRIDE;
@@ -276,10 +276,10 @@ namespace maps
 		void  getAsMatlab3DGraphScript(std::string  &out_script) const;
 
 		/** Returns a 3D object representing the map (mean) */
-		virtual void getAs3DObject( mrpt::opengl::CSetOfObjectsPtr &outObj ) const MRPT_OVERRIDE;
+		virtual void getAs3DObject( mrpt::opengl::CSetOfObjects::Ptr &outObj ) const MRPT_OVERRIDE;
 
 		/** Returns two 3D objects representing the mean and variance maps */
-		virtual void  getAs3DObject ( mrpt::opengl::CSetOfObjectsPtr	&meanObj, mrpt::opengl::CSetOfObjectsPtr	&varObj ) const;
+		virtual void  getAs3DObject ( mrpt::opengl::CSetOfObjects::Ptr	&meanObj, mrpt::opengl::CSetOfObjects::Ptr	&varObj ) const;
 
 		TMapRepresentation	 getMapType(); //!< Return the type of the random-field grid map, according to parameters passed on construction.
 
@@ -356,7 +356,7 @@ namespace maps
 		size_t              m_average_normreadings_count;
 		/** @} */
 
-		ConnectivityDescriptorPtr m_gmrf_connectivity; //!< Empty: default
+		ConnectivityDescriptor::Ptr m_gmrf_connectivity; //!< Empty: default
 
 		mrpt::graphs::ScalarFactorGraph  m_gmrf;
 

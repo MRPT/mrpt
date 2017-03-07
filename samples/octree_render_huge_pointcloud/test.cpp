@@ -22,7 +22,7 @@ using namespace mrpt::utils;
 
 void insertRandomPoints_uniform(
 	const size_t N,
-	opengl::CPointCloudPtr &gl,
+	opengl::CPointCloud::Ptr &gl,
 	const TPoint3D &p_min,
 	const TPoint3D &p_max)
 {
@@ -35,7 +35,7 @@ void insertRandomPoints_uniform(
 
 void insertRandomPoints_screw(
 	const size_t N,
-	opengl::CPointCloudPtr &gl,
+	opengl::CPointCloud::Ptr &gl,
 	const TPoint3D &p_start,
 	const TPoint3D &p_end)
 {
@@ -59,7 +59,7 @@ void insertRandomPoints_screw(
 
 void insertRandomPoints_gauss(
 	const size_t N,
-	opengl::CPointCloudPtr &gl,
+	opengl::CPointCloud::Ptr &gl,
 	const TPoint3D &p_mean,
 	const TPoint3D &p_stddevs)
 {
@@ -82,10 +82,10 @@ void TestOctreeRenderHugePointCloud()
 
 	CDisplayWindow3D	win("Demo of MRPT's octree pointclouds",640,480);
 
-	COpenGLScenePtr &theScene = win.get3DSceneAndLock();
+	COpenGLScene::Ptr &theScene = win.get3DSceneAndLock();
 
 	// CPointCloud
-	opengl::CPointCloudPtr gl_pointcloud = opengl::CPointCloud::Create();
+	opengl::CPointCloud::Ptr gl_pointcloud = opengl::CPointCloud::Create();
 	theScene->insert( gl_pointcloud );
 
 	gl_pointcloud->setPointSize(3.0);
@@ -142,7 +142,7 @@ void TestOctreeRenderHugePointCloud()
 	printf("Point count: %e\n", (double)gl_pointcloud->size());
 
 	// Draw the octree bounding boxes:
-	mrpt::opengl::CSetOfObjectsPtr gl_bb = mrpt::opengl::CSetOfObjects::Create();
+	mrpt::opengl::CSetOfObjects::Ptr gl_bb = mrpt::opengl::CSetOfObjects::Create();
 	gl_pointcloud->octree_get_graphics_boundingboxes(*gl_bb);
 	theScene->insert( gl_bb );
 
@@ -150,7 +150,7 @@ void TestOctreeRenderHugePointCloud()
 
 	win.setCameraZoom(600);
 	{
-		mrpt::opengl::COpenGLViewportPtr view=theScene->getViewport("main");
+		mrpt::opengl::COpenGLViewport::Ptr view=theScene->getViewport("main");
 		view->setViewportClipDistances(0.1, 1e6);
 	}
 

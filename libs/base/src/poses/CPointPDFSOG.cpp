@@ -578,12 +578,12 @@ void CPointPDFSOG::getMostLikelyMode( CPointPDFGaussian& outVal ) const
 /*---------------------------------------------------------------
 						getAs3DObject
  ---------------------------------------------------------------*/
-//void  CPointPDFSOG::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const
+//void  CPointPDFSOG::getAs3DObject( mrpt::opengl::CSetOfObjects::Ptr	&outObj ) const
 //{
 //	// For each gaussian node
 //	for (CListGaussianModes::const_iterator it = m_modes.begin(); it!= m_modes.end();++it)
 //	{
-//		opengl::CEllipsoidPtr obj = opengl::CEllipsoid::Create();
+//		opengl::CEllipsoid::Ptr obj = opengl::CEllipsoid::Create();
 //
 //		obj->setPose( it->val.mean);
 //		obj->setCovMatrix(it->val.cov,  it->val.cov(2,2)==0  ?  2:3);

@@ -300,7 +300,7 @@ void CRandomFieldGridMap3D::updateMapEstimation()
 	}
 }
 
-void mrpt::maps::CRandomFieldGridMap3D::setVoxelsConnectivity(const ConnectivityDescriptorPtr & new_connectivity_descriptor)
+void mrpt::maps::CRandomFieldGridMap3D::setVoxelsConnectivity(const ConnectivityDescriptor::Ptr & new_connectivity_descriptor)
 {
 	m_gmrf_connectivity = new_connectivity_descriptor;
 }

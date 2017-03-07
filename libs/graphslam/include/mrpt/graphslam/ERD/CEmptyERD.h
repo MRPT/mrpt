@@ -34,9 +34,9 @@ class CEmptyERD:
 		~CEmptyERD();
 
 		bool updateState(
-				mrpt::obs::CActionCollectionPtr action,
-				mrpt::obs::CSensoryFramePtr observations,
-				mrpt::obs::CObservationPtr observation );
+				mrpt::obs::CActionCollection::Ptr action,
+				mrpt::obs::CSensoryFrame::Ptr observations,
+				mrpt::obs::CObservation::Ptr observation );
 
 	private:
 		void registerNewEdge(
@@ -54,9 +54,9 @@ CEmptyERD<GRAPH_t>::~CEmptyERD() { }
 
 template<class GRAPH_t>
 bool CEmptyERD<GRAPH_t>::updateState(
-		mrpt::obs::CActionCollectionPtr action,
-		mrpt::obs::CSensoryFramePtr observations,
-		mrpt::obs::CObservationPtr observation ) {return true;}
+		mrpt::obs::CActionCollection::Ptr action,
+		mrpt::obs::CSensoryFrame::Ptr observations,
+		mrpt::obs::CObservation::Ptr observation ) {return true;}
 
 template<class GRAPH_t>
 void CEmptyERD<GRAPH_t>::registerNewEdge(

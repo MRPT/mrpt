@@ -71,6 +71,7 @@ namespace mrpt
 			bool				m_pointSmooth; //!< Default: false
 			mutable volatile size_t	m_last_rendered_count, m_last_rendered_count_ongoing;
 
+		public:
 			/** Constructor
 			  */
 			CPointCloudColoured( ) :

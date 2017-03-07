@@ -50,7 +50,7 @@ void TestCapture_FlyCapture2()
 
 	int cnt = 0;
 
-	CObservationImagePtr obs= CObservationImage::Create();  // Memory will be freed by SF destructor in each loop.
+	CObservationImage::Ptr obs= CObservationImage::Create();  // Memory will be freed by SF destructor in each loop.
 
 	while (!mrpt::system::os::kbhit())
 	{

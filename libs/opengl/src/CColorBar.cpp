@@ -41,7 +41,7 @@ CColorBar::CColorBar(
 
 }
 
-CColorBarPtr CColorBar::Create(
+CColorBar::Ptr CColorBar::Create(
 	const mrpt::utils::TColormap colormap, //!< The colormap to represent.
 	double width, double height,   //!< size of the color bar
 	double min_col, double max_col,  //!< limits for [0,1] colormap indices
@@ -50,7 +50,7 @@ CColorBarPtr CColorBar::Create(
 	double label_font_size //!< Label text font size
 )
 {
-	return CColorBarPtr(new CColorBar(colormap,width,height,min_col,max_col, min_value, max_value, label_format, label_font_size));
+	return CColorBar::Ptr(new CColorBar(colormap,width,height,min_col,max_col, min_value, max_value, label_format, label_font_size));
 }
 
 void CColorBar::setColormap(const mrpt::utils::TColormap colormap)

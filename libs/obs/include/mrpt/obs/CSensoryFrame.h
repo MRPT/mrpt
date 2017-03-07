@@ -27,7 +27,7 @@ namespace mrpt
 		  *  New observations can be added using:
 		  *
 		  * \code
-		  * CObservationXXXPtr	o = CObservationXXX::Create();  // Create a smart pointer containing an object of class "CObservationXXX"
+		  * CObservationXXX::Ptr	o = CObservationXXX::Create();  // Create a smart pointer containing an object of class "CObservationXXX"
 		  * o->(...)
 		  *
 		  * CSensoryFrame	 sf;
@@ -69,7 +69,7 @@ namespace mrpt
 			/** A points map, build only under demand by the methods getAuxPointsMap() and buildAuxPointsMap().
 			  *  It's a generic smart pointer to avoid depending here in the library mrpt-obs on classes on other libraries.
 			  */
-			mutable mrpt::maps::CMetricMapPtr  m_cachedMap;
+			mutable mrpt::maps::CMetricMap::Ptr  m_cachedMap;
 
 			void internal_buildAuxPointsMap( const void *options = nullptr ) const;  //!< Internal method, used from buildAuxPointsMap()
 
@@ -138,7 +138,7 @@ namespace mrpt
 			  *
 			  * \sa mrpt::maps::CMetricMap, CObservation::insertObservationInto, CMetricMap::insertObservation
 			  */
-			 inline bool  insertObservationsInto( mrpt::maps::CMetricMapPtr &theMap, const mrpt::poses::CPose3D *robotPose = nullptr ) const
+			 inline bool  insertObservationsInto( mrpt::maps::CMetricMap::Ptr &theMap, const mrpt::poses::CPose3D *robotPose = nullptr ) const
 			 {
 				 return insertObservationsInto(theMap.get(), robotPose);
 			 }
@@ -152,7 +152,7 @@ namespace mrpt
 			 /** You can use "sf+=obs;" to add the observation "obs" to the "sf1". Objects are copied, using the smart pointer, thus the original pointer can be safely deleted next.
 			   * \sa moveFrom
 			  */
-			 void operator += (const CObservationPtr &obs);
+			 void operator += (const CObservation::Ptr &obs);
 
 			 /** Copies all the observation from another object, then erase them from the origin object (this method is fast since only pointers are copied); Previous objects in this objects are not deleted.
 			   * \sa operator +=
@@ -161,21 +161,21 @@ namespace mrpt
 
 			 /** Inserts a new observation to the list: The pointer to the objects is copied, thus DO NOT delete the passed object, this class will do at destructor or when appropriate.
 			   */
-			 void push_back(const CObservationPtr &obs);
+			 void push_back(const CObservation::Ptr &obs);
 
 			 /** Inserts a new observation to the list: The pointer to the objects is copied, thus DO NOT delete the passed object, this class will do at destructor or when appropriate.
 			   */
-			 void insert(const CObservationPtr &obs);
+			 void insert(const CObservation::Ptr &obs);
 
 			 /** Returns the i'th observation of a given class (or of a descendant class), or nullptr if there is no such observation in the array.
 			   *  Example:
 			   * \code
-					CObservationImagePtr obs = m_SF->getObservationByClass<CObservationImage>();
+					CObservationImage::Ptr obs = m_SF->getObservationByClass<CObservationImage>();
 			   * \endcode
 			   * By default (ith=0), the first observation is returned.
 			   */
 			 template <typename T>
-			 typename T::SmartPtr getObservationByClass( const size_t &ith = 0 ) const
+			 typename T::Ptr getObservationByClass( const size_t &ith = 0 ) const
 			 {
 				MRPT_START
 				size_t  foundCount = 0;
@@ -183,18 +183,18 @@ namespace mrpt
 				for (const_iterator it = begin();it!=end();++it)
 					if ( (*it)->GetRuntimeClass()->derivedFrom( class_ID ) )
 						if (foundCount++ == ith)
-							return typename T::SmartPtr(*it);
-				return typename T::SmartPtr();	// Not found: return empty smart pointer
+							return std::dynamic_pointer_cast<T>(*it);
+				return typename T::Ptr();	// Not found: return empty smart pointer
 				MRPT_END
 			 }
 
 			/** You can use CSensoryFrame::begin to get a iterator to the first element.
 			  */
-			typedef std::deque<CObservationPtr>::iterator		iterator;
+			typedef std::deque<CObservation::Ptr>::iterator		iterator;
 
 			/** You can use CSensoryFrame::begin to get a iterator to the first element.
 			  */
-			typedef std::deque<CObservationPtr>::const_iterator	const_iterator;
+			typedef std::deque<CObservation::Ptr>::const_iterator	const_iterator;
 
 			/** Returns a constant iterator to the first observation: this is an example of usage:
 			  * \code
@@ -269,36 +269,36 @@ namespace mrpt
 			/** Returns the i'th observation in the list (0=first).
 			  * \sa begin, size
 			  */
-			CObservationPtr getObservationByIndex( const size_t &idx ) const;
+			CObservation::Ptr getObservationByIndex( const size_t &idx ) const;
 
 			/** Returns the i'th observation in the list (0=first), and as a different smart pointer type:
 			  * \code
-			  *   sf.getObservationByIndexAs<CObservationStereoImagesPtr>(i);
+			  *   sf.getObservationByIndexAs<CObservationStereoImages::Ptr>(i);
 			  * \endcode
 			  * \sa begin, size
 			  */
 			template <typename T>
 			T getObservationByIndexAs( const size_t &idx ) const
 			{
-				return static_cast<T>(getObservationByIndex(idx));
+				return std::dynamic_pointer_cast<typename T::element_type>(getObservationByIndex(idx));
 			}
 
 			/** Returns the i'th observation in the list with the given "sensorLabel" (0=first).
 			  * \return The observation, or nullptr if not found.
 			  * \sa begin, size
 			  */
-			CObservationPtr getObservationBySensorLabel( const std::string &label, const size_t &idx = 0) const;
+			CObservation::Ptr getObservationBySensorLabel( const std::string &label, const size_t &idx = 0) const;
 
 			/** Returns the i'th observation in the list with the given "sensorLabel" (0=first), and as a different smart pointer type:
 			  * \code
-			  *   sf.getObservationBySensorLabelAs<CObservationStereoImagesPtr>(i);
+			  *   sf.getObservationBySensorLabelAs<CObservationStereoImages::Ptr>(i);
 			  * \endcode
 			  * \sa begin, size
 			  */
 			template <typename T>
 			T getObservationBySensorLabelAs( const std::string &label, const size_t &idx = 0) const
 			{
-				return T(getObservationBySensorLabel(label,idx));
+				return std::dynamic_pointer_cast<typename T::element_type>(getObservationBySensorLabel(label,idx));
 			}
 
 			/** Efficiently swaps the contents of two objects.
@@ -309,7 +309,7 @@ namespace mrpt
 			 /** The set of observations taken at the same time instant. See the top of this page for instructions on accessing this.
 			  */
 			 //std::deque<CObservation*>	m_observations;
-			std::deque<CObservationPtr>	m_observations;
+			std::deque<CObservation::Ptr>	m_observations;
 
 		}; // End of class def.
 		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CSensoryFrame, mrpt::utils::CSerializable, OBS_IMPEXP )

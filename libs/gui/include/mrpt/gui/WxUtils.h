@@ -127,7 +127,7 @@ namespace mrpt
 		/** Create a MRPT image from a wxImage. The new object is returned as a smart pointer to a CImage object.
 		  * \sa wxImage2MRPTImage
 		  */
-		mrpt::utils::CImagePtr GUI_IMPEXP wxImage2MRPTImagePtr( const wxImage &img );
+		mrpt::utils::CImage::Ptr GUI_IMPEXP wxImage2MRPTImagePtr( const wxImage &img );
 
 		/** Extracts the key modifiers from a wxKeyEvent */
 		mrptKeyModifier keyEventToMrptKeyModifier( const wxKeyEvent &ev );

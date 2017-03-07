@@ -25,7 +25,7 @@ using namespace std;
 // ------------------------------------------------------
 void TestCameraCaptureAsk()
 {
-	CCameraSensorPtr cam = prepareVideoSourceFromUserSelection();
+	CCameraSensor::Ptr cam = prepareVideoSourceFromUserSelection();
 
 	if (!cam)
 	{
@@ -45,24 +45,24 @@ void TestCameraCaptureAsk()
 		if( !counter )
 			tictac.Tic();
 
-		mrpt::obs::CObservationPtr  obs = cam->getNextFrame();
+		mrpt::obs::CObservation::Ptr  obs = cam->getNextFrame();
 		ASSERT_(obs);
 
 		CImage *img = nullptr;
 
 		if (IS_CLASS(obs,CObservationImage))
 		{
-			CObservationImagePtr o=CObservationImagePtr(obs);
+			CObservationImage::Ptr o=std::dynamic_pointer_cast<CObservationImage>(obs);
 			img = &o->image;
 		}
 		else if (IS_CLASS(obs,CObservationStereoImages))
 		{
-			CObservationStereoImagesPtr o=CObservationStereoImagesPtr(obs);
+			CObservationStereoImages::Ptr o=std::dynamic_pointer_cast<CObservationStereoImages>(obs);
 			img = &o->imageRight;
 		}
 		else if (IS_CLASS(obs,CObservation3DRangeScan))
 		{
-			CObservation3DRangeScanPtr o=CObservation3DRangeScanPtr(obs);
+			CObservation3DRangeScan::Ptr o=std::dynamic_pointer_cast<CObservation3DRangeScan>(obs);
 			if (o->hasIntensityImage)
 				img = &o->intensityImage;
 		}

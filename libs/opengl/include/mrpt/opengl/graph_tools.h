@@ -100,7 +100,7 @@ namespace mrpt
 			  * \ingroup mrpt_opengl_grp
 			  */
 			template<class GRAPH_T>
-			CSetOfObjectsPtr graph_visualize(
+			CSetOfObjects::Ptr graph_visualize(
 				const GRAPH_T &g,
 				const mrpt::utils::TParametersDouble &extra_params = mrpt::utils::TParametersDouble()
 				);

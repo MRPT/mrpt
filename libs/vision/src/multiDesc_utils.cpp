@@ -53,7 +53,7 @@ const int FEAT_FREE = -1;
 					insertHashCoeffs
 -------------------------------------------------------------*/
 void vision::insertHashCoeffs(
-                const CFeaturePtr       & feat,
+                const CFeature::Ptr       & feat,
                 TQuantizationTable      & qTable )
 {
     MRPT_START
@@ -247,7 +247,7 @@ TMultiResMatchingOutput vision::relocalizeMultiDesc(
             for( map< TFeatureID, vector<double> >::iterator nit = featsToCompareMap.begin(); nit != featsToCompareMap.end(); ++nit, ++counter )
             {
                 int baseIdx;
-                CFeaturePtr baseFeat = baseList.getByID( nit->first, baseIdx );
+                CFeature::Ptr baseFeat = baseList.getByID( nit->first, baseIdx );
 
 //                cout << int((*it)->ID) << " (" << (*it)->x << "," << (*it)->y << ")";
 //                cout << " -------------------------------------------------------------" << endl;
@@ -1337,8 +1337,8 @@ int  vision::matchMultiResolutionFeatures(
 -------------------------------------------------------------*/
 int vision::computeMoreDescriptors(
                 const CImage                        & image,
-                const CFeaturePtr                   & inputFeat,
-                CFeaturePtr                         & outputFeat,
+                const CFeature::Ptr                   & inputFeat,
+                CFeature::Ptr                         & outputFeat,
                 const bool                          & lowerScales,
                 const TMultiResDescOptions          & opts )
 {
@@ -1512,8 +1512,8 @@ int vision::computeMoreDescriptors(
 					setProperScales
 -------------------------------------------------------------*/
 void vision::setProperScales(
-                const CFeaturePtr                   & feat1,
-                const CFeaturePtr                   & feat2,
+                const CFeature::Ptr                   & feat1,
+                const CFeature::Ptr                   & feat2,
                 int                                 & firstScale,
                 int                                 & lastScale )
 {
@@ -1748,7 +1748,7 @@ void vision::computeMultiResolutionDescriptors(
 -------------------------------------------------------------*/
 bool vision::computeMultiResolutionDescriptors(
                 const CImage                        & image,
-                CFeaturePtr                         & feat,
+                CFeature::Ptr                         & feat,
                 const TMultiResDescOptions          & opts )
 {
 #if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM>=0x211

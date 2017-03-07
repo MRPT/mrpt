@@ -102,7 +102,7 @@ namespace maps
 	 * \code
 	 * mrpt::maps::CMultiMetricMap theMap;
 	 * {
-	 *  mrpt::maps::CSimplePointsMapPtr ptMap = mrpt::maps::CSimplePointsMap::Create();
+	 *  mrpt::maps::CSimplePointsMap::Ptr ptMap = mrpt::maps::CSimplePointsMap::Create();
 	 *  theMap.maps.push_back(ptMap);
 	 * }
 	 * \endcode
@@ -140,7 +140,7 @@ namespace maps
 	public:
 		/** @name Access to internal list of maps: direct list, iterators, utility methods and proxies
 		    @{ */
-		typedef std::deque< mrpt::utils::poly_ptr_ptr<mrpt::maps::CMetricMapPtr> > TListMaps;
+		typedef std::deque< mrpt::utils::poly_ptr_ptr<mrpt::maps::CMetricMap::Ptr> > TListMaps;
 
 		/** The list of MRPT metric maps in this object. Use dynamic_cast or smart pointer-based downcast to access maps by their actual type.
 		  * You can directly manipulate this list. Helper methods to initialize it are described in the docs of CMultiMetricMap 
@@ -155,25 +155,25 @@ namespace maps
 		const_iterator end() const { return maps.end(); }
 
 		/** Gets the i-th map \exception std::runtime_error On out-of-bounds */
-		mrpt::maps::CMetricMapPtr getMapByIndex(size_t idx) const;
+		mrpt::maps::CMetricMap::Ptr getMapByIndex(size_t idx) const;
 
 		/** Returns the i'th observation of a given class (or of a descendant class), or nullptr if there is no such observation in the array.
 		  *  Example:
 		  * \code
-		  *  CObservationImagePtr obs = m_SF->getObservationByClass<CObservationImage>();
+		  *  CObservationImage::Ptr obs = m_SF->getObservationByClass<CObservationImage>();
 		  * \endcode
 		  * By default (ith=0), the first observation is returned.
 		  */
 		template <typename T>
-		typename T::SmartPtr getMapByClass( const size_t &ith = 0 ) const
+		typename T::Ptr getMapByClass( const size_t &ith = 0 ) const
 		{
 			size_t  foundCount = 0;
 			const mrpt::utils::TRuntimeClassId*	class_ID = T::classinfo;
 			for (const_iterator it = begin();it!=end();++it)
 				if ( (*it)->GetRuntimeClass()->derivedFrom( class_ID ) )
 					if (foundCount++ == ith)
-						return typename T::SmartPtr(it->get_ptr());
-			return typename T::SmartPtr();	// Not found: return empty smart pointer
+						return std::dynamic_pointer_cast<T>(it->get_ptr());
+			return typename T::Ptr();	// Not found: return empty smart pointer
 		}
 
 		/** Takes a const ref of a STL non-associative container of smart pointers at construction and exposes an interface 
@@ -182,8 +182,8 @@ namespace maps
 		template <class SELECTED_CLASS_PTR, class CONTAINER>
 		struct ProxyFilterContainerByClass
 		{
-			typedef typename SELECTED_CLASS_PTR::value_type* ptr_t;
-			typedef const typename SELECTED_CLASS_PTR::value_type* const_ptr_t;
+			typedef typename SELECTED_CLASS_PTR::element_type* ptr_t;
+			typedef const typename SELECTED_CLASS_PTR::element_type* const_ptr_t;
 			ProxyFilterContainerByClass(CONTAINER &source) : m_source(&source) {}
 			ProxyFilterContainerByClass(ProxyFilterContainerByClass<SELECTED_CLASS_PTR, CONTAINER>& ) : m_source() {} // m_source init in parent copy ctor
 
@@ -204,7 +204,7 @@ namespace maps
 				size_t cnt=0;
 				for(typename CONTAINER::const_iterator it=m_source->begin();it!=m_source->end();++it)
 					if ( dynamic_cast<const_ptr_t>(it->get()) ) 
-						if (cnt++ == index) { return SELECTED_CLASS_PTR(it->get_ptr()); }
+						if (cnt++ == index) { return std::dynamic_pointer_cast<typename SELECTED_CLASS_PTR::element_type>(it->get_ptr()); }
 				throw std::out_of_range("Index is out of range");
 			}
 			template <typename ELEMENT>
@@ -218,9 +218,9 @@ namespace maps
 		template <class SELECTED_CLASS_PTR, class CONTAINER>
 		struct ProxySelectorContainerByClass
 		{
-			typedef typename SELECTED_CLASS_PTR::value_type pointee_t;
-			typedef typename SELECTED_CLASS_PTR::value_type* ptr_t;
-			typedef const typename SELECTED_CLASS_PTR::value_type* const_ptr_t;
+			typedef typename SELECTED_CLASS_PTR::element_type pointee_t;
+			typedef typename SELECTED_CLASS_PTR::element_type* ptr_t;
+			typedef const typename SELECTED_CLASS_PTR::element_type* const_ptr_t;
 			ProxySelectorContainerByClass(CONTAINER &source) : m_source(&source) {}
 			ProxySelectorContainerByClass(ProxySelectorContainerByClass<SELECTED_CLASS_PTR, CONTAINER>& ) : m_source() {} // m_source init in parent copy ctor
 			ProxySelectorContainerByClass<SELECTED_CLASS_PTR, CONTAINER>& operator=(const ProxySelectorContainerByClass<SELECTED_CLASS_PTR, CONTAINER>&o) { return *this; } // Do nothing, we must keep refs to our own parent
@@ -248,7 +248,7 @@ namespace maps
 			void internal_update_ref() const {
 				for(typename CONTAINER::const_iterator it=m_source->begin();it!=m_source->end();++it) {
 					if ( dynamic_cast<const_ptr_t>(it->get()) ) {
-						m_ret=SELECTED_CLASS_PTR(it->get_ptr());
+						m_ret = std::dynamic_pointer_cast<pointee_t>(it->get_ptr());
 						return;
 					}
 				}
@@ -257,19 +257,19 @@ namespace maps
 
 		}; // end ProxySelectorContainerByClass
 
-		ProxyFilterContainerByClass<mrpt::maps::CSimplePointsMapPtr,TListMaps>           m_pointsMaps; //!< STL-like proxy to access this kind of maps in \ref maps
-		ProxyFilterContainerByClass<mrpt::maps::COccupancyGridMap2DPtr,TListMaps>        m_gridMaps;   //!< STL-like proxy to access this kind of maps in \ref maps
-		ProxyFilterContainerByClass<mrpt::maps::COctoMapPtr,TListMaps>                   m_octoMaps;   //!< STL-like proxy to access this kind of maps in \ref maps
-		ProxyFilterContainerByClass<mrpt::maps::CColouredOctoMapPtr,TListMaps>           m_colourOctoMaps;   //!< STL-like proxy to access this kind of maps in \ref maps
-		ProxyFilterContainerByClass<mrpt::maps::CGasConcentrationGridMap2DPtr,TListMaps> m_gasGridMaps;   //!< STL-like proxy to access this kind of maps in \ref maps
-		ProxyFilterContainerByClass<mrpt::maps::CWirelessPowerGridMap2DPtr,TListMaps>    m_wifiGridMaps;   //!< STL-like proxy to access this kind of maps in \ref maps
-		ProxyFilterContainerByClass<mrpt::maps::CHeightGridMap2DPtr,TListMaps>           m_heightMaps;   //!< STL-like proxy to access this kind of maps in \ref maps
-		ProxyFilterContainerByClass<mrpt::maps::CHeightGridMap2D_MRFPtr,TListMaps>       m_heightMRFMaps;   //!< STL-like proxy to access this kind of maps in \ref maps
-		ProxyFilterContainerByClass<mrpt::maps::CReflectivityGridMap2DPtr,TListMaps>     m_reflectivityMaps;   //!< STL-like proxy to access this kind of maps in \ref maps
-		ProxySelectorContainerByClass<mrpt::maps::CColouredPointsMapPtr,TListMaps>       m_colourPointsMap; //!< Proxy that looks like a smart pointer to the first matching object in \ref maps
-		ProxySelectorContainerByClass<mrpt::maps::CWeightedPointsMapPtr,TListMaps>       m_weightedPointsMap; //!< Proxy that looks like a smart pointer to the first matching object in \ref maps
-		ProxySelectorContainerByClass<mrpt::maps::CLandmarksMapPtr,TListMaps>            m_landmarksMap; //!< Proxy that looks like a smart pointer to the first matching object in \ref maps
-		ProxySelectorContainerByClass<mrpt::maps::CBeaconMapPtr,TListMaps>               m_beaconMap; //!< Proxy that looks like a smart pointer to the first matching object in \ref maps
+		ProxyFilterContainerByClass<mrpt::maps::CSimplePointsMap::Ptr,TListMaps>           m_pointsMaps; //!< STL-like proxy to access this kind of maps in \ref maps
+		ProxyFilterContainerByClass<mrpt::maps::COccupancyGridMap2D::Ptr,TListMaps>        m_gridMaps;   //!< STL-like proxy to access this kind of maps in \ref maps
+		ProxyFilterContainerByClass<mrpt::maps::COctoMap::Ptr,TListMaps>                   m_octoMaps;   //!< STL-like proxy to access this kind of maps in \ref maps
+		ProxyFilterContainerByClass<mrpt::maps::CColouredOctoMap::Ptr,TListMaps>           m_colourOctoMaps;   //!< STL-like proxy to access this kind of maps in \ref maps
+		ProxyFilterContainerByClass<mrpt::maps::CGasConcentrationGridMap2D::Ptr,TListMaps> m_gasGridMaps;   //!< STL-like proxy to access this kind of maps in \ref maps
+		ProxyFilterContainerByClass<mrpt::maps::CWirelessPowerGridMap2D::Ptr,TListMaps>    m_wifiGridMaps;   //!< STL-like proxy to access this kind of maps in \ref maps
+		ProxyFilterContainerByClass<mrpt::maps::CHeightGridMap2D::Ptr,TListMaps>           m_heightMaps;   //!< STL-like proxy to access this kind of maps in \ref maps
+		ProxyFilterContainerByClass<mrpt::maps::CHeightGridMap2D_MRF::Ptr,TListMaps>       m_heightMRFMaps;   //!< STL-like proxy to access this kind of maps in \ref maps
+		ProxyFilterContainerByClass<mrpt::maps::CReflectivityGridMap2D::Ptr,TListMaps>     m_reflectivityMaps;   //!< STL-like proxy to access this kind of maps in \ref maps
+		ProxySelectorContainerByClass<mrpt::maps::CColouredPointsMap::Ptr,TListMaps>       m_colourPointsMap; //!< Proxy that looks like a smart pointer to the first matching object in \ref maps
+		ProxySelectorContainerByClass<mrpt::maps::CWeightedPointsMap::Ptr,TListMaps>       m_weightedPointsMap; //!< Proxy that looks like a smart pointer to the first matching object in \ref maps
+		ProxySelectorContainerByClass<mrpt::maps::CLandmarksMap::Ptr,TListMaps>            m_landmarksMap; //!< Proxy that looks like a smart pointer to the first matching object in \ref maps
+		ProxySelectorContainerByClass<mrpt::maps::CBeaconMap::Ptr,TListMaps>               m_beaconMap; //!< Proxy that looks like a smart pointer to the first matching object in \ref maps
 
 		/** @} */
 
@@ -315,7 +315,7 @@ namespace maps
 
 		/** Returns a 3D object representing the map.
 		  */
-		void getAs3DObject(mrpt::opengl::CSetOfObjectsPtr &outObj) const MRPT_OVERRIDE;
+		void getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr &outObj) const MRPT_OVERRIDE;
 
 		/** If the map is a simple point map or it's a multi-metric map that contains EXACTLY one simple point map, return it.
 			* Otherwise, return NULL

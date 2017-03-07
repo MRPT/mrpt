@@ -68,7 +68,7 @@ namespace kinematics
 		  * on the vehicle-kinematics derived class */
 		virtual void sendVelCmd(const CVehicleVelCmd &cmd_vel) = 0;
 		/** Gets an empty velocity command object that can be queried to find out the number of velcmd components,... */
-		virtual CVehicleVelCmdPtr getVelCmdType() const = 0;
+		virtual CVehicleVelCmd::Ptr getVelCmdType() const = 0;
 
 		/** Enable/Disable odometry errors. Errors in odometry are 1 sigma Gaussian values per second */
 		void setOdometryErrors(

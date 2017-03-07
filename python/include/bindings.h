@@ -13,19 +13,13 @@
 /* macros */
 #define STRINGIFY(str) #str
 
-#define MAKE_PTR(class_name) class_<class_name##Ptr>(STRINGIFY(class_name##Ptr), "class_name smart pointer type", no_init)\
+#define MAKE_PTR(class_name) class_<class_name::Ptr>(STRINGIFY(class_name::Ptr), "class_name smart pointer type", no_init)\
     .def("ctx", &class_name##Ptr_get_ctx, return_internal_reference<>())\
     .def("ctx", &class_name##Ptr_set_ctx)\
     .def("pointer", &class_name##Ptr_pointer, return_internal_reference<>())\
 ;\
 
-#define MAKE_PTR_NAMED(class_name, ptr_name) class_<class_name##Ptr>(STRINGIFY(ptr_name##Ptr), "class_name smart pointer type", no_init)\
-    .def("ctx", &class_name##Ptr_get_ctx, return_internal_reference<>())\
-    .def("ctx", &class_name##Ptr_set_ctx)\
-    .def("pointer", &class_name##Ptr_pointer, return_internal_reference<>())\
-;\
-
-#define MAKE_PTR_BASE(class_name, base_name) class_<class_name##Ptr, bases<base_name##Ptr> >(STRINGIFY(class_name##Ptr), "class_name smart pointer type", no_init)\
+#define MAKE_PTR_NAMED(class_name, ptr_name) class_<class_name::Ptr>(STRINGIFY(ptr_name::Ptr), "class_name smart pointer type", no_init)\
     .def("ctx", &class_name##Ptr_get_ctx, return_internal_reference<>())\
     .def("ctx", &class_name##Ptr_set_ctx)\
     .def("pointer", &class_name##Ptr_pointer, return_internal_reference<>())\
@@ -37,9 +31,9 @@
 
 #define MAKE_VEC_NAMED(class_name, vec_name) class_<std::vector<class_name> >(#vec_name).def(vector_indexing_suite<std::vector<class_name> >());
 
-#define MAKE_PTR_CTX(class_name) class_name& class_name##Ptr_get_ctx(class_name##Ptr& self) { return *self; }\
-void class_name##Ptr_set_ctx(class_name##Ptr& self, class_name& ctx) { *self = ctx; }\
-class_name* class_name##Ptr_pointer(class_name##Ptr& self) { return self.get(); }\
+#define MAKE_PTR_CTX(class_name) class_name& class_name##Ptr_get_ctx(class_name::Ptr& self) { return *self; }\
+void class_name##Ptr_set_ctx(class_name::Ptr& self, class_name& ctx) { *self = ctx; }\
+class_name* class_name##Ptr_pointer(class_name::Ptr& self) { return self.get(); }\
 
 #define MAKE_AS_STR(class_name) std::string class_name##_asString(class_name& self)\
 {\

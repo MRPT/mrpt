@@ -32,24 +32,24 @@ string   myDataDir( MRPT_EXAMPLES_BASE_DIRECTORY + string("setOfTexturedTriangle
 void TestDisplay3D()
 {
 	CDisplayWindow3D win("Test of CSetOfTexturedTriangles");
-	COpenGLScenePtr &scene = win.get3DSceneAndLock();
+	COpenGLScene::Ptr &scene = win.get3DSceneAndLock();
 
 	// Modify the scene:
 	// ------------------------------------------------------
 	{
-		opengl::CGridPlaneXYPtr obj = opengl::CGridPlaneXY::Create(-20,20,-20,20,0,1);
+		opengl::CGridPlaneXY::Ptr obj = opengl::CGridPlaneXY::Create(-20,20,-20,20,0,1);
 		obj->setColor(0.4,0.4,0.4);
 		scene->insert( obj );
 	}
 	{
-		opengl::CAxisPtr obj = opengl::CAxis::Create();
+		opengl::CAxis::Ptr obj = opengl::CAxis::Create();
 		obj->setFrequency(5);
 		obj->enableTickMarks();
 		obj->setAxisLimits(-10,-10,-10, 10,10,10);
 		scene->insert( obj );
 	}
 	{
-		opengl::CSpherePtr obj = opengl::CSphere::Create();
+		opengl::CSphere::Ptr obj = opengl::CSphere::Create();
 		obj->setColor(0,0,1);
 		obj->setRadius(0.3);
 		obj->setLocation(0,0,1);
@@ -57,7 +57,7 @@ void TestDisplay3D()
 		scene->insert( obj );
 	}
 	{
-		opengl::CSpherePtr obj = opengl::CSphere::Create();
+		opengl::CSphere::Ptr obj = opengl::CSphere::Create();
 		obj->setColor(1,0,0);
 		obj->setRadius(0.3);
 		obj->setLocation(-1,-1,1);
@@ -71,7 +71,7 @@ void TestDisplay3D()
 		image.loadFromFile(myDataDir + string("texture.png"), 1); // color
 		alpha.loadFromFile(myDataDir + string("mask.png"),    0); // transparency
 
-		opengl::CSetOfTexturedTrianglesPtr obj = opengl::CSetOfTexturedTriangles::Create();
+		opengl::CSetOfTexturedTriangles::Ptr obj = opengl::CSetOfTexturedTriangles::Create();
 		opengl::CSetOfTexturedTriangles::TTriangle tri;
 
 		tri = opengl::CSetOfTexturedTriangles::TTriangle(
@@ -100,9 +100,9 @@ void TestDisplay3D()
 	while( !mrpt::system::os::kbhit() && win.isOpen() )
 	{
 		// Move the scene:
-		COpenGLScenePtr &scene = win.get3DSceneAndLock();
+		COpenGLScene::Ptr &scene = win.get3DSceneAndLock();
 
-		opengl::CRenderizablePtr obj = scene->getByName("ball_1");
+		opengl::CRenderizable::Ptr obj = scene->getByName("ball_1");
 		obj->setLocation(
 			obj->getPoseX() + cos(obj->getPoseY()/2)*0.05,
 			obj->getPoseY() - sin(obj->getPoseX()/2)*0.09,

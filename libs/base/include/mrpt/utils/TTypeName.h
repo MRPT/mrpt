@@ -66,12 +66,12 @@ namespace mrpt
 				static std::string get() { return std::string(#_TYPE); } };
 
 		#define MRPT_DECLARE_TTYPENAME_PTR(_TYPE) \
-			template<> struct TTypeName <_TYPE##Ptr> { \
+			template<> struct TTypeName <_TYPE::Ptr> { \
 			static std::string get() { return TTypeName<_TYPE>::get(); }	};
 
 		#define MRPT_DECLARE_TTYPENAME_PTR_NAMESPACE(_TYPE,__NS) \
-			template<> struct TTypeName <__NS :: _TYPE##Ptr> { \
-			static std::string get() { return TTypeName<__NS :: _TYPE>::get(); }	};
+			template<> struct TTypeName <__NS::_TYPE::Ptr> { \
+			static std::string get() { return TTypeName<__NS::_TYPE>::get(); }	};
 
 		MRPT_DECLARE_TTYPENAME(bool)
 		MRPT_DECLARE_TTYPENAME(double)

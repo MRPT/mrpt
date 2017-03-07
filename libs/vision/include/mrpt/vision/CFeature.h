@@ -211,7 +211,7 @@ namespace mrpt
 		class VISION_IMPEXP CFeatureList : public mrpt::math::KDTreeCapable<CFeatureList>
 		{
 		protected:
-			typedef std::vector<CFeaturePtr> TInternalFeatList;
+			typedef std::vector<CFeature::Ptr> TInternalFeatList;
 
 			TInternalFeatList  m_feats; //!< The actual container with the list of features
 
@@ -232,11 +232,11 @@ namespace mrpt
 			TFeatureID getMaxID() const;
 
 			/** Get a reference to a Feature from its ID */
-			CFeaturePtr getByID( const TFeatureID &ID ) const;
-			CFeaturePtr getByID( const TFeatureID &ID, int &out_idx ) const;
+			CFeature::Ptr getByID( const TFeatureID &ID ) const;
+			CFeature::Ptr getByID( const TFeatureID &ID, int &out_idx ) const;
 
 			/** Get a vector of references to a subset of features from their IDs */
-			void getByMultiIDs( const std::vector<TFeatureID> &IDs, std::vector<CFeaturePtr> &out, std::vector<int> &outIndex ) const;
+			void getByMultiIDs( const std::vector<TFeatureID> &IDs, std::vector<CFeature::Ptr> &out, std::vector<int> &outIndex ) const;
 
 			/** Get a reference to the nearest feature to the a given 2D point (version returning distance to closest feature in "max_dist")
 			*   \param x [IN] The query point x-coordinate
@@ -245,7 +245,7 @@ namespace mrpt
 			*  \return A reference to the found feature, or a nullptr smart pointer if none found.
 			*  \note See also all the available KD-tree search methods, listed in mrpt::math::KDTreeCapable
 			*/
-			CFeaturePtr nearest( const float x, const float y, double &max_dist ) const;
+			CFeature::Ptr nearest( const float x, const float y, double &max_dist ) const;
 
 			/** Constructor */
 			CFeatureList();
@@ -282,10 +282,10 @@ namespace mrpt
 			inline void clear() { m_feats.clear(); mark_kdtree_as_outdated(); }
 			inline void resize(size_t N) { m_feats.resize(N); mark_kdtree_as_outdated(); }
 
-			inline void push_back(const CFeaturePtr &f) { mark_kdtree_as_outdated();  m_feats.push_back(f); }
+			inline void push_back(const CFeature::Ptr &f) { mark_kdtree_as_outdated();  m_feats.push_back(f); }
 
-			inline CFeaturePtr & operator [](const unsigned int index) { return m_feats[index]; }
-			inline const CFeaturePtr & operator [](const unsigned int index) const  { return m_feats[index]; }
+			inline CFeature::Ptr & operator [](const unsigned int index) { return m_feats[index]; }
+			inline const CFeature::Ptr & operator [](const unsigned int index) const  { return m_feats[index]; }
 
 			/** @} */
 
@@ -358,7 +358,7 @@ namespace mrpt
 		*****************************************************/
 		/** A list of features
 		*/
-		class VISION_IMPEXP CMatchedFeatureList : public std::deque< std::pair<CFeaturePtr,CFeaturePtr> >
+		class VISION_IMPEXP CMatchedFeatureList : public std::deque< std::pair<CFeature::Ptr,CFeature::Ptr> >
 		{
 		public:
 			/** The type of the first feature in the list */
@@ -371,7 +371,7 @@ namespace mrpt
 			void getBothFeatureLists( CFeatureList &list1, CFeatureList &list2 );
 
 			/** Returns a smart pointer to the feature with the provided ID or a empty one if not found */
-			CFeaturePtr getByID( const TFeatureID & ID, const TListIdx &idx );
+			CFeature::Ptr getByID( const TFeatureID & ID, const TListIdx &idx );
 
 			/** Returns the maximum ID of the features in the list. If the max ID has been already set up, this method just returns it.
 			    Otherwise, this method finds, stores and returns it.*/

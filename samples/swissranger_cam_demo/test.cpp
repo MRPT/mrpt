@@ -78,17 +78,17 @@ void Test_SwissRanger()
 //	win3D.setPos(10,290);
 //	win3D.resize(400,200);
 
-	//mrpt::opengl::CPointCloudPtr gl_points = mrpt::opengl::CPointCloud::Create();
-	mrpt::opengl::CPointCloudColouredPtr gl_points = mrpt::opengl::CPointCloudColoured::Create();
+	//mrpt::opengl::CPointCloud::Ptr gl_points = mrpt::opengl::CPointCloud::Create();
+	mrpt::opengl::CPointCloudColoured::Ptr gl_points = mrpt::opengl::CPointCloudColoured::Create();
 	gl_points->setPointSize(4.5);
 
-	mrpt::opengl::CTexturedPlanePtr gl_img_range 			=  mrpt::opengl::CTexturedPlane::Create(0.5,-0.5,-0.5*aspect_ratio,0.5*aspect_ratio);
-	mrpt::opengl::CTexturedPlanePtr gl_img_intensity 		=  mrpt::opengl::CTexturedPlane::Create(0.5,-0.5,-0.5*aspect_ratio,0.5*aspect_ratio);
-	mrpt::opengl::CTexturedPlanePtr gl_img_intensity_rect 	=  mrpt::opengl::CTexturedPlane::Create(0.5,-0.5,-0.5*aspect_ratio,0.5*aspect_ratio);
+	mrpt::opengl::CTexturedPlane::Ptr gl_img_range 			=  mrpt::opengl::CTexturedPlane::Create(0.5,-0.5,-0.5*aspect_ratio,0.5*aspect_ratio);
+	mrpt::opengl::CTexturedPlane::Ptr gl_img_intensity 		=  mrpt::opengl::CTexturedPlane::Create(0.5,-0.5,-0.5*aspect_ratio,0.5*aspect_ratio);
+	mrpt::opengl::CTexturedPlane::Ptr gl_img_intensity_rect 	=  mrpt::opengl::CTexturedPlane::Create(0.5,-0.5,-0.5*aspect_ratio,0.5*aspect_ratio);
 
 
 	{
-		mrpt::opengl::COpenGLScenePtr &scene = win3D.get3DSceneAndLock();
+		mrpt::opengl::COpenGLScene::Ptr &scene = win3D.get3DSceneAndLock();
 
 		// Create the Opengl object for the point cloud:
 		scene->insert( gl_points );
@@ -101,7 +101,7 @@ void Test_SwissRanger()
 
 		// Create the Opengl objects for the planar images, as textured planes, each in a separate viewport:
 		win3D.addTextMessage(30,-10-1*(VW_GAP+VW_HEIGHT),"Range data",TColorf(1,1,1), 1, MRPT_GLUT_BITMAP_HELVETICA_12 );
-		opengl::COpenGLViewportPtr viewRange = scene->createViewport("view2d_range");
+		opengl::COpenGLViewport::Ptr viewRange = scene->createViewport("view2d_range");
 		scene->insert( gl_img_range, "view2d_range");
 		viewRange->setViewportPosition(5,-10-1*(VW_GAP+VW_HEIGHT), VW_WIDTH,VW_HEIGHT);
 		viewRange->setTransparent(true);
@@ -111,7 +111,7 @@ void Test_SwissRanger()
 		viewRange->getCamera().setZoomDistance(1.0);
 
 		win3D.addTextMessage(30, -10-2*(VW_GAP+VW_HEIGHT),"Intensity data",TColorf(1,1,1), 2, MRPT_GLUT_BITMAP_HELVETICA_12 );
-		opengl::COpenGLViewportPtr viewInt = scene->createViewport("view2d_int");
+		opengl::COpenGLViewport::Ptr viewInt = scene->createViewport("view2d_int");
 		scene->insert( gl_img_intensity, "view2d_int");
 		viewInt->setViewportPosition(5, -10-2*(VW_GAP+VW_HEIGHT), VW_WIDTH,VW_HEIGHT );
 		viewInt->setTransparent(true);
@@ -121,7 +121,7 @@ void Test_SwissRanger()
 		viewInt->getCamera().setZoomDistance(1.0);
 
 		win3D.addTextMessage(30, -10-3*(VW_GAP+VW_HEIGHT),"Intensity data (undistorted)",TColorf(1,1,1), 3, MRPT_GLUT_BITMAP_HELVETICA_12 );
-		opengl::COpenGLViewportPtr viewIntRect = scene->createViewport("view2d_intrect");
+		opengl::COpenGLViewport::Ptr viewIntRect = scene->createViewport("view2d_intrect");
 		scene->insert( gl_img_intensity_rect, "view2d_intrect");
 		viewIntRect->setViewportPosition(5, -10-3*(VW_GAP+VW_HEIGHT), VW_WIDTH,VW_HEIGHT );
 		viewIntRect->setTransparent(true);

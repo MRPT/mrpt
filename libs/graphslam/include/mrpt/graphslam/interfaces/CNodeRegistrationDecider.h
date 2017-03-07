@@ -65,9 +65,9 @@ class CNodeRegistrationDecider : public mrpt::graphslam::CRegistrationDeciderOrO
 		 * \return True upon successful node registration in the graph
 		 */
 		virtual bool updateState(
-				mrpt::obs::CActionCollectionPtr action,
-				mrpt::obs::CSensoryFramePtr observations,
-				mrpt::obs::CObservationPtr observation ) = 0;
+				mrpt::obs::CActionCollection::Ptr action,
+				mrpt::obs::CSensoryFrame::Ptr observations,
+				mrpt::obs::CObservation::Ptr observation ) = 0;
 
 	protected:
 		/**\brief Check whether a new node should be registered in the

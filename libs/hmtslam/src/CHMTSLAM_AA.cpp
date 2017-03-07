@@ -31,7 +31,7 @@ using namespace std;
 	Area Abstraction (AA) process within HMT-SLAM
 
   ---------------------------------------------------------------*/
-CHMTSLAM::TMessageLSLAMfromAAPtr CHMTSLAM::areaAbstraction(
+CHMTSLAM::TMessageLSLAMfromAA::Ptr CHMTSLAM::areaAbstraction(
 	CLocalMetricHypothesis	*LMH,
 	const TPoseIDList		&newPoseIDs )
 {
@@ -43,7 +43,7 @@ CHMTSLAM::TMessageLSLAMfromAAPtr CHMTSLAM::areaAbstraction(
 	ASSERT_(obj);
 
 	// The output results:
-	TMessageLSLAMfromAAPtr resMsg = TMessageLSLAMfromAAPtr(new TMessageLSLAMfromAA());
+	TMessageLSLAMfromAA::Ptr resMsg = TMessageLSLAMfromAA::Ptr(new TMessageLSLAMfromAA());
 
 
 	// Process msg:
@@ -57,7 +57,7 @@ CHMTSLAM::TMessageLSLAMfromAAPtr CHMTSLAM::areaAbstraction(
 
 		// Get SF & pose pdf for the new pose.
 		const CSensoryFrame			*sf;
-		CPose3DPDFParticlesPtr		posePDF = CPose3DPDFParticles::Create();
+		CPose3DPDFParticles::Ptr		posePDF = CPose3DPDFParticles::Create();
 
 		{
 			// CCriticalSectionLocker	lock( & LMH->m_lock ); // We are already within the LMH's lock!
@@ -78,7 +78,7 @@ CHMTSLAM::TMessageLSLAMfromAAPtr CHMTSLAM::areaAbstraction(
 			LMH->m_robotPosesGraph.partitioner.options = obj->m_options.AA_options;
 
 			unsigned int newIdx = LMH->m_robotPosesGraph.partitioner.addMapFrame(
-				CSensoryFramePtr(new CSensoryFrame(*sf)),
+				CSensoryFrame::Ptr(new CSensoryFrame(*sf)),
 				posePDF );
 			LMH->m_robotPosesGraph.idx2pose[ newIdx ] = *newID;
 		} // end of critical section lock on "m_robotPosesGraph.lock"

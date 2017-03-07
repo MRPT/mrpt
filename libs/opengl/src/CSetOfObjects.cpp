@@ -124,7 +124,7 @@ CSetOfObjects::~CSetOfObjects()
 }
 
 
-void CSetOfObjects::insert( const CRenderizablePtr &newObject )
+void CSetOfObjects::insert( const CRenderizable::Ptr &newObject )
 {
 	ASSERTMSG_(newObject.get() != this, "Error: Trying to insert container into itself!");
 	m_objects.push_back(newObject);
@@ -161,7 +161,7 @@ void CSetOfObjects::dumpListOfObjects( utils::CStringList  &lst )
 /*--------------------------------------------------------------
 					removeObject
   ---------------------------------------------------------------*/
-void CSetOfObjects::removeObject( const CRenderizablePtr &obj )
+void CSetOfObjects::removeObject( const CRenderizable::Ptr &obj )
 {
 	for (CListOpenGLObjects::iterator it=m_objects.begin();it!=m_objects.end();++it)
 		if (*it == obj)
@@ -189,7 +189,7 @@ bool CSetOfObjects::traceRay(const mrpt::poses::CPose3D &o,double &dist) const	{
 class FSetColor	{
 public:
 	uint8_t r,g,b,a;
-	void operator()(CRenderizablePtr &p)	{
+	void operator()(CRenderizable::Ptr &p)	{
 		p->setColor_u8(r,g,b,a);
 	}
 	FSetColor(uint8_t R,uint8_t G,uint8_t B,uint8_t A):r(R),g(G),b(B),a(A)	{}
@@ -202,7 +202,7 @@ CRenderizable& CSetOfObjects::setColor_u8(const mrpt::utils::TColor &c)	{
 }
 
 
-bool CSetOfObjects::contains(const CRenderizablePtr &obj) const	{
+bool CSetOfObjects::contains(const CRenderizable::Ptr &obj) const	{
 	return find(m_objects.begin(),m_objects.end(),obj)!=m_objects.end();
 }
 
@@ -230,7 +230,7 @@ CRenderizable& CSetOfObjects::setColorA_u8(const uint8_t  a)	{
 /*---------------------------------------------------------------
 							getByName
   ---------------------------------------------------------------*/
-CRenderizablePtr CSetOfObjects::getByName( const string &str )
+CRenderizable::Ptr CSetOfObjects::getByName( const string &str )
 {
 	for (CListOpenGLObjects::iterator	it=m_objects.begin();it!=m_objects.end();++it)
 	{
@@ -238,12 +238,12 @@ CRenderizablePtr CSetOfObjects::getByName( const string &str )
 			return *it;
 		else if ( (*it)->GetRuntimeClass() == CLASS_ID_NAMESPACE(CSetOfObjects,opengl))
 		{
-			CRenderizablePtr ret = getAs<CSetOfObjects>(*it)->getByName(str);
+			CRenderizable::Ptr ret = getAs<CSetOfObjects>(*it)->getByName(str);
 			if (ret)
 				return ret;
 		}
 	}
-	return CRenderizablePtr();
+	return CRenderizable::Ptr();
 }
 
 

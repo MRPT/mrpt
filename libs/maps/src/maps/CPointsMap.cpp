@@ -747,11 +747,11 @@ void  CPointsMap::TLikelihoodOptions::loadFromConfigFile(
 /*---------------------------------------------------------------
 						getAs3DObject
 ---------------------------------------------------------------*/
-void  CPointsMap::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const
+void  CPointsMap::getAs3DObject( mrpt::opengl::CSetOfObjects::Ptr	&outObj ) const
 {
 	if (!genericMapParams.enableSaveAs3DObject) return;
 
-	opengl::CPointCloudPtr  obj = opengl::CPointCloud::Create();
+	opengl::CPointCloud::Ptr  obj = opengl::CPointCloud::Create();
 
 	obj->loadFromPointsMap(this);
 	obj->setColor( CPointsMap::COLOR_3DSCENE_R, CPointsMap::COLOR_3DSCENE_G, CPointsMap::COLOR_3DSCENE_B, 1 );
@@ -1462,11 +1462,11 @@ namespace mrpt
 	{
 		// Tricky way to call to a library that depends on us, a sort of "run-time" linking:
 		//  ptr_internal_build_points_map_from_scan2D is a functor in "mrpt-obs", set by "mrpt-maps" at its startup.
-		extern void OBS_IMPEXP (*ptr_internal_build_points_map_from_scan2D)(const mrpt::obs::CObservation2DRangeScan &obs, mrpt::maps::CMetricMapPtr &out_map, const void *insertOps);
+		extern void OBS_IMPEXP (*ptr_internal_build_points_map_from_scan2D)(const mrpt::obs::CObservation2DRangeScan &obs, mrpt::maps::CMetricMap::Ptr &out_map, const void *insertOps);
 	}
 }
 
-void internal_build_points_map_from_scan2D(const mrpt::obs::CObservation2DRangeScan &obs, mrpt::maps::CMetricMapPtr &out_map, const void *insertOps)
+void internal_build_points_map_from_scan2D(const mrpt::obs::CObservation2DRangeScan &obs, mrpt::maps::CMetricMap::Ptr &out_map, const void *insertOps)
 {
 	// Create on first call:
 	if (out_map)

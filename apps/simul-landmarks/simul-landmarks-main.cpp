@@ -290,7 +290,7 @@ int main(int argc, char ** argv)
 			}
 
             // Simulate observations:
-            CObservationBearingRangePtr obs=CObservationBearingRange::Create();
+            CObservationBearingRange::Ptr obs=CObservationBearingRange::Create();
 
             obs->minSensorDistance=minSensorDistance;
             obs->maxSensorDistance=maxSensorDistance;
@@ -391,7 +391,7 @@ int main(int argc, char ** argv)
 #if MRPT_HAS_OPENGL_GLUT  && MRPT_HAS_WXWIDGETS
 			mrpt::gui::CDisplayWindow3D		win("Final simulation",400,300);
 
-			mrpt::opengl::COpenGLScenePtr &scene = win.get3DSceneAndLock();
+			mrpt::opengl::COpenGLScene::Ptr &scene = win.get3DSceneAndLock();
 
 			scene->insert( mrpt::opengl::CGridPlaneXY::Create( min_x-10,max_x+10,min_y-10,max_y+10,0 ));
 			scene->insert( mrpt::opengl::stock_objects::CornerXYZ() );
@@ -399,7 +399,7 @@ int main(int argc, char ** argv)
 			// Insert all landmarks:
 			for (CLandmarksMap::TCustomSequenceLandmarks::const_iterator it=landmarkMap.landmarks.begin();it!=landmarkMap.landmarks.end();++it)
 			{
-				mrpt::opengl::CSpherePtr lm = mrpt::opengl::CSphere::Create();
+				mrpt::opengl::CSphere::Ptr lm = mrpt::opengl::CSphere::Create();
 				lm->setColor(1,0,0);
 				lm->setRadius(0.1f);
 				lm->setLocation( it->pose_mean );
@@ -410,7 +410,7 @@ int main(int argc, char ** argv)
 
 			// Insert all robot poses:
 			const size_t N = size(GT_path,1);
-			mrpt::opengl::CSetOfLinesPtr  pathLines = mrpt::opengl::CSetOfLines::Create();
+			mrpt::opengl::CSetOfLines::Ptr  pathLines = mrpt::opengl::CSetOfLines::Create();
 			pathLines->setColor(0,0,1,0.5);
 			pathLines->setLineWidth(3.0);
 			pathLines->resize(N-1);
@@ -422,7 +422,7 @@ int main(int argc, char ** argv)
 			
 			for (size_t i=0;i<N;i++)
 			{
-				mrpt::opengl::CSetOfObjectsPtr  corner = mrpt::opengl::stock_objects::CornerXYZ();
+				mrpt::opengl::CSetOfObjects::Ptr  corner = mrpt::opengl::stock_objects::CornerXYZ();
 				corner->setScale(0.2f);
 				corner->setPose(TPose3D(GT_path(i,0),GT_path(i,1),GT_path(i,2),GT_path(i,3),GT_path(i,4),GT_path(i,5)));
 				scene->insert(corner);

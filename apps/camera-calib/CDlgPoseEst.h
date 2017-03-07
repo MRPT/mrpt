@@ -123,7 +123,7 @@ class CDlgPoseEst: public wxDialog
 		void threadProcessCorners();
 
 		mrpt::system::TThreadHandle		m_threadCorners;	//!< The thread for corner detection.
-		mrpt::obs::CObservationImagePtr  m_threadImgToProcess;  //!< Input for the thread, null if nothing pending
+		mrpt::obs::CObservationImage::Ptr  m_threadImgToProcess;  //!< Input for the thread, null if nothing pending
 		bool m_threadMustClose;  //!< Close signal
 		std::vector<mrpt::utils::TPixelCoordf>	m_threadResults;    //!< The detected corners, if threadResultsComputed=true
 		bool m_threadResultsComputed; //!< Put to true by the thread when done with an image
@@ -133,14 +133,14 @@ class CDlgPoseEst: public wxDialog
 		unsigned int m_check_size_y;
 		bool m_normalize_image;
 		bool m_useScaramuzzaAlternativeDetector;
-		mrpt::hwdrivers::CCameraSensorPtr m_video;
+		mrpt::hwdrivers::CCameraSensor::Ptr m_video;
 		CMyGLCanvas* m_3Dview_cam;
 		mrpt::vision::pnp::CPnP pnp_algos;
 		Eigen::MatrixXd obj_pts, img_pts, pose_mat, cam_intrinsic, I3;
 
-		mrpt::opengl::COpenGLScenePtr	scene;
-		mrpt::opengl::CSetOfObjectsPtr	cor, cor1;
-		mrpt::opengl::CGridPlaneXYPtr	grid;
+		mrpt::opengl::COpenGLScene::Ptr	scene;
+		mrpt::opengl::CSetOfObjects::Ptr	cor, cor1;
+		mrpt::opengl::CGridPlaneXY::Ptr	grid;
 
 	public:
 		typedef  bool (mrpt::vision::pnp::CPnP::*CPNP_PTR) (const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat);

@@ -113,7 +113,7 @@ of type CMetricMapBuilderRBPF  */
 
 		/** Returns a copy of the current best pose estimation as a pose PDF.
 		  */
-		mrpt::poses::CPose3DPDFPtr  getCurrentPoseEstimation() const;
+		mrpt::poses::CPose3DPDF::Ptr  getCurrentPoseEstimation() const;
 
 		/** Returns the current most-likely path estimation (the path associated to the most likely particle).
 		  */

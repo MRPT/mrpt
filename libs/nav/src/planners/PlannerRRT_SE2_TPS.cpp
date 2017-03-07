@@ -87,7 +87,7 @@ void PlannerRRT_SE2_TPS::loadConfig(const mrpt::utils::CConfigFileBase &ini, con
 	{
 		// Generate it:
 		const std::string sPTGName = ini.read_string(sSect,format("PTG%u_Type", n ),"", true );
-		m_PTGs.push_back( CParameterizedTrajectoryGeneratorPtr( CParameterizedTrajectoryGenerator::CreatePTG(sPTGName,ini,sSect,format("PTG%u_", n)) ) );
+		m_PTGs.push_back( CParameterizedTrajectoryGenerator::Ptr( CParameterizedTrajectoryGenerator::CreatePTG(sPTGName,ini,sSect,format("PTG%u_", n)) ) );
 	}
 }
 
@@ -622,7 +622,7 @@ void PlannerRRT_SE2_TPS::renderMoveTree(
 	)
 {
 	// Build a model of the vehicle shape: 
-	mrpt::opengl::CSetOfLinesPtr gl_veh_shape = mrpt::opengl::CSetOfLines::Create();
+	mrpt::opengl::CSetOfLines::Ptr gl_veh_shape = mrpt::opengl::CSetOfLines::Create();
 	double xyzcorners_scale; // Size of XYZ corners (scaled to vehicle dimensions)
 	{
 		gl_veh_shape->setLineWidth(options.vehicle_line_width);
@@ -667,7 +667,7 @@ void PlannerRRT_SE2_TPS::renderMoveTree(
 	// "ground"
 	if (options.ground_xy_grid_frequency>0)
 	{
-		mrpt::opengl::CGridPlaneXYPtr obj = mrpt::opengl::CGridPlaneXY::Create( pi.world_bbox_min.x,pi.world_bbox_max.x, pi.world_bbox_min.y,pi.world_bbox_max.y, 0, options.ground_xy_grid_frequency );
+		mrpt::opengl::CGridPlaneXY::Ptr obj = mrpt::opengl::CGridPlaneXY::Create( pi.world_bbox_min.x,pi.world_bbox_max.x, pi.world_bbox_min.y,pi.world_bbox_max.y, 0, options.ground_xy_grid_frequency );
 		obj->setColor_u8(options.color_ground_xy_grid);
 		scene.insert( obj );
 	}
@@ -675,7 +675,7 @@ void PlannerRRT_SE2_TPS::renderMoveTree(
 	// Original randomly-pick pose:
 	if (options.x_rand_pose)
 	{
-		mrpt::opengl::CSetOfObjectsPtr obj = mrpt::opengl::stock_objects::CornerXYZ(xyzcorners_scale*1.0);
+		mrpt::opengl::CSetOfObjects::Ptr obj = mrpt::opengl::stock_objects::CornerXYZ(xyzcorners_scale*1.0);
 		string m_name =	"X_rand";
 		obj->setName(m_name);
 		obj->enableShowName();
@@ -686,7 +686,7 @@ void PlannerRRT_SE2_TPS::renderMoveTree(
 	// Nearest state pose:
 	if (options.x_nearest_pose)
 	{
-		mrpt::opengl::CSetOfObjectsPtr obj = mrpt::opengl::stock_objects::CornerXYZ(xyzcorners_scale*1.0);
+		mrpt::opengl::CSetOfObjects::Ptr obj = mrpt::opengl::stock_objects::CornerXYZ(xyzcorners_scale*1.0);
 		string m_name =	"X_near";
 		obj->setName(m_name);
 		obj->enableShowName();
@@ -727,7 +727,7 @@ void PlannerRRT_SE2_TPS::renderMoveTree(
 
 	// The starting pose vehicle shape must be inserted independently, because the rest are edges and we draw the END pose of each edge:
 	{
-		mrpt::opengl::CSetOfLinesPtr vehShape(new mrpt::opengl::CSetOfLines(*gl_veh_shape));
+		mrpt::opengl::CSetOfLines::Ptr vehShape(new mrpt::opengl::CSetOfLines(*gl_veh_shape));
 		mrpt::poses::CPose3D shapePose(mrpt::math::TPose3D(pi.start_pose));
 		shapePose.z_incr( options.vehicle_shape_z );
 		vehShape->setPose(shapePose);
@@ -757,14 +757,14 @@ void PlannerRRT_SE2_TPS::renderMoveTree(
 			{
 				const float corner_scale = xyzcorners_scale* (is_new_one ? 1.5f : 1.0f);
 
-				mrpt::opengl::CSetOfObjectsPtr obj = mrpt::opengl::stock_objects::CornerXYZSimple(corner_scale);
+				mrpt::opengl::CSetOfObjects::Ptr obj = mrpt::opengl::stock_objects::CornerXYZSimple(corner_scale);
 				obj->setPose(trg_state);
 				scene.insert(obj);
 
 				// Insert vehicle shapes along optimal path:
 				if (is_best_path_and_draw_shape) 
 				{
-					mrpt::opengl::CSetOfLinesPtr vehShape(new mrpt::opengl::CSetOfLines(*gl_veh_shape));
+					mrpt::opengl::CSetOfLines::Ptr vehShape(new mrpt::opengl::CSetOfLines(*gl_veh_shape));
 					mrpt::poses::CPose3D shapePose = trg_state;
 					shapePose.z_incr( options.vehicle_shape_z );
 					vehShape->setPose(shapePose);
@@ -780,7 +780,7 @@ void PlannerRRT_SE2_TPS::renderMoveTree(
 				const mrpt::nav::CParameterizedTrajectoryGenerator * ptg = m_PTGs[node.edge_to_parent->ptg_index].get();
 
 				// Create the path shape, in relative coords to the parent node:
-				mrpt::opengl::CSetOfLinesPtr obj = mrpt::opengl::CSetOfLines::Create();
+				mrpt::opengl::CSetOfLines::Ptr obj = mrpt::opengl::CSetOfLines::Create();
 				obj->setPose(parent_state); // Points are relative to this pose: let OpenGL to deal with the coords. composition
 
 				ptg->renderPathAsSimpleLine(node.edge_to_parent->ptg_K,*obj,0.25f /*decimation*/, node.edge_to_parent->ptg_dist /*max path length*/);
@@ -811,7 +811,7 @@ void PlannerRRT_SE2_TPS::renderMoveTree(
 	// The new node:
 	if (options.new_state)
 	{
-		mrpt::opengl::CSetOfObjectsPtr obj = mrpt::opengl::stock_objects::CornerXYZ(xyzcorners_scale*1.2);
+		mrpt::opengl::CSetOfObjects::Ptr obj = mrpt::opengl::stock_objects::CornerXYZ(xyzcorners_scale*1.2);
 		string m_name =	"X_new";
 		obj->setName(m_name);
 		obj->enableShowName();
@@ -822,7 +822,7 @@ void PlannerRRT_SE2_TPS::renderMoveTree(
 	// Obstacles:
 	if (options.draw_obstacles)
 	{
-		mrpt::opengl::CPointCloudPtr obj = mrpt::opengl::CPointCloud::Create();
+		mrpt::opengl::CPointCloud::Ptr obj = mrpt::opengl::CPointCloud::Create();
 
 		obj->loadFromPointsMap(&pi.obstacles_points);
 		obj->setPose(mrpt::poses::CPose2D(0.0, 0.0, 0.0)); // Points are relative to the origin
@@ -836,7 +836,7 @@ void PlannerRRT_SE2_TPS::renderMoveTree(
 	// Draw this AFTER the global map so it's visible:
 	if (options.draw_obstacles && options.local_obs_from_nearest_pose && options.x_nearest_pose)
 	{
-		mrpt::opengl::CPointCloudPtr obj = mrpt::opengl::CPointCloud::Create();
+		mrpt::opengl::CPointCloud::Ptr obj = mrpt::opengl::CPointCloud::Create();
 
 		obj->loadFromPointsMap(options.local_obs_from_nearest_pose);
 		obj->setPose(*options.x_nearest_pose); // Points are relative to this pose: let OpenGL to deal with the coords. composition
@@ -847,7 +847,7 @@ void PlannerRRT_SE2_TPS::renderMoveTree(
 
 	// Start:
 	{
-		mrpt::opengl::CSetOfObjectsPtr obj = mrpt::opengl::stock_objects::CornerXYZ(xyzcorners_scale*1.5);
+		mrpt::opengl::CSetOfObjects::Ptr obj = mrpt::opengl::stock_objects::CornerXYZ(xyzcorners_scale*1.5);
 		obj->setName("START");
 		obj->enableShowName();
 		obj->setColor_u8( options.color_start );
@@ -857,7 +857,7 @@ void PlannerRRT_SE2_TPS::renderMoveTree(
 
 	// Target:
 	{
-		mrpt::opengl::CSetOfObjectsPtr obj = mrpt::opengl::stock_objects::CornerXYZ(xyzcorners_scale*1.5);
+		mrpt::opengl::CSetOfObjects::Ptr obj = mrpt::opengl::stock_objects::CornerXYZ(xyzcorners_scale*1.5);
 		string m_name =	"GOAL";
 		obj->setName(m_name);
 		obj->enableShowName();
@@ -869,7 +869,7 @@ void PlannerRRT_SE2_TPS::renderMoveTree(
 	// Log msg:
 	if (!options.log_msg.empty())
 	{
-		mrpt::opengl::CText3DPtr gl_txt=mrpt::opengl::CText3D::Create(options.log_msg,"sans",options.log_msg_scale );
+		mrpt::opengl::CText3D::Ptr gl_txt=mrpt::opengl::CText3D::Create(options.log_msg,"sans",options.log_msg_scale );
 		gl_txt->setLocation(options.log_msg_position);
 		scene.insert(gl_txt);
 	}

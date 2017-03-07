@@ -20,7 +20,7 @@ using namespace mrpt::math;
 /*---------------------------------------------------------------
                 Constructor
  ---------------------------------------------------------------*/
-CMappedImage::CMappedImage( CImagePtr img, double x0, double x1, double y0, double y1, TInterpolationMethod	method  ) :
+CMappedImage::CMappedImage( CImage::Ptr img, double x0, double x1, double y0, double y1, TInterpolationMethod	method  ) :
 	m_img( img ),
 	m_x0 (x0),
 	m_x1 (x1),
@@ -34,7 +34,7 @@ CMappedImage::CMappedImage( CImagePtr img, double x0, double x1, double y0, doub
 	{
 		CImage *new_img = new CImage();
 		m_img->grayscale(*new_img);
-		m_img = CImagePtr( new_img );
+		m_img = CImage::Ptr( new_img );
 	}
 	changeCoordinates(x0,x1,y0,y1);
 }

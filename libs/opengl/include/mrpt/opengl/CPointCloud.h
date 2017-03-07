@@ -228,12 +228,12 @@ namespace mrpt
 			/** Render a subset of points (required by octree renderer) */
 			void  render_subset(const bool all, const std::vector<size_t>& idxs, const float render_area_sqpixels ) const;
 
-		private:
 			/** Constructor */
 			CPointCloud();
 
 			/** Private, virtual destructor: only can be deleted from smart pointers */
 			virtual ~CPointCloud() { }
+		private:
 
 			mutable float  m_min, m_max,m_max_m_min,m_max_m_min_inv; 	//!< Buffer for min/max coords when m_colorFromDepth is true.
 			mutable mrpt::utils::TColorf m_col_slop,m_col_slop_inv; //!< Color linear function slope

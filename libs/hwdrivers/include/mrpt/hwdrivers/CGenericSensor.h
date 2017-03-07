@@ -38,7 +38,6 @@ namespace mrpt
 			CGenericSensor*		(*ptrCreateObject)();			//!< Pointer to class constructor
 		};
 
-		typedef std::shared_ptr<CGenericSensor>	CGenericSensorPtr;
 
 		/** A generic interface for a wide-variety of sensors designed to be used in the application RawLogGrabber.
 		  *  Derived classes should be designed with the following execution flow in mind:
@@ -63,10 +62,11 @@ namespace mrpt
 		class HWDRIVERS_IMPEXP CGenericSensor: public mrpt::utils::CUncopiable
 		{
 		public:
+			using Ptr = std::shared_ptr<CGenericSensor>;
 			virtual const mrpt::hwdrivers::TSensorClassId* GetRuntimeClass() const = 0;
 
-			typedef std::multimap< mrpt::system::TTimeStamp, mrpt::utils::CSerializablePtr > TListObservations;
-			typedef std::pair< mrpt::system::TTimeStamp, mrpt::utils::CSerializablePtr > TListObsPair;
+			typedef std::multimap< mrpt::system::TTimeStamp, mrpt::utils::CSerializable::Ptr > TListObservations;
+			typedef std::pair< mrpt::system::TTimeStamp, mrpt::utils::CSerializable::Ptr > TListObsPair;
 
 			/** The current state of the sensor
 			  * \sa CGenericSensor::getState
@@ -134,18 +134,18 @@ namespace mrpt
 			/** This method must be called by derived classes to enqueue a new observation in the list to be returned by getObservations.
 			  *  Passed objects must be created in dynamic memory and a smart pointer passed. Example of creation:
 			  \code
-				mrpt::obs::CObservationGPSPtr  o = CObservationGPSPtr( new CObservationGPS() );
+				mrpt::obs::CObservationGPS::Ptr  o = CObservationGPS::Ptr( new CObservationGPS() );
 				o-> .... // Set data
 				appendObservation(o);
 			  \endcode
 			  * If several observations are passed at once in the vector, they'll be considered as a block regarding the grabbing decimation factor.
 			  */
-			void appendObservations( const std::vector<mrpt::utils::CSerializablePtr> &obj);
+			void appendObservations( const std::vector<mrpt::utils::CSerializable::Ptr> &obj);
 
 			//! Like appendObservations() but for just one observation.
-			void appendObservation( const mrpt::utils::CSerializablePtr &obj)
+			void appendObservation( const mrpt::utils::CSerializable::Ptr &obj)
 			{
-				appendObservations(std::vector<mrpt::utils::CSerializablePtr>(1, obj));
+				appendObservations(std::vector<mrpt::utils::CSerializable::Ptr>(1, obj));
 			}
 
 			/** Auxiliary structure used for CSerializable runtime class ID support.
@@ -169,16 +169,16 @@ namespace mrpt
 			/** Creates a sensor by a name of the class.
 			  *  Typically the user may want to create a smart pointer around the returned pointer, whis is made with:
 			  *  \code
-			  *   CGenericSensorPtr sensor = CGenericSensorPtr( CGenericSensor::createSensor("XXX") );
+			  *   CGenericSensor::Ptr sensor = CGenericSensor::Ptr( CGenericSensor::createSensor("XXX") );
 			  *  \endcode
 			  * \return A pointer to a new class, or nullptr if class name is unknown.
 			  */
 			static CGenericSensor* createSensor(const std::string &className);
 
 			/** Just like createSensor, but returning a smart pointer to the newly created sensor object. */
-			static inline CGenericSensorPtr createSensorPtr(const std::string &className)
+			static inline CGenericSensor::Ptr createSensorPtr(const std::string &className)
 			{
-				return CGenericSensorPtr(createSensor(className));
+				return CGenericSensor::Ptr(createSensor(className));
 			}
 
 			/** Constructor */

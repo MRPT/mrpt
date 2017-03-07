@@ -41,7 +41,7 @@ namespace mrpt
 		private:
 			/** Private member, implements one the algorithms.
 			  */
-			mrpt::poses::CPosePDFPtr AlignPDF_correlation(
+			mrpt::poses::CPosePDF::Ptr AlignPDF_correlation(
 					const mrpt::maps::CMetricMap		*m1,
 					const mrpt::maps::CMetricMap		*m2,
 					const mrpt::poses::CPosePDFGaussian	&initialEstimationPDF,
@@ -50,7 +50,7 @@ namespace mrpt
 
 			/** Private member, implements both, the "robustMatch" and the newer "modifiedRANSAC" algorithms.
 			  */
-			mrpt::poses::CPosePDFPtr AlignPDF_robustMatch(
+			mrpt::poses::CPosePDF::Ptr AlignPDF_robustMatch(
 					const mrpt::maps::CMetricMap		*m1,
 					const mrpt::maps::CMetricMap		*m2,
 					const mrpt::poses::CPosePDFGaussian	&initialEstimationPDF,
@@ -147,10 +147,10 @@ namespace mrpt
 				  *   - The final sog is the merge of sog3.
 				  *
 				  */
-				mrpt::utils::poly_ptr_ptr<mrpt::poses::CPosePDFSOGPtr> sog1,sog2,sog3;
+				mrpt::utils::poly_ptr_ptr<mrpt::poses::CPosePDFSOG::Ptr> sog1,sog2,sog3;
 
 				/** The landmarks of each map (the indices of these landmarks correspond to those in "correspondences")  */
-				mrpt::maps::CLandmarksMapPtr	landmarks_map1, landmarks_map2;
+				mrpt::maps::CLandmarksMap::Ptr	landmarks_map1, landmarks_map2;
 
 				/** All the found correspondences (not consistent) */
 				mrpt::utils::TMatchingPairList	correspondences;
@@ -191,7 +191,7 @@ namespace mrpt
 			 * \return A smart pointer to the output estimated pose PDF.
 			 * \sa CPointsMapAlignmentAlgorithm, options
 			 */
-			mrpt::poses::CPosePDFPtr AlignPDF(
+			mrpt::poses::CPosePDF::Ptr AlignPDF(
 					const mrpt::maps::CMetricMap		*m1,
 					const mrpt::maps::CMetricMap		*m2,
 					const mrpt::poses::CPosePDFGaussian	&initialEstimationPDF,
@@ -201,7 +201,7 @@ namespace mrpt
 
 
 			/** Not applicable in this class, will launch an exception. */
-			mrpt::poses::CPose3DPDFPtr Align3DPDF(
+			mrpt::poses::CPose3DPDF::Ptr Align3DPDF(
 					const mrpt::maps::CMetricMap		*m1,
 					const mrpt::maps::CMetricMap		*m2,
 					const mrpt::poses::CPose3DPDFGaussian	&initialEstimationPDF,

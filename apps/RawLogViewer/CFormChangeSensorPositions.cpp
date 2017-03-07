@@ -554,7 +554,7 @@ void CFormChangeSensorPositions::executeOperationOnRawlog( TRawlogFilter operati
     while ((( !isInMemory && keepLoading ) ||
             (  isInMemory && countLoop < rawlog.size() ))&& !sensorPoseReadOK && !camReadIsOk )
     {
-        CSerializablePtr newObj;
+        CSerializable::Ptr newObj;
         try
         {
             if (isInMemory)
@@ -570,7 +570,7 @@ void CFormChangeSensorPositions::executeOperationOnRawlog( TRawlogFilter operati
             if ( newObj->GetRuntimeClass() == CLASS_ID(CSensoryFrame))
             {
                 // A sensory frame:
-                CSensoryFramePtr sf(newObj);
+                CSensoryFrame::Ptr sf(std::dynamic_pointer_cast<CSensoryFrame>(newObj));
 
                 // Process & save:
                                 operation(nullptr,sf.get(),changes );
@@ -580,26 +580,26 @@ void CFormChangeSensorPositions::executeOperationOnRawlog( TRawlogFilter operati
             else if ( newObj->GetRuntimeClass() == CLASS_ID(CActionCollection))
             {
                 // This is an action:
-                CActionCollectionPtr acts =CActionCollectionPtr( newObj );
+                CActionCollection::Ptr acts = std::dynamic_pointer_cast<CActionCollection>( newObj );
 
                 // Process & save:
-                                operation( (CActionCollection*)acts.get(),nullptr,changes);
+                operation( dynamic_cast<CActionCollection*>(acts.get()),nullptr,changes);
 
                 if (!isInMemory)  (*out_fil) << *acts;
             }
-			else if ( newObj->GetRuntimeClass()->derivedFrom(CLASS_ID(CObservation)))
+            else if ( newObj->GetRuntimeClass()->derivedFrom(CLASS_ID(CObservation)))
             {
                 // A sensory frame:
-                CObservationPtr o(newObj);
+                CObservation::Ptr o(std::dynamic_pointer_cast<CObservation>(newObj));
 
-				static CSensoryFrame sf;
-				sf.clear();
-				sf.insert(o);
+                static CSensoryFrame sf;
+                sf.clear();
+                sf.insert(o);
 
                 // Process & save:
-                                operation(nullptr,&sf,changes );
+                operation(nullptr,&sf,changes );
 
-				if (!isInMemory)  (*out_fil) << *o;
+                if (!isInMemory)  (*out_fil) << *o;
             }
             else
             {   // Unknown class:
@@ -658,7 +658,7 @@ void  exec_setPoseByIdx( mrpt::obs::CActionCollection *acts, mrpt::obs::CSensory
 	if (SF)
 		if (SF->size()>idxToProcess)
 		{
-		    CObservationPtr obs = SF->getObservationByIndex(idxToProcess);
+		    CObservation::Ptr obs = SF->getObservationByIndex(idxToProcess);
 		    if (changeOnlyXYZ)
 		    {
                 CPose3D   tmpPose;
@@ -687,7 +687,7 @@ void  exec_setPoseByLabel( mrpt::obs::CActionCollection *acts, mrpt::obs::CSenso
 	{
 		for (CSensoryFrame::iterator it= SF->begin();it!=SF->end();++it)
 		{
-		    CObservationPtr obs = *it;
+		    CObservation::Ptr obs = *it;
 
 		    if ( obs->sensorLabel == labelToProcess)
 		    {
@@ -760,7 +760,7 @@ void  exec_getCurrentPoseByLabel( mrpt::obs::CActionCollection *acts, mrpt::obs:
 {
 	if (SF && SF->size())
 	{
-		CObservationPtr o = SF->getObservationBySensorLabel(labelToProcess);
+		CObservation::Ptr o = SF->getObservationBySensorLabel(labelToProcess);
 		if (o)
 		{
 			o->getSensorPose( sensorPoseToRead );
@@ -812,7 +812,7 @@ void  exec_getCurrentCamCfgByIdx( mrpt::obs::CActionCollection *acts, mrpt::obs:
 		{
 			if ( SF->getObservationByIndex(idxToProcess)->GetRuntimeClass() == CLASS_ID( CObservationImage ))
 			{
-				CObservationImagePtr obsIm = SF->getObservationByIndexAs<CObservationImagePtr>(idxToProcess);
+				CObservationImage::Ptr obsIm = SF->getObservationByIndexAs<CObservationImage::Ptr>(idxToProcess);
 				camDistortion= obsIm->cameraParams.getDistortionParamsAsVector();
 				camIntrinsic = obsIm->cameraParams.intrinsicParams;
 				camFocalLen  = obsIm->cameraParams.focalLengthMeters;
@@ -824,11 +824,11 @@ void  exec_getCurrentCamCfgByLabel( mrpt::obs::CActionCollection *acts, mrpt::ob
 {
 	if (SF && SF->size())
 	{
-		CObservationPtr o = SF->getObservationBySensorLabel(labelToProcess);
+		CObservation::Ptr o = SF->getObservationBySensorLabel(labelToProcess);
 
 		if (o && o->GetRuntimeClass()==CLASS_ID(CObservationImage))
 		{
-			CObservationImagePtr obsIm = SF->getObservationBySensorLabelAs<CObservationImagePtr>(labelToProcess);
+			CObservationImage::Ptr obsIm = SF->getObservationBySensorLabelAs<CObservationImage::Ptr>(labelToProcess);
 			camDistortion= obsIm->cameraParams.getDistortionParamsAsVector();
 			camIntrinsic = obsIm->cameraParams.intrinsicParams;
 			camFocalLen  = obsIm->cameraParams.focalLengthMeters;
@@ -885,7 +885,7 @@ void  exec_setCurrentCamCfgByIdx( mrpt::obs::CActionCollection *acts, mrpt::obs:
 		{
 			if ( SF->getObservationByIndex(idxToProcess)->GetRuntimeClass() == CLASS_ID( CObservationImage ))
 			{
-				CObservationImagePtr obsIm = SF->getObservationByIndexAs<CObservationImagePtr>(idxToProcess);
+				CObservationImage::Ptr obsIm = SF->getObservationByIndexAs<CObservationImage::Ptr>(idxToProcess);
 				obsIm->cameraParams.setDistortionParamsVector( camDistortion );
 				obsIm->cameraParams.intrinsicParams = camIntrinsic;
 				obsIm->cameraParams.focalLengthMeters = camFocalLen;
@@ -897,10 +897,10 @@ void  exec_setCurrentCamCfgByLabel( mrpt::obs::CActionCollection *acts, mrpt::ob
 {
 	if (SF && SF->size())
 	{
-		CObservationPtr o = SF->getObservationBySensorLabel(labelToProcess);
+		CObservation::Ptr o = SF->getObservationBySensorLabel(labelToProcess);
 		if (o && o->GetRuntimeClass()==CLASS_ID(CObservationImage))
 		{
-			CObservationImagePtr obsIm = SF->getObservationBySensorLabelAs<CObservationImagePtr>(labelToProcess);
+			CObservationImage::Ptr obsIm = SF->getObservationBySensorLabelAs<CObservationImage::Ptr>(labelToProcess);
 			obsIm->cameraParams.setDistortionParamsVector( camDistortion );
 			obsIm->cameraParams.intrinsicParams = camIntrinsic;
 			obsIm->cameraParams.focalLengthMeters = camFocalLen;

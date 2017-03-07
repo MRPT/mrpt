@@ -58,9 +58,8 @@ namespace mrpt
 			void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const MRPT_OVERRIDE;
 
 			/** Class factory  */
-			static CTextPtr Create(const std::string &str);
+			static CText::Ptr Create(const std::string &str);
 
-		private:
 			/** Constructor */
 			CText( const std::string &str = std::string("") );
 

@@ -104,7 +104,7 @@ void xRawLogViewerFrame::OnImportCARMEN(wxCommandEvent& event)
 
 	CActionRobotMovement2D		actionMovement;
 	CSensoryFrame				sf;
-	CObservation2DRangeScanPtr	obsScan;
+	CObservation2DRangeScan::Ptr	obsScan;
 	CActionCollection			actions;
 	CPose2D						frontLaserPose(0,0,0);
 	CPose2D						rearLaserPose(0,0,M_PIf);
@@ -338,8 +338,8 @@ void xRawLogViewerFrame::OnImportSequenceOfImages(wxCommandEvent& event)
 					!os::_strcmpi( "ras",filExt.c_str() ) )
 			{
 				// Add SF:
-				CSensoryFramePtr sf=CSensoryFrame::Create();
-				CObservationImagePtr  im = CObservationImage::Create();
+				CSensoryFrame::Ptr sf=CSensoryFrame::Create();
+				CObservationImage::Ptr  im = CObservationImage::Create();
 				im->cameraPose=CPose3D(0,0,0);
 				im->image.loadFromFile(filName);
 				im->timestamp = fakeTimeStamp;
@@ -358,7 +358,7 @@ void xRawLogViewerFrame::OnImportSequenceOfImages(wxCommandEvent& event)
 				rawlog.addObservationsMemoryReference( sf );
 
 				// Add emppty action:
-				CActionCollectionPtr acts=CActionCollection::Create();
+				CActionCollection::Ptr acts=CActionCollection::Create();
 				rawlog.addActionsMemoryReference( acts );
 
 				// for the next step:
@@ -460,10 +460,10 @@ void xRawLogViewerFrame::OnMenuExportALOG(wxCommandEvent& event)
 			// ---------------------
 			if ( rawlog.getType(i)==CRawlog::etActionCollection && lastTime!=INVALID_TIMESTAMP )
 			{
-				CActionCollectionPtr acts  = rawlog.getAsAction(i);
+				CActionCollection::Ptr acts  = rawlog.getAsAction(i);
 
 				// Have we odometry here?
-				CActionRobotMovement2DPtr act = acts->getMovementEstimationByType( CActionRobotMovement2D::emOdometry );
+				CActionRobotMovement2D::Ptr act = acts->getMovementEstimationByType( CActionRobotMovement2D::emOdometry );
 				if ( act )
 				{
 					globalOdometry = globalOdometry  + act->poseChange->getMeanVal();
@@ -488,10 +488,10 @@ void xRawLogViewerFrame::OnMenuExportALOG(wxCommandEvent& event)
 			}
 			else if ( rawlog.getType(i)==CRawlog::etSensoryFrame )
 			{
-				CSensoryFramePtr SF = rawlog.getAsObservations(i);
+				CSensoryFrame::Ptr SF = rawlog.getAsObservations(i);
 
 				// Any laser scan?
-				CObservation2DRangeScanPtr obs = SF->getObservationByClass<CObservation2DRangeScan>();
+				CObservation2DRangeScan::Ptr obs = SF->getObservationByClass<CObservation2DRangeScan>();
 				if (obs)
 				{
 					lastTime = obs->timestamp;
@@ -1083,7 +1083,7 @@ void xRawLogViewerFrame::saveImportedLogToRawlog(
 		if (it->second.type != 0)
 		{
 			// is an observation:
-			CObservationPtr	 newObs;
+			CObservation::Ptr	 newObs;
 
 			// Create object:
 			switch (it->second.type)
@@ -1094,7 +1094,7 @@ void xRawLogViewerFrame::saveImportedLogToRawlog(
 				// ----------------
 				// 2D/3D LASER
 				// ----------------
-				CObservation2DRangeScanPtr obs = CObservation2DRangeScan::Create();
+				CObservation2DRangeScan::Ptr obs = CObservation2DRangeScan::Create();
 				newObs = obs;
 
 				obs->aperture = M_PIf;
@@ -1132,7 +1132,7 @@ void xRawLogViewerFrame::saveImportedLogToRawlog(
 				if ( fileExists( img_file ) )
 				{
 
-					CObservationImagePtr obs = CObservationImage::Create();
+					CObservationImage::Ptr obs = CObservationImage::Create();
 					newObs = obs;
 
 					obs->cameraPose.setFromValues(
@@ -1248,24 +1248,24 @@ void xRawLogViewerFrame::OnGenGasTxt(wxCommandEvent& event)
 
 		for (i=0;i<n;i++)
 		{
-			CObservationGasSensorsPtr obs;
+			CObservationGasSensors::Ptr obs;
 
 			switch ( rawlog.getType(i) )
 			{
 
 			case CRawlog::etSensoryFrame:
 				{
-					CSensoryFramePtr sf = rawlog.getAsObservations(i);
+					CSensoryFrame::Ptr sf = rawlog.getAsObservations(i);
 					obs = sf->getObservationByClass<CObservationGasSensors>();
 				}
 				break;
 
 			case CRawlog::etObservation:
 				{
-					CObservationPtr o = rawlog.getAsObservation(i);		//get the observation
+					CObservation::Ptr o = rawlog.getAsObservation(i);		//get the observation
 					if (IS_CLASS(o,CObservationGasSensors))
 					{
-						obs = CObservationGasSensorsPtr(o);	//Get the GAS observation
+						obs = std::dynamic_pointer_cast<CObservationGasSensors>(o);	//Get the GAS observation
 					}
 				}
 				break;
@@ -1358,24 +1358,24 @@ void xRawLogViewerFrame::OnGenWifiTxt(wxCommandEvent& event)
 
 		for (i=0;i<n;i++)
 		{
-			CObservationWirelessPowerPtr obs;
+			CObservationWirelessPower::Ptr obs;
 
 			switch ( rawlog.getType(i) )
 			{
 
 			case CRawlog::etSensoryFrame:
 				{
-					CSensoryFramePtr sf = rawlog.getAsObservations(i);
+					CSensoryFrame::Ptr sf = rawlog.getAsObservations(i);
 					obs = sf->getObservationByClass<CObservationWirelessPower>();
 				}
 				break;
 
 			case CRawlog::etObservation:
 				{
-					CObservationPtr o = rawlog.getAsObservation(i);		//get the observation
+					CObservation::Ptr o = rawlog.getAsObservation(i);		//get the observation
 					if (IS_CLASS(o,CObservationWirelessPower))
 					{
-						obs = CObservationWirelessPowerPtr(o);	//Get the GAS observation
+						obs = std::dynamic_pointer_cast<CObservationWirelessPower>(o);	//Get the GAS observation
 					}
 				}
 				break;
@@ -1469,24 +1469,24 @@ void xRawLogViewerFrame::OnGenRFIDTxt(wxCommandEvent& event)
 
 		for (i=0;i<n;i++)
 		{
-			CObservationRFIDPtr obs;
+			CObservationRFID::Ptr obs;
 
 			switch ( rawlog.getType(i) )
 			{
 
 			case CRawlog::etSensoryFrame:
 				{
-					CSensoryFramePtr sf = rawlog.getAsObservations(i);
+					CSensoryFrame::Ptr sf = rawlog.getAsObservations(i);
 					obs = sf->getObservationByClass<CObservationRFID>();
 				}
 				break;
 
 			case CRawlog::etObservation:
 				{
-					CObservationPtr o = rawlog.getAsObservation(i);		//get the observation
+					CObservation::Ptr o = rawlog.getAsObservation(i);		//get the observation
 					if (IS_CLASS(o,CObservationRFID))
 					{
-						obs = CObservationRFIDPtr(o);	//Get the GAS observation
+						obs = std::dynamic_pointer_cast<CObservationRFID>(o);	//Get the GAS observation
 					}
 				}
 				break;
@@ -1684,7 +1684,7 @@ Units are m and radian.
 				// Always create an range-bearing observation, for the cases of images without any detected landmark
 				//  so we have the observation, even if it's empty:
 				// Create upon first landmark:
-				CObservationBearingRangePtr obs = CObservationBearingRange::Create();
+				CObservationBearingRange::Ptr obs = CObservationBearingRange::Create();
 				obs->sensorLabel = "CIRCLE_DETECTOR";
 				obs->timestamp = cur_timestamp;
 				obs->minSensorDistance = 0;
@@ -1705,7 +1705,7 @@ Units are m and radian.
 			//  STEP <image> <dX> <dY> <dTheta>, <cXX>, <cXY>, <cYY>, <cXTheta>, <cYTheta>, <cThetaTheta>
 
 			// Add the image to be inserted before the next odometry entry:
-			CObservationImagePtr newImg = CObservationImage::Create();
+			CObservationImage::Ptr newImg = CObservationImage::Create();
 			newImg->timestamp = cur_timestamp;
 			newImg->sensorLabel = "CAMERA";
 			newImg->image.setExternalStorage(words[1] + std::string(".jpg"));
@@ -1742,7 +1742,7 @@ Units are m and radian.
 			{
 				obs_odo.timestamp = cur_timestamp;
 				obs_odo.odometry += odoIncr;
-				newRawlog.addObservationMemoryReference( CObservationOdometryPtr( new CObservationOdometry( obs_odo )));
+				newRawlog.addObservationMemoryReference(std::make_shared<CObservationOdometry>( obs_odo ));
 			}
 		}
 		else
@@ -1754,7 +1754,7 @@ Units are m and radian.
 
 			// Just append this measure to the observation within "set_of_obs":
 
-			CObservationBearingRangePtr obs = set_of_obs.getObservationByClass<CObservationBearingRange>();
+			CObservationBearingRange::Ptr obs = set_of_obs.getObservationByClass<CObservationBearingRange>();
 			ASSERT_(obs)
 
 			// <pX> <pY> <quality> <cXX> <cXY> <cYY> <ID>
@@ -1904,9 +1904,9 @@ void xRawLogViewerFrame::OnGenerateIMUTextFile(wxCommandEvent& event)
 
 				case CRawlog::etSensoryFrame:
 				{
-					CSensoryFramePtr sf = rawlog.getAsObservations(i);
+					CSensoryFrame::Ptr sf = rawlog.getAsObservations(i);
 					size_t k = 0;
-					CObservationIMUPtr obs;
+					CObservationIMU::Ptr obs;
 					do {
 						obs =sf->getObservationByClass<CObservationIMU>(k++);
 						if (obs)
@@ -1939,11 +1939,11 @@ void xRawLogViewerFrame::OnGenerateIMUTextFile(wxCommandEvent& event)
 
 				case CRawlog::etObservation:
 				{
-					CObservationPtr oo = rawlog.getAsObservation(i);
+					CObservation::Ptr oo = rawlog.getAsObservation(i);
 
 					if ( oo->GetRuntimeClass() == CLASS_ID(CObservationIMU) )
 					{
-						CObservationIMUPtr obs = CObservationIMUPtr(oo);
+						CObservationIMU::Ptr obs = std::dynamic_pointer_cast<CObservationIMU>(oo);
 						// For each entry in this sequence:
 						if (obs->rawMeasurements.size()>0)
 						{
@@ -2004,8 +2004,8 @@ void xRawLogViewerFrame::OnGenerateTextFileRangeBearing(wxCommandEvent& event)
 		{
 			if ( rawlog.getType(i)==CRawlog::etSensoryFrame )
 			{
-				CSensoryFramePtr sf = rawlog.getAsObservations(i);
-				CObservationBearingRangePtr obs = sf->getObservationByClass<CObservationBearingRange>();
+				CSensoryFrame::Ptr sf = rawlog.getAsObservations(i);
+				CObservationBearingRange::Ptr obs = sf->getObservationByClass<CObservationBearingRange>();
 				if (obs)
 				{
 					// For each entry in this sequence:
@@ -2023,11 +2023,11 @@ void xRawLogViewerFrame::OnGenerateTextFileRangeBearing(wxCommandEvent& event)
 			}
 			else if ( rawlog.getType(i)==CRawlog::etObservation )
 			{
-				CObservationPtr o = rawlog.getAsObservation(i);
+				CObservation::Ptr o = rawlog.getAsObservation(i);
 
 				if (IS_CLASS(o,CObservationBearingRange))
 				{
-					CObservationBearingRangePtr obs = CObservationBearingRangePtr(o);
+					CObservationBearingRange::Ptr obs = std::dynamic_pointer_cast<CObservationBearingRange>(o);
 					// For each entry in this sequence:
 					for (size_t q=0;q<obs->sensedData.size();q++)
 					{

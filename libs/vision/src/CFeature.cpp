@@ -927,7 +927,7 @@ void CFeatureList::loadFromTextFile( const std::string &filename )
 	{
 		try
 		{
-			CFeaturePtr feat_ptr = CFeature::Create();
+			CFeature::Ptr feat_ptr = CFeature::Create();
 			CFeature*   feat = feat_ptr.get(); // for faster access
 
  			int _ID;
@@ -999,26 +999,26 @@ void CFeatureList::copyListFrom( const CFeatureList &otherList )
     for( it1 = otherList.begin(), it2 = this->begin(); it1 != otherList.end(); ++it1, ++it2 )
     {
         *it2 = *it1;
-	(*it2).reset((*it2)->clone());
+	(*it2).reset(dynamic_cast<CFeature *>((*it2)->clone()));
     }
 } // end-copyListFrom
 
 // --------------------------------------------------
 // getByID()
 // --------------------------------------------------
-CFeaturePtr CFeatureList::getByID( const TFeatureID &ID ) const
+CFeature::Ptr CFeatureList::getByID( const TFeatureID &ID ) const
 {
 	for( CFeatureList::const_iterator it = begin(); it != end(); ++it )
 		if( (*it)->ID == ID )
 		    return (*it);
 
-	return CFeaturePtr();
+	return CFeature::Ptr();
 } // end getByID
 
 // --------------------------------------------------
 // getByID()
 // --------------------------------------------------
-CFeaturePtr CFeatureList::getByID( const TFeatureID &ID, int &out_idx ) const
+CFeature::Ptr CFeatureList::getByID( const TFeatureID &ID, int &out_idx ) const
 {
     int k = 0;
 	for( CFeatureList::const_iterator it = begin(); it != end(); ++it, ++k )
@@ -1028,13 +1028,13 @@ CFeaturePtr CFeatureList::getByID( const TFeatureID &ID, int &out_idx ) const
 		    return (*it);
 		}
     out_idx = -1;
-	return CFeaturePtr();
+	return CFeature::Ptr();
 } // end getByID
 
 // --------------------------------------------------
 // getByID()
 // --------------------------------------------------
-void CFeatureList::getByMultiIDs( const vector<TFeatureID> &IDs, vector<CFeaturePtr> &out, vector<int> &outIndex ) const
+void CFeatureList::getByMultiIDs( const vector<TFeatureID> &IDs, vector<CFeature::Ptr> &out, vector<int> &outIndex ) const
 {
     out.clear();
     outIndex.clear();
@@ -1044,7 +1044,7 @@ void CFeatureList::getByMultiIDs( const vector<TFeatureID> &IDs, vector<CFeature
     for( int k = 0; k < int(IDs.size()); ++k )
     {
         int idx;
-        CFeaturePtr f = getByID( IDs[k], idx );
+        CFeature::Ptr f = getByID( IDs[k], idx );
         out.push_back( f );
         outIndex.push_back( idx );
     }
@@ -1053,10 +1053,10 @@ void CFeatureList::getByMultiIDs( const vector<TFeatureID> &IDs, vector<CFeature
 // --------------------------------------------------
 // nearest(x,y)
 // --------------------------------------------------
-CFeaturePtr CFeatureList::nearest(  const float x,  const float y, double &dist_prev ) const
+CFeature::Ptr CFeatureList::nearest(  const float x,  const float y, double &dist_prev ) const
 {
 	if (this->empty())
-		return CFeaturePtr();
+		return CFeature::Ptr();
 
 	float closest_x,closest_y;
 	float closest_sqDist;
@@ -1070,7 +1070,7 @@ CFeaturePtr CFeatureList::nearest(  const float x,  const float y, double &dist_
 		dist_prev = closest_dist;
 		return m_feats[closest_idx];
 	}
-	else return CFeaturePtr();
+	else return CFeature::Ptr();
 } // end nearest
 
 
@@ -1128,16 +1128,16 @@ void CMatchedFeatureList::saveToTextFile(const std::string &filename)
 // --------------------------------------------------
 //			getBothFeatureLists
 // --------------------------------------------------
-CFeaturePtr CMatchedFeatureList::getByID( const TFeatureID & ID, const TListIdx &idx )
+CFeature::Ptr CMatchedFeatureList::getByID( const TFeatureID & ID, const TListIdx &idx )
 {
     CMatchedFeatureList::iterator it;
     for( it = begin(); it != end(); ++it )
     {
-        CFeaturePtr feat = (idx == firstList) ? it->first : it->second;
+        CFeature::Ptr feat = (idx == firstList) ? it->first : it->second;
         if( feat->ID == ID )
             return feat;
     }
-    return CFeaturePtr();
+    return CFeature::Ptr();
 }
 
 // --------------------------------------------------

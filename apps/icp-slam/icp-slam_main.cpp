@@ -207,7 +207,7 @@ void MapBuilding_ICP(const string &INI_FILENAME, const string &override_rawlog_f
 
 
 	// Create 3D window if requested:
-	CDisplayWindow3DPtr	win3D;
+	CDisplayWindow3D::Ptr	win3D;
 #if MRPT_HAS_WXWIDGETS
 	if (SHOW_PROGRESS_3D_REAL_TIME)
 	{
@@ -225,9 +225,9 @@ void MapBuilding_ICP(const string &INI_FILENAME, const string &override_rawlog_f
 	tictacGlobal.Tic();
 	for (;;)
 	{
-		CActionCollectionPtr	action;
-		CSensoryFramePtr		observations;
-		CObservationPtr			observation;
+		CActionCollection::Ptr	action;
+		CSensoryFrame::Ptr		observations;
+		CObservation::Ptr			observation;
 
 		if (os::kbhit())
 		{
@@ -242,7 +242,7 @@ void MapBuilding_ICP(const string &INI_FILENAME, const string &override_rawlog_f
 			break; // file EOF
 
 		const bool isObsBasedRawlog = observation ? true : false;
-		std::vector<mrpt::obs::CObservation2DRangeScanPtr> lst_current_laser_scans;   // Just for drawing in 3D views
+		std::vector<mrpt::obs::CObservation2DRangeScan::Ptr> lst_current_laser_scans;   // Just for drawing in 3D views
 
 		if (rawlogEntry>=rawlog_offset)
 		{
@@ -253,7 +253,7 @@ void MapBuilding_ICP(const string &INI_FILENAME, const string &override_rawlog_f
 				static bool firstOdo = true;
 				if (IS_CLASS(observation,CObservationOdometry))
 				{
-					CObservationOdometryPtr o = CObservationOdometryPtr(observation);
+					CObservationOdometry::Ptr o = std::dynamic_pointer_cast<CObservationOdometry>(observation);
 					if (!firstOdo)
 						odoPose = odoPose + (o->odometry - lastOdo);
 
@@ -263,7 +263,7 @@ void MapBuilding_ICP(const string &INI_FILENAME, const string &override_rawlog_f
 			}
 			else
 			{
-				CActionRobotMovement2DPtr act= action->getBestMovementEstimation();
+				CActionRobotMovement2D::Ptr act= action->getBestMovementEstimation();
 				if (act)
 					odoPose = odoPose + act->poseChange->getMeanVal();
 			}
@@ -276,7 +276,7 @@ void MapBuilding_ICP(const string &INI_FILENAME, const string &override_rawlog_f
 				{
 					if (IS_CLASS(observation,CObservation2DRangeScan))
 					{
-						lst_current_laser_scans.push_back( CObservation2DRangeScanPtr(observation) );
+						lst_current_laser_scans.push_back( std::dynamic_pointer_cast<CObservation2DRangeScan>(observation) );
 					}
 				}
 				else
@@ -284,7 +284,7 @@ void MapBuilding_ICP(const string &INI_FILENAME, const string &override_rawlog_f
 					// Rawlog in the Actions-SF format:
 					for (size_t i=0; ; i++)
 					{
-						CObservation2DRangeScanPtr new_obs = observations->getObservationByClass<CObservation2DRangeScan>(i);
+						CObservation2DRangeScan::Ptr new_obs = observations->getObservationByClass<CObservation2DRangeScan>(i);
 						if (!new_obs)
 						     break; // There're no more scans
 						else lst_current_laser_scans.push_back( new_obs );
@@ -327,12 +327,12 @@ void MapBuilding_ICP(const string &INI_FILENAME, const string &override_rawlog_f
                 CPose3D robotPose;
 				mapBuilder.getCurrentPoseEstimation()->getMean(robotPose);
 
-				COpenGLScenePtr		scene = COpenGLScene::Create();
+				COpenGLScene::Ptr		scene = COpenGLScene::Create();
 
-                COpenGLViewportPtr view=scene->getViewport("main");
+                COpenGLViewport::Ptr view=scene->getViewport("main");
                 ASSERT_(view);
 
-                COpenGLViewportPtr view_map = scene->createViewport("mini-map");
+                COpenGLViewport::Ptr view_map = scene->createViewport("mini-map");
                 view_map->setBorderSize(2);
                 view_map->setViewportPosition(0.01,0.01,0.35,0.35);
                 view_map->setTransparent(false);
@@ -347,10 +347,10 @@ void MapBuilding_ICP(const string &INI_FILENAME, const string &override_rawlog_f
 				}
 
 				// The ground:
-				mrpt::opengl::CGridPlaneXYPtr groundPlane = mrpt::opengl::CGridPlaneXY::Create(-200,200,-200,200,0,5);
+				mrpt::opengl::CGridPlaneXY::Ptr groundPlane = mrpt::opengl::CGridPlaneXY::Create(-200,200,-200,200,0,5);
 				groundPlane->setColor(0.4,0.4,0.4);
 				view->insert( groundPlane );
-				view_map->insert( CRenderizablePtr( groundPlane) ); // A copy
+				view_map->insert( CRenderizable::Ptr( groundPlane) ); // A copy
 
 				// The camera pointing to the current robot pose:
 				if (CAMERA_3DSCENE_FOLLOWS_ROBOT)
@@ -365,12 +365,12 @@ void MapBuilding_ICP(const string &INI_FILENAME, const string &override_rawlog_f
 
 				// The maps:
 				{
-					opengl::CSetOfObjectsPtr obj = opengl::CSetOfObjects::Create();
+					opengl::CSetOfObjects::Ptr obj = opengl::CSetOfObjects::Create();
 					mostLikMap->getAs3DObject( obj );
 					view->insert(obj);
 
 					// Only the point map:
-					opengl::CSetOfObjectsPtr ptsMap = opengl::CSetOfObjects::Create();
+					opengl::CSetOfObjects::Ptr ptsMap = opengl::CSetOfObjects::Create();
 					if (mostLikMap->m_pointsMaps.size())
 					{
                         mostLikMap->m_pointsMaps[0]->getAs3DObject(ptsMap);
@@ -379,16 +379,16 @@ void MapBuilding_ICP(const string &INI_FILENAME, const string &override_rawlog_f
 				}
 
 				// Draw the robot path:
-				CPose3DPDFPtr posePDF =  mapBuilder.getCurrentPoseEstimation();
+				CPose3DPDF::Ptr posePDF =  mapBuilder.getCurrentPoseEstimation();
 				CPose3D  curRobotPose;
 				posePDF->getMean(curRobotPose);
 				{
-					opengl::CSetOfObjectsPtr obj = opengl::stock_objects::RobotPioneer();
+					opengl::CSetOfObjects::Ptr obj = opengl::stock_objects::RobotPioneer();
 					obj->setPose( curRobotPose );
 					view->insert(obj);
 				}
 				{
-					opengl::CSetOfObjectsPtr obj = opengl::stock_objects::RobotPioneer();
+					opengl::CSetOfObjects::Ptr obj = opengl::stock_objects::RobotPioneer();
 					obj->setPose( curRobotPose );
 					view_map->insert( obj );
 				}
@@ -399,7 +399,7 @@ void MapBuilding_ICP(const string &INI_FILENAME, const string &override_rawlog_f
 					for (size_t i=0;i<lst_current_laser_scans.size();i++)
 					{
 						// Create opengl object and load scan data from the scan observation:
-						opengl::CPlanarLaserScanPtr obj = opengl::CPlanarLaserScan::Create();
+						opengl::CPlanarLaserScan::Ptr obj = opengl::CPlanarLaserScan::Create();
 						obj->setScan(*lst_current_laser_scans[i]);
 						obj->setPose( curRobotPose );
 						obj->setSurfaceColor(1.0f,0.0f,0.0f, 0.5f);
@@ -418,7 +418,7 @@ void MapBuilding_ICP(const string &INI_FILENAME, const string &override_rawlog_f
 				// Show 3D?
 				if (win3D)
 				{
-					opengl::COpenGLScenePtr &ptrScene = win3D->get3DSceneAndLock();
+					opengl::COpenGLScene::Ptr &ptrScene = win3D->get3DSceneAndLock();
 					ptrScene = scene;
 
 					win3D->unlockAccess3DScene();

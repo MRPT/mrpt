@@ -110,7 +110,7 @@ int main ( int argc, char** argv )
 	//										Create scene
 	//========================================================================================
 	gui::CDisplayWindow3D window;
-	opengl::COpenGLScenePtr	scene;
+	opengl::COpenGLScene::Ptr	scene;
 	mrpt::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE = 1000000;
 	window.setWindowTitle("RGB-D camera frame");
 	window.resize(800,600);
@@ -120,7 +120,7 @@ int main ( int argc, char** argv )
 	window.setCameraElevationDeg(90);
 	scene = window.get3DSceneAndLock();
 
-	opengl::CSetOfLinesPtr lines = opengl::CSetOfLines::Create();
+	opengl::CSetOfLines::Ptr lines = opengl::CSetOfLines::Create();
 	lines->setLocation(0,0,0);
 	lines->setColor(0,0,1);
 	lines->setLineWidth(10);
@@ -130,13 +130,13 @@ int main ( int argc, char** argv )
 	lines->appendLine(-1,-1,0,-1,1,0);
 	scene->insert( lines );
 
-	opengl::CPointCloudPtr too_close = opengl::CPointCloud::Create();
+	opengl::CPointCloud::Ptr too_close = opengl::CPointCloud::Create();
 	too_close->setPointSize(5);
 	too_close->enablePointSmooth(true);
 	too_close->setColor(1,0,0);
 	scene->insert( too_close );
 
-	opengl::CGridPlaneXYPtr grid = opengl::CGridPlaneXY::Create(-4,4,-4,4,0);
+	opengl::CGridPlaneXY::Ptr grid = opengl::CGridPlaneXY::Create(-4,4,-4,4,0);
 	scene->insert( grid );
 
 	window.unlockAccess3DScene();

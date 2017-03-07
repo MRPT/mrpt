@@ -299,19 +299,19 @@ class reactive_navigator_demoframe: public wxFrame
 		CMyRedirector *m_myRedirector;
 
 		// ========= Opengl View: Map & robot  =======
-		mrpt::opengl::CSetOfObjectsPtr		gl_grid;
-		mrpt::opengl::CSetOfObjectsPtr		gl_robot,gl_robot_local, gl_target;
-		mrpt::opengl::CSetOfObjectsPtr		m_gl_placing_nav_target, m_gl_placing_robot, m_gl_drawing_obs;
-		mrpt::opengl::CDiskPtr		        gl_robot_sensor_range;
-		mrpt::opengl::CSetOfLinesPtr        gl_robot_path;
-		mrpt::opengl::CPlanarLaserScanPtr   gl_scan3D;
-		mrpt::opengl::CSetOfLinesPtr        gl_robot_ptg_prediction;
-		mrpt::opengl::CSetOfObjectsPtr      gl_waypoints_clicking, gl_waypoints_status;
+		mrpt::opengl::CSetOfObjects::Ptr		gl_grid;
+		mrpt::opengl::CSetOfObjects::Ptr		gl_robot,gl_robot_local, gl_target;
+		mrpt::opengl::CSetOfObjects::Ptr		m_gl_placing_nav_target, m_gl_placing_robot, m_gl_drawing_obs;
+		mrpt::opengl::CDisk::Ptr		        gl_robot_sensor_range;
+		mrpt::opengl::CSetOfLines::Ptr        gl_robot_path;
+		mrpt::opengl::CPlanarLaserScan::Ptr   gl_scan3D;
+		mrpt::opengl::CSetOfLines::Ptr        gl_robot_ptg_prediction;
+		mrpt::opengl::CSetOfObjects::Ptr      gl_waypoints_clicking, gl_waypoints_status;
 
 		// ========= Opengl View: Local view (holonomic)  =======
-		mrpt::opengl::CSimpleLinePtr        gl_line_direction;
-		mrpt::opengl::CPointCloudPtr        gl_rel_target, gl_rel_robot;
-		mrpt::opengl::CSetOfLinesPtr        gl_nd_gaps, gl_tp_obstacles;
+		mrpt::opengl::CSimpleLine::Ptr        gl_line_direction;
+		mrpt::opengl::CPointCloud::Ptr        gl_rel_target, gl_rel_robot;
+		mrpt::opengl::CSetOfLines::Ptr        gl_nd_gaps, gl_tp_obstacles;
 
 };
 

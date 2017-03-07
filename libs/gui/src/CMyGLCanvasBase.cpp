@@ -299,7 +299,7 @@ void CMyGLCanvasBase::Render()
 			// Set the camera params in the scene:
 			if (!useCameraFromScene)
 			{
-				COpenGLViewportPtr view= m_openGLScene->getViewport("main");
+				COpenGLViewport::Ptr view= m_openGLScene->getViewport("main");
 				if (!view)
 				{
 					THROW_EXCEPTION("Fatal error: there is no 'main' viewport in the 3D scene!");

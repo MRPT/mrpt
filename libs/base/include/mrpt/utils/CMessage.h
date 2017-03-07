@@ -11,13 +11,13 @@
 
 #include <mrpt/utils/core_defs.h>
 #include <mrpt/utils/mrpt_stdint.h>
+#include <mrpt/utils/CSerializable.h>
 #include <vector>
 
 namespace mrpt
 {
 	namespace utils
 	{
-		class CSerializable; struct CSerializablePtr; 
 
 		/** A class that contain generic messages, that can be sent and received from a "CClientTCPSocket" object.
 		  *  A message consists of a "header" (or type), and a "body" (or content).
@@ -50,7 +50,7 @@ namespace mrpt
 			  *   will be ignored (it should be nullptr).
 			  * \except std::exception On corrupt data, unknown serialized objects, unknown serialized object version,...
 			  */
-			void  deserializeIntoNewObject( CSerializablePtr &obj );
+			void  deserializeIntoNewObject( CSerializable::Ptr &obj );
 
 			/** Sets the contents of the message from a string
 			  * \sa getContentAsString

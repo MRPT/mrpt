@@ -368,13 +368,13 @@ bool CMultiMetricMapPDF::insertObservation(CSensoryFrame	&sf)
 	const size_t M = particlesCount();
 
 	// Insert into SFs:
-	CPose3DPDFParticlesPtr posePDF = CPose3DPDFParticles::Create();
+	CPose3DPDFParticles::Ptr posePDF = CPose3DPDFParticles::Create();
 	getEstimatedPosePDF(*posePDF);
 
 	// Insert it into the SFs and the SF2robotPath list:
 	SFs.insert(
 		posePDF,
-		CSensoryFramePtr( new CSensoryFrame(sf) ) );
+		CSensoryFrame::Ptr( new CSensoryFrame(sf) ) );
 	SF2robotPath.push_back( m_particles[0].d->robotPath.size()-1 );
 
 	bool anymap = false;
@@ -511,8 +511,8 @@ void  CMultiMetricMapPDF::updateSensoryFrameSequence()
 {
 	MRPT_START
 	CPose3DPDFParticles	posePartsPDF;
-	CPose3DPDFPtr		previousPosePDF;
-	CSensoryFramePtr	dummy;
+	CPose3DPDF::Ptr		previousPosePDF;
+	CSensoryFrame::Ptr	dummy;
 
 	for (size_t i=0;i<SFs.size();i++)
 	{

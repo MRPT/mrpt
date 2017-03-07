@@ -47,11 +47,11 @@ DECLARE_OP_FUNCTION(op_list_rangebearing)
 			      << "%--------------------------------------------------------------------------------------------\n";
 		}
 
-		bool processOneObservation(CObservationPtr  &obs)
+		bool processOneObservation(CObservation::Ptr  &obs)
 		{
 			if (IS_CLASS(obs, CObservationBearingRange ) )
 			{
-				const CObservationBearingRangePtr obsRB_ = CObservationBearingRangePtr(obs);
+				const CObservationBearingRange::Ptr obsRB_ = std::dynamic_pointer_cast<CObservationBearingRange>(obs);
 				const CObservationBearingRange * obsRB = obsRB_.get();
 
 				const double tim = mrpt::system::timestampToDouble( obsRB->timestamp );

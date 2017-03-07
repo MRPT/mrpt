@@ -157,7 +157,7 @@ namespace mrpt
 
 
 			/** Class factory  */
-			static CMeshPtr Create(bool enableTransparency, float xMin = 0.0f, float xMax = 0.0f, float yMin = 0.0f, float yMax = 0.0f );
+			static CMesh::Ptr Create(bool enableTransparency, float xMin = 0.0f, float xMax = 0.0f, float yMin = 0.0f, float yMax = 0.0f );
 
 			/** Render
 			  */
@@ -190,7 +190,6 @@ namespace mrpt
 			  */
 			bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const MRPT_OVERRIDE;
 
-		private:
 			/** Constructor  */
 			CMesh(bool enableTransparency = false, float xMin = 0.0f, float xMax = 0.0f, float yMin = 0.0f, float yMax = 0.0f);
 

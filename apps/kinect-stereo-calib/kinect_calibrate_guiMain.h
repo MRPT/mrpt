@@ -63,7 +63,7 @@ struct TThreadParam
 
 	bool  flag_grab_depth; //!< Default: false = only grab intensity channel(s)
 
-	mrpt::synch::CThreadSafeVariable<mrpt::obs::CObservation3DRangeScanPtr> new_obs;     // RGB+D (+3D points)
+	mrpt::synch::CThreadSafeVariable<mrpt::obs::CObservation3DRangeScan::Ptr> new_obs;     // RGB+D (+3D points)
 };
 
 // Thread for (async) live detecting corners: Do in another thread so the GUI doesn't freeze.
@@ -111,7 +111,7 @@ class kinect_calibrate_guiDialog: public wxDialog
 		mrpt::system::TThreadHandle  m_findcorners_thread;
 		TThreadDetectCornerParam     m_findcorners_thread_data;
 
-		mrpt::obs::CObservation3DRangeScanPtr  m_last_obs;
+		mrpt::obs::CObservation3DRangeScan::Ptr  m_last_obs;
 
 		TGrabState                                 m_grabstate;
 
@@ -119,8 +119,8 @@ class kinect_calibrate_guiDialog: public wxDialog
 		mrpt::vision::TStereoCalibResults          m_calib_result;
 		mrpt::vision::TStereoCalibParams           m_calib_params;
 
-		mrpt::opengl::CPointCloudColouredPtr  m_gl_3d_points; // For live Kinect tests
-		mrpt::opengl::CSetOfObjectsPtr  m_gl_corner_left,m_gl_corner_right; // For live Kinect tests
+		mrpt::opengl::CPointCloudColoured::Ptr  m_gl_3d_points; // For live Kinect tests
+		mrpt::opengl::CSetOfObjects::Ptr  m_gl_corner_left,m_gl_corner_right; // For live Kinect tests
 
 		void thread_grabbing();
 		void thread_find_corners();

@@ -55,26 +55,26 @@ size_t CHierarchicalMapMHPartition::arcCount() const
 /*---------------------------------------------------------------
 						getNodeByID
   ---------------------------------------------------------------*/
-CHMHMapNodePtr  CHierarchicalMapMHPartition::getNodeByID(CHMHMapNode::TNodeID	id)
+CHMHMapNode::Ptr  CHierarchicalMapMHPartition::getNodeByID(CHMHMapNode::TNodeID	id)
 {
 	MRPT_START
-	if (id==AREAID_INVALID) return CHMHMapNodePtr();
+	if (id==AREAID_INVALID) return CHMHMapNode::Ptr();
 
 	TNodeList::iterator it = m_nodes.find(id);
-	return it==m_nodes.end() ?  CHMHMapNodePtr() : it->second;
+	return it==m_nodes.end() ?  CHMHMapNode::Ptr() : it->second;
 
 	MRPT_END
 }
 /*---------------------------------------------------------------
 						getNodeByID
   ---------------------------------------------------------------*/
-const CHMHMapNodePtr  CHierarchicalMapMHPartition::getNodeByID(CHMHMapNode::TNodeID	id) const
+const CHMHMapNode::Ptr  CHierarchicalMapMHPartition::getNodeByID(CHMHMapNode::TNodeID	id) const
 {
 	MRPT_START
-	if (id==AREAID_INVALID) return CHMHMapNodePtr();
+	if (id==AREAID_INVALID) return CHMHMapNode::Ptr();
 
 	TNodeList::const_iterator it = m_nodes.find(id);
-	return it==m_nodes.end() ?  CHMHMapNodePtr() : it->second;
+	return it==m_nodes.end() ?  CHMHMapNode::Ptr() : it->second;
 
 	MRPT_END
 }
@@ -82,7 +82,7 @@ const CHMHMapNodePtr  CHierarchicalMapMHPartition::getNodeByID(CHMHMapNode::TNod
 /*---------------------------------------------------------------
 						getNodeByLabel
   ---------------------------------------------------------------*/
-CHMHMapNodePtr  CHierarchicalMapMHPartition::getNodeByLabel(const std::string &label, const THypothesisID &hypothesisID)
+CHMHMapNode::Ptr  CHierarchicalMapMHPartition::getNodeByLabel(const std::string &label, const THypothesisID &hypothesisID)
 {
 	MRPT_START
 
@@ -93,14 +93,14 @@ CHMHMapNodePtr  CHierarchicalMapMHPartition::getNodeByLabel(const std::string &l
 				return it->second;
 
 	// Not found:
-	return CHMHMapNodePtr();
+	return CHMHMapNode::Ptr();
 
 	MRPT_END
 }
 /*---------------------------------------------------------------
 						getNodeByLabel
   ---------------------------------------------------------------*/
-const CHMHMapNodePtr  CHierarchicalMapMHPartition::getNodeByLabel(const std::string &label, const THypothesisID &hypothesisID) const
+const CHMHMapNode::Ptr  CHierarchicalMapMHPartition::getNodeByLabel(const std::string &label, const THypothesisID &hypothesisID) const
 {
 	MRPT_START
 
@@ -111,7 +111,7 @@ const CHMHMapNodePtr  CHierarchicalMapMHPartition::getNodeByLabel(const std::str
 				return it->second;
 
 	// Not found:
-	return CHMHMapNodePtr();
+	return CHMHMapNode::Ptr();
 
 	MRPT_END
 }
@@ -119,10 +119,10 @@ const CHMHMapNodePtr  CHierarchicalMapMHPartition::getNodeByLabel(const std::str
 /*---------------------------------------------------------------
 					getFirstNode
   ---------------------------------------------------------------*/
-CHMHMapNodePtr  CHierarchicalMapMHPartition::getFirstNode()
+CHMHMapNode::Ptr  CHierarchicalMapMHPartition::getFirstNode()
 {
 	if (m_nodes.empty())
-			return CHMHMapNodePtr();
+			return CHMHMapNode::Ptr();
 	else	return (m_nodes.begin())->second;
 }
 
@@ -747,7 +747,7 @@ void CHierarchicalMapMHPartition::findPathBetweenNodes(
 
 	map<CHMHMapNode::TNodeID,TDistance>					d;		// distance
 	map<CHMHMapNode::TNodeID,TPrevious>					previous;
-	map<CHMHMapNode::TNodeID, CHMHMapArcPtr>		previous_arcs;
+	map<CHMHMapNode::TNodeID, CHMHMapArc::Ptr>		previous_arcs;
 	map<CHMHMapNode::TNodeID, bool>						visited;
 
 	unsigned 						visitedCount = 0;
@@ -795,7 +795,7 @@ void CHierarchicalMapMHPartition::findPathBetweenNodes(
 		visitedCount++;
 
 		// For each arc from "u":
-		const CHMHMapNodePtr nodeU = getNodeByID(u->first);
+		const CHMHMapNode::Ptr nodeU = getNodeByID(u->first);
 		TArcList  arcs;
 		nodeU->getArcs( arcs, hypothesisID );
 		for (TArcList::const_iterator i=arcs.begin();i!=arcs.end();++i)
@@ -899,11 +899,11 @@ void  CHierarchicalMapMHPartition::computeCoordinatesTransformationBetweenNodes(
 
 
 		// Get the pose PDF:
-		CSerializablePtr anotation = (*arcsIt)->m_annotations.get( ARC_ANNOTATION_DELTA, hypothesisID );
+		CSerializable::Ptr anotation = (*arcsIt)->m_annotations.get( ARC_ANNOTATION_DELTA, hypothesisID );
 		ASSERT_( anotation );
 
 		CPose3DPDFGaussian pdf; // Convert to gaussian
-		pdf.copyFrom(*CPose3DPDFPtr(anotation));
+		pdf.copyFrom(*std::dynamic_pointer_cast<CPose3DPDF>(anotation));
 
 		vector<CVectorDouble>  samples;
 
@@ -991,7 +991,7 @@ void CHierarchicalMapMHPartition::findArcsBetweenNodes(
 	MRPT_START
 
 	ret.clear();
-	const CHMHMapNodePtr node1 = getNodeByID( node1id );
+	const CHMHMapNode::Ptr node1 = getNodeByID( node1id );
 
 	TArcList		lstArcs;
 	TArcList::const_iterator 	itArc;
@@ -1023,7 +1023,7 @@ void CHierarchicalMapMHPartition::findArcsOfTypeBetweenNodes(
 	MRPT_START
 
 	ret.clear();
-	const CHMHMapNodePtr node1 = getNodeByID( node1id );
+	const CHMHMapNode::Ptr node1 = getNodeByID( node1id );
 
 	TArcList		lstArcs;
 	TArcList::const_iterator 	itArc;
@@ -1055,7 +1055,7 @@ bool	 CHierarchicalMapMHPartition::areNodesNeightbour(
 {
 	MRPT_START
 
-	const CHMHMapNodePtr node1 = getNodeByID( node1id );
+	const CHMHMapNode::Ptr node1 = getNodeByID( node1id );
 
 	TArcList		lstArcs;
 	TArcList::const_iterator 	itArc;
@@ -1098,7 +1098,7 @@ void  CHierarchicalMapMHPartition::getAs3DScene(
 	// First: Clear and add the cool "ground grid" :-P
 	outScene.clear();
 	{
-		mrpt::opengl::CGridPlaneXYPtr obj = mrpt::opengl::CGridPlaneXY::Create( -500,500,-500,500,0,5 );
+		mrpt::opengl::CGridPlaneXY::Ptr obj = mrpt::opengl::CGridPlaneXY::Create( -500,500,-500,500,0,5 );
 		obj->setColor(0.3,0.3,0.3);
 		outScene.insert( obj );
 	}
@@ -1118,9 +1118,9 @@ void  CHierarchicalMapMHPartition::getAs3DScene(
 	for (it=nodesPoses.begin();it!=nodesPoses.end();it++)
 	{
 		CPose2D		meanPose = CPose2D(it->second.mean);
-		const CHMHMapNodePtr node = getNodeByID( it->first );
+		const CHMHMapNode::Ptr node = getNodeByID( it->first );
 
-		CRobotPosesGraphPtr posesGraph = node->m_annotations.getAs<CRobotPosesGraph>(NODE_ANNOTATION_POSES_GRAPH,hypothesisID);
+		CRobotPosesGraph::Ptr posesGraph = node->m_annotations.getAs<CRobotPosesGraph>(NODE_ANNOTATION_POSES_GRAPH,hypothesisID);
 
 		if (posesGraph && posesGraph->size())
 		{
@@ -1150,12 +1150,12 @@ void  CHierarchicalMapMHPartition::getAs3DScene(
 	for (it = nodesPoses.begin();it!=nodesPoses.end();it++)
 	{
 		const CPose3D	&pose = it->second.mean;
-		const CHMHMapNodePtr node = getNodeByID( it->first );
+		const CHMHMapNode::Ptr node = getNodeByID( it->first );
 
-		CMultiMetricMapPtr metricMap = node->m_annotations.getAs<CMultiMetricMap>(NODE_ANNOTATION_METRIC_MAPS, hypothesisID);
+		CMultiMetricMap::Ptr metricMap = node->m_annotations.getAs<CMultiMetricMap>(NODE_ANNOTATION_METRIC_MAPS, hypothesisID);
 		if (metricMap) //ASSERT_(metricMap);
 		{
-			mrpt::opengl::CSetOfObjectsPtr objTex = mrpt::opengl::CSetOfObjects::Create();
+			mrpt::opengl::CSetOfObjects::Ptr objTex = mrpt::opengl::CSetOfObjects::Create();
 			metricMap->getAs3DObject( objTex );
 			objTex->setPose( pose );
 			outScene.insert( objTex );
@@ -1170,12 +1170,12 @@ void  CHierarchicalMapMHPartition::getAs3DScene(
 	// ----------------------
 	for (it = nodesPoses.begin(),it2=nodesMeanPoses.begin();it!=nodesPoses.end();it++,it2++)
 	{
-		const CHMHMapNodePtr node = getNodeByID( it->first );
+		const CHMHMapNode::Ptr node = getNodeByID( it->first );
 		const CPose3D		&pose = it->second.mean ;
 		const CPose3D		&meanPose= it2->second ;
 
 		// The sphere of the node:
-		mrpt::opengl::CSpherePtr objSphere = mrpt::opengl::CSphere::Create();
+		mrpt::opengl::CSphere::Ptr objSphere = mrpt::opengl::CSphere::Create();
 
 		objSphere->setName( node->m_label );
 		objSphere->setColor(0,0,1);
@@ -1189,7 +1189,7 @@ void  CHierarchicalMapMHPartition::getAs3DScene(
 		outScene.insert( objSphere );
 
 		// The label with the name of the node:
-		mrpt::opengl::CTextPtr objText = mrpt::opengl::CText::Create();
+		mrpt::opengl::CText::Ptr objText = mrpt::opengl::CText::Create();
 	//	objText->m_str = node->m_label;
 		objText->setString( format("%li",(long int)node->getID()) );
 		//objText->m_fontHeight = 20;
@@ -1200,7 +1200,7 @@ void  CHierarchicalMapMHPartition::getAs3DScene(
 
 		// And the observations "on the ground" as disks
 		// ---------------------------------------------------
-		CRobotPosesGraphPtr posesGraph = node->m_annotations.getAs<CRobotPosesGraph>(NODE_ANNOTATION_POSES_GRAPH,hypothesisID);
+		CRobotPosesGraph::Ptr posesGraph = node->m_annotations.getAs<CRobotPosesGraph>(NODE_ANNOTATION_POSES_GRAPH,hypothesisID);
 		//ASSERT_(posesGraph);
 
 		if (posesGraph)
@@ -1212,7 +1212,7 @@ void  CHierarchicalMapMHPartition::getAs3DScene(
 
 				CPose3D auxPose( pose + SF_pose );
 
-				mrpt::opengl::CDiskPtr glObj = mrpt::opengl::CDisk::Create();
+				mrpt::opengl::CDisk::Ptr glObj = mrpt::opengl::CDisk::Create();
 
 				glObj->setColor(1,0,0);
 
@@ -1232,7 +1232,7 @@ void  CHierarchicalMapMHPartition::getAs3DScene(
 				outScene.insert( glObj );
 
 				// And a line up-to the node:
-				mrpt::opengl::CSimpleLinePtr objLine = mrpt::opengl::CSimpleLine::Create();
+				mrpt::opengl::CSimpleLine::Ptr objLine = mrpt::opengl::CSimpleLine::Create();
 
 				objLine->setColor(1,0,0, 0.2);
 				objLine->setLineWidth(1.5);
@@ -1250,14 +1250,14 @@ void  CHierarchicalMapMHPartition::getAs3DScene(
 		node->getArcs( arcs, hypothesisID );
 		for (TArcList::const_iterator a=arcs.begin();a!=arcs.end();++a)
 		{
-			CHMHMapArcPtr arc = *a;
+			CHMHMapArc::Ptr arc = *a;
 
 			if (arc->getNodeFrom()==node->getID())
 			{
 				CPose3D		poseTo( nodesMeanPoses.find(arc->getNodeTo())->second );
 
 				// Draw the line:
-				mrpt::opengl::CSimpleLinePtr objLine = mrpt::opengl::CSimpleLine::Create();
+				mrpt::opengl::CSimpleLine::Ptr objLine = mrpt::opengl::CSimpleLine::Create();
 
 				objLine->setColor(0,1,0, 0.5);
 				objLine->setLineWidth(5);
@@ -1302,11 +1302,11 @@ void  CHierarchicalMapMHPartition::computeGloballyConsistentNodeCoordinates(
 		const CHMHMapNode::TNodeID id_from = (*it_arc)->getNodeFrom();
 		const CHMHMapNode::TNodeID id_to   = (*it_arc)->getNodeTo();
 
-		CSerializablePtr anotation = (*it_arc)->m_annotations.get( ARC_ANNOTATION_DELTA, hypothesisID );
+		CSerializable::Ptr anotation = (*it_arc)->m_annotations.get( ARC_ANNOTATION_DELTA, hypothesisID );
 		if (!anotation) continue;
 		
 		CPose3DPDFGaussianInf edge_rel_pose_pdf; // Convert to gaussian
-		edge_rel_pose_pdf.copyFrom(*CPose3DPDFPtr(anotation));
+		edge_rel_pose_pdf.copyFrom(*std::dynamic_pointer_cast<CPose3DPDF>(anotation));
 
 		pose_graph.insertEdgeAtEnd(id_from,id_to,edge_rel_pose_pdf);
 	}
@@ -1385,7 +1385,7 @@ void  CHierarchicalMapMHPartition::dumpAsText(utils::CStringList &st) const
 			}
 			else if ( ann->name == NODE_ANNOTATION_POSES_GRAPH )
 			{
-				CRobotPosesGraphPtr posesGraph = it->second->m_annotations.getAs<CRobotPosesGraph>(NODE_ANNOTATION_POSES_GRAPH,ann->ID);
+				CRobotPosesGraph::Ptr posesGraph = it->second->m_annotations.getAs<CRobotPosesGraph>(NODE_ANNOTATION_POSES_GRAPH,ann->ID);
 				ASSERT_(posesGraph);
 
 				st << format("     CRobotPosesGraph has %i poses:",(int)posesGraph->size());
@@ -1445,11 +1445,11 @@ void  CHierarchicalMapMHPartition::dumpAsText(utils::CStringList &st) const
 			}
 			else if ( ann->name == ARC_ANNOTATION_DELTA )
 			{
-				CSerializablePtr o = (*it)->m_annotations.get(ARC_ANNOTATION_DELTA, ann->ID );
+				CSerializable::Ptr o = (*it)->m_annotations.get(ARC_ANNOTATION_DELTA, ann->ID );
 				ASSERT_(o);
 
 				CPose3DPDFGaussian relativePoseAcordToArc;
-				relativePoseAcordToArc.copyFrom(*CPose3DPDFPtr(o));
+				relativePoseAcordToArc.copyFrom(*std::dynamic_pointer_cast<CPose3DPDF>(o));
 
 				st << format("     VALUE: (%f,%f,%f , %fdeg,%fdeg,%fdeg)",
 					relativePoseAcordToArc.mean.x(),
@@ -1471,7 +1471,7 @@ void  CHierarchicalMapMHPartition::dumpAsText(utils::CStringList &st) const
 /*---------------------------------------------------------------
 					findArcOfTypeBetweenNodes
   ---------------------------------------------------------------*/
-CHMHMapArcPtr CHierarchicalMapMHPartition::findArcOfTypeBetweenNodes(
+CHMHMapArc::Ptr CHierarchicalMapMHPartition::findArcOfTypeBetweenNodes(
 	const CHMHMapNode::TNodeID	&node1id,
 	const CHMHMapNode::TNodeID	&node2id,
 	const THypothesisID			&hypothesisID,
@@ -1499,7 +1499,7 @@ CHMHMapArcPtr CHierarchicalMapMHPartition::findArcOfTypeBetweenNodes(
 		}
 	}
 
-	return CHMHMapArcPtr();
+	return CHMHMapArc::Ptr();
 	MRPT_END
 }
 
@@ -1518,8 +1518,8 @@ double CHierarchicalMapMHPartition::computeOverlapProbabilityBetweenNodes(
 
 	size_t 		i,hits = 0;
 	CPose3DPDFParticles	posePDF;
-	const CHMHMapNodePtr from	= getNodeByID( nodeFrom );
-	const CHMHMapNodePtr to		= getNodeByID( nodeTo );
+	const CHMHMapNode::Ptr from	= getNodeByID( nodeFrom );
+	const CHMHMapNode::Ptr to		= getNodeByID( nodeTo );
 
 	// Draw pose samples:
 	computeCoordinatesTransformationBetweenNodes(
@@ -1535,7 +1535,7 @@ double CHierarchicalMapMHPartition::computeOverlapProbabilityBetweenNodes(
 	float			r1_x_min, r1_x_max, r1_y_min, r1_y_max,r2_x_min, r2_x_max, r2_y_min, r2_y_max;
 
 	// MAP1:
-	CMultiMetricMapPtr hMap1 = from->m_annotations.getAs<CMultiMetricMap>(NODE_ANNOTATION_METRIC_MAPS, hypothesisID, false);
+	CMultiMetricMap::Ptr hMap1 = from->m_annotations.getAs<CMultiMetricMap>(NODE_ANNOTATION_METRIC_MAPS, hypothesisID, false);
 
 	ASSERT_(hMap1->m_gridMaps.size()>0);
 
@@ -1557,7 +1557,7 @@ double CHierarchicalMapMHPartition::computeOverlapProbabilityBetweenNodes(
 
 
 	// MAP2:
-	CMultiMetricMapPtr hMap2 = to->m_annotations.getAs<CMultiMetricMap>(NODE_ANNOTATION_METRIC_MAPS, hypothesisID, false);
+	CMultiMetricMap::Ptr hMap2 = to->m_annotations.getAs<CMultiMetricMap>(NODE_ANNOTATION_METRIC_MAPS, hypothesisID, false);
 
 	ASSERT_(hMap2->m_gridMaps.size()>0);
 

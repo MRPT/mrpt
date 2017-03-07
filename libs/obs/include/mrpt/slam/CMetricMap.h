@@ -11,7 +11,7 @@
 MRPT_WARNING("*Deprecated header* Please replace with #include <mrpt/maps/CMetricMap.h>. This backward compatible header will be removed in MRPT 2.0.0")
 namespace mrpt { namespace slam {
 	using mrpt::maps::CMetricMap;    //!< Backward compatibility
-	using mrpt::maps::CMetricMapPtr; //!< Backward compatibility
+	using mrpt::maps::CMetricMap::Ptr; //!< Backward compatibility
 	using mrpt::maps::TMatchingParams; //!< Backward compatibility
 	using mrpt::maps::TMatchingExtraResults;  //!< Backward compatibility
 } }

@@ -401,7 +401,7 @@ void CIMUXSens_MT4::doProcess()
 		// Data properly collected: extract data fields
 		// -------------------------------------------------
 		m_state		= ssWorking;
-		CObservationIMUPtr obs			= CObservationIMU::Create();
+		CObservationIMU::Ptr obs			= CObservationIMU::Create();
 
 		if (packet.containsOrientation())
 		{
@@ -504,7 +504,7 @@ void CIMUXSens_MT4::doProcess()
 		{
 			XsVector lla_data = packet.latitudeLongitude();
 
-			CObservationGPSPtr obsGPS = CObservationGPSPtr( new CObservationGPS() );
+			CObservationGPS::Ptr obsGPS = CObservationGPS::Ptr( new CObservationGPS() );
 			gnss::Message_NMEA_RMC rGPSs;
 			gnss::Message_NMEA_RMC::content_t & rGPS = rGPSs.fields;
 			rGPS.latitude_degrees = lla_data[0];

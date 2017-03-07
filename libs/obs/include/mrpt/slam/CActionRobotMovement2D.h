@@ -11,5 +11,5 @@
 MRPT_WARNING("*Deprecated header* Please replace with #include <mrpt/obs/CActionRobotMovement2D.h>. This backward compatible header will be removed in MRPT 2.0.0")
 namespace mrpt { namespace slam {
 	using mrpt::obs::CActionRobotMovement2D;    //!< Backward compatibility
-	using mrpt::obs::CActionRobotMovement2DPtr; //!< Backward compatibility
+	using mrpt::obs::CActionRobotMovement2D::Ptr; //!< Backward compatibility
 } }

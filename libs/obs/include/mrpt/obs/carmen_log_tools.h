@@ -52,7 +52,7 @@ namespace mrpt
 		  */
 		  bool OBS_IMPEXP carmen_log_parse_line(
 			std::istream &in_stream,
-			std::vector<mrpt::obs::CObservationPtr> &out_imported_observations,
+			std::vector<mrpt::obs::CObservation::Ptr> &out_imported_observations,
 			const mrpt::system::TTimeStamp &time_start_log );
 
 

@@ -11,5 +11,5 @@
 MRPT_WARNING("*Deprecated header* Please replace with #include <mrpt/obs/CObservationRawDAQ.h>. This backward compatible header will be removed in MRPT 2.0.0")
 namespace mrpt { namespace slam {
 	using mrpt::obs::CObservationRawDAQ;    //!< Backward compatibility
-	using mrpt::obs::CObservationRawDAQPtr; //!< Backward compatibility
+	using mrpt::obs::CObservationRawDAQ::Ptr; //!< Backward compatibility
 } }

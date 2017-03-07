@@ -212,7 +212,7 @@ void CAngularObservationMesh::getScanSet(std::vector<CObservation2DRangeScan> &s
 	scans=scanSet;
 }
 
-void CAngularObservationMesh::generateSetOfTriangles(CSetOfTrianglesPtr &res) const	{
+void CAngularObservationMesh::generateSetOfTriangles(CSetOfTriangles::Ptr &res) const	{
 	if (!meshUpToDate) updateMesh();
 	res->insertTriangles(triangles.begin(),triangles.end());
 	//for (vector<CSetOfTriangles::TTriangle>::iterator it=triangles.begin();it!=triangles.end();++it) res->insertTriangle(*it);
@@ -281,7 +281,7 @@ void CAngularObservationMesh::TDoubleRange::values(std::vector<double> &vals) co
 	vals[am-1]=finalValue();
 }
 
-void CAngularObservationMesh::getTracedRays(CSetOfLinesPtr &res) const	{
+void CAngularObservationMesh::getTracedRays(CSetOfLines::Ptr &res) const	{
 	if (!meshUpToDate) updateMesh();
 	size_t count=0;
 	for (size_t i=0;i<validityMatrix.getRowCount();i++) for (size_t j=0;j<validityMatrix.getColCount();j++) if (validityMatrix(i,j)) count++;
@@ -291,10 +291,10 @@ void CAngularObservationMesh::getTracedRays(CSetOfLinesPtr &res) const	{
 
 class FAddUntracedLines	{
 public:
-	CSetOfLinesPtr &lins;
+	CSetOfLines::Ptr &lins;
 	const CPoint3D &pDist;
 	std::vector<double> pitchs;
-	FAddUntracedLines(CSetOfLinesPtr &l,const CPoint3D &p,const std::vector<double> &pi):lins(l),pDist(p),pitchs()	{
+	FAddUntracedLines(CSetOfLines::Ptr &l,const CPoint3D &p,const std::vector<double> &pi):lins(l),pDist(p),pitchs()	{
 		pitchs.reserve(pi.size());
 		for (std::vector<double>::const_reverse_iterator it=pi.rbegin();it!=pi.rend();++it) pitchs.push_back(*it);
 	}
@@ -309,7 +309,7 @@ public:
 		pitchs.pop_back();
 	}
 };
-void CAngularObservationMesh::getUntracedRays(CSetOfLinesPtr &res,double dist) const	{
+void CAngularObservationMesh::getUntracedRays(CSetOfLines::Ptr &res,double dist) const	{
 	for_each(scanSet.begin(),scanSet.end(),FAddUntracedLines(res,dist,pitchBounds));
 }
 

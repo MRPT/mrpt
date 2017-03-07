@@ -51,7 +51,7 @@ BOOST_PYTHON_FUNCTION_OVERLOADS(CRenderizable_setColor2_overloads, CRenderizable
 // end of CRenderizable
 
 // COpenGLScene
-void COpenGLScene_insert(COpenGLScene &self, const CRenderizablePtr &newObject, const std::string &viewportName=std::string("main"))
+void COpenGLScene_insert(COpenGLScene &self, const CRenderizable::Ptr &newObject, const std::string &viewportName=std::string("main"))
 {
     self.insert(newObject, viewportName);
 }
@@ -66,14 +66,14 @@ void CSetOfLines_appendLine(CSetOfLines &self, float x0, float y0, float z0, flo
     self.appendLine(x0, y0, z0, x1, y1, z1);
 }
 
-CSetOfLinesPtr CSetOfLines_Create()
+CSetOfLines::Ptr CSetOfLines_Create()
 {
     return CSetOfLines::Create();
 }
 // end of CSetOfLines
 
 // CEllipsoid
-CEllipsoidPtr CEllipsoid_Create()
+CEllipsoid::Ptr CEllipsoid_Create()
 {
     return CEllipsoid::Create();
 }
@@ -90,7 +90,7 @@ void CEllipsoid_setFromPosePDF(CEllipsoid& self, CPose3DPDF& posePDF)
 // end of CEllipsoid
 
 // CGridPlaneXY
-CGridPlaneXYPtr CGridPlaneXY_Create(float xMin=-10.0, float xMax=10.0, float yMin=-10.0, float yMax=10.0, float z=0.0, float frequency=1.0)
+CGridPlaneXY::Ptr CGridPlaneXY_Create(float xMin=-10.0, float xMax=10.0, float yMin=-10.0, float yMax=10.0, float z=0.0, float frequency=1.0)
 {
     return CGridPlaneXY::Create(xMin, xMax, yMin, yMax, z, frequency);
 }
@@ -134,7 +134,7 @@ void export_opengl()
 
     // CGridPlaneXY
     {
-        MAKE_PTR_BASE(CGridPlaneXY, CRenderizable)
+        MAKE_PTR(CGridPlaneXY)
 
         class_<CGridPlaneXY, boost::noncopyable, bases<CRenderizable> >("CGridPlaneXY", "A grid of lines over the XY plane.", no_init)
             .def("Create", &CGridPlaneXY_Create, CGridPlaneXY_Create_overloads()).staticmethod("Create")
@@ -143,7 +143,7 @@ void export_opengl()
 
     // CSetOfObjects
     {
-        MAKE_PTR_BASE(CSetOfObjects, CRenderizable)
+        MAKE_PTR(CSetOfObjects)
 
         class_<CSetOfObjects, boost::noncopyable, bases<CRenderizable> >("CSetOfObjects", "A set of objects, which are referenced to the coordinates framework established in this object.", no_init)
             MAKE_CREATE(CSetOfObjects)
@@ -152,7 +152,7 @@ void export_opengl()
 
     // CSetOfLines
     {
-        MAKE_PTR_BASE(CSetOfLines, CRenderizable)
+        MAKE_PTR(CSetOfLines)
 
         class_<CSetOfLines, boost::noncopyable, bases<CRenderizable> >("CSetOfLines", "A set of independent lines (or segments), one line with its own start and end positions (X,Y,Z).", no_init)
             .def("Create", &CSetOfLines_Create, "Create smart pointer from class.").staticmethod("Create")
@@ -162,7 +162,7 @@ void export_opengl()
 
     // CEllipsoid
     {
-        MAKE_PTR_BASE(CEllipsoid, CRenderizable)
+        MAKE_PTR(CEllipsoid)
 
         class_<CEllipsoid, boost::noncopyable, bases<CRenderizable> >("CEllipsoid", "A 2D ellipse or 3D ellipsoid, depending on the size of the m_cov matrix (2x2 or 3x3).", no_init)
             .def("Create", &CEllipsoid_Create, "Create smart pointer from class.").staticmethod("Create")

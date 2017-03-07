@@ -39,7 +39,7 @@ namespace mrpt
 		public:
 			typedef	int64_t TLandmarkID;					//!< The type for the IDs of landmarks.
 
-			std::vector<mrpt::vision::CFeaturePtr> features;		//!< The set of features from which the landmark comes.
+			std::vector<mrpt::vision::CFeature::Ptr> features;		//!< The set of features from which the landmark comes.
 
 			mrpt::math::TPoint3D pose_mean;					//!< The mean of the landmark 3D position.
 			mrpt::math::TPoint3D normal;					//!< The "normal" to the landmark, i.e. a unitary 3D vector towards the viewing direction, or a null vector if not applicable
@@ -81,7 +81,7 @@ namespace mrpt
 			/** Creates one feature in the vector "features", calling the appropriate constructor of the smart pointer, so after calling this method "features[0]" is a valid pointer to a CFeature object.
 			  */
 			void createOneFeature()
-			{ features.assign(1, mrpt::vision::CFeaturePtr( new mrpt::vision::CFeature() ) ); }
+			{ features.assign(1, mrpt::vision::CFeature::Ptr( new mrpt::vision::CFeature() ) ); }
 
 			/** Default constructor
 			  */

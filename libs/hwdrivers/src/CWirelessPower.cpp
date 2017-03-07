@@ -505,10 +505,10 @@ bool CWirelessPower::getObservation( mrpt::obs::CObservationWirelessPower &outOb
 void CWirelessPower::doProcess()
 {
 	// Wrapper to getObservation
-	mrpt::obs::CObservationWirelessPowerPtr  outObservation = mrpt::obs::CObservationWirelessPower::Create();
+	mrpt::obs::CObservationWirelessPower::Ptr  outObservation = mrpt::obs::CObservationWirelessPower::Create();
 	getObservation(*outObservation);
 
-	appendObservation(mrpt::obs::CObservationWirelessPowerPtr(new mrpt::obs::CObservationWirelessPower(*outObservation)));
+	appendObservation(mrpt::obs::CObservationWirelessPower::Ptr(new mrpt::obs::CObservationWirelessPower(*outObservation)));
 }
 
 

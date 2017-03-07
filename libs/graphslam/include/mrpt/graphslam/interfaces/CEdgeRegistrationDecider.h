@@ -59,9 +59,9 @@ class CEdgeRegistrationDecider : public mrpt::graphslam::CRegistrationDeciderOrO
 		 * potential Edge registration
 		 */
 		virtual bool updateState(
-				mrpt::obs::CActionCollectionPtr action,
-				mrpt::obs::CSensoryFramePtr observations,
-				mrpt::obs::CObservationPtr observation ) = 0;
+				mrpt::obs::CActionCollection::Ptr action,
+				mrpt::obs::CSensoryFrame::Ptr observations,
+				mrpt::obs::CObservation::Ptr observation ) = 0;
 		/**\brief Fill the given map with the type of registered edges as well as
 		 * the corresponding number of registration of each edge.
 		 */

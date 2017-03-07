@@ -39,8 +39,8 @@ namespace kinematics
 			ASSERTMSG_(cmd, "Wrong vehicle kinematic class, expected `CVehicleVelCmd_Holo`");
 			sendVelRampCmd(cmd->vel, cmd->dir_local + m_odometry.phi /* local to odometry dir */ ,cmd->ramp_time,cmd->rot_speed);
 		}
-		CVehicleVelCmdPtr getVelCmdType() const MRPT_OVERRIDE {
-			return CVehicleVelCmdPtr(new kinematic_cmd_t());
+		CVehicleVelCmd::Ptr getVelCmdType() const MRPT_OVERRIDE {
+			return CVehicleVelCmd::Ptr(new kinematic_cmd_t());
 		}
 
 	private:

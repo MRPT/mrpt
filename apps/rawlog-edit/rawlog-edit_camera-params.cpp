@@ -86,20 +86,20 @@ DECLARE_OP_FUNCTION(op_camera_params)
 			VERBOSE_COUT << "Type of camera configuration file found: " << (is_stereo ? "stereo":"monocular") << "\n";
 		}
 
-		bool processOneObservation(CObservationPtr  &obs)
+		bool processOneObservation(CObservation::Ptr  &obs)
 		{
 			if ( strCmpI(obs->sensorLabel,target_label))
 			{
 				if (IS_CLASS(obs,CObservationImage))
 				{
-					CObservationImagePtr o = CObservationImagePtr(obs);
+					CObservationImage::Ptr o = std::dynamic_pointer_cast<CObservationImage>(obs);
 					o->cameraParams = new_cam_params;
 					m_changedCams++;
 				}
 				else
 				if (IS_CLASS(obs,CObservationStereoImages))
 				{
-					CObservationStereoImagesPtr o = CObservationStereoImagesPtr(obs);
+					CObservationStereoImages::Ptr o = std::dynamic_pointer_cast<CObservationStereoImages>(obs);
 					o->setStereoCameraParams(new_stereo_cam_params);
 					m_changedCams++;
 				}
@@ -109,9 +109,9 @@ DECLARE_OP_FUNCTION(op_camera_params)
 
 		// This method can be reimplemented to save the modified object to an output stream.
 		virtual void OnPostProcess(
-			mrpt::obs::CActionCollectionPtr &actions,
-			mrpt::obs::CSensoryFramePtr     &SF,
-			mrpt::obs::CObservationPtr      &obs)
+			mrpt::obs::CActionCollection::Ptr &actions,
+			mrpt::obs::CSensoryFrame::Ptr     &SF,
+			mrpt::obs::CObservation::Ptr      &obs)
 		{
 			ASSERT_((actions && SF) || obs)
 			if (actions)

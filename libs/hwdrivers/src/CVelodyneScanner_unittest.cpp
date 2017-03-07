@@ -49,8 +49,8 @@ TEST(CVelodyneScanner, sample_vlp16_dataset)
 	bool rx_ok = true;
 	for (size_t i=0;i<1000 && rx_ok;i++)
 	{
-		mrpt::obs::CObservationVelodyneScanPtr scan;
-		mrpt::obs::CObservationGPSPtr          gps;
+		mrpt::obs::CObservationVelodyneScan::Ptr scan;
+		mrpt::obs::CObservationGPS::Ptr          gps;
 		rx_ok = velodyne.getNextObservation(scan,gps);
 		if (scan) { nScans++;
 		scan->generatePointCloud();
@@ -86,8 +86,8 @@ TEST(CVelodyneScanner, sample_hdl32_dataset)
 	bool rx_ok = true;
 	for (size_t i=0;i<1000 && rx_ok;i++)
 	{
-		mrpt::obs::CObservationVelodyneScanPtr scan;
-		mrpt::obs::CObservationGPSPtr          gps;
+		mrpt::obs::CObservationVelodyneScan::Ptr scan;
+		mrpt::obs::CObservationGPS::Ptr          gps;
 		rx_ok = velodyne.getNextObservation(scan,gps);
 		if (scan) nScans++;
 //		if (gps)  nGPS++;

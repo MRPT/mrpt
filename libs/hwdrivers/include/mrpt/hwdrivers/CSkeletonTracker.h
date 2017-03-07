@@ -70,7 +70,7 @@ enum JOINT {HEAD = 0, NECK, TORSO,
 
 			/** Preview window management */
 			bool									m_showPreview;
-			mrpt::gui::CDisplayWindow3DPtr			m_win;
+			mrpt::gui::CDisplayWindow3D::Ptr			m_win;
 			std::vector< std::pair<JOINT,JOINT> >	m_linesToPlot;			//!< Lines between joints
 			std::vector<double>						m_joint_theta;			//!< Joint angles when no skeleton has been detected
 
@@ -82,7 +82,7 @@ enum JOINT {HEAD = 0, NECK, TORSO,
 				const std::string					& iniSection );
 
 			/** Displays real-time info for the captured skeleton */
-			void processPreview(const mrpt::obs::CObservationSkeletonPtr & obs);
+			void processPreview(const mrpt::obs::CObservationSkeleton::Ptr & obs);
 			void processPreviewNone();
 
 		public:

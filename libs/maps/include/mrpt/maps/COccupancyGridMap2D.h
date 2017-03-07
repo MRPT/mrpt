@@ -724,7 +724,7 @@ namespace maps
 
 		/** Returns a 3D plane with its texture being the occupancy grid and transparency proportional to "uncertainty" (i.e. a value of 0.5 is fully transparent)
 		  */
-		void getAs3DObject(mrpt::opengl::CSetOfObjectsPtr &outObj) const MRPT_OVERRIDE;
+		void getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr &outObj) const MRPT_OVERRIDE;
 
 		/** Get a point cloud with all (border) occupied cells as points */
 		void getAsPointCloud( mrpt::maps::CSimplePointsMap &pm, const float occup_threshold = 0.5f ) const;

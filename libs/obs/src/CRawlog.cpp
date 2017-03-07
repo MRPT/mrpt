@@ -44,29 +44,29 @@ void  CRawlog::clear()
 
 void  CRawlog::addObservations(CSensoryFrame		&observations )
 {
-	m_seqOfActObs.push_back( CSerializablePtr( observations.duplicateGetSmartPtr() ) );
+	m_seqOfActObs.push_back( std::dynamic_pointer_cast<CSerializable>( observations.duplicateGetSmartPtr() ) );
 }
 
 void  CRawlog::addActions(CActionCollection		&actions ) {
-	m_seqOfActObs.push_back( CSerializablePtr( actions.duplicateGetSmartPtr() ) );
+	m_seqOfActObs.push_back( std::dynamic_pointer_cast<CSerializable>( actions.duplicateGetSmartPtr() ) );
 }
 
-void  CRawlog::addActionsMemoryReference( const CActionCollectionPtr &action ) {
+void  CRawlog::addActionsMemoryReference( const CActionCollection::Ptr &action ) {
 	m_seqOfActObs.push_back( action );
 }
 
-void  CRawlog::addObservationsMemoryReference( const CSensoryFramePtr &observations ) {
+void  CRawlog::addObservationsMemoryReference( const CSensoryFrame::Ptr &observations ) {
 	m_seqOfActObs.push_back( observations );
 }
-void  CRawlog::addGenericObject( const CSerializablePtr &obj ) {
+void  CRawlog::addGenericObject( const CSerializable::Ptr &obj ) {
 	m_seqOfActObs.push_back( obj );
 }
 
-void  CRawlog::addObservationMemoryReference( const CObservationPtr &observation )
+void  CRawlog::addObservationMemoryReference( const CObservation::Ptr &observation )
 {
 	if (IS_CLASS(observation,CObservationComment))
 	{
-		CObservationCommentPtr o = CObservationCommentPtr(observation);
+		CObservationComment::Ptr o = std::dynamic_pointer_cast<CObservationComment>(observation);
 		m_commentTexts = *o;
 	}
 	else
@@ -75,7 +75,7 @@ void  CRawlog::addObservationMemoryReference( const CObservationPtr &observation
 
 void  CRawlog::addAction( CAction &action )
 {
-	CActionCollectionPtr temp = CActionCollection::Create();
+	CActionCollection::Ptr temp = CActionCollection::Create();
 	temp->insert( action );
 	m_seqOfActObs.push_back( temp );
 }
@@ -85,37 +85,37 @@ size_t  CRawlog::size() const
 	return m_seqOfActObs.size();
 }
 
-CActionCollectionPtr  CRawlog::getAsAction( size_t index ) const
+CActionCollection::Ptr  CRawlog::getAsAction( size_t index ) const
 {
 	MRPT_START
 
 	if (index >=m_seqOfActObs.size())
 		THROW_EXCEPTION("Index out of bounds")
 
-	CSerializablePtr obj = m_seqOfActObs[index];
+	CSerializable::Ptr obj = m_seqOfActObs[index];
 
 	if ( obj->GetRuntimeClass() == CLASS_ID(CActionCollection) )
-			return CActionCollectionPtr( obj );
+			return std::dynamic_pointer_cast<CActionCollection>( obj );
 	else	THROW_EXCEPTION_FMT("Element at index %i is not a CActionCollection",(int)index);
 	MRPT_END
 }
 
-CObservationPtr  CRawlog::getAsObservation( size_t index ) const
+CObservation::Ptr  CRawlog::getAsObservation( size_t index ) const
 {
 	MRPT_START
 
 	if (index >=m_seqOfActObs.size())
 		THROW_EXCEPTION("Index out of bounds")
 
-	CSerializablePtr obj = m_seqOfActObs[index];
+	CSerializable::Ptr obj = m_seqOfActObs[index];
 
 	if ( obj->GetRuntimeClass()->derivedFrom( CLASS_ID(CObservation) ) )
-			return CObservationPtr( obj );
+			return std::dynamic_pointer_cast<CObservation>( obj );
 	else	THROW_EXCEPTION_FMT("Element at index %i is not a CObservation",(int)index);
 	MRPT_END
 }
 
-CSerializablePtr CRawlog::getAsGeneric( size_t index ) const
+CSerializable::Ptr CRawlog::getAsGeneric( size_t index ) const
 {
 	MRPT_START
 	if (index >=m_seqOfActObs.size())
@@ -131,7 +131,7 @@ CRawlog::TEntryType CRawlog::getType( size_t index ) const
 	if (index >=m_seqOfActObs.size())
 		THROW_EXCEPTION("Index out of bounds")
 
-	const CSerializablePtr &obj = m_seqOfActObs[index];
+	const CSerializable::Ptr &obj = m_seqOfActObs[index];
 
 	if( obj->GetRuntimeClass()->derivedFrom( CLASS_ID(CObservation) ) )
 		return etObservation;
@@ -144,16 +144,16 @@ CRawlog::TEntryType CRawlog::getType( size_t index ) const
 	MRPT_END
 }
 
-CSensoryFramePtr  CRawlog::getAsObservations( size_t index ) const
+CSensoryFrame::Ptr  CRawlog::getAsObservations( size_t index ) const
 {
 	MRPT_START
 	if (index >=m_seqOfActObs.size())
 		THROW_EXCEPTION("Index out of bounds")
 
-	CSerializablePtr obj = m_seqOfActObs[index];
+	CSerializable::Ptr obj = m_seqOfActObs[index];
 
 	if ( obj->GetRuntimeClass()->derivedFrom( CLASS_ID(CSensoryFrame) ))
-			return CSensoryFramePtr( obj );
+			return std::dynamic_pointer_cast<CSensoryFrame>( obj );
 	else	THROW_EXCEPTION_FMT("Element at index %i is not a CSensoryFrame",(int)index);
 	MRPT_END
 }
@@ -191,7 +191,7 @@ void  CRawlog::readFromStream(mrpt::utils::CStream &in,int version)
 			in >> n;
 			m_seqOfActObs.resize(n);
 			for (i=0;i<n;i++)
-				m_seqOfActObs[i] = CSerializablePtr( in.ReadObject() );
+				m_seqOfActObs[i] = CSerializable::Ptr( in.ReadObject() );
 
 			in >> m_commentTexts;
 
@@ -213,7 +213,7 @@ bool  CRawlog::loadFromRawLogFile( const std::string &fileName, bool non_obs_obj
 	bool keepReading = true;
 	while (keepReading)
 	{
-		CSerializablePtr newObj;
+		CSerializable::Ptr newObj;
 		try
 		{
 			fs >> newObj;
@@ -222,14 +222,14 @@ bool  CRawlog::loadFromRawLogFile( const std::string &fileName, bool non_obs_obj
 			if ( newObj->GetRuntimeClass() == CLASS_ID(CRawlog))
 			{
 				// It is an entire object: Copy and finish:
-				CRawlogPtr ao = CRawlogPtr( newObj );
+				CRawlog::Ptr ao = std::dynamic_pointer_cast<CRawlog>( newObj );
 				this->swap(*ao);
 				return true;
 			}
 			else if ( newObj->GetRuntimeClass()->derivedFrom( CLASS_ID(CObservation)) )
 			{
 				if (IS_CLASS(newObj,CObservationComment)) {
-					CObservationCommentPtr o = CObservationCommentPtr(newObj);
+					CObservationComment::Ptr o = std::dynamic_pointer_cast<CObservationComment>(newObj);
 					m_commentTexts = *o;
 				}
 				else {
@@ -327,8 +327,8 @@ void CRawlog::swap( CRawlog &obj)
 
 bool CRawlog::readActionObservationPair(
 	CStream					&inStream,
-	CActionCollectionPtr	&action,
-	CSensoryFramePtr		&observations,
+	CActionCollection::Ptr	&action,
+	CSensoryFrame::Ptr		&observations,
 	size_t			& rawlogEntry )
 {
 	try
@@ -337,11 +337,11 @@ bool CRawlog::readActionObservationPair(
 		action.reset();
 		while (!action)
 		{
-			CSerializablePtr obj;
+			CSerializable::Ptr obj;
 			inStream >> obj;
 			if (obj->GetRuntimeClass() == CLASS_ID( CActionCollection ) )
 			{
-				action = CActionCollectionPtr( obj );
+				action = std::dynamic_pointer_cast<CActionCollection>( obj );
 			}
 			else
 			{
@@ -354,11 +354,11 @@ bool CRawlog::readActionObservationPair(
 		observations.reset();
 		while (!observations)
 		{
-			CSerializablePtr obj;
+			CSerializable::Ptr obj;
 			inStream >> obj;
 			if (obj->GetRuntimeClass() == CLASS_ID( CSensoryFrame ) )
 			{
-				observations = CSensoryFramePtr(obj);
+				observations = std::dynamic_pointer_cast<CSensoryFrame>(obj);
 			}
 			else
 			{
@@ -389,9 +389,9 @@ bool CRawlog::readActionObservationPair(
   ---------------------------------------------------------------*/
 bool CRawlog::getActionObservationPairOrObservation(
 	CStream					&inStream,
-	CActionCollectionPtr	&action,
-	CSensoryFramePtr		&observations,
-	CObservationPtr			&observation,
+	CActionCollection::Ptr	&action,
+	CSensoryFrame::Ptr		&observations,
+	CObservation::Ptr			&observation,
 	size_t			& rawlogEntry )
 {
 	try
@@ -402,15 +402,15 @@ bool CRawlog::getActionObservationPairOrObservation(
 		action.reset();
 		while (!action)
 		{
-			CSerializablePtr obj;
+			CSerializable::Ptr obj;
 			inStream >> obj;
 			if (IS_CLASS(obj,CActionCollection ) )
 			{
-				action = CActionCollectionPtr( obj );
+				action = std::dynamic_pointer_cast<CActionCollection>( obj );
 			}
 			else if (IS_DERIVED(obj,CObservation ) )
 			{
-				observation = CObservationPtr(obj);
+				observation = std::dynamic_pointer_cast<CObservation>(obj);
 				rawlogEntry++;
 				return true;
 			}
@@ -423,11 +423,11 @@ bool CRawlog::getActionObservationPairOrObservation(
 		observations.reset();
 		while (!observations)
 		{
-			CSerializablePtr obj;
+			CSerializable::Ptr obj;
 			inStream >> obj;
 			if (obj->GetRuntimeClass() == CLASS_ID( CSensoryFrame ) )
 			{
-				observations = CSensoryFramePtr(obj);
+				observations = std::dynamic_pointer_cast<CSensoryFrame>(obj);
 			}
 			rawlogEntry++;
 		}
@@ -482,7 +482,7 @@ void CRawlog::findObservationsByClassInRange(
 			TTimeStamp this_timestamp;
 			if ( (*it)->GetRuntimeClass()->derivedFrom( CLASS_ID( CObservation ) ) )
 			{
-				CObservationPtr o = CObservationPtr (*it);
+				CObservation::Ptr o = std::dynamic_pointer_cast<CObservation>(*it);
 				this_timestamp = o->timestamp;
 				ASSERT_(this_timestamp!=INVALID_TIMESTAMP);
 			}
@@ -505,7 +505,7 @@ void CRawlog::findObservationsByClassInRange(
 		TTimeStamp this_timestamp;
 		if ((*first)->GetRuntimeClass()->derivedFrom( CLASS_ID(CObservation)))
 		{
-			CObservationPtr o = CObservationPtr (*first);
+			CObservation::Ptr o = std::dynamic_pointer_cast<CObservation> (*first);
 			this_timestamp = o->timestamp;
 			ASSERT_(this_timestamp!=INVALID_TIMESTAMP);
 
@@ -529,8 +529,8 @@ void CRawlog::findObservationsByClassInRange(
 }
 
 bool CRawlog::getActionObservationPair(
-	CActionCollectionPtr  &action,
-	CSensoryFramePtr      &observations,
+	CActionCollection::Ptr  &action,
+	CSensoryFrame::Ptr      &observations,
 	size_t	              &rawlogEntry ) const
 {
 	try

@@ -94,8 +94,8 @@ CSimpleMap::~CSimpleMap()
   ---------------------------------------------------------------*/
 void  CSimpleMap::get(
 		size_t	        index,
-		CPose3DPDFPtr &out_posePDF,
-		CSensoryFramePtr &out_SF ) const
+		CPose3DPDF::Ptr &out_posePDF,
+		CSensoryFrame::Ptr &out_SF ) const
 {
 	if (index>=m_posesObsPairs.size())
 		THROW_EXCEPTION("Index out of bounds");
@@ -125,8 +125,8 @@ void  CSimpleMap::remove(size_t index)
   ---------------------------------------------------------------*/
 void  CSimpleMap::set(
 	size_t	index,
-	const CPose3DPDFPtr &in_posePDF,
-	const CSensoryFramePtr & in_SF )
+	const CPose3DPDF::Ptr &in_posePDF,
+	const CSensoryFrame::Ptr & in_SF )
 {
 	MRPT_START
 
@@ -144,15 +144,15 @@ void  CSimpleMap::set(
   ---------------------------------------------------------------*/
 void  CSimpleMap::set(
 	size_t	index,
-	const CPosePDFPtr &in_posePDF,
-	const CSensoryFramePtr &in_SF )
+	const CPosePDF::Ptr &in_posePDF,
+	const CSensoryFrame::Ptr &in_SF )
 {
 	MRPT_START
 
 	if (index>=m_posesObsPairs.size())
 		THROW_EXCEPTION("Index out of bounds");
 
-	if (in_posePDF) 	m_posesObsPairs[index].first = CPose3DPDFPtr( CPose3DPDF::createFrom2D( *in_posePDF ) );
+	if (in_posePDF) 	m_posesObsPairs[index].first = CPose3DPDF::Ptr( CPose3DPDF::createFrom2D( *in_posePDF ) );
 	if (in_SF) 			m_posesObsPairs[index].second = in_SF;
 
 	MRPT_END
@@ -162,14 +162,14 @@ void  CSimpleMap::set(
 /*---------------------------------------------------------------
 						insert
   ---------------------------------------------------------------*/
-void  CSimpleMap::insert( const CPose3DPDF *in_posePDF, const CSensoryFramePtr &in_SF )
+void  CSimpleMap::insert( const CPose3DPDF *in_posePDF, const CSensoryFrame::Ptr &in_SF )
 {
 	MRPT_START
 
 	TPosePDFSensFramePair	pair;
 
 	pair.second  = in_SF;
-	pair.first	 = CPose3DPDFPtr( static_cast<CPose3DPDF*>(in_posePDF->clone()) );
+	pair.first	 = CPose3DPDF::Ptr( static_cast<CPose3DPDF*>(in_posePDF->clone()) );
 
 	m_posesObsPairs.push_back( pair );
 
@@ -180,8 +180,8 @@ void  CSimpleMap::insert( const CPose3DPDF *in_posePDF, const CSensoryFramePtr &
 						insert
   ---------------------------------------------------------------*/
 void  CSimpleMap::insert(
-	const CPose3DPDFPtr &in_posePDF,
-	const CSensoryFramePtr &in_SF )
+	const CPose3DPDF::Ptr &in_posePDF,
+	const CSensoryFrame::Ptr &in_SF )
 {
 	MRPT_START
 
@@ -204,8 +204,8 @@ void  CSimpleMap::insert( const CPose3DPDF *in_posePDF, const CSensoryFrame &in_
 
 	TPosePDFSensFramePair	pair;
 
-	pair.second  = CSensoryFramePtr( new CSensoryFrame(in_SF) );
-	pair.first	 = CPose3DPDFPtr( static_cast<CPose3DPDF*>(in_posePDF->clone()) );
+	pair.second  = CSensoryFrame::Ptr( new CSensoryFrame(in_SF) );
+	pair.first	 = CPose3DPDF::Ptr( static_cast<CPose3DPDF*>(in_posePDF->clone()) );
 
 	m_posesObsPairs.push_back( pair );
 
@@ -221,8 +221,8 @@ void  CSimpleMap::insert( const CPosePDF *in_posePDF, const CSensoryFrame &in_SF
 
 	TPosePDFSensFramePair	pair;
 
-	pair.second  = CSensoryFramePtr( new CSensoryFrame(in_SF) );
-	pair.first	 = CPose3DPDFPtr( static_cast<CPose3DPDF*>(in_posePDF->clone()) );
+	pair.second  = CSensoryFrame::Ptr( new CSensoryFrame(in_SF) );
+	pair.first	 = CPose3DPDF::Ptr( static_cast<CPose3DPDF*>(in_posePDF->clone()) );
 
 	m_posesObsPairs.push_back( pair );
 
@@ -232,14 +232,14 @@ void  CSimpleMap::insert( const CPosePDF *in_posePDF, const CSensoryFrame &in_SF
 /*---------------------------------------------------------------
 						insert
   ---------------------------------------------------------------*/
-void  CSimpleMap::insert( const CPosePDF *in_posePDF, const CSensoryFramePtr &in_SF )
+void  CSimpleMap::insert( const CPosePDF *in_posePDF, const CSensoryFrame::Ptr &in_SF )
 {
 	MRPT_START
 
 	TPosePDFSensFramePair	pair;
 
 	pair.second  = in_SF;
-	pair.first	 = CPose3DPDFPtr( static_cast<CPose3DPDF*>(in_posePDF->clone()) );
+	pair.first	 = CPose3DPDF::Ptr( static_cast<CPose3DPDF*>(in_posePDF->clone()) );
 
 	m_posesObsPairs.push_back( pair );
 
@@ -250,10 +250,10 @@ void  CSimpleMap::insert( const CPosePDF *in_posePDF, const CSensoryFramePtr &in
 						insert  2D
   ---------------------------------------------------------------*/
 void  CSimpleMap::insert(
-	const CPosePDFPtr &in_posePDF,
-	const CSensoryFramePtr &in_SF )
+	const CPosePDF::Ptr &in_posePDF,
+	const CSensoryFrame::Ptr &in_SF )
 {
-	insert( CPose3DPDFPtr( CPose3DPDF::createFrom2D( *in_posePDF ) ) ,in_SF);
+	insert( CPose3DPDF::Ptr( CPose3DPDF::createFrom2D( *in_posePDF ) ) ,in_SF);
 }
 
 /*---------------------------------------------------------------
@@ -300,9 +300,9 @@ void  CSimpleMap::readFromStream(mrpt::utils::CStream &in, int version)
 			m_posesObsPairs.resize(n);
 			for (i=0;i<n;i++)
 			{
-				CPosePDFPtr aux2Dpose;
+				CPosePDF::Ptr aux2Dpose;
 				in >> aux2Dpose >> m_posesObsPairs[i].second;
-				m_posesObsPairs[i].first = CPose3DPDFPtr( CPose3DPDF::createFrom2D( *aux2Dpose ) );
+				m_posesObsPairs[i].first = CPose3DPDF::Ptr( CPose3DPDF::createFrom2D( *aux2Dpose ) );
 			}
 		} break;
 	default:

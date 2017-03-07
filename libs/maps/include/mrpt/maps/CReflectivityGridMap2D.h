@@ -84,7 +84,7 @@ namespace mrpt
 
 			void saveMetricMapRepresentationToFile(const std::string &filNamePrefix ) const MRPT_OVERRIDE;
 
-			void getAs3DObject(mrpt::opengl::CSetOfObjectsPtr &outObj) const MRPT_OVERRIDE;
+			void getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr &outObj) const MRPT_OVERRIDE;
 
 			/** Returns the grid as a 8-bit graylevel image, where each pixel is a cell (output image is RGB only if forceRGB is true) */
 			void  getAsImage( utils::CImage	&img, bool verticalFlip = false, bool forceRGB=false) const;

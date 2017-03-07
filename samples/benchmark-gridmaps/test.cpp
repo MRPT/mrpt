@@ -68,7 +68,7 @@ void BenchmarkGridmaps()
 
 
 	ASSERT_( metricMap.m_gridMaps.size() );
-	COccupancyGridMap2DPtr gridMap = metricMap.m_gridMaps[0];
+	COccupancyGridMap2D::Ptr gridMap = metricMap.m_gridMaps[0];
 	COccupancyGridMap2D		gridMapCopy( *gridMap );
 
 	int  i, N;

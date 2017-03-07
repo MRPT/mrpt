@@ -27,6 +27,7 @@ namespace mrpt
 		  */
 		struct BASE_IMPEXP TRuntimeClassId
 		{
+			using Ptr =  safe_ptr<TRuntimeClassId>;
 			const char* className;
 			/** Create an object of the related class, or nullptr if it is virtual. */
 			mrpt::utils::CObject*			(*ptrCreateObject)();
@@ -42,7 +43,6 @@ namespace mrpt
 
 		/** A wrapper class for a "TRuntimeClassId *", well-defined with respect to copy operators and constructors. \ingroup mrpt_base_grp
 		  */
-		typedef safe_ptr<TRuntimeClassId> TRuntimeClassIdPtr;
 
 		/** Register a class into the MRPT internal list of "CSerializable" descendents.
 		  *  Used internally in the macros DEFINE_SERIALIZABLE, etc...
@@ -98,7 +98,7 @@ namespace mrpt
 
 
 		/** The virtual base class of all MRPT classes with a unified RTTI system.
-		 *   For each class named <code>CMyClass</code>, a new type named <code>CMyClassPtr</code> will be created as a smart pointer suitable for
+		 *   For each class named <code>CMyClass</code>, a new type named <code>CMyClass::Ptr</code> will be created as a smart pointer suitable for
 		 *    keeping referencing count smart pointers to objects of that class. By default the base class of all these smart pointers is CObject::Ptr.
 		 * \sa  mrpt::utils::CSerializable \ingroup mrpt_base_grp
 		 */
@@ -143,12 +143,13 @@ namespace mrpt
 			_STATIC_LINKAGE_ mrpt::utils::CLASSINIT _init_##class_name;\
 		public: \
 			/*! A typedef for the associated smart pointer */ \
-			typedef class_name##Ptr SmartPtr; \
+			using Ptr = std::shared_ptr<class_name>; \
+			using ConstPtr = std::shared_ptr<const class_name>; \
 			_STATIC_LINKAGE_ mrpt::utils::TRuntimeClassId  class##class_name; \
 			_STATIC_LINKAGE_ const mrpt::utils::TRuntimeClassId *classinfo; \
 			_VIRTUAL_LINKAGE_ const mrpt::utils::TRuntimeClassId* GetRuntimeClass() const MRPT_OVERRIDE; \
 			_STATIC_LINKAGE_ mrpt::utils::CObject* CreateObject(); \
-			_STATIC_LINKAGE_ class_name##Ptr Create(); \
+			_STATIC_LINKAGE_ class_name::Ptr Create(); \
 			_VIRTUAL_LINKAGE_ mrpt::utils::CObject *clone() const MRPT_OVERRIDE; \
 			/*! @} */ \
 		public: \
@@ -167,30 +168,10 @@ namespace mrpt
 		#define DEFINE_MRPT_OBJECT_POST_CUSTOM_BASE_NO_LINKAGE(class_name, base_name) DEFINE_MRPT_OBJECT_POST_CUSTOM_BASE_LINKAGE2(class_name, base_name, class_name)
 
 		/**  This declaration must be inserted in all CObject classes definition, before the class declaration.  */
-		#define DEFINE_MRPT_OBJECT_PRE_CUSTOM_BASE_LINKAGE2(class_name, base_name, class_name_LINKAGE_ ) \
-			class  class_name_LINKAGE_; \
-			struct class_name_LINKAGE_##Ptr;
+		#define DEFINE_MRPT_OBJECT_PRE_CUSTOM_BASE_LINKAGE2(class_name, base_name, class_name_LINKAGE_ )
 
 		/**  This declaration must be inserted in all CObject classes definition, after the class declaration.  */
-		#define DEFINE_MRPT_OBJECT_POST_CUSTOM_BASE_LINKAGE2(class_name, base_name, class_name_LINKAGE_ ) \
-			/*! The smart pointer type for the associated class */ \
-			struct class_name_LINKAGE_##Ptr : public base_name##Ptr \
-			{ \
-				typedef class_name value_type; \
-				inline class_name##Ptr() : base_name##Ptr(static_cast<base_name*>(nullptr)) { } \
-				inline explicit class_name##Ptr(class_name* p) : base_name##Ptr( static_cast<base_name*>(p) ) { } \
-				inline explicit class_name##Ptr(const base_name##Ptr & p) : base_name##Ptr(p) { if(p) ASSERTMSG_( p->GetRuntimeClass()->derivedFrom(#class_name),::mrpt::format("Wrong typecasting of smart pointers: %s -> %s",p->GetRuntimeClass()->className, #class_name) )  } \
-				inline explicit class_name##Ptr(const mrpt::utils::CObject::Ptr & p) : base_name##Ptr(p) { if(p)ASSERTMSG_( p->GetRuntimeClass()->derivedFrom(#class_name),::mrpt::format("Wrong typecasting of smart pointers: %s -> %s",p->GetRuntimeClass()->className, #class_name) )  } \
-				/*! Return the internal plain C++ pointer */ \
-				inline class_name * get() { return dynamic_cast<class_name*>(base_name##Ptr::get()); } \
-				/*! Return the internal plain C++ pointer (const) */ \
-				inline const class_name * get() const { return dynamic_cast<const class_name*>(base_name##Ptr::get()); } \
-				inline class_name* operator ->(void) { return dynamic_cast<class_name*>( base_name##Ptr::operator ->() ); } \
-				inline const class_name* operator ->(void) const { return dynamic_cast<const class_name*>( base_name##Ptr::operator ->() ); } \
-				inline class_name& operator *(void) { return *dynamic_cast<class_name*>( base_name##Ptr::operator ->() ); } \
-				inline const class_name& operator *(void) const { return *dynamic_cast<const class_name*>( base_name##Ptr::operator ->() ); } \
-			};
-
+		#define DEFINE_MRPT_OBJECT_POST_CUSTOM_BASE_LINKAGE2(class_name, base_name, class_name_LINKAGE_ )
 
 		// This macro is a workaround to avoid possibly empty arguments to MACROS (when _LINKAGE_ evals to nothing...)
 		#define DEFINE_MRPT_OBJECT_PRE_CUSTOM_LINKAGE(class_name,_LINKAGE_)  DEFINE_MRPT_OBJECT_PRE_CUSTOM_LINKAGE2(class_name, _LINKAGE_ class_name)
@@ -202,26 +183,10 @@ namespace mrpt
 
 		// This one is almost identical to the one above, but without a member:
 		/**  This declaration must be inserted in all CObject classes definition, before the class declaration. */
-		#define DEFINE_MRPT_OBJECT_PRE_CUSTOM_LINKAGE2(class_name,class_name_LINKAGE_) \
-			struct class_name_LINKAGE_##Ptr;
+		#define DEFINE_MRPT_OBJECT_PRE_CUSTOM_LINKAGE2(class_name,class_name_LINKAGE_) 
 
 		/**  This declaration must be inserted in all CObject classes definition, after the class declaration. */
-		#define DEFINE_MRPT_OBJECT_POST_CUSTOM_LINKAGE2(class_name,class_name_LINKAGE_) \
-			/*! The smart pointer type for the associated class */ \
-			struct class_name_LINKAGE_##Ptr : public mrpt::utils::CObject::Ptr \
-			{ \
-				inline class_name##Ptr() : mrpt::utils::CObject::Ptr(static_cast<mrpt::utils::CObject*>(nullptr)) { } \
-				inline explicit class_name##Ptr(class_name* p) : mrpt::utils::CObject::Ptr( static_cast<mrpt::utils::CObject*>(p) ) { } \
-				inline explicit class_name##Ptr(const mrpt::utils::CObject::Ptr & p) : mrpt::utils::CObject::Ptr(p) { ASSERTMSG_( p->GetRuntimeClass()->derivedFrom(#class_name),::mrpt::format("Wrong typecasting of smart pointers: %s -> %s",p->GetRuntimeClass()->className, #class_name) )  } \
-				/*! Return the internal plain C++ pointer */ \
-				inline class_name * get() { return dynamic_cast<class_name*>(mrpt::utils::CObject::Ptr::get()); } \
-				/*! Return the internal plain C++ pointer (const) */ \
-				inline const class_name * get() const { return dynamic_cast<const class_name*>(mrpt::utils::CObject::Ptr::get()); } \
-				inline class_name* operator ->(void) { return dynamic_cast<class_name*>( mrpt::utils::CObject::Ptr::operator ->() ); } \
-				inline const class_name* operator ->(void) const { return dynamic_cast<const class_name*>( mrpt::utils::CObject::Ptr::operator ->() ); } \
-				inline class_name& operator *(void) { return *dynamic_cast<class_name*>( mrpt::utils::CObject::Ptr::operator ->() ); } \
-				inline const class_name& operator *(void) const { return *dynamic_cast<const class_name*>( mrpt::utils::CObject::Ptr::operator ->() ); } \
-			};
+		#define DEFINE_MRPT_OBJECT_POST_CUSTOM_LINKAGE2(class_name,class_name_LINKAGE_)
 
 		/**  This declaration must be inserted in all CObject classes definition, before the class declaration.
 		  */
@@ -238,8 +203,8 @@ namespace mrpt
 		#define IMPLEMENTS_MRPT_OBJECT(class_name, base,NameSpace) \
 			mrpt::utils::CObject* NameSpace::class_name::CreateObject() \
 				{ return static_cast<mrpt::utils::CObject*>( new NameSpace::class_name ); } \
-			NameSpace::class_name##Ptr NameSpace::class_name::Create() \
-				{ return NameSpace::class_name##Ptr( new NameSpace::class_name ); } \
+			NameSpace::class_name::Ptr NameSpace::class_name::Create() \
+				{ return NameSpace::class_name::Ptr( new NameSpace::class_name ); } \
 			const mrpt::utils::TRuntimeClassId* NameSpace::class_name::_GetBaseClass() \
 				{ return CLASS_ID(base); } \
 			mrpt::utils::TRuntimeClassId NameSpace::class_name::class##class_name = { \
@@ -260,6 +225,8 @@ namespace mrpt
 		protected: \
 			static const mrpt::utils::TRuntimeClassId* _GetBaseClass(); \
 		public: \
+			using Ptr = std::shared_ptr<class_name>; \
+			using ConstPtr = std::shared_ptr<const class_name>; \
 			static const mrpt::utils::TRuntimeClassId class##class_name; \
 			virtual const mrpt::utils::TRuntimeClassId* GetRuntimeClass() const MRPT_OVERRIDE; \
 			friend class mrpt::utils::CStream; \

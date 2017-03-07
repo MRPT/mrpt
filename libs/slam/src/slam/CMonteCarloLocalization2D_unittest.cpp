@@ -202,8 +202,8 @@ void run_test_pf_localization(CPose2D &meanPose, CMatrixDouble33 &cov)
 			// -----------------------------
 			//		Particle filter
 			// -----------------------------
-			CActionCollectionPtr action;
-			CSensoryFramePtr     observations;
+			CActionCollection::Ptr action;
+			CSensoryFrame::Ptr     observations;
 			bool				end = false;
 
 			//TTimeStamp cur_obs_timestamp;

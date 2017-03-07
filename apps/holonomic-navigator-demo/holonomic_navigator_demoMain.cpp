@@ -293,7 +293,7 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent,wx
 	// Populate 3D views:
 	// -------------------------------
 	{
-		mrpt::opengl::CGridPlaneXYPtr obj = mrpt::opengl::CGridPlaneXY::Create(-50,50, -50,50, 0, 1);
+		mrpt::opengl::CGridPlaneXY::Ptr obj = mrpt::opengl::CGridPlaneXY::Create(-50,50, -50,50, 0, 1);
 		obj->setColor_u8(TColor(30,30,30,50));
 		m_plot3D->m_openGLScene->insert( obj );
 	}
@@ -304,7 +304,7 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent,wx
 
 	gl_robot = mrpt::opengl::CSetOfObjects::Create();
 	{
-		mrpt::opengl::CCylinderPtr obj = mrpt::opengl::CCylinder::Create(0.2f,0.1f,0.9f);
+		mrpt::opengl::CCylinder::Ptr obj = mrpt::opengl::CCylinder::Create(0.2f,0.1f,0.9f);
 		obj->setColor_u8( TColor::red );
 		gl_robot->insert( obj );
 	}
@@ -327,7 +327,7 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent,wx
 
 	gl_target = mrpt::opengl::CSetOfObjects::Create();
 	{
-		mrpt::opengl::CArrowPtr obj;
+		mrpt::opengl::CArrow::Ptr obj;
 		obj = mrpt::opengl::CArrow::Create( 1,0,0,  0.2f,0,0, 0.4f,0.05f, 0.15f ); obj->setColor_u8( TColor(0,0,255) ); gl_target->insert(obj);
 		obj = mrpt::opengl::CArrow::Create(-1,0,0, -0.2f,0,0, 0.4f,0.05f, 0.15f ); obj->setColor_u8( TColor(0,0,255) ); gl_target->insert(obj);
 		obj = mrpt::opengl::CArrow::Create( 0,1,0,  0,0.2f,0, 0.4f,0.05f, 0.15f ); obj->setColor_u8( TColor(0,0,255) ); gl_target->insert(obj);
@@ -338,7 +338,7 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent,wx
 	{	// Sign of "picking a navigation target":
 		m_gl_placing_nav_target = opengl::CSetOfObjects::Create();
 
-		mrpt::opengl::CArrowPtr obj;
+		mrpt::opengl::CArrow::Ptr obj;
 		obj = mrpt::opengl::CArrow::Create( 1,0,0,  0.2f,0,0, 0.4f,0.05f, 0.15f ); obj->setColor_u8( TColor(0,0,255) ); m_gl_placing_nav_target->insert(obj);
 		obj = mrpt::opengl::CArrow::Create(-1,0,0, -0.2f,0,0, 0.4f,0.05f, 0.15f ); obj->setColor_u8( TColor(0,0,255) ); m_gl_placing_nav_target->insert(obj);
 		obj = mrpt::opengl::CArrow::Create( 0,1,0,  0,0.2f,0, 0.4f,0.05f, 0.15f ); obj->setColor_u8( TColor(0,0,255) ); m_gl_placing_nav_target->insert(obj);
@@ -348,7 +348,7 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent,wx
 	}
 	{	// Sign of "replacing the robot":
 		m_gl_placing_robot = opengl::CSetOfObjects::Create();
-		mrpt::opengl::CCylinderPtr obj = mrpt::opengl::CCylinder::Create(0.2f,0.1f,0.9f);
+		mrpt::opengl::CCylinder::Ptr obj = mrpt::opengl::CCylinder::Create(0.2f,0.1f,0.9f);
 		obj->setColor_u8( TColor(255,0,0, 120) );
 		m_gl_placing_robot->insert(obj);
 
@@ -370,7 +370,7 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent,wx
 
 	// 2D view ==============
 	{
-		mrpt::opengl::CGridPlaneXYPtr obj = mrpt::opengl::CGridPlaneXY::Create(-1,1.001f, -1,1.001f, 0, 1);
+		mrpt::opengl::CGridPlaneXY::Ptr obj = mrpt::opengl::CGridPlaneXY::Create(-1,1.001f, -1,1.001f, 0, 1);
 		obj->setColor_u8(TColor(30,30,30,50));
 		m_plotScan->m_openGLScene->insert( obj );
 	}
@@ -603,7 +603,7 @@ void holonomic_navigator_demoFrame::simulateOneStep(double time_step)
 
 	this->m_holonomicMethod->navigate(ni, no);
 
-	mrpt::nav::CHolonomicLogFileRecordPtr  out_log = no.logRecord;
+	mrpt::nav::CHolonomicLogFileRecord::Ptr  out_log = no.logRecord;
 
 	// Move robot:
 	m_robotPose.x += cos(no.desiredDirection) * no.desiredSpeed * time_step;
@@ -625,7 +625,7 @@ void holonomic_navigator_demoFrame::simulateOneStep(double time_step)
 	// Update 2D view graphs:
 	if (out_log && IS_CLASS(out_log, CLogFileRecord_ND))
 	{
-		CLogFileRecord_NDPtr log = CLogFileRecord_NDPtr(out_log);
+		CLogFileRecord_ND::Ptr log = std::dynamic_pointer_cast<CLogFileRecord_ND>(out_log);
 		const size_t nGaps = log->gaps_ini.size();
 
 		const string sSitu = mrpt::utils::TEnumType<CHolonomicND::TSituations>::value2name(log->situation);

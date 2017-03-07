@@ -121,7 +121,7 @@ void CIMUXSens::doProcess()
 			nowUI		= packet.getRtc();
 			m_state		= ssWorking;
 
-			CObservationIMUPtr obs			= CObservationIMU::Create();
+			CObservationIMU::Ptr obs			= CObservationIMU::Create();
 
 			// ANGLE MEASUREMENTS:
 			if ( packet.containsOriEuler() )

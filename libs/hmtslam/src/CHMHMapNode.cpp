@@ -47,11 +47,11 @@ CHMHMapNode::CHMHMapNode(
 	}
 }
 
-CHMHMapNodePtr CHMHMapNode::Create(
+CHMHMapNode::Ptr CHMHMapNode::Create(
 	CHierarchicalMHMap		*parent,
 	const THypothesisIDSet	&hyps )
 {
-	CHMHMapNodePtr obj = CHMHMapNodePtr( new CHMHMapNode(parent,hyps) );
+	CHMHMapNode::Ptr obj = CHMHMapNode::Ptr( new CHMHMapNode(parent,hyps) );
 	if (parent) parent->onNodeAddition(obj);
 	return obj;
 }
@@ -143,7 +143,7 @@ void  CHMHMapNode::onArcDestruction(CHMHMapArc	*arc)
 /*---------------------------------------------------------------
 					onArcAddition
   ---------------------------------------------------------------*/
-void  CHMHMapNode::onArcAddition(const CHMHMapArcPtr &arc)
+void  CHMHMapNode::onArcAddition(const CHMHMapArc::Ptr &arc)
 {
 	MRPT_START
 

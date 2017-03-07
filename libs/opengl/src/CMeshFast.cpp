@@ -26,9 +26,9 @@ using namespace std;
 
 IMPLEMENTS_SERIALIZABLE( CMeshFast, CRenderizableDisplayList, mrpt::opengl )
 
-CMeshFastPtr CMeshFast::Create(bool enableTransparency, float xMin, float xMax , float yMin, float yMax )
+CMeshFast::Ptr CMeshFast::Create(bool enableTransparency, float xMin, float xMax , float yMin, float yMax )
 {
-	return CMeshFastPtr( new CMeshFast( enableTransparency, xMin ,xMax , yMin ,yMax ) );
+	return CMeshFast::Ptr( new CMeshFast( enableTransparency, xMin ,xMax , yMin ,yMax ) );
 }
 void CMeshFast::updatePoints() const	{
 	CRenderizableDisplayList::notifyChange();

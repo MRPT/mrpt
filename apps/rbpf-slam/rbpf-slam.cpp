@@ -227,7 +227,7 @@ void MapBuilding_RBPF()
 		for (CMultiMetricMapPDF::CParticleList::iterator it=mapBuilder.mapPDF.m_particles.begin();it!=mapBuilder.mapPDF.m_particles.end();++it) {
 			CRBPFParticleData* part_d = it->d.get();
 			CMultiMetricMap &mmap = part_d->mapTillNow;
-			mrpt::maps::COccupancyGridMap2DPtr it_grid = mmap.getMapByClass<mrpt::maps::COccupancyGridMap2D>();
+			mrpt::maps::COccupancyGridMap2D::Ptr it_grid = mmap.getMapByClass<mrpt::maps::COccupancyGridMap2D>();
 			ASSERTMSG_(it_grid, "No gridmap in multimetric map definition, but metric map continuation was set (!)" );
 			it_grid->copyMapContentFrom( gridmap );
 		}
@@ -291,10 +291,10 @@ void MapBuilding_RBPF()
 	// ----------------------------------------------------------
 	//						Map Building
 	// ----------------------------------------------------------
-	CActionCollectionPtr					action;
-	CSensoryFramePtr						observations;
-	std::deque<CObservationGasSensorsPtr>	gasObservations;
-	std::deque<CObservationWirelessPowerPtr>	wifiObservations;
+	CActionCollection::Ptr					action;
+	CSensoryFrame::Ptr						observations;
+	std::deque<CObservationGasSensors::Ptr>	gasObservations;
+	std::deque<CObservationWirelessPower::Ptr>	wifiObservations;
 	CPose3D  odoPose(0,0,0);
 
     CDisplayWindow3D    *win3D = nullptr;
@@ -327,12 +327,12 @@ void MapBuilding_RBPF()
 		{
 			// Update odometry:
 			{
-				CActionRobotMovement2DPtr act= action->getBestMovementEstimation();
+				CActionRobotMovement2D::Ptr act= action->getBestMovementEstimation();
 				if (act)
 					odoPose = odoPose + CPose3D( act->poseChange->getMeanVal() );
 				else
 				{
-					CActionRobotMovement3DPtr act3D = action->getActionByClass<CActionRobotMovement3D>();
+					CActionRobotMovement3D::Ptr act3D = action->getActionByClass<CActionRobotMovement3D>();
 					if (act3D)
 						odoPose = odoPose + act3D->poseChange.mean;
 				}
@@ -359,12 +359,12 @@ void MapBuilding_RBPF()
 				mapBuilder.m_statsLastIteration.observationsInserted ? int(1):int(0)
 				);
 
-			CPose3DPDFPtr curPDFptr = mapBuilder.getCurrentPoseEstimation();
+			CPose3DPDF::Ptr curPDFptr = mapBuilder.getCurrentPoseEstimation();
 			CPose3DPDFParticles	curPDF;
 
 			if ( IS_CLASS( curPDFptr, CPose3DPDFParticles ) )
 			{
-				CPose3DPDFParticlesPtr pp= CPose3DPDFParticlesPtr(curPDFptr);
+				CPose3DPDFParticles::Ptr pp= std::dynamic_pointer_cast<CPose3DPDFParticles>(curPDFptr);
 				curPDF = *pp;
 			}
 
@@ -380,7 +380,7 @@ void MapBuilding_RBPF()
 
 					const CMultiMetricMap * avrMap = mapBuilder.mapPDF.getAveragedMetricMapEstimation();
 					ASSERT_(avrMap->m_gridMaps.size()>0 );
-					COccupancyGridMap2DPtr grid = avrMap->m_gridMaps[0];
+					COccupancyGridMap2D::Ptr grid = avrMap->m_gridMaps[0];
 					grid->computeEntropy( entropy );
 
 					grid->saveAsBitmapFile(format("%s/EMMI_gridmap_%03u.bmp",OUT_DIR,step));
@@ -424,20 +424,20 @@ void MapBuilding_RBPF()
 				}
 
 				// Save a 3D scene view of the mapping process:
-                COpenGLScenePtr scene;
+				COpenGLScene::Ptr scene;
 				if (SAVE_3D_SCENE || SHOW_PROGRESS_IN_WINDOW)
 				{
 				    scene = COpenGLScene::Create();
 
 					// The ground:
-					mrpt::opengl::CGridPlaneXYPtr groundPlane = mrpt::opengl::CGridPlaneXY::Create(-200,200,-200,200,0,5);
+					mrpt::opengl::CGridPlaneXY::Ptr groundPlane = mrpt::opengl::CGridPlaneXY::Create(-200,200,-200,200,0,5);
 					groundPlane->setColor(0.4,0.4,0.4);
 					scene->insert( groundPlane );
 
 					// The camera pointing to the current robot pose:
 					if (CAMERA_3DSCENE_FOLLOWS_ROBOT)
 					{
-						mrpt::opengl::CCameraPtr objCam = mrpt::opengl::CCamera::Create();
+						mrpt::opengl::CCamera::Ptr objCam = mrpt::opengl::CCamera::Create();
 						CPose3D		robotPose;
 						curPDF.getMean(robotPose);
 
@@ -447,13 +447,13 @@ void MapBuilding_RBPF()
 						scene->insert( objCam );
 					}
 					// Draw the map(s):
-					mrpt::opengl::CSetOfObjectsPtr objs = mrpt::opengl::CSetOfObjects::Create();
+					mrpt::opengl::CSetOfObjects::Ptr objs = mrpt::opengl::CSetOfObjects::Create();
 					mostLikMap->getAs3DObject( objs );
 					scene->insert( objs );
 
 					// Draw the robot particles:
 					size_t		M = mapBuilder.mapPDF.particlesCount();
-					mrpt::opengl::CSetOfLinesPtr objLines = mrpt::opengl::CSetOfLines::Create();
+					mrpt::opengl::CSetOfLines::Ptr objLines = mrpt::opengl::CSetOfLines::Create();
 					objLines->setColor(0,1,1);
 					for (size_t i=0;i<M;i++)
 					{
@@ -493,7 +493,7 @@ void MapBuilding_RBPF()
 
 							minDistBtwPoses = 6 * sqrt(COV3(0,0)+COV3(1,1));
 
-							opengl::CEllipsoidPtr objEllip = opengl::CEllipsoid::Create();
+							opengl::CEllipsoid::Ptr objEllip = opengl::CEllipsoid::Create();
 							objEllip->setLocation(meanPose.x(), meanPose.y(), meanPose.z() + 0.001 );
 							objEllip->setCovMatrix(COV3, COV3(2,2)==0 ? 2:3 );
 
@@ -513,7 +513,7 @@ void MapBuilding_RBPF()
 
                 if (SHOW_PROGRESS_IN_WINDOW)
                 {
-                    COpenGLScenePtr &scenePtr = win3D->get3DSceneAndLock();
+                    COpenGLScene::Ptr &scenePtr = win3D->get3DSceneAndLock();
                     scenePtr = scene;
                     win3D->unlockAccess3DScene();
 

@@ -221,7 +221,7 @@ CPhidgetInterfaceKitProximitySensors::~CPhidgetInterfaceKitProximitySensors()
 -------------------------------------------------------------*/
 void CPhidgetInterfaceKitProximitySensors::doProcess( )
 {
-	CObservationRangePtr obs= CObservationRange::Create();
+	CObservationRange::Ptr obs= CObservationRange::Create();
 
 	try
 	{

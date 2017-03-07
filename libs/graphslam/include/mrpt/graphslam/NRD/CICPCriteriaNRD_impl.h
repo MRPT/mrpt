@@ -91,9 +91,9 @@ CICPCriteriaNRD<GRAPH_t>::getCurrentRobotPosEstimation() const {
 
 template<class GRAPH_t>
 bool CICPCriteriaNRD<GRAPH_t>::updateState(
-		mrpt::obs::CActionCollectionPtr action,
-		mrpt::obs::CSensoryFramePtr observations,
-		mrpt::obs::CObservationPtr observation )  {
+		mrpt::obs::CActionCollection::Ptr action,
+		mrpt::obs::CSensoryFrame::Ptr observations,
+		mrpt::obs::CObservation::Ptr observation )  {
 	MRPT_START;
 	MRPT_UNUSED_PARAM(action);
 	m_time_logger.enter("CICPCriteriaNRD::updateState");
@@ -106,20 +106,20 @@ bool CICPCriteriaNRD<GRAPH_t>::updateState(
 	if (observation) { // Observation-Only Rawlog
 		// delegate the action to the method responsible
 		if (IS_CLASS(observation, CObservation2DRangeScan) ) { // 2D
-			mrpt::obs::CObservation2DRangeScanPtr curr_laser_scan =
-				static_cast<mrpt::obs::CObservation2DRangeScanPtr>(observation);
+			mrpt::obs::CObservation2DRangeScan::Ptr curr_laser_scan =
+				std::dynamic_pointer_cast<mrpt::obs::CObservation2DRangeScan>(observation);
 			registered_new_node = updateState2D(curr_laser_scan);
 
 		}
 		else if (IS_CLASS(observation, CObservation3DRangeScan) ) { // 3D
-			CObservation3DRangeScanPtr curr_laser_scan =
-				static_cast<mrpt::obs::CObservation3DRangeScanPtr>(observation);
+			CObservation3DRangeScan::Ptr curr_laser_scan =
+				std::dynamic_pointer_cast<mrpt::obs::CObservation3DRangeScan>(observation);
 			registered_new_node = updateState3D(curr_laser_scan);
 		}
 		else if (IS_CLASS(observation, CObservationOdometry) ) { // odometry
 			// if it exists use the odometry information to reject wrong ICP matches
-			CObservationOdometryPtr obs_odometry =
-				static_cast<CObservationOdometryPtr>(observation);
+			CObservationOdometry::Ptr obs_odometry =
+				std::dynamic_pointer_cast<CObservationOdometry>(observation);
 
 			// not incremental - gives the absolute odometry reading - no InfMat
 			// either
@@ -134,9 +134,9 @@ bool CICPCriteriaNRD<GRAPH_t>::updateState(
 		// Action part
 		if (action->getBestMovementEstimation()) {
 			// if it exists use the odometry information to reject wrong ICP matches
-			mrpt::obs::CActionRobotMovement2DPtr robot_move =
+			mrpt::obs::CActionRobotMovement2D::Ptr robot_move =
 				action->getBestMovementEstimation();
-			mrpt::poses::CPosePDFPtr increment = robot_move->poseChange.get_ptr();
+			mrpt::poses::CPosePDF::Ptr increment = robot_move->poseChange.get_ptr();
 			mrpt::poses::CPosePDFGaussianInf increment_gaussian;
 			increment_gaussian.copyFrom(*increment);
 			m_latest_odometry_PDF += increment_gaussian;
@@ -144,12 +144,12 @@ bool CICPCriteriaNRD<GRAPH_t>::updateState(
 
 		// observations part
 		if (observations->getObservationByClass<CObservation2DRangeScan>()) { // 2D
-			CObservation2DRangeScanPtr curr_laser_scan =
+			CObservation2DRangeScan::Ptr curr_laser_scan =
 				observations->getObservationByClass<CObservation2DRangeScan>();
 			registered_new_node = updateState2D(curr_laser_scan);
 		}
 		else if (observations->getObservationByClass<CObservation3DRangeScan>()){	// 3D - EXPERIMENTAL, has not been tested
-			CObservation3DRangeScanPtr curr_laser_scan =
+			CObservation3DRangeScan::Ptr curr_laser_scan =
 				observations->getObservationByClass<CObservation3DRangeScan>();
 			registered_new_node = updateState3D(curr_laser_scan);
 		}
@@ -170,7 +170,7 @@ bool CICPCriteriaNRD<GRAPH_t>::updateState(
 
 template<class GRAPH_t>
 bool CICPCriteriaNRD<GRAPH_t>::updateState2D(
-		mrpt::obs::CObservation2DRangeScanPtr scan2d) {
+		mrpt::obs::CObservation2DRangeScan::Ptr scan2d) {
 	MRPT_START;
 	bool registered_new_node = false;
 
@@ -275,7 +275,7 @@ bool CICPCriteriaNRD<GRAPH_t>::checkRegistrationCondition2D() {
 }
 template<class GRAPH_t>
 bool CICPCriteriaNRD<GRAPH_t>::updateState3D(
-		mrpt::obs::CObservation3DRangeScanPtr scan3d) {
+		mrpt::obs::CObservation3DRangeScan::Ptr scan3d) {
 	MRPT_START;
 	bool registered_new_node = false;
 

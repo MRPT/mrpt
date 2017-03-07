@@ -57,7 +57,7 @@ void TestStereoRectify(int argc, char** argv)
 	// Show to the user a list of possible camera drivers and creates and open the selected camera.
 	cout << "Please, select the input stereo camera or rawlog file (with stereo images)...\n";
 
-	mrpt::hwdrivers::CCameraSensorPtr cam = mrpt::hwdrivers::prepareVideoSourceFromUserSelection();
+	mrpt::hwdrivers::CCameraSensor::Ptr cam = mrpt::hwdrivers::prepareVideoSourceFromUserSelection();
 	if (!cam) return;
 
 	cout << "Video stream open OK\n";
@@ -66,9 +66,9 @@ void TestStereoRectify(int argc, char** argv)
 	CDisplayWindow3D	win("Demo of stereo rectification",1280,600);
 
 	// Create 2 viewports, one for each image:
-	std::vector<COpenGLViewportPtr>  gl_views(2);
+	std::vector<COpenGLViewport::Ptr>  gl_views(2);
 	{
-		COpenGLScenePtr &theScene = win.get3DSceneAndLock();
+		COpenGLScene::Ptr &theScene = win.get3DSceneAndLock();
 		gl_views[0]  = theScene->getViewport("main");
 		ASSERT_(gl_views[0])
 		gl_views[1] = theScene->createViewport("right_image");
@@ -113,13 +113,13 @@ void TestStereoRectify(int argc, char** argv)
 		mrpt::system::sleep(1);
 
 		// Grab new video frame:
-		CObservationPtr obs = cam->getNextFrame();
+		CObservation::Ptr obs = cam->getNextFrame();
 		if (obs)
 		{
 			if (IS_CLASS(obs,CObservationStereoImages))
 			{
 				// Get the observation object:
-				CObservationStereoImagesPtr o = CObservationStereoImagesPtr(obs);
+				CObservationStereoImages::Ptr o = std::dynamic_pointer_cast<CObservationStereoImages>(obs);
 
 				// If the rectification maps are still not ready, prepare them now:
 				if (!rectifyMap.isSet())

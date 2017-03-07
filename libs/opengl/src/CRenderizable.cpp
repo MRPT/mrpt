@@ -332,7 +332,7 @@ bool CRenderizable::traceRay(const mrpt::poses::CPose3D &o,double &dist) const	{
 	return false;
 }
 
-CRenderizablePtr &mrpt::opengl::operator<<(CRenderizablePtr &r,const mrpt::poses::CPose3D &p)	{
+CRenderizable::Ptr &mrpt::opengl::operator<<(CRenderizable::Ptr &r,const mrpt::poses::CPose3D &p)	{
 	r->setPose(p+r->getPose());
 	return r;
 }

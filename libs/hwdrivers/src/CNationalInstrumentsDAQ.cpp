@@ -553,7 +553,7 @@ bool CNationalInstrumentsDAQ::checkDAQIsWorking() const
 						readFromDAQ
 -------------------------------------------------------------*/
 void  CNationalInstrumentsDAQ::readFromDAQ(
-	std::vector<mrpt::obs::CObservationRawDAQPtr> &outObservations,
+	std::vector<mrpt::obs::CObservationRawDAQ::Ptr> &outObservations,
 	bool &hardwareError )
 {
 	hardwareError			= false;
@@ -580,7 +580,7 @@ void  CNationalInstrumentsDAQ::readFromDAQ(
 				--(it->new_obs_available);
 
 				// Yes, valid block of samples was adquired:
-				outObservations.push_back(CObservationRawDAQPtr(new CObservationRawDAQ(tmp_obs)));
+				outObservations.push_back(CObservationRawDAQ::Ptr(new CObservationRawDAQ(tmp_obs)));
 			}
 		}
 		catch (...)
@@ -609,7 +609,7 @@ void  CNationalInstrumentsDAQ::doProcess()
 	{
 		m_state = ssWorking;
 					
-		std::vector<mrpt::utils::CSerializablePtr> new_obs;
+		std::vector<mrpt::utils::CSerializable::Ptr> new_obs;
 		new_obs.resize(m_nextObservations.size());
 
 		for (size_t i=0;i<m_nextObservations.size();i++)

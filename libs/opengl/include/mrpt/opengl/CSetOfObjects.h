@@ -56,7 +56,7 @@ namespace mrpt
 			}
 			/** Insert a new object to the list.
 			  */
-			void insert( const CRenderizablePtr &newObject );
+			void insert( const CRenderizable::Ptr &newObject );
 
 			/** Inserts a set of objects, bounded by iterators, into the list.
 			  */
@@ -84,21 +84,21 @@ namespace mrpt
 
 			/** Returns the first object with a given name, or a nullptr pointer if not found.
 			  */
-			CRenderizablePtr getByName( const std::string &str );
+			CRenderizable::Ptr getByName( const std::string &str );
 
 			 /** Returns the i'th object of a given class (or of a descendant class), or nullptr (an empty smart pointer) if not found.
 			   *  Example:
 			   * \code
-					CSpherePtr obs = myscene.getByClass<CSphere>();
+					CSphere::Ptr obs = myscene.getByClass<CSphere>();
 			   * \endcode
 			   * By default (ith=0), the first observation is returned.
 			   */
 			template <typename T>
-			typename T::SmartPtr getByClass( const size_t &ith = 0 ) const;
+			typename T::Ptr getByClass( const size_t &ith = 0 ) const;
 
 			/** Removes the given object from the scene (it also deletes the object to free its memory).
 			  */
-			void removeObject( const CRenderizablePtr &obj );
+			void removeObject( const CRenderizable::Ptr &obj );
 
 			/** Retrieves a list of all objects in text form  */
 			void dumpListOfObjects( mrpt::utils::CStringList  &lst );
@@ -110,7 +110,7 @@ namespace mrpt
 			virtual CRenderizable& setColorG_u8(const uint8_t g) MRPT_OVERRIDE;
 			virtual CRenderizable& setColorB_u8(const uint8_t b) MRPT_OVERRIDE;
 			virtual CRenderizable& setColorA_u8(const uint8_t a) MRPT_OVERRIDE;
-			bool contains(const CRenderizablePtr &obj) const;
+			bool contains(const CRenderizable::Ptr &obj) const;
 			virtual void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const MRPT_OVERRIDE;
 
 			/** @name pose_pdf -> 3d objects auxiliary templates
@@ -122,23 +122,22 @@ namespace mrpt
 
 			/** Returns a representation of a the PDF - this is just an auxiliary function, it's more natural to call
 			  *    mrpt::poses::CPosePDF::getAs3DObject     */
-			static CSetOfObjectsPtr posePDF2opengl(const mrpt::poses::CPosePDF &o);
+			static CSetOfObjects::Ptr posePDF2opengl(const mrpt::poses::CPosePDF &o);
 
 			/** Returns a representation of a the PDF - this is just an auxiliary function, it's more natural to call
 			  *    mrpt::poses::CPointPDF::getAs3DObject     */
-			static CSetOfObjectsPtr posePDF2opengl(const mrpt::poses::CPointPDF &o);
+			static CSetOfObjects::Ptr posePDF2opengl(const mrpt::poses::CPointPDF &o);
 
 			/** Returns a representation of a the PDF - this is just an auxiliary function, it's more natural to call
 			  *    mrpt::poses::CPose3DPDF::getAs3DObject     */
-			static CSetOfObjectsPtr posePDF2opengl(const mrpt::poses::CPose3DPDF &o);
+			static CSetOfObjects::Ptr posePDF2opengl(const mrpt::poses::CPose3DPDF &o);
 
 			/** Returns a representation of a the PDF - this is just an auxiliary function, it's more natural to call
 			  *    mrpt::poses::CPose3DQuatPDF::getAs3DObject     */
-			static CSetOfObjectsPtr posePDF2opengl(const mrpt::poses::CPose3DQuatPDF &o);
+			static CSetOfObjects::Ptr posePDF2opengl(const mrpt::poses::CPose3DQuatPDF &o);
 
 			/** @} */
 
-		private:
 			/** Default constructor
 			  */
 			CSetOfObjects( );
@@ -150,21 +149,21 @@ namespace mrpt
 		/** Inserts an object into the list. Allows call chaining.
 		  * \sa mrpt::opengl::CSetOfObjects::insert
 		  */
-		inline CSetOfObjectsPtr &operator<<(CSetOfObjectsPtr &s,const CRenderizablePtr &r)	{
+		inline CSetOfObjects::Ptr &operator<<(CSetOfObjects::Ptr &s,const CRenderizable::Ptr &r)	{
 			s->insert(r);
 			return s;
 		}
 		/** Inserts a set of objects into the list. Allows call chaining.
 		  * \sa mrpt::opengl::CSetOfObjects::insert
 		  */
-		template<class T> inline CSetOfObjectsPtr &operator<<(CSetOfObjectsPtr &o,const std::vector<T> &v)	{
+		template<class T> inline CSetOfObjects::Ptr &operator<<(CSetOfObjects::Ptr &o,const std::vector<T> &v)	{
 			o->insertCollection(v);
 			return o;
 		}
 
-		// Implementation: (here because it needs the _POST macro defining the SmartPtr)
+		// Implementation: (here because it needs the _POST macro defining the Smart::Ptr)
 		template <typename T>
-		typename T::SmartPtr CSetOfObjects::getByClass( const size_t &ith ) const
+		typename T::Ptr CSetOfObjects::getByClass( const size_t &ith ) const
 		{
 			MRPT_START
 			size_t  foundCount = 0;
@@ -172,19 +171,19 @@ namespace mrpt
 			for (CListOpenGLObjects::const_iterator it = m_objects.begin();it!=m_objects.end();++it)
 				if (  *it && (*it)->GetRuntimeClass()->derivedFrom( class_ID ) )
 					if (foundCount++ == ith)
-						return typename T::SmartPtr(*it);
+						return std::dynamic_pointer_cast<T>(*it);
 
 			// If not found directly, search recursively:
 			for (CListOpenGLObjects::const_iterator it=m_objects.begin();it!=m_objects.end();++it)
 			{
 				if ( *it && (*it)->GetRuntimeClass() == CLASS_ID_NAMESPACE(CSetOfObjects,mrpt::opengl))
 				{
-					typename T::SmartPtr o = CSetOfObjectsPtr(*it)->getByClass<T>(ith);
+					typename T::Ptr o = std::dynamic_pointer_cast<CSetOfObjects>(*it)->getByClass<T>(ith);
 					if (o) return o;
 				}
 			}
 
-			return typename T::SmartPtr();	// Not found: return empty smart pointer
+			return typename T::Ptr();	// Not found: return empty smart pointer
 			MRPT_END
 		}
 

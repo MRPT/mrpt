@@ -34,7 +34,7 @@ namespace mrpt
 			DEFINE_SERIALIZABLE( CActionCollection )
 
 		protected:
-			std::deque<mrpt::utils::poly_ptr_ptr<CActionPtr> >	m_actions;  //!< The robot "actionss"
+			std::deque<mrpt::utils::poly_ptr_ptr<CAction::Ptr> >	m_actions;  //!< The robot "actionss"
 
 		 public:
 			CActionCollection(); //!< ctor
@@ -42,11 +42,11 @@ namespace mrpt
 
 			/** You can use CActionCollection::begin to get a iterator to the first element.
 			  */
-			typedef std::deque<mrpt::utils::poly_ptr_ptr<CActionPtr> >::iterator		iterator;
+			typedef std::deque<mrpt::utils::poly_ptr_ptr<CAction::Ptr> >::iterator		iterator;
 
 			/** You can use CActionCollection::begin to get a iterator to the first element.
 			  */
-			typedef std::deque<mrpt::utils::poly_ptr_ptr<CActionPtr> >::const_iterator	const_iterator;
+			typedef std::deque<mrpt::utils::poly_ptr_ptr<CAction::Ptr> >::const_iterator	const_iterator;
 
 			/** Returns a iterator to the first action: this is an example of usage:
 			  * \code
@@ -54,7 +54,7 @@ namespace mrpt
 			  *   ...
 			  *   for (CActionCollection::iterator it=acts.begin();it!=acts.end();++it)
 			  *	  {
-			  *      (*it)->... // (*it) is a "CActionPtr"
+			  *      (*it)->... // (*it) is a "CAction::Ptr"
 			  *   }
 			  *
 			  * \endcode
@@ -67,7 +67,7 @@ namespace mrpt
 			  *   ...
 			  *   for (CActionCollection::iterator it=acts.begin();it!=acts.end();++it)
 			  *	  {
-			  *      (*it)->... // (*it) is a "CActionPtr"
+			  *      (*it)->... // (*it) is a "CAction::Ptr"
 			  *   }
 			  *
 			  * \endcode
@@ -80,7 +80,7 @@ namespace mrpt
 			  *   ...
 			  *   for (CActionCollection::iterator it=acts.begin();it!=acts.end();++it)
 			  *	  {
-			  *      (*it)->... // (*it) is a "CActionPtr"
+			  *      (*it)->... // (*it) is a "CAction::Ptr"
 			  *   }
 			  *
 			  * \endcode
@@ -93,7 +93,7 @@ namespace mrpt
 			  *   ...
 			  *   for (CActionCollection::iterator it=acts.begin();it!=acts.end();++it)
 			  *	  {
-			  *      (*it)->... // (*it) is a "CActionPtr"
+			  *      (*it)->... // (*it) is a "CAction::Ptr"
 			  *   }
 			  *
 			  * \endcode
@@ -113,17 +113,17 @@ namespace mrpt
 			  *  First element is 0.
 			  * \exception std::exception On index out of bounds.
 			  */
-			CActionPtr get(size_t index);
+			CAction::Ptr get(size_t index);
 
 			 /** Access to the i'th action of a given class, or a nullptr smart pointer if there is no action of that class in the list.
 			   *  Example:
 			   * \code
-					CActionRobotMovement2DPtr obs = acts->getActionByClass<CActionRobotMovement2D>();
+					CActionRobotMovement2D::Ptr obs = acts->getActionByClass<CActionRobotMovement2D>();
 			   * \endcode
 			   * By default (ith=0), the first one is returned.
 			   */
 			 template <typename T>
-			 typename T::SmartPtr getActionByClass( const size_t &ith = 0 ) const
+			 typename T::Ptr getActionByClass( const size_t &ith = 0 ) const
 			 {
 				MRPT_START
 				size_t  foundCount = 0;
@@ -131,8 +131,8 @@ namespace mrpt
 				for (const_iterator it = begin();it!=end();++it)
 					if ( (*it)->GetRuntimeClass()->derivedFrom( class_ID ) )
 						if (foundCount++ == ith)
-							return typename T::SmartPtr(it->get_ptr());
-				return typename T::SmartPtr();	// Not found: return empty smart pointer
+							return std::dynamic_pointer_cast<T>(it->get_ptr());
+				return typename T::Ptr();	// Not found: return empty smart pointer
 				MRPT_END
 			 }
 
@@ -148,12 +148,12 @@ namespace mrpt
 			/** Returns the best pose increment estimator in the collection, based on the determinant of its pose change covariance matrix.
 			  * \return The estimation, or nullptr if none is available.
 			  */
-			CActionRobotMovement2DPtr  getBestMovementEstimation() const;
+			CActionRobotMovement2D::Ptr  getBestMovementEstimation() const;
 
 			/** Returns the pose increment estimator in the collection having the specified type.
 			  * \return The estimation, or nullptr if none is available.
 			  */
-			CActionRobotMovement2DPtr  getMovementEstimationByType( CActionRobotMovement2D::TEstimationMethod method);
+			CActionRobotMovement2D::Ptr  getMovementEstimationByType( CActionRobotMovement2D::TEstimationMethod method);
 
 			/** Look for the first 2D or 3D "odometry" found in this collection of actions, and return the "mean" increment of the robot according to it.
 			  * \return true on success,false on no odometry found.

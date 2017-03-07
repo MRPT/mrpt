@@ -81,7 +81,7 @@ DECLARE_OP_FUNCTION(op_sensors_pose)
 
 		}
 
-		bool processOneObservation(CObservationPtr  &obs)
+		bool processOneObservation(CObservation::Ptr  &obs)
 		{
 			// Check the sensor label:
 			TSensor2PoseMap::iterator i = desiredSensorPoses.find(obs->sensorLabel);
@@ -95,9 +95,9 @@ DECLARE_OP_FUNCTION(op_sensors_pose)
 
 		// This method can be reimplemented to save the modified object to an output stream.
 		virtual void OnPostProcess(
-			mrpt::obs::CActionCollectionPtr &actions,
-			mrpt::obs::CSensoryFramePtr     &SF,
-			mrpt::obs::CObservationPtr      &obs)
+			mrpt::obs::CActionCollection::Ptr &actions,
+			mrpt::obs::CSensoryFrame::Ptr     &SF,
+			mrpt::obs::CObservation::Ptr      &obs)
 		{
 			ASSERT_((actions && SF) || obs)
 			if (actions)

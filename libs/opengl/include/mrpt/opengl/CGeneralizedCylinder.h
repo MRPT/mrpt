@@ -118,7 +118,7 @@ namespace opengl	{
 		/**
 		  * Creation of generalized cylinder from axis and generatrix
 		  */
-		static CGeneralizedCylinderPtr Create(const std::vector<mrpt::math::TPoint3D> &axis,const std::vector<mrpt::math::TPoint3D> &generatrix);
+		static CGeneralizedCylinder::Ptr Create(const std::vector<mrpt::math::TPoint3D> &axis,const std::vector<mrpt::math::TPoint3D> &generatrix);
 		/**
 		  * Render.
 		  * \sa mrpt::opengl::CRenderizable
@@ -189,12 +189,12 @@ namespace opengl	{
 		  * Get a polyhedron containing the starting point of the cylinder (its "base").
 		  * \sa getEnd,mrpt::opengl::CPolyhedron
 		  */
-		void getOrigin(CPolyhedronPtr &poly) const;
+		void getOrigin(CPolyhedron::Ptr &poly) const;
 		/**
 		  * Get a polyhedron containing the ending point of the cylinder (its "base").
 		  * \sa getOrigin,mrpt::opengl::CPolyhedron
 		  */
-		void getEnd(CPolyhedronPtr &poly) const;
+		void getEnd(CPolyhedron::Ptr &poly) const;
 		/**
 		  * Get the cylinder as a set of polygons in 3D.
 		  * \sa mrpt::math::TPolygon3D
@@ -204,12 +204,12 @@ namespace opengl	{
 		  * Get a polyhedron consisting of a set of closed sections of the cylinder.
 		  * \sa mrpt::opengl::CPolyhedron
 		  */
-		void getClosedSection(size_t index1,size_t index2,CPolyhedronPtr &poly) const;
+		void getClosedSection(size_t index1,size_t index2,CPolyhedron::Ptr &poly) const;
 		/**
 		  * Get a polyhedron consisting of a single section of the cylinder.
 		  * \sa mrpt::opengl::CPolyhedron
 		  */
-		inline void getClosedSection(size_t index,CPolyhedronPtr &poly) const	{
+		inline void getClosedSection(size_t index,CPolyhedron::Ptr &poly) const	{
 			getClosedSection(index,index,poly);
 		}
 		/**
@@ -332,6 +332,7 @@ namespace opengl	{
 		  * Given a vector of polyhedrons, gets the starting and ending iterators to the section to be actually rendered.
 		  */
 		void getMeshIterators(const std::vector<TQuadrilateral> &m,std::vector<TQuadrilateral>::const_iterator &begin,std::vector<TQuadrilateral>::const_iterator &end) const;
+	public:
 		/**
 		  * Basic constructor with default initialization.
 		  */

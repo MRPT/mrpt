@@ -57,7 +57,7 @@ namespace mrpt
 			DEFINE_SERIALIZABLE( CKinematicChain )
 
 		private:
-			mutable std::vector<mrpt::opengl::CRenderizablePtr>  m_last_gl_objects; //!< Smart pointers to the last objects for each link, as returned in getAs3DObject(), for usage within update3DObject()
+			mutable std::vector<mrpt::opengl::CRenderizable::Ptr>  m_last_gl_objects; //!< Smart pointers to the last objects for each link, as returned in getAs3DObject(), for usage within update3DObject()
 
 			std::vector<TKinematicLink>  m_links;  //!< The links of this robot arm
 			mrpt::poses::CPose3D         m_origin; //!< The pose of the first link.
@@ -130,7 +130,7 @@ namespace mrpt
 			  * \sa update3DObject
 			  */
 			void getAs3DObject(
-				mrpt::opengl::CSetOfObjectsPtr &inout_gl_obj,
+				mrpt::opengl::CSetOfObjects::Ptr &inout_gl_obj,
 				mrpt::aligned_containers<mrpt::poses::CPose3D>::vector_t *out_all_poses = nullptr
 				) const;
 

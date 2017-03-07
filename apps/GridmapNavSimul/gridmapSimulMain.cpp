@@ -133,11 +133,11 @@ CPose2D					lastOdo, pose_start;
 bool					we_are_closing = false;
 long					decimation = 1;
 
-mrpt::opengl::CSetOfObjectsPtr		gl_grid;
-mrpt::opengl::CSetOfObjectsPtr		gl_robot;
-mrpt::opengl::CPlanarLaserScanPtr 	gl_scan;
-mrpt::opengl::CPointCloudPtr 		gl_path_GT;
-mrpt::opengl::CPointCloudPtr 		gl_path_ODO;
+mrpt::opengl::CSetOfObjects::Ptr		gl_grid;
+mrpt::opengl::CSetOfObjects::Ptr		gl_robot;
+mrpt::opengl::CPlanarLaserScan::Ptr 	gl_scan;
+mrpt::opengl::CPointCloud::Ptr 		gl_path_GT;
+mrpt::opengl::CPointCloud::Ptr 		gl_path_ODO;
 
 
 int		last_pressed_key = 0;
@@ -790,7 +790,7 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 					// Observation:
 					CSensoryFrame	sf;
 					the_scan.timestamp = act.timestamp;
-					sf.insert( CObservation2DRangeScanPtr( new CObservation2DRangeScan(the_scan)) );
+					sf.insert( CObservation2DRangeScan::Ptr( new CObservation2DRangeScan(the_scan)) );
 					outs << sf;
 				}
 				else
@@ -1070,10 +1070,10 @@ void gridmapSimulFrame::OnbtnResimulateClick(wxCommandEvent& event)
     {
     	ASSERT_( rawlog.getType(i) == CRawlog::etSensoryFrame );
 
-    	CSensoryFramePtr sf = rawlog.getAsObservations(i);
+    	CSensoryFrame::Ptr sf = rawlog.getAsObservations(i);
     	CPose2D  gt_pose( GT(i/2,1),GT(i/2,2),GT(i/2,3) );
 
-		CObservation2DRangeScanPtr the_scan = sf->getObservationByClass<CObservation2DRangeScan>();
+		CObservation2DRangeScan::Ptr the_scan = sf->getObservationByClass<CObservation2DRangeScan>();
 		the_grid.laserScanSimulator( *the_scan, gt_pose, 0.5f, LASER_N_RANGES, LASER_STD_ERROR, 1, LASER_BEARING_STD_ERROR );
     }
 
