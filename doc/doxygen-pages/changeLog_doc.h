@@ -16,10 +16,7 @@
 <a name="2.0.0">
 <h2>Version 2.0.0: (Under development)  </h2></a>
 - <b>Most important changes:</b>
-	- MRPT now requires **C++11** to build and use. See GitHub [issue #66](https://github.com/MRPT/mrpt/issues/66)
-	   for all details, but the most important implications are:
-		 	- Smart pointers `ClassName::Ptr` are no longer based on `stlplus`.
-			- Many macros `MRPT_XXX` now are plain C++11 keywords.
+	- MRPT now requires **C++11** to build and use. See this page for a guide to port existing code to MRPT 2.0: \ref porting_mrpt2
 	- Support for old namespaces `mrpt-scanmatching`, `mrpt-reactivenav` is over.
 	- Backwards compatible headers for "maps" and "observations" in mrpt::slam are removed.
 	  They moved to their own namespaces in MRPT v1.3.0 (Jan 2015).
