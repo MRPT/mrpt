@@ -36,7 +36,7 @@ inline double MYRAND1(size_t prec=64)	{
 	return static_cast<double>(rand()%prec)/static_cast<double>(prec-1);
 }
 
-void randomColor(CRenderizable::Ptr &obj,double alpha)	{
+void randomColor(const CRenderizable::Ptr &obj,double alpha)	{
 	obj->setColor(MYRAND1(),MYRAND1(),MYRAND1(),alpha);
 }
 

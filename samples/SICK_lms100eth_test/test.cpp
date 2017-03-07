@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
         laser.doProcessSimple(isOutObs, outObs, hardwareError);
 
         ptr_scene = win3D.get3DSceneAndLock();
-        opengl::CPlanarLaserScan::Ptr obj = (opengl::CPlanarLaserScan::Ptr)(ptr_scene->getByName("scan_LMS100"));
+        opengl::CPlanarLaserScan::Ptr obj = std::dynamic_pointer_cast<opengl::CPlanarLaserScan>(ptr_scene->getByName("scan_LMS100"));
         obj->clear();
         obj->setScan(outObs);
         win3D.unlockAccess3DScene();

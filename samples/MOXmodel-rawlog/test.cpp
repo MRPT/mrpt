@@ -94,7 +94,7 @@ int main(int argc, char **argv)
 		   {
 			   if (IS_CLASS(o,CObservationGasSensors))
 			   {
-				   CObservationGasSensors::Ptr obs = CObservationGasSensors::Ptr( o );
+				   CObservationGasSensors::Ptr obs = std::dynamic_pointer_cast<CObservationGasSensors>( o );
 
 				   //Correct delay on gas readings
 				   if ( apply_delay )

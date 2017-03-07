@@ -114,7 +114,7 @@ void TestVideoBuildPyr()
 			if (IS_CLASS(obs,CObservationImage))
 			{
 				// Get the observation object:
-				CObservationImage::Ptr o = CObservationImage::Ptr(obs);
+				CObservationImage::Ptr o = std::dynamic_pointer_cast<CObservationImage>(obs);
 
 				// Update pyramid:
 				imgpyr.buildPyramidFast(

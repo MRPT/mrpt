@@ -89,15 +89,15 @@ int main()
 						// Show the distances
 						std::string obj = format("sonar%i",obs.sensedData[i].sensorID);
 						mrpt::opengl::CCylinder::Ptr sonarRange;
-						mrpt::opengl::CRenderizable::Ptr obj::Ptr = scene->getByName( obj );
-						if( !obj::Ptr )
+						mrpt::opengl::CRenderizable::Ptr objPtr = scene->getByName( obj );
+						if( !objPtr )
 						{
 							sonarRange = mrpt::opengl::CCylinder::Create(0.0f,0.0f,1.0f,30,10);
 							sonarRange->setName( obj );
 							scene->insert( sonarRange );
 						}
 						else
-							sonarRange = CCylinder::Ptr( obj::Ptr );
+							sonarRange = std::dynamic_pointer_cast<CCylinder>( objPtr );
 
 						sonarRange->setRadii( 0, tan( obs.sensorConeApperture )*obs.sensedData[i].sensedDistance );
 						sonarRange->setPose( mrpt::poses::CPose3D(obs.sensedData[i].sensorPose)+CPose3D(0,0,0,0,DEG2RAD(90.0),0) );

@@ -119,7 +119,7 @@ void TestStereoRectify(int argc, char** argv)
 			if (IS_CLASS(obs,CObservationStereoImages))
 			{
 				// Get the observation object:
-				CObservationStereoImages::Ptr o = CObservationStereoImages::Ptr(obs);
+				CObservationStereoImages::Ptr o = std::dynamic_pointer_cast<CObservationStereoImages>(obs);
 
 				// If the rectification maps are still not ready, prepare them now:
 				if (!rectifyMap.isSet())
