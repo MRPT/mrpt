@@ -21,6 +21,17 @@
 *     - `ptr.clear_unique()` --> `ptr.reset()`. (Read this note above)
 *     - `ptr.make_unique()` does no longer exists, and does not make sense (read above).
 *     - `ptr.pointer()` --> `ptr.get()`
+*  - Smart pointer typicasting now is done via C++11 standard functions: 
+*     - Example: Old code 
+*        \code
+*        CObservationPtr obs = getObsFromSomewhere();
+*        CObservationGPSPtr gps = CObservationGPS(obs);
+*        \endcode
+*       becomes in MRPT 2.0:
+*        \code
+*        CObservation::Ptr obs = getObsFromSomewhere();
+*        CObservationGPS::Ptr gps = std::dynamic_pointer_cast<CObservationGPS>(obs);
+*        \endcode
 *  - `mrpt::utils::CObject`
 *     - `duplicate()` method has been removed, since its functionality is redundant with `clone()`.
 *
