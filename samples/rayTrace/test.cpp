@@ -73,7 +73,7 @@ CPose3D randomPose()	{
  * Call configRandom given the address of an object and assign random pose and
  * color to it
  */
-void configRandom(CRenderizable::Ptr &obj)	{
+void configRandom(const CRenderizable::Ptr &obj)	{
 	obj->setColor(MYRAND1(),MYRAND1(),MYRAND1(),MYRANDG(0.75,0.25));
 	obj->setPose(randomPose());
 }
@@ -124,7 +124,7 @@ void generateObjects(CSetOfObjects::Ptr &world)	{
 		md(i,ii)=md(ii,i)=MYRANDG(sqrt(md(i,i)*md(ii,ii)));
 	}
 	ell->setCovMatrix(md);
-	configRandom(ell);
+	configRandom(std::dynamic_pointer_cast<CRenderizable>(ell));
 	world->insert(ell);
 }
 

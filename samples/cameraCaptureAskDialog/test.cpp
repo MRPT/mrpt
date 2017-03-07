@@ -52,17 +52,17 @@ void TestCameraCaptureAsk()
 
 		if (IS_CLASS(obs,CObservationImage))
 		{
-			CObservationImage::Ptr o=CObservationImage::Ptr(obs);
+			CObservationImage::Ptr o=std::dynamic_pointer_cast<CObservationImage>(obs);
 			img = &o->image;
 		}
 		else if (IS_CLASS(obs,CObservationStereoImages))
 		{
-			CObservationStereoImages::Ptr o=CObservationStereoImages::Ptr(obs);
+			CObservationStereoImages::Ptr o=std::dynamic_pointer_cast<CObservationStereoImages>(obs);
 			img = &o->imageRight;
 		}
 		else if (IS_CLASS(obs,CObservation3DRangeScan))
 		{
-			CObservation3DRangeScan::Ptr o=CObservation3DRangeScan::Ptr(obs);
+			CObservation3DRangeScan::Ptr o=std::dynamic_pointer_cast<CObservation3DRangeScan>(obs);
 			if (o->hasIntensityImage)
 				img = &o->intensityImage;
 		}

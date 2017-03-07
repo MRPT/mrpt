@@ -112,7 +112,7 @@ void TestCamera3DFaceDetection( CCameraSensor::Ptr cam )
 		CObservation3DRangeScan::Ptr o;
 		
 		try{
-			o = CObservation3DRangeScan::Ptr(cam->getNextFrame());
+			o = std::dynamic_pointer_cast<CObservation3DRangeScan>(cam->getNextFrame());
 		}
 		catch ( CExceptionEOF &)
 		{
@@ -122,7 +122,7 @@ void TestCamera3DFaceDetection( CCameraSensor::Ptr cam )
 
 		vector_detectable_object detected;
 
-		//CObservation3DRangeScan::Ptr o = CObservation3DRangeScan::Ptr(obs);
+		//CObservation3DRangeScan::Ptr o = std::dynamic_pointer_cast<CObservation3DRangeScan>(obs);
 			
 		faceDetector.detectObjects( o, detected );
 				//static int x = 0;			
@@ -132,7 +132,7 @@ void TestCamera3DFaceDetection( CCameraSensor::Ptr cam )
 			for ( unsigned int i = 0; i < detected.size(); i++ )
 			{
 				ASSERT_( IS_CLASS(detected[i],CDetectable3D ) )
-				CDetectable3D::Ptr obj = CDetectable3D::Ptr( detected[i] );
+				CDetectable3D::Ptr obj = std::dynamic_pointer_cast<CDetectable3D>( detected[i] );
 
 				if ( showEachDetectedFace )
 				{
@@ -266,11 +266,11 @@ void TestCameraFaceDetection()
 			vector_detectable_object detected;
 			faceDetector.detectObjects( obs, detected );
 
-			CObservationImage::Ptr o = CObservationImage::Ptr(obs);
+			CObservationImage::Ptr o = std::dynamic_pointer_cast<CObservationImage>(obs);
 			for ( unsigned int i = 0; i < detected.size(); i++ )
 			{	
 				ASSERT_( IS_CLASS(detected[i],CDetectable2D ) )
-				CDetectable2D::Ptr obj = CDetectable2D::Ptr( detected[i] );
+				CDetectable2D::Ptr obj = std::dynamic_pointer_cast<CDetectable2D>( detected[i] );
 				o->image.rectangle( obj->m_x, obj->m_y, obj->m_x+obj->m_width, obj->m_y + obj->m_height, TColor(255,0,0) );
 			}
 
@@ -281,12 +281,12 @@ void TestCameraFaceDetection()
 			vector_detectable_object detected;
 			faceDetector.detectObjects( obs, detected );
 
-			CObservationStereoImages::Ptr o=CObservationStereoImages::Ptr(obs);
+			CObservationStereoImages::Ptr o=std::dynamic_pointer_cast<CObservationStereoImages>(obs);
 
 			for ( unsigned int i = 0; i < detected.size(); i++ )
 			{	
 				ASSERT_( IS_CLASS(detected[i],CDetectable2D ) )
-				CDetectable2D::Ptr obj = CDetectable2D::Ptr( detected[i] );
+				CDetectable2D::Ptr obj = std::dynamic_pointer_cast<CDetectable2D>( detected[i] );
 				o->imageRight.rectangle( obj->m_x, obj->m_y, obj->m_x+obj->m_width, obj->m_y + obj->m_height, TColor(255,0,0) );
 			}
 
@@ -336,7 +336,7 @@ void TestImagesFaceDetection(int argc, char *argv[])
 		for ( unsigned int i = 0; i < detected.size() ; i++ )
 		{	
 			ASSERT_( IS_CLASS(detected[i],CDetectable2D ) )
-			CDetectable2D::Ptr obj = CDetectable2D::Ptr( detected[i] );
+			CDetectable2D::Ptr obj = std::dynamic_pointer_cast<CDetectable2D>( detected[i] );
 			img.rectangle( obj->m_x, obj->m_y, obj->m_x+obj->m_width, obj->m_y + obj->m_height, TColor(255,0,0) );
 		}
 
@@ -370,7 +370,7 @@ void BatchMode()
 			if (!counter)
 				tictac.Tic();
 
-			CObservation3DRangeScan::Ptr o = 	(CObservation3DRangeScan::Ptr)rawlog.getAsObservation( j );
+			CObservation3DRangeScan::Ptr o = std::dynamic_pointer_cast<CObservation3DRangeScan>(rawlog.getAsObservation( j ));
 
 			ASSERT_(o);
 

@@ -75,7 +75,7 @@ void TestOpenGLVideo()
 		{
 			if (IS_CLASS(obs,CObservationImage))
 			{
-				CObservationImage::Ptr o = CObservationImage::Ptr(obs);
+				CObservationImage::Ptr o = std::dynamic_pointer_cast<CObservationImage>(obs);
 				win.get3DSceneAndLock();
 					gl_plane1->assignImage( o->image );
 					gl_plane2->assignImage( o->image );

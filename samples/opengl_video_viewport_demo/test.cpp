@@ -82,7 +82,7 @@ void TestOpenGLVideo()
 		{
 			if (IS_CLASS(obs,CObservationImage))
 			{
-				CObservationImage::Ptr o = CObservationImage::Ptr(obs);
+				CObservationImage::Ptr o = std::dynamic_pointer_cast<CObservationImage>(obs);
 				win.get3DSceneAndLock();
 					gl_view_main->setImageView(o->image);
 				win.unlockAccess3DScene();

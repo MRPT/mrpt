@@ -83,14 +83,10 @@ void thread_grabbing(TThreadParam &p)
 {
 	try
 	{
-#if MRPT_HAS_CXX11
-		typedef std::unique_ptr<CKinect> CKinect::Ptr;  // This assures automatic destruction
-#else
-		typedef std::auto_ptr<CKinect> CKinect::Ptr;  // This assures automatic destruction
-#endif
+		typedef std::unique_ptr<CKinect> CKinectPtr;  // This assures automatic destruction
 
 		// Only one of these will be actually used:
-		CKinect::Ptr          kinect;
+		CKinectPtr          kinect;
 		CFileGZInputStream  dataset;
 
 		mrpt::system::TTimeStamp  dataset_prev_tim     = INVALID_TIMESTAMP;
@@ -100,7 +96,7 @@ void thread_grabbing(TThreadParam &p)
 		{
 			// Online:
 			// ---------------------
-			kinect = CKinect::Ptr(new CKinect());
+			kinect.reset(new CKinect());
 
 			// Set params:
 			kinect->enableGrabRGB(true);
@@ -161,7 +157,7 @@ void thread_grabbing(TThreadParam &p)
 				} while (!IS_CLASS(obs,CObservation3DRangeScan));
 
 				// We have one observation:
-				CObservation3DRangeScan::Ptr obs3D = CObservation3DRangeScan::Ptr(obs);
+				CObservation3DRangeScan::Ptr obs3D = std::dynamic_pointer_cast<CObservation3DRangeScan>(obs);
 				obs3D->load(); // *Important* This is needed to load the range image if stored as a separate file.
 
 				// Do we have to wait to emulate real-time behavior?

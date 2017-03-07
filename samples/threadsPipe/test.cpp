@@ -40,7 +40,7 @@ void thread_reader(std::unique_ptr<CPipeReadEndPoint> &read_pipe)
 		CSerializable::Ptr obj = read_pipe->ReadObject();
 		if (IS_CLASS(obj,CPose3D))
 		{
-			CPose3D::Ptr ptrPose = CPose3D::Ptr(obj);
+			CPose3D::Ptr ptrPose = std::dynamic_pointer_cast<CPose3D>(obj);
 			cout << "RX pose: " << *ptrPose << endl;
 		}
 

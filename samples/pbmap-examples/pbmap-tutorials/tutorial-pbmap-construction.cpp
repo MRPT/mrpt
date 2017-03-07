@@ -48,10 +48,10 @@ void testPbMapConstruction(const string &config_file)
   {
     // Read frame
     frameRGBDandPose cloudAndPose;
-    cloudAndPose.cloud::Ptr.reset(new pcl::PointCloud<PointT>);
+    cloudAndPose.cloudPtr.reset(new pcl::PointCloud<PointT>);
     cloudFile = mrpt::format("pointcloud%i.pcd", i);
     ASSERT_FILE_EXISTS_(path + cloudFile)
-    reader.read (path + cloudFile, *cloudAndPose.cloud::Ptr);
+    reader.read (path + cloudFile, *cloudAndPose.cloudPtr);
 
     // Read pose
     mrpt::utils::CFileGZInputStream serialized_pose;
@@ -68,9 +68,9 @@ void testPbMapConstruction(const string &config_file)
     // Detect planes and build PbMap
     pbmap_maker.frameQueue.push_back(cloudAndPose);
 
-    pcl::PointCloud<PointT>::Ptr alignedCloud::Ptr(new pcl::PointCloud<PointT>);
-    pcl::transformPointCloud(*cloudAndPose.cloud::Ptr,*alignedCloud::Ptr,cloudAndPose.pose);
-    globalCloud += *alignedCloud::Ptr;
+    pcl::PointCloud<PointT>::Ptr alignedCloudPtr(new pcl::PointCloud<PointT>);
+    pcl::transformPointCloud(*cloudAndPose.cloudPtr,*alignedCloudPtr,cloudAndPose.pose);
+    globalCloud += *alignedCloudPtr;
 
     mrpt::system::sleep(1000); // sleep to visualize the map creation from the keyframes in slow motion
   }

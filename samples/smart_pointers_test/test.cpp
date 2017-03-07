@@ -24,7 +24,7 @@ void TestSmartPointers()
 	p3D->setFromValues( 1, 2, 3, DEG2RAD(30),DEG2RAD(-45),DEG2RAD(-30)  );
 
 	// And a smart pointer to a CPose2D:
-	CPose2D::Ptr	p2D  = CPose2D::Ptr( new CPose2D() );  // This is exactly the same than calling ::Create()
+	CPose2D::Ptr	p2D  = std::make_shared<CPose2D>();  // This is exactly the same than calling ::Create()
 	p2D->x( 4 );
 	p2D->phi( DEG2RAD(90) );
 
@@ -35,12 +35,12 @@ void TestSmartPointers()
 	CObject::Ptr pBase = p3D;
 
 	// We can cast a base smart pointer to a pointer to a derived class:
-	CPose3D::Ptr p3Dbis = CPose3D::Ptr( pBase );
+	CPose3D::Ptr p3Dbis = std::dynamic_pointer_cast<CPose3D>( pBase );
 	cout << "p3d bis: " << *p3Dbis << endl;
 
 	// If the cast does not match the actual classes, an exception is raised:
 	cout << "Now we'll try a bad typecasting, so an exception will be raised:" << endl;
-	CPose3D::Ptr p3Dbad = CPose3D::Ptr( p2D );
+	CPose3D::Ptr p3Dbad = std::dynamic_pointer_cast<CPose3D>( p2D );
 	cout << "p3d bad: " << *p3Dbad << endl;  // Shouldn't arrive here!
 }
 
