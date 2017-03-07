@@ -180,42 +180,42 @@ void CDifodoDatasets::initializeScene()
 	light0.setPosition(0,0,1,1);
 
 	//Grid (ground)
-	CGridPlaneXYPtr ground = CGridPlaneXY::Create();
+	CGridPlaneXY::Ptr ground = CGridPlaneXY::Create();
 	scene->insert( ground );
 
 	//Reference
-	//CSetOfObjectsPtr reference = stock_objects::CornerXYZ();
+	//CSetOfObjects::Ptr reference = stock_objects::CornerXYZ();
 	//scene->insert( reference );
 
 	//					Cameras and points
 	//------------------------------------------------------
 
 	//DifOdo camera
-	CBoxPtr camera_odo = CBox::Create(math::TPoint3D(-0.02,-0.1,-0.01),math::TPoint3D(0.02,0.1,0.01));
+	CBox::Ptr camera_odo = CBox::Create(math::TPoint3D(-0.02,-0.1,-0.01),math::TPoint3D(0.02,0.1,0.01));
 	camera_odo->setPose(cam_pose + rel_lenspose);
 	camera_odo->setColor(0,1,0);
 	scene->insert( camera_odo );
 
 	//Groundtruth camera
-	CBoxPtr camera_gt = CBox::Create(math::TPoint3D(-0.02,-0.1,-0.01),math::TPoint3D(0.02,0.1,0.01));
+	CBox::Ptr camera_gt = CBox::Create(math::TPoint3D(-0.02,-0.1,-0.01),math::TPoint3D(0.02,0.1,0.01));
 	camera_gt->setPose(gt_pose + rel_lenspose);
 	camera_gt->setColor(1,0,0);
 	scene->insert( camera_gt );
 
 	//Frustum
-	opengl::CFrustumPtr FOV = opengl::CFrustum::Create(0.3f, 2, 57.3f*fovh, 57.3f*fovv, 1.f, true, false);
+	opengl::CFrustum::Ptr FOV = opengl::CFrustum::Create(0.3f, 2, 57.3f*fovh, 57.3f*fovv, 1.f, true, false);
 	FOV->setColor(0.7,0.7,0.7);
 	FOV->setPose(gt_pose);
 	scene->insert( FOV );
 
 	//Reference gt
-	CSetOfObjectsPtr reference_gt = stock_objects::CornerXYZ();
+	CSetOfObjects::Ptr reference_gt = stock_objects::CornerXYZ();
 	reference_gt->setScale(0.2f);
 	reference_gt->setPose(gt_pose);
 	scene->insert( reference_gt );
 
 	//Camera points
-	CPointCloudColouredPtr cam_points = CPointCloudColoured::Create();
+	CPointCloudColoured::Ptr cam_points = CPointCloudColoured::Create();
 	cam_points->setColor(1,0,0);
 	cam_points->setPointSize(2);
 	cam_points->enablePointSmooth(1);
@@ -227,24 +227,24 @@ void CDifodoDatasets::initializeScene()
 	//-------------------------------------------------------------
 
 	//Dif Odometry
-	CSetOfLinesPtr traj_lines_odo = CSetOfLines::Create();
+	CSetOfLines::Ptr traj_lines_odo = CSetOfLines::Create();
 	traj_lines_odo->setLocation(0,0,0);
 	traj_lines_odo->setColor(0,0.6,0);
 	traj_lines_odo->setLineWidth(6);
 	scene->insert( traj_lines_odo );
-	CPointCloudPtr traj_points_odo = CPointCloud::Create();
+	CPointCloud::Ptr traj_points_odo = CPointCloud::Create();
 	traj_points_odo->setColor(0,0.6,0);
 	traj_points_odo->setPointSize(4);
 	traj_points_odo->enablePointSmooth(1);
 	scene->insert( traj_points_odo );
 
 	//Groundtruth
-	CSetOfLinesPtr traj_lines_gt = CSetOfLines::Create();
+	CSetOfLines::Ptr traj_lines_gt = CSetOfLines::Create();
 	traj_lines_gt->setLocation(0,0,0);
 	traj_lines_gt->setColor(0.6,0,0);
 	traj_lines_gt->setLineWidth(6);
 	scene->insert( traj_lines_gt );
-	CPointCloudPtr traj_points_gt = CPointCloud::Create();
+	CPointCloud::Ptr traj_points_gt = CPointCloud::Create();
 	traj_points_gt->setColor(0.6,0,0);
 	traj_points_gt->setPointSize(4);
 	traj_points_gt->enablePointSmooth(1);
@@ -252,7 +252,7 @@ void CDifodoDatasets::initializeScene()
 
 	//Ellipsoid showing covariance
 	math::CMatrixFloat33 cov3d = 20.f*est_cov.topLeftCorner(3,3);
-	CEllipsoidPtr ellip = CEllipsoid::Create();
+	CEllipsoid::Ptr ellip = CEllipsoid::Create();
 	ellip->setCovMatrix(cov3d);
 	ellip->setQuantiles(2.0);
 	ellip->setColor(1.0, 1.0, 1.0, 0.5);
@@ -263,7 +263,7 @@ void CDifodoDatasets::initializeScene()
 	//User-interface information
 	utils::CImage img_legend;
 	img_legend.loadFromXPM(legend_xpm);
-	COpenGLViewportPtr legend = scene->createViewport("legend");
+	COpenGLViewport::Ptr legend = scene->createViewport("legend");
 	legend->setViewportPosition(20, 20, 332, 164);
 	legend->setImageView(img_legend);
 
@@ -278,11 +278,11 @@ void CDifodoDatasets::updateScene()
 	scene = window.get3DSceneAndLock();
 
 	//Reference gt
-	CSetOfObjectsPtr reference_gt = scene->getByClass<CSetOfObjects>(0);
+	CSetOfObjects::Ptr reference_gt = scene->getByClass<CSetOfObjects>(0);
 	reference_gt->setPose(gt_pose);
 
 	//Camera points
-	CPointCloudColouredPtr cam_points = scene->getByClass<CPointCloudColoured>(0);
+	CPointCloudColoured::Ptr cam_points = scene->getByClass<CPointCloudColoured>(0);
 	cam_points->clear();
 	cam_points->setPose(gt_pose);
 	for (unsigned int y=0; y<cols; y++)
@@ -291,39 +291,39 @@ void CDifodoDatasets::updateScene()
 									1.f-sqrt(weights(z,y)), sqrt(weights(z,y)), 0);
 
 	//DifOdo camera
-	CBoxPtr camera_odo = scene->getByClass<CBox>(0);
+	CBox::Ptr camera_odo = scene->getByClass<CBox>(0);
 	camera_odo->setPose(cam_pose + rel_lenspose);
 
 	//Groundtruth camera
-	CBoxPtr camera_gt = scene->getByClass<CBox>(1);
+	CBox::Ptr camera_gt = scene->getByClass<CBox>(1);
 	camera_gt->setPose(gt_pose + rel_lenspose);
 
 	//Frustum
-	CFrustumPtr FOV = scene->getByClass<CFrustum>(0);
+	CFrustum::Ptr FOV = scene->getByClass<CFrustum>(0);
 	FOV->setPose(gt_pose);
 
 	if ((first_pose == true)&&((gt_pose-gt_oldpose).norm() < 0.5))
 	{
 		//Difodo traj lines
-		CSetOfLinesPtr traj_lines_odo = scene->getByClass<CSetOfLines>(0);
+		CSetOfLines::Ptr traj_lines_odo = scene->getByClass<CSetOfLines>(0);
 		traj_lines_odo->appendLine(cam_oldpose.x(), cam_oldpose.y(), cam_oldpose.z(), cam_pose.x(), cam_pose.y(), cam_pose.z());
 
 		//Difodo traj points
-		CPointCloudPtr traj_points_odo = scene->getByClass<CPointCloud>(0);
+		CPointCloud::Ptr traj_points_odo = scene->getByClass<CPointCloud>(0);
 		traj_points_odo->insertPoint(cam_pose.x(), cam_pose.y(), cam_pose.z());
 
 		//Groundtruth traj lines
-		CSetOfLinesPtr traj_lines_gt = scene->getByClass<CSetOfLines>(1);
+		CSetOfLines::Ptr traj_lines_gt = scene->getByClass<CSetOfLines>(1);
 		traj_lines_gt->appendLine(gt_oldpose.x(), gt_oldpose.y(), gt_oldpose.z(), gt_pose.x(), gt_pose.y(), gt_pose.z());
 
 		//Groundtruth traj points
-		CPointCloudPtr traj_points_gt = scene->getByClass<CPointCloud>(1);
+		CPointCloud::Ptr traj_points_gt = scene->getByClass<CPointCloud>(1);
 		traj_points_gt->insertPoint(gt_pose.x(), gt_pose.y(), gt_pose.z());
 	}
 
 	//Ellipsoid showing covariance
 	math::CMatrixFloat33 cov3d = 20.f*est_cov.topLeftCorner(3,3);
-	CEllipsoidPtr ellip = scene->getByClass<CEllipsoid>(0);
+	CEllipsoid::Ptr ellip = scene->getByClass<CEllipsoid>(0);
 	ellip->setCovMatrix(cov3d);
 	ellip->setPose(cam_pose + rel_lenspose);
 
@@ -333,7 +333,7 @@ void CDifodoDatasets::updateScene()
 
 void CDifodoDatasets::loadFrame()
 {
-	CObservationPtr alfa = dataset.getAsObservation(rawlog_count);
+	CObservation::Ptr alfa = dataset.getAsObservation(rawlog_count);
 
 	while (!IS_CLASS(alfa, CObservation3DRangeScan))
 	{
@@ -346,7 +346,7 @@ void CDifodoDatasets::loadFrame()
 		alfa = dataset.getAsObservation(rawlog_count);
 	}
 
-	CObservation3DRangeScanPtr obs3D = CObservation3DRangeScanPtr(alfa);
+	CObservation3DRangeScan::Ptr obs3D = std::dynamic_pointer_cast<CObservation3DRangeScan>(alfa);
 	obs3D->load();
 	const CMatrix range = obs3D->rangeImage;
 	const unsigned int height = range.getRowCount();

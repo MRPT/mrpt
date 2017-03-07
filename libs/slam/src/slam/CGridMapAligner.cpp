@@ -52,7 +52,7 @@ The method for aligning a pair of 2D points map.
 *
 * \sa CPointsMapAlignmentAlgorithm
   ---------------------------------------------------------------*/
-CPosePDFPtr CGridMapAligner::AlignPDF(
+CPosePDF::Ptr CGridMapAligner::AlignPDF(
     const mrpt::maps::CMetricMap		*mm1,
     const mrpt::maps::CMetricMap		*mm2,
     const CPosePDFGaussian	&initialEstimationPDF,
@@ -87,7 +87,7 @@ bool myVectorOrder( const pair<size_t,float> & o1, const pair<size_t,float> & o2
 /*---------------------------------------------------------------
 					AlignPDF_robustMatch
 ---------------------------------------------------------------*/
-CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
+CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
     const mrpt::maps::CMetricMap		*mm1,
     const mrpt::maps::CMetricMap		*mm2,
     const CPosePDFGaussian	&initialEstimationPDF,
@@ -106,8 +106,8 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 
 	CPose2D									grossEst = initialEstimationPDF.mean;
 
-	CLandmarksMapPtr						lm1( new CLandmarksMap() );
-	CLandmarksMapPtr						lm2( new CLandmarksMap() );
+	CLandmarksMap::Ptr						lm1( new CLandmarksMap() );
+	CLandmarksMap::Ptr						lm2( new CLandmarksMap() );
 
 	std::vector<size_t>						idxs1,idxs2;
 	std::vector<size_t>::iterator			it1,it2;
@@ -149,7 +149,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 
 	// The PDF to estimate:
 	// ------------------------------------------------------
-	CPosePDFSOGPtr pdf_SOG = CPosePDFSOG::Create();
+	CPosePDFSOG::Ptr pdf_SOG = CPosePDFSOG::Create();
 
 	// Extract features from grid-maps:
 	// ------------------------------------------------------
@@ -191,10 +191,10 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 		const double thres_max = options.threshold_max;
 		const double thres_delta = options.threshold_delta;
 
-		//CDisplayWindowPlotsPtr	auxWin;
+		//CDisplayWindowPlots::Ptr	auxWin;
 		if (options.debug_show_corrs)
 		{
-			//auxWin = CDisplayWindowPlotsPtr( new CDisplayWindowPlots("Individual corr.") );
+			//auxWin = CDisplayWindowPlots::Ptr( new CDisplayWindowPlots("Individual corr.") );
 			std::cerr << "Warning: options.debug_show_corrs has no effect since MRPT 0.9.1\n";
 		}
 
@@ -799,8 +799,8 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 				!multimap1->m_pointsMaps.empty() && !multimap2->m_pointsMaps.empty() &&
 				multimap1->m_pointsMaps[0] && multimap2->m_pointsMaps[0] )
 			{
-				CSimplePointsMapPtr		pnts1 = multimap1->m_pointsMaps[0];
-				CSimplePointsMapPtr		pnts2 = multimap2->m_pointsMaps[0];
+				CSimplePointsMap::Ptr		pnts1 = multimap1->m_pointsMaps[0];
+				CSimplePointsMap::Ptr		pnts2 = multimap2->m_pointsMaps[0];
 
 				CICP				icp;
 				CICP::TReturnInfo	icpInfo;
@@ -816,7 +816,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 				outInfo.icp_goodness_all_sog_modes.clear();
 				for (CPosePDFSOG::iterator i=pdf_SOG->begin();i!=pdf_SOG->end(); ++cnt)
 				{
-					CPosePDFPtr icp_est = icp.Align(pnts1.get(),pnts2.get(),(i)->mean,nullptr,&icpInfo);
+					CPosePDF::Ptr icp_est = icp.Align(pnts1.get(),pnts2.get(),(i)->mean,nullptr,&icpInfo);
 
 					//(i)->cov(0,0) += square( 0.05 );
 					//(i)->cov(1,1) += square( 0.05 );
@@ -884,7 +884,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 /*---------------------------------------------------------------
 					AlignPDF_correlation
 ---------------------------------------------------------------*/
-CPosePDFPtr CGridMapAligner::AlignPDF_correlation(
+CPosePDF::Ptr CGridMapAligner::AlignPDF_correlation(
     const mrpt::maps::CMetricMap		*mm1,
     const mrpt::maps::CMetricMap		*mm2,
     const CPosePDFGaussian	&initialEstimationPDF,
@@ -916,7 +916,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_correlation(
 
 	// The PDF to estimate:
 	// ------------------------------------------------------
-	CPosePDFGaussianPtr PDF = CPosePDFGaussian::Create();
+	CPosePDFGaussian::Ptr PDF = CPosePDFGaussian::Create();
 
 	// Determine the extension to compute the correlation into:
 	// ----------------------------------------------------------
@@ -1122,7 +1122,7 @@ void  CGridMapAligner::TConfigParams::loadFromConfigFile(
 }
 
 
-CPose3DPDFPtr CGridMapAligner::Align3DPDF(
+CPose3DPDF::Ptr CGridMapAligner::Align3DPDF(
 	const mrpt::maps::CMetricMap		*m1,
 	const mrpt::maps::CMetricMap		*m2,
 	const CPose3DPDFGaussian	&initialEstimationPDF,

@@ -733,7 +733,7 @@ bool CImageGrabber_FlyCapture2::getObservation( mrpt::obs::CObservationStereoIma
 			ferr = rawImage[i].Convert(PIXEL_FORMAT_BGRU, &rgbuImage);
 			CHECK_FC2_ERROR(ferr)
 
-			unsigned char* dataPtr; // To store Ipl converted image pointer
+			unsigned char* data::Ptr; // To store Ipl converted image pointer
 			if(m_options.get_rectified) // If rectified
 			{
 				// Use the rgbu single image to build up a packed (rbgu) TriclopsInput.
@@ -761,18 +761,18 @@ bool CImageGrabber_FlyCapture2::getObservation( mrpt::obs::CObservationStereoIma
 				img_rows = rectPackColImg.nrows;
 				img_cols = rectPackColImg.ncols;
 				img_stride = rectPackColImg.rowinc;
-				dataPtr = (unsigned char*)rectPackColImg.data;
+				data::Ptr = (unsigned char*)rectPackColImg.data;
 			}
 			else // If not rectified
 			{
 				rgbuImage.GetDimensions(&img_rows,&img_cols,&img_stride);
-				dataPtr = rgbuImage.GetData();
+				data::Ptr = rgbuImage.GetData();
 			}
 			// Convert PGR image ==> OpenCV format:
 			IplImage *tmpImage = cvCreateImage( cvSize( img_cols, img_rows ), IPL_DEPTH_8U, 4 );
 
 			// Copy image data
-			memcpy( tmpImage->imageData, dataPtr, img_rows*img_stride );
+			memcpy( tmpImage->imageData, data::Ptr, img_rows*img_stride );
 			tmpImage->widthStep = img_stride;
 			// Convert images to BGR (3 channels) and set origins
 			imageIpl[i] = cvCreateImage( cvSize( img_cols, img_rows ), IPL_DEPTH_8U, 3 );

@@ -59,17 +59,17 @@ void hmt_slam_guiFrame::updateLocalMapView()
 	if (!data1) return;
 	if (!data1->m_ptr) return;
 
-	CSerializablePtr obj = data1->m_ptr;
+	CSerializable::Ptr obj = data1->m_ptr;
 	if (obj->GetRuntimeClass()==CLASS_ID(CHMHMapNode))
 	{
 		// The 3D view:
-		opengl::CSetOfObjectsPtr objs = opengl::CSetOfObjects::Create();
+		opengl::CSetOfObjects::Ptr objs = opengl::CSetOfObjects::Create();
 
 		// -------------------------------------------
 		// Draw a grid on the ground:
 		// -------------------------------------------
 		{
-			opengl::CGridPlaneXYPtr obj = opengl::CGridPlaneXY::Create(-100,100,-100,100,0,5);
+			opengl::CGridPlaneXY::Ptr obj = opengl::CGridPlaneXY::Create(-100,100,-100,100,0,5);
 			obj->setColor(0.4,0.4,0.4);
 			objs->insert(obj);  // it will free the memory
 		}
@@ -78,7 +78,7 @@ void hmt_slam_guiFrame::updateLocalMapView()
 		// Two passes: 1st draw the map on the ground, then the rest.
 		for (int nRound=0;nRound<2;nRound++)
 		{
-			CHMHMapNodePtr firstArea;
+			CHMHMapNode::Ptr firstArea;
 			CPose3DPDFGaussian		refPoseThisArea;
 
 			for (size_t  nSelItem = 0; nSelItem<nSel;nSelItem++)
@@ -87,7 +87,7 @@ void hmt_slam_guiFrame::updateLocalMapView()
 				if (!data1) continue;
 				if (!data1->m_ptr) continue;
 
-				CHMHMapNodePtr area= CHMHMapNodePtr(data1->m_ptr);
+				CHMHMapNode::Ptr area= std::dynamic_pointer_cast<CHMHMapNode>(data1->m_ptr);
 				if (!area) continue;
 
 				// Is this the first rendered area??
@@ -113,9 +113,9 @@ void hmt_slam_guiFrame::updateLocalMapView()
 					cout << "Pose " << firstArea->getID() << " - " << area->getID() << refPoseThisArea << endl;
 				}
 
-				CMultiMetricMapPtr obj_mmap = area->m_annotations.getAs<CMultiMetricMap>( NODE_ANNOTATION_METRIC_MAPS, hypID, false );
+				CMultiMetricMap::Ptr obj_mmap = area->m_annotations.getAs<CMultiMetricMap>( NODE_ANNOTATION_METRIC_MAPS, hypID, false );
 
-				CRobotPosesGraphPtr obj_robposes = area->m_annotations.getAs<CRobotPosesGraph>( NODE_ANNOTATION_POSES_GRAPH, hypID, false );
+				CRobotPosesGraph::Ptr obj_robposes = area->m_annotations.getAs<CRobotPosesGraph>( NODE_ANNOTATION_POSES_GRAPH, hypID, false );
 
 				TPoseID	refPoseID;
 				area->m_annotations.getElemental( NODE_ANNOTATION_REF_POSEID, refPoseID, hypID, true);
@@ -125,7 +125,7 @@ void hmt_slam_guiFrame::updateLocalMapView()
 				// ---------------------------------------------------------
 				if (nRound==0)
 				{
-					opengl::CSetOfObjectsPtr objMap= opengl::CSetOfObjects::Create();
+					opengl::CSetOfObjects::Ptr objMap= opengl::CSetOfObjects::Create();
 					obj_mmap->getAs3DObject(objMap);
 					objMap->setPose( refPoseThisArea.mean );
 					objs->insert(objMap);
@@ -143,7 +143,7 @@ void hmt_slam_guiFrame::updateLocalMapView()
 						float y_min = obj_mmap->m_gridMaps[0]->getYMin();
 						float y_max = obj_mmap->m_gridMaps[0]->getYMax();
 
-						opengl::CSetOfLinesPtr objBB = opengl::CSetOfLines::Create();
+						opengl::CSetOfLines::Ptr objBB = opengl::CSetOfLines::Create();
 						objBB->setColor(0,0,1);
 						objBB->setLineWidth( 4.0f );
 
@@ -163,7 +163,7 @@ void hmt_slam_guiFrame::updateLocalMapView()
 						CPose3D	p;
 						(*obj_robposes)[refPoseID].pdf.getMean(p);
 
-						opengl::CSetOfObjectsPtr corner = stock_objects::CornerXYZ();
+						opengl::CSetOfObjects::Ptr corner = stock_objects::CornerXYZ();
 						corner->setPose( refPoseThisArea.mean + p);
 						corner->setName(format("AREA %i",(int)area->getID() ));
 						corner->enableShowName();
@@ -176,7 +176,7 @@ void hmt_slam_guiFrame::updateLocalMapView()
 					// -----------------------------------------------
 					if (refPoseThisArea.cov(0,0)!=0 || refPoseThisArea.cov(1,1)!=0)
 					{
-						opengl::CEllipsoidPtr ellip = opengl::CEllipsoid::Create();
+						opengl::CEllipsoid::Ptr ellip = opengl::CEllipsoid::Create();
 						ellip->setPose( refPoseThisArea.mean );
 						ellip->enableDrawSolid3D(false);
 

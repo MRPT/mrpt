@@ -23,7 +23,7 @@ public:
 	mrpt::poses::CPose3D gt_pose;		//!< Groundtruth camera pose
 	mrpt::poses::CPose3D gt_oldpose;	//!< Groundtruth camera previous pose
 
-	mrpt::opengl::COpenGLScenePtr scene;	//!< Opengl scene
+	mrpt::opengl::COpenGLScene::Ptr scene;	//!< Opengl scene
 	mrpt::gui::CDisplayWindow3D	window;
 	mrpt::obs::CRawlog	dataset;
 	std::ifstream		f_gt;

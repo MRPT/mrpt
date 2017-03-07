@@ -108,7 +108,7 @@ class CScanAnimation: public wxDialog
 		struct TRenderObject
 		{
 			mrpt::system::TTimeStamp       timestamp;
-			mrpt::opengl::CRenderizablePtr obj;
+			mrpt::opengl::CRenderizable::Ptr obj;
 		};
 		typedef std::map<std::string,TRenderObject> TListGlObjects;
 		TListGlObjects  m_gl_objects;  //!< All the observations added to the map.

@@ -48,12 +48,12 @@ DECLARE_OP_FUNCTION(op_export_odometry_txt)
 		}
 
 		// return false on any error.
-		bool processOneObservation(CObservationPtr  &o)
+		bool processOneObservation(CObservation::Ptr  &o)
 		{
 			if (!IS_CLASS(o, CObservationOdometry ) )
 				return true;
 
-			const CObservationOdometry* obs = CObservationOdometryPtr(o).get();
+			const CObservationOdometry* obs = dynamic_cast<CObservationOdometry*>(o.get());
 
 			map<string, FILE*>::const_iterator  it = lstFiles.find( obs->sensorLabel );
 
@@ -172,12 +172,12 @@ DECLARE_OP_FUNCTION(op_recalc_odometry)
 		}
 
 		// return false on any error.
-		bool processOneObservation(CObservationPtr  &o)
+		bool processOneObservation(CObservation::Ptr  &o)
 		{
 			if (!IS_CLASS(o, CObservationOdometry ) )
 				return true;
 
-			CObservationOdometry* obs = CObservationOdometryPtr(o).get();
+			CObservationOdometry* obs = dynamic_cast<CObservationOdometry *>(o.get());
 
 			if (!obs->hasEncodersInfo)
 				throw std::runtime_error("CObservationOdometry entry does not contain encoder info, cannot recalculate odometry!"); 
@@ -205,9 +205,9 @@ DECLARE_OP_FUNCTION(op_recalc_odometry)
 
 		// This method can be reimplemented to save the modified object to an output stream.
 		virtual void OnPostProcess(
-			mrpt::obs::CActionCollectionPtr &actions,
-			mrpt::obs::CSensoryFramePtr     &SF,
-			mrpt::obs::CObservationPtr      &obs)
+			mrpt::obs::CActionCollection::Ptr &actions,
+			mrpt::obs::CSensoryFrame::Ptr     &SF,
+			mrpt::obs::CObservation::Ptr      &obs)
 		{
 			ASSERT_((actions && SF) || obs)
 			if (actions)

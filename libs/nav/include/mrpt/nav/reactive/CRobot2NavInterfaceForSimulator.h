@@ -51,14 +51,14 @@ namespace mrpt
 			return true;
 		}
 
-		mrpt::kinematics::CVehicleVelCmdPtr getEmergencyStopCmd() MRPT_OVERRIDE
+		mrpt::kinematics::CVehicleVelCmd::Ptr getEmergencyStopCmd() MRPT_OVERRIDE
 		{
-			return mrpt::kinematics::CVehicleVelCmdPtr(new mrpt::kinematics::CVehicleVelCmd_Holo(0.0,0.0,0.1,0.0));
+			return mrpt::kinematics::CVehicleVelCmd::Ptr(new mrpt::kinematics::CVehicleVelCmd_Holo(0.0,0.0,0.1,0.0));
 		}
 
-		mrpt::kinematics::CVehicleVelCmdPtr getStopCmd() MRPT_OVERRIDE
+		mrpt::kinematics::CVehicleVelCmd::Ptr getStopCmd() MRPT_OVERRIDE
 		{
-			return mrpt::kinematics::CVehicleVelCmdPtr(new mrpt::kinematics::CVehicleVelCmd_Holo(0.0,0.0,1.0,0.0));
+			return mrpt::kinematics::CVehicleVelCmd::Ptr(new mrpt::kinematics::CVehicleVelCmd_Holo(0.0,0.0,1.0,0.0));
 		}
 
 		/** See CRobot2NavInterface::getNavigationTime(). In this class, simulation time is returned instead of wall-clock time. */
@@ -110,13 +110,13 @@ namespace mrpt
 		}
 
 
-		mrpt::kinematics::CVehicleVelCmdPtr getStopCmd() MRPT_OVERRIDE
+		mrpt::kinematics::CVehicleVelCmd::Ptr getStopCmd() MRPT_OVERRIDE
 		{
-			mrpt::kinematics::CVehicleVelCmdPtr cmd(new mrpt::kinematics::CVehicleVelCmd_DiffDriven());
+			mrpt::kinematics::CVehicleVelCmd::Ptr cmd(new mrpt::kinematics::CVehicleVelCmd_DiffDriven());
 			cmd->setToStop();
 			return cmd;
 		}
-		mrpt::kinematics::CVehicleVelCmdPtr getEmergencyStopCmd() MRPT_OVERRIDE
+		mrpt::kinematics::CVehicleVelCmd::Ptr getEmergencyStopCmd() MRPT_OVERRIDE
 		{
 			return getStopCmd();
 		}

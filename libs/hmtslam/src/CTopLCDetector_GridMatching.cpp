@@ -36,10 +36,10 @@ CTopLCDetector_GridMatching::~CTopLCDetector_GridMatching()
   * \param out_log_lik The output, a log-likelihood.
   * \return nullptr, or a PDF of the estimated translation between the two areas (can be a multi-modal PDF).
   */
-CPose3DPDFPtr CTopLCDetector_GridMatching::computeTopologicalObservationModel(
+CPose3DPDF::Ptr CTopLCDetector_GridMatching::computeTopologicalObservationModel(
 	const THypothesisID		&hypID,
-	const CHMHMapNodePtr	&currentArea,
-	const CHMHMapNodePtr	&refArea,
+	const CHMHMapNode::Ptr	&currentArea,
+	const CHMHMapNode::Ptr	&refArea,
 	double					&out_log_lik
 	)
 {
@@ -57,8 +57,8 @@ CPose3DPDFPtr CTopLCDetector_GridMatching::computeTopologicalObservationModel(
 	const CTopLCDetector_GridMatching::TOptions &o = m_hmtslam->m_options.TLC_grid_options;
 	gridAligner.options = o.matchingOptions;
 
-	CMultiMetricMapPtr hMapCur = currentArea->m_annotations.getAs<CMultiMetricMap>(NODE_ANNOTATION_METRIC_MAPS, hypID, false);
-	CMultiMetricMapPtr hMapRef = refArea->m_annotations.getAs<CMultiMetricMap>(NODE_ANNOTATION_METRIC_MAPS, hypID, false);
+	CMultiMetricMap::Ptr hMapCur = currentArea->m_annotations.getAs<CMultiMetricMap>(NODE_ANNOTATION_METRIC_MAPS, hypID, false);
+	CMultiMetricMap::Ptr hMapRef = refArea->m_annotations.getAs<CMultiMetricMap>(NODE_ANNOTATION_METRIC_MAPS, hypID, false);
 
 	ASSERT_( hMapRef->m_gridMaps.size()>=1 )
 	ASSERT_( hMapCur->m_gridMaps.size()>=1 )
@@ -74,7 +74,7 @@ CPose3DPDFPtr CTopLCDetector_GridMatching::computeTopologicalObservationModel(
 	gridAligner.options.dumpToConsole();
 
 	// Do the map align:
-	CPosePDFPtr alignRes = gridAligner.Align(
+	CPosePDF::Ptr alignRes = gridAligner.Align(
 		hMapCur.get(),   // "ref" as seen from "cur"...The order is critical!!!
 		hMapRef.get(),  
 		initEstimate,
@@ -89,7 +89,7 @@ CPose3DPDFPtr CTopLCDetector_GridMatching::computeTopologicalObservationModel(
 #endif
 
 	// Transform the 2D SOG into a 3D SOG:
-	CPose3DPDFPtr res = CPose3DPDFPtr( CPose3DPDF::createFrom2D(*alignRes) );
+	CPose3DPDF::Ptr res = CPose3DPDF::Ptr( CPose3DPDF::createFrom2D(*alignRes) );
 
 	// --------------------
 	// Debug output:
@@ -111,7 +111,7 @@ CPose3DPDFPtr CTopLCDetector_GridMatching::computeTopologicalObservationModel(
 
 		m_hmtslam->logFmt(mrpt::utils::LVL_DEBUG,"[TLCD_gridmatch] DEBUG: Saving %s\n",filRes.c_str());
 		CFileOutputStream f_res(filRes);
-		f_res.printf("# SOG modes: %i\n",(int)CPosePDFSOGPtr(alignRes)->size() );
+		f_res.printf("# SOG modes: %i\n",(int)std::dynamic_pointer_cast<CPosePDFSOG>(alignRes)->size() );
 		f_res.printf("ICP goodness: ");
 		f_res.printf_vector("%f ",info.icp_goodness_all_sog_modes);
 		f_res.printf("\n");

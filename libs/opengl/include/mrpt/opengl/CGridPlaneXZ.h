@@ -73,7 +73,7 @@ namespace mrpt
 
 
 			/** Class factory  */
-			static CGridPlaneXZPtr Create(
+			static CGridPlaneXZ::Ptr Create(
 				float xMin = -10,
 				float xMax = 10,
 				float zMin = -10,
@@ -90,7 +90,7 @@ namespace mrpt
 
 			/** Evaluates the bounding box of this object (including possible children) in the coordinate frame of the object parent. */
 			void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const MRPT_OVERRIDE;
-		private:
+
 			/** Constructor */
 			CGridPlaneXZ(
 				float xMin = -10,

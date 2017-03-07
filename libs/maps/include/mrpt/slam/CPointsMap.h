@@ -11,5 +11,5 @@
 MRPT_WARNING("*Deprecated header* Please replace with #include <mrpt/maps/CPointsMap.h>. This backward compatible header will be removed in MRPT 2.0.0")
 namespace mrpt { namespace slam {
 	using mrpt::maps::CPointsMap;    //!< Backward compatibility
-	using mrpt::maps::CPointsMapPtr; //!< Backward compatibility
+	using mrpt::maps::CPointsMap::Ptr; //!< Backward compatibility
 } }

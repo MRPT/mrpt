@@ -104,9 +104,9 @@ class CFixedIntervalsNRD:
 		 *
 		 * \return True upon successful node registration in the graph
 		 */
-		bool updateState( mrpt::obs::CActionCollectionPtr action,
-				mrpt::obs::CSensoryFramePtr observations,
-				mrpt::obs::CObservationPtr observation );
+		bool updateState( mrpt::obs::CActionCollection::Ptr action,
+				mrpt::obs::CSensoryFrame::Ptr observations,
+				mrpt::obs::CObservation::Ptr observation );
 
 		/**\brief Parameters structure for managing the relevant to the decider
 		 * variables in a compact manner
@@ -147,9 +147,9 @@ class CFixedIntervalsNRD:
 		/**\brief Initialization function to be called from the various constructors
 		 */
 		void initCFixedIntervalsNRD();
-		void checkIfInvalidDataset(mrpt::obs::CActionCollectionPtr action,
-				mrpt::obs::CSensoryFramePtr observations,
-				mrpt::obs::CObservationPtr observation );
+		void checkIfInvalidDataset(mrpt::obs::CActionCollection::Ptr action,
+				mrpt::obs::CSensoryFrame::Ptr observations,
+				mrpt::obs::CObservation::Ptr observation );
 
 		// Private members
 		//////////////////////////////////////////////////////////////

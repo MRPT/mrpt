@@ -35,7 +35,7 @@ void CRangeScanRegistrationDecider<GRAPH_t>::getICPEdge(
 		initial_pose = *initial_pose_in;
 	}
 
-	mrpt::poses::CPosePDFPtr pdf = params.icp.Align(
+	mrpt::poses::CPosePDF::Ptr pdf = params.icp.Align(
 			&m1,
 			&m2,
 			initial_pose,
@@ -81,7 +81,7 @@ void CRangeScanRegistrationDecider<GRAPH_t>::getICPEdge(
 		initial_pose = *initial_pose_in;
 	}
 
-	mrpt::poses::CPose3DPDFPtr pdf = params.icp.Align3D(
+	mrpt::poses::CPose3DPDF::Ptr pdf = params.icp.Align3D(
 			&m1,
 			&m2,
 			initial_pose,
@@ -137,8 +137,8 @@ void CRangeScanRegistrationDecider<GRAPH_t>::decimatePointsMap(
 
 template<class GRAPH_t>
 bool CRangeScanRegistrationDecider<GRAPH_t>::convert3DTo2DRangeScan(
-		mrpt::obs::CObservation3DRangeScanPtr& scan3D_in,
-		mrpt::obs::CObservation2DRangeScanPtr* scan2D_out /*= NULL*/) {
+		mrpt::obs::CObservation3DRangeScan::Ptr& scan3D_in,
+		mrpt::obs::CObservation2DRangeScan::Ptr* scan2D_out /*= NULL*/) {
 	MRPT_START;
 
 	bool success = false;

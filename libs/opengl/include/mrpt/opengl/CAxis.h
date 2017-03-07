@@ -58,7 +58,7 @@ namespace mrpt
 			void enableTickMarks(bool show_x, bool show_y, bool show_z);
 
 			/** Class factory  */
-			static CAxisPtr Create(
+			static CAxis::Ptr Create(
 				float xmin,float ymin, float zmin,
 				float xmax, float ymax,  float zmax,
 				float frecuency = 1, float lineWidth = 3, bool marks=false);
@@ -68,7 +68,7 @@ namespace mrpt
 
 			/** Evaluates the bounding box of this object (including possible children) in the coordinate frame of the object parent. */
 			void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const MRPT_OVERRIDE;
-	private:
+
 			/** Constructor */
 			CAxis(
 				float xmin=-1.0f,float ymin=-1.0f, float zmin=-1.0f,

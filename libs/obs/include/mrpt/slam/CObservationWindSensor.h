@@ -11,5 +11,5 @@
 MRPT_WARNING("*Deprecated header* Please replace with #include <mrpt/obs/CObservationWindSensor.h>. This backward compatible header will be removed in MRPT 2.0.0")
 namespace mrpt { namespace slam {
 	using mrpt::obs::CObservationWindSensor;    //!< Backward compatibility
-	using mrpt::obs::CObservationWindSensorPtr; //!< Backward compatibility
+	using mrpt::obs::CObservationWindSensor::Ptr; //!< Backward compatibility
 } }

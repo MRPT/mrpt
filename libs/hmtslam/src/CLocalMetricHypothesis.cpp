@@ -68,7 +68,7 @@ CLocalMetricHypothesis::~CLocalMetricHypothesis()
 	the poses in the auxiliary graph, and each of the areas
 	they belong to.
   ---------------------------------------------------------------*/
-void CLocalMetricHypothesis::getAs3DScene( opengl::CSetOfObjectsPtr &objs ) const
+void CLocalMetricHypothesis::getAs3DScene( opengl::CSetOfObjects::Ptr &objs ) const
 {
 	objs->clear();
 
@@ -76,7 +76,7 @@ void CLocalMetricHypothesis::getAs3DScene( opengl::CSetOfObjectsPtr &objs ) cons
 	// Draw a grid on the ground:
 	// -------------------------------------------
 	{
-		opengl::CGridPlaneXYPtr obj = opengl::CGridPlaneXY::Create(-100,100,-100,100,0,5);
+		opengl::CGridPlaneXY::Ptr obj = opengl::CGridPlaneXY::Create(-100,100,-100,100,0,5);
 		obj->setColor(0.4,0.4,0.4);
 
 		objs->insert(obj);  // it will free the memory
@@ -98,7 +98,7 @@ void CLocalMetricHypothesis::getAs3DScene( opengl::CSetOfObjectsPtr &objs ) cons
 
 		for ( TNodeIDSet::const_iterator n=m_neighbors.begin();n!=m_neighbors.end();++n)
 		{
-			const CHMHMapNodePtr node = m_parent->m_map.getNodeByID( *n );
+			const CHMHMapNode::Ptr node = m_parent->m_map.getNodeByID( *n );
 			ASSERT_(node);
 			TPoseID poseID_origin;
 			CPose3D originPose;
@@ -106,7 +106,7 @@ void CLocalMetricHypothesis::getAs3DScene( opengl::CSetOfObjectsPtr &objs ) cons
 			{
 				lstPoses[ poseID_origin ].getMean(originPose);
 
-				opengl::CSetOfObjectsPtr corner = stock_objects::CornerXYZ();
+				opengl::CSetOfObjects::Ptr corner = stock_objects::CornerXYZ();
 				corner->setPose(originPose);
 				objs->insert( corner );
 			}
@@ -117,7 +117,7 @@ void CLocalMetricHypothesis::getAs3DScene( opengl::CSetOfObjectsPtr &objs ) cons
 	// -----------------------------------------
 	const CPose3D meanCurPose = lstPoses[ m_currentRobotPose ].getMeanVal();
 	{
-		opengl::CCameraPtr cam = opengl::CCamera::Create();
+		opengl::CCamera::Ptr cam = opengl::CCamera::Create();
 		cam->setZoomDistance(85);
 		cam->setAzimuthDegrees(45 + RAD2DEG(meanCurPose.yaw()));
 		cam->setElevationDegrees(45);
@@ -132,7 +132,7 @@ void CLocalMetricHypothesis::getAs3DScene( opengl::CSetOfObjectsPtr &objs ) cons
 
 	for (it=lstPoses.begin(); it!=lstPoses.end();it++)
 	{
-		opengl::CEllipsoidPtr ellip = opengl::CEllipsoid::Create();
+		opengl::CEllipsoid::Ptr ellip = opengl::CEllipsoid::Create();
 		// Color depending on being into the current area:
 		if ( m_nodeIDmemberships.find(it->first)->second == m_nodeIDmemberships.find(m_currentRobotPose)->second )
 			ellip->setColor(0,0,1);
@@ -167,7 +167,7 @@ void CLocalMetricHypothesis::getAs3DScene( opengl::CSetOfObjectsPtr &objs ) cons
 
 		// Add an arrow for the mean direction also:
 		{
-			mrpt::opengl::CArrowPtr obj = mrpt::opengl::CArrow::Create(
+			mrpt::opengl::CArrow::Ptr obj = mrpt::opengl::CArrow::Create(
 				0,0,0,
 				0.20f,0,0,
 				0.25f,0.005f,0.02f);
@@ -182,7 +182,7 @@ void CLocalMetricHypothesis::getAs3DScene( opengl::CSetOfObjectsPtr &objs ) cons
 		if (it->first == m_currentRobotPose )
 		{
 			// Draw robot:
-			opengl::CSetOfObjectsPtr robot = stock_objects::RobotPioneer();
+			opengl::CSetOfObjects::Ptr robot = stock_objects::RobotPioneer();
 			robot->setPose(pdf.mean);
 
 			// Add it:
@@ -228,7 +228,7 @@ void CLocalMetricHypothesis::getAs3DScene( opengl::CSetOfObjectsPtr &objs ) cons
 			CPose3DPDFGaussian   pdf;
 			pdf.copyFrom( *pdfParts );
 
-			opengl::CSimpleLinePtr line = opengl::CSimpleLine::Create();
+			opengl::CSimpleLine::Ptr line = opengl::CSimpleLine::Create();
 			line->setColor(0.8,0.8,0.8, 0.3);
 			line->setLineWidth(2);
 
@@ -259,7 +259,7 @@ void CLocalMetricHypothesis::getAs3DScene( opengl::CSetOfObjectsPtr &objs ) cons
 
 				const CPose3DPDFGaussian  *hisPdf = & hisIt->second.m_pose;
 
-				opengl::CSimpleLinePtr line = opengl::CSimpleLine::Create();
+				opengl::CSimpleLine::Ptr line = opengl::CSimpleLine::Create();
 				line->m_color_R = 0.2f;
 				line->m_color_G = 0.8f;
 				line->m_color_B = 0.2f;
@@ -288,7 +288,7 @@ void CLocalMetricHypothesis::getAs3DScene( opengl::CSetOfObjectsPtr &objs ) cons
 
 		for ( itMeans = areas_mean.begin(); itMeans!=areas_mean.end(); itMeans++ )
 		{
-			opengl::CSpherePtr sphere = opengl::CSphere::Create();
+			opengl::CSphere::Ptr sphere = opengl::CSphere::Create();
 
 			if (itMeans->first == m_nodeIDmemberships.find( m_currentRobotPose)->second )
 			{   // Color of current area
@@ -307,10 +307,10 @@ void CLocalMetricHypothesis::getAs3DScene( opengl::CSetOfObjectsPtr &objs ) cons
 			objs->insert( sphere );
 
 			// And text label:
-			opengl::CTextPtr txt = opengl::CText::Create();
+			opengl::CText::Ptr txt = opengl::CText::Create();
 			txt->setColor(1,1,1);
 
-			const CHMHMapNodePtr node = m_parent->m_map.getNodeByID( itMeans->first );
+			const CHMHMapNode::Ptr node = m_parent->m_map.getNodeByID( itMeans->first );
 			ASSERT_(node);
 
 			txt->setLocation( itMeans->second.x(), itMeans->second.y(), itMeans->second.z() + m_parent->m_options.VIEW3D_AREA_SPHERES_HEIGHT );
@@ -331,7 +331,7 @@ void CLocalMetricHypothesis::getAs3DScene( opengl::CSetOfObjectsPtr &objs ) cons
 		for ( itMeans = areas_mean.begin(); itMeans!=areas_mean.end(); itMeans++ )
 		{
 			CHMHMapNode::TNodeID  srcAreaID = itMeans->first;
-			const CHMHMapNodePtr srcArea = m_parent->m_map.getNodeByID( srcAreaID );
+			const CHMHMapNode::Ptr srcArea = m_parent->m_map.getNodeByID( srcAreaID );
 			ASSERT_(srcArea);
 
 			TArcList		lstArcs;
@@ -345,7 +345,7 @@ void CLocalMetricHypothesis::getAs3DScene( opengl::CSetOfObjectsPtr &objs ) cons
 					if ( trgAreaPoseIt != areas_mean.end() )
 					{
 						// Yes, target node of the arc is in the LMH: Draw it:
-						opengl::CSimpleLinePtr line = opengl::CSimpleLine::Create();
+						opengl::CSimpleLine::Ptr line = opengl::CSimpleLine::Create();
 						line->setColor(0.8,0.8,0);
 						line->setLineWidth(3);
 
@@ -578,13 +578,13 @@ void CLocalMetricHypothesis::changeCoordinateOrigin( const TPoseID &newOrigin )
 		CSimpleMap *SFseq = m_robotPosesGraph.partitioner.getSequenceOfFrames();
 		for (std::map<uint32_t,TPoseID>::const_iterator it=m_robotPosesGraph.idx2pose.begin();it!=m_robotPosesGraph.idx2pose.end();++it)
 		{
-			CPose3DPDFPtr		pdf;
-			CSensoryFramePtr	sf;
+			CPose3DPDF::Ptr		pdf;
+			CSensoryFrame::Ptr	sf;
 			SFseq->get( it->first, pdf, sf);
 
 			// Copy from particles:
 			ASSERT_( pdf->GetRuntimeClass() == CLASS_ID(CPose3DPDFParticles) );
-			CPose3DPDFParticlesPtr pdfParts = CPose3DPDFParticlesPtr(pdf);
+			CPose3DPDFParticles::Ptr pdfParts = std::dynamic_pointer_cast<CPose3DPDFParticles>(pdf);
 			getPoseParticles( it->second, *pdfParts);
 		}
 	}
@@ -765,7 +765,7 @@ void CLocalMetricHypothesis::updateAreaFromLMH(
 
 	ASSERT_( !lstPoseIDs.empty() );
 
-	CHMHMapNodePtr node;
+	CHMHMapNode::Ptr node;
 	{
 		synch::CCriticalSectionLocker  ( &m_parent->m_map_cs );
 		node = m_parent->m_map.getNodeByID( areaID );
@@ -780,9 +780,9 @@ void CLocalMetricHypothesis::updateAreaFromLMH(
 	// 1) The set of robot poses and SFs
 	//    In annotation: 					NODE_ANNOTATION_POSES_GRAPH
 	// ---------------------------------------------------------------------
-	CRobotPosesGraphPtr posesGraph;
+	CRobotPosesGraph::Ptr posesGraph;
 	{
-		CSerializablePtr annot = node->m_annotations.get(NODE_ANNOTATION_POSES_GRAPH,m_ID);
+		CSerializable::Ptr annot = node->m_annotations.get(NODE_ANNOTATION_POSES_GRAPH,m_ID);
 		if (!annot)
 		{
 			// Add it now:
@@ -791,7 +791,7 @@ void CLocalMetricHypothesis::updateAreaFromLMH(
 		}
 		else
 		{
-			posesGraph = CRobotPosesGraphPtr(annot);
+			posesGraph = std::dynamic_pointer_cast<CRobotPosesGraph>(annot);
 			posesGraph->clear();
 		}
 	}
@@ -843,7 +843,7 @@ void CLocalMetricHypothesis::updateAreaFromLMH(
 	// 2) One single metric map built from the most likelily robot poses
 	//    In annotation: 					NODE_ANNOTATION_METRIC_MAPS
 	// ---------------------------------------------------------------------
-	CMultiMetricMapPtr metricMap = node->m_annotations.getAs<CMultiMetricMap>(NODE_ANNOTATION_METRIC_MAPS,m_ID, false);
+	CMultiMetricMap::Ptr metricMap = node->m_annotations.getAs<CMultiMetricMap>(NODE_ANNOTATION_METRIC_MAPS,m_ID, false);
 	metricMap->clear();
 	posesGraph->insertIntoMetricMap( *metricMap );
 

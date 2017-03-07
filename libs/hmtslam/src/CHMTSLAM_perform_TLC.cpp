@@ -87,12 +87,12 @@ void CHMTSLAM::perform_TLC(
 	//	// Only if the pose has been affected:
 	//	if (Li.count(it->second)==0) continue;
 
-	//	CPose3DPDFPtr		pdf;
-	//	CSensoryFramePtr	sf;
+	//	CPose3DPDF::Ptr		pdf;
+	//	CSensoryFrame::Ptr	sf;
 	//	SFseq->get( it->first, pdf, sf);
 
 	//	// Copy from particles:
-	//	CPose3DPDFParticlesPtr pdfParts = CPose3DPDFParticlesPtr(pdf);
+	//	CPose3DPDFParticles::Ptr pdfParts = CPose3DPDFParticles::Ptr(pdf);
 	//	LMH.getPoseParticles( it->second, *pdfParts);
 	//}
 
@@ -143,7 +143,7 @@ void CHMTSLAM::perform_TLC(
 	//const CPose3D  Apose_ei = -Apose_ie;
 	const CPose3D AeRefInLMH = AiRef + Apose_ie;
 
-	CRobotPosesGraphPtr AePG = m_map.getNodeByID(Ae)->m_annotations.getAs<CRobotPosesGraph>(NODE_ANNOTATION_POSES_GRAPH, LMH.m_ID);
+	CRobotPosesGraph::Ptr AePG = m_map.getNodeByID(Ae)->m_annotations.getAs<CRobotPosesGraph>(NODE_ANNOTATION_POSES_GRAPH, LMH.m_ID);
 
 	// For each pose in Ae:
 	for (CRobotPosesGraph::const_iterator it=AePG->begin();it!=AePG->end();++it)

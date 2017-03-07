@@ -375,7 +375,7 @@ void  CPosePDFParticlesExtended::prediction_and_update_pfStandardProposal(
 	MRPT_START
 
 	size_t				i,M = m_particles.size();
-	CActionRobotMovement2DPtr robotMovement;
+	CActionRobotMovement2D::Ptr robotMovement;
 
 	// ----------------------------------------------------------------------
 	//						PREDICTION STAGE
@@ -452,7 +452,7 @@ void  CPosePDFParticlesExtended::prediction_and_update_pfAuxiliaryPFOptimal(
 	MRPT_START
 
 	size_t						i,k,N,M = m_particles.size();
-	CActionRobotMovement2DPtr robotMovement;
+	CActionRobotMovement2D::Ptr robotMovement;
 
 	// ----------------------------------------------------------------------
 	//							PRELIMINAR CHECKS:

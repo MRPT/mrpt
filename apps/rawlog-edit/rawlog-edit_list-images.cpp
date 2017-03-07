@@ -45,12 +45,12 @@ DECLARE_OP_FUNCTION(op_list_images)
 				throw std::runtime_error("list-images: Cannot open output text file.");
 		}
 
-		bool processOneObservation(CObservationPtr  &obs)
+		bool processOneObservation(CObservation::Ptr  &obs)
 		{
 			const string label_time = format("%s_%f", obs->sensorLabel.c_str(), timestampTotime_t(obs->timestamp) );
 			if (IS_CLASS(obs, CObservationStereoImages ) )
 			{
-				CObservationStereoImagesPtr obsSt = CObservationStereoImagesPtr(obs);
+				CObservationStereoImages::Ptr obsSt = std::dynamic_pointer_cast<CObservationStereoImages>(obs);
 				// save image to file & convert into external storage:
 				if (obsSt->imageLeft.isExternallyStored())
 					m_out << obsSt->imageLeft.getExternalStorageFile() << std::endl;
@@ -60,14 +60,14 @@ DECLARE_OP_FUNCTION(op_list_images)
 			}
 			else if (IS_CLASS(obs, CObservationImage ) )
 			{
-				CObservationImagePtr obsIm = CObservationImagePtr(obs);
+				CObservationImage::Ptr obsIm = std::dynamic_pointer_cast<CObservationImage>(obs);
 
 				if (obsIm->image.isExternallyStored())
 					m_out << obsIm->image.getExternalStorageFile() << std::endl;
 			}
 			else if (IS_CLASS(obs, CObservation3DRangeScan ) )
 			  {
-				CObservation3DRangeScanPtr obs3D = CObservation3DRangeScanPtr(obs);
+				CObservation3DRangeScan::Ptr obs3D = std::dynamic_pointer_cast<CObservation3DRangeScan>(obs);
 
 				if (obs3D->intensityImage.isExternallyStored())
 					m_out << obs3D->intensityImage.getExternalStorageFile() << std::endl;

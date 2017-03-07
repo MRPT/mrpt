@@ -131,11 +131,11 @@ void CIncrementalMapPartitioner::clear()
 						addMapFrame
   ---------------------------------------------------------------*/
 unsigned int CIncrementalMapPartitioner::addMapFrame(
-	const CSensoryFramePtr &frame,
-	const CPosePDFPtr &robotPose )
+	const CSensoryFrame::Ptr &frame,
+	const CPosePDF::Ptr &robotPose )
 {
 	MRPT_START
-	return addMapFrame( frame,CPose3DPDFPtr( CPose3DPDF::createFrom2D( *robotPose ) ));
+	return addMapFrame( frame,CPose3DPDF::Ptr( CPose3DPDF::createFrom2D( *robotPose ) ));
 	MRPT_END
 }
 
@@ -144,13 +144,13 @@ unsigned int CIncrementalMapPartitioner::addMapFrame(
 						addMapFrame
   ---------------------------------------------------------------*/
 unsigned int CIncrementalMapPartitioner::addMapFrame(
-	const CSensoryFramePtr &frame,
-	const CPose3DPDFPtr &robotPose )
+	const CSensoryFrame::Ptr &frame,
+	const CPose3DPDF::Ptr &robotPose )
 {
 	size_t								i=0,j=0,n=0;
 	CPose3D								pose_i, pose_j, relPose;
-	CPose3DPDFPtr						posePDF_i, posePDF_j;
-	CSensoryFramePtr					sf_i, sf_j;
+	CPose3DPDF::Ptr						posePDF_i, posePDF_j;
+	CSensoryFrame::Ptr					sf_i, sf_j;
 	CMultiMetricMap						*map_i=nullptr,*map_j=nullptr;
 	mrpt::utils::TMatchingPairList		corrs;
 	static CPose3D						nullPose(0,0,0);
@@ -551,8 +551,8 @@ void  CIncrementalMapPartitioner::removeSetOfNodes(vector_uint	indexesToRemove, 
 		m_individualFrames.remove( *it );
 
 	// Change coordinates reference of frames:
-	CSensoryFramePtr	SF;
-	CPose3DPDFPtr		posePDF;
+	CSensoryFrame::Ptr	SF;
+	CPose3DPDF::Ptr		posePDF;
 
 	if (changeCoordsRef)
 	{
@@ -596,8 +596,8 @@ void CIncrementalMapPartitioner::changeCoordinatesOriginPoseIndex( const unsigne
 {
 	MRPT_START
 
-	CPose3DPDFPtr pdf;
-	CSensoryFramePtr sf;
+	CPose3DPDF::Ptr pdf;
+	CSensoryFrame::Ptr sf;
 	m_individualFrames.get(newOriginPose,pdf,sf);
 
 	CPose3D p;
@@ -611,7 +611,7 @@ void CIncrementalMapPartitioner::changeCoordinatesOriginPoseIndex( const unsigne
 				getAs3DScene
   ---------------------------------------------------------------*/
 void CIncrementalMapPartitioner::getAs3DScene(
-	mrpt::opengl::CSetOfObjectsPtr &objs,
+	mrpt::opengl::CSetOfObjects::Ptr &objs,
 	const std::map<uint32_t,int64_t>  *renameIndexes
 	) const
 {
@@ -622,14 +622,14 @@ void CIncrementalMapPartitioner::getAs3DScene(
 
 	for (size_t i=0;i<m_individualFrames.size();i++)
 	{
-		CPose3DPDFPtr i_pdf;
-		CSensoryFramePtr i_sf;
+		CPose3DPDF::Ptr i_pdf;
+		CSensoryFrame::Ptr i_sf;
 		m_individualFrames.get(i,i_pdf,i_sf);
 
 		CPose3D  i_mean;
 		i_pdf->getMean(i_mean);
 
-		opengl::CSpherePtr   i_sph = opengl::CSphere::Create();
+		opengl::CSphere::Ptr   i_sph = opengl::CSphere::Create();
 		i_sph->setRadius(0.02f);
 		i_sph->setColor(0,0,1);
 
@@ -651,8 +651,8 @@ void CIncrementalMapPartitioner::getAs3DScene(
 		// Arcs:
 		for (size_t j=i+1;j<m_individualFrames.size();j++)
 		{
-			CPose3DPDFPtr j_pdf;
-			CSensoryFramePtr j_sf;
+			CPose3DPDF::Ptr j_pdf;
+			CSensoryFrame::Ptr j_sf;
 			m_individualFrames.get(j,j_pdf,j_sf);
 
 			CPose3D  j_mean;
@@ -662,7 +662,7 @@ void CIncrementalMapPartitioner::getAs3DScene(
 
 			if (SSO_ij>0.01)
 			{
-				opengl::CSimpleLinePtr lin = opengl::CSimpleLine::Create();
+				opengl::CSimpleLine::Ptr lin = opengl::CSimpleLine::Create();
 				lin->setLineCoords(
 					i_mean.x(), i_mean.y(), i_mean.z(),
 					j_mean.x(), j_mean.y(), j_mean.z() );
@@ -726,7 +726,7 @@ void  CIncrementalMapPartitioner::writeToStream(mrpt::utils::CStream &out, int *
 unsigned int CIncrementalMapPartitioner::addMapFrame( const CSensoryFrame &frame, const CPose3DPDF &robotPose3D )
 {
 	return addMapFrame(
-		CSensoryFramePtr(new CSensoryFrame(frame)),
-		CPose3DPDFPtr( robotPose3D.duplicateGetSmartPtr() )
+		CSensoryFrame::Ptr(new CSensoryFrame(frame)),
+		std::dynamic_pointer_cast<CPose3DPDF>(robotPose3D.duplicateGetSmartPtr() )
 		);
 }

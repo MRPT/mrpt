@@ -192,7 +192,7 @@ void CImpinjRFID::closeReader()
 
 void CImpinjRFID::doProcess(){
 
-	mrpt::obs::CObservationRFIDPtr obs = mrpt::obs::CObservationRFID::Create();
+	mrpt::obs::CObservationRFID::Ptr obs = mrpt::obs::CObservationRFID::Create();
 	if(getObservation(*obs))
 		appendObservation(obs);
 }

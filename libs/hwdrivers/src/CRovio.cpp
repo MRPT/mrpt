@@ -242,7 +242,7 @@ void CRovio::thread_video()	//This function takes a frame and waits until getLas
 
 		while(!m_videothread_must_exit)
 		{
-			CObservationImagePtr obs = CObservationImage::Create();
+			CObservationImage::Ptr obs = CObservationImage::Create();
 
 			if (in_video.retrieveFrame(obs->image) )
 			{
@@ -328,7 +328,7 @@ bool CRovio::stop_video()
 	return !was_already_stop;
 }
 
-bool CRovio::getNextImageSync(CObservationImagePtr& lastImage )		//This function grabbes the images taken by thread_video
+bool CRovio::getNextImageSync(CObservationImage::Ptr& lastImage )		//This function grabbes the images taken by thread_video
 {
 	if (!isVideoStreamming())
 		return false;

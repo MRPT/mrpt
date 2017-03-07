@@ -197,8 +197,8 @@ bool DemoFeatures()
 	winPlots.resize(500,200);
 
 	// Another window to show the descriptors themselves:
-	CDisplayWindowPtr		winptr2D_descr1,winptr2D_descr2;
-	CDisplayWindowPlotsPtr	winptrPlot_descr1,winptrPlot_descr2;
+	CDisplayWindow::Ptr		winptr2D_descr1,winptr2D_descr2;
+	CDisplayWindowPlots::Ptr	winptrPlot_descr1,winptrPlot_descr2;
 
 	if (fext.options.featsType == featSIFT )
 		desc_to_compute = descSIFT;

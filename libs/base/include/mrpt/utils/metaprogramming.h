@@ -85,10 +85,9 @@ namespace mrpt
 			//NOTE: replace with mem_fun_ref(&CSerializable::make_unique)
 			/** An object for making smart pointers unique (ie, making copies if necessary), intended for being used in STL algorithms. */
 			struct ObjectMakeUnique {
-				typedef mrpt::utils::CObject::Ptr argument_type;
-				typedef void result_type;
-				inline void operator()(mrpt::utils::CObject::Ptr &ptr) {
-					ptr.reset(ptr->clone());
+				template <typename T>
+				inline void operator()(T &ptr) {
+					ptr.reset(dynamic_cast<typename T::element_type *>(ptr->clone()));
 				}
 			};
 
@@ -96,8 +95,8 @@ namespace mrpt
 			struct ObjectPairMakeUnique {
 				template <typename T>
 				inline void operator()(T &ptr) {
-					ptr.first.reset(ptr.first->clone());
-					ptr.second.reset(ptr.first->clone());
+					ptr.first.reset(dynamic_cast<typename T::first_type::element_type *>(ptr.first->clone()));
+					ptr.second.reset(dynamic_cast<typename T::second_type::element_type *>(ptr.first->clone()));
 				}
 			};
 

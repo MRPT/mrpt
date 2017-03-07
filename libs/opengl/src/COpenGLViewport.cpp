@@ -161,7 +161,7 @@ void COpenGLViewport::clear()
 /*--------------------------------------------------------------
 					insert
   ---------------------------------------------------------------*/
-void COpenGLViewport::insert( const CRenderizablePtr &newObject )
+void COpenGLViewport::insert( const CRenderizable::Ptr &newObject )
 {
 	m_objects.push_back(newObject);
 }
@@ -324,7 +324,7 @@ void  COpenGLViewport::render( const int render_width, const int render_height  
 			{	// Clone: render someone's else objects.
 				ASSERT_(m_parent.get()!=nullptr);
 
-				COpenGLViewportPtr view = m_parent->getViewport( m_clonedViewport );
+				COpenGLViewport::Ptr view = m_parent->getViewport( m_clonedViewport );
 				if (!view)
 					THROW_EXCEPTION_FMT("Cloned viewport '%s' not found in parent COpenGLScene",m_clonedViewport.c_str());
 
@@ -339,7 +339,7 @@ void  COpenGLViewport::render( const int render_width, const int render_height  
 
 			// Get camera:
 			// 1st: if there is a CCamera in the scene:
-			CRenderizablePtr cam_ptr = viewForGetCamera->getByClass<CCamera>();
+			CRenderizable::Ptr cam_ptr = viewForGetCamera->getByClass<CCamera>();
 
 			CCamera *myCamera=nullptr;
 			if (cam_ptr)
@@ -637,7 +637,7 @@ void  COpenGLViewport::readFromStream(mrpt::utils::CStream &in,int version)
 /*---------------------------------------------------------------
 							getByName
   ---------------------------------------------------------------*/
-CRenderizablePtr COpenGLViewport::getByName( const string &str )
+CRenderizable::Ptr COpenGLViewport::getByName( const string &str )
 {
 	for (CListOpenGLObjects::iterator	it=m_objects.begin();it!=m_objects.end();++it)
 	{
@@ -645,12 +645,12 @@ CRenderizablePtr COpenGLViewport::getByName( const string &str )
 			return *it;
 		else if ( (*it)->GetRuntimeClass() == CLASS_ID_NAMESPACE(CSetOfObjects,opengl))
 		{
-			CRenderizablePtr ret = getAs<CSetOfObjects>(*it)->getByName(str);
+			CRenderizable::Ptr ret = getAs<CSetOfObjects>(*it)->getByName(str);
 			if (ret)
 				return ret;
 		}
 	}
-	return CRenderizablePtr();
+	return CRenderizable::Ptr();
 }
 
 /*---------------------------------------------------------------
@@ -697,7 +697,7 @@ void COpenGLViewport::dumpListOfObjects( utils::CStringList  &lst )
 /*--------------------------------------------------------------
 					removeObject
   ---------------------------------------------------------------*/
-void COpenGLViewport::removeObject( const CRenderizablePtr &obj )
+void COpenGLViewport::removeObject( const CRenderizable::Ptr &obj )
 {
 	for (CListOpenGLObjects::iterator	it=m_objects.begin();it!=m_objects.end();++it)
 		if (*it == obj)

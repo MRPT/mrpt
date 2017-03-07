@@ -29,9 +29,6 @@ namespace mrpt
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CRenderizable, mrpt::utils::CSerializable, OPENGL_IMPEXP )
 
-		/** A list of objects pointers, automatically managing memory free at destructor, and managing copies correctly. */
-		typedef std::deque<CRenderizablePtr> CListOpenGLObjects;
-
 		/** The base class of 3D objects that can be directly rendered through OpenGL.
 		  *  In this class there are a set of common properties to all 3D objects, mainly:
 		  *		- A name (m_name): A name that can be optionally asigned to objects for easing its reference.
@@ -145,10 +142,12 @@ namespace mrpt
 			virtual ~CRenderizable();
 
 			/** Interface for the stlplus smart pointer class. */
+			/* Can't overload clone return type
 			inline CRenderizable * clone() const
 			{
 				return static_cast<CRenderizable*>( this->clone() );
 			}
+			*/
 
 			/** Implements the rendering of 3D objects in each class derived from CRenderizable.
 			  */
@@ -199,17 +198,20 @@ namespace mrpt
 			static void releaseTextureName(unsigned int i);
 
 		};
-		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CRenderizable, mrpt::utils::CSerializable, OPENGL_IMPEXP )
+		/** A list of objects pointers, automatically managing memory free at destructor, and managing copies correctly. */
+		using CListOpenGLObjects = std::deque<CRenderizable::Ptr>
+
+		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CRenderizable, mrpt::utils::CSerializable, OPENGL_IMPEXP );
 
 		/** Applies a mrpt::poses::CPose3D transformation to the object. Note that this method doesn't <i>set</i> the pose to the given value, but <i>combines</i> it with the existing one.
 		  * \sa setPose */
-		OPENGL_IMPEXP CRenderizablePtr & operator<<(CRenderizablePtr &r,const mrpt::poses::CPose3D &p);
+		OPENGL_IMPEXP CRenderizable::Ptr & operator<<(CRenderizable::Ptr &r,const mrpt::poses::CPose3D &p);
 
 	} // end namespace
 
 } // End of namespace
 
-// This header goes here so there we can use "CRenderizablePtr"
+// This header goes here so there we can use "CRenderizable::Ptr"
 //#include <mrpt/opengl/gl_utils.h>
 
 

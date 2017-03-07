@@ -29,7 +29,7 @@ using namespace mrpt::utils;
 // This is my custom class to handle the pre/post render events:
 struct TMyExtraRenderingStuff : public mrpt::utils::CObserver
 {
-	opengl::CSpherePtr    ball_obj;  // The ball moving in the scene
+	opengl::CSphere::Ptr    ball_obj;  // The ball moving in the scene
 	bool                  showing_help, hiding_help;
 	mrpt::utils::CTicTac  tim_show_start, tim_show_end;
 
@@ -108,20 +108,20 @@ void TestDisplay3D()
 {
 	CDisplayWindow3D	win("Example of 3D Scene Visualization - MRPT",640,480);
 
-	COpenGLScenePtr &theScene = win.get3DSceneAndLock();
+	COpenGLScene::Ptr &theScene = win.get3DSceneAndLock();
 
 	// The unique instance of the observer class:
 	TMyExtraRenderingStuff   my_extra_rendering;
 
 	// And start subscribing to the viewport events:
-	opengl::COpenGLViewportPtr the_main_view = theScene->getViewport("main");
+	opengl::COpenGLViewport::Ptr the_main_view = theScene->getViewport("main");
 	my_extra_rendering.observeBegin( *the_main_view );
 
 
 	// Modify the scene:
 	// ------------------------------------------------------
 	{
-		opengl::CGridPlaneXYPtr obj = opengl::CGridPlaneXY::Create(-20,20,-20,20,0,1);
+		opengl::CGridPlaneXY::Ptr obj = opengl::CGridPlaneXY::Create(-20,20,-20,20,0,1);
 		obj->setColor(0.8,0.8,0.8);
 		theScene->insert( obj );
 	}
@@ -130,7 +130,7 @@ void TestDisplay3D()
 
 	if (1)
 	{
-		opengl::CAxisPtr obj = opengl::CAxis::Create();
+		opengl::CAxis::Ptr obj = opengl::CAxis::Create();
 		obj->setFrequency(5);
 		obj->enableTickMarks();
 		obj->setAxisLimits(-10,-10,-10, 10,10,10);
@@ -138,7 +138,7 @@ void TestDisplay3D()
 	}
 
 	{
-		opengl::CSpherePtr obj = opengl::CSphere::Create();
+		opengl::CSphere::Ptr obj = opengl::CSphere::Create();
 		obj->setColor(0,0,1);
 		obj->setRadius(0.3);
 		obj->setLocation(0,0,1);
@@ -172,9 +172,9 @@ void TestDisplay3D()
 	while (!end && win.isOpen() )
 	{
 		// Move the scene:
-		COpenGLScenePtr &theScene = win.get3DSceneAndLock();
+		COpenGLScene::Ptr &theScene = win.get3DSceneAndLock();
 
-		opengl::CRenderizablePtr obj1 = theScene->getByName("ball_1");
+		opengl::CRenderizable::Ptr obj1 = theScene->getByName("ball_1");
 		const double t = timer.Tac();
 		const double R = 8;
 		const double W = 5.0, Q = 3.3;

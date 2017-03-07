@@ -20,7 +20,6 @@ namespace mrpt
 		// Note: instead of the standard "DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE", classes inheriting
 		// from templates need special nasty handling for MSVC DLL exports...
 		DEFINE_MRPT_OBJECT_PRE_CUSTOM_BASE_LINKAGE2(CMatrixD, mrpt::utils::CSerializable, CMatrixD)
-		BASE_IMPEXP ::mrpt::utils::CStream& operator>>(mrpt::utils::CStream& in, CMatrixDPtr &pObj);
 
 
 		/**  This class is a "CSerializable" wrapper for "CMatrixTemplateNumeric<double>".
@@ -69,6 +68,7 @@ namespace mrpt
 			explicit CMatrixD( const TPoint3D &p);
 
 		}; // end of class definition
+		BASE_IMPEXP ::mrpt::utils::CStream& operator>>(mrpt::utils::CStream& in, CMatrixD::Ptr &pObj);
 		DEFINE_MRPT_OBJECT_POST_CUSTOM_BASE_LINKAGE2(CMatrixD, mrpt::utils::CSerializable, CMatrixD)
 
 	} // End of namespace

@@ -65,13 +65,12 @@ namespace mrpt
 			void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const MRPT_OVERRIDE;
 
 			/** Class factory  */
-			static CArrowPtr Create(
+			static CArrow::Ptr Create(
 				float x0,float y0,float z0,
 				float x1,float y1,float z1,
 				float headRatio = 0.2f,float smallRadius = 0.05f,float largeRadius = 0.2f,
 				float arrow_roll = -1.0f,float arrow_pitch = -1.0f,float arrow_yaw = -1.0f);
 
-		private:
 			/** Constructor
 			  */
 			CArrow(

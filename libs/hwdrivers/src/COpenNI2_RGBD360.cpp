@@ -93,8 +93,8 @@ void COpenNI2_RGBD360::doProcess()
 
 	bool	thereIs, hwError;
 
-	CObservationRGBD360Ptr newObs = CObservationRGBD360::Create();
-	//	CObservation3DRangeScanPtr newObs = CObservation3DRangeScan::Create();
+	CObservationRGBD360::Ptr newObs = CObservationRGBD360::Create();
+	//	CObservation3DRangeScan::Ptr newObs = CObservation3DRangeScan::Create();
 
    assert(getNumDevices() > 0);
 	//  unsigned sensor_id = COpenNI2Generic::vOpenDevices.front();
@@ -110,7 +110,7 @@ void COpenNI2_RGBD360::doProcess()
 	{
 		m_state = ssWorking;
 
-		std::vector<mrpt::utils::CSerializablePtr> objs;
+		std::vector<mrpt::utils::CSerializable::Ptr> objs;
 		if (m_grab_rgb || m_grab_depth || m_grab_3D_points) objs.push_back(newObs);
 
 		appendObservations( objs );

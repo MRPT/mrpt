@@ -18,9 +18,9 @@ namespace mrpt
 		/** \addtogroup stlext_grp
 		  * @{ */
 
-		/** Wrapper to a stlplus clone smart pointer to polymorphic classes, capable of handling 
+		/** Wrapper to a clone smart pointer to polymorphic classes, capable of handling 
 		* copy operator, etc. making deep copies. 
-		* Example use: `poly_ptr_ptr<mrpt::poses::CPosePDFPtr>`
+		* Example use: `poly_ptr_ptr<mrpt::poses::CPosePDF::Ptr>`
 		* \sa copy_ptr<T>
 		*/
 		template <typename T>
@@ -29,21 +29,21 @@ namespace mrpt
 		public:
 			/** Ctor from a smart pointer; makes deep copy. */
 			poly_ptr_ptr(const T &ptr) {
-				m_smartptr.reset(ptr->clone());
+				m_smartptr.reset(dynamic_cast<typename T::element_type *>(ptr->clone()));
 			}
 			/** Default ctor; init to nullptr. */
 			poly_ptr_ptr() {}
 			/** copy ctor: makes a copy of the object via `clone()` */
 			poly_ptr_ptr(const poly_ptr_ptr<T> & o) {
-				m_smartptr.reset(o.m_smartptr->clone());
+				m_smartptr.reset(dynamic_cast<typename T::element_type *>(o.m_smartptr->clone()));
 			}
 			poly_ptr_ptr<T> & operator =(const poly_ptr_ptr<T> &o) {
 				if (this == &o) return *this;
-				m_smartptr.reset(o.m_smartptr->clone());
+				m_smartptr.reset(dynamic_cast<typename T::element_type *>(o.m_smartptr->clone()));
 				return *this;
 			}
 			poly_ptr_ptr<T> & operator =(const T &o_ptr) {
-				m_smartptr.reset(o_ptr->clone());
+				m_smartptr.reset(dynamic_cast<typename T::element_type *>(o_ptr->clone()));
 				return *this;
 			}
 #if (__cplusplus>199711L)
@@ -62,20 +62,20 @@ namespace mrpt
 #endif
 			~poly_ptr_ptr() {}
 
-			typename T::value_type * get() {
+			typename T::element_type * get() {
 				if (m_smartptr) return m_smartptr.get();
 				else throw std::runtime_error("dereferencing nullptr poly_ptr");
 			}
-			const typename T::value_type * get() const {
+			const typename T::element_type * get() const {
 				if (m_smartptr) return m_smartptr.get();
 				else throw std::runtime_error("dereferencing nullptr poly_ptr");
 			}
 
-			typename T::value_type * operator->() { return get(); }
-			const typename T::value_type * operator->() const { return get(); }
+			typename T::element_type * operator->() { return get(); }
+			const typename T::element_type * operator->() const { return get(); }
 
-			typename T::value_type& operator*(void) { return *get(); }
-			const typename T::value_type& operator*(void) const { return * get(); }
+			typename T::element_type& operator*(void) { return *get(); }
+			const typename T::element_type& operator*(void) const { return * get(); }
 
 			operator bool() const { return m_smartptr ? true : false; }
 			bool operator!(void) const { return !m_smartptr(); }

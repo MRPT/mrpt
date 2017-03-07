@@ -53,9 +53,9 @@ class CRegistrationDeciderOrOptimizer : public mrpt::utils::COutputLogger {
 		 * the decider/optimizer implementing this method
 		 */
 		virtual bool updateState(
-				mrpt::obs::CActionCollectionPtr action,
-				mrpt::obs::CSensoryFramePtr observations,
-				mrpt::obs::CObservationPtr observation ) = 0;
+				mrpt::obs::CActionCollection::Ptr action,
+				mrpt::obs::CSensoryFrame::Ptr observations,
+				mrpt::obs::CObservation::Ptr observation ) = 0;
 
 		/**\brief Fetch the graph on which the decider/optimizer will work on. */
 		virtual void setGraphPtr(GRAPH_t* graph) {}
@@ -136,9 +136,9 @@ class CRegistrationDeciderOrOptimizer : public mrpt::utils::COutputLogger {
 		 * dataset / provided observations
 		 */
 		virtual void checkIfInvalidDataset(
-				mrpt::obs::CActionCollectionPtr action,
-				mrpt::obs::CSensoryFramePtr observations,
-				mrpt::obs::CObservationPtr observation ) {}
+				mrpt::obs::CActionCollection::Ptr action,
+				mrpt::obs::CSensoryFrame::Ptr observations,
+				mrpt::obs::CObservation::Ptr observation ) {}
 
 
 		mrpt::graphslam::CWindowManager* m_win_manager;

@@ -50,7 +50,7 @@ TEST(SerializeTestMaps, WriteReadToMem)
 				delete o;
 			}
 
-			CSerializablePtr recons;
+			CSerializable::Ptr recons;
 			buf.Seek(0);
 			buf >> recons;
 		}

@@ -11,5 +11,5 @@
 MRPT_WARNING("*Deprecated header* Please replace with #include <mrpt/maps/COctoMapBase.h>. This backward compatible header will be removed in MRPT 2.0.0")
 namespace mrpt { namespace slam {
 	using mrpt::maps::COctoMapBase;    //!< Backward compatibility
-	using mrpt::maps::COctoMapBasePtr; //!< Backward compatibility
+	using mrpt::maps::COctoMapBase::Ptr; //!< Backward compatibility
 } }

@@ -163,7 +163,7 @@ void CSwissRanger3DCamera::doProcess()
 
 	bool	thereIs, hwError;
 
-	CObservation3DRangeScanPtr newObs = CObservation3DRangeScan::Create();
+	CObservation3DRangeScan::Ptr newObs = CObservation3DRangeScan::Create();
 
 	getNextObservation( *newObs, thereIs, hwError );
 

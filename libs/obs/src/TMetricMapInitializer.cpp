@@ -91,7 +91,7 @@ void  TSetOfMetricMapInitializers::loadFromConfigFile(
 			mi->loadFromConfigFile(ini,sMapSectionsPrefix);
 
 			// Add the params to the list:
-			this->push_back( TMetricMapInitializerPtr(mi) );
+			this->push_back( TMetricMapInitializer::Ptr(mi) );
 		}
 
 	}// end for each map kind

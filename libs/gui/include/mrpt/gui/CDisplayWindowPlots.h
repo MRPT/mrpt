@@ -75,7 +75,7 @@ namespace mrpt
 				unsigned int initialHeight = 300 );
 
 			/** Class factory returning a smart pointer */
-			static CDisplayWindowPlotsPtr Create(
+			static CDisplayWindowPlots::Ptr Create(
 				const std::string	&windowCaption,
 				unsigned int		initialWindowWidth = 400,
 				unsigned int		initialWindowHeight = 300 );

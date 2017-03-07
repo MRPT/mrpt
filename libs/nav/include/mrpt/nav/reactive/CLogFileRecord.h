@@ -52,8 +52,8 @@ namespace nav
 			double desiredDirection,desiredSpeed;          //!< The results from the holonomic method.
 			double evaluation;                       //!< Final score of this candidate
 			mrpt::utils::TParametersDouble  evalFactors;   //!< Evaluation factors
-			CHolonomicLogFileRecordPtr HLFR;          //!< Other useful info about holonomic method execution.
-			mrpt::nav::CParameterizedTrajectoryGeneratorPtr ptg; //!< Only for the FIRST entry in a log file, this will contain a copy of the PTG with trajectories, suitable to render trajectories, etc.
+			CHolonomicLogFileRecord::Ptr HLFR;          //!< Other useful info about holonomic method execution.
+			mrpt::nav::CParameterizedTrajectoryGenerator::Ptr ptg; //!< Only for the FIRST entry in a log file, this will contain a copy of the PTG with trajectories, suitable to render trajectories, etc.
 			mrpt::nav::ClearanceDiagram  clearance;    //!< Clearance for each path
 		};
 
@@ -81,8 +81,8 @@ namespace nav
 		mrpt::poses::CPose2D          relPoseSense, relPoseVelCmd; //! Relative poses (wrt to robotOdometryPose) for extrapolated paths at two instants: time of obstacle sense, and future pose of motion comman
 		mrpt::math::TPoint2D          WS_target_relative;  //!< The relative location of target point in WS.
 
-		mrpt::kinematics::CVehicleVelCmdPtr    cmd_vel;  //!< The final motion command sent to robot, in "m/sec" and "rad/sec".
-		mrpt::kinematics::CVehicleVelCmdPtr    cmd_vel_original;  //!< Motion command as comes out from the PTG, before scaling speed limit filtering.
+		mrpt::kinematics::CVehicleVelCmd::Ptr    cmd_vel;  //!< The final motion command sent to robot, in "m/sec" and "rad/sec".
+		mrpt::kinematics::CVehicleVelCmd::Ptr    cmd_vel_original;  //!< Motion command as comes out from the PTG, before scaling speed limit filtering.
 		mrpt::math::TTwist2D   cur_vel; //!< The actual robot velocities in global (map) coordinates, as read from sensors, in "m/sec" and "rad/sec".
 		mrpt::math::TTwist2D   cur_vel_local; //!< The actual robot velocities in local (robot) coordinates, as read from sensors, in "m/sec" and "rad/sec".
 

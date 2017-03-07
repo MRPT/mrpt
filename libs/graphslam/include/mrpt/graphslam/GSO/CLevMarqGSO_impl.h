@@ -57,9 +57,9 @@ void CLevMarqGSO<GRAPH_t>::initCLevMarqGSO() {
 //////////////////////////////////////////////////////////////
 template<class GRAPH_t>
 bool CLevMarqGSO<GRAPH_t>::updateState(
-		mrpt::obs::CActionCollectionPtr action,
-		mrpt::obs::CSensoryFramePtr observations,
-		mrpt::obs::CObservationPtr observation ) {
+		mrpt::obs::CActionCollection::Ptr action,
+		mrpt::obs::CSensoryFrame::Ptr observations,
+		mrpt::obs::CObservation::Ptr observation ) {
 	MRPT_START;
 	using namespace mrpt::utils;
 	this->logFmt(LVL_DEBUG, "In updateOptimizerState... ");
@@ -242,17 +242,17 @@ inline void CLevMarqGSO<GRAPH_t>::updateGraphVisualization() {
 	this->logFmt(mrpt::utils::LVL_DEBUG, "In the updateGraphVisualization function");
 
 	// update the graph (clear and rewrite..)
-	COpenGLScenePtr& scene = m_win->get3DSceneAndLock();
+	COpenGLScene::Ptr& scene = m_win->get3DSceneAndLock();
 
 	// remove previous graph and insert the new instance
-	CRenderizablePtr prev_object = scene->getByName("optimized_graph");
+	CRenderizable::Ptr prev_object = scene->getByName("optimized_graph");
 	bool prev_visibility = true;
 	if (prev_object) { // set the visibility of the graph correctly
 		prev_visibility = prev_object->isVisible();
 	}
 	scene->removeObject(prev_object);
 
-	CSetOfObjectsPtr graph_obj =
+	CSetOfObjects::Ptr graph_obj =
 		graph_tools::graph_visualize(*m_graph, viz_params.cfg);
 	graph_obj->setName("optimized_graph");
 	graph_obj->setVisibility(prev_visibility);
@@ -279,9 +279,9 @@ void CLevMarqGSO<GRAPH_t>::toggleGraphVisualization() {
 	MRPT_START;
 	using namespace mrpt::opengl;
 
-	COpenGLScenePtr& scene = m_win->get3DSceneAndLock();
+	COpenGLScene::Ptr& scene = m_win->get3DSceneAndLock();
 
-	CRenderizablePtr graph_obj = scene->getByName("optimized_graph");
+	CRenderizable::Ptr graph_obj = scene->getByName("optimized_graph");
 	graph_obj->setVisibility(!graph_obj->isVisible());
 
 	m_win->unlockAccess3DScene();
@@ -299,14 +299,14 @@ void CLevMarqGSO<GRAPH_t>::fitGraphInView() {
 			"\nVisualization of data was requested but no CDisplayWindow3D pointer was given\n");
 
 	// first fetch the graph object
-	COpenGLScenePtr& scene = m_win->get3DSceneAndLock();
-	CRenderizablePtr obj = scene->getByName("optimized_graph");
-	CSetOfObjectsPtr graph_obj = static_cast<CSetOfObjectsPtr>(obj);
+	COpenGLScene::Ptr& scene = m_win->get3DSceneAndLock();
+	CRenderizable::Ptr obj = scene->getByName("optimized_graph");
+	CSetOfObjects::Ptr graph_obj = std::dynamic_pointer_cast<CSetOfObjects>(obj);
 	m_win->unlockAccess3DScene();
 	m_win->forceRepaint();
 
 	// autofit it based on its grid
-	CGridPlaneXYPtr obj_grid = graph_obj->CSetOfObjects::getByClass<CGridPlaneXY>();
+	CGridPlaneXY::Ptr obj_grid = graph_obj->CSetOfObjects::getByClass<CGridPlaneXY>();
 	if (obj_grid) {
 		float x_min,x_max, y_min,y_max;
 		obj_grid->getPlaneLimits(x_min,x_max, y_min,y_max);
@@ -332,9 +332,9 @@ void CLevMarqGSO<GRAPH_t>::initOptDistanceVisualization() {
 		m_win_observer->registerKeystroke(opt_params.keystroke_optimization_distance,
 				"Toggle optimization distance on/off");
 
-		COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+		COpenGLScene::Ptr scene = m_win->get3DSceneAndLock();
 
-		CDiskPtr obj = CDisk::Create();
+		CDisk::Ptr obj = CDisk::Create();
 		pose_t initial_pose;
 		obj->setPose(initial_pose);
 		obj->setName("optimization_distance_disk");
@@ -369,10 +369,10 @@ void CLevMarqGSO<GRAPH_t>::updateOptDistanceVisualization() {
 
 	// update ICP_max_distance Disk
 	if (opt_params.optimization_distance > 0) {
-		COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+		COpenGLScene::Ptr scene = m_win->get3DSceneAndLock();
 
-		CRenderizablePtr obj = scene->getByName("optimization_distance_disk");
-		CDiskPtr disk_obj = static_cast<CDiskPtr>(obj);
+		CRenderizable::Ptr obj = scene->getByName("optimization_distance_disk");
+		CDisk::Ptr disk_obj = std::dynamic_pointer_cast<CDisk>(obj);
 
 		disk_obj->setPose(m_graph->nodes[m_graph->nodeCount()-1]);
 
@@ -390,9 +390,9 @@ void CLevMarqGSO<GRAPH_t>::toggleOptDistanceVisualization() {
 	ASSERTMSG_(m_win_manager, "No CWindowManager* is given");
 	using namespace mrpt::opengl;
 
-	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+	COpenGLScene::Ptr scene = m_win->get3DSceneAndLock();
 
-	CRenderizablePtr obj = scene->getByName("optimization_distance_disk");
+	CRenderizable::Ptr obj = scene->getByName("optimization_distance_disk");
 	obj->setVisibility(!obj->isVisible());
 
 	m_win->unlockAccess3DScene();

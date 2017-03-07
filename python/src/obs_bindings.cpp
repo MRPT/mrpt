@@ -222,8 +222,8 @@ void CObservation2DRangeScan_from_ROS_LaserScan_msg(CObservation2DRangeScan &sel
 tuple CRawlog_readActionObservationPair(CStream &inStream, size_t rawlogEntry)
 {
   list ret_val;
-  CActionCollectionPtr action;
-  CSensoryFramePtr observations;
+  CActionCollection::Ptr action;
+  CSensoryFrame::Ptr observations;
 
   bool is_next = CRawlog::readActionObservationPair(inStream, action, observations, rawlogEntry);
 
@@ -266,7 +266,7 @@ void export_obs()
 
     // CAction
     {
-        MAKE_PTR_BASE(CAction, CSerializable)
+        MAKE_PTR(CAction)
 
         class_<CAction, boost::noncopyable, bases<CSerializable> >("CAction", no_init)
             .def_readwrite("timestamp", &CAction::timestamp)
@@ -286,7 +286,7 @@ void export_obs()
 
     // CActionRobotMovement2D
     {
-        MAKE_PTR_BASE(CActionRobotMovement2D, CAction)
+        MAKE_PTR(CActionRobotMovement2D)
 
         scope s = class_<CActionRobotMovement2D, bases<CAction> >("CActionRobotMovement2D", init<>())
             .def_readwrite("rawOdometryIncrementReading", &CActionRobotMovement2D::rawOdometryIncrementReading)
@@ -348,7 +348,7 @@ void export_obs()
 
     // CObservation
     {
-        MAKE_PTR_BASE(CObservation, CSerializable)
+        MAKE_PTR(CObservation)
 
         class_<CObservation, boost::noncopyable, bases<CSerializable> >("CObservation", no_init)
             .add_property("timestamp", &CObservation_get_timestamp, &CObservation_set_timestamp)
@@ -363,7 +363,7 @@ void export_obs()
 
     // CObservationOdometry
     {
-        MAKE_PTR_BASE(CObservationOdometry, CObservation)
+        MAKE_PTR(CObservationOdometry)
 
         scope s = class_<CObservationOdometry, bases<CObservation> >("CObservationOdometry", init<>())
             .def_readwrite("odometry", &CObservationOdometry::odometry)
@@ -381,7 +381,7 @@ void export_obs()
     }
     // CObservationRange
     {
-        MAKE_PTR_BASE(CObservationRange, CObservation)
+        MAKE_PTR(CObservationRange)
 
         scope s = class_<CObservationRange, bases<CObservation> >("CObservationRange", init<>())
             .def_readwrite("minSensorDistance", &CObservationRange::minSensorDistance)
@@ -415,7 +415,7 @@ void export_obs()
 
     // CObservation2DRangeScan
     {
-        MAKE_PTR_BASE(CObservation2DRangeScan, CObservation)
+        MAKE_PTR(CObservation2DRangeScan)
 
         class_<CObservation2DRangeScan, bases<CObservation> >("CObservation2DRangeScan", init<>())
             .def_readwrite("scan", &CObservation2DRangeScan::scan)
@@ -436,7 +436,7 @@ void export_obs()
 
     // CObservationBearingRange
     {
-        MAKE_PTR_BASE(CObservationBearingRange, CObservation)
+        MAKE_PTR(CObservationBearingRange)
 
         scope s = class_<CObservationBearingRange, bases<CObservation> >("CObservationBearingRange", init<>())
             .def_readwrite("minSensorDistance", &CObservationBearingRange::minSensorDistance)

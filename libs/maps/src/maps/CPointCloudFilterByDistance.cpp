@@ -31,7 +31,7 @@ void CPointCloudFilterByDistance::filter(
 	ASSERT_(pc_timestamp!=INVALID_TIMESTAMP);
 	ASSERT_(pc != nullptr);
 
-	CSimplePointsMapPtr original_pc = CSimplePointsMap::Create();
+	CSimplePointsMap::Ptr original_pc = CSimplePointsMap::Create();
 	original_pc->copyFrom(*pc);
 
 	// 1) Filter:

@@ -722,7 +722,7 @@ void camera_calib_guiDialog::OnlbFilesSelect(wxCommandEvent& event)
 
 void camera_calib_guiDialog::show3Dview()
 {
-	mrpt::opengl::COpenGLScenePtr	scene = mrpt::opengl::COpenGLScene::Create();
+	mrpt::opengl::COpenGLScene::Ptr	scene = mrpt::opengl::COpenGLScene::Create();
 
 	const unsigned int  check_size_x = edSizeX->GetValue();
 	const unsigned int  check_size_y = edSizeY->GetValue();
@@ -731,14 +731,14 @@ void camera_calib_guiDialog::show3Dview()
 
 	if (!check_squares_length_X_meters || !check_squares_length_Y_meters) return;
 
-	opengl::CGridPlaneXYPtr	grid = opengl::CGridPlaneXY::Create(0,check_size_x*check_squares_length_X_meters, 0, check_size_y*check_squares_length_Y_meters, 0, check_squares_length_X_meters );
+	opengl::CGridPlaneXY::Ptr	grid = opengl::CGridPlaneXY::Create(0,check_size_x*check_squares_length_X_meters, 0, check_size_y*check_squares_length_Y_meters, 0, check_squares_length_X_meters );
 	scene->insert( grid );
 
 	for (TCalibrationImageList::iterator it=lst_images.begin();it!=lst_images.end();++it)
 	{
 		if (!it->second.detected_corners.empty())
 		{
-			mrpt::opengl::CSetOfObjectsPtr	cor = mrpt::opengl::stock_objects::CornerXYZ();
+			mrpt::opengl::CSetOfObjects::Ptr	cor = mrpt::opengl::stock_objects::CornerXYZ();
 			cor->setName( mrpt::system::extractFileName(it->first) );
 			cor->enableShowName(true);
 			cor->setScale(0.1f);

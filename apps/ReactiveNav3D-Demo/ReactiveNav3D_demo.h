@@ -426,7 +426,7 @@ public:
 	std::vector <CRobotKinects>			kinects;
 	CShortTermMemory				stm;
 	gui::CDisplayWindow3D			window;
-	COpenGLScenePtr					scene;
+	COpenGLScene::Ptr					scene;
 	
 	bool getCurrentPoseAndSpeeds( mrpt::math::TPose2D &curPose, mrpt::math::TTwist2D &curVel, mrpt::system::TTimeStamp &timestamp) MRPT_OVERRIDE
 	{
@@ -613,7 +613,7 @@ public:
 
 		//Maps are inserted
 		{
-			CSetOfObjectsPtr gl_grid = CSetOfObjects::Create();
+			CSetOfObjects::Ptr gl_grid = CSetOfObjects::Create();
 			for (unsigned int i=0; i<maps.size(); i++)
 			{
 				maps[i].getAs3DObject(gl_grid);
@@ -623,14 +623,14 @@ public:
 
 		//A CornerXYZ object is inserted as an absolute frame of reference
 		{
-			CSetOfObjectsPtr obj = opengl::stock_objects::CornerXYZ();
+			CSetOfObjects::Ptr obj = opengl::stock_objects::CornerXYZ();
 			obj->setLocation(0,0,0);
 			scene->insert( obj );
 		}
 
 		////A reference grid is inserted
 		//{
-		//	CGridPlaneXYPtr obj = opengl::CGridPlaneXY::Create(-16,16,-16,16,0,1);
+		//	CGridPlaneXY::Ptr obj = opengl::CGridPlaneXY::Create(-16,16,-16,16,0,1);
 		//	obj->setColor(0.4,0.4,0.4);
 		//	obj->setLocation(0,0,0);
 		//	obj->setName("gridref");
@@ -639,7 +639,7 @@ public:
 
 		//The target is inserted
 		{
-			CDiskPtr obj = opengl::CDisk::Create(0.4f, 0.3f);
+			CDisk::Ptr obj = opengl::CDisk::Create(0.4f, 0.3f);
 			obj->setLocation(0, 0, 0);
 			obj->setColor(0.2,0.3,0.9);
 			scene->insert( obj );
@@ -654,7 +654,7 @@ public:
 				else {h = robotShape.getHeight(i-1) + h;}
 
 				robotpose3d.z(h);
-				CPolyhedronPtr obj;
+				CPolyhedron::Ptr obj;
 				obj = opengl::CPolyhedron::CreateCustomPrism(robotShape.polygon(i), robotShape.getHeight(i));
 				obj->setName(format("Level%d",i+1));
 				obj->setPose(robotpose3d);
@@ -673,8 +673,8 @@ public:
 		robotpose3d.z() = 0;
 		//The laserscans are inserted
 		{
-			std::vector <CPlanarLaserScanPtr> gl_scan;
-			CPlanarLaserScanPtr gl_scanind;
+			std::vector <CPlanarLaserScan::Ptr> gl_scan;
+			CPlanarLaserScan::Ptr gl_scanind;
 
 			for (unsigned int i=0; i<lasers.size(); i++)
 			{
@@ -695,8 +695,8 @@ public:
 		{
 			robotpose3d.z(0);
 			mrpt::math::TPoint3D point;
-			std::vector <CPointCloudPtr> obj;
-			CPointCloudPtr indobj;
+			std::vector <CPointCloud::Ptr> obj;
+			CPointCloud::Ptr indobj;
 
 			for (unsigned int i=0;i<kinects.size();i++)
 			{
@@ -718,7 +718,7 @@ public:
 
 		//Virtual obstacles from STM are inserted
 		{
-			CPointCloudPtr obj = CPointCloud::Create();
+			CPointCloud::Ptr obj = CPointCloud::Create();
 			obj->setPose(robotpose3d);
 			obj->setPointSize(5.0);
 			obj->setColor(0,1,0);
@@ -746,7 +746,7 @@ public:
 	{
 		scene = window.get3DSceneAndLock();
 		CPose3D robotpose3d = CPose2D(robotSim.getCurrentGTPose());
-		CRenderizablePtr obj;
+		CRenderizable::Ptr obj;
 		
 		//The robot pose is updated
 		{
@@ -766,7 +766,7 @@ public:
 		robotpose3d.z() = 0;
 		//The laserscan is inserted
 		{
-			CPlanarLaserScanPtr lasobj;
+			CPlanarLaserScan::Ptr lasobj;
 
 			for (unsigned int i=0; i<lasers.size(); i++)
 			{
@@ -780,7 +780,7 @@ public:
 		{
 			robotpose3d.z(0);
 		 mrpt::math::TPoint3D point;
-			CPointCloudPtr obj;
+			CPointCloud::Ptr obj;
 
 			for (unsigned int i=0; i<kinects.size(); i++)
 			{
@@ -798,7 +798,7 @@ public:
 
 		//Virtual obstacles from STM are inserted
 		{
-			CPointCloudPtr obj;
+			CPointCloud::Ptr obj;
 			obj = scene->getByClass<CPointCloud> (kinects.size());
 			obj->setPose(robotpose3d);
 			obj->clear();

@@ -11,5 +11,5 @@
 MRPT_WARNING("*Deprecated header* Please replace with #include <mrpt/maps/CMultiMetricMap.h>. This backward compatible header will be removed in MRPT 2.0.0")
 namespace mrpt { namespace slam {
 	typedef mrpt::maps::CMultiMetricMap CMultiMetricMap;    //!< Backward compatible typedef
-	typedef mrpt::maps::CMultiMetricMapPtr CMultiMetricMapPtr; //!< Backward compatible typedef
+	typedef mrpt::maps::CMultiMetricMap::Ptr CMultiMetricMap::Ptr; //!< Backward compatible typedef
 } }

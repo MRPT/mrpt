@@ -55,9 +55,9 @@ namespace mrpt
 			void doProcessRawlog()
 			{
 				// The 3 different objects we can read from a rawlog:
-				mrpt::obs::CActionCollectionPtr actions;
-				mrpt::obs::CSensoryFramePtr     SF;
-				mrpt::obs::CObservationPtr      obs;
+				mrpt::obs::CActionCollection::Ptr actions;
+				mrpt::obs::CSensoryFrame::Ptr     SF;
+				mrpt::obs::CObservation::Ptr      obs;
 
 				m_timParse.Tic();
 
@@ -123,15 +123,15 @@ namespace mrpt
 			// The virtual method of the user to be invoked for each read object:
 			//  Return false to abort and stop the read loop.
 			virtual bool processOneEntry(
-				mrpt::obs::CActionCollectionPtr &actions,
-				mrpt::obs::CSensoryFramePtr     &SF,
-				mrpt::obs::CObservationPtr      &obs) = 0;
+				mrpt::obs::CActionCollection::Ptr &actions,
+				mrpt::obs::CSensoryFrame::Ptr     &SF,
+				mrpt::obs::CObservation::Ptr      &obs) = 0;
 
 			// This method can be reimplemented to save the modified object to an output stream.
 			virtual void OnPostProcess(
-				mrpt::obs::CActionCollectionPtr &actions,
-				mrpt::obs::CSensoryFramePtr     &SF,
-				mrpt::obs::CObservationPtr      &obs)
+				mrpt::obs::CActionCollection::Ptr &actions,
+				mrpt::obs::CSensoryFrame::Ptr     &SF,
+				mrpt::obs::CObservation::Ptr      &obs)
 			{
 				MRPT_UNUSED_PARAM(actions); MRPT_UNUSED_PARAM(SF); MRPT_UNUSED_PARAM(obs);
 				// Default: Do nothing
@@ -151,15 +151,15 @@ namespace mrpt
 			}
 
 			virtual bool processOneEntry(
-				mrpt::obs::CActionCollectionPtr &actions,
-				mrpt::obs::CSensoryFramePtr     &SF,
-				mrpt::obs::CObservationPtr      &obs)
+				mrpt::obs::CActionCollection::Ptr &actions,
+				mrpt::obs::CSensoryFrame::Ptr     &SF,
+				mrpt::obs::CObservation::Ptr      &obs)
 			{
 				MRPT_UNUSED_PARAM(actions);
 				// Process each observation individually, either from "obs" or each within a "SF":
 				for (size_t idxObs=0; true; idxObs++)
 				{
-					mrpt::obs::CObservationPtr  obs_indiv;
+					mrpt::obs::CObservation::Ptr  obs_indiv;
 					if (obs)
 					{
 						if (idxObs>0)  break;
@@ -182,7 +182,7 @@ namespace mrpt
 			}
 
 			// To be implemented by the user. Return false on any error to abort processing.
-			virtual bool processOneObservation(mrpt::obs::CObservationPtr  &obs) = 0;
+			virtual bool processOneObservation(mrpt::obs::CObservation::Ptr  &obs) = 0;
 
 
 		}; // end CRawlogProcessorOnEachObservation
@@ -209,10 +209,10 @@ namespace mrpt
 			}
 
 			/** To be implemented by users: return false means the observation is  */
-			virtual bool tellIfThisObsPasses(mrpt::obs::CObservationPtr  &obs) = 0;
+			virtual bool tellIfThisObsPasses(mrpt::obs::CObservation::Ptr  &obs) = 0;
 
 			// Process each entry. Return false on any error to abort processing.
-			virtual bool processOneObservation(mrpt::obs::CObservationPtr  &obs)
+			virtual bool processOneObservation(mrpt::obs::CObservation::Ptr  &obs)
 			{
 				if (!tellIfThisObsPasses(obs))
 				{
@@ -228,9 +228,9 @@ namespace mrpt
 			}
             // Save those entries which are not nullptr.
 			virtual void OnPostProcess(
-				mrpt::obs::CActionCollectionPtr &actions,
-				mrpt::obs::CSensoryFramePtr     &SF,
-				mrpt::obs::CObservationPtr      &obs)
+				mrpt::obs::CActionCollection::Ptr &actions,
+				mrpt::obs::CSensoryFrame::Ptr     &SF,
+				mrpt::obs::CObservation::Ptr      &obs)
 			{
 				if (actions)
 				{

@@ -35,8 +35,8 @@ namespace mrpt
 		  *  \note This is used in mrpt::slam::CIncrementalMapPartitioner
 		  */
 		inline double observationsOverlap(
-			const mrpt::obs::CObservationPtr & o1,
-			const mrpt::obs::CObservationPtr & o2,
+			const mrpt::obs::CObservation::Ptr & o1,
+			const mrpt::obs::CObservation::Ptr & o2,
 			const mrpt::poses::CPose3D *pose_o2_wrt_o1 = nullptr ) 
 		{
 			return observationsOverlap(o1.get(), o2.get(), pose_o2_wrt_o1 );
@@ -56,8 +56,8 @@ namespace mrpt
 		  *  \note This is used in mrpt::slam::CIncrementalMapPartitioner
 		  */
 		inline double observationsOverlap(
-			const mrpt::obs::CSensoryFramePtr &sf1,
-			const mrpt::obs::CSensoryFramePtr &sf2,
+			const mrpt::obs::CSensoryFrame::Ptr &sf1,
+			const mrpt::obs::CSensoryFrame::Ptr &sf2,
 			const mrpt::poses::CPose3D *pose_sf2_wrt_sf1 = nullptr )
 		{
 			return observationsOverlap(*sf1.get(), *sf2.get(), pose_sf2_wrt_sf1);

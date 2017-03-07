@@ -48,12 +48,12 @@ DECLARE_OP_FUNCTION(op_export_anemometer_txt)
 		}
 
 		// return false on any error.
-		bool processOneObservation(CObservationPtr  &o)
+		bool processOneObservation(CObservation::Ptr  &o)
 		{
 			if (!IS_CLASS(o, CObservationWindSensor ) )
 				return true;
 
-			const CObservationWindSensor* obs = CObservationWindSensorPtr(o).get();
+			const CObservationWindSensor* obs = dynamic_cast<CObservationWindSensor *>(o.get());
 
 			map<string, FILE*>::const_iterator  it = lstFiles.find( obs->sensorLabel );
 

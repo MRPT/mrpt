@@ -36,7 +36,7 @@ typedef void (*wxRawlogTreeEventFunction)(
 	CRawlogTreeView*		the_tree,
 	TRawlogTreeViewEvent	ev,
 	int						item_index,
-	const mrpt::utils::CSerializablePtr &item_data);
+	const mrpt::utils::CSerializable::Ptr &item_data);
 
 
 /** A tree view that represents efficiently all rawlog's items.
@@ -119,7 +119,7 @@ protected:
 		}
 
 		uint8_t				level;		//!< Hierarchy level: 0,1,2.
-                mrpt::utils::CSerializablePtr	data;	//!< The object, or nullptr
+                mrpt::utils::CSerializable::Ptr	data;	//!< The object, or nullptr
 		size_t		index;
 	};
 

@@ -61,8 +61,8 @@ CLSLAM_RBPF_2DLASER::~CLSLAM_RBPF_2DLASER()
 --------------------------------------------------------------- */
 void CLSLAM_RBPF_2DLASER::processOneLMH(
 	CLocalMetricHypothesis	*LMH,
-	const CActionCollectionPtr &actions,
-	const CSensoryFramePtr     &sf )
+	const CActionCollection::Ptr &actions,
+	const CSensoryFrame::Ptr     &sf )
 {
 	MRPT_START
 
@@ -85,7 +85,7 @@ void CLSLAM_RBPF_2DLASER::processOneLMH(
 		ASSERT_( m_parent->m_map.nodeCount()==1 );
 
 		m_parent->m_map_cs.enter();
-		CHMHMapNodePtr firstArea = m_parent->m_map.getFirstNode();
+		CHMHMapNode::Ptr firstArea = m_parent->m_map.getFirstNode();
 		ASSERT_(firstArea);
 		LMH->m_nodeIDmemberships[currentPoseID] = firstArea->getID();
 
@@ -235,7 +235,7 @@ void  CLSLAM_RBPF_2DLASER::prediction_and_update_pfAuxiliaryPFOptimal(
 	// A valid action?
 	if (actions!=nullptr)
 	{
-		CActionRobotMovement2DPtr act = actions->getBestMovementEstimation();	// Find a robot movement estimation:
+		CActionRobotMovement2D::Ptr act = actions->getBestMovementEstimation();	// Find a robot movement estimation:
 		if (!act) THROW_EXCEPTION("Action list does not contain any CActionRobotMovement2D derived object!");
 
 		if (!LMH->m_accumRobotMovementIsValid) // Reset accum.
@@ -747,7 +747,7 @@ void  CLSLAM_RBPF_2DLASER::prediction_and_update_pfOptimalProposal(
 	// A valid action?
 	if (actions!=nullptr)
 	{
-		CActionRobotMovement2DPtr act = actions->getBestMovementEstimation();	// Find a robot movement estimation:
+		CActionRobotMovement2D::Ptr act = actions->getBestMovementEstimation();	// Find a robot movement estimation:
 		if (!act) THROW_EXCEPTION("Action list does not contain any CActionRobotMovement2D derived object!");
 
 		if (!LMH->m_accumRobotMovementIsValid) // Reset accum.
@@ -844,7 +844,7 @@ void  CLSLAM_RBPF_2DLASER::prediction_and_update_pfOptimalProposal(
 				THROW_EXCEPTION("There is no point or grid map. At least one needed for ICP.");
 
 			// Use ICP to align to each particle's map:
-			CPosePDFPtr alignEst = icp.Align(
+			CPosePDF::Ptr alignEst = icp.Align(
 				mapalign,
 				&localMapPoints,
 				initialPoseEstimation,

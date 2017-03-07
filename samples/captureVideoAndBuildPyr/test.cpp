@@ -46,7 +46,7 @@ void TestVideoBuildPyr()
 	// Show to the user a list of possible camera drivers and creates and open the selected camera.
 	cout << "Please, select the input video file or camera...\n";
 
-	mrpt::hwdrivers::CCameraSensorPtr cam = mrpt::hwdrivers::prepareVideoSourceFromUserSelection();
+	mrpt::hwdrivers::CCameraSensor::Ptr cam = mrpt::hwdrivers::prepareVideoSourceFromUserSelection();
 	if (!cam) return;
 
 	cout << "Video stream open OK\n";
@@ -56,9 +56,9 @@ void TestVideoBuildPyr()
 
 	//  Get the smart pointer to the main viewport object in this window,
 	//   and create other viewports for the smaller images:
-	std::vector<COpenGLViewportPtr>  gl_views(N_OCTAVES);
+	std::vector<COpenGLViewport::Ptr>  gl_views(N_OCTAVES);
 	{
-		COpenGLScenePtr &theScene = win.get3DSceneAndLock();
+		COpenGLScene::Ptr &theScene = win.get3DSceneAndLock();
 		gl_views[0]  = theScene->getViewport("main");
 		ASSERT_(gl_views[0])
 
@@ -108,13 +108,13 @@ void TestVideoBuildPyr()
 		mrpt::system::sleep(1);
 
 		// Grab new video frame:
-		CObservationPtr obs = cam->getNextFrame();
+		CObservation::Ptr obs = cam->getNextFrame();
 		if (obs)
 		{
 			if (IS_CLASS(obs,CObservationImage))
 			{
 				// Get the observation object:
-				CObservationImagePtr o = CObservationImagePtr(obs);
+				CObservationImage::Ptr o = std::dynamic_pointer_cast<CObservationImage>(obs);
 
 				// Update pyramid:
 				imgpyr.buildPyramidFast(

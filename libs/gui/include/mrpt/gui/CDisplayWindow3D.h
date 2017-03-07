@@ -43,7 +43,7 @@ namespace mrpt
 		  *   mrpt::gui::CDisplayWindow3D	win("My window");
 		  *
 		  *   // Adquire the scene:
-		  *   mrpt::opengl::COpenGLScenePtr &ptrScene = win.get3DSceneAndLock();
+		  *   mrpt::opengl::COpenGLScene::Ptr &ptrScene = win.get3DSceneAndLock();
 		  *
 		  *   // Modify the scene:
 		  *   ptrScene->...
@@ -67,7 +67,7 @@ namespace mrpt
 		  *   mrpt::gui::CDisplayWindow3D	win("My window");
 		  *   // ...
 		  *   { // The scene is adquired in this scope
-		  *      mrpt::opengl::COpenGLScenePtr ptrScene;
+		  *      mrpt::opengl::COpenGLScene::Ptr ptrScene;
 		  *      mrpt::gui::CDisplayWindow3DLocker  locker(win,ptrScene);
 		  *      //...
 		  *      
@@ -105,7 +105,7 @@ namespace mrpt
 			friend class C3DWindowDialog;
 			friend class CMyGLCanvas_DisplayWindow3D;
 
-			mrpt::opengl::COpenGLScenePtr          m_3Dscene; //!< Internal OpenGL object (see general discussion in about usage of this object)
+			mrpt::opengl::COpenGLScene::Ptr          m_3Dscene; //!< Internal OpenGL object (see general discussion in about usage of this object)
 			mrpt::synch::CCriticalSectionRecursive m_csAccess3DScene; //!< Critical section for accesing m_3Dscene
 
 			void  createOpenGLContext(); //!< Throws an exception on initialization error
@@ -117,7 +117,7 @@ namespace mrpt
 			unsigned int		m_grab_imgs_idx;
 
 			bool				m_is_capturing_imgs;
-			mrpt::utils::CImagePtr		m_last_captured_img;
+			mrpt::utils::CImage::Ptr		m_last_captured_img;
 			synch::CCriticalSection		m_last_captured_img_cs;
 
 			void  doRender();
@@ -136,7 +136,7 @@ namespace mrpt
 				unsigned int		initialWindowHeight = 300 );
 
 			/** Class factory returning a smart pointer */
-			static CDisplayWindow3DPtr Create(
+			static CDisplayWindow3D::Ptr Create(
 				const std::string	&windowCaption,
 				unsigned int		initialWindowWidth = 400,
 				unsigned int		initialWindowHeight = 300 );
@@ -147,7 +147,7 @@ namespace mrpt
 			/** Gets a reference to the smart shared pointer that holds the internal scene (carefuly read introduction in gui::CDisplayWindow3D before use!)
 			  *  This also locks the critical section for accesing the scene, thus the window will not be repainted until it is unlocked. 
 			  * \note It is safer to use mrpt::gui::CDisplayWindow3DLocker instead.*/
-			mrpt::opengl::COpenGLScenePtr & get3DSceneAndLock( );
+			mrpt::opengl::COpenGLScene::Ptr & get3DSceneAndLock( );
 
 			/** Unlocks the access to the internal 3D scene. It is safer to use mrpt::gui::CDisplayWindow3DLocker instead.
 			  *  Typically user will want to call forceRepaint after updating the scene. */
@@ -225,7 +225,7 @@ namespace mrpt
 			  * \Note If there was no time yet for grabbing any image, an empty smart pointer will be returned.
 			  * \sa captureImagesStart, getLastWindowImage
 			  */
-			mrpt::utils::CImagePtr getLastWindowImagePtr() const;
+			mrpt::utils::CImage::Ptr getLastWindowImagePtr() const;
 
 			/** Increments by one the image counter and return the next image file name (Users normally don't want to call this method).
 			  * \sa grabImagesStart
@@ -285,12 +285,12 @@ namespace mrpt
 
 			/** A short cut for getting the "main" viewport of the scene object, it is equivalent to:
 			  *  \code
-			  *    mrpt::opengl::COpenGLScenePtr &scene = win3D.get3DSceneAndLock();
+			  *    mrpt::opengl::COpenGLScene::Ptr &scene = win3D.get3DSceneAndLock();
 			  *    viewport = scene->getViewport("main");
 			  *    win3D.unlockAccess3DScene();
 			  *  \endcode
 			  */
-			mrpt::opengl::COpenGLViewportPtr getDefaultViewport();
+			mrpt::opengl::COpenGLViewport::Ptr getDefaultViewport();
 
 			/** Set the "main" viewport into "image view"-mode, where an image is efficiently drawn (fitting the viewport area) using an OpenGL textured quad.
 			  *  Call this method with the new image to update the displayed image (but recall to first lock the parent openglscene's critical section, then do the update, then release the lock, and then issue a window repaint).
@@ -351,7 +351,7 @@ namespace mrpt
 		{
 		public:
 			/** Acquires the lock of the 3D scene of the referenced window, and returns a copy of the smart pointer to it. */
-			CDisplayWindow3DLocker(CDisplayWindow3D &win, mrpt::opengl::COpenGLScenePtr &out_scene_ptr);
+			CDisplayWindow3DLocker(CDisplayWindow3D &win, mrpt::opengl::COpenGLScene::Ptr &out_scene_ptr);
 			/** Acquires the lock of the 3D scene of the referenced window. Use this signature when the scene object is not required. */
 			CDisplayWindow3DLocker(CDisplayWindow3D &win);
 			~CDisplayWindow3DLocker();

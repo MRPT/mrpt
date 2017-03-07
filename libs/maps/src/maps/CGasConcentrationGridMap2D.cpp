@@ -519,7 +519,7 @@ void  CGasConcentrationGridMap2D::TInsertionOptions::loadFromConfigFile(
 /*---------------------------------------------------------------
 						getAs3DObject
 ---------------------------------------------------------------*/
-void  CGasConcentrationGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj) const
+void  CGasConcentrationGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjects::Ptr	&outObj) const
 {
 	MRPT_START
 	if (!genericMapParams.enableSaveAs3DObject) return;
@@ -531,8 +531,8 @@ void  CGasConcentrationGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	
 						getAs3DObject
 ---------------------------------------------------------------*/
 void  CGasConcentrationGridMap2D::getAs3DObject(
-	mrpt::opengl::CSetOfObjectsPtr	&meanObj,
-	mrpt::opengl::CSetOfObjectsPtr	&varObj ) const
+	mrpt::opengl::CSetOfObjects::Ptr	&meanObj,
+	mrpt::opengl::CSetOfObjects::Ptr	&varObj ) const
 {
 	MRPT_START
 	if (!genericMapParams.enableSaveAs3DObject) return;
@@ -543,7 +543,7 @@ void  CGasConcentrationGridMap2D::getAs3DObject(
 /*---------------------------------------------------------------
 						getWindAs3DObject
 ---------------------------------------------------------------*/
-void  CGasConcentrationGridMap2D::getWindAs3DObject( mrpt::opengl::CSetOfObjectsPtr &windObj) const
+void  CGasConcentrationGridMap2D::getWindAs3DObject( mrpt::opengl::CSetOfObjects::Ptr &windObj) const
 {
 	//Return an arrow map of the wind state (module(color) and direction).
 	float scale = 0.2f;
@@ -590,7 +590,7 @@ void  CGasConcentrationGridMap2D::getWindAs3DObject( mrpt::opengl::CSetOfObjects
 			double mod_xy = *windGrid_module.cellByPos( xs[cx],ys[cy] );
 
 
-			mrpt::opengl::CArrowPtr obj = mrpt::opengl::CArrow::Create(
+			mrpt::opengl::CArrow::Ptr obj = mrpt::opengl::CArrow::Create(
 				xs[cx],ys[cy],0,
 				xs[cx]+scale*cos(dir_xy),ys[cy]+scale*sin(dir_xy),0,
 				1.15f*scale,0.3f*scale,0.35f*scale);

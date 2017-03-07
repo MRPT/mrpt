@@ -343,10 +343,10 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent&)
 		return;
 	}
 
-	CSerializablePtr obj_ref = rawlog.getAsGeneric( refIndx );
-	CSerializablePtr obj_new = rawlog.getAsGeneric( newIndx );
+	CSerializable::Ptr obj_ref = rawlog.getAsGeneric( refIndx );
+	CSerializable::Ptr obj_new = rawlog.getAsGeneric( newIndx );
 
-	CPosePDFPtr	poseEst;
+	CPosePDF::Ptr	poseEst;
 	float		runTime;
 
 	// Load ICP options:
@@ -406,12 +406,12 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent&)
 	// --------------------------------------
 	if (IS_CLASS(obj_ref,CSensoryFrame))
 	{
-		CSensoryFramePtr SF_ref = CSensoryFramePtr(obj_ref);
+		CSensoryFrame::Ptr SF_ref = std::dynamic_pointer_cast<CSensoryFrame>(obj_ref);
 		SF_ref->insertObservationsInto(refMap);
 	}
 	else if (IS_DERIVED(obj_ref,CObservation))
 	{
-		CObservationPtr	obs_ref = CObservationPtr(obj_ref);
+		CObservation::Ptr	obs_ref = std::dynamic_pointer_cast<CObservation>(obj_ref);
 		refMap->insertObservation(obs_ref.get());
 	}
 	else THROW_EXCEPTION("Unexpected runtime class found.");
@@ -419,12 +419,12 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent&)
 	CPose3D	newMapRobotPose( 0,0,0 );
 	if (obj_new->GetRuntimeClass()==CLASS_ID(CSensoryFrame))
 	{
-		CSensoryFramePtr SF_new = CSensoryFramePtr(obj_new);
+		CSensoryFrame::Ptr SF_new = std::dynamic_pointer_cast<CSensoryFrame>(obj_new);
 		SF_new->insertObservationsInto(&newMapPt, &newMapRobotPose);
 	}
 	else if (obj_new->GetRuntimeClass()->derivedFrom(CLASS_ID(CObservation)))
 	{
-		CObservationPtr	obs_new = CObservationPtr(obj_new);
+		CObservation::Ptr	obs_new = std::dynamic_pointer_cast<CObservation>(obj_new);
 		newMapPt.insertObservation(obs_new.get());
 	}
 	else THROW_EXCEPTION("Unexpected runtime class found.");
@@ -599,7 +599,7 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent&)
 			cout << format("Output PDF class is: %s\n",poseEst->GetRuntimeClass()->className );
 			if (poseEst->GetRuntimeClass()==CLASS_ID(CPosePDFSOG))
 			{
-				CPosePDFSOGPtr SOG = CPosePDFSOGPtr(poseEst);
+				CPosePDFSOG::Ptr SOG = std::dynamic_pointer_cast<CPosePDFSOG>(poseEst);
 				size_t  i,n=SOG->size();
 				cout << format("# of gaussians in SOG: %i\n",(int)n);
 				for (i=0;i<n;i++)

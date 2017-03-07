@@ -127,8 +127,8 @@ class CRangeScanRegistrationDecider {
 	 * \return True if operation was successful, false otherwise
 	 */
 	bool convert3DTo2DRangeScan(
-			/*from = */ mrpt::obs::CObservation3DRangeScanPtr& scan3D_in,
-			/*to   = */ mrpt::obs::CObservation2DRangeScanPtr* scan2D_out=nullptr);
+			/*from = */ mrpt::obs::CObservation3DRangeScan::Ptr& scan3D_in,
+			/*to   = */ mrpt::obs::CObservation2DRangeScan::Ptr* scan2D_out=nullptr);
 
 	struct TParams: public mrpt::utils::CLoadableOptions {
 		public:

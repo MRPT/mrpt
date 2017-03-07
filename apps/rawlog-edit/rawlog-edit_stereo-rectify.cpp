@@ -107,7 +107,7 @@ DECLARE_OP_FUNCTION(op_stereo_rectify)
 			}
 		}
 
-		bool processOneObservation(CObservationPtr  &obs)
+		bool processOneObservation(CObservation::Ptr  &obs)
 		{
 		    m_this_obs_is_ok = true;
 
@@ -115,7 +115,7 @@ DECLARE_OP_FUNCTION(op_stereo_rectify)
 			{
 				if (IS_CLASS(obs,CObservationStereoImages))
 				{
-					CObservationStereoImagesPtr o = CObservationStereoImagesPtr(obs);
+					CObservationStereoImages::Ptr o = std::dynamic_pointer_cast<CObservationStereoImages>(obs);
 
 					try
 					{
@@ -170,9 +170,9 @@ DECLARE_OP_FUNCTION(op_stereo_rectify)
 
 		// This method can be reimplemented to save the modified object to an output stream.
 		virtual void OnPostProcess(
-			mrpt::obs::CActionCollectionPtr &actions,
-			mrpt::obs::CSensoryFramePtr     &SF,
-			mrpt::obs::CObservationPtr      &obs)
+			mrpt::obs::CActionCollection::Ptr &actions,
+			mrpt::obs::CSensoryFrame::Ptr     &SF,
+			mrpt::obs::CObservation::Ptr      &obs)
 		{
 		    if (!m_this_obs_is_ok) return;
 

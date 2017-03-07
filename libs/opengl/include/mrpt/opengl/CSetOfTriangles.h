@@ -108,7 +108,7 @@ namespace mrpt
 			/**
 			  * Inserts an existing CSetOfTriangles into this one.
 			  */
-			void insertTriangles(const CSetOfTrianglesPtr &p); 
+			void insertTriangles(const CSetOfTriangles::Ptr &p); 
 			/**
 			  * Reserves memory for certain number of triangles, avoiding multiple memory allocation calls.
 			  */
@@ -178,7 +178,6 @@ namespace mrpt
 			/** Evaluates the bounding box of this object (including possible children) in the coordinate frame of the object parent. */
 			void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const MRPT_OVERRIDE;
 
-		private:
 			/** Constructor
 			  */
 			CSetOfTriangles( bool enableTransparency = false ) :
@@ -195,14 +194,14 @@ namespace mrpt
 		/** Inserts a set of triangles into the list; note that this method allows to pass another CSetOfTriangles as argument. Allows call chaining.
 		  * \sa mrpt::opengl::CSetOfTriangles::insertTriangle
 		  */
-		template<class T> inline CSetOfTrianglesPtr &operator<<(CSetOfTrianglesPtr &s,const T &t)	{
+		template<class T> inline CSetOfTriangles::Ptr &operator<<(CSetOfTriangles::Ptr &s,const T &t)	{
 			s->insertTriangles(t.begin(),t.end());
 			return s;
 		}
 		/** Inserts a triangle into the list. Allows call chaining.
 		  * \sa mrpt::opengl::CSetOfTriangles::insertTriangle
 		  */
-		template<> inline CSetOfTrianglesPtr &operator<<(CSetOfTrianglesPtr &s,const CSetOfTriangles::TTriangle &t)	{
+		template<> inline CSetOfTriangles::Ptr &operator<<(CSetOfTriangles::Ptr &s,const CSetOfTriangles::TTriangle &t)	{
 			s->insertTriangle(t);
 			return s;
 		}

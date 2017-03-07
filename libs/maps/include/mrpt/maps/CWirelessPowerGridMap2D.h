@@ -55,7 +55,7 @@ namespace maps
 
 		} insertionOptions;
 
-		void getAs3DObject(mrpt::opengl::CSetOfObjectsPtr &outObj) const MRPT_OVERRIDE; //!< Returns a 3D object representing the map 
+		void getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr &outObj) const MRPT_OVERRIDE; //!< Returns a 3D object representing the map 
 
 	protected:
 		/** Get the part of the options common to all CRandomFieldGridMap2D classes */

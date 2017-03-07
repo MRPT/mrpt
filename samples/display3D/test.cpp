@@ -32,12 +32,12 @@ void TestDisplay3D()
 {
 	CDisplayWindow3D	win("Example of 3D Scene Visualization - MRPT",640,480);
 
-	COpenGLScenePtr &theScene = win.get3DSceneAndLock();
+	COpenGLScene::Ptr &theScene = win.get3DSceneAndLock();
 
 
 	// Add a clone viewport, using [0,1] factor X,Y,Width,Height coordinates:
 	{
-		COpenGLViewportPtr vi= theScene->createViewport("myClone");
+		COpenGLViewport::Ptr vi= theScene->createViewport("myClone");
 		vi->setViewportPosition(0.7,0.05,0.28,0.28);
 		vi->setCloneView("main");
 		vi->setTransparent(true);
@@ -48,7 +48,7 @@ void TestDisplay3D()
 
 	// Another clone viewport, using absolute coordinates
 	{
-		COpenGLViewportPtr vi= theScene->createViewport("myClone2");
+		COpenGLViewport::Ptr vi= theScene->createViewport("myClone2");
 		vi->setViewportPosition(/*x px*/ -250, /*y px*/-250, /*width px*/ 250, /*height px*/ 200);  // x,y negative means pixels from the top/right, instead of from the bottom/left.
 		vi->setCloneView("main");
 		vi->setTransparent(false);
@@ -60,8 +60,8 @@ void TestDisplay3D()
 	// And another transparent viewport just to show 3D text:
 	if (0)
 	{
-		mrpt::opengl::CTextPtr txt1 = mrpt::opengl::CText::Create();
-		COpenGLViewportPtr vi= theScene->createViewport("flat_viewport");
+		mrpt::opengl::CText::Ptr txt1 = mrpt::opengl::CText::Create();
+		COpenGLViewport::Ptr vi= theScene->createViewport("flat_viewport");
 		vi->setViewportPosition(0,0,0.3,0.3);
 		vi->setTransparent(true);
 		vi->setBorderSize(0);
@@ -76,13 +76,13 @@ void TestDisplay3D()
 	// Modify the scene:
 	// ------------------------------------------------------
 	{
-		opengl::CGridPlaneXYPtr obj = opengl::CGridPlaneXY::Create(-20,20,-20,20,0,1);
+		opengl::CGridPlaneXY::Ptr obj = opengl::CGridPlaneXY::Create(-20,20,-20,20,0,1);
 		obj->setColor(0.8,0.8,0.8);
 		theScene->insert( obj );
 	}
 
 	{
-		opengl::CAxisPtr obj = opengl::CAxis::Create();
+		opengl::CAxis::Ptr obj = opengl::CAxis::Create();
 		obj->setFrequency(5);
 		obj->enableTickMarks();
 		obj->setAxisLimits(-10,-10,-10, 10,10,10);
@@ -90,7 +90,7 @@ void TestDisplay3D()
 	}
 
 	{
-		opengl::CBoxPtr obj = opengl::CBox::Create();
+		opengl::CBox::Ptr obj = opengl::CBox::Create();
 		obj->setWireframe(false);
 		obj->setColor(1,0,0);
 		obj->setLineWidth(3.0);
@@ -99,7 +99,7 @@ void TestDisplay3D()
 	}
 
 	{
-		opengl::CSpherePtr obj = opengl::CSphere::Create();
+		opengl::CSphere::Ptr obj = opengl::CSphere::Create();
 		obj->setColor(0,0,1);
 		obj->setRadius(0.3);
 		obj->setLocation(0,0,1);
@@ -107,7 +107,7 @@ void TestDisplay3D()
 		theScene->insert( obj );
 	}
 	{
-		opengl::CSpherePtr obj = opengl::CSphere::Create();
+		opengl::CSphere::Ptr obj = opengl::CSphere::Create();
 		obj->setColor(1,0,0);
 		obj->setRadius(0.3);
 		obj->setLocation(-1,-1,1);
@@ -116,7 +116,7 @@ void TestDisplay3D()
 	}
 
 	{
-		opengl::CSpherePtr obj = opengl::CSphere::Create();
+		opengl::CSphere::Ptr obj = opengl::CSphere::Create();
 		obj->setColor(0,1,0);
 		obj->setRadius(0.5);
 		obj->setLocation(0,0,0);
@@ -151,11 +151,11 @@ void TestDisplay3D()
 		const double t = timer.Tac();
 
 		// Move the scene:
-		COpenGLScenePtr &theScene = win.get3DSceneAndLock();
+		COpenGLScene::Ptr &theScene = win.get3DSceneAndLock();
 
 		const double R1 = 8;
 		const double W1= 5.0, Q1 = 3.3;
-		opengl::CRenderizablePtr obj1 = theScene->getByName("ball_1");
+		opengl::CRenderizable::Ptr obj1 = theScene->getByName("ball_1");
 		obj1->setLocation(
 			R1* cos(W1*t)*sin(Q1*t),
 			R1* sin(W1*t),
@@ -164,7 +164,7 @@ void TestDisplay3D()
 
 		const double R2 = 6;
 		const double W2= 1.3, Q2 = 7.2;
-		opengl::CRenderizablePtr obj2 = theScene->getByName("ball_2");
+		opengl::CRenderizable::Ptr obj2 = theScene->getByName("ball_2");
 		obj2->setLocation(
 			R2* cos(W2*t)*sin(Q2*t),
 			R2* sin(W2*t),

@@ -41,7 +41,7 @@ See mrpt::poses for the complete list of classes here.
 mrpt::utils::CObject.</li>
 
 <li><b>Smart pointers:</b> Based on the STLplus library, any class CFoo inheriting from CObject, automatically has an associated smart
-pointer class CFooPtr. MRPT implements advanced smart pointers capable of multi-thread safe usage and smart pointer typecasting with
+pointer class CFoo::Ptr. MRPT implements advanced smart pointers capable of multi-thread safe usage and smart pointer typecasting with
 runtime check for correct castings (<a href="http://www.mrpt.org/Smart_pointers" >tutorial</a>).</li>
 
 <li><b>Image handling:</b> The class mrpt::utils::CImage represents a wrapper around OpenCV IplImage's, plus extra functionality

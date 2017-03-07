@@ -133,9 +133,9 @@ class CICPCriteriaERD :
 		~CICPCriteriaERD();
 
 		bool updateState(
-				mrpt::obs::CActionCollectionPtr action,
-				mrpt::obs::CSensoryFramePtr observations,
-				mrpt::obs::CObservationPtr observation );
+				mrpt::obs::CActionCollection::Ptr action,
+				mrpt::obs::CSensoryFrame::Ptr observations,
+				mrpt::obs::CObservation::Ptr observation );
 
 
 		void setGraphPtr(GRAPH_t* graph);
@@ -198,9 +198,9 @@ class CICPCriteriaERD :
 				const mrpt::utils::TNodeID& from,
 				const mrpt::utils::TNodeID& to,
 				const constraint_t& rel_edge );
-		void checkIfInvalidDataset(mrpt::obs::CActionCollectionPtr action,
-				mrpt::obs::CSensoryFramePtr observations,
-				mrpt::obs::CObservationPtr observation );
+		void checkIfInvalidDataset(mrpt::obs::CActionCollection::Ptr action,
+				mrpt::obs::CSensoryFrame::Ptr observations,
+				mrpt::obs::CObservation::Ptr observation );
 		/**\brief Get a list of the nodeIDs whose position is within a certain
 		 * distance to the specified nodeID
 		 */
@@ -233,17 +233,17 @@ class CICPCriteriaERD :
 
 
 		std::map<mrpt::utils::TNodeID,
-			mrpt::obs::CObservation2DRangeScanPtr> m_nodes_to_laser_scans2D;
+			mrpt::obs::CObservation2DRangeScan::Ptr> m_nodes_to_laser_scans2D;
 		std::map<mrpt::utils::TNodeID,
-			mrpt::obs::CObservation3DRangeScanPtr> m_nodes_to_laser_scans3D;
+			mrpt::obs::CObservation3DRangeScan::Ptr> m_nodes_to_laser_scans3D;
 		std::map<std::string, int> m_edge_types_to_nums;
 
 		size_t m_last_total_num_of_nodes;
-		mrpt::obs::CObservation2DRangeScanPtr m_last_laser_scan2D;
-		mrpt::obs::CObservation3DRangeScanPtr m_last_laser_scan3D;
+		mrpt::obs::CObservation2DRangeScan::Ptr m_last_laser_scan2D;
+		mrpt::obs::CObservation3DRangeScan::Ptr m_last_laser_scan3D;
 		// fake 2D laser scan generated from corresponding 3DRangeScan for
 		// visualization reasons
-		mrpt::obs::CObservation2DRangeScanPtr m_fake_laser_scan2D;
+		mrpt::obs::CObservation2DRangeScan::Ptr m_fake_laser_scan2D;
 
 		// find out if decider is invalid for the given dataset
 		bool m_checked_for_usuable_dataset;

@@ -47,7 +47,7 @@ DECLARE_OP_FUNCTION(op_generate_pcd)
 				throw std::runtime_error(string("ERROR: Output directory does not exist: ")+m_outdir);
 		}
 
-		bool processOneObservation(CObservationPtr  &obs)
+		bool processOneObservation(CObservation::Ptr  &obs)
 		{
 			const string label_time = format("%s/%06u_%s_%f.pcd",
 				m_outdir.c_str(),
@@ -56,7 +56,7 @@ DECLARE_OP_FUNCTION(op_generate_pcd)
 				timestampTotime_t(obs->timestamp) );
 			if (IS_CLASS(obs, CObservation3DRangeScan ) )
 			{
-				CObservation3DRangeScanPtr obs3D = CObservation3DRangeScanPtr(obs);
+				CObservation3DRangeScan::Ptr obs3D = std::dynamic_pointer_cast<CObservation3DRangeScan>(obs);
 				if (obs3D->hasRangeImage && !obs3D->hasPoints3D)
 					obs3D->project3DPointsFromDepthImage();
 
@@ -74,7 +74,7 @@ DECLARE_OP_FUNCTION(op_generate_pcd)
 			else
 			if (IS_CLASS(obs, CObservation2DRangeScan ) )
 			{
-				CObservation2DRangeScanPtr obs2D = CObservation2DRangeScanPtr(obs);
+				CObservation2DRangeScan::Ptr obs2D = std::dynamic_pointer_cast<CObservation2DRangeScan>(obs);
 
 				CSimplePointsMap map;
 				map.insertionOptions.minDistBetweenLaserPoints = 0;

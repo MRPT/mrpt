@@ -28,7 +28,7 @@ namespace mrpt
             {}
 
             std::string			name;
-            CSerializablePtr	value;
+            CSerializable::Ptr	value;
             int64_t				ID;
         };
 
@@ -69,41 +69,41 @@ namespace mrpt
 
             /** Returns the value of the property (case insensitive) for some given hypothesis ID, or a nullptr smart pointer if it does not exist.
               */
-            CSerializablePtr  get(const char *propertyName, const int64_t & hypothesis_ID ) const;
+            CSerializable::Ptr  get(const char *propertyName, const int64_t & hypothesis_ID ) const;
 
             /** Returns the value of the property (case insensitive) for some given hypothesis ID checking its class in runtime, or a nullptr smart pointer if it does not exist.
               */
 			template <typename T>
-            typename T::SmartPtr getAs(const char *propertyName, const int64_t & hypothesis_ID, bool allowNullPointer = true) const
+			typename T::Ptr getAs(const char *propertyName, const int64_t & hypothesis_ID, bool allowNullPointer = true) const
 			{
 				MRPT_START
-				CSerializablePtr obj = get(propertyName,hypothesis_ID);
+				CSerializable::Ptr obj = get(propertyName,hypothesis_ID);
 				if (!obj)
 				{
 					if (allowNullPointer)
-							return typename T::SmartPtr();
+							return typename T::Ptr();
 					else	THROW_EXCEPTION("Null pointer")
 				}
 				const mrpt::utils::TRuntimeClassId*	class_ID = T::classinfo;
 				ASSERT_( class_ID == obj->GetRuntimeClass() );
-				return typename T::SmartPtr( obj );
+				return std::dynamic_pointer_cast<T>( obj );
 				MRPT_END
 			}
 
 
 			/** Returns the value of the property (case insensitive) for the first hypothesis ID found, or nullptr if it does not exist.
               */
-            CSerializablePtr  getAnyHypothesis(const char *propertyName) const;
+            CSerializable::Ptr  getAnyHypothesis(const char *propertyName) const;
 
             /** Sets/change the value of the property (case insensitive) for the given hypothesis ID, making a copy of the object (or setting it to nullptr if it is the passed value)
               * \sa setMemoryReference
               */
-            void  set(const char *propertyName, const CSerializablePtr &obj, const int64_t & hypothesis_ID);
+            void  set(const char *propertyName, const CSerializable::Ptr &obj, const int64_t & hypothesis_ID);
 
             /** Sets/change the value of the property (case insensitive) for the given hypothesis ID, directly replacing the pointer instead of making a copy of the object.
               * \sa set
               */
-            void  setMemoryReference(const char *propertyName, const CSerializablePtr& obj, const int64_t & hypothesis_ID);
+            void  setMemoryReference(const char *propertyName, const CSerializable::Ptr& obj, const int64_t & hypothesis_ID);
 
             /** Remove a given property, if it exists.
               */
@@ -120,8 +120,8 @@ namespace mrpt
             {
                 MRPT_START
 
-                CMemoryChunkPtr memChunk = CMemoryChunkPtr( new CMemoryChunk() );
-				memChunk->setAllocBlockSize(10);
+                CMemoryChunk::Ptr memChunk = std::make_shared<CMemoryChunk>();
+                memChunk->setAllocBlockSize(10);
                 (*memChunk) << data;
 
                 for (std::vector<TPropertyValueIDTriplet>::iterator it=m_properties.begin();it!=m_properties.end();++it)
@@ -158,7 +158,7 @@ namespace mrpt
                 {
                     if (mrpt::system::strCmpI(propertyName,it->name) && it->ID == hypothesis_ID )
                     {
-                        CMemoryChunkPtr memChunk = CMemoryChunkPtr(it->value);
+                        CMemoryChunk::Ptr memChunk = std::dynamic_pointer_cast<CMemoryChunk>(it->value);
                         ASSERT_(memChunk)
                         if (memChunk->getTotalBytesCount()!=sizeof(out_data)) THROW_EXCEPTION("Data sizes do not match.");
                         out_data = *static_cast<T*>( memChunk->getRawBufferData() );

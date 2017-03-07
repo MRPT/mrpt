@@ -69,19 +69,19 @@ int main ( int argc, char** argv )
       win3D.setFOV(90);
       win3D.setCameraPointingToPoint(2.5,0,0);
 
-      mrpt::opengl::CPointCloudColouredPtr gl_points = mrpt::opengl::CPointCloudColoured::Create();
+      mrpt::opengl::CPointCloudColoured::Ptr gl_points = mrpt::opengl::CPointCloudColoured::Create();
       gl_points->setPointSize(2.5);
 
 	// The 2D "laser scan" OpenGL object:
-	mrpt::opengl::CPlanarLaserScanPtr gl_2d_scan = mrpt::opengl::CPlanarLaserScan::Create();
+	mrpt::opengl::CPlanarLaserScan::Ptr gl_2d_scan = mrpt::opengl::CPlanarLaserScan::Create();
 	gl_2d_scan->enablePoints(true);
 	gl_2d_scan->enableLine(true);
 	gl_2d_scan->enableSurface(true);
 	gl_2d_scan->setSurfaceColor(0,0,1, 0.3);  // RGBA
 
-      opengl::COpenGLViewportPtr viewInt; // Extra viewports for the RGB images.
+      opengl::COpenGLViewport::Ptr viewInt; // Extra viewports for the RGB images.
       {
-        mrpt::opengl::COpenGLScenePtr &scene = win3D.get3DSceneAndLock();
+        mrpt::opengl::COpenGLScene::Ptr &scene = win3D.get3DSceneAndLock();
 
         // Create the Opengl object for the point cloud:
         scene->insert( gl_points );
@@ -117,10 +117,10 @@ int main ( int argc, char** argv )
       while (!win3D.keyHit())	//Push any key to exit // win3D.isOpen()
       {
   //    cout << "Get new observation\n";
-        CObservation3DRangeScanPtr newObs = CObservation3DRangeScan::Create();
+        CObservation3DRangeScan::Ptr newObs = CObservation3DRangeScan::Create();
         rgbd_sensor.getNextObservation(*newObs, bObs, bError);
 
-	CObservation2DRangeScanPtr obs_2d; // The equivalent 2D scan
+	CObservation2DRangeScan::Ptr obs_2d; // The equivalent 2D scan
 
         if (bObs && !bError && newObs && newObs->timestamp!=INVALID_TIMESTAMP && newObs->timestamp!=last_obs_tim )
         {

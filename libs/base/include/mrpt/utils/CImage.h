@@ -80,7 +80,7 @@ namespace mrpt
 		 *		- To move images from one object to the another, use CImage::copyFastFrom rather than the copy operator =.
 		 *		- If you are interested in a smart pointer to an image, use:
 		 *  \code
-		 *    CImagePtr   myImgPtr = CImagePtr( new CImage(...) );
+		 *    CImage::Ptr   myImg::Ptr = CImage::Ptr( new CImage(...) );
 		 *  \endcode
 		 *		- To set a CImage from an OpenCV "IPLImage*", use the methods:
 		 *			- CImage::loadFromIplImage

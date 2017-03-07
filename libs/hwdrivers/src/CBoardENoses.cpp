@@ -353,7 +353,7 @@ bool CBoardENoses::getObservation( mrpt::obs::CObservationGasSensors &obs )
 */
 void  CBoardENoses::doProcess()
 {
-	CObservationGasSensorsPtr obs= CObservationGasSensors::Create();
+	CObservationGasSensors::Ptr obs= CObservationGasSensors::Create();
 
 	if (getObservation(*obs))
 	{

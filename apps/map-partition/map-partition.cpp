@@ -92,8 +92,8 @@ void Test()
 	const size_t n = in_map.size();
 	for (size_t i=0;i<n;i++)
 	{
-		CSensoryFramePtr sf;
-		CPose3DPDFPtr posePDF;
+		CSensoryFrame::Ptr sf;
+		CPose3DPDF::Ptr posePDF;
 
 		in_map.get(i,posePDF, sf);
 
@@ -139,8 +139,8 @@ void Test()
 		out_map.clear();
 		for (size_t j=0;j<parts[i].size();j++)
 		{
-			CSensoryFramePtr	sf;
-			CPose3DPDFPtr		posePDF;
+			CSensoryFrame::Ptr	sf;
+			CPose3DPDF::Ptr		posePDF;
 
 			in_map.get(parts[i][j],posePDF, sf);
 
@@ -238,8 +238,8 @@ void Test()
 		CPose2D		meanPose;
 		for (size_t j=0;j<parts[i].size();j++)
 		{
-			CSensoryFramePtr	sf;
-			CPose3DPDFPtr		posePDF;
+			CSensoryFrame::Ptr	sf;
+			CPose3DPDF::Ptr		posePDF;
 
 			// Get the pose:
 			in_map.get(parts[i][j],posePDF, sf);

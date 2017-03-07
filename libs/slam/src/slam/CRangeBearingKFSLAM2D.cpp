@@ -147,8 +147,8 @@ void CRangeBearingKFSLAM2D::getCurrentState(
 						processActionObservation
   ---------------------------------------------------------------*/
 void  CRangeBearingKFSLAM2D::processActionObservation(
-    CActionCollectionPtr	&action,
-    CSensoryFramePtr		&SF )
+    CActionCollection::Ptr	&action,
+    CSensoryFrame::Ptr		&SF )
 {
 	MRPT_START
 
@@ -168,7 +168,7 @@ void  CRangeBearingKFSLAM2D::processActionObservation(
 	// =============================================================
 	if (options.create_simplemap)
 	{
-		CPosePDFGaussianPtr	auxPosePDF = CPosePDFGaussian::Create();
+		CPosePDFGaussian::Ptr	auxPosePDF = CPosePDFGaussian::Create();
 		getCurrentRobotPose( *auxPosePDF );
 		m_SFs.insert( auxPosePDF , SF );
 	}
@@ -183,8 +183,8 @@ void  CRangeBearingKFSLAM2D::processActionObservation(
 void CRangeBearingKFSLAM2D::OnGetAction(KFArray_ACT &u) const
 {
 	// Get odometry estimation:
-	CActionRobotMovement2DPtr actMov2D = m_action->getBestMovementEstimation();
-	CActionRobotMovement3DPtr actMov3D = m_action->getActionByClass<CActionRobotMovement3D>();
+	CActionRobotMovement2D::Ptr actMov2D = m_action->getBestMovementEstimation();
+	CActionRobotMovement3D::Ptr actMov3D = m_action->getActionByClass<CActionRobotMovement3D>();
 	if (actMov3D)
 	{
 		u[0]=actMov3D->poseChange.mean.x();
@@ -245,8 +245,8 @@ void  CRangeBearingKFSLAM2D::OnTransitionJacobian( KFMatrix_VxV  &F ) const
 	MRPT_START
 
 	// The jacobian of the transition function:  dfv_dxv
-	CActionRobotMovement2DPtr act2D = m_action->getBestMovementEstimation();
-	CActionRobotMovement3DPtr act3D = m_action->getActionByClass<CActionRobotMovement3D>();
+	CActionRobotMovement2D::Ptr act2D = m_action->getBestMovementEstimation();
+	CActionRobotMovement3D::Ptr act3D = m_action->getActionByClass<CActionRobotMovement3D>();
 
 	if (act3D && act2D)  THROW_EXCEPTION("Both 2D & 3D odometry are present!?!?")
 
@@ -288,8 +288,8 @@ void  CRangeBearingKFSLAM2D::OnTransitionNoise( KFMatrix_VxV &Q ) const
 	MRPT_START
 
 	// The uncertainty of the 2D odometry, projected from the current position:
-	CActionRobotMovement2DPtr act2D = m_action->getBestMovementEstimation();
-	CActionRobotMovement3DPtr act3D = m_action->getActionByClass<CActionRobotMovement3D>();
+	CActionRobotMovement2D::Ptr act2D = m_action->getBestMovementEstimation();
+	CActionRobotMovement3D::Ptr act3D = m_action->getActionByClass<CActionRobotMovement3D>();
 
 	if (act3D && act2D)  THROW_EXCEPTION("Both 2D & 3D odometry are present!?!?")
 
@@ -333,7 +333,7 @@ void CRangeBearingKFSLAM2D::OnObservationModel(
 	MRPT_START
 
 	// Get the sensor pose relative to the robot:
-	CObservationBearingRangePtr obs = m_SF->getObservationByClass<CObservationBearingRange>();
+	CObservationBearingRange::Ptr obs = m_SF->getObservationByClass<CObservationBearingRange>();
 	ASSERTMSG_(obs,"*ERROR*: This method requires an observation of type CObservationBearingRange")
 	const CPose2D  sensorPoseOnRobot = CPose2D(obs->sensorLocationOnRobot);
 
@@ -394,7 +394,7 @@ void CRangeBearingKFSLAM2D::OnObservationJacobians(
 	MRPT_START
 
 	// Get the sensor pose relative to the robot:
-	CObservationBearingRangePtr obs = m_SF->getObservationByClass<CObservationBearingRange>();
+	CObservationBearingRange::Ptr obs = m_SF->getObservationByClass<CObservationBearingRange>();
 	ASSERTMSG_(obs,"*ERROR*: This method requires an observation of type CObservationBearingRange")
 	const CPose2D  sensorPoseOnRobot = CPose2D(obs->sensorLocationOnRobot);
 
@@ -505,7 +505,7 @@ void CRangeBearingKFSLAM2D::OnGetObservationsAndDataAssociation(
 	// Z: Observations
 	CObservationBearingRange::TMeasurementList::const_iterator itObs;
 
-	CObservationBearingRangePtr obs = m_SF->getObservationByClass<CObservationBearingRange>();
+	CObservationBearingRange::Ptr obs = m_SF->getObservationByClass<CObservationBearingRange>();
 	ASSERTMSG_(obs,"*ERROR*: This method requires an observation of type CObservationBearingRange")
 
 	const size_t N = obs->sensedData.size();
@@ -779,7 +779,7 @@ void CRangeBearingKFSLAM2D::OnInverseObservationModel(
          dyn_dhn: 2x2  -->
 	  ------------------------------------------- */
 
-	CObservationBearingRangePtr obs = m_SF->getObservationByClass<CObservationBearingRange>();
+	CObservationBearingRange::Ptr obs = m_SF->getObservationByClass<CObservationBearingRange>();
 	ASSERTMSG_(obs,"*ERROR*: This method requires an observation of type CObservationBearingRange")
 	const CPose2D   sensorPoseOnRobot = CPose2D( obs->sensorLocationOnRobot );
 
@@ -840,7 +840,7 @@ void CRangeBearingKFSLAM2D::OnNewLandmarkAddedToMap(
 {
 	MRPT_START
 
-	CObservationBearingRangePtr obs = m_SF->getObservationByClass<CObservationBearingRange>();
+	CObservationBearingRange::Ptr obs = m_SF->getObservationByClass<CObservationBearingRange>();
 	ASSERTMSG_(obs,"*ERROR*: This method requires an observation of type CObservationBearingRange")
 
 	// ----------------------------------------------
@@ -870,7 +870,7 @@ void CRangeBearingKFSLAM2D::OnNewLandmarkAddedToMap(
 /*---------------------------------------------------------------
 						getAs3DObject
   ---------------------------------------------------------------*/
-void  CRangeBearingKFSLAM2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const
+void  CRangeBearingKFSLAM2D::getAs3DObject( mrpt::opengl::CSetOfObjects::Ptr	&outObj ) const
 {
     outObj->clear();
 
@@ -889,7 +889,7 @@ void  CRangeBearingKFSLAM2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outO
     pointGauss.cov = COV;
 
     {
-		opengl::CEllipsoidPtr ellip = opengl::CEllipsoid::Create();
+		opengl::CEllipsoid::Ptr ellip = opengl::CEllipsoid::Create();
 
 		ellip->setPose(pointGauss.mean);
 		ellip->setCovMatrix(pointGauss.cov);
@@ -911,7 +911,7 @@ void  CRangeBearingKFSLAM2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outO
         m_pkk.extractMatrix(3+2*i,3+2*i,2,2, COV);
         pointGauss.cov = COV;
 
-		opengl::CEllipsoidPtr ellip = opengl::CEllipsoid::Create();
+		opengl::CEllipsoid::Ptr ellip = opengl::CEllipsoid::Create();
 
 		ellip->setName( format( "%u",static_cast<unsigned int>(i) ) );
 		ellip->enableShowName(true);
@@ -983,8 +983,8 @@ void CRangeBearingKFSLAM2D::saveMapAndPath2DRepresentationAsMATLABFile(
 		os::fprintf(f,"\nROB_PATH=[");
 		for (i=0;i<m_SFs.size();i++)
 		{
-			CSensoryFramePtr dummySF;
-			CPose3DPDFPtr pdf3D;
+			CSensoryFrame::Ptr dummySF;
+			CPose3DPDF::Ptr pdf3D;
 			m_SFs.get(i,pdf3D,dummySF);
 
 			CPose3D p;
@@ -1045,7 +1045,7 @@ void CRangeBearingKFSLAM2D::OnPreComputingPredictions(
 	const vector_KFArray_OBS	&prediction_means,
 	vector_size_t				&out_LM_indices_to_predict ) const
 {
-	CObservationBearingRangePtr obs = m_SF->getObservationByClass<CObservationBearingRange>();
+	CObservationBearingRange::Ptr obs = m_SF->getObservationByClass<CObservationBearingRange>();
 	ASSERTMSG_(obs,"*ERROR*: This method requires an observation of type CObservationBearingRange")
 
 	const double sensor_max_range = obs->maxSensorDistance;

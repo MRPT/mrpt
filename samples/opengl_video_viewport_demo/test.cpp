@@ -27,7 +27,7 @@ void TestOpenGLVideo()
 	// Show to the user a list of possible camera drivers and creates and open the selected camera.
 	cout << "Please, select the input video file or camera...\n";
 
-	mrpt::hwdrivers::CCameraSensorPtr cam = mrpt::hwdrivers::prepareVideoSourceFromUserSelection();
+	mrpt::hwdrivers::CCameraSensor::Ptr cam = mrpt::hwdrivers::prepareVideoSourceFromUserSelection();
 	if (!cam) return;
 
 	cout << "Video stream open OK\n";
@@ -38,9 +38,9 @@ void TestOpenGLVideo()
 
 	// Win #1:
 	//  Get the smart pointer to the main viewport object in this window:
-	COpenGLViewportPtr gl_view_main;
+	COpenGLViewport::Ptr gl_view_main;
 	{
-		COpenGLScenePtr &theScene = win.get3DSceneAndLock();
+		COpenGLScene::Ptr &theScene = win.get3DSceneAndLock();
 		gl_view_main  = theScene->getViewport("main");
 		ASSERT_(gl_view_main)
 		// IMPORTANT!!! IF NOT UNLOCKED, THE WINDOW WILL NOT BE UPDATED!
@@ -49,9 +49,9 @@ void TestOpenGLVideo()
 
 	// Win #2:
 	//  Get the smart pointer to the main viewport object in this window:
-	COpenGLViewportPtr gl_view_aux;
+	COpenGLViewport::Ptr gl_view_aux;
 	{
-		COpenGLScenePtr &theScene = win2.get3DSceneAndLock();
+		COpenGLScene::Ptr &theScene = win2.get3DSceneAndLock();
 		theScene->insert( mrpt::opengl::CGridPlaneXY::Create() );
 
 		// Create small auxiliary viewport
@@ -77,12 +77,12 @@ void TestOpenGLVideo()
 		mrpt::system::sleep(1);
 
 		// Grab new video frame:
-		CObservationPtr obs = cam->getNextFrame();
+		CObservation::Ptr obs = cam->getNextFrame();
 		if (obs)
 		{
 			if (IS_CLASS(obs,CObservationImage))
 			{
-				CObservationImagePtr o = CObservationImagePtr(obs);
+				CObservationImage::Ptr o = std::dynamic_pointer_cast<CObservationImage>(obs);
 				win.get3DSceneAndLock();
 					gl_view_main->setImageView(o->image);
 				win.unlockAccess3DScene();

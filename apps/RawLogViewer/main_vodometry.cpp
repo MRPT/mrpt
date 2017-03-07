@@ -116,8 +116,8 @@ void xRawLogViewerFrame::OnMenuVisualOdometry(wxCommandEvent& event)
 					ASSERT_( rawlog.getType( countLoop + 1 ) == CRawlog::etActionCollection );
 					ASSERT_( rawlog.getType( countLoop + 2 ) == CRawlog::etSensoryFrame );
 
-					CSensoryFramePtr SF = rawlog.getAsObservations(countLoop);
-					CObservationStereoImagesPtr obsSt = SF->getObservationByClass<CObservationStereoImages>();
+					CSensoryFrame::Ptr SF = rawlog.getAsObservations(countLoop);
+					CObservationStereoImages::Ptr obsSt = SF->getObservationByClass<CObservationStereoImages>();
 
 					// ----------------------------------------
 					// VISUAL ODOMETRY OPTIONS:
@@ -130,7 +130,7 @@ void xRawLogViewerFrame::OnMenuVisualOdometry(wxCommandEvent& event)
 					newAction.estimationMethod	= CActionRobotMovement3D::emVisualOdometry;
 					vOd.process( obsSt, newAction.poseChangeQuat );
 
-					CActionCollectionPtr AC = rawlog.getAsAction( countLoop + 1 );
+					CActionCollection::Ptr AC = rawlog.getAsAction( countLoop + 1 );
 					AC->clear();
 					AC->insert( newAction );
 
@@ -143,11 +143,11 @@ void xRawLogViewerFrame::OnMenuVisualOdometry(wxCommandEvent& event)
 
 				//case CRawlog::etObservation:
 				//{
-				//	CObservationPtr o = rawlog.getAsObservation(countLoop);
+				//	CObservation::Ptr o = rawlog.getAsObservation(countLoop);
 
 				//	if (IS_CLASS(o,CObservationStereoImages) )
 				//	{
-				//		CObservationStereoImagesPtr obsSt = CObservationStereoImagesPtr(o);
+				//		CObservationStereoImages::Ptr obsSt = CObservationStereoImages::Ptr(o);
 				//		obsSt->imageLeft.saveToFile( format( "%s/img_stereo_%s_left_%05u.%s",outDir.c_str(), obsSt->sensorLabel.c_str() ,imgSaved, imgFileExtension.c_str() ) );
 
 				//		obsSt->imageRight.saveToFile( format("%s/img_stereo_%s_right_%05u.%s",outDir.c_str(),obsSt->sensorLabel.c_str(),imgSaved, imgFileExtension.c_str()) );
@@ -156,7 +156,7 @@ void xRawLogViewerFrame::OnMenuVisualOdometry(wxCommandEvent& event)
 				//	else
 				//	if (IS_CLASS(o,CObservationImage) )
 				//	{
-				//		CObservationImagePtr obsIm = CObservationImagePtr(o);
+				//		CObservationImage::Ptr obsIm = CObservationImage::Ptr(o);
 				//		obsIm->image.saveToFile( format("%s/img_monocular_%s_%05u.%s",outDir.c_str(),obsIm->sensorLabel.c_str(),imgSaved, imgFileExtension.c_str()) );
 				//		imgSaved++;
 				//	}

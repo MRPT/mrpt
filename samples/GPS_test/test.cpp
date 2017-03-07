@@ -81,7 +81,7 @@ void Test_GPS()
 			{
 				ASSERT_(itObs->second->GetRuntimeClass()==CLASS_ID(CObservationGPS));
 
-				CObservationGPSPtr gpsData=CObservationGPSPtr(itObs->second);
+				CObservationGPS::Ptr gpsData=std::dynamic_pointer_cast<CObservationGPS>(itObs->second);
 				gpsData->dumpToConsole();
 			}
 			lstObs.clear();

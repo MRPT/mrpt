@@ -21,7 +21,7 @@ using namespace std;
 
 IMPLEMENTS_SERIALIZABLE( CGridPlaneXZ, CRenderizableDisplayList, mrpt::opengl )
 
-CGridPlaneXZPtr CGridPlaneXZ::Create(
+CGridPlaneXZ::Ptr CGridPlaneXZ::Create(
 	float xMin,
 	float xMax,
 	float zMin,
@@ -32,7 +32,7 @@ CGridPlaneXZPtr CGridPlaneXZ::Create(
 	bool  antiAliasing
 	)
 {
-	return CGridPlaneXZPtr( new CGridPlaneXZ( xMin,xMax, zMin, zMax, y, frequency,lineWidth,antiAliasing ) );
+	return CGridPlaneXZ::Ptr( new CGridPlaneXZ( xMin,xMax, zMin, zMax, y, frequency,lineWidth,antiAliasing ) );
 }
 
 /** Constructor */

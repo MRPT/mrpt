@@ -89,12 +89,12 @@ namespace mrpt
 				*/
 			struct TMessageLSLAMfromAA
 			{
+				using Ptr = std::shared_ptr<TMessageLSLAMfromAA>;
 				THypothesisID				hypothesisID; //!< The hypothesis ID (LMH) for these results.
 				std::vector< TPoseIDList >	partitions;
 
 				void dumpToConsole( ) const;  //!< for debugging only
 			};
-			typedef std::shared_ptr<TMessageLSLAMfromAA> TMessageLSLAMfromAAPtr;
 
 			/** Message definition:
 				- From: LSLAM
@@ -103,10 +103,10 @@ namespace mrpt
 				*/
 			struct TMessageLSLAMtoTBI
 			{
+				using Ptr = std::shared_ptr<TMessageLSLAMtoTBI>;
 				CLocalMetricHypothesis	*LMH;		//!< The LMH
 				TNodeIDList				 areaIDs;	//!< The areas to consider.
 			};
-			typedef std::shared_ptr<TMessageLSLAMtoTBI> TMessageLSLAMtoTBIPtr;
 
 			/** Message definition:
 				- From: TBI
@@ -115,6 +115,7 @@ namespace mrpt
 				*/
 			struct TMessageLSLAMfromTBI
 			{
+				using Ptr = std::shared_ptr<TMessageLSLAMfromTBI>;
 				THypothesisID				hypothesisID; //!< The hypothesis ID (LMH) for these results.
 
 				CHMHMapNode::TNodeID		cur_area; //!< The area for who the loop-closure has been computed.
@@ -138,7 +139,6 @@ namespace mrpt
 
 				//MRPT_MAKE_ALIGNED_OPERATOR_NEW
 			};
-			typedef std::shared_ptr<TMessageLSLAMfromTBI>	TMessageLSLAMfromTBIPtr;
 
 
 			utils::CMessageQueue	m_LSLAM_queue;  //!< LSLAM thread input queue, messages of type CHMTSLAM::TMessageLSLAMfromAA
@@ -151,7 +151,7 @@ namespace mrpt
 			  * \return A structure with all return data. Memory to be freed by user.
 			  * \note The critical section for LMH must be locked BEFORE calling this method (it does NOT lock any critical section).
 			  */
-			static TMessageLSLAMfromAAPtr areaAbstraction(
+			static TMessageLSLAMfromAA::Ptr areaAbstraction(
 				CLocalMetricHypothesis	*LMH,
 				const TPoseIDList		&newPoseIDs );
 
@@ -161,7 +161,7 @@ namespace mrpt
 			  * \param areaID (IN) The area ID to consider for potential loop-closures.
 			  * \note The critical section for LMH must be locked BEFORE calling this method (it does NOT lock any critical section).
 			  */
-			static TMessageLSLAMfromTBIPtr TBI_main_method(
+			static TMessageLSLAMfromTBI::Ptr TBI_main_method(
 				CLocalMetricHypothesis	*LMH,
 				const CHMHMapNode::TNodeID &areaID
 				);
@@ -186,19 +186,19 @@ namespace mrpt
 			  *  This class will delete the passed object when required, so DO NOT DELETE the passed object after calling this.
 			  * \sa pushObservations,pushObservation
 			  */
-			void  pushAction( const mrpt::obs::CActionCollectionPtr &acts );
+			void  pushAction( const mrpt::obs::CActionCollection::Ptr &acts );
 
 			/** Here the user can enter observations into the system (will go to the SLAM process).
 			  *  This class will delete the passed object when required, so DO NOT DELETE the passed object after calling this.
 			  * \sa pushAction,pushObservation
 			  */
-			void  pushObservations( const mrpt::obs::CSensoryFramePtr &sf );
+			void  pushObservations( const mrpt::obs::CSensoryFrame::Ptr &sf );
 
 			/** Here the user can enter an observation into the system (will go to the SLAM process).
 			  *  This class will delete the passed object when required, so DO NOT DELETE the passed object after calling this.
 			  * \sa pushAction,pushObservation
 			  */
-			void  pushObservation( const mrpt::obs::CObservationPtr &obs );
+			void  pushObservation( const mrpt::obs::CObservation::Ptr &obs );
 
 			enum TLSlamMethod
 			{
@@ -209,10 +209,10 @@ namespace mrpt
 			/** Used from the LSLAM thread to retrieve the next object from the queue.
 			  * \return The object, or nullptr if empty.
 			  */
-			mrpt::utils::CSerializablePtr getNextObjectFromInputQueue();
+			mrpt::utils::CSerializable::Ptr getNextObjectFromInputQueue();
 
 			/** The queue of pending actions/observations supplied by the user waiting for being processed. */
-			std::queue<mrpt::utils::CSerializablePtr>		m_inputQueue;
+			std::queue<mrpt::utils::CSerializable::Ptr>		m_inputQueue;
 
 			/** Critical section for accessing  m_inputQueue */
 			synch::CCriticalSection	m_inputQueue_cs;
@@ -484,8 +484,8 @@ namespace mrpt
 			  */
 			virtual void processOneLMH(
 				CLocalMetricHypothesis	*LMH,
-				const mrpt::obs::CActionCollectionPtr 	&act,
-				const mrpt::obs::CSensoryFramePtr		&sf ) = 0;
+				const mrpt::obs::CActionCollection::Ptr 	&act,
+				const mrpt::obs::CSensoryFrame::Ptr		&sf ) = 0;
 
 
 			/** The PF algorithm implementation.
@@ -533,8 +533,8 @@ namespace mrpt
 			  */
 			void processOneLMH(
 				CLocalMetricHypothesis	*LMH,
-				const mrpt::obs::CActionCollectionPtr	&act,
-				const mrpt::obs::CSensoryFramePtr		&sf );
+				const mrpt::obs::CActionCollection::Ptr	&act,
+				const mrpt::obs::CSensoryFrame::Ptr		&sf );
 
 			/** The PF algorithm implementation.  */
 			void  prediction_and_update_pfAuxiliaryPFOptimal(

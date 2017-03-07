@@ -88,12 +88,12 @@ DECLARE_OP_FUNCTION(op_export_rawdaq_txt)
 		}
 
 		// return false on any error.
-		bool processOneObservation(CObservationPtr  &o)
+		bool processOneObservation(CObservation::Ptr  &o)
 		{
             if (!IS_CLASS(o, CObservationRawDAQ ) )
 				return true;
 
-            const CObservationRawDAQ* obs = CObservationRawDAQPtr(o).get();
+            const CObservationRawDAQ* obs = dynamic_cast<CObservationRawDAQ *>(o.get());
 
 			map<string, FILE*>::const_iterator  it = lstFiles.find( obs->sensorLabel );
 

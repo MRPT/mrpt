@@ -146,21 +146,21 @@ class CICPCriteriaNRD:
 		 * \sa updateState2D, updateState3D
 		 */
 		bool updateState(
-				mrpt::obs::CActionCollectionPtr action,
-				mrpt::obs::CSensoryFramePtr observations,
-				mrpt::obs::CObservationPtr observation );
+				mrpt::obs::CActionCollection::Ptr action,
+				mrpt::obs::CSensoryFrame::Ptr observations,
+				mrpt::obs::CObservation::Ptr observation );
 		/**\brief Specialized updateState method used solely when dealing with
 		 * 2DRangeScan information.
 		 * \sa updateState3D
 		 */
 		bool updateState2D(
-				mrpt::obs::CObservation2DRangeScanPtr observation);
+				mrpt::obs::CObservation2DRangeScan::Ptr observation);
 		/**\brief Specialized updateState method used solely when dealing with
 		 * 3DRangeScan information.
 		 * \sa updateState2D
 		 */
 		bool updateState3D(
-				mrpt::obs::CObservation3DRangeScanPtr observation);
+				mrpt::obs::CObservation3DRangeScan::Ptr observation);
 
 		struct TParams: public mrpt::utils::CLoadableOptions {
 			public:
@@ -215,11 +215,11 @@ class CICPCriteriaNRD:
 		bool m_is_using_3DScan;
 
 		// handy laser scans to use in the class methods
-		mrpt::obs::CObservation2DRangeScanPtr m_last_laser_scan2D;
-		mrpt::obs::CObservation2DRangeScanPtr m_curr_laser_scan2D;
+		mrpt::obs::CObservation2DRangeScan::Ptr m_last_laser_scan2D;
+		mrpt::obs::CObservation2DRangeScan::Ptr m_curr_laser_scan2D;
 
-		mrpt::obs::CObservation3DRangeScanPtr m_last_laser_scan3D;
-		mrpt::obs::CObservation3DRangeScanPtr m_curr_laser_scan3D;
+		mrpt::obs::CObservation3DRangeScan::Ptr m_last_laser_scan3D;
+		mrpt::obs::CObservation3DRangeScan::Ptr m_curr_laser_scan3D;
 
 		/**\brief Latest odometry rigid body transformation.
 		 *

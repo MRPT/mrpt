@@ -189,7 +189,7 @@ namespace mrpt
 		mrpt::utils::CStream  *m_logFile, *m_prev_logfile;         //!< The current log file stream, or nullptr if not being used
 		bool                   m_enableKeepLogRecords; //!< See enableKeepLogRecords
 		CLogFileRecord lastLogRecord;  //!< The last log
-		mrpt::kinematics::CVehicleVelCmdPtr m_last_vel_cmd ; //!< Last velocity commands
+		mrpt::kinematics::CVehicleVelCmd::Ptr m_last_vel_cmd ; //!< Last velocity commands
 
 		mrpt::synch::CCriticalSectionRecursive  m_critZoneLastLog; //!< Critical zones
 
@@ -242,17 +242,17 @@ namespace mrpt
 			const mrpt::system::TTimeStamp tim_start_iteration);
 
 		/** Return the [0,1] velocity scale of raw PTG cmd_vel */
-		virtual double generate_vel_cmd(const TCandidateMovementPTG &in_movement, mrpt::kinematics::CVehicleVelCmdPtr &new_vel_cmd );
-		void STEP8_GenerateLogRecord(CLogFileRecord &newLogRec,const mrpt::math::TPose2D& relTarget,int nSelectedPTG, const mrpt::kinematics::CVehicleVelCmdPtr &new_vel_cmd, int nPTGs, const bool best_is_NOP_cmdvel, const mrpt::poses::CPose2D &rel_cur_pose_wrt_last_vel_cmd_NOP, const mrpt::poses::CPose2D &rel_pose_PTG_origin_wrt_sense_NOP, const double executionTimeValue, const double tim_changeSpeed, const mrpt::system::TTimeStamp &tim_start_iteration);
+		virtual double generate_vel_cmd(const TCandidateMovementPTG &in_movement, mrpt::kinematics::CVehicleVelCmd::Ptr &new_vel_cmd );
+		void STEP8_GenerateLogRecord(CLogFileRecord &newLogRec,const mrpt::math::TPose2D& relTarget,int nSelectedPTG, const mrpt::kinematics::CVehicleVelCmd::Ptr &new_vel_cmd, int nPTGs, const bool best_is_NOP_cmdvel, const mrpt::poses::CPose2D &rel_cur_pose_wrt_last_vel_cmd_NOP, const mrpt::poses::CPose2D &rel_pose_PTG_origin_wrt_sense_NOP, const double executionTimeValue, const double tim_changeSpeed, const mrpt::system::TTimeStamp &tim_start_iteration);
 		void preDestructor(); //!< To be called during children destructors to assure thread-safe destruction, and free of shared objects.
 		virtual void onStartNewNavigation() MRPT_OVERRIDE;
 
 		bool m_closing_navigator; //!< Signal that the destructor has been called, so no more calls are accepted from other threads
 
 		mrpt::system::TTimeStamp m_WS_Obstacles_timestamp;
-		mrpt::maps::CPointCloudFilterBasePtr m_WS_filter;   //!< Default: none
+		mrpt::maps::CPointCloudFilterBase::Ptr m_WS_filter;   //!< Default: none
 
-		mrpt::nav::CMultiObjectiveMotionOptimizerBasePtr m_multiobjopt;
+		mrpt::nav::CMultiObjectiveMotionOptimizerBase::Ptr m_multiobjopt;
 
 
 		struct TInfoPerPTG

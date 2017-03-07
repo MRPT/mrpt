@@ -62,7 +62,6 @@ namespace mrpt
 			/* Simulation of ray-trace. */
 			bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const MRPT_OVERRIDE;
 
-		private:
 			/** Default constructor
 			  */
 			C3DSScene( );
@@ -70,6 +69,7 @@ namespace mrpt
 			/** Private, virtual destructor: only can be deleted from smart pointers */
 			virtual ~C3DSScene();
 
+		private:
 			/** A container for automatic deletion of lib3ds's scene when the last reference of the smart_ptr's is destroyed.
 			  */
 			struct TImpl3DS

@@ -113,17 +113,17 @@ namespace opengl	{
 		  * Creation of a polyhedron from its vertices and faces.
 		  * \throw logic_error if the polyhedron definition has flaws (bad vertex indices, etc.).
 		  */
-		static CPolyhedronPtr Create(const std::vector<mrpt::math::TPoint3D> &vertices,const std::vector<std::vector<uint32_t> > &faces);
+		static CPolyhedron::Ptr Create(const std::vector<mrpt::math::TPoint3D> &vertices,const std::vector<std::vector<uint32_t> > &faces);
 		/**
 		  * Creation of a polyhedron from its vertices and faces.
 		  * \throw logic_error if the polyhedron definition has flaws (bad vertex indices, etc.).
 		  */
-		static CPolyhedronPtr Create(const std::vector<mrpt::math::TPoint3D> &vertices,const std::vector<TPolyhedronFace> &faces);
+		static CPolyhedron::Ptr Create(const std::vector<mrpt::math::TPoint3D> &vertices,const std::vector<TPolyhedronFace> &faces);
 		/**
 		  * Creation from a set of polygons.
 		  * \sa mrpt::math::TPolygon3D
 		  */
-		static CPolyhedronPtr Create(const std::vector<mrpt::math::TPolygon3D> &polys);
+		static CPolyhedron::Ptr Create(const std::vector<mrpt::math::TPolygon3D> &polys);
 
 		/** Evaluates the bounding box of this object (including possible children) in the coordinate frame of the object parent. */
 		void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const MRPT_OVERRIDE;
@@ -139,33 +139,33 @@ namespace opengl	{
 		  <p align="center"><img src="Tetrahedron.gif"></p>
 		  * \sa CreatePyramid,CreateJohnsonSolidWithConstantBase,CreateTruncatedTetrahedron
 		  */
-		static CPolyhedronPtr CreateTetrahedron(double radius);
+		static CPolyhedron::Ptr CreateTetrahedron(double radius);
 		/**
 		  * Creates a regular cube, also called hexahedron (see http://en.wikipedia.org/wiki/Hexahedron). The hexahedron is created as a cubic prism which transitive edges. Another ways to create it include:
 		  <ul><li>Dual to an octahedron.</li><li>Parallelepiped with three orthogonal, equally-lengthed vectors.</li><li>Triangular trapezohedron with proper height.</li></ul>
 		  <p align="center"><img src="Hexahedron.gif"></p>
 		  * \sa CreateOctahedron,getDual,CreateParallelepiped,CreateTrapezohedron,CreateTruncatedHexahedron,CreateTruncatedOctahedron,CreateCuboctahedron,CreateRhombicuboctahedron
 		  */
-		static CPolyhedronPtr CreateHexahedron(double radius);
+		static CPolyhedron::Ptr CreateHexahedron(double radius);
 		/**
 		  * Creates a regular octahedron (see http://en.wikipedia.org/wiki/Octahedron). The octahedron is created as a square bipyramid whit transitive edges and vertices. Another ways to create an octahedron are:
 		  <ul><li>Dual to an hexahedron</li><li>Triangular antiprism with transitive vertices.</li><li>Conveniently truncated tetrahedron.</li></ul>
 		  <p align="center"><img src="Octahedron.gif"></p>
 		  * \sa CreateHexahedron,getDual,CreateArchimedeanAntiprism,CreateTetrahedron,truncate,CreateTruncatedOctahedron,CreateTruncatedHexahedron,CreateCuboctahedron,CreateRhombicuboctahedron
 		  */
-		static CPolyhedronPtr CreateOctahedron(double radius);
+		static CPolyhedron::Ptr CreateOctahedron(double radius);
 		/**
 		  * Creates a regular dodecahedron (see http://en.wikipedia.org/wiki/Dodecahedron). The dodecahedron is created as the dual to an icosahedron.
 		  <p align="center"><img src="Dodecahedron.gif"></p>
 		  * \sa CreateIcosahedron,getDual,CreateTruncatedDodecahedron,CreateTruncatedIcosahedron,CreateIcosidodecahedron,CreateRhombicosidodecahedron
 		  */
-		static CPolyhedronPtr CreateDodecahedron(double radius);
+		static CPolyhedron::Ptr CreateDodecahedron(double radius);
 		/**
 		  * Creates a regular icosahedron (see http://en.wikipedia.org/wiki/Icosahedron). The icosahedron is created as a gyroelongated pentagonal bipyramid with transitive edges, and it's the dual to a dodecahedron.
 		  <p align="center"><img src="Icosahedron.gif"></p>
 		  * \sa CreateJohnsonSolidWithConstantBase,CreateDodecahedron,getDual,CreateTruncatedIcosahedron,CreateTruncatedDodecahedron,CreateIcosidodecahedron,CreateRhombicosidodecahedron
 		  */
-		static CPolyhedronPtr CreateIcosahedron(double radius);
+		static CPolyhedron::Ptr CreateIcosahedron(double radius);
 		/** @}
 		  */
 
@@ -177,33 +177,33 @@ namespace opengl	{
 		  <p align="center"><img src="Truncatedtetrahedron.gif"></p>
 		  * \sa CreateTetrahedron,CreateTriakisTetrahedron
 		  */
-		static CPolyhedronPtr CreateTruncatedTetrahedron(double radius);
+		static CPolyhedron::Ptr CreateTruncatedTetrahedron(double radius);
 		/**
 		  * Creates a cuboctahedron, consisting of six square faces and eight triangular ones (see http://en.wikipedia.org/wiki/Cuboctahedron). There are several ways to create a cuboctahedron:
 		  <ul><li>Hexahedron truncated to a certain extent.</li><li>Octahedron truncated to a certain extent.</li><li>Cantellated tetrahedron</li><li>Dual to a rhombic dodecahedron.</li></ul>
 		  <p align="center"><img src="Cuboctahedron.gif"></p>
 		  * \sa CreateHexahedron,CreateOctahedron,truncate,CreateTetrahedron,cantellate,CreateRhombicuboctahedron,CreateRhombicDodecahedron,
 		  */
-		static CPolyhedronPtr CreateCuboctahedron(double radius);
+		static CPolyhedron::Ptr CreateCuboctahedron(double radius);
 		/**
 		  * Creates a truncated hexahedron, with six octogonal faces and eight triangular ones (see http://en.wikipedia.org/wiki/Truncated_hexahedron). The truncated octahedron is dual to the triakis octahedron.
 		  <p align="center"><img src="Truncatedhexahedron.gif"></p>
 		  * \sa CreateHexahedron,CreateTriakisOctahedron
 		  */
-		static CPolyhedronPtr CreateTruncatedHexahedron(double radius);
+		static CPolyhedron::Ptr CreateTruncatedHexahedron(double radius);
 		/**
 		  * Creates a truncated octahedron, with eight hexagons and eight squares (see http://en.wikipedia.org/wiki/Truncated_octahedron). It's the dual to the tetrakis hexahedron.
 		  <p align="center"><img src="Truncatedoctahedron.gif"></p>
 		  * \sa CreateOctahedron,CreateTetrakisHexahedron
 		  */
-		static CPolyhedronPtr CreateTruncatedOctahedron(double radius);
+		static CPolyhedron::Ptr CreateTruncatedOctahedron(double radius);
 		/**
 		  * Creates a rhombicuboctahedron, with 18 squares and 8 triangles (see http://en.wikipedia.org/wiki/Rhombicuboctahedron), calculated as an elongated square bicupola. It can also be calculated as a cantellated hexahedron or octahedron, and its dual is the deltoidal icositetrahedron.
 		  * If the second argument is set to false, the lower cupola is rotated, so that the objet created is an elongated square gyrobicupola (see http://en.wikipedia.org/wiki/Elongated_square_gyrobicupola). This is not an archimedean solid, but a Johnson one, since it hasn't got vertex transitivity.
 		  <p align="center"><img src="Rhombicuboctahedron.gif"></p>
 		  * \sa CreateJohnsonSolidWithConstantBase,CreateHexahedron,CreateOctahedron,cantellate,CreateCuboctahedron,CreateDeltoidalIcositetrahedron
 		  */
-		static CPolyhedronPtr CreateRhombicuboctahedron(double radius,bool type=true);
+		static CPolyhedron::Ptr CreateRhombicuboctahedron(double radius,bool type=true);
 		/**
 		  * Creates an icosidodecahedron, with 12 pentagons and 20 triangles (see http://en.wikipedia.org/wiki/Icosidodecahedron). Certain truncations of either a dodecahedron or an icosahedron yield an icosidodecahedron.
 		  * The dual of the icosidodecahedron is the rhombic triacontahedron.
@@ -211,25 +211,25 @@ namespace opengl	{
 		  <p align="center"><img src="Icosidodecahedron.gif"></p>
 		  * \sa CreateDodecahedron,CreateIcosahedron,truncate,CreateRhombicosidodecahedron,CreateRhombicTriacontahedron
 		  */
-		static CPolyhedronPtr CreateIcosidodecahedron(double radius,bool type=true);
+		static CPolyhedron::Ptr CreateIcosidodecahedron(double radius,bool type=true);
 		/**
 		  * Creates a truncated dodecahedron, consisting of 12 dodecagons and 20 triangles (see http://en.wikipedia.org/wiki/Truncated_dodecahedron). The truncated dodecahedron is the dual to the triakis icosahedron.
 		  <p align="center"><img src="Truncateddodecahedron.gif"></p>
 		  * \sa CreateDodecahedron,CreateTriakisIcosahedron
 		  */
-		static CPolyhedronPtr CreateTruncatedDodecahedron(double radius);
+		static CPolyhedron::Ptr CreateTruncatedDodecahedron(double radius);
 		/**
 		  * Creates a truncated icosahedron, consisting of 20 hexagons and 12 pentagons. This object resembles a typical soccer ball (see http://en.wikipedia.org/wiki/Truncated_icosahedron). The pentakis dodecahedron is the dual to the truncated icosahedron.
 		  <p align="center"><img src="Truncatedicosahedron.gif"></p>
 		  * \sa CreateIcosahedron,CreatePentakisDodecahedron
 		  */
-		static CPolyhedronPtr CreateTruncatedIcosahedron(double radius);
+		static CPolyhedron::Ptr CreateTruncatedIcosahedron(double radius);
 		/**
 		  * Creates a rhombicosidodecahedron, consisting of 30 squares, 12 pentagons and 20 triangles (see http://en.wikipedia.org/wiki/Rhombicosidodecahedron). This object can be obtained as the cantellation of either a dodecahedron or an icosahedron. The dual of the rhombicosidodecahedron is the deltoidal hexecontahedron.
 		  <p align="center"><img src="Rhombicosidodecahedron.gif"></p>
 		  * \sa CreateDodecahedron,CreateIcosahedron,CreateIcosidodecahedron,CreateDeltoidalHexecontahedron
 		  */
-		static CPolyhedronPtr CreateRhombicosidodecahedron(double radius);
+		static CPolyhedron::Ptr CreateRhombicosidodecahedron(double radius);
 		/** @}
 		 */
 
@@ -240,7 +240,7 @@ namespace opengl	{
 		  * Creates a pentagonal rotunda (half an icosidodecahedron), consisting of six pentagons, ten triangles and a decagon (see http://en.wikipedia.org/wiki/Pentagonal_rotunda).
 		  * \sa CreateIcosidodecahedron,CreateJohnsonSolidWithConstantBase
 		  */
-		static CPolyhedronPtr CreatePentagonalRotunda(double radius);
+		static CPolyhedron::Ptr CreatePentagonalRotunda(double radius);
 		/** @}
 		 */
 
@@ -252,63 +252,63 @@ namespace opengl	{
 		  <p align="center"><img src="Triakistetrahedron.gif"></p>
 		  * \sa CreateTruncatedTetrahedron
 		  */
-		static CPolyhedronPtr CreateTriakisTetrahedron(double radius);
+		static CPolyhedron::Ptr CreateTriakisTetrahedron(double radius);
 
 		/**
 		  * Creates a rhombic dodecahedron, dual to the cuboctahedron. This body consists of 12 rhombi (see http://en.wikipedia.org/wiki/Rhombic_dodecahedron).
 		  <p align="center"><img src="Rhombicdodecahedron.gif"></p>
 		  * \sa CreateCuboctahedron
 		  */
-		static CPolyhedronPtr CreateRhombicDodecahedron(double radius);
+		static CPolyhedron::Ptr CreateRhombicDodecahedron(double radius);
 
 		/**
 		  * Creates a triakis octahedron, dual to the truncated hexahedron. This body consists of 24 isosceles triangles (see http://en.wikipedia.org/wiki/Triakis_octahedron).
 		  <p align="center"><img src="Triakisoctahedron.gif"></p>
 		  * \sa CreateTruncatedHexahedron
 		  */
-		static CPolyhedronPtr CreateTriakisOctahedron(double radius);
+		static CPolyhedron::Ptr CreateTriakisOctahedron(double radius);
 
 		/**
 		  * Creates a tetrakis hexahedron, dual to the truncated octahedron. This body consists of 24 isosceles triangles (see http://en.wikipedia.org/wiki/Tetrakis_hexahedron).
 		  <p align="center"><img src="Tetrakishexahedron.gif"></p>
 		  * \sa CreateTruncatedOctahedron
 		  */
-		static CPolyhedronPtr CreateTetrakisHexahedron(double radius);
+		static CPolyhedron::Ptr CreateTetrakisHexahedron(double radius);
 
 		/**
 		  * Creates a deltoidal icositetrahedron, dual to the rhombicuboctahedron. This body consists of 24 kites (see http://en.wikipedia.org/wiki/Deltoidal_icositetrahedron).
 		  <p align="center"><img src="Deltoidalicositetrahedron.gif"></p>
 		  * \sa CreateRhombicuboctahedron
 		  */
-		static CPolyhedronPtr CreateDeltoidalIcositetrahedron(double radius);
+		static CPolyhedron::Ptr CreateDeltoidalIcositetrahedron(double radius);
 
 		/**
 		  * Creates a rhombic triacontahedron, dual to the icosidodecahedron. This body consists of 30 rhombi (see http://en.wikipedia.org/wiki/Rhombic_triacontahedron).
 		  <p align="center"><img src="Rhombictriacontahedron.gif"></p>
 		  * \sa CreateIcosidodecahedron
 		  */
-		static CPolyhedronPtr CreateRhombicTriacontahedron(double radius);
+		static CPolyhedron::Ptr CreateRhombicTriacontahedron(double radius);
 
 		/**
 		  * Creates a triakis icosahedron, dual to the truncated dodecahedron. This body consists of 60 isosceles triangles http://en.wikipedia.org/wiki/Triakis_icosahedron).
 		  <p align="center"><img src="Triakisicosahedron.gif"></p>
 		  * \sa CreateTruncatedDodecahedron
 		  */
-		static CPolyhedronPtr CreateTriakisIcosahedron(double radius);
+		static CPolyhedron::Ptr CreateTriakisIcosahedron(double radius);
 
 		/**
 		  * Creates a pentakis dodecahedron, dual to the truncated icosahedron. This body consists of 60 isosceles triangles (see http://en.wikipedia.org/wiki/Pentakis_dodecahedron).
 		  <p align="center"><img src="Pentakisdodecahedron.gif"></p>
 		  * \sa CreateTruncatedIcosahedron
 		  */
-		static CPolyhedronPtr CreatePentakisDodecahedron(double radius);
+		static CPolyhedron::Ptr CreatePentakisDodecahedron(double radius);
 
 		/**
 		  * Creates a deltoidal hexecontahedron, dual to the rhombicosidodecahedron. This body consists of 60 kites (see http://en.wikipedia.org/wiki/Deltoidal_hexecontahedron).
 		  <p align="center"><img src="Deltoidalhexecontahedron.gif"></p>
 		  * \sa CreateRhombicosidodecahedron
 		  */
-		static CPolyhedronPtr CreateDeltoidalHexecontahedron(double radius);
+		static CPolyhedron::Ptr CreateDeltoidalHexecontahedron(double radius);
 		/** @}
 		 */
 
@@ -319,120 +319,120 @@ namespace opengl	{
 		  * Creates a cubic prism, given the coordinates of two opposite vertices. Each edge will be parallel to one of the coordinate axes, although the orientation may change by assigning a pose to the object.
 		  * \sa CreateCubicPrism(const mrpt::math::TPoint3D &,const mrpt::math::TPoint3D &),CreateParallelepiped,CreateCustomPrism,CreateRegularPrism,CreateArchimedeanRegularPrism
 		  */
-		static CPolyhedronPtr CreateCubicPrism(double x1,double x2,double y1,double y2,double z1,double z2);
+		static CPolyhedron::Ptr CreateCubicPrism(double x1,double x2,double y1,double y2,double z1,double z2);
 		/**
 		  * Creates a cubic prism, given two opposite vertices.
 		  * \sa CreateCubicPrism(double,double,double,double,double,double),CreateParallelepiped,CreateCustomPrism,CreateRegularPrism,CreateArchimedeanRegularPrism
 		  */
-		static CPolyhedronPtr CreateCubicPrism(const mrpt::math::TPoint3D &p1,const mrpt::math::TPoint3D &p2);
+		static CPolyhedron::Ptr CreateCubicPrism(const mrpt::math::TPoint3D &p1,const mrpt::math::TPoint3D &p2);
 		/**
 		  * Creates a custom pyramid, using a set of 2D vertices which will lie on the XY plane.
 		  * \sa CreateDoublePyramid,CreateFrustum,CreateBifrustum,CreateRegularPyramid
 		  */
-		static CPolyhedronPtr CreatePyramid(const std::vector<mrpt::math::TPoint2D> &baseVertices,double height);
+		static CPolyhedron::Ptr CreatePyramid(const std::vector<mrpt::math::TPoint2D> &baseVertices,double height);
 		/**
 		  * Creates a double pyramid, using a set of 2D vertices which will lie on the XY plane. The second height is used with the downwards pointing pyramid, so that it will effectively point downwards if it's positive.
 		  * \sa CreatePyramid,CreateBifrustum,CreateRegularDoublePyramid
 		  */
-		static CPolyhedronPtr CreateDoublePyramid(const std::vector<mrpt::math::TPoint2D> &baseVertices,double height1,double height2);
+		static CPolyhedron::Ptr CreateDoublePyramid(const std::vector<mrpt::math::TPoint2D> &baseVertices,double height1,double height2);
 		/**
 		  * Creates a truncated pyramid, using a set of vertices which will lie on the XY plane.
 		  * Do not try to use with a ratio equal to zero; use CreatePyramid instead. When using a ratio of 1, it will create a Prism.
 		  * \sa CreatePyramid,CreateBifrustum
 		  */
-		static CPolyhedronPtr CreateTruncatedPyramid(const std::vector<mrpt::math::TPoint2D> &baseVertices,double height,double ratio);
+		static CPolyhedron::Ptr CreateTruncatedPyramid(const std::vector<mrpt::math::TPoint2D> &baseVertices,double height,double ratio);
 		/**
 		  * This is a synonym for CreateTruncatedPyramid.
 		  * \sa CreateTruncatedPyramid
 		  */
-		static CPolyhedronPtr CreateFrustum(const std::vector<mrpt::math::TPoint2D> &baseVertices,double height,double ratio);
+		static CPolyhedron::Ptr CreateFrustum(const std::vector<mrpt::math::TPoint2D> &baseVertices,double height,double ratio);
 		/**
 		  * Creates a custom prism with vertical edges, given any base which will lie on the XY plane.
 		  * \sa CreateCubicPrism,CreateCustomAntiprism,CreateRegularPrism,CreateArchimedeanRegularPrism
 		  */
-		static CPolyhedronPtr CreateCustomPrism(const std::vector<mrpt::math::TPoint2D> &baseVertices,double height);
+		static CPolyhedron::Ptr CreateCustomPrism(const std::vector<mrpt::math::TPoint2D> &baseVertices,double height);
 		/**
 		  * Creates a custom antiprism, using two custom bases. For better results, the top base should be slightly rotated with respect to the bottom one.
 		  * \sa CreateCustomPrism,CreateRegularAntiprism,CreateArchimedeanRegularAntiprism
 		  */
-		static CPolyhedronPtr CreateCustomAntiprism(const std::vector<mrpt::math::TPoint2D> &bottomBase,const std::vector<mrpt::math::TPoint2D> &topBase,double height);
+		static CPolyhedron::Ptr CreateCustomAntiprism(const std::vector<mrpt::math::TPoint2D> &bottomBase,const std::vector<mrpt::math::TPoint2D> &topBase,double height);
 		/**
 		  * Creates a parallelepiped, given a base point and three vectors represented as points.
 		  * \sa CreateCubicPrism
 		  */
-		static CPolyhedronPtr CreateParallelepiped(const mrpt::math::TPoint3D &base,const mrpt::math::TPoint3D &v1,const mrpt::math::TPoint3D &v2,const mrpt::math::TPoint3D &v3);
+		static CPolyhedron::Ptr CreateParallelepiped(const mrpt::math::TPoint3D &base,const mrpt::math::TPoint3D &v1,const mrpt::math::TPoint3D &v2,const mrpt::math::TPoint3D &v3);
 		/**
 		  * Creates a bifrustum, or double truncated pyramid, given a base which will lie on the XY plane.
 		  * \sa CreateFrustum,CreateDoublePyramid
 		  */
-		static CPolyhedronPtr CreateBifrustum(const std::vector<mrpt::math::TPoint2D> &baseVertices,double height1,double ratio1,double height2,double ratio2);
+		static CPolyhedron::Ptr CreateBifrustum(const std::vector<mrpt::math::TPoint2D> &baseVertices,double height1,double ratio1,double height2,double ratio2);
 		/**
 		  * Creates a trapezohedron, consisting of 2*N kites, where N is the number of edges in the base. The base radius controls the polyhedron height, whilst the distance between bases affects the height.
 		  * When the number of edges equals 3, the polyhedron is actually a parallelepiped, and it can even be a cube.
 		  */
-		static CPolyhedronPtr CreateTrapezohedron(uint32_t numBaseEdges,double baseRadius,double basesDistance);
+		static CPolyhedron::Ptr CreateTrapezohedron(uint32_t numBaseEdges,double baseRadius,double basesDistance);
 		/**
 		  * Creates an antiprism whose base is a regular polygon. The upper base is rotated \f$\frac\pi N\f$ with respect to the lower one, where N is the number of vertices in the base, and thus the lateral triangles are isosceles.
 		  * \sa CreateCustomAntiprism,CreateArchimedeanRegularAntiprism
 		  */
-		static CPolyhedronPtr CreateRegularAntiprism(uint32_t numBaseEdges,double baseRadius,double height);
+		static CPolyhedron::Ptr CreateRegularAntiprism(uint32_t numBaseEdges,double baseRadius,double height);
 		/**
 		  * Creates a regular prism whose base is a regular polygon and whose edges are either parallel or perpendicular to the XY plane.
 		  * \sa CreateCubicPrism,CreateCustomPrism,CreateArchimedeanRegularAntiprism
 		  */
-		static CPolyhedronPtr CreateRegularPrism(uint32_t numBaseEdges,double baseRadius,double height);
+		static CPolyhedron::Ptr CreateRegularPrism(uint32_t numBaseEdges,double baseRadius,double height);
 		/**
 		  * Creates a regular pyramid whose base is a regular polygon.
 		  * \sa CreatePyramid
 		  */
-		static CPolyhedronPtr CreateRegularPyramid(uint32_t numBaseEdges,double baseRadius,double height);
+		static CPolyhedron::Ptr CreateRegularPyramid(uint32_t numBaseEdges,double baseRadius,double height);
 		/**
 		  * Creates a regular double pyramid whose base is a regular polygon.
 		  * \sa CreateDoublePyramid
 		  */
-		static CPolyhedronPtr CreateRegularDoublePyramid(uint32_t numBaseEdges,double baseRadius,double height1,double height2);
+		static CPolyhedron::Ptr CreateRegularDoublePyramid(uint32_t numBaseEdges,double baseRadius,double height1,double height2);
 		/**
 		  * Creates a regular prism whose lateral area is comprised of squares, and so each face of its is a regular polygon. Due to vertex transitivity, the resulting object is always archimedean.
 		  * \sa CreateRegularPrism,CreateCustomPrism
 		  */
-		static CPolyhedronPtr CreateArchimedeanRegularPrism(uint32_t numBaseEdges,double baseRadius);
+		static CPolyhedron::Ptr CreateArchimedeanRegularPrism(uint32_t numBaseEdges,double baseRadius);
 		/**
 		  * Creates a regular antiprism whose lateral polygons are equilateral triangles, and so each face of its is a regular polygon. Due to vertex transitivity, the resulting object is always archimedean.
 		  * \sa CreateRegularAntiprism,CreateCustomAntiprism
 		  */
-		static CPolyhedronPtr CreateArchimedeanRegularAntiprism(uint32_t numBaseEdges,double baseRadius);
+		static CPolyhedron::Ptr CreateArchimedeanRegularAntiprism(uint32_t numBaseEdges,double baseRadius);
 		/**
 		  * Creates a regular truncated pyramid whose base is a regular polygon.
 		  * \sa CreateTruncatedPyramid
 		  */
-		static CPolyhedronPtr CreateRegularTruncatedPyramid(uint32_t numBaseEdges,double baseRadius,double height,double ratio);
+		static CPolyhedron::Ptr CreateRegularTruncatedPyramid(uint32_t numBaseEdges,double baseRadius,double height,double ratio);
 		/**
 		  * This is a synonym for CreateRegularTruncatedPyramid.
 		  * \sa CreateRegularTruncatedPyramid
 		  */
-		static CPolyhedronPtr CreateRegularFrustum(uint32_t numBaseEdges,double baseRadius,double height,double ratio);
+		static CPolyhedron::Ptr CreateRegularFrustum(uint32_t numBaseEdges,double baseRadius,double height,double ratio);
 		/**
 		  * Creates a bifrustum (double truncated pyramid) whose base is a regular polygon lying in the XY plane.
 		  * \sa CreateBifrustum
 		  */
-		static CPolyhedronPtr CreateRegularBifrustum(uint32_t numBaseEdges,double baseRadius,double height1,double ratio1,double height2,double ratio2);
+		static CPolyhedron::Ptr CreateRegularBifrustum(uint32_t numBaseEdges,double baseRadius,double height1,double ratio1,double height2,double ratio2);
 		/**
 		  * Creates a cupola.
 		  * \throw std::logic_error if the number of edges is odd or less than four.
 		  */
-		static CPolyhedronPtr CreateCupola(uint32_t numBaseEdges,double edgeLength);
+		static CPolyhedron::Ptr CreateCupola(uint32_t numBaseEdges,double edgeLength);
 		/**
 		  * Creates a trapezohedron whose dual is exactly an archimedean antiprism. Creates a cube if numBaseEdges is equal to 3.
 		  * \todo Actually resulting height is significantly higher than that passed to the algorithm.
 		  * \sa CreateTrapezohedron,CreateArchimedeanRegularAntiprism,getDual
 		  */
-		static CPolyhedronPtr CreateCatalanTrapezohedron(uint32_t numBaseEdges,double height);
+		static CPolyhedron::Ptr CreateCatalanTrapezohedron(uint32_t numBaseEdges,double height);
 		/**
 		  * Creates a double pyramid whose dual is exactly an archimedean prism. Creates an octahedron if numBaseEdges is equal to 4.
 		  * \todo Actually resulting height is significantly higher than that passed to the algorithm.
 		  * \sa CreateDoublePyramid,CreateArchimedeanRegularPrism,getDual
 		  */
-		static CPolyhedronPtr CreateCatalanDoublePyramid(uint32_t numBaseEdges,double height);
+		static CPolyhedron::Ptr CreateCatalanDoublePyramid(uint32_t numBaseEdges,double height);
 		/**
 		  * Creates a series of concatenated solids (most of which are prismatoids) whose base is a regular polygon with a given number of edges. Every face of the resulting body will be a regular polygon, so it is a Johnson solid; in special cases, it may be archimedean or even platonic.
 		  * The shape of the body is defined by the string argument, which can include one or more of the following:
@@ -463,7 +463,7 @@ namespace opengl	{
 		  <tr><td>R-R+</td><td align="center">10</td><td>Icosidodecahedron</td></tr>
 		  </table></center>
 		  */
-		static CPolyhedronPtr CreateJohnsonSolidWithConstantBase(uint32_t numBaseEdges,double baseRadius,const std::string &components,size_t shifts=0);
+		static CPolyhedron::Ptr CreateJohnsonSolidWithConstantBase(uint32_t numBaseEdges,double baseRadius,const std::string &components,size_t shifts=0);
 		/** @}
 		 */
 
@@ -564,7 +564,7 @@ namespace opengl	{
 		/** Gets the intersection of two polyhedra, either as a set or as a matrix of intersections. Each intersection is represented by a TObject3D.
 		  * \sa mrpt::math::TObject3D
 		  */
-		template<class T> inline static size_t getIntersection(const CPolyhedronPtr &p1,const CPolyhedronPtr &p2,T &container);
+		template<class T> inline static size_t getIntersection(const CPolyhedron::Ptr &p1,const CPolyhedron::Ptr &p2,T &container);
 		/**
 		  * Returns true if the polygon is a completely closed object.
 		  */
@@ -583,7 +583,7 @@ namespace opengl	{
 		/**
 		  * Creates a random polyhedron from the static methods.
 		  */
-		static CPolyhedronPtr CreateRandomPolyhedron(double radius);
+		static CPolyhedron::Ptr CreateRandomPolyhedron(double radius);
 
 		/** @name Polyhedron special operations.
 			@{
@@ -593,51 +593,51 @@ namespace opengl	{
 		  * \sa truncate,cantellate,augment
 		  * \throw std::logic_error Can't get the dual to this polyhedron.
 		  */
-		CPolyhedronPtr getDual() const;
+		CPolyhedron::Ptr getDual() const;
 		/**
 		  * Truncates a polyhedron to a given factor.
 		  * \sa getDual,cantellate,augment
 		  * \throw std::logic_error Polyhedron truncation results in skew polygons and thus it's impossible to perform.
 		  */
-		CPolyhedronPtr truncate(double factor) const;
+		CPolyhedron::Ptr truncate(double factor) const;
 		/**
 		  * Cantellates a polyhedron to a given factor.
 		  * \sa getDual,truncate,augment
 		  */
-		CPolyhedronPtr cantellate(double factor) const;
+		CPolyhedron::Ptr cantellate(double factor) const;
 		/**
 		  * Augments a polyhedron to a given height. This operation is roughly dual to the truncation: given a body P, the operation dtdP and aP yield resembling results.
 		  * \sa getDual,truncate,cantellate
 		  */
-		CPolyhedronPtr augment(double height) const;
+		CPolyhedron::Ptr augment(double height) const;
 		/**
 		  * Augments a polyhedron to a given height. This method only affects to faces with certain number of vertices.
 		  * \sa augment(double) const
 		  */
-		CPolyhedronPtr augment(double height,size_t numVertices) const;
+		CPolyhedron::Ptr augment(double height,size_t numVertices) const;
 		/**
 		  * Augments a polyhedron, so that the resulting triangles are equilateral. If the argument is true, triangles are "cut" from the polyhedron, instead of being added.
 		  * \throw std::logic_error a non-regular face has been found.
 		  * \sa augment(double) const
 		  */
-		CPolyhedronPtr augment(bool direction=false) const;
+		CPolyhedron::Ptr augment(bool direction=false) const;
 		/**
 		  * Augments a polyhedron, so that the resulting triangles are equilateral; affects only faces with certain number of faces. If the second argument is true, triangles are "cut" from the polyhedron.
 		  * \throw std::logic_error a non-regular face has been found.
 		  * \sa augment(double) const
 		  */
-		CPolyhedronPtr augment(size_t numVertices,bool direction=false) const;
+		CPolyhedron::Ptr augment(size_t numVertices,bool direction=false) const;
 		/**
 		  * Rotates a polyhedron around the Z axis a given amount of radians. In some cases, this operation may be necessary to view the symmetry between related objects.
 		  *	\sa scale
 		  */
-		CPolyhedronPtr rotate(double angle) const;
+		CPolyhedron::Ptr rotate(double angle) const;
 		/**
 		  * Scales a polyhedron to a given factor.
 		  * \throw std::logic_error factor is not a strictly positive number.
 		  * \sa rotate
 		  */
-		CPolyhedronPtr scale(double factor) const;
+		CPolyhedron::Ptr scale(double factor) const;
 		/** @}
 		 */
 		/**
@@ -695,18 +695,19 @@ namespace opengl	{
 				addEdges(*it);
 			}
 		}
+	public:
 		/** Creates a polyhedron without checking its correctness. */
-		static CPolyhedronPtr CreateNoCheck(const std::vector<mrpt::math::TPoint3D> &vertices,const std::vector<TPolyhedronFace> &faces);
+		static CPolyhedron::Ptr CreateNoCheck(const std::vector<mrpt::math::TPoint3D> &vertices,const std::vector<TPolyhedronFace> &faces);
 		/** Creates an empty Polyhedron. */
-		static CPolyhedronPtr CreateEmpty();
+		static CPolyhedron::Ptr CreateEmpty();
 		/** Destructor. */
 		virtual ~CPolyhedron()	{}
 	};
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(CPolyhedron,CRenderizableDisplayList, OPENGL_IMPEXP)
 
-	// Implemented after the definition of SmartPtrs in the _POST() macro above.
+	// Implemented after the definition of Smart::Ptrs in the _POST() macro above.
 	template<class T>
-	size_t CPolyhedron::getIntersection(const CPolyhedronPtr &p1,const CPolyhedronPtr &p2,T &container)	{
+	size_t CPolyhedron::getIntersection(const CPolyhedron::Ptr &p1,const CPolyhedron::Ptr &p2,T &container)	{
 		std::vector<mrpt::math::TPolygon3D> polys1,polys2;
 		p1->getSetOfPolygonsAbsolute(polys1);
 		p2->getSetOfPolygonsAbsolute(polys2);

@@ -311,11 +311,7 @@ void mrpt::slam::data_association_full_covariance(
 	// ------------------------------------------------------------
 	// Build a KD-tree of the predictions for quick look-up:
 	// ------------------------------------------------------------
-#if MRPT_HAS_CXX11
 	typedef std::unique_ptr<KDTreeEigenMatrixAdaptor<CMatrixDouble> > KDTreeMatrixPtr;
-#else
-	typedef std::auto_ptr<KDTreeEigenMatrixAdaptor<CMatrixDouble> > KDTreeMatrixPtr;
-#endif
 	KDTreeMatrixPtr  kd_tree;
 	const size_t N_KD_RESULTS = nPredictions;
 	std::vector<double>	kd_result_distances(DAT_ASOC_USE_KDTREE ? N_KD_RESULTS : 0);

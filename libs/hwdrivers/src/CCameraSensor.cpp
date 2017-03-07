@@ -581,22 +581,22 @@ CCameraSensor::~CCameraSensor()
 /* -----------------------------------------------------
 				getNextFrame
 ----------------------------------------------------- */
-CObservationPtr CCameraSensor::getNextFrame( )
+CObservation::Ptr CCameraSensor::getNextFrame( )
 {
-	vector<CSerializablePtr> out_obs;
+	vector<CSerializable::Ptr> out_obs;
 	getNextFrame(out_obs);
-	return static_cast<CObservationPtr>(out_obs[0]);
+	return std::dynamic_pointer_cast<CObservation>(out_obs[0]);
 }
 
 /* -----------------------------------------------------
 				getNextFrame
 ----------------------------------------------------- */
-void CCameraSensor::getNextFrame( vector<CSerializablePtr> & out_obs )
+void CCameraSensor::getNextFrame( vector<CSerializable::Ptr> & out_obs )
 {
-	CObservationImagePtr		obs;
-	CObservationStereoImagesPtr	stObs;
-	CObservation3DRangeScanPtr	obs3D;		// 3D range image, also with an intensity channel
-	CObservationIMUPtr			obsIMU;		// IMU observation grabbed by DUO3D cameras
+	CObservationImage::Ptr		obs;
+	CObservationStereoImages::Ptr	stObs;
+	CObservation3DRangeScan::Ptr	obs3D;		// 3D range image, also with an intensity channel
+	CObservationIMU::Ptr			obsIMU;		// IMU observation grabbed by DUO3D cameras
 
 	bool  capture_ok = false;
 
@@ -758,47 +758,47 @@ void CCameraSensor::getNextFrame( vector<CSerializablePtr> & out_obs )
 	{
 		// Read in a loop until we found at least one image:
 		//  Assign to: obs && stObs
-		CSerializablePtr  newObs;
+		CSerializable::Ptr  newObs;
 		while (!obs && !stObs && !obs3D)
 		{
 			*m_cap_rawlog  >> newObs;
 			if (IS_DERIVED( newObs, CObservation) )
 			{
-				CObservationPtr o = CObservationPtr(newObs);
+				CObservation::Ptr o = std::dynamic_pointer_cast<CObservation>(newObs);
 				if (!m_rawlog_camera_sensor_label.empty() && m_rawlog_camera_sensor_label!=o->sensorLabel)
 					continue;
 
 				if (IS_CLASS(o,CObservationImage))
-					obs = CObservationImagePtr(o);
+					obs = std::dynamic_pointer_cast<CObservationImage>(o);
 				else if (IS_CLASS(o,CObservationStereoImages))
-					stObs = CObservationStereoImagesPtr(o);
+					stObs = std::dynamic_pointer_cast<CObservationStereoImages>(o);
 				else if (IS_CLASS(o,CObservation3DRangeScan))
-					obs3D = CObservation3DRangeScanPtr(o);
+					obs3D = std::dynamic_pointer_cast<CObservation3DRangeScan>(o);
 			}
 			else if (IS_CLASS( newObs, CSensoryFrame) )
 			{
-				CSensoryFramePtr sf = CSensoryFramePtr(newObs);
+				CSensoryFrame::Ptr sf = std::dynamic_pointer_cast<CSensoryFrame>(newObs);
 
 				for (CSensoryFrame::iterator i=sf->begin();i!=sf->end();++i)
 				{
-					CObservationPtr &o = *i;
+					CObservation::Ptr &o = *i;
 
 					if (!m_rawlog_camera_sensor_label.empty() && m_rawlog_camera_sensor_label!=o->sensorLabel)
 						continue;
 
 					if (IS_CLASS(o,CObservationImage))
 					{
-						obs = CObservationImagePtr(o);
+						obs = std::dynamic_pointer_cast<CObservationImage>(o);
 						break;
 					}
 					else if (IS_CLASS(o,CObservationStereoImages))
 					{
-						stObs = CObservationStereoImagesPtr(o);
+						stObs = std::dynamic_pointer_cast<CObservationStereoImages>(o);
 						break;
 					}
 					else if (IS_CLASS(o,CObservation3DRangeScan))
 					{
-						obs3D = CObservation3DRangeScanPtr(o);
+						obs3D = std::dynamic_pointer_cast<CObservation3DRangeScan>(o);
 						break;
 					}
 				}
@@ -914,7 +914,7 @@ void CCameraSensor::getNextFrame( vector<CSerializablePtr> & out_obs )
 	if (m_camera_grab_decimator_counter<m_camera_grab_decimator)
 	{
 		// Done here:
-		out_obs.push_back( CObservationPtr() );
+		out_obs.push_back( CObservation::Ptr() );
 		return;
 	}
 	// Continue as normal:
@@ -1112,13 +1112,13 @@ void CCameraSensor::getNextFrame( vector<CSerializablePtr> & out_obs )
 	if (delayed_insertion_in_obs_queue)
 	{
 		if( m_cap_duo3d && m_cap_duo3d->captureIMUIsSet() && obsIMU )	
-			out_obs.push_back( CObservationPtr(obsIMU) );
+			out_obs.push_back( CObservation::Ptr(obsIMU) );
 	}
 	else
 	{
-		if( stObs )		out_obs.push_back( CObservationPtr(stObs) );
-		if( obs )		out_obs.push_back( CObservationPtr(obs) );
-		if( obs3D )		out_obs.push_back( CObservationPtr(obs3D) );
+		if( stObs )		out_obs.push_back( CObservation::Ptr(stObs) );
+		if( obs )		out_obs.push_back( CObservation::Ptr(obs) );
+		if( obs3D )		out_obs.push_back( CObservation::Ptr(obs3D) );
 	} 
 	return;
 }
@@ -1128,7 +1128,7 @@ void CCameraSensor::getNextFrame( vector<CSerializablePtr> & out_obs )
 ----------------------------------------------------- */
 void  CCameraSensor::doProcess()
 {
-	vector<CSerializablePtr> out_obs;
+	vector<CSerializable::Ptr> out_obs;
 	getNextFrame(out_obs);
 	appendObservations(out_obs);
 }
@@ -1167,14 +1167,14 @@ void CCameraSensor::setPathForExternalImages( const std::string &directory )
 /* ------------------------------------------------------------------------
 						prepareVideoSourceFromUserSelection
    ------------------------------------------------------------------------ */
-CCameraSensorPtr mrpt::hwdrivers::prepareVideoSourceFromUserSelection()
+CCameraSensor::Ptr mrpt::hwdrivers::prepareVideoSourceFromUserSelection()
 {
 #if MRPT_HAS_WXWIDGETS
 	// Create the main wxThread, if it doesn't exist yet:
 	if (!mrpt::gui::WxSubsystem::createOneInstanceMainThread() )
 	{
 		std::cerr << "[mrpt::hwdrivers::prepareVideoSourceFromUserSelection] Error initiating Wx subsystem." << std::endl;
-		return CCameraSensorPtr(); // Error!
+		return CCameraSensor::Ptr(); // Error!
 	}
 
 	mrpt::synch::CSemaphore  semDlg(0,10);
@@ -1209,21 +1209,21 @@ CCameraSensorPtr mrpt::hwdrivers::prepareVideoSourceFromUserSelection()
 	if(!semDlg.waitForSignal(maxTimeout))
 	{
 		cerr << "[prepareVideoSourceFromUserSelection] Timeout waiting window creation." << endl;
-		return CCameraSensorPtr();
+		return CCameraSensor::Ptr();
 	}
 
     // wait for user selection:
    	if(!semDlg.waitForSignal())
 	{
 		cerr << "[prepareVideoSourceFromUserSelection] Timeout waiting user selection." << endl;
-		return CCameraSensorPtr();
+		return CCameraSensor::Ptr();
 	}
 
 	// If the user didn't accept the dialog, return now:
 	if (!dlgSelection.accepted_by_user)
-		return CCameraSensorPtr();
+		return CCameraSensor::Ptr();
 
-	CCameraSensorPtr cam = CCameraSensorPtr(new CCameraSensor);
+	CCameraSensor::Ptr cam = CCameraSensor::Ptr(new CCameraSensor);
 	cam->loadConfig(dlgSelection.selectedConfig,"CONFIG");
 	cam->initialize();	// This will raise an exception if neccesary
 
@@ -1236,7 +1236,7 @@ CCameraSensorPtr mrpt::hwdrivers::prepareVideoSourceFromUserSelection()
 /* ------------------------------------------------------------------------
 						prepareVideoSourceFromPanel
    ------------------------------------------------------------------------ */
-CCameraSensorPtr mrpt::hwdrivers::prepareVideoSourceFromPanel(void *_panel)
+CCameraSensor::Ptr mrpt::hwdrivers::prepareVideoSourceFromPanel(void *_panel)
 {
 #if MRPT_HAS_WXWIDGETS
 
@@ -1246,7 +1246,7 @@ CCameraSensorPtr mrpt::hwdrivers::prepareVideoSourceFromPanel(void *_panel)
 		writeConfigFromVideoSourcePanel(_panel,"CONFIG",&cfg);
 
 		// Try to open the camera:
-		CCameraSensorPtr video = CCameraSensorPtr( new CCameraSensor());
+		CCameraSensor::Ptr video = CCameraSensor::Ptr( new CCameraSensor());
 		video->loadConfig(cfg,"CONFIG");
 
 		// This will raise an exception if neccesary
@@ -1258,7 +1258,7 @@ CCameraSensorPtr mrpt::hwdrivers::prepareVideoSourceFromPanel(void *_panel)
 	{
 		cerr << endl << e.what() << endl;
 		wxMessageBox(_("Couldn't open video source"),_("Error"));
-		return CCameraSensorPtr();
+		return CCameraSensor::Ptr();
 	}
 #else
 	THROW_EXCEPTION("MRPT compiled without wxWidgets")
@@ -1333,14 +1333,14 @@ void CCameraSensor::thread_save_images(unsigned int my_working_thread_index)
 			{
 				if (IS_DERIVED(i->second, CObservation))
 				{
-					mrpt::obs::CObservationPtr obs = mrpt::obs::CObservationPtr(i->second);
+					mrpt::obs::CObservation::Ptr obs = std::dynamic_pointer_cast<mrpt::obs::CObservation>(i->second);
 					(*m_hook_pre_save)(obs,m_hook_pre_save_param);
 				}
 			}
 
 			if (IS_CLASS(i->second, CObservationImage))
 			{
-				CObservationImagePtr obs = CObservationImagePtr(i->second);
+				CObservationImage::Ptr obs = std::dynamic_pointer_cast<CObservationImage>(i->second);
 
 				string filName = fileNameStripInvalidChars( trim(m_sensorLabel) ) + format( "_%f.%s", (double)timestampTotime_t( obs->timestamp ), m_external_images_format.c_str() );
 
@@ -1349,7 +1349,7 @@ void CCameraSensor::thread_save_images(unsigned int my_working_thread_index)
 			}
 			else if (IS_CLASS(i->second, CObservationStereoImages))
 			{
-				CObservationStereoImagesPtr stObs = CObservationStereoImagesPtr(i->second);
+				CObservationStereoImages::Ptr stObs = std::dynamic_pointer_cast<CObservationStereoImages>(i->second);
 
 				const string filNameL = fileNameStripInvalidChars( trim(m_sensorLabel) ) + format( "_L_%f.%s", (double)timestampTotime_t( stObs->timestamp ), m_external_images_format.c_str() );
 				const string filNameR = fileNameStripInvalidChars( trim(m_sensorLabel) ) + format( "_R_%f.%s", (double)timestampTotime_t( stObs->timestamp ), m_external_images_format.c_str() );

@@ -24,7 +24,7 @@ namespace mrpt
 		class BASE_IMPEXP CMappedImage
 		{
 		protected:
-			CImagePtr			m_img;
+			CImage::Ptr			m_img;
 			double					m_x0,m_x1, m_y0, m_y1;
 			double					m_pixel_size; //!< width * pixel_size = (x1-x0)
 			TInterpolationMethod	m_method;
@@ -38,7 +38,7 @@ namespace mrpt
 			  * \param y1 Coordinate Y of the bottom side (or -1 to IMAGE_HEIGHT-1)
 			  * \param method The interpolation method: It can be imNEAREST, imBILINEAR or imBICUBIC.
 			  */
-			CMappedImage( CImagePtr img, double x0=0, double x1=-1, double y0=0, double y1=-1, TInterpolationMethod	method = IMG_INTERP_LINEAR );
+			CMappedImage( CImage::Ptr img, double x0=0, double x1=-1, double y0=0, double y1=-1, TInterpolationMethod	method = IMG_INTERP_LINEAR );
 
 			/** Changes the coordinates of the image (see constructor for the meaning) */
 			void changeCoordinates(double x0, double x1, double y0, double y1);

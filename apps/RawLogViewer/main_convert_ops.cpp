@@ -60,8 +60,8 @@ void xRawLogViewerFrame::OnMenuCompactRawlog(wxCommandEvent& event)
 
 	wxTheApp->Yield();  // Let the app. process messages
 
-	CActionRobotMovement2DPtr lastAct;
-        CSensoryFramePtr        lastSF; //  = nullptr;
+	CActionRobotMovement2D::Ptr lastAct;
+        CSensoryFrame::Ptr        lastSF; //  = nullptr;
 
 	unsigned counter_loops = 0;
 	unsigned nActionsDel = 0;
@@ -85,7 +85,7 @@ void xRawLogViewerFrame::OnMenuCompactRawlog(wxCommandEvent& event)
 			if (lastAct)
 			{
 				// Remove this one and add it to the first in the series:
-				CActionRobotMovement2DPtr act = CActionCollectionPtr(*it)->getMovementEstimationByType( CActionRobotMovement2D::emOdometry );
+				CActionRobotMovement2D::Ptr act = std::dynamic_pointer_cast<CActionCollection>(*it)->getMovementEstimationByType( CActionRobotMovement2D::emOdometry );
 				ASSERT_(act);
 				lastAct->computeFromOdometry( lastAct->rawOdometryIncrementReading + act->rawOdometryIncrementReading, lastAct->motionModelConfiguration);
 
@@ -95,13 +95,13 @@ void xRawLogViewerFrame::OnMenuCompactRawlog(wxCommandEvent& event)
 			else
 			{
 				// This is the first one:
-				lastAct = CActionCollectionPtr(*it)->getMovementEstimationByType( CActionRobotMovement2D::emOdometry );
+				lastAct = std::dynamic_pointer_cast<CActionCollection>(*it)->getMovementEstimationByType( CActionRobotMovement2D::emOdometry );
 				ASSERT_(lastAct);
 
 				// Before leaving the last SF, leave only one observation for each sensorLabel:
 				if (onlyOnePerLabel && lastSF)
 				{
-					CSensoryFramePtr newSF = CSensoryFrame::Create();
+					CSensoryFrame::Ptr newSF = CSensoryFrame::Create();
 					set<string> knownLabels;
 
 					for (CSensoryFrame::const_iterator o=lastSF->begin();o!=lastSF->end();++o)
@@ -122,7 +122,7 @@ void xRawLogViewerFrame::OnMenuCompactRawlog(wxCommandEvent& event)
 			if (lastSF)
 			{
 				// remove this one and accumulate in the first in the serie:
-				lastSF->moveFrom( * CSensoryFramePtr(*it) );
+				lastSF->moveFrom( * std::dynamic_pointer_cast<CSensoryFrame>(*it) );
 
 				deleteThis = true;
 				nEmptySFDel++;
@@ -130,7 +130,7 @@ void xRawLogViewerFrame::OnMenuCompactRawlog(wxCommandEvent& event)
 			else
 			{
 				// This is the first SF:
-				CSensoryFramePtr sf = CSensoryFramePtr(*it);
+				CSensoryFrame::Ptr sf = std::dynamic_pointer_cast<CSensoryFrame>(*it);
 
 				// Only take into account if not empty!
 				if (sf->size())
@@ -194,7 +194,7 @@ void xRawLogViewerFrame::OnMenuLossLessDecimate(wxCommandEvent& event)
 	//  To free the memory of the current rawlog entries as we create the new one,
 	//  then call "clearWithoutDelete" at the end.
 	// ------------------------------------------------------------------------------
-	CSensoryFramePtr		accum_sf;
+	CSensoryFrame::Ptr		accum_sf;
 	CActionRobotMovement2D::TMotionModelOptions	odometryOptions;
 	bool					cummMovementInit = false;
 	long 					SF_counter = 0;
@@ -205,14 +205,14 @@ void xRawLogViewerFrame::OnMenuLossLessDecimate(wxCommandEvent& event)
 	// For each entry:
 	for (i=0;i<N;i++)
 	{
-		CSerializablePtr obj = rawlog.getAsGeneric(i);
+		CSerializable::Ptr obj = rawlog.getAsGeneric(i);
 
 		if (rawlog.getType(i)==CRawlog::etActionCollection)
 		{
 			// Accumulate Actions
 			// ----------------------
-			CActionCollectionPtr curActs = CActionCollectionPtr (  obj );
-			CActionRobotMovement2DPtr mov = curActs->getBestMovementEstimation();
+			CActionCollection::Ptr curActs = std::dynamic_pointer_cast<CActionCollection>(  obj );
+			CActionRobotMovement2D::Ptr mov = curActs->getBestMovementEstimation();
 			if (mov)
 			{
 				CPose2D  	incrPose = mov->poseChange->getMeanVal();
@@ -253,7 +253,7 @@ void xRawLogViewerFrame::OnMenuLossLessDecimate(wxCommandEvent& event)
 				accum_sf = CSensoryFrame::Create();
 
 			// Copy pointers to observations only (fast):
-			accum_sf->moveFrom( *CSensoryFramePtr(obj) );
+			accum_sf->moveFrom( *std::dynamic_pointer_cast<CSensoryFrame>(obj) );
 
 			if ( ++SF_counter >= DECIMATE_RATIO )
 			{
@@ -356,7 +356,7 @@ void xRawLogViewerFrame::OnMenuLossLessDecFILE(wxCommandEvent& event)
 	//  To free the memory of the current rawlog entries as we create the new one,
 	//  then call "clearWithoutDelete" at the end.
 	// ------------------------------------------------------------------------------
-	CSensoryFramePtr		accum_sf;
+	CSensoryFrame::Ptr		accum_sf;
 	CActionRobotMovement2D::TMotionModelOptions	odometryOptions;
 	bool					cummMovementInit = false;
 	long 					SF_counter = 0;
@@ -377,7 +377,7 @@ void xRawLogViewerFrame::OnMenuLossLessDecFILE(wxCommandEvent& event)
 			wxTheApp->Yield();  // Let the app. process messages
 		}
 
-		CSerializablePtr newObj;
+		CSerializable::Ptr newObj;
 		try
 		{
 			fil >> newObj;
@@ -394,7 +394,7 @@ void xRawLogViewerFrame::OnMenuLossLessDecFILE(wxCommandEvent& event)
 					accum_sf = CSensoryFrame::Create();
 
 				// Copy pointers to observations only (fast):
-				accum_sf->moveFrom( *CSensoryFramePtr(newObj) );
+				accum_sf->moveFrom( *std::dynamic_pointer_cast<CSensoryFrame>(newObj) );
 
 				if ( ++SF_counter >= DECIMATE_RATIO )
 				{
@@ -405,7 +405,7 @@ void xRawLogViewerFrame::OnMenuLossLessDecFILE(wxCommandEvent& event)
 					accum_sf.reset();
 
 					// INSERT ACTIONS:
-					CActionCollectionPtr actsCol = CActionCollection::Create();
+					CActionCollection::Ptr actsCol = CActionCollection::Create();
 					if (cummMovementInit)
 					{
 						CActionRobotMovement2D	cummMovement;
@@ -423,8 +423,8 @@ void xRawLogViewerFrame::OnMenuLossLessDecFILE(wxCommandEvent& event)
 			{
 				// Accumulate Actions
 				// ----------------------
-				CActionCollectionPtr curActs = CActionCollectionPtr( newObj );
-				CActionRobotMovement2DPtr mov = curActs->getBestMovementEstimation();
+				CActionCollection::Ptr curActs = std::dynamic_pointer_cast<CActionCollection>( newObj );
+				CActionRobotMovement2D::Ptr mov = curActs->getBestMovementEstimation();
 				if (mov)
 				{
 					timestamp_lastAction = mov->timestamp;
@@ -560,19 +560,19 @@ void xRawLogViewerFrame::OnMenuConvertExternallyStored(wxCommandEvent& event)
 
 		try
 		{
-			CSerializablePtr newObj;
+			CSerializable::Ptr newObj;
 			fil >> newObj;
 
 			// Check type:
 			if ( newObj->GetRuntimeClass() == CLASS_ID(CSensoryFrame) )
 			{
-				CSensoryFramePtr SF(newObj);
+				CSensoryFrame::Ptr SF(std::dynamic_pointer_cast<CSensoryFrame>(newObj));
 
 				for (unsigned k=0;k<SF->size();k++)
 				{
 					if (SF->getObservationByIndex(k)->GetRuntimeClass()==CLASS_ID(CObservationStereoImages ) )
 					{
-						CObservationStereoImagesPtr obsSt = SF->getObservationByIndexAs<CObservationStereoImagesPtr>(k);
+						CObservationStereoImages::Ptr obsSt = SF->getObservationByIndexAs<CObservationStereoImages::Ptr>(k);
 
 						// save image to file & convert into external storage:
 						string fileName = format("img_stereo_%u_left_%05u.%s",k,imgSaved,imgFileExtension.c_str() );
@@ -590,7 +590,7 @@ void xRawLogViewerFrame::OnMenuConvertExternallyStored(wxCommandEvent& event)
 					}
 					if (SF->getObservationByIndex(k)->GetRuntimeClass()==CLASS_ID(CObservationImage ) )
 					{
-						CObservationImagePtr obsIm = SF->getObservationByIndexAs<CObservationImagePtr>(k);
+						CObservationImage::Ptr obsIm = SF->getObservationByIndexAs<CObservationImage::Ptr>(k);
 
 						// save image to file & convert into external storage:
 						string fileName = format("img_monocular_%u_%05u.%s",k,imgSaved,imgFileExtension.c_str() );
@@ -698,13 +698,13 @@ void xRawLogViewerFrame::OnMenuConvertObservationOnly(wxCommandEvent& event)
 
 		try
 		{
-			CSerializablePtr newObj;
+			CSerializable::Ptr newObj;
 			fil >> newObj;
 
 			// Check type:
 			if ( newObj->GetRuntimeClass() == CLASS_ID(CSensoryFrame) )
 			{
-				CSensoryFramePtr SF(newObj);
+				CSensoryFrame::Ptr SF(std::dynamic_pointer_cast<CSensoryFrame>(newObj));
 				for (CSensoryFrame::iterator it=SF->begin();it!=SF->end();++it)
 				{
 					time_ordered_list_observation.insert( TTimeObservationPair( (*it)->timestamp, (*it) ));
@@ -715,15 +715,15 @@ void xRawLogViewerFrame::OnMenuConvertObservationOnly(wxCommandEvent& event)
 				if ( newObj->GetRuntimeClass() == CLASS_ID(CActionCollection) )
 				{
 					// Replace "odometry action" with "odometry observation":
-					CActionCollectionPtr	acts = CActionCollectionPtr( newObj );
+					CActionCollection::Ptr	acts = std::dynamic_pointer_cast<CActionCollection>( newObj );
 					// Get odometry:
-					CActionRobotMovement2DPtr actOdom = acts->getBestMovementEstimation();
+					CActionRobotMovement2D::Ptr actOdom = acts->getBestMovementEstimation();
 					if (actOdom)
 					{
 						odometry_accum = odometry_accum + actOdom->poseChange->getMeanVal();
 
 						// Generate "odometry obs":
-						CObservationOdometryPtr  newO = CObservationOdometry::Create();
+						CObservationOdometry::Ptr  newO = CObservationOdometry::Create();
 						newO->sensorLabel = "odometry";
 						newO->timestamp   = actOdom->timestamp!=INVALID_TIMESTAMP ?  actOdom->timestamp : lastValidObsTime;
 						newO->odometry    = odometry_accum;
@@ -734,7 +734,7 @@ void xRawLogViewerFrame::OnMenuConvertObservationOnly(wxCommandEvent& event)
 				else
 				if ( newObj->GetRuntimeClass()->derivedFrom( CLASS_ID(CObservation) ) )
 				{
-					CObservationPtr o = CObservationPtr( newObj );
+					CObservation::Ptr o = std::dynamic_pointer_cast<CObservation>( newObj );
 					time_ordered_list_observation.insert( TTimeObservationPair( o->timestamp, o ));
 				}
 
@@ -806,7 +806,7 @@ void xRawLogViewerFrame::OnMenuResortByTimestamp(wxCommandEvent& event)
 
 		case CRawlog::etObservation:
 			{
-				CObservationPtr o = rawlog.getAsObservation(i);
+				CObservation::Ptr o = rawlog.getAsObservation(i);
 
 				TTimeStamp tim = useSensorTimestamp ? o->getTimeStamp() : o->getOriginalReceivedTimeStamp();
 
@@ -878,8 +878,8 @@ void xRawLogViewerFrame::OnMenuShiftTimestampsByLabel(wxCommandEvent& event)
         {
         case CRawlog::etSensoryFrame:
             {
-                CSensoryFramePtr sf = rawlog.getAsObservations(i);
-				CObservationPtr o;
+                CSensoryFrame::Ptr sf = rawlog.getAsObservations(i);
+				CObservation::Ptr o;
 				for (size_t k=0;k<the_labels.size();k++)
 				{
 					size_t idx = 0;
@@ -894,7 +894,7 @@ void xRawLogViewerFrame::OnMenuShiftTimestampsByLabel(wxCommandEvent& event)
 
         case CRawlog::etObservation:
             {
-                CObservationPtr o = rawlog.getAsObservation(i);
+                CObservation::Ptr o = rawlog.getAsObservation(i);
 
 				for (size_t k=0;k<the_labels.size();k++)
 					if (o->sensorLabel==the_labels[k])
@@ -960,7 +960,7 @@ void xRawLogViewerFrame::OnMenuConvertSF(wxCommandEvent& event)
 	CSensoryFrame	SF_new;
 	set<string>  	SF_new_labels;
 	TTimeStamp		SF_new_first_t = INVALID_TIMESTAMP;
-	CObservationOdometryPtr  last_sf_odo, cur_sf_odo;
+	CObservationOdometry::Ptr  last_sf_odo, cur_sf_odo;
 
 	for (unsigned int countLoop=0;countLoop<nEntries;countLoop++)
 	{
@@ -984,7 +984,7 @@ void xRawLogViewerFrame::OnMenuConvertSF(wxCommandEvent& event)
 
 			case CRawlog::etObservation:
 			{
-				CObservationPtr o = rawlog.getAsObservation(countLoop);
+				CObservation::Ptr o = rawlog.getAsObservation(countLoop);
 
 				// Update stats:
 				bool label_existed = SF_new_labels.find(o->sensorLabel)!=SF_new_labels.end();
@@ -1028,7 +1028,7 @@ void xRawLogViewerFrame::OnMenuConvertSF(wxCommandEvent& event)
 
 				if (o->GetRuntimeClass() ==CLASS_ID(CObservationOdometry) )
 				{
-					cur_sf_odo = CObservationOdometryPtr(o);
+					cur_sf_odo = std::dynamic_pointer_cast<CObservationOdometry>(o);
 				}
 
 			}

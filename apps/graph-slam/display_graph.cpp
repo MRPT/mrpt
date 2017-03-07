@@ -57,7 +57,7 @@ void display_graph(const GRAPHTYPE & g)
 {
 	// Convert into a 3D representation:
 	TParametersDouble  params;
-	CSetOfObjectsPtr objGraph = mrpt::opengl::graph_tools::graph_visualize(g,params);
+	CSetOfObjects::Ptr objGraph = mrpt::opengl::graph_tools::graph_visualize(g,params);
 
 	// Show in a window:
 	mrpt::gui::CDisplayWindow3D  win("graph-slam - Graph visualization",700,600);
@@ -69,7 +69,7 @@ void display_graph(const GRAPHTYPE & g)
 	//  recomputing it again here:
 	win.setCameraElevationDeg(75);
 	{
-		opengl::CGridPlaneXYPtr obj_grid = objGraph->CSetOfObjects::getByClass<CGridPlaneXY>();
+		opengl::CGridPlaneXY::Ptr obj_grid = objGraph->CSetOfObjects::getByClass<CGridPlaneXY>();
 		if (obj_grid)
 		{
 			float x_min,x_max, y_min,y_max;
@@ -80,7 +80,7 @@ void display_graph(const GRAPHTYPE & g)
 		}
 	}
 
-	mrpt::opengl::COpenGLScenePtr &scene = win.get3DSceneAndLock();
+	mrpt::opengl::COpenGLScene::Ptr &scene = win.get3DSceneAndLock();
 	scene->insert(objGraph);
 
 	win.unlockAccess3DScene();
@@ -90,7 +90,7 @@ void display_graph(const GRAPHTYPE & g)
 	struct Win3D_observer : public mrpt::utils::CObserver
 	{
 		const GRAPHTYPE   &m_graph;
-		CSetOfObjectsPtr   m_new_3dobj;
+		CSetOfObjects::Ptr   m_new_3dobj;
 		TParametersDouble  params;  // for "graph_visualize()"
 
 		bool  request_to_refresh_3D_view;
@@ -258,8 +258,8 @@ void display_graph(const GRAPHTYPE & g)
 	win_feedback.observeBegin(win);
 	// and openglviewport events:
 	{
-		COpenGLScenePtr &theScene = win.get3DSceneAndLock();
-		opengl::COpenGLViewportPtr the_main_view = theScene->getViewport("main");
+		COpenGLScene::Ptr &theScene = win.get3DSceneAndLock();
+		opengl::COpenGLViewport::Ptr the_main_view = theScene->getViewport("main");
 		win_feedback.observeBegin( *the_main_view );
 		win.unlockAccess3DScene();
 	}

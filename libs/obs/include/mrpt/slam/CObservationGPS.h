@@ -11,5 +11,5 @@
 MRPT_WARNING("*Deprecated header* Please replace with #include <mrpt/obs/CObservationGPS.h>. This backward compatible header will be removed in MRPT 2.0.0")
 namespace mrpt { namespace slam {
 	using mrpt::obs::CObservationGPS;    //!< Backward compatibility
-	using mrpt::obs::CObservationGPSPtr; //!< Backward compatibility
+	using mrpt::obs::CObservationGPS::Ptr; //!< Backward compatibility
 } }

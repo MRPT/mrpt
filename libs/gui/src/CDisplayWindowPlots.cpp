@@ -494,12 +494,12 @@ void CWindowDialogPlots::image(
 
 #endif
 
-CDisplayWindowPlotsPtr CDisplayWindowPlots::Create(
+CDisplayWindowPlots::Ptr CDisplayWindowPlots::Create(
 	const std::string	&windowCaption,
 	unsigned int		initialWindowWidth,
 	unsigned int		initialWindowHeight )
 {
-	return CDisplayWindowPlotsPtr(new CDisplayWindowPlots(windowCaption,initialWindowWidth,initialWindowHeight));
+	return CDisplayWindowPlots::Ptr(new CDisplayWindowPlots(windowCaption,initialWindowWidth,initialWindowHeight));
 }
 /*---------------------------------------------------------------
 					Constructor

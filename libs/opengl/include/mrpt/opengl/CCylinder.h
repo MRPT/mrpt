@@ -48,7 +48,7 @@ namespace opengl	{
 		bool mHasTopBase,mHasBottomBase;
 	public:
 		/** Constructor with two radii. Allows the construction of any cylinder. */
-		static CCylinderPtr Create(const float baseRadius,const float topRadius,const float height=1,const int slices=10,const int stacks=10);
+		static CCylinder::Ptr Create(const float baseRadius,const float topRadius,const float height=1,const int slices=10,const int stacks=10);
 		/** Render
 		  * \sa mrpt::opengl::CRenderizable
 		  */
@@ -151,7 +151,6 @@ namespace opengl	{
 
 		/** Evaluates the bounding box of this object (including possible children) in the coordinate frame of the object parent. */
 		void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const MRPT_OVERRIDE;
-	private:
 		/**
 		  * Basic empty constructor. Set all parameters to default.
 		  */
@@ -164,6 +163,7 @@ namespace opengl	{
 		  * Destructor.
 		  */
 		virtual ~CCylinder() {};
+	private:
 		/**
 		  * Gets the radius of the circunference located at certain height, returning false if the cylinder doesn't get that high.
 		  */

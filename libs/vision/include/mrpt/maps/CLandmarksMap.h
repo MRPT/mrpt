@@ -527,7 +527,7 @@ namespace maps
 		/** Returns a 3D object representing the map.
 		  * \sa COLOR_LANDMARKS_IN_3DSCENES
 		  */
-		void getAs3DObject(mrpt::opengl::CSetOfObjectsPtr &outObj) const MRPT_OVERRIDE;
+		void getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr &outObj) const MRPT_OVERRIDE;
 
 		// See base docs
 		virtual void  auxParticleFilterCleanUp() MRPT_OVERRIDE;

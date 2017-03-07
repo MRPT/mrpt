@@ -48,12 +48,12 @@ DECLARE_OP_FUNCTION(op_export_enose_txt)
 		}
 
 		// Return false on any error.
-		bool processOneObservation(CObservationPtr  &o)
+		bool processOneObservation(CObservation::Ptr  &o)
 		{
 			if (!IS_CLASS(o, CObservationGasSensors ) )
 				return true;
 
-			const CObservationGasSensors* obs = CObservationGasSensorsPtr(o).get();
+			const CObservationGasSensors* obs = dynamic_cast<CObservationGasSensors *>(o.get());
 
 			map<string, FILE*>::const_iterator  it = lstFiles.find( obs->sensorLabel );
 

@@ -135,7 +135,7 @@ void CFeatureExtraction::extractFeaturesKLT(
 
 			if( options.patchSize==0 || ( (xBorderSup < (int)imgW) && (xBorderInf > 0) && (yBorderSup < (int)imgH) && (yBorderInf > 0) ) )
 			{
-				CFeaturePtr ft = CFeature::Create();
+				CFeature::Ptr ft = CFeature::Create();
 
 				ft->type		= featKLT;
 				ft->x			= points[i].x;				// X position

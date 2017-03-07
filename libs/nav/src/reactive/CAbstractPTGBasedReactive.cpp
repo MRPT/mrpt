@@ -255,7 +255,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				mrpt::utils::CMemoryStream buf;
 				buf << *this->getPTG(i);
 				buf.Seek(0);
-				newLogRec.infoPerPTG[i].ptg = mrpt::nav::CParameterizedTrajectoryGeneratorPtr ( buf.ReadObject() );
+				newLogRec.infoPerPTG[i].ptg = std::dynamic_pointer_cast<mrpt::nav::CParameterizedTrajectoryGenerator> ( buf.ReadObject() );
 			}
 		}
 	}
@@ -484,7 +484,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		// ---------------------------------------------------------------------
 		//				SEND MOVEMENT COMMAND TO THE ROBOT
 		// ---------------------------------------------------------------------
-		mrpt::kinematics::CVehicleVelCmdPtr new_vel_cmd;
+		mrpt::kinematics::CVehicleVelCmd::Ptr new_vel_cmd;
 		if (best_is_NOP_cmdvel)
 		{
 			// Notify the robot that we want it to keep executing the last cmdvel:
@@ -643,7 +643,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 }
 
 
-void CAbstractPTGBasedReactive::STEP8_GenerateLogRecord(CLogFileRecord &newLogRec,const TPose2D& relTarget,int nSelectedPTG, const mrpt::kinematics::CVehicleVelCmdPtr &new_vel_cmd, const int nPTGs, const bool best_is_NOP_cmdvel, const mrpt::poses::CPose2D &rel_cur_pose_wrt_last_vel_cmd_NOP, const mrpt::poses::CPose2D &rel_pose_PTG_origin_wrt_sense_NOP, const double executionTimeValue, const double tim_changeSpeed, const mrpt::system::TTimeStamp &tim_start_iteration)
+void CAbstractPTGBasedReactive::STEP8_GenerateLogRecord(CLogFileRecord &newLogRec,const TPose2D& relTarget,int nSelectedPTG, const mrpt::kinematics::CVehicleVelCmd::Ptr &new_vel_cmd, const int nPTGs, const bool best_is_NOP_cmdvel, const mrpt::poses::CPose2D &rel_cur_pose_wrt_last_vel_cmd_NOP, const mrpt::poses::CPose2D &rel_pose_PTG_origin_wrt_sense_NOP, const double executionTimeValue, const double tim_changeSpeed, const mrpt::system::TTimeStamp &tim_start_iteration)
 {
 	// ---------------------------------------
 	// STEP8: Generate log record
@@ -893,7 +893,7 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 	}
 	else if (m_last_vel_cmd)
 	{
-		mrpt::kinematics::CVehicleVelCmdPtr desired_cmd;
+		mrpt::kinematics::CVehicleVelCmd::Ptr desired_cmd;
 		desired_cmd = cm.PTG->directionToMotionCommand(move_k);
 		const mrpt::kinematics::CVehicleVelCmd *ptr1 = m_last_vel_cmd.get();
 		const mrpt::kinematics::CVehicleVelCmd *ptr2 = desired_cmd.get();
@@ -963,7 +963,7 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 	MRPT_END;
 }
 
-double CAbstractPTGBasedReactive::generate_vel_cmd( const TCandidateMovementPTG &in_movement, mrpt::kinematics::CVehicleVelCmdPtr &new_vel_cmd )
+double CAbstractPTGBasedReactive::generate_vel_cmd( const TCandidateMovementPTG &in_movement, mrpt::kinematics::CVehicleVelCmd::Ptr &new_vel_cmd )
 {
 	mrpt::utils::CTimeLoggerEntry tle(m_timelogger, "generate_vel_cmd");
 	double cmdvel_speed_scale = 1.0;
@@ -1096,7 +1096,7 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
 
 	const size_t idx_in_log_infoPerPTGs = this_is_PTG_continuation ? getPTG_count() : indexPTG;
 
-	CHolonomicLogFileRecordPtr HLFR;
+	CHolonomicLogFileRecord::Ptr HLFR;
 	cm.PTG = ptg;
 
 	// If the user doesn't want to use this PTG, just mark it as invalid:
@@ -1365,7 +1365,7 @@ void CAbstractPTGBasedReactive::loadConfigFile(const mrpt::utils::CConfigFileBas
 	if (params_abstract_ptg_navigator.enable_obstacle_filtering)
 	{
 		mrpt::maps::CPointCloudFilterByDistance *filter = new mrpt::maps::CPointCloudFilterByDistance;
-		m_WS_filter = mrpt::maps::CPointCloudFilterBasePtr(filter);
+		m_WS_filter = mrpt::maps::CPointCloudFilterBase::Ptr(filter);
 		filter->options.loadFromConfigFile(c,"CPointCloudFilterByDistance");
 	}
 	else
@@ -1374,7 +1374,7 @@ void CAbstractPTGBasedReactive::loadConfigFile(const mrpt::utils::CConfigFileBas
 	}
 
 	// Movement chooser:
-	m_multiobjopt = CMultiObjectiveMotionOptimizerBasePtr(CMultiObjectiveMotionOptimizerBase::Create(params_abstract_ptg_navigator.motion_decider_method));
+	m_multiobjopt = CMultiObjectiveMotionOptimizerBase::Ptr(CMultiObjectiveMotionOptimizerBase::Create(params_abstract_ptg_navigator.motion_decider_method));
 	if (!m_multiobjopt)
 		THROW_EXCEPTION_FMT("Non-registered CMultiObjectiveMotionOptimizerBase className=`%s`", params_abstract_ptg_navigator.motion_decider_method.c_str());
 

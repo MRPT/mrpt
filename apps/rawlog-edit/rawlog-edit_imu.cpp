@@ -48,12 +48,12 @@ DECLARE_OP_FUNCTION(op_export_imu_txt)
 		}
 
 		// return false on any error.
-		bool processOneObservation(CObservationPtr  &o)
+		bool processOneObservation(CObservation::Ptr  &o)
 		{
 			if (!IS_CLASS(o, CObservationIMU ) )
 				return true;
 
-			const CObservationIMU* obs = CObservationIMUPtr(o).get();
+			const CObservationIMU* obs = dynamic_cast<CObservationIMU*>(o.get());
 
 			map<string, FILE*>::const_iterator  it = lstFiles.find( obs->sensorLabel );
 

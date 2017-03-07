@@ -48,14 +48,14 @@ DECLARE_OP_FUNCTION(op_rename_externals)
 
 		}
 
-		bool processOneObservation(CObservationPtr  &obs)
+		bool processOneObservation(CObservation::Ptr  &obs)
 		{
 			map<string,string> files2rename;
 
 			const string label_time = format("%s_%f", obs->sensorLabel.c_str(), timestampTotime_t(obs->timestamp) );
 			if (IS_CLASS(obs, CObservationStereoImages ) )
 			{
-				CObservationStereoImagesPtr obsSt = CObservationStereoImagesPtr(obs);
+				CObservationStereoImages::Ptr obsSt = std::dynamic_pointer_cast<CObservationStereoImages>(obs);
 				// save image to file & convert into external storage:
 				if (obsSt->imageLeft.isExternallyStored())
 				{
@@ -87,7 +87,7 @@ DECLARE_OP_FUNCTION(op_rename_externals)
 			}
 			else if (IS_CLASS(obs, CObservationImage ) )
 			{
-				CObservationImagePtr obsIm = CObservationImagePtr(obs);
+				CObservationImage::Ptr obsIm = std::dynamic_pointer_cast<CObservationImage>(obs);
 
 				if (obsIm->image.isExternallyStored())
 				{
@@ -105,7 +105,7 @@ DECLARE_OP_FUNCTION(op_rename_externals)
 			}
 			else if (IS_CLASS(obs, CObservation3DRangeScan ) )
 			{
-				CObservation3DRangeScanPtr obs3D = CObservation3DRangeScanPtr(obs);
+				CObservation3DRangeScan::Ptr obs3D = std::dynamic_pointer_cast<CObservation3DRangeScan>(obs);
 
 				// save images to file & convert into external storage:
 				// Intensity channel:
@@ -161,9 +161,9 @@ DECLARE_OP_FUNCTION(op_rename_externals)
 
 		// This method can be reimplemented to save the modified object to an output stream.
 		virtual void OnPostProcess(
-			mrpt::obs::CActionCollectionPtr &actions,
-			mrpt::obs::CSensoryFramePtr     &SF,
-			mrpt::obs::CObservationPtr      &obs)
+			mrpt::obs::CActionCollection::Ptr &actions,
+			mrpt::obs::CSensoryFrame::Ptr     &SF,
+			mrpt::obs::CObservation::Ptr      &obs)
 		{
 			ASSERT_((actions && SF) || obs)
 			if (actions)

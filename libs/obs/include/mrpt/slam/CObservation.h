@@ -11,5 +11,5 @@
 MRPT_WARNING("*Deprecated header* Please replace with #include <mrpt/obs/CObservation.h>. This backward compatible header will be removed in MRPT 2.0.0")
 namespace mrpt { namespace slam {
 	using mrpt::obs::CObservation;    //!< Backward compatibility
-	using mrpt::obs::CObservationPtr; //!< Backward compatibility
+	using mrpt::obs::CObservation::Ptr; //!< Backward compatibility
 } }

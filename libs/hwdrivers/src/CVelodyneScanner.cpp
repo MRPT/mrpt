@@ -190,8 +190,8 @@ void CVelodyneScanner::loadConfig_sensorSpecific(
 }
 
 bool CVelodyneScanner::getNextObservation(
-	mrpt::obs::CObservationVelodyneScanPtr & outScan,
-	mrpt::obs::CObservationGPSPtr          & outGPS
+	mrpt::obs::CObservationVelodyneScan::Ptr & outScan,
+	mrpt::obs::CObservationGPS::Ptr          & outGPS
 	)
 {
 	try
@@ -199,8 +199,8 @@ bool CVelodyneScanner::getNextObservation(
 		ASSERTMSG_(m_initialized, "initialize() has not been called yet!");
 
 		// Init with empty smart pointers:
-		outScan = mrpt::obs::CObservationVelodyneScanPtr();
-		outGPS  = mrpt::obs::CObservationGPSPtr();
+		outScan = mrpt::obs::CObservationVelodyneScan::Ptr();
+		outGPS  = mrpt::obs::CObservationGPS::Ptr();
 
 		// Try to get data & pos packets:
 		mrpt::obs::CObservationVelodyneScan::TVelodyneRawPacket  rx_pkt;
@@ -215,7 +215,7 @@ bool CVelodyneScanner::getNextObservation(
 
 		if (pos_pkt_timestamp!=INVALID_TIMESTAMP)
 		{
-			mrpt::obs::CObservationGPSPtr gps_obs = mrpt::obs::CObservationGPS::Create();
+			mrpt::obs::CObservationGPS::Ptr gps_obs = mrpt::obs::CObservationGPS::Create();
 			gps_obs->sensorLabel = this->m_sensorLabel + std::string("_GPS");
 			gps_obs->sensorPose = m_sensorPose;
 
@@ -327,8 +327,8 @@ bool CVelodyneScanner::getNextObservation(
 
 void CVelodyneScanner::doProcess()
 {
-	CObservationVelodyneScanPtr obs;
-	CObservationGPSPtr          obs_gps;
+	CObservationVelodyneScan::Ptr obs;
+	CObservationGPS::Ptr          obs_gps;
 
 	if (getNextObservation(obs,obs_gps))
 	{
