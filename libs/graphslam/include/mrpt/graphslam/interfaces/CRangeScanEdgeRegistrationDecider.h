@@ -35,6 +35,9 @@ class CRangeScanEdgeRegistrationDecider :
 			mrpt::utils::TNodeID,
 			mrpt::obs::CObservation2DRangeScanPtr> nodes_to_scans2D_t;
 
+		CRangeScanEdgeRegistrationDecider();
+		~CRangeScanEdgeRegistrationDecider();
+
 	protected:
 		/**\name Relevant-observations manipulation 
 		 * Methods for manipulating the underlying storage of the
@@ -56,6 +59,10 @@ class CRangeScanEdgeRegistrationDecider :
 		 * position
 		 */
 		nodes_to_scans2D_t  m_nodes_to_laser_scans2D;
+ 		/**\brief Keep track of the total number of registered nodes since the last
+ 		 * time class method was called
+ 		 */
+		size_t m_last_total_num_nodes;
 
 	private:
 

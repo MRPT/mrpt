@@ -19,29 +19,20 @@ template<class GRAPH_T>
 CICPCriteriaERD<GRAPH_T>::CICPCriteriaERD():
 	params(*this), // pass reference to self when initializing the parameters
 	m_search_disk_color(142, 142, 56),
-	m_laser_scans_color(0, 20, 255)
+	m_laser_scans_color(0, 20, 255),
+	m_is_using_3DScan(false)
 {
 	MRPT_START;
-
-	this->initCICPCriteriaERD();
-
-	MRPT_END;
-}
-template<class GRAPH_T>
-void CICPCriteriaERD<GRAPH_T>::initCICPCriteriaERD() {
-	MRPT_START;
 	using namespace mrpt::utils;
+
 	this->initializeLoggers("CICPCriteriaERD");
 
-	m_is_using_3DScan = false;
-
 	// start ICP constraint registration only when
-	// nodeCount > m_last_total_num_of_nodes
-	m_last_total_num_of_nodes = 2;
-
 	m_edge_types_to_nums["ICP2D"] = 0;
 	m_edge_types_to_nums["ICP3D"] = 0;
 	m_edge_types_to_nums["LC"] = 0;
+
+	this->m_last_total_num_nodes = 2;
 
 	this->logFmt(LVL_DEBUG, "Initialized class object");
 
@@ -65,9 +56,9 @@ template<class GRAPH_T> bool CICPCriteriaERD<GRAPH_T>::updateState(
 	// check possible prior node registration
 	bool registered_new_node = false;
 
-	if (m_last_total_num_of_nodes < this->m_graph->nodeCount()) {
+	if (this->m_last_total_num_nodes < this->m_graph->nodeCount()) {
 		registered_new_node = true;
-		m_last_total_num_of_nodes = this->m_graph->nodeCount();
+		this->m_last_total_num_nodes = this->m_graph->nodeCount();
 		this->logFmt(LVL_DEBUG, "New node has been registered!");
 	}
 
@@ -75,8 +66,6 @@ template<class GRAPH_T> bool CICPCriteriaERD<GRAPH_T>::updateState(
 		if (IS_CLASS(observation, CObservation2DRangeScan)) {
 			m_last_laser_scan2D =
 				static_cast<mrpt::obs::CObservation2DRangeScanPtr>(observation);
-
-
 			m_is_using_3DScan = false;
 		}
 		if (IS_CLASS(observation, CObservation3DRangeScan)) {
@@ -90,7 +79,6 @@ template<class GRAPH_T> bool CICPCriteriaERD<GRAPH_T>::updateState(
 			this->convert3DTo2DRangeScan(
 					/*from = */ m_last_laser_scan3D,
 					/*to   = */ &m_fake_laser_scan2D);
-
 
 			m_is_using_3DScan = true;
 		}

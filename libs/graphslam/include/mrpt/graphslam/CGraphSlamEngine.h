@@ -316,7 +316,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		/**\brief	Compute the map of the environment based on the
 		 * recorded measurements.
 		 *
-		 * \note Currently only mrpt::obs::2DRangeScans are supported
+		 * \warning Currently only mrpt::obs::2DRangeScans are supported
 		 * \sa getMap
 		 */
 		void computeMap() const;
@@ -546,7 +546,13 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		/**\brief Update the viewport responsible for displaying the graph-building
 		 * procedure in the estimated position of the robot
 		 */
-		inline void updateCurrPosViewport();
+		virtual void updateCurrPosViewport();
+		/**\brief return the 3D Pose of a LaserScan that is to be visualized.
+		 *
+		 * Used during the computeMap call for the occupancy gridmap
+		 */
+		virtual mrpt::poses::CPose3D getLSPoseForGridMapVisualization(
+				const mrpt::utils::TNodeID& nodeID) const;
 		void initMapVisualization();
 		/**\brief Update the map visualization based on the current graphSLAM
 		 * state.
@@ -560,7 +566,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 				const std::map<
 					mrpt::utils::TNodeID,
 					mrpt::obs::CObservation2DRangeScanPtr>& nodes_to_laser_scans2D,
-				bool full_update=false );
+				bool full_update=false);
 		/**\brief Display the next ground truth position in the visualization window.
 		 *
 		 * \sa updateOdometryVisualization
@@ -696,6 +702,11 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		virtual void monitorNodeRegistration(
 				bool registered=false,
 				std::string class_name="Class");
+		/**\brief Wrapper around the GRAPH_T::dijkstra_nodes_estimate
+		 *
+		 * Update the global position of the nodes
+		 */
+		void execDijkstraNodesEstimation();
 
 		// VARIABLES
 		//////////////////////////////////////////////////////////////

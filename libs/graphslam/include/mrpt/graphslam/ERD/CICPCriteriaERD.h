@@ -179,9 +179,6 @@ class CICPCriteriaERD :
 	protected:
 		// protected functions
 		//////////////////////////////////////////////////////////////
-		/** \brief Initialization function to be called from the various constructors
-		 */
-		void initCICPCriteriaERD();
 		void checkRegistrationCondition2D(
 				const std::set<mrpt::utils::TNodeID>& nodes_set);
 		void checkRegistrationCondition3D(
@@ -209,7 +206,6 @@ class CICPCriteriaERD :
 		// protected variables
 		//////////////////////////////////////////////////////////////
 
-		bool m_is_using_3DScan;
 
 		mrpt::utils::TColor m_search_disk_color; //!< see Constructor for initialization
 		mrpt::utils::TColor m_laser_scans_color; //!< see Constructor for initialization
@@ -222,8 +218,8 @@ class CICPCriteriaERD :
 		std::map<mrpt::utils::TNodeID,
 			mrpt::obs::CObservation3DRangeScanPtr> m_nodes_to_laser_scans3D;
 		std::map<std::string, int> m_edge_types_to_nums;
+		bool m_is_using_3DScan;
 
-		size_t m_last_total_num_of_nodes;
 		mrpt::obs::CObservation2DRangeScanPtr m_last_laser_scan2D;
 		mrpt::obs::CObservation3DRangeScanPtr m_last_laser_scan3D;
 		// fake 2D laser scan generated from corresponding 3DRangeScan for
