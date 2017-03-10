@@ -27,7 +27,6 @@ template<class GRAPH_T>
 CLoopCloserERD<GRAPH_T>::CLoopCloserERD():
 	m_visualize_curr_node_covariance(false),
 	m_curr_node_covariance_color(160, 160, 160, /*alpha = */255),
-	m_last_total_num_nodes(0),
 	m_partitions_full_update(false),
 	m_is_first_time_node_reg(true),
 	m_dijkstra_node_count_thresh(3)
@@ -87,7 +86,7 @@ bool CLoopCloserERD<GRAPH_T>::updateState(
 	
 	// check possible prior node registration
 	size_t num_registered = absDiff(
-			m_last_total_num_nodes, this->m_graph->nodeCount());
+			this->m_last_total_num_nodes, this->m_graph->nodeCount());
 	bool registered_new_node = num_registered > 0;
 
 	if (registered_new_node) {
@@ -142,7 +141,7 @@ bool CLoopCloserERD<GRAPH_T>::updateState(
 			this->execDijkstraProjection();
 		}
 
-		m_last_total_num_nodes = this->m_graph->nodeCount();
+		this->m_last_total_num_nodes = this->m_graph->nodeCount();
 	}
 
 	this->m_time_logger.leave("updateState");
@@ -151,8 +150,26 @@ bool CLoopCloserERD<GRAPH_T>::updateState(
 }
 
 template<class GRAPH_T>
+void CLoopCloserERD<GRAPH_T>::fetchNodeIDsForScanMatching(
+		const mrpt::utils::TNodeID& curr_nodeID,
+		std::set<mrpt::utils::TNodeID>* nodes_set) { 
+	ASSERT_(nodes_set);
+
+	// deal with the case that less than `prev_nodes_for_ICP` nodes have been
+	// registered
+	size_t fetched_nodeIDs = 0;
+	for (int nodeID_i = static_cast<int>(curr_nodeID)-1;
+			((fetched_nodeIDs <= this->m_laser_params.prev_nodes_for_ICP) &&
+			 (nodeID_i >= 0)); 
+			--nodeID_i) {
+			nodes_set->insert(nodeID_i);
+			fetched_nodeIDs++;
+		}
+} // end of fetchNodeIDsForScanMatching
+
+template<class GRAPH_T>
 void CLoopCloserERD<GRAPH_T>::addScanMatchingEdges(
-		mrpt::utils::TNodeID curr_nodeID) {
+		const mrpt::utils::TNodeID& curr_nodeID) {
 	MRPT_START;
 	using namespace std;
 	using namespace mrpt;
@@ -161,24 +178,12 @@ void CLoopCloserERD<GRAPH_T>::addScanMatchingEdges(
 	using namespace mrpt::math;
 
 	// get a list of nodes to check ICP against
-	std::set<TNodeID> nodes_set;
-
-	// have too few nodes been registered yet?
-	if (curr_nodeID < m_laser_params.prev_nodes_for_ICP) {
-		for (TNodeID nodeID = 0; nodeID != curr_nodeID; ++nodeID) {
-			nodes_set.insert(nodeID);
-		}
-	}
-	else {
-		for (TNodeID nodeID = curr_nodeID-1;
-				nodeID != curr_nodeID-1 - m_laser_params.prev_nodes_for_ICP;
-				--nodeID) {
-			nodes_set.insert(nodeID);
-		}
-	}
-
 	MRPT_LOG_DEBUG_STREAM("Adding ICP Constraints for nodeID: " <<
 		curr_nodeID);
+
+	std::set<TNodeID> nodes_set;
+	this->fetchNodeIDsForScanMatching(curr_nodeID, &nodes_set);
+
 
 	// try adding ICP constraints with each node in the previous set
 	for (std::set<TNodeID>::const_iterator node_it = nodes_set.begin();
@@ -236,6 +241,7 @@ bool CLoopCloserERD<GRAPH_T>::getICPEdge(
 	using namespace mrpt::obs;
 	using namespace mrpt::utils;
 	using namespace std;
+	using namespace mrpt::graphslam::detail;
 
 	// fetch the relevant laser scans and poses of the nodeIDs
 	// If given in the additional params struct, use those values instead of
@@ -251,10 +257,10 @@ bool CLoopCloserERD<GRAPH_T>::getICPEdge(
 	}
 
 	// from-node parameters
-	const TNodeProps* from_params = ad_params ? &ad_params->from_params : NULL;
+	const node_props_t* from_params = ad_params ? &ad_params->from_params : NULL;
 	bool from_success = this->getPropsOfNodeID(from, &from_pose, from_scan, from_params); // TODO
 	// to-node parameters
-	const TNodeProps* to_params = ad_params ? &ad_params->to_params : NULL;
+	const node_props_t* to_params = ad_params ? &ad_params->to_params : NULL;
 	bool to_success = this->getPropsOfNodeID(to, &to_pose, to_scan, to_params);
 
 
@@ -298,8 +304,8 @@ bool CLoopCloserERD<GRAPH_T>::getICPEdge(
 template<class GRAPH_T>
 bool CLoopCloserERD<GRAPH_T>::fillNodePropsFromGroupParams(
 		const mrpt::utils::TNodeID& nodeID,
-		const std::map<mrpt::utils::TNodeID, TNodeProps>& group_params,
-		TNodeProps* node_props) {
+		const std::map<mrpt::utils::TNodeID, node_props_t>& group_params,
+		node_props_t* node_props) {
 	ASSERT_(node_props);
 
 	//MRPT_LOG_DEBUG_STREAM << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>";
@@ -307,7 +313,7 @@ bool CLoopCloserERD<GRAPH_T>::fillNodePropsFromGroupParams(
 		//<< nodeID << "\"";
 
 	// Make sure that the given nodeID exists in the group_params
-	typename std::map<mrpt::utils::TNodeID, TNodeProps>::const_iterator
+	typename std::map<mrpt::utils::TNodeID, node_props_t>::const_iterator
 		search = group_params.find(nodeID);
 	bool res = false;
 	if (search == group_params.end()) {
@@ -329,7 +335,7 @@ bool CLoopCloserERD<GRAPH_T>::getPropsOfNodeID(
 		const mrpt::utils::TNodeID& nodeID,
 		global_pose_t* pose,
 		mrpt::obs::CObservation2DRangeScanPtr& scan,
-		const TNodeProps* node_props/*=NULL*/) const {
+		const node_props_t* node_props/*=NULL*/) const {
 
 	// make sure output instances are valid
 	ASSERT_(pose);
@@ -834,9 +840,7 @@ bool CLoopCloserERD<GRAPH_T>::computeDominantEigenVector(
 	}
 	else { // call to eigenVectors method
 		CMatrixDouble eigvecs, eigvals;
-this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 12);
 		consist_matrix.eigenVectors(eigvecs, eigvals);
-this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 13);
 
 		// assert that the eivenvectors, eigenvalues, consistency matrix are of the
 		// same size
@@ -851,13 +855,9 @@ this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 13);
 					static_cast<unsigned long>(eigvals.size()),
 					static_cast<unsigned long>(consist_matrix.size())));
 
-this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 14);
 		eigvecs.extractCol(eigvecs.getColCount()-1, *eigvec);
-this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 15);
 		lambda1 = eigvals(eigvals.getRowCount()-1, eigvals.getColCount()-1);
-this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 16);
 		lambda2 = eigvals(eigvals.getRowCount()-2, eigvals.getColCount()-2);
-this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 17);
 	}
 
 	// I don't care about the sign of the eigenvector element

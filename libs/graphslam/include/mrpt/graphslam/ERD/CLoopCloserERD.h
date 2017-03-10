@@ -41,6 +41,7 @@
 #include <mrpt/graphslam/interfaces/CRangeScanEdgeRegistrationDecider.h>
 #include <mrpt/graphslam/misc/TSlidingWindow.h>
 #include <mrpt/graphslam/misc/TUncertaintyPath.h>
+#include <mrpt/graphslam/misc/TNodeProps.h>
 #include <mrpt/graphs/THypothesis.h>
 #include <mrpt/graphs/CHypothesisNotFoundException.h>
 
@@ -257,6 +258,7 @@ class CLoopCloserERD:
 		typedef std::map< std::pair<hypot_t*, hypot_t*>, double > hypotsp_to_consist_t;
 		typedef mrpt::graphslam::TUncertaintyPath<GRAPH_T> path_t;
 		typedef std::vector<path_t> paths_t;
+		typedef mrpt::graphslam::detail::TNodeProps<GRAPH_T> node_props_t;
 		/**\}*/
 
 		// Public methods
@@ -296,41 +298,7 @@ class CLoopCloserERD:
 
 		/**\name Helper structs */
 		/**\{ */
-		// TODO - Check all these helper structs, especially for the multi-robot
-		// case
-		struct TNodeProps {
-			typename GRAPH_T::global_pose_t pose;
-			mrpt::obs::CObservation2DRangeScanPtr scan;
 
-			TNodeProps operator=(const TNodeProps& other) {
-				this->pose = other.pose;
-				this->scan = other.scan;
-				return *this;
-			}
-
-			void getAsString(std::string* str) const {
-				ASSERT_(str);
-				str->clear();
-				*str += mrpt::format("Pose: %s|\t", this->pose.asString().c_str());
-				if (this->scan.present()) {
-					*str += mrpt::format("Scan #%lu", this->scan->getScanSize());
-				}
-				else {
-					*str += "Scan: NONE";
-				}
-				*str += "\n";
-			}
-			std::string getAsString() const {
-				std::string str;
-				this->getAsString(&str);
-				return str;
-			}
-
-			friend std::ostream& operator<<(std::ostream& o, const TNodeProps& obj) {
-				o << obj.getAsString() << endl;
-				return o;
-			}
-		};
 		/**
 		 * \brief Struct for passing additional parameters to the getICPEdge call
 		 *
@@ -340,8 +308,8 @@ class CLoopCloserERD:
 		struct TGetICPEdgeAdParams {
 			typedef TGetICPEdgeAdParams self_t;
 
-			TNodeProps from_params; /**< Ad. params for the from_node */
-			TNodeProps to_params; /**< Ad. params for the to_node */
+			node_props_t from_params; /**< Ad. params for the from_node */
+			node_props_t to_params; /**< Ad. params for the to_node */
 			pose_t init_estim; /**< Initial ICP estimation */
 
 			void getAsString(std::string* str) const {
@@ -368,7 +336,7 @@ class CLoopCloserERD:
 		 * generateHypotsPool call
 		 */
 		struct TGenerateHypotsPoolAdParams {
-			typedef std::map<mrpt::utils::TNodeID, TNodeProps> group_t;
+			typedef std::map<mrpt::utils::TNodeID, node_props_t> group_t;
 
 			/**\brief  Ad. params for groupA */
 			group_t groupA_params;
@@ -446,8 +414,8 @@ class CLoopCloserERD:
 		 */
 		bool fillNodePropsFromGroupParams(
 				const mrpt::utils::TNodeID& nodeID,
-				const std::map<mrpt::utils::TNodeID, TNodeProps>& group_params,
-				TNodeProps* node_props);
+				const std::map<mrpt::utils::TNodeID, node_props_t>& group_params,
+				node_props_t* node_props);
 		/**\brief Fill the pose and LaserScan for the given nodeID.
 		 * Pose and LaserScan are either fetched from the TNodeProps struct if it
 		 * contains valid data, otherwise from the corresponding class vars
@@ -459,7 +427,7 @@ class CLoopCloserERD:
 				const mrpt::utils::TNodeID& nodeID,
 				global_pose_t* pose,
 				mrpt::obs::CObservation2DRangeScanPtr& scan,
-				const TNodeProps* node_props=NULL) const;
+				const node_props_t* node_props=NULL) const;
 
 		/**\brief Struct for storing together the parameters needed for ICP
 		 * matching, laser scans visualization etc.
@@ -574,8 +542,10 @@ class CLoopCloserERD:
 		 * keep track of the recorded mahalanobis distance values.
 		 * \sa getICPEdge
 		 */
-		bool mahalanobisDistanceOdometryToICPEdge(const mrpt::utils::TNodeID& from,
-				const mrpt::utils::TNodeID& to, const constraint_t& rel_edge);
+		bool mahalanobisDistanceOdometryToICPEdge(
+				const mrpt::utils::TNodeID& from,
+				const mrpt::utils::TNodeID& to,
+				const constraint_t& rel_edge);
 		/**\brief Wrapper around the registerNewEdge method which accepts a
 		 * THypothesis object instead.
 		 */
@@ -584,13 +554,23 @@ class CLoopCloserERD:
 				const mrpt::utils::TNodeID& from,
 				const mrpt::utils::TNodeID& to,
 				const constraint_t& rel_edge );
+		/**\brief Fetch a list of nodes with regards prior to the given nodeID for
+		 * which to try and add scan matching edges
+		 *
+		 * \sa addScanMatchingEdges
+		 */
+		virtual void fetchNodeIDsForScanMatching(
+				const mrpt::utils::TNodeID& curr_nodeID,
+				std::set<mrpt::utils::TNodeID>* nodes_set);
 		/**\brief Addd ICP constraints from X previous nodeIDs up to the given
 		 * nodeID.
 		 *
 		 * X is set by the user in the .ini configuration file (see
 		 * TLaserParams::prev_nodes_for_ICP)
+		 *
+		 * \sa fetchNodeIDsForScanMatching
 		 */
-		void addScanMatchingEdges(mrpt::utils::TNodeID curr_nodeID);
+		virtual void addScanMatchingEdges(const mrpt::utils::TNodeID& curr_nodeID);
 		void initLaserScansVisualization();
 		void updateLaserScansVisualization();
 		/**\brief togle the LaserScans visualization on and off
@@ -860,9 +840,6 @@ class CLoopCloserERD:
 		 * Handy for displaying them in the Visualization window.
 		 */
 		std::map<std::string, int> m_edge_types_to_nums;
- 		/**\brief Keep track of the total number of registered nodes since the last
- 		 * time class method was called */
-		size_t m_last_total_num_nodes;
 		/**\brief Keep the last laser scan for visualization purposes */
 		mrpt::obs::CObservation2DRangeScanPtr m_last_laser_scan2D;
 		/**\name Partition vectors */

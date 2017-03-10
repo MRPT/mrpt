@@ -496,7 +496,6 @@ bool CGraphSlamEngine<GRAPH_T>::_execGraphSlamStep(
 		size_t& rawlog_entry) {
 	MRPT_START;
 
-this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 1);
 	using namespace std;
 	using namespace mrpt;
 	using namespace mrpt::utils;
@@ -507,7 +506,6 @@ this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 1);
 	using namespace mrpt::system;
 
 	m_time_logger.enter("proc_time");
-this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 2);
 
 	ASSERTMSG_(m_has_read_config,
 			format("\nConfig file is not read yet.\nExiting... \n"));
@@ -538,7 +536,6 @@ this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 2);
 		// return true;
 	}
 
-this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 3);
 	// NRD
 	bool registered_new_node;
 	{
@@ -561,7 +558,6 @@ this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 3);
 		}
 	}
 
-this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 4);
 	if (registered_new_node) {
 
 		// At the first node registration, must have registered exactly 2 nodes
@@ -654,15 +650,7 @@ this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 4);
 
 	if (registered_new_node) {
 
-		// update the global position of the nodes
-		{
-			mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
-			m_time_logger.enter("dijkstra_nodes_estimation");
-
-			m_graph.dijkstra_nodes_estimate();
-
-			m_time_logger.leave("dijkstra_nodes_estimation");
-		}
+		this->execDijkstraNodesEstimation();
 
 		// keep track of the laser scans so that I can later visualize the map
 		m_nodes_to_laser_scans2D[m_nodeID_max] = m_last_laser_scan2D;
@@ -756,14 +744,12 @@ this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 4);
 					/* unique_index = */ m_text_index_timestamp );
 		}
 	}
-this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 5);
 
 	// Odometry visualization
 	if (m_visualize_odometry_poses && m_odometry_poses.size()) {
 		this->updateOdometryVisualization();
 	}
 
-this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 6);
 	// ensure that the GT is visualized at the same rate as the SLAM procedure
 	// handle RGBD-TUM datasets manually. Advance the GT index accordingly
 	if (m_use_GT) {
@@ -791,7 +777,6 @@ this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 6);
 			}
 		}
 	}
-this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 7);
 
 	// 3DRangeScans viewports update
 	if (mrpt::system::strCmpI(m_GT_file_format, "rgbd_tum")) {
@@ -814,11 +799,21 @@ this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 7);
 			m_init_timestamp,
 			m_curr_timestamp);
 	m_time_logger.leave("proc_time");
-this->logFmt(mrpt::utils::LVL_INFO, "TODO - Remove me. Kalimera %d", 8);
 
 	return !m_request_to_exit;
 	MRPT_END;
 } // end of _execGraphSlamStep
+
+template<class GRAPH_T>
+void CGraphSlamEngine<GRAPH_T>::execDijkstraNodesEstimation() {
+		{
+			mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
+			m_time_logger.enter("dijkstra_nodes_estimation");
+			m_graph.dijkstra_nodes_estimate();
+			m_time_logger.leave("dijkstra_nodes_estimation");
+		}
+}
+
 
 template<class GRAPH_T>
 void CGraphSlamEngine<GRAPH_T>::monitorNodeRegistration(
@@ -898,6 +893,7 @@ template<class GRAPH_T>
 inline void CGraphSlamEngine<GRAPH_T>::computeMap() const {
 	MRPT_START;
 	using namespace std;
+	using namespace mrpt;
 	using namespace mrpt::maps;
 	using namespace mrpt::utils;
 	using namespace mrpt::poses;
@@ -917,25 +913,18 @@ inline void CGraphSlamEngine<GRAPH_T>::computeMap() const {
 				it != m_nodes_to_laser_scans2D.end(); ++it) {
 
 			const TNodeID& curr_node = it->first;
-			mrpt::obs::CObservation2DRangeScanPtr curr_laser_scan = it->second;
 
-			// TODO - Correct this. Laser scan should exist anyway
-			bool laser_scan_exists = !curr_laser_scan.null();
-			// TODO - Correct this. Pose should exist at all cost.
-			CPose3D curr_pose_3d;
-			bool pose_found = true;
-			typename GRAPH_T::global_poses_t::const_iterator
-				pose_search = m_graph.nodes.find(curr_node);
-			if (pose_search != m_graph.nodes.end()) {
-				curr_pose_3d = CPose3D(pose_search->second);
-			}
-			else {
-				pose_found = false;
-			}
+			// fetch LaserScan
+			const mrpt::obs::CObservation2DRangeScanPtr& curr_laser_scan = it->second;
+			ASSERTMSG_(curr_laser_scan.present(),
+					format("LaserScan of nodeID: %lu is not present.",
+						static_cast<unsigned long>(curr_node)));
 
-			if (laser_scan_exists && pose_found) {
-				gridmap->insertObservation(curr_laser_scan.pointer(), &curr_pose_3d);
-			}
+			// Fetch pose at which to display the LaserScan
+			CPose3D scan_pose = getLSPoseForGridMapVisualization(curr_node);
+
+			// Add all to gridmap
+			gridmap->insertObservation(curr_laser_scan.pointer(), &scan_pose);
 		}
 
 		m_map_is_cached = true;
@@ -949,7 +938,7 @@ inline void CGraphSlamEngine<GRAPH_T>::computeMap() const {
 
 
 	MRPT_END;
-}
+} // end of computeMap
 
 template<class GRAPH_T>
 void CGraphSlamEngine<GRAPH_T>::loadParams(
@@ -1724,6 +1713,12 @@ mrpt::system::TTimeStamp CGraphSlamEngine<GRAPH_T>::getTimeStamp(
 }
 
 template<class GRAPH_T>
+mrpt::poses::CPose3D CGraphSlamEngine<GRAPH_T>::getLSPoseForGridMapVisualization(
+		const mrpt::utils::TNodeID& nodeID) const {
+	return mrpt::poses::CPose3D(m_graph.nodes.at(nodeID));
+}
+
+template<class GRAPH_T>
 void CGraphSlamEngine<GRAPH_T>::initMapVisualization() {
 	using namespace mrpt::opengl;
 
@@ -1780,8 +1775,6 @@ void CGraphSlamEngine<GRAPH_T>::updateMapVisualization(
 			node_it = nodes_set.begin();
 			node_it != nodes_set.end(); ++node_it) {
 
-		pose_t scan_pose = m_graph.nodes.at(*node_it);
-
 		// name of gui object
 		stringstream scan_name("");
 		scan_name << "laser_scan_";
@@ -1807,9 +1800,6 @@ void CGraphSlamEngine<GRAPH_T>::updateMapVisualization(
 			CRenderizablePtr obj = map_obj->getByName(scan_name.str());
 			CSetOfObjectsPtr scan_obj = static_cast<CSetOfObjectsPtr>(obj);
 			if (scan_obj.null()) {
-				MRPT_LOG_DEBUG_STREAM("CSetOfObjects for nodeID " << *node_it <<
-					"doesn't exist. Creating it...");
-
 				scan_obj = CSetOfObjects::Create();
 
 				// creating and inserting the observation in the CSetOfObjects
@@ -1839,7 +1829,8 @@ void CGraphSlamEngine<GRAPH_T>::updateMapVisualization(
 			}
 
 			// finally set the pose correctly - as computed by graphSLAM
-			scan_obj->setPose(CPose3D(scan_pose));
+			const CPose3D& scan_pose = CPose3D(m_graph.nodes.at(*node_it));
+			scan_obj->setPose(scan_pose);
 
 		}
 		else {
@@ -1854,7 +1845,7 @@ void CGraphSlamEngine<GRAPH_T>::updateMapVisualization(
 	double elapsed_time = map_update_timer.Tac();
 	MRPT_LOG_DEBUG_STREAM("updateMapVisualization took: " << elapsed_time << "s");
 	MRPT_END;
-}
+} // end of updateMapVisualization
 
 template<class GRAPH_T>
 void CGraphSlamEngine<GRAPH_T>::decimateLaserScan(

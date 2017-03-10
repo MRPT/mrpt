@@ -4,6 +4,13 @@
 namespace mrpt { namespace graphslam { namespace deciders {
 
 template<class GRAPH_T>
+CRangeScanEdgeRegistrationDecider<GRAPH_T>::CRangeScanEdgeRegistrationDecider():
+m_last_total_num_nodes(0) { }
+
+template<class GRAPH_T>
+CRangeScanEdgeRegistrationDecider<GRAPH_T>::~CRangeScanEdgeRegistrationDecider() { }
+
+template<class GRAPH_T>
 void CRangeScanEdgeRegistrationDecider<GRAPH_T>::loadParams(
 		const std::string& source_fname) {
 	MRPT_START;
