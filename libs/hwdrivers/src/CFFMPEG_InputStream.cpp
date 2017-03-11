@@ -23,6 +23,7 @@
 	#include <libavformat/avformat.h>
 	#include <libavcodec/avcodec.h>
 	#include <libswscale/swscale.h>
+	#include <libavutil/imgutils.h>
 	}
 #endif
 
@@ -225,7 +226,7 @@ bool CFFMPEG_InputStream::openURL( const std::string &url, bool grab_as_grayscal
     }
 
     // Determine required buffer size and allocate buffer
-    size_t numBytes=avpicture_get_size(
+    size_t numBytes = av_image_get_buffer_size(
 		m_grab_as_grayscale ?    // BGR vs. RGB for OpenCV
 #if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(55,00,0)
 			AV_PIX_FMT_GRAY8 : AV_PIX_FMT_BGR24,
@@ -233,7 +234,7 @@ bool CFFMPEG_InputStream::openURL( const std::string &url, bool grab_as_grayscal
 			PIX_FMT_GRAY8 : PIX_FMT_BGR24,
 #endif
 		ctx->pCodecCtx->width,
-		ctx->pCodecCtx->height);
+		ctx->pCodecCtx->height, 1);
 
     ctx->buffer.resize(numBytes);
 
@@ -391,13 +392,13 @@ bool CFFMPEG_InputStream::retrieveFrame( mrpt::utils::CImage &out_img )
 					);
 
 				// Free the packet that was allocated by av_read_frame
-				av_free_packet(&packet);
+				av_packet_unref(&packet);
 				return true;
             }
         }
 
         // Free the packet that was allocated by av_read_frame
-        av_free_packet(&packet);
+        av_packet_unref(&packet);
     }
 
 	return false; // Error reading/ EOF
