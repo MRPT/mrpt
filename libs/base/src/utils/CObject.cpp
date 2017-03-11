@@ -116,7 +116,7 @@ TRuntimeClassId* CObject::_GetBaseClass()
 	return nullptr;
 }
 
-const struct TRuntimeClassId CObject::classCObject =
+const struct TRuntimeClassId CObject::runtimeClassId =
 {
 	"CObject",
 	nullptr,
