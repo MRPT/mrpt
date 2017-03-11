@@ -68,21 +68,30 @@ namespace mrpt
 		  */
 		const TRuntimeClassId BASE_IMPEXP * findRegisteredClass(const std::string &className);
 
+		template <typename T>
+		constexpr const mrpt::utils::TRuntimeClassId* CLASS_ID_impl()
+		{
+			return &T::runtimeClassId;
+		}
 
 		/** Access to runtime class ID for a defined class name.
-		  */
-		#define CLASS_ID(class_name) static_cast<const mrpt::utils::TRuntimeClassId*>(&class_name::class##class_name)
+		 */
+		#define CLASS_ID(T) mrpt::utils::CLASS_ID_impl<T>()
+		// Convert these
+		#define CLASS_ID_TEMPLATE(class_name,T) mrpt::utils::CLASS_ID_impl<T>()
+		#define CLASS_ID_NAMESPACE(class_name,namespaceName) mrpt::utils::CLASS_ID_impl<namespaceName::class_name>()
 
-		/** Access to runtime class ID for a defined class name.
-		  */
-		#define CLASS_ID_NAMESPACE(class_name,namespaceName) static_cast<const mrpt::utils::TRuntimeClassId*>(&namespaceName::class_name::class##class_name)
-
-		/** Access to runtime class ID for a defined template class name.
-		  */
-		#define CLASS_ID_TEMPLATE(class_name,T) static_cast<const mrpt::utils::TRuntimeClassId*>(& template <class T> class_name<T>::class##class_name)
+		template <typename T>
+		struct IS_CLASS_impl
+		{
+			template <typename PTR>
+			static bool check(const PTR p){
+				return p->GetRuntimeClass()==CLASS_ID_impl<T>();
+			}
+		};
 
 		/** Evaluates to true if the given pointer to an object (derived from mrpt::utils::CSerializable) is of the given class. */
-		#define IS_CLASS( ptrObj, class_name )  ((ptrObj)->GetRuntimeClass()==CLASS_ID(class_name))
+		#define IS_CLASS(ptrObj, class_name) mrpt::utils::IS_CLASS_impl<class_name>::check(ptrObj)
 
 		/** Evaluates to true if the given pointer to an object (derived from mrpt::utils::CSerializable) is an instance of the given class or any of its derived classes. */
 		#define IS_DERIVED( ptrObj, class_name )  ((ptrObj)->GetRuntimeClass()->derivedFrom(CLASS_ID(class_name)))
@@ -109,7 +118,7 @@ namespace mrpt
 		public:
 			using Ptr = std::shared_ptr<CObject>;
 			using ConstPtr = std::shared_ptr<const CObject>;
-			static const mrpt::utils::TRuntimeClassId classCObject;
+			static const mrpt::utils::TRuntimeClassId runtimeClassId;
 
 			/** Returns information about the class of an object in runtime. */
 			virtual const mrpt::utils::TRuntimeClassId* GetRuntimeClass() const
@@ -145,7 +154,7 @@ namespace mrpt
 			/*! A typedef for the associated smart pointer */ \
 			using Ptr = std::shared_ptr<class_name>; \
 			using ConstPtr = std::shared_ptr<const class_name>; \
-			_STATIC_LINKAGE_ mrpt::utils::TRuntimeClassId  class##class_name; \
+			_STATIC_LINKAGE_ mrpt::utils::TRuntimeClassId  runtimeClassId; \
 			_STATIC_LINKAGE_ const mrpt::utils::TRuntimeClassId *classinfo; \
 			_VIRTUAL_LINKAGE_ const mrpt::utils::TRuntimeClassId* GetRuntimeClass() const MRPT_OVERRIDE; \
 			_STATIC_LINKAGE_ mrpt::utils::CObject* CreateObject(); \
@@ -207,9 +216,9 @@ namespace mrpt
 				{ return NameSpace::class_name::Ptr( new NameSpace::class_name ); } \
 			const mrpt::utils::TRuntimeClassId* NameSpace::class_name::_GetBaseClass() \
 				{ return CLASS_ID(base); } \
-			mrpt::utils::TRuntimeClassId NameSpace::class_name::class##class_name = { \
+			mrpt::utils::TRuntimeClassId NameSpace::class_name::runtimeClassId = { \
 				#class_name, NameSpace::class_name::CreateObject, &class_name::_GetBaseClass }; \
-			const mrpt::utils::TRuntimeClassId *NameSpace::class_name::classinfo = & NameSpace::class_name::class##class_name; \
+			const mrpt::utils::TRuntimeClassId *NameSpace::class_name::classinfo = & NameSpace::class_name::runtimeClassId; \
 			const mrpt::utils::TRuntimeClassId* NameSpace::class_name::GetRuntimeClass() const \
 			{ return CLASS_ID_NAMESPACE(class_name,NameSpace); } \
 			mrpt::utils::CLASSINIT NameSpace::class_name::_init_##class_name(CLASS_ID(base)); \
@@ -227,7 +236,7 @@ namespace mrpt
 		public: \
 			using Ptr = std::shared_ptr<class_name>; \
 			using ConstPtr = std::shared_ptr<const class_name>; \
-			static const mrpt::utils::TRuntimeClassId class##class_name; \
+			static const mrpt::utils::TRuntimeClassId runtimeClassId; \
 			virtual const mrpt::utils::TRuntimeClassId* GetRuntimeClass() const MRPT_OVERRIDE; \
 			friend class mrpt::utils::CStream; \
 		/*! @}  */ \
@@ -238,7 +247,7 @@ namespace mrpt
 		#define IMPLEMENTS_VIRTUAL_MRPT_OBJECT(class_name, base_class_name,NameSpace) \
 			const mrpt::utils::TRuntimeClassId* class_name::_GetBaseClass() \
 				{ return CLASS_ID(base_class_name); } \
-			const mrpt::utils::TRuntimeClassId class_name::class##class_name = { \
+			const mrpt::utils::TRuntimeClassId class_name::runtimeClassId = { \
 				#class_name, nullptr, &class_name::_GetBaseClass }; \
 			const mrpt::utils::TRuntimeClassId* class_name::GetRuntimeClass() const \
 				{ return CLASS_ID(class_name); }
