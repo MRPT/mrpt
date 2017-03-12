@@ -15,6 +15,9 @@
 #include <mrpt/utils/exceptions.h>
 #include <mrpt/utils/bits.h> // reverseBytesInPlace()
 #include <mrpt/utils/CSerializable.h>
+#include <mrpt/utils/variant.h>
+
+#include <mrpt/otherlibs/mapbox/variant.hpp>
 #include <vector>
 
 namespace mrpt
@@ -54,10 +57,11 @@ namespace mrpt
 			 *  Write attempts to write up to Count bytes to Buffer, and returns the number of bytes actually written. */
 			virtual size_t  Write(const void *Buffer, size_t Count) = 0;
 
-			/** A common template code for both versions of CStream::ReadObject()
-			  * - EXISTING_OBJ=true  -> read in the object passed as argument
-			  * - EXISTING_OBJ=false -> build a new object and return it */
-			template <bool EXISTING_OBJ> void internal_ReadObject(CSerializable::Ptr &newObj, CSerializable *existingObj = nullptr);
+			/** Read the object */
+			void internal_ReadObject(CSerializable &newObj, const std::string &className, bool isOldFormat, int8_t version);
+
+			/** Read the object Header*/
+			void internal_ReadObjectHeader(std::string &className, bool &isOldFormat, int8_t &version);
 
 		public:
 			/* Constructor
@@ -167,12 +171,100 @@ namespace mrpt
 			/** Writes an object to the stream.
 			 */
 			void WriteObject( const CSerializable *o );
+			void WriteObject( const CSerializable &o )
+			{
+				WriteObject(&o);
+			}
 
 			/** Reads an object from stream, its class determined at runtime, and returns a smart pointer to the object.
 			 * \exception std::exception On I/O error or undefined class.
 			 * \exception mrpt::utils::CExceptionEOF On an End-Of-File condition found at a correct place: an EOF that abruptly finishes in the middle of one object raises a plain std::exception instead.
 			 */
-			CSerializable::Ptr ReadObject();
+
+			CSerializable::Ptr ReadObject() {
+				return ReadObject<CSerializable>();
+			}
+
+			/** Reads an object from stream, its class determined at runtime, and returns a smart pointer to the object. This version is similar to std::make_shared<T>.
+			 * \exception std::exception On I/O error or undefined class.
+			 * \exception mrpt::utils::CExceptionEOF On an End-Of-File condition found at a correct place: an EOF that abruptly finishes in the middle of one object raises a plain std::exception instead.
+			 */
+			template <typename T>
+			typename T::Ptr ReadObject()
+			{
+				CSerializable::Ptr obj;
+				std::string strClassName;
+				bool isOldFormat;
+				int8_t version;
+				internal_ReadObjectHeader(strClassName, isOldFormat, version);
+				const TRuntimeClassId *classId = findRegisteredClass( strClassName );
+				if(strClassName == "nullptr")
+				{
+					return typename T::Ptr();
+				}
+				obj.reset(dynamic_cast<CSerializable *>(classId->createObject()));
+				internal_ReadObject(*obj,strClassName, isOldFormat, version);
+				return std::dynamic_pointer_cast<T>(obj);
+			}
+		private:
+			template <typename RET>
+			RET ReadVariant_helper(CSerializable::Ptr &ptr)
+			{
+				THROW_EXCEPTION("Can't match variant type");
+				return RET();
+			}
+
+			template <typename RET, typename T, typename ...R>
+			RET ReadVariant_helper(CSerializable::Ptr &ptr, typename std::enable_if<is_shared_ptr<T>::value>::type * = nullptr)
+			{
+				if(IS_CLASS(ptr, typename T::element_type))
+					return std::dynamic_pointer_cast<typename T::element_type>(ptr);
+				return ReadVariant_helper<RET, R...>(ptr);
+			}
+
+			template <typename RET, typename T, typename ...R>
+			RET ReadVariant_helper(CSerializable::Ptr &ptr, typename std::enable_if<!is_shared_ptr<T>::value>::type * = nullptr)
+			{
+				if(IS_CLASS(ptr, T))
+					return dynamic_cast<T&>(*ptr);
+				return ReadVariant_helper<RET, R...>(ptr);
+			}
+		public:
+			/** Reads a variant from stream, its class determined at runtime, and returns a variant to the object.
+			 * To be compatible with the current polymorphic system this support smart pointer types.
+			 * For pointer types, This will bind to the first possible pointer type.
+			 * variant<CSerializable::Ptr, CRenderizable::Ptr>
+			 * \exception std::exception On I/O error or undefined class.
+			 * \exception mrpt::utils::CExceptionEOF On an End-Of-File condition found at a correct place: an EOF that abruptly finishes in the middle of one object raises a plain std::exception instead.
+			 */
+			template <typename ...T>
+			typename mrpt::utils::variant<T...> ReadVariant()
+			{
+				CSerializable::Ptr obj;
+				std::string strClassName;
+				bool isOldFormat;
+				int8_t version;
+				internal_ReadObjectHeader(strClassName, isOldFormat, version);
+				const TRuntimeClassId *classId = findRegisteredClass( strClassName );
+				if(!classId) THROW_EXCEPTION_FMT("Stored object has class '%s' which is not registered!",strClassName.c_str())
+				if(strClassName == "nullptr")
+				{
+					return mrpt::utils::variant<T...>();
+				}
+				obj.reset(dynamic_cast<CSerializable *>(classId->createObject()));
+				internal_ReadObject(*obj,strClassName, isOldFormat, version);
+				return ReadVariant_helper<mrpt::utils::variant<T...>,T...>(obj);
+			}
+
+
+			/** Writes a Variant to the stream.
+			 */
+			template <typename T>
+			void WriteVariant(T t)
+			{
+				t.match([&](auto &o){this->WriteObject(o);});
+			}
+
 
 			/** Reads an object from stream, where its class must be the same
 			 *    as the supplied object, where the loaded object will be stored in.
@@ -302,9 +394,9 @@ namespace mrpt
 		CStream BASE_IMPEXP & operator << (mrpt::utils::CStream&, const vector_bool &a);
 		CStream BASE_IMPEXP & operator << (mrpt::utils::CStream&, const std::vector<std::string> &);
 
-        #if MRPT_WORD_SIZE!=32  // If it's 32 bit, size_t <=> uint32_t
+	#if MRPT_WORD_SIZE!=32  // If it's 32 bit, size_t <=> uint32_t
 		CStream BASE_IMPEXP & operator << (mrpt::utils::CStream&, const std::vector<size_t> &a);
-        #endif
+	#endif
 
 		// Read --------------------
 		CStream BASE_IMPEXP & operator>>(mrpt::utils::CStream&in, char *a);
@@ -327,15 +419,29 @@ namespace mrpt
 		CStream BASE_IMPEXP & operator << (mrpt::utils::CStream&s, const std::vector<float>  &a);
 		CStream BASE_IMPEXP & operator << (mrpt::utils::CStream&s, const std::vector<double> &a);
 
-        #if MRPT_WORD_SIZE!=32  // If it's 32 bit, size_t <=> uint32_t
+	#if MRPT_WORD_SIZE!=32  // If it's 32 bit, size_t <=> uint32_t
 		CStream BASE_IMPEXP & operator >> (mrpt::utils::CStream&s, std::vector<size_t> &a);
-        #endif
+	#endif
 		// 
 		template <typename T, typename std::enable_if<std::is_base_of<mrpt::utils::CSerializable, T>::value>::type* = nullptr>
 		mrpt::utils::CStream& operator>>(mrpt::utils::CStream& in, typename std::shared_ptr<T> &pObj)
 		{
-			pObj = std::dynamic_pointer_cast<T>(in.ReadObject());
+			pObj = in.ReadObject<T>();
 			return in;
+		}
+
+		template <typename ... T>
+		mrpt::utils::CStream& operator>>(mrpt::utils::CStream& in, typename mrpt::utils::variant<T...> &pObj)
+		{
+			pObj = in.ReadVariant<T...>();
+			return in;
+		}
+
+		template <typename ... T>
+		mrpt::utils::CStream& operator<<(mrpt::utils::CStream& out, const typename mrpt::utils::variant<T...> &pObj)
+		{
+			pObj.match([&](auto &t){out << t;});
+			return out;
 		}
 
 	} // End of namespace

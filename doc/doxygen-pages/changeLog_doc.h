@@ -16,11 +16,12 @@
 <a name="2.0.0">
 <h2>Version 2.0.0: (Under development)  </h2></a>
 - <b>Most important changes:</b>
-	- MRPT now requires **C++11** to build and use. See this page for a guide to port existing code to MRPT 2.0: \ref porting_mrpt2
+	- MRPT now requires **C++14** to build and use. See this page for a guide to port existing code to MRPT 2.0: \ref porting_mrpt2
 	- Support for old namespaces `mrpt-scanmatching`, `mrpt-reactivenav` is over.
 	- Backwards compatible headers for "maps" and "observations" in mrpt::slam are removed.
 	  They moved to their own namespaces in MRPT v1.3.0 (Jan 2015).
-
+	- All pointer typedefs are now in their respective classes.
+	- Using a variant type from the mapbox variant library, and added serialization with variants(To be replaced by std::variant eventually).
 - <b>Detailed list of changes:</b>
 	- ()...)
 

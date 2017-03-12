@@ -18,7 +18,7 @@ PROJECT(MRPT)
 #        Setup CMake
 # -------------------------
 CMAKE_MINIMUM_REQUIRED(VERSION 3.1)
-set (CMAKE_CXX_STANDARD 11)  # Require C++11 (C++14?)
+set (CMAKE_CXX_STANDARD 14)  # Require C++11 (C++14?)
 SET(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS 1) # Allow empty endif() and such (since CMake 2.4)
 if(COMMAND cmake_policy)
 	# We don't want to mix relative and absolute paths in linker lib lists.

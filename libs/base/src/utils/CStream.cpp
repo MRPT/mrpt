@@ -353,15 +353,9 @@ CStream& utils::operator>>(mrpt::utils::CStream&in, char *s)
 //#define CSTREAM_VERBOSE     1
 #define CSTREAM_VERBOSE     0
 
-template <bool EXISTING_OBJ>
-void CStream::internal_ReadObject(CSerializable::Ptr &newObj,CSerializable *existingObj)
+void CStream::internal_ReadObjectHeader(std::string &strClassName, bool &isOldFormat, int8_t &version)
 {
-	// Automatically register all classes when the first one is registered.
-	registerAllPendingClasses();
-
-	// First, read the class name:
 	uint8_t lengthReadClassName = 255;
-	bool    isOldFormat=false;   // < MRPT 0.5.5
 	char    readClassName[260];
 	readClassName[0] = 0;
 
@@ -379,6 +373,10 @@ void CStream::internal_ReadObject(CSerializable::Ptr &newObj,CSerializable *exis
 			if (3 != ReadBuffer( buf, 3 ) ) THROW_EXCEPTION("Cannot read object header from stream! (EOF?)");
 			if (buf[0] || buf[1] || buf[2]) THROW_EXCEPTION("Expecting 0x00 00 00 while parsing old streaming header (Perhaps it's a gz-compressed stream? Use a GZ-stream for reading)");
 		}
+		else
+		{
+			isOldFormat = false;
+		}
 
 		// Remove MSB:
 		lengthReadClassName &= 0x7F;
@@ -393,10 +391,9 @@ void CStream::internal_ReadObject(CSerializable::Ptr &newObj,CSerializable *exis
 		readClassName[lengthReadClassName]='\0';
 
 		// Pass to string class:
-		const std::string strClassName(readClassName);
+		strClassName = readClassName;
 
 		// Next, the version number:
-		int8_t version;
 		if (isOldFormat)
 		{
 			int32_t  version_old;
@@ -416,48 +413,6 @@ void CStream::internal_ReadObject(CSerializable::Ptr &newObj,CSerializable *exis
 		cerr << "[CStream::ReadObject] readClassName:" << strClassName << " version: " << version <<  endl;
 #endif
 
-		CSerializable* obj = nullptr;
-		if (EXISTING_OBJ)
-		{	// (Existing object)
-			// Now, compare to existing class:
-			if(strClassName != "nullptr")
-			{
-				ASSERT_(existingObj)
-				const TRuntimeClassId	*id  = existingObj->GetRuntimeClass();
-				const TRuntimeClassId	*id2 = findRegisteredClass(strClassName);
-				if (!id2) THROW_EXCEPTION_FMT("Stored object has class '%s' which is not registered!",strClassName.c_str());
-				if ( id!=id2 ) THROW_EXCEPTION(format("Stored class does not match with existing object!!:\n Stored: %s\n Expected: %s", id2->className,id->className ));
-				// It matches, OK
-				obj = existingObj;
-			}
-		}
-		else if (strClassName != "nullptr")
-		{	// (New object)
-			// Get the mapping to the "TRuntimeClassId*" in the registered classes table:
-			const TRuntimeClassId *classId = findRegisteredClass( strClassName );
-			if (!classId)
-			{
-				const std::string msg = format("Class '%s' is not registered! Have you called mrpt::registerClass(CLASS)?",readClassName);
-				std::cerr << "CStream::ReadObject(): " << msg << std::endl;
-				THROW_EXCEPTION(msg)
-			}
-			obj = static_cast<CSerializable*>(classId->createObject());
-			newObj = CSerializable::Ptr(obj);
-		}
-
-		if(strClassName != "nullptr")
-		{
-			// Go on, read it:
-			obj->readFromStream( *this, (int)version );
-		}
-		// Check end flag (introduced in MRPT 0.5.5)
-		if (!isOldFormat)
-		{
-			uint8_t	endFlag;
-			if (sizeof(endFlag)!=ReadBuffer( (void*)&endFlag, sizeof(endFlag) )) THROW_EXCEPTION("Cannot read object streaming version from stream!");
-			if (endFlag!=SERIALIZATION_END_FLAG) THROW_EXCEPTION_FMT("end-flag missing: There is a bug in the deserialization method of class: '%s'",strClassName.c_str());
-		}
-		ASSERT_(!EXISTING_OBJ || strClassName != "nullptr");
 	}
 	catch (std::bad_alloc &)
 	{
@@ -478,16 +433,32 @@ void CStream::internal_ReadObject(CSerializable::Ptr &newObj,CSerializable *exis
 } // end method
 
 
-/*---------------------------------------------------------------
-	Reads an object from stream, where its class is determined
-	at runtime.
-	  exception std::exception On I/O error or undefined class.
- ---------------------------------------------------------------*/
-CSerializable::Ptr CStream::ReadObject()
+void CStream::internal_ReadObject(CSerializable &obj, const std::string &strClassName, bool isOldFormat, int8_t version)
 {
-	CSerializable::Ptr ret;
-	internal_ReadObject<false>(ret, nullptr);
-	return ret;
+	try
+	{
+		if(strClassName != "nullptr")
+		       obj.readFromStream( *this, (int)version );
+		if (!isOldFormat)
+		{
+			uint8_t endFlag;
+			if (sizeof(endFlag)!=ReadBuffer( (void*)&endFlag, sizeof(endFlag) ))
+				THROW_EXCEPTION("Cannot read object streaming version from stream!");
+			if (endFlag!=SERIALIZATION_END_FLAG)
+				THROW_EXCEPTION_FMT("end-flag missing: There is a bug in the deserialization method of class: '%s'",strClassName.c_str());
+		}
+	}
+	catch (std::bad_alloc &)
+	{
+		throw;
+	}
+	catch(std::exception &e)
+	{
+	       THROW_TYPED_EXCEPTION("Cannot read object due to EOF", CExceptionEOF);
+	}
+	catch (...) {
+		THROW_EXCEPTION("Unexpected runtime error!");
+	}
 }
 
 /*---------------------------------------------------------------
@@ -497,8 +468,22 @@ CSerializable::Ptr CStream::ReadObject()
  ---------------------------------------------------------------*/
 void CStream::ReadObject(CSerializable *existingObj)
 {
-	CSerializable::Ptr dummy;
-	internal_ReadObject<true>(dummy,existingObj);
+	std::string strClassName;
+	bool isOldFormat;
+	int8_t version;
+
+	internal_ReadObjectHeader(strClassName, isOldFormat, version);
+
+	ASSERT_(existingObj && strClassName != "nullptr");
+	ASSERT_(strClassName != "nullptr");
+
+	const TRuntimeClassId   *id  = existingObj->GetRuntimeClass();
+	const TRuntimeClassId   *id2 = findRegisteredClass(strClassName);
+
+	if (!id2) THROW_EXCEPTION_FMT("Stored object has class '%s' which is not registered!",strClassName.c_str());
+	if ( id!=id2 ) THROW_EXCEPTION(format("Stored class does not match with existing object!!:\n Stored: %s\n Expected: %s", id2->className,id->className ));
+
+	internal_ReadObject(*existingObj, strClassName, isOldFormat, version);
 }
 
 /*---------------------------------------------------------------
