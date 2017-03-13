@@ -132,8 +132,7 @@ drawNodePoints(mrpt::opengl::CSetOfObjectsPtr& object,
 		object->insert(it->second);
 	}
 
-
-}
+} // end of drawNodePoints
 
 template<class CPOSE, class MAPS_IMPLEMENTATION, class EDGE_ANNOTATIONS>
 void CMRVisualizer<CPOSE, MAPS_IMPLEMENTATION, TMRSlamNodeAnnotations, EDGE_ANNOTATIONS>::
@@ -242,7 +241,7 @@ drawEdges(mrpt::opengl::CSetOfObjectsPtr& object,
 
 		object->insert(it->second);
 	}
-}
+} // end of drawEdges
 
 
 } } } // end of namespaces

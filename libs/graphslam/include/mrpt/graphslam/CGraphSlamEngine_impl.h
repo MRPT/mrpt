@@ -104,13 +104,20 @@ template<class GRAPH_T>
 void CGraphSlamEngine<GRAPH_T>::getRobotEstimatedTrajectory(
 		typename GRAPH_T::global_poses_t* graph_poses) const {
 	MRPT_START;
-
+	ASSERT_(graph_poses);
 	mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
 	*graph_poses = m_graph.nodes;
-
 	MRPT_END;
 }
 
+template<class GRAPH_T>
+void CGraphSlamEngine<GRAPH_T>::getNodeIDsOfEstimatedTrajectory(
+		std::set<mrpt::utils::TNodeID>* nodes_set) const {
+	MRPT_START;
+	ASSERT_(nodes_set);
+	m_graph.getAllNodes(*nodes_set);
+	MRPT_END;
+}
 
 
 template<class GRAPH_T>
@@ -1714,7 +1721,7 @@ mrpt::system::TTimeStamp CGraphSlamEngine<GRAPH_T>::getTimeStamp(
 
 template<class GRAPH_T>
 mrpt::poses::CPose3D CGraphSlamEngine<GRAPH_T>::getLSPoseForGridMapVisualization(
-		const mrpt::utils::TNodeID& nodeID) const {
+		const mrpt::utils::TNodeID nodeID) const {
 	return mrpt::poses::CPose3D(m_graph.nodes.at(nodeID));
 }
 
@@ -1764,10 +1771,10 @@ void CGraphSlamEngine<GRAPH_T>::updateMapVisualization(
 			MRPT_LOG_DEBUG_STREAM << "Executing full update of the map visuals";
 			map_obj->clear();
 
-		} // END_IF FULL UPDATE
+		} // end if - full update
 		else { // add only current nodeID
 			nodes_set.insert(m_nodeID_max);
-		} // END_IF PARTIAL_UPDATE
+		} // end if - partial update
 	}
 
 	// for all the nodes in the previously populated set
@@ -1808,7 +1815,7 @@ void CGraphSlamEngine<GRAPH_T>::updateMapVisualization(
 				m.getAs3DObject(scan_obj);
 
 				scan_obj->setName(scan_name.str());
-				scan_obj->setColor_u8(m_optimized_map_color);
+				this->setObjectPropsFromNodeID(*node_it, scan_obj);
 
 				// set the visibility of the object the same value as the visibility of
 				// the previous - Needed for proper toggling of the visibility of the
@@ -1846,6 +1853,15 @@ void CGraphSlamEngine<GRAPH_T>::updateMapVisualization(
 	MRPT_LOG_DEBUG_STREAM("updateMapVisualization took: " << elapsed_time << "s");
 	MRPT_END;
 } // end of updateMapVisualization
+
+template<class GRAPH_T>
+void CGraphSlamEngine<GRAPH_T>::setObjectPropsFromNodeID(
+		const mrpt::utils::TNodeID  nodeID,
+		mrpt::opengl::CSetOfObjectsPtr& viz_object) {
+	MRPT_START;
+	viz_object->setColor_u8(m_optimized_map_color);
+	MRPT_END;
+}
 
 template<class GRAPH_T>
 void CGraphSlamEngine<GRAPH_T>::decimateLaserScan(
@@ -2052,7 +2068,6 @@ void CGraphSlamEngine<GRAPH_T>::initEstimatedTrajectoryVisualization() {
 			/* 2nd */ 0, 0, 0);
 
 	// robot model
-	//CSetOfObjectsPtr robot_model = stock_objects::RobotPioneer();
 	//pose_t initial_pose;
 	CSetOfObjectsPtr robot_model = this->setCurrentPositionModel(
 			"robot_estimated_traj",
@@ -2106,7 +2121,7 @@ updateEstimatedTrajectoryVisualization(bool full_update) {
 		std::set<mrpt::utils::TNodeID> nodes_set;
 		{
 			if (full_update) {
-				m_graph.getAllNodes(nodes_set);
+				this->getNodeIDsOfEstimatedTrajectory(&nodes_set);
 				estimated_traj_setoflines->clear();
 				// dummy way so that I can use appendLineStrip afterwards.
 				estimated_traj_setoflines->appendLine(
