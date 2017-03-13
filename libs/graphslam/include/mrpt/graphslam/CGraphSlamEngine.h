@@ -253,12 +253,17 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 */
 		global_pose_t getCurrentRobotPosEstimation() const;
 		/***\brief Get the estimated trajectory of the robot given by the running
-		 * graphSLAM algorithm
+		 * graphSLAM algorithm.
 		 * \param[out] graph_nodes Nodes of the graph that have been registered so
 		 * far. graph_nodes contains a map of nodeIDs to their corresponding poses.
 		 */
-		void getRobotEstimatedTrajectory(
+		virtual void getRobotEstimatedTrajectory(
 				typename GRAPH_T::global_poses_t* graph_poses) const;
+		/**\brief Return the list of nodeIDs which make up robot trajectory
+		 * \sa updateEstimatedTrajectoryVisualization
+		 */
+		virtual void getNodeIDsOfEstimatedTrajectory(
+				std::set<mrpt::utils::TNodeID>* nodes_set) const;
 		/**\brief Wrapper method around the GRAPH_T::saveToTextFile method.
 		 * Method saves the graph in the format used by TORO & HoG-man strategies
 		 *
@@ -552,7 +557,17 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 * Used during the computeMap call for the occupancy gridmap
 		 */
 		virtual mrpt::poses::CPose3D getLSPoseForGridMapVisualization(
-				const mrpt::utils::TNodeID& nodeID) const;
+				const mrpt::utils::TNodeID nodeID) const;
+		/**\brief Set the properties of the map visual object based on the nodeID that
+		 * it was produced by.
+		 * Derived classes may override this method if they want to have different
+		 * visual properties (color, shape etc.) for different nodeIDs.
+		 *
+		 * \note Base class method sets only the color of the object
+		 */
+		virtual void setObjectPropsFromNodeID(
+				const mrpt::utils::TNodeID nodeID,
+				mrpt::opengl::CSetOfObjectsPtr& viz_object);
 		void initMapVisualization();
 		/**\brief Update the map visualization based on the current graphSLAM
 		 * state.
