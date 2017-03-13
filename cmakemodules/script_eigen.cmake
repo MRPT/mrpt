@@ -2,6 +2,20 @@
 # ===================================================
 SET(EIGEN_MATRIXBASE_PLUGIN "<mrpt/math/eigen_plugins.h>" CACHE STRING "Eigen plugin header")
 SET(EIGEN_MATRIXBASE_PLUGIN_POST_IMPL "<mrpt/math/eigen_plugins_impl.h>" CACHE STRING "Eigen plugin implementation header")
+
+# download Eigen from bitbucket
+include(ExternalProject)
+ExternalProject_Add(eigen3
+  URL               "https://bitbucket.org/eigen/eigen/get/3.3.3.tar.bz2"
+  URL_MD5           "b2ddade41040d9cf73b39b4b51e8775b"
+  SOURCE_DIR        "${MRPT_SOURCE_DIR}/otherlibs/eigen3/"
+  CONFIGURE_COMMAND ""
+  BUILD_COMMAND     ""
+  INSTALL_COMMAND   ""
+  TEST_COMMAND      ""
+)
+
+
 SET(EIGEN_EMBEDDED_INCLUDE_DIR "${MRPT_SOURCE_DIR}/otherlibs/eigen3/" CACHE PATH "Eigen path for embedded use")
 
 MARK_AS_ADVANCED(EIGEN_MATRIXBASE_PLUGIN)
