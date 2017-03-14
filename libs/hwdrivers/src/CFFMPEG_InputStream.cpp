@@ -226,7 +226,7 @@ bool CFFMPEG_InputStream::openURL( const std::string &url, bool grab_as_grayscal
     }
 
     // Determine required buffer size and allocate buffer
-#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(54, 6, 0)
+#if LIBAVUTIL_VERSION_INT < AV_VERSION_INT(54, 6, 0)
     size_t numBytes=avpicture_get_size(
 #else
     size_t numBytes = av_image_get_buffer_size(
@@ -239,7 +239,7 @@ bool CFFMPEG_InputStream::openURL( const std::string &url, bool grab_as_grayscal
 #endif
 		ctx->pCodecCtx->width,
 		ctx->pCodecCtx->height
-#if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(54, 6, 0)
+#if LIBAVUTIL_VERSION_INT >= AV_VERSION_INT(54, 6, 0)
 		, 1
 #endif
 		);   
