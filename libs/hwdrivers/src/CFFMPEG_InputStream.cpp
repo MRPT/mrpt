@@ -226,15 +226,23 @@ bool CFFMPEG_InputStream::openURL( const std::string &url, bool grab_as_grayscal
     }
 
     // Determine required buffer size and allocate buffer
+#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(54, 6, 0)
+    size_t numBytes=avpicture_get_size(
+#else
     size_t numBytes = av_image_get_buffer_size(
+#endif
 		m_grab_as_grayscale ?    // BGR vs. RGB for OpenCV
 #if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(55,00,0)
-			AV_PIX_FMT_GRAY8 : AV_PIX_FMT_BGR24,
+		AV_PIX_FMT_GRAY8 : AV_PIX_FMT_BGR24,
 #else
-			PIX_FMT_GRAY8 : PIX_FMT_BGR24,
+		PIX_FMT_GRAY8 : PIX_FMT_BGR24,
 #endif
 		ctx->pCodecCtx->width,
-		ctx->pCodecCtx->height, 1);
+		ctx->pCodecCtx->height
+#if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(54, 6, 0)
+		, 1
+#endif
+		);   
 
     ctx->buffer.resize(numBytes);
 
@@ -264,9 +272,9 @@ bool CFFMPEG_InputStream::openURL( const std::string &url, bool grab_as_grayscal
 void CFFMPEG_InputStream::close()
 {
 #if MRPT_HAS_FFMPEG
-	if (!this->isOpen()) return;
+    if (!this->isOpen()) return;
 
-	TFFMPEGContext *ctx = MY_FFMPEG_STATE;
+    TFFMPEGContext *ctx = MY_FFMPEG_STATE;
 
     // Close the codec
     if (ctx->pCodecCtx)
@@ -308,11 +316,11 @@ void CFFMPEG_InputStream::close()
 		ctx->pFrame = nullptr;
     }
 
-	if (ctx->img_convert_ctx)
-	{
-		sws_freeContext( ctx->img_convert_ctx );
-		ctx->img_convert_ctx = nullptr;
-	}
+    if (ctx->img_convert_ctx)
+    {
+        sws_freeContext( ctx->img_convert_ctx );
+        ctx->img_convert_ctx = nullptr;
+    }
 
 #endif
 }
@@ -323,9 +331,9 @@ void CFFMPEG_InputStream::close()
 bool CFFMPEG_InputStream::retrieveFrame( mrpt::utils::CImage &out_img )
 {
 #if MRPT_HAS_FFMPEG
-	if (!this->isOpen()) return false;
+    if (!this->isOpen()) return false;
 
-	TFFMPEGContext *ctx = MY_FFMPEG_STATE;
+    TFFMPEGContext *ctx = MY_FFMPEG_STATE;
 
     AVPacket        packet;
     int             frameFinished;
@@ -341,14 +349,14 @@ bool CFFMPEG_InputStream::retrieveFrame( mrpt::utils::CImage &out_img )
 				ctx->pCodecCtx,
 				ctx->pFrame,
 				&frameFinished,
-                &packet);
+				&packet);
 #else
             avcodec_decode_video(
 				ctx->pCodecCtx,
 				ctx->pFrame,
 				&frameFinished,
-                packet.data,
-                packet.size);
+				packet.data,
+				packet.size);
 #endif
             // Did we get a video frame?
             if(frameFinished)
@@ -392,13 +400,21 @@ bool CFFMPEG_InputStream::retrieveFrame( mrpt::utils::CImage &out_img )
 					);
 
 				// Free the packet that was allocated by av_read_frame
+#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(55, 16, 0)
+				av_free_packet(&packet);
+#else
 				av_packet_unref(&packet);
+#endif
 				return true;
             }
         }
 
         // Free the packet that was allocated by av_read_frame
+#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(55, 16, 0)
+        av_free_packet(&packet);
+#else
         av_packet_unref(&packet);
+#endif
     }
 
 	return false; // Error reading/ EOF
