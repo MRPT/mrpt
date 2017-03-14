@@ -13,6 +13,8 @@
 #include <mrpt/hwdrivers/CEnoseModular.h>
 #include <mrpt/utils/CMessage.h>
 
+#include <thread>
+
 using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::obs;
@@ -87,9 +89,9 @@ CStream *CEnoseModular::checkConnectionAndConnect()
 		try
 		{
 			m_stream_FTDI->OpenBySerialNumber( m_usbSerialNumber );
-			mrpt::system::sleep(10);
+			std::this_thread::sleep_for(10ms);
 			m_stream_FTDI->Purge();
-			mrpt::system::sleep(10);
+			std::this_thread::sleep_for(10ms);
 			m_stream_FTDI->SetLatencyTimer(1);
 			m_stream_FTDI->SetTimeouts(10,100);
 			return m_stream_FTDI;
@@ -111,9 +113,9 @@ CStream *CEnoseModular::checkConnectionAndConnect()
 			m_stream_SERIAL->setConfig(m_COM_baud);			
 			//m_stream_SERIAL->setTimeouts(25,1,100, 1,20);
 			m_stream_SERIAL->setTimeouts(50,1,100, 1,20);
-			mrpt::system::sleep(10);
+			std::this_thread::sleep_for(10ms);
 			m_stream_SERIAL->purgeBuffers();
-			mrpt::system::sleep(10);
+			std::this_thread::sleep_for(10ms);
 			return m_stream_SERIAL;
 		}
 		catch(...)

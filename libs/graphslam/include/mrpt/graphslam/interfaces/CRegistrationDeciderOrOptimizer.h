@@ -12,7 +12,6 @@
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/CObservation.h>
-#include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/graphs/CNetworkOfPoses.h>
 #include <mrpt/utils/COutputLogger.h>
 
@@ -70,18 +69,18 @@ class CRegistrationDeciderOrOptimizer : public mrpt::utils::COutputLogger {
 
 			m_win_manager = win_manager;
 		}
-		/**\brief Fetch a mrpt::synch::CCriticalSection for locking the GRAPH_t resource.
+		/**\brief Fetch a std::mutex for locking the GRAPH_t resource.
 		 *
 		 * Handy for realising multithreading in the derived classes.
 		 *
 		 * \warning Beware that prior to the decider/optimizer public method call,
-		 * the CCriticalSection will already be locked from CGraphSlamEngine_t
+		 * the std::mutex will already be locked from CGraphSlamEngine_t
 		 * instance, but this isn't effective in multithreaded implementations
 		 * where the decider/optimizer itself has to lock the function at which the extra
 		 * thread runs.
 		 */
 		virtual void setCriticalSectionPtr(
-				mrpt::synch::CCriticalSection* graph_section) { }
+				std::mutex* graph_section) { }
 		/**\brief Initialize visual objects in CDisplayWindow (e.g. \em add an
 		 * object to scene).
 		 *

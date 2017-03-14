@@ -46,7 +46,7 @@ int main(int argc, char **argv)
 			cout << obs.sensedData[i].sensedDistance << "\t";
 		}
 		cout << endl;
-		mrpt::system::sleep(10);
+		std::this_thread::sleep_for(10ms);
 	}while(	!mrpt::system::os::kbhit() );
 
 	return 0;

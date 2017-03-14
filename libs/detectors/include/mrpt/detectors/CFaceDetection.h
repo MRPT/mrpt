@@ -13,10 +13,10 @@
 #include <mrpt/detectors/CObjectDetection.h>
 #include <mrpt/detectors/CCascadeClassifierDetection.h>
 #include <mrpt/utils/CTimeLogger.h>
-#include <mrpt/system/threads.h>
-#include <mrpt/synch/CSemaphore.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/obs/obs_frwds.h>
+
+#include <future>
 
 namespace mrpt
 {
@@ -73,9 +73,9 @@ namespace mrpt
 			
 		private:
 
-			mrpt::system::TThreadHandle		m_thread_checkIfFaceRegions;	//!< Thread that execute checkIfFaceRegions filter
-			mrpt::system::TThreadHandle		m_thread_checkIfFacePlaneCov;	//!< Thread that execute checkIfFacePlaneCov filter
-			mrpt::system::TThreadHandle		m_thread_checkIfDiagonalSurface;	//!< Thread that execute checkIfDiagonalSurface filter
+			std::thread		m_thread_checkIfFaceRegions;	//!< Thread that execute checkIfFaceRegions filter
+			std::thread		m_thread_checkIfFacePlaneCov;	//!< Thread that execute checkIfFacePlaneCov filter
+			std::thread		m_thread_checkIfDiagonalSurface;	//!< Thread that execute checkIfDiagonalSurface filter
 
 			bool	m_checkIfFaceRegions_res;	//!< Save result of checkIfFaceRegions filter
 			bool	m_checkIfFacePlaneCov_res;	//!< Save result of checkIfFacePlaneCov filter
@@ -83,13 +83,13 @@ namespace mrpt
 
 			bool	m_end_threads;	//!< Indicates to all threads that must finish their execution
 			
-			mrpt::synch::CSemaphore m_enter_checkIfFaceRegions;	//!< Indicates to thread_checkIfFaceRegions that exist a new face to analyze
-			mrpt::synch::CSemaphore m_enter_checkIfFacePlaneCov;	//!< Indicates to thread_checkIfFacePlaneCov that exist a new face to analyze
-			mrpt::synch::CSemaphore m_enter_checkIfDiagonalSurface;	//!< Indicates to thread_checkIfDiagonalSurface that exist a new face to analyze
+			std::promise<void> m_enter_checkIfFaceRegions;	//!< Indicates to thread_checkIfFaceRegions that exist a new face to analyze
+			std::promise<void> m_enter_checkIfFacePlaneCov;	//!< Indicates to thread_checkIfFacePlaneCov that exist a new face to analyze
+			std::promise<void> m_enter_checkIfDiagonalSurface;	//!< Indicates to thread_checkIfDiagonalSurface that exist a new face to analyze
 
-			mrpt::synch::CSemaphore m_leave_checkIfFaceRegions;	//!< Indicates to main thread that thread_checkIfFaceRegions has been completed analisis of the last face detected
-			mrpt::synch::CSemaphore m_leave_checkIfFacePlaneCov;	//!< Indicates to main thread that thread_checkIfFacePlaneCov has been completed analisis of the last face detected
-			mrpt::synch::CSemaphore m_leave_checkIfDiagonalSurface;	//!< Indicates to main thread that thread_checkIfDiagonalSurface has been completed analisis of the last face detected
+			std::promise<void> m_leave_checkIfFaceRegions;	//!< Indicates to main thread that thread_checkIfFaceRegions has been completed analisis of the last face detected
+			std::promise<void> m_leave_checkIfFacePlaneCov;	//!< Indicates to main thread that thread_checkIfFacePlaneCov has been completed analisis of the last face detected
+			std::promise<void> m_leave_checkIfDiagonalSurface;	//!< Indicates to main thread that thread_checkIfDiagonalSurface has been completed analisis of the last face detected
 
 			mrpt::obs::CObservation3DRangeScan m_lastFaceDetected;	//!< Last face detected
 

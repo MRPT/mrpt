@@ -62,7 +62,7 @@ synch::CCriticalSection					cs_global_list_obs;
 bool									allThreadsMustExit = false;
 
 // Thread handlers vector stored as global (persistent MEX variables)
-vector<TThreadHandle> lstThreads;
+vector<std::thread> lstThreads;
 
 // State variables
 bool mex_is_running = false;
@@ -131,10 +131,10 @@ MEX_DEFINE(new) (int nlhs, mxArray* plhs[],
         threParms.cfgFile		= &iniFile;
         threParms.sensor_label	= *it;
 
-        TThreadHandle	thre = createThread(SensorThread, threParms);
+        std::thread	thre = std::thread(SensorThread, threParms);
 
         lstThreads.push_back(thre);
-        sleep(time_between_launches);
+        std::this_thread::sleep_for(std::chrono::milliseconds(time_between_launches));
     }
 
     printf("[mex-grabber::new] All threads launched\n");
@@ -153,7 +153,7 @@ MEX_DEFINE(read) (int nlhs, mxArray* plhs[],
 
     // See if we have observations and process them:
     {
-        synch::CCriticalSectionLocker	lock (&cs_global_list_obs);
+        std::lock_guard<std::mutex>	lock (&cs_global_list_obs);
         copy_of_global_list_obs.clear();
 
         if (!global_list_obs.empty())
@@ -203,13 +203,13 @@ MEX_DEFINE(delete) (int nlhs, mxArray* plhs[],
     // Wait all threads:
     // ----------------------------
     allThreadsMustExit = true;
-    mrpt::system::sleep(300);
+    std::this_thread::sleep_for(300ms);
     printf("\nWaiting for all threads to close...\n");
-    for (vector<TThreadHandle>::iterator th=lstThreads.begin();th!=lstThreads.end();++th)
-        joinThread( *th );
+    for (vector<std::thread>::iterator th=lstThreads.begin();th!=lstThreads.end();++th)
+        th->join();
 
     cout << endl << "[mex-grabber::delete] mex-grabber application finished" << endl;
-	mrpt::system::sleep(1000); // Time for the wxSubsystem to close all remaining windows and avoid crash... (any better way?)
+	std::this_thread::sleep_for(1000ms); // Time for the wxSubsystem to close all remaining windows and avoid crash... (any better way?)
     mex_is_running = false;
 } // End of "delete" method
 
@@ -256,7 +256,7 @@ void SensorThread(TThreadParams params)
             sensor->getObservations( lstObjs );
 
             {
-                synch::CCriticalSectionLocker	lock (&cs_global_list_obs);
+                std::lock_guard<std::mutex>	lock (&cs_global_list_obs);
                 // Control maximum number of stored observations to prevent excesive growth of list between calls
                 if ( global_list_obs.size() < 2 * max_num_obs ) // .size() is returning 2 countings for each pair
                     global_list_obs.insert( lstObjs.begin(), lstObjs.end() );
@@ -269,7 +269,7 @@ void SensorThread(TThreadParams params)
             double	At = timeDifference(t0,t1);
             int At_rem_ms = process_period_ms - At*1000;
             if (At_rem_ms>0)
-                sleep(At_rem_ms);
+                std::this_thread::sleep_for(std::chrono::milliseconds(At_rem_ms));
         }
 
         sensor.clear();
@@ -309,7 +309,7 @@ int main(int argc, const char* argv[] )
         mxArray* mxOut[1];
         mexFunction( 1, mxOut, 2, mxIn );
 
-		mrpt::system::sleep(5000); // Time for the sensor to read before collecting
+		std::this_thread::sleep_for(5000ms); // Time for the sensor to read before collecting
 
         // Read frames with "read"
 		mxIn[0] = mexplus::from( "read" );

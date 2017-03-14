@@ -266,7 +266,7 @@ int main()
 				add_baseline(Sensor_array[0x0000]);
 			} //end-if getObs
 
-			mrpt::system::sleep(40);
+			std::this_thread::sleep_for(40ms);
 		}//end-While
 
 		clear_memory();

@@ -43,7 +43,7 @@ void CHMTSLAM::thread_TBI()
 	{
 		// Start thread:
 		// -------------------------
-		obj->logFmt(mrpt::utils::LVL_DEBUG, "[thread_TBI] Thread started (ID=0x%08lX)\n", mrpt::system::getCurrentThreadId() );
+		obj->logFmt(mrpt::utils::LVL_DEBUG, "[thread_TBI] Thread started (ID=0x%08lX)\n", std::this_thread::get_id() );
 
 		// --------------------------------------------
 		//    The main loop
@@ -51,13 +51,14 @@ void CHMTSLAM::thread_TBI()
 		// --------------------------------------------
 		while ( !obj->m_terminateThreads )
 		{
-			mrpt::system::sleep(100);
+			std::this_thread::sleep_for(100ms);
 		};	// end while execute thread
 
 		// Finish thread:
 		// -------------------------
 		time_t timCreat,timExit; double timCPU=0;
-		try { mrpt::system::getCurrentThreadTimes( timCreat,timExit,timCPU); } catch(...) {};
+		MRPT_TODO("Fix thread times");
+//		try { mrpt::system::getCurrentThreadTimes( timCreat,timExit,timCPU); } catch(...) {};
 		obj->logFmt(mrpt::utils::LVL_DEBUG, "[thread_TBI] Thread finished. CPU time used:%.06f secs \n",timCPU);
 		obj->m_terminationFlag_TBI = true;
 
@@ -112,7 +113,7 @@ CHMTSLAM::TMessageLSLAMfromTBI::Ptr CHMTSLAM::TBI_main_method(
 	const THypothesisID		LMH_ID = LMH->m_ID;
 
 	// Lock the map:
-	synch::CCriticalSectionLocker( &obj->m_map_cs );
+	std::lock_guard<std::mutex>( obj->m_map_cs );
 
 	TMessageLSLAMfromTBI::Ptr msg = TMessageLSLAMfromTBI::Ptr(new TMessageLSLAMfromTBI());
 
@@ -183,7 +184,7 @@ CHMTSLAM::TMessageLSLAMfromTBI::Ptr CHMTSLAM::TBI_main_method(
 	// ----------------------------------------------------
 	std::set<CHMHMapNode::TNodeID>  lstNodesToErase;
 	{
-		synch::CCriticalSection lock( obj->m_topLCdets_cs );
+		std::lock_guard<std::mutex> lock( obj->m_topLCdets_cs );
 
 		for ( deque<CTopLCDetectorBase*>::const_iterator it=obj->m_topLCdets.begin();it!=obj->m_topLCdets.end();++it)
 		{

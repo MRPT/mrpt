@@ -19,7 +19,6 @@
 #include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/utils/types_simple.h>
-#include <mrpt/system/threads.h>
 
 #include <mrpt/graphslam/interfaces/CNodeRegistrationDecider.h>
 

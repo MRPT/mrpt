@@ -28,7 +28,7 @@ void CWaypointsNavigator::navigateWaypoints( const TWaypointSequence & nav_reque
 {
 	MRPT_START
 
-	mrpt::synch::CCriticalSectionLocker csl(&m_nav_waypoints_cs);
+	std::lock_guard<std::recursive_mutex> csl(m_nav_waypoints_cs);
 
 
 	m_waypoint_nav_status = TWaypointStatusSequence();
@@ -60,7 +60,7 @@ void CWaypointsNavigator::getWaypointNavStatus(TWaypointStatusSequence & out_nav
 void CWaypointsNavigator::cancel()
 {
 	{
-		mrpt::synch::CCriticalSectionLocker csl(&m_nav_waypoints_cs);
+		std::lock_guard<std::recursive_mutex> csl(m_nav_waypoints_cs);
 		m_waypoint_nav_status = TWaypointStatusSequence();
 	}
 	CAbstractNavigator::cancel();
@@ -77,7 +77,7 @@ void CWaypointsNavigator::navigationStep()
 	// --------------------------------------
 	{
 	mrpt::utils::CTimeLoggerEntry tle(m_timlog_delays,"CWaypointsNavigator::navigationStep()");
-	mrpt::synch::CCriticalSectionLocker csl(&m_nav_waypoints_cs);
+	std::lock_guard<std::recursive_mutex> csl(m_nav_waypoints_cs);
 
 	TWaypointStatusSequence &wps = m_waypoint_nav_status; // shortcut to save typing
 

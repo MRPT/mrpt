@@ -350,7 +350,7 @@ namespace mrpt
 			inline mrpt::obs::CObservation3DRangeScan & internal_latest_obs() { return m_latest_obs; }
 			inline volatile uint32_t & internal_tim_latest_depth() { return m_tim_latest_depth; }
 			inline volatile uint32_t & internal_tim_latest_rgb()   { return m_tim_latest_rgb; }
-			inline mrpt::synch::CCriticalSection & internal_latest_obs_cs() { return m_latest_obs_cs; }
+			inline std::mutex & internal_latest_obs_cs() { return m_latest_obs_cs; }
 #endif
 
 		protected:
@@ -373,7 +373,7 @@ namespace mrpt
 			// Data fields for use with the callback function:
 			mrpt::obs::CObservation3DRangeScan  m_latest_obs;
 			volatile uint32_t                 m_tim_latest_depth, m_tim_latest_rgb; // 0 = not updated
-			mrpt::synch::CCriticalSection     m_latest_obs_cs;
+			std::mutex     m_latest_obs_cs;
 #endif
 
 			mrpt::utils::TCamera  	m_cameraParamsRGB;  //!< Params for the RGB camera

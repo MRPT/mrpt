@@ -18,7 +18,6 @@
 
 using namespace mrpt::hwdrivers;
 using namespace mrpt::system;
-using namespace mrpt::synch;
 using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::obs;
@@ -86,7 +85,6 @@ CKinect::CKinect()  :
 	m_f_dev(nullptr), // The "freenect_device", or nullptr if closed
 	m_tim_latest_depth(0),
 	m_tim_latest_rgb(0),
-	m_latest_obs_cs("m_latest_obs_cs"),
 #endif
 	m_relativePoseIntensityWRTDepth(0,-0.02,0, DEG2RAD(-90),DEG2RAD(0),DEG2RAD(-90)),
 	m_initial_tilt_angle(360),
@@ -94,8 +92,7 @@ CKinect::CKinect()  :
 	m_grab_image(true),
 	m_grab_depth(true),
 	m_grab_3D_points(true),
-	m_grab_IMU(true),
-	m_video_channel(VIDEO_CHANNEL_RGB)
+	m_grab_IMU(true)
 {
 	calculate_range2meters();
 
@@ -263,7 +260,7 @@ void depth_cb(freenect_device *dev, void *v_depth, uint32_t timestamp)
 	CKinect *obj = reinterpret_cast<CKinect*>(freenect_get_user(dev));
 
 	// Update of the timestamps at the end:
-	mrpt::synch::CCriticalSectionLocker lock( &obj->internal_latest_obs_cs() );
+	std::lock_guard<std::mutex> lock(obj->internal_latest_obs_cs() );
 	CObservation3DRangeScan &obs = obj->internal_latest_obs();
 
 	obs.hasRangeImage  = true;
@@ -298,7 +295,7 @@ void rgb_cb(freenect_device *dev, void *img_data, uint32_t timestamp)
 	const freenect_frame_mode frMode = freenect_get_current_video_mode(dev);
 
 	// Update of the timestamps at the end:
-	mrpt::synch::CCriticalSectionLocker lock( &obj->internal_latest_obs_cs() );
+	std::lock_guard<std::mutex> lock(obj->internal_latest_obs_cs() );
 	CObservation3DRangeScan &obs = obj->internal_latest_obs();
 
 #ifdef KINECT_PROFILE_MEM_ALLOC
@@ -529,10 +526,10 @@ void CKinect::getNextObservation(
 	const TTimeStamp tim0 = mrpt::system::now();
 
 	// Reset these timestamp flags so if they are !=0 in the next call we're sure they're new frames.
-	m_latest_obs_cs.enter();
+	m_latest_obs_cs.lock();
 	m_tim_latest_rgb   = 0;
 	m_tim_latest_depth = 0;
-	m_latest_obs_cs.leave();
+	m_latest_obs_cs.unlock();
 
 	while (freenect_process_events(f_ctx)>=0 && mrpt::system::now()<(tim0+max_wait) )
 	{
@@ -556,10 +553,10 @@ void CKinect::getNextObservation(
 		m_latest_obs.hasRangeImage = true;
 		m_latest_obs.range_is_depth = true;
 
-		m_latest_obs_cs.enter(); // Important: if system is running slow, etc. we cannot tell for sure that the depth buffer is not beeing filled right now:
+		m_latest_obs_cs.lock(); // Important: if system is running slow, etc. we cannot tell for sure that the depth buffer is not beeing filled right now:
 		m_latest_obs.rangeImage.setSize(m_cameraParamsDepth.nrows,m_cameraParamsDepth.ncols);
 		m_latest_obs.rangeImage.setConstant(0); // "0" means: error in range
-		m_latest_obs_cs.leave();
+		m_latest_obs_cs.unlock();
 		there_is_obs=true;
 	}
 
@@ -571,9 +568,9 @@ void CKinect::getNextObservation(
 	// We DO have a fresh new observation:
 
 	// Quick save the observation to the user's object:
-	m_latest_obs_cs.enter();
+	m_latest_obs_cs.lock();
 		_out_obs.swap(m_latest_obs);
-	m_latest_obs_cs.leave();
+	m_latest_obs_cs.unlock();
 #endif
 
 	// Set common data into observation:

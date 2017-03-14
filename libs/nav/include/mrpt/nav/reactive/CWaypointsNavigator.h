@@ -70,7 +70,7 @@ namespace mrpt
 
 	protected:
 		TWaypointStatusSequence  m_waypoint_nav_status; //!< The latest waypoints navigation command and the up-to-date control status.
-		mrpt::synch::CCriticalSectionRecursive m_nav_waypoints_cs;
+		std::recursive_mutex m_nav_waypoints_cs;
 
 		/** Implements the way to waypoint is free function in children classes: `true` must be returned 
 		  * if, according to the information gathered at the last navigation step, there is a free path to 

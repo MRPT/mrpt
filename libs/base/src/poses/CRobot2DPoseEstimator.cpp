@@ -14,12 +14,12 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CRobot2DPoseEstimator.h>
 #include <mrpt/math/wrap2pi.h>
+#include <mutex>
 
 using namespace mrpt;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace mrpt::utils;
-using namespace mrpt::synch;
 using namespace mrpt::system;
 using namespace std;
 
@@ -44,7 +44,7 @@ CRobot2DPoseEstimator::~CRobot2DPoseEstimator()
    -------------------------------------------------------- */
 void CRobot2DPoseEstimator::reset()
 {
-	CCriticalSectionLocker   lock(&m_cs);
+	std::lock_guard<std::mutex>   lock(m_cs);
 
 	m_last_loc_time	= INVALID_TIMESTAMP;
 	m_last_odo_time	= INVALID_TIMESTAMP;
@@ -61,7 +61,7 @@ void CRobot2DPoseEstimator::processUpdateNewPoseLocalization(
 	const TPose2D &newPose,
 	TTimeStamp cur_tim)
 {
-	CCriticalSectionLocker   lock(&m_cs);
+	std::lock_guard<std::mutex>   lock(m_cs);
 
 	// Overwrite old localization data:
 	m_last_loc_time	= cur_tim;
@@ -85,7 +85,7 @@ void CRobot2DPoseEstimator::processUpdateNewOdometry(
 {
 	MRPT_START
 
-	CCriticalSectionLocker   lock(&m_cs);
+	std::lock_guard<std::mutex>   lock(m_cs);
 
 	if (m_last_odo_time!=INVALID_TIMESTAMP)
 	{

@@ -176,7 +176,7 @@ void thread_grabbing(TThreadParam &p)
 					const double need_to_wait_ms = 1000.*( At_dataset-At_actual );
 					//cout << "[Kinect grab thread] Need to wait (ms): " << need_to_wait_ms << endl;
 					if (need_to_wait_ms>0)
-						mrpt::system::sleep( need_to_wait_ms );
+						std::this_thread::sleep_for(std::chrono::duration<double,std::milli>(need_to_wait_ms ));
 				}
 
 				// Send observation to main thread:
@@ -216,7 +216,7 @@ void Test_KinectOnlineOffline(bool is_online, const string &rawlog_file = string
 		false // generate_3D_pointcloud_in_this_thread -> Don't, we'll do it in this main thread.
 		);
 
-	mrpt::system::TThreadHandle thHandle= mrpt::system::createThreadRef(thread_grabbing ,thrPar);
+	std::thread thHandle(thread_grabbing , std::ref(thrPar));
 
 	// Wait until data stream starts so we can say for sure the sensor has been initialized OK:
 	cout << "Waiting for sensor initialization...\n";
@@ -224,7 +224,7 @@ void Test_KinectOnlineOffline(bool is_online, const string &rawlog_file = string
 		CObservation3DRangeScan::Ptr newObs = thrPar.new_obs.get();
 		if (newObs && newObs->timestamp!=INVALID_TIMESTAMP)
 				break;
-		else 	mrpt::system::sleep(10);
+		else 	std::this_thread::sleep_for(10ms);
 	} while (!thrPar.quit);
 
 	// Check error condition:
@@ -415,13 +415,13 @@ void Test_KinectOnlineOffline(bool is_online, const string &rawlog_file = string
 			};
 		}
 
-		mrpt::system::sleep(1);
+		std::this_thread::sleep_for(1ms);
 	}
 
 
 	cout << "Waiting for grabbing thread to exit...\n";
 	thrPar.quit = true;
-	mrpt::system::joinThread(thHandle);
+	thHandle.join();
 	cout << "Bye!\n";
 }
 
@@ -452,7 +452,7 @@ int main(int argc, char **argv)
 			Test_KinectOnlineOffline(false, string(argv[1]));
 		}
 
-		mrpt::system::sleep(50);
+		std::this_thread::sleep_for(50ms);
 		return 0;
 
 	} catch (std::exception &e)

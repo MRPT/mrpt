@@ -14,7 +14,6 @@
 #include <cstring>
 
 #ifndef HAVE_STRTOK_R
-#   include <mrpt/synch/CCriticalSection.h>
 #endif
 
 using namespace mrpt;

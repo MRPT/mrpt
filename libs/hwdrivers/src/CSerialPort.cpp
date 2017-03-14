@@ -12,7 +12,6 @@
 #include <mrpt/hwdrivers/CSerialPort.h>
 #include <mrpt/system/os.h>
 #include <mrpt/utils/utils_defs.h>
-#include <mrpt/system/threads.h>
 
 #if defined(MRPT_OS_LINUX) || defined(MRPT_OS_APPLE)
 // Linux implementation: refer to
@@ -42,10 +41,13 @@
 #include <windows.h>
 #endif
 
+#include <thread>
+
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::hwdrivers;
 using namespace std;
+using namespace std::literals;
 
 // ctor
 CSerialPort::CSerialPort( const string &portName, bool openNow ) :
@@ -623,7 +625,7 @@ size_t  CSerialPort::Read(void *Buffer, size_t Count)
 		if (alreadyRead<Count)
 		{
 			// Wait 1 more ms for new data to arrive.
-			mrpt::system::sleep( 1 );
+			std::this_thread::sleep_for(1ms);
 		}
 
 		// Reset interbytes timer:
@@ -684,7 +686,7 @@ std::string CSerialPort::ReadString(
 			}
 		}
 		// If we are still here, string is not finished:
-		mrpt::system::sleep(1); // Wait 1 more ms for new data to arrive.
+		std::this_thread::sleep_for(1ms); // Wait 1 more ms for new data to arrive.
 #else
 		// Bytes waiting in the queue?
 		// Check if we are still connected or there is an error...
@@ -722,7 +724,7 @@ std::string CSerialPort::ReadString(
 		{
 			// we decide to move the sleep here to satisfy realtime requirement in the case where we are waiting a n-length string at a frequency
 			// greater than 1/n...
-			mrpt::system::sleep(1); // Wait 1 more ms for new data to arrive.
+			std::this_thread::sleep_for(1ms); // Wait 1 more ms for new data to arrive.
 		}
 		// If we are still here, string is not finished:
 #endif
@@ -779,7 +781,7 @@ size_t  CSerialPort::Write(const void *Buffer, size_t Count)
 				usecs= (end.tv_sec - start.tv_sec)*1000000 +
 				  (end.tv_usec - start.tv_usec);
 				} while (usecs < 60);
-				//mrpt::system::sleep(1); // we'll continue writting is a ms.
+				//std::this_thread::sleep_for(1ms); // we'll continue writting is a ms.
 			}
 		}
 		while ( ( total_bytes_written<Count) &&

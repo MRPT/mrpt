@@ -9,7 +9,6 @@
 
 #include "vision-precomp.h"   // Precompiled headers
 
-#include <mrpt/system/threads.h>
 #include <mrpt/system/os.h>
 #include <mrpt/vision/CFeatureExtraction.h>
 

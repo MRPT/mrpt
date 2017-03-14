@@ -64,7 +64,7 @@ void TestCameraCaptureAsk()
 			cout << "Frame Rate: " << counter/t << " fps" << endl;
 			counter = 0;
 		}
-		mrpt::system::sleep(2);
+		std::this_thread::sleep_for(2ms);
 	}
 
 	cout << "Closing..." << endl;

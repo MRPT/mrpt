@@ -195,7 +195,7 @@ class hmt_slam_guiFrame: public wxFrame
 
 
 		// DATA ABOUT THREAD OF HMT-SLAM ---------------|
-		mrpt::system::TThreadHandle  m_hThreadHMTSLAM; //!< Handle of HMT-SLAM thread
+		std::thread  m_hThreadHMTSLAM; //!< Handle of HMT-SLAM thread
 
 		void thread_HMTSLAM();
 

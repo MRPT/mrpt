@@ -137,7 +137,7 @@ int DoTrackingDemo(CCameraSensor::Ptr  cam, bool  DO_SAVE_VIDEO)
 		if (!obs)
 		{
             cerr << "*Warning* getNextFrame() returned nullptr!\n";
-			mrpt::system::sleep(50);
+			std::this_thread::sleep_for(50ms);
 			continue;
 		}
 
@@ -326,7 +326,7 @@ int DoTrackingDemo(CCameraSensor::Ptr  cam, bool  DO_SAVE_VIDEO)
 		}
 
 		if (extra_tim_to_wait>0)
-			mrpt::system::sleep(1000*extra_tim_to_wait);
+			std::this_thread::sleep_for(std::chrono::duration<double,std::milli>(1000.0*extra_tim_to_wait));
 
 		step_num++;
 	} // end infinite loop
@@ -459,7 +459,7 @@ int main(int argc, char **argv)
 		const int ret = DoTrackingDemo(cam, last_arg_is_save_video);
 
 		win.reset();
-		mrpt::system::sleep(150); // give time to close GUI threads
+		std::this_thread::sleep_for(150ms); // give time to close GUI threads
 		return ret;
 	}
 	catch (std::exception &e)

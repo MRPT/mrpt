@@ -175,7 +175,7 @@ bool CLMS100Eth::turnOn()
                 do{
                     sendCommand(msg);
                     size_t read = m_client.readAsync(msgIn, 100, 1000, 1000);
-                    sleep(10000);
+                    std::this_thread::sleep_for(10000ms);
 
                     msgIn[read-1] = 0;
                     MRPT_LOG_DEBUG_FMT("message : %s\n",&msgIn[1]);

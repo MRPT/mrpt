@@ -9,7 +9,6 @@
 
 #include <mrpt/random.h>
 #include <mrpt/graphslam/levmarq.h>
-#include <mrpt/system/threads.h> // sleep()
 #include <mrpt/gui.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/COpenGLScene.h>
@@ -323,7 +322,7 @@ struct ExampleDemoGraphSLAM
 		cout << "Close any window to end...\n";
 		while (win.isOpen() && win2.isOpen() && win_err.isOpen() && !mrpt::system::os::kbhit())
 		{
-			mrpt::system::sleep(10);
+			std::this_thread::sleep_for(10ms);
 		}
 	}
 };
@@ -380,7 +379,7 @@ int main()
 			} break;
 		};
 
-		mrpt::system::sleep(20);
+		std::this_thread::sleep_for(20ms);
 		return 0;
 	} catch (exception &e)
 	{

@@ -12,6 +12,8 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
 
+#include <thread>
+
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::obs;
@@ -67,7 +69,7 @@ void Test_GPS()
 	while (! mrpt::system::os::kbhit())
 	{
 		gps.doProcess();
-		mrpt::system::sleep( 500 );
+		std::this_thread::sleep_for(500ms);
 
 		gps.getObservations( lstObs );
 

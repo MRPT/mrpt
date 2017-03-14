@@ -10,10 +10,11 @@
 #include "hwdrivers-precomp.h"   // Precompiled headers
 
 #include <mrpt/hwdrivers/CPtuDPerception.h>
-#include <mrpt/system/threads.h>
 #include <mrpt/system/string_utils.h>
 #include <mrpt/system/os.h>
+
 #include <cstring>
+#include <thread>
 
 using namespace std;
 using namespace mrpt::utils;
@@ -635,7 +636,7 @@ bool CPtuDPerception::scan(char axis, int tWait, float initial, float final, dou
 	moveToAbsPos(axis,initial);
 	aWait();
 
-	mrpt::system::sleep(500);
+	std::this_thread::sleep_for(500ms);
 
 	double j=0;
 	offPosQ(axis,j);
@@ -658,7 +659,7 @@ bool CPtuDPerception::scan(char axis, int tWait, float initial, float final, dou
 			moveToOffPos(axis,radPre);
 		}
 		offPosQ(axis,j);
-		mrpt::system::sleep(tWait);
+		std::this_thread::sleep_for(std::chrono::milliseconds(tWait));
 	}
 
 	// Adjust steps for second scan
@@ -674,7 +675,7 @@ bool CPtuDPerception::scan(char axis, int tWait, float initial, float final, dou
 			moveToOffPos(axis,-radPre);
 		}
 		offPosQ(axis,j);
-		mrpt::system::sleep(tWait);
+		std::this_thread::sleep_for(std::chrono::milliseconds(tWait));
 	}
 
 	offPosQ(axis,j);

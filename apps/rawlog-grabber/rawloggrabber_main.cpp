@@ -30,6 +30,8 @@
 #include <mrpt/system/os.h>
 #include <mrpt/system/filesystem.h>
 
+#include <thread>
+
 #ifdef RAWLOGGRABBER_PLUGIN
 #	include "rawloggrabber_plugin.h"
 #endif
@@ -58,7 +60,7 @@ void SensorThread(TThreadParams params);
 
 
 CGenericSensor::TListObservations		global_list_obs;
-synch::CCriticalSection					cs_global_list_obs;
+std::mutex					cs_global_list_obs;
 
 bool									allThreadsMustExit = false;
 
@@ -144,7 +146,7 @@ int main(int argc, char **argv)
 		vector_string	sections;
 		iniFile.getAllSections( sections );
 
-		vector<TThreadHandle>		lstThreads;
+		vector<std::thread>		lstThreads;
 
 		for (vector_string::iterator it=sections.begin();it!=sections.end();++it)
 		{
@@ -155,10 +157,9 @@ int main(int argc, char **argv)
 			threParms.cfgFile		= &iniFile;
 			threParms.sensor_label	= *it;
 
-			TThreadHandle	thre = createThread(SensorThread, threParms);
 
-			lstThreads.push_back(thre);
-			sleep(time_between_launches);
+			lstThreads.emplace_back(&SensorThread, threParms);
+			std::this_thread::sleep_for(std::chrono::milliseconds(time_between_launches));
 		}
 
 		// ----------------------------------------------
@@ -176,7 +177,7 @@ int main(int argc, char **argv)
 		{
 			// See if we have observations and process them:
 			{
-				synch::CCriticalSectionLocker	lock (&cs_global_list_obs);
+				std::lock_guard<std::mutex>	lock (cs_global_list_obs);
 				copy_of_global_list_obs.clear();
 
 				if (!global_list_obs.empty())
@@ -346,7 +347,7 @@ int main(int argc, char **argv)
 					cout << "[" << dateTimeToString(now()) << "] Saved " << copy_of_global_list_obs.size() << " objects." << endl;
 				}
 			}
-			sleep(GRABBER_PERIOD_MS);
+			std::this_thread::sleep_for(std::chrono::milliseconds(GRABBER_PERIOD_MS));
 		}
 
 		if (allThreadsMustExit) {
@@ -359,10 +360,10 @@ int main(int argc, char **argv)
 		// Wait all threads:
 		// ----------------------------
 		allThreadsMustExit = true;
-		mrpt::system::sleep(300);
+		std::this_thread::sleep_for(300ms);
 		cout << endl << "Waiting for all threads to close..." << endl;
-		for (vector<TThreadHandle>::iterator th=lstThreads.begin();th!=lstThreads.end();++th)
-			joinThread( *th );
+		for (vector<std::thread>::iterator th=lstThreads.begin();th!=lstThreads.end();++th)
+			th->join();
 
 		return 0;
 	} catch (std::exception &e)
@@ -423,7 +424,7 @@ void SensorThread(TThreadParams params)
 			sensor->getObservations( lstObjs );
 
 			{
-				synch::CCriticalSectionLocker	lock (&cs_global_list_obs);
+				std::lock_guard<std::mutex>	lock (cs_global_list_obs);
 				global_list_obs.insert( lstObjs.begin(), lstObjs.end() );
 			}
 
@@ -434,7 +435,7 @@ void SensorThread(TThreadParams params)
 			double	At = timeDifference(t0,t1);
 			int At_rem_ms = process_period_ms - At*1000;
 			if (At_rem_ms>0)
-				sleep(At_rem_ms);
+				std::this_thread::sleep_for(std::chrono::milliseconds(At_rem_ms));
 		}
 
 		sensor.reset();

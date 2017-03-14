@@ -21,7 +21,6 @@
 
 using namespace mrpt::hwdrivers;
 using namespace mrpt::system;
-using namespace mrpt::synch;
 using namespace mrpt::obs;
 using namespace mrpt::math;
 using namespace std;

@@ -132,7 +132,7 @@ namespace pbmap {
     void run();
 
     /*!PbMapMaker's thread handle*/
-    mrpt::system::TThreadHandle pbmaker_hd;
+    std::thread pbmaker_hd;
 
     /*!PbMapMaker's exit thread*/
     bool stop_pbMapMaker();

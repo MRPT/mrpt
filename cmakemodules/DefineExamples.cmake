@@ -56,8 +56,6 @@ IF(BUILD_EXAMPLES)
 		SocketsTest
 		directoryExplorer
 		http_tests
-		critSectionDeadLock
-		threadsTest
 		fileSystemWatcher
 		geometry3D
 		poses

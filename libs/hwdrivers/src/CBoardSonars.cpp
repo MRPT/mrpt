@@ -14,6 +14,8 @@
 
 #include <mrpt/hwdrivers/CBoardSonars.h>
 
+#include <thread>
+
 using namespace mrpt::utils;
 using namespace mrpt::hwdrivers;
 using namespace std;
@@ -263,7 +265,7 @@ bool CBoardSonars::programI2CAddress( uint8_t currentAddress, uint8_t newAddress
 		msg.content[1] = newAddress;
 		sendMessage(msg);
 
-		mrpt::system::sleep(10);
+		std::this_thread::sleep_for(10ms);
 
 		return receiveMessage(msgRx);
 	}
@@ -285,9 +287,9 @@ bool CBoardSonars::checkConnectionAndConnect()
 	try
 	{
 		OpenBySerialNumber( m_usbSerialNumber );
-		mrpt::system::sleep(10);
+		std::this_thread::sleep_for(10ms);
 		Purge();
-		mrpt::system::sleep(10);
+		std::this_thread::sleep_for(10ms);
 		SetLatencyTimer(1);
 		SetTimeouts(300,100);
 

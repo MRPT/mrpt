@@ -11,13 +11,15 @@
 
 #include <mrpt/utils/net_utils.h>
 #include <mrpt/hwdrivers/CServoeNeck.h>
-#include <mrpt/system/threads.h>
+
+#include <thread>
 
 //const double MAX_VALUE = 10000;					// ICR value in the ATMEGA16
 
 using namespace mrpt::utils;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::math;
+using namespace std::literals;
 
 /*-------------------------------------------------------------
 					default constructor
@@ -57,7 +59,7 @@ bool CServoeNeck::queryFirmwareVersion( std::string &out_firmwareVersion )
 		if (receiveMessage( msgRx ) )
 		{
 			msgRx.getContentAsString( out_firmwareVersion );
-			mrpt::system::sleep(200);
+			std::this_thread::sleep_for(200ms);
 			return true;
 		}
 		else
@@ -126,7 +128,7 @@ bool CServoeNeck::setRegisterValue( const uint16_t value, const uint8_t servo, b
 		if (!receiveMessage(msgRx) )
 			return false;	// Error
 
-		mrpt::system::sleep(200);
+		std::this_thread::sleep_for(200ms);
 		return true;
 	}
 	catch(...)
@@ -164,7 +166,7 @@ bool CServoeNeck::setRegisterValueAndSpeed( const uint16_t value, const uint8_t 
 		if (!receiveMessage(msgRx) )
 			return false;	// Error
 
-		mrpt::system::sleep(200);
+		std::this_thread::sleep_for(200ms);
 		return true;
 	}
 	catch(...)
@@ -380,9 +382,9 @@ bool CServoeNeck::checkConnectionAndConnect()
 	try
 	{
 		OpenBySerialNumber( m_usbSerialNumber );
-		mrpt::system::sleep(10);
+		std::this_thread::sleep_for(10ms);
 		Purge();
-		mrpt::system::sleep(10);
+		std::this_thread::sleep_for(10ms);
 		SetLatencyTimer(1);
         SetTimeouts(300,100);
 		return true;

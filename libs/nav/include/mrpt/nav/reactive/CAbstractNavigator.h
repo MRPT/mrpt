@@ -14,10 +14,11 @@
 #include <mrpt/utils/TEnumType.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/poses/CPose3DInterpolator.h>
-#include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/obs/obs_frwds.h>
 
 #include <mrpt/nav/link_pragmas.h>
+
+#include <mutex>
 
 namespace mrpt
 {
@@ -151,7 +152,7 @@ namespace mrpt
 
 		CRobot2NavInterface   &m_robot; //!< The navigator-robot interface.
 
-		mrpt::synch::CCriticalSectionRecursive m_nav_cs; //!< mutex for all navigation methods
+		std::recursive_mutex m_nav_cs; //!< mutex for all navigation methods
 
 		struct NAV_IMPEXP TRobotPoseVel
 		{

@@ -11,10 +11,7 @@
 
 #include <mrpt/opengl/opengl_fonts.h>
 #include <mrpt/utils/utils_defs.h>
-#include <mrpt/system/threads.h>
 #include <mrpt/config.h>
-#include <mrpt/synch/CSemaphore.h>
-#include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/utils/types_math.h>
 #include <mrpt/gui/gui_frwds.h>
@@ -23,6 +20,7 @@
 
 #include <queue>
 #include <map>
+#include <thread>
 
 #if MRPT_HAS_WXWIDGETS
 
@@ -150,7 +148,7 @@ namespace mrpt
 
 				private:
 
-					static synch::CCriticalSection     cs_windowCount;
+					static std::mutex     cs_windowCount;
 					static int                         m_windowCount;
 
 					wxTimer                         *m_theTimer;
@@ -163,10 +161,10 @@ namespace mrpt
 
 			struct TWxMainThreadData
 			{
-				TWxMainThreadData();
-				mrpt::system::TThreadHandle  m_wxMainThreadId; //!< The thread ID of wxMainThread, or 0 if it is not running.
-				mrpt::synch::CSemaphore m_semWxMainThreadReady; //!< This is signaled when wxMainThread is ready.
-				mrpt::synch::CCriticalSection m_csWxMainThreadId; //!< The critical section for accessing "m_wxMainThreadId"
+				std::thread  m_wxMainThreadId; //!< The thread ID of wxMainThread, or 0 if it is not running.
+				std::promise<void> m_semWxMainThreadReady; //!< This is signaled when wxMainThread is ready.
+				std::promise<void> m_done;
+				std::mutex m_csWxMainThreadId; //!< The critical section for accessing "m_wxMainThreadId"
 			};
 
 			static TWxMainThreadData& GetWxMainThreadInstance();
@@ -278,7 +276,7 @@ namespace mrpt
 			/** Do not access directly to this, use the thread-safe functions
 			  */
 			static std::queue<TRequestToWxMainThread*>  *listPendingWxRequests;
-			static synch::CCriticalSection              *cs_listPendingWxRequests;
+			static std::mutex              *cs_listPendingWxRequests;
 	#endif
 		}; // End of class def.
 
@@ -296,7 +294,7 @@ namespace mrpt
 			{
 			protected:
 				wxBitmap *m_img;
-				mrpt::synch::CCriticalSection	m_img_cs;
+				std::mutex	m_img_cs;
 				CDisplayWindow *m_win2D;
 
 			public:
@@ -304,7 +302,7 @@ namespace mrpt
 				virtual ~wxMRPTImageControl();
 
 				wxPoint m_last_mouse_point, m_last_mouse_click;
-				//mrpt::synch::CCriticalSection	m_mouse_cs;
+				//std::mutex	m_mouse_cs;
 
 				void AssignImage(wxBitmap *img); //!< Assigns this image. This object has the ownship of the image and will delete it when appropriate.
 				void GetBitmap(wxBitmap &bmp);

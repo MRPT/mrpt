@@ -8,8 +8,9 @@
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/system/os.h>
-#include <mrpt/system/threads.h>
 #include <mrpt/hwdrivers/CServoeNeck.h>
+
+#include <thread>
 
 using namespace mrpt;
 using namespace mrpt::system;
@@ -33,7 +34,7 @@ int main()
 			if (!eNeckBoard.queryFirmwareVersion( firmVers ) )
 			{
 				cout << "Cannot connect to USB device... Retrying in 1 sec" << endl;
-				mrpt::system::sleep(1000);
+				std::this_thread::sleep_for(1000ms);
 			}
 			else
 			{
@@ -109,7 +110,7 @@ int main()
 			case 'k': // center
 				srv = c == 's' ? SRV1 : SRV2;
 				eNeckBoard.center(srv);
-				mrpt::system::sleep( 200 );
+				std::this_thread::sleep_for(200ms);
 				std::cout << "Centering servo " << srv+1 << std::endl;
 				break;
 
@@ -117,11 +118,11 @@ int main()
 			case 'h': // complete run
 				srv = c == 'f' ? SRV1 : SRV2;
 				eNeckBoard.center( srv );
-				mrpt::system::sleep( 200 );
+				std::this_thread::sleep_for(200ms);
 				eNeckBoard.setAngle( DEG2RAD(-90), srv );
-				mrpt::system::sleep( 200 );
+				std::this_thread::sleep_for(200ms);
 				eNeckBoard.setAngle( DEG2RAD(90), srv );
-				mrpt::system::sleep( 200 );
+				std::this_thread::sleep_for(200ms);
 				std::cout << "Performing a complete run in servo " << srv+1 << std::endl;
 				break;
 
@@ -142,7 +143,7 @@ int main()
 				for( unsigned int i = 0; i < 10; i++ )
 				{
 					eNeckBoard.setAngleWithFilter( DEG2RAD( angles[i] ), srv );
-					mrpt::system::sleep( 200 );
+					std::this_thread::sleep_for(200ms);
 				}
 				std::cout << "Sending a set of angles to servo " << srv+1 << std::endl;
 				break;
@@ -177,7 +178,7 @@ int main()
 
 			default: continue;
 			}
-			mrpt::system::sleep( 200 );
+			std::this_thread::sleep_for(200ms);
 		} while( c != 27 ); // end-do-while (Esc key)
 		eNeckBoard.disableServo();	// assert that the servo is disbled at the end
 	} // end-try

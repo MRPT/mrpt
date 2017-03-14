@@ -9,7 +9,6 @@
 #ifndef  CBaseGUIWindow_H
 #define  CBaseGUIWindow_H
 
-#include <mrpt/synch/CSemaphore.h>
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/utils/mrptEvent.h>
 #include <mrpt/utils/CObservable.h>
@@ -21,11 +20,14 @@
 
 #include <mrpt/gui/link_pragmas.h>
 
+#include <mutex>
+#include <future>
+
 namespace mrpt
 {
 	namespace gui
 	{
-		DEFINE_MRPT_OBJECT_PRE_CUSTOM_LINKAGE( CBaseGUIWindow, GUI_IMPEXP )
+//		DEFINE_MRPT_OBJECT_PRE_CUSTOM_LINKAGE( CBaseGUIWindow, GUI_IMPEXP )
 
 		/** The base class for GUI window classes.
 		  *
@@ -41,13 +43,8 @@ namespace mrpt
 		  *    so all your code in the handler must be thread safe.
 		  * \ingroup mrpt_gui_grp
 		  */
-		class GUI_IMPEXP CBaseGUIWindow :
-			public mrpt::utils::CObject,
-			public mrpt::utils::CObservable
+		class GUI_IMPEXP CBaseGUIWindow : public mrpt::utils::CObservable
 		{
-			// This must be added to any CSerializable derived class:
-			DEFINE_VIRTUAL_SERIALIZABLE( CBaseGUIWindow )
-
 			friend class CWindowDialog;
 			friend class C3DWindowDialog;
 			friend class CWindowDialogPlots;
@@ -58,8 +55,8 @@ namespace mrpt
 			void*		m_winobj_voidptr;
 
 		protected:
-			synch::CSemaphore 	m_semThreadReady;	//!< This semaphore will be signaled when the wx window is built and ready.
-			synch::CSemaphore 	m_semWindowDestroyed; //!< This semaphore will be signaled when the wx window is destroyed.
+			mutable std::promise<void> m_threadReady;	//!< This semaphore will be signaled when the wx window is built and ready.
+			mutable std::promise<void> m_windowDestroyed; //!< This semaphore will be signaled when the wx window is destroyed.
 			std::string			m_caption;	//!< The caption of the window
 			mrpt::utils::void_ptr_noncopy	m_hwnd;	//!< The window handle
 
@@ -136,7 +133,6 @@ namespace mrpt
 
 
 		}; // End of class def.
-		DEFINE_MRPT_OBJECT_POST_CUSTOM_LINKAGE( CBaseGUIWindow, GUI_IMPEXP )
 
 
 		/** @name Events common to all GUI windows:

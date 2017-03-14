@@ -26,7 +26,6 @@
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
 #include <mrpt/system/os.h>
-#include <mrpt/system/threads.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>  // This class lives in the lib [mrpt-maps] and must be included by hand
 #include <mrpt/gui/CDisplayWindow3D.h>
@@ -429,7 +428,7 @@ void MapBuilding_ICP(const string &INI_FILENAME, const string &override_rawlog_f
 					// Update:
 					win3D->forceRepaint();
 
-					mrpt::system::sleep( SHOW_PROGRESS_3D_REAL_TIME_DELAY_MS );
+					std::this_thread::sleep_for(std::chrono::milliseconds(SHOW_PROGRESS_3D_REAL_TIME_DELAY_MS));
 				}
 			}
 

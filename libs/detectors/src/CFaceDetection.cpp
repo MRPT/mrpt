@@ -44,13 +44,7 @@ using namespace mrpt::obs;
 //							CFaceDetection
 //------------------------------------------------------------------------
 CFaceDetection::CFaceDetection() :
-	m_end_threads(false),
-	m_enter_checkIfFaceRegions(0,1),
-	m_enter_checkIfFacePlaneCov(0,1),
-	m_enter_checkIfDiagonalSurface(0,1),
-	m_leave_checkIfFaceRegions(0,1),
-	m_leave_checkIfFacePlaneCov(0,1),
-	m_leave_checkIfDiagonalSurface(0,1)
+	m_end_threads(false)
 {
 	m_measure.numPossibleFacesDetected = 0;
 	m_measure.numRealFacesDetected = 0;
@@ -70,13 +64,13 @@ CFaceDetection::~CFaceDetection()
 
 	m_end_threads	= true;
 
-	m_enter_checkIfFacePlaneCov.release();
-	m_enter_checkIfFaceRegions.release();
-	m_enter_checkIfDiagonalSurface.release();
+	m_enter_checkIfFacePlaneCov.set_value();
+	m_enter_checkIfFaceRegions.set_value();
+	m_enter_checkIfDiagonalSurface.set_value();
 
-	joinThread(m_thread_checkIfFaceRegions);
-	joinThread(m_thread_checkIfFacePlaneCov);
-	joinThread(m_thread_checkIfDiagonalSurface);
+	m_thread_checkIfFaceRegions.join();
+	m_thread_checkIfFacePlaneCov.join();
+	m_thread_checkIfDiagonalSurface.join();
 }
 
 //------------------------------------------------------------------------
@@ -105,11 +99,11 @@ void CFaceDetection::init(const mrpt::utils::CConfigFileBase &cfg )
 	if ( m_options.multithread )
 	{
 		if ( m_options.useRegionsFilter )
-			m_thread_checkIfFaceRegions = createThread( dummy_checkIfFaceRegions, this );
+			m_thread_checkIfFaceRegions = std::thread( dummy_checkIfFaceRegions, this );
 		if ( m_options.useCovFilter )
-			m_thread_checkIfFacePlaneCov = createThread( dummy_checkIfFacePlaneCov, this );
+			m_thread_checkIfFacePlaneCov = std::thread( dummy_checkIfFacePlaneCov, this );
 		if ( m_options.useSizeDistanceRelationFilter || m_options.useDiagonalDistanceFilter )
-			m_thread_checkIfDiagonalSurface = createThread( dummy_checkIfDiagonalSurface, this );
+			m_thread_checkIfDiagonalSurface = std::thread( dummy_checkIfDiagonalSurface, this );
 
 		m_checkIfFacePlaneCov_res	= false;
 		m_checkIfFaceRegions_res	= true;
@@ -187,19 +181,19 @@ void CFaceDetection::detectObjects_Impl(const mrpt::obs::CObservation *obs, vect
 
 					// Semaphores signal
 					if ( m_options.useCovFilter )
-						m_enter_checkIfFacePlaneCov.release();
+						m_enter_checkIfFacePlaneCov.set_value();
 					if ( m_options.useRegionsFilter )
-						m_enter_checkIfFaceRegions.release();
+						m_enter_checkIfFaceRegions.set_value();
 					if ( m_options.useSizeDistanceRelationFilter || m_options.useDiagonalDistanceFilter )
-						m_enter_checkIfDiagonalSurface.release();
+						m_enter_checkIfDiagonalSurface.set_value();
 
 					// Semaphores wait
 					if ( m_options.useCovFilter )
-						m_leave_checkIfFacePlaneCov.waitForSignal();
+						m_leave_checkIfFacePlaneCov.get_future().wait();
 					if ( m_options.useRegionsFilter )
-						m_leave_checkIfFaceRegions.waitForSignal();
+						m_leave_checkIfFaceRegions.get_future().wait();
 					if ( m_options.useSizeDistanceRelationFilter || m_options.useDiagonalDistanceFilter )
-						m_leave_checkIfDiagonalSurface.waitForSignal();
+						m_leave_checkIfDiagonalSurface.get_future().wait();
 
 					// Check resutls
 					if ( !m_checkIfFacePlaneCov_res || !m_checkIfFaceRegions_res
@@ -346,7 +340,7 @@ void CFaceDetection::thread_checkIfFacePlaneCov( )
 {
 	for(;;)
 	{
-		m_enter_checkIfFacePlaneCov.waitForSignal();
+		m_enter_checkIfFacePlaneCov.get_future().wait();
 
 		if ( m_end_threads )
 			break;
@@ -354,7 +348,7 @@ void CFaceDetection::thread_checkIfFacePlaneCov( )
 		// Perform filter
 		m_checkIfFacePlaneCov_res = checkIfFacePlaneCov( &m_lastFaceDetected );
 
-		m_leave_checkIfFacePlaneCov.release();
+		m_leave_checkIfFacePlaneCov.set_value();
 	}
 }
 
@@ -474,7 +468,7 @@ void CFaceDetection::thread_checkIfFaceRegions( )
 {
 	for(;;)
 	{
-		m_enter_checkIfFaceRegions.waitForSignal();
+		m_enter_checkIfFaceRegions.get_future().wait();
 
 		if ( m_end_threads )
 			break;
@@ -482,7 +476,7 @@ void CFaceDetection::thread_checkIfFaceRegions( )
 		// Perform filter
 		m_checkIfFaceRegions_res = checkIfFaceRegions( &m_lastFaceDetected );
 
-		m_leave_checkIfFaceRegions.release();
+		m_leave_checkIfFaceRegions.set_value();
 	}
 }
 
@@ -798,7 +792,7 @@ void CFaceDetection::thread_checkIfDiagonalSurface( )
 {
 	for(;;)
 	{
-		m_enter_checkIfDiagonalSurface.waitForSignal();
+		m_enter_checkIfDiagonalSurface.get_future().wait();
 
 		if ( m_end_threads )
 			break;
@@ -806,7 +800,7 @@ void CFaceDetection::thread_checkIfDiagonalSurface( )
 		// Perform filter
 		m_checkIfDiagonalSurface_res = checkIfDiagonalSurface( &m_lastFaceDetected );
 
-		m_leave_checkIfDiagonalSurface.release();
+		m_leave_checkIfDiagonalSurface.set_value();
 	}
 }
 

@@ -30,7 +30,6 @@
 #include <mrpt/slam/CICP.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/system/os.h>
-#include <mrpt/system/threads.h>
 
 #include <mrpt/graphslam/interfaces/CNodeRegistrationDecider.h>
 #include <mrpt/graphslam/misc/CRangeScanRegistrationDecider.h>

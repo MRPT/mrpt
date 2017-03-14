@@ -14,7 +14,6 @@
 
 #include <mrpt/math/slerp.h>
 #include <mrpt/utils/CTicTac.h>
-#include <mrpt/system/threads.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/stock_objects.h>
@@ -110,7 +109,7 @@ void TestSLERP()
 
 		// Update window:
 		win.forceRepaint();
-		mrpt::system::sleep(5);
+		std::this_thread::sleep_for(5ms);
 
 	};
 }

@@ -30,6 +30,7 @@ using namespace mrpt::utils;
 using namespace mrpt::obs;
 using namespace mrpt::system;
 using namespace std;
+using namespace std::literals;
 
 IMPLEMENTS_GENERIC_SENSOR(CCameraSensor,mrpt::hwdrivers)
 
@@ -97,7 +98,7 @@ CCameraSensor::CCameraSensor() :
 	m_camera_grab_decimator (0),
 	m_camera_grab_decimator_counter(0),
 	m_preview_counter	(0),
-	m_external_image_saver_count( mrpt::system::getNumberOfProcessors() ),
+	m_external_image_saver_count( std::thread::hardware_concurrency() ),
 	m_threadImagesSaverShouldEnd(false),
 	m_hook_pre_save      (nullptr),
 	m_hook_pre_save_param(nullptr)
@@ -348,7 +349,7 @@ void CCameraSensor::initialize()
 		m_toSaveList.resize(m_external_image_saver_count);
 
 		for (unsigned int i=0;i<m_external_image_saver_count;++i)
-			m_threadImagesSaver[i] = mrpt::system::createThreadFromObjectMethod(this,&CCameraSensor::thread_save_images, i);
+			m_threadImagesSaver[i] = std::thread(&CCameraSensor::thread_save_images,this,i);
 
 	}
 
@@ -380,7 +381,7 @@ void CCameraSensor::close()
 	{
 		m_threadImagesSaverShouldEnd = true;
         for (size_t i=0;i<m_threadImagesSaver.size();i++)
-            mrpt::system::joinThread( m_threadImagesSaver[i] );
+             m_threadImagesSaver[i] .join();
 	}
 }
 
@@ -650,7 +651,7 @@ void CCameraSensor::getNextFrame( vector<CSerializable::Ptr> & out_obs )
 		do
 		{
 			m_cap_kinect->getNextObservation(*obs3D, there_is_obs, hardware_error);
-			if (!there_is_obs) mrpt::system::sleep(1);
+			if (!there_is_obs) std::this_thread::sleep_for(1ms);
 		} while (!there_is_obs && mrpt::system::timeDifference(t0,mrpt::system::now())<max_timeout);
 
 		if (!there_is_obs || hardware_error)
@@ -670,7 +671,7 @@ void CCameraSensor::getNextFrame( vector<CSerializable::Ptr> & out_obs )
 		do
 		{
 			m_cap_openni2->getNextObservation(*obs3D, there_is_obs, hardware_error);
-			if (!there_is_obs) mrpt::system::sleep(1);
+			if (!there_is_obs) std::this_thread::sleep_for(1ms);
 		} while (!there_is_obs && mrpt::system::timeDifference(t0,mrpt::system::now())<max_timeout);
 
 		if (!there_is_obs || hardware_error)
@@ -966,7 +967,7 @@ void CCameraSensor::getNextFrame( vector<CSerializable::Ptr> & out_obs )
 		{	// Stereo obs  -------
 			if (m_external_images_own_thread)
 			{
-				m_csToSaveList.enter();
+				m_csToSaveList.lock();
 
 				// Select the "m_toSaveList" with the shortest pending queue:
 				size_t idx_min = 0;
@@ -976,7 +977,7 @@ void CCameraSensor::getNextFrame( vector<CSerializable::Ptr> & out_obs )
                 // Insert:
 				m_toSaveList[idx_min].insert( TListObsPair( stObs->timestamp, stObs ) );
 
-				m_csToSaveList.leave();
+				m_csToSaveList.unlock();
 
 				delayed_insertion_in_obs_queue = true;
 			}
@@ -1003,7 +1004,7 @@ void CCameraSensor::getNextFrame( vector<CSerializable::Ptr> & out_obs )
 		{	// Monocular image obs  -------
 			if (m_external_images_own_thread)
 			{
-				m_csToSaveList.enter();
+				m_csToSaveList.lock();
 
 				// Select the "m_toSaveList" with the shortest pending queue:
 				size_t idx_min = 0;
@@ -1014,7 +1015,7 @@ void CCameraSensor::getNextFrame( vector<CSerializable::Ptr> & out_obs )
                 // Insert:
 				m_toSaveList[idx_min].insert( TListObsPair( obs->timestamp, obs ) );
 
-				m_csToSaveList.leave();
+				m_csToSaveList.unlock();
 				delayed_insertion_in_obs_queue = true;
 			}
 			else
@@ -1177,21 +1178,21 @@ CCameraSensor::Ptr mrpt::hwdrivers::prepareVideoSourceFromUserSelection()
 		return CCameraSensor::Ptr(); // Error!
 	}
 
-	mrpt::synch::CSemaphore  semDlg(0,10);
-	mrpt::gui::detail::TReturnAskUserOpenCamera dlgSelection;
+	std::promise<void>  semDlg;
+	std::promise<mrpt::gui::detail::TReturnAskUserOpenCamera> dlgSelection;
 
     // Create window:
     WxSubsystem::TRequestToWxMainThread  *REQ = new WxSubsystem::TRequestToWxMainThread[1];
     REQ->OPCODE   = 700;
     REQ->sourceCameraSelectDialog = true;
-	REQ->voidPtr = reinterpret_cast<void*>(&semDlg);
-	REQ->voidPtr2 = reinterpret_cast<void*>(&dlgSelection);
+    REQ->voidPtr = reinterpret_cast<void*>(&semDlg);
+    REQ->voidPtr2 = reinterpret_cast<void*>(&dlgSelection);
     WxSubsystem::pushPendingWxRequest( REQ );
 
     // Wait for the window to realize and signal it's alive:
     if (!WxSubsystem::isConsoleApp)
     {
-    	mrpt::system::sleep(20);	// Force at least 1-2 timer ticks for processing the event:
+    	std::this_thread::sleep_for(20ms);	// Force at least 1-2 timer ticks for processing the event:
     	wxApp::GetInstance()->Yield(true);
     }
 
@@ -1206,25 +1207,22 @@ CCameraSensor::Ptr mrpt::hwdrivers::prepareVideoSourceFromUserSelection()
 	const char *envVal = getenv("MRPT_WXSUBSYS_TIMEOUT_MS");
 	if (envVal) maxTimeout = atoi(envVal);
 
-	if(!semDlg.waitForSignal(maxTimeout))
+	if(semDlg.get_future().wait_for(std::chrono::milliseconds(maxTimeout))== std::future_status::timeout)
 	{
 		cerr << "[prepareVideoSourceFromUserSelection] Timeout waiting window creation." << endl;
 		return CCameraSensor::Ptr();
 	}
 
-    // wait for user selection:
-   	if(!semDlg.waitForSignal())
-	{
-		cerr << "[prepareVideoSourceFromUserSelection] Timeout waiting user selection." << endl;
-		return CCameraSensor::Ptr();
-	}
+	// wait for user selection:
+	auto future = dlgSelection.get_future();
+	future.wait();
 
 	// If the user didn't accept the dialog, return now:
-	if (!dlgSelection.accepted_by_user)
+	if (!future.get().accepted_by_user)
 		return CCameraSensor::Ptr();
 
 	CCameraSensor::Ptr cam = CCameraSensor::Ptr(new CCameraSensor);
-	cam->loadConfig(dlgSelection.selectedConfig,"CONFIG");
+	cam->loadConfig(future.get().selectedConfig,"CONFIG");
 	cam->initialize();	// This will raise an exception if neccesary
 
 	return cam;
@@ -1322,9 +1320,9 @@ void CCameraSensor::thread_save_images(unsigned int my_working_thread_index)
 		TListObservations newObs;
 
 		// is there any new image?
-		m_csToSaveList.enter();
+		m_csToSaveList.lock();
 		m_toSaveList[my_working_thread_index].swap(newObs);
-		m_csToSaveList.leave();
+		m_csToSaveList.unlock();
 
 		for (TListObservations::const_iterator i=newObs.begin();i!=newObs.end();++i)
 		{
@@ -1372,6 +1370,6 @@ void CCameraSensor::thread_save_images(unsigned int my_working_thread_index)
 			appendObservation(i->second);
 		}
 
-		mrpt::system::sleep(2);
+		std::this_thread::sleep_for(2ms);
 	}
 }
