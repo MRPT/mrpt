@@ -21,8 +21,10 @@
 *     - `ptr.clear_unique()` --> `ptr.reset()`. (Read this note above)
 *     - `ptr.make_unique()` does no longer exists, and does not make sense (read above).
 *     - `ptr.pointer()` --> `ptr.get()`
-*  - Smart pointer typicasting now is done via C++11 standard functions: 
-*     - Example: Old code 
+*  - Smart pointers have been renamed from `CFooPtr` to the more standard `CFoo::Ptr`, with a new pointer-to-const version `CFoo::ConstPtr`.
+*    - Note: To help with porting and maintaining existing code bases, MRPT 2.* comes by default with a CMake flag `MRPT_1X_BACKCOMPATIB_SMARTPTR_NAMES`, which declares aliases of smart pointers with the old name `CFooPtr`. It is recommended to switch it OFF when writing new code as well as port existing code since this feature will be removed in the future.
+*  - Smart pointer typecasting now is done via C++11 standard functions:
+*     - Example: Old code
 *        \code
 *        CObservationPtr obs = getObsFromSomewhere();
 *        CObservationGPSPtr gps = CObservationGPS(obs);

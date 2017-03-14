@@ -141,14 +141,6 @@ namespace mrpt
 			CRenderizable();
 			virtual ~CRenderizable();
 
-			/** Interface for the stlplus smart pointer class. */
-			/* Can't overload clone return type
-			inline CRenderizable * clone() const
-			{
-				return static_cast<CRenderizable*>( this->clone() );
-			}
-			*/
-
 			/** Implements the rendering of 3D objects in each class derived from CRenderizable.
 			  */
 			virtual void  render() const = 0;

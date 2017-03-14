@@ -38,11 +38,7 @@ namespace mrpt
 			mrpt::utils::CObject*		createObject() const;
 			bool	derivedFrom(const TRuntimeClassId* pBaseClass) const;
 			bool	derivedFrom(const char* pBaseClass_name) const;
-
 		};
-
-		/** A wrapper class for a "TRuntimeClassId *", well-defined with respect to copy operators and constructors. \ingroup mrpt_base_grp
-		  */
 
 		/** Register a class into the MRPT internal list of "CSerializable" descendents.
 		  *  Used internally in the macros DEFINE_SERIALIZABLE, etc...
@@ -199,10 +195,15 @@ namespace mrpt
 
 		// This one is almost identical to the one above, but without a member:
 		/**  This declaration must be inserted in all CObject classes definition, before the class declaration. */
-		#define DEFINE_MRPT_OBJECT_PRE_CUSTOM_LINKAGE2(class_name,class_name_LINKAGE_) 
+		#define DEFINE_MRPT_OBJECT_PRE_CUSTOM_LINKAGE2(class_name,class_name_LINKAGE_)
 
 		/**  This declaration must be inserted in all CObject classes definition, after the class declaration. */
+#ifdef MRPT_1X_BACKCOMPATIB_SMARTPTR_NAMES
+		#define DEFINE_MRPT_OBJECT_POST_CUSTOM_LINKAGE2(class_name,class_name_LINKAGE_) \
+		using class_name##Ptr = class_name::Ptr; //!< MRPT 1.X backwards-compatible smart pointer name (to be removed in a future version of MRPT! Use CFoo::Ptr instead)
+#else
 		#define DEFINE_MRPT_OBJECT_POST_CUSTOM_LINKAGE2(class_name,class_name_LINKAGE_)
+#endif
 
 		/**  This declaration must be inserted in all CObject classes definition, before the class declaration.
 		  */

@@ -43,7 +43,7 @@ namespace mrpt
 
 			virtual ~CSerializable() { }
 
-        protected:
+			protected:
 			 /** Introduces a pure virtual method responsible for writing to a CStream.
 			  *  This can not be used directly be users, instead use "stream << object;"
 			  *   for writing it to a stream.
