@@ -270,5 +270,3 @@ void utils::RawStringToObject(const std::string & in_data, CSerializable::Ptr &o
 		fprintf(stderr, "[RawStringToObject] Unknown exception\n");
 	}
 }
-
-
