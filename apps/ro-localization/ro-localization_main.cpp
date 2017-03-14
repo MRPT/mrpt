@@ -29,7 +29,6 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
 #include <mrpt/math/data_utils.h>
-#include <mrpt/system/threads.h>
 #include <mrpt/obs/CObservationBeaconRanges.h>
 #include <mrpt/obs/CObservationGPS.h>
 #include <mrpt/obs/CRawlog.h>
@@ -831,7 +830,7 @@ void TestParticlesLocalization()
 
 					window.unlockAccess3DScene();
 					window.forceRepaint();
-					mrpt::system::sleep(2);	// Time to refresh
+					std::this_thread::sleep_for(2ms);	// Time to refresh
 	#endif
 				}
 #endif

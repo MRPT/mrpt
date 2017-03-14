@@ -11,7 +11,6 @@
 //#include <mrpt/graphslam/levmarq.h>
 #include <mrpt/gui.h>
 #include <mrpt/utils/CObserver.h>
-#include <mrpt/system/threads.h>
 #include <mrpt/opengl/gl_utils.h>
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/CSetOfObjects.h>
@@ -283,7 +282,7 @@ void display_graph(const GRAPHTYPE & g)
 		{
 			win.repaint();
 		}
-		mrpt::system::sleep(10);
+		std::this_thread::sleep_for(10ms);
 	}
 }
 

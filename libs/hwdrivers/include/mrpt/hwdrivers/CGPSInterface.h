@@ -137,14 +137,14 @@ namespace mrpt
 			void  setParser(PARSERS parser);  //!< Select the parser for incomming data, among the options enumerated in \a CGPSInterface
 			PARSERS getParser() const;
 
-			//void setExternCOM( CSerialPort *outPort, mrpt::synch::CCriticalSection *csOutPort ); // Replaced by bindStream() in MRPT 1.4.0
+			//void setExternCOM( CSerialPort *outPort, std::mutex *csOutPort ); // Replaced by bindStream() in MRPT 1.4.0
 
 			/** This enforces the use of a given user stream, instead of trying to open the serial port set in this class parameters.
 			  * \param[in] csExternalStream If not NULL, read/write operations to the stream will be guarded by this critical section.
 			  * The stream object is not deleted. It is the user responsibility to keep that object allocated during the entire life of this object.
 			  * \note Call before CGenericSensor::initialize()
 			  */
-			void bindStream(mrpt::utils::CStream * external_stream, mrpt::synch::CCriticalSection *csOptionalExternalStream = nullptr );
+			void bindStream(mrpt::utils::CStream * external_stream, std::mutex *csOptionalExternalStream = nullptr );
 
 			bool useExternCOM() const { return m_data_stream_is_external; }
 			bool useExternalStream() const { return m_data_stream_is_external; }
@@ -203,7 +203,7 @@ namespace mrpt
 			bool legacy_topcon_setup_commands();
 
 			mrpt::utils::CStream           *m_data_stream;    //!< Typically a CSerialPort created by this class, but may be set externally.
-			mrpt::synch::CCriticalSection  *m_data_stream_cs;
+			std::mutex  *m_data_stream_cs;
 			bool                            m_data_stream_is_external;
 
 			poses::CPose3D  m_sensorPose;

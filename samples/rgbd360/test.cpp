@@ -55,11 +55,11 @@ int main ( int argc, char** argv )
     cout << "Calling COpenNI2_RGBD360::initialize()...";
 //    rgbd360.m_num_sensors = num_sensors;
     rgbd360.initialize();
-    mrpt::system::sleep(2000); // Sleep 2s
+    std::this_thread::sleep_for(2000ms); // Sleep 2s
     cout << "OK " << rgbd360.numDevices << " available devices."  << endl;
 
     const unsigned num_sensors = NUM_SENSORS;
-    vector<mrpt::system::TThreadHandle> v_stitch_hd(num_sensors);
+    vector<std::thread> v_stitch_hd(num_sensors);
     vector<bool> v_stitch_im(num_sensors);
 
 //    cout << "Create windows\n";
@@ -99,7 +99,7 @@ int main ( int argc, char** argv )
       for(unsigned i=0; i < num_sensors; i++)
         win[i]->showImage(newObs.intensityImages[i]);
 //      win.showImage(newObs.intensityImage);
-      mrpt::system::sleep(10);
+      std::this_thread::sleep_for(10ms);
 
     }
 

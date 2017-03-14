@@ -11,7 +11,7 @@
 
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/utils/CStream.h>
-#include <mrpt/synch/CCriticalSection.h>
+#include <mutex>
 #include <cstdlib> // atexit()
 
 #include "opengl_internals.h"
@@ -31,7 +31,7 @@ void deleteSingleton();
 struct TAuxDLData
 {
 	std::vector<unsigned int>      dls_to_delete;
-	mrpt::synch::CCriticalSectionRecursive  dls_to_delete_cs;
+	std::recursive_mutex  dls_to_delete_cs;
 
 	static TAuxDLData& getSingleton()
 	{
@@ -70,9 +70,9 @@ CRenderizableDisplayList::~CRenderizableDisplayList()
 	{
 		// Delete the graphical memory (actually, enque the request...)
 		TAuxDLData & obj = TAuxDLData::getSingleton();
-		obj.dls_to_delete_cs.enter();
+		obj.dls_to_delete_cs.lock();
 			obj.dls_to_delete.push_back(m_dl);
-		obj.dls_to_delete_cs.leave();
+		obj.dls_to_delete_cs.unlock();
 	}
 }
 
@@ -92,13 +92,13 @@ void   CRenderizableDisplayList::render() const
 		TAuxDLData & obj = TAuxDLData::getSingleton();
 		if (!obj.dls_to_delete.empty())
 		{
-			obj.dls_to_delete_cs.enter();
+			obj.dls_to_delete_cs.lock();
 #if MRPT_HAS_OPENGL_GLUT
 			for (size_t i=0;i<obj.dls_to_delete.size();i++)
 				glDeleteLists(obj.dls_to_delete[i], 1);
 #endif
 			obj.dls_to_delete.clear();
-			obj.dls_to_delete_cs.leave();
+			obj.dls_to_delete_cs.unlock();
 		}
 
 		if (m_dl==INVALID_DISPLAY_LIST_ID)

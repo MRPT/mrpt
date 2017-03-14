@@ -12,12 +12,12 @@
 
 #include <mrpt/utils/TCamera.h>
 #include <mrpt/hwdrivers/link_pragmas.h>
-#include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/synch/CThreadSafeVariable.h>
 #include <mrpt/obs/CObservationImage.h>
 
 #include <mrpt/hwdrivers/CGenericSensor.h>
 
+#include <thread>
 
 namespace mrpt
 {
@@ -30,14 +30,14 @@ namespace mrpt
 		class HWDRIVERS_IMPEXP CRovio
 		{
 		private:
-			mrpt::system::TThreadHandle		m_videoThread;
+			std::thread		m_videoThread;
 			bool	m_videothread_must_exit; 
 			bool	m_videothread_initialized_done;
 			bool	m_videothread_initialized_error;
 			bool    m_videothread_finished;
 
 			mrpt::obs::CObservationImage::Ptr buffer_img;
-			mrpt::synch::CCriticalSection buffer_img_cs;
+			std::mutex buffer_img_cs;
 
 
 			/** This function takes a frame and waits until getLastImage ask for it, and so on.

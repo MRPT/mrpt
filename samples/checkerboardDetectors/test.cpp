@@ -10,7 +10,6 @@
 #include <mrpt/utils/CImage.h>
 #include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/vision/chessboard_find_corners.h>
-#include <mrpt/system/threads.h>
 #include <mrpt/gui.h>
 
 using namespace std;
@@ -89,7 +88,7 @@ void TestCheckerboardDetectors()
 	// wait till user closes any window:
 	while (win1.isOpen() && win2.isOpen())
 	{
-		mrpt::system::sleep(10);
+		std::this_thread::sleep_for(10ms);
 	}
 }
 

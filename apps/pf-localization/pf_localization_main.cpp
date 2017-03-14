@@ -34,7 +34,6 @@
 #include <mrpt/maps/CMultiMetricMap.h>
 
 #include <mrpt/system/os.h>
-#include <mrpt/system/threads.h> // sleep()
 #include <mrpt/system/vector_loadsave.h>
 #include <mrpt/math/distributions.h>
 #include <mrpt/math/utils.h>
@@ -646,7 +645,7 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 							// Update:
 							win3D->forceRepaint();
 
-							sleep( SHOW_PROGRESS_3D_REAL_TIME_DELAY_MS );
+							std::this_thread::sleep_for(std::chrono::milliseconds(SHOW_PROGRESS_3D_REAL_TIME_DELAY_MS ));
 						} // end show 3D real-time
 
 

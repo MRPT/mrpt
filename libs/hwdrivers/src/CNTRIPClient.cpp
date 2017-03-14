@@ -21,7 +21,6 @@
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::system;
-using namespace mrpt::synch;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::math;
 using namespace std;
@@ -32,15 +31,13 @@ using namespace std;
    -------------------------------------------------------- */
 CNTRIPClient::CNTRIPClient() :
 	m_thread(),
-	m_sem_sock_closed(0,1),
-	m_sem_first_connect_done(0,1),
 	m_thread_exit (false),
 	m_thread_do_process(false),
 	m_waiting_answer_connection(false),
 	m_answer_connection(connError),
 	m_args ( )
 {
-	m_thread = mrpt::system::createThreadFromObjectMethod( this, &CNTRIPClient::private_ntrip_thread );
+	m_thread = std::thread( &CNTRIPClient::private_ntrip_thread , this);
 }
 
 /* --------------------------------------------------------
@@ -49,11 +46,10 @@ CNTRIPClient::CNTRIPClient() :
 CNTRIPClient::~CNTRIPClient()
 {
 	this->close();
-	if (!m_thread.isClear())
+	if (m_thread.joinable())
 	{
 		m_thread_exit = true;
-		joinThread(m_thread);
-		m_thread.clear();
+		m_thread.join();
 	}
 }
 
@@ -66,7 +62,8 @@ void CNTRIPClient::close()
 	m_upload_data.clear();
 	if (!m_thread_do_process) return;
 	m_thread_do_process = false;
-	m_sem_sock_closed.waitForSignal(500);
+	MRPT_TODO("Is this a race condition if we are not checking for timeout?");
+	m_sem_sock_closed.get_future().wait_for(500ms);
 }
 
 /* --------------------------------------------------------
@@ -96,7 +93,7 @@ bool CNTRIPClient::open(const NTRIPArgs &params, string &out_errmsg)
 	m_thread_do_process = true;
 
 	// Wait until the thread tell us the initial result...
-	if (!m_sem_first_connect_done.waitForSignal(6000))
+	if (m_sem_first_connect_done.get_future().wait_for(6s) == std::future_status::timeout)
 	{
 		out_errmsg = "Timeout waiting thread response";
 		return false;
@@ -148,10 +145,10 @@ void CNTRIPClient::private_ntrip_thread()
 			}
 
 			if (last_thread_do_process) // Let the waiting caller continue now.
-				m_sem_sock_closed.release();
+				m_sem_sock_closed.set_value();
 
 			last_thread_do_process = m_thread_do_process;
-			mrpt::system::sleep(100);
+			std::this_thread::sleep_for(100ms);
 			continue;
 		}
 
@@ -251,7 +248,7 @@ void CNTRIPClient::private_ntrip_thread()
 				m_waiting_answer_connection = false;
 
 				m_answer_connection = connect_res;
-				m_sem_first_connect_done.release(1);
+				m_sem_first_connect_done.set_value();
 			}
 
 			if (connect_res!=connOk)
@@ -261,7 +258,7 @@ void CNTRIPClient::private_ntrip_thread()
 		// Retry if it was a failed connection.
 		if ( !my_sock.isConnected() )
 		{
-			mrpt::system::sleep(500);
+			std::this_thread::sleep_for(500ms);
 			continue;
 		}
 
@@ -296,7 +293,7 @@ void CNTRIPClient::private_ntrip_thread()
 				cerr << "*ERROR*: Couldn't write back " << N << " bytes to NTRIP server!.\n";
 		}
 
-		mrpt::system::sleep(10);
+		std::this_thread::sleep_for(10ms);
 	} // end while
 
 

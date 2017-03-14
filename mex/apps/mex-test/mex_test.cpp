@@ -35,7 +35,7 @@ int timer   = 0;
 bool allThreadsMustExit = false;
 
 // Thread handler stored as global
-TThreadHandle thre;
+std::thread thre;
 
 void timerThread( );
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
@@ -48,7 +48,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     if (thre.idThread == 0) // Unitialized
     {
         printf("Thread was unitialized, launching new timerThread\n");
-        thre = createThread(timerThread);
+        thre = std::thread(timerThread);
     }
 
     printf("Counter: %d\n", counter);
@@ -84,7 +84,7 @@ void timerThread( )
     {
         printf("Inside loop counter: %d\n", timerCounter++);
 
-        sleep(1000);
+        std::this_thread::sleep_for(1000ms);
         timer++;
     }
     //printf("timerThread loop exited\n");

@@ -13,10 +13,11 @@
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
-#include <mrpt/system/threads.h> // sleep()
 
 // Universal include for all versions of OpenCV
 #include <mrpt/otherlibs/do_opencv_includes.h> 
+
+#include <thread>
 
 using namespace mrpt::detectors;
 using namespace mrpt::obs;
@@ -105,7 +106,7 @@ void CCascadeClassifierDetection::detectObjects_Impl(const CObservation *obs, ve
 	}
 	if (!img)
 	{
-	    mrpt::system::sleep(2);
+	    std::this_thread::sleep_for(2ms);
 	    return;
 	}
 

@@ -319,7 +319,7 @@ bool  CSickLaserSerial::waitContinuousSampleFrame(
 			return false;
 
 		if (nRead<nBytesToRead)
-			mrpt::system::sleep(1);
+			std::this_thread::sleep_for(1ms);
 
 		// Lectura OK:
 		// Era la primera?
@@ -420,7 +420,7 @@ bool CSickLaserSerial::LMS_setupSerialComms()
             COM->setConfig( rates[i] );
 
             LMS_endContinuousMode(); // Stop continuous mode.
-            mrpt::system::sleep(100);
+            std::this_thread::sleep_for(100ms);
             COM->purgeBuffers();
 
             for (int nTry=0;nTry<4 && !detected_rate;nTry++)
@@ -432,14 +432,14 @@ bool CSickLaserSerial::LMS_setupSerialComms()
                     detected_rate = rates[i];
                     break;
                 }
-                mrpt::system::sleep(20);
+                std::this_thread::sleep_for(20ms);
             } // for tries
             // There is no link, or the baudrate is wrong...
         }
 
         // Try again in a while:
         if (!detected_rate && reps!=(m_nTries_connect-1))
-            mrpt::system::sleep(5000);
+            std::this_thread::sleep_for(5000ms);
 	}
 
 	// Are we connected at the right rate?
@@ -457,7 +457,7 @@ bool CSickLaserSerial::LMS_setupSerialComms()
 	COM->purgeBuffers();
 
 	// Wait...
-	mrpt::system::sleep(500);
+	std::this_thread::sleep_for(500ms);
 
 	// And check comms at the new baud rate:
 	return LMS_statusQuery();
@@ -764,9 +764,9 @@ bool CSickLaserSerial::SendCommandToSICK(const uint8_t *cmd,const uint16_t cmd_l
             cout << "[CSickLaserSerial::SendCommandToSICK] Error writing data to serial port." << endl;
             return false;
         }
-        mrpt::system::sleep(15);
+        std::this_thread::sleep_for(15ms);
         if (LMS_waitACK(50)) return true;
-        mrpt::system::sleep(10);
+        std::this_thread::sleep_for(10ms);
     }
 
     return false;

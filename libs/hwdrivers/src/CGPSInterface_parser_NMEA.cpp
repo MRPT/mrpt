@@ -10,7 +10,6 @@
 #include "hwdrivers-precomp.h"   // Precompiled headers
 
 #include <mrpt/system/os.h>
-#include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/hwdrivers/CGPSInterface.h>
 

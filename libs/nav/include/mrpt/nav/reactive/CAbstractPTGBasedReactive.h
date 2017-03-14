@@ -19,7 +19,6 @@
 #include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/math/filters.h>
-#include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/math/CPolygon.h>
 #include <mrpt/maps/CPointCloudFilterBase.h>
 
@@ -191,7 +190,7 @@ namespace mrpt
 		CLogFileRecord lastLogRecord;  //!< The last log
 		mrpt::kinematics::CVehicleVelCmd::Ptr m_last_vel_cmd ; //!< Last velocity commands
 
-		mrpt::synch::CCriticalSectionRecursive  m_critZoneLastLog; //!< Critical zones
+		std::recursive_mutex  m_critZoneLastLog; //!< Critical zones
 
 		bool    m_enableConsoleOutput;  //!< Enables / disables the console debug output.
 		bool    m_init_done;            //!< Whether \a loadConfigFile() has been called or not.

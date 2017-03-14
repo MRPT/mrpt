@@ -11,7 +11,6 @@
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/system/string_utils.h>
-#include <mrpt/system/threads.h> // sleep
 #include <mrpt/system/os.h>
 #include <iostream>
 
@@ -89,7 +88,7 @@ void Test_RPLIDAR()
 			tictac.Tic();
 		}
 
-		mrpt::system::sleep(5);
+		std::this_thread::sleep_for(5ms);
 	};
 
 }

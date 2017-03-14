@@ -9,10 +9,8 @@
 #ifndef CHMTSLAM_H
 #define CHMTSLAM_H
 
-#include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/utils/COutputLogger.h>
 #include <mrpt/utils/CMessageQueue.h>
-#include <mrpt/system/threads.h>
 
 #include <mrpt/hmtslam/HMT_SLAM_common.h>
 #include <mrpt/hmtslam/CLocalMetricHypothesis.h>
@@ -25,6 +23,8 @@
 #include <mrpt/slam/TKLDParams.h>
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/opengl/COpenGLScene.h>
+
+#include<thread>
 #include <queue>
 
 namespace mrpt
@@ -215,12 +215,12 @@ namespace mrpt
 			std::queue<mrpt::utils::CSerializable::Ptr>		m_inputQueue;
 
 			/** Critical section for accessing  m_inputQueue */
-			synch::CCriticalSection	m_inputQueue_cs;
+			mutable std::mutex	m_inputQueue_cs;
 
 			/** Critical section for accessing m_map */
-			synch::CCriticalSection	m_map_cs;
+			mutable std::mutex	m_map_cs;
 
-			synch::CCriticalSection	m_LMHs_cs; //!< Critical section for accessing m_LMHs
+			mutable std::mutex	m_LMHs_cs; //!< Critical section for accessing m_LMHs
 
 			/** @} */
 
@@ -237,7 +237,7 @@ namespace mrpt
 			/** The function for the "3D viewer" thread. */
 			void thread_3D_viewer( );
 			/** Threads handles */
-			mrpt::system::TThreadHandle m_hThread_LSLAM, m_hThread_TBI, m_hThread_3D_viewer;
+			std::thread m_hThread_LSLAM, m_hThread_TBI, m_hThread_3D_viewer;
 			/** @} */
 
 
@@ -288,7 +288,7 @@ namespace mrpt
 			std::deque<CTopLCDetectorBase*>	m_topLCdets;
 
 			/** The critical section for accessing m_topLCdets */
-			synch::CCriticalSection	m_topLCdets_cs;
+			std::mutex	m_topLCdets_cs;
 		public:
 
 			/** Must be invoked before calling  initializeEmptyMap, so LC objects can be created. */

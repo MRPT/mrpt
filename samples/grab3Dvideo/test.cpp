@@ -12,7 +12,6 @@
 #include <mrpt/opengl/CBox.h>
 #include <mrpt/opengl/CSphere.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
-#include <mrpt/system/threads.h>
 #include <mrpt/system/os.h>
 
 using namespace std;
@@ -143,7 +142,7 @@ void TestDisplay3D()
 
 		// Update window:
 		win.forceRepaint();
-		mrpt::system::sleep(10);
+		std::this_thread::sleep_for(10ms);
 
 		// Grab frame:
 		mrpt::utils::CImage::Ptr img = win.getLastWindowImagePtr();

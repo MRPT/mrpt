@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
         obj->setScan(outObs);
         win3D.unlockAccess3DScene();
         win3D.forceRepaint();
-        mrpt::system::sleep(20);
+        std::this_thread::sleep_for(20ms);
     }
     win3D.waitForKey();
     return 0;

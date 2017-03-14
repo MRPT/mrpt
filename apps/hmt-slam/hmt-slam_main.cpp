@@ -93,7 +93,7 @@ void Run_HMT_SLAM()
 	std::string			rawlogFileName;
 
 	// wait for threads init. (Just to do not mix debug strings on console)
-	sleep(100);
+	std::this_thread::sleep_for(100ms);
 
 	// The rawlog file:
 	// ----------------------------------------
@@ -177,7 +177,7 @@ void Run_HMT_SLAM()
 			if ((rawlogEntry % STEPS_BETWEEN_WAITING_FOR_QUEUE_EMPTY)==0)
 				while (!mapping.isInputQueueEmpty() && !os::kbhit() && !mapping.abortedDueToErrors() )
 				{
-					sleep(2);
+					std::this_thread::sleep_for(2ms);
 				}
 		} // (rawlogEntry>=rawlog_offset)
 
@@ -188,11 +188,11 @@ void Run_HMT_SLAM()
 	};	// end "while(1)"
 
 	mapping.logFmt(mrpt::utils::LVL_INFO, "********* Application finished!! 3 seconds to exit... **********\n");
-	sleep(1000);
+	std::this_thread::sleep_for(1000ms);
 	mapping.logFmt(mrpt::utils::LVL_INFO, "********* Application finished!! 2 seconds to exit... **********\n");
-	sleep(1000);
+	std::this_thread::sleep_for(1000ms);
 	mapping.logFmt(mrpt::utils::LVL_INFO, "********* Application finished!! 1 second to exit... **********\n");
-	sleep(1000);
+	std::this_thread::sleep_for(1000ms);
 
 	{
 		string final_file = OUT_DIR+string("/final_map.hmtslam");

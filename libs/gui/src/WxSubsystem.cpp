@@ -24,7 +24,7 @@
 
 // ------------------------------------------------------------------------
 // Defined: Try to wait for all windows & the thread to exit cleanly.
-// Undefined: Just to a sleep() and quit crossing our fingers.
+// Undefined: Just to a std::this_thread::sleep_for(ms) and quit crossing our fingers.
 //
 //  Problem with the "clean way" is: As of feb/2011, I get this error
 //   at the end:
@@ -38,14 +38,13 @@
 using namespace mrpt;
 using namespace mrpt::gui;
 using namespace mrpt::utils;
-using namespace mrpt::synch;
 using namespace std;
 
-synch::CCriticalSection  	WxSubsystem::CWXMainFrame::cs_windowCount;
+std::mutex  	WxSubsystem::CWXMainFrame::cs_windowCount;
 int                       	WxSubsystem::CWXMainFrame::m_windowCount = 0;
 
 std::queue<WxSubsystem::TRequestToWxMainThread*> * WxSubsystem::listPendingWxRequests = nullptr;
-synch::CCriticalSection             * WxSubsystem::cs_listPendingWxRequests = nullptr;
+std::mutex             * WxSubsystem::cs_listPendingWxRequests = nullptr;
 
 volatile WxSubsystem::CWXMainFrame* WxSubsystem::CWXMainFrame::oneInstance = nullptr;
 volatile bool WxSubsystem::isConsoleApp = true;
@@ -71,7 +70,7 @@ WxSubsystem::CAuxWxSubsystemShutdowner::~CAuxWxSubsystemShutdowner()
 			REQ->OPCODE   = 999;
 			WxSubsystem::pushPendingWxRequest( REQ );
 
-			//mrpt::system::sleep(100); // JL: I found no better way of doing this, sorry :-(  See WxSubsystem::waitWxShutdownsIfNoWindows()
+			//std::this_thread::sleep_for(100ms); // JL: I found no better way of doing this, sorry :-(  See WxSubsystem::waitWxShutdownsIfNoWindows()
 			WxSubsystem::waitWxShutdownsIfNoWindows();
 		} catch (...) { } // Just in case we got an out-of-mem error.
 	} // is console app.
@@ -194,7 +193,7 @@ WxSubsystem::CWXMainFrame::~CWXMainFrame()
 
 int WxSubsystem::CWXMainFrame::notifyWindowCreation()
 {
-	CCriticalSectionLocker	lock(&cs_windowCount);
+	std::lock_guard<std::mutex>	lock(cs_windowCount);
     return ++m_windowCount;
 }
 
@@ -202,7 +201,7 @@ int WxSubsystem::CWXMainFrame::notifyWindowDestruction()
 {
 	int ret;
 	{
-		CCriticalSectionLocker	lock(&cs_windowCount);
+		std::lock_guard<std::mutex>	lock(cs_windowCount);
 		ret = --m_windowCount;
 	}
 
@@ -231,11 +230,11 @@ WxSubsystem::TRequestToWxMainThread * WxSubsystem::popPendingWxRequest()
 {
 	if (!cs_listPendingWxRequests)
 	{
-		cs_listPendingWxRequests= new CCriticalSection();
+		cs_listPendingWxRequests= new std::mutex();
 		listPendingWxRequests = new std::queue<TRequestToWxMainThread*>;
 	}
 
-	synch::CCriticalSectionLocker	locker( cs_listPendingWxRequests );
+	std::lock_guard<std::mutex>	locker(*cs_listPendingWxRequests );
 
     // Is empty?
     if (listPendingWxRequests->empty())
@@ -262,11 +261,11 @@ void WxSubsystem::pushPendingWxRequest( WxSubsystem::TRequestToWxMainThread *dat
 
 	if (!cs_listPendingWxRequests)
 	{
-		cs_listPendingWxRequests= new CCriticalSection();
+		cs_listPendingWxRequests= new std::mutex();
 		listPendingWxRequests = new std::queue<TRequestToWxMainThread*>;
 	}
 
-	CCriticalSectionLocker locker(cs_listPendingWxRequests);
+	std::lock_guard<std::mutex> locker(*cs_listPendingWxRequests);
     listPendingWxRequests->push( data );
 }
 
@@ -276,7 +275,7 @@ void WxSubsystem::pushPendingWxRequest( WxSubsystem::TRequestToWxMainThread *dat
   */
 void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 {
-	bool app_closed = false;
+    bool app_closed = false;
     try
     {
         TRequestToWxMainThread *msg;
@@ -665,25 +664,28 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
                 case 700:
 				if (msg->sourceCameraSelectDialog)
                 {
-                	mrpt::synch::CSemaphore *sem = reinterpret_cast<mrpt::synch::CSemaphore*>(msg->voidPtr);
+					std::promise<void> *sem = reinterpret_cast<std::promise<void>*>(msg->voidPtr);
 
 					CDialogAskUserForCamera *dlg = new CDialogAskUserForCamera();
 					// Signal that the window is ready:
-					sem->release(1);
+					sem->set_value();
 
 					// Show
 					const bool wasOk = (dlg->ShowModal() == wxID_OK);
 
 					// send selection to caller:
-					mrpt::gui::detail::TReturnAskUserOpenCamera *ret = reinterpret_cast<mrpt::gui::detail::TReturnAskUserOpenCamera*>(msg->voidPtr2);
+					std::promise<mrpt::gui::detail::TReturnAskUserOpenCamera> *promise = reinterpret_cast<std::promise<mrpt::gui::detail::TReturnAskUserOpenCamera>*>(msg->voidPtr2);
+					mrpt::gui::detail::TReturnAskUserOpenCamera ret;
 
 					// Parse selection as a config text block:
-					dlg->panel->writeConfigFromVideoSourcePanel("CONFIG",&ret->selectedConfig);
-					ret->accepted_by_user = wasOk;
+					dlg->panel->writeConfigFromVideoSourcePanel("CONFIG",&ret.selectedConfig);
+					ret.accepted_by_user = wasOk;
+
+					promise->set_value(ret);
 
 					delete dlg;
 
-					sem->release(1);
+					sem->set_value();
 
                 } break;
 
@@ -795,7 +797,7 @@ bool CDisplayWindow_WXAPP::OnInit()
 
 	// We are ready!!
 	//cout << "[wxMainThread] Signaling semaphore." << endl;
-	WxSubsystem::GetWxMainThreadInstance().m_semWxMainThreadReady.release();
+	WxSubsystem::GetWxMainThreadInstance().m_semWxMainThreadReady.set_value();
 
 	return true;
 }
@@ -807,11 +809,10 @@ int CDisplayWindow_WXAPP::OnExit()
 	cout << "[wxApp::OnExit] wxApplication OnExit called." << endl;
 #endif
 
-	CCriticalSectionLocker	lock(& WxSubsystem::GetWxMainThreadInstance().m_csWxMainThreadId );
+	std::lock_guard<std::mutex>	lock( WxSubsystem::GetWxMainThreadInstance().m_csWxMainThreadId );
 
 	wxApp::OnExit();
 	CleanUp();
-	//WxSubsystem::GetWxMainThreadInstance().m_wxMainThreadId.clear(); // Moved to wxMainThread()
 	return 0;
 }
 
@@ -823,16 +824,16 @@ void WxSubsystem::waitWxShutdownsIfNoWindows()
 #ifndef WXSHUTDOWN_DO_IT_CLEAN
 
 	#ifdef WXSUBSYSTEM_VERBOSE
-		cout << "[WxSubsystem::waitWxShutdownsIfNoWindows] Doing a quick sleep() and returning.\n";
+		cout << "[WxSubsystem::waitWxShutdownsIfNoWindows] Doing a quick std::this_thread::sleep_for(ms) and returning.\n";
 	#endif
-	mrpt::system::sleep(100);
+	std::this_thread::sleep_for(100ms);
 	return;
 #else
 	// Just let know a global object that, at its destruction, it must  ....
 	// Any open windows?
 	int nOpenWnds;
 	{
-		CCriticalSectionLocker	locker(&CWXMainFrame::cs_windowCount);
+		std::lock_guard<std::mutex>	lock(CWXMainFrame::cs_windowCount);
 		nOpenWnds = CWXMainFrame::m_windowCount;
 	}
 
@@ -847,19 +848,11 @@ void WxSubsystem::waitWxShutdownsIfNoWindows()
     	bool done=false;
 		int maxTimeout =
 #ifdef _DEBUG
-			3000;
+			30000;
 #else
-			500;
+			5000;
 #endif
-    	while (!done && --maxTimeout >0)
-    	{
-    		system::sleep(10);
-			WxSubsystem::GetWxMainThreadInstance().m_csWxMainThreadId.enter();
-			done = WxSubsystem::GetWxMainThreadInstance().m_wxMainThreadId.isClear();
-			WxSubsystem::GetWxMainThreadInstance().m_csWxMainThreadId.leave();
-    	}
-
-    	if (maxTimeout<=0)
+    	if (m_done.wait_for(std::chrono::milliseconds(maxTimeout)) == std::future_status::timeout)
     	{
     		cerr << "[WxSubsystem::waitWxShutdownsIfNoWindows] Timeout waiting for WxWidgets thread to shutdown!" << endl;
     	}
@@ -959,7 +952,7 @@ void WxSubsystem::wxMainThread()
 #endif
 
 		// Now this thread is ready. The main thread is free to end now:
-		WxSubsystem::GetWxMainThreadInstance().m_wxMainThreadId.clear();
+		WxSubsystem::GetWxMainThreadInstance().m_done.set_value();
 	}
 	else
 	{
@@ -977,7 +970,7 @@ void WxSubsystem::wxMainThread()
 #ifdef WXSUBSYSTEM_VERBOSE
 		cout << "[wxMainThread] Signaling semaphore." << endl;
 #endif
-		WxSubsystem::GetWxMainThreadInstance().m_semWxMainThreadReady.release();
+		WxSubsystem::GetWxMainThreadInstance().m_semWxMainThreadReady.set_value();
 
 	}
 
@@ -994,12 +987,6 @@ WxSubsystem::TWxMainThreadData& WxSubsystem::GetWxMainThreadInstance()
 	return *dat;
 }
 
-WxSubsystem::TWxMainThreadData::TWxMainThreadData() :
-	m_wxMainThreadId(),
-	m_semWxMainThreadReady(0,1),
-	m_csWxMainThreadId("csWxMainThreadId")
-{
-}
 
 
 /*---------------------------------------------------------------
@@ -1008,10 +995,10 @@ WxSubsystem::TWxMainThreadData::TWxMainThreadData() :
 bool WxSubsystem::createOneInstanceMainThread()
 {
 	WxSubsystem::TWxMainThreadData & wxmtd = WxSubsystem::GetWxMainThreadInstance();
-	CCriticalSectionLocker	lock(&wxmtd.m_csWxMainThreadId);
+	std::lock_guard<std::mutex>	lock(wxmtd.m_csWxMainThreadId);
 
 	wxAppConsole *app_con = wxApp::GetInstance();
-	if (app_con && wxmtd.m_wxMainThreadId.isClear())
+	if (app_con && wxmtd.m_wxMainThreadId.get_id() == std::thread::id())
 	{
 		// We are NOT in a console application: There is already a wxApp instance running and it's not us.
 		WxSubsystem::isConsoleApp = false;
@@ -1031,13 +1018,13 @@ bool WxSubsystem::createOneInstanceMainThread()
 	{
 		//cout << "[createOneInstanceMainThread] Mode: Console." << endl;
 		WxSubsystem::isConsoleApp = true;
-		if (wxmtd.m_wxMainThreadId.isClear())
+		if (wxmtd.m_wxMainThreadId.get_id() == std::thread::id())
 		{
 #ifdef WXSUBSYSTEM_VERBOSE
-		printf("[WxSubsystem::createOneInstanceMainThread] Launching wxMainThread() thread...\n");
+			printf("[WxSubsystem::createOneInstanceMainThread] Launching wxMainThread() thread...\n");
 #endif
 			// Create a thread for message processing there:
-			wxmtd.m_wxMainThreadId = system::createThread( wxMainThread );
+			wxmtd.m_wxMainThreadId = std::thread( wxMainThread );
 
 			int maxTimeout =
 #ifdef _DEBUG
@@ -1051,7 +1038,7 @@ bool WxSubsystem::createOneInstanceMainThread()
 			if (envVal)
 				maxTimeout = atoi(envVal);
 
-			if(! wxmtd.m_semWxMainThreadReady.waitForSignal(maxTimeout) )  // A few secs should be enough...
+			if(wxmtd.m_semWxMainThreadReady.get_future().wait_for(std::chrono::milliseconds(maxTimeout)) == std::future_status::timeout)  // A few secs should be enough...
 			{
 				cerr << "[WxSubsystem::createOneInstanceMainThread] Timeout waiting wxApplication to start up!" << endl;
 				return false;

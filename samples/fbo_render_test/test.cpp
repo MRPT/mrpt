@@ -13,12 +13,16 @@
 #include <mrpt/opengl/CSphere.h>
 #include <mrpt/opengl/CFBORender.h>
 #include <mrpt/gui/CDisplayWindow.h>
-#include <mrpt/system/threads.h>
+
+#include <thread>
+#include <chrono>
 
 using namespace mrpt;
 using namespace mrpt::gui;
 using namespace mrpt::utils;
 using namespace mrpt::opengl;
+
+using namespace std::literals;
 
 // ------------------------------------------------------
 //				TestDisplay3D
@@ -98,7 +102,7 @@ void TestDisplay3D()
 		// show the redered image
 		win.showImage(frame);
 
-		mrpt::system::sleep(50);
+		std::this_thread::sleep_for(50ms);
 	}
 }
 

@@ -101,11 +101,11 @@ void Test_NIDAQ()
 			cout << "1 ";
 			daq.writeDigitalOutputTask(1, true, 0.1);
 			daq.writeDigitalOutputTask(2, false, 0.1);
-			mrpt::system::sleep(5000);
+			std::this_thread::sleep_for(5000ms);
 			cout << "0 ";
 			daq.writeDigitalOutputTask(1, false, 0.1);
 			daq.writeDigitalOutputTask(2, true, 0.1);
-			mrpt::system::sleep(5000);
+			std::this_thread::sleep_for(5000ms);
 		}
 	}
 
@@ -141,7 +141,7 @@ void Test_NIDAQ()
 			}
 		}
 
-		mrpt::system::sleep(1);
+		std::this_thread::sleep_for(1ms);
 	};
 }
 

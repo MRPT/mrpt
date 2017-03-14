@@ -13,7 +13,6 @@
 #include <mrpt/utils/CImage.h>
 #include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/utils/CConfigFileMemory.h>
-#include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/gui/keycodes.h>
 
 #include <mrpt/gui/link_pragmas.h>
@@ -61,6 +60,8 @@
 #include <wx/dcclient.h>
 
 #endif
+
+#include <mutex>
 
 namespace mrpt
 {
@@ -138,10 +139,10 @@ namespace mrpt
 		{
 		protected:
 			wxBitmap *m_img;
-			mrpt::synch::CCriticalSection	m_img_cs;
+			std::mutex	m_img_cs;
 
 			wxPoint m_last_mouse_point, m_last_mouse_click;
-			mrpt::synch::CCriticalSection	m_mouse_cs;
+			std::mutex	m_mouse_cs;
 
 		public:
 			wxMRPTImageControl(	wxWindow *parent,wxWindowID winID,int x, int y, int width, int height);

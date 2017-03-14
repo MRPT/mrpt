@@ -119,7 +119,7 @@ using namespace std;
 #endif
 
 // Critical section for updating the scene:
-synch::CCriticalSection	critSec_UpdateScene;
+std::mutex	critSec_UpdateScene;
 
 // The file to open (from cmd line), or an empty string
 extern std::string     global_fileToOpen;
@@ -171,7 +171,7 @@ void CMyGLCanvas::OnPreRender()
 {
 	// This was used to receive scenes from a TCP stream, but it's not used anymore now:
 	// Do we have to update the scene??
-//	synch::CCriticalSectionLocker   lock( &critSec_UpdateScene );
+//	std::lock_guard<std::mutex>   lock(critSec_UpdateScene );
 //	if (newOpenGLScene) { m_openGLScene.reset(); m_openGLScene = newOpenGLScene; newOpenGLScene.reset(); }
 }
 
@@ -721,7 +721,7 @@ void _DSceneViewerFrame::loadFromFile( const std::string &fil, bool isInASequenc
 
         static utils::CTicTac		tictac;
         {
-            synch::CCriticalSectionLocker   lock(&critSec_UpdateScene);
+            std::lock_guard<std::mutex>   lock(critSec_UpdateScene);
 
             tictac.Tic();
 
@@ -1265,7 +1265,7 @@ void func_clear_octrees(const mrpt::opengl::CRenderizable::Ptr &o)
 void _DSceneViewerFrame::clear_all_octrees_in_scene()
 {
 	{
-		mrpt::synch::CCriticalSectionLocker lock(&critSec_UpdateScene);
+		std::lock_guard<std::mutex> lock(critSec_UpdateScene);
 		m_canvas->m_openGLScene->visitAllObjects( &func_clear_octrees );
 	}
 }
@@ -1317,7 +1317,7 @@ void _DSceneViewerFrame::OnmnuSceneStatsSelected(wxCommandEvent& event)
 		sceneStats.clear();
 
 		{
-			mrpt::synch::CCriticalSectionLocker lock(&critSec_UpdateScene);
+			std::lock_guard<std::mutex> lock(critSec_UpdateScene);
 			m_canvas->m_openGLScene->visitAllObjects( &func_gather_stats );
 		}
 
@@ -1369,7 +1369,7 @@ void _DSceneViewerFrame::OnmnuItemShowCloudOctreesSelected(wxCommandEvent& event
 		wxBusyCursor wait;
 
 		{
-			mrpt::synch::CCriticalSectionLocker lock(&critSec_UpdateScene);
+			std::lock_guard<std::mutex> lock(critSec_UpdateScene);
 			m_canvas->m_openGLScene->visitAllObjects( &func_gather_stats );
 
 			CSetOfObjects::Ptr gl_octrees_bb;

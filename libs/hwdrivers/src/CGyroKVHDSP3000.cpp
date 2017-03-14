@@ -9,12 +9,10 @@
 
 #include "hwdrivers-precomp.h"   // Precompiled headers
 
-#include <mrpt/system/threads.h>
 #include <mrpt/hwdrivers/CGyroKVHDSP3000.h>
 #include <mrpt/obs/CObservationIMU.h>
 
-
-
+#include <thread>
 
 IMPLEMENTS_GENERIC_SENSOR(CGyroKVHDSP3000,mrpt::hwdrivers)
 
@@ -60,7 +58,7 @@ void CGyroKVHDSP3000::doProcess()
 
 	if(m_state == ssError)
 	{
-		mrpt::system::sleep(200);
+		std::this_thread::sleep_for(200ms);
 		initialize();
 	}
 

@@ -29,7 +29,6 @@
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/utils/stl_serialization.h>
 #include <mrpt/system/filesystem.h>
-#include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/utils/CMemoryStream.h>
 
 #include <mrpt/system/os.h>
@@ -37,7 +36,6 @@
 using namespace mrpt::slam;
 using namespace mrpt::hmtslam;
 using namespace mrpt::utils;
-using namespace mrpt::synch;
 using namespace mrpt::obs;
 using namespace mrpt::maps;
 using namespace mrpt::opengl;
@@ -56,11 +54,6 @@ THypothesisID	CHMTSLAM::m_nextHypID     = COMMON_TOPOLOG_HYP + 1;
 						Constructor
   ---------------------------------------------------------------*/
 CHMTSLAM::CHMTSLAM( )
- :  m_inputQueue_cs("inputQueue_cs"),
-    m_map_cs("map_cs"),
-    m_LMHs_cs("LMHs_cs")
-//	m_semaphoreInputQueueHasData (0 /*Init state*/ ,1 /*Max*/ ),
-//	m_eventNewObservationInserted(0 /*Init state*/ ,10000 /*Max*/ )
 {
 	// Initialize data structures:
 	// ----------------------------
@@ -71,9 +64,9 @@ CHMTSLAM::CHMTSLAM( )
 
 	// Create threads:
 	// -----------------------
-	m_hThread_LSLAM 	= mrpt::system::createThreadFromObjectMethod( this, &CHMTSLAM::thread_LSLAM );
-	m_hThread_TBI 		= mrpt::system::createThreadFromObjectMethod( this, &CHMTSLAM::thread_TBI );
-	m_hThread_3D_viewer	= mrpt::system::createThreadFromObjectMethod( this, &CHMTSLAM::thread_3D_viewer );
+	m_hThread_LSLAM 	= std::thread( &CHMTSLAM::thread_LSLAM , this);
+	m_hThread_TBI 		= std::thread( &CHMTSLAM::thread_TBI , this);
+	m_hThread_3D_viewer	= std::thread( &CHMTSLAM::thread_3D_viewer , this);
 
 
 	// Other variables:
@@ -102,9 +95,9 @@ CHMTSLAM::~CHMTSLAM()
 	// ----------------------------------
 	MRPT_LOG_DEBUG("[CHMTSLAM::destructor] Waiting for threads end...\n");
 
-	mrpt::system::joinThread( m_hThread_3D_viewer );
-	mrpt::system::joinThread( m_hThread_LSLAM );
-	mrpt::system::joinThread( m_hThread_TBI );
+	 m_hThread_3D_viewer .join();
+	 m_hThread_LSLAM .join();
+	 m_hThread_TBI .join();
 
 	MRPT_LOG_DEBUG("[CHMTSLAM::destructor] All threads finished.\n");
 
@@ -147,7 +140,7 @@ CHMTSLAM::~CHMTSLAM()
 
 	// Delete TLC-detectors
 	{
-		synch::CCriticalSectionLocker	lock( &m_topLCdets_cs );
+		std::lock_guard<std::mutex>	lock(m_topLCdets_cs );
 
 		// Clear old list:
 		for (std::deque<CTopLCDetectorBase*>::iterator it=m_topLCdets.begin();it!=m_topLCdets.end();++it)
@@ -164,7 +157,7 @@ void  CHMTSLAM::clearInputQueue()
 {
 	// Wait for critical section
 	{
-		CCriticalSectionLocker  locker( &m_inputQueue_cs);
+		std::lock_guard<std::mutex>  lock(m_inputQueue_cs);
 
 		while (!m_inputQueue.empty())
 		{
@@ -188,7 +181,7 @@ void  CHMTSLAM::pushAction( const CActionCollection::Ptr &acts )
 	}
 
 	{	// Wait for critical section
-		CCriticalSectionLocker  locker( &m_inputQueue_cs);
+		std::lock_guard<std::mutex>  lock(m_inputQueue_cs);
 		m_inputQueue.push( acts );
 	}
 }
@@ -206,7 +199,7 @@ void  CHMTSLAM::pushObservations( const CSensoryFrame::Ptr &sf )
 	}
 
 	{	// Wait for critical section
-		CCriticalSectionLocker  locker( &m_inputQueue_cs);
+		std::lock_guard<std::mutex>  lock(m_inputQueue_cs);
 		m_inputQueue.push( sf );
 	}
 }
@@ -227,7 +220,7 @@ void  CHMTSLAM::pushObservation( const CObservation::Ptr &obs )
 	sf->insert(obs);  // memory will be freed when deleting the SF in other thread
 
 	{	// Wait for critical section
-		CCriticalSectionLocker  locker( &m_inputQueue_cs);
+		std::lock_guard<std::mutex>  lock(m_inputQueue_cs);
 		m_inputQueue.push( sf );
 	}
 }
@@ -368,7 +361,7 @@ bool  CHMTSLAM::isInputQueueEmpty()
 	bool	res;
 
 	{	// Wait for critical section
-		CCriticalSectionLocker  locker( &m_inputQueue_cs);
+		std::lock_guard<std::mutex>  lock(m_inputQueue_cs);
 		res = m_inputQueue.empty();
 	}
 	return res;
@@ -381,7 +374,7 @@ size_t CHMTSLAM::inputQueueSize()
 {
 	size_t  res;
 	{	// Wait for critical section
-		CCriticalSectionLocker  locker( &m_inputQueue_cs);
+		std::lock_guard<std::mutex>  lock(m_inputQueue_cs);
 		res = m_inputQueue.size();
 	}
 	return res;
@@ -395,7 +388,7 @@ CSerializable::Ptr CHMTSLAM::getNextObjectFromInputQueue()
 	CSerializable::Ptr obj;
 
 	{	// Wait for critical section
-		CCriticalSectionLocker  locker( &m_inputQueue_cs);
+		std::lock_guard<std::mutex>  lock(m_inputQueue_cs);
 		if (!m_inputQueue.empty())
 		{
 			obj = m_inputQueue.front();
@@ -421,7 +414,7 @@ void  CHMTSLAM::initializeEmptyMap()
 	// ------------------------------------
 	CHMHMapNode::TNodeID	firstAreaID;
 	{
-		synch::CCriticalSectionLocker	locker( &m_map_cs );
+		std::lock_guard<std::mutex>	lock(m_map_cs );
 
 		// Initialize hierarchical structures:
 		// -----------------------------------------------------
@@ -444,7 +437,7 @@ void  CHMTSLAM::initializeEmptyMap()
 	// CLEAR LIST OF HYPOTHESES
 	// ------------------------------------
 	{
-		synch::CCriticalSectionLocker	lock( &m_LMHs_cs );
+		std::lock_guard<std::mutex>	lock(m_LMHs_cs );
 
 		// Add to the list:
 		m_LMHs.clear();
@@ -481,7 +474,7 @@ void  CHMTSLAM::initializeEmptyMap()
 	//  Topological LC detectors:
 	// ------------------------------------
 	{
-		synch::CCriticalSectionLocker	lock( &m_topLCdets_cs );
+		std::lock_guard<std::mutex>	lock(m_topLCdets_cs );
 
 		// Clear old list:
 		for (std::deque<CTopLCDetectorBase*>::iterator it=m_topLCdets.begin();it!=m_topLCdets.end();++it)
@@ -632,10 +625,10 @@ void  CHMTSLAM::readFromStream(mrpt::utils::CStream &in,int version)
 			// -------------------------------------------
 			//std::map< THypothesisID, CLocalMetricHypothesis >::const_iterator it;
 
-			//CCriticalSectionLocker LMHs( & m_LMHs_cs );
-			//for (it=m_LMHs.begin();it!=m_LMHs.end();it++) it->second.m_lock.enter();
+			//std::lock_guard<std::mutex> LMHs( & m_LMHs_cs );
+			//for (it=m_LMHs.begin();it!=m_LMHs.end();it++) it->second.m_lock.lock();
 
-			CCriticalSectionLocker lock_map( &m_map_cs );
+			std::lock_guard<std::mutex> lock_map( m_map_cs );
 
 			// Data:
 			in  >> m_nextAreaLabel
@@ -651,7 +644,7 @@ void  CHMTSLAM::readFromStream(mrpt::utils::CStream &in,int version)
 			// Save options??? Better allow changing them...
 
 			// Release all critical sections:
-			//for (it=m_LMHs.begin();it!=m_LMHs.end();it++) it->second.m_lock.enter();
+			//for (it=m_LMHs.begin();it!=m_LMHs.end();it++) it->second.m_lock.lock();
 
 		} break;
 	default:
@@ -674,10 +667,10 @@ void  CHMTSLAM::writeToStream(mrpt::utils::CStream &out, int *version) const
 		// -------------------------------------------
 		//std::map< THypothesisID, CLocalMetricHypothesis >::const_iterator it;
 
-		//CCriticalSectionLocker LMHs( & m_LMHs_cs );
-		//for (it=m_LMHs.begin();it!=m_LMHs.end();it++) it->second.m_lock.enter();
+		//std::lock_guard<std::mutex> LMHs( & m_LMHs_cs );
+		//for (it=m_LMHs.begin();it!=m_LMHs.end();it++) it->second.m_lock.lock();
 
-		CCriticalSectionLocker lock_map( &m_map_cs );
+		std::lock_guard<std::mutex> lock_map( m_map_cs );
 
 		// Data:
 		out << m_nextAreaLabel
@@ -693,7 +686,7 @@ void  CHMTSLAM::writeToStream(mrpt::utils::CStream &out, int *version) const
 		// Save options??? Better allow changing them...
 
 		// Release all critical sections:
-		//for (it=m_LMHs.begin();it!=m_LMHs.end();it++) it->second.m_lock.enter();
+		//for (it=m_LMHs.begin();it!=m_LMHs.end();it++) it->second.m_lock.lock();
 
 
 	}

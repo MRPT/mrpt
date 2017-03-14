@@ -26,9 +26,6 @@ using namespace mrpt::opengl;
 using namespace mrpt::math;
 using namespace std;
 
-
-IMPLEMENTS_MRPT_OBJECT(CDisplayWindow3D,CBaseGUIWindow,mrpt::gui)
-
 #if MRPT_HAS_OPENGL_GLUT
 	#ifdef MRPT_OS_WINDOWS
 		// Windows:
@@ -220,7 +217,7 @@ void CMyGLCanvas_DisplayWindow3D::OnPostRenderSwapBuffers(double At, wxPaintDC &
 		if (m_win3D->isCapturingImgs())
 		{
 			{
-				mrpt::synch::CCriticalSectionLocker	lock(& m_win3D->m_last_captured_img_cs );
+				std::lock_guard<std::mutex>	lock( m_win3D->m_last_captured_img_cs );
 				m_win3D->m_last_captured_img = frame;
 				frame.reset();
 			}
@@ -306,7 +303,7 @@ void C3DWindowDialog::OnClose(wxCloseEvent& event)
     WxSubsystem::CWXMainFrame::notifyWindowDestruction();
 
 	// Signal we are destroyed:
-    m_win3D->m_semWindowDestroyed.release();
+    m_win3D->m_windowDestroyed.set_value();
 
     event.Skip(); // keep processing by parent classes.
 }
@@ -397,13 +394,11 @@ CDisplayWindow3D::CDisplayWindow3D(
 	unsigned int		initialWindowWidth,
 	unsigned int		initialWindowHeight )
 	: CBaseGUIWindow(static_cast<void*>(this),300,399, windowCaption),
-      m_csAccess3DScene(),
       m_grab_imgs_prefix(),
       m_grab_imgs_idx(0),
       m_is_capturing_imgs(false),
-      m_last_captured_img_cs("m_last_captured_img_cs"),
-	  m_lastFullScreen (mrpt::system::now()),
-	  m_last_FPS(10)
+      m_lastFullScreen (mrpt::system::now()),
+      m_last_FPS(10)
 {
 //	static mrpt::utils::CStdOutStream oo;
 //	m_csAccess3DScene.m_debugOut = &oo;
@@ -425,8 +420,8 @@ CDisplayWindow3D::Ptr CDisplayWindow3D::Create(
 CDisplayWindow3D::~CDisplayWindow3D( )
 {
 	// get lock so we make sure nobody else is touching the window right now.
-	m_csAccess3DScene.enter();
-	m_csAccess3DScene.leave();
+	m_csAccess3DScene.lock();
+	m_csAccess3DScene.unlock();
 
 	CBaseGUIWindow::destroyWxWindow();
 }
@@ -512,7 +507,7 @@ void  CDisplayWindow3D::setWindowTitle( const std::string &str )
  ---------------------------------------------------------------*/
 opengl::COpenGLScene::Ptr& CDisplayWindow3D::get3DSceneAndLock( )
 {
-	m_csAccess3DScene.enter();
+	m_csAccess3DScene.lock();
 	return m_3Dscene;
 }
 
@@ -521,7 +516,7 @@ opengl::COpenGLScene::Ptr& CDisplayWindow3D::get3DSceneAndLock( )
  ---------------------------------------------------------------*/
 void  CDisplayWindow3D::unlockAccess3DScene()
 {
-	m_csAccess3DScene.leave();
+	m_csAccess3DScene.unlock();
 }
 
 /*---------------------------------------------------------------
@@ -772,9 +767,9 @@ bool CDisplayWindow3D::getLastMousePositionRay(TLine3D &ray) const
 	int x,y;
 	if (getLastMousePosition(x,y))
 	{
-		m_csAccess3DScene.enter();
+		m_csAccess3DScene.lock();
 		m_3Dscene->getViewport("main")->get3DRayForPixelCoord(x,y,ray);
-		m_csAccess3DScene.leave();
+		m_csAccess3DScene.unlock();
 		return true;
 	}
 	else return false;
@@ -848,7 +843,7 @@ bool CDisplayWindow3D::getLastWindowImage( mrpt::utils::CImage &out_img ) const
 	bool ret;
 
 	{
-		mrpt::synch::CCriticalSectionLocker	lock(& m_last_captured_img_cs );
+		std::lock_guard<std::mutex>	lock( m_last_captured_img_cs );
 		if (m_last_captured_img)
 		{
 			out_img = *m_last_captured_img;  // Copy the full image
@@ -864,7 +859,7 @@ bool CDisplayWindow3D::getLastWindowImage( mrpt::utils::CImage &out_img ) const
  ---------------------------------------------------------------*/
 CImage::Ptr CDisplayWindow3D::getLastWindowImagePtr() const
 {
-	mrpt::synch::CCriticalSectionLocker	lock(& m_last_captured_img_cs );
+	std::lock_guard<std::mutex>	lock( m_last_captured_img_cs );
 	return m_last_captured_img;
 }
 
@@ -1006,26 +1001,26 @@ void CDisplayWindow3D::internal_emitGrabImageEvent(const std::string &fil)
 // Returns the "main" viewport of the scene.
 mrpt::opengl::COpenGLViewport::Ptr CDisplayWindow3D::getDefaultViewport()
 {
-	m_csAccess3DScene.enter();
+	m_csAccess3DScene.lock();
 	mrpt::opengl::COpenGLViewport::Ptr view = m_3Dscene->getViewport("main");
-	m_csAccess3DScene.leave();
+	m_csAccess3DScene.unlock();
 	return view;
 }
 
 void CDisplayWindow3D::setImageView(const mrpt::utils::CImage &img)
 {
-	m_csAccess3DScene.enter();
+	m_csAccess3DScene.lock();
 	mrpt::opengl::COpenGLViewport::Ptr view = m_3Dscene->getViewport("main");
 	view->setImageView(img);
-	m_csAccess3DScene.leave();
+	m_csAccess3DScene.unlock();
 }
 
 void CDisplayWindow3D::setImageView_fast(mrpt::utils::CImage &img)
 {
-	m_csAccess3DScene.enter();
+	m_csAccess3DScene.lock();
 	mrpt::opengl::COpenGLViewport::Ptr view = m_3Dscene->getViewport("main");
 	view->setImageView_fast(img);
-	m_csAccess3DScene.leave();
+	m_csAccess3DScene.unlock();
 }
 
 

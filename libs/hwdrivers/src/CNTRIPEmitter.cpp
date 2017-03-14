@@ -90,7 +90,7 @@ void CNTRIPEmitter::doProcess()
 		}
 	}
 
-	mrpt::system::sleep(1);
+	std::this_thread::sleep_for(1ms);
 }
 
 /*-------------------------------------------------------------

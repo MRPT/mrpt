@@ -12,10 +12,11 @@
 #include <mrpt/hwdrivers/COpenNI2Generic.h>
 #include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
-#include <mrpt/system/threads.h>
 
 // Universal include for all versions of OpenCV
 #include <mrpt/otherlibs/do_opencv_includes.h>
+
+#include <thread>
 
 #if MRPT_HAS_OPENNI2
 
@@ -31,7 +32,6 @@
 using namespace mrpt::hwdrivers;
 using namespace mrpt::system;
 using namespace mrpt::obs;
-using namespace mrpt::synch;
 using namespace std;
 
 
@@ -248,7 +248,7 @@ void COpenNI2Generic::open(unsigned sensor_id)
 	}else{
 	  showLog(" open failed.\n");
 	}
-	mrpt::system::sleep(1000); // Sleep
+	std::this_thread::sleep_for(1000ms); // Sleep
 #else
 	MRPT_UNUSED_PARAM(sensor_id);
 	THROW_EXCEPTION("MRPT was built without OpenNI2 support")

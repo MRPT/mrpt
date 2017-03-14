@@ -56,7 +56,7 @@ void CGenericSensor::appendObservations( const std::vector<mrpt::utils::CSeriali
 	{
 		m_grab_decimation_counter = 0;
 
-		synch::CCriticalSectionLocker	lock( & m_csObjList );
+		std::lock_guard<std::mutex>	lock( m_csObjList );
 
 		for (size_t i=0;i<objs.size();i++)
 		{
@@ -89,7 +89,7 @@ void CGenericSensor::appendObservations( const std::vector<mrpt::utils::CSeriali
 -------------------------------------------------------------*/
 void CGenericSensor::getObservations( TListObservations	&lstObjects )
 {
-	synch::CCriticalSectionLocker	lock( & m_csObjList );
+	std::lock_guard<std::mutex>	lock( m_csObjList );
 	lstObjects = m_objList;
 	m_objList.clear();			// Memory of objects will be freed by invoker.
 }

@@ -19,7 +19,6 @@ namespace mrpt
 {
 	namespace gui
 	{
-		DEFINE_MRPT_OBJECT_PRE_CUSTOM_BASE_LINKAGE(CDisplayWindowPlots,  mrpt::gui::CBaseGUIWindow, GUI_IMPEXP)
 
 		/** Create a GUI window and display plots with MATLAB-like interfaces and commands.
 		 *
@@ -30,10 +29,10 @@ namespace mrpt
 		 */
 		class GUI_IMPEXP CDisplayWindowPlots : public mrpt::gui::CBaseGUIWindow
 		{
-			// This must be added to any CObject derived class:
-			DEFINE_MRPT_OBJECT( CDisplayWindowPlots )
 
 		public:
+			using Ptr = std::shared_ptr<CDisplayWindowPlots>;
+
 			typedef void (* TCallbackMenu) (int menuID,float cursor_x, float cursor_y, void* userParam); //!< Type for the callback function used in setMenuCallback
 
 		protected:
@@ -239,7 +238,6 @@ namespace mrpt
 
 
 		}; // End of class def.
-		DEFINE_MRPT_OBJECT_POST_CUSTOM_BASE_LINKAGE(CDisplayWindowPlots,  mrpt::gui::CBaseGUIWindow, GUI_IMPEXP)
 	}
 
 } // End of namespace

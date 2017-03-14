@@ -9,7 +9,6 @@
 #ifndef CConsoleRedirector_H
 #define CConsoleRedirector_H
 
-#include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/utils/core_defs.h>
 #include <streambuf>
 #include <iostream>
@@ -31,7 +30,7 @@ namespace mrpt
 			std::streambuf 	*sbOld;		//!< The "old" std::cout
 			std::streambuf 	*sbOld_cerr;		//!< The "old" std::cout
 			bool 			m_also_to_console;
-			mrpt::synch::CCriticalSection	m_cs;
+			std::mutex	m_cs;
 
 		public:
 			/** Constructor
@@ -99,7 +98,7 @@ namespace mrpt
 			{
 				sync();
 
-				m_cs.enter();
+				m_cs.lock();
 				if (c != EOF)
 				{
 					if (pbase() == epptr())
@@ -112,13 +111,13 @@ namespace mrpt
 						sputc(c);
 				}
 
-				m_cs.leave();
+				m_cs.unlock();
 				return 0;
 			}
 
 			int	sync() MRPT_OVERRIDE
 			{
-				m_cs.enter();
+				m_cs.lock();
 				if (pbase() != pptr())
 				{
 					int len = int(pptr() - pbase());
@@ -126,7 +125,7 @@ namespace mrpt
 					writeString(temp);
 					setp(pbase(), epptr());
 				}
-				m_cs.leave();
+				m_cs.unlock();
 				return 0;
 			}
 		};

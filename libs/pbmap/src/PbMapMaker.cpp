@@ -18,7 +18,6 @@
 
 
 #include <mrpt/utils/types_math.h> // Eigen
-#include <mrpt/system/threads.h>
 
 //#include <pcl/io/io.h>
 //#include <pcl/io/pcd_io.h>
@@ -31,7 +30,6 @@
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/common/transforms.h>
 #include <pcl/common/time.h>
-#include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/pbmap/PbMapMaker.h>
 
@@ -46,7 +44,7 @@ using namespace std;
 using namespace Eigen;
 using namespace mrpt::pbmap;
 
-mrpt::synch::CCriticalSection CS_visualize;
+std::mutex CS_visualize;
 
 // Bhattacharyya histogram distance function
 double BhattacharyyaDist(std::vector<float> &hist1, std::vector<float> &hist2)
@@ -161,7 +159,7 @@ PbMapMaker::PbMapMaker(const string &config_file) :
   if(configPbMap.makeClusters)
     clusterize = new SemanticClustering(mPbMap);
 
-  pbmaker_hd = mrpt::system::createThreadFromObjectMethod(this,&PbMapMaker::run);
+  pbmaker_hd = std::thread(&PbMapMaker::run,this);
 
 
   // Unary
@@ -520,7 +518,7 @@ void PbMapMaker::detectPlanesCloud( pcl::PointCloud<PointT>::Ptr &pointCloudPtr_
   pcl::PointCloud<pcl::PointXYZRGBA>::Ptr alignedCloudPtr(new pcl::PointCloud<pcl::PointXYZRGBA>);
   pcl::transformPointCloud(*pointCloudPtr_arg,*alignedCloudPtr,poseKF);
 
-  { mrpt::synch::CCriticalSectionLocker csl(&CS_visualize);
+  { std::lock_guard<std::mutex> csl(CS_visualize);
     *mPbMap.globalMapPtr += *alignedCloudPtr;
     // Downsample voxel map's point cloud
     static pcl::VoxelGrid<pcl::PointXYZRGBA> grid;
@@ -641,7 +639,7 @@ void PbMapMaker::detectPlanesCloud( pcl::PointCloud<PointT>::Ptr &pointCloudPtr_
   size_t numPrevPlanes = mPbMap.vPlanes.size();
 //  set<unsigned> observedPlanes;
   observedPlanes.clear();
- { mrpt::synch::CCriticalSectionLocker csl(&CS_visualize);
+ { std::lock_guard<std::mutex> csl(CS_visualize);
   for (size_t i = 0; i < detectedPlanes.size (); i++)
   {
     // Check similarity with previous planes detected
@@ -985,11 +983,11 @@ void PbMapMaker::viz_cb (pcl::visualization::PCLVisualizer& viz)
 {
   if (mPbMap.globalMapPtr->empty())
   {
-    mrpt::system::sleep(10);
+    std::this_thread::sleep_for(10ms);
     return;
   }
 
-  { mrpt::synch::CCriticalSectionLocker csl(&CS_visualize);
+  { std::lock_guard<std::mutex> csl(CS_visualize);
 
     // Render the data
     {
@@ -1191,7 +1189,7 @@ void PbMapMaker::run()
   {
     if( numPrevKFs == frameQueue.size() )
     {
-      mrpt::system::sleep(10);
+      std::this_thread::sleep_for(10ms);
     }
     else
     {
@@ -1233,13 +1231,12 @@ bool PbMapMaker::stop_pbMapMaker()
 {
   m_pbmaker_must_stop = true;
   while(!m_pbmaker_finished)
-    mrpt::system::sleep(1);
+    std::this_thread::sleep_for(1ms);
   cout << "Waiting for PbMapMaker thread to die.." << endl;
 
-  mrpt::system::joinThread(pbmaker_hd);
-	pbmaker_hd.clear();
+  pbmaker_hd.join();
 
-	return true;
+  return true;
 }
 
 PbMapMaker::~PbMapMaker()

@@ -13,7 +13,6 @@
 #include <mrpt/opengl/CSetOfTexturedTriangles.h>
 #include <mrpt/opengl/CSphere.h>
 #include <mrpt/system/os.h>
-#include <mrpt/system/threads.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 
 using namespace std;
@@ -120,7 +119,7 @@ void TestDisplay3D()
 		// Update window:
 		win.forceRepaint();
 
-		mrpt::system::sleep(20);
+		std::this_thread::sleep_for(20ms);
 	}
 }
 

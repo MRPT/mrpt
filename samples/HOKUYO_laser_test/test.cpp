@@ -13,7 +13,6 @@
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/system/string_utils.h>
-#include <mrpt/system/threads.h> // sleep
 #include <mrpt/system/os.h>
 
 using namespace mrpt;
@@ -165,7 +164,7 @@ void Test_HOKUYO()
             tictac.Tic();
 		}
 
-		mrpt::system::sleep(15);
+		std::this_thread::sleep_for(15ms);
 	};
 
 	laser.turnOff();

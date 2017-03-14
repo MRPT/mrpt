@@ -12,6 +12,8 @@
 #include <mrpt/math/ops_vectors.h>  // << for vectors
 #include <mrpt/utils/utils_defs.h>
 
+#include <thread>
+
 using namespace mrpt;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::utils;
@@ -103,7 +105,7 @@ int main(int argc, char **argv)
 				CGenericSensor::TListObservations dummy;
 				robot.getObservations(dummy);  // Empty the list
 
-				mrpt::system::sleep(20);
+				std::this_thread::sleep_for(20ms);
 				continue;
 			}
 			char c = mrpt::system::os::getch();

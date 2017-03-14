@@ -69,7 +69,7 @@ CFileSystemWatcher::CFileSystemWatcher( const std::string &path ) :
 
 	m_hNotif = static_cast<void*>(hDir);
 
-	m_watchThread = mrpt::system::createThreadFromObjectMethod(this, &CFileSystemWatcher::thread_win32_watch);
+	m_watchThread = std::thread( &CFileSystemWatcher::thread_win32_watch,this);
 
 #else
 #	if MRPT_HAS_INOTIFY

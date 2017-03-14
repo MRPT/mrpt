@@ -10,10 +10,11 @@
 #include "hwdrivers-precomp.h"   // Precompiled headers
 
 
-#include <mrpt/system/threads.h>
 #include <mrpt/hwdrivers/CIMUXSens_MT4.h>
 #include <mrpt/obs/CObservationIMU.h>
 #include <mrpt/obs/CObservationGPS.h>
+
+#include <thread>
 
 IMPLEMENTS_GENERIC_SENSOR(CIMUXSens_MT4,mrpt::hwdrivers)
 
@@ -367,7 +368,7 @@ void CIMUXSens_MT4::doProcess()
 #if MRPT_HAS_xSENS_MT4
 	if(m_state == ssError)
 	{
-		mrpt::system::sleep(200);
+		std::this_thread::sleep_for(200ms);
 		initialize();
 	}
 
