@@ -36,7 +36,7 @@ using namespace mrpt::utils;
 using namespace std;
 
 // The configuration file:
-CConfigFile      *iniFile=nullptrL;
+CConfigFile      *iniFile=nullptr;
 
 
 bool hmtMapViewerApp::OnInit()
