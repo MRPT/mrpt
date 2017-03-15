@@ -540,6 +540,9 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 * is periodically scheduled inside the execGraphSlam method
 		 */
 		/**\{*/
+		/**\brief Wrapper around the deciders/optimizer updateVisuals methods
+		 */
+		void updateAllVisuals();
 		/**\brief In RGB-D TUM Datasets update the Range image displayed in a
 		 * seperate viewport
 		 */

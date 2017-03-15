@@ -671,14 +671,7 @@ bool CGraphSlamEngine<GRAPH_T>::_execGraphSlamStep(
 
 		// query node/edge deciders for visual objects update
 		if (m_enable_visuals) {
-			mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
-			m_time_logger.enter("Visuals");
-
-			m_node_reg->updateVisuals();
-			m_edge_reg->updateVisuals();
-			m_optimizer->updateVisuals();
-
-			m_time_logger.leave("Visuals");
+			this->updateAllVisuals();
 		}
 
 		// update the edge counter
@@ -1157,6 +1150,21 @@ void CGraphSlamEngine<GRAPH_T>::initRangeImageViewport() {
 
 	MRPT_END;
 }
+
+template<class GRAPH_T>
+void CGraphSlamEngine<GRAPH_T>::updateAllVisuals() {
+	MRPT_START;
+	mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
+	m_time_logger.enter("Visuals");
+
+	m_node_reg->updateVisuals();
+	m_edge_reg->updateVisuals();
+	m_optimizer->updateVisuals();
+
+	m_time_logger.leave("Visuals");
+	MRPT_END;
+}
+
 template<class GRAPH_T>
 void CGraphSlamEngine<GRAPH_T>::updateRangeImageViewport() {
 	MRPT_START;
