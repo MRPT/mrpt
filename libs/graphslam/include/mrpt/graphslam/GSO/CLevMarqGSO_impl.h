@@ -108,7 +108,10 @@ void CLevMarqGSO<GRAPH_t>::updateVisuals() {
 	MRPT_START;
 	parent::updateVisuals();
 
-	this->updateOptDistanceVisualization();
+	if (opt_params.optimization_distance > 0) {
+		this->updateOptDistanceVisualization();
+	}
+
 	this->updateGraphVisualization();
 
 	MRPT_END;
@@ -316,18 +319,14 @@ void CLevMarqGSO<GRAPH_t>::updateOptDistanceVisualization() {
 	using namespace mrpt::opengl;
 
 	// update ICP_max_distance Disk
-	if (opt_params.optimization_distance > 0) {
-		COpenGLScenePtr scene = this->m_win->get3DSceneAndLock();
+	COpenGLScenePtr scene = this->m_win->get3DSceneAndLock();
 
-		CRenderizablePtr obj = scene->getByName("optimization_distance_disk");
-		CDiskPtr disk_obj = static_cast<CDiskPtr>(obj);
+	CRenderizablePtr obj = scene->getByName("optimization_distance_disk");
+	CDiskPtr disk_obj = static_cast<CDiskPtr>(obj);
+	disk_obj->setPose(this->m_graph->nodes.rbegin()->second);
 
-		disk_obj->setPose(this->m_graph->nodes[this->m_graph->nodeCount()-1]);
-
-		this->m_win->unlockAccess3DScene();
-		this->m_win->forceRepaint();
-	}
-
+	this->m_win->unlockAccess3DScene();
+	this->m_win->forceRepaint();
 	MRPT_END;
 }
 

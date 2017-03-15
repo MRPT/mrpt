@@ -1710,6 +1710,9 @@ void CLoopCloserERD<GRAPH_T>::updateMapPartitionsVisualization() {
 	int partitionID = 0;
 	bool partition_contains_last_node = false;
 	bool found_last_node = false; // last node must exist in one partition at all cost TODO
+	MRPT_LOG_DEBUG_STREAM << "Searching for the partition of the last nodeID: "
+		<< (this->m_graph->nodeCount()-1);
+
 	for (partitions_t::const_iterator p_it = m_curr_partitions.begin();
 			p_it != m_curr_partitions.end(); ++p_it, ++partitionID) {
 
@@ -1717,12 +1720,12 @@ void CLoopCloserERD<GRAPH_T>::updateMapPartitionsVisualization() {
 		vector_uint nodes_list = *p_it;
 
 		// finding the partition in which the last node is in
-		if (std::find(nodes_list.begin(),
+		if (std::find(
+					nodes_list.begin(),
 					nodes_list.end(),
 					this->m_graph->nodeCount()-1) != nodes_list.end()) {
 			partition_contains_last_node = true;
 
-			ASSERTMSG_(!found_last_node, "Last node already found in another partition.");
 			found_last_node = true;
 		}
 		else {
@@ -1745,9 +1748,9 @@ void CLoopCloserERD<GRAPH_T>::updateMapPartitionsVisualization() {
 			}
 		}
 		else {
-			//MRPT_LOG_DEBUG_STREAM <<
-				//"\tCreating a new CSetOfObjects partition object for partition #" <<
-				//partitionID;
+			MRPT_LOG_DEBUG_STREAM <<
+				"\tCreating a new CSetOfObjects partition object for partition #" <<
+				partitionID;
 			curr_partition_obj = CSetOfObjects::Create();
 			curr_partition_obj->setName(partition_obj_name);
 			if (m_lc_params.LC_check_curr_partition_only) {
@@ -1826,8 +1829,10 @@ void CLoopCloserERD<GRAPH_T>::updateMapPartitionsVisualization() {
 		//MRPT_LOG_DEBUG_STREAM << "Done working on partition #" << partitionID;
 	}
 
-	ASSERTMSG_(found_last_node,
-			"Last inserted node was not found in any partition.");
+	if (!found_last_node) {
+		MRPT_LOG_ERROR_STREAM << "Last inserted nodeID was not found in any partition.";
+		ASSERT_(found_last_node);
+	}
 
 	// remove outdated partitions
 	// these occur when more partitions existed during the previous visualization
@@ -1844,7 +1849,12 @@ void CLoopCloserERD<GRAPH_T>::updateMapPartitionsVisualization() {
 					static_cast<unsigned long>(partitionID));
 
 			CRenderizablePtr obj = map_partitions_obj->getByName(partition_obj_name);
-			ASSERTMSG_(obj, "Partition object name is not found.");
+			if (!obj) {
+				MRPT_LOG_ERROR_STREAM
+				<< "Partition : " << partition_obj_name
+				<< " was not found.";
+				ASSERT_(!obj);
+			}
 			map_partitions_obj->removeObject(obj);
 		}
 	}
@@ -1853,7 +1863,7 @@ void CLoopCloserERD<GRAPH_T>::updateMapPartitionsVisualization() {
 
 	this->m_win->unlockAccess3DScene();
 	this->m_win->forceRepaint();
-}
+} // end of updateMapPartitionsVisualization
 
 template<class GRAPH_T>
 void CLoopCloserERD<GRAPH_T>::toggleMapPartitionsVisualization() {
@@ -1878,7 +1888,7 @@ void CLoopCloserERD<GRAPH_T>::toggleMapPartitionsVisualization() {
 	this->m_win->forceRepaint();
 
 	MRPT_END;
-}
+} // end of toggleMapPartitionsVisualization
 
 template<class GRAPH_T>
 void CLoopCloserERD<GRAPH_T>::computeCentroidOfNodesVector(
@@ -1903,7 +1913,7 @@ void CLoopCloserERD<GRAPH_T>::computeCentroidOfNodesVector(
 	centroid_coords->second = centroid_y/static_cast<double>(nodes_list.size());
 
 	MRPT_END;
-}
+} // end of computeCentroidOfNodesVector
 
 template<class GRAPH_T>
 void CLoopCloserERD<GRAPH_T>::initLaserScansVisualization() {
@@ -2037,7 +2047,7 @@ void CLoopCloserERD<GRAPH_T>::updateVisuals() {
 	this->m_time_logger.enter("Visuals");
 
 	if (m_laser_params.visualize_laser_scans) {
-	this->updateLaserScansVisualization();
+		this->updateLaserScansVisualization();
 	}
 	if (m_lc_params.visualize_map_partitions) {
 		this->updateMapPartitionsVisualization();
