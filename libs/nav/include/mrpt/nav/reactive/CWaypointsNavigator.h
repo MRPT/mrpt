@@ -46,6 +46,13 @@ namespace mrpt
 
 		/** Get a copy of the control structure which describes the progress status of the waypoint navigation. */
 		virtual void getWaypointNavStatus(TWaypointStatusSequence & out_nav_status) const;
+
+		/** Get a copy of the control structure which describes the progress status of the waypoint navigation. */
+		TWaypointStatusSequence getWaypointNavStatus() const {
+			TWaypointStatusSequence nav_status;
+			this->getWaypointNavStatus(nav_status);
+			return nav_status;
+		}
 		/** @}*/
 
 		/** Returns `true` if, according to the information gathered at the last navigation step, 
