@@ -259,10 +259,11 @@ void  CMetricMapBuilderRBPF::initialize(
 	enterCriticalSection();
 
 	MRPT_LOG_INFO_STREAM( "[initialize] Called with " << initialMap.size() << " nodes in fixed map\n"); 
-	if (x0)
-		MRPT_LOG_INFO_STREAM( "[initialize] x0: " << x0->getMeanVal() << "\n");
-	else
+	if (x0) {
+		MRPT_LOG_INFO_STREAM( "[initialize] x0: " << x0->getMeanVal() << "\n"); 
+	} else {
 		MRPT_LOG_INFO_STREAM( "[initialize] x0: (Not supplied)\n");
+	}
 
 	this->clear();
 	if (x0) {
