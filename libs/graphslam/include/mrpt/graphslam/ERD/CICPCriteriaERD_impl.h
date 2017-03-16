@@ -215,18 +215,15 @@ void CICPCriteriaERD<GRAPH_t>::checkRegistrationCondition2D(
 				m_time_logger.leave("CICPCriteriaERD::getICPEdge");
 
 				// Debugging statements
-				MRPT_LOG_DEBUG_STREAM <<
-			">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>";
-				MRPT_LOG_DEBUG_STREAM <<
+				MRPT_LOG_DEBUG_STREAM(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+				MRPT_LOG_DEBUG_STREAM(
 					"ICP constraint between NON-successive nodes: " << 
 					*node_it << " => " << curr_nodeID << 
 					std::endl <<
 					"\tnIterations = " << icp_info.nIterations <<
-					"\tgoodness = " << icp_info.goodness;
-				MRPT_LOG_DEBUG_STREAM << "ICP_goodness_thresh: " <<
-					params.ICP_goodness_thresh;
-				MRPT_LOG_DEBUG_STREAM <<
-			"<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<";
+					"\tgoodness = " << icp_info.goodness);
+				MRPT_LOG_DEBUG_STREAM("ICP_goodness_thresh: " <<params.ICP_goodness_thresh);
+				MRPT_LOG_DEBUG_STREAM("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
 
 
 				// criterion for registering a new node
