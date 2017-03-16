@@ -171,9 +171,9 @@ void CFixedIntervalsNRD<GRAPH_t>::registerNewNode() {
 	m_graph->nodes[to] = m_graph->nodes[from] + m_since_prev_node_PDF.getMeanVal();
 	m_graph->insertEdgeAtEnd(from, to, m_since_prev_node_PDF);
 
-	MRPT_LOG_DEBUG_STREAM << "Registered new node:" << endl <<
+	MRPT_LOG_DEBUG_STREAM("Registered new node:" << endl <<
 		"\t" << from << " => " << to << endl <<
-		"\tEdge: " << m_since_prev_node_PDF.getMeanVal().asString();
+		"\tEdge: " << m_since_prev_node_PDF.getMeanVal().asString());
 
 	MRPT_END;
 }

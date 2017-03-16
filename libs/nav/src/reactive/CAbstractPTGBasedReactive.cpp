@@ -598,7 +598,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		// Running period estim:
 		const double period_tim= timerForExecutionPeriod.Tac();
 		if (period_tim > 1.5* meanExecutionPeriod.getLastOutput()) {
-			MRPT_LOG_WARN_FMT("Timing warning: Suspicious executionTime=%.03f ms is far above the average of %.03f ms", 1e3*period_tim, meanExecutionPeriod.getLastOutput()*1e3);
+			MRPT_LOG_WARN_FMT("Timing warning: Suspicious executionPeriod=%.03f ms is far above the average of %.03f ms", 1e3*period_tim, meanExecutionPeriod.getLastOutput()*1e3);
 		}
 		meanExecutionPeriod.filter(period_tim);
 		timerForExecutionPeriod.Tic();
@@ -663,6 +663,8 @@ void CAbstractPTGBasedReactive::STEP8_GenerateLogRecord(CLogFileRecord &newLogRe
 	newLogRec.values["executionTime_avr"] = meanExecutionTime.getLastOutput();
 	newLogRec.values["time_changeSpeeds()"] = tim_changeSpeed;
 	newLogRec.values["time_changeSpeeds()_avr"] = tim_changeSpeed_avr.getLastOutput();
+	newLogRec.values["CWaypointsNavigator::navigationStep()"] = m_timlog_delays.getLastTime("CWaypointsNavigator::navigationStep()");
+	newLogRec.values["CAbstractNavigator::navigationStep()"] = m_timlog_delays.getLastTime("CAbstractNavigator::navigationStep()");
 	newLogRec.timestamps["tim_start_iteration"] = tim_start_iteration;
 	newLogRec.timestamps["curPoseAndVel"] = m_curPoseVel.timestamp;
 	newLogRec.nPTGs = nPTGs;
@@ -744,7 +746,7 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 
 	// Factor 1: Free distance for the chosen PTG and "alpha" in the TP-Space:
 	// ----------------------------------------------------------------------
-	double & colfree = cm.props["colision_free_distance"];
+	double & colfree = cm.props["collision_free_distance"];
 	if (move_k == target_k && target_d_norm>.0 && in_TPObstacles[move_k]>target_d_norm+0.05 /*small margin*/) {
 		// If we head straight to target, don't count the possible collisions ahead:
 		colfree = mrpt::utils::saturate_val(in_TPObstacles[move_k] / (target_d_norm + 0.05 /* give a minimum margin */), 0.0, 1.0);
@@ -760,7 +762,8 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 	{
 		int cur_k=0;
 		double cur_norm_d=.0;
-		bool is_exact;
+		bool is_exact, is_time_based = false;
+		uint32_t cur_ptg_step = 0;
 
 		// Use: time-based prediction for shorter distances, PTG inverse mapping-based for longer ranges:
 		const double maxD = params_abstract_ptg_navigator.max_dist_for_timebased_path_prediction;
@@ -769,10 +772,20 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 		}
 		else {
 			// Use time: 
+			is_time_based = true;
 			is_exact = true; // well, sort of...
 			const double NOP_At = m_lastSentVelCmd.speed_scale * mrpt::system::timeDifference(m_lastSentVelCmd.tim_send_cmd_vel, tim_start_iteration);
+			newLogRec.additional_debug_msgs["PTG_eval.NOP_At"] = mrpt::format("%.06f s",NOP_At);
 			cur_k = move_k;
-			cur_norm_d = cm.PTG->getPathDist(cur_k, mrpt::utils::round(NOP_At / cm.PTG->getPathStepDuration())) / cm.PTG->getRefDistance();
+			cur_ptg_step = mrpt::utils::round(NOP_At / cm.PTG->getPathStepDuration());
+			cur_norm_d = cm.PTG->getPathDist(cur_k, cur_ptg_step) / cm.PTG->getRefDistance();
+			{
+				const double cur_a = cm.PTG->index2alpha(cur_k);
+				log.TP_Robot.x = cos(cur_a)*cur_norm_d;
+				log.TP_Robot.y = sin(cur_a)*cur_norm_d;
+				cm.starting_robot_dir = cur_a;
+				cm.starting_robot_dist = cur_norm_d;
+			}
 		}
 
 		if (!is_exact)
@@ -782,8 +795,8 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 			newLogRec.additional_debug_msgs["PTG_eval"] = "PTG-continuation not allowed, cur. pose out of PTG domain.";
 			return;
 		}
-		uint32_t cur_ptg_step = 0;
 		bool WS_point_is_unique = true; 
+		if (!is_time_based)
 		{
 			bool ok1 = cm.PTG->getPathStepForDist(m_lastSentVelCmd.ptg_alpha_index, cur_norm_d * cm.PTG->getRefDistance(), cur_ptg_step);
 			if (ok1) {
@@ -845,28 +858,8 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 		}
 	}
 
-	//// Factor 2: Distance in sectors:
-	//// -------------------------------------------
-	////int dif = std::abs(TargetSector - kDirection);
-	////if ( dif > int(nSectors/2)) dif = nSectors - dif;
-	//m_expr_var_k = move_k;
-	//m_expr_var_k_target = target_k;
-	//m_expr_var_num_paths = in_TPObstacles.size();
-
-	//// Was: eval_factors[SCOREIDX_TPS_DIRECTION] = exp(-std::abs( dif / (nSectors/10.0)));
-	//eval_factors[SCOREIDX_TPS_DIRECTION] = PIMPL_GET_CONSTREF(exprtk::expression<double>, m_expr_score2_formula).value();
-
-	// Factor 3: Angle between the robot at the end of the chosen trajectory and the target
-	// -------------------------------------------------------------------------------------
-	//double t_ang = atan2( WS_Target.y - pose.y, WS_Target.x - pose.x );
-	//t_ang -= pose.phi;
-	//mrpt::math::wrapToPiInPlace(t_ang);
-
-	//eval_factors[SCOREIDX_ORIENTATION_AT_END] = exp(-square( t_ang / (0.5*M_PI)) );
-
 	// Factor4: Decrease in euclidean distance between (x,y) and the target:
 	//  Moving away of the target is negatively valued.
-	// ---------------------------------------------------------------------------
 	cm.props["dist_eucl_final"] = std::hypot(WS_Target.x- pose.x, WS_Target.y- pose.y);
 
 	// Factor5: Hysteresis:
@@ -901,17 +894,6 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 	// -----------------------------------------------------
 	double &clearance = cm.props["clearance"];
 	clearance = in_clearance.getClearance(move_k, target_d_norm*1.01, false /* spot, dont interpolate */ );
-
-#if 0 // ->leave this to the multiobjective optimizer
-	// Don't trust PTG continuation if we are too close to obstacles:
-	if (this_is_PTG_continuation &&
-		std::min(eval_factors[SCOREIDX_COLISION_FREE_DISTANCE], eval_factors[SCOREIDX_CLEARANCE]) < params_abstract_ptg_navigator.min_normalized_free_space_for_ptg_continuation)
-	{
-		newLogRec.additional_debug_msgs["PTG_eval"] = "PTG-continuation not allowed, too close to obstacles.";
-		cm.speed = -0.01; // this enforces a 0 global evaluation score
-		return;
-	}
-#endif
 
 	// Factor: ETA (Estimated Time of Arrival to target or to closest obstacle, whatever it's first)
 	// -----------------------------------------------------
@@ -983,7 +965,7 @@ double CAbstractPTGBasedReactive::generate_vel_cmd( const TCandidateMovementPTG 
 	}
 	catch (std::exception &e)
 	{
-		MRPT_LOG_ERROR_STREAM << "[CAbstractPTGBasedReactive::generate_vel_cmd] Exception: " << e.what();
+		MRPT_LOG_ERROR_STREAM( "[CAbstractPTGBasedReactive::generate_vel_cmd] Exception: " << e.what());
 	}
 	return cmdvel_speed_scale;
 }

@@ -7,9 +7,24 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#pragma once
+#include <mrpt/math/CRuntimeCompiledExpression.h>
+#include <gtest/gtest.h>
 
-#include <mrpt/utils/types_math.h>
+using namespace mrpt;
+using namespace mrpt::utils;
+using namespace mrpt::math;
+using namespace std;
 
-#include <mrpt/pbmap/Miscellaneous.h>
-//#include <mrpt/pbmap/PbMap.h>   // Removed due to gcc5 internal error when using PCH
+TEST(RuntimeCompiledExpression,SimpleTest)
+{
+	mrpt::math::CRuntimeCompiledExpression expr;
+	std::map<std::string, double> vars;
+
+	vars["x"] = 5.0;
+	vars["y"] = 3.0;
+	expr.compile("x^2+x*y+1", vars);
+
+	EXPECT_NEAR(expr.eval(), vars["x"] * vars["x"] + vars["x"] * vars["y"] + 1.0, 1e-9);
+}
+
+

@@ -151,6 +151,7 @@ void CAbstractNavigator::saveConfigFile(mrpt::utils::CConfigFileBase & c) const
 void CAbstractNavigator::navigationStep()
 {
 	mrpt::synch::CCriticalSectionLocker csl(&m_nav_cs);
+	mrpt::utils::CTimeLoggerEntry tle(m_timlog_delays, "CAbstractNavigator::navigationStep()");
 
 	const TState prevState = m_navigationState;
 	switch ( m_navigationState )
@@ -374,7 +375,7 @@ void CAbstractNavigator::updateCurrentPoseAndSpeeds()
 	{
 		m_latestPoses.erase(m_latestPoses.begin());
 	}
-	//MRPT_LOG_DEBUG_STREAM << "updateCurrentPoseAndSpeeds: " << m_latestPoses.size() << " poses in list of latest robot poses.";
+	//MRPT_LOG_DEBUG_STREAM( "updateCurrentPoseAndSpeeds: " << m_latestPoses.size() << " poses in list of latest robot poses.");
 }
 
 bool CAbstractNavigator::changeSpeeds(const mrpt::kinematics::CVehicleVelCmd &vel_cmd)

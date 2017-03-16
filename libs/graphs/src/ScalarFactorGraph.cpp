@@ -44,7 +44,7 @@ void ScalarFactorGraph::clear()
 
 void ScalarFactorGraph::initialize(const size_t nodeCount)
 {
-	MRPT_LOG_DEBUG_STREAM << "initialize() called, nodeCount=" << nodeCount;
+	MRPT_LOG_DEBUG_STREAM("initialize() called, nodeCount=" << nodeCount);
 
 	m_numNodes = nodeCount;
 }

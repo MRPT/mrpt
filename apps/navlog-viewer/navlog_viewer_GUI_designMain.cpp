@@ -968,6 +968,14 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 			const size_t nAlphas = pI.TP_Obstacles.size();
 			//ASSERT_(nAlphas>0)  // In case of "invalid" PTGs during navigation, TP_Obstacles may be left uncomputed.
 
+			if (!cbShowAllDebugEntries->IsChecked()) {
+				win->clearTextMessages();
+			}
+
+			win->addTextMessage(4, 4,
+				format("[%u]:%s", nPTG, log.infoPerPTG[nPTG].PTG_desc.c_str()),
+				TColorf(1.0f, 1.0f, 1.0f), "mono", 8, mrpt::opengl::NICE, 0 /*id*/, 1.5, 0.1, true /*shadow*/);
+
 			// Chosen direction:
 			{
 				const double aDir = pI.desiredDirection;
@@ -1016,7 +1024,17 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 
 				win->addTextMessage(4, -12,
 					format("TP_Target=(%.02f,%.02f) k=%i ang=%.02f deg", pI.TP_Target.x, pI.TP_Target.y, tp_target_k, mrpt::utils::RAD2DEG(ang)),
-					TColorf(1.0f, 1.0f, 1.0f), "sans", 8, mrpt::opengl::NICE, 1 /*id*/, 1.5, 0.1, false /*shadow*/);
+					TColorf(1.0f, 1.0f, 1.0f), "mono", 8, mrpt::opengl::NICE, 1 /*id*/, 1.5, 0.1, false /*shadow*/);
+			}
+			if (cbShowAllDebugEntries->IsChecked()) 
+			{
+				unsigned int unique_id = 2;
+				int lineY = 1;
+				for (const auto &e : pI.evalFactors) {
+					win->addTextMessage(4, 5 + (lineY++) * 11,
+						mrpt::format("%20s=%6.03f", e.first.c_str(), e.second),
+						mrpt::utils::TColorf(1, 1, 1), "mono", 9, mrpt::opengl::NICE, unique_id++, 1.5, 0.1, true);
+				}
 			}
 
 			// Current robot pt (normally in pure reactive, at (0,0)):

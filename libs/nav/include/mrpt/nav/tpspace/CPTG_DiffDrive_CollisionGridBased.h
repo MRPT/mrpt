@@ -130,18 +130,18 @@ protected:
 		typedef std::vector<std::pair<uint16_t,float> > TCollisionCell;
 
 		/** An internal class for storing the collision grid  */
-		class NAV_IMPEXP CColisionGrid : public mrpt::utils::CDynamicGrid<TCollisionCell>
+		class NAV_IMPEXP CCollisionGrid : public mrpt::utils::CDynamicGrid<TCollisionCell>
 		{
 		private:
 			CPTG_DiffDrive_CollisionGridBased const * m_parent;
 
 		public:
-			CColisionGrid(float x_min, float x_max,float y_min, float y_max, float resolution, CPTG_DiffDrive_CollisionGridBased* parent )
+			CCollisionGrid(float x_min, float x_max,float y_min, float y_max, float resolution, CPTG_DiffDrive_CollisionGridBased* parent )
 				: mrpt::utils::CDynamicGrid<TCollisionCell>(x_min,x_max,y_min,y_max,resolution),
 				m_parent(parent)
 			{
 			}
-			virtual ~CColisionGrid() { }
+			virtual ~CCollisionGrid() { }
 
 			bool saveToFile( mrpt::utils::CStream* fil, const mrpt::math::CPolygon & computed_robotShape ) const;	//!< Save to file, true = OK
 			bool loadFromFile( mrpt::utils::CStream* fil, const mrpt::math::CPolygon & current_robotShape );	//!< Load from file,  true = OK
@@ -156,13 +156,13 @@ protected:
 				*/
 			void updateCellInfo( const unsigned int icx, const unsigned int icy, const uint16_t k, const float dist );
 
-		}; // end of class CColisionGrid
+		}; // end of class CCollisionGrid
 
 		// Save/Load from files.
 		bool saveColGridsToFile( const std::string &filename, const mrpt::math::CPolygon & computed_robotShape ) const;	// true = OK
 		bool loadColGridsFromFile( const std::string &filename, const mrpt::math::CPolygon & current_robotShape ); // true = OK
 
-		CColisionGrid	m_collisionGrid; //!< The collision grid
+		CCollisionGrid	m_collisionGrid; //!< The collision grid
 
 		/** Specifies the min/max values for "k" and "n", respectively.
 		  * \sa m_lambdaFunctionOptimizer

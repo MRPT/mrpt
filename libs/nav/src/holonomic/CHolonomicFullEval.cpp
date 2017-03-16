@@ -136,7 +136,7 @@ void CHolonomicFullEval::navigate(const NavInput & ni, NavOutput &no)
 		// Range of attainable values: 0=passes thru target. 2=opposite direction
 		double min_dist_target_along_path = sg.distance(ni.target);
 
-		// Idea: if this segment is taking us *away* from target, don't make the segment to start at (0,0), since all 
+		// Idea: if this segment is taking us *away* from target, don't make the segment to start at (0,0), since all
 		// paths "running away" will then have identical minimum distances to target. Use the middle of the segment instead:
 		const double endpt_dist_to_target = (ni.target - TPoint2D(x, y)).norm();
 		const double endpt_dist_to_target_norm = std::min(1.0, endpt_dist_to_target);
@@ -209,7 +209,7 @@ void CHolonomicFullEval::navigate(const NavInput & ni, NavOutput &no)
 	ASSERT_(NUM_PHASES>=1);
 
 	std::vector<double> weights_sum_phase(NUM_PHASES, .0), weights_sum_phase_inv(NUM_PHASES);
-	for (unsigned int i = 0; i < NUM_PHASES; i++) 
+	for (unsigned int i = 0; i < NUM_PHASES; i++)
 	{
 		for (unsigned int l : options.PHASE_FACTORS[i]) weights_sum_phase[i] += options.factorWeights[l];
 		ASSERT_(weights_sum_phase[i]>.0);
@@ -254,12 +254,12 @@ void CHolonomicFullEval::navigate(const NavInput & ni, NavOutput &no)
 
 		last_phase_threshold = options.PHASE_THRESHOLDS[phase_idx] * phase_max + (1.0 - options.PHASE_THRESHOLDS[phase_idx]) * phase_min;
 	} // end for each phase
-	
+
 	// Give a chance for a derived class to manipulate the final evaluations:
 	auto & dirs_eval = *phase_scores.rbegin();
 
-	postProcessDirectionEvaluations(dirs_eval);
-	
+	postProcessDirectionEvaluations(dirs_eval, ni);
+
 	// Recalculate the threshold just in case the postProcess function above changed things:
 	{
 		double phase_min = std::numeric_limits<double>::max(), phase_max = .0;
@@ -276,16 +276,8 @@ void CHolonomicFullEval::navigate(const NavInput & ni, NavOutput &no)
 	const unsigned int INVALID_K = std::numeric_limits<unsigned int>::max();
 	unsigned int best_k = INVALID_K;
 	double       best_eval = .0;
-#if 0
-	// Individual direction search:
-	for (unsigned int i=0;i<nDirs;i++) {
-		if (dirs_eval[i]>best_eval) {
-			best_eval = dirs_eval[i];
-			best_k = i;
-		}
-	}
-#else
-	// Of those directions above "last_phase_threshold", keep the GAP with the largest maximum value within; 
+
+	// Of those directions above "last_phase_threshold", keep the GAP with the largest maximum value within;
 	// then pick the MIDDLE point as the final selection.
 	std::vector<TGap> gaps;
 	int best_gap_idx = -1;
@@ -363,20 +355,36 @@ void CHolonomicFullEval::navigate(const NavInput & ni, NavOutput &no)
 		const unsigned int width_threshold = mrpt::utils::round(options.gap_width_ratio_threshold * nDirs);
 
 		// Move straihgt towards target?
-		if (smallest_clearance_in_k_units >= clearance_threshold && 
+		if (smallest_clearance_in_k_units >= clearance_threshold &&
 			gap_width>=width_threshold)
 		{
 			best_k = target_k;
 		}
 	}
-	
+
 	if (best_k==INVALID_K) // did not fulfill conditions above
 	{
 		// Not heading to target: go thru the "middle" of the gap to maximize clearance
 		best_k = mrpt::utils::round(0.5*(best_gap.k_to + best_gap.k_from));
 	}
 
-#endif
+	// Alternative, simpler method to decide motion:
+	// If target can be reached without collision *and* with a minimum of clearance, 
+	// then select that direction, with the score as computed with the regular formulas above
+	// (even if that score was not the maximum!).
+	if (target_dist<0.99 && ni.obstacles[target_k]>target_dist*1.01 &&
+		ni.clearance->getClearance(target_k /*path index*/, std::min(0.99, target_dist*0.95), true /*interpolate path*/)
+			> options.TOO_CLOSE_OBSTACLE
+		)
+	{
+		best_k = target_k;
+		best_eval = dirs_eval[target_k];
+		
+		// Reflect this decision in the phase score plots:
+		phase_scores[NUM_PHASES - 1][target_k] += 2.0;
+	}
+
+	// Prepare NavigationOutput data:
 	if (best_eval==.0)
 	{
 		// No way found!
@@ -396,7 +404,7 @@ void CHolonomicFullEval::navigate(const NavInput & ni, NavOutput &no)
 			1.0;
 
 
-		const double obs_clearance = m_dirs_scores(best_k, 4);
+		//const double obs_clearance = m_dirs_scores(best_k, 4);
 		const double obs_dist = ni.obstacles[best_k]; // Was: min with obs_clearance too.
 		const double obs_dist_th = std::max(options.TOO_CLOSE_OBSTACLE, options.OBSTACLE_SLOW_DOWN_DISTANCE*ni.maxObstacleDist);
 		double riskFactor = 1.0;
@@ -527,7 +535,7 @@ void CHolonomicFullEval::TOptions::loadFromConfigFile(const mrpt::utils::CConfig
 	{
 		c.read_vector(s, mrpt::format("PHASE%i_FACTORS",i + 1), PHASE_FACTORS[i], PHASE_FACTORS[i], true);
 		ASSERT_(!PHASE_FACTORS[i].empty());
-		
+
 		PHASE_THRESHOLDS[i] = c.read_double(s, mrpt::format("PHASE%i_THRESHOLD", i + 1),.0, true);
 		ASSERT_(PHASE_THRESHOLDS[i]>=.0 && PHASE_THRESHOLDS[i]<=1.0);
 	}
@@ -594,16 +602,16 @@ void  CHolonomicFullEval::readFromStream(mrpt::utils::CStream &in,int version)
 		{
 		// Params:
 		in >> options.factorWeights >> options.HYSTERESIS_SECTOR_COUNT;
-		
+
 		if (version>=3) {
 			in >> options.PHASE_FACTORS;
-		} 
+		}
 		else {
 			options.PHASE_THRESHOLDS.resize(2);
 			in >> options.PHASE_FACTORS[0] >> options.PHASE_FACTORS[1];
 		}
 		in >> options.TARGET_SLOW_APPROACHING_DISTANCE >> options.TOO_CLOSE_OBSTACLE;
-		
+
 		if (version >= 3) {
 			in >> options.PHASE_THRESHOLDS;
 		}
@@ -630,8 +638,7 @@ void  CHolonomicFullEval::readFromStream(mrpt::utils::CStream &in,int version)
 	};
 }
 
-void CHolonomicFullEval::postProcessDirectionEvaluations(std::vector<double> &dir_evals)
+void CHolonomicFullEval::postProcessDirectionEvaluations(std::vector<double> &dir_evals, const NavInput & ni)
 {
 	// Default: do nothing
 }
-

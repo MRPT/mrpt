@@ -704,7 +704,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 								Delta_b_c.cov(0,0)=Delta_b_c.cov(1,1)=square(0.04);
 								Delta_b_c.cov(3,3)=square(DEG2RAD(1));
 
-								MRPT_LOG_DEBUG_STREAM << "b_a: " << Delta_b_a.mean << endl << "a_c: " << Delta_a_c.mean << endl << "b_a + a_c: " << Delta_b_c.mean << endl;
+								MRPT_LOG_DEBUG_STREAM( "b_a: " << Delta_b_a.mean << endl << "a_c: " << Delta_a_c.mean << endl << "b_a + a_c: " << Delta_b_c.mean << endl);
 
 								// ------------------------------------------------
 								// Finally, add the new annotation to arc "b->c":
@@ -734,7 +734,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 								if (!arcDeltaIsInverted)
 								{  // arc: b->c
 									newArc->m_annotations.set(ARC_ANNOTATION_DELTA, CPose3DPDFGaussianPtr( new CPose3DPDFGaussian(Delta_b_c) ),LMH->m_ID );
-									MRPT_LOG_DEBUG_STREAM << "[LSLAM_proc_msg_AA] Setting arc " << nodeB->getID() << " -> " << node_c->getID() << " : " << Delta_b_c.mean << " cov = " << Delta_b_c.cov.inMatlabFormat() << endl;
+									MRPT_LOG_DEBUG_STREAM( "[LSLAM_proc_msg_AA] Setting arc " << nodeB->getID() << " -> " << node_c->getID() << " : " << Delta_b_c.mean << " cov = " << Delta_b_c.cov.inMatlabFormat() << endl);
 									newArc->m_annotations.setElemental(ARC_ANNOTATION_DELTA_SRC_POSEID, refPoseAt_b ,LMH->m_ID );
 									newArc->m_annotations.setElemental(ARC_ANNOTATION_DELTA_TRG_POSEID, refPoseAt_c ,LMH->m_ID );
 								}
@@ -743,7 +743,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 									CPose3DPDFGaussian Delta_b_c_inv;
 									Delta_b_c.inverse( Delta_b_c_inv );
 
-									MRPT_LOG_DEBUG_STREAM << "[LSLAM_proc_msg_AA] Setting arc " << nodeB->getID() << " <- " << node_c->getID() << " : " << Delta_b_c_inv.mean << " cov = " << Delta_b_c_inv.cov.inMatlabFormat() << endl;
+									MRPT_LOG_DEBUG_STREAM( "[LSLAM_proc_msg_AA] Setting arc " << nodeB->getID() << " <- " << node_c->getID() << " : " << Delta_b_c_inv.mean << " cov = " << Delta_b_c_inv.cov.inMatlabFormat() << endl);
 									newArc->m_annotations.set(ARC_ANNOTATION_DELTA,CPose3DPDFGaussianPtr( new CPose3DPDFGaussian(Delta_b_c_inv)),LMH->m_ID );
 									newArc->m_annotations.setElemental(ARC_ANNOTATION_DELTA_SRC_POSEID, refPoseAt_c ,LMH->m_ID );
 									newArc->m_annotations.setElemental(ARC_ANNOTATION_DELTA_TRG_POSEID, refPoseAt_b ,LMH->m_ID );
@@ -915,8 +915,8 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 									newDelta.cov(0,0)=newDelta.cov(1,1)=square(0.04);
 									newDelta.cov(3,3)=square(DEG2RAD(1));
 
-									MRPT_LOG_DEBUG_STREAM<< "[LSLAM_proc_msg_AA] Updating arc " << nodeFrom << " -> " << nodeTo << " OLD: " << oldDelta->mean << " cov = " << oldDelta->cov.inMatlabFormat() << endl;
-									MRPT_LOG_DEBUG_STREAM<< "[LSLAM_proc_msg_AA] Updating arc " << nodeFrom << " -> " << nodeTo << " NEW: " << newDelta.mean << " cov = " << newDelta.cov.inMatlabFormat() << endl;
+									MRPT_LOG_DEBUG_STREAM( "[LSLAM_proc_msg_AA] Updating arc " << nodeFrom << " -> " << nodeTo << " OLD: " << oldDelta->mean << " cov = " << oldDelta->cov.inMatlabFormat() << endl);
+									MRPT_LOG_DEBUG_STREAM( "[LSLAM_proc_msg_AA] Updating arc " << nodeFrom << " -> " << nodeTo << " NEW: " << newDelta.mean << " cov = " << newDelta.cov.inMatlabFormat() << endl);
 
 									theArc->m_annotations.set(ARC_ANNOTATION_DELTA, CPose3DPDFGaussianPtr( new CPose3DPDFGaussian(newDelta)),LMH->m_ID );
 									theArc->m_annotations.setElemental(ARC_ANNOTATION_DELTA_SRC_POSEID, poseID_trg ,LMH->m_ID );
@@ -943,8 +943,8 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 									newDelta.cov(0,0)=newDelta.cov(1,1)=square(0.04);
 									newDelta.cov(3,3)=square(DEG2RAD(1));
 
-									MRPT_LOG_DEBUG_STREAM<< "[LSLAM_proc_msg_AA] Updating arc " << nodeFrom << " <- " << nodeTo << " OLD: " << oldDelta->mean << " cov = " << oldDelta->cov.inMatlabFormat() << endl;
-									MRPT_LOG_DEBUG_STREAM<< "[LSLAM_proc_msg_AA] Updating arc " << nodeFrom << " <- " << nodeTo << " NEW: " << newDelta.mean << " cov = " << newDelta.cov.inMatlabFormat() << endl;
+									MRPT_LOG_DEBUG_STREAM( "[LSLAM_proc_msg_AA] Updating arc " << nodeFrom << " <- " << nodeTo << " OLD: " << oldDelta->mean << " cov = " << oldDelta->cov.inMatlabFormat() << endl);
+									MRPT_LOG_DEBUG_STREAM( "[LSLAM_proc_msg_AA] Updating arc " << nodeFrom << " <- " << nodeTo << " NEW: " << newDelta.mean << " cov = " << newDelta.cov.inMatlabFormat() << endl);
 
 									theArc->m_annotations.set(ARC_ANNOTATION_DELTA,CPose3DPDFGaussianPtr(new CPose3DPDFGaussian(newDelta)),LMH->m_ID );
 									theArc->m_annotations.setElemental(ARC_ANNOTATION_DELTA_TRG_POSEID, poseID_trg ,LMH->m_ID );
@@ -1128,7 +1128,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 				// Add data to arc:
 				if (!arcDeltaIsInverted)
 				{
-					MRPT_LOG_DEBUG_STREAM<< "[LSLAM_proc_msg_AA] Updating int. arc " << area_a_ID << " -> " << area_b_ID << " : " << relPoseGauss.mean << " cov = " << relPoseGauss.cov.inMatlabFormat() << endl;
+					MRPT_LOG_DEBUG_STREAM( "[LSLAM_proc_msg_AA] Updating int. arc " << area_a_ID << " -> " << area_b_ID << " : " << relPoseGauss.mean << " cov = " << relPoseGauss.cov.inMatlabFormat() << endl);
 					newArc->m_annotations.set(ARC_ANNOTATION_DELTA, CPose3DPDFGaussianPtr(new CPose3DPDFGaussian(relPoseGauss)),LMH->m_ID );
 					newArc->m_annotations.setElemental(ARC_ANNOTATION_DELTA_SRC_POSEID, area_a_poseID_src ,LMH->m_ID );
 					newArc->m_annotations.setElemental(ARC_ANNOTATION_DELTA_TRG_POSEID, area_b_poseID_trg ,LMH->m_ID );
@@ -1138,7 +1138,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 					CPose3DPDFGaussian	relPoseInv;
 					relPoseGauss.inverse(relPoseInv);
 
-					MRPT_LOG_DEBUG_STREAM<< "[LSLAM_proc_msg_AA] Updating int. arc " << area_a_ID << " <- " << area_b_ID << " : " << relPoseInv.mean << " cov = " << relPoseInv.cov.inMatlabFormat() << endl;
+					MRPT_LOG_DEBUG_STREAM( "[LSLAM_proc_msg_AA] Updating int. arc " << area_a_ID << " <- " << area_b_ID << " : " << relPoseInv.mean << " cov = " << relPoseInv.cov.inMatlabFormat() << endl);
 					newArc->m_annotations.set(ARC_ANNOTATION_DELTA,CPose3DPDFGaussianPtr( new CPose3DPDFGaussian(relPoseInv)),LMH->m_ID );
 
 					newArc->m_annotations.setElemental(ARC_ANNOTATION_DELTA_SRC_POSEID, area_b_poseID_trg,LMH->m_ID );
