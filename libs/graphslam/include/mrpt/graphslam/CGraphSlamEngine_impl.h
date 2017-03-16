@@ -362,10 +362,8 @@ void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 				m_info_params.fields["Overall number of objects"].c_str());
 		m_GT_poses_step = m_GT_poses.size() / num_of_objects;
 
-		MRPT_LOG_INFO_STREAM <<	"Overall number of objects in rawlog: "
-			<< num_of_objects;
-		MRPT_LOG_INFO_STREAM << "Setting the Ground truth read step to: "
-			<< m_GT_poses_step;
+		MRPT_LOG_INFO_STREAM("Overall number of objects in rawlog: "<< num_of_objects);
+		MRPT_LOG_INFO_STREAM("Setting the Ground truth read step to: "<< m_GT_poses_step);
 	}
 	catch (std::exception& e) {
 		MRPT_LOG_INFO_STREAM( "RGBD_TUM info file was not found: " << e.what());
@@ -649,8 +647,7 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 		}
 		else if (mrpt::system::strCmpI(m_GT_file_format, "navsimul")) {
 			if (m_observation_only_dataset) { // 1/2loops
-				MRPT_LOG_DEBUG_STREAM <<
-					"observation_only_dataset: Updating GTVisualization";
+				MRPT_LOG_DEBUG_STREAM("observation_only_dataset: Updating GTVisualization");
 				if (rawlog_entry % 2 == 0) {
 		      if (m_enable_visuals) {
 			      this->updateGTVisualization(); // I have already taken care of the step
@@ -661,8 +658,7 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 			}
 			else { // 1/loop
 				// get both action and observation at a single step - same rate as GT
-				MRPT_LOG_DEBUG_STREAM <<
-					"action-observations dataset: Updating GTVisualization";
+				MRPT_LOG_DEBUG_STREAM("action-observations dataset: Updating GTVisualization");
 		    if (m_enable_visuals) {
 			    this->updateGTVisualization(); // I have already taken care of the step
 			  }
@@ -1450,8 +1446,8 @@ void CGraphSlamEngine<GRAPH_t>::queryObserverForEvents() {
 
 		// message to the user
 		if (m_program_paused) {
-			MRPT_LOG_INFO_STREAM << "Program is paused. "
-				<< "Press \"p\" or \"P\" in the dipslay window to resume";
+			MRPT_LOG_INFO_STREAM("Program is paused. "
+				<< "Press \"p\" or \"P\" in the dipslay window to resume");
 		}
 		else {
 			MRPT_LOG_INFO_STREAM( "Program resumed.");
@@ -1596,10 +1592,10 @@ void CGraphSlamEngine<GRAPH_t>::dumpVisibilityErrorMsg(
 	MRPT_START;
 	using namespace mrpt::utils;
 
-	MRPT_LOG_ERROR_STREAM << "Cannot toggle visibility of specified object.\n"
+	MRPT_LOG_ERROR_STREAM("Cannot toggle visibility of specified object.\n"
 			<< "Make sure that the corresponding visualization flag ("
 			<< viz_flag
-			<< ") is set to true in the .ini file.";
+			<< ") is set to true in the .ini file.");
 	mrpt::system::sleep(sleep_time);
 
 	MRPT_END;
@@ -1670,8 +1666,8 @@ void CGraphSlamEngine<GRAPH_t>::updateMapVisualization(
 
 			CSetOfObjectsPtr scan_obj;
 			if (obj.null()) {
-				MRPT_LOG_DEBUG_STREAM << "CSetOfObjects for nodeID " << *node_it <<
-					"doesn't exist. Creating it...";
+				MRPT_LOG_DEBUG_STREAM("CSetOfObjects for nodeID " << *node_it <<
+					"doesn't exist. Creating it...");
 
 				scan_obj = CSetOfObjects::Create();
 
@@ -1708,15 +1704,13 @@ void CGraphSlamEngine<GRAPH_t>::updateMapVisualization(
 			m_win->forceRepaint();
 		}
 		else {
-			MRPT_LOG_DEBUG_STREAM << "Laser scans of NodeID " << *node_it <<
-				"are  empty/invalid";
+			MRPT_LOG_DEBUG_STREAM("Laser scans of NodeID " << *node_it << "are  empty/invalid");
 		}
 	}
 
 
 	double elapsed_time = map_update_timer.Tac();
-	MRPT_LOG_DEBUG_STREAM << "updateMapVisualization took: "
-		<< elapsed_time << "s";
+	MRPT_LOG_DEBUG_STREAM("updateMapVisualization took: " << elapsed_time << "s");
 	MRPT_END;
 }
 
@@ -2226,8 +2220,7 @@ void CGraphSlamEngine<GRAPH_t>::computeSlamMetric(mrpt::utils::TNodeID nodeID, s
 		prev_gt_pos = curr_gt_pos;
 	}
 
-	MRPT_LOG_DEBUG_STREAM << "Total deformation energy: "
-		<< m_curr_deformation_energy;
+	MRPT_LOG_DEBUG_STREAM("Total deformation energy: " << m_curr_deformation_energy);
 
 	MRPT_END;
 }
