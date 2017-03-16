@@ -440,6 +440,12 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
 	# The -Wno-long-long is required in 64bit systems when including sytem headers.
 	# The -Wno-variadic-macros was needed for Eigen3, StdVector.h
  	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CONFIGURE_CFLAGS} -Wall -Wno-long-long -Wno-variadic-macros")
+	
+	# Workaround: Eigen <3.3 produces *tons* of warnings in GCC >=6. See http://eigen.tuxfamily.org/bz/show_bug.cgi?id=1221
+	IF (NOT CMAKE_MRPT_GCC_VERSION LESS 60 AND "${MRPT_EIGEN_VERSION}" VERSION_LESS "3.3")
+		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-ignored-attributes")
+	ENDIF()
+	
   IF(NOT APPLE)
     # This causes the option "-Wnorite-strings" to be set on gcc-4.9 on OS X
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-write-strings")
