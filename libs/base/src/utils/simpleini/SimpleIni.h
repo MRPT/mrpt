@@ -2165,7 +2165,7 @@ struct MRPT_IniFileParser : public SI_ConvertA<char>
 	MRPT_IniFileParser(bool a_bStoreIsUtf8) : SI_ConvertA<char>(a_bStoreIsUtf8) { }
 
 	/* copy and assignment */
-	MRPT_IniFileParser(const MRPT_IniFileParser & rhs) { SI_ConvertA<char>::operator=(rhs); }
+	MRPT_IniFileParser(const MRPT_IniFileParser & rhs) : SI_ConvertA<char>(rhs) { SI_ConvertA<char>::operator=(rhs); }
 	MRPT_IniFileParser & operator=(const MRPT_IniFileParser & rhs) {
 		SI_ConvertA<char>::operator=(rhs);
 		return *this;
@@ -2836,4 +2836,3 @@ typedef CSimpleIniTempl<wchar_t,
 } // end namespace
 
 #endif // INCLUDED_SimpleIni_h
-
