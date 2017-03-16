@@ -136,7 +136,10 @@ void CWaypointsNavigator::navigationStep()
 
 		// 2) More advanced policy: if available, use children class methods to decide 
 		//     which is the best candidate for the next waypoint, if we can skip current one:
-		if (!wps.final_goal_reached && wps.waypoint_index_current_goal >= 0)
+		if (!wps.final_goal_reached && 
+			wps.waypoint_index_current_goal >= 0 && 
+			wps.waypoints[wps.waypoint_index_current_goal].allow_skip
+			)
 		{
 			const mrpt::poses::CPose2D robot_pose(m_curPoseVel.pose);
 			int most_advanced_wp = wps.waypoint_index_current_goal;
@@ -145,6 +148,7 @@ void CWaypointsNavigator::navigationStep()
 			for (int idx=wps.waypoint_index_current_goal;idx<(int)wps.waypoints.size();idx++)
 			{
 				if (idx<0) continue;
+				if (wps.waypoints[idx].reached) continue;
 
 				// Is it reachable?
 				mrpt::math::TPoint2D wp_local_wrt_robot;
