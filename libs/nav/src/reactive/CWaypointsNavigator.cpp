@@ -116,10 +116,10 @@ void CWaypointsNavigator::navigationStep()
 				m_lastNavTargetReached   // This may be set from CAbstractNavigator if the target is reached
 				)
 			{
-				MRPT_LOG_DEBUG_STREAM << "[CWaypointsNavigator::navigationStep] Waypoint " <<
+				MRPT_LOG_DEBUG_STREAM("[CWaypointsNavigator::navigationStep] Waypoint " <<
 					(wps.waypoint_index_current_goal+1) << "/" << wps.waypoints.size() << " reached."
 					" segment-to-target dist: " << dist2target << ", allowed_dist: " << wps.waypoints[wps.waypoint_index_current_goal].allowed_distance
-					<< " reach detected by CAbstractNavigator?: " << (m_lastNavTargetReached ? "YES" : "NO");
+					<< " reach detected by CAbstractNavigator?: " << (m_lastNavTargetReached ? "YES" : "NO"));
 
 				wps.waypoints[wps.waypoint_index_current_goal].reached = true;
 				m_robot.sendWaypointReachedEvent(wps.waypoint_index_current_goal, true /* reason: really reached*/);
@@ -205,7 +205,7 @@ void CWaypointsNavigator::navigationStep()
 
 			this->navigate( &nav_cmd );
 
-			MRPT_LOG_DEBUG_STREAM << "[CWaypointsNavigator::navigationStep] Active waypoint changed. Current status:\n" << this->getWaypointNavStatus().getAsText();
+			MRPT_LOG_DEBUG_STREAM( "[CWaypointsNavigator::navigationStep] Active waypoint changed. Current status:\n" << this->getWaypointNavStatus().getAsText());
 		}
 	}
 	}

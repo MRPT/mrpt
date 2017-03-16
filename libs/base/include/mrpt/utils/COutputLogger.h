@@ -52,7 +52,7 @@ typedef void (*output_logger_callback_t)(const std::string &msg, const mrpt::uti
  * // printf-like versions:
  * MRPT_LOG_ERROR_FMT("Out of range value: %i.", int_param);
  * // stream-like versions:
- * MRPT_LOG_ERROR_STREAM << "Out of range value: " << int_param;
+ * MRPT_LOG_ERROR_STREAM("Out of range value: " << int_param << " more vars: " << other_var);
  * \endcode
  *
  * - Logger instance keeps the messages in an internal container so that upon
@@ -260,7 +260,7 @@ class BASE_IMPEXP COutputLogger {
 		std::set<TCallbackEntry> m_listCallbacks;
 };
 
-	/** For use in MRPT_LOG_DEBUG_STREAM, etc. */
+	/** For use in MRPT_LOG_DEBUG_STREAM(), etc. */
 	struct BASE_IMPEXP COutputLoggerStreamWrapper
 	{
 		COutputLoggerStreamWrapper(VerbosityLevel level, const COutputLogger &logger) : m_level(level),m_logger(logger) {}
@@ -293,11 +293,11 @@ class BASE_IMPEXP COutputLogger {
 #define MRPT_LOG_WARN_FMT(_FMT_STRING,...) this->logFmt(::mrpt::utils::LVL_WARN, _FMT_STRING, __VA_ARGS__)
 #define MRPT_LOG_ERROR_FMT(_FMT_STRING,...) this->logFmt(::mrpt::utils::LVL_ERROR, _FMT_STRING, __VA_ARGS__)
 
-/** Usage: `MRPT_LOG_DEBUG_STREAM << "Var=" << value;` */
-#define MRPT_LOG_DEBUG_STREAM ::mrpt::utils::COutputLoggerStreamWrapper(::mrpt::utils::LVL_DEBUG,*this)
-#define MRPT_LOG_INFO_STREAM ::mrpt::utils::COutputLoggerStreamWrapper(::mrpt::utils::LVL_INFO,*this)
-#define MRPT_LOG_WARN_STREAM ::mrpt::utils::COutputLoggerStreamWrapper(::mrpt::utils::LVL_WARN,*this)
-#define MRPT_LOG_ERROR_STREAM ::mrpt::utils::COutputLoggerStreamWrapper(::mrpt::utils::LVL_ERROR,*this)
+/** Usage: `MRPT_LOG_DEBUG_STREAM("Var=" << value << " foo=" << foo_var);` */
+#define MRPT_LOG_DEBUG_STREAM(__CONTENTS) { if (this->isLoggingLevelVisible(::mrpt::utils::LVL_DEBUG)) { ::mrpt::utils::COutputLoggerStreamWrapper(::mrpt::utils::LVL_DEBUG,*this) << __CONTENTS; } }
+#define MRPT_LOG_INFO_STREAM(__CONTENTS)  { if (this->isLoggingLevelVisible(::mrpt::utils::LVL_INFO))  { ::mrpt::utils::COutputLoggerStreamWrapper(::mrpt::utils::LVL_INFO,*this) << __CONTENTS; } }
+#define MRPT_LOG_WARN_STREAM(__CONTENTS)  { if (this->isLoggingLevelVisible(::mrpt::utils::LVL_WARN))  { ::mrpt::utils::COutputLoggerStreamWrapper(::mrpt::utils::LVL_WARN,*this) << __CONTENTS; } }
+#define MRPT_LOG_ERROR_STREAM(__CONTENTS) { if (this->isLoggingLevelVisible(::mrpt::utils::LVL_ERROR)) { ::mrpt::utils::COutputLoggerStreamWrapper(::mrpt::utils::LVL_ERROR,*this) << __CONTENTS; } }
 
 }
 	// Specializations MUST occur at the same namespace:

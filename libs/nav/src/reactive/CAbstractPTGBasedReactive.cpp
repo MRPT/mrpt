@@ -965,7 +965,7 @@ double CAbstractPTGBasedReactive::generate_vel_cmd( const TCandidateMovementPTG 
 	}
 	catch (std::exception &e)
 	{
-		MRPT_LOG_ERROR_STREAM << "[CAbstractPTGBasedReactive::generate_vel_cmd] Exception: " << e.what();
+		MRPT_LOG_ERROR_STREAM( "[CAbstractPTGBasedReactive::generate_vel_cmd] Exception: " << e.what());
 	}
 	return cmdvel_speed_scale;
 }
