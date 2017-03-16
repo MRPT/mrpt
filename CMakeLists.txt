@@ -14,7 +14,7 @@
 # ----------------------------------------------------------------------------
 PROJECT(MRPT)
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6.4)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8.7)
 
 # -------------------------
 #        Setup CMake
@@ -68,6 +68,7 @@ ENDIF()
 #        automatically included through "#pragma"'s ;-)
 # ---------------------------------------------------------------------------
 SET(MRPT_LINKER_LIBS "")
+
 
 # ----- Useful macros ------
 include(cmakemodules/UtilsMacros.cmake REQUIRED)
@@ -185,13 +186,7 @@ ENDIF()
 
 # Enable precompiled headers:
 # ===================================================
-IF(MSVC)
-	SET(DEFAULT_VAL_PRECOMP_HDR ON)
-ELSE()
-	SET(DEFAULT_VAL_PRECOMP_HDR OFF)
-ENDIF()
-
-SET(MRPT_ENABLE_PRECOMPILED_HDRS ${DEFAULT_VAL_PRECOMP_HDR} CACHE BOOL "Enable precompiled headers (thru 'mrpt/LIB.h')")
+SET(MRPT_ENABLE_PRECOMPILED_HDRS ON CACHE BOOL "Enable precompiled headers (thru 'mrpt/LIB.h')")
 MARK_AS_ADVANCED(MRPT_ENABLE_PRECOMPILED_HDRS)
 
 # Eigen library plugins:
@@ -497,9 +492,6 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
 		SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -stdlib=libstdc++")
 	ENDIF()
 
-	# This is to fix the compilation of C++ templates
-	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fdelayed-template-parsing")
-
 endif()
 
 # Shared options between GCC and CLANG:
@@ -664,6 +656,11 @@ STRING(REGEX REPLACE "/STACK:[0-9]+" "/STACK:1000000" CMAKE_SHARED_LINKER_FLAGS 
 # This will become a list with all libraries to be built, and their
 #  dependencies stored in "mrpt-${name}_LIB_DEPS"
 SET(ALL_MRPT_LIBS "" CACHE INTERNAL "")  # This emulates global vars
+
+IF (NOT CMAKE_VERSION VERSION_LESS "2.8.12")
+	include(cmakemodules/cotire.cmake REQUIRED) # COmpiler TIme REducer helper for PCH
+	set_directory_properties(PROPERTIES COTIRE_ADD_UNITY_BUILD FALSE) # Disable unity targets
+ENDIF()
 
 # ----------------------------------------------------------------------------
 #      					PROCESS SUBDIRECTORIES:

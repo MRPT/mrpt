@@ -30,6 +30,7 @@ void CWaypointsNavigator::navigateWaypoints( const TWaypointSequence & nav_reque
 
 	mrpt::synch::CCriticalSectionLocker csl(&m_nav_waypoints_cs);
 
+
 	m_waypoint_nav_status = TWaypointStatusSequence();
 	m_waypoint_nav_status.timestamp_nav_started = mrpt::system::now();
 
@@ -75,6 +76,7 @@ void CWaypointsNavigator::navigationStep()
 	//     Waypoint navigation algorithm
 	// --------------------------------------
 	{
+	mrpt::utils::CTimeLoggerEntry tle(m_timlog_delays,"CWaypointsNavigator::navigationStep()");
 	mrpt::synch::CCriticalSectionLocker csl(&m_nav_waypoints_cs);
 
 	TWaypointStatusSequence &wps = m_waypoint_nav_status; // shortcut to save typing
@@ -114,13 +116,13 @@ void CWaypointsNavigator::navigationStep()
 				m_lastNavTargetReached   // This may be set from CAbstractNavigator if the target is reached
 				)
 			{
-				MRPT_LOG_DEBUG_STREAM << "[CWaypointsNavigator::navigationStep] Waypoint " <<
+				MRPT_LOG_DEBUG_STREAM("[CWaypointsNavigator::navigationStep] Waypoint " <<
 					(wps.waypoint_index_current_goal+1) << "/" << wps.waypoints.size() << " reached."
 					" segment-to-target dist: " << dist2target << ", allowed_dist: " << wps.waypoints[wps.waypoint_index_current_goal].allowed_distance
-					<< " reach detected by CAbstractNavigator?: " << (m_lastNavTargetReached ? "YES" : "NO");
+					<< " reach detected by CAbstractNavigator?: " << (m_lastNavTargetReached ? "YES" : "NO"));
 
 				wps.waypoints[wps.waypoint_index_current_goal].reached = true;
-				m_robot.sendWaypointReachedEvent(wps.waypoint_index_current_goal);
+				m_robot.sendWaypointReachedEvent(wps.waypoint_index_current_goal, true /* reason: really reached*/);
 
 				// Was this the final goal??
 				if (wps.waypoint_index_current_goal < int(wps.waypoints.size() - 1)) {
@@ -134,7 +136,10 @@ void CWaypointsNavigator::navigationStep()
 
 		// 2) More advanced policy: if available, use children class methods to decide 
 		//     which is the best candidate for the next waypoint, if we can skip current one:
-		if (!wps.final_goal_reached && wps.waypoint_index_current_goal >= 0)
+		if (!wps.final_goal_reached && 
+			wps.waypoint_index_current_goal >= 0 && 
+			wps.waypoints[wps.waypoint_index_current_goal].allow_skip
+			)
 		{
 			const mrpt::poses::CPose2D robot_pose(m_curPoseVel.pose);
 			int most_advanced_wp = wps.waypoint_index_current_goal;
@@ -143,6 +148,7 @@ void CWaypointsNavigator::navigationStep()
 			for (int idx=wps.waypoint_index_current_goal;idx<(int)wps.waypoints.size();idx++)
 			{
 				if (idx<0) continue;
+				if (wps.waypoints[idx].reached) continue;
 
 				// Is it reachable?
 				mrpt::math::TPoint2D wp_local_wrt_robot;
@@ -170,7 +176,7 @@ void CWaypointsNavigator::navigationStep()
 				wps.waypoint_index_current_goal = most_advanced_wp;
 				for (int k=most_advanced_wp_at_begin;k<most_advanced_wp;k++) {
 					wps.waypoints[k].reached = true;
-					m_robot.sendWaypointReachedEvent(k);
+					m_robot.sendWaypointReachedEvent(k, false /* reason: skipped */);
 				}
 			}
 		}
@@ -198,6 +204,8 @@ void CWaypointsNavigator::navigationStep()
 			nav_cmd.targetIsIntermediaryWaypoint = !is_final_wp;
 
 			this->navigate( &nav_cmd );
+
+			MRPT_LOG_DEBUG_STREAM( "[CWaypointsNavigator::navigationStep] Active waypoint changed. Current status:\n" << this->getWaypointNavStatus().getAsText());
 		}
 	}
 	}
