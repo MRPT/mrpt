@@ -199,13 +199,13 @@ void CLevMarqGSO<GRAPH_t>::notifyOfWindowEvents(
 
 	// if mouse event, let the user decide about the camera
 	if (events_occurred.find("mouse_clicked")->second) {
-		MRPT_LOG_DEBUG_STREAM << "Mouse was clicked. Disabling autozoom.";
+		MRPT_LOG_DEBUG_STREAM( "Mouse was clicked. Disabling autozoom.");
 		m_autozoom_active = false;
 	}
 
 	// autofit the graph once
 	if (events_occurred.find(viz_params.keystroke_graph_autofit)->second) {
-		MRPT_LOG_DEBUG_STREAM << "Autofit button was pressed";
+		MRPT_LOG_DEBUG_STREAM( "Autofit button was pressed");
 		this->fitGraphInView();
 	}
 

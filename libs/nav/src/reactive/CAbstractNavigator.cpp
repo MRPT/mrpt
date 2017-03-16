@@ -375,7 +375,7 @@ void CAbstractNavigator::updateCurrentPoseAndSpeeds()
 	{
 		m_latestPoses.erase(m_latestPoses.begin());
 	}
-	//MRPT_LOG_DEBUG_STREAM << "updateCurrentPoseAndSpeeds: " << m_latestPoses.size() << " poses in list of latest robot poses.";
+	//MRPT_LOG_DEBUG_STREAM( "updateCurrentPoseAndSpeeds: " << m_latestPoses.size() << " poses in list of latest robot poses.");
 }
 
 bool CAbstractNavigator::changeSpeeds(const mrpt::kinematics::CVehicleVelCmd &vel_cmd)
