@@ -26,7 +26,8 @@ CAbstractNavigator::TNavigationParams::TNavigationParams() :
 	target(0,0,0),
 	targetAllowedDistance(0.5),
 	targetIsRelative(false),
-	targetIsIntermediaryWaypoint(false)
+	targetIsIntermediaryWaypoint(false),
+	enableApproachSlowDown(true)
 {
 }
 
@@ -38,7 +39,7 @@ std::string CAbstractNavigator::TNavigationParams::getAsText() const
 	s+= mrpt::format("navparams.targetAllowedDistance = %.03f\n", targetAllowedDistance );
 	s+= mrpt::format("navparams.targetIsRelative = %s\n", targetIsRelative ? "YES":"NO");
 	s+= mrpt::format("navparams.targetIsIntermediaryWaypoint = %s\n", targetIsIntermediaryWaypoint ? "YES":"NO");
-
+	s+= mrpt::format("navparams.enableApproachSlowDown = %s\n", enableApproachSlowDown ? "YES" : "NO");
 	return s;
 }
 
@@ -233,16 +234,17 @@ void CAbstractNavigator::navigationStep()
 			// Have we really reached the target?
 			if (checkHasReachedTarget(targetDist))
 			{
-				if (!m_navigationParams->targetIsIntermediaryWaypoint) {
-					this->stop(false /*not emergency*/);
-				}
 				m_navigationState = IDLE;
-				logFmt(mrpt::utils::LVL_WARN, "Navigation target (%.03f,%.03f) was reached\n", m_navigationParams->target.x,m_navigationParams->target.y);
-
-				if (!m_navigationParams->targetIsIntermediaryWaypoint && !m_navigationEndEventSent)
+				logFmt(mrpt::utils::LVL_WARN, "Navigation target (%.03f,%.03f) was reached\n", m_navigationParams->target.x, m_navigationParams->target.y);
+				
+				if (!m_navigationParams->targetIsIntermediaryWaypoint)
 				{
-					m_navigationEndEventSent = true;
-					m_robot.sendNavigationEndEvent();
+					this->stop(false /*not emergency*/);
+					if (!m_navigationEndEventSent)
+					{
+						m_navigationEndEventSent = true;
+						m_robot.sendNavigationEndEvent();
+					}
 				}
 				break;
 			}
