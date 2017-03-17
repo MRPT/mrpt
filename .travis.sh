@@ -22,6 +22,8 @@ function build ()
 
   cmake $MRPT_DIR -DBUILD_EXAMPLES=$BUILD_EXAMPLES -DBUILD_APPLICATIONS=TRUE -DBUILD_TESTING=FALSE -DBUILD_ARIA=$BUILD_ARIA
   make -j2
+
+	cd $MRPT_DIR
 }
 
 command_exists () {
@@ -44,6 +46,8 @@ function test ()
 #  else
     make test
 #  fi
+
+  cd $MRPT_DIR
 }
 
 case $TASK in
