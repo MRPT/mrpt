@@ -27,7 +27,12 @@ bool CRobot2NavInterface::changeSpeedsNOP()
 	return true;
 }
 
-bool CRobot2NavInterface::startWatchdog(float T_ms) 
+mrpt::kinematics::CVehicleVelCmdPtr CRobot2NavInterface::getAlignCmd(const double relative_heading_radians)
+{
+	return mrpt::kinematics::CVehicleVelCmdPtr();
+}
+
+bool CRobot2NavInterface::startWatchdog(float T_ms)
 {
 	std::cout << "[startWatchdog] Period=" << T_ms << "ms. Doing nothing: not implemented in user's derived class." << std::endl;
 	return true;
