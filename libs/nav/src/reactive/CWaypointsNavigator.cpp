@@ -110,16 +110,12 @@ void CWaypointsNavigator::navigationStep()
 		if (wps.waypoint_index_current_goal >= 0)
 		{
 			const double dist2target = robot_move_seg.distance(wps.waypoints[wps.waypoint_index_current_goal].target);
-			if (
-				dist2target < wps.waypoints[wps.waypoint_index_current_goal].allowed_distance
-				||
-				m_lastNavTargetReached   // This may be set from CAbstractNavigator if the target is reached
-				)
+			if (dist2target < wps.waypoints[wps.waypoint_index_current_goal].allowed_distance)
 			{
 				MRPT_LOG_DEBUG_STREAM("[CWaypointsNavigator::navigationStep] Waypoint " <<
 					(wps.waypoint_index_current_goal+1) << "/" << wps.waypoints.size() << " reached."
 					" segment-to-target dist: " << dist2target << ", allowed_dist: " << wps.waypoints[wps.waypoint_index_current_goal].allowed_distance
-					<< " reach detected by CAbstractNavigator?: " << (m_lastNavTargetReached ? "YES" : "NO"));
+					);
 
 				wps.waypoints[wps.waypoint_index_current_goal].reached = true;
 				m_robot.sendWaypointReachedEvent(wps.waypoint_index_current_goal, true /* reason: really reached*/);
