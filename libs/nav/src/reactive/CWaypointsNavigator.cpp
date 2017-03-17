@@ -17,7 +17,8 @@ using namespace mrpt::nav;
 using namespace std;
 
 CWaypointsNavigator::CWaypointsNavigator(CRobot2NavInterface &robot_if) :
-	CAbstractNavigator(robot_if)
+	CAbstractNavigator(robot_if),
+	m_was_aligning(false)
 {
 }
 
@@ -32,6 +33,7 @@ void CWaypointsNavigator::navigateWaypoints( const TWaypointSequence & nav_reque
 	mrpt::synch::CCriticalSectionLocker csl(&m_nav_waypoints_cs);
 
 
+	m_was_aligning = false;
 	m_waypoint_nav_status = TWaypointStatusSequence();
 	m_waypoint_nav_status.timestamp_nav_started = mrpt::system::now();
 
@@ -125,15 +127,36 @@ void CWaypointsNavigator::navigationStep()
 				{
 					// Handle pure-rotation robot interface to honor target_heading
 					const double ang_err = mrpt::math::angDistance(m_curPoseVel.pose.phi, wp.target_heading);
-					if (ang_err <= params_waypoints_navigator.waypoint_angle_tolerange)
+					if (std::abs(ang_err) <= params_waypoints_navigator.waypoint_angle_tolerange)
 					{
 						consider_wp_reached = true;
 					}
 					else
 					{
 						is_aligning = true;
-						MRPT_TODO("CONTINUE here: send align cmd");
-						this->stop(false /*not emergency*/);
+
+						if (!m_was_aligning)
+						{
+							// 1st time we are aligning:
+							// Send vel_cmd to the robot:
+							mrpt::kinematics::CVehicleVelCmdPtr align_cmd = m_robot.getAlignCmd(ang_err);
+
+							MRPT_LOG_DEBUG_FMT(
+								"[CWaypointsNavigator::navigationStep] Trying to align to heading: %.02f deg. "
+								"Relative heading: %.02f deg. "
+								"With motion cmd: %s",
+								mrpt::utils::RAD2DEG(wp.target_heading),
+								mrpt::utils::RAD2DEG(ang_err),
+								align_cmd ? align_cmd->asString().c_str() : "nullptr (operation not supported by this robot)");
+
+							if (align_cmd) {
+								this->changeSpeeds(*align_cmd);
+							}
+							else {
+								this->stop(false /*not emergency*/);
+								consider_wp_reached = true; // this robot does not support "in place" alignment
+							}
+						}
 					}
 				}
 
@@ -249,6 +272,8 @@ void CWaypointsNavigator::navigationStep()
 	{
 		CAbstractNavigator::navigationStep();  // This internally locks "m_nav_cs"
 	}
+
+	m_was_aligning = is_aligning; // Let the next timestep know about this
 
 	MRPT_END
 }
