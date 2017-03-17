@@ -93,6 +93,9 @@ namespace mrpt
 
 		virtual bool checkHasReachedTarget(const double targetDist) const MRPT_OVERRIDE;
 
+	private:
+		bool m_was_aligning; //!< Whether the last timestep was "is_aligning" in a waypoint with heading
+
 	};
   }
 }
