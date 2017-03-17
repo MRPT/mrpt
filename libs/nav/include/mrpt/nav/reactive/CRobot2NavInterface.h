@@ -28,9 +28,9 @@ namespace mrpt
 	  *  Ackermann, differential-driven or holonomic robots. It will depend on the used PTGs, so checkout 
 	  *  each PTG documentation for the lenght and meaning of velocity commands.
 	  *
-	  * Users may prefer to inherit from one of these classes, which already provide implementations for the kinematic-specific methods:
-	  *  - CReactiveInterfaceImplementation_DiffDriven 
-	  *  - CReactiveInterfaceImplementation_Holo
+	  * If used for a simulator, users may prefer to inherit from one of these classes, which already provide partial implementations:
+	  *  - mrpt::nav::CRobot2NavInterfaceForSimulator_DiffDriven
+	  *  - mrpt::nav::CRobot2NavInterfaceForSimulator_Holo
 	  *
 	  * \sa CReactiveNavigationSystem, CAbstractNavigator
 	  *  \ingroup nav_reactive
@@ -82,6 +82,11 @@ namespace mrpt
 		  * \return the emergency stop command
 		  */
 		virtual mrpt::kinematics::CVehicleVelCmdPtr getStopCmd() = 0;
+
+		/** Gets a motion command to make the robot to align with a given *relative* heading, without translating.
+		  * Only for circular robots that can rotate in place; otherwise, return an empty smart pointer to indicate 
+		  * that the operation is not possible (this is what the default implementation does). */
+		virtual mrpt::kinematics::CVehicleVelCmdPtr getAlignCmd(const double relative_heading_radians);
 
 		/** Start the watchdog timer of the robot platform, if any, for maximum expected delay between consecutive calls to changeSpeeds().
 		 * \param T_ms Period, in ms.

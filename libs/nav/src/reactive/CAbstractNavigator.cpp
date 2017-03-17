@@ -26,7 +26,8 @@ CAbstractNavigator::TNavigationParams::TNavigationParams() :
 	target(0,0,0),
 	targetAllowedDistance(0.5),
 	targetIsRelative(false),
-	targetIsIntermediaryWaypoint(false)
+	targetIsIntermediaryWaypoint(false),
+	enableApproachSlowDown(true)
 {
 }
 
@@ -38,7 +39,7 @@ std::string CAbstractNavigator::TNavigationParams::getAsText() const
 	s+= mrpt::format("navparams.targetAllowedDistance = %.03f\n", targetAllowedDistance );
 	s+= mrpt::format("navparams.targetIsRelative = %s\n", targetIsRelative ? "YES":"NO");
 	s+= mrpt::format("navparams.targetIsIntermediaryWaypoint = %s\n", targetIsIntermediaryWaypoint ? "YES":"NO");
-
+	s+= mrpt::format("navparams.enableApproachSlowDown = %s\n", enableApproachSlowDown ? "YES" : "NO");
 	return s;
 }
 
@@ -59,7 +60,6 @@ CAbstractNavigator::CAbstractNavigator(CRobot2NavInterface &react_iterf_impl) :
 	m_navigationEndEventSent(false),
 	m_navigationState     ( IDLE ),
 	m_navigationParams    ( NULL ),
-	m_lastNavTargetReached(false),
 	m_robot               ( react_iterf_impl ),
 	m_curPoseVel          (),
 	m_last_curPoseVelUpdate_robot_time(-1e9),
@@ -84,7 +84,6 @@ void CAbstractNavigator::cancel()
 	mrpt::synch::CCriticalSectionLocker csl(&m_nav_cs);
 	MRPT_LOG_DEBUG("CAbstractNavigator::cancel() called.");
 	m_navigationState = IDLE;
-	m_lastNavTargetReached = false;
 	this->stop(false /*not emergency*/);
 }
 
@@ -233,20 +232,19 @@ void CAbstractNavigator::navigationStep()
 			}
 
 			// Have we really reached the target?
-			if ( targetDist < m_navigationParams->targetAllowedDistance )
+			if (checkHasReachedTarget(targetDist))
 			{
-				m_lastNavTargetReached = true;
-
-				if (!m_navigationParams->targetIsIntermediaryWaypoint) {
-					this->stop(false /*not emergency*/);
-				}
 				m_navigationState = IDLE;
-				logFmt(mrpt::utils::LVL_WARN, "Navigation target (%.03f,%.03f) was reached\n", m_navigationParams->target.x,m_navigationParams->target.y);
-
-				if (!m_navigationParams->targetIsIntermediaryWaypoint && !m_navigationEndEventSent)
+				logFmt(mrpt::utils::LVL_WARN, "Navigation target (%.03f,%.03f) was reached\n", m_navigationParams->target.x, m_navigationParams->target.y);
+				
+				if (!m_navigationParams->targetIsIntermediaryWaypoint)
 				{
-					m_navigationEndEventSent = true;
-					m_robot.sendNavigationEndEvent();
+					this->stop(false /*not emergency*/);
+					if (!m_navigationEndEventSent)
+					{
+						m_navigationEndEventSent = true;
+						m_robot.sendNavigationEndEvent();
+					}
 				}
 				break;
 			}
@@ -303,7 +301,6 @@ void CAbstractNavigator::navigate(const CAbstractNavigator::TNavigationParams *p
 	mrpt::synch::CCriticalSectionLocker csl(&m_nav_cs);
 
 	m_navigationEndEventSent = false;
-	m_lastNavTargetReached = false;
 
 	// Copy data:
 	mrpt::utils::delete_safe(m_navigationParams);
@@ -405,4 +402,9 @@ void CAbstractNavigator::TAbstractNavigatorParams::saveToConfigFile(mrpt::utils:
 {
 	MRPT_SAVE_CONFIG_VAR_COMMENT(dist_to_target_for_sending_event, "Default value=0, means use the `targetAllowedDistance` passed by the user in the navigation request.");
 	MRPT_SAVE_CONFIG_VAR_COMMENT(alarm_seems_not_approaching_target_timeout, "navigator timeout (seconds) [Default=30 sec]");
+}
+
+bool CAbstractNavigator::checkHasReachedTarget(const double targetDist) const
+{
+	return (targetDist < m_navigationParams->targetAllowedDistance);
 }

@@ -311,7 +311,6 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		// =========
 
 		CPose2D rel_pose_PTG_origin_wrt_sense,relPoseSense, relPoseVelCmd;
-		MRPT_TODO("port all delays-model to double and use robotTime() to make this compatible with faster-than-real-time simulators??");
 		if (params_abstract_ptg_navigator.use_delays_model)
 		{
 			/*
@@ -918,8 +917,6 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 				// Heuristic: discount the time already executed.
 				// Note that hm.speed above scales the overall path time using the current speed scale, not the exact
 				// integration over the past timesteps. It's an approximation, probably good enough...
-				
-				MRPT_TODO("support for simulation time here too!");
 				discount_time = mrpt::system::timeDifference(m_lastSentVelCmd.tim_send_cmd_vel, tim_start_iteration);
 			}
 			eta -= discount_time; // This could even become negative if the approximation is poor...
@@ -1144,8 +1141,8 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
 			tictac.Tic();
 
 			ASSERT_(holoMethod);
-			// Don't slow down if we are approaching a target that is not the final waypoint:
-			holoMethod->enableApproachTargetSlowDown( !navp.targetIsIntermediaryWaypoint );
+			// Slow down if we are approaching the final target, etc.
+			holoMethod->enableApproachTargetSlowDown(navp.enableApproachSlowDown);
 
 			// Prepare holonomic algorithm call:
 			CAbstractHolonomicReactiveMethod::NavInput ni;
