@@ -65,8 +65,10 @@ namespace mrpt
 	/** A waypoint with an execution status. \ingroup nav_reactive */
 	struct NAV_IMPEXP TWaypointStatus : public TWaypoint
 	{
-		bool reached; //!< Whether this waypoint has been reached already (to within the allowed distance as per user specifications).
+		bool reached; //!< Whether this waypoint has been reached already (to within the allowed distance as per user specifications) or skipped.
+		bool skipped; //!< If `reached==true` this boolean tells whether the waypoint was physically reached (false) or marked as reached because it was skipped (true).
 		mrpt::system::TTimeStamp  timestamp_reach; //!< Timestamp of when this waypoint was reached. (Default=INVALID_TIMESTAMP means not reached so far)
+
 
 		TWaypointStatus();
 		TWaypointStatus & operator =(const TWaypoint &wp);

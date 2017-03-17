@@ -18,6 +18,10 @@ namespace mrpt
 	/** This class extends `CAbstractNavigator` with the capability of following a list of waypoints. By default, waypoints are followed one by one, 
 	 *  but, if they are tagged with `allow_skip=true` **and** the derived navigator class supports it, the navigator may choose to skip some to 
 	 *  make a smoother, safer and shorter navigation.
+	 *
+	 * Waypoints have an optional `target_heading` field, which will be honored only for waypoints that are skipped, and if the underlying robot 
+	 * interface supports the pure-rotation methods.
+	 *
 	 * Notes on navigation status and event dispatchment:
 	 *  - Navigation state may briefly pass by the `IDLE` status between a waypoint is reached and a new navigation command is issued towards the next waypoint.
 	 *  - `sendNavigationEndEvent()` will be called only when the last waypoint is reached.
@@ -85,6 +89,8 @@ namespace mrpt
 		virtual bool impl_waypoint_is_reachable(const mrpt::math::TPoint2D &wp_local_wrt_robot) const = 0;
 
 		virtual void onStartNewNavigation() MRPT_OVERRIDE;
+
+		virtual bool checkHasReachedTarget(const double targetDist) const MRPT_OVERRIDE;
 
 	};
   }

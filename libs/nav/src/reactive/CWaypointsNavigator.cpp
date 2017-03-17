@@ -112,12 +112,17 @@ void CWaypointsNavigator::navigationStep()
 			const double dist2target = robot_move_seg.distance(wps.waypoints[wps.waypoint_index_current_goal].target);
 			if (dist2target < wps.waypoints[wps.waypoint_index_current_goal].allowed_distance)
 			{
+				MRPT_TODO("Handle pure-rotation robot interface to honor target_heading");
+
 				MRPT_LOG_DEBUG_STREAM("[CWaypointsNavigator::navigationStep] Waypoint " <<
 					(wps.waypoint_index_current_goal+1) << "/" << wps.waypoints.size() << " reached."
 					" segment-to-target dist: " << dist2target << ", allowed_dist: " << wps.waypoints[wps.waypoint_index_current_goal].allowed_distance
 					);
 
-				wps.waypoints[wps.waypoint_index_current_goal].reached = true;
+				auto &wp = wps.waypoints[wps.waypoint_index_current_goal];
+				wp.reached = true;
+				wp.skipped = false;
+				wp.timestamp_reach = mrpt::system::now();
 				m_robot.sendWaypointReachedEvent(wps.waypoint_index_current_goal, true /* reason: really reached*/);
 
 				// Was this the final goal??
@@ -171,7 +176,11 @@ void CWaypointsNavigator::navigationStep()
 			if (most_advanced_wp>=0) {
 				wps.waypoint_index_current_goal = most_advanced_wp;
 				for (int k=most_advanced_wp_at_begin;k<most_advanced_wp;k++) {
-					wps.waypoints[k].reached = true;
+					auto &wp = wps.waypoints[k];
+					wp.reached = true;
+					wp.skipped = true;
+					wp.timestamp_reach = mrpt::system::now();
+
 					m_robot.sendWaypointReachedEvent(k, false /* reason: skipped */);
 				}
 			}
@@ -256,4 +265,9 @@ CWaypointsNavigator::TWaypointsNavigatorParams::TWaypointsNavigatorParams() :
 	max_distance_to_allow_skip_waypoint(-1.0),
 	min_timesteps_confirm_skip_waypoints(1)
 {
+}
+
+bool CWaypointsNavigator::checkHasReachedTarget(const double targetDist) const
+{
+	return (!m_navigationParams->targetIsIntermediaryWaypoint) && (targetDist < m_navigationParams->targetAllowedDistance);
 }
