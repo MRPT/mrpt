@@ -404,5 +404,5 @@ void CAbstractNavigator::TAbstractNavigatorParams::saveToConfigFile(mrpt::utils:
 
 bool CAbstractNavigator::checkHasReachedTarget(const double targetDist) const
 {
-	return (!m_navigationParams->targetIsIntermediaryWaypoint) && (targetDist < m_navigationParams->targetAllowedDistance);
+	return (targetDist < m_navigationParams->targetAllowedDistance);
 }

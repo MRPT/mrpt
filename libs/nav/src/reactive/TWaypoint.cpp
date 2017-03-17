@@ -87,6 +87,7 @@ std::string TWaypointSequence::getAsText() const
 // TWaypointStatus ========== 
 TWaypointStatus::TWaypointStatus() :
 	reached(false),
+	skipped(false),
 	timestamp_reach(INVALID_TIMESTAMP)
 {
 }
