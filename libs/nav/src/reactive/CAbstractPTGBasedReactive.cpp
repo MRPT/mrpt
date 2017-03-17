@@ -1141,8 +1141,8 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
 			tictac.Tic();
 
 			ASSERT_(holoMethod);
-			// Don't slow down if we are approaching a target that is not the final waypoint:
-			holoMethod->enableApproachTargetSlowDown( !navp.targetIsIntermediaryWaypoint );
+			// Slow down if we are approaching the final target, etc.
+			holoMethod->enableApproachTargetSlowDown(navp.enableApproachSlowDown);
 
 			// Prepare holonomic algorithm call:
 			CAbstractHolonomicReactiveMethod::NavInput ni;

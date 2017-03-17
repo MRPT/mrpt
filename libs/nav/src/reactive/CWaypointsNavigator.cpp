@@ -11,6 +11,7 @@
 
 #include <mrpt/nav/reactive/CWaypointsNavigator.h>
 #include <mrpt/poses/CPose2D.h>
+#include <mrpt/math/wrap2pi.h>
 
 using namespace mrpt::nav;
 using namespace std;
@@ -75,6 +76,8 @@ void CWaypointsNavigator::navigationStep()
 	// --------------------------------------
 	//     Waypoint navigation algorithm
 	// --------------------------------------
+	bool is_aligning = false;  // the robot is aligning into a waypoint with a desired heading
+
 	{
 	mrpt::utils::CTimeLoggerEntry tle(m_timlog_delays,"CWaypointsNavigator::navigationStep()");
 	mrpt::synch::CCriticalSectionLocker csl(&m_nav_waypoints_cs);
@@ -109,28 +112,50 @@ void CWaypointsNavigator::navigationStep()
 
 		if (wps.waypoint_index_current_goal >= 0)
 		{
-			const double dist2target = robot_move_seg.distance(wps.waypoints[wps.waypoint_index_current_goal].target);
-			if (dist2target < wps.waypoints[wps.waypoint_index_current_goal].allowed_distance)
+			auto &wp = wps.waypoints[wps.waypoint_index_current_goal];
+			const double dist2target = robot_move_seg.distance(wp.target);
+			if (dist2target < wp.allowed_distance)
 			{
-				MRPT_TODO("Handle pure-rotation robot interface to honor target_heading");
+				bool consider_wp_reached = false;
+				if (wp.target_heading == TWaypoint::INVALID_NUM)
+				{
+					consider_wp_reached = true;
+				}
+				else
+				{
+					// Handle pure-rotation robot interface to honor target_heading
+					const double ang_err = mrpt::math::angDistance(m_curPoseVel.pose.phi, wp.target_heading);
+					if (ang_err <= params_waypoints_navigator.waypoint_angle_tolerange)
+					{
+						consider_wp_reached = true;
+					}
+					else
+					{
+						is_aligning = true;
+						MRPT_TODO("CONTINUE here: send align cmd");
+						this->stop(false /*not emergency*/);
+					}
+				}
 
-				MRPT_LOG_DEBUG_STREAM("[CWaypointsNavigator::navigationStep] Waypoint " <<
-					(wps.waypoint_index_current_goal+1) << "/" << wps.waypoints.size() << " reached."
-					" segment-to-target dist: " << dist2target << ", allowed_dist: " << wps.waypoints[wps.waypoint_index_current_goal].allowed_distance
+				if (consider_wp_reached)
+				{
+					MRPT_LOG_DEBUG_STREAM("[CWaypointsNavigator::navigationStep] Waypoint " <<
+						(wps.waypoint_index_current_goal + 1) << "/" << wps.waypoints.size() << " reached."
+						" segment-to-target dist: " << dist2target << ", allowed_dist: " << wp.allowed_distance
 					);
 
-				auto &wp = wps.waypoints[wps.waypoint_index_current_goal];
-				wp.reached = true;
-				wp.skipped = false;
-				wp.timestamp_reach = mrpt::system::now();
-				m_robot.sendWaypointReachedEvent(wps.waypoint_index_current_goal, true /* reason: really reached*/);
+					wp.reached = true;
+					wp.skipped = false;
+					wp.timestamp_reach = mrpt::system::now();
+					m_robot.sendWaypointReachedEvent(wps.waypoint_index_current_goal, true /* reason: really reached*/);
 
-				// Was this the final goal??
-				if (wps.waypoint_index_current_goal < int(wps.waypoints.size() - 1)) {
-					wps.waypoint_index_current_goal++;
-				}
-				else {
-					wps.final_goal_reached = true;
+					// Was this the final goal??
+					if (wps.waypoint_index_current_goal < int(wps.waypoints.size() - 1)) {
+						wps.waypoint_index_current_goal++;
+					}
+					else {
+						wps.final_goal_reached = true;
+					}
 				}
 			}
 		}
@@ -207,6 +232,7 @@ void CWaypointsNavigator::navigationStep()
 			nav_cmd.targetAllowedDistance = wp.allowed_distance;
 			nav_cmd.targetIsRelative = false;
 			nav_cmd.targetIsIntermediaryWaypoint = !is_final_wp;
+			nav_cmd.enableApproachSlowDown = !is_final_wp || (wp.target_heading!=TWaypoint::INVALID_NUM);
 
 			this->navigate( &nav_cmd );
 
@@ -219,7 +245,10 @@ void CWaypointsNavigator::navigationStep()
 	//       waypoints-related events:
 
 	// Call base navigation step to execute one-single waypoint navigation, as usual:
-	CAbstractNavigator::navigationStep();  // This internally locks "m_nav_cs"
+	if (!is_aligning)
+	{
+		CAbstractNavigator::navigationStep();  // This internally locks "m_nav_cs"
+	}
 
 	MRPT_END
 }
@@ -253,12 +282,14 @@ void mrpt::nav::CWaypointsNavigator::TWaypointsNavigatorParams::loadFromConfigFi
 {
 	MRPT_LOAD_CONFIG_VAR(max_distance_to_allow_skip_waypoint, double, c, s);
 	MRPT_LOAD_CONFIG_VAR(min_timesteps_confirm_skip_waypoints, int, c, s);
+	MRPT_LOAD_CONFIG_VAR_DEGREES(waypoint_angle_tolerange, c, s);
 }
 
 void mrpt::nav::CWaypointsNavigator::TWaypointsNavigatorParams::saveToConfigFile(mrpt::utils::CConfigFileBase & c, const std::string & s) const
 {
 	MRPT_SAVE_CONFIG_VAR_COMMENT(max_distance_to_allow_skip_waypoint, "Max distance to `foresee` waypoints [meters]. (<0: unlimited)");
 	MRPT_SAVE_CONFIG_VAR_COMMENT(min_timesteps_confirm_skip_waypoints, "Min timesteps a `future` waypoint must be seen as reachable to become the active one.");
+	MRPT_SAVE_CONFIG_VAR_DEGREES_COMMENT("waypoint_angle_tolerange", waypoint_angle_tolerange, "Angular error tolerance for waypoints with an assigned heading [deg] (Default: 5 deg)");
 }
 
 CWaypointsNavigator::TWaypointsNavigatorParams::TWaypointsNavigatorParams() :
