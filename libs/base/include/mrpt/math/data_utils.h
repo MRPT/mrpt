@@ -82,7 +82,6 @@ namespace mrpt
 				ASSERT_( COV1.isSquare() && COV2.isSquare() );
 				ASSERT_( size(COV1,1)==size(COV2,1));
 			#endif
-			const size_t N = size(COV1,1);
 			MAT1 COV = COV1;
 			COV+=COV2;
 			COV.substract_An(CROSS_COV12,2);
