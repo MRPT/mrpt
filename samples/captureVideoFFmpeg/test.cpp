@@ -10,7 +10,6 @@
 #include <mrpt/hwdrivers/CFFMPEG_InputStream.h>
 #include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/utils/CTicTac.h>
-#include <mrpt/system/threads.h>
 
 using namespace mrpt::utils;
 using namespace mrpt::gui;
@@ -50,7 +49,7 @@ void Test_FFMPEG_CaptureCamera(const std::string &video_url)
 
 
 		win.showImage(img);
-		mrpt::system::sleep(10);
+		std::this_thread::sleep_for(10ms);
 
 		if (win.keyHit() && win.waitForKey()==27) break;
 	}

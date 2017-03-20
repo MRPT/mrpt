@@ -21,7 +21,6 @@ using namespace mrpt::hmtslam;
 using namespace mrpt::poses;
 using namespace mrpt::obs;
 using namespace mrpt::utils;
-using namespace mrpt::synch;
 using namespace std;
 
 /*---------------------------------------------------------------
@@ -60,7 +59,7 @@ CHMTSLAM::TMessageLSLAMfromAA::Ptr CHMTSLAM::areaAbstraction(
 		CPose3DPDFParticles::Ptr		posePDF = CPose3DPDFParticles::Create();
 
 		{
-			// CCriticalSectionLocker	lock( & LMH->m_lock ); // We are already within the LMH's lock!
+			// std::lock_guard<std::mutex>	lock( LMH->m_lock ); // We are already within the LMH's lock!
 
 			// SF:
 			std::map<TPoseID,CSensoryFrame>::const_iterator itSFs = LMH->m_SFs.find( *newID );
@@ -72,7 +71,7 @@ CHMTSLAM::TMessageLSLAMfromAA::Ptr CHMTSLAM::areaAbstraction(
 		} // end of LMH's critical section lock
 
 		{
-			synch::CCriticalSectionLocker locker ( &LMH->m_robotPosesGraph.lock );
+			std::lock_guard<std::mutex> locker ( LMH->m_robotPosesGraph.lock );
 
 			// Add to the graph partitioner:
 			LMH->m_robotPosesGraph.partitioner.options = obj->m_options.AA_options;
@@ -86,7 +85,7 @@ CHMTSLAM::TMessageLSLAMfromAA::Ptr CHMTSLAM::areaAbstraction(
 
 	vector< vector_uint >   partitions;
 	{
-		synch::CCriticalSectionLocker locker ( &LMH->m_robotPosesGraph.lock );
+		std::lock_guard<std::mutex> locker ( LMH->m_robotPosesGraph.lock );
 		// Recompute partitions:
 		LMH->m_robotPosesGraph.partitioner.markAllNodesForReconsideration(); // We will have always small local maps.
 		LMH->m_robotPosesGraph.partitioner.updatePartitions( partitions );

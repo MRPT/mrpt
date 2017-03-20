@@ -305,7 +305,7 @@ wxMRPTImageControl::wxMRPTImageControl(
 
 wxMRPTImageControl::~wxMRPTImageControl()
 {
-	mrpt::synch::CCriticalSectionLocker	lock(& m_img_cs);
+	std::lock_guard<std::mutex>	lock( m_img_cs);
 	if (m_img)
 	{
 		delete m_img;
@@ -315,20 +315,20 @@ wxMRPTImageControl::~wxMRPTImageControl()
 
 void wxMRPTImageControl::OnMouseMove(wxMouseEvent& ev)
 {
-	mrpt::synch::CCriticalSectionLocker	lock(& m_mouse_cs);
+	std::lock_guard<std::mutex>	lock( m_mouse_cs);
 	m_last_mouse_point = ev.GetPosition();
 }
 
 void wxMRPTImageControl::OnMouseClick(wxMouseEvent& ev)
 {
-	mrpt::synch::CCriticalSectionLocker	lock(& m_mouse_cs);
+	std::lock_guard<std::mutex>	lock( m_mouse_cs);
 	m_last_mouse_click= ev.GetPosition();
 }
 
 
 void wxMRPTImageControl::AssignImage(wxBitmap *img)
 {
-	mrpt::synch::CCriticalSectionLocker	lock(& m_img_cs);
+	std::lock_guard<std::mutex>	lock( m_img_cs);
 	if (m_img)
 	{
 		delete m_img;
@@ -342,7 +342,7 @@ void wxMRPTImageControl::AssignImage(const mrpt::utils::CImage &img)
 {
 	wxBitmap *wxImg = MRPTImage2wxBitmap(img);
 
-	mrpt::synch::CCriticalSectionLocker	lock(& m_img_cs);
+	std::lock_guard<std::mutex>	lock( m_img_cs);
 	if (m_img)
 	{
 		delete m_img;
@@ -356,7 +356,7 @@ void wxMRPTImageControl::OnPaint(wxPaintEvent &ev)
 {
 	wxPaintDC dc(this);
 
-	mrpt::synch::CCriticalSectionLocker	lock(& m_img_cs);
+	std::lock_guard<std::mutex>	lock( m_img_cs);
 	if (!m_img)
 	{
 		// Erase background:
@@ -368,7 +368,7 @@ void wxMRPTImageControl::OnPaint(wxPaintEvent &ev)
 
 void wxMRPTImageControl::GetBitmap(wxBitmap &bmp)
 {
-	mrpt::synch::CCriticalSectionLocker	lock(& m_img_cs);
+	std::lock_guard<std::mutex>	lock( m_img_cs);
 	if (!m_img) return;
 	bmp = *m_img;
 }

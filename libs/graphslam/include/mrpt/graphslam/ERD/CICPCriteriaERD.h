@@ -31,7 +31,6 @@
 #include <mrpt/slam/CICP.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/filesystem.h>
-#include <mrpt/system/threads.h>
 
 #include <stdlib.h> // abs
 

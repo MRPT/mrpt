@@ -117,7 +117,7 @@ void  CMetricMapBuilderICP::TConfigParams::dumpToTextStream( CStream	&out) const
   ---------------------------------------------------------------*/
 void  CMetricMapBuilderICP::processObservation(const CObservation::Ptr &obs)
 {
-	mrpt::synch::CCriticalSectionLocker lock_cs( &critZoneChangingMap );
+	std::lock_guard<std::mutex> lock_cs(critZoneChangingMap );
 
 	MRPT_START
 
@@ -451,7 +451,7 @@ void  CMetricMapBuilderICP::initialize(
 	m_there_has_been_an_odometry = false;
 
 	// Init path & map:
-	mrpt::synch::CCriticalSectionLocker lock_cs( &critZoneChangingMap );
+	std::lock_guard<std::mutex> lock_cs(critZoneChangingMap );
 
 	// Create metric maps:
 	metricMap.setListOfMaps( &ICP_options.mapInitializers );

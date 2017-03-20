@@ -11,12 +11,12 @@
 
 #include "hwdrivers-precomp.h"   // Precompiled headers
 #include <mrpt/hwdrivers/CGillAnemometer.h>
-#include <mrpt/system/threads.h>
 #include <mrpt/system/datetime.h>
 
 #include <iostream>
 #include <iterator>
 #include <sstream>
+#include <thread>
 
 using namespace std;
 using namespace mrpt::utils;
@@ -63,28 +63,24 @@ void  CGillAnemometer::loadConfig_sensorSpecific(
 ----------------------------------------------------- */
 bool  CGillAnemometer::tryToOpenTheCOM()
 {
-    if (COM.isOpen())
-        return true;	// Already open
+	if (COM.isOpen())
+		return true;	// Already open
 
-    if (m_verbose) cout << "[CGillAnemometer] Opening " << com_port << " @ " <<com_bauds << endl;
+	if (m_verbose) cout << "[CGillAnemometer] Opening " << com_port << " @ " <<com_bauds << endl;
 
 	try
 	{
-        COM.open(com_port);
-        // Config:
-        COM.setConfig( com_bauds, 0, 8, 1 );
-        //COM.setTimeouts( 1, 0, 1, 1, 1 );
+		COM.open(com_port);
+		COM.setConfig( com_bauds, 0, 8, 1 );
 		COM.setTimeouts(50,1,100, 1,20);
-		//mrpt::system::sleep(10);
 		COM.purgeBuffers();
-		//mrpt::system::sleep(10);
 
 		return true; // All OK!
 	}
 	catch (std::exception &e)
 	{
 		std::cerr << "[CGillAnemometer::tryToOpenTheCOM] Error opening or configuring the serial port:" << std::endl << e.what();
-        COM.close();
+		COM.close();
 		return false;
 	}
 	catch (...)
@@ -129,7 +125,7 @@ void CGillAnemometer::doProcess()
 			if (time_out)
 			{
 				cout << "[CGillAnemometer] " << com_port << " @ " <<com_bauds << " - measurement Timed-Out" << endl;
-				mrpt::system::sleep(10);
+				std::this_thread::sleep_for(10ms);
 			}
 			else
 				have_reading = true;

@@ -12,8 +12,9 @@
 #include <mrpt/gui/CBaseGUIWindow.h>
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/opengl_fonts.h>
-#include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/utils/CImage.h>
+
+#include <mutex>
 
 namespace mrpt
 {
@@ -22,7 +23,6 @@ namespace mrpt
 		class C3DWindowDialog;
 		class CMyGLCanvas_DisplayWindow3D;
 
-		DEFINE_MRPT_OBJECT_PRE_CUSTOM_BASE_LINKAGE(CDisplayWindow3D, mrpt::gui::CBaseGUIWindow, GUI_IMPEXP)
 
 		/** A graphical user interface (GUI) for efficiently rendering 3D scenes in real-time.
 		  *  This class always contains internally an instance of opengl::COpenGLScene, which
@@ -98,15 +98,15 @@ namespace mrpt
 		  */
 		class GUI_IMPEXP CDisplayWindow3D : public mrpt::gui::CBaseGUIWindow
 		{
-			// This must be added to any CObject derived class:
-			DEFINE_MRPT_OBJECT( CDisplayWindow3D )
-
+		public:
+			using Ptr = std::shared_ptr<CDisplayWindow3D>;
+			using ConstPtr = std::shared_ptr<const CDisplayWindow3D>;
 		protected:
 			friend class C3DWindowDialog;
 			friend class CMyGLCanvas_DisplayWindow3D;
 
 			mrpt::opengl::COpenGLScene::Ptr          m_3Dscene; //!< Internal OpenGL object (see general discussion in about usage of this object)
-			mrpt::synch::CCriticalSectionRecursive m_csAccess3DScene; //!< Critical section for accesing m_3Dscene
+			mutable std::recursive_mutex m_csAccess3DScene; //!< Critical section for accesing m_3Dscene
 
 			void  createOpenGLContext(); //!< Throws an exception on initialization error
 
@@ -118,7 +118,7 @@ namespace mrpt
 
 			bool				m_is_capturing_imgs;
 			mrpt::utils::CImage::Ptr		m_last_captured_img;
-			synch::CCriticalSection		m_last_captured_img_cs;
+			mutable std::mutex		m_last_captured_img_cs;
 
 			void  doRender();
 
@@ -313,7 +313,6 @@ namespace mrpt
 			void internal_emitGrabImageEvent(const std::string &fil); //!< called by CMyGLCanvas_DisplayWindow3D::OnPostRenderSwapBuffers
 
 		}; // End of class def.
-		DEFINE_MRPT_OBJECT_POST_CUSTOM_BASE_LINKAGE(CDisplayWindow3D, mrpt::gui::CBaseGUIWindow, GUI_IMPEXP)
 
 
 		/** @name Events specific to CDisplayWindow3D

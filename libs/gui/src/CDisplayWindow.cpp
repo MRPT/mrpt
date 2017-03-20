@@ -25,7 +25,6 @@ using namespace mrpt::system;
 using namespace std;
 
 
-IMPLEMENTS_MRPT_OBJECT(CDisplayWindow,CBaseGUIWindow,mrpt::gui)
 
 
 #if MRPT_HAS_WXWIDGETS
@@ -63,7 +62,7 @@ CWindowDialog::wxMRPTImageControl::wxMRPTImageControl(
 
 CWindowDialog::wxMRPTImageControl::~wxMRPTImageControl()
 {
-	mrpt::synch::CCriticalSectionLocker	lock(& m_img_cs);
+	std::lock_guard<std::mutex>	lock( m_img_cs);
 	if (m_img)
 	{
 		delete m_img;
@@ -73,13 +72,13 @@ CWindowDialog::wxMRPTImageControl::~wxMRPTImageControl()
 
 void CWindowDialog::wxMRPTImageControl::OnMouseMove(wxMouseEvent& ev)
 {
-	//mrpt::synch::CCriticalSectionLocker	lock(& m_mouse_cs);
+	//std::lock_guard<std::mutex>	lock( m_mouse_cs);
 	m_last_mouse_point = ev.GetPosition();
 }
 
 void CWindowDialog::wxMRPTImageControl::OnMouseClick(wxMouseEvent& ev)
 {
-	//mrpt::synch::CCriticalSectionLocker	lock(& m_mouse_cs);
+	//std::lock_guard<std::mutex>	lock( m_mouse_cs);
 	m_last_mouse_click= ev.GetPosition();
 }
 
@@ -89,7 +88,7 @@ void CWindowDialog::wxMRPTImageControl::OnChar(wxKeyEvent & ev)
 
 void CWindowDialog::wxMRPTImageControl::AssignImage(wxBitmap *img)
 {
-	mrpt::synch::CCriticalSectionLocker	lock(& m_img_cs);
+	std::lock_guard<std::mutex>	lock( m_img_cs);
 	if (m_img)
 	{
 		delete m_img;
@@ -103,7 +102,7 @@ void CWindowDialog::wxMRPTImageControl::OnPaint(wxPaintEvent &ev)
 {
 	wxPaintDC dc(this);
 
-	mrpt::synch::CCriticalSectionLocker	lock(& m_img_cs);
+	std::lock_guard<std::mutex>	lock( m_img_cs);
 	if (!m_img)
 	{
 		// Erase background:
@@ -115,7 +114,7 @@ void CWindowDialog::wxMRPTImageControl::OnPaint(wxPaintEvent &ev)
 
 void CWindowDialog::wxMRPTImageControl::GetBitmap(wxBitmap &bmp)
 {
-	mrpt::synch::CCriticalSectionLocker	lock(& m_img_cs);
+	std::lock_guard<std::mutex>	lock( m_img_cs);
 	if (!m_img) return;
 	bmp = *m_img;
 }
@@ -216,8 +215,7 @@ void CWindowDialog::OnClose(wxCloseEvent& event)
     // Decrement number of windows:
     WxSubsystem::CWXMainFrame::notifyWindowDestruction();
 
-	// Signal we are destroyed:
-    m_win2D->m_semWindowDestroyed.release();
+    m_win2D->m_windowDestroyed.set_value();
 
     event.Skip(); // keep processing by parent classes.
 }

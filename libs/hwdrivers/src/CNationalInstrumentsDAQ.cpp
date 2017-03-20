@@ -108,6 +108,7 @@ CNationalInstrumentsDAQ::TInfoPerTask::TInfoPerTask() :
 { }
 
 // Copy ctor (needed for the auto_ptr semantics)
+/*
 CNationalInstrumentsDAQ::TInfoPerTask::TInfoPerTask(const TInfoPerTask &o) :
 	taskHandle(o.taskHandle),
 	hThread(o.hThread),
@@ -121,7 +122,7 @@ CNationalInstrumentsDAQ::TInfoPerTask::TInfoPerTask(const TInfoPerTask &o) :
 	const_cast<TInfoPerTask*>(&o)->read_pipe.release();
 	const_cast<TInfoPerTask*>(&o)->write_pipe.release();
 }
-
+*/
 
 /* -----------------------------------------------------
                 Constructor
@@ -471,7 +472,7 @@ void  CNationalInstrumentsDAQ::initialize()
 
 			MRPT_DAQmx_ErrChk (MRPT_DAQmxStartTask(taskHandle));
 
-			ipt.hThread = mrpt::system::createThreadFromObjectMethodRef<CNationalInstrumentsDAQ,TInfoPerTask>(this, &CNationalInstrumentsDAQ::grabbing_thread, ipt);
+			ipt.hThread = std::thread(&CNationalInstrumentsDAQ::grabbing_thread, this, ipt);
 			
 
 		}
@@ -486,11 +487,11 @@ void  CNationalInstrumentsDAQ::initialize()
 			}
 
 			// Stop thread:
-			if (!ipt.hThread.isClear())
+			if (ipt.hThread.joinable())
 			{
 				ipt.must_close=true;
 				cerr << "[CNationalInstrumentsDAQ::initialize] Waiting for the grabbing thread to end due to exception...\n";
-				mrpt::system::joinThread(ipt.hThread);
+				ipt.hThread.join();
 				cerr << "[CNationalInstrumentsDAQ::initialize] Grabbing thread ended.\n";
 			}
 
@@ -522,10 +523,11 @@ void CNationalInstrumentsDAQ::stop()
 	for (list<TInfoPerTask>::iterator it=m_running_tasks.begin();it!=m_running_tasks.end();++it)
 	{
 		// For some reason, join doesn't work...
-		// if (!it->hThread.isClear()) mrpt::system::joinThread(it->hThread);
+		if (it->hThread.joinable())
+			 it->hThread.join();
 		// Polling:
-		for (size_t tim=0;tim<250 && !it->is_closed;tim++) { mrpt::system::sleep(1); }
-		it->hThread.clear();
+		// for (size_t tim=0;tim<250 && !it->is_closed;tim++) { std::this_thread::sleep_for(1ms); }
+		// it->hThread.clear();
 	}
 	if (m_verbose) cout << "[CNationalInstrumentsDAQ::stop] All threads ended.\n";
 
@@ -739,10 +741,10 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask &ipt)
 			{
 				++(ipt.new_obs_available);
 				ipt.write_pipe->WriteObject(&obs);
-				//mrpt::system::sleep(1); // This seems to be needed to allow all objs to be sent to the recv thread
+				//std::this_thread::sleep_for(1ms); // This seems to be needed to allow all objs to be sent to the recv thread
 			}
 			else {
-				mrpt::system::sleep(1);
+				std::this_thread::sleep_for(1ms);
 			}
 
 		} // end of main thread loop

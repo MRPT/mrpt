@@ -76,12 +76,10 @@ bool CLevMarqGSO<GRAPH_t>::updateState(
 
 		if (opt_params.optimization_on_second_thread) {
 			//join the previous optimization thread
-			mrpt::system::joinThread(m_thread_optimize);
+			m_thread_optimize.join();
 
 			// optimize the graph - run on a seperate thread
-			m_thread_optimize = mrpt::system::createThreadFromObjectMethod(
-					/*obj = */ this,
-					/* func = */ &CLevMarqGSO::optimizeGraph);
+			m_thread_optimize = std::thread(&CLevMarqGSO::optimizeGraph, this);
 
 		}
 		else { // single threaded implementation
@@ -125,7 +123,7 @@ void CLevMarqGSO<GRAPH_t>::setWindowManagerPtr(
 
 template <class GRAPH_t>
 void CLevMarqGSO<GRAPH_t>::setCriticalSectionPtr(
-		mrpt::synch::CCriticalSection* graph_section) {
+		std::mutex* graph_section) {
 	MRPT_START;
 
 	m_graph_section = graph_section;
@@ -409,9 +407,9 @@ void CLevMarqGSO<GRAPH_t>::optimizeGraph() {
 
 	this->logFmt(mrpt::utils::LVL_DEBUG,
 				"In optimizeGraph\n\tThreadID: %lu\n\tTrying to grab lock... ",
-				mrpt::system::getCurrentThreadId());
+				std::this_thread::get_id());
 
-	mrpt::synch::CCriticalSectionLocker m_graph_lock(m_graph_section);
+	std::lock_guard<std::mutex> m_graph_lock(*m_graph_section);
 	this->_optimizeGraph();
 
 	this->logFmt(mrpt::utils::LVL_DEBUG, "2nd thread grabbed the lock..");

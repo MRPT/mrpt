@@ -25,7 +25,6 @@
 using namespace mrpt::slam;
 using namespace mrpt::hmtslam;
 using namespace mrpt::utils;
-using namespace mrpt::synch;
 using namespace mrpt::obs;
 using namespace mrpt::maps;
 using namespace mrpt::opengl;
@@ -56,7 +55,7 @@ void CHMTSLAM::thread_LSLAM()
 	{
 		// Start thread:
 		// -------------------------
-		obj->logFmt(mrpt::utils::LVL_DEBUG,"[thread_LSLAM] Thread started (ID=0x%08lX)\n", mrpt::system::getCurrentThreadId() );
+		obj->logFmt(mrpt::utils::LVL_DEBUG,"[thread_LSLAM] Thread started (ID=0x%08lX)\n", std::this_thread::get_id() );
 
 		// --------------------------------------------
 		//    The main loop
@@ -112,11 +111,11 @@ void CHMTSLAM::thread_LSLAM()
 				ASSERT_(obj->m_LSLAM_method);
 
 				{
-					CCriticalSectionLocker LMHs_cs_locker( & obj->m_LMHs_cs );
+					std::lock_guard<std::mutex> LMHs_cs_lock( obj->m_LMHs_cs );
 
 					for (it=obj->m_LMHs.begin();it!=obj->m_LMHs.end();it++)
 					{
-						CCriticalSectionLocker  LMH_individual_locker( & it->second.m_lock );
+						std::lock_guard<std::mutex>  LMH_individual_lock( it->second.threadLocks.m_lock );
 
 						// ----------------------------------------------
 						// 1) Process acts & obs by Local SLAM method:
@@ -204,14 +203,15 @@ void CHMTSLAM::thread_LSLAM()
 			else
 			{
 				// Wait for new data:
-				mrpt::system::sleep(5);
+				std::this_thread::sleep_for(5ms);
 			}
 		};	// end while execute thread
 
 		// Finish thread:
 		// -------------------------
 		time_t timCreat,timExit; double timCPU=0;
-		try { mrpt::system::getCurrentThreadTimes( timCreat,timExit,timCPU); } catch(...) {};
+		MRPT_TODO("Fix thread times");
+		//try { mrpt::system::getCurrentThreadTimes( timCreat,timExit,timCPU); } catch(...) {};
 		obj->logFmt(mrpt::utils::LVL_DEBUG,"[thread_LSLAM] Thread finished. CPU time used:%.06f secs \n",timCPU);
 		obj->m_terminationFlag_LSLAM = true;
 
@@ -321,7 +321,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 		// Get current coords origin:
 		TPoseID poseID_origin;
 		{
-			CCriticalSectionLocker  locker( &m_map_cs );
+			std::lock_guard<std::mutex>  lock(m_map_cs );
 
 			map<TPoseID,CHMHMapNode::TNodeID>::const_iterator itCur = LMH->m_nodeIDmemberships.find( LMH->m_currentRobotPose );
 			ASSERT_(itCur != LMH->m_nodeIDmemberships.end() );
@@ -351,7 +351,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 		}
 		if (0)
 		{
-			CCriticalSectionLocker  locker( &m_map_cs );
+			std::lock_guard<std::mutex>  lock(m_map_cs );
 			utils::CStringList s;
 			m_map.dumpAsText(s);
 			s.saveToFile( format("%s/HMAP_txt/HMAP_%05i_before.txt",m_options.LOG_OUTPUT_DIR.c_str(), DEBUG_STEP ) );
@@ -432,7 +432,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 			if (partIdx2Areas[i]== AREAID_INVALID)
 			{
 				// Create new area in the H-MAP:
-				CCriticalSectionLocker  locker( &m_map_cs );
+				std::lock_guard<std::mutex>  lock(m_map_cs );
 
 				CHMHMapNode::Ptr newArea = CHMHMapNode::Create( &m_map );
 
@@ -538,7 +538,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 			}
 #endif
 
-				CCriticalSectionLocker  locker( &m_map_cs );
+				std::lock_guard<std::mutex>  lock(m_map_cs );
 
 				// A node has dissappeared:
 				// Delete the node from the HMT map:
@@ -814,7 +814,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 
 		if (partIdx2Areas.size()>1)
 		{
-			CCriticalSectionLocker	locker( &m_map_cs );
+			std::lock_guard<std::mutex>	lock(m_map_cs );
 			//THypothesisIDSet   theArcHypos( LMH->m_ID );
 
 			set<CHMHMapNode::TNodeID>	areasWithLink; // All the areas with at least one internal arc.
@@ -1070,7 +1070,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 		//  in the corresponding arc in the HMT-map:
 		// -------------------------------------------------------------------------------------
 		{
-			CCriticalSectionLocker	locker( &m_map_cs );
+			std::lock_guard<std::mutex>	lock(m_map_cs );
 			THypothesisIDSet   theArcHypos( LMH->m_ID );
 
 			for ( list_searchable<TPairNodeIDs>::const_iterator arcCreat=lstInternalArcsToCreate.begin();arcCreat!=lstInternalArcsToCreate.end();++arcCreat)
@@ -1155,7 +1155,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 		//    an entry in 'lstAlreadyUpdated' but the arc actually exists:
 		// ----------------------------------------------------------------
 		{
-			CCriticalSectionLocker	locker( &m_map_cs );
+			std::lock_guard<std::mutex>	lock(m_map_cs );
 
 			for (TNodeIDSet::const_iterator pNei=LMH->m_neighbors.begin();pNei!=LMH->m_neighbors.end();++pNei)
 			{
@@ -1199,7 +1199,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 
 		if (0)
 		{
-			CCriticalSectionLocker  locker( &m_map_cs );
+			std::lock_guard<std::mutex>  lock(m_map_cs );
 			utils::CStringList s;
 			m_map.dumpAsText(s);
 			s.saveToFile( format("%s/HMAP_txt/HMAP_%05i_mid.txt",m_options.LOG_OUTPUT_DIR.c_str(), DEBUG_STEP ) );
@@ -1219,7 +1219,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 			{
 				TArcList lstArcs;
 				{
-					CCriticalSectionLocker  locker( &m_map_cs );
+					std::lock_guard<std::mutex>  lock(m_map_cs );
 					m_map.findArcsOfTypeBetweenNodes( *pNei1, curAreaID , LMH->m_ID, "RelativePose", lstArcs);
 				}
 				if (lstArcs.empty())
@@ -1229,7 +1229,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 					// Remove from list first:
 					CHMHMapNode::TNodeID id = *pNei1;
 
-					pNei1 = erase_return_next(LMH->m_neighbors,pNei1);
+					pNei1 = mrpt::utils::erase_return_next(LMH->m_neighbors,pNei1);
 
 					// Now: this calls internally to "updateAreaFromLMH"
 					double ESS_bef = LMH->ESS();
@@ -1255,7 +1255,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 		// -------------------------------------------------------------
 		CHMHMapNode::Ptr currentArea;
 		{
-			CCriticalSectionLocker  locker( &m_map_cs );
+			std::lock_guard<std::mutex>  lock(m_map_cs );
 
 			const CHMHMapNode::TNodeID curAreaID = LMH->m_nodeIDmemberships[ LMH->m_currentRobotPose ];
 			currentArea = m_map.getNodeByID( curAreaID );
@@ -1451,7 +1451,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 
 		if (0)
 		{
-			CCriticalSectionLocker  locker( &m_map_cs );
+			std::lock_guard<std::mutex>  lock(m_map_cs );
 			utils::CStringList s;
 			m_map.dumpAsText(s);
 			s.saveToFile( format("%s/HMAP_txt/HMAP_%05i_after.txt",m_options.LOG_OUTPUT_DIR.c_str(), DEBUG_STEP ) );

@@ -14,7 +14,6 @@
 #include <mrpt/utils/mrpt_macros.h>
 #include <mrpt/utils/COutputLogger.h>
 #include <mrpt/system/filesystem.h>
-#include <mrpt/system/threads.h>
 
 #include <mrpt/graphslam/link_pragmas.h>
 #include <mrpt/graphslam/misc/CWindowObserver.h>

@@ -26,9 +26,6 @@ using namespace mrpt::math;
 using namespace mrpt::system;
 using namespace std;
 
-IMPLEMENTS_MRPT_OBJECT(CDisplayWindowPlots,CBaseGUIWindow,mrpt::gui)
-
-
 #if MRPT_HAS_WXWIDGETS
 
 BEGIN_EVENT_TABLE(CWindowDialogPlots,wxFrame)
@@ -182,7 +179,7 @@ void CWindowDialogPlots::OnClose(wxCloseEvent& event)
     WxSubsystem::CWXMainFrame::notifyWindowDestruction();
 
 	// Signal we are destroyed:
-    m_winPlots->m_semWindowDestroyed.release();
+    m_winPlots->m_windowDestroyed.set_value();
 
     event.Skip(); // keep processing by parent classes.
 }

@@ -190,7 +190,7 @@ int main ( int argc, char** argv )
 			}
 		}
 
-		system::sleep(5);
+		std::this_thread::sleep_for(5ms);
 		window.unlockAccess3DScene();
 		window.repaint();
 

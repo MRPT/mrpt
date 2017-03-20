@@ -67,7 +67,7 @@ void TestOpenGLVideo()
 	while (win.isOpen())
 	{
 		win.addTextMessage(5,5, format("%.02fFPS", win.getRenderingFPS()));
-		mrpt::system::sleep(1);
+		std::this_thread::sleep_for(1ms);
 
 		// Grab new video frame:
 		CObservation::Ptr obs = cam->getNextFrame();

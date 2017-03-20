@@ -284,7 +284,7 @@ void CDlgPoseEst::OnbtnStartClick(wxCommandEvent& event)
 
 	m_calibFrames.clear();
 
-	m_threadCorners = mrpt::system::createThreadFromObjectMethod( this, &CDlgPoseEst::threadProcessCorners );
+	m_threadCorners = std::thread( &CDlgPoseEst::threadProcessCorners , this);
 
 	//lbProgress->SetLabel(_("0"));
 
@@ -306,7 +306,7 @@ void CDlgPoseEst::OnbtnStopClick(wxCommandEvent& event)
 	this->m_panelCamera->Enable();
 
 	m_threadMustClose = true;
-	mrpt::system::joinThread( m_threadCorners );
+	 m_threadCorners .join();
 }
 
 void CDlgPoseEst::OntimCaptureTrigger(wxTimerEvent& event)
@@ -473,7 +473,7 @@ void CDlgPoseEst::threadProcessCorners()
 				else
 				{
 					// Nothing to do:
-					mrpt::system::sleep(5);
+					std::this_thread::sleep_for(5ms);
 				}
 			}
 

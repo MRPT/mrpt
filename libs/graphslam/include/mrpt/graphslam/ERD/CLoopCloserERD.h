@@ -34,7 +34,6 @@
 #include <mrpt/slam/CIncrementalMapPartitioner.h>
 #include <mrpt/slam/CICP.h>
 #include <mrpt/system/os.h>
-#include <mrpt/system/threads.h>
 #include <mrpt/math/data_utils.h>
 
 #include <mrpt/graphslam/interfaces/CEdgeRegistrationDecider.h>

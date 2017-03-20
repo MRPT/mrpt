@@ -10,9 +10,10 @@
 #include <mrpt/hwdrivers/CInterfaceFTDI.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/datetime.h>
-#include <mrpt/system/threads.h>
+
 #include <cstdio>
 #include <iostream>
+#include <thread>
 
 using namespace mrpt;
 using namespace mrpt::hwdrivers;
@@ -45,7 +46,7 @@ void Test_EnumerateDevices()
 
 		printf("\nPRESS ANY KEY TO END THE PROGRAM...\n\n");
 		cout.flush();
-		mrpt::system::sleep(500);
+		std::this_thread::sleep_for(500ms);
 	};
 }
 

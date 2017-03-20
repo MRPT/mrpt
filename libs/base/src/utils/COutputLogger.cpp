@@ -12,7 +12,6 @@
 #include <mrpt/utils/CStream.h>
 #include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/utils/COutputLogger.h>
-#include <mrpt/system/threads.h>
 #include <cstdio>
 #include <sstream>
 #include <iostream>

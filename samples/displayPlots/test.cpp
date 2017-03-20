@@ -10,7 +10,6 @@
 #include <mrpt/gui/CDisplayWindowPlots.h>
 #include <mrpt/math/distributions.h>
 #include <mrpt/system/os.h>
-#include <mrpt/system/threads.h>
 
 using namespace mrpt;
 using namespace mrpt::gui;
@@ -87,7 +86,7 @@ void TestDisplayPlots()
 		mean_y = sin(t)*5;
 		win2.plotEllipse(mean_x ,mean_y, ellipse_cov, 3 ,"b-2","my_ellipse");
 
-		mrpt::system::sleep(50);
+		std::this_thread::sleep_for(50ms);
 	}
 }
 

@@ -45,9 +45,10 @@
 #include <mrpt/utils.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/opengl.h>
-#include <mrpt/system/threads.h>
 #include <mrpt/vision/chessboard_stereo_camera_calib.h>
 #include <mrpt/synch/CThreadSafeVariable.h>
+
+#include <thread>
 
 // Thread for grabbing: Do this is another thread so we divide rendering and grabbing
 //   and exploit multicore CPUs.
@@ -105,10 +106,10 @@ class kinect_calibrate_guiDialog: public wxDialog
 
 		CMyRedirector  *m_my_redirector;
 
-		mrpt::system::TThreadHandle  m_cap_thread;
+		std::thread  m_cap_thread;
 		TThreadParam                 m_cap_thread_data;
 
-		mrpt::system::TThreadHandle  m_findcorners_thread;
+		std::thread  m_findcorners_thread;
 		TThreadDetectCornerParam     m_findcorners_thread_data;
 
 		mrpt::obs::CObservation3DRangeScan::Ptr  m_last_obs;

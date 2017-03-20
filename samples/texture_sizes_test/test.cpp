@@ -9,7 +9,6 @@
 
 #include <mrpt/utils/CImage.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
-#include <mrpt/system/threads.h>
 #include <mrpt/opengl/CTexturedPlane.h>
 #include <mrpt/opengl/CText.h>
 
@@ -187,7 +186,7 @@ void TextureSizes_test()
 	while (win.isOpen())
 	{
 		win.addTextMessage(5,5, format("%.02fFPS", win.getRenderingFPS()));
-		mrpt::system::sleep(2);
+		std::this_thread::sleep_for(2ms);
 		win.repaint();
 	}
 }

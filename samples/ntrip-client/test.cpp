@@ -88,7 +88,7 @@ void TestNTRIP()
 		{
 			ntrip.stream_data.readAndClear(dat);
 			cout << "Read " << dat.size() << " bytes." << endl;
-			mrpt::system::sleep(1000);
+			std::this_thread::sleep_for(1000ms);
 		}
 	}
 }
@@ -126,7 +126,7 @@ void TestNTRIP2()
 		{
 			ntrip.stream_data.readAndClear(dat);
 			cout << "Read " << dat.size() << " bytes." << endl;
-			mrpt::system::sleep(1000);
+			std::this_thread::sleep_for(1000ms);
 		}
 	}
 }

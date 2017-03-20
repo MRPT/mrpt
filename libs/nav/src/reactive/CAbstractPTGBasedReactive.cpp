@@ -77,8 +77,8 @@ void CAbstractPTGBasedReactive::preDestructor()
 	m_closing_navigator = true;
 
 	// Wait to end of navigation (multi-thread...)
-	m_nav_cs.enter();
-	m_nav_cs.leave();
+	m_nav_cs.lock();
+	m_nav_cs.unlock();
 
 	// Just in case.
 	try {
@@ -99,7 +99,7 @@ CAbstractPTGBasedReactive::~CAbstractPTGBasedReactive()
 
 void CAbstractPTGBasedReactive::initialize()
 {
-	mrpt::synch::CCriticalSectionLocker csl(&m_nav_cs);
+	std::lock_guard<std::recursive_mutex> csl(m_nav_cs);
 
 	m_infoPerPTG_timestamp = INVALID_TIMESTAMP;
 
@@ -115,7 +115,7 @@ void CAbstractPTGBasedReactive::initialize()
   ---------------------------------------------------------------*/
 void CAbstractPTGBasedReactive::enableLogFile(bool enable)
 {
-	mrpt::synch::CCriticalSectionLocker csl(&m_nav_cs);
+	std::lock_guard<std::recursive_mutex> csl(m_nav_cs);
 
 	try
 	{
@@ -178,7 +178,7 @@ void CAbstractPTGBasedReactive::enableLogFile(bool enable)
 
 void CAbstractPTGBasedReactive::getLastLogRecord( CLogFileRecord &o )
 {
-	mrpt::synch::CCriticalSectionLocker lock(&m_critZoneLastLog);
+	std::lock_guard<std::recursive_mutex> lock(m_critZoneLastLog);
 	o = lastLogRecord;
 }
 
@@ -204,7 +204,7 @@ void CAbstractPTGBasedReactive::deleteHolonomicObjects()
 
 void CAbstractPTGBasedReactive::setHolonomicMethod(const std::string & method, const mrpt::utils::CConfigFileBase & ini)
 {
-	mrpt::synch::CCriticalSectionLocker csl(&m_nav_cs);
+	std::lock_guard<std::recursive_mutex> csl(m_nav_cs);
 
 	this->deleteHolonomicObjects();
 	const size_t nPTGs = this->getPTG_count();
@@ -692,7 +692,7 @@ void CAbstractPTGBasedReactive::STEP8_GenerateLogRecord(CLogFileRecord &newLogRe
 	}
 	// Set as last log record
 	{
-		mrpt::synch::CCriticalSectionLocker lock_log(&m_critZoneLastLog);    // Lock
+		std::lock_guard<std::recursive_mutex> lock_log(m_critZoneLastLog);    // Lock
 		lastLogRecord = newLogRec; // COPY
 	}
 }

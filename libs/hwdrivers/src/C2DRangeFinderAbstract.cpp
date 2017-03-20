@@ -45,9 +45,9 @@ C2DRangeFinderAbstract::~C2DRangeFinderAbstract()
 -------------------------------------------------------------*/
 void  C2DRangeFinderAbstract::bindIO( CStream	*streamIO )
 {
-	m_csChangeStream.enter();
+	m_csChangeStream.lock();
 	m_stream = streamIO;
-	m_csChangeStream.leave();
+	m_csChangeStream.unlock();
 }
 
 /*-------------------------------------------------------------
@@ -58,7 +58,7 @@ void  C2DRangeFinderAbstract::getObservation(
 	mrpt::obs::CObservation2DRangeScan	&outObservation,
 	bool							&hardwareError )
 {
-	m_csLastObservation.enter();
+	m_csLastObservation.lock();
 
 	hardwareError			= m_hardwareError;
 	outThereIsObservation	= m_lastObservationIsNew;
@@ -66,7 +66,7 @@ void  C2DRangeFinderAbstract::getObservation(
 	if (outThereIsObservation)
 		outObservation = m_lastObservation;
 
-	m_csLastObservation.leave();
+	m_csLastObservation.unlock();
 }
 
 /*-------------------------------------------------------------

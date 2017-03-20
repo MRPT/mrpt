@@ -263,16 +263,16 @@ bool  CHokuyoURG::turnOn()
 
 			// Assure the laser is off and quiet:
 			switchLaserOff();
-			mrpt::system::sleep(10);
+			std::this_thread::sleep_for(10ms);
 
 			COM->purgeBuffers();
-			mrpt::system::sleep(10);
+			std::this_thread::sleep_for(10ms);
 
 			COM->setConfig( 115200 );
 			switchLaserOff();
-			mrpt::system::sleep(10);
+			std::this_thread::sleep_for(10ms);
 			COM->purgeBuffers();
-			mrpt::system::sleep(10);
+			std::this_thread::sleep_for(10ms);
 			COM->setConfig( 19200 );
 		}
 
@@ -293,13 +293,13 @@ bool  CHokuyoURG::turnOn()
 		{
 			// Assure the laser is off and quiet:
 			switchLaserOff();
-			mrpt::system::sleep(10);
+			std::this_thread::sleep_for(10ms);
 
 			purgeBuffers();
-			mrpt::system::sleep(10);
+			std::this_thread::sleep_for(10ms);
 
 			switchLaserOff();
-			mrpt::system::sleep(10);
+			std::this_thread::sleep_for(10ms);
 			purgeBuffers();
 		}
 

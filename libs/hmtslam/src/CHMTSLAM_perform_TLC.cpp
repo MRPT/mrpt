@@ -43,7 +43,7 @@ void CHMTSLAM::perform_TLC(
 	MRPT_START
 	ASSERT_(Ai!=Ae)
 
-	synch::CCriticalSectionLocker locker ( &LMH.m_robotPosesGraph.lock );
+	std::lock_guard<std::mutex> locker ( LMH.m_robotPosesGraph.lock );
 
 	logFmt(mrpt::utils::LVL_DEBUG, "[perform_TLC] TLC of areas: %u <-> %u \n",(unsigned)Ai, (unsigned)Ae );
 

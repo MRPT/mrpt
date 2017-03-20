@@ -9,11 +9,11 @@
 
 #include <iostream>
 #include "ReactiveNav3D_demo.h"
-#include <mrpt/system/threads.h> // sleep()
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/utils/CConfigFileMemory.h>
 
 using namespace mrpt::math;
+using namespace std::literals;
 
 const char *default_cfg_txt =
 	"; ---------------------------------------------------------------\n"
@@ -353,7 +353,7 @@ int main(int num_arg, char *argv[])
 				ReactInterface.senseObstacles( auxpoints, auxpoints_time);
 			}
 			ReactInterface.updateScene();
-			mrpt::system::sleep(5);
+			std::this_thread::sleep_for(5ms);
 
 
 			//Move target with the mouse

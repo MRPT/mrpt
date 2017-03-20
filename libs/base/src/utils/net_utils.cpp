@@ -14,9 +14,10 @@
 #include <mrpt/utils/CServerTCPSocket.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/system/string_utils.h>
-#include <mrpt/system/threads.h>
-#include <mrpt/synch/CSemaphore.h>
 #include <mrpt/synch/CThreadSafeVariable.h>
+
+#include <thread>
+#include <future>
 #include <cstring>
 #include <stdio.h>
 
@@ -39,8 +40,8 @@
 
 
 using namespace mrpt;
-using namespace mrpt::synch;
 using namespace mrpt::system;
+using namespace mrpt::synch;
 using namespace mrpt::utils;
 using namespace mrpt::utils::net;
 using namespace std;
@@ -241,7 +242,7 @@ mrpt::utils::net::http_request(
 					out_errormsg = "Timeout waiting answer from server";
 					return net::erCouldntConnect;
 				}
-				mrpt::system::sleep(10);
+				std::this_thread::sleep_for(10ms);
 				continue;
 			}
 			total_read+=len;
@@ -402,25 +403,6 @@ mrpt::utils::net::http_get(
 }
 
 
-// ===========   net::DNS_resolve_async   ==============
-// Yeah, it's gonna got pretty complicated...
-struct TDNSThreadData
-{
-	TDNSThreadData() :
-		sem_solved(0,1),
-		sem_caller_quitted(0,1),
-		in_servername(),
-		out_solved_ip()
-	{}
-	synch::CSemaphore   sem_solved;
-	synch::CSemaphore	sem_caller_quitted;   // This is needed in order to the thread to wait for deleting this struct!
-	std::string			in_servername;
-    CThreadSafeVariable<std::string>  out_solved_ip;  // Will be set to nullptr by the caller if the function returns.
-};
-
-void thread_DNS_solver_async(TDNSThreadData &dat); // Frd decl.
-
-
 
 /** Resolve a server address by its name, returning its IP address as a string - This method has a timeout for the maximum time to wait for the DNS server.
   *   For example: server_name="www.google.com" -> out_ip="209.85.227.99"
@@ -444,21 +426,52 @@ bool net::DNS_resolve_async(
 
 	// Solve DNS --------------
 	// It seems that the only reliable way of *with a timeout* is to launch a separate thread.
-	TDNSThreadData param;
-	param.in_servername = server_name;
 
-	TThreadHandle th =
-	mrpt::system::createThreadRef( thread_DNS_solver_async,param );
+	std::future<std::string> dns_result = std::async(std::launch::async, [&](){
+		// Windows-specific stuff:
+#ifdef MRPT_OS_WINDOWS
+		{
+			// Init the WinSock Library:
+			WORD		wVersionRequested = MAKEWORD( 2, 0 );
+			WSADATA		wsaData;
+			if (WSAStartup( wVersionRequested, &wsaData ) )
+			{
+				std::cerr << "thread_DNS_solver_async: Error calling WSAStartup";
+				return;
+			}
+		}
+#endif
 
-	bool res =(param.sem_solved.waitForSignal(timeout_ms));
-	// Let the thread now about me quitting:
-	param.sem_caller_quitted.release();
-	mrpt::system::joinThread(th);
+		// Do the DNS lookup:
+		std::string  dns_result;
 
-	if (res)
+		hostent *he = gethostbyname(server_name.c_str() );
+		if (!he)
+		{
+			dns_result.clear();  // empty string -> error.
+		}
+		else
+		{
+			struct in_addr ADDR;
+			::memcpy(&ADDR, he->h_addr, sizeof(ADDR)); // Was: *((struct in_addr *)he->h_addr);
+			// Convert address to text:
+			dns_result = string( inet_ntoa(ADDR) );
+		}
+
+
+
+#ifdef MRPT_OS_WINDOWS
+		WSACleanup();
+#endif
+		return dns_result;
+	});
+
+	auto status = dns_result.wait_for(std::chrono::milliseconds(timeout_ms));		
+
+	if (status == std::future_status::ready)
 	{
 		// Done: Anyway, it can still be an error result:
-		out_ip = param.out_solved_ip;
+		out_ip = dns_result.get();
 		return !out_ip.empty();
 	}
 	else
@@ -468,52 +481,6 @@ bool net::DNS_resolve_async(
 
 		return false;
 	}
-}
-
-void thread_DNS_solver_async(TDNSThreadData &param)
-{
-	// Windows-specific stuff:
-#ifdef MRPT_OS_WINDOWS
-	{
-		// Init the WinSock Library:
-		WORD		wVersionRequested = MAKEWORD( 2, 0 );
-		WSADATA		wsaData;
-		if (WSAStartup( wVersionRequested, &wsaData ) )
-		{
-			std::cerr << "thread_DNS_solver_async: Error calling WSAStartup";
-			return;
-		}
-	}
-#endif
-
-	// Do the DNS lookup:
-	std::string  dns_result;
-
-	hostent *he = gethostbyname( param.in_servername.c_str() );
-	if (!he)
-	{
-		dns_result.clear();  // empty string -> error.
-	}
-	else
-	{
-		struct in_addr ADDR;
-		::memcpy(&ADDR, he->h_addr, sizeof(ADDR)); // Was: *((struct in_addr *)he->h_addr);
-		// Convert address to text:
-		dns_result = string( inet_ntoa(ADDR) );
-	}
-
-	// Save in the caller string:
-	param.out_solved_ip.set( dns_result );
-
-	// and signal we're done:
-	param.sem_solved.release();
-
-	// Finally, wait for the main thread to end so we can safely free the shared struct:
-	param.sem_caller_quitted.waitForSignal();
-
-#ifdef MRPT_OS_WINDOWS
-	WSACleanup();
-#endif
 }
 
 /** Returns a description of the last Sockets error */
