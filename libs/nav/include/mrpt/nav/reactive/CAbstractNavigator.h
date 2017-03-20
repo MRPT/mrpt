@@ -137,7 +137,8 @@ namespace mrpt
 		/** Called whenever a new navigation has been started. Can be used to reset state variables, etc. */
 		virtual void onStartNewNavigation() = 0;
 
-		/** Call to the robot getCurrentPoseAndSpeeds() and updates members m_curPose,m_curVel and m_curVelLocal accordingly. */
+		/** Call to the robot getCurrentPoseAndSpeeds() and updates members m_curPose,m_curVel and m_curVelLocal accordingly. 
+		  * If an error is returned by the user callback, first, it calls robot.stop() ,then throws an std::runtime_error exception. */
 		void updateCurrentPoseAndSpeeds();
 
 		/** Stops the robot and set navigation state to error */
