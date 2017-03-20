@@ -81,6 +81,10 @@ const long reactive_navigator_demoframe::ID_BUTTON4 = wxNewId();
 const long reactive_navigator_demoframe::ID_BUTTON5 = wxNewId();
 const long reactive_navigator_demoframe::ID_BUTTON7 = wxNewId();
 const long reactive_navigator_demoframe::ID_BUTTON12 = wxNewId();
+const long reactive_navigator_demoframe::ID_STATICTEXT10 = wxNewId();
+const long reactive_navigator_demoframe::ID_STATICTEXT9 = wxNewId();
+const long reactive_navigator_demoframe::ID_STATICTEXT8 = wxNewId();
+const long reactive_navigator_demoframe::ID_TEXTCTRL6 = wxNewId();
 const long reactive_navigator_demoframe::ID_BUTTON6 = wxNewId();
 const long reactive_navigator_demoframe::ID_BUTTON1 = wxNewId();
 const long reactive_navigator_demoframe::ID_BUTTON9 = wxNewId();
@@ -200,6 +204,14 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
     btnSetWaypointSeq->SetBitmapDisabled(btnSetWaypointSeq->CreateBitmapDisabled(btnSetWaypointSeq->GetBitmapLabel()));
     btnSetWaypointSeq->SetBitmapMargin(wxSize(2,4));
     FlexGridSizer4->Add(btnSetWaypointSeq, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 2);
+    StaticText8 = new wxStaticText(this, ID_STATICTEXT10, _("(non-skip:SHIFT+click)"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT10"));
+    FlexGridSizer4->Add(StaticText8, 1, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    StaticText7 = new wxStaticText(this, ID_STATICTEXT9, _("(with yaw: CTRL+click)"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT9"));
+    FlexGridSizer4->Add(StaticText7, 1, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    StaticText6 = new wxStaticText(this, ID_STATICTEXT8, _("Waypt yaw (deg):"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT8"));
+    FlexGridSizer4->Add(StaticText6, 1, wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    edWayPtHeading = new wxTextCtrl(this, ID_TEXTCTRL6, _("0.0"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL6"));
+    FlexGridSizer4->Add(edWayPtHeading, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     btnPlaceRobot = new wxCustomButton(this,ID_BUTTON6,_("Replace robot..."),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FIND")),wxART_MAKE_CLIENT_ID_FROM_STR(wxString(wxEmptyString))),wxDefaultPosition,wxSize(-1,60),wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON6"));
     btnPlaceRobot->SetBitmapDisabled(btnPlaceRobot->CreateBitmapDisabled(btnPlaceRobot->GetBitmapLabel()));
     btnPlaceRobot->SetBitmapMargin(wxSize(2,4));
@@ -1097,35 +1109,10 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 		}
 
 		// Plot waypoints being clicked by the user graphically:
-		gl_waypoints_clicking->clear();
-		for (const auto &p : m_waypoints_clicked.waypoints)
-		{
-			mrpt::opengl::CDiskPtr gl_pt = mrpt::opengl::CDisk::Create(0.3f,0.2f, 20);
-			gl_pt->setLocation(p.target.x,p.target.y,0.01);
-			gl_pt->setColor_u8(mrpt::utils::TColor(0x00,0x00,0xff));
-			gl_waypoints_clicking->insert(gl_pt);
-		}
+		m_waypoints_clicked.getAsOpenglVisualization(*gl_waypoints_clicking);
 
 		// Plot firmly set waypoints and their status:
-		gl_waypoints_status->clear();
-		{
-			const mrpt::utils::TColor colNormal (0x00,0x00,0xff);
-			const mrpt::utils::TColor colCurrent(0xff,0x00,0x20);
-			unsigned int idx=0;
-			for (const auto &p : wp_status.waypoints)
-			{
-				const bool is_cur_goal = (int(idx)==wp_status.waypoint_index_current_goal);
-
-				mrpt::opengl::CDiskPtr gl_pt = mrpt::opengl::CDisk::Create(is_cur_goal ? 0.4f : 0.3f,0.2f, 20);
-				gl_pt->setLocation(p.target.x,p.target.y,0.01);
-				gl_pt->setName(mrpt::format("WayPt #%2u Reach:%s",idx, p.reached ? "YES":"NO"));
-				gl_pt->enableShowName(true);
-				gl_pt->setColor_u8( is_cur_goal ? colCurrent : colNormal );
-				gl_waypoints_clicking->insert(gl_pt);
-
-				++idx;
-			}
-		}
+		wp_status.getAsOpenglVisualization(*gl_waypoints_status);
 	}
 
 	WX_END_TRY
@@ -1242,8 +1229,13 @@ void reactive_navigator_demoframe::Onplot3DMouseClick(wxMouseEvent& event)
 		{
 			if (event.ButtonIsDown( wxMOUSE_BTN_LEFT ))
 			{
-				const bool allow_skip_wps = cbWaypointsAllowSkip->IsChecked();
-				m_waypoints_clicked.waypoints.push_back( TWaypoint( m_curCursorPos.x,m_curCursorPos.y, 0.2 /* allowed dist */, allow_skip_wps) );
+				const bool allow_skip_wps = !event.ShiftDown();
+				double heading = TWaypoint::INVALID_NUM;
+				if (event.ControlDown()) {
+					this->edWayPtHeading->GetValue().ToDouble(&heading);
+					heading *= M_PI / 180;
+				}
+				m_waypoints_clicked.waypoints.push_back( TWaypoint( m_curCursorPos.x,m_curCursorPos.y, 0.2 /* allowed dist */, allow_skip_wps, heading) );
 			}
 			if (event.ButtonIsDown( wxMOUSE_BTN_RIGHT ))
 			{
