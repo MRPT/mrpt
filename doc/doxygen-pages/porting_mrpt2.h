@@ -34,9 +34,13 @@
 *        CObservation::Ptr obs = getObsFromSomewhere();
 *        CObservationGPS::Ptr gps = std::dynamic_pointer_cast<CObservationGPS>(obs);
 *        \endcode
-*  - `mrpt::utils::CObject`
-*     - `duplicate()` method has been removed, since its functionality is redundant with `clone()`.
-*
+*  - Threads, semaphores and mutexes are now based on C++11 standard library. Required changes:
+*    - `mrpt::synch::CCriticalSection cs;` --> `std::mutex cs;`
+*    - `mrpt::synch::CCriticalSectionLocker lock(&cs);` --> `std::lock_guard<std::mutex> lock(cs);`
+*    - `mrpt::system::TThreadHandle h = mrpt::system::createThread(...);` --> `std::thread h = std::thread(...);`
+*    - `mrpt::system::sleep(5);` --> `std::this_thread::sleep_for(5ms);`
+*    - `mrpt::synch::CSemaphore sem; sem.waitForSignal(timeout); sem.release();` --> `std::promise<void> sem; auto fut = sem.get_future(); fut.wait_for(...); sem.set_value();`
+*  - `mrpt::utils::CObject::duplicate()` has been removed, use the equivalent (redundant) `mrpt::utils::CObject::clone()`.
 *
 * **Optional changes**
 *   - Use the `Foo::Const::Ptr` smart pointers when possible instead of its non-const counterpart.
