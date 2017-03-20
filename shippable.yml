@@ -1,17 +1,15 @@
 language: c
 
-compiler:
-  - gcc
-  - clang
-
-env:
-  - TASK="prefetch"
-  - TASK="build" CCACHE_SLOPPINESS="pch_defines,time_macros"
-
 matrix:
-  exclude:
-    - compiler: clang
-      env: TASK="prefetch"
+  include:
+  - compiler: gcc
+    env: TASK="prefetch"
+  - compiler: gcc
+    env: TASK="build" CCACHE_SLOPPINESS="pch_defines,time_macros"
+  - compiler: clang
+    env: TASK="build" CCACHE_SLOPPINESS="pch_defines,time_macros"
+  - compiler: gcc
+    env: TASK="test" BUILD_TYPE=Coverage CCACHE_SLOPPINESS=pch_defines,time_macros
 
 build:
   pre_ci_boot:
@@ -44,4 +42,8 @@ build:
     - sudo apt-get install -y libboost-python-dev
     - sudo apt-get install -y libpython-dev python-numpy 
     - sudo apt-get install -y lcov
+    - sudo gem install coveralls-lcov 
     - bash .travis.sh
+
+after_success:
+ - if [ "$BUILD_TYPE" == "Coverage" ]; then bash scripts/coveralls_submit.sh ; fi
