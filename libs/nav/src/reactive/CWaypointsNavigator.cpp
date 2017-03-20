@@ -255,7 +255,7 @@ void CWaypointsNavigator::navigationStep()
 			nav_cmd.targetAllowedDistance = wp.allowed_distance;
 			nav_cmd.targetIsRelative = false;
 			nav_cmd.targetIsIntermediaryWaypoint = !is_final_wp;
-			nav_cmd.enableApproachSlowDown = !is_final_wp || (wp.target_heading!=TWaypoint::INVALID_NUM);
+			nav_cmd.enableApproachSlowDown = is_final_wp || (wp.target_heading!=TWaypoint::INVALID_NUM);
 
 			this->navigate( &nav_cmd );
 
