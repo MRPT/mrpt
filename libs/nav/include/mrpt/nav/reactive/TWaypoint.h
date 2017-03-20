@@ -10,6 +10,8 @@
 
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/system/datetime.h>
+#include <mrpt/opengl/opengl_frwds.h>
+#include <mrpt/utils/TColor.h>
 #include <vector>
 #include <string>
 
@@ -48,6 +50,18 @@ namespace mrpt
 		static const double INVALID_NUM; //!< The default value of fields (used to detect non-set values)
 	};
 
+	/** used in getAsOpenglVisualization() */
+	struct NAV_IMPEXP TWaypointsRenderingParams
+	{
+		TWaypointsRenderingParams();
+
+		double outter_radius, inner_radius;
+		double outter_radius_non_skippable, inner_radius_non_skippable;
+		double heading_arrow_len;
+		mrpt::utils::TColor  color_regular, color_current_goal;
+		bool show_labels;
+	};
+
 	/** The struct for requesting navigation requests for a sequence of waypoints.
 	 * Used in CWaypointsNavigator::navigateWaypoints(). 
 	 * Users can directly fill in the list of waypoints manipulating the public field `waypoints`.
@@ -60,6 +74,8 @@ namespace mrpt
 
 		TWaypointSequence(); //!< Ctor with default values
 		std::string getAsText() const; //!< Gets navigation params as a human-readable format
+		/** Renders the sequence of waypoints (previous contents of `obj` are cleared) */
+		void getAsOpenglVisualization(mrpt::opengl::CSetOfObjects &obj, const mrpt::nav::TWaypointsRenderingParams &params = mrpt::nav::TWaypointsRenderingParams()) const;
 	};
 
 	/** A waypoint with an execution status. \ingroup nav_reactive */
@@ -91,6 +107,9 @@ namespace mrpt
 
 		TWaypointStatusSequence(); //!< Ctor with default values
 		std::string getAsText() const; //!< Gets navigation params as a human-readable format
+
+		/** Renders the sequence of waypoints (previous contents of `obj` are cleared) */
+		void getAsOpenglVisualization(mrpt::opengl::CSetOfObjects &obj, const mrpt::nav::TWaypointsRenderingParams &params = mrpt::nav::TWaypointsRenderingParams()) const;
 	};
 
   }
