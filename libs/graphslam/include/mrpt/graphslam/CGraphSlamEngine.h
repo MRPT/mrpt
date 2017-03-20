@@ -44,9 +44,7 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/system/os.h>
-#include <mrpt/system/threads.h>
 #include <mrpt/system/string_utils.h>
-#include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/utils/CFileInputStream.h>
@@ -722,7 +720,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		/** Mark graph modification/accessing explicitly for multithreaded
 		 * implementation
 		 */
-		mrpt::synch::CCriticalSection m_graph_section;
+		mutable std::mutex m_graph_section;
 
 		// keep track of the storage directory for the 3DRangeScan depth/range
 		// images

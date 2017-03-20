@@ -15,6 +15,8 @@
 #include <mrpt/utils/CMemoryStream.h>
 #include <mrpt/obs/CObservationImage.h>
 
+#include <thread>
+
 using namespace mrpt::utils;
 using namespace mrpt::obs;
 using namespace mrpt::hwdrivers;
@@ -250,7 +252,7 @@ void CRovio::thread_video()	//This function takes a frame and waits until getLas
 
 				//Critical section
 				{
-					mrpt::synch::CCriticalSectionLocker cs( &this->buffer_img_cs );
+					std::lock_guard<std::mutex> cs( this->buffer_img_cs );
 					this->buffer_img = obs;
 					//cout<<"[CRovio::threadVideo] Image grabbed\n";
 				}
@@ -260,7 +262,7 @@ void CRovio::thread_video()	//This function takes a frame and waits until getLas
 				//obs.clear();	//If no image was copied, destroy the thisect.
 				cout<<"[CRovio::thread_video] Warning: the program doesn't receive any image\n";
 			}
-			mrpt::system::sleep(10);
+			std::this_thread::sleep_for(10ms);
 		}//end while
 
 		in_video.close();
@@ -284,23 +286,22 @@ void CRovio::thread_video()	//This function takes a frame and waits until getLas
 
 bool CRovio::retrieve_video()
 {
-	if(m_videoThread.isClear())
+	if(m_videoThread.get_id() == std::thread::id())
 	{
 		m_videothread_initialized_done  = false;
 		m_videothread_initialized_error = false;
 		m_videothread_must_exit         = false;
 		m_videothread_finished          = false;
 
-		m_videoThread = mrpt::system::createThreadFromObjectMethod(this,&mrpt::hwdrivers::CRovio::thread_video);
+		m_videoThread = std::thread(&mrpt::hwdrivers::CRovio::thread_video,this);
 
 		while (!m_videothread_initialized_done) {
-			mrpt::system::sleep(10);
+			std::this_thread::sleep_for(10ms);
 		}
 
 		// Ok or error?
 		if (m_videothread_initialized_error)
 		{
-			m_videoThread.clear();
 			return false;
 		}
 		else return true; // Grabbing video
@@ -311,7 +312,7 @@ bool CRovio::retrieve_video()
 
 bool CRovio::isVideoStreamming() const
 {
-	return (!m_videoThread.isClear() && !m_videothread_finished);
+	return (m_videoThread.joinable() && !m_videothread_finished);
 }
 
 bool CRovio::stop_video()
@@ -320,10 +321,9 @@ bool CRovio::stop_video()
 	m_videothread_must_exit = true;
 	if (isVideoStreamming())
 	{
-		joinThread(m_videoThread);
+		m_videoThread.join();
 		was_already_stop = false;
 	}
-	m_videoThread.clear();
 
 	return !was_already_stop;
 }
@@ -334,7 +334,7 @@ bool CRovio::getNextImageSync(CObservationImage::Ptr& lastImage )		//This functi
 		return false;
 
 	{
-		mrpt::synch::CCriticalSectionLocker cs( &buffer_img_cs );
+		std::lock_guard<std::mutex> cs( buffer_img_cs );
 		if(!buffer_img)
 			return false;
 

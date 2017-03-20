@@ -84,14 +84,14 @@ void CLSLAM_RBPF_2DLASER::processOneLMH(
 
 		ASSERT_( m_parent->m_map.nodeCount()==1 );
 
-		m_parent->m_map_cs.enter();
+		m_parent->m_map_cs.lock();
 		CHMHMapNode::Ptr firstArea = m_parent->m_map.getFirstNode();
 		ASSERT_(firstArea);
 		LMH->m_nodeIDmemberships[currentPoseID] = firstArea->getID();
 
 		// Set annotation for the reference pose:
 		firstArea->m_annotations.setElemental( NODE_ANNOTATION_REF_POSEID,  currentPoseID , LMH->m_ID);
-		m_parent->m_map_cs.leave();
+		m_parent->m_map_cs.unlock();
 	}
 
 	bool	insertNewRobotPose = false;
@@ -194,7 +194,7 @@ void CLSLAM_RBPF_2DLASER::processOneLMH(
 		// Notice LC detectors:
 		// ------------------------------
 		{
-			synch::CCriticalSectionLocker	lock( &m_parent->m_topLCdets_cs );
+			std::lock_guard<std::mutex>	lock(m_parent->m_topLCdets_cs );
 
 			for (std::deque<CTopLCDetectorBase*>::iterator it=m_parent->m_topLCdets.begin();it!=m_parent->m_topLCdets.end();++it)
 				(*it)->OnNewPose( newlyAddedPose, sf.get() );

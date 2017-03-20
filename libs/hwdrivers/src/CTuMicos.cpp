@@ -10,11 +10,12 @@
 #include "hwdrivers-precomp.h"   // Precompiled headers
 
 #include <mrpt/hwdrivers/CTuMicos.h>
-#include <mrpt/system/threads.h>
 #include <mrpt/system/string_utils.h>
 #include <mrpt/utils/utils_defs.h>
+
 #include <cstring>
 #include <cstdio>
+#include <thread>
 
 using namespace std;
 using namespace mrpt::utils;
@@ -314,7 +315,7 @@ bool CTuMicos::reset(void) {
 
 	sprintf(command2,"%u %s ",axis_index,"ncal");
 
-	mrpt::system::sleep(1000);
+	std::this_thread::sleep_for(1000ms);
 
 	if (!transmit(command2)) return false;
 

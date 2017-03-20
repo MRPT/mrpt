@@ -13,7 +13,6 @@
 #include <mrpt/utils/CMemoryStream.h>
 #include <mrpt/utils/metaprogramming.h>
 #include <mrpt/math/data_utils.h>
-#include <mrpt/system/threads.h>
 
 using namespace mrpt::utils;
 using namespace mrpt::math;
@@ -408,7 +407,7 @@ bool DemoFeatures()
 			win1.showImage(img1_show);
 			win2.showImage(img2_show);
 
-			mrpt::system::sleep(10);
+			std::this_thread::sleep_for(10ms);
 		}
 
 		// Wait for the next iteration:

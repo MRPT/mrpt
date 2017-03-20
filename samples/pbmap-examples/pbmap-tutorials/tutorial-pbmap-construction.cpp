@@ -72,7 +72,7 @@ void testPbMapConstruction(const string &config_file)
     pcl::transformPointCloud(*cloudAndPose.cloudPtr,*alignedCloudPtr,cloudAndPose.pose);
     globalCloud += *alignedCloudPtr;
 
-    mrpt::system::sleep(1000); // sleep to visualize the map creation from the keyframes in slow motion
+    std::this_thread::sleep_for(1000ms); // sleep to visualize the map creation from the keyframes in slow motion
   }
 
   // Serialize PbMap
@@ -88,7 +88,7 @@ void testPbMapConstruction(const string &config_file)
     total_area += pbmap_maker.getPbMap().vPlanes[i].areaHull;
   cout << "This PbMap contains " << pbmap_maker.getPbMap().vPlanes.size() << " planes, covering a total area of " << total_area << " m2" << endl;
 
-  mrpt::system::sleep(10000);
+  std::this_thread::sleep_for(10000ms);
 }
 
 int main(int argc, char **argv)

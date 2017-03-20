@@ -11,7 +11,6 @@
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/random.h>
 #include <mrpt/system/os.h>
-#include <mrpt/system/threads.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CSphere.h>
 
@@ -138,7 +137,7 @@ void GravityDemo()
 
 		// Update window:
 		win.forceRepaint();
-		mrpt::system::sleep(1);
+		std::this_thread::sleep_for(1ms);
 	};
 }
 

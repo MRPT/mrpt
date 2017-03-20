@@ -399,10 +399,10 @@ namespace mrpt
 			/** @name Stuff related to working threads to save images to disk
 			    @{ */
 			unsigned int		m_external_image_saver_count; //!< Number of working threads. Default:1, set to 2 in quad cores.
-			std::vector<mrpt::system::TThreadHandle>  m_threadImagesSaver;
+			std::vector<std::thread>  m_threadImagesSaver;
 
 			bool 	m_threadImagesSaverShouldEnd;
-			mrpt::synch::CCriticalSection	m_csToSaveList;		//!< The critical section for m_toSaveList
+			std::mutex	m_csToSaveList;		//!< The critical section for m_toSaveList
 			std::vector<TListObservations>	m_toSaveList;		//!< The queues of objects to be returned by getObservations, one for each working thread.
 			void thread_save_images(unsigned int my_working_thread_index); //!< Thread to save images to files.
 			

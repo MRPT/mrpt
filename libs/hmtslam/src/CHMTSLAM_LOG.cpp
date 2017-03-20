@@ -20,7 +20,6 @@ using namespace mrpt::hmtslam;
 using namespace mrpt::opengl;
 using namespace mrpt::poses;
 using namespace mrpt::utils;
-using namespace mrpt::synch;
 using namespace mrpt::system;
 using namespace std;
 
@@ -50,7 +49,7 @@ void CHMTSLAM::generateLogFiles(unsigned int nIteration)
 	THypothesisID	bestHypoID;
 	CLocalMetricHypothesis  *bestLMH = nullptr;
 	{
-		CCriticalSectionLocker  locker( &m_LMHs_cs );
+		std::lock_guard<std::mutex>  lock(m_LMHs_cs );
 
 		MRPT_LOG_INFO_STREAM << "[LOG] Number of LMHs: " <<  m_LMHs.size();
 
@@ -77,7 +76,7 @@ void CHMTSLAM::generateLogFiles(unsigned int nIteration)
 			bestHypoID = bestLMH->m_ID;
 
 			{
-				CCriticalSectionLocker  lockerLMH( &bestLMH->m_lock );
+				std::lock_guard<std::mutex>  lockerLMH( bestLMH->threadLocks.m_lock );
 
 				{
 					// Generate the metric maps 3D view...
@@ -102,7 +101,7 @@ void CHMTSLAM::generateLogFiles(unsigned int nIteration)
 				// Save the SSO matrix:
 #if 0
 				{
-					CCriticalSectionLocker  locker( &bestLMH->m_robotPosesGraph.lock );
+					std::lock_guard<std::mutex>  lock(bestLMH->m_robotPosesGraph.lock );
 					string filSSO = format("%s/ASSO/mostLikelyLMH_ASSO_%05u.3Dscene", m_options.LOG_OUTPUT_DIR.c_str(), nIteration );
 					COpenGLScene	sceneSSO;
 					opengl::CSetOfObjects::Ptr sso3D = opengl::CSetOfObjects::Create();
@@ -150,7 +149,7 @@ void CHMTSLAM::generateLogFiles(unsigned int nIteration)
 		static int CNT = 0;
 		if ((CNT++ % 5) == 0)
 		{
-			CCriticalSectionLocker  lockerLMH( &bestLMH->m_lock );
+			std::lock_guard<std::mutex>  lockerLMH( bestLMH->threadLocks.m_lock );
 
 			for (TNodeIDSet::const_iterator n = bestLMH->m_neighbors.begin();n!=bestLMH->m_neighbors.end();++n)
 				bestLMH->updateAreaFromLMH( *n );
@@ -158,7 +157,7 @@ void CHMTSLAM::generateLogFiles(unsigned int nIteration)
 			// Save global map for most likely hypothesis:
 			COpenGLScene	sceneGlobalHMTMAP;
 			{
-				CCriticalSectionLocker  locker( &m_map_cs );
+				std::lock_guard<std::mutex>  lock(m_map_cs );
 				MRPT_LOG_INFO_STREAM << "[LOG] HMT-map: "<< m_map.nodeCount() << " nodes/ "<< m_map.arcCount() << " arcs";
 
 				m_map.getAs3DScene(

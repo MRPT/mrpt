@@ -11,12 +11,11 @@
 #define CNTRIPClient_H
 
 #include <mrpt/utils/utils_defs.h>
-#include <mrpt/synch/CSemaphore.h>
 #include <mrpt/synch/MT_buffer.h>
-#include <mrpt/system/threads.h>
 
 #include <mrpt/hwdrivers/link_pragmas.h>
 
+#include <future>
 #include <list>
 
 namespace mrpt
@@ -99,9 +98,9 @@ namespace mrpt
 		protected:
 			void private_ntrip_thread(); //!< The working thread
 
-			mrpt::system::TThreadHandle  m_thread;
-			mrpt::synch::CSemaphore  m_sem_sock_closed;
-			mrpt::synch::CSemaphore  m_sem_first_connect_done;
+			std::thread  m_thread;
+			std::promise<void>  m_sem_sock_closed;
+			std::promise<void>  m_sem_first_connect_done;
 
 			mutable bool m_thread_exit;
 			mutable bool m_thread_do_process; //!< Will be "true" between "open" and "close"

@@ -234,7 +234,7 @@ void Test_SwissRanger()
 				TColorf(0,0,1), 110, MRPT_GLUT_BITMAP_HELVETICA_18 );
 		win3D.unlockAccess3DScene();
 
-		mrpt::system::sleep(1);
+		std::this_thread::sleep_for(1ms);
 	}
 }
 

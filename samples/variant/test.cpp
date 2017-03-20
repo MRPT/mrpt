@@ -16,8 +16,8 @@
 using namespace mrpt;
 using namespace mrpt::poses;
 using namespace mrpt::utils;
-using namespace mrpt::synch;
 using namespace mrpt::system;
+using namespace mrpt::synch;
 using namespace std;
 
 
@@ -25,7 +25,7 @@ void thread_reader(CPipeReadEndPoint &read_pipe)
 {
 	try
 	{
-		printf("[thread_reader ID:%lu] Started.\n", getCurrentThreadId());
+		std::cout << "[thread_reader ID:" << std::this_thread::get_id() << "] Started." << std::endl;
 
 		// Simple read commands:
 		size_t len=0;
@@ -56,7 +56,7 @@ void thread_writer(CPipeWriteEndPoint &write_pipe)
 {
 	try
 	{
-		printf("[thread_writer ID:%lu] Started.\n", getCurrentThreadId());
+		std::cout << "[thread_writer ID:" << std::this_thread::get_id() << "] Started." << std::endl;
 
 		// Simple write commands:
 		const char *str = "Hello world!";
@@ -94,16 +94,16 @@ void ThreadsTest()
 	CPipe::createPipe(read_pipe,write_pipe);
 
 	// And send the two end-points to two threads:
-	mrpt::system::TThreadHandle hT1 = createThreadRef( thread_reader, *read_pipe );
-	mrpt::system::TThreadHandle hT2 = createThreadRef( thread_writer, *write_pipe );
+	std::thread hT1( thread_reader, std::ref(*read_pipe) );
+	std::thread hT2( thread_writer, std::ref(*write_pipe) );
 
 	usleep(1000);
 	// Wait for the threads to end.
-	mrpt::system::joinThread(hT2);
+	hT1.join();
 	// We need to close this to ensure the pipe gets flushed
 	// Remember Unix uses buffered io
 	write_pipe.reset();
-	mrpt::system::joinThread(hT1);
+	hT1.join();
 }
 
 // ------------------------------------------------------

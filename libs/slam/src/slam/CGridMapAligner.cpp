@@ -998,7 +998,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_correlation(
 			CImage	aux( outCrossCorr, true );
 			win->showImage(aux);
 			win2->showImage(map2_img);
-			mrpt::system::sleep(5);
+			std::this_thread::sleep_for(5ms);
 #endif
 
 	} // end for phi

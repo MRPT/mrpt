@@ -38,7 +38,7 @@ void CMyGLCanvas::OnRenderError( const wxString &str )
 void CMyGLCanvas::OnPreRender()
 {
 	// Do we have to update the scene??
-/*	SYNCH::CCriticalSectionLocker   lock( &critSec_UpdateScene );
+/*	SYNCH::std::lock_guard<std::mutex>   lock(critSec_UpdateScene );
 	if (newOpenGLScene)
 	{
 		if (m_openGLScene) delete m_openGLScene;

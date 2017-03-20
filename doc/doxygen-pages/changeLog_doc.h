@@ -46,7 +46,7 @@
 			- New twist (linear + angular velocity state) classes: mrpt::math::TTwist2D, mrpt::math::TTwist3D
 			- New template method: mrpt::utils::CStream::ReadAsAndCastTo
 			- Added missing method mrpt::poses::CPose2D::inverseComposePoint() for consistency with CPose3D
-			- New class mrpt::synch::CCriticalSectionRecursive
+			- New class std::recursive_mutex
 			- New class mrpt::utils::COutputLogger replaces the classes mrpt::utils::CDebugOutputCapable (deprecated) and mrpt::utils::CLog (removed).
 			- New macros for much more versatily logging:
 				- MRPT_LOG_DEBUG(), MRPT_LOG_INFO(), MRPT_LOG_WARN(), MRPT_LOG_ERROR()

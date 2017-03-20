@@ -339,7 +339,7 @@ navlog_viewer_GUI_designDialog::~navlog_viewer_GUI_designDialog()
 	// Clean all windows:
 	m_mywins.clear();
 	m_mywins3D.clear();
-	mrpt::system::sleep(100);
+	std::this_thread::sleep_for(100ms);
 }
 
 // ---------------------------------------------------------
@@ -1219,16 +1219,16 @@ void navlog_viewer_GUI_designDialog::OnmnuMatlabPlotsSelected(wxCommandEvent& ev
 
 	f << "\n % Points: \n"
 	  << " Ps = [";
-    for (size_t k=0;k<X.size();k++)
-        f << X[k] << " " << Y[k] << "\n";
+	for (size_t k=0;k<X.size();k++)
+		f << X[k] << " " << Y[k] << "\n";
 
 	f << "];\n"
 	  << "plot(Ps(:,1),Ps(:,2),'k.','MarkerSize',3);\n";
 
 	f << "\n % Target point: \n"
 	  << " Ts = [";
-    for (size_t k=0;k<TX.size();k++)
-        f << TX[k] << " " << TY[k] << "\n";
+	for (size_t k=0;k<TX.size();k++)
+		f << TX[k] << " " << TY[k] << "\n";
 
 	f << "];\n"
 	  << "plot(Ts(:,1),Ts(:,2),'rx','MarkerSize',10);\n";

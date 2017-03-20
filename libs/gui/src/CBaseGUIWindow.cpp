@@ -19,7 +19,6 @@ using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace std;
 
-IMPLEMENTS_VIRTUAL_MRPT_OBJECT(CBaseGUIWindow, CObject,mrpt::gui)
 
 
 /*---------------------------------------------------------------
@@ -29,8 +28,6 @@ CBaseGUIWindow::CBaseGUIWindow(void* winobj_voidptr, int CMD_CREATE_WIN, int CMD
 	: m_CMD_CREATE_WIN(CMD_CREATE_WIN),
 	  m_CMD_DESTROY_WIN(CMD_DESTROY_WIN),
 	  m_winobj_voidptr(winobj_voidptr),
-	  m_semThreadReady(0,1),
-	  m_semWindowDestroyed(0,1),
 	  m_caption(initial_caption),
 	  m_hwnd(nullptr),
   	  m_keyPushed(false),
@@ -44,12 +41,12 @@ CBaseGUIWindow::CBaseGUIWindow(void* winobj_voidptr, int CMD_CREATE_WIN, int CMD
  ---------------------------------------------------------------*/
 void CBaseGUIWindow::createWxWindow(unsigned int initialWidth, unsigned int initialHeight)
 {
-	MRPT_UNUSED_PARAM(initialWidth); MRPT_UNUSED_PARAM(initialHeight);
-	MRPT_START
+    MRPT_UNUSED_PARAM(initialWidth); MRPT_UNUSED_PARAM(initialHeight);
+    MRPT_START
 #if MRPT_HAS_WXWIDGETS
-	// Create the main wxThread:
-	// -------------------------------
-	if (!WxSubsystem::createOneInstanceMainThread() )
+    // Create the main wxThread:
+    // -------------------------------
+    if (!WxSubsystem::createOneInstanceMainThread() )
         return; // Error!
 
     // Create window:
@@ -68,7 +65,7 @@ void CBaseGUIWindow::createWxWindow(unsigned int initialWidth, unsigned int init
     // Wait for the window to realize and signal it's alive:
     if (!WxSubsystem::isConsoleApp)
     {
-    	mrpt::system::sleep(20);	// Force at least 1-2 timer ticks for processing the event:
+    	std::this_thread::sleep_for(20ms);	// Force at least 1-2 timer ticks for processing the event:
     	wxApp::GetInstance()->Yield(true);
     }
 	int maxTimeout =
@@ -81,8 +78,8 @@ void CBaseGUIWindow::createWxWindow(unsigned int initialWidth, unsigned int init
 	const char *envVal = getenv("MRPT_WXSUBSYS_TIMEOUT_MS");
 	if (envVal) maxTimeout = atoi(envVal);
 
-
-	if(!m_semThreadReady.waitForSignal(maxTimeout))  // 2 secs should be enough...
+	auto future = m_threadReady.get_future();
+	if(future.wait_for(std::chrono::milliseconds(maxTimeout)) == std::future_status::timeout) // 2 secs should be enough...
 	{
 		cerr << "[CBaseGUIWindow::ctor] Timeout waiting window creation." << endl;
 	}
@@ -120,7 +117,7 @@ void CBaseGUIWindow::destroyWxWindow()
 		// Wait until the thread ends:
 		if (!WxSubsystem::isConsoleApp)
 		{
-			mrpt::system::sleep(20);	// Force at least 1-2 timer ticks for processing the event:
+			std::this_thread::sleep_for(20ms);	// Force at least 1-2 timer ticks for processing the event:
 			wxApp::GetInstance()->Yield(true);
 		}
 		const int maxTimeout =
@@ -129,7 +126,7 @@ void CBaseGUIWindow::destroyWxWindow()
 	#else
 			6000;
 	#endif
-		if(!m_semWindowDestroyed.waitForSignal(maxTimeout))  // 2 secs should be enough...
+		if(m_windowDestroyed.get_future().wait_for(std::chrono::milliseconds(maxTimeout))== std::future_status::timeout)
 		{
 			cerr << "[CBaseGUIWindow::dtor] Timeout waiting window destruction." << endl;
 		}
@@ -144,7 +141,6 @@ void CBaseGUIWindow::destroyWxWindow()
  ---------------------------------------------------------------*/
 void CBaseGUIWindow::notifyChildWindowDestruction()
 {
-    //cout << "[CBaseGUIWindow::notifyChildWindowDestruction] Called." << endl;
     m_hwnd = nullptr;
 }
 
@@ -175,7 +171,7 @@ int  CBaseGUIWindow::waitForKey(bool ignoreControlKeys,mrptKeyModifier *out_push
 			}
 			// Ignore and keep waiting
 		}
-		mrpt::system::sleep(10);
+		std::this_thread::sleep_for(10ms);
 		// Are we still alive?
 		if (!isOpen())
 			return 0;
@@ -199,7 +195,7 @@ int  CBaseGUIWindow::getPushedKey(mrptKeyModifier *out_pushModifier)
 			if (out_pushModifier) *out_pushModifier = m_keyPushedModifier;
 			return k;
 		}
-		mrpt::system::sleep(10);
+		std::this_thread::sleep_for(10ms);
 		// Are we still alive?
 		if (!isOpen())
 			return 0;
@@ -219,5 +215,5 @@ bool CBaseGUIWindow::isOpen()
  ---------------------------------------------------------------*/
 void CBaseGUIWindow::notifySemThreadReady()
 {
-	m_semThreadReady.release();
+	m_threadReady.set_value();
 }

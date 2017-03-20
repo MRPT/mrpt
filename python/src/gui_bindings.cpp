@@ -182,7 +182,7 @@ void export_gui()
 
     // CDisplayWindow3D
     {
-        scope s = class_<CDisplayWindow3D>("CDisplayWindow3D", "A graphical user interface (GUI) for efficiently rendering 3D scenes in real-time.", init<optional<std::string, unsigned int, unsigned int> >(args("windowCaption", "initialWindowWidth", "initialWindowHeight")))
+        scope s = class_<CDisplayWindow3D, boost::noncopyable>("CDisplayWindow3D", "A graphical user interface (GUI) for efficiently rendering 3D scenes in real-time.", init<optional<std::string, unsigned int, unsigned int> >(args("windowCaption", "initialWindowWidth", "initialWindowHeight")))
             .def("get3DSceneAndLock", &CDisplayWindow3D::get3DSceneAndLock, return_value_policy<reference_existing_object>(), "Gets a reference to the smart shared pointer that holds the internal scene (carefuly read introduction in gui::CDisplayWindow3D before use!) This also locks the critical section for accesing the scene, thus the window will not be repainted until it is unlocked.")
             .def("unlockAccess3DScene", &CDisplayWindow3D::unlockAccess3DScene, "Unlocks the access to the internal 3D scene.")
             .def("forceRepaint", &CDisplayWindow3D::forceRepaint, "Repaints the window.")

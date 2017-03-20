@@ -9,8 +9,10 @@
 #ifndef  mrpt_synch_mt_buffer_H
 #define  mrpt_synch_mt_buffer_H
 
-#include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/utils/types_simple.h>
+
+#include <thread>
+#include <mutex>
 
 namespace mrpt
 {
@@ -24,7 +26,7 @@ class MT_buffer
 {
 private:
 	vector_byte       m_data;
-	CCriticalSection  m_cs;
+	std::mutex  m_cs;
 
 public:
 	MT_buffer()  //!< Default constructor
@@ -34,40 +36,40 @@ public:
 
 	void clear()  //!< Empty the buffer
 	{
-		m_cs.enter();
+		m_cs.lock();
 		m_data.clear();
-		m_cs.leave();
+		m_cs.unlock();
 	}
 
 	size_t size()  //!< Return the number of available bytes at this moment.
 	{
 		size_t s;
-		m_cs.enter();
+		m_cs.lock();
 		s = m_data.size();
-		m_cs.leave();
+		m_cs.unlock();
 		return s;
 	}
 
 	void appendData(const vector_byte &d)  //!< Append new data to the stream
 	{
-		m_cs.enter();
+		m_cs.lock();
 		m_data.insert( m_data.begin(), d.begin(),d.end() );
-		m_cs.leave();
+		m_cs.unlock();
 	}
 
 	void readAndClear(vector_byte &d)  //!< Read the whole buffer and empty it.
 	{
-		m_cs.enter();
+		m_cs.lock();
 		d.clear();
 		m_data.swap(d);
-		m_cs.leave();
+		m_cs.unlock();
 	}
 
 	void read(vector_byte &d)  //!< Read the whole buffer.
 	{
-		m_cs.enter();
+		m_cs.lock();
 		d = m_data;
-		m_cs.leave();
+		m_cs.unlock();
 	}
 
 }; // end of MT_buffer

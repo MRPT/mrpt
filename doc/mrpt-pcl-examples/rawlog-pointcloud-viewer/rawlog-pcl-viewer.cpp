@@ -57,7 +57,7 @@ struct ThreadData
 };
 
 ThreadData                    td;
-mrpt::synch::CCriticalSection td_cs;
+std::mutex td_cs;
 
 
 void viewerUpdate(pcl::visualization::PCLVisualizer& viewer)
@@ -70,7 +70,7 @@ void viewerUpdate(pcl::visualization::PCLVisualizer& viewer)
     static mrpt::system::TTimeStamp last_time = INVALID_TIMESTAMP;
 
     {  // Mutex protected
-    	mrpt::synch::CCriticalSectionLocker lock(&td_cs);
+    	std::lock_guard<std::mutex> lock(td_cs);
     	if (td.new_timestamp!=last_time)
     	{
     		last_time = td.new_timestamp;
@@ -174,18 +174,18 @@ int main(int argc, char**argv)
 						new_map->getPCLPointCloud(*cloud);
 
 						{  // Mutex protected
-							mrpt::synch::CCriticalSectionLocker lock(&td_cs);
+							std::lock_guard<std::mutex> lock(td_cs);
 							td.new_timestamp = mrpt::system::now();
 							td.new_cloud = cloud;
 						}
 
-						mrpt::system::sleep(30);  // Delay to allow the point cloud to show up.
+						std::this_thread::sleep_for(30ms);  // Delay to allow the point cloud to show up.
 					}
 
 				}
 			}
 
-			mrpt::system::sleep(1);
+			std::this_thread::sleep_for(1ms);
 		}
 		return 0;
 	}

@@ -13,6 +13,7 @@
 #include <mrpt/hwdrivers/CIbeoLuxETH.h> // Precompiled headers
 
 #include <bitset>
+#include <thread>
 
 #define APPERTURE           4.712385    // in radian <=> 270°
 
@@ -47,11 +48,11 @@ CIbeoLuxETH::CIbeoLuxETH(string _ip, unsigned int _port):
 CIbeoLuxETH::~CIbeoLuxETH()
 {
 	m_run = false;
-	mrpt::system::joinThread(dataCollectionThread);
+	dataCollectionThread.join();
 	// Wait a little for the thread to come down
 	// Don't ask why, it just works
 	//TODO: Try without the delay
-	sleep(10);
+	std::this_thread::sleep_for(10ms);
 }
 
 void CIbeoLuxETH::dataCollection()
@@ -341,7 +342,7 @@ void CIbeoLuxETH::initialize()
 	// boost threads:
 	//boost::thread dataCollectionThread(boost::bind(&CIbeoLuxETH::dataCollection,this));
 
-	dataCollectionThread = createThreadFromObjectMethod(this, &CIbeoLuxETH::dataCollection);
+	dataCollectionThread = std::thread( &CIbeoLuxETH::dataCollection,this);
 }
 
 void CIbeoLuxETH::doProcess()

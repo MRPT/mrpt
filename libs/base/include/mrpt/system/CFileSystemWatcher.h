@@ -11,8 +11,8 @@
 
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/system/os.h>
-#include <mrpt/system/threads.h>
 #include <mrpt/utils/CThreadSafeQueue.h>
+#include <thread>
 
 namespace mrpt
 {
@@ -70,7 +70,7 @@ namespace mrpt
 			std::string		m_watchedDirectory; //!< Ended in "/"
 	#ifdef MRPT_OS_WINDOWS
 			void	*m_hNotif;
-			mrpt::system::TThreadHandle	m_watchThread;
+			std::thread m_watchThread;
 			void thread_win32_watch(); //!< Watch thread; only needed in win32
 			mrpt::utils::CThreadSafeQueue<TFileSystemChange>  m_queue_events_win32;
 

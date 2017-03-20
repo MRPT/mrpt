@@ -233,7 +233,7 @@ void TestImageConversion()
 
 	while (ok && !_kbhit())
 	{
-		mrpt::system::sleep(10);
+		std::this_thread::sleep_for(10ms);
 		tictac.Tic();
 			ok = cap.getObservation( obs );
 		printf("Frame grabbed in %.03fms\n", 1000.0f*tictac.Tac() );

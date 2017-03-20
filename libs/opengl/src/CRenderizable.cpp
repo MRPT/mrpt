@@ -11,7 +11,6 @@
 
 #include <mrpt/opengl/CRenderizable.h>		// Include these before windows.h!!
 #include <mrpt/opengl/gl_utils.h>
-#include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/utils/CStringList.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/poses/CPoint3D.h>
@@ -19,13 +18,14 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/utils/CStream.h>
 
+#include <mutex>
+
 #include "opengl_internals.h"
 
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::opengl;
 using namespace mrpt::utils;
-using namespace mrpt::synch;
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE( CRenderizable, CSerializable, mrpt::opengl )
 
@@ -37,15 +37,14 @@ struct TOpenGLNameBooker
 private:
 	TOpenGLNameBooker() :
 		freeTextureNames(MAX_GL_TEXTURE_IDS,false),
-		next_free_texture(1),   // 0 is a reserved number!!
-		cs()
+		next_free_texture(1)   // 0 is a reserved number!!
 	{
 	}
 
 public:
 	std::vector<bool>		freeTextureNames;
 	unsigned int			next_free_texture;
-	synch::CCriticalSectionRecursive	cs;
+	std::recursive_mutex	cs;
 
 	static TOpenGLNameBooker & instance()
 	{
@@ -80,7 +79,7 @@ unsigned int CRenderizable::getNewTextureNumber()
 
 	TOpenGLNameBooker &booker = TOpenGLNameBooker::instance();
 
-	CCriticalSectionLocker lock ( &booker.cs );
+	std::lock_guard<std::recursive_mutex> lock ( booker.cs );
 
 	unsigned int ret = booker.next_free_texture;
 	unsigned int tries = 0;
@@ -102,7 +101,7 @@ unsigned int CRenderizable::getNewTextureNumber()
 void CRenderizable::releaseTextureName(unsigned int i)
 {
 	TOpenGLNameBooker &booker = TOpenGLNameBooker::instance();
-	CCriticalSectionLocker lock ( &booker.cs );
+	std::lock_guard<std::recursive_mutex> lock ( booker.cs );
 	booker.freeTextureNames[i] = false;
 	if (i<booker.next_free_texture) booker.next_free_texture = i;  // try to reuse texture numbers.
 	// "glDeleteTextures" seems not to be neeeded, since we do the reservation of texture names by our own.

@@ -9,9 +9,9 @@
 #ifndef CRobot2DPoseEstimator_H
 #define CRobot2DPoseEstimator_H
 
-#include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/system/datetime.h>
+#include <mutex>
 
 namespace mrpt
 {
@@ -83,7 +83,7 @@ namespace mrpt
 			TOptions params; //!< parameters of the filter.
 
 		private:
-			mrpt::synch::CCriticalSection  m_cs;
+			std::mutex  m_cs;
 
 			mrpt::system::TTimeStamp    m_last_loc_time;
 			mrpt::math::TPose2D         m_last_loc;   //!< Last pose as estimated by the localization/SLAM subsystem.

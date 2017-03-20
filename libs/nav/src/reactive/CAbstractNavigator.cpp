@@ -81,7 +81,7 @@ CAbstractNavigator::~CAbstractNavigator()
   ---------------------------------------------------------------*/
 void CAbstractNavigator::cancel()
 {
-	mrpt::synch::CCriticalSectionLocker csl(&m_nav_cs);
+	std::lock_guard<std::recursive_mutex> csl(m_nav_cs);
 	MRPT_LOG_DEBUG("CAbstractNavigator::cancel() called.");
 	m_navigationState = IDLE;
 	m_lastNavTargetReached = false;
@@ -94,7 +94,7 @@ void CAbstractNavigator::cancel()
   ---------------------------------------------------------------*/
 void CAbstractNavigator::resume()
 {
-	mrpt::synch::CCriticalSectionLocker csl(&m_nav_cs);
+	std::lock_guard<std::recursive_mutex> csl(m_nav_cs);
 
 	MRPT_LOG_DEBUG("[CAbstractNavigator::resume() called.");
 	if ( m_navigationState == SUSPENDED )
@@ -107,7 +107,7 @@ void CAbstractNavigator::resume()
   ---------------------------------------------------------------*/
 void  CAbstractNavigator::suspend()
 {
-	mrpt::synch::CCriticalSectionLocker csl(&m_nav_cs);
+	std::lock_guard<std::recursive_mutex> csl(m_nav_cs);
 
 	MRPT_LOG_DEBUG("CAbstractNavigator::suspend() called.");
 	if ( m_navigationState == NAVIGATING )
@@ -116,7 +116,7 @@ void  CAbstractNavigator::suspend()
 
 void CAbstractNavigator::resetNavError()
 {
-	mrpt::synch::CCriticalSectionLocker csl(&m_nav_cs);
+	std::lock_guard<std::recursive_mutex> csl(m_nav_cs);
 
 	MRPT_LOG_DEBUG("CAbstractNavigator::resetNavError() called.");
 	if ( m_navigationState == NAV_ERROR )
@@ -150,7 +150,7 @@ void CAbstractNavigator::saveConfigFile(mrpt::utils::CConfigFileBase & c) const
   ---------------------------------------------------------------*/
 void CAbstractNavigator::navigationStep()
 {
-	mrpt::synch::CCriticalSectionLocker csl(&m_nav_cs);
+	std::lock_guard<std::recursive_mutex> csl(m_nav_cs);
 	mrpt::utils::CTimeLoggerEntry tle(m_timlog_delays, "CAbstractNavigator::navigationStep()");
 
 	const TState prevState = m_navigationState;
@@ -300,7 +300,7 @@ void CAbstractNavigator::doEmergencyStop( const std::string &msg )
 
 void CAbstractNavigator::navigate(const CAbstractNavigator::TNavigationParams *params )
 {
-	mrpt::synch::CCriticalSectionLocker csl(&m_nav_cs);
+	std::lock_guard<std::recursive_mutex> csl(m_nav_cs);
 
 	m_navigationEndEventSent = false;
 	m_lastNavTargetReached = false;

@@ -206,7 +206,7 @@ void TestCamera3DFaceDetection( CCameraSensor::Ptr cam )
 			fps.push_back( counter/t );
 			counter = 0;
 		}
-		mrpt::system::sleep(2);
+		std::this_thread::sleep_for(2ms);
 	}
 
 	cout << "Fps mean: " << fps.sumAll() / fps.size() << endl;
@@ -299,7 +299,7 @@ void TestCameraFaceDetection()
 			cout << "Frame Rate: " << counter/t << " fps" << endl;
 			counter = 0;
 		}
-		mrpt::system::sleep(2);
+		std::this_thread::sleep_for(2ms);
 	}
 
 	cout << "Closing..." << endl;
@@ -385,7 +385,7 @@ void BatchMode()
 				counter = 0;
 			}
 		
-			mrpt::system::sleep(2);
+			std::this_thread::sleep_for(2ms);
 		}
 
 		unsigned int falsePositivesDeleted, realFacesDeleted;

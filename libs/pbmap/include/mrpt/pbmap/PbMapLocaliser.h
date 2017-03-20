@@ -21,12 +21,11 @@
 
 #include <mrpt/utils/utils_defs.h>
 
-#include <mrpt/system/threads.h>
-
 #include <mrpt/pbmap/PbMap.h>
 #include <mrpt/pbmap/SubgraphMatcher.h>
 #include <mrpt/pbmap/ConsistencyTest.h>
 #include <mrpt/pbmap/link_pragmas.h>
+#include <thread>
 
 namespace mrpt {
 namespace pbmap {
@@ -105,7 +104,7 @@ namespace pbmap {
     void run();
 
     /*!PbMapLocaliser's thread handle*/
-    mrpt::system::TThreadHandle pbMapLocaliser_hd;
+    std::thread pbMapLocaliser_hd;
 
     /*!PbMapLocaliser's exit thread*/
     bool stop_pbMapLocaliser();

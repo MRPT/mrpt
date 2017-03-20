@@ -14,7 +14,6 @@
 #include <mrpt/system/filesystem.h>
 
 #ifndef HAVE_TIMEGM
-#   include <mrpt/synch/CCriticalSection.h>
 #endif // HAVE_TIMEGM
 
 #include <cstring>
@@ -114,8 +113,8 @@ using namespace std;
 		// generic version, slower but probably not used in any modern compiler!
 		time_t mrpt::system::os::timegm(struct tm *tm)
 		{
-			static mrpt::synch::CCriticalSection cs;
-			mrpt::synch::CCriticalSectionLocker locker(&cs);
+			static std::mutex cs;
+			std::lock_guard<std::mutex> lock(cs);
 
 			time_t ret;
 			char tz[256];

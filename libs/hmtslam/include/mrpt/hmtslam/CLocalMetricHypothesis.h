@@ -9,7 +9,6 @@
 #ifndef CLocalMetricHypothesis_H
 #define CLocalMetricHypothesis_H
 
-#include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/bayes/CParticleFilterCapable.h>
 
 #include <mrpt/hmtslam/HMT_SLAM_common.h>
@@ -80,7 +79,13 @@ namespace mrpt
 			  */
 			~CLocalMetricHypothesis();
 
-			synch::CCriticalSection				m_lock;					//!< Critical section for threads signaling they are working with the LMH.
+			MRPT_TODO ("Separate the serializable class from this code, so we don't have to worry about copying locks")
+			struct ThreadLocks{
+				//Don't really copy mutexes
+				ThreadLocks() {}
+				ThreadLocks(const ThreadLocks&) {}
+				mutable std::mutex m_lock;
+			} threadLocks;
 			THypothesisID						m_ID;					//!< The unique ID of the hypothesis (Used for accessing mrpt::slam::CHierarchicalMHMap).
 			mrpt::utils::safe_ptr<CHMTSLAM>					m_parent;				//!< For quick access to our parent object.
 			TPoseID								m_currentRobotPose;		//!< The current robot pose (its global unique ID) for this hypothesis.
@@ -101,7 +106,9 @@ namespace mrpt
 			/** Used by AA thread */
 			struct TRobotPosesPartitioning
 			{
-				synch::CCriticalSection		lock;  //!< CS to access the entire struct.
+				TRobotPosesPartitioning(){}
+				TRobotPosesPartitioning(const TRobotPosesPartitioning &o):partitioner(o.partitioner),idx2pose(o.idx2pose){}
+				mutable std::mutex		lock;  //!< CS to access the entire struct.
 				mrpt::slam::CIncrementalMapPartitioner			partitioner;
 				std::map<uint32_t,TPoseID> 		idx2pose;   //!< For the poses in "partitioner".
 

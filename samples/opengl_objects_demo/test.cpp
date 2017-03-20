@@ -9,7 +9,6 @@
 
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/random.h>
-#include <mrpt/system/threads.h>
 
 #include <mrpt/opengl.h>
 
@@ -821,7 +820,7 @@ void TestOpenGLObjects()
 	while (win.isOpen())
 	{
 		win.addTextMessage(5,5, format("%.02fFPS", win.getRenderingFPS()));
-		mrpt::system::sleep(2);
+		std::this_thread::sleep_for(2ms);
 		win.repaint();
 	}
 }

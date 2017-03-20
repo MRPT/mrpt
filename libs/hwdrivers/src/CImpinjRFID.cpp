@@ -12,8 +12,12 @@
 #include <mrpt/hwdrivers/CImpinjRFID.h>
 #include <mrpt/system/os.h>
 
+#include <thread>
+
 using namespace mrpt::hwdrivers;
 using namespace mrpt::system;
+
+using namespace std::literals;
 
 IMPLEMENTS_GENERIC_SENSOR(CImpinjRFID,mrpt::hwdrivers)
 
@@ -36,7 +40,7 @@ void CImpinjRFID::initialize()
 
 	// start the driver
 	//use a separate thread so the connection can be established while the program starts. This is essential because the module will stall on the accept() call until the driver executable requests a connection, and, on the other hand, if the module is not listening, the driver will fail
-	mrpt::system::createThread(dummy_startDriver,this);
+	std::thread(dummy_startDriver,this).detach();
 //	system::createThreadFromObjectMethod<CImpinjRFID>(this,startDriver);
 
 	// start connection
@@ -62,13 +66,12 @@ void CImpinjRFID::startDriver()
 	cmdline << driver_path << " " << reader_name.c_str() << " " << IPm.c_str() << " " << port;
 
 	// wait until the current module starts the sockets and listens to it
-	system::sleep(2000);
+	std::this_thread::sleep_for(2s);
 
 	const int ret = ::system(cmdline.str().c_str());
 	if (0!=ret)
 		std::cerr << "[CImpinjRFID::startDriver] Error ("<< ret << ") invoking command:\n" << cmdline.str() << std::endl;
 
-	system::exitThread();  // JL->Emil: Really needed? If not, just remove...
 }
 
 void  CImpinjRFID::loadConfig_sensorSpecific(
@@ -113,7 +116,7 @@ void CImpinjRFID::connect()
 
 	client = server->accept();
 
-	system::sleep(1000);
+	std::this_thread::sleep_for(1s);
 	connected = true;
 
 }

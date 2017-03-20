@@ -174,11 +174,11 @@ bool  CSickLaserUSB::checkControllerIsConnected()
 	{
 		m_usbConnection->OpenBySerialNumber( m_serialNumber );
 		m_usbConnection->ResetDevice( );
-		mrpt::system::sleep(10);
+		std::this_thread::sleep_for(10ms);
 		m_usbConnection->SetTimeouts( 10, 20 );	// read, write, in milliseconds
-		mrpt::system::sleep(10);
+		std::this_thread::sleep_for(10ms);
 		m_usbConnection->SetLatencyTimer(1);		// 1ms, the minimum
-		mrpt::system::sleep(10);
+		std::this_thread::sleep_for(10ms);
 
 		MRPT_LOG_INFO_FMT("[CSickLaserUSB] USB DEVICE S/N:'%s' OPEN SUCCESSFULLY!!!\n",m_serialNumber.c_str() );
 		return true;

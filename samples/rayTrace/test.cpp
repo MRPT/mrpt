@@ -17,7 +17,6 @@
 
 #include <mrpt/gui.h>
 #include <mrpt/random.h>
-#include <mrpt/system/threads.h> // sleep()
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/opengl/CAngularObservationMesh.h>
@@ -131,7 +130,7 @@ void generateObjects(CSetOfObjects::Ptr &world)	{
 void display()	{
 	CDisplayWindow3D window("Ray trace demo",640,480);
 	window.setPos(10,10);
-	mrpt::system::sleep(20);
+	std::this_thread::sleep_for(20ms);
 	COpenGLScene::Ptr scene1=COpenGLScene::Create();
 	//COpenGLScene::Ptr &scene1=window.get3DSceneAndLock();
 	opengl::CGridPlaneXY::Ptr plane1=CGridPlaneXY::Create(-20,20,-20,20,0,1);
@@ -173,7 +172,7 @@ void display()	{
 	scene1->insert(point);
 	CDisplayWindow3D window2("Observed mesh",640,480);
 	window2.setPos(660,10);
-	mrpt::system::sleep(20);
+	std::this_thread::sleep_for(20ms);
 	window.get3DSceneAndLock()=scene1;
 	window.unlockAccess3DScene();
 	window.setCameraElevationDeg(25.0f);

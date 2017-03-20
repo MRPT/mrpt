@@ -10,7 +10,6 @@
 #define C2DRangeFinderAbstract_H
 
 #include <mrpt/utils/CStream.h>
-#include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/utils/COutputLogger.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/utils/CConfigFileBase.h>
@@ -44,7 +43,7 @@ namespace mrpt
 
 			/** For being thread-safe.
 			  */
-			synch::CCriticalSection	m_csChangeStream,m_csLastObservation;
+			std::mutex	m_csChangeStream,m_csLastObservation;
 
 			mrpt::obs::CObservation2DRangeScan::Ptr		m_nextObservation;		//!< A dynamic object used as buffer in doProcess
 

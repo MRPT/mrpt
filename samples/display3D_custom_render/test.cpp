@@ -8,7 +8,6 @@
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/gui/CDisplayWindow3D.h>
-#include <mrpt/system/threads.h>
 #include <mrpt/system/os.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/CObserver.h>
@@ -195,7 +194,7 @@ void TestDisplay3D()
 
 		// Update window:
 		win.forceRepaint();
-		mrpt::system::sleep(1);
+		std::this_thread::sleep_for(1ms);
 
 		if (mrpt::system::os::kbhit()) end = true;
 		if (win.keyHit())
@@ -238,7 +237,7 @@ int main()
 	{
 		TestDisplay3D();
 
-		mrpt::system::sleep(50); // leave time for the window to close
+		std::this_thread::sleep_for(50ms); // leave time for the window to close
 		return 0;
 	} catch (std::exception &e)
 	{

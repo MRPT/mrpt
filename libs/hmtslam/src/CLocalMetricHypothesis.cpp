@@ -27,7 +27,6 @@ using namespace mrpt;
 using namespace mrpt::slam;
 using namespace mrpt::hmtslam;
 using namespace mrpt::utils;
-using namespace mrpt::synch;
 using namespace mrpt::opengl;
 using namespace mrpt::obs;
 using namespace mrpt::maps;
@@ -43,7 +42,6 @@ IMPLEMENTS_SERIALIZABLE(CLSLAMParticleData, CSerializable,mrpt::hmtslam)
 				Normal constructor
   ---------------------------------------------------------------*/
 CLocalMetricHypothesis::CLocalMetricHypothesis( CHMTSLAM  * parent ) :
-	m_lock(),
 	m_parent(parent),
 	m_log_w_metric_history()
 	//m_log_w_topol_history()
@@ -94,7 +92,7 @@ void CLocalMetricHypothesis::getAs3DScene( opengl::CSetOfObjects::Ptr &objs ) co
 	// Draw a 3D coordinates corner for each cluster
 	// -----------------------------------------------
 	{
-		CCriticalSectionLocker	locker( &m_parent->m_map_cs );
+		std::lock_guard<std::mutex>	lock(m_parent->m_map_cs );
 
 		for ( TNodeIDSet::const_iterator n=m_neighbors.begin();n!=m_neighbors.end();++n)
 		{
@@ -284,7 +282,7 @@ void CLocalMetricHypothesis::getAs3DScene( opengl::CSetOfObjects::Ptr &objs ) co
 	// Draw each of the areas in the neighborhood:
 	// ---------------------------------------------------------
 	{
-		CCriticalSectionLocker	locker( &m_parent->m_map_cs ); //To access nodes' labels.
+		std::lock_guard<std::mutex>	lock(m_parent->m_map_cs ); //To access nodes' labels.
 
 		for ( itMeans = areas_mean.begin(); itMeans!=areas_mean.end(); itMeans++ )
 		{
@@ -326,7 +324,7 @@ void CLocalMetricHypothesis::getAs3DScene( opengl::CSetOfObjects::Ptr &objs ) co
 	// Draw links between areas:
 	// ---------------------------------------------------------
 	{
-		CCriticalSectionLocker	locker( &m_parent->m_map_cs );
+		std::lock_guard<std::mutex>	lock(m_parent->m_map_cs );
 
 		for ( itMeans = areas_mean.begin(); itMeans!=areas_mean.end(); itMeans++ )
 		{
@@ -573,7 +571,7 @@ void CLocalMetricHypothesis::changeCoordinateOrigin( const TPoseID &newOrigin )
 
 	// Change coords in incr. partitioning as well:
 	{
-		synch::CCriticalSectionLocker locker ( &m_robotPosesGraph.lock );
+		std::lock_guard<std::mutex> locker ( m_robotPosesGraph.lock );
 
 		CSimpleMap *SFseq = m_robotPosesGraph.partitioner.getSequenceOfFrames();
 		for (std::map<uint32_t,TPoseID>::const_iterator it=m_robotPosesGraph.idx2pose.begin();it!=m_robotPosesGraph.idx2pose.end();++it)
@@ -686,7 +684,7 @@ void CLocalMetricHypothesis::removeAreaFromLMH( const CHMHMapNode::TNodeID areaI
 	// 	- the graph partitioner.
 	// ----------------------------------------------------------------------
 	{
-		synch::CCriticalSectionLocker locker ( &m_robotPosesGraph.lock );
+		std::lock_guard<std::mutex> locker ( m_robotPosesGraph.lock );
 
 		vector_uint	indexesToRemove;
 		indexesToRemove.reserve( lstPoseIDs.size() );
@@ -767,7 +765,7 @@ void CLocalMetricHypothesis::updateAreaFromLMH(
 
 	CHMHMapNode::Ptr node;
 	{
-		synch::CCriticalSectionLocker  ( &m_parent->m_map_cs );
+		std::lock_guard<std::mutex>  ( m_parent->m_map_cs );
 		node = m_parent->m_map.getNodeByID( areaID );
 		ASSERT_(node);
 		ASSERT_(node->m_hypotheses.has( m_ID ));

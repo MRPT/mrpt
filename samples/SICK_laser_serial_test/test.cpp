@@ -11,7 +11,6 @@
 #include <mrpt/gui/CDisplayWindowPlots.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
-#include <mrpt/system/threads.h> // sleep()
 #include <mrpt/system/os.h>
 
 using namespace mrpt;
@@ -105,7 +104,7 @@ void TestPLS()
 			win.axis_equal();
 #endif
 		}
-		mrpt::system::sleep(15);
+		std::this_thread::sleep_for(15ms);
 	};
 
 	laser.turnOff();

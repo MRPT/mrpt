@@ -55,7 +55,7 @@ int main()
 			if (!sonarBoard.queryFirmwareVersion( firmVers ) )
 			{
 				cout << "Cannot connect to USB device... Retrying in 1 sec" << endl;
-				mrpt::system::sleep(1000);
+				std::this_thread::sleep_for(1000ms);
 			}
 			else
 			{
@@ -115,7 +115,7 @@ int main()
 					//return -1;
 				}
 
-				mrpt::system::sleep(200);
+				std::this_thread::sleep_for(200ms);
 			}
 		}
 		else

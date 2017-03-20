@@ -26,7 +26,6 @@
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/random.h>
-#include <mrpt/system/threads.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
@@ -520,7 +519,7 @@ void MapBuilding_RBPF()
                     win3D->forceRepaint();
                     int add_delay = SHOW_PROGRESS_IN_WINDOW_DELAY_MS - t_exec*1000;
                     if (add_delay>0)
-                        sleep(add_delay);
+                        std::this_thread::sleep_for(std::chrono::milliseconds(add_delay));
                 }
                 /*else
                 {

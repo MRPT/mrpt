@@ -21,8 +21,8 @@
 #	include <stdlib.h>
 #endif
 
-using namespace mrpt::utils;
 using namespace mrpt::synch;
+using namespace mrpt::utils;
 
 // ------------------  CPipe ------------------
 

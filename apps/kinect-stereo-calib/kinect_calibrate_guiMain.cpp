@@ -880,7 +880,7 @@ void kinect_calibrate_guiDialog::OnbtnConnectClick(wxCommandEvent& event)
 {
 	btnNext2->Enable(false);
 
-	if (!m_cap_thread.isClear())
+	if (m_cap_thread.joinable())
 	{
 		// Shoulnd't reach here...just in case:
 		btnConnect->Enable(false);
@@ -895,8 +895,8 @@ void kinect_calibrate_guiDialog::OnbtnConnectClick(wxCommandEvent& event)
 	m_findcorners_thread_data.quit = false;
 
 	// Launch thread:
-	m_cap_thread         = mrpt::system::createThreadFromObjectMethod(this, &kinect_calibrate_guiDialog::thread_grabbing);
-	m_findcorners_thread = mrpt::system::createThreadFromObjectMethod(this, &kinect_calibrate_guiDialog::thread_find_corners);
+	m_cap_thread         = std::thread( &kinect_calibrate_guiDialog::thread_grabbing,this);
+	m_findcorners_thread = std::thread( &kinect_calibrate_guiDialog::thread_find_corners,this);
 	btnConnect->Enable(false);
 	btnDisconnect->Enable(true);
 
@@ -988,16 +988,15 @@ void kinect_calibrate_guiDialog::thread_grabbing()
 void kinect_calibrate_guiDialog::OntimMiscTrigger(wxTimerEvent& event)
 {
 	// if the thread was launched and has closed (e.g. for some error), clear the handle:
-	if (!m_cap_thread.isClear() && m_cap_thread_data.terminated)
+	if (m_cap_thread.joinable() && m_cap_thread_data.terminated)
 	{
-		m_cap_thread.clear();
 		btnConnect->Enable(true);
 		btnDisconnect->Enable(false);
 	}
 
 	// If we have a new image, process it depending on the current tab:
 	// -----------------------------------------------------------------
-	if (!m_cap_thread.isClear())
+	if (m_cap_thread.joinable())
 	{	// we're grabbing:
 
 		CObservation3DRangeScan::Ptr possiblyNewObs = m_cap_thread_data.new_obs.get();
@@ -1027,22 +1026,18 @@ void kinect_calibrate_guiDialog::StopLiveGrabThreads()
 	wxBusyInfo info(_("Waiting for grab threads to close..."),this);
 	wxTheApp->Yield();
 
-	if (!m_cap_thread.isClear() && !m_cap_thread_data.terminated)
+	if (m_cap_thread.joinable())
 	{
 		m_cap_thread_data.quit = true;
 		cout << "Waiting for the grabbing thread to end...\n";
-		for (int i=0;i<1000 && !m_cap_thread_data.terminated;i++) mrpt::system::sleep(1);
-		mrpt::system::terminateThread( m_cap_thread );
-		m_cap_thread.clear();
+		m_cap_thread.join();
 		cout << "Grabbing thread closed.\n";
 	}
-	if (!m_findcorners_thread.isClear() && !m_findcorners_thread_data.terminated)
+	if (m_findcorners_thread.joinable())
 	{
 		m_findcorners_thread_data.quit = true;
 		cout << "Waiting for the corner find thread to end...\n";
-		for (int i=0;i<1000 && !m_findcorners_thread_data.terminated;i++) mrpt::system::sleep(1);
-		mrpt::system::terminateThread( m_findcorners_thread );
-		m_findcorners_thread.clear();
+		m_findcorners_thread.join();
 		cout << "Corner finding thread closed.\n";
 	}
 }
@@ -1291,7 +1286,7 @@ void kinect_calibrate_guiDialog::thread_find_corners()
 			}
 			else
 			{
-				mrpt::system::sleep(2);
+				std::this_thread::sleep_for(2ms);
 			}
 		}
 		catch(std::exception &e)
@@ -1898,7 +1893,7 @@ void kinect_calibrate_guiDialog::OnbtnConnectLive3DClick(wxCommandEvent& event)
 {
 	btnConnectLive3D->Enable(false);
 
-	if (!m_cap_thread.isClear()) {
+	if (m_cap_thread.joinable()) {
 		// Shoulnd't reach here...just in case:
 		return;
 	}
@@ -1908,7 +1903,7 @@ void kinect_calibrate_guiDialog::OnbtnConnectLive3DClick(wxCommandEvent& event)
 	m_cap_thread_data.select_IR_channel = false;
 
 	// Launch thread:
-	m_cap_thread         = mrpt::system::createThreadFromObjectMethod(this, &kinect_calibrate_guiDialog::thread_grabbing);
+	m_cap_thread         = std::thread( &kinect_calibrate_guiDialog::thread_grabbing,this);
 
 	btnDisconnectLive->Enable(true);
 }

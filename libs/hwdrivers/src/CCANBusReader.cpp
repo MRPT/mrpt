@@ -15,8 +15,9 @@
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/system/os.h>
 #include <cstdio> // printf
-
 #include <mrpt/hwdrivers/CCANBusReader.h>
+
+#include <thread>
 
 IMPLEMENTS_GENERIC_SENSOR(CCANBusReader,mrpt::hwdrivers)
 
@@ -410,7 +411,7 @@ bool CCANBusReader::waitContinuousSampleFrame(
 			return false;
 
 		if (nRead<nBytesToRead)
-			mrpt::system::sleep(30);
+			std::this_thread::sleep_for(30ms);
 
 		// Reading OK:
 		// Was it the first one?
@@ -496,7 +497,7 @@ bool CCANBusReader::setupSerialComms()
             // Are we already receiving at 500k?
             // ------------------------------------------------
             m_mySerialPort->setConfig( rates[i] );
-            mrpt::system::sleep(100);
+            std::this_thread::sleep_for(100ms);
             m_mySerialPort->purgeBuffers();
 
             // close the connection
@@ -508,7 +509,7 @@ bool CCANBusReader::setupSerialComms()
             cout << " ... done" << endl;
             /**/
 
-            mrpt::system::sleep(100);
+            std::this_thread::sleep_for(100ms);
             m_mySerialPort->purgeBuffers();
 
             for (int nTry=0;nTry<250000/*4*/ && !detected_rate;nTry++)
@@ -521,14 +522,14 @@ bool CCANBusReader::setupSerialComms()
                     detected_rate = rates[i];
                     break;
                 }
-                mrpt::system::sleep(20);
+                std::this_thread::sleep_for(20ms);
             } // for tries
             // There is no link, or the baudrate is wrong...
         }
 
         // Try again in a while:
         if (!detected_rate && reps!=(m_nTries_connect-1))
-            mrpt::system::sleep(5000);
+            std::this_thread::sleep_for(5000ms);
 	}
 
 	// Switch "this" serial port to the detected baudrate
@@ -538,7 +539,7 @@ bool CCANBusReader::setupSerialComms()
 	m_mySerialPort->purgeBuffers();
 
 	// Wait...
-	mrpt::system::sleep(500);
+	std::this_thread::sleep_for(500ms);
 
 	// And check comms at the new baud rate:
 	return true;
@@ -720,12 +721,12 @@ bool CCANBusReader::sendCommandToCANReader(const uint8_t *cmd,const uint16_t cmd
             return false;
         }
         return true;
-//        mrpt::system::sleep(15);
+//        std::this_thread::sleep_for(15ms);
 //        if(wait)
 //        {
 //            if(waitACK(5000))
 //                return true;
-//            mrpt::system::sleep(10);
+//            std::this_thread::sleep_for(10ms);
 //        }
 //        else
 //            return true; // perform special wait outside this method

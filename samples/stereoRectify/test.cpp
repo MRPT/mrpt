@@ -110,7 +110,7 @@ void TestStereoRectify(int argc, char** argv)
 			TColorf(1,1,1),"sans",15, mrpt::opengl::FILL, 11
 			);
 
-		mrpt::system::sleep(1);
+		std::this_thread::sleep_for(1ms);
 
 		// Grab new video frame:
 		CObservation::Ptr obs = cam->getNextFrame();

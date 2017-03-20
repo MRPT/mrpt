@@ -106,7 +106,7 @@ class CDlgCalibWizardOnline: public wxDialog
 
 		void threadProcessCorners();
 
-		mrpt::system::TThreadHandle		m_threadCorners;	//!< The thread for corner detection.
+		std::thread		m_threadCorners;	//!< The thread for corner detection.
 		mrpt::obs::CObservationImage::Ptr  m_threadImgToProcess;  //!< Input for the thread, null if nothing pending
 		bool 							m_threadMustClose;  //!< Close signal
 		std::vector<mrpt::utils::TPixelCoordf>	m_threadResults;    //!< The detected corners, if threadResultsComputed=true

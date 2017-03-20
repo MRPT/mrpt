@@ -17,7 +17,6 @@
 #include <mrpt/poses/CPose3DPDF.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/maps/CSimplePointsMap.h>
-#include <mrpt/system/threads.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CSphere.h>
@@ -209,7 +208,7 @@ void test_icp3D()
 	window3.unlockAccess3DScene();
 
 
-	mrpt::system::sleep(20);
+	std::this_thread::sleep_for(20ms);
 	window.forceRepaint();
 	window2.forceRepaint();
 

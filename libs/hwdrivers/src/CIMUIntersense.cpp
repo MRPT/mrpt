@@ -9,7 +9,6 @@
 
 #include "hwdrivers-precomp.h"   // Precompiled headers
 
-#include <mrpt/system/threads.h>
 #include <mrpt/hwdrivers/CIMUIntersense.h>
 #include <mrpt/obs/CObservationIMU.h>
 
@@ -82,7 +81,7 @@ void CIMUIntersense::doProcess()
 #if MRPT_HAS_INTERSENSE
 	if(m_state == ssError)
 	{
-		mrpt::system::sleep(200);
+		std::this_thread::sleep_for(200ms);
 		initialize();
 	}
 
@@ -277,7 +276,7 @@ void CIMUIntersense::initialize()
 						
 					} // end-if
 #endif
-					mrpt::system::sleep(500);
+					std::this_thread::sleep_for(500ms);
 				} // end-else
 				m_nSensors++;
 			} // end-if

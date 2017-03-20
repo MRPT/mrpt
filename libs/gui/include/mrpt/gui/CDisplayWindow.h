@@ -19,7 +19,6 @@ namespace mrpt
 	/** Classes for creating GUI windows for 2D and 3D visualization.   \ingroup mrpt_gui_grp */
 	namespace gui
 	{
-		DEFINE_MRPT_OBJECT_PRE_CUSTOM_BASE_LINKAGE(CDisplayWindow, mrpt::gui::CBaseGUIWindow, GUI_IMPEXP)
 
 		/** This class creates a window as a graphical user interface (GUI) for displaying images to the user.
 		 *
@@ -28,9 +27,9 @@ namespace mrpt
 		 */
 		class GUI_IMPEXP CDisplayWindow : public mrpt::gui::CBaseGUIWindow
 		{
-			// This must be added to any CSerializable derived class:
-			DEFINE_MRPT_OBJECT( CDisplayWindow )
-
+		public:
+			using Ptr = std::shared_ptr<CDisplayWindow>;
+			using ConstPtr = std::shared_ptr<const CDisplayWindow>;
 		protected:
 
 			/** Enables or disables the visualization of cursor coordinates on the window caption.
@@ -202,7 +201,6 @@ namespace mrpt
 			void  setWindowTitle( const std::string &str ) MRPT_OVERRIDE;
 
 		}; // End of class def.
-		DEFINE_MRPT_OBJECT_POST_CUSTOM_BASE_LINKAGE(CDisplayWindow, mrpt::gui::CBaseGUIWindow, GUI_IMPEXP)
 
 	} // End of namespace
 
