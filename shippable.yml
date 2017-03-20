@@ -4,10 +4,14 @@ compiler:
   - gcc
   - clang
 
-cache: true
-
 env:
+  - TASK="prefetch"
   - TASK="build" CCACHE_SLOPPINESS="pch_defines,time_macros"
+
+matrix:
+  exclude:
+    - compiler: clang
+      env: TASK="prefetch"
 
 build:
   pre_ci_boot:
