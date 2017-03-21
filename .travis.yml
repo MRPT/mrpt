@@ -31,14 +31,11 @@ addons:
     - libpcl-all
     - libopenni2-dev
     - libudev-dev
-    - gdb
     - libboost-python-dev
-    - libpython-dev python-numpy 
-    - lcov
-    
+    - libpython-dev python-numpy
+
 before_install:
   - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew update          ; fi
-
 
 install:
   - if [ "$TRAVIS_OS_NAME" == "osx" ]; then
@@ -48,15 +45,8 @@ install:
     brew install opencv ;
     brew install assimp ;
     fi
-  - if [ "$BUILD_TYPE" == "Coverage" ]; then
-    gem install coveralls-lcov ;
-    fi
   - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$CXX" = "g++" ]; then export CXX="g++-6"; fi
   - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$CXX" == "clang++" ]; then export CXX="clang++-3.8"; fi
-
-
-after_success:
- - if [ "$BUILD_TYPE" == "Coverage" ]; then bash scripts/coveralls_submit.sh ; fi
 
 script:
   - bash .travis.sh
@@ -81,6 +71,3 @@ matrix:
   - compiler: clang
     os: osx
     env: TASK="test" CCACHE_SLOPPINESS=pch_defines,time_macros
-  - compiler: gcc
-    os: linux
-    env: TASK="test" BUILD_TYPE=Coverage CCACHE_SLOPPINESS=pch_defines,time_macros
