@@ -340,7 +340,7 @@ void CAbstractNavigator::updateCurrentPoseAndSpeeds()
 		const double last_call_age = robot_time_secs - m_last_curPoseVelUpdate_robot_time;
 		if (last_call_age < MIN_TIME_BETWEEN_POSE_UPDATES)
 		{
-			MRPT_LOG_DEBUG_FMT("updateCurrentPoseAndSpeeds: ignoring call, since last call was only %f ms ago.", last_call_age*1e3);
+			MRPT_LOG_THROTTLE_DEBUG_FMT(5.0,"updateCurrentPoseAndSpeeds: ignoring call, since last call was only %f ms ago.", last_call_age*1e3);
 			return;  // previous data is still valid: don't query the robot again
 		}
 	}
@@ -372,7 +372,6 @@ void CAbstractNavigator::updateCurrentPoseAndSpeeds()
 	{
 		m_latestPoses.erase(m_latestPoses.begin());
 	}
-	//MRPT_LOG_DEBUG_STREAM( "updateCurrentPoseAndSpeeds: " << m_latestPoses.size() << " poses in list of latest robot poses.");
 }
 
 bool CAbstractNavigator::changeSpeeds(const mrpt::kinematics::CVehicleVelCmd &vel_cmd)

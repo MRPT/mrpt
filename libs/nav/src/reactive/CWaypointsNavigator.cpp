@@ -141,7 +141,7 @@ void CWaypointsNavigator::navigationStep()
 							// Send vel_cmd to the robot:
 							mrpt::kinematics::CVehicleVelCmdPtr align_cmd = m_robot.getAlignCmd(ang_err);
 
-							MRPT_LOG_DEBUG_FMT(
+							MRPT_LOG_INFO_FMT(
 								"[CWaypointsNavigator::navigationStep] Trying to align to heading: %.02f deg. "
 								"Relative heading: %.02f deg. "
 								"With motion cmd: %s",
@@ -156,6 +156,10 @@ void CWaypointsNavigator::navigationStep()
 								this->stop(false /*not emergency*/);
 								consider_wp_reached = true; // this robot does not support "in place" alignment
 							}
+						}
+						else
+						{
+							MRPT_LOG_THROTTLE_INFO_FMT(0.5, "[CWaypointsNavigator::navigationStep] Waiting for the robot to get aligned: current_heading=%.02f deg target_heading=%.02f deg", mrpt::utils::RAD2DEG(m_curPoseVel.pose.phi), mrpt::utils::RAD2DEG(wp.target_heading) );
 						}
 					}
 				}

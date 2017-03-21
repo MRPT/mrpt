@@ -20,10 +20,11 @@ CRobot2NavInterface::CRobot2NavInterface()
 CRobot2NavInterface::~CRobot2NavInterface()
 {
 }
-
 bool CRobot2NavInterface::changeSpeedsNOP()
 {
-	std::cout << "[changeSpeedsNOP] Doing nothing: not implemented in user's derived class." << std::endl;
+	MRPT_UNSCOPED_LOGGER_START;
+	MRPT_LOG_THROTTLE_INFO(10.0, "[changeSpeedsNOP] Doing nothing : not implemented in user's derived class.");
+	MRPT_UNSCOPED_LOGGER_END;
 	return true;
 }
 
