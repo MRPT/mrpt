@@ -127,7 +127,7 @@ void CWaypointsNavigator::navigationStep()
 				{
 					// Handle pure-rotation robot interface to honor target_heading
 					const double ang_err = mrpt::math::angDistance(m_curPoseVel.pose.phi, wp.target_heading);
-					if (std::abs(ang_err) <= params_waypoints_navigator.waypoint_angle_tolerange)
+					if (std::abs(ang_err) <= params_waypoints_navigator.waypoint_angle_tolerance)
 					{
 						consider_wp_reached = true;
 					}
@@ -311,14 +311,14 @@ void mrpt::nav::CWaypointsNavigator::TWaypointsNavigatorParams::loadFromConfigFi
 {
 	MRPT_LOAD_CONFIG_VAR(max_distance_to_allow_skip_waypoint, double, c, s);
 	MRPT_LOAD_CONFIG_VAR(min_timesteps_confirm_skip_waypoints, int, c, s);
-	MRPT_LOAD_CONFIG_VAR_DEGREES(waypoint_angle_tolerange, c, s);
+	MRPT_LOAD_CONFIG_VAR_DEGREES(waypoint_angle_tolerance, c, s);
 }
 
 void mrpt::nav::CWaypointsNavigator::TWaypointsNavigatorParams::saveToConfigFile(mrpt::utils::CConfigFileBase & c, const std::string & s) const
 {
 	MRPT_SAVE_CONFIG_VAR_COMMENT(max_distance_to_allow_skip_waypoint, "Max distance to `foresee` waypoints [meters]. (<0: unlimited)");
 	MRPT_SAVE_CONFIG_VAR_COMMENT(min_timesteps_confirm_skip_waypoints, "Min timesteps a `future` waypoint must be seen as reachable to become the active one.");
-	MRPT_SAVE_CONFIG_VAR_DEGREES_COMMENT("waypoint_angle_tolerange", waypoint_angle_tolerange, "Angular error tolerance for waypoints with an assigned heading [deg] (Default: 5 deg)");
+	MRPT_SAVE_CONFIG_VAR_DEGREES_COMMENT("waypoint_angle_tolerance", waypoint_angle_tolerance, "Angular error tolerance for waypoints with an assigned heading [deg] (Default: 5 deg)");
 }
 
 CWaypointsNavigator::TWaypointsNavigatorParams::TWaypointsNavigatorParams() :
