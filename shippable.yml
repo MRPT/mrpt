@@ -1,17 +1,19 @@
 language: c
 
-compiler:
-  - gcc
-  - clang
-
 env:
-  - TASK="prefetch"
-  - TASK="build" CCACHE_SLOPPINESS="pch_defines,time_macros"
+  global:
+    - secure: cp5oUQ80fWqlbWrnjp+Mblp9wyn2SXZu2Wx7FKLHaG9txTcVj86wSqMF3+qnyDN/vgd0u3C0GA1dND7xBIJRnkhWCwNyglXAr7L6UCRK4IRi3lGC/ZxFthcJHljFFkh+8ss/+v7E7eu9fDC2ph5a7baDookIs5c9jaFJcYEkkEakaSjtbLk7QqxrizsMrRa2pOMOq7bq7lE47VaE0BO7fZYk+CAN0Byjh5OnDUK1tznHnryjiCCxa5WIcNw/LkMU8x4lb5xxSy7+mZdlNzWRKdtsf5W4wdAk+JOrZrFFuiK4J3cxsHwYel4Yxcswgr8GnJxGo5whC/2/f+SoXMREdQ==
 
 matrix:
-  exclude:
-    - compiler: clang
-      env: TASK="prefetch"
+  include:
+  - compiler: gcc
+    env: TASK="prefetch"
+  - compiler: gcc
+    env: TASK="build" CCACHE_SLOPPINESS="pch_defines,time_macros"
+  - compiler: clang
+    env: TASK="build" CCACHE_SLOPPINESS="pch_defines,time_macros"
+  - compiler: gcc
+    env: TASK="test" BUILD_TYPE=Coverage CCACHE_SLOPPINESS=pch_defines,time_macros
 
 build:
   pre_ci_boot:
@@ -40,8 +42,14 @@ build:
     - sudo apt-get install -y libopenni2-dev
     - sudo apt-get install -y libudev-dev
     - sudo apt-get install -y libproj-dev
-    - sudo apt-get install -y gdb
     - sudo apt-get install -y libboost-python-dev
-    - sudo apt-get install -y libpython-dev python-numpy 
+    - sudo apt-get install -y libpython-dev python-numpy
     - sudo apt-get install -y lcov
+    - sudo apt-get install -y ruby rubygems-integration
+    - sudo gem install coveralls-lcov
+    # this one is missing in the docker image? TODO: Pull-request to https://github.com/dry-dock/u16cppall/blob/master/install.sh
+    - sudo update-alternatives --install /usr/bin/gcov gcov /usr/bin/gcov-6 90
     - bash .travis.sh
+
+after_success:
+ - if [ "$BUILD_TYPE" == "Coverage" ]; then bash scripts/coveralls_submit.sh ; fi
