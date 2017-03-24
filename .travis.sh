@@ -1,4 +1,6 @@
-#!/bin/sh
+#!/bin/bash
+
+set -e   # Make sure any error makes the script to return an error code
 
 MRPT_DIR=`pwd`
 BUILD_DIR=build
