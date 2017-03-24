@@ -130,34 +130,6 @@
 						<option>1</option>
 					</object>
 					<object class="sizeritem">
-						<object class="wxCustomButton" name="ID_BUTTON1" variable="btnLoadMap" member="yes">
-							<label>Load map...</label>
-							<bitmap stock_id="wxART_FILE_OPEN" stock_client="wxART_BUTTON" />
-							<bitmap_margin>2,4</bitmap_margin>
-							<size>-1,60</size>
-							<minsize>-1,-1</minsize>
-							<maxsize>-1,-1</maxsize>
-							<handler function="OnbtnLoadMapClick" entry="EVT_BUTTON" />
-						</object>
-						<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
-						<border>2</border>
-						<option>1</option>
-					</object>
-					<object class="sizeritem">
-						<object class="wxCustomButton" name="ID_BUTTON9" variable="btnEmptyMap" member="yes">
-							<label>New map...</label>
-							<bitmap stock_id="wxART_NEW" />
-							<bitmap_margin>2,4</bitmap_margin>
-							<size>-1,50</size>
-							<minsize>-1,-1</minsize>
-							<maxsize>-1,-1</maxsize>
-							<handler function="OnbtnEmptyMapClick" entry="EVT_BUTTON" />
-						</object>
-						<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
-						<border>2</border>
-						<option>1</option>
-					</object>
-					<object class="sizeritem">
 						<object class="wxCustomButton" name="ID_BUTTON8" variable="btnDrawMapObs" member="yes">
 							<label>Draw occupied...</label>
 							<bitmap stock_id="wxART_GO_FORWARD" />
@@ -186,49 +158,80 @@
 						<option>1</option>
 					</object>
 					<object class="sizeritem">
-						<object class="wxCustomButton" name="ID_BUTTON10" variable="btnSaveMap" member="yes">
-							<label>Save map...</label>
-							<bitmap stock_id="wxART_FILE_SAVE" stock_client="wxART_BUTTON" />
-							<bitmap_margin>2,4</bitmap_margin>
-							<size>-1,64</size>
-							<minsize>-1,-1</minsize>
-							<maxsize>-1,-1</maxsize>
-							<handler function="OnbtnSaveMapClick" entry="EVT_BUTTON" />
+						<object class="wxFlexGridSizer" variable="FlexGridSizer12" member="no">
+							<cols>2</cols>
+							<growablecols>0,1</growablecols>
+							<object class="sizeritem">
+								<object class="wxCustomButton" name="ID_BUTTON1" variable="btnLoadMap" member="yes">
+									<label>Load map...</label>
+									<bitmap stock_id="wxART_FILE_OPEN" stock_client="wxART_BUTTON" />
+									<bitmap_margin>2,4</bitmap_margin>
+									<size>-1,60</size>
+									<minsize>-1,-1</minsize>
+									<maxsize>-1,-1</maxsize>
+									<handler function="OnbtnLoadMapClick" entry="EVT_BUTTON" />
+								</object>
+								<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
+								<border>2</border>
+								<option>1</option>
+							</object>
+							<object class="sizeritem">
+								<object class="wxCustomButton" name="ID_BUTTON9" variable="btnEmptyMap" member="yes">
+									<label>New map...</label>
+									<bitmap stock_id="wxART_NEW" />
+									<bitmap_margin>2,4</bitmap_margin>
+									<size>-1,50</size>
+									<minsize>-1,-1</minsize>
+									<maxsize>-1,-1</maxsize>
+									<handler function="OnbtnEmptyMapClick" entry="EVT_BUTTON" />
+								</object>
+								<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
+								<border>2</border>
+								<option>1</option>
+							</object>
+							<object class="sizeritem">
+								<object class="wxCustomButton" name="ID_BUTTON10" variable="btnSaveMap" member="yes">
+									<label>Save map...</label>
+									<bitmap stock_id="wxART_FILE_SAVE" stock_client="wxART_BUTTON" />
+									<bitmap_margin>2,4</bitmap_margin>
+									<size>-1,64</size>
+									<minsize>-1,-1</minsize>
+									<maxsize>-1,-1</maxsize>
+									<handler function="OnbtnSaveMapClick" entry="EVT_BUTTON" />
+								</object>
+								<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
+								<border>2</border>
+								<option>1</option>
+							</object>
+							<object class="sizeritem">
+								<object class="wxCustomButton" name="ID_BUTTON2" variable="btnHelp" member="yes">
+									<label>About...</label>
+									<bitmap stock_id="wxART_QUESTION" />
+									<bitmap_margin>5,4</bitmap_margin>
+									<size>-1,60</size>
+									<minsize>-1,-1</minsize>
+									<maxsize>-1,-1</maxsize>
+									<handler function="OnAbout" entry="EVT_BUTTON" />
+								</object>
+								<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
+								<border>2</border>
+								<option>1</option>
+							</object>
+							<object class="sizeritem">
+								<object class="wxCustomButton" name="ID_BUTTON3" variable="btnQuit" member="yes">
+									<label>Exit</label>
+									<bitmap stock_id="wxART_QUIT" />
+									<size>-1,60</size>
+									<minsize>-1,-1</minsize>
+									<maxsize>-1,-1</maxsize>
+									<handler function="OnbtnQuitClick" entry="EVT_BUTTON" />
+								</object>
+								<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
+								<border>2</border>
+								<option>1</option>
+							</object>
 						</object>
 						<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
-						<border>2</border>
-						<option>1</option>
-					</object>
-					<object class="spacer">
-						<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
-						<border>1</border>
-						<option>1</option>
-					</object>
-					<object class="sizeritem">
-						<object class="wxCustomButton" name="ID_BUTTON2" variable="btnHelp" member="yes">
-							<label>About...</label>
-							<bitmap stock_id="wxART_QUESTION" />
-							<bitmap_margin>5,4</bitmap_margin>
-							<size>-1,60</size>
-							<minsize>-1,-1</minsize>
-							<maxsize>-1,-1</maxsize>
-							<handler function="OnAbout" entry="EVT_BUTTON" />
-						</object>
-						<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
-						<border>2</border>
-						<option>1</option>
-					</object>
-					<object class="sizeritem">
-						<object class="wxCustomButton" name="ID_BUTTON3" variable="btnQuit" member="yes">
-							<label>Exit</label>
-							<bitmap stock_id="wxART_QUIT" />
-							<size>-1,60</size>
-							<minsize>-1,-1</minsize>
-							<maxsize>-1,-1</maxsize>
-							<handler function="OnbtnQuitClick" entry="EVT_BUTTON" />
-						</object>
-						<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
-						<border>2</border>
 						<option>1</option>
 					</object>
 				</object>

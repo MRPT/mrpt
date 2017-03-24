@@ -103,10 +103,10 @@ class reactive_navigator_demoframe: public wxFrame
         static const long ID_STATICTEXT8;
         static const long ID_TEXTCTRL6;
         static const long ID_BUTTON6;
-        static const long ID_BUTTON1;
-        static const long ID_BUTTON9;
         static const long ID_BUTTON8;
         static const long ID_BUTTON11;
+        static const long ID_BUTTON1;
+        static const long ID_BUTTON9;
         static const long ID_BUTTON10;
         static const long ID_BUTTON2;
         static const long ID_BUTTON3;
