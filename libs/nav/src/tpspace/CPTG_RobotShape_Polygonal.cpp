@@ -150,11 +150,11 @@ double CPTG_RobotShape_Polygonal::evalClearanceToRobotShape(const double ox, con
 	if (isPointInsideRobotShape(ox, oy))
 		return .0;
 	
-	double d = ::hypot(ox, oy) - m_robotApproxRadius;
+	double d = ::hypot(ox, oy) - m_robotMaxRadius;
 
 	// if d<=0, we know from the isPointInsideRobotShape() above that
 	// it's a false positive: enforce a minimum "fake" clearance:
-	mrpt::utils::keep_max(d, 0.1*m_robotApproxRadius);
+	mrpt::utils::keep_max(d, 0.1*m_robotMaxRadius);
 
 	return d;
 }
