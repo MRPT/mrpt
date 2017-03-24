@@ -191,7 +191,7 @@ namespace nav
 		virtual double evalPathRelativePriority(uint16_t k, double target_distance) const { return 1.0; }
 
 		/** Returns an approximation of the robot radius. */
-		virtual double getApproxRobotRadius() const = 0;
+		virtual double getMaxRobotRadius() const = 0;
 		/** Returns true if the point lies within the robot shape. */
 		virtual bool isPointInsideRobotShape(const double x, const double y) const = 0;
 
@@ -323,7 +323,7 @@ protected:
 		/** Robot shape must be set before initialization, either from ctor params or via this method. */
 		void setRobotShape(const mrpt::math::CPolygon & robotShape);
 		const mrpt::math::CPolygon & getRobotShape() const { return m_robotShape; }
-		double getApproxRobotRadius() const MRPT_OVERRIDE;
+		double getMaxRobotRadius() const MRPT_OVERRIDE;
 		virtual double evalClearanceToRobotShape(const double ox, const double oy) const MRPT_OVERRIDE;
 		/** @} */
 		bool isPointInsideRobotShape(const double x, const double y) const MRPT_OVERRIDE;
@@ -331,7 +331,7 @@ protected:
 	protected:
 		virtual void internal_processNewRobotShape() = 0; //!< Will be called whenever the robot shape is set / updated
 		mrpt::math::CPolygon m_robotShape;
-		double m_robotApproxRadius;
+		double m_robotMaxRadius;
 		void loadShapeFromConfigFile(const mrpt::utils::CConfigFileBase & source,const std::string & section);
 		void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const MRPT_OVERRIDE;
 		void internal_shape_loadFromStream(mrpt::utils::CStream &in);
@@ -354,7 +354,7 @@ protected:
 		/** Robot shape must be set before initialization, either from ctor params or via this method. */
 		void setRobotShapeRadius(const double robot_radius);
 		double getRobotShapeRadius() const { return m_robotRadius; }
-		double getApproxRobotRadius() const MRPT_OVERRIDE;
+		double getMaxRobotRadius() const MRPT_OVERRIDE;
 		virtual double evalClearanceToRobotShape(const double ox, const double oy) const MRPT_OVERRIDE;
 		/** @} */
 		void add_robotShape_to_setOfLines(mrpt::opengl::CSetOfLines &gl_shape, const mrpt::poses::CPose2D &origin = mrpt::poses::CPose2D ()) const  MRPT_OVERRIDE;

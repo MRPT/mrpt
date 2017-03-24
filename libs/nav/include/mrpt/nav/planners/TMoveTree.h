@@ -27,7 +27,7 @@ namespace mrpt
 
 	
 		/** Generic base for metrics */
-		template<class NODE_TYPE>
+		template<class node_t>
 		struct PoseDistanceMetric; 
 		
 		/** This class contains motions and motions tree structures for the hybrid navigation algorithm
@@ -52,23 +52,24 @@ namespace mrpt
 		class TMoveTree : public mrpt::graphs::CDirectedTree<EDGE_TYPE>
 		{
 		public:
-			struct NODE_TYPE : public NODE_TYPE_DATA
+			struct node_t : public NODE_TYPE_DATA
 			{
 				mrpt::utils::TNodeID node_id;   //!< Duplicated ID (it's also in the map::iterator->first), but put here to make it available in path_t
 				mrpt::utils::TNodeID parent_id; //!< INVALID_NODEID for the root, a valid ID otherwise
 				EDGE_TYPE * edge_to_parent; //!< NULL for root, a valid edge otherwise
-				NODE_TYPE(mrpt::utils::TNodeID node_id_, mrpt::utils::TNodeID parent_id_, EDGE_TYPE * edge_to_parent_, const NODE_TYPE_DATA &data) : 
+				node_t(mrpt::utils::TNodeID node_id_, mrpt::utils::TNodeID parent_id_, EDGE_TYPE * edge_to_parent_, const NODE_TYPE_DATA &data) : 
 					NODE_TYPE_DATA(data),
 					node_id(node_id_),parent_id(parent_id_),
 					edge_to_parent(edge_to_parent_)
 				{
 				}
-				NODE_TYPE() {}
+				node_t() {}
 			};
 
 			typedef mrpt::graphs::CDirectedTree<EDGE_TYPE> base_t;
-			typedef typename MAPS_IMPLEMENTATION::template map<mrpt::utils::TNodeID,NODE_TYPE>  node_map_t;  //!< Map: TNode_ID => Node info
-			typedef std::list<NODE_TYPE> path_t; //!< A topological path up-tree
+			typedef EDGE_TYPE edge_t;
+			typedef typename MAPS_IMPLEMENTATION::template map<mrpt::utils::TNodeID, node_t>  node_map_t;  //!< Map: TNode_ID => Node info
+			typedef std::list<node_t> path_t; //!< A topological path up-tree
 
 			/** Finds the nearest node to a given pose, using the given metric */
 			template <class NODE_TYPE_FOR_METRIC>
@@ -111,13 +112,13 @@ namespace mrpt
 				typename base_t::TListEdges & edges_of_parent = base_t::edges_to_children[parent_id];
 				edges_of_parent.push_back( typename base_t::TEdgeInfo(new_child_id,false/*direction_child_to_parent*/, new_edge_data ) );
 				// node:
-				m_nodes[new_child_id] = NODE_TYPE(new_child_id,parent_id, &edges_of_parent.back().data, new_child_node_data);
+				m_nodes[new_child_id] = node_t(new_child_id,parent_id, &edges_of_parent.back().data, new_child_node_data);
 			}
 
 			/** Insert a node without edges (should be used only for a tree root node) */
 			void insertNode(const mrpt::utils::TNodeID node_id, const NODE_TYPE_DATA &node_data) 
 			{
-				m_nodes[node_id] = NODE_TYPE(node_id,INVALID_NODEID, NULL, node_data);
+				m_nodes[node_id] = node_t(node_id,INVALID_NODEID, NULL, node_data);
 			}
 
 			mrpt::utils::TNodeID getNextFreeNodeID() const { return m_nodes.size(); }
@@ -135,7 +136,7 @@ namespace mrpt
 				out_path.clear();
 				typename node_map_t::const_iterator it_src = m_nodes.find(target_node);
 				if (it_src == m_nodes.end()) throw std::runtime_error("backtrackPath: target_node not found in tree!");
-				const NODE_TYPE * node = &it_src->second;
+				const node_t * node = &it_src->second;
 				for (;;)
 				{
 					out_path.push_front(*node);

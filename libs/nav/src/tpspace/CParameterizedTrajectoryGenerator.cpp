@@ -281,8 +281,8 @@ void CParameterizedTrajectoryGenerator::internal_TPObsDistancePostprocess(const 
 
 	case COLL_BEH_BACK_AWAY:
 		{
-			if (new_tp_obs_dist < getApproxRobotRadius() ) {
-				// This means that we are getting apart of the obstacle:
+			if (new_tp_obs_dist < getMaxRobotRadius() ) {
+				// This means that we are getting apart of the obstacle: 
 				// ignore it to allow the robot to get off the near-collision:
 				// Don't change inout_tp_obs.
 				return;
