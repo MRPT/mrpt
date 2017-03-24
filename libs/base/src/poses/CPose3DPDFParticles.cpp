@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -15,6 +15,7 @@
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/poses/SO_SE_average.h>
+#include <mrpt/system/os.h>
 
 using namespace mrpt;
 using namespace mrpt::poses;
@@ -76,7 +77,7 @@ void CPose3DPDFParticles::getMean(CPose3D &p) const
 
 	// Default to (0,..,0)
 	p = CPose3D();
-	if (m_particles.empty()) 
+	if (m_particles.empty())
 		return;
 
 	// Calc average on SE(3)
@@ -242,8 +243,24 @@ void  CPose3DPDFParticles::readFromStream(mrpt::utils::CStream &in, int version)
  ---------------------------------------------------------------*/
 void  CPose3DPDFParticles::saveToTextFile(const std::string &file) const
 {
-	MRPT_UNUSED_PARAM(file);
-	THROW_EXCEPTION("TO DO!");
+	using namespace mrpt::system;
+
+	FILE	*f=os::fopen(file.c_str(),"wt");
+	if (!f) return;
+
+	os::fprintf(f,"%% x  y  z  yaw[rad] pitch[rad] roll[rad] log_weight\n");
+
+	for (const auto &p : m_particles)
+		os::fprintf(f,"%f %f %f %f %f %f %e\n",
+				p.d->x(),
+				p.d->y(),
+				p.d->z(),
+				p.d->yaw(),
+				p.d->pitch(),
+				p.d->roll(),
+				p.log_w );
+
+	os::fclose(f);
 }
 
 

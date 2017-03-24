@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -586,7 +586,7 @@ void CFormMotionModel::applyToRawlogFile()
             }
             else
             {   // Unknown class:
-                THROW_EXCEPTION_CUSTOM_MSG1( "Unexpected class found in the file: '%s'",newObj->GetRuntimeClass()->className );
+                THROW_EXCEPTION_FMT( "Unexpected class found in the file: '%s'",newObj->GetRuntimeClass()->className );
             }
         }
         catch (exception &e)
@@ -936,7 +936,7 @@ void CFormMotionModel::OnbtnGetFromFileClick(wxCommandEvent& event)
             }
             else
             {   // Unknown class:
-                THROW_EXCEPTION_CUSTOM_MSG1("Unexpected class found in the file: '%s'",newObj->GetRuntimeClass()->className);
+                THROW_EXCEPTION_FMT("Unexpected class found in the file: '%s'",newObj->GetRuntimeClass()->className);
             }
 
         newObj.clear();  // FREE MEMORY!

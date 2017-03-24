@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -396,7 +396,7 @@ void CKinect::open()
 
 	// Open the given device number:
 	if (freenect_open_device(f_ctx, f_dev_ptr, m_user_device_number) < 0)
-		THROW_EXCEPTION_CUSTOM_MSG1("Error opening Kinect sensor with index: %d",m_user_device_number)
+		THROW_EXCEPTION_FMT("Error opening Kinect sensor with index: %d",m_user_device_number)
 
 	// Setup:
 	if (m_initial_tilt_angle!=360) // 360 means no motor command.
@@ -706,7 +706,7 @@ void CKinect::setPathForExternalImages( const std::string &directory )
 
 //	if (!mrpt::system::createDirectory( directory ))
 //	{
-//		THROW_EXCEPTION_CUSTOM_MSG1("Error: Cannot create the directory for externally saved images: %s",directory.c_str() )
+//		THROW_EXCEPTION_FMT("Error: Cannot create the directory for externally saved images: %s",directory.c_str() )
 //	}
 //	m_path_for_external_images = directory;
 }

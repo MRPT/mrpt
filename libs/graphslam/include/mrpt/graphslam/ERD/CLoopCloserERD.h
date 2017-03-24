@@ -2,7 +2,7 @@
 	 |                     Mobile Robot Programming Toolkit (MRPT)               |
 	 |                          http://www.mrpt.org/                             |
 	 |                                                                           |
-	 | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+	 | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
 	 | See: http://www.mrpt.org/Authors - All rights reserved.                   |
 	 | Released under BSD License. See details in http://www.mrpt.org/License    |
 	 +---------------------------------------------------------------------------+ */
@@ -297,7 +297,7 @@ class CLoopCloserERD:
 
 				mrpt::slam::CICP icp;
 				// threshold for accepting an ICP constraint in the graph
-				int prev_nodes_for_ICP; // how many nodes back to check ICP against?
+				size_t prev_nodes_for_ICP; // how many nodes back to check ICP against?
 
  				/** see Constructor for initialization */
 				const mrpt::utils::TColor laser_scans_color;
@@ -350,7 +350,7 @@ class CLoopCloserERD:
 		 		 * If this difference is surpassed then the partition should be
 		 		 * investigated for loop closures using Olson's strategy.
 		 		 */
-				int LC_min_nodeid_diff;
+				size_t LC_min_nodeid_diff;
 				/**\brief Eigenvalues ratio for accepting/rejecting a hypothesis set.
 				 *
 				 * By default this is set to 2.
@@ -674,7 +674,7 @@ class CLoopCloserERD:
 		std::map<std::string, int> m_edge_types_to_nums;
  		/**\brief Keep track of the total number of registered nodes since the last
  		 * time class method was called */
-		int m_last_total_num_of_nodes;
+		size_t m_last_total_num_of_nodes;
 		/**\brief Surpass this to start adding edges */
 		int m_threshold_to_start;
 

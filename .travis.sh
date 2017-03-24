@@ -14,12 +14,16 @@ function build ()
   # gcc is too slow and we have a time limit in Travis CI: exclude examples when building with gcc
   if [ "$CC" == "gcc" ]; then
     BUILD_EXAMPLES=FALSE
+    BUILD_ARIA=FALSE
   else
     BUILD_EXAMPLES=TRUE
+    BUILD_ARIA=ON
   fi
 
-  cmake $MRPT_DIR -DBUILD_EXAMPLES=$BUILD_EXAMPLES -DBUILD_APPLICATIONS=TRUE -DBUILD_TESTING=FALSE
+  cmake $MRPT_DIR -DBUILD_EXAMPLES=$BUILD_EXAMPLES -DBUILD_APPLICATIONS=TRUE -DBUILD_TESTING=FALSE -DBUILD_ARIA=$BUILD_ARIA
   make -j2
+
+	cd $MRPT_DIR
 }
 
 command_exists () {
@@ -28,23 +32,25 @@ command_exists () {
 
 function test ()
 {
-  mkdir $BUILD_DIR && cd $BUILD_DIR
-  cmake $MRPT_DIR -DBUILD_APPLICATIONS=FALSE
-  # Use `test_gdb` to show stack traces of failing unit tests.
-  if command_exists gdb ; then
-    make test_gdb
-  else
-    make test
+  # gcc is too slow and we have a time limit in Travis CI:
+  if [ "$CC" == "gcc" ] && [ "$TRAVIS_OS_NAME" == "osx" ]; then
+	return
   fi
-}
 
-function doc ()
-{
-  echo doc placeholder
+  mkdir $BUILD_DIR && cd $BUILD_DIR
+  cmake $MRPT_DIR -DBUILD_APPLICATIONS=FALSE -DBUILD_ARIA=FALSE -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
+  # Remove gdb use for coverage test reports.
+  # Use `test_gdb` to show stack traces of failing unit tests.
+#  if command_exists gdb ; then
+#    make test_gdb
+#  else
+    make test
+#  fi
+
+  cd $MRPT_DIR
 }
 
 case $TASK in
   build ) build;;
   test ) test;;
-  doc ) doc;;
 esac

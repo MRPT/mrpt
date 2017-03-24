@@ -2,16 +2,14 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 #pragma once
 
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
-#include <mrpt/utils/pimpl.h>
-
-PIMPL_FORWARD_DECLARATION(namespace exprtk { template <typename T> class expression; })
+#include <mrpt/math/CRuntimeCompiledExpression.h>
 
 namespace mrpt
 {
@@ -51,9 +49,9 @@ namespace mrpt
 		virtual mrpt::kinematics::CVehicleVelCmdPtr getSupportedKinematicVelocityCommand() const MRPT_OVERRIDE;
 
 		size_t getPathStepCount(uint16_t k) const MRPT_OVERRIDE;
-		void getPathPose(uint16_t k, uint16_t step, mrpt::math::TPose2D &p) const MRPT_OVERRIDE;
-		double getPathDist(uint16_t k, uint16_t step) const  MRPT_OVERRIDE;
-		bool getPathStepForDist(uint16_t k, double dist, uint16_t &out_step) const MRPT_OVERRIDE;
+		void getPathPose(uint16_t k, uint32_t step, mrpt::math::TPose2D &p) const MRPT_OVERRIDE;
+		double getPathDist(uint16_t k, uint32_t step) const  MRPT_OVERRIDE;
+		bool getPathStepForDist(uint16_t k, double dist, uint32_t &out_step) const MRPT_OVERRIDE;
 		double getPathStepDuration() const MRPT_OVERRIDE;
 		double getMaxLinVel() const MRPT_OVERRIDE { return V_MAX; }
 		double getMaxAngVel() const MRPT_OVERRIDE { return W_MAX; }
@@ -71,16 +69,17 @@ namespace mrpt
 		mrpt::math::TTwist2D curVelLocal;
 
 		std::string expr_V, expr_W, expr_T_ramp;
+		mutable std::vector<int> m_pathStepCountCache;
 
 		// Compilation of user-given expressions
-		PIMPL_DECLARE_TYPE(exprtk::expression<double>, m_expr_v);
-		PIMPL_DECLARE_TYPE(exprtk::expression<double>, m_expr_w);
-		PIMPL_DECLARE_TYPE(exprtk::expression<double>, m_expr_T_ramp);
+		mrpt::math::CRuntimeCompiledExpression m_expr_v, m_expr_w, m_expr_T_ramp;
 		double m_expr_dir;  // Used as symbol "dir" in m_expr_v and m_expr_w
-		void internal_init_exprtks();
+
 		double internal_get_v(const double dir) const;  //!< Evals expr_v
 		double internal_get_w(const double dir) const;  //!< Evals expr_w
 		double internal_get_T_ramp(const double dir) const;  //!< Evals expr_T_ramp
+
+		void internal_construct_exprs();
 
 		void internal_processNewRobotShape() MRPT_OVERRIDE;
 		void internal_initialize(const std::string & cacheFilename = std::string(), const bool verbose = true) MRPT_OVERRIDE;

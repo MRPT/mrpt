@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -1063,6 +1063,7 @@ bool  CHokuyoURG::checkCOMisOpen()
 			// Try to open the serial port:
 			CClientTCPSocket	*theCOM = new CClientTCPSocket();
 
+			printf("[CHokuyoURG] Connecting to %s:%u...\n", m_ip_dir.c_str(), m_port_dir);
 			theCOM->connect( m_ip_dir, m_port_dir );
 
 			if (!theCOM->isConnected())

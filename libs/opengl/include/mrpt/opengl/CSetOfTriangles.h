@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -35,14 +35,19 @@ namespace mrpt
 			  */
 			struct OPENGL_IMPEXP TTriangle
 			{
-				inline TTriangle() {  }
+				inline TTriangle() {
+					for (size_t i = 0; i<3; i++) {
+						r[i] = g[i] = b[i] = a[i] = 1.0f;
+					}
+				}
 				inline TTriangle(const mrpt::math::TPolygon3D &p)  {
 					ASSERT_(p.size()==3)
 					for (size_t i=0;i<3;i++) {
-						x[i]=p[i].x; y[i]=p[i].y; z[i]=p[i].z; r[i]=g[i]=b[i]=a[i]=1; }
+						x[i]=p[i].x; y[i]=p[i].y; z[i]=p[i].z; r[i]=g[i]=b[i]=a[i]=1.0f; 
+					}
 				}
-				float	x[3],y[3],z[3];
-				float	r[3],g[3],b[3],a[3];
+				float x[3],y[3],z[3];
+				float r[3],g[3],b[3],a[3];
 			};
 			/**
 			  * Const iterator type.

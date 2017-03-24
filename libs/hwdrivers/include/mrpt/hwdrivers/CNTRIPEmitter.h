@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -12,6 +12,8 @@
 #include <mrpt/hwdrivers/CNTRIPClient.h>
 #include <mrpt/hwdrivers/CSerialPort.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
+#include <mrpt/utils/CTicTac.h>
+#include <fstream>
 
 namespace mrpt
 {
@@ -32,6 +34,7 @@ namespace mrpt
 		  *   COM_port_LIN = ttyUSB0
 		  *   baudRate     = 38400   
 		  *   #transmit_to_server = true   // (Default:true) Whether to send back to the TCP/IP caster all data received from the output serial port
+		  *   #raw_output_file_prefix = raw_ntrip_data    // If provided, save raw data from the NTRIP to a file, useful for post-processing. In this case, not having a serial port configured (commented out) is a valid configuration.
 		  *
 		  *   server   = 143.123.9.129    // NTRIP caster IP
 		  *   port     = 2101
@@ -61,6 +64,10 @@ namespace mrpt
 			std::string     m_com_port;		//!< If set to non-empty, the serial port will be attempted to be opened automatically when this class is first used to request data from the laser.
 			int             m_com_bauds;
 			bool            m_transmit_to_server;
+			std::string     m_raw_output_file_prefix;
+			std::ofstream   m_raw_output_file_stream;
+			mrpt::utils::CTicTac m_rate_timer;
+			size_t          m_rate_count;
 
 		protected:
 			/** See the class documentation at the top for expected parameters */
@@ -79,6 +86,10 @@ namespace mrpt
 			  *  This is not needed if the configuration is loaded with "loadConfig".
 			  */
 			void  setOutputSerialPort(const std::string &port) { m_com_port = port; }
+			std::string getOutputSerialPort() const { return m_com_port; }
+
+			void setRawOutputFilePrefix(const std::string &outfile) { m_raw_output_file_prefix = outfile; }
+			std::string getRawOutputFilePrefix() const { return m_raw_output_file_prefix; }
 
 			/** Set up the NTRIP communications, raising an exception on fatal errors.
 			  *  Called automatically by rawlog-grabber.

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -49,22 +49,33 @@ mrpt::nav::CParameterizedTrajectoryGenerator * CAbstractHolonomicReactiveMethod:
 
 CAbstractHolonomicReactiveMethod * CAbstractHolonomicReactiveMethod::Create(const std::string &className) MRPT_NO_THROWS
 {
-	try {
+	try 
+	{
+		mrpt::utils::registerAllPendingClasses();
 
-	mrpt::utils::registerAllPendingClasses();
+		// Factory:
+		const mrpt::utils::TRuntimeClassId *classId = mrpt::utils::findRegisteredClass( className );
+		if (!classId) return NULL;
 
-	// Factory:
-	const mrpt::utils::TRuntimeClassId *classId = mrpt::utils::findRegisteredClass( className );
-	if (!classId) return NULL;
-
-	CAbstractHolonomicReactiveMethod *holo = dynamic_cast<CAbstractHolonomicReactiveMethod*>( classId->createObject() );
-	if (!holo) return NULL;
-	
-	return holo;
-	} 
+		CAbstractHolonomicReactiveMethod *holo = dynamic_cast<CAbstractHolonomicReactiveMethod*>( classId->createObject() );
+		return holo;
+	}
 	catch (...)
 	{
-		return NULL;
+		return nullptr;
 	}
 }
 
+CAbstractHolonomicReactiveMethod::NavInput::NavInput() :
+	target(0,0),
+	maxRobotSpeed(1.0),
+	maxObstacleDist(1.0),
+	clearance(nullptr)
+{
+}
+
+CAbstractHolonomicReactiveMethod::NavOutput::NavOutput() :
+	desiredDirection(0),
+	desiredSpeed(0)
+{
+}

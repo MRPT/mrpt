@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -90,7 +90,7 @@ namespace mrpt
 
 			void enableTransparency( bool v )	{ m_enableTransparency = v; CRenderizableDisplayList::notifyChange(); }
 			void enableWireFrame( bool v ) 		{ m_isWireFrame = v; CRenderizableDisplayList::notifyChange(); }
-			void enableColorFromZ( bool v, mrpt::utils::TColormap	colorMap = mrpt::utils::cmJET )
+			void enableColorFromZ( bool v, mrpt::utils::TColormap	colorMap = mrpt::utils::cmHOT )
 			{
 				m_colorFromZ = v;
 				m_colorMap   = colorMap;
@@ -120,19 +120,19 @@ namespace mrpt
 			inline float getXMax() const	{ return xMax; }
 			inline float getYMin() const	{ return yMin; }
 			inline float getYMax() const	{ return yMax; }
-			inline void setXMin(const float &nxm)	{
+			inline void setXMin(const float nxm)	{
 				xMin=nxm;
 				trianglesUpToDate=false; CRenderizableDisplayList::notifyChange();
 			}
-			inline void setXMax(const float &nxm)	{
+			inline void setXMax(const float nxm)	{
 				xMax=nxm;
 				trianglesUpToDate=false; CRenderizableDisplayList::notifyChange();
 			}
-			inline void setYMin(const float &nym)	{
+			inline void setYMin(const float nym)	{
 				yMin=nym;
 				trianglesUpToDate=false; CRenderizableDisplayList::notifyChange();
 			}
-			inline void setYMax(const float &nym)	{
+			inline void setYMax(const float nym)	{
 				yMax=nym;
 				trianglesUpToDate=false; CRenderizableDisplayList::notifyChange();
 			}
@@ -144,12 +144,12 @@ namespace mrpt
 				min=yMin;
 				max=yMax;
 			}
-			inline void setXBounds(const float &min,const float &max)	{
+			inline void setXBounds(const float min,const float max)	{
 				xMin=min;
 				xMax=max;
 				trianglesUpToDate=false; CRenderizableDisplayList::notifyChange();
 			}
-			inline void setYBounds(const float &min,const float &max)	{
+			inline void setYBounds(const float min,const float max)	{
 				yMin=min;
 				yMax=max;
 				trianglesUpToDate=false; CRenderizableDisplayList::notifyChange();
@@ -191,29 +191,11 @@ namespace mrpt
 			bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const MRPT_OVERRIDE;
 
 		private:
-			/** Constructor
-			  */
-			CMesh( bool enableTransparency = false, float xMin = 0.0f, float xMax = 0.0f, float yMin = 0.0f, float yMax = 0.0f ) :
-				m_textureImage(0,0),
-				m_enableTransparency(enableTransparency),
-				m_colorFromZ(false),
-				m_isWireFrame(false),
-				m_isImage(false),
-				Z(0,0), mask(0,0), U(0,0), V(0,0), C(0,0), C_r(0,0), C_g(0,0), C_b(0,0),
-				m_colorMap( mrpt::utils::cmJET ),
-				m_modified_Z(true),
-				m_modified_Image(false),
-				xMin(xMin), xMax(xMax), yMin(yMin), yMax(yMax),
-				trianglesUpToDate(false)
-			{
-				m_color.A = 255;
-				m_color.R = 0;
-				m_color.G = 0;
-				m_color.B = 150;
-			}
-			/** Private, virtual destructor: only can be deleted from smart pointers */
-			virtual ~CMesh() { }
+			/** Constructor  */
+			CMesh(bool enableTransparency = false, float xMin = 0.0f, float xMax = 0.0f, float yMin = 0.0f, float yMax = 0.0f);
 
+			/** Private, virtual destructor: only can be deleted from smart pointers */
+			virtual ~CMesh();
 		};
 		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CMesh, CRenderizableDisplayList, OPENGL_IMPEXP )
 

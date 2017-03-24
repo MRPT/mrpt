@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -263,7 +263,7 @@ mrpt::kinematics::CVehicleVelCmdPtr CPTG_DiffDrive_CollisionGridBased::direction
 /*---------------------------------------------------------------
 					getTPObstacle
   ---------------------------------------------------------------*/
-const CPTG_DiffDrive_CollisionGridBased::TCollisionCell & CPTG_DiffDrive_CollisionGridBased::CColisionGrid::getTPObstacle(
+const CPTG_DiffDrive_CollisionGridBased::TCollisionCell & CPTG_DiffDrive_CollisionGridBased::CCollisionGrid::getTPObstacle(
 	const float obsX, const float obsY) const
 {
 	static const TCollisionCell  emptyCell;
@@ -275,7 +275,7 @@ const CPTG_DiffDrive_CollisionGridBased::TCollisionCell & CPTG_DiffDrive_Collisi
 	Updates the info into a cell: It updates the cell only
 	  if the distance d for the path k is lower than the previous value:
   ---------------------------------------------------------------*/
-void CPTG_DiffDrive_CollisionGridBased::CColisionGrid::updateCellInfo(
+void CPTG_DiffDrive_CollisionGridBased::CCollisionGrid::updateCellInfo(
 	const unsigned int icx,
 	const unsigned int icy,
 	const uint16_t k,
@@ -352,7 +352,7 @@ const uint32_t COLGRID_FILE_MAGIC     = 0xC0C0C0C3;
 /*---------------------------------------------------------------
 					Save to file
   ---------------------------------------------------------------*/
-bool CPTG_DiffDrive_CollisionGridBased::CColisionGrid::saveToFile( mrpt::utils::CStream *f, const mrpt::math::CPolygon & computed_robotShape ) const
+bool CPTG_DiffDrive_CollisionGridBased::CCollisionGrid::saveToFile( mrpt::utils::CStream *f, const mrpt::math::CPolygon & computed_robotShape ) const
 {
 	try
 	{
@@ -397,7 +397,7 @@ bool CPTG_DiffDrive_CollisionGridBased::CColisionGrid::saveToFile( mrpt::utils::
 /*---------------------------------------------------------------
 						loadFromFile
   ---------------------------------------------------------------*/
-bool CPTG_DiffDrive_CollisionGridBased::CColisionGrid::loadFromFile( mrpt::utils::CStream *f, const mrpt::math::CPolygon & current_robotShape  )
+bool CPTG_DiffDrive_CollisionGridBased::CCollisionGrid::loadFromFile( mrpt::utils::CStream *f, const mrpt::math::CPolygon & current_robotShape  )
 {
 	try
 	{
@@ -475,7 +475,7 @@ bool CPTG_DiffDrive_CollisionGridBased::CColisionGrid::loadFromFile( mrpt::utils
 	}
 	catch(std::exception &e)
 	{
-		std::cerr << "[CColisionGrid::loadFromFile] " << e.what();
+		std::cerr << "[CCollisionGrid::loadFromFile] " << e.what();
 		return false;
 	}
 	catch(...)
@@ -717,7 +717,7 @@ void CPTG_DiffDrive_CollisionGridBased::internal_initialize(const std::string & 
 
 						if ( poly.contains( mrpt::math::TPoint2D(cx,cy) ) )
 						{
-							// Colision!! Update cell info:
+							// Collision!! Update cell info:
 							const float d = this->getPathDist(k, n);
 							m_collisionGrid.updateCellInfo(ix  ,iy  ,  k,d);
 							m_collisionGrid.updateCellInfo(ix-1,iy  ,  k,d);
@@ -751,7 +751,7 @@ size_t CPTG_DiffDrive_CollisionGridBased::getPathStepCount(uint16_t k) const
 	return m_trajectory[k].size();
 }
 
-void CPTG_DiffDrive_CollisionGridBased::getPathPose(uint16_t k, uint16_t step, mrpt::math::TPose2D &p) const
+void CPTG_DiffDrive_CollisionGridBased::getPathPose(uint16_t k, uint32_t step, mrpt::math::TPose2D &p) const
 {
 	ASSERT_(k<m_trajectory.size());
 	ASSERT_(step<m_trajectory[k].size());
@@ -761,7 +761,7 @@ void CPTG_DiffDrive_CollisionGridBased::getPathPose(uint16_t k, uint16_t step, m
 	p.phi = m_trajectory[k][step].phi;
 }
 
-double CPTG_DiffDrive_CollisionGridBased::getPathDist(uint16_t k, uint16_t step) const
+double CPTG_DiffDrive_CollisionGridBased::getPathDist(uint16_t k, uint32_t step) const
 {
 	ASSERT_(k<m_trajectory.size());
 	ASSERT_(step<m_trajectory[k].size());
@@ -769,7 +769,7 @@ double CPTG_DiffDrive_CollisionGridBased::getPathDist(uint16_t k, uint16_t step)
 	return m_trajectory[k][step].dist;
 }
 
-bool CPTG_DiffDrive_CollisionGridBased::getPathStepForDist(uint16_t k, double dist, uint16_t &out_step) const
+bool CPTG_DiffDrive_CollisionGridBased::getPathStepForDist(uint16_t k, double dist, uint32_t &out_step) const
 {
 	ASSERT_(k<m_trajectory.size());
 	const size_t numPoints = m_trajectory[k].size();

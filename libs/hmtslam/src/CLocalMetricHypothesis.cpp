@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -743,7 +743,7 @@ unsigned int CLocalMetricHypothesis::TRobotPosesPartitioning::pose2idx(const TPo
 	for (std::map<uint32_t,TPoseID>::const_iterator it=idx2pose.begin();it!=idx2pose.end();++it)
 		if (it->second == id)
 			return it->first;
-	THROW_EXCEPTION_CUSTOM_MSG1("PoseID=%i not found.", static_cast<int>(id) );
+	THROW_EXCEPTION_FMT("PoseID=%i not found.", static_cast<int>(id) );
 }
 
 /*---------------------------------------------------------------

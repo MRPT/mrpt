@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -12,13 +12,13 @@
 #define CDLGCAMTRACKING_H
 
 //(*Headers(CDlgCamTracking)
-#include <wx/grid.h>
-#include <wx/checkbox.h>
-#include <wx/dialog.h>
 #include <wx/sizer.h>
-#include <wx/button.h>
 #include <wx/menu.h>
 #include <wx/textctrl.h>
+#include <wx/checkbox.h>
+#include <wx/grid.h>
+#include <wx/button.h>
+#include <wx/dialog.h>
 //*)
 
 #include <mrpt/poses/CPose3DInterpolator.h>
@@ -34,17 +34,17 @@ class CDlgCamTracking: public wxDialog
 		virtual ~CDlgCamTracking();
 
 		//(*Declarations(CDlgCamTracking)
-		wxMenuItem* MenuItem1;
-		wxGrid* gridPoses;
-		wxButton* btnClose;
 		wxButton* btnStop;
-		wxButton* btnLoad;
-		wxMenu menuGrid;
 		wxButton* btnGrab;
-		wxTextCtrl* edVel;
-		wxButton* btnStart;
 		wxButton* btnSave;
+		wxButton* btnStart;
+		wxButton* btnClose;
+		wxMenuItem* MenuItem1;
+		wxButton* btnLoad;
+		wxGrid* gridPoses;
 		wxCheckBox* cbConstVel;
+		wxTextCtrl* edVel;
+		wxMenu menuGrid;
 		//*)
 
 

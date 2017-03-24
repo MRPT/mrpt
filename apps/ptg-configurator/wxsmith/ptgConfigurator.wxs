@@ -13,7 +13,7 @@
 			<object class="sizeritem">
 				<object class="wxPanel" name="ID_PANEL1" variable="Panel1" member="yes">
 					<object class="wxFlexGridSizer" variable="FlexGridSizer2" member="no">
-						<cols>2</cols>
+						<cols>1</cols>
 						<rows>1</rows>
 						<growablecols>0</growablecols>
 						<growablerows>0</growablerows>
@@ -25,7 +25,6 @@
 								<object class="sizeritem">
 									<object class="wxFlexGridSizer" variable="FlexGridSizer7" member="no">
 										<rows>1</rows>
-										<growablecols>1</growablecols>
 										<object class="sizeritem">
 											<object class="wxStaticText" name="ID_STATICTEXT1" variable="StaticText1" member="yes">
 												<label>Select a PTG class:</label>
@@ -45,7 +44,19 @@
 										</object>
 										<object class="sizeritem">
 											<object class="wxStaticText" name="ID_STATICTEXT5" variable="StaticText5" member="yes">
-												<label>After selecting a PTG, clhange params. as desired, then click `Initialize PTG`</label>
+												<label>then change params as desired and click `Initialize PTG`</label>
+											</object>
+											<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+											<border>5</border>
+											<option>1</option>
+										</object>
+										<object class="sizeritem">
+											<object class="wxButton" name="ID_BUTTON1" variable="btnReloadParams" member="yes">
+												<label>Initialize PTG</label>
+												<font>
+													<weight>bold</weight>
+												</font>
+												<handler function="OnbtnReloadParamsClick" entry="EVT_BUTTON" />
 											</object>
 											<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
 											<border>5</border>
@@ -76,18 +87,6 @@
 											<option>1</option>
 										</object>
 										<object class="sizeritem">
-											<object class="wxButton" name="ID_BUTTON1" variable="btnReloadParams" member="yes">
-												<label>Initialize PTG</label>
-												<font>
-													<weight>bold</weight>
-												</font>
-												<handler function="OnbtnReloadParamsClick" entry="EVT_BUTTON" />
-											</object>
-											<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
-											<border>5</border>
-											<option>1</option>
-										</object>
-										<object class="sizeritem">
 											<object class="wxCheckBox" name="ID_CHECKBOX1" variable="cbDrawShapePath" member="yes">
 												<label>Draw robot shape</label>
 												<checked>1</checked>
@@ -108,6 +107,16 @@
 										<object class="sizeritem">
 											<object class="wxTextCtrl" name="ID_TEXTCTRL5" variable="edMinDistBtwShapes" member="yes">
 												<value>0.5</value>
+												<size>50,-1</size>
+											</object>
+											<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+											<border>5</border>
+											<option>1</option>
+										</object>
+										<object class="sizeritem">
+											<object class="wxButton" name="ID_BUTTON5" variable="btnLoadPlugin" member="yes">
+												<label>Load Plugin</label>
+												<handler function="OnButton1Click" entry="EVT_BUTTON" />
 											</object>
 											<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
 											<border>5</border>
@@ -151,16 +160,21 @@
 											<border>5</border>
 											<option>1</option>
 										</object>
+										<object class="spacer">
+											<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+											<border>5</border>
+											<option>1</option>
+										</object>
 									</object>
 									<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 									<option>1</option>
 								</object>
 								<object class="sizeritem">
 									<object class="wxFlexGridSizer" variable="FlexGridSizer8" member="no">
-										<cols>6</cols>
+										<cols>11</cols>
 										<object class="sizeritem">
 											<object class="wxCheckBox" name="ID_CHECKBOX2" variable="cbBuildTPObs" member="yes">
-												<label>Build TP-Obstacles for obstacle point: x=</label>
+												<label>Obstacle point: x=</label>
 												<checked>1</checked>
 												<handler function="OncbBuildTPObsClick" entry="EVT_CHECKBOX" />
 											</object>
@@ -171,6 +185,7 @@
 										<object class="sizeritem">
 											<object class="wxTextCtrl" name="ID_TEXTCTRL3" variable="edObsX" member="yes">
 												<value>9.0</value>
+												<size>50,-1</size>
 											</object>
 											<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
 											<border>5</border>
@@ -187,6 +202,7 @@
 										<object class="sizeritem">
 											<object class="wxTextCtrl" name="ID_TEXTCTRL4" variable="edObsY" member="yes">
 												<value>3.0</value>
+												<size>50,-1</size>
 											</object>
 											<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
 											<border>5</border>
@@ -203,7 +219,7 @@
 										</object>
 										<object class="sizeritem">
 											<object class="wxButton" name="ID_BUTTON2" variable="btnRebuildTPObs" member="yes">
-												<label>Rebuild TP-Obs.</label>
+												<label>Rebuild TP-Obs now</label>
 												<handler function="OnbtnRebuildTPObsClick" entry="EVT_BUTTON" />
 											</object>
 											<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
@@ -212,7 +228,7 @@
 										</object>
 										<object class="sizeritem">
 											<object class="wxStaticText" name="ID_STATICTEXT6" variable="StaticText6" member="yes">
-												<label>Target point: x=</label>
+												<label>Target: x=</label>
 											</object>
 											<flag>wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL</flag>
 											<border>5</border>
@@ -221,6 +237,7 @@
 										<object class="sizeritem">
 											<object class="wxTextCtrl" name="ID_TEXTCTRL6" variable="edTargetX" member="yes">
 												<value>5.0</value>
+												<size>50,-1</size>
 											</object>
 											<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
 											<border>5</border>
@@ -237,6 +254,7 @@
 										<object class="sizeritem">
 											<object class="wxTextCtrl" name="ID_TEXTCTRL7" variable="edTargetY" member="yes">
 												<value>1.0</value>
+												<size>50,-1</size>
 											</object>
 											<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
 											<border>5</border>
@@ -256,40 +274,40 @@
 									<option>1</option>
 								</object>
 								<object class="sizeritem">
-									<object class="wxTextCtrl" name="ID_TEXTCTRL1" variable="edCfg" member="yes">
-										<size>-1,150</size>
-										<font>
-											<size>8</size>
-											<family>teletype</family>
-											<sysfont>wxSYS_OEM_FIXED_FONT</sysfont>
-										</font>
-										<style>wxTE_PROCESS_ENTER|wxTE_PROCESS_TAB|wxTE_MULTILINE|wxHSCROLL|wxTE_DONTWRAP|wxALWAYS_SHOW_SB</style>
+									<object class="wxFlexGridSizer" variable="FlexGridSizer6" member="no">
+										<cols>2</cols>
+										<rows>1</rows>
+										<growablecols>0,1</growablecols>
+										<growablerows>0</growablerows>
+										<object class="sizeritem">
+											<object class="wxTextCtrl" name="ID_TEXTCTRL1" variable="edCfg" member="yes">
+												<size>-1,150</size>
+												<font>
+													<size>8</size>
+													<family>teletype</family>
+													<sysfont>wxSYS_OEM_FIXED_FONT</sysfont>
+												</font>
+												<style>wxTE_PROCESS_ENTER|wxTE_PROCESS_TAB|wxTE_MULTILINE|wxHSCROLL|wxTE_DONTWRAP|wxALWAYS_SHOW_SB</style>
+											</object>
+											<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
+											<border>2</border>
+											<option>1</option>
+										</object>
+										<object class="sizeritem">
+											<object class="wxTextCtrl" name="ID_TEXTCTRL2" variable="edLog" member="yes">
+												<size>-1,100</size>
+												<font>
+													<size>8</size>
+													<family>teletype</family>
+													<sysfont>wxSYS_OEM_FIXED_FONT</sysfont>
+												</font>
+												<style>wxTE_PROCESS_ENTER|wxTE_PROCESS_TAB|wxTE_MULTILINE|wxTE_READONLY|wxHSCROLL|wxTE_DONTWRAP|wxALWAYS_SHOW_SB</style>
+											</object>
+											<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
+											<option>1</option>
+										</object>
 									</object>
 									<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
-									<border>2</border>
-									<option>1</option>
-								</object>
-								<object class="sizeritem">
-									<object class="wxFlexGridSizer" variable="FlexGridSizer5" member="no">
-										<cols>3</cols>
-									</object>
-									<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
-									<option>1</option>
-								</object>
-							</object>
-							<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
-							<option>1</option>
-						</object>
-						<object class="sizeritem">
-							<object class="wxFlexGridSizer" variable="FlexGridSizer6" member="no">
-								<cols>3</cols>
-								<object class="sizeritem">
-									<object class="wxButton" name="ID_BUTTON5" variable="Button1" member="yes">
-										<label>Load Plugin</label>
-										<handler function="OnButton1Click" entry="EVT_BUTTON" />
-									</object>
-									<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
-									<border>5</border>
 									<option>1</option>
 								</object>
 							</object>
@@ -325,8 +343,53 @@
 								<object class="wxPanel" name="ID_PANEL2" variable="Panel2" member="yes">
 									<object class="wxFlexGridSizer" variable="FlexGridSizer10" member="no">
 										<cols>1</cols>
+										<rows>2</rows>
 										<growablecols>0</growablecols>
-										<growablerows>0</growablerows>
+										<growablerows>1</growablerows>
+										<object class="sizeritem">
+											<object class="wxStaticBoxSizer" variable="StaticBoxSizer1" member="no">
+												<label>Show:</label>
+												<object class="sizeritem">
+													<object class="wxFlexGridSizer" variable="FlexGridSizer15" member="no">
+														<cols>4</cols>
+														<object class="sizeritem">
+															<object class="wxCheckBox" name="ID_CHECKBOX5" variable="cbShowTPObs" member="yes">
+																<label>TP-Obstacles</label>
+																<checked>1</checked>
+																<handler function="OnrbShowTPSelectSelect" entry="EVT_CHECKBOX" />
+															</object>
+															<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+															<border>5</border>
+															<option>1</option>
+														</object>
+														<object class="sizeritem">
+															<object class="wxCheckBox" name="ID_CHECKBOX6" variable="cbShowClearance" member="yes">
+																<label>Clearance diagram</label>
+																<checked>1</checked>
+																<handler function="OnrbShowTPSelectSelect" entry="EVT_CHECKBOX" />
+															</object>
+															<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+															<border>5</border>
+															<option>1</option>
+														</object>
+														<object class="sizeritem">
+															<object class="wxCheckBox" name="ID_CHECKBOX7" variable="cbClearanceInterp" member="yes">
+																<label>Interpolate clearance diagram</label>
+																<handler function="OnrbShowTPSelectSelect" entry="EVT_CHECKBOX" />
+															</object>
+															<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+															<border>5</border>
+															<option>1</option>
+														</object>
+													</object>
+													<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
+													<option>1</option>
+												</object>
+											</object>
+											<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
+											<border>2</border>
+											<option>1</option>
+										</object>
 										<object class="sizeritem">
 											<object class="Custom" name="ID_CUSTOM2" subclass="CMyGLCanvas" variable="m_plotTPSpace" member="yes">
 												<creating_code>$(THIS) = new $(CLASS)($(PARENT),$(ID),$(POS),$(SIZE),$(STYLE),$(NAME));</creating_code>
@@ -409,9 +472,9 @@
 								<object class="wxPanel" name="ID_PANEL5" variable="Panel5" member="yes">
 									<object class="wxFlexGridSizer" variable="FlexGridSizer13" member="no">
 										<cols>1</cols>
-										<rows>6</rows>
+										<rows>8</rows>
 										<growablecols>0</growablecols>
-										<growablerows>1,3,5</growablerows>
+										<growablerows>1,3,5,7</growablerows>
 										<object class="sizeritem">
 											<object class="wxStaticText" name="ID_STATICTEXT10" variable="StaticText10" member="yes">
 												<label>Selected path trajectory: X [m]</label>
@@ -454,6 +517,22 @@
 										</object>
 										<object class="sizeritem">
 											<object class="Custom" name="ID_CUSTOM7" subclass="mpWindow" variable="m_plotPathPhi" member="yes">
+												<creating_code>$(THIS) = new $(CLASS)($(PARENT),$(ID),$(POS),$(SIZE),0);</creating_code>
+												<style></style>
+											</object>
+											<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
+											<option>1</option>
+										</object>
+										<object class="sizeritem">
+											<object class="wxStaticText" name="ID_STATICTEXT16" variable="StaticText16" member="yes">
+												<label>Selected path trajectory: traversed distance [m]</label>
+											</object>
+											<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
+											<border>5</border>
+											<option>1</option>
+										</object>
+										<object class="sizeritem">
+											<object class="Custom" name="ID_CUSTOM11" subclass="mpWindow" variable="m_plotPathDist" member="yes">
 												<creating_code>$(THIS) = new $(CLASS)($(PARENT),$(ID),$(POS),$(SIZE),0);</creating_code>
 												<style></style>
 											</object>
@@ -531,19 +610,6 @@
 				<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
 				<option>1</option>
 			</object>
-			<object class="sizeritem">
-				<object class="wxTextCtrl" name="ID_TEXTCTRL2" variable="edLog" member="yes">
-					<size>-1,100</size>
-					<font>
-						<size>8</size>
-						<family>teletype</family>
-						<sysfont>wxSYS_OEM_FIXED_FONT</sysfont>
-					</font>
-					<style>wxTE_PROCESS_ENTER|wxTE_PROCESS_TAB|wxTE_MULTILINE|wxTE_READONLY|wxHSCROLL|wxTE_DONTWRAP|wxALWAYS_SHOW_SB</style>
-				</object>
-				<flag>wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP</flag>
-				<option>1</option>
-			</object>
 		</object>
 		<object class="wxMenuBar" variable="MenuBar1" member="no">
 			<object class="wxMenu" variable="Menu1" member="no">
@@ -566,9 +632,9 @@
 			</object>
 		</object>
 		<object class="wxStatusBar" name="ID_STATUSBAR1" variable="StatusBar1" member="yes">
-			<fields>3</fields>
-			<widths>-2,-2,-3</widths>
-			<styles>wxSB_NORMAL,wxSB_NORMAL,wxSB_NORMAL</styles>
+			<fields>4</fields>
+			<widths>-2,-5,-3,-3</widths>
+			<styles>wxSB_NORMAL,wxSB_NORMAL,wxSB_NORMAL,wxSB_NORMAL</styles>
 		</object>
 	</object>
 </wxsmith>

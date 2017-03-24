@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -54,30 +54,14 @@ namespace mrpt
 	{
 		DEFINE_SERIALIZABLE( CHolonomicVFF )
 	public:
-		/**  Initialize the parameters of the navigator, from some configuration file, or default values if set to NULL.
-		  */
+		/**  Initialize the parameters of the navigator, from some configuration file, or default values if set to NULL. */
 		CHolonomicVFF(const mrpt::utils::CConfigFileBase *INI_FILE=NULL);
 
-		/** This method performs the holonomic navigation itself.
-		  *  \param target [IN] The relative location (x,y) of target point.
-		  *  \param obstacles [IN] Distance to obstacles from robot location (0,0). First index refers to -PI direction, and last one to +PI direction. Distances can be dealed as "meters", although they are "pseudometers", see note below.
-		  *  \param maxRobotSpeed [IN] Maximum robot speed, in "pseudometers/sec". See note below.
-		  *  \param desiredDirection [OUT] The desired motion direction, in the range [-PI,PI]
-		  *  \param desiredSpeed [OUT] The desired motion speed in that direction, in "pseudometers"/sec. (See note below)
-		  *  \param logRecord [IN/OUT] A placeholder for a pointer to a log record with extra info about the execution. Set to NULL if not required. User <b>must free memory</b> using "delete logRecord" after using it.
-		  *
-		  *  NOTE: With "pseudometers" we refer to the distance unit in TP-Space, thus:
-		  *     <br><center><code>pseudometer<sup>2</sup>= meter<sup>2</sup> + (rad * r)<sup>2</sup></code><br></center>
-		  */
-		void  navigate(	const mrpt::math::TPoint2D &target,
-							const std::vector<double>	&obstacles,
-							double			maxRobotSpeed,
-							double			&desiredDirection,
-							double			&desiredSpeed,
-							CHolonomicLogFileRecordPtr &logRecord,
-			const double    max_obstacle_dist ) MRPT_OVERRIDE;
+		// See base class docs
+		void navigate(const NavInput & ni, NavOutput &no) MRPT_OVERRIDE;
 
 		void initialize(const mrpt::utils::CConfigFileBase &INI_FILE) MRPT_OVERRIDE; // See base class docs
+		virtual void saveConfigFile(mrpt::utils::CConfigFileBase &c) const MRPT_OVERRIDE; // See base class docs
 
 		/** Algorithm options */
 		struct NAV_IMPEXP TOptions : public mrpt::utils::CLoadableOptions

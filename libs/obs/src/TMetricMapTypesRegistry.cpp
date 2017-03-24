@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -47,7 +47,7 @@ mrpt::maps::CMetricMap* TMetricMapTypesRegistry::factoryMapObjectFromDefinition(
 {
 	TListRegisteredMaps::const_iterator it=m_registry.find( mi.getMetricMapClassType()->className );
 	if (it==m_registry.end()) {
-		THROW_EXCEPTION_CUSTOM_MSG1("[TMetricMapTypesRegistry] Error: Cannot create map of unregistered map type '%s'",mi.getMetricMapClassType()->className); 
+		THROW_EXCEPTION_FMT("[TMetricMapTypesRegistry] Error: Cannot create map of unregistered map type '%s'",mi.getMetricMapClassType()->className); 
 	}
 
 	ASSERT_(it->second.second!=NULL)

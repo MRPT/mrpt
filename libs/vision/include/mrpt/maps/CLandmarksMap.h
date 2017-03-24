@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -270,7 +270,7 @@ namespace maps
 			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
 			void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
 
-			/** @name Parameters for: 2D LIDAR scans 
+			/** @name Parameters for: 2D LIDAR scans
 			  * @{ */
 			unsigned int rangeScan2D_decimation; //!< The number of rays from a 2D range scan will be decimated by this factor (default = 1, no decimation)
 			/** @} */
@@ -293,7 +293,12 @@ namespace maps
 			float  beaconRangesStd; //!< The standard deviation used for Beacon ranges likelihood (default=0.08) [meters] \sa beaconRangesUseObservationStd
 			bool   beaconRangesUseObservationStd; //!< (Default: false) If true, `beaconRangesStd` is ignored and each individual `CObservationBeaconRanges::stdError` field is used instead.
 			/** @} */
-			
+
+            /** @name Parameters for: External robot poses observation
+              * @{ */
+            float  extRobotPoseStd; //!< The standard deviation used for external robot poses likelihood (default=0.05) [meters]
+            /** @} */
+
 			/** @name Parameters for: GPS readings
 			  * @{ */
 
@@ -306,7 +311,7 @@ namespace maps
 				double	longitude;   //!< degrees
 				double	latitude;    //!< degrees
 				double	altitude;    //!< meters
-				/** These 3 params allow rotating and shifting GPS coordinates with other 2D maps (e.g. gridmaps). 
+				/** These 3 params allow rotating and shifting GPS coordinates with other 2D maps (e.g. gridmaps).
 				  * - ang : Map rotation [deg]
 				  * - x_shift, y_shift: (x,y) offset [m] */
 				double	ang, x_shift, y_shift;
@@ -393,10 +398,10 @@ namespace maps
 		/** Loads into this landmarks map the SIFT features extracted from an image observation (Previous contents of map will be erased)
 		  *  The robot is assumed to be at the origin of the map.
 		  *  Some options may be applicable from "insertionOptions" (insertionOptions.SIFTsLoadDistanceOfTheMean)
-		  * 
+		  *
 		  *  \param feat_options Optionally, you can pass here parameters for changing the default SIFT detector settings.
 		  */
-		void  loadSiftFeaturesFromImageObservation( 
+		void  loadSiftFeaturesFromImageObservation(
 			const mrpt::obs::CObservationImage	&obs,
 			const mrpt::vision::CFeatureExtraction::TOptions & feat_options = mrpt::vision::CFeatureExtraction::TOptions(mrpt::vision::featSIFT)
 			);
@@ -407,8 +412,8 @@ namespace maps
 		  *
 		  *  \param feat_options Optionally, you can pass here parameters for changing the default SIFT detector settings.
 		  */
-		void  loadSiftFeaturesFromStereoImageObservation( 
-			const mrpt::obs::CObservationStereoImages	&obs, 
+		void  loadSiftFeaturesFromStereoImageObservation(
+			const mrpt::obs::CObservationStereoImages	&obs,
 			mrpt::maps::CLandmark::TLandmarkID fID,
 			const mrpt::vision::CFeatureExtraction::TOptions & feat_options = mrpt::vision::CFeatureExtraction::TOptions(mrpt::vision::featSIFT)
 			);

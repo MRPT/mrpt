@@ -2,7 +2,7 @@
 	 |                     Mobile Robot Programming Toolkit (MRPT)               |
 	 |                          http://www.mrpt.org/                             |
 	 |                                                                           |
-	 | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+	 | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
 	 | See: http://www.mrpt.org/Authors - All rights reserved.                   |
 	 | Released under BSD License. See details in http://www.mrpt.org/License    |
 	 +---------------------------------------------------------------------------+ */
@@ -168,7 +168,7 @@ class CICPCriteriaERD :
 				double ICP_max_distance;
 				// threshold for accepting an ICP constraint in the graph
 				double ICP_goodness_thresh;
-				int LC_min_nodeid_diff;
+				size_t LC_min_nodeid_diff;
 				bool visualize_laser_scans;
 				// keystroke to be used for the user to toggle the LaserScans from
 				// the CDisplayWindow
@@ -238,7 +238,7 @@ class CICPCriteriaERD :
 			mrpt::obs::CObservation3DRangeScanPtr> m_nodes_to_laser_scans3D;
 		std::map<std::string, int> m_edge_types_to_nums;
 
-		int m_last_total_num_of_nodes;
+		size_t m_last_total_num_of_nodes;
 		mrpt::obs::CObservation2DRangeScanPtr m_last_laser_scan2D;
 		mrpt::obs::CObservation3DRangeScanPtr m_last_laser_scan3D;
 		// fake 2D laser scan generated from corresponding 3DRangeScan for

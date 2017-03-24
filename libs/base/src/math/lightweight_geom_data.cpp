@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -207,13 +207,15 @@ double TSegment2D::distance(const TPoint2D &point) const {
 double TSegment2D::signedDistance(const TPoint2D &point) const	{
 	//It is reckoned whether the perpendicular line to the TSegment2D which passes through point crosses or not the referred segment,
 	//or what is the same, whether point makes an obtuse triangle with the segment or not (being the longest segment one between the point and either end of TSegment2D).
-	double d1, d2, d3, ds1, ds2, ds3;
-	d1 = math::distance(point,point1);
-	d2 = math::distance(point,point2);
-	d3 = length();
-	ds1 = square(d1);
-	ds2 = square(d2);
-	ds3 = square(d3);
+	const double d1 = math::distance(point,point1);
+	if (point1 == point2)
+		return d1;
+
+	const double d2 = math::distance(point,point2);
+	const double d3 = length();
+	const double ds1 = square(d1);
+	const double ds2 = square(d2);
+	const double ds3 = square(d3);
 	if ( ds1 > (ds2 + ds3) || ds2 > (ds1 + ds3) )
 		 // Fix sign:
 		 return min(d1,d2) * ( TLine2D(*this).signedDistance(point)<0 ? -1:1);

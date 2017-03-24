@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -326,7 +326,7 @@ void  COpenGLViewport::render( const int render_width, const int render_height  
 
 				COpenGLViewportPtr view = m_parent->getViewport( m_clonedViewport );
 				if (!view)
-					THROW_EXCEPTION_CUSTOM_MSG1("Cloned viewport '%s' not found in parent COpenGLScene",m_clonedViewport.c_str());
+					THROW_EXCEPTION_FMT("Cloned viewport '%s' not found in parent COpenGLScene",m_clonedViewport.c_str());
 
 				objectsToRender = &view->m_objects;
 				viewForGetCamera = m_isClonedCamera ? view.pointer() : const_cast<COpenGLViewport*>(this);

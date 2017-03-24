@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -23,6 +23,15 @@ CVehicleVelCmd_Holo::CVehicleVelCmd_Holo() :
 	rot_speed(.0)
 {
 }
+
+CVehicleVelCmd_Holo::CVehicleVelCmd_Holo(double vel, double dir_local, double ramp_time, double rot_speed) :
+	vel(vel),
+	dir_local(dir_local),
+	ramp_time(ramp_time),
+	rot_speed(rot_speed)
+{
+}
+
 CVehicleVelCmd_Holo::~CVehicleVelCmd_Holo()
 {
 }
@@ -41,7 +50,7 @@ std::string CVehicleVelCmd_Holo::getVelCmdDescription(const int index) const
 	case 2: return "ramp_time"; break;
 	case 3: return "rot_speed"; break;
 	default:
-		THROW_EXCEPTION_CUSTOM_MSG1("index out of bounds: %i",index);
+		THROW_EXCEPTION_FMT("index out of bounds: %i",index);
 	};
 }
 
@@ -54,7 +63,7 @@ double CVehicleVelCmd_Holo::getVelCmdElement(const int index) const
 	case 2: return ramp_time; break;
 	case 3: return rot_speed; break;
 	default:
-		THROW_EXCEPTION_CUSTOM_MSG1("index out of bounds: %i", index);
+		THROW_EXCEPTION_FMT("index out of bounds: %i", index);
 	};
 }
 
@@ -67,7 +76,7 @@ void CVehicleVelCmd_Holo::setVelCmdElement(const int index, const double val)
 	case 2: ramp_time=val; break;
 	case 3: rot_speed=val; break;
 	default:
-		THROW_EXCEPTION_CUSTOM_MSG1("index out of bounds: %i", index);
+		THROW_EXCEPTION_FMT("index out of bounds: %i", index);
 	};
 }
 
@@ -106,11 +115,12 @@ void CVehicleVelCmd_Holo::writeToStream(mrpt::utils::CStream &out, int *version)
 void CVehicleVelCmd_Holo::cmdVel_scale(double vel_scale)
 {
 	vel *= vel_scale; // |(vx,vy)|
-	rot_speed *= vel_scale; // rot_speed
+	// rot_speed *= vel_scale; // rot_speed
+	// Note: No need to scale "rot_speed" since a holonomic robot's path will be invariant 
 	// ramp_time: leave unchanged
 }
 
-void CVehicleVelCmd_Holo::cmdVel_limits(const mrpt::kinematics::CVehicleVelCmd &prev_vel_cmd, const double beta, const TVelCmdParams &params)
+double CVehicleVelCmd_Holo::cmdVel_limits(const mrpt::kinematics::CVehicleVelCmd &prev_vel_cmd, const double beta, const TVelCmdParams &params)
 {
 	ASSERTMSG_(params.robotMax_V_mps >= .0, "[CVehicleVelCmd_Holo] `robotMax_V_mps` must be set to valid values: either assign values programatically or call loadConfigFile()");
 
@@ -121,5 +131,7 @@ void CVehicleVelCmd_Holo::cmdVel_limits(const mrpt::kinematics::CVehicleVelCmd &
 	rot_speed *= f; // rot_speed
 	// ramp_time: leave unchanged
 	// Blending with "beta" not required, since the ramp_time already blends cmds for holo robots.
+
+	return f;
 }
 

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -25,7 +25,7 @@ IMPLEMENTS_SERIALIZABLE( CHolonomicVFF, CAbstractHolonomicReactiveMethod,mrpt::n
 						initialize
   ---------------------------------------------------------------*/
 CHolonomicVFF::CHolonomicVFF(const mrpt::utils::CConfigFileBase *INI_FILE) :
-	CAbstractHolonomicReactiveMethod("VFF_CONFIG")
+	CAbstractHolonomicReactiveMethod("CHolonomicVFF")
 {
 	if (INI_FILE!=NULL)
 		initialize( *INI_FILE );
@@ -35,39 +35,32 @@ void CHolonomicVFF::initialize(const mrpt::utils::CConfigFileBase &INI_FILE)
 {
 	options.loadFromConfigFile(INI_FILE, getConfigFileSectionName());
 }
-
+void CHolonomicVFF::saveConfigFile(mrpt::utils::CConfigFileBase &c) const
+{
+	options.saveToConfigFile(c, getConfigFileSectionName());
+}
 
 /*---------------------------------------------------------------
 						navigate
   ---------------------------------------------------------------*/
-void  CHolonomicVFF::navigate(
-	const mrpt::math::TPoint2D &target,
-	const std::vector<double>	&obstacles,
-	double			maxRobotSpeed,
-	double			&desiredDirection,
-	double			&desiredSpeed,
-	CHolonomicLogFileRecordPtr &logRecord,
-	const double    max_obstacle_dist)
+void CHolonomicVFF::navigate(const NavInput & ni, NavOutput &no)
 {
 	// Create a log record for returning data.
-	if (!logRecord)
-	{
-		logRecord = CLogFileRecord_VFF::Create();
-	}
+	no.logRecord = CLogFileRecord_VFF::Create();
 
 	// Forces vector:
 	mrpt::math::TPoint2D resultantForce(0,0),instantaneousForce(0,0);
 
 	// Obstacles:
 	{
-		const size_t n = obstacles.size();
+		const size_t n = ni.obstacles.size();
 		const double inc_ang = 2*M_PI/n;
 		double ang = -M_PI + 0.5*inc_ang;
 		for (size_t i=0;i<n;i++, ang+=inc_ang )
 		{
 			// Compute force strength:
 			//const double mod = exp(- obstacles[i] );
-			const double mod = std::min(1e6, 1.0/ obstacles[i] );
+			const double mod = std::min(1e6, 1.0/ ni.obstacles[i] );
 
 			// Add repulsive force:
 			instantaneousForce.x = -cos(ang) * mod;
@@ -76,26 +69,26 @@ void  CHolonomicVFF::navigate(
 		}
 	}
 
-	const double obstcl_weight = 20.0/obstacles.size();
+	const double obstcl_weight = 20.0/ ni.obstacles.size();
 	resultantForce *= obstcl_weight;
 
 	const double obstacleNearnessFactor = std::min( 1.0, 6.0/resultantForce.norm());
 
 	// Target:
-	const double ang = atan2( target.y, target.x );
+	const double ang = atan2(ni.target.y, ni.target.x );
 	const double mod = options.TARGET_ATTRACTIVE_FORCE;
 	resultantForce += mrpt::math::TPoint2D(cos(ang) * mod, sin(ang) * mod );
 
 	// Result:
-	desiredDirection = (resultantForce.y==0 && resultantForce.x==0) ?
+	no.desiredDirection = (resultantForce.y==0 && resultantForce.x==0) ?
 		0 : atan2( resultantForce.y, resultantForce.x );
 
 	// Speed control: Reduction factors
 	// ---------------------------------------------
 	if (m_enableApproachTargetSlowDown)
 	{
-		const double targetNearnessFactor = std::min(1.0, target.norm() / (options.TARGET_SLOW_APPROACHING_DISTANCE));
-		desiredSpeed = maxRobotSpeed * std::min(obstacleNearnessFactor, targetNearnessFactor);
+		const double targetNearnessFactor = std::min(1.0, ni.target.norm() / (options.TARGET_SLOW_APPROACHING_DISTANCE));
+		no.desiredSpeed = ni.maxRobotSpeed * std::min(obstacleNearnessFactor, targetNearnessFactor);
 	}
 }
 
@@ -173,13 +166,12 @@ void CHolonomicVFF::TOptions::loadFromConfigFile(const mrpt::utils::CConfigFileB
 	MRPT_END
 }
 
-void CHolonomicVFF::TOptions::saveToConfigFile(mrpt::utils::CConfigFileBase &cfg , const std::string &section) const
+void CHolonomicVFF::TOptions::saveToConfigFile(mrpt::utils::CConfigFileBase &c , const std::string &s) const
 {
-	MRPT_START
-	const int WN = 25, WV = 30;
+	MRPT_START;
 
-	cfg.write(section,"TARGET_SLOW_APPROACHING_DISTANCE",TARGET_SLOW_APPROACHING_DISTANCE,   WN,WV, "For stopping gradually");
-	cfg.write(section,"TARGET_ATTRACTIVE_FORCE",TARGET_ATTRACTIVE_FORCE,   WN,WV, "Dimension-less (may have to be tuned depending on the density of obstacle sampling)");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(TARGET_SLOW_APPROACHING_DISTANCE, "For stopping gradually");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(TARGET_ATTRACTIVE_FORCE, "Dimension-less (may have to be tuned depending on the density of obstacle sampling)");
 
-	MRPT_END
+	MRPT_END;
 }

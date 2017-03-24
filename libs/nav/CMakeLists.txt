@@ -30,6 +30,7 @@ define_mrpt_lib(
 	mrpt-maps
 	mrpt-kinematics
 	# Depts of the deps:
+	mrpt-graphs  # dep of mrpt-maps
 	mrpt-obs
 	mrpt-opengl
 	mrpt-base

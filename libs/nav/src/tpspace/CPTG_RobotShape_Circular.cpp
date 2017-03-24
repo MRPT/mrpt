@@ -2,7 +2,7 @@
 |                     Mobile Robot Programming Toolkit (MRPT)               |
 |                          http://www.mrpt.org/                             |
 |                                                                           |
-| Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+| Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
 | See: http://www.mrpt.org/Authors - All rights reserved.                   |
 | Released under BSD License. See details in http://www.mrpt.org/License    |
 +---------------------------------------------------------------------------+ */
@@ -12,6 +12,7 @@
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/utils/CStream.h>
+#include <mrpt/utils/round.h>
 
 using namespace mrpt::nav;
 
@@ -107,4 +108,11 @@ bool CPTG_RobotShape_Circular::isPointInsideRobotShape(const double x, const dou
 {
 	return ::hypot(x, y) < m_robotRadius;
 }
+
+double CPTG_RobotShape_Circular::evalClearanceToRobotShape(const double ox, const double oy) const
+{
+	return ::hypot(ox, oy) - m_robotRadius;
+}
+
+
 

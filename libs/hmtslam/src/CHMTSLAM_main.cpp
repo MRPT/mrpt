@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -474,7 +474,7 @@ void  CHMTSLAM::initializeEmptyMap()
 		}
 		break;
 	default:
-		THROW_EXCEPTION_CUSTOM_MSG1("Invalid selection for LSLAM method: %i",(int)m_options.SLAM_METHOD );
+		THROW_EXCEPTION_FMT("Invalid selection for LSLAM method: %i",(int)m_options.SLAM_METHOD );
 	};
 
 	// ------------------------------------
@@ -580,7 +580,7 @@ CTopLCDetectorBase* CHMTSLAM::loopClosureDetector_factory(const std::string  &na
 	MRPT_START
 	std::map<std::string,TLopLCDetectorFactory>::const_iterator it=m_registeredLCDetectors.find( name );
 	if (it==m_registeredLCDetectors.end())
-		THROW_EXCEPTION_CUSTOM_MSG1("Invalid value for TLC_detectors: %s", name.c_str() );
+		THROW_EXCEPTION_FMT("Invalid value for TLC_detectors: %s", name.c_str() );
 	return it->second(this);
 	MRPT_END
 }

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -45,7 +45,7 @@ CImageGrabber_OpenCV::CImageGrabber_OpenCV(
 		case CAMERA_CV_DSHOW: cv_cap_indx = CV_CAP_DSHOW; break;
 		// *** HAVE YOU HAD A COMPILER ERROR NEAR THIS LINE?? : You need OpenCV >=1.1.1, (2.0 final release) or a SVN version ***
 #endif
-		default: THROW_EXCEPTION_CUSTOM_MSG1("Invalid camera type: %i", cameraType);
+		default: THROW_EXCEPTION_FMT("Invalid camera type: %i", cameraType);
 	}
 
 	cv_cap_indx += cameraIndex;
@@ -67,7 +67,7 @@ CImageGrabber_OpenCV::CImageGrabber_OpenCV(
 			case CV_CAP_VFW:	cameraType = CAMERA_CV_VFW; break;
 			case CV_CAP_MIL:	cameraType = CAMERA_CV_MIL; break;
 			case CV_CAP_DSHOW: cameraType = CAMERA_CV_DSHOW; break;
-			default: THROW_EXCEPTION_CUSTOM_MSG1("Invalid camera type: %i", cameraType);
+			default: THROW_EXCEPTION_FMT("Invalid camera type: %i", cameraType);
 		}
 	}
 #endif

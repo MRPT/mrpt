@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -107,7 +107,7 @@ gnss_message* gnss_message::readAndBuildFromStream(mrpt::utils::CStream &in)
 	in >> msg_id;
 	gnss_message* msg = gnss_message::Factory(static_cast<gnss_message_type_t>(msg_id) );
 	if (!msg)
-		THROW_EXCEPTION_CUSTOM_MSG1("Error deserializing gnss_message: unknown message type '%i'",static_cast<int>(msg_id));
+		THROW_EXCEPTION_FMT("Error deserializing gnss_message: unknown message type '%i'",static_cast<int>(msg_id));
 	msg->internal_readFromStream(in);
 	return msg;
 }

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -83,7 +83,7 @@ void TestOpenGLObjects()
 
 	// Arrow
 	{
-		opengl::CArrowPtr obj = opengl::CArrow::Create(0,0,0, 3,0,0, 0.2, 0.1,0.2, 0,0,0 );
+		opengl::CArrowPtr obj = opengl::CArrow::Create(0,0,0, 3,0,0, 0.2f, 0.1f,0.2f, 0,0,0 );
 		obj->setLocation(off_x,0,0);
 		obj->setColor(1,0,0);
 		theScene->insert( obj );
@@ -171,14 +171,14 @@ void TestOpenGLObjects()
 	// CDisk
 	{
 		{
-			opengl::CDiskPtr obj = opengl::CDisk::Create(2.0,1.8, 50);
+			opengl::CDiskPtr obj = opengl::CDisk::Create(2.0f,1.8f, 50);
 			obj->setLocation(off_x,0,0);
 			obj->setColor(0.8,0,0);
 			theScene->insert( obj );
 		}
 
 		{
-			opengl::CDiskPtr obj = opengl::CDisk::Create(2.0,0, 50);
+			opengl::CDiskPtr obj = opengl::CDisk::Create(2.0f,0, 50);
 			obj->setLocation(off_x,5,0);
 			obj->setColor(0.8,0,0);
 			theScene->insert( obj );
@@ -561,6 +561,19 @@ void TestOpenGLObjects()
 	}
 	off_x+=STEP_X;
 
+	// CColorMap
+	{
+		{
+			opengl::CColorBarPtr obj = opengl::CColorBar::Create(mrpt::utils::cmHOT, 0.2,1.0, 0.0,1.0,  -50.0, 100.0, "%7.02f m/s");
+			obj->setLocation(off_x, 0, 0);
+			theScene->insert(obj);
+		}
+
+		opengl::CTextPtr gl_txt = opengl::CText::Create("CColorBar");
+		gl_txt->setLocation(off_x, off_y_label, 0);
+		theScene->insert(gl_txt);
+	}
+	off_x += STEP_X;
 
 	// CSetOfLines
 	{
@@ -615,11 +628,11 @@ void TestOpenGLObjects()
 					y(i,j) = cos(0.3*i);
 				}
 			obj->setVectorField(x,y);
-			obj->setPointColor(1,0.3,0);
+			obj->setPointColor(1,0.3f,0);
 			obj->setVectorFieldColor(0,0,1);
 			obj->setPointSize(3.0);
 			obj->setLineWidth(2.0);
-			obj->setGridCenterAndCellSize(0,0,1.2,1.2);
+			obj->setGridCenterAndCellSize(0,0,1.2f,1.2f);
 			obj->adjustVectorFieldToGrid();			
 			theScene->insert( obj );
 		}
@@ -653,7 +666,7 @@ void TestOpenGLObjects()
 				}
 			obj->setPointCoordinates(x,y,z);
 			obj->setVectorField(vx,vy,vz);
-			obj->setPointColor(1,0.3,0);
+			obj->setPointColor(1,0.3f,0);
 			obj->setVectorFieldColor(0,0,1);
 			obj->setPointSize(3.0);
 			obj->setLineWidth(2.0);

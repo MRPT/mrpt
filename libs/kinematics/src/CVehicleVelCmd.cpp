@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -51,10 +51,17 @@ CVehicleVelCmd & CVehicleVelCmd::operator =(const CVehicleVelCmd &other)
 void CVehicleVelCmd::TVelCmdParams::loadConfigFile(const mrpt::utils::CConfigFileBase &cfg, const std::string &section)
 {
 	MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(robotMax_V_mps, double, cfg, section);
-	MRPT_LOAD_HERE_CONFIG_VAR_NO_DEFAULT(robotMax_W_degps, double, robotMax_W_radps, cfg, section);
-	robotMax_W_radps = mrpt::utils::DEG2RAD(robotMax_W_radps);
+	MRPT_LOAD_HERE_CONFIG_VAR_DEGREES_NO_DEFAULT(robotMax_W_degps, double, robotMax_W_radps, cfg, section);
 	MRPT_LOAD_CONFIG_VAR(robotMinCurvRadius, double, cfg, section);
 }
+
+void CVehicleVelCmd::TVelCmdParams::saveToConfigFile(mrpt::utils::CConfigFileBase & c, const std::string & s) const
+{
+	MRPT_SAVE_CONFIG_VAR_COMMENT(robotMax_V_mps, "Max. linear speed (m/s) [Default=-1 (not set), will raise exception if needed and not set]");
+	MRPT_SAVE_CONFIG_VAR_DEGREES_COMMENT("robotMax_W_degps",robotMax_W_radps, "Max. angular speed (deg/s) [Default=-1 (not set), will raise exception if needed and not set]");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(robotMinCurvRadius, "Min. radius of curvature of paths (m) [Default=-1 (not set), will raise exception if needed and not set]");
+}
+
 
 CVehicleVelCmd::TVelCmdParams::TVelCmdParams() :
 	robotMax_V_mps(-1.),

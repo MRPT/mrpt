@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -68,6 +68,8 @@
 #if MRPT_HAS_LIBLAS
 #	include <mrpt/maps/CPointsMap_liblas.h>
 #endif
+
+const mrpt::maps::CColouredPointsMap dummy_map; // this is to enforce to load the mrpt-maps DLL, then register all OpenGL classes defined there.
 
 // A custom Art provider for customizing the icons:
 class MyArtProvider : public wxArtProvider
@@ -160,6 +162,9 @@ void saveLastUsedDirectoryToCfgFile(const std::string &fil)
 
 void CMyGLCanvas::OnRenderError( const wxString &str )
 {
+	if (!logWin)
+		logWin = new wxLogWindow(this, wxT("Log window"), false);
+
 	wxLogError(str);
 	logWin->Show();
 }
@@ -375,8 +380,6 @@ END_EVENT_TABLE()
 _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent,wxWindowID id)
 	: m_travelling_start_time(INVALID_TIMESTAMP), maxv(0)
 {
-	//wxLogNull logQuiet;  // There're some issues with the toolbar icons.. just ignore them
-	logWin = new wxLogWindow(this,wxT("Log window"),false);
 	theWindow = this;
 
 	// Load my custom icons:

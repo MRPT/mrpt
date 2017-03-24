@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -129,7 +129,7 @@ void CCameraSensor::initialize()
 		if (idx<0)
 		{
 			m_state = CGenericSensor::ssError;
-			THROW_EXCEPTION_CUSTOM_MSG1("Invalid value of :'%s'",m_cv_camera_type.c_str())
+			THROW_EXCEPTION_FMT("Invalid value of :'%s'",m_cv_camera_type.c_str())
 		}
 
 		cout << format("[CCameraSensor::initialize] opencv camera, index: %i type: %i...\n", int(m_cv_camera_index),idx);
@@ -172,7 +172,7 @@ void CCameraSensor::initialize()
 		if (!m_cap_ffmpeg->openURL( m_ffmpeg_url, m_capture_grayscale ))
 		{
 			m_state = CGenericSensor::ssError;
-			THROW_EXCEPTION_CUSTOM_MSG1("Error opening FFmpeg stream: %s", m_ffmpeg_url.c_str())
+			THROW_EXCEPTION_FMT("Error opening FFmpeg stream: %s", m_ffmpeg_url.c_str())
 		}
 	}
 	else if (m_grabber_type=="swissranger")
@@ -259,7 +259,7 @@ void CCameraSensor::initialize()
 		if (! m_cap_rawlog->open(m_rawlog_file) )
 		{
 			m_state = CGenericSensor::ssError;
-			THROW_EXCEPTION_CUSTOM_MSG1("Error opening rawlog file: %s", m_rawlog_file.c_str())
+			THROW_EXCEPTION_FMT("Error opening rawlog file: %s", m_rawlog_file.c_str())
 		}
 		// File open OK.
 		// Localize the external images directory of this rawlog, if it exists:
@@ -329,7 +329,7 @@ void CCameraSensor::initialize()
 		}
 	}
 	else
-		THROW_EXCEPTION_CUSTOM_MSG1("Unknown 'grabber_type' found: %s", m_grabber_type.c_str() )
+		THROW_EXCEPTION_FMT("Unknown 'grabber_type' found: %s", m_grabber_type.c_str() )
 
 	// Change state:
 	cout << "[CCameraSensor::initialize] Done!" << endl;
@@ -530,7 +530,7 @@ void  CCameraSensor::loadConfig_sensorSpecific(
 	double the_fps = configSource.read_double( iniSection, "dc1394_framerate", 15.0 );
 	it_fps = map_fps.find( the_fps );
 	if ( it_fps == map_fps.end() )
-		THROW_EXCEPTION_CUSTOM_MSG1("ERROR: DC1394 framerate seems to be not a valid number: %f",the_fps);
+		THROW_EXCEPTION_FMT("ERROR: DC1394 framerate seems to be not a valid number: %f",the_fps);
 
 	m_dc1394_options.framerate =  it_fps->second;
 
@@ -548,7 +548,7 @@ void  CCameraSensor::loadConfig_sensorSpecific(
 	string the_color_coding = mrpt::system::upperCase( configSource.read_string_first_word( iniSection, "dc1394_color_coding", "COLOR_CODING_YUV422" ) );
 	it_color = map_color.find(the_color_coding );
 	if (it_color == map_color.end())
-		THROW_EXCEPTION_CUSTOM_MSG1("ERROR: Color coding seems not to be valid : '%s'",the_color_coding.c_str() );
+		THROW_EXCEPTION_FMT("ERROR: Color coding seems not to be valid : '%s'",the_color_coding.c_str() );
 	m_dc1394_options.color_coding = it_color->second;
 
 
@@ -1159,7 +1159,7 @@ void CCameraSensor::setPathForExternalImages( const std::string &directory )
 {
 	if (!mrpt::system::createDirectory( directory ))
 	{
-		THROW_EXCEPTION_CUSTOM_MSG1("Error: Cannot create the directory for externally saved images: %s",directory.c_str() )
+		THROW_EXCEPTION_FMT("Error: Cannot create the directory for externally saved images: %s",directory.c_str() )
 	}
 	m_path_for_external_images = directory;
 }

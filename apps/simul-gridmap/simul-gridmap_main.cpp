@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -184,7 +184,7 @@ void do_simulation()
 			CSensoryFramePtr sf = CSensoryFrame::Create();
 
 			CObservation2DRangeScanPtr the_scan = CObservation2DRangeScan::Create();
-			the_scan->aperture = M_PI;
+			the_scan->aperture = M_PIf;
 			the_scan->timestamp = mrpt::system::now();
 			the_grid.laserScanSimulator( *the_scan, real_pose, 0.5f, LASER_N_RANGES, LASER_STD_ERROR, 1, LASER_BEARING_STD_ERROR );
 			sf->insert(the_scan);
