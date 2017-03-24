@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -410,7 +410,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 				pdf_SOG->push_back( best_mode );
 				outInfo.sog2 = pdf_SOG;
 
-				MRPT_LOG_INFO_STREAM << "[CGridMapAligner] amRobustMatch: "<< nB << " SOG modes reduced to "<< pdf_SOG->size() << " (most-likely) (min.inliers="<< min_inliers << ")\n";
+				MRPT_LOG_INFO_STREAM( "[CGridMapAligner] amRobustMatch: "<< nB << " SOG modes reduced to "<< pdf_SOG->size() << " (most-likely) (min.inliers="<< min_inliers << ")\n");
 
 			} // end of amRobustMatch
 			else
@@ -852,7 +852,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 				outInfo.sog3 = pdf_SOG;
 
 				pdf_SOG->mergeModes( options.maxKLd_for_merge, false );
-				MRPT_LOG_DEBUG_STREAM << "[CGridMapAligner] " << pdf_SOG->size() << " SOG modes merged after ICP.";
+				MRPT_LOG_DEBUG_STREAM( "[CGridMapAligner] " << pdf_SOG->size() << " SOG modes merged after ICP.");
 
 			} // end multimapX
 

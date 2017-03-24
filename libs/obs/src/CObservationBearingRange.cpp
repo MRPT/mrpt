@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -75,7 +75,7 @@ void  CObservationBearingRange::writeToStream(mrpt::utils::CStream &out, int *ve
 			if (id!=INVALID_LANDMARK_ID)
 			{
 				if (0!=lstIDs.count(id))
-					THROW_EXCEPTION_CUSTOM_MSG1("Duplicate landmark ID=%i found.",(int)id);
+					THROW_EXCEPTION_FMT("Duplicate landmark ID=%i found.",(int)id);
 				lstIDs.insert(id);
 			}
 
@@ -158,7 +158,7 @@ void  CObservationBearingRange::readFromStream(mrpt::utils::CStream &in, int ver
 				if (id!=INVALID_LANDMARK_ID)
 				{
 					if (0!=lstIDs.count(id))
-						THROW_EXCEPTION_CUSTOM_MSG1("Duplicate landmark ID=%i found.",(int)id);
+						THROW_EXCEPTION_FMT("Duplicate landmark ID=%i found.",(int)id);
 					lstIDs.insert(id);
 				}
 			}

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -71,7 +71,7 @@ DECLARE_OP_FUNCTION(op_export_enose_txt)
 
 				f_this = lstFiles[ obs->sensorLabel ] = os::fopen( fileName.c_str(), "wt");
 				if (!f_this)
-					THROW_EXCEPTION_CUSTOM_MSG1("Cannot open output file for write: %s", fileName.c_str() );
+					THROW_EXCEPTION_FMT("Cannot open output file for write: %s", fileName.c_str() );
 
 				// The first line is a description of the columns:
 				//------------------------------------------------

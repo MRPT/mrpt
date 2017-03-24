@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -53,7 +53,7 @@ namespace mrpt
 				std::ios_base::openmode  openMode = std::ios_base::binary | std::ios_base::out;
 				if ( append_file ) openMode |= std::ios_base::app;
 				m_of.open(out_file.c_str(),  openMode );
-				if (!m_of.is_open()) THROW_EXCEPTION_CUSTOM_MSG1("Error opening file: %s",out_file.c_str())
+				if (!m_of.is_open()) THROW_EXCEPTION_FMT("Error opening file: %s",out_file.c_str())
 
 				if (bufferSize)
 				{

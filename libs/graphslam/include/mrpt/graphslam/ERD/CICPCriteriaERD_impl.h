@@ -2,7 +2,7 @@
 	 |                     Mobile Robot Programming Toolkit (MRPT)               |
 	 |                          http://www.mrpt.org/                             |
 	 |                                                                           |
-	 | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+	 | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
 	 | See: http://www.mrpt.org/Authors - All rights reserved.                   |
 	 | Released under BSD License. See details in http://www.mrpt.org/License    |
 	 +---------------------------------------------------------------------------+ */
@@ -215,18 +215,15 @@ void CICPCriteriaERD<GRAPH_t>::checkRegistrationCondition2D(
 				m_time_logger.leave("CICPCriteriaERD::getICPEdge");
 
 				// Debugging statements
-				MRPT_LOG_DEBUG_STREAM <<
-			">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>";
-				MRPT_LOG_DEBUG_STREAM <<
+				MRPT_LOG_DEBUG_STREAM(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+				MRPT_LOG_DEBUG_STREAM(
 					"ICP constraint between NON-successive nodes: " << 
 					*node_it << " => " << curr_nodeID << 
 					std::endl <<
 					"\tnIterations = " << icp_info.nIterations <<
-					"\tgoodness = " << icp_info.goodness;
-				MRPT_LOG_DEBUG_STREAM << "ICP_goodness_thresh: " <<
-					params.ICP_goodness_thresh;
-				MRPT_LOG_DEBUG_STREAM <<
-			"<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<";
+					"\tgoodness = " << icp_info.goodness);
+				MRPT_LOG_DEBUG_STREAM("ICP_goodness_thresh: " <<params.ICP_goodness_thresh);
+				MRPT_LOG_DEBUG_STREAM("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
 
 
 				// criterion for registering a new node
@@ -698,7 +695,7 @@ void CICPCriteriaERD<GRAPH_t>::TParams::dumpToTextStream(
 	out.printf("------------------[ Goodness-based ICP Edge Registration ]------------------\n");
 	out.printf("ICP goodness threshold         = %.2f%% \n", ICP_goodness_thresh*100);
 	out.printf("ICP max radius for edge search = %.2f\n", ICP_max_distance);
-	out.printf("Min. node difference for LC    = %d\n", LC_min_nodeid_diff);
+	out.printf("Min. node difference for LC    = %lu\n", LC_min_nodeid_diff);
 	out.printf("Visualize laser scans          = %d\n", visualize_laser_scans);
 	out.printf("3DScans Image Directory        = %s\n", scans_img_external_dir.c_str());
 

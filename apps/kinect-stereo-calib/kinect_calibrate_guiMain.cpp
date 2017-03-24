@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -1746,8 +1746,8 @@ void kinect_calibrate_guiDialog::OnbtnListLoadClick(wxCommandEvent& event)
 
 			mrpt::vision::TImageStereoCalibData & scd = *m_calib_images.rbegin();
 
-			if (!scd.left.img_original.loadFromFile(file_img_l)) THROW_EXCEPTION_CUSTOM_MSG1("Error loading image: %s",file_img_l.c_str() )
-			if (!scd.right.img_original.loadFromFile(file_img_r)) THROW_EXCEPTION_CUSTOM_MSG1("Error loading image: %s",file_img_r.c_str() )
+			if (!scd.left.img_original.loadFromFile(file_img_l)) THROW_EXCEPTION_FMT("Error loading image: %s",file_img_l.c_str() )
+			if (!scd.right.img_original.loadFromFile(file_img_r)) THROW_EXCEPTION_FMT("Error loading image: %s",file_img_r.c_str() )
 
 			UpdateListOfImages();
 		}

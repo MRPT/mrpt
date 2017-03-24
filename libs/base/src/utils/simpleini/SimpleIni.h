@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -2072,7 +2072,7 @@ public:
      *                      the NULL byte will be converted.
      * @return              -1 cast to size_t on a conversion error.
      */
-    size_t SizeFromStore(
+    virtual size_t SizeFromStore(
         const char *    a_pInputData,
         size_t          a_uInputDataLen)
     {
@@ -2096,7 +2096,7 @@ public:
      * @return              true if all of the input data was successfully
      *                      converted.
      */
-    bool ConvertFromStore(
+    virtual bool ConvertFromStore(
         const char *    a_pInputData,
         size_t          a_uInputDataLen,
         SI_CHAR *       a_pOutputData,
@@ -2157,6 +2157,78 @@ public:
     }
 };
 
+/** MRPT custom INI file parser to allow minimal file preprocessing:
+* - multiline entries via an end-of-line backslash ('\')
+*/
+struct MRPT_IniFileParser : public SI_ConvertA<char>
+{
+	MRPT_IniFileParser(bool a_bStoreIsUtf8) : SI_ConvertA<char>(a_bStoreIsUtf8) { }
+
+	/* copy and assignment */
+	MRPT_IniFileParser(const MRPT_IniFileParser & rhs) : SI_ConvertA<char>(rhs) { SI_ConvertA<char>::operator=(rhs); }
+	MRPT_IniFileParser & operator=(const MRPT_IniFileParser & rhs) {
+		SI_ConvertA<char>::operator=(rhs);
+		return *this;
+	}
+
+	virtual size_t SizeFromStore(
+		const char *    a_pInputData,
+		size_t          a_uInputDataLen) MRPT_OVERRIDE
+	{
+		SI_ASSERT(a_uInputDataLen != (size_t)-1);
+		return do_parse(a_pInputData, a_uInputDataLen, nullptr);
+	}
+
+	virtual bool ConvertFromStore(
+		const char *    a_pInputData,
+		size_t          a_uInputDataLen,
+		char *       a_pOutputData,
+		size_t          a_uOutputDataSize) MRPT_OVERRIDE
+	{
+		this->do_parse(a_pInputData, a_uInputDataLen, a_pOutputData);
+		return true;
+	}
+
+private:
+	/** Shared code for the two virtual methods. If out_str==NULL, just count output bytes */
+	size_t do_parse(
+		const char *  in_str,
+		const size_t  in_len,
+		char *        out_str)
+	{
+		size_t out_len = 0, i = 0;
+		while (i < in_len)
+		{
+			const char c = in_str[i];
+			if (c == '\\' && i < in_len - 1 && (in_str[i + 1] == '\r' || in_str[i + 1] == '\n'))
+			{
+				// Skip the backslash + one newline: CR "\r", LF "\n", CR+LF "\r\n"
+				if (i < in_len - 2 && in_str[i + 1] == '\r' && in_str[i + 2] == '\n') {
+					//out_len += 0;
+					i += 3;
+				}
+				else if (in_str[i + 1] == '\r' || in_str[i + 1] == '\n') {
+					//out_len += 0;
+					i += 2;
+				}
+				else {
+					throw std::runtime_error("MRPT_IniFileParser: parse error, shouldn't reach here!");
+				}
+			}
+			else
+			{
+				// Normal case:
+				if (out_str) {
+					out_str[out_len] = c;
+				}
+				out_len++;
+				i++;
+			}
+		}
+		return out_len;
+	}
+
+};
 
 // ---------------------------------------------------------------------------
 //                              SI_CONVERT_GENERIC
@@ -2735,6 +2807,8 @@ typedef CSimpleIniTempl<char,
 typedef CSimpleIniTempl<char,
     SI_Case<char>,SI_ConvertA<char> >                   CSimpleIniCaseA;
 
+typedef CSimpleIniTempl<char, SI_NoCase<char>, MRPT_IniFileParser> MRPT_CSimpleIni;
+
 #if defined(SI_CONVERT_ICU)
 typedef CSimpleIniTempl<UChar,
     SI_NoCase<UChar>,SI_ConvertW<UChar> >               CSimpleIniW;
@@ -2762,4 +2836,3 @@ typedef CSimpleIniTempl<wchar_t,
 } // end namespace
 
 #endif // INCLUDED_SimpleIni_h
-

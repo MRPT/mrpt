@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -27,8 +27,8 @@ CConfigFile::CConfigFile( const std::string &fileName )
 
 	m_file = fileName;
 	m_modified = false;
-    m_ini = (void*) new CSimpleIniA();
-    static_cast<CSimpleIniA*>(m_ini.get())->LoadFile(fileName.c_str());
+    m_ini = (void*) new MRPT_CSimpleIni();
+    static_cast<MRPT_CSimpleIni*>(m_ini.get())->LoadFile(fileName.c_str());
 
 
     MRPT_END
@@ -39,13 +39,13 @@ CConfigFile::CConfigFile( const std::string &fileName )
  ---------------------------------------------------------------*/
 CConfigFile::CConfigFile()
 {
-    MRPT_START
+	MRPT_START
 
 	m_file = "";
 	m_modified = false;
-    m_ini = (void*) new CSimpleIniA();
+	m_ini = (void*) new MRPT_CSimpleIni();
 
-    MRPT_END
+	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -58,7 +58,7 @@ void CConfigFile::setFileName(const std::string &fil_path)
 	m_file = fil_path;
 	m_modified = false;
 
-    static_cast<CSimpleIniA*>(m_ini.get())->LoadFile(fil_path.c_str());
+    static_cast<MRPT_CSimpleIni*>(m_ini.get())->LoadFile(fil_path.c_str());
     MRPT_END
 }
 
@@ -70,10 +70,15 @@ void CConfigFile::writeNow()
     MRPT_START
 	if (m_modified && !m_file.empty())
 	{
-	    static_cast<CSimpleIniA*>(m_ini.get())->SaveFile( m_file.c_str() );
+	    static_cast<MRPT_CSimpleIni*>(m_ini.get())->SaveFile( m_file.c_str() );
 	    m_modified = false;
 	}
     MRPT_END
+}
+
+void CConfigFile::discardSavingChanges()
+{
+	m_modified = false;
 }
 
 /*---------------------------------------------------------------
@@ -82,7 +87,7 @@ void CConfigFile::writeNow()
 CConfigFile::~CConfigFile()
 {
     writeNow();
-    delete static_cast<CSimpleIniA*>(m_ini.get());
+    delete static_cast<MRPT_CSimpleIni*>(m_ini.get());
 }
 
 
@@ -95,7 +100,7 @@ void  CConfigFile::writeString(const std::string &section,const std::string &nam
 
 	m_modified = true;
 
-    if (0 > static_cast<CSimpleIniA*>(m_ini.get())->SetValue( section.c_str(),name.c_str(),str.c_str(), NULL ))
+    if (0 > static_cast<MRPT_CSimpleIni*>(m_ini.get())->SetValue( section.c_str(),name.c_str(),str.c_str(), NULL ))
         THROW_EXCEPTION("Error changing value in INI-style file!");
 
     MRPT_END
@@ -114,7 +119,7 @@ std::string  CConfigFile::readString(
     MRPT_START
     const char *defVal = failIfNotFound ? NULL :defaultStr.c_str();
 
-    const char *aux = static_cast<const CSimpleIniA*>(m_ini.get())->GetValue(
+    const char *aux = static_cast<const MRPT_CSimpleIni*>(m_ini.get())->GetValue(
         section.c_str(),
         name.c_str(),
         defVal,
@@ -144,10 +149,10 @@ std::string  CConfigFile::readString(
  ---------------------------------------------------------------*/
 void CConfigFile::getAllSections( vector_string	&sections ) const
 {
-	CSimpleIniA::TNamesDepend	names;
-	static_cast<const CSimpleIniA*>(m_ini.get())->GetAllSections(names);
+	MRPT_CSimpleIni::TNamesDepend	names;
+	static_cast<const MRPT_CSimpleIni*>(m_ini.get())->GetAllSections(names);
 
-	CSimpleIniA::TNamesDepend::iterator		n;
+	MRPT_CSimpleIni::TNamesDepend::iterator		n;
 	vector_string::iterator		s;
 	sections.resize(names.size());
 	for (n=names.begin(),s=sections.begin(); n!=names.end();++n,++s)
@@ -160,10 +165,10 @@ void CConfigFile::getAllSections( vector_string	&sections ) const
  ---------------------------------------------------------------*/
 void CConfigFile::getAllKeys( const string &section, vector_string	&keys ) const
 {
-	CSimpleIniA::TNamesDepend	names;
-	static_cast<const CSimpleIniA*>(m_ini.get())->GetAllKeys(section.c_str(), names);
+	MRPT_CSimpleIni::TNamesDepend	names;
+	static_cast<const MRPT_CSimpleIni*>(m_ini.get())->GetAllKeys(section.c_str(), names);
 
-	CSimpleIniA::TNamesDepend::iterator		n;
+	MRPT_CSimpleIni::TNamesDepend::iterator		n;
 	vector_string::iterator		s;
 	keys.resize(names.size());
 	for ( n = names.begin(), s = keys.begin(); n!=names.end();++n,++s)

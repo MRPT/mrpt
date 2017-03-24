@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -76,6 +76,10 @@ namespace mrpt
 		  * \sa registerClass, findRegisteredClass
 		  */
 		std::vector<const mrpt::utils::TRuntimeClassId*> BASE_IMPEXP getAllRegisteredClasses();
+
+		/** Like getAllRegisteredClasses(), but filters the list to only include children clases of a given base one.
+		  * \sa getAllRegisteredClasses(), getAllRegisteredClassesChildrenOf()  */
+		std::vector<const TRuntimeClassId*> BASE_IMPEXP getAllRegisteredClassesChildrenOf(const TRuntimeClassId* parent_id);
 
 		/** Return info about a given class by its name, or NULL if the class is not registered
 		  * \sa registerClass, getAllRegisteredClasses

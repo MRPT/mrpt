@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -153,7 +153,7 @@ void CImage::copyFromForceLoad(const CImage &o)
 	{
 		// Load from that file:
 		if (!this->loadFromFile( o.getExternalStorageFileAbsolutePath() ))
-			THROW_TYPED_EXCEPTION_CUSTOM_MSG1("Error loading externally-stored image from: %s", o.getExternalStorageFileAbsolutePath().c_str() ,CExceptionExternalImageNotFound);
+			THROW_TYPED_EXCEPTION_FMT(CExceptionExternalImageNotFound,"Error loading externally-stored image from: %s", o.getExternalStorageFileAbsolutePath().c_str());
 	}
 	else
 	{	// It's not external storage.
@@ -1951,7 +1951,7 @@ void CImage::makeSureImageIsLoaded() const throw (std::exception,utils::CExcepti
 		m_externalFile = tmpFile;
 
 		if (!ret)
-			THROW_TYPED_EXCEPTION_CUSTOM_MSG1("Error loading externally-stored image from: %s", wholeFile.c_str() ,CExceptionExternalImageNotFound);
+			THROW_TYPED_EXCEPTION_FMT(CExceptionExternalImageNotFound,"Error loading externally-stored image from: %s", wholeFile.c_str());
 	}
 	else THROW_EXCEPTION("img is NULL in a non-externally stored image.");
 }

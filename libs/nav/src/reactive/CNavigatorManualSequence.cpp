@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -12,6 +12,8 @@
 #include <mrpt/nav/reactive/CNavigatorManualSequence.h>
 #include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/system/string_utils.h>
+#include <mrpt/kinematics/CVehicleVelCmd_DiffDriven.h>
+#include <mrpt/kinematics/CVehicleVelCmd_Holo.h>
 
 using namespace mrpt::nav;
 
@@ -25,17 +27,21 @@ CNavigatorManualSequence::~CNavigatorManualSequence()
 {
 }
 
-void CNavigatorManualSequence::loadConfigFile(const mrpt::utils::CConfigFileBase &cfg, const std::string &section_prefix)
+void CNavigatorManualSequence::saveConfigFile(mrpt::utils::CConfigFileBase &c) const
 {
-	const std::string sSect = section_prefix+std::string("CMDS");
+}
+
+void CNavigatorManualSequence::loadConfigFile(const mrpt::utils::CConfigFileBase &c)
+{
+	const std::string s = "CNavigatorManualSequence";
 
 	programmed_orders.clear();
 	mrpt::vector_string lstKeys;
-	cfg.getAllKeys(sSect, lstKeys);
+	c.getAllKeys(s, lstKeys);
 
 	for (size_t i=0;i<lstKeys.size();i++)
 	{
-		std::string s = cfg.read_string(sSect,lstKeys[i],"",true);
+		std::string s = c.read_string(s,lstKeys[i],"",true);
 		std::vector<std::string> toks;
 		mrpt::system::tokenize(s," \t\r\n",toks);
 		ASSERTMSG_(toks.size()>2,std::string("Wrong format while parsing CNavigatorManualSequence cfg file in entry: ")+lstKeys[i]);

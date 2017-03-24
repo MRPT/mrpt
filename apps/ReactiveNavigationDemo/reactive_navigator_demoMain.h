@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -23,6 +23,7 @@
 #include "MyGLCanvas.h"
 #include <wx/panel.h>
 #include <wx/choice.h>
+#include <wx/button.h>
 #include <wx/frame.h>
 #include <wx/timer.h>
 #include <wx/statusbr.h>
@@ -89,6 +90,7 @@ class reactive_navigator_demoframe: public wxFrame
         void OnbtnSaveMapClick(wxCommandEvent& event);
         void OnbtnDrawEmptyClick(wxCommandEvent& event);
         void OnbtnSetWaypointSeqClick(wxCommandEvent& event);
+        void OnbtnGenerateTemplateClick(wxCommandEvent& event);
         //*)
 
         //(*Identifiers(reactive_navigator_demoframe)
@@ -96,11 +98,15 @@ class reactive_navigator_demoframe: public wxFrame
         static const long ID_BUTTON5;
         static const long ID_BUTTON7;
         static const long ID_BUTTON12;
+        static const long ID_STATICTEXT10;
+        static const long ID_STATICTEXT9;
+        static const long ID_STATICTEXT8;
+        static const long ID_TEXTCTRL6;
         static const long ID_BUTTON6;
-        static const long ID_BUTTON1;
-        static const long ID_BUTTON9;
         static const long ID_BUTTON8;
         static const long ID_BUTTON11;
+        static const long ID_BUTTON1;
+        static const long ID_BUTTON9;
         static const long ID_BUTTON10;
         static const long ID_BUTTON2;
         static const long ID_BUTTON3;
@@ -111,6 +117,7 @@ class reactive_navigator_demoframe: public wxFrame
         static const long ID_CHECKBOX4;
         static const long ID_CHECKBOX5;
         static const long ID_RADIOBOX1;
+        static const long ID_BUTTON13;
         static const long ID_PANEL6;
         static const long ID_TEXTCTRL1;
         static const long ID_PANEL2;
@@ -164,8 +171,11 @@ class reactive_navigator_demoframe: public wxFrame
         wxCheckBox* cbDrawShapePath;
         wxRadioBox* rbNavMode;
         wxMenu* Menu3;
+        wxStaticText* StaticText6;
         wxSplitterWindow* SplitterWindow2;
+        wxButton* btnGenerateTemplate;
         wxCustomButton* btnLoadMap;
+        wxStaticText* StaticText8;
         wxCustomButton* btnQuit;
         wxPanel* Panel1;
         wxStaticText* StaticText1;
@@ -180,6 +190,7 @@ class reactive_navigator_demoframe: public wxFrame
         wxMenuItem* mnuViewRobotPath;
         wxCustomButton* btnDrawEmpty;
         wxTextCtrl* edLog;
+        wxStaticText* StaticText7;
         wxCheckBox* cbShowPredictedPTG;
         wxStatusBar* StatusBar1;
         wxPanel* pnParamsPreprog;
@@ -188,6 +199,7 @@ class reactive_navigator_demoframe: public wxFrame
         wxCustomButton* btnSaveMap;
         wxPanel* Panel2;
         wxSplitterWindow* SplitterWindow1;
+        wxTextCtrl* edWayPtHeading;
         wxMenuItem* mnuViewMaxRange;
         wxStaticText* StaticText4;
         wxCustomButton* btnPlaceTarget;
@@ -259,11 +271,12 @@ class reactive_navigator_demoframe: public wxFrame
 				mrpt::nav::CRobot2NavInterfaceForSimulator_DiffDriven(simul),
 				MyNavIFBase(ref_latest_obstacles)
 			{}
-			virtual bool senseObstacles(mrpt::maps::CSimplePointsMap &obstacles, mrpt::system::TTimeStamp &timestamp) MRPT_OVERRIDE {
+			bool senseObstacles(mrpt::maps::CSimplePointsMap &obstacles, mrpt::system::TTimeStamp &timestamp) MRPT_OVERRIDE {
 				obstacles = latest_obstacles;
 				timestamp = mrpt::system::now();
 				return true;
 			}
+			bool changeSpeedsNOP() MRPT_OVERRIDE { return true; }
 		};
 		class MyRobot2NavInterface_Holo : public mrpt::nav::CRobot2NavInterfaceForSimulator_Holo, public MyNavIFBase
 		{
@@ -272,11 +285,12 @@ class reactive_navigator_demoframe: public wxFrame
 				mrpt::nav::CRobot2NavInterfaceForSimulator_Holo(simul),
 				MyNavIFBase(ref_latest_obstacles)
 			{}
-			virtual bool senseObstacles( mrpt::maps::CSimplePointsMap &obstacles, mrpt::system::TTimeStamp &timestamp ) MRPT_OVERRIDE {
+			bool senseObstacles( mrpt::maps::CSimplePointsMap &obstacles, mrpt::system::TTimeStamp &timestamp ) MRPT_OVERRIDE {
 				obstacles = latest_obstacles;
 				timestamp = mrpt::system::now();
 				return true;
 			}
+			bool changeSpeedsNOP() MRPT_OVERRIDE { return true; }
 		};
 
 		std::unique_ptr<mrpt::nav::CAbstractNavigator>  m_navMethod;

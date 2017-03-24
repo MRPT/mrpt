@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -484,7 +484,7 @@ void CFormRawMap::OnbtnGenerateClick(wxCommandEvent& )
 				}
 
 				if ( !poseIncrementLoaded && i<last )
-					THROW_EXCEPTION_CUSTOM_MSG1("ERROR: Odometry not found at step %d!",(int)i);
+					THROW_EXCEPTION_FMT("ERROR: Odometry not found at step %d!",(int)i);
 
 				curPose = curPose + poseIncrement;
 				addNewPathEntry=true;
@@ -753,7 +753,7 @@ void CFormRawMap::OnbtnGeneratePathsClick(wxCommandEvent& )
 					}
 
 					if ( !poseIncrementLoaded )
-						THROW_EXCEPTION_CUSTOM_MSG1("ERROR: Odometry not found at step %d!",(int)i);
+						THROW_EXCEPTION_FMT("ERROR: Odometry not found at step %d!",(int)i);
 
 					curPose = curPose + poseIncrement;
 					pathX.push_back( curPose.x() );

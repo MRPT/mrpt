@@ -2,7 +2,7 @@
 |                     Mobile Robot Programming Toolkit (MRPT)               |
 |                          http://www.mrpt.org/                             |
 |                                                                           |
-| Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+| Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
 | See: http://www.mrpt.org/Authors - All rights reserved.                   |
 | Released under BSD License. See details in http://www.mrpt.org/License    |
 +---------------------------------------------------------------------------+ */
@@ -208,7 +208,7 @@ namespace mrpt
 				if (!missing_predictions_to_add.empty())
 				{
 					const size_t nNew = missing_predictions_to_add.size();
-					MRPT_LOG_WARN_STREAM << "[KF] *Performance Warning*: " <<nNew <<  " LMs were not correctly predicted by OnPreComputingPredictions().";
+					MRPT_LOG_WARN_STREAM("[KF] *Performance Warning*: " <<nNew <<  " LMs were not correctly predicted by OnPreComputingPredictions().");
 
 					ASSERTDEB_(FEAT_SIZE!=0)
 						for (size_t j=0;j<nNew;j++)

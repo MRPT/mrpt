@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -150,6 +150,12 @@ namespace mrpt
 			/** Set XYZ coordinates of i'th point */
 			inline void setPointXYZ(const size_t idx, const coords_t x,const coords_t y, const coords_t z) {
 				m_obj.setPointFast(idx,x,y,z);
+			}
+			
+			/** Set XYZ coordinates of i'th point */
+			inline void setInvalidPoint(const size_t idx)
+			{
+				THROW_EXCEPTION("mrpt::maps::CSimplePointsMap needs to be dense");
 			}
 		}; // end of PointCloudAdapter<mrpt::maps::CPointsMap>
 

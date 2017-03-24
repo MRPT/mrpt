@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -162,6 +162,10 @@ namespace mrpt
 			bool isEnabledSetupCommandsAppendCRLF() const;
 
 			void enableAppendMsgTypeToSensorLabel(bool enable) { m_sensorLabelAppendMsgType = enable; }
+
+			/** If set to non-empty, RAW GPS serial data will be also dumped to a separate file. */
+			void setRawDumpFilePrefix(const std::string &filePrefix) { m_raw_dump_file_prefix=filePrefix; }
+			std::string getRawDumpFilePrefix() const { return m_raw_dump_file_prefix; }
 
 			/** Send a custom data block to the GNSS device right now. Can be used to change its behavior online as needed. 
 			  \return false on communication error */

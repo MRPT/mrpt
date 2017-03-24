@@ -17,6 +17,7 @@ define_mrpt_lib(
 	mrpt-base
 	mrpt-opengl
 	mrpt-obs
+	mrpt-graphs
 	)
 
 IF(BUILD_mrpt-detectors)

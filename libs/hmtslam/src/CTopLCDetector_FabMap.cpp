@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -32,7 +32,7 @@ CTopLCDetector_FabMap::CTopLCDetector_FabMap(CHMTSLAM *hmtslam) :
 
     unsigned int nVocabSize;
 	if (!fabmap::ParseOXV_PeekDimensions(o->vocab_path + o->vocabName + ".oxv",nVocabSize))
-		THROW_EXCEPTION_CUSTOM_MSG1("Error parsing vocabulary file: %s", std::string(o->vocab_path + o->vocabName + ".oxv").c_str() )
+		THROW_EXCEPTION_FMT("Error parsing vocabulary file: %s", std::string(o->vocab_path + o->vocabName + ".oxv").c_str() )
 
 	m_fabmap = new fabmap::FabMapInstance( o->vocab_path,o->vocabName, o->p_obs_given_exists,0.1, o->p_at_new_place, nVocabSize, o->df_lik_smooth );
 

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -40,8 +40,8 @@ Number of steps "d" for each PTG path "k":
 //#define DO_PERFORMANCE_BENCHMARK
 
 #ifdef DO_PERFORMANCE_BENCHMARK
-	mrpt::utils::CTimeLogger tl;
-	#define PERFORMANCE_BENCHMARK  CTimeLoggerEntry  tle(tl, __CURRENT_FUNCTION_NAME__);
+	mrpt::utils::CTimeLogger tl_holo("CPTG_Holo_Blend");
+	#define PERFORMANCE_BENCHMARK  CTimeLoggerEntry  tle(tl_holo, __CURRENT_FUNCTION_NAME__);
 #else
 	#define PERFORMANCE_BENCHMARK
 #endif
@@ -56,36 +56,89 @@ double CPTG_Holo_Blend::eps = 1e-4;               // epsilon for detecting 1/0 s
 	const double vxf = vf_mod*cos(dir), vyf = vf_mod* sin(dir); \
 	const double T_ramp = internal_get_T_ramp(dir);
 
-// Axiliary function for calc_trans_distance_t_below_Tramp() and others:
-double CPTG_Holo_Blend::calc_trans_distance_t_below_Tramp_abc(double t, double a,double b, double c)
+#if 0
+static double calc_trans_distance_t_below_Tramp_abc_analytic(double t, double a, double b, double c)
 {
-	ASSERT_(t>=0);
-	if (t==0.0) return .0;
+	PERFORMANCE_BENCHMARK;
+
+	ASSERT_(t >= 0);
+	if (t == 0.0) return .0;
 
 	double dist;
 	// Handle special case: degenerate sqrt(a*t^2+b*t+c) =  sqrt((t-r)^2) = |t-r|
-	const double discr = b*b-4*a*c;
+	const double discr = b*b - 4 * a*c;
 	if (std::abs(discr)<1e-6)
 	{
-		const double r = -b/(2*a);
+		const double r = -b / (2 * a);
 		// dist= definite integral [0,t] of: |t-r| dt
-		dist = r*std::abs(r)*0.5 + (t - r)*std::abs(t - r)*0.5;
+		dist = r*std::abs(r)*0.5 - (r - t)*std::abs(r - t)*0.5;
 	}
 	else
 	{
 		// General case:
 		// Indefinite integral of sqrt(a*t^2+b*t+c):
-		const double int_t = (t*(1.0/2.0)+(b*(1.0/4.0))/a)*sqrt(c+b*t+a*(t*t))+1.0/pow(a,3.0/2.0)*log(1.0/sqrt(a)*(b*(1.0/2.0)+a*t)+sqrt(c+b*t+a*(t*t)))*(a*c-(b*b)*(1.0/4.0))*(1.0/2.0);
+		const double int_t = (t*(1.0 / 2.0) + (b*(1.0 / 4.0)) / a)*sqrt(c + b*t + a*(t*t)) + 1.0 / pow(a, 3.0 / 2.0)*log(1.0 / sqrt(a)*(b*(1.0 / 2.0) + a*t) + sqrt(c + b*t + a*(t*t)))*(a*c - (b*b)*(1.0 / 4.0))*(1.0 / 2.0);
 		// Limit when t->0:
-		const double int_t0 = (b*sqrt(c)*(1.0/4.0))/a+1.0/pow(a,3.0/2.0)*log(1.0/sqrt(a)*(b+sqrt(a)*sqrt(c)*2.0)*(1.0/2.0))*(a*c-(b*b)*(1.0/4.0))*(1.0/2.0);
-		dist=int_t - int_t0;// Definite integral [0,t]
+		const double int_t0 = (b*sqrt(c)*(1.0 / 4.0)) / a + 1.0 / pow(a, 3.0 / 2.0)*log(1.0 / sqrt(a)*(b + sqrt(a)*sqrt(c)*2.0)*(1.0 / 2.0))*(a*c - (b*b)*(1.0 / 4.0))*(1.0 / 2.0);
+		dist = int_t - int_t0;// Definite integral [0,t]
 	}
 #ifdef _DEBUG
 	using namespace mrpt;
 	MRPT_CHECK_NORMAL_NUMBER(dist);
-	ASSERT_(dist>=.0);
+	ASSERT_(dist >= .0);
 #endif
 	return dist;
+}
+#endif
+
+// Numeric integration of: sqrt(a*t^2+b*t+c) for t=[0,T]
+static double calc_trans_distance_t_below_Tramp_abc_numeric(double T, double a, double b, double c)
+{
+	PERFORMANCE_BENCHMARK;
+
+	double d = .0;
+	const unsigned int NUM_STEPS = 15;
+
+	ASSERT_(a >= .0);
+	ASSERT_(c >= .0);
+	double feval_t = std::sqrt(c); // t (initial: t=0)
+	double feval_tp1; // t+1
+
+	const double At = T / (NUM_STEPS);
+	double t = .0;
+	for (unsigned int i = 0; i < NUM_STEPS; i++)
+	{
+		// Eval function at t+1:
+		t += At;
+		double dd = a*t*t + b*t + c;
+
+		// handle numerical innacuracies near t=T_ramp:
+		ASSERT_(dd>-1e-5);
+		if (dd < 0) dd = .0;
+
+		feval_tp1 = sqrt(dd);
+
+		// Trapezoidal rule:
+		d += At*(feval_t+ feval_tp1)*0.5;
+
+		// for next step:
+		feval_t = feval_tp1;
+	}
+
+	return d;
+}
+
+// Axiliary function for calc_trans_distance_t_below_Tramp() and others:
+double CPTG_Holo_Blend::calc_trans_distance_t_below_Tramp_abc(double t, double a,double b, double c)
+{
+	// JLB (29 Jan 2017): it turns out that numeric integration is *faster* and more accurate (does not have "special cases")...
+#if 0
+	double ret = calc_trans_distance_t_below_Tramp_abc_analytic(t, a, b, c);
+#else
+	double ret = calc_trans_distance_t_below_Tramp_abc_numeric(t, a, b, c);
+#endif
+
+	return ret;
 }
 
 
@@ -96,11 +149,11 @@ double CPTG_Holo_Blend::calc_trans_distance_t_below_Tramp(double k2, double k4, 
 dd = sqrt( (4*k2^2 + 4*k4^2)*t^2 + (4*k2*vxi + 4*k4*vyi)*t + vxi^2 + vyi^2 ) dt
             a t^2 + b t + c
 */
-	const double c = (vxi*vxi+vyi*vyi);
+	const double c = (vxi*vxi + vyi*vyi);
 	if (std::abs(k2)>eps || std::abs(k4)>eps)
 	{
-		const double a = ((k2*k2)*4.0+(k4*k4)*4.0);
-		const double b = (k2*vxi*4.0+k4*vyi*4.0);
+		const double a = ((k2*k2)*4.0 + (k4*k4)*4.0);
+		const double b = (k2*vxi*4.0 + k4*vyi*4.0);
 
 		// Numerically-ill case: b=c=0 (initial vel=0)
 		if (std::abs(b)<eps && std::abs(c)<eps) {
@@ -120,6 +173,7 @@ dd = sqrt( (4*k2^2 + 4*k4^2)*t^2 + (4*k2*vxi + 4*k4*vyi)*t + vxi^2 + vyi^2 ) dt
 void CPTG_Holo_Blend::updateCurrentRobotVel(const mrpt::math::TTwist2D &curVelLocal)
 {
 	this->curVelLocal = curVelLocal;
+	m_pathStepCountCache.assign(m_alphaValuesCount, -1); // mark as invalid
 }
 
 void CPTG_Holo_Blend::loadDefaultParams()
@@ -340,14 +394,22 @@ mrpt::kinematics::CVehicleVelCmdPtr CPTG_Holo_Blend::directionToMotionCommand( u
 
 size_t CPTG_Holo_Blend::getPathStepCount(uint16_t k) const
 {
-	uint16_t step;
+	if (m_pathStepCountCache.size() > k && m_pathStepCountCache[k] > 0)
+		return m_pathStepCountCache[k];
+
+	uint32_t step;
 	if (!getPathStepForDist(k,this->refDistance,step)) {
-		THROW_EXCEPTION_CUSTOM_MSG1("Could not solve closed-form distance for k=%u",static_cast<unsigned>(k));
+		THROW_EXCEPTION_FMT("Could not solve closed-form distance for k=%u",static_cast<unsigned>(k));
 	}
+	ASSERT_(step>0);
+	if (m_pathStepCountCache.size() != m_alphaValuesCount) {
+		m_pathStepCountCache.assign(m_alphaValuesCount, -1);
+	}
+	m_pathStepCountCache[k] = step;
 	return step;
 }
 
-void CPTG_Holo_Blend::getPathPose(uint16_t k, uint16_t step, mrpt::math::TPose2D &p) const
+void CPTG_Holo_Blend::getPathPose(uint16_t k, uint32_t step, mrpt::math::TPose2D &p) const
 {
 	const double t = PATH_TIME_STEP*step;
 	const double dir = CParameterizedTrajectoryGenerator::index2alpha(k);
@@ -399,7 +461,7 @@ void CPTG_Holo_Blend::getPathPose(uint16_t k, uint16_t step, mrpt::math::TPose2D
 	}
 }
 
-double CPTG_Holo_Blend::getPathDist(uint16_t k, uint16_t step) const
+double CPTG_Holo_Blend::getPathDist(uint16_t k, uint32_t step) const
 {
 	const double t = PATH_TIME_STEP*step;
 	const double dir = CParameterizedTrajectoryGenerator::index2alpha(k);
@@ -421,7 +483,7 @@ double CPTG_Holo_Blend::getPathDist(uint16_t k, uint16_t step) const
 	}
 }
 
-bool CPTG_Holo_Blend::getPathStepForDist(uint16_t k, double dist, uint16_t &out_step) const
+bool CPTG_Holo_Blend::getPathStepForDist(uint16_t k, double dist, uint32_t &out_step) const
 {
 	PERFORMANCE_BENCHMARK;
 
@@ -520,8 +582,8 @@ void CPTG_Holo_Blend::updateTPObstacleSingle(double ox, double oy, uint16_t k, d
 
 	double sol_t = -1.0; // candidate solution for shortest time to collision
 
-	// Note: It's tempting to try to solve first for t>T_ramp because it has simpler (faster) equations, 
-	// but there are cases in which we will have valid collisions for t>T_ramp but other valid ones 
+	// Note: It's tempting to try to solve first for t>T_ramp because it has simpler (faster) equations,
+	// but there are cases in which we will have valid collisions for t>T_ramp but other valid ones
 	// for t<T_ramp as well, so the only SAFE way to detect shortest distances is to check over increasing values of "t".
 
 	// Try to solve first for t<T_ramp:
@@ -595,7 +657,7 @@ void CPTG_Holo_Blend::updateTPObstacleSingle(double ox, double oy, uint16_t k, d
 			const double sol_t0 = (-b + sqrt(discr)) / (2 * a);
 			const double sol_t1 = (-b - sqrt(discr)) / (2 * a);
 
-			// Identify the shortest valid colission time:
+			// Identify the shortest valid collision time:
 			if (sol_t0<T_ramp && sol_t1<T_ramp) sol_t = -1.0;
 			else if (sol_t0<T_ramp && sol_t1 >= T_ramp_thres099) sol_t = sol_t1;
 			else if (sol_t1<T_ramp && sol_t0 >= T_ramp_thres099) sol_t = sol_t0;
@@ -646,7 +708,7 @@ double CPTG_Holo_Blend::maxTimeInVelCmdNOP(int path_k) const
 //	const double dir_local = CParameterizedTrajectoryGenerator::index2alpha(path_k);
 
 	const size_t nSteps = getPathStepCount(path_k);
-	const double max_t = nSteps * PATH_TIME_STEP;
+	const double max_t = PATH_TIME_STEP * (nSteps * 0.7 /* leave room for obstacle detection ahead when we are far down the predicted PTG path */);
 	return max_t;
 }
 
@@ -654,3 +716,82 @@ double CPTG_Holo_Blend::getPathStepDuration() const
 {
 	return PATH_TIME_STEP;
 }
+
+CPTG_Holo_Blend::CPTG_Holo_Blend() :
+	T_ramp_max(-1.0),
+	V_MAX(-1.0),
+	W_MAX(-1.0),
+	turningRadiusReference(0.30),
+	curVelLocal(0, 0, 0)
+{
+	internal_construct_exprs();
+}
+
+CPTG_Holo_Blend::CPTG_Holo_Blend(const mrpt::utils::CConfigFileBase &cfg, const std::string &sSection) :
+	turningRadiusReference(0.30),
+	curVelLocal(0, 0, 0)
+{
+	internal_construct_exprs();
+	this->loadFromConfigFile(cfg, sSection);
+}
+
+CPTG_Holo_Blend::~CPTG_Holo_Blend()
+{
+}
+
+void CPTG_Holo_Blend::internal_construct_exprs()
+{
+	std::map<std::string, double *> symbols;
+	symbols["dir"] = &m_expr_dir;
+	symbols["V_MAX"] = &V_MAX;
+	symbols["W_MAX"] = &W_MAX;
+	symbols["T_ramp_max"] = &T_ramp_max;
+	symbols["T_ramp_max"] = &T_ramp_max;
+
+	m_expr_v.register_symbol_table(symbols);
+	m_expr_w.register_symbol_table(symbols);
+	m_expr_T_ramp.register_symbol_table(symbols);
+
+	// Default expressions (can be overloaded by values in a config file)
+	expr_V = "V_MAX";
+	expr_W = "W_MAX";
+	expr_T_ramp = "T_ramp_max";
+}
+
+double CPTG_Holo_Blend::internal_get_v(const double dir) const
+{
+	const_cast<double&>(m_expr_dir) = dir;
+	return std::abs(m_expr_v.eval());
+}
+double CPTG_Holo_Blend::internal_get_w(const double dir) const
+{
+	const_cast<double&>(m_expr_dir) = dir;
+	return std::abs(m_expr_w.eval());
+}
+double CPTG_Holo_Blend::internal_get_T_ramp(const double dir) const
+{
+	const_cast<double&>(m_expr_dir) = dir;
+	return m_expr_T_ramp.eval();
+}
+
+void CPTG_Holo_Blend::internal_initialize(const std::string & cacheFilename, const bool verbose)
+{
+	// No need to initialize anything, just do some params sanity checks:
+	ASSERT_(T_ramp_max>0);
+	ASSERT_(V_MAX>0);
+	ASSERT_(W_MAX>0);
+	ASSERT_(m_alphaValuesCount>0);
+	ASSERT_(m_robotRadius>0);
+
+	// Compile user-given expressions:
+	m_expr_v.compile(expr_V, std::map<std::string, double>(), "expr_V");
+	m_expr_w.compile(expr_W, std::map<std::string, double>(), "expr_w");
+	m_expr_T_ramp.compile(expr_T_ramp, std::map<std::string, double>(), "expr_T_ramp");
+
+#ifdef DO_PERFORMANCE_BENCHMARK
+	tl.dumpAllStats();
+#endif
+
+	m_pathStepCountCache.clear();
+}
+

@@ -2,14 +2,13 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
 #include "opengl-precomp.h"  // Precompiled header
 
-//#include <mrpt/poses/CPose3D.h>
 #include <mrpt/opengl/CMesh3D.h>
 #include <mrpt/utils/color_maps.h>
 #include <mrpt/utils/CStream.h>
@@ -30,6 +29,28 @@ CMesh3DPtr CMesh3D::Create(bool enableTransparency, bool enableShowEdges, bool e
 	return CMesh3DPtr(new CMesh3D(enableTransparency, enableShowEdges, enableShowFaces, enableShowVertices));
 }
 
+CMesh3D::CMesh3D(bool enableTransparency, bool antiAliasing , bool enableShowEdges , bool enableShowFaces, bool enableShowVertices ) :
+	m_enableTransparency(enableTransparency),
+	m_antiAliasing(antiAliasing),
+	m_showEdges(enableShowEdges),
+	m_showFaces(enableShowFaces),
+	m_showVertices(enableShowVertices),
+	m_computeNormals(true),
+	m_lineWidth(2.f),
+	m_pointSize(6.f),
+	m_colorMap(mrpt::utils::cmHOT)
+{
+	m_color.R = 1.f; m_color.G = 0.f; m_color.B = 0.f; m_color.A = 1.f;
+	edge_color[0] = 0.9f; edge_color[1] = 0.9f; edge_color[2] = 0.9f; edge_color[3] = 1.f;
+	face_color[0] = 0.7f; face_color[1] = 0.7f; face_color[2] = 0.8f; face_color[3] = 1.f;
+	vert_color[0] = 0.3f; vert_color[1] = 0.3f; vert_color[2] = 0.3f; vert_color[3] = 1.f;
+	m_num_faces = 0;
+	m_num_verts = 0;
+}
+
+CMesh3D::~CMesh3D()
+{
+}
 
 void CMesh3D::loadMesh(unsigned int num_verts, unsigned int num_faces, int *verts_per_face, int *face_verts, float *vert_coords)
 {

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -121,7 +121,7 @@ bool DemoFeatures()
 	if (!file1.empty())
 	{
 		if (!img1.loadFromFile(file1))
-			THROW_EXCEPTION_CUSTOM_MSG1("Error loading file: %s",file1.c_str())
+			THROW_EXCEPTION_FMT("Error loading file: %s",file1.c_str())
 	}
 	else
 	{
@@ -133,7 +133,7 @@ bool DemoFeatures()
 	if (!file2.empty())
 	{
 		if (!img2.loadFromFile(file2))
-			THROW_EXCEPTION_CUSTOM_MSG1("Error loading file: %s",file2.c_str())
+			THROW_EXCEPTION_FMT("Error loading file: %s",file2.c_str())
 	}
 	else
 	{

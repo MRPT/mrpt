@@ -51,7 +51,7 @@ class GRAPHSLAM_IMPEXP CWindowManager : public mrpt::utils::COutputLogger {
     	m_fetched_displaywindow_pointer = true;
     	win = win_in;
 
-    	MRPT_LOG_DEBUG_STREAM << "Fetched the CDisplayWindow3D* successfully";
+    	MRPT_LOG_DEBUG_STREAM( "Fetched the CDisplayWindow3D* successfully");
     }
 		/**\brief Store the CWindowObserver pointer in the CWindowManager instance.
 		 *
@@ -61,7 +61,7 @@ class GRAPHSLAM_IMPEXP CWindowManager : public mrpt::utils::COutputLogger {
     	m_fetched_observer_pointer = true;
     	observer = obsever_in;
 
-    	MRPT_LOG_DEBUG_STREAM << "Fetched the CWindowObserver* successfully";
+    	MRPT_LOG_DEBUG_STREAM( "Fetched the CWindowObserver* successfully");
     }
 
 		/**\brief Assign the next available offset_y and text_index for the
@@ -147,7 +147,7 @@ class GRAPHSLAM_IMPEXP CWindowManager : public mrpt::utils::COutputLogger {
 
 			// loger related directives
 			this->setLoggerName("CWindowManager");
-			MRPT_LOG_DEBUG_STREAM << "Initializing...";
+			MRPT_LOG_DEBUG_STREAM( "Initializing...");
     }
 
 		bool m_fetched_observer_pointer;

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -309,6 +309,7 @@ void  CPosePDFParticles::saveToTextFile(const std::string &file) const
 {
 	FILE	*f=os::fopen(file.c_str(),"wt");
 	if (!f) return;
+	os::fprintf(f,"%% x  y  yaw[rad] log_weight\n");
 
 	for (unsigned int i=0;i<m_particles.size();i++)
 		os::fprintf(f,"%f %f %f %e\n",

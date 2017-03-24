@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -44,7 +44,7 @@ namespace mrpt
 		{
 			if (dim==1) return m.getRowCount();
 			else if (dim==2) return m.getColCount();
-			else THROW_EXCEPTION_CUSTOM_MSG1("size: Queried matrix dimension must be 1 or 2. Called with i=%i",dim);
+			else THROW_EXCEPTION_FMT("size: Queried matrix dimension must be 1 or 2. Called with i=%i",dim);
 		}
 	}
 

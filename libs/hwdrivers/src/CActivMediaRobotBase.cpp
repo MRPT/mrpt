@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -183,7 +183,7 @@ void CActivMediaRobotBase::connectAndEnableMotors()
 	// Establecimiento de la conexión con el pioneer
 	if (!static_cast<ArSimpleConnector*>(m_simpleConnector)->connectRobot( THE_ROBOT ))
 	{
-		THROW_EXCEPTION_CUSTOM_MSG1("[CActivMediaRobotBase] Couldn't connect to robot thru %s", m_com_port.c_str() )
+		THROW_EXCEPTION_FMT("[CActivMediaRobotBase] Couldn't connect to robot thru %s", m_com_port.c_str() )
 	}
 	else
 	{

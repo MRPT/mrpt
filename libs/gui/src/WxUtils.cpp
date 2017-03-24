@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -933,7 +933,7 @@ void CPanelCameraSelection::readConfigIntoVideoSourcePanel(
 		this->cbSR_chConf->SetValue( cfg->read_bool(sect,"sr_grab_confidence",false));
 	}
 	else
-		THROW_EXCEPTION_CUSTOM_MSG1("Error: Unknown choice in 'grabber_type': '%s'",grab_type.c_str() );
+		THROW_EXCEPTION_FMT("Error: Unknown choice in 'grabber_type': '%s'",grab_type.c_str() );
 
 	// Grayscale option:
 	this->cbGrayscale->SetValue( cfg->read_bool(sect,"capture_grayscale", false) );

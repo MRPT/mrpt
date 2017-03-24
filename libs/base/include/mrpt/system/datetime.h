@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -98,6 +98,12 @@ namespace mrpt
 		inline double timestampToDouble( const mrpt::system::TTimeStamp  t ) { return timestampTotime_t(t); }
 
 		double BASE_IMPEXP timeDifference( const mrpt::system::TTimeStamp t_first, const mrpt::system::TTimeStamp t_later ); //!< Returns the time difference from t1 to t2 (positive if t2 is posterior to t1), in seconds \sa secondsToTimestamp
+
+		/** Returns the current time, as a `double` (fractional version of time_t) instead of a `TTimeStamp`.
+		* \sa now(), timestampTotime_t() */
+		inline double now_double() {
+			return mrpt::system::timestampTotime_t(mrpt::system::getCurrentTime());
+		}
 
 		mrpt::system::TTimeStamp BASE_IMPEXP timestampAdd( const mrpt::system::TTimeStamp tim, const double num_seconds); //!< Shifts a timestamp the given amount of seconds (>0: forwards in time, <0: backwards) \sa secondsToTimestamp
 

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -49,7 +49,7 @@ void CRovio::initialize() //string &errormsg, string url_out, string user_out, s
 		cout<<"[CRovio::Initialize] Response:\n"<<response<<endl;
 
 	if (!errormsg.empty())
-		THROW_EXCEPTION_CUSTOM_MSG1("Error initializing Rovio: %s",errormsg.c_str() );
+		THROW_EXCEPTION_FMT("Error initializing Rovio: %s",errormsg.c_str() );
 }
 
 /*-------------------------------------------------

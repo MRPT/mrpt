@@ -187,7 +187,7 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 						#MESSAGE(STATUS "adding link dep: mrpt-${name} -> ${DEP}")
 						LIST(APPEND AUX_EXTRA_LINK_LIBS
 							optimized ${MRPT_LIB_PREFIX}${DEP}${MRPT_DLL_VERSION_POSTFIX}
-							debug     ${MRPT_LIB_PREFIX}${DEP}${MRPT_DLL_VERSION_POSTFIX}-dbg) #Old: ${DEP}${MRPT_LINKER_LIBS_POSTFIX})
+							debug     ${MRPT_LIB_PREFIX}${DEP}${MRPT_DLL_VERSION_POSTFIX}${CMAKE_DEBUG_POSTFIX})
 					ENDIF(NOT _LIB_HDRONLY)
 				ENDIF(NOT ${headers_only})
 
@@ -239,7 +239,7 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 		SET_TARGET_PROPERTIES(mrpt-${name} PROPERTIES
 			OUTPUT_NAME ${MRPT_LIB_PREFIX}mrpt-${name}${MRPT_DLL_VERSION_POSTFIX}
 			COMPILE_PDB_NAME "${MRPT_LIB_PREFIX}mrpt-${name}${MRPT_DLL_VERSION_POSTFIX}"
-			COMPILE_PDB_NAME_DEBUG "${MRPT_LIB_PREFIX}mrpt-${name}${MRPT_DLL_VERSION_POSTFIX}-dbg"
+			COMPILE_PDB_NAME_DEBUG "${MRPT_LIB_PREFIX}mrpt-${name}${MRPT_DLL_VERSION_POSTFIX}${CMAKE_DEBUG_POSTFIX}"
 			ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/"
 			RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/"
 			VERSION "${CMAKE_MRPT_VERSION_NUMBER_MAJOR}.${CMAKE_MRPT_VERSION_NUMBER_MINOR}.${CMAKE_MRPT_VERSION_NUMBER_PATCH}"
@@ -268,7 +268,29 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 				set_source_files_properties("${CMAKE_SOURCE_DIR}/libs/${name}/src/${name}-precomp.cpp"
 					PROPERTIES
 					COMPILE_FLAGS "/Yc${name}-precomp.h")
-			ENDIF (MSVC)
+			ELSE()
+				IF (NOT CMAKE_VERSION VERSION_LESS "2.8.12")
+					# Use cotire module for GCC/CLANG:
+					list(APPEND COTIRE_PREFIX_HEADER_IGNORE_PATH
+						"${OpenCV_INCLUDE_DIR}"
+						"${MRPT_LIBS_ROOT}/${name}/src"
+					)
+					set_target_properties(mrpt-${name} PROPERTIES
+						COTIRE_PREFIX_HEADER_IGNORE_PATH "${COTIRE_PREFIX_HEADER_IGNORE_PATH}"
+					)
+					set_target_properties(mrpt-${name} PROPERTIES	COTIRE_CXX_PREFIX_HEADER_INIT "${CMAKE_SOURCE_DIR}/libs/${name}/src/${name}-precomp.h")
+					cotire(mrpt-${name})
+
+					IF($ENV{VERBOSE})
+						#get_target_property(_unitySource example COTIRE_CXX_UNITY_SOURCE)
+						#get_target_property(_unityTargetName mrpt-${name} COTIRE_UNITY_TARGET_NAME)
+						get_target_property(_prefixHeader mrpt-${name} COTIRE_CXX_PREFIX_HEADER)
+						get_target_property(_precompiledHeader mrpt-${name} COTIRE_CXX_PRECOMPILED_HEADER)
+						MESSAGE(STATUS "  mrpt-${name}: Prefix header=${_prefixHeader}")
+						MESSAGE(STATUS "  mrpt-${name}: PCH header=${_precompiledHeader}")
+					ENDIF()
+				ENDIF()
+			ENDIF()
 
 			SOURCE_GROUP("Precompiled headers" FILES
 				"${CMAKE_SOURCE_DIR}/libs/${name}/src/${name}-precomp.cpp"
@@ -306,7 +328,7 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 			# Collect .pdb debug files for optional installation:
 			IF (MSVC)
 				SET(PDB_FILE
-					"${CMAKE_BINARY_DIR}/bin/Debug/${MRPT_LIB_PREFIX}mrpt-${name}${MRPT_DLL_VERSION_POSTFIX}-dbg.pdb")
+					"${CMAKE_BINARY_DIR}/bin/Debug/${MRPT_LIB_PREFIX}mrpt-${name}${MRPT_DLL_VERSION_POSTFIX}${CMAKE_DEBUG_POSTFIX}.pdb")
 				IF (EXISTS "${PDB_FILE}")
 					INSTALL(FILES ${PDB_FILE} DESTINATION bin COMPONENT LibrariesDebugInfoPDB)
 				ENDIF ()
@@ -369,7 +391,7 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 			set_source_files_properties(${${_N}_FILES} PROPERTIES COMPILE_FLAGS "/Y-")
 		ENDFOREACH()
 	ENDIF()
-	
+
 	# --- End of conditional build of module ---
 	ENDIF(BUILD_mrpt-${name})
 

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -75,7 +75,7 @@ void CLandmarksMap::TMapDefinition::loadFromConfigFile_map_specific(const mrpt::
 
 void CLandmarksMap::TMapDefinition::dumpToTextStream_map_specific(mrpt::utils::CStream &out) const
 {
-	out.printf("number of initial beacons               = %u\n",(int)initialBeacons.size());
+	out.printf("number of initial beacons                = %u\n",(int)initialBeacons.size());
 
 	out.printf("      ID         (X,Y,Z)\n");
 	out.printf("--------------------------------------------------------\n");
@@ -229,15 +229,6 @@ void  CLandmarksMap::readFromStream(mrpt::utils::CStream &in, int version)
 
 }
 
-/**** FAMD ****/
-//void  CLandmarksMap::importMapMaxID( CLandmarksMap &sourceMap )
-//{
-//	CLandmarksMap::_mapMaxID = sourceMap._mapMaxID;
-//}
-/**** END FAMD ****/
-
-
-
 /*---------------------------------------------------------------
 					computeObservationLikelihood
   ---------------------------------------------------------------*/
@@ -371,16 +362,16 @@ double	 CLandmarksMap::internal_computeObservationLikelihood(
 		dij(0,0) =          o->pose.mean.x()     - sensorPose3D.x();
 		dij(0,1) =          o->pose.mean.y()     - sensorPose3D.y();
 		dij(0,2) =          o->pose.mean.z()     - sensorPose3D.z();
-		dij(0,3) = wrapToPi(o->pose.mean.roll()  - sensorPose3D.roll());
+        dij(0,3) = wrapToPi(o->pose.mean.yaw()   - sensorPose3D.yaw());
 		dij(0,4) = wrapToPi(o->pose.mean.pitch() - sensorPose3D.pitch());
-		dij(0,5) = wrapToPi(o->pose.mean.yaw()   - sensorPose3D.yaw());
+        dij(0,5) = wrapToPi(o->pose.mean.roll()  - sensorPose3D.roll());
 
 		// Equivalent covariance from "i" to "j":
 		Cij = CMatrixDouble(o->pose.cov);
 		Cij_1 = Cij.inv();
 
-		double distMahaFlik2 =  dij.multiply_HCHt_scalar(Cij_1); //( dij * Cij_1 * (~dij) )(0,0);
-		double ret = -0.5f * distMahaFlik2;
+		double distMahaFlik2 =  dij.multiply_HCHt_scalar(Cij_1);
+		double ret = - 0.5  * (distMahaFlik2 / square(likelihoodOptions.extRobotPoseStd));
 
 		MRPT_CHECK_NORMAL_NUMBER(ret);
 		return ret;
@@ -401,7 +392,7 @@ double	 CLandmarksMap::internal_computeObservationLikelihood(
 		double					x,y;
 		double					earth_radius=6378137;
 
-		if ((o->has_RMC_datum)&&(likelihoodOptions.GPSOrigin.min_sat<=o->getMsgByClass<gnss::Message_NMEA_GGA>().fields.satellitesUsed))
+		if ((o->has_GGA_datum)&&(likelihoodOptions.GPSOrigin.min_sat<=o->getMsgByClass<gnss::Message_NMEA_GGA>().fields.satellitesUsed))
 		{
 			//Compose GPS robot position
 
@@ -2106,20 +2097,20 @@ void  CLandmarksMap::TInsertionOptions::dumpToTextStream(mrpt::utils::CStream	&o
 	out.printf("\n");
 	out.printf("SiftCorrRatioThreshold                  = %f\n", SiftCorrRatioThreshold);
 	out.printf("SiftLikelihoodThreshold                 = %f\n", SiftLikelihoodThreshold);
-	out.printf("SiftEDDThreshold						= %f\n", SiftEDDThreshold);
-	out.printf("SIFTMatching3DMethod					= %d\n", SIFTMatching3DMethod);
-	out.printf("SIFTLikelihoodMethod					= %d\n", SIFTLikelihoodMethod);
+	out.printf("SiftEDDThreshold                        = %f\n", SiftEDDThreshold);
+	out.printf("SIFTMatching3DMethod                    = %d\n", SIFTMatching3DMethod);
+    out.printf("SIFTLikelihoodMethod                    = %d\n", SIFTLikelihoodMethod);
 
-	out.printf("SIFTsLoadDistanceOfTheMean              = %f\n", SIFTsLoadDistanceOfTheMean);
-	out.printf("SIFTsLoadEllipsoidWidth                 = %f\n", SIFTsLoadEllipsoidWidth);
-	out.printf("\n");
-	out.printf("SIFTs_stdXY                             = %f\n", SIFTs_stdXY);
-	out.printf("SIFTs_stdDisparity                      = %f\n", SIFTs_stdDisparity);
-	out.printf("\n");
-	out.printf("SIFTs_numberOfKLTKeypoints              = %i\n", SIFTs_numberOfKLTKeypoints);
-	out.printf("SIFTs_stereo_maxDepth                   = %f\n", SIFTs_stereo_maxDepth);
-	out.printf("SIFTs_epipolar_TH						= %f\n", SIFTs_epipolar_TH);
-	out.printf("PLOT_IMAGES								= %c\n", PLOT_IMAGES ? 'Y':'N');
+    out.printf("SIFTsLoadDistanceOfTheMean              = %f\n", SIFTsLoadDistanceOfTheMean);
+    out.printf("SIFTsLoadEllipsoidWidth                 = %f\n", SIFTsLoadEllipsoidWidth);
+    out.printf("\n");
+    out.printf("SIFTs_stdXY                             = %f\n", SIFTs_stdXY);
+    out.printf("SIFTs_stdDisparity                      = %f\n", SIFTs_stdDisparity);
+    out.printf("\n");
+    out.printf("SIFTs_numberOfKLTKeypoints              = %i\n", SIFTs_numberOfKLTKeypoints);
+    out.printf("SIFTs_stereo_maxDepth                   = %f\n", SIFTs_stereo_maxDepth);
+    out.printf("SIFTs_epipolar_TH                       = %f\n", SIFTs_epipolar_TH);
+    out.printf("PLOT_IMAGES                             = %c\n", PLOT_IMAGES ? 'Y':'N');
 
 	SIFT_feat_options.dumpToTextStream(out);
 
@@ -2167,6 +2158,7 @@ CLandmarksMap::TLikelihoodOptions::TLikelihoodOptions() :
 	SIFT_feat_options				( vision::featSIFT ),
 	beaconRangesStd					( 0.08f ),
 	beaconRangesUseObservationStd	(false),
+	extRobotPoseStd                 ( 0.05f ),
 	GPSOrigin						(),
 	GPS_sigma						( 1.0f )
 {
@@ -2198,7 +2190,7 @@ void  CLandmarksMap::TLikelihoodOptions::dumpToTextStream(mrpt::utils::CStream	&
 	out.printf("SIFTnullCorrespondenceDistance          = %f\n",SIFTnullCorrespondenceDistance);
 	out.printf("beaconRangesStd                         = %f\n",beaconRangesStd);
 	out.printf("beaconRangesUseObservationStd           = %c\n",beaconRangesUseObservationStd ? 'Y':'N');
-
+    out.printf("extRobotPoseStd                         = %f\n",extRobotPoseStd);
 
 	out.printf("GPSOrigin:LATITUDE                      = %f\n",GPSOrigin.latitude);
 	out.printf("GPSOrigin:LONGITUDE                     = %f\n",GPSOrigin.longitude);
@@ -2241,6 +2233,8 @@ void  CLandmarksMap::TLikelihoodOptions::loadFromConfigFile(
 
 	beaconRangesStd					= iniFile.read_float(section.c_str(),"beaconRangesStd",beaconRangesStd);
 	beaconRangesUseObservationStd	= iniFile.read_bool(section.c_str(),"beaconRangesUseObservationStd",beaconRangesUseObservationStd);
+
+    extRobotPoseStd                 = iniFile.read_float(section.c_str(),"extRobotPoseStd",extRobotPoseStd);
 
 	SIFT_feat_options.loadFromConfigFile(iniFile,section);
 }

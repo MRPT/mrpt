@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -268,13 +268,13 @@ void CClientTCPSocket::connect(
 	// Resolve the IP address of the given host name
 	std::string   solved_IP;
 	if (!net::DNS_resolve_async(remotePartAddress,solved_IP,DNS_LOOKUP_TIMEOUT_MS))
-		THROW_EXCEPTION_CUSTOM_MSG1("DNS lookup failed for '%s'",remotePartAddress.c_str());
+		THROW_EXCEPTION_FMT("DNS lookup failed for '%s'",remotePartAddress.c_str());
 
 
 	// Fill out from IP address text:
 	otherAddress.sin_addr.s_addr = inet_addr(solved_IP.c_str());
 	if (INADDR_NONE==otherAddress.sin_addr.s_addr)
-		THROW_EXCEPTION_CUSTOM_MSG1("Invalid IP address provided: %s",solved_IP.c_str());
+		THROW_EXCEPTION_FMT("Invalid IP address provided: %s",solved_IP.c_str());
 
 	// Set to NON-BLOCKING:
 #ifdef MRPT_OS_WINDOWS
@@ -410,7 +410,7 @@ size_t  CClientTCPSocket::readAsync(
 						 ptrTimeout);	// Timeout
 
 		if( selRet==INVALID_SOCKET )
-			THROW_EXCEPTION_CUSTOM_MSG1( "Error reading from socket: %s", getLastErrorStr().c_str() );
+			THROW_EXCEPTION_FMT( "Error reading from socket: %s", getLastErrorStr().c_str() );
 
 		if (selRet==0)
 		{
@@ -500,7 +500,7 @@ size_t  CClientTCPSocket::writeAsync(
 						 ptrTimeout);	// Timeout
 
 		if( selRet==INVALID_SOCKET )
-			THROW_EXCEPTION_CUSTOM_MSG1( "Error writing to socket: %s", getLastErrorStr().c_str() );
+			THROW_EXCEPTION_FMT( "Error writing to socket: %s", getLastErrorStr().c_str() );
 
 		if (selRet==0)
 		{

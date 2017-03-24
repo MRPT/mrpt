@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2016, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -104,7 +104,9 @@ CVelodyneScanner::CVelodyneScanner() :
 	m_pcap_repeat_delay(0.0),
 	m_hDataSock(INVALID_SOCKET),
 	m_hPositionSock(INVALID_SOCKET),
-	m_last_gps_rmc_age(INVALID_TIMESTAMP)
+	m_last_gps_rmc_age(INVALID_TIMESTAMP),
+	m_lidar_rpm(0),
+	m_lidar_return(UNCHANGED)
 {
 	m_sensorLabel = "Velodyne";
 
@@ -179,6 +181,10 @@ void CVelodyneScanner::loadConfig_sensorSpecific(
 			static_cast<unsigned int>(m_model),
 			TModelPropertiesFactory::getListKnownModels().c_str()))
 	}
+
+	// Optional HTTP-based settings:
+	MRPT_LOAD_HERE_CONFIG_VAR(rpm, int, m_lidar_rpm, cfg, sect);
+	m_lidar_return = cfg.read_enum<return_type_t>(sect, "return_type", m_lidar_return);
 
 	MRPT_END
 }
@@ -358,6 +364,15 @@ void CVelodyneScanner::initialize()
 	if (m_pcap_input_file.empty())
 	{ // Online
 
+		if (m_lidar_rpm>0) {
+			if (!setLidarRPM(m_lidar_rpm))
+				THROW_EXCEPTION("Error in setLidarRPM()!");
+		}
+		if (m_lidar_return != UNCHANGED) {
+			if (!setLidarReturnType(m_lidar_return))
+				THROW_EXCEPTION("Error in setLidarReturnType()!");
+		}
+
 		// (1) Create LIDAR DATA socket
 		// --------------------------------
 		if ( INVALID_SOCKET == (m_hDataSock = socket(PF_INET, SOCK_DGRAM, 0)) )
@@ -408,7 +423,7 @@ void CVelodyneScanner::initialize()
 
 		if (m_pcap_verbose) printf("\n[CVelodyneScanner] Opening PCAP file \"%s\"\n", m_pcap_input_file.c_str());
 		if ((m_pcap = pcap_open_offline(m_pcap_input_file.c_str(), errbuf) ) == NULL) {
-			THROW_EXCEPTION_CUSTOM_MSG1("Error opening PCAP file: '%s'",errbuf);
+			THROW_EXCEPTION_FMT("Error opening PCAP file: '%s'",errbuf);
 		}
 
 		// Build PCAP filter:
@@ -430,30 +445,6 @@ void CVelodyneScanner::initialize()
 
 #else
 		THROW_EXCEPTION("Velodyne: Reading from PCAP requires building MRPT with libpcap support!");
-#endif
-	}
-
-	// Save to PCAP file?
-	if (!m_pcap_output_file.empty())
-	{
-#if MRPT_HAS_LIBPCAP
-		char errbuf[PCAP_ERRBUF_SIZE];
-
-		mrpt::system::TTimeParts parts;
-		mrpt::system::timestampToParts(mrpt::system::now(), parts, true);
-		string	sFilePostfix = "_";
-		sFilePostfix += format("%04u-%02u-%02u_%02uh%02um%02us",(unsigned int)parts.year, (unsigned int)parts.month, (unsigned int)parts.day, (unsigned int)parts.hour, (unsigned int)parts.minute, (unsigned int)parts.second );
-		const string sFileName = m_pcap_output_file + mrpt::system::fileNameStripInvalidChars( sFilePostfix ) + string(".pcap");
-
-		m_pcap_out = pcap_open_dead(DLT_EN10MB, 65535);
-		ASSERTMSG_(m_pcap_out!=NULL, "Error creating PCAP live capture handle");
-
-		printf("\n[CVelodyneScanner] Writing to PCAP file \"%s\"\n", sFileName.c_str());
-		if ((m_pcap_dumper = pcap_dump_open(reinterpret_cast<pcap_t*>(m_pcap_out),sFileName.c_str())) == NULL) {
-			THROW_EXCEPTION_CUSTOM_MSG1("Error creating PCAP live dumper: '%s'",errbuf);
-		}
-#else
-		THROW_EXCEPTION("Velodyne: Writing PCAP files requires building MRPT with libpcap support!");
 #endif
 	}
 
@@ -559,6 +550,31 @@ bool CVelodyneScanner::receivePackets(
 
 	// Optional PCAP dump:
 #if MRPT_HAS_LIBPCAP
+	// Save to PCAP file?
+	if (!m_pcap_output_file.empty() && !m_pcap_out) // 1st time: create output file
+	{
+#if MRPT_HAS_LIBPCAP
+		char errbuf[PCAP_ERRBUF_SIZE];
+
+		mrpt::system::TTimeParts parts;
+		mrpt::system::timestampToParts(mrpt::system::now(), parts, true);
+		string	sFilePostfix = "_";
+		sFilePostfix += format("%04u-%02u-%02u_%02uh%02um%02us",(unsigned int)parts.year, (unsigned int)parts.month, (unsigned int)parts.day, (unsigned int)parts.hour, (unsigned int)parts.minute, (unsigned int)parts.second );
+		const string sFileName = m_pcap_output_file + mrpt::system::fileNameStripInvalidChars( sFilePostfix ) + string(".pcap");
+
+		m_pcap_out = pcap_open_dead(DLT_EN10MB, 65535);
+		ASSERTMSG_(m_pcap_out!=NULL, "Error creating PCAP live capture handle");
+
+		printf("\n[CVelodyneScanner] Writing to PCAP file \"%s\"\n", sFileName.c_str());
+		if ((m_pcap_dumper = pcap_dump_open(reinterpret_cast<pcap_t*>(m_pcap_out),sFileName.c_str())) == NULL) {
+			THROW_EXCEPTION_FMT("Error creating PCAP live dumper: '%s'",errbuf);
+		}
+#else
+		THROW_EXCEPTION("Velodyne: Writing PCAP files requires building MRPT with libpcap support!");
+#endif
+	}
+
+
 	if (m_pcap_out && m_pcap_dumper && (data_pkt_timestamp!=INVALID_TIMESTAMP || pos_pkt_timestamp!=INVALID_TIMESTAMP)) 
 	{
 		struct pcap_pkthdr header;
@@ -807,7 +823,7 @@ bool CVelodyneScanner::internal_read_PCAP_packet(
 		// rewind the file
 		pcap_close( reinterpret_cast<pcap_t*>(m_pcap) );
 		if ((m_pcap = pcap_open_offline(m_pcap_input_file.c_str(), errbuf) ) == NULL) {
-			THROW_EXCEPTION_CUSTOM_MSG1("Error opening PCAP file: '%s'",errbuf);
+			THROW_EXCEPTION_FMT("Error opening PCAP file: '%s'",errbuf);
 		}
 		m_pcap_file_empty = true;              // maybe the file disappeared?
 	} // loop back and try again
@@ -815,3 +831,95 @@ bool CVelodyneScanner::internal_read_PCAP_packet(
 	THROW_EXCEPTION("MRPT needs to be built against libpcap to enable this functionality")
 #endif
 }
+
+bool CVelodyneScanner::setLidarReturnType(return_type_t ret_type)
+{
+	/* HTTP-based config: http://10.0.0.100/tab/config.html
+		<form name='returns' method="post" action="/cgi/setting">
+		<span>Return&nbsp;Type:&nbsp;</span> <select name="returns"
+		onchange='javascript:this.form.submit()'>
+		<option>Strongest</option>
+		<option>Last</option>
+		<option>Dual</option>
+		</select>
+		</form>
+	*/
+	MRPT_START;
+	std::string strRet;
+	switch (ret_type)
+	{
+	case STRONGEST: strRet = "Strongest"; break;
+	case DUAL:      strRet = "Dual"; break;
+	case LAST:      strRet = "Last"; break;
+	case UNCHANGED: return true;
+	default:
+		THROW_EXCEPTION("Invalid value for return type!");
+	};
+
+	const std::string cmd = mrpt::format("returns=%s", strRet.c_str());
+	return this->internal_send_http_post(cmd);
+	MRPT_END;
+}
+
+bool CVelodyneScanner::setLidarRPM(int rpm)
+{
+	/* HTTP-based config: http://10.0.0.100/tab/config.html
+	<form name='rpm' method="post" action="/cgi/setting">
+	Motor
+	&nbsp;RPM:&nbsp;<input type="text" name="rpm" size="5" style="text-align:right" /><input type="button" value="+" onclick="javascript:this.form.rpm.value++;this.form.submit()" /><input type="button" value="-" onclick="javascript:this.form.rpm.value--;this.form.submit()" />
+	&nbsp;<input type="submit" value="Set" />
+	</form>
+	*/
+
+	MRPT_START;
+	const std::string cmd = mrpt::format("rpm=%i", rpm);
+	return this->internal_send_http_post(cmd);
+	MRPT_END;
+}
+
+bool CVelodyneScanner::setLidarOnOff(bool on)
+{
+	// laser = on|off
+	MRPT_START;
+	const std::string cmd = mrpt::format("laser=%s", on ? "on":"off");
+	return this->internal_send_http_post(cmd);
+	MRPT_END;
+}
+
+bool CVelodyneScanner::internal_send_http_post(const std::string &post_data)
+{
+	MRPT_START;
+
+	ASSERTMSG_(!m_device_ip.empty(), "A device IP address must be specified first!");
+
+	using namespace mrpt::utils::net;
+
+	vector_byte post_out;
+	string post_err_str;
+
+	int http_rep_code;
+	mrpt::utils::TParameters<string> extra_headers, out_headers;
+
+	extra_headers["Origin"] = mrpt::format("http://%s", m_device_ip.c_str());
+	extra_headers["Referer"] = mrpt::format("http://%s", m_device_ip.c_str());
+	extra_headers["Upgrade-Insecure-Requests"] = "1";
+	extra_headers["Content-Type"] = "application/x-www-form-urlencoded";
+
+	ERRORCODE_HTTP ret = http_request(
+		"POST",
+		post_data,
+		mrpt::format("http://%s/cgi/setting", m_device_ip.c_str()),
+		post_out,
+		post_err_str,
+		80 /* port */,
+		string(), string(), // user,pass
+		&http_rep_code,
+		&extra_headers,
+		&out_headers
+		);
+
+	return   mrpt::utils::net::erOk==ret && (http_rep_code == 200 || http_rep_code == 204); // OK codes
+
+	MRPT_END;
+}
+
