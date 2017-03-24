@@ -17,7 +17,7 @@ using namespace mrpt::nav;
 
 CPTG_RobotShape_Polygonal::CPTG_RobotShape_Polygonal() : 
 	m_robotShape(), 
-	m_robotApproxRadius(.01) 
+	m_robotMaxRadius(.01) 
 {
 }
 CPTG_RobotShape_Polygonal::~CPTG_RobotShape_Polygonal()
@@ -26,11 +26,12 @@ CPTG_RobotShape_Polygonal::~CPTG_RobotShape_Polygonal()
 
 void CPTG_RobotShape_Polygonal::setRobotShape(const mrpt::math::CPolygon & robotShape) 
 {
+	ASSERT_ABOVEEQ_(robotShape.size(),3u);
 	m_robotShape = robotShape;
-	double r_mean = .0;
-	for (const auto &v : m_robotShape) 
-		r_mean += v.norm();
-	m_robotApproxRadius = m_robotShape.empty() ? .01 : r_mean / m_robotShape.size();
+
+	m_robotMaxRadius = .0;  // Default minimum
+	for (const auto &v : m_robotShape)
+		mrpt::utils::keep_max(m_robotMaxRadius, v.norm());
 
 	internal_processNewRobotShape();
 }
@@ -131,9 +132,9 @@ void CPTG_RobotShape_Polygonal::internal_shape_saveToStream(mrpt::utils::CStream
 	out << m_robotShape;
 }
 
-double CPTG_RobotShape_Polygonal::getApproxRobotRadius() const
+double CPTG_RobotShape_Polygonal::getMaxRobotRadius() const
 {
-	return m_robotApproxRadius;
+	return m_robotMaxRadius;
 }
 
 bool CPTG_RobotShape_Polygonal::isPointInsideRobotShape(const double x, const double y) const
