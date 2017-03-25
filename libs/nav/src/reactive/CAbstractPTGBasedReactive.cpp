@@ -368,6 +368,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		}
 
 		const TPose2D relTarget = TPose2D(CPose2D(m_navigationParams->target) - (CPose2D(m_curPoseVel.pose) + relPoseVelCmd));
+		const double relTargetDist = ::hypot(relTarget.x, relTarget.y);
 
 		m_infoPerPTG.assign(nPTGs+1, TInfoPerPTG());  // reset contents
 		m_infoPerPTG_timestamp = tim_start_iteration;
@@ -397,14 +398,28 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		// =========
 		// This approach is only possible if:
 		bool NOP_not_too_old = true;
+		bool NOP_not_too_close_and_have_to_slowdown = true;
 		double NOP_max_time = -1.0, NOP_At = -1.0;
+		double slowdowndist = .0;
 		const bool can_do_nop_motion = (m_lastSentVelCmd.isValid() &&
 			!target_changed_since_last_iteration &&
 			getPTG(m_lastSentVelCmd.ptg_index)->supportVelCmdNOP()) &&
-			(NOP_not_too_old = (NOP_At=mrpt::system::timeDifference(m_lastSentVelCmd.tim_send_cmd_vel, tim_start_iteration)) < (NOP_max_time=getPTG(m_lastSentVelCmd.ptg_index)->maxTimeInVelCmdNOP(m_lastSentVelCmd.ptg_alpha_index)) );
+			(NOP_not_too_old = (NOP_At=mrpt::system::timeDifference(m_lastSentVelCmd.tim_send_cmd_vel, tim_start_iteration)) < (NOP_max_time=getPTG(m_lastSentVelCmd.ptg_index)->maxTimeInVelCmdNOP(m_lastSentVelCmd.ptg_alpha_index)) ) &&
+			(NOP_not_too_close_and_have_to_slowdown = 
+				(!m_navigationParams->enableApproachSlowDown || 
+				( relTargetDist
+					>
+				  (slowdowndist = m_holonomicMethod[m_lastSentVelCmd.ptg_index]->getTargetApproachSlowDownDistance())  // slowdowndist is assigned here, inside the if() to be sure the index in m_lastSentVelCmd is valid!
+				)
+				)
+			)
+			;
 
 		if (!NOP_not_too_old) {
 			newLogRec.additional_debug_msgs["PTG_cont"] = mrpt::format("PTG-continuation not allowed: previous command timed-out (At=%.03f > Max_At=%.03f)", NOP_At, NOP_max_time);
+		}
+		if (!NOP_not_too_close_and_have_to_slowdown) {
+			newLogRec.additional_debug_msgs["PTG_cont_trgdst"] = mrpt::format("PTG-continuation not allowed: target too close and must start slow-down (trgDist=%.03f < SlowDownDist=%.03f)", relTargetDist, slowdowndist);
 		}
 
 		CPose2D rel_cur_pose_wrt_last_vel_cmd_NOP, rel_pose_PTG_origin_wrt_sense_NOP;
