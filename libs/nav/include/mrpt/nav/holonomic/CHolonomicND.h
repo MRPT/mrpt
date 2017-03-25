@@ -101,6 +101,8 @@ namespace mrpt
 
 		TOptions options;  //!< Parameters of the algorithm (can be set manually or loaded from CHolonomicND::initialize or options.loadFromConfigFile(), etc.)
 
+		double getTargetApproachSlowDownDistance() const MRPT_OVERRIDE { return options.TARGET_SLOW_APPROACHING_DISTANCE; }
+
 	private:
 		unsigned int m_last_selected_sector;
 
