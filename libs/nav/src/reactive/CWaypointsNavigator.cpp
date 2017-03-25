@@ -323,7 +323,8 @@ void mrpt::nav::CWaypointsNavigator::TWaypointsNavigatorParams::saveToConfigFile
 
 CWaypointsNavigator::TWaypointsNavigatorParams::TWaypointsNavigatorParams() :
 	max_distance_to_allow_skip_waypoint(-1.0),
-	min_timesteps_confirm_skip_waypoints(1)
+	min_timesteps_confirm_skip_waypoints(1),
+	waypoint_angle_tolerance( mrpt::utils::DEG2RAD(5.0) )
 {
 }
 
