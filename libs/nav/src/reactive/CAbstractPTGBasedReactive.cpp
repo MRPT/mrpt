@@ -10,9 +10,9 @@
 #include "nav-precomp.h" // Precomp header
 
 #include <mrpt/nav/reactive/CAbstractPTGBasedReactive.h>
-#include <mrpt/nav/holonomic/CHolonomicVFF.h>
-#include <mrpt/nav/holonomic/CHolonomicND.h>
-#include <mrpt/nav/holonomic/CHolonomicFullEval.h>
+#include <mrpt/nav/holonomic/CHolonomicVFF.h>  // TODO: Remove for MRPT 2.0
+#include <mrpt/nav/holonomic/CHolonomicND.h> // TODO: Remove for MRPT 2.0
+#include <mrpt/nav/holonomic/CHolonomicFullEval.h> // TODO: Remove for MRPT 2.0
 #include <mrpt/system/filesystem.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/math/geometry.h>
@@ -182,6 +182,7 @@ void CAbstractPTGBasedReactive::getLastLogRecord( CLogFileRecord &o )
 	o = lastLogRecord;
 }
 
+// TODO: Remove for MRPT 2.0
 static std::string holoMethodEnum2ClassName(const THolonomicMethod method)
 {
 	std::string className;
@@ -1421,3 +1422,17 @@ void CAbstractPTGBasedReactive::saveConfigFile(mrpt::utils::CConfigFileBase & c)
 		}
 	}
 }
+
+void CAbstractPTGBasedReactive::setTargetApproachSlowDownDistance(const double dist)
+{
+	for (auto &o : m_holonomicMethod) {
+		o->setTargetApproachSlowDownDistance(dist);
+	}
+}
+
+double CAbstractPTGBasedReactive::getTargetApproachSlowDownDistance() const
+{
+	ASSERT_(!m_holonomicMethod.empty());
+	return m_holonomicMethod[0]->getTargetApproachSlowDownDistance();
+}
+

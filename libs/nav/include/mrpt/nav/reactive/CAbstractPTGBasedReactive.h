@@ -202,6 +202,9 @@ namespace mrpt
 			return params_abstract_ptg_navigator.robot_absolute_speed_limits;
 		}
 
+		void setTargetApproachSlowDownDistance(const double dist);  //!< Changes this parameter in all inner holonomic navigator instances [m].
+		double getTargetApproachSlowDownDistance() const;  //!< Returns this parameter for the first inner holonomic navigator instances  [m] (should be the same in all of them?)
+
 	protected:
 		/** The main method for the navigator */
 		virtual void  performNavigationStep() MRPT_OVERRIDE;
