@@ -63,6 +63,9 @@ void CHolonomicFullEval::navigate(const NavInput & ni, NavOutput &no)
 
 	ASSERT_(ni.clearance!=nullptr);
 
+	const auto ptg = getAssociatedPTG();
+	const double ptg_ref_dist = ptg ? ptg->getRefDistance() : 1.0;
+
 	// Create a log record for returning data.
 	CLogFileRecord_FullEvalPtr log = CLogFileRecord_FullEval::Create();
 	no.logRecord = log;
@@ -118,9 +121,9 @@ void CHolonomicFullEval::navigate(const NavInput & ni, NavOutput &no)
 		}
 
 		// Discount "circular loop aparent free distance" here, but don't count it for clearance, since those are not real obstacle points.
-		if (getAssociatedPTG()) {
-			const double max_real_freespace = getAssociatedPTG()->getActualUnloopedPathLength(i);
-			const double max_real_freespace_norm = max_real_freespace / getAssociatedPTG()->getRefDistance();
+		if (ptg!=nullptr) {
+			const double max_real_freespace = ptg->getActualUnloopedPathLength(i);
+			const double max_real_freespace_norm = max_real_freespace / ptg->getRefDistance();
 
 			mrpt::utils::keep_min(scores[0], max_real_freespace_norm);
 		}
@@ -374,7 +377,9 @@ void CHolonomicFullEval::navigate(const NavInput & ni, NavOutput &no)
 	// (even if that score was not the maximum!).
 	if (target_dist<0.99 && ni.obstacles[target_k]>target_dist*1.01 &&
 		ni.clearance->getClearance(target_k /*path index*/, std::min(0.99, target_dist*0.95), true /*interpolate path*/)
-			> options.TOO_CLOSE_OBSTACLE
+			> options.TOO_CLOSE_OBSTACLE 
+		&&
+		dirs_eval[target_k]>0 /* the direct target direction has at least a minimum score */
 		)
 	{
 		best_k = target_k;
@@ -399,14 +404,13 @@ void CHolonomicFullEval::navigate(const NavInput & ni, NavOutput &no)
 		// Speed control: Reduction factors
 		// ---------------------------------------------
 		const double targetNearnessFactor = m_enableApproachTargetSlowDown ?
-			std::min(1.0, ni.target.norm() / (options.TARGET_SLOW_APPROACHING_DISTANCE))
+			std::min(1.0, ni.target.norm() / (options.TARGET_SLOW_APPROACHING_DISTANCE / ptg_ref_dist))
 			:
 			1.0;
 
-
 		//const double obs_clearance = m_dirs_scores(best_k, 4);
 		const double obs_dist = ni.obstacles[best_k]; // Was: min with obs_clearance too.
-		const double obs_dist_th = std::max(options.TOO_CLOSE_OBSTACLE, options.OBSTACLE_SLOW_DOWN_DISTANCE*ni.maxObstacleDist);
+		const double obs_dist_th = std::max(options.TOO_CLOSE_OBSTACLE, (options.OBSTACLE_SLOW_DOWN_DISTANCE / ptg_ref_dist)*ni.maxObstacleDist);
 		double riskFactor = 1.0;
 		if (obs_dist <= options.TOO_CLOSE_OBSTACLE) {
 			riskFactor = 0.0;

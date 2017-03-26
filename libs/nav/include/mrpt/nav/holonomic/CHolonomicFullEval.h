@@ -36,7 +36,7 @@ namespace mrpt
 	 * // 2: Distance of end collision-free point to target (Euclidean)
 	 * // 3: Hysteresis
 	 * // 4: Clearness to nearest obstacle along path
-	 * TARGET_SLOW_APPROACHING_DISTANCE = 0.20   // Start to reduce speed when closer than this to target.
+	 * TARGET_SLOW_APPROACHING_DISTANCE = 0.20   // Start to reduce speed when closer than this to target [m]
 	 * TOO_CLOSE_OBSTACLE               = 0.02   // Directions with collision-free distances below this threshold are not elegible.
 	 * HYSTERESIS_SECTOR_COUNT          = 5      // Range of "sectors" (directions) for hysteresis over succesive timesteps
 	 * PHASE1_FACTORS   = 0 1 2                  // Indices of the factors above to be considered in phase 1
@@ -64,7 +64,7 @@ namespace mrpt
 		struct NAV_IMPEXP TOptions : public mrpt::utils::CLoadableOptions
 		{
 			double TOO_CLOSE_OBSTACLE;  //!< Directions with collision-free distances below this threshold are not elegible.
-			double TARGET_SLOW_APPROACHING_DISTANCE; //!< Start to reduce speed when closer than this to target.
+			double TARGET_SLOW_APPROACHING_DISTANCE; //!< Start to reduce speed when closer than this to target  [m]
 			double OBSTACLE_SLOW_DOWN_DISTANCE;      //!< Start to reduce speed when clearance is below this value ([0,1] ratio wrt obstacle reference/max distance)
 			double HYSTERESIS_SECTOR_COUNT; //!< Range of "sectors" (directions) for hysteresis over succesive timesteps
 			std::vector<double>   factorWeights;  //!< See docs above
@@ -85,6 +85,7 @@ namespace mrpt
 		TOptions options;  //!< Parameters of the algorithm (can be set manually or loaded from CHolonomicFullEval::initialize or options.loadFromConfigFile(), etc.)
 
 		double getTargetApproachSlowDownDistance() const MRPT_OVERRIDE { return options.TARGET_SLOW_APPROACHING_DISTANCE; }
+		void setTargetApproachSlowDownDistance(const double dist) MRPT_OVERRIDE { options.TARGET_SLOW_APPROACHING_DISTANCE = dist; }
 
 	private:
 		unsigned int m_last_selected_sector;

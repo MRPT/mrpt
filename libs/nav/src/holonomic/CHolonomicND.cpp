@@ -49,6 +49,9 @@ void CHolonomicND::saveConfigFile(mrpt::utils::CConfigFileBase &c) const
   ---------------------------------------------------------------*/
 void CHolonomicND::navigate(const NavInput & ni, NavOutput &no)
 {
+	const auto ptg = getAssociatedPTG();
+	const double ptg_ref_dist = ptg ? ptg->getRefDistance() : 1.0;
+
 	TGapArray			gaps;
 	TSituations			situation;
 	unsigned int		selectedSector;
@@ -89,7 +92,7 @@ void CHolonomicND::navigate(const NavInput & ni, NavOutput &no)
 		// Speed control: Reduction factors
 		// ---------------------------------------------
 		const double targetNearnessFactor = m_enableApproachTargetSlowDown ? 
-			std::min(1.0, ni.target.norm() / (options.TARGET_SLOW_APPROACHING_DISTANCE))
+			std::min(1.0, ni.target.norm() / (options.TARGET_SLOW_APPROACHING_DISTANCE / ptg_ref_dist))
 			:
 			1.0;
 
