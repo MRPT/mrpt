@@ -58,7 +58,7 @@ void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) cons
 			out << infoPerPTG[i].timeForTPObsTransformation << infoPerPTG[i].timeForHolonomicMethod; // made double in v12
 			out << infoPerPTG[i].desiredDirection << infoPerPTG[i].desiredSpeed << infoPerPTG[i].evaluation; // made double in v12
 			// removed in v23: out << evaluation_org << evaluation_priority; // added in v21
-			out << *infoPerPTG[i].HLFR;
+			out << infoPerPTG[i].HLFR;
 
 			// Version 9: Removed security distances. Added optional field with PTG info.
 			const bool there_is_ptg_data = infoPerPTG[i].ptg.present();
