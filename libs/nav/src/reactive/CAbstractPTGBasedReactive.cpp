@@ -877,6 +877,27 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 	//  Moving away of the target is negatively valued.
 	cm.props["dist_eucl_final"] = std::hypot(WS_Target.x- pose.x, WS_Target.y- pose.y);
 
+
+	// Use PTG clearance methods to evaluate the real-world (WorkSpace) minimum distance to target:
+	{
+		std::map<double, double> pathDists;
+		const double D = cm.PTG->getRefDistance();
+		const int num_steps = ceil( D * 2.0);
+		for (int i = 0; i < num_steps; i++) {
+			pathDists[i / double(num_steps)] = 100.0; // default normalized distance to target (a huge value)
+		}
+
+		cm.PTG->evalClearanceSingleObstacle(WS_Target.x, WS_Target.y, move_k, pathDists, false /*treat point as target, not obstacle*/ );
+
+		const auto it = std::min_element(
+			pathDists.begin(), pathDists.end(),
+			[colfree](decltype(pathDists)::value_type& l, decltype(pathDists)::value_type& r) -> bool {
+			return (l.second < r.second) && l.first<colfree;
+			}
+		);
+		cm.props["dist_eucl_min"] = (it!= pathDists.end()) ? it->second * cm.PTG->getRefDistance() : 100.0;
+	}
+
 	// Factor5: Hysteresis:
 	// -----------------------------------------------------
 	double &hysteresis = cm.props["hysteresis"];
