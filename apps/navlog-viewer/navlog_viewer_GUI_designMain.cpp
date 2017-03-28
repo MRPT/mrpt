@@ -961,9 +961,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 			const size_t nAlphas = pI.TP_Obstacles.size();
 			//ASSERT_(nAlphas>0)  // In case of "invalid" PTGs during navigation, TP_Obstacles may be left uncomputed.
 
-			if (!cbList->IsChecked(m_cbIdx_ShowAllDebugFields)) {
-				win->clearTextMessages();
-			}
+			win->clearTextMessages();
 
 			win->addTextMessage(4, 4,
 				format("[%u]:%s", nPTG, log.infoPerPTG[nPTG].PTG_desc.c_str()),
