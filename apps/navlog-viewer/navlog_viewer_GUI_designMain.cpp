@@ -1285,6 +1285,10 @@ void navlog_viewer_GUI_designDialog::OnmnuSeePTGParamsSelected(wxCommandEvent& e
 
 void navlog_viewer_GUI_designDialog::OncbGlobalFrameClick(wxCommandEvent& event)
 {
+	if (cbList->IsChecked(m_cbIdx_ShowCursor))
+		timMouseXY.Start(100, false);
+	else timMouseXY.Stop();
+
 	wxScrollEvent d;
 	OnslidLogCmdScroll(d);
 }
@@ -1577,13 +1581,6 @@ void navlog_viewer_GUI_designDialog::OnmnuMatlabExportPaths(wxCommandEvent & eve
 		"figure(); plot(cmdvels(:,1),cmdvels(:,2:"<< (MAX_CMDVEL_COMPONENTS+1) <<"), '.', cmdvels(:,1),cmdvels(:,2:" << (MAX_CMDVEL_COMPONENTS + 1) << "), '-'); xlabel('Time'); title('Issued motion commands (meaning CVehicleVelCmd-dependend)');\n\n";
 
 	WX_END_TRY;
-}
-
-void navlog_viewer_GUI_designDialog::OncbShowXYClick(wxCommandEvent& event)
-{
-	if (cbList->IsChecked(m_cbIdx_ShowCursor))
-	     timMouseXY.Start(100, false);
-	else timMouseXY.Stop();
 }
 
 void navlog_viewer_GUI_designDialog::OnrbPerPTGPlotsSelect(wxCommandEvent& event)
