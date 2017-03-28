@@ -10,6 +10,8 @@
 
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/system/datetime.h>
+#include <mrpt/opengl/opengl_frwds.h>
+#include <mrpt/utils/TColor.h>
 #include <vector>
 #include <string>
 
@@ -42,10 +44,22 @@ namespace mrpt
 
 		bool isValid() const; //!< Check whether all the minimum mandatory fields have been filled by the user.
 		TWaypoint(); //!< Ctor with default values
-		TWaypoint(double target_x, double target_y, double allowed_distance, bool allow_skip = true);
+		TWaypoint(double target_x, double target_y, double allowed_distance, bool allow_skip = true, double target_heading_ = INVALID_NUM);
 		std::string getAsText() const; //!< get in human-readable format
 
 		static const double INVALID_NUM; //!< The default value of fields (used to detect non-set values)
+	};
+
+	/** used in getAsOpenglVisualization() */
+	struct NAV_IMPEXP TWaypointsRenderingParams
+	{
+		TWaypointsRenderingParams();
+
+		double outter_radius, inner_radius;
+		double outter_radius_non_skippable, inner_radius_non_skippable;
+		double heading_arrow_len;
+		mrpt::utils::TColor  color_regular, color_current_goal;
+		bool show_labels;
 	};
 
 	/** The struct for requesting navigation requests for a sequence of waypoints.
@@ -60,13 +74,17 @@ namespace mrpt
 
 		TWaypointSequence(); //!< Ctor with default values
 		std::string getAsText() const; //!< Gets navigation params as a human-readable format
+		/** Renders the sequence of waypoints (previous contents of `obj` are cleared) */
+		void getAsOpenglVisualization(mrpt::opengl::CSetOfObjects &obj, const mrpt::nav::TWaypointsRenderingParams &params = mrpt::nav::TWaypointsRenderingParams()) const;
 	};
 
 	/** A waypoint with an execution status. \ingroup nav_reactive */
 	struct NAV_IMPEXP TWaypointStatus : public TWaypoint
 	{
-		bool reached; //!< Whether this waypoint has been reached already (to within the allowed distance as per user specifications).
+		bool reached; //!< Whether this waypoint has been reached already (to within the allowed distance as per user specifications) or skipped.
+		bool skipped; //!< If `reached==true` this boolean tells whether the waypoint was physically reached (false) or marked as reached because it was skipped (true).
 		mrpt::system::TTimeStamp  timestamp_reach; //!< Timestamp of when this waypoint was reached. (Default=INVALID_TIMESTAMP means not reached so far)
+
 
 		TWaypointStatus();
 		TWaypointStatus & operator =(const TWaypoint &wp);
@@ -89,6 +107,9 @@ namespace mrpt
 
 		TWaypointStatusSequence(); //!< Ctor with default values
 		std::string getAsText() const; //!< Gets navigation params as a human-readable format
+
+		/** Renders the sequence of waypoints (previous contents of `obj` are cleared) */
+		void getAsOpenglVisualization(mrpt::opengl::CSetOfObjects &obj, const mrpt::nav::TWaypointsRenderingParams &params = mrpt::nav::TWaypointsRenderingParams()) const;
 	};
 
   }

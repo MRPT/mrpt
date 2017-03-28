@@ -208,7 +208,7 @@ namespace mrpt
 				if (!missing_predictions_to_add.empty())
 				{
 					const size_t nNew = missing_predictions_to_add.size();
-					MRPT_LOG_WARN_STREAM << "[KF] *Performance Warning*: " <<nNew <<  " LMs were not correctly predicted by OnPreComputingPredictions().";
+					MRPT_LOG_WARN_STREAM("[KF] *Performance Warning*: " <<nNew <<  " LMs were not correctly predicted by OnPreComputingPredictions().");
 
 					ASSERTDEB_(FEAT_SIZE!=0)
 						for (size_t j=0;j<nNew;j++)

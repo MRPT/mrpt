@@ -192,7 +192,7 @@ void CTimeLogger::saveToCSVFile(const std::string &csv_file)  const
 
 void CTimeLogger::dumpAllStats(const size_t  column_width) const
 {
-	MRPT_LOG_INFO_STREAM << "dumpAllStats:\n" << getStatsAsText(column_width);
+	MRPT_LOG_INFO_STREAM("dumpAllStats:\n" << getStatsAsText(column_width));
 }
 
 void CTimeLogger::do_enter(const char *func_name)

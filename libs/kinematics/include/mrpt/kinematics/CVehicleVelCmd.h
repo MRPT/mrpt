@@ -56,8 +56,8 @@ namespace mrpt
 			* \param[out] out_vel_cmd
 			*
 			* Users can directly inherit from existing implementations instead of manually redefining this method:
-			*  - mrpt::nav::CReactiveInterfaceImplementation_DiffDriven
-			*  - mrpt::nav::CReactiveInterfaceImplementation_Holo
+			*  - mrpt::kinematics::CVehicleVelCmd_DiffDriven 
+			*  - mrpt::kinematics::CVehicleVelCmd_Holo
 			*/
 			virtual void cmdVel_scale(double vel_scale) = 0;
 
