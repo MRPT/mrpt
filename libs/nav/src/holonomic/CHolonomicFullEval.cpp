@@ -50,9 +50,14 @@ struct TGap
 	int    k_from, k_to;
 	double min_eval, max_eval;
 	bool   contains_target_k;
+	int    k_best_eval; //!< Direction with the best evaluation inside the gap.
 
 	TGap() :
-		k_from(-1), k_to(-1), min_eval(std::numeric_limits<double>::max()), max_eval(-std::numeric_limits<double>::max()), contains_target_k(false)
+		k_from(-1), k_to(-1), 
+		min_eval(std::numeric_limits<double>::max()), 
+		max_eval(-std::numeric_limits<double>::max()), 
+		contains_target_k(false), 
+		k_best_eval(-1)
 	{}
 };
 
@@ -316,6 +321,9 @@ void CHolonomicFullEval::navigate(const NavInput & ni, NavOutput &no)
 			if (inside_gap)
 			{
 				auto &active_gap = *gaps.rbegin();
+				if (val >= active_gap.max_eval) {
+					active_gap.k_best_eval = i;
+				}
 				mrpt::utils::keep_max(active_gap.max_eval, val);
 				mrpt::utils::keep_min(active_gap.min_eval, val);
 
@@ -357,9 +365,11 @@ void CHolonomicFullEval::navigate(const NavInput & ni, NavOutput &no)
 		const unsigned int gap_width = best_gap.k_to - best_gap.k_from;
 		const unsigned int width_threshold = mrpt::utils::round(options.gap_width_ratio_threshold * nDirs);
 
-		// Move straihgt towards target?
+		// Move straight to target?
 		if (smallest_clearance_in_k_units >= clearance_threshold &&
-			gap_width>=width_threshold)
+			gap_width>=width_threshold && 
+			ni.obstacles[target_k]>target_dist*1.01
+			)
 		{
 			best_k = target_k;
 		}
