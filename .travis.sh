@@ -1,4 +1,6 @@
-#!/bin/sh
+#!/bin/bash
+
+set -e   # Make sure any error makes the script to return an error code
 
 MRPT_DIR=`pwd`
 BUILD_DIR=build
@@ -22,6 +24,8 @@ function build ()
 
   cmake $MRPT_DIR -DBUILD_EXAMPLES=$BUILD_EXAMPLES -DBUILD_APPLICATIONS=TRUE -DBUILD_TESTING=FALSE -DBUILD_ARIA=$BUILD_ARIA
   make -j2
+
+	cd $MRPT_DIR
 }
 
 command_exists () {
@@ -36,13 +40,16 @@ function test ()
   fi
 
   mkdir $BUILD_DIR && cd $BUILD_DIR
-  cmake $MRPT_DIR -DBUILD_APPLICATIONS=FALSE -DBUILD_ARIA=FALSE
+  cmake $MRPT_DIR -DBUILD_APPLICATIONS=FALSE -DBUILD_ARIA=FALSE -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
+  # Remove gdb use for coverage test reports.
   # Use `test_gdb` to show stack traces of failing unit tests.
-  if command_exists gdb ; then
-    make test_gdb
-  else
+#  if command_exists gdb ; then
+#    make test_gdb
+#  else
     make test
-  fi
+#  fi
+
+  cd $MRPT_DIR
 }
 
 case $TASK in

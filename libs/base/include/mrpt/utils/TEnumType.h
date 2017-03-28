@@ -34,14 +34,12 @@ namespace mrpt
 			/** Gives the numerical name for a given enum text name \exception std::exception on unknown enum name */
 			static ENUMTYPE    name2value(const std::string &name)
 			{
-				if (getBimap().empty()) TEnumTypeFiller<ENUMTYPE>::fill(getBimap());
 				return getBimap().inverse(name);
 			}
 
 			/** Gives the textual name for a given enum value \exception std::exception on unknown enum value name */
 			static std::string value2name(const ENUMTYPE val)
 			{
-				if (getBimap().empty()) TEnumTypeFiller<ENUMTYPE>::fill(getBimap());
 				return getBimap().direct(val);
 			}
 
@@ -49,6 +47,7 @@ namespace mrpt
 			static inline bimap<ENUMTYPE,std::string> &getBimap()
 			{
 				static bimap<ENUMTYPE,std::string> data;
+				if (data.empty()) TEnumTypeFiller<ENUMTYPE>::fill(data);
 				return data;
 			}
 		};

@@ -189,12 +189,12 @@ bool CReactiveNavigationSystem::implementSenseObstacles(mrpt::system::TTimeStamp
 	}
 	catch (std::exception &e)
 	{
-		MRPT_LOG_ERROR_STREAM << "[CReactiveNavigationSystem::STEP2_Sense] Exception:" << e.what();
+		MRPT_LOG_ERROR_STREAM( "[CReactiveNavigationSystem::STEP2_Sense] Exception:" << e.what());
 		return false;
 	}
 	catch (...)
 	{
-		MRPT_LOG_ERROR_STREAM << "[CReactiveNavigationSystem::STEP2_Sense] Unexpected exception!";
+		MRPT_LOG_ERROR_STREAM( "[CReactiveNavigationSystem::STEP2_Sense] Unexpected exception!");
 		return false;
 	}
 

@@ -263,7 +263,7 @@ mrpt::kinematics::CVehicleVelCmd::Ptr CPTG_DiffDrive_CollisionGridBased::directi
 /*---------------------------------------------------------------
 					getTPObstacle
   ---------------------------------------------------------------*/
-const CPTG_DiffDrive_CollisionGridBased::TCollisionCell & CPTG_DiffDrive_CollisionGridBased::CColisionGrid::getTPObstacle(
+const CPTG_DiffDrive_CollisionGridBased::TCollisionCell & CPTG_DiffDrive_CollisionGridBased::CCollisionGrid::getTPObstacle(
 	const float obsX, const float obsY) const
 {
 	static const TCollisionCell  emptyCell;
@@ -275,7 +275,7 @@ const CPTG_DiffDrive_CollisionGridBased::TCollisionCell & CPTG_DiffDrive_Collisi
 	Updates the info into a cell: It updates the cell only
 	  if the distance d for the path k is lower than the previous value:
   ---------------------------------------------------------------*/
-void CPTG_DiffDrive_CollisionGridBased::CColisionGrid::updateCellInfo(
+void CPTG_DiffDrive_CollisionGridBased::CCollisionGrid::updateCellInfo(
 	const unsigned int icx,
 	const unsigned int icy,
 	const uint16_t k,
@@ -352,7 +352,7 @@ const uint32_t COLGRID_FILE_MAGIC     = 0xC0C0C0C3;
 /*---------------------------------------------------------------
 					Save to file
   ---------------------------------------------------------------*/
-bool CPTG_DiffDrive_CollisionGridBased::CColisionGrid::saveToFile( mrpt::utils::CStream *f, const mrpt::math::CPolygon & computed_robotShape ) const
+bool CPTG_DiffDrive_CollisionGridBased::CCollisionGrid::saveToFile( mrpt::utils::CStream *f, const mrpt::math::CPolygon & computed_robotShape ) const
 {
 	try
 	{
@@ -397,7 +397,7 @@ bool CPTG_DiffDrive_CollisionGridBased::CColisionGrid::saveToFile( mrpt::utils::
 /*---------------------------------------------------------------
 						loadFromFile
   ---------------------------------------------------------------*/
-bool CPTG_DiffDrive_CollisionGridBased::CColisionGrid::loadFromFile( mrpt::utils::CStream *f, const mrpt::math::CPolygon & current_robotShape  )
+bool CPTG_DiffDrive_CollisionGridBased::CCollisionGrid::loadFromFile( mrpt::utils::CStream *f, const mrpt::math::CPolygon & current_robotShape  )
 {
 	try
 	{
@@ -475,7 +475,7 @@ bool CPTG_DiffDrive_CollisionGridBased::CColisionGrid::loadFromFile( mrpt::utils
 	}
 	catch(std::exception &e)
 	{
-		std::cerr << "[CColisionGrid::loadFromFile] " << e.what();
+		std::cerr << "[CCollisionGrid::loadFromFile] " << e.what();
 		return false;
 	}
 	catch(...)
@@ -717,7 +717,7 @@ void CPTG_DiffDrive_CollisionGridBased::internal_initialize(const std::string & 
 
 						if ( poly.contains( mrpt::math::TPoint2D(cx,cy) ) )
 						{
-							// Colision!! Update cell info:
+							// Collision!! Update cell info:
 							const float d = this->getPathDist(k, n);
 							m_collisionGrid.updateCellInfo(ix  ,iy  ,  k,d);
 							m_collisionGrid.updateCellInfo(ix-1,iy  ,  k,d);

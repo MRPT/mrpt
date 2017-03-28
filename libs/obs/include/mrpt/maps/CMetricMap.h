@@ -14,14 +14,13 @@
 #include <mrpt/utils/CObservable.h>
 #include <mrpt/math/math_frwds.h>
 #include <mrpt/math/lightweight_geom_data.h>
-#include <mrpt/opengl/opengl_frwds.h>
+#include <mrpt/obs/CObservation.h>
+#include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/maps/CMetricMapEvents.h>
 #include <mrpt/maps/TMetricMapInitializer.h>
 #include <mrpt/maps/metric_map_types.h>
 #include <mrpt/obs/obs_frwds.h>
 #include <mrpt/obs/link_pragmas.h>
-#include <mrpt/opengl/CSetOfObjects.h>
-#include <mrpt/obs/CObservation.h>
 #include <deque>
 
 namespace mrpt
@@ -44,9 +43,9 @@ namespace mrpt
 		 *	  - mrpt::obs::mrptEventMetricMapClear: Upon call of the ::clear() method.
 		 *    - mrpt::obs::mrptEventMetricMapInsert: Upon insertion of an observation that effectively modifies the map (e.g. inserting an image into a grid map will NOT raise an event, inserting a laser scan will).
 		 *
-		 * Checkout each derived class documentation to learn which mrpt::obs::CObservation-derived classes are supported by CMetricMap::insertObservation()
+		 * To check what observations are supported by each metric map, see: \ref maps_observations
 		 *
-		 * \note All derived class must implement a static class factory `<metric_map_class>::MapDefinition()` that builds a default TMetricMapInitializer [New in MRPT 1.3.0] 
+		 * \note All derived class must implement a static class factory `<metric_map_class>::MapDefinition()` that builds a default TMetricMapInitializer [New in MRPT 1.3.0]
 		 *
 		 * \sa CObservation, CSensoryFrame, CMultiMetricMap
 	 	 * \ingroup mrpt_obs_grp
@@ -65,7 +64,7 @@ namespace mrpt
 			/** Internal method called by insertObservation() */
 			virtual bool  internal_insertObservation(
 				const mrpt::obs::CObservation *obs,
-				const mrpt::poses::CPose3D *robotPose = nullptr ) = 0;
+				const mrpt::poses::CPose3D *robotPose = NULL ) = 0;
 
 			/** Internal method called by computeObservationLikelihood() */
 			virtual double internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom ) = 0;
@@ -107,18 +106,18 @@ namespace mrpt
 			inline void  loadFromSimpleMap( const mrpt::maps::CSimpleMap &Map ) {  loadFromProbabilisticPosesAndObservations(Map); }
 
 			/** Insert the observation information into this map. This method must be implemented
-			 *    in derived classes.
+			 *    in derived classes. See: \ref maps_observations
 			 * \param obs The observation
-			 * \param robotPose The 3D pose of the robot mobile base in the map reference system, or nullptr (default) if you want to use the origin.
+			 * \param robotPose The 3D pose of the robot mobile base in the map reference system, or NULL (default) if you want to use the origin.
 			 *
 			 * \sa CObservation::insertObservationInto
 			 */
-			bool  insertObservation(const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = nullptr );
+			bool  insertObservation(const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = NULL );
 
-			/** A wrapper for smart pointers, just calls the non-smart pointer version. */
-			bool  insertObservationPtr(const mrpt::obs::CObservation::Ptr &obs, const mrpt::poses::CPose3D *robotPose = nullptr );
+			/** A wrapper for smart pointers, just calls the non-smart pointer version.  See: \ref maps_observations  */
+			bool  insertObservationPtr(const mrpt::obs::CObservation::Ptr &obs, const mrpt::poses::CPose3D *robotPose = NULL );
 
-			/** Computes the log-likelihood of a given observation given an arbitrary robot 3D pose.
+			/** Computes the log-likelihood of a given observation given an arbitrary robot 3D pose.  See: \ref maps_observations
 			 *
 			 * \param takenFrom The robot's pose the observation is supposed to be taken from.
 			 * \param obs The observation.
@@ -131,7 +130,7 @@ namespace mrpt
 			/** \overload */
 			double	 computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose2D &takenFrom );
 
-			/** Returns true if this map is able to compute a sensible likelihood function for this observation (i.e. an occupancy grid map cannot with an image).
+			/** Returns true if this map is able to compute a sensible likelihood function for this observation (i.e. an occupancy grid map cannot with an image).  See: \ref maps_observations
 			 * \param obs The observation.
 			 * \sa computeObservationLikelihood, genericMapParams.enableObservationLikelihood
 			 */
@@ -140,7 +139,7 @@ namespace mrpt
 			/** \overload */
 			bool canComputeObservationLikelihood( const mrpt::obs::CObservation::Ptr &obs ) const;
 
-			/** Returns the sum of the log-likelihoods of each individual observation within a mrpt::obs::CSensoryFrame.
+			/** Returns the sum of the log-likelihoods of each individual observation within a mrpt::obs::CSensoryFrame.  See: \ref maps_observations
 			 *
 			 * \param takenFrom The robot's pose the observation is supposed to be taken from.
 			 * \param sf The set of observations in a CSensoryFrame.
@@ -149,7 +148,7 @@ namespace mrpt
 			 */
 			double computeObservationsLikelihood( const mrpt::obs::CSensoryFrame &sf, const mrpt::poses::CPose2D &takenFrom );
 
-			/** Returns true if this map is able to compute a sensible likelihood function for this observation (i.e. an occupancy grid map cannot with an image).
+			/** Returns true if this map is able to compute a sensible likelihood function for this observation (i.e. an occupancy grid map cannot with an image).  See: \ref maps_observations
 			 * \param sf The observations.
 			 * \sa canComputeObservationLikelihood
 			 */
@@ -222,7 +221,7 @@ namespace mrpt
 			/** This virtual method saves the map to a file "filNamePrefix"+< some_file_extension >, as an image or in any other applicable way (Notice that other methods to save the map may be implemented in classes implementing this virtual interface). */
 			virtual void  saveMetricMapRepresentationToFile(const std::string	&filNamePrefix) const = 0;
 
-			/** Returns a 3D object representing the map. 
+			/** Returns a 3D object representing the map.
 			  * \sa genericMapParams, TMapGenericParams::enableSaveAs3DObject */
 			virtual void  getAs3DObject( mrpt::opengl::CSetOfObjects::Ptr	&outObj ) const = 0;
 
@@ -239,8 +238,8 @@ namespace mrpt
 			/** If the map is a simple points map or it's a multi-metric map that contains EXACTLY one simple points map, return it.
 			  * Otherwise, return NULL
 			  */
-			virtual const mrpt::maps::CSimplePointsMap * getAsSimplePointsMap() const { return nullptr; }
-			virtual       mrpt::maps::CSimplePointsMap * getAsSimplePointsMap()       { return nullptr; }
+			virtual const mrpt::maps::CSimplePointsMap * getAsSimplePointsMap() const { return NULL; }
+			virtual       mrpt::maps::CSimplePointsMap * getAsSimplePointsMap()       { return NULL; }
 
 		}; // End of class def.
 		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CMetricMap, mrpt::utils::CSerializable, OBS_IMPEXP )

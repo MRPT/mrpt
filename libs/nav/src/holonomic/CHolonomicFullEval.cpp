@@ -63,6 +63,9 @@ void CHolonomicFullEval::navigate(const NavInput & ni, NavOutput &no)
 
 	ASSERT_(ni.clearance!=nullptr);
 
+	const auto ptg = getAssociatedPTG();
+	const double ptg_ref_dist = ptg ? ptg->getRefDistance() : 1.0;
+
 	// Create a log record for returning data.
 	CLogFileRecord_FullEval::Ptr log = CLogFileRecord_FullEval::Create();
 	no.logRecord = log;
@@ -118,9 +121,9 @@ void CHolonomicFullEval::navigate(const NavInput & ni, NavOutput &no)
 		}
 
 		// Discount "circular loop aparent free distance" here, but don't count it for clearance, since those are not real obstacle points.
-		if (getAssociatedPTG()) {
-			const double max_real_freespace = getAssociatedPTG()->getActualUnloopedPathLength(i);
-			const double max_real_freespace_norm = max_real_freespace / getAssociatedPTG()->getRefDistance();
+		if (ptg!=nullptr) {
+			const double max_real_freespace = ptg->getActualUnloopedPathLength(i);
+			const double max_real_freespace_norm = max_real_freespace / ptg->getRefDistance();
 
 			mrpt::utils::keep_min(scores[0], max_real_freespace_norm);
 		}
@@ -258,7 +261,7 @@ void CHolonomicFullEval::navigate(const NavInput & ni, NavOutput &no)
 	// Give a chance for a derived class to manipulate the final evaluations:
 	auto & dirs_eval = *phase_scores.rbegin();
 
-	postProcessDirectionEvaluations(dirs_eval);
+	postProcessDirectionEvaluations(dirs_eval, ni);
 
 	// Recalculate the threshold just in case the postProcess function above changed things:
 	{
@@ -276,15 +279,7 @@ void CHolonomicFullEval::navigate(const NavInput & ni, NavOutput &no)
 	const unsigned int INVALID_K = std::numeric_limits<unsigned int>::max();
 	unsigned int best_k = INVALID_K;
 	double       best_eval = .0;
-#if 0
-	// Individual direction search:
-	for (unsigned int i=0;i<nDirs;i++) {
-		if (dirs_eval[i]>best_eval) {
-			best_eval = dirs_eval[i];
-			best_k = i;
-		}
-	}
-#else
+
 	// Of those directions above "last_phase_threshold", keep the GAP with the largest maximum value within;
 	// then pick the MIDDLE point as the final selection.
 	std::vector<TGap> gaps;
@@ -376,7 +371,25 @@ void CHolonomicFullEval::navigate(const NavInput & ni, NavOutput &no)
 		best_k = mrpt::utils::round(0.5*(best_gap.k_to + best_gap.k_from));
 	}
 
-#endif
+	// Alternative, simpler method to decide motion:
+	// If target can be reached without collision *and* with a minimum of clearance, 
+	// then select that direction, with the score as computed with the regular formulas above
+	// (even if that score was not the maximum!).
+	if (target_dist<0.99 && ni.obstacles[target_k]>target_dist*1.01 &&
+		ni.clearance->getClearance(target_k /*path index*/, std::min(0.99, target_dist*0.95), true /*interpolate path*/)
+			> options.TOO_CLOSE_OBSTACLE 
+		&&
+		dirs_eval[target_k]>0 /* the direct target direction has at least a minimum score */
+		)
+	{
+		best_k = target_k;
+		best_eval = dirs_eval[target_k];
+		
+		// Reflect this decision in the phase score plots:
+		phase_scores[NUM_PHASES - 1][target_k] += 2.0;
+	}
+
+	// Prepare NavigationOutput data:
 	if (best_eval==.0)
 	{
 		// No way found!
@@ -391,14 +404,13 @@ void CHolonomicFullEval::navigate(const NavInput & ni, NavOutput &no)
 		// Speed control: Reduction factors
 		// ---------------------------------------------
 		const double targetNearnessFactor = m_enableApproachTargetSlowDown ?
-			std::min(1.0, ni.target.norm() / (options.TARGET_SLOW_APPROACHING_DISTANCE))
+			std::min(1.0, ni.target.norm() / (options.TARGET_SLOW_APPROACHING_DISTANCE / ptg_ref_dist))
 			:
 			1.0;
 
-
 		//const double obs_clearance = m_dirs_scores(best_k, 4);
 		const double obs_dist = ni.obstacles[best_k]; // Was: min with obs_clearance too.
-		const double obs_dist_th = std::max(options.TOO_CLOSE_OBSTACLE, options.OBSTACLE_SLOW_DOWN_DISTANCE*ni.maxObstacleDist);
+		const double obs_dist_th = std::max(options.TOO_CLOSE_OBSTACLE, (options.OBSTACLE_SLOW_DOWN_DISTANCE / ptg_ref_dist)*ni.maxObstacleDist);
 		double riskFactor = 1.0;
 		if (obs_dist <= options.TOO_CLOSE_OBSTACLE) {
 			riskFactor = 0.0;
@@ -630,7 +642,7 @@ void  CHolonomicFullEval::readFromStream(mrpt::utils::CStream &in,int version)
 	};
 }
 
-void CHolonomicFullEval::postProcessDirectionEvaluations(std::vector<double> &dir_evals)
+void CHolonomicFullEval::postProcessDirectionEvaluations(std::vector<double> &dir_evals, const NavInput & ni)
 {
 	// Default: do nothing
 }

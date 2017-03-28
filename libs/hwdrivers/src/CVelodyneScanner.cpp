@@ -920,7 +920,7 @@ bool CVelodyneScanner::internal_send_http_post(const std::string &post_data)
 		&out_headers
 		);
 
-	return http_rep_code == 200 || http_rep_code == 204; // OK codes
+	return   mrpt::utils::net::erOk==ret && (http_rep_code == 200 || http_rep_code == 204); // OK codes
 
 	MRPT_END;
 }

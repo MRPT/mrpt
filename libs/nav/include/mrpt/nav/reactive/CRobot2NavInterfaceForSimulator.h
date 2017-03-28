@@ -61,6 +61,16 @@ namespace mrpt
 			return mrpt::kinematics::CVehicleVelCmd::Ptr(new mrpt::kinematics::CVehicleVelCmd_Holo(0.0,0.0,1.0,0.0));
 		}
 
+		mrpt::kinematics::CVehicleVelCmd::Ptr getAlignCmd(const double relative_heading_radians) MRPT_OVERRIDE
+		{
+			return mrpt::kinematics::CVehicleVelCmd::Ptr(new mrpt::kinematics::CVehicleVelCmd_Holo(
+				0.0, // vel
+				relative_heading_radians, // local_dir
+				0.5, // ramp_time
+				mrpt::utils::signWithZero(relative_heading_radians) * mrpt::utils::DEG2RAD(40.0) // rotvel
+			));
+		}
+
 		/** See CRobot2NavInterface::getNavigationTime(). In this class, simulation time is returned instead of wall-clock time. */
 		double getNavigationTime() MRPT_OVERRIDE {
 			return m_simul.getTime()-m_simul_time_start;

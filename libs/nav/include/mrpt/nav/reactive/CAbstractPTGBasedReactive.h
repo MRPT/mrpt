@@ -43,6 +43,27 @@ namespace mrpt
 	  * Publications:
 	  *  - See derived classes for papers on each specific method.
 	  *
+	  * Available "variables" or "score names" for each motion candidate (these can be used in runtime-compiled expressions
+	  * in the configuration files of motion deciders):
+	  *
+	  * - `ptg_idx`: PTG index (0-based)
+	  * - `ref_dist`: PTG ref distance [m]
+	  * - `target_dir`: Angle of target in TP-Space [rad]
+	  * - `target_k`: Same as target_dir but in discrete path 0-based indices.
+	  * - `target_d_norm`: Normalized target distance. Can be >1 if distance is larger than ref_distance.
+	  * - `move_k`: Motion candidate path 0-based index.
+	  * - `is_PTG_cont`: 1 (is "NOP" motion command), 0 otherwise
+	  * - `num_paths`: Number of paths in the PTG
+	  * - `WS_target_x`, `WS_target_y`: Target coordinates in realworld [m]
+	  * - `robpose_x`, `robpose_y`, `robpose_phi`: Robot pose ([m] and [rad]) at the "end of trajectory": at collision or at target distance.
+	  * - `ptg_priority`: Product of PTG getScorePriority() times PTG evalPathRelativePriority()
+	  * - `collision_free_distance`: Normalized [0,1] collision-free distance in selected path.
+	  * - `dist_eucl_final`: Euclidean distance (in the real-world WordSpace) between "end of trajectory" and target.
+	  * - `hysteresis`: Measure of similarity with previous command [0,1]
+	  * - `clearance`: Clearance (larger means larger distances to obstacles) for the path from "current pose" up to "end of trajectory".
+	  * - `eta`: Estimated Time of Arrival at "end of trajectory".
+	  * - `original_col_free_dist`: Only for "NOP motions", the collision-free distance when the motion command was originally issued.
+	  *
 	  * \sa CReactiveNavigationSystem, CReactiveNavigationSystem3D
 	  *  \ingroup nav_reactive
 	  */
@@ -179,6 +200,9 @@ namespace mrpt
 		mrpt::kinematics::CVehicleVelCmd::TVelCmdParams & changeCurrentRobotSpeedLimits() { 
 			return params_abstract_ptg_navigator.robot_absolute_speed_limits;
 		}
+
+		void setTargetApproachSlowDownDistance(const double dist);  //!< Changes this parameter in all inner holonomic navigator instances [m].
+		double getTargetApproachSlowDownDistance() const;  //!< Returns this parameter for the first inner holonomic navigator instances  [m] (should be the same in all of them?)
 
 	protected:
 		/** The main method for the navigator */
