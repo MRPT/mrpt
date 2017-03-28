@@ -63,7 +63,6 @@ class navlog_viewer_GUI_designDialog: public wxFrame //wxDialog
 		void OnmnuSeePTGParamsSelected(wxCommandEvent& event);
 		void OncbGlobalFrameClick(wxCommandEvent& event);
 		void OnmnuSaveScoreMatrixSelected(wxCommandEvent& event);
-		void OncbShowXYClick(wxCommandEvent& event);
 		void OnrbPerPTGPlotsSelect(wxCommandEvent& event);
 		//*)
 		void OntimMouseXY(wxTimerEvent& event);
