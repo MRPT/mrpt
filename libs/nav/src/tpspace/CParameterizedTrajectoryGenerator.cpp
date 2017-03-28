@@ -333,7 +333,7 @@ void CParameterizedTrajectoryGenerator::updateClearancePost(ClearanceDiagram & c
 	// Used only when in approx mode (Removed 30/01/2017)
 }
 
-void CParameterizedTrajectoryGenerator::evalClearanceSingleObstacle(const double ox, const double oy, const uint16_t k, std::map<double, double> & inout_realdist2clearance) const
+void CParameterizedTrajectoryGenerator::evalClearanceSingleObstacle(const double ox, const double oy, const uint16_t k, std::map<double, double> & inout_realdist2clearance, bool treat_as_obstacle) const
 {
 	bool had_collision = false;
 
@@ -364,8 +364,12 @@ void CParameterizedTrajectoryGenerator::evalClearanceSingleObstacle(const double
 		// obstacle to robot clearance:
 		double oxl, oyl; // obstacle in robot frame
 		mrpt::poses::CPose2D(pose).inverseComposePoint(ox, oy, oxl, oyl);
-		const double this_clearance = this->evalClearanceToRobotShape(oxl, oyl);
-		if (this_clearance <= .0) {
+		const double this_clearance = treat_as_obstacle ?
+			this->evalClearanceToRobotShape(oxl, oyl)
+			:
+			std::hypot(oxl,oyl)
+			;
+		if (this_clearance <= .0 && treat_as_obstacle) {
 			// Collision:
 			had_collision = true;
 			inout_clearance = .0;

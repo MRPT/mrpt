@@ -296,10 +296,13 @@ protected:
 		virtual void internal_readFromStream(mrpt::utils::CStream &in);
 		virtual void internal_writeToStream(mrpt::utils::CStream &out) const;
 
+	public:
 		/** Evals the robot clearance for each robot pose along path `k`, for the real distances in
 		* the key of the map<>, then keep in the map value the minimum of its current stored clearance,
-		* or the computed clearance. In case of collision, clearance is zero. */
-		virtual void evalClearanceSingleObstacle(const double ox, const double oy, const uint16_t k, std::map<double, double> & inout_realdist2clearance) const;
+		* or the computed clearance. In case of collision, clearance is zero. 
+		* \param treat_as_obstacle true: normal use for obstacles; false: compute shortest distances to a target point (no collision)
+		*/
+		virtual void evalClearanceSingleObstacle(const double ox, const double oy, const uint16_t k, std::map<double, double> & inout_realdist2clearance, bool treat_as_obstacle = true) const;
 
 	}; // end of class
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CParameterizedTrajectoryGenerator, mrpt::utils::CSerializable, NAV_IMPEXP )
