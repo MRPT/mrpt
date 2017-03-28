@@ -279,7 +279,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		STEP1_InitPTGs(); // Will only recompute if "m_PTGsMustBeReInitialized==true"
 
 		// Update kinematic state in all PTGs:
-		for (size_t i=0;i<nPTGs;i++)
+		for (size_t i = 0; i < nPTGs; i++) 
 			getPTG(i)->updateCurrentRobotVel(m_curPoseVel.velLocal);
 
 		// STEP2: Load the obstacles and sort them in height bands.
@@ -371,6 +371,10 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		const TPose2D relTarget = TPose2D(CPose2D(m_navigationParams->target) - (CPose2D(m_curPoseVel.pose) + relPoseVelCmd));
 		const double relTargetDist = ::hypot(relTarget.x, relTarget.y);
 
+		// Allow PTGs to be responsible to target location:
+		for (size_t i = 0; i < nPTGs; i++)
+			getPTG(i)->setRelativeTarget(relTarget);
+
 		m_infoPerPTG.assign(nPTGs+1, TInfoPerPTG());  // reset contents
 		m_infoPerPTG_timestamp = tim_start_iteration;
 		vector<TCandidateMovementPTG> candidate_movs(nPTGs+1); // the last extra one is for the evaluation of "NOP motion command" choice.
@@ -442,11 +446,14 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 
 				CParameterizedTrajectoryGenerator * ptg = getPTG(m_lastSentVelCmd.ptg_index);
 				ASSERT_(ptg!=nullptr);
-				ptg->updateCurrentRobotVel(m_lastSentVelCmd.poseVel.velLocal);
 
 				const TPose2D relTarget_NOP = TPose2D(CPose2D(m_navigationParams->target) - robot_pose_at_send_cmd);
 				rel_pose_PTG_origin_wrt_sense_NOP = robot_pose_at_send_cmd - (CPose2D(m_curPoseVel.pose) + relPoseSense);
 				rel_cur_pose_wrt_last_vel_cmd_NOP = CPose2D(m_curPoseVel.pose) - robot_pose_at_send_cmd;
+
+				// Update PTG response to dynamic params:
+				ptg->updateCurrentRobotVel(m_lastSentVelCmd.poseVel.velLocal);
+				ptg->setRelativeTarget(relTarget_NOP);
 
 				if (fill_log_record)
 				{

@@ -276,8 +276,14 @@ namespace nav
 		  * \sa m_clearance_dist_resolution
 		  */
 		void updateClearance(const double ox, const double oy, ClearanceDiagram & cd) const;
-
 		void updateClearancePost(ClearanceDiagram & cd, const std::vector<double> &TP_obstacles) const;
+
+		/** Can be used to make PTGs react to relative target position. */
+		virtual void setRelativeTarget(const mrpt::math::TPose2D & target) const {
+			// Default: do nothing
+		}
+
+
 protected:
 		double    refDistance;
 		uint16_t  m_alphaValuesCount; //!< The number of discrete values for "alpha" between -PI and +PI.

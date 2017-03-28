@@ -663,10 +663,19 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 						if (!ptg->isInitialized())
 							ptg->initialize();
 
+						const mrpt::math::TPose2D relTrg(log.WS_target_relative.x, log.WS_target_relative.y, 0);
+
 						// Set instantaneous kinematic state:
 						if (!is_NOP_cmd)
-								ptg->updateCurrentRobotVel(log.cur_vel_local);
-						else	ptg->updateCurrentRobotVel(log.ptg_last_curRobotVelLocal);
+						{
+							ptg->updateCurrentRobotVel(log.cur_vel_local);
+							ptg->setRelativeTarget(relTrg);
+						}
+						else
+						{
+							ptg->updateCurrentRobotVel(log.ptg_last_curRobotVelLocal);
+							ptg->setRelativeTarget( TPose2D( CPose2D(relTrg) - log.rel_cur_pose_wrt_last_vel_cmd_NOP ));
+						}
 
 						// Draw path:
 						const int selected_k =
