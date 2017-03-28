@@ -51,7 +51,7 @@ void CHMTSLAM::generateLogFiles(unsigned int nIteration)
 	{
 		std::lock_guard<std::mutex>  lock(m_LMHs_cs );
 
-		MRPT_LOG_INFO_STREAM << "[LOG] Number of LMHs: " <<  m_LMHs.size();
+		MRPT_LOG_INFO_STREAM( "[LOG] Number of LMHs: " <<  m_LMHs.size());
 
 		// Generate 3D view of local areas:
 		{
@@ -93,7 +93,7 @@ void CHMTSLAM::generateLogFiles(unsigned int nIteration)
 
 					sceneLSLAM->enableFollowCamera(true);
 
-					MRPT_LOG_INFO_STREAM << "[LOG] Saving " << filLocalAreas;
+					MRPT_LOG_INFO_STREAM( "[LOG] Saving " << filLocalAreas);
 					CFileGZOutputStream(filLocalAreas) << *sceneLSLAM;
 				}
 
@@ -136,7 +136,7 @@ void CHMTSLAM::generateLogFiles(unsigned int nIteration)
 		if ((CNT++ % 20) == 0)
 		{
 			string hmtmap_file( format("%s/HMTSLAM_state/state_%05u.hmtslam", m_options.LOG_OUTPUT_DIR.c_str(), nIteration ) );
-			MRPT_LOG_INFO_STREAM << "[LOG] Saving: " << hmtmap_file.c_str();
+			MRPT_LOG_INFO_STREAM( "[LOG] Saving: " << hmtmap_file.c_str());
 			CFileGZOutputStream(hmtmap_file) << *this;
 		}
 	}
@@ -158,7 +158,7 @@ void CHMTSLAM::generateLogFiles(unsigned int nIteration)
 			COpenGLScene	sceneGlobalHMTMAP;
 			{
 				std::lock_guard<std::mutex>  lock(m_map_cs );
-				MRPT_LOG_INFO_STREAM << "[LOG] HMT-map: "<< m_map.nodeCount() << " nodes/ "<< m_map.arcCount() << " arcs";
+				MRPT_LOG_INFO_STREAM( "[LOG] HMT-map: "<< m_map.nodeCount() << " nodes/ "<< m_map.arcCount() << " arcs");
 
 				m_map.getAs3DScene(
 					sceneGlobalHMTMAP,					// Scene
@@ -169,7 +169,7 @@ void CHMTSLAM::generateLogFiles(unsigned int nIteration)
 			}
 
 			string hmtmap_file( format("%s/HMAP_3D/mostLikelyHMT_MAP_%05u.3Dscene", m_options.LOG_OUTPUT_DIR.c_str(), nIteration ) );
-			MRPT_LOG_INFO_STREAM << "[LOG] Saving "<< hmtmap_file;
+			MRPT_LOG_INFO_STREAM( "[LOG] Saving "<< hmtmap_file);
 			CFileGZOutputStream(hmtmap_file) << sceneGlobalHMTMAP;
 		}
 	}
@@ -187,7 +187,7 @@ void CHMTSLAM::generateLogFiles(unsigned int nIteration)
 	}
 
 	double t_log = tictac.Tac();
-	MRPT_LOG_INFO_STREAM << "[LOG] Time for logging: " << mrpt::system::formatTimeInterval(t_log);
+	MRPT_LOG_INFO_STREAM( "[LOG] Time for logging: " << mrpt::system::formatTimeInterval(t_log));
 
 	MRPT_END
 }

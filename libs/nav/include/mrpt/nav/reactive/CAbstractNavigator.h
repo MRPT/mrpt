@@ -67,6 +67,8 @@ namespace mrpt
 			 */
 			bool  targetIsIntermediaryWaypoint;
 
+			bool enableApproachSlowDown; //!< (Default=true) Slow down when approaching target.
+
 			TNavigationParams(); //!< Ctor with default values
 			virtual ~TNavigationParams() {}
 			virtual std::string getAsText() const; //!< Gets navigation params as a human-readable format
@@ -136,7 +138,8 @@ namespace mrpt
 		/** Called whenever a new navigation has been started. Can be used to reset state variables, etc. */
 		virtual void onStartNewNavigation() = 0;
 
-		/** Call to the robot getCurrentPoseAndSpeeds() and updates members m_curPose,m_curVel and m_curVelLocal accordingly. */
+		/** Call to the robot getCurrentPoseAndSpeeds() and updates members m_curPose,m_curVel and m_curVelLocal accordingly. 
+		  * If an error is returned by the user callback, first, it calls robot.stop() ,then throws an std::runtime_error exception. */
 		void updateCurrentPoseAndSpeeds();
 
 		/** Stops the robot and set navigation state to error */
@@ -146,9 +149,13 @@ namespace mrpt
 		virtual bool changeSpeedsNOP(); //!< Default: forward call to m_robot.changeSpeedsNOP(). Can be overriden.
 		virtual bool stop(bool isEmergencyStop); //!< Default: forward call to m_robot.stop(). Can be overriden.
 
+		/** Default implementation: check if target_dist is below the accepted distance. 
+		  * If true is returned here, the end-of-navigation event will be sent out (only for non-intermediary targets).
+		  */
+		virtual bool checkHasReachedTarget(const double targetDist) const;
+
 		TState             m_navigationState;  //!< Current internal state of navigator:
 		TNavigationParams  *m_navigationParams;  //!< Current navigation parameters
-		bool                m_lastNavTargetReached; //!< Whether the last target was reached successfully.
 
 		CRobot2NavInterface   &m_robot; //!< The navigator-robot interface.
 

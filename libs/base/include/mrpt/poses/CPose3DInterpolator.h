@@ -90,9 +90,23 @@ namespace mrpt
 
 			 inline iterator begin() { return m_path.begin(); }
 			 inline const_iterator begin() const { return m_path.begin(); }
+			 inline const_iterator cbegin() const { 
+#if MRPT_HAS_CXX11
+				 return m_path.cbegin();
+#else
+				 return m_path.begin();
+#endif
+			 }
 
 			 inline iterator end() { return m_path.end(); }
 			 inline const_iterator end() const { return m_path.end(); }
+			 inline const_iterator cend() const {
+#if MRPT_HAS_CXX11
+				 return m_path.cend();
+#else
+				 return m_path.end();
+#endif
+			 }
 
 			 inline reverse_iterator rbegin() { return m_path.rbegin(); }
 			 inline const_reverse_iterator rbegin() const { return m_path.rbegin(); }
@@ -110,6 +124,9 @@ namespace mrpt
 
 			 size_t size() const { return m_path.size(); }
 			 bool empty() const { return m_path.empty(); }
+
+			 iterator find(const mrpt::system::TTimeStamp & t) { return m_path.find(t); }
+			 const_iterator find(const mrpt::system::TTimeStamp & t) const { return m_path.find(t); }
 
 			 /** Creates an empty interpolator (with no points).
 			  */

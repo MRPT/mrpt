@@ -116,7 +116,7 @@ void CRandomFieldGridMap3D::internal_initialize(bool erase_prev_contents)
 	ASSERT_EQUAL_(nodeCount, m_size_x*m_size_y*m_size_z);
 	ASSERT_EQUAL_(m_size_x_times_y, m_size_x*m_size_y);
 
-	MRPT_LOG_DEBUG_STREAM << "[internal_initialize] Creating priors for GMRF with " << nodeCount << " nodes." << std::endl;
+	MRPT_LOG_DEBUG_STREAM( "[internal_initialize] Creating priors for GMRF with " << nodeCount << " nodes." << std::endl);
 	CTicTac tictac;
 	tictac.Tic();
 
@@ -181,7 +181,7 @@ void CRandomFieldGridMap3D::internal_initialize(bool erase_prev_contents)
 		}
 	} // end for "j"
 
-	MRPT_LOG_DEBUG_STREAM << "[internal_initialize] Prior built in " << tictac.Tac() << " s\n" << std::endl;
+	MRPT_LOG_DEBUG_STREAM( "[internal_initialize] Prior built in " << tictac.Tac() << " s\n" << std::endl);
 }
 
 /*---------------------------------------------------------------

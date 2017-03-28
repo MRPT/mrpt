@@ -69,6 +69,8 @@
 #	include <mrpt/maps/CPointsMap_liblas.h>
 #endif
 
+const mrpt::maps::CColouredPointsMap dummy_map; // this is to enforce to load the mrpt-maps DLL, then register all OpenGL classes defined there.
+
 // A custom Art provider for customizing the icons:
 class MyArtProvider : public wxArtProvider
 {

@@ -10,9 +10,9 @@
 #include "nav-precomp.h" // Precomp header
 
 #include <mrpt/nav/reactive/CAbstractPTGBasedReactive.h>
-#include <mrpt/nav/holonomic/CHolonomicVFF.h>
-#include <mrpt/nav/holonomic/CHolonomicND.h>
-#include <mrpt/nav/holonomic/CHolonomicFullEval.h>
+#include <mrpt/nav/holonomic/CHolonomicVFF.h>  // TODO: Remove for MRPT 2.0
+#include <mrpt/nav/holonomic/CHolonomicND.h> // TODO: Remove for MRPT 2.0
+#include <mrpt/nav/holonomic/CHolonomicFullEval.h> // TODO: Remove for MRPT 2.0
 #include <mrpt/system/filesystem.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/math/geometry.h>
@@ -182,6 +182,7 @@ void CAbstractPTGBasedReactive::getLastLogRecord( CLogFileRecord &o )
 	o = lastLogRecord;
 }
 
+// TODO: Remove for MRPT 2.0
 static std::string holoMethodEnum2ClassName(const THolonomicMethod method)
 {
 	std::string className;
@@ -311,7 +312,6 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		// =========
 
 		CPose2D rel_pose_PTG_origin_wrt_sense,relPoseSense, relPoseVelCmd;
-		MRPT_TODO("port all delays-model to double and use robotTime() to make this compatible with faster-than-real-time simulators??");
 		if (params_abstract_ptg_navigator.use_delays_model)
 		{
 			/*
@@ -369,6 +369,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		}
 
 		const TPose2D relTarget = TPose2D(CPose2D(m_navigationParams->target) - (CPose2D(m_curPoseVel.pose) + relPoseVelCmd));
+		const double relTargetDist = ::hypot(relTarget.x, relTarget.y);
 
 		m_infoPerPTG.assign(nPTGs+1, TInfoPerPTG());  // reset contents
 		m_infoPerPTG_timestamp = tim_start_iteration;
@@ -398,14 +399,28 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		// =========
 		// This approach is only possible if:
 		bool NOP_not_too_old = true;
+		bool NOP_not_too_close_and_have_to_slowdown = true;
 		double NOP_max_time = -1.0, NOP_At = -1.0;
+		double slowdowndist = .0;
 		const bool can_do_nop_motion = (m_lastSentVelCmd.isValid() &&
 			!target_changed_since_last_iteration &&
 			getPTG(m_lastSentVelCmd.ptg_index)->supportVelCmdNOP()) &&
-			(NOP_not_too_old = (NOP_At=mrpt::system::timeDifference(m_lastSentVelCmd.tim_send_cmd_vel, tim_start_iteration)) < (NOP_max_time=getPTG(m_lastSentVelCmd.ptg_index)->maxTimeInVelCmdNOP(m_lastSentVelCmd.ptg_alpha_index)) );
+			(NOP_not_too_old = (NOP_At=mrpt::system::timeDifference(m_lastSentVelCmd.tim_send_cmd_vel, tim_start_iteration)) < (NOP_max_time=getPTG(m_lastSentVelCmd.ptg_index)->maxTimeInVelCmdNOP(m_lastSentVelCmd.ptg_alpha_index)) ) &&
+			(NOP_not_too_close_and_have_to_slowdown = 
+				(!m_navigationParams->enableApproachSlowDown || 
+				( relTargetDist
+					>
+				  (slowdowndist = m_holonomicMethod[m_lastSentVelCmd.ptg_index]->getTargetApproachSlowDownDistance())  // slowdowndist is assigned here, inside the if() to be sure the index in m_lastSentVelCmd is valid!
+				)
+				)
+			)
+			;
 
 		if (!NOP_not_too_old) {
 			newLogRec.additional_debug_msgs["PTG_cont"] = mrpt::format("PTG-continuation not allowed: previous command timed-out (At=%.03f > Max_At=%.03f)", NOP_At, NOP_max_time);
+		}
+		if (!NOP_not_too_close_and_have_to_slowdown) {
+			newLogRec.additional_debug_msgs["PTG_cont_trgdst"] = mrpt::format("PTG-continuation not allowed: target too close and must start slow-down (trgDist=%.03f < SlowDownDist=%.03f)", relTargetDist, slowdowndist);
 		}
 
 		CPose2D rel_cur_pose_wrt_last_vel_cmd_NOP, rel_pose_PTG_origin_wrt_sense_NOP;
@@ -746,7 +761,7 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 
 	// Factor 1: Free distance for the chosen PTG and "alpha" in the TP-Space:
 	// ----------------------------------------------------------------------
-	double & colfree = cm.props["colision_free_distance"];
+	double & colfree = cm.props["collision_free_distance"];
 	if (move_k == target_k && target_d_norm>.0 && in_TPObstacles[move_k]>target_d_norm+0.05 /*small margin*/) {
 		// If we head straight to target, don't count the possible collisions ahead:
 		colfree = mrpt::utils::saturate_val(in_TPObstacles[move_k] / (target_d_norm + 0.05 /* give a minimum margin */), 0.0, 1.0);
@@ -858,28 +873,8 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 		}
 	}
 
-	//// Factor 2: Distance in sectors:
-	//// -------------------------------------------
-	////int dif = std::abs(TargetSector - kDirection);
-	////if ( dif > int(nSectors/2)) dif = nSectors - dif;
-	//m_expr_var_k = move_k;
-	//m_expr_var_k_target = target_k;
-	//m_expr_var_num_paths = in_TPObstacles.size();
-
-	//// Was: eval_factors[SCOREIDX_TPS_DIRECTION] = exp(-std::abs( dif / (nSectors/10.0)));
-	//eval_factors[SCOREIDX_TPS_DIRECTION] = PIMPL_GET_CONSTREF(exprtk::expression<double>, m_expr_score2_formula).value();
-
-	// Factor 3: Angle between the robot at the end of the chosen trajectory and the target
-	// -------------------------------------------------------------------------------------
-	//double t_ang = atan2( WS_Target.y - pose.y, WS_Target.x - pose.x );
-	//t_ang -= pose.phi;
-	//mrpt::math::wrapToPiInPlace(t_ang);
-
-	//eval_factors[SCOREIDX_ORIENTATION_AT_END] = exp(-square( t_ang / (0.5*M_PI)) );
-
 	// Factor4: Decrease in euclidean distance between (x,y) and the target:
 	//  Moving away of the target is negatively valued.
-	// ---------------------------------------------------------------------------
 	cm.props["dist_eucl_final"] = std::hypot(WS_Target.x- pose.x, WS_Target.y- pose.y);
 
 	// Factor5: Hysteresis:
@@ -915,17 +910,6 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 	double &clearance = cm.props["clearance"];
 	clearance = in_clearance.getClearance(move_k, target_d_norm*1.01, false /* spot, dont interpolate */ );
 
-#if 0 // ->leave this to the multiobjective optimizer
-	// Don't trust PTG continuation if we are too close to obstacles:
-	if (this_is_PTG_continuation &&
-		std::min(eval_factors[SCOREIDX_COLISION_FREE_DISTANCE], eval_factors[SCOREIDX_CLEARANCE]) < params_abstract_ptg_navigator.min_normalized_free_space_for_ptg_continuation)
-	{
-		newLogRec.additional_debug_msgs["PTG_eval"] = "PTG-continuation not allowed, too close to obstacles.";
-		cm.speed = -0.01; // this enforces a 0 global evaluation score
-		return;
-	}
-#endif
-
 	// Factor: ETA (Estimated Time of Arrival to target or to closest obstacle, whatever it's first)
 	// -----------------------------------------------------
 	double &eta = cm.props["eta"];
@@ -949,8 +933,6 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 				// Heuristic: discount the time already executed.
 				// Note that hm.speed above scales the overall path time using the current speed scale, not the exact
 				// integration over the past timesteps. It's an approximation, probably good enough...
-				
-				MRPT_TODO("support for simulation time here too!");
 				discount_time = mrpt::system::timeDifference(m_lastSentVelCmd.tim_send_cmd_vel, tim_start_iteration);
 			}
 			eta -= discount_time; // This could even become negative if the approximation is poor...
@@ -996,7 +978,7 @@ double CAbstractPTGBasedReactive::generate_vel_cmd( const TCandidateMovementPTG 
 	}
 	catch (std::exception &e)
 	{
-		MRPT_LOG_ERROR_STREAM << "[CAbstractPTGBasedReactive::generate_vel_cmd] Exception: " << e.what();
+		MRPT_LOG_ERROR_STREAM( "[CAbstractPTGBasedReactive::generate_vel_cmd] Exception: " << e.what());
 	}
 	return cmdvel_speed_scale;
 }
@@ -1175,8 +1157,8 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
 			tictac.Tic();
 
 			ASSERT_(holoMethod);
-			// Don't slow down if we are approaching a target that is not the final waypoint:
-			holoMethod->enableApproachTargetSlowDown( !navp.targetIsIntermediaryWaypoint );
+			// Slow down if we are approaching the final target, etc.
+			holoMethod->enableApproachTargetSlowDown(navp.enableApproachSlowDown);
 
 			// Prepare holonomic algorithm call:
 			CAbstractHolonomicReactiveMethod::NavInput ni;
@@ -1440,3 +1422,17 @@ void CAbstractPTGBasedReactive::saveConfigFile(mrpt::utils::CConfigFileBase & c)
 		}
 	}
 }
+
+void CAbstractPTGBasedReactive::setTargetApproachSlowDownDistance(const double dist)
+{
+	for (auto &o : m_holonomicMethod) {
+		o->setTargetApproachSlowDownDistance(dist);
+	}
+}
+
+double CAbstractPTGBasedReactive::getTargetApproachSlowDownDistance() const
+{
+	ASSERT_(!m_holonomicMethod.empty());
+	return m_holonomicMethod[0]->getTargetApproachSlowDownDistance();
+}
+

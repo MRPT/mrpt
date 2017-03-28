@@ -101,13 +101,13 @@ void CPointCloudFilterByDistance::filter(
 
 			// Look for neighbors in "time=k-i"
 			std::vector<TPoint3D> neig_kmi(options.previous_keyframes);
-			std::vector<float>    neig_sq_dist_kmi(options.previous_keyframes, .0);
+			std::vector<float>    neig_sq_dist_kmi(options.previous_keyframes, std::numeric_limits<float>::max() );
 
-			for (int k = 0; k < options.previous_keyframes; ++k)
-			{
-				for (int prev_tim_idx = 0; prev_tim_idx < options.previous_keyframes; prev_tim_idx++)
-				{
-					prev_pc[prev_tim_idx]->pc->kdTreeClosestPoint3D(pt_km1[prev_tim_idx], neig_kmi[prev_tim_idx], neig_sq_dist_kmi[prev_tim_idx]);
+			for (int k = 0; k < options.previous_keyframes; ++k) {
+				for (int prev_tim_idx = 0; prev_tim_idx < options.previous_keyframes; prev_tim_idx++) {
+					if (prev_pc[prev_tim_idx]->pc->size() > 0) {
+						prev_pc[prev_tim_idx]->pc->kdTreeClosestPoint3D(pt_km1[prev_tim_idx], neig_kmi[prev_tim_idx], neig_sq_dist_kmi[prev_tim_idx]);
+					}
 				}
 			}
 
