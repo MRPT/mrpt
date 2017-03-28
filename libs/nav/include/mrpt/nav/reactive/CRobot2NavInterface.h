@@ -10,15 +10,10 @@
 
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/nav/link_pragmas.h>
-#include <mrpt/maps/CSimplePointsMap.h>
-#include <mrpt/utils/CConfigFileBase.h>
+#include <mrpt/obs/obs_frwds.h> // CSimplePointsMap
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/kinematics/CVehicleVelCmd.h>
-#include <mrpt/kinematics/CVehicleVelCmd_DiffDriven.h>
-#include <mrpt/kinematics/CVehicleVelCmd_Holo.h>
-
-#include <vector>
 
 namespace mrpt
 {
@@ -33,9 +28,9 @@ namespace mrpt
 	  *  Ackermann, differential-driven or holonomic robots. It will depend on the used PTGs, so checkout 
 	  *  each PTG documentation for the lenght and meaning of velocity commands.
 	  *
-	  * Users may prefer to inherit from one of these classes, which already provide implementations for the kinematic-specific methods:
-	  *  - CReactiveInterfaceImplementation_DiffDriven 
-	  *  - CReactiveInterfaceImplementation_Holo
+	  * If used for a simulator, users may prefer to inherit from one of these classes, which already provide partial implementations:
+	  *  - mrpt::nav::CRobot2NavInterfaceForSimulator_DiffDriven
+	  *  - mrpt::nav::CRobot2NavInterfaceForSimulator_Holo
 	  *
 	  * \sa CReactiveNavigationSystem, CAbstractNavigator
 	  *  \ingroup nav_reactive
@@ -43,8 +38,8 @@ namespace mrpt
 	class NAV_IMPEXP CRobot2NavInterface
 	{
 	public:
-		CRobot2NavInterface() {}
-		virtual ~CRobot2NavInterface() {}
+		CRobot2NavInterface();
+		virtual ~CRobot2NavInterface();
 
 		/** Get the current pose and speeds of the robot. The implementation should not take too much time to return,
 		*   so if it might take more than ~10ms to ask the robot for the instantaneous data, it may be good enough to
@@ -70,7 +65,7 @@ namespace mrpt
 		  * so there is no need to change that past command. The unique effect of this callback would be resetting the watchdog timer. 
 		  * \return false on any error.
 		  * \sa changeSpeeds(), startWatchdog() */
-		virtual bool changeSpeedsNOP() { std::cout << "[changeSpeedsNOP] Not implemented by the user." << std::endl; return true; }
+		virtual bool changeSpeedsNOP();
 
 		/** Stop the robot right now. 
 		 *  \param[in] isEmergencyStop true if stop is due to some unexpected error. false if "stop" happens as part of a normal operation (e.g. target reached).
@@ -88,17 +83,19 @@ namespace mrpt
 		  */
 		virtual mrpt::kinematics::CVehicleVelCmd::Ptr getStopCmd() = 0;
 
+		/** Gets a motion command to make the robot to align with a given *relative* heading, without translating.
+		  * Only for circular robots that can rotate in place; otherwise, return an empty smart pointer to indicate 
+		  * that the operation is not possible (this is what the default implementation does). */
+		virtual mrpt::kinematics::CVehicleVelCmd::Ptr getAlignCmd(const double relative_heading_radians);
+
 		/** Start the watchdog timer of the robot platform, if any, for maximum expected delay between consecutive calls to changeSpeeds().
 		 * \param T_ms Period, in ms.
 		 * \return false on any error. */
-		virtual bool startWatchdog(float T_ms) {
-			MRPT_UNUSED_PARAM(T_ms);
-			return true;
-		}
+		virtual bool startWatchdog(float T_ms);
 
 		/** Stop the watchdog timer.
 		 * \return false on any error. \sa startWatchdog */
-		virtual bool stopWatchdog() { return true; }
+		virtual bool stopWatchdog();
 
 		/** Return the current set of obstacle points, as seen from the local coordinate frame of the robot.
 		  * \return false on any error.
@@ -108,32 +105,30 @@ namespace mrpt
 		virtual bool senseObstacles( mrpt::maps::CSimplePointsMap &obstacles, mrpt::system::TTimeStamp &timestamp) = 0;
 
 		/** Callback: Start of navigation command */
-		virtual void sendNavigationStartEvent () { std::cout << "[sendNavigationStartEvent] Not implemented by the user." << std::endl; }
+		virtual void sendNavigationStartEvent();
 		
 		/** Callback: End of navigation command (reach of single goal, or final waypoint of waypoint list) */
-		virtual void sendNavigationEndEvent() {	std::cout << "[sendNavigationEndEvent] Not implemented by the user." << std::endl; }
+		virtual void sendNavigationEndEvent();
 
-		/** Callback: Reached an intermediary waypoint in waypoint list navigation */
-		virtual void sendWaypointReachedEvent(int waypoint_index) { std::cout << "[sendWaypointReachedEvent] Not implemented by the user. Reached waypoint #" << waypoint_index << std::endl; }
+		/** Callback: Reached an intermediary waypoint in waypoint list navigation.
+		  * reached_nSkipped will be `true` if the waypoint was physically reached; `false` if it was actually "skipped".
+		  */
+		virtual void sendWaypointReachedEvent(int waypoint_index, bool reached_nSkipped);
 
 		/** Callback: Heading towards a new intermediary/final waypoint in waypoint list navigation */
-		virtual void sendNewWaypointTargetEvent(int waypoint_index) { std::cout << "[sendNewWaypointTargetEvent] Not implemented by the user. Navigating towards waypoint #" << waypoint_index << std::endl; }
+		virtual void sendNewWaypointTargetEvent(int waypoint_index);
 
 		/** Callback: Error asking sensory data from robot or sending motor commands. */
-		virtual void sendNavigationEndDueToErrorEvent() { std::cout << "[sendNavigationEndDueToErrorEvent] Not implemented by the user." << std::endl; }
+		virtual void sendNavigationEndDueToErrorEvent();
 
 		/** Callback: No progression made towards target for a predefined period of time. */
-		virtual void sendWaySeemsBlockedEvent() { std::cout << "[sendWaySeemsBlockedEvent] Not implemented by the user." << std::endl; }
+		virtual void sendWaySeemsBlockedEvent();
 
 		/** Returns the number of seconds ellapsed since the constructor of this class was invoked, or since 
 		  * the last call of resetNavigationTimer(). This will be normally wall-clock time, except in simulators where this method will return simulation time. */
-		virtual double getNavigationTime() {
-			return m_navtime.Tac();
-		}
+		virtual double getNavigationTime();
 		/** see getNavigationTime() */
-		virtual void resetNavigationTimer() {
-			m_navtime.Tic();
-		}
+		virtual void resetNavigationTimer();
 
 	private:
 		mrpt::utils::CTicTac  m_navtime; //!< For getNavigationTime

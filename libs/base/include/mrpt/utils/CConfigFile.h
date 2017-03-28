@@ -22,6 +22,9 @@ namespace utils
 	  *   to the file at the destructor, and only if at least one write operation has been applied.
 	  *
 	  * Use base class `CConfigFileBase`'s methods `read_{int,float,double,string,...}()` and `write()` to actually read and write values.
+	  *
+	  * See: \ref config_file_format
+	  *
 	  * \ingroup mrpt_base_grp
 	  */
 	class BASE_IMPEXP CConfigFile : public CConfigFileBase

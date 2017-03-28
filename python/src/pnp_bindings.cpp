@@ -19,6 +19,8 @@ mrpt::vision::pnp::CPnP pnp_algos;
     using namespace cv;
 #endif
 
+#include <iostream>
+
 class PnPAlgos
 {
 public:

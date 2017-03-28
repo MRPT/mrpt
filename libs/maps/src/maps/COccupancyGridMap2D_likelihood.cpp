@@ -372,19 +372,6 @@ double	 COccupancyGridMap2D::computeObservationLikelihood_rayTracing(
 			0,
 			decimation	);
 
-		 /** /
-		 {
-			FILE	*f;
-
-			f=os::fopen("scan_sim.txt","wt");
-			for (int i=0;i<nRays;i++) os::fprintf(f,"%f ",simulatedObs.validRange[i] ? simulatedObs.scan[i]:0);
-			os::fclose(f);
-			f=os::fopen("scan_meas.txt","wt");
-			for (i=0;i<nRays;i++) os::fprintf(f,"%f ",o->validRange[i] ? o->scan[i]:0);
-			os::fclose(f);
-		 }
-		 / **/
-
 		 double		stdLaser   = likelihoodOptions.rayTracing_stdHit;
 		 double		stdSqrt2 = sqrt(2.0f) * stdLaser;
 
@@ -929,4 +916,3 @@ bool COccupancyGridMap2D::internal_canComputeObservationLikelihood( const mrpt::
 		return false;
 	}
 }
-

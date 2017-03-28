@@ -120,8 +120,7 @@ IF(BUILD_mrpt-base)
 		ENDIF()
 	ENDIF()
 
-        IF(CMAKE_MRPT_HAS_JPEG)
-            target_link_libraries(mrpt-base ${JPEG_LIBS})
-        ENDIF()
-
+	IF(CMAKE_MRPT_HAS_JPEG)
+		target_link_libraries(mrpt-base ${JPEG_LIBS})
+	ENDIF()
 ENDIF()

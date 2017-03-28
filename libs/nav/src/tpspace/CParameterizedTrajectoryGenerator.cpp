@@ -55,6 +55,9 @@ void CParameterizedTrajectoryGenerator::loadFromConfigFile(const mrpt::utils::CC
 	MRPT_LOAD_CONFIG_VAR_NO_DEFAULT     (refDistance , double,  cfg,sSection);
 	MRPT_LOAD_HERE_CONFIG_VAR(score_priority , double, m_score_priority, cfg,sSection);
 	MRPT_LOAD_HERE_CONFIG_VAR(clearance_num_points, double, m_clearance_num_points, cfg, sSection);
+
+	// Ensure a minimum of resolution:
+	mrpt::utils::keep_max(m_clearance_num_points, refDistance/1.0);
 }
 void CParameterizedTrajectoryGenerator::saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const
 {
@@ -278,8 +281,8 @@ void CParameterizedTrajectoryGenerator::internal_TPObsDistancePostprocess(const 
 
 	case COLL_BEH_BACK_AWAY:
 		{
-			if (new_tp_obs_dist < getApproxRobotRadius() ) {
-				// This means that we are getting apart of the obstacle:
+			if (new_tp_obs_dist < getMaxRobotRadius() ) {
+				// This means that we are getting apart of the obstacle: 
 				// ignore it to allow the robot to get off the near-collision:
 				// Don't change inout_tp_obs.
 				return;

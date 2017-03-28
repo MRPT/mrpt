@@ -60,7 +60,7 @@ void  CMetricMapBuilder::loadCurrentMapFromFile(const std::string &fileName)
 	// New file??
 	if ( mrpt::system::fileExists( fileName ) )
 	{
-		MRPT_LOG_INFO_STREAM << "[CMetricMapBuilder::loadCurrentMapFromFile] Loading current map from '" << fileName << "' ..." << std::endl;
+		MRPT_LOG_INFO_STREAM( "[CMetricMapBuilder::loadCurrentMapFromFile] Loading current map from '" << fileName << "' ..." << std::endl);
 		CFileGZInputStream		f( fileName);
 
 		// Load from file:
@@ -68,7 +68,7 @@ void  CMetricMapBuilder::loadCurrentMapFromFile(const std::string &fileName)
 	}
 	else
 	{	// Is a new file, start with an empty map:
-		MRPT_LOG_WARN_STREAM << "[CMetricMapBuilder::loadCurrentMapFromFile] Loading current map from '" << fileName << "' ..." << std::endl;
+		MRPT_LOG_WARN_STREAM( "[CMetricMapBuilder::loadCurrentMapFromFile] Loading current map from '" << fileName << "' ..." << std::endl);
 		map.clear();
 	}
 
@@ -85,7 +85,7 @@ void  CMetricMapBuilder::saveCurrentMapToFile(const std::string &fileName, bool 
 	CSimpleMap		curmap;
 	getCurrentlyBuiltMap(curmap);
 
-	MRPT_LOG_INFO_STREAM << "[CMetricMapBuilder::saveCurrentMapToFile] Saving current map to '" << fileName << "' ..." << std::endl;
+	MRPT_LOG_INFO_STREAM( "[CMetricMapBuilder::saveCurrentMapToFile] Saving current map to '" << fileName << "' ..." << std::endl);
 
 	// Save to file:
 	if (compressGZ)
