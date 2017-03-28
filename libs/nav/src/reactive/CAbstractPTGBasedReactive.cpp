@@ -743,6 +743,18 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 	mrpt::math::TPose2D pose;
 	cm.PTG->getPathPose(move_k, nStep,pose);
 
+	// Make sure that the target slow-down is honored, as seen in real-world Euclidean space 
+	// (as opposed to TP-Space, where the holo methods are evaluated)
+	if (m_navigationParams && m_navigationParams->enableApproachSlowDown && !m_holonomicMethod.empty() && m_holonomicMethod[0]!=nullptr)
+	{
+		const double TARGET_SLOW_APPROACHING_DISTANCE = m_holonomicMethod[0]->getTargetApproachSlowDownDistance();
+		const double targetNearnessFactor = std::min(1.0, mrpt::math::TPoint2D(WS_Target).norm() / TARGET_SLOW_APPROACHING_DISTANCE);
+		if (targetNearnessFactor < cm.speed) {
+			newLogRec.additional_debug_msgs["PTG_eval.speed"] = mrpt::format("Relative speed reduced %.03f->%.03f based on Euclidean nearness to target.", cm.speed,targetNearnessFactor);
+			cm.speed = targetNearnessFactor;
+		}
+	}
+
 	// Start storing params in the candidate move structure: 
 	cm.props["ptg_idx"] = ptg_idx4weights;
 	cm.props["ref_dist"] = ref_dist;
