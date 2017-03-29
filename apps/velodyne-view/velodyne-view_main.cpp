@@ -23,7 +23,6 @@
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
-#include <mrpt/synch/CThreadSafeVariable.h>
 #include <mrpt/system/os.h>  // MRPT_getVersion()
 #include <mrpt/otherlibs/tclap/CmdLine.h>
 
@@ -61,8 +60,8 @@ struct TThreadParam
 	volatile double tilt_ang_deg;
 	volatile double Hz;
 
-	mrpt::synch::CThreadSafeVariable<CObservationVelodyneScan::Ptr> new_obs;     // Raw scans
-	mrpt::synch::CThreadSafeVariable<CObservationGPS::Ptr>          new_obs_gps; // GPS, if any
+	CObservationVelodyneScan::Ptr new_obs;     // Raw scans
+	CObservationGPS::Ptr          new_obs_gps; // GPS, if any
 };
 
 void thread_grabbing(TThreadParam &p)
@@ -121,8 +120,8 @@ void thread_grabbing(TThreadParam &p)
 				if (obs_gps) f_out_rawlog << *obs_gps;
 			}
 
-			if (obs)      {p.new_obs.set(obs); nScans++;}
-			if (obs_gps)  p.new_obs_gps.set(obs_gps);
+			if (obs)      {std::atomic_store(&p.new_obs, obs); nScans++;}
+			if (obs_gps)  std::atomic_store(&p.new_obs_gps, obs_gps);
 
 			if (p.pushed_key!=0)
 			{
@@ -175,7 +174,7 @@ int VelodyneView(int argc, char **argv)
 	// Wait until data stream starts so we can say for sure the sensor has been initialized OK:
 	cout << "Waiting for sensor initialization...\n";
 	do {
-		CObservation::Ptr possiblyNewObs = thrPar.new_obs.get();
+		CObservation::Ptr possiblyNewObs = std::atomic_load(&thrPar.new_obs);
 		if (possiblyNewObs && possiblyNewObs->timestamp!=INVALID_TIMESTAMP)
 				break;
 		else 	std::this_thread::sleep_for(10ms);
@@ -221,14 +220,14 @@ int VelodyneView(int argc, char **argv)
 	{
 		bool do_view_refresh = false;
 
-		CObservationVelodyneScan::Ptr possiblyNewObs    = thrPar.new_obs.get();
-		CObservationGPS::Ptr          possiblyNewObsGps = thrPar.new_obs_gps.get();
+		CObservationVelodyneScan::Ptr possiblyNewObs    = std::atomic_load(&thrPar.new_obs);
+		CObservationGPS::Ptr          possiblyNewObsGps = std::atomic_load(&thrPar.new_obs_gps);
 
 		if (possiblyNewObsGps && possiblyNewObsGps->timestamp!=INVALID_TIMESTAMP &&
 			(!last_obs_gps  || possiblyNewObsGps->timestamp!=last_obs_gps->timestamp ) )
 		{
 			// It IS a new observation:
-			last_obs_gps = thrPar.new_obs_gps.get();
+			last_obs_gps = std::atomic_load(&thrPar.new_obs_gps);
 
 			std::string rmc_datum;
 			if (last_obs_gps->has_RMC_datum) {

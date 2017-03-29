@@ -11,7 +11,6 @@
 #define _mrpt_synch_H
 
 #include "synch/MT_buffer.h"
-#include "synch/CThreadSafeVariable.h"
 #include "synch/CPipe.h"
 
 #endif

@@ -951,7 +951,7 @@ void kinect_calibrate_guiDialog::thread_grabbing()
 
 			if (!hard_error && there_is_obs)
 			{
-				p.new_obs.set(obs);
+				std::atomic_store(&p.new_obs, obs);
 			}
 
 			if (old_tilt_ang_deg != p.tilt_ang_deg)
@@ -999,7 +999,7 @@ void kinect_calibrate_guiDialog::OntimMiscTrigger(wxTimerEvent& event)
 	if (m_cap_thread.joinable())
 	{	// we're grabbing:
 
-		CObservation3DRangeScan::Ptr possiblyNewObs = m_cap_thread_data.new_obs.get();
+		CObservation3DRangeScan::Ptr possiblyNewObs = std::atomic_load(&m_cap_thread_data.new_obs);
 		if (possiblyNewObs && possiblyNewObs->timestamp!=INVALID_TIMESTAMP &&
 			(!m_last_obs  || possiblyNewObs->timestamp!=m_last_obs->timestamp ) )
 		{	// It IS a new observation:

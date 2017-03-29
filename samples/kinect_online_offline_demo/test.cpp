@@ -20,7 +20,6 @@
 #include <mrpt/hwdrivers/CKinect.h>
 #include <mrpt/gui.h>
 #include <mrpt/maps/CColouredPointsMap.h>
-#include <mrpt/synch/CThreadSafeVariable.h>
 #include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/obs/CRawlog.h>
@@ -67,7 +66,7 @@ struct TThreadParam
 	volatile bool   quit;       //!< In/Out variable: Forces the thread to exit or indicates an error in the thread that caused it to end.
 	volatile double Hz;         //!< Out variable: Approx. capturing rate from the thread.
 
-	mrpt::synch::CThreadSafeVariable<CObservation3DRangeScan::Ptr> new_obs;  //!< RGB+D (+ optionally, 3D point cloud)
+	CObservation3DRangeScan::Ptr new_obs;  //!< RGB+D (+ optionally, 3D point cloud)
 };
 
 // Only for offline operation:
@@ -138,7 +137,7 @@ void thread_grabbing(TThreadParam &p)
 				else if (there_is_obs)
 				{
 					// Send object to the main thread:
-					p.new_obs.set(obs);
+					std::atomic_store(&p.new_obs, obs);
 				}
 			}
 			else
@@ -180,7 +179,7 @@ void thread_grabbing(TThreadParam &p)
 				}
 
 				// Send observation to main thread:
-				p.new_obs.set(obs3D);
+				std::atomic_store(&p.new_obs, obs3D);
 
 				dataset_prev_tim     = cur_tim;
 				my_last_read_obs_tim = mrpt::system::now();
@@ -221,7 +220,7 @@ void Test_KinectOnlineOffline(bool is_online, const string &rawlog_file = string
 	// Wait until data stream starts so we can say for sure the sensor has been initialized OK:
 	cout << "Waiting for sensor initialization...\n";
 	do {
-		CObservation3DRangeScan::Ptr newObs = thrPar.new_obs.get();
+		CObservation3DRangeScan::Ptr newObs = std::atomic_load(&thrPar.new_obs);
 		if (newObs && newObs->timestamp!=INVALID_TIMESTAMP)
 				break;
 		else 	std::this_thread::sleep_for(10ms);
@@ -277,7 +276,7 @@ void Test_KinectOnlineOffline(bool is_online, const string &rawlog_file = string
 
 	while (win3D.isOpen() && !thrPar.quit)
 	{
-		CObservation3DRangeScan::Ptr newObs = thrPar.new_obs.get();
+		CObservation3DRangeScan::Ptr newObs = std::atomic_load(&thrPar.new_obs);
 		if (newObs && newObs->timestamp!=INVALID_TIMESTAMP &&
 			newObs->timestamp!=last_obs_tim )
 		{
