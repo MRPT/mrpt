@@ -239,7 +239,6 @@ endif()
 # ----------------------------------------------------------------------------
 include(cmakemodules/script_gridmap_options.cmake REQUIRED)			# Enable Intel Threading Building Blocks (TBB) lib?
 
-include(cmakemodules/script_tbb.cmake REQUIRED)         # Enable Intel Threading Building Blocks (TBB) lib?
 include(cmakemodules/script_phidget.cmake REQUIRED)     # Support for phidget Interface Kit with proximity sensor device :
 include(cmakemodules/script_videre_svs.cmake REQUIRED)  # Support for Videre Design stereo camera:
 include(cmakemodules/script_ftdi.cmake REQUIRED)        # Check for the FTDI headers (Linux only, in win32 we use built-in header & dynamic DLL load):
