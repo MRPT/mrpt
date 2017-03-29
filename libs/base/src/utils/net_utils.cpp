@@ -14,7 +14,6 @@
 #include <mrpt/utils/CServerTCPSocket.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/system/string_utils.h>
-#include <mrpt/synch/CThreadSafeVariable.h>
 
 #include <thread>
 #include <future>
@@ -41,7 +40,6 @@
 
 using namespace mrpt;
 using namespace mrpt::system;
-using namespace mrpt::synch;
 using namespace mrpt::utils;
 using namespace mrpt::utils::net;
 using namespace std;

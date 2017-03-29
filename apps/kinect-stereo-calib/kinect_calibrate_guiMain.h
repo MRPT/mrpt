@@ -46,7 +46,6 @@
 #include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/opengl.h>
 #include <mrpt/vision/chessboard_stereo_camera_calib.h>
-#include <mrpt/synch/CThreadSafeVariable.h>
 
 #include <thread>
 
@@ -64,7 +63,7 @@ struct TThreadParam
 
 	bool  flag_grab_depth; //!< Default: false = only grab intensity channel(s)
 
-	mrpt::synch::CThreadSafeVariable<mrpt::obs::CObservation3DRangeScan::Ptr> new_obs;     // RGB+D (+3D points)
+	mrpt::obs::CObservation3DRangeScan::Ptr new_obs;     // RGB+D (+3D points)
 };
 
 // Thread for (async) live detecting corners: Do in another thread so the GUI doesn't freeze.
