@@ -21,7 +21,6 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/CConfigFile.h>
-#include <mrpt/synch/CThreadSafeVariable.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>
 #include <mrpt/opengl/CFrustum.h>
@@ -48,8 +47,8 @@ struct TThreadParam
 	volatile int    pushed_key;
 	volatile double Hz;
 
-	mrpt::synch::CThreadSafeVariable<CObservation3DRangeScan::Ptr> new_obs;     // RGB+D (+3D points)
-	mrpt::synch::CThreadSafeVariable<CObservationIMU::Ptr>         new_obs_imu; // Accelerometers
+	CObservation3DRangeScan::Ptr new_obs;     // RGB+D (+3D points)
+	CObservationIMU::Ptr         new_obs_imu; // Accelerometers
 };
 
 void thread_grabbing(TThreadParam &p)
@@ -89,8 +88,8 @@ void thread_grabbing(TThreadParam &p)
 
 			if (!hard_error && there_is_obs)
 			{
-				p.new_obs.set(obs);
-				p.new_obs_imu.set(obs_imu);
+				std::atomic_store(&p.new_obs, obs);
+				std::atomic_store(&p.new_obs_imu, obs_imu);
 			}
 
 			if (p.pushed_key!=0)
@@ -135,7 +134,7 @@ void Test_Kinect()
 	// Wait until data stream starts so we can say for sure the sensor has been initialized OK:
 	cout << "Waiting for sensor initialization...\n";
 	do {
-		CObservation3DRangeScan::Ptr possiblyNewObs = thrPar.new_obs.get();
+		CObservation3DRangeScan::Ptr possiblyNewObs = std::atomic_load(&thrPar.new_obs);
 		if (possiblyNewObs && possiblyNewObs->timestamp!=INVALID_TIMESTAMP)
 				break;
 		else 	std::this_thread::sleep_for(10ms);
@@ -213,13 +212,13 @@ void Test_Kinect()
 
 	while (win3D.isOpen() && !thrPar.quit)
 	{
-		CObservation3DRangeScan::Ptr possiblyNewObs = thrPar.new_obs.get();
+		CObservation3DRangeScan::Ptr possiblyNewObs = std::atomic_load(&thrPar.new_obs);
 		if (possiblyNewObs && possiblyNewObs->timestamp!=INVALID_TIMESTAMP &&
 			(!last_obs  || possiblyNewObs->timestamp!=last_obs->timestamp ) )
 		{
 			// It IS a new observation:
 			last_obs     = possiblyNewObs;
-			last_obs_imu = thrPar.new_obs_imu.get();
+			last_obs_imu = std::atomic_load(&thrPar.new_obs_imu);
 
 			// Update visualization ---------------------------------------
 			bool do_refresh = false;

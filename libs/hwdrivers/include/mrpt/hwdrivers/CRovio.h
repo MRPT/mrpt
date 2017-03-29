@@ -12,7 +12,6 @@
 
 #include <mrpt/utils/TCamera.h>
 #include <mrpt/hwdrivers/link_pragmas.h>
-#include <mrpt/synch/CThreadSafeVariable.h>
 #include <mrpt/obs/CObservationImage.h>
 
 #include <mrpt/hwdrivers/CGenericSensor.h>

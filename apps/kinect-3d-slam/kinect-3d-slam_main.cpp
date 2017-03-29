@@ -30,7 +30,6 @@ Note: This is a very *simple* approach to SLAM. It would be better to first sele
 #include <mrpt/vision/tracking.h>
 #include <mrpt/tfest/se3.h>
 #include <mrpt/system/filesystem.h>
-#include <mrpt/synch/CThreadSafeVariable.h>
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/maps/CColouredPointsMap.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
@@ -63,7 +62,7 @@ struct TThreadParam
 	volatile double tilt_ang_deg;
 	volatile double Hz;
 
-	mrpt::synch::CThreadSafeVariable<CObservation3DRangeScan::Ptr> new_obs;
+	CObservation3DRangeScan::Ptr new_obs;
 };
 
 void thread_grabbing(TThreadParam &p)
@@ -102,7 +101,7 @@ void thread_grabbing(TThreadParam &p)
 
 			if (!hard_error && there_is_obs)
 			{
-				p.new_obs.set(obs);
+				std::atomic_store(&p.new_obs,obs);
 			}
 
 			if (p.pushed_key!=0)
@@ -157,7 +156,7 @@ void Test_Kinect()
 	// Wait until data stream starts so we can say for sure the sensor has been initialized OK:
 	cout << "Waiting for sensor initialization...\n";
 	do {
-		CObservation3DRangeScan::Ptr possiblyNewObs = thrPar.new_obs.get();
+		CObservation3DRangeScan::Ptr possiblyNewObs = std::atomic_load(&thrPar.new_obs);
 		if (possiblyNewObs && possiblyNewObs->timestamp!=INVALID_TIMESTAMP)
 				break;
 		else 	std::this_thread::sleep_for(10ms);
@@ -267,7 +266,7 @@ void Test_Kinect()
 
 	while (win3D.isOpen() && !thrPar.quit)
 	{
-		CObservation3DRangeScan::Ptr possiblyNewObs = thrPar.new_obs.get();
+		CObservation3DRangeScan::Ptr possiblyNewObs = std::atomic_load(&thrPar.new_obs);
 		if (possiblyNewObs && possiblyNewObs->timestamp!=INVALID_TIMESTAMP &&
 			(!last_obs  || possiblyNewObs->timestamp!=last_obs->timestamp ) )
 		{
