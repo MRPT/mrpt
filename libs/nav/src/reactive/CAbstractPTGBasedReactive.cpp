@@ -899,7 +899,8 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 
 	// Use PTG clearance methods to evaluate the real-world (WorkSpace) minimum distance to target:
 	{
-		std::map<double, double> pathDists;
+		typedef std::map<double, double> map_d2d_t;
+		map_d2d_t pathDists;
 		const double D = cm.PTG->getRefDistance();
 		const int num_steps = ceil( D * 2.0);
 		for (int i = 0; i < num_steps; i++) {
@@ -910,7 +911,7 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 
 		const auto it = std::min_element(
 			pathDists.begin(), pathDists.end(),
-			[colfree](decltype(pathDists)::value_type& l, decltype(pathDists)::value_type& r) -> bool {
+			[colfree](map_d2d_t::value_type& l, map_d2d_t::value_type& r) -> bool {
 			return (l.second < r.second) && l.first<colfree;
 			}
 		);
