@@ -10,7 +10,6 @@
 #define  CTICTAC_H
 
 #include <mrpt/base/link_pragmas.h>
-#include <mrpt/utils/CUncopiable.h>
 
 namespace mrpt
 {
@@ -21,8 +20,10 @@ namespace utils
 	 *  \note The class is named after the Spanish equivalent of "Tic-Toc" ;-)
 	 * \ingroup mrpt_base_grp
 	 */
-	class BASE_IMPEXP CTicTac : public mrpt::utils::CUncopiable
+	class BASE_IMPEXP CTicTac
 	{
+		static_assert(!std::is_copy_constructible<CTicTac>::value && !std::is_copy_constructible<CTicTac>::value, "Copy Check");
+
 	public:
 		CTicTac(); //!< Default constructor. Implicitly calls Tic()
 		virtual ~CTicTac();  //!< Dtor
