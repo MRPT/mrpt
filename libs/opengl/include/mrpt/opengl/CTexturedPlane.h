@@ -18,7 +18,6 @@ namespace mrpt
 
 
 		// This must be added to any CSerializable derived class:
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CTexturedPlane, CTexturedObject, OPENGL_IMPEXP )
 
 		/** A 2D plane in the XY plane with a texture image.
 		  *  \sa opengl::COpenGLScene

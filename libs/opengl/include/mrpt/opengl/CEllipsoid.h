@@ -18,7 +18,6 @@ namespace mrpt
 	namespace opengl
 	{
 		// This must be added to any CSerializable derived class:
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CEllipsoid, CRenderizableDisplayList, OPENGL_IMPEXP )
 
 		/** A 2D ellipse or 3D ellipsoid, depending on the size of the m_cov matrix (2x2 or 3x3).
 		  *  The center of the ellipsoid is the "m_x,m_y,m_z" object's coordinates. In the case of

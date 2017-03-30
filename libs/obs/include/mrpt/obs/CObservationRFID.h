@@ -18,7 +18,6 @@ namespace mrpt
 {
 namespace obs
 {
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservationRFID, CObservation, OBS_IMPEXP)
 
 	/** This represents one or more RFID tags observed by a receiver.
 	 *

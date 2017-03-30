@@ -15,7 +15,6 @@ namespace mrpt
 {
 namespace poses
 {
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( CPoint2DPDFGaussian, CPoint2DPDF )
 
 	/** A gaussian distribution for 2D points. Also a method for bayesian fusion is provided.
 	 * \ingroup poses_pdf_grp

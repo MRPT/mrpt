@@ -18,7 +18,6 @@ namespace mrpt
 {
 namespace obs
 {
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservationRange , CObservation,OBS_IMPEXP )
 
 	/** Declares a class derived from "CObservation" that
 	       encapsules a single range measurement, and associated parameters. This can be used

@@ -34,7 +34,6 @@ namespace mrpt
 {
 namespace maps
 {
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( COccupancyGridMap2D, CMetricMap, MAPS_IMPEXP )
 
 	/** A class for storing an occupancy grid map.
 	 *  COccupancyGridMap2D is a class for storing a metric map

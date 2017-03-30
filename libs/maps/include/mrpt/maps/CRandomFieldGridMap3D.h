@@ -26,7 +26,6 @@ namespace mrpt
 {
 namespace maps
 {
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE(CRandomFieldGridMap3D, mrpt::utils::CSerializable, MAPS_IMPEXP )
 
 	/** The contents of each voxel in a CRandomFieldGridMap3D map.
 	  * \ingroup mrpt_maps_grp

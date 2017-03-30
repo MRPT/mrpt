@@ -61,7 +61,6 @@ namespace mrpt
 			{}
 		};
 
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_LINKAGE ( TMapGenericParams, OBS_IMPEXP )
 		/** Common params to all maps derived from mrpt::maps::CMetricMap  */
 		class OBS_IMPEXP TMapGenericParams : public mrpt::utils::CLoadableOptions, public mrpt::utils::CSerializable
 		{

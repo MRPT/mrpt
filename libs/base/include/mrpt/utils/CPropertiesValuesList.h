@@ -16,7 +16,6 @@ namespace mrpt
 	namespace utils
 	{
 		// This must be added to any CSerializable derived class:
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( CPropertiesValuesList, mrpt::utils::CSerializable )
 
 		/** An arbitrary list of "annotations", or named attributes, each being an instance of any CSerializable object.
 		 *  A multi-hypotheses version exists in CMHPropertiesValuesList.

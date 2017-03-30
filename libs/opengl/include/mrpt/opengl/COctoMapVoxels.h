@@ -24,7 +24,6 @@ namespace mrpt
 		};
 
 		// This must be added to any CSerializable derived class:
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( COctoMapVoxels, CRenderizableDisplayList, OPENGL_IMPEXP )
 
 		/** A flexible renderer of voxels, typically from a 3D octo map (see mrpt::maps::COctoMap).
 		  *  This class is sort of equivalent to octovis::OcTreeDrawer from the octomap package, but

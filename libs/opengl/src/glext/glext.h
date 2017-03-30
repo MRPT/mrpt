@@ -1648,7 +1648,6 @@ extern "C" {
 #ifndef GL_HP_texture_lighting
 #define GL_TEXTURE_LIGHTING_MODE_HP       0x8167
 #define GL_TEXTURE_POST_SPECULAR_HP       0x8168
-#define GL_TEXTURE_PRE_SPECULAR_HP        0x8169
 #endif
 
 #ifndef GL_EXT_draw_range_elements

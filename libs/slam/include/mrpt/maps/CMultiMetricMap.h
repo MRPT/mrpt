@@ -37,7 +37,6 @@ namespace maps
 {
 	class TSetOfMetricMapInitializers;
 
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CMultiMetricMap , CMetricMap, SLAM_IMPEXP )
 
 	/** This class stores any customizable set of metric maps.
 	 * The internal metric maps can be accessed directly by the user as smart pointers with CMultiMetricMap::getMapByIndex() or via `iterator`s.

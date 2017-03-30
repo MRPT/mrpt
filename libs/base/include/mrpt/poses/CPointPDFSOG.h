@@ -18,7 +18,6 @@ namespace mrpt
 {
 	namespace poses
 	{
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( CPointPDFSOG, CPointPDF )
 
 		/** Declares a class that represents a Probability Density function (PDF) of a 3D point \f$ p(\mathbf{x}) = [x ~ y ~ z ]^t \f$.
 		 *   This class implements that PDF as the following multi-modal Gaussian distribution:

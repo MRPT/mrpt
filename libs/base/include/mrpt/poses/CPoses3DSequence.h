@@ -18,7 +18,6 @@ namespace poses
 {
 
 	// This must be added to any CSerializable derived class:
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( CPoses3DSequence, mrpt::utils::CSerializable )
 
 	/** This class stores a sequence of relative, incremental 3D poses. It is useful as the bases storing unit for more complex probability particles and for computing the absolute pose of any intermediate pose.
 	 *

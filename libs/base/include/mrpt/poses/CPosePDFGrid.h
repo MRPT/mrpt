@@ -18,7 +18,6 @@ namespace mrpt
 namespace poses
 {
 	// This must be added to any CSerializable derived class:
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( CPosePDFGrid, CPosePDF   )
 
 	/** Declares a class that represents a Probability Distribution
 	 *    function (PDF) of a 2D pose (x,y,phi).

@@ -19,7 +19,6 @@ namespace mrpt
 namespace obs
 {
 
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservationSkeleton , CObservation, OBS_IMPEXP)
 
 	/** This class stores a skeleton as tracked by OPENNI2 & NITE2 libraries from PrimeSense sensors
 	 *

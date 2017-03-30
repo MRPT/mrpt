@@ -18,7 +18,6 @@ namespace mrpt
 	namespace opengl
 	{
 		// This must be added to any CSerializable derived class:
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CDisk, CRenderizableDisplayList, OPENGL_IMPEXP )
 
 		/** A planar disk in the XY plane.
 		  *  \sa opengl::COpenGLScene

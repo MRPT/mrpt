@@ -14,7 +14,6 @@ namespace mrpt
 {
   namespace nav
   {
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE(CPTG_DiffDrive_alpha, CParameterizedTrajectoryGenerator, NAV_IMPEXP)
 
 	/** The "a(symptotic)-alpha PTG", as named in PTG papers.
 	 * - **Compatible kinematics**: differential-driven / Ackermann steering

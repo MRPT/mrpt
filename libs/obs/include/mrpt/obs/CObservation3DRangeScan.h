@@ -59,7 +59,6 @@ namespace obs
 		void project3DPointsFromDepthImageInto(mrpt::obs::CObservation3DRangeScan & src_obs,POINTMAP & dest_pointcloud, const mrpt::obs::T3DPointsProjectionParams & projectParams, const mrpt::obs::TRangeImageFilterParams &filterParams);
 	}
 
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservation3DRangeScan, CObservation,OBS_IMPEXP )
 
 	/** Declares a class derived from "CObservation" that encapsules a 3D range scan measurement, as from a time-of-flight range camera or any other RGBD sensor.
 	 *

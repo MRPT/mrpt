@@ -20,7 +20,6 @@ namespace mrpt {
 namespace poses { class CPose3DInterpolator; }
 namespace obs 
 {
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservationVelodyneScan, CObservation, OBS_IMPEXP)
 
 	/** A `CObservation`-derived class for RAW DATA (and optionally, point cloud) of scans from 3D Velodyne LIDAR scanners.
 	  * A scan comprises one or more "velodyne packets" (refer to Velodyne user manual).

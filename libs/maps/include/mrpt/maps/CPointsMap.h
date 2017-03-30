@@ -30,7 +30,6 @@ namespace mrpt
 /** \ingroup mrpt_maps_grp */
 namespace maps
 {
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CPointsMap , CMetricMap, MAPS_IMPEXP )
 
 	// Forward decls. needed to make its static methods friends of CPointsMap
 	namespace detail {

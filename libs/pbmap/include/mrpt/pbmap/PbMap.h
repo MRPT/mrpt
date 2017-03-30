@@ -31,7 +31,6 @@
 namespace mrpt {
 namespace pbmap {
 	// This must be added to any CSerializable derived class:
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_LINKAGE( PbMap, PBMAP_IMPEXP)
 
 	/** A class used to store a Plane-based Map (PbMap). A PbMap consists of a set of planar patches
 	* described by geometric features (shape, relative position, etc.) and/or radiometric features

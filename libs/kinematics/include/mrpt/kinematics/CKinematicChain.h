@@ -21,7 +21,6 @@ namespace mrpt
 
 	namespace kinematics
 	{
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CKinematicChain, mrpt::utils::CSerializable, KINEMATICS_IMPEXP )
 
 		/** An individual kinematic chain element (one link) which builds up a CKinematicChain.
 		  * The parameterization of the SE(3) transformation from the starting point to the end point

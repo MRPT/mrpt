@@ -19,7 +19,6 @@ namespace mrpt
 {
 namespace poses
 {
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( TSimple3DPoint, mrpt::utils::CSerializable )
 
 	/** Data within each particle
 	 * \ingroup poses_pdf_grp
@@ -45,7 +44,6 @@ namespace poses
 	};
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE( TSimple3DPoint, mrpt::utils::CSerializable )
 
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( CPointPDFParticles, CPointPDF )
 
 	/** A probability distribution of a 2D/3D point, represented as a set of random samples (particles).
 	 * \sa CPointPDF

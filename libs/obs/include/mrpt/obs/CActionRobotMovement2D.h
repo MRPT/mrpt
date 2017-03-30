@@ -19,7 +19,6 @@ namespace mrpt
 {
 	namespace obs
 	{
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CActionRobotMovement2D, CAction, OBS_IMPEXP )
 
 		/** Represents a probabilistic 2D movement of the robot mobile base
 		 *

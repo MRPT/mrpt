@@ -20,7 +20,6 @@ namespace mrpt
 {
 	namespace utils
 	{
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( TCamera, mrpt::utils::CSerializable )
 
 		/** Structure to hold the parameters of a pinhole camera model.
 		  *  The parameters obtained for one camera resolution can be used for any other resolution by means of the method TCamera::scaleToResolution()

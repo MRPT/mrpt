@@ -18,7 +18,6 @@ namespace mrpt
 {
 namespace maps
 {
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CHeightGridMap2D_MRF , CRandomFieldGridMap2D, MAPS_IMPEXP )
 
 	/** CHeightGridMap2D_MRF represents digital-elevation-model over a 2D area, with uncertainty, based on a Markov-Random-Field (MRF) estimator.
 	  *

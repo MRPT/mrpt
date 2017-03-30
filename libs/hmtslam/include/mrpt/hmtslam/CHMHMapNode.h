@@ -25,7 +25,6 @@ namespace mrpt
 		class HMTSLAM_IMPEXP CHierarchicalMHMap;
 		class HMTSLAM_IMPEXP CHMHMapArc;
 
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CHMHMapNode,mrpt::utils::CSerializable, HMTSLAM_IMPEXP )
 
 		/** A class for representing a node in a hierarchical, multi-hypothesis map.
 		 *   The node itself will be considered only if some given hypothesisID matchs its own ID.

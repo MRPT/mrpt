@@ -19,7 +19,6 @@ namespace mrpt
 {
 namespace obs
 {
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservationWindSensor, CObservation, OBS_IMPEXP)
 
 	/** Declares a class derived from "CObservation" that represents the wind measurements taken on the robot by an anemometer.
 	 * The observation is composed by two magnitudes:

@@ -15,8 +15,6 @@ namespace mrpt
 {
   namespace nav
   {
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE(CLogFileRecord_FullEval, CHolonomicLogFileRecord, NAV_IMPEXP)
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE(CHolonomicFullEval, CAbstractHolonomicReactiveMethod, NAV_IMPEXP )
 
 	/** \addtogroup nav_holo Holonomic navigation methods
 	  * \ingroup mrpt_nav_grp
