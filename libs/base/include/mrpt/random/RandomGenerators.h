@@ -12,6 +12,9 @@
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 
+#include <random>
+#include <limits>
+
 namespace mrpt
 {
 	namespace math { template <class T> class CMatrixTemplateNumeric; }  // Frwd. decl.
@@ -33,19 +36,12 @@ namespace mrpt
 		{
 		protected:
 			/** Data used internally by the MT19937 PRNG algorithm. */
-			struct  TMT19937_data
-			{
-				TMT19937_data() : index(0), seed_initialized(false)
-				{}
-				uint32_t	MT[624];
-				uint32_t	index;
-				bool		seed_initialized;
-			} m_MT19937_data;
+			std::mt19937_64 m_MT19937;
 
-			bool   m_std_gauss_set;
-			double m_std_gauss_next;
+			std::normal_distribution<double> m_normdistribution;
+			std::uniform_int_distribution<uint32_t> m_uint32;
+			std::uniform_int_distribution<uint64_t> m_uint64;
 
-			void MT19937_generateNumbers();
 			void MT19937_initializeGenerator(const uint32_t &seed);
 
 		public:
@@ -54,10 +50,10 @@ namespace mrpt
 			 @{ */
 
 				/** Default constructor: initialize random seed based on current time */
-				CRandomGenerator() : m_MT19937_data(),m_std_gauss_set(false) { randomize(); }
+				CRandomGenerator() { randomize(); }
 
 				/** Constructor for providing a custom random seed to initialize the PRNG */
-				CRandomGenerator(const uint32_t seed) : m_MT19937_data() { randomize(seed); }
+				CRandomGenerator(const uint32_t seed) { randomize(seed); }
 
 				void randomize(const uint32_t seed);  //!< Initialize the PRNG from the given random seed
 				void randomize();	//!< Randomize the generators, based on current time
@@ -75,8 +71,8 @@ namespace mrpt
 				uint64_t drawUniform64bit();
 
 				/** You can call this overloaded method with either 32 or 64bit unsigned ints for the sake of general coding. */
-				void drawUniformUnsignedInt(uint32_t &ret_number) { ret_number=drawUniform32bit(); }
-				void drawUniformUnsignedInt(uint64_t &ret_number) { ret_number=drawUniform64bit(); }
+				void drawUniformUnsignedInt(uint32_t &ret_number) { ret_number = m_uint32(m_MT19937); }
+				void drawUniformUnsignedInt(uint64_t &ret_number) { ret_number = m_uint64(m_MT19937); }
 
 				/** Return a uniform unsigned integer in the range [min_val,max_val] (both inclusive) */
 				template <typename T, typename U,typename V>
@@ -130,7 +126,7 @@ namespace mrpt
 				/** Generate a normalized (mean=0, std=1) normally distributed sample.
 				 *  \param likelihood If desired, pass a pointer to a double which will receive the likelihood of the given sample to have been obtained, that is, the value of the normal pdf at the sample value.
 				 */
-				double drawGaussian1D_normalized( double *likelihood = nullptr);
+				double drawGaussian1D_normalized();
 
 				/** Generate a normally distributed pseudo-random number.
 				 * \param mean The mean value of desired normal distribution
