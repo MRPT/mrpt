@@ -8,7 +8,6 @@
    +---------------------------------------------------------------------------+ */
 
 #include "base-precomp.h"  // Precompiled headers
-#include <mrpt/utils/mrpt_inttypes.h>  // For PRIu64
 
 #include <mrpt/synch/CPipe.h>
 
