@@ -10,7 +10,6 @@
 #define  mrpt_synch_pipe_H
 
 #include <mrpt/base/link_pragmas.h>
-#include <mrpt/utils/CUncopiable.h>
 #include <mrpt/utils/CStream.h>
 #include <string>
 #include <memory> // for auto_ptr<>, unique_ptr<>
@@ -58,9 +57,9 @@ namespace mrpt
 
 		/** Common interface of read & write pipe end-points */
 		class BASE_IMPEXP CPipeBaseEndPoint :
-			public mrpt::utils::CUncopiable,
 			public mrpt::utils::CStream
 		{
+			static_assert(!std::is_copy_constructible<CPipeBaseEndPoint>::value && !std::is_copy_assignable<CPipeBaseEndPoint>::value, "Copy Check");
 			friend class CPipe;
 		public:
 			CPipeBaseEndPoint();

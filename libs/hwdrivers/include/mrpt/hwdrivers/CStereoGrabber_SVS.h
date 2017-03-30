@@ -11,7 +11,6 @@
 
 #include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/hwdrivers/link_pragmas.h>
-#include <mrpt/utils/CUncopiable.h>
 
 namespace mrpt
 {
@@ -59,8 +58,9 @@ namespace mrpt
 		  * \sa You'll probably want to use instead the most generic camera grabber in MRPT: mrpt::hwdrivers::CCameraSensor
 		  * \ingroup mrpt_hwdrivers_grp
 		  */
-        class HWDRIVERS_IMPEXP  CStereoGrabber_SVS : public mrpt::utils::CUncopiable
-		{
+        class HWDRIVERS_IMPEXP  CStereoGrabber_SVS
+	{
+		static_assert(!std::is_copy_constructible<CStereoGrabber_SVS>::value && !std::is_copy_assignable<CStereoGrabber_SVS>::value, "Copy Check");
 		protected:
 			bool			m_bInitialized;					//!< If this has been correctly initiated
 
