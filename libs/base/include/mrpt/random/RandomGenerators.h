@@ -42,7 +42,6 @@ namespace mrpt
 			std::uniform_int_distribution<uint32_t> m_uint32;
 			std::uniform_int_distribution<uint64_t> m_uint64;
 
-			void MT19937_generateNumbers();
 			void MT19937_initializeGenerator(const uint32_t &seed);
 
 		public:

@@ -30,12 +30,6 @@ void CRandomGenerator::MT19937_initializeGenerator(const uint32_t &seed)
 	m_MT19937.seed(seed);
 }
 
-// Generate an array of 624 untempered numbers
-void CRandomGenerator::MT19937_generateNumbers()
-{
-	m_MT19937();
-}
-
 uint64_t CRandomGenerator::drawUniform64bit()
 {
 	return m_uint64(m_MT19937);
