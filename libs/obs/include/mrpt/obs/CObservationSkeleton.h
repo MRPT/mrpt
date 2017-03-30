@@ -28,7 +28,6 @@ namespace obs
 	 */
 	class OBS_IMPEXP CObservationSkeleton : public CObservation
 	{
-		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CObservationSkeleton )
 
 	 public:

@@ -25,7 +25,6 @@ namespace mrpt
 			  */
 		class NAV_IMPEXP CMultiObjMotionOpt_Scalarization: public mrpt::nav::CMultiObjectiveMotionOptimizerBase
 		{
-			// This must be added to any CSerializable derived class:
 			DEFINE_MRPT_OBJECT(CMultiObjMotionOpt_Scalarization)
 
 		public:

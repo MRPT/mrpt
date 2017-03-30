@@ -36,7 +36,6 @@ namespace obs
 	 */
 	class OBS_IMPEXP CObservationStereoImagesFeatures : public CObservation
 	{
-		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CObservationStereoImagesFeatures )
 
 	 public:

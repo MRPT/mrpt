@@ -39,7 +39,6 @@ namespace obs
 	  */
 	class OBS_IMPEXP CObservationStereoImages : public CObservation
 	{
-		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CObservationStereoImages )
 		// This must be added for declaration of MEX-related functions
 		DECLARE_MEX_CONVERSION

@@ -41,7 +41,6 @@ namespace obs
 	  */
 	class OBS_IMPEXP CObservation2DRangeScan : public CObservation
 	{
-		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CObservation2DRangeScan )
 		// This must be added for declaration of MEX-related functions
 		DECLARE_MEX_CONVERSION

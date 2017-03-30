@@ -38,7 +38,6 @@ namespace mrpt
 		  */
 		class HMTSLAM_IMPEXP CLSLAMParticleData : public mrpt::utils::CSerializable
 		{
-			// This must be added to any CSerializable derived class:
 			DEFINE_SERIALIZABLE( CLSLAMParticleData )
 
 		public:
@@ -65,7 +64,6 @@ namespace mrpt
 		{
 			friend class HMTSLAM_IMPEXP CLSLAM_RBPF_2DLASER;
 
-			// This must be added to any CSerializable derived class:
 			DEFINE_SERIALIZABLE( CLocalMetricHypothesis )
 
 		public:

@@ -17,7 +17,6 @@ namespace mrpt
 	{
 		#define INVALID_DISPLAY_LIST_ID  static_cast<unsigned int>(-1)
 
-		// This must be added to any CSerializable derived class:
 
 		/** A renderizable object suitable for rendering with OpenGL's display lists.
 		  *   The idea is to use the derived classes' ::render() method to save all the primitives

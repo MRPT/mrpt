@@ -18,15 +18,12 @@ namespace mrpt
 namespace utils
 {
 
-	// This must be added to any CSerializable derived class:
-	// This must be added to any CSerializable derived class:
 
 /**  This class implements the tables of databases.
  * \sa CSimpleDatabase \ingroup mrpt_base_grp
  */
 class BASE_IMPEXP CSimpleDatabaseTable : public mrpt::utils::CSerializable
 {
-	// This must be added to any CSerializable derived class:
 	DEFINE_SERIALIZABLE( CSimpleDatabaseTable )
 public:
 	/** Default constructor
@@ -119,7 +116,6 @@ private:
   */
 class BASE_IMPEXP CSimpleDatabase  : public mrpt::utils::CSerializable
 {
-	// This must be added to any CSerializable derived class:
 	DEFINE_SERIALIZABLE( CSimpleDatabase )
 
 public:

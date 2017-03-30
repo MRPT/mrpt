@@ -31,7 +31,6 @@ namespace slam
 	  */
 	class SLAM_IMPEXP  CIncrementalMapPartitioner : public mrpt::utils::COutputLogger, public mrpt::utils::CSerializable
 	{
-		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CIncrementalMapPartitioner )
 
 	public:

@@ -16,7 +16,6 @@ namespace mrpt
 {
 	namespace utils
 	{
-		// This must be added to any CSerializable derived class:
 
 		/** A memory buffer (implements CStream) which can be itself serialized.
 		 *
@@ -25,7 +24,6 @@ namespace mrpt
 		 */
 		class BASE_IMPEXP CMemoryChunk : public CSerializable, public CMemoryStream
 		{
-			// This must be added to any CSerializable derived class:
 			DEFINE_SERIALIZABLE( CMemoryChunk )
 
 		}; // End of class def.

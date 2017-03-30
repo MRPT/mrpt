@@ -33,7 +33,6 @@ namespace mrpt
 		 */
 		class MAPS_IMPEXP COctoMap : public COctoMapBase<octomap::OcTree,octomap::OcTreeNode>
 		{
-			// This must be added to any CSerializable derived class:
 			DEFINE_SERIALIZABLE( COctoMap )
 
 		 public:

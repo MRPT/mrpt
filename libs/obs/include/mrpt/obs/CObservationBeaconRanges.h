@@ -26,7 +26,6 @@ namespace obs
 	 */
 	class OBS_IMPEXP CObservationBeaconRanges : public CObservation
 	{
-		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CObservationBeaconRanges )
 
 	 public:

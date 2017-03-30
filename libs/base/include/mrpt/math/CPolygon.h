@@ -16,14 +16,12 @@ namespace mrpt
 {
 namespace math
 {
-	// This must be added to any CSerializable derived class:
 
 	/** A wrapper of a TPolygon2D class, implementing CSerializable.
 	 * \ingroup geometry_grp
 	 */
 	class BASE_IMPEXP CPolygon : public mrpt::utils::CSerializable, public mrpt::math::TPolygon2D
 	{
-		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CPolygon )
 
 	public:

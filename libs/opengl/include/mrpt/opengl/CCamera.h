@@ -20,7 +20,6 @@ namespace mrpt
 		class COpenGLViewport;
 		class CCamera;
 
-		// This must be added to any CSerializable derived class:
 
 		/** A camera: if added to a scene, the viewpoint defined by this camera will be used instead of the camera parameters set in COpenGLViewport::m_camera.
 		  *  A camera can be defined to provide a projective or orthogonal view of the world by setting the member CCamera::m_projectiveModel.

@@ -138,7 +138,6 @@ namespace obs
 	 */
 	class OBS_IMPEXP CObservation3DRangeScan : public CObservation
 	{
-		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CObservation3DRangeScan )
 
 	protected:

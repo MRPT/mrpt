@@ -42,7 +42,6 @@ namespace maps
 	 */
 	class MAPS_IMPEXP CBeaconMap : public mrpt::maps::CMetricMap
 	{
-		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CBeaconMap )
 
 	public:

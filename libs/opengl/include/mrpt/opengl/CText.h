@@ -18,7 +18,6 @@ namespace mrpt
 	{
 
 
-		// This must be added to any CSerializable derived class:
 
 		/** A 2D text (bitmap rendering): it always "faces the observer" despite it's at some 3D location.
 		  *  Use setString and setFont to change the text displayed by this object.

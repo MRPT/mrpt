@@ -18,7 +18,6 @@ namespace mrpt
 {
 	namespace obs
 	{
-		// This must be added to any CSerializable derived class:
 
 		/** Declares a class for storing a "sensory frame", a set of "observations" taken by the robot approximately at the same time as one "snapshot" of the environment.
 		  * It can contain "observations" of many different kinds.
@@ -50,7 +49,6 @@ namespace mrpt
 		  */
 		class OBS_IMPEXP CSensoryFrame : public mrpt::utils::CSerializable
 		{
-			// This must be added to any CSerializable derived class:
 			DEFINE_SERIALIZABLE( CSensoryFrame )
 
 		public:

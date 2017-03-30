@@ -53,7 +53,6 @@ namespace mrpt
 			public mrpt::utils::CSerializable,
 			public mrpt::utils::CObservable
 		{
-			// This must be added to any CSerializable derived class:
 			DEFINE_VIRTUAL_SERIALIZABLE( CMetricMap )
 
 		private:

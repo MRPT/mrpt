@@ -32,7 +32,6 @@ namespace maps
 	  */
 	class MAPS_IMPEXP CWirelessPowerGridMap2D : public CRandomFieldGridMap2D
 	{
-		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CWirelessPowerGridMap2D )
 	public:
 		/** Constructor */

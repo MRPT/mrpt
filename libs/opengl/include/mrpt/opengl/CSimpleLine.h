@@ -17,7 +17,6 @@ namespace mrpt
 	{
 
 
-		// This must be added to any CSerializable derived class:
 
 		/** A line segment
 		  *  \sa opengl::COpenGLScene

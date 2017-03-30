@@ -17,7 +17,6 @@ namespace mrpt
 	{
 
 
-		// This must be added to any CSerializable derived class:
 
 		/** Draw a 3D world axis, with coordinate marks at some regular interval
 		  *  \sa opengl::COpenGLScene

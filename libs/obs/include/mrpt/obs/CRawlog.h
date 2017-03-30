@@ -50,7 +50,6 @@ namespace mrpt
 		 */
 		class OBS_IMPEXP CRawlog : public mrpt::utils::CSerializable
 		{
-			// This must be added to any CSerializable derived class:
 			DEFINE_SERIALIZABLE( CRawlog )
 
 		private:

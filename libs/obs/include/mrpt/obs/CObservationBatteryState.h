@@ -32,7 +32,6 @@ namespace obs
 	 */
 	class OBS_IMPEXP CObservationBatteryState : public CObservation
 	{
-		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CObservationBatteryState )
 
 	 public:

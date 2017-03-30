@@ -33,7 +33,6 @@ namespace mrpt
 		 */
 		class BASE_IMPEXP  CPointPDFSOG : public CPointPDF
 		{
-			// This must be added to any CSerializable derived class:
 			DEFINE_SERIALIZABLE( CPointPDFSOG )
 
 		public:

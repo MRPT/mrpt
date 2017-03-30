@@ -54,7 +54,6 @@ namespace mrpt
 		 */
 		class BASE_IMPEXP CPose3DInterpolator : public mrpt::utils::CSerializable
 		{
-			// This must be added to any CSerializable derived class:
 			DEFINE_SERIALIZABLE( CPose3DInterpolator )
 
 		 private:

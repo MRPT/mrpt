@@ -30,7 +30,6 @@ namespace mrpt
 		 */
 		class MAPS_IMPEXP CColouredOctoMap : public COctoMapBase<octomap::ColorOcTree,octomap::ColorOcTreeNode>
 		{
-			// This must be added to any CSerializable derived class:
 			DEFINE_SERIALIZABLE( CColouredOctoMap )
 
 		 public:

@@ -18,7 +18,6 @@ namespace mrpt
 	{
 
 
-		// This must be added to any CSerializable derived class:
 
 		/** A set of colored triangles.
 		  *  This class can be used to draw any solid, arbitrarily complex object (without textures).

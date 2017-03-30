@@ -20,7 +20,6 @@ namespace mrpt
 	{
 
 
-		// This must be added to any CSerializable derived class:
 
 		/** This class can load & render 3D models in a number of different formats (requires the library assimp).
 		  *  - All supported formats: http://assimp.sourceforge.net/main_features_formats.html

@@ -71,7 +71,6 @@ namespace poses
 	 */
 	class BASE_IMPEXP CPose3D : public CPose<CPose3D>, public mrpt::utils::CSerializable
 	{
-		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CPose3D )
 
         // This must be added for declaration of MEX-related functions

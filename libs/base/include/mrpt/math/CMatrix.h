@@ -17,8 +17,6 @@ namespace mrpt
 {
 	namespace math
 	{
-		// This must be added to any CSerializable derived class:
-		// from templates need special nasty handling for MSVC DLL exports...
 
 		/**  This class is a "CSerializable" wrapper for "CMatrixFloat".
 		 * \note For a complete introduction to Matrices and vectors in MRPT, see: http://www.mrpt.org/Matrices_vectors_arrays_and_Linear_Algebra_MRPT_and_Eigen_classes
@@ -26,7 +24,6 @@ namespace mrpt
 		 */
 		class BASE_IMPEXP_TEMPL CMatrix : public mrpt::utils::CSerializable, public CMatrixFloat
 		{
-			// This must be added to any CSerializable derived class:
 			DEFINE_SERIALIZABLE_CUSTOM_LINKAGE( CMatrix, void BASE_IMPEXP, static BASE_IMPEXP, virtual BASE_IMPEXP )
 
 		public:

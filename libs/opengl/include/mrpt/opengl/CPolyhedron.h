@@ -16,7 +16,6 @@ namespace mrpt	{
 namespace opengl	{
 	class OPENGL_IMPEXP CPolyhedron;
 
-	// This must be added to any CSerializable derived class:
 	/**
 	  * This class represents arbitrary polyhedra. The class includes a set of static methods to create common polyhedrons. The class includes many methods to create standard polyhedra, not intended to be fast but to be simple. For example, the dodecahedron is not created efficiently: first, an icosahedron is created, and a duality operator is applied to it, which yields the dodecahedron. This way, code is much smaller, although much slower. This is not a big problem, since polyhedron creation does not usually take a significant amount of time (they are created once and rendered many times).
 	  * Polyhedra information and models have been gotten from the Wikipedia, http://wikipedia.org

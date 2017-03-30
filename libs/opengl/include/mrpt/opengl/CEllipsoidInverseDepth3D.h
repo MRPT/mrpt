@@ -15,7 +15,6 @@ namespace mrpt
 {
 	namespace opengl
 	{
-		// This must be added to any CSerializable derived class:
 
 		/** An especial "ellipsoid" in 3D computed as the uncertainty iso-surfaces of a (inv_range,yaw,pitch) variable.
 		  *  The parameter space of this ellipsoid comprises these variables (in this order):

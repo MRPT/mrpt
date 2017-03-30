@@ -15,7 +15,6 @@ namespace mrpt
 {
 namespace utils
 {
-	// This must be added to any CSerializable derived class:
 
 	/** This class represents a std::string derived class which is also CSerializable
 	 * \sa CSerializable
@@ -23,7 +22,6 @@ namespace utils
 	 */
 	class BASE_IMPEXP CTypeSelector : public mrpt::utils::CSerializable
 	{
-		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CTypeSelector )
 	protected:
 		/** The possibilities

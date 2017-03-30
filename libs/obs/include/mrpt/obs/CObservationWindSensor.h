@@ -30,7 +30,6 @@ namespace obs
 	 */
 	class OBS_IMPEXP CObservationWindSensor : public CObservation
 	{
-		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CObservationWindSensor )
 
 	 public:

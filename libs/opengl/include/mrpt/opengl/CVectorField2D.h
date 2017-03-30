@@ -18,7 +18,6 @@ namespace mrpt
 {
 	namespace opengl
 	{
-		// This must be added to any CSerializable derived class:
 
 		/** A 2D vector field representation, consisting of points and arrows drawn on a plane (invisible grid).
 		  *  \sa opengl::COpenGLScene

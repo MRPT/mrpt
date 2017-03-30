@@ -32,7 +32,6 @@ namespace maps
 	  */
 	class MAPS_IMPEXP CGasConcentrationGridMap2D : public CRandomFieldGridMap2D
 	{
-		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CGasConcentrationGridMap2D )
 	public:
 

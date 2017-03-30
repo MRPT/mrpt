@@ -121,7 +121,6 @@ namespace maps
 	 */
 	class SLAM_IMPEXP CMultiMetricMap : public mrpt::maps::CMetricMap
 	{
-		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CMultiMetricMap )
 	protected:
 		void deleteAllMaps(); //!< Deletes all maps and clears the internal lists of maps (with clear_unique(), so user copies remain alive)

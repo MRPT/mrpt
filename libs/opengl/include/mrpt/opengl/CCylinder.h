@@ -14,7 +14,6 @@
 namespace mrpt	{
 namespace opengl	{
 	class OPENGL_IMPEXP CCylinder;
-	// This must be added to any CSerializable derived class:
 	/** A cylinder or cone whose base lies in the XY plane.
 	  * \sa opengl::COpenGLScene,opengl::CDisk
 	  *  

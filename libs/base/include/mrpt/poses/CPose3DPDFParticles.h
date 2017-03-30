@@ -18,7 +18,6 @@ namespace mrpt
 {
 	namespace poses
 	{
-		// This must be added to any CSerializable derived class:
 
 		/** Declares a class that represents a Probability Density function (PDF) of a 3D pose
 		 *
@@ -34,7 +33,6 @@ namespace mrpt
 			public mrpt::bayes::CParticleFilterData<CPose3D>,
 			public mrpt::bayes::CParticleFilterDataImpl<CPose3DPDFParticles,mrpt::bayes::CParticleFilterData<CPose3D>::CParticleList>
 		{
-			// This must be added to any CSerializable derived class:
 			DEFINE_SERIALIZABLE( CPose3DPDFParticles )
 
 		 public:

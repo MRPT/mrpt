@@ -25,7 +25,6 @@ namespace obs
 	 */
 	class OBS_IMPEXP CObservationReflectivity : public CObservation
 	{
-		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CObservationReflectivity )
 
 	 public:

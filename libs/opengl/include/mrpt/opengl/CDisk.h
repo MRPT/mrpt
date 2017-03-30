@@ -17,7 +17,6 @@ namespace mrpt
 {
 	namespace opengl
 	{
-		// This must be added to any CSerializable derived class:
 
 		/** A planar disk in the XY plane.
 		  *  \sa opengl::COpenGLScene

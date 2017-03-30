@@ -19,7 +19,6 @@ namespace mrpt
 	  */
 	namespace opengl
 	{
-		// This must be added to any CSerializable derived class:
 
 
 		/** This class allows the user to create, load, save, and render 3D scenes using OpenGL primitives.

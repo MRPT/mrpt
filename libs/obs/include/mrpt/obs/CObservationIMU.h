@@ -72,7 +72,6 @@ namespace obs
 	 */
 	class OBS_IMPEXP CObservationIMU : public CObservation
 	{
-		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CObservationIMU )
 
 	 public:

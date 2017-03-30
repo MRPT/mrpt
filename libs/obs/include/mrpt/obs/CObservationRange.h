@@ -28,7 +28,6 @@ namespace obs
 	 */
 	class OBS_IMPEXP CObservationRange : public CObservation
 	{
-		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CObservationRange )
 
 	 public:

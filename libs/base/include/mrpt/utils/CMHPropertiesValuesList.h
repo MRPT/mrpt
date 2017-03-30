@@ -18,7 +18,6 @@ namespace mrpt
 {
     namespace utils
     {
-        // This must be added to any CSerializable derived class:
 
         /** Internal triplet for each property in utils::CMHPropertiesValuesList */
         struct BASE_IMPEXP  TPropertyValueIDTriplet
@@ -39,7 +38,6 @@ namespace mrpt
          */
         class BASE_IMPEXP CMHPropertiesValuesList : public mrpt::utils::CSerializable
         {
-            // This must be added to any CSerializable derived class:
             DEFINE_SERIALIZABLE( CMHPropertiesValuesList )
 
 		private:

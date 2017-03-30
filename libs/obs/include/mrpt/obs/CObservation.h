@@ -38,7 +38,6 @@ namespace mrpt
 		 */
 		class OBS_IMPEXP CObservation : public mrpt::utils::CSerializable
 		{
-			// This must be added to any CSerializable derived class:
 			DEFINE_VIRTUAL_SERIALIZABLE(CObservation)
 
 		protected:

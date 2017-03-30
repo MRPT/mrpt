@@ -17,7 +17,6 @@ namespace mrpt
 {
 	namespace utils
 	{
-		// This must be added to any CSerializable derived class:
 
 		/** A class for storing a list of text lines.
 		  *  This class is optimized for managing strings on a "per-line" basis, although methods are also provided to obtain/set the
@@ -30,7 +29,6 @@ namespace mrpt
 		 */
 		class BASE_IMPEXP CStringList : public mrpt::utils::CSerializable
 		{
-			// This must be added to any CSerializable derived class:
 			DEFINE_SERIALIZABLE( CStringList )
 
 		protected:

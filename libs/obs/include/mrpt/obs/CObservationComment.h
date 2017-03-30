@@ -26,7 +26,6 @@ namespace obs
 	 */
 	class OBS_IMPEXP CObservationComment : public CObservation
 	{
-		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CObservationComment )
 
 	 public:

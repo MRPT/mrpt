@@ -25,7 +25,6 @@ namespace mrpt
 	{
 		class CPlanarLaserScan;
 
-		// This must be added to any CSerializable derived class:
 
 		/** This object renders a 2D laser scan by means of three elements: the points, the line along end-points and the 2D scanned surface.
 		  *

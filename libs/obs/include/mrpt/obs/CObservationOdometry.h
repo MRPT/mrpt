@@ -30,7 +30,6 @@ namespace mrpt
 		 */
 		class OBS_IMPEXP CObservationOdometry : public CObservation
 		{
-			// This must be added to any CSerializable derived class:
 			DEFINE_SERIALIZABLE( CObservationOdometry )
 
 		 public:

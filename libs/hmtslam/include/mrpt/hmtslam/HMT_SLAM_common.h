@@ -75,7 +75,6 @@ namespace mrpt
 		  */
 		class HMTSLAM_IMPEXP THypothesisIDSet : public mrpt::utils::CSerializable, public std::set<THypothesisID>
 		{
-			// This must be added to any CSerializable derived class:
 			DEFINE_SERIALIZABLE( THypothesisIDSet )
 
 		public:

@@ -60,7 +60,6 @@ namespace maps
 		public mrpt::utils::PLY_Importer,
 		public mrpt::utils::PLY_Exporter
 	{
-		// This must be added to any CSerializable derived class:
 		DEFINE_VIRTUAL_SERIALIZABLE( CPointsMap )
 		// This must be added for declaration of MEX-related functions
 		DECLARE_MEX_CONVERSION

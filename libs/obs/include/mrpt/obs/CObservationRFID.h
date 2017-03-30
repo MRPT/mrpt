@@ -26,7 +26,6 @@ namespace obs
 	 */
 	class OBS_IMPEXP CObservationRFID : public CObservation
 	{
-		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CObservationRFID )
 
 	 public:

@@ -21,7 +21,6 @@ namespace mrpt
 	{
 
 
-		// This must be added to any CSerializable derived class:
 
 
 		/** A cloud of points, all with the same color or each depending on its value along a particular coordinate axis.

@@ -35,7 +35,6 @@ namespace mrpt
 		  */
 		class HMTSLAM_IMPEXP CRobotPosesGraph : public  mrpt::utils::CSerializable, public std::map<TPoseID,TPoseInfo>
 		{
-			// This must be added to any CSerializable derived class:
 			DEFINE_SERIALIZABLE( CRobotPosesGraph )
 		public:
 

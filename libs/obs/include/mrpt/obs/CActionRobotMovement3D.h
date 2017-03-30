@@ -25,7 +25,6 @@ namespace obs
 	*/
 	class OBS_IMPEXP CActionRobotMovement3D : public CAction
 	{
-		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CActionRobotMovement3D )
 
 	public:

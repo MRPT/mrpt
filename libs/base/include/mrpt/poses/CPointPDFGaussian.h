@@ -24,7 +24,6 @@ namespace poses
 	 */
 	class BASE_IMPEXP CPointPDFGaussian : public CPointPDF
 	{
-		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CPointPDFGaussian )
 
 	 public:
