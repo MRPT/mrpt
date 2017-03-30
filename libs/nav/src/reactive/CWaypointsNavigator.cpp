@@ -149,11 +149,10 @@ void CWaypointsNavigator::navigationStep()
 								mrpt::utils::RAD2DEG(ang_err),
 								align_cmd ? align_cmd->asString().c_str() : "nullptr (operation not supported by this robot)");
 
+							this->stop(false /*not emergency*/); // In any case, do a "stop"
 							if (align_cmd) {
 								this->changeSpeeds(*align_cmd);
-							}
-							else {
-								this->stop(false /*not emergency*/);
+							} else {
 								consider_wp_reached = true; // this robot does not support "in place" alignment
 							}
 						}
