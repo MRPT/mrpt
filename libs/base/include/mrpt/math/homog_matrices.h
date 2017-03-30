@@ -11,7 +11,6 @@
 
 #include <mrpt/config.h>
 #include <mrpt/utils/compiler_fixes.h>
-#include <mrpt/utils/boost_join.h>
 #include <mrpt/utils/mrpt_macros.h>
 
 namespace mrpt
