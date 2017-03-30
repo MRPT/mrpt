@@ -19,7 +19,6 @@ namespace mrpt
 
 
 		// This must be added to any CSerializable derived class:
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CSetOfTriangles, CRenderizableDisplayList, OPENGL_IMPEXP )
 
 		/** A set of colored triangles.
 		  *  This class can be used to draw any solid, arbitrarily complex object (without textures).

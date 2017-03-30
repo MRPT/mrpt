@@ -32,8 +32,6 @@ namespace mrpt
 		class HMTSLAM_IMPEXP CHMTSLAM;
 		class HMTSLAM_IMPEXP CLSLAM_RBPF_2DLASER;
 
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CLSLAMParticleData, mrpt::utils::CSerializable, HMTSLAM_IMPEXP )
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CLocalMetricHypothesis, mrpt::utils::CSerializable, HMTSLAM_IMPEXP )
 
 		/** Auxiliary class used in mrpt::slam::CLocalMetricHypothesis for HMT-SLAM; this class keeps the data relative to each local metric particle ("a robot metric path hypothesis" and its associated metric map).
 		  * \ingroup mrpt_hmtslam_grp

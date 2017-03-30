@@ -28,7 +28,6 @@ namespace mrpt
 namespace maps
 {
 	class CBeaconMap;
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CBeacon, mrpt::utils::CSerializable, MAPS_IMPEXP )
 
 	/** The class for storing individual "beacon landmarks" under a variety of 3D position PDF distributions.
 	  *  This class is used for storage within the class CBeaconMap.

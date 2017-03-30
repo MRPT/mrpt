@@ -19,7 +19,6 @@ namespace mrpt
 
 
 		// This must be added to any CSerializable derived class:
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CText, CRenderizable, OPENGL_IMPEXP )
 
 		/** A 2D text (bitmap rendering): it always "faces the observer" despite it's at some 3D location.
 		  *  Use setString and setFont to change the text displayed by this object.

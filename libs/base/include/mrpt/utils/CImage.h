@@ -49,7 +49,6 @@ namespace mrpt
 		};
 
 		// This must be added to any CSerializable derived class:
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( CImage, mrpt::utils::CSerializable )
 
 		/** A class for storing images as grayscale or RGB bitmaps.
 		 *  File I/O is supported as:

@@ -18,7 +18,6 @@ namespace mrpt
 	namespace utils
 	{
 		// This must be added to any CSerializable derived class:
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( CStringList, mrpt::utils::CSerializable )
 
 		/** A class for storing a list of text lines.
 		  *  This class is optimized for managing strings on a "per-line" basis, although methods are also provided to obtain/set the

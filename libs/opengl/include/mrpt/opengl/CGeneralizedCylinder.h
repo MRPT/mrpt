@@ -20,7 +20,6 @@ namespace mrpt	{
 namespace opengl	{
 	class OPENGL_IMPEXP CGeneralizedCylinder;
 	// This must be added to any CSerializable derived class:
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE(CGeneralizedCylinder,CRenderizableDisplayList, OPENGL_IMPEXP)
 	/**
 	  * This object represents any figure obtained by extruding any profile along a given axis. The profile should lie over a x=0 plane, and the axis must be roughly perpendicular to this plane. In particular, it should be almost perpendicular to the Z axis.
 	  * \ingroup mrpt_opengl_grp

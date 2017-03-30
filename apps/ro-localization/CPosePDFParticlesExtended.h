@@ -34,7 +34,6 @@ namespace mrpt
 #define DUMMY_LINKAGE
 
 		// This must be added to any CSerializable derived class:
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CPosePDFParticlesExtended, mrpt::poses::CPosePDF, DUMMY_LINKAGE )
 
 		/** Declares a class that represents a Probability Distribution
 		 *    function (PDF) of a 2D pose (x,y,phi).

@@ -14,7 +14,6 @@ namespace mrpt
 {
 	namespace kinematics
 	{
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE(CVehicleVelCmd_Holo, CVehicleVelCmd, KINEMATICS_IMPEXP)
 		
 		/** Kinematic model for
 		*

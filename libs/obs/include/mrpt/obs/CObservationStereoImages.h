@@ -21,7 +21,6 @@ namespace mrpt
 {
 namespace obs
 {
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservationStereoImages , CObservation,OBS_IMPEXP )
 
 	/** Observation class for either a pair of left+right or left+disparity images from a stereo camera.
 	  *

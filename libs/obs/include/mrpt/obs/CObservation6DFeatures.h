@@ -18,7 +18,6 @@ namespace mrpt
 {
 namespace obs
 {
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservation6DFeatures, CObservation, OBS_IMPEXP  )
 
 	/** An observation of one or more "features" or "objects", possibly identified with a unique ID, whose relative SE(3) pose is observed with respect to the sensor.
 	 * The list of features is stored in \a sensedFeatures

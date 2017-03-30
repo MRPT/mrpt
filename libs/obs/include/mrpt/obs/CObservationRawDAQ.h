@@ -16,7 +16,6 @@ namespace mrpt
 {
 namespace obs
 {
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservationRawDAQ , CObservation, OBS_IMPEXP)
 
 	/** Store raw data from a Data Acquisition (DAQ) device, such that input or output analog and digital channels, counters from encoders, etc. at one sampling instant.
 	 *  All analog values are assumed to be volts. 

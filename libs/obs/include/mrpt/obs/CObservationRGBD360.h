@@ -23,7 +23,6 @@ namespace mrpt
 {
 namespace obs
 {
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservationRGBD360, CObservation, OBS_IMPEXP )
 
 //	namespace detail {
 //		// Implemented in CObservationRGBD360_project3D_impl.h

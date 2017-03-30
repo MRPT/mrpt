@@ -21,7 +21,6 @@ namespace mrpt
 {
 	namespace detectors
 	{
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CDetectableObject, mrpt::utils::CSerializable, DETECTORS_IMPEXP )
 
 		/** Base class that contains common atributes and functions of detectable objects.
 		  * It was initially thought for detected objects in images from cams, but it's easily
@@ -44,7 +43,6 @@ namespace mrpt
 		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CDetectableObject, mrpt::utils::CSerializable, DETECTORS_IMPEXP )
 
 
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CDetectable2D, mrpt::detectors::CDetectableObject, DETECTORS_IMPEXP )
 
 		class DETECTORS_IMPEXP CDetectable2D: public CDetectableObject
 		{
@@ -84,7 +82,6 @@ namespace mrpt
 		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CDetectable2D, mrpt::detectors::CDetectableObject, DETECTORS_IMPEXP )
 
 
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CDetectable3D, mrpt::detectors::CDetectable2D, DETECTORS_IMPEXP )
 
 		class DETECTORS_IMPEXP CDetectable3D: public CDetectable2D
 		{

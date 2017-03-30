@@ -19,7 +19,6 @@ namespace mrpt
 {
 namespace maps
 {
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CGasConcentrationGridMap2D , CRandomFieldGridMap2D, MAPS_IMPEXP )
 
 	/** CGasConcentrationGridMap2D represents a PDF of gas concentrations over a 2D area.
 	  *

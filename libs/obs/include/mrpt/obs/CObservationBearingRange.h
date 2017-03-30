@@ -17,7 +17,6 @@ namespace mrpt
 {
 namespace obs
 {
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservationBearingRange , CObservation, OBS_IMPEXP)
 
 	/** This observation represents a number of range-bearing value pairs, each one for a detected landmark, which optionally can have identification IDs.
 	 *  This class can manage sensors that detect landmarks in a 2D plane (e.g. a laser scanner) or in the 3D space (e.g. a camera). There are

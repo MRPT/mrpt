@@ -20,7 +20,6 @@ namespace poses
 {
 	class CPosePDF;
 
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( CPose3DPDF, mrpt::utils::CSerializable )
 
 	/** Declares a class that represents a Probability Density Function (PDF) of a 3D pose (6D actually).
 	 *   This class is just the base class for unifying many diferent

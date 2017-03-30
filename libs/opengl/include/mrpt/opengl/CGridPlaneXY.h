@@ -19,7 +19,6 @@ namespace mrpt
 
 
 		// This must be added to any CSerializable derived class:
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CGridPlaneXY , CRenderizableDisplayList, OPENGL_IMPEXP )
 
 		/** A grid of lines over the XY plane.
 		  *  \sa opengl::COpenGLScene

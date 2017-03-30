@@ -21,7 +21,6 @@ namespace mrpt
 {
 	namespace maps
 	{
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CColouredPointsMap, CPointsMap,MAPS_IMPEXP )
 
 		/** A map of 2D/3D points with individual colours (RGB).
 		 *  For different color schemes, see CColouredPointsMap::colorScheme

@@ -17,7 +17,6 @@ namespace mrpt
 	namespace utils
 	{
 		// This must be added to any CSerializable derived class:
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( CMemoryChunk, mrpt::utils::CSerializable )
 
 		/** A memory buffer (implements CStream) which can be itself serialized.
 		 *

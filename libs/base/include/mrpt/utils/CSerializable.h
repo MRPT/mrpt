@@ -28,7 +28,6 @@ namespace mrpt
 	  */
 	namespace utils
 	{
-		DEFINE_MRPT_OBJECT_PRE( CSerializable )
 
 		/** The virtual base class which provides a unified interface for all persistent objects in MRPT.
 		 *  Many important properties of this class are inherited from mrpt::utils::CObject. See that class for more details.
@@ -150,8 +149,6 @@ namespace mrpt
 
 		/**  This declaration must be inserted in all CSerializable classes definition, before the class declaration.
 		  */
-		#define DEFINE_SERIALIZABLE_PRE_CUSTOM_LINKAGE(class_name,_LINKAGE_) \
-			DEFINE_MRPT_OBJECT_PRE_CUSTOM_BASE_LINKAGE2(class_name, mrpt::utils::CSerializable, _LINKAGE_ class_name)
 
 		#define DEFINE_SERIALIZABLE_POST_CUSTOM_LINKAGE(class_name,_LINKAGE_) \
 			DEFINE_MRPT_OBJECT_POST_CUSTOM_BASE_LINKAGE2(class_name, mrpt::utils::CSerializable, _LINKAGE_ class_name) \
@@ -159,22 +156,17 @@ namespace mrpt
 		/**  This declaration must be inserted in all CSerializable classes definition, before the class declaration.
 		  */
 		#define DEFINE_SERIALIZABLE_PRE(class_name) \
-			DEFINE_MRPT_OBJECT_PRE_CUSTOM_BASE_LINKAGE2(class_name, mrpt::utils::CSerializable, BASE_IMPEXP class_name) \
 
 		#define DEFINE_SERIALIZABLE_POST(class_name) \
 			DEFINE_MRPT_OBJECT_POST_CUSTOM_BASE_LINKAGE2(class_name, mrpt::utils::CSerializable, BASE_IMPEXP class_name) \
 
 		/**  This declaration must be inserted in all CSerializable classes definition, before the class declaration.
 		  */
-		#define DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE(class_name, base_name, _LINKAGE_ ) \
-			DEFINE_MRPT_OBJECT_PRE_CUSTOM_BASE_LINKAGE2(class_name, base_name, _LINKAGE_ class_name) \
 
 		#define DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(class_name, base_name, _LINKAGE_ ) \
 			DEFINE_MRPT_OBJECT_POST_CUSTOM_BASE_LINKAGE2(class_name, base_name, _LINKAGE_ class_name) \
 
 		/**  This declaration must be inserted in all CSerializable classes definition, before the class declaration. */
-		#define DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE(class_name, base_name) \
-			DEFINE_MRPT_OBJECT_PRE_CUSTOM_BASE_LINKAGE(class_name, base_name, BASE_IMPEXP ) \
 
 		#define DEFINE_SERIALIZABLE_POST_CUSTOM_BASE(class_name, base_name) \
 			DEFINE_MRPT_OBJECT_POST_CUSTOM_BASE_LINKAGE(class_name, base_name, BASE_IMPEXP ) \

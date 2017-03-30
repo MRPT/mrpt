@@ -27,7 +27,6 @@ namespace mrpt
 {
 	namespace gui
 	{
-//		DEFINE_MRPT_OBJECT_PRE_CUSTOM_LINKAGE( CBaseGUIWindow, GUI_IMPEXP )
 
 		/** The base class for GUI window classes.
 		  *
