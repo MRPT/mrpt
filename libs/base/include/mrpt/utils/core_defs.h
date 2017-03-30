@@ -11,7 +11,6 @@
 // The set of very basic includes for mrpt-base
 #include <mrpt/config.h>
 #include <mrpt/utils/compiler_fixes.h>
-#include <mrpt/utils/boost_join.h>
 #include <mrpt/utils/mrpt_macros.h>
 
 #include <mrpt/base/link_pragmas.h>  // Linking pragmas for Win32

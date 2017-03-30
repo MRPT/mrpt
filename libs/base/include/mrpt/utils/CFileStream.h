@@ -10,7 +10,6 @@
 #define  CFILESTREAM_H
 
 #include <mrpt/utils/CStream.h>
-#include <mrpt/utils/CUncopiable.h>
 
 #include <fstream>
 
@@ -36,8 +35,9 @@ namespace mrpt
 		 * \sa CStream, CFileInputStream, CFileOutputStrea, CFileGZInputStream
 		 * \ingroup mrpt_base_grp
 		 */
-		class BASE_IMPEXP  CFileStream : public CStream, public CUncopiable
+		class BASE_IMPEXP  CFileStream : public CStream
 		{
+			static_assert(!std::is_copy_constructible<CFileStream>::value && !std::is_copy_assignable<CFileStream>::value, "Copy Check");
 		protected:
 			size_t  Read(void *Buffer, size_t Count) MRPT_OVERRIDE;
 			size_t  Write(const void *Buffer, size_t Count) MRPT_OVERRIDE;

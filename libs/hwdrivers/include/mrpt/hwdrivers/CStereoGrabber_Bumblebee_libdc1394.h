@@ -10,7 +10,6 @@
 
 #include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/hwdrivers/link_pragmas.h>
-#include <mrpt/utils/CUncopiable.h>
 #include <mrpt/hwdrivers/CImageGrabber_dc1394.h>
 
 #include <mrpt/config.h>
@@ -31,8 +30,9 @@ namespace mrpt
 		  * \sa You'll probably want to use instead the most generic camera grabber in MRPT: mrpt::hwdrivers::CCameraSensor
 		  * \ingroup mrpt_hwdrivers_grp
 		  */
-		class HWDRIVERS_IMPEXP CStereoGrabber_Bumblebee_libdc1394 : public mrpt::utils::CUncopiable
+		class HWDRIVERS_IMPEXP CStereoGrabber_Bumblebee_libdc1394
 		{
+			static_assert(!std::is_copy_constructible<CStereoGrabber_Bumblebee_libdc1394>::value && !std::is_copy_assignable<CStereoGrabber_Bumblebee_libdc1394>::value, "Copy Check");
 		public:
 			/** Constructor. Parameters have the same meaning as in CImageGrabber_dc1394::CImageGrabber_dc1394() */
 			CStereoGrabber_Bumblebee_libdc1394(uint64_t cameraGUID, uint16_t cameraUnit, double   frameRate);

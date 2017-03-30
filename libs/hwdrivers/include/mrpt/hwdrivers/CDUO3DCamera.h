@@ -15,7 +15,6 @@
 #include <mrpt/vision/CStereoRectifyMap.h>
 
 #include <mrpt/hwdrivers/link_pragmas.h>
-#include <mrpt/utils/CUncopiable.h>
 
 namespace mrpt
 {
@@ -122,9 +121,9 @@ namespace mrpt
 		  *
 		  * \ingroup mrpt_hwdrivers_grp
 		  */
-		class HWDRIVERS_IMPEXP CDUO3DCamera : public mrpt::utils::CUncopiable
+		class HWDRIVERS_IMPEXP CDUO3DCamera
 		{
-
+			static_assert(!std::is_copy_constructible<CDUO3DCamera>::value && !std::is_copy_assignable<CDUO3DCamera>::value, "Copy Check");
 		protected:
 			// members
 			// [USER-DEFINED]
