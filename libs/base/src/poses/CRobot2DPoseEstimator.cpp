@@ -140,18 +140,6 @@ bool CRobot2DPoseEstimator::getCurrentEstimate(mrpt::math::TPose2D &pose, mrpt::
 	return true;
 }
 
-bool CRobot2DPoseEstimator::getCurrentEstimate(
-	TPose2D &pose, float &v, float &w,
-	TTimeStamp tim_query
-	) const
-{
-	mrpt::math::TTwist2D velLocal, velGlobal;
-	bool ret = getCurrentEstimate(pose, velLocal, velGlobal, tim_query);
-	v = velLocal.vx;
-	w = velLocal.omega;
-	return ret;
-}
-
 /** get the current estimate
 * \return true is the estimate can be trusted. False if the real observed data is too old.
 */
@@ -213,18 +201,6 @@ void CRobot2DPoseEstimator::extrapolateRobotPose(
 		new_p.y = p.y + ss*arc_x + cc*arc_y;
 		new_p.phi = p.phi + theta;
 	}
-}
-
-bool CRobot2DPoseEstimator::getCurrentEstimate( mrpt::poses::CPose2D &pose, float &v, float &w, mrpt::system::TTimeStamp tim_query) const
-{
-	mrpt::math::TPose2D  p;
-	mrpt::math::TTwist2D velLocal, velGlobal;
-	bool ret = getCurrentEstimate(p, velLocal, velGlobal, tim_query);
-	if (ret)
-		pose = CPose2D(p);
-	v = velLocal.vx;
-	w = velLocal.omega;
-	return ret;
 }
 
 bool CRobot2DPoseEstimator::getLatestRobotPose(CPose2D &pose) const
