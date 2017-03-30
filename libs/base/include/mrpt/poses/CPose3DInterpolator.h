@@ -20,7 +20,6 @@ namespace mrpt
 {
 	namespace poses
 	{
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( CPose3DInterpolator, mrpt::utils::CSerializable )
 
 		typedef std::pair<mrpt::system::TTimeStamp, mrpt::poses::CPose3D> TTimePosePair;
 

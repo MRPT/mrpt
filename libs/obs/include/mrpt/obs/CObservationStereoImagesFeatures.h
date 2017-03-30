@@ -27,7 +27,6 @@ namespace obs
 		unsigned int ID;
 	};
 
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservationStereoImagesFeatures , CObservation, OBS_IMPEXP )
 	/** Declares a class derived from "CObservation" that encapsules a pair of cameras and a set of matched image features extracted from them.
 	 *
 	 <b>NOTE:</b> The image features stored in this class are NOT supposed to be UNDISTORTED, but the TCamera members must provide their distortion params. 

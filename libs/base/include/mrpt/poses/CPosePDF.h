@@ -22,7 +22,6 @@ namespace poses
 	class CPosePDFGaussian; // frd decl.
 
 	// This must be added to any CSerializable derived class:
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( CPosePDF, mrpt::utils::CSerializable )
 
 	/** Declares a class that represents a probability density function (pdf) of a 2D pose (x,y,phi).
 	 *   This class is just the base class for unifying many diferent ways this pdf can be implemented.

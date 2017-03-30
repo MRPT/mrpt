@@ -20,7 +20,6 @@ namespace mrpt
 	namespace obs
 	{
 		// This must be added to any CSerializable derived class:
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CActionCollection, mrpt::utils::CSerializable, OBS_IMPEXP )
 
 		/** Declares a class for storing a collection of robot actions. It is used in mrpt::obs::CRawlog,
 		 *    for logs storage and particle filter based simulations.

@@ -36,7 +36,6 @@ namespace mrpt
 		hmFULL_EVAL = 2              //!< CHolonomicFullEval
 	};
 
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE(CAbstractHolonomicReactiveMethod, mrpt::utils::CSerializable, NAV_IMPEXP)
 
 	/** A base class for holonomic reactive navigation methods.
 	 *  \sa CHolonomicVFF,CHolonomicND,CHolonomicFullEval, CReactiveNavigationSystem

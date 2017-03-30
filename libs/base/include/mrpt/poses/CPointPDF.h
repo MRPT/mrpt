@@ -18,7 +18,6 @@ namespace mrpt
 {
 namespace poses
 {
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( CPointPDF, mrpt::utils::CSerializable )
 
 	/** Declares a class that represents a Probability Distribution
 	 *    function (PDF) of a 3D point (x,y,z).

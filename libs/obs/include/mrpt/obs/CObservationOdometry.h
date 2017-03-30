@@ -20,7 +20,6 @@ namespace mrpt
 {
 	namespace obs
 	{
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservationOdometry, CObservation,OBS_IMPEXP  )
 
 		/** An observation of the current (cumulative) odometry for a wheeled robot.
 		 *   This kind of observation will only occur in a "observation-only" rawlog file, otherwise

@@ -51,7 +51,6 @@ namespace mrpt
 		class HMTSLAM_IMPEXP CHMHMapArc;
 		class HMTSLAM_IMPEXP CHMHMapNode;
 
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CHMHMapArc,mrpt::utils::CSerializable, HMTSLAM_IMPEXP )
 
 		/** An integer number uniquely identifying each of the concurrent hypotheses for the robot topological path (& possibly local metric clusters) in HMT-SLAM.
 		  *   The number 0 has the special meaning of "that part of the map/robot path in which all hypotheses agree".
@@ -69,7 +68,6 @@ namespace mrpt
 		typedef std::vector<TPoseID> TPoseIDList;
 		typedef std::set<TPoseID> TPoseIDSet;
 
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( THypothesisIDSet,mrpt::utils::CSerializable, HMTSLAM_IMPEXP )
 
 		/** A set of hypothesis IDs, used for arcs and nodes in multi-hypothesis hybrid maps.
 		  *  \sa THypothesisID, CHierarchicalMHMap

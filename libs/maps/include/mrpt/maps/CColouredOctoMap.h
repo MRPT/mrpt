@@ -21,7 +21,6 @@ namespace mrpt
 {
 	namespace maps
 	{
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CColouredOctoMap , CMetricMap, MAPS_IMPEXP )
 
 		/** A three-dimensional probabilistic occupancy grid, implemented as an octo-tree with the "octomap" C++ library.
 		 *  This version stores both, occupancy information and RGB colour data at each octree node. See the base class mrpt::maps::COctoMapBase.

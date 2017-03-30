@@ -24,7 +24,6 @@ namespace mrpt
 {
 namespace slam
 {
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CIncrementalMapPartitioner, mrpt::utils::CSerializable, SLAM_IMPEXP )
 
 	/** This class can be used to make partitions on a map/graph build from
 	  *   observations taken at some poses/nodes.

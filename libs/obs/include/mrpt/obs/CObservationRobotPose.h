@@ -17,7 +17,6 @@ namespace mrpt
 {
 namespace obs
 {
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservationRobotPose, CObservation, OBS_IMPEXP  )
 
 	/** An observation providing an alternative robot pose from an external source.
 	 * \sa CObservation

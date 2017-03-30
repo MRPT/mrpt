@@ -20,7 +20,6 @@ namespace mrpt
 
 
 		// This must be added to any CSerializable derived class:
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CSetOfObjects, CRenderizable, OPENGL_IMPEXP )
 
 		/** A set of object, which are referenced to the coordinates framework established in this object.
 		  *  It can be established a hierarchy of "CSetOfObjects", where the coordinates framework of each

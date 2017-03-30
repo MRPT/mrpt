@@ -17,7 +17,6 @@ namespace mrpt
 namespace math
 {
 	// This must be added to any CSerializable derived class:
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( CPolygon, mrpt::utils::CSerializable )
 
 	/** A wrapper of a TPolygon2D class, implementing CSerializable.
 	 * \ingroup geometry_grp

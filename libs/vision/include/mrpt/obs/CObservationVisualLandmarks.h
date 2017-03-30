@@ -19,7 +19,6 @@ namespace mrpt
 {
 namespace obs
 {
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservationVisualLandmarks , CObservation, VISION_IMPEXP )
 
 	/** Declares a class derived from "CObservation" that stores a Landmarks Map as seen from a stereo camera at a given instant of time.
 	 *

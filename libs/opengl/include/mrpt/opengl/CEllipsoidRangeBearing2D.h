@@ -16,7 +16,6 @@ namespace mrpt
 	namespace opengl
 	{
 		// This must be added to any CSerializable derived class:
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CEllipsoidRangeBearing2D, CRenderizableDisplayList, OPENGL_IMPEXP )
 
 		/** An especial "ellipsoid" in 2D computed as the uncertainty iso-surfaces of a (range,bearing) variable.
 		  *  The parameter space of this ellipsoid comprises these variables (in this order):

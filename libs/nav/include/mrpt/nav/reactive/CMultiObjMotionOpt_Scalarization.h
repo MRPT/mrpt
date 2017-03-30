@@ -15,7 +15,6 @@ namespace mrpt
 {
 	namespace nav
 	{
-		DEFINE_MRPT_OBJECT_PRE_CUSTOM_LINKAGE(CMultiObjMotionOpt_Scalarization, NAV_IMPEXP)
 
 			/** Implementation of multi-objective motion chooser using scalarization: a user-given formula is used to 
 			  * collapse all the scores into a single scalar score. The candidate with the highest positive score is selected.

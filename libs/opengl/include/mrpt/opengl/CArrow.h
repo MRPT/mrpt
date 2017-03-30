@@ -18,7 +18,6 @@ namespace mrpt
 
 
 		// This must be added to any CSerializable derived class:
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CArrow, CRenderizableDisplayList, OPENGL_IMPEXP )
 
 		/** A 3D arrow
 		  *  \sa opengl::COpenGLScene

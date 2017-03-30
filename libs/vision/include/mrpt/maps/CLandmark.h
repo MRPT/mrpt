@@ -21,7 +21,6 @@ namespace mrpt
 {
 	namespace maps
 	{
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CLandmark, mrpt::utils::CSerializable, VISION_IMPEXP )
 
 		/** The class for storing "landmarks" (visual or laser-scan-extracted features,...)
 		  *

@@ -16,7 +16,6 @@ namespace mrpt	{
 namespace opengl	{
 
 	// This must be added to any CSerializable derived class:
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE(CColorBar,CRenderizableDisplayList, OPENGL_IMPEXP)
 	
 	/** A colorbar indicator. This class renders a colorbar as a 3D object, in the XY plane. 
 	  * For an overlay indicator that can be easily added to any display, see COpenGLScene::addColorBar()

@@ -18,7 +18,6 @@ namespace mrpt
 {
 namespace obs
 {
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservationWirelessPower, CObservation, OBS_IMPEXP)
 
 	/** This represents a measurement of the wireless strength perceived by the robot.
 	 *  The signal level is given as a percentage.

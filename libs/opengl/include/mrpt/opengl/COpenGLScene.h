@@ -20,7 +20,6 @@ namespace mrpt
 	namespace opengl
 	{
 		// This must be added to any CSerializable derived class:
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( COpenGLScene, mrpt::utils::CSerializable, OPENGL_IMPEXP )
 
 
 		/** This class allows the user to create, load, save, and render 3D scenes using OpenGL primitives.

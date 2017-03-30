@@ -24,7 +24,6 @@ namespace mrpt
 {
 namespace obs
 {
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservation2DRangeScan, CObservation, OBS_IMPEXP)
 
 	/** A "CObservation"-derived class that represents a 2D range scan measurement (typically from a laser scanner).
 	  *  The data structures are generic enough to hold a wide variety of 2D scanners and "3D" planar rotating 2D lasers.

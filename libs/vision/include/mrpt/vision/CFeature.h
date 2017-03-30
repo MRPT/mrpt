@@ -41,7 +41,6 @@ namespace mrpt
 		/****************************************************
 						Class CFEATURE
 		*****************************************************/
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CFeature, mrpt::utils::CSerializable, VISION_IMPEXP )
 
 		/** A generic 2D feature from an image, extracted with \a CFeatureExtraction
 		  * Each feature may have one or more descriptors (see \a descriptors), in addition to an image patch.

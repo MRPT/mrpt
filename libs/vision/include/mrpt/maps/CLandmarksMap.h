@@ -28,7 +28,6 @@ namespace maps
 {
 	namespace internal { typedef std::vector<CLandmark>	TSequenceLandmarks; }
 
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CLandmarksMap, CMetricMap, VISION_IMPEXP )
 
 	/** A class for storing a map of 3D probabilistic landmarks.
 	 * <br>

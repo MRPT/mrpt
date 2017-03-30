@@ -19,7 +19,6 @@ namespace mrpt
 	namespace poses
 	{
 		// This must be added to any CSerializable derived class:
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE(CPose3DPDFParticles,CPose3DPDF)
 
 		/** Declares a class that represents a Probability Density function (PDF) of a 3D pose
 		 *
