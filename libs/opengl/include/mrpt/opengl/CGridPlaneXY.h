@@ -18,7 +18,6 @@ namespace mrpt
 	{
 
 
-		// This must be added to any CSerializable derived class:
 
 		/** A grid of lines over the XY plane.
 		  *  \sa opengl::COpenGLScene

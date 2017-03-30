@@ -23,7 +23,6 @@ namespace mrpt
 			VOXEL_SET_FREESPACE = 1
 		};
 
-		// This must be added to any CSerializable derived class:
 
 		/** A flexible renderer of voxels, typically from a 3D octo map (see mrpt::maps::COctoMap).
 		  *  This class is sort of equivalent to octovis::OcTreeDrawer from the octomap package, but

@@ -25,7 +25,6 @@ namespace poses
 	  */
 	class BASE_IMPEXP TSimple3DPoint : public mrpt::utils::CSerializable
 	{
-		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( TSimple3DPoint )
 	public:
 		TSimple3DPoint(const TSimple3DPoint&o) : x(o.x),y(o.y),z(o.z)
@@ -54,7 +53,6 @@ namespace poses
 		public mrpt::bayes::CParticleFilterData<TSimple3DPoint>,
 		public mrpt::bayes::CParticleFilterDataImpl<CPointPDFParticles,mrpt::bayes::CParticleFilterData<TSimple3DPoint>::CParticleList>
 	{
-		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CPointPDFParticles )
 
 	 public:

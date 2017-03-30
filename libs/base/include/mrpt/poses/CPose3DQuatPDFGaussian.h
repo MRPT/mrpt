@@ -37,7 +37,6 @@ namespace poses
 	 */
 	class BASE_IMPEXP CPose3DQuatPDFGaussian : public CPose3DQuatPDF
 	{
-		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CPose3DQuatPDFGaussian )
 
 	protected:

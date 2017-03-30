@@ -15,7 +15,6 @@
 namespace mrpt	{
 namespace opengl	{
 
-	// This must be added to any CSerializable derived class:
 
 	/** A solid or wireframe frustum in 3D (a rectangular truncated pyramid), with arbitrary (possibly assymetric) field-of-view angles.
 	  *

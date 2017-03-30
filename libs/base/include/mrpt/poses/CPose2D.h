@@ -36,7 +36,6 @@ namespace poses
 	class BASE_IMPEXP CPose2D : public CPose<CPose2D>, public mrpt::utils::CSerializable
 	{
 	public:
-		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CPose2D )
 
 	public:

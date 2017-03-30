@@ -19,7 +19,6 @@ namespace mrpt
 	{
 
 
-		// This must be added to any CSerializable derived class:
 
 		/** A set of object, which are referenced to the coordinates framework established in this object.
 		  *  It can be established a hierarchy of "CSetOfObjects", where the coordinates framework of each

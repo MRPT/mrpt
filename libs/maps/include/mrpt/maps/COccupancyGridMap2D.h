@@ -66,7 +66,6 @@ namespace maps
 		public CLogOddsGridMap2D<int16_t>
 #endif
 	{
-		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( COccupancyGridMap2D )
 	public:
 

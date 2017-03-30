@@ -29,7 +29,6 @@ namespace mrpt
 		class COpenGLScene;
 		class CRenderizable;
 
-		// This must be added to any CSerializable derived class:
 
 		/** A viewport within a COpenGLScene, containing a set of OpenGL objects to render.
 		  *   This class has protected constuctor, thus it cannot be created by users. Use COpenGLScene::createViewport instead.

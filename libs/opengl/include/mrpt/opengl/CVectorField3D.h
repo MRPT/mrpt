@@ -22,7 +22,6 @@ namespace mrpt
 	{
 		class OPENGL_IMPEXP CVectorField3D;
 
-		// This must be added to any CSerializable derived class:
 
 		/** A 3D vector field representation, consisting of points and arrows drawn at any spatial position.
 			*  This opengl object has been created to represent scene flow, and hence both the vector field and

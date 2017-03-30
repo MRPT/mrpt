@@ -17,7 +17,6 @@ namespace mrpt
 namespace poses
 {
 
-	// This must be added to any CSerializable derived class:
 
 	/** This class stores a sequence of relative, incremental 2D poses. It is useful as the bases storing unit for more complex probability particles and for computing the absolute pose of any intermediate pose.
 	 *
@@ -26,7 +25,6 @@ namespace poses
 	 */
 	class BASE_IMPEXP CPoses2DSequence : public mrpt::utils::CSerializable
 	{
-		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CPoses2DSequence )
 	public:
 		/** Default constructor

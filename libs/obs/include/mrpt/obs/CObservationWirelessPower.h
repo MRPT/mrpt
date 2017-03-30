@@ -27,7 +27,6 @@ namespace obs
 	 */
 	class OBS_IMPEXP CObservationWirelessPower : public CObservation
 	{
-		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CObservationWirelessPower )
 
 	 public:

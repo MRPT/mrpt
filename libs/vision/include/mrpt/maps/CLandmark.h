@@ -32,7 +32,6 @@ namespace mrpt
 		  */
 		class VISION_IMPEXP CLandmark : public mrpt::utils::CSerializable
 		{
-			// This must be added to any CSerializable derived class:
 			DEFINE_SERIALIZABLE( CLandmark )
 
 		public:

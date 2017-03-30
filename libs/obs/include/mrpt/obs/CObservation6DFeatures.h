@@ -26,7 +26,6 @@ namespace obs
 	 */
 	class OBS_IMPEXP CObservation6DFeatures : public CObservation
 	{
-		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CObservation6DFeatures )
 	 public:
 		CObservation6DFeatures( );  //!< Default ctor

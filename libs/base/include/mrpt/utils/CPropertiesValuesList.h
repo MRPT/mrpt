@@ -15,7 +15,6 @@ namespace mrpt
 {
 	namespace utils
 	{
-		// This must be added to any CSerializable derived class:
 
 		/** An arbitrary list of "annotations", or named attributes, each being an instance of any CSerializable object.
 		 *  A multi-hypotheses version exists in CMHPropertiesValuesList.
@@ -24,7 +23,6 @@ namespace mrpt
 		 */
 		class BASE_IMPEXP CPropertiesValuesList : public mrpt::utils::CSerializable
 		{
-			// This must be added to any CSerializable derived class:
 			DEFINE_SERIALIZABLE( CPropertiesValuesList )
 		protected:
 			struct BASE_IMPEXP  TPropertyValuePair

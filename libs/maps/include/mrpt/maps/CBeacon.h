@@ -38,7 +38,6 @@ namespace maps
 	  */
 	class MAPS_IMPEXP CBeacon : public mrpt::poses::CPointPDF
 	{
-		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CBeacon )
 
 	public:

@@ -62,7 +62,6 @@ namespace mrpt
 			friend class CTopLCDetector_GridMatching;
 			friend class CTopLCDetector_FabMap;
 
-			// This must be added to any CSerializable derived class:
 			DEFINE_SERIALIZABLE( CHMTSLAM )
 
 		protected:

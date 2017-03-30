@@ -18,7 +18,6 @@ namespace poses
 {
 	class CPose3DPDF;
 
-	// This must be added to any CSerializable derived class:
 
 	/** A Probability Density  function (PDF) of a 2D pose \f$ p(\mathbf{x}) = [x ~ y ~ \phi ]^t \f$ as a Gaussian with a mean and the inverse of the covariance.
 	 *
@@ -32,7 +31,6 @@ namespace poses
 	 */
 	class BASE_IMPEXP CPosePDFGaussianInf : public CPosePDF
 	{
-		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CPosePDFGaussianInf )
 
 	protected:

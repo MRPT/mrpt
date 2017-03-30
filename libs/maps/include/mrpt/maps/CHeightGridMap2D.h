@@ -56,7 +56,6 @@ namespace mrpt
 			public utils::CDynamicGrid<THeightGridmapCell>,
 			public CHeightGridMap2D_Base
 		{
-			// This must be added to any CSerializable derived class:
 			DEFINE_SERIALIZABLE( CHeightGridMap2D )
 		public:
 

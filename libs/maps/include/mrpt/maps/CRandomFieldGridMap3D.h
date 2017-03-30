@@ -75,7 +75,6 @@ namespace maps
 	{
 		typedef utils::CDynamicGrid3D<TRandomFieldVoxel> BASE;
 
-		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CRandomFieldGridMap3D )
 	public:
 		static bool ENABLE_GMRF_PROFILER; //!< [default:false] Enables a profiler to show a performance report at application end.

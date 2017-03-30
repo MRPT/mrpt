@@ -31,7 +31,6 @@ namespace mrpt
 		 */
 		class MAPS_IMPEXP CSimplePointsMap : public CPointsMap
 		{
-			// This must be added to any CSerializable derived class:
 			DEFINE_SERIALIZABLE( CSimplePointsMap )
 
 		 public:

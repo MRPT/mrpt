@@ -58,7 +58,6 @@ namespace obs
 	 */
 	class OBS_IMPEXP CObservationGPS : public CObservation
 	{
-		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CObservationGPS )
 
 	public:

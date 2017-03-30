@@ -39,7 +39,6 @@ namespace mrpt
 			friend class HMTSLAM_IMPEXP CHierarchicalMHMapPartition;
 			friend class HMTSLAM_IMPEXP CHMHMapArc;
 
-			// This must be added to any CSerializable derived class:
 			DEFINE_SERIALIZABLE( CHMHMapNode )
 
 		public:

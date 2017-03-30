@@ -26,7 +26,6 @@ namespace mrpt
 		class CSetOfObjects;
 
 
-		// This must be added to any CSerializable derived class:
 
 		/** The base class of 3D objects that can be directly rendered through OpenGL.
 		  *  In this class there are a set of common properties to all 3D objects, mainly:

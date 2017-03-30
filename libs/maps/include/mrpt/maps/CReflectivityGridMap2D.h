@@ -42,7 +42,6 @@ namespace mrpt
 			public utils::CDynamicGrid<int8_t>,
 			public CLogOddsGridMap2D<int8_t>
 		{
-			// This must be added to any CSerializable derived class:
 			DEFINE_SERIALIZABLE( CReflectivityGridMap2D )
 
 		protected:

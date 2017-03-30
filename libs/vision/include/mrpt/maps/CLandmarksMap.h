@@ -57,7 +57,6 @@ namespace maps
 	 */
 	class VISION_IMPEXP CLandmarksMap : public mrpt::maps::CMetricMap
 	{
-		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CLandmarksMap )
 
 	private:

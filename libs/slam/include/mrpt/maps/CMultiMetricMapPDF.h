@@ -35,7 +35,6 @@ namespace maps
 	  */
 	class SLAM_IMPEXP CRBPFParticleData : public mrpt::utils::CSerializable
 	{
-		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CRBPFParticleData )
 	public:
 		CRBPFParticleData( const TSetOfMetricMapInitializers *mapsInitializers = nullptr ) :
@@ -65,7 +64,6 @@ namespace maps
 	{
 		friend class mrpt::slam::CMetricMapBuilderRBPF;
 
-		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CMultiMetricMapPDF )
 
 	protected:

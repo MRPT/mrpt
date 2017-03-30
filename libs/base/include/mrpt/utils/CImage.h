@@ -48,7 +48,6 @@ namespace mrpt
 			FAST_REF_OR_CONVERT_TO_GRAY = 1
 		};
 
-		// This must be added to any CSerializable derived class:
 
 		/** A class for storing images as grayscale or RGB bitmaps.
 		 *  File I/O is supported as:

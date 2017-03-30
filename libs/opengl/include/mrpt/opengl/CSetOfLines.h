@@ -17,7 +17,6 @@ namespace mrpt
 {
 	namespace opengl
 	{
-		// This must be added to any CSerializable derived class:
 
 		/** A set of independent lines (or segments), one line with its own start and end positions (X,Y,Z).
 		  * Optionally, the vertices can be also shown as dots.

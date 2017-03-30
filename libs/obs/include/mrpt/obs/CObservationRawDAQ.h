@@ -28,7 +28,6 @@ namespace obs
 	 */
 	class OBS_IMPEXP CObservationRawDAQ : public CObservation
 	{
-		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CObservationRawDAQ )
 	 public:
 		/** Constructor */

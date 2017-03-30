@@ -21,7 +21,6 @@ namespace mrpt
 {
 	namespace opengl
 	{
-		// This must be added to any CSerializable derived class:
 
 		/** A 3D mesh composed of Triangles and/or Quads.
 		  * A typical usage example would be a 3D model of an object.

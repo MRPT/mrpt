@@ -21,7 +21,6 @@ namespace mrpt
 	{
 
 
-		// This must be added to any CSerializable derived class:
 
 		/** A planar (XY) grid where each cell has an associated height and, optionally, a texture map.
 		  * To make it faster to render, instead of drawing lines and triangles it draws a point at each

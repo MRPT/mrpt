@@ -30,7 +30,6 @@ namespace mrpt
 		 */
 		class OBS_IMPEXP  CActionRobotMovement2D : public CAction
 		{
-			// This must be added to any CSerializable derived class:
 			DEFINE_SERIALIZABLE( CActionRobotMovement2D )
 
 		public:

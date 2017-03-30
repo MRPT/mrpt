@@ -52,7 +52,6 @@ namespace mrpt
 		  */
 		class KINEMATICS_IMPEXP CKinematicChain : public mrpt::utils::CSerializable
 		{
-			// This must be added to any CSerializable derived class:
 			DEFINE_SERIALIZABLE( CKinematicChain )
 
 		private:

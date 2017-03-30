@@ -33,7 +33,6 @@ namespace mrpt
 			friend class CHierarchicalMapMHPartition;
 			friend class TArcList;
 
-			// This must be added to any CSerializable derived class:
 			DEFINE_SERIALIZABLE( CHMHMapArc )
 
 		public:

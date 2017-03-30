@@ -17,7 +17,6 @@ namespace mrpt
 {
 namespace poses
 {
-	// This must be added to any CSerializable derived class:
 
 	/** Declares a class that represents a Probability Density function (PDF) of a 3D(6D) pose \f$ p(\mathbf{x}) = [x ~ y ~ z ~ yaw ~ pitch ~ roll]^t \f$.
 	 *   This class implements that PDF as the following multi-modal Gaussian distribution:
@@ -32,7 +31,6 @@ namespace poses
 	 */
 	class BASE_IMPEXP CPose3DPDFSOG : public CPose3DPDF
 	{
-		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CPose3DPDFSOG )
 
 	public:

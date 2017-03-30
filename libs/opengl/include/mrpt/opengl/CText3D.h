@@ -18,7 +18,6 @@ namespace mrpt
 	{
 
 
-		// This must be added to any CSerializable derived class:
 
 		/** A 3D text (rendered with OpenGL primitives), with selectable font face and drawing style.
 		  *  Use \a setString and \a setFont to change the text displayed by this object (can be multi-lined).

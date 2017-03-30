@@ -17,7 +17,6 @@ namespace mrpt
 {
 	namespace math
 	{
-		// This must be added to any CSerializable derived class:
 
 		/** A (persistent) sequence of (x,y) coordinates, allowing queries of intermediate points through spline interpolation, where possible.
 		  *  This class internally relies on mrpt::math::spline. Optionally the y coordinate can be set as wrapped in ]-pi,pi].
@@ -27,7 +26,6 @@ namespace mrpt
 		 */
 		class BASE_IMPEXP CSplineInterpolator1D : public mrpt::utils::CSerializable
 		{
-			// This must be added to any CSerializable derived class:
 			DEFINE_SERIALIZABLE( CSplineInterpolator1D )
 
 		private:

@@ -33,7 +33,6 @@ namespace obs
 	 */
 	class OBS_IMPEXP CObservationImage : public CObservation
 	{
-		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CObservationImage )
 		// This must be added for declaration of MEX-related functions
 		DECLARE_MEX_CONVERSION

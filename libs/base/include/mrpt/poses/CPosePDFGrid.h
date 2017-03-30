@@ -17,7 +17,6 @@ namespace mrpt
 {
 namespace poses
 {
-	// This must be added to any CSerializable derived class:
 
 	/** Declares a class that represents a Probability Distribution
 	 *    function (PDF) of a 2D pose (x,y,phi).
@@ -28,7 +27,6 @@ namespace poses
 	 */
 	class BASE_IMPEXP CPosePDFGrid : public CPosePDF, public CPose2DGridTemplate<double>
 	{
-		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CPosePDFGrid )
 
 	 protected:

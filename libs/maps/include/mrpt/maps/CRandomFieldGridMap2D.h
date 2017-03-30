@@ -117,7 +117,6 @@ namespace maps
 	{
 		typedef utils::CDynamicGrid<TRandomFieldCell> BASE;
 
-		// This must be added to any CSerializable derived class:
 		DEFINE_VIRTUAL_SERIALIZABLE( CRandomFieldGridMap2D )
 	public:
 

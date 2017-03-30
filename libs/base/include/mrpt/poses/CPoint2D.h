@@ -35,7 +35,6 @@ namespace poses
 	 */
 	class BASE_IMPEXP CPoint2D : public CPoint<CPoint2D>, public mrpt::utils::CSerializable
 	{
-		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CPoint2D )
 
 	public:

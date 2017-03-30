@@ -15,7 +15,6 @@
 namespace mrpt	{
 namespace opengl	{
 
-	// This must be added to any CSerializable derived class:
 	
 	/** A solid or wireframe box in 3D, defined by 6 rectangular faces parallel to the planes X, Y and Z (note that the object can be translated and rotated afterwards as any other CRenderizable object using the "object pose" in the base class).
 	  *  Three drawing modes are possible:

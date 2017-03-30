@@ -17,7 +17,6 @@ namespace mrpt
 	{
 
 
-		// This must be added to any CSerializable derived class:
 
 		/** A 2D plane in the XY plane with a texture image.
 		  *  \sa opengl::COpenGLScene

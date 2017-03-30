@@ -40,7 +40,6 @@ namespace poses
 	 */
 	class BASE_IMPEXP CPose3DQuat : public CPose<CPose3DQuat>, public mrpt::utils::CSerializable
 	{
-		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CPose3DQuat )
 
 	public:

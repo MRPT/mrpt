@@ -27,7 +27,6 @@ namespace obs
 	 */
 	class VISION_IMPEXP CObservationVisualLandmarks : public CObservation
 	{
-		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CObservationVisualLandmarks )
 
 	 public:

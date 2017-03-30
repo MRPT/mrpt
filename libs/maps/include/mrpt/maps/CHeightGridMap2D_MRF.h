@@ -32,7 +32,6 @@ namespace maps
 	  */
 	class MAPS_IMPEXP CHeightGridMap2D_MRF : public CRandomFieldGridMap2D, public CHeightGridMap2D_Base
 	{
-		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CHeightGridMap2D_MRF )
 	public:
 		/** Constructor */

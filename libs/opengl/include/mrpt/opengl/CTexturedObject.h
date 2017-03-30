@@ -19,7 +19,6 @@ namespace mrpt
 	{
 
 
-		// This must be added to any CSerializable derived class:
 
 		/** A base class for all OpenGL objects with loadable textures.
 		  *  \sa opengl::COpenGLScene, opengl::CTexturedPlane, opengl::CSetOfTexturedTriangles
