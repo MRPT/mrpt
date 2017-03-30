@@ -54,11 +54,6 @@ namespace mrpt
 			*/
 			bool getCurrentEstimate(mrpt::math::TPose2D &pose, mrpt::math::TTwist2D &velLocal, mrpt::math::TTwist2D &velGlobal, mrpt::system::TTimeStamp tim_query = mrpt::system::now()) const;
 
-			MRPT_DEPRECATED("Use the other signature with TTwist2D output for velocities")
-			bool getCurrentEstimate( mrpt::math::TPose2D &pose, float &v, float &w, mrpt::system::TTimeStamp tim_query = mrpt::system::now() ) const;
-			MRPT_DEPRECATED("Use the other signature with TTwist2D output for velocities")
-			bool getCurrentEstimate( mrpt::poses::CPose2D &pose, float &v, float &w, mrpt::system::TTimeStamp tim_query = mrpt::system::now() ) const;
-
 			/** Get the latest known robot pose, either from odometry or localization.
 			*  This differs from getCurrentEstimate() in that this method does NOT extrapolate as getCurrentEstimate() does.
 			* \return false if there is not estimation yet.
