@@ -10,6 +10,7 @@
 #define  CTICTAC_H
 
 #include <mrpt/base/link_pragmas.h>
+#include <type_traits>
 
 namespace mrpt
 {
