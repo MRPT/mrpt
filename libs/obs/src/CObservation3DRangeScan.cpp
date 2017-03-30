@@ -873,27 +873,6 @@ bool CObservation3DRangeScan::doDepthAndIntensityCamerasCoincide() const
 		((ref_pose.getRotationMatrix() - relativePoseIntensityWRTDepth.getRotationMatrix()).array().abs() < EPSILON).all();
 }
 
-
-// Convert into equivalent 2D "fake" laser scan. See .h for doc
-void CObservation3DRangeScan::convertTo2DScan(
-	CObservation2DRangeScan &out_scan2d,
-	const std::string &sensorLabel,
-	const double angle_sup,
-	const double angle_inf,
-	const double oversampling_ratio,
-	const mrpt::math::CMatrix * rangeMask_min
-	)
-{
-	T3DPointsTo2DScanParams sp;
-	sp.sensorLabel = sensorLabel;
-	sp.angle_sup = angle_sup;
-	sp.angle_inf = angle_inf;
-	sp.oversampling_ratio = oversampling_ratio;
-	TRangeImageFilterParams fp;
-	fp.rangeMask_min = rangeMask_min;
-	convertTo2DScan(out_scan2d, sp,fp);
-}
-
 void CObservation3DRangeScan::convertTo2DScan(mrpt::obs::CObservation2DRangeScan & out_scan2d, const T3DPointsTo2DScanParams &sp, const TRangeImageFilterParams &fp )
 {
 	out_scan2d.sensorLabel = sensorLabel;

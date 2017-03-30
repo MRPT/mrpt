@@ -207,25 +207,6 @@ namespace obs
 			detail::project3DPointsFromDepthImageInto<POINTMAP>(*this,dest_pointcloud,projectParams, filterParams);
 		}
 
-		template <class POINTMAP>
-		MRPT_DEPRECATED("DEPRECATED: Use the other method signature with structured parameters instead.")
-		inline void project3DPointsFromDepthImageInto(
-			POINTMAP                   & dest_pointcloud,
-			const bool takeIntoAccountSensorPoseOnRobot,
-			const mrpt::poses::CPose3D *robotPoseInTheWorld=nullptr,
-			const bool PROJ3D_USE_LUT=true,
-			const mrpt::math::CMatrix * rangeMask_min = nullptr
-			)
-		{
-			T3DPointsProjectionParams pp; 
-			pp.takeIntoAccountSensorPoseOnRobot = takeIntoAccountSensorPoseOnRobot;
-			pp.robotPoseInTheWorld = robotPoseInTheWorld;
-			pp.PROJ3D_USE_LUT = PROJ3D_USE_LUT;
-			TRangeImageFilterParams fp;
-			fp.rangeMask_min=rangeMask_min;
-			detail::project3DPointsFromDepthImageInto<POINTMAP>(*this,dest_pointcloud,pp,fp);
-		}
-
 		/** This method is equivalent to \c project3DPointsFromDepthImageInto() storing the projected 3D points (without color, in local sensor-centric coordinates) in this same class.
 		  *  For new code it's recommended to use instead \c project3DPointsFromDepthImageInto() which is much more versatile. */
 		inline void project3DPointsFromDepthImage(const bool PROJ3D_USE_LUT=true) {
@@ -263,16 +244,6 @@ namespace obs
 		  * \sa The example in http://www.mrpt.org/tutorials/mrpt-examples/example-kinect-to-2d-laser-demo/
 		  */
 		void convertTo2DScan(mrpt::obs::CObservation2DRangeScan & out_scan2d, const T3DPointsTo2DScanParams &scanParams, const TRangeImageFilterParams &filterParams = TRangeImageFilterParams() );
-
-		MRPT_DEPRECATED("DEPRECATED: Use the other method signature with structured parameters instead.")
-		void convertTo2DScan(
-			mrpt::obs::CObservation2DRangeScan & out_scan2d,
-			const std::string       & sensorLabel,
-			const double angle_sup = mrpt::utils::DEG2RAD(5),
-			const double angle_inf = mrpt::utils::DEG2RAD(5),
-			const double oversampling_ratio = 1.2,
-			const mrpt::math::CMatrix * rangeMask_min = nullptr
-			);
 
 		/** Whether external files (3D points, range and confidence) are to be 
 		  * saved as `.txt` text files (MATLAB compatible) or `*.bin` binary (faster).
