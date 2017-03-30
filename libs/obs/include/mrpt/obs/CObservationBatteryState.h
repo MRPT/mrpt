@@ -18,7 +18,6 @@ namespace mrpt
 {
 namespace obs
 {
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservationBatteryState, CObservation, OBS_IMPEXP)
 
 	/** This represents a measurement of the batteries on the robot.
 	 *  The battery levels are in volts in the form of the public members:

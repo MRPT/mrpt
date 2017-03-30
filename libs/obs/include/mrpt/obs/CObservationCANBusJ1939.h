@@ -16,7 +16,6 @@ namespace mrpt
 {
 namespace obs
 {
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservationCANBusJ1939 , CObservation, OBS_IMPEXP)
 
 	/** This class stores a message from a CAN BUS with the protocol J1939
 	 *

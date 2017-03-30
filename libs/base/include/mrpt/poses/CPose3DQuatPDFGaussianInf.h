@@ -21,7 +21,6 @@ namespace poses
 	class CPosePDFGaussian;
 	class CPose3DPDFGaussian;
 
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( CPose3DQuatPDFGaussianInf , CPose3DQuatPDF )
 
 	/** Declares a class that represents a Probability Density function (PDF) of a 3D pose using a quaternion \f$ p(\mathbf{x}) = [x ~ y ~ z ~ qr ~ qx ~ qy ~ qz]^\top \f$.
 	 *

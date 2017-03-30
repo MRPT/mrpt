@@ -27,7 +27,6 @@ namespace mrpt
 
 
 		// This must be added to any CSerializable derived class:
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CRenderizable, mrpt::utils::CSerializable, OPENGL_IMPEXP )
 
 		/** The base class of 3D objects that can be directly rendered through OpenGL.
 		  *  In this class there are a set of common properties to all 3D objects, mainly:

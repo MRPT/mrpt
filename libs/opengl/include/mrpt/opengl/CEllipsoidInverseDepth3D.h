@@ -16,7 +16,6 @@ namespace mrpt
 	namespace opengl
 	{
 		// This must be added to any CSerializable derived class:
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CEllipsoidInverseDepth3D, CRenderizableDisplayList, OPENGL_IMPEXP )
 
 		/** An especial "ellipsoid" in 3D computed as the uncertainty iso-surfaces of a (inv_range,yaw,pitch) variable.
 		  *  The parameter space of this ellipsoid comprises these variables (in this order):

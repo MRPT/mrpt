@@ -27,7 +27,6 @@ namespace mrpt
 {
 	namespace maps
 	{
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CMetricMap, mrpt::utils::CSerializable, OBS_IMPEXP )
 
 		/** Declares a virtual base class for all metric maps storage classes.
 		 *  In this class virtual methods are provided to allow the insertion

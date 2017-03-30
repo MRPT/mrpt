@@ -20,7 +20,6 @@ namespace mrpt
 {
 	namespace maps
 	{
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CSimplePointsMap , CPointsMap, MAPS_IMPEXP )
 
 		/** A cloud of points in 2D or 3D, which can be built from a sequence of laser scans.
 		 *    This class only stores the coordinates (x,y,z) of each point.

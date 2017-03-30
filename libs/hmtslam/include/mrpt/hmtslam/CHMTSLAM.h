@@ -36,7 +36,6 @@ namespace mrpt
 		class CLSLAMAlgorithmBase;
 		class CLSLAM_RBPF_2DLASER;
 
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CHMTSLAM, mrpt::utils::CSerializable, HMTSLAM_IMPEXP )
 
 		/** An implementation of Hybrid Metric Topological SLAM (HMT-SLAM).
 		 *

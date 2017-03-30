@@ -18,7 +18,6 @@ namespace mrpt
 
 
 		// This must be added to any CSerializable derived class:
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CAxis, CRenderizableDisplayList, OPENGL_IMPEXP )
 
 		/** Draw a 3D world axis, with coordinate marks at some regular interval
 		  *  \sa opengl::COpenGLScene

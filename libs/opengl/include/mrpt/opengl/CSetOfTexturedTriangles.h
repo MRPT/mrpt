@@ -18,7 +18,6 @@ namespace mrpt
 	namespace opengl
 	{
 		// This must be added to any CSerializable derived class:
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CSetOfTexturedTriangles, CTexturedObject, OPENGL_IMPEXP )
 
 		/** A set of textured triangles.
 		  *  This class can be used to draw any solid, arbitrarily complex object with textures.

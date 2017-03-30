@@ -19,7 +19,6 @@ namespace mrpt
     namespace utils
     {
         // This must be added to any CSerializable derived class:
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( CMHPropertiesValuesList, mrpt::utils::CSerializable )
 
         /** Internal triplet for each property in utils::CMHPropertiesValuesList */
         struct BASE_IMPEXP  TPropertyValueIDTriplet

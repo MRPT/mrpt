@@ -18,7 +18,6 @@ namespace mrpt
 	namespace opengl
 	{
 		// This must be added to any CSerializable derived class:
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CSetOfLines, CRenderizableDisplayList, OPENGL_IMPEXP )
 
 		/** A set of independent lines (or segments), one line with its own start and end positions (X,Y,Z).
 		  * Optionally, the vertices can be also shown as dots.

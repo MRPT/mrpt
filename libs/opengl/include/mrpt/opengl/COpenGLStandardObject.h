@@ -16,7 +16,6 @@ namespace mrpt	{
 	namespace opengl	{
 		typedef uint32_t _GLENUM;
 
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE(COpenGLStandardObject,CRenderizableDisplayList, OPENGL_IMPEXP)
 		/**
 		  * Objects of this class represent a generic openGL object without specific geometric properties.
 		  * \ingroup mrpt_opengl_grp

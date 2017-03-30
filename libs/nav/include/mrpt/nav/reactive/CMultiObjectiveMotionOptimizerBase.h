@@ -19,7 +19,6 @@ namespace mrpt
 {
 	namespace nav
 	{
-		DEFINE_MRPT_OBJECT_PRE_CUSTOM_LINKAGE(CMultiObjectiveMotionOptimizerBase, NAV_IMPEXP)
 
 		/** Virtual base class for multi-objective motion choosers, as used for reactive navigation engines.
 		  *\sa CReactiveNavigationSystem, CReactiveNavigationSystem3D

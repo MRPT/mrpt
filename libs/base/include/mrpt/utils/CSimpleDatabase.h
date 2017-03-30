@@ -19,9 +19,7 @@ namespace utils
 {
 
 	// This must be added to any CSerializable derived class:
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( CSimpleDatabase, mrpt::utils::CSerializable )
 	// This must be added to any CSerializable derived class:
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( CSimpleDatabaseTable, mrpt::utils::CSerializable )
 
 /**  This class implements the tables of databases.
  * \sa CSimpleDatabase \ingroup mrpt_base_grp

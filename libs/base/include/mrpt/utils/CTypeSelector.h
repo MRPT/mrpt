@@ -16,7 +16,6 @@ namespace mrpt
 namespace utils
 {
 	// This must be added to any CSerializable derived class:
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( CTypeSelector, mrpt::utils::CSerializable )
 
 	/** This class represents a std::string derived class which is also CSerializable
 	 * \sa CSerializable

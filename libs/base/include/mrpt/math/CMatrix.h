@@ -18,9 +18,7 @@ namespace mrpt
 	namespace math
 	{
 		// This must be added to any CSerializable derived class:
-		// Note: instead of the standard "DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE", classes inheriting
 		// from templates need special nasty handling for MSVC DLL exports...
-		DEFINE_MRPT_OBJECT_PRE_CUSTOM_BASE_LINKAGE2(CMatrix, mrpt::utils::CSerializable, CMatrix)
 
 		/**  This class is a "CSerializable" wrapper for "CMatrixFloat".
 		 * \note For a complete introduction to Matrices and vectors in MRPT, see: http://www.mrpt.org/Matrices_vectors_arrays_and_Linear_Algebra_MRPT_and_Eigen_classes

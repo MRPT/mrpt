@@ -28,7 +28,6 @@ namespace maps
 {
 	class COccupancyGridMap2D;
 
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CRandomFieldGridMap2D , CMetricMap, MAPS_IMPEXP )
 
 	// Pragma defined to ensure no structure packing: since we'll serialize TRandomFieldCell to streams, we want it not to depend on compiler options, etc.
 #if defined(MRPT_IS_X86_AMD64)

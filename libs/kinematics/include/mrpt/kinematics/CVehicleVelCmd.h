@@ -17,7 +17,6 @@ namespace mrpt
 {
 	namespace kinematics
 	{
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE(CVehicleVelCmd, mrpt::utils::CSerializable, KINEMATICS_IMPEXP)
 
 		/** Virtual base for velocity commands of different kinematic models of planar mobile robot.
 		 * \ingroup mrpt_kinematics_grp */

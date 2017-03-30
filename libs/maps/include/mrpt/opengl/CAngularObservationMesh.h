@@ -21,7 +21,6 @@
 
 namespace mrpt	{
 namespace opengl	{
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE(CAngularObservationMesh,CRenderizableDisplayList, MAPS_IMPEXP)
 
 	/**
 	  * A mesh built from a set of 2D laser scan observations.

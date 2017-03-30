@@ -21,7 +21,6 @@ namespace mrpt
 		class CCamera;
 
 		// This must be added to any CSerializable derived class:
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CCamera, CRenderizable, OPENGL_IMPEXP )
 
 		/** A camera: if added to a scene, the viewpoint defined by this camera will be used instead of the camera parameters set in COpenGLViewport::m_camera.
 		  *  A camera can be defined to provide a projective or orthogonal view of the world by setting the member CCamera::m_projectiveModel.

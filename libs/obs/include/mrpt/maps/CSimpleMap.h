@@ -20,7 +20,6 @@ namespace mrpt
 namespace maps
 {
 	// This must be added to any CSerializable derived class:
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CSimpleMap, mrpt::utils::CSerializable, OBS_IMPEXP )
 
 	/** This class stores a sequence of <Probabilistic Pose,SensoryFrame> pairs, thus a "metric map" can be totally determined with this information.
 	 *     The pose of the sensory frame is not deterministic, but described by some PDF. Full 6D poses are used.

@@ -16,7 +16,6 @@ namespace mrpt
 {
 namespace obs
 {
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservationComment , CObservation, OBS_IMPEXP)
 
 
 	/** This "observation" is actually a placeholder for a text block with comments or additional parameters attached to a given rawlog file.

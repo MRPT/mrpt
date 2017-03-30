@@ -172,30 +172,24 @@ namespace mrpt
 			DEFINE_MRPT_OBJECT_CUSTOM_LINKAGE(class_name, static /*none*/, virtual /*none*/)
 
 		// This macro is a workaround to avoid possibly empty arguments to MACROS (when _LINKAGE_ evals to nothing...)
-		#define DEFINE_MRPT_OBJECT_PRE_CUSTOM_BASE_LINKAGE(class_name, base_name, _LINKAGE_ )  DEFINE_MRPT_OBJECT_PRE_CUSTOM_BASE_LINKAGE2(class_name, base_name, _LINKAGE_ class_name)
 		#define DEFINE_MRPT_OBJECT_POST_CUSTOM_BASE_LINKAGE(class_name, base_name, _LINKAGE_ ) DEFINE_MRPT_OBJECT_POST_CUSTOM_BASE_LINKAGE2(class_name, base_name, _LINKAGE_ class_name)
 
 		// Use this one when there is NO import/export macro:
-		#define DEFINE_MRPT_OBJECT_PRE_CUSTOM_BASE_NO_LINKAGE(class_name, base_name) DEFINE_MRPT_OBJECT_PRE_CUSTOM_BASE_LINKAGE2(class_name, base_name, class_name)
 		#define DEFINE_MRPT_OBJECT_POST_CUSTOM_BASE_NO_LINKAGE(class_name, base_name) DEFINE_MRPT_OBJECT_POST_CUSTOM_BASE_LINKAGE2(class_name, base_name, class_name)
 
 		/**  This declaration must be inserted in all CObject classes definition, before the class declaration.  */
-		#define DEFINE_MRPT_OBJECT_PRE_CUSTOM_BASE_LINKAGE2(class_name, base_name, class_name_LINKAGE_ )
 
 		/**  This declaration must be inserted in all CObject classes definition, after the class declaration.  */
 		#define DEFINE_MRPT_OBJECT_POST_CUSTOM_BASE_LINKAGE2(class_name, base_name, class_name_LINKAGE_ )
 
 		// This macro is a workaround to avoid possibly empty arguments to MACROS (when _LINKAGE_ evals to nothing...)
-		#define DEFINE_MRPT_OBJECT_PRE_CUSTOM_LINKAGE(class_name,_LINKAGE_)  DEFINE_MRPT_OBJECT_PRE_CUSTOM_LINKAGE2(class_name, _LINKAGE_ class_name)
 		#define DEFINE_MRPT_OBJECT_POST_CUSTOM_LINKAGE(class_name,_LINKAGE_) DEFINE_MRPT_OBJECT_POST_CUSTOM_LINKAGE2(class_name, _LINKAGE_ class_name)
 
 		// Use this macro when there is NO export/import macro:
-		#define DEFINE_MRPT_OBJECT_PRE_NO_LINKAGE(class_name) DEFINE_MRPT_OBJECT_PRE_CUSTOM_LINKAGE2(class_name, class_name)
 		#define DEFINE_MRPT_OBJECT_POST_NO_LINKAGE(class_name) DEFINE_MRPT_OBJECT_POST_CUSTOM_LINKAGE2(class_name, class_name)
 
 		// This one is almost identical to the one above, but without a member:
 		/**  This declaration must be inserted in all CObject classes definition, before the class declaration. */
-		#define DEFINE_MRPT_OBJECT_PRE_CUSTOM_LINKAGE2(class_name,class_name_LINKAGE_)
 
 		/**  This declaration must be inserted in all CObject classes definition, after the class declaration. */
 #ifdef MRPT_1X_BACKCOMPATIB_SMARTPTR_NAMES
@@ -207,12 +201,9 @@ namespace mrpt
 
 		/**  This declaration must be inserted in all CObject classes definition, before the class declaration.
 		  */
-		#define DEFINE_MRPT_OBJECT_PRE_CUSTOM_BASE(class_name, base_name) \
-			DEFINE_MRPT_OBJECT_PRE_CUSTOM_BASE_LINKAGE(class_name, base_name, BASE_IMPEXP )
 
 		/**  This declaration must be inserted in all CObject classes definition, before the class declaration.
 		  */
-		#define DEFINE_MRPT_OBJECT_PRE(class_name)  DEFINE_MRPT_OBJECT_PRE_CUSTOM_LINKAGE(class_name, BASE_IMPEXP )  // This macro is valid for classes within mrpt-base only.
 		#define DEFINE_MRPT_OBJECT_POST(class_name) DEFINE_MRPT_OBJECT_POST_CUSTOM_LINKAGE(class_name, BASE_IMPEXP )  // This macro is valid for classes within mrpt-base only.
 
 		/** This must be inserted in all CObject classes implementation files
