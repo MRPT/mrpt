@@ -24,7 +24,7 @@ namespace mrpt
 		 */
 		class BASE_IMPEXP CFileGZInputStream : public CStream
 		{
-			static_assert(!std::is_copy_constructible<CFileGZInputStream>::value && !std::is_copy_constructible<CFileGZInputStream>::value, "Copy Check");
+			static_assert(!std::is_copy_constructible<CFileGZInputStream>::value && !std::is_copy_assignable<CFileGZInputStream>::value, "Copy Check");
 
 		protected:
 			size_t  Read(void *Buffer, size_t Count) MRPT_OVERRIDE;

@@ -28,7 +28,7 @@ namespace mrpt
 #else
 		class BASE_IMPEXP CFileGZOutputStream : public CStream
 		{
-			static_assert(!std::is_copy_constructible<CFileGZOutputStream>::value && !std::is_copy_constructible<CFileGZOutputStream>::value, "Copy Check");
+			static_assert(!std::is_copy_constructible<CFileGZOutputStream>::value && !std::is_copy_assignable<CFileGZOutputStream>::value, "Copy Check");
 		protected:
 			size_t  Read(void *Buffer, size_t Count) MRPT_OVERRIDE;
 			size_t  Write(const void *Buffer, size_t Count) MRPT_OVERRIDE;

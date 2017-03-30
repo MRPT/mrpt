@@ -123,7 +123,7 @@ namespace mrpt
 		  */
 		class HWDRIVERS_IMPEXP CDUO3DCamera
 		{
-			static_assert(!std::is_copy_constructible<CDUO3DCamera>::value && !std::is_copy_constructible<CDUO3DCamera>::value, "Copy Check");
+			static_assert(!std::is_copy_constructible<CDUO3DCamera>::value && !std::is_copy_assignable<CDUO3DCamera>::value, "Copy Check");
 		protected:
 			// members
 			// [USER-DEFINED]

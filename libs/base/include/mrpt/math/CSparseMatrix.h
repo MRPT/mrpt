@@ -358,7 +358,7 @@ namespace mrpt
 			  */
 			class BASE_IMPEXP CholeskyDecomp
 			{
-				static_assert(!std::is_copy_constructible<CholeskyDecomp>::value && !std::is_copy_constructible<CholeskyDecomp>::value, "Copy Check");
+				static_assert(!std::is_copy_constructible<CholeskyDecomp>::value && !std::is_copy_assignable<CholeskyDecomp>::value, "Copy Check");
 			private:
 				css * m_symbolic_structure;
 				csn * m_numeric_structure;
