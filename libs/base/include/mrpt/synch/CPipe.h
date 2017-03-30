@@ -59,7 +59,7 @@ namespace mrpt
 		class BASE_IMPEXP CPipeBaseEndPoint :
 			public mrpt::utils::CStream
 		{
-			static_assert(!std::is_copy_constructible<CPipeBaseEndPoint>::value && !std::is_copy_constructible<CPipeBaseEndPoint>::value, "Copy Check");
+			static_assert(!std::is_copy_constructible<CPipeBaseEndPoint>::value && !std::is_copy_assignable<CPipeBaseEndPoint>::value, "Copy Check");
 			friend class CPipe;
 		public:
 			CPipeBaseEndPoint();

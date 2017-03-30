@@ -129,7 +129,7 @@ namespace mrpt
 		  */
 		class HWDRIVERS_IMPEXP  CImageGrabber_FlyCapture2
 		{
-			static_assert(!std::is_copy_constructible<CImageGrabber_FlyCapture2>::value && !std::is_copy_constructible<CImageGrabber_FlyCapture2>::value, "Copy Check");
+			static_assert(!std::is_copy_constructible<CImageGrabber_FlyCapture2>::value && !std::is_copy_assignable<CImageGrabber_FlyCapture2>::value, "Copy Check");
 		protected:
 			void *m_camera;      //!< Opaque pointer to the FlyCapture2::Camera object. nullptr if no camera is grabbing.
 			void *m_camera_info; //!< Opaque pointer to the FlyCapture2::CameraInfo object. nullptr if no camera is grabbing.

@@ -23,7 +23,7 @@ namespace mrpt
 		 */
 		class BASE_IMPEXP CFileInputStream : public CStream
 		{
-			static_assert(!std::is_copy_constructible<CFileInputStream>::value && !std::is_copy_constructible<CFileInputStream>::value, "Copy Check");
+			static_assert(!std::is_copy_constructible<CFileInputStream>::value && !std::is_copy_assignable<CFileInputStream>::value, "Copy Check");
 		protected:
 			size_t  Read(void *Buffer, size_t Count) MRPT_OVERRIDE;
 			size_t  Write(const void *Buffer, size_t Count) MRPT_OVERRIDE;

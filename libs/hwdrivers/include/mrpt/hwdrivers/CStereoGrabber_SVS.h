@@ -60,7 +60,7 @@ namespace mrpt
 		  */
         class HWDRIVERS_IMPEXP  CStereoGrabber_SVS
 	{
-		static_assert(!std::is_copy_constructible<CStereoGrabber_SVS>::value && !std::is_copy_constructible<CStereoGrabber_SVS>::value, "Copy Check");
+		static_assert(!std::is_copy_constructible<CStereoGrabber_SVS>::value && !std::is_copy_assignable<CStereoGrabber_SVS>::value, "Copy Check");
 		protected:
 			bool			m_bInitialized;					//!< If this has been correctly initiated
 

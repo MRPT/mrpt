@@ -23,7 +23,7 @@ namespace utils
 	 */
 	class BASE_IMPEXP CTicTac
 	{
-		static_assert(!std::is_copy_constructible<CTicTac>::value && !std::is_copy_constructible<CTicTac>::value, "Copy Check");
+		static_assert(!std::is_copy_constructible<CTicTac>::value && !std::is_copy_assignable<CTicTac>::value, "Copy Check");
 
 	public:
 		CTicTac(); //!< Default constructor. Implicitly calls Tic()
