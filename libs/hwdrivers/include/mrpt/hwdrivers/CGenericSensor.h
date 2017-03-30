@@ -11,7 +11,6 @@
 #define CGenericSensor_H
 
 #include <mrpt/utils/CConfigFileBase.h>
-#include <mrpt/utils/CUncopiable.h>
 #include <mrpt/obs/CObservation.h>
 #include <map>
 
@@ -57,8 +56,9 @@ namespace mrpt
 		  *    http://www.mrpt.org/Application:RawLogGrabber
 		  * \ingroup mrpt_hwdrivers_grp
  		  */
-		class HWDRIVERS_IMPEXP CGenericSensor: public mrpt::utils::CUncopiable
+		class HWDRIVERS_IMPEXP CGenericSensor
 		{
+			static_assert(!std::is_copy_constructible<CGenericSensor>::value && !std::is_copy_constructible<CGenericSensor>::value, "Copy Check");
 		public:
 			using Ptr = std::shared_ptr<CGenericSensor>;
 			virtual const mrpt::hwdrivers::TSensorClassId* GetRuntimeClass() const = 0;
