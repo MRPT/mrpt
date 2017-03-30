@@ -244,24 +244,7 @@
 	}
 
 // Static asserts: use compiler version if we have a modern GCC (>=4.3) or MSVC (>=2010) version, otherwise rely on custom implementation:
-#if MRPT_CHECK_VISUALC_VERSION(10) || __has_extension(cxx_static_assert) || (MRPT_CHECK_GCC_VERSION(4,3) && MRPT_HAS_CXX11)
-	#define MRPT_COMPILE_TIME_ASSERT(expression) static_assert(expression,#expression);
-#else
-	// The following macro is based on dclib:
-	// Copyright (C) 2003  Davis E. King (davisking@users.sourceforge.net)
-	// License: Boost Software License   See LICENSE.txt for the full license.
-	namespace mrpt
-	{
-		namespace utils
-		{
-			template <bool value> struct compile_time_assert;
-			template <> struct compile_time_assert<true> { enum {value=1};  };
-		}
-	}
-	#define MRPT_COMPILE_TIME_ASSERT(expression) \
-			typedef char BOOST_JOIN(MRPT_CTA, __LINE__)[::mrpt::utils::compile_time_assert<(bool)(expression)>::value]; extern BOOST_JOIN(MRPT_CTA, __LINE__) BOOST_JOIN(MRPT_DUMMYVAR_CTA, __LINE__);
-
-#endif
+#define MRPT_COMPILE_TIME_ASSERT(expression) static_assert(expression,#expression);
 
 	/** Assert comparing two values, reporting their actual values upon failure */
 	#define ASSERT_EQUAL_( __A, __B)      { if (__A!=__B) { std::ostringstream __s__;__s__<<"ASSERT_EQUAL_("<<#__A<<","<<#__B<<") failed with\n"<<#__A<<"=" <<__A <<"\n"<<#__B<<"="<<__B; THROW_EXCEPTION(__s__.str()) } }
