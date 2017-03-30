@@ -22,8 +22,10 @@ namespace mrpt
 		 * \sa CFileInputStream
 		 * \ingroup mrpt_base_grp
 		 */
-		class BASE_IMPEXP CFileGZInputStream : public CStream, public CUncopiable
+		class BASE_IMPEXP CFileGZInputStream : public CStream
 		{
+			static_assert(!std::is_copy_constructible<CFileGZInputStream>::value && !std::is_copy_constructible<CFileGZInputStream>::value, "Copy Check");
+
 		protected:
 			size_t  Read(void *Buffer, size_t Count) MRPT_OVERRIDE;
 			size_t  Write(const void *Buffer, size_t Count) MRPT_OVERRIDE;

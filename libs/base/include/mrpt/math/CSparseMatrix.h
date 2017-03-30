@@ -11,7 +11,6 @@
 
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/utils/exceptions.h>
-#include <mrpt/utils/CUncopiable.h>
 
 #include <mrpt/math/math_frwds.h>
 #include <mrpt/utils/types_math.h>
@@ -357,8 +356,9 @@ namespace mrpt
 			  * \note This class designed to be "uncopiable".
 			  * \sa The main class: CSparseMatrix
 			  */
-			class BASE_IMPEXP CholeskyDecomp  : public mrpt::utils::CUncopiable
+			class BASE_IMPEXP CholeskyDecomp
 			{
+				static_assert(!std::is_copy_constructible<CholeskyDecomp>::value && !std::is_copy_constructible<CholeskyDecomp>::value, "Copy Check");
 			private:
 				css * m_symbolic_structure;
 				csn * m_numeric_structure;
@@ -372,6 +372,7 @@ namespace mrpt
 				  *  \exception mrpt::math::CExceptionNotDefPos On non-definite-positive matrix as input.
 				  */
 				CholeskyDecomp(const CSparseMatrix &A);
+				CholeskyDecomp(const CholeskyDecomp &A) = delete;
 
 				/** Destructor */
 				virtual ~CholeskyDecomp();
@@ -397,7 +398,6 @@ namespace mrpt
 				  */
 				void update(const CSparseMatrix &new_SM);
 			};
-
 
 			/** @} */
 
