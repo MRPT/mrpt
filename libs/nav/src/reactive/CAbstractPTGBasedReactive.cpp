@@ -980,9 +980,6 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 		}
 	}
 
-	//  SAVE LOG
-	log.evalFactors = cm.props;
-
 	MRPT_END;
 }
 
@@ -1275,8 +1272,10 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
 				m_lastSentVelCmd.colfreedist_move_k
 				:
 				.0;
-		}
 
+			//  SAVE LOG
+			newLogRec.infoPerPTG[idx_in_log_infoPerPTGs].evalFactors = cm.props;
+		}
 
 	} // end "valid_TP"
 
