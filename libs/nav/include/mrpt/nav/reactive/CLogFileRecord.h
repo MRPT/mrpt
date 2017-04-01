@@ -89,9 +89,7 @@ namespace nav
 		int16_t                ptg_index_NOP;  //!< Negative means no NOP mode evaluation, so the rest of "NOP variables" should be ignored.
 		uint16_t               ptg_last_k_NOP;
 		mrpt::math::TPose2D    rel_cur_pose_wrt_last_vel_cmd_NOP, rel_pose_PTG_origin_wrt_sense_NOP;
-		// Was: mrpt::math::TTwist2D   ptg_last_curRobotVelLocal;
 		mrpt::nav::CParameterizedTrajectoryGenerator::TNavDynamicState ptg_last_navDynState;
-
 	};
 	  DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CLogFileRecord, mrpt::utils::CSerializable, NAV_IMPEXP )
 
