@@ -27,8 +27,8 @@ CAbstractNavigator::TNavigationParams::TNavigationParams() :
 	target_frame_id("map"),
 	targetAllowedDistance(0.5),
 	targetIsRelative(false),
-	targetIsIntermediaryWaypoint(false),
-	enableApproachSlowDown(true)
+	targetDesiredRelSpeed(.0),
+	targetIsIntermediaryWaypoint(false)
 {
 }
 
@@ -41,7 +41,7 @@ std::string CAbstractNavigator::TNavigationParams::getAsText() const
 	s+= mrpt::format("navparams.targetAllowedDistance = %.03f\n", targetAllowedDistance );
 	s+= mrpt::format("navparams.targetIsRelative = %s\n", targetIsRelative ? "YES":"NO");
 	s+= mrpt::format("navparams.targetIsIntermediaryWaypoint = %s\n", targetIsIntermediaryWaypoint ? "YES":"NO");
-	s+= mrpt::format("navparams.enableApproachSlowDown = %s\n", enableApproachSlowDown ? "YES" : "NO");
+	s+= mrpt::format("navparams.targetDesiredRelSpeed = %.02f\n", targetDesiredRelSpeed);
 	return s;
 }
 
@@ -308,7 +308,12 @@ void CAbstractNavigator::doEmergencyStop( const std::string &msg )
 
 void CAbstractNavigator::navigate(const CAbstractNavigator::TNavigationParams *params )
 {
+	MRPT_START;
+
 	mrpt::synch::CCriticalSectionLocker csl(&m_nav_cs);
+
+	ASSERT_(params!=nullptr);
+	ASSERT_(params->targetDesiredRelSpeed >= .0 && params->targetDesiredRelSpeed <= 1.0);
 
 	m_navigationEndEventSent = false;
 
@@ -336,6 +341,8 @@ void CAbstractNavigator::navigate(const CAbstractNavigator::TNavigationParams *p
 	// Reset the bad navigation alarm:
 	m_badNavAlarm_minDistTarget = std::numeric_limits<double>::max();
 	m_badNavAlarm_lastMinDistTime = mrpt::system::getCurrentTime();
+
+	MRPT_END;
 }
 
 void CAbstractNavigator::updateCurrentPoseAndSpeeds()

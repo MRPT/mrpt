@@ -57,18 +57,12 @@ namespace mrpt
 		/** The struct for configuring navigation requests. Used in CAbstractPTGBasedReactive::navigate() */
 		struct NAV_IMPEXP TNavigationParams
 		{
-			mrpt::math::TPose2D target;  //!< Coordinates of desired target location. Heading may be ignored by some reactive implementations.
-			std::string         target_frame_id; //!< (Default="map") Frame ID in which target is given. Optional, use only for submapping applications.
-			float               targetAllowedDistance;    //!< (Default=0.5 meters) Allowed distance to target in order to end the navigation.
-			bool                targetIsRelative;  //!< (Default=false) Whether the \a target coordinates are in global coordinates (false) or are relative to the current robot pose (true).
-
-			/** (Default=false) If true, the behavior changes in these aspects:
-			 * - The robot will *not* slow down when approaching the target.
-			 * - Event callback `sendWaypointReachedEvent()` will be called instead of `sendNavigationEndEvent()`
-			 */
-			bool  targetIsIntermediaryWaypoint;
-
-			bool enableApproachSlowDown; //!< (Default=true) Slow down when approaching target.
+			mrpt::math::TPose2D target;                //!< Coordinates of desired target location. Heading may be ignored by some reactive implementations.
+			std::string         target_frame_id;       //!< (Default="map") Frame ID in which target is given. Optional, use only for submapping applications.
+			float               targetAllowedDistance; //!< (Default=0.5 meters) Allowed distance to target in order to end the navigation.
+			bool                targetIsRelative;      //!< (Default=false) Whether the \a target coordinates are in global coordinates (false) or are relative to the current robot pose (true).
+			double              targetDesiredRelSpeed; //!< (Default=.0) Desired relative speed (wrt maximum speed), in range [0,1], of the vehicle at target. Holonomic nav methods will perform "slow down" approaching target only if this is "==.0". Intermediary values will be honored only by the higher-level navigator, based on straight-line Euclidean distances.
+			bool                targetIsIntermediaryWaypoint; // !< (Default=false) If true, event callback `sendWaypointReachedEvent()` will be called instead of `sendNavigationEndEvent()`
 
 			TNavigationParams(); //!< Ctor with default values
 			virtual ~TNavigationParams() {}

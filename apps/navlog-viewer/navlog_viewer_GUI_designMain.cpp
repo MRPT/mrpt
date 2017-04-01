@@ -559,13 +559,13 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 				}
 				// Global or local coordinates?
 				if (cbList->IsChecked(m_cbIdx_GlobalFrame)) {
-					gl_robot_frame->setPose(  mrpt::poses::CPose3D(log.robotOdometryPose) );
+					gl_robot_frame->setPose(  mrpt::poses::CPose3D(mrpt::poses::CPose2D(log.robotPoseLocalization)) );
 					// Move the window focus:
 					float px,py,pz;
 					win1->getCameraPointingToPoint(px,py,pz);
 					const float cam_zoom = win1->getCameraZoom();
-					if ( log.robotOdometryPose.distance2DTo(px,py)>.3*cam_zoom )
-						win1->setCameraPointingToPoint(log.robotOdometryPose.x(),log.robotOdometryPose.y(),0.0);
+					if ((mrpt::math::TPoint2D(log.robotPoseLocalization) - mrpt::math::TPoint2D(px, py)).norm() > .3*cam_zoom)
+						win1->setCameraPointingToPoint(log.robotPoseLocalization.x,log.robotPoseLocalization.y,0.0);
 				} else {
 					gl_robot_frame->setPose( mrpt::poses::CPose3D() );
 				}
@@ -665,17 +665,8 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 
 						const mrpt::math::TPose2D relTrg(log.WS_target_relative.x, log.WS_target_relative.y, 0);
 
-						// Set instantaneous kinematic state:
-						if (!is_NOP_cmd)
-						{
-							ptg->updateCurrentRobotVel(log.cur_vel_local);
-							ptg->setRelativeTarget(relTrg);
-						}
-						else
-						{
-							ptg->updateCurrentRobotVel(log.ptg_last_curRobotVelLocal);
-							ptg->setRelativeTarget( TPose2D( CPose2D(relTrg) - log.rel_cur_pose_wrt_last_vel_cmd_NOP ));
-						}
+						// Set instantaneous dyn state:
+						ptg->updateNavDynamicState(is_NOP_cmd  ? log.ptg_last_navDynState : log.navDynState);
 
 						// Draw path:
 						const int selected_k =
@@ -807,7 +798,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 		ADD_WIN_TEXTMSG(mrpt::format("cur_vel      =[%.02f m/s, %0.2f m/s, %.02f dps]",log.cur_vel.vx, log.cur_vel.vy, mrpt::utils::RAD2DEG(log.cur_vel.omega)) );
 		ADD_WIN_TEXTMSG(mrpt::format("cur_vel_local=[%.02f m/s, %0.2f m/s, %.02f dps]", log.cur_vel_local.vx, log.cur_vel_local.vy, mrpt::utils::RAD2DEG(log.cur_vel_local.omega)) );
 
-		ADD_WIN_TEXTMSG(mrpt::format("robot_pose=%s rel_target=%s", log.robotOdometryPose.asString().c_str(), log.WS_target_relative.asString().c_str()));
+		ADD_WIN_TEXTMSG(mrpt::format("robot_pose=%s rel_target=%s", log.robotPoseLocalization.asString().c_str(), log.WS_target_relative.asString().c_str()));
 
 		if (log.cmd_vel_original)
 		{
@@ -1196,14 +1187,14 @@ void navlog_viewer_GUI_designDialog::OnmnuMatlabPlotsSelected(wxCommandEvent& ev
         const CLogFileRecordPtr logsptr = CLogFileRecordPtr( m_logdata[i] );
         const CLogFileRecord * logptr = logsptr.pointer();
 
-		const CPose2D robotPose = logptr->robotOdometryPose;
+		const auto robotPose = logptr->robotPoseLocalization;
 		CPose2D observationBasePose = robotPose;
 
 		if (cbList->IsChecked(m_cbIdx_ShowDelays))
 			observationBasePose = observationBasePose + logptr->relPoseSense;
 
 		f << format("dec=dec+1; if (dec>=dec_shps); drawRobotShape(rs,[%f %f %f]); dec=0; end\n",
-			robotPose.x(), robotPose.y(), robotPose.phi() );
+			robotPose.x, robotPose.y, robotPose.phi );
 
         if (++decim_point_cnt>=DECIMATE_POINTS)
         {
@@ -1396,7 +1387,7 @@ void navlog_viewer_GUI_designDialog::OnmnuMatlabExportPaths(wxCommandEvent & eve
 	std::map<double, double> iteration_duration; // time: tim_start_iteration
 	struct TRobotPoseVel
 	{
-		mrpt::math::TPose2D pose;
+		mrpt::math::TPose2D pose, poseOdom;
 		mrpt::math::TTwist2D velGlobal, velLocal;
 	};
 	std::map<double, TRobotPoseVel> global_local_vel; // time: curPoseAndVel
@@ -1464,7 +1455,8 @@ void navlog_viewer_GUI_designDialog::OnmnuMatlabExportPaths(wxCommandEvent & eve
 			}
 
 			auto & p = global_local_vel[tim_pose];
-			p.pose = logptr->robotOdometryPose;
+			p.pose = logptr->robotPoseLocalization;
+			p.poseOdom = logptr->robotPoseOdometry;
 			p.velGlobal = logptr->cur_vel;
 			p.velLocal = logptr->cur_vel_local;
 		}
@@ -1493,10 +1485,13 @@ void navlog_viewer_GUI_designDialog::OnmnuMatlabExportPaths(wxCommandEvent & eve
 
 	f << "clear; close all;\n";
 
-	f << "% robot pose over time. Columns: [time curPoseAndVel, x,y,phi_rad]\n"
+	f << "% robot pose over time. Columns: [time curPoseAndVel, x,y,phi_rad,  odo_x,odo_y,odo_phi_rad]\n"
 		"robot_pose = [";
 	for (const auto &e : global_local_vel) {
-		f << (e.first - t_ref) << "," << e.second.pose.x << "," << e.second.pose.y << "," << e.second.pose.phi << " ; ";
+		f << (e.first - t_ref) << "," 
+			<< e.second.pose.x << "," << e.second.pose.y << "," << e.second.pose.phi << ", "
+			<< e.second.poseOdom.x << "," << e.second.poseOdom.y << "," << e.second.poseOdom.phi
+			<< " ; ";
 	}
 	f <<
 		"];\n"
