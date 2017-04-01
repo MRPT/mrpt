@@ -27,19 +27,19 @@ enum FrameLookUpStatus {
 };
 
 
-/** Virtual base class for interfaces to a [ROS tf2](http://wiki.ros.org/tf2)-like 
+/** Virtual base class for interfaces to a [ROS tf2](http://wiki.ros.org/tf2)-like
 * service capable of "publishing" and "looking-up" relative poses between two "coordinate frames".
 * Use derived classes for:
-*  - wrapping real ROS tf (TO-DO in [mrpt-bridge](http://wiki.ros.org/mrpt_bridge)), or 
+*  - wrapping real ROS tf (TO-DO in [mrpt-bridge](http://wiki.ros.org/mrpt_bridge)), or
 *  - using a pure MRPT standalone TF service with mrpt::poses::FrameTransformer
 *
 * Frame IDs are strings.
-* MRPT modules use the standard ROS [REP 105](http://www.ros.org/reps/rep-0105.html#coordinate-frames) 
-* document regarding common names for frames: 
+* MRPT modules use the standard ROS [REP 105](http://www.ros.org/reps/rep-0105.html#coordinate-frames)
+* document regarding common names for frames:
 *  - `base_link`: "the robot"
 *  - `odom`: Origin for odometry
 *  - `map`: Origin for "the map"
-* 
+*
 * \tparam DIM Can be 2 for SE(2), 2D transformations; or 3 for SE(3), 3D transformations.
 * \ingroup poses_grp
 * \sa FrameTransformer, CPose3D
@@ -61,8 +61,8 @@ public:
 		const mrpt::system::TTimeStamp & timestamp = mrpt::system::now()
 	) = 0;
 
-	/** Queries the current pose of `target_frame` wrt ("as seen from") `source_frame`. 
-	  * It tries to return the pose at the given timepoint, unless it is INVALID_TIMESTAMP (default), 
+	/** Queries the current pose of `target_frame` wrt ("as seen from") `source_frame`.
+	  * It tries to return the pose at the given timepoint, unless it is INVALID_TIMESTAMP (default),
 	  * which means returning the latest know transformation.
 	  */
 	virtual FrameLookUpStatus lookupTransform(
@@ -75,7 +75,7 @@ public:
 
 }; // End of class def.
 
-/** See docs in FrameTransformerInterface. 
+/** See docs in FrameTransformerInterface.
 *   This class is an implementation for standalone (non ROS) applications.
 * \ingroup poses_grp
 * \sa FrameTransformerInterface
@@ -84,13 +84,15 @@ template <int DIM>
 class BASE_IMPEXP FrameTransformer : public FrameTransformerInterface<DIM>
 {
 public:
+	typedef FrameTransformerInterface<DIM> base_t;
+
 	FrameTransformer();
 	~FrameTransformer();
 
 	// See base docs
-	virtual void sendTransform(const std::string & parent_frame,const std::string & child_frame,const pose_t & child_wrt_parent, const mrpt::system::TTimeStamp & timestamp = mrpt::system::now() )  MRPT_OVERRIDE;
+	virtual void sendTransform(const std::string & parent_frame,const std::string & child_frame,const typename base_t::pose_t & child_wrt_parent, const mrpt::system::TTimeStamp & timestamp = mrpt::system::now() )  MRPT_OVERRIDE;
 	// See base docs
-	virtual FrameLookUpStatus lookupTransform(const std::string & target_frame, const std::string & source_frame, pose_t & child_wrt_parent, const mrpt::system::TTimeStamp query_time = INVALID_TIMESTAMP, const double timeout_secs = .0) MRPT_OVERRIDE;
+	virtual FrameLookUpStatus lookupTransform(const std::string & target_frame, const std::string & source_frame, typename base_t::pose_t & child_wrt_parent, const mrpt::system::TTimeStamp query_time = INVALID_TIMESTAMP, const double timeout_secs = .0) MRPT_OVERRIDE;
 
 protected:
 	//double m_max_extrapolation_time;  //!< for extrapolation in the past or in the future [s]
@@ -99,10 +101,10 @@ protected:
 	struct BASE_IMPEXP TF_TreeEdge
 	{
 		// TODO: CPose{2,3}DInterpolator?
-		pose_t pose;
+		typename base_t::pose_t pose;
 		mrpt::system::TTimeStamp timestamp;
 
-		TF_TreeEdge(const pose_t &pose_, const mrpt::system::TTimeStamp &timestamp_) :
+		TF_TreeEdge(const typename base_t::pose_t &pose_, const mrpt::system::TTimeStamp &timestamp_) :
 			pose(pose_),
 			timestamp(timestamp_)
 		{}

@@ -38,27 +38,27 @@ FrameTransformer<DIM>::FrameTransformer()
 template <int DIM>
 FrameTransformer<DIM>::~FrameTransformer()
 {
-	
+
 }
 
 template <int DIM>
 void FrameTransformer<DIM>::sendTransform(
-	const std::string & parent_frame, 
-	const std::string & child_frame, 
-	const pose_t & child_wrt_parent,
+	const std::string & parent_frame,
+	const std::string & child_frame,
+	const typename base_t::pose_t & child_wrt_parent,
 	const mrpt::system::TTimeStamp & timestamp)
 {
 	m_pose_edges_buffer[parent_frame][child_frame] = TF_TreeEdge(child_wrt_parent, timestamp);
 }
 
-// future work: allow graph traversal and do pose chain composition? 
+// future work: allow graph traversal and do pose chain composition?
 // We dont need to replicate the full functionality of ROS tf, though... just what we really need.
 
 template <int DIM>
 FrameLookUpStatus FrameTransformer<DIM>::lookupTransform(
-	const std::string & target_frame, 
-	const std::string & source_frame, 
-	pose_t & child_wrt_parent,
+	const std::string & target_frame,
+	const std::string & source_frame,
+	typename base_t::pose_t & child_wrt_parent,
 	const mrpt::system::TTimeStamp query_time,
 	const double timeout_secs)
 {
