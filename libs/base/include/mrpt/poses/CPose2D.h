@@ -18,9 +18,9 @@ namespace poses
 {
 	DEFINE_SERIALIZABLE_PRE( CPose2D )
 
-	/** A class used to store a 2D pose.
-	 *    A class used to store a 2D pose, including the 2D coordinate
-	 *      point and a heading (phi) angle.
+	/** A class used to store a 2D pose, including the 2D coordinate point and a heading (phi) angle.
+	 *  Use this class instead of lightweight mrpt::math::TPose2D when pose/point composition is to be called 
+	 *  multiple times with the same pose, since this class caches calls to expensive trigronometric functions.
 	 *
 	 *  For a complete description of Points/Poses, see mrpt::poses::CPoseOrPoint, or refer
 	 *    to the <a href="http://www.mrpt.org/2D_3D_Geometry" >2D/3D Geometry tutorial</a> in the wiki.
