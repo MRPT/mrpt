@@ -131,13 +131,13 @@ std::string TWaypointStatusSequence::getAsText() const
 }
 
 TWaypointsRenderingParams::TWaypointsRenderingParams() :
-	outter_radius(.3),
-	inner_radius(.2),
-	outter_radius_non_skippable(.3),
-	inner_radius_non_skippable(.0),
+	outter_radius(.3), inner_radius(.2),
+	outter_radius_non_skippable(.3), inner_radius_non_skippable(.0),
+	outter_radius_reached(.2), inner_radius_reached(.1),
 	heading_arrow_len(1.0),
 	color_regular(mrpt::utils::TColor(0x00, 0x00, 0xff)),
 	color_current_goal(mrpt::utils::TColor(0xff, 0x00, 0x20)),
+	color_reached(mrpt::utils::TColor(0x00, 0x00, 0xc0,0xd0)),
 	show_labels(true)
 {
 }
@@ -182,8 +182,8 @@ void TWaypointStatusSequence::getAsOpenglVisualization(mrpt::opengl::CSetOfObjec
 			const bool is_cur_goal = (int(idx) == waypoint_index_current_goal);
 
 			mrpt::opengl::CDiskPtr gl_pt = mrpt::opengl::CDisk::Create(
-				p.allow_skip ? params.outter_radius : params.outter_radius_non_skippable,
-				p.allow_skip ? params.inner_radius : params.inner_radius_non_skippable,
+				p.reached ? params.outter_radius_reached : (p.allow_skip ? params.outter_radius : params.outter_radius_non_skippable),
+				p.reached ? params.inner_radius_reached  : (p.allow_skip ? params.inner_radius : params.inner_radius_non_skippable),
 				15
 				);
 			gl_pt->setLocation(p.target.x, p.target.y, 0.01);
@@ -192,7 +192,7 @@ void TWaypointStatusSequence::getAsOpenglVisualization(mrpt::opengl::CSetOfObjec
 				gl_pt->setName(mrpt::format("WayPt #%2u Reach:%s", idx, p.reached ? "YES" : "NO"));
 				gl_pt->enableShowName(true);
 			}
-			gl_pt->setColor_u8(is_cur_goal ? params.color_current_goal : params.color_regular);
+			gl_pt->setColor_u8(is_cur_goal ? params.color_current_goal : (p.reached ? params.color_reached : params.color_regular));
 			obj.insert(gl_pt);
 
 			if (p.target_heading != TWaypoint::INVALID_NUM)
