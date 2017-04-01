@@ -256,6 +256,7 @@ void CWaypointsNavigator::navigationStep()
 			nav_cmd.target.x = wp.target.x;
 			nav_cmd.target.y = wp.target.y;
 			nav_cmd.target.phi = (wp.target_heading!=TWaypoint::INVALID_NUM ? wp.target_heading : .0);
+			nav_cmd.target_frame_id = wp.target_frame_id;
 			nav_cmd.targetAllowedDistance = wp.allowed_distance;
 			nav_cmd.targetIsRelative = false;
 			nav_cmd.targetIsIntermediaryWaypoint = !is_final_wp;

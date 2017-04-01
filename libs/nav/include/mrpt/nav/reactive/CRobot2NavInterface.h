@@ -50,7 +50,8 @@ namespace mrpt
 			mrpt::math::TPose2D      &curPose,        //!< (output) The latest robot pose (typically from a mapping/localization module), in world coordinates. (x,y: meters, phi: radians)
 			mrpt::math::TTwist2D     &curVelGlobal,   //!< (output) The latest robot velocity vector, in world coordinates. (vx,vy: m/s, omega: rad/s)
 			mrpt::system::TTimeStamp &timestamp,      //!< (output) The timestamp for the read pose and velocity values. Use mrpt::system::now() unless you have something more accurate.
-			mrpt::math::TPose2D      &curOdometry     //!< (output) The latest robot raw odometry pose; may have long-time drift should be more locally consistent than curPose (x,y: meters, phi: radians)
+			mrpt::math::TPose2D      &curOdometry,    //!< (output) The latest robot raw odometry pose; may have long-time drift should be more locally consistent than curPose (x,y: meters, phi: radians)
+			std::string              &frame_id        //!< (output) ID of the coordinate frame for curPose. Default is not modified is "map". [Only for future support to submapping,etc.]
 			) = 0;
 
 		/** Sends a velocity command to the robot.

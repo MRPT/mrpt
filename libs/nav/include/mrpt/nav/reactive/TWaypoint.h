@@ -31,6 +31,9 @@ namespace mrpt
 		  * of the robot at this waypoint. Some navigator implementations may ignore 
 		  * this preferred heading anyway, read the docs of each implementation to find it out. */
 		double  target_heading;
+
+		std::string target_frame_id; //!< (Default="map") Frame ID in which target is given. Optional, use only for submapping applications.
+
 		double  allowed_distance; //!< [Must be set by the user] How close should the robot get to this waypoint for it to be considered reached.
 
 		/** [Default=true] Whether it is allowed to the navigator to proceed to a more advanced waypoint 
@@ -39,8 +42,6 @@ namespace mrpt
 		  * ultimate goal and hence not subject to be skipped.
 		  */
 		bool    allow_skip;
-
-		int counter_seen_reachable; //!< (Initialized to 0 automatically) How many times this waypoint has been seen as "reachable" before it being the current active waypoint.
 
 		bool isValid() const; //!< Check whether all the minimum mandatory fields have been filled by the user.
 		TWaypoint(); //!< Ctor with default values
@@ -85,6 +86,7 @@ namespace mrpt
 		bool reached; //!< Whether this waypoint has been reached already (to within the allowed distance as per user specifications) or skipped.
 		bool skipped; //!< If `reached==true` this boolean tells whether the waypoint was physically reached (false) or marked as reached because it was skipped (true).
 		mrpt::system::TTimeStamp  timestamp_reach; //!< Timestamp of when this waypoint was reached. (Default=INVALID_TIMESTAMP means not reached so far)
+		int counter_seen_reachable; //!< (Initialized to 0 automatically) How many times this waypoint has been seen as "reachable" before it being the current active waypoint.
 
 
 		TWaypointStatus();
