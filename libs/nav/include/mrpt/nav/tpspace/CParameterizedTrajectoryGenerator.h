@@ -222,6 +222,7 @@ namespace nav
 
 		/** To be invoked by the navigator *before* each navigation step, to let the PTG to react to changing dynamic conditions. * \sa onNewNavDynamicState(), m_nav_dyn_state  */
 		void updateNavDynamicState(const TNavDynamicState &newState);
+		const TNavDynamicState & getCurrentNavDynamicState() const { return m_nav_dyn_state; }
 
 		static std::string OUTPUT_DEBUG_PATH_PREFIX; //!< The path used as defaul output in, for example, debugDumpInFiles. (Default="./reactivenav.logs/")
 
