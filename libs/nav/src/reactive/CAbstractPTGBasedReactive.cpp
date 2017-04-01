@@ -802,6 +802,7 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 	cm.props["target_k"] = target_k;
 	cm.props["target_d_norm"] = target_d_norm;
 	cm.props["move_k"] = move_k;
+	double & move_cur_d = cm.props["move_cur_d"] = 0;  // current robot path normalized distance over path (0 unless in a NOP cmd)
 	cm.props["is_PTG_cont"] = this_is_PTG_continuation ? 1 : 0;
 	cm.props["num_paths"] = in_TPObstacles.size();
 	cm.props["WS_target_x"] = WS_Target.x;
@@ -814,17 +815,13 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 	// Factor 1: Free distance for the chosen PTG and "alpha" in the TP-Space:
 	// ----------------------------------------------------------------------
 	double & colfree = cm.props["collision_free_distance"];
-	if (move_k == target_k && target_d_norm>.0 && in_TPObstacles[move_k]>target_d_norm+0.05 /*small margin*/) {
-		// If we head straight to target, don't count the possible collisions ahead:
-		colfree = mrpt::utils::saturate_val(in_TPObstacles[move_k] / (target_d_norm + 0.05 /* give a minimum margin */), 0.0, 1.0);
-	}
-	else {
-		// Normal case: distance to collision:
-		colfree = in_TPObstacles[move_k];
-	}
+	
+	// distance to collision:
+	colfree     = in_TPObstacles[move_k];  // we'll next substract here the already-traveled distance, for NOP motion candidates.
 
 	// Special case for NOP motion cmd:
 	// consider only the empty space *after* the current robot pose, which is not at the origin.
+
 	if (this_is_PTG_continuation)
 	{
 		int cur_k=0;
@@ -923,6 +920,9 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 		if (colfree < 0.99) {
 			colfree -= cur_norm_d;
 		}
+
+		// Save estimated robot pose over path as a parameter for scores:
+		move_cur_d = cur_norm_d;
 	}
 
 	// Factor4: Decrease in euclidean distance between (x,y) and the target:
@@ -930,7 +930,7 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 	cm.props["dist_eucl_final"] = std::hypot(WS_Target.x- pose.x, WS_Target.y- pose.y);
 
 
-	// Use PTG clearance methods to evaluate the real-world (WorkSpace) minimum distance to target:
+	// dist_eucl_min: Use PTG clearance methods to evaluate the real-world (WorkSpace) minimum distance to target:
 	{
 		typedef std::map<double, double> map_d2d_t;
 		map_d2d_t pathDists;
