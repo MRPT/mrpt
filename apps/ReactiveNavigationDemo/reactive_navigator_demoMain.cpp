@@ -1057,8 +1057,8 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 				const int selected_k = is_NOP_op ? lfr.ptg_last_k_NOP : ptg->alpha2index( lfr.infoPerPTG[lfr.nSelectedPTG].desiredDirection );
 				float max_dist = ptg->getRefDistance();
 				gl_robot_ptg_prediction->clear();
-				ptg->updateCurrentRobotVel(lfr.ptg_last_curRobotVelLocal);
-				ptg->setRelativeTarget( mrpt::math::TPose2D(lfr.WS_target_relative.x, lfr.WS_target_relative.y,.0));
+
+				ptg->updateNavDynamicState(lfr.ptg_last_navDynState);
 
 				ptg->renderPathAsSimpleLine(selected_k,*gl_robot_ptg_prediction,0.10, max_dist);
 				gl_robot_ptg_prediction->setColor_u8( mrpt::utils::TColor(0xff,0x00,0x00) );
