@@ -368,6 +368,14 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			// No delays model: poses to their default values.
 		}
 
+
+		if (m_navigationParams->target_frame_id!=m_curPoseVel.pose_frame_id)
+		{
+			// TODO: Support submapping navigation. Call:
+			// m_frame_tf->lookupTransform(...);
+			THROW_EXCEPTION_FMT("Different frame_id's are not supported yet!: target_frame_id=`%s` != pose_frame_id=`%s`", m_navigationParams->target_frame_id.c_str(), m_curPoseVel.pose_frame_id.c_str());
+		}
+
 		const TPose2D relTarget = TPose2D(CPose2D(m_navigationParams->target) - (CPose2D(m_curPoseVel.pose) + relPoseVelCmd));
 		const double relTargetDist = ::hypot(relTarget.x, relTarget.y);
 
@@ -437,28 +445,37 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 					m_lastSentVelCmd.tim_send_cmd_vel,
 					tim_changeSpeed_avr.getLastOutput());
 
-			CPose3D robot_pose3d_at_send_cmd;
-			bool valid_pose;
+			// Note: we use (uncorrected) raw odometry as basis to the following calculation since it's normally 
+			// smoother than particle filter-based localization data, more accurate in the middle/long term, 
+			// but not in the short term:
+			MRPT_TODO("Write a CPose2DInterpolator class");
+			CPose3D robot_odom3d_at_send_cmd, robot_pose3d_at_send_cmd;
+			bool valid_odom, valid_pose;
+
+			m_latestOdomPoses.interpolate(tim_send_cmd_vel_corrected, robot_odom3d_at_send_cmd, valid_odom);
 			m_latestPoses.interpolate(tim_send_cmd_vel_corrected, robot_pose3d_at_send_cmd, valid_pose);
-			if (valid_pose)
+
+			if (valid_odom && valid_pose)
 			{
 				const CPose2D robot_pose_at_send_cmd = CPose2D(robot_pose3d_at_send_cmd);
+				const CPose2D robot_odom_at_send_cmd = CPose2D(robot_odom3d_at_send_cmd);
 
 				CParameterizedTrajectoryGenerator * ptg = getPTG(m_lastSentVelCmd.ptg_index);
 				ASSERT_(ptg!=nullptr);
 
 				const TPose2D relTarget_NOP = TPose2D(CPose2D(m_navigationParams->target) - robot_pose_at_send_cmd);
-				rel_pose_PTG_origin_wrt_sense_NOP = robot_pose_at_send_cmd - (CPose2D(m_curPoseVel.pose) + relPoseSense);
-				rel_cur_pose_wrt_last_vel_cmd_NOP = CPose2D(m_curPoseVel.pose) - robot_pose_at_send_cmd;
+				rel_pose_PTG_origin_wrt_sense_NOP = robot_odom_at_send_cmd - (CPose2D(m_curPoseVel.rawOdometry) + relPoseSense);
+				rel_cur_pose_wrt_last_vel_cmd_NOP = CPose2D(m_curPoseVel.rawOdometry) - robot_odom_at_send_cmd;
 
 				// Update PTG response to dynamic params:
+				MRPT_TODO("Make these two a single updateRobotNavStatus() or alike with a struct input argument");
 				ptg->updateCurrentRobotVel(m_lastSentVelCmd.poseVel.velLocal);
 				ptg->setRelativeTarget(relTarget_NOP);
 
 				if (fill_log_record)
 				{
 					newLogRec.additional_debug_msgs["rel_cur_pose_wrt_last_vel_cmd_NOP(interp)"] = rel_cur_pose_wrt_last_vel_cmd_NOP.asString();
-					newLogRec.additional_debug_msgs["robot_pose_at_send_cmd(interp)"] = robot_pose_at_send_cmd.asString();
+					newLogRec.additional_debug_msgs["robot_odom_at_send_cmd(interp)"] = robot_odom_at_send_cmd.asString();
 				}
 
 				ASSERT_(m_navigationParams);

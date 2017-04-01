@@ -31,7 +31,7 @@ namespace mrpt
 	public:
 		CRobot2NavInterfaceForSimulator_Holo(mrpt::kinematics::CVehicleSimul_Holo &simul) : m_simul(simul),m_simul_time_start(.0) {}
 	
-		bool getCurrentPoseAndSpeeds(mrpt::math::TPose2D &curPose, mrpt::math::TTwist2D &curVel, mrpt::system::TTimeStamp &timestamp, mrpt::math::TPose2D &curOdometry) MRPT_OVERRIDE
+		bool getCurrentPoseAndSpeeds(mrpt::math::TPose2D &curPose, mrpt::math::TTwist2D &curVel, mrpt::system::TTimeStamp &timestamp, mrpt::math::TPose2D &curOdometry, std::string &frame_id) MRPT_OVERRIDE
 		{
 			curPose = m_simul.getCurrentGTPose();
 			curVel  = m_simul.getCurrentGTVel();
@@ -98,7 +98,7 @@ namespace mrpt
 	public:
 		CRobot2NavInterfaceForSimulator_DiffDriven(mrpt::kinematics::CVehicleSimul_DiffDriven &simul) : m_simul(simul),m_simul_time_start(.0) {}
 	
-		bool getCurrentPoseAndSpeeds(mrpt::math::TPose2D &curPose, mrpt::math::TTwist2D &curVel, mrpt::system::TTimeStamp &timestamp,mrpt::math::TPose2D &curOdometry) MRPT_OVERRIDE
+		bool getCurrentPoseAndSpeeds(mrpt::math::TPose2D &curPose, mrpt::math::TTwist2D &curVel, mrpt::system::TTimeStamp &timestamp,mrpt::math::TPose2D &curOdometry, std::string &frame_id) MRPT_OVERRIDE
 		{
 			curPose = m_simul.getCurrentGTPose();
 			curVel  = m_simul.getCurrentGTVel();
