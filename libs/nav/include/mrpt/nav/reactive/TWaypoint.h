@@ -57,8 +57,9 @@ namespace mrpt
 
 		double outter_radius, inner_radius;
 		double outter_radius_non_skippable, inner_radius_non_skippable;
+		double outter_radius_reached, inner_radius_reached;
 		double heading_arrow_len;
-		mrpt::utils::TColor  color_regular, color_current_goal;
+		mrpt::utils::TColor  color_regular, color_current_goal, color_reached;
 		bool show_labels;
 	};
 
