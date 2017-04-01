@@ -51,7 +51,8 @@ void FrameTransformer<DIM>::sendTransform(
 	m_pose_edges_buffer[parent_frame][child_frame] = TF_TreeEdge(child_wrt_parent, timestamp);
 }
 
-MRPT_TODO("future work: allow graph traversal and do pose chain composition"); // We dont need to replicate the full functionality of ROS tf, though... just what we really need.
+// future work: allow graph traversal and do pose chain composition? 
+// We dont need to replicate the full functionality of ROS tf, though... just what we really need.
 
 template <int DIM>
 FrameLookUpStatus FrameTransformer<DIM>::lookupTransform(

@@ -137,7 +137,7 @@ namespace mrpt
 		/** Called whenever a new navigation has been started. Can be used to reset state variables, etc. */
 		virtual void onStartNewNavigation() = 0;
 
-		/** Call to the robot getCurrentPoseAndSpeeds() and updates members m_curPose,m_curVel and m_curVelLocal accordingly. 
+		/** Call to the robot getCurrentPoseAndSpeeds() and updates members m_curPoseVel accordingly.
 		  * If an error is returned by the user callback, first, it calls robot.stop() ,then throws an std::runtime_error exception. */
 		void updateCurrentPoseAndSpeeds();
 
@@ -164,6 +164,7 @@ namespace mrpt
 		{
 			mrpt::math::TPose2D  pose;
 			mrpt::math::TTwist2D velGlobal, velLocal;
+			mrpt::math::TPose2D  rawOdometry;  //!< raw odometry (frame does not match to "pose", but is expected to be smoother in the short term).
 			mrpt::system::TTimeStamp timestamp;
 			TRobotPoseVel();
 		};

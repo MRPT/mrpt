@@ -47,6 +47,7 @@ CAbstractNavigator::TRobotPoseVel::TRobotPoseVel() :
 	pose(0,0,0),
 	velGlobal(0,0,0),
 	velLocal(0,0,0),
+	rawOdometry(0,0,0),
 	timestamp(INVALID_TIMESTAMP)
 {
 }
@@ -347,7 +348,7 @@ void CAbstractNavigator::updateCurrentPoseAndSpeeds()
 
 	{
 		mrpt::utils::CTimeLoggerEntry tle(m_timlog_delays, "getCurrentPoseAndSpeeds()");
-		if (!m_robot.getCurrentPoseAndSpeeds(m_curPoseVel.pose, m_curPoseVel.velGlobal, m_curPoseVel.timestamp))
+		if (!m_robot.getCurrentPoseAndSpeeds(m_curPoseVel.pose, m_curPoseVel.velGlobal, m_curPoseVel.timestamp, m_curPoseVel.rawOdometry))
 		{
 			m_navigationState = NAV_ERROR;
 			try {
