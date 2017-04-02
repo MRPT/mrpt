@@ -247,14 +247,13 @@ namespace mrpt
 		/** Builds TP-Obstacles from Workspace obstacles for the given PTG.
 		  * "out_TPObstacles" is already initialized to the proper length and maximum collision-free distance for each "k" trajectory index.
 		  * Distances are in "pseudo-meters". They will be normalized automatically to [0,1] upon return. */
-		virtual void STEP3_WSpaceToTPSpace(const size_t ptg_idx,std::vector<double> &out_TPObstacles, mrpt::nav::ClearanceDiagram &out_clearance, const mrpt::poses::CPose2D &rel_pose_PTG_origin_wrt_sense, const bool eval_clearance) = 0;
+		virtual void STEP3_WSpaceToTPSpace(const size_t ptg_idx,std::vector<double> &out_TPObstacles, mrpt::nav::ClearanceDiagram &out_clearance, const mrpt::math::TPose2D &rel_pose_PTG_origin_wrt_sense, const bool eval_clearance) = 0;
 
 		/** Generates a pointcloud of obstacles, and the robot shape, to be saved in the logging record for the current timestep */
 		virtual void loggingGetWSObstaclesAndShape(CLogFileRecord &out_log) = 0;
 
 		/** Scores \a holonomicMovement */
-		void calc_move_candidate_scores(
-			TCandidateMovementPTG         & holonomicMovement,
+		void calc_move_candidate_scores(TCandidateMovementPTG         & holonomicMovement,
 			const std::vector<double>        & in_TPObstacles,
 			const mrpt::nav::ClearanceDiagram & in_clearance,
 			const mrpt::math::TPose2D  & WS_Target,
@@ -262,13 +261,13 @@ namespace mrpt
 			CLogFileRecord::TInfoPerPTG & log,
 			CLogFileRecord & newLogRec,
 			const bool this_is_PTG_continuation,
-			const mrpt::poses::CPose2D & relPoseVelCmd_NOP,
+			const mrpt::math::TPose2D &relPoseVelCmd_NOP,
 			const unsigned int ptg_idx4weights,
 			const mrpt::system::TTimeStamp tim_start_iteration);
 
 		/** Return the [0,1] velocity scale of raw PTG cmd_vel */
 		virtual double generate_vel_cmd(const TCandidateMovementPTG &in_movement, mrpt::kinematics::CVehicleVelCmdPtr &new_vel_cmd );
-		void STEP8_GenerateLogRecord(CLogFileRecord &newLogRec,const mrpt::math::TPose2D& relTarget,int nSelectedPTG, const mrpt::kinematics::CVehicleVelCmdPtr &new_vel_cmd, int nPTGs, const bool best_is_NOP_cmdvel, const mrpt::poses::CPose2D &rel_cur_pose_wrt_last_vel_cmd_NOP, const mrpt::poses::CPose2D &rel_pose_PTG_origin_wrt_sense_NOP, const double executionTimeValue, const double tim_changeSpeed, const mrpt::system::TTimeStamp &tim_start_iteration);
+		void STEP8_GenerateLogRecord(CLogFileRecord &newLogRec, const mrpt::math::TPose2D& relTarget, int nSelectedPTG, const mrpt::kinematics::CVehicleVelCmdPtr &new_vel_cmd, int nPTGs, const bool best_is_NOP_cmdvel, const math::TPose2D &rel_cur_pose_wrt_last_vel_cmd_NOP, const math::TPose2D &rel_pose_PTG_origin_wrt_sense_NOP, const double executionTimeValue, const double tim_changeSpeed, const mrpt::system::TTimeStamp &tim_start_iteration);
 		void preDestructor(); //!< To be called during children destructors to assure thread-safe destruction, and free of shared objects.
 		virtual void onStartNewNavigation() MRPT_OVERRIDE;
 
@@ -293,11 +292,10 @@ namespace mrpt
 		std::vector<TInfoPerPTG> m_infoPerPTG; //!< Temporary buffers for working with each PTG during a navigationStep()
 		mrpt::system::TTimeStamp m_infoPerPTG_timestamp;
 
-		void build_movement_candidate(
-			CParameterizedTrajectoryGenerator * ptg,
+		void build_movement_candidate(CParameterizedTrajectoryGenerator * ptg,
 			const size_t indexPTG,
 			const mrpt::math::TPose2D &relTarget,
-			const mrpt::poses::CPose2D &rel_pose_PTG_origin_wrt_sense,
+			const mrpt::math::TPose2D &rel_pose_PTG_origin_wrt_sense,
 			TInfoPerPTG &ipf,
 			TCandidateMovementPTG &holonomicMovement,
 			CLogFileRecord &newLogRec,
@@ -305,7 +303,7 @@ namespace mrpt
 			mrpt::nav::CAbstractHolonomicReactiveMethod *holoMethod,
 			const mrpt::system::TTimeStamp tim_start_iteration,
 			const TNavigationParams &navp = TNavigationParams(),
-			const mrpt::poses::CPose2D &relPoseVelCmd_NOP = mrpt::poses::CPose2D()
+			const mrpt::math::TPose2D &relPoseVelCmd_NOP = mrpt::poses::CPose2D()
 		);
 
 		struct NAV_IMPEXP TSentVelCmd

@@ -45,7 +45,7 @@ namespace poses
 		explicit inline CPoint3D(const mrpt::math::CArrayDouble<3> &xyz) : m_coords(xyz) { }
 
 		/** Constructor from an CPoint2D object. */
-		CPoint3D( const CPoint2D &p);
+		explicit CPoint3D( const CPoint2D &p);
 
 		/** Constructor from an CPose3D object. */
 		explicit CPoint3D( const CPose3D &p);
@@ -54,7 +54,7 @@ namespace poses
 		explicit CPoint3D( const CPose2D &p);
 
 		/** Constructor from lightweight object. */
-		inline CPoint3D(const mrpt::math::TPoint3D &p) { m_coords[0]=p.x; m_coords[1]=p.y; m_coords[2]=p.z; }
+		inline explicit CPoint3D(const mrpt::math::TPoint3D &p) { m_coords[0]=p.x; m_coords[1]=p.y; m_coords[2]=p.z; }
 
 		/** Returns this point as seen from "b", i.e. result = this - b */
 		CPoint3D  operator - (const CPose3D& b) const;

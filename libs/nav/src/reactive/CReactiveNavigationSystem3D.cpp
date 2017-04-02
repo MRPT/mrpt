@@ -250,11 +250,13 @@ void CReactiveNavigationSystem3D::STEP3_WSpaceToTPSpace(
 	const size_t ptg_idx,
 	std::vector<double> &out_TPObstacles,
 	mrpt::nav::ClearanceDiagram &out_clearance,
-	const mrpt::poses::CPose2D &rel_pose_PTG_origin_wrt_sense,
+	const mrpt::math::TPose2D &rel_pose_PTG_origin_wrt_sense_,
 	const bool eval_clearance)
 {
 	ASSERT_EQUAL_(m_WS_Obstacles_inlevels.size(), m_robotShape.size());
 	ASSERT_(!m_ptgmultilevel.empty() && m_ptgmultilevel.begin()->PTGs.size()==m_robotShape.size());
+
+	const mrpt::poses::CPose2D rel_pose_PTG_origin_wrt_sense(rel_pose_PTG_origin_wrt_sense_);
 
 	for (size_t j=0;j<m_robotShape.size();j++)
 	{

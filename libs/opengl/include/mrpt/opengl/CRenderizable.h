@@ -70,7 +70,9 @@ namespace mrpt
 			inline bool isShowNameEnabled() const { return m_show_name; }	//!< \sa enableShowName
 
 			CRenderizable& setPose( const mrpt::poses::CPose3D &o );	//!< Set the 3D pose from a mrpt::poses::CPose3D object (return a ref to this)
+			CRenderizable& setPose( const mrpt::poses::CPose2D &o );	//!< Set the 3D pose from a mrpt::poses::CPose3D object (return a ref to this)
 			CRenderizable& setPose( const mrpt::math::TPose3D &o );	//!< Set the 3D pose from a  mrpt::math::TPose3D object (return a ref to this)
+			CRenderizable& setPose( const mrpt::math::TPose2D &o );	//!< Set the 3D pose from a  mrpt::math::TPose3D object (return a ref to this)
 			CRenderizable& setPose( const mrpt::poses::CPoint3D &o );	//!< Set the 3D pose from a mrpt::poses::CPose3D object (return a ref to this)
 			CRenderizable& setPose( const mrpt::poses::CPoint2D &o );	//!< Set the 3D pose from a mrpt::poses::CPose3D object (return a ref to this)
 

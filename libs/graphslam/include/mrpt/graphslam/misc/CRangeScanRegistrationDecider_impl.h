@@ -78,7 +78,7 @@ void CRangeScanRegistrationDecider<GRAPH_t>::getICPEdge(
 	// If given, use initial_pose_in as a first guess for the ICP
 	mrpt::poses::CPose3D initial_pose;
 	if (initial_pose_in) {
-		initial_pose = *initial_pose_in;
+		initial_pose = mrpt::poses::CPose3D(*initial_pose_in);
 	}
 
 	mrpt::poses::CPose3DPDFPtr pdf = params.icp.Align3D(

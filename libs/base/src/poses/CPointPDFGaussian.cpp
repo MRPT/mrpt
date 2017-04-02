@@ -95,9 +95,7 @@ void  CPointPDFGaussian::readFromStream(mrpt::utils::CStream &in,int version)
 	{
 	case 0:
 		{
-			CPoint3D m;
-			in >> m;
-			mean = TPoint3D(m);
+			in >> mean;
 
 			CMatrix c;
 			in >> c; cov = c.cast<double>();

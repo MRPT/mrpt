@@ -19,7 +19,7 @@ namespace poses
 	DEFINE_SERIALIZABLE_PRE( CPose2D )
 
 	/** A class used to store a 2D pose, including the 2D coordinate point and a heading (phi) angle.
-	 *  Use this class instead of lightweight mrpt::math::TPose2D when pose/point composition is to be called 
+	 *  Use this class instead of lightweight mrpt::math::TPose2D when pose/point composition is to be called
 	 *  multiple times with the same pose, since this class caches calls to expensive trigronometric functions.
 	 *
 	 *  For a complete description of Points/Poses, see mrpt::poses::CPoseOrPoint, or refer
@@ -66,13 +66,13 @@ namespace poses
 		 CPose2D(const double x,const double y,const double phi);
 
 		 /** Constructor from a CPoint2D object. */
-		 CPose2D(const CPoint2D &);
+		 explicit CPose2D(const CPoint2D &);
 
 		 /** Aproximation!! Avoid its use, since information is lost. */
 		 explicit CPose2D(const CPose3D &);
 
 		 /** Constructor from lightweight object. */
-		 CPose2D(const mrpt::math::TPose2D &);
+		 explicit CPose2D(const mrpt::math::TPose2D &);
 
 		 /** Constructor from CPoint3D with information loss. */
 		 explicit CPose2D(const CPoint3D &);

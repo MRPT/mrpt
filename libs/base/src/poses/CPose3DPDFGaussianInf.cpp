@@ -152,7 +152,7 @@ void  CPose3DPDFGaussianInf::copyFrom(const CPosePDF &o)
 	{	// cov is already inverted, but it's a 2D pose:
 		const CPosePDFGaussianInf *ptr = static_cast<const CPosePDFGaussianInf*>(&o);
 
-		mean = ptr->mean;
+		mean = CPose3D(ptr->mean);
 
 		// 3x3 inv_cov -> 6x6 inv_cov
 		cov_inv.zeros();
