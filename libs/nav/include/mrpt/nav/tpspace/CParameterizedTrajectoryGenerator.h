@@ -54,6 +54,7 @@ namespace nav
 	 *	- 15/SEP/2005: Totally rewritten again, for integration into MRPT Applications Repository.
 	 *	- 19/JUL/2009: Simplified to use only STL data types, and created the class factory interface.
 	 *	- MAY/2016: Refactored into CParameterizedTrajectoryGenerator, CPTG_DiffDrive_CollisionGridBased, PTG classes renamed.
+	 *	- 2016-2017: Many features added to support "PTG continuation", dynamic paths depending on vehicle speeds, etc.
 	 *
 	 *  \ingroup nav_tpspace
 	 */
@@ -65,7 +66,6 @@ namespace nav
 	public:
 		CParameterizedTrajectoryGenerator(); //!< Default ctor. Must call `loadFromConfigFile()` before initialization
 		virtual ~CParameterizedTrajectoryGenerator() //!<  Destructor 
-
 		{ }
 
 		/** The class factory for creating a PTG from a list of parameters in a section of a given config file (physical file or in memory).
@@ -119,10 +119,25 @@ namespace nav
 		  * Can be queried to determine the expected kinematic interface of the PTG.  */
 		virtual mrpt::kinematics::CVehicleVelCmdPtr getSupportedKinematicVelocityCommand() const = 0;
 
-		/** Callback whenever we have new info about the velocity state of the robot right now. May be used by some PTGs and discarded by others.
-		  * \param[in] curVelLocal The current robot velocities in the local frame of reference (+X: forwards, omega: clockwise rotation) */
-		virtual void updateCurrentRobotVel(const mrpt::math::TTwist2D &curVelLocal) = 0;
+		/** Dynamic state that may affect the PTG path parameterization. \ingroup nav_reactive  */
+		struct NAV_IMPEXP TNavDynamicState
+		{
+			mrpt::math::TTwist2D curVelLocal; //!< Current vehicle velocity (local frame of reference)
+			mrpt::math::TPose2D  relTarget;   //!< Current relative target location
+			double               targetRelSpeed; //!< Desired relative speed [0,1] at target. Default=0
 
+			TNavDynamicState();
+			bool operator ==(const TNavDynamicState& o) const;
+			inline bool operator !=(const TNavDynamicState& o)  const { return !(*this==o); }
+			void writeToStream(mrpt::utils::CStream &out) const;
+			void readFromStream(mrpt::utils::CStream &in);
+		};
+
+	protected:
+		/** Invoked when `m_nav_dyn_state` has changed; gives the PTG the opportunity to react and parameterize paths depending on the instantaneous conditions */
+		virtual void onNewNavDynamicState() = 0;
+
+	public:
 		virtual void setRefDistance(const double refDist) { refDistance=refDist; }
 
 		/** Access path `k` ([0,N-1]=>[-pi,pi] in alpha): number of discrete "steps" along the trajectory.
@@ -177,6 +192,11 @@ namespace nav
 		  * Default implementation returns "false". */
 		virtual bool supportVelCmdNOP() const;
 
+		/** Returns true if this PTG takes into account the desired velocity at target. \sa updateNavDynamicState() */
+		virtual bool supportSpeedAtTarget() const {
+			return false;
+		}
+
 		/** Only for PTGs supporting supportVelCmdNOP(): this is the maximum time (in seconds) for which the path
 		  * can be followed without re-issuing a new velcmd. Note that this is only an absolute maximum duration, 
 		  * navigation implementations will check for many other conditions. Default method in the base virtual class returns 0. 
@@ -199,6 +219,10 @@ namespace nav
 		virtual double evalClearanceToRobotShape(const double ox, const double oy) const = 0;
 
 		/** @} */  // --- end of virtual methods
+
+		/** To be invoked by the navigator *before* each navigation step, to let the PTG to react to changing dynamic conditions. * \sa onNewNavDynamicState(), m_nav_dyn_state  */
+		void updateNavDynamicState(const TNavDynamicState &newState);
+		const TNavDynamicState & getCurrentNavDynamicState() const { return m_nav_dyn_state; }
 
 		static std::string OUTPUT_DEBUG_PATH_PREFIX; //!< The path used as defaul output in, for example, debugDumpInFiles. (Default="./reactivenav.logs/")
 
@@ -289,6 +313,7 @@ protected:
 		uint16_t  m_alphaValuesCount; //!< The number of discrete values for "alpha" between -PI and +PI.
 		double    m_score_priority;
 		uint16_t  m_clearance_num_points; //!< Number of steps for the piecewise-constant approximation of clearance from TPS distances [0,1] (Default=5) \sa updateClearance()
+		TNavDynamicState m_nav_dyn_state; //!< Updated before each nav step by 
 
 		bool      m_is_initialized;
 

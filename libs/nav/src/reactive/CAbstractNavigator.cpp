@@ -24,10 +24,11 @@ const double PREVIOUS_POSES_MAX_AGE = 20; // seconds
 // Ctor: CAbstractNavigator::TNavigationParams
 CAbstractNavigator::TNavigationParams::TNavigationParams() :
 	target(0,0,0),
+	target_frame_id("map"),
 	targetAllowedDistance(0.5),
 	targetIsRelative(false),
-	targetIsIntermediaryWaypoint(false),
-	enableApproachSlowDown(true)
+	targetDesiredRelSpeed(.0),
+	targetIsIntermediaryWaypoint(false)
 {
 }
 
@@ -36,10 +37,11 @@ std::string CAbstractNavigator::TNavigationParams::getAsText() const
 {
 	string s;
 	s+= mrpt::format("navparams.target = (%.03f,%.03f,%.03f deg)\n", target.x, target.y,target.phi );
+	s+= mrpt::format("navparams.target_frame_id = \"%s\"\n", target_frame_id.c_str() );
 	s+= mrpt::format("navparams.targetAllowedDistance = %.03f\n", targetAllowedDistance );
 	s+= mrpt::format("navparams.targetIsRelative = %s\n", targetIsRelative ? "YES":"NO");
 	s+= mrpt::format("navparams.targetIsIntermediaryWaypoint = %s\n", targetIsIntermediaryWaypoint ? "YES":"NO");
-	s+= mrpt::format("navparams.enableApproachSlowDown = %s\n", enableApproachSlowDown ? "YES" : "NO");
+	s+= mrpt::format("navparams.targetDesiredRelSpeed = %.02f\n", targetDesiredRelSpeed);
 	return s;
 }
 
@@ -47,7 +49,9 @@ CAbstractNavigator::TRobotPoseVel::TRobotPoseVel() :
 	pose(0,0,0),
 	velGlobal(0,0,0),
 	velLocal(0,0,0),
-	timestamp(INVALID_TIMESTAMP)
+	rawOdometry(0,0,0),
+	timestamp(INVALID_TIMESTAMP),
+	pose_frame_id()
 {
 }
 
@@ -59,14 +63,17 @@ CAbstractNavigator::CAbstractNavigator(CRobot2NavInterface &react_iterf_impl) :
 	m_lastNavigationState ( IDLE ),
 	m_navigationEndEventSent(false),
 	m_navigationState     ( IDLE ),
-	m_navigationParams    ( NULL ),
+	m_navigationParams    ( nullptr ),
 	m_robot               ( react_iterf_impl ),
+	m_frame_tf            (nullptr),
 	m_curPoseVel          (),
 	m_last_curPoseVelUpdate_robot_time(-1e9),
 	m_latestPoses         (),
+	m_latestOdomPoses     (),
 	m_timlog_delays       (true, "CAbstractNavigator::m_timlog_delays")
 {
 	m_latestPoses.setInterpolationMethod(mrpt::poses::CPose3DInterpolator::imLinear2Neig);
+	m_latestOdomPoses.setInterpolationMethod(mrpt::poses::CPose3DInterpolator::imLinear2Neig);
 	this->setVerbosityLevel(mrpt::utils::LVL_DEBUG);
 }
 
@@ -120,6 +127,11 @@ void CAbstractNavigator::resetNavError()
 	MRPT_LOG_DEBUG("CAbstractNavigator::resetNavError() called.");
 	if ( m_navigationState == NAV_ERROR )
 		m_navigationState  = IDLE;
+}
+
+void CAbstractNavigator::setFrameTF(mrpt::poses::FrameTransformer<2>* frame_tf)
+{
+	m_frame_tf = frame_tf;
 }
 
 void CAbstractNavigator::loadConfigFile(const mrpt::utils::CConfigFileBase & c)
@@ -195,9 +207,7 @@ void CAbstractNavigator::navigationStep()
 				if (m_navigationParams)
 					MRPT_LOG_DEBUG(mrpt::format("[CAbstractNavigator::navigationStep()] Navigation Params:\n%s\n", m_navigationParams->getAsText().c_str() ));
 
-				m_robot.startWatchdog( 1000 );	// Watchdog = 1 seg
-				m_latestPoses.clear(); // Clear cache of last poses.
-				onStartNewNavigation();
+				internal_onStartNewNavigation();
 			}
 
 			// Have we just started the navigation?
@@ -298,7 +308,12 @@ void CAbstractNavigator::doEmergencyStop( const std::string &msg )
 
 void CAbstractNavigator::navigate(const CAbstractNavigator::TNavigationParams *params )
 {
+	MRPT_START;
+
 	mrpt::synch::CCriticalSectionLocker csl(&m_nav_cs);
+
+	ASSERT_(params!=nullptr);
+	ASSERT_(params->targetDesiredRelSpeed >= .0 && params->targetDesiredRelSpeed <= 1.0);
 
 	m_navigationEndEventSent = false;
 
@@ -326,6 +341,8 @@ void CAbstractNavigator::navigate(const CAbstractNavigator::TNavigationParams *p
 	// Reset the bad navigation alarm:
 	m_badNavAlarm_minDistTarget = std::numeric_limits<double>::max();
 	m_badNavAlarm_lastMinDistTime = mrpt::system::getCurrentTime();
+
+	MRPT_END;
 }
 
 void CAbstractNavigator::updateCurrentPoseAndSpeeds()
@@ -347,7 +364,8 @@ void CAbstractNavigator::updateCurrentPoseAndSpeeds()
 
 	{
 		mrpt::utils::CTimeLoggerEntry tle(m_timlog_delays, "getCurrentPoseAndSpeeds()");
-		if (!m_robot.getCurrentPoseAndSpeeds(m_curPoseVel.pose, m_curPoseVel.velGlobal, m_curPoseVel.timestamp))
+		m_curPoseVel.pose_frame_id = std::string("map"); // default
+		if (!m_robot.getCurrentPoseAndSpeeds(m_curPoseVel.pose, m_curPoseVel.velGlobal, m_curPoseVel.timestamp, m_curPoseVel.rawOdometry, m_curPoseVel.pose_frame_id))
 		{
 			m_navigationState = NAV_ERROR;
 			try {
@@ -362,15 +380,31 @@ void CAbstractNavigator::updateCurrentPoseAndSpeeds()
 	m_curPoseVel.velLocal.rotate(-m_curPoseVel.pose.phi);
 
 	m_last_curPoseVelUpdate_robot_time = robot_time_secs;
+	const bool changed_frame_id = (m_last_curPoseVelUpdate_pose_frame_id != m_curPoseVel.pose_frame_id);
+	m_last_curPoseVelUpdate_pose_frame_id = m_curPoseVel.pose_frame_id;
+
+	if (changed_frame_id)
+	{
+		// If frame changed, clear past poses. This could be improved by requesting 
+		// the transf between the two frames, but it's probably not worth.
+		m_latestPoses.clear();
+		m_latestOdomPoses.clear();
+	}
 
 	// Append to list of past poses:
 	m_latestPoses.insert(m_curPoseVel.timestamp, mrpt::poses::CPose3D(mrpt::math::TPose3D(m_curPoseVel.pose)));
+	m_latestOdomPoses.insert(m_curPoseVel.timestamp, mrpt::poses::CPose3D(mrpt::math::TPose3D(m_curPoseVel.rawOdometry)));
 
 	// Purge old ones:
-	while (m_latestPoses.size()>1 &&
+	while (m_latestPoses.size() > 1 &&
 		mrpt::system::timeDifference(m_latestPoses.begin()->first, m_latestPoses.rbegin()->first) > PREVIOUS_POSES_MAX_AGE)
 	{
 		m_latestPoses.erase(m_latestPoses.begin());
+	}
+	while (m_latestOdomPoses.size() > 1 &&
+		mrpt::system::timeDifference(m_latestOdomPoses.begin()->first, m_latestOdomPoses.rbegin()->first) > PREVIOUS_POSES_MAX_AGE)
+	{
+		m_latestOdomPoses.erase(m_latestOdomPoses.begin());
 	}
 }
 
@@ -406,4 +440,12 @@ void CAbstractNavigator::TAbstractNavigatorParams::saveToConfigFile(mrpt::utils:
 bool CAbstractNavigator::checkHasReachedTarget(const double targetDist) const
 {
 	return (targetDist < m_navigationParams->targetAllowedDistance);
+}
+
+void CAbstractNavigator::internal_onStartNewNavigation()
+{
+	m_robot.startWatchdog(1000);	// Watchdog = 1 seg
+	m_latestPoses.clear(); // Clear cache of last poses.
+	m_latestOdomPoses.clear();
+	onStartNewNavigation();
 }
