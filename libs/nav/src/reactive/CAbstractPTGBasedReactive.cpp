@@ -380,6 +380,9 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		ptg_dynState.curVelLocal = m_curPoseVel.velLocal;
 		ptg_dynState.relTarget = relTarget;
 		ptg_dynState.targetRelSpeed = m_navigationParams->targetDesiredRelSpeed;
+
+		newLogRec.navDynState = ptg_dynState;
+
 		for (size_t i = 0; i < nPTGs; i++) {
 			getPTG(i)->updateNavDynamicState(ptg_dynState);
 		}
