@@ -150,7 +150,7 @@ navlog_viewer_GUI_designDialog::navlog_viewer_GUI_designDialog(wxWindow* parent,
     wxFlexGridSizer* FlexGridSizer6;
     wxFlexGridSizer* FlexGridSizer1;
     wxFlexGridSizer* FlexGridSizer11;
-    
+
     Create(parent, wxID_ANY, _("Navigation log viewer - Part of the MRPT project"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE, _T("wxID_ANY"));
     Move(wxPoint(20,20));
     FlexGridSizer1 = new wxFlexGridSizer(1, 1, 0, 0);
@@ -182,7 +182,7 @@ navlog_viewer_GUI_designDialog::navlog_viewer_GUI_designDialog(wxWindow* parent,
     edLogFile = new wxTextCtrl(Panel_AUX, ID_TEXTCTRL1, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY, wxDefaultValidator, _T("ID_TEXTCTRL1"));
     FlexGridSizer10->Add(edLogFile, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
     FlexGridSizer3->Add(FlexGridSizer10, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
-    wxString __wxRadioBoxChoices_1[3] = 
+    wxString __wxRadioBoxChoices_1[3] =
     {
     	_("TP-Obstacles only"),
     	_("+ final scores"),
@@ -262,7 +262,7 @@ navlog_viewer_GUI_designDialog::navlog_viewer_GUI_designDialog(wxWindow* parent,
     mnuMoreOps.Append(mnuSaveScoreMatrix);
     FlexGridSizer1->Fit(this);
     FlexGridSizer1->SetSizeHints(this);
-    
+
     Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OnbtnLoadClick);
     Connect(ID_BUTTON2,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OnbtnHelpClick);
     Connect(ID_BUTTON3,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OnbtnQuitClick);
@@ -683,7 +683,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 
 						// PTG origin:
 						// enable delays model?
-						mrpt::poses::CPose2D ptg_origin = (cbList->IsChecked(m_cbIdx_ShowDelays)) ? log.relPoseVelCmd : CPose2D();
+						const mrpt::math::TPose2D ptg_origin = (cbList->IsChecked(m_cbIdx_ShowDelays)) ? log.relPoseVelCmd : mrpt::math::TPose2D(0,0,0);
 
 						// "NOP cmd" case:
 						if (log.ptg_index_NOP >= 0) {
@@ -1488,7 +1488,7 @@ void navlog_viewer_GUI_designDialog::OnmnuMatlabExportPaths(wxCommandEvent & eve
 	f << "% robot pose over time. Columns: [time curPoseAndVel, x,y,phi_rad,  odo_x,odo_y,odo_phi_rad]\n"
 		"robot_pose = [";
 	for (const auto &e : global_local_vel) {
-		f << (e.first - t_ref) << "," 
+		f << (e.first - t_ref) << ","
 			<< e.second.pose.x << "," << e.second.pose.y << "," << e.second.pose.phi << ", "
 			<< e.second.poseOdom.x << "," << e.second.poseOdom.y << "," << e.second.poseOdom.phi
 			<< " ; ";
