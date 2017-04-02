@@ -118,7 +118,7 @@ bool mrpt::scanmatching::leastSquareErrorRigidTransformation6DRANSAC(
 
 	out_inliers_idx = results.inliers_idx;
 	out_scale = results.scale;
-	out_transformation = results.transformation;
+	out_transformation = CPose3D(results.transformation);
 
 	return ret;
 }
@@ -131,7 +131,7 @@ bool mrpt::scanmatching::leastSquareErrorRigidTransformation(
 {
 	mrpt::math::TPose2D estPose;
 	const bool ret = mrpt::tfest::se2_l2(in_correspondences,estPose,out_estimateCovariance);
-	out_transformation = estPose;
+	out_transformation = CPose2D(estPose);
 	return ret;
 }
 

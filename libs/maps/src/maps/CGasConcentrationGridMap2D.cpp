@@ -198,7 +198,7 @@ bool  CGasConcentrationGridMap2D::internal_insertObservation(
 				const CObservationGasSensors::TObservationENose *it = &o->m_readings[insertionOptions.enose_id];
 
 				// Compute the 3D sensor pose in world coordinates:
-				sensorPose = CPose2D( CPose3D(robotPose2D) + it->eNosePoseOnTheRobot );
+				sensorPose = CPose2D( CPose3D(robotPose2D) + CPose3D(it->eNosePoseOnTheRobot) );
 
 				// Compute the sensor reading value (Volts):
 				if (insertionOptions.gasSensorType==0x0000){	//compute the mean
@@ -228,7 +228,7 @@ bool  CGasConcentrationGridMap2D::internal_insertObservation(
 			{
 				const CObservationGasSensors::TObservationENose *it = &o->m_readings[0];
 				// Compute the 3D sensor pose in world coordinates:
-				sensorPose = CPose2D( CPose3D(robotPose2D) + it->eNosePoseOnTheRobot );
+				sensorPose = CPose2D( CPose3D(robotPose2D) +CPose3D(it->eNosePoseOnTheRobot) );
 				sensorReading = it->readingsVoltage[0];
 			}
 

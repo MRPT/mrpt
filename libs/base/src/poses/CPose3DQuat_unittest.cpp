@@ -167,7 +167,7 @@ protected:
 		const CPoint3D  	p(x,y,z);
 
 		CPoint3D  p_minus_p1 = p - p1;
-		CPoint3D  p_minus_q1 = p - q1;
+		CPoint3D  p_minus_q1 = p - CPose3D(q1);
 
 		CPoint3D  p_rec = q1 + p_minus_q1;
 
@@ -187,7 +187,7 @@ protected:
 		CPose3DQuat 	q(x[0],x[1],x[2],CQuaternionDouble(x[3],x[4],x[5],x[6]));
 		q.quat().normalize();
 		const CPoint3D 		p(x[7+0],x[7+1],x[7+2]);
-		const CPoint3D pp = p-q;
+		const CPoint3D pp = p-CPose3D(q);
 		Y[0]=pp.x();
 		Y[1]=pp.y();
 		Y[2]=pp.z();
@@ -265,7 +265,7 @@ protected:
 	{
 		const CPose3D p1(x1,y1,z1,yaw1,pitch1,roll1);
 		const CPose3DQuat q1(p1);
-		const CPose3D p1r = q1;
+		const CPose3D p1r = CPose3D(q1);
 
 		EXPECT_NEAR(0, (p1.getHomogeneousMatrixVal()-q1.getHomogeneousMatrixVal()).array().abs().sum(), 1e-5) <<
 			"p1.getHomogeneousMatrixVal():\n" << p1.getHomogeneousMatrixVal() << endl <<

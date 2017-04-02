@@ -541,11 +541,11 @@ void  CMultiMetricMapPDF::saveCurrentPathEstimationToTextFile( const std::string
 	{
 		for (size_t i=0;i<it->d->robotPath.size();i++)
 		{
-			const CPose3D  &p = it->d->robotPath[i];
+			const mrpt::math::TPose3D  &p = it->d->robotPath[i];
 
 			os::fprintf(f,"%.04f %.04f %.04f %.04f %.04f %.04f ",
-				p.x(),p.y(),p.z(),
-				p.yaw(), p.pitch(), p.roll() );
+				p.x,p.y,p.z,
+				p.yaw, p.pitch, p.roll );
 		}
 		os::fprintf(f," %e\n", it->log_w );
 	}
