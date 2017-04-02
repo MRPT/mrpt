@@ -459,7 +459,7 @@ void  mrpt::topography::path_from_rtk_gps(
 				MRPT_CHECK_NORMAL_NUMBER( optimal_pose.quat().r() );
 
 				// Final vehicle pose:
-				const CPose3D veh_pose= optimal_pose;
+				const CPose3D veh_pose= CPose3D(optimal_pose);
 
 				// Add to the interpolator:
 				robot_path.insert( i->first, veh_pose );

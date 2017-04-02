@@ -683,7 +683,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 
 						// PTG origin:
 						// enable delays model?
-						const mrpt::math::TPose2D ptg_origin = (cbList->IsChecked(m_cbIdx_ShowDelays)) ? log.relPoseVelCmd : mrpt::math::TPose2D(0,0,0);
+						mrpt::math::TPose2D ptg_origin = (cbList->IsChecked(m_cbIdx_ShowDelays)) ? log.relPoseVelCmd : mrpt::math::TPose2D(0,0,0);
 
 						// "NOP cmd" case:
 						if (log.ptg_index_NOP >= 0) {
@@ -1188,10 +1188,10 @@ void navlog_viewer_GUI_designDialog::OnmnuMatlabPlotsSelected(wxCommandEvent& ev
         const CLogFileRecord * logptr = logsptr.pointer();
 
 		const auto robotPose = logptr->robotPoseLocalization;
-		CPose2D observationBasePose = robotPose;
+		CPose2D observationBasePose = CPose2D(robotPose);
 
 		if (cbList->IsChecked(m_cbIdx_ShowDelays))
-			observationBasePose = observationBasePose + logptr->relPoseSense;
+			observationBasePose = observationBasePose + CPose2D(logptr->relPoseSense);
 
 		f << format("dec=dec+1; if (dec>=dec_shps); drawRobotShape(rs,[%f %f %f]); dec=0; end\n",
 			robotPose.x, robotPose.y, robotPose.phi );
@@ -1199,7 +1199,7 @@ void navlog_viewer_GUI_designDialog::OnmnuMatlabPlotsSelected(wxCommandEvent& ev
         if (++decim_point_cnt>=DECIMATE_POINTS)
         {
             CSimplePointsMap pts;
-            pts.changeCoordinatesReference( logptr->WS_Obstacles, observationBasePose);
+			pts.changeCoordinatesReference( logptr->WS_Obstacles, CPose3D(observationBasePose));
 
             const std::vector<float> &pX = pts.getPointsBufferRef_x();
             const std::vector<float> &pY = pts.getPointsBufferRef_y();

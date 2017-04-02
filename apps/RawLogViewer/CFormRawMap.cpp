@@ -528,7 +528,7 @@ void CFormRawMap::OnbtnGenerateClick(wxCommandEvent& )
 			pathX.push_back( curPose.x() );
 			pathY.push_back( curPose.y() );
 			if ( last_tim != INVALID_TIMESTAMP )
-				robot_path.insert( last_tim, curPose );
+				robot_path.insert( last_tim, CPose3D(curPose) );
 		}
 
 

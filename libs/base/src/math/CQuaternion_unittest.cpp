@@ -45,7 +45,7 @@ protected:
 	{
 		CPose3D p1(0,0,0, YAW,PITCH,ROLL);
 		CPose3DQuat		q1(p1);
-		CPose3D			p2 = q1;
+		CPose3D			p2 = CPose3D(q1);
 
 		EXPECT_NEAR(0,(p1.getRotationMatrix()-p2.getRotationMatrix()).array().abs().sum(), 1e-4) <<
 			"ypr->quat->ypr failed with:" << endl

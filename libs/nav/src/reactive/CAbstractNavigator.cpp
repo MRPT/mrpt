@@ -325,13 +325,7 @@ void CAbstractNavigator::navigate(const CAbstractNavigator::TNavigationParams *p
 	if ( m_navigationParams->targetIsRelative )
 	{
 		this->updateCurrentPoseAndSpeeds();
-
-		const mrpt::poses::CPose2D relTarget(m_navigationParams->target);
-		mrpt::poses::CPose2D absTarget;
-		absTarget.composeFrom(m_curPoseVel.pose, relTarget);
-
-		m_navigationParams->target = mrpt::math::TPose2D(absTarget);
-
+		m_navigationParams->target = m_curPoseVel.pose + m_navigationParams->target;
 		m_navigationParams->targetIsRelative = false; // Now it's not relative
 	}
 

@@ -375,7 +375,7 @@ void Test_Kinect()
 						/* Cannot find a minimum number of matches, inconsistent parameters due to very reduced numberof matches,etc. */
 					}
 
-					const CPose3D relativePose = results.transformation;
+					const CPose3D relativePose = CPose3D(results.transformation);
 
 					str_status = mrpt::format("%d corrs | inliers: %d | rel.pose: %s ", int(corrs.size()), int(results.inliers_idx.size()), relativePose.asString().c_str() );
 					str_status2 = string( results.inliers_idx.size()==0 ? "LOST! Please, press 'r' to restart" : "" );

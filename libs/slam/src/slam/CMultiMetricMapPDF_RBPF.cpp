@@ -212,7 +212,7 @@ void  CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 		if (robotMovement2D.present())
 		{
 			robotActionSampler.setPosePDF( robotMovement2D->poseChange.get_ptr() );
-			motionModelMeanIncr = robotMovement2D->poseChange->getMeanVal();
+			motionModelMeanIncr = mrpt::poses::CPose3D(robotMovement2D->poseChange->getMeanVal());
 		}
 		else
 		{

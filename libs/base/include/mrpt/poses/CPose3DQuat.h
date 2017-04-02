@@ -440,6 +440,8 @@ namespace poses
 	/** Unary - operator: return the inverse pose "-p" (Note that is NOT the same than a pose with all its arguments multiplied by "-1") */
 	CPose3DQuat BASE_IMPEXP operator -(const CPose3DQuat &p);
 
+	bool BASE_IMPEXP operator==(const CPose3DQuat &p1,const CPose3DQuat &p2);
+	bool BASE_IMPEXP operator!=(const CPose3DQuat &p1,const CPose3DQuat &p2);
 
 
 	} // End of namespace
