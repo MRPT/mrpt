@@ -636,6 +636,10 @@ void ptgConfiguratorframe::OnbtnReloadParamsClick(wxCommandEvent& event)
 
 	ptg->initialize();
 
+	// PTG: Realize updated dynamical state (not from a real robot in this app,
+	// but already loaded from a config file in this app for debugging):
+	ptg->updateNavDynamicState( ptg->getCurrentNavDynamicState() );
+
 	// one-time GUI init for each PTG settings:
 	edIndexHighlightPath->SetRange(0, ptg->getPathCount() - 1);
 	slidPathHighlight->SetRange(0, ptg->getPathCount() - 1);

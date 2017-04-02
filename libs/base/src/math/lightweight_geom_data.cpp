@@ -63,7 +63,6 @@ TPose2D::TPose2D(const mrpt::poses::CPose2D &p):x(p.x()),y(p.y()),phi(p.phi())	{
 void TPose2D::asString(std::string &s) const {
 	s = mrpt::format("[%f %f %f]",x,y,mrpt::utils::RAD2DEG(phi));
 }
-
 void TPose2D::fromString(const std::string &s)
 {
 	CMatrixDouble  m;
@@ -72,6 +71,27 @@ void TPose2D::fromString(const std::string &s)
 	x = m.get_unsafe(0,0);
 	y = m.get_unsafe(0,1);
 	phi = DEG2RAD(m.get_unsafe(0,2));
+}
+mrpt::math::TPose2D mrpt::math::TPose2D::operator+(const mrpt::math::TPose2D & b) const
+{
+	const double A_cosphi = cos(this->phi), A_sinphi = sin(this->phi);
+	// Use temporary variables for the cases (A==this) or (B==this)
+	const double new_x = this->x + b.x * A_cosphi - b.y * A_sinphi;
+	const double new_y = this->y + b.x * A_cosphi + b.y * A_sinphi;
+	const double new_phi = mrpt::math::wrapToPi(this->phi + b.phi);
+
+	return mrpt::math::TPose2D(new_x, new_y, new_phi);
+}
+
+mrpt::math::TPose2D mrpt::math::TPose2D::operator-(const mrpt::math::TPose2D & b) const
+{
+	const double B_cosphi = cos(b.phi), B_sinphi = sin(b.phi);
+
+	const double new_x = (this->x - b.x) * B_cosphi + (this->y - b.y) * B_sinphi;
+	const double new_y = -(this->x - b.x) * B_sinphi + (this->y - b.y) * B_cosphi;
+	const double new_phi = mrpt::math::wrapToPi(this->phi - b.phi);
+
+	return mrpt::math::TPose2D(new_x, new_y, new_phi);
 }
 
 // ----
@@ -95,6 +115,17 @@ void TTwist2D::rotate(const double ang)
 	vx = nvx;
 	vy = nvy;
 }
+bool TTwist2D::operator ==(const TTwist2D&o) const
+{
+	return vx == o.vx && vy == o.vy && omega == o.omega;
+}
+bool TTwist2D::operator !=(const TTwist2D&o) const {
+	return !(*this==o);
+}
+mrpt::math::TPose2D TTwist2D::operator*(const double dt) const
+{
+	return mrpt::math::TPose2D(vx*dt,vy*dt,omega*dt);
+}
 
 // ----
 void TTwist3D::asString(std::string &s) const {
@@ -108,7 +139,7 @@ void TTwist3D::fromString(const std::string &s)
 	for (int i=0;i<3;i++) (*this)[i] = m.get_unsafe(0,i);
 	for (int i=0;i<3;i++) (*this)[3+i] = DEG2RAD(m.get_unsafe(0,3+i));
 }
-// Transform all 6 components for a change of reference frame from "A" to 
+// Transform all 6 components for a change of reference frame from "A" to
 // another frame "B" whose rotation with respect to "A" is given by `rot`. The translational part of the pose is ignored
 void TTwist3D::rotate(const mrpt::poses::CPose3D & rot)
 {
@@ -122,7 +153,13 @@ void TTwist3D::rotate(const mrpt::poses::CPose3D & rot)
 	wy=R(1,0)*t.wx+R(1,1)*t.wy+R(1,2)*t.wz;
 	wz=R(2,0)*t.wx+R(2,1)*t.wy+R(2,2)*t.wz;
 }
-
+bool TTwist3D::operator ==(const TTwist3D&o) const
+{
+	return vx == o.vx && vy == o.vy && vz == o.vz && wx == o.wx && wy == o.wy && wz == o.wz;
+}
+bool TTwist3D::operator !=(const TTwist3D&o) const {
+	return !(*this == o);
+}
 
 TPoint3D::TPoint3D(const TPoint2D &p):x(p.x),y(p.y),z(0.0)	{}
 TPoint3D::TPoint3D(const TPose2D &p):x(p.x),y(p.y),z(0.0)	{}
@@ -611,7 +648,7 @@ inline double isLeft( const mrpt::math::TPoint2D &P0, const mrpt::math::TPoint2D
 	return ( (P1.x - P0.x) * (P2.y - P0.y) - (P2.x -  P0.x) * (P1.y - P0.y) );
 }
 
-bool TPolygon2D::contains(const TPoint2D &P) const	
+bool TPolygon2D::contains(const TPoint2D &P) const
 {
 	int wn = 0;    // the  winding number counter
 
@@ -619,14 +656,14 @@ bool TPolygon2D::contains(const TPoint2D &P) const
 	const size_t n = this->size();
 	for (size_t i=0; i<n; i++) // edge from V[i] to  V[i+1]
 	{
-		if ((*this)[i].y <= P.y) 
+		if ((*this)[i].y <= P.y)
 		{
 			// start y <= P.y
 			if ((*this)[(i+1) % n].y  > P.y)      // an upward crossing
 				if (isLeft( (*this)[i], (*this)[(i+1)%n], P) > 0)  // P left of  edge
 					++wn;            // have  a valid up intersect
 	}
-	else 
+	else
 	{
 		// start y > P.y (no test needed)
 		if ((*this)[(i+1)%n].y  <= P.y)     // a downward crossing

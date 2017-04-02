@@ -412,7 +412,7 @@ class CMyReactInterface : public mrpt::nav::CRobot2NavInterfaceForSimulator_Diff
 public:
 	CVehicleSimul_DiffDriven        robotSim;
 
-	CMyReactInterface() : 
+	CMyReactInterface() :
 		CRobot2NavInterfaceForSimulator_DiffDriven(this->robotSim)
 	{
 	}
@@ -427,12 +427,13 @@ public:
 	CShortTermMemory				stm;
 	gui::CDisplayWindow3D			window;
 	COpenGLScenePtr					scene;
-	
-	bool getCurrentPoseAndSpeeds( mrpt::math::TPose2D &curPose, mrpt::math::TTwist2D &curVel, mrpt::system::TTimeStamp &timestamp) MRPT_OVERRIDE
+
+	bool getCurrentPoseAndSpeeds( mrpt::math::TPose2D &curPose, mrpt::math::TTwist2D &curVel, mrpt::system::TTimeStamp &timestamp, mrpt::math::TPose2D &odomPose, std::string &pose_frame_id) MRPT_OVERRIDE
 	{
 		curPose = robotSim.getCurrentGTPose();
 		curVel  = robotSim.getCurrentGTVel();
 		timestamp = mrpt::system::now();
+		odomPose = robotSim.getCurrentOdometricPose();
 		return true;
 	}
 
@@ -747,7 +748,7 @@ public:
 		scene = window.get3DSceneAndLock();
 		CPose3D robotpose3d = CPose2D(robotSim.getCurrentGTPose());
 		CRenderizablePtr obj;
-		
+
 		//The robot pose is updated
 		{
 			float h=0;
@@ -838,6 +839,3 @@ public:
 	}
 
 };
-
-
-

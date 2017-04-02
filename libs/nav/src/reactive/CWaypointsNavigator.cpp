@@ -255,10 +255,11 @@ void CWaypointsNavigator::navigationStep()
 			nav_cmd.target.x = wp.target.x;
 			nav_cmd.target.y = wp.target.y;
 			nav_cmd.target.phi = (wp.target_heading!=TWaypoint::INVALID_NUM ? wp.target_heading : .0);
+			nav_cmd.target_frame_id = wp.target_frame_id;
 			nav_cmd.targetAllowedDistance = wp.allowed_distance;
 			nav_cmd.targetIsRelative = false;
 			nav_cmd.targetIsIntermediaryWaypoint = !is_final_wp;
-			nav_cmd.enableApproachSlowDown = is_final_wp || (wp.target_heading!=TWaypoint::INVALID_NUM);
+			nav_cmd.targetDesiredRelSpeed = (is_final_wp || (wp.target_heading != TWaypoint::INVALID_NUM)) ? 0. : 1.;
 
 			this->navigate( &nav_cmd );
 

@@ -41,16 +41,18 @@ namespace mrpt
 		CRobot2NavInterface();
 		virtual ~CRobot2NavInterface();
 
-		/** Get the current pose and speeds of the robot. The implementation should not take too much time to return,
+		/** Get the current pose and velocity of the robot. The implementation should not take too much time to return,
 		*   so if it might take more than ~10ms to ask the robot for the instantaneous data, it may be good enough to
 		*   return the latest values from a cache which is updated in a parallel thread.
-		*
-		* \param[out] curPose The latest robot pose, in world coordinates. (x,y: meters, phi: radians)
-		* \param[out] curVelGlobal  The latest robot velocity vector, in world coordinates. (vx,vy: m/s, omega: rad/s)
-		* \param[out] timestamp  The timestamp for the read pose and velocity values. Use mrpt::system::now() unless you have something more accurate.
 		* \return false on any error retrieving these values from the robot.
 		*/
-		virtual bool getCurrentPoseAndSpeeds(mrpt::math::TPose2D &curPose, mrpt::math::TTwist2D &curVelGlobal, mrpt::system::TTimeStamp &timestamp ) = 0;
+		virtual bool getCurrentPoseAndSpeeds(
+			mrpt::math::TPose2D      &curPose,        //!< (output) The latest robot pose (typically from a mapping/localization module), in world coordinates. (x,y: meters, phi: radians)
+			mrpt::math::TTwist2D     &curVelGlobal,   //!< (output) The latest robot velocity vector, in world coordinates. (vx,vy: m/s, omega: rad/s)
+			mrpt::system::TTimeStamp &timestamp,      //!< (output) The timestamp for the read pose and velocity values. Use mrpt::system::now() unless you have something more accurate.
+			mrpt::math::TPose2D      &curOdometry,    //!< (output) The latest robot raw odometry pose; may have long-time drift should be more locally consistent than curPose (x,y: meters, phi: radians)
+			std::string              &frame_id        //!< (output) ID of the coordinate frame for curPose. Default is not modified is "map". [Only for future support to submapping,etc.]
+			) = 0;
 
 		/** Sends a velocity command to the robot.
 		 * The number components in each command depends on children classes of mrpt::kinematics::CVehicleVelCmd.
