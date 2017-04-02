@@ -24,9 +24,13 @@ FrameTransformerInterface<DIM>::~FrameTransformerInterface()
 {
 }
 
+namespace mrpt {
+namespace poses {
 // Explicit instantations:
 template class BASE_IMPEXP FrameTransformerInterface<2>;
 template class BASE_IMPEXP FrameTransformerInterface<3>;
+}
+}
 
 
 // ------- FrameTransformer --------
@@ -81,6 +85,10 @@ FrameLookUpStatus FrameTransformer<DIM>::lookupTransform(
 	return LKUP_GOOD;
 }
 
+namespace mrpt {
+namespace poses {
 // Explicit instantations:
 template class BASE_IMPEXP FrameTransformer<2>;
 template class BASE_IMPEXP FrameTransformer<3>;
+}
+}
