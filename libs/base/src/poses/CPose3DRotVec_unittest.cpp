@@ -39,8 +39,8 @@ protected:
 			<< "newPoseRVT  : " << newPoseRVT_1 << endl;
 
         // CPose3DRotVec -> CPose3DQuat -> CPose3DRotVec
-        CPose3DQuat poseQuat(poseRVT);
-        CPose3DRotVec newPoseRVT_2(poseQuat);
+		CPose3DQuat poseQuat= CPose3DQuat(CPose3D(poseRVT));
+		CPose3DRotVec newPoseRVT_2= CPose3DRotVec(CPose3D(poseQuat));
 
 	    EXPECT_NEAR(0, (poseRVT.getAsVectorVal()-newPoseRVT_2.getAsVectorVal()).array().abs().sum(), 1e-5)
             << "Quat: " << endl
@@ -100,7 +100,7 @@ protected:
 
         CPose3DQuat q1(M1), q2(M2), q1_c_q2(UNINITIALIZED_POSE);
         q1_c_q2 = q1 + q2;
-        const CPose3DRotVec p3(q1_c_q2);
+		const CPose3DRotVec p3 = CPose3DRotVec(CPose3D(q1_c_q2));
 
 		EXPECT_NEAR(0, (p1_c_p2_i_p2.getAsVectorVal()-p2.getAsVectorVal()).array().abs().sum(), 1e-5)
 			<< "p1          : " << p1 << endl
@@ -115,7 +115,7 @@ protected:
 			<< "p1_i_p2 matrix: " << endl << p1_i_p2.getHomogeneousMatrixVal() << endl
 			<< "p2_c_p1_i_p2: " << p2_c_p1_i_p2 << endl;
 
-        EXPECT_NEAR(0, (p3.getAsVectorVal()-p1_c_p2.getAsVectorVal()).array().abs().sum(), 1e-5)
+		EXPECT_NEAR(0, (p3.getAsVectorVal()-p1_c_p2.getAsVectorVal()).array().abs().sum(), 1e-5)
 			<< "p3          : " << p3 << endl
 			<< "p1_c_p2     : " << p1_c_p2 << endl;
 	}

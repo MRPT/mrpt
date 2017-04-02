@@ -257,7 +257,7 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 				CPosePDFPtr pestPose= ICP.Align(
 					matchWith,					// Map 1
 					&sensedPoints,				// Map 2
-					initialEstimatedRobotPose,	// a first gross estimation of map 2 relative to map 1.
+					mrpt::poses::CPose2D(initialEstimatedRobotPose),	// a first gross estimation of map 2 relative to map 1.
 					&runningTime,				// Running time
 					&icpReturn					// Returned information
 					);

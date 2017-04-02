@@ -163,14 +163,14 @@ namespace mrpt
 			if (actions)
 			{
 				// Find a robot movement estimation:
-				mrpt::poses::CPose3D				motionModelMeanIncr;
+				mrpt::poses::CPose3D motionModelMeanIncr;
 				{
 					mrpt::obs::CActionRobotMovement2DPtr	robotMovement2D = actions->getBestMovementEstimation();
 					// If there is no 2D action, look for a 3D action:
 					if (robotMovement2D.present())
 					{
 						m_movementDrawer.setPosePDF( robotMovement2D->poseChange.get_ptr() );
-						motionModelMeanIncr = robotMovement2D->poseChange->getMeanVal();
+						motionModelMeanIncr = mrpt::poses::CPose3D(robotMovement2D->poseChange->getMeanVal());
 					}
 					else
 					{
@@ -347,7 +347,7 @@ namespace mrpt
 			size_t  N = PF_options.pfAuxFilterOptimal_MaximumSearchSamples;
 			ASSERT_(N>1)
 
-			const mrpt::poses::CPose3D oldPose = *me->getLastPose(index);
+			const mrpt::poses::CPose3D oldPose = mrpt::poses::CPose3D(*me->getLastPose(index));
 			mrpt::math::CVectorDouble   vectLiks(N,0);		// The vector with the individual log-likelihoods.
 			mrpt::poses::CPose3D			drawnSample;
 			for (size_t q=0;q<N;q++)
@@ -413,7 +413,7 @@ namespace mrpt
 
 			// Take the previous particle weight:
 			const double cur_logweight = myObj->m_particles[index].log_w;
-			const mrpt::poses::CPose3D oldPose = *myObj->getLastPose(index);
+			const mrpt::poses::CPose3D oldPose = mrpt::poses::CPose3D(*myObj->getLastPose(index));
 
 			if (!PF_options.pfAuxFilterStandard_FirstStageWeightsMonteCarlo)
 			{
@@ -851,7 +851,7 @@ namespace mrpt
 				me->logStr(mrpt::utils::LVL_DEBUG, "[PF_SLAM_aux_perform_one_rejection_sampling_step] Warning: Discarding very unlikely particle.");
 			}
 
-			const mrpt::poses::CPose3D oldPose = *getLastPose(k);	// Get the current pose of the k'th particle
+			const mrpt::poses::CPose3D oldPose =  mrpt::poses::CPose3D(*getLastPose(k));	// Get the current pose of the k'th particle
 
 			//   (b) Rejection-sampling: Draw a new robot pose from x[k],
 			//       and accept it with probability p(zk|x) / maxLikelihood:
@@ -919,7 +919,7 @@ namespace mrpt
 
 					if (timeout>=maxTries)
 					{
-						out_newPose = bestTryByNow_pose;
+						out_newPose =  mrpt::poses::CPose3D(bestTryByNow_pose);
 						poseLogLik = bestTryByNow_loglik;
 						me->logStr(mrpt::utils::LVL_WARN, "[PF_implementation] Warning: timeout in rejection sampling.");
 					}

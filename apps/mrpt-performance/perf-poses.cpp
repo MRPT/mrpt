@@ -301,24 +301,6 @@ double poses_test_compose3DQuatpoint2(int a1, int a2)
 	return T;
 }
 
-double poses_test_invcompose3DQuatpoint(int a1, int a2)
-{
-	const long N = 500000;
-	CTicTac	 tictac;
-
-	CPose3DQuat  a(CPose3D(1.0,2.0,3.0,DEG2RAD(10),DEG2RAD(50),DEG2RAD(-30)));
-	CPoint3D  b(8.0,-5.0,-1.0);
-
-	CPoint3D p;
-	for (long i=0;i<N;i++)
-	{
-		p = b-a;
-	}
-	double T = tictac.Tac()/N;
-	dummy_do_nothing_with_string( mrpt::format("%f",p.x()) );
-	return T;
-}
-
 double poses_test_invcompose3DQuatpoint2(int a1, int a2)
 {
 	const long N = 500000;
@@ -473,7 +455,6 @@ void register_tests_poses()
 	lstTests.push_back( TestData("poses: CPose3DQuat (+) CPoint3D",poses_test_compose3DQuatpoint ) );
 	lstTests.push_back( TestData("poses: CPose3DQuat.composePoint()",poses_test_compose3DQuatpoint2 ) );
 
-	lstTests.push_back( TestData("poses: CPoint3D (-) CPose3DQuat ",poses_test_invcompose3DQuatpoint ) );
 	lstTests.push_back( TestData("poses: CPose3DQuat.invcomposePoint()",poses_test_invcompose3DQuatpoint2 ) );
 
 	lstTests.push_back( TestData("poses: Conv CPose3DQuat <- CPose3D",poses_test_convert_quat_ypr ) );

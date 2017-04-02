@@ -412,7 +412,7 @@ void  COpenGLViewport::render( const int render_width, const int render_height  
 				// Up is set as Y axis
 				mrpt::poses::CPose3D viewDirection,pose,at;
 				viewDirection.z(+1);
-				pose = myCamera->getPose();
+				pose = mrpt::poses::CPose3D(myCamera->getPose());
 				at = pose + viewDirection;
 				gluLookAt(
 					pose.x(),

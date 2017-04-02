@@ -440,7 +440,7 @@ public:
 	bool senseObstacles( mrpt::maps::CSimplePointsMap 	&obstacles, mrpt::system::TTimeStamp &timestamp ) MRPT_OVERRIDE
 	{
 		last_pose = new_pose;
-		new_pose = robotSim.getCurrentGTPose();
+		new_pose =  CPose2D(robotSim.getCurrentGTPose() );
 		CPose3D robotpose3d(new_pose[0], new_pose[1], 0, new_pose[2], 0, 0);
 		CPose3D kinectrelpose(0,0,0,0,0,0);
 
@@ -598,7 +598,7 @@ public:
 
 	void initializeScene()
 	{
-		CPose3D robotpose3d = CPose2D(robotSim.getCurrentGTPose());
+		CPose3D robotpose3d = CPose3D(CPose2D(robotSim.getCurrentGTPose()));
 
 
 		//The display window is created
@@ -746,7 +746,7 @@ public:
 	void updateScene()
 	{
 		scene = window.get3DSceneAndLock();
-		CPose3D robotpose3d = CPose2D(robotSim.getCurrentGTPose());
+		CPose3D robotpose3d = CPose3D(CPose2D(robotSim.getCurrentGTPose()));
 		CRenderizablePtr obj;
 
 		//The robot pose is updated
@@ -829,10 +829,10 @@ public:
 		navparams.targetAllowedDistance = targetAllowedDistance;
 		navparams.targetIsRelative = targetIsRelative;
 		if (!targetIsRelative)
-			target = mrpt::math::TPose2D(x, y, 0);
+			target = CPose2D(x, y, 0);
 		else
 		{
-			CPose2D robotpose = robotSim.getCurrentGTPose();
+			CPose2D robotpose = CPose2D(robotSim.getCurrentGTPose());
 			target = CPose2D(x ,y, 0) + robotpose;
 		}
 		return navparams;
