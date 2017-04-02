@@ -72,7 +72,7 @@ void TPose2D::fromString(const std::string &s)
 	y = m.get_unsafe(0,1);
 	phi = DEG2RAD(m.get_unsafe(0,2));
 }
-mrpt::math::TPose2D mrpt::math::TPose2D::operator+(mrpt::math::TPose2D & b) const
+mrpt::math::TPose2D mrpt::math::TPose2D::operator+(const mrpt::math::TPose2D & b) const
 {
 	const double A_cosphi = cos(this->phi), A_sinphi = sin(this->phi);
 	// Use temporary variables for the cases (A==this) or (B==this)
@@ -83,7 +83,7 @@ mrpt::math::TPose2D mrpt::math::TPose2D::operator+(mrpt::math::TPose2D & b) cons
 	return mrpt::math::TPose2D(new_x, new_y, new_phi);
 }
 
-mrpt::math::TPose2D mrpt::math::TPose2D::operator-(mrpt::math::TPose2D & b) const
+mrpt::math::TPose2D mrpt::math::TPose2D::operator-(const mrpt::math::TPose2D & b) const
 {
 	const double B_cosphi = cos(b.phi), B_sinphi = sin(b.phi);
 
@@ -139,7 +139,7 @@ void TTwist3D::fromString(const std::string &s)
 	for (int i=0;i<3;i++) (*this)[i] = m.get_unsafe(0,i);
 	for (int i=0;i<3;i++) (*this)[3+i] = DEG2RAD(m.get_unsafe(0,3+i));
 }
-// Transform all 6 components for a change of reference frame from "A" to 
+// Transform all 6 components for a change of reference frame from "A" to
 // another frame "B" whose rotation with respect to "A" is given by `rot`. The translational part of the pose is ignored
 void TTwist3D::rotate(const mrpt::poses::CPose3D & rot)
 {
@@ -648,7 +648,7 @@ inline double isLeft( const mrpt::math::TPoint2D &P0, const mrpt::math::TPoint2D
 	return ( (P1.x - P0.x) * (P2.y - P0.y) - (P2.x -  P0.x) * (P1.y - P0.y) );
 }
 
-bool TPolygon2D::contains(const TPoint2D &P) const	
+bool TPolygon2D::contains(const TPoint2D &P) const
 {
 	int wn = 0;    // the  winding number counter
 
@@ -656,14 +656,14 @@ bool TPolygon2D::contains(const TPoint2D &P) const
 	const size_t n = this->size();
 	for (size_t i=0; i<n; i++) // edge from V[i] to  V[i+1]
 	{
-		if ((*this)[i].y <= P.y) 
+		if ((*this)[i].y <= P.y)
 		{
 			// start y <= P.y
 			if ((*this)[(i+1) % n].y  > P.y)      // an upward crossing
 				if (isLeft( (*this)[i], (*this)[(i+1)%n], P) > 0)  // P left of  edge
 					++wn;            // have  a valid up intersect
 	}
-	else 
+	else
 	{
 		// start y > P.y (no test needed)
 		if ((*this)[(i+1)%n].y  <= P.y)     // a downward crossing
