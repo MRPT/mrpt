@@ -638,7 +638,7 @@ void ptgConfiguratorframe::OnbtnReloadParamsClick(wxCommandEvent& event)
 
 	// PTG: Realize updated dynamical state (not from a real robot in this app,
 	// but already loaded from a config file in this app for debugging):
-	ptg->updateNavDynamicState( ptg->getCurrentNavDynamicState() );
+	ptg->updateNavDynamicState( ptg->getCurrentNavDynamicState(), true );
 
 	// one-time GUI init for each PTG settings:
 	edIndexHighlightPath->SetRange(0, ptg->getPathCount() - 1);
@@ -697,8 +697,25 @@ void ptgConfiguratorframe::rebuild3Dview()
 	// Limits:
 	gl_axis_WS->setAxisLimits(-refDist,-refDist,.0f, refDist,refDist,.0f);
 
+	double tx=10.0, ty=.0; // Target in WS
+	{
+		bool ok_x = edTargetX->GetValue().ToDouble(&tx);
+		bool ok_y = edTargetY->GetValue().ToDouble(&ty);
+		if (ok_x && ok_y) {
+			gl_WS_target->setLocation(tx, ty, 0);
+		}
+	}
+
 	if (ptg && ptg->isInitialized())
 	{
+		// Update PTG dynamic state with new target:
+		{
+			mrpt::nav::CParameterizedTrajectoryGenerator::TNavDynamicState navdyn = ptg->getCurrentNavDynamicState();
+			navdyn.relTarget.x = tx;
+			navdyn.relTarget.y = ty;
+			ptg->updateNavDynamicState(navdyn);
+		}
+
 		// TP-Obstacles:
 		std::vector<double> TP_Obstacles;
 		ptg->initTPObstacles(TP_Obstacles);
@@ -881,17 +898,9 @@ void ptgConfiguratorframe::rebuild3Dview()
 
 	// Target:
 	{
-		// WS:
-		double tx,ty;
-		bool ok_x = edTargetX->GetValue().ToDouble(&tx);
-		bool ok_y = edTargetY->GetValue().ToDouble(&ty);
-		if (ok_x && ok_y)
-		{
-			gl_WS_target->setLocation(tx,ty,0);
-		}
-		// TPS:
 		if (ptg && ptg->isInitialized())
 		{
+
 			int k=0;
 			double norm_d=0;
 			bool is_exact = ptg->inverseMap_WS2TP(tx,ty,k,norm_d);
