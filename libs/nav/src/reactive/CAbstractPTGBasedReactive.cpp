@@ -414,14 +414,14 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 
 		// Round #2: Evaluate dont sending any new velocity command ("NOP" motion)
 		// =========
-		// This approach is only possible if:
 		bool NOP_not_too_old = true;
 		bool NOP_not_too_close_and_have_to_slowdown = true;
 		double NOP_max_time = -1.0, NOP_At = -1.0;
 		double slowdowndist = .0;
 		CParameterizedTrajectoryGenerator * last_sent_ptg = m_lastSentVelCmd.isValid() ? getPTG(m_lastSentVelCmd.ptg_index) : nullptr;
 
-		const bool can_do_nop_motion = 
+		// This approach is only possible if:
+		const bool can_do_nop_motion =
 			(
 				m_lastSentVelCmd.isValid() &&
 				!target_changed_since_last_iteration &&
