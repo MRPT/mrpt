@@ -899,9 +899,9 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 		simulatedScan.aperture = m_simul_options.SENSOR_FOV;
 		simulatedScan.rightToLeft = true;
 		simulatedScan.maxRange = m_simul_options.MAX_SENSOR_RADIUS;
-		simulatedScan.sensorPose = CPose2D(0,0,0.10);
+		simulatedScan.sensorPose = CPose3D(0.10,0,0, 0,0,0);
 
-		m_gridMap.laserScanSimulator( simulatedScan, m_robotSimul->getCurrentGTPose(),0.5, m_simul_options.SENSOR_NUM_RANGES, m_simul_options.SENSOR_RANGE_NOISE_STD );
+		m_gridMap.laserScanSimulator( simulatedScan, CPose2D(m_robotSimul->getCurrentGTPose()),0.5, m_simul_options.SENSOR_NUM_RANGES, m_simul_options.SENSOR_RANGE_NOISE_STD );
 
 		// Build the obstacles points map for the reactive:
 		{
@@ -1057,7 +1057,9 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 				const int selected_k = is_NOP_op ? lfr.ptg_last_k_NOP : ptg->alpha2index( lfr.infoPerPTG[lfr.nSelectedPTG].desiredDirection );
 				float max_dist = ptg->getRefDistance();
 				gl_robot_ptg_prediction->clear();
-				ptg->updateCurrentRobotVel(lfr.ptg_last_curRobotVelLocal);
+
+				ptg->updateNavDynamicState(lfr.ptg_last_navDynState);
+
 				ptg->renderPathAsSimpleLine(selected_k,*gl_robot_ptg_prediction,0.10, max_dist);
 				gl_robot_ptg_prediction->setColor_u8( mrpt::utils::TColor(0xff,0x00,0x00) );
 

@@ -344,7 +344,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 		}
 		else
 		{
-			outInfo.noRobustEstimation = noRobustEst;
+			outInfo.noRobustEstimation = mrpt::poses::CPose2D(noRobustEst);
 			MRPT_LOG_INFO( mrpt::format("[CGridMapAligner] Overall estimation(%u corrs, total: %u): (%.03f,%.03f,%.03fdeg)\n",
 				corrsCount,(unsigned)correspondences.size(),
 				outInfo.noRobustEstimation.x(),
@@ -591,7 +591,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 							if ( used_landmarks2[j] ) continue;
 
 							lm2_pnts.getPoint(j,p2_j_local); // In local coords.
-							pdf_M2_j.mean = temptPose.mean + p2_j_local; // In (temptative) global coords:
+							pdf_M2_j.mean = mrpt::poses::CPoint2D(temptPose.mean + p2_j_local); // In (temptative) global coords:
 							pdf_M2_j.cov.get_unsafe(0,0) =
 							pdf_M2_j.cov.get_unsafe(1,1) = square( options.ransac_SOG_sigma_m );
 

@@ -574,9 +574,9 @@ void holonomic_navigator_demoFrame::simulateOneStep(double time_step)
 	simulatedScan.aperture = M_2PIf;
 	simulatedScan.rightToLeft = true;
 	simulatedScan.maxRange = m_simul_options.MAX_SENSOR_RADIUS;
-	simulatedScan.sensorPose = CPose2D(0,0,0);
+	simulatedScan.sensorPose = CPose3D();
 
-	m_gridMap.laserScanSimulator( simulatedScan, m_robotPose,0.5, m_simul_options.SENSOR_NUM_RANGES, m_simul_options.SENSOR_RANGE_NOISE_STD );
+	m_gridMap.laserScanSimulator( simulatedScan, mrpt::poses::CPose2D(m_robotPose),0.5, m_simul_options.SENSOR_NUM_RANGES, m_simul_options.SENSOR_RANGE_NOISE_STD );
 
 	gl_scan3D->setScan( simulatedScan );  // Draw real scan in 3D view
 

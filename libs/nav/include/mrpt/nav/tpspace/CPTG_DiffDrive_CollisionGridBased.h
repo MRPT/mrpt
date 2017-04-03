@@ -76,9 +76,11 @@ namespace nav
 
 		void updateTPObstacle(double ox, double oy, std::vector<double> &tp_obstacles) const MRPT_OVERRIDE;
 		void updateTPObstacleSingle(double ox, double oy, uint16_t k, double &tp_obstacle_k) const MRPT_OVERRIDE;
-		/** This family of PTGs ignore the kinematic state of the robot */
-		void updateCurrentRobotVel(const mrpt::math::TTwist2D &curVelLocal)  MRPT_OVERRIDE 
-		{}
+		
+		/** This family of PTGs ignores the dynamic states */
+		virtual void onNewNavDynamicState() MRPT_OVERRIDE {
+			// Do nothing.
+		}
 
 		/** @} */  // --- end of virtual methods
 

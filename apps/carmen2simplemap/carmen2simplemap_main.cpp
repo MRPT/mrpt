@@ -114,7 +114,7 @@ int main(int argc, char **argv)
 				if (importedObservations.size()>1 && IS_CLASS(importedObservations[i], CObservationOdometry) )
 				{
 					CObservationOdometry::Ptr odo = std::dynamic_pointer_cast<CObservationOdometry>(importedObservations[i]);
-					gt_pose = TPose2D(odo->odometry);
+					gt_pose = odo->odometry;
 					has_gt_pose = true;
 					break;
 				}

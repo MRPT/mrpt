@@ -454,3 +454,14 @@ void CPose3DQuat::setToNaN()
 	for (int i=0;i<4;i++)
 		quat()[i] = std::numeric_limits<double>::quiet_NaN();
 }
+
+bool mrpt::poses::operator==(const CPose3DQuat &p1,const CPose3DQuat &p2)
+{
+	return p1.quat()==p2.quat() && p1.x()==p2.x() && p1.y()==p2.y() && p1.z()==p2.z();
+}
+
+bool mrpt::poses::operator!=(const CPose3DQuat &p1,const CPose3DQuat &p2)
+{
+	return !(p1==p2);
+}
+

@@ -28,6 +28,7 @@ CParameterizedTrajectoryGenerator::CParameterizedTrajectoryGenerator() :
 	m_alphaValuesCount(0),
 	m_score_priority(1.0),
 	m_clearance_num_points(5),
+	m_nav_dyn_state(),
 	m_is_initialized(false)
 { }
 
@@ -58,6 +59,17 @@ void CParameterizedTrajectoryGenerator::loadFromConfigFile(const mrpt::utils::CC
 
 	// Ensure a minimum of resolution:
 	mrpt::utils::keep_max(m_clearance_num_points, refDistance/1.0);
+
+	// Optional params, for debugging only
+	MRPT_LOAD_HERE_CONFIG_VAR(vxi, double, m_nav_dyn_state.curVelLocal.vx, cfg, sSection);
+	MRPT_LOAD_HERE_CONFIG_VAR(vyi, double, m_nav_dyn_state.curVelLocal.vy, cfg, sSection);
+	MRPT_LOAD_HERE_CONFIG_VAR_DEGREES(wi, double, m_nav_dyn_state.curVelLocal.omega, cfg, sSection);
+	
+	MRPT_LOAD_HERE_CONFIG_VAR(reltrg_x, double, m_nav_dyn_state.relTarget.x, cfg, sSection);
+	MRPT_LOAD_HERE_CONFIG_VAR(reltrg_y, double, m_nav_dyn_state.relTarget.y, cfg, sSection);
+	MRPT_LOAD_HERE_CONFIG_VAR_DEGREES(reltrg_phi, double, m_nav_dyn_state.relTarget.phi , cfg, sSection);
+
+	MRPT_LOAD_HERE_CONFIG_VAR(target_rel_speed, double, m_nav_dyn_state.targetRelSpeed, cfg, sSection);
 }
 void CParameterizedTrajectoryGenerator::saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const
 {
@@ -69,9 +81,19 @@ void CParameterizedTrajectoryGenerator::saveToConfigFile(mrpt::utils::CConfigFil
 	cfg.write(sSection,"score_priority",m_score_priority,   WN,WV, "When used in path planning, a multiplying factor (default=1.0) for the scores for this PTG. Assign values <1 to PTGs with low priority.");
 	cfg.write(sSection, "clearance_num_points", m_clearance_num_points, WN, WV, "Number of steps for the piecewise-constant approximation of clearance (Default=5).");
 
+	// Optional params, for debugging only
+	cfg.write(sSection, "vxi", m_nav_dyn_state.curVelLocal.vx, WN, WV, "(Only for debugging) Current robot velocity vx [m/s].");
+	cfg.write(sSection, "vyi", m_nav_dyn_state.curVelLocal.vy, WN, WV, "(Only for debugging) Current robot velocity vy [m/s].");
+	cfg.write(sSection, "wi", mrpt::utils::RAD2DEG(m_nav_dyn_state.curVelLocal.omega), WN, WV, "(Only for debugging) Current robot velocity omega [deg/s].");
+
+	cfg.write(sSection, "reltrg_x", m_nav_dyn_state.relTarget.x, WN, WV, "(Only for debugging) Relative target x [m].");
+	cfg.write(sSection, "reltrg_y", m_nav_dyn_state.relTarget.y, WN, WV, "(Only for debugging) Relative target y [m].");
+	cfg.write(sSection, "reltrg_phi", mrpt::utils::RAD2DEG(m_nav_dyn_state.relTarget.phi), WN, WV, "(Only for debugging) Relative target phi [deg].");
+
+	cfg.write(sSection, "target_rel_speed", m_nav_dyn_state.targetRelSpeed, WN, WV, "(Only for debugging) Desired relative speed at target [0,1]");
+
 	MRPT_END
 }
-
 
 void CParameterizedTrajectoryGenerator::internal_readFromStream(mrpt::utils::CStream &in)
 {
@@ -244,6 +266,17 @@ bool CParameterizedTrajectoryGenerator::isInitialized() const
 	return m_is_initialized;
 }
 
+void CParameterizedTrajectoryGenerator::updateNavDynamicState(const CParameterizedTrajectoryGenerator::TNavDynamicState & newState)
+{
+	// Make sure there is a real difference: notifying a PTG that a condition changed 
+	// may imply a significant computational cost if paths need to be re-evaluated on the fly, etc.
+	// so the cost of the comparison here is totally worth:
+	if (m_nav_dyn_state!=newState) {
+		m_nav_dyn_state = newState;
+		this->onNewNavDynamicState();
+	}
+}
+
 void CParameterizedTrajectoryGenerator::initialize(const std::string & cacheFilename, const bool verbose)
 {
 	if (m_is_initialized) return;
@@ -333,7 +366,7 @@ void CParameterizedTrajectoryGenerator::updateClearancePost(ClearanceDiagram & c
 	// Used only when in approx mode (Removed 30/01/2017)
 }
 
-void CParameterizedTrajectoryGenerator::evalClearanceSingleObstacle(const double ox, const double oy, const uint16_t k, std::map<double, double> & inout_realdist2clearance) const
+void CParameterizedTrajectoryGenerator::evalClearanceSingleObstacle(const double ox, const double oy, const uint16_t k, std::map<double, double> & inout_realdist2clearance, bool treat_as_obstacle) const
 {
 	bool had_collision = false;
 
@@ -364,8 +397,12 @@ void CParameterizedTrajectoryGenerator::evalClearanceSingleObstacle(const double
 		// obstacle to robot clearance:
 		double oxl, oyl; // obstacle in robot frame
 		mrpt::poses::CPose2D(pose).inverseComposePoint(ox, oy, oxl, oyl);
-		const double this_clearance = this->evalClearanceToRobotShape(oxl, oyl);
-		if (this_clearance <= .0) {
+		const double this_clearance = treat_as_obstacle ?
+			this->evalClearanceToRobotShape(oxl, oyl)
+			:
+			std::hypot(oxl,oyl)
+			;
+		if (this_clearance <= .0 && treat_as_obstacle) {
 			// Collision:
 			had_collision = true;
 			inout_clearance = .0;
@@ -379,4 +416,42 @@ void CParameterizedTrajectoryGenerator::evalClearanceSingleObstacle(const double
 			mrpt::utils::keep_min(inout_clearance, this_clearance_norm);
 		}
 	}
+}
+
+CParameterizedTrajectoryGenerator::TNavDynamicState::TNavDynamicState() :
+	curVelLocal(0,0,0),
+	relTarget(20.0,0,0), // Default: assume a "distant" target ahead
+	targetRelSpeed(0)
+{
+}
+
+bool CParameterizedTrajectoryGenerator::TNavDynamicState::operator==(const TNavDynamicState & o) const
+{
+	return
+		(curVelLocal==o.curVelLocal) &&
+		(relTarget==o.relTarget) &&
+		(targetRelSpeed==o.targetRelSpeed)
+		;
+}
+
+void mrpt::nav::CParameterizedTrajectoryGenerator::TNavDynamicState::writeToStream(mrpt::utils::CStream & out) const
+{
+	const uint8_t version = 0;
+	out << version;
+	// Data:
+	out << curVelLocal << relTarget << targetRelSpeed;
+}
+
+void mrpt::nav::CParameterizedTrajectoryGenerator::TNavDynamicState::readFromStream(mrpt::utils::CStream & in)
+{
+	uint8_t version;
+	in >> version;
+	switch (version)
+	{
+	case 0:
+		in >>curVelLocal >> relTarget >> targetRelSpeed;
+		break;
+	default:
+		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+	};
 }

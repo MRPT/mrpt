@@ -104,7 +104,7 @@ namespace mrpt
 			mrpt::maps::CSimplePointsMap m_WS_Obstacles;  //!< The obstacle points, as seen from the local robot frame.
 			mrpt::maps::CSimplePointsMap m_WS_Obstacles_original;  //!< Obstacle points, before filtering (if filtering is enabled).
 			// See docs in parent class
-			void STEP3_WSpaceToTPSpace(const size_t ptg_idx, std::vector<double> &out_TPObstacles, mrpt::nav::ClearanceDiagram &out_clearance, const mrpt::poses::CPose2D &rel_pose_PTG_origin_wrt_sense, const bool eval_clearance) MRPT_OVERRIDE;
+			void STEP3_WSpaceToTPSpace(const size_t ptg_idx, std::vector<double> &out_TPObstacles, mrpt::nav::ClearanceDiagram &out_clearance, const mrpt::math::TPose2D &rel_pose_PTG_origin_wrt_sense, const bool eval_clearance) MRPT_OVERRIDE;
 
 		}; // end class
 	}

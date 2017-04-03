@@ -117,7 +117,7 @@ void  CSickLaserSerial::doProcessSimple(
 	outObservation.aperture = M_PIf;
 	outObservation.maxRange	= is_mm_mode ? 32.7 : 81.0;
 	outObservation.stdError = 0.003f;
-	outObservation.sensorPose = m_sensorPose;
+	outObservation.sensorPose = mrpt::poses::CPose3D(m_sensorPose);
 
 	outObservation.resizeScan(ranges.size());
 
