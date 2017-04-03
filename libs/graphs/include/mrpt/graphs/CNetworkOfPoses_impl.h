@@ -49,7 +49,7 @@ namespace mrpt
 			};
 			template <> struct TPosePDFHelper<CPose3D>
 			{
-				static inline void copyFrom2D(CPose3D &p, const CPosePDFGaussianInf &pdf ) { p = pdf.mean; }
+				static inline void copyFrom2D(CPose3D &p, const CPosePDFGaussianInf &pdf ) { p = CPose3D(pdf.mean); }
 				static inline void copyFrom3D(CPose3D &p, const CPose3DPDFGaussianInf &pdf ) { p = pdf.mean; }
 			};
 
@@ -278,8 +278,9 @@ namespace mrpt
 							// Add to map: ID -> absolute pose:
 							if (g->nodes.find(id)==g->nodes.end())
 							{
-								typename CNetworkOfPoses<CPOSE>::constraint_t::type_value & newNode = g->nodes[id];
-								newNode = CPose2D(p2D); // Auto converted to mrpt::poses::CPose3D if needed
+								typedef typename CNetworkOfPoses<CPOSE>::constraint_t::type_value pose_t;
+								pose_t & newNode = g->nodes[id];
+								newNode = pose_t(CPose2D(p2D)); // Convert to mrpt::poses::CPose3D if needed
 							}
 						}
 						else if ( strCmpI(key,"VERTEX3") )

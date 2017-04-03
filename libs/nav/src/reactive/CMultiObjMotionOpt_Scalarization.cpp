@@ -54,7 +54,8 @@ int CMultiObjMotionOpt_Scalarization::impl_decide(const std::vector<mrpt::nav::T
 		// vars:
 		for (const auto &c : extra_info.score_values) {
 			for (const auto &score : c) {
-				double & var = m_expr_scalar_vars[score.first]; // create or reuse placeholder
+				//double & var = 
+				m_expr_scalar_vars[score.first]; // create or reuse placeholder
 			}
 		}
 

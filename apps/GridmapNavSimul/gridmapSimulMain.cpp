@@ -186,9 +186,9 @@ void CMyGLCanvas::OnPostRenderSwapBuffers(double At, wxPaintDC &dc)
 
 void CMyGLCanvas::OnPostRender()
 {
-	CPose2D p = the_robot.getCurrentGTPose();
+	const mrpt::math::TPose2D p = the_robot.getCurrentGTPose();
 
-	string s = format("Pose: (%.03f,%.03f,%.02fdeg)", p.x(),p.y(), RAD2DEG(p.phi()) );
+	string s = format("Pose: (%.03f,%.03f,%.02fdeg)", p.x,p.y, RAD2DEG(p.phi) );
 	mrpt::opengl::CRenderizable::renderTextBitmap( 20,20, s.c_str(), 1,0,0 , MRPT_GLUT_BITMAP_HELVETICA_18);
 
 
@@ -671,7 +671,7 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 			last_pressed_key=0;
 		}
 
-		CPose2D p = the_robot.getCurrentGTPose();
+		const mrpt::math::TPose2D p = the_robot.getCurrentGTPose();
 
 		// Simulate scan:
 		mrpt::obs::CObservation2DRangeScan the_scan;
@@ -684,7 +684,7 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 		static mrpt::utils::CTimeLogger timlog;
 
 		timlog.enter("laserScanSimulator");
-		the_grid.laserScanSimulator( the_scan, p, 0.6f, LASER_N_RANGES, LASER_STD_ERROR, 1, LASER_BEARING_STD_ERROR );
+		the_grid.laserScanSimulator( the_scan, mrpt::poses::CPose2D(p), 0.6f, LASER_N_RANGES, LASER_STD_ERROR, 1, LASER_BEARING_STD_ERROR );
 		timlog.leave("laserScanSimulator");
 
 #ifdef DO_SCAN_LIKELIHOOD_DEBUG
@@ -766,7 +766,7 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 				const bool  is_sf_format = cbRawlogSFformat->GetValue();
 
 				const TTimeStamp	tim_now = mrpt::system::now();
-				CPose2D  odo_now = the_robot.getCurrentOdometricPose();
+				const mrpt::poses::CPose2D  odo_now = CPose2D(the_robot.getCurrentOdometricPose());
 
 				if(is_sf_format)
 				{
@@ -810,7 +810,7 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 
 
 				// And save to a text file the GT robot pose:
-				CPose2D  cur_pose_relative = p - pose_start;
+				CPose2D  cur_pose_relative = CPose2D(p) - pose_start;
 
 				out_GT.printf("%f %.03f %.03f %.03f\n",
 					mrpt::system::timestampTotime_t(tim_now),
@@ -819,7 +819,7 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 					cur_pose_relative.phi() );
 
 				// save to lists:
-				robot_path_GT.push_back( p );
+				robot_path_GT.push_back( mrpt::poses::CPose2D(p) );
 				robot_path_ODO.push_back( odo_now );
 			}
 		}
@@ -848,8 +848,8 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 			gl_path_ODO->insertPoint( this_odo.x(), this_odo.y(), 0 );
 		}
 
-		m_canvas->cameraPointingX = p.x();
-		m_canvas->cameraPointingY = p.y();
+		m_canvas->cameraPointingX = p.x;
+		m_canvas->cameraPointingY = p.y;
 
 		m_canvas->Refresh();
 
@@ -883,7 +883,7 @@ void gridmapSimulFrame::OnbtnStartClick(wxCommandEvent& event)
 	gl_path_GT->clear();
 	gl_path_ODO->clear();
 
-	pose_start = the_robot.getCurrentGTPose( );
+	pose_start = CPose2D( the_robot.getCurrentGTPose( ));
 	the_robot.setCurrentOdometricPose( TPose2D(0,0,0) );
 	lastOdo = CPose2D(0,0,0);
 

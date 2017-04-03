@@ -61,13 +61,13 @@ void CRejectionSamplingRangeOnlyLocalization::RS_drawFromProposal( CPose2D &outS
 
 	// Compute the robot pose P.
 	//	  P = SAMPLE - ROT · SENSOR_ON_ROBOT
-	CPoint2D  on(m_dataPerBeacon[m_drawIndex].sensorOnRobot.x,m_dataPerBeacon[m_drawIndex].sensorOnRobot.y);
-	CPoint2D  S(outSample.x(),outSample.y());
-	on = CPose2D(0,0,outSample.phi()) + on;
+	mrpt::math::TPoint2D  on(m_dataPerBeacon[m_drawIndex].sensorOnRobot.x,m_dataPerBeacon[m_drawIndex].sensorOnRobot.y);
+	mrpt::math::TPoint2D  S(outSample.x(),outSample.y());
+	on = mrpt::math::TPoint2D(mrpt::math::TPose2D(0,0,outSample.phi()) + on);
 	S = S - on;
 
-	outSample.x( S.x() );
-	outSample.y( S.y() );
+	outSample.x( S.x );
+	outSample.y( S.y );
 
 	MRPT_END
 }

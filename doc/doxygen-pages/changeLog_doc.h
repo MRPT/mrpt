@@ -76,6 +76,8 @@
 			- Safer CClassRegistry: detect and warn on attempts to duplicated class registration.
 			- New class mrpt::math::CRuntimeCompiledExpression
 			- mrpt::utils::CConfigFile and mrpt::utils::CConfigFileMemory now can parse config files with end-of-line backslash to split long strings into several lines.
+			- New class mrpt::poses::FrameTransformer
+			- mrpt::poses classes now have all their constructors from mrpt::math types marked as explicit, to avoid potential ambiguities and unnoticed conversions.
 		- \ref mrpt_bayes_grp
 			- [API change] `verbose` is no longer a field of mrpt::bayes::CParticleFilter::TParticleFilterOptions. Use the setVerbosityLevel() method of the CParticleFilter class itself.
 			- [API change] mrpt::bayes::CProbabilityParticle (which affects all PF-based classes in MRPT) has been greatly simplified via usage of the new mrpt::utils::copy_ptr<> pointee-copy-semantics smart pointer.
