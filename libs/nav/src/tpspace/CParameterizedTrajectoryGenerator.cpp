@@ -291,7 +291,7 @@ void CParameterizedTrajectoryGenerator::updateNavDynamicState(const CParameteriz
 		{
 			int target_k;
 			double target_norm_d;
-			bool is_exact = this->inverseMap_WS2TP(m_nav_dyn_state.relTarget.x, m_nav_dyn_state.relTarget.y, target_k, target_norm_d);
+			bool is_exact = this->inverseMap_WS2TP(m_nav_dyn_state.relTarget.x, m_nav_dyn_state.relTarget.y, target_k, target_norm_d,1.0 /*large tolerance*/);
 			if (is_exact && target_norm_d<0.99) {
 				m_nav_dyn_state_target_k = target_k;
 				this->onNewNavDynamicState(); // Recalc
