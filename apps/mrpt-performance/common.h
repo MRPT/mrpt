@@ -17,6 +17,7 @@
 // All the register functions: --------------------
 void register_tests_icpslam();
 void register_tests_poses();
+void register_tests_pose_interp();
 void register_tests_matrices();
 void register_tests_grids();
 void register_tests_pointmaps();
