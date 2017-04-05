@@ -7,6 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
+#include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DInterpolator.h>
 #include <mrpt/random/RandomGenerators.h>
 #include <mrpt/system/datetime.h>
@@ -20,13 +21,13 @@ using mrpt::utils::DEG2RAD;
 // ------------------------------------------------------
 
 // XX ======================
-template <bool INSERT_AT_END, bool BENCHMARK_INSERT_nQUERY>
+template <typename pose_t, bool INSERT_AT_END, bool BENCHMARK_INSERT_nQUERY>
 double pose_interp3D_test_insert(int a1, int a2)
 {
 	const long N = 400000;
 	mrpt::utils::CTicTac tictac;
 
-	mrpt::poses::CPose3D a(1.0,2.0,3.0,DEG2RAD(10),DEG2RAD(50),DEG2RAD(-30));
+	pose_t a = pose_t(mrpt::poses::CPose3D(1.0,2.0,3.0,DEG2RAD(10),DEG2RAD(50),DEG2RAD(-30)));
 	
 	mrpt::poses::CPose3DInterpolator pose_path;
 	const auto t0 = mrpt::system::now();
@@ -62,7 +63,7 @@ double pose_interp3D_test_insert(int a1, int a2)
 		}
 		t = t0 + mrpt::system::secondsToTimestamp(4.512);
 		
-		mrpt::poses::CPose3D p;
+		pose_t p;
 		bool valid;
 		tictac.Tic();
 		for (long i = 0; i < N; i++)
@@ -70,7 +71,7 @@ double pose_interp3D_test_insert(int a1, int a2)
 			pose_path.interpolate(t, p, valid);
 			t += Ats[i]; // negligible cost...
 		}
-		dummy_do_nothing_with_string( mrpt::format("%f %s",p.x(),valid? "YES":"NO") );
+		dummy_do_nothing_with_string( mrpt::format("%s %s",p.asString(),valid? "YES":"NO") );
 		return tictac.Tac() / N;
 	}
 }
@@ -82,8 +83,12 @@ void register_tests_pose_interp()
 {
 	mrpt::random::randomGenerator.randomize(1234);
 
-	lstTests.push_back( TestData("CPose3DInterpolator: insert pose at end", &pose_interp3D_test_insert<true,true>) );
-	lstTests.push_back( TestData("CPose3DInterpolator: insert pose random", &pose_interp3D_test_insert<false,true>) );
-	lstTests.push_back( TestData("CPose3DInterpolator: query", &pose_interp3D_test_insert<true, false>));
+	lstTests.push_back( TestData("CPose3DInterpolator: CPose3D insert pose at end", &pose_interp3D_test_insert<mrpt::poses::CPose3D, true,true>) );
+	lstTests.push_back( TestData("CPose3DInterpolator: CPose3D insert pose random", &pose_interp3D_test_insert<mrpt::poses::CPose3D, false,true>) );
+	lstTests.push_back( TestData("CPose3DInterpolator: CPose3D query", &pose_interp3D_test_insert<mrpt::poses::CPose3D,true, false>));
+
+	lstTests.push_back(TestData("CPose3DInterpolator: TPose3D insert pose at end", &pose_interp3D_test_insert<mrpt::math::TPose3D, true, true>));
+	lstTests.push_back(TestData("CPose3DInterpolator: TPose3D insert pose random", &pose_interp3D_test_insert<mrpt::math::TPose3D, false, true>));
+	lstTests.push_back(TestData("CPose3DInterpolator: TPose3D query", &pose_interp3D_test_insert<mrpt::math::TPose3D, true, false>));
 
 }

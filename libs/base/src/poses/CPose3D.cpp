@@ -539,49 +539,11 @@ CPose3D mrpt::poses::operator -(const CPose3D &b)
 	return CPose3D(B_INV);
 }
 
-/*---------------------------------------------------------------
-		getAsQuaternion
----------------------------------------------------------------*/
 void CPose3D::getAsQuaternion(mrpt::math::CQuaternionDouble &q, mrpt::math::CMatrixFixedNumeric<double,4,3>   *out_dq_dr ) const
 {
 	updateYawPitchRoll();
-	// See: http://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
-	const double	cy = cos(m_yaw*0.5);
-	const double	sy = sin(m_yaw*0.5);
-	const double	cp = cos(m_pitch*0.5);
-	const double	sp = sin(m_pitch*0.5);
-	const double	cr = cos(m_roll*0.5);
-	const double	sr = sin(m_roll*0.5);
-
-	const double ccc = cr*cp*cy;
-	const double ccs = cr*cp*sy;
-	const double css = cr*sp*sy;
-	const double sss = sr*sp*sy;
-	const double scc = sr*cp*cy;
-	const double ssc = sr*sp*cy;
-	const double csc = cr*sp*cy;
-	const double scs = sr*cp*sy;
-
-	q[0] = ccc+sss;
-	q[1] = scc-css;
-	q[2] = csc+scs;
-	q[3] = ccs-ssc;
-
-	// Compute 4x3 Jacobian: for details, see technical report:
-	//   Parameterizations of SE(3) transformations: equivalences, compositions and uncertainty, J.L. Blanco (2010).
-	//   http://www.mrpt.org/6D_poses:equivalences_compositions_and_uncertainty
-	if (out_dq_dr)
-	{
-		MRPT_ALIGN16 const double nums[4*3] = {
-			-0.5*q[3], 0.5*( -csc+scs ), -0.5*q[1],
-			-0.5*q[2],  0.5*( -ssc-ccs ), 0.5* q[0],
-			0.5*q[1], 0.5*( ccc-sss  ),  0.5*q[3],
-			0.5* q[0], 0.5*( -css-scc ), -0.5*q[2]
-		};
-		out_dq_dr->loadFromArray(nums);
-	}
+	mrpt::math::TPose3D(0, 0, 0, m_yaw, m_pitch, m_roll).getAsQuaternion(q, out_dq_dr);
 }
-
 
 bool mrpt::poses::operator==(const CPose3D &p1,const CPose3D &p2)
 {

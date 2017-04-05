@@ -13,16 +13,14 @@
 #include <mrpt/system/datetime.h>
 #include <mrpt/utils/TEnumType.h>
 #include <mrpt/utils/aligned_containers.h>
-#include <mrpt/math/math_frwds.h>
-#include <mrpt/poses/CPose3D.h>
+#include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/poses/poses_frwds.h>
 
 namespace mrpt
 {
 	namespace poses
 	{
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( CPose3DInterpolator, mrpt::utils::CSerializable )
-
-		typedef std::pair<mrpt::system::TTimeStamp, mrpt::poses::CPose3D> TTimePosePair;
 
 		/** This class stores a time-stamped trajectory in SE(3) (CPose3D poses). 
 		  *  It can also interpolate SE(3) poses over time using linear, splines or SLERP interpolation, as set in CPose3DInterpolator::setInterpolationMethod()
@@ -35,15 +33,13 @@ namespace mrpt
 		  *
 		  * path.setInterpolationMethod( CPose3DInterpolator::imSplineSlerp );
 		  *
-		  * path.insert( t0, CPose3D(...) );
-		  * path.insert( t1, CPose3D(...) );
-		  * path.insert( t2, CPose3D(...) );
-		  * path.insert( t3, CPose3D(...) );
+		  * path.insert( t0, mrpt::poses::CPose3D(...) );
+		  * path.insert( t1, mrpt::math::TPose3D(...) ); // prefered (faster)
 		  *
-		  * CPose3D p;
+		  * mrpt::math::TPose3D p;
 		  * bool valid;
 		  *
-		  * cout << "Pose at t: " << path.interpolate(t,p,valid) << endl;
+		  * cout << "Pose at t: " << path.interpolate(t,p,valid).asString() << endl;
 		  * \endcode
 		  *
 		  *  Time is represented with mrpt::system::TTimeStamp. See mrpt::system for methods and utilities to manage these time references.
@@ -58,15 +54,16 @@ namespace mrpt
 			// This must be added to any CSerializable derived class:
 			DEFINE_SERIALIZABLE( CPose3DInterpolator )
 
-		 private:
-			 typedef mrpt::aligned_containers< mrpt::system::TTimeStamp, CPose3D >::map_t TPath;
-			 TPath	m_path;		//!< The sequence of poses
+		private:
+			typedef std::map<mrpt::system::TTimeStamp, mrpt::math::TPose3D> TPath;
+			TPath m_path; //!< The sequence of poses
+		public:
+			typedef std::pair<mrpt::system::TTimeStamp, mrpt::math::TPose3D> TTimePosePair;
 
-		 public:
-			 typedef TPath::iterator		iterator;
-			 typedef TPath::const_iterator const_iterator;
-			 typedef TPath::reverse_iterator		reverse_iterator;
-			 typedef TPath::const_reverse_iterator const_reverse_iterator;
+			typedef TPath::iterator		iterator;
+			typedef TPath::const_iterator const_iterator;
+			typedef TPath::reverse_iterator		reverse_iterator;
+			typedef TPath::const_reverse_iterator const_reverse_iterator;
 
 			 /** Type to select the interpolation method in CPose3DInterpolator::setInterpolationMethod
 			   *  - imSpline: Spline interpolation using 4 points (2 before + 2 after the query point).
@@ -128,14 +125,13 @@ namespace mrpt
 			 iterator find(const mrpt::system::TTimeStamp & t) { return m_path.find(t); }
 			 const_iterator find(const mrpt::system::TTimeStamp & t) const { return m_path.find(t); }
 
-			 /** Creates an empty interpolator (with no points).
-			  */
-			 CPose3DInterpolator();
+			CPose3DInterpolator(); //!< Default ctor: empty sequence of poses
 
-			 /** Inserts a new pose in the sequence.
-			   *  It overwrites any previously existing pose at exactly the same time.
-			   */
-			 void insert( mrpt::system::TTimeStamp t, const CPose3D &p);
+			/** Inserts a new pose in the sequence.
+			  *  It overwrites any previously existing pose at exactly the same time.
+			  */
+			void insert( mrpt::system::TTimeStamp t, const mrpt::math::TPose3D &p);
+			void insert( mrpt::system::TTimeStamp t, const mrpt::poses::CPose3D &p); //!< Overload (slower)
 
 			 /** Returns the pose at a given time, or interpolates using splines if there is not an exact match.
 			   * \param t The time of the point to interpolate.
@@ -143,10 +139,10 @@ namespace mrpt
 			   * \param out_valid_interp Whether there was information enough to compute the interpolation.
 			   * \return A reference to out_interp
 			   */
-			 CPose3D &interpolate( mrpt::system::TTimeStamp t, CPose3D &out_interp, bool &out_valid_interp ) const;
+			mrpt::math::TPose3D &interpolate( mrpt::system::TTimeStamp t, mrpt::math::TPose3D &out_interp, bool &out_valid_interp ) const;
+			mrpt::poses::CPose3D &interpolate(mrpt::system::TTimeStamp t, mrpt::poses::CPose3D &out_interp, bool &out_valid_interp) const; //!< \overload (slower)
 
-			 /** Clears the current sequence of poses */
-			 void clear();
+			void clear(); //!< Clears the current sequence of poses
 
 			 /** Set value of the maximum time to consider interpolation.
 			   *  If set to a negative value, the check is disabled (default behavior).
@@ -156,10 +152,10 @@ namespace mrpt
 			 /** Set value of the maximum time to consider interpolation */
 			 double getMaxTimeInterpolation( );
 
-			 /** Get the previous CPose3D in the map with a minimum defined distance
-			   * \return true if pose was found, false otherwise.
-			   */
-			 bool getPreviousPoseWithMinDistance( const mrpt::system::TTimeStamp &t, double distance, CPose3D &out_pose );
+			/** Get the previous CPose3D in the map with a minimum defined distance.
+			* \return true if pose was found, false otherwise */
+			bool getPreviousPoseWithMinDistance( const mrpt::system::TTimeStamp &t, double distance, mrpt::math::TPose3D &out_pose );
+			bool getPreviousPoseWithMinDistance( const mrpt::system::TTimeStamp &t, double distance, CPose3D &out_pose ); //!< \overload (slower)
 
 			 /** Saves the points in the interpolator to a text file, with this format:
 			   *  Each row contains these elements separated by spaces:
@@ -184,14 +180,9 @@ namespace mrpt
 			 bool loadFromTextFile(const std::string &s);
 
 			 /**  Computes the bounding box in X,Y,Z of the whole vehicle path.
-			   * \exception std::exception On empty path
-			   */
-			 void getBoundingBox(CPoint3D &minCorner, CPoint3D &maxCorner) const;
-
-			 /**  Computes the bounding box in X,Y,Z of the whole vehicle path.
-			   * \exception std::exception On empty path
-			   */
-			 void getBoundingBox(mrpt::math::TPoint3D &minCorner, mrpt::math::TPoint3D &maxCorner) const;
+			   * \exception std::exception On empty path */
+			void getBoundingBox(CPoint3D &minCorner, CPoint3D &maxCorner) const;
+			void getBoundingBox(mrpt::math::TPoint3D &minCorner, mrpt::math::TPoint3D &maxCorner) const; //!< \overload
 
 			 /** Change the method used to interpolate the robot path.
 			   *  The default method at construction is "imSpline".
@@ -212,9 +203,9 @@ namespace mrpt
 
 
 		private:
-			 double maxTimeInterpolation; //!< Maximum time considered to interpolate. If the difference between the desired timestamp where to interpolate and the next timestamp stored in the map is bigger than this value, the interpolation will not be done.
+			double maxTimeInterpolation; //!< Maximum time considered to interpolate. If the difference between the desired timestamp where to interpolate and the next timestamp stored in the map is bigger than this value, the interpolation will not be done.
 
-			 TInterpolatorMethod 	m_method;
+			TInterpolatorMethod 	m_method;
 
 		}; // End of class def.
 		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE( CPose3DInterpolator, mrpt::utils::CSerializable )
