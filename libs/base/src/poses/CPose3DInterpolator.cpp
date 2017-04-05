@@ -17,8 +17,9 @@
 #include <mrpt/utils/stl_serialization.h>
 #include <mrpt/math/slerp.h>
 #include <mrpt/math/wrap2pi.h>
-#include <mrpt/math/interp_fit.h>
+#include <mrpt/math/interp_fit.hpp>
 #include <mrpt/math/CMatrixD.h>
+#include <array>
 
 using namespace mrpt;
 using namespace mrpt::math;
@@ -85,15 +86,31 @@ void CPose3DInterpolator::clear()
   ---------------------------------------------------------------*/
 void CPose3DInterpolator::insert( mrpt::system::TTimeStamp t, const CPose3D &p)
 {
+	m_path[t] = mrpt::math::TPose3D(p);
+}
+void CPose3DInterpolator::insert(mrpt::system::TTimeStamp t, const mrpt::math::TPose3D &p)
+{
 	m_path[t] = p;
 }
 
 /*---------------------------------------------------------------
 						interpolate
   ---------------------------------------------------------------*/
-CPose3D & CPose3DInterpolator::interpolate( mrpt::system::TTimeStamp t, CPose3D &out_interp, bool &out_valid_interp ) const
+CPose3D & CPose3DInterpolator::interpolate(mrpt::system::TTimeStamp t, CPose3D &out_interp, bool &out_valid_interp) const
 {
+	mrpt::math::TPose3D p;
+	this->interpolate(t, p, out_valid_interp);
+	out_interp = mrpt::poses::CPose3D(p);
+	return out_interp;
+}
+
+mrpt::math::TPose3D & CPose3DInterpolator::interpolate( mrpt::system::TTimeStamp t, mrpt::math::TPose3D &out_interp, bool &out_valid_interp ) const
+{
+	using mrpt::math::TPose3D;
+
 	TTimePosePair p1, p2, p3, p4;
+
+	out_interp = TPose3D(0,0,0,0,0,0); // Default value in case of invalid interp
 
 	// Invalid?
 	if (t==INVALID_TIMESTAMP)
@@ -133,7 +150,6 @@ CPose3D & CPose3DInterpolator::interpolate( mrpt::system::TTimeStamp t, CPose3D 
 	if( it_ge1 == m_path.end() || it_ge1 == m_path.begin() )
 	{
 		out_valid_interp = false;
-		out_interp.setFromValues(0,0,0);
 		return out_interp;
 	} // end
 
@@ -143,7 +159,6 @@ CPose3D & CPose3DInterpolator::interpolate( mrpt::system::TTimeStamp t, CPose3D 
 	{
 		if (interp_method_requires_4pts) {
 			out_valid_interp = false;
-			out_interp.setFromValues(0,0,0);
 			return out_interp;
 		}
 	}
@@ -157,7 +172,6 @@ CPose3D & CPose3DInterpolator::interpolate( mrpt::system::TTimeStamp t, CPose3D 
 	{
 		if (interp_method_requires_4pts) {
 			out_valid_interp = false;
-			out_interp.setFromValues(0, 0, 0);
 			return out_interp;
 		}
 	}
@@ -176,7 +190,6 @@ CPose3D & CPose3DInterpolator::interpolate( mrpt::system::TTimeStamp t, CPose3D 
 	   dt34 > maxTimeInterpolation ))
 	{
 		out_valid_interp = false;
-		out_interp.setFromValues(0,0,0);
 		return out_interp;
 	}
 
@@ -189,25 +202,25 @@ CPose3D & CPose3DInterpolator::interpolate( mrpt::system::TTimeStamp t, CPose3D 
 	// Time where to interpolate:  t
 	double td     = mrpt::system::timestampTotime_t(t);
 
-	CVectorDouble	ts;
-	ts.resize(4);
+	mrpt::math::CArrayDouble<4> ts;
+	//ts.resize(4);
 	ts[0] = mrpt::system::timestampTotime_t(p1.first);
 	ts[1] = mrpt::system::timestampTotime_t(p2.first);
 	ts[2] = mrpt::system::timestampTotime_t(p3.first);
 	ts[3] = mrpt::system::timestampTotime_t(p4.first);
 
-	CVectorDouble	X,Y,Z,yaw,pitch,roll;
-	X.resize(4);						Y.resize(4);							Z.resize(4);
-	X[0]	= p1.second.x();				Y[0]	= p1.second.y();					Z[0]	= p1.second.z();
-	X[1]	= p2.second.x();				Y[1]	= p2.second.y();					Z[1]	= p2.second.z();
-	X[2]	= p3.second.x();				Y[2]	= p3.second.y();					Z[2]	= p3.second.z();
-	X[3]	= p4.second.x();				Y[3]	= p4.second.y();					Z[3]	= p4.second.z();
+	mrpt::math::CArrayDouble<4> X,Y,Z,yaw,pitch,roll;
+	//X.resize(4);						Y.resize(4);							Z.resize(4);
+	X[0]	= p1.second.x;				Y[0]	= p1.second.y;					Z[0]	= p1.second.z;
+	X[1]	= p2.second.x;				Y[1]	= p2.second.y;					Z[1]	= p2.second.z;
+	X[2]	= p3.second.x;				Y[2]	= p3.second.y;					Z[2]	= p3.second.z;
+	X[3]	= p4.second.x;				Y[3]	= p4.second.y;					Z[3]	= p4.second.z;
 
-	yaw.resize(4);						pitch.resize(4);						roll.resize(4);
-	yaw[0]  = p1.second.yaw();			pitch[0]  = p1.second.pitch();			roll[0]  = p1.second.roll();
-	yaw[1]  = p2.second.yaw();			pitch[1]  = p2.second.pitch();			roll[1]  = p2.second.roll();
-	yaw[2]  = p3.second.yaw();			pitch[2]  = p3.second.pitch();			roll[2]  = p3.second.roll();
-	yaw[3]  = p4.second.yaw();			pitch[3]  = p4.second.pitch();			roll[3]  = p4.second.roll();
+	//yaw.resize(4);						pitch.resize(4);						roll.resize(4);
+	yaw[0]  = p1.second.yaw;			pitch[0]  = p1.second.pitch;			roll[0]  = p1.second.roll;
+	yaw[1]  = p2.second.yaw;			pitch[1]  = p2.second.pitch;			roll[1]  = p2.second.roll;
+	yaw[2]  = p3.second.yaw;			pitch[2]  = p3.second.pitch;			roll[2]  = p3.second.roll;
+	yaw[3]  = p4.second.yaw;			pitch[3]  = p4.second.pitch;			roll[3]  = p4.second.roll;
 
 
 	unwrap2PiSequence(yaw);
@@ -215,8 +228,6 @@ CPose3D & CPose3DInterpolator::interpolate( mrpt::system::TTimeStamp t, CPose3D 
 	unwrap2PiSequence(roll);
 
 	// Target interpolated values:
-	double int_x,int_y,int_z,int_yaw,int_pitch,int_roll;
-
 	switch (m_method)
 	{
 	case imSpline:
@@ -224,98 +235,84 @@ CPose3D & CPose3DInterpolator::interpolate( mrpt::system::TTimeStamp t, CPose3D 
 		// ---------------------------------------
 		//    SPLINE INTERPOLATION
 		// ---------------------------------------
-		int_x		= math::spline(td, ts, X);
-		int_y		= math::spline(td, ts, Y);
-		int_z		= math::spline(td, ts, Z);
-		int_yaw		= math::spline(td, ts, yaw,		true );	// Wrap 2pi
-		int_pitch	= math::spline(td, ts, pitch,	true );
-		int_roll	= math::spline(td, ts, roll,	true );
-
+		out_interp.x		= math::spline(td, ts, X);
+		out_interp.y		= math::spline(td, ts, Y);
+		out_interp.z		= math::spline(td, ts, Z);
+		out_interp.yaw		= math::spline(td, ts, yaw,		true );	// Wrap 2pi
+		out_interp.pitch	= math::spline(td, ts, pitch,	true );
+		out_interp.roll	= math::spline(td, ts, roll,	true );
 		}
 		break;
 
 	case imLinear2Neig:
 		{
-		int_x		= math::interpolate2points(td, ts[1],X[1],ts[2],X[2]);
-		int_y		= math::interpolate2points(td, ts[1],Y[1],ts[2],Y[2]);
-		int_z		= math::interpolate2points(td, ts[1],Z[1],ts[2],Z[2]);
-		int_yaw		= math::interpolate2points(td, ts[1],yaw[1],ts[2],yaw[2],	true );	// Wrap 2pi
-		int_pitch	= math::interpolate2points(td, ts[1],pitch[1],ts[2],pitch[2],	true );
-		int_roll	= math::interpolate2points(td, ts[1],roll[1],ts[2],roll[2],	true );
+		out_interp.x		= math::interpolate2points(td, ts[1],X[1],ts[2],X[2]);
+		out_interp.y		= math::interpolate2points(td, ts[1],Y[1],ts[2],Y[2]);
+		out_interp.z		= math::interpolate2points(td, ts[1],Z[1],ts[2],Z[2]);
+		out_interp.yaw		= math::interpolate2points(td, ts[1],yaw[1],ts[2],yaw[2],	true );	// Wrap 2pi
+		out_interp.pitch	= math::interpolate2points(td, ts[1],pitch[1],ts[2],pitch[2],	true );
+		out_interp.roll	= math::interpolate2points(td, ts[1],roll[1],ts[2],roll[2],	true );
 		}
 		break;
 
 	case imLinear4Neig:
 		{
-		int_x		= math::leastSquareLinearFit(td, ts, X);
-		int_y		= math::leastSquareLinearFit(td, ts, Y);
-		int_z		= math::leastSquareLinearFit(td, ts, Z);
-		int_yaw		= math::leastSquareLinearFit(td, ts, yaw,	true );	// Wrap 2pi
-		int_pitch	= math::leastSquareLinearFit(td, ts, pitch,	true );
-		int_roll	= math::leastSquareLinearFit(td, ts, roll,	true );
+		out_interp.x		= math::leastSquareLinearFit<double,decltype(ts), 4>(td, ts, X);
+		out_interp.y		= math::leastSquareLinearFit<double, decltype(ts), 4>(td, ts, Y);
+		out_interp.z		= math::leastSquareLinearFit<double, decltype(ts), 4>(td, ts, Z);
+		out_interp.yaw		= math::leastSquareLinearFit<double, decltype(ts), 4>(td, ts, yaw,	true );	// Wrap 2pi
+		out_interp.pitch	= math::leastSquareLinearFit<double, decltype(ts), 4>(td, ts, pitch,	true );
+		out_interp.roll		= math::leastSquareLinearFit<double, decltype(ts), 4>(td, ts, roll,	true );
 		}
 		break;
 
 	case imSSLLLL:
 		{
-		int_x		= math::spline(td, ts, X);
-		int_y		= math::spline(td, ts, Y);
-		int_z		= math::leastSquareLinearFit(td, ts, Z);
-		int_yaw		= math::leastSquareLinearFit(td, ts, yaw,	true );	// Wrap 2pi
-		int_pitch	= math::leastSquareLinearFit(td, ts, pitch,	true );
-		int_roll	= math::leastSquareLinearFit(td, ts, roll,	true );
+		out_interp.x		= math::spline(td, ts, X);
+		out_interp.y		= math::spline(td, ts, Y);
+		out_interp.z		= math::leastSquareLinearFit<double, decltype(ts), 4>(td, ts, Z);
+		out_interp.yaw		= math::leastSquareLinearFit<double, decltype(ts), 4>(td, ts, yaw,	true );	// Wrap 2pi
+		out_interp.pitch	= math::leastSquareLinearFit<double, decltype(ts), 4>(td, ts, pitch,	true );
+		out_interp.roll	= math::leastSquareLinearFit<double, decltype(ts), 4>(td, ts, roll,	true );
 		}
 		break;
 
 	case imSSLSLL:
 		{
-		int_x		= math::spline(td, ts, X);
-		int_y		= math::spline(td, ts, Y);
-		int_z		= math::leastSquareLinearFit(td, ts, Z);
-		int_yaw		= math::spline(td, ts, yaw,	true );					// Wrap 2pi
-		int_pitch	= math::leastSquareLinearFit(td, ts, pitch,	true );
-		int_roll	= math::leastSquareLinearFit(td, ts, roll,	true );
+		out_interp.x		= math::spline(td, ts, X);
+		out_interp.y		= math::spline(td, ts, Y);
+		out_interp.z		= math::leastSquareLinearFit<double, decltype(ts), 4>(td, ts, Z);
+		out_interp.yaw		= math::spline(td, ts, yaw,	true );					// Wrap 2pi
+		out_interp.pitch	= math::leastSquareLinearFit<double, decltype(ts), 4>(td, ts, pitch,	true );
+		out_interp.roll	= math::leastSquareLinearFit<double, decltype(ts), 4>(td, ts, roll,	true );
 		}
 		break;
 
 	case imLinearSlerp:
 		{
-		int_x		= math::interpolate2points(td, ts[1],X[1],ts[2],X[2]);
-		int_y		= math::interpolate2points(td, ts[1],Y[1],ts[2],Y[2]);
-		int_z		= math::interpolate2points(td, ts[1],Z[1],ts[2],Z[2]);
-
-		const CPose3D aux1(0,0,0,yaw[1],pitch[1],roll[1]);
-		const CPose3D aux2(0,0,0,yaw[2],pitch[2],roll[2]);
-		CPose3D  q_interp;
-
 		const double ratio = (td-ts[1])/(ts[2]-ts[1]);
-		mrpt::math::slerp(aux1,aux2, ratio, q_interp);
-
-		q_interp.getYawPitchRoll(int_yaw,int_pitch,int_roll);
-		}
+		mrpt::math::slerp_ypr(TPose3D(0,0,0,yaw[1], pitch[1], roll[1]), TPose3D(0, 0, 0, yaw[2], pitch[2], roll[2]), ratio, out_interp);
+	
+		out_interp.x = math::interpolate2points(td, ts[1], X[1], ts[2], X[2]);
+		out_interp.y = math::interpolate2points(td, ts[1], Y[1], ts[2], Y[2]);
+		out_interp.z = math::interpolate2points(td, ts[1], Z[1], ts[2], Z[2]);
+	}
 		break;
 
 	case imSplineSlerp:
 		{
-		int_x		= math::spline(td, ts, X);
-		int_y		= math::spline(td, ts, Y);
-		int_z		= math::spline(td, ts, Z);
+		const double ratio = (td - ts[1]) / (ts[2] - ts[1]);
+		mrpt::math::slerp_ypr(TPose3D(0, 0, 0, yaw[1], pitch[1], roll[1]), TPose3D(0, 0, 0, yaw[2], pitch[2], roll[2]), ratio, out_interp);
 
-		const CPose3D aux1(0,0,0,yaw[1],pitch[1],roll[1]);
-		const CPose3D aux2(0,0,0,yaw[2],pitch[2],roll[2]);
-		CPose3D  q_interp;
-
-		const double ratio = (td-ts[1])/(ts[2]-ts[1]);
-		mrpt::math::slerp(aux1,aux2, ratio, q_interp);
-
-		q_interp.getYawPitchRoll(int_yaw,int_pitch,int_roll);
+		out_interp.x = math::spline(td, ts, X);
+		out_interp.y = math::spline(td, ts, Y);
+		out_interp.z = math::spline(td, ts, Z);
 		}
 		break;
 
 	default: THROW_EXCEPTION("Unknown value for interpolation method!");
 	}; // end switch
 
-	out_interp.setFromValues(int_x, int_y, int_z, int_yaw, int_pitch, int_roll);
 	out_valid_interp = true;
 	return out_interp;
 
@@ -324,13 +321,20 @@ CPose3D & CPose3DInterpolator::interpolate( mrpt::system::TTimeStamp t, CPose3D 
 /*---------------------------------------------------------------
 					    getPreviousPose
   ---------------------------------------------------------------*/
+bool CPose3DInterpolator::getPreviousPoseWithMinDistance(const mrpt::system::TTimeStamp &t, double distance, CPose3D &out_pose)
+{
+	mrpt::math::TPose3D p;
+	bool ret = getPreviousPoseWithMinDistance(t, distance, p);
+	out_pose = mrpt::poses::CPose3D(p);
+	return ret;
+}
 
-bool CPose3DInterpolator::getPreviousPoseWithMinDistance(  const mrpt::system::TTimeStamp &t, double distance, CPose3D &out_pose )
+bool CPose3DInterpolator::getPreviousPoseWithMinDistance(  const mrpt::system::TTimeStamp &t, double distance, mrpt::math::TPose3D &out_pose )
 {
 	if( m_path.size() == 0 || distance <=0 )
 		return false;
 
-	CPose3D			myPose;
+	mrpt::math::TPose3D myPose;
 
 	// Search for the desired timestamp
 	iterator  it = m_path.find(t);
@@ -339,12 +343,11 @@ bool CPose3DInterpolator::getPreviousPoseWithMinDistance(  const mrpt::system::T
 	else
 		return false;
 
-
 	double d = 0.0;
 	do
 	{
 		--it;
-		d = myPose.distance2DTo( it->second.x(), it->second.y());
+		d = (mrpt::math::TPoint2D(myPose) - mrpt::math::TPoint2D(it->second)).norm();
 	} while( d < distance && it != m_path.begin() );
 
 	if( d >= distance )
@@ -385,12 +388,12 @@ bool CPose3DInterpolator::saveToTextFile(const std::string &s) const
 
 		for (const_iterator i=m_path.begin();i!=m_path.end();++i)
 		{
-			const double	t  = timestampTotime_t(i->first);
-			const CPose3D	&p = i->second;
+			const double  t  = timestampTotime_t(i->first);
+			const auto    &p = i->second;
 			int r = f.printf("%.06f %.06f %.06f %.06f %.06f %.06f %.06f\n",
 				t,
-				p.x(),p.y(),p.z(),
-				p.yaw(),p.pitch(),p.roll());
+				p.x,p.y,p.z,
+				p.yaw,p.pitch,p.roll);
 			ASSERT_(r>0);
 		}
 
@@ -421,7 +424,7 @@ bool CPose3DInterpolator::saveInterpolatedToTextFile(const std::string &s, doubl
 
 		//cout << "Interp: " << t_ini << " " << t_end << " " << At << endl;
 
-		CPose3D	   p;
+		mrpt::math::TPose3D	   p;
 		bool       valid;
 
 		for (TTimeStamp t=t_ini;t<=t_end;t+=At)
@@ -431,8 +434,8 @@ bool CPose3DInterpolator::saveInterpolatedToTextFile(const std::string &s, doubl
 
 			int r = f.printf("%.06f %.06f %.06f %.06f %.06f %.06f %.06f\n",
 				mrpt::system::timestampTotime_t(t),
-				p.x(),p.y(),p.z(),
-				p.yaw(),p.pitch(),p.roll());
+				p.x,p.y,p.z,
+				p.yaw,p.pitch,p.roll);
 			ASSERT_(r>0);
 		}
 
@@ -471,7 +474,7 @@ bool CPose3DInterpolator::loadFromTextFile(const std::string &s)
 	// load into the path:
 	const size_t N = M.getColCount();
 	for (size_t i=0;i<N;i++)
-		insert(time_tToTimestamp( M(i,0) ), CPose3D( M(i,1),M(i,2),M(i,3),M(i,4),M(i,5),M(i,6) ) );
+		insert(time_tToTimestamp( M(i,0) ), mrpt::math::TPose3D( M(i,1),M(i,2),M(i,3),M(i,4),M(i,5),M(i,6) ) );
 
 	return true;
 	MRPT_END
@@ -488,12 +491,12 @@ void CPose3DInterpolator::getBoundingBox(mrpt::math::TPoint3D &Min, mrpt::math::
 
 	for (const_iterator p=m_path.begin();p!=m_path.end();++p)
 	{
-		Min.x = min( Min.x, p->second.x());
-		Min.y = min( Min.y, p->second.y());
-		Min.z = min( Min.z, p->second.z());
-		Max.x = max( Max.x, p->second.x());
-		Max.y = max( Max.y, p->second.y());
-		Max.z = max( Max.z, p->second.z());
+		Min.x = min( Min.x, p->second.x);
+		Min.y = min( Min.y, p->second.y);
+		Min.z = min( Min.z, p->second.z);
+		Max.x = max( Max.x, p->second.x);
+		Max.y = max( Max.y, p->second.y);
+		Max.z = max( Max.z, p->second.z);
 	}
 
 	MRPT_END
@@ -576,16 +579,16 @@ void CPose3DInterpolator::filter( unsigned int component, unsigned int samples )
 		{
 		    particles.m_particles[i].log_w = 0;
 		    particles.m_particles[i].d->setFromValues(
-                        it1->second.x(), it1->second.y(), it1->second.z(),
-                        it1->second.yaw(), it1->second.pitch(), it1->second.roll() );
+                        it1->second.x, it1->second.y, it1->second.z,
+                        it1->second.yaw, it1->second.pitch, it1->second.roll );
 			switch( component )
 			{
-				case 0:	particles.m_particles[i].d->x(it2->second.x());		break;
-				case 1:	particles.m_particles[i].d->y(it2->second.y());		break;
-				case 2:	particles.m_particles[i].d->z(it2->second.z());		break;
-				case 3:	particles.m_particles[i].d->setYawPitchRoll(it2->second.yaw(),it1->second.pitch(),it1->second.roll()); break;
-				case 4:	particles.m_particles[i].d->setYawPitchRoll(it1->second.yaw(),it2->second.pitch(),it1->second.roll()); 	break;
-				case 5:	particles.m_particles[i].d->setYawPitchRoll(it1->second.yaw(),it1->second.pitch(),it2->second.roll()); 	break;
+				case 0:	particles.m_particles[i].d->x(it2->second.x);		break;
+				case 1:	particles.m_particles[i].d->y(it2->second.y);		break;
+				case 2:	particles.m_particles[i].d->z(it2->second.z);		break;
+				case 3:	particles.m_particles[i].d->setYawPitchRoll(it2->second.yaw,it1->second.pitch,it1->second.roll); break;
+				case 4:	particles.m_particles[i].d->setYawPitchRoll(it1->second.yaw,it2->second.pitch,it1->second.roll); 	break;
+				case 5:	particles.m_particles[i].d->setYawPitchRoll(it1->second.yaw,it1->second.pitch,it2->second.roll); 	break;
 			} // end switch
 		} // end for it2
         particles.getMean( auxPose );
