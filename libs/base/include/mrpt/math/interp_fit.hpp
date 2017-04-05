@@ -170,7 +170,7 @@ void leastSquareLinearFit( const VECTORLIKE1 &ts,
 		Xt.set_unsafe(1,i, x[i]-x_min);
 	}
 
-	const auto VECTORLIKE B = ((Xt*Xt.transpose()).inv().eval()*Xt*y).eval();
+	const auto B = ((Xt*Xt.transpose()).inv().eval()*Xt*y).eval();
 	ASSERT_(B.size() == 2)
 
 	const size_t tsN = size_t(ts.size());
