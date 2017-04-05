@@ -109,7 +109,7 @@ mrpt::math::TPose3D & CPose3DInterpolator::interpolate( mrpt::system::TTimeStamp
 	using mrpt::math::TPose3D;
 
 	TTimePosePair p1, p2, p3, p4;
-
+	p1.second = p2.second = p3.second = p4.second =
 	out_interp = TPose3D(0,0,0,0,0,0); // Default value in case of invalid interp
 
 	// Invalid?
@@ -210,13 +210,11 @@ mrpt::math::TPose3D & CPose3DInterpolator::interpolate( mrpt::system::TTimeStamp
 	ts[3] = mrpt::system::timestampTotime_t(p4.first);
 
 	mrpt::math::CArrayDouble<4> X,Y,Z,yaw,pitch,roll;
-	//X.resize(4);						Y.resize(4);							Z.resize(4);
 	X[0]	= p1.second.x;				Y[0]	= p1.second.y;					Z[0]	= p1.second.z;
 	X[1]	= p2.second.x;				Y[1]	= p2.second.y;					Z[1]	= p2.second.z;
 	X[2]	= p3.second.x;				Y[2]	= p3.second.y;					Z[2]	= p3.second.z;
 	X[3]	= p4.second.x;				Y[3]	= p4.second.y;					Z[3]	= p4.second.z;
 
-	//yaw.resize(4);						pitch.resize(4);						roll.resize(4);
 	yaw[0]  = p1.second.yaw;			pitch[0]  = p1.second.pitch;			roll[0]  = p1.second.roll;
 	yaw[1]  = p2.second.yaw;			pitch[1]  = p2.second.pitch;			roll[1]  = p2.second.roll;
 	yaw[2]  = p3.second.yaw;			pitch[2]  = p3.second.pitch;			roll[2]  = p3.second.roll;
