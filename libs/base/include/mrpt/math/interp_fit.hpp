@@ -160,7 +160,7 @@ void leastSquareLinearFit( const VECTORLIKE1 &ts,
 	const size_t N = x.size();
 
 	// X= [1 columns of ones, x' ]
-	typedef decltype(x[0]) NUM;
+	typedef typename VECTORLIKE3::value_type NUM;
 	const NUM x_min = x.minimum();
 	Eigen::Matrix<NUM, 2, NUM_POINTS> Xt;
 	Xt.resize(2, N);
