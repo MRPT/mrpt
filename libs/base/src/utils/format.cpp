@@ -12,6 +12,7 @@
 
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/system/os.h>
+#include <mrpt/system/memory.h>
 
 #include <cstdarg>
 
@@ -25,22 +26,33 @@ string mrpt::format(const char *fmt, ...)
 {
 	if (!fmt) return string("");
 
-	int   result = -1, length = 1024;
-	vector<char> buffer;
+	int   result = -1, length = 2048;
+	char *buffer=nullptr;
 	while (result == -1)
 	{
-		buffer.resize(length + 10);
+		if (buffer!=nullptr) {
+			mrpt_alloca_free(buffer);
+		}
+		buffer= static_cast<char*>(mrpt_alloca(length+10));
+		if (buffer==nullptr) THROW_EXCEPTION("mrpt::format(): Out of memory?");
 
 		va_list args;  // This must be done WITHIN the loop
 		va_start(args,fmt);
-		result = os::vsnprintf(&buffer[0], length, fmt, args);
+		result = os::vsnprintf(buffer, length, fmt, args);
 		va_end(args);
 
 		// Truncated?
 		if (result>=length) result=-1;
 		length*=2;
 	}
-	string s(&buffer[0]);
+
+#if defined(HAVE_ALLOCA)
+	// We are safe to directly return without an explicit alloca_free():
+	return string(buffer);
+#else
+	string s(buffer);
+	mrpt_alloca_free(buffer);
 	return s;
+#endif
 }
 

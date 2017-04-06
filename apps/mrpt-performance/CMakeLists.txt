@@ -39,7 +39,8 @@ ADD_EXECUTABLE(${PROJECT_NAME}
 	perf-scan_matching.cpp
 	perf-CObservation3DRangeScan.cpp
 	perf-atan2lut.cpp
-	 ${MRPT_VERSION_RC_FILE}
+	perf-strings.cpp
+	${MRPT_VERSION_RC_FILE}
 	)
 
 # Add the required libraries for linking:
