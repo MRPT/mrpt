@@ -386,8 +386,8 @@ void CAbstractNavigator::updateCurrentPoseAndSpeeds()
 	}
 
 	// Append to list of past poses:
-	m_latestPoses.insert(m_curPoseVel.timestamp, mrpt::poses::CPose3D(mrpt::math::TPose3D(m_curPoseVel.pose)));
-	m_latestOdomPoses.insert(m_curPoseVel.timestamp, mrpt::poses::CPose3D(mrpt::math::TPose3D(m_curPoseVel.rawOdometry)));
+	m_latestPoses.insert(m_curPoseVel.timestamp, m_curPoseVel.pose);
+	m_latestOdomPoses.insert(m_curPoseVel.timestamp, m_curPoseVel.rawOdometry);
 
 	// Purge old ones:
 	while (m_latestPoses.size() > 1 &&
