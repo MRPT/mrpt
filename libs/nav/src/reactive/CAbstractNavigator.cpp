@@ -72,8 +72,8 @@ CAbstractNavigator::CAbstractNavigator(CRobot2NavInterface &react_iterf_impl) :
 	m_latestOdomPoses     (),
 	m_timlog_delays       (true, "CAbstractNavigator::m_timlog_delays")
 {
-	m_latestPoses.setInterpolationMethod(mrpt::poses::CPose3DInterpolator::imLinear2Neig);
-	m_latestOdomPoses.setInterpolationMethod(mrpt::poses::CPose3DInterpolator::imLinear2Neig);
+	m_latestPoses.setInterpolationMethod(mrpt::poses::imLinear2Neig);
+	m_latestOdomPoses.setInterpolationMethod(mrpt::poses::imLinear2Neig);
 	this->setVerbosityLevel(mrpt::utils::LVL_DEBUG);
 }
 
