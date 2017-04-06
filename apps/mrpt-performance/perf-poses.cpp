@@ -7,8 +7,13 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/math.h>
-#include <mrpt/poses.h>
+#include <mrpt/poses/CPoint2D.h>
+#include <mrpt/poses/CPose2D.h>
+#include <mrpt/poses/CPose3D.h>
+#include <mrpt/poses/CPose3DQuat.h>
+#include <mrpt/poses/CPose3DPDFGaussian.h>
+#include <mrpt/poses/CPose3DQuatPDFGaussian.h>
+#include <mrpt/random/RandomGenerators.h>
 
 #include "common.h"
 
@@ -21,7 +26,7 @@ using namespace std;
 
 
 // ------------------------------------------------------
-//				Benchmark Misc. Math
+//				Benchmark Poses
 // ------------------------------------------------------
 
 // 3D ======================

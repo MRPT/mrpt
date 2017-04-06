@@ -134,6 +134,7 @@ int main(int argc, char **argv)
 		// --------------------
 		register_tests_icpslam();
 		register_tests_poses();
+		register_tests_pose_interp();
 		register_tests_matrices();
 		register_tests_grids();
 		register_tests_pointmaps();
@@ -147,6 +148,7 @@ int main(int argc, char **argv)
 		register_tests_graphslam();
 		register_tests_CObservation3DRangeScan();
 		register_tests_atan2lut();
+		register_tests_strings();
 
 		if (doLog)
 		{

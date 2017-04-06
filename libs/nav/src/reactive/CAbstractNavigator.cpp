@@ -72,8 +72,8 @@ CAbstractNavigator::CAbstractNavigator(CRobot2NavInterface &react_iterf_impl) :
 	m_latestOdomPoses     (),
 	m_timlog_delays       (true, "CAbstractNavigator::m_timlog_delays")
 {
-	m_latestPoses.setInterpolationMethod(mrpt::poses::CPose3DInterpolator::imLinear2Neig);
-	m_latestOdomPoses.setInterpolationMethod(mrpt::poses::CPose3DInterpolator::imLinear2Neig);
+	m_latestPoses.setInterpolationMethod(mrpt::poses::imLinear2Neig);
+	m_latestOdomPoses.setInterpolationMethod(mrpt::poses::imLinear2Neig);
 	this->setVerbosityLevel(mrpt::utils::LVL_DEBUG);
 }
 
@@ -386,8 +386,8 @@ void CAbstractNavigator::updateCurrentPoseAndSpeeds()
 	}
 
 	// Append to list of past poses:
-	m_latestPoses.insert(m_curPoseVel.timestamp, mrpt::poses::CPose3D(mrpt::math::TPose3D(m_curPoseVel.pose)));
-	m_latestOdomPoses.insert(m_curPoseVel.timestamp, mrpt::poses::CPose3D(mrpt::math::TPose3D(m_curPoseVel.rawOdometry)));
+	m_latestPoses.insert(m_curPoseVel.timestamp, m_curPoseVel.pose);
+	m_latestOdomPoses.insert(m_curPoseVel.timestamp, m_curPoseVel.rawOdometry);
 
 	// Purge old ones:
 	while (m_latestPoses.size() > 1 &&
