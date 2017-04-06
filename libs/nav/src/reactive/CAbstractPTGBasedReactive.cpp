@@ -466,18 +466,14 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			// Note: we use (uncorrected) raw odometry as basis to the following calculation since it's normally 
 			// smoother than particle filter-based localization data, more accurate in the middle/long term, 
 			// but not in the short term:
-			MRPT_TODO("Write a CPose2DInterpolator class");
-			CPose3D robot_odom3d_at_send_cmd, robot_pose3d_at_send_cmd;
+			mrpt::math::TPose2D robot_pose_at_send_cmd, robot_odom_at_send_cmd;
 			bool valid_odom, valid_pose;
 
-			m_latestOdomPoses.interpolate(tim_send_cmd_vel_corrected, robot_odom3d_at_send_cmd, valid_odom);
-			m_latestPoses.interpolate(tim_send_cmd_vel_corrected, robot_pose3d_at_send_cmd, valid_pose);
+			m_latestOdomPoses.interpolate(tim_send_cmd_vel_corrected, robot_odom_at_send_cmd, valid_odom);
+			m_latestPoses.interpolate(tim_send_cmd_vel_corrected, robot_pose_at_send_cmd, valid_pose);
 
 			if (valid_odom && valid_pose)
 			{
-				const mrpt::math::TPose2D robot_pose_at_send_cmd = mrpt::math::TPose2D( CPose2D(robot_pose3d_at_send_cmd) );
-				const mrpt::math::TPose2D robot_odom_at_send_cmd = mrpt::math::TPose2D( CPose2D(robot_odom3d_at_send_cmd) );
-
 				ASSERT_(last_sent_ptg!=nullptr);
 
 				const TPose2D relTarget_NOP = m_navigationParams->target - robot_pose_at_send_cmd;
@@ -1017,9 +1013,6 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 		}
 	}
 
-	//  SAVE LOG
-	log.evalFactors = cm.props;
-
 	MRPT_END;
 }
 
@@ -1306,8 +1299,10 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
 				m_lastSentVelCmd.colfreedist_move_k
 				:
 				.0;
-		}
 
+			//  SAVE LOG
+			newLogRec.infoPerPTG[idx_in_log_infoPerPTGs].evalFactors = cm.props;
+		}
 
 	} // end "valid_TP"
 
