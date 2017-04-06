@@ -13,7 +13,7 @@
 #include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/utils/TEnumType.h>
 #include <mrpt/utils/CLoadableOptions.h>
-#include <mrpt/poses/CPose3DInterpolator.h>
+#include <mrpt/poses/CPose2DInterpolator.h>
 #include <mrpt/poses/FrameTransformer.h>
 #include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/obs/obs_frwds.h>
@@ -186,7 +186,7 @@ namespace mrpt
 		TRobotPoseVel m_curPoseVel; //!< Current robot pose (updated in CAbstractNavigator::navigationStep() )
 		double  m_last_curPoseVelUpdate_robot_time;
 		std::string m_last_curPoseVelUpdate_pose_frame_id;
-		mrpt::poses::CPose3DInterpolator m_latestPoses, m_latestOdomPoses; //!< Latest robot poses (updated in CAbstractNavigator::navigationStep() )
+		mrpt::poses::CPose2DInterpolator m_latestPoses, m_latestOdomPoses; //!< Latest robot poses (updated in CAbstractNavigator::navigationStep() )
 
 		mrpt::utils::CTimeLogger m_timlog_delays; //!< Time logger to collect delay-related stats
 
