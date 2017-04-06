@@ -82,7 +82,7 @@ void  mrpt::topography::path_from_rtk_gps(
 
 	robot_path.clear();
 	robot_path.setMaxTimeInterpolation(3.0);	// Max. seconds of GPS blackout not to interpolate.
-	robot_path.setInterpolationMethod( CPose3DInterpolator::imSSLSLL );
+	robot_path.setInterpolationMethod( mrpt::poses::imSSLSLL );
 
 	TPathFromRTKInfo	outInfoTemp;
 	if (outInfo) *outInfo = outInfoTemp;
