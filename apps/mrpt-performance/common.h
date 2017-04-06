@@ -31,6 +31,7 @@ void register_tests_graph();
 void register_tests_graphslam();
 void register_tests_CObservation3DRangeScan();
 void register_tests_atan2lut();
+void register_tests_strings();
 // -------------------------------------------------
 
 typedef double (*TestFunctor)(int a1, int a2);  // return run-time in secs.
