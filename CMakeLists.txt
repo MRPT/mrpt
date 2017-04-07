@@ -480,6 +480,11 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
 	SET(CMAKE_CXX_FLAGS_COVERAGE "${CMAKE_CXX_FLAGS_DEBUG} --coverage -fno-inline -fno-inline-small-functions -fno-default-inline")
 	SET(CMAKE_EXE_LINKER_FLAGS_COVERAGE "${CMAKE_EXE_LINKER_FLAGS_DEBUG} --coverage")
 	SET(CMAKE_SHARED_LINKER_FLAGS_COVERAGE "${CMAKE_SHARED_LINKER_FLAGS_DEBUG} --coverage")
+
+	# Trusty error: Boost needs -fext-numeric-literals
+	# /usr/include/boost/math/constants/constants.hpp:260:1148: error: unable to find numeric literal operator ‘operator""Q’
+	# /usr/include/boost/math/constants/constants.hpp:260:1148: note: use -std=gnu++11 or -fext-numeric-literals to enable more built-in suffixes
+	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fext-numeric-literals")
 ENDIF()
 
 # CLang options ================================
