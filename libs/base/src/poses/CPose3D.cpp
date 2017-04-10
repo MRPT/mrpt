@@ -9,22 +9,35 @@
 
 #include "base-precomp.h"  // Precompiled headers
 
-#include <mrpt/poses/CPose2D.h>
-#include <mrpt/poses/CPoint2D.h>
-#include <mrpt/poses/CPose3D.h>
-#include <mrpt/poses/CPoint3D.h>
-#include <mrpt/poses/CPose3DQuat.h>
-#include <mrpt/poses/CPose3DRotVec.h>
-#include <mrpt/math/CMatrix.h>
-#include <mrpt/math/geometry.h>
-#include <mrpt/math/wrap2pi.h>
-#include <mrpt/math/matrix_serialization.h>
-#include <mrpt/math/ops_matrices.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/config.h>                                     // for HAVE_SINCOS
+#include <mrpt/utils/types_math.h>                           // for CVectorD...
+#include <mrpt/math/CMatrix.h>                               // for CMatrix
+#include <mrpt/math/geometry.h>                              // for skew_sym...
+#include <mrpt/math/matrix_serialization.h>                  // for operator>>
+#include <mrpt/math/wrap2pi.h>                               // for wrapToPi
+#include <mrpt/poses/CPoint2D.h>                             // for CPoint2D
+#include <mrpt/poses/CPoint3D.h>                             // for CPoint3D
+#include <mrpt/poses/CPose2D.h>                              // for CPose2D
+#include <mrpt/poses/CPose3D.h>                              // for CPose3D
+#include <mrpt/poses/CPose3DQuat.h>                          // for CPose3DQuat
+#include <mrpt/poses/CPose3DRotVec.h>                        // for CPose3DR...
+#include <mrpt/utils/CStream.h>                              // for CStream
+#include <algorithm>                                         // for move
+#include <cmath>                                             // for fabs
+#include <iomanip>                                           // for operator<<
+#include <limits>                                            // for numeric_...
+#include <ostream>                                           // for operator<<
+#include <string>                                            // for allocator
+#include <mrpt/math/CArrayNumeric.h>                         // for CArrayDo...
+#include <mrpt/math/CMatrixFixedNumeric.h>                   // for CMatrixF...
+#include <mrpt/math/CMatrixTemplateNumeric.h>                // for CMatrixD...
+#include <mrpt/math/CQuaternion.h>                           // for CQuatern...
+#include <mrpt/math/homog_matrices.h>                        // for homogene...
+#include <mrpt/math/lightweight_geom_data.h>                 // for TPoint3D
+#include <mrpt/math/ops_containers.h>                        // for dotProduct
+#include <mrpt/utils/CSerializable.h>                        // for CSeriali...
+#include <mrpt/utils/bits.h>                                 // for square
 #include <mrpt/math/utils_matlab.h>
-#include <iomanip>
-#include <limits>
-
 
 #ifndef M_SQRT1_2
 #define M_SQRT1_2 0.70710678118654752440

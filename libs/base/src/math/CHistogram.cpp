@@ -8,7 +8,6 @@
    +---------------------------------------------------------------------------+ */
 
 #include "base-precomp.h"  // Precompiled headers
-#include <mrpt/utils/types_math.h>
 
 #include <mrpt/math/CHistogram.h>
 #include <mrpt/math/utils.h>
@@ -96,4 +95,3 @@ void CHistogram::getHistogramNormalized( std::vector<double> &x, std::vector<dou
 	for (size_t i=0;i<N;i++)
 		hits[i]=K*m_bins[i];
 }
-

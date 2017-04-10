@@ -9,7 +9,6 @@
 
 #include "base-precomp.h"  // Precompiled headers
 
-#include <mrpt/utils/CTicTac.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPosePDFParticles.h>
 #include <mrpt/system/os.h>

@@ -11,13 +11,11 @@
 
 
 #include <mrpt/poses/CPointPDFSOG.h>
-#include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/random.h>
 #include <mrpt/math/distributions.h>
-#include <mrpt/math/matrix_serialization.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/system/os.h>
 
