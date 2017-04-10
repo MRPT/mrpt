@@ -9,11 +9,15 @@
 
 #include "base-precomp.h"  // Precompiled headers
 
-
-#include <mrpt/poses/CPose2D.h>
-#include <mrpt/poses/CPose3D.h>
-#include <mrpt/poses/CRobot2DPoseEstimator.h>
-#include <mrpt/math/wrap2pi.h>
+#include <mrpt/poses/CPose2D.h>                // for CPose2D
+#include <mrpt/poses/CRobot2DPoseEstimator.h>  // for CRobot2DPoseEstimator
+#include <cmath>                               // for cos, sin, abs
+#include <exception>                           // for exception
+#include <iostream>                            // for operator<<, basic_ostream
+#include "mrpt/math/lightweight_geom_data.h"   // for TPose2D, TTwist2D, TPo...
+#include "mrpt/synch/CCriticalSection.h"       // for CCriticalSection, CCri...
+#include "mrpt/system/datetime.h"              // for INVALID_TIMESTAMP, tim...
+#include "mrpt/utils/mrpt_macros.h"            // for MRPT_END, MRPT_START, e
 
 using namespace mrpt;
 using namespace mrpt::poses;

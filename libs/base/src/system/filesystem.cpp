@@ -9,10 +9,11 @@
 
 #include "base-precomp.h"  // Precompiled headers
 
-#include <mrpt/system/datetime.h>
-#include <mrpt/system/filesystem.h>
-#include <mrpt/system/os.h>
 #include <mrpt/system/CDirectoryExplorer.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/os.h>                  // for sprintf
+#include "mrpt/utils/bits.h"                 // for format
+#include "mrpt/utils/mrpt_macros.h"          // for MRPT_END, MRPT_START, e
 
 #include <cstring>
 #include <string>
@@ -601,10 +602,9 @@ std::string mrpt::system::getShareMRPTDir()
 
 		for (const auto &e : sPaths)
 			if (directoryExists(e)) {
-				sDetectedPath = e; 
+				sDetectedPath = e;
 				break;
 			}
 	}
 	return sDetectedPath;
 }
-

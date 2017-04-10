@@ -10,8 +10,6 @@
 #include "nav-precomp.h" // Precomp header
 
 #include <mrpt/nav/reactive/CAbstractNavigator.h>
-#include <mrpt/poses/CPose2D.h>
-#include <mrpt/math/geometry.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/utils/CConfigFileMemory.h>
 #include <limits>
@@ -246,7 +244,7 @@ void CAbstractNavigator::navigationStep()
 			{
 				m_navigationState = IDLE;
 				logFmt(mrpt::utils::LVL_WARN, "Navigation target (%.03f,%.03f) was reached\n", m_navigationParams->target.x, m_navigationParams->target.y);
-				
+
 				if (!m_navigationParams->targetIsIntermediaryWaypoint)
 				{
 					this->stop(false /*not emergency*/);
@@ -379,7 +377,7 @@ void CAbstractNavigator::updateCurrentPoseAndSpeeds()
 
 	if (changed_frame_id)
 	{
-		// If frame changed, clear past poses. This could be improved by requesting 
+		// If frame changed, clear past poses. This could be improved by requesting
 		// the transf between the two frames, but it's probably not worth.
 		m_latestPoses.clear();
 		m_latestOdomPoses.clear();

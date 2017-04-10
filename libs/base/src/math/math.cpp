@@ -22,7 +22,6 @@
 #include <mrpt/utils/types_math.h>
 #include <mrpt/math/ops_matrices.h>
 
-#include <float.h>
 #include <algorithm>
 
 using namespace mrpt;

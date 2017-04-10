@@ -8,12 +8,8 @@
    +---------------------------------------------------------------------------+ */
 
 #include "base-precomp.h"  // Precompiled headers
-#include <mrpt/poses/CPose2D.h>
-#include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPose3DQuat.h>
-#include <mrpt/math/CMatrix.h>
 #include <mrpt/utils/CStream.h>
 #include <iomanip>
 #include <limits>
@@ -464,4 +460,3 @@ bool mrpt::poses::operator!=(const CPose3DQuat &p1,const CPose3DQuat &p2)
 {
 	return !(p1==p2);
 }
-
