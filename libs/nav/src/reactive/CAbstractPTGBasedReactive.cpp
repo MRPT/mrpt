@@ -375,8 +375,9 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		const TPose2D relTarget = (m_navigationParams->target - (m_curPoseVel.pose+relPoseVelCmd));
 		const double relTargetDist = ::hypot(relTarget.x, relTarget.y);
 
-		// Allow PTGs to be responsive to target location, dynamics, etc.
-		CParameterizedTrajectoryGenerator::TNavDynamicState ptg_dynState;
+		// PTG dynamic state
+		CParameterizedTrajectoryGenerator::TNavDynamicState ptg_dynState; //!< Allow PTGs to be responsive to target location, dynamics, etc.
+
 		ptg_dynState.curVelLocal = m_curPoseVel.velLocal;
 		ptg_dynState.relTarget = relTarget;
 		ptg_dynState.targetRelSpeed = m_navigationParams->targetDesiredRelSpeed;
@@ -413,14 +414,14 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 
 		// Round #2: Evaluate dont sending any new velocity command ("NOP" motion)
 		// =========
-		// This approach is only possible if:
 		bool NOP_not_too_old = true;
 		bool NOP_not_too_close_and_have_to_slowdown = true;
 		double NOP_max_time = -1.0, NOP_At = -1.0;
 		double slowdowndist = .0;
 		CParameterizedTrajectoryGenerator * last_sent_ptg = m_lastSentVelCmd.isValid() ? getPTG(m_lastSentVelCmd.ptg_index) : nullptr;
 
-		const bool can_do_nop_motion = 
+		// This approach is only possible if:
+		const bool can_do_nop_motion =
 			(
 				m_lastSentVelCmd.isValid() &&
 				!target_changed_since_last_iteration &&
@@ -432,7 +433,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				NOP_not_too_old =
 					(NOP_At=mrpt::system::timeDifference(m_lastSentVelCmd.tim_send_cmd_vel, tim_start_iteration)) 
 					<
-					(NOP_max_time= last_sent_ptg->maxTimeInVelCmdNOP(m_lastSentVelCmd.ptg_alpha_index))
+					(NOP_max_time= last_sent_ptg->maxTimeInVelCmdNOP(m_lastSentVelCmd.ptg_alpha_index)/ std::max(0.1,m_lastSentVelCmd.speed_scale))
 			)
 			&&
 			(NOP_not_too_close_and_have_to_slowdown = 
@@ -559,6 +560,11 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		}
 		else
 		{
+			// Make sure the dynamic state of a NOP cmd has not overwritten the state for a "regular" PTG choice:
+			for (size_t i = 0; i < nPTGs; i++) {
+				getPTG(i)->updateNavDynamicState(ptg_dynState);
+			}
+
 			// STEP7: Get the non-holonomic movement command.
 			// ---------------------------------------------------------------------
 			double cmd_vel_speed_ratio = 1.0;
@@ -1222,7 +1228,7 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
 
 			ASSERT_(holoMethod);
 			// Slow down if we are approaching the final target, etc.
-			holoMethod->enableApproachTargetSlowDown(navp.targetDesiredRelSpeed==.0);
+			holoMethod->enableApproachTargetSlowDown(navp.targetDesiredRelSpeed<.11);
 
 			// Prepare holonomic algorithm call:
 			CAbstractHolonomicReactiveMethod::NavInput ni;

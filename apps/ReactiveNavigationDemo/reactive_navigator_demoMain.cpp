@@ -1058,7 +1058,7 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 				float max_dist = ptg->getRefDistance();
 				gl_robot_ptg_prediction->clear();
 
-				ptg->updateNavDynamicState(lfr.ptg_last_navDynState);
+				ptg->updateNavDynamicState(is_NOP_op ? lfr.ptg_last_navDynState : lfr.navDynState);
 
 				ptg->renderPathAsSimpleLine(selected_k,*gl_robot_ptg_prediction,0.10, max_dist);
 				gl_robot_ptg_prediction->setColor_u8( mrpt::utils::TColor(0xff,0x00,0x00) );
