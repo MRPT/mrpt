@@ -27,7 +27,7 @@ CAbstractNavigator::TNavigationParams::TNavigationParams() :
 	target_frame_id("map"),
 	targetAllowedDistance(0.5),
 	targetIsRelative(false),
-	targetDesiredRelSpeed(.0),
+	targetDesiredRelSpeed(.05),
 	targetIsIntermediaryWaypoint(false)
 {
 }

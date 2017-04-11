@@ -259,7 +259,7 @@ void CWaypointsNavigator::navigationStep()
 			nav_cmd.targetAllowedDistance = wp.allowed_distance;
 			nav_cmd.targetIsRelative = false;
 			nav_cmd.targetIsIntermediaryWaypoint = !is_final_wp;
-			nav_cmd.targetDesiredRelSpeed = (is_final_wp || (wp.target_heading != TWaypoint::INVALID_NUM)) ? 0. : 1.;
+			nav_cmd.targetDesiredRelSpeed = (is_final_wp || (wp.target_heading != TWaypoint::INVALID_NUM)) ? 0.05 : 1.;
 
 			this->navigate( &nav_cmd );
 
