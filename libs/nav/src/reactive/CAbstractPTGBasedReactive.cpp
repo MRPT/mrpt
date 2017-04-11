@@ -433,7 +433,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				NOP_not_too_old =
 					(NOP_At=mrpt::system::timeDifference(m_lastSentVelCmd.tim_send_cmd_vel, tim_start_iteration)) 
 					<
-					(NOP_max_time= last_sent_ptg->maxTimeInVelCmdNOP(m_lastSentVelCmd.ptg_alpha_index))
+					(NOP_max_time= last_sent_ptg->maxTimeInVelCmdNOP(m_lastSentVelCmd.ptg_alpha_index)/ std::max(0.1,m_lastSentVelCmd.speed_scale))
 			)
 			&&
 			(NOP_not_too_close_and_have_to_slowdown = 
