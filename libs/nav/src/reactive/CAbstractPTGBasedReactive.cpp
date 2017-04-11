@@ -560,6 +560,11 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		}
 		else
 		{
+			// Make sure the dynamic state of a NOP cmd has not overwritten the state for a "regular" PTG choice:
+			for (size_t i = 0; i < nPTGs; i++) {
+				getPTG(i)->updateNavDynamicState(ptg_dynState);
+			}
+
 			// STEP7: Get the non-holonomic movement command.
 			// ---------------------------------------------------------------------
 			double cmd_vel_speed_ratio = 1.0;
@@ -1223,7 +1228,7 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
 
 			ASSERT_(holoMethod);
 			// Slow down if we are approaching the final target, etc.
-			holoMethod->enableApproachTargetSlowDown(navp.targetDesiredRelSpeed==.0);
+			holoMethod->enableApproachTargetSlowDown(navp.targetDesiredRelSpeed<.11);
 
 			// Prepare holonomic algorithm call:
 			CAbstractHolonomicReactiveMethod::NavInput ni;
