@@ -167,7 +167,7 @@ protected:
 		const CPoint3D  	p(x,y,z);
 
 		CPoint3D  p_minus_p1 = p - p1;
-		CPoint3D  p_minus_q1 = p - CPose3D(q1);
+		CPoint3D  p_minus_q1 = p - q1;
 
 		CPoint3D  p_rec = q1 + p_minus_q1;
 
@@ -187,7 +187,7 @@ protected:
 		CPose3DQuat 	q(x[0],x[1],x[2],CQuaternionDouble(x[3],x[4],x[5],x[6]));
 		q.quat().normalize();
 		const CPoint3D 		p(x[7+0],x[7+1],x[7+2]);
-		const CPoint3D pp = p-CPose3D(q);
+		const CPoint3D pp = p-q;
 		Y[0]=pp.x();
 		Y[1]=pp.y();
 		Y[2]=pp.z();
