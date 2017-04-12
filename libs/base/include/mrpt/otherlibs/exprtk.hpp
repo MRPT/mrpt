@@ -26571,12 +26571,14 @@ namespace exprtk
             else if (all_nodes_variables(arg_list))
                return varnode_optimise_varargfunc(operation,arg_list);
 
+            #ifndef exprtk_disable_string_capabilities
             if (details::e_smulti == operation)
             {
                return node_allocator_->
                  allocate<details::str_vararg_node<Type,details::vararg_multi_op<Type> > >(arg_list);
             }
             else
+            #endif
             {
                switch (operation)
                {
