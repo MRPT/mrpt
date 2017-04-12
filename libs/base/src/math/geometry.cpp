@@ -18,7 +18,6 @@
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/math/lightweight_geom_data.h>
-#include <mrpt/utils/stl_serialization.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
@@ -2006,4 +2005,3 @@ bool math::traceRay(const vector<TPolygonWithPlane> &vec,const CPose3D &pose,dou
 	}
 	return res;
 }
-

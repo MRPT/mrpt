@@ -11,12 +11,10 @@
 
 #include <mrpt/random.h>
 #include <mrpt/math/wrap2pi.h>
-#include <mrpt/math/transform_gaussian.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DPDFGaussianInf.h>
 #include <mrpt/poses/CPose3DQuatPDFGaussian.h>
-#include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPosePDFGaussianInf.h>
 #include <mrpt/system/os.h>
@@ -448,4 +446,3 @@ CPose3DPDFGaussianInf mrpt::poses::operator -( const CPose3DPDFGaussianInf &x, c
 	res-=u;
 	return res;
 }
-

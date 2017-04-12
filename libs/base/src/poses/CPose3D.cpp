@@ -9,22 +9,35 @@
 
 #include "base-precomp.h"  // Precompiled headers
 
-#include <mrpt/poses/CPose2D.h>
-#include <mrpt/poses/CPoint2D.h>
-#include <mrpt/poses/CPose3D.h>
-#include <mrpt/poses/CPoint3D.h>
-#include <mrpt/poses/CPose3DQuat.h>
-#include <mrpt/poses/CPose3DRotVec.h>
-#include <mrpt/math/CMatrix.h>
-#include <mrpt/math/geometry.h>
-#include <mrpt/math/wrap2pi.h>
-#include <mrpt/math/matrix_serialization.h>
-#include <mrpt/math/ops_matrices.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/config.h>                                     // for HAVE_SINCOS
+#include <mrpt/utils/types_math.h>                           // for CVectorD...
+#include <mrpt/math/CMatrix.h>                               // for CMatrix
+#include <mrpt/math/geometry.h>                              // for skew_sym...
+#include <mrpt/math/matrix_serialization.h>                  // for operator>>
+#include <mrpt/math/wrap2pi.h>                               // for wrapToPi
+#include <mrpt/poses/CPoint2D.h>                             // for CPoint2D
+#include <mrpt/poses/CPoint3D.h>                             // for CPoint3D
+#include <mrpt/poses/CPose2D.h>                              // for CPose2D
+#include <mrpt/poses/CPose3D.h>                              // for CPose3D
+#include <mrpt/poses/CPose3DQuat.h>                          // for CPose3DQuat
+#include <mrpt/poses/CPose3DRotVec.h>                        // for CPose3DR...
+#include <mrpt/utils/CStream.h>                              // for CStream
+#include <algorithm>                                         // for move
+#include <cmath>                                             // for fabs
+#include <iomanip>                                           // for operator<<
+#include <limits>                                            // for numeric_...
+#include <ostream>                                           // for operator<<
+#include <string>                                            // for allocator
+#include <mrpt/math/CArrayNumeric.h>                         // for CArrayDo...
+#include <mrpt/math/CMatrixFixedNumeric.h>                   // for CMatrixF...
+#include <mrpt/math/CMatrixTemplateNumeric.h>                // for CMatrixD...
+#include <mrpt/math/CQuaternion.h>                           // for CQuatern...
+#include <mrpt/math/homog_matrices.h>                        // for homogene...
+#include <mrpt/math/lightweight_geom_data.h>                 // for TPoint3D
+#include <mrpt/math/ops_containers.h>                        // for dotProduct
+#include <mrpt/utils/CSerializable.h>                        // for CSeriali...
+#include <mrpt/utils/bits.h>                                 // for square
 #include <mrpt/math/utils_matlab.h>
-#include <iomanip>
-#include <limits>
-
 
 #ifndef M_SQRT1_2
 #define M_SQRT1_2 0.70710678118654752440
@@ -539,49 +552,11 @@ CPose3D mrpt::poses::operator -(const CPose3D &b)
 	return CPose3D(B_INV);
 }
 
-/*---------------------------------------------------------------
-		getAsQuaternion
----------------------------------------------------------------*/
 void CPose3D::getAsQuaternion(mrpt::math::CQuaternionDouble &q, mrpt::math::CMatrixFixedNumeric<double,4,3>   *out_dq_dr ) const
 {
 	updateYawPitchRoll();
-	// See: http://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
-	const double	cy = cos(m_yaw*0.5);
-	const double	sy = sin(m_yaw*0.5);
-	const double	cp = cos(m_pitch*0.5);
-	const double	sp = sin(m_pitch*0.5);
-	const double	cr = cos(m_roll*0.5);
-	const double	sr = sin(m_roll*0.5);
-
-	const double ccc = cr*cp*cy;
-	const double ccs = cr*cp*sy;
-	const double css = cr*sp*sy;
-	const double sss = sr*sp*sy;
-	const double scc = sr*cp*cy;
-	const double ssc = sr*sp*cy;
-	const double csc = cr*sp*cy;
-	const double scs = sr*cp*sy;
-
-	q[0] = ccc+sss;
-	q[1] = scc-css;
-	q[2] = csc+scs;
-	q[3] = ccs-ssc;
-
-	// Compute 4x3 Jacobian: for details, see technical report:
-	//   Parameterizations of SE(3) transformations: equivalences, compositions and uncertainty, J.L. Blanco (2010).
-	//   http://www.mrpt.org/6D_poses:equivalences_compositions_and_uncertainty
-	if (out_dq_dr)
-	{
-		MRPT_ALIGN16 const double nums[4*3] = {
-			-0.5*q[3], 0.5*( -csc+scs ), -0.5*q[1],
-			-0.5*q[2],  0.5*( -ssc-ccs ), 0.5* q[0],
-			0.5*q[1], 0.5*( ccc-sss  ),  0.5*q[3],
-			0.5* q[0], 0.5*( -css-scc ), -0.5*q[2]
-		};
-		out_dq_dr->loadFromArray(nums);
-	}
+	mrpt::math::TPose3D(0, 0, 0, m_yaw, m_pitch, m_roll).getAsQuaternion(q, out_dq_dr);
 }
-
 
 bool mrpt::poses::operator==(const CPose3D &p1,const CPose3D &p2)
 {

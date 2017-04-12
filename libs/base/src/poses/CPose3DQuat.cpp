@@ -8,12 +8,8 @@
    +---------------------------------------------------------------------------+ */
 
 #include "base-precomp.h"  // Precompiled headers
-#include <mrpt/poses/CPose2D.h>
-#include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPose3DQuat.h>
-#include <mrpt/math/CMatrix.h>
 #include <mrpt/utils/CStream.h>
 #include <iomanip>
 #include <limits>
@@ -463,5 +459,19 @@ bool mrpt::poses::operator==(const CPose3DQuat &p1,const CPose3DQuat &p2)
 bool mrpt::poses::operator!=(const CPose3DQuat &p1,const CPose3DQuat &p2)
 {
 	return !(p1==p2);
+}
+
+CPoint3D mrpt::poses::operator -(const CPoint3D &G,const CPose3DQuat &p)
+{ 
+	CPoint3D L; 
+	p.inverseComposePoint(G[0], G[1], G[2], L[0], L[1], L[2]); 
+	return L; 
+}
+
+mrpt::math::TPoint3D mrpt::poses::operator -(const mrpt::math::TPoint3D &G, const CPose3DQuat &p)
+{
+	mrpt::math::TPoint3D L; 
+	p.inverseComposePoint(G[0], G[1], G[2], L[0], L[1], L[2]); 
+	return L; 
 }
 

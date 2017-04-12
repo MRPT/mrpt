@@ -10,10 +10,6 @@
 #include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/math/ransac.h>
-#include <mrpt/math/ops_vectors.h>
-#include <mrpt/math/CMatrix.h>
-#include <mrpt/math/CMatrixD.h>
-#include <mrpt/math/ops_matrices.h>
 #include <mrpt/random.h>
 
 using namespace mrpt;
@@ -181,4 +177,3 @@ template class BASE_IMPEXP mrpt::math::RANSAC_Template<double>;
 #ifdef HAVE_LONG_DOUBLE
 template class BASE_IMPEXP mrpt::math::RANSAC_Template<long double>;
 #endif
-

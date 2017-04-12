@@ -13,8 +13,9 @@
 #include <mrpt/math/transform_gaussian.h>
 #include <mrpt/math/distributions.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
-#include <mrpt/poses/CPosePDF.h>
-#include <mrpt/poses/CPosePDFGaussian.h>
+#include "mrpt/poses/CPose3D.h"                               // for CPose3D
+#include "mrpt/poses/CPose3DQuat.h"                           // for CPose3D...
+#include "mrpt/poses/CPose3DQuatPDF.h"                        // for CPose3D...
 #include <mrpt/system/os.h>
 #include <mrpt/utils/CStream.h>
 

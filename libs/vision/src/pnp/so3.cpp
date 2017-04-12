@@ -27,7 +27,6 @@ You should have received a copy of the GNU General Public License
 along with this program.If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************/
 
-#include <iostream>
 #include <math.h>
 #include <mrpt/utils/types_math.h>
 
@@ -40,34 +39,34 @@ mrpt::vision::pnp::so3::so3(const Eigen::MatrixXd& obj_pts_, const Eigen::Matrix
     n=n0;
     obj_pts = obj_pts_;
     img_pts = img_pts_.block(0,0,n,2);
-    
+
     cam_intrinsic = cam_intrinsic_;
-    
+
     beta1 = Eigen::MatrixXd::Zero(2*n,3);
     Pr1 = Eigen::MatrixXd::Zero(3, 2*n);
     Pr = Eigen::MatrixXd::Zero(2*n, 2*n);
-    
+
     Ra.setIdentity();
     Rc.setIdentity();
     R_ret.setIdentity();
     R.setIdentity();
     step.setZero();
     N.setZero();
-    
+
     rgm.setZero();
     Veca.setZero();
     Vecc.setZero();
     dummyrgm.setZero();
     ax.setZero();
-     
+
     gam       = Eigen::VectorXd::Zero(2*n);
     err       = Eigen::VectorXd::Zero(2*n);
-   
+
     k=0;
     k1=0;
     k2=0;
     k3=0;
-    
+
     for(k=0;k<n;k++)
 		beta1.block(2*k, 0, 2, 2) = -cam_intrinsic.block(0,0,2,2);
 }
@@ -86,14 +85,14 @@ Eigen::Matrix3d  mrpt::vision::pnp::so3::quatrot(Eigen::Vector3d  Vec)
 		 ax(0)*ax(2)*(1 - c_ang) - ax(1)*s_ang, ax(1)*ax(2)*(1 - c_ang) + ax(0)*s_ang, c_ang + ax(2) *ax(2) * (1 - c_ang);
 
 	return R_ret;
-	
+
 }
 
 //<---------------------- Function to calcualte rotation error------------------------->//
 void mrpt::vision::pnp::so3::err_calc(Eigen::Matrix3d & R, int flag, Eigen::VectorXd & err, Eigen::Vector3d & Vec, Eigen::Vector3d & rgm)
 {
 	gam=Eigen::VectorXd ::Zero(2*n);
-	
+
 	N = Eigen::MatrixXd ::Zero(3,3);
 
 	for (k = 0; k < n; k++)
@@ -102,7 +101,7 @@ void mrpt::vision::pnp::so3::err_calc(Eigen::Matrix3d & R, int flag, Eigen::Vect
 	}
 	if (flag)
 		rgm = Pr1*(- gam);
-	
+
 	err = Pr*(- gam);
 
 	for (k = 0; k < n; k++)
@@ -113,7 +112,7 @@ void mrpt::vision::pnp::so3::err_calc(Eigen::Matrix3d & R, int flag, Eigen::Vect
 	step = R.transpose()*N.transpose() - N*R;
 
 	Vec << step(2, 1), step(0, 2), step(1, 0);
-	
+
 	Vec /= Vec.norm();
 
 }
@@ -132,23 +131,23 @@ void mrpt::vision::pnp::so3::findPosSO3(Eigen::Matrix3d & R_guess)
 	Pr1 = (beta1.transpose()*beta1).inverse()*beta1.transpose();
 
 	Pr = Eigen::MatrixXd ::Identity(2 * n, 2 * n) - beta1*Pr1;
-	
+
 	err_calc(Ra, 0, err, Veca, dummyrgm);
 
 	error_a = err.norm();
 
 	error_c = error_a;
-	
+
 	Ra = R;
     Rc = Ra;
 	Vecc = Veca;
 
 	stepsize=M_PI/72;
-    
+
 	while (stepsize > M_PI / 1440)
 	{
 		k2++;
-		
+
 		while (Veca.transpose()*Vecc>0)
 		{
 			error_a = error_c;
@@ -158,13 +157,13 @@ void mrpt::vision::pnp::so3::findPosSO3(Eigen::Matrix3d & R_guess)
 			err_calc(Rc, 0, err, Vecc, dummyrgm);
 			error_c = err.norm();
 			k3++;
-            
+
             if(k3>100)
             {
                 k3=0;
                 break;
             }
-            
+
 		}
 
 		while (Veca.transpose()*Vecc < 0)
@@ -179,16 +178,16 @@ void mrpt::vision::pnp::so3::findPosSO3(Eigen::Matrix3d & R_guess)
                 k1=0;
                 break;
             }
-            
+
 		}
-        
+
         if(k2>100)
         {
             k2=0;
             break;
         }
-        
-       
+
+
 	}
 
 	R = Rc;
@@ -199,15 +198,15 @@ bool mrpt::vision::pnp::so3::compute_pose(Eigen::Matrix3d& R_, Eigen::Vector3d& 
 {
     if(R_(2,2)==1)
         findPosSO3(R_);
-    else 
+    else
         findPosSO3(Ra);
     R_ = R;
-    
+
     if(rgm(2)<0)
         t_ = -rgm;
-    else 
+    else
         t_ = rgm;
-    
+
     return true;
 }
 
@@ -247,5 +246,3 @@ Eigen::Vector4d  mrpt::vision::pnp::so3::dcm2quat(Eigen::Matrix3d  R)
 
 	return q;
 }
-
-
