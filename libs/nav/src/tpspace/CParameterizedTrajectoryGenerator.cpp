@@ -28,6 +28,7 @@ CParameterizedTrajectoryGenerator::CParameterizedTrajectoryGenerator() :
 	m_alphaValuesCount(0),
 	m_score_priority(1.0),
 	m_clearance_num_points(5),
+	m_nav_dyn_state_target_k(INVALID_PTG_PATH_INDEX),
 	m_nav_dyn_state(),
 	m_is_initialized(false)
 { }
@@ -198,7 +199,11 @@ void CParameterizedTrajectoryGenerator::initTPObstacleSingle(uint16_t k, double 
 {
 	TP_Obstacle_k = std::min(
 		refDistance,
-		this->getPathDist(k, this->getPathStepCount(k) - 1));
+		m_nav_dyn_state_target_k!=INVALID_PTG_PATH_INDEX ?
+			refDistance 
+			:
+			this->getPathDist(k, this->getPathStepCount(k) - 1)
+		);
 }
 
 
@@ -266,14 +271,32 @@ bool CParameterizedTrajectoryGenerator::isInitialized() const
 	return m_is_initialized;
 }
 
-void CParameterizedTrajectoryGenerator::updateNavDynamicState(const CParameterizedTrajectoryGenerator::TNavDynamicState & newState)
+void CParameterizedTrajectoryGenerator::updateNavDynamicState(const CParameterizedTrajectoryGenerator::TNavDynamicState & newState, const bool force_update)
 {
 	// Make sure there is a real difference: notifying a PTG that a condition changed 
 	// may imply a significant computational cost if paths need to be re-evaluated on the fly, etc.
 	// so the cost of the comparison here is totally worth:
-	if (m_nav_dyn_state!=newState) {
+	if (force_update || m_nav_dyn_state!=newState)
+	{
+		ASSERT_(newState.targetRelSpeed >= .0 && newState.targetRelSpeed <= 1.0); // sanity check
 		m_nav_dyn_state = newState;
+		
+		// 1st) Build PTG paths without counting for target slow-down:
+		m_nav_dyn_state_target_k = INVALID_PTG_PATH_INDEX;
+
 		this->onNewNavDynamicState();
+
+		// 2nd) Save the special path for slow-down:
+		if (this->supportSpeedAtTarget())
+		{
+			int target_k;
+			double target_norm_d;
+			bool is_exact = this->inverseMap_WS2TP(m_nav_dyn_state.relTarget.x, m_nav_dyn_state.relTarget.y, target_k, target_norm_d,1.0 /*large tolerance*/);
+			if (is_exact && target_norm_d<0.99) {
+				m_nav_dyn_state_target_k = target_k;
+				this->onNewNavDynamicState(); // Recalc
+			}
+		}
 	}
 }
 

@@ -9,7 +9,6 @@
 
 #include "base-precomp.h"  // Precompiled headers
 
-#include <mrpt/utils/CTicTac.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/filesystem.h>
 
@@ -157,7 +156,7 @@ string mrpt::system::MRPT_getCompilationDate()
 	time_t now;
 	char *endptr;
 	const char *source_date_epoch = MRPT_SOURCE_DATE_EPOCH;
-	
+
 	errno = 0;
 	unsigned long epoch = strtoul(source_date_epoch, &endptr, 10);
 	if (epoch==0 || ((errno == ERANGE && (epoch == std::numeric_limits<unsigned long>::max() || epoch == 0)) || (errno != 0 && epoch == 0))) {
@@ -593,5 +592,3 @@ std::string mrpt::system::find_mrpt_shared_dir()
 
 	return found_mrpt_shared_dir;
 }
-
-

@@ -14,6 +14,7 @@
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3DQuat.h>
+#include <mrpt/math/CQuaternion.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/math/ops_containers.h>
 #include <mrpt/utils/CStream.h>
@@ -189,6 +190,41 @@ TPose3D::TPose3D(const TPoint3D &p):x(p.x),y(p.y),z(p.z),yaw(0.0),pitch(0.0),rol
 TPose3D::TPose3D(const mrpt::poses::CPose3D &p):x(p.x()),y(p.y()),z(p.z()),yaw(p.yaw()),pitch(p.pitch()),roll(p.roll())	{}
 void TPose3D::asString(std::string &s) const {
 	s = mrpt::format("[%f %f %f %f %f %f]",x,y,z,RAD2DEG(yaw),RAD2DEG(pitch),RAD2DEG(roll));
+}
+void TPose3D::getAsQuaternion(mrpt::math::CQuaternion<double> & q, mrpt::math::CMatrixFixedNumeric<double, 4, 3>* out_dq_dr) const
+{
+	// See: http://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
+	const double cy = cos(yaw*0.5),  sy = sin(yaw*0.5);
+	const double cp = cos(pitch*0.5),sp = sin(pitch*0.5);
+	const double cr = cos(roll*0.5), sr = sin(roll*0.5);
+
+	const double ccc = cr*cp*cy;
+	const double ccs = cr*cp*sy;
+	const double css = cr*sp*sy;
+	const double sss = sr*sp*sy;
+	const double scc = sr*cp*cy;
+	const double ssc = sr*sp*cy;
+	const double csc = cr*sp*cy;
+	const double scs = sr*cp*sy;
+
+	q[0] = ccc + sss;
+	q[1] = scc - css;
+	q[2] = csc + scs;
+	q[3] = ccs - ssc;
+
+	// Compute 4x3 Jacobian: for details, see technical report:
+	//   Parameterizations of SE(3) transformations: equivalences, compositions and uncertainty, J.L. Blanco (2010).
+	//   http://www.mrpt.org/6D_poses:equivalences_compositions_and_uncertainty
+	if (out_dq_dr)
+	{
+		MRPT_ALIGN16 const double nums[4 * 3] = {
+			-0.5*q[3], 0.5*(-csc + scs), -0.5*q[1],
+			-0.5*q[2],  0.5*(-ssc - ccs), 0.5* q[0],
+			0.5*q[1], 0.5*(ccc - sss),  0.5*q[3],
+			0.5* q[0], 0.5*(-css - scc), -0.5*q[2]
+		};
+		out_dq_dr->loadFromArray(nums);
+	}
 }
 void TPose3D::fromString(const std::string &s)
 {

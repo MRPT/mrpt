@@ -13,7 +13,7 @@
 #include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/utils/TEnumType.h>
 #include <mrpt/utils/CLoadableOptions.h>
-#include <mrpt/poses/CPose3DInterpolator.h>
+#include <mrpt/poses/CPose2DInterpolator.h>
 #include <mrpt/poses/FrameTransformer.h>
 #include <mrpt/obs/obs_frwds.h>
 
@@ -62,7 +62,7 @@ namespace mrpt
 			std::string         target_frame_id;       //!< (Default="map") Frame ID in which target is given. Optional, use only for submapping applications.
 			float               targetAllowedDistance; //!< (Default=0.5 meters) Allowed distance to target in order to end the navigation.
 			bool                targetIsRelative;      //!< (Default=false) Whether the \a target coordinates are in global coordinates (false) or are relative to the current robot pose (true).
-			double              targetDesiredRelSpeed; //!< (Default=.0) Desired relative speed (wrt maximum speed), in range [0,1], of the vehicle at target. Holonomic nav methods will perform "slow down" approaching target only if this is "==.0". Intermediary values will be honored only by the higher-level navigator, based on straight-line Euclidean distances.
+			double              targetDesiredRelSpeed; //!< (Default=.05) Desired relative speed (wrt maximum speed), in range [0,1], of the vehicle at target. Holonomic nav methods will perform "slow down" approaching target only if this is "==.0". Intermediary values will be honored only by the higher-level navigator, based on straight-line Euclidean distances.
 			bool                targetIsIntermediaryWaypoint; // !< (Default=false) If true, event callback `sendWaypointReachedEvent()` will be called instead of `sendNavigationEndEvent()`
 
 			TNavigationParams(); //!< Ctor with default values
@@ -187,7 +187,7 @@ namespace mrpt
 		TRobotPoseVel m_curPoseVel; //!< Current robot pose (updated in CAbstractNavigator::navigationStep() )
 		double  m_last_curPoseVelUpdate_robot_time;
 		std::string m_last_curPoseVelUpdate_pose_frame_id;
-		mrpt::poses::CPose3DInterpolator m_latestPoses, m_latestOdomPoses; //!< Latest robot poses (updated in CAbstractNavigator::navigationStep() )
+		mrpt::poses::CPose2DInterpolator m_latestPoses, m_latestOdomPoses; //!< Latest robot poses (updated in CAbstractNavigator::navigationStep() )
 
 		mrpt::utils::CTimeLogger m_timlog_delays; //!< Time logger to collect delay-related stats
 

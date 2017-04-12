@@ -10,11 +10,9 @@
 #include "vision-precomp.h"   // Precompiled headers
 
 #include <mrpt/utils/CStream.h>
-#include <mrpt/utils/stl_serialization.h>
 #include <mrpt/maps/CLandmark.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/utils/stl_serialization.h>
-#include <mrpt/system/os.h>
 
 using namespace mrpt::obs;
 using namespace mrpt::maps;
@@ -137,5 +135,3 @@ void  CLandmark::readFromStream(mrpt::utils::CStream &in, int version)
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
 	};
 }
-
-

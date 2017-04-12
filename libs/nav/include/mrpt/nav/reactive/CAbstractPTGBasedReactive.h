@@ -198,7 +198,7 @@ namespace mrpt
 		}
 
 		/** Changes the current, global (honored for all PTGs) robot speed limits, via returning a reference to a structure that holds those limits */
-		mrpt::kinematics::CVehicleVelCmd::TVelCmdParams & changeCurrentRobotSpeedLimits() { 
+		mrpt::kinematics::CVehicleVelCmd::TVelCmdParams & changeCurrentRobotSpeedLimits() {
 			return params_abstract_ptg_navigator.robot_absolute_speed_limits;
 		}
 
@@ -329,12 +329,9 @@ namespace mrpt
 		mrpt::math::TPose2D m_lastTarget; //!< To detect changes
 		std::string m_navlogfiles_dir; //!< Default: "./reactivenav.logs"
 
-		double m_expr_var_k, m_expr_var_k_target, m_expr_var_num_paths;
-
 	}; // end of CAbstractPTGBasedReactive
   }
 }
 
 
 #endif
-

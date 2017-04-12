@@ -155,7 +155,7 @@ void CDlgCamTracking::OnbtnGrabClick(wxCommandEvent& event)
 void CDlgCamTracking::OnbtnStartClick(wxCommandEvent& event)
 {
 	m_poses.setMaxTimeInterpolation(10000);
-	m_poses.setInterpolationMethod( CPose3DInterpolator::imSSLLLL );
+	m_poses.setInterpolationMethod( mrpt::poses::imSSLLLL );
 	//m_poses.setInterpolationMethod( CPose3DInterpolator::imLinear2Neig );
 
 	m_main_win->m_travelling_is_arbitrary = true;
@@ -184,19 +184,19 @@ void CDlgCamTracking::UpdateTableFromPoses()
 	for (CPose3DInterpolator::const_iterator it=m_poses.begin();it!=m_poses.end();++it, ++i)
 	{
 		const TTimeStamp t = it->first;
-		const CPose3D &p = it->second;
+		const auto &p = it->second;
 
 		if (t0==INVALID_TIMESTAMP) t0=t;
 
 
 		gridPoses->SetCellValue(i,0, wxString::Format(wxT("%.02f"), timeDifference(t0,t) ));
 
-		gridPoses->SetCellValue(i,1, wxString::Format(wxT("%f"),p.x() ));
-		gridPoses->SetCellValue(i,2, wxString::Format(wxT("%f"),p.y() ));
-		gridPoses->SetCellValue(i,3, wxString::Format(wxT("%f"),p.z() ));
-		gridPoses->SetCellValue(i,4, wxString::Format(wxT("%f"),RAD2DEG(p.yaw()) ));
-		gridPoses->SetCellValue(i,5, wxString::Format(wxT("%f"),RAD2DEG(p.pitch()) ));
-		gridPoses->SetCellValue(i,6, wxString::Format(wxT("%f"),RAD2DEG(p.roll()) ));
+		gridPoses->SetCellValue(i,1, wxString::Format(wxT("%f"),p.x ));
+		gridPoses->SetCellValue(i,2, wxString::Format(wxT("%f"),p.y ));
+		gridPoses->SetCellValue(i,3, wxString::Format(wxT("%f"),p.z ));
+		gridPoses->SetCellValue(i,4, wxString::Format(wxT("%f"),RAD2DEG(p.yaw) ));
+		gridPoses->SetCellValue(i,5, wxString::Format(wxT("%f"),RAD2DEG(p.pitch) ));
+		gridPoses->SetCellValue(i,6, wxString::Format(wxT("%f"),RAD2DEG(p.roll) ));
 	}
 
 	gridPoses->EndBatch();
