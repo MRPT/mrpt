@@ -116,7 +116,7 @@ void CWaypointsNavigator::navigationStep()
 		{
 			auto &wp = wps.waypoints[wps.waypoint_index_current_goal];
 			const double dist2target = robot_move_seg.distance(wp.target);
-			if (dist2target < wp.allowed_distance)
+			if (dist2target < wp.allowed_distance || m_was_aligning /* we were already aligning at a WP */)
 			{
 				bool consider_wp_reached = false;
 				if (wp.target_heading == TWaypoint::INVALID_NUM)
