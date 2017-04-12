@@ -25,8 +25,13 @@ namespace mrpt
 		/** A versatile "profiler" that logs the time spent within each pair of calls to enter(X)-leave(X), among other stats.
 		 *  The results can be dumped to cout or to Visual Studio's output panel.
 		 *  Recursive methods are supported with no problems, that is, calling "enter(X) enter(X) ... leave(X) leave(X)".
+		 *  `enter()`/`leave()` are thread-safe.
 		 *
 		 *  This class can be also used to monitorize min/mean/max/total stats of any user-provided parameters via the method CTimeLogger::registerUserMeasure()
+		 *
+		 * Cost of the profiler itself (measured on MSVC2015, Windows 10, Intel i5-2310 2.9GHz):
+		 * - `enter()`: average 445 ns
+		 * - `leave()`: average 316 ns
 		 *
 		 * \sa CTimeLoggerEntry
 		 *
@@ -51,8 +56,8 @@ namespace mrpt
 				bool has_time_units;
 			};
 
-			typedef mrpt::utils::ts_hash_map<std::string, TCallData, 1 /* bytes hash */, 10 /* allowed hash collisions */> TDataMap;
-			TDataMap  m_data;  //Was: std::map<std::string,TCallData>  m_data;
+			typedef mrpt::utils::ts_hash_map<std::string, TCallData, 1 /* bytes hash */, 10 /* allowed hash collisions */> TDataMap; // Was: std::map<std::string,TCallData>
+			TDataMap  m_data;
 
 			void do_enter( const char *func_name );
 			double do_leave( const char *func_name );
