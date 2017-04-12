@@ -219,7 +219,7 @@ namespace nav
 		/** @} */  // --- end of virtual methods
 
 		/** To be invoked by the navigator *before* each navigation step, to let the PTG to react to changing dynamic conditions. * \sa onNewNavDynamicState(), m_nav_dyn_state  */
-		void updateNavDynamicState(const TNavDynamicState &newState);
+		void updateNavDynamicState(const TNavDynamicState &newState, const bool force_update = false);
 		const TNavDynamicState & getCurrentNavDynamicState() const { return m_nav_dyn_state; }
 
 		static std::string OUTPUT_DEBUG_PATH_PREFIX; //!< The path used as defaul output in, for example, debugDumpInFiles. (Default="./reactivenav.logs/")
@@ -312,6 +312,9 @@ protected:
 		double    m_score_priority;
 		uint16_t  m_clearance_num_points; //!< Number of steps for the piecewise-constant approximation of clearance from TPS distances [0,1] (Default=5) \sa updateClearance()
 		TNavDynamicState m_nav_dyn_state; //!< Updated before each nav step by 
+		uint16_t         m_nav_dyn_state_target_k; //!< Update in updateNavDynamicState(), contains the path index (k) for the target.
+
+		static const uint16_t INVALID_PTG_PATH_INDEX = static_cast<uint16_t>(-1);
 
 		bool      m_is_initialized;
 

@@ -9,11 +9,19 @@
 
 #include "base-precomp.h"  // Precompiled headers
 
-#include <mrpt/bayes/CParticleFilter.h>
-#include <mrpt/bayes/CParticleFilterCapable.h>
-#include <mrpt/bayes/CParticleFilterData.h>
-#include <mrpt/utils/CStream.h>
-#include <mrpt/utils/CConfigFileBase.h>  // For MRPT_LOAD_*
+#include <cmath>                                // for exp
+#include <mrpt/bayes/CParticleFilter.h>         // for CParticleFilter::TPar...
+#include <mrpt/bayes/CParticleFilterCapable.h>  // for CParticleFilterCapable
+#include <mrpt/utils/CConfigFileBase.h>         // for CConfigFileBase, MRPT...
+#include <mrpt/utils/CStream.h>                 // for CStream
+#include <stddef.h>                             // for size_t
+#include <exception>                            // for exception
+#include <string>                               // for string, allocator
+#include <mrpt/utils/COutputLogger.h>           // for COutputLogger, MRPT_L...
+#include <mrpt/utils/bits.h>                    // for format, square
+#include <mrpt/utils/mrpt_macros.h>             // for MRPT_END, MRPT_START, e
+namespace mrpt { namespace obs { class CActionCollection; } }
+namespace mrpt { namespace obs { class CSensoryFrame; } }
 
 using namespace mrpt::bayes;
 using namespace mrpt::utils;

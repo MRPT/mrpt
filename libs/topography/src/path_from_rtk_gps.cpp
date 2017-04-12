@@ -84,7 +84,7 @@ void  mrpt::topography::path_from_rtk_gps(
 
 	robot_path.clear();
 	robot_path.setMaxTimeInterpolation(3.0);	// Max. seconds of GPS blackout not to interpolate.
-	robot_path.setInterpolationMethod( CPose3DInterpolator::imSSLSLL );
+	robot_path.setInterpolationMethod( mrpt::poses::imSSLSLL );
 
 	TPathFromRTKInfo	outInfoTemp;
 	if (outInfo) *outInfo = outInfoTemp;
@@ -510,14 +510,14 @@ void  mrpt::topography::path_from_rtk_gps(
 			// ---------------------------------------------
 			const double MAX_DIST_TO_FILTER = 4.0;
 
-			for (CPose3DInterpolator::iterator i=robot_path.begin();i!=robot_path.end();++i)
+			for (auto i=robot_path.begin();i!=robot_path.end();++i)
 			{
-				CPose3D   p = i->second;
+				mrpt::math::TPose3D p = i->second;
 
 				CVectorDouble pitchs, rolls;	// The elements to average
 
-				pitchs.push_back(p.pitch());
-				rolls.push_back(p.roll());
+				pitchs.push_back(p.pitch);
+				rolls.push_back(p.roll);
 
 				CPose3DInterpolator::iterator q=i;
 				for (int k=0;k<PATH_SMOOTH_FILTER && q!=robot_path.begin();k++)
@@ -525,8 +525,8 @@ void  mrpt::topography::path_from_rtk_gps(
 					--q;
 					if (abs( mrpt::system::timeDifference(q->first,i->first))<MAX_DIST_TO_FILTER )
 					{
-						pitchs.push_back( q->second.pitch() );
-						rolls.push_back( q->second.roll() );
+						pitchs.push_back( q->second.pitch );
+						rolls.push_back( q->second.roll );
 					}
 				}
 				q=i;
@@ -535,12 +535,13 @@ void  mrpt::topography::path_from_rtk_gps(
 					++q;
 					if (abs( mrpt::system::timeDifference(q->first,i->first))<MAX_DIST_TO_FILTER )
 					{
-						pitchs.push_back( q->second.pitch() );
-						rolls.push_back( q->second.roll() );
+						pitchs.push_back( q->second.pitch );
+						rolls.push_back( q->second.roll );
 					}
 				}
 
-				p.setYawPitchRoll(p.yaw(), mrpt::math::averageWrap2Pi(pitchs), mrpt::math::averageWrap2Pi(rolls) );
+				p.pitch = mrpt::math::averageWrap2Pi(pitchs);
+				p.roll = mrpt::math::averageWrap2Pi(rolls);
 
 				// save in filtered path:
 				filtered_robot_path.insert( i->first, p );

@@ -93,6 +93,15 @@ namespace mrpt
 			const double        t,
 			mrpt::poses::CPose3DQuat       & p);
 
+		/** \overload Interpolates two SO(3) elements (the rotational part only), given as mrpt::math::TPose3D 
+		 * form as yaw,pitch,roll angles. XYZ are ignored.
+		 */
+		void BASE_IMPEXP slerp_ypr(
+			const mrpt::math::TPose3D& q0,
+			const mrpt::math::TPose3D & q1,
+			const double        t,
+			mrpt::math::TPose3D       & p);
+
 		/** @} */
 
 		/** @} */  // grouping

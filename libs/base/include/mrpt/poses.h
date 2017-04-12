@@ -36,6 +36,7 @@
 #include <mrpt/poses/CPoses2DSequence.h>
 #include <mrpt/poses/CPose3DPDFSOG.h>
 #include <mrpt/poses/CPoses3DSequence.h>
+#include <mrpt/poses/CPose2DInterpolator.h>
 #include <mrpt/poses/CPose3DInterpolator.h>
 #include <mrpt/poses/CPoseRandomSampler.h>
 #include <mrpt/poses/CRobot2DPoseEstimator.h>

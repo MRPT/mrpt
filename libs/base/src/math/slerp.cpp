@@ -50,3 +50,15 @@ void mrpt::math::slerp(
 	q.y( (1-t)*q0.y()+t*q1.y() );
 	q.z( (1-t)*q0.z()+t*q1.z() );
 }
+
+void mrpt::math::slerp_ypr(const mrpt::math::TPose3D& q0, const mrpt::math::TPose3D & q1, const double t, mrpt::math::TPose3D & p)
+{
+	mrpt::math::CQuaternionDouble quat0(UNINITIALIZED_QUATERNION), quat1(UNINITIALIZED_QUATERNION), q(UNINITIALIZED_QUATERNION);
+	q0.getAsQuaternion(quat0);
+	q1.getAsQuaternion(quat1);
+	mrpt::math::slerp(quat0, quat1, t, q);
+	
+	p.x = p.y = p.z = 0;
+	q.rpy(p.roll, p.pitch, p.yaw);
+}
+

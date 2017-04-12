@@ -10,8 +10,6 @@
 #include "nav-precomp.h" // Precomp header
 
 #include <mrpt/nav/reactive/CAbstractNavigator.h>
-#include <mrpt/poses/CPose2D.h>
-#include <mrpt/math/geometry.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/utils/CConfigFileMemory.h>
 #include <limits>
@@ -27,7 +25,7 @@ CAbstractNavigator::TNavigationParams::TNavigationParams() :
 	target_frame_id("map"),
 	targetAllowedDistance(0.5),
 	targetIsRelative(false),
-	targetDesiredRelSpeed(.0),
+	targetDesiredRelSpeed(.05),
 	targetIsIntermediaryWaypoint(false)
 {
 }
@@ -72,8 +70,8 @@ CAbstractNavigator::CAbstractNavigator(CRobot2NavInterface &react_iterf_impl) :
 	m_latestOdomPoses     (),
 	m_timlog_delays       (true, "CAbstractNavigator::m_timlog_delays")
 {
-	m_latestPoses.setInterpolationMethod(mrpt::poses::CPose3DInterpolator::imLinear2Neig);
-	m_latestOdomPoses.setInterpolationMethod(mrpt::poses::CPose3DInterpolator::imLinear2Neig);
+	m_latestPoses.setInterpolationMethod(mrpt::poses::imLinear2Neig);
+	m_latestOdomPoses.setInterpolationMethod(mrpt::poses::imLinear2Neig);
 	this->setVerbosityLevel(mrpt::utils::LVL_DEBUG);
 }
 
@@ -246,7 +244,7 @@ void CAbstractNavigator::navigationStep()
 			{
 				m_navigationState = IDLE;
 				logFmt(mrpt::utils::LVL_WARN, "Navigation target (%.03f,%.03f) was reached\n", m_navigationParams->target.x, m_navigationParams->target.y);
-				
+
 				if (!m_navigationParams->targetIsIntermediaryWaypoint)
 				{
 					this->stop(false /*not emergency*/);
@@ -378,15 +376,15 @@ void CAbstractNavigator::updateCurrentPoseAndSpeeds()
 
 	if (changed_frame_id)
 	{
-		// If frame changed, clear past poses. This could be improved by requesting 
+		// If frame changed, clear past poses. This could be improved by requesting
 		// the transf between the two frames, but it's probably not worth.
 		m_latestPoses.clear();
 		m_latestOdomPoses.clear();
 	}
 
 	// Append to list of past poses:
-	m_latestPoses.insert(m_curPoseVel.timestamp, mrpt::poses::CPose3D(mrpt::math::TPose3D(m_curPoseVel.pose)));
-	m_latestOdomPoses.insert(m_curPoseVel.timestamp, mrpt::poses::CPose3D(mrpt::math::TPose3D(m_curPoseVel.rawOdometry)));
+	m_latestPoses.insert(m_curPoseVel.timestamp, m_curPoseVel.pose);
+	m_latestOdomPoses.insert(m_curPoseVel.timestamp, m_curPoseVel.rawOdometry);
 
 	// Purge old ones:
 	while (m_latestPoses.size() > 1 &&
