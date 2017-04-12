@@ -78,6 +78,7 @@ namespace mrpt
 		// ---------------- Forward declarations: Classes ----------------
 		template <class T> class CMatrixTemplate;
 		template <class T> class CMatrixTemplateObjects;
+		template <class T> class CQuaternion;
 
     	/** ContainerType<T>::element_t exposes the value of any STL or Eigen container.
 		  *  Default specialization works for STL and MRPT containers, there is another one for Eigen in <mrpt/math/eigen_frwds.h> */

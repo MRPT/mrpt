@@ -10,8 +10,6 @@
 #include "vision-precomp.h"   // Precompiled headers
 
 #include <mrpt/math/geometry.h>
-#include <mrpt/random.h>
-#include <mrpt/utils/CConfigFile.h>
 #include <mrpt/utils/CFileOutputStream.h>
 
 #include <mrpt/maps/CLandmarksMap.h>
@@ -25,6 +23,7 @@
 #include <mrpt/obs/CObservationBeaconRanges.h>
 #include <mrpt/obs/CObservationVisualLandmarks.h>
 #include <mrpt/system/os.h>
+#include <mrpt/random.h>
 
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CEllipsoid.h>

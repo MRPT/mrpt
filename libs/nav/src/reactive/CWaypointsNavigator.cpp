@@ -116,7 +116,7 @@ void CWaypointsNavigator::navigationStep()
 		{
 			auto &wp = wps.waypoints[wps.waypoint_index_current_goal];
 			const double dist2target = robot_move_seg.distance(wp.target);
-			if (dist2target < wp.allowed_distance)
+			if (dist2target < wp.allowed_distance || m_was_aligning /* we were already aligning at a WP */)
 			{
 				bool consider_wp_reached = false;
 				if (wp.target_heading == TWaypoint::INVALID_NUM)
@@ -259,7 +259,7 @@ void CWaypointsNavigator::navigationStep()
 			nav_cmd.targetAllowedDistance = wp.allowed_distance;
 			nav_cmd.targetIsRelative = false;
 			nav_cmd.targetIsIntermediaryWaypoint = !is_final_wp;
-			nav_cmd.targetDesiredRelSpeed = (is_final_wp || (wp.target_heading != TWaypoint::INVALID_NUM)) ? 0. : 1.;
+			nav_cmd.targetDesiredRelSpeed = (is_final_wp || (wp.target_heading != TWaypoint::INVALID_NUM)) ? 0.05 : 1.;
 
 			this->navigate( &nav_cmd );
 

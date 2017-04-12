@@ -32,7 +32,7 @@ TEST(CConfigFileMemory, Sections)
 	second.write("one","name","val");
 	second.write("two","names","value");
 	second.getAllSections(sections);
-	EXPECT_EQ(2, sections.size());
+	EXPECT_EQ(2U, sections.size());
 	if (sections.size() == 2) {  // avoid potential crash if fails
 		EXPECT_STREQ("one", sections[0].c_str());
 		EXPECT_STREQ("two", sections[1].c_str());
