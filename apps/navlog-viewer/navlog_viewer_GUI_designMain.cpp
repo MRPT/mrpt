@@ -855,6 +855,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 	// --------------------------------
 	for (unsigned int nPTG=0;nPTG<log.infoPerPTG.size();nPTG++)  // log.infoPerPTG.size() may be != nPTGs in the last entry is used for "NOP cmdvel"
 	{
+		const bool is_selected_ptg = (int(nPTG) == log.nSelectedPTG);
 		CDisplayWindow3DPtr &win = m_mywins3D[format("PTG%u",nPTG)];
 		if (!win)  {
 			const static int W = 290;
@@ -950,13 +951,12 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 			vector<float> xs,ys;
 
 			const size_t nAlphas = pI.TP_Obstacles.size();
-			//ASSERT_(nAlphas>0)  // In case of "invalid" PTGs during navigation, TP_Obstacles may be left uncomputed.
 
 			win->clearTextMessages();
 
 			win->addTextMessage(4, 4,
 				format("[%u]:%s", nPTG, log.infoPerPTG[nPTG].PTG_desc.c_str()),
-				TColorf(1.0f, 1.0f, 1.0f), "mono", 8, mrpt::opengl::NICE, 0 /*id*/, 1.5, 0.1, true /*shadow*/);
+				is_selected_ptg ? TColorf(1.0f, 1.0f, 0.f) : TColorf(1.0f, 1.0f, 1.0f), "mono", 8, mrpt::opengl::NICE, 0 /*id*/, 1.5, 0.1, true /*shadow*/);
 
 			// Chosen direction:
 			{
