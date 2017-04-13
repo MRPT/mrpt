@@ -105,6 +105,8 @@ class ptgConfiguratorframe: public wxFrame
         static const long ID_TEXTCTRL6;
         static const long ID_STATICTEXT7;
         static const long ID_TEXTCTRL7;
+        static const long ID_STATICTEXT17;
+        static const long ID_TEXTCTRL8;
         static const long ID_BUTTON4;
         static const long ID_TEXTCTRL1;
         static const long ID_TEXTCTRL2;
@@ -180,6 +182,7 @@ class ptgConfiguratorframe: public wxFrame
         wxPanel* Panel6;
         wxPanel* Panel3;
         CMyGLCanvas* m_plot;
+        wxTextCtrl* edRelSpeedAtTarget;
         wxButton* btnPlaceTarget;
         mpWindow* m_plotPathYp;
         wxTextCtrl* edTargetX;
@@ -199,6 +202,7 @@ class ptgConfiguratorframe: public wxFrame
         wxTextCtrl* edCfg;
         wxPanel* Panel2;
         wxTextCtrl* edMinDistBtwShapes;
+        wxStaticText* StaticText17;
         wxStaticText* StaticText4;
         wxCheckBox* cbShowClearance;
         wxStaticText* StaticText16;

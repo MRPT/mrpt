@@ -171,7 +171,7 @@
 								</object>
 								<object class="sizeritem">
 									<object class="wxFlexGridSizer" variable="FlexGridSizer8" member="no">
-										<cols>11</cols>
+										<rows>1</rows>
 										<object class="sizeritem">
 											<object class="wxCheckBox" name="ID_CHECKBOX2" variable="cbBuildTPObs" member="yes">
 												<label>Obstacle point: x=</label>
@@ -237,7 +237,7 @@
 										<object class="sizeritem">
 											<object class="wxTextCtrl" name="ID_TEXTCTRL6" variable="edTargetX" member="yes">
 												<value>5.0</value>
-												<size>50,-1</size>
+												<size>31,-1</size>
 											</object>
 											<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
 											<border>5</border>
@@ -254,7 +254,24 @@
 										<object class="sizeritem">
 											<object class="wxTextCtrl" name="ID_TEXTCTRL7" variable="edTargetY" member="yes">
 												<value>1.0</value>
-												<size>50,-1</size>
+												<size>35,-1</size>
+											</object>
+											<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+											<border>5</border>
+											<option>1</option>
+										</object>
+										<object class="sizeritem">
+											<object class="wxStaticText" name="ID_STATICTEXT17" variable="StaticText17" member="yes">
+												<label>RelSpeed=</label>
+											</object>
+											<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+											<border>5</border>
+											<option>1</option>
+										</object>
+										<object class="sizeritem">
+											<object class="wxTextCtrl" name="ID_TEXTCTRL8" variable="edRelSpeedAtTarget" member="yes">
+												<value>0.0</value>
+												<size>34,-1</size>
 											</object>
 											<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
 											<border>5</border>
