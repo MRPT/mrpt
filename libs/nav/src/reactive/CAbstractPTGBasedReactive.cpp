@@ -786,7 +786,9 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 
 	// Make sure that the target slow-down is honored, as seen in real-world Euclidean space 
 	// (as opposed to TP-Space, where the holo methods are evaluated)
-	if (m_navigationParams && m_navigationParams->targetDesiredRelSpeed<1.0 && !m_holonomicMethod.empty() && m_holonomicMethod[0]!=nullptr)
+	if (m_navigationParams && m_navigationParams->targetDesiredRelSpeed<1.0 && !m_holonomicMethod.empty() && m_holonomicMethod[0]!=nullptr 
+		&& !cm.PTG->supportSpeedAtTarget()  // If the PTG is able to handle the slow-down on its own, dont change speed here
+		)
 	{
 		const double TARGET_SLOW_APPROACHING_DISTANCE = m_holonomicMethod[0]->getTargetApproachSlowDownDistance();
 
