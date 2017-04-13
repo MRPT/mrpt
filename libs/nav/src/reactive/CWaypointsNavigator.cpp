@@ -259,7 +259,7 @@ void CWaypointsNavigator::navigationStep()
 			nav_cmd.targetAllowedDistance = wp.allowed_distance;
 			nav_cmd.targetIsRelative = false;
 			nav_cmd.targetIsIntermediaryWaypoint = !is_final_wp;
-			nav_cmd.targetDesiredRelSpeed = (is_final_wp || (wp.target_heading != TWaypoint::INVALID_NUM)) ? 0.05 : 1.;
+			nav_cmd.targetDesiredRelSpeed = (is_final_wp || (wp.target_heading != TWaypoint::INVALID_NUM)) ? params_waypoints_navigator.rel_speed_for_stop_waypoints : 1.;
 
 			this->navigate( &nav_cmd );
 
@@ -312,6 +312,7 @@ void mrpt::nav::CWaypointsNavigator::TWaypointsNavigatorParams::loadFromConfigFi
 	MRPT_LOAD_CONFIG_VAR(max_distance_to_allow_skip_waypoint, double, c, s);
 	MRPT_LOAD_CONFIG_VAR(min_timesteps_confirm_skip_waypoints, int, c, s);
 	MRPT_LOAD_CONFIG_VAR_DEGREES(waypoint_angle_tolerance, c, s);
+	MRPT_LOAD_CONFIG_VAR(rel_speed_for_stop_waypoints, double, c, s);
 }
 
 void mrpt::nav::CWaypointsNavigator::TWaypointsNavigatorParams::saveToConfigFile(mrpt::utils::CConfigFileBase & c, const std::string & s) const
@@ -319,12 +320,14 @@ void mrpt::nav::CWaypointsNavigator::TWaypointsNavigatorParams::saveToConfigFile
 	MRPT_SAVE_CONFIG_VAR_COMMENT(max_distance_to_allow_skip_waypoint, "Max distance to `foresee` waypoints [meters]. (<0: unlimited)");
 	MRPT_SAVE_CONFIG_VAR_COMMENT(min_timesteps_confirm_skip_waypoints, "Min timesteps a `future` waypoint must be seen as reachable to become the active one.");
 	MRPT_SAVE_CONFIG_VAR_DEGREES_COMMENT("waypoint_angle_tolerance", waypoint_angle_tolerance, "Angular error tolerance for waypoints with an assigned heading [deg] (Default: 5 deg)");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(rel_speed_for_stop_waypoints, "[0,1] Relative speed when aiming at a stop-point waypoint (Default=0.10)");
 }
 
 CWaypointsNavigator::TWaypointsNavigatorParams::TWaypointsNavigatorParams() :
 	max_distance_to_allow_skip_waypoint(-1.0),
 	min_timesteps_confirm_skip_waypoints(1),
-	waypoint_angle_tolerance( mrpt::utils::DEG2RAD(5.0) )
+	waypoint_angle_tolerance( mrpt::utils::DEG2RAD(5.0) ),
+	rel_speed_for_stop_waypoints(0.10)
 {
 }
 
