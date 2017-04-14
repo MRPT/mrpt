@@ -515,10 +515,17 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		ASSERT_(m_multiobjopt);
 		int best_ptg_idx = m_multiobjopt->decide(candidate_movs, mo_info);
 
-		if (fill_log_record && mo_info.final_evaluation.size()== newLogRec.infoPerPTG.size())
+		if (fill_log_record)
 		{
-			for (unsigned int i = 0; i < newLogRec.infoPerPTG.size(); i++) {
-				newLogRec.infoPerPTG[i].evaluation = mo_info.final_evaluation[i];
+			if (mo_info.final_evaluation.size() == newLogRec.infoPerPTG.size())
+			{
+				for (unsigned int i = 0; i < newLogRec.infoPerPTG.size(); i++) {
+					newLogRec.infoPerPTG[i].evaluation = mo_info.final_evaluation[i];
+				}
+			}
+			int idx = 0;
+			for (const auto &le : mo_info.log_entries) {
+				newLogRec.additional_debug_msgs[mrpt::format("MultiObjMotOptmzr_msg%03i",idx++)] = le;
 			}
 		}
 

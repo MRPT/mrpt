@@ -76,6 +76,7 @@ int CMultiObjectiveMotionOptimizerBase::decide(const std::vector<mrpt::nav::TCan
 				const double val = ma.eval();
 				if (val == 0) {
 					assert_failed = true;
+					extra_info.log_entries.emplace_back( std::move(mrpt::format("[CMultiObjectiveMotionOptimizerBase] mov_idx=%u ASSERT failed: `%s`", mov_idx, ma.get_original_expression().c_str()) ));
 					break;
 				}
 			}
