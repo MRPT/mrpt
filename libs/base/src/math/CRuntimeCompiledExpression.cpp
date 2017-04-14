@@ -32,6 +32,8 @@ void CRuntimeCompiledExpression::compile(
 	const std::string &expr_name_for_error_reporting  //!< A descriptive name of this formula, to be used when generating error reports via an  exception, if needed
 )
 {
+	m_original_expr_str = expression;
+
 	exprtk::symbol_table<double> symbol_table;
 	for (const auto &v : variables) {
 		double & var = const_cast<double&>(v.second);
@@ -72,4 +74,13 @@ exprtk::expression<double> & CRuntimeCompiledExpression::get_raw_exprtk_expr() {
 const exprtk::expression<double> & CRuntimeCompiledExpression::get_raw_exprtk_expr() const {
 	ASSERT_(m_compiled_formula.ptr.get() != nullptr);
 	return PIMPL_GET_CONSTREF(exprtk::expression<double>, m_compiled_formula);
+}
+
+bool CRuntimeCompiledExpression::is_compiled() const
+{
+	return m_compiled_formula.ptr.get() != nullptr;
+}
+const std::string & CRuntimeCompiledExpression::get_original_expression() const
+{
+	return m_original_expr_str;
 }

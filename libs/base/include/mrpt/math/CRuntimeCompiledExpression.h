@@ -62,11 +62,15 @@ namespace math
 		*/
 		double eval() const;
 
+		bool is_compiled() const; //!< Returns true if compile() was called and ended without errors.
+		const std::string & get_original_expression() const; //!< Returns the original formula passed to compile(), or an empty string if still not compiled.
+
 		exprtk::expression<double> & get_raw_exprtk_expr(); //!< Access raw exprtk expression object.
 		const exprtk::expression<double> & get_raw_exprtk_expr() const; //!< Access raw exprtk expression object.
 
 	private:
 		PIMPL_DECLARE_TYPE(exprtk::expression<double>, m_compiled_formula);
+		std::string m_original_expr_str;
 
 	}; // End of class def.
 
