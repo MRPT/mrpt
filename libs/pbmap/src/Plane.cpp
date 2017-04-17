@@ -22,103 +22,16 @@
 #include <pcl/filters/voxel_grid.h>
 #include <cassert>
 
+#include <Eigen/Eigenvalues>
+
+#include <mrpt/system/os.h>
+
 using namespace mrpt::pbmap;
 using namespace mrpt::utils;
 using namespace std;
+using namespace Eigen;
 
 IMPLEMENTS_SERIALIZABLE(Plane, CSerializable, mrpt::pbmap)
-
-///*---------------------------------------------------------------
-//						writeToStream
-// ---------------------------------------------------------------*/
-//void  Plane::writeToStream(mrpt::utils::CStream &out, int *out_Version) const
-//{
-//	if (out_Version)
-//		*out_Version = 0;
-//	else
-//	{
-//cout << "write plane \n";
-//		// The data
-//		out << static_cast<uint32_t>(numObservations);//out << uint32_t(numObservations);
-//		out << areaVoxels;
-//		out << areaHull;
-//		out << elongation;
-//    out << v3normal(0) << v3normal(1) << v3normal(2);
-//    out << v3center(0) << v3center(1) << v3center(2);
-//    out << v3PpalDir(0) << v3PpalDir(1) << v3PpalDir(2);
-//    out << v3colorNrgb(0) << v3colorNrgb(1) << v3colorNrgb(2);
-//    out << v3colorNrgbDev(0) << v3colorNrgbDev(1) << v3colorNrgbDev(2);
-////    out.WriteBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3normal(0),3);
-////    out.WriteBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3center(0),3);
-////    out.WriteBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3PpalDir(0),3);
-////    out.WriteBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3colorNrgb(0),3);
-////    out.WriteBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3colorNrgbDev(0),3);
-//
-//    out << (uint32_t)neighborPlanes.size();
-//    for (std::map<unsigned,unsigned>::const_iterator it=neighborPlanes.begin(); it != neighborPlanes.end(); it++)
-//      out << static_cast<uint32_t>(it->first) << static_cast<uint32_t>(it->second);
-//
-//    out << (uint32_t)polygonContourPtr->size();
-//    for (uint32_t i=0; i < polygonContourPtr->size(); i++)
-//      out << polygonContourPtr->points[i].x << polygonContourPtr->points[i].y << polygonContourPtr->points[i].z;
-//
-//    out << bFullExtent;
-//    out << bFromStructure;
-//	}
-//
-//}
-//
-///*---------------------------------------------------------------
-//						readFromStream
-// ---------------------------------------------------------------*/
-//void  Plane::readFromStream(mrpt::utils::CStream &in, int version)
-//{
-//	switch(version)
-//	{
-//	case 0:
-//		{
-//      cout << "Read plane\n";
-//
-//			// The data
-//			uint32_t n;
-//			in >> n;
-//			numObservations = (unsigned)n;
-//			in >> areaVoxels;
-//			in >> areaHull;
-//			in >> elongation;
-//			in >> v3normal(0) >> v3normal(1) >> v3normal(2);
-//			in >> v3center(0) >> v3center(1) >> v3center(2);
-//			in >> v3PpalDir(0) >> v3PpalDir(1) >> v3PpalDir(2);
-//			in >> v3colorNrgb(0) >> v3colorNrgb(1) >> v3colorNrgb(2);
-//			in >> v3colorNrgbDev(0) >> v3colorNrgbDev(1) >> v3colorNrgbDev(2);
-////			in.ReadBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3normal[0],sizeof(v3normal[0])*3);
-////			in.ReadBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3center[0],sizeof(v3center[0])*3);
-////			in.ReadBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3PpalDir[0],sizeof(v3PpalDir[0])*3);
-////			in.ReadBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3colorNrgb[0],sizeof(v3colorNrgb[0])*3);
-////			in.ReadBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3colorNrgbDev[0],sizeof(v3colorNrgbDev[0])*3);
-//
-//			in >> n;
-//			neighborPlanes.clear();
-//      for (uint32_t i=0; i < n; i++)
-//      {
-//        uint32_t neighbor, commonObs;
-//        in >> neighbor >> commonObs;
-//        neighborPlanes[neighbor] = commonObs;
-//      }
-//
-//			in >> n;
-//			polygonContourPtr->resize(n);
-//      for (unsigned i=0; i < n; i++)
-//        in >> polygonContourPtr->points[i].x >> polygonContourPtr->points[i].y >> polygonContourPtr->points[i].z;
-//
-//      in >> bFullExtent;
-//      in >> bFromStructure;
-//
-//		} break;
-//	default:
-//		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
-//  };
-//}
 
 /*---------------------------------------------------------------
 						writeToStream
@@ -339,6 +252,18 @@ void Plane::forcePtsLayOnPlane()
   }
 }
 
+void Plane::forcePtsLayOnPlane(pcl::PointCloud<pcl::PointXYZRGBA>::Ptr & inliers)
+{
+  // The plane equation has the form Ax + By + Cz + D = 0, where the vector N=(A,B,C) is the normal and the constant D can be calculated as D = -N*(PlanePoint) = -N*PlaneCenter
+  const double D = -(v3normal.dot(v3center));
+  for(unsigned i = 0; i < inliers->size(); i++)
+  {
+    double dist = v3normal[0]*inliers->points[i].x + v3normal[1]*inliers->points[i].y + v3normal[2]*inliers->points[i].z + D;
+    inliers->points[i].x -= v3normal[0] * dist;
+    inliers->points[i].y -= v3normal[1] * dist;
+    inliers->points[i].z -= v3normal[2] * dist;
+  }
+}
 
 /** \brief Compute the area of a 2D planar polygon patch
   */
@@ -357,10 +282,10 @@ float Plane::compute2DPolygonalArea ()
   float AreaX2 = 0.0;
   float p_i[3], p_j[3];
 
-  for (unsigned int i = 0; i < polygonContourPtr->points.size (); i++)
+  for (unsigned int i = 0; i < polygonContourPtr->size(); i++)
   {
     p_i[0] = polygonContourPtr->points[i].x; p_i[1] = polygonContourPtr->points[i].y; p_i[2] = polygonContourPtr->points[i].z;
-    int j = (i + 1) % polygonContourPtr->points.size ();
+    int j = (i + 1) % polygonContourPtr->size();
     p_j[0] = polygonContourPtr->points[j].x; p_j[1] = polygonContourPtr->points[j].y; p_j[2] = polygonContourPtr->points[j].z;
 
     AreaX2 += p_i[k1] * p_j[k2] - p_i[k2] * p_j[k1];
@@ -388,10 +313,10 @@ void Plane::computeMassCenterAndArea()
   Eigen::Vector3f massCenter = Eigen::Vector3f::Zero();
   float p_i[3], p_j[3];
 
-  for (unsigned int i = 0; i < polygonContourPtr->points.size (); i++)
+  for (unsigned int i = 0; i < polygonContourPtr->size(); i++)
   {
     p_i[0] = polygonContourPtr->points[i].x; p_i[1] = polygonContourPtr->points[i].y; p_i[2] = polygonContourPtr->points[i].z;
-    int j = (i + 1) % polygonContourPtr->points.size ();
+    int j = (i + 1) % polygonContourPtr->size();
     p_j[0] = polygonContourPtr->points[j].x; p_j[1] = polygonContourPtr->points[j].y; p_j[2] = polygonContourPtr->points[j].z;
     double cross_segment = p_i[k1] * p_j[k2] - p_i[k2] * p_j[k1];
 
@@ -424,6 +349,145 @@ void Plane::calcElongationAndPpalDir()
     v3PpalDir[1] = eigenVect(1,0);
     v3PpalDir[2] = eigenVect(2,0);
   }
+
+  // Compute the geometric center
+  Eigen::Vector3f p_i, p_j, p_k, weighted_sum_vertices;
+  float total_weights = 0.f; // This value is twice the perimeter
+  Eigen::VectorXf weights( polygonContourPtr->size() );
+  for (unsigned int i = 0; i < polygonContourPtr->size(); i++)
+  {
+    p_i[0] = polygonContourPtr->points[i].x; p_i[1] = polygonContourPtr->points[i].y; p_i[2] = polygonContourPtr->points[i].z;
+    int j = (i + 1) % polygonContourPtr->size();
+    p_j[0] = polygonContourPtr->points[j].x; p_j[1] = polygonContourPtr->points[j].y; p_j[2] = polygonContourPtr->points[j].z;
+    int k = (j + 1) % polygonContourPtr->size();
+    p_k[0] = polygonContourPtr->points[k].x; p_k[1] = polygonContourPtr->points[k].y; p_k[2] = polygonContourPtr->points[k].z;
+
+    weights[j] = (p_j-p_i).norm() + (p_j-p_k).norm();
+    total_weights += weights[j];
+    weighted_sum_vertices += weights[j]*p_j;
+  }
+  //v3center = weighted_sum_vertices / total_weights;
+  Eigen::Vector3f v3center_ = weighted_sum_vertices / total_weights;
+  assert( (v3center_-v3center).isMuchSmallerThan(0.01f) );
+
+  Eigen::Matrix3f M = Eigen::Matrix3f::Zero();
+  for (unsigned int i = 0; i < polygonContourPtr->size(); i++)
+  {
+    p_i[0] = polygonContourPtr->points[i].x; p_i[1] = polygonContourPtr->points[i].y; p_i[2] = polygonContourPtr->points[i].z;
+    //diff.squaredNorm();
+    M += weights[i] * (p_i-v3center) * (p_i-v3center).transpose();
+  }
+
+}
+
+// Compute the plane parameters from a set of noisy points (described in our RAS paper)
+void Plane::computeInvariantParams (pcl::PointCloud<pcl::PointXYZRGBA>::Ptr & inliers )
+{
+    double start_time = pcl::getTime();
+
+    //float d_prev = d;
+
+    // Recompute the plane parameters {n,d,c,Sigma}
+    float stdDevFactor = 0.01f;
+    float total_weights = 0.f;
+    Eigen::Vector3f p_i;
+    Eigen::VectorXf weights( inliers->size() );
+    Eigen::Vector3f v3center_ = Eigen::Vector3f::Zero();
+    // Compute the geometric center
+    for (unsigned int i = 0; i < inliers->size(); i++)
+    {
+      p_i[0] = inliers->points[i].x; p_i[1] = inliers->points[i].y; p_i[2] = inliers->points[i].z;
+      float sigma_p = stdDevFactor * p_i.squaredNorm();
+      weights[i] = 1.f / (sigma_p*sigma_p);
+      total_weights += weights[i];
+      v3center_ += weights[i] * p_i;
+    }
+//    v3center_ = v3center_ / total_weights;
+//    std::cout << " v3center_ " << v3center_.transpose() << std::endl;
+//    std::cout << "v3center " << v3center.transpose() << std::endl;
+//    Eigen::Vector3f diff = v3center_-v3center;
+    Eigen::Vector3f diff = Eigen::Vector3f::Ones();
+    assert( diff.isMuchSmallerThan(2*Eigen::Vector3f::Ones()) ); // This does not work
+    v3center = v3center_ / total_weights;
+
+    // Compute the inliers's covariance matrix M
+    Eigen::Matrix3f M = Eigen::Matrix3f::Zero();
+    for (unsigned int i = 0; i < inliers->size(); i++)
+    {
+      p_i[0] = inliers->points[i].x; p_i[1] = inliers->points[i].y; p_i[2] = inliers->points[i].z;
+      v3center_ += weights[i] * p_i;
+      M += weights[i] * (p_i-v3center) * (p_i-v3center).transpose();
+    }
+
+    JacobiSVD<MatrixXf> svd(M, ComputeThinU | ComputeThinV);
+    v3normal = svd.matrixU().col(2);
+    if(v3normal .dot (v3center) > 0)
+        v3normal = -v3normal;
+    d = -v3normal .dot( v3center );
+
+//    std::cout << "svd eigenvectors \n" << svd.matrixU() << std::endl;
+//    std::cout << "svd eigenvectors \n" << svd.matrixV() << std::endl;
+//    std::cout << "svd eigenvalues \n" << svd.singularValues() << std::endl;
+    //std::cout << "v3normal " << v3normal.transpose() << std::endl;
+    //std::cout << "d " << d << " " << d_prev << std::endl;
+    //mrpt::system::pause();
+
+    information(3,3) = total_weights;
+    information.block(0,3,3,1) = total_weights * v3center_;
+    information.block(3,0,1,3) = information.block(0,3,3,1).transpose();
+    float nMn = v3normal.transpose()*M*v3normal;
+    information.block(0,0,3,3) = M - total_weights*v3center_*v3center_.transpose() - nMn*Eigen::Matrix3f::Identity();
+    //information.block(0,0,3,3) = M - total_weights*v3center_*v3center_.transpose() - (Eigen::Matrix3f::Identity()*(v3normal.transpose()*M*v3normal));
+
+    svd = JacobiSVD<MatrixXf>(information);//(M, ComputeThinU | ComputeThinV);
+    info_3rd_eigenval = sqrt( svd.singularValues()[2] );
+    //info_3rd_eigenval = ( svd.singularValues()[2] );
+
+//    double start_end = pcl::getTime();
+//    cout << "computeParams profiling " << (start_end - start_time)*1e6 << " us\n";
+}
+
+// Compute the plane parameters from a set of noisy points (described in our RAS paper)
+void Plane::computeParamsConvexHull ()
+{
+    double start_time = pcl::getTime();
+
+    // Shift the points to fulfill the plane equation
+    //forcePtsLayOnPlane(); // This is already done right after computing the convex hull
+
+    Eigen::Vector3f p_i, p_j, p_k, weighted_sum_vertices;
+    float total_weights = 0.f; // This value is twice the perimeter
+    Eigen::VectorXf weights( polygonContourPtr->size() );
+    for (unsigned int i = 0; i < polygonContourPtr->size(); i++)
+    {
+      p_i[0] = polygonContourPtr->points[i].x; p_i[1] = polygonContourPtr->points[i].y; p_i[2] = polygonContourPtr->points[i].z;
+      int j = (i + 1) % polygonContourPtr->size();
+      p_j[0] = polygonContourPtr->points[j].x; p_j[1] = polygonContourPtr->points[j].y; p_j[2] = polygonContourPtr->points[j].z;
+      int k = (j + 1) % polygonContourPtr->size();
+      p_k[0] = polygonContourPtr->points[k].x; p_k[1] = polygonContourPtr->points[k].y; p_k[2] = polygonContourPtr->points[k].z;
+
+      weights[j] = (p_j-p_i).norm() + (p_j-p_k).norm();
+      total_weights += weights[j];
+      weighted_sum_vertices += weights[j]*p_j;
+    }
+    v3center = weighted_sum_vertices / total_weights;
+
+    Eigen::Matrix3f M = Eigen::Matrix3f::Zero();
+    for (unsigned int i = 0; i < polygonContourPtr->size(); i++)
+    {
+      p_i[0] = polygonContourPtr->points[i].x; p_i[1] = polygonContourPtr->points[i].y; p_i[2] = polygonContourPtr->points[i].z;
+      M += weights[i] * (p_i-v3center) * (p_i-v3center).transpose();
+    }
+
+    JacobiSVD<MatrixXf> svd(M, ComputeThinU | ComputeThinV);
+    if( svd.singularValues()[0] > 2 * svd.singularValues()[1] )
+    {
+        v3PpalDir = svd.matrixU().col(0);
+        elongation = sqrt( svd.singularValues()[0] / svd.singularValues()[1] );
+    }
+
+//    double start_end = pcl::getTime();
+//    cout << "computeParams profiling " << (start_end - start_time)*1e6 << " us\n";
 }
 
 // The point cloud of the plane must be filled before using this function
@@ -848,6 +912,8 @@ void Plane::calcConvexHull(pcl::PointCloud<pcl::PointXYZRGBA>::Ptr &pointCloud, 
     indices[i] = H[i].id;
   }
 
+  // Shift the points to fulfill the plane equation
+  forcePtsLayOnPlane(polygonContourPtr);
 }
 
 
@@ -920,6 +986,9 @@ void Plane::calcConvexHullandParams(pcl::PointCloud<pcl::PointXYZRGBA>::Ptr &poi
     indices[i] = H[i].id;
   }
 
+  // Shift the points to fulfill the plane equation
+  forcePtsLayOnPlane(polygonContourPtr);
+
   // Calc area and mass center
   float ct = fabs ( v3normal[k0] );
   float AreaX2 = 0.0;
@@ -934,42 +1003,83 @@ void Plane::calcConvexHullandParams(pcl::PointCloud<pcl::PointXYZRGBA>::Ptr &poi
   }
   areaHull = fabs (AreaX2) / (2 * ct);
 
+//  std::cout << " PREV v3center " << v3center.transpose() << std::endl;
+//  float error = v3center.transpose()*v3normal+d;
+//  std::cout << " fit error " << error << std::endl;
+
   v3center[k1] /= (3*AreaX2);
   v3center[k2] /= (3*AreaX2);
   v3center[k0] = (-d - v3normal[k1]*massCenter[k1] - v3normal[k2]*massCenter[k2]) / v3normal[k0];
 
-  d = -v3normal .dot( v3center );
+  //d = -v3normal .dot( v3center );
 
-  // Compute elongation and ppal direction
-  Eigen::Matrix2f covariances = Eigen::Matrix2f::Zero();
-  Eigen::Vector2f p1, p2;
-  p2[0] = H[0].x-massCenter[k1]; p2[1] = H[0].y-massCenter[k2];
-//  float perimeter = 0.0;
-  for(size_t i=1; i < hull_noRep; i++)
-  {
-    p1 = p2;
-    p2[0] = H[i].x-massCenter[k1]; p2[1] = H[i].y-massCenter[k2];
-    float lenght_side = (p1 - p2).norm();
-//    perimeter += lenght_side;
-    covariances += lenght_side * (p1*p1.transpose() + p2*p2.transpose());
-  }
-//  covariances /= perimeter;
+//  // Compute elongation and ppal direction
+//  Eigen::Matrix2f covariances = Eigen::Matrix2f::Zero();
+//  Eigen::Vector2f p1, p2;
+//  p2[0] = H[0].x-massCenter[k1]; p2[1] = H[0].y-massCenter[k2];
+////  float perimeter = 0.0;
+//  for(size_t i=1; i < hull_noRep; i++)
+//  {
+//    p1 = p2;
+//    p2[0] = H[i].x-massCenter[k1]; p2[1] = H[i].y-massCenter[k2];
+//    float lenght_side = (p1 - p2).norm();
+////    perimeter += lenght_side;
+//    covariances += lenght_side * (p1*p1.transpose() + p2*p2.transpose());
+//  }
+////  covariances /= perimeter;
 
-  // Compute eigen vectors and values
-  Eigen::SelfAdjointEigenSolver<Eigen::Matrix2f> evd (covariances);
-  // Organize eigenvectors and eigenvalues in ascendent order
-  for (int i = 0; i < 2; ++i)
+//  // Compute eigen vectors and values
+//  Eigen::SelfAdjointEigenSolver<Eigen::Matrix2f> evd (covariances);
+//  // Organize eigenvectors and eigenvalues in ascendent order
+//  if( evd.eigenvalues()[0] > 2 * evd.eigenvalues()[1] )
+//  {
+//    elongation = sqrt(evd.eigenvalues()[0] / evd.eigenvalues()[1]);
+//    v3PpalDir[k1] = evd.eigenvectors()(0,0);
+//    v3PpalDir[k2] = evd.eigenvectors()(1,0);
+//    v3PpalDir[k0] = (-d - v3normal[k1]*v3PpalDir[k1] - v3normal[k2]*v3PpalDir[k2]) / v3normal[k0];
+//    v3PpalDir /= v3PpalDir.norm();
+//  }
+//  std::cout << " elongation " << elongation << std::endl;
+//  std::cout << " v3center " << v3center.transpose() << std::endl;
+//  std::cout << " v3PpalDir " << v3PpalDir.transpose() << std::endl;
+//  error = v3center.transpose()*v3normal+d;
+//  std::cout << " fit error " << error << std::endl;
+
+  Eigen::Vector3f p_i, p_j, p_k, weighted_sum_vertices;
+  float total_weights = 0.f; // This value is twice the perimeter
+  Eigen::VectorXf weights( polygonContourPtr->size() );
+  for (unsigned int i = 0; i < polygonContourPtr->size(); i++)
   {
-    std::cout << "Eig " << evd.eigenvalues()[i] << " v " << evd.eigenvectors().col(i).transpose() << "\n";
+      p_i[0] = polygonContourPtr->points[i].x; p_i[1] = polygonContourPtr->points[i].y; p_i[2] = polygonContourPtr->points[i].z;
+      int j = (i + 1) % polygonContourPtr->size();
+      p_j[0] = polygonContourPtr->points[j].x; p_j[1] = polygonContourPtr->points[j].y; p_j[2] = polygonContourPtr->points[j].z;
+      int k = (j + 1) % polygonContourPtr->size();
+      p_k[0] = polygonContourPtr->points[k].x; p_k[1] = polygonContourPtr->points[k].y; p_k[2] = polygonContourPtr->points[k].z;
+
+      weights[j] = (p_j-p_i).norm() + (p_j-p_k).norm();
+      total_weights += weights[j];
+      weighted_sum_vertices += weights[j]*p_j;
   }
-  if( evd.eigenvalues()[0] > 2 * evd.eigenvalues()[1] )
+  v3center = weighted_sum_vertices / total_weights;
+
+  Eigen::Matrix3f M = Eigen::Matrix3f::Zero();
+  for (unsigned int i = 0; i < polygonContourPtr->size(); i++)
   {
-    elongation = sqrt(evd.eigenvalues()[0] / evd.eigenvalues()[1]);
-    v3PpalDir[k1] = evd.eigenvectors()(0,0);
-    v3PpalDir[k2] = evd.eigenvectors()(1,0);
-    v3PpalDir[k0] = (-d - v3normal[k1]*v3PpalDir[k1] - v3normal[k2]*v3PpalDir[k2]) / v3normal[k0];
-    v3PpalDir /= v3PpalDir.norm();
+      p_i[0] = polygonContourPtr->points[i].x; p_i[1] = polygonContourPtr->points[i].y; p_i[2] = polygonContourPtr->points[i].z;
+      M += weights[i] * (p_i-v3center) * (p_i-v3center).transpose();
   }
+
+  JacobiSVD<MatrixXf> svd(M, ComputeThinU | ComputeThinV);
+  if( svd.singularValues()[0] > 2 * svd.singularValues()[1] )
+  {
+      v3PpalDir = svd.matrixU().col(0);
+      elongation = sqrt( svd.singularValues()[0] / svd.singularValues()[1] );
+  }
+//  std::cout << " POST elongation " << elongation << std::endl;
+//  std::cout << " v3center " << v3center.transpose() << std::endl;
+//  std::cout << " v3PpalDir " << v3PpalDir.transpose() << std::endl;
+//  error = v3center.transpose()*v3normal+d;
+//  std::cout << " fit error " << error << std::endl;
 }
 
 /*!Returns true when the closest distance between the patches "this" and the input "plane_nearby" is under distThreshold. This function is approximated*/
@@ -1102,8 +1212,8 @@ void Plane::mergePlane(Plane &same_plane_patch)
 
   d = -v3normal .dot( v3center );
 
-  // Move the points to fulfill the plane equation
-  forcePtsLayOnPlane();
+  // Shift the points to fulfill the plane equation
+  //forcePtsLayOnPlane(); // This is already done right after computing the convex hull
 
   // Update area
 //  double area_recalc = planePointCloudPtr->size() * 0.0025;
@@ -1147,16 +1257,91 @@ assert(inliers.size() > 0 && same_plane_patch.inliers.size() > 0);
 
 }
 
+void Plane::mergePlane_convexHull(Plane &same_plane_patch)
+{
+  // Update normal and d
+  Vector4f nd; nd.block(0,0,3,1) = v3normal; nd(3) = d;
+  Vector4f nd_merge; nd_merge.block(0,0,3,1) = same_plane_patch.v3normal; nd_merge(3) = same_plane_patch.d;
+  Matrix4f total_information = information + same_plane_patch.information;
+  Matrix4f total_covariance;
+  JacobiSVD<Matrix4f> pseudo_inverse(total_information);
+  pseudo_inverse.pinv(total_covariance);
+  Vector4f nd_fused = total_covariance*(information*nd + same_plane_patch.information*nd_merge);
+
+  std::cout << "PREV v3normal " << v3normal.transpose() << std::endl;
+  std::cout << "d " << d << std::endl;
+  std::cout << "information \n" << information << std::endl;
+
+  v3normal = nd_fused.block(0,0,3,1);
+  v3normal = v3normal / v3normal.norm();
+  d = nd_fused(3);
+  information = total_information;
+  JacobiSVD<MatrixXf> svd(information);//(M, ComputeThinU | ComputeThinV);
+  info_3rd_eigenval = sqrt( svd.singularValues()[2] );
+  //info_3rd_eigenval = ( svd.singularValues()[2] );
+
+  std::cout << "v3normal " << v3normal.transpose() << std::endl;
+  std::cout << "d " << d << std::endl;
+  std::cout << "information \n" << information << std::endl;
+
+  // Update point inliers
+  *planePointCloudPtr += *same_plane_patch.planePointCloudPtr; // Add the points of the new detection and perform a voxel grid
+
+  // Filter the points of the patch with a voxel-grid. This points are used only for visualization
+  static pcl::VoxelGrid<pcl::PointXYZRGBA> merge_grid;
+  merge_grid.setLeafSize(0.05,0.05,0.05);
+  pcl::PointCloud<pcl::PointXYZRGBA> mergeCloud;
+  merge_grid.setInputCloud (planePointCloudPtr);
+  merge_grid.filter (mergeCloud);
+  planePointCloudPtr->clear();
+  *planePointCloudPtr = mergeCloud;
+//  calcMainColor();
+//  if(configPbMap.use_color)
+//    calcMainColor();
+
+  inliers.insert(inliers.end(), same_plane_patch.inliers.begin(), same_plane_patch.inliers.end());
+
+  // Update convex hull
+  *same_plane_patch.polygonContourPtr += *polygonContourPtr;
+  calcConvexHull(same_plane_patch.polygonContourPtr);
+  computeMassCenterAndArea();
+  calcElongationAndPpalDir();
+
+  // Shift the points to fulfill the plane equation
+  //forcePtsLayOnPlane(); // This is already done right after computing the convex hull
+
+  // Update area
+//  double area_recalc = planePointCloudPtr->size() * 0.0025;
+//  mpPlaneInferInfo->isFullExtent(same_plane_patch, area_recalc);
+  areaVoxels= planePointCloudPtr->size() * 0.0025;
+}
+
 void Plane::transform(Eigen::Matrix4f &Rt)
 {
+  const Eigen::Matrix3f rotation = Rt.block(0,0,3,3);
+  const Eigen::Vector3f translation = Rt.block(0,3,3,1);
+
   // Transform normal and ppal direction
-  v3normal = Rt.block(0,0,3,3) * v3normal;
-  v3PpalDir = Rt.block(0,0,3,3) * v3PpalDir;
+  v3normal = rotation * v3normal;
+  v3PpalDir = rotation * v3PpalDir;
 
   // Transform centroid
-  v3center = Rt.block(0,0,3,3) * v3center + Rt.block(0,3,3,1);
+  v3center = rotation * v3center + translation;
 
   d = -(v3normal. dot (v3center));
+
+  // Rotate covariance
+  const Eigen::Matrix3f cov_nn = information.block(0,0,3,3);
+  const Eigen::Vector3f cov_nd = information.block(0,3,3,1);
+  const float cov_dd = information(3,3);
+  information.block(0,0,3,3) = rotation * cov_nn * rotation.transpose();
+  information.block(0,3,3,1) = rotation * (cov_nn*translation + cov_nd);
+  information.block(3,0,1,3) = information.block(0,3,3,1).transpose();
+  information(3,3) = translation.transpose()*cov_nn*translation + 2*(translation .dot (cov_nd) ) + cov_dd;
+
+  JacobiSVD<MatrixXf> svd(information);//(M, ComputeThinU | ComputeThinV);
+  info_3rd_eigenval = sqrt( svd.singularValues()[2] );
+  //info_3rd_eigenval = svd.singularValues()[2];
 
   // Transform convex hull points
   pcl::transformPointCloud(*polygonContourPtr, *polygonContourPtr, Rt);

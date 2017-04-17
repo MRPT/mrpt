@@ -25,7 +25,7 @@
 namespace mrpt {
 namespace pbmap {
 
-  /*! This class computes the rigid transformation between two sets of matched planes,
+  /*!  This class computes the rigid transformation between two sets of matched planes,
    *  and provides a measure of their rigid adjustment
    *
    * \ingroup mrpt_pbmap_grp
@@ -34,29 +34,32 @@ namespace pbmap {
   {
    public:
 
-    /*!Constructor */
+    /*! Constructor */
     ConsistencyTest(PbMap &PBM_source, PbMap &PBM_target);
+
+    /*! Compute the wights for each plane assigned */
+    void computeMatchWeights(std::map<unsigned, unsigned> & matched_planes);
 
   //  /**! Get diamond of points around the center. This is used to calculate the adjustment error with a model plane */
   //  void calcDiamondPlane(Plane& plane);
 
-    /*!Calculate the alignment error between two sets of matched planes.
+    /*! Calculate the alignment error between two sets of matched planes.
       The input rigid transformation "se3rigidTransfInv" is used to project the centroids of one set of planes into their
       matched planes and returns the sum of cuadratic distances */
     double calcAlignmentError( std::map<unsigned, unsigned> &matched_planes, Eigen::Matrix4f &rigidTransf );
 
-    /*!Return an initial guess for the rigid transformation which aligns two matched places.
+    /*! Return an initial guess for the rigid transformation which aligns two matched places.
     The translation is calculated from the planes centroids and the rotation from the alignment of the plane's normals.*/
     Eigen::Matrix4f initPose( std::map<unsigned, unsigned> &matched_planes);
     Eigen::Matrix4f estimatePose( std::map<unsigned, unsigned> &matched_planes ); // Weighted with the area
     bool estimatePoseWithCovariance(std::map<unsigned, unsigned> &matched_planes, Eigen::Matrix4f &rigidTransf, Eigen::Matrix<float,6,6> &covarianceM);
 
-    /*!Return an initial guess for the rigid transformation which aligns two matched places.
+    /*! Return an initial guess for the rigid transformation which aligns two matched places.
     The translation is calculated from the planes centroids and the rotation from the alignment of the plane's normals.
     A planar movement is assumed (wheeled robot)*/
     Eigen::Matrix4f initPose2D( std::map<unsigned, unsigned> &matched_planes);
 
-    /*!Return the estimated rigid transformation which aligns two matched subgraphs (i.e. neighborhoods of planes).
+    /*! Return the estimated rigid transformation which aligns two matched subgraphs (i.e. neighborhoods of planes).
     This function iteratively minimizes the alignment error of the matched planes wrt the rigid transformation.*/
     Eigen::Matrix4f getRTwithModel( std::map<unsigned, unsigned> &matched_planes );
 
@@ -67,14 +70,17 @@ Eigen::Matrix4f estimatePoseRANSAC( std::map<unsigned, unsigned> &matched_planes
 
    private:
 
-    /*!One of the subgraphs matched by SubgraphMatcher.*/
+    /*! One of the subgraphs matched by SubgraphMatcher.*/
     PbMap &PBMSource;
 
-    /*!The other subgraph matched by SubgraphMatcher.*/
+    /*! The other subgraph matched by SubgraphMatcher.*/
     PbMap &PBMTarget;
 
-    /*!List of pairs of matched planes from the PbMaps PBMSource with those from PBMTarget*/
+    /*! List of pairs of matched planes from the PbMaps PBMSource with those from PBMTarget*/
     std::map<unsigned, unsigned> matched_planes;
+
+    /*! Weights of matched elements */
+    std::map<unsigned,float> weights_src;
 
 //// Ransac functions to detect outliers in the plane matching
 //void ransacPlaneAlignment_fit( const mrpt::math::CMatrixFloat &planeCorresp,
