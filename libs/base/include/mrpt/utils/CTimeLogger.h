@@ -137,7 +137,7 @@ namespace mrpt
 		  @{ */
 		void BASE_IMPEXP global_profiler_enter(const char *func_name) MRPT_NO_THROWS;
 		void BASE_IMPEXP global_profiler_leave(const char *func_name) MRPT_NO_THROWS;
-		mrpt::utils::CTimeLogger& BASE_IMPEXP global_profiler_getref() MRPT_NO_THROWS;
+		mrpt::utils::CTimeLogger BASE_IMPEXP & global_profiler_getref() MRPT_NO_THROWS;
 		/** @} */
 
 	} // End of namespace
