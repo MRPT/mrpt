@@ -19,17 +19,18 @@ namespace mrpt
 {
 namespace nav
 {
-	/** \defgroup nav_tpspace TP-Space and PTG classes
-	  * \ingroup mrpt_nav_grp
-	  */
-
 	/** Clearance information for one particular PTG and one set of obstacles. 
-		* Usage: declare an object of this type (it will be initialized to "empty"), then 
-		* repeatedly call CParameterizedTrajectoryGenerator::updateClearance() for each 2D obstacle point. */
+		* Usage: 
+		* - Declare an object of this type (it will be initialized to "empty"), 
+		* - Call CParameterizedTrajectoryGenerator::initClearanceDiagram()
+		* - Repeatedly call CParameterizedTrajectoryGenerator::updateClearance() for each 2D obstacle point. 
+		*
+		*  \ingroup nav_tpspace
+		*/
 	class NAV_IMPEXP ClearanceDiagram
 	{
 	public:
-		/** Container: [path_k][TPS_distance] => normalized_clearance_for_exactly_that_robot_pose  */
+		/** Container: [decimated_path_k][TPS_distance] => normalized_clearance_for_exactly_that_robot_pose  */
 		std::vector<std::map<double,double> > raw_clearances;
 
 		ClearanceDiagram(); //!< default ctor
