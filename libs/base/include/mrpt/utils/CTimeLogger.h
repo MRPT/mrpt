@@ -55,7 +55,7 @@ namespace mrpt
 				std::stack<double,std::vector<double> >   open_calls;
 				bool has_time_units;
 			};
-
+		protected:
 			typedef mrpt::utils::ts_hash_map<std::string, TCallData, 1 /* bytes hash */, 10 /* allowed hash collisions */> TDataMap; // Was: std::map<std::string,TCallData>
 			TDataMap  m_data;
 
@@ -135,9 +135,9 @@ namespace mrpt
 
 		/** @name Auxiliary stuff for the global profiler used in MRPT_START / MRPT_END macros.
 		  @{ */
-		extern CTimeLogger BASE_IMPEXP global_profiler;
 		void BASE_IMPEXP global_profiler_enter(const char *func_name) MRPT_NO_THROWS;
 		void BASE_IMPEXP global_profiler_leave(const char *func_name) MRPT_NO_THROWS;
+		mrpt::utils::CTimeLogger& BASE_IMPEXP global_profiler_getref() MRPT_NO_THROWS;
 		/** @} */
 
 	} // End of namespace
