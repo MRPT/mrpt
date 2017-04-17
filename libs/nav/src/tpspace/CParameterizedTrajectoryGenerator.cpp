@@ -28,8 +28,8 @@ CParameterizedTrajectoryGenerator::CParameterizedTrajectoryGenerator() :
 	m_alphaValuesCount(0),
 	m_score_priority(1.0),
 	m_clearance_num_points(5),
-	m_nav_dyn_state_target_k(INVALID_PTG_PATH_INDEX),
 	m_nav_dyn_state(),
+	m_nav_dyn_state_target_k(INVALID_PTG_PATH_INDEX),
 	m_is_initialized(false)
 { }
 
@@ -65,7 +65,7 @@ void CParameterizedTrajectoryGenerator::loadFromConfigFile(const mrpt::utils::CC
 	MRPT_LOAD_HERE_CONFIG_VAR(vxi, double, m_nav_dyn_state.curVelLocal.vx, cfg, sSection);
 	MRPT_LOAD_HERE_CONFIG_VAR(vyi, double, m_nav_dyn_state.curVelLocal.vy, cfg, sSection);
 	MRPT_LOAD_HERE_CONFIG_VAR_DEGREES(wi, double, m_nav_dyn_state.curVelLocal.omega, cfg, sSection);
-	
+
 	MRPT_LOAD_HERE_CONFIG_VAR(reltrg_x, double, m_nav_dyn_state.relTarget.x, cfg, sSection);
 	MRPT_LOAD_HERE_CONFIG_VAR(reltrg_y, double, m_nav_dyn_state.relTarget.y, cfg, sSection);
 	MRPT_LOAD_HERE_CONFIG_VAR_DEGREES(reltrg_phi, double, m_nav_dyn_state.relTarget.phi , cfg, sSection);
@@ -200,7 +200,7 @@ void CParameterizedTrajectoryGenerator::initTPObstacleSingle(uint16_t k, double 
 	TP_Obstacle_k = std::min(
 		refDistance,
 		m_nav_dyn_state_target_k!=INVALID_PTG_PATH_INDEX ?
-			refDistance 
+			refDistance
 			:
 			this->getPathDist(k, this->getPathStepCount(k) - 1)
 		);
@@ -273,14 +273,14 @@ bool CParameterizedTrajectoryGenerator::isInitialized() const
 
 void CParameterizedTrajectoryGenerator::updateNavDynamicState(const CParameterizedTrajectoryGenerator::TNavDynamicState & newState, const bool force_update)
 {
-	// Make sure there is a real difference: notifying a PTG that a condition changed 
+	// Make sure there is a real difference: notifying a PTG that a condition changed
 	// may imply a significant computational cost if paths need to be re-evaluated on the fly, etc.
 	// so the cost of the comparison here is totally worth:
 	if (force_update || m_nav_dyn_state!=newState)
 	{
 		ASSERT_(newState.targetRelSpeed >= .0 && newState.targetRelSpeed <= 1.0); // sanity check
 		m_nav_dyn_state = newState;
-		
+
 		// 1st) Build PTG paths without counting for target slow-down:
 		m_nav_dyn_state_target_k = INVALID_PTG_PATH_INDEX;
 
@@ -338,7 +338,7 @@ void CParameterizedTrajectoryGenerator::internal_TPObsDistancePostprocess(const 
 	case COLL_BEH_BACK_AWAY:
 		{
 			if (new_tp_obs_dist < getMaxRobotRadius() ) {
-				// This means that we are getting apart of the obstacle: 
+				// This means that we are getting apart of the obstacle:
 				// ignore it to allow the robot to get off the near-collision:
 				// Don't change inout_tp_obs.
 				return;
