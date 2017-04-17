@@ -399,6 +399,8 @@ void CParameterizedTrajectoryGenerator::evalClearanceSingleObstacle(const double
 	const double numStepsPerIncr = (numPathSteps - 1.0) / (inout_realdist2clearance.size());
 
 	double step_pointer_dbl = 0.0;
+	const mrpt::math::TPoint2D og(ox,oy); // obstacle in "global" frame
+	mrpt::math::TPoint2D ol; // obstacle in robot frame
 
 	for (auto &e : inout_realdist2clearance)
 	{
@@ -418,12 +420,11 @@ void CParameterizedTrajectoryGenerator::evalClearanceSingleObstacle(const double
 		this->getPathPose(k, step, pose);
 
 		// obstacle to robot clearance:
-		double oxl, oyl; // obstacle in robot frame
-		mrpt::poses::CPose2D(pose).inverseComposePoint(ox, oy, oxl, oyl);
+		pose.inverseComposePoint(og, ol);
 		const double this_clearance = treat_as_obstacle ?
-			this->evalClearanceToRobotShape(oxl, oyl)
+			this->evalClearanceToRobotShape(ol.x, ol.y)
 			:
-			std::hypot(oxl,oyl)
+			ol.norm()
 			;
 		if (this_clearance <= .0 && treat_as_obstacle) {
 			// Collision:
