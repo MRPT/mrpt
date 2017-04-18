@@ -20,12 +20,31 @@ using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace std;
 
-CTimeLogger mrpt::utils::global_profiler;
+struct MyGlobalProfiler : public mrpt::utils::CTimeLogger
+{
+	MyGlobalProfiler() : mrpt::utils::CTimeLogger("MRPT_global_profiler")
+	{}
+
+	~MyGlobalProfiler()
+	{
+		if (!m_data.empty())
+		{
+			const std::string sFil("mrpt-global-profiler.csv");
+			this->saveToCSVFile(sFil);
+			std::cout << "[MRPT global profiler] Write stats to: "<< sFil <<std::endl;
+		}
+	}
+};
+MyGlobalProfiler global_profiler;
 
 namespace mrpt
 {
 	namespace utils
 	{
+		CTimeLogger& global_profiler_getref() MRPT_NO_THROWS {
+			return global_profiler;
+		}
+
 		void global_profiler_enter(const char *func_name) MRPT_NO_THROWS {
 			global_profiler.enter(func_name);
 		}

@@ -49,7 +49,7 @@ CLogFileRecord::CLogFileRecord() :
 void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 	if (version)
-		*version = 24;
+		*version = 25;
 	else
 	{
 		uint32_t	i,n;
@@ -78,7 +78,8 @@ void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) cons
 			if (there_is_ptg_data)
 				out << infoPerPTG[i].ptg;
 
-			out << infoPerPTG[i].clearance.raw_clearances; // v19
+			// Was: out << infoPerPTG[i].clearance.raw_clearances; // v19
+			infoPerPTG[i].clearance.writeToStream(out); // v25
 		}
 		out << nSelectedPTG << WS_Obstacles;
 		out << WS_Obstacles_original; // v20
@@ -162,6 +163,7 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 	case 22:
 	case 23:
 	case 24:
+	case 25:
 		{
 			// Version 0 --------------
 			uint32_t  i,n;
@@ -172,59 +174,70 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 			infoPerPTG.resize(n);
 			for (i=0;i<n;i++)
 			{
+				auto &ipp = infoPerPTG[i];
 				char str[256];
 				in >> str;
-				infoPerPTG[i].PTG_desc = std::string(str);
+				ipp.PTG_desc = std::string(str);
 
 				int32_t m;
 				in >> m;
-				infoPerPTG[i].TP_Obstacles.resize(m);
-				if (m) in.ReadBufferFixEndianness( &(*infoPerPTG[i].TP_Obstacles.begin()), m );
+				ipp.TP_Obstacles.resize(m);
+				if (m) in.ReadBufferFixEndianness( &(*ipp.TP_Obstacles.begin()), m );
 
 				if (version>=8)
-					in >> infoPerPTG[i].TP_Target;
+					in >> ipp.TP_Target;
 				else
 				{
 					mrpt::poses::CPoint2D pos;
 					in >> pos;
-					infoPerPTG[i].TP_Target = mrpt::math::TPoint2D(pos);
+					ipp.TP_Target = mrpt::math::TPoint2D(pos);
 				}
 				if (version >= 17)
-					in >> infoPerPTG[i].TP_Robot;
-				else infoPerPTG[i].TP_Robot = mrpt::math::TPoint2D(0, 0);
+					in >> ipp.TP_Robot;
+				else ipp.TP_Robot = mrpt::math::TPoint2D(0, 0);
 
 				if (version>=12) {
-					in >> infoPerPTG[i].timeForTPObsTransformation >> infoPerPTG[i].timeForHolonomicMethod;
-					in >> infoPerPTG[i].desiredDirection >> infoPerPTG[i].desiredSpeed >> infoPerPTG[i].evaluation;
+					in >> ipp.timeForTPObsTransformation >> ipp.timeForHolonomicMethod;
+					in >> ipp.desiredDirection >> ipp.desiredSpeed >> ipp.evaluation;
 				} else {
-					in.ReadAsAndCastTo<float,double>(infoPerPTG[i].timeForTPObsTransformation);
-					in.ReadAsAndCastTo<float,double>(infoPerPTG[i].timeForHolonomicMethod);
-					in.ReadAsAndCastTo<float,double>(infoPerPTG[i].desiredDirection);
-					in.ReadAsAndCastTo<float,double>(infoPerPTG[i].desiredSpeed);
-					in.ReadAsAndCastTo<float,double>(infoPerPTG[i].evaluation);
+					in.ReadAsAndCastTo<float,double>(ipp.timeForTPObsTransformation);
+					in.ReadAsAndCastTo<float,double>(ipp.timeForHolonomicMethod);
+					in.ReadAsAndCastTo<float,double>(ipp.desiredDirection);
+					in.ReadAsAndCastTo<float,double>(ipp.desiredSpeed);
+					in.ReadAsAndCastTo<float,double>(ipp.evaluation);
 				}
 				if (version >= 21 && version <23) {
 					double evaluation_org, evaluation_priority;
 					in >> evaluation_org >> evaluation_priority;
 				}
 
-				in >> infoPerPTG[i].HLFR;
+				in >> ipp.HLFR;
 
 				if (version>=9) // Extra PTG info
 				{
-					infoPerPTG[i].ptg.reset();
+					ipp.ptg.reset();
 
 					bool there_is_ptg_data;
 					in >> there_is_ptg_data;
 					if (there_is_ptg_data)
-						infoPerPTG[i].ptg = std::dynamic_pointer_cast<CParameterizedTrajectoryGenerator>( in.ReadObject() );
+						ipp.ptg = std::dynamic_pointer_cast<CParameterizedTrajectoryGenerator>( in.ReadObject() );
 				}
 
-				if (version >= 19) {
-					in >> infoPerPTG[i].clearance.raw_clearances;
+				if (version >= 19)
+				{
+					if (version < 25) {
+						std::vector<std::map<double,double> > raw_clearances;
+						in >> raw_clearances;
+						ipp.clearance.resize(raw_clearances.size(), raw_clearances.size());
+						for (size_t i = 0; i < raw_clearances.size(); i++)
+							ipp.clearance.get_path_clearance_decimated(i) = raw_clearances[i];
+					}
+					else {
+						ipp.clearance.readFromStream(in);
+					}
 				}
 				else {
-					infoPerPTG[i].clearance.raw_clearances.clear();
+					ipp.clearance.clear();
 				}
 			}
 

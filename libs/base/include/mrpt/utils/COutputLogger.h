@@ -309,6 +309,12 @@ namespace mrpt {
 			this->logStr(_LVL, _STRING); \
 	} } while (0)
 
+#define INTERNAL_MRPT_LOG_FMT(_LVL,_FMT_STRING,...) \
+	do { \
+		if (this->isLoggingLevelVisible(_LVL)) { \
+				this->logFmt(_LVL, _FMT_STRING, __VA_ARGS__); \
+			} } while (0)
+
 #define INTERNAL_MRPT_LOG_STREAM(_LVL, __CONTENTS)  \
 	do { \
 		if (this->isLoggingLevelVisible(_LVL)) { \
@@ -317,28 +323,30 @@ namespace mrpt {
 
 #define INTERNAL_MRPT_LOG_THROTTLE(_LVL,_PERIOD_SECONDS, _STRING) \
 	do { \
-		static mrpt::utils::CTicTac tim; \
-		if (tim.Tac()>_PERIOD_SECONDS) { \
-			tim.Tic(); \
-			this->logStr(_LVL, _STRING); \
-		} } while (0)
+		if (this->isLoggingLevelVisible(_LVL)) { \
+			static mrpt::utils::CTicTac tim; \
+			if (tim.Tac()>_PERIOD_SECONDS) { \
+				tim.Tic(); \
+				this->logStr(_LVL, _STRING); \
+		} } } while (0)
 
 #define INTERNAL_MRPT_LOG_THROTTLE_STREAM(_LVL,_PERIOD_SECONDS, __CONTENTS) \
 	do { \
-		static mrpt::utils::CTicTac tim; \
-		if (tim.Tac()>_PERIOD_SECONDS) { \
-			tim.Tic(); \
-			if (this->isLoggingLevelVisible(_LVL) &&  ) { \
-				::mrpt::utils::COutputLoggerStreamWrapper(_LVL, *this) << __CONTENTS; \
+		if (this->isLoggingLevelVisible(_LVL)) { \
+			static mrpt::utils::CTicTac tim; \
+			if (tim.Tac()>_PERIOD_SECONDS) { \
+				tim.Tic(); \
+					::mrpt::utils::COutputLoggerStreamWrapper(_LVL, *this) << __CONTENTS; \
 		} } } while (0)
 
 #define INTERNAL_MRPT_LOG_THROTTLE_FMT(_LVL,_PERIOD_SECONDS,_FMT_STRING,...) \
 	do { \
-		static mrpt::utils::CTicTac tim; \
-		if (tim.Tac()>_PERIOD_SECONDS) { \
-			tim.Tic(); \
-			this->logFmt(_LVL, _FMT_STRING, __VA_ARGS__); \
-		} } while (0)
+		if (this->isLoggingLevelVisible(_LVL)) { \
+			static mrpt::utils::CTicTac tim; \
+			if (tim.Tac()>_PERIOD_SECONDS) { \
+				tim.Tic(); \
+				this->logFmt(_LVL, _FMT_STRING, __VA_ARGS__); \
+			} } } while (0)
 
 
 		/** Use: `MRPT_LOG_DEBUG("message");`  */
@@ -360,10 +368,10 @@ namespace mrpt {
 #define MRPT_LOG_THROTTLE_ERROR(_PERIOD_SECONDS,_STRING) INTERNAL_MRPT_LOG_THROTTLE(::mrpt::utils::LVL_ERROR,_PERIOD_SECONDS, _STRING)
 
 /** Use: `MRPT_LOG_DEBUG_FMT("i=%u", i);`  */
-#define MRPT_LOG_DEBUG_FMT(_FMT_STRING,...) this->logFmt(::mrpt::utils::LVL_DEBUG, _FMT_STRING, __VA_ARGS__)
-#define MRPT_LOG_INFO_FMT( _FMT_STRING,...) this->logFmt(::mrpt::utils::LVL_INFO,  _FMT_STRING, __VA_ARGS__)
-#define MRPT_LOG_WARN_FMT( _FMT_STRING,...) this->logFmt(::mrpt::utils::LVL_WARN,  _FMT_STRING, __VA_ARGS__)
-#define MRPT_LOG_ERROR_FMT(_FMT_STRING,...) this->logFmt(::mrpt::utils::LVL_ERROR, _FMT_STRING, __VA_ARGS__)
+#define MRPT_LOG_DEBUG_FMT(_FMT_STRING,...) INTERNAL_MRPT_LOG_FMT(::mrpt::utils::LVL_DEBUG, _FMT_STRING, __VA_ARGS__)
+#define MRPT_LOG_INFO_FMT( _FMT_STRING,...) INTERNAL_MRPT_LOG_FMT(::mrpt::utils::LVL_INFO,  _FMT_STRING, __VA_ARGS__)
+#define MRPT_LOG_WARN_FMT( _FMT_STRING,...) INTERNAL_MRPT_LOG_FMT(::mrpt::utils::LVL_WARN,  _FMT_STRING, __VA_ARGS__)
+#define MRPT_LOG_ERROR_FMT(_FMT_STRING,...) INTERNAL_MRPT_LOG_FMT(::mrpt::utils::LVL_ERROR, _FMT_STRING, __VA_ARGS__)
 
 /** Use: `MRPT_LOG_DEBUG_STREAM("Var=" << value << " foo=" << foo_var);` */
 #define MRPT_LOG_DEBUG_STREAM(__CONTENTS) INTERNAL_MRPT_LOG_STREAM(::mrpt::utils::LVL_DEBUG,__CONTENTS)
