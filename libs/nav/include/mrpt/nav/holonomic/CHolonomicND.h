@@ -46,7 +46,6 @@ namespace mrpt
 	 * \endcode
 	 *
 	 *  \sa CAbstractHolonomicReactiveMethod,CReactiveNavigationSystem
-	 *  \ingroup 
 	 */
 	class NAV_IMPEXP CHolonomicND : public CAbstractHolonomicReactiveMethod
 	{

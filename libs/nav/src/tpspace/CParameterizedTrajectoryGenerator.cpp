@@ -28,8 +28,9 @@ CParameterizedTrajectoryGenerator::CParameterizedTrajectoryGenerator() :
 	m_alphaValuesCount(0),
 	m_score_priority(1.0),
 	m_clearance_num_points(5),
-	m_nav_dyn_state_target_k(INVALID_PTG_PATH_INDEX),
+	m_clearance_decimated_paths(15),
 	m_nav_dyn_state(),
+	m_nav_dyn_state_target_k(INVALID_PTG_PATH_INDEX),
 	m_is_initialized(false)
 { }
 
@@ -39,6 +40,7 @@ void CParameterizedTrajectoryGenerator::loadDefaultParams()
 	refDistance = 6.0;
 	m_score_priority = 1.0;
 	m_clearance_num_points = 5;
+	m_clearance_decimated_paths = 15;
 }
 
 bool CParameterizedTrajectoryGenerator::supportVelCmdNOP() const
@@ -57,6 +59,7 @@ void CParameterizedTrajectoryGenerator::loadFromConfigFile(const mrpt::utils::CC
 	MRPT_LOAD_CONFIG_VAR_NO_DEFAULT     (refDistance , double,  cfg,sSection);
 	MRPT_LOAD_HERE_CONFIG_VAR(score_priority , double, m_score_priority, cfg,sSection);
 	MRPT_LOAD_HERE_CONFIG_VAR(clearance_num_points, double, m_clearance_num_points, cfg, sSection);
+	MRPT_LOAD_HERE_CONFIG_VAR(clearance_decimated_paths, double, m_clearance_decimated_paths, cfg, sSection);
 
 	// Ensure a minimum of resolution:
 	mrpt::utils::keep_max(m_clearance_num_points, refDistance/1.0);
@@ -65,7 +68,7 @@ void CParameterizedTrajectoryGenerator::loadFromConfigFile(const mrpt::utils::CC
 	MRPT_LOAD_HERE_CONFIG_VAR(vxi, double, m_nav_dyn_state.curVelLocal.vx, cfg, sSection);
 	MRPT_LOAD_HERE_CONFIG_VAR(vyi, double, m_nav_dyn_state.curVelLocal.vy, cfg, sSection);
 	MRPT_LOAD_HERE_CONFIG_VAR_DEGREES(wi, double, m_nav_dyn_state.curVelLocal.omega, cfg, sSection);
-	
+
 	MRPT_LOAD_HERE_CONFIG_VAR(reltrg_x, double, m_nav_dyn_state.relTarget.x, cfg, sSection);
 	MRPT_LOAD_HERE_CONFIG_VAR(reltrg_y, double, m_nav_dyn_state.relTarget.y, cfg, sSection);
 	MRPT_LOAD_HERE_CONFIG_VAR_DEGREES(reltrg_phi, double, m_nav_dyn_state.relTarget.phi , cfg, sSection);
@@ -81,6 +84,7 @@ void CParameterizedTrajectoryGenerator::saveToConfigFile(mrpt::utils::CConfigFil
 	cfg.write(sSection,"refDistance",refDistance,   WN,WV, "Maximum distance (meters) for building trajectories (visibility range)");
 	cfg.write(sSection,"score_priority",m_score_priority,   WN,WV, "When used in path planning, a multiplying factor (default=1.0) for the scores for this PTG. Assign values <1 to PTGs with low priority.");
 	cfg.write(sSection, "clearance_num_points", m_clearance_num_points, WN, WV, "Number of steps for the piecewise-constant approximation of clearance (Default=5).");
+	cfg.write(sSection, "clearance_decimated_paths", m_clearance_decimated_paths, WN, WV, "Number of decimated paths for estimation of clearance (Default=15).");
 
 	// Optional params, for debugging only
 	cfg.write(sSection, "vxi", m_nav_dyn_state.curVelLocal.vx, WN, WV, "(Only for debugging) Current robot velocity vx [m/s].");
@@ -108,11 +112,18 @@ void CParameterizedTrajectoryGenerator::internal_readFromStream(mrpt::utils::CSt
 	case 1:
 	case 2:
 	case 3:
+	case 4:
 		in >> refDistance >> m_alphaValuesCount >> m_score_priority;
 		if (version >= 1) in >> m_clearance_num_points;
 		if (version == 2) {
 			bool old_use_approx_clearance;
 			in >> old_use_approx_clearance; // ignored in v>=3
+		}
+		if (version >= 4) {
+			in >> m_clearance_decimated_paths;
+		}
+		else {
+			m_clearance_decimated_paths = m_alphaValuesCount;
 		}
 		break;
 	default:
@@ -122,10 +133,11 @@ void CParameterizedTrajectoryGenerator::internal_readFromStream(mrpt::utils::CSt
 
 void CParameterizedTrajectoryGenerator::internal_writeToStream(mrpt::utils::CStream &out) const
 {
-	const uint8_t version = 3;
+	const uint8_t version = 4;
 	out << version;
 
 	out << refDistance << m_alphaValuesCount << m_score_priority << m_clearance_num_points /* v1 */;
+	out << m_clearance_decimated_paths /* v4*/;
 }
 
 double CParameterizedTrajectoryGenerator::index2alpha(uint16_t k, const unsigned int num_paths)
@@ -200,7 +212,7 @@ void CParameterizedTrajectoryGenerator::initTPObstacleSingle(uint16_t k, double 
 	TP_Obstacle_k = std::min(
 		refDistance,
 		m_nav_dyn_state_target_k!=INVALID_PTG_PATH_INDEX ?
-			refDistance 
+			refDistance
 			:
 			this->getPathDist(k, this->getPathStepCount(k) - 1)
 		);
@@ -273,14 +285,14 @@ bool CParameterizedTrajectoryGenerator::isInitialized() const
 
 void CParameterizedTrajectoryGenerator::updateNavDynamicState(const CParameterizedTrajectoryGenerator::TNavDynamicState & newState, const bool force_update)
 {
-	// Make sure there is a real difference: notifying a PTG that a condition changed 
+	// Make sure there is a real difference: notifying a PTG that a condition changed
 	// may imply a significant computational cost if paths need to be re-evaluated on the fly, etc.
 	// so the cost of the comparison here is totally worth:
 	if (force_update || m_nav_dyn_state!=newState)
 	{
 		ASSERT_(newState.targetRelSpeed >= .0 && newState.targetRelSpeed <= 1.0); // sanity check
 		m_nav_dyn_state = newState;
-		
+
 		// 1st) Build PTG paths without counting for target slow-down:
 		m_nav_dyn_state_target_k = INVALID_PTG_PATH_INDEX;
 
@@ -338,7 +350,7 @@ void CParameterizedTrajectoryGenerator::internal_TPObsDistancePostprocess(const 
 	case COLL_BEH_BACK_AWAY:
 		{
 			if (new_tp_obs_dist < getMaxRobotRadius() ) {
-				// This means that we are getting apart of the obstacle: 
+				// This means that we are getting apart of the obstacle:
 				// ignore it to allow the robot to get off the near-collision:
 				// Don't change inout_tp_obs.
 				return;
@@ -358,17 +370,19 @@ void CParameterizedTrajectoryGenerator::internal_TPObsDistancePostprocess(const 
 
 void mrpt::nav::CParameterizedTrajectoryGenerator::initClearanceDiagram(ClearanceDiagram & cd) const
 {
-	cd.raw_clearances.resize(m_alphaValuesCount);
-	for (unsigned int k = 0; k < m_alphaValuesCount; k++)
+	cd.resize(m_alphaValuesCount, m_clearance_decimated_paths);
+	for (unsigned int decim_k = 0; decim_k < m_clearance_decimated_paths; decim_k++)
 	{
-		const size_t numPathSteps = getPathStepCount(k);
+		const auto real_k = cd.decimated_k_to_real_k(decim_k);
+		const size_t numPathSteps = getPathStepCount(real_k);
 		const double numStepsPerIncr = (numPathSteps - 1.0) / double(m_clearance_num_points);
 
+		auto & cl_path = cd.get_path_clearance_decimated(decim_k);
 		for (double step_pointer_dbl = 0.0; step_pointer_dbl < numPathSteps; step_pointer_dbl += numStepsPerIncr)
 		{
 			const size_t step = mrpt::utils::round(step_pointer_dbl);
-			const double dist_over_path = this->getPathDist(k, step);
-			cd.raw_clearances[k][dist_over_path] = 1.0; // create entry in map<>
+			const double dist_over_path = this->getPathDist(real_k, step);
+			cl_path[dist_over_path] = 1.0; // create entry in map<>
 		}
 	}
 }
@@ -376,12 +390,15 @@ void mrpt::nav::CParameterizedTrajectoryGenerator::initClearanceDiagram(Clearanc
 void CParameterizedTrajectoryGenerator::updateClearance(const double ox, const double oy, ClearanceDiagram & cd) const
 {
 	// Initialize CD on first call:
-	ASSERT_(cd.raw_clearances.size() == m_alphaValuesCount);
+	ASSERT_(cd.get_actual_num_paths() == m_alphaValuesCount);
 	ASSERT_(m_clearance_num_points>0 && m_clearance_num_points<10000);
 
 	// evaluate in derived-class: this function also keeps the minimum automatically.
-	for (uint16_t k=0;k<m_alphaValuesCount;k++)
-		this->evalClearanceSingleObstacle(ox,oy,k, cd.raw_clearances[k]);
+	for (uint16_t decim_k = 0; decim_k < cd.get_decimated_num_paths(); decim_k++)
+	{
+		const auto real_k = cd.decimated_k_to_real_k(decim_k);
+		this->evalClearanceSingleObstacle(ox, oy, real_k, cd.get_path_clearance_decimated(decim_k));
+	}
 }
 
 void CParameterizedTrajectoryGenerator::updateClearancePost(ClearanceDiagram & cd, const std::vector<double> &TP_obstacles) const
@@ -389,7 +406,7 @@ void CParameterizedTrajectoryGenerator::updateClearancePost(ClearanceDiagram & c
 	// Used only when in approx mode (Removed 30/01/2017)
 }
 
-void CParameterizedTrajectoryGenerator::evalClearanceSingleObstacle(const double ox, const double oy, const uint16_t k, std::map<double, double> & inout_realdist2clearance, bool treat_as_obstacle) const
+void CParameterizedTrajectoryGenerator::evalClearanceSingleObstacle(const double ox, const double oy, const uint16_t k, ClearanceDiagram::dist2clearance_t & inout_realdist2clearance, bool treat_as_obstacle) const
 {
 	bool had_collision = false;
 
@@ -399,6 +416,8 @@ void CParameterizedTrajectoryGenerator::evalClearanceSingleObstacle(const double
 	const double numStepsPerIncr = (numPathSteps - 1.0) / (inout_realdist2clearance.size());
 
 	double step_pointer_dbl = 0.0;
+	const mrpt::math::TPoint2D og(ox,oy); // obstacle in "global" frame
+	mrpt::math::TPoint2D ol; // obstacle in robot frame
 
 	for (auto &e : inout_realdist2clearance)
 	{
@@ -418,12 +437,11 @@ void CParameterizedTrajectoryGenerator::evalClearanceSingleObstacle(const double
 		this->getPathPose(k, step, pose);
 
 		// obstacle to robot clearance:
-		double oxl, oyl; // obstacle in robot frame
-		mrpt::poses::CPose2D(pose).inverseComposePoint(ox, oy, oxl, oyl);
+		pose.inverseComposePoint(og, ol);
 		const double this_clearance = treat_as_obstacle ?
-			this->evalClearanceToRobotShape(oxl, oyl)
+			this->evalClearanceToRobotShape(ol.x, ol.y)
 			:
-			std::hypot(oxl,oyl)
+			ol.norm()
 			;
 		if (this_clearance <= .0 && treat_as_obstacle) {
 			// Collision:

@@ -52,6 +52,7 @@ namespace mrpt
 	  * - `eta`: Estimated Time of Arrival at "end of trajectory".
 	  * - `hysteresis`: Measure of similarity with previous command [0,1]
 	  * - `is_PTG_cont`: 1 (is "NOP" motion command), 0 otherwise
+	  * - `is_slowdown`: 1 if PTG returns true in CParameterizedTrajectoryGenerator::supportSpeedAtTarget() for this step.
 	  * - `move_cur_d`: Normalized distance already traveled over the selected PTG. Normally 0, unless in a "NOP motion".
 	  * - `move_k`: Motion candidate path 0-based index.
 	  * - `num_paths`: Number of paths in the PTG
