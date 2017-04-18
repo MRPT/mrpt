@@ -1029,7 +1029,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 			// Clearance-diagram:
 			{
 				auto gl_obj = mrpt::opengl::CMeshPtr(scene->getByName("tp_clearance"));
-				if (pI.clearance.raw_clearances.empty())
+				if (pI.clearance.empty())
 					gl_obj->setVisibility(false);
 				else
 				{
