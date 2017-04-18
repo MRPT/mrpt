@@ -256,8 +256,11 @@ namespace nav
 		double getScorePriority() const { return m_score_priority; }
 		void setScorePriorty(double prior) { m_score_priority = prior; }
 
-		double getClearanceStepCount() const { return m_clearance_num_points; }
-		void setClearanceStepCount(const double res) { m_clearance_num_points = res; }
+		unsigned getClearanceStepCount() const { return m_clearance_num_points; }
+		void setClearanceStepCount(const unsigned res) { m_clearance_num_points = res; }
+
+		unsigned getClearanceDecimatedPaths() const { return m_clearance_decimated_paths; }
+		void setClearanceDecimatedPaths(const unsigned num) { m_clearance_decimated_paths=num; }
 
 		/** Returns the representation of one trajectory of this PTG as a 3D OpenGL object (a simple curved line).
 		  * \param[in] k The 0-based index of the selected trajectory (discrete "alpha" parameter).
@@ -313,6 +316,7 @@ protected:
 		uint16_t  m_alphaValuesCount; //!< The number of discrete values for "alpha" between -PI and +PI.
 		double    m_score_priority;
 		uint16_t  m_clearance_num_points; //!< Number of steps for the piecewise-constant approximation of clearance from TPS distances [0,1] (Default=5) \sa updateClearance()
+		uint16_t  m_clearance_decimated_paths; //!< Number of paths for the decimated paths analysis of clearance
 		TNavDynamicState m_nav_dyn_state; //!< Updated before each nav step by 
 		uint16_t         m_nav_dyn_state_target_k; //!< Update in updateNavDynamicState(), contains the path index (k) for the target.
 
@@ -336,7 +340,7 @@ protected:
 		* or the computed clearance. In case of collision, clearance is zero. 
 		* \param treat_as_obstacle true: normal use for obstacles; false: compute shortest distances to a target point (no collision)
 		*/
-		virtual void evalClearanceSingleObstacle(const double ox, const double oy, const uint16_t k, std::map<double, double> & inout_realdist2clearance, bool treat_as_obstacle = true) const;
+		virtual void evalClearanceSingleObstacle(const double ox, const double oy, const uint16_t k, ClearanceDiagram::dist2clearance_t & inout_realdist2clearance, bool treat_as_obstacle = true) const;
 
 	}; // end of class
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CParameterizedTrajectoryGenerator, mrpt::utils::CSerializable, NAV_IMPEXP )

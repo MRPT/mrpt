@@ -12,11 +12,16 @@
 #include <mrpt/nav/holonomic/ClearanceDiagram.h>
 #include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
 #include <mrpt/opengl/CMesh.h>
+#include <mrpt/utils/CStream.h>
+#include <mrpt/utils/round.h>
+#include <mrpt/utils/stl_serialization.h>
 #include <limits>
 
 using namespace mrpt::nav;
 
-ClearanceDiagram::ClearanceDiagram()
+ClearanceDiagram::ClearanceDiagram() :
+	m_actual_num_paths(0),
+	m_k_a2d(.0), m_k_d2a(.0)
 {
 }
 
@@ -36,10 +41,8 @@ void ClearanceDiagram::renderAs3DObject(
 
 	mrpt::math::CMatrixFloat Z(nX, nY);
 
-	if (raw_clearances.empty())
+	if (m_raw_clearances.empty())
 		return; // Nothing to do: empty structure!
-
-	const unsigned num_paths = raw_clearances.size();
 
 	for (int iX = 0; iX < nX; iX++)
 	{
@@ -52,9 +55,9 @@ void ClearanceDiagram::renderAs3DObject(
 			if (x != 0 || y != 0)
 			{
 				const double alpha = ::atan2(y, x);
-				const uint16_t k = CParameterizedTrajectoryGenerator::alpha2index(alpha, num_paths);
+				const uint16_t actual_k = CParameterizedTrajectoryGenerator::alpha2index(alpha, m_actual_num_paths);
 				const double dist = std::hypot(x, y);
-				clear_val = this->getClearance(k, dist, integrate_over_path);
+				clear_val = this->getClearance(actual_k, dist, integrate_over_path);
 			}
 			Z(iX, iY) = clear_val;
 		}
@@ -67,14 +70,69 @@ void ClearanceDiagram::renderAs3DObject(
 	mesh.enableWireFrame(false);
 }
 
-double ClearanceDiagram::getClearance(uint16_t k, double dist, bool integrate_over_path) const
+void mrpt::nav::ClearanceDiagram::readFromStream(mrpt::utils::CStream & in)
 {
-	if (raw_clearances.empty()) // If we are not using clearance values, just return a fixed value:
+	uint8_t version;
+	in >> version;
+	switch (version)
+	{
+	case 0:
+		uint32_t decim_num;
+		in.ReadAsAndCastTo<uint32_t, size_t>(m_actual_num_paths);
+		in >> decim_num;
+		this->resize(m_actual_num_paths, decim_num);
+		in >> m_raw_clearances;
+		break;
+	default:
+		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+	};
+}
+
+void mrpt::nav::ClearanceDiagram::writeToStream(mrpt::utils::CStream & out) const
+{
+	const uint8_t version = 0;
+	out << version;
+
+	out << uint32_t(m_actual_num_paths) << uint32_t(m_raw_clearances.size());
+	out << m_raw_clearances;
+}
+
+ClearanceDiagram::dist2clearance_t & ClearanceDiagram::get_path_clearance(size_t actual_k)
+{
+	return m_raw_clearances[real_k_to_decimated_k(actual_k)];
+}
+
+const ClearanceDiagram::dist2clearance_t & ClearanceDiagram::get_path_clearance(size_t actual_k) const
+{
+	return m_raw_clearances[real_k_to_decimated_k(actual_k)];
+}
+
+size_t mrpt::nav::ClearanceDiagram::real_k_to_decimated_k(size_t k) const
+{
+	ASSERT_(m_actual_num_paths>0 && !m_raw_clearances.empty());
+	const size_t ret = mrpt::utils::round(k*m_k_a2d);
+	ASSERT_(ret<m_raw_clearances.size());
+	return ret;
+}
+
+size_t mrpt::nav::ClearanceDiagram::decimated_k_to_real_k(size_t k) const
+{
+	ASSERT_(m_actual_num_paths>0 && !m_raw_clearances.empty());
+	const size_t ret = mrpt::utils::round(k*m_k_d2a);
+	ASSERT_(ret<m_actual_num_paths);
+	return ret;
+}
+
+double ClearanceDiagram::getClearance(uint16_t actual_k, double dist, bool integrate_over_path) const
+{
+	if (this->empty()) // If we are not using clearance values, just return a fixed value:
 		return 0.0;
 
-	ASSERT_(k<raw_clearances.size());
+	ASSERT_BELOW_(actual_k, m_actual_num_paths);
 
-	const auto & rc_k = raw_clearances[k];
+	const size_t k = real_k_to_decimated_k(actual_k);
+
+	const auto & rc_k = m_raw_clearances[k];
 
 	double res = 0;
 	int avr_count = 0;  //weighted avrg: closer to query points weight more than at path start.
@@ -103,5 +161,23 @@ double ClearanceDiagram::getClearance(uint16_t k, double dist, bool integrate_ov
 
 void ClearanceDiagram::clear()
 {
-	raw_clearances.clear();
+	m_actual_num_paths = 0;
+	m_raw_clearances.clear();
+	m_k_a2d = m_k_d2a = .0;
+}
+
+void mrpt::nav::ClearanceDiagram::resize(size_t actual_num_paths, size_t decimated_num_paths)
+{
+	if (decimated_num_paths == 0)
+	{
+		this->clear();
+		return;
+	}
+	ASSERT_ABOVEEQ_(actual_num_paths, decimated_num_paths);
+
+	m_actual_num_paths = actual_num_paths;
+	m_raw_clearances.resize(decimated_num_paths);
+
+	m_k_d2a = double(m_actual_num_paths-1) / (m_raw_clearances.size()-1);
+	m_k_a2d = double(m_raw_clearances.size()-1) / (m_actual_num_paths-1);
 }
