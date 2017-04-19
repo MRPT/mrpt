@@ -12,6 +12,7 @@
 
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/math/CArrayNumeric.h>
+#include <mrpt/utils/bits.h>
 
 namespace mrpt
 {
