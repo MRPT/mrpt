@@ -2125,7 +2125,7 @@ void CRandomFieldGridMap2D::insertIndividualReading(const double sensorReading,c
 			?
 			m_insertOptions_common->GMRF_lambdaObs   // default information
 			:
-			1.0/mrpt::utils::square(reading_stddev)
+			1.0/mrpt::math::square(reading_stddev)
 		); break;
 	default:
 		THROW_EXCEPTION("insertObservation() isn't implemented for selected 'mapType'")

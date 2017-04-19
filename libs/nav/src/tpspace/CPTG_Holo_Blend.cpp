@@ -312,7 +312,7 @@ bool CPTG_Holo_Blend::inverseMap_WS2TP(double x, double y, int &out_k, double &o
 			r[1] = vyi * q[0] + q[0]*q[0] * TR2_ * (q[2]-vyi)   - y;
 		}
 		const double alpha = atan2(q[2], q[1]);
-		const double V_MAXsq = mrpt::utils::square(this->internal_get_v(alpha));
+		const double V_MAXsq = mrpt::math::square(this->internal_get_v(alpha));
 		r[2] = q[1]*q[1]+q[2]*q[2] - V_MAXsq;
 
 		// Jacobian: q=[t vxf vyf]   q0=t   q1=vxf   q2=vyf

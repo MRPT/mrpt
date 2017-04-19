@@ -211,7 +211,7 @@ namespace maps
 		void  resizeGrid(float new_x_min,float new_x_max,float new_y_min,float new_y_max,float new_cells_default_value = 0.5f, bool additionalMargin = true) MRPT_NO_THROWS;
 
 		/** Returns the area of the gridmap, in square meters */
-		inline double getArea() const { return size_x*size_y*mrpt::utils::square(resolution); }
+		inline double getArea() const { return size_x*size_y*mrpt::math::square(resolution); }
 
 		/** Returns the horizontal size of grid map in cells count */
 		inline unsigned int   getSizeX() const { return size_x; }

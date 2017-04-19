@@ -31,10 +31,10 @@ double CObservation2DRangeScanWithUncertainty::evaluateScanLikelihood(const CObs
 	ASSERT_(params.prob_outliers>=0.0 && params.prob_outliers<=1.0)
 	ASSERT_(otherScan.maxRange>0.0)
 
-	const double sensorRangeVar = mrpt::utils::square(otherScan.stdError);
+	const double sensorRangeVar = mrpt::math::square(otherScan.stdError);
 	const size_t N = rangesMean.size();
 
-	const double max_var = mrpt::utils::square(params.max_prediction_std_dev);
+	const double max_var = mrpt::math::square(params.max_prediction_std_dev);
 	double lik_sum = .0;
 	size_t num_valid = 0;
 	for (size_t i=0;i<N;i++)
