@@ -99,7 +99,7 @@ void CPTG_DiffDrive_CollisionGridBased::simulateTrajectories(
 		float			*out_max_acc_v,
 		float			*out_max_acc_w)
 {
-	using mrpt::utils::square;
+	using mrpt::math::square;
 
 	internal_deinitialize(); // Free previous paths
 
@@ -486,7 +486,7 @@ bool CPTG_DiffDrive_CollisionGridBased::CCollisionGrid::loadFromFile( mrpt::util
 
 bool CPTG_DiffDrive_CollisionGridBased::inverseMap_WS2TP(double x, double y, int &out_k, double &out_d, double tolerance_dist) const
 {
-	using mrpt::utils::square;
+	using mrpt::math::square;
 
 	ASSERTMSG_(m_alphaValuesCount>0, "Have you called simulateTrajectories() first?")
 

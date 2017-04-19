@@ -56,7 +56,7 @@ namespace mrpt
 			}
 			// Calculate temporary values.
 			const double halfTheta = acos(cosHalfTheta);
-			const double sinHalfTheta = std::sqrt(1.0 - mrpt::utils::square(cosHalfTheta));
+			const double sinHalfTheta = std::sqrt(1.0 - mrpt::math::square(cosHalfTheta));
 			// if theta = 180 degrees then result is not fully defined
 			// we could rotate around any axis normal to qa or qb
 			if (std::abs(sinHalfTheta) < 0.001)

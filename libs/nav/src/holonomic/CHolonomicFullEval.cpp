@@ -64,7 +64,7 @@ struct TGap
 
 void CHolonomicFullEval::navigate(const NavInput & ni, NavOutput &no)
 {
-	using mrpt::utils::square;
+	using mrpt::math::square;
 
 	ASSERT_(ni.clearance!=nullptr);
 
