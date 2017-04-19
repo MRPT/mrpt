@@ -385,9 +385,19 @@ void CHolonomicFullEval::navigate(const NavInput & ni, NavOutput &no)
 	// If target can be reached without collision *and* with a minimum of clearance, 
 	// then select that direction, with the score as computed with the regular formulas above
 	// (even if that score was not the maximum!).
-	if (target_dist<0.99 && ni.obstacles[target_k]>target_dist*1.01 &&
-		ni.clearance->getClearance(target_k /*path index*/, std::min(0.99, target_dist*0.95), true /*interpolate path*/)
-			> options.TOO_CLOSE_OBSTACLE 
+	if (target_dist<0.99 && 
+		(
+		/* No obstacles to target + enough clearance: */
+		( ni.obstacles[target_k]>target_dist*1.01 &&
+		  ni.clearance->getClearance(target_k /*path index*/, std::min(0.99, target_dist*0.95), true /*interpolate path*/)
+		   > options.TOO_CLOSE_OBSTACLE
+		)
+		||
+		/* Or: no obstacles to target with extra margin, target is really near, dont check clearance: */
+		( ni.obstacles[target_k]>(target_dist+0.15 /*meters*/ /ptg_ref_dist) && 
+		  target_dist<(1.5 /*meters*/ / ptg_ref_dist)
+		)
+		)
 		&&
 		dirs_eval[target_k]>0 /* the direct target direction has at least a minimum score */
 		)
