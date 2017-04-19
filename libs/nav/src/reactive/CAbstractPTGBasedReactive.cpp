@@ -373,7 +373,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		}
 
 		const TPose2D relTarget = (m_navigationParams->target - (m_curPoseVel.pose+relPoseVelCmd));
-		const double relTargetDist = ::hypot(relTarget.x, relTarget.y);
+		const double relTargetDist = relTarget.norm();
 
 		// PTG dynamic state
 		CParameterizedTrajectoryGenerator::TNavDynamicState ptg_dynState; //!< Allow PTGs to be responsive to target location, dynamics, etc.
@@ -902,8 +902,8 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 
 				mrpt::math::TPose2D predicted_rel_pose;
 				cm.PTG->getPathPose(m_lastSentVelCmd.ptg_alpha_index, cur_ptg_step, predicted_rel_pose);
-				const CPose2D predicted_pose_global = CPose2D(m_lastSentVelCmd.poseVel.pose) + CPose2D(predicted_rel_pose);
-				const double predicted2real_dist = predicted_pose_global.distance2DTo(m_curPoseVel.pose.x, m_curPoseVel.pose.y);
+				const auto predicted_pose_global = m_lastSentVelCmd.poseVel.rawOdometry + predicted_rel_pose;
+				const double predicted2real_dist = mrpt::math::hypot_fast(predicted_pose_global.x - m_curPoseVel.rawOdometry.x, predicted_pose_global.y - m_curPoseVel.rawOdometry.y);
 				newLogRec.additional_debug_msgs["PTG_eval.lastCmdPose(raw)"] = m_lastSentVelCmd.poseVel.pose.asString();
 				newLogRec.additional_debug_msgs["PTG_eval.PTGcont"] = mrpt::format("mismatchDistance=%.03f cm", 1e2*predicted2real_dist);
 
@@ -942,7 +942,7 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 
 	// Factor4: Decrease in euclidean distance between (x,y) and the target:
 	//  Moving away of the target is negatively valued.
-	cm.props["dist_eucl_final"] = std::hypot(WS_Target.x- pose.x, WS_Target.y- pose.y);
+	cm.props["dist_eucl_final"] = mrpt::math::hypot_fast(WS_Target.x- pose.x, WS_Target.y- pose.y);
 
 
 	// dist_eucl_min: Use PTG clearance methods to evaluate the real-world (WorkSpace) minimum distance to target:
@@ -1264,7 +1264,7 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
 
 			// Take into account the future robot pose after NOP motion iterations to slow down accordingly *now*
 			if (ptg->supportVelCmdNOP()) {
-				const double v = ::hypot(m_curPoseVel.velLocal.vx, m_curPoseVel.velLocal.vy);
+				const double v = mrpt::math::hypot_fast(m_curPoseVel.velLocal.vx, m_curPoseVel.velLocal.vy);
 				const double d = v * ptg->maxTimeInVelCmdNOP(kDirection);
 				obsFreeNormalizedDistance = std::min(obsFreeNormalizedDistance, std::max(0.90, obsFreeNormalizedDistance - d) );
 			}

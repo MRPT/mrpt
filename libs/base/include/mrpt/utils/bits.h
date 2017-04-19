@@ -40,12 +40,20 @@ namespace mrpt
 		  *  \note Template argument MATRIXLIKE can be: mrpt::math::CMatrixTemplate, mrpt::math::CMatrixTemplateNumeric, mrpt::math::CMatrixFixedNumeric
 		  */
 		template <class MATRIXLIKE>
-		inline size_t size( const MATRIXLIKE& m, int dim )
+		inline size_t size( const MATRIXLIKE& m, const int dim )
 		{
 			if (dim==1) return m.getRowCount();
 			else if (dim==2) return m.getColCount();
 			else THROW_EXCEPTION_FMT("size: Queried matrix dimension must be 1 or 2. Called with i=%i",dim);
 		}
+
+		/** Inline function for the square of a number. */
+		template<class T>
+		inline T square(const T x) { return x*x; }
+
+		/** Faster version of std::hypot(), to use when overflow is not an issue and we prefer fast code. */
+		template<class T>
+		inline T hypot_fast(const T x, const T y) { return std::sqrt(x*x + y*y); }
 	}
 
 	namespace utils
@@ -124,9 +132,7 @@ namespace mrpt
 		template <typename T>
 		inline int fix(T x) { return  x>0 ? static_cast<int>(floor(static_cast<double>(x))) : static_cast<int>(ceil(static_cast<double>(x))) ; }
 
-		/** Inline function for the square of a number. */
-		template<class T>
-		inline T square(const T x)    { return x*x; }
+		using mrpt::math::square;  //!< Allow square() to be available under mrpt::math and mrpt::utils
 
 		/** Utility to get a cast'ed pointer from a smart pointer */
 		template <class R, class SMART_PTR>
