@@ -52,25 +52,9 @@ double math_test_FUNC(int a1, int a2, FUNC func)
 	{
 		r = func(x, y);
 	}
-	double T = tictac.Tac() / N;
+	double t = tictac.Tac() / N;
 	dummy_do_nothing_with_string(mrpt::format("%f", r));
-	return T;
-}
-template <typename T>
-double math_test_fast_hypot(int a1, int a2)
-{
-	const long N = 100000000;
-	CTicTac	 tictac;
-
-	T x = 1.0, y = 2.0, r = .0;
-	tictac.Tic();
-	for (long i = 0; i<N; i++)
-	{
-		r = mrpt::math::hypot_fast(x, y);
-	}
-	double T = tictac.Tac() / N;
-	dummy_do_nothing_with_string(mrpt::format("%f", r));
-	return T;
+	return t;
 }
 
 // ------------------------------------------------------
