@@ -1001,7 +1001,9 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 				if (sel_ptg_idx < int(m_logdata_ptg_paths.size()) && sel_ptg_idx >= 0)
 				{
 					mrpt::nav::CParameterizedTrajectoryGeneratorPtr ptg = m_logdata_ptg_paths[sel_ptg_idx];
-					tp_target_k = ptg->alpha2index(ang);
+					if (ptg) {
+						tp_target_k = ptg->alpha2index(ang);
+					}
 				}
 
 				win->addTextMessage(4, -12,
