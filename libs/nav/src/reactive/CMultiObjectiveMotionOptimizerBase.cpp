@@ -50,7 +50,15 @@ int CMultiObjectiveMotionOptimizerBase::decide(const std::vector<mrpt::nav::TCan
 			for (const auto &f : m_params_base.formula_score)
 			{
 				auto &se = m_score_exprs[f.first];
-				se.compile(f.second, m_expr_vars, std::string("score: ") + f.first);
+				try
+				{
+					se.compile(f.second, m_expr_vars, std::string("score: ") + f.first);
+				}
+				catch (std::exception &)
+				{
+					m_score_exprs.clear();
+					throw; // rethrow
+				}
 			}
 		}
 
@@ -64,7 +72,16 @@ int CMultiObjectiveMotionOptimizerBase::decide(const std::vector<mrpt::nav::TCan
 			{
 				const auto &str = m_params_base.movement_assert[i];
 				auto &ce = m_movement_assert_exprs[i];
-				ce.compile(str, m_expr_vars, "assert" );
+				
+				try
+				{
+					ce.compile(str, m_expr_vars, "assert");
+				}
+				catch (std::exception &)
+				{
+					m_movement_assert_exprs.clear();
+					throw; // rethrow
+				}
 			}
 		}
 
