@@ -69,7 +69,6 @@ void TUserOptionsChecker<GRAPH_t>::createDeciderOptimizerMappings() {
 
 template<class GRAPH_t>
 void TUserOptionsChecker<GRAPH_t>::_createDeciderOptimizerMappings() {
-std::cout << "TODO - Remove me. Kalimera ==> " << 12 << std::endl;
 }
 
 // deciders/optpimizers specific to the 2D SLAM cases
