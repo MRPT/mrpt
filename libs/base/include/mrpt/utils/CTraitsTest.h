@@ -6,15 +6,25 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
-#pragma once
+#ifndef  CTraitsTest_H
+#define  CTraitsTest_H
 
-#include <mrpt/utils/mrpt_macros.h>
-
-MRPT_WARNING("Deprecated header: use <mrpt/nav/tpspace/motion_planning_utils.h> instead")
-
-#include <mrpt/nav/tpspace/motion_planning_utils.h>
-
-// MRPT <1.3.0 backwards compatibility 
-namespace mrpt {
-	namespace  reactivenav = mrpt::nav;
+#include <type_traits>
+/*---------------------------------------------------------------
+        Class
+  ---------------------------------------------------------------*/
+namespace mrpt
+{
+        namespace utils
+        {
+		template<typename T>
+		class CTraitsTest{
+			static_assert(std::is_move_constructible<T>(), "Can't move");
+			static_assert(std::is_copy_constructible<T>(), "Can't copy");
+			static_assert(std::is_move_assignable<T>(), "Can't move assign");
+			static_assert(std::is_copy_assignable<T>(), "Can't copy assign");
+		};
+	}
 }
+
+#endif

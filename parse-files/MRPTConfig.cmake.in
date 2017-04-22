@@ -18,8 +18,7 @@
 #     - base           --> libmrpt-base
 #     - opengl         --> libmrpt-opengl
 #     - hwdrivers      --> libmrpt-hwdrivers
-#     - reactivenav    --> libmrpt-reactivenav
-#     - hmtslam        --> libmrpt-hmtslam
+#     - nav            --> libmrpt-nav
 #
 #   This file will define the following variables:
 #    - MRPT_LIBRARIES        : The list of libraries to links against.

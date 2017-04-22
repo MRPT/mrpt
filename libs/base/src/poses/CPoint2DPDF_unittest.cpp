@@ -7,7 +7,13 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#pragma once
+#include <mrpt/poses/CPoint2DPDF.h>
+#include <mrpt/utils/CTraitsTest.h>
 
-#include <mrpt/scanmatching/scan_matching.h>
+using namespace mrpt;
+using namespace mrpt::poses;
+using namespace mrpt::utils;
+using namespace mrpt::math;
+using namespace std;
+
 
