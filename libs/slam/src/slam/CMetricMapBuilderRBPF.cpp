@@ -248,6 +248,8 @@ void  CMetricMapBuilderRBPF::processActionObservation(
 	MRPT_END;
 }
 
+MRPT_TODO("Split initialize() in two, one generic without pose, one with particles-based PDF");
+
 /*---------------------------------------------------------------
 					initialize
   ---------------------------------------------------------------*/
