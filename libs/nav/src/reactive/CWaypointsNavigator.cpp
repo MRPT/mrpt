@@ -18,7 +18,8 @@ using namespace std;
 
 CWaypointsNavigator::CWaypointsNavigator(CRobot2NavInterface &robot_if) :
 	CAbstractNavigator(robot_if),
-	m_was_aligning(false)
+	m_was_aligning(false),
+	m_is_aligning(false)
 {
 }
 
@@ -77,7 +78,7 @@ void CWaypointsNavigator::waypoints_navigationStep()
 	// --------------------------------------
 	//     Waypoint navigation algorithm
 	// --------------------------------------
-	m_was_aligning = false;  // the robot is aligning into a waypoint with a desired heading
+	m_is_aligning = false;  // the robot is aligning into a waypoint with a desired heading
 
 	{
 	mrpt::utils::CTimeLoggerEntry tle(m_timlog_delays,"CWaypointsNavigator::navigationStep()");
@@ -132,7 +133,7 @@ void CWaypointsNavigator::waypoints_navigationStep()
 					}
 					else
 					{
-						m_was_aligning = true;
+						m_is_aligning = true;
 
 						if (!m_was_aligning)
 						{
@@ -281,10 +282,12 @@ void CWaypointsNavigator::navigationStep()
 	waypoints_navigationStep();
 
 	// Call base navigation step to execute one-single waypoint navigation, as usual:
-	if (!m_was_aligning)
+	if (!m_is_aligning)
 	{
 		CAbstractNavigator::navigationStep();  // This internally locks "m_nav_cs"
 	}
+
+	m_was_aligning = m_is_aligning; // Let the next timestep know about this
 
 	MRPT_END
 }

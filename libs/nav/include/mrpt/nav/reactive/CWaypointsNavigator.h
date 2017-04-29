@@ -97,6 +97,7 @@ namespace mrpt
 
 	private:
 		bool m_was_aligning; //!< Whether the last timestep was "is_aligning" in a waypoint with heading
+		bool m_is_aligning;
 
 	};
   }
