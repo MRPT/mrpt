@@ -259,7 +259,7 @@ namespace mrpt
 				out_mean = mrpt::math::sum(v) / static_cast<double>(N);
 				// Compute the std:
 				double	vector_std=0;
-				for (size_t i=0;i<N;i++) vector_std += mrpt::utils::square( v[i]-out_mean);
+				for (size_t i=0;i<N;i++) vector_std += mrpt::math::square( v[i]-out_mean);
 				out_std = std::sqrt(vector_std  / static_cast<double>(N - (unbiased ? 1:0)) );
 			}
 		}
@@ -359,8 +359,8 @@ namespace mrpt
 			for(size_t i=0;i<N;++i)
 			{
 				numerator += (patch1[i]-a_mean)*(patch2[i]-b_mean);
-				sum_a += mrpt::utils::square(patch1[i]-a_mean);
-				sum_b += mrpt::utils::square(patch2[i]-b_mean);
+				sum_a += mrpt::math::square(patch1[i]-a_mean);
+				sum_b += mrpt::math::square(patch2[i]-b_mean);
 			}
 			ASSERTMSG_(sum_a*sum_b!=0,"Divide by zero when normalizing.")
 			result=numerator/std::sqrt(sum_a*sum_b);

@@ -373,7 +373,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		}
 
 		const TPose2D relTarget = (m_navigationParams->target - (m_curPoseVel.pose+relPoseVelCmd));
-		const double relTargetDist = ::hypot(relTarget.x, relTarget.y);
+		const double relTargetDist = relTarget.norm();
 
 		// PTG dynamic state
 		CParameterizedTrajectoryGenerator::TNavDynamicState ptg_dynState; //!< Allow PTGs to be responsive to target location, dynamics, etc.
@@ -781,6 +781,7 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 	const double   target_d_norm   = TP_Target.norm();
 	// Picked movement direction:
 	const int      move_k   = static_cast<int>( cm.PTG->alpha2index( cm.direction ) );
+	const double   target_WS_d = WS_Target.norm();
 
 	// Coordinates of the trajectory end for the given PTG and "alpha":
 	const double d = std::min( in_TPObstacles[ move_k ], 0.99*target_d_norm);
@@ -800,9 +801,8 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 		const double TARGET_SLOW_APPROACHING_DISTANCE = m_holonomicMethod[0]->getTargetApproachSlowDownDistance();
 
 		const double Vf = m_navigationParams->targetDesiredRelSpeed; // [0,1]
-		const double d = mrpt::math::TPoint2D(WS_Target).norm();
 
-		const double f = std::min(1.0,Vf + d*(1.0-Vf)/TARGET_SLOW_APPROACHING_DISTANCE);
+		const double f = std::min(1.0,Vf + target_WS_d*(1.0-Vf)/TARGET_SLOW_APPROACHING_DISTANCE);
 		if (f < cm.speed) {
 			newLogRec.additional_debug_msgs["PTG_eval.speed"] = mrpt::format("Relative speed reduced %.03f->%.03f based on Euclidean nearness to target.", cm.speed,f);
 			cm.speed = f;
@@ -825,7 +825,7 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 	cm.props["robpose_y"] = pose.y;
 	cm.props["robpose_phi"] = pose.phi;
 	cm.props["ptg_priority"] = cm.PTG->getScorePriority() *  cm.PTG->evalPathRelativePriority(target_k, target_d_norm);
-	cm.props["is_slowdown"] = cm.PTG->supportSpeedAtTarget() ? 1 : 0;
+	const bool is_slowdown = (cm.props["is_slowdown"] = (cm.PTG->supportSpeedAtTarget() ? 1 : 0)) != 0;
 
 	// Factor 1: Free distance for the chosen PTG and "alpha" in the TP-Space:
 	// ----------------------------------------------------------------------
@@ -902,12 +902,14 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 
 				mrpt::math::TPose2D predicted_rel_pose;
 				cm.PTG->getPathPose(m_lastSentVelCmd.ptg_alpha_index, cur_ptg_step, predicted_rel_pose);
-				const CPose2D predicted_pose_global = CPose2D(m_lastSentVelCmd.poseVel.pose) + CPose2D(predicted_rel_pose);
-				const double predicted2real_dist = predicted_pose_global.distance2DTo(m_curPoseVel.pose.x, m_curPoseVel.pose.y);
+				const auto predicted_pose_global = m_lastSentVelCmd.poseVel.rawOdometry + predicted_rel_pose;
+				const double predicted2real_dist = mrpt::math::hypot_fast(predicted_pose_global.x - m_curPoseVel.rawOdometry.x, predicted_pose_global.y - m_curPoseVel.rawOdometry.y);
 				newLogRec.additional_debug_msgs["PTG_eval.lastCmdPose(raw)"] = m_lastSentVelCmd.poseVel.pose.asString();
 				newLogRec.additional_debug_msgs["PTG_eval.PTGcont"] = mrpt::format("mismatchDistance=%.03f cm", 1e2*predicted2real_dist);
 
-				if (predicted2real_dist > params_abstract_ptg_navigator.max_distance_predicted_actual_path)
+				if (predicted2real_dist > params_abstract_ptg_navigator.max_distance_predicted_actual_path &&
+					(!is_slowdown || (target_d_norm - cur_norm_d)*ref_dist>2.0 /*meters*/)
+					)
 				{
 					cm.speed = -0.01; // this enforces a 0 global evaluation score
 					newLogRec.additional_debug_msgs["PTG_eval"] = "PTG-continuation not allowed, mismatchDistance above threshold.";
@@ -942,7 +944,7 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 
 	// Factor4: Decrease in euclidean distance between (x,y) and the target:
 	//  Moving away of the target is negatively valued.
-	cm.props["dist_eucl_final"] = std::hypot(WS_Target.x- pose.x, WS_Target.y- pose.y);
+	cm.props["dist_eucl_final"] = mrpt::math::hypot_fast(WS_Target.x- pose.x, WS_Target.y- pose.y);
 
 
 	// dist_eucl_min: Use PTG clearance methods to evaluate the real-world (WorkSpace) minimum distance to target:
@@ -1264,7 +1266,7 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
 
 			// Take into account the future robot pose after NOP motion iterations to slow down accordingly *now*
 			if (ptg->supportVelCmdNOP()) {
-				const double v = ::hypot(m_curPoseVel.velLocal.vx, m_curPoseVel.velLocal.vy);
+				const double v = mrpt::math::hypot_fast(m_curPoseVel.velLocal.vx, m_curPoseVel.velLocal.vy);
 				const double d = v * ptg->maxTimeInVelCmdNOP(kDirection);
 				obsFreeNormalizedDistance = std::min(obsFreeNormalizedDistance, std::max(0.90, obsFreeNormalizedDistance - d) );
 			}

@@ -301,10 +301,12 @@ void CParameterizedTrajectoryGenerator::updateNavDynamicState(const CParameteriz
 		// 2nd) Save the special path for slow-down:
 		if (this->supportSpeedAtTarget())
 		{
-			int target_k;
+			int target_k=-1;
 			double target_norm_d;
-			bool is_exact = this->inverseMap_WS2TP(m_nav_dyn_state.relTarget.x, m_nav_dyn_state.relTarget.y, target_k, target_norm_d,1.0 /*large tolerance*/);
-			if (is_exact && target_norm_d<0.99) {
+			//bool is_exact = // JLB removed this constraint for being too restrictive.
+			this->inverseMap_WS2TP(m_nav_dyn_state.relTarget.x, m_nav_dyn_state.relTarget.y, target_k, target_norm_d,1.0 /*large tolerance*/);
+			if (target_norm_d>0.01 && target_norm_d<0.99 && target_k>=0 && target_k<m_alphaValuesCount) 
+			{
 				m_nav_dyn_state_target_k = target_k;
 				this->onNewNavDynamicState(); // Recalc
 			}

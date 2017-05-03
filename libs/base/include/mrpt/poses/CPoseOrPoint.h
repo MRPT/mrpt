@@ -129,7 +129,7 @@ namespace mrpt
 			/** Returns the squared euclidean distance to another pose/point: */
 			template <class OTHERCLASS>	inline double sqrDistanceTo(const CPoseOrPoint<OTHERCLASS> &b) const
 			{
-				using mrpt::utils::square;
+				using mrpt::math::square;
 
 				if (b.is3DPoseOrPoint())
 				{
@@ -153,11 +153,11 @@ namespace mrpt
 			}
 
 			/** Returns the squared 2D distance from this pose/point to a 2D point (ignores Z, if it exists). */
-			inline double distance2DToSquare( double ax, double ay ) const { using mrpt::utils::square; return square(ax-x())+square(ay-y()); }
+			inline double distance2DToSquare( double ax, double ay ) const { using mrpt::math::square; return square(ax-x())+square(ay-y()); }
 
 			/** Returns the squared 3D distance from this pose/point to a 3D point */
 			inline double distance3DToSquare( double ax, double ay, double az ) const {
-				using mrpt::utils::square;
+				using mrpt::math::square;
 				return square(ax-x())+square(ay-y())+square(az-(is3DPoseOrPoint() ? static_cast<const DERIVEDCLASS*>(this)->m_coords[2] : 0) );
 			}
 
@@ -173,7 +173,7 @@ namespace mrpt
 			/** Returns the euclidean norm of vector: \f$ ||\mathbf{x}|| = \sqrt{x^2+y^2+z^2} \f$ */
 			inline double  norm() const
 			{
-				using mrpt::utils::square;
+				using mrpt::math::square;
 				return std::sqrt( square(x())+square(y())+ (!is3DPoseOrPoint() ? 0 : square(static_cast<const DERIVEDCLASS*>(this)->m_coords[2]) ) );
 			}
 
