@@ -255,7 +255,7 @@ public:
 	void updateObsGrids(float incrx, float incry, float phi, const std::vector<CRobotKinects> &kinects, const std::vector<double> &heights )
 	{
 		using namespace std;
-		using mrpt::utils::square;
+		using mrpt::math::square;
 		//First, move the robot respect to the grid and adjust the likelihood values in the grid according to that movement
 		//-----------------------------------------------------------------------------------------------------------------
 

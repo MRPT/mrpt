@@ -24,7 +24,6 @@ namespace mrpt
 	namespace utils
 	{
 		class CStream;
-		template<class T> inline T square(const T x);
 	}
 
 	namespace system

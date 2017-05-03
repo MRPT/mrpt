@@ -18,7 +18,8 @@ using namespace std;
 
 CWaypointsNavigator::CWaypointsNavigator(CRobot2NavInterface &robot_if) :
 	CAbstractNavigator(robot_if),
-	m_was_aligning(false)
+	m_was_aligning(false),
+	m_is_aligning(false)
 {
 }
 
@@ -31,7 +32,6 @@ void CWaypointsNavigator::navigateWaypoints( const TWaypointSequence & nav_reque
 	MRPT_START
 
 	std::lock_guard<std::recursive_mutex> csl(m_nav_waypoints_cs);
-
 
 	m_was_aligning = false;
 	m_waypoint_nav_status = TWaypointStatusSequence();
@@ -69,16 +69,16 @@ void CWaypointsNavigator::cancel()
 	CAbstractNavigator::cancel();
 }
 
-void CWaypointsNavigator::navigationStep()
+void CWaypointsNavigator::waypoints_navigationStep()
 {
 	MRPT_START
 
-	using mrpt::utils::square;
+	using mrpt::math::square;
 
 	// --------------------------------------
 	//     Waypoint navigation algorithm
 	// --------------------------------------
-	bool is_aligning = false;  // the robot is aligning into a waypoint with a desired heading
+	m_is_aligning = false;  // the robot is aligning into a waypoint with a desired heading
 
 	{
 	mrpt::utils::CTimeLoggerEntry tle(m_timlog_delays,"CWaypointsNavigator::navigationStep()");
@@ -133,7 +133,7 @@ void CWaypointsNavigator::navigationStep()
 					}
 					else
 					{
-						is_aligning = true;
+						m_is_aligning = true;
 
 						if (!m_was_aligning)
 						{
@@ -271,13 +271,23 @@ void CWaypointsNavigator::navigationStep()
 	// Note: navigationStep() called *after* waypoints part to get end-of-navigation events *after*
 	//       waypoints-related events:
 
+	MRPT_END
+}
+
+
+void CWaypointsNavigator::navigationStep()
+{
+	MRPT_START
+
+	waypoints_navigationStep();
+
 	// Call base navigation step to execute one-single waypoint navigation, as usual:
-	if (!is_aligning)
+	if (!m_is_aligning)
 	{
 		CAbstractNavigator::navigationStep();  // This internally locks "m_nav_cs"
 	}
 
-	m_was_aligning = is_aligning; // Let the next timestep know about this
+	m_was_aligning = m_is_aligning; // Let the next timestep know about this
 
 	MRPT_END
 }

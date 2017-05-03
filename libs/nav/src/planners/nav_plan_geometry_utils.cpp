@@ -22,7 +22,7 @@ bool mrpt::nav::collision_free_dist_segment_circ_robot(
 	const mrpt::math::TPoint2D &o,
 	double &out_col_dist)
 {
-	using mrpt::utils::square;
+	using mrpt::math::square;
 
 	out_col_dist = -1.0;
 

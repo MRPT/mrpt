@@ -63,7 +63,7 @@ namespace mrpt
 			   const mrpt::math::TPoint3D & landmark_global,
 			   mrpt::math::CMatrixFixedNumeric<double,2,6> & out_J)
 		{
-			using mrpt::utils::square;
+			using mrpt::math::square;
 
 			double x,y,z; // wrt cam (local coords)
 			if (POSES_ARE_INVERSE)

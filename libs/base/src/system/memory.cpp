@@ -14,6 +14,7 @@
 #include <exception>                 // for exception
 #include <mrpt/config.h>             // for HAVE_POSIX_MEMALIGN, MRPT_OS_LINUX
 #include <mrpt/utils/mrpt_macros.h>  // for MRPT_END, MRPT_START, MRPT_UNUSE...
+#include <mrpt/system/memory.h>
 
 #ifdef MRPT_OS_APPLE
 #include <mach/mach_init.h>
