@@ -8,9 +8,8 @@ TColorManager::TColorManager(
 	color_thresh(255) {
 
 	this->reset();
-
 	this->use_standard_colors_first = use_standard_colors_first;
-}
+} // end of TColorManager (ctor)
 
 TColorManager::~TColorManager() { }
 
@@ -19,9 +18,9 @@ TColor TColorManager::getNextTColor() {
 	if (have_exceeded_colors) {
 		// pick and return a random color triad
 		return TColor(
-				rand() % (255 + 1),
-				rand() % (255 + 1),
-				rand() % (255 + 1));
+				rand() % (color_thresh + 1),
+				rand() % (color_thresh + 1),
+				rand() % (color_thresh + 1));
 	}
 
 	// start updating by the step if we don't use (or have already used) the
@@ -50,11 +49,11 @@ TColor TColorManager::getNextTColor() {
 
 	this->markColorAsUsed(curr_color);
 	return curr_color;
-}
+} // end of getNextTColor
 
 TColorf TColorManager::getNextTColorf() {
 	return TColorf(this->getNextTColor());
-}
+} // end of getNextTColor
 
 void TColorManager::advanceRGBCounters() {
 	// method is used only when we either don't use or have already used the
@@ -88,7 +87,7 @@ void TColorManager::advanceRGBCounters() {
 		this->advanceRGBCounters();
 	}
 
-}
+} // end of advanceRGBCounters
 
 void TColorManager::markColorAsUsed(TColor color) {
 
