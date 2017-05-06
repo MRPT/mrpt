@@ -419,6 +419,10 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		double NOP_max_time = -1.0, NOP_At = -1.0;
 		double slowdowndist = .0;
 		CParameterizedTrajectoryGenerator * last_sent_ptg = m_lastSentVelCmd.isValid() ? getPTG(m_lastSentVelCmd.ptg_index) : nullptr;
+		if (last_sent_ptg) {
+			// So supportSpeedAtTarget() below is evaluated in the correct context:
+			last_sent_ptg->updateNavDynamicState(m_lastSentVelCmd.ptg_dynState);
+		}
 
 		// This approach is only possible if:
 		const bool can_do_nop_motion =
