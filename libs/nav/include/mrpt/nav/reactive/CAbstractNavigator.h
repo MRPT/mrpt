@@ -150,6 +150,12 @@ namespace mrpt
 		  * If an error is returned by the user callback, first, it calls robot.stop() ,then throws an std::runtime_error exception. */
 		void updateCurrentPoseAndSpeeds();
 
+		/** Factorization of the part inside navigationStep(), for the case of state being NAVIGATING.
+		  * Performs house-hold tasks like raising events in case of starting/ending navigation, timeout reaching destination, etc.
+		  * `call_virtual_nav_method` can be set to false to avoid calling the virtual method performNavigationStep()
+		  */
+		virtual void performNavigationStepNavigating(bool call_virtual_nav_method = true);
+
 		/** Stops the robot and set navigation state to error */
 		void doEmergencyStop( const std::string &msg );
 
