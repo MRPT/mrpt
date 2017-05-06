@@ -97,8 +97,8 @@ bool CLoopCloserERD<GRAPH_T>::updateState(
 		// first time only, unless we override this check.
 		if (!this->m_override_registered_nodes_check) {
 			if (!((num_registered == 1) ^ (num_registered == 2 && m_is_first_time_node_reg))) {
-				MRPT_LOG_ERROR_STREAM <<
-					"Invalid number of registered nodes since last call to updateStates; Found \""
+				MRPT_LOG_ERROR_STREAM
+					<< "Invalid number of registered nodes since last call to updateStates; Found \""
 					<< num_registered << "\" new nodes.";
 				THROW_EXCEPTION("Invalid number of registered nodes.");
 			}
@@ -292,8 +292,6 @@ bool CLoopCloserERD<GRAPH_T>::getICPEdge(
 			rel_edge,
 			&initial_estim,
 			icp_info);
-	MRPT_LOG_ERROR_STREAM << from << " -> " << to << ": " << rel_edge->getMeanVal()
-		<< " ==> Goodness : " << icp_info->goodness;
 	MRPT_LOG_DEBUG_STREAM << "*************";
 
 	this->m_time_logger.leave("getICPEdge");

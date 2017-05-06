@@ -11,8 +11,8 @@
 namespace mrpt { namespace utils {
 
 // TODO - finish this.
-/**\brief Manager the R, G, B colors and ask class instance of the next
- * unique RGB combination
+/**\brief Manage R, G, B color triads and ask class instance of the next
+ * unique RGB combination.
  */
 struct TColorManager {
 	public:
@@ -62,8 +62,13 @@ struct TColorManager {
 		// color triad with which to advance the current TColor instance
 		mrpt::utils::TColor color_step_triad;
 
+		/**\brief Reset all class properties to their default values
+		 *
+		 * Method called in the constructor of the class
+		 */
 		void reset();
 		void advanceRGBCounters();
+		/**\brief Mark the given color as used. */
 		void markColorAsUsed(mrpt::utils::TColor color);
 };
 

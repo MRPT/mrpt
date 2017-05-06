@@ -19,7 +19,7 @@ CWindowObserver::CWindowObserver() :
 	m_showing_help(false),
 	m_hiding_help(false)
 {
-	help_msg = "User options:\n"
+	m_help_msg = "User options:\n"
 		" - h/H: Toggle help message\n"
 		" - Alt+Enter: Toggle fullscreen\n"
 		" - Mouse click: Set camera manually\n"
@@ -54,7 +54,7 @@ void CWindowObserver::returnEventsStruct(
 void CWindowObserver::registerKeystroke(
 		const std::string key_str,
 		const std::string key_desc) {
-	help_msg += std::string("\n") + " - " + 
+	m_help_msg += std::string("\n") + " - " +
 		key_str + "/" + mrpt::system::upperCase(key_str) +
 		": " + key_desc;
 
@@ -157,7 +157,7 @@ void CWindowObserver::OnEvent(const mrpt::utils::mrptEvent &e) {
 			mrpt::opengl::gl_utils::renderMessageBox(
 					0.25f,  0.25f,  // x,y (in screen "ratios")
 					0.50f, 0.50f, // width, height (in screen "ratios")
-					help_msg.c_str(),
+					m_help_msg.c_str(),
 					0.02f,  // text size
 					mrpt::utils::TColor(190,190,190, 200*tranparency),   // background
 					mrpt::utils::TColor(0,0,0, 200*tranparency),  // border
