@@ -104,3 +104,20 @@ TEST(CConfigFile, readMultiLineStrings)
 	const std::string readStr = cfg.read_string("test", "key_str", "");
 	EXPECT_EQ(readStr, expectedStr);
 }
+
+TEST(CConfigFileMemory, parseVariables)
+{
+	const std::string sampleCfgTxt2 =
+		"@define MAXSPEED 10\n"
+		"[test]\n"
+		"var1=5\n";
+		"var2=@MAXSPEED@\n";
+		"varstr1=MAXSPEED\n";
+	;
+	CConfigFileMemory cfg;
+	cfg.setContent(sampleCfgTxt2);
+
+	EXPECT_EQ(cfg.read_int("test", "var1", 0), 5);
+	EXPECT_EQ(cfg.read_int("test", "var2", 0), 10);
+	EXPECT_EQ(cfg.read_string("test", "varstr1", ""), std::string("MAXSPEED"));
+}
