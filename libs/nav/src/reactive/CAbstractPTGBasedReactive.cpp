@@ -412,6 +412,27 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				);
 		} // end for each PTG
 
+		// check for collision, which is reflected by ALL TP-Obstacles being zero:
+		bool is_all_ptg_collision = true;
+		for (size_t indexPTG = 0; indexPTG < nPTGs; indexPTG++)
+		{
+			bool is_collision = true;
+			const auto & obs = m_infoPerPTG[indexPTG].TP_Obstacles;
+			for (const auto o : obs) {
+				if (o != 0) {
+					is_collision = false;
+					break;
+				}
+			}
+			if (!is_collision) {
+				is_all_ptg_collision = false;
+				break;
+			}
+		}
+		if (is_all_ptg_collision) {
+			m_robot.sendApparentCollisionEvent();
+		}
+
 		// Round #2: Evaluate dont sending any new velocity command ("NOP" motion)
 		// =========
 		bool NOP_not_too_old = true;

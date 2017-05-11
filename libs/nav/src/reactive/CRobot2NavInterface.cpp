@@ -69,6 +69,10 @@ void CRobot2NavInterface::sendWaySeemsBlockedEvent()
 {
 	std::cout << "[sendWaySeemsBlockedEvent] Doing nothing: not implemented in user's derived class." << std::endl;
 }
+void CRobot2NavInterface::sendApparentCollisionEvent()
+{
+	std::cout << "[sendApparentCollisionEvent] Doing nothing: not implemented in user's derived class." << std::endl;
+}
 double CRobot2NavInterface::getNavigationTime() {
 	return m_navtime.Tac();
 }
