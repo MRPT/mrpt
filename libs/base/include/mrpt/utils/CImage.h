@@ -406,15 +406,10 @@ namespace mrpt
 			  */
 			void  normalize();
 
-			/** Flips vertically the image.
-			  * \sa swapRB
-			  */
-			void flipVertical(bool also_swapRB = false);
+			void flipVertical(bool also_swapRB = false); //!< Flips the image vertically. \sa swapRB(), flipHorizontal()
+			void flipHorizontal(); //!< Flips the image horizontally \sa swapRB(), flipVertical()
 
-			/** Swaps red and blue channels.
-			  * \sa flipVertical
-			  */
-			void swapRB();
+			void swapRB(); //!< Swaps red and blue channels.
 
 			/** Rectify (un-distort) the image according to some camera parameters, and returns an output un-distorted image.
 			  * \param out_img The output rectified image
