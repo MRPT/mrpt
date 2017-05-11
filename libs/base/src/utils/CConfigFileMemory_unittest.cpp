@@ -109,9 +109,11 @@ TEST(CConfigFileMemory, parseVariables)
 {
 	const std::string sampleCfgTxt2 =
 		"@define MAXSPEED 10\n"
+		"@define  MAXOMEGA  -30  \n"
 		"[test]\n"
 		"var1=5\n";
 		"var2=@MAXSPEED@\n";
+		"var3=@MAXOMEGA@\n";
 		"varstr1=MAXSPEED\n";
 	;
 	CConfigFileMemory cfg;
@@ -119,5 +121,6 @@ TEST(CConfigFileMemory, parseVariables)
 
 	EXPECT_EQ(cfg.read_int("test", "var1", 0), 5);
 	EXPECT_EQ(cfg.read_int("test", "var2", 0), 10);
+	EXPECT_EQ(cfg.read_int("test", "var3", 0), -30);
 	EXPECT_EQ(cfg.read_string("test", "varstr1", ""), std::string("MAXSPEED"));
 }
