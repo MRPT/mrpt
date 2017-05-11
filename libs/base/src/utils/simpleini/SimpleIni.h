@@ -2196,6 +2196,7 @@ private:
 		const size_t  in_len,
 		char *        out_str)
 	{
+		std::map<std::string, std::string> defined_vars;
 		size_t out_len = 0, i = 0;
 		while (i < in_len)
 		{
@@ -2217,6 +2218,45 @@ private:
 			}
 			else
 			{
+				// Handle "@define varname value"
+				if (!::strncmp(in_str + i, "@define",7))
+				{
+					// Extract rest of this line:
+					i += 7;
+					std::string var_name, var_value;
+					bool in_var_name = false, done_var_name = false;
+					while (i < in_len && in_str[i] != '\r' && in_str[i] != '\n')
+					{
+						const char c = in_str[i];
+						i++;
+						if (c != ' ' && c != '\t')
+						{
+							// not whitespace
+							if (!in_var_name && !done_var_name) {
+								in_var_name = true;
+							}
+						}
+						else
+						{
+							// whitespace
+							if (in_var_name) {
+								in_var_name = false;
+								done_var_name = true;
+							}
+						}
+						if (in_var_name) {
+							var_name += c;
+						}
+						if (done_var_name) {
+							var_value += c;
+						}
+					}
+
+					if (!var_name.empty()) {
+						defined_vars[var_name] = var_value;
+					}
+				}
+
 				// Normal case:
 				if (out_str) {
 					out_str[out_len] = c;
