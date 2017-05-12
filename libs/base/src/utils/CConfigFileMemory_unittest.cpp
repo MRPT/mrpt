@@ -46,7 +46,7 @@ TEST(CConfigFileMemory, Names)
 	third.write("sec","name","val");
 	third.write("sec","names","value");
 	third.getAllKeys("sec", names);
-	EXPECT_EQ(2, names.size());
+	EXPECT_EQ(2U, names.size());
 	if (names.size() == 2) {  // avoid potential crash if fails
 		EXPECT_STREQ("name", names[0].c_str());
 		EXPECT_STREQ("names", names[1].c_str());
