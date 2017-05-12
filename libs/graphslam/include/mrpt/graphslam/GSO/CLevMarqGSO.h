@@ -139,7 +139,6 @@ class CLevMarqGSO:
 
 		CLevMarqGSO();
 		~CLevMarqGSO();
-		void initCLevMarqGSO();
 
 		bool updateState( mrpt::obs::CActionCollectionPtr action,
 				mrpt::obs::CSensoryFramePtr observations,
@@ -177,7 +176,10 @@ class CLevMarqGSO:
 				double offset_y_optimization_distance;
 				int text_index_optimization_distance;
 				mrpt::utils::TColor optimization_distance_color;
+				/**\brief Keystroke to toggle the optimization distance on/off */
 				std::string keystroke_optimization_distance;
+				/**\brief Keystroke to manually trigger a full graph optimization */
+				std::string keystroke_optimize_graph;
 
 				// nodeID difference for an edge to be considered loop closure
 				int LC_min_nodeid_diff;
@@ -238,8 +240,11 @@ class CLevMarqGSO:
 		 *
 		 * Wrapper around the graphslam::optimize_spa_levmarq method
 		 * \sa optimize_spa_levmarq, optimizeGraph
+		 *
+		 * \param[in] full_update Impose that method optimizes the whole graph
+		 *
 		 */
-		void _optimizeGraph();
+		void _optimizeGraph(bool is_full_update=false);
 		/** \brief Wrapper around _optimizeGraph which first locks the section and then
 		 * calls the _optimizeGraph method.
 		 *
@@ -263,6 +268,8 @@ class CLevMarqGSO:
 		 * In case N consecutive full optimizations have been issued, skip some of
 		 * the next as they slow down the overall execution and they don't reduce
 		 * the overall error
+		 *
+		 * \return True for issuing a full graph optimization, False otherwise
 		 */
 		bool checkForFullOptimization();
 		/**\brief Initialize objects relateed to the Graph Visualization
@@ -320,7 +327,8 @@ class CLevMarqGSO:
 		 */
 		enum FullOptimizationPolicy {
 			FOP_IGNORE_LC=0,
-			FOP_USE_LC
+			FOP_USE_LC,
+			FOP_TOTAL_NUM
 		};
 		/**\brief Should I fully optimize the graph on loop closure?
 		 */
@@ -363,6 +371,9 @@ class CLevMarqGSO:
 		/**\brief Indicates whether a full graph optimization was just issued.
 		 */
 		bool m_just_fully_optimized_graph;
+
+		/**\brief Minimum number of nodes before we try optimizing the graph */
+		int m_min_nodes_for_optimization;
 };
 
 } } } // end of namespaces

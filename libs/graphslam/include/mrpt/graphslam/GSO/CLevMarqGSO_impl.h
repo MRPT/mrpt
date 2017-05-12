@@ -16,38 +16,26 @@ namespace mrpt { namespace graphslam { namespace optimizers {
 //////////////////////////////////////////////////////////////
 
 template<class GRAPH_t>
-CLevMarqGSO<GRAPH_t>::CLevMarqGSO()
+CLevMarqGSO<GRAPH_t>::CLevMarqGSO():
+	m_first_time_call(false),
+	m_has_read_config(false),
+	m_autozoom_active(true),
+	m_last_total_num_of_nodes(5),
+	m_optimization_policy(FOP_USE_LC),
+	m_curr_used_consec_lcs(0),
+	m_curr_ignored_consec_lcs(0),
+	m_just_fully_optimized_graph(false),
+	m_min_nodes_for_optimization(3)
 {
 	MRPT_START;
-
-	this->initCLevMarqGSO();
+	using namespace mrpt::utils;
+	this->initializeLoggers("CLevMarqGSO");
 
 	MRPT_END;
 }
 template<class GRAPH_t>
 CLevMarqGSO<GRAPH_t>::~CLevMarqGSO() {
 	// JL Removed MRPT_END since it could launch an exception, not allowed in a dtor
-}
-
-template<class GRAPH_t>
-void CLevMarqGSO<GRAPH_t>::initCLevMarqGSO() {
-	MRPT_START;
-	using namespace mrpt::utils;
-	this->initializeLoggers("CLevMarqGSO");
-
-	m_first_time_call = false;
-	m_has_read_config = false;
-	m_last_total_num_of_nodes = 5;
-	m_autozoom_active = true;
-
-	// should I fully optimize my graph
-	m_curr_used_consec_lcs = 0;
-	m_curr_ignored_consec_lcs = 0;
-	m_optimization_policy = FOP_USE_LC;
-
-	m_just_fully_optimized_graph = false;
-
-	MRPT_END;
 }
 
 // Member function implementations
@@ -82,7 +70,8 @@ bool CLevMarqGSO<GRAPH_t>::updateState(
 
 		}
 		else { // single threaded implementation
-			this->_optimizeGraph();
+			bool is_full_update = this->checkForFullOptimization();
+			this->_optimizeGraph(is_full_update);
 		}
 
 	}
@@ -119,19 +108,12 @@ void CLevMarqGSO<GRAPH_t>::updateVisuals() {
 
 template<class GRAPH_t>
 void CLevMarqGSO<GRAPH_t>::notifyOfWindowEvents(
-		const std::map<std::string, bool>& events_occurred)
-{
+		const std::map<std::string, bool>& events_occurred) {
 	MRPT_START;
 	using namespace std;
 	parent::notifyOfWindowEvents(events_occurred);
 
-	//// print the keys for debuggging reasons
-	//for (std::map<std::string, bool>::const_iterator cit = events_occurred.begin();
-			//cit != events_occurred.end(); ++cit) {
-		//cout << "\t" << cit->first << " ==> " << cit->second << endl;
-	//}
-
-	// I know the keys exists - I put it there explicitly
+	// I know the keys exists - I registered them explicitly
 
 	// optimization_distance toggling
 	if (opt_params.optimization_distance > 0) {
@@ -139,12 +121,17 @@ void CLevMarqGSO<GRAPH_t>::notifyOfWindowEvents(
 					opt_params.keystroke_optimization_distance)->second) {
 			this->toggleOptDistanceVisualization();
 		}
+
+		if (events_occurred.find(opt_params.keystroke_optimize_graph)->second) {
+			this->_optimizeGraph(/*is_full_update=*/ true);
+		}
 	}
 
 	// graph toggling
 	if (events_occurred.find(viz_params.keystroke_graph_toggle)->second) {
 		this->toggleGraphVisualization();
 	}
+
 
 	// if mouse event, let the user decide about the camera
 	if (events_occurred.find("mouse_clicked")->second) {
@@ -158,8 +145,9 @@ void CLevMarqGSO<GRAPH_t>::notifyOfWindowEvents(
 		this->fitGraphInView();
 	}
 
+
 	MRPT_END;
-}
+} // end of notifyOfWindowEvents
 
 template<class GRAPH_t>
 inline void CLevMarqGSO<GRAPH_t>::initGraphVisualization() {
@@ -167,17 +155,17 @@ inline void CLevMarqGSO<GRAPH_t>::initGraphVisualization() {
 	ASSERTMSG_(this->m_win_manager, "No CWindowManager* is given");
 
 	if (viz_params.visualize_optimized_graph) {
-		this->m_win_observer->registerKeystroke(viz_params.keystroke_graph_toggle,
+		this->m_win_observer->registerKeystroke(
+				viz_params.keystroke_graph_toggle,
 				"Toggle Graph visualization");
-		this->m_win_observer->registerKeystroke(viz_params.keystroke_graph_autofit,
+		this->m_win_observer->registerKeystroke(
+				viz_params.keystroke_graph_autofit,
 				"Fit Graph in view");
 
 		this->m_win_manager->assignTextMessageParameters(
 				/* offset_y*	= */ &viz_params.offset_y_graph,
 				/* text_index* = */ &viz_params.text_index_graph );
-
 	}
-
 
 	MRPT_END;
 }
@@ -282,8 +270,14 @@ void CLevMarqGSO<GRAPH_t>::initOptDistanceVisualization() {
 	using namespace mrpt::opengl;
 
 	if (opt_params.optimization_distance > 0) {
-		this->m_win_observer->registerKeystroke(opt_params.keystroke_optimization_distance,
+		this->m_win_observer->registerKeystroke(
+				opt_params.keystroke_optimization_distance,
 				"Toggle optimization distance on/off");
+
+		this->m_win_observer->registerKeystroke(
+				opt_params.keystroke_optimize_graph,
+				"Manually trigger a full graph optimization");
+
 
 		COpenGLScenePtr scene = this->m_win->get3DSceneAndLock();
 
@@ -367,23 +361,25 @@ void CLevMarqGSO<GRAPH_t>::optimizeGraph() {
 }
 
 template<class GRAPH_t>
-void CLevMarqGSO<GRAPH_t>::_optimizeGraph() {
+void CLevMarqGSO<GRAPH_t>::_optimizeGraph(bool is_full_update/*=false*/) {
 	MRPT_START;
 	this->m_time_logger.enter("CLevMarqGSO::_optimizeGraph");
-	this->logFmt(mrpt::utils::LVL_DEBUG, "In _optimizeGraph");
 
 	using namespace mrpt::utils;
 
+	// if less than X nodes exist overall, do not try optimizing
+	if (m_min_nodes_for_optimization > this->m_graph->nodes.size()) {
+		return;
+	}
+
 	CTicTac optimization_timer;
 	optimization_timer.Tic();
-
 
 	// set of nodes for which the optimization procedure will take place
 	std::set< mrpt::utils::TNodeID>* nodes_to_optimize;
 
 	// fill in the nodes in certain distance to the current node, only if
 	// is_full_update is not instructed
-	bool is_full_update = this->checkForFullOptimization();
 	if (is_full_update) {
   	// nodes_to_optimize: List of nodes to optimize. NULL -> all but the root
   	// node.
@@ -430,7 +426,7 @@ void CLevMarqGSO<GRAPH_t>::_optimizeGraph() {
 	this->m_time_logger.leave("CLevMarqGSO::_optimizeGraph");
 	MRPT_UNUSED_PARAM(elapsed_time);
 	MRPT_END;
-}
+} // end of _optimizeGraph
 
 template<class GRAPH_t>
 bool CLevMarqGSO<GRAPH_t>::checkForLoopClosures() {
@@ -533,12 +529,11 @@ bool CLevMarqGSO<GRAPH_t>::checkForFullOptimization() {
 	}
 	else {
 		is_full_update = true;
-		MRPT_LOG_INFO_STREAM <<
-			"Commencing with *FULL* graph optimization... ";
+		MRPT_LOG_WARN_STREAM << "Commencing with *FULL* graph optimization... ";
 	}
 	return is_full_update;
 
-}
+} // end of checkForFullOptimization
 
 template<class GRAPH_t>
 bool CLevMarqGSO<GRAPH_t>::justFullyOptimizedGraph() const {
@@ -662,7 +657,8 @@ void CLevMarqGSO<GRAPH_t>::getDescriptiveReport(std::string* report_str) const {
 template<class GRAPH_t>
 CLevMarqGSO<GRAPH_t>::OptimizationParams::OptimizationParams():
 	optimization_distance_color(0, 201, 87),
-	keystroke_optimization_distance("u")
+	keystroke_optimization_distance("u"),
+	keystroke_optimize_graph("w")
 { }
 template<class GRAPH_t>
 CLevMarqGSO<GRAPH_t>::OptimizationParams::~OptimizationParams() {
