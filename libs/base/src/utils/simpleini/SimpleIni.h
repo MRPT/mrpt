@@ -30,6 +30,8 @@
 #include <algorithm>
 #include <stdio.h>
 #include <cstring>
+#include <mrpt/utils/utils_defs.h>
+#include <mrpt/math/CRuntimeCompiledExpression.h>
 
 #ifdef SI_SUPPORT_IOSTREAMS
 # include <iostream>
@@ -2196,10 +2198,17 @@ private:
 		const size_t  in_len,
 		char *        out_str)
 	{
+		std::map<std::string, std::string> defined_vars;
+		std::map<std::string, double> defined_vars_values;
 		size_t out_len = 0, i = 0;
+		unsigned int line_count = 1;
 		while (i < in_len)
 		{
 			const char c = in_str[i];
+			if (c == '\n') {
+				line_count++;
+			}
+
 			if (c == '\\' && i < in_len - 1 && (in_str[i + 1] == '\r' || in_str[i + 1] == '\n'))
 			{
 				// Skip the backslash + one newline: CR "\r", LF "\n", CR+LF "\r\n"
@@ -2217,6 +2226,116 @@ private:
 			}
 			else
 			{
+				// Handle "@define varname value"
+				if (in_len>i+7 && !::strncmp(in_str + i, "@define",7))
+				{
+					// Extract rest of this line:
+					i += 7;
+					std::string var_name, var_value;
+					bool in_var_name = false, done_var_name = false;
+					while (i < in_len && in_str[i] != '\r' && in_str[i] != '\n')
+					{
+						const char c = in_str[i];
+						i++;
+						if (c != ' ' && c != '\t')
+						{
+							// not whitespace
+							if (!in_var_name && !done_var_name) {
+								in_var_name = true;
+							}
+						}
+						else
+						{
+							// whitespace
+							if (in_var_name) {
+								in_var_name = false;
+								done_var_name = true;
+							}
+						}
+						if (in_var_name) {
+							var_name += c;
+						}
+						if (done_var_name) {
+							var_value += c;
+						}
+					}
+
+					if (!var_name.empty()) {
+						defined_vars[var_name] = var_value;
+						if (!var_value.empty()) {
+							defined_vars_values[var_name] = ::atof(var_value.c_str());
+						}
+					}
+					continue;
+				}
+
+				// Handle "${varname}"
+				if (in_len>i + 4 && in_str[i]=='$' && in_str[i+1] == '{')
+				{
+					// extract varname:
+					i += 2;
+					std::string varname;
+					bool end_ok = false;
+					while (i < in_len && in_str[i]!='\n' && in_str[i]!='\r')
+					{
+						const char ch = in_str[i];
+						i++;
+						if (ch == '}') {
+							end_ok = true;
+							break;
+						}
+						varname += ch;
+					}
+					if (!end_ok) {
+						throw std::runtime_error(mrpt::format("Line %u: Expected closing `}` near: `%s`",line_count,varname.c_str()));
+					}
+
+					const auto it = defined_vars.find(varname);
+					if (it==defined_vars.end())
+						throw std::runtime_error(mrpt::format("Line %u: Unknown variable `${%s}`", line_count,varname.c_str()));
+
+					for (const char ch : it->second)
+					{
+						if (out_str) out_str[out_len] = ch;
+						out_len++;
+					}
+					continue;
+				}
+
+				// Handle "$eval{expression}"
+				if (in_len>i + 7 && !strncmp(in_str+i,"$eval{", 6))
+				{
+					// extract expression:
+					i += 6;
+					std::string expr;
+					bool end_ok = false;
+					while (i < in_len && in_str[i] != '\n' && in_str[i] != '\r')
+					{
+						const char ch = in_str[i];
+						i++;
+						if (ch == '}') {
+							end_ok = true;
+							break;
+						}
+						expr += ch;
+					}
+					if (!end_ok) {
+						throw std::runtime_error(mrpt::format("Line %u: Expected closing `}` near: `%s`", line_count, expr.c_str()));
+					}
+					mrpt::math::CRuntimeCompiledExpression cexpr;
+
+					cexpr.compile(expr, defined_vars_values, mrpt::format("Line %u: ", line_count));
+					const double val = cexpr.eval();
+					const std::string res = mrpt::format("%e",val);
+
+					for (const char ch : res)
+					{
+						if (out_str) out_str[out_len] = ch;
+						out_len++;
+					}
+					continue;
+				}
+
 				// Normal case:
 				if (out_str) {
 					out_str[out_len] = c;

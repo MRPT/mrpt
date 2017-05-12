@@ -42,6 +42,13 @@ first non-blank character of the value.
   - An exception to the rule above is hard-coded to allow URLs, e.g. `key = http://www.google.com` is not considered to contain a comment.
 - Preprocessor:
   - Just like in C/C++, lines can be ended in a backslash (`\`) to mean "line continuation". [New in MRPT 1.5.0]
+  - C preprocessor-like `#define`s are available as `@define VARNAME VALUE`, then using variables as `${VARNAME}` or math expressions as `$eval{...}`. See the example below: [New in MRPT 1.5.0].
+		\code
+		@define MAXSPEED 10
+		[test]
+		var1=${MAXSPEED}
+		var2=$eval{1+2*MAXSPEED}
+		\endcode
 
 # Examples
 
