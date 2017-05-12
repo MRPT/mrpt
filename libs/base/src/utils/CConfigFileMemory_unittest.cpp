@@ -123,6 +123,6 @@ TEST(CConfigFileMemory, parseVariables)
 	EXPECT_EQ(cfg.read_int("test", "var1", 0), 5);
 	EXPECT_EQ(cfg.read_int("test", "var2", 0), 10);
 	EXPECT_EQ(cfg.read_int("test", "var3", 0), -30);
-	EXPECT_EQ(cfg.read_int("test", "var4", 0), 20);
+	EXPECT_NEAR(cfg.read_double("test", "var4", .0), 20.0,1e-6);
 	EXPECT_EQ(cfg.read_string("test", "varstr1", ""), std::string("MAXSPEED"));
 }
