@@ -30,6 +30,7 @@
 #include <algorithm>
 #include <stdio.h>
 #include <cstring>
+#include <mrpt/utils/utils_defs.h>
 
 #ifdef SI_SUPPORT_IOSTREAMS
 # include <iostream>
@@ -2186,6 +2187,8 @@ struct MRPT_IniFileParser : public SI_ConvertA<char>
 		size_t          a_uOutputDataSize) MRPT_OVERRIDE
 	{
 		this->do_parse(a_pInputData, a_uInputDataLen, a_pOutputData);
+		printf("DEBUG:\n%s", a_pOutputData);
+
 		return true;
 	}
 
@@ -2198,9 +2201,14 @@ private:
 	{
 		std::map<std::string, std::string> defined_vars;
 		size_t out_len = 0, i = 0;
+		unsigned int line_count = 1;
 		while (i < in_len)
 		{
 			const char c = in_str[i];
+			if (c == '\n') {
+				line_count++;
+			}
+
 			if (c == '\\' && i < in_len - 1 && (in_str[i + 1] == '\r' || in_str[i + 1] == '\n'))
 			{
 				// Skip the backslash + one newline: CR "\r", LF "\n", CR+LF "\r\n"
@@ -2219,7 +2227,7 @@ private:
 			else
 			{
 				// Handle "@define varname value"
-				if (!::strncmp(in_str + i, "@define",7))
+				if (in_len>i+7 && !::strncmp(in_str + i, "@define",7))
 				{
 					// Extract rest of this line:
 					i += 7;
@@ -2255,6 +2263,40 @@ private:
 					if (!var_name.empty()) {
 						defined_vars[var_name] = var_value;
 					}
+					continue;
+				}
+
+				// Handle "${varname}"
+				if (in_len>i + 4 && in_str[i]=='$' && in_str[i+1] == '{')
+				{
+					// extract varname:
+					i += 2;
+					std::string varname;
+					bool end_ok = false;
+					while (i < in_len && in_str[i]!='\n' && in_str[i]!='\r')
+					{
+						const char ch = in_str[i];
+						i++;
+						if (ch == '}') {
+							end_ok = true;
+							break;
+						}
+						varname += ch;
+					}
+					if (!end_ok) {
+						throw std::runtime_error(mrpt::format("Line %u: Expected closing `}` near: `%s`",line_count,varname.c_str()));
+					}
+
+					const auto it = defined_vars.find(varname);
+					if (it==defined_vars.end())
+						throw std::runtime_error(mrpt::format("Line %u: Unknown variable `${%s}`", line_count,varname.c_str()));
+
+					for (const char ch : it->second)
+					{
+						if (out_str) out_str[out_len] = ch;
+						out_len++;
+					}
+					continue;
 				}
 
 				// Normal case:
