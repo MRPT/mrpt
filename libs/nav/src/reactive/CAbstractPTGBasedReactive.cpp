@@ -850,11 +850,8 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 	cm.props["robpose_y"] = pose.y;
 	cm.props["robpose_phi"] = pose.phi;
 	cm.props["ptg_priority"] = cm.PTG->getScorePriority() *  cm.PTG->evalPathRelativePriority(target_k, target_d_norm);
-	const bool is_slowdown = (cm.props["is_slowdown"] = (
-		(cm.PTG->supportSpeedAtTarget() ? 1 : 0)) != 0
-		&&
-		target_k==move_k
-		);
+	const bool is_slowdown = cm.PTG->supportSpeedAtTarget() && target_k == move_k;
+	cm.props["is_slowdown"] = is_slowdown ? 1:0;
 
 	// Factor 1: Free distance for the chosen PTG and "alpha" in the TP-Space:
 	// ----------------------------------------------------------------------
