@@ -265,3 +265,32 @@ CReactiveNavigationSystem::TReactiveNavigatorParams::TReactiveNavigatorParams() 
 	max_obstacles_height(10.0)
 {
 }
+
+bool CReactiveNavigationSystem::checkCollisionWithLatestObstacles() const
+{
+	ASSERT_(!PTGs.empty());
+	size_t nObs;
+	const float *xs, *ys, *zs;
+	m_WS_Obstacles.getPointsBuffer(nObs, xs, ys, zs);
+
+	for (size_t i = 0; i < 1 /* assume all PTGs share the same robot shape! */; i++)
+	{
+		const auto ptg = PTGs[i];
+		ASSERT_(ptg!=nullptr);
+		const double R = ptg->getMaxRobotRadius();
+		for (size_t obs = 0; obs < nObs; obs++)
+		{
+			const double ox = xs[obs], oy = ys[obs], oz = zs[obs];
+			if (oz >= params_reactive_nav.min_obstacles_height && 
+				oz <= params_reactive_nav.max_obstacles_height && 
+				ox>=-R && ox<=R && 
+				oy>=-R && oy<=R &&
+				ptg->isPointInsideRobotShape(ox,oy)
+				)
+			{
+				return true; // collision!
+			}
+		}
+	}
+	return false; // No collision!
+}
