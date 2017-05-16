@@ -1024,8 +1024,12 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 
 	// Factor6: clearance
 	// -----------------------------------------------------
+	// clearance indicators that may be useful in deciding the best motion:
 	double &clearance = cm.props["clearance"];
 	clearance = in_clearance.getClearance(move_k, target_d_norm*1.01, false /* spot, dont interpolate */ );
+	cm.props["clearance_50p"] = in_clearance.getClearance(move_k, target_d_norm*0.5, false /* spot, dont interpolate */);
+	cm.props["clearance_path"] = in_clearance.getClearance(move_k, target_d_norm*0.9, true /* average */);
+	cm.props["clearance_path_50p"] = in_clearance.getClearance(move_k, target_d_norm*0.5, true /* average */);
 
 	// Factor: ETA (Estimated Time of Arrival to target or to closest obstacle, whatever it's first)
 	// -----------------------------------------------------
