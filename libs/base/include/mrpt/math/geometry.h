@@ -499,7 +499,9 @@ namespace mrpt
 		  */
 		void BASE_IMPEXP createPlaneFromPoseAndNormal(const mrpt::poses::CPose3D &pose,const double (&normal)[3],TPlane &plane);
 		/**
-		  * Creates a rotation matrix so that the coordinate given (0 for x, 1 for y, 2 for z) corresponds to the vector.
+		  * Creates a homogeneus matrix (4x4) such that the coordinate given (0 for x, 1 for y, 2 for z) corresponds to the provided vector.
+			* \param[in] vec must be a *unitary* vector
+			* \sa generateAxisBaseFromDirectionAndAxis()
 		  */
 		void BASE_IMPEXP generateAxisBaseFromDirectionAndAxis(const double (&vec)[3],char coord,CMatrixDouble &matrix);
 		/** @}
@@ -889,7 +891,7 @@ namespace mrpt
 					const double &	R2_pose_y,
 					const double &	R2_pose_phi );
 
-		/** Computes an axis base (a set of three 3D normal vectors) with the given vector being the first of them.
+		/** Computes an axis base (a set of three 3D normal vectors) with the given vector being the first of them ("X")
 		  * NOTE: Make sure of passing all floats or doubles and that the template of the receiving matrix is of the same type!
 		  *
 		  *  If   \f$ d = [ dx ~ dy ~ dz ] \f$ is the input vector, then this function returns a matrix \f$ M \f$ such as:
@@ -903,20 +905,21 @@ namespace mrpt
 			\f]
 		  *
 		  *   And the three normal vectors are computed as:
-
-			  \f[ v^1 = \frac{d}{|d|}  \f]
-
-			  If (dx!=0 or dy!=0):
-				\f[ v^2 = \frac{[-dy ~ dx ~ 0 ]}{\sqrt{dx^2+dy^2}}  \f]
-			  otherwise (the direction vector is vertical):
-				\f[ v^2 = [1 ~ 0 ~ 0]  \f]
-
-			  And finally, the third vector is the cross product of the others:
-
-			    \f[ v^3 = v^1 \times v^2  \f]
+			*
+			*  \f[ v^1 = \frac{d}{|d|}  \f]
+			*
+			* If (dx!=0 or dy!=0):
+			* \f[ v^2 = \frac{[-dy ~ dx ~ 0 ]}{\sqrt{dx^2+dy^2}}  \f]
+			* otherwise (the direction vector is vertical):
+			* \f[ v^2 = [1 ~ 0 ~ 0]  \f]
+			*
+			* And finally, the third vector is the cross product of the others:
+			*
+			*    \f[ v^3 = v^1 \times v^2  \f]
 		  *
 		  * \return The 3x3 matrix (CMatrixTemplateNumeric<T>), containing one vector per column.
 		  * \except Throws an std::exception on invalid input (i.e. null direction vector)
+			* \sa generateAxisBaseFromDirectionAndAxis()
 		  *
 		  * (JLB @ 18-SEP-2007)
 		  */
