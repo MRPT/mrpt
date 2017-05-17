@@ -553,7 +553,6 @@ void TPlane::getAsPose3D(mrpt::poses::CPose3D &outPose)	{
 	getUnitaryNormalVector(normal);
 	CMatrixDouble AXIS;
 	generateAxisBaseFromDirectionAndAxis(normal,2,AXIS);
-	AXIS.set_unsafe(3,3,1);
 	for (size_t i=0;i<3;i++) if (abs(coefs[i])>=geometryEpsilon)	{
 		AXIS.set_unsafe(i,3,-coefs[3]/coefs[i]);
 		break;
@@ -566,7 +565,6 @@ void TPlane::getAsPose3DForcingOrigin(const TPoint3D &newOrigin,mrpt::poses::CPo
 	getUnitaryNormalVector(normal);
 	CMatrixDouble AXIS;
 	generateAxisBaseFromDirectionAndAxis(normal,2,AXIS);
-	AXIS.set_unsafe(3,3,1);
 	for (size_t i=0;i<3;i++) AXIS.set_unsafe(i,3,newOrigin[i]);
 	pose=mrpt::poses::CPose3D(AXIS);
 }
