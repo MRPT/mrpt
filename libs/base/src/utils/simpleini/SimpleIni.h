@@ -31,6 +31,7 @@
 #include <stdio.h>
 #include <cstring>
 #include <mrpt/utils/utils_defs.h>
+#include <mrpt/system/string_utils.h>
 #include <mrpt/math/CRuntimeCompiledExpression.h>
 
 #ifdef SI_SUPPORT_IOSTREAMS
@@ -2192,21 +2193,61 @@ struct MRPT_IniFileParser : public SI_ConvertA<char>
 	}
 
 private:
+	struct ParseContext
+	{
+		std::map<std::string, std::string> defined_vars;
+		std::map<std::string, double> defined_vars_values;
+		unsigned int line_count = 1;
+	};
+
+	// Return a string or a number (as string) if expr = "$eval{...}"
+	std::string parse_process_var_eval(const ParseContext& pc, std::string expr)
+	{
+		expr = mrpt::system::trim(expr);
+		while (expr.size()>6)
+		{
+			auto p = expr.find("$eval{");
+			if (p == std::string::npos) break; // done!
+			auto pend = expr.find("}",p);
+			if (pend == std::string::npos)
+				throw std::runtime_error(mrpt::format("Line %u: Expected closing `}` near: `%s`", pc.line_count, expr.c_str()));
+
+			const auto substr = expr.substr(p + 6, pend - p - 6);
+			mrpt::math::CRuntimeCompiledExpression cexpr;
+			cexpr.compile(substr, pc.defined_vars_values, mrpt::format("Line %u: ", pc.line_count));
+			
+			std::string new_expr = expr.substr(0, p);
+			new_expr += mrpt::format("%e", cexpr.eval());
+			new_expr += expr.substr(pend+1);
+
+			new_expr.swap(expr);
+		}
+		return expr;
+	}
+
+	void parse_process_var_define(ParseContext &pc, const std::string &var_name, const std::string &var_value)
+	{
+		if (!var_name.empty()) {
+			pc.defined_vars[var_name] = var_value;
+			if (!var_value.empty()) {
+				pc.defined_vars_values[var_name] = ::atof(parse_process_var_eval(pc,var_value).c_str());
+			}
+		}
+	}
+
 	/** Shared code for the two virtual methods. If out_str==NULL, just count output bytes */
 	size_t do_parse(
 		const char *  in_str,
 		const size_t  in_len,
 		char *        out_str)
 	{
-		std::map<std::string, std::string> defined_vars;
-		std::map<std::string, double> defined_vars_values;
+		ParseContext pc;
 		size_t out_len = 0, i = 0;
-		unsigned int line_count = 1;
 		while (i < in_len)
 		{
 			const char c = in_str[i];
 			if (c == '\n') {
-				line_count++;
+				pc.line_count++;
 			}
 
 			if (c == '\\' && i < in_len - 1 && (in_str[i + 1] == '\r' || in_str[i + 1] == '\n'))
@@ -2260,12 +2301,7 @@ private:
 						}
 					}
 
-					if (!var_name.empty()) {
-						defined_vars[var_name] = var_value;
-						if (!var_value.empty()) {
-							defined_vars_values[var_name] = ::atof(var_value.c_str());
-						}
-					}
+					parse_process_var_define(pc, var_name, var_value);
 					continue;
 				}
 
@@ -2287,14 +2323,16 @@ private:
 						varname += ch;
 					}
 					if (!end_ok) {
-						throw std::runtime_error(mrpt::format("Line %u: Expected closing `}` near: `%s`",line_count,varname.c_str()));
+						throw std::runtime_error(mrpt::format("Line %u: Expected closing `}` near: `%s`", pc.line_count,varname.c_str()));
 					}
 
-					const auto it = defined_vars.find(varname);
-					if (it==defined_vars.end())
-						throw std::runtime_error(mrpt::format("Line %u: Unknown variable `${%s}`", line_count,varname.c_str()));
+					const auto it = pc.defined_vars.find(varname);
+					if (it== pc.defined_vars.end())
+						throw std::runtime_error(mrpt::format("Line %u: Unknown variable `${%s}`", pc.line_count,varname.c_str()));
 
-					for (const char ch : it->second)
+					const auto str_out = parse_process_var_eval(pc,it->second);
+
+					for (const char ch : str_out)
 					{
 						if (out_str) out_str[out_len] = ch;
 						out_len++;
@@ -2320,13 +2358,10 @@ private:
 						expr += ch;
 					}
 					if (!end_ok) {
-						throw std::runtime_error(mrpt::format("Line %u: Expected closing `}` near: `%s`", line_count, expr.c_str()));
+						throw std::runtime_error(mrpt::format("Line %u: Expected closing `}` near: `%s`", pc.line_count, expr.c_str()));
 					}
-					mrpt::math::CRuntimeCompiledExpression cexpr;
 
-					cexpr.compile(expr, defined_vars_values, mrpt::format("Line %u: ", line_count));
-					const double val = cexpr.eval();
-					const std::string res = mrpt::format("%e",val);
+					const std::string res = parse_process_var_eval(pc,expr);
 
 					for (const char ch : res)
 					{
