@@ -141,6 +141,8 @@ namespace obs
 		{
 			std::vector<float>   x,y,z;
 			std::vector<uint8_t> intensity; //!< Color [0,255]
+			std::vector<mrpt::system::TTimeStamp> timestamp; //!< Timestamp for each point (if `generatePerPointTimestamp`=true in `TGeneratePointCloudParameters`), or empty vector if not populated (default).
+			std::vector<float>   azimuth; //!< Original azimuth of each point (if `generatePerPointAzimuth`=true, empty otherwise )
 
 			inline size_t size() const {
 				return x.size();
@@ -150,12 +152,16 @@ namespace obs
 				y.clear();
 				z.clear();
 				intensity.clear();
+				timestamp.clear();
+				azimuth.clear();
 			}
 			inline void clear_deep() {
-				{ std::vector<float> dumm; x.swap(dumm); }
-				{ std::vector<float> dumm; y.swap(dumm); }
-				{ std::vector<float> dumm; z.swap(dumm); }
-				{ std::vector<uint8_t> dumm; intensity.swap(dumm); }
+				x.swap(std::vector<float>());
+				y.swap(std::vector<float>());
+				z.swap(std::vector<float>());
+				intensity.swap(std::vector<uint8_t>());
+				timestamp.swap(std::vector<mrpt::system::TTimeStamp>());
+				azimuth.swap(std::vector<float>());
 			}
 		};
 
@@ -182,6 +188,8 @@ namespace obs
 			bool   filterBynROI; //!< Enable nROI filter (Default:false): do NOT add points inside a given 3D box
 			bool   filterOutIsolatedPoints; //!< (Default:false) Simple filter to remove spurious returns (e.g. Sun reflected on large water extensions)
 			bool   dualKeepStrongest, dualKeepLast; //!< (Default:true) In VLP16 dual mode, keep both or just one of the returns.
+			bool   generatePerPointTimestamp;       //!< (Default:false) If `true`, populate the vector timestamp
+			bool   generatePerPointAzimuth;         //!< (Default:false) If `true`, populate the vector azimuth
 
 			TGeneratePointCloudParameters();
 		};
