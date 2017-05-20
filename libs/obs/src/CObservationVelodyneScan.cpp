@@ -63,7 +63,9 @@ CObservationVelodyneScan::TGeneratePointCloudParameters::TGeneratePointCloudPara
 	filterBynROI(false),
 	filterOutIsolatedPoints(false),
 	dualKeepStrongest(true),
-	dualKeepLast(true)
+	dualKeepLast(true),
+	generatePerPointTimestamp(false),
+	generatePerPointAzimuth(false)
 {
 }
 
@@ -183,7 +185,7 @@ double VLP16AdjustTimeStamp(int firingblock,int dsr,int firingwithinblock)  //!<
 /** Auxiliary class used to refactor CObservationVelodyneScan::generatePointCloud() */
 struct PointCloudStorageWrapper {
 	/** Process the insertion of a new (x,y,z) point to the cloud, in sensor-centric coordinates, with the exact timestamp of that LIDAR ray */
-	virtual void add_point(double pt_x,double pt_y, double pt_z,uint8_t pt_intensity, const mrpt::system::TTimeStamp &tim) = 0;
+	virtual void add_point(double pt_x,double pt_y, double pt_z,uint8_t pt_intensity, const mrpt::system::TTimeStamp &tim, const float azimuth) = 0;
 };
 
 static void velodyne_scan_to_pointcloud(
@@ -386,7 +388,7 @@ static void velodyne_scan_to_pointcloud(
 					continue;
 
 				// Insert point:
-				out_pc.add_point(pt.x,pt.y,pt.z, raw->blocks[block].laser_returns[k].intensity,pkt_tim);
+				out_pc.add_point(pt.x,pt.y,pt.z, raw->blocks[block].laser_returns[k].intensity,pkt_tim, azimuth_corrected_f);
 
 			} // end for k,dsr=[0,31]
 		} // end for each block [0,11]
@@ -398,22 +400,27 @@ void CObservationVelodyneScan::generatePointCloud(const TGeneratePointCloudParam
 {
 	struct PointCloudStorageWrapper_Inner : public PointCloudStorageWrapper {
 		CObservationVelodyneScan & me_;
-		PointCloudStorageWrapper_Inner(CObservationVelodyneScan &me) : me_(me) {
+		const TGeneratePointCloudParameters &params_;
+		PointCloudStorageWrapper_Inner(CObservationVelodyneScan &me, const TGeneratePointCloudParameters &p) : me_(me), params_(p) {
 			// Reset point cloud:
-			me_.point_cloud.x.clear();
-			me_.point_cloud.y.clear();
-			me_.point_cloud.z.clear();
-			me_.point_cloud.intensity.clear();
+			me_.point_cloud.clear();
 		}
-		void add_point(double pt_x,double pt_y, double pt_z,uint8_t pt_intensity, const mrpt::system::TTimeStamp &tim) MRPT_OVERRIDE {
+		void add_point(double pt_x,double pt_y, double pt_z,uint8_t pt_intensity, const mrpt::system::TTimeStamp &tim, const float azimuth) MRPT_OVERRIDE {
 			me_.point_cloud.x.push_back( pt_x );
 			me_.point_cloud.y.push_back( pt_y );
 			me_.point_cloud.z.push_back( pt_z );
 			me_.point_cloud.intensity.push_back( pt_intensity );
+			if (params_.generatePerPointTimestamp) {
+				me_.point_cloud.timestamp.push_back(tim);
+			}
+			if (params_.generatePerPointAzimuth) {
+				const int azimuth_corrected = ((int)round(azimuth)) % CObservationVelodyneScan::ROTATION_MAX_UNITS;
+				me_.point_cloud.azimuth.push_back(azimuth_corrected * ROTATION_RESOLUTION);
+			}
 		}
 	};
 
-	PointCloudStorageWrapper_Inner my_pc_wrap(*this);
+	PointCloudStorageWrapper_Inner my_pc_wrap(*this, params);
 
 	velodyne_scan_to_pointcloud(*this,params, my_pc_wrap);
 
@@ -438,9 +445,10 @@ void CObservationVelodyneScan::generatePointCloudAlongSE3Trajectory(
 		bool last_query_valid_;
 
 		PointCloudStorageWrapper_SE3_Interp(CObservationVelodyneScan &me,const mrpt::poses::CPose3DInterpolator & vehicle_path,std::vector<mrpt::math::TPointXYZIu8> & out_points,TGeneratePointCloudSE3Results &results_stats) : 
-			me_(me),vehicle_path_(vehicle_path),out_points_(out_points),results_stats_(results_stats),last_query_tim_(INVALID_TIMESTAMP),last_query_valid_(false) {
+			me_(me),vehicle_path_(vehicle_path),out_points_(out_points),results_stats_(results_stats),last_query_tim_(INVALID_TIMESTAMP),last_query_valid_(false) 
+		{
 		}
-		void add_point(double pt_x,double pt_y, double pt_z,uint8_t pt_intensity, const mrpt::system::TTimeStamp &tim) MRPT_OVERRIDE 
+		void add_point(double pt_x,double pt_y, double pt_z,uint8_t pt_intensity, const mrpt::system::TTimeStamp &tim, const float azimuth) MRPT_OVERRIDE
 		{
 			// Use a cache since it's expected that the same timestamp is queried several times in a row:
 			if (last_query_tim_!=tim) {
