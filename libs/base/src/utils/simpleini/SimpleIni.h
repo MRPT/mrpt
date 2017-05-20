@@ -2344,18 +2344,17 @@ private:
 				if (in_len>i + 7 && !strncmp(in_str+i,"$eval{", 6))
 				{
 					// extract expression:
-					i += 6;
 					std::string expr;
 					bool end_ok = false;
 					while (i < in_len && in_str[i] != '\n' && in_str[i] != '\r')
 					{
 						const char ch = in_str[i];
 						i++;
+						expr += ch;
 						if (ch == '}') {
 							end_ok = true;
 							break;
 						}
-						expr += ch;
 					}
 					if (!end_ok) {
 						throw std::runtime_error(mrpt::format("Line %u: Expected closing `}` near: `%s`", pc.line_count, expr.c_str()));
