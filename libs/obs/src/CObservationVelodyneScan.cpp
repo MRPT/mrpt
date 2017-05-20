@@ -471,3 +471,22 @@ void CObservationVelodyneScan::generatePointCloudAlongSE3Trajectory(
 	PointCloudStorageWrapper_SE3_Interp my_pc_wrap(*this,vehicle_path,out_points,results_stats);
 	velodyne_scan_to_pointcloud(*this,params, my_pc_wrap);
 }
+
+void CObservationVelodyneScan::TPointCloud::clear()
+{
+	x.clear();
+	y.clear();
+	z.clear();
+	intensity.clear();
+	timestamp.clear();
+	azimuth.clear();
+}
+void CObservationVelodyneScan::TPointCloud::clear_deep()
+{
+	{ std::vector<float> d; x.swap(d); }
+	{ std::vector<float> d; y.swap(d); }
+	{ std::vector<float> d; z.swap(d); }
+	{ std::vector<uint8_t> d; intensity.swap(d); }
+	{ std::vector<mrpt::system::TTimeStamp> d; timestamp.swap(d); }
+	{ std::vector<float> d; azimuth.swap(d); }
+}
