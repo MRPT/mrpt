@@ -147,22 +147,8 @@ namespace obs
 			inline size_t size() const {
 				return x.size();
 			}
-			inline void clear() {
-				x.clear();
-				y.clear();
-				z.clear();
-				intensity.clear();
-				timestamp.clear();
-				azimuth.clear();
-			}
-			inline void clear_deep() {
-				x.swap(std::vector<float>());
-				y.swap(std::vector<float>());
-				z.swap(std::vector<float>());
-				intensity.swap(std::vector<uint8_t>());
-				timestamp.swap(std::vector<mrpt::system::TTimeStamp>());
-				azimuth.swap(std::vector<float>());
-			}
+			void clear(); //!< Sets all vectors to zero length
+			void clear_deep(); //!< Like clear(), but also enforcing freeing memory
 		};
 
 		/** Optionally, raw data can be converted into a 3D point cloud (local coordinates wrt the sensor, not the vehicle) 
