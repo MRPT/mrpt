@@ -653,6 +653,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 					m_infoPerPTG[best_ptg_idx].TP_Obstacles[m_lastSentVelCmd.ptg_alpha_index]
 					:
 					.0;
+				m_lastSentVelCmd.was_slowdown = (selectedHolonomicMovement->props["is_slowdown"]!=0.0);
 
 				m_lastSentVelCmd.tp_target_k = selectedHolonomicMovement ?
 					selectedHolonomicMovement->PTG->alpha2index(m_infoPerPTG[best_ptg_idx].target_alpha) :
@@ -850,7 +851,11 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 	cm.props["robpose_y"] = pose.y;
 	cm.props["robpose_phi"] = pose.phi;
 	cm.props["ptg_priority"] = cm.PTG->getScorePriority() *  cm.PTG->evalPathRelativePriority(target_k, target_d_norm);
-	const bool is_slowdown = cm.PTG->supportSpeedAtTarget() && target_k == move_k;
+	const bool is_slowdown =
+		this_is_PTG_continuation ?
+		m_lastSentVelCmd.was_slowdown
+		:
+		(cm.PTG->supportSpeedAtTarget() && target_k == move_k);
 	cm.props["is_slowdown"] = is_slowdown ? 1:0;
 
 	// Factor 1: Free distance for the chosen PTG and "alpha" in the TP-Space:
@@ -1162,6 +1167,7 @@ void CAbstractPTGBasedReactive::TSentVelCmd::reset()
 	tim_send_cmd_vel = INVALID_TIMESTAMP;
 	poseVel = TRobotPoseVel();
 	colfreedist_move_k = .0;
+	was_slowdown = false;
 	speed_scale = 1.0;
 	ptg_dynState = CParameterizedTrajectoryGenerator::TNavDynamicState();
 }
