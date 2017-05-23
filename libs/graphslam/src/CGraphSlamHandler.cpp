@@ -23,7 +23,7 @@ CGraphSlamHandler::CGraphSlamHandler() {
 
 //////////////////////////////////////////////////////////////////////////////
 
-void CGraphSlamHandler::setOutputLoggerPtr(mrpt::utils::COutputLogger* logger) {
+void C91ad0dbGraphSlamHandler::setOutputLoggerPtr(mrpt::utils::COutputLogger* logger) {
 	MRPT_START;
 
 	ASSERT_(logger);

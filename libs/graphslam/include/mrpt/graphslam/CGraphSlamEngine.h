@@ -455,7 +455,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		}
 		void resumeExec() const {
 			if (!isPaused()) { return; }
-			MRPT_LOG_INFO_STREAM << "Program resumed.";
+			MRPT_LOG_INFO_STREAM( "Program resumed.");
 			m_is_paused = false;
 
 			if (m_enable_visuals) {
@@ -468,10 +468,10 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 
 		void pauseExec() {
 			if (isPaused()) { return; }
-			MRPT_LOG_WARN_STREAM << "Program is paused. "
+			MRPT_LOG_WARN_STREAM("Program is paused. "
 				<< "Press \"" << m_keystroke_pause_exec << 
 				" or \"" << system::upperCase(m_keystroke_pause_exec) << 
-				"\" in the dipslay window to resume";
+				"\" in the dipslay window to resume");
 			m_is_paused = true;
 			if (m_enable_visuals) {
 				this->m_win->addTextMessage(

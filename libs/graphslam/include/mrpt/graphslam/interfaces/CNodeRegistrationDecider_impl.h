@@ -51,7 +51,7 @@ bool CNodeRegistrationDecider<GRAPH_T>::registerNewNodeAtEnd(
 	// register the initial node if it doesn't exist.
 	// Runs only once.
 	if (this->m_prev_registered_nodeID == INVALID_NODEID) { // root
-		MRPT_LOG_WARN_STREAM << "Registering root node..." << endl;
+		MRPT_LOG_WARN_STREAM("Registering root node..." << endl);
 		global_pose_t tmp_pose =
 			this->getCurrentRobotPosEstimation();
 		this->addNodeAnnotsToPose(&tmp_pose);
@@ -94,9 +94,9 @@ bool CNodeRegistrationDecider<GRAPH_T>::registerNewNodeAtEnd(
 	m_prev_registered_nodeID = to;
 
 
-	MRPT_LOG_DEBUG_STREAM << "Registered new node:" << endl <<
+	MRPT_LOG_DEBUG_STREAM("Registered new node:" << endl <<
 		"\t" << from << " => " << to << endl <<
-		"\tEdge: " << constraint.getMeanVal().asString();
+		"\tEdge: " << constraint.getMeanVal().asString());
 
 	return true;
 	MRPT_END;

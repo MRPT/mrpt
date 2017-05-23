@@ -135,13 +135,13 @@ void CLevMarqGSO<GRAPH_t>::notifyOfWindowEvents(
 
 	// if mouse event, let the user decide about the camera
 	if (events_occurred.find("mouse_clicked")->second) {
-		MRPT_LOG_DEBUG_STREAM( "Mouse was clicked. Disabling autozoom.");
+		MRPT_LOG_DEBUG_STREAM("Mouse was clicked. Disabling autozoom.");
 		m_autozoom_active = false;
 	}
 
 	// autofit the graph once
 	if (events_occurred.find(viz_params.keystroke_graph_autofit)->second) {
-		MRPT_LOG_DEBUG_STREAM( "Autofit button was pressed");
+		MRPT_LOG_DEBUG_STREAM("Autofit button was pressed");
 		this->fitGraphInView();
 	}
 
@@ -481,7 +481,7 @@ bool CLevMarqGSO<GRAPH_t>::checkForFullOptimization() {
 	// Decide on the LoopClosingAttitude I am in
 	if (!added_lc) { // reset both ignored and used counters
 		if (m_curr_used_consec_lcs != 0 || m_curr_ignored_consec_lcs != 0) {
-			MRPT_LOG_DEBUG_STREAM << "No new Loop Closure found.";
+			MRPT_LOG_DEBUG_STREAM("No new Loop Closure found.");
 		}
 
 		m_curr_used_consec_lcs = 0;
@@ -524,12 +524,12 @@ bool CLevMarqGSO<GRAPH_t>::checkForFullOptimization() {
 	// Decide on whether to fully optimize the graph based on the mode I am in
 	if (m_optimization_policy == FOP_IGNORE_LC) {
 		is_full_update = false;
-		MRPT_LOG_WARN_STREAM <<
-			"*PARTIAL* graph optimization.. ignoring new loop closure";
+		MRPT_LOG_WARN_STREAM(
+			"*PARTIAL* graph optimization.. ignoring new loop closure");
 	}
 	else {
 		is_full_update = true;
-		MRPT_LOG_WARN_STREAM << "Commencing with *FULL* graph optimization... ";
+		MRPT_LOG_WARN_STREAM("Commencing with *FULL* graph optimization... ");
 	}
 	return is_full_update;
 

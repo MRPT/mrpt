@@ -13,14 +13,6 @@
 
 namespace mrpt { namespace graphslam { namespace deciders {
 
-// helper methods	
-bool essentiallyEqual(float a, float b, float epsilon) {
-	return fabs(a - b) <= ( (fabs(a) > fabs(b) ? fabs(b) : fabs(a)) * epsilon);
-}
-bool essentiallyEqual(float a, float b) {
-	return essentiallyEqual(a, b, std::numeric_limits<double>::epsilon());
-}
-
 // Ctors, Dtors
 // //////////////////////////////////
 template<class GRAPH_T>
@@ -34,7 +26,7 @@ CLoopCloserERD<GRAPH_T>::CLoopCloserERD():
 	this->initializeLoggers("CLoopCloserERD");
 	m_edge_types_to_nums["ICP2D"] = 0;
 	m_edge_types_to_nums["LC"] = 0;
-	MRPT_LOG_DEBUG_STREAM << "Initialized class object";
+	MRPT_LOG_DEBUG_STREAM("Initialized class object");
 }
 
 template<class GRAPH_T>
@@ -42,7 +34,7 @@ CLoopCloserERD<GRAPH_T>::~CLoopCloserERD() {
 	using namespace mrpt::graphslam;
 
 	// release memory of m_node_optimal_paths map.
-	MRPT_LOG_DEBUG_STREAM << "Releasing memory of m_node_optimal_paths map...";
+	MRPT_LOG_DEBUG_STREAM("Releasing memory of m_node_optimal_paths map...");
 	for (typename std::map<
 			mrpt::utils::TNodeID,
 			path_t*>::iterator
@@ -83,23 +75,23 @@ bool CLoopCloserERD<GRAPH_T>::updateState(
 	if (!m_first_laser_scan.present()) {
 		m_first_laser_scan = m_last_laser_scan2D;
 	}
-	
+
 	// check possible prior node registration
 	size_t num_registered = absDiff(
 			this->m_last_total_num_nodes, this->m_graph->nodeCount());
 	bool registered_new_node = num_registered > 0;
 
 	if (registered_new_node) {
-		MRPT_LOG_DEBUG_STREAM << "New node has been registered in the graph!";
+		MRPT_LOG_DEBUG_STREAM("New node has been registered in the graph!");
 		registered_new_node = true;
 
 		// either single node registration, or double node registration for the
 		// first time only, unless we override this check.
 		if (!this->m_override_registered_nodes_check) {
 			if (!((num_registered == 1) ^ (num_registered == 2 && m_is_first_time_node_reg))) {
-				MRPT_LOG_ERROR_STREAM
-					<< "Invalid number of registered nodes since last call to updateStates; Found \""
-					<< num_registered << "\" new nodes.";
+				MRPT_LOG_ERROR_STREAM(
+					"Invalid number of registered nodes since last call to updateStates| "
+					"Found \"" << num_registered << "\" new nodes.");
 				THROW_EXCEPTION("Invalid number of registered nodes.");
 			}
 		}
@@ -109,7 +101,7 @@ bool CLoopCloserERD<GRAPH_T>::updateState(
 		// the first added constraint. Add the first measurement taken to the root
 		// and the second as usual
 		if (m_is_first_time_node_reg) {
-			MRPT_LOG_WARN_STREAM << "Assigning first laserScan to the graph root node.";
+			MRPT_LOG_WARN_STREAM("Assigning first laserScan to the graph root node.");
 			this->m_nodes_to_laser_scans2D[this->m_graph->root] = m_first_laser_scan;
 			m_is_first_time_node_reg = false;
 		}
@@ -152,7 +144,7 @@ bool CLoopCloserERD<GRAPH_T>::updateState(
 template<class GRAPH_T>
 void CLoopCloserERD<GRAPH_T>::fetchNodeIDsForScanMatching(
 		const mrpt::utils::TNodeID& curr_nodeID,
-		std::set<mrpt::utils::TNodeID>* nodes_set) { 
+		std::set<mrpt::utils::TNodeID>* nodes_set) {
 	ASSERT_(nodes_set);
 
 	// deal with the case that less than `prev_nodes_for_ICP` nodes have been
@@ -160,11 +152,11 @@ void CLoopCloserERD<GRAPH_T>::fetchNodeIDsForScanMatching(
 	size_t fetched_nodeIDs = 0;
 	for (int nodeID_i = static_cast<int>(curr_nodeID)-1;
 			((fetched_nodeIDs <= this->m_laser_params.prev_nodes_for_ICP) &&
-			 (nodeID_i >= 0)); 
+			 (nodeID_i >= 0));
 			--nodeID_i) {
-			nodes_set->insert(nodeID_i);
-			fetched_nodeIDs++;
-		}
+		nodes_set->insert(nodeID_i);
+		fetched_nodeIDs++;
+	}
 } // end of fetchNodeIDsForScanMatching
 
 template<class GRAPH_T>
@@ -192,8 +184,8 @@ void CLoopCloserERD<GRAPH_T>::addScanMatchingEdges(
 		constraint_t rel_edge;
 		mrpt::slam::CICP::TReturnInfo icp_info;
 
-		MRPT_LOG_DEBUG_STREAM("Fetching laser scan for nodes: " << *node_it << "
-				==> " << curr_nodeID);
+		MRPT_LOG_DEBUG_STREAM("Fetching laser scan for nodes: " << *node_it
+				<<  "==> " << curr_nodeID);
 
 		bool found_edge = this->getICPEdge(
 				*node_it,
@@ -250,10 +242,10 @@ bool CLoopCloserERD<GRAPH_T>::getICPEdge(
 	global_pose_t from_pose;
 	global_pose_t to_pose;
 
-	MRPT_LOG_DEBUG_STREAM << "****In getICPEdge method: ";
+	MRPT_LOG_DEBUG_STREAM("****In getICPEdge method: ");
 	if (ad_params) {
-		MRPT_LOG_DEBUG_STREAM << "TGetICPEdgeAdParams:\n"
-			<< ad_params->getAsString() << endl;
+		MRPT_LOG_DEBUG_STREAM("TGetICPEdgeAdParams:\n"
+			<< ad_params->getAsString() << endl);
 	}
 
 	// from-node parameters
@@ -268,7 +260,7 @@ bool CLoopCloserERD<GRAPH_T>::getICPEdge(
 		MRPT_LOG_DEBUG_STREAM(
 			"Either node #" << from <<
 			" or node #" << to <<
-			" doesn't contain a valid LaserScan. Ignoring this...";
+			" doesn't contain a valid LaserScan. Ignoring this...");
 		return false;
 	}
 
@@ -282,9 +274,9 @@ bool CLoopCloserERD<GRAPH_T>::getICPEdge(
  		initial_estim = to_pose - from_pose;
  	}
 
-	MRPT_LOG_DEBUG_STREAM << "from_pose: " << from_pose
+	MRPT_LOG_DEBUG_STREAM("from_pose: " << from_pose
 		<< "| to_pose: " << to_pose
-		<< "| init_estim: " << initial_estim;
+		<< "| init_estim: " << initial_estim);
 
 	range_ops_t::getICPEdge(
 			*from_scan,
@@ -292,7 +284,7 @@ bool CLoopCloserERD<GRAPH_T>::getICPEdge(
 			rel_edge,
 			&initial_estim,
 			icp_info);
-	MRPT_LOG_DEBUG_STREAM << "*************";
+	MRPT_LOG_DEBUG_STREAM("*************");
 
 	this->m_time_logger.leave("getICPEdge");
 	return true;
@@ -306,24 +298,24 @@ bool CLoopCloserERD<GRAPH_T>::fillNodePropsFromGroupParams(
 		node_props_t* node_props) {
 	ASSERT_(node_props);
 
-	//MRPT_LOG_DEBUG_STREAM << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>";
-	//MRPT_LOG_DEBUG_STREAM << "Running fillNodePropsFromGroupParams for nodeID \""
-		//<< nodeID << "\"";
+	//MRPT_LOG_DEBUG_STREAM(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+	//MRPT_LOG_DEBUG_STREAM("Running fillNodePropsFromGroupParams for nodeID \""
+		//<< nodeID << "\"");
 
 	// Make sure that the given nodeID exists in the group_params
 	typename std::map<mrpt::utils::TNodeID, node_props_t>::const_iterator
 		search = group_params.find(nodeID);
 	bool res = false;
 	if (search == group_params.end()) {
-		//MRPT_LOG_DEBUG_STREAM << "Operation failed.";
+		//MRPT_LOG_DEBUG_STREAM("Operation failed.");
 	}
 	else {
 		*node_props = search->second;
 		res = true;
-		//MRPT_LOG_DEBUG_STREAM << "Properties filled: " << node_props->getAsString();
+		//MRPT_LOG_DEBUG_STREAM("Properties filled: " << node_props->getAsString());
 	}
 
-	//MRPT_LOG_DEBUG_STREAM << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<";
+	//MRPT_LOG_DEBUG_STREAM("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
 	return res;
 
 }
@@ -371,7 +363,7 @@ bool CLoopCloserERD<GRAPH_T>::getPropsOfNodeID(
 			filled_pose = true;
 		}
 		else {
-			MRPT_LOG_WARN_STREAM << "pose not found for nodeID: " << nodeID;
+			MRPT_LOG_WARN_STREAM("pose not found for nodeID: " << nodeID);
 		}
 	}
 	if (!filled_scan) {
@@ -436,12 +428,12 @@ void CLoopCloserERD<GRAPH_T>::checkPartitionsForLC(
 		}
 		else {
 			if (*partitions_it == finder->second) {
-				//MRPT_LOG_DEBUG_STREAM << "Partition " << partitionID
-					//<< " remained unchanged. ";
+				//MRPT_LOG_DEBUG_STREAM("Partition " << partitionID
+					//<< " remained unchanged. ");
 				continue; // same list as before.. no need to check this...
 			}
 			else { // list was changed  - update the previous nodes list
-				//MRPT_LOG_DEBUG_STREAM << "Partition " << partitionID << " CHANGED. ";
+				//MRPT_LOG_DEBUG_STREAM("Partition " << partitionID << " CHANGED. ");
 				finder->second = *partitions_it;
 			}
 		}
@@ -528,24 +520,24 @@ void CLoopCloserERD<GRAPH_T>::evaluatePartitionsForLC(
 				consist_matrix,
 				hypots_pool,
 				&valid_hypots);
-	
+
 		// registering the indicated/valid hypotheses
 		if (valid_hypots.size()) {
-			MRPT_LOG_WARN_STREAM << "Registering Hypotheses...";
+			MRPT_LOG_WARN_STREAM("Registering Hypotheses...");
 			for (typename hypotsp_t::iterator
 					it = valid_hypots.begin(); it != valid_hypots.end(); ++it) {
 				this->registerHypothesis(**it);
 			}
 		}
 		// delete all hypotheses - generated in the heap...
-		MRPT_LOG_DEBUG_STREAM << "Deleting the generated hypotheses pool..." ;
+		MRPT_LOG_DEBUG_STREAM("Deleting the generated hypotheses pool..." );
 		for (typename hypotsp_t::iterator
 				it = hypots_pool.begin(); it != hypots_pool.end(); ++it) {
 			delete *it;
 		}
 	} // for each partition
 
-	MRPT_LOG_DEBUG_STREAM << "\n" << this->header_sep;
+	MRPT_LOG_DEBUG_STREAM("\n" << this->header_sep);
 	this->m_time_logger.leave("LoopClosureEvaluation");
 
 	MRPT_END;
@@ -598,7 +590,7 @@ void CLoopCloserERD<GRAPH_T>::evalPWConsistenciesMatrix(
 			w(i) = 0; // revert the change
 		}
 		ss << endl;
-		//MRPT_LOG_DEBUG_STREAM << ss.str();
+		//MRPT_LOG_DEBUG_STREAM(ss.str());
 	}
 	cout << "Outcome of discretization: " << w.transpose() << endl;
 	//mrpt::system::pause();
@@ -688,11 +680,11 @@ void CLoopCloserERD<GRAPH_T>::generateHypotsPool(
 			"generateHypotsPool: Given hypotsp_t pointer is invalid.");
 	generated_hypots->clear();
 
-	MRPT_LOG_DEBUG_STREAM << "Generating hypotheses for groups: " << endl;
-	MRPT_LOG_DEBUG_STREAM << "- groupA:\t" << getSTLContainerAsString(groupA) <<
-		" - size: " << groupA.size() << endl;
-	MRPT_LOG_DEBUG_STREAM << "- groupB:\t" << getSTLContainerAsString(groupB) <<
-		" - size: " << groupB.size() << endl;
+	MRPT_LOG_DEBUG_STREAM("Generating hypotheses for groups: " << endl);
+	MRPT_LOG_DEBUG_STREAM("- groupA:\t" << getSTLContainerAsString(groupA) <<
+		" - size: " << groupA.size() << endl);
+	MRPT_LOG_DEBUG_STREAM("- groupB:\t" << getSTLContainerAsString(groupB) <<
+		" - size: " << groupB.size() << endl);
 
 
 	// verify that the number of laserScans is the same as the number of poses if
@@ -755,17 +747,17 @@ void CLoopCloserERD<GRAPH_T>::generateHypotsPool(
 					fillNodePropsFromGroupParams(
 							*a_it, ad_params->groupA_params, &icp_ad_params->to_params);
 
-					//MRPT_LOG_DEBUG_STREAM << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>";
-					//MRPT_LOG_DEBUG_STREAM << "From nodeID (other): " << *b_it;
-					//MRPT_LOG_DEBUG_STREAM << "From params (other): "
-						//<< icp_ad_params->from_params.getAsString();
-					//MRPT_LOG_DEBUG_STREAM << "from_success: " << (from_success? "TRUE" : "FALSE");
-					//MRPT_LOG_DEBUG_STREAM << "**********";
-					//MRPT_LOG_DEBUG_STREAM << "To nodeID (own)   : " << *a_it;
-					//MRPT_LOG_DEBUG_STREAM << "To params (own)   : "
-						//<< icp_ad_params->to_params.getAsString();
-					//MRPT_LOG_DEBUG_STREAM << "to_success: " << (to_success? "TRUE" : "FALSE");
-					//MRPT_LOG_DEBUG_STREAM << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<";
+					//MRPT_LOG_DEBUG_STREAM(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+					//MRPT_LOG_DEBUG_STREAM("From nodeID (other): " << *b_it);
+					//MRPT_LOG_DEBUG_STREAM("From params (other): "
+						//<< icp_ad_params->from_params.getAsString());
+					//MRPT_LOG_DEBUG_STREAM("from_success: " << (from_success? "TRUE" : "FALSE"));
+					//MRPT_LOG_DEBUG_STREAM("**********");
+					//MRPT_LOG_DEBUG_STREAM("To nodeID (own)   : " << *a_it);
+					//MRPT_LOG_DEBUG_STREAM("To params (own)   : "
+						//<< icp_ad_params->to_params.getAsString());
+					//MRPT_LOG_DEBUG_STREAM("to_success: " << (to_success? "TRUE" : "FALSE"));
+					//MRPT_LOG_DEBUG_STREAM("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
 				}
 
 				// fetch the ICP constraint bi => ai
@@ -788,27 +780,26 @@ void CLoopCloserERD<GRAPH_T>::generateHypotsPool(
 					m_laser_params.goodness_threshold_win.getMedian() *
 					m_lc_icp_constraint_factor;
 				bool accept_goodness = icp_info.goodness > goodness_thresh;
-				MRPT_LOG_DEBUG_STREAM 
-					<< "generateHypotsPool:\nCurr. Goodness: " << icp_info.goodness
+				MRPT_LOG_DEBUG_STREAM( "generateHypotsPool:\nCurr. Goodness: " << icp_info.goodness
 					<< "|\t Threshold: " << goodness_thresh << " => " <<
-					(accept_goodness? "ACCEPT" : "REJECT") << endl;
+					(accept_goodness? "ACCEPT" : "REJECT") << endl);
 
 				if (!found_edge || !accept_goodness) {
 					hypot->is_valid = false;
 					invalid_hypots++;
 				}
 				generated_hypots->push_back(hypot);
-				MRPT_LOG_DEBUG_STREAM << hypot->getAsString();
+				MRPT_LOG_DEBUG_STREAM(hypot->getAsString());
 
 				// delete pointer to getICPEdge additional parameters if they were
 				// initialized
 				delete icp_ad_params;
 			}
 		}
-		MRPT_LOG_DEBUG_STREAM <<
+		MRPT_LOG_DEBUG_STREAM(
 			"Generated pool of hypotheses...\tsize = "
 			<< generated_hypots->size()
-			<< "\tinvalid hypotheses: " << invalid_hypots;
+			<< "\tinvalid hypotheses: " << invalid_hypots);
 	}
 	//mrpt::system::pause();
 
@@ -866,13 +857,14 @@ bool CLoopCloserERD<GRAPH_T>::computeDominantEigenVector(
 	// check the ratio of the two eigenvalues - reject hypotheses set if ratio
 	// smaller than threshold
 	if (essentiallyEqual(0, lambda2, /**limit = */ 0.00001)) {
-		MRPT_LOG_ERROR_STREAM << "Bad lambda2 value: " << lambda2
-			<< " => Skipping current evaluation." << endl;
+		MRPT_LOG_ERROR_STREAM("Bad lambda2 value: " << lambda2
+			<< " => Skipping current evaluation." << endl);
 		return false;
 	}
 	double curr_lambda_ratio = lambda1 / lambda2;
-	MRPT_LOG_DEBUG_STREAM << "lambda1 = " << lambda1 << " | lambda2 = " << lambda2
-		<< "| ratio = " << curr_lambda_ratio << endl;
+	MRPT_LOG_DEBUG_STREAM(
+			"lambda1 = " << lambda1 << " | lambda2 = " << lambda2
+		<< "| ratio = " << curr_lambda_ratio << endl);
 
 	is_valid_lambda_ratio =
 		(curr_lambda_ratio > m_lc_params.LC_eigenvalues_ratio_thresh);
@@ -903,11 +895,11 @@ void CLoopCloserERD<GRAPH_T>::generatePWConsistenciesMatrix(
 			consist_matrix->rows() == hypots_pool.size(),
 			"Consistency matrix dimensions aren't equal to the hypotheses pool size");
 
-	MRPT_LOG_DEBUG_STREAM << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << endl
+	MRPT_LOG_DEBUG_STREAM(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << endl
 		<< "In generatePWConsistencyMatrix:\n"
 		<< "\tgroupA: " << getSTLContainerAsString(groupA) << endl
 		<< "\tgroupB: " << getSTLContainerAsString(groupB) << endl
-		<< "\tHypots pool Size: " << hypots_pool.size();
+		<< "\tHypots pool Size: " << hypots_pool.size());
 
 	// b1
 	for (vector_uint::const_iterator
@@ -925,14 +917,14 @@ void CLoopCloserERD<GRAPH_T>::generatePWConsistenciesMatrix(
 
 				TNodeID a1 = *a1_it;
 				hypot_t* hypot_b2_a1 = this->findHypotByEnds(hypots_pool, b2, a1);
-				//MRPT_LOG_DEBUG_STREAM << "hypot_b2_a1: " << hypot_b2_a1->getAsString();
+				//MRPT_LOG_DEBUG_STREAM("hypot_b2_a1: " << hypot_b2_a1->getAsString());
 
 				// a2
 				for (vector_uint::const_iterator
 						a2_it = a1_it+1; a2_it != groupA.end(); ++a2_it) {
 					TNodeID a2 = *a2_it;
 					hypot_t* hypot_b1_a2 = this->findHypotByEnds(hypots_pool, b1, a2);
-					//MRPT_LOG_DEBUG_STREAM << "hypot_b1_a2: " << hypot_b1_a2->getAsString();
+					//MRPT_LOG_DEBUG_STREAM("hypot_b1_a2: " << hypot_b1_a2->getAsString());
 
 					double consistency;
 
@@ -983,11 +975,11 @@ void CLoopCloserERD<GRAPH_T>::generatePWConsistenciesMatrix(
 						consistency = 0;
 					}
 
-					//MRPT_LOG_DEBUG_STREAM <<
+					//MRPT_LOG_DEBUG_STREAM(
 						//"Adding hypothesis consistency for nodeIDs: "
 						//<< "[b1] " << b1 << ", [b2] -> " << b2
 						//<< ", [a1] -> " << a1 << ", [a2] -> " << a2
-						//<< " ==> " << consistency << endl;
+						//<< " ==> " << consistency << endl);
 
 					// fill the PW consistency matrix corresponding element - symmetrical
 					int id1 = hypot_b2_a1->id;
@@ -996,17 +988,17 @@ void CLoopCloserERD<GRAPH_T>::generatePWConsistenciesMatrix(
 					(*consist_matrix)(id1, id2) = consistency;
 					(*consist_matrix)(id2, id1) = consistency;
 
-					//MRPT_LOG_DEBUG_STREAM << "id1 = " << id1 << "\t|"
+					//MRPT_LOG_DEBUG_STREAM("id1 = " << id1 << "\t|"
 						//<< "id2 = " << id2 << "\t|"
-						//<< "consistency = " << consistency;
+						//<< "consistency = " << consistency);
 				}
 			}
 		}
 	}
 
-	//MRPT_LOG_WARN_STREAM << "Consistency matrix:" << endl
+	//MRPT_LOG_WARN_STREAM("Consistency matrix:" << endl
 		//<< this->header_sep << endl
-		//<< *consist_matrix << endl;
+		//<< *consist_matrix << endl);
 
 	MRPT_END;
 } // end of generatePWConsistenciesMatrix
@@ -1028,17 +1020,17 @@ double CLoopCloserERD<GRAPH_T>::generatePWConsistencyElement(
 	using namespace mrpt::graphslam;
 	using namespace mrpt::graphslam::detail;
 
-	//MRPT_LOG_DEBUG_STREAM << "In generatePWConsistencyElement.\n"
+	//MRPT_LOG_DEBUG_STREAM("In generatePWConsistencyElement.\n"
 		//<< "\t[" << a1 << ", " << a2 << "]\n"
-		//<< "\t[" << b1 << ", " << b2 << "]";
-	//MRPT_LOG_DEBUG_STREAM << "a1->a2 optimal path:"
+		//<< "\t[" << b1 << ", " << b2 << "]");
+	//MRPT_LOG_DEBUG_STREAM("a1->a2 optimal path:"
 		//<< (opt_paths && !opt_paths->begin()->isEmpty()?
 				//opt_paths->begin()->getAsString() :
-				//"NONE");
-	//MRPT_LOG_DEBUG_STREAM << "b1->b2 optimal path: "
+				//"NONE"));
+	//MRPT_LOG_DEBUG_STREAM("b1->b2 optimal path: "
 		//<< (opt_paths && !opt_paths->rbegin()->isEmpty()?
 				//opt_paths->rbegin()->getAsString() :
-				//"NONE");
+				//"NONE"));
 
 	// standard size assertions
 	ASSERT_(hypots.size() == 2);
@@ -1050,7 +1042,7 @@ double CLoopCloserERD<GRAPH_T>::generatePWConsistencyElement(
 	// a1 ==> a2
 	const path_t* path_a1_a2;
 	if (!opt_paths || opt_paths->begin()->isEmpty()) {
-		MRPT_LOG_DEBUG_STREAM << "Running dijkstra [a1] " << a1 << " => [a2] "<< a2;
+		MRPT_LOG_DEBUG_STREAM("Running dijkstra [a1] " << a1 << " => [a2] "<< a2);
 		execDijkstraProjection(/*starting_node=*/ a1, /*ending_node=*/ a2);
 		path_a1_a2 = this->queryOptimalPath(a2);
 	}
@@ -1064,7 +1056,7 @@ double CLoopCloserERD<GRAPH_T>::generatePWConsistencyElement(
 	// b1 ==> b2
 	const path_t* path_b1_b2;
 	if (!opt_paths || opt_paths->rend()->isEmpty()) {
-		MRPT_LOG_DEBUG_STREAM << "Running djkstra [b1] " << b1 << " => [b2] "<< b2;
+		MRPT_LOG_DEBUG_STREAM("Running djkstra [b1] " << b1 << " => [b2] "<< b2);
 		execDijkstraProjection(/*starting_node=*/ b1, /*ending_node=*/ b2);
 		path_b1_b2 = this->queryOptimalPath(b2);
 	}
@@ -1088,7 +1080,7 @@ double CLoopCloserERD<GRAPH_T>::generatePWConsistencyElement(
 	res_transform += path_b1_b2->curr_pose_pdf;
 	res_transform += hypot_b2_a1->getEdge();
 
-	MRPT_LOG_DEBUG_STREAM << "\n-----------Resulting Transformation----------- Hypots: #"
+	MRPT_LOG_DEBUG_STREAM("\n-----------Resulting Transformation----------- Hypots: #"
 		<< hypot_b1_a2->id << ", #" << hypot_b2_a1->id << endl
 		<< "a1 --> a2 => b1 --> b2 => a1: "
 		<< a1 << " --> " << a2 << " => " << b1 << " --> " << b2 << " => " << a1 << endl
@@ -1096,7 +1088,7 @@ double CLoopCloserERD<GRAPH_T>::generatePWConsistencyElement(
 		<< "DIJKSTRA: " << a1 << " --> " << a2 << ": " << path_a1_a2->curr_pose_pdf << endl
 		<< "DIJKSTRA: " << b1 << " --> " << b2 << ": " << path_b1_b2->curr_pose_pdf << endl
 		<< "hypot_b1_a2(inv):\n" << hypot_b1_a2->getInverseEdge() << endl
-		<< "hypot_b2_a1:\n" << hypot_b2_a1->getEdge() << endl;
+		<< "hypot_b2_a1:\n" << hypot_b2_a1->getEdge() << endl);
 
 	// get the vector of the corresponding transformation - [x, y, phi] form
 	dynamic_vector<double> T;
@@ -1300,7 +1292,7 @@ void CLoopCloserERD<GRAPH_T>::execDijkstraProjection(
 		// it is found.
 		if (ending_node != INVALID_NODEID) {
 			if (visited_nodes.at(ending_node)) {
-				//MRPT_LOG_DEBUG_STREAM << dijkstra_end;
+				//MRPT_LOG_DEBUG_STREAM(dijkstra_end);
 				this->m_time_logger.leave("Dijkstra Projection");
 				return;
 			}
@@ -1341,7 +1333,7 @@ void CLoopCloserERD<GRAPH_T>::execDijkstraProjection(
 		}
 	}
 
-	//MRPT_LOG_DEBUG_STREAM << dijkstra_end;
+	//MRPT_LOG_DEBUG_STREAM(dijkstra_end);
 	this->m_time_logger.leave("Dijkstra Projection");
 	MRPT_END;
 }
@@ -1396,8 +1388,8 @@ CLoopCloserERD<GRAPH_T>::queryOptimalPath(const mrpt::utils::TNodeID node) const
 		path = search->second;
 	}
 
-	//MRPT_LOG_DEBUG_STREAM << "Queried optimal path for nodeID: " << node
-		//<< " ==> Path: " << (path? "Found" : "NOT Found");
+	//MRPT_LOG_DEBUG_STREAM("Queried optimal path for nodeID: " << node
+		//<< " ==> Path: " << (path? "Found" : "NOT Found"));
 	return path;
 }
 
@@ -1572,8 +1564,8 @@ bool CLoopCloserERD<GRAPH_T>::mahalanobisDistanceOdometryToICPEdge(
 
 template<class GRAPH_T>
 void CLoopCloserERD<GRAPH_T>::registerHypothesis(const hypot_t& hypot) {
-	//MRPT_LOG_DEBUG_STREAM << "Registering hypothesis: " <<
-		//hypot.getAsString([>oneline=<] true);
+	//MRPT_LOG_DEBUG_STREAM("Registering hypothesis: " <<
+		//hypot.getAsString([>oneline=<] true));
 	this->registerNewEdge(hypot.from, hypot.to, hypot.getEdge());
 }
 
@@ -1708,13 +1700,13 @@ void CLoopCloserERD<GRAPH_T>::updateMapPartitionsVisualization() {
 	int partitionID = 0;
 	bool partition_contains_last_node = false;
 	bool found_last_node = false; // last node must exist in one partition at all cost TODO
-	MRPT_LOG_DEBUG_STREAM << "Searching for the partition of the last nodeID: "
-		<< (this->m_graph->nodeCount()-1);
+	MRPT_LOG_DEBUG_STREAM("Searching for the partition of the last nodeID: "
+		<< (this->m_graph->nodeCount()-1));
 
 	for (partitions_t::const_iterator p_it = m_curr_partitions.begin();
 			p_it != m_curr_partitions.end(); ++p_it, ++partitionID) {
 
-		//MRPT_LOG_DEBUG_STREAM << "Working on Partition #" << partitionID;
+		//MRPT_LOG_DEBUG_STREAM("Working on Partition #" << partitionID);
 		vector_uint nodes_list = *p_it;
 
 		// finding the partition in which the last node is in
@@ -1737,18 +1729,18 @@ void CLoopCloserERD<GRAPH_T>::updateMapPartitionsVisualization() {
 		CRenderizablePtr obj = map_partitions_obj->getByName(partition_obj_name);
 		CSetOfObjectsPtr curr_partition_obj;
 		if (obj) {
-			//MRPT_LOG_DEBUG_STREAM <<
+			//MRPT_LOG_DEBUG_STREAM(
 					//"\tFetching CSetOfObjects partition object for partition #" <<
-					//partitionID;
+					//partitionID);
 			curr_partition_obj = static_cast<CSetOfObjectsPtr>(obj);
 			if (m_lc_params.LC_check_curr_partition_only) { // make all but the last partition invisible
 				curr_partition_obj->setVisibility(partition_contains_last_node); 
 			}
 		}
 		else {
-			MRPT_LOG_DEBUG_STREAM <<
+			MRPT_LOG_DEBUG_STREAM(
 				"\tCreating a new CSetOfObjects partition object for partition #" <<
-				partitionID;
+				partitionID);
 			curr_partition_obj = CSetOfObjects::Create();
 			curr_partition_obj->setName(partition_obj_name);
 			if (m_lc_params.LC_check_curr_partition_only) {
@@ -1756,7 +1748,7 @@ void CLoopCloserERD<GRAPH_T>::updateMapPartitionsVisualization() {
 				curr_partition_obj->setVisibility(partition_contains_last_node); 
 			}
 
-			//MRPT_LOG_DEBUG_STREAM << "\t\tCreating a new CSphere balloon object";
+			//MRPT_LOG_DEBUG_STREAM("\t\tCreating a new CSphere balloon object");
 			CSpherePtr balloon_obj = CSphere::Create();
 			balloon_obj->setName(balloon_obj_name);
 			balloon_obj->setRadius(m_lc_params.balloon_radius);
@@ -1766,8 +1758,8 @@ void CLoopCloserERD<GRAPH_T>::updateMapPartitionsVisualization() {
 			curr_partition_obj->insert(balloon_obj);
 
 			// set of lines connecting the graph nodes to the balloon
-			//MRPT_LOG_DEBUG_STREAM <<
-				//"\t\tCreating set of lines that will connect to the Balloon";
+			//MRPT_LOG_DEBUG_STREAM(
+				//"\t\tCreating set of lines that will connect to the Balloon");
 			CSetOfLinesPtr connecting_lines_obj = CSetOfLines::Create();
 			connecting_lines_obj->setName("connecting_lines");
 			connecting_lines_obj->setColor_u8(m_lc_params.connecting_lines_color);
@@ -1778,7 +1770,7 @@ void CLoopCloserERD<GRAPH_T>::updateMapPartitionsVisualization() {
 			// add the created CSetOfObjects to the total CSetOfObjects responsible
 			// for the map partitioning
 			map_partitions_obj->insert(curr_partition_obj);
-			//MRPT_LOG_DEBUG_STREAM << "\tInserted new CSetOfObjects successfully";
+			//MRPT_LOG_DEBUG_STREAM("\tInserted new CSetOfObjects successfully");
 		}
 		// up to now the CSetOfObjects exists and the balloon inside it as well..
 
@@ -1788,7 +1780,7 @@ void CLoopCloserERD<GRAPH_T>::updateMapPartitionsVisualization() {
 		TPoint3D balloon_location(centroid_coords.first, centroid_coords.second,
 				m_lc_params.balloon_elevation);
 
-		//MRPT_LOG_DEBUG_STREAM << "\tUpdating the balloon position";
+		//MRPT_LOG_DEBUG_STREAM("\tUpdating the balloon position");
 		// set the balloon properties
 		CSpherePtr balloon_obj;
 		{
@@ -1802,7 +1794,7 @@ void CLoopCloserERD<GRAPH_T>::updateMapPartitionsVisualization() {
 				balloon_obj->setColor_u8(m_lc_params.balloon_std_color);
 		}
 
-		//MRPT_LOG_DEBUG_STREAM << "\tUpdating the lines connecting nodes to balloon";
+		//MRPT_LOG_DEBUG_STREAM("\tUpdating the lines connecting nodes to balloon");
 		// set the lines connecting the nodes of the partition to the partition
 		// balloon - set it from scratch all the times since the node positions
 		// tend to change according to the dijkstra position estimation
@@ -1824,11 +1816,11 @@ void CLoopCloserERD<GRAPH_T>::updateMapPartitionsVisualization() {
 			}
 
 		}
-		//MRPT_LOG_DEBUG_STREAM << "Done working on partition #" << partitionID;
+		//MRPT_LOG_DEBUG_STREAM("Done working on partition #" << partitionID);
 	}
 
 	if (!found_last_node) {
-		MRPT_LOG_ERROR_STREAM << "Last inserted nodeID was not found in any partition.";
+		MRPT_LOG_ERROR_STREAM("Last inserted nodeID was not found in any partition.");
 		ASSERT_(found_last_node);
 	}
 
@@ -1848,15 +1840,14 @@ void CLoopCloserERD<GRAPH_T>::updateMapPartitionsVisualization() {
 
 			CRenderizablePtr obj = map_partitions_obj->getByName(partition_obj_name);
 			if (!obj) {
-				MRPT_LOG_ERROR_STREAM
-				<< "Partition : " << partition_obj_name
-				<< " was not found.";
+				MRPT_LOG_ERROR_STREAM( "Partition : " << partition_obj_name
+				<< " was not found.");
 				ASSERT_(!obj);
 			}
 			map_partitions_obj->removeObject(obj);
 		}
 	}
-	MRPT_LOG_DEBUG_STREAM << "Done working on the partitions visualization.";
+	MRPT_LOG_DEBUG_STREAM("Done working on the partitions visualization.");
 
 
 	this->m_win->unlockAccess3DScene();
@@ -2018,7 +2009,7 @@ template<class GRAPH_T>
 void CLoopCloserERD<GRAPH_T>::initializeVisuals() {
 	MRPT_START;
 	parent_t::initializeVisuals();
-	//MRPT_LOG_DEBUG_STREAM << "Initializing visuals";
+	//MRPT_LOG_DEBUG_STREAM("Initializing visuals");
 	this->m_time_logger.enter("Visuals");
 
 	ASSERTMSG_(m_laser_params.has_read_config,
@@ -2041,7 +2032,7 @@ template<class GRAPH_T>
 void CLoopCloserERD<GRAPH_T>::updateVisuals() {
 	MRPT_START;
 	parent_t::updateVisuals();
-	//MRPT_LOG_DEBUG_STREAM << "Updating visuals";
+	//MRPT_LOG_DEBUG_STREAM("Updating visuals");
 	this->m_time_logger.enter("Visuals");
 
 	if (m_laser_params.visualize_laser_scans) {
@@ -2196,7 +2187,7 @@ void CLoopCloserERD<GRAPH_T>::printParams() const {
 	cout << "Scan-matching ICP Constraint factor: " << m_consec_icp_constraint_factor << endl;
 	cout << "Loop-closure ICP Constraint factor:  " << m_lc_icp_constraint_factor << endl;
 
-	MRPT_LOG_DEBUG_STREAM << "Printed the relevant parameters";
+	MRPT_LOG_DEBUG_STREAM("Printed the relevant parameters");
 	MRPT_END;
 }
 
@@ -2286,8 +2277,8 @@ void CLoopCloserERD<GRAPH_T>::updateMapPartitions(
 			it = nodes_to_scans.begin();
 			it != nodes_to_scans.end(); ++it) {
 		if ((it->second).null()) { // if laserScan invalid go to next...
-			MRPT_LOG_WARN_STREAM <<
-				"nodeID \"" << it->first << "\" has invalid laserScan";
+			MRPT_LOG_WARN_STREAM(
+				"nodeID \"" << it->first << "\" has invalid laserScan");
 			continue;
 		}
 
@@ -2295,7 +2286,7 @@ void CLoopCloserERD<GRAPH_T>::updateMapPartitions(
 		// TODO - investigate this case. Why should this be happening?
 		typename GRAPH_T::global_poses_t::const_iterator search;
 		search = this->m_graph->nodes.find(it->first);
-		if (search == m_graph->nodes.end()) {
+		if (search == this->m_graph->nodes.end()) {
 			MRPT_LOG_WARN_STREAM("Couldn't find pose for nodeID " << it->first);
 			continue;
 		}
@@ -2321,7 +2312,7 @@ void CLoopCloserERD<GRAPH_T>::updateMapPartitions(
 	//update current partitions list
 	m_partitioner.updatePartitions(m_curr_partitions);
 
-	MRPT_LOG_DEBUG_STREAM << "Updated map partitions successfully.";
+	MRPT_LOG_DEBUG_STREAM("Updated map partitions successfully.");
 	this->m_time_logger.leave("updateMapPartitions");
 	MRPT_END;
 } // end of updateMapPartitions
