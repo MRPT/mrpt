@@ -29,11 +29,18 @@ using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;
 
-// Next there are declared some auxiliary functions:
+// Next we declare some auxiliary functions:
 namespace mrpt
 {
 	namespace math
 	{
+		bool essentiallyEqual(float a, float b, float epsilon) {
+			return fabs(a - b) <= ( (fabs(a) > fabs(b) ? fabs(b) : fabs(a)) * epsilon);
+		}
+		bool essentiallyEqual(float a, float b) {
+			return essentiallyEqual(a, b, std::numeric_limits<double>::epsilon());
+		}
+
 		//Replaces data[1..2*nn] by its discrete Fourier transform, if isign is input as 1; or replaces
 		//data[1..2*nn] by nn times its inverse discrete Fourier transform, if isign is input as -1.
 		//data is a complex array of length nn or, equivalently, a real array of length 2*nn. nn MUST

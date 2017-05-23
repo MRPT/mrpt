@@ -17,10 +17,25 @@
 
 namespace mrpt
 {
-	/** This base provides a set of functions for maths stuff. \ingroup mrpt_base_grp
+	/** This base provides a set of functions for maths stuff.
+	 * \ingroup mrpt_base_grp
 	 */
 	namespace math
 	{
+		/**\brief Compare 2 floats and determine whether they are equal
+		 * \return True if equal, false otherwise
+		 * \param a Fist num
+		 * \param b Second num
+		 * \param epsilon Difference below which a, b are considered equal
+		 */
+		bool BASE_IMPEXP essentiallyEqual(float a, float b, float epsilon);
+		/**\brief Compare 2 floats and determine whether they are equal
+		 * \return True if equal, false otherwise
+		 * \param a Fist num
+		 * \param b Second num
+		 */
+		bool BASE_IMPEXP essentiallyEqual(float a, float b);
+
 		/**\brief Absolute difference between two numbers.
 		 *
 		 */
