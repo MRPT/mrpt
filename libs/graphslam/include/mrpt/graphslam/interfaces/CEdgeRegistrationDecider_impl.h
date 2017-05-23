@@ -35,9 +35,9 @@ void CEdgeRegistrationDecider<GRAPH_T>::registerNewEdge(
     const constraint_t& rel_edge) {
   using namespace std;
 
-  MRPT_LOG_DEBUG_STREAM << "Registering new edge: " << from << " => "
+  MRPT_LOG_DEBUG_STREAM( "Registering new edge: " << from << " => "
 		<< to << endl << "\tRelative Edge: " << rel_edge.getMeanVal().asString()
-		<< "\tNorm: " << rel_edge.getMeanVal().norm();
+		<< "\tNorm: " << rel_edge.getMeanVal().norm());
 
 }
 

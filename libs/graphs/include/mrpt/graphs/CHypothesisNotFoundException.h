@@ -7,6 +7,9 @@
 	 | Released under BSD License. See details in http://www.mrpt.org/License    |
 	 +---------------------------------------------------------------------------+ */
 
+#ifndef CHYPOTHESISNOTFOUNDEXCEPTION_H
+#define CHYPOTHESISNOTFOUNDEXCEPTION_H
+
 #include <mrpt/utils/types_simple.h>
 #include <mrpt/utils/mrpt_macros.h>
 
@@ -38,3 +41,5 @@ class HypothesisNotFoundException: public std::runtime_error {
 	std::string m_msg;
 	static std::ostringstream m_cnvt;
 };
+
+#endif /* end of include guard: CHYPOTHESISNOTFOUNDEXCEPTION_H */

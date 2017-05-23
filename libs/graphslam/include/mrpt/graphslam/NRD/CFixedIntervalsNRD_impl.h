@@ -50,7 +50,7 @@ bool CFixedIntervalsNRD<GRAPH_T>::updateState(
 			CObservationOdometryPtr obs_odometry =
 				static_cast<CObservationOdometryPtr>(observation);
 			// not incremental - gives the absolute odometry reading
-			m_curr_odometry_only_pose = obs_odometry->odometry;
+			m_curr_odometry_only_pose = pose_t(obs_odometry->odometry);
 			this->logFmt(LVL_DEBUG, "Current odometry-only pose: %s",
 					m_curr_odometry_only_pose.asString().c_str());
 

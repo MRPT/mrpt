@@ -45,7 +45,7 @@ void CRegistrationDeciderOrOptimizer<GRAPH_T>::initializeLoggers(
 
 	// just for the messages until reading the actual verbosity level, set it to debug.
 	this->setMinLoggingLevel(LVL_DEBUG);
-	MRPT_LOG_DEBUG_STREAM << "Initialized time, output logger instances." << endl;
+	MRPT_LOG_DEBUG_STREAM("Initialized time, output logger instances." << endl);
 }
 
 template<class GRAPH_T>
@@ -80,7 +80,7 @@ void CRegistrationDeciderOrOptimizer<GRAPH_T>::setCriticalSectionPtr(
 template<class GRAPH_T>
 void CRegistrationDeciderOrOptimizer<GRAPH_T>::initializeVisuals() {
 	using namespace mrpt::utils;
-	//MRPT_LOG_DEBUG_STREAM << "Initializing visuals";
+	//MRPT_LOG_DEBUG_STREAM("Initializing visuals");
 
 	this->assertVisualsVars();
 	m_initialized_visuals = true;
@@ -96,31 +96,31 @@ void CRegistrationDeciderOrOptimizer<GRAPH_T>::assertVisualsVars() {
 template<class GRAPH_T>
 void CRegistrationDeciderOrOptimizer<GRAPH_T>::updateVisuals() {
 	ASSERT_(m_initialized_visuals);
-	//MRPT_LOG_DEBUG_STREAM << "Updating visuals";
+	//MRPT_LOG_DEBUG_STREAM("Updating visuals");
 }
 
 template<class GRAPH_T>
 void CRegistrationDeciderOrOptimizer<GRAPH_T>::notifyOfWindowEvents(
 		const std::map<std::string, bool>& events_occurred) {
 	this->assertVisualsVars();
-	//MRPT_LOG_DEBUG_STREAM << "Querrying window events...";
+	//MRPT_LOG_DEBUG_STREAM("Querrying window events...");
 }
 
 template<class GRAPH_T>
 void CRegistrationDeciderOrOptimizer<GRAPH_T>::loadParams(
 		const std::string& source_fname) {
-	MRPT_LOG_DEBUG_STREAM << "Loading corresponding parameters";
+	MRPT_LOG_DEBUG_STREAM("Loading corresponding parameters");
 }
 
 template<class GRAPH_T>
 void CRegistrationDeciderOrOptimizer<GRAPH_T>::printParams() const {
-	MRPT_LOG_DEBUG_STREAM << "Printing corresponding parameters";
+	MRPT_LOG_DEBUG_STREAM("Printing corresponding parameters");
 }
 
 template<class GRAPH_T>
 void CRegistrationDeciderOrOptimizer<GRAPH_T>::getDescriptiveReport(
 		std::string* report_str) const {
-	MRPT_LOG_DEBUG_STREAM << "Generating corresponding report";
+	MRPT_LOG_DEBUG_STREAM("Generating corresponding report");
 	// TODO - give the compact form here!
 
 }
@@ -130,7 +130,7 @@ void CRegistrationDeciderOrOptimizer<GRAPH_T>::setGraphPtr(GRAPH_T* graph) {
 	using namespace mrpt::utils;
 
 	m_graph = graph;
-	MRPT_LOG_DEBUG_STREAM << "Fetched the graph pointer successfully";
+	MRPT_LOG_DEBUG_STREAM("Fetched the graph pointer successfully");
 }
 
 template<class GRAPH_T>
