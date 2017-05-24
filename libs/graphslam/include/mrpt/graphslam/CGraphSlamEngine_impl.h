@@ -878,7 +878,8 @@ void CGraphSlamEngine<GRAPH_T>::getMap(
 	if (!m_map_is_cached){
 		this->computeMap();
 	}
-	map = dynamic_cast<mrpt::maps::COctoMap*>(m_octomap_cached->duplicate());
+	map = dynamic_cast<mrpt::maps::COctoMapPtr>(m_octomap_cached->duplicate());
+	ASSERT_(map)
 
 	// fill the timestamp if this is given
 	if (acquisition_time) {

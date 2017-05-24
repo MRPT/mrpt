@@ -149,10 +149,10 @@ void CLoopCloserERD<GRAPH_T>::fetchNodeIDsForScanMatching(
 
 	// deal with the case that less than `prev_nodes_for_ICP` nodes have been
 	// registered
-	size_t fetched_nodeIDs = 0;
+	int fetched_nodeIDs = 0;
 	for (int nodeID_i = static_cast<int>(curr_nodeID)-1;
 			((fetched_nodeIDs <= this->m_laser_params.prev_nodes_for_ICP) &&
-			 (nodeID_i >= 0));
+			 (nodeID_i >= 0)); // <----- I *have* to use int (instead of unsigned) if I use this condition
 			--nodeID_i) {
 		nodes_set->insert(nodeID_i);
 		fetched_nodeIDs++;
@@ -626,8 +626,10 @@ void CLoopCloserERD<GRAPH_T>::splitPartitionToGroups(
 	ASSERTMSG_(groupA, "Pointer to groupA is not valid");
 	ASSERTMSG_(groupB, "Pointer to groupB is not valid");
 	ASSERTMSG_(max_nodes_in_group == -1 || max_nodes_in_group > 0,
-			format("Value %d not permitted for max_nodes_in_group"
-				"Either use a positive integer, or -1 for non-restrictive partition size",
+			format(
+				"Value %d not permitted for max_nodes_in_group"
+				"Either use a positive integer, "
+				"or -1 for non-restrictive partition size",
 				max_nodes_in_group));
 
 	// find a large difference between successive nodeIDs - that's where the cut
@@ -649,14 +651,15 @@ void CLoopCloserERD<GRAPH_T>::splitPartitionToGroups(
 	// Fill the groups
 	*groupA = vector_uint(partition.begin(), partition.begin() + index_to_split);
 	*groupB = vector_uint(partition.begin() + index_to_split, partition.end());
-	if (max_nodes_in_group != -1) { // limit the number of nodes in each group
+	// limit the number of nodes in each group
+	if (max_nodes_in_group != -1) {
 		// groupA
-		if (groupA->size() > max_nodes_in_group) {
+		if (groupA->size() > static_cast<size_t>(max_nodes_in_group)) {
 			*groupA = vector_uint(groupA->begin(),
 					groupA->begin() + max_nodes_in_group);
 		}
 		// groupB
-		if (groupB->size() > max_nodes_in_group) {
+		if (groupB->size() > static_cast<size_t>(max_nodes_in_group)) {
 			*groupB = vector_uint(groupB->end() - max_nodes_in_group,
 					groupB->end());
 		}
@@ -891,8 +894,8 @@ void CLoopCloserERD<GRAPH_T>::generatePWConsistenciesMatrix(
 	using namespace std;
 	ASSERTMSG_(consist_matrix, "Invalid pointer to the Consistency matrix is given");
 	ASSERTMSG_(
-			consist_matrix->rows() == hypots_pool.size() &&
-			consist_matrix->rows() == hypots_pool.size(),
+			static_cast<unsigned long>(consist_matrix->rows()) == hypots_pool.size() &&
+			static_cast<unsigned long>(consist_matrix->rows()) == hypots_pool.size(),
 			"Consistency matrix dimensions aren't equal to the hypotheses pool size");
 
 	MRPT_LOG_DEBUG_STREAM(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << endl

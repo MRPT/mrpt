@@ -16,7 +16,17 @@
 
 namespace mrpt
 {
-namespace poses
+
+	namespace traits {
+		template<>
+			struct is_inf_type< ::mrpt::poses::CPose3DQuatPDFGaussianInf> {
+				static const bool value = true;
+			};
+	}
+
+
+
+	namespace poses
 {
 	class CPosePDFGaussian;
 	class CPose3DPDFGaussian;

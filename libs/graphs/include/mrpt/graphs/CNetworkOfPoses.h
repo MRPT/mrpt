@@ -443,11 +443,9 @@ namespace mrpt
 							//cout << "Unconnected nodeIDs: " << mrpt::math::getSTLContainerAsString(unconnected_nodeIDs) << endl;
 							// mainland: set of nodes that the root nodeID is in
 							// island: set of nodes that the Dijkstra graph traversal can't
-							// reach starting from the root. These essentially are groups of
-							// nodes.
+							// reach starting from the root.
 							// [!] There may be multiple sets of these nodes
-							TNodeID from_nodeID;
-							TNodeID to_nodeID;
+
 							// set::rend() is the element with the highest value
 							// set::begin() is the element with the lowest value
 							const TNodeID& island_highest = *unconnected_nodeIDs.rbegin();
@@ -535,6 +533,7 @@ namespace mrpt
 				sub_graph->dijkstra_nodes_estimate();
 
 			} // end of extractSubGraph
+
 			/**\brief Integrate given graph into own graph using the list of provided
 			 * common THypotheses. Nodes of the other graph are renumbered upon
 			 * integration in own graph.
@@ -811,7 +810,7 @@ namespace mrpt
 
 				typename self_t::global_pose_t& p_from = graph->nodes.at(from);
 				typename self_t::global_pose_t& p_to = graph->nodes.at(to);
-				typename self_t::template edge_t virt_edge(p_to - p_from);
+				const typename BASE::edge_t& virt_edge(p_to - p_from);
 
 				graph->insertEdge(from, to, virt_edge);
 			}

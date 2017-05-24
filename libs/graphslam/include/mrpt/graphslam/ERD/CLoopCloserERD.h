@@ -10,6 +10,7 @@
 #ifndef CLOOPCLOSERERD_H
 #define CLOOPCLOSERERD_H
 
+#include <mrpt/utils/mrpt_macros.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/math/data_utils.h>
