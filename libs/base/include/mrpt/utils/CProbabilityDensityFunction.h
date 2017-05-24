@@ -22,10 +22,10 @@ namespace mrpt
  		 * \ingroup poses_grp
  		 */
 		template<class T>
-			struct is_inf_type {
-				// false by default
-				static const bool value = false;
-			};
+		struct is_inf_type {
+			// false by default
+			static const bool value = false;
+		};
 	}
 
 	namespace utils

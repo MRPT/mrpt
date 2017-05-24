@@ -20,9 +20,9 @@ namespace mrpt
 	namespace traits
 	{
 		template<>
-			struct is_inf_type< ::mrpt::poses::CPose3DPDFGaussianInf> {
-				static const bool value = true;
-			};
+		struct is_inf_type< ::mrpt::poses::CPose3DPDFGaussianInf> {
+			static const bool value = true;
+		};
 	}
 
 
