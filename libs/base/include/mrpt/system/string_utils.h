@@ -124,18 +124,18 @@ namespace mrpt
 		/** Original code snippet found in http://stackoverflow.com/a/30357710 */
 		/**\{*/
 
-		/** @brief Convert String instance to Number */
+		/** @brief Convert string instance to number */
 		template <typename T>
-			T str2num(std::string const& value){
+			T str2num(std::string const& value) {
+				std::stringstream sin;
+				sin << value;
+				T output;
+				sin >> output;
+				return output;
 
-    		std::stringstream sin;
-    		sin << value;
-    		T output;
-    		sin >> output;
-    		return output;
 			}
 
-		/** @brief Convert Number instance to string */
+		/** @brief Convert number instance to string */
 		template <typename T>
 			std::string num2str(T const& value){
     		std::stringstream sin;
