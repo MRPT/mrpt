@@ -859,7 +859,7 @@ bool CLoopCloserERD<GRAPH_T>::computeDominantEigenVector(
 
 	// check the ratio of the two eigenvalues - reject hypotheses set if ratio
 	// smaller than threshold
-	if (essentiallyEqual(0, lambda2, /**limit = */ 0.00001)) {
+	if (approximatelyEqual(0.0, lambda2, /**limit = */ 0.00001)) {
 		MRPT_LOG_ERROR_STREAM("Bad lambda2 value: " << lambda2
 			<< " => Skipping current evaluation." << endl);
 		return false;

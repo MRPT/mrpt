@@ -28,13 +28,20 @@ namespace mrpt
 		 * \param b Second num
 		 * \param epsilon Difference below which a, b are considered equal
 		 */
-		bool BASE_IMPEXP essentiallyEqual(float a, float b, float epsilon);
+		template<class T1, class T2>
+		bool approximatelyEqual(T1 a, T1 b, T2 epsilon) {
+			return fabs(a - b) <= ( (fabs(a) > fabs(b) ? fabs(b) : fabs(a)) * epsilon);
+		}
+
 		/**\brief Compare 2 floats and determine whether they are equal
 		 * \return True if equal, false otherwise
 		 * \param a Fist num
 		 * \param b Second num
 		 */
-		bool BASE_IMPEXP essentiallyEqual(float a, float b);
+		template<class T>
+		bool approximatelyEqual(T a, T b) {
+			return approximatelyEqual(a, b, std::numeric_limits<T>::epsilon());
+		}
 
 		/**\brief Absolute difference between two numbers.
 		 *
