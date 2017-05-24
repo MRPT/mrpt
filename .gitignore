@@ -8,6 +8,12 @@ CMakeLists.txt.user
 SOURCE_DATE_EPOCH
 *.backup
 
+# OSX
 *.DS_Store
 .Spotlight-V100
+
+# Vim-related files
 Session.vim
+
+# common results directories
+graphslam_results/
