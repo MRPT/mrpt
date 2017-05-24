@@ -40,6 +40,7 @@ namespace mrpt
 						m_unconnected_nodeIDs(unconnected_nodeIDs),
 						m_err(err + "\n\n") { }
 
+					using std::exception::what; // supress clang warning
   				const char* what() {
 						return m_err.c_str();
   				}

@@ -6,10 +6,6 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
-#ifndef MRPT_NO_WARN_BIG_HDR
-#include <mrpt/utils/core_defs.h>
-MRPT_WARNING("Including <mrpt/graphslam.h> makes compilation much slower, consider including only what you need (define MRPT_NO_WARN_BIG_HDR to disable this warning)")
-#endif
 
 #ifndef _mrpt_graphslam_H
 #define _mrpt_graphslam_H

@@ -373,7 +373,7 @@ class CLevMarqGSO:
 		bool m_just_fully_optimized_graph;
 
 		/**\brief Minimum number of nodes before we try optimizing the graph */
-		int m_min_nodes_for_optimization;
+		size_t m_min_nodes_for_optimization;
 };
 
 } } } // end of namespaces

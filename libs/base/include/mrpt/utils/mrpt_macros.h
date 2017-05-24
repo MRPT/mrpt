@@ -412,6 +412,22 @@
 #define MRPT_FORCE_INLINE inline
 #endif
 
+/** Format specifier for size_t variables in a OS-independent, processor
+ * architecture-independent way
+ *
+ * See
+ * https://stackoverflow.com/questions/40202990/print-a-size-t-in-a-os-independent-architecture-independent-way
+ * for the initial post
+ */
+#ifdef _MSC_VER /* TODO Untested MSC detection */
+#define PRIuSIZE Iu
+#else
+#define PRIuSIZE zu
+#endif
+#define QUOTE(name) #name
+#define STR(macro) QUOTE(macro)
+#define USIZE_STR STR(PRIuSIZE)
+
 /** Determines whether this is an X86 or AMD64 platform */
 #if defined(__amd64__) || defined(__amd64) || defined(__x86_64__) || defined(__x86_64) || defined(_M_AMD64) || defined (_M_X64) \
 	|| defined (__i386__)|| defined (__i386) || defined (_M_I86) || defined (i386) || defined(_M_IX86) || defined (_X86_)
