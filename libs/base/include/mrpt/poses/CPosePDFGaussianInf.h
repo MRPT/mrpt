@@ -75,7 +75,7 @@ namespace mrpt
 			void getMean(CPose2D &mean_pose) const MRPT_OVERRIDE {
 				mean_pose = mean;
 			}
-			bool isInfType() const { return true; }
+			bool isInfType() const MRPT_OVERRIDE { return true; }
 
 			/** Returns an estimate of the pose covariance matrix (3x3 cov matrix) and the mean, both at once.
 		   * \sa getMean */
