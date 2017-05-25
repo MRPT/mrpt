@@ -23,8 +23,11 @@
 #include <mrpt/system/threads.h>
 #include <mrpt/opengl/graph_tools.h>
 #include <mrpt/opengl/CDisk.h>
+#include <mrpt/opengl/CSphere.h>
 #include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/utils/TColor.h>
+#include <mrpt/poses/CPose2D.h>
+#include <mrpt/poses/CPose3D.h>
 
 #include <mrpt/graphslam/levmarq.h>
 #include <mrpt/graphslam/interfaces/CGraphSlamOptimizer.h>
@@ -119,22 +122,22 @@ namespace mrpt { namespace graphslam { namespace optimizers {
  *
  * \ingroup mrpt_graphslam_grp
  */
-template<class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf>
+template<class GRAPH_T=typename mrpt::graphs::CNetworkOfPoses2DInf>
 class CLevMarqGSO:
-	public mrpt::graphslam::optimizers::CGraphSlamOptimizer<GRAPH_t>
+	public mrpt::graphslam::optimizers::CGraphSlamOptimizer<GRAPH_T>
 {
 	public:
 		// Public methods
 		//////////////////////////////////////////////////////////////
 		/**\brief Handy typedefs */
 		/**\{*/
-		typedef typename GRAPH_t::constraint_t constraint_t;
-		typedef typename GRAPH_t::constraint_t::type_value pose_t; // type of underlying poses (2D/3D)
+		typedef typename GRAPH_T::constraint_t constraint_t;
+		typedef typename GRAPH_T::constraint_t::type_value pose_t; // type of underlying poses (2D/3D)
 		typedef mrpt::math::CMatrixFixedNumeric<double,
 						constraint_t::state_length,
 						constraint_t::state_length> InfMat;
-		typedef mrpt::graphslam::CRegistrationDeciderOrOptimizer<GRAPH_t> grandpa;
-		typedef mrpt::graphslam::optimizers::CGraphSlamOptimizer<GRAPH_t> parent;
+		typedef mrpt::graphslam::CRegistrationDeciderOrOptimizer<GRAPH_T> grandpa;
+		typedef mrpt::graphslam::optimizers::CGraphSlamOptimizer<GRAPH_T> parent;
 		/**\}*/
 
 		CLevMarqGSO();
@@ -186,7 +189,7 @@ class CLevMarqGSO:
 
 				// Map of TPairNodesID to their corresponding edge as recorded in the
 				// last update of the optimizer state
-				typename GRAPH_t::edges_map_t last_pair_nodes_to_edge;
+				typename GRAPH_T::edges_map_t last_pair_nodes_to_edge;
 		};
 
 		/**\brief struct for holding the graph visualization-related variables in a
@@ -234,7 +237,7 @@ class CLevMarqGSO:
 		 *
 		 */
 		static void levMarqFeedback(
-				const GRAPH_t& graph,
+				const GRAPH_T& graph,
 				const size_t iter,
 				const size_t max_iter,
 				const double cur_sq_error );
@@ -294,12 +297,32 @@ class CLevMarqGSO:
 		 */
 		inline void fitGraphInView();
 
+		/**\brief Initialize the Disk/Sphere used for visualizing the optimization
+		 * distance.
+		 */
+		/**\{*/
 		void initOptDistanceVisualization();
+		/**\brief Setup the corresponding Disk/Sphere instance.
+		 *
+		 * Method overloads are used to overcome the C++ specialization
+		 * restrictions
+		 *
+		 * \return Disk/Sphere instance for 2D/3D SLAM respectively
+		 */
+		/**\{*/
+		mrpt::opengl::CRenderizablePtr initOptDistanceVisualizationInternal(
+				const mrpt::poses::CPose2D& p_unused);
+		mrpt::opengl::CRenderizablePtr initOptDistanceVisualizationInternal(
+				const mrpt::poses::CPose3D& p_unused);
+		/**\}*/
+
+		/**\}*/
+
 		/**\brief Update the position of the disk indicating the distance in which
 		 * Levenberg-Marquardt graph optimization is executed
 		 */
 		inline void updateOptDistanceVisualization();
-		/**\brief toggle the optimization distance disk on and off
+		/**\brief toggle the optimization distance object on and off
 		 */
 		void toggleOptDistanceVisualization();
 		/**\brief Get a list of the nodeIDs whose position is within a certain

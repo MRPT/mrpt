@@ -527,6 +527,18 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 
 		void initRangeImageViewport();
 		void initIntensityImageViewport();
+
+		mrpt::opengl::CSetOfObjectsPtr initRobotModelVisualization();
+		/**\brief Method to help overcome the partial template specialization
+		 * restriction of C++. Apply polymorphism by overloading function arguments instead
+		 */
+		/**\{ */
+		mrpt::opengl::CSetOfObjectsPtr initRobotModelVisualizationInternal(
+				const mrpt::poses::CPose2D& p_unused);
+		mrpt::opengl::CSetOfObjectsPtr initRobotModelVisualizationInternal(
+				const mrpt::poses::CPose3D& p_unused);
+		/**\} */
+
 		void initCurrPosViewport();
 		void initGTVisualization();
 		void initOdometryVisualization();
@@ -995,6 +1007,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		/**\brief Type of constraint currently in use.
 		 */
 		std::string m_current_constraint_type;
+
 		/**\brief Separator string to be used in debugging messages
 		 */
 		static const std::string header_sep;
