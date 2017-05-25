@@ -125,6 +125,12 @@
 				- Parameters are no longer passed via a mrpt::utils::TParameters class, but via a mrpt::utils::CConfigFileBase which makes parameter passing to PTGs much more maintainable and consistent.
 				- PTGs now have a score_priority field to manually set hints about preferences for path planning.
 				- PTGs are now mrpt::utils::CLoadableOptions classes
+			- \ref mrpt_graphslam_grp
+				 - Extend mrpt-graphslam lib to execute simulated/real-time graphSLAM.
+				 	 mrpt-graphslam supports 2D/3D execution of graphSLAM, utilizing
+				 	 LaserScans, odometry information.
+				 - Develop application `graphslam-engine` that executes graphSLAM via
+				 	 the mrpt-graphslam lib
 			- New classes:
 				- mrpt::nav::CMultiObjectiveMotionOptimizerBase
 	- Changes in build system:

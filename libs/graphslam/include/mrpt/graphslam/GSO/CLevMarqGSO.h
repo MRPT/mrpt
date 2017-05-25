@@ -23,8 +23,11 @@
 #include <mrpt/system/threads.h>
 #include <mrpt/opengl/graph_tools.h>
 #include <mrpt/opengl/CDisk.h>
+#include <mrpt/opengl/CSphere.h>
 #include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/utils/TColor.h>
+#include <mrpt/poses/CPose2D.h>
+#include <mrpt/poses/CPose3D.h>
 
 #include <mrpt/graphslam/levmarq.h>
 #include <mrpt/graphslam/interfaces/CGraphSlamOptimizer.h>
@@ -119,37 +122,39 @@ namespace mrpt { namespace graphslam { namespace optimizers {
  *
  * \ingroup mrpt_graphslam_grp
  */
-template<class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf>
+template<class GRAPH_T=typename mrpt::graphs::CNetworkOfPoses2DInf>
 class CLevMarqGSO:
-	public mrpt::graphslam::optimizers::CGraphSlamOptimizer<GRAPH_t>
+	public mrpt::graphslam::optimizers::CGraphSlamOptimizer<GRAPH_T>
 {
 	public:
 		// Public methods
 		//////////////////////////////////////////////////////////////
-
-		typedef typename GRAPH_t::constraint_t constraint_t;
-		typedef typename GRAPH_t::constraint_t::type_value pose_t; // type of underlying poses (2D/3D)
+		/**\brief Handy typedefs */
+		/**\{*/
+		typedef typename GRAPH_T::constraint_t constraint_t;
+		typedef typename GRAPH_T::constraint_t::type_value pose_t; // type of underlying poses (2D/3D)
 		typedef mrpt::math::CMatrixFixedNumeric<double,
 						constraint_t::state_length,
 						constraint_t::state_length> InfMat;
+		typedef mrpt::graphslam::CRegistrationDeciderOrOptimizer<GRAPH_T> grandpa;
+		typedef mrpt::graphslam::optimizers::CGraphSlamOptimizer<GRAPH_T> parent;
+		/**\}*/
 
 		CLevMarqGSO();
 		~CLevMarqGSO();
-		void initCLevMarqGSO();
 
 		bool updateState( mrpt::obs::CActionCollectionPtr action,
 				mrpt::obs::CSensoryFramePtr observations,
 				mrpt::obs::CObservationPtr observation );
 
-		void setGraphPtr(GRAPH_t* graph);
-		void setWindowManagerPtr(mrpt::graphslam::CWindowManager* win_manager);
-		void setCriticalSectionPtr(mrpt::synch::CCriticalSection* graph_section);
 		void initializeVisuals();
 		void updateVisuals();
 		/**\brief Get a list of the window events that happened since the last
 		 * call.
 		 */
-		void notifyOfWindowEvents(const std::map<std::string, bool>& events_occurred);
+		void notifyOfWindowEvents(
+				const std::map<std::string,
+				bool>& events_occurred);
 		/**\brief Struct for holding the optimization-related variables in a
 		 * compact form
 		 */
@@ -174,18 +179,18 @@ class CLevMarqGSO:
 				double offset_y_optimization_distance;
 				int text_index_optimization_distance;
 				mrpt::utils::TColor optimization_distance_color;
+				/**\brief Keystroke to toggle the optimization distance on/off */
 				std::string keystroke_optimization_distance;
+				/**\brief Keystroke to manually trigger a full graph optimization */
+				std::string keystroke_optimize_graph;
 
 				// nodeID difference for an edge to be considered loop closure
 				int LC_min_nodeid_diff;
 
 				// Map of TPairNodesID to their corresponding edge as recorded in the
 				// last update of the optimizer state
-				typename GRAPH_t::edges_map_t last_pair_nodes_to_edge;
+				typename GRAPH_T::edges_map_t last_pair_nodes_to_edge;
 		};
-
-		void loadParams(const std::string& source_fname);
-		void printParams() const;
 
 		/**\brief struct for holding the graph visualization-related variables in a
 		 * compact form
@@ -209,22 +214,30 @@ class CLevMarqGSO:
 				double offset_y_graph;
 
 		};
+
+		void loadParams(const std::string& source_fname);
+		void printParams() const;
 		void getDescriptiveReport(std::string* report_str) const;
+
+    bool justFullyOptimizedGraph() const;
 
 		// Public members
 		// ////////////////////////////
-		OptimizationParams opt_params; /**<Parameters relevant to the optimizatio nfo the graph. */
-		GraphVisualizationParams viz_params; /**<Parameters relevant to the visualization of the graph. */
+		/** Parameters relevant to the optimizatio nfo the graph. */
+		OptimizationParams opt_params;
+		/** Parameters relevant to the visualization of the graph. */
+		GraphVisualizationParams viz_params;
 
-	private:
+	protected:
 
-		// Private methods
+		// protected methods
 		// ////////////////////////////
 
 		/**\brief Feedback of the Levenberg-Marquardt graph optimization procedure.
+		 *
 		 */
 		static void levMarqFeedback(
-				const GRAPH_t& graph,
+				const GRAPH_T& graph,
 				const size_t iter,
 				const size_t max_iter,
 				const double cur_sq_error );
@@ -233,25 +246,40 @@ class CLevMarqGSO:
 		 *
 		 * Wrapper around the graphslam::optimize_spa_levmarq method
 		 * \sa optimize_spa_levmarq, optimizeGraph
+		 *
+		 * \param[in] full_update Impose that method optimizes the whole graph
+		 *
 		 */
-		void _optimizeGraph();
-		/** \brief Wrapper around _optimizeGraph which first locks the section and then
-		 * calls the _optimizeGraph method.
+		void _optimizeGraph(bool is_full_update=false);
+		/** \brief Wrapper around _optimizeGraph which first locks the section and
+		 * then calls the _optimizeGraph method.
 		 *
 		 * Used in multithreaded optimization
 		 * \sa _optimizeGraph()
 		 */
 		void optimizeGraph();
-		/**\brief Checks if a loop closure edge was added in the graph.
+		/**\brief Check if a loop closure edge was added in the graph.
 		 *
 		 * Match the previously registered edges in the graph with the current. If
 		 * there is a node difference *in any new edge* greater than
-		 * \b LC_min_nodeid_diff (see .ini parameter) then a full graph optimization
-		 * is issued.
+		 * \b LC_min_nodeid_diff (see .ini parameter) then new constraint is
+		 * considered a Loop Closure
 		 *
-		 * \return True on new loop closure
+		 * \return True if \b any of the newly added edges is considered a loop
+		 * closure
 		 */
 		bool checkForLoopClosures();
+		/**\brief Decide whether to issue a full graph optimization
+		 *
+		 * In case N consecutive full optimizations have been issued, skip some of
+		 * the next as they slow down the overall execution and they don't reduce
+		 * the overall error
+		 *
+		 * \return True for issuing a full graph optimization, False otherwise
+		 */
+		bool checkForFullOptimization();
+		/**\brief Initialize objects relateed to the Graph Visualization
+		 */
 		void initGraphVisualization();
 		/**\brief Called internally for updating the visualization scene for the graph
 		 * building procedure
@@ -269,12 +297,32 @@ class CLevMarqGSO:
 		 */
 		inline void fitGraphInView();
 
+		/**\brief Initialize the Disk/Sphere used for visualizing the optimization
+		 * distance.
+		 */
+		/**\{*/
 		void initOptDistanceVisualization();
+		/**\brief Setup the corresponding Disk/Sphere instance.
+		 *
+		 * Method overloads are used to overcome the C++ specialization
+		 * restrictions
+		 *
+		 * \return Disk/Sphere instance for 2D/3D SLAM respectively
+		 */
+		/**\{*/
+		mrpt::opengl::CRenderizablePtr initOptDistanceVisualizationInternal(
+				const mrpt::poses::CPose2D& p_unused);
+		mrpt::opengl::CRenderizablePtr initOptDistanceVisualizationInternal(
+				const mrpt::poses::CPose3D& p_unused);
+		/**\}*/
+
+		/**\}*/
+
 		/**\brief Update the position of the disk indicating the distance in which
 		 * Levenberg-Marquardt graph optimization is executed
 		 */
 		inline void updateOptDistanceVisualization();
-		/**\brief toggle the optimization distance disk on and off
+		/**\brief toggle the optimization distance object on and off
 		 */
 		void toggleOptDistanceVisualization();
 		/**\brief Get a list of the nodeIDs whose position is within a certain
@@ -285,16 +333,10 @@ class CLevMarqGSO:
 				const mrpt::utils::TNodeID& cur_nodeID,
 				double distance );
 
-		// Private members
+		// protected members
 		//////////////////////////////////////////////////////////////
-		GRAPH_t* m_graph; /**<\brief Pointer to the graph under construction */
-		mrpt::gui::CDisplayWindow3D* m_win;
-		mrpt::graphslam::CWindowManager* m_win_manager;
-		mrpt::graphslam::CWindowObserver* m_win_observer;
-		mrpt::synch::CCriticalSection* m_graph_section;
 
 		bool m_first_time_call;
-		bool m_initialized_visuals;
 		bool m_has_read_config;
 		bool registered_new_node;
 		bool m_autozoom_active;
@@ -305,7 +347,59 @@ class CLevMarqGSO:
 
 		// Use second thread for graph optimization
 		mrpt::system::TThreadHandle m_thread_optimize;
-		mrpt::utils::CTimeLogger m_time_logger; /**<Time logger instance */
+
+		/**\brief Enumeration that defines the behaviors towards using or ignoring a
+		 * newly added loop closure to fully optimize the graph
+		 */
+		enum FullOptimizationPolicy {
+			FOP_IGNORE_LC=0,
+			FOP_USE_LC,
+			FOP_TOTAL_NUM
+		};
+		/**\brief Should I fully optimize the graph on loop closure?
+		 */
+		FullOptimizationPolicy m_optimization_policy;
+		/**\name Smart Full-Optimization Command
+		 *
+		 * Instead of issuing a full optimization every time a loop closure is
+		 * detected, ignore current loop closure when enough consecutive loop
+		 * closures have already been utilised.
+		 * This avoids the added computational cost that is needed for optimizing
+		 * the graph without reducing the accuracy of the overall operation
+		 */
+		/**\{*/
+
+		/**\brief Number of maximum cosecutive loop closures that are allowed to be
+		 * issued.
+		 *
+		 * \sa m_curr_used_consec_lcs, m_max_ignored_consec_lcs
+		 */
+		size_t m_max_used_consec_lcs;
+		/**\brief Number of consecutive loop closures that are currently registered
+		 *
+		 * \sa m_max_used_consec_lcs
+		 */
+		size_t m_curr_used_consec_lcs;
+		/**\brief Number of consecutive loop closures to ignore after \b
+		 * m_max_used_consec_lcs have already been issued.
+		 *
+		 * \sa m_curr_ignored_consec_lcs, m_max_used_consec_lcs
+		 */
+		size_t m_max_ignored_consec_lcs;
+		/**\brief Consecutive Loop Closures that have currently been ignored
+		 *
+		 * \sa m_max_ignored_consec_lcs
+		 */
+		size_t m_curr_ignored_consec_lcs;
+
+		/**\}*/
+
+		/**\brief Indicates whether a full graph optimization was just issued.
+		 */
+		bool m_just_fully_optimized_graph;
+
+		/**\brief Minimum number of nodes before we try optimizing the graph */
+		size_t m_min_nodes_for_optimization;
 };
 
 } } } // end of namespaces

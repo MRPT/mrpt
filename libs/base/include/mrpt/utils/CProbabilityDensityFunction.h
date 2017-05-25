@@ -18,18 +18,19 @@ namespace mrpt
 	namespace utils
 	{
 		/** A generic template for probability density distributions (PDFs).
-		  * This template is used as base for many classes in mrpt::poses
-		  *  Any derived class must implement \a getMean() and a getCovarianceAndMean().
-		  *  Other methods such as \a getMean() or \a getCovariance() are implemented here for convenience.
-		  * \sa mprt::poses::CPosePDF, mprt::poses::CPose3DPDF, mprt::poses::CPointPDF
+		 * This template is used as base for many classes in mrpt::poses
+		 *  Any derived class must implement \a getMean() and a getCovarianceAndMean().
+		 *  Other methods such as \a getMean() or \a getCovariance() are implemented here for convenience.
+		 * \sa mprt::poses::CPosePDF, mprt::poses::CPose3DPDF, mprt::poses::CPointPDF
 		 * \ingroup mrpt_base_grp
- 		  */
+ 		 */
 		template <class TDATA, size_t STATE_LEN>
 		class CProbabilityDensityFunction
 		{
 		public:
 			static const size_t state_length = STATE_LEN;	//!< The length of the variable, for example, 3 for a 3D point, 6 for a 3D pose (x y z yaw pitch roll).
 			typedef TDATA type_value;  //!< The type of the state the PDF represents
+			typedef CProbabilityDensityFunction<TDATA, STATE_LEN> self_t;
 
 			 /** Returns the mean, or mathematical expectation of the probability density distribution (PDF).
 			   * \sa getCovarianceAndMean, getInformationMatrix
@@ -89,7 +90,14 @@ namespace mrpt
 				this->getCovarianceAndMean(cov,p);
 				return cov;
 			}
-
+			
+			/** Returns whether the class instance holds the uncertainty in covariance or information form.
+			 * \note By default this is going to be covariance form. *Inf classes
+			 * (e.g. CPosePDFGaussianInf) store it in information form.
+			 *
+			 * \sa mrpt::traits::is_inf_type
+			 */
+			virtual bool isInfType() const { return false; }
 
 			/** Returns the information (inverse covariance) matrix (a STATE_LEN x STATE_LEN matrix)
 			  *  Unless reimplemented in derived classes, this method first reads the covariance, then invert it.
