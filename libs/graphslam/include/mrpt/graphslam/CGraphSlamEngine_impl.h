@@ -165,6 +165,7 @@ void CGraphSlamEngine<GRAPH_T>::initClass() {
 			mrpt::system::pause();
 		}
 
+		// store it in a string for future use.
 		m_current_constraint_type = c_str;
 		m_current_constraint_type = "Constraints: " + m_current_constraint_type;
 	}
@@ -395,7 +396,6 @@ void CGraphSlamEngine<GRAPH_T>::initClass() {
 	}
 
 
-
 	// query node/edge deciders for visual objects initialization
 	if (m_enable_visuals) {
 		mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
@@ -446,7 +446,6 @@ void CGraphSlamEngine<GRAPH_T>::initClass() {
   	m_map_is_cached = false;
   }
 
-
 	// In case we are given an RGBD TUM Dataset - try and read the info file so
 	// that we know how to play back the GT poses.
 	try {
@@ -477,6 +476,7 @@ void CGraphSlamEngine<GRAPH_T>::initClass() {
 				mrpt::utils::TColorf(1.0, 0, 0),
 				m_text_index_paused_message);
 	}
+
 
 	MRPT_END;
 } // end of initClass
@@ -1235,7 +1235,26 @@ void CGraphSlamEngine<GRAPH_T>::updateIntensityImageViewport() {
 	}
 
 	MRPT_END;
-}
+} // end of updateIntensityImageViewport
+
+template<class GRAPH_T>
+mrpt::opengl::CSetOfObjectsPtr CGraphSlamEngine<GRAPH_T>::initRobotModelVisualization() {
+	pose_t p;
+	return this->initRobotModelVisualizationInternal(p);
+} // end of initRobotModelVisualization
+
+template<class GRAPH_T>
+mrpt::opengl::CSetOfObjectsPtr CGraphSlamEngine<GRAPH_T>::
+initRobotModelVisualizationInternal(const mrpt::poses::CPose2D& p_unused) {
+	return mrpt::opengl::stock_objects::RobotPioneer();
+
+} // end of initRobotModelVisualizationInternal - CPose2D
+
+template<class GRAPH_T>
+mrpt::opengl::CSetOfObjectsPtr CGraphSlamEngine<GRAPH_T>::
+initRobotModelVisualizationInternal(const mrpt::poses::CPose3D& p_unused) {
+	return mrpt::opengl::stock_objects::CornerXYZ();
+} // end of initRobotModelVisualizationInternal - CPose3D
 
 
 template<class GRAPH_T>
@@ -1996,12 +2015,6 @@ void CGraphSlamEngine<GRAPH_T>::initOdometryVisualization() {
 	odometry_poses_cloud->setName("odometry_poses_cloud");
 
 	// robot model
-	//CSetOfObjectsPtr robot_model = stock_objects::RobotPioneer();
-	//pose_t initial_pose;
-	//robot_model->setPose(initial_pose);
-	//robot_model->setName("robot_odometry_poses");
-	//robot_model->setColor_u8(m_odometry_color);
-	//robot_model->setScale(m_robot_model_size);
 	CSetOfObjectsPtr robot_model = this->setCurrentPositionModel(
 			"robot_odometry_poses",
 			m_odometry_color,
@@ -2632,17 +2645,8 @@ CGraphSlamEngine<GRAPH_T>::setCurrentPositionModel(
 	using namespace mrpt::opengl;
 	ASSERTMSG_(!model_name.empty(), "Model name provided is empty.");
 
-	mrpt::opengl::CSetOfObjectsPtr model;
-	// set the robot model depending on the type of slam 2D/3D
-	pose_t p;
-	if (IS_CLASS(&p, CPose2D)) {
-		model = stock_objects::RobotPioneer();
-	}
-	else {
-		model = stock_objects::RobotRhodon();
-	}
-	ASSERT_(model.present());
-
+	mrpt::opengl::CSetOfObjectsPtr model =
+		this->initRobotModelVisualization();
 	model->setName(model_name);
 	model->setColor_u8(model_color);
 	model->setScale(model_size);

@@ -79,9 +79,6 @@ void CRegistrationDeciderOrOptimizer<GRAPH_T>::setCriticalSectionPtr(
 
 template<class GRAPH_T>
 void CRegistrationDeciderOrOptimizer<GRAPH_T>::initializeVisuals() {
-	using namespace mrpt::utils;
-	//MRPT_LOG_DEBUG_STREAM("Initializing visuals");
-
 	this->assertVisualsVars();
 	m_initialized_visuals = true;
 }
@@ -96,14 +93,12 @@ void CRegistrationDeciderOrOptimizer<GRAPH_T>::assertVisualsVars() {
 template<class GRAPH_T>
 void CRegistrationDeciderOrOptimizer<GRAPH_T>::updateVisuals() {
 	ASSERT_(m_initialized_visuals);
-	//MRPT_LOG_DEBUG_STREAM("Updating visuals");
 }
 
 template<class GRAPH_T>
 void CRegistrationDeciderOrOptimizer<GRAPH_T>::notifyOfWindowEvents(
 		const std::map<std::string, bool>& events_occurred) {
-	this->assertVisualsVars();
-	//MRPT_LOG_DEBUG_STREAM("Querrying window events...");
+	ASSERT_(m_initialized_visuals);
 }
 
 template<class GRAPH_T>
