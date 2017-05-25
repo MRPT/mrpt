@@ -16,16 +16,6 @@
 
 namespace mrpt
 {
-
-	namespace traits {
-		template<>
-			struct is_inf_type< ::mrpt::poses::CPose3DQuatPDFGaussianInf> {
-				static const bool value = true;
-			};
-	}
-
-
-
 	namespace poses
 {
 	class CPosePDFGaussian;
@@ -77,7 +67,7 @@ namespace mrpt
 		void getMean(CPose3DQuat &mean_pose) const MRPT_OVERRIDE {
 			mean_pose = mean;
 		}
-		bool isInfType() const { return mrpt::traits::is_inf_type<self_t>::value; }
+		bool isInfType() const { return true; }
 
 		/** Returns an estimate of the pose covariance matrix (7x7 cov matrix) and the mean, both at once. \sa getMean */
 		void getCovarianceAndMean(mrpt::math::CMatrixDouble77 &cov,CPose3DQuat &mean_point) const MRPT_OVERRIDE {

@@ -16,16 +16,6 @@
 
 namespace mrpt
 {
-
-	namespace traits
-	{
-		template<>
-		struct is_inf_type< ::mrpt::poses::CPose3DPDFGaussianInf> {
-			static const bool value = true;
-		};
-	}
-
-
 	namespace poses
 	{
 		class CPosePDFGaussian;
@@ -88,7 +78,7 @@ namespace mrpt
 			void getMean(CPose3D &mean_pose) const MRPT_OVERRIDE {
 				mean_pose = mean;
 			}
-			bool isInfType() const { return mrpt::traits::is_inf_type<self_t>::value; }
+			bool isInfType() const { return true; }
 
 			/** Returns an estimate of the pose covariance matrix (6x6 cov matrix) and the mean, both at once.
 		   * \sa getMean  */

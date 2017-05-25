@@ -386,7 +386,6 @@ void CLoopCloserERD<GRAPH_T>::checkPartitionsForLC(
 
 	using namespace std;
 	using namespace mrpt;
-	using namespace mrpt::math;
 	using namespace mrpt::utils;
 
 	ASSERT_(partitions_for_LC);
@@ -676,7 +675,7 @@ void CLoopCloserERD<GRAPH_T>::generateHypotsPool(
 		hypotsp_t* generated_hypots,
 		const TGenerateHypotsPoolAdParams* ad_params/*=NULL*/) {
 	MRPT_START;
-	using namespace mrpt::math;
+	using namespace mrpt::utils;
 	using namespace mrpt;
 
 	ASSERTMSG_(generated_hypots,
