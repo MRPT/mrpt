@@ -176,10 +176,10 @@ void TUncertaintyPath<GRAPH_T>::dumpToTextStream(
 template<class GRAPH_T>
 void TUncertaintyPath<GRAPH_T>::getAsString(std::string* str) const{
 	using namespace mrpt;
-	using namespace mrpt::math;
 	using namespace mrpt::poses;
 	using namespace std;
-	using namespace mrpt::traits;
+	using namespace mrpt::utils;
+	using namespace mrpt::math;
 
 	stringstream ss;
 	string header_sep(30, '=');
@@ -232,7 +232,6 @@ double TUncertaintyPath<GRAPH_T>::getDeterminant() {
 	using namespace mrpt::math;
 	using namespace mrpt::poses;
 	using namespace std;
-	using namespace mrpt::traits;
 
 	// if determinant is up-to-date then return the cached version...
 	if (determinant_is_updated) return determinant_cached;
@@ -262,7 +261,6 @@ bool TUncertaintyPath<GRAPH_T>::hasLowerUncertaintyThan(
 	using namespace mrpt::math;
 	using namespace mrpt::poses;
 	using namespace std;
-	using namespace mrpt::traits;
 
 	ASSERTMSG_(
 			(curr_pose_pdf.isInfType() && other.curr_pose_pdf.isInfType()) ||

@@ -115,7 +115,6 @@ bool CNodeRegistrationDecider<GRAPH_T>::registerNewNodeAtEnd() {
 template<class GRAPH_T>
 void CNodeRegistrationDecider<GRAPH_T>::resetPDF(constraint_t* c) {
 	MRPT_START;
-	using namespace mrpt::traits;
 	ASSERT_(c);
 
 	*c = constraint_t();

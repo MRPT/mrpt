@@ -15,19 +15,6 @@
 
 namespace mrpt
 {
-	namespace traits {
-		/**\brief Type Traits for manipulating covariance and information form
- 		 * Probability Density Function (PDF) classes
- 		 *
- 		 * \ingroup poses_grp
- 		 */
-		template<class T>
-		struct is_inf_type {
-			// false by default
-			static const bool value = false;
-		};
-	}
-
 	namespace utils
 	{
 		/** A generic template for probability density distributions (PDFs).

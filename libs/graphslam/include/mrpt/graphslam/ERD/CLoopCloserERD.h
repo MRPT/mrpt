@@ -12,9 +12,9 @@
 
 #include <mrpt/utils/mrpt_macros.h>
 #include <mrpt/math/CMatrix.h>
-#include <mrpt/math/utils.h>
 #include <mrpt/math/data_utils.h>
 #include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/utils/stl_containers_utils.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/utils/CConfigFileBase.h>

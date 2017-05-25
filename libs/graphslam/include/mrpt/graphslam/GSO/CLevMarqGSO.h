@@ -220,8 +220,10 @@ class CLevMarqGSO:
 
 		// Public members
 		// ////////////////////////////
-		OptimizationParams opt_params; /**<Parameters relevant to the optimizatio nfo the graph. */
-		GraphVisualizationParams viz_params; /**<Parameters relevant to the visualization of the graph. */
+		/** Parameters relevant to the optimizatio nfo the graph. */
+		OptimizationParams opt_params;
+		/** Parameters relevant to the visualization of the graph. */
+		GraphVisualizationParams viz_params;
 
 	protected:
 
@@ -229,6 +231,7 @@ class CLevMarqGSO:
 		// ////////////////////////////
 
 		/**\brief Feedback of the Levenberg-Marquardt graph optimization procedure.
+		 *
 		 */
 		static void levMarqFeedback(
 				const GRAPH_t& graph,
@@ -245,8 +248,8 @@ class CLevMarqGSO:
 		 *
 		 */
 		void _optimizeGraph(bool is_full_update=false);
-		/** \brief Wrapper around _optimizeGraph which first locks the section and then
-		 * calls the _optimizeGraph method.
+		/** \brief Wrapper around _optimizeGraph which first locks the section and
+		 * then calls the _optimizeGraph method.
 		 *
 		 * Used in multithreaded optimization
 		 * \sa _optimizeGraph()
