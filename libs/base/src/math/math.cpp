@@ -29,7 +29,7 @@ using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;
 
-// Next there are declared some auxiliary functions:
+// Next we declare some auxiliary functions:
 namespace mrpt
 {
 	namespace math

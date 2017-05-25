@@ -114,6 +114,7 @@ namespace mrpt
 			  * \exception std::exception On index out of bounds.
 			  */
 			CActionPtr get(size_t index);
+			const CAction& get(size_t index) const;
 
 			 /** Access to the i'th action of a given class, or a NULL smart pointer if there is no action of that class in the list.
 			   *  Example:

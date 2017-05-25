@@ -39,8 +39,7 @@
 #include <map>
 #include <string>
 
-#include <mrpt/graphslam/interfaces/CEdgeRegistrationDecider.h>
-#include <mrpt/graphslam/misc/CRangeScanRegistrationDecider.h>
+#include <mrpt/graphslam/interfaces/CRangeScanEdgeRegistrationDecider.h>
 
 
 namespace mrpt { namespace graphslam { namespace deciders {
@@ -106,26 +105,24 @@ namespace mrpt { namespace graphslam { namespace deciders {
  *   + \a Description   : Only applicable in datasets with 3DRangeScans that
  *   are externally stored (not stored in the given .rawlog file).
  *
- * \note Since the decider inherits from the CRangeScanRegistrationDecider
- * class, it parses the configuration parameters of the latter as well from the
- * "ICP" section. Refer to the CRangeScanRegistrationDecider documentation for
- * its list of configuration parameters
- *
  * \ingroup mrpt_graphslam_grp
  */
-template<class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf >
+template<class GRAPH_T=typename mrpt::graphs::CNetworkOfPoses2DInf >
 class CICPCriteriaERD :
-	public mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_t>,
-	public mrpt::graphslam::deciders::CRangeScanRegistrationDecider<GRAPH_t>
+	public mrpt::graphslam::deciders::CRangeScanEdgeRegistrationDecider<GRAPH_T>
 {
 	public:
+		/**\brief Handy typedefs */
+		/**\{*/
 		/**\brief type of graph constraints */
-		typedef typename GRAPH_t::constraint_t constraint_t;
+		typedef typename GRAPH_T::constraint_t constraint_t;
 		/**\brief type of underlying poses (2D/3D). */
-		typedef typename GRAPH_t::constraint_t::type_value pose_t;
-		/**\brief Typedef for accessing methods of the RangeScanRegistrationDecider_t parent class. */
-		typedef mrpt::graphslam::deciders::CRangeScanRegistrationDecider<GRAPH_t> range_scanner_t;
-		typedef CICPCriteriaERD<GRAPH_t> decider_t; /**< self type - Handy typedef */
+		typedef typename GRAPH_T::constraint_t::type_value pose_t;
+		typedef CRangeScanEdgeRegistrationDecider<GRAPH_T> parent_t;
+		typedef typename parent_t::range_ops_t range_ops_t;
+		typedef CICPCriteriaERD<GRAPH_T> decider_t; /**< self type - Handy typedef */
+		typedef typename parent_t::nodes_to_scans2D_t nodes_to_scans2D_t;
+		/**\}*/
 
 		// Public methods
 		//////////////////////////////////////////////////////////////
@@ -137,9 +134,6 @@ class CICPCriteriaERD :
 				mrpt::obs::CSensoryFramePtr observations,
 				mrpt::obs::CObservationPtr observation );
 
-
-		void setGraphPtr(GRAPH_t* graph);
-		void setWindowManagerPtr(mrpt::graphslam::CWindowManager* win_manager);
 		void notifyOfWindowEvents(
 				const std::map<std::string, bool>& events_occurred);
 		void getEdgesStats(
@@ -147,7 +141,6 @@ class CICPCriteriaERD :
 
 		void initializeVisuals();
 		void updateVisuals();
-		bool justInsertedLoopClosure() const;
 		void loadParams(const std::string& source_fname);
 		void printParams() const;
 
@@ -163,7 +156,6 @@ class CICPCriteriaERD :
 				void 	dumpToTextStream(mrpt::utils::CStream &out) const;
 
 				decider_t& decider;
-				mrpt::slam::CICP icp;
 				// maximum distance for checking other nodes for ICP constraints
 				double ICP_max_distance;
 				// threshold for accepting an ICP constraint in the graph
@@ -184,12 +176,9 @@ class CICPCriteriaERD :
 		// ////////////////////////////
 		TParams params;
 
-	private:
-		// Private functions
+	protected:
+		// protected functions
 		//////////////////////////////////////////////////////////////
-		/** \brief Initialization function to be called from the various constructors
-		 */
-		void initCICPCriteriaERD();
 		void checkRegistrationCondition2D(
 				const std::set<mrpt::utils::TNodeID>& nodes_set);
 		void checkRegistrationCondition3D(
@@ -214,17 +203,9 @@ class CICPCriteriaERD :
 		void dumpVisibilityErrorMsg(std::string viz_flag,
 				int sleep_time=500 /* ms */);
 
-		// Private variables
+		// protected variables
 		//////////////////////////////////////////////////////////////
 
-		GRAPH_t* m_graph; /**<\brief Pointer to the graph under construction */
-		mrpt::gui::CDisplayWindow3D* m_win;
-		mrpt::graphslam::CWindowManager* m_win_manager;
-		mrpt::graphslam::CWindowObserver* m_win_observer;
-
-		bool m_initialized_visuals;
-		bool m_just_inserted_loop_closure;
-		bool m_is_using_3DScan;
 
 		mrpt::utils::TColor m_search_disk_color; //!< see Constructor for initialization
 		mrpt::utils::TColor m_laser_scans_color; //!< see Constructor for initialization
@@ -237,20 +218,14 @@ class CICPCriteriaERD :
 		std::map<mrpt::utils::TNodeID,
 			mrpt::obs::CObservation3DRangeScanPtr> m_nodes_to_laser_scans3D;
 		std::map<std::string, int> m_edge_types_to_nums;
+		bool m_is_using_3DScan;
 
-		size_t m_last_total_num_of_nodes;
 		mrpt::obs::CObservation2DRangeScanPtr m_last_laser_scan2D;
 		mrpt::obs::CObservation3DRangeScanPtr m_last_laser_scan3D;
 		// fake 2D laser scan generated from corresponding 3DRangeScan for
 		// visualization reasons
 		mrpt::obs::CObservation2DRangeScanPtr m_fake_laser_scan2D;
 
-		// find out if decider is invalid for the given dataset
-		bool m_checked_for_usuable_dataset;
-		size_t m_consecutive_invalid_format_instances;
-		const size_t m_consecutive_invalid_format_instances_thres;
-
-		mrpt::utils::CTimeLogger m_time_logger; /**<Time logger instance */
 };
 
 } } } // end of namespaces

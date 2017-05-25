@@ -7,5 +7,6 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
+#define MRPT_NO_WARN_BIG_HDR // Including all hdrs here is not a problem
 #include "graphs-precomp.h"  // Precompiled headers
 

@@ -496,7 +496,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 	}
 
   }
-  catch( utils::CExceptionExternalImageNotFound &e )
+  catch( mrpt::utils::CExceptionExternalImageNotFound &e )
   {
 	  wxMessageBox( _U(e.what()), _("Error with a delayed load image"), wxOK, this );
 

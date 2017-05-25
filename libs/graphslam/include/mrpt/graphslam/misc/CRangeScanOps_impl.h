@@ -7,13 +7,13 @@
 	 | Released under BSD License. See details in http://www.mrpt.org/License    |
 	 +---------------------------------------------------------------------------+ */
 
-#ifndef CRANGESCANREGISTRATIONDECIDER_IMPL_H
-#define CRANGESCANREGISTRATIONDECIDER_IMPL_H
+#ifndef CRANGESCANOPS_IMPL_H
+#define CRANGESCANOPS_IMPL_H
 
 namespace mrpt { namespace graphslam { namespace deciders {
 
-template<class GRAPH_t>
-void CRangeScanRegistrationDecider<GRAPH_t>::getICPEdge(
+template<class GRAPH_T>
+void CRangeScanOps<GRAPH_T>::getICPEdge(
 		const mrpt::obs::CObservation2DRangeScan& from,
 		const mrpt::obs::CObservation2DRangeScan& to,
 		constraint_t* rel_edge,
@@ -50,8 +50,8 @@ void CRangeScanRegistrationDecider<GRAPH_t>::getICPEdge(
 
 	MRPT_END;
 }
-template<class GRAPH_t>
-void CRangeScanRegistrationDecider<GRAPH_t>::getICPEdge(
+template<class GRAPH_T>
+void CRangeScanOps<GRAPH_T>::getICPEdge(
 		const mrpt::obs::CObservation3DRangeScan& from,
 		const mrpt::obs::CObservation3DRangeScan& to,
 		constraint_t* rel_edge,
@@ -106,8 +106,8 @@ void CRangeScanRegistrationDecider<GRAPH_t>::getICPEdge(
 	MRPT_END;
 }
 
-template<class GRAPH_t>
-void CRangeScanRegistrationDecider<GRAPH_t>::decimatePointsMap(
+template<class GRAPH_T>
+void CRangeScanOps<GRAPH_T>::decimatePointsMap(
 		mrpt::maps::CPointsMap* m,
 		size_t keep_point_every, /* = 4 */
 		size_t low_lim /* = 8000 */) {
@@ -130,13 +130,13 @@ void CRangeScanRegistrationDecider<GRAPH_t>::decimatePointsMap(
 	}
 	m->applyDeletionMask(deletion_mask);
 
-	std::cout << "Map size: " << map_size << " => " << m->size() << std::endl;
+	//std::cout << "Map size: " << map_size << " => " << m->size() << std::endl;
 
 	MRPT_END;
 }
 
-template<class GRAPH_t>
-bool CRangeScanRegistrationDecider<GRAPH_t>::convert3DTo2DRangeScan(
+template<class GRAPH_T>
+bool CRangeScanOps<GRAPH_T>::convert3DTo2DRangeScan(
 		mrpt::obs::CObservation3DRangeScanPtr& scan3D_in,
 		mrpt::obs::CObservation2DRangeScanPtr* scan2D_out /*= NULL*/) {
 	MRPT_START;
@@ -163,17 +163,17 @@ bool CRangeScanRegistrationDecider<GRAPH_t>::convert3DTo2DRangeScan(
 // TParameter
 // //////////////////////////////////
 
-template<class GRAPH_t>
-CRangeScanRegistrationDecider<GRAPH_t>::TParams::TParams():
+template<class GRAPH_T>
+CRangeScanOps<GRAPH_T>::TParams::TParams():
 	has_read_config(false)
 { }
 
-template<class GRAPH_t>
-CRangeScanRegistrationDecider<GRAPH_t>::TParams::~TParams() {
+template<class GRAPH_T>
+CRangeScanOps<GRAPH_T>::TParams::~TParams() {
 }
 
-template<class GRAPH_t>
-void CRangeScanRegistrationDecider<GRAPH_t>::TParams::dumpToTextStream(
+template<class GRAPH_T>
+void CRangeScanOps<GRAPH_T>::TParams::dumpToTextStream(
 		mrpt::utils::CStream &out) const {
 	MRPT_START;
 
@@ -192,8 +192,8 @@ void CRangeScanRegistrationDecider<GRAPH_t>::TParams::dumpToTextStream(
 
 	MRPT_END;
 }
-template<class GRAPH_t>
-void CRangeScanRegistrationDecider<GRAPH_t>::TParams::loadFromConfigFile(
+template<class GRAPH_T>
+void CRangeScanOps<GRAPH_T>::TParams::loadFromConfigFile(
 		const mrpt::utils::CConfigFileBase& source,
 		const std::string& section) {
 	MRPT_START;
@@ -230,4 +230,4 @@ void CRangeScanRegistrationDecider<GRAPH_t>::TParams::loadFromConfigFile(
 
 } } } // end of namespaces
 
-#endif /* end of include guard: CRANGESCANREGISTRATIONDECIDER_IMPL_H */
+#endif /* end of include guard: CRANGESCANOPS_IMPL_H */
