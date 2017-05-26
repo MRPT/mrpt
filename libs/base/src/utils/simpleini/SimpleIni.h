@@ -34,6 +34,8 @@
 #include <mrpt/system/string_utils.h>
 #include <mrpt/math/CRuntimeCompiledExpression.h>
 
+#define SI_SUPPORT_IOSTREAMS
+
 #ifdef SI_SUPPORT_IOSTREAMS
 # include <iostream>
 #endif // SI_SUPPORT_IOSTREAMS
@@ -64,8 +66,6 @@ enum SI_Error {
     SI_FILE     = -3    //!< File error (see errno for detail error)
 };
 
-#define SI_UTF8_SIGNATURE     "\xEF\xBB\xBF"
-
 #ifdef _WIN32
 # define SI_NEWLINE_A   "\r\n"
 # define SI_NEWLINE_W   L"\r\n"
@@ -73,10 +73,6 @@ enum SI_Error {
 # define SI_NEWLINE_A   "\n"
 # define SI_NEWLINE_W   L"\n"
 #endif // _WIN32
-
-#if defined(SI_CONVERT_ICU)
-# include <unicode/ustring.h>
-#endif
 
 #if defined(_WIN32)
 # define SI_HAS_WIDE_FILE
@@ -228,7 +224,7 @@ public:
     */
     class Converter : private SI_CONVERTER {
     public:
-        Converter(bool a_bStoreIsUtf8) : SI_CONVERTER(a_bStoreIsUtf8) {
+        Converter() : SI_CONVERTER() {
             m_scratch.resize(1024);
         }
         Converter(const Converter & rhs) { operator=(rhs); }
@@ -259,12 +255,10 @@ public:
 
     /** Default constructor.
 
-        @param a_bIsUtf8     See the method SetUnicode() for details.
         @param a_bMultiKey   See the method SetMultiKey() for details.
         @param a_bMultiLine  See the method SetMultiLine() for details.
      */
     CSimpleIniTempl(
-        bool a_bIsUtf8 = false,
         bool a_bMultiKey = false,
         bool a_bMultiLine = false
         );
@@ -277,27 +271,6 @@ public:
 
     /*-----------------------------------------------------------------------*/
     /** @{ @name Settings */
-
-    /** Set the storage format of the INI data. This affects both the loading
-        and saving of the INI data using all of the Load/Save API functions.
-        This value cannot be changed after any INI data has been loaded.
-
-        If the file is not set to Unicode (UTF-8), then the data encoding is
-        assumed to be the OS native encoding. This encoding is the system
-        locale on Linux/Unix and the legacy MBCS encoding on Windows NT/2K/XP.
-        If the storage format is set to Unicode then the file will be loaded
-        as UTF-8 encoded data regardless of the native file encoding. If
-        SI_CHAR == char then all of the char* parameters take and return UTF-8
-        encoded data regardless of the system locale.
-
-        \param a_bIsUtf8     Assume UTF-8 encoding for the source?
-     */
-    void SetUnicode(bool a_bIsUtf8 = true) {
-        if (!m_pData) m_bStoreIsUtf8 = a_bIsUtf8;
-    }
-
-    /** Get the storage format of the INI data. */
-    bool IsUnicode() const { return m_bStoreIsUtf8; }
 
     /** Should multiple identical keys be permitted in the file. If set to false
         then the last value encountered will be used as the value of the key.
@@ -421,15 +394,10 @@ public:
                             to fopen() and so must be a valid path for the
                             current platform.
 
-        @param a_bAddSignature  Prepend the UTF-8 BOM if the output data is
-                            in UTF-8 format. If it is not UTF-8 then
-                            this parameter is ignored.
-
         @return SI_Error    See error definitions
      */
     SI_Error SaveFile(
-        const char *    a_pszFile,
-        bool            a_bAddSignature = true
+        const char *    a_pszFile
         ) const;
 
 #ifdef SI_HAS_WIDE_FILE
@@ -437,15 +405,10 @@ public:
 
         @param a_pwszFile   Path of the file to be saved in UTF-16.
 
-        @param a_bAddSignature  Prepend the UTF-8 BOM if the output data is
-                            in UTF-8 format. If it is not UTF-8 then
-                            this parameter is ignored.
-
         @return SI_Error    See error definitions
      */
     SI_Error SaveFile(
-        const SI_WCHAR_T *  a_pwszFile,
-        bool                a_bAddSignature = true
+        const SI_WCHAR_T *  a_pwszFile
         ) const;
 #endif // _WIN32
 
@@ -454,16 +417,10 @@ public:
         @param a_pFile      Handle to a file. File should be opened for
                             binary output.
 
-        @param a_bAddSignature  Prepend the UTF-8 BOM if the output data is in
-                            UTF-8 format. If it is not UTF-8 then this value is
-                            ignored. Do not set this to true if anything has
-                            already been written to the file.
-
         @return SI_Error    See error definitions
      */
     SI_Error SaveFile(
-        FILE *  a_pFile,
-        bool    a_bAddSignature = false
+        FILE *  a_pFile
         ) const;
 
     /** Save the INI data. The data will be written to the output device
@@ -490,16 +447,10 @@ public:
 
         @param a_oOutput    Output writer to write the data to.
 
-        @param a_bAddSignature  Prepend the UTF-8 BOM if the output data is in
-                            UTF-8 format. If it is not UTF-8 then this value is
-                            ignored. Do not set this to true if anything has
-                            already been written to the OutputWriter.
-
         @return SI_Error    See error definitions
      */
     SI_Error Save(
-        OutputWriter &  a_oOutput,
-        bool            a_bAddSignature = false
+        OutputWriter &  a_oOutput
         ) const;
 
 #ifdef SI_SUPPORT_IOSTREAMS
@@ -507,20 +458,14 @@ public:
 
         @param a_ostream    String to have the INI data appended to.
 
-        @param a_bAddSignature  Prepend the UTF-8 BOM if the output data is in
-                            UTF-8 format. If it is not UTF-8 then this value is
-                            ignored. Do not set this to true if anything has
-                            already been written to the stream.
-
         @return SI_Error    See error definitions
      */
     SI_Error Save(
-        std::ostream &  a_ostream,
-        bool            a_bAddSignature = false
+        std::ostream &  a_ostream
         ) const
     {
         StreamWriter writer(a_ostream);
-        return Save(writer, a_bAddSignature);
+        return Save(writer);
     }
 #endif // SI_SUPPORT_IOSTREAMS
 
@@ -528,20 +473,14 @@ public:
 
         @param a_sBuffer    String to have the INI data appended to.
 
-        @param a_bAddSignature  Prepend the UTF-8 BOM if the output data is in
-                            UTF-8 format. If it is not UTF-8 then this value is
-                            ignored. Do not set this to true if anything has
-                            already been written to the string.
-
         @return SI_Error    See error definitions
      */
     SI_Error Save(
-        std::string &   a_sBuffer,
-        bool            a_bAddSignature = false
+        std::string &   a_sBuffer
         ) const
     {
         StringWriter writer(a_sBuffer);
-        return Save(writer, a_bAddSignature);
+        return Save(writer);
     }
 
     /*-----------------------------------------------------------------------*/
@@ -726,7 +665,7 @@ public:
         to the output INI data.
      */
     Converter GetConverter() const {
-        return Converter(m_bStoreIsUtf8);
+        return Converter();
     }
 
     /*-----------------------------------------------------------------------*/
@@ -846,9 +785,6 @@ private:
      */
     TNamesDepend m_strings;
 
-    /** Is the format of our datafile UTF-8 or MBCS? */
-    bool m_bStoreIsUtf8;
-
     /** Are multiple values permitted for the same key? */
     bool m_bAllowMultiKey;
 
@@ -867,14 +803,12 @@ private:
 
 template<class SI_CHAR, class SI_STRLESS, class SI_CONVERTER>
 CSimpleIniTempl<SI_CHAR,SI_STRLESS,SI_CONVERTER>::CSimpleIniTempl(
-    bool a_bIsUtf8,
     bool a_bAllowMultiKey,
     bool a_bAllowMultiLine
     )
   : m_pData(0)
   , m_uDataLen(0)
   , m_pFileComment(NULL)
-  , m_bStoreIsUtf8(a_bIsUtf8)
   , m_bAllowMultiKey(a_bAllowMultiKey)
   , m_bAllowMultiLine(a_bAllowMultiLine)
   , m_nOrder(0)
@@ -994,15 +928,7 @@ CSimpleIniTempl<SI_CHAR,SI_STRLESS,SI_CONVERTER>::Load(
     size_t          a_uDataLen
     )
 {
-    SI_CONVERTER converter(m_bStoreIsUtf8);
-
-    // consume the UTF-8 BOM if it exists
-    if (m_bStoreIsUtf8 && a_uDataLen >= 3) {
-        if (memcmp(a_pData, SI_UTF8_SIGNATURE, 3) == 0) {
-            a_pData    += 3;
-            a_uDataLen -= 3;
-        }
-    }
+    SI_CONVERTER converter;
 
     // determine the length of the converted data
     size_t uLen = converter.SizeFromStore(a_pData, a_uDataLen);
@@ -1696,8 +1622,7 @@ CSimpleIniTempl<SI_CHAR,SI_STRLESS,SI_CONVERTER>::GetAllKeys(
 template<class SI_CHAR, class SI_STRLESS, class SI_CONVERTER>
 SI_Error
 CSimpleIniTempl<SI_CHAR,SI_STRLESS,SI_CONVERTER>::SaveFile(
-    const char *    a_pszFile,
-    bool            a_bAddSignature
+    const char *    a_pszFile
     ) const
 {
     FILE * fp = NULL;
@@ -1707,7 +1632,7 @@ CSimpleIniTempl<SI_CHAR,SI_STRLESS,SI_CONVERTER>::SaveFile(
     fp = fopen(a_pszFile, "wb");
 #endif
     if (!fp) return SI_FILE;
-    SI_Error rc = SaveFile(fp, a_bAddSignature);
+    SI_Error rc = SaveFile(fp);
     fclose(fp);
     return rc;
 }
@@ -1716,20 +1641,19 @@ CSimpleIniTempl<SI_CHAR,SI_STRLESS,SI_CONVERTER>::SaveFile(
 template<class SI_CHAR, class SI_STRLESS, class SI_CONVERTER>
 SI_Error
 CSimpleIniTempl<SI_CHAR,SI_STRLESS,SI_CONVERTER>::SaveFile(
-    const SI_WCHAR_T *  a_pwszFile,
-    bool                a_bAddSignature
+    const SI_WCHAR_T *  a_pwszFile
     ) const
 {
 #ifdef _WIN32
     FILE * fp = _wfopen(a_pwszFile, L"wb");
     if (!fp) return SI_FILE;
-    SI_Error rc = SaveFile(fp, a_bAddSignature);
+    SI_Error rc = SaveFile(fp);
     fclose(fp);
     return rc;
 #else // SI_CONVERT_ICU
     char szFile[256];
     u_austrncpy(szFile, a_pwszFile, sizeof(szFile));
-    return SaveFile(szFile, a_bAddSignature);
+    return SaveFile(szFile);
 #endif
 }
 #endif // SI_HAS_WIDE_FILE
@@ -1737,27 +1661,20 @@ CSimpleIniTempl<SI_CHAR,SI_STRLESS,SI_CONVERTER>::SaveFile(
 template<class SI_CHAR, class SI_STRLESS, class SI_CONVERTER>
 SI_Error
 CSimpleIniTempl<SI_CHAR,SI_STRLESS,SI_CONVERTER>::SaveFile(
-    FILE *  a_pFile,
-    bool    a_bAddSignature
+    FILE *  a_pFile
     ) const
 {
     FileWriter writer(a_pFile);
-    return Save(writer, a_bAddSignature);
+    return Save(writer);
 }
 
 template<class SI_CHAR, class SI_STRLESS, class SI_CONVERTER>
 SI_Error
 CSimpleIniTempl<SI_CHAR,SI_STRLESS,SI_CONVERTER>::Save(
-    OutputWriter &  a_oOutput,
-    bool            a_bAddSignature
+    OutputWriter &  a_oOutput
     ) const
 {
-    Converter convert(m_bStoreIsUtf8);
-
-    // add the UTF-8 signature if it is desired
-    if (m_bStoreIsUtf8 && a_bAddSignature) {
-        a_oOutput.Write(SI_UTF8_SIGNATURE);
-    }
+    Converter convert;
 
     // get all of the sections sorted in load order
     TNamesDepend oSections;
@@ -1984,24 +1901,6 @@ CSimpleIniTempl<SI_CHAR,SI_STRLESS,SI_CONVERTER>::DeleteString(
 //                              CONVERSION FUNCTIONS
 // ---------------------------------------------------------------------------
 
-// Defines the conversion classes for different libraries. Before including
-// SimpleIni.h, set the converter that you wish you use by defining one of the
-// following symbols.
-//
-//  SI_CONVERT_GENERIC      Use the Unicode reference conversion library in
-//                          the accompanying files ConvertUTF.h/c
-//  SI_CONVERT_ICU          Use the IBM ICU conversion library. Requires
-//                          ICU headers on include path and icuuc.lib
-//  SI_CONVERT_WIN32        Use the Win32 API functions for conversion.
-
-#if !defined(SI_CONVERT_GENERIC) && !defined(SI_CONVERT_WIN32) && !defined(SI_CONVERT_ICU)
-# ifdef _WIN32
-#  define SI_CONVERT_WIN32
-# else
-#  define SI_CONVERT_GENERIC
-# endif
-#endif
-
 /**
  * Generic case-sensitive less than comparison. This class returns numerically
  * ordered ASCII case-sensitive text for all possible sizes and types of
@@ -2049,16 +1948,12 @@ struct SI_GenericNoCase {
  */
 template<class SI_CHAR>
 class SI_ConvertA {
-    bool m_bStoreIsUtf8;
-protected:
-    SI_ConvertA() { }
 public:
-    SI_ConvertA(bool a_bStoreIsUtf8) : m_bStoreIsUtf8(a_bStoreIsUtf8) { }
+    SI_ConvertA(){ }
 
     /* copy and assignment */
     SI_ConvertA(const SI_ConvertA & rhs) { operator=(rhs); }
     SI_ConvertA & operator=(const SI_ConvertA & rhs) {
-        m_bStoreIsUtf8 = rhs.m_bStoreIsUtf8;
         return *this;
     }
 
@@ -2165,7 +2060,7 @@ public:
 */
 struct MRPT_IniFileParser : public SI_ConvertA<char>
 {
-	MRPT_IniFileParser(bool a_bStoreIsUtf8) : SI_ConvertA<char>(a_bStoreIsUtf8) { }
+	MRPT_IniFileParser() : SI_ConvertA<char>() { }
 
 	/* copy and assignment */
 	MRPT_IniFileParser(const MRPT_IniFileParser & rhs) : SI_ConvertA<char>(rhs) { SI_ConvertA<char>::operator=(rhs); }
@@ -2383,572 +2278,6 @@ private:
 
 };
 
-// ---------------------------------------------------------------------------
-//                              SI_CONVERT_GENERIC
-// ---------------------------------------------------------------------------
-#ifdef SI_CONVERT_GENERIC
-
-#define SI_Case     SI_GenericCase
-#define SI_NoCase   SI_GenericNoCase
-}}}  // end namespaces
-
-#include <wchar.h>
-#include "ConvertUTF.h"
-
-namespace mrpt { namespace utils { namespace simpleini {
-
-/**
- * Converts UTF-8 to a wchar_t (or equivalent) using the Unicode reference
- * library functions. This can be used on all platforms.
- */
-template<class SI_CHAR>
-class SI_ConvertW {
-    bool m_bStoreIsUtf8;
-protected:
-    SI_ConvertW() { }
-public:
-    SI_ConvertW(bool a_bStoreIsUtf8) : m_bStoreIsUtf8(a_bStoreIsUtf8) { }
-
-    /* copy and assignment */
-    SI_ConvertW(const SI_ConvertW & rhs) { operator=(rhs); }
-    SI_ConvertW & operator=(const SI_ConvertW & rhs) {
-        m_bStoreIsUtf8 = rhs.m_bStoreIsUtf8;
-        return *this;
-    }
-
-    /** Calculate the number of SI_CHAR required for converting the input
-     * from the storage format. The storage format is always UTF-8 or MBCS.
-     *
-     * @param a_pInputData  Data in storage format to be converted to SI_CHAR.
-     * @param a_uInputDataLen Length of storage format data in bytes. This
-     *                      must be the actual length of the data, including
-     *                      NULL byte if NULL terminated string is required.
-     * @return              Number of SI_CHAR required by the string when
-     *                      converted. If there are embedded NULL bytes in the
-     *                      input data, only the string up and not including
-     *                      the NULL byte will be converted.
-     * @return              -1 cast to size_t on a conversion error.
-     */
-    size_t SizeFromStore(
-        const char *    a_pInputData,
-        size_t          a_uInputDataLen)
-    {
-        SI_ASSERT(a_uInputDataLen != (size_t) -1);
-
-        if (m_bStoreIsUtf8) {
-            // worst case scenario for UTF-8 to wchar_t is 1 char -> 1 wchar_t
-            // so we just return the same number of characters required as for
-            // the source text.
-            return a_uInputDataLen;
-        }
-        else {
-            return mbstowcs(NULL, a_pInputData, a_uInputDataLen);
-        }
-    }
-
-    /** Convert the input string from the storage format to SI_CHAR.
-     * The storage format is always UTF-8 or MBCS.
-     *
-     * @param a_pInputData  Data in storage format to be converted to SI_CHAR.
-     * @param a_uInputDataLen Length of storage format data in bytes. This
-     *                      must be the actual length of the data, including
-     *                      NULL byte if NULL terminated string is required.
-     * @param a_pOutputData Pointer to the output buffer to received the
-     *                      converted data.
-     * @param a_uOutputDataSize Size of the output buffer in SI_CHAR.
-     * @return              true if all of the input data was successfully
-     *                      converted.
-     */
-    bool ConvertFromStore(
-        const char *    a_pInputData,
-        size_t          a_uInputDataLen,
-        SI_CHAR *       a_pOutputData,
-        size_t          a_uOutputDataSize)
-    {
-        if (m_bStoreIsUtf8) {
-            // This uses the Unicode reference implementation to do the
-            // conversion from UTF-8 to wchar_t. The required files are
-            // ConvertUTF.h and ConvertUTF.c which should be included in
-            // the distribution but are publically available from unicode.org
-            // at http://www.unicode.org/Public/PROGRAMS/CVTUTF/
-            ConversionResult retval;
-            const UTF8 * pUtf8 = (const UTF8 *) a_pInputData;
-            if (sizeof(wchar_t) == sizeof(UTF32)) {
-                UTF32 * pUtf32 = (UTF32 *) a_pOutputData;
-                retval = ConvertUTF8toUTF32(
-                    &pUtf8, pUtf8 + a_uInputDataLen,
-                    &pUtf32, pUtf32 + a_uOutputDataSize,
-                    lenientConversion);
-            }
-            else if (sizeof(wchar_t) == sizeof(UTF16)) {
-                UTF16 * pUtf16 = (UTF16 *) a_pOutputData;
-                retval = ConvertUTF8toUTF16(
-                    &pUtf8, pUtf8 + a_uInputDataLen,
-                    &pUtf16, pUtf16 + a_uOutputDataSize,
-                    lenientConversion);
-            }
-            return retval == conversionOK;
-        }
-        else {
-            size_t retval = mbstowcs(a_pOutputData,
-                a_pInputData, a_uOutputDataSize);
-            return retval != (size_t)(-1);
-        }
-    }
-
-    /** Calculate the number of char required by the storage format of this
-     * data. The storage format is always UTF-8 or MBCS.
-     *
-     * @param a_pInputData  NULL terminated string to calculate the number of
-     *                      bytes required to be converted to storage format.
-     * @return              Number of bytes required by the string when
-     *                      converted to storage format. This size always
-     *                      includes space for the terminating NULL character.
-     * @return              -1 cast to size_t on a conversion error.
-     */
-    size_t SizeToStore(
-        const SI_CHAR * a_pInputData)
-    {
-        if (m_bStoreIsUtf8) {
-            // worst case scenario for wchar_t to UTF-8 is 1 wchar_t -> 6 char
-            size_t uLen = 0;
-            while (a_pInputData[uLen]) {
-                ++uLen;
-            }
-            return (6 * uLen) + 1;
-        }
-        else {
-            size_t uLen = wcstombs(NULL, a_pInputData, 0);
-            if (uLen == (size_t)(-1)) {
-                return uLen;
-            }
-            return uLen + 1; // include NULL terminator
-        }
-    }
-
-    /** Convert the input string to the storage format of this data.
-     * The storage format is always UTF-8 or MBCS.
-     *
-     * @param a_pInputData  NULL terminated source string to convert. All of
-     *                      the data will be converted including the
-     *                      terminating NULL character.
-     * @param a_pOutputData Pointer to the buffer to receive the converted
-     *                      string.
-     * @param a_uOutputDataSize Size of the output buffer in char.
-     * @return              true if all of the input data, including the
-     *                      terminating NULL character was successfully
-     *                      converted.
-     */
-    bool ConvertToStore(
-        const SI_CHAR * a_pInputData,
-        char *          a_pOutputData,
-        size_t          a_uOutputDataSize
-        )
-    {
-        if (m_bStoreIsUtf8) {
-            // calc input string length (SI_CHAR type and size independent)
-            size_t uInputLen = 0;
-            while (a_pInputData[uInputLen]) {
-                ++uInputLen;
-            }
-            ++uInputLen; // include the NULL char
-
-            // This uses the Unicode reference implementation to do the
-            // conversion from wchar_t to UTF-8. The required files are
-            // ConvertUTF.h and ConvertUTF.c which should be included in
-            // the distribution but are publically available from unicode.org
-            // at http://www.unicode.org/Public/PROGRAMS/CVTUTF/
-            ConversionResult retval;
-            UTF8 * pUtf8 = (UTF8 *) a_pOutputData;
-            if (sizeof(wchar_t) == sizeof(UTF32)) {
-                const UTF32 * pUtf32 = (const UTF32 *) a_pInputData;
-                retval = ConvertUTF32toUTF8(
-                    &pUtf32, pUtf32 + uInputLen + 1,
-                    &pUtf8, pUtf8 + a_uOutputDataSize,
-                    lenientConversion);
-            }
-            else if (sizeof(wchar_t) == sizeof(UTF16)) {
-                const UTF16 * pUtf16 = (const UTF16 *) a_pInputData;
-                retval = ConvertUTF16toUTF8(
-                    &pUtf16, pUtf16 + uInputLen + 1,
-                    &pUtf8, pUtf8 + a_uOutputDataSize,
-                    lenientConversion);
-            }
-            return retval == conversionOK;
-        }
-        else {
-            size_t retval = wcstombs(a_pOutputData,
-                a_pInputData, a_uOutputDataSize);
-            return retval != (size_t) -1;
-        }
-    }
-};
-
-#endif // SI_CONVERT_GENERIC
-
-
-// ---------------------------------------------------------------------------
-//                              SI_CONVERT_ICU
-// ---------------------------------------------------------------------------
-#ifdef SI_CONVERT_ICU
-
-#define SI_Case     SI_GenericCase
-#define SI_NoCase   SI_GenericNoCase
-
-}}} // end NS
-#include <unicode/ucnv.h>
-namespace mrpt { namespace utils { namespace simpleini {
-
-/**
- * Converts MBCS/UTF-8 to UChar using ICU. This can be used on all platforms.
- */
-template<class SI_CHAR>
-class SI_ConvertW {
-    const char * m_pEncoding;
-    UConverter * m_pConverter;
-protected:
-    SI_ConvertW() : m_pEncoding(NULL), m_pConverter(NULL) { }
-public:
-    SI_ConvertW(bool a_bStoreIsUtf8) : m_pConverter(NULL) {
-        m_pEncoding = a_bStoreIsUtf8 ? "UTF-8" : NULL;
-    }
-
-    /* copy and assignment */
-    SI_ConvertW(const SI_ConvertW & rhs) { operator=(rhs); }
-    SI_ConvertW & operator=(const SI_ConvertW & rhs) {
-        m_pEncoding = rhs.m_pEncoding;
-        m_pConverter = NULL;
-        return *this;
-    }
-    ~SI_ConvertW() { if (m_pConverter) ucnv_close(m_pConverter); }
-
-    /** Calculate the number of UChar required for converting the input
-     * from the storage format. The storage format is always UTF-8 or MBCS.
-     *
-     * @param a_pInputData  Data in storage format to be converted to UChar.
-     * @param a_uInputDataLen Length of storage format data in bytes. This
-     *                      must be the actual length of the data, including
-     *                      NULL byte if NULL terminated string is required.
-     * @return              Number of UChar required by the string when
-     *                      converted. If there are embedded NULL bytes in the
-     *                      input data, only the string up and not including
-     *                      the NULL byte will be converted.
-     * @return              -1 cast to size_t on a conversion error.
-     */
-    size_t SizeFromStore(
-        const char *    a_pInputData,
-        size_t          a_uInputDataLen)
-    {
-        SI_ASSERT(a_uInputDataLen != (size_t) -1);
-
-        UErrorCode nError;
-
-        if (!m_pConverter) {
-            nError = U_ZERO_ERROR;
-            m_pConverter = ucnv_open(m_pEncoding, &nError);
-            if (U_FAILURE(nError)) {
-                return (size_t) -1;
-            }
-        }
-
-        nError = U_ZERO_ERROR;
-        ucnv_resetToUnicode(m_pConverter);
-        int32_t nLen = ucnv_toUChars(m_pConverter, NULL, 0,
-            a_pInputData, (int32_t) a_uInputDataLen, &nError);
-        if (nError != U_BUFFER_OVERFLOW_ERROR) {
-            return (size_t) -1;
-        }
-
-        return (size_t) nLen;
-    }
-
-    /** Convert the input string from the storage format to UChar.
-     * The storage format is always UTF-8 or MBCS.
-     *
-     * @param a_pInputData  Data in storage format to be converted to UChar.
-     * @param a_uInputDataLen Length of storage format data in bytes. This
-     *                      must be the actual length of the data, including
-     *                      NULL byte if NULL terminated string is required.
-     * @param a_pOutputData Pointer to the output buffer to received the
-     *                      converted data.
-     * @param a_uOutputDataSize Size of the output buffer in UChar.
-     * @return              true if all of the input data was successfully
-     *                      converted.
-     */
-    bool ConvertFromStore(
-        const char *    a_pInputData,
-        size_t          a_uInputDataLen,
-        UChar *         a_pOutputData,
-        size_t          a_uOutputDataSize)
-    {
-        UErrorCode nError;
-
-        if (!m_pConverter) {
-            nError = U_ZERO_ERROR;
-            m_pConverter = ucnv_open(m_pEncoding, &nError);
-            if (U_FAILURE(nError)) {
-                return false;
-            }
-        }
-
-        nError = U_ZERO_ERROR;
-        ucnv_resetToUnicode(m_pConverter);
-        ucnv_toUChars(m_pConverter,
-            a_pOutputData, (int32_t) a_uOutputDataSize,
-            a_pInputData, (int32_t) a_uInputDataLen, &nError);
-        if (U_FAILURE(nError)) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /** Calculate the number of char required by the storage format of this
-     * data. The storage format is always UTF-8 or MBCS.
-     *
-     * @param a_pInputData  NULL terminated string to calculate the number of
-     *                      bytes required to be converted to storage format.
-     * @return              Number of bytes required by the string when
-     *                      converted to storage format. This size always
-     *                      includes space for the terminating NULL character.
-     * @return              -1 cast to size_t on a conversion error.
-     */
-    size_t SizeToStore(
-        const UChar * a_pInputData)
-    {
-        UErrorCode nError;
-
-        if (!m_pConverter) {
-            nError = U_ZERO_ERROR;
-            m_pConverter = ucnv_open(m_pEncoding, &nError);
-            if (U_FAILURE(nError)) {
-                return (size_t) -1;
-            }
-        }
-
-        nError = U_ZERO_ERROR;
-        ucnv_resetFromUnicode(m_pConverter);
-        int32_t nLen = ucnv_fromUChars(m_pConverter, NULL, 0,
-            a_pInputData, -1, &nError);
-        if (nError != U_BUFFER_OVERFLOW_ERROR) {
-            return (size_t) -1;
-        }
-
-        return (size_t) nLen + 1;
-    }
-
-    /** Convert the input string to the storage format of this data.
-     * The storage format is always UTF-8 or MBCS.
-     *
-     * @param a_pInputData  NULL terminated source string to convert. All of
-     *                      the data will be converted including the
-     *                      terminating NULL character.
-     * @param a_pOutputData Pointer to the buffer to receive the converted
-     *                      string.
-     * @param a_pOutputDataSize Size of the output buffer in char.
-     * @return              true if all of the input data, including the
-     *                      terminating NULL character was successfully
-     *                      converted.
-     */
-    bool ConvertToStore(
-        const UChar *   a_pInputData,
-        char *          a_pOutputData,
-        size_t          a_uOutputDataSize)
-    {
-        UErrorCode nError;
-
-        if (!m_pConverter) {
-            nError = U_ZERO_ERROR;
-            m_pConverter = ucnv_open(m_pEncoding, &nError);
-            if (U_FAILURE(nError)) {
-                return false;
-            }
-        }
-
-        nError = U_ZERO_ERROR;
-        ucnv_resetFromUnicode(m_pConverter);
-        ucnv_fromUChars(m_pConverter,
-            a_pOutputData, (int32_t) a_uOutputDataSize,
-            a_pInputData, -1, &nError);
-        if (U_FAILURE(nError)) {
-            return false;
-        }
-
-        return true;
-    }
-};
-
-#endif // SI_CONVERT_ICU
-
-
-// ---------------------------------------------------------------------------
-//                              SI_CONVERT_WIN32
-// ---------------------------------------------------------------------------
-#ifdef SI_CONVERT_WIN32
-
-#define SI_Case     SI_GenericCase
-
-// Windows CE doesn't have errno or MBCS libraries
-#ifdef _WIN32_WCE
-# ifndef SI_NO_MBCS
-#  define SI_NO_MBCS
-# endif
-#endif
-}}}
-#include <windows.h>
-namespace mrpt { namespace utils { namespace simpleini {
-#ifdef SI_NO_MBCS
-# define SI_NoCase   SI_GenericNoCase
-#else // !SI_NO_MBCS
-/**
- * Case-insensitive comparison class using Win32 MBCS functions. This class
- * returns a case-insensitive semi-collation order for MBCS text. It may not
- * be safe for UTF-8 text returned in char format as we don't know what
- * characters will be folded by the function! Therefore, if you are using
- * SI_CHAR == char and SetUnicode(true), then you need to use the generic
- * SI_NoCase class instead.
- */
-}}}
-#include <mbstring.h>
-namespace mrpt { namespace utils { namespace simpleini {
-template<class SI_CHAR>
-struct SI_NoCase {
-    bool operator()(const SI_CHAR * pLeft, const SI_CHAR * pRight) const {
-        if (sizeof(SI_CHAR) == sizeof(char)) {
-            return _mbsicmp((const unsigned char *)pLeft,
-                (const unsigned char *)pRight) < 0;
-        }
-        if (sizeof(SI_CHAR) == sizeof(wchar_t)) {
-            return _wcsicmp((const wchar_t *)pLeft,
-                (const wchar_t *)pRight) < 0;
-        }
-        return SI_GenericNoCase<SI_CHAR>()(pLeft, pRight);
-    }
-};
-#endif // SI_NO_MBCS
-
-/**
- * Converts MBCS and UTF-8 to a wchar_t (or equivalent) on Windows. This uses
- * only the Win32 functions and doesn't require the external Unicode UTF-8
- * conversion library. It will not work on Windows 95 without using Microsoft
- * Layer for Unicode in your application.
- */
-template<class SI_CHAR>
-class SI_ConvertW {
-    UINT m_uCodePage;
-protected:
-    SI_ConvertW() { }
-public:
-    SI_ConvertW(bool a_bStoreIsUtf8) {
-        m_uCodePage = a_bStoreIsUtf8 ? CP_UTF8 : CP_ACP;
-    }
-
-    /* copy and assignment */
-    SI_ConvertW(const SI_ConvertW & rhs) { operator=(rhs); }
-    SI_ConvertW & operator=(const SI_ConvertW & rhs) {
-        m_uCodePage = rhs.m_uCodePage;
-        return *this;
-    }
-
-    /** Calculate the number of SI_CHAR required for converting the input
-     * from the storage format. The storage format is always UTF-8 or MBCS.
-     *
-     * @param a_pInputData  Data in storage format to be converted to SI_CHAR.
-     * @param a_uInputDataLen Length of storage format data in bytes. This
-     *                      must be the actual length of the data, including
-     *                      NULL byte if NULL terminated string is required.
-     * @return              Number of SI_CHAR required by the string when
-     *                      converted. If there are embedded NULL bytes in the
-     *                      input data, only the string up and not including
-     *                      the NULL byte will be converted.
-     * @return              -1 cast to size_t on a conversion error.
-     */
-    size_t SizeFromStore(
-        const char *    a_pInputData,
-        size_t          a_uInputDataLen)
-    {
-        SI_ASSERT(a_uInputDataLen != (size_t) -1);
-
-        int retval = MultiByteToWideChar(
-            m_uCodePage, 0,
-            a_pInputData, (int) a_uInputDataLen,
-            0, 0);
-        return (size_t)(retval > 0 ? retval : -1);
-    }
-
-    /** Convert the input string from the storage format to SI_CHAR.
-     * The storage format is always UTF-8 or MBCS.
-     *
-     * @param a_pInputData  Data in storage format to be converted to SI_CHAR.
-     * @param a_uInputDataLen Length of storage format data in bytes. This
-     *                      must be the actual length of the data, including
-     *                      NULL byte if NULL terminated string is required.
-     * @param a_pOutputData Pointer to the output buffer to received the
-     *                      converted data.
-     * @param a_uOutputDataSize Size of the output buffer in SI_CHAR.
-     * @return              true if all of the input data was successfully
-     *                      converted.
-     */
-    bool ConvertFromStore(
-        const char *    a_pInputData,
-        size_t          a_uInputDataLen,
-        SI_CHAR *       a_pOutputData,
-        size_t          a_uOutputDataSize)
-    {
-        int nSize = MultiByteToWideChar(
-            m_uCodePage, 0,
-            a_pInputData, (int) a_uInputDataLen,
-            (wchar_t *) a_pOutputData, (int) a_uOutputDataSize);
-        return (nSize > 0);
-    }
-
-    /** Calculate the number of char required by the storage format of this
-     * data. The storage format is always UTF-8.
-     *
-     * @param a_pInputData  NULL terminated string to calculate the number of
-     *                      bytes required to be converted to storage format.
-     * @return              Number of bytes required by the string when
-     *                      converted to storage format. This size always
-     *                      includes space for the terminating NULL character.
-     * @return              -1 cast to size_t on a conversion error.
-     */
-    size_t SizeToStore(
-        const SI_CHAR * a_pInputData)
-    {
-        int retval = WideCharToMultiByte(
-            m_uCodePage, 0,
-            (const wchar_t *) a_pInputData, -1,
-            0, 0, 0, 0);
-        return (size_t) (retval > 0 ? retval : -1);
-    }
-
-    /** Convert the input string to the storage format of this data.
-     * The storage format is always UTF-8 or MBCS.
-     *
-     * @param a_pInputData  NULL terminated source string to convert. All of
-     *                      the data will be converted including the
-     *                      terminating NULL character.
-     * @param a_pOutputData Pointer to the buffer to receive the converted
-     *                      string.
-     * @param a_pOutputDataSize Size of the output buffer in char.
-     * @return              true if all of the input data, including the
-     *                      terminating NULL character was successfully
-     *                      converted.
-     */
-    bool ConvertToStore(
-        const SI_CHAR * a_pInputData,
-        char *          a_pOutputData,
-        size_t          a_uOutputDataSize)
-    {
-        int retval = WideCharToMultiByte(
-            m_uCodePage, 0,
-            (const wchar_t *) a_pInputData, -1,
-            a_pOutputData, (int) a_uOutputDataSize, 0, 0);
-        return retval > 0;
-    }
-};
-
-#endif // SI_CONVERT_WIN32
 
 
 // ---------------------------------------------------------------------------
@@ -2956,23 +2285,11 @@ public:
 // ---------------------------------------------------------------------------
 
 typedef CSimpleIniTempl<char,
-    SI_NoCase<char>,SI_ConvertA<char> >                 CSimpleIniA;
+    SI_GenericNoCase<char>,SI_ConvertA<char> >                 CSimpleIniA;
 typedef CSimpleIniTempl<char,
-    SI_Case<char>,SI_ConvertA<char> >                   CSimpleIniCaseA;
+	SI_GenericCase<char>,SI_ConvertA<char> >                   CSimpleIniCaseA;
 
-typedef CSimpleIniTempl<char, SI_NoCase<char>, MRPT_IniFileParser> MRPT_CSimpleIni;
-
-#if defined(SI_CONVERT_ICU)
-typedef CSimpleIniTempl<UChar,
-    SI_NoCase<UChar>,SI_ConvertW<UChar> >               CSimpleIniW;
-typedef CSimpleIniTempl<UChar,
-    SI_Case<UChar>,SI_ConvertW<UChar> >                 CSimpleIniCaseW;
-#else
-typedef CSimpleIniTempl<wchar_t,
-    SI_NoCase<wchar_t>,SI_ConvertW<wchar_t> >           CSimpleIniW;
-typedef CSimpleIniTempl<wchar_t,
-    SI_Case<wchar_t>,SI_ConvertW<wchar_t> >             CSimpleIniCaseW;
-#endif
+typedef CSimpleIniTempl<char, SI_GenericNoCase<char>, MRPT_IniFileParser> MRPT_CSimpleIni;
 
 #ifdef _UNICODE
 # define CSimpleIni      CSimpleIniW
