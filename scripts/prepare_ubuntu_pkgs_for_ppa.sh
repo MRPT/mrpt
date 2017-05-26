@@ -28,9 +28,13 @@ else
 	exit 1
 fi
 
-MRPT_UBUNTU_OUT_DIR="$HOME/mrpt_ubuntu"
+if [ -z "${MRPT_UBUNTU_OUT_DIR}" ]; then
+       export MRPT_UBUNTU_OUT_DIR="$HOME/mrpt_ubuntu"
+fi
 MRPTSRC=`pwd`
-MRPT_DEB_DIR="$HOME/mrpt_debian"
+if [ -z "${MRPT_DEB_DIR}" ]; then
+       export MRPT_DEB_DIR="$HOME/mrpt_debian"
+fi
 MRPT_EXTERN_DEBIAN_DIR="$MRPTSRC/packaging/debian/"
 EMAIL4DEB="Jose Luis Blanco (University of Malaga) <joseluisblancoc@gmail.com>"
 
