@@ -596,7 +596,6 @@ std::string mrpt::system::find_mrpt_shared_dir()
 	return found_mrpt_shared_dir;
 } // end of find_mrpt_shared_dir
 
-MRPT_TODO("Test popen execution on Windows")
 int mrpt::system::executeCommand(
 		const std::string&  command,
     std::string* output/*=NULL*/,
@@ -607,6 +606,7 @@ int mrpt::system::executeCommand(
   // Create the stringstream
   stringstream sout;
 
+#ifdef MRPT_OS_LINUX
   // Run Popen
   FILE *in;
   char buff[512];
@@ -634,4 +634,9 @@ int mrpt::system::executeCommand(
 
   // Return exit code
   return exit_code;
+#else
+	MRPT_TODO("Write popen alternative for Windows")
+	THROW_EXCEPTION("not implemented for Windows yet!");
+#endif
+
 } // end of executeCommand
