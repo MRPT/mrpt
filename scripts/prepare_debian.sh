@@ -56,7 +56,9 @@ else
 fi
 
 MRPTSRC=`pwd`
-MRPT_DEB_DIR="$HOME/mrpt_debian"
+if [ -z "$MRPT_DEB_DIR" ]; then
+        MRPT_DEB_DIR="$HOME/mrpt_debian"
+fi
 MRPT_EXTERN_DEBIAN_DIR="$MRPTSRC/packaging/debian/"
 
 if [ -f ${MRPT_EXTERN_DEBIAN_DIR}/control.in ];
