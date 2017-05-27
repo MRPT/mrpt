@@ -91,7 +91,7 @@ typedef struct gz_header_s {
     int     xflags;     /* extra flags (not used when writing a gzip file) */
     int     os;         /* operating system */
     Bytef   *extra;     /* pointer to extra field or Z_NULL if none */
-    uInt    extra_len;  /* extra field length (valid if extra != Z_nullptr) */
+    uInt    extra_len;  /* extra field length (valid if extra != Z_NULL) */
     uInt    extra_max;  /* space at extra (only when reading header) */
     Bytef   *name;      /* pointer to zero-terminated file name or Z_NULL */
     uInt    name_max;   /* space at name (only when reading header) */
@@ -200,7 +200,7 @@ ZEXTERN int ZEXPORT deflateInit OF((z_streamp strm, int level));
 
      Initializes the internal stream state for compression. The fields
    zalloc, zfree and opaque must be initialized before by the caller.
-   If zalloc and zfree are set to Z_nullptr, deflateInit updates them to
+   If zalloc and zfree are set to Z_NULL, deflateInit updates them to
    use default allocation functions.
 
      The compression level must be Z_DEFAULT_COMPRESSION, or between 0 and 9:
@@ -327,7 +327,7 @@ ZEXTERN int ZEXPORT inflateInit OF((z_streamp strm));
    value depends on the compression method), inflateInit determines the
    compression method from the zlib header and allocates all data structures
    accordingly; otherwise the allocation will be deferred to the first call of
-   inflate.  If zalloc and zfree are set to Z_nullptr, inflateInit updates them to
+   inflate.  If zalloc and zfree are set to Z_NULL, inflateInit updates them to
    use default allocation functions.
 
      inflateInit returns Z_OK if success, Z_MEM_ERROR if there was not enough
@@ -654,8 +654,8 @@ ZEXTERN int ZEXPORT deflateSetHeader OF((z_streamp strm,
    deflate().  The text, time, os, extra field, name, and comment information
    in the provided gz_header structure are written to the gzip header (xflag is
    ignored -- the extra flags are set according to the compression level).  The
-   caller must assure that, if not Z_nullptr, name and comment are terminated with
-   a zero byte, and that if extra is not Z_nullptr, that extra_len bytes are
+   caller must assure that, if not Z_NULL, name and comment are terminated with
+   a zero byte, and that if extra is not Z_NULL, that extra_len bytes are
    available there.  If hcrc is true, a gzip header crc is included.  Note that
    the current versions of the command-line version of gzip (up through version
    1.3.x) do not support header crc's, and will report that it is a "multi-part
@@ -806,13 +806,13 @@ ZEXTERN int ZEXPORT inflateGetHeader OF((z_streamp strm,
 
       The text, time, xflags, and os fields are filled in with the gzip header
    contents.  hcrc is set to true if there is a header CRC.  (The header CRC
-   was valid if done is set to one.)  If extra is not Z_nullptr, then extra_max
+   was valid if done is set to one.)  If extra is not Z_NULL, then extra_max
    contains the maximum number of bytes to write to extra.  Once done is true,
    extra_len contains the actual extra field length, and extra contains the
    extra field, or that field truncated if extra_max is less than extra_len.
-   If name is not Z_nullptr, then up to name_max characters are written there,
+   If name is not Z_NULL, then up to name_max characters are written there,
    terminated with a zero unless the length is greater than name_max.  If
-   comment is not Z_nullptr, then up to comm_max characters are written there,
+   comment is not Z_NULL, then up to comm_max characters are written there,
    terminated with a zero unless the length is greater than comm_max.  When
    any of extra, name, or comment are not Z_NULL and the respective field is
    not present in the header, then that field is set to Z_NULL to signal its
@@ -837,7 +837,7 @@ ZEXTERN int ZEXPORT inflateBackInit OF((z_streamp strm, int windowBits,
 
      Initialize the internal stream state for decompression using inflateBack()
    calls.  The fields zalloc, zfree and opaque in strm must be initialized
-   before the call.  If zalloc and zfree are Z_nullptr, then the default library-
+   before the call.  If zalloc and zfree are Z_NULL, then the default library-
    derived memory allocation routines are used.  windowBits is the base two
    logarithm of the window size, in the range 8..15.  window is a caller
    supplied buffer of that size.  Except for special applications where it is
@@ -901,8 +901,8 @@ ZEXTERN int ZEXPORT inflateBack OF((z_streamp strm,
      For convenience, inflateBack() can be provided input on the first call by
    setting strm->next_in and strm->avail_in.  If that input is exhausted, then
    in() will be called.  Therefore strm->next_in must be initialized before
-   calling inflateBack().  If strm->next_in is Z_nullptr, then in() will be called
-   immediately for input.  If strm->next_in is not Z_nullptr, then strm->avail_in
+   calling inflateBack().  If strm->next_in is Z_NULL, then in() will be called
+   immediately for input.  If strm->next_in is not Z_NULL, then strm->avail_in
    must also be initialized, and then if strm->avail_in is not zero, input will
    initially be taken from strm->next_in[0 .. strm->avail_in - 1].
 
@@ -919,7 +919,7 @@ ZEXTERN int ZEXPORT inflateBack OF((z_streamp strm,
    nature of the error), or Z_STREAM_ERROR if the stream was not properly
    initialized.  In the case of Z_BUF_ERROR, an input or output error can be
    distinguished using strm->next_in which will be Z_NULL only if in() returned
-   an error.  If strm->next is not Z_nullptr, then the Z_BUF_ERROR was due to
+   an error.  If strm->next is not Z_NULL, then the Z_BUF_ERROR was due to
    out() returning non-zero.  (in() will always be called before out(), so
    strm->next_in is assured to be defined if out() returns non-zero.)  Note
    that inflateBack() cannot return Z_OK.
@@ -1244,7 +1244,7 @@ ZEXTERN uLong ZEXPORT adler32 OF((uLong adler, const Bytef *buf, uInt len));
    An Adler-32 checksum is almost as reliable as a CRC32 but can be computed
    much faster. Usage example:
 
-     uLong adler = adler32(0L, Z_nullptr, 0);
+     uLong adler = adler32(0L, Z_NULL, 0);
 
      while (read_buffer(buffer, length) != EOF) {
        adler = adler32(adler, buffer, length);
@@ -1269,7 +1269,7 @@ ZEXTERN uLong ZEXPORT crc32   OF((uLong crc, const Bytef *buf, uInt len));
    performed within this function so it shouldn't be done by the application.
    Usage example:
 
-     uLong crc = crc32(0L, Z_nullptr, 0);
+     uLong crc = crc32(0L, Z_NULL, 0);
 
      while (read_buffer(buffer, length) != EOF) {
        crc = crc32(crc, buffer, length);
