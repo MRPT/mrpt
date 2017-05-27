@@ -189,9 +189,9 @@ void BlenderImporter::InternReadFile( const std::string& pFile,
 
 		// build a zlib stream
 		z_stream zstream;
-		zstream.opaque = Z_nullptr;
-		zstream.zalloc = Z_nullptr;
-		zstream.zfree  = Z_nullptr;
+        zstream.opaque = Z_NULL;
+        zstream.zalloc = Z_NULL;
+        zstream.zfree  = Z_NULL;
 		zstream.data_type = Z_BINARY;
 
 		// http://hewgill.com/journal/entries/349-how-to-decompress-gzip-stream-with-zlib
@@ -321,7 +321,7 @@ void BlenderImporter::ExtractScene(Scene& out, const FileDatabase& file)
 #ifndef ASSIMP_BUILD_BLENDER_NO_STATS
 	DefaultLogger::get()->info((format(),
 		"(Stats) Fields read: "	,file.stats().fields_read,
-		", pointers resolved: "	,file.stats().gets_resolved,  
+        ", pointers resolved: "	,file.stats().pointers_resolved,
 		", cache hits: "        ,file.stats().cache_hits,  
 		", cached objects: "	,file.stats().cached_objects
 	));
