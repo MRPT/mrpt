@@ -123,7 +123,6 @@ namespace mrpt
 		  */
 		class HWDRIVERS_IMPEXP CDUO3DCamera
 		{
-			static_assert(!std::is_copy_constructible<CDUO3DCamera>::value && !std::is_copy_assignable<CDUO3DCamera>::value, "Copy Check");
 		protected:
 			// members
 			// [USER-DEFINED]
@@ -142,6 +141,9 @@ namespace mrpt
 
 			/** Constructor: tries to open the camera with the given options. Raises an exception on error. \sa open() */
 			CDUO3DCamera( const TCaptureOptions_DUO3D & options );
+
+			CDUO3DCamera(const CDUO3DCamera &) = delete;
+			CDUO3DCamera& operator =(const CDUO3DCamera &) = delete;
 
 			/** Destructor  */
 			virtual ~CDUO3DCamera();
@@ -209,6 +211,9 @@ namespace mrpt
 			MRPT_MAKE_ALIGNED_OPERATOR_NEW
 
 		};	// End of class
+
+		static_assert(!std::is_copy_constructible<CDUO3DCamera>::value, "Copy Check");
+		static_assert(!std::is_copy_assignable<CDUO3DCamera>::value, "Assign Check");
 	} // End of namespace
 } // End of namespace
 #endif

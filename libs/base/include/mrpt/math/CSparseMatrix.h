@@ -358,7 +358,6 @@ namespace mrpt
 			  */
 			class BASE_IMPEXP CholeskyDecomp
 			{
-				static_assert(!std::is_copy_constructible<CholeskyDecomp>::value && !std::is_copy_assignable<CholeskyDecomp>::value, "Copy Check");
 			private:
 				css * m_symbolic_structure;
 				csn * m_numeric_structure;
@@ -373,6 +372,8 @@ namespace mrpt
 				  */
 				CholeskyDecomp(const CSparseMatrix &A);
 				CholeskyDecomp(const CholeskyDecomp &A) = delete;
+				
+				CholeskyDecomp& operator =(const CholeskyDecomp &) = delete;
 
 				/** Destructor */
 				virtual ~CholeskyDecomp();
@@ -398,6 +399,7 @@ namespace mrpt
 				  */
 				void update(const CSparseMatrix &new_SM);
 			};
+			static_assert(!std::is_copy_constructible<CholeskyDecomp>::value && !std::is_copy_assignable<CholeskyDecomp>::value, "Copy Check");
 
 			/** @} */
 

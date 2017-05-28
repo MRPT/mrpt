@@ -32,10 +32,12 @@ namespace mrpt
 		  */
 		class HWDRIVERS_IMPEXP CStereoGrabber_Bumblebee_libdc1394
 		{
-			static_assert(!std::is_copy_constructible<CStereoGrabber_Bumblebee_libdc1394>::value && !std::is_copy_assignable<CStereoGrabber_Bumblebee_libdc1394>::value, "Copy Check");
 		public:
 			/** Constructor. Parameters have the same meaning as in CImageGrabber_dc1394::CImageGrabber_dc1394() */
 			CStereoGrabber_Bumblebee_libdc1394(uint64_t cameraGUID, uint16_t cameraUnit, double   frameRate);
+			
+			CStereoGrabber_Bumblebee_libdc1394(const CStereoGrabber_Bumblebee_libdc1394 &) = delete;
+			CStereoGrabber_Bumblebee_libdc1394& operator =(const CStereoGrabber_Bumblebee_libdc1394 &) = delete;
 
 			/** Destructor */
 			virtual ~CStereoGrabber_Bumblebee_libdc1394(void);
@@ -55,6 +57,7 @@ namespace mrpt
 
 			bool			m_bInitialized;					//!< If this has been correctly initiated
 		};	// End of class
+		static_assert(!std::is_copy_constructible<CStereoGrabber_Bumblebee_libdc1394>::value && !std::is_copy_assignable<CStereoGrabber_Bumblebee_libdc1394>::value, "Copy Check");
 	} // End of NS
 } // End of NS
 
