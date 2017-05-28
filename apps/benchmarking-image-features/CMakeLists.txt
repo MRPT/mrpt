@@ -1,3 +1,4 @@
+project(benchmarkingImageFeatures_GUI)
 cmake_minimum_required(VERSION 2.8.11)
 
 project(benchmarking-image-features)
@@ -11,7 +12,7 @@ set(CMAKE_AUTOMOC ON)
 find_package(Qt5Widgets)
 
 # Tell CMake to create the benchmarking executable
-add_executable(benchmarking_GUI main.cpp mainwindow.h mainwindow.cpp)
+add_executable(${PROJECT_NAME} main.cpp mainwindow.h mainwindow.cpp)
 
 # Use the Widgets module from Qt 5.
-target_link_libraries(benchmarking_GUI Qt5::Widgets)
+target_link_libraries(${PROJECT_NAME} Qt5::Widgets)
