@@ -101,8 +101,6 @@ CFileSystemWatcher::~CFileSystemWatcher( )
 	if (m_hNotif)
 	{
 		// Kill thread:
-		if (!m_watchThread.isClear())
-			mrpt::system::terminateThread(m_watchThread);
 		CloseHandle(HANDLE(m_hNotif));
 		m_hNotif=nullptr;
 	}
