@@ -2,7 +2,7 @@
 
 
 CMainWindow::CMainWindow(QWidget *parent)
-    : QMainWindow(parent)
+	: QMainWindow(parent)
 {
 }
 

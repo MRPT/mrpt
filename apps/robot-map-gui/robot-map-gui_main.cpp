@@ -9,9 +9,9 @@
 
 
 /*---------------------------------------------------------------
-    APPLICATION: robot-map-gui
-    FILE: robot-map-gui_main.cpp
-    AUTHOR: LisGein <alred402@gmail.com>
+	APPLICATION: robot-map-gui
+	FILE: robot-map-gui_main.cpp
+	AUTHOR: LisGein <alred402@gmail.com>
 
 	See README.txt for instructions.
   ---------------------------------------------------------------*/
@@ -22,9 +22,9 @@
 
 int main(int argc, char **argv)
 {
-    QApplication app(argc, argv);
-    CMainWindow mainWindow;
-    mainWindow.show();
-    return app.exec();
+	QApplication app(argc, argv);
+	CMainWindow mainWindow;
+	mainWindow.show();
+	return app.exec();
 }
 
