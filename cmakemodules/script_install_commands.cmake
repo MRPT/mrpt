@@ -45,6 +45,13 @@ IF(WIN32)
 		ENDFOREACH(F)
 	ENDIF (EXISTS "${wxWidgets_LIB_DIR}")
 
+	# Qt5:
+	IF (${CMAKE_MRPT_HAS_Qt5})
+		FOREACH(F ${Qt5_COMPONENTS_LIBS})
+			INSTALL(FILES "${F}" DESTINATION bin)
+		ENDFOREACH(F)
+	ENDIF ()
+
 	# OpenCV:
 	IF (EXISTS "${OpenCV_DIR}/bin/Release")
 		FILE(GLOB_RECURSE EXTRA_DLLS "${OpenCV_DIR}/bin/*.dll") # This includes debug & release DLLs
