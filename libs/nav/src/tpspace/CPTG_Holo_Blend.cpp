@@ -9,7 +9,6 @@
 
 #include "nav-precomp.h" // Precomp header
 #include <mrpt/nav/tpspace/CPTG_Holo_Blend.h>
-#include <mrpt/math/wrap2pi.h>
 #include <mrpt/utils/types_math.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/utils/round.h>
@@ -51,7 +50,7 @@ double CPTG_Holo_Blend::eps = 1e-4;               // epsilon for detecting 1/0 s
 
 // As a macro instead of a function (uglier) to allow for const variables (safer)
 #define COMMON_PTG_DESIGN_PARAMS \
-	const double vxi = curVelLocal.vx, vyi = curVelLocal.vy; \
+	const double vxi = m_nav_dyn_state.curVelLocal.vx, vyi = m_nav_dyn_state.curVelLocal.vy; \
 	const double vf_mod = internal_get_v(dir); \
 	const double vxf = vf_mod*cos(dir), vyf = vf_mod* sin(dir); \
 	const double T_ramp = internal_get_T_ramp(dir);
@@ -170,9 +169,8 @@ dd = sqrt( (4*k2^2 + 4*k4^2)*t^2 + (4*k2*vxi + 4*k4*vyi)*t + vxi^2 + vyi^2 ) dt
 	}
 }
 
-void CPTG_Holo_Blend::updateCurrentRobotVel(const mrpt::math::TTwist2D &curVelLocal)
+void CPTG_Holo_Blend::onNewNavDynamicState()
 {
-	this->curVelLocal = curVelLocal;
 	m_pathStepCountCache.assign(m_alphaValuesCount, -1); // mark as invalid
 }
 
@@ -197,11 +195,6 @@ void CPTG_Holo_Blend::loadFromConfigFile(const mrpt::utils::CConfigFileBase &cfg
 	MRPT_LOAD_HERE_CONFIG_VAR_DEGREES_NO_DEFAULT(w_max_dps  ,double, W_MAX, cfg,sSection);
 	MRPT_LOAD_CONFIG_VAR(turningRadiusReference  ,double, cfg,sSection);
 
-	// For debugging only
-	MRPT_LOAD_HERE_CONFIG_VAR(vxi  ,double, curVelLocal.vx, cfg,sSection);
-	MRPT_LOAD_HERE_CONFIG_VAR(vyi  ,double, curVelLocal.vy, cfg,sSection);
-	MRPT_LOAD_HERE_CONFIG_VAR_DEGREES(wi   ,double, curVelLocal.omega, cfg, sSection);
-
 	MRPT_LOAD_HERE_CONFIG_VAR(expr_V, string, expr_V, cfg, sSection);
 	MRPT_LOAD_HERE_CONFIG_VAR(expr_W, string, expr_W, cfg, sSection);
 	MRPT_LOAD_HERE_CONFIG_VAR(expr_T_ramp, string, expr_T_ramp, cfg, sSection);
@@ -217,10 +210,6 @@ void CPTG_Holo_Blend::saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const s
 	cfg.write(sSection,"v_max_mps",V_MAX,   WN,WV, "Maximum linear velocity for trajectories [m/s].");
 	cfg.write(sSection,"w_max_dps",mrpt::utils::RAD2DEG(W_MAX),   WN,WV, "Maximum angular velocity for trajectories [deg/s].");
 	cfg.write(sSection,"turningRadiusReference",turningRadiusReference,   WN,WV, "An approximate dimension of the robot (not a critical parameter) [m].");
-
-	cfg.write(sSection,"vxi",curVelLocal.vx,   WN,WV, "(Only for debugging) Current robot velocity vx [m/s].");
-	cfg.write(sSection,"vyi",curVelLocal.vy,   WN,WV, "(Only for debugging) Current robot velocity vy [m/s].");
-	cfg.write(sSection, "wi", mrpt::utils::RAD2DEG(curVelLocal.omega),WN,WV,"(Only for debugging) Current robot velocity omega [deg/s].");
 
 	cfg.write(sSection, "expr_V", expr_V, WN, WV, "Math expr for |V| as a function of `dir`,`V_MAX`,`W_MAX`,`T_ramp_max`.");
 	cfg.write(sSection, "expr_W", expr_W, WN, WV, "Math expr for |omega| (disregarding the sign, only the module) as a function of `dir`,`V_MAX`,`W_MAX`,`T_ramp_max`.");
@@ -291,7 +280,7 @@ bool CPTG_Holo_Blend::inverseMap_WS2TP(double x, double y, int &out_k, double &o
 
 	const double err_threshold = 1e-3;
 	const double T_ramp = T_ramp_max;
-	const double vxi = curVelLocal.vx, vyi = curVelLocal.vy;
+	const double vxi = m_nav_dyn_state.curVelLocal.vx, vyi = m_nav_dyn_state.curVelLocal.vy;
 
 	// Use a Newton iterative non-linear optimizer to find the "exact" solution for (t,alpha)
 	// in each case: (1) t<T_ramp and (2) t>T_ramp
@@ -323,7 +312,7 @@ bool CPTG_Holo_Blend::inverseMap_WS2TP(double x, double y, int &out_k, double &o
 			r[1] = vyi * q[0] + q[0]*q[0] * TR2_ * (q[2]-vyi)   - y;
 		}
 		const double alpha = atan2(q[2], q[1]);
-		const double V_MAXsq = mrpt::utils::square(this->internal_get_v(alpha));
+		const double V_MAXsq = mrpt::math::square(this->internal_get_v(alpha));
 		r[2] = q[1]*q[1]+q[2]*q[2] - V_MAXsq;
 
 		// Jacobian: q=[t vxf vyf]   q0=t   q1=vxf   q2=vyf
@@ -430,7 +419,7 @@ void CPTG_Holo_Blend::getPathPose(uint16_t k, uint32_t step, mrpt::math::TPose2D
 	}
 
 	// Rotational part:
-	const double wi = curVelLocal.omega;
+	const double wi = m_nav_dyn_state.curVelLocal.omega;
 
 	if (t<T_ramp)
 	{
@@ -721,15 +710,13 @@ CPTG_Holo_Blend::CPTG_Holo_Blend() :
 	T_ramp_max(-1.0),
 	V_MAX(-1.0),
 	W_MAX(-1.0),
-	turningRadiusReference(0.30),
-	curVelLocal(0, 0, 0)
+	turningRadiusReference(0.30)
 {
 	internal_construct_exprs();
 }
 
 CPTG_Holo_Blend::CPTG_Holo_Blend(const mrpt::utils::CConfigFileBase &cfg, const std::string &sSection) :
-	turningRadiusReference(0.30),
-	curVelLocal(0, 0, 0)
+	turningRadiusReference(0.30)
 {
 	internal_construct_exprs();
 	this->loadFromConfigFile(cfg, sSection);
@@ -794,4 +781,3 @@ void CPTG_Holo_Blend::internal_initialize(const std::string & cacheFilename, con
 
 	m_pathStepCountCache.clear();
 }
-

@@ -85,7 +85,7 @@ void  CPoses3DSequence::getPose(unsigned int ind, CPose3D &outPose)
 {
 	if (ind>=m_poses.size()) THROW_EXCEPTION("getPose: Index out of range!!");
 
-	outPose = m_poses[ind];
+	outPose = CPose3D(m_poses[ind]);
 }
 
 /*---------------------------------------------------------------

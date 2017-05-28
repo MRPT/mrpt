@@ -229,7 +229,7 @@ namespace mrpt
 				//WARNING!: this shortcut to avoid repeated initialization makes the method somewhat
 				//faster, but makes it incapable of being used in more than one thread
 				//simultaneously!
-				using mrpt::utils::square;
+				using mrpt::math::square;
 				static mrpt::math::CMatrixFixedNumeric<double,2,2> J1(firstInverseJacobian());
 				static mrpt::math::CMatrixFixedNumeric<double,4,2> J2(secondInverseJacobian());
 				static mrpt::math::CMatrixFixedNumeric<double,3,4> J3(thirdInverseJacobian());

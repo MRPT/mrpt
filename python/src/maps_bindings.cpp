@@ -197,7 +197,7 @@ void CSimpleMap_insert(CSimpleMap &self, CPose3DPDF &in_posePDF, CSensoryFrame &
 CPose2D CMultiMetricMapPDF_getLastPose(CMultiMetricMapPDF& self, size_t i)
 {
     mrpt::math::TPose3D last_pose = *(self.getLastPose(i));
-    return CPose2D(last_pose);
+	return CPose2D(CPose3D(last_pose));
 }
 
 list CMultiMetricMapPDF_getPath(CMultiMetricMapPDF& self, size_t i)

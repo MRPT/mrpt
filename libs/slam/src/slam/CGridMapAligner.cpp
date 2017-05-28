@@ -332,7 +332,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 
 		// Compute the estimation using ALL the correspondences (NO ROBUST):
 		// ----------------------------------------------------------------------
-		mrpt::math::TPose2D noRobustEst; 
+		mrpt::math::TPose2D noRobustEst;
 		if (! mrpt::tfest::se2_l2(correspondences,noRobustEst) )
 		{
 			// There's no way to match the maps! e.g. no correspondences
@@ -344,7 +344,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 		}
 		else
 		{
-			outInfo.noRobustEstimation = noRobustEst;
+			outInfo.noRobustEstimation = mrpt::poses::CPose2D(noRobustEst);
 			MRPT_LOG_INFO( mrpt::format("[CGridMapAligner] Overall estimation(%u corrs, total: %u): (%.03f,%.03f,%.03fdeg)\n",
 				corrsCount,(unsigned)correspondences.size(),
 				outInfo.noRobustEstimation.x(),
@@ -410,7 +410,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 				pdf_SOG->push_back( best_mode );
 				outInfo.sog2 = pdf_SOG;
 
-				MRPT_LOG_INFO_STREAM << "[CGridMapAligner] amRobustMatch: "<< nB << " SOG modes reduced to "<< pdf_SOG->size() << " (most-likely) (min.inliers="<< min_inliers << ")\n";
+				MRPT_LOG_INFO_STREAM( "[CGridMapAligner] amRobustMatch: "<< nB << " SOG modes reduced to "<< pdf_SOG->size() << " (most-likely) (min.inliers="<< min_inliers << ")\n");
 
 			} // end of amRobustMatch
 			else
@@ -591,7 +591,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 							if ( used_landmarks2[j] ) continue;
 
 							lm2_pnts.getPoint(j,p2_j_local); // In local coords.
-							pdf_M2_j.mean = temptPose.mean + p2_j_local; // In (temptative) global coords:
+							pdf_M2_j.mean = mrpt::poses::CPoint2D(temptPose.mean + p2_j_local); // In (temptative) global coords:
 							pdf_M2_j.cov.get_unsafe(0,0) =
 							pdf_M2_j.cov.get_unsafe(1,1) = square( options.ransac_SOG_sigma_m );
 
@@ -852,7 +852,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 				outInfo.sog3 = pdf_SOG;
 
 				pdf_SOG->mergeModes( options.maxKLd_for_merge, false );
-				MRPT_LOG_DEBUG_STREAM << "[CGridMapAligner] " << pdf_SOG->size() << " SOG modes merged after ICP.";
+				MRPT_LOG_DEBUG_STREAM( "[CGridMapAligner] " << pdf_SOG->size() << " SOG modes merged after ICP.");
 
 			} // end multimapX
 

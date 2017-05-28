@@ -178,10 +178,10 @@ double	 CBeaconMap::internal_computeObservationLikelihood(
 	/* ===============================================================================================================
 		Refer to the papers:
 		- IROS 2008, "Efficient Probabilistic Range-Only SLAM",
-			http://www.mrpt.org/Paper:RO-SLAM_with_SOG
+			http://www.mrpt.org/paper-ro-slam-with-sog/
 
 		- ICRA 2008, "A Pure Probabilistic Approach to Range-Only SLAM",
-			http://www.mrpt.org/Paper:A_Pure_Probabilistic_Approach_to_Range-Only_SLAM_(ICRA_2008)
+			http://www.mrpt.org/tutorials/slam-algorithms/rangeonly_slam/
 	   =============================================================================================================== */
 
 	if ( CLASS_ID(CObservationBeaconRanges)==obs->GetRuntimeClass() )
@@ -366,14 +366,14 @@ bool  CBeaconMap::internal_insertObservation( const mrpt::obs::CObservation *obs
 						OBSERVATION TYPE: CObservationBeaconRanges
 		 ********************************************************************/
 
-		/* ===============================================================================================================
-		    Refer to the papers:
-			- IROS 2008, "Efficient Probabilistic Range-Only SLAM",
-			    http://www.mrpt.org/Paper:RO-SLAM_with_SOG
+		 /* ===============================================================================================================
+	 		Refer to the papers:
+	 		- IROS 2008, "Efficient Probabilistic Range-Only SLAM",
+	 			http://www.mrpt.org/paper-ro-slam-with-sog/
 
-			- ICRA 2008, "A Pure Probabilistic Approach to Range-Only SLAM",
-			    http://www.mrpt.org/Paper:A_Pure_Probabilistic_Approach_to_Range-Only_SLAM_(ICRA_2008)
-		   =============================================================================================================== */
+	 		- ICRA 2008, "A Pure Probabilistic Approach to Range-Only SLAM",
+	 			http://www.mrpt.org/tutorials/slam-algorithms/rangeonly_slam/
+	 	   =============================================================================================================== */
 
 		// Here we fuse OR create the beacon position PDF:
 		// --------------------------------------------------------

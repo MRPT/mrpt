@@ -287,28 +287,27 @@ CRenderizable& CRenderizable::setPose( const mrpt::poses::CPose3D &o )
 	m_pose = o;
 	return *this;
 }
-
-/*--------------------------------------------------------------
-					setPose
-  ---------------------------------------------------------------*/
+CRenderizable& CRenderizable::setPose( const mrpt::poses::CPose2D &o )
+{
+	m_pose = mrpt::poses::CPose3D(o);
+	return *this;
+}
 CRenderizable& CRenderizable::setPose( const mrpt::math::TPose3D &o )
 {
 	m_pose = mrpt::poses::CPose3D(o);
 	return *this;
 }
+CRenderizable& CRenderizable::setPose( const mrpt::math::TPose2D &o )
+{
+	m_pose = mrpt::poses::CPose3D(o);
+	return *this;
+}
 
-/*--------------------------------------------------------------
-					setPose
-  ---------------------------------------------------------------*/
 CRenderizable& CRenderizable::setPose( const mrpt::poses::CPoint3D &o )	//!< Set the 3D pose from a mrpt::poses::CPose3D object
 {
 	m_pose.setFromValues(o.x(), o.y(), o.z(),  0,0,0 );
 	return *this;
 }
-
-/*--------------------------------------------------------------
-					setPose
-  ---------------------------------------------------------------*/
 CRenderizable& CRenderizable::setPose( const mrpt::poses::CPoint2D &o )	//!< Set the 3D pose from a mrpt::poses::CPose3D object
 {
 	m_pose.setFromValues(o.x(), o.y(),0,  0,0,0 );
@@ -333,7 +332,7 @@ bool CRenderizable::traceRay(const mrpt::poses::CPose3D &o,double &dist) const	{
 }
 
 CRenderizablePtr &mrpt::opengl::operator<<(CRenderizablePtr &r,const mrpt::poses::CPose3D &p)	{
-	r->setPose(p+r->getPose());
+	r->setPose(p+mrpt::poses::CPose3D(r->getPose()));
 	return r;
 }
 

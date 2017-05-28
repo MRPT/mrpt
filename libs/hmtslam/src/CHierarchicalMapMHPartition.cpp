@@ -1172,7 +1172,7 @@ void  CHierarchicalMapMHPartition::getAs3DScene(
 	{
 		const CHMHMapNodePtr node = getNodeByID( it->first );
 		const CPose3D		&pose = it->second.mean ;
-		const CPose3D		&meanPose= it2->second ;
+		const CPose3D		meanPose= CPose3D(it2->second);
 
 		// The sphere of the node:
 		mrpt::opengl::CSpherePtr objSphere = mrpt::opengl::CSphere::Create();

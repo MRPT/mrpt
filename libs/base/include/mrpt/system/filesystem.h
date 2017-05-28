@@ -26,9 +26,12 @@ namespace mrpt
 		/** Returns the name of a proposed temporary file name */
 		std::string BASE_IMPEXP getTempFileName();
 
-		/** Returns the current working directory.
-		  */
+		/** Returns the current working directory  */
 		std::string BASE_IMPEXP getcwd();
+
+		/** Attempts to find the directory `[PREFIX/]share/mrpt/` and returns its absolute path, or empty string if not found. 
+		  * Example return paths: Linux after installing = `/usr/share/mrpt/`; manually-built system = `[CMAKE_SOURCE_DIR]/share/mrpt/`, etc.  */
+		std::string BASE_IMPEXP getShareMRPTDir();
 
 		/** Creates a directory
 		  * \return Returns false on any error, true on directory created or already existed.

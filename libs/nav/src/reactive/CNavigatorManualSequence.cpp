@@ -12,6 +12,8 @@
 #include <mrpt/nav/reactive/CNavigatorManualSequence.h>
 #include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/system/string_utils.h>
+#include <mrpt/kinematics/CVehicleVelCmd_DiffDriven.h>
+#include <mrpt/kinematics/CVehicleVelCmd_Holo.h>
 
 using namespace mrpt::nav;
 

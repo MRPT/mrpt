@@ -29,7 +29,7 @@ namespace mrpt
 			double starting_robot_dir, starting_robot_dist; //!< Default to 0, they can be used to reflect a robot starting at a position not at (0,0). Used in "PTG continuation"
 
 			/** List of properties. May vary for different user implementations of scores and/or different multi-objective optimizers.
-			* Common entries: `eval_prio`, `evaluation`
+			* See list of available variable names in docs for mrpt::nav::CAbstractPTGBasedReactive
 			*/
 			mrpt::utils::TParameters<double>  props;
 

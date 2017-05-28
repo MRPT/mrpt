@@ -10,7 +10,6 @@
 #include "nav-precomp.h" // Precomp header
 
 #include <mrpt/nav/reactive/CReactiveNavigationSystem3D.h>
-#include <mrpt/nav/tpspace/CPTG_DiffDrive_CollisionGridBased.h>
 #include <mrpt/poses/CPose3D.h>
 
 using namespace mrpt;
@@ -250,11 +249,13 @@ void CReactiveNavigationSystem3D::STEP3_WSpaceToTPSpace(
 	const size_t ptg_idx,
 	std::vector<double> &out_TPObstacles,
 	mrpt::nav::ClearanceDiagram &out_clearance,
-	const mrpt::poses::CPose2D &rel_pose_PTG_origin_wrt_sense,
+	const mrpt::math::TPose2D &rel_pose_PTG_origin_wrt_sense_,
 	const bool eval_clearance)
 {
 	ASSERT_EQUAL_(m_WS_Obstacles_inlevels.size(), m_robotShape.size());
 	ASSERT_(!m_ptgmultilevel.empty() && m_ptgmultilevel.begin()->PTGs.size()==m_robotShape.size());
+
+	const mrpt::poses::CPose2D rel_pose_PTG_origin_wrt_sense(rel_pose_PTG_origin_wrt_sense_);
 
 	for (size_t j=0;j<m_robotShape.size();j++)
 	{
@@ -317,3 +318,36 @@ void CReactiveNavigationSystem3D::loggingGetWSObstaclesAndShape(CLogFileRecord &
 	}
 	out_log.robotShape_radius = m_robotShape.getRadius(0);
 }
+
+bool CReactiveNavigationSystem3D::checkCollisionWithLatestObstacles() const
+{
+	const size_t nSlices = m_robotShape.size();
+
+	for (size_t idxH = 0; idxH < nSlices; ++idxH)
+	{
+		size_t nObs;
+		const float *xs, *ys, *zs;
+		m_WS_Obstacles_inlevels[idxH].getPointsBuffer(nObs, xs, ys, zs);
+
+		for (size_t i = 0; i < 1 /* assume all PTGs share the same robot shape! */; i++)
+		{
+			const auto ptg = this->m_ptgmultilevel[idxH].PTGs[i];
+			ASSERT_(ptg != nullptr);
+
+			const double R = ptg->getMaxRobotRadius();
+			for (size_t obs = 0; obs < nObs; obs++)
+			{
+				const double ox = xs[obs], oy = ys[obs], oz = zs[obs];
+				if (ox >= -R && ox <= R &&
+					oy >= -R && oy <= R &&
+					ptg->isPointInsideRobotShape(ox, oy)
+					)
+				{
+					return true; // collision!
+				}
+			}
+		}
+	}
+	return false; // No collision!
+}
+

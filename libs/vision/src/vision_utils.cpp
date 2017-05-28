@@ -1928,7 +1928,7 @@ void vision::StereoObs2BRObs(
 
 	// Indicate that the covariances have been calculated (for compatibility with earlier versions)
 	outObs.validCovariances = true;
-	outObs.setSensorPose( inObs.cameraPose );
+	outObs.setSensorPose( mrpt::poses::CPose3D(inObs.cameraPose) );
 
 } // end StereoObs2BRObs
 

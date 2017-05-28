@@ -269,7 +269,7 @@ bool CCANBusReader::tryToOpenComms(std::string *err_msg)
 		std::string s = "[CCANBusReader] Error trying to open CANBusReader at port ";
 		s+= e.what();
 		if (err_msg) *err_msg=s;
-		MRPT_LOG_ERROR_STREAM << s;
+		MRPT_LOG_ERROR_STREAM( s);
 		return false;
 	}
 }
@@ -402,7 +402,7 @@ bool CCANBusReader::waitContinuousSampleFrame(
 		catch (std::exception &e)
 		{
 			// Disconnected?
-			MRPT_LOG_ERROR_STREAM << "[waitContinuousSampleFrame] Disconnecting due to comms error: " << e.what();
+			MRPT_LOG_ERROR_STREAM( "[waitContinuousSampleFrame] Disconnecting due to comms error: " << e.what());
 			return false;
 		}
 

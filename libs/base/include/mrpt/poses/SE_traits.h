@@ -12,6 +12,7 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/math/lightweight_geom_data.h>
 
 namespace mrpt
 {
@@ -32,6 +33,8 @@ namespace mrpt
 			typedef mrpt::math::CArrayDouble<VECTOR_SIZE> array_t;
 			typedef mrpt::math::CMatrixFixedNumeric<double,VECTOR_SIZE,VECTOR_SIZE> matrix_VxV_t;
 			typedef CPose3D  pose_t;
+			typedef mrpt::math::TPose3D   lightweight_pose_t;
+			typedef mrpt::math::TPoint3D  point_t;
 
 			/** Exponential map in SE(3), with XYZ different from the first three values of "x" \sa pseudo_exp */
 			static inline void exp(const array_t &x, CPose3D &P) { CPose3D::exp(x, P, false); }
@@ -65,6 +68,8 @@ namespace mrpt
 			typedef mrpt::math::CArrayDouble<VECTOR_SIZE> array_t;
 			typedef mrpt::math::CMatrixFixedNumeric<double,VECTOR_SIZE,VECTOR_SIZE> matrix_VxV_t;
 			typedef CPose2D  pose_t;
+			typedef mrpt::math::TPose2D  lightweight_pose_t;
+			typedef mrpt::math::TPoint2D point_t;
 
 			/** Exponential map in SE(2) */
 			static inline void exp(const array_t &x, CPose2D &P) { P.x(x[0]); P.y(x[1]); P.phi(x[2]); }

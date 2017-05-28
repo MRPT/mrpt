@@ -265,7 +265,7 @@ protected:
 	{
 		const CPose3D p1(x1,y1,z1,yaw1,pitch1,roll1);
 		const CPose3DQuat q1(p1);
-		const CPose3D p1r = q1;
+		const CPose3D p1r = CPose3D(q1);
 
 		EXPECT_NEAR(0, (p1.getHomogeneousMatrixVal()-q1.getHomogeneousMatrixVal()).array().abs().sum(), 1e-5) <<
 			"p1.getHomogeneousMatrixVal():\n" << p1.getHomogeneousMatrixVal() << endl <<

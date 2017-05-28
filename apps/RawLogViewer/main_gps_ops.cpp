@@ -656,7 +656,7 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
 				refCoords.lon, refCoords.lat, refCoords.height,
 				_local_ENU,
 				true);
-			local_ENU = _local_ENU;
+			local_ENU = CPose3D(_local_ENU);
 		}
 
 		// All gps data:
@@ -713,7 +713,7 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
 										refCoords,
 										_local_ENU,
 										true);
-									local_ENU = _local_ENU;
+									local_ENU = CPose3D(_local_ENU);
 								}
 
 								// Local XYZ coordinates transform:
@@ -833,7 +833,7 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
 										refCoords.lon, refCoords.lat, refCoords.height,
 										_local_ENU,
 										true);
-									local_ENU = _local_ENU;
+									local_ENU = CPose3D(_local_ENU);
 								}
 
 								// Local XYZ coordinates transform:

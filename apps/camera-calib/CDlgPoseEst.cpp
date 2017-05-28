@@ -504,7 +504,7 @@ void CDlgPoseEst::threadProcessCorners()
 		cor1->setName("Camera Frame");
 		cor1->enableShowName(true);
 		cor1->setScale(0.5);
-		cor1->setPose(q_pose);
+		cor1->setPose(mrpt::poses::CPose3D(q_pose));
 		scene->insert( cor1 );
 
 		this->m_3Dview_cam->m_openGLScene = scene;

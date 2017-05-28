@@ -265,7 +265,7 @@ void  CRandomFieldGridMap2D::internal_clear()
 			//Set initial factors: L "prior factors" + 0 "Observation factors"
 			const size_t nPriorFactors = (this->getSizeX() -1) * this->getSizeY() + this->getSizeX() * (this->getSizeY() -1);		// L = (Nr-1)*Nc + Nr*(Nc-1); Full connected
 
-			MRPT_LOG_DEBUG_STREAM << "[clear] Generating " << nPriorFactors << " prior factors for a map size of N=" << nodeCount << endl;
+			MRPT_LOG_DEBUG_STREAM( "[clear] Generating " << nPriorFactors << " prior factors for a map size of N=" << nodeCount << endl);
 
 			m_gmrf.clear();
 			m_gmrf.initialize(nodeCount);
@@ -446,7 +446,7 @@ void  CRandomFieldGridMap2D::internal_clear()
 				} // end for "j"
 			} // end if_use_Occupancy
 
-			MRPT_LOG_DEBUG_STREAM << "[clear] Prior built in " << tictac.Tac() << " s ----------";
+			MRPT_LOG_DEBUG_STREAM( "[clear] Prior built in " << tictac.Tac() << " s ----------");
 
 			if (m_rfgm_run_update_upon_clear) {
 				//Solve system and update map estimation
@@ -1821,7 +1821,7 @@ void  CRandomFieldGridMap2D::insertObservation_KF2(
 {
 	MRPT_START
 
-	MRPT_LOG_DEBUG_STREAM << "Inserting KF2: (" << normReading << ") at Postion" << point << endl;
+	MRPT_LOG_DEBUG_STREAM( "Inserting KF2: (" << normReading << ") at Postion" << point << endl);
 
 	const signed	W = m_insertOptions_common->KF_W_size;
 	const size_t	K = 2*W*(W+1)+1;
@@ -2125,7 +2125,7 @@ void CRandomFieldGridMap2D::insertIndividualReading(const double sensorReading,c
 			?
 			m_insertOptions_common->GMRF_lambdaObs   // default information
 			:
-			1.0/mrpt::utils::square(reading_stddev)
+			1.0/mrpt::math::square(reading_stddev)
 		); break;
 	default:
 		THROW_EXCEPTION("insertObservation() isn't implemented for selected 'mapType'")

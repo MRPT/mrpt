@@ -45,6 +45,9 @@ void CHolonomicVFF::saveConfigFile(mrpt::utils::CConfigFileBase &c) const
   ---------------------------------------------------------------*/
 void CHolonomicVFF::navigate(const NavInput & ni, NavOutput &no)
 {
+	const auto ptg = getAssociatedPTG();
+	const double ptg_ref_dist = ptg ? ptg->getRefDistance() : 1.0;
+
 	// Create a log record for returning data.
 	no.logRecord = CLogFileRecord_VFF::Create();
 
@@ -87,7 +90,7 @@ void CHolonomicVFF::navigate(const NavInput & ni, NavOutput &no)
 	// ---------------------------------------------
 	if (m_enableApproachTargetSlowDown)
 	{
-		const double targetNearnessFactor = std::min(1.0, ni.target.norm() / (options.TARGET_SLOW_APPROACHING_DISTANCE));
+		const double targetNearnessFactor = std::min(1.0, ni.target.norm() / (options.TARGET_SLOW_APPROACHING_DISTANCE/ ptg_ref_dist));
 		no.desiredSpeed = ni.maxRobotSpeed * std::min(obstacleNearnessFactor, targetNearnessFactor);
 	}
 }

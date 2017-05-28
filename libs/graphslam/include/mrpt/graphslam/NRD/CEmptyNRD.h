@@ -25,11 +25,15 @@ namespace mrpt { namespace graphslam { namespace deciders {
  *
  * \ingroup mrpt_graphslam_grp
  */
-template<class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf>
+template<class GRAPH_T=typename mrpt::graphs::CNetworkOfPoses2DInf>
 class CEmptyNRD:
-	public mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_t>
+	public mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_T>
 {
-	typedef typename GRAPH_t::constraint_t::type_value pose_t;
+	/**\brief Handy typedefs */
+	/**\{*/
+	typedef typename GRAPH_T::constraint_t::type_value pose_t;
+	typedef typename GRAPH_T::global_pose_t global_pose_t;
+	/**\}*/
 	public:
 		CEmptyNRD();
 		~CEmptyNRD();
@@ -37,7 +41,7 @@ class CEmptyNRD:
 		bool updateState( mrpt::obs::CActionCollectionPtr action,
 				mrpt::obs::CSensoryFramePtr observations,
 				mrpt::obs::CObservationPtr observation );
-		pose_t getCurrentRobotPosEstimation() const;
+		global_pose_t getCurrentRobotPosEstimation() const;
 
 	private:
 		void registerNewNode();
@@ -46,23 +50,23 @@ class CEmptyNRD:
 
 //////////////////////////////////////////////////////////////////////////////
 
-template<class GRAPH_t>
-CEmptyNRD<GRAPH_t>::CEmptyNRD() { }
-template<class GRAPH_t>
-CEmptyNRD<GRAPH_t>::~CEmptyNRD() { }
+template<class GRAPH_T>
+CEmptyNRD<GRAPH_T>::CEmptyNRD() { }
+template<class GRAPH_T>
+CEmptyNRD<GRAPH_T>::~CEmptyNRD() { }
 
-template<class GRAPH_t>
-bool CEmptyNRD<GRAPH_t>::updateState(
+template<class GRAPH_T>
+bool CEmptyNRD<GRAPH_T>::updateState(
 		mrpt::obs::CActionCollectionPtr action,
 		mrpt::obs::CSensoryFramePtr observations,
 		mrpt::obs::CObservationPtr observation )  {return false;}
 
-template<class GRAPH_t>
-void CEmptyNRD<GRAPH_t>::registerNewNode() { }
+template<class GRAPH_T>
+void CEmptyNRD<GRAPH_T>::registerNewNode() { }
 
-template<class GRAPH_t>
-typename GRAPH_t::constraint_t::type_value
-CEmptyNRD<GRAPH_t>::getCurrentRobotPosEstimation() const {return pose_t();}
+template<class GRAPH_T>
+typename GRAPH_T::global_pose_t
+CEmptyNRD<GRAPH_T>::getCurrentRobotPosEstimation() const {return typename GRAPH_T::global_pose_t();}
 
 } } } // end of namespaces
 

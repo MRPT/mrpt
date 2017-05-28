@@ -133,14 +133,7 @@ namespace poses
 		/**  Computes the 3D point G such as \f$ G = this \oplus L \f$.  \sa composePoint    */
 		inline mrpt::math::TPoint3D operator +( const mrpt::math::TPoint3D &L) const { mrpt::math::TPoint3D G; composePoint(L[0],L[1],L[2], G[0],G[1],G[2]); return G; }
 
-		/**  Computes the 3D point L such as \f$ L = G \ominus this \f$.  \sa inverseComposePoint    */
-		inline CPoint3D operator -( const CPoint3D &G) const { CPoint3D L; inverseComposePoint(G[0],G[1],G[2], L[0],L[1],L[2]); return L; }
-
-		/**  Computes the 3D point L such as \f$ L = G \ominus this \f$.  \sa inverseComposePoint    */
-		inline mrpt::math::TPoint3D operator -( const mrpt::math::TPoint3D &G) const { mrpt::math::TPoint3D L; inverseComposePoint(G[0],G[1],G[2], L[0],L[1],L[2]); return L; }
-
-		/** Scalar multiplication (all x y z qr qx qy qz elements are multiplied by the scalar).
-		  */
+		/** Scalar multiplication (all x y z qr qx qy qz elements are multiplied by the scalar). */
 		virtual void operator *=(const double  s);
 
 		/** Make \f$ this = this \oplus b \f$  */
@@ -439,7 +432,13 @@ namespace poses
 
 	/** Unary - operator: return the inverse pose "-p" (Note that is NOT the same than a pose with all its arguments multiplied by "-1") */
 	CPose3DQuat BASE_IMPEXP operator -(const CPose3DQuat &p);
+	/**  Computes the 3D point L such as \f$ L = G \ominus this \f$.  \sa inverseComposePoint    */
+	CPoint3D BASE_IMPEXP operator -(const CPoint3D &G, const CPose3DQuat &p);
+	/**  Computes the 3D point L such as \f$ L = G \ominus this \f$.  \sa inverseComposePoint    */
+	mrpt::math::TPoint3D BASE_IMPEXP operator -(const mrpt::math::TPoint3D &G,const CPose3DQuat &p);
 
+	bool BASE_IMPEXP operator==(const CPose3DQuat &p1,const CPose3DQuat &p2);
+	bool BASE_IMPEXP operator!=(const CPose3DQuat &p1,const CPose3DQuat &p2);
 
 
 	} // End of namespace

@@ -12,7 +12,7 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DInterpolator.h>
 #include <mrpt/math/CSplineInterpolator1D.h>
-#include <mrpt/math/interp_fit.h>
+#include <mrpt/math/interp_fit.hpp>
 #include <mrpt/math/utils.h>
 #include <mrpt/random.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>

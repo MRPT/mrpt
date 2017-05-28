@@ -42,7 +42,7 @@ namespace mrpt
 		std::string getDescription() const MRPT_OVERRIDE;
 		bool inverseMap_WS2TP(double x, double y, int &out_k, double &out_d, double tolerance_dist = 0.10) const MRPT_OVERRIDE;
 		bool PTG_IsIntoDomain( double x, double y ) const MRPT_OVERRIDE;
-		void updateCurrentRobotVel(const mrpt::math::TTwist2D &curVelLocal) MRPT_OVERRIDE;
+		void onNewNavDynamicState() MRPT_OVERRIDE;
 
 		/** Converts a discretized "alpha" value into a feasible motion command or action. See derived classes for the meaning of these actions */
 		virtual mrpt::kinematics::CVehicleVelCmdPtr directionToMotionCommand(uint16_t k) const MRPT_OVERRIDE;
@@ -66,7 +66,6 @@ namespace mrpt
 		double T_ramp_max;
 		double V_MAX, W_MAX;
 		double turningRadiusReference;
-		mrpt::math::TTwist2D curVelLocal;
 
 		std::string expr_V, expr_W, expr_T_ramp;
 		mutable std::vector<int> m_pathStepCountCache;

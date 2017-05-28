@@ -18,7 +18,6 @@
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/math/lightweight_geom_data.h>
-#include <mrpt/utils/stl_serialization.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
@@ -1656,6 +1655,7 @@ void math::generateAxisBaseFromDirectionAndAxis(const double (&vec)[3],char coor
 	char coord1=(coord+1)%3;
 	char coord2=(coord+2)%3;
 	matrix.setSize(4,4);
+	matrix(3,3)=1.0;
 	for (size_t i=0;i<3;i++) matrix.set_unsafe(i,coord,vec[i]);
 	matrix.set_unsafe(0,coord1,0);
 	double h=hypot(vec[1],vec[2]);
@@ -2006,4 +2006,3 @@ bool math::traceRay(const vector<TPolygonWithPlane> &vec,const CPose3D &pose,dou
 	}
 	return res;
 }
-

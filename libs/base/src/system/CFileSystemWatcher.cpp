@@ -9,8 +9,6 @@
 
 #include "base-precomp.h"  // Precompiled headers
 
-
-
 #include <mrpt/config.h>
 
 #ifdef MRPT_OS_WINDOWS
@@ -29,12 +27,10 @@
 	#include <stdio.h>
 #endif
 
-#include <cstring>
-
+#include <cstring>                           // for NULL, memcpy
 #include <mrpt/system/CFileSystemWatcher.h>
-#include <mrpt/system/filesystem.h>
-#include <mrpt/system/os.h>
-
+#include <mrpt/system/filesystem.h>          // for directoryExists()
+#include <mrpt/utils/mrpt_macros.h>          // for THROW_EXCEPTION, ASSERT_
 
 using namespace mrpt::system;
 using namespace std;

@@ -10,7 +10,6 @@
 #include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/math/filters.h>
-#include <cmath>
 
 using namespace mrpt::math;
 

@@ -31,7 +31,7 @@ bool tfest::se2_l2(
 {
 	mrpt::math::TPose2D p;
 	const bool ret = tfest::se2_l2(in_correspondences,p, &out_transformation.cov );
-	out_transformation.mean = p;
+	out_transformation.mean = CPose2D(p);
 	return ret;
 }
 

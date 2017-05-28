@@ -472,9 +472,9 @@ void CVelodyneScanner::close()
 	{
 		shutdown(m_hPositionSock, 2 ); //SD_BOTH  );
 #ifdef MRPT_OS_WINDOWS
-		closesocket( m_hDataSock );
+		closesocket( m_hPositionSock );
 #else
-		::close( m_hDataSock );
+		::close( m_hPositionSock );
 #endif
 		m_hPositionSock=INVALID_SOCKET;
 	}

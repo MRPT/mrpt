@@ -87,7 +87,8 @@ namespace mrpt
 		void setConfigFileSectionName(const std::string &sectName); //!< Defines the name of the section used in initialize()
 		std::string getConfigFileSectionName() const; //!< Gets the name of the section used in initialize()
 
-
+		virtual double getTargetApproachSlowDownDistance() const = 0; //!< Returns the actual value of this parameter [m], as set via the children class options structure. \sa setTargetApproachSlowDownDistance()
+		virtual void setTargetApproachSlowDownDistance(const double dist) = 0; //!< Sets the actual value of this parameter [m]. \sa getTargetApproachSlowDownDistance()
 
 		/** Class factory from class name, e.g. `"CHolonomicVFF"`, etc.
 		  * \exception std::logic_error On invalid or missing parameters. */

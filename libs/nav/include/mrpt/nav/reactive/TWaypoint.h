@@ -10,6 +10,8 @@
 
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/system/datetime.h>
+#include <mrpt/opengl/opengl_frwds.h>
+#include <mrpt/utils/TColor.h>
 #include <vector>
 #include <string>
 
@@ -29,6 +31,9 @@ namespace mrpt
 		  * of the robot at this waypoint. Some navigator implementations may ignore 
 		  * this preferred heading anyway, read the docs of each implementation to find it out. */
 		double  target_heading;
+
+		std::string target_frame_id; //!< (Default="map") Frame ID in which target is given. Optional, use only for submapping applications.
+
 		double  allowed_distance; //!< [Must be set by the user] How close should the robot get to this waypoint for it to be considered reached.
 
 		/** [Default=true] Whether it is allowed to the navigator to proceed to a more advanced waypoint 
@@ -38,14 +43,25 @@ namespace mrpt
 		  */
 		bool    allow_skip;
 
-		int counter_seen_reachable; //!< (Initialized to 0 automatically) How many times this waypoint has been seen as "reachable" before it being the current active waypoint.
-
 		bool isValid() const; //!< Check whether all the minimum mandatory fields have been filled by the user.
 		TWaypoint(); //!< Ctor with default values
-		TWaypoint(double target_x, double target_y, double allowed_distance, bool allow_skip = true);
+		TWaypoint(double target_x, double target_y, double allowed_distance, bool allow_skip = true, double target_heading_ = INVALID_NUM);
 		std::string getAsText() const; //!< get in human-readable format
 
 		static const double INVALID_NUM; //!< The default value of fields (used to detect non-set values)
+	};
+
+	/** used in getAsOpenglVisualization() */
+	struct NAV_IMPEXP TWaypointsRenderingParams
+	{
+		TWaypointsRenderingParams();
+
+		double outter_radius, inner_radius;
+		double outter_radius_non_skippable, inner_radius_non_skippable;
+		double outter_radius_reached, inner_radius_reached;
+		double heading_arrow_len;
+		mrpt::utils::TColor  color_regular, color_current_goal, color_reached;
+		bool show_labels;
 	};
 
 	/** The struct for requesting navigation requests for a sequence of waypoints.
@@ -60,13 +76,18 @@ namespace mrpt
 
 		TWaypointSequence(); //!< Ctor with default values
 		std::string getAsText() const; //!< Gets navigation params as a human-readable format
+		/** Renders the sequence of waypoints (previous contents of `obj` are cleared) */
+		void getAsOpenglVisualization(mrpt::opengl::CSetOfObjects &obj, const mrpt::nav::TWaypointsRenderingParams &params = mrpt::nav::TWaypointsRenderingParams()) const;
 	};
 
 	/** A waypoint with an execution status. \ingroup nav_reactive */
 	struct NAV_IMPEXP TWaypointStatus : public TWaypoint
 	{
-		bool reached; //!< Whether this waypoint has been reached already (to within the allowed distance as per user specifications).
+		bool reached; //!< Whether this waypoint has been reached already (to within the allowed distance as per user specifications) or skipped.
+		bool skipped; //!< If `reached==true` this boolean tells whether the waypoint was physically reached (false) or marked as reached because it was skipped (true).
 		mrpt::system::TTimeStamp  timestamp_reach; //!< Timestamp of when this waypoint was reached. (Default=INVALID_TIMESTAMP means not reached so far)
+		int counter_seen_reachable; //!< (Initialized to 0 automatically) How many times this waypoint has been seen as "reachable" before it being the current active waypoint.
+
 
 		TWaypointStatus();
 		TWaypointStatus & operator =(const TWaypoint &wp);
@@ -89,6 +110,9 @@ namespace mrpt
 
 		TWaypointStatusSequence(); //!< Ctor with default values
 		std::string getAsText() const; //!< Gets navigation params as a human-readable format
+
+		/** Renders the sequence of waypoints (previous contents of `obj` are cleared) */
+		void getAsOpenglVisualization(mrpt::opengl::CSetOfObjects &obj, const mrpt::nav::TWaypointsRenderingParams &params = mrpt::nav::TWaypointsRenderingParams()) const;
 	};
 
   }

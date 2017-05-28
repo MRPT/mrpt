@@ -141,22 +141,14 @@ namespace obs
 		{
 			std::vector<float>   x,y,z;
 			std::vector<uint8_t> intensity; //!< Color [0,255]
+			std::vector<mrpt::system::TTimeStamp> timestamp; //!< Timestamp for each point (if `generatePerPointTimestamp`=true in `TGeneratePointCloudParameters`), or empty vector if not populated (default).
+			std::vector<float>   azimuth; //!< Original azimuth of each point (if `generatePerPointAzimuth`=true, empty otherwise )
 
 			inline size_t size() const {
 				return x.size();
 			}
-			inline void clear() {
-				x.clear();
-				y.clear();
-				z.clear();
-				intensity.clear();
-			}
-			inline void clear_deep() {
-				{ std::vector<float> dumm; x.swap(dumm); }
-				{ std::vector<float> dumm; y.swap(dumm); }
-				{ std::vector<float> dumm; z.swap(dumm); }
-				{ std::vector<uint8_t> dumm; intensity.swap(dumm); }
-			}
+			void clear(); //!< Sets all vectors to zero length
+			void clear_deep(); //!< Like clear(), but also enforcing freeing memory
 		};
 
 		/** Optionally, raw data can be converted into a 3D point cloud (local coordinates wrt the sensor, not the vehicle) 
@@ -182,6 +174,8 @@ namespace obs
 			bool   filterBynROI; //!< Enable nROI filter (Default:false): do NOT add points inside a given 3D box
 			bool   filterOutIsolatedPoints; //!< (Default:false) Simple filter to remove spurious returns (e.g. Sun reflected on large water extensions)
 			bool   dualKeepStrongest, dualKeepLast; //!< (Default:true) In VLP16 dual mode, keep both or just one of the returns.
+			bool   generatePerPointTimestamp;       //!< (Default:false) If `true`, populate the vector timestamp
+			bool   generatePerPointAzimuth;         //!< (Default:false) If `true`, populate the vector azimuth
 
 			TGeneratePointCloudParameters();
 		};

@@ -380,7 +380,7 @@ void CPointsMap::determineMatching2D(
 
 	// We'll assume that the real allocated memory in the source buffers at least have room for a maximum
 	//  of 3 more floats, and pad with zeroes there (yeah, fuck correct-constness....)
-	// JLBC OCT/2016: resize() methods in maps have been modified to enforce capacities to be 4*N by design, 
+	// JLBC OCT/2016: resize() methods in maps have been modified to enforce capacities to be 4*N by design,
 	// but will leave this code here just in case (for some edge cases?)
 	if ( otherMap->x.capacity()<nLocalPoints_4align ||
 		 otherMap->y.capacity()<nLocalPoints_4align )
@@ -442,8 +442,8 @@ void CPointsMap::determineMatching2D(
 
 #else
 	// Non SSE2 version:
-	const Eigen::Map<Eigen::Matrix<float,Eigen::Dynamic,1> > x_org( const_cast<float*>(&otherMap->x[0]),otherMap->x.size(),1 ); 
-	const Eigen::Map<Eigen::Matrix<float,Eigen::Dynamic,1> > y_org( const_cast<float*>(&otherMap->y[0]),otherMap->y.size(),1 ); 
+	const Eigen::Map<Eigen::Matrix<float,Eigen::Dynamic,1> > x_org( const_cast<float*>(&otherMap->x[0]),otherMap->x.size(),1 );
+	const Eigen::Map<Eigen::Matrix<float,Eigen::Dynamic,1> > y_org( const_cast<float*>(&otherMap->y[0]),otherMap->y.size(),1 );
 
 	Eigen::Array<float,Eigen::Dynamic,1>  x_locals = otherMapPose.x + cos_phi * x_org.array() - sin_phi *  y_org.array() ;
 	Eigen::Array<float,Eigen::Dynamic,1>  y_locals = otherMapPose.y + sin_phi * x_org.array() + cos_phi *  y_org.array() ;
@@ -921,7 +921,7 @@ void CPointsMap::boundingBox(
 
 			// We'll assume that the real allocated memory in the source buffers at least have room for a maximum
 			//  of 3 more floats, and pad with zeroes there (yeah, fuck correct-constness....)
-			// JLBC OCT/2016: resize() methods in maps have been modified to enforce capacities to be 4*N by design, 
+			// JLBC OCT/2016: resize() methods in maps have been modified to enforce capacities to be 4*N by design,
 			// but will leave this code here just in case (for some edge cases?)
 			if ( x.capacity()<nPoints_4align ||
 				 y.capacity()<nPoints_4align ||
@@ -1771,16 +1771,7 @@ bool  CPointsMap::internal_insertObservation(
 					*o,						// The laser range scan observation
 					&robotPose3D				// The robot pose
 					);
-
-				// Don't build this vector if is not used later!
-//				if (!insertionOptions.disableDeletion)
-//				{
-//					const size_t n = size();
-//					checkForDeletion.resize(n);
-//					for (size_t i=0;i<n;i++) checkForDeletion[i] = true;
-//				}
 			}
-
 
 			return true;
 		}
@@ -2048,7 +2039,7 @@ void CPointsMap::loadFromVelodyneScan(
 
 	// global 3D pose:
 	CPose3D sensorGlobalPose;
-	if (robotPose) 
+	if (robotPose)
 	      sensorGlobalPose = *robotPose + scan.sensorPose;
 	else  sensorGlobalPose = scan.sensorPose;
 
@@ -2077,4 +2068,3 @@ void CPointsMap::loadFromVelodyneScan(
 			);
 	}
 }
-

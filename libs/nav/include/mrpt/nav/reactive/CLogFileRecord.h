@@ -10,7 +10,6 @@
 #define CLogFileRecord_H
 
 #include <mrpt/utils/CSerializable.h>
-#include <mrpt/poses/CPose2D.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/utils/CMemoryStream.h>
 #include <mrpt/utils/TParameters.h>
@@ -40,8 +39,7 @@ namespace nav
 
 		/** The structure used to store all relevant information about each
 		  *  transformation into TP-Space.
-		  *  \ingroup nav_reactive
-		  */
+		  *  \ingroup nav_reactive  */
 		struct NAV_IMPEXP TInfoPerPTG
 		{
 			std::string              PTG_desc;      //!< A short description for the applied PTG
@@ -57,11 +55,9 @@ namespace nav
 			mrpt::nav::ClearanceDiagram  clearance;    //!< Clearance for each path
 		};
 
+		mrpt::nav::CParameterizedTrajectoryGenerator::TNavDynamicState navDynState;
 		uint32_t  nPTGs;  //!< The number of PTGS:
-
-		 /** The info for each applied PTG: must contain "nPTGs * nSecDistances" elements */
-		mrpt::aligned_containers<TInfoPerPTG>::vector_t infoPerPTG;
-
+		mrpt::aligned_containers<TInfoPerPTG>::vector_t infoPerPTG; //!< The info for each applied PTG: must contain "nPTGs * nSecDistances" elements
 		int32_t   nSelectedPTG;   //!< The selected PTG.
 
 		/** Known values: 
@@ -77,8 +73,8 @@ namespace nav
 		std::map<std::string, mrpt::system::TTimeStamp>  timestamps;
 		std::map<std::string, std::string>  additional_debug_msgs;  //!< Additional debug traces
 		mrpt::maps::CSimplePointsMap  WS_Obstacles, WS_Obstacles_original;  //!< The WS-Obstacles
-		mrpt::poses::CPose2D          robotOdometryPose; //!< The robot pose (from raw odometry or a localization system).
-		mrpt::poses::CPose2D          relPoseSense, relPoseVelCmd; //! Relative poses (wrt to robotOdometryPose) for extrapolated paths at two instants: time of obstacle sense, and future pose of motion comman
+		mrpt::math::TPose2D           robotPoseLocalization, robotPoseOdometry; //!< The robot pose (from odometry and from the localization/SLAM system).
+		mrpt::math::TPose2D           relPoseSense, relPoseVelCmd; //! Relative poses (wrt to robotPoseLocalization) for extrapolated paths at two instants: time of obstacle sense, and future pose of motion comman
 		mrpt::math::TPoint2D          WS_target_relative;  //!< The relative location of target point in WS.
 
 		mrpt::kinematics::CVehicleVelCmdPtr    cmd_vel;  //!< The final motion command sent to robot, in "m/sec" and "rad/sec".
@@ -92,9 +88,8 @@ namespace nav
 		// "NOP motion command" mode variables:
 		int16_t                ptg_index_NOP;  //!< Negative means no NOP mode evaluation, so the rest of "NOP variables" should be ignored.
 		uint16_t               ptg_last_k_NOP;
-		mrpt::poses::CPose2D   rel_cur_pose_wrt_last_vel_cmd_NOP, rel_pose_PTG_origin_wrt_sense_NOP;
-		mrpt::math::TTwist2D   ptg_last_curRobotVelLocal;
-
+		mrpt::math::TPose2D    rel_cur_pose_wrt_last_vel_cmd_NOP, rel_pose_PTG_origin_wrt_sense_NOP;
+		mrpt::nav::CParameterizedTrajectoryGenerator::TNavDynamicState ptg_last_navDynState;
 	};
 	  DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CLogFileRecord, mrpt::utils::CSerializable, NAV_IMPEXP )
 

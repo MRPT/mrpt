@@ -24,6 +24,7 @@
 #include <mrpt/poses/CPosePDFGaussianInf.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPose3DPDFGaussianInf.h>
+#include <mrpt/graphs/TNodeAnnotations.h>
 
 namespace mrpt
 {
@@ -39,18 +40,18 @@ namespace mrpt
 
 			template <class POSE_PDF> struct TPosePDFHelper
 			{
-				static inline void copyFrom2D(POSE_PDF &p, const CPosePDFGaussianInf &pdf ) { p.copyFrom( pdf ); }
-				static inline void copyFrom3D(POSE_PDF &p, const CPose3DPDFGaussianInf &pdf ) { p.copyFrom( pdf ); }
+				static inline void copyFrom2D(POSE_PDF &p, const CPosePDFGaussianInf &pdf) { p.copyFrom(pdf); }
+				static inline void copyFrom3D(POSE_PDF &p, const CPose3DPDFGaussianInf &pdf) { p.copyFrom(pdf); }
 			};
 			template <> struct TPosePDFHelper<CPose2D>
 			{
-				static inline void copyFrom2D(CPose2D &p, const CPosePDFGaussianInf &pdf ) { p = pdf.mean; }
-				static inline void copyFrom3D(CPose2D &p, const CPose3DPDFGaussianInf &pdf ) { p = CPose2D(pdf.mean); }
+				static inline void copyFrom2D(CPose2D &p, const CPosePDFGaussianInf &pdf) { p = pdf.mean; }
+				static inline void copyFrom3D(CPose2D &p, const CPose3DPDFGaussianInf &pdf) { p = CPose2D(pdf.mean); }
 			};
 			template <> struct TPosePDFHelper<CPose3D>
 			{
-				static inline void copyFrom2D(CPose3D &p, const CPosePDFGaussianInf &pdf ) { p = pdf.mean; }
-				static inline void copyFrom3D(CPose3D &p, const CPose3DPDFGaussianInf &pdf ) { p = pdf.mean; }
+				static inline void copyFrom2D(CPose3D &p, const CPosePDFGaussianInf &pdf) { p = CPose3D(pdf.mean); }
+				static inline void copyFrom3D(CPose3D &p, const CPose3DPDFGaussianInf &pdf) { p = pdf.mean; }
 			};
 
 			/// a helper struct with static template functions \sa CNetworkOfPoses
@@ -60,17 +61,17 @@ namespace mrpt
 				static void write_VERTEX_line(const TNodeID id, const mrpt::poses::CPose2D &p, std::ofstream &f)
 				{
 					//  VERTEX2 id x y phi
-					f << "VERTEX2 " << id << " " << p.x() << " " << p.y() << " " << p.phi() << endl;
+					f << "VERTEX2 " << id << " " << p.x() << " " << p.y() << " " << p.phi();
 				}
 				static void write_VERTEX_line(const TNodeID id, const mrpt::poses::CPose3D &p, std::ofstream &f)
 				{
 					//  VERTEX3 id x y z roll pitch yaw
 					// **CAUTION** In the TORO graph format angles are in the RPY order vs. MRPT's YPR.
-					f << "VERTEX3 " << id << " " << p.x() << " " << p.y() << " " << p.z()<< " " << p.roll()<< " " << p.pitch()<< " " << p.yaw() << endl;
+					f << "VERTEX3 " << id << " " << p.x() << " " << p.y() << " " << p.z()<< " " << p.roll()<< " " << p.pitch()<< " " << p.yaw();
 				}
 
 
-				static void write_EDGE_line( const TPairNodeIDs &edgeIDs,const CPosePDFGaussianInf & edge, std::ofstream &f)
+				static void write_EDGE_line(const TPairNodeIDs &edgeIDs,const CPosePDFGaussianInf & edge, std::ofstream &f)
 				{
 					//  EDGE2 from_id to_id Ax Ay Aphi inf_xx inf_xy inf_yy inf_pp inf_xp inf_yp
 					// **CAUTION** TORO docs say "from_id" "to_id" in the opposite order, but it seems from the data that this is the correct expected format.
@@ -79,7 +80,7 @@ namespace mrpt
 							edge.cov_inv(0,0)<<" "<<edge.cov_inv(0,1)<<" "<<edge.cov_inv(1,1)<<" "<<
 							edge.cov_inv(2,2)<<" "<<edge.cov_inv(0,2)<<" "<<edge.cov_inv(1,2) << endl;
 				}
-				static void write_EDGE_line( const TPairNodeIDs &edgeIDs,const CPose3DPDFGaussianInf & edge, std::ofstream &f)
+				static void write_EDGE_line(const TPairNodeIDs &edgeIDs,const CPose3DPDFGaussianInf & edge, std::ofstream &f)
 				{
 					//  EDGE3 from_id to_id Ax Ay Az Aroll Apitch Ayaw inf_11 inf_12 .. inf_16 inf_22 .. inf_66
 					// **CAUTION** In the TORO graph format angles are in the RPY order vs. MRPT's YPR.
@@ -94,26 +95,26 @@ namespace mrpt
 							edge.cov_inv(4,4)<<" "<<edge.cov_inv(4,3)<<" "<<
 							edge.cov_inv(3,3) << endl;
 				}
-				static void write_EDGE_line( const TPairNodeIDs &edgeIDs,const CPosePDFGaussian & edge, std::ofstream &f)
+				static void write_EDGE_line(const TPairNodeIDs &edgeIDs,const CPosePDFGaussian & edge, std::ofstream &f)
 				{
 					CPosePDFGaussianInf p;
 					p.copyFrom(edge);
 					write_EDGE_line(edgeIDs,p,f);
 				}
-				static void write_EDGE_line( const TPairNodeIDs &edgeIDs,const CPose3DPDFGaussian & edge, std::ofstream &f)
+				static void write_EDGE_line(const TPairNodeIDs &edgeIDs,const CPose3DPDFGaussian & edge, std::ofstream &f)
 				{
 					CPose3DPDFGaussianInf p;
 					p.copyFrom(edge);
 					write_EDGE_line(edgeIDs,p,f);
 				}
-				static void write_EDGE_line( const TPairNodeIDs &edgeIDs,const mrpt::poses::CPose2D & edge, std::ofstream &f)
+				static void write_EDGE_line(const TPairNodeIDs &edgeIDs,const mrpt::poses::CPose2D & edge, std::ofstream &f)
 				{
 					CPosePDFGaussianInf p;
 					p.mean = edge;
 					p.cov_inv.unit(3,1.0);
 					write_EDGE_line(edgeIDs,p,f);
 				}
-				static void write_EDGE_line( const TPairNodeIDs &edgeIDs,const mrpt::poses::CPose3D & edge, std::ofstream &f)
+				static void write_EDGE_line(const TPairNodeIDs &edgeIDs,const mrpt::poses::CPose3D & edge, std::ofstream &f)
 				{
 					CPose3DPDFGaussianInf p;
 					p.mean = edge;
@@ -133,13 +134,21 @@ namespace mrpt
 						THROW_EXCEPTION_FMT("Error opening file '%s' for writing",fil.c_str());
 
 					// 1st: Nodes
-					for (typename graph_t::global_poses_t::const_iterator itNod = g->nodes.begin();itNod!=g->nodes.end();++itNod)
+					for (typename graph_t::global_poses_t::const_iterator
+							itNod = g->nodes.begin();
+							itNod!=g->nodes.end();
+							++itNod) {
 						write_VERTEX_line(itNod->first, itNod->second, f);
+
+						// write whatever the NODE_ANNOTATION instance want's to write.
+						f << " | " << itNod->second.retAnnotsAsString() << endl;
+
+					}
 
 					// 2nd: Edges:
 					for (typename graph_t::const_iterator it=g->begin();it!=g->end();++it)
 						if (it->first.first!=it->first.second)	// Ignore self-edges, typically from importing files with EQUIV's
-							write_EDGE_line( it->first, it->second, f);
+							write_EDGE_line(it->first, it->second, f);
 
 				} // end save_graph
 
@@ -220,15 +229,15 @@ namespace mrpt
 						const string lin = s.str();
 
 						string key;
-						if ( !(s >> key) || key.empty() )
-							THROW_EXCEPTION(format("Line %u: Can't read string for entry type in: '%s'", lineNum, lin.c_str() ) );
+						if (!(s >> key) || key.empty())
+							THROW_EXCEPTION(format("Line %u: Can't read string for entry type in: '%s'", lineNum, lin.c_str()));
 
-						if ( mrpt::system::strCmpI(key,"EQUIV") )
+						if (mrpt::system::strCmpI(key,"EQUIV"))
 						{
 							// Process these ones at the end, for now store in a list:
 							TNodeID  id1,id2;
 							if (!(s>> id1 >> id2))
-								THROW_EXCEPTION(format("Line %u: Can't read id1 & id2 in EQUIV line: '%s'", lineNum, lin.c_str() ) );
+								THROW_EXCEPTION(format("Line %u: Can't read id1 & id2 in EQUIV line: '%s'", lineNum, lin.c_str()));
 							lstEquivs[std::max(id1,id2)] = std::min(id1,id2);
 						}
 					} // end 1st pass
@@ -255,19 +264,19 @@ namespace mrpt
 						//  EDGE_SE3:QUAT from_id to_id Ax Ay Az qx qy qz qw inf_11 inf_12 .. inf_16 inf_22 .. inf_66
 						//  EQUIV id1 id2
 						string key;
-						if ( !(s >> key) || key.empty() )
-							THROW_EXCEPTION(format("Line %u: Can't read string for entry type in: '%s'", lineNum, lin.c_str() ) );
+						if (!(s >> key) || key.empty())
+							THROW_EXCEPTION(format("Line %u: Can't read string for entry type in: '%s'", lineNum, lin.c_str()));
 
-						if ( strCmpI(key,"VERTEX2") || strCmpI(key,"VERTEX") || strCmpI(key,"VERTEX_SE2") )
+						if (strCmpI(key,"VERTEX2") || strCmpI(key,"VERTEX") || strCmpI(key,"VERTEX_SE2"))
 						{
 							TNodeID  id;
 							TPose2D  p2D;
 							if (!(s>> id >> p2D.x >> p2D.y >> p2D.phi))
-								THROW_EXCEPTION(format("Line %u: Error parsing VERTEX2 line: '%s'", lineNum, lin.c_str() ) );
+								THROW_EXCEPTION(format("Line %u: Error parsing VERTEX2 line: '%s'", lineNum, lin.c_str()));
 
 							// Make sure the node is new:
 							if (g->nodes.find(id)!=g->nodes.end())
-								THROW_EXCEPTION(format("Line %u: Error, duplicated verted ID %u in line: '%s'", lineNum, static_cast<unsigned int>(id), lin.c_str() ) );
+								THROW_EXCEPTION(format("Line %u: Error, duplicated verted ID %u in line: '%s'", lineNum, static_cast<unsigned int>(id), lin.c_str()));
 
 							// EQUIV? Replace ID by new one.
 							{
@@ -278,25 +287,26 @@ namespace mrpt
 							// Add to map: ID -> absolute pose:
 							if (g->nodes.find(id)==g->nodes.end())
 							{
-								typename CNetworkOfPoses<CPOSE>::constraint_t::type_value & newNode = g->nodes[id];
-								newNode = CPose2D(p2D); // Auto converted to mrpt::poses::CPose3D if needed
+								typedef typename CNetworkOfPoses<CPOSE>::constraint_t::type_value pose_t;
+								pose_t & newNode = g->nodes[id];
+								newNode = pose_t(CPose2D(p2D)); // Convert to mrpt::poses::CPose3D if needed
 							}
 						}
-						else if ( strCmpI(key,"VERTEX3") )
+						else if (strCmpI(key,"VERTEX3"))
 						{
 							if (!graph_is_3D)
-								THROW_EXCEPTION(format("Line %u: Try to load VERTEX3 into a 2D graph: '%s'", lineNum, lin.c_str() ) );
+								THROW_EXCEPTION(format("Line %u: Try to load VERTEX3 into a 2D graph: '%s'", lineNum, lin.c_str()));
 
 							//  VERTEX3 id x y z roll pitch yaw
 							TNodeID  id;
 							TPose3D  p3D;
 							// **CAUTION** In the TORO graph format angles are in the RPY order vs. MRPT's YPR.
-							if (!(s>> id >> p3D.x >> p3D.y >> p3D.z >> p3D.roll >> p3D.pitch >> p3D.yaw ))
-								THROW_EXCEPTION(format("Line %u: Error parsing VERTEX3 line: '%s'", lineNum, lin.c_str() ) );
+							if (!(s>> id >> p3D.x >> p3D.y >> p3D.z >> p3D.roll >> p3D.pitch >> p3D.yaw))
+								THROW_EXCEPTION(format("Line %u: Error parsing VERTEX3 line: '%s'", lineNum, lin.c_str()));
 
 							// Make sure the node is new:
 							if (g->nodes.find(id)!=g->nodes.end())
-								THROW_EXCEPTION(format("Line %u: Error, duplicated verted ID %u in line: '%s'", lineNum, static_cast<unsigned int>(id), lin.c_str() ) );
+								THROW_EXCEPTION(format("Line %u: Error, duplicated verted ID %u in line: '%s'", lineNum, static_cast<unsigned int>(id), lin.c_str()));
 
 							// EQUIV? Replace ID by new one.
 							{
@@ -307,23 +317,23 @@ namespace mrpt
 							// Add to map: ID -> absolute pose:
 							if (g->nodes.find(id)==g->nodes.end())
 							{
-								g->nodes[id] = typename CNetworkOfPoses<CPOSE>::constraint_t::type_value( CPose3D(p3D) ); // Auto converted to CPose2D if needed
+								g->nodes[id] = typename CNetworkOfPoses<CPOSE>::constraint_t::type_value(CPose3D(p3D)); // Auto converted to CPose2D if needed
 							}
 						}
-						else if ( strCmpI(key,"VERTEX_SE3:QUAT") )
+						else if (strCmpI(key,"VERTEX_SE3:QUAT"))
 						{
 							if (!graph_is_3D)
-								THROW_EXCEPTION(format("Line %u: Try to load VERTEX_SE3:QUAT into a 2D graph: '%s'", lineNum, lin.c_str() ) );
+								THROW_EXCEPTION(format("Line %u: Try to load VERTEX_SE3:QUAT into a 2D graph: '%s'", lineNum, lin.c_str()));
 
 							// VERTEX_SE3:QUAT id x y z qx qy qz qw
 							TNodeID  id;
 							TPose3DQuat  p3D;
-							if (!(s>> id >> p3D.x >> p3D.y >> p3D.z >> p3D.qx >> p3D.qy >> p3D.qz >> p3D.qr ))
-								THROW_EXCEPTION(format("Line %u: Error parsing VERTEX_SE3:QUAT line: '%s'", lineNum, lin.c_str() ) );
+							if (!(s>> id >> p3D.x >> p3D.y >> p3D.z >> p3D.qx >> p3D.qy >> p3D.qz >> p3D.qr))
+								THROW_EXCEPTION(format("Line %u: Error parsing VERTEX_SE3:QUAT line: '%s'", lineNum, lin.c_str()));
 
 							// Make sure the node is new:
 							if (g->nodes.find(id)!=g->nodes.end())
-								THROW_EXCEPTION(format("Line %u: Error, duplicated verted ID %u in line: '%s'", lineNum, static_cast<unsigned int>(id), lin.c_str() ) );
+								THROW_EXCEPTION(format("Line %u: Error, duplicated verted ID %u in line: '%s'", lineNum, static_cast<unsigned int>(id), lin.c_str()));
 
 							// EQUIV? Replace ID by new one.
 							{
@@ -334,10 +344,10 @@ namespace mrpt
 							// Add to map: ID -> absolute pose:
 							if (g->nodes.find(id)==g->nodes.end())
 							{
-								g->nodes[id] = typename CNetworkOfPoses<CPOSE>::constraint_t::type_value( CPose3D(CPose3DQuat(p3D)) ); // Auto converted to CPose2D if needed
+								g->nodes[id] = typename CNetworkOfPoses<CPOSE>::constraint_t::type_value(CPose3D(CPose3DQuat(p3D))); // Auto converted to CPose2D if needed
 							}
 						}
-						else if ( strCmpI(key,"EDGE2") || strCmpI(key,"EDGE") || strCmpI(key,"ODOMETRY") || strCmpI(key,"EDGE_SE2") )
+						else if (strCmpI(key,"EDGE2") || strCmpI(key,"EDGE") || strCmpI(key,"ODOMETRY") || strCmpI(key,"EDGE_SE2"))
 						{
 							//  EDGE2 from_id to_id Ax Ay Aphi inf_xx inf_xy inf_yy inf_pp inf_xp inf_yp
 							//                                   s00   s01     s11    s22    s02    s12
@@ -347,8 +357,8 @@ namespace mrpt
 							//    [  -   -  s22 ]
 							//
 							TNodeID  to_id, from_id;
-							if (!(s>> from_id >> to_id ))
-								THROW_EXCEPTION(format("Line %u: Error parsing EDGE2 line: '%s'", lineNum, lin.c_str() ) );
+							if (!(s>> from_id >> to_id))
+								THROW_EXCEPTION(format("Line %u: Error parsing EDGE2 line: '%s'", lineNum, lin.c_str()));
 
 							// EQUIV? Replace ID by new one.
 							{
@@ -367,8 +377,8 @@ namespace mrpt
 								if (!(s>>
 										Ap_mean.x >> Ap_mean.y >> Ap_mean.phi >>
 										Ap_cov_inv(0,0) >> Ap_cov_inv(0,1) >> Ap_cov_inv(1,1) >>
-										Ap_cov_inv(2,2) >> Ap_cov_inv(0,2) >> Ap_cov_inv(1,2) ))
-									THROW_EXCEPTION(format("Line %u: Error parsing EDGE2 line: '%s'", lineNum, lin.c_str() ) );
+										Ap_cov_inv(2,2) >> Ap_cov_inv(0,2) >> Ap_cov_inv(1,2)))
+									THROW_EXCEPTION(format("Line %u: Error parsing EDGE2 line: '%s'", lineNum, lin.c_str()));
 
 								// Complete low triangular part of inf matrix:
 								Ap_cov_inv(1,0) = Ap_cov_inv(0,1);
@@ -377,19 +387,19 @@ namespace mrpt
 
 								// Convert to 2D cov, 3D cov or 3D inv_cov as needed:
 								typename CNetworkOfPoses<CPOSE>::edge_t  newEdge;
-								TPosePDFHelper<CPOSE>::copyFrom2D(newEdge, CPosePDFGaussianInf( CPose2D(Ap_mean), Ap_cov_inv ) );
+								TPosePDFHelper<CPOSE>::copyFrom2D(newEdge, CPosePDFGaussianInf(CPose2D(Ap_mean), Ap_cov_inv));
 								g->insertEdge(from_id, to_id, newEdge);
 							}
 						}
-						else if ( strCmpI(key,"EDGE3") )
+						else if (strCmpI(key,"EDGE3"))
 						{
 							if (!graph_is_3D)
-								THROW_EXCEPTION(format("Line %u: Try to load EDGE3 into a 2D graph: '%s'", lineNum, lin.c_str() ) );
+								THROW_EXCEPTION(format("Line %u: Try to load EDGE3 into a 2D graph: '%s'", lineNum, lin.c_str()));
 
 							//  EDGE3 from_id to_id Ax Ay Az Aroll Apitch Ayaw inf_11 inf_12 .. inf_16 inf_22 .. inf_66
 							TNodeID  to_id, from_id;
-							if (!(s>> from_id >> to_id ))
-								THROW_EXCEPTION(format("Line %u: Error parsing EDGE3 line: '%s'", lineNum, lin.c_str() ) );
+							if (!(s>> from_id >> to_id))
+								THROW_EXCEPTION(format("Line %u: Error parsing EDGE3 line: '%s'", lineNum, lin.c_str()));
 
 							// EQUIV? Replace ID by new one.
 							{
@@ -406,8 +416,8 @@ namespace mrpt
 								TPose3D  Ap_mean;
 								mrpt::math::CMatrixDouble66 Ap_cov_inv;
 								// **CAUTION** In the TORO graph format angles are in the RPY order vs. MRPT's YPR.
-								if (!(s>> Ap_mean.x >> Ap_mean.y >> Ap_mean.z >> Ap_mean.roll >> Ap_mean.pitch >> Ap_mean.yaw ))
-									THROW_EXCEPTION(format("Line %u: Error parsing EDGE3 line: '%s'", lineNum, lin.c_str() ) );
+								if (!(s>> Ap_mean.x >> Ap_mean.y >> Ap_mean.z >> Ap_mean.roll >> Ap_mean.pitch >> Ap_mean.yaw))
+									THROW_EXCEPTION(format("Line %u: Error parsing EDGE3 line: '%s'", lineNum, lin.c_str()));
 
 								// **CAUTION** Indices are shuffled to the change YAW(3) <-> ROLL(5) in the order of the data.
 								if (!(s>>
@@ -416,7 +426,7 @@ namespace mrpt
 										Ap_cov_inv(2,2) >> Ap_cov_inv(2,5) >> Ap_cov_inv(2,4) >> Ap_cov_inv(2,3) >>
 										Ap_cov_inv(5,5) >> Ap_cov_inv(5,4) >> Ap_cov_inv(5,3) >>
 										Ap_cov_inv(4,4) >> Ap_cov_inv(4,3) >>
-										Ap_cov_inv(3,3) ))
+										Ap_cov_inv(3,3)))
 								{
 									// Cov may be omitted in the file:
 									Ap_cov_inv.unit(6,1.0);
@@ -437,20 +447,20 @@ namespace mrpt
 
 								// Convert as needed:
 								typename CNetworkOfPoses<CPOSE>::edge_t  newEdge;
-								TPosePDFHelper<CPOSE>::copyFrom3D(newEdge, CPose3DPDFGaussianInf( CPose3D(Ap_mean), Ap_cov_inv ) );
+								TPosePDFHelper<CPOSE>::copyFrom3D(newEdge, CPose3DPDFGaussianInf(CPose3D(Ap_mean), Ap_cov_inv));
 								g->insertEdge(from_id, to_id, newEdge);
 							}
 						}
-						else if ( strCmpI(key,"EDGE_SE3:QUAT") )
+						else if (strCmpI(key,"EDGE_SE3:QUAT"))
 						{
 							if (!graph_is_3D)
-								THROW_EXCEPTION(format("Line %u: Try to load EDGE3 into a 2D graph: '%s'", lineNum, lin.c_str() ) );
+								THROW_EXCEPTION(format("Line %u: Try to load EDGE3 into a 2D graph: '%s'", lineNum, lin.c_str()));
 
 							//  EDGE_SE3:QUAT from_id to_id Ax Ay Az qx qy qz qw inf_11 inf_12 .. inf_16 inf_22 .. inf_66
 							//  EDGE3 from_id to_id Ax Ay Az Aroll Apitch Ayaw inf_11 inf_12 .. inf_16 inf_22 .. inf_66
 							TNodeID  to_id, from_id;
-							if (!(s>> from_id >> to_id ))
-								THROW_EXCEPTION(format("Line %u: Error parsing EDGE_SE3:QUAT line: '%s'", lineNum, lin.c_str() ) );
+							if (!(s>> from_id >> to_id))
+								THROW_EXCEPTION(format("Line %u: Error parsing EDGE_SE3:QUAT line: '%s'", lineNum, lin.c_str()));
 
 							// EQUIV? Replace ID by new one.
 							{
@@ -466,8 +476,8 @@ namespace mrpt
 							{
 								TPose3DQuat Ap_mean;
 							 mrpt::math::CMatrixDouble66 Ap_cov_inv;
-								if (!(s>> Ap_mean.x >> Ap_mean.y >> Ap_mean.z >> Ap_mean.qx >> Ap_mean.qy >> Ap_mean.qz >> Ap_mean.qr ))
-									THROW_EXCEPTION(format("Line %u: Error parsing EDGE_SE3:QUAT line: '%s'", lineNum, lin.c_str() ) );
+								if (!(s>> Ap_mean.x >> Ap_mean.y >> Ap_mean.z >> Ap_mean.qx >> Ap_mean.qy >> Ap_mean.qz >> Ap_mean.qr))
+									THROW_EXCEPTION(format("Line %u: Error parsing EDGE_SE3:QUAT line: '%s'", lineNum, lin.c_str()));
 
 								// **CAUTION** Indices are shuffled to the change YAW(3) <-> ROLL(5) in the order of the data.
 								if (!(s>>
@@ -476,7 +486,7 @@ namespace mrpt
 										Ap_cov_inv(2,2) >> Ap_cov_inv(2,5) >> Ap_cov_inv(2,4) >> Ap_cov_inv(2,3) >>
 										Ap_cov_inv(5,5) >> Ap_cov_inv(5,4) >> Ap_cov_inv(5,3) >>
 										Ap_cov_inv(4,4) >> Ap_cov_inv(4,3) >>
-										Ap_cov_inv(3,3) ))
+										Ap_cov_inv(3,3)))
 								{
 									// Cov may be omitted in the file:
 									Ap_cov_inv.unit(6,1.0);
@@ -497,11 +507,11 @@ namespace mrpt
 
 								// Convert as needed:
 								typename CNetworkOfPoses<CPOSE>::edge_t  newEdge;
-								TPosePDFHelper<CPOSE>::copyFrom3D(newEdge, CPose3DPDFGaussianInf( CPose3D(CPose3DQuat(Ap_mean)), Ap_cov_inv ) );
+								TPosePDFHelper<CPOSE>::copyFrom3D(newEdge, CPose3DPDFGaussianInf(CPose3D(CPose3DQuat(Ap_mean)), Ap_cov_inv));
 								g->insertEdge(from_id, to_id, newEdge);
 							}
 						}
-						else if ( strCmpI(key,"EQUIV") )
+						else if (strCmpI(key,"EQUIV"))
 						{
 							// Already read in the 1st pass.
 						}
@@ -539,7 +549,7 @@ namespace mrpt
 					for (TEdgeIterator itEd=g->edges.begin();itEd!=g->edges.end();++itEd)
 					{
 						// Build a pair <id1,id2> with id1 < id2:
-						const pair<TNodeID,TNodeID> arc_id = make_pair( std::min(itEd->first.first,itEd->first.second),std::max(itEd->first.first,itEd->first.second) );
+						const pair<TNodeID,TNodeID> arc_id = make_pair(std::min(itEd->first.first,itEd->first.second),std::max(itEd->first.first,itEd->first.second));
 						// get (or create the first time) the list of edges between them:
 						vector<TEdgeIterator> &lstEdges = lstAllEdges[arc_id];
 						// And add this one:
@@ -552,7 +562,7 @@ namespace mrpt
 					{
 						const size_t N = it->second.size();
 						for (size_t i=1;i<N;i++)  // i=0 is NOT removed
-							g->edges.erase( it->second[i] );
+							g->edges.erase(it->second[i]);
 
 						if (N>=2) nRemoved+=N-1;
 					}
@@ -569,12 +579,14 @@ namespace mrpt
 				// --------------------------------------------------------------------------------
 				static void graph_of_poses_dijkstra_init(graph_t *g)
 				{
-					MRPT_START
+					MRPT_START;
+					using namespace std;
 
 					// Do Dijkstra shortest path from "root" to all other nodes:
 					typedef CDijkstra<graph_t,typename graph_t::maps_implementation_t> dijkstra_t;
 					typedef typename graph_t::constraint_t  constraint_t;
 
+					// initialize corresponding dijkstra object from root.
 					dijkstra_t dijkstra(*g, g->root);
 
 					// Get the tree representation of the graph and traverse it
@@ -588,36 +600,75 @@ namespace mrpt
 						graph_t * m_g; // The original graph
 
 						VisitorComputePoses(graph_t *g) : m_g(g) { }
-						virtual void OnVisitNode( const TNodeID parent_id, const typename dijkstra_t::tree_graph_t::Visitor::tree_t::TEdgeInfo &edge_to_child, const size_t depth_level ) MRPT_OVERRIDE
+						virtual void OnVisitNode(const TNodeID parent_id, const typename dijkstra_t::tree_graph_t::Visitor::tree_t::TEdgeInfo &edge_to_child, const size_t depth_level) MRPT_OVERRIDE
 						{
 							MRPT_UNUSED_PARAM(depth_level);
 							const TNodeID  child_id = edge_to_child.id;
 
 							// Compute the pose of "child_id" as parent_pose (+) edge_delta_pose,
-							//  taking into account that that edge may be in reverse order and then have to invert the delta_pose:
-							if ( (!edge_to_child.reverse && !m_g->edges_store_inverse_poses) ||
-								 ( edge_to_child.reverse &&  m_g->edges_store_inverse_poses)
+							//  taking into account that that edge may be in reverse order
+							//  and then have to invert the delta_pose:
+							if ((!edge_to_child.reverse && !m_g->edges_store_inverse_poses) ||
+								 (edge_to_child.reverse &&  m_g->edges_store_inverse_poses)
 								)
 							{	// pose_child = p_parent (+) p_delta
-								m_g->nodes[child_id].composeFrom( m_g->nodes[parent_id],  edge_to_child.data->getPoseMean() );
+								m_g->nodes[child_id].composeFrom(m_g->nodes[parent_id],  edge_to_child.data->getPoseMean());
 							}
 							else
 							{	// pose_child = p_parent (+) [(-)p_delta]
-								m_g->nodes[child_id].composeFrom( m_g->nodes[parent_id], - edge_to_child.data->getPoseMean() );
+								m_g->nodes[child_id].composeFrom(m_g->nodes[parent_id], - edge_to_child.data->getPoseMean());
 							}
 						}
 					};
 
-					// Remove all global poses but for the root node, which is the origin:
+					// Remove all global poses except for the root node, which is the origin:
+					//
+					// Keep track of the NODE_ANNOTATIONS for each node and put it after
+					// the global pose computation
+					bool empty_node_annots = g->nodes.begin()->second.is_node_annots_empty;
+					map<const TNodeID, TNodeAnnotations*> nodeID_to_annots;
+					if (!empty_node_annots) {
+						for (typename graph_t::global_poses_t::const_iterator
+								poses_cit = g->nodes.begin();
+								poses_cit != g->nodes.end();
+								++poses_cit) {
+
+							nodeID_to_annots.insert(
+									make_pair(
+										poses_cit->first, poses_cit->second.getCopyOfAnnots()));
+						}
+					}
+
 					g->nodes.clear();
-					g->nodes[g->root] = typename constraint_t::type_value();  // Typ: CPose2D() or CPose3D()
+					g->nodes[g->root] = typename constraint_t::type_value(); // Typ: CPose2D() or CPose3D()
 
 					// Run the visit thru all nodes in the tree:
 					VisitorComputePoses  myVisitor(g);
 					treeView.visitBreadthFirst(treeView.root, myVisitor);
 
+					// Fill the NODE_ANNOTATIONS part again
+					if (!empty_node_annots) {
+						for (typename graph_t::global_poses_t::iterator
+								poses_cit = g->nodes.begin();
+								poses_cit != g->nodes.end();
+								++poses_cit) {
+
+							TNodeAnnotations* node_annots = nodeID_to_annots.at(poses_cit->first);
+							bool res = poses_cit->second.setAnnots(*node_annots);
+
+							// free dynamically allocated mem
+							delete node_annots;
+							node_annots = NULL;
+
+							// make sure setting annotations was successful
+							ASSERTMSG_(res, mrpt::format(
+										"Setting annotations for nodeID \"%lu\" was unsuccessful",
+										static_cast<unsigned long>(poses_cit->first)));
+						}
+					}
+
 					MRPT_END
-				}
+				} // end of graph_of_poses_dijkstra_init
 
 
 				// Auxiliary funcs:
@@ -662,16 +713,16 @@ namespace mrpt
 					return
 						square(p1.x()-p2.x())+
 						square(p1.y()-p2.y())+
-						square( mrpt::math::wrapToPi(p1.phi()-p2.phi() ) );
+						square(mrpt::math::wrapToPi(p1.phi()-p2.phi()));
 				}
 				static inline double auxEuclid2Dist(const mrpt::poses::CPose3D &p1,const mrpt::poses::CPose3D &p2) {
 					return
 						square(p1.x()-p2.x())+
 						square(p1.y()-p2.y())+
 						square(p1.z()-p2.z())+
-						square( mrpt::math::wrapToPi(p1.yaw()-p2.yaw() ) )+
-						square( mrpt::math::wrapToPi(p1.pitch()-p2.pitch() ) )+
-						square( mrpt::math::wrapToPi(p1.roll()-p2.roll() ) );
+						square(mrpt::math::wrapToPi(p1.yaw()-p2.yaw()))+
+						square(mrpt::math::wrapToPi(p1.pitch()-p2.pitch()))+
+						square(mrpt::math::wrapToPi(p1.roll()-p2.roll()));
 				}
 
 				// --------------------------------------------------------------------------------
@@ -682,7 +733,7 @@ namespace mrpt
 				static double graph_edge_sqerror(
 					const graph_t *g,
 					const typename mrpt::graphs::CDirectedGraph<typename graph_t::constraint_t>::edges_map_t::const_iterator &itEdge,
-					bool ignoreCovariances )
+					bool ignoreCovariances)
 				{
 					MRPT_START
 

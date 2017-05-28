@@ -198,7 +198,7 @@ bool  CGasConcentrationGridMap2D::internal_insertObservation(
 				const CObservationGasSensors::TObservationENose *it = &o->m_readings[insertionOptions.enose_id];
 
 				// Compute the 3D sensor pose in world coordinates:
-				sensorPose = CPose2D( CPose3D(robotPose2D) + it->eNosePoseOnTheRobot );
+				sensorPose = CPose2D( CPose3D(robotPose2D) + CPose3D(it->eNosePoseOnTheRobot) );
 
 				// Compute the sensor reading value (Volts):
 				if (insertionOptions.gasSensorType==0x0000){	//compute the mean
@@ -228,7 +228,7 @@ bool  CGasConcentrationGridMap2D::internal_insertObservation(
 			{
 				const CObservationGasSensors::TObservationENose *it = &o->m_readings[0];
 				// Compute the 3D sensor pose in world coordinates:
-				sensorPose = CPose2D( CPose3D(robotPose2D) + it->eNosePoseOnTheRobot );
+				sensorPose = CPose2D( CPose3D(robotPose2D) +CPose3D(it->eNosePoseOnTheRobot) );
 				sensorReading = it->readingsVoltage[0];
 			}
 
@@ -242,20 +242,13 @@ bool  CGasConcentrationGridMap2D::internal_insertObservation(
 			m_average_normreadings_var  = (square(sensorReading - m_average_normreadings_mean) + m_average_normreadings_count*m_average_normreadings_var) /(1+m_average_normreadings_count);
 			m_average_normreadings_count++;
 
-#if 0
-			cout << "[DEBUG] m_average_normreadings_count: " << m_average_normreadings_count << " -> mean: " << m_average_normreadings_mean << " var: " <<  m_average_normreadings_var  << endl;
-#endif
-
 			// Finally, do the actual map update with that value:
 			this->insertIndividualReading(sensorReading, mrpt::math::TPoint2D(sensorPose.x(),sensorPose.y()) );
 			return true;	// Done!
-
 		} //endif correct "gasSensorLabel"
-
 	} // end if "CObservationGasSensors"
 
 	return false;
-
 	MRPT_END
 }
 
@@ -412,7 +405,7 @@ void  CGasConcentrationGridMap2D::readFromStream(mrpt::utils::CStream &in, int v
 				m_average_normreadings_count = N;
 			}
 
-			if (version>=4) 
+			if (version>=4)
 				in >> genericMapParams;
 
 			m_hasToRecoverMeanAndCov = true;

@@ -11,12 +11,10 @@
 
 #include <mrpt/random.h>
 #include <mrpt/math/wrap2pi.h>
-#include <mrpt/math/transform_gaussian.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DPDFGaussianInf.h>
 #include <mrpt/poses/CPose3DQuatPDFGaussian.h>
-#include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPosePDFGaussianInf.h>
 #include <mrpt/system/os.h>
@@ -152,7 +150,7 @@ void  CPose3DPDFGaussianInf::copyFrom(const CPosePDF &o)
 	{	// cov is already inverted, but it's a 2D pose:
 		const CPosePDFGaussianInf *ptr = static_cast<const CPosePDFGaussianInf*>(&o);
 
-		mean = ptr->mean;
+		mean = CPose3D(ptr->mean);
 
 		// 3x3 inv_cov -> 6x6 inv_cov
 		cov_inv.zeros();
@@ -448,4 +446,3 @@ CPose3DPDFGaussianInf mrpt::poses::operator -( const CPose3DPDFGaussianInf &x, c
 	res-=u;
 	return res;
 }
-

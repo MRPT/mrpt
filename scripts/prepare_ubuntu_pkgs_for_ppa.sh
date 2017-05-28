@@ -28,9 +28,13 @@ else
 	exit 1
 fi
 
-MRPT_UBUNTU_OUT_DIR="$HOME/mrpt_ubuntu"
+if [ -z "${MRPT_UBUNTU_OUT_DIR}" ]; then
+       export MRPT_UBUNTU_OUT_DIR="$HOME/mrpt_ubuntu"
+fi
 MRPTSRC=`pwd`
-MRPT_DEB_DIR="$HOME/mrpt_debian"
+if [ -z "${MRPT_DEB_DIR}" ]; then
+       export MRPT_DEB_DIR="$HOME/mrpt_debian"
+fi
 MRPT_EXTERN_DEBIAN_DIR="$MRPTSRC/packaging/debian/"
 EMAIL4DEB="Jose Luis Blanco (University of Malaga) <joseluisblancoc@gmail.com>"
 
@@ -40,8 +44,7 @@ rm -fr $MRPT_UBUNTU_OUT_DIR/
 # -------------------------------------------------------------------
 # And now create the custom packages for each Ubuntu distribution:
 # -------------------------------------------------------------------
-LST_DISTROS=(yakkety  xenial vivid trusty precise )
-LST_EBDEIGN=( 0        0        0   0        1   )
+LST_DISTROS=(zesty yakkety  xenial vivid trusty )
 
 count=${#LST_DISTROS[@]}
 IDXS=$(seq 0 $(expr $count - 1))
@@ -51,19 +54,12 @@ cp ${MRPT_EXTERN_DEBIAN_DIR}/changelog /tmp/my_changelog
 for IDX in ${IDXS};
 do
 	DEBIAN_DIST=${LST_DISTROS[$IDX]}
-	EMBED_EIGEN=${LST_EBDEIGN[$IDX]}
-	if [ $EMBED_EIGEN == "1" ];
-	then
-		EMBED_EIGEN_FLAG="-e"
-	else
-		EMBED_EIGEN_FLAG=""	
-	fi
-
+	
 	# -------------------------------------------------------------------
 	# Call the standard "prepare_debian.sh" script:
 	# -------------------------------------------------------------------
 	cd ${MRPTSRC}
-	bash scripts/prepare_debian.sh -s -u -h -d ${DEBIAN_DIST} ${EMBED_EIGEN_FLAG} -c "${MRPT_PKG_CUSTOM_CMAKE_PARAMS}" 
+	bash scripts/prepare_debian.sh -s -u -h -d ${DEBIAN_DIST} -c "${MRPT_PKG_CUSTOM_CMAKE_PARAMS}" 
 
 	MRPT_SNAPSHOT_VERSION=`date +%Y%m%d-%H%M`
 	MRPT_SNAPSHOT_VERSION+="-git-"

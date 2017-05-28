@@ -444,7 +444,7 @@ DECLARE_OP_FUNCTION(op_export_gps_txt)
 					// Local coordinates reference:
 					TPose3D _local_ENU;
 					mrpt::topography::ENU_axes_from_WGS84(refCoords, _local_ENU, true);
-					local_ENU = _local_ENU;
+					local_ENU = mrpt::poses::CPose3D(_local_ENU);
 				}
 
 				// Local XYZ coordinates transform:

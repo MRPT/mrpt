@@ -42,9 +42,9 @@ namespace mrpt
 		 *	  - mrpt::obs::mrptEventMetricMapClear: Upon call of the ::clear() method.
 		 *    - mrpt::obs::mrptEventMetricMapInsert: Upon insertion of an observation that effectively modifies the map (e.g. inserting an image into a grid map will NOT raise an event, inserting a laser scan will).
 		 *
-		 * Checkout each derived class documentation to learn which mrpt::obs::CObservation-derived classes are supported by CMetricMap::insertObservation()
+		 * To check what observations are supported by each metric map, see: \ref maps_observations
 		 *
-		 * \note All derived class must implement a static class factory `<metric_map_class>::MapDefinition()` that builds a default TMetricMapInitializer [New in MRPT 1.3.0] 
+		 * \note All derived class must implement a static class factory `<metric_map_class>::MapDefinition()` that builds a default TMetricMapInitializer [New in MRPT 1.3.0]
 		 *
 		 * \sa CObservation, CSensoryFrame, CMultiMetricMap
 	 	 * \ingroup mrpt_obs_grp
@@ -105,7 +105,7 @@ namespace mrpt
 			inline void  loadFromSimpleMap( const mrpt::maps::CSimpleMap &Map ) {  loadFromProbabilisticPosesAndObservations(Map); }
 
 			/** Insert the observation information into this map. This method must be implemented
-			 *    in derived classes.
+			 *    in derived classes. See: \ref maps_observations
 			 * \param obs The observation
 			 * \param robotPose The 3D pose of the robot mobile base in the map reference system, or NULL (default) if you want to use the origin.
 			 *
@@ -113,10 +113,10 @@ namespace mrpt
 			 */
 			bool  insertObservation(const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = NULL );
 
-			/** A wrapper for smart pointers, just calls the non-smart pointer version. */
+			/** A wrapper for smart pointers, just calls the non-smart pointer version.  See: \ref maps_observations  */
 			bool  insertObservationPtr(const mrpt::obs::CObservationPtr &obs, const mrpt::poses::CPose3D *robotPose = NULL );
 
-			/** Computes the log-likelihood of a given observation given an arbitrary robot 3D pose.
+			/** Computes the log-likelihood of a given observation given an arbitrary robot 3D pose.  See: \ref maps_observations
 			 *
 			 * \param takenFrom The robot's pose the observation is supposed to be taken from.
 			 * \param obs The observation.
@@ -129,7 +129,7 @@ namespace mrpt
 			/** \overload */
 			double	 computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose2D &takenFrom );
 
-			/** Returns true if this map is able to compute a sensible likelihood function for this observation (i.e. an occupancy grid map cannot with an image).
+			/** Returns true if this map is able to compute a sensible likelihood function for this observation (i.e. an occupancy grid map cannot with an image).  See: \ref maps_observations
 			 * \param obs The observation.
 			 * \sa computeObservationLikelihood, genericMapParams.enableObservationLikelihood
 			 */
@@ -138,7 +138,7 @@ namespace mrpt
 			/** \overload */
 			bool canComputeObservationLikelihood( const mrpt::obs::CObservationPtr &obs ) const;
 
-			/** Returns the sum of the log-likelihoods of each individual observation within a mrpt::obs::CSensoryFrame.
+			/** Returns the sum of the log-likelihoods of each individual observation within a mrpt::obs::CSensoryFrame.  See: \ref maps_observations
 			 *
 			 * \param takenFrom The robot's pose the observation is supposed to be taken from.
 			 * \param sf The set of observations in a CSensoryFrame.
@@ -147,7 +147,7 @@ namespace mrpt
 			 */
 			double computeObservationsLikelihood( const mrpt::obs::CSensoryFrame &sf, const mrpt::poses::CPose2D &takenFrom );
 
-			/** Returns true if this map is able to compute a sensible likelihood function for this observation (i.e. an occupancy grid map cannot with an image).
+			/** Returns true if this map is able to compute a sensible likelihood function for this observation (i.e. an occupancy grid map cannot with an image).  See: \ref maps_observations
 			 * \param sf The observations.
 			 * \sa canComputeObservationLikelihood
 			 */
@@ -220,7 +220,7 @@ namespace mrpt
 			/** This virtual method saves the map to a file "filNamePrefix"+< some_file_extension >, as an image or in any other applicable way (Notice that other methods to save the map may be implemented in classes implementing this virtual interface). */
 			virtual void  saveMetricMapRepresentationToFile(const std::string	&filNamePrefix) const = 0;
 
-			/** Returns a 3D object representing the map. 
+			/** Returns a 3D object representing the map.
 			  * \sa genericMapParams, TMapGenericParams::enableSaveAs3DObject */
 			virtual void  getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const = 0;
 

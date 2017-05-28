@@ -14,6 +14,7 @@
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3DQuat.h>
+#include <mrpt/math/CQuaternion.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/math/ops_containers.h>
 #include <mrpt/utils/CStream.h>
@@ -63,7 +64,6 @@ TPose2D::TPose2D(const mrpt::poses::CPose2D &p):x(p.x()),y(p.y()),phi(p.phi())	{
 void TPose2D::asString(std::string &s) const {
 	s = mrpt::format("[%f %f %f]",x,y,mrpt::utils::RAD2DEG(phi));
 }
-
 void TPose2D::fromString(const std::string &s)
 {
 	CMatrixDouble  m;
@@ -72,6 +72,27 @@ void TPose2D::fromString(const std::string &s)
 	x = m.get_unsafe(0,0);
 	y = m.get_unsafe(0,1);
 	phi = DEG2RAD(m.get_unsafe(0,2));
+}
+mrpt::math::TPose2D mrpt::math::TPose2D::operator+(const mrpt::math::TPose2D & b) const
+{
+	const double A_cosphi = cos(this->phi), A_sinphi = sin(this->phi);
+	// Use temporary variables for the cases (A==this) or (B==this)
+	const double new_x = this->x + b.x * A_cosphi - b.y * A_sinphi;
+	const double new_y = this->y + b.x * A_cosphi + b.y * A_sinphi;
+	const double new_phi = mrpt::math::wrapToPi(this->phi + b.phi);
+
+	return mrpt::math::TPose2D(new_x, new_y, new_phi);
+}
+
+mrpt::math::TPose2D mrpt::math::TPose2D::operator-(const mrpt::math::TPose2D & b) const
+{
+	const double B_cosphi = cos(b.phi), B_sinphi = sin(b.phi);
+
+	const double new_x = (this->x - b.x) * B_cosphi + (this->y - b.y) * B_sinphi;
+	const double new_y = -(this->x - b.x) * B_sinphi + (this->y - b.y) * B_cosphi;
+	const double new_phi = mrpt::math::wrapToPi(this->phi - b.phi);
+
+	return mrpt::math::TPose2D(new_x, new_y, new_phi);
 }
 
 // ----
@@ -95,6 +116,17 @@ void TTwist2D::rotate(const double ang)
 	vx = nvx;
 	vy = nvy;
 }
+bool TTwist2D::operator ==(const TTwist2D&o) const
+{
+	return vx == o.vx && vy == o.vy && omega == o.omega;
+}
+bool TTwist2D::operator !=(const TTwist2D&o) const {
+	return !(*this==o);
+}
+mrpt::math::TPose2D TTwist2D::operator*(const double dt) const
+{
+	return mrpt::math::TPose2D(vx*dt,vy*dt,omega*dt);
+}
 
 // ----
 void TTwist3D::asString(std::string &s) const {
@@ -108,7 +140,7 @@ void TTwist3D::fromString(const std::string &s)
 	for (int i=0;i<3;i++) (*this)[i] = m.get_unsafe(0,i);
 	for (int i=0;i<3;i++) (*this)[3+i] = DEG2RAD(m.get_unsafe(0,3+i));
 }
-// Transform all 6 components for a change of reference frame from "A" to 
+// Transform all 6 components for a change of reference frame from "A" to
 // another frame "B" whose rotation with respect to "A" is given by `rot`. The translational part of the pose is ignored
 void TTwist3D::rotate(const mrpt::poses::CPose3D & rot)
 {
@@ -122,7 +154,13 @@ void TTwist3D::rotate(const mrpt::poses::CPose3D & rot)
 	wy=R(1,0)*t.wx+R(1,1)*t.wy+R(1,2)*t.wz;
 	wz=R(2,0)*t.wx+R(2,1)*t.wy+R(2,2)*t.wz;
 }
-
+bool TTwist3D::operator ==(const TTwist3D&o) const
+{
+	return vx == o.vx && vy == o.vy && vz == o.vz && wx == o.wx && wy == o.wy && wz == o.wz;
+}
+bool TTwist3D::operator !=(const TTwist3D&o) const {
+	return !(*this == o);
+}
 
 TPoint3D::TPoint3D(const TPoint2D &p):x(p.x),y(p.y),z(0.0)	{}
 TPoint3D::TPoint3D(const TPose2D &p):x(p.x),y(p.y),z(0.0)	{}
@@ -152,6 +190,41 @@ TPose3D::TPose3D(const TPoint3D &p):x(p.x),y(p.y),z(p.z),yaw(0.0),pitch(0.0),rol
 TPose3D::TPose3D(const mrpt::poses::CPose3D &p):x(p.x()),y(p.y()),z(p.z()),yaw(p.yaw()),pitch(p.pitch()),roll(p.roll())	{}
 void TPose3D::asString(std::string &s) const {
 	s = mrpt::format("[%f %f %f %f %f %f]",x,y,z,RAD2DEG(yaw),RAD2DEG(pitch),RAD2DEG(roll));
+}
+void TPose3D::getAsQuaternion(mrpt::math::CQuaternion<double> & q, mrpt::math::CMatrixFixedNumeric<double, 4, 3>* out_dq_dr) const
+{
+	// See: http://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
+	const double cy = cos(yaw*0.5),  sy = sin(yaw*0.5);
+	const double cp = cos(pitch*0.5),sp = sin(pitch*0.5);
+	const double cr = cos(roll*0.5), sr = sin(roll*0.5);
+
+	const double ccc = cr*cp*cy;
+	const double ccs = cr*cp*sy;
+	const double css = cr*sp*sy;
+	const double sss = sr*sp*sy;
+	const double scc = sr*cp*cy;
+	const double ssc = sr*sp*cy;
+	const double csc = cr*sp*cy;
+	const double scs = sr*cp*sy;
+
+	q[0] = ccc + sss;
+	q[1] = scc - css;
+	q[2] = csc + scs;
+	q[3] = ccs - ssc;
+
+	// Compute 4x3 Jacobian: for details, see technical report:
+	//   Parameterizations of SE(3) transformations: equivalences, compositions and uncertainty, J.L. Blanco (2010).
+	//   http://www.mrpt.org/6D_poses:equivalences_compositions_and_uncertainty
+	if (out_dq_dr)
+	{
+		MRPT_ALIGN16 const double nums[4 * 3] = {
+			-0.5*q[3], 0.5*(-csc + scs), -0.5*q[1],
+			-0.5*q[2],  0.5*(-ssc - ccs), 0.5* q[0],
+			0.5*q[1], 0.5*(ccc - sss),  0.5*q[3],
+			0.5* q[0], 0.5*(-css - scc), -0.5*q[2]
+		};
+		out_dq_dr->loadFromArray(nums);
+	}
 }
 void TPose3D::fromString(const std::string &s)
 {
@@ -480,7 +553,6 @@ void TPlane::getAsPose3D(mrpt::poses::CPose3D &outPose)	{
 	getUnitaryNormalVector(normal);
 	CMatrixDouble AXIS;
 	generateAxisBaseFromDirectionAndAxis(normal,2,AXIS);
-	AXIS.set_unsafe(3,3,1);
 	for (size_t i=0;i<3;i++) if (abs(coefs[i])>=geometryEpsilon)	{
 		AXIS.set_unsafe(i,3,-coefs[3]/coefs[i]);
 		break;
@@ -493,7 +565,6 @@ void TPlane::getAsPose3DForcingOrigin(const TPoint3D &newOrigin,mrpt::poses::CPo
 	getUnitaryNormalVector(normal);
 	CMatrixDouble AXIS;
 	generateAxisBaseFromDirectionAndAxis(normal,2,AXIS);
-	AXIS.set_unsafe(3,3,1);
 	for (size_t i=0;i<3;i++) AXIS.set_unsafe(i,3,newOrigin[i]);
 	pose=mrpt::poses::CPose3D(AXIS);
 }
@@ -611,7 +682,7 @@ inline double isLeft( const mrpt::math::TPoint2D &P0, const mrpt::math::TPoint2D
 	return ( (P1.x - P0.x) * (P2.y - P0.y) - (P2.x -  P0.x) * (P1.y - P0.y) );
 }
 
-bool TPolygon2D::contains(const TPoint2D &P) const	
+bool TPolygon2D::contains(const TPoint2D &P) const
 {
 	int wn = 0;    // the  winding number counter
 
@@ -619,14 +690,14 @@ bool TPolygon2D::contains(const TPoint2D &P) const
 	const size_t n = this->size();
 	for (size_t i=0; i<n; i++) // edge from V[i] to  V[i+1]
 	{
-		if ((*this)[i].y <= P.y) 
+		if ((*this)[i].y <= P.y)
 		{
 			// start y <= P.y
 			if ((*this)[(i+1) % n].y  > P.y)      // an upward crossing
 				if (isLeft( (*this)[i], (*this)[(i+1)%n], P) > 0)  // P left of  edge
 					++wn;            // have  a valid up intersect
 	}
-	else 
+	else
 	{
 		// start y > P.y (no test needed)
 		if ((*this)[(i+1)%n].y  <= P.y)     // a downward crossing

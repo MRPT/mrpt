@@ -123,24 +123,24 @@ namespace poses
 
 		/** Constructor from a CPose2D object.
 		*/
-		CPose3D(const CPose2D &);
+		explicit CPose3D(const CPose2D &);
 
 		/** Constructor from a CPoint3D object.
 		*/
-		CPose3D(const CPoint3D &);
+		explicit CPose3D(const CPoint3D &);
 
 		/** Constructor from lightweight object.
 		*/
-		CPose3D(const mrpt::math::TPose3D &);
+		explicit CPose3D(const mrpt::math::TPose3D &);
 
 		/** Constructor from a quaternion (which only represents the 3D rotation part) and a 3D displacement. */
 		CPose3D(const mrpt::math::CQuaternionDouble &q, const double x, const double y, const double z );
 
 		/** Constructor from a CPose3DQuat. */
-		CPose3D(const CPose3DQuat &);
+		explicit CPose3D(const CPose3DQuat &);
 
 		/** Constructor from a CPose3DRotVec. */
-		CPose3D(const CPose3DRotVec &p );
+		explicit CPose3D(const CPose3DRotVec &p );
 
 		/** Fast constructor that leaves all the data uninitialized - call with UNINITIALIZED_POSE as argument */
 		inline CPose3D(TConstructorFlags_Poses ) : m_ROT(mrpt::math::UNINITIALIZED_MATRIX), m_ypr_uptodate(false) { }

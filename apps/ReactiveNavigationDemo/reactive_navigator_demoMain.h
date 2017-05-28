@@ -98,11 +98,15 @@ class reactive_navigator_demoframe: public wxFrame
         static const long ID_BUTTON5;
         static const long ID_BUTTON7;
         static const long ID_BUTTON12;
+        static const long ID_STATICTEXT10;
+        static const long ID_STATICTEXT9;
+        static const long ID_STATICTEXT8;
+        static const long ID_TEXTCTRL6;
         static const long ID_BUTTON6;
-        static const long ID_BUTTON1;
-        static const long ID_BUTTON9;
         static const long ID_BUTTON8;
         static const long ID_BUTTON11;
+        static const long ID_BUTTON1;
+        static const long ID_BUTTON9;
         static const long ID_BUTTON10;
         static const long ID_BUTTON2;
         static const long ID_BUTTON3;
@@ -167,9 +171,11 @@ class reactive_navigator_demoframe: public wxFrame
         wxCheckBox* cbDrawShapePath;
         wxRadioBox* rbNavMode;
         wxMenu* Menu3;
+        wxStaticText* StaticText6;
         wxSplitterWindow* SplitterWindow2;
         wxButton* btnGenerateTemplate;
         wxCustomButton* btnLoadMap;
+        wxStaticText* StaticText8;
         wxCustomButton* btnQuit;
         wxPanel* Panel1;
         wxStaticText* StaticText1;
@@ -184,6 +190,7 @@ class reactive_navigator_demoframe: public wxFrame
         wxMenuItem* mnuViewRobotPath;
         wxCustomButton* btnDrawEmpty;
         wxTextCtrl* edLog;
+        wxStaticText* StaticText7;
         wxCheckBox* cbShowPredictedPTG;
         wxStatusBar* StatusBar1;
         wxPanel* pnParamsPreprog;
@@ -192,6 +199,7 @@ class reactive_navigator_demoframe: public wxFrame
         wxCustomButton* btnSaveMap;
         wxPanel* Panel2;
         wxSplitterWindow* SplitterWindow1;
+        wxTextCtrl* edWayPtHeading;
         wxMenuItem* mnuViewMaxRange;
         wxStaticText* StaticText4;
         wxCustomButton* btnPlaceTarget;

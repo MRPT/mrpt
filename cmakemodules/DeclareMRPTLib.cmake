@@ -187,7 +187,7 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 						#MESSAGE(STATUS "adding link dep: mrpt-${name} -> ${DEP}")
 						LIST(APPEND AUX_EXTRA_LINK_LIBS
 							optimized ${MRPT_LIB_PREFIX}${DEP}${MRPT_DLL_VERSION_POSTFIX}
-							debug     ${MRPT_LIB_PREFIX}${DEP}${MRPT_DLL_VERSION_POSTFIX}-dbg) #Old: ${DEP}${MRPT_LINKER_LIBS_POSTFIX})
+							debug     ${MRPT_LIB_PREFIX}${DEP}${MRPT_DLL_VERSION_POSTFIX}${CMAKE_DEBUG_POSTFIX})
 					ENDIF(NOT _LIB_HDRONLY)
 				ENDIF(NOT ${headers_only})
 
@@ -239,7 +239,7 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 		SET_TARGET_PROPERTIES(mrpt-${name} PROPERTIES
 			OUTPUT_NAME ${MRPT_LIB_PREFIX}mrpt-${name}${MRPT_DLL_VERSION_POSTFIX}
 			COMPILE_PDB_NAME "${MRPT_LIB_PREFIX}mrpt-${name}${MRPT_DLL_VERSION_POSTFIX}"
-			COMPILE_PDB_NAME_DEBUG "${MRPT_LIB_PREFIX}mrpt-${name}${MRPT_DLL_VERSION_POSTFIX}-dbg"
+			COMPILE_PDB_NAME_DEBUG "${MRPT_LIB_PREFIX}mrpt-${name}${MRPT_DLL_VERSION_POSTFIX}${CMAKE_DEBUG_POSTFIX}"
 			ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/"
 			RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/"
 			VERSION "${CMAKE_MRPT_VERSION_NUMBER_MAJOR}.${CMAKE_MRPT_VERSION_NUMBER_MINOR}.${CMAKE_MRPT_VERSION_NUMBER_PATCH}"
@@ -328,7 +328,7 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 			# Collect .pdb debug files for optional installation:
 			IF (MSVC)
 				SET(PDB_FILE
-					"${CMAKE_BINARY_DIR}/bin/Debug/${MRPT_LIB_PREFIX}mrpt-${name}${MRPT_DLL_VERSION_POSTFIX}-dbg.pdb")
+					"${CMAKE_BINARY_DIR}/bin/Debug/${MRPT_LIB_PREFIX}mrpt-${name}${MRPT_DLL_VERSION_POSTFIX}${CMAKE_DEBUG_POSTFIX}.pdb")
 				IF (EXISTS "${PDB_FILE}")
 					INSTALL(FILES ${PDB_FILE} DESTINATION bin COMPONENT LibrariesDebugInfoPDB)
 				ENDIF ()

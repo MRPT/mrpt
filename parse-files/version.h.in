@@ -13,4 +13,7 @@ const char MRPT_version_str[]    = "${CMAKE_MRPT_COMPLETE_NAME}";
 // See specs: https://reproducible-builds.org/specs/source-date-epoch/
 const char MRPT_SOURCE_DATE_EPOCH[] = "${CMAKE_SOURCE_DATE_EPOCH}";
 
+const char MRPT_CMAKE_SOURCE_DIR[]     = "${CMAKE_SOURCE_DIR}";
+const char MRPT_CMAKE_INSTALL_PREFIX[] = "${CMAKE_INSTALL_PREFIX}";
+		
 #endif

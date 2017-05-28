@@ -9,10 +9,16 @@
 
 #include "base-precomp.h"  // Precompiled headers
 
-#include <mrpt/math/CSplineInterpolator1D.h>
-#include <mrpt/utils/CStream.h>
-#include <mrpt/math/interp_fit.h>
-#include <mrpt/utils/stl_serialization.h>
+#include <mrpt/utils/types_math.h>            // for dynamic_vector, CVector...
+#include <mrpt/math/CSplineInterpolator1D.h>  // for CSplineInterpolator1D
+#include <mrpt/utils/CStream.h>               // for CStream, operator<<
+#include <mrpt/utils/stl_serialization.h>     // for operator<<, operator>>
+#include <map>                                // for _Rb_tree_const_iterator
+#include <mrpt/math/interp_fit.hpp>           // for spline
+#include <mrpt/utils/CObject.h>               // for CSplineInterpolator1D::...
+#include <mrpt/utils/CSerializable.h>         // for CSerializable, CSeriali...
+#include <mrpt/utils/bits.h>                  // for format
+#include <mrpt/utils/mrpt_macros.h>           // for MRPT_THROW_UNKNOWN_SERI...
 
 using namespace mrpt;
 using namespace mrpt::math;
@@ -133,4 +139,3 @@ void  CSplineInterpolator1D::readFromStream(mrpt::utils::CStream &in, int versio
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
 	};
 }
-

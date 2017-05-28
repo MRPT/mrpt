@@ -70,6 +70,7 @@ namespace mrpt
 			virtual size_t getPTG_count() const  MRPT_OVERRIDE { return PTGs.size(); }
 			virtual CParameterizedTrajectoryGenerator* getPTG(size_t i)  MRPT_OVERRIDE { ASSERT_(i<PTGs.size()); return PTGs[i]; }
 			virtual const CParameterizedTrajectoryGenerator* getPTG(size_t i) const  MRPT_OVERRIDE { ASSERT_(i<PTGs.size()); return PTGs[i]; }
+			virtual bool checkCollisionWithLatestObstacles()  const MRPT_OVERRIDE;
 
 			struct NAV_IMPEXP TReactiveNavigatorParams : public mrpt::utils::CLoadableOptions
 			{
@@ -104,7 +105,7 @@ namespace mrpt
 			mrpt::maps::CSimplePointsMap m_WS_Obstacles;  //!< The obstacle points, as seen from the local robot frame.
 			mrpt::maps::CSimplePointsMap m_WS_Obstacles_original;  //!< Obstacle points, before filtering (if filtering is enabled).
 			// See docs in parent class
-			void STEP3_WSpaceToTPSpace(const size_t ptg_idx, std::vector<double> &out_TPObstacles, mrpt::nav::ClearanceDiagram &out_clearance, const mrpt::poses::CPose2D &rel_pose_PTG_origin_wrt_sense, const bool eval_clearance) MRPT_OVERRIDE;
+			void STEP3_WSpaceToTPSpace(const size_t ptg_idx, std::vector<double> &out_TPObstacles, mrpt::nav::ClearanceDiagram &out_clearance, const mrpt::math::TPose2D &rel_pose_PTG_origin_wrt_sense, const bool eval_clearance) MRPT_OVERRIDE;
 
 		}; // end class
 	}

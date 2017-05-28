@@ -12,7 +12,6 @@
 #include <mrpt/utils/CStream.h>
 #include <mrpt/poses/CPose3DQuatPDF.h>
 #include <mrpt/poses/CPose3DQuatPDFGaussian.h>
-#include <mrpt/poses/CPose3DPDF.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 
 using namespace mrpt::poses;
@@ -138,4 +137,3 @@ void CPose3DQuatPDF::jacobiansPoseComposition(
 	if (out_x_oplus_u)
 		*out_x_oplus_u = x_plus_u;
 }
-

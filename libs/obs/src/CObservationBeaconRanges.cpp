@@ -128,7 +128,7 @@ void  CObservationBeaconRanges::debugPrintOut()
 void CObservationBeaconRanges::getSensorPose( CPose3D &out_sensorPose ) const
 {
 	if (!sensedData.empty())
-		out_sensorPose=sensedData[0].sensorLocationOnRobot;
+		out_sensorPose=CPose3D(sensedData[0].sensorLocationOnRobot);
 	else 	out_sensorPose = CPose3D(0,0,0);
 }
 

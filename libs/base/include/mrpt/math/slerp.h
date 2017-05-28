@@ -56,7 +56,7 @@ namespace mrpt
 			}
 			// Calculate temporary values.
 			const double halfTheta = acos(cosHalfTheta);
-			const double sinHalfTheta = std::sqrt(1.0 - mrpt::utils::square(cosHalfTheta));
+			const double sinHalfTheta = std::sqrt(1.0 - mrpt::math::square(cosHalfTheta));
 			// if theta = 180 degrees then result is not fully defined
 			// we could rotate around any axis normal to qa or qb
 			if (std::abs(sinHalfTheta) < 0.001)
@@ -92,6 +92,15 @@ namespace mrpt
 			const mrpt::poses::CPose3DQuat & q1,
 			const double        t,
 			mrpt::poses::CPose3DQuat       & p);
+
+		/** \overload Interpolates two SO(3) elements (the rotational part only), given as mrpt::math::TPose3D 
+		 * form as yaw,pitch,roll angles. XYZ are ignored.
+		 */
+		void BASE_IMPEXP slerp_ypr(
+			const mrpt::math::TPose3D& q0,
+			const mrpt::math::TPose3D & q1,
+			const double        t,
+			mrpt::math::TPose3D       & p);
 
 		/** @} */
 

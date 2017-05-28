@@ -280,8 +280,8 @@ void loadMapInto3DScene(COpenGLScene &scene)
 	// Camera points at path beginning:
 	if (!robot_path.empty())
 	{
-		CPose3D &p = robot_path.begin()->second;
-		scene.getViewport("main")->getCamera().setPointingAt( p );
+		auto &p = robot_path.begin()->second;
+		scene.getViewport("main")->getCamera().setPointingAt( mrpt::poses::CPose3D(p) );
 		scene.enableFollowCamera(true);
 	}
 
@@ -301,12 +301,12 @@ void loadMapInto3DScene(COpenGLScene &scene)
 
 		for (CPose3DInterpolator::iterator it=robot_path.begin();it!=robot_path.end();++it)
 		{
-			CPose3D &p = it->second;
+			auto &p = it->second;
 			this_t = it->first;
 
-			if ( distanceBetweenPoints(x0,y0,z0, p.x(),p.y(),p.z()) < 5.5 )
+			if ( distanceBetweenPoints(x0,y0,z0, p.x,p.y,p.z) < 5.5 )
 			{
-				obj->appendLine( x0,y0,z0, p.x(),p.y(),p.z() );
+				obj->appendLine( x0,y0,z0, p.x,p.y,p.z );
 			}
 			else if (last_t!=INVALID_TIMESTAMP)
 			{
@@ -330,9 +330,9 @@ void loadMapInto3DScene(COpenGLScene &scene)
 				}
 			}
 			// For the next loop:
-			x0 = p.x();
-			y0 = p.y();
-			z0 = p.z();
+			x0 = p.x;
+			y0 = p.y;
+			z0 = p.z;
 			last_t = this_t;
 		}
 
@@ -528,7 +528,7 @@ void CFormRawMap::OnbtnGenerateClick(wxCommandEvent& )
 			pathX.push_back( curPose.x() );
 			pathY.push_back( curPose.y() );
 			if ( last_tim != INVALID_TIMESTAMP )
-				robot_path.insert( last_tim, curPose );
+				robot_path.insert( last_tim, CPose3D(curPose) );
 		}
 
 
@@ -948,13 +948,13 @@ void CFormRawMap::OnGenerateFromRTK(wxCommandEvent& )
 	for (CPose3DInterpolator::iterator i=robot_path.begin();i!=robot_path.end();++i)
 	{
 		if (i!=robot_path.begin())
-			overall_dist += i->second.distance3DTo(last_x,last_y,last_z);
-		last_x=i->second.x();
-		last_y=i->second.y();
-		last_z=i->second.z();
+			overall_dist += (mrpt::math::TPoint3D(i->second) - mrpt::math::TPoint3D(last_x,last_y,last_z)).norm();
+		last_x=i->second.x;
+		last_y=i->second.y;
+		last_z=i->second.z;
 
-		pathX.push_back(i->second.x());
-		pathY.push_back(i->second.y());
+		pathX.push_back(i->second.x);
+		pathY.push_back(i->second.y);
 	}
 
     plotMap->DelAllLayers(true,false);
@@ -1038,11 +1038,11 @@ void CFormRawMap::OnbtnSavePathClick(wxCommandEvent& )
 		for ( CPose3DInterpolator::const_iterator i=robot_path.begin();i!=robot_path.end();++i)
 		{
 			const double	t  = timestampTotime_t(i->first);
-			const CPose3D	&p = i->second;
+			const auto &p = i->second;
 			f.printf("%.06f %.06f %.06f %.06f %.06f %.06f %.06f ",
 				t,
-				p.x(),p.y(),p.z(),
-				p.yaw(),p.pitch(),p.roll());
+				p.x,p.y,p.z,
+				p.yaw,p.pitch,p.roll);
 
 			// The uncertainty, if available:
 			mrpt::aligned_containers<mrpt::system::TTimeStamp, mrpt::math::CMatrixDouble66 >::map_t::const_iterator Wit = rtk_path_info.vehicle_uncertainty.find(i->first);

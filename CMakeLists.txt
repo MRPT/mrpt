@@ -24,8 +24,8 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.8.7)
 SET(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS 1)
 
 if(COMMAND cmake_policy)
-	# We don't want to mix relative and absolute paths in linker lib lists.
-	cmake_policy(SET CMP0003 NEW)
+	cmake_policy(SET CMP0003 NEW) # We don't want to mix relative and absolute paths in linker lib lists.
+	cmake_policy(SET CMP0005 NEW) # Escape definitions (-D) strings
 	if(POLICY CMP0053)
 		cmake_policy(SET CMP0053 OLD) # Simplify variable reference and escape sequence evaluation.
 	endif()
@@ -38,7 +38,6 @@ if(COMMAND cmake_policy)
 	if(POLICY CMP0043)
 		cmake_policy(SET CMP0043 OLD) #  Ignore COMPILE_DEFINITIONS_<Config> properties.
 	endif()
-
 endif()
 # -------------------------
 
@@ -87,11 +86,13 @@ include(cmakemodules/script_detect_clang.cmake REQUIRED)     # Detect clang comp
 
 # ------------------------------------------
 # We want libraries to be named "libXXX"
-#  and "libXXX-dbg" in all compilers:
+#  in all compilers, and and "libXXX-dbg" in MSVC
 # ------------------------------------------
-set(CMAKE_DEBUG_POSTFIX  "-dbg")
 IF(MSVC)
 	set(MRPT_LIB_PREFIX "lib")  # Libs are: "libXXX"
+	set(CMAKE_DEBUG_POSTFIX  "-dbg")
+ELSE()
+	set(CMAKE_DEBUG_POSTFIX "")
 ENDIF()
 
 # In case of Makefiles if the user does not setup CMAKE_BUILD_TYPE, assume it's Release:
@@ -440,6 +441,12 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
 	# The -Wno-long-long is required in 64bit systems when including sytem headers.
 	# The -Wno-variadic-macros was needed for Eigen3, StdVector.h
  	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CONFIGURE_CFLAGS} -Wall -Wno-long-long -Wno-variadic-macros")
+
+	# Workaround: Eigen <3.3 produces *tons* of warnings in GCC >=6. See http://eigen.tuxfamily.org/bz/show_bug.cgi?id=1221
+	IF (NOT CMAKE_MRPT_GCC_VERSION LESS 60 AND "${MRPT_EIGEN_VERSION}" VERSION_LESS "3.3")
+		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-ignored-attributes")
+	ENDIF()
+
   IF(NOT APPLE)
     # This causes the option "-Wnorite-strings" to be set on gcc-4.9 on OS X
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-write-strings")
@@ -467,6 +474,11 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
 	IF(MRPT_ENABLE_LIBSTD_PARALLEL_MODE)
 		SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} -D_GLIBCXX_PARALLEL -fopenmp")
 	ENDIF()
+
+	# BUILD_TYPE: Coverage
+	SET(CMAKE_CXX_FLAGS_COVERAGE "${CMAKE_CXX_FLAGS_DEBUG} --coverage -fno-inline -fno-inline-small-functions -fno-default-inline")
+	SET(CMAKE_EXE_LINKER_FLAGS_COVERAGE "${CMAKE_EXE_LINKER_FLAGS_DEBUG} --coverage")
+	SET(CMAKE_SHARED_LINKER_FLAGS_COVERAGE "${CMAKE_SHARED_LINKER_FLAGS_DEBUG} --coverage")
 ENDIF()
 
 # CLang options ================================
@@ -624,14 +636,7 @@ SET( MEX_EXECUTABLE_OUTPUT_PATH ${MRPT_BINARY_DIR}/mex/test CACHE PATH "Output d
 IF(CMAKE_MRPT_USE_DEB_POSTFIXS)
 	# Values when building a Debian package ---------------
 	MESSAGE(STATUS "** mrpt cmake: Using Debian post-fix for install directories **")
-	IF(CMAKE_BUILD_TYPE STREQUAL "Debug")
-		# Debug packages
-		SET(libmrpt_dev_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/libmrpt-dbg/usr/")
-	ELSE()
-		# Normal packages
-		SET(libmrpt_dev_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/libmrpt-dev/usr/")
-	ENDIF()
-
+	SET(libmrpt_dev_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/libmrpt-dev/usr/")
 	SET(mrpt_apps_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/mrpt-apps/usr/")
 	SET(mrpt_doc_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/mrpt-doc/usr/")
 	SET(mrpt_common_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/mrpt-common/usr/")
@@ -657,7 +662,7 @@ STRING(REGEX REPLACE "/STACK:[0-9]+" "/STACK:1000000" CMAKE_SHARED_LINKER_FLAGS 
 #  dependencies stored in "mrpt-${name}_LIB_DEPS"
 SET(ALL_MRPT_LIBS "" CACHE INTERNAL "")  # This emulates global vars
 
-IF (NOT CMAKE_VERSION VERSION_LESS "2.8.12")
+IF (NOT MSVC AND NOT CMAKE_VERSION VERSION_LESS "2.8.12")
 	include(cmakemodules/cotire.cmake REQUIRED) # COmpiler TIme REducer helper for PCH
 	set_directory_properties(PROPERTIES COTIRE_ADD_UNITY_BUILD FALSE) # Disable unity targets
 ENDIF()

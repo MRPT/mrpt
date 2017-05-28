@@ -15,56 +15,36 @@ namespace mrpt { namespace graphslam { namespace deciders {
 // Ctors, Dtors
 // //////////////////////////////////
 
-template<class GRAPH_t>
-CICPCriteriaERD<GRAPH_t>::CICPCriteriaERD():
+template<class GRAPH_T>
+CICPCriteriaERD<GRAPH_T>::CICPCriteriaERD():
 	params(*this), // pass reference to self when initializing the parameters
 	m_search_disk_color(142, 142, 56),
 	m_laser_scans_color(0, 20, 255),
-	m_consecutive_invalid_format_instances_thres(20) // high threshold just to make sure
+	m_is_using_3DScan(false)
 {
-	MRPT_START;
-
-	this->initCICPCriteriaERD();
-
-	MRPT_END;
-}
-template<class GRAPH_t>
-void CICPCriteriaERD<GRAPH_t>::initCICPCriteriaERD() {
 	MRPT_START;
 	using namespace mrpt::utils;
 
-	m_win = NULL;
-	m_win_manager = NULL;
-	m_graph = NULL;
-
-	m_initialized_visuals = false;
-	m_just_inserted_loop_closure = false;
-	m_is_using_3DScan = false;
+	this->initializeLoggers("CICPCriteriaERD");
 
 	// start ICP constraint registration only when
-	// nodeCount > m_last_total_num_of_nodes
-	m_last_total_num_of_nodes = 2;
-
 	m_edge_types_to_nums["ICP2D"] = 0;
 	m_edge_types_to_nums["ICP3D"] = 0;
 	m_edge_types_to_nums["LC"] = 0;
 
-	m_checked_for_usuable_dataset = false;
-	m_consecutive_invalid_format_instances = 0;
+	this->m_last_total_num_nodes = 2;
 
-	this->logging_enable_keep_record = true;
-	this->setLoggerName("CICPCriteriaERD");
 	this->logFmt(LVL_DEBUG, "Initialized class object");
 
 	MRPT_END;
 }
-template<class GRAPH_t>
-CICPCriteriaERD<GRAPH_t>::~CICPCriteriaERD() { }
+template<class GRAPH_T>
+CICPCriteriaERD<GRAPH_T>::~CICPCriteriaERD() { }
 
 // Methods implementations
 // //////////////////////////////////
 
-template<class GRAPH_t> bool CICPCriteriaERD<GRAPH_t>::updateState(
+template<class GRAPH_T> bool CICPCriteriaERD<GRAPH_T>::updateState(
 		mrpt::obs::CActionCollectionPtr action,
 		mrpt::obs::CSensoryFramePtr observations,
 		mrpt::obs::CObservationPtr observation ) {
@@ -76,9 +56,9 @@ template<class GRAPH_t> bool CICPCriteriaERD<GRAPH_t>::updateState(
 	// check possible prior node registration
 	bool registered_new_node = false;
 
-	if (m_last_total_num_of_nodes < m_graph->nodeCount()) {
+	if (this->m_last_total_num_nodes < this->m_graph->nodeCount()) {
 		registered_new_node = true;
-		m_last_total_num_of_nodes = m_graph->nodeCount();
+		this->m_last_total_num_nodes = this->m_graph->nodeCount();
 		this->logFmt(LVL_DEBUG, "New node has been registered!");
 	}
 
@@ -86,8 +66,6 @@ template<class GRAPH_t> bool CICPCriteriaERD<GRAPH_t>::updateState(
 		if (IS_CLASS(observation, CObservation2DRangeScan)) {
 			m_last_laser_scan2D =
 				static_cast<mrpt::obs::CObservation2DRangeScanPtr>(observation);
-
-
 			m_is_using_3DScan = false;
 		}
 		if (IS_CLASS(observation, CObservation3DRangeScan)) {
@@ -102,7 +80,6 @@ template<class GRAPH_t> bool CICPCriteriaERD<GRAPH_t>::updateState(
 					/*from = */ m_last_laser_scan3D,
 					/*to   = */ &m_fake_laser_scan2D);
 
-
 			m_is_using_3DScan = true;
 		}
 
@@ -110,16 +87,18 @@ template<class GRAPH_t> bool CICPCriteriaERD<GRAPH_t>::updateState(
 		// add the last laser_scan
 		if (registered_new_node) {
 			if (!m_last_laser_scan2D.null()) {
-				m_nodes_to_laser_scans2D[m_graph->nodeCount()-1] = m_last_laser_scan2D;
+				this->m_nodes_to_laser_scans2D[this->m_graph->nodeCount()-1] =
+					m_last_laser_scan2D;
 				this->logFmt(LVL_DEBUG,
 						"Added laser scans of nodeID: %lu",
-						m_graph->nodeCount()-1);
+						this->m_graph->nodeCount()-1);
 			}
 			if (!m_last_laser_scan3D.null()) {
-				m_nodes_to_laser_scans3D[m_graph->nodeCount()-1] = m_last_laser_scan3D;
+				m_nodes_to_laser_scans3D[
+					this->m_graph->nodeCount()-1] = m_last_laser_scan3D;
 				this->logFmt(LVL_DEBUG,
 						"Added laser scans of nodeID: %lu",
-						m_graph->nodeCount()-1);
+						this->m_graph->nodeCount()-1);
 			}
 		}
 	}
@@ -128,7 +107,8 @@ template<class GRAPH_t> bool CICPCriteriaERD<GRAPH_t>::updateState(
 		m_last_laser_scan2D =
 			observations->getObservationByClass<CObservation2DRangeScan>();
 		if (registered_new_node && m_last_laser_scan2D) {
-			m_nodes_to_laser_scans2D[m_graph->nodeCount()-1] = m_last_laser_scan2D;
+			this->m_nodes_to_laser_scans2D[
+				this->m_graph->nodeCount()-1] = m_last_laser_scan2D;
 		}
 	}
 
@@ -138,15 +118,15 @@ template<class GRAPH_t> bool CICPCriteriaERD<GRAPH_t>::updateState(
 		std::set<mrpt::utils::TNodeID> nodes_to_check_ICP;
 		this->getNearbyNodesOf(
 				&nodes_to_check_ICP,
-				m_graph->nodeCount()-1,
+				this->m_graph->nodeCount()-1,
 				params.ICP_max_distance);
 		this->logFmt(LVL_DEBUG,
 				"Found * %lu * nodes close to nodeID %lu",
 				nodes_to_check_ICP.size(),
-				m_graph->nodeCount()-1);
+				this->m_graph->nodeCount()-1);
 
 		// reset the loop_closure flag and run registration
-		m_just_inserted_loop_closure = false;
+		this->m_just_inserted_lc = false;
 		registered_new_node = false;
 
 		if (m_is_using_3DScan) {
@@ -157,30 +137,25 @@ template<class GRAPH_t> bool CICPCriteriaERD<GRAPH_t>::updateState(
 		}
 	}
 
-	if (!m_checked_for_usuable_dataset) {
-		this->checkIfInvalidDataset(action, observations, observation);
-	}
-
 	return true;
 	MRPT_END;
 }
 
-template<class GRAPH_t>
-void CICPCriteriaERD<GRAPH_t>::checkRegistrationCondition2D(
+template<class GRAPH_T>
+void CICPCriteriaERD<GRAPH_T>::checkRegistrationCondition2D(
 		const std::set<mrpt::utils::TNodeID>& nodes_set) {
 	MRPT_START;
 	using namespace mrpt;
 	using namespace mrpt::obs;
 	using namespace mrpt::math;
 
-	mrpt::utils::TNodeID curr_nodeID = m_graph->nodeCount()-1;
+	mrpt::utils::TNodeID curr_nodeID = this->m_graph->nodeCount()-1;
 	CObservation2DRangeScanPtr curr_laser_scan;
-	std::map<mrpt::utils::TNodeID,
-		mrpt::obs::CObservation2DRangeScanPtr>::const_iterator search;
+	typename nodes_to_scans2D_t::const_iterator search;
 
 	// search for curr_laser_scan
-	search = m_nodes_to_laser_scans2D.find(curr_nodeID);
-	if (search != m_nodes_to_laser_scans2D.end()) {
+	search = this->m_nodes_to_laser_scans2D.find(curr_nodeID);
+	if (search != this->m_nodes_to_laser_scans2D.end()) {
 		curr_laser_scan = search->second;
 	}
 
@@ -197,36 +172,33 @@ void CICPCriteriaERD<GRAPH_t>::checkRegistrationCondition2D(
 			CObservation2DRangeScanPtr prev_laser_scan;
 
 			// search for prev_laser_scan
-			search = m_nodes_to_laser_scans2D.find(*node_it);
-			if (search != m_nodes_to_laser_scans2D.end()) {
+			search = this->m_nodes_to_laser_scans2D.find(*node_it);
+			if (search != this->m_nodes_to_laser_scans2D.end()) {
 				prev_laser_scan = search->second;
 
 				// make use of initial node position difference for the ICP edge
-				pose_t initial_pose = m_graph->nodes[curr_nodeID] -
-					m_graph->nodes[*node_it];
+				pose_t initial_pose = this->m_graph->nodes[curr_nodeID] -
+					this->m_graph->nodes[*node_it];
 
-				m_time_logger.enter("CICPCriteriaERD::getICPEdge");
+				this->m_time_logger.enter("CICPCriteriaERD::getICPEdge");
 				this->getICPEdge(
 						*prev_laser_scan,
 						*curr_laser_scan,
 						&rel_edge,
 						&initial_pose,
 						&icp_info);
-				m_time_logger.leave("CICPCriteriaERD::getICPEdge");
+				this->m_time_logger.leave("CICPCriteriaERD::getICPEdge");
 
 				// Debugging statements
-				MRPT_LOG_DEBUG_STREAM <<
-			">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>";
-				MRPT_LOG_DEBUG_STREAM <<
+				MRPT_LOG_DEBUG_STREAM(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+				MRPT_LOG_DEBUG_STREAM(
 					"ICP constraint between NON-successive nodes: " << 
 					*node_it << " => " << curr_nodeID << 
 					std::endl <<
 					"\tnIterations = " << icp_info.nIterations <<
-					"\tgoodness = " << icp_info.goodness;
-				MRPT_LOG_DEBUG_STREAM << "ICP_goodness_thresh: " <<
-					params.ICP_goodness_thresh;
-				MRPT_LOG_DEBUG_STREAM <<
-			"<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<";
+					"\tgoodness = " << icp_info.goodness);
+				MRPT_LOG_DEBUG_STREAM("ICP_goodness_thresh: " <<params.ICP_goodness_thresh);
+				MRPT_LOG_DEBUG_STREAM("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
 
 
 				// criterion for registering a new node
@@ -237,7 +209,7 @@ void CICPCriteriaERD<GRAPH_t>::checkRegistrationCondition2D(
 					if (absDiff(curr_nodeID, *node_it) >
 							params.LC_min_nodeid_diff) {
 						m_edge_types_to_nums["LC"]++;
-						m_just_inserted_loop_closure = true;
+						this->m_just_inserted_lc = true;
 					}
 				}
 			}
@@ -246,15 +218,15 @@ void CICPCriteriaERD<GRAPH_t>::checkRegistrationCondition2D(
 
 	MRPT_END;
 }
-template<class GRAPH_t>
-void CICPCriteriaERD<GRAPH_t>::checkRegistrationCondition3D(
+template<class GRAPH_T>
+void CICPCriteriaERD<GRAPH_T>::checkRegistrationCondition3D(
 		const std::set<mrpt::utils::TNodeID>& nodes_set) {
 	MRPT_START;
 	using namespace std;
 	using namespace mrpt::obs;
 	using namespace mrpt::math;
 
-	mrpt::utils::TNodeID curr_nodeID = m_graph->nodeCount()-1;
+	mrpt::utils::TNodeID curr_nodeID = this->m_graph->nodeCount()-1;
 	CObservation3DRangeScanPtr curr_laser_scan;
 	std::map<mrpt::utils::TNodeID,
 		mrpt::obs::CObservation3DRangeScanPtr>::const_iterator search;
@@ -282,14 +254,14 @@ void CICPCriteriaERD<GRAPH_t>::checkRegistrationCondition3D(
 				prev_laser_scan = search->second;
 
 				// TODO - use initial edge estimation
-				m_time_logger.enter("CICPCriteriaERD::getICPEdge");
+				this->m_time_logger.enter("CICPCriteriaERD::getICPEdge");
 				this->getICPEdge(
 						*prev_laser_scan,
 						*curr_laser_scan,
 						&rel_edge,
 						NULL,
 						&icp_info);
-				m_time_logger.leave("CICPCriteriaERD::getICPEdge");
+				this->m_time_logger.leave("CICPCriteriaERD::getICPEdge");
 
 				// criterion for registering a new node
 				if (icp_info.goodness > params.ICP_goodness_thresh) {
@@ -298,7 +270,7 @@ void CICPCriteriaERD<GRAPH_t>::checkRegistrationCondition3D(
 					// in case of loop closure
 					if (absDiff(curr_nodeID, *node_it) > params.LC_min_nodeid_diff) {
 						m_edge_types_to_nums["LC"]++;
-						m_just_inserted_loop_closure = true;
+						this->m_just_inserted_lc = true;
 					}
 				}
 			}
@@ -308,21 +280,20 @@ void CICPCriteriaERD<GRAPH_t>::checkRegistrationCondition3D(
 	MRPT_END;
 }
 
-template<class GRAPH_t>
-void CICPCriteriaERD<GRAPH_t>::registerNewEdge(
+template<class GRAPH_T>
+void CICPCriteriaERD<GRAPH_T>::registerNewEdge(
 		const mrpt::utils::TNodeID& from,
 		const mrpt::utils::TNodeID& to,
 		const constraint_t& rel_edge ) {
-	MRPT_START;
 	using namespace mrpt::utils;
+	parent_t::registerNewEdge(from, to, rel_edge);
 
-	m_graph->insertEdge(from,  to, rel_edge);
+	this->m_graph->insertEdge(from,  to, rel_edge);
 
-	MRPT_END;
 }
 
-template<class GRAPH_t>
-void CICPCriteriaERD<GRAPH_t>::getNearbyNodesOf(
+template<class GRAPH_T>
+void CICPCriteriaERD<GRAPH_T>::getNearbyNodesOf(
 		std::set<mrpt::utils::TNodeID> *nodes_set,
 		const mrpt::utils::TNodeID& cur_nodeID,
 		double distance ) {
@@ -331,51 +302,28 @@ void CICPCriteriaERD<GRAPH_t>::getNearbyNodesOf(
 
 	if (distance > 0) {
 		// check all but the last node.
-		for (TNodeID nodeID = 0; nodeID < m_graph->nodeCount()-1; ++nodeID) {
-			double curr_distance = m_graph->nodes[nodeID].distanceTo(
-					m_graph->nodes[cur_nodeID]);
+		for (TNodeID nodeID = 0;
+				nodeID < this->m_graph->nodeCount()-1;
+				++nodeID) {
+			double curr_distance = this->m_graph->nodes[nodeID].distanceTo(
+					this->m_graph->nodes[cur_nodeID]);
 			if (curr_distance <= distance) {
 				nodes_set->insert(nodeID);
 			}
 		}
 	}
 	else { // check against all nodes
-		m_graph->getAllNodes(*nodes_set);
+		this->m_graph->getAllNodes(*nodes_set);
 	}
 
 	MRPT_END;
 }
 
-
-template<class GRAPH_t>
-void CICPCriteriaERD<GRAPH_t>::setGraphPtr(GRAPH_t* graph) {
-	MRPT_START;
-
-	m_graph = graph;
-
-	this->logFmt(mrpt::utils::LVL_DEBUG, "Fetched the graph successfully");
-
-	MRPT_END;
-}
-template<class GRAPH_t>
-void CICPCriteriaERD<GRAPH_t>::setWindowManagerPtr(
-		mrpt::graphslam::CWindowManager* win_manager) {
-	ASSERT_(win_manager);
-	m_win_manager = win_manager;
-
-	// may still be null..
-	if (m_win_manager) {
-		m_win = m_win_manager->win;
-
-		m_win_observer = m_win_manager->observer;
-	}
-
-}
-template<class GRAPH_t>
-void CICPCriteriaERD<GRAPH_t>::notifyOfWindowEvents(
+template<class GRAPH_T>
+void CICPCriteriaERD<GRAPH_T>::notifyOfWindowEvents(
 		const std::map<std::string, bool>& events_occurred) {
 	MRPT_START;
-	ASSERT_(m_win_manager);
+	parent_t::notifyOfWindowEvents(events_occurred);
 
 	// I know the key exists - I put it there explicitly
 	if (events_occurred.find(params.keystroke_laser_scans)->second) {
@@ -385,17 +333,17 @@ void CICPCriteriaERD<GRAPH_t>::notifyOfWindowEvents(
 	MRPT_END;
 }
 
-template<class GRAPH_t>
-void CICPCriteriaERD<GRAPH_t>::toggleLaserScansVisualization() {
+template<class GRAPH_T>
+void CICPCriteriaERD<GRAPH_T>::toggleLaserScansVisualization() {
 	MRPT_START;
-	ASSERTMSG_(m_win, "No CDisplayWindow3D* was provided");
-	ASSERTMSG_(m_win_manager, "No CWindowManager* was provided");
+	ASSERTMSG_(this->m_win, "No CDisplayWindow3D* was provided");
+	ASSERTMSG_(this->m_win_manager, "No CWindowManager* was provided");
 
 	using namespace mrpt::opengl;
 
 	this->logFmt(mrpt::utils::LVL_INFO, "Toggling LaserScans visualization...");
 
-	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+	COpenGLScenePtr scene = this->m_win->get3DSceneAndLock();
 
 	if (params.visualize_laser_scans) {
 		CRenderizablePtr obj = scene->getByName("laser_scan_viz");
@@ -405,15 +353,15 @@ void CICPCriteriaERD<GRAPH_t>::toggleLaserScansVisualization() {
 		dumpVisibilityErrorMsg("visualize_laser_scans");
 	}
 
-	m_win->unlockAccess3DScene();
-	m_win->forceRepaint();
+	this->m_win->unlockAccess3DScene();
+	this->m_win->forceRepaint();
 
 	MRPT_END;
 }
 
 
-template<class GRAPH_t>
-void CICPCriteriaERD<GRAPH_t>::getEdgesStats(
+template<class GRAPH_T>
+void CICPCriteriaERD<GRAPH_T>::getEdgesStats(
 		std::map<std::string, int>* edge_types_to_num) const {
 	MRPT_START;
 
@@ -422,27 +370,23 @@ void CICPCriteriaERD<GRAPH_t>::getEdgesStats(
 	MRPT_END;
 }
 
-template<class GRAPH_t>
-void CICPCriteriaERD<GRAPH_t>::initializeVisuals() {
+template<class GRAPH_T>
+void CICPCriteriaERD<GRAPH_T>::initializeVisuals() {
 	MRPT_START;
-	ASSERT_(m_win_manager);
-
-	this->logFmt(mrpt::utils::LVL_DEBUG, "Initializing visuals");
-	m_time_logger.enter("CICPCriteriaERD::Visuals");
 	using namespace mrpt::opengl;
+	this->logFmt(mrpt::utils::LVL_DEBUG, "Initializing visuals");
+	this->m_time_logger.enter("CICPCriteriaERD::Visuals");
+	parent_t::initializeVisuals();
 
 	ASSERTMSG_(params.has_read_config,
 			"Configuration parameters aren't loaded yet");
-	ASSERTMSG_(m_win, "No CDisplayWindow3D* was provided");
-	ASSERTMSG_(m_win_manager, "No CWindowManager* was provided");
-	ASSERTMSG_(m_win_observer, "No CWindowObserver* was provided");
 
-	m_win_observer->registerKeystroke(params.keystroke_laser_scans,
+	this->m_win_observer->registerKeystroke(params.keystroke_laser_scans,
 			"Toggle LaserScans Visualization");
 
 	// ICP_max_distance disk
 	if (params.ICP_max_distance > 0) {
-		COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+		COpenGLScenePtr scene = this->m_win->get3DSceneAndLock();
 
 		CDiskPtr obj = CDisk::Create();
 		pose_t initial_pose;
@@ -452,13 +396,13 @@ void CICPCriteriaERD<GRAPH_t>::initializeVisuals() {
 		obj->setDiskRadius(params.ICP_max_distance, params.ICP_max_distance-0.1);
 		scene->insert(obj);
 
-		m_win->unlockAccess3DScene();
-		m_win->forceRepaint();
+		this->m_win->unlockAccess3DScene();
+		this->m_win->forceRepaint();
 	}
 
 	// laser scan visualization
 	if (params.visualize_laser_scans) {
-		COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+		COpenGLScenePtr scene = this->m_win->get3DSceneAndLock();
 
 		CPlanarLaserScanPtr laser_scan_viz = mrpt::opengl::CPlanarLaserScan::Create();
 		laser_scan_viz->enablePoints(true);
@@ -473,55 +417,53 @@ void CICPCriteriaERD<GRAPH_t>::initializeVisuals() {
 		laser_scan_viz->setName("laser_scan_viz");
 
 		scene->insert(laser_scan_viz);
-		m_win->unlockAccess3DScene();
-		m_win->forceRepaint();
+		this->m_win->unlockAccess3DScene();
+		this->m_win->forceRepaint();
 	}
 
 	// max distance disk - textMessage
-	if (m_win && m_win_manager && params.ICP_max_distance > 0) {
-		m_win_manager->assignTextMessageParameters(
+	if (this->m_win && this->m_win_manager && params.ICP_max_distance > 0) {
+		this->m_win_manager->assignTextMessageParameters(
 				&m_offset_y_search_disk,
 				&m_text_index_search_disk);
 
-		m_win_manager->addTextMessage(5,-m_offset_y_search_disk,
+		this->m_win_manager->addTextMessage(5,-m_offset_y_search_disk,
 				mrpt::format("ICP Edges search radius"),
 				mrpt::utils::TColorf(m_search_disk_color),
 				/* unique_index = */ m_text_index_search_disk );
 	}
 
-	m_initialized_visuals = true;
-	m_time_logger.leave("CICPCriteriaERD::Visuals");
+	this->m_time_logger.leave("CICPCriteriaERD::Visuals");
 	MRPT_END;
 }
-template<class GRAPH_t>
-void CICPCriteriaERD<GRAPH_t>::updateVisuals() {
+template<class GRAPH_T>
+void CICPCriteriaERD<GRAPH_T>::updateVisuals() {
 	MRPT_START;
-	ASSERT_(m_win_manager);
-	ASSERT_(m_initialized_visuals);
-	m_time_logger.enter("CICPCriteriaERD::Visuals");
+	this->m_time_logger.enter("CICPCriteriaERD::Visuals");
 	using namespace mrpt::opengl;
 	using namespace mrpt::utils;
 	using namespace mrpt::math;
 	using namespace mrpt::poses;
-	this->logFmt(LVL_DEBUG, "Updating visuals");
+	parent_t::updateVisuals();
 
 	// update ICP_max_distance Disk
-	if (m_win && params.ICP_max_distance > 0) {
-		COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+	if (this->m_win && params.ICP_max_distance > 0) {
+		COpenGLScenePtr scene = this->m_win->get3DSceneAndLock();
 
 		CRenderizablePtr obj = scene->getByName("ICP_max_distance");
 		CDiskPtr disk_obj = static_cast<CDiskPtr>(obj);
 
-		disk_obj->setPose(m_graph->nodes[m_graph->nodeCount()-1]);
+		disk_obj->setPose(
+				this->m_graph->nodes[this->m_graph->nodeCount()-1]);
 
-		m_win->unlockAccess3DScene();
-		m_win->forceRepaint();
+		this->m_win->unlockAccess3DScene();
+		this->m_win->forceRepaint();
 	}
 
 	// update laser scan visual
-	if (m_win && params.visualize_laser_scans &&
+	if (this->m_win && params.visualize_laser_scans &&
 			(!m_last_laser_scan2D.null() || !m_fake_laser_scan2D.null())) {
-		COpenGLScenePtr scene = m_win->get3DSceneAndLock();
+		COpenGLScenePtr scene = this->m_win->get3DSceneAndLock();
 
 		CRenderizablePtr obj = scene->getByName("laser_scan_viz");
 		CPlanarLaserScanPtr laser_scan_viz = static_cast<CPlanarLaserScanPtr>(obj);
@@ -535,10 +477,11 @@ void CICPCriteriaERD<GRAPH_t>::updateVisuals() {
 		}
 
 		// set the pose of the laser scan
-		typename GRAPH_t::global_poses_t::const_iterator search =
-			m_graph->nodes.find(m_graph->nodeCount()-1);
-		if (search != m_graph->nodes.end()) {
-			laser_scan_viz->setPose(m_graph->nodes[m_graph->nodeCount()-1]);
+		typename GRAPH_T::global_poses_t::const_iterator search =
+			this->m_graph->nodes.find(this->m_graph->nodeCount()-1);
+		if (search != this->m_graph->nodes.end()) {
+			laser_scan_viz->setPose(
+					this->m_graph->nodes[this->m_graph->nodeCount()-1]);
 			// put the laser scan *underneath* the graph, so that you can still
 			// visualize the loop closures with the nodes ahead
 			laser_scan_viz->setPose(CPose3D(
@@ -549,55 +492,16 @@ void CICPCriteriaERD<GRAPH_t>::updateVisuals() {
 						));
 		}
 
-		m_win->unlockAccess3DScene();
-		m_win->forceRepaint();
+		this->m_win->unlockAccess3DScene();
+		this->m_win->forceRepaint();
 	}
 
-	m_time_logger.leave("CICPCriteriaERD::Visuals");
-	MRPT_END;
-}
-template<class GRAPH_t>
-bool CICPCriteriaERD<GRAPH_t>::justInsertedLoopClosure() const {
-	return m_just_inserted_loop_closure;
-}
-
-template<class GRAPH_t>
-void CICPCriteriaERD<GRAPH_t>::checkIfInvalidDataset(
-		mrpt::obs::CActionCollectionPtr action,
-		mrpt::obs::CSensoryFramePtr observations,
-		mrpt::obs::CObservationPtr observation ) {
-	MRPT_START;
-	MRPT_UNUSED_PARAM(action);
-	using namespace mrpt::utils;
-	using namespace mrpt::obs;
-
-	if (observation.present()) { // FORMAT #2
-		if (IS_CLASS(observation, CObservation2DRangeScan) ||
-				IS_CLASS(observation, CObservation3DRangeScan)) {
-			m_checked_for_usuable_dataset = true;
-			return;
-		}
-		else {
-			m_consecutive_invalid_format_instances++;
-		}
-	}
-	else {
-		// TODO - what if it's in this format but only has odometry information?
-		m_checked_for_usuable_dataset = true;
-		return;
-	}
-	if (m_consecutive_invalid_format_instances > m_consecutive_invalid_format_instances_thres) {
-		this->logFmt(LVL_ERROR,
-				"Can't find usuable data in the given dataset.\nMake sure dataset contains valid CObservation2DRangeScan/CObservation3DRangeScan data.");
-		mrpt::system::sleep(5000);
-		m_checked_for_usuable_dataset = true;
-	}
-
+	this->m_time_logger.leave("CICPCriteriaERD::Visuals");
 	MRPT_END;
 }
 
-template<class GRAPH_t>
-void CICPCriteriaERD<GRAPH_t>::dumpVisibilityErrorMsg(
+template<class GRAPH_T>
+void CICPCriteriaERD<GRAPH_T>::dumpVisibilityErrorMsg(
 		std::string viz_flag, int sleep_time /* = 500 milliseconds */) {
 	MRPT_START;
 	using namespace mrpt::utils;
@@ -614,10 +518,11 @@ void CICPCriteriaERD<GRAPH_t>::dumpVisibilityErrorMsg(
 }
 
 
-template<class GRAPH_t>
-void CICPCriteriaERD<GRAPH_t>::loadParams(const std::string& source_fname) {
+template<class GRAPH_T>
+void CICPCriteriaERD<GRAPH_T>::loadParams(const std::string& source_fname) {
 	MRPT_START;
 	using namespace mrpt::utils;
+	parent_t::loadParams(source_fname);
 
 	params.loadFromConfigFileName(source_fname,
 			"EdgeRegistrationDeciderParameters");
@@ -633,17 +538,17 @@ void CICPCriteriaERD<GRAPH_t>::loadParams(const std::string& source_fname) {
 
 	MRPT_END;
 }
-template<class GRAPH_t>
-void CICPCriteriaERD<GRAPH_t>::printParams() const {
+template<class GRAPH_T>
+void CICPCriteriaERD<GRAPH_T>::printParams() const {
 	MRPT_START;
-
+	parent_t::printParams();
 	params.dumpToConsole();
 
 	MRPT_END;
 }
 
-template<class GRAPH_t>
-void CICPCriteriaERD<GRAPH_t>::getDescriptiveReport(std::string* report_str) const {
+template<class GRAPH_T>
+void CICPCriteriaERD<GRAPH_T>::getDescriptiveReport(std::string* report_str) const {
 	MRPT_START;
 	using namespace std;
 
@@ -656,11 +561,12 @@ void CICPCriteriaERD<GRAPH_t>::getDescriptiveReport(std::string* report_str) con
 	class_props_ss << header_sep << std::endl;
 
 	// time and output logging
-	const std::string time_res = m_time_logger.getStatsAsText();
+	const std::string time_res = this->m_time_logger.getStatsAsText();
 	const std::string output_res = this->getLogAsString();
 
 	// merge the individual reports
 	report_str->clear();
+	parent_t::getDescriptiveReport(report_str);
 
 	*report_str += class_props_ss.str();
 	*report_str += report_sep;
@@ -679,19 +585,19 @@ void CICPCriteriaERD<GRAPH_t>::getDescriptiveReport(std::string* report_str) con
 // TParameter
 // //////////////////////////////////
 
-template<class GRAPH_t>
-CICPCriteriaERD<GRAPH_t>::TParams::TParams(decider_t& d):
+template<class GRAPH_T>
+CICPCriteriaERD<GRAPH_T>::TParams::TParams(decider_t& d):
 	decider(d),
 	keystroke_laser_scans("l"),
 	has_read_config(false)
 { }
 
-template<class GRAPH_t>
-CICPCriteriaERD<GRAPH_t>::TParams::~TParams() {
+template<class GRAPH_T>
+CICPCriteriaERD<GRAPH_T>::TParams::~TParams() {
 }
 
-template<class GRAPH_t>
-void CICPCriteriaERD<GRAPH_t>::TParams::dumpToTextStream(
+template<class GRAPH_T>
+void CICPCriteriaERD<GRAPH_T>::TParams::dumpToTextStream(
 		mrpt::utils::CStream &out) const {
 	MRPT_START;
 
@@ -702,12 +608,10 @@ void CICPCriteriaERD<GRAPH_t>::TParams::dumpToTextStream(
 	out.printf("Visualize laser scans          = %d\n", visualize_laser_scans);
 	out.printf("3DScans Image Directory        = %s\n", scans_img_external_dir.c_str());
 
-	decider.range_scanner_t::params.dumpToTextStream(out);
-
 	MRPT_END;
 }
-template<class GRAPH_t>
-void CICPCriteriaERD<GRAPH_t>::TParams::loadFromConfigFile(
+template<class GRAPH_T>
+void CICPCriteriaERD<GRAPH_T>::TParams::loadFromConfigFile(
 		const mrpt::utils::CConfigFileBase& source,
 		const std::string& section) {
 	MRPT_START;
@@ -732,9 +636,6 @@ void CICPCriteriaERD<GRAPH_t>::TParams::loadFromConfigFile(
 			section,
 			"scan_images_external_directory",
 			"./", false);
-
-	// load the icp parameters - from "ICP" section explicitly
-	decider.range_scanner_t::params.loadFromConfigFile(source, "ICP");
 
 	has_read_config = true;
 

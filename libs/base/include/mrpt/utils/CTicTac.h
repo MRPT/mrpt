@@ -25,7 +25,6 @@ namespace utils
 	{
 	public:
 		CTicTac(); //!< Default constructor. Implicitly calls Tic()
-		virtual ~CTicTac();  //!< Dtor
 		void   Tic();  //!< Starts the stopwatch. \sa Tac
 		double Tac();  //!< Stops the stopwatch.  \return Returns the ellapsed time in seconds.  \sa Tic
 	private:

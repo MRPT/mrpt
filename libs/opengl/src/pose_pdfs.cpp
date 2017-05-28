@@ -259,7 +259,7 @@ CSetOfObjectsPtr CSetOfObjects::posePDF2opengl(const CPose3DQuatPDF &o)
 
 		opengl::CEllipsoidPtr obj = opengl::CEllipsoid::Create();
 
-		obj->setPose( p->mean);
+		obj->setPose( CPose3D(p->mean));
 		obj->setCovMatrix(CMatrixDouble(p->cov),  p->cov(2,2)==0  ?  2:3);
 
 		obj->setQuantiles(3);

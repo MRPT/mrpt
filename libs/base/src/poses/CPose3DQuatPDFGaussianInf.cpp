@@ -10,13 +10,26 @@
 #include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/poses/CPose3DQuatPDFGaussianInf.h>
-#include <mrpt/math/transform_gaussian.h>
+#include <mrpt/utils/types_math.h>                           // for CMatrixF...
+#include <stdio.h>                                           // for size_t
+#include <algorithm>                                         // for move, max
+#include <exception>                                         // for exception
+#include <new>                                               // for operator...
+#include <ostream>                                           // for operator<<
+#include <string>                                            // for allocator
+#include <vector>                                            // for vector
+#include <mrpt/math/CMatrixFixedNumeric.h>                   // for CMatrixF...
+#include <mrpt/math/CQuaternion.h>                           // for CQuatern...
+#include <mrpt/poses/CPose3D.h>                              // for CPose3D
+#include <mrpt/poses/CPose3DQuat.h>                          // for CPose3DQuat
+#include <mrpt/poses/CPose3DQuatPDF.h>                       // for CPose3DQ...
+#include <mrpt/random/RandomGenerators.h>                    // for CRandomG...
+#include <mrpt/utils/CObject.h>                              // for CPose3DQ...
+#include <mrpt/utils/CSerializable.h>                        // for CSeriali...
+#include <mrpt/utils/bits.h>                                 // for size
+#include <mrpt/utils/mrpt_macros.h>                          // for MRPT_END
+#include <mrpt/system/os.h>                                  // for fopen
 #include <mrpt/math/distributions.h>
-#include <mrpt/poses/CPose3DPDFGaussian.h>
-#include <mrpt/poses/CPosePDF.h>
-#include <mrpt/poses/CPosePDFGaussian.h>
-#include <mrpt/system/os.h>
-#include <mrpt/utils/CStream.h>
 
 using namespace mrpt;
 using namespace mrpt::system;
