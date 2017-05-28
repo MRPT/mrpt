@@ -546,6 +546,73 @@ const std::string & mrpt::system::getMRPTLicense()
 	return sLicenseText;
 }
 
+
+/*---------------------------------------------------------------
+
+launchProcess
+
+---------------------------------------------------------------*/
+
+bool mrpt::system::launchProcess(const std::string & command)
+
+{
+
+#ifdef MRPT_OS_WINDOWS
+
+	STARTUPINFOA			SI;
+
+	PROCESS_INFORMATION		PI;
+
+
+
+	memset(&SI, 0, sizeof(STARTUPINFOA));
+
+	SI.cb = sizeof(STARTUPINFOA);
+
+
+
+	if (CreateProcessA(NULL, (LPSTR)command.c_str(), NULL, NULL, true, 0, NULL, NULL, &SI, &PI))
+
+	{
+
+		// Wait:
+
+		WaitForSingleObject(PI.hProcess, INFINITE);
+
+		return true;
+
+	} // End of process executed OK
+
+	else
+
+	{
+
+		char str[300];
+
+		DWORD e = GetLastError();
+
+
+
+		FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM, 0, e, 0, str, sizeof(str), NULL);
+
+
+
+		// ERROR:
+
+		std::cerr << "[launchProcess] Couldn't spawn process. Error msg: " << str << std::endl;
+
+		return false;
+
+	}
+
+#else
+
+	return 0 == ::system(command.c_str());
+
+#endif
+
+} // end launchProcess
+
 #include <mrpt/mrpt_paths_config.h>
 std::string mrpt::system::find_mrpt_shared_dir()
 {
