@@ -170,6 +170,14 @@ namespace mrpt
 		  */
 		void BASE_IMPEXP setConsoleColor( TConsoleColor color, bool changeStdErr=false );
 
+
+		/** Executes the given command (which may contain a program + arguments), and waits until it finishes.
+
+		* \return false on any error, true otherwise
+
+		*/
+		bool BASE_IMPEXP  launchProcess(const std::string & command);
+
 		/** @} */
 
 	} // End of namespace
