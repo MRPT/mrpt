@@ -129,7 +129,6 @@ namespace mrpt
 		  */
 		class HWDRIVERS_IMPEXP  CImageGrabber_FlyCapture2
 		{
-			static_assert(!std::is_copy_constructible<CImageGrabber_FlyCapture2>::value && !std::is_copy_assignable<CImageGrabber_FlyCapture2>::value, "Copy Check");
 		protected:
 			void *m_camera;      //!< Opaque pointer to the FlyCapture2::Camera object. nullptr if no camera is grabbing.
 			void *m_camera_info; //!< Opaque pointer to the FlyCapture2::CameraInfo object. nullptr if no camera is grabbing.
@@ -146,6 +145,9 @@ namespace mrpt
 		public:
 			/** Constructor that does not open a camera. \sa open() */
 			CImageGrabber_FlyCapture2();
+			
+			CImageGrabber_FlyCapture2(const CImageGrabber_FlyCapture2 &) = delete;
+			CImageGrabber_FlyCapture2& operator =(const CImageGrabber_FlyCapture2 &) = delete;
 
 			/** Constructor: tries to open the camera with the given options. Raises an exception on error. \sa open() */
 			CImageGrabber_FlyCapture2( const TCaptureOptions_FlyCapture2 &options);
@@ -194,7 +196,7 @@ namespace mrpt
 			inline bool isStereo(){ return m_options.stereo_mode; }
 
 		};	// End of class
-
+		static_assert(!std::is_copy_constructible<CImageGrabber_FlyCapture2>::value && !std::is_copy_assignable<CImageGrabber_FlyCapture2>::value, "Copy Check");
 	} // End of NS
 } // End of NS
 

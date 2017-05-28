@@ -58,7 +58,6 @@ namespace mrpt
  		  */
 		class HWDRIVERS_IMPEXP CGenericSensor
 		{
-			static_assert(!std::is_copy_constructible<CGenericSensor>::value && !std::is_copy_assignable<CGenericSensor>::value, "Copy Check");
 		public:
 			using Ptr = std::shared_ptr<CGenericSensor>;
 			virtual const mrpt::hwdrivers::TSensorClassId* GetRuntimeClass() const = 0;
@@ -182,6 +181,9 @@ namespace mrpt
 			/** Constructor */
 			CGenericSensor( );
 
+			CGenericSensor(const CGenericSensor &) = delete;
+			CGenericSensor& operator =(const CGenericSensor &) = delete;
+
 			/** Destructor */
 			virtual ~CGenericSensor();
 
@@ -237,6 +239,7 @@ namespace mrpt
 
 		}; // end of class
 
+		static_assert(!std::is_copy_constructible<CGenericSensor>::value && !std::is_copy_assignable<CGenericSensor>::value, "Copy Check");
 
 		#define SENSOR_CLASS_ID(class_name) \
 			static_cast<const mrpt::hwdrivers::TSensorClassId*>(& mrpt::hwdrivers::class_name::class##class_name)

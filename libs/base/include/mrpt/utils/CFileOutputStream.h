@@ -24,7 +24,6 @@ namespace utils
 	 */
 	class BASE_IMPEXP CFileOutputStream : public CStream
 	{
-		static_assert(!std::is_copy_constructible<CFileOutputStream>::value && !std::is_copy_assignable<CFileOutputStream>::value, "Copy Check");
 	protected:
 		size_t Read(void *Buffer, size_t Count) MRPT_OVERRIDE;
 		size_t Write(const void *Buffer, size_t Count) MRPT_OVERRIDE;
@@ -44,6 +43,9 @@ namespace utils
 
 		 /** Default constructor */
 		CFileOutputStream();
+		
+		CFileOutputStream(const CFileOutputStream &) = delete;
+		CFileOutputStream& operator =(const CFileOutputStream &) = delete;
 
 		 /** Open the given file for write
 		  * \param fileName The file to be open in this stream
@@ -71,6 +73,7 @@ namespace utils
 		/** Method for getting the current cursor position, where 0 is the first byte and TotalBytesCount-1 the last one */
 		uint64_t getPosition() MRPT_OVERRIDE;
 	}; // End of class def.
+	static_assert(!std::is_copy_constructible<CFileOutputStream>::value && !std::is_copy_assignable<CFileOutputStream>::value, "Copy Check");
 	} // End of namespace
 } // end of namespace
 #endif
