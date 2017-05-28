@@ -231,7 +231,7 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame *sf)
 			if (o->hasRangeImage && !o->hasPoints3D)
 			{
 				mrpt::obs::T3DPointsProjectionParams pp;
-				pp.takeIntoAccountSensorPoseOnRobot = false,
+				pp.takeIntoAccountSensorPoseOnRobot = false;
 				o->project3DPointsFromDepthImageInto(*o, pp);
 				obs3D_to_clear.push_back(o);
 			}

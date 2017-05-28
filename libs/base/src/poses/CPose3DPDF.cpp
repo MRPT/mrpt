@@ -83,7 +83,7 @@ CPose3DPDF* CPose3DPDF::createFrom2D(const CPosePDF &o)
 			for (it1=obj->m_particles.begin(),it2=newObj->m_particles.begin();it1!=obj->m_particles.end();++it1,++it2)
 			{
 				it2->log_w = it1->log_w;
-				(*it2->d) = (*it1->d);
+				(*it2->d) = CPose3D(*it1->d);
 			}
 
 			return newObj;

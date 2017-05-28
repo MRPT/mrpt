@@ -244,7 +244,7 @@ void COutputLogger::TMsg::dumpToConsole() const {
 	// Switch back to normal color:
 	mrpt::system::setConsoleColor(CONCOL_NORMAL);
 #ifdef _MSC_VER
-	OutputDebugStringA(str.c_str());
+	OutputDebugStringA(str.c_str());  // call benchmarked: avrg 90 us (50-200 us)
 #endif
 }
 

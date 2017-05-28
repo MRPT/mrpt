@@ -17,7 +17,7 @@
 #include <wx/radiobox.h>
 #include <wx/menu.h>
 #include <wx/textctrl.h>
-#include <wx/checkbox.h>
+#include <wx/checklst.h>
 #include <wx/things/toggle.h>
 #include <wx/slider.h>
 #include <wx/panel.h>
@@ -63,7 +63,6 @@ class navlog_viewer_GUI_designDialog: public wxFrame //wxDialog
 		void OnmnuSeePTGParamsSelected(wxCommandEvent& event);
 		void OncbGlobalFrameClick(wxCommandEvent& event);
 		void OnmnuSaveScoreMatrixSelected(wxCommandEvent& event);
-		void OncbShowXYClick(wxCommandEvent& event);
 		void OnrbPerPTGPlotsSelect(wxCommandEvent& event);
 		//*)
 		void OntimMouseXY(wxTimerEvent& event);
@@ -71,15 +70,20 @@ class navlog_viewer_GUI_designDialog: public wxFrame //wxDialog
 
 		//(*Identifiers(navlog_viewer_GUI_designDialog)
 		static const long ID_BUTTON1;
-		static const long ID_STATICTEXT1;
-		static const long ID_TEXTCTRL1;
 		static const long ID_BUTTON2;
 		static const long ID_BUTTON3;
+		static const long ID_STATICTEXT1;
+		static const long ID_TEXTCTRL1;
+		static const long ID_RADIOBOX1;
+		static const long ID_CHECKLISTBOX1;
 		static const long ID_SLIDER1;
+		static const long ID_BUTTON6;
 		static const long ID_BUTTON4;
 		static const long ID_BUTTON5;
 		static const long ID_STATICTEXT9;
 		static const long ID_TEXTCTRL3;
+		static const long ID_STATICTEXT8;
+		static const long ID_TEXTCTRL2;
 		static const long ID_PANEL2;
 		static const long ID_STATICTEXT2;
 		static const long ID_STATICTEXT3;
@@ -88,15 +92,6 @@ class navlog_viewer_GUI_designDialog: public wxFrame //wxDialog
 		static const long ID_STATICTEXT6;
 		static const long ID_STATICTEXT7;
 		static const long ID_PANEL3;
-		static const long ID_RADIOBOX1;
-		static const long ID_CHECKBOX1;
-		static const long ID_CHECKBOX2;
-		static const long ID_CHECKBOX3;
-		static const long ID_CHECKBOX4;
-		static const long ID_CHECKBOX5;
-		static const long ID_STATICTEXT8;
-		static const long ID_TEXTCTRL2;
-		static const long ID_BUTTON6;
 		static const long ID_PANEL1;
 		static const long ID_TIMER1;
 		static const long ID_TIMER2;
@@ -114,36 +109,33 @@ class navlog_viewer_GUI_designDialog: public wxFrame //wxDialog
 		wxPanel* Panel_AUX;
 		wxStaticText* txtLogDuration;
 		wxStaticText* StaticText2;
-		wxCheckBox* cbDrawShapePath;
 		wxRadioBox* rbPerPTGPlots;
 		wxStaticText* StaticText6;
 		wxTimer timAutoload;
+		wxCheckListBox* cbList;
 		wxFlexGridSizer* FlexGridSizer9;
 		wxCustomButton* btnQuit;
 		wxPanel* Panel1;
 		wxStaticText* StaticText1;
 		wxMenu mnuMoreOps;
 		wxStaticText* StaticText3;
-		wxCheckBox* cbShowAllDebugEntries;
 		wxPanel* Panel3;
 		wxSlider* slidLog;
 		wxTimer timPlay;
 		wxStaticText* StaticText5;
-		wxCheckBox* cbGlobalFrame;
 		wxTextCtrl* edAnimDelayMS;
 		wxStaticText* txtLogEntries;
 		wxMenuItem* mnuMatlabPlots;
-		wxFlexGridSizer* flexGridRightHand;
-		wxCheckBox* cbShowRelPoses;
 		wxCustomButton* btnHelp;
 		wxTextCtrl* edLogFile;
-		wxCheckBox* cbShowXY;
 		wxCustomButton* btnLoad;
 		wxStaticText* StaticText4;
 		wxStaticText* txtSelectedPTG;
 		wxButton* btnPlay;
 		//*)
 		wxTimer timMouseXY;
+
+		int m_cbIdx_DrawShape, m_cbIdx_ShowAllDebugFields, m_cbIdx_GlobalFrame, m_cbIdx_ShowDelays, m_cbIdx_ClearanceOverPath, m_cbIdx_ShowCursor;
 
 		DECLARE_EVENT_TABLE()
 

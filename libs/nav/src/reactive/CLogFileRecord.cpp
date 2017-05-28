@@ -20,12 +20,24 @@ using namespace mrpt::nav;
 
 IMPLEMENTS_SERIALIZABLE( CLogFileRecord, CSerializable,mrpt::nav )
 
-
 /*---------------------------------------------------------------
 					Constructor
   ---------------------------------------------------------------*/
 CLogFileRecord::CLogFileRecord() :
-    nPTGs     ( 0 )
+	nPTGs     ( 0 ),
+	nSelectedPTG(-1),
+	robotPoseLocalization(0,0,0),
+	robotPoseOdometry(0,0,0),
+	relPoseSense(0,0,0),
+	relPoseVelCmd(0,0,0),
+	WS_target_relative(0,0),
+	cur_vel(0,0,0),
+	cur_vel_local(0,0,0),
+	robotShape_radius(.0),
+	ptg_index_NOP(-1),
+	ptg_last_k_NOP(0),
+	rel_cur_pose_wrt_last_vel_cmd_NOP(0,0,0),
+	rel_pose_PTG_origin_wrt_sense_NOP(0,0,0)
 {
 	infoPerPTG.clear();
 	WS_Obstacles.clear();
@@ -37,7 +49,7 @@ CLogFileRecord::CLogFileRecord() :
 void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 	if (version)
-		*version = 23;
+		*version = 25;
 	else
 	{
 		uint32_t	i,n;
@@ -58,7 +70,7 @@ void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) cons
 			out << infoPerPTG[i].timeForTPObsTransformation << infoPerPTG[i].timeForHolonomicMethod; // made double in v12
 			out << infoPerPTG[i].desiredDirection << infoPerPTG[i].desiredSpeed << infoPerPTG[i].evaluation; // made double in v12
 			// removed in v23: out << evaluation_org << evaluation_priority; // added in v21
-			out << *infoPerPTG[i].HLFR;
+			out << infoPerPTG[i].HLFR;
 
 			// Version 9: Removed security distances. Added optional field with PTG info.
 			const bool there_is_ptg_data = infoPerPTG[i].ptg.present();
@@ -66,14 +78,22 @@ void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) cons
 			if (there_is_ptg_data)
 				out << infoPerPTG[i].ptg;
 
-			out << infoPerPTG[i].clearance.raw_clearances; // v19
+			// Was: out << infoPerPTG[i].clearance.raw_clearances; // v19
+			infoPerPTG[i].clearance.writeToStream(out); // v25
 		}
 		out << nSelectedPTG << WS_Obstacles;
 		out << WS_Obstacles_original; // v20
-		out << robotOdometryPose << WS_target_relative /*v8*/;
+		
+		// Removed v24: out << robotOdometryPose;
+		out << robotPoseLocalization << robotPoseOdometry; // v24
+
+		out << WS_target_relative; //v8
 		// v16:
-		out << ptg_index_NOP << ptg_last_k_NOP  << rel_cur_pose_wrt_last_vel_cmd_NOP << rel_pose_PTG_origin_wrt_sense_NOP;
-		out << ptg_last_curRobotVelLocal; // v17
+		out << ptg_index_NOP << ptg_last_k_NOP; 
+		out << rel_cur_pose_wrt_last_vel_cmd_NOP << rel_pose_PTG_origin_wrt_sense_NOP; // v24: CPose2D->TPose2D
+		
+		// Removed: v24. out << ptg_last_curRobotVelLocal; // v17
+		ptg_last_navDynState.writeToStream(out); // v24
 
 		if (ptg_index_NOP<0)
 			out << cmd_vel /*v10*/ << cmd_vel_original; // v15
@@ -102,10 +122,12 @@ void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) cons
 
 		out << values << timestamps; // v13
 
-		out << relPoseSense << relPoseVelCmd; // v14
+		out << relPoseSense << relPoseVelCmd; // v14, v24 changed CPose2D->TPose2D
 
 		// v15: cmd_vel converted from std::vector<double> into CSerializable
 		out << additional_debug_msgs; // v18
+
+		navDynState.writeToStream(out); // v24
 	}
 }
 
@@ -140,6 +162,8 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 	case 21:
 	case 22:
 	case 23:
+	case 24:
+	case 25:
 		{
 			// Version 0 --------------
 			uint32_t  i,n;
@@ -150,59 +174,70 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 			infoPerPTG.resize(n);
 			for (i=0;i<n;i++)
 			{
+				auto &ipp = infoPerPTG[i];
 				char str[256];
 				in >> str;
-				infoPerPTG[i].PTG_desc = std::string(str);
+				ipp.PTG_desc = std::string(str);
 
 				int32_t m;
 				in >> m;
-				infoPerPTG[i].TP_Obstacles.resize(m);
-				if (m) in.ReadBufferFixEndianness( &(*infoPerPTG[i].TP_Obstacles.begin()), m );
+				ipp.TP_Obstacles.resize(m);
+				if (m) in.ReadBufferFixEndianness( &(*ipp.TP_Obstacles.begin()), m );
 
 				if (version>=8)
-					in >> infoPerPTG[i].TP_Target;
+					in >> ipp.TP_Target;
 				else
 				{
 					mrpt::poses::CPoint2D pos;
 					in >> pos;
-					infoPerPTG[i].TP_Target = mrpt::math::TPoint2D(pos);
+					ipp.TP_Target = mrpt::math::TPoint2D(pos);
 				}
 				if (version >= 17)
-					in >> infoPerPTG[i].TP_Robot;
-				else infoPerPTG[i].TP_Robot = mrpt::math::TPoint2D(0, 0);
+					in >> ipp.TP_Robot;
+				else ipp.TP_Robot = mrpt::math::TPoint2D(0, 0);
 
 				if (version>=12) {
-					in >> infoPerPTG[i].timeForTPObsTransformation >> infoPerPTG[i].timeForHolonomicMethod;
-					in >> infoPerPTG[i].desiredDirection >> infoPerPTG[i].desiredSpeed >> infoPerPTG[i].evaluation;
+					in >> ipp.timeForTPObsTransformation >> ipp.timeForHolonomicMethod;
+					in >> ipp.desiredDirection >> ipp.desiredSpeed >> ipp.evaluation;
 				} else {
-					in.ReadAsAndCastTo<float,double>(infoPerPTG[i].timeForTPObsTransformation);
-					in.ReadAsAndCastTo<float,double>(infoPerPTG[i].timeForHolonomicMethod);
-					in.ReadAsAndCastTo<float,double>(infoPerPTG[i].desiredDirection);
-					in.ReadAsAndCastTo<float,double>(infoPerPTG[i].desiredSpeed);
-					in.ReadAsAndCastTo<float,double>(infoPerPTG[i].evaluation);
+					in.ReadAsAndCastTo<float,double>(ipp.timeForTPObsTransformation);
+					in.ReadAsAndCastTo<float,double>(ipp.timeForHolonomicMethod);
+					in.ReadAsAndCastTo<float,double>(ipp.desiredDirection);
+					in.ReadAsAndCastTo<float,double>(ipp.desiredSpeed);
+					in.ReadAsAndCastTo<float,double>(ipp.evaluation);
 				}
 				if (version >= 21 && version <23) {
 					double evaluation_org, evaluation_priority;
 					in >> evaluation_org >> evaluation_priority;
 				}
 
-				in >> infoPerPTG[i].HLFR;
+				in >> ipp.HLFR;
 
 				if (version>=9) // Extra PTG info
 				{
-					infoPerPTG[i].ptg.clear();
+					ipp.ptg.clear();
 
 					bool there_is_ptg_data;
 					in >> there_is_ptg_data;
 					if (there_is_ptg_data)
-						infoPerPTG[i].ptg = mrpt::nav::CParameterizedTrajectoryGeneratorPtr( in.ReadObject() );
+						ipp.ptg = mrpt::nav::CParameterizedTrajectoryGeneratorPtr( in.ReadObject() );
 				}
 
-				if (version >= 19) {
-					in >> infoPerPTG[i].clearance.raw_clearances;
+				if (version >= 19)
+				{
+					if (version < 25) {
+						std::vector<std::map<double,double> > raw_clearances;
+						in >> raw_clearances;
+						ipp.clearance.resize(raw_clearances.size(), raw_clearances.size());
+						for (size_t i = 0; i < raw_clearances.size(); i++)
+							ipp.clearance.get_path_clearance_decimated(i) = raw_clearances[i];
+					}
+					else {
+						ipp.clearance.readFromStream(in);
+					}
 				}
 				else {
-					infoPerPTG[i].clearance.raw_clearances.clear();
+					ipp.clearance.clear();
 				}
 			}
 
@@ -214,7 +249,16 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 				WS_Obstacles_original = WS_Obstacles;
 			}
 
-			in >> robotOdometryPose;
+			if (version < 24) {
+				mrpt::poses::CPose2D robotOdometryPose;
+				in >> robotOdometryPose;
+				robotPoseOdometry     = robotOdometryPose;
+				robotPoseLocalization = robotOdometryPose;
+			}
+			else
+			{
+				in >> robotPoseLocalization >> robotPoseOdometry; // v24
+			}
 
 			if (version>=8)
 				in >> WS_target_relative;
@@ -226,15 +270,27 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 			}
 
 			if (version >= 16) {
-				in >> ptg_index_NOP >> ptg_last_k_NOP >> rel_cur_pose_wrt_last_vel_cmd_NOP >> rel_pose_PTG_origin_wrt_sense_NOP;
+				in >> ptg_index_NOP >> ptg_last_k_NOP;
+				if (version >= 24) {
+					in >> rel_cur_pose_wrt_last_vel_cmd_NOP >> rel_pose_PTG_origin_wrt_sense_NOP;
+				}
+				else
+				{
+					mrpt::poses::CPose2D crel_cur_pose_wrt_last_vel_cmd_NOP,crel_pose_PTG_origin_wrt_sense_NOP;
+					in >> crel_cur_pose_wrt_last_vel_cmd_NOP >> crel_pose_PTG_origin_wrt_sense_NOP;
+					rel_cur_pose_wrt_last_vel_cmd_NOP = crel_cur_pose_wrt_last_vel_cmd_NOP;
+					rel_pose_PTG_origin_wrt_sense_NOP = crel_pose_PTG_origin_wrt_sense_NOP;
+				}
 			}
 			else {
 				ptg_index_NOP = -1;
 			}
-			if (version >= 17)
-				in >> ptg_last_curRobotVelLocal; // v17
-			else
-				ptg_last_curRobotVelLocal = mrpt::math::TTwist2D(0, 0, 0);
+			if (version >= 17 && version < 24) {
+				in >> ptg_last_navDynState.curVelLocal;
+			}
+			if (version >= 24) {
+				ptg_last_navDynState.readFromStream(in);
+			}
 
 			if (version >= 10) {
 				if (version >= 15) {
@@ -395,15 +451,32 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 			}
 
 			if (version >= 14) {
-				in >> relPoseSense >> relPoseVelCmd;
+				if (version >= 24) {
+					in >> relPoseSense >> relPoseVelCmd;
+				}
+				else {
+					mrpt::poses::CPose2D crelPoseSense, crelPoseVelCmd;
+					in >> crelPoseSense >> crelPoseVelCmd;
+					relPoseSense = crelPoseSense;
+					relPoseVelCmd = crelPoseVelCmd;
+				}
 			}
 			else {
-				relPoseSense = relPoseVelCmd = mrpt::poses::CPose2D();
+				relPoseSense = relPoseVelCmd = mrpt::math::TPose2D();
 			}
 
 			if (version>=18) 
 			     in >> additional_debug_msgs;
 			else additional_debug_msgs.clear();
+
+			if (version>=24)
+				 navDynState.readFromStream(in);
+			else {
+				navDynState = CParameterizedTrajectoryGenerator::TNavDynamicState();
+				navDynState.curVelLocal = cur_vel_local;
+				navDynState.relTarget = WS_target_relative;
+			}
+
 
 		} break;
 	default:

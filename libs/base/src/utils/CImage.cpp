@@ -1992,6 +1992,14 @@ void CImage::flipVertical(bool also_swapRB )
 #endif
 }
 
+void CImage::flipHorizontal()
+{
+#if MRPT_HAS_OPENCV
+	IplImage *ptr=(IplImage*)img;
+	cvFlip(ptr,nullptr,1);
+#endif
+}
+
 /*---------------------------------------------------------------
 				swapRB
  ---------------------------------------------------------------*/

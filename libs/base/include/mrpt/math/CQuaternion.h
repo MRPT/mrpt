@@ -12,6 +12,7 @@
 
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/math/CArrayNumeric.h>
+#include <mrpt/utils/bits.h>
 
 namespace mrpt
 {
@@ -146,7 +147,7 @@ namespace mrpt
 		template <class ARRAYLIKE3>
 		void ln_noresize(ARRAYLIKE3 &out_ln) const
 		{
-			using mrpt::utils::square;
+			using mrpt::math::square;
 			const T xyz_norm = std::sqrt(square(x())+square(y())+square(z()));
 			const T K = (xyz_norm<1e-7) ?  2 : 2*::acos(r())/xyz_norm;
 			out_ln[0] = K*x();
@@ -211,7 +212,7 @@ namespace mrpt
 
 		/** Return the squared norm of the quaternion */
 		inline double normSqr() const {
-			using mrpt::utils::square;
+			using mrpt::math::square;
 			return square(r()) + square(x()) + square(y()) + square(z());
 		}
 
@@ -327,7 +328,7 @@ namespace mrpt
 		template <class MATRIXLIKE>
 		void rpy_and_jacobian(T &roll, T &pitch, T &yaw, MATRIXLIKE *out_dr_dq = NULL, bool resize_out_dr_dq_to3x4 = true ) const
 		{
-			using mrpt::utils::square;
+			using mrpt::math::square;
 			using std::sqrt;
 
 			if (out_dr_dq && resize_out_dr_dq_to3x4)

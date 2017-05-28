@@ -313,9 +313,9 @@ CPosePDFPtr CICP::ICP_Method_Classic(
 				//  (Method from paper of J.Gonzalez, Martinez y Morales)
 				// ----------------------------------------------------------------------
 				mrpt::math::TPose2D est_mean;
-				mrpt::tfest::se2_l2(correspondences, est_mean); 
+				mrpt::tfest::se2_l2(correspondences, est_mean);
 
-				gaussPdf->mean = est_mean;
+				gaussPdf->mean = mrpt::poses::CPose2D(est_mean);
 
 				// If matching has not changed, decrease the thresholds:
 				// --------------------------------------------------------
@@ -461,11 +461,11 @@ CPosePDFPtr CICP::ICP_Method_Classic(
 			// -----------------------------------------------------------------------------------
 			float  	Axy = matchParams.maxDistForCorrespondence*0.9f;
 
-			TPose2D  	P0( gaussPdf->mean );
-			TPose2D  	PX1(P0);	PX1.x -= Axy;
-			TPose2D  	PX2(P0);	PX2.x += Axy;
-			TPose2D  	PY1(P0);	PY1.y -= Axy;
-			TPose2D  	PY2(P0);	PY2.y += Axy;
+			CPose2D  	P0( gaussPdf->mean );
+			CPose2D  	PX1(P0);	PX1.x_incr(-Axy);
+			CPose2D  	PX2(P0);	PX2.x_incr(+Axy);
+			CPose2D  	PY1(P0);	PY1.y_incr(-Axy);
+			CPose2D  	PY2(P0);	PY2.y_incr(+Axy);
 
 			matchParams.angularDistPivotPoint = TPoint3D( gaussPdf->mean.x(),gaussPdf->mean.y(),0);
 			m1->determineMatching2D(
@@ -1018,7 +1018,7 @@ CPose3DPDFPtr CICP::ICP3D_Method_Classic(
 				mrpt::poses::CPose3DQuat estPoseQuat;
 				double transf_scale;
 				mrpt::tfest::se3_l2(correspondences, estPoseQuat, transf_scale, false /* dont force unit scale */ );
-				gaussPdf->mean = estPoseQuat;
+				gaussPdf->mean = mrpt::poses::CPose3D(estPoseQuat);
 
 				// If matching has not changed, decrease the thresholds:
 				// --------------------------------------------------------

@@ -34,11 +34,13 @@ ADD_EXECUTABLE(${PROJECT_NAME}
 	perf-matrix1.cpp perf-matrix2.cpp
 	perf-pointmaps.cpp
 	perf-poses.cpp
+	perf-pose-interp.cpp
 	perf-random.cpp
 	perf-scan_matching.cpp
 	perf-CObservation3DRangeScan.cpp
 	perf-atan2lut.cpp
-	 ${MRPT_VERSION_RC_FILE}
+	perf-strings.cpp
+	${MRPT_VERSION_RC_FILE}
 	)
 
 # Add the required libraries for linking:

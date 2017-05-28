@@ -180,7 +180,7 @@ double grid_test_9(int a1, int a2)
 
 	CSimplePointsMap  gridmap;
 	CSimplePointsMap  pt_map2;
-	pt_map2.insertionOptions.minDistBetweenLaserPoints = 0.03;
+	pt_map2.insertionOptions.minDistBetweenLaserPoints = 0.03f;
 
 	CPose3D pose;
 	gridmap.insertObservation(&scan1, &pose);

@@ -10,8 +10,6 @@
 #include "vision-precomp.h"   // Precompiled headers
 
 #include <mrpt/math/geometry.h>
-#include <mrpt/random.h>
-#include <mrpt/utils/CConfigFile.h>
 #include <mrpt/utils/CFileOutputStream.h>
 
 #include <mrpt/maps/CLandmarksMap.h>
@@ -25,6 +23,7 @@
 #include <mrpt/obs/CObservationBeaconRanges.h>
 #include <mrpt/obs/CObservationVisualLandmarks.h>
 #include <mrpt/system/os.h>
+#include <mrpt/random.h>
 
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CEllipsoid.h>
@@ -229,15 +228,6 @@ void  CLandmarksMap::readFromStream(mrpt::utils::CStream &in, int version)
 
 }
 
-/**** FAMD ****/
-//void  CLandmarksMap::importMapMaxID( CLandmarksMap &sourceMap )
-//{
-//	CLandmarksMap::_mapMaxID = sourceMap._mapMaxID;
-//}
-/**** END FAMD ****/
-
-
-
 /*---------------------------------------------------------------
 					computeObservationLikelihood
   ---------------------------------------------------------------*/
@@ -401,7 +391,7 @@ double	 CLandmarksMap::internal_computeObservationLikelihood(
 		double					x,y;
 		double					earth_radius=6378137;
 
-		if ((o->has_RMC_datum)&&(likelihoodOptions.GPSOrigin.min_sat<=o->getMsgByClass<gnss::Message_NMEA_GGA>().fields.satellitesUsed))
+		if ((o->has_GGA_datum)&&(likelihoodOptions.GPSOrigin.min_sat<=o->getMsgByClass<gnss::Message_NMEA_GGA>().fields.satellitesUsed))
 		{
 			//Compose GPS robot position
 
@@ -628,7 +618,6 @@ void  CLandmarksMap::loadSiftFeaturesFromImageObservation(
 {
 	CImage								corImg;
 	CPointPDFGaussian						landmark3DPositionPDF;
-	CPoint3D								dir;	// Unitary, director vector
 	float									d = insertionOptions.SIFTsLoadDistanceOfTheMean;
 	float									width = insertionOptions.SIFTsLoadEllipsoidWidth;
 	CMatrixDouble33							P,D;
@@ -656,16 +645,16 @@ void  CLandmarksMap::loadSiftFeaturesFromImageObservation(
 	{
 		// Find the 3D position from the pixels
 		//  coordinates and the camera intrinsic matrix:
-		dir = vision::pixelTo3D( TPixelCoordf( (*sift)->x,(*sift)->y) , obs.cameraParams.intrinsicParams );	//dir = vision::pixelTo3D( sift->x,sift->y, obs.intrinsicParams );
+		mrpt::math::TPoint3D dir = vision::pixelTo3D( TPixelCoordf( (*sift)->x,(*sift)->y) , obs.cameraParams.intrinsicParams );	//dir = vision::pixelTo3D( sift->x,sift->y, obs.intrinsicParams );
 
 		// Compute the mean and covariance of the landmark gaussian 3D position,
 		//  from the unitary direction vector and a given distance:
 		// --------------------------------------------------------------------------
-		landmark3DPositionPDF.mean = dir;	// The mean is easy :-)
+		landmark3DPositionPDF.mean = CPoint3D(dir);	// The mean is easy :-)
 		landmark3DPositionPDF.mean*= d;
 
 		// The covariance:
-		P = math::generateAxisBaseFromDirection( dir.x(),dir.y(),dir.z() );
+		P = math::generateAxisBaseFromDirection( dir.x,dir.y,dir.z );
 
 		// Diagonal matrix (with the "size" of the ellipsoid)
 		D(0,0) = square( 0.5 * d );
@@ -770,7 +759,7 @@ void  CLandmarksMap::loadSiftFeaturesFromStereoImageObservation(
 	//CLandmarksMap::_maxMapID = fID;
 
 	// Project landmarks according to the ref. camera pose:
-	changeCoordinatesReference( obs.cameraPose );
+	changeCoordinatesReference( mrpt::poses::CPose3D(obs.cameraPose) );
 
 	MRPT_END
 }

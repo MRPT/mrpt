@@ -54,7 +54,7 @@ namespace poses
 		}
 
 		/** Implicit constructor from lightweight type. */
-		inline CPoint2D(const mrpt::math::TPoint2D &o) { m_coords[0]=o.x; m_coords[1]=o.y; }
+		inline explicit CPoint2D(const mrpt::math::TPoint2D &o) { m_coords[0]=o.x; m_coords[1]=o.y; }
 
 		/** Explicit constructor from lightweight type (loses the z coord). */
 		inline explicit CPoint2D(const mrpt::math::TPoint3D &o) { m_coords[0]=o.x; m_coords[1]=o.y; m_coords[2]=0; }

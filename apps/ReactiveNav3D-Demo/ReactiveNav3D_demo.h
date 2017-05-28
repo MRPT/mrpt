@@ -255,7 +255,7 @@ public:
 	void updateObsGrids(float incrx, float incry, float phi, const std::vector<CRobotKinects> &kinects, const std::vector<double> &heights )
 	{
 		using namespace std;
-		using mrpt::utils::square;
+		using mrpt::math::square;
 		//First, move the robot respect to the grid and adjust the likelihood values in the grid according to that movement
 		//-----------------------------------------------------------------------------------------------------------------
 
@@ -412,7 +412,7 @@ class CMyReactInterface : public mrpt::nav::CRobot2NavInterfaceForSimulator_Diff
 public:
 	CVehicleSimul_DiffDriven        robotSim;
 
-	CMyReactInterface() : 
+	CMyReactInterface() :
 		CRobot2NavInterfaceForSimulator_DiffDriven(this->robotSim)
 	{
 	}
@@ -427,19 +427,20 @@ public:
 	CShortTermMemory				stm;
 	gui::CDisplayWindow3D			window;
 	COpenGLScenePtr					scene;
-	
-	bool getCurrentPoseAndSpeeds( mrpt::math::TPose2D &curPose, mrpt::math::TTwist2D &curVel, mrpt::system::TTimeStamp &timestamp) MRPT_OVERRIDE
+
+	bool getCurrentPoseAndSpeeds( mrpt::math::TPose2D &curPose, mrpt::math::TTwist2D &curVel, mrpt::system::TTimeStamp &timestamp, mrpt::math::TPose2D &odomPose, std::string &pose_frame_id) MRPT_OVERRIDE
 	{
 		curPose = robotSim.getCurrentGTPose();
 		curVel  = robotSim.getCurrentGTVel();
 		timestamp = mrpt::system::now();
+		odomPose = robotSim.getCurrentOdometricPose();
 		return true;
 	}
 
 	bool senseObstacles( mrpt::maps::CSimplePointsMap 	&obstacles, mrpt::system::TTimeStamp &timestamp ) MRPT_OVERRIDE
 	{
 		last_pose = new_pose;
-		new_pose = robotSim.getCurrentGTPose();
+		new_pose =  CPose2D(robotSim.getCurrentGTPose() );
 		CPose3D robotpose3d(new_pose[0], new_pose[1], 0, new_pose[2], 0, 0);
 		CPose3D kinectrelpose(0,0,0,0,0,0);
 
@@ -597,7 +598,7 @@ public:
 
 	void initializeScene()
 	{
-		CPose3D robotpose3d = CPose2D(robotSim.getCurrentGTPose());
+		CPose3D robotpose3d = CPose3D(CPose2D(robotSim.getCurrentGTPose()));
 
 
 		//The display window is created
@@ -745,9 +746,9 @@ public:
 	void updateScene()
 	{
 		scene = window.get3DSceneAndLock();
-		CPose3D robotpose3d = CPose2D(robotSim.getCurrentGTPose());
+		CPose3D robotpose3d = CPose3D(CPose2D(robotSim.getCurrentGTPose()));
 		CRenderizablePtr obj;
-		
+
 		//The robot pose is updated
 		{
 			float h=0;
@@ -828,16 +829,13 @@ public:
 		navparams.targetAllowedDistance = targetAllowedDistance;
 		navparams.targetIsRelative = targetIsRelative;
 		if (!targetIsRelative)
-			target = mrpt::math::TPose2D(x, y, 0);
+			target = CPose2D(x, y, 0);
 		else
 		{
-			CPose2D robotpose = robotSim.getCurrentGTPose();
+			CPose2D robotpose = CPose2D(robotSim.getCurrentGTPose());
 			target = CPose2D(x ,y, 0) + robotpose;
 		}
 		return navparams;
 	}
 
 };
-
-
-

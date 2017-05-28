@@ -99,19 +99,19 @@ void CPTG_RobotShape_Circular::internal_shape_saveToStream(mrpt::utils::CStream 
 	out << m_robotRadius;
 }
 
-double CPTG_RobotShape_Circular::getApproxRobotRadius() const
+double CPTG_RobotShape_Circular::getMaxRobotRadius() const
 {
 	return m_robotRadius;
 }
 
 bool CPTG_RobotShape_Circular::isPointInsideRobotShape(const double x, const double y) const
 {
-	return ::hypot(x, y) < m_robotRadius;
+	return mrpt::math::hypot_fast(x, y) < m_robotRadius;
 }
 
 double CPTG_RobotShape_Circular::evalClearanceToRobotShape(const double ox, const double oy) const
 {
-	return ::hypot(ox, oy) - m_robotRadius;
+	return mrpt::math::hypot_fast(ox, oy) - m_robotRadius;
 }
 
 

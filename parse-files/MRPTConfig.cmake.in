@@ -30,9 +30,9 @@
 #    - MRPT_VERSION_{MAJOR,MINOR,PATCH}: 3 variables for the version parts
 #
 #   Optional input variables:
-#    - MRPT_DONT_USE_DBG_LIBS: If defined at input, before the
-#         "FIND_PACKAGE(MRPT...)", and set to "1", the release libraries
-#         will be used even for linking against "Debug" CMake builds.
+#    - (Windows only) MRPT_DONT_USE_DBG_LIBS: If defined at input, before the
+#         "FIND_PACKAGE(MRPT...)", and set to "1", will not search for `-dbg`
+#         libraries when linking in "Debug" CMake builds.
 #
 # =========================================================================
 
@@ -180,10 +180,10 @@ FOREACH(MRPTLIB ${MRPT_FIND_COMPONENTS})
 	# If the required lib is header-only, don't add to the list of libs to link!
 	get_property(_LIB_HDRONLY GLOBAL PROPERTY "mrpt-${MRPTLIB}_LIB_IS_HEADERS_ONLY")
 	IF(NOT _LIB_HDRONLY)
-		IF(NOT MRPT_DONT_USE_DBG_LIBS)
+		IF(WIN32 AND NOT MRPT_DONT_USE_DBG_LIBS)
 			LIST(APPEND MRPT_LIBRARIES
 				optimized @MRPT_LIB_PREFIX@mrpt-${MRPTLIB}@MRPT_DLL_VERSION_POSTFIX@
-				debug     @MRPT_LIB_PREFIX@mrpt-${MRPTLIB}@MRPT_DLL_VERSION_POSTFIX@-dbg)
+				debug     @MRPT_LIB_PREFIX@mrpt-${MRPTLIB}@MRPT_DLL_VERSION_POSTFIX@@CMAKE_DEBUG_POSTFIX@)
 		ELSE()
 			LIST(APPEND MRPT_LIBRARIES  @MRPT_LIB_PREFIX@mrpt-${MRPTLIB}@MRPT_DLL_VERSION_POSTFIX@)
 		ENDIF()

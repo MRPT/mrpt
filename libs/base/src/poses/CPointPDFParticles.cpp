@@ -9,10 +9,11 @@
 
 #include "base-precomp.h"  // Precompiled headers
 
+#include <mrpt/utils/CStream.h>
 #include <mrpt/poses/CPointPDFParticles.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/math/ops_vectors.h>
+#include <mrpt/math/ops_containers.h>  // maximum()
 #include <mrpt/system/os.h>
 
 using namespace mrpt;
@@ -30,8 +31,8 @@ CPointPDFParticles::CPointPDFParticles(size_t numParticles)
 }
 
 /** Clear all the particles (free memory) */
-void CPointPDFParticles::clear() { 
-	setSize(0); 
+void CPointPDFParticles::clear() {
+	setSize(0);
 }
 
 /*---------------------------------------------------------------

@@ -147,7 +147,7 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 			CPose2D pose_after;
 			if (m_lastPoseEst.getLatestRobotPose(pose_after))
 				this->accumulateRobotDisplacementCounters(pose_after);
-			MRPT_LOG_DEBUG_STREAM << "processObservation(): obs is CObservationOdometry, new post_after=" << pose_after;
+			MRPT_LOG_DEBUG_STREAM( "processObservation(): obs is CObservationOdometry, new post_after=" << pose_after);
 		}
 	} // end it's odometry
 	else
@@ -188,7 +188,7 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 			m_distSinceLastICP.lin < std::min(ICP_options.localizationLinDistance,ICP_options.insertionLinDistance) &&
 			m_distSinceLastICP.ang < std::min(ICP_options.localizationAngDistance,ICP_options.insertionAngDistance);
 
-		MRPT_LOG_DEBUG_STREAM << "processObservation(): skipping ICP pose correction due to small odometric displacement? : " << (we_skip_ICP_pose_correction ? "YES":"NO");
+		MRPT_LOG_DEBUG_STREAM( "processObservation(): skipping ICP pose correction due to small odometric displacement? : " << (we_skip_ICP_pose_correction ? "YES":"NO"));
 
 		CICP::TReturnInfo	icpReturn;
 		bool				can_do_icp=false;
@@ -257,7 +257,7 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 				CPosePDFPtr pestPose= ICP.Align(
 					matchWith,					// Map 1
 					&sensedPoints,				// Map 2
-					initialEstimatedRobotPose,	// a first gross estimation of map 2 relative to map 1.
+					mrpt::poses::CPose2D(initialEstimatedRobotPose),	// a first gross estimation of map 2 relative to map 1.
 					&runningTime,				// Running time
 					&icpReturn					// Returned information
 					);
@@ -275,7 +275,7 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 
 
 					// Debug output to console:
-					MRPT_LOG_INFO_STREAM << "processObservation: previousPose="<<previousKnownRobotPose << "-> currentPose=" << pEst2D.getMeanVal() << std::endl;
+					MRPT_LOG_INFO_STREAM( "processObservation: previousPose="<<previousKnownRobotPose << "-> currentPose=" << pEst2D.getMeanVal() << std::endl);
 					MRPT_LOG_INFO( format("[CMetricMapBuilderICP]   Fit:%.1f%% Itr:%i In %.02fms \n",
 							icpReturn.goodness*100,
 							icpReturn.nIterations,
@@ -283,7 +283,7 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 				}
 				else
 				{
-					MRPT_LOG_WARN_STREAM << "Ignoring ICP of low quality: " << icpReturn.goodness*100 << std::endl;
+					MRPT_LOG_WARN_STREAM( "Ignoring ICP of low quality: " << icpReturn.goodness*100 << std::endl);
 				}
 
 				// Compute the transversed length:
@@ -295,7 +295,7 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 			} // end we can do ICP.
 			else
 			{
-				MRPT_LOG_WARN_STREAM << "Cannot do ICP: empty pointmap or not suitable gridmap...\n";
+				MRPT_LOG_WARN_STREAM( "Cannot do ICP: empty pointmap or not suitable gridmap...\n");
 			}
 
 		} // else, we do ICP pose correction
@@ -322,7 +322,7 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 		if (matchWith && matchWith->isEmpty())
 			update = true;
 
-		MRPT_LOG_DEBUG_STREAM << "update map: " << (update ? "YES":"NO") << " options.enableMapUpdating: " << (options.enableMapUpdating ? "YES":"NO");
+		MRPT_LOG_DEBUG_STREAM( "update map: " << (update ? "YES":"NO") << " options.enableMapUpdating: " << (options.enableMapUpdating ? "YES":"NO"));
 
 		if ( options.enableMapUpdating && update)
 		{
@@ -346,7 +346,7 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 			CPose3D		estimatedPose3D(currentKnownRobotPose);
 			const bool anymap_update = metricMap.insertObservationPtr(obs,&estimatedPose3D);
 			if (!anymap_update)
-				MRPT_LOG_WARN_STREAM << "**No map was updated** after inserting an observation of type `"<< obs->GetRuntimeClass()->className << "`";
+				MRPT_LOG_WARN_STREAM( "**No map was updated** after inserting an observation of type `"<< obs->GetRuntimeClass()->className << "`");
 
 			// Add to the vector of "poses"-"SFs" pairs:
 			CPosePDFGaussian	posePDF(currentKnownRobotPose);
@@ -357,7 +357,7 @@ void  CMetricMapBuilderICP::processObservation(const CObservationPtr &obs)
 
 			SF_Poses_seq.insert( pose3D, sf );
 
-			MRPT_LOG_INFO_STREAM << "Map updated OK. Done in " << mrpt::system::formatTimeInterval( tictac.Tac() ) << std::endl;
+			MRPT_LOG_INFO_STREAM( "Map updated OK. Done in " << mrpt::system::formatTimeInterval( tictac.Tac() ) << std::endl);
 		}
 
 	} // end other observation

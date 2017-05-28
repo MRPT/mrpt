@@ -13,10 +13,12 @@
 #include <mrpt/utils/CImage.h>
 #include <mrpt/utils/CTicTac.h>
 #include <list>
+#include <functional>
 
 // All the register functions: --------------------
 void register_tests_icpslam();
 void register_tests_poses();
+void register_tests_pose_interp();
 void register_tests_matrices();
 void register_tests_grids();
 void register_tests_pointmaps();
@@ -30,9 +32,10 @@ void register_tests_graph();
 void register_tests_graphslam();
 void register_tests_CObservation3DRangeScan();
 void register_tests_atan2lut();
+void register_tests_strings();
 // -------------------------------------------------
 
-typedef double (*TestFunctor)(int a1, int a2);  // return run-time in secs.
+using TestFunctor = std::function<double(int,int)>; // return run-time in secs.
 
 struct TestData
 {

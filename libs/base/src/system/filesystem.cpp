@@ -9,12 +9,15 @@
 
 #include "base-precomp.h"  // Precompiled headers
 
-#include <mrpt/system/datetime.h>
-#include <mrpt/system/filesystem.h>
-#include <mrpt/system/os.h>
 #include <mrpt/system/CDirectoryExplorer.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/os.h>                  // for sprintf
+#include "mrpt/utils/bits.h"                 // for format
+#include "mrpt/utils/mrpt_macros.h"          // for MRPT_END, MRPT_START, e
 
 #include <cstring>
+#include <string>
+#include <vector>
 #include <stdio.h>
 
 #ifdef MRPT_OS_WINDOWS
@@ -26,10 +29,9 @@
 	#include <io.h>
 	#include <direct.h>
 #else
-    #include <termios.h>
-    #include <unistd.h>
-    #include <sys/time.h>
-    #include <time.h>
+	#include <termios.h>
+	#include <sys/time.h>
+	#include <time.h>
 	#include <unistd.h>
 	#include <utime.h>
 	#include <errno.h>
@@ -560,3 +562,49 @@ time_t mrpt::system::getFileModificationTime(const std::string &filename)
 	else return fS.st_mtime;
 }
 
+#include <mrpt/version.h>
+// Read docs in .h
+std::string mrpt::system::getShareMRPTDir()
+{
+	using std::string;
+	using std::vector;
+
+	static vector<string> sPaths;
+	static string sDetectedPath;
+	static bool is_first = true;
+	if (is_first)
+	{
+		is_first = false;
+
+		// Source dir:
+		sPaths.push_back(string(MRPT_CMAKE_SOURCE_DIR) + string("/share/mrpt/"));
+		// Install dir:
+		sPaths.push_back(string(MRPT_CMAKE_INSTALL_PREFIX) + string("/share/mrpt/"));
+
+		// Program path & ".." & "../..":
+		char buf[2048];
+		bool sBufOk=false;
+#ifdef MRPT_OS_WINDOWS
+		sBufOk = (0 != GetModuleFileNameA(NULL, buf, sizeof(buf)));
+#endif
+#ifdef MRPT_OS_LINUX
+		sBufOk = (-1 != readlink("/proc/self/exe", buf, sizeof(buf)));
+#endif
+
+		if (sBufOk) {
+			string sBuf = string(buf);
+			std::replace(sBuf.begin(), sBuf.end(), '\\', '/');
+			sBuf = extractFileDirectory(sBuf);
+			sPaths.push_back(sBuf + string("share/mrpt/"));
+			sPaths.push_back(sBuf + string("../share/mrpt/"));
+			sPaths.push_back(sBuf + string("../../share/mrpt/"));
+		}
+
+		for (const auto &e : sPaths)
+			if (directoryExists(e)) {
+				sDetectedPath = e;
+				break;
+			}
+	}
+	return sDetectedPath;
+}

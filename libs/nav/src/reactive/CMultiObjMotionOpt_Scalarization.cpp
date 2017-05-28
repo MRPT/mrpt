@@ -54,14 +54,23 @@ int CMultiObjMotionOpt_Scalarization::impl_decide(const std::vector<mrpt::nav::T
 		// vars:
 		for (const auto &c : extra_info.score_values) {
 			for (const auto &score : c) {
-				double & var = m_expr_scalar_vars[score.first]; // create or reuse placeholder
+				//double & var = 
+				m_expr_scalar_vars[score.first]; // create or reuse placeholder
 			}
 		}
 
 		// formula:
 		m_expr_scalar_formula = mrpt::math::CRuntimeCompiledExpression();
 		// Compile user-given expressions:
-		m_expr_scalar_formula.compile(parameters.scalar_score_formula, m_expr_scalar_vars);
+		try
+		{
+			m_expr_scalar_formula.compile(parameters.scalar_score_formula, m_expr_scalar_vars);
+		}
+		catch (std::exception &)
+		{
+			m_expr_scalar_vars.clear();
+			throw; // rethrow
+		}
 	}
 
 	// Evaluate the formula for all candidates:

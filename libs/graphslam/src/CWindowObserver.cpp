@@ -19,7 +19,7 @@ CWindowObserver::CWindowObserver() :
 	m_showing_help(false),
 	m_hiding_help(false)
 {
-	help_msg = "User options:\n"
+	m_help_msg = "User options:\n"
 		" - h/H: Toggle help message\n"
 		" - Alt+Enter: Toggle fullscreen\n"
 		" - Mouse click: Set camera manually\n"
@@ -42,16 +42,19 @@ void CWindowObserver::returnEventsStruct(
 
 	// reset the code flags
 	if (reset_keypresses) {
-		for ( std::map<std::string, bool>::iterator map_it = 
-				m_key_codes_to_pressed.begin(); map_it != m_key_codes_to_pressed.end();
+		for (std::map<std::string, bool>::iterator
+				map_it = m_key_codes_to_pressed.begin();
+				map_it != m_key_codes_to_pressed.end();
 				++map_it ) {
 			map_it->second = false;
 		}
 }
 }
 
-void CWindowObserver::registerKeystroke(const std::string key_str, const std::string key_desc) {
-	help_msg += std::string("\n") + " - " + 
+void CWindowObserver::registerKeystroke(
+		const std::string key_str,
+		const std::string key_desc) {
+	m_help_msg += std::string("\n") + " - " +
 		key_str + "/" + mrpt::system::upperCase(key_str) +
 		": " + key_desc;
 
@@ -60,17 +63,20 @@ void CWindowObserver::registerKeystroke(const std::string key_str, const std::st
 
 void CWindowObserver::OnEvent(const mrpt::utils::mrptEvent &e) {
 	if (e.isOfType<mrpt::utils::mrptEventOnDestroy>()) {
-		const mrpt::utils::mrptEventOnDestroy &ev = static_cast<const mrpt::utils::mrptEventOnDestroy &>(e);
+		const mrpt::utils::mrptEventOnDestroy &ev =
+			static_cast<const mrpt::utils::mrptEventOnDestroy &>(e);
 		MRPT_UNUSED_PARAM(ev);
 		std::cout  << "Event received: mrptEventOnDestroy" << std::endl;
 	}
 	else if (e.isOfType<mrpt::gui::mrptEventWindowResize>()) {
-		const mrpt::gui::mrptEventWindowResize &ev = static_cast<const mrpt::gui::mrptEventWindowResize &>(e);
+		const mrpt::gui::mrptEventWindowResize &ev =
+			static_cast<const mrpt::gui::mrptEventWindowResize &>(e);
 		std::cout  << "Resize event received from: " << ev.source_object
 			<< ", new size: " << ev.new_width << " x " << ev.new_height << std::endl;
 	}
 	else if (e.isOfType<mrpt::gui::mrptEventWindowChar>()) {
-		const mrpt::gui::mrptEventWindowChar &ev = static_cast<const mrpt::gui::mrptEventWindowChar &>(e);
+		const mrpt::gui::mrptEventWindowChar &ev =
+			static_cast<const mrpt::gui::mrptEventWindowChar &>(e);
 		std::cout  << "Char event received from: " << ev.source_object
 			<< ". Char code: " <<  ev.char_code << " modif: " << ev.key_modifiers << std::endl;;
 
@@ -88,7 +94,9 @@ void CWindowObserver::OnEvent(const mrpt::utils::mrptEvent &e) {
 				}
 				m_key_codes_to_pressed["h"] = true;
 				break;
-			case 3: // <C-c>
+			case 'c':
+			case 'C':
+			//case 3: // <C-c>
 				if (ev.key_modifiers == 8192) {
 					std::cout << "Pressed C-c inside CDisplayWindow3D" << std::endl;
 					m_key_codes_to_pressed["Ctrl+c"] = true;
@@ -100,7 +108,8 @@ void CWindowObserver::OnEvent(const mrpt::utils::mrptEvent &e) {
 				// cares translate the character to its corresponding meaning.
 				// Pressed letter is stored in lower case form only to make it easier
 				// to check afterwards
-				m_key_codes_to_pressed[mrpt::system::lowerCase(std::string(1, ev.char_code))] = true;
+				m_key_codes_to_pressed[
+					mrpt::system::lowerCase(std::string(1, ev.char_code))] = true;
 				break;
 		}
 
@@ -148,7 +157,7 @@ void CWindowObserver::OnEvent(const mrpt::utils::mrptEvent &e) {
 			mrpt::opengl::gl_utils::renderMessageBox(
 					0.25f,  0.25f,  // x,y (in screen "ratios")
 					0.50f, 0.50f, // width, height (in screen "ratios")
-					help_msg.c_str(),
+					m_help_msg.c_str(),
 					0.02f,  // text size
 					mrpt::utils::TColor(190,190,190, 200*tranparency),   // background
 					mrpt::utils::TColor(0,0,0, 200*tranparency),  // border

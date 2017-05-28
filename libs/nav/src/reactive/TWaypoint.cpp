@@ -10,6 +10,9 @@
 #include "nav-precomp.h" // Precomp header
 
 #include <mrpt/nav/reactive/TWaypoint.h>
+#include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/opengl/CDisk.h>
+#include <mrpt/opengl/CArrow.h>
 #include <limits>
 
 using namespace mrpt::nav;
@@ -21,18 +24,18 @@ const double TWaypoint::INVALID_NUM = std::numeric_limits<double>::max();
 TWaypoint::TWaypoint() :
 	target(INVALID_NUM,INVALID_NUM),
 	target_heading(INVALID_NUM),
+	target_frame_id("map"),
 	allowed_distance(INVALID_NUM),
-	allow_skip(true),
-	counter_seen_reachable(0)
+	allow_skip(true)
 {
 }
 
-TWaypoint::TWaypoint(double target_x, double target_y, double allowed_distance_, bool allow_skip_ ) : 
+TWaypoint::TWaypoint(double target_x, double target_y, double allowed_distance_, bool allow_skip_, double target_heading_) :
 	target(target_x,target_y),
-	target_heading(INVALID_NUM),
+	target_heading(target_heading_),
+	target_frame_id("map"),
 	allowed_distance(allowed_distance_),
-	allow_skip(allow_skip_),
-	counter_seen_reachable(0)
+	allow_skip(allow_skip_)
 {
 }
 
@@ -87,7 +90,9 @@ std::string TWaypointSequence::getAsText() const
 // TWaypointStatus ========== 
 TWaypointStatus::TWaypointStatus() :
 	reached(false),
-	timestamp_reach(INVALID_TIMESTAMP)
+	skipped(false),
+	timestamp_reach(INVALID_TIMESTAMP),
+	counter_seen_reachable(0)
 {
 }
 TWaypointStatus & TWaypointStatus::operator =(const TWaypoint &wp)
@@ -126,3 +131,78 @@ std::string TWaypointStatusSequence::getAsText() const
 	return s;
 }
 
+TWaypointsRenderingParams::TWaypointsRenderingParams() :
+	outter_radius(.3), inner_radius(.2),
+	outter_radius_non_skippable(.3), inner_radius_non_skippable(.0),
+	outter_radius_reached(.2), inner_radius_reached(.1),
+	heading_arrow_len(1.0),
+	color_regular(mrpt::utils::TColor(0x00, 0x00, 0xff)),
+	color_current_goal(mrpt::utils::TColor(0xff, 0x00, 0x20)),
+	color_reached(mrpt::utils::TColor(0x00, 0x00, 0xc0,0xd0)),
+	show_labels(true)
+{
+}
+
+
+void TWaypointSequence::getAsOpenglVisualization(mrpt::opengl::CSetOfObjects &obj, const mrpt::nav::TWaypointsRenderingParams &params) const
+{
+	obj.clear();
+	unsigned int idx = 0;
+	for (const auto &p : waypoints)
+	{
+		auto gl_pt = mrpt::opengl::CDisk::Create(
+			p.allow_skip ? params.outter_radius : params.outter_radius_non_skippable,
+			p.allow_skip ? params.inner_radius : params.inner_radius_non_skippable,
+			15);
+		gl_pt->setLocation(p.target.x, p.target.y, 0.01);
+		gl_pt->setColor_u8(params.color_regular);
+		if (params.show_labels)
+		{
+			gl_pt->setName(mrpt::format("WayPt #%2u", idx));
+			gl_pt->enableShowName(true);
+		}
+		obj.insert(gl_pt);
+
+		if (p.target_heading != TWaypoint::INVALID_NUM)
+		{
+			auto o = mrpt::opengl::CArrow::Create(0, 0, 0, params.heading_arrow_len, 0.0f, 0.0f);
+			o->setPose(mrpt::poses::CPose3D(p.target.x, p.target.y, 0.02, p.target_heading, 0, 0));
+			obj.insert(o);
+		}
+		++idx;
+	}
+}
+
+void TWaypointStatusSequence::getAsOpenglVisualization(mrpt::opengl::CSetOfObjects &obj, const mrpt::nav::TWaypointsRenderingParams &params) const
+{
+	obj.clear();
+	{
+		unsigned int idx = 0;
+		for (const auto &p : waypoints)
+		{
+			const bool is_cur_goal = (int(idx) == waypoint_index_current_goal);
+
+			mrpt::opengl::CDiskPtr gl_pt = mrpt::opengl::CDisk::Create(
+				p.reached ? params.outter_radius_reached : (p.allow_skip ? params.outter_radius : params.outter_radius_non_skippable),
+				p.reached ? params.inner_radius_reached  : (p.allow_skip ? params.inner_radius : params.inner_radius_non_skippable),
+				15
+				);
+			gl_pt->setLocation(p.target.x, p.target.y, 0.01);
+			if (params.show_labels)
+			{
+				gl_pt->setName(mrpt::format("WayPt #%2u Reach:%s", idx, p.reached ? "YES" : "NO"));
+				gl_pt->enableShowName(true);
+			}
+			gl_pt->setColor_u8(is_cur_goal ? params.color_current_goal : (p.reached ? params.color_reached : params.color_regular));
+			obj.insert(gl_pt);
+
+			if (p.target_heading != TWaypoint::INVALID_NUM)
+			{
+				auto o = mrpt::opengl::CArrow::Create(0, 0, 0, params.heading_arrow_len, 0.0f, 0.0f);
+				o->setPose(mrpt::poses::CPose3D(p.target.x, p.target.y, 0.02, p.target_heading, 0, 0));
+				obj.insert(o);
+			}
+			++idx;
+		}
+	}
+}

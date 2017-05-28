@@ -31,11 +31,12 @@ namespace mrpt
 	public:
 		CRobot2NavInterfaceForSimulator_Holo(mrpt::kinematics::CVehicleSimul_Holo &simul) : m_simul(simul),m_simul_time_start(.0) {}
 	
-		bool getCurrentPoseAndSpeeds(mrpt::math::TPose2D &curPose, mrpt::math::TTwist2D &curVel, mrpt::system::TTimeStamp &timestamp) MRPT_OVERRIDE
+		bool getCurrentPoseAndSpeeds(mrpt::math::TPose2D &curPose, mrpt::math::TTwist2D &curVel, mrpt::system::TTimeStamp &timestamp, mrpt::math::TPose2D &curOdometry, std::string &frame_id) MRPT_OVERRIDE
 		{
 			curPose = m_simul.getCurrentGTPose();
 			curVel  = m_simul.getCurrentGTVel();
 			timestamp = mrpt::system::now();
+			curOdometry = m_simul.getCurrentOdometricPose();
 			return true; // ok
 		}
 
@@ -59,6 +60,16 @@ namespace mrpt
 		mrpt::kinematics::CVehicleVelCmdPtr getStopCmd() MRPT_OVERRIDE
 		{
 			return mrpt::kinematics::CVehicleVelCmdPtr(new mrpt::kinematics::CVehicleVelCmd_Holo(0.0,0.0,1.0,0.0));
+		}
+
+		mrpt::kinematics::CVehicleVelCmdPtr getAlignCmd(const double relative_heading_radians) MRPT_OVERRIDE
+		{
+			return mrpt::kinematics::CVehicleVelCmdPtr(new mrpt::kinematics::CVehicleVelCmd_Holo(
+				0.0, // vel
+				relative_heading_radians, // local_dir
+				0.5, // ramp_time
+				mrpt::utils::signWithZero(relative_heading_radians) * mrpt::utils::DEG2RAD(40.0) // rotvel
+			));
 		}
 
 		/** See CRobot2NavInterface::getNavigationTime(). In this class, simulation time is returned instead of wall-clock time. */
@@ -87,11 +98,12 @@ namespace mrpt
 	public:
 		CRobot2NavInterfaceForSimulator_DiffDriven(mrpt::kinematics::CVehicleSimul_DiffDriven &simul) : m_simul(simul),m_simul_time_start(.0) {}
 	
-		bool getCurrentPoseAndSpeeds(mrpt::math::TPose2D &curPose, mrpt::math::TTwist2D &curVel, mrpt::system::TTimeStamp &timestamp) MRPT_OVERRIDE
+		bool getCurrentPoseAndSpeeds(mrpt::math::TPose2D &curPose, mrpt::math::TTwist2D &curVel, mrpt::system::TTimeStamp &timestamp,mrpt::math::TPose2D &curOdometry, std::string &frame_id) MRPT_OVERRIDE
 		{
 			curPose = m_simul.getCurrentGTPose();
 			curVel  = m_simul.getCurrentGTVel();
 			timestamp = mrpt::system::now();
+			curOdometry = m_simul.getCurrentOdometricPose();
 			return true; // ok
 		}
 

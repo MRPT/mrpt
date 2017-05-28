@@ -10,14 +10,11 @@
 #include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/poses/CPose3DRotVec.h>
 #include <mrpt/poses/CPoint3D.h>
-#include <mrpt/poses/CPose3D.h>
 #include <mrpt/math/geometry.h>  // skew_symmetric3()
-#include <mrpt/math/ops_matrices.h>
 #include <mrpt/utils/CStream.h>
 #include <iomanip>
 #include <limits>

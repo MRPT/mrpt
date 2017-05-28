@@ -39,8 +39,8 @@ namespace mrpt
 				  * A value of 0 in all scores, or an empty map, means unsuitable candidate. */
 				std::vector<std::map<std::string, double> > score_values;
 
-				/** The final evaluation score for each candidate */
-				std::vector<double> final_evaluation;
+				std::vector<double>      final_evaluation;  //!< The final evaluation score for each candidate
+				std::vector<std::string> log_entries;       //!< Optionally, debug logging info will be stored here by the implementor classes
 			};
 
 			/** The main entry point for the class: returns the 0-based index of the best of the N motion candidates in `movs`. 

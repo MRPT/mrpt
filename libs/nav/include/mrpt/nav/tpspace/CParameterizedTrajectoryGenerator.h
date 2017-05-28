@@ -54,6 +54,7 @@ namespace nav
 	 *	- 15/SEP/2005: Totally rewritten again, for integration into MRPT Applications Repository.
 	 *	- 19/JUL/2009: Simplified to use only STL data types, and created the class factory interface.
 	 *	- MAY/2016: Refactored into CParameterizedTrajectoryGenerator, CPTG_DiffDrive_CollisionGridBased, PTG classes renamed.
+	 *	- 2016-2017: Many features added to support "PTG continuation", dynamic paths depending on vehicle speeds, etc.
 	 *
 	 *  \ingroup nav_tpspace
 	 */
@@ -65,7 +66,6 @@ namespace nav
 	public:
 		CParameterizedTrajectoryGenerator(); //!< Default ctor. Must call `loadFromConfigFile()` before initialization
 		virtual ~CParameterizedTrajectoryGenerator() //!<  Destructor 
-
 		{ }
 
 		/** The class factory for creating a PTG from a list of parameters in a section of a given config file (physical file or in memory).
@@ -119,10 +119,25 @@ namespace nav
 		  * Can be queried to determine the expected kinematic interface of the PTG.  */
 		virtual mrpt::kinematics::CVehicleVelCmdPtr getSupportedKinematicVelocityCommand() const = 0;
 
-		/** Callback whenever we have new info about the velocity state of the robot right now. May be used by some PTGs and discarded by others.
-		  * \param[in] curVelLocal The current robot velocities in the local frame of reference (+X: forwards, omega: clockwise rotation) */
-		virtual void updateCurrentRobotVel(const mrpt::math::TTwist2D &curVelLocal) = 0;
+		/** Dynamic state that may affect the PTG path parameterization. \ingroup nav_reactive  */
+		struct NAV_IMPEXP TNavDynamicState
+		{
+			mrpt::math::TTwist2D curVelLocal; //!< Current vehicle velocity (local frame of reference)
+			mrpt::math::TPose2D  relTarget;   //!< Current relative target location
+			double               targetRelSpeed; //!< Desired relative speed [0,1] at target. Default=0
 
+			TNavDynamicState();
+			bool operator ==(const TNavDynamicState& o) const;
+			inline bool operator !=(const TNavDynamicState& o)  const { return !(*this==o); }
+			void writeToStream(mrpt::utils::CStream &out) const;
+			void readFromStream(mrpt::utils::CStream &in);
+		};
+
+	protected:
+		/** Invoked when `m_nav_dyn_state` has changed; gives the PTG the opportunity to react and parameterize paths depending on the instantaneous conditions */
+		virtual void onNewNavDynamicState() = 0;
+
+	public:
 		virtual void setRefDistance(const double refDist) { refDistance=refDist; }
 
 		/** Access path `k` ([0,N-1]=>[-pi,pi] in alpha): number of discrete "steps" along the trajectory.
@@ -177,6 +192,11 @@ namespace nav
 		  * Default implementation returns "false". */
 		virtual bool supportVelCmdNOP() const;
 
+		/** Returns true if this PTG takes into account the desired velocity at target. \sa updateNavDynamicState() */
+		virtual bool supportSpeedAtTarget() const {
+			return false;
+		}
+
 		/** Only for PTGs supporting supportVelCmdNOP(): this is the maximum time (in seconds) for which the path
 		  * can be followed without re-issuing a new velcmd. Note that this is only an absolute maximum duration, 
 		  * navigation implementations will check for many other conditions. Default method in the base virtual class returns 0. 
@@ -191,7 +211,7 @@ namespace nav
 		virtual double evalPathRelativePriority(uint16_t k, double target_distance) const { return 1.0; }
 
 		/** Returns an approximation of the robot radius. */
-		virtual double getApproxRobotRadius() const = 0;
+		virtual double getMaxRobotRadius() const = 0;
 		/** Returns true if the point lies within the robot shape. */
 		virtual bool isPointInsideRobotShape(const double x, const double y) const = 0;
 
@@ -199,6 +219,10 @@ namespace nav
 		virtual double evalClearanceToRobotShape(const double ox, const double oy) const = 0;
 
 		/** @} */  // --- end of virtual methods
+
+		/** To be invoked by the navigator *before* each navigation step, to let the PTG to react to changing dynamic conditions. * \sa onNewNavDynamicState(), m_nav_dyn_state  */
+		void updateNavDynamicState(const TNavDynamicState &newState, const bool force_update = false);
+		const TNavDynamicState & getCurrentNavDynamicState() const { return m_nav_dyn_state; }
 
 		static std::string OUTPUT_DEBUG_PATH_PREFIX; //!< The path used as defaul output in, for example, debugDumpInFiles. (Default="./reactivenav.logs/")
 
@@ -232,8 +256,11 @@ namespace nav
 		double getScorePriority() const { return m_score_priority; }
 		void setScorePriorty(double prior) { m_score_priority = prior; }
 
-		double getClearanceStepCount() const { return m_clearance_num_points; }
-		void setClearanceStepCount(const double res) { m_clearance_num_points = res; }
+		unsigned getClearanceStepCount() const { return m_clearance_num_points; }
+		void setClearanceStepCount(const unsigned res) { m_clearance_num_points = res; }
+
+		unsigned getClearanceDecimatedPaths() const { return m_clearance_decimated_paths; }
+		void setClearanceDecimatedPaths(const unsigned num) { m_clearance_decimated_paths=num; }
 
 		/** Returns the representation of one trajectory of this PTG as a 3D OpenGL object (a simple curved line).
 		  * \param[in] k The 0-based index of the selected trajectory (discrete "alpha" parameter).
@@ -276,13 +303,24 @@ namespace nav
 		  * \sa m_clearance_dist_resolution
 		  */
 		void updateClearance(const double ox, const double oy, ClearanceDiagram & cd) const;
-
 		void updateClearancePost(ClearanceDiagram & cd, const std::vector<double> &TP_obstacles) const;
+
+		/** Can be used to make PTGs react to relative target position. */
+		virtual void setRelativeTarget(const mrpt::math::TPose2D & target) const {
+			// Default: do nothing
+		}
+
+
 protected:
 		double    refDistance;
 		uint16_t  m_alphaValuesCount; //!< The number of discrete values for "alpha" between -PI and +PI.
 		double    m_score_priority;
 		uint16_t  m_clearance_num_points; //!< Number of steps for the piecewise-constant approximation of clearance from TPS distances [0,1] (Default=5) \sa updateClearance()
+		uint16_t  m_clearance_decimated_paths; //!< Number of paths for the decimated paths analysis of clearance
+		TNavDynamicState m_nav_dyn_state; //!< Updated before each nav step by 
+		uint16_t         m_nav_dyn_state_target_k; //!< Update in updateNavDynamicState(), contains the path index (k) for the target.
+
+		static const uint16_t INVALID_PTG_PATH_INDEX = static_cast<uint16_t>(-1);
 
 		bool      m_is_initialized;
 
@@ -296,10 +334,13 @@ protected:
 		virtual void internal_readFromStream(mrpt::utils::CStream &in);
 		virtual void internal_writeToStream(mrpt::utils::CStream &out) const;
 
+	public:
 		/** Evals the robot clearance for each robot pose along path `k`, for the real distances in
 		* the key of the map<>, then keep in the map value the minimum of its current stored clearance,
-		* or the computed clearance. In case of collision, clearance is zero. */
-		virtual void evalClearanceSingleObstacle(const double ox, const double oy, const uint16_t k, std::map<double, double> & inout_realdist2clearance) const;
+		* or the computed clearance. In case of collision, clearance is zero. 
+		* \param treat_as_obstacle true: normal use for obstacles; false: compute shortest distances to a target point (no collision)
+		*/
+		virtual void evalClearanceSingleObstacle(const double ox, const double oy, const uint16_t k, ClearanceDiagram::dist2clearance_t & inout_realdist2clearance, bool treat_as_obstacle = true) const;
 
 	}; // end of class
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CParameterizedTrajectoryGenerator, mrpt::utils::CSerializable, NAV_IMPEXP )
@@ -323,7 +364,7 @@ protected:
 		/** Robot shape must be set before initialization, either from ctor params or via this method. */
 		void setRobotShape(const mrpt::math::CPolygon & robotShape);
 		const mrpt::math::CPolygon & getRobotShape() const { return m_robotShape; }
-		double getApproxRobotRadius() const MRPT_OVERRIDE;
+		double getMaxRobotRadius() const MRPT_OVERRIDE;
 		virtual double evalClearanceToRobotShape(const double ox, const double oy) const MRPT_OVERRIDE;
 		/** @} */
 		bool isPointInsideRobotShape(const double x, const double y) const MRPT_OVERRIDE;
@@ -331,7 +372,7 @@ protected:
 	protected:
 		virtual void internal_processNewRobotShape() = 0; //!< Will be called whenever the robot shape is set / updated
 		mrpt::math::CPolygon m_robotShape;
-		double m_robotApproxRadius;
+		double m_robotMaxRadius;
 		void loadShapeFromConfigFile(const mrpt::utils::CConfigFileBase & source,const std::string & section);
 		void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const MRPT_OVERRIDE;
 		void internal_shape_loadFromStream(mrpt::utils::CStream &in);
@@ -354,7 +395,7 @@ protected:
 		/** Robot shape must be set before initialization, either from ctor params or via this method. */
 		void setRobotShapeRadius(const double robot_radius);
 		double getRobotShapeRadius() const { return m_robotRadius; }
-		double getApproxRobotRadius() const MRPT_OVERRIDE;
+		double getMaxRobotRadius() const MRPT_OVERRIDE;
 		virtual double evalClearanceToRobotShape(const double ox, const double oy) const MRPT_OVERRIDE;
 		/** @} */
 		void add_robotShape_to_setOfLines(mrpt::opengl::CSetOfLines &gl_shape, const mrpt::poses::CPose2D &origin = mrpt::poses::CPose2D ()) const  MRPT_OVERRIDE;

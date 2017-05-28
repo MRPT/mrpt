@@ -10,7 +10,6 @@
 #include "nav-precomp.h" // Precomp header
 
 #include <mrpt/nav/reactive/CReactiveNavigationSystem.h>
-#include <mrpt/nav/tpspace/CPTG_DiffDrive_CollisionGridBased.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/utils/CConfigFileMemory.h>
 
@@ -189,20 +188,22 @@ bool CReactiveNavigationSystem::implementSenseObstacles(mrpt::system::TTimeStamp
 	}
 	catch (std::exception &e)
 	{
-		MRPT_LOG_ERROR_STREAM << "[CReactiveNavigationSystem::STEP2_Sense] Exception:" << e.what();
+		MRPT_LOG_ERROR_STREAM( "[CReactiveNavigationSystem::STEP2_Sense] Exception:" << e.what());
 		return false;
 	}
 	catch (...)
 	{
-		MRPT_LOG_ERROR_STREAM << "[CReactiveNavigationSystem::STEP2_Sense] Unexpected exception!";
+		MRPT_LOG_ERROR_STREAM( "[CReactiveNavigationSystem::STEP2_Sense] Unexpected exception!");
 		return false;
 	}
 
 }
 
-void CReactiveNavigationSystem::STEP3_WSpaceToTPSpace(const size_t ptg_idx,std::vector<double> &out_TPObstacles, mrpt::nav::ClearanceDiagram &out_clearance, const mrpt::poses::CPose2D &rel_pose_PTG_origin_wrt_sense, const bool eval_clearance)
+void CReactiveNavigationSystem::STEP3_WSpaceToTPSpace(const size_t ptg_idx,std::vector<double> &out_TPObstacles, mrpt::nav::ClearanceDiagram &out_clearance, const mrpt::math::TPose2D &rel_pose_PTG_origin_wrt_sense_, const bool eval_clearance)
 {
 	CParameterizedTrajectoryGenerator	*ptg = this->getPTG(ptg_idx);
+
+	const mrpt::poses::CPose2D rel_pose_PTG_origin_wrt_sense(rel_pose_PTG_origin_wrt_sense_);
 
 	const float OBS_MAX_XY = params_abstract_ptg_navigator.ref_distance*1.1f;
 
@@ -263,4 +264,33 @@ CReactiveNavigationSystem::TReactiveNavigatorParams::TReactiveNavigatorParams() 
 	min_obstacles_height(0.0),
 	max_obstacles_height(10.0)
 {
+}
+
+bool CReactiveNavigationSystem::checkCollisionWithLatestObstacles() const
+{
+	ASSERT_(!PTGs.empty());
+	size_t nObs;
+	const float *xs, *ys, *zs;
+	m_WS_Obstacles.getPointsBuffer(nObs, xs, ys, zs);
+
+	for (size_t i = 0; i < 1 /* assume all PTGs share the same robot shape! */; i++)
+	{
+		const auto ptg = PTGs[i];
+		ASSERT_(ptg!=nullptr);
+		const double R = ptg->getMaxRobotRadius();
+		for (size_t obs = 0; obs < nObs; obs++)
+		{
+			const double ox = xs[obs], oy = ys[obs], oz = zs[obs];
+			if (oz >= params_reactive_nav.min_obstacles_height && 
+				oz <= params_reactive_nav.max_obstacles_height && 
+				ox>=-R && ox<=R && 
+				oy>=-R && oy<=R &&
+				ptg->isPointInsideRobotShape(ox,oy)
+				)
+			{
+				return true; // collision!
+			}
+		}
+	}
+	return false; // No collision!
 }

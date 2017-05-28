@@ -50,9 +50,27 @@ int CMultiObjectiveMotionOptimizerBase::decide(const std::vector<mrpt::nav::TCan
 			for (const auto &f : m_params_base.formula_score)
 			{
 				auto &se = m_score_exprs[f.first];
-				se.compile(f.second, m_expr_vars, std::string("score: ") + f.first);
+				try
+				{
+					se.compile(f.second, m_expr_vars, std::string("score: ") + f.first);
+				}
+				catch (std::exception &)
+				{
+					m_score_exprs.clear();
+					throw; // rethrow
+				}
+
+				// Register formulas also as variables, usable by the assert() expressions:
+				{
+					auto it = m_expr_vars.find(f.first);
+					if (it != m_expr_vars.end()) {
+						THROW_EXCEPTION_FMT("Error: Expression name `%s` already exists as an input variable.", f.first.c_str());
+					}
+					// Add it:
+					m_expr_vars[f.first] = std::numeric_limits<double>::quiet_NaN();
+				}
 			}
-		}
+		} // end for each score expr
 
 		// Upon first iteration: compile expressions
 		if (m_movement_assert_exprs.size() != m_params_base.movement_assert.size())
@@ -64,19 +82,15 @@ int CMultiObjectiveMotionOptimizerBase::decide(const std::vector<mrpt::nav::TCan
 			{
 				const auto &str = m_params_base.movement_assert[i];
 				auto &ce = m_movement_assert_exprs[i];
-				ce.compile(str, m_expr_vars, "assert" );
-			}
-		}
-
-		// For each assert, evaluate it:
-		bool assert_failed = false;
-		{
-			for (auto &ma : m_movement_assert_exprs)
-			{
-				const double val = ma.eval();
-				if (val == 0) {
-					assert_failed = true;
-					break;
+				
+				try
+				{
+					ce.compile(str, m_expr_vars, "assert");
+				}
+				catch (std::exception &)
+				{
+					m_movement_assert_exprs.clear();
+					throw; // rethrow
 				}
 			}
 		}
@@ -86,7 +100,7 @@ int CMultiObjectiveMotionOptimizerBase::decide(const std::vector<mrpt::nav::TCan
 		{
 			// Evaluate:
 			double val;
-			if (m.speed <= 0 || assert_failed) // Invalid candidate
+			if (m.speed <= 0) // Invalid candidate
 			{
 				val = .0;
 			} 
@@ -103,7 +117,7 @@ int CMultiObjectiveMotionOptimizerBase::decide(const std::vector<mrpt::nav::TCan
 			// Store:
 			score_values[mov_idx][sc.first] = val;
 		}
-	}
+	} // end for mov_idx
 
 	// Optional score post-processing: normalize highest value to 1.0
 	for (const auto& sScoreName : m_params_base.scores_to_normalize)
@@ -118,6 +132,17 @@ int CMultiObjectiveMotionOptimizerBase::decide(const std::vector<mrpt::nav::TCan
 		}
 
 		// Normalize:
+		if (maxScore <= 0) // all scores=0... let's decide that all are equal, so normalized to "1"
+		{
+			for (auto &s : score_values)
+			{
+				auto it = s.find(sScoreName);
+				if (it != s.end()) {
+					it->second = 1.0;
+				}
+			}
+		}
+		else
 		if (maxScore > 0 && maxScore!=1.0 /* already normalized! */)
 		{
 			double K = 1.0 / maxScore;
@@ -130,6 +155,31 @@ int CMultiObjectiveMotionOptimizerBase::decide(const std::vector<mrpt::nav::TCan
 			}
 		}
 	}
+
+	// For each assert, evaluate it (*after* score normalization)
+	for (unsigned int mov_idx = 0; mov_idx < movs.size(); ++mov_idx)
+	{
+		const auto &m = movs[mov_idx];
+		bool assert_failed = false;
+		{
+			for (auto &ma : m_movement_assert_exprs)
+			{
+				const double val = ma.eval();
+				if (val == 0) {
+					assert_failed = true;
+					extra_info.log_entries.emplace_back(std::move(mrpt::format("[CMultiObjectiveMotionOptimizerBase] mov_idx=%u ASSERT failed: `%s`", mov_idx, ma.get_original_expression().c_str())));
+					break;
+				}
+			}
+		}
+		if (assert_failed)
+		{
+			for (auto &e : score_values[mov_idx]) 
+			{
+				e.second = .0;
+			}
+		}
+	} // end mov_idx
 
 	// Run algorithm:
 	return impl_decide(movs, extra_info);

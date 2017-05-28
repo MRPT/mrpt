@@ -15,7 +15,6 @@
 #include <mrpt/poses/CPose3DPDF.h>
 #include <mrpt/poses/CPose3DPDFGaussianInf.h>
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/math/CMatrix.h>
 #include <mrpt/math/distributions.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/system/os.h>
@@ -84,7 +83,7 @@ void  CPosePDFGaussianInf::readFromStream(mrpt::utils::CStream &in,int version)
 		{
 			TPose2D p;
 			in >> p.x >> p.y >> p.phi;
-			mean = p;
+			mean = CPose2D(p);
 
 			in >> cov_inv(0,0) >> cov_inv(1,1) >> cov_inv(2,2);
 			in >> cov_inv(0,1) >> cov_inv(0,2) >> cov_inv(1,2);
@@ -540,4 +539,3 @@ CPosePDFGaussianInf mrpt::poses::operator -( const CPosePDFGaussianInf &a, const
 	res.inverseComposition(a,b);
 	return res;
 }
-

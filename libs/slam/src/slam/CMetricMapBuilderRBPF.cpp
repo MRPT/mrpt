@@ -123,8 +123,8 @@ void  CMetricMapBuilderRBPF::processActionObservation(
 		else if (act2D)
 		{
 			MRPT_LOG_DEBUG("processActionObservation(): Input action is CActionRobotMovement2D");
-			odoIncrementSinceLastMapUpdate += act2D->poseChange->getMeanVal();
-			odoIncrementSinceLastLocalization.mean += act2D->poseChange->getMeanVal();
+			odoIncrementSinceLastMapUpdate += mrpt::poses::CPose3D(act2D->poseChange->getMeanVal());
+			odoIncrementSinceLastLocalization.mean += mrpt::poses::CPose3D(act2D->poseChange->getMeanVal());
 		}
 		else
 		{
@@ -192,7 +192,7 @@ void  CMetricMapBuilderRBPF::processActionObservation(
 			}
 		}
 
-		MRPT_LOG_DEBUG_STREAM << "odoIncrementSinceLastLocalization before resetting = " << odoIncrementSinceLastLocalization.mean;
+		MRPT_LOG_DEBUG_STREAM( "odoIncrementSinceLastLocalization before resetting = " << odoIncrementSinceLastLocalization.mean);
 		// Reset distance counters:
 		odoIncrementSinceLastLocalization.mean.setFromValues(0,0,0,0,0,0);
 		odoIncrementSinceLastLocalization.cov.zeros();
@@ -215,7 +215,7 @@ void  CMetricMapBuilderRBPF::processActionObservation(
 			CMatrixDouble66	cov;
 			poseEstimation.getCovarianceAndMean(cov,estPos);
 
-			MRPT_LOG_INFO_STREAM << "New pose=" << estPos << std::endl << "New ESS:"<< mapPDF.ESS() << std::endl;
+			MRPT_LOG_INFO_STREAM( "New pose=" << estPos << std::endl << "New ESS:"<< mapPDF.ESS() << std::endl);
 			MRPT_LOG_INFO( format("   STDs: x=%2.3f y=%2.3f z=%.03f yaw=%2.3fdeg\n", sqrt(cov(0,0)),sqrt(cov(1,1)),sqrt(cov(2,2)),RAD2DEG(sqrt(cov(3,3)))) );
 		}
 	}
@@ -231,7 +231,7 @@ void  CMetricMapBuilderRBPF::processActionObservation(
 		// Add current observation to the map:
 		const bool anymap_update = mapPDF.insertObservation(observations);
 		if (!anymap_update)
-			MRPT_LOG_WARN_STREAM << "**No map was updated** after inserting a CSensoryFrame with "<< observations.size();
+			MRPT_LOG_WARN_STREAM( "**No map was updated** after inserting a CSensoryFrame with "<< observations.size());
 
 		m_statsLastIteration.observationsInserted = true;
 	}
@@ -258,11 +258,12 @@ void  CMetricMapBuilderRBPF::initialize(
 	// Enter critical section (updating map)
 	enterCriticalSection();
 
-	MRPT_LOG_INFO_STREAM << "[initialize] Called with " << initialMap.size() << " nodes in fixed map\n"; 
-	if (x0)
-		MRPT_LOG_INFO_STREAM << "[initialize] x0: " << x0->getMeanVal() << "\n";
-	else
-		MRPT_LOG_INFO_STREAM << "[initialize] x0: (Not supplied)\n";
+	MRPT_LOG_INFO_STREAM( "[initialize] Called with " << initialMap.size() << " nodes in fixed map\n"); 
+	if (x0) {
+		MRPT_LOG_INFO_STREAM( "[initialize] x0: " << x0->getMeanVal() << "\n"); 
+	} else {
+		MRPT_LOG_INFO_STREAM( "[initialize] x0: (Not supplied)\n");
+	}
 
 	this->clear();
 	if (x0) {
