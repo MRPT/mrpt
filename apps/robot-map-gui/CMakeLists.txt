@@ -14,12 +14,12 @@ if(CMAKE_MRPT_HAS_Qt5)
 
     set(CPP_FILES
         robot-map-gui_main.cpp
-        gui/cmainwindow.cpp
+        gui/CMainWindow.cpp
         )
 
 
     set(FILES_TO_MOC
-        gui/cmainwindow.h
+        gui/CMainWindow.h
         )
 
 

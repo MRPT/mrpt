@@ -17,7 +17,7 @@
   ---------------------------------------------------------------*/
 #include <QApplication>
 
-#include "gui/cmainwindow.h"
+#include "gui/CMainWindow.h"
 
 
 int main(int argc, char **argv)
