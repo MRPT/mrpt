@@ -43,10 +43,10 @@ namespace mrpt { namespace graphslam { namespace deciders {
  *
  * ### Specifications
  *
- * - Map type: 2D
+ * - Map type: 2D, 3D
  * - MRPT rawlog format: #1, #2
  * - Graph Type: CPosePDFGaussianInf
- * - Observations Used: CObservationOdometry, CActionRobotMovement2D
+ * - Observations Used: CObservationOdometry, CActionRobotMovement2D, CActionRobotMovement3D
  * - Node Registration Strategy: Fixed Odometry Intervals
  *
  * ### .ini Configuration Parameters

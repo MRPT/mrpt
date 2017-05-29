@@ -245,7 +245,8 @@ void CFixedIntervalsNRD<GRAPH_T>::TParams::loadFromConfigFile(
 }
 
 template<class GRAPH_T>
-void CFixedIntervalsNRD<GRAPH_T>::TParams::getAsString(std::string* params_out) const {
+void CFixedIntervalsNRD<GRAPH_T>::TParams::
+getAsString(std::string* params_out) const {
 	MRPT_START;
 	using namespace mrpt::math;
 	using namespace mrpt::utils;

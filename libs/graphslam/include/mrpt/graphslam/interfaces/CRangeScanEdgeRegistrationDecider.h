@@ -10,8 +10,9 @@ namespace mrpt { namespace graphslam { namespace deciders {
 /**\brief Edge Registration Decider Interface from which RangeScanner-based
  * ERDs can inherit from.
  *
- * Holds common vars for the underlying classesand provides methods for
- * accessing and modifying them.
+ * Holds common vars for the underlying classes and provides methods for
+ * accessing and modifying them. Also takes care of common visualization needed
+ * in derived classes
  *
  * \note Since the decider inherits from the CRangeScanOps
  * class, it parses the configuration parameters of the latter as well from the

@@ -46,7 +46,7 @@ namespace maps
 	  <table>
 	  <tr> <td><b>Observation class:</b></td> <td><b>Generated Landmarks:</b></td> <td><b>Comments:</b></td> </tr>
 	  <tr> <td>CObservationImage</td> <td>vlSIFT</td> <td>1) A SIFT feature is created for each SIFT detected in the image,
-	           <br>2) Correspondences between SIFTs features and existing ones are finded by computeMatchingWith3DLandmarks,
+	           <br>2) Correspondences between SIFTs features and existing ones are found by computeMatchingWith3DLandmarks,
 			   <br>3) The corresponding feaures are fused, and the new ones added, with an initial uncertainty according to insertionOptions</td> </tr>
 	  <tr> <td>CObservationStereoImages</td> <td>vlSIFT</td> <td> Each image is separately procesed by the method for CObservationImage observations </td> </tr>
 	  <tr> <td>CObservationStereoImages</td> <td>vlColor</td> <td> TODO... </td> </tr>
