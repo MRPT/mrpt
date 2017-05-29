@@ -13,7 +13,7 @@
 namespace mrpt { namespace graphslam { namespace deciders {
 
 template<class GRAPH_T>
-void CRangeScanOps<GRAPH_T>::getICPEdge(
+void CRangeScanOps<GRAPH_T>::_getICPEdge(
 		const mrpt::obs::CObservation2DRangeScan& from,
 		const mrpt::obs::CObservation2DRangeScan& to,
 		constraint_t* rel_edge,
@@ -49,9 +49,10 @@ void CRangeScanOps<GRAPH_T>::getICPEdge(
 	if (icp_info) *icp_info = info;
 
 	MRPT_END;
-}
+} // end of _getICPEdge
+
 template<class GRAPH_T>
-void CRangeScanOps<GRAPH_T>::getICPEdge(
+void CRangeScanOps<GRAPH_T>::_getICPEdge(
 		const mrpt::obs::CObservation3DRangeScan& from,
 		const mrpt::obs::CObservation3DRangeScan& to,
 		constraint_t* rel_edge,
@@ -71,9 +72,6 @@ void CRangeScanOps<GRAPH_T>::getICPEdge(
 
 	m1.insertObservation(&from);
 	m2.insertObservation(&to);
-
-	//this->decimatePointsMap(&m1, [> keep every = */ 40, /* low_lim = <] 5000);
-	//this->decimatePointsMap(&m2, [> keep every = */ 40, /* low_lim = <] 5000);
 
 	// If given, use initial_pose_in as a first guess for the ICP
 	mrpt::poses::CPose3D initial_pose;
@@ -95,7 +93,7 @@ void CRangeScanOps<GRAPH_T>::getICPEdge(
 	if (icp_info) *icp_info = info;
 
 	MRPT_END;
-}
+} // end of _getICPEdge
 
 template<class GRAPH_T>
 void CRangeScanOps<GRAPH_T>::decimatePointsMap(
@@ -124,7 +122,7 @@ void CRangeScanOps<GRAPH_T>::decimatePointsMap(
 	//std::cout << "Map size: " << map_size << " => " << m->size() << std::endl;
 
 	MRPT_END;
-}
+} // end of decimatePointsMap
 
 template<class GRAPH_T>
 bool CRangeScanOps<GRAPH_T>::convert3DTo2DRangeScan(
@@ -149,7 +147,7 @@ bool CRangeScanOps<GRAPH_T>::convert3DTo2DRangeScan(
 
 	return success;
 	MRPT_END;
-}
+} // end of convert3DTo2DRangeScan
 
 // TParameter
 // //////////////////////////////////

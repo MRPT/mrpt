@@ -72,7 +72,7 @@ class CEdgeRegistrationDecider :
 		 * the corresponding number of registration of each edge.
 		 */
     virtual void getEdgesStats(
-    		std::map<std::string, int>* edge_type_to_num) const {};
+    		std::map<std::string, int>* edge_type_to_num) const;
     /**\brief Used by the caller to query for possible loop closures in the
      * last edge registration procedure.
      */
@@ -80,6 +80,7 @@ class CEdgeRegistrationDecider :
     	return m_just_inserted_lc;
     }
 		virtual void getDescriptiveReport(std::string* report_str) const; 
+
   protected:
   	/**\name Registration criteria checks
 		 *\brief Check whether a new edge should be registered in the
@@ -113,6 +114,14 @@ class CEdgeRegistrationDecider :
 		 * By default set to false.
 		 */
 		bool m_override_registered_nodes_check;
+		/**\brief Keep track of the registered edge types.
+		 *
+		 * Available types of edges include:
+		 * - ICP2D
+		 * - ICP3D
+		 * - LC
+		 */
+		std::map<std::string, int> m_edge_types_to_nums;
 
 };
 

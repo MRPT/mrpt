@@ -12,23 +12,17 @@
 
 #include <mrpt/utils/mrpt_macros.h>
 #include <mrpt/math/CMatrix.h>
-#include <mrpt/math/data_utils.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/utils/stl_containers_utils.h>
 #include <mrpt/utils/CLoadableOptions.h>
-#include <mrpt/utils/CConfigFile.h>
-#include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/utils/types_simple.h>
-#include <mrpt/utils/TColor.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/obs/obs_utils.h>
-#include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CSetOfLines.h>
-#include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/opengl/CSphere.h>
 #include <mrpt/opengl/CEllipsoid.h>
 #include <mrpt/poses/CPoint3D.h>
@@ -36,13 +30,9 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/slam/CIncrementalMapPartitioner.h>
 #include <mrpt/slam/CICP.h>
-#include <mrpt/system/os.h>
-#include <mrpt/system/threads.h>
 
 #include <mrpt/graphslam/interfaces/CRangeScanEdgeRegistrationDecider.h>
-#include <mrpt/graphslam/misc/TSlidingWindow.h>
 #include <mrpt/graphslam/misc/TUncertaintyPath.h>
-#include <mrpt/graphslam/misc/TNodeProps.h>
 #include <mrpt/graphs/THypothesis.h>
 #include <mrpt/graphs/CHypothesisNotFoundException.h>
 
@@ -248,6 +238,7 @@ class CLoopCloserERD:
 		typedef typename GRAPH_T::global_pose_t global_pose_t;
 		typedef CLoopCloserERD<GRAPH_T> decider_t; /**< self type - Handy typedef */
 		typedef typename parent_t::range_ops_t range_ops_t;
+		typedef typename parent_t::TGetICPEdgeAdParams TGetICPEdgeAdParams;
 		typedef typename parent_t::nodes_to_scans2D_t nodes_to_scans2D_t;
 		/**\brief Typedef for referring to a list of partitions */
 		typedef std::vector<mrpt::vector_uint> partitions_t;
@@ -259,7 +250,7 @@ class CLoopCloserERD:
 		typedef std::map< std::pair<hypot_t*, hypot_t*>, double > hypotsp_to_consist_t;
 		typedef mrpt::graphslam::TUncertaintyPath<GRAPH_T> path_t;
 		typedef std::vector<path_t> paths_t;
-		typedef mrpt::graphslam::detail::TNodeProps<GRAPH_T> node_props_t;
+		typedef typename parent_t::node_props_t node_props_t;
 		/**\}*/
 
 		// Public methods
@@ -272,12 +263,8 @@ class CLoopCloserERD:
 				mrpt::obs::CSensoryFramePtr observations,
 				mrpt::obs::CObservationPtr observation );
 
-		void setWindowManagerPtr(mrpt::graphslam::CWindowManager* win_manager);
 		void notifyOfWindowEvents(
 				const std::map<std::string, bool>& events_occurred);
-		void getEdgesStats(
-				std::map<std::string, int>* edge_types_to_num) const;
-
 		void initializeVisuals();
 		void updateVisuals();
 		void loadParams(const std::string& source_fname);
@@ -299,40 +286,6 @@ class CLoopCloserERD:
 
 		/**\name Helper structs */
 		/**\{ */
-
-		/**
-		 * \brief Struct for passing additional parameters to the getICPEdge call
-		 *
-		 * Handy for overriding the search to the \a GRAPH_T::nodes map or the
-		 * search for the node's LaserScan
-		 */
-		struct TGetICPEdgeAdParams {
-			typedef TGetICPEdgeAdParams self_t;
-
-			node_props_t from_params; /**< Ad. params for the from_node */
-			node_props_t to_params; /**< Ad. params for the to_node */
-			pose_t init_estim; /**< Initial ICP estimation */
-
-			void getAsString(std::string* str) const {
-				using namespace std;
-				using namespace mrpt;
-				ASSERT_(str);
-				str->clear();
-				*str  += format("from_params: %s", from_params.getAsString().c_str());
-				*str += format("to_params: %s", to_params.getAsString().c_str());
-				*str += format("init_estim: %s\n", init_estim.asString().c_str());
-			}
-			std::string getAsString() const {
-				std::string str;
-				this->getAsString(&str);
-				return str;
-			}
-			friend std::ostream& operator<<(std::ostream& o, const self_t& params) {
-				o << params.getAsString() << endl;
-				return o;
-			}
-
-		};
 		/**\brief Struct for passing additional parameters to the
 		 * generateHypotsPool call
 		 */
@@ -368,12 +321,11 @@ class CLoopCloserERD:
 		 * between the two groups
 		 * \pram[out] consist_matrix Pointer to Pair-wise consistencies matrix that
 		 * is to be filled
-		 
 		 * \param[in] groupA_opt_paths Pointer to vector of optimal paths that can
 		 * be used instead of making queries to the m_node_optimal_paths class
 		 * vector. See corresponding argument in generatePWConsistencyElement
 		 * method
-		 * \param[in] groupB_opt_paths 
+		 * \param[in] groupB_opt_paths
 		 *
 		 * \sa generatePWConsistencyElement
 		 * \sa evalPWConsistenciesMatrix
@@ -402,81 +354,6 @@ class CLoopCloserERD:
 		// protected functions
 		//////////////////////////////////////////////////////////////
 
-		/**\brief Fill the TNodeProps instance using the parameters from the map
-		 *
-		 * \param[in] nodeID ID of node corresponding to the TNodeProps struct that
-		 * is to be filled
-		 * \param[in] group_params Map of TNodeID to corresponding TNodeProps
-		 * instance.
-		 * \param[out] node_props Pointer to the TNodeProps struct to be filled.
-		 *
-		 * 
-		 * \return True if operation was successful, false otherwise.
-		 */
-		bool fillNodePropsFromGroupParams(
-				const mrpt::utils::TNodeID& nodeID,
-				const std::map<mrpt::utils::TNodeID, node_props_t>& group_params,
-				node_props_t* node_props);
-		/**\brief Fill the pose and LaserScan for the given nodeID.
-		 * Pose and LaserScan are either fetched from the TNodeProps struct if it
-		 * contains valid data, otherwise from the corresponding class vars
-		 *
-		 * \return True if operation was successful and pose, scan contain valid
-		 * data.
-		 */
-		bool getPropsOfNodeID(
-				const mrpt::utils::TNodeID& nodeID,
-				global_pose_t* pose,
-				mrpt::obs::CObservation2DRangeScanPtr& scan,
-				const node_props_t* node_props=NULL) const;
-
-		/**\brief Struct for storing together the parameters needed for ICP
-		 * matching, laser scans visualization etc.
-		 */
-		struct TLaserParams: public mrpt::utils::CLoadableOptions {
-			public:
-				TLaserParams();
-				~TLaserParams();
-
-				void loadFromConfigFile(
-						const mrpt::utils::CConfigFileBase &source,
-						const std::string &section);
-				void 	dumpToTextStream(mrpt::utils::CStream &out) const;
-
-				mrpt::slam::CICP icp;
- 				/**\brief How many nodes back to check ICP against?
- 				 */
-				int prev_nodes_for_ICP;
-
- 				/** see Constructor for initialization */
-				const mrpt::utils::TColor laser_scans_color;
-				bool visualize_laser_scans;
-				// keystroke to be used by the user to toggle the LaserScans from
-				// the CDisplayWindow
-				std::string keystroke_laser_scans;
-
-				/**\brief Indicate whethet to use scan-matching at all during
-				 * graphSLAM [on by default].
-				 *
-				 * \warning It is strongly recomended that the user does not set this
-				 * to false (via the .ini file). graphSLAM may diverge significantly if
-				 * no scan-matching is not used.
-				 */
-				bool use_scan_matching;
-				bool has_read_config;
-				/**\brief Keep track of the mahalanobis distance between the initial pose
-				 * difference and the suggested new edge for the pairs of checked
-				 * nodes.
-				 */
-				TSlidingWindow mahal_distance_ICP_odom_win;
-				/**\brief Keep track of ICP Goodness values for ICP between nearby
-				 * nodes and adapt the Goodness threshold based on the median of the
-				 * recorded Goodness values.
-				 */
-				TSlidingWindow goodness_threshold_win;
-
-		};
-
 		/**\brief Struct for storing together the loop-closing related parameters.
 		 */
 		struct TLoopClosureParams: public mrpt::utils::CLoadableOptions {
@@ -489,8 +366,8 @@ class CLoopCloserERD:
 						const std::string &section);
 				void 	dumpToTextStream(mrpt::utils::CStream &out) const;
 
-				/**\brief flag indicating whether to check only the partition of the last
-	 			 * registered node for potential loop closures
+				/**\brief flag indicating whether to check only the partition of the
+				 * last registered node for potential loop closures
 	 			 */
 				bool LC_check_curr_partition_only;
 				/**\brief nodeID difference for detecting potential loop closure in a
@@ -509,10 +386,6 @@ class CLoopCloserERD:
 				 * before I consider the potential loop closure.
 				 */
 				int LC_min_remote_nodes;
-				/**\brief Full partition of map only afer X new nodes have been
-				 * registered
-				 */
-				int full_partition_per_nodes;
 				bool visualize_map_partitions;
 				std::string keystroke_map_partitions;
 
@@ -529,24 +402,7 @@ class CLoopCloserERD:
 				bool has_read_config;
 
 		};
-		TLaserParams m_laser_params;
 		TLoopClosureParams m_lc_params;
-
-		/**brief Compare the suggested ICP edge against the initial node
-		 * difference.
-		 *
-		 * If this difference is significantly larger than the rest of of the
-		 * recorded mahalanobis distances, reject the suggested ICP edge.
-		 *
-		 * \return True if suggested ICP edge is accepted
-		 * \note Method updates the Mahalanobis Distance TSlidingWindow which
-		 * keep track of the recorded mahalanobis distance values.
-		 * \sa getICPEdge
-		 */
-		bool mahalanobisDistanceOdometryToICPEdge(
-				const mrpt::utils::TNodeID& from,
-				const mrpt::utils::TNodeID& to,
-				const constraint_t& rel_edge);
 		/**\brief Wrapper around the registerNewEdge method which accepts a
 		 * THypothesis object instead.
 		 */
@@ -555,30 +411,6 @@ class CLoopCloserERD:
 				const mrpt::utils::TNodeID& from,
 				const mrpt::utils::TNodeID& to,
 				const constraint_t& rel_edge );
-		/**\brief Fetch a list of nodes with regards prior to the given nodeID for
-		 * which to try and add scan matching edges
-		 *
-		 * \sa addScanMatchingEdges
-		 */
-		virtual void fetchNodeIDsForScanMatching(
-				const mrpt::utils::TNodeID& curr_nodeID,
-				std::set<mrpt::utils::TNodeID>* nodes_set);
-		/**\brief Addd ICP constraints from X previous nodeIDs up to the given
-		 * nodeID.
-		 *
-		 * X is set by the user in the .ini configuration file (see
-		 * TLaserParams::prev_nodes_for_ICP)
-		 *
-		 * \sa fetchNodeIDsForScanMatching
-		 */
-		virtual void addScanMatchingEdges(const mrpt::utils::TNodeID& curr_nodeID);
-		void initLaserScansVisualization();
-		void updateLaserScansVisualization();
-		/**\brief togle the LaserScans visualization on and off
-		 */
-		void toggleLaserScansVisualization();
-		void dumpVisibilityErrorMsg(std::string viz_flag,
-				int sleep_time=500 /* ms */);
 		/**\brief Split the currently registered graph nodes into partitions.  */
 		void updateMapPartitions(
 				bool full_update=false,
@@ -718,27 +550,6 @@ class CLoopCloserERD:
 				const hypotsp_t& vec_hypots,
 				const size_t& id,
 				bool throw_exc=true);
-		/**\brief Get the ICP Edge between the provided nodes.
-		 *
-		 * Handy for not having to manually fetch the laser scans, as the method
-		 * takes care of this.
-		 *
-		 * \param[out] icp_info Struct that will be filled with the results of the
-		 * ICP operation
-		 *
-		 * \param[in] ad_params Pointer to additional parameters in the getICPEdge call
-		 *
-		 * \return True if operation was successful, false otherwise (e.g. if the
-		 * either of the nodes' CObservation2DRangeScan object does not contain
-		 * valid data.
-		 */
-		virtual bool getICPEdge(
-				const mrpt::utils::TNodeID& from,
-				const mrpt::utils::TNodeID& to,
-				constraint_t* rel_edge,
-				mrpt::slam::CICP::TReturnInfo* icp_info=NULL,
-				const TGetICPEdgeAdParams* ad_params=NULL
-				);
 		/**\brief compute the minimum uncertainty of each node position with
 		 * regards to the graph root.
 		 *
@@ -834,15 +645,8 @@ class CLoopCloserERD:
 		bool m_visualize_curr_node_covariance;
 		const mrpt::utils::TColor m_curr_node_covariance_color;
 		double m_offset_y_curr_node_covariance;
-		int m_text_index_curr_node_covariance;
-
-		/**\brief Keep track of the registered edge types.
-		 *
-		 * Handy for displaying them in the Visualization window.
-		 */
-		std::map<std::string, int> m_edge_types_to_nums;
-		/**\brief Keep the last laser scan for visualization purposes */
-		mrpt::obs::CObservation2DRangeScanPtr m_last_laser_scan2D;
+		 int m_text_index_curr_node_covariance;
+		
 		/**\name Partition vectors */
 		/**\{ */
 		/**\brief Previous partitions vector */
@@ -874,12 +678,18 @@ class CLoopCloserERD:
 		/**\brief Node Count lower bound before executing dijkstra
 		 */
 		size_t m_dijkstra_node_count_thresh;
-		/**\brief Factor used for accepting an ICP Constraint as valid.
-		 */
-		double m_consec_icp_constraint_factor;
-		/**\brief Factor used for accepting an ICP Constraint in the loop closure proc.
+		/**\brief Factor used for accepting an ICP Constraint in the loop closure
+		 * proc.
 		 */
 		double m_lc_icp_constraint_factor;
+		/**\brief Indicate whethet to use scan-matching at all during graphSLAM [on
+		 * by default].
+		 *
+		 * \warning It is strongly recomended that the user does not set this to
+		 * false (via the .ini file). graphSLAM may diverge significantly if no
+		 * scan-matching is not used.
+		 */
+		bool m_use_scan_matching;
 
 };
 

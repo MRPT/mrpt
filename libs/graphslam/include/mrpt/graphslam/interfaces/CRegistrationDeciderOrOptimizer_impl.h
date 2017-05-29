@@ -35,6 +35,12 @@ CRegistrationDeciderOrOptimizer<GRAPH_T>::~CRegistrationDeciderOrOptimizer() {
 }
 
 template<class GRAPH_T>
+bool CRegistrationDeciderOrOptimizer<GRAPH_T>::updateState(
+		mrpt::obs::CActionCollectionPtr action,
+		mrpt::obs::CSensoryFramePtr observations,
+		mrpt::obs::CObservationPtr observation ) { }
+
+template<class GRAPH_T>
 void CRegistrationDeciderOrOptimizer<GRAPH_T>::initializeLoggers(
 		const std::string& name) {
 	using namespace std;
@@ -76,6 +82,21 @@ void CRegistrationDeciderOrOptimizer<GRAPH_T>::setCriticalSectionPtr(
 	m_graph_section = graph_section;
 	this->logFmt(mrpt::utils::LVL_DEBUG, "Fetched the CCRiticalSection successfully");
 }
+template<class GRAPH_T>
+void CRegistrationDeciderOrOptimizer<GRAPH_T>::dumpVisibilityErrorMsg(
+		std::string viz_flag, int sleep_time /* = 500 ms */) {
+	MRPT_START;
+
+	this->logFmt(mrpt::utils::LVL_ERROR,
+			"Cannot toggle visibility of specified object.\n "
+			"Make sure that the corresponding visualization flag ( %s "
+			") is set to true in the .ini file.\n",
+			viz_flag.c_str());
+	mrpt::system::sleep(sleep_time);
+
+	MRPT_END;
+}
+
 
 template<class GRAPH_T>
 void CRegistrationDeciderOrOptimizer<GRAPH_T>::initializeVisuals() {
