@@ -38,6 +38,9 @@ namespace mrpt
 
 			mrpt::obs::CObservationPtr	obs; //!< Observation wich contain the deteted object
 
+			/** Set the observation which the object at hand is going to be
+			 * detected from
+			 */
 			inline void setObservation( mrpt::obs::CObservationPtr newObs ){	obs = newObs;	};
 
 		}; // End of class

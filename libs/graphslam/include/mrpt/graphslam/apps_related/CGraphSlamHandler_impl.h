@@ -391,17 +391,17 @@ void CGraphSlamHandler<GRAPH_T>::execute() {
 	size_t curr_rawlog_entry;
 
 	// Read the dataset and pass the measurements to CGraphSlamEngine
-	bool cont_exec = true;
+	bool continue_exec = true;
 	while (CRawlog::getActionObservationPairOrObservation(
 				rawlog_stream,
 				action,
 				observations,
 				observation,
-				curr_rawlog_entry) && cont_exec) {
+				curr_rawlog_entry) && continue_exec) {
 
 		// actual call to the graphSLAM execution method
 		// Exit if user pressed C-c
-		cont_exec = m_engine->_execGraphSlamStep(
+		continue_exec = m_engine->_execGraphSlamStep(
 				action,
 				observations,
 				observation,
