@@ -1,6 +1,12 @@
 #include "mainwindow.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <vector>
+#include <string>
+#include <string.h>
+#include <iostream>
 
-
+using namespace std;
 void MainWindow::on_button_generate_clicked()
 {
     ReadInputFormat();
@@ -71,11 +77,12 @@ void MainWindow::on_browse_button_clicked()
     QFileDialog dialog;
     dialog.setFileMode(QFileDialog::AnyFile);
 
-    if(currentInputIndex == 0)
+    //0 = single image; 1 = stereo image; 2 = rawlog file ; 3 = image dataset folder
+    if(currentInputIndex == 0 || currentInputIndex == 2)
     {
         dialog.setNameFilter(tr("Images (*.png *.xpm *.jpg *.tiff *.gif)"));
     }
-    else if(currentInputIndex == 1 || currentInputIndex == 2)
+    else if(currentInputIndex == 1 || currentInputIndex == 3)
     {
         dialog.setFileMode(QFileDialog::Directory);
     }
@@ -97,34 +104,30 @@ void MainWindow::on_browse_button_clicked()
  **/
 void MainWindow::ReadInputFormat()
 {
+    // store the input type here
     currentInputIndex = inputs->currentIndex();
 
-    if(detector1->isChecked())
-        detector_selected = 1;
-    else if(detector2->isChecked())
-        detector_selected = 2;
-    else if(detector3->isChecked())
-        detector_selected = 3;
-    else if(detector4->isChecked())
-        detector_selected = 4;
-    else if(detector5->isChecked())
-        detector_selected = 5;
-    else
+    //store the detector chosen here
+    for(int i=0 ; i<NUM_DETECTORS ; i++)
+    {
         detector_selected = -1;
+        if(detectors[i]->isChecked())
+        {
+            detector_selected = i;
+            break;
+        }
+    }
 
-
-    if(descriptor1->isChecked())
-        descriptor_selected = 1;
-    else if(descriptor2->isChecked())
-        descriptor_selected = 2;
-    else if(descriptor3->isChecked())
-        descriptor_selected = 3;
-    else if(descriptor4->isChecked())
-        descriptor_selected = 4;
-    else if(descriptor5->isChecked())
-        descriptor_selected = 5;
-    else
+    //store the descriptor here
+    for(int i=0 ; i<NUM_DESCRIPTORS ; i++)
+    {
         descriptor_selected = -1;
+        if(descriptors[i]->isChecked())
+        {
+            descriptor_selected = i;
+            break;
+        }
+    }
 }
 
 MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
@@ -137,58 +140,60 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
     window_gui = new QWidget;
     window_gui->setWindowTitle("GUI app for benchmarking image detectors and descriptord");
 
-    //Select the Detector here
+    //Initialize the detectors here
     QGroupBox *groupBox = new QGroupBox(tr("Select your detector"));
-    detector1 = new QRadioButton("Harris Corner Detector");
-    detector2 = new QRadioButton("Detector 2");
-    detector3 = new QRadioButton("FAST Detector");
-    detector4 = new QRadioButton("LSD Detector");
-    detector5 = new QRadioButton("AKAZE Detector");
+    string detector_names[] = {"Harris Corner Detector", "Detectorf",
+                     "FAST Detector", "LSD Detector",
+                     "AKAZE Detector"};
+    for(int i=0 ; i<NUM_DETECTORS ; i++)
+    {
+        detectors[i] = new QRadioButton(this);
+        detectors[i]->setText(detector_names[i].c_str());
+    }
     QPushButton *detector_button = new QPushButton;
     detector_button->setText("Evaluate Detector");
     connect(detector_button, SIGNAL(clicked(bool)),this, SLOT(on_detector_button_clicked()));
-
-
     QVBoxLayout *vbox = new QVBoxLayout;
-    vbox->addWidget(detector1);
-    vbox->addWidget(detector2);
-    vbox->addWidget(detector3);
-    vbox->addWidget(detector4);
-    vbox->addWidget(detector5);
+    for(int i=0 ; i<NUM_DETECTORS ; i++)
+    {
+        vbox->addWidget(detectors[i]);
+    }
     vbox->addWidget(detector_button);
     groupBox->setLayout(vbox);
 
-    //Select the descriptor here
+
+
+
+    //initialize the descriptors here
     QGroupBox *groupBox2 = new QGroupBox(tr("Select your descriptor"));
-    descriptor1 = new QRadioButton("SIFT Descriptor");
-    descriptor2 = new QRadioButton("SURF Descriptor");
-    descriptor3 = new QRadioButton("LATCH Descriptor");
-    descriptor4 = new QRadioButton("BLD Descriptor");
-    descriptor5 = new QRadioButton("BRIEF Descriptors");
+    string descriptor_names[] = {"SIFT Descriptor", "SURF Descriptor",
+                                  "LATCH Descriptor", "BLD Descriptor",
+                                  "BRIEF Descriptors"};
+    for(int i=0 ; i<NUM_DETECTORS ; i++)
+    {
+        descriptors[i] = new QRadioButton(this);
+        descriptors[i]->setText(descriptor_names[i].c_str());
+    }
     QPushButton *descriptor_button = new QPushButton;
     descriptor_button->setText("Evaluate Descriptor");
     connect(descriptor_button, SIGNAL(clicked(bool)),this, SLOT(on_descriptor_button_clicked()));
-
-
     QVBoxLayout *vbox2 = new QVBoxLayout;
-    vbox2->addWidget(descriptor1);
-    vbox2->addWidget(descriptor2);
-    vbox2->addWidget(descriptor3);
-    vbox2->addWidget(descriptor4);
-    vbox2->addWidget(descriptor5);
+    for(int i=0 ; i<NUM_DESCRIPTORS ; i++)
+    {
+        vbox2->addWidget(descriptors[i]);
+    }
     vbox2->addWidget(descriptor_button);
     groupBox2->setLayout(vbox2);
 
+
+
     //provide user input image options
-
-
-
-
     QGroupBox *inputGroupBox = new QGroupBox;
     QLabel *inputLabel = new QLabel("<b>Specify the input data format</b>");
     inputs = new QComboBox;
     inputs->addItem("Single Image");
     inputs->addItem("Stereo Image");
+    inputs->addItem("Image Rawlog file");
     inputs->addItem("Image Dataset");
     inputFilePath = new QLineEdit;
     QPushButton *browse_button = new QPushButton("Browse");
@@ -202,12 +207,8 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
     inputGroupBox->setLayout(inputVbox);
 
 
-    //QFileDialog fileName = QFileDialog::getOpenFileName(this, tr("Open Image"), "/home/raghavender", tr("Image Files (*.png *.jpg *.bmp)"));;
 
-
-    QFileDialog dialog(this);
-    dialog.setFileMode(QFileDialog::AnyFile);
-
+    // initializing the buttons here
     QGroupBox *groupBox_buttons = new QGroupBox;
     button_generate = new QPushButton("Generate Detectors / Descriptors");
     connect(button_generate, SIGNAL(clicked(bool)), this,SLOT(on_button_generate_clicked()));
