@@ -337,13 +337,7 @@ void CICPCriteriaERD<GRAPH_T>::loadParams(const std::string& source_fname) {
 			"LC_min_nodeid_diff",
 			30, false);
 
-	std::string section("CRangeScanEdgeRegistrationDecider");
-
-	int min_verbosity_level = source.read_int(
-			section,
-			"class_verbosity",
-			1, false);
-	this->setMinLoggingLevel(VerbosityLevel(min_verbosity_level));
+	std::string section("EdgeRegistrationDeciderParameters");
 
 	m_ICP_max_distance = source.read_double(
 			section,

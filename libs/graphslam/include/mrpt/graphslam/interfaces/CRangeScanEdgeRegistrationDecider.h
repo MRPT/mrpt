@@ -85,7 +85,7 @@ class CRangeScanEdgeRegistrationDecider :
 				return str;
 			}
 			friend std::ostream& operator<<(std::ostream& o, const self_t& params) {
-				o << params.getAsString() << endl;
+				o << params.getAsString() << std::endl;
 				return o;
 			}
 		};

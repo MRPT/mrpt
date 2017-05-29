@@ -75,6 +75,7 @@ void TUserOptionsChecker<GRAPH_t>::_createDeciderOptimizerMappings() {
 template<>
 inline void TUserOptionsChecker<mrpt::graphs::CNetworkOfPoses2DInf>::_createDeciderOptimizerMappings() {
 	using namespace mrpt::graphs;
+	using namespace mrpt::graphslam::deciders;
 
 	node_regs_map["CICPCriteriaNRD"] =
 		&createNodeRegistrationDecider<CICPCriteriaNRD<CNetworkOfPoses2DInf> >;
@@ -87,6 +88,7 @@ inline void TUserOptionsChecker<mrpt::graphs::CNetworkOfPoses2DInf>::_createDeci
 template<>
 inline void TUserOptionsChecker<mrpt::graphs::CNetworkOfPoses2DInf_NA>::_createDeciderOptimizerMappings() {
 	using namespace mrpt::graphs;
+	using namespace mrpt::graphslam::deciders;
 
 	node_regs_map["CICPCriteriaNRD"] =
 		&createNodeRegistrationDecider<CICPCriteriaNRD<CNetworkOfPoses2DInf_NA> >;

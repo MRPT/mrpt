@@ -154,6 +154,17 @@ bool CRegistrationDeciderOrOptimizer<GRAPH_T>::isMultiRobotSlamClass() {
 	return is_mr_slam_class;
 }
 
+template<class GRAPH_T>
+void CRegistrationDeciderOrOptimizer<GRAPH_T>::
+setVerbosityLevelFromSection(std::string source_fname, std::string section) {
+	mrpt::utils::CConfigFile source(source_fname);
+	int level = source.read_int(
+			section,
+			"class_verbosity",
+			1, false);
+	this->setMinLoggingLevel(mrpt::utils::VerbosityLevel(level));
+}
+
 } } // end of namespaces
 
 #endif /* end of include guard: CREGISTRATIONDECIDEROROPTIMIZER_IMPL_H */

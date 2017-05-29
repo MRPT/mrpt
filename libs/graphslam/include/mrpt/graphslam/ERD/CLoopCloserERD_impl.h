@@ -440,6 +440,7 @@ void CLoopCloserERD<GRAPH_T>::generateHypotsPool(
 	MRPT_START;
 	using namespace mrpt::utils;
 	using namespace mrpt;
+	using namespace std;
 
 	ASSERTMSG_(generated_hypots,
 			"generateHypotsPool: Given hypotsp_t pointer is invalid.");
@@ -1732,15 +1733,6 @@ void CLoopCloserERD<GRAPH_T>::loadParams(const std::string& source_fname) {
 			"lc_icp_constraint_factor",
 			0.70, false);
 
-
-	// set the logging level if given by the user
-	int min_verbosity_level = source.read_int(
-			section,
-			"class_verbosity",
-			1, false);
-
-
-	this->setMinLoggingLevel(mrpt::utils::VerbosityLevel(min_verbosity_level));
 	MRPT_END;
 }
 template<class GRAPH_T>

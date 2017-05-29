@@ -53,11 +53,6 @@ namespace mrpt { namespace graphslam { namespace deciders {
  *
  * \htmlinclude graphslam-engine_config_params_preamble.txt
  *
- * - \b class_verbosity
- *   + \a Section       : NodeRegistrationDeciderParameters
- *   + \a Default value : 1 (LVL_INFO)
- *   + \a Required      : FALSE
- *
  * - \b registration_max_distance
  *  + \a Section       : NodeRegistrationDeciderParameters
  *  + \a Default value : 0.5 // meters
