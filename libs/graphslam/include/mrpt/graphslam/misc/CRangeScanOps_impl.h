@@ -55,7 +55,7 @@ void CRangeScanOps<GRAPH_T>::getICPEdge(
 		const mrpt::obs::CObservation3DRangeScan& from,
 		const mrpt::obs::CObservation3DRangeScan& to,
 		constraint_t* rel_edge,
-		const mrpt::poses::CPose2D* initial_pose_in /* =NULL */,
+		const mrpt::poses::CPose3D* initial_pose_in /* =NULL */,
 		mrpt::slam::CICP::TReturnInfo* icp_info /* =NULL */) {
 	MRPT_START;
 
@@ -78,7 +78,7 @@ void CRangeScanOps<GRAPH_T>::getICPEdge(
 	// If given, use initial_pose_in as a first guess for the ICP
 	mrpt::poses::CPose3D initial_pose;
 	if (initial_pose_in) {
-		initial_pose = mrpt::poses::CPose3D(*initial_pose_in);
+		initial_pose = *initial_pose_in;
 	}
 
 	mrpt::poses::CPose3DPDFPtr pdf = params.icp.Align3D(
@@ -89,19 +89,10 @@ void CRangeScanOps<GRAPH_T>::getICPEdge(
 			(void*)&info);
 
 	// return the edge regardless of the goodness of the alignment
-	// copy from the 3D PDF
-	// NULLIFY contraint_t if Z displacement is high (normally this should be 0)
-	// since we are moving in 2D
-	if (fabs(pdf->getMeanVal().z()) < 0.1) {
-		rel_edge->copyFrom(*pdf);
-	}
-	else {
-		rel_edge = NULL;
-	}
+	rel_edge->copyFrom(*pdf);
 
 	// if given, fill the TReturnInfo Struct
 	if (icp_info) *icp_info = info;
-
 
 	MRPT_END;
 }
