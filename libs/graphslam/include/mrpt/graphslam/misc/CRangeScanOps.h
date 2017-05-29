@@ -29,13 +29,14 @@
 
 namespace mrpt { namespace graphslam { namespace deciders {
 
-/**\brief Class for keeping together all the RangeScanner-related functions.
+/**\brief Class acts as a container for keeping together all the
+ * RangeScanner-related functions.
  *
  * ## Description
  *
- * Deciders that make use of either 2DRangeScans (laser generated
- * observations) or 3DRangeScans (RGBD-cameras) can inherit from
- * this class in case they want to use the underlying methods
+ * Deciders that make use of either 2DRangeScans (laser) or 3DRangeScans
+ * (RGBD-cameras) can inherit from this class in case they want to use the
+ * underlying methods.
  *
  * ### .ini Configuration Parameters
  *
@@ -83,6 +84,8 @@ class CRangeScanOps {
 	/**\{*/
 	typedef typename GRAPH_T::constraint_t constraint_t;
 	typedef CRangeScanOps<GRAPH_T> self_t;
+	typedef typename GRAPH_T::constraint_t::type_value pose_t;
+	typedef typename GRAPH_T::global_pose_t global_pose_t;
 	/**\}*/
 
 	protected:
@@ -95,7 +98,7 @@ class CRangeScanOps {
 	 * User can optionally ask that additional information be returned in a
 	 * TReturnInfo struct
 	 */
-	void getICPEdge(
+	void _getICPEdge(
 			const mrpt::obs::CObservation2DRangeScan& from,
 			const mrpt::obs::CObservation2DRangeScan& to,
 			constraint_t* rel_edge,
@@ -107,7 +110,7 @@ class CRangeScanOps {
 	 * User can optionally ask that additional information be returned in a
 	 * TReturnInfo struct
 	 */
-	void getICPEdge(
+	void _getICPEdge(
 			const mrpt::obs::CObservation3DRangeScan& from,
 			const mrpt::obs::CObservation3DRangeScan& to,
 			constraint_t* rel_edge,
@@ -151,7 +154,7 @@ class CRangeScanOps {
 
 			bool has_read_config;
 	};
-	TParams params;
+	TParams params;	
 
 };
 

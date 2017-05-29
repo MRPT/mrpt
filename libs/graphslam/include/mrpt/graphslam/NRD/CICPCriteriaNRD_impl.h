@@ -148,7 +148,7 @@ bool CICPCriteriaNRD<GRAPH_T>::checkRegistrationCondition2D() {
 	constraint_t rel_edge;
 	mrpt::slam::CICP::TReturnInfo icp_info;
 
-	this->getICPEdge(
+	this->_getICPEdge(
 			*m_last_laser_scan2D,
 			*m_curr_laser_scan2D,
 			&rel_edge,

@@ -49,9 +49,9 @@ namespace mrpt { namespace graphslam { namespace deciders {
  * ## Description
  *
  * Register new edges in the graph with the last inserted node. Criterion for
- * adding new edges should be the goodness of the candidate ICP edge. The
- * nodes for ICP are picked <em>based on the distance from the last
- * inserted node</em>.
+ * adding new edges should be the goodness of the candidate ICP edge. The nodes
+ * for ICP are picked <em>based on the distance from the last inserted
+ * node</em>.
  * \sa  getNearbyNodesOf
  *
  * ### Specifications
@@ -122,6 +122,7 @@ class CICPCriteriaERD :
 		typedef typename parent_t::range_ops_t range_ops_t;
 		typedef CICPCriteriaERD<GRAPH_T> decider_t; /**< self type - Handy typedef */
 		typedef typename parent_t::nodes_to_scans2D_t nodes_to_scans2D_t;
+		typedef typename parent_t::nodes_to_scans3D_t nodes_to_scans3D_t;
 		/**\}*/
 
 		// Public methods
@@ -136,45 +137,11 @@ class CICPCriteriaERD :
 
 		void notifyOfWindowEvents(
 				const std::map<std::string, bool>& events_occurred);
-		void getEdgesStats(
-				std::map<std::string, int>* edge_types_to_num) const;
-
 		void initializeVisuals();
 		void updateVisuals();
 		void loadParams(const std::string& source_fname);
 		void printParams() const;
-
-		struct TParams: public mrpt::utils::CLoadableOptions {
-			public:
-				TParams(decider_t& d);
-				~TParams();
-
-
-				void loadFromConfigFile(
-						const mrpt::utils::CConfigFileBase &source,
-						const std::string &section);
-				void 	dumpToTextStream(mrpt::utils::CStream &out) const;
-
-				decider_t& decider;
-				// maximum distance for checking other nodes for ICP constraints
-				double ICP_max_distance;
-				// threshold for accepting an ICP constraint in the graph
-				double ICP_goodness_thresh;
-				size_t LC_min_nodeid_diff;
-				bool visualize_laser_scans;
-				// keystroke to be used for the user to toggle the LaserScans from
-				// the CDisplayWindow
-				std::string keystroke_laser_scans;
-
-				std::string scans_img_external_dir;
-
-				bool has_read_config;
-		};
 		void getDescriptiveReport(std::string* report_str) const;
-
-		// Public variables
-		// ////////////////////////////
-		TParams params;
 
 	protected:
 		// protected functions
@@ -183,10 +150,6 @@ class CICPCriteriaERD :
 				const std::set<mrpt::utils::TNodeID>& nodes_set);
 		void checkRegistrationCondition3D(
 				const std::set<mrpt::utils::TNodeID>& nodes_set);
-		void registerNewEdge(
-				const mrpt::utils::TNodeID& from,
-				const mrpt::utils::TNodeID& to,
-				const constraint_t& rel_edge );
 		void checkIfInvalidDataset(mrpt::obs::CActionCollectionPtr action,
 				mrpt::obs::CSensoryFramePtr observations,
 				mrpt::obs::CObservationPtr observation );
@@ -197,11 +160,13 @@ class CICPCriteriaERD :
 				std::set<mrpt::utils::TNodeID> *nodes_set,
 				const mrpt::utils::TNodeID& cur_nodeID,
 				double distance );
-		/**\brief togle the LaserScans visualization on and off
-		 */
-		void toggleLaserScansVisualization();
-		void dumpVisibilityErrorMsg(std::string viz_flag,
-				int sleep_time=500 /* ms */);
+
+		// TODO - format this for the 3D case - Disk => Sphere
+		// TODO - Override this for the mr_case
+		void initICPDistanceVizualization();
+		// TODO - format this for the 3D case - Disk => Sphere
+		// TODO - Override this for the mr_case
+		void updateICPDistanceVizualization();
 
 		// protected variables
 		//////////////////////////////////////////////////////////////
@@ -211,20 +176,17 @@ class CICPCriteriaERD :
 		mrpt::utils::TColor m_laser_scans_color; //!< see Constructor for initialization
 		double m_offset_y_search_disk;
 		int m_text_index_search_disk;
-
-
-		std::map<mrpt::utils::TNodeID,
-			mrpt::obs::CObservation2DRangeScanPtr> m_nodes_to_laser_scans2D;
-		std::map<mrpt::utils::TNodeID,
-			mrpt::obs::CObservation3DRangeScanPtr> m_nodes_to_laser_scans3D;
-		std::map<std::string, int> m_edge_types_to_nums;
 		bool m_is_using_3DScan;
 
-		mrpt::obs::CObservation2DRangeScanPtr m_last_laser_scan2D;
-		mrpt::obs::CObservation3DRangeScanPtr m_last_laser_scan3D;
-		// fake 2D laser scan generated from corresponding 3DRangeScan for
-		// visualization reasons
-		mrpt::obs::CObservation2DRangeScanPtr m_fake_laser_scan2D;
+		std::string m_ICP_max_distance_obj_name;
+
+		double m_ICP_max_distance;
+		/** threshold for accepting an ICP constraint in the graph */
+		double m_ICP_goodness_thresh;
+		/** Minimum node ID difference to consider an edge as a loop closure */
+		size_t m_LC_min_nodeid_diff;
+		std::string m_scans_img_external_dir;
+
 
 };
 
