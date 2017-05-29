@@ -68,6 +68,7 @@ void CRangeScanEdgeRegistrationDecider<GRAPH_T>::loadParams(
 template<class GRAPH_T>
 void CRangeScanEdgeRegistrationDecider<GRAPH_T>::printParams() const {
 	MRPT_START;
+	using namespace std;
 
 	parent_t::printParams();
 	range_ops_t::params.dumpToConsole();
@@ -86,7 +87,6 @@ void CRangeScanEdgeRegistrationDecider<GRAPH_T>::printParams() const {
 template<class GRAPH_T>
 void CRangeScanEdgeRegistrationDecider<GRAPH_T>::initLaserScansVisualization() {
 	MRPT_START;
-
 
 	// laser scan visualization
 	if (m_visualize_laser_scans) {
@@ -364,8 +364,10 @@ void CRangeScanEdgeRegistrationDecider<GRAPH_T>::updateVisuals() {
 } // end of updateVisuals
 
 template<class GRAPH_T>
-void CRangeScanEdgeRegistrationDecider<GRAPH_T>::updateLaserScansVisualization() {
+void CRangeScanEdgeRegistrationDecider<GRAPH_T>::
+updateLaserScansVisualization() {
 	MRPT_START;
+	using namespace mrpt::poses;
 
 	// update laser scan visual
 	if (m_visualize_laser_scans && !m_last_laser_scan2D.null()) {
@@ -383,13 +385,14 @@ void CRangeScanEdgeRegistrationDecider<GRAPH_T>::updateLaserScansVisualization()
 		// TODO - change the opacity of the laserscan so that I can see underneath
 		// it
 		if (search != this->m_graph->nodes.end()) {
+			const CPose3D p = CPose3D(search->second.getPoseMean());
 			laser_scan_viz->setPose(mrpt::poses::CPose3D(
-						search->second.x()
-						search->second.y(),
+						p.x(),
+						p.y(),
 						-0.30,
-						search->second.yaw(),
-						search->second.pitch(),
-						search->second.roll()));
+						p.yaw(),
+						p.pitch(),
+						p.roll()));
 		}
 
 		this->m_win->unlockAccess3DScene();
@@ -416,7 +419,6 @@ template<class GRAPH_T>
 void CRangeScanEdgeRegistrationDecider<GRAPH_T>::toggleLaserScansVisualization() {
 	MRPT_START;
 	using namespace mrpt::utils;
-
 	this->logFmt(LVL_INFO, "Toggling LaserScans visualization...");
 
 	mrpt::opengl::COpenGLScenePtr scene = this->m_win->get3DSceneAndLock();

@@ -631,14 +631,6 @@ void CLevMarqGSO<GRAPH_T>::loadParams(const std::string& source_fname) {
 			"max_ignored_consecutive_loop_closures",
 			15, false);
 
-	// set the logging level if given by the user
-	// Minimum verbosity level of the logger
-	int min_verbosity_level = source.read_int(
-			"OptimizerParameters",
-			"class_verbosity",
-			1, false);
-	this->setMinLoggingLevel(VerbosityLevel(min_verbosity_level));
-
 	this->logFmt(mrpt::utils::LVL_DEBUG, "Successfully loaded Params. ");
 	m_has_read_config = true;
 

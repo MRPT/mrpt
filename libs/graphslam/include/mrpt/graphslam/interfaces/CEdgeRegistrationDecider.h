@@ -68,6 +68,8 @@ class CEdgeRegistrationDecider :
 				mrpt::obs::CActionCollectionPtr action,
 				mrpt::obs::CSensoryFramePtr observations,
 				mrpt::obs::CObservationPtr observation ) = 0;
+		virtual void loadParams(const std::string& source_fname);
+		virtual void printParams() const;
 		/**\brief Fill the given map with the type of registered edges as well as
 		 * the corresponding number of registration of each edge.
 		 */

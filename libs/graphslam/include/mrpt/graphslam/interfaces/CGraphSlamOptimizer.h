@@ -63,19 +63,22 @@ class CGraphSlamOptimizer :
 				mrpt::obs::CActionCollectionPtr action,
 				mrpt::obs::CSensoryFramePtr observations,
 				mrpt::obs::CObservationPtr observation ) = 0;
-
+		virtual void loadParams(const std::string& source_fname);
+		virtual void printParams() const;
     /**\brief Used by the caller to query for possible full graph optimization
      * on the latest optimizer run
      */
-    virtual bool justFullyOptimizedGraph() const {return false;}
+    virtual bool justFullyOptimizedGraph() const { return false; }
 
 	protected:
-		/**\brief method called for optimizing the underlying graph.
+		/**\brief Method called for optimizing the underlying graph.
 		 */
 		virtual void optimizeGraph() = 0;
 
 };
 
 } } } // end of namespaces
+
+#include "CGraphSlamOptimizer_impl.h"
 
 #endif /* end of include guard: CGRAPHSLAMOPTIMIZER_H */

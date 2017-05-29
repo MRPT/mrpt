@@ -1,14 +1,13 @@
 #ifndef CEDGEREGISTRATIONDECIDER_IMPL_H
 #define CEDGEREGISTRATIONDECIDER_IMPL_H
 
-using namespace mrpt::graphslam::deciders;
-using namespace std;
-
 #include <sstream>
 
 // Implementation of classes defined in the CEdgeRegistrationDecider class
 // template.
 //
+
+namespace mrpt { namespace graphslam { namespace deciders {
 
 template<class GRAPH_T>
 CEdgeRegistrationDecider<GRAPH_T>::CEdgeRegistrationDecider():
@@ -26,6 +25,7 @@ CEdgeRegistrationDecider<GRAPH_T>::~CEdgeRegistrationDecider() { }
 template<class GRAPH_T>
 void CEdgeRegistrationDecider<GRAPH_T>::getDescriptiveReport(
 		std::string* report_str) const {
+	using namespace std;
 	stringstream ss("");
 	parent::getDescriptiveReport(report_str);
 
@@ -54,7 +54,20 @@ void CEdgeRegistrationDecider<GRAPH_T>::getEdgesStats(
 	*edge_types_to_num = m_edge_types_to_nums;
 } // end of getEdgeStats
 
+template<class GRAPH_T>
+void CEdgeRegistrationDecider<GRAPH_T>::loadParams(
+		const std::string& source_fname) {
+	std::string section("EdgeRegistrationDeciderParameters");
+	this->setVerbosityLevelFromSection(source_fname, section);
+}
 
+template<class GRAPH_T>
+void CEdgeRegistrationDecider<GRAPH_T>::printParams() const {
+	using namespace std;
+	std::cout << "ERD Verbosity: " <<
+		this->getMinLoggingLevelStr() << endl;
+}
 
+} } } // end of namespaces
 
 #endif /* end of include guard: CEDGEREGISTRATIONDECIDER_IMPL_H */

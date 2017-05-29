@@ -117,6 +117,12 @@ class CRegistrationDeciderOrOptimizer :
 		 * screen in a unified/compact way.
 		 */
 		virtual void printParams() const;
+		/**\brief Read the verbosity level from a specific section of a .ini file.
+		 *
+		 * Utility method for all the derived classes to set this level in a
+		 * consistent manner
+		 */
+		void setVerbosityLevelFromSection(std::string source_fname, std::string section);
 		/**\brief Fill the provided string with a detailed report of the
 		 * decider/optimizer state.
 		 *
