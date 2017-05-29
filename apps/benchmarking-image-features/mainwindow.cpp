@@ -44,6 +44,9 @@ void MainWindow::on_detector_button_clicked()
         return;
     }
 
+
+    // CALL DETECTOR DIALOG HERE TO CREATE DIALOG FOR PARAMETERS/EVALUATION
+
     QString details("You have selected the DETECTOR" + QString::number(detector_selected) + " ,The selected image "+ QString::number(currentInputIndex) + " has the following characteristics");
     QMessageBox::information(this,"Detector Characteristics for the selected input", details);
 }
@@ -61,6 +64,8 @@ void MainWindow::on_descriptor_button_clicked()
         QMessageBox::information(this,"Warning", "Please select the descriptor before viewing the performance metrics");
         return;
     }
+
+    // CALL DESCRIPTOR DIALOG HERE TO CREATE DIALOG FOR PARAMETERS/EVALUATION
 
     QString details("You have selected the DESCRIPTOR" + QString::number(descriptor_selected) + "The selected image"+ QString::number(currentInputIndex) +"has the following characteristics");
     QMessageBox::information(this,"Descriptor Characteristics for the selected input", details);
