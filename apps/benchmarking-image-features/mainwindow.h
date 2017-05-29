@@ -1,5 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
+#define NUM_DETECTORS 5
+#define NUM_DESCRIPTORS 5
 
 #include <QMainWindow>
 #include <QObject>
@@ -20,6 +22,10 @@
 #include <QComboBox>
 #include <QFileDialog>
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string>
+using namespace std;
 
 class MainWindow : public QMainWindow
 {
@@ -48,6 +54,10 @@ public:
     QRadioButton *detector3;
     QRadioButton *detector4;
     QRadioButton *detector5;
+
+    QRadioButton *detectors[NUM_DETECTORS];
+    QRadioButton *descriptors[NUM_DESCRIPTORS];
+
 
     QRadioButton *descriptor1;
     QRadioButton *descriptor2;
