@@ -43,11 +43,12 @@ std::string CAbstractPTGBasedReactive::TNavigationParamsPTG::getAsText() const
 	return s;
 }
 
-bool CAbstractPTGBasedReactive::TNavigationParamsPTG::isEqual(const CAbstractNavigator::TNavigationParams& rhs) const
+bool CAbstractPTGBasedReactive::TNavigationParamsPTG::isEqual(const CAbstractNavigator::TNavigationParamsBase& rhs) const
 {
-	auto o = dynamic_cast<const CAbstractPTGBasedReactive::TNavigationParamsPTG&>(rhs); // Will never throw, ensured by caller.
-	return CWaypointsNavigator::TNavigationParamsWaypoints::isEqual(rhs) &&
-		restrict_PTG_indices == o.restrict_PTG_indices;
+	auto o = dynamic_cast<const CAbstractPTGBasedReactive::TNavigationParamsPTG*>(&rhs);
+	return o!=nullptr && 
+		CWaypointsNavigator::TNavigationParamsWaypoints::isEqual(rhs) &&
+		restrict_PTG_indices == o->restrict_PTG_indices;
 }
 
 const double ESTIM_LOWPASSFILTER_ALPHA = 0.7;
@@ -283,7 +284,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		const bool target_changed_since_last_iteration = (m_copy_prev_navParams == nullptr) || !(*m_copy_prev_navParams==*m_navigationParams);
 		if (target_changed_since_last_iteration) {
 			mrpt::utils::delete_safe(m_copy_prev_navParams);
-			m_copy_prev_navParams = m_navigationParams->clone();
+			m_copy_prev_navParams = dynamic_cast<CAbstractNavigator::TNavigationParams*>(m_navigationParams->clone());
 		}
 
 		STEP1_InitPTGs(); // Will only recompute if "m_PTGsMustBeReInitialized==true"
@@ -376,14 +377,14 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		}
 
 
-		if (m_navigationParams->target_frame_id!=m_curPoseVel.pose_frame_id)
+		if (m_navigationParams->target.target_frame_id!=m_curPoseVel.pose_frame_id)
 		{
-			// TODO: Support submapping navigation. Call:
+			MRPT_TODO("Support submapping navigation");
 			// m_frame_tf->lookupTransform(...);
-			THROW_EXCEPTION_FMT("Different frame_id's are not supported yet!: target_frame_id=`%s` != pose_frame_id=`%s`", m_navigationParams->target_frame_id.c_str(), m_curPoseVel.pose_frame_id.c_str());
+			THROW_EXCEPTION_FMT("Different frame_id's are not supported yet!: target_frame_id=`%s` != pose_frame_id=`%s`", m_navigationParams->target.target_frame_id.c_str(), m_curPoseVel.pose_frame_id.c_str());
 		}
 
-		const TPose2D relTarget = (m_navigationParams->target - (m_curPoseVel.pose+relPoseVelCmd));
+		const TPose2D relTarget = (m_navigationParams->target.target_coords - (m_curPoseVel.pose+relPoseVelCmd));
 		const double relTargetDist = relTarget.norm();
 
 		// PTG dynamic state
@@ -391,7 +392,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 
 		ptg_dynState.curVelLocal = m_curPoseVel.velLocal;
 		ptg_dynState.relTarget = relTarget;
-		ptg_dynState.targetRelSpeed = m_navigationParams->targetDesiredRelSpeed;
+		ptg_dynState.targetRelSpeed = m_navigationParams->target.targetDesiredRelSpeed;
 
 		newLogRec.navDynState = ptg_dynState;
 
@@ -512,7 +513,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			{
 				ASSERT_(last_sent_ptg!=nullptr);
 
-				const TPose2D relTarget_NOP = m_navigationParams->target - robot_pose_at_send_cmd;
+				const TPose2D relTarget_NOP = m_navigationParams->target.target_coords - robot_pose_at_send_cmd;
 				rel_pose_PTG_origin_wrt_sense_NOP = robot_odom_at_send_cmd - (m_curPoseVel.rawOdometry + relPoseSense);
 				rel_cur_pose_wrt_last_vel_cmd_NOP = m_curPoseVel.rawOdometry - robot_odom_at_send_cmd;
 
@@ -831,13 +832,13 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 
 	// Make sure that the target slow-down is honored, as seen in real-world Euclidean space 
 	// (as opposed to TP-Space, where the holo methods are evaluated)
-	if (m_navigationParams && m_navigationParams->targetDesiredRelSpeed<1.0 && !m_holonomicMethod.empty() && m_holonomicMethod[0]!=nullptr 
+	if (m_navigationParams && m_navigationParams->target.targetDesiredRelSpeed<1.0 && !m_holonomicMethod.empty() && m_holonomicMethod[0]!=nullptr
 		&& !cm.PTG->supportSpeedAtTarget()  // If the PTG is able to handle the slow-down on its own, dont change speed here
 		)
 	{
 		const double TARGET_SLOW_APPROACHING_DISTANCE = m_holonomicMethod[0]->getTargetApproachSlowDownDistance();
 
-		const double Vf = m_navigationParams->targetDesiredRelSpeed; // [0,1]
+		const double Vf = m_navigationParams->target.targetDesiredRelSpeed; // [0,1]
 
 		const double f = std::min(1.0,Vf + target_WS_d*(1.0-Vf)/TARGET_SLOW_APPROACHING_DISTANCE);
 		if (f < cm.speed) {
@@ -1287,7 +1288,7 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
 
 			ASSERT_(holoMethod);
 			// Slow down if we are approaching the final target, etc.
-			holoMethod->enableApproachTargetSlowDown(navp.targetDesiredRelSpeed<.11);
+			holoMethod->enableApproachTargetSlowDown(navp.target.targetDesiredRelSpeed<.11);
 
 			// Prepare holonomic algorithm call:
 			CAbstractHolonomicReactiveMethod::NavInput ni;
