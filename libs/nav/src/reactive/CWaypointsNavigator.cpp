@@ -21,21 +21,22 @@ std::string CWaypointsNavigator::TNavigationParamsWaypoints::getAsText() const
 	std::string s = TNavigationParams::getAsText();
 	if (!multiple_targets.empty())
 	{
-		s += "multiple_targets: [";
+		s += "multiple_targets:\n";
+		int i = 0;
 		for (const auto &e : multiple_targets) {
-			s += e.asString();
-			s += std::string(" ");
+			s += mrpt::format("target[%i]:\n",i++);
+			s += e.getAsText();
 		}
-		s += "]\n";
 	}
 	return s;
 }
 
-bool CWaypointsNavigator::TNavigationParamsWaypoints::isEqual(const CAbstractNavigator::TNavigationParams& rhs) const
+bool CWaypointsNavigator::TNavigationParamsWaypoints::isEqual(const CAbstractNavigator::TNavigationParamsBase& rhs) const
 {
-	auto o = dynamic_cast<const CWaypointsNavigator::TNavigationParamsWaypoints&>(rhs); // Will never throw, ensured by caller.
-	return CAbstractNavigator::TNavigationParams::isEqual(rhs) &&
-		multiple_targets == o.multiple_targets;
+	auto o = dynamic_cast<const CWaypointsNavigator::TNavigationParamsWaypoints*>(&rhs);
+	return o!=nullptr && 
+		CAbstractNavigator::TNavigationParams::isEqual(rhs) &&
+		multiple_targets == o->multiple_targets;
 }
 
 CWaypointsNavigator::CWaypointsNavigator(CRobot2NavInterface &robot_if) :
@@ -268,21 +269,39 @@ void CWaypointsNavigator::waypoints_navigationStep()
 		if (wps.waypoint_index_current_goal>=0 && prev_wp_index!=wps.waypoint_index_current_goal)
 		{
 			ASSERT_( wps.waypoint_index_current_goal < int(wps.waypoints.size()) );
-			TWaypointStatus &wp = wps.waypoints[wps.waypoint_index_current_goal];
-			const bool is_final_wp =  ( (wps.waypoint_index_current_goal+1)==int(wps.waypoints.size()) );
-			
+			ASSERT_( params_waypoints_navigator.multitarget_look_ahead>=0);
+
+			// Notify we have a new "current waypoint"
 			m_robot.sendNewWaypointTargetEvent(wps.waypoint_index_current_goal);
 
-			CAbstractNavigator::TNavigationParams nav_cmd;
-			nav_cmd.target.x = wp.target.x;
-			nav_cmd.target.y = wp.target.y;
-			nav_cmd.target.phi = (wp.target_heading!=TWaypoint::INVALID_NUM ? wp.target_heading : .0);
-			nav_cmd.target_frame_id = wp.target_frame_id;
-			nav_cmd.targetAllowedDistance = wp.allowed_distance;
-			nav_cmd.targetIsRelative = false;
-			nav_cmd.targetIsIntermediaryWaypoint = !is_final_wp;
-			nav_cmd.targetDesiredRelSpeed = (is_final_wp || (wp.target_heading != TWaypoint::INVALID_NUM)) ? params_waypoints_navigator.rel_speed_for_stop_waypoints : 1.;
+			// Send the current targets + "multitarget_look_ahead" additional ones to help the local planner.
+			CWaypointsNavigator::TNavigationParamsWaypoints nav_cmd;
+			const int wp_last_idx = std::min(int(wps.waypoints.size()) - 1, wps.waypoint_index_current_goal + params_waypoints_navigator.multitarget_look_ahead);
+			const unsigned int num_multiple_wps = (wp_last_idx - wps.waypoint_index_current_goal) + 1;
 
+			for (int wp_idx = wps.waypoint_index_current_goal; wp_idx <= wp_last_idx; wp_idx++)
+			{
+				TWaypointStatus &wp = wps.waypoints[wp_idx];
+				const bool is_final_wp = ((wp_idx + 1) == int(wps.waypoints.size()));
+
+				CAbstractNavigator::TargetInfo ti;
+
+				ti.target_coords.x = wp.target.x;
+				ti.target_coords.y = wp.target.y;
+				ti.target_coords.phi = (wp.target_heading != TWaypoint::INVALID_NUM ? wp.target_heading : .0);
+				ti.target_frame_id = wp.target_frame_id;
+				ti.targetAllowedDistance = wp.allowed_distance;
+				ti.targetIsRelative = false;
+				ti.targetIsIntermediaryWaypoint = !is_final_wp;
+				ti.targetDesiredRelSpeed = (is_final_wp || (wp.target_heading != TWaypoint::INVALID_NUM)) ? params_waypoints_navigator.rel_speed_for_stop_waypoints : 1.;
+
+				// For backwards compat. with single-target code, write single target info too for the first, next, waypoint:
+				if (wp_idx == wps.waypoint_index_current_goal) {
+					nav_cmd.target = ti;
+				}
+				// Append to list of targets:
+				nav_cmd.multiple_targets.emplace_back(ti);
+			}
 			this->navigate( &nav_cmd );
 
 			MRPT_LOG_DEBUG_STREAM( "[CWaypointsNavigator::navigationStep] Active waypoint changed. Current status:\n" << this->getWaypointNavStatus().getAsText());
@@ -345,6 +364,7 @@ void mrpt::nav::CWaypointsNavigator::TWaypointsNavigatorParams::loadFromConfigFi
 	MRPT_LOAD_CONFIG_VAR(min_timesteps_confirm_skip_waypoints, int, c, s);
 	MRPT_LOAD_CONFIG_VAR_DEGREES(waypoint_angle_tolerance, c, s);
 	MRPT_LOAD_CONFIG_VAR(rel_speed_for_stop_waypoints, double, c, s);
+	MRPT_LOAD_CONFIG_VAR(multitarget_look_ahead, int, c, s);
 }
 
 void mrpt::nav::CWaypointsNavigator::TWaypointsNavigatorParams::saveToConfigFile(mrpt::utils::CConfigFileBase & c, const std::string & s) const
@@ -353,17 +373,19 @@ void mrpt::nav::CWaypointsNavigator::TWaypointsNavigatorParams::saveToConfigFile
 	MRPT_SAVE_CONFIG_VAR_COMMENT(min_timesteps_confirm_skip_waypoints, "Min timesteps a `future` waypoint must be seen as reachable to become the active one.");
 	MRPT_SAVE_CONFIG_VAR_DEGREES_COMMENT("waypoint_angle_tolerance", waypoint_angle_tolerance, "Angular error tolerance for waypoints with an assigned heading [deg] (Default: 5 deg)");
 	MRPT_SAVE_CONFIG_VAR_COMMENT(rel_speed_for_stop_waypoints, "[0,1] Relative speed when aiming at a stop-point waypoint (Default=0.10)");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(multitarget_look_ahead, ">=0 number of waypoints to forward to the underlying navigation engine, to ease obstacles avoidance when a waypoint is blocked (Default=0 : none)");
 }
 
 CWaypointsNavigator::TWaypointsNavigatorParams::TWaypointsNavigatorParams() :
 	max_distance_to_allow_skip_waypoint(-1.0),
 	min_timesteps_confirm_skip_waypoints(1),
 	waypoint_angle_tolerance( mrpt::utils::DEG2RAD(5.0) ),
-	rel_speed_for_stop_waypoints(0.10)
+	rel_speed_for_stop_waypoints(0.10),
+	multitarget_look_ahead(0)
 {
 }
 
 bool CWaypointsNavigator::checkHasReachedTarget(const double targetDist) const
 {
-	return (!m_navigationParams->targetIsIntermediaryWaypoint) && (targetDist < m_navigationParams->targetAllowedDistance);
+	return (!m_navigationParams->target.targetIsIntermediaryWaypoint) && (targetDist < m_navigationParams->target.targetAllowedDistance);
 }

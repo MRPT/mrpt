@@ -1271,10 +1271,10 @@ void reactive_navigator_demoframe::Onplot3DMouseClick(wxMouseEvent& event)
 
 			// Issue a new navigation cmd:
 			CAbstractPTGBasedReactive::TNavigationParamsPTG   navParams;
-			navParams.target.x = m_targetPoint.x ;
-			navParams.target.y = m_targetPoint.y ;
-			navParams.targetAllowedDistance = 0.40f;
-			navParams.targetIsRelative = false;
+			navParams.target.target_coords.x = m_targetPoint.x ;
+			navParams.target.target_coords.y = m_targetPoint.y ;
+			navParams.target.targetAllowedDistance = 0.40f;
+			navParams.target.targetIsRelative = false;
 
 			// Optional: restrict the PTGs to use
 			//navParams.restrict_PTG_indices.push_back(1);

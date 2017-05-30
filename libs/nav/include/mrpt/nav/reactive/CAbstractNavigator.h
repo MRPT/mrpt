@@ -54,23 +54,42 @@ namespace mrpt
 		CAbstractNavigator( CRobot2NavInterface &robot_interface_impl );  //!< ctor
 		virtual ~CAbstractNavigator(); //!< dtor
 
-		/** The struct for configuring navigation requests. Used in CAbstractPTGBasedReactive::navigate() */
-		struct NAV_IMPEXP TNavigationParams
+		/** Individual target info in CAbstractNavigator::TNavigationParamsBase and derived classes */
+		struct NAV_IMPEXP TargetInfo
 		{
-			mrpt::math::TPose2D target;                //!< Coordinates of desired target location. Heading may be ignored by some reactive implementations.
+			mrpt::math::TPose2D target_coords;         //!< Coordinates of desired target location. Heading may be ignored by some reactive implementations.
 			std::string         target_frame_id;       //!< (Default="map") Frame ID in which target is given. Optional, use only for submapping applications.
 			float               targetAllowedDistance; //!< (Default=0.5 meters) Allowed distance to target in order to end the navigation.
 			bool                targetIsRelative;      //!< (Default=false) Whether the \a target coordinates are in global coordinates (false) or are relative to the current robot pose (true).
 			double              targetDesiredRelSpeed; //!< (Default=.05) Desired relative speed (wrt maximum speed), in range [0,1], of the vehicle at target. Holonomic nav methods will perform "slow down" approaching target only if this is "==.0". Intermediary values will be honored only by the higher-level navigator, based on straight-line Euclidean distances.
 			bool                targetIsIntermediaryWaypoint; // !< (Default=false) If true, event callback `sendWaypointReachedEvent()` will be called instead of `sendNavigationEndEvent()`
 
-			TNavigationParams(); //!< Ctor with default values
-			virtual ~TNavigationParams() {}
-			virtual std::string getAsText() const; //!< Gets navigation params as a human-readable format
-			virtual TNavigationParams* clone() const { return new TNavigationParams(*this); }
+			TargetInfo();
+			std::string getAsText() const; //!< Gets navigation params as a human-readable format
+			bool operator==(const TargetInfo&o) const;
+			bool operator!=(const TargetInfo&o) const { return !(*this==o); }
+		};
+
+		/** Base for all high-level navigation commands. See derived classes */
+		struct NAV_IMPEXP TNavigationParamsBase
+		{
+			virtual ~TNavigationParamsBase() {}
+			virtual std::string getAsText() const =0; //!< Gets navigation params as a human-readable format
+			virtual TNavigationParamsBase* clone() const = 0;
 		protected:
-			friend bool NAV_IMPEXP operator==(const TNavigationParams&, const TNavigationParams&);
-			virtual bool isEqual(const TNavigationParams& o) const;
+			friend bool NAV_IMPEXP operator==(const TNavigationParamsBase&, const TNavigationParamsBase&);
+			virtual bool isEqual(const TNavigationParamsBase& o) const =0;
+		};
+
+		/** The struct for configuring navigation requests. Used in CAbstractPTGBasedReactive::navigate() */
+		struct NAV_IMPEXP TNavigationParams : public TNavigationParamsBase
+		{
+			TargetInfo  target; //!< Navigation target
+
+			virtual std::string getAsText() const MRPT_OVERRIDE; //!< Gets navigation params as a human-readable format
+			virtual TNavigationParamsBase* clone() const MRPT_OVERRIDE { return new TNavigationParams(*this); }
+		protected:
+			virtual bool isEqual(const TNavigationParamsBase& o) const MRPT_OVERRIDE;
 		};
 
 		/** \name Navigation control API
@@ -207,7 +226,7 @@ namespace mrpt
 		MRPT_MAKE_ALIGNED_OPERATOR_NEW
 	};
 
-	bool NAV_IMPEXP operator==(const CAbstractNavigator::TNavigationParams&, const CAbstractNavigator::TNavigationParams&);
+	bool NAV_IMPEXP operator==(const CAbstractNavigator::TNavigationParamsBase&, const CAbstractNavigator::TNavigationParamsBase&);
 
   }
 

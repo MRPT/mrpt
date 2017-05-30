@@ -20,9 +20,9 @@ using namespace std;
 
 const double PREVIOUS_POSES_MAX_AGE = 20; // seconds
 
-// Ctor: CAbstractNavigator::TNavigationParams
-CAbstractNavigator::TNavigationParams::TNavigationParams() :
-	target(0,0,0),
+// Ctor: CAbstractNavigator::TargetInfo
+CAbstractNavigator::TargetInfo::TargetInfo() :
+	target_coords(0,0,0),
 	target_frame_id("map"),
 	targetAllowedDistance(0.5),
 	targetIsRelative(false),
@@ -32,24 +32,42 @@ CAbstractNavigator::TNavigationParams::TNavigationParams() :
 }
 
 // Gets navigation params as a human-readable format:
-std::string CAbstractNavigator::TNavigationParams::getAsText() const
+std::string CAbstractNavigator::TargetInfo::getAsText() const
 {
 	string s;
-	s+= mrpt::format("navparams.target = (%.03f,%.03f,%.03f deg)\n", target.x, target.y,target.phi );
-	s+= mrpt::format("navparams.target_frame_id = \"%s\"\n", target_frame_id.c_str() );
-	s+= mrpt::format("navparams.targetAllowedDistance = %.03f\n", targetAllowedDistance );
-	s+= mrpt::format("navparams.targetIsRelative = %s\n", targetIsRelative ? "YES":"NO");
-	s+= mrpt::format("navparams.targetIsIntermediaryWaypoint = %s\n", targetIsIntermediaryWaypoint ? "YES":"NO");
-	s+= mrpt::format("navparams.targetDesiredRelSpeed = %.02f\n", targetDesiredRelSpeed);
+	s += mrpt::format("target_coords = (%.03f,%.03f,%.03f deg)\n", target_coords.x, target_coords.y, target_coords.phi);
+	s += mrpt::format("target_frame_id = \"%s\"\n", target_frame_id.c_str());
+	s += mrpt::format("targetAllowedDistance = %.03f\n", targetAllowedDistance);
+	s += mrpt::format("targetIsRelative = %s\n", targetIsRelative ? "YES" : "NO");
+	s += mrpt::format("targetIsIntermediaryWaypoint = %s\n", targetIsIntermediaryWaypoint ? "YES" : "NO");
+	s += mrpt::format("targetDesiredRelSpeed = %.02f\n", targetDesiredRelSpeed);
 	return s;
 }
 
-bool CAbstractNavigator::TNavigationParams::isEqual(const CAbstractNavigator::TNavigationParams& o) const
+bool mrpt::nav::CAbstractNavigator::TargetInfo::operator==(const TargetInfo & o) const
 {
-	return target == o.target &&
+	return target_coords == o.target_coords &&
+		target_frame_id == o.target_frame_id &&
 		targetAllowedDistance == o.targetAllowedDistance &&
 		targetIsRelative == o.targetIsRelative &&
-		targetIsIntermediaryWaypoint == o.targetIsIntermediaryWaypoint;
+		targetDesiredRelSpeed == o.targetDesiredRelSpeed &&
+		targetIsIntermediaryWaypoint == o.targetIsIntermediaryWaypoint
+		;
+}
+
+// Gets navigation params as a human-readable format:
+std::string CAbstractNavigator::TNavigationParams::getAsText() const
+{
+	string s;
+	s+= "navparams. Single target:\n";
+	s+= target.getAsText();
+	return s;
+}
+
+bool CAbstractNavigator::TNavigationParams::isEqual(const CAbstractNavigator::TNavigationParamsBase& o) const
+{
+	auto * rhs = dynamic_cast<const CAbstractNavigator::TNavigationParams *>(&o);
+	return (rhs != nullptr) && (this->target == rhs->target);
 }
 
 CAbstractNavigator::TRobotPoseVel::TRobotPoseVel() :
@@ -230,20 +248,21 @@ void CAbstractNavigator::navigate(const CAbstractNavigator::TNavigationParams *p
 	mrpt::synch::CCriticalSectionLocker csl(&m_nav_cs);
 
 	ASSERT_(params!=nullptr);
-	ASSERT_(params->targetDesiredRelSpeed >= .0 && params->targetDesiredRelSpeed <= 1.0);
+	ASSERT_(params->target.targetDesiredRelSpeed >= .0 && params->target.targetDesiredRelSpeed <= 1.0);
 
 	m_navigationEndEventSent = false;
 
 	// Copy data:
 	mrpt::utils::delete_safe(m_navigationParams);
-	m_navigationParams = params->clone();
+	m_navigationParams = dynamic_cast<CAbstractNavigator::TNavigationParams *>(params->clone());
+	ASSERT_(m_navigationParams!=nullptr);
 
 	// Transform: relative -> absolute, if needed.
-	if ( m_navigationParams->targetIsRelative )
+	if ( m_navigationParams->target.targetIsRelative )
 	{
 		this->updateCurrentPoseAndSpeeds();
-		m_navigationParams->target = m_curPoseVel.pose + m_navigationParams->target;
-		m_navigationParams->targetIsRelative = false; // Now it's not relative
+		m_navigationParams->target.target_coords = m_curPoseVel.pose + m_navigationParams->target.target_coords;
+		m_navigationParams->target.targetIsRelative = false; // Now it's not relative
 	}
 
 	// new state:
@@ -348,14 +367,14 @@ void CAbstractNavigator::TAbstractNavigatorParams::saveToConfigFile(mrpt::utils:
 	MRPT_SAVE_CONFIG_VAR_COMMENT(alarm_seems_not_approaching_target_timeout, "navigator timeout (seconds) [Default=30 sec]");
 }
 
-bool mrpt::nav::operator==(const CAbstractNavigator::TNavigationParams& a, const CAbstractNavigator::TNavigationParams&b)
+bool mrpt::nav::operator==(const CAbstractNavigator::TNavigationParamsBase& a, const CAbstractNavigator::TNavigationParamsBase&b)
 {
 	return typeid(a) == typeid(b) && a.isEqual(b);
 }
 
 bool CAbstractNavigator::checkHasReachedTarget(const double targetDist) const
 {
-	return (targetDist < m_navigationParams->targetAllowedDistance);
+	return (targetDist < m_navigationParams->target.targetAllowedDistance);
 }
 
 void CAbstractNavigator::internal_onStartNewNavigation()
@@ -403,10 +422,10 @@ void CAbstractNavigator::performNavigationStepNavigating(bool call_virtual_nav_m
 
 		if (m_navigationParams)
 		{
-			const double targetDist = seg_robot_mov.distance(mrpt::math::TPoint2D(m_navigationParams->target));
+			const double targetDist = seg_robot_mov.distance(mrpt::math::TPoint2D(m_navigationParams->target.target_coords));
 
 			// Should "End of navigation" event be sent??
-			if (!m_navigationParams->targetIsIntermediaryWaypoint && !m_navigationEndEventSent && targetDist < params_abstract_navigator.dist_to_target_for_sending_event)
+			if (!m_navigationParams->target.targetIsIntermediaryWaypoint && !m_navigationEndEventSent && targetDist < params_abstract_navigator.dist_to_target_for_sending_event)
 			{
 				m_navigationEndEventSent = true;
 				m_robot.sendNavigationEndEvent();
@@ -416,9 +435,9 @@ void CAbstractNavigator::performNavigationStepNavigating(bool call_virtual_nav_m
 			if (checkHasReachedTarget(targetDist))
 			{
 				m_navigationState = IDLE;
-				logFmt(mrpt::utils::LVL_WARN, "Navigation target (%.03f,%.03f) was reached\n", m_navigationParams->target.x, m_navigationParams->target.y);
+				logFmt(mrpt::utils::LVL_WARN, "Navigation target (%.03f,%.03f) was reached\n", m_navigationParams->target.target_coords.x, m_navigationParams->target.target_coords.y);
 
-				if (!m_navigationParams->targetIsIntermediaryWaypoint)
+				if (!m_navigationParams->target.targetIsIntermediaryWaypoint)
 				{
 					this->stop(false /*not emergency*/);
 					if (!m_navigationEndEventSent)
