@@ -163,9 +163,9 @@ void XGLImporter::InternReadFile( const std::string& pFile,
 
 		// build a zlib stream
 		z_stream zstream;
-		zstream.opaque = Z_nullptr;
-		zstream.zalloc = Z_nullptr;
-		zstream.zfree  = Z_nullptr;
+        zstream.opaque = Z_NULL;
+        zstream.zalloc = Z_NULL;
+        zstream.zfree  = Z_NULL;
 		zstream.data_type = Z_BINARY;
 
 		// raw decompression without a zlib or gzip header

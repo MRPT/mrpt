@@ -37,7 +37,6 @@ namespace mrpt
 		 */
 		class BASE_IMPEXP  CFileStream : public CStream
 		{
-			static_assert(!std::is_copy_constructible<CFileStream>::value && !std::is_copy_assignable<CFileStream>::value, "Copy Check");
 		protected:
 			size_t  Read(void *Buffer, size_t Count) MRPT_OVERRIDE;
 			size_t  Write(const void *Buffer, size_t Count) MRPT_OVERRIDE;
@@ -53,6 +52,10 @@ namespace mrpt
 			CFileStream( const std::string &fileName, TFileOpenModes mode = fomRead | fomWrite);
 			/** Constructor */
 			CFileStream();
+
+			CFileStream(const CFileStream &) = delete;
+			CFileStream& operator =(const CFileStream &) = delete;
+			
 			virtual ~CFileStream(); //!< Destructor
 
 			/** Opens the file, returning true on success.
@@ -81,7 +84,7 @@ namespace mrpt
 			bool readLine( std::string &str );
 
 		}; // End of class def.
-
+		static_assert(!std::is_copy_constructible<CFileStream>::value && !std::is_copy_assignable<CFileStream>::value, "Copy Check");
 	} // End of namespace
 } // end of namespace
 #endif

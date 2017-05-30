@@ -24,7 +24,6 @@ namespace mrpt
 		 */
 		class BASE_IMPEXP CFileGZInputStream : public CStream
 		{
-			static_assert(!std::is_copy_constructible<CFileGZInputStream>::value && !std::is_copy_assignable<CFileGZInputStream>::value, "Copy Check");
 
 		protected:
 			size_t  Read(void *Buffer, size_t Count) MRPT_OVERRIDE;
@@ -41,6 +40,10 @@ namespace mrpt
 			  * \exception std::exception If there's an error opening the file.
 			  */
 			CFileGZInputStream(const std::string &fileName );
+
+			CFileGZInputStream(const CFileGZInputStream &) = delete;
+			CFileGZInputStream& operator =(const CFileGZInputStream &) = delete;
+
 
 			virtual ~CFileGZInputStream(); //!< Dtor
 
@@ -66,6 +69,7 @@ namespace mrpt
 
 		}; // End of class def.
 
+		static_assert(!std::is_copy_constructible<CFileGZInputStream>::value && !std::is_copy_assignable<CFileGZInputStream>::value, "Copy Check");
 	} // End of namespace
 } // end of namespace
 #endif

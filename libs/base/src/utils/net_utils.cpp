@@ -435,7 +435,7 @@ bool net::DNS_resolve_async(
 			if (WSAStartup( wVersionRequested, &wsaData ) )
 			{
 				std::cerr << "thread_DNS_solver_async: Error calling WSAStartup";
-				return;
+				return std::string();
 			}
 		}
 #endif
