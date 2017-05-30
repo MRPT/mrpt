@@ -1733,6 +1733,13 @@ void CLoopCloserERD<GRAPH_T>::loadParams(const std::string& source_fname) {
 			"lc_icp_constraint_factor",
 			0.70, false);
 
+	// how many of the previous nodes to check ICP against
+	m_prev_nodes_for_ICP = source.read_int(
+			section,
+			"prev_nodes_for_ICP",
+			10, false);
+
+
 	MRPT_END;
 }
 template<class GRAPH_T>
@@ -1746,10 +1753,12 @@ void CLoopCloserERD<GRAPH_T>::printParams() const {
 	m_partitioner.options.dumpToConsole();
 	m_lc_params.dumpToConsole();
 
-	cout << "Use scan-matching constraints      : "
+	cout << "Use scan-matching constraints               : "
 		<< (m_use_scan_matching? "TRUE": "FALSE") << endl;
-	cout << "Loop-closure ICP Constraint factor :  "
+	cout << "Loop-closure ICP Constraint factor          : "
 		<< m_lc_icp_constraint_factor << endl;
+	cout << "Num. of previous nodes to check ICP against : "
+		<< m_prev_nodes_for_ICP << endl;
 
 	MRPT_END;
 }
@@ -1879,6 +1888,28 @@ void CLoopCloserERD<GRAPH_T>::updateMapPartitions(
 	this->m_time_logger.leave("updateMapPartitions");
 	MRPT_END;
 } // end of updateMapPartitions
+
+template<class GRAPH_T>
+void CLoopCloserERD<GRAPH_T>::fetchNodeIDsForScanMatching(
+		const mrpt::utils::TNodeID& curr_nodeID,
+		std::set<mrpt::utils::TNodeID>* nodes_set) {
+	ASSERT_(nodes_set);
+
+	// deal with the case that less than `prev_nodes_for_ICP` nodes have been
+	// registered
+	int fetched_nodeIDs = 0;
+	// vvvv I *have* to use int (instead of unsigned) if I use this condition vv
+	for (int nodeID_i = static_cast<int>(curr_nodeID)-1;
+			((fetched_nodeIDs <= this->m_prev_nodes_for_ICP) &&
+			 (nodeID_i >= 0));  //<--
+			--nodeID_i) {
+		nodes_set->insert(nodeID_i);
+		fetched_nodeIDs++;
+	}
+} // end of fetchNodeIDsForScanMatching
+
+
+
 
 // TLoopClosureParams
 // //////////////////////////////////

@@ -257,16 +257,22 @@ class CLoopCloserERD:
 				mrpt::obs::CActionCollectionPtr action,
 				mrpt::obs::CSensoryFramePtr observations,
 				mrpt::obs::CObservationPtr observation );
+		/**\brief Fetch nodes prior to the latest registered and try to add ICP
+		 * against each one of them
+		 */
+		virtual void fetchNodeIDsForScanMatching(
+				const mrpt::utils::TNodeID& curr_nodeID,
+				std::set<mrpt::utils::TNodeID>* nodes_set);
 
-		void notifyOfWindowEvents(
+		virtual void notifyOfWindowEvents(
 				const std::map<std::string, bool>& events_occurred);
-		void initializeVisuals();
-		void updateVisuals();
-		void loadParams(const std::string& source_fname);
-		void printParams() const;
+		virtual void initializeVisuals();
+		virtual void updateVisuals();
+		virtual void loadParams(const std::string& source_fname);
+		virtual void printParams() const;
 
-		void getDescriptiveReport(std::string* report_str) const;
-		void getCurrPartitions(partitions_t* partitions_out) const;
+		virtual void getDescriptiveReport(std::string* report_str) const;
+		virtual void getCurrPartitions(partitions_t* partitions_out) const;
 		const partitions_t& getCurrPartitions() const;
 		/**\brief Return the minimum number of nodes that should exist in the graph
 		 * prior to running Dijkstra
@@ -274,7 +280,7 @@ class CLoopCloserERD:
 		size_t getDijkstraExecutionThresh() const {
 			return m_dijkstra_node_count_thresh;
 		}
-		void setDijkstraExecutionThresh(size_t new_thresh) {
+		virtual void setDijkstraExecutionThresh(size_t new_thresh) {
 			m_dijkstra_node_count_thresh = new_thresh;
 		}
 
@@ -685,6 +691,10 @@ class CLoopCloserERD:
 		 * scan-matching is not used.
 		 */
 		bool m_use_scan_matching;
+ 		/**\brief How many of the previous nodes nodes to check ICP against?
+ 		 *
+ 		 */
+		int m_prev_nodes_for_ICP;
 
 };
 

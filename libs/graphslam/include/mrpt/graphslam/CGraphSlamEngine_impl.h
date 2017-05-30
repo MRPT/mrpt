@@ -477,9 +477,19 @@ void CGraphSlamEngine<GRAPH_T>::initClass() {
 				m_text_index_paused_message);
 	}
 
+	// miscellaneous initialization actions
+	this->initMiscActions();
+
 
 	MRPT_END;
 } // end of initClass
+
+template<class GRAPH_T>
+void CGraphSlamEngine<GRAPH_T>::initMiscActions() {
+	this->m_node_reg->initMiscActions();
+	this->m_edge_reg->initMiscActions();
+	this->m_optimizer->initMiscActions();
+}
 
 template<class GRAPH_T>
 bool CGraphSlamEngine<GRAPH_T>::execGraphSlamStep(
@@ -811,7 +821,7 @@ void CGraphSlamEngine<GRAPH_T>::execDijkstraNodesEstimation() {
 			m_graph.dijkstra_nodes_estimate();
 			m_time_logger.leave("dijkstra_nodes_estimation");
 		}
-}
+} // end of execDijkstraNodesEstimation
 
 
 template<class GRAPH_T>
@@ -843,7 +853,7 @@ void CGraphSlamEngine<GRAPH_T>::monitorNodeRegistration(
 		}
 	}
 	MRPT_END;
-}
+} // end of monitorNodeRegistration
 
 template<class GRAPH_T>
 void CGraphSlamEngine<GRAPH_T>::getMap(
@@ -866,7 +876,7 @@ void CGraphSlamEngine<GRAPH_T>::getMap(
 		*acquisition_time = m_map_acq_time;
 	}
 	MRPT_END;
-}
+} // end of getMap
 
 template<class GRAPH_T>
 void CGraphSlamEngine<GRAPH_T>::getMap(
@@ -887,7 +897,7 @@ void CGraphSlamEngine<GRAPH_T>::getMap(
 	}
 
 	MRPT_END;
-}
+} // end of getMap
 
 template<class GRAPH_T>
 inline void CGraphSlamEngine<GRAPH_T>::computeMap() const {
@@ -1021,7 +1031,8 @@ void CGraphSlamEngine<GRAPH_T>::loadParams(
 
 	m_has_read_config = true;
 	MRPT_END;
-}
+} // end of loadParams
+
 template<class GRAPH_T>
 std::string CGraphSlamEngine<GRAPH_T>::getParamsAsString() const {
 	MRPT_START;
@@ -1031,7 +1042,8 @@ std::string CGraphSlamEngine<GRAPH_T>::getParamsAsString() const {
 	return str;
 
 	MRPT_END;
-}
+} // end of getParamsAsString
+
 template<class GRAPH_T>
 void CGraphSlamEngine<GRAPH_T>::getParamsAsString(
 		std::string* params_out) const {
@@ -1078,7 +1090,7 @@ void CGraphSlamEngine<GRAPH_T>::getParamsAsString(
 	*params_out = ss_out.str();
 
 	MRPT_END;
-}
+} // end of getParamsAsString
 
 template<class GRAPH_T>
 void CGraphSlamEngine<GRAPH_T>::printParams() const {
@@ -1090,7 +1102,7 @@ void CGraphSlamEngine<GRAPH_T>::printParams() const {
 	m_optimizer->printParams();
 
 	MRPT_END;
-}
+} // end of printParams
 
 template<class GRAPH_T>
 void CGraphSlamEngine<GRAPH_T>::initResultsFile(
@@ -1129,7 +1141,7 @@ void CGraphSlamEngine<GRAPH_T>::initResultsFile(
 	m_out_streams[fname]->printf("%s\n\n", sep.c_str());
 
 	MRPT_END;
-}
+} // end if initResultsFile
 
 template<class GRAPH_T>
 void CGraphSlamEngine<GRAPH_T>::initRangeImageViewport() {
@@ -1149,7 +1161,7 @@ void CGraphSlamEngine<GRAPH_T>::initRangeImageViewport() {
 	m_win->forceRepaint();
 
 	MRPT_END;
-}
+} // end of initRangeImageViewport
 
 template<class GRAPH_T>
 void CGraphSlamEngine<GRAPH_T>::updateAllVisuals() {
@@ -1163,7 +1175,7 @@ void CGraphSlamEngine<GRAPH_T>::updateAllVisuals() {
 
 	m_time_logger.leave("Visuals");
 	MRPT_END;
-}
+} // end of updateAllVisuals
 
 template<class GRAPH_T>
 void CGraphSlamEngine<GRAPH_T>::updateRangeImageViewport() {
@@ -1192,7 +1204,7 @@ void CGraphSlamEngine<GRAPH_T>::updateRangeImageViewport() {
 	}
 
 	MRPT_END;
-}
+} // end of updateRangeImageViewport
 
 template<class GRAPH_T>
 void CGraphSlamEngine<GRAPH_T>::initIntensityImageViewport() {
@@ -1212,7 +1224,8 @@ void CGraphSlamEngine<GRAPH_T>::initIntensityImageViewport() {
 	m_win->forceRepaint();
 
 	MRPT_END;
-}
+} // end of initIntensityImageViewport
+
 template<class GRAPH_T>
 void CGraphSlamEngine<GRAPH_T>::updateIntensityImageViewport() {
 	MRPT_START;
@@ -1282,7 +1295,7 @@ void CGraphSlamEngine<GRAPH_T>::initCurrPosViewport() {
 	m_win->forceRepaint();
 
 	MRPT_END;
-}
+} // end of initCurrPosViewport
 
 
 

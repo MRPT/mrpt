@@ -22,17 +22,30 @@ namespace mrpt { namespace graphslam { namespace deciders {
  * accessing and modifying them. Also takes care of common visualization needed
  * in derived classes
  *
- * \note Since the decider inherits from the CRangeScanOps
- * class, it parses the configuration parameters of the latter as well from the
- * "ICP" section. Refer to the CRangeScanOps documentation for
- * its list of configuration parameters
+ * \note Since the decider inherits from the CRangeScanOps class, it parses the
+ * configuration parameters of the latter as well from the "ICP" section. Refer
+ * to the CRangeScanOps documentation for its list of configuration parameters
+ *
+ * ### .ini Configuration Parameters
+ *
+ * \htmlinclude graphslam-engine_config_params_preamble.txt
+ *
+ * - \b ICP_goodness_thresh
+ *   + \a Section       : EdgeRegistrationDeciderParameters
+ *   + \a Default value : 0.75
+ *   + \a Required      : FALSE
+ *   + \a Description   : Threshold for accepting a scan-matching edge between
+ *   the current and previous nodes. If "-1" an adaptive threshold is going to
+ *   be used
+
+ *
  */
 template<class GRAPH_T>
 class CRangeScanEdgeRegistrationDecider :
 	public virtual CEdgeRegistrationDecider<GRAPH_T>,
 	public virtual CRangeScanOps<GRAPH_T>
 	{
-	public:
+		public:
 		typedef mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_T>
 			parent_t;
 		/**\brief Typedef for accessing methods of the
@@ -54,7 +67,7 @@ class CRangeScanEdgeRegistrationDecider :
 		CRangeScanEdgeRegistrationDecider();
 		virtual ~CRangeScanEdgeRegistrationDecider();
 
-	protected:
+		protected:
 		/**\name Helper structs */
 		/**\{*/
 		/**
@@ -127,6 +140,7 @@ class CRangeScanEdgeRegistrationDecider :
 				const std::map<mrpt::utils::TNodeID, node_props_t>& group_params,
 					node_props_t* node_props);
 		/**\brief Fill the pose and LaserScan for the given nodeID.
+		 *
 		 * Pose and LaserScan are either fetched from the TNodeProps struct, if it
 		 * contains valid data, otherwise from the corresponding class vars
 		 *
@@ -148,10 +162,22 @@ class CRangeScanEdgeRegistrationDecider :
 		 * modification to the method behavior.
 		 */
 		/**\{*/
-		/** \brief Fetch the latest observation that the current instance
-		 	* received (most probably during a call to the updateState method.
-		 	*/
-		// TODO - Implement these
+		/** \name Latest observation getter methods
+		 *
+		 * \brief Fetch the latest observation that the current instance
+		 * received (most probably during a call to the updateState method). Handles
+		 * exclusively CObservation* (observation-only format)
+		 *
+		 * \warning Use these methods as-is in the derived classes. Most likely
+		 * there will be no reason for overriding and that will shadow the
+		 * overloads.
+		 */
+		/**\{*/
+		void getIncomingObs(mrpt::obs::CObservationPtr obs);
+		void getIncomingObs(mrpt::obs::CObservation2DRangeScanPtr obs);
+		void getIncomingObs(mrpt::obs::CObservation3DRangeScanPtr obs);
+		/**\}*/
+
 		/**\}*/
 
 		virtual void notifyOfWindowEvents(
@@ -163,31 +189,37 @@ class CRangeScanEdgeRegistrationDecider :
 		virtual void updateVisuals();
 		virtual void initLaserScansVisualization();
 		virtual void updateLaserScansVisualization();
+		/**\brief togle the LaserScans visualization on and off
+		*/
+		virtual void toggleLaserScansVisualization();
+		/**\}*/
+
 		/**\brief Fetch a list of nodes with regards to the given nodeID for
 		 	* which to try and add scan matching edges
+		 	*
+		 	* \param[in] curr_nodeID Reference node ID which is to be used for
+		 	* fetching the list of nodes
+		 	*
+		 	* \param[out] nodes_set Pointer to list of nodes that is filled by the
+		 	* method at hand.
 		 	*
 		 	* \sa addScanMatchingEdges
 		 	*/
 		virtual void fetchNodeIDsForScanMatching(
 				const mrpt::utils::TNodeID& curr_nodeID,
-				std::set<mrpt::utils::TNodeID>* nodes_set);
-		/**\brief Addd ICP constraints from X previous nodeIDs up to the given
-		 * nodeID.
+				std::set<mrpt::utils::TNodeID>* nodes_set) = 0;
+		/**\brief Try to add ICP Constraints with the given nodeID curr_nodeID.
 		 *
-		 * X is set by the user in the .ini configuration file (see
-		 * prev_nodes_for_ICP)
+		 * The list of nodes with which to check ICP against is decided by the
+		 * fetchNodeIDsForScanMatching method
 		 *
 		 * \sa fetchNodeIDsForScanMatching
 		 */
 		virtual void addScanMatchingEdges(const mrpt::utils::TNodeID& curr_nodeID);
-		/**\brief togle the LaserScans visualization on and off
-		*/
-		virtual void toggleLaserScansVisualization();
-
-		/**\}*/
 
 		virtual void loadParams(const std::string& source_fname);
 		virtual void printParams() const;
+		virtual void initMiscActions();
 		/**brief Compare the suggested ICP edge against the initial node
 		 * difference.
 		 *
@@ -199,14 +231,18 @@ class CRangeScanEdgeRegistrationDecider :
 		 * keep track of the recorded mahalanobis distance values.
 		 * \sa getICPEdge
 		 */
-		virtual bool mahalanobisDistanceOdometryToICPEdge(
+		virtual bool mahalanobisDistanceInitToICPEdge(
 				const mrpt::utils::TNodeID& from,
 				const mrpt::utils::TNodeID& to,
 				const constraint_t& rel_edge);
+		/**\brief Make the ICP goodness value used during ICP evaulation fixed.
+		 */
+		virtual void fixICPGoodnessThresh(const double goodness);
+		/**\brief Return the current goodness threshold */
+		double getGoodnessThresh() const;
 
-
-		/**\brief Map for keeping track of the observation recorded at each graph
-		 * position
+		/**\brief std::maps for keeping track of the observation recorded at each
+		 * graph position
 		 */
 		/**\{*/
 		nodes_to_scans2D_t  m_nodes_to_laser_scans2D;
@@ -217,27 +253,30 @@ class CRangeScanEdgeRegistrationDecider :
  		 */
 		size_t m_last_total_num_nodes;
 
-		/**\brief ICP-related variables */
+		/**\name ICP-related variables */
 		/**\{*/
-		/**\brief CICP instance that finds the correspondences */
-		mrpt::slam::CICP m_icp;
- 		/**\brief How many nodes back to check ICP against?
- 		 	*
- 		 	*/
-		int m_prev_nodes_for_ICP;
-
 		/**\brief Keep track of the mahalanobis distance between the initial pose
 		 * difference and the suggested new edge for the pairs of checked
 		 * nodes.
 		 */
 		TSlidingWindow m_mahal_distance_ICP_odom_win;
+		/**\brief if set to false, instance will not take into account the
+		 * mahalanobis distance when evaluating potential edges
+		 *
+		 * By default True.
+		 *
+		 */
+		bool m_use_mahal_distance_init_ICP;
 		/**\brief Keep track of ICP Goodness values for ICP between nearby nodes and
 		* adapt the Goodness threshold based on the median of the recorded Goodness
 		* values.
 		*/
 		TSlidingWindow m_goodness_threshold_win;
+		double m_ICP_goodness_thresh;
 		/**\}*/
 
+		/**\brief Track the latest received measurement */
+		mrpt::obs::CObservationPtr m_last_obs;
 		/**\name LaserScans visualization parameters */
 		/**\{*/
 		/** Keystroke to be used by the user to toggle the LaserScans from the
@@ -257,6 +296,20 @@ class CRangeScanEdgeRegistrationDecider :
 			*
 			*/
 		double m_consec_icp_constraint_factor;
+
+		double m_offset_y_icp_goodness;
+		int m_text_index_icp_goodness;
+
+
+		private:
+		/**\brief Fixed goodness value.
+		 *
+		 * Set this via the fixICPGoodnessThresh method.
+		 * \sa fixICPGoodnessThresh
+		 */
+		double m_ICP_goodness_thresh_fixed;
+		bool m_icp_goodness_thresh_is_fixed;
+
 
 	};
 

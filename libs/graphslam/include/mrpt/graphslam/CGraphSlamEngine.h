@@ -88,19 +88,16 @@ namespace mrpt { namespace graphslam {
  * constraints (edges) and solve it to find an estimation of the actual robot
  * trajectory.
  *
- * // TODO - change this description
  * The template arguments are listed below:
  * - \em GRAPH_T: The type of Graph to be constructed and optimized. Currently
  *   CGraphSlamEngine works only with CPosePDFGaussianInf GRAPH_T instances.
- * - \em NODE_REGISTRAR: Class responsible of adding new nodes in the graph.
- *   Class should at least implement the deciders::CNodeRegistrationDecider
- *   interface provided in CNodeRegistrationDecider.h file.
- * - \em EDGE_REGISTRAR: Class responsible of adding new edges in the graph.
- *   Class should at least implement the deciders::CEdgeRegistrationDecider
- *   interface provided in CEdgeRegistrationDecider.h file.
- * - \em OPTIMIZER: Class responsible of optimizing the graph. Class should at
- *   least implement the optimizers::CGraphSlamOptimizer interface provided
- *   in CGraphSlamOptimizer.h file.
+ *
+ * Class holds the following decider optimizer instances that change the
+ * behavior according to the derived classes that are actually used
+ *
+ * - CNodeRegistrationDecider
+ * - CEdgeRegistrationDecider
+ * - CGraphSlamOptimizer
  *
  * \note The GRAPH_T resource is accessed after having locked the relevant section
  * \em m_graph_section. Critical section is also <em> locked prior to the calls
@@ -138,7 +135,6 @@ namespace mrpt { namespace graphslam {
  *   + \a Section       : GeneralConfiguration
  *   + \a Default value : 1 (LVL_INFO)
  *   + \a Required      : FALSE
- *
  *
  * - \b visualize_map
  *   + \a Section       : VisualizationParameters
@@ -264,6 +260,11 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 */
 		virtual void getNodeIDsOfEstimatedTrajectory(
 				std::set<mrpt::utils::TNodeID>* nodes_set) const;
+		/**\brief Wrapper method for the decider's optimizer initMiscAction classes
+		 * \warning Actions of this method run at the end of instance initialization
+		 */
+		virtual void initMiscActions();
+
 		/**\brief Wrapper method around the GRAPH_T::saveToTextFile method.
 		 * Method saves the graph in the format used by TORO & HoG-man strategies
 		 *

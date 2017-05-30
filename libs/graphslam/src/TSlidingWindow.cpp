@@ -35,7 +35,7 @@ TSlidingWindow::TSlidingWindow(
 }
 TSlidingWindow::~TSlidingWindow() { }
 
-double TSlidingWindow::getMedian() {
+double TSlidingWindow::getMedian() const {
 	MRPT_START;
 
 	double median_out = 0.0;
@@ -60,8 +60,9 @@ double TSlidingWindow::getMedian() {
 	return median_out;
 
 	MRPT_END;
-}
-double TSlidingWindow::getMean() {
+} // end of getMedian
+
+double TSlidingWindow::getMean() const {
 	MRPT_START;
 
 	double mean_out = 0.0;
@@ -80,8 +81,9 @@ double TSlidingWindow::getMean() {
 	return mean_out;
 
 	MRPT_END;
-}
-double TSlidingWindow::getStdDev() {
+} // end of getMean
+
+double TSlidingWindow::getStdDev() const {
 	MRPT_START;
 
 	double std_dev_out = 0.0;
@@ -105,29 +107,31 @@ double TSlidingWindow::getStdDev() {
 
 	return std_dev_out;
 	MRPT_END;
-}
+} // end of getStdDev
 
-bool TSlidingWindow::evaluateMeasurementInGaussian(double measurement) {
+bool TSlidingWindow::evaluateMeasurementInGaussian(double measurement) const {
 	// get the boundaries for acceptance of measurements - [-3sigma, 3sigma] with
 	// regards to the mean
 	double low_lim = this->getMean() - 3*this->getStdDev();
 	double upper_lim = this->getMean() + 3*this->getStdDev();
 
 	return measurement > low_lim && measurement < upper_lim;
-}
+} // end of evaluateMeasurementInGaussian
+
 bool TSlidingWindow::evaluateMeasurementAbove(
-		double value) {
+		double value) const {
 	MRPT_START;
 
 	double threshold = this->getMean();
 	return (value > threshold);
 
 	MRPT_END;
-}
+} // end of evaluateMeasurementBelow
+
 bool TSlidingWindow::evaluateMeasurementBelow(
-		double value) {
+		double value) const {
 	return !evaluateMeasurementAbove(value);
-}
+} // end of evaluateMeasurementBelow
 
 
 void TSlidingWindow::addNewMeasurement(
@@ -151,7 +155,8 @@ void TSlidingWindow::addNewMeasurement(
 	m_std_dev_updated = false;
 
 	MRPT_END;
-}
+} // end of addNewMeasurement
+
 void TSlidingWindow::resizeWindow(
 		size_t new_size ) {
 	MRPT_START;
@@ -170,7 +175,8 @@ void TSlidingWindow::resizeWindow(
 	m_win_size = new_size;
 
 	MRPT_END;
-}
+} // end of resizeWindow
+
 void TSlidingWindow::loadFromConfigFile(
 		const mrpt::utils::CConfigFileBase& source,
 		const std::string& section) {
@@ -183,7 +189,8 @@ void TSlidingWindow::loadFromConfigFile(
 	this->resizeWindow(sliding_win_size);
 
 	MRPT_END;
-}
+} // end of loadFromConfigFile
+
 void TSlidingWindow::dumpToTextStream(
 		mrpt::utils::CStream &out) const {
 	MRPT_START;
@@ -208,7 +215,7 @@ void TSlidingWindow::dumpToTextStream(
 	out.printf("m_is_initialized    : %s\n"   , m_is_initialized? "TRUE": "FALSE");
 
 	MRPT_END;
-}
+} // end of dumpToTextStream
 
 size_t TSlidingWindow::getWindowSize() const {
 	return m_win_size;

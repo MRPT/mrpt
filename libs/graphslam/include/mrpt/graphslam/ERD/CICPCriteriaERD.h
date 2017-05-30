@@ -65,12 +65,7 @@ namespace mrpt { namespace graphslam { namespace deciders {
  * ### .ini Configuration Parameters
  *
  * \htmlinclude graphslam-engine_config_params_preamble.txt
- *
- * - \b class_verbosity
- *   + \a Section       : EdgeRegistrationDeciderParameters
- *   + \a default value : 1 (LVL_INFO)
- *   + \a Required      : FALSE
- *
+ 
  * - \b LC_min_nodeid_diff
  *  + \a Section       : GeneralConfiguration
  *  + \a Default value : 30
@@ -86,17 +81,15 @@ namespace mrpt { namespace graphslam { namespace deciders {
  *  align the laser scans of the current node and each of the previous nodes
  *  that are found within the designated ICP_max_distance.
  *
- * - \b ICP_goodness_thresh
- *   + \a Section       : EdgeRegistrationDeciderParameters
- *   + \a Default value : 0.75
- *   + \a Required      : FALSE
- *   + \a Description   : Threshold for accepting a scan-matching edge between
- *   the current and previous nodes
  *
- * - \b visualize_laser_scans
- *   + \a Section       : VisualizationParameters
+ * - \b use_mahal_distance
+ *   + \a section       : EdgeRegistrationDeciderParameters
  *   + \a Default value : TRUE
  *   + \a Required      : FALSE
+ *   + \a Description   : If True, the decider uses the mahalanobis distance of
+ *   the suggested ICP constraint and the current constraint between a set of
+ *   nodes to decide if adding such constraint makes sense or if it is an
+ *   outlier
  *
  * - \b scans_img_external_dir
  *   + \a Section       : EdgeRegistrationDeciderParameters
@@ -104,6 +97,10 @@ namespace mrpt { namespace graphslam { namespace deciders {
  *   + \a Required      : FALSE
  *   + \a Description   : Only applicable in datasets with 3DRangeScans that
  *   are externally stored (not stored in the given .rawlog file).
+ *
+ * \note Since the decider inherits from the CRangeScanEdgeRegistrationDecider
+ * class, it parses the configuration parameters of the latter as well from the
+ * "ICP" section. Refer to the latter for its list of configuration parameters
  *
  * \ingroup mrpt_graphslam_grp
  */
@@ -134,6 +131,14 @@ class CICPCriteriaERD :
 				mrpt::obs::CActionCollectionPtr action,
 				mrpt::obs::CSensoryFramePtr observations,
 				mrpt::obs::CObservationPtr observation );
+		/**\brief Fetch nodes that are in a radious of the latest registered nodeID.
+		 *
+		 * \note This basically provides a wrapper around the getNearbyNodesOf
+		 * method
+		 */
+		void fetchNodeIDsForScanMatching(
+				const mrpt::utils::TNodeID& curr_nodeID,
+				std::set<mrpt::utils::TNodeID>* nodes_set);
 
 		void notifyOfWindowEvents(
 				const std::map<std::string, bool>& events_occurred);
@@ -146,20 +151,20 @@ class CICPCriteriaERD :
 	protected:
 		// protected functions
 		//////////////////////////////////////////////////////////////
-		void checkRegistrationCondition2D(
-				const std::set<mrpt::utils::TNodeID>& nodes_set);
-		void checkRegistrationCondition3D(
-				const std::set<mrpt::utils::TNodeID>& nodes_set);
+
 		void checkIfInvalidDataset(mrpt::obs::CActionCollectionPtr action,
 				mrpt::obs::CSensoryFramePtr observations,
 				mrpt::obs::CObservationPtr observation );
 		/**\brief Get a list of the nodeIDs whose position is within a certain
 		 * distance to the specified nodeID
+		 *
+		 * \param[in] distance Radious cenetered at curr_nodeID to check ICP
+		 * against.
 		 */
 		void getNearbyNodesOf(
+				const mrpt::utils::TNodeID& curr_nodeID,
 				std::set<mrpt::utils::TNodeID> *nodes_set,
-				const mrpt::utils::TNodeID& cur_nodeID,
-				double distance );
+				const double distance);
 
 		// TODO - format this for the 3D case - Disk => Sphere
 		// TODO - Override this for the mr_case
@@ -173,19 +178,14 @@ class CICPCriteriaERD :
 
 
 		mrpt::utils::TColor m_search_disk_color; //!< see Constructor for initialization
-		mrpt::utils::TColor m_laser_scans_color; //!< see Constructor for initialization
 		double m_offset_y_search_disk;
 		int m_text_index_search_disk;
-		bool m_is_using_3DScan;
 
 		std::string m_ICP_max_distance_obj_name;
 
 		double m_ICP_max_distance;
-		/** threshold for accepting an ICP constraint in the graph */
-		double m_ICP_goodness_thresh;
 		/** Minimum node ID difference to consider an edge as a loop closure */
 		size_t m_LC_min_nodeid_diff;
-		std::string m_scans_img_external_dir;
 
 
 };
