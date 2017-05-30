@@ -7,7 +7,7 @@ set(CMAKE_MRPT_HAS_Qt5 0)
 if (USE_QT)
 	set(QT_MRPT_COMPONENTS_TO_SEARCH "Gui;Widgets;Core" CACHE STRING "Components to search in Qt")
 
-	find_package(Qt5 COMPONENTS ${QT_MRPT_COMPONENTS_TO_SEARCH} REQUIRED)
+	find_package(Qt5 COMPONENTS ${QT_MRPT_COMPONENTS_TO_SEARCH})
 
 	if (Qt5Core_FOUND)
 		set(CMAKE_MRPT_HAS_Qt5 1)
