@@ -553,9 +553,9 @@ void ReadBinaryDataArray(char type, uint32_t count, const char*& data, const cha
 		// see http://www.ietf.org/rfc/rfc1950.txt
 		
 		z_stream zstream;
-		zstream.opaque = Z_nullptr;
-		zstream.zalloc = Z_nullptr;
-		zstream.zfree  = Z_nullptr;
+        zstream.opaque = Z_NULL;
+        zstream.zalloc = Z_NULL;
+        zstream.zfree  = Z_NULL;
 		zstream.data_type = Z_BINARY;
 
 		// http://hewgill.com/journal/entries/349-how-to-decompress-gzip-stream-with-zlib

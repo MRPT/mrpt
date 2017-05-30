@@ -23,15 +23,17 @@ namespace utils
 	 */
 	class BASE_IMPEXP CTicTac
 	{
-		static_assert(!std::is_copy_constructible<CTicTac>::value && !std::is_copy_assignable<CTicTac>::value, "Copy Check");
 
 	public:
 		CTicTac(); //!< Default constructor. Implicitly calls Tic()
+		CTicTac(const CTicTac &) = delete;
+		CTicTac& operator =(const CTicTac &) = delete;
 		void   Tic();  //!< Starts the stopwatch. \sa Tac
 		double Tac();  //!< Stops the stopwatch.  \return Returns the ellapsed time in seconds.  \sa Tic
 	private:
 		unsigned char largeInts[64];
 	}; // End of class def.
+	static_assert(!std::is_copy_constructible<CTicTac>::value && !std::is_copy_assignable<CTicTac>::value, "Copy Check");
 
 } // End of namespace
 } // End of namespace

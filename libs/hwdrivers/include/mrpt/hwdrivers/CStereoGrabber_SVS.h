@@ -60,7 +60,6 @@ namespace mrpt
 		  */
         class HWDRIVERS_IMPEXP  CStereoGrabber_SVS
 	{
-		static_assert(!std::is_copy_constructible<CStereoGrabber_SVS>::value && !std::is_copy_assignable<CStereoGrabber_SVS>::value, "Copy Check");
 		protected:
 			bool			m_bInitialized;					//!< If this has been correctly initiated
 
@@ -86,7 +85,10 @@ namespace mrpt
 			TCaptureOptions_SVS	m_options;
 
 			/** Constructor: */
-			CStereoGrabber_SVS( int cameraIndex = 0, const TCaptureOptions_SVS &options = TCaptureOptions_SVS() );
+			CStereoGrabber_SVS(int cameraIndex = 0, const TCaptureOptions_SVS &options = TCaptureOptions_SVS());
+			
+			CStereoGrabber_SVS(const CStereoGrabber_SVS &) = delete;
+			CStereoGrabber_SVS& operator =(const CStereoGrabber_SVS &) = delete;
 
 			/** Destructor */
 			virtual ~CStereoGrabber_SVS(void);
@@ -103,7 +105,7 @@ namespace mrpt
 			bool  getStereoObservation( mrpt::obs::CObservationStereoImages &out_observation );
 
 		};	// End of class
-
+		static_assert(!std::is_copy_constructible<CStereoGrabber_SVS>::value && !std::is_copy_assignable<CStereoGrabber_SVS>::value, "Copy Check");
 	} // End of NS
 } // End of NS
 

@@ -1,4 +1,4 @@
-# ----------------------------------------------------------------------------
+﻿# ----------------------------------------------------------------------------
 # Root CMake file for the MRPT libraries and applications
 #
 #  Run with "cmake ." at the root directory to build the makefiles for
@@ -237,7 +237,7 @@ endif()
 # ----------------------------------------------------------------------------
 # Other sub-scripts:
 # ----------------------------------------------------------------------------
-include(cmakemodules/script_gridmap_options.cmake REQUIRED)			# Enable Intel Threading Building Blocks (TBB) lib?
+include(cmakemodules/script_gridmap_options.cmake REQUIRED) # Enable Intel Threading Building Blocks (TBB) lib?
 
 include(cmakemodules/script_phidget.cmake REQUIRED)     # Support for phidget Interface Kit with proximity sensor device :
 include(cmakemodules/script_videre_svs.cmake REQUIRED)  # Support for Videre Design stereo camera:
@@ -248,6 +248,7 @@ include(cmakemodules/script_opencv.cmake REQUIRED)      # Check for the OpenCV l
 include(cmakemodules/script_openni2.cmake REQUIRED)     # Check for the OpenNI2 library
 include(cmakemodules/script_ffmpeg.cmake REQUIRED)      # Check for ffmpeg C libraries: libavcodec, libavutil, libavformat, libswscale
 include(cmakemodules/script_wxwidgets.cmake REQUIRED)   # Check for wxWidgets + GL
+include(cmakemodules/script_qt.cmake REQUIRED)          # Check for wxWidgets + GL
 include(cmakemodules/script_libdc1394.cmake REQUIRED)   # Check for libdc1394-2
 include(cmakemodules/script_assimp.cmake REQUIRED)      # Check for system assimp lib (3D models)
 include(cmakemodules/script_lib3ds.cmake REQUIRED)      # Check for system lib3ds
@@ -260,18 +261,18 @@ include(cmakemodules/script_SIMD.cmake REQUIRED)        # SSE2/SSE3/... optimiza
 include(cmakemodules/script_gtest.cmake REQUIRED)       # Unit testing lib
 include(cmakemodules/script_clang.cmake REQUIRED)       # clang library (For UTFConvert)
 include(cmakemodules/script_national_instruments.cmake REQUIRED)  # NI C library
-include(cmakemodules/script_sift_hess.cmake REQUIRED)  # SIFT Hess implementation
-include(cmakemodules/script_xsens.cmake REQUIRED)      # XSens Motion trackers / IMU drivers
-include(cmakemodules/script_flycapture2.cmake REQUIRED)# Check for PointGreyResearch (PGR) FlyCapture2 library
-include(cmakemodules/script_triclops.cmake REQUIRED)	# Check for PointGreyResearch (PGR) Triclops library
-include(cmakemodules/script_duo3d.cmake REQUIRED)		# Support for DUO3D Camera
-include(cmakemodules/script_matlab.cmake REQUIRED)	# Support for Matlab MEX functions generation
-include(cmakemodules/script_isense.cmake REQUIRED)		# Support for INTERSENSE Sensors
-include(cmakemodules/script_nite2.cmake REQUIRED)		# Check for NITE2 library
-include(cmakemodules/script_yamlcpp.cmake REQUIRED)		# Check for YAMLCPP library
+include(cmakemodules/script_sift_hess.cmake REQUIRED)   # SIFT Hess implementation
+include(cmakemodules/script_xsens.cmake REQUIRED)       # XSens Motion trackers / IMU drivers
+include(cmakemodules/script_flycapture2.cmake REQUIRED) # Check for PointGreyResearch (PGR) FlyCapture2 library
+include(cmakemodules/script_triclops.cmake REQUIRED)    # Check for PointGreyResearch (PGR) Triclops library
+include(cmakemodules/script_duo3d.cmake REQUIRED)       # Support for DUO3D Camera
+include(cmakemodules/script_matlab.cmake REQUIRED)      # Support for Matlab MEX functions generation
+include(cmakemodules/script_isense.cmake REQUIRED)      # Support for INTERSENSE Sensors
+include(cmakemodules/script_nite2.cmake REQUIRED)       # Check for NITE2 library
+include(cmakemodules/script_yamlcpp.cmake REQUIRED)     # Check for YAMLCPP library
 include(cmakemodules/script_pcap.cmake REQUIRED)        # Check for the libpcap library
-#include(cmakemodules/script_ros1.cmake REQUIRED)        # Check for ROS
-include(cmakemodules/script_vtk.cmake REQUIRED)        # Check for VTK
+#include(cmakemodules/script_ros1.cmake REQUIRED)       # Check for ROS
+include(cmakemodules/script_vtk.cmake REQUIRED)         # Check for VTK
 
 # ---------------------------------------------------------------------------
 #			OPTIONS

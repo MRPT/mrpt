@@ -59,10 +59,13 @@ namespace mrpt
 		class BASE_IMPEXP CPipeBaseEndPoint :
 			public mrpt::utils::CStream
 		{
-			static_assert(!std::is_copy_constructible<CPipeBaseEndPoint>::value && !std::is_copy_assignable<CPipeBaseEndPoint>::value, "Copy Check");
 			friend class CPipe;
 		public:
 			CPipeBaseEndPoint();
+			
+			CPipeBaseEndPoint(const CPipeBaseEndPoint &) = delete;
+			CPipeBaseEndPoint& operator =(const CPipeBaseEndPoint &) = delete;
+
 			virtual ~CPipeBaseEndPoint();
 
 			/** De-serializes one end-point description, for example, from a parent process. */
@@ -95,7 +98,8 @@ namespace mrpt
 			virtual uint64_t getTotalBytesCount() MRPT_OVERRIDE; //!< Without effect in this class
 			virtual uint64_t getPosition() MRPT_OVERRIDE; //!< Without effect in this class
 		}; // end of CPipeBaseEndPoint
-
+		static_assert(!std::is_copy_constructible<CPipeBaseEndPoint>::value && !std::is_copy_assignable<CPipeBaseEndPoint>::value, "Copy Check");
+		
 		/** The read end-point in a pipe created with mrpt::synch::CPipe.
 		  * Use the method mrpt::utils::CStream::ReadBuffer() of the base class CStream for blocking reading. */
 		class BASE_IMPEXP CPipeReadEndPoint : public CPipeBaseEndPoint

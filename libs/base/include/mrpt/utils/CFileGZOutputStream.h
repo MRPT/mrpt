@@ -28,7 +28,6 @@ namespace mrpt
 #else
 		class BASE_IMPEXP CFileGZOutputStream : public CStream
 		{
-			static_assert(!std::is_copy_constructible<CFileGZOutputStream>::value && !std::is_copy_assignable<CFileGZOutputStream>::value, "Copy Check");
 		protected:
 			size_t  Read(void *Buffer, size_t Count) MRPT_OVERRIDE;
 			size_t  Write(const void *Buffer, size_t Count) MRPT_OVERRIDE;
@@ -46,6 +45,10 @@ namespace mrpt
 			  * \sa open
 			  */
 			CFileGZOutputStream();
+			
+			CFileGZOutputStream(const CFileGZOutputStream &) = delete;
+			CFileGZOutputStream& operator =(const CFileGZOutputStream &) = delete;
+
 			virtual ~CFileGZOutputStream(); //!< Destructor
 
 			 /** Open a file for write, choosing the compression level
@@ -72,6 +75,7 @@ namespace mrpt
 				THROW_EXCEPTION("getTotalBytesCount is not implemented in this class");
 			}
 		}; // End of class def.
+		static_assert(!std::is_copy_constructible<CFileGZOutputStream>::value && !std::is_copy_assignable<CFileGZOutputStream>::value, "Copy Check");
 #endif
 
 	} // End of namespace
