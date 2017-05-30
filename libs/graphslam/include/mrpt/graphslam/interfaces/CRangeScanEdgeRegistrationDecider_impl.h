@@ -7,14 +7,13 @@ template<class GRAPH_T>
 CRangeScanEdgeRegistrationDecider<GRAPH_T>::
 CRangeScanEdgeRegistrationDecider():
 	m_last_total_num_nodes(0),
+ 	m_use_mahal_distance_init_ICP(true),
 	m_keystroke_laser_scans("l"),
- 	m_planar_laser_scan_obj_name("laser_scan_viz")
+ 	m_planar_laser_scan_obj_name("laser_scan_viz"),
+ 	m_icp_goodness_thresh_is_fixed(false)
 {
-	// TODO - add condition not to use mahal distance
 	m_mahal_distance_ICP_odom_win.resizeWindow(200); // use the last X mahal. distance values
-	// TODO - add explicit flag to use a fixed threshold
 	m_goodness_threshold_win.resizeWindow(200);
-
 }
 
 template<class GRAPH_T>
@@ -39,13 +38,6 @@ void CRangeScanEdgeRegistrationDecider<GRAPH_T>::loadParams(
 			"visualize_laser_scans",
 			true, false);
 
-	// how many nodes to check ICP against
-	m_prev_nodes_for_ICP = source.read_int(
-			section_viz,
-			"prev_nodes_for_ICP",
-			10, false);
-
-	// TODO - this should be a light blue - cyan
 	const uint64_t ls_color =  source.read_uint64_t(
 			section_viz,
 			"laser_scans_color",
@@ -61,6 +53,11 @@ void CRangeScanEdgeRegistrationDecider<GRAPH_T>::loadParams(
 			"consec_icp_constraint_factor",
 			0.90, false);
 
+	// fixed threshold - if <= 0  an adaptive threshold is going to be used
+	m_ICP_goodness_thresh = source.read_double(
+			section_erd,
+			"ICP_goodness_thresh",
+			-1, false);
 
 	MRPT_END;
 } // end of loadParams
@@ -73,9 +70,6 @@ void CRangeScanEdgeRegistrationDecider<GRAPH_T>::printParams() const {
 	parent_t::printParams();
 	range_ops_t::params.dumpToConsole();
 
-	// TODO - display this only when not using a radius around it
-	cout << "Num. of previous nodes to check ICP against = "
-		<< m_prev_nodes_for_ICP << endl;
 	cout << "Visualize laser scans                       = "
 			<< (m_visualize_laser_scans? "TRUE": "FALSE") << endl;
 	cout << "Scan-matching ICP Constraint factor         = "
@@ -108,24 +102,6 @@ void CRangeScanEdgeRegistrationDecider<GRAPH_T>::initLaserScansVisualization() {
 
 	MRPT_END;
 } // end of initLaserScansVisualization
-
-template<class GRAPH_T>
-void CRangeScanEdgeRegistrationDecider<GRAPH_T>::fetchNodeIDsForScanMatching(
-		const mrpt::utils::TNodeID& curr_nodeID,
-		std::set<mrpt::utils::TNodeID>* nodes_set) {
-	ASSERT_(nodes_set);
-
-	// deal with the case that less than `prev_nodes_for_ICP` nodes have been
-	// registered
-	int fetched_nodeIDs = 0;
-	for (int nodeID_i = static_cast<int>(curr_nodeID)-1;
-			((fetched_nodeIDs <= this->m_prev_nodes_for_ICP) &&
-			 (nodeID_i >= 0)); // <----- I *have* to use int (instead of unsigned) if I use this condition
-			--nodeID_i) {
-		nodes_set->insert(nodeID_i);
-		fetched_nodeIDs++;
-	}
-} // end of fetchNodeIDsForScanMatching
 
 template<class GRAPH_T>
 bool CRangeScanEdgeRegistrationDecider<GRAPH_T>::fillNodePropsFromGroupParams(
@@ -246,7 +222,8 @@ bool CRangeScanEdgeRegistrationDecider<GRAPH_T>::getPropsOfNodeID(
 
 	// TODO - What if the node_props->pose is indeed 0?
 	ASSERTMSG_(!(filled_pose ^ filled_scan),
-			format("Either BOTH or NONE of the filled_pose, filled_scan should be set."
+			format(
+				"Either BOTH or NONE of the filled_pose, filled_scan should be set."
 				"NodeID:  [%lu]", static_cast<unsigned long>(nodeID)));
 
 	//
@@ -312,24 +289,30 @@ void CRangeScanEdgeRegistrationDecider<GRAPH_T>::addScanMatchingEdges(
 				&icp_info);
 		if (!found_edge) continue;
 
+		// Goodness value
+		//
 		// keep track of the recorded goodness values
 		// TODO - rethink on these condition.
-		if (!isNaN(icp_info.goodness) || icp_info.goodness != 0) {
-			m_goodness_threshold_win.addNewMeasurement(icp_info.goodness);
+		if (!m_icp_goodness_thresh_is_fixed && (
+					!isNaN(icp_info.goodness) || 
+					icp_info.goodness != 0)) {
+				m_goodness_threshold_win.addNewMeasurement(icp_info.goodness);
 		}
-		double goodness_thresh =
-			m_goodness_threshold_win.getMedian() *
-			m_consec_icp_constraint_factor;
+		double goodness_thresh = this->getGoodnessThresh();
 		bool accept_goodness = icp_info.goodness > goodness_thresh;
 		MRPT_LOG_DEBUG_STREAM(
 				"Curr. Goodness: " << icp_info.goodness
 				<< "|\t Threshold: " << goodness_thresh << 
 				" => " << (accept_goodness? "ACCEPT" : "REJECT"));
 
+		// Mahalanobis distance
+		//
 		// make sure that the suggested edge makes sense with regards to current
 		// graph config - check against the current position difference
-		bool accept_mahal_distance = this->mahalanobisDistanceOdometryToICPEdge(
-				*node_it, curr_nodeID, rel_edge);
+		bool accept_mahal_distance = (m_use_mahal_distance_init_ICP ?
+				this->mahalanobisDistanceInitToICPEdge(
+					*node_it, curr_nodeID, rel_edge) :
+				true);
 
 		// criterion for registering a new node
 		if (accept_goodness && accept_mahal_distance) {
@@ -341,8 +324,28 @@ void CRangeScanEdgeRegistrationDecider<GRAPH_T>::addScanMatchingEdges(
 } // end of addScanMatchingEdges
 
 template<class GRAPH_T>
+double CRangeScanEdgeRegistrationDecider<GRAPH_T>::getGoodnessThresh() const {
+	double thresh;
+
+	if (!m_icp_goodness_thresh_is_fixed) {
+		thresh =
+			m_goodness_threshold_win.getMedian() * m_consec_icp_constraint_factor;
+	}
+	else {
+		thresh = m_ICP_goodness_thresh_fixed;
+	}
+
+	return thresh;
+}
+
+template<class GRAPH_T>
 void CRangeScanEdgeRegistrationDecider<GRAPH_T>::initializeVisuals() {
 	MRPT_START;
+
+	// assign a text message for displaying the ICP goodness value 
+	this->m_win_manager->assignTextMessageParameters(
+			/* offset_y*	= */ &m_offset_y_icp_goodness,
+			/* text_index* = */ &m_text_index_icp_goodness);
 
 	if (m_visualize_laser_scans) { this->initLaserScansVisualization(); }
 
@@ -359,6 +362,18 @@ void CRangeScanEdgeRegistrationDecider<GRAPH_T>::updateVisuals() {
 	MRPT_START;
 
 	if (m_visualize_laser_scans) { this->updateLaserScansVisualization(); }
+
+	if (!this->m_icp_goodness_thresh_is_fixed) {
+		std::string title = mrpt::format(
+				"ICP Goodness threshold: %0.3f",
+				this->getGoodnessThresh());
+
+		// update the indicated ICP goodness
+		this->m_win_manager->addTextMessage(5,-m_offset_y_icp_goodness,
+				title,
+				mrpt::utils::TColorf(1, 1, 1),
+				/* unique_index = */ this->m_text_index_icp_goodness);
+	}
 
 	MRPT_END;
 } // end of updateVisuals
@@ -403,6 +418,25 @@ updateLaserScansVisualization() {
 } // end of updateLaserScansVisualization
 
 template<class GRAPH_T>
+void CRangeScanEdgeRegistrationDecider<GRAPH_T>::getIncomingObs(
+		mrpt::obs::CObservationPtr obs) {
+	m_last_obs = obs;
+} // end of getIncomingObs
+
+template<class GRAPH_T>
+void CRangeScanEdgeRegistrationDecider<GRAPH_T>::getIncomingObs(
+		mrpt::obs::CObservation2DRangeScanPtr obs) {
+	this->m_last_laser_scan2D = obs;
+} // end of getIncomingObs
+
+template<class GRAPH_T>
+void CRangeScanEdgeRegistrationDecider<GRAPH_T>::getIncomingObs(
+		mrpt::obs::CObservation3DRangeScanPtr obs) {
+	this->m_last_laser_scan3D = obs;
+	this->m_last_laser_scan3D->load(); // load the images into memory
+} // end of getIncomingObs
+
+template<class GRAPH_T>
 void CRangeScanEdgeRegistrationDecider<GRAPH_T>::notifyOfWindowEvents(
 		const std::map<std::string, bool>& events_occurred) {
 	MRPT_START;
@@ -438,7 +472,8 @@ void CRangeScanEdgeRegistrationDecider<GRAPH_T>::toggleLaserScansVisualization()
 } // end of toggleLaserScansVisualization
 
 template<class GRAPH_T>
-bool CRangeScanEdgeRegistrationDecider<GRAPH_T>::mahalanobisDistanceOdometryToICPEdge(
+bool CRangeScanEdgeRegistrationDecider<GRAPH_T>::
+mahalanobisDistanceInitToICPEdge(
 		const mrpt::utils::TNodeID& from, const mrpt::utils::TNodeID& to, const
 		constraint_t& rel_edge) {
 	MRPT_START;
@@ -448,7 +483,8 @@ bool CRangeScanEdgeRegistrationDecider<GRAPH_T>::mahalanobisDistanceOdometryToIC
 	using namespace mrpt::utils;
 
 	// mean difference
-	pose_t initial_estim = this->m_graph->nodes.at(to) - this->m_graph->nodes.at(from);
+	pose_t initial_estim =
+		this->m_graph->nodes.at(to) - this->m_graph->nodes.at(from);
 	dynamic_vector<double> mean_diff;
 	(rel_edge.getMeanVal()-initial_estim).getAsVector(mean_diff);
 
@@ -473,7 +509,42 @@ bool CRangeScanEdgeRegistrationDecider<GRAPH_T>::mahalanobisDistanceOdometryToIC
 
 	return accept_edge;
 	MRPT_END;
-} // end of mahalanobisDistanceOdometryToICPEdge
+} // end of mahalanobisDistanceInitToICPEdge
+
+template<class GRAPH_T>
+void CRangeScanEdgeRegistrationDecider<GRAPH_T>::initMiscActions() {
+
+	// I put it here because it runs after visuals have been initiated
+	// so the text message can be displayed at the correct position
+	if (m_ICP_goodness_thresh > 0) {
+		this->fixICPGoodnessThresh(m_ICP_goodness_thresh);
+	}
+
+}
+
+
+template<class GRAPH_T>
+void CRangeScanEdgeRegistrationDecider<GRAPH_T>::fixICPGoodnessThresh(
+		const double goodness) {
+
+	this->m_ICP_goodness_thresh_fixed = goodness;
+	m_icp_goodness_thresh_is_fixed = true;
+
+	std::string title = mrpt::format(
+			"ICP Goodness threshold: %0.3f",
+			this->getGoodnessThresh());
+
+	if (this->m_win_manager) {
+		// update the indicated ICP goodness
+		this->m_win_manager->addTextMessage(5,-m_offset_y_icp_goodness,
+				title,
+				mrpt::utils::TColorf(0, 0, 1),
+				/* unique_index = */ m_text_index_icp_goodness);
+	}
+
+	MRPT_LOG_WARN_STREAM("Using fixed goodness threshold: " <<
+			this->m_ICP_goodness_thresh_fixed);
+} // end of fixICPGoodenssThresh
 
 
 } } } // end of namespaces

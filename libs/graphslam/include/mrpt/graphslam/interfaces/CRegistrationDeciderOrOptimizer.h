@@ -145,6 +145,8 @@ class CRegistrationDeciderOrOptimizer :
 		virtual void setClassName(const std::string& name);
 		bool isMultiRobotSlamClass();
 
+		virtual void initMiscActions() { }
+
 		std::string getClassName() const { return m_class_name; };
 
 	protected:
