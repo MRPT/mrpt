@@ -11,7 +11,7 @@
 #include <mrpt/graphslam/misc/CEdgeCounter.h>
 
 // implementation file of CEdgeCounter class
-using namespace mrpt::graphslam::supplementary;
+using namespace mrpt::graphslam::detail;
 
 
 CEdgeCounter::CEdgeCounter() {
@@ -68,16 +68,14 @@ int CEdgeCounter::getLoopClosureEdges() const {
 }
 
 int CEdgeCounter::getTotalNumOfEdges() const {
-	int sum = 0;
+	int sum;
+	this->getTotalNumOfEdges(&sum);
 
-	for (std::map<std::string, int>::const_iterator it =
-			m_name_to_edges_num.begin(); it != m_name_to_edges_num.end(); ++it) {
-		sum += it->second;
-	}
 	return sum;
 }
 
 void CEdgeCounter::getTotalNumOfEdges(int* total_num_edges) const {
+	ASSERT_(total_num_edges);
 	int sum = 0;
 
 	for (std::map<std::string, int>::const_iterator it =
@@ -135,7 +133,9 @@ void CEdgeCounter::addEdge(const std::string& name,
 
 		// specify warning if is_new = true
 		if (is_new) {
-			std::string str_err = "Specified edge type already exists but is_new is also specified!";
+			std::string str_err = mrpt::format(
+					"Specified edge type [%s] already exists but is_new is also specified!",
+					name.c_str());
 			THROW_EXCEPTION(str_err)
 				//std::stringstream ss_warn;
 				//ss_warn << "Commencing with the increment normally" << std::endl;
@@ -172,7 +172,7 @@ void CEdgeCounter::addEdgeType(const std::string& name) {
 
 	if ( search != m_name_to_edges_num.end() ) {
 		THROW_EXCEPTION(
-				mrpt::format("Specified edge type %s already exists", name.c_str()))
+				mrpt::format("Specified edge type [%s] already exists", name.c_str()))
 	}
 	else {
 		m_name_to_edges_num[name] = 0;
@@ -262,8 +262,10 @@ void CEdgeCounter::setTextMessageParams(
 void CEdgeCounter::setTextMessageParams(
 		const std::map<std::string, double>& name_to_offset_y,
 		const std::map<std::string, int>& name_to_text_index,
-		const double& offset_y_total_edges, const int& text_index_total_edges,
-		const double& offset_y_loop_closures, const int& text_index_loop_closures) {
+		const double& offset_y_total_edges,
+		const int& text_index_total_edges,
+		const double& offset_y_loop_closures,
+		const int& text_index_loop_closures) {
 
 	// set the parameters for total edges / loop closures
 	m_display_total_edges = true;

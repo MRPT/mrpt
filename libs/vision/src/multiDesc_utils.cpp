@@ -1420,7 +1420,7 @@ int vision::computeMoreDescriptors(
             auxHashCoeffs.resize( auxOriVector.size() );
             for( unsigned int m = 0; m < auxOriVector.size(); ++m )
             {
-//                cout << " :::: Descriptor for orientation " << auxOriVector[m];
+//                cout << " :: Descriptor for orientation " << auxOriVector[m];
                 computeHistogramOfOrientations(
                             rsPatch,
                             a/2+1, a/2+1, a,
@@ -1485,7 +1485,7 @@ int vision::computeMoreDescriptors(
             auxCoefVector.resize( auxOriVector.size() );
             for( unsigned int m = 0; m < auxOriVector.size(); ++m )
             {
-//                cout << " :::: Descriptor for orientation " << auxOriVector[m];
+//                cout << " :: Descriptor for orientation " << auxOriVector[m];
                 computeHistogramOfOrientations(
                             rsPatch,
                             a/2+1, a/2+1, a,

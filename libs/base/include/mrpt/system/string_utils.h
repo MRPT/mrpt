@@ -17,28 +17,28 @@ namespace mrpt
 	namespace system
 	{
 		/** \addtogroup string_manage String management and utilities (in #include <mrpt/system/string_utils.h>)
-		  * \ingroup mrpt_base_grp
-		  * @{ */
+		 * \ingroup mrpt_base_grp
+		 * @{ */
 
 		/** An OS-independent method for tokenizing a string.
-		  * The extra parameter "context" must be a pointer to a "char*" variable, which needs no initialization and is used to save information between calls to strtok.
-		  * \sa system::tokenize
-		  */
-		char BASE_IMPEXP  *strtok( char *str, const char *strDelimit, char **context ) MRPT_NO_THROWS;
+		 * The extra parameter "context" must be a pointer to a "char*" variable, which needs no initialization and is used to save information between calls to strtok.
+		 * \sa system::tokenize
+		 */
+		char BASE_IMPEXP  *strtok(char *str, const char *strDelimit, char **context) MRPT_NO_THROWS;
 
 		/** Tokenizes a string according to a set of delimiting characters.
-		  * Example:
-		  * \code
-		  std::vector<std::string>	tokens;
-		  tokenize( " - Pepe-Er  Muo"," -",tokens);
-		  * \endcode
-		  *
-		  *  Will generate 3 tokens:
-		  *		- "Pepe"
-		  *		- "Er"
-		  *		- "Muo"
-		  * \param[in] skipBlankTokens If `true`, consecutive "delimiters" will be considered one single delimiters. If `false`, a blank token will be returned between each pair of delimiters.
-		  */
+		 * Example:
+		 * \code
+		 std::vector<std::string>	tokens;
+		 tokenize(" - Pepe-Er  Muo"," -",tokens);
+		 * \endcode
+		 *
+		 *  Will generate 3 tokens:
+		 *		- "Pepe"
+		 *		- "Er"
+		 *		- "Muo"
+		 * \param[in] skipBlankTokens If `true`, consecutive "delimiters" will be considered one single delimiters. If `false`, a blank token will be returned between each pair of delimiters.
+		 */
 		void  BASE_IMPEXP tokenize(
 			const std::string       & inString,
 			const std::string       & inDelimiters,
@@ -55,35 +55,36 @@ namespace mrpt
 		std::string BASE_IMPEXP trim(const std::string &str);
 
 		/** Returns a upper-case version of a string.
-		  * \sa lowerCase  */
+		 * \sa lowerCase  */
 		std::string  BASE_IMPEXP upperCase(const std::string& str);
 
 		/** Returns an lower-case version of a string.
-		  * \sa upperCase  */
+		 * \sa upperCase  */
 		std::string  BASE_IMPEXP lowerCase(const std::string& str);
 
 		/** Decodes a UTF-8 string into an UNICODE string.
-		  *  See http://en.wikipedia.org/wiki/UTF-8  and http://www.codeguru.com/cpp/misc/misc/multi-lingualsupport/article.php/c10451/.
+		 *  See http://en.wikipedia.org/wiki/UTF-8  and http://www.codeguru.com/cpp/misc/misc/multi-lingualsupport/article.php/c10451/.
 		  */
-		void BASE_IMPEXP decodeUTF8( const std::string &strUTF8, vector_word &out_uniStr );
+		void BASE_IMPEXP decodeUTF8(const std::string &strUTF8, vector_word &out_uniStr);
 
 		/** Encodes a 2-bytes UNICODE string into a UTF-8 string.
-		  *  See http://en.wikipedia.org/wiki/UTF-8 and http://www.codeguru.com/cpp/misc/misc/multi-lingualsupport/article.php/c10451/.
+		 *  See http://en.wikipedia.org/wiki/UTF-8 and http://www.codeguru.com/cpp/misc/misc/multi-lingualsupport/article.php/c10451/.
 		  */
-        void BASE_IMPEXP encodeUTF8( const vector_word &input, std::string &output );
+        void BASE_IMPEXP encodeUTF8(const vector_word &input, std::string &output);
 
 		/** Encode a sequence of bytes as a string in base-64.
-		  * \sa decodeBase64  */
-		void BASE_IMPEXP encodeBase64( const vector_byte &inputData,  std::string &outString );
+		 * \sa decodeBase64  */
+		void BASE_IMPEXP encodeBase64(const vector_byte &inputData,  std::string &outString);
 
 		/** Decode a base-64 string into the original sequence of bytes.
-		  * \sa encodeBase64
-		  * \return false on invalid base-64 string passed as input, true on success.
-		  */
-		bool BASE_IMPEXP decodeBase64( const std::string &inString, vector_byte &outData );
+		 * \sa encodeBase64
+		 * \return false on invalid base-64 string passed as input, true on success.
+		 */
+		bool BASE_IMPEXP decodeBase64(const std::string &inString, vector_byte &outData);
 
-		/** This function implements formatting with the appropriate SI metric unit prefix: 1e-12->'p', 1e-9->'n', 1e-6->'u', 1e-3->'m', 1->'', 1e3->'K', 1e6->'M', 1e9->'G', 1e12->'T'
-		 * \sa intervalFormat */
+		/** This function implements formatting with the appropriate SI metric unit
+		 * prefix: 1e-12->'p', 1e-9->'n', 1e-6->'u', 1e-3->'m', 1->'', 1e3->'K',
+		 * 1e6->'M', 1e9->'G', 1e12->'T' \sa intervalFormat */
 		std::string BASE_IMPEXP unitsFormat(const double val,int nDecimalDigits=2, bool middle_space=true);
 
 		/** Enlarge the string with spaces up to the given length. */
@@ -101,9 +102,11 @@ namespace mrpt
 		/** Return true if "str" starts with "subStr" (case insensitive)  \sa strStarts */
 		bool BASE_IMPEXP strStartsI(const std::string &str, const std::string &subStr);
 
-		/** Generates a string for a container in the format [A,B,C,...], and the fmt string for <b>each</b> vector element. */
+		/** Generates a string for a container in the format [A,B,C,...], and the
+		 * fmt string for <b>each</b> vector element.
+		 */
 		template <typename T>
-		std::string sprintf_container(const char *fmt, const T &V )
+		std::string sprintf_container(const char *fmt, const T &V)
 		{
 			std::string ret = "[";
 			typename T::const_iterator it=V.begin();
@@ -117,6 +120,31 @@ namespace mrpt
 			ret+="]";
 			return ret;
 		}
+
+		/** Original code snippet found in http://stackoverflow.com/a/30357710 */
+		/**\{*/
+
+		/** @brief Convert string instance to number */
+		template <typename T>
+			T str2num(std::string const& value) {
+				std::stringstream sin;
+				sin << value;
+				T output;
+				sin >> output;
+				return output;
+
+			}
+
+		/** @brief Convert number instance to string */
+		template <typename T>
+			std::string num2str(T const& value){
+    		std::stringstream sin;
+    		sin << value;
+    		return sin.str();
+			}
+
+		/**\}*/
+
 
 		/** @} */
 	} // End of namespace

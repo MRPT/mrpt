@@ -56,7 +56,9 @@ else
 fi
 
 MRPTSRC=`pwd`
-MRPT_DEB_DIR="$HOME/mrpt_debian"
+if [ -z "$MRPT_DEB_DIR" ]; then
+        MRPT_DEB_DIR="$HOME/mrpt_debian"
+fi
 MRPT_EXTERN_DEBIAN_DIR="$MRPTSRC/packaging/debian/"
 
 if [ -f ${MRPT_EXTERN_DEBIAN_DIR}/control.in ];
@@ -95,7 +97,7 @@ mkdir -p ${MRPT_DEBSRC_DIR}
 if [ -d "$MRPTSRC/.git" ];
 then
 	echo "Exporting git source tree to ${MRPT_DEBSRC_DIR}"
-	git archive  --format=tar master | tar -x -C ${MRPT_DEBSRC_DIR}
+	git archive  --format=tar HEAD | tar -x -C ${MRPT_DEBSRC_DIR}
 
 	# Generate ./SOURCE_DATE_EPOCH with UNIX time_t
 	SOURCE_DATE_EPOCH=$(git log -1 --pretty=%ct)

@@ -25,7 +25,7 @@ namespace mrpt
 		  *
 		  *  Note that nodes are *not* explicitly listed anywhere: their existence is only inferred from their ID numbers in the list
 		  *  of edges in the \a edges_to_children data structure. If you want to include information for each node, derive from this class
-		  *  and create a separte container for that data.
+		  *  and create a separate container for that data.
 		  *
 		  *  This class is less general than CDirectedGraph but more efficient to traverse (see \a visitDepthFirst and \a visitBreadthFirst).
 		  *

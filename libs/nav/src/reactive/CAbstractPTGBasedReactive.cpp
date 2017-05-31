@@ -412,6 +412,27 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				);
 		} // end for each PTG
 
+		// check for collision, which is reflected by ALL TP-Obstacles being zero:
+		bool is_all_ptg_collision = true;
+		for (size_t indexPTG = 0; indexPTG < nPTGs; indexPTG++)
+		{
+			bool is_collision = true;
+			const auto & obs = m_infoPerPTG[indexPTG].TP_Obstacles;
+			for (const auto o : obs) {
+				if (o != 0) {
+					is_collision = false;
+					break;
+				}
+			}
+			if (!is_collision) {
+				is_all_ptg_collision = false;
+				break;
+			}
+		}
+		if (is_all_ptg_collision) {
+			m_robot.sendApparentCollisionEvent();
+		}
+
 		// Round #2: Evaluate dont sending any new velocity command ("NOP" motion)
 		// =========
 		bool NOP_not_too_old = true;
@@ -419,6 +440,10 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		double NOP_max_time = -1.0, NOP_At = -1.0;
 		double slowdowndist = .0;
 		CParameterizedTrajectoryGenerator * last_sent_ptg = m_lastSentVelCmd.isValid() ? getPTG(m_lastSentVelCmd.ptg_index) : nullptr;
+		if (last_sent_ptg) {
+			// So supportSpeedAtTarget() below is evaluated in the correct context:
+			last_sent_ptg->updateNavDynamicState(m_lastSentVelCmd.ptg_dynState);
+		}
 
 		// This approach is only possible if:
 		const bool can_do_nop_motion =
@@ -628,6 +653,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 					m_infoPerPTG[best_ptg_idx].TP_Obstacles[m_lastSentVelCmd.ptg_alpha_index]
 					:
 					.0;
+				m_lastSentVelCmd.was_slowdown = (selectedHolonomicMovement->props["is_slowdown"]!=0.0);
 
 				m_lastSentVelCmd.tp_target_k = selectedHolonomicMovement ?
 					selectedHolonomicMovement->PTG->alpha2index(m_infoPerPTG[best_ptg_idx].target_alpha) :
@@ -825,7 +851,12 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 	cm.props["robpose_y"] = pose.y;
 	cm.props["robpose_phi"] = pose.phi;
 	cm.props["ptg_priority"] = cm.PTG->getScorePriority() *  cm.PTG->evalPathRelativePriority(target_k, target_d_norm);
-	const bool is_slowdown = (cm.props["is_slowdown"] = (cm.PTG->supportSpeedAtTarget() ? 1 : 0)) != 0;
+	const bool is_slowdown =
+		this_is_PTG_continuation ?
+		m_lastSentVelCmd.was_slowdown
+		:
+		(cm.PTG->supportSpeedAtTarget() && target_k == move_k);
+	cm.props["is_slowdown"] = is_slowdown ? 1:0;
 
 	// Factor 1: Free distance for the chosen PTG and "alpha" in the TP-Space:
 	// ----------------------------------------------------------------------
@@ -998,8 +1029,12 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 
 	// Factor6: clearance
 	// -----------------------------------------------------
+	// clearance indicators that may be useful in deciding the best motion:
 	double &clearance = cm.props["clearance"];
 	clearance = in_clearance.getClearance(move_k, target_d_norm*1.01, false /* spot, dont interpolate */ );
+	cm.props["clearance_50p"] = in_clearance.getClearance(move_k, target_d_norm*0.5, false /* spot, dont interpolate */);
+	cm.props["clearance_path"] = in_clearance.getClearance(move_k, target_d_norm*0.9, true /* average */);
+	cm.props["clearance_path_50p"] = in_clearance.getClearance(move_k, target_d_norm*0.5, true /* average */);
 
 	// Factor: ETA (Estimated Time of Arrival to target or to closest obstacle, whatever it's first)
 	// -----------------------------------------------------
@@ -1132,6 +1167,7 @@ void CAbstractPTGBasedReactive::TSentVelCmd::reset()
 	tim_send_cmd_vel = INVALID_TIMESTAMP;
 	poseVel = TRobotPoseVel();
 	colfreedist_move_k = .0;
+	was_slowdown = false;
 	speed_scale = 1.0;
 	ptg_dynState = CParameterizedTrajectoryGenerator::TNavDynamicState();
 }
