@@ -12,27 +12,93 @@
 #include <mrpt/graphs/CDirectedGraph.h>
 #include <mrpt/graphs/CDirectedTree.h>
 #include <mrpt/utils/traits_map.h>
+#include <mrpt/math/utils.h>
+
 #include <limits>
+#include <iostream> // TODO - remove me
+#include <vector>
+#include <utility>
+#include <exception>
 
 namespace mrpt
 {
 	namespace graphs
 	{
-		/** The Dijkstra algorithm for finding the shortest path between a given source node in a (weighted) directed graph and all other nodes in the form of a tree.
-		  *  The constructor takes as input the graph (the set of directed edges) computes all the needed data, then
-		  *   successive calls to \a getShortestPathTo return the paths efficiently from the root.
-		  *  The entire generated tree can be also retrieved with \a getTreeGraph.
-		  *
-		  *  Input graphs are represented by instances of (or classes derived from) mrpt::graphs::CDirectedGraph, and node's IDs are uint64_t values,
-		  *   although the type mrpt::utils::TNodeID is also provided for clarity in the code.
-		  *
-		  *  The second template argument MAPS_IMPLEMENTATION allows choosing between a sparse std::map<> representation (using mrpt::utils::map_traits_stdmap)
-		  *   for several intermediary and final results, and an alternative (using mrpt::utils::map_traits_map_as_vector as argument)
-		  *   dense implementation which is much faster, but can be only used if the TNodeID's start in 0 or a low value.
-		  *
-		  * See <a href="http://www.mrpt.org/Example:Dijkstra_optimal_path_search_in_graphs" > this page </a> for a complete example.
-		  * \ingroup mrpt_graphs_grp
-		  */
+
+		namespace detail {
+
+			/**\brief Custom exception class that passes information in case an
+			 * unconnected graph is passed to a Dijkstra instance
+			 */
+			class NotConnectedGraph: public std::exception
+			{
+				public:
+
+					explicit NotConnectedGraph(
+							const std::set<mrpt::utils::TNodeID>& unconnected_nodeIDs,
+							std::string err):
+						m_unconnected_nodeIDs(unconnected_nodeIDs),
+						m_err(err + "\n\n") { }
+
+					using std::exception::what; // supress clang warning
+  				const char* what() {
+						return m_err.c_str();
+  				}
+
+  				~NotConnectedGraph() throw() { }
+
+  				/**\brief Fill set with the nodeIDs Dijkstra algorithm could not reach
+  				 * starting from the root node.
+  				 */
+  				void getUnconnectedNodeIDs(std::set<mrpt::utils::TNodeID>* set_nodeIDs) const {
+  					ASSERTMSG_(set_nodeIDs, "\nSet of nodes pointer is invalid\n");
+
+						// fil the given set
+						set_nodeIDs->clear();
+  					for (std::set<mrpt::utils::TNodeID>::iterator
+  							it = m_unconnected_nodeIDs.begin();
+  							it != m_unconnected_nodeIDs.end();
+  							++it) {
+  						set_nodeIDs->insert(*it);
+  					}
+
+  				}
+
+  			private:
+					std::set<mrpt::utils::TNodeID> m_unconnected_nodeIDs;
+					std::string m_err;
+			};
+		} // end of namespace - detail
+
+		/** The Dijkstra algorithm for finding the shortest path between a given
+		 * source node in a (weighted) directed graph and all other nodes in the
+		 * form of a tree.
+		 *
+		 *  The constructor takes as input the graph (the set of directed edges)
+		 *  computes all the needed data, then successive calls to \a
+		 *  getShortestPathTo return the paths efficiently from the root.
+		 *
+		 *  The entire generated tree can be also retrieved with \a getTreeGraph.
+		 *
+		 *  Input graphs are represented by instances of (or classes derived from)
+		 *  mrpt::graphs::CDirectedGraph, and node's IDs are uint64_t values,
+		 *  although the type mrpt::utils::TNodeID is also provided for clarity in
+		 *  the code.
+		 *
+		 *  The second template argument MAPS_IMPLEMENTATION allows choosing
+		 *  between a sparse std::map<> representation (using *
+		 *  mrpt::utils::map_traits_stdmap) for several intermediary and final
+		 *  results, and an alternative (using
+		 *  mrpt::utils::map_traits_map_as_vector as argument) dense
+		 *  implementation which is much faster, but can be only used if the
+		 *  TNodeID's start in 0 or a low value.
+		 *
+		 * See <a
+		 * href="http://www.mrpt.org/Example:Dijkstra_optimal_path_search_in_graphs"
+		 * > this page </a> for a complete example.
+		 *
+		 * \ingroup mrpt_graphs_grp
+		 */
 		template<class TYPE_GRAPH, class MAPS_IMPLEMENTATION = mrpt::utils::map_traits_stdmap >
 		class CDijkstra
 		{
@@ -41,7 +107,7 @@ namespace mrpt
 			struct TDistance
 			{
 				double dist;
-				inline TDistance() : dist( std::numeric_limits<double>::max() ) { }
+				inline TDistance() : dist(std::numeric_limits<double>::max()) { }
 				inline TDistance(const double D) : dist(D) { }
 				inline const TDistance & operator =(const double D) { dist = D; return *this;}
 			};
@@ -49,7 +115,7 @@ namespace mrpt
 			/** Auxiliary struct for backward paths */
 			struct TPrevious
 			{
-				inline TPrevious() : id( INVALID_NODEID ) { }
+				inline TPrevious() : id(INVALID_NODEID) { }
 				TNodeID  id;
 			};
 
@@ -81,27 +147,31 @@ namespace mrpt
 
 			/** @} */
 
-			/** Constructor, which takes the input graph and executes the entire Dijkstra algorithm from the given root node ID.
-			  *
-			  *  The graph is given by the set of directed edges, stored in a mrpt::graphs::CDirectedGraph class.
-			  *
-			  *  If a function \a functor_edge_weight is provided, it will be used to compute the weight of edges.
-			  *  Otherwise, all edges weight the unity.
-			  *
-			  *  After construction, call \a getShortestPathTo to get the shortest path to a node or \a getTreeGraph for the tree representation.
-			  *
-			  * \sa getShortestPathTo, getTreeGraph
-			  * \exception std::exception If the source nodeID is not found in the graph
-			  */
+			/** Constructor which takes the input graph and executes the entire
+			 * Dijkstra algorithm from the given root node ID.
+			 *
+			 *  The graph is given by the set of directed edges, stored in a
+			 *  mrpt::graphs::CDirectedGraph class.
+			 *
+			 *  If a function \a functor_edge_weight is provided, it will be used to
+			 *  compute the weight of edges.  Otherwise, all edges weight the unity.
+			 *
+			 *  After construction, call \a getShortestPathTo to get the shortest
+			 *  path to a node or \a getTreeGraph for the tree representation.
+			 *
+			 * \sa getShortestPathTo, getTreeGraph
+			 *
+			 * \exception std::exception If the source nodeID is not found in the
+			 * graph
+			 */
 			CDijkstra(
-				const graph_t  &graph,
+					const graph_t  &graph,
 				const TNodeID   source_node_ID,
 				double (*functor_edge_weight)(const graph_t& graph, const TNodeID id_from, const TNodeID id_to, const edge_t &edge) =  nullptr,
 				void   (*functor_on_progress)(const graph_t& graph, size_t visitedCount) = nullptr
 				)
 				: m_cached_graph(graph), m_source_node_ID(source_node_ID)
 			{
-				MRPT_START
 				/*
 				1  function Dijkstra(G, w, s)
 				2     for each vertex v in V[G]                        // Initializations
@@ -119,12 +189,13 @@ namespace mrpt
 				14                        m_prev_node[v] := u
 				*/
 
-				// Makea list of all the nodes in the graph:
-				graph.getAllNodes( m_lstNode_IDs );
+				// Make a list of all the nodes in the graph:
+				graph.getAllNodes(m_lstNode_IDs);
 				const size_t nNodes = m_lstNode_IDs.size();
 
-				if ( m_lstNode_IDs.find(source_node_ID)==m_lstNode_IDs.end() )
-					THROW_EXCEPTION_FMT("Cannot find the source node_ID=%u in the graph",static_cast<unsigned int>(source_node_ID));
+				if ( m_lstNode_IDs.find(source_node_ID)==m_lstNode_IDs.end() ) {
+					THROW_EXCEPTION_FMT("Cannot find the source node_ID=%lu in the graph",static_cast<unsigned long>(source_node_ID));
+				}
 
 				// Init:
 				// m_distances: already initialized to infinity by default.
@@ -132,46 +203,88 @@ namespace mrpt
 				// m_prev_arc: idem
 				// m_visited: idem
 				size_t visitedCount = 0;
-				m_distances            [source_node_ID] = 0;
+				m_distances[source_node_ID] = 0;
 				m_distances_non_visited[source_node_ID] = 0;
 
-				// Precompute all neighbors:
+				// Precompute all neighbors of all the nodes in the given graph:
 				graph.getAdjacencyMatrix(m_allNeighbors);
 
+				using namespace std;
+
 				TNodeID u;
-				do  // The algorithm:
-				{
+				// as long as there are nodes not yet visited.
+				do { // The algorithm:
 					// Find the nodeID with the minimum known distance so far considered:
 					double min_d = std::numeric_limits<double>::max();
 					u = INVALID_NODEID;
 
 					// No need to check if the min. distance node is not visited yet, since we
 					// keep two lists: m_distances_non_visited & m_distances
-					for (typename std::map<TNodeID,TDistance>::const_iterator itDist=m_distances_non_visited.begin();itDist!=m_distances_non_visited.end();++itDist)
-					{
-						if (itDist->second.dist < min_d)
-						{
+					for (typename std::map<TNodeID,TDistance>::const_iterator
+							itDist=m_distances_non_visited.begin();
+							itDist != m_distances_non_visited.end();
+							++itDist) {
+
+						// TODO - remove these
+						//cout << "Current min distance: " << min_d << endl;
+						//cout << "itDist->first: " << itDist->first << endl;
+						//cout << "itDist->second (distance to this node): " << itDist->second.dist << endl;
+
+						if (itDist->second.dist < min_d) {
 							u = itDist->first;
 							min_d = itDist->second.dist;
+							//cout << "updating u, min_d... " << endl;
 						}
-					}
-					ASSERTMSG_(u!=INVALID_NODEID, "Graph is not fully connected!")
+						//cout << "finished for." << endl;
 
-					// Save distance (for possible future reference...) and remove this node from "non-visited":
+					}
+
+					// make sure we have found the next nodeID from the available non-visited distances
+					if (u == INVALID_NODEID) {
+						std::set<TNodeID> nodeIDs_unconnected;
+
+						// for all the nodes in the graph
+						for (typename TYPE_GRAPH::global_poses_t::const_iterator
+								n_it = graph.nodes.begin();
+								n_it != graph.nodes.end();
+								++n_it) {
+
+							// have I already visited this node in Dijkstra?
+							bool have_traversed = false;
+							for (typename id2dist_map_t::const_iterator
+									d_it = m_distances.begin();
+									d_it != m_distances.end();
+									++d_it) {
+								if (n_it->first == d_it->first) {
+									have_traversed = true;
+									break;
+								}
+							}
+
+							if (!have_traversed) {
+								nodeIDs_unconnected.insert(n_it->first);
+							}
+						}
+
+						std::string err_str = mrpt::format("Graph is not fully connected!");
+						throw mrpt::graphs::detail::NotConnectedGraph(
+								nodeIDs_unconnected, err_str);
+					}
+
+					// Update distance (for possible future reference...) and remove this node from "non-visited":
 					m_distances[u]=m_distances_non_visited[u];
 					m_distances_non_visited.erase(u);
 
 					visitedCount++;
 
 					// Let the user know about our progress...
-					if (functor_on_progress) (*functor_on_progress)(graph,visitedCount);
+					if (functor_on_progress) (*functor_on_progress)(graph, visitedCount);
 
 					// For each arc from "u":
 					const std::set<TNodeID> & neighborsOfU = m_allNeighbors[u];	//graph.getNeighborsOf(u,neighborsOfU);
-					for (std::set<TNodeID>::const_iterator itNei=neighborsOfU.begin();itNei!=neighborsOfU.end();++itNei)
-					{
+					for (std::set<TNodeID>::const_iterator itNei = neighborsOfU.begin(); itNei != neighborsOfU.end(); ++itNei) {
 						const TNodeID i = *itNei;
-						if (i==u) continue; // ignore self-loops...
+						if (i == u) continue; // ignore self-loops...
 
 						// the "edge_ui" may be searched here or a bit later, so the "bool" var will tell us.
 						typename graph_t::const_iterator edge_ui;
@@ -182,50 +295,51 @@ namespace mrpt
 						double edge_ui_weight;
 						if (!functor_edge_weight)
 							edge_ui_weight = 1.;
-						else
-						{	// edge may be i->u or u->i:
-							edge_ui = graph.edges.find( std::make_pair(u,i) );
-							if ( edge_ui==graph.edges.end() )
-							{
-								edge_ui = graph.edges.find( std::make_pair(i,u));
+						else {	// edge may be i->u or u->i:
+							edge_ui = graph.edges.find(std::make_pair(u,i));
+							if (edge_ui==graph.edges.end()) {
+								edge_ui = graph.edges.find(std::make_pair(i,u));
 								edge_ui_reverse = true;
 							}
 							ASSERT_(edge_ui!=graph.edges.end());
-							edge_ui_weight = (*functor_edge_weight)( graph, edge_ui->first.first,edge_ui->first.second, edge_ui->second );
+							edge_ui_weight = (*functor_edge_weight)(graph, edge_ui->first.first,edge_ui->first.second, edge_ui->second);
 							edge_ui_found = true;
 						}
 
-						if ( (min_d+edge_ui_weight) < m_distances[i].dist) // the [] creates the entry if needed
-						{
-							m_distances[i].dist = m_distances_non_visited[i].dist = min_d+edge_ui_weight;
+						if ((min_d+edge_ui_weight) < m_distances[i].dist) { // the [] creates the entry if needed
+							// update m_distances, m_distances_non_visited
+							m_distances_non_visited[i].dist =  min_d + edge_ui_weight;
+							m_distances[i].dist =  min_d + edge_ui_weight;
+
 							m_prev_node[i].id = u;
 							// If still not done above, detect the direction of the arc now:
-							if (!edge_ui_found)
-							{
-								edge_ui = graph.edges.find( std::make_pair(u,i) );
-								if ( edge_ui==graph.edges.end() ) {
-									edge_ui = graph.edges.find( std::make_pair(i,u));
+							if (!edge_ui_found) {
+								edge_ui = graph.edges.find(std::make_pair(u,i));
+								if (edge_ui==graph.edges.end()) {
+									edge_ui = graph.edges.find(std::make_pair(i,u));
 									edge_ui_reverse = true;
 								}
 								ASSERT_(edge_ui!=graph.edges.end());
 							}
 
-							if ( !edge_ui_reverse )
+							if (!edge_ui_reverse)
 									m_prev_arc[i] = std::make_pair(u,i);	// *u -> *i
 							else	m_prev_arc[i] = std::make_pair(i,u);	// *i -> *u
 						}
 					}
-				} while ( visitedCount<nNodes );
+				} while (visitedCount < nNodes);
 
-				MRPT_END
 			} // end Dijkstra
 
 
 			/** @name Query Dijkstra results
-			    @{ */
+			  @{ */
 
-			/** Return the distance from the root node to any other node using the Dijkstra-generated tree \exception std::exception On unknown node ID
-			  */
+			/** Return the distance from the root node to any other node using the
+			 * Dijkstra-generated tree
+			 *
+			 * \exception std::exception On unknown node ID
+			 */
 			inline double getNodeDistanceToRoot(const TNodeID id) const {
 				typename id2dist_map_t::const_iterator it=m_distances.find(id);
 				if (it==m_distances.end()) THROW_EXCEPTION("Node was not found in the graph when running Dijkstra");
@@ -238,54 +352,66 @@ namespace mrpt
 			/** Return the node ID of the tree root, as passed in the constructor */
 			inline TNodeID getRootNodeID() const { return m_source_node_ID; }
 
-			/** Return the adjacency matrix of the input graph, which is cached at construction so if needed later just use this copy to avoid recomputing it \sa  mrpt::graphs::CDirectedGraph::getAdjacencyMatrix */
-			inline const list_all_neighbors_t & getCachedAdjacencyMatrix() const { return m_allNeighbors; }
+			/** Return the adjacency matrix of the input graph, which is cached at
+			 * construction so if needed later just use this copy to avoid
+			 * recomputing it
+			 *
+			 * \sa  mrpt::graphs::CDirectedGraph::getAdjacencyMatrix
+			 * */
+			inline const list_all_neighbors_t & getCachedAdjacencyMatrix() const {
+				return m_allNeighbors; }
 
-			/** Returns the shortest path between the source node passed in the constructor and the given target node.
-			  * The reconstructed path contains a list of arcs (all of them exist in the graph with the given direction), such as the
-			  *  the first edge starts at the origin passed in the constructor, and the last one contains the given target.
-			  *
-			  * \note An empty list of edges is returned when target equals the source node.
-			  * \sa getTreeGraph
-			  */
+			/** Returns the shortest path between the source node passed in the
+			 * constructor and the given target node. The reconstructed path
+			 * contains a list of arcs (all of them exist in the graph with the given
+			 * direction), such as the the first edge starts at the origin passed in
+			 * the constructor, and the last one contains the given target.
+			 *
+			 * \note An empty list of edges is returned when target equals the source
+			 * node.
+			 *
+			 * \sa getTreeGraph
+			 */
 			void getShortestPathTo(
-				const TNodeID   target_node_ID,
-				edge_list_t &out_path
-				) const
-			{
+					const TNodeID   target_node_ID,
+					edge_list_t &out_path) const {
+
 				out_path.clear();
 				if (target_node_ID==m_source_node_ID) return;
 
 				TNodeID nod = target_node_ID;
-				do
-				{
+				do {
 					typename id2pairIDs_map_t::const_iterator it = m_prev_arc.find(nod);
 					ASSERT_(it!=m_prev_arc.end())
 
-					out_path.push_front( it->second );
+					out_path.push_front(it->second);
 					nod = m_prev_node.find(nod)->second.id;
 				} while (nod!=m_source_node_ID);
 
 			} // end of getShortestPathTo
 
 
-			/** Type for graph returned by \a getTreeGraph: a graph like the original input graph, but with edge data being pointers to the original data (to save copy time & memory)
-			  */
+			/** Type for graph returned by \a getTreeGraph: a graph like the original
+			 * input graph, but with edge data being pointers to the original data
+			 * (to save copy time & memory)
+			 */
 			typedef CDirectedTree<const edge_t *>  tree_graph_t;
 
 			/** Returns a tree representation of the graph, as determined by the Dijkstra shortest paths from the root node.
-			  * Note that the annotations on each edge in the tree are "const pointers" to the original graph edge data, so
-			  * it's mandatory for the original input graph not to be deleted as long as this tree is used.
-			  * \sa getShortestPathTo
-			  */
-			void getTreeGraph( tree_graph_t &out_tree ) const
+			 * Note that the annotations on each edge in the tree are "const pointers" to the original graph edge data, so
+			 * it's mandatory for the original input graph not to be deleted as long as this tree is used.
+			 * \sa getShortestPathTo
+			 */
+			void getTreeGraph(tree_graph_t &out_tree) const
 			{
 				typedef typename tree_graph_t::TEdgeInfo TreeEdgeInfo;
 
 				out_tree.clear();
 				out_tree.root = m_source_node_ID;
-				for (typename id2pairIDs_map_t::const_iterator itArcs=m_prev_arc.begin();itArcs!=m_prev_arc.end();++itArcs)
-				{	// For each saved arc in "m_prev_arc", recover the original data in the input graph and save it to the output tree structure.
+				// For each saved arc in "m_prev_arc", recover the original data in the input graph and save it to the output tree structure.
+				for (typename id2pairIDs_map_t::const_iterator itArcs=m_prev_arc.begin();
+						itArcs!=m_prev_arc.end();
+						++itArcs) {	
 					const TNodeID id      = itArcs->first;
 					const TNodeID id_from = itArcs->second.first;
 					const TNodeID id_to   = itArcs->second.second;
@@ -294,12 +420,14 @@ namespace mrpt
 					TreeEdgeInfo newEdge(id);
 					newEdge.reverse = (id==id_from); // true: root towards leafs.
 					typename graph_t::edges_map_t::const_iterator itEdgeData = m_cached_graph.edges.find(std::make_pair(id_from,id_to));
-					ASSERTMSG_(itEdgeData!=m_cached_graph.edges.end(),format("Edge %u->%u is in Dijkstra paths but not in original graph!",static_cast<unsigned int>(id_from),static_cast<unsigned int>(id_to) ))
+					ASSERTMSG_(
+							itEdgeData!=m_cached_graph.edges.end(),format(
+								"Edge %u->%u is in Dijkstra paths but not in original graph!",static_cast<unsigned int>(id_from),static_cast<unsigned int>(id_to)))
 					newEdge.data = & itEdgeData->second;
-					edges.push_back( newEdge );
+					edges.push_back(newEdge);
 				}
 
-			}// end getTreeGraph
+			} // end getTreeGraph
 
 
 

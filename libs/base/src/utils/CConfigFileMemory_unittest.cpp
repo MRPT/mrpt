@@ -46,7 +46,7 @@ TEST(CConfigFileMemory, Names)
 	third.write("sec","name","val");
 	third.write("sec","names","value");
 	third.getAllKeys("sec", names);
-	EXPECT_EQ(2, names.size());
+	EXPECT_EQ(2U, names.size());
 	if (names.size() == 2) {  // avoid potential crash if fails
 		EXPECT_STREQ("name", names[0].c_str());
 		EXPECT_STREQ("names", names[1].c_str());
@@ -103,4 +103,28 @@ TEST(CConfigFile, readMultiLineStrings)
 
 	const std::string readStr = cfg.read_string("test", "key_str", "");
 	EXPECT_EQ(readStr, expectedStr);
+}
+
+TEST(CConfigFileMemory, parseVariables)
+{
+	const std::string sampleCfgTxt2 =
+		"@define MAXSPEED 10\n"
+		"@define  MAXOMEGA  -30  \n"
+		"[test]\n"
+		"var1=5\n"
+		"var2=${MAXSPEED}\n"
+		"var3=${MAXOMEGA}\n"
+		"var4=$eval{5*MAXSPEED+MAXOMEGA}\n"
+		"var5 = $eval{ MAXSPEED - MAXOMEGA } \n"
+		"varstr1=MAXSPEED\n";
+	;
+	CConfigFileMemory cfg;
+	cfg.setContent(sampleCfgTxt2);
+
+	EXPECT_EQ(cfg.read_int("test", "var1", 0), 5);
+	EXPECT_EQ(cfg.read_int("test", "var2", 0), 10);
+	EXPECT_EQ(cfg.read_int("test", "var3", 0), -30);
+	EXPECT_NEAR(cfg.read_double("test", "var4", .0), 20.0, 1e-6);
+	EXPECT_NEAR(cfg.read_double("test", "var5", .0), 40.0,1e-6);
+	EXPECT_EQ(cfg.read_string("test", "varstr1", ""), std::string("MAXSPEED"));
 }

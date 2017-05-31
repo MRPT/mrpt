@@ -98,7 +98,7 @@ void CConfigFileMemory::setContent(  const std::string &str )
  ---------------------------------------------------------------*/
 void CConfigFileMemory::getContent( std::string &str ) const
 {
-	((MRPT_CSimpleIni*)(m_ini.get()))->Save( str, false );
+	((MRPT_CSimpleIni*)(m_ini.get()))->Save( str);
 }
 
 /*---------------------------------------------------------------

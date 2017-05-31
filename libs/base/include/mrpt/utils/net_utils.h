@@ -18,8 +18,8 @@ namespace mrpt
 	namespace utils
 	{
 		/** A set of useful routines for networking. (in #include <mrpt/utils/net_utils.h>)
-		  * \ingroup network_grp
-		  */
+		 * \ingroup network_grp
+		 */
 		namespace net
 		{
 			/** \addtogroup network_grp
@@ -27,8 +27,7 @@ namespace mrpt
 
 			using std::string;
 
-			/** Possible returns from a HTTP request.
-			  */
+			/** Possible returns from a HTTP request. */
 			enum ERRORCODE_HTTP {
 				erOk = 0,
 				erBadURL,
@@ -38,21 +37,21 @@ namespace mrpt
 			};
 
 			/** Perform an HTTP GET operation (version for retrieving the data as a vector_byte)
-			  * \param url Must be a simple string of the form "http://<servername>/<relative-address>".
-			  * \param port The server port, if different from 80.
-			  * \param extra_headers If provided, the given extra HTTP headers will be sent.
-			  * \param out_errormsg On exit will contain a description of the error or "Ok".
-			  * \param out_content The buffer with the retrieved data.
-			  * \param out_http_responsecode If provided, will hold the HTTP code, eg: 200, 404...
-			  * \param out_headers If provided, a copy of all the headers returned by the server will be saved here.
-			  * \param auth_user Send a basic HTTP authorization request with the given user & password.
-			  * \param auth_pass Send a basic HTTP authorization request with the given user & password.
-			  *
-			  * \return The error or success code.
-			  * \sa mrpt::utils::vectorToBinaryFile, http_request()
-			  */
+			 * \param url Must be a simple string of the form "http://<servername>/<relative-address>".
+			 * \param port The server port, if different from 80.
+			 * \param extra_headers If provided, the given extra HTTP headers will be sent.
+			 * \param out_errormsg On exit will contain a description of the error or "Ok".
+			 * \param out_content The buffer with the retrieved data.
+			 * \param out_http_responsecode If provided, will hold the HTTP code, eg: 200, 404...
+			 * \param out_headers If provided, a copy of all the headers returned by the server will be saved here.
+			 * \param auth_user Send a basic HTTP authorization request with the given user & password.
+			 * \param auth_pass Send a basic HTTP authorization request with the given user & password.
+			 *
+			 * \return The error or success code.
+			 * \sa mrpt::utils::vectorToBinaryFile
+			 */
 			ERRORCODE_HTTP BASE_IMPEXP
-			http_get(
+				http_get(
 				const string	&url,
 				vector_byte		&out_content,
 				string			&out_errormsg,
@@ -65,7 +64,20 @@ namespace mrpt
 				int  timeout_ms = 1000
 				);
 
-			/**\ overload */
+			/** Perform an HTTP GET operation (version for retrieving the data as text)
+			 * \param url Must be a simple string of the form "http://<servername>/<relative-address>".
+			 * \param port The server port, if different from 80.
+			 * \param extra_headers If provided, the given extra HTTP headers will be sent.
+			 * \param out_errormsg On exit will contain a description of the error or "Ok".
+			 * \param out_content The buffer with the retrieved data.
+			 * \param out_http_responsecode If provided, will hold the HTTP code, eg: 200, 404...
+			 * \param out_headers If provided, a copy of all the headers returned by the server will be saved here.
+			 * \param auth_user Send a basic HTTP authorization request with the given user & password.
+			 * \param auth_pass Send a basic HTTP authorization request with the given user & password.
+			 *
+			 * \return The error or success code.
+			 * \sa mrpt::utils::vectorToBinaryFile
+			 */
 			ERRORCODE_HTTP  BASE_IMPEXP
 			http_get(
 				const string	&url,
@@ -98,11 +110,13 @@ namespace mrpt
 				);
 
 
-			/** Resolve a server address by its name, returning its IP address as a string - This method has a timeout for the maximum time to wait for the DNS server.
-			  *   For example: server_name="www.google.com" -> out_ip="209.85.227.99"
-			  *
-			  * \return true on success, false on timeout or other error.
-			  */
+			/** Resolve a server address by its name, returning its IP address as a
+			 * string - This method has a timeout for the maximum time to wait for
+			 * the DNS server.  For example: server_name="www.google.com" ->
+			 * out_ip="209.85.227.99"
+			 *
+			 * \return true on success, false on timeout or other error.
+			 */
 			bool BASE_IMPEXP DNS_resolve_async(
 				const std::string &server_name,
 				std::string	 &out_ip,
@@ -111,6 +125,25 @@ namespace mrpt
 
 			/** Returns a description of the last Sockets error */
 			std::string BASE_IMPEXP getLastSocketErrorStr();
+
+			/** @brief Ping an IP address
+ 			 *
+ 			 * @param[in] address Address to ping.
+ 			 * @param[in] max_attempts Number of attempts to try and ping.
+ 			 * @param[out] output String containing output information
+ 			 *
+ 			 * @return True if responsive, false otherwise.
+ 			 *
+ 			 * @note { I am redirecting stderr to stdout, so that the overall process
+ 			 * is simplified.  Otherwise see:
+ 			 * https://jineshkj.wordpress.com/2006/12/22/how-to-capture-stdin-stdout-and-stderr-of-child-program/
+ 			 * }
+ 			 *
+ 			 */
+			bool BASE_IMPEXP Ping(
+					const std::string& address,
+    			const int& max_attempts,
+    			std::string* output_str=NULL);
 
 			/** @} */  // end grouping
 

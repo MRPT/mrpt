@@ -55,7 +55,7 @@ protected:
 private:
 	bool m_showing_help, m_hiding_help;
 
-	std::string help_msg;
+	std::string m_help_msg;
 
 	/**\brief Map from registered char_code (std::string to support <C-c>) to boolean
 	 * true/false indicating whether it has been pressed since previous time
@@ -63,7 +63,6 @@ private:
 	 */
 	std::map<std::string, bool> m_key_codes_to_pressed;
 	mrpt::utils::CTicTac  m_tim_show_start, m_tim_show_end;
-	std::string m_help_text;
 };
 
 } } // END OF NAMESPACES

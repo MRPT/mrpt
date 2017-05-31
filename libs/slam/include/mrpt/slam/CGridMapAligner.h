@@ -111,7 +111,7 @@ namespace mrpt
 				float	threshold_max;		//!< Correspondences are considered if their distances are below this threshold (in the range [0,1]) (default=0.15).
 				float	threshold_delta;	//!< Correspondences are considered if their distances to the best match are below this threshold (in the range [0,1]) (default=0.15).
 
-				float   min_ICP_goodness;	//!< The minimum goodness (0-1) of the post-matching ICP to accept a hypothesis as good (default=0.25)
+				float   min_ICP_goodness;	//!< The minimum goodness (0-1) of the post-matching ICP to accept a hypothesis as good (default=0.30)
 				double  max_ICP_mahadist;	//!< The maximum Mahalanobis distance between the initial and final poses in the ICP not to discard the hypothesis (default=10)
 				double  maxKLd_for_merge;	//!< Maximum KL-divergence for merging modes of the SOG (default=0.9)
 
@@ -181,8 +181,8 @@ namespace mrpt
 			 * \param m1			[IN] The first map (Must be a mrpt::maps::CMultiMetricMap class)
 			 * \param m2			[IN] The second map (Must be a mrpt::maps::CMultiMetricMap class)
 			 * \param initialEstimationPDF	[IN] (IGNORED IN THIS ALGORITHM!)
-			 * \param runningTime	[OUT] A pointer to a container for obtaining the algorithm running time in seconds, or nullptr if you don't need it.
-			 * \param info			[OUT] A pointer to a CAlignerFromMotionDraws::TReturnInfo struct, or nullptr if result information are not required.
+			 * \param runningTime	[OUT] A pointer to a container for obtaining the algorithm running time in seconds, or NULL if you don't need it.
+			 * \param info			[OUT] A pointer to a TReturnInfo struct, or NULL if result information are not required.
 			 *
 			 * \note The returned PDF depends on the selected alignment method:
 			 *		- "amRobustMatch" --> A "poses::CPosePDFSOG" object.

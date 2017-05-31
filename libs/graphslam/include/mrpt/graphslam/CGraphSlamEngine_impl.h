@@ -1,31 +1,37 @@
 /* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          http://www.mrpt.org/                             |
-   |                                                                           |
-   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-   | Released under BSD License. See details in http://www.mrpt.org/License    |
-   +---------------------------------------------------------------------------+ */
+ |                     Mobile Robot Programming Toolkit (MRPT)               |
+	 |                          http://www.mrpt.org/                             |
+	 |                                                                           |
+	 | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
+	 | See: http://www.mrpt.org/Authors - All rights reserved.                   |
+	 | Released under BSD License. See details in http://www.mrpt.org/License    |
+	 +---------------------------------------------------------------------------+ */
+
 #ifndef CGRAPHSLAMENGINE_IMPL_H
 #define CGRAPHSLAMENGINE_IMPL_H
 
 namespace mrpt { namespace graphslam {
 
+template<class GRAPH_T>
+const std::string CGraphSlamEngine<GRAPH_T>::header_sep = std::string(80, '-');
+template<class GRAPH_T>
+const std::string CGraphSlamEngine<GRAPH_T>::report_sep = std::string(2, '\n');
+
  // Ctors, Dtors implementations
 //////////////////////////////////////////////////////////////
 
-template<class GRAPH_t>
-CGraphSlamEngine<GRAPH_t>::CGraphSlamEngine(
+template<class GRAPH_T>
+CGraphSlamEngine<GRAPH_T>::CGraphSlamEngine(
 		const std::string& config_file,
-		const std::string rawlog_fname/* ="" */,
-		const std::string fname_GT /* ="" */,
-		mrpt::graphslam::CWindowManager* win_manager /* = nullptr */,
-		mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_t>* node_reg /* = nullptr */,
-		mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_t>* edge_reg /* = nullptr */,
-		mrpt::graphslam::optimizers::CGraphSlamOptimizer<GRAPH_t>* optimizer /* = nullptr */
+		const std::string& rawlog_fname/* ="" */,
+		const std::string& fname_GT /* ="" */,
+		mrpt::graphslam::CWindowManager* win_manager /* = NULL */,
+		mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_T>* node_reg /* = NULL */,
+		mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_T>* edge_reg /* = NULL */,
+		mrpt::graphslam::optimizers::CGraphSlamOptimizer<GRAPH_T>* optimizer /* = NULL */
 		):
-	m_node_registrar(node_reg),
-	m_edge_registrar(edge_reg),
+	m_node_reg(node_reg),
+	m_edge_reg(edge_reg),
 	m_optimizer(optimizer),
 	m_enable_visuals(win_manager != nullptr),
 	m_config_fname(config_file),
@@ -33,53 +39,46 @@ CGraphSlamEngine<GRAPH_t>::CGraphSlamEngine(
 	m_fname_GT(fname_GT),
 	m_GT_poses_step(1),
 	m_win_manager(win_manager),
+	m_paused_message("Program is paused. Press \"p/P\" to resume."),
+	m_text_index_paused_message(345), // just a large number.
 	m_odometry_color(0, 0, 255),
 	m_GT_color(0, 255, 0),
 	m_estimated_traj_color(255, 165, 0),
 	m_optimized_map_color(255, 0, 0),
+	m_current_constraint_type_color(255, 255, 255),
 	m_robot_model_size(1),
-	m_class_name("CGraphSlamEngine")
+	m_class_name("CGraphSlamEngine"),
+	m_is_first_time_node_reg(true)
 {
-
-	this->initCGraphSlamEngine();
+	this->initClass();
 };
 
-template<class GRAPH_t>
-
-CGraphSlamEngine<GRAPH_t>::~CGraphSlamEngine() {
+template<class GRAPH_T>
+CGraphSlamEngine<GRAPH_T>::~CGraphSlamEngine() {
 	using namespace mrpt::utils;
 	using namespace mrpt;
 	using namespace std;
 
-	MRPT_LOG_DEBUG_STREAM( "In Destructor: Deleting CGraphSlamEngine instance...");
+	MRPT_LOG_DEBUG_STREAM("In Destructor: Deleting CGraphSlamEngine instance...");
 
 	// close all open files
 	for (fstreams_out_it it  = m_out_streams.begin(); it != m_out_streams.end();
 			++it) {
 		if ((it->second)->fileOpenCorrectly()) {
-			MRPT_LOG_INFO_STREAM( "Closing file: " << (it->first));
+			MRPT_LOG_INFO_STREAM("Closing file: " << (it->first));
 			(it->second)->close();
 		}
 	}
 
-	// delete m_odometry_poses
-	if (m_odometry_poses.size()) {
-		MRPT_LOG_DEBUG_STREAM( "Releasing m_odometry_poses vector; size: " << m_odometry_poses.size());
-		for (size_t i = 0; i != m_odometry_poses.size(); ++i) {
-			delete m_odometry_poses[i];
-		}
-		MRPT_LOG_DEBUG_STREAM( "Released m_odometry_poses vector");
-	}
-
 	// change back the CImage path
 	if (mrpt::system::strCmpI(m_GT_file_format, "rgbd_tum")) {
-		MRPT_LOG_DEBUG_STREAM( "Changing back the CImage PATH");
+		MRPT_LOG_DEBUG_STREAM("Changing back the CImage PATH");
 		CImage::IMAGES_PATH_BASE = m_img_prev_path_base;
 	}
 
 	// delete the CDisplayWindowPlots object
 	if (m_win_plot) {
-		MRPT_LOG_DEBUG_STREAM( "Releasing CDisplayWindowPlots...");
+		MRPT_LOG_DEBUG_STREAM("Releasing CDisplayWindowPlots...");
 		delete m_win_plot;
 	}
 }
@@ -89,32 +88,39 @@ CGraphSlamEngine<GRAPH_t>::~CGraphSlamEngine() {
 //////////////////////////////////////////////////////////////
 
 
-template<class GRAPH_t>
-typename GRAPH_t::constraint_t::type_value
-CGraphSlamEngine<GRAPH_t>::getCurrentRobotPosEstimation() const {
+template<class GRAPH_T>
+typename GRAPH_T::global_pose_t
+CGraphSlamEngine<GRAPH_T>::getCurrentRobotPosEstimation() const {
 	MRPT_START;
 
 	std::lock_guard<std::mutex> m_graph_lock(m_graph_section);
-	return m_node_registrar->getCurrentRobotPosEstimation();
+	return m_node_reg->getCurrentRobotPosEstimation();
 
 	MRPT_END;
 }
 
-template<class GRAPH_t>
-void CGraphSlamEngine<GRAPH_t>::getRobotEstimatedTrajectory(
-		mrpt::graphs::CNetworkOfPoses2DInf::global_poses_t* graph_poses) const {
+template<class GRAPH_T>
+void CGraphSlamEngine<GRAPH_T>::getRobotEstimatedTrajectory(
+		typename GRAPH_T::global_poses_t* graph_poses) const {
 	MRPT_START;
-
+	ASSERT_(graph_poses);
 	std::lock_guard<std::mutex> m_graph_lock(m_graph_section);
 	*graph_poses = m_graph.nodes;
+	MRPT_END;
+}
 
+template<class GRAPH_T>
+void CGraphSlamEngine<GRAPH_T>::getNodeIDsOfEstimatedTrajectory(
+		std::set<mrpt::utils::TNodeID>* nodes_set) const {
+	MRPT_START;
+	ASSERT_(nodes_set);
+	m_graph.getAllNodes(*nodes_set);
 	MRPT_END;
 }
 
 
-
-template<class GRAPH_t>
-void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
+template<class GRAPH_T>
+void CGraphSlamEngine<GRAPH_T>::initClass() {
 	MRPT_START;
 	using namespace mrpt;
 	using namespace mrpt::utils;
@@ -126,6 +132,43 @@ void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 	this->logging_enable_keep_record = true;
 	this->setLoggerName(m_class_name);
 
+	// Assert that the deciders/optimizer pointers are valid
+	ASSERT_(m_node_reg);
+	ASSERT_(m_edge_reg);
+	ASSERT_(m_optimizer);
+	
+	// Assert that the graph class used is supported.
+	{
+		MRPT_LOG_INFO_STREAM("Verifying support for given MRPT graph class...");
+
+		// TODO - initialize vector in a smarter way.
+		m_supported_constraint_types.push_back("CPosePDFGaussianInf");
+		m_supported_constraint_types.push_back("CPose3DPDFGaussianInf");
+
+		constraint_t c;
+		const string c_str(c.GetRuntimeClass()->className);
+
+		bool found = (std::find(
+				m_supported_constraint_types.begin(),
+				m_supported_constraint_types.end(),
+				c_str) != m_supported_constraint_types.end());
+
+		if (found) {
+			MRPT_LOG_INFO_STREAM("[OK] Class: " << c_str);
+		}
+		else {
+			MRPT_LOG_WARN_STREAM(
+				"Given graph class " << c_str <<
+				" has not been tested consistently yet." <<
+				"Proceed at your own risk.");
+			mrpt::system::pause();
+		}
+
+		// store it in a string for future use.
+		m_current_constraint_type = c_str;
+		m_current_constraint_type = "Constraints: " + m_current_constraint_type;
+	}
+
 	// If a valid CWindowManager pointer is given then visuals are on.
 	if (m_enable_visuals) {
 		m_win = m_win_manager->win;
@@ -135,7 +178,7 @@ void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 		m_win = nullptr;
 		m_win_observer = nullptr;
 
-		MRPT_LOG_WARN_STREAM( "Visualization is off. Running on headless mode");
+		MRPT_LOG_WARN_STREAM("Visualization is off. Running on headless mode");
 	}
 
 	// set the CDisplayWindowPlots pointer to null for starters, we don't know if
@@ -146,30 +189,29 @@ void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 	m_request_to_exit = false;
 
 	// max node number already in the graph
-	m_nodeID_max = 0;
-	m_graph.root = TNodeID(0);
+	m_nodeID_max = INVALID_NODEID;
 
-	m_program_paused  = false;
+	m_is_paused  = false;
 	m_GT_poses_index  = 0;
 
 	// pass the necessary variables/objects to the deciders/optimizes
 	// pass a graph ptr after the instance initialization
-	m_node_registrar->setGraphPtr(&m_graph);
-	m_edge_registrar->setGraphPtr(&m_graph);
+	m_node_reg->setGraphPtr(&m_graph);
+	m_edge_reg->setGraphPtr(&m_graph);
 	m_optimizer->setGraphPtr(&m_graph);
 
 	// pass the window manager pointer
 	// note: m_win_manager contains a pointer to the CDisplayWindow3D instance
 	if (m_enable_visuals) {
-		m_node_registrar->setWindowManagerPtr(m_win_manager);
-		m_edge_registrar->setWindowManagerPtr(m_win_manager);
+		m_node_reg->setWindowManagerPtr(m_win_manager);
+		m_edge_reg->setWindowManagerPtr(m_win_manager);
 		m_optimizer->setWindowManagerPtr(m_win_manager);
 		m_edge_counter.setWindowManagerPtr(m_win_manager);
 	}
 
 	// pass a lock in case of multithreaded implementation
-	m_node_registrar->setCriticalSectionPtr(&m_graph_section);
-	m_edge_registrar->setCriticalSectionPtr(&m_graph_section);
+	m_node_reg->setCriticalSectionPtr(&m_graph_section);
+	m_edge_reg->setCriticalSectionPtr(&m_graph_section);
 	m_optimizer->setCriticalSectionPtr(&m_graph_section);
 
 	// Load the parameters that each one of the self/deciders/optimizer classes
@@ -177,7 +219,7 @@ void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 	this->loadParams(m_config_fname);
 
 	if (!m_enable_visuals) {
-		MRPT_LOG_WARN_STREAM( "Switching all visualization parameters off...");
+		MRPT_LOG_WARN_STREAM("Switching all visualization parameters off...");
 		m_visualize_odometry_poses       = 0;
 		m_visualize_GT                   = 0;
 		m_visualize_map                  = 0;
@@ -191,17 +233,19 @@ void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 	m_use_GT = !m_fname_GT.empty();
 	if (m_use_GT) {
 		if (mrpt::system::strCmpI(m_GT_file_format, "rgbd_tum")) {
+			THROW_EXCEPTION("Not Implemented Yet.");
 			this->alignOpticalWithMRPTFrame();
-			this->readGTFileRGBD_TUM(m_fname_GT, &m_GT_poses);
+			//this->readGTFileRGBD_TUM(m_fname_GT, &m_GT_poses);
 		}
 		else if (mrpt::system::strCmpI(m_GT_file_format, "navsimul")) {
-			this->readGTFileNavSimulOutput(m_fname_GT, &m_GT_poses);
+			this->readGTFile(m_fname_GT, &m_GT_poses);
 		}
 	}
 
 	// plot the GT related visuals only if ground-truth file is given
 	if (!m_use_GT) {
-		MRPT_LOG_WARN_STREAM( "Ground truth file was not provided. Switching the related visualization parameters off...");
+		MRPT_LOG_WARN_STREAM(
+				"Ground truth file was not provided. Switching the related visualization parameters off...");
 		m_visualize_GT          = 0;
 		m_visualize_SLAM_metric = 0;
 	}
@@ -210,6 +254,10 @@ void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 	if (m_enable_visuals) {
 		m_win_manager->assignTextMessageParameters(&m_offset_y_timestamp,
 				&m_text_index_timestamp);
+	}
+
+	if (m_visualize_map) {
+		this->initMapVisualization();
 	}
 
 	// Configuration of various trajectories visualization
@@ -267,7 +315,6 @@ void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 		m_win->forceRepaint();
 	}
 
-
 	// Add additional keystrokes in the CDisplayWindow3D help textBox
 	if (m_enable_visuals) {
 
@@ -308,7 +355,8 @@ void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 		double offset_y_total_edges, offset_y_loop_closures;
 		int text_index_total_edges, text_index_loop_closures;
 
-		m_win_manager->assignTextMessageParameters(&offset_y_total_edges,
+		m_win_manager->assignTextMessageParameters(
+				&offset_y_total_edges,
 				&text_index_total_edges);
 
 
@@ -334,21 +382,68 @@ void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 				offset_y_loop_closures, text_index_loop_closures);
 	}
 
+	// Type of the generated graph
+	if (m_enable_visuals) {
+		m_win_manager->assignTextMessageParameters(
+				&m_offset_y_current_constraint_type,
+				&m_text_index_current_constraint_type);
+		m_win_manager->addTextMessage(m_offset_x_left,
+				-m_offset_y_current_constraint_type,
+				m_current_constraint_type,
+				TColorf(m_current_constraint_type_color),
+				m_text_index_current_constraint_type);
+	}
+
+
 	// query node/edge deciders for visual objects initialization
 	if (m_enable_visuals) {
 		std::lock_guard<std::mutex> m_graph_lock(m_graph_section);
 		m_time_logger.enter("Visuals");
-		m_node_registrar->initializeVisuals();
-		m_edge_registrar->initializeVisuals();
+		m_node_reg->initializeVisuals();
+		m_edge_reg->initializeVisuals();
 		m_optimizer->initializeVisuals();
 		m_time_logger.leave("Visuals");
 	}
 
 	m_init_timestamp = INVALID_TIMESTAMP;
 
-	m_gridmap_is_cached = false;
-	m_gridmap_cached = mrpt::maps::COccupancyGridMap2D::Create();
+	// COccupancyGridMap2D Initialization
+	{
+		mrpt::maps::COccupancyGridMap2D::Ptr gridmap = mrpt::maps::COccupancyGridMap2D::Create();
 
+		gridmap->setSize(
+				/* min_x = */ -20.0f,
+				/* float max_x = */ 20.0f,
+				/* float min_y = */ -20.0f,
+				/* float max_y = */ 20.0f,
+				/* float resolution = */ 0.05f);
+
+		// TODO - Read these from the .ini file
+		// observation insertion options
+  	gridmap->insertionOptions.maxOccupancyUpdateCertainty = 0.8f;
+  	gridmap->insertionOptions.maxDistanceInsertion = 5;
+  	gridmap->insertionOptions.wideningBeamsWithDistance = true;
+  	gridmap->insertionOptions.decimation = 2;
+
+	  m_gridmap_cached = gridmap;
+		m_map_is_cached = false;
+  }
+
+  // COctoMap Initialization
+  {
+		mrpt::maps::COctoMap::Ptr octomap = mrpt::maps::COctoMap::Create();
+
+		// TODO - adjust the insertionoptions...
+		// TODO - Read these from the .ini file
+  	octomap->insertionOptions.setOccupancyThres(0.5);
+  	octomap->insertionOptions.setProbHit(0.7);
+  	octomap->insertionOptions.setProbMiss(0.4);
+  	octomap->insertionOptions.setClampingThresMin(0.1192);
+  	octomap->insertionOptions.setClampingThresMax(0.971);
+
+  	m_octomap_cached = octomap;
+  	m_map_is_cached = false;
+  }
 
 	// In case we are given an RGBD TUM Dataset - try and read the info file so
 	// that we know how to play back the GT poses.
@@ -364,7 +459,7 @@ void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 		MRPT_LOG_INFO_STREAM("Setting the Ground truth read step to: "<< m_GT_poses_step);
 	}
 	catch (std::exception& e) {
-		MRPT_LOG_INFO_STREAM( "RGBD_TUM info file was not found: " << e.what());
+		MRPT_LOG_INFO_STREAM("RGBD_TUM info file was not found: " << e.what());
 	}
 
 	// SLAM evaluation metric
@@ -373,11 +468,20 @@ void CGraphSlamEngine<GRAPH_t>::initCGraphSlamEngine() {
 		this->initSlamMetricVisualization();
 	}
 
-	MRPT_END;
-}
+	// Message to be displayed on pause
+	if (m_enable_visuals) {
+		this->m_win->addTextMessage(
+				0.5, 0.3, "",
+				mrpt::utils::TColorf(1.0, 0, 0),
+				m_text_index_paused_message);
+	}
 
-template<class GRAPH_t>
-bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
+
+	MRPT_END;
+} // end of initClass
+
+template<class GRAPH_T>
+bool CGraphSlamEngine<GRAPH_T>::execGraphSlamStep(
 		mrpt::obs::CObservation::Ptr& observation,
 		size_t& rawlog_entry) {
 	using namespace mrpt::obs;
@@ -385,11 +489,12 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 	CActionCollection::Ptr action;
 	CSensoryFrame::Ptr observations;
 
-	return this->execGraphSlamStep(action, observations, observation, rawlog_entry);
-}
+	return this->_execGraphSlamStep(action, observations, observation,
+			rawlog_entry);
+} // end of execGraphSlamStep
 
-template<class GRAPH_t>
-bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
+template<class GRAPH_T>
+bool CGraphSlamEngine<GRAPH_T>::_execGraphSlamStep(
 		mrpt::obs::CActionCollection::Ptr& action,
 		mrpt::obs::CSensoryFrame::Ptr& observations,
 		mrpt::obs::CObservation::Ptr& observation,
@@ -401,6 +506,7 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 	using namespace mrpt::utils;
 	using namespace mrpt::poses;
 	using namespace mrpt::obs;
+	using namespace mrpt::obs::utils;
 	using namespace mrpt::opengl;
 	using namespace mrpt::system;
 
@@ -412,55 +518,96 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 
 	// read first measurement independently if we haven't already
 	if (m_init_timestamp == INVALID_TIMESTAMP) {
-		MRPT_LOG_DEBUG_STREAM( "execGraphSlamStep: first run");
+		m_init_timestamp = getTimeStamp(action, observations, observation);
+		MRPT_LOG_DEBUG_STREAM("execGraphSlamStep: first run");
 
 		if (observation) {
-			MRPT_LOG_DEBUG_STREAM( "Observation only dataset!");
+			MRPT_LOG_DEBUG_STREAM("Observation only dataset!");
 			m_observation_only_dataset = true; // false by default
-			m_init_timestamp = observation->timestamp;
 		}
 		else {
-			MRPT_LOG_DEBUG_STREAM( "Action-observation dataset!");
+			MRPT_LOG_DEBUG_STREAM("Action-observation dataset!");
+			MRPT_LOG_DEBUG_STREAM("Action-observation dataset!");
+			ASSERT_(action);
 			m_observation_only_dataset = false;
-			if (action->getBestMovementEstimation()) {
 
-				CActionRobotMovement2D::Ptr robot_move =
-					action->getBestMovementEstimation();
-				CPosePDF::Ptr increment = robot_move->poseChange.get_ptr();
-				pose_t increment_pose = increment->getMeanVal();
-				m_curr_odometry_only_pose += increment_pose;
-
-				m_init_timestamp = robot_move->timestamp;
-			}
+			CPose3D increment_pose_3d;
+			action->getFirstMovementEstimationMean(increment_pose_3d);
+			pose_t increment_pose(increment_pose_3d);
+			m_curr_odometry_only_pose += increment_pose;
 		}
+
+		// TODO enable this and test this.
+		// return true;
 	}
 
-
-	// node registration procedure
+	// NRD
 	bool registered_new_node;
 	{
 		std::lock_guard<std::mutex> m_graph_lock(m_graph_section);
 		m_time_logger.enter("node_registrar");
-		registered_new_node = m_node_registrar->updateState(
+		registered_new_node = m_node_reg->updateState(
 				action, observations, observation);
 		m_time_logger.leave("node_registrar");
-		if (registered_new_node) {
-			m_edge_counter.addEdge("Odometry");
-			m_nodeID_max++;
+	}
+
+	{ // get the 2D laser scan, if there
+		CObservation2DRangeScan::Ptr scan =
+			getObservation<CObservation2DRangeScan>(observations, observation);
+		if (scan) {
+			m_last_laser_scan2D = scan;
+
+			if (!m_first_laser_scan2D) { // capture first laser scan seperately
+				m_first_laser_scan2D = m_last_laser_scan2D;
+			}
 		}
 	}
-	// Edge registration procedure
-	// run this so that the decider can be updated with the latest
+
+	if (registered_new_node) {
+
+		// At the first node registration, must have registered exactly 2 nodes
+		// (root + first)
+		if (m_is_first_time_node_reg) {
+			std::lock_guard<std::mutex> m_graph_lock(m_graph_section);
+			m_nodeID_max = 0;
+			if (m_graph.nodeCount() != 2) {
+				MRPT_LOG_ERROR_STREAM("Expected [2] new registered nodes"
+					<< " but got [" << m_graph.nodeCount() << "]");
+				THROW_EXCEPTION(format("Illegal node registration"));
+			}
+			m_is_first_time_node_reg = false;
+
+			m_nodes_to_laser_scans2D.insert(
+					make_pair(m_nodeID_max, m_first_laser_scan2D));
+		}
+
+		// going to be incremented in monitorNodeRegistration anyway.
+		m_nodeID_max++;
+
+		// either way add just one odometry edge
+		m_edge_counter.addEdge("Odometry");
+	}
+	this->monitorNodeRegistration(registered_new_node,
+			"NodeRegistrationDecider");
+
+	// Edge registration procedure - Optimization
+	// run this so that the ERD, GSO can be updated with the latest
 	// observations even when no new nodes have been added to the graph
-	{
+	{ // ERD
 		std::lock_guard<std::mutex> m_graph_lock(m_graph_section);
 
 		m_time_logger.enter("edge_registrar");
-		m_edge_registrar->updateState(
+		m_edge_reg->updateState(
 				action,
 				observations,
 				observation );
 		m_time_logger.leave("edge_registrar");
+	}
+	this->monitorNodeRegistration(registered_new_node,
+			"EdgeRegistrationDecider");
+
+	{ // GSO
+		std::lock_guard<std::mutex> m_graph_lock(m_graph_section);
 
 		m_time_logger.enter("optimizer");
 		m_optimizer->updateState(
@@ -469,34 +616,23 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 				observation );
 		m_time_logger.leave("optimizer");
 	}
+	this->monitorNodeRegistration(registered_new_node,
+			"GraphSlamOptimizer");
 
 	// current timestamp - to be filled depending on the format
-	mrpt::system::TTimeStamp timestamp;
+ 	m_curr_timestamp = getTimeStamp(action, observations, observation);
 
 	if (observation) {
 		// Read a single observation from the rawlog
 		// (Format #2 rawlog file)
-
-		timestamp = observation->timestamp;
 
 		// odometry
 		if (IS_CLASS(observation, CObservationOdometry)) {
 			CObservationOdometry::Ptr obs_odometry =
 				std::dynamic_pointer_cast<CObservationOdometry>(observation);
 
-			m_curr_odometry_only_pose = obs_odometry->odometry;
-			// add to the odometry vector
-			{
-				pose_t* odometry_pose = new pose_t;
-				*odometry_pose = m_curr_odometry_only_pose;
-				m_odometry_poses.push_back(odometry_pose);
-			}
-		}
-		// laser scans
-		else if (IS_CLASS(observation, CObservation2DRangeScan)) {
-			m_last_laser_scan2D =
-				std::dynamic_pointer_cast<mrpt::obs::CObservation2DRangeScan>(observation);
-
+			m_curr_odometry_only_pose = pose_t(obs_odometry->odometry);
+			m_odometry_poses.push_back(m_curr_odometry_only_pose);
 		}
 		else if (IS_CLASS(observation, CObservation3DRangeScan)) {
 			m_last_laser_scan3D =
@@ -507,61 +643,38 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 	else {
 		// action, observations should contain a pair of valid data
 		// (Format #1 rawlog file)
+		ASSERT_(observations);
+		ASSERT_(action);
 
-		// parse the current action
-		CActionRobotMovement2D::Ptr robot_move =
-			action->getBestMovementEstimation();
-		CPosePDF::Ptr increment = robot_move->poseChange.get_ptr();
-		pose_t increment_pose = increment->getMeanVal();
+		CPose3D increment_pose_3d;
+		action->getFirstMovementEstimationMean(increment_pose_3d);
+		pose_t increment_pose(increment_pose_3d);
 		m_curr_odometry_only_pose += increment_pose;
-
-		timestamp = robot_move->timestamp;
-
-		// add to the odometry vector
-		{
-			pose_t* odometry_pose = new pose_t;
-			*odometry_pose = m_curr_odometry_only_pose;
-			m_odometry_poses.push_back(odometry_pose);
-		}
-
-		// get the last laser scan
-		m_last_laser_scan2D =
-			observations->getObservationByClass<CObservation2DRangeScan>();
-
+		m_odometry_poses.push_back(m_curr_odometry_only_pose);
 	} // ELSE FORMAT #1 - Action/Observations
 
 	if (registered_new_node) {
 
-		// update the global position of the nodes
-		{
-			std::lock_guard<std::mutex> m_graph_lock(m_graph_section);
-			m_time_logger.enter("dijkstra_nodes_estimation");
-			m_graph.dijkstra_nodes_estimate();
-			m_time_logger.leave("dijkstra_nodes_estimation");
-		}
+		this->execDijkstraNodesEstimation();
 
 		// keep track of the laser scans so that I can later visualize the map
 		m_nodes_to_laser_scans2D[m_nodeID_max] = m_last_laser_scan2D;
 
 		if (m_enable_visuals && m_visualize_map) {
 			std::lock_guard<std::mutex> m_graph_lock(m_graph_section);
-			bool full_update = m_edge_registrar->justInsertedLoopClosure();
-			this->updateMapVisualization(m_graph, m_nodes_to_laser_scans2D, full_update);
+			//bool full_update = m_optimizer->justFullyOptimizedGraph();
+			bool full_update = true;
+			this->updateMapVisualization(m_nodes_to_laser_scans2D, full_update);
 		}
 
 		// query node/edge deciders for visual objects update
 		if (m_enable_visuals) {
-			std::lock_guard<std::mutex> m_graph_lock(m_graph_section);
-			m_time_logger.enter("Visuals");
-			m_node_registrar->updateVisuals();
-			m_edge_registrar->updateVisuals();
-			m_optimizer->updateVisuals();
-			m_time_logger.leave("Visuals");
+			this->updateAllVisuals();
 		}
 
 		// update the edge counter
 		std::map<std::string, int> edge_types_to_nums;
-		m_edge_registrar->getEdgesStats(&edge_types_to_nums);
+		m_edge_reg->getEdgesStats(&edge_types_to_nums);
 		if (edge_types_to_nums.size()) {
 			for (std::map<std::string, int>::const_iterator it =
 					edge_types_to_nums.begin(); it != edge_types_to_nums.end();
@@ -576,6 +689,7 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 				}
 			}
 		}
+
 		// update the graph visualization
 
 		if (m_enable_curr_pos_viewport) {
@@ -583,7 +697,7 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 		}
 		// update visualization of estimated trajectory
 		if (m_enable_visuals) {
-			bool full_update = true;
+			bool full_update = true; // don't care, do it anyway.
 			m_time_logger.enter("Visuals");
 			this->updateEstimatedTrajectoryVisualization(full_update);
 			m_time_logger.leave("Visuals");
@@ -602,8 +716,8 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 			}
 		}
 
-		// mark the gridmap outdated
-		m_gridmap_is_cached = false;
+		// mark the map outdated
+		m_map_is_cached = false;
 
 	} // IF REGISTERED_NEW_NODE
 
@@ -615,14 +729,14 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 	// Use the dataset timestamp otherwise fallback to
 	// mrpt::system::getCurrentTime
 	if (m_enable_visuals) {
-		if (timestamp != INVALID_TIMESTAMP) {
-			m_win_manager->addTextMessage(5,-m_offset_y_timestamp,
-					format("Simulated time: %s", timeToString(timestamp).c_str()),
+		if (m_curr_timestamp != INVALID_TIMESTAMP) {
+			m_win_manager->addTextMessage(m_offset_x_left, -m_offset_y_timestamp,
+					format("Simulated time: %s", timeToString(m_curr_timestamp).c_str()),
 					TColorf(1.0, 1.0, 1.0),
 					/* unique_index = */ m_text_index_timestamp );
 		}
 		else {
-			m_win_manager->addTextMessage(5,-m_offset_y_timestamp,
+			m_win_manager->addTextMessage(m_offset_x_left, -m_offset_y_timestamp,
 					format("Wall time: %s", timeToString(mrpt::system::getCurrentTime()).c_str()),
 					TColorf(1.0, 1.0, 1.0),
 					/* unique_index = */ m_text_index_timestamp );
@@ -645,18 +759,15 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 		}
 		else if (mrpt::system::strCmpI(m_GT_file_format, "navsimul")) {
 			if (m_observation_only_dataset) { // 1/2loops
-				MRPT_LOG_DEBUG_STREAM("observation_only_dataset: Updating GTVisualization");
 				if (rawlog_entry % 2 == 0) {
 		      if (m_enable_visuals) {
 			      this->updateGTVisualization(); // I have already taken care of the step
 			    }
 					m_GT_poses_index += m_GT_poses_step;
-					MRPT_LOG_DEBUG_STREAM( "rawlog_entry%2==0 " << std::endl);
 				}
 			}
 			else { // 1/loop
 				// get both action and observation at a single step - same rate as GT
-				MRPT_LOG_DEBUG_STREAM("action-observations dataset: Updating GTVisualization");
 		    if (m_enable_visuals) {
 			    this->updateGTVisualization(); // I have already taken care of the step
 			  }
@@ -684,99 +795,152 @@ bool CGraphSlamEngine<GRAPH_t>::execGraphSlamStep(
 
 	m_dataset_grab_time = mrpt::system::timeDifference(
 			m_init_timestamp,
-			timestamp);
+			m_curr_timestamp);
 	m_time_logger.leave("proc_time");
 
 	return !m_request_to_exit;
 	MRPT_END;
-} // END OF EXECGRAPHSLAM
-template<class GRAPH_t>
-void CGraphSlamEngine<GRAPH_t>::getOccupancyGridMap2D(
-		mrpt::maps::COccupancyGridMap2D* map_ptr,
-		mrpt::system::TTimeStamp* acquisition_time /* = nullptr */) const {
+} // end of _execGraphSlamStep
+
+template<class GRAPH_T>
+void CGraphSlamEngine<GRAPH_T>::execDijkstraNodesEstimation() {
+		{
+			std::lock_guard<std::mutex> m_graph_lock(m_graph_section);
+			m_time_logger.enter("dijkstra_nodes_estimation");
+			m_graph.dijkstra_nodes_estimate();
+			m_time_logger.leave("dijkstra_nodes_estimation");
+		}
+}
+
+
+template<class GRAPH_T>
+void CGraphSlamEngine<GRAPH_T>::monitorNodeRegistration(
+		bool registered/*=false*/,
+		std::string class_name/*="Class"*/) {
 	MRPT_START;
-	ASSERT_(map_ptr);
+	using namespace mrpt::utils;
+	using namespace mrpt;
 
-	if (!m_gridmap_is_cached){
-		this->computeOccupancyGridMap2D();
+	std::lock_guard<std::mutex> m_graph_lock(m_graph_section);
+	size_t listed_nodeCount = (m_nodeID_max == INVALID_NODEID?
+			0 : m_nodeID_max + 1);
+
+	if (!registered) { // just check that it's the same.
+		ASSERTMSG_(listed_nodeCount == m_graph.nodeCount(),
+				format("listed_nodeCount [%lu] != nodeCount() [%lu]",
+					static_cast<unsigned long>(listed_nodeCount),
+					static_cast<unsigned long>(m_graph.nodeCount())));
 	}
-
-	map_ptr->copyMapContentFrom(*m_gridmap_cached);
-
-	// fill the timestamp if this is given
-	if (acquisition_time) {
-		*acquisition_time = m_gridmap_acq_time;
+	else {
+		if (listed_nodeCount != m_graph.nodeCount()) {
+			MRPT_LOG_ERROR_STREAM(class_name <<
+				" illegally added new nodes to the graph " <<
+				", wanted to see [" << listed_nodeCount << "] but saw ["
+				<< m_graph.nodeCount() << "]");
+			THROW_EXCEPTION(format("Illegal node registration by %s.",
+						class_name.c_str()));
+		}
 	}
 	MRPT_END;
 }
 
+template<class GRAPH_T>
+void CGraphSlamEngine<GRAPH_T>::getMap(
+		mrpt::maps::COccupancyGridMap2D::Ptr map,
+		mrpt::system::TTimeStamp* acquisition_time/*=NULL*/) const {
+	MRPT_START;
 
-template<class GRAPH_t>
-void CGraphSlamEngine<GRAPH_t>::computeOccupancyGridMap2D() const {
+	if (!map) {
+		map = mrpt::maps::COccupancyGridMap2D::Create();
+	}
+	ASSERT_(map);
+
+	if (!m_map_is_cached){
+		this->computeMap();
+	}
+	map->copyMapContentFrom(*m_gridmap_cached);
+
+	// fill the timestamp if this is given
+	if (acquisition_time) {
+		*acquisition_time = m_map_acq_time;
+	}
+	MRPT_END;
+}
+
+template<class GRAPH_T>
+void CGraphSlamEngine<GRAPH_T>::getMap(
+		mrpt::maps::COctoMap::Ptr map,
+		mrpt::system::TTimeStamp* acquisition_time/*=NULL*/) const {
+	MRPT_START;
+	THROW_EXCEPTION("Not Implemented Yet.");
+
+	if (!m_map_is_cached){
+		this->computeMap();
+	}
+	map = dynamic_cast<mrpt::maps::COctoMap::Ptr>(m_octomap_cached->clone());
+	ASSERT_(map)
+
+	// fill the timestamp if this is given
+	if (acquisition_time) {
+		*acquisition_time = m_map_acq_time;
+	}
+
+	MRPT_END;
+}
+
+template<class GRAPH_T>
+inline void CGraphSlamEngine<GRAPH_T>::computeMap() const {
 	MRPT_START;
 	using namespace std;
+	using namespace mrpt;
 	using namespace mrpt::maps;
 	using namespace mrpt::utils;
 	using namespace mrpt::poses;
 
-	MRPT_LOG_DEBUG_STREAM( "Computing the occupancy gridmap...");
 	std::lock_guard<std::mutex> m_graph_lock(m_graph_section);
 
-	// set the map parameters
-	mrpt::maps::COccupancyGridMap2D gridmap(
-			/* min_x = */ -20.0f,
-			/* float max_x = */ 20.0f,
-			/* float min_y = */ -20.0f,
-			/* float max_y = */ 20.0f,
-			/* float resolution = */ 0.05f);
+	if (!constraint_t::is_3D()) { // 2D Poses
+		//MRPT_LOG_DEBUG_STREAM("Computing the occupancy gridmap...");
+		mrpt::maps::COccupancyGridMap2D::Ptr gridmap = m_gridmap_cached;
+		gridmap->clear();
 
-	// observation insertion options
-  gridmap.insertionOptions.maxOccupancyUpdateCertainty = 0.8f;
+		// traverse all the nodes - add their laser scans at their corresponding
+		// poses
+		for (std::map<mrpt::utils::TNodeID,
+				mrpt::obs::CObservation2DRangeScan::Ptr>::const_iterator
+				it = m_nodes_to_laser_scans2D.begin();
+				it != m_nodes_to_laser_scans2D.end(); ++it) {
 
-  gridmap.insertionOptions.maxDistanceInsertion = 15;
-  gridmap.insertionOptions.wideningBeamsWithDistance = true;
-  gridmap.insertionOptions.decimation = 2;
+			const TNodeID& curr_node = it->first;
 
-	// traverse all the nodes - add their laser scans at their corresponding poses
-	for (std::map<mrpt::utils::TNodeID,
-			mrpt::obs::CObservation2DRangeScan::Ptr>::const_iterator
-			it = m_nodes_to_laser_scans2D.begin();
-			it != m_nodes_to_laser_scans2D.end(); ++it) {
+			// fetch LaserScan
+			const mrpt::obs::CObservation2DRangeScan::Ptr& curr_laser_scan = it->second;
+			ASSERTMSG_(curr_laser_scan,
+					format("LaserScan of nodeID: %lu is not present.",
+						static_cast<unsigned long>(curr_node)));
 
-		TNodeID curr_node = it->first;
-		mrpt::obs::CObservation2DRangeScan::Ptr curr_laser_scan = it->second;
-		pose_t curr_pose;
+			// Fetch pose at which to display the LaserScan
+			CPose3D scan_pose = getLSPoseForGridMapVisualization(curr_node);
 
-		bool laser_scan_exists = curr_laser_scan ? true : false;
-
-		bool pose_found = true;
-		typename mrpt::graphs::CNetworkOfPoses2DInf::global_poses_t::const_iterator
-			pose_search = m_graph.nodes.find(curr_node);
-		if (pose_search != m_graph.nodes.end()) {
-			curr_pose = pose_search->second;
-		}
-		else {
-			pose_found = false;
+			// Add all to gridmap
+			gridmap->insertObservation(curr_laser_scan.get(), &scan_pose);
 		}
 
-		if (laser_scan_exists && pose_found) {
-			CPose3D pose_3d(curr_pose);
-			gridmap.insertObservation(curr_laser_scan.get(), &pose_3d);
-		}
+		m_map_is_cached = true;
+		m_map_acq_time = mrpt::system::now();
+	}
+	else { // 3D Pose
+		//MRPT_LOG_DEBUG_STREAM("Computing the Octomap...");
+		THROW_EXCEPTION("Not Implemented Yet. Method is to compute a COctoMap");
+		//MRPT_LOG_DEBUG_STREAM("Computed COctoMap successfully.");
 	}
 
-	m_gridmap_cached->copyMapContentFrom(gridmap);
-	m_gridmap_is_cached = true;
-	m_gridmap_acq_time = mrpt::system::now();
 
-	MRPT_LOG_DEBUG_STREAM( "Computed the occupancy gridmap successfully.");
 	MRPT_END;
-}
+} // end of computeMap
 
-
-
-template<class GRAPH_t>
-void CGraphSlamEngine<GRAPH_t>::loadParams(
+template<class GRAPH_T>
+void CGraphSlamEngine<GRAPH_T>::loadParams(
 		const std::string& fname) {
 	MRPT_START;
 	using namespace mrpt::utils;
@@ -784,8 +948,8 @@ void CGraphSlamEngine<GRAPH_t>::loadParams(
 	ASSERTMSG_(mrpt::system::fileExists(fname),
 			mrpt::format("\nConfiguration file not found: \n%s\n", fname.c_str()));
 
-	MRPT_LOG_INFO_STREAM( "Reading the .ini file... ");
-
+	MRPT_LOG_INFO_STREAM("Reading the .ini file... ");
+	MRPT_LOG_INFO_STREAM("Reading the .ini file... ");
 	CConfigFile cfg_file(fname);
 
 	// Section: GeneralConfiguration
@@ -850,15 +1014,15 @@ void CGraphSlamEngine<GRAPH_t>::loadParams(
 			"enable_intensity_viewport",
 			false, false);
 
-	m_node_registrar->loadParams(fname);
-	m_edge_registrar->loadParams(fname);
+	m_node_reg->loadParams(fname);
+	m_edge_reg->loadParams(fname);
 	m_optimizer->loadParams(fname);
 
 	m_has_read_config = true;
 	MRPT_END;
 }
-template<class GRAPH_t>
-std::string CGraphSlamEngine<GRAPH_t>::getParamsAsString() const {
+template<class GRAPH_T>
+std::string CGraphSlamEngine<GRAPH_T>::getParamsAsString() const {
 	MRPT_START;
 
 	std::string str;
@@ -867,8 +1031,8 @@ std::string CGraphSlamEngine<GRAPH_t>::getParamsAsString() const {
 
 	MRPT_END;
 }
-template<class GRAPH_t>
-void CGraphSlamEngine<GRAPH_t>::getParamsAsString(
+template<class GRAPH_T>
+void CGraphSlamEngine<GRAPH_T>::getParamsAsString(
 		std::string* params_out) const {
 	MRPT_START;
 	ASSERT_(m_has_read_config);
@@ -915,139 +1079,59 @@ void CGraphSlamEngine<GRAPH_t>::getParamsAsString(
 	MRPT_END;
 }
 
-template<class GRAPH_t>
-void CGraphSlamEngine<GRAPH_t>::printParams() const {
+template<class GRAPH_T>
+void CGraphSlamEngine<GRAPH_T>::printParams() const {
 	MRPT_START;
 	std::cout << getParamsAsString();
 
-	m_node_registrar->printParams();
-	m_edge_registrar->printParams();
+	m_node_reg->printParams();
+	m_edge_reg->printParams();
 	m_optimizer->printParams();
 
 	MRPT_END;
 }
 
-template<class GRAPH_t>
-void CGraphSlamEngine<GRAPH_t>::initOutputDir(
-		const std::string& output_dir_fname /* = graphslam_results */) {
-	MRPT_START;
-	using namespace std;
-	using namespace mrpt::utils;
-	using namespace mrpt::system;
-
-	MRPT_LOG_INFO_STREAM( "Setting up output directory: " << output_dir_fname);
-
-	// current time vars - handy in the rest of the function.
-	mrpt::system::TTimeStamp cur_date(getCurrentTime());
-	string cur_date_str(dateTimeToString(cur_date));
-	string cur_date_validstr(fileNameStripInvalidChars(cur_date_str));
-
-	ASSERTMSG_(m_has_read_config,
-			"\nCannot initialize output directory, \nMake sure that you have parsed the configuration file first\n");
-
-	// Determine what to do with existing results if previous output directory
-	// exists
-	if (directoryExists(output_dir_fname)) {
-		int answer_int;
-		if (m_user_decides_about_output_dir) {
-			stringstream question;
-			string answer;
-
-			question << "Directory exists. Choose between the "
-				<< "following options" << std::endl;
-			question << "\t 1: Rename current folder and start new "
-				<< "output directory (default)" << std::endl;
-			question << "\t 2: Remove existing contents and continue execution "
-				<< std::endl;
-			question << "\t 3: Handle potential conflict manually "
-				"(Halts program execution)" << std::endl;
-			question << "\t [ 1 | 2 | 3 ] --> ";
-			std::cout << question.str();
-
-			getline(cin, answer);
-			answer = mrpt::system::trim(answer);
-			answer_int = atoi(&answer[0]);
-		}
-		else {
-			answer_int = 2;
-		}
-
-		switch (answer_int)
-		{
-			case 2:
-				{
-					MRPT_LOG_INFO_STREAM( "Deleting existing files...");
-					// purge directory
-					deleteFilesInDirectory(output_dir_fname,
-							/*deleteDirectoryAsWell = */ false);
-					break;
-				}
-			case 3:
-				{
-					// I don't need to exit gracefully here..
-					exit(0);
-				}
-			case 1:
-			default:
-				{
-					// rename the whole directory to DATE_TIME_${OUTPUT_DIR_NAME}
-					string dst_fname = output_dir_fname + cur_date_validstr;
-					MRPT_LOG_INFO_STREAM( "Renaming directory to: " << dst_fname);
-					string* error_msg = nullptr;
-					bool did_rename = renameFile(output_dir_fname,
-							dst_fname,
-							error_msg);
-					ASSERTMSG_(did_rename,
-							format("\nError while trying to rename the output directory: %s",
-								error_msg->c_str()) );
-					break;
-				}
-		} // SWITCH (ANSWER_INT)
-	} // IF DIRECTORY EXISTS..
-
-	// Now rebuild the directory from scratch
-	MRPT_LOG_INFO_STREAM( "Creating the new directory structure...");
-	string cur_fname;
-
-	// debug_fname
-	createDirectory(output_dir_fname);
-	MRPT_LOG_INFO_STREAM( "Finished initializing output directory.");
-
-	MRPT_END;
-} // end of initOutputDir
-
-template<class GRAPH_t>
-void CGraphSlamEngine<GRAPH_t>::initResultsFile(
+template<class GRAPH_T>
+void CGraphSlamEngine<GRAPH_T>::initResultsFile(
 		const std::string& fname) {
 	MRPT_START;
 	using namespace mrpt::utils;
 	using namespace std;
 	using namespace mrpt::system;
 
-	MRPT_LOG_INFO_STREAM( "Setting up file: " << fname);
+	MRPT_LOG_INFO_STREAM("Setting up file: " << fname);
 
-	// current time vars - handy in the rest of the function.
+	// current time vars
+#if defined(MRPT_OS_APPLE)
 	mrpt::system::TTimeStamp cur_date(getCurrentTime());
+	std::string time_spec = "UTC Time";
+#else
+	mrpt::system::TTimeStamp cur_date(getCurrentLocalTime());
+	std::string time_spec = "Time";
+#endif
 	string cur_date_str(dateTimeToString(cur_date));
 	string cur_date_validstr(fileNameStripInvalidChars(cur_date_str));
 
 	m_out_streams[fname] = new CFileOutputStream(fname);
 	ASSERTMSG_(m_out_streams[fname]->fileOpenCorrectly(),
-			mrpt::format("\nError while trying to open %s\n", fname.c_str()) );
+			mrpt::format(
+				"\nError while trying to open %s\n", fname.c_str()) );
 
 	const std::string sep(80, '#');
 
 	m_out_streams[fname]->printf("# Mobile Robot Programming Toolkit (MRPT)\n");
 	m_out_streams[fname]->printf("# http::/www.mrpt.org\n");
 	m_out_streams[fname]->printf("# GraphSlamEngine Application\n");
-	m_out_streams[fname]->printf("# Automatically generated file - %s\n", cur_date_str.c_str());
+	m_out_streams[fname]->printf("# Automatically generated file - %s: %s\n", 
+			time_spec.c_str(),
+			cur_date_str.c_str());
 	m_out_streams[fname]->printf("%s\n\n", sep.c_str());
 
 	MRPT_END;
 }
 
-template<class GRAPH_t>
-void CGraphSlamEngine<GRAPH_t>::initRangeImageViewport() {
+template<class GRAPH_T>
+void CGraphSlamEngine<GRAPH_T>::initRangeImageViewport() {
 	MRPT_START;
 	ASSERT_(m_enable_visuals);
 	using namespace mrpt::opengl;
@@ -1065,8 +1149,23 @@ void CGraphSlamEngine<GRAPH_t>::initRangeImageViewport() {
 
 	MRPT_END;
 }
-template<class GRAPH_t>
-void CGraphSlamEngine<GRAPH_t>::updateRangeImageViewport() {
+
+template<class GRAPH_T>
+void CGraphSlamEngine<GRAPH_T>::updateAllVisuals() {
+	MRPT_START;
+	std::lock_guard<std::mutex> m_graph_lock(m_graph_section);
+	m_time_logger.enter("Visuals");
+
+	m_node_reg->updateVisuals();
+	m_edge_reg->updateVisuals();
+	m_optimizer->updateVisuals();
+
+	m_time_logger.leave("Visuals");
+	MRPT_END;
+}
+
+template<class GRAPH_T>
+void CGraphSlamEngine<GRAPH_T>::updateRangeImageViewport() {
 	MRPT_START;
 	ASSERT_(m_enable_visuals);
 	using namespace mrpt::math;
@@ -1094,8 +1193,8 @@ void CGraphSlamEngine<GRAPH_t>::updateRangeImageViewport() {
 	MRPT_END;
 }
 
-template<class GRAPH_t>
-void CGraphSlamEngine<GRAPH_t>::initIntensityImageViewport() {
+template<class GRAPH_T>
+void CGraphSlamEngine<GRAPH_T>::initIntensityImageViewport() {
 	MRPT_START;
 	ASSERT_(m_enable_visuals);
 	using namespace mrpt::opengl;
@@ -1113,8 +1212,8 @@ void CGraphSlamEngine<GRAPH_t>::initIntensityImageViewport() {
 
 	MRPT_END;
 }
-template<class GRAPH_t>
-void CGraphSlamEngine<GRAPH_t>::updateIntensityImageViewport() {
+template<class GRAPH_T>
+void CGraphSlamEngine<GRAPH_T>::updateIntensityImageViewport() {
 	MRPT_START;
 	ASSERT_(m_enable_visuals);
 	using namespace mrpt::opengl;
@@ -1135,11 +1234,30 @@ void CGraphSlamEngine<GRAPH_t>::updateIntensityImageViewport() {
 	}
 
 	MRPT_END;
-}
+} // end of updateIntensityImageViewport
+
+template<class GRAPH_T>
+mrpt::opengl::CSetOfObjects::Ptr CGraphSlamEngine<GRAPH_T>::initRobotModelVisualization() {
+	pose_t p;
+	return this->initRobotModelVisualizationInternal(p);
+} // end of initRobotModelVisualization
+
+template<class GRAPH_T>
+mrpt::opengl::CSetOfObjects::Ptr CGraphSlamEngine<GRAPH_T>::
+initRobotModelVisualizationInternal(const mrpt::poses::CPose2D& p_unused) {
+	return mrpt::opengl::stock_objects::RobotPioneer();
+
+} // end of initRobotModelVisualizationInternal - CPose2D
+
+template<class GRAPH_T>
+mrpt::opengl::CSetOfObjects::Ptr CGraphSlamEngine<GRAPH_T>::
+initRobotModelVisualizationInternal(const mrpt::poses::CPose3D& p_unused) {
+	return mrpt::opengl::stock_objects::CornerXYZ();
+} // end of initRobotModelVisualizationInternal - CPose3D
 
 
-template<class GRAPH_t>
-void CGraphSlamEngine<GRAPH_t>::initCurrPosViewport() {
+template<class GRAPH_T>
+void CGraphSlamEngine<GRAPH_T>::initCurrPosViewport() {
 	MRPT_START;
 	ASSERT_(m_enable_visuals);
 	using namespace mrpt::opengl;
@@ -1167,8 +1285,8 @@ void CGraphSlamEngine<GRAPH_t>::initCurrPosViewport() {
 
 
 
-template<class GRAPH_t>
-inline void CGraphSlamEngine<GRAPH_t>::updateCurrPosViewport() {
+template<class GRAPH_T>
+inline void CGraphSlamEngine<GRAPH_T>::updateCurrPosViewport() {
 	MRPT_START;
 	ASSERT_(m_enable_visuals);
 	using namespace mrpt::opengl;
@@ -1177,7 +1295,7 @@ inline void CGraphSlamEngine<GRAPH_t>::updateCurrPosViewport() {
 
 	ASSERT_(m_enable_visuals);
 
-	pose_t curr_robot_pose = this->getCurrentRobotPosEstimation();
+	global_pose_t curr_robot_pose = this->getCurrentRobotPosEstimation();
 
 	COpenGLScene::Ptr scene = m_win->get3DSceneAndLock();
 	COpenGLViewport::Ptr viewp = scene->getViewport("curr_robot_pose_viewport");
@@ -1185,16 +1303,16 @@ inline void CGraphSlamEngine<GRAPH_t>::updateCurrPosViewport() {
 
 	m_win->unlockAccess3DScene();
 	m_win->forceRepaint();
-	MRPT_LOG_DEBUG_STREAM( "Updated the \"current_pos\" viewport");
+	MRPT_LOG_DEBUG_STREAM("Updated the \"current_pos\" viewport");
 
 	MRPT_END;
 }
 
-template<class GRAPH_t>
-void CGraphSlamEngine<GRAPH_t>::readGTFileNavSimulOutput(
+template<class GRAPH_T>
+void CGraphSlamEngine<GRAPH_T>::readGTFile(
 		const std::string& fname_GT,
-		std::vector<pose_t>* gt_poses,
-		std::vector<mrpt::system::TTimeStamp>* gt_timestamps /* = nullptr */) {
+		std::vector<mrpt::poses::CPose2D>* gt_poses,
+		std::vector<mrpt::system::TTimeStamp>* gt_timestamps /* = NULL */) {
 	MRPT_START;
 	using namespace std;
 	using namespace mrpt::utils;
@@ -1207,9 +1325,8 @@ void CGraphSlamEngine<GRAPH_t>::readGTFileNavSimulOutput(
 				"m_visualize_GT flag to false\n", fname_GT.c_str()));
 
 	CFileInputStream file_GT(fname_GT);
-	ASSERT_(file_GT.fileOpenCorrectly() &&
-			"\nreadGTFileNavSimulOutput: Couldn't open GT file\n");
-	ASSERTMSG_(gt_poses, "No valid std::vector<pose_t>* was given");
+	ASSERTMSG_(file_GT.fileOpenCorrectly(), "\nCouldn't open GT file\n");
+	ASSERTMSG_(gt_poses, "\nNo valid std::vector<pose_t>* was given\n");
 
 	string curr_line;
 
@@ -1242,12 +1359,19 @@ void CGraphSlamEngine<GRAPH_t>::readGTFileNavSimulOutput(
 
 	MRPT_END;
 }
-
-template<class GRAPH_t>
-void CGraphSlamEngine<GRAPH_t>::readGTFileRGBD_TUM(
+template<class GRAPH_T>
+void CGraphSlamEngine<GRAPH_T>::readGTFile(
 		const std::string& fname_GT,
-		std::vector<pose_t>* gt_poses,
-		std::vector<mrpt::system::TTimeStamp>* gt_timestamps/*= nullptr */) {
+		std::vector<mrpt::poses::CPose3D>* gt_poses,
+		std::vector<mrpt::system::TTimeStamp>* gt_timestamps /* = NULL */) {
+	THROW_EXCEPTION("Not implemented.");
+}
+
+template<class GRAPH_T>
+void CGraphSlamEngine<GRAPH_T>::readGTFileRGBD_TUM(
+		const std::string& fname_GT,
+		std::vector<mrpt::poses::CPose2D>* gt_poses,
+		std::vector<mrpt::system::TTimeStamp>* gt_timestamps/*= NULL */) {
 	MRPT_START;
 	using namespace std;
 	using namespace mrpt::utils;
@@ -1356,8 +1480,8 @@ void CGraphSlamEngine<GRAPH_t>::readGTFileRGBD_TUM(
 	MRPT_END;
 }
 
-template<class GRAPH_t>
-void CGraphSlamEngine<GRAPH_t>::alignOpticalWithMRPTFrame() {
+template<class GRAPH_T>
+void CGraphSlamEngine<GRAPH_T>::alignOpticalWithMRPTFrame() {
 	MRPT_START;
 	using namespace std;
 	using namespace mrpt::math;
@@ -1405,13 +1529,13 @@ void CGraphSlamEngine<GRAPH_t>::alignOpticalWithMRPTFrame() {
 	ss_out << "rotx: " << endl << rotx << endl;
 	ss_out << "Full rotation matrix: " << endl << m_rot_TUM_to_MRPT << endl;
 
-	MRPT_LOG_DEBUG_STREAM( ss_out);
+	MRPT_LOG_DEBUG_STREAM(ss_out);
 
 	MRPT_END;
 }
 
-template<class GRAPH_t>
-void CGraphSlamEngine<GRAPH_t>::queryObserverForEvents() {
+template<class GRAPH_T>
+void CGraphSlamEngine<GRAPH_T>::queryObserverForEvents() {
 	MRPT_START;
 	ASSERT_(m_enable_visuals);
 	ASSERTMSG_(m_win_observer,
@@ -1440,40 +1564,25 @@ void CGraphSlamEngine<GRAPH_t>::queryObserverForEvents() {
 	}
 	// pause/resume program execution
 	if (events_occurred[m_keystroke_pause_exec]) {
-		m_program_paused = !m_program_paused;
-
-		// message to the user
-		if (m_program_paused) {
-			MRPT_LOG_INFO_STREAM("Program is paused. "
-				<< "Press \"p\" or \"P\" in the dipslay window to resume");
-		}
-		else {
-			MRPT_LOG_INFO_STREAM( "Program resumed.");
-		}
-
-		while (m_program_paused) {
-			using namespace std::literals;
-			std::this_thread::sleep_for(1s);
-			this->queryObserverForEvents();
-		}
+		this->togglePause();
 	}
 
 	// notify the deciders/optimizer of any events they may be interested in
-	MRPT_LOG_DEBUG_STREAM( "Notifying deciders/optimizer for events");
-	m_node_registrar->notifyOfWindowEvents(events_occurred);
-	m_edge_registrar->notifyOfWindowEvents(events_occurred);
+	//MRPT_LOG_DEBUG_STREAM("Notifying deciders/optimizer for events");
+	m_node_reg->notifyOfWindowEvents(events_occurred);
+	m_edge_reg->notifyOfWindowEvents(events_occurred);
 	m_optimizer->notifyOfWindowEvents(events_occurred);
 
 	MRPT_END;
 }
 
-template<class GRAPH_t>
-void CGraphSlamEngine<GRAPH_t>::toggleOdometryVisualization() {
+template<class GRAPH_T>
+void CGraphSlamEngine<GRAPH_T>::toggleOdometryVisualization() {
 	MRPT_START;
 	ASSERT_(m_enable_visuals);
 	using namespace mrpt::utils;
 	using namespace mrpt::opengl;
-	MRPT_LOG_INFO_STREAM( "Toggling Odometry visualization...");
+	MRPT_LOG_INFO_STREAM("Toggling Odometry visualization...");
 
 	COpenGLScene::Ptr scene = m_win->get3DSceneAndLock();
 
@@ -1493,13 +1602,13 @@ void CGraphSlamEngine<GRAPH_t>::toggleOdometryVisualization() {
 
 	MRPT_END;
 }
-template<class GRAPH_t>
-void CGraphSlamEngine<GRAPH_t>::toggleGTVisualization() {
+template<class GRAPH_T>
+void CGraphSlamEngine<GRAPH_T>::toggleGTVisualization() {
 	MRPT_START;
 	ASSERT_(m_enable_visuals);
 	using namespace mrpt::opengl;
 	using namespace mrpt::utils;
-	MRPT_LOG_INFO_STREAM( "Toggling Ground Truth visualization");
+	MRPT_LOG_INFO_STREAM("Toggling Ground Truth visualization");
 
 	COpenGLScene::Ptr scene = m_win->get3DSceneAndLock();
 
@@ -1520,14 +1629,14 @@ void CGraphSlamEngine<GRAPH_t>::toggleGTVisualization() {
 
 	MRPT_END;
 }
-template<class GRAPH_t>
-void CGraphSlamEngine<GRAPH_t>::toggleMapVisualization() {
+template<class GRAPH_T>
+void CGraphSlamEngine<GRAPH_T>::toggleMapVisualization() {
 	MRPT_START;
 	ASSERT_(m_enable_visuals);
 	using namespace std;
 	using namespace mrpt::opengl;
 	using namespace mrpt::utils;
-	MRPT_LOG_INFO_STREAM( "Toggling Map visualization... ");
+	MRPT_LOG_INFO_STREAM("Toggling Map visualization... ");
 
 	COpenGLScene::Ptr scene = m_win->get3DSceneAndLock();
 
@@ -1558,13 +1667,13 @@ void CGraphSlamEngine<GRAPH_t>::toggleMapVisualization() {
 
 	MRPT_END;
 }
-template<class GRAPH_t>
-void CGraphSlamEngine<GRAPH_t>::toggleEstimatedTrajectoryVisualization() {
+template<class GRAPH_T>
+void CGraphSlamEngine<GRAPH_T>::toggleEstimatedTrajectoryVisualization() {
 	MRPT_START;
 	ASSERT_(m_enable_visuals);
 	using namespace mrpt::opengl;
 	using namespace mrpt::utils;
-	MRPT_LOG_INFO_STREAM( "Toggling Estimated Trajectory visualization... ");
+	MRPT_LOG_INFO_STREAM("Toggling Estimated Trajectory visualization... ");
 
 	COpenGLScene::Ptr scene = m_win->get3DSceneAndLock();
 
@@ -1585,8 +1694,8 @@ void CGraphSlamEngine<GRAPH_t>::toggleEstimatedTrajectoryVisualization() {
 
 	MRPT_END;
 }
-template<class GRAPH_t>
-void CGraphSlamEngine<GRAPH_t>::dumpVisibilityErrorMsg(
+template<class GRAPH_T>
+void CGraphSlamEngine<GRAPH_T>::dumpVisibilityErrorMsg(
 		std::string viz_flag, int sleep_time /* = 500 milliseconds */) {
 	MRPT_START;
 	using namespace mrpt::utils;
@@ -1600,11 +1709,65 @@ void CGraphSlamEngine<GRAPH_t>::dumpVisibilityErrorMsg(
 	MRPT_END;
 }
 
-template<class GRAPH_t>
-void CGraphSlamEngine<GRAPH_t>::updateMapVisualization(
-		const GRAPH_t& gr,
-		std::map<mrpt::utils::TNodeID,
-		mrpt::obs::CObservation2DRangeScan::Ptr> m_nodes_to_laser_scans2D,
+template<class GRAPH_T>
+mrpt::system::TTimeStamp CGraphSlamEngine<GRAPH_T>::getTimeStamp(
+		const mrpt::obs::CActionCollection::Ptr action,
+		const mrpt::obs::CSensoryFrame::Ptr observations,
+		const mrpt::obs::CObservation::Ptr observation) {
+	MRPT_START;
+	using namespace mrpt::obs;
+	using namespace mrpt::system;
+
+	// make sure that adequate data is given.
+	ASSERTMSG_(action || observation,
+			"Neither action or observation contains valid data.");
+
+	mrpt::system::TTimeStamp timestamp = INVALID_TIMESTAMP;
+	if (observation) {
+		timestamp = observation->timestamp;
+	}
+	else {
+		// querry action part first
+		timestamp = action->get(0)->timestamp;
+
+		// if still not available query the observations in the CSensoryFrame
+		if (timestamp == INVALID_TIMESTAMP) {
+			for (mrpt::obs::CSensoryFrame::const_iterator sens_it = observations->begin();
+					sens_it != observations->end(); ++sens_it) {
+				timestamp = (*sens_it)->timestamp;
+				if (timestamp != INVALID_TIMESTAMP) {
+					break;
+				}
+			}
+		}
+	}
+	return timestamp;
+	MRPT_END;
+}
+
+template<class GRAPH_T>
+mrpt::poses::CPose3D CGraphSlamEngine<GRAPH_T>::getLSPoseForGridMapVisualization(
+		const mrpt::utils::TNodeID nodeID) const {
+	return mrpt::poses::CPose3D(m_graph.nodes.at(nodeID));
+}
+
+template<class GRAPH_T>
+void CGraphSlamEngine<GRAPH_T>::initMapVisualization() {
+	using namespace mrpt::opengl;
+
+	CSetOfObjects::Ptr map_obj = CSetOfObjects::Create();
+	map_obj->setName("map");
+	COpenGLScene::Ptr& scene = this->m_win->get3DSceneAndLock();
+	scene->insert(map_obj);
+	this->m_win->unlockAccess3DScene();
+	this->m_win->forceRepaint();
+}
+
+template<class GRAPH_T>
+void CGraphSlamEngine<GRAPH_T>::updateMapVisualization(
+		const std::map<
+			mrpt::utils::TNodeID,
+			mrpt::obs::CObservation2DRangeScan::Ptr>& nodes_to_laser_scans2D,
 		bool full_update /*= false */) {
 	MRPT_START;
 	ASSERT_(m_enable_visuals);
@@ -1613,31 +1776,37 @@ void CGraphSlamEngine<GRAPH_t>::updateMapVisualization(
 	using namespace mrpt::opengl;
 	using namespace std;
 	using namespace mrpt::poses;
+	COpenGLScene::Ptr scene = m_win->get3DSceneAndLock();
+	CSetOfObjects::Ptr map_obj;
+	{
+		CRenderizable::Ptr obj = scene->getByName("map");
+		map_obj = std::dynamic_pointer_cast<CSetOfObjects>(obj);
+		ASSERT_(map_obj);
+	}
 
 	CTicTac map_update_timer;
 	map_update_timer.Tic();
 
-	// get set of nodes to run the update for
+	// get the set of nodes for which to run the update
 	std::set<mrpt::utils::TNodeID> nodes_set;
 	{
 		if (full_update) {
 			// for all the nodes get the node position and the corresponding laser scan
 			// if they were recorded and visualize them
 			m_graph.getAllNodes(nodes_set);
-			MRPT_LOG_INFO_STREAM( "Executing full update of the map");
+			MRPT_LOG_DEBUG_STREAM("Executing full update of the map visuals");
+			map_obj->clear();
 
-		} // IF FULL UPDATE
-		else { // add only current CSimplePointMap
+		} // end if - full update
+		else { // add only current nodeID
 			nodes_set.insert(m_nodeID_max);
-		} // if PARTIAL_UPDATE
+		} // end if - partial update
 	}
 
 	// for all the nodes in the previously populated set
 	for (std::set<mrpt::utils::TNodeID>::const_iterator
 			node_it = nodes_set.begin();
 			node_it != nodes_set.end(); ++node_it) {
-
-		pose_t scan_pose = m_graph.nodes.find(*node_it)->second;
 
 		// name of gui object
 		stringstream scan_name("");
@@ -1648,26 +1817,22 @@ void CGraphSlamEngine<GRAPH_t>::updateMapVisualization(
 		CObservation2DRangeScan::Ptr scan_content;
 		std::map<mrpt::utils::TNodeID,
 			mrpt::obs::CObservation2DRangeScan::Ptr>::const_iterator search =
-				m_nodes_to_laser_scans2D.find(*node_it);
+				nodes_to_laser_scans2D.find(*node_it);
 
 		// make sure that the laser scan exists and is valid
-		if (search != m_nodes_to_laser_scans2D.end() && search->second) {
+		if (search != nodes_to_laser_scans2D.end() &&
+				search->second) {
 			scan_content = search->second;
 
 			CObservation2DRangeScan scan_decimated;
 			this->decimateLaserScan(*scan_content, &scan_decimated,
 					/*keep_every_n_entries = */ 5);
 
-			// if the scan doesn't already exist, add it to the scene, otherwise just
+			// if the scan doesn't already exist, add it to the map object, otherwise just
 			// adjust its pose
-			COpenGLScene::Ptr scene = m_win->get3DSceneAndLock();
-			CRenderizable::Ptr obj = scene->getByName(scan_name.str());
-
-			CSetOfObjects::Ptr scan_obj;
-			if (!obj) {
-				MRPT_LOG_DEBUG_STREAM("CSetOfObjects for nodeID " << *node_it <<
-					"doesn't exist. Creating it...");
-
+			CRenderizable::Ptr obj = map_obj->getByName(scan_name.str());
+			CSetOfObjects::Ptr scan_obj = std::dynamic_pointer_cast<CSetOfObjects>(obj);
+			if (!scan_obj) {
 				scan_obj = CSetOfObjects::Create();
 
 				// creating and inserting the observation in the CSetOfObjects
@@ -1676,7 +1841,7 @@ void CGraphSlamEngine<GRAPH_t>::updateMapVisualization(
 				m.getAs3DObject(scan_obj);
 
 				scan_obj->setName(scan_name.str());
-				scan_obj->setColor_u8(m_optimized_map_color);
+				this->setObjectPropsFromNodeID(*node_it, scan_obj);
 
 				// set the visibility of the object the same value as the visibility of
 				// the previous - Needed for proper toggling of the visibility of the
@@ -1684,37 +1849,48 @@ void CGraphSlamEngine<GRAPH_t>::updateMapVisualization(
 				{
 					stringstream prev_scan_name("");
 					prev_scan_name << "laser_scan_" << *node_it - 1;
-					CRenderizable::Ptr prev_obj = scene->getByName(prev_scan_name.str());
+					CRenderizable::Ptr prev_obj = map_obj->getByName(prev_scan_name.str());
 					if (prev_obj) {
 						scan_obj->setVisibility(prev_obj->isVisible());
 					}
 				}
 
-				scene->insert(scan_obj);
+				map_obj->insert(scan_obj);
 			}
 			else {
-				scan_obj = std::dynamic_pointer_cast<CSetOfObjects>(obj);
+				scan_obj = std::dynamic_pointer_cast<CSetOfObjects>(scan_obj);
 			}
 
 			// finally set the pose correctly - as computed by graphSLAM
-			scan_obj->setPose(CPose3D(scan_pose));
+			const CPose3D& scan_pose = CPose3D(m_graph.nodes.at(*node_it));
+			scan_obj->setPose(scan_pose);
 
-			m_win->unlockAccess3DScene();
-			m_win->forceRepaint();
 		}
 		else {
 			MRPT_LOG_DEBUG_STREAM("Laser scans of NodeID " << *node_it << "are  empty/invalid");
 		}
-	}
 
+	} // end for set of nodes
+
+	m_win->unlockAccess3DScene();
+	m_win->forceRepaint();
 
 	double elapsed_time = map_update_timer.Tac();
 	MRPT_LOG_DEBUG_STREAM("updateMapVisualization took: " << elapsed_time << "s");
 	MRPT_END;
+} // end of updateMapVisualization
+
+template<class GRAPH_T>
+void CGraphSlamEngine<GRAPH_T>::setObjectPropsFromNodeID(
+		const mrpt::utils::TNodeID  nodeID,
+		mrpt::opengl::CSetOfObjects::Ptr& viz_object) {
+	MRPT_START;
+	viz_object->setColor_u8(m_optimized_map_color);
+	MRPT_END;
 }
 
-template<class GRAPH_t>
-void CGraphSlamEngine<GRAPH_t>::decimateLaserScan(
+template<class GRAPH_T>
+void CGraphSlamEngine<GRAPH_T>::decimateLaserScan(
 		mrpt::obs::CObservation2DRangeScan& laser_scan_in,
 		mrpt::obs::CObservation2DRangeScan* laser_scan_out,
 		const int keep_every_n_entries /*= 2*/) {
@@ -1739,8 +1915,8 @@ void CGraphSlamEngine<GRAPH_t>::decimateLaserScan(
 	MRPT_END;
 }
 
-template<class GRAPH_t>
-void CGraphSlamEngine<GRAPH_t>::initGTVisualization() {
+template<class GRAPH_T>
+void CGraphSlamEngine<GRAPH_T>::initGTVisualization() {
 	MRPT_START;
 	ASSERT_(m_enable_visuals);
 	using namespace mrpt::utils;
@@ -1762,12 +1938,10 @@ void CGraphSlamEngine<GRAPH_t>::initGTVisualization() {
 	GT_cloud->setName("GT_cloud");
 
 	// robot model
-	CSetOfObjects::Ptr robot_model = stock_objects::RobotPioneer();
-	pose_t initial_pose;
-	robot_model->setPose(initial_pose);
-	robot_model->setName("robot_GT");
-	robot_model->setColor_u8(m_GT_color);
-	robot_model->setScale(m_robot_model_size);
+	CSetOfObjects::Ptr robot_model = this->setCurrentPositionModel(
+			/*name = */"robot_GT",
+			/*color = */m_GT_color,
+			/*scale = */m_robot_model_size);
 
 	// insert them to the scene
 	COpenGLScene::Ptr scene = m_win->get3DSceneAndLock();
@@ -1778,7 +1952,7 @@ void CGraphSlamEngine<GRAPH_t>::initGTVisualization() {
 	m_win_manager->assignTextMessageParameters(
 			/* offset_y*		= */ &m_offset_y_GT,
 			/* text_index* = */ &m_text_index_GT);
-	m_win_manager->addTextMessage(5,-m_offset_y_GT,
+	m_win_manager->addTextMessage(m_offset_x_left, -m_offset_y_GT,
 			mrpt::format("Ground truth path"),
 			TColorf(m_GT_color),
 			/* unique_index = */ m_text_index_GT );
@@ -1786,10 +1960,10 @@ void CGraphSlamEngine<GRAPH_t>::initGTVisualization() {
 	m_win->forceRepaint();
 
 	MRPT_END;
-}
+} // end of initGTVisualization
 
-template<class GRAPH_t>
-void CGraphSlamEngine<GRAPH_t>::updateGTVisualization() {
+template<class GRAPH_T>
+void CGraphSlamEngine<GRAPH_T>::updateGTVisualization() {
 	MRPT_START;
 	ASSERT_(m_enable_visuals);
 	using namespace mrpt::opengl;
@@ -1807,25 +1981,22 @@ void CGraphSlamEngine<GRAPH_t>::updateGTVisualization() {
 		CPointCloud::Ptr GT_cloud = std::dynamic_pointer_cast<CPointCloud>(obj);
 
 		// add the latest GT pose
-		pose_t gt_pose = m_GT_poses[m_GT_poses_index];
-		GT_cloud->insertPoint(
-				gt_pose.x(),
-				gt_pose.y(),
-				0 );
+		mrpt::poses::CPose3D p(m_GT_poses[m_GT_poses_index]);
+		GT_cloud->insertPoint(p.x(), p.y(), p.z());
 
 		// robot model of GT trajectory
 		obj = scene->getByName("robot_GT");
 		CSetOfObjects::Ptr robot_obj = std::dynamic_pointer_cast<CSetOfObjects>(obj);
-		robot_obj->setPose(gt_pose);
+		robot_obj->setPose(p);
 		m_win->unlockAccess3DScene();
 		m_win->forceRepaint();
 	}
 
 	MRPT_END;
-}
+} // end of updateGTVisualization
 
-template<class GRAPH_t>
-void CGraphSlamEngine<GRAPH_t>::initOdometryVisualization() {
+template<class GRAPH_T>
+void CGraphSlamEngine<GRAPH_T>::initOdometryVisualization() {
 	MRPT_START;
 	ASSERT_(m_has_read_config);
 	ASSERT_(m_enable_visuals);
@@ -1843,12 +2014,10 @@ void CGraphSlamEngine<GRAPH_t>::initOdometryVisualization() {
 	odometry_poses_cloud->setName("odometry_poses_cloud");
 
 	// robot model
-	CSetOfObjects::Ptr robot_model = stock_objects::RobotPioneer();
-	pose_t initial_pose;
-	robot_model->setPose(initial_pose);
-	robot_model->setName("robot_odometry_poses");
-	robot_model->setColor_u8(m_odometry_color);
-	robot_model->setScale(m_robot_model_size);
+	CSetOfObjects::Ptr robot_model = this->setCurrentPositionModel(
+			"robot_odometry_poses",
+			m_odometry_color,
+			m_robot_model_size);
 
 	// insert them to the scene
 	COpenGLScene::Ptr scene = m_win->get3DSceneAndLock();
@@ -1859,7 +2028,7 @@ void CGraphSlamEngine<GRAPH_t>::initOdometryVisualization() {
 	m_win_manager->assignTextMessageParameters(
 			/* offset_y* = */ &m_offset_y_odometry,
 			/* text_index* = */ &m_text_index_odometry);
-	m_win_manager->addTextMessage(5,-m_offset_y_odometry,
+	m_win_manager->addTextMessage(m_offset_x_left, -m_offset_y_odometry,
 			mrpt::format("Odometry path"),
 			TColorf(m_odometry_color),
 			/* unique_index = */ m_text_index_odometry );
@@ -1869,8 +2038,8 @@ void CGraphSlamEngine<GRAPH_t>::initOdometryVisualization() {
 	MRPT_END;
 }
 
-template<class GRAPH_t>
-void CGraphSlamEngine<GRAPH_t>::updateOdometryVisualization() {
+template<class GRAPH_T>
+void CGraphSlamEngine<GRAPH_T>::updateOdometryVisualization() {
 	MRPT_START;
 	ASSERT_(m_enable_visuals);
 	ASSERTMSG_(m_win,
@@ -1882,17 +2051,17 @@ void CGraphSlamEngine<GRAPH_t>::updateOdometryVisualization() {
 	// point cloud
 	CRenderizable::Ptr obj = scene->getByName("odometry_poses_cloud");
 	CPointCloud::Ptr odometry_poses_cloud = std::dynamic_pointer_cast<CPointCloud>(obj);
-	pose_t* odometry_pose = m_odometry_poses.back();
+	mrpt::poses::CPose3D p(m_odometry_poses.back());
 
 	odometry_poses_cloud->insertPoint(
-			odometry_pose->x(),
-			odometry_pose->y(),
-			0 );
+			p.x(),
+			p.y(),
+			p.z());
 
 	// robot model
 	obj = scene->getByName("robot_odometry_poses");
 	CSetOfObjects::Ptr robot_obj = std::dynamic_pointer_cast<CSetOfObjects>(obj);
-	robot_obj->setPose(*odometry_pose);
+	robot_obj->setPose(p);
 
 	m_win->unlockAccess3DScene();
 	m_win->forceRepaint();
@@ -1900,8 +2069,8 @@ void CGraphSlamEngine<GRAPH_t>::updateOdometryVisualization() {
 	MRPT_END;
 }
 
-template<class GRAPH_t>
-void CGraphSlamEngine<GRAPH_t>::initEstimatedTrajectoryVisualization() {
+template<class GRAPH_T>
+void CGraphSlamEngine<GRAPH_T>::initEstimatedTrajectoryVisualization() {
 	MRPT_START;
 	ASSERT_(m_enable_visuals);
 	using namespace mrpt::opengl;
@@ -1910,7 +2079,7 @@ void CGraphSlamEngine<GRAPH_t>::initEstimatedTrajectoryVisualization() {
 	// SetOfLines
 	CSetOfLines::Ptr estimated_traj_setoflines = CSetOfLines::Create();
 	estimated_traj_setoflines->setColor_u8(m_estimated_traj_color);
-	estimated_traj_setoflines->setLineWidth(0.5);
+	estimated_traj_setoflines->setLineWidth(1.5);
 	estimated_traj_setoflines->setName("estimated_traj_setoflines");
 	// append a dummy line so that you can later use append using
 	// CSetOfLines::appendLienStrip method.
@@ -1919,12 +2088,11 @@ void CGraphSlamEngine<GRAPH_t>::initEstimatedTrajectoryVisualization() {
 			/* 2nd */ 0, 0, 0);
 
 	// robot model
-	CSetOfObjects::Ptr robot_model = stock_objects::RobotPioneer();
-	pose_t initial_pose;
-	robot_model->setPose(initial_pose);
-	robot_model->setName("robot_estimated_traj");
-	robot_model->setColor_u8(m_estimated_traj_color);
-	robot_model->setScale(m_robot_model_size);
+	//pose_t initial_pose;
+	CSetOfObjects::Ptr robot_model = this->setCurrentPositionModel(
+			"robot_estimated_traj",
+			m_estimated_traj_color,
+			m_robot_model_size);
 
 	// insert objects in the graph
 	COpenGLScene::Ptr scene = m_win->get3DSceneAndLock();
@@ -1937,7 +2105,7 @@ void CGraphSlamEngine<GRAPH_t>::initEstimatedTrajectoryVisualization() {
 	if (m_visualize_estimated_trajectory) {
 		m_win_manager->assignTextMessageParameters( /* offset_y* = */ &m_offset_y_estimated_traj,
 				/* text_index* = */ &m_text_index_estimated_traj);
-		m_win_manager->addTextMessage(5,-m_offset_y_estimated_traj,
+		m_win_manager->addTextMessage(m_offset_x_left, -m_offset_y_estimated_traj,
 				mrpt::format("Estimated trajectory"),
 				TColorf(m_estimated_traj_color),
 				/* unique_index = */ m_text_index_estimated_traj );
@@ -1949,8 +2117,8 @@ void CGraphSlamEngine<GRAPH_t>::initEstimatedTrajectoryVisualization() {
 	MRPT_END;
 }
 
-template<class GRAPH_t>
-void CGraphSlamEngine<GRAPH_t>::
+template<class GRAPH_T>
+void CGraphSlamEngine<GRAPH_T>::
 updateEstimatedTrajectoryVisualization(bool full_update) {
 	MRPT_START;
 	ASSERT_(m_enable_visuals);
@@ -1965,15 +2133,17 @@ updateEstimatedTrajectoryVisualization(bool full_update) {
 	if (m_visualize_estimated_trajectory) {
 		// set of lines
 		obj = scene->getByName("estimated_traj_setoflines");
-		CSetOfLines::Ptr estimated_traj_setoflines = std::dynamic_pointer_cast<CSetOfLines>(obj);
+		CSetOfLines::Ptr estimated_traj_setoflines =
+			std::dynamic_pointer_cast<CSetOfLines>(obj);
 
-		// gather set of nodes for which to append lines - all of the nodes in the
-		// graph or just the last inserted..
+		// gather set of nodes for which to append lines - all of the nodes in
+		// the graph or just the last inserted..
 		std::set<mrpt::utils::TNodeID> nodes_set;
 		{
 			if (full_update) {
-				m_graph.getAllNodes(nodes_set);
+				this->getNodeIDsOfEstimatedTrajectory(&nodes_set);
 				estimated_traj_setoflines->clear();
+				// dummy way so that I can use appendLineStrip afterwards.
 				estimated_traj_setoflines->appendLine(
 						/* 1st */ 0, 0, 0,
 						/* 2nd */ 0, 0, 0);
@@ -1985,13 +2155,15 @@ updateEstimatedTrajectoryVisualization(bool full_update) {
 		}
 		// append line for each node in the set
 		for (std::set<mrpt::utils::TNodeID>::const_iterator
-				nodeID_it = nodes_set.begin();
-				nodeID_it != nodes_set.end(); ++nodeID_it) {
+				it = nodes_set.begin();
+				it != nodes_set.end(); ++it) {
+
+			mrpt::poses::CPose3D p(m_graph.nodes.at(*it));
 
 			estimated_traj_setoflines->appendLineStrip(
-					m_graph.nodes[*nodeID_it].x(),
-					m_graph.nodes[*nodeID_it].y(),
-					0.05f);
+					p.x(),
+					p.y(),
+					p.z());
 		}
 	}
 
@@ -2006,28 +2178,29 @@ updateEstimatedTrajectoryVisualization(bool full_update) {
 	m_win->unlockAccess3DScene();
 	m_win->forceRepaint();
 	MRPT_END;
-}
+} // end of updateEstimatedTrajectoryVisualization
+
 
 // TRGBDInfoFileParams
 // ////////////////////////////////
-template<class GRAPH_t>
-CGraphSlamEngine<GRAPH_t>::
+template<class GRAPH_T>
+CGraphSlamEngine<GRAPH_T>::
 TRGBDInfoFileParams::TRGBDInfoFileParams(const std::string& rawlog_fname) {
 
 	this->setRawlogFile(rawlog_fname);
 	this->initTRGBDInfoFileParams();
 }
-template<class GRAPH_t>
-CGraphSlamEngine<GRAPH_t>::
+template<class GRAPH_T>
+CGraphSlamEngine<GRAPH_T>::
 TRGBDInfoFileParams::TRGBDInfoFileParams() {
 	this->initTRGBDInfoFileParams();
 }
-template<class GRAPH_t>
-CGraphSlamEngine<GRAPH_t>::
+template<class GRAPH_T>
+CGraphSlamEngine<GRAPH_T>::
 TRGBDInfoFileParams::~TRGBDInfoFileParams() { }
 
-template<class GRAPH_t>
-void CGraphSlamEngine<GRAPH_t>::TRGBDInfoFileParams::setRawlogFile(
+template<class GRAPH_T>
+void CGraphSlamEngine<GRAPH_T>::TRGBDInfoFileParams::setRawlogFile(
 		const std::string& rawlog_fname) {
 
 	// get the correct info filename from the rawlog_fname
@@ -2038,16 +2211,16 @@ void CGraphSlamEngine<GRAPH_t>::TRGBDInfoFileParams::setRawlogFile(
 	info_fname = dir + name_prefix + rawlog_filename + name_suffix;
 }
 
-template<class GRAPH_t>
-void CGraphSlamEngine<GRAPH_t>::
+template<class GRAPH_T>
+void CGraphSlamEngine<GRAPH_T>::
 TRGBDInfoFileParams::initTRGBDInfoFileParams() {
 	// fields to use
 	fields["Overall number of objects"] = "";
 	fields["Observations format"] = "";
 }
 
-template<class GRAPH_t>
-void CGraphSlamEngine<GRAPH_t>::TRGBDInfoFileParams::parseFile() {
+template<class GRAPH_T>
+void CGraphSlamEngine<GRAPH_T>::TRGBDInfoFileParams::parseFile() {
 	ASSERT_FILE_EXISTS_(info_fname);
 	using namespace std;
 	using namespace mrpt::utils;
@@ -2094,9 +2267,9 @@ void CGraphSlamEngine<GRAPH_t>::TRGBDInfoFileParams::parseFile() {
 }
 ////////////////////////////////////////////////////////////////////////////////
 
-template<class GRAPH_t>
-void CGraphSlamEngine<GRAPH_t>::saveGraph(
-		const std::string* fname_in /*= nullptr */) const {
+template<class GRAPH_T>
+void CGraphSlamEngine<GRAPH_T>::saveGraph(
+		const std::string* fname_in /*= NULL */) const {
 	MRPT_START;
 	using namespace mrpt::utils;
 
@@ -2109,15 +2282,15 @@ void CGraphSlamEngine<GRAPH_t>::saveGraph(
 		fname = "output_graph.graph";
 	}
 
-	MRPT_LOG_INFO_STREAM( "Saving generated graph in VERTEX/EDGE format: " << fname);
+	MRPT_LOG_INFO_STREAM("Saving generated graph in VERTEX/EDGE format: " << fname);
 	m_graph.saveToTextFile(fname);
 
 	MRPT_END;
 }
 
-template<class GRAPH_t>
-void CGraphSlamEngine<GRAPH_t>::save3DScene(
-		const std::string* fname_in /* = nullptr */) const {
+template<class GRAPH_T>
+void CGraphSlamEngine<GRAPH_T>::save3DScene(
+		const std::string* fname_in /* = NULL */) const {
 	MRPT_START;
 	ASSERTMSG_(m_enable_visuals,
 			"\nsave3DScene was called even though enable_visuals flag is off.\nExiting...\n");
@@ -2126,12 +2299,17 @@ void CGraphSlamEngine<GRAPH_t>::save3DScene(
 
 	COpenGLScene::Ptr scene = m_win->get3DSceneAndLock();
 
+	if (!scene) {
+		MRPT_LOG_ERROR_STREAM("Could not fetch 3D Scene. Display window must already be closed.");
+		return;
+	}
+
 	// TODO - what else is there to be excluded from the scene?
 	// remove the CPlanarLaserScan if it exists
 	{
 		CPlanarLaserScan::Ptr laser_scan;
 		for (; (laser_scan = scene->getByClass<CPlanarLaserScan>()) ;) {
-			MRPT_LOG_DEBUG_STREAM( "Removing CPlanarLaserScan from generated 3DScene...");
+			MRPT_LOG_DEBUG_STREAM("Removing CPlanarLaserScan from generated 3DScene...");
 			scene->removeObject(laser_scan);
 		}
 	}
@@ -2145,7 +2323,7 @@ void CGraphSlamEngine<GRAPH_t>::save3DScene(
 		fname = "output_scene.3DScene";
 	}
 
-	MRPT_LOG_INFO_STREAM( "Saving generated scene to " << fname);
+	MRPT_LOG_INFO_STREAM("Saving generated scene to " << fname);
 	scene->saveToFile(fname);
 
 	m_win->unlockAccess3DScene();
@@ -2154,11 +2332,12 @@ void CGraphSlamEngine<GRAPH_t>::save3DScene(
 	MRPT_END;
 }
 
-template<class GRAPH_t>
-void CGraphSlamEngine<GRAPH_t>::computeSlamMetric(mrpt::utils::TNodeID nodeID, size_t gt_index) {
+template<class GRAPH_T>
+void CGraphSlamEngine<GRAPH_T>::computeSlamMetric(mrpt::utils::TNodeID nodeID, size_t gt_index) {
 	MRPT_START;
 	using namespace mrpt::utils;
 	using namespace mrpt::math;
+	using namespace mrpt::poses;
 
 	// start updating the metric after a certain number of nodes have been added
 	if ( m_graph.nodeCount() < 4 ) {
@@ -2171,10 +2350,10 @@ void CGraphSlamEngine<GRAPH_t>::computeSlamMetric(mrpt::utils::TNodeID nodeID, s
 	// initialize the loop variables only once
 	pose_t curr_node_pos;
 	pose_t curr_gt_pos;
-	pose_t node_delta;
+	pose_t node_delta_pos;
 	pose_t gt_delta;
-	double trans_diff;
-	double rot_diff;
+	double trans_diff = 0;
+	double rot_diff = 0;
 
 	size_t indices_size = m_nodeID_to_gt_indices.size();
 
@@ -2196,6 +2375,9 @@ void CGraphSlamEngine<GRAPH_t>::computeSlamMetric(mrpt::utils::TNodeID nodeID, s
 	pose_t prev_node_pos = m_graph.nodes[prev_it->first];
 	pose_t prev_gt_pos = m_GT_poses[prev_it->second];
 
+	// temporary constraint type 
+	constraint_t c;
+
 	for (std::map<mrpt::utils::TNodeID, size_t>::const_iterator
 			index_it = start_it;
 			index_it != m_nodeID_to_gt_indices.end();
@@ -2203,11 +2385,11 @@ void CGraphSlamEngine<GRAPH_t>::computeSlamMetric(mrpt::utils::TNodeID nodeID, s
 		curr_node_pos = m_graph.nodes[index_it->first];
 		curr_gt_pos = m_GT_poses[index_it->second];
 
-		node_delta = curr_node_pos - prev_node_pos;
+		node_delta_pos = curr_node_pos - prev_node_pos;
 		gt_delta = curr_gt_pos - prev_gt_pos;
 
-		trans_diff = gt_delta.distanceTo(node_delta);
-		rot_diff = wrapToPi(gt_delta.phi() - node_delta.phi());
+		trans_diff = gt_delta.distanceTo(node_delta_pos);
+		rot_diff = this->accumulateAngleDiffs(gt_delta, node_delta_pos);
 
 		m_curr_deformation_energy += (pow(trans_diff, 2) + pow(rot_diff, 2));
 		m_curr_deformation_energy /= indices_size;
@@ -2224,15 +2406,35 @@ void CGraphSlamEngine<GRAPH_t>::computeSlamMetric(mrpt::utils::TNodeID nodeID, s
 	MRPT_END;
 }
 
-template<class GRAPH_t>
-void CGraphSlamEngine<GRAPH_t>::initSlamMetricVisualization() {
+template<class GRAPH_T>
+double CGraphSlamEngine<GRAPH_T>::accumulateAngleDiffs(
+				mrpt::poses::CPose2D p1,
+				mrpt::poses::CPose2D p2) {
+	return mrpt::math::wrapToPi(p1.phi() - p2.phi());
+}
+template<class GRAPH_T>
+double CGraphSlamEngine<GRAPH_T>::accumulateAngleDiffs(
+				mrpt::poses::CPose3D p1,
+				mrpt::poses::CPose3D p2) {
+	using namespace mrpt::math;
+	double res = 0;
+
+	res += wrapToPi(p1.roll() - p2.roll());
+	res += wrapToPi(p1.pitch() - p2.pitch());
+	res += wrapToPi(p1.yaw() - p2.yaw());
+
+	return res;
+}
+
+template<class GRAPH_T>
+void CGraphSlamEngine<GRAPH_T>::initSlamMetricVisualization() {
 	ASSERT_(m_enable_visuals);
 	using namespace std;
 	using namespace mrpt::utils;
 	using namespace mrpt::gui;
 
 	MRPT_START;
-	MRPT_LOG_DEBUG_STREAM( "In initializeSlamMetricVisualization...");
+	MRPT_LOG_DEBUG_STREAM("In initializeSlamMetricVisualization...");
 	ASSERT_(m_visualize_SLAM_metric);
 
 	// initialize the m_win_plot on the stack
@@ -2248,8 +2450,8 @@ void CGraphSlamEngine<GRAPH_t>::initSlamMetricVisualization() {
 	MRPT_END;
 }
 
-template<class GRAPH_t>
-void CGraphSlamEngine<GRAPH_t>::updateSlamMetricVisualization() {
+template<class GRAPH_T>
+void CGraphSlamEngine<GRAPH_T>::updateSlamMetricVisualization() {
 	MRPT_START;
 	ASSERT_(m_enable_visuals);
 	ASSERT_(m_win_plot && m_visualize_SLAM_metric);
@@ -2280,19 +2482,16 @@ void CGraphSlamEngine<GRAPH_t>::updateSlamMetricVisualization() {
 	MRPT_END;
 }
 
-template<class GRAPH_t>
-void CGraphSlamEngine<GRAPH_t>::getDescriptiveReport(std::string* report_str) const {
+template<class GRAPH_T>
+void CGraphSlamEngine<GRAPH_T>::getDescriptiveReport(std::string* report_str) const {
 	MRPT_START;
 	using namespace std;
 	using namespace mrpt::utils;
 
-	const std::string report_sep(2, '\n');
-	const std::string header_sep(80, '#');
-
 	// Summary of Results
 	stringstream results_ss;
 	results_ss << "Summary: " << std::endl;
-	results_ss << header_sep << std::endl;
+	results_ss << this->header_sep << std::endl;
 	results_ss << "\tProcessing time: " <<
 		m_time_logger.getMeanTime("proc_time") << std::endl;;
 	results_ss << "\tDataset Grab time: " << m_dataset_grab_time << std::endl;
@@ -2313,29 +2512,71 @@ void CGraphSlamEngine<GRAPH_t>::getDescriptiveReport(std::string* report_str) co
 	report_str->clear();
 
 	*report_str += results_ss.str();
-	*report_str += report_sep;
+	*report_str += this->report_sep;
 
 	*report_str += config_params;
-	*report_str += report_sep;
+	*report_str += this->report_sep;
 
 	*report_str += time_res;
-	*report_str += report_sep;
+	*report_str += this->report_sep;
 
 	*report_str += output_res;
-	*report_str += report_sep;
+	*report_str += this->report_sep;
 
 	MRPT_END;
 }
 
-template<class GRAPH_t>
-void CGraphSlamEngine<GRAPH_t>::generateReportFiles(
+template<class GRAPH_T>
+bool CGraphSlamEngine<GRAPH_T>::getGraphSlamStats(
+		std::map<std::string, int>* node_stats,
+		std::map<std::string, int>* edge_stats,
+		mrpt::system::TTimeStamp* timestamp/*=NULL*/) {
+	MRPT_START;
+	using namespace std;
+	using namespace mrpt::graphslam::detail;
+
+	ASSERTMSG_(node_stats, "Invalid pointer to node_stats is given");
+	ASSERTMSG_(edge_stats, "Invalid pointer to edge_stats is given");
+
+	if (m_nodeID_max == 0) {
+		return false;
+	}
+
+	// fill the node stats
+	(*node_stats)["nodes_total"] = m_nodeID_max + 1;
+
+	// fill the edge stats
+	for (CEdgeCounter::const_iterator it = m_edge_counter.begin();
+			it != m_edge_counter.end();
+			++it) {
+		(*edge_stats)[it->first] = it->second;
+	}
+
+	(*edge_stats)["loop_closures"] = m_edge_counter.getLoopClosureEdges();
+	(*edge_stats)["edges_total"] = m_edge_counter.getTotalNumOfEdges();
+
+	// fill the timestamp
+	if (timestamp) {
+		*timestamp = m_curr_timestamp;
+	}
+
+	return true;
+	MRPT_END;
+}
+
+template<class GRAPH_T>
+void CGraphSlamEngine<GRAPH_T>::generateReportFiles(
 		const std::string& output_dir_fname) {
 	MRPT_START;
 	using namespace mrpt::utils;
-	// first initialize the directory where the files are to be placed
-	this->initOutputDir(output_dir_fname);
+	using namespace mrpt::system;
+	using namespace mrpt;
 
-	MRPT_LOG_INFO_STREAM( "Generating detailed class report...");
+	ASSERTMSG_(directoryExists(output_dir_fname),
+			format("Output directory \"%s\" doesn't exist",
+				output_dir_fname.c_str()));
+
+	MRPT_LOG_INFO_STREAM("Generating detailed class report...");
 	std::lock_guard<std::mutex> m_graph_lock(m_graph_section);
 
 	std::string report_str;
@@ -2357,14 +2598,14 @@ void CGraphSlamEngine<GRAPH_t>::generateReportFiles(
 		report_str.clear();
 		fname = output_dir_fname + "/" + "node_registrar" + ext;
 		this->initResultsFile(fname);
-		m_node_registrar->getDescriptiveReport(&report_str);
+		m_node_reg->getDescriptiveReport(&report_str);
 		m_out_streams[fname]->printf("%s", report_str.c_str());
 	}
 	{ // edge_registrar
 		report_str.clear();
 		fname = output_dir_fname + "/" + "edge_registrar" + ext;
 		this->initResultsFile(fname);
-		m_edge_registrar->getDescriptiveReport(&report_str);
+		m_edge_reg->getDescriptiveReport(&report_str);
 		m_out_streams[fname]->printf("%s", report_str.c_str());
 	}
 	{ // optimizer
@@ -2383,7 +2624,8 @@ void CGraphSlamEngine<GRAPH_t>::generateReportFiles(
 		this->initResultsFile(fname);
 
 		m_out_streams[fname]->printf("%s\n", desc.c_str());
-		for (std::vector<double>::const_iterator vec_it = m_deformation_energy_vec.begin();
+		for (std::vector<double>::const_iterator
+				vec_it = m_deformation_energy_vec.begin();
 				vec_it != m_deformation_energy_vec.end(); ++vec_it) {
 			m_out_streams[fname]->printf("%f\n", *vec_it);
 		}
@@ -2391,11 +2633,30 @@ void CGraphSlamEngine<GRAPH_t>::generateReportFiles(
 
 	MRPT_END;
 }
+template<class GRAPH_T>
+mrpt::opengl::CSetOfObjects::Ptr
+CGraphSlamEngine<GRAPH_T>::setCurrentPositionModel(
+		const std::string& model_name,
+		const mrpt::utils::TColor& model_color,
+		const size_t model_size,
+		const pose_t& init_pose) {
+	using namespace mrpt::poses;
+	using namespace mrpt::opengl;
+	ASSERTMSG_(!model_name.empty(), "Model name provided is empty.");
 
+	mrpt::opengl::CSetOfObjects::Ptr model =
+		this->initRobotModelVisualization();
+	model->setName(model_name);
+	model->setColor_u8(model_color);
+	model->setScale(model_size);
+	model->setPose(init_pose);
+
+	return model;
+}
 
 // TODO - check this
-template<class GRAPH_t>
-void CGraphSlamEngine<GRAPH_t>::getDeformationEnergyVector(
+template<class GRAPH_T>
+void CGraphSlamEngine<GRAPH_T>::getDeformationEnergyVector(
 		std::vector<double>* vec_out) const {
 	MRPT_START;
 

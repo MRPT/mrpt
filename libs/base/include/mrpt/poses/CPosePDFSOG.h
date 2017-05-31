@@ -12,6 +12,7 @@
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/math/math_frwds.h>
+#include <ostream>
 
 
 namespace mrpt
@@ -54,12 +55,21 @@ namespace mrpt
 				double		log_w;
 
 			public:
-			  MRPT_MAKE_ALIGNED_OPERATOR_NEW
+			  MRPT_MAKE_ALIGNED_OPERATOR_NEW;
+
+			  friend std::ostream& operator<<(std::ostream& o, const TGaussianMode& mode) {
+			  	o << "Mean: " << mode.mean << std::endl
+			  		<< "Covariance: " << std::endl << mode.cov << std::endl
+			  		<< "Log-weight: " << mode.log_w << std::endl;
+			  	return o;
+			  }
 			};
 
 			typedef mrpt::aligned_containers<TGaussianMode>::vector_t	CListGaussianModes;
 			typedef CListGaussianModes::const_iterator const_iterator;
 			typedef CListGaussianModes::iterator iterator;
+
+			const CListGaussianModes& getSOGModes() const { return m_modes; }
 
 		protected:
 			void assureSymmetry(); //!< Ensures the symmetry of the covariance matrix (eventually certain operations in the math-coprocessor lead to non-symmetric matrixes!)

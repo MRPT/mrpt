@@ -22,17 +22,20 @@ namespace mrpt
 		class CPose3DRotVec;
 
 		// PDFs:
-		class CPointPDF; 
-		class CPosePDF;  
-		class CPose3DPDF; 
-		class CPose3DQuatPDF; 
-		class CPosePDFParticles; 
-		class CPosePDFGaussian; 
-		class CPosePDFGaussianInf; 
-		class CPosePDFSOG; 
-		class CPose3DPDF; 
-		class CPose3DPDFGaussian; 
-		class CPose3DPDFGaussianInf; 
+		class CPointPDF; struct CPointPDFPtr;
+		class CPosePDF;  struct CPosePDFPtr;
+		class CPose3DPDF; struct CPose3DPDFPtr;
+		class CPose3DQuatPDF; struct CPose3DQuatPDFPtr;
+		class CPosePDFParticles; struct CPosePDFParticlesPtr;
+		class CPosePDFGaussian; struct CPosePDFGaussianPtr;
+		class CPosePDFGaussianInf; struct CPosePDFGaussianInfPtr;
+		class CPosePDFSOG; struct CPosePDFSOGPtr;
+		class CPose3DPDF; struct CPose3DPDFPtr;
+		class CPose3DPDFGaussian; struct CPose3DPDFGaussianPtr;
+		class CPose3DPDFGaussianInf; struct CPose3DPDFGaussianInfPtr;
+		class CPose3DQuatPDFGaussianInf; struct CPose3DQuatPDFGaussianInfPtr;
 
 	}
 } 
+
+

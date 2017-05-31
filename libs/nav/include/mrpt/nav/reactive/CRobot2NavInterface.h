@@ -126,6 +126,9 @@ namespace mrpt
 		/** Callback: No progression made towards target for a predefined period of time. */
 		virtual void sendWaySeemsBlockedEvent();
 
+		/** Callback: Apparent collision event (i.e. there is at least one obstacle point inside the robot shape) */
+		virtual void sendApparentCollisionEvent();
+
 		/** Returns the number of seconds ellapsed since the constructor of this class was invoked, or since 
 		  * the last call of resetNavigationTimer(). This will be normally wall-clock time, except in simulators where this method will return simulation time. */
 		virtual double getNavigationTime();
