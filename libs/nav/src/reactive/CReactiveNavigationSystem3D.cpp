@@ -318,3 +318,36 @@ void CReactiveNavigationSystem3D::loggingGetWSObstaclesAndShape(CLogFileRecord &
 	}
 	out_log.robotShape_radius = m_robotShape.getRadius(0);
 }
+
+bool CReactiveNavigationSystem3D::checkCollisionWithLatestObstacles() const
+{
+	const size_t nSlices = m_robotShape.size();
+
+	for (size_t idxH = 0; idxH < nSlices; ++idxH)
+	{
+		size_t nObs;
+		const float *xs, *ys, *zs;
+		m_WS_Obstacles_inlevels[idxH].getPointsBuffer(nObs, xs, ys, zs);
+
+		for (size_t i = 0; i < 1 /* assume all PTGs share the same robot shape! */; i++)
+		{
+			const auto ptg = this->m_ptgmultilevel[idxH].PTGs[i];
+			ASSERT_(ptg != nullptr);
+
+			const double R = ptg->getMaxRobotRadius();
+			for (size_t obs = 0; obs < nObs; obs++)
+			{
+				const double ox = xs[obs], oy = ys[obs], oz = zs[obs];
+				if (ox >= -R && ox <= R &&
+					oy >= -R && oy <= R &&
+					ptg->isPointInsideRobotShape(ox, oy)
+					)
+				{
+					return true; // collision!
+				}
+			}
+		}
+	}
+	return false; // No collision!
+}
+

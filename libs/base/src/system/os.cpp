@@ -53,6 +53,8 @@
 	#define _stat stat
 #endif
 
+#include <sstream>
+
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::system;
@@ -61,7 +63,7 @@ using namespace std;
 #ifndef MRPT_OS_WINDOWS
     /** By ninjalj in http://stackoverflow.com/questions/3962263/checking-if-a-key-was-pressed
       */
-	void my_aux_sighandler(int ) {}
+	void my_aux_sighandler(int) {}
 
     int myKbhit(void)
     {
@@ -179,7 +181,7 @@ string mrpt::system::MRPT_getCompilationDate()
 ---------------------------------------------------------------*/
 string mrpt::system::MRPT_getVersion()
 {
-	return string( ::MRPT_version_str );
+	return string(::MRPT_version_str);
 }
 
 /*---------------------------------------------------------------
@@ -254,8 +256,8 @@ FILE * os::fopen(const char *fileName,const char *mode) MRPT_NO_THROWS
 #if defined(_MSC_VER) && (_MSC_VER>=1400)
 	// Use a secure version in Visual Studio 2005:
 	FILE	*f;
-	if ( 0 != ::fopen_s(&f,fileName,mode) )
-			return nullptr;
+	if (0 != ::fopen_s(&f,fileName,mode))
+			return NULL;
 	else	return f;
 #else
 	// Use standard version:
@@ -308,7 +310,7 @@ char * os::strcpy(char *dest, size_t destSize, const char *source) MRPT_NO_THROW
 ---------------------------------------------------------------*/
 int os::_strcmp(const char*str1,const char*str2) MRPT_NO_THROWS
 {
-	return ::strcmp( str1,str2 );
+	return ::strcmp(str1,str2);
 }
 
 /*---------------------------------------------------------------
@@ -318,12 +320,12 @@ int os::_strcmpi(const char*str1,const char*str2) MRPT_NO_THROWS
 {
 #ifdef MRPT_OS_WINDOWS
     #if defined(_MSC_VER) && (_MSC_VER>=1400)
-        return ::_strcmpi( str1,str2 );
+        return ::_strcmpi(str1,str2);
     #else
-        return ::strcmpi( str1,str2 );
+        return ::strcmpi(str1,str2);
     #endif
 #else
-    return ::strcasecmp( str1,str2 );
+    return ::strcasecmp(str1,str2);
 #endif
 }
 
@@ -332,7 +334,7 @@ int os::_strcmpi(const char*str1,const char*str2) MRPT_NO_THROWS
 */
 int os::_strncmp(const char*str1,const char*str2,size_t count) MRPT_NO_THROWS
 {
-    return ::strncmp( str1,str2,count);
+    return ::strncmp(str1,str2,count);
 }
 
 /** An OS-independent version of strnicmp.
@@ -341,9 +343,9 @@ int os::_strncmp(const char*str1,const char*str2,size_t count) MRPT_NO_THROWS
 int os::_strnicmp(const char*str1,const char*str2,size_t count) MRPT_NO_THROWS
 {
 #if defined(_MSC_VER)
-	return ::_strnicmp( str1,str2,count );
+	return ::_strnicmp(str1,str2,count);
 #else
-    return ::strncasecmp( str1,str2,count );
+    return ::strncasecmp(str1,str2,count);
 #endif
 }
 
@@ -356,13 +358,13 @@ void os::memcpy(
 	void		*dest,
 	size_t		destSize,
 	const void	*src,
-	size_t		copyCount ) MRPT_NO_THROWS
+	size_t		copyCount) MRPT_NO_THROWS
 {
 #if defined(_MSC_VER) && (_MSC_VER>=1400)
 	::memcpy_s(dest,destSize,src,copyCount);
 #else
 	MRPT_UNUSED_PARAM(destSize);
-	::memcpy( dest,src,copyCount );
+	::memcpy(dest,src,copyCount);
 #endif
 }
 
@@ -377,12 +379,12 @@ int os::getch() MRPT_NO_THROWS
 	struct termios oldt,
 	newt;
 	int ch;
-	tcgetattr( STDIN_FILENO, &oldt );
+	tcgetattr(STDIN_FILENO, &oldt);
 	newt = oldt;
-	newt.c_lflag &= ~( ICANON | ECHO );
-	tcsetattr( STDIN_FILENO, TCSANOW, &newt );
+	newt.c_lflag &= ~(ICANON | ECHO);
+	tcsetattr(STDIN_FILENO, TCSANOW, &newt);
 	ch = getchar();
-	tcsetattr( STDIN_FILENO, TCSANOW, &oldt );
+	tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
 	return ch;
 #endif
 }
@@ -429,7 +431,7 @@ int os::fprintf(FILE *fil, const char *frm, ...) MRPT_NO_THROWS
 /*---------------------------------------------------------------
 					mrpt::system::pause
 ---------------------------------------------------------------*/
-void mrpt::system::pause(const std::string &msg ) MRPT_NO_THROWS
+void mrpt::system::pause(const std::string &msg) MRPT_NO_THROWS
 {
 	std::cout << msg << std::endl;
 	os::getch();
@@ -456,9 +458,9 @@ void mrpt::system::clearConsole()
 int64_t mrpt::system::os::_strtoll(const char *nptr, char **endptr, int base)
 {
 #ifdef MRPT_OS_WINDOWS
-	return (int64_t) ::strtol( nptr, endptr, base );
+	return (int64_t) ::strtol(nptr, endptr, base);
 #else
-	return (int64_t) ::strtoll( nptr, endptr, base );
+	return (int64_t) ::strtoll(nptr, endptr, base);
 #endif
 
 }
@@ -469,9 +471,9 @@ int64_t mrpt::system::os::_strtoll(const char *nptr, char **endptr, int base)
 uint64_t mrpt::system::os::_strtoull(const char *nptr, char **endptr, int base)
 {
 #ifdef MRPT_OS_WINDOWS
-	return (uint64_t) ::strtoul( nptr, endptr, base );
+	return (uint64_t) ::strtoul(nptr, endptr, base);
 #else
-	return (uint64_t) ::strtoull( nptr, endptr, base );
+	return (uint64_t) ::strtoull(nptr, endptr, base);
 #endif
 
 }
@@ -483,7 +485,7 @@ uint64_t mrpt::system::os::_strtoull(const char *nptr, char **endptr, int base)
   *  - 2 : Green text color
   *  - 4 : Red text color
   */
-void mrpt::system::setConsoleColor( TConsoleColor color,bool changeStdErr )
+void mrpt::system::setConsoleColor(TConsoleColor color,bool changeStdErr)
 {
 	static const int TS_NORMAL = 0;
 	static const int TS_BLUE   = 1;
@@ -491,29 +493,29 @@ void mrpt::system::setConsoleColor( TConsoleColor color,bool changeStdErr )
 	static const int TS_RED    = 4;
 #ifdef MRPT_OS_WINDOWS
     static int normal_attributes = -1;
-    HANDLE hstdout = GetStdHandle( changeStdErr ? STD_ERROR_HANDLE : STD_OUTPUT_HANDLE );
+    HANDLE hstdout = GetStdHandle(changeStdErr ? STD_ERROR_HANDLE : STD_OUTPUT_HANDLE);
 	fflush(changeStdErr ? stderr: stdout);
 
-    if( normal_attributes < 0 )
+    if(normal_attributes < 0)
     {
         CONSOLE_SCREEN_BUFFER_INFO info;
-        GetConsoleScreenBufferInfo( hstdout, &info );
+        GetConsoleScreenBufferInfo(hstdout, &info);
         normal_attributes = info.wAttributes;
     }
 
-    SetConsoleTextAttribute( hstdout,
+    SetConsoleTextAttribute(hstdout,
         (WORD)(color == TS_NORMAL ? normal_attributes :
         ((color & TS_BLUE ? FOREGROUND_BLUE : 0)|
         (color & TS_GREEN ? FOREGROUND_GREEN : 0)|
-        (color & TS_RED ? FOREGROUND_RED : 0)|FOREGROUND_INTENSITY)) );
+        (color & TS_RED ? FOREGROUND_RED : 0)|FOREGROUND_INTENSITY)));
 #else
 	// *nix:
     static const uint8_t ansi_tab[] = { 30, 34, 32, 36, 31, 35, 33, 37 };
     int code = 0;
-	fflush( changeStdErr ? stdout:stderr );
-    if( color != TS_NORMAL )
+	fflush(changeStdErr ? stdout:stderr);
+    if(color != TS_NORMAL)
         code = ansi_tab[color & (TS_BLUE|TS_GREEN|TS_RED)];
-    fprintf(changeStdErr ? stdout:stderr, "\x1b[%dm", code );
+    fprintf(changeStdErr ? stdout:stderr, "\x1b[%dm", code);
 #endif
 }
 
@@ -658,4 +660,49 @@ std::string mrpt::system::find_mrpt_shared_dir()
 	}
 
 	return found_mrpt_shared_dir;
-}
+} // end of find_mrpt_shared_dir
+
+int mrpt::system::executeCommand(
+		const std::string&  command,
+    std::string* output/*=NULL*/,
+    const std::string&  mode/*="r"*/)
+{
+	using namespace std;
+
+  // Create the stringstream
+  stringstream sout;
+
+#ifdef MRPT_OS_LINUX
+  // Run Popen
+  FILE *in;
+  char buff[512];
+
+  // Test output
+  if (!(in = popen(command.c_str(), mode.c_str()))) {
+    sout << "Popen Execution failed!" << endl;
+    *output = sout.str();
+
+    return -1;
+  }
+
+  // Parse output
+  while(fgets(buff, sizeof(buff), in)!=NULL){
+    sout << buff;
+  }
+
+  // Close
+  int exit_code = pclose(in);
+
+  // set output - if valid pointer given
+  if (output) {
+    *output = sout.str();
+  }
+
+  // Return exit code
+  return exit_code;
+#else
+	MRPT_TODO("Write popen alternative for Windows")
+	THROW_EXCEPTION("not implemented for Windows yet!");
+#endif
+
+} // end of executeCommand

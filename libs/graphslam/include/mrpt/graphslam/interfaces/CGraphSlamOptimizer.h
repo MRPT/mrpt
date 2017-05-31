@@ -7,8 +7,8 @@
 	 | Released under BSD License. See details in http://www.mrpt.org/License    |
 	 +---------------------------------------------------------------------------+ */
 
-#ifndef CGRAPHOPTIMIZER_H
-#define CGRAPHOPTIMIZER_H
+#ifndef CGRAPHSLAMOPTIMIZER_H
+#define CGRAPHSLAMOPTIMIZER_H
 
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CSensoryFrame.h>
@@ -36,10 +36,15 @@ namespace mrpt { namespace graphslam { namespace optimizers {
  * \ingroup mrpt_graphslam_grp
  */
 template<class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf>
-class CGraphSlamOptimizer : public mrpt::graphslam::CRegistrationDeciderOrOptimizer<GRAPH_t> {
+class CGraphSlamOptimizer :
+	public virtual mrpt::graphslam::CRegistrationDeciderOrOptimizer<GRAPH_t>
+{
 	public:
+		/**\brief Handy typedefs */
+		/**\{*/
 		typedef typename GRAPH_t::constraint_t constraint_t; // type of underlying constraints
 		typedef typename GRAPH_t::constraint_t::type_value pose_t; // type of underlying poses (2D/3D)
+		/**\}*/
 
 		CGraphSlamOptimizer() { }
 		~CGraphSlamOptimizer() { }
@@ -58,6 +63,11 @@ class CGraphSlamOptimizer : public mrpt::graphslam::CRegistrationDeciderOrOptimi
 				mrpt::obs::CSensoryFrame::Ptr observations,
 				mrpt::obs::CObservation::Ptr observation ) = 0;
 
+    /**\brief Used by the caller to query for possible full graph optimization
+     * on the latest optimizer run
+     */
+    virtual bool justFullyOptimizedGraph() const {return false;}
+
 	protected:
 		/**\brief method called for optimizing the underlying graph.
 		 */
@@ -67,4 +77,4 @@ class CGraphSlamOptimizer : public mrpt::graphslam::CRegistrationDeciderOrOptimi
 
 } } } // end of namespaces
 
-#endif /* end of include guard: CGRAPHOPTIMIZER_H */
+#endif /* end of include guard: CGRAPHSLAMOPTIMIZER_H */

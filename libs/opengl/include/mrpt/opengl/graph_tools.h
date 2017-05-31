@@ -48,20 +48,10 @@ namespace mrpt
 			  *        <td> If set to !=0, draw lines between nodes with at least one edge between them. </td>
 			  *        <td align="center" > 1 (do show) </td>
 			  *   </tr>
-			  *   <tr>
-			  *        <td align="center" ><code> edge_color </code></td>
-			  *        <td> If show_edges is !=0, the color of those edges as a hexadecimal int value 0xAARRGGBB with Alpha+RGB color (Alpha=0xFF:opaque,0x00:transparent).</td>
-			  *        <td align="center" > 0x400000FF </td>
-			  *   </tr>
-			  *   <tr>
-			  *        <td align="center" ><code> edge_width </code></td>
-			  *        <td> If show_edges is !=0, the width of edge lines.</td>
-			  *        <td align="center" > 2.0 </td>
-			  *   </tr>
-			  *   <tr>
-			  *        <td align="center" ><code> show_node_corners </code></td>
-			  *        <td> If set to !=0, draw a small 3D corner frame at each node (see mrpt::opengl::stock_objects::CornerXYZSimple). </td>
-			  *        <td align="center" > 1 (do show) </td>
+			 	*   <tr>
+			 	*        <td align="center" ><code> show_node_corners </code></td>
+			 	*        <td> If set to !=0, draw a small 3D corner frame at each node (see mrpt::opengl::stock_objects::CornerXYZSimple). </td>
+			 	*        <td align="center" > 1 (do show) </td>
 			  *   </tr>
 			  *   <tr>
 			  *        <td align="center" ><code> show_edge_rel_poses </code></td>
@@ -69,9 +59,15 @@ namespace mrpt
 			  *        <td align="center" > 1 (do show) </td>
 			  *   </tr>
 			  *   <tr>
-			  *        <td align="center" ><code> edge_rel_poses_color </code></td>
-			  *        <td> If show_edge_rel_poses is !=0, the color of those edges as a hexadecimal int value 0xAARRGGBB with Alpha+RGB color (Alpha=0xFF:opaque,0x00:transparent).</td>
-			  *        <td align="center" > 0x40FF8000 </td>
+			  *        <td align="center" ><code> nodes_point_size </code></td>
+			  *        <td> If set to !=0, draw a point of the given size (glPointSize) at each node.</td>
+			  *        <td align="center" > 0 (no points) </td>
+			  *   </tr>
+				*
+			 	*   <tr>
+			 	*        <td align="center" ><code> nodes_corner_scale </code></td>
+			 	*        <td> If show_node_corners!=0, the size (length) of te corner lines. </td>
+			 	*        <td align="center" > 0.7 </td>
 			  *   </tr>
 			  *   <tr>
 			  *        <td align="center" ><code> nodes_edges_corner_scale </code></td>
@@ -79,20 +75,27 @@ namespace mrpt
 			  *        <td align="center" > 0.4 </td>
 			  *   </tr>
 			  *   <tr>
-			  *        <td align="center" ><code> nodes_corner_scale </code></td>
-			  *        <td> If show_node_corners!=0, the size (length) of te corner lines. </td>
-			  *        <td align="center" > 0.7 </td>
-			  *   </tr>
-			  *   <tr>
-			  *        <td align="center" ><code> nodes_point_size </code></td>
-			  *        <td> If set to !=0, draw a point of the given size (glPointSize) at each node.</td>
-			  *        <td align="center" > 0 (no points) </td>
-			  *   </tr>
-			  *   <tr>
 			  *        <td align="center" ><code> nodes_point_color </code></td>
 			  *        <td> If nodes_point_size!=0, set this value to a hexadecimal int value 0xRRGGBB with the desired RGB color of points.</td>
 			  *        <td align="center" > 0xA0A0A0 (light gray) </td>
 			  *   </tr>
+			  *   <tr>
+			 	*        <td align="center" ><code> edge_color </code></td>
+			 	*        <td> If show_edges is !=0, the color of those edges as a hexadecimal int value 0xAARRGGBB with Alpha+RGB color (Alpha=0xFF:opaque,0x00:transparent).</td>
+			 	*        <td align="center" > 0x400000FF </td>
+			  *   </tr>
+				*
+			  *   <tr>
+			  *        <td align="center" ><code> edge_rel_poses_color </code></td>
+			  *        <td> If show_edge_rel_poses is !=0, the color of those edges as a hexadecimal int value 0xAARRGGBB with Alpha+RGB color (Alpha=0xFF:opaque,0x00:transparent).</td>
+			  *        <td align="center" > 0x40FF8000 </td>
+			  *   </tr>
+			  *   <tr>
+			  *        <td align="center" ><code> edge_width </code></td>
+			  *        <td> If show_edges is !=0, the width of edge lines.</td>
+			  *        <td align="center" > 2.0 </td>
+			  *   </tr>
+				*
 			  *	  </table>
 			  *
 			  * \sa mrpt::graphs::CNetworkOfPoses2D, mrpt::graphs::CNetworkOfPoses3D, mrpt::graphs::CNetworkOfPoses2DInf, mrpt::graphs::CNetworkOfPoses3DInf

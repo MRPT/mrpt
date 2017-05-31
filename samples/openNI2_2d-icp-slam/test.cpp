@@ -166,7 +166,9 @@ int main ( int argc, char** argv )
           {
     // Pathway: RGB+D --> XYZ+RGB opengl
             win3D.get3DSceneAndLock();
-              newObs->project3DPointsFromDepthImageInto(*gl_points, false /* without obs.sensorPose */);
+            mrpt::obs::T3DPointsProjectionParams pp;
+            pp.takeIntoAccountSensorPoseOnRobot = false;
+            newObs->project3DPointsFromDepthImageInto(*gl_points, pp /* without obs.sensorPose */);
             win3D.unlockAccess3DScene();
           }
 

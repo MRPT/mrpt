@@ -13,6 +13,7 @@
 #include <vector>
 #include <mrpt/base/link_pragmas.h>
 #include <mrpt/poses/poses_frwds.h>
+#include <ostream>
 
 namespace mrpt
 {
@@ -43,6 +44,16 @@ namespace mrpt
 					other_x(_other_x),other_y(_other_y),other_z(_other_z),
 					errorSquareAfterTransformation(0)
 			{
+			}
+
+			friend std::ostream& operator<<(
+					std::ostream& o,
+					const mrpt::utils::TMatchingPair& pair) {
+				o << "[" << pair.this_idx << "->" << pair.other_idx << "]"  << ": "
+					<< "(" << pair.this_x << "," << pair.this_y << "," << pair.this_z << ")" << " -> "
+					<< "(" << pair.other_x << "," << pair.other_y << "," << pair.other_z << ")";
+
+				return o;
 			}
 
 			unsigned int	this_idx;

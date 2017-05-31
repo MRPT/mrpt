@@ -16,13 +16,73 @@
 using namespace mrpt::utils;
 
 // Static colors:
-TColor TColor::red		= TColor(255,0,0);
-TColor TColor::green	= TColor(0,255,0);
-TColor TColor::blue		= TColor(0,0,255);
-TColor TColor::black    = TColor(0,0,0);
-TColor TColor::white    = TColor(255,255,255);
-TColor TColor::gray     = TColor(127,127,127);
+TColor TColor::red = TColor(255,0,0);
+TColor TColor::green = TColor(0,255,0);
+TColor TColor::blue = TColor(0,0,255);
+TColor TColor::black = TColor(0,0,0);
+TColor TColor::white = TColor(255,255,255);
+TColor TColor::gray = TColor(127,127,127);
 
+TColor mrpt::utils::operator+(const TColor& first, const TColor& second) {
+	TColor ret;
+	ret.R = first.R + second.R;
+	ret.G = first.G + second.G;
+	ret.B = first.B + second.B;
+	ret.A = first.A + second.A;
+
+	return ret;
+}
+
+TColor mrpt::utils::operator-(const TColor& first, const TColor& second) {
+	TColor ret;
+	ret.R = first.R - second.R;
+	ret.G = first.G - second.G;
+	ret.B = first.B - second.B;
+	ret.A = first.A - second.A;
+
+	return ret;
+}
+
+TColor& TColor::operator+=(const TColor& other) {
+	this->R += other.R;
+	this->G += other.G;
+	this->B += other.B;
+	this->A += other.A;
+
+	return *this;
+}
+
+TColor& TColor::operator-=(const TColor& other) {
+	this->R -= other.R;
+	this->G -= other.G;
+	this->B -= other.B;
+	this->A -= other.A;
+
+	return *this;
+}
+
+TColor& TColor::operator=(const TColor& other) {
+	this->R = other.R;
+	this->G = other.G;
+	this->B = other.B;
+	this->A = other.A;
+
+	return *this;
+}
+
+bool mrpt::utils::operator==(const TColor& first, const TColor& second) {
+	bool ret = 
+		first.R == second.R &&
+		first.G == second.G &&
+		first.B == second.B &&
+		first.A == second.A;
+
+	return ret;
+}
+
+//bool operator!=(const TColor& first, const TColor& second) {
+	//return (!(first == second));
+//}
 
 // Text streaming:
 std::ostream & mrpt::utils::operator << (std::ostream& o, const TColor & c)

@@ -197,97 +197,7 @@ void CAbstractNavigator::navigationStep()
 		break;
 
 	case NAVIGATING:
-		try
-		{
-			if ( m_lastNavigationState != NAVIGATING )
-			{
-				MRPT_LOG_INFO("[CAbstractNavigator::navigationStep()] Starting Navigation. Watchdog initiated...\n");
-				if (m_navigationParams)
-					MRPT_LOG_DEBUG(mrpt::format("[CAbstractNavigator::navigationStep()] Navigation Params:\n%s\n", m_navigationParams->getAsText().c_str() ));
-
-				internal_onStartNewNavigation();
-			}
-
-			// Have we just started the navigation?
-			if ( m_lastNavigationState == IDLE )
-				m_robot.sendNavigationStartEvent();
-
-			/* ----------------------------------------------------------------
-			        Get current robot dyn state:
-				---------------------------------------------------------------- */
-			updateCurrentPoseAndSpeeds();
-
-			/* ----------------------------------------------------------------
-		 			Have we reached the target location?
-				---------------------------------------------------------------- */
-			// Build a 2D segment from the current robot pose to the previous one:
-			ASSERT_(!m_latestPoses.empty());
-			const mrpt::math::TSegment2D seg_robot_mov = mrpt::math::TSegment2D(
-				mrpt::math::TPoint2D(m_curPoseVel.pose),
-				m_latestPoses.size()>1 ?
-					mrpt::math::TPoint2D( (++m_latestPoses.rbegin())->second )
-					:
-					mrpt::math::TPoint2D((m_latestPoses.rbegin())->second)
-			);
-
-			const double targetDist = seg_robot_mov.distance( mrpt::math::TPoint2D(m_navigationParams->target) );
-
-			// Should "End of navigation" event be sent??
-			if (!m_navigationParams->targetIsIntermediaryWaypoint && !m_navigationEndEventSent && targetDist < params_abstract_navigator.dist_to_target_for_sending_event)
-			{
-				m_navigationEndEventSent = true;
-				m_robot.sendNavigationEndEvent();
-			}
-
-			// Have we really reached the target?
-			if (checkHasReachedTarget(targetDist))
-			{
-				m_navigationState = IDLE;
-				logFmt(mrpt::utils::LVL_WARN, "Navigation target (%.03f,%.03f) was reached\n", m_navigationParams->target.x, m_navigationParams->target.y);
-
-				if (!m_navigationParams->targetIsIntermediaryWaypoint)
-				{
-					this->stop(false /*not emergency*/);
-					if (!m_navigationEndEventSent)
-					{
-						m_navigationEndEventSent = true;
-						m_robot.sendNavigationEndEvent();
-					}
-				}
-				break;
-			}
-
-			// Check the "no approaching the target"-alarm:
-			// -----------------------------------------------------------
-			if (targetDist < m_badNavAlarm_minDistTarget )
-			{
-				m_badNavAlarm_minDistTarget = targetDist;
-				m_badNavAlarm_lastMinDistTime =  mrpt::system::getCurrentTime();
-			}
-			else
-			{
-				// Too much time have passed?
-				if (mrpt::system::timeDifference( m_badNavAlarm_lastMinDistTime, mrpt::system::getCurrentTime() ) > params_abstract_navigator.alarm_seems_not_approaching_target_timeout)
-				{
-					MRPT_LOG_WARN("--------------------------------------------\nWARNING: Timeout for approaching toward the target expired!! Aborting navigation!! \n---------------------------------\n");
-					m_navigationState = NAV_ERROR;
-					m_robot.sendWaySeemsBlockedEvent();
-					break;
-				}
-			}
-
-			// ==== The normal execution of the navigation: Execute one step ====
-			performNavigationStep();
-
-		}
-		catch (std::exception &e)
-		{
-			cerr << "[CAbstractNavigator::navigationStep] Exception:\n" << e.what() << endl;
-		}
-		catch (...)
-		{
-			cerr << "[CAbstractNavigator::navigationStep] Unexpected exception.\n";
-		}
+		this->performNavigationStepNavigating(true /* do call virtual method nav implementation*/);
 		break;	// End case NAVIGATING
 	};
 	m_lastNavigationState = prevState;
@@ -439,4 +349,103 @@ void CAbstractNavigator::internal_onStartNewNavigation()
 	m_latestPoses.clear(); // Clear cache of last poses.
 	m_latestOdomPoses.clear();
 	onStartNewNavigation();
+}
+
+void CAbstractNavigator::performNavigationStepNavigating(bool call_virtual_nav_method)
+{
+	try
+	{
+		if (m_lastNavigationState != NAVIGATING)
+		{
+			MRPT_LOG_INFO("[CAbstractNavigator::navigationStep()] Starting Navigation. Watchdog initiated...\n");
+			if (m_navigationParams)
+				MRPT_LOG_DEBUG(mrpt::format("[CAbstractNavigator::navigationStep()] Navigation Params:\n%s\n", m_navigationParams->getAsText().c_str()));
+
+			internal_onStartNewNavigation();
+		}
+
+		// Have we just started the navigation?
+		if (m_lastNavigationState == IDLE)
+			m_robot.sendNavigationStartEvent();
+
+		/* ----------------------------------------------------------------
+		Get current robot dyn state:
+		---------------------------------------------------------------- */
+		updateCurrentPoseAndSpeeds();
+
+		/* ----------------------------------------------------------------
+		Have we reached the target location?
+		---------------------------------------------------------------- */
+		// Build a 2D segment from the current robot pose to the previous one:
+		ASSERT_(!m_latestPoses.empty());
+		const mrpt::math::TSegment2D seg_robot_mov = mrpt::math::TSegment2D(
+			mrpt::math::TPoint2D(m_curPoseVel.pose),
+			m_latestPoses.size() > 1 ?
+			mrpt::math::TPoint2D((++m_latestPoses.rbegin())->second)
+			:
+			mrpt::math::TPoint2D((m_latestPoses.rbegin())->second)
+			);
+
+		if (m_navigationParams)
+		{
+			const double targetDist = seg_robot_mov.distance(mrpt::math::TPoint2D(m_navigationParams->target));
+
+			// Should "End of navigation" event be sent??
+			if (!m_navigationParams->targetIsIntermediaryWaypoint && !m_navigationEndEventSent && targetDist < params_abstract_navigator.dist_to_target_for_sending_event)
+			{
+				m_navigationEndEventSent = true;
+				m_robot.sendNavigationEndEvent();
+			}
+
+			// Have we really reached the target?
+			if (checkHasReachedTarget(targetDist))
+			{
+				m_navigationState = IDLE;
+				logFmt(mrpt::utils::LVL_WARN, "Navigation target (%.03f,%.03f) was reached\n", m_navigationParams->target.x, m_navigationParams->target.y);
+
+				if (!m_navigationParams->targetIsIntermediaryWaypoint)
+				{
+					this->stop(false /*not emergency*/);
+					if (!m_navigationEndEventSent)
+					{
+						m_navigationEndEventSent = true;
+						m_robot.sendNavigationEndEvent();
+					}
+				}
+				return;
+			}
+
+			// Check the "no approaching the target"-alarm:
+			// -----------------------------------------------------------
+			if (targetDist < m_badNavAlarm_minDistTarget)
+			{
+				m_badNavAlarm_minDistTarget = targetDist;
+				m_badNavAlarm_lastMinDistTime = mrpt::system::getCurrentTime();
+			}
+			else
+			{
+				// Too much time have passed?
+				if (mrpt::system::timeDifference(m_badNavAlarm_lastMinDistTime, mrpt::system::getCurrentTime()) > params_abstract_navigator.alarm_seems_not_approaching_target_timeout)
+				{
+					MRPT_LOG_WARN("--------------------------------------------\nWARNING: Timeout for approaching toward the target expired!! Aborting navigation!! \n---------------------------------\n");
+					m_navigationState = NAV_ERROR;
+					m_robot.sendWaySeemsBlockedEvent();
+					return;
+				}
+			}
+		}
+
+		// The normal execution of the navigation: Execute one step:
+		if (call_virtual_nav_method) {
+			performNavigationStep();
+		}
+	}
+	catch (std::exception &e)
+	{
+		MRPT_LOG_ERROR_FMT("[CAbstractNavigator::navigationStep] Exception:\n %s",e.what());
+	}
+	catch (...)
+	{
+		MRPT_LOG_ERROR("[CAbstractNavigator::navigationStep] Untyped exception!");
+	}
 }
