@@ -11,7 +11,7 @@
 namespace mrpt { namespace graphslam {
 
 /**\brief Class acts as a container for storing pointers to mrpt::gui::CDisplayWindow3D,
- * mrpt::graphslam::CWindowManager instances.
+ * mrpt::graphslam::CWindowObserver instances.
  *
  * CWindowManager also provides methods for adding/positioning textMessages
  * and viewports in the CDisplayWindow in a compact and consistent way.
@@ -80,6 +80,16 @@ class GRAPHSLAM_IMPEXP CWindowManager : public mrpt::utils::COutputLogger {
 
 			*text_index = m_curr_text_index;
 			m_curr_text_index += m_index_text_step;
+		}
+
+		/**\brief Wrapper call around the CWindowDisplay3D */
+		bool isOpen() {
+			if (win) {
+				return win->isOpen();
+			}
+			else {
+				return false;
+			}
 		}
 
 		/**\brief Wrapper around the CDisplayWindow3D::addTextMessage method, so that the

@@ -6,6 +6,7 @@
 	 | See: http://www.mrpt.org/Authors - All rights reserved.                   |
 	 | Released under BSD License. See details in http://www.mrpt.org/License    |
 	 +---------------------------------------------------------------------------+ */
+
 #ifndef CREGISTRATIONDECIDEROROPTIMIZER_H
 #define CREGISTRATIONDECIDEROROPTIMIZER_H
 
@@ -14,12 +15,11 @@
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/graphs/CNetworkOfPoses.h>
 #include <mrpt/utils/COutputLogger.h>
-
+#include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/graphslam/misc/CWindowManager.h>
 
 #include <string>
 #include <map>
-
 
 namespace mrpt { namespace graphslam {
 
@@ -38,13 +38,16 @@ namespace mrpt { namespace graphslam {
  *
  * \ingroup mrpt_graphslam_grp
  */
-template<class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf>
-class CRegistrationDeciderOrOptimizer : public mrpt::utils::COutputLogger {
+template<class GRAPH_T=typename mrpt::graphs::CNetworkOfPoses2DInf>
+class CRegistrationDeciderOrOptimizer :
+	public mrpt::utils::COutputLogger
+{
 	public:
 
-		CRegistrationDeciderOrOptimizer():
-			m_win_manager(nullptr) {
-		}
+		/**\Default Ctor*/
+		CRegistrationDeciderOrOptimizer();
+		/**\Dtor*/
+		virtual ~CRegistrationDeciderOrOptimizer();
 		/**\brief Generic method for fetching the incremental action-observations (or
 		 * observation-only) measurements
 		 *
@@ -55,32 +58,28 @@ class CRegistrationDeciderOrOptimizer : public mrpt::utils::COutputLogger {
 				mrpt::obs::CActionCollection::Ptr action,
 				mrpt::obs::CSensoryFrame::Ptr observations,
 				mrpt::obs::CObservation::Ptr observation ) = 0;
-
-		/**\brief Fetch the graph on which the decider/optimizer will work on. */
-		virtual void setGraphPtr(GRAPH_t* graph) {}
 		/**\brief Fetch a CWindowManager pointer.
 		 *
 		 * CWindowManager instance should contain a CDisplayWindow3D* and,
 		 * optionally, a CWindowObserver pointer so that interaction with the
 		 * window is possible
 		 */
-		virtual void setWindowManagerPtr(mrpt::graphslam::CWindowManager* win_manager) {
-			ASSERT_(win_manager);
+		virtual void setWindowManagerPtr(
+				mrpt::graphslam::CWindowManager* win_manager);
 
-			m_win_manager = win_manager;
-		}
-		/**\brief Fetch a std::mutex for locking the GRAPH_t resource.
+		/**\brief Fetch a std::mutex for locking the GRAPH_T
+		 * resource.
 		 *
 		 * Handy for realising multithreading in the derived classes.
 		 *
 		 * \warning Beware that prior to the decider/optimizer public method call,
-		 * the std::mutex will already be locked from CGraphSlamEngine_t
-		 * instance, but this isn't effective in multithreaded implementations
-		 * where the decider/optimizer itself has to lock the function at which the extra
+		 * the CCriticalSection will already be locked from CGraphSlamEngine_t
+		 * instance, but this isn't effective in multithreaded implementations where
+		 * the decider/optimizer itself has to lock the function at which the extra
 		 * thread runs.
 		 */
 		virtual void setCriticalSectionPtr(
-				std::mutex* graph_section) { }
+				std::mutex* graph_section); 
 		/**\brief Initialize visual objects in CDisplayWindow (e.g. \em add an
 		 * object to scene).
 		 *
@@ -89,9 +88,7 @@ class CRegistrationDeciderOrOptimizer : public mrpt::utils::COutputLogger {
 		 *
 		 * \sa setWindowManagerPtr, updateVisuals
 		 */
-		virtual void initializeVisuals() {
-			ASSERT_(m_win_manager);
-		}
+		virtual void initializeVisuals(); 
 		/**\brief Update the relevant visual features in CDisplayWindow.
 		 *
 		 *\exception std::exception If the method is called without having first
@@ -99,10 +96,7 @@ class CRegistrationDeciderOrOptimizer : public mrpt::utils::COutputLogger {
 		 *
 		 * \sa setWindowManagerPtr, initializeVisuals
 		 */
-		virtual void updateVisuals() {
-			ASSERT_(m_win_manager);
-		
-		}
+		virtual void updateVisuals();
 		/**\brief Get a list of the window events that happened since the last call.
 		 *
 		 * Method in derived classes is automatically called from the
@@ -110,16 +104,14 @@ class CRegistrationDeciderOrOptimizer : public mrpt::utils::COutputLogger {
 		 * fetch the parameters that it is interested in.
 		 */
 		virtual void notifyOfWindowEvents(
-				const std::map<std::string, bool>& events_occurred) {
-			ASSERT_(m_win_manager);
-		}
+				const std::map<std::string, bool>& events_occurred);
 		/**\brief Load the necessary for the decider/optimizer configuration parameters.
 		 */
-		virtual void loadParams(const std::string& source_fname) {}
+		virtual void loadParams(const std::string& source_fname);
 		/**\brief Print the problem parameters - relevant to the decider/optimizer to the
 		 * screen in a unified/compact way.
 		 */
-		virtual void printParams() const {}
+		virtual void printParams() const;
 		/**\brief Fill the provided string with a detailed report of the
 		 * decider/optimizer state.
 		 *
@@ -128,22 +120,62 @@ class CRegistrationDeciderOrOptimizer : public mrpt::utils::COutputLogger {
 		 * - Properties fo class at the current time
 		 * - Logging of commands until current time
 		 */
-		virtual void getDescriptiveReport(std::string* report_str) const {}
+		virtual void getDescriptiveReport(std::string* report_str) const;
+
+		/**\brief Fetch the graph on which the decider/optimizer will work on.
+		 *
+		 */
+		virtual void setGraphPtr(GRAPH_T* graph);
+
+		/**\brief Initialize the COutputLogger, CTimeLogger instances given the
+		 * name of the decider/optimizer at hand
+		 */
+		virtual void initializeLoggers(const std::string& name);
+		virtual void setClassName(const std::string& name);
+		bool isMultiRobotSlamClass();
+
+		std::string getClassName() const { return m_class_name; };
 
 	protected:
-		/**\brief Check if the current decider/optimizer is inappropriate for the given
-		 * dataset / provided observations
+		/**\brief Handy function for making all the visuals assertions in a
+		 * compact manner
 		 */
-		virtual void checkIfInvalidDataset(
-				mrpt::obs::CActionCollection::Ptr action,
-				mrpt::obs::CSensoryFrame::Ptr observations,
-				mrpt::obs::CObservation::Ptr observation ) {}
+		virtual void assertVisualsVars();
+		/**\brief Pointer to the graph that is under construction */
+		GRAPH_T* m_graph;
+		std::mutex* m_graph_section;
 
-
+		/** \name Visuals-related variables methods
+		 */
+		/**\{*/
+		/**\brief Pointer to the CWindowManager object used to store
+		 * visuals-related instances
+		 */
 		mrpt::graphslam::CWindowManager* m_win_manager;
+		/**\brief Window to use */
+		mrpt::gui::CDisplayWindow3D* m_win;
+		/**\brief CWindowObserver object for monitoring various visual-oriented
+		 * events.*/
+		mrpt::graphslam::CWindowObserver* m_win_observer;
+		bool m_initialized_visuals;
+		/**\}*/
 
+		/**\brief Time logger instance */
+		mrpt::utils::CTimeLogger m_time_logger;
+		/**\brief Name of the class instance */
+		std::string m_class_name;
+		/**\brief Boolean indicating if the current class can be used in
+		 * multi-robot SLAM operations
+		 */
+		bool is_mr_slam_class;
+
+		/**\brief Separator string to be used in debugging messages
+		 */
+		static const std::string header_sep;
+		static const std::string report_sep;
 };
 
 } } // end of namespaces
 
+#include "CRegistrationDeciderOrOptimizer_impl.h"
 #endif /* end of include guard: CREGISTRATIONDECIDEROROPTIMIZER_H */

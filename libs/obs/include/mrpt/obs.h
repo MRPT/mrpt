@@ -57,6 +57,7 @@ MRPT_WARNING("Including <mrpt/obs.h> makes compilation much slower, consider inc
 // Others:
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/obs/carmen_log_tools.h>
+#include <mrpt/obs/obs_utils.h>
 
 // Very basic classes for maps:
 #include <mrpt/maps/CMetricMap.h>

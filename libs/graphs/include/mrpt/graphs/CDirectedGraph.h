@@ -66,20 +66,28 @@ namespace mrpt
 
 
 			typedef typename mrpt::aligned_containers<TPairNodeIDs,edge_t>::multimap_t	edges_map_t;  //!< The type of the member \a edges
-			typedef typename edges_map_t::iterator         iterator;
-			typedef typename edges_map_t::const_iterator   const_iterator;
+			typedef typename edges_map_t::iterator                iterator;
+			typedef typename edges_map_t::reverse_iterator        reverse_iterator;
+			typedef typename edges_map_t::const_iterator          const_iterator;
+			typedef typename edges_map_t::const_reverse_iterator  const_reverse_iterator;
+			/**\brief Handy self type */
+			typedef CDirectedGraph<TYPE_EDGES, EDGE_ANNOTATIONS> self_t;
 
 			/** The public member with the directed edges in the graph */
-			edges_map_t   edges;
+			edges_map_t edges;
 
 
 			inline CDirectedGraph(const edges_map_t &obj) : edges(obj) { }  //!< Copy constructor from a multimap<pair< >, >
 			inline CDirectedGraph() : edges() {}  //!< Default constructor
 
 			inline iterator begin() { return edges.begin(); }
+			inline iterator rbegin() { return edges.rbegin(); }
 			inline iterator end() { return edges.end(); }
+			inline iterator rend() { return edges.rend(); }
 			inline const_iterator begin() const { return edges.begin(); }
+			inline const_iterator rbegin() const { return edges.rbegin(); }
 			inline const_iterator end() const { return edges.end(); }
+			inline const_iterator rend() const { return edges.rend(); }
 
 			/** @name Edges/nodes utility methods
 				@{ */
@@ -106,9 +114,10 @@ namespace mrpt
 				edges.insert(edges.end(), entry);
 			}
 
-			/** Test is the given directed edge exists. */
-			inline bool edgeExists(TNodeID from_nodeID, TNodeID to_nodeID) const
-			{ return edges.find(std::make_pair(from_nodeID,to_nodeID))!=edges.end(); }
+			/** Test if the given directed edge exists. */
+			inline bool edgeExists(TNodeID from_nodeID, TNodeID to_nodeID) const { 
+				return edges.find(std::make_pair(from_nodeID,to_nodeID))!=edges.end();
+			}
 
 			/** Return a reference to the content of a given edge.
 			  *  If several edges exist between the given nodes, the first one is returned.
@@ -138,11 +147,11 @@ namespace mrpt
 
 			/** Return a pair<first,last> of iterators to the range of edges between two given nodes. \sa getEdge  */
 			std::pair<iterator,iterator> getEdges(TNodeID from_nodeID, TNodeID to_nodeID) {
-				return edges.equal_range( std::make_pair(from_nodeID,to_nodeID) );
+				return edges.equal_range(std::make_pair(from_nodeID,to_nodeID));
 			}
 			/** Return a pair<first,last> of const iterators to the range of edges between two given nodes.  \sa getEdge */
 			std::pair<const_iterator,const_iterator> getEdges(TNodeID from_nodeID, TNodeID to_nodeID) const {
-				return edges.equal_range( std::make_pair(from_nodeID,to_nodeID) );
+				return edges.equal_range(std::make_pair(from_nodeID,to_nodeID));
 			}
 
 			/** Erase all edges between the given nodes (it has no effect if no edge existed)
@@ -190,6 +199,12 @@ namespace mrpt
 					else if (it->first.second==nodeID)
 						neighborIDs.insert(it->first.first);
 				}
+			}
+			/** Return the list of all neighbors of "nodeID", by creating a list of their node IDs. \sa getAdjacencyMatrix */
+			std::set<TNodeID> getNeighborsOf(const TNodeID nodeID) const {
+				std::set<TNodeID> neighborIDs;
+				this->getNeighborsOf(nodeID, neighborIDs);
+				return neighborIDs;
 			}
 
 			/** Return a map from node IDs to all its neighbors (that is, connected nodes, regardless of the edge direction)

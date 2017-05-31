@@ -390,10 +390,13 @@ void navlog_viewer_GUI_designDialog::loadLogfile(const std::string &filName)
 				if (!logptr->infoPerPTG.empty())
 				{
 					size_t nPTGs = logptr->infoPerPTG.size();
-					m_logdata_ptg_paths.resize(nPTGs);
-					for (size_t i=0;i<nPTGs;i++)
-						if (logptr->infoPerPTG[i].ptg)
-							m_logdata_ptg_paths[i] = logptr->infoPerPTG[i].ptg;
+					if (nPTGs > m_logdata_ptg_paths.size())
+					{
+						m_logdata_ptg_paths.resize(nPTGs);
+						for (size_t i = 0; i < nPTGs; i++)
+							if (logptr->infoPerPTG[i].ptg)
+								m_logdata_ptg_paths[i] = logptr->infoPerPTG[i].ptg;
+					}
 				}
 			}
 
@@ -505,6 +508,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 	WX_START_TRY
 
 	const int i = this->slidLog->GetValue();
+	if (i >= m_logdata.size()) return;
 
 	// In the future, we could handle more log classes. For now, only "CLogFileRecord::Ptr":
 	CLogFileRecord::Ptr logptr = std::dynamic_pointer_cast<CLogFileRecord>(m_logdata[i]);

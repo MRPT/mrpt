@@ -7,8 +7,8 @@
 	 | Released under BSD License. See details in http://www.mrpt.org/License    |
 	 +---------------------------------------------------------------------------+ */
 
-#ifndef CRANGESCANREGISTRATIONDECIDER_H
-#define CRANGESCANREGISTRATIONDECIDER_H
+#ifndef CRANGESCANOPS_H
+#define CRANGESCANOPS_H
 
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
@@ -77,10 +77,13 @@ namespace mrpt { namespace graphslam { namespace deciders {
  *
  * \ingroup mrpt_graphslam_grp
  */
-template<class GRAPH_t=typename mrpt::graphs::CNetworkOfPoses2DInf>
-class CRangeScanRegistrationDecider {
-	typedef typename GRAPH_t::constraint_t constraint_t;
-	typedef CRangeScanRegistrationDecider<GRAPH_t> self_t;
+template<class GRAPH_T=typename mrpt::graphs::CNetworkOfPoses2DInf>
+class CRangeScanOps {
+	/**\brief Handy typedefs */
+	/**\{*/
+	typedef typename GRAPH_T::constraint_t constraint_t;
+	typedef CRangeScanOps<GRAPH_T> self_t;
+	/**\}*/
 
 	protected:
 	// Protected methods
@@ -155,6 +158,6 @@ class CRangeScanRegistrationDecider {
 
 } } } // end of namespaces
 
-#include "CRangeScanRegistrationDecider_impl.h"
-#endif /* end of include guard: CRANGESCANREGISTRATIONDECIDER_H */
+#include "CRangeScanOps_impl.h"
+#endif /* end of include guard: CRANGESCANOPS_H */
 

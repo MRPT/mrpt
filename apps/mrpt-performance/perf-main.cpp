@@ -240,18 +240,14 @@ int main(int argc, char **argv)
 #define COMP_VER(NAME,MAJ,MIN,PATCH)  NAME ___STR1__(MAJ) ___STR1__(MIN)  ___STR1__(PATCH)
 
 #if defined(_MSC_VER)
-#		if _MSC_VER<=1399
-			const char* compiler_name = "MSVC7";
-#		elif _MSC_VER<=1499
-			const char* compiler_name = "MSVC8";
-#		elif _MSC_VER<=1599
-			const char* compiler_name = "MSVC9";
-#		elif _MSC_VER<=1699
-			const char* compiler_name = "MSVC10";
-#		elif _MSC_VER<=1799
-			const char* compiler_name = "MSVC11";
-#		elif _MSC_VER<=1899
-			const char* compiler_name = "MSVC12";
+#		if _MSC_VER==1700
+			const char* compiler_name = "MSVC2012";
+#		elif _MSC_VER==1800
+			const char* compiler_name = "MSVC2013";
+#		elif _MSC_VER==1900
+			const char* compiler_name = "MSVC2015";
+#		elif _MSC_VER==1910
+			const char* compiler_name = "MSVC2017";
 #		else
 			const char* compiler_name = "MSVC";
 #		endif

@@ -110,6 +110,7 @@
 				- New switch mrpt::obs::CObservation3DRangeScan::EXTERNALS_AS_TEXT for runtime selection of externals format.
 			- mrpt::obs::CObservation2DRangeScan now has an optional field for intensity.
 			- mrpt::obs::CRawLog can now holds objects of arbitrary type, not only actions/observations. This may be useful for richer logs aimed at debugging.
+			- mrpt::obs::CObservationVelodyneScan::generatePointCloud() can now generate the microseconds-precise timestamp for each individual point (new param `generatePerPointTimestamp`).
 		- \ref mrpt_opengl_grp
 			- [ABI change] mrpt::opengl::CAxis now has many new options exposed to configure its look.
 			- mrpt::opengl::CSetOfLines can now optionally show vertices as dots.
@@ -138,6 +139,12 @@
 				- Parameters are no longer passed via a mrpt::utils::TParameters class, but via a mrpt::utils::CConfigFileBase which makes parameter passing to PTGs much more maintainable and consistent.
 				- PTGs now have a score_priority field to manually set hints about preferences for path planning.
 				- PTGs are now mrpt::utils::CLoadableOptions classes
+			- \ref mrpt_graphslam_grp
+				 - Extend mrpt-graphslam lib to execute simulated/real-time graphSLAM.
+				 	 mrpt-graphslam supports 2D/3D execution of graphSLAM, utilizing
+				 	 LaserScans, odometry information.
+				 - Develop application `graphslam-engine` that executes graphSLAM via
+				 	 the mrpt-graphslam lib
 			- New classes:
 				- mrpt::nav::CMultiObjectiveMotionOptimizerBase
 	- Changes in build system:
