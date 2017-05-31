@@ -276,6 +276,7 @@ void CWaypointsNavigator::waypoints_navigationStep()
 
 			// Send the current targets + "multitarget_look_ahead" additional ones to help the local planner.
 			CWaypointsNavigator::TNavigationParamsWaypoints nav_cmd;
+			MRPT_TODO("Check skippable flag");
 			const int wp_last_idx = std::min(int(wps.waypoints.size()) - 1, wps.waypoint_index_current_goal + params_waypoints_navigator.multitarget_look_ahead);
 			const unsigned int num_multiple_wps = (wp_last_idx - wps.waypoint_index_current_goal) + 1;
 
