@@ -287,6 +287,23 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			m_copy_prev_navParams = dynamic_cast<CAbstractNavigator::TNavigationParams*>(m_navigationParams->clone());
 		}
 
+		// Load the list of target(s) from the navigationParam user command.
+		// Semantic is: any of the target is good. If several targets are reachable, head to latest one.
+		std::vector<CAbstractNavigator::TargetInfo>  targets;
+		{
+			auto p = dynamic_cast<const CWaypointsNavigator::TNavigationParamsWaypoints*>(m_navigationParams);
+			if (p && !p->multiple_targets.empty())
+			{
+				targets = p->multiple_targets;
+			}
+			else
+			{
+				targets.push_back(m_navigationParams->target);
+			}
+		}
+		const size_t nTargets = targets.size(); // Normally = 1, will be >1 if we want the robot local planner to be "smarter" in skipping dynamic obstacles.
+		ASSERT_(nTargets>=1);
+
 		STEP1_InitPTGs(); // Will only recompute if "m_PTGsMustBeReInitialized==true"
 
 		// STEP2: Load the obstacles and sort them in height bands.
@@ -298,7 +315,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			{
 				CPose2D rel_cur_pose_wrt_last_vel_cmd_NOP, rel_pose_PTG_origin_wrt_sense_NOP;
 				STEP8_GenerateLogRecord(newLogRec,
-					mrpt::math::TPose2D() /*fake target*/,
+					std::vector<mrpt::math::TPose2D>() /*no targets*/,
 					-1, // best_ptg_idx,
 					m_robot.getEmergencyStopCmd(),
 					nPTGs,
@@ -384,14 +401,23 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			THROW_EXCEPTION_FMT("Different frame_id's are not supported yet!: target_frame_id=`%s` != pose_frame_id=`%s`", m_navigationParams->target.target_frame_id.c_str(), m_curPoseVel.pose_frame_id.c_str());
 		}
 
-		const TPose2D relTarget = (m_navigationParams->target.target_coords - (m_curPoseVel.pose+relPoseVelCmd));
-		const double relTargetDist = relTarget.norm();
+		std::vector<TPose2D> relTargets;
+		const auto curPoseExtrapol = (m_curPoseVel.pose + relPoseVelCmd);
+		std::transform(
+			targets.begin(), targets.end(), // in
+			std::back_inserter(relTargets), // out
+			[curPoseExtrapol](auto &it) { return it->target_coords - curPoseExtrapol; }
+		);
+		ASSERT_EQUAL_(relTargets.size(),targets.size());
+
+		// Use the distance to the first target as reference:
+		const double relTargetDist = relTargets.begin()->norm();
 
 		// PTG dynamic state
 		CParameterizedTrajectoryGenerator::TNavDynamicState ptg_dynState; //!< Allow PTGs to be responsive to target location, dynamics, etc.
 
 		ptg_dynState.curVelLocal = m_curPoseVel.velLocal;
-		ptg_dynState.relTarget = relTarget;
+		ptg_dynState.relTarget = relTargets[0];
 		ptg_dynState.targetRelSpeed = m_navigationParams->target.targetDesiredRelSpeed;
 
 		newLogRec.navDynState = ptg_dynState;
@@ -415,7 +441,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			ASSERT_(m_navigationParams);
 			build_movement_candidate(
 				ptg, indexPTG,
-				relTarget, rel_pose_PTG_origin_wrt_sense,
+				relTargets, rel_pose_PTG_origin_wrt_sense,
 				ipf, cm,
 				newLogRec, false /* this is a regular PTG reactive case */,
 				m_holonomicMethod[indexPTG],
@@ -513,7 +539,14 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			{
 				ASSERT_(last_sent_ptg!=nullptr);
 
-				const TPose2D relTarget_NOP = m_navigationParams->target.target_coords - robot_pose_at_send_cmd;
+				std::vector<TPose2D> relTargets_NOPs;
+				std::transform(
+					targets.begin(), targets.end(), // in
+					std::back_inserter(relTargets_NOPs), // out
+					[robot_pose_at_send_cmd](auto &it) { return it->target_coords - robot_pose_at_send_cmd; }
+				);
+				ASSERT_EQUAL_(relTargets_NOPs.size(), targets.size());
+
 				rel_pose_PTG_origin_wrt_sense_NOP = robot_odom_at_send_cmd - (m_curPoseVel.rawOdometry + relPoseSense);
 				rel_cur_pose_wrt_last_vel_cmd_NOP = m_curPoseVel.rawOdometry - robot_odom_at_send_cmd;
 
@@ -529,7 +562,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				ASSERT_(m_navigationParams);
 				build_movement_candidate(
 					last_sent_ptg, m_lastSentVelCmd.ptg_index,
-					relTarget_NOP, rel_pose_PTG_origin_wrt_sense_NOP,
+					relTargets_NOPs, rel_pose_PTG_origin_wrt_sense_NOP,
 					m_infoPerPTG[nPTGs], candidate_movs[nPTGs],
 					newLogRec, true /* this is the PTG continuation (NOP) choice */,
 					m_holonomicMethod[m_lastSentVelCmd.ptg_index],
@@ -588,7 +621,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				if(fill_log_record)
 				{
 					STEP8_GenerateLogRecord(newLogRec,
-						relTarget,
+						relTargets,
 						best_ptg_idx,
 						m_robot.getEmergencyStopCmd(),
 						nPTGs,
@@ -639,7 +672,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 						{
 							new_vel_cmd = m_robot.getEmergencyStopCmd();
 							STEP8_GenerateLogRecord(newLogRec,
-								relTarget,
+								relTargets,
 								best_ptg_idx,
 								new_vel_cmd,
 								nPTGs,
@@ -666,10 +699,6 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 					:
 					.0;
 				m_lastSentVelCmd.was_slowdown = (selectedHolonomicMovement->props["is_slowdown"]!=0.0);
-
-				m_lastSentVelCmd.tp_target_k = selectedHolonomicMovement ?
-					selectedHolonomicMovement->PTG->alpha2index(m_infoPerPTG[best_ptg_idx].target_alpha) :
-					0;
 
 				m_lastSentVelCmd.poseVel = m_curPoseVel;
 				m_lastSentVelCmd.tim_send_cmd_vel = tim_send_cmd_vel;
@@ -722,7 +751,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		if (fill_log_record)
 		{
 			STEP8_GenerateLogRecord(newLogRec,
-				relTarget,
+				relTargets,
 				best_ptg_idx,
 				new_vel_cmd,
 				nPTGs,
@@ -743,7 +772,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 }
 
 
-void CAbstractPTGBasedReactive::STEP8_GenerateLogRecord(CLogFileRecord &newLogRec,const TPose2D& relTarget,int nSelectedPTG, const mrpt::kinematics::CVehicleVelCmdPtr &new_vel_cmd, const int nPTGs, const bool best_is_NOP_cmdvel, const mrpt::math::TPose2D &rel_cur_pose_wrt_last_vel_cmd_NOP, const mrpt::math::TPose2D &rel_pose_PTG_origin_wrt_sense_NOP, const double executionTimeValue, const double tim_changeSpeed, const mrpt::system::TTimeStamp &tim_start_iteration)
+void CAbstractPTGBasedReactive::STEP8_GenerateLogRecord(CLogFileRecord &newLogRec,const std::vector<TPose2D>& relTargets,int nSelectedPTG, const mrpt::kinematics::CVehicleVelCmdPtr &new_vel_cmd, const int nPTGs, const bool best_is_NOP_cmdvel, const mrpt::math::TPose2D &rel_cur_pose_wrt_last_vel_cmd_NOP, const mrpt::math::TPose2D &rel_pose_PTG_origin_wrt_sense_NOP, const double executionTimeValue, const double tim_changeSpeed, const mrpt::system::TTimeStamp &tim_start_iteration)
 {
 	// ---------------------------------------
 	// STEP8: Generate log record
@@ -754,7 +783,7 @@ void CAbstractPTGBasedReactive::STEP8_GenerateLogRecord(CLogFileRecord &newLogRe
 
 	newLogRec.robotPoseLocalization = m_curPoseVel.pose;
 	newLogRec.robotPoseOdometry     = m_curPoseVel.rawOdometry;
-	newLogRec.WS_target_relative  = TPoint2D(relTarget);
+	newLogRec.WS_targets_relative = relTargets;
 	newLogRec.nSelectedPTG        = nSelectedPTG;
 	newLogRec.cur_vel             = m_curPoseVel.velGlobal;
 	newLogRec.cur_vel_local       = m_curPoseVel.velLocal;
@@ -802,8 +831,8 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 	TCandidateMovementPTG         & cm,
 	const std::vector<double>        & in_TPObstacles,
 	const mrpt::nav::ClearanceDiagram & in_clearance,
-	const mrpt::math::TPose2D  & WS_Target,
-	const mrpt::math::TPoint2D & TP_Target,
+	const std::vector<mrpt::math::TPose2D>  & WS_Targets,
+	const std::vector<CAbstractPTGBasedReactive::PTGTarget> & TP_Targets,
 	CLogFileRecord::TInfoPerPTG & log,
 	CLogFileRecord & newLogRec,
 	const bool this_is_PTG_continuation,
@@ -813,10 +842,14 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 {
 	MRPT_START;
 
-	const double   ref_dist      = cm.PTG->getRefDistance();
-	const double   target_dir    = (TP_Target.x!=0 || TP_Target.y!=0) ? atan2( TP_Target.y, TP_Target.x) : 0.0;
-	const int      target_k = static_cast<int>( cm.PTG->alpha2index( target_dir ) );
-	const double   target_d_norm   = TP_Target.norm();
+	const double   ref_dist = cm.PTG->getRefDistance();
+
+	
+	// Replaced by: TP_Targets[i].*
+	//const double   target_dir    = (TP_Target.x!=0 || TP_Target.y!=0) ? atan2( TP_Target.y, TP_Target.x) : 0.0;
+	//const int      target_k = static_cast<int>( cm.PTG->alpha2index( target_dir ) );
+	//const double   target_d_norm   = TP_Target.norm();
+
 	// Picked movement direction:
 	const int      move_k   = static_cast<int>( cm.PTG->alpha2index( cm.direction ) );
 	const double   target_WS_d = WS_Target.norm();
@@ -1175,7 +1208,6 @@ void CAbstractPTGBasedReactive::TSentVelCmd::reset()
 {
 	ptg_index = -1;
 	ptg_alpha_index = -1;
-	tp_target_k = -1;
 	tim_send_cmd_vel = INVALID_TIMESTAMP;
 	poseVel = TRobotPoseVel();
 	colfreedist_move_k = .0;
@@ -1192,7 +1224,7 @@ bool CAbstractPTGBasedReactive::TSentVelCmd::isValid() const
 void CAbstractPTGBasedReactive::build_movement_candidate(
 	CParameterizedTrajectoryGenerator * ptg,
 	const size_t indexPTG,
-	const mrpt::math::TPose2D &relTarget,
+	const std::vector<mrpt::math::TPose2D> &relTargets,
 	const mrpt::math::TPose2D &rel_pose_PTG_origin_wrt_sense,
 	TInfoPerPTG &ipf,
 	TCandidateMovementPTG &cm,
@@ -1212,33 +1244,42 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
 	cm.PTG = ptg;
 
 	// If the user doesn't want to use this PTG, just mark it as invalid:
-	ipf.valid_TP = true;
+	ipf.targets.assign(relTargets.size(), PTGTarget()); // Init to default, invalid state
+	bool use_this_ptg = true;
 	{
 		const TNavigationParamsPTG * navpPTG = dynamic_cast<const TNavigationParamsPTG*>(&navp);
 		if (navpPTG && !navpPTG->restrict_PTG_indices.empty())
 		{
-			bool use_this_ptg = false;
+			use_this_ptg = false;
 			for (size_t i = 0; i < navpPTG->restrict_PTG_indices.size() && !use_this_ptg; i++) {
 				if (navpPTG->restrict_PTG_indices[i] == indexPTG)
 					use_this_ptg = true;
 			}
-			ipf.valid_TP = use_this_ptg;
 		}
 	}
 
 	double timeForTPObsTransformation = .0, timeForHolonomicMethod = .0;
 
 	// Normal PTG validity filter: check if target falls into the PTG domain:
-	if (ipf.valid_TP)
+	if (use_this_ptg)
 	{
-		ipf.valid_TP = ptg->inverseMap_WS2TP(relTarget.x, relTarget.y, ipf.target_k, ipf.target_dist);
+		for (size_t i=0;i<relTargets.size();i++)
+		{
+			const auto & trg = relTargets[i];
+			PTGTarget & ptg_target = ipf.targets[i];
+
+			ptg_target.valid_TP = ptg->inverseMap_WS2TP(trg.x, trg.y, ptg_target.target_k, ptg_target.target_dist);
+			if (!ptg_target.valid_TP) continue;
+			
+			ptg_target.target_alpha = ptg->index2alpha(ptg_target.target_k);
+			ptg_target.TP_Target.x = cos(ptg_target.target_alpha) * ptg_target.target_dist;
+			ptg_target.TP_Target.y = sin(ptg_target.target_alpha) * ptg_target.target_dist;
+		}
 	}
 
+	MRPT_TODO("cont");
 	if (!ipf.valid_TP)
 	{
-		ipf.target_k = 0;
-		ipf.target_dist = 0;
-
 		newLogRec.additional_debug_msgs[mrpt::format("mov_candidate_%u", static_cast<unsigned int>(indexPTG))] = "PTG discarded since target is out of domain.";
 
 		{   // Invalid PTG (target out of reachable space):
@@ -1248,10 +1289,6 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
 	}
 	else
 	{
-		ipf.target_alpha = ptg->index2alpha(ipf.target_k);
-		ipf.TP_Target.x = cos(ipf.target_alpha) * ipf.target_dist;
-		ipf.TP_Target.y = sin(ipf.target_alpha) * ipf.target_dist;
-
 		//  STEP3(b): Build TP-Obstacles
 		// -----------------------------------------------------------------------------
 		{
@@ -1351,8 +1388,8 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
 				cm,
 				ipf.TP_Obstacles,
 				ipf.clearance,
-				relTarget,
-				ipf.TP_Target,
+				relTargets,
+				ipf.targets,
 				newLogRec.infoPerPTG[idx_in_log_infoPerPTGs], newLogRec,
 				this_is_PTG_continuation, rel_cur_pose_wrt_last_vel_cmd_NOP,
 				indexPTG, 
