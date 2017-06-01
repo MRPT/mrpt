@@ -10,18 +10,18 @@ include(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CM
 project(robot-map-gui)
 
 
-if(CMAKE_MRPT_HAS_Qt5)
+if(CMAKE_MRPT_HAS_Qt5 AND CMAKE_MRPT_HAS_OPENGL_GLUT)
 
 	set(CPP_FILES
 		robot-map-gui_main.cpp
 		gui/CMainWindow.cpp
+		gui/GLWidget.cpp
 		)
-
 
 	set(FILES_TO_MOC
 		gui/CMainWindow.h
+		gui/GLWidget.h
 		)
-
 
 	qt5_wrap_cpp(moc_cpps ${FILES_TO_MOC})
 
@@ -29,23 +29,22 @@ if(CMAKE_MRPT_HAS_Qt5)
 	# TARGET:
 	# ---------------------------------------------
 	# Define the executable target:
-
 	add_executable(${PROJECT_NAME}
 		${CPP_FILES}
 		${moc_cpps}
-		${MRPT_VERSION_RC_FILE})
+		${MRPT_VERSION_RC_FILE}
+		)
 
 	# Add the required libraries for linking:
-	target_link_libraries(${PROJECT_NAME}
-		Qt5::Widgets
-		${MRPT_LINKER_LIBS}
-		)
+	qt5_use_modules(${PROJECT_NAME} Widgets OpenGL)
+
+	target_link_libraries(${PROJECT_NAME} ${MRPT_LINKER_LIBS})
 
 	# Dependencies on MRPT libraries:
 	#  Just mention the top-level dependency, the rest will be detected automatically,
 	#  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
-	DeclareAppDependencies(${PROJECT_NAME} mrpt-slam  )
+	DeclareAppDependencies(${PROJECT_NAME} mrpt-slam mrpt-gui mrpt-opengl mrpt-vision)
 
 	DeclareAppForInstall(${PROJECT_NAME})
 
-endif(CMAKE_MRPT_HAS_Qt5)
+endif(CMAKE_MRPT_HAS_Qt5 AND CMAKE_MRPT_HAS_OPENGL_GLUT)
