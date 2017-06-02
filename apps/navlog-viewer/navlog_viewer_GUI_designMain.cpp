@@ -508,7 +508,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 	WX_START_TRY
 
 	const int i = this->slidLog->GetValue();
-	if (i >= m_logdata.size()) return;
+	if (i >= int(m_logdata.size())) return;
 
 	// In the future, we could handle more log classes. For now, only "CLogFileRecordPtr":
 	CLogFileRecordPtr logptr = CLogFileRecordPtr(m_logdata[i]);
@@ -667,8 +667,6 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 						if (!ptg->isInitialized())
 							ptg->initialize();
 
-						const mrpt::math::TPose2D relTrg(log.WS_target_relative.x, log.WS_target_relative.y, 0);
-
 						// Set instantaneous dyn state:
 						ptg->updateNavDynamicState(is_NOP_cmd  ? log.ptg_last_navDynState : log.navDynState);
 
@@ -763,8 +761,15 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 				}
 				// Move the map & add a point at (0,0,0) so the name label appears at the target:
 				gl_trg->clear();
-				gl_trg->setLocation(log.WS_target_relative.x,log.WS_target_relative.y, .05f);
-				gl_trg->insertPoint(0,0,0);
+				if (!log.WS_targets_relative.empty())
+				{
+					const auto t0 = log.WS_targets_relative[0];
+					const float tz = .05f;
+					gl_trg->setLocation(t0.x, t0.y, tz);
+					for (const auto &t : log.WS_targets_relative) {
+						gl_trg->insertPoint(t.x - t0.x , t.y - t0.y, tz);
+					}
+				}
 			}
 		}
 
@@ -802,7 +807,13 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 		ADD_WIN_TEXTMSG(mrpt::format("cur_vel      =[%.02f m/s, %0.2f m/s, %.02f dps]",log.cur_vel.vx, log.cur_vel.vy, mrpt::utils::RAD2DEG(log.cur_vel.omega)) );
 		ADD_WIN_TEXTMSG(mrpt::format("cur_vel_local=[%.02f m/s, %0.2f m/s, %.02f dps]", log.cur_vel_local.vx, log.cur_vel_local.vy, mrpt::utils::RAD2DEG(log.cur_vel_local.omega)) );
 
-		ADD_WIN_TEXTMSG(mrpt::format("robot_pose=%s rel_target=%s", log.robotPoseLocalization.asString().c_str(), log.WS_target_relative.asString().c_str()));
+		ADD_WIN_TEXTMSG(mrpt::format("robot_pose=%s", log.robotPoseLocalization.asString().c_str()));
+		{
+			for (unsigned int i = 0; i < log.WS_targets_relative.size(); i++) {
+				ADD_WIN_TEXTMSG(mrpt::format("rel_target[%u]=%s", i, log.WS_targets_relative[i].asString().c_str()));
+			}
+		}
+		
 
 		if (log.cmd_vel_original)
 		{
@@ -998,21 +1009,26 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 			{
 				auto gl_obj = mrpt::opengl::CPointCloudPtr(scene->getByName("tp_target"));
 				gl_obj->clear();
-				gl_obj->insertPoint(pI.TP_Target.x, pI.TP_Target.y,0);
-
-				double ang = ::atan2(pI.TP_Target.y, pI.TP_Target.x);
-				int tp_target_k=0;
-				if (sel_ptg_idx < int(m_logdata_ptg_paths.size()) && sel_ptg_idx >= 0)
-				{
-					mrpt::nav::CParameterizedTrajectoryGeneratorPtr ptg = m_logdata_ptg_paths[sel_ptg_idx];
-					if (ptg) {
-						tp_target_k = ptg->alpha2index(ang);
-					}
+				for (const auto &p : pI.TP_Targets) {
+					gl_obj->insertPoint(p.x,p.y,.0);
 				}
 
-				win->addTextMessage(4, -12,
-					format("TP_Target=(%.02f,%.02f) k=%i ang=%.02f deg", pI.TP_Target.x, pI.TP_Target.y, tp_target_k, mrpt::utils::RAD2DEG(ang)),
-					TColorf(1.0f, 1.0f, 1.0f), "mono", 8, mrpt::opengl::NICE, 1 /*id*/, 1.5, 0.1, false /*shadow*/);
+				if (!pI.TP_Targets.empty())
+				{
+					double ang = ::atan2(pI.TP_Targets[0].y, pI.TP_Targets[0].x);
+					int tp_target_k = 0;
+					if (sel_ptg_idx < int(m_logdata_ptg_paths.size()) && sel_ptg_idx >= 0)
+					{
+						mrpt::nav::CParameterizedTrajectoryGeneratorPtr ptg = m_logdata_ptg_paths[sel_ptg_idx];
+						if (ptg) {
+							tp_target_k = ptg->alpha2index(ang);
+						}
+					}
+
+					win->addTextMessage(4, -12,
+						format("TP_Target[0]=(%.02f,%.02f) k=%i ang=%.02f deg", pI.TP_Targets[0].x, pI.TP_Targets[0].y, tp_target_k, mrpt::utils::RAD2DEG(ang)),
+						TColorf(1.0f, 1.0f, 1.0f), "mono", 8, mrpt::opengl::NICE, 1 /*id*/, 1.5, 0.1, false /*shadow*/);
+				}
 			}
 			if (cbList->IsChecked(m_cbIdx_ShowAllDebugFields))
 			{
@@ -1215,7 +1231,7 @@ void navlog_viewer_GUI_designDialog::OnmnuMatlabPlotsSelected(wxCommandEvent& ev
         }
 
         // Target:
-        const mrpt::math::TPoint2D trg_glob = mrpt::math::TPoint2D(robotPose +logptr->WS_target_relative );
+        const mrpt::math::TPoint2D trg_glob = mrpt::math::TPoint2D(robotPose +logptr->WS_targets_relative[0] );
         if (TX.empty() || std::abs((*TX.rbegin())-trg_glob.x)>1e-3 || std::abs((*TY.rbegin())-trg_glob.y)>1e-3 )
         {
             TX.push_back(trg_glob.x);

@@ -33,6 +33,20 @@ namespace mrpt
 	class NAV_IMPEXP CWaypointsNavigator : public  mrpt::nav::CAbstractNavigator
 	{
 	public:
+		/** The struct for configuring navigation requests to CWaypointsNavigator and derived classes. */
+		struct NAV_IMPEXP TNavigationParamsWaypoints : public CAbstractNavigator::TNavigationParams
+		{
+			/** If not empty, this will prevail over the base class single goal target. 
+			  * Semantic is: any of these targets will be good for heading the robot towards them, 
+			  * but the priority is for the latest ones in the sequence. */
+			std::vector<mrpt::nav::CAbstractNavigator::TargetInfo>  multiple_targets;
+
+			virtual std::string getAsText() const MRPT_OVERRIDE;
+			virtual TNavigationParamsBase* clone() const MRPT_OVERRIDE { return new TNavigationParamsWaypoints(*this); }
+		protected:
+			virtual bool isEqual(const CAbstractNavigator::TNavigationParamsBase& o) const MRPT_OVERRIDE;
+		};
+
 		CWaypointsNavigator( CRobot2NavInterface &robot_interface_impl );  //!< ctor
 		virtual ~CWaypointsNavigator(); //!< dtor
 
@@ -70,6 +84,7 @@ namespace mrpt
 			int     min_timesteps_confirm_skip_waypoints; //!< How many times shall a future waypoint be seen as reachable to skip to it (Default: 1)
 			double  waypoint_angle_tolerance;             //!< [rad] Angular error tolerance for waypoints with an assigned heading (Default: 5 deg)
 			double  rel_speed_for_stop_waypoints;         //!< [0,1] Relative speed when aiming at a stop-point waypoint (Default=0.10)
+			int     multitarget_look_ahead;               //!< >=0 number of waypoints to forward to the underlying navigation engine, to ease obstacles avoidance when a waypoint is blocked (Default=0 : none).
 
 			virtual void loadFromConfigFile(const mrpt::utils::CConfigFileBase &c, const std::string &s) MRPT_OVERRIDE;
 			virtual void saveToConfigFile(mrpt::utils::CConfigFileBase &c, const std::string &s) const MRPT_OVERRIDE;

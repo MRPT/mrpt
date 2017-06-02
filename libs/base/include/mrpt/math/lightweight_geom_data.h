@@ -16,6 +16,7 @@
 #include <mrpt/utils/TTypeName.h>
 #include <mrpt/math/math_frwds.h>  // forward declarations
 #include <mrpt/math/eigen_frwds.h>  // forward declarations
+#include <mrpt/math/wrap2pi.h>
 #include <vector>
 #include <stdexcept>
 
