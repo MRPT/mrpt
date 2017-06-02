@@ -285,7 +285,6 @@ void CWaypointsNavigator::waypoints_navigationStep()
 					break;
 				wp_last_idx++;
 			}
-			const unsigned int num_multiple_wps = (wp_last_idx - wps.waypoint_index_current_goal) + 1;
 
 			for (int wp_idx = wps.waypoint_index_current_goal; wp_idx <= wp_last_idx; wp_idx++)
 			{
