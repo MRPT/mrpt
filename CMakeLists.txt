@@ -610,10 +610,10 @@ if(MSVC)
 
 endif()
 
-IF(CMAKE_COMPILER_IS_GNUCXX AND NOT APPLE)
-	# --as-needed: Avoid unnecesary libraries (.so dependencies):
-	#SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--as-needed")
-	#SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--as-needed")
+IF(CMAKE_COMPILER_IS_GNUCXX)
+	# -Wl,-z,defs: error on undefined symbols
+	SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-z,defs")
+	SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,defs")
 ENDIF()
 
 IF($ENV{VERBOSE})
