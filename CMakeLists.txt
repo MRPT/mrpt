@@ -257,7 +257,6 @@ include(cmakemodules/script_jpeg.cmake REQUIRED)        # Check for jpeg
 include(cmakemodules/script_swissrange.cmake REQUIRED)  # Support for SWISSRANGE 3D camera:
 include(cmakemodules/script_SIMD.cmake REQUIRED)        # SSE2/SSE3/... optimization options
 include(cmakemodules/script_gtest.cmake REQUIRED)       # Unit testing lib
-include(cmakemodules/script_clang.cmake REQUIRED)       # clang library (For UTFConvert)
 include(cmakemodules/script_national_instruments.cmake REQUIRED)  # NI C library
 include(cmakemodules/script_sift_hess.cmake REQUIRED)  # SIFT Hess implementation
 include(cmakemodules/script_xsens.cmake REQUIRED)      # XSens Motion trackers / IMU drivers
