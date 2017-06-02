@@ -91,9 +91,19 @@ namespace mrpt
 		unsigned int direction2sector(const double a, const unsigned int N);
 		mrpt::math::CMatrixD m_dirs_scores; //!< Individual scores for each direction: (i,j), i (row) are directions, j (cols) are scores. Not all directions may have evaluations, in which case a "-1" value will be found.
 		
-		virtual void postProcessDirectionEvaluations(std::vector<double> &dir_evals, const NavInput & ni); // If desired, override in a derived class to manipulate the final evaluations of each directions
+		virtual void postProcessDirectionEvaluations(std::vector<double> &dir_evals, const NavInput & ni, unsigned int trg_idx); // If desired, override in a derived class to manipulate the final evaluations of each directions
 
+		struct NAV_IMPEXP EvalOutput
+		{
+			unsigned int best_k;
+			double       best_eval;
+			std::vector<std::vector<double> > phase_scores;
+			EvalOutput();
+		};
+
+		void evalSingleTarget(unsigned int target_idx, const NavInput & ni, EvalOutput &eo); //!< Evals one single target of the potentially many of them in NavInput
 	}; // end of CHolonomicFullEval
+
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CHolonomicFullEval, CAbstractHolonomicReactiveMethod, NAV_IMPEXP )
 
 	/** A class for storing extra information about the execution of CHolonomicFullEval navigation.
@@ -103,10 +113,13 @@ namespace mrpt
 	{
 		DEFINE_SERIALIZABLE( CLogFileRecord_FullEval )
 	public:
-		 /** Member data */
+		CLogFileRecord_FullEval();
+
+		/** Member data */
 		int32_t              selectedSector;
 		double               evaluation;
 		mrpt::math::CMatrixD dirs_scores; //!< Individual scores for each direction: (i,j), i (row) are directions, j (cols) are scores. Not all directions may have evaluations, in which case a "-1" value will be found.
+		int32_t              selectedTarget; //!< Normally = 0. Can be >0 if multiple targets passed simultaneously.
 
 		const mrpt::math::CMatrixD * getDirectionScores() const MRPT_OVERRIDE { return &dirs_scores; }
 	};
