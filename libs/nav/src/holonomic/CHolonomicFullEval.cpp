@@ -27,6 +27,9 @@ using namespace std;
 IMPLEMENTS_SERIALIZABLE( CLogFileRecord_FullEval, CHolonomicLogFileRecord,mrpt::nav )
 IMPLEMENTS_SERIALIZABLE( CHolonomicFullEval, CAbstractHolonomicReactiveMethod,mrpt::nav)
 
+const unsigned int INVALID_K = std::numeric_limits<unsigned int>::max();
+
+
 CHolonomicFullEval::CHolonomicFullEval(const mrpt::utils::CConfigFileBase *INI_FILE ) :
 	CAbstractHolonomicReactiveMethod("CHolonomicFullEval"),
 	m_last_selected_sector ( std::numeric_limits<unsigned int>::max() )
@@ -61,24 +64,29 @@ struct TGap
 	{}
 };
 
-
-void CHolonomicFullEval::navigate(const NavInput & ni, NavOutput &no)
+CHolonomicFullEval::EvalOutput::EvalOutput() :
+	best_k(INVALID_K),
+	best_eval(.0)
 {
+}
+
+
+void CHolonomicFullEval::evalSingleTarget(unsigned int target_idx, const NavInput & ni, EvalOutput &eo)
+{
+	ASSERT_(target_idx<ni.targets.size());
+	const auto target = ni.targets[target_idx];
+
 	using mrpt::math::square;
 
-	ASSERT_(ni.clearance!=nullptr);
+	eo = EvalOutput();
 
 	const auto ptg = getAssociatedPTG();
 	const double ptg_ref_dist = ptg ? ptg->getRefDistance() : 1.0;
-
-	// Create a log record for returning data.
-	CLogFileRecord_FullEvalPtr log = CLogFileRecord_FullEval::Create();
-	no.logRecord = log;
-
 	const size_t nDirs = ni.obstacles.size();
-	const double target_dir = ::atan2(ni.target.y, ni.target.x);
+
+	const double target_dir = ::atan2(target.y, target.x);
 	const unsigned int target_k = CParameterizedTrajectoryGenerator::alpha2index(target_dir, nDirs);
-	const double target_dist = ni.target.norm();
+	const double target_dist = target.norm();
 
 	m_dirs_scores.resize(nDirs, options.factorWeights.size() + 2 );
 
@@ -142,11 +150,11 @@ void CHolonomicFullEval::navigate(const NavInput & ni, NavOutput &no)
 		sg.point2.y = y;
 
 		// Range of attainable values: 0=passes thru target. 2=opposite direction
-		double min_dist_target_along_path = sg.distance(ni.target);
+		double min_dist_target_along_path = sg.distance(target);
 
 		// Idea: if this segment is taking us *away* from target, don't make the segment to start at (0,0), since all
 		// paths "running away" will then have identical minimum distances to target. Use the middle of the segment instead:
-		const double endpt_dist_to_target = (ni.target - TPoint2D(x, y)).norm();
+		const double endpt_dist_to_target = (target - TPoint2D(x, y)).norm();
 		const double endpt_dist_to_target_norm = std::min(1.0, endpt_dist_to_target);
 
 		if (
@@ -158,7 +166,7 @@ void CHolonomicFullEval::navigate(const NavInput & ni, NavOutput &no)
 			// path takes us away or way blocked:
 			sg.point1.x = x*0.5;
 			sg.point1.y = y*0.5;
-			min_dist_target_along_path = sg.distance(ni.target);
+			min_dist_target_along_path = sg.distance(target);
 		}
 
 		scores[1] = 1.0 / (1.0 + square(min_dist_target_along_path) );
@@ -224,7 +232,8 @@ void CHolonomicFullEval::navigate(const NavInput & ni, NavOutput &no)
 		weights_sum_phase_inv[i] = 1.0 / weights_sum_phase[i];
 	}
 
-	std::vector<std::vector<double> > phase_scores(NUM_PHASES, std::vector<double>(nDirs,.0) );
+	eo.phase_scores = std::vector<std::vector<double> >(NUM_PHASES, std::vector<double>(nDirs,.0) );
+	auto &phase_scores = eo.phase_scores; // shortcut
 	double last_phase_threshold = -1.0; // don't threshold for the first phase
 
 	for (unsigned int phase_idx = 0; phase_idx < NUM_PHASES; phase_idx++)
@@ -266,7 +275,7 @@ void CHolonomicFullEval::navigate(const NavInput & ni, NavOutput &no)
 	// Give a chance for a derived class to manipulate the final evaluations:
 	auto & dirs_eval = *phase_scores.rbegin();
 
-	postProcessDirectionEvaluations(dirs_eval, ni);
+	postProcessDirectionEvaluations(dirs_eval, ni, target_idx);
 
 	// Recalculate the threshold just in case the postProcess function above changed things:
 	{
@@ -281,9 +290,6 @@ void CHolonomicFullEval::navigate(const NavInput & ni, NavOutput &no)
 
 
 	// Search for best direction:
-	const unsigned int INVALID_K = std::numeric_limits<unsigned int>::max();
-	unsigned int best_k = INVALID_K;
-	double       best_eval = .0;
 
 	// Of those directions above "last_phase_threshold", keep the GAP with the largest maximum value within;
 	// then pick the MIDDLE point as the final selection.
@@ -350,7 +356,7 @@ void CHolonomicFullEval::navigate(const NavInput & ni, NavOutput &no)
 
 	const TGap & best_gap = gaps[best_gap_idx];
 
-	best_eval = best_gap.max_eval;
+	eo.best_eval = best_gap.max_eval;
 
 	// Different qualitative situations:
 	if (best_gap_idx == gap_idx_for_target_dir) // Gap contains target, AND
@@ -371,14 +377,14 @@ void CHolonomicFullEval::navigate(const NavInput & ni, NavOutput &no)
 			ni.obstacles[target_k]>target_dist*1.01
 			)
 		{
-			best_k = target_k;
+			eo.best_k = target_k;
 		}
 	}
 
-	if (best_k==INVALID_K) // did not fulfill conditions above
+	if (eo.best_k==INVALID_K) // did not fulfill conditions above
 	{
 		// Not heading to target: go thru the "middle" of the gap to maximize clearance
-		best_k = mrpt::utils::round(0.5*(best_gap.k_to + best_gap.k_from));
+		eo.best_k = mrpt::utils::round(0.5*(best_gap.k_to + best_gap.k_from));
 	}
 
 	// Alternative, simpler method to decide motion:
@@ -402,11 +408,42 @@ void CHolonomicFullEval::navigate(const NavInput & ni, NavOutput &no)
 		dirs_eval[target_k]>0 /* the direct target direction has at least a minimum score */
 		)
 	{
-		best_k = target_k;
-		best_eval = dirs_eval[target_k];
+		eo.best_k = target_k;
+		eo.best_eval = dirs_eval[target_k];
 		
 		// Reflect this decision in the phase score plots:
 		phase_scores[NUM_PHASES - 1][target_k] += 2.0;
+	}
+
+}
+
+void CHolonomicFullEval::navigate(const NavInput & ni, NavOutput &no)
+{
+	using mrpt::math::square;
+
+	ASSERT_(ni.clearance!=nullptr);
+	ASSERT_(!ni.targets.empty());
+
+	// Create a log record for returning data.
+	CLogFileRecord_FullEvalPtr log = CLogFileRecord_FullEval::Create();
+	no.logRecord = log;
+
+	const size_t numTrgs = ni.targets.size();
+	
+	std::vector<EvalOutput> evals(numTrgs);
+	double       best_eval = .0;
+	unsigned int best_trg_idx = 0;
+
+	for (unsigned int trg_idx = 0; trg_idx < numTrgs; trg_idx++)
+	{
+		auto & eo = evals[trg_idx];
+		evalSingleTarget(trg_idx, ni, eo);
+
+		if (eo.best_eval >= best_eval) // >= because we prefer the most advanced targets...
+		{
+			best_eval = eo.best_eval;
+			best_trg_idx = trg_idx;
+		}
 	}
 
 	// Prepare NavigationOutput data:
@@ -419,17 +456,19 @@ void CHolonomicFullEval::navigate(const NavInput & ni, NavOutput &no)
 	else
 	{
 		// A valid movement:
-		no.desiredDirection = CParameterizedTrajectoryGenerator::index2alpha(best_k, ni.obstacles.size());
+		const auto ptg = getAssociatedPTG();
+		const double ptg_ref_dist = ptg ? ptg->getRefDistance() : 1.0;
+
+		no.desiredDirection = CParameterizedTrajectoryGenerator::index2alpha(evals[best_trg_idx].best_k, ni.obstacles.size());
 
 		// Speed control: Reduction factors
 		// ---------------------------------------------
 		const double targetNearnessFactor = m_enableApproachTargetSlowDown ?
-			std::min(1.0, ni.target.norm() / (options.TARGET_SLOW_APPROACHING_DISTANCE / ptg_ref_dist))
+			std::min(1.0, ni.targets[best_trg_idx].norm() / (options.TARGET_SLOW_APPROACHING_DISTANCE / ptg_ref_dist))
 			:
 			1.0;
 
-		//const double obs_clearance = m_dirs_scores(best_k, 4);
-		const double obs_dist = ni.obstacles[best_k]; // Was: min with obs_clearance too.
+		const double obs_dist = ni.obstacles[evals[best_trg_idx].best_k]; // Was: min with obs_clearance too.
 		const double obs_dist_th = std::max(options.TOO_CLOSE_OBSTACLE, (options.OBSTACLE_SLOW_DOWN_DISTANCE / ptg_ref_dist)*ni.maxObstacleDist);
 		double riskFactor = 1.0;
 		if (obs_dist <= options.TOO_CLOSE_OBSTACLE) {
@@ -442,15 +481,15 @@ void CHolonomicFullEval::navigate(const NavInput & ni, NavOutput &no)
 		no.desiredSpeed = ni.maxRobotSpeed * std::min(riskFactor,targetNearnessFactor);
 	}
 
-	m_last_selected_sector = best_k;
+	m_last_selected_sector = evals[best_trg_idx].best_k;
 
 	// LOG --------------------------
 	if (log)
 	{
-		log->selectedSector = best_k;
-		log->evaluation = best_eval;
-
-		log->dirs_eval = phase_scores;
+		log->selectedTarget = best_trg_idx;
+		log->selectedSector = evals[best_trg_idx].best_k;
+		log->evaluation = evals[best_trg_idx].best_eval;
+		log->dirs_eval = evals[best_trg_idx].phase_scores;
 
 		if (options.LOG_SCORE_MATRIX) {
 			log->dirs_scores = m_dirs_scores;
@@ -466,13 +505,21 @@ unsigned int CHolonomicFullEval::direction2sector(const double a, const unsigned
 	else return static_cast<unsigned int>(idx);
 }
 
+CLogFileRecord_FullEval::CLogFileRecord_FullEval() :
+	selectedSector(0),
+	evaluation(.0),
+	dirs_scores(),
+	selectedTarget(0)
+{
+}
+
 void  CLogFileRecord_FullEval::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 	if (version)
-		*version = 2;
+		*version = 3;
 	else
 	{
-		out << CHolonomicLogFileRecord::dirs_eval << dirs_scores << selectedSector << evaluation;
+		out << CHolonomicLogFileRecord::dirs_eval << dirs_scores << selectedSector << evaluation << selectedTarget /*v3*/;
 	}
 }
 
@@ -486,6 +533,7 @@ void  CLogFileRecord_FullEval::readFromStream(mrpt::utils::CStream &in,int versi
 	case 0:
 	case 1:
 	case 2:
+	case 3:
 		{
 		if (version >= 2)
 		{
@@ -500,6 +548,12 @@ void  CLogFileRecord_FullEval::readFromStream(mrpt::utils::CStream &in,int versi
 			}
 		}
 		in >> dirs_scores >> selectedSector >> evaluation;
+		if (version >= 3) {
+			in >> selectedTarget;
+		}
+		else {
+			selectedTarget = 0;
+		}
 		} break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
@@ -662,7 +716,7 @@ void  CHolonomicFullEval::readFromStream(mrpt::utils::CStream &in,int version)
 	};
 }
 
-void CHolonomicFullEval::postProcessDirectionEvaluations(std::vector<double> &dir_evals, const NavInput & ni)
+void CHolonomicFullEval::postProcessDirectionEvaluations(std::vector<double> &dir_evals, const NavInput & ni, unsigned int trg_idx)
 {
 	// Default: do nothing
 }

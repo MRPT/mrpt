@@ -30,7 +30,7 @@ CLogFileRecord::CLogFileRecord() :
 	robotPoseOdometry(0,0,0),
 	relPoseSense(0,0,0),
 	relPoseVelCmd(0,0,0),
-	WS_target_relative(0,0),
+	WS_targets_relative(),
 	cur_vel(0,0,0),
 	cur_vel_local(0,0,0),
 	robotShape_radius(.0),
@@ -49,7 +49,7 @@ CLogFileRecord::CLogFileRecord() :
 void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 	if (version)
-		*version = 25;
+		*version = 26;
 	else
 	{
 		uint32_t	i,n;
@@ -65,7 +65,7 @@ void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) cons
 			out << m;
 			if (m) out.WriteBuffer((const void*)&(*infoPerPTG[i].TP_Obstacles.begin()), m * sizeof(infoPerPTG[i].TP_Obstacles[0]));
 
-			out << infoPerPTG[i].TP_Target;  // v8: CPoint2D -> TPoint2D
+			out << infoPerPTG[i].TP_Targets;  // v8: CPoint2D -> TPoint2D. v26: vector
 			out << infoPerPTG[i].TP_Robot; // v17
 			out << infoPerPTG[i].timeForTPObsTransformation << infoPerPTG[i].timeForHolonomicMethod; // made double in v12
 			out << infoPerPTG[i].desiredDirection << infoPerPTG[i].desiredSpeed << infoPerPTG[i].evaluation; // made double in v12
@@ -87,7 +87,7 @@ void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) cons
 		// Removed v24: out << robotOdometryPose;
 		out << robotPoseLocalization << robotPoseOdometry; // v24
 
-		out << WS_target_relative; //v8
+		out << WS_targets_relative; //v8, v26: vector
 		// v16:
 		out << ptg_index_NOP << ptg_last_k_NOP; 
 		out << rel_cur_pose_wrt_last_vel_cmd_NOP << rel_pose_PTG_origin_wrt_sense_NOP; // v24: CPose2D->TPose2D
@@ -164,6 +164,7 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 	case 23:
 	case 24:
 	case 25:
+	case 26:
 		{
 			// Version 0 --------------
 			uint32_t  i,n;
@@ -184,13 +185,23 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 				ipp.TP_Obstacles.resize(m);
 				if (m) in.ReadBufferFixEndianness( &(*ipp.TP_Obstacles.begin()), m );
 
-				if (version>=8)
-					in >> ipp.TP_Target;
+				ipp.TP_Targets.clear();
+				if (version >= 8)
+				{
+					if (version >= 26) {
+						in >> ipp.TP_Targets;
+					}
+					else {
+						mrpt::math::TPoint2D trg;
+						in >> trg;
+						ipp.TP_Targets.push_back(trg);
+					}
+				}
 				else
 				{
 					mrpt::poses::CPoint2D pos;
 					in >> pos;
-					ipp.TP_Target = mrpt::math::TPoint2D(pos);
+					ipp.TP_Targets.push_back(mrpt::math::TPoint2D(pos));
 				}
 				if (version >= 17)
 					in >> ipp.TP_Robot;
@@ -260,13 +271,25 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 				in >> robotPoseLocalization >> robotPoseOdometry; // v24
 			}
 
-			if (version>=8)
-				in >> WS_target_relative;
+			WS_targets_relative.clear();
+			if (version >= 8)
+			{
+				if (version >= 26)
+				{
+					in >> WS_targets_relative;
+				}
+				else
+				{
+					mrpt::math::TPoint2D trg;
+					in >> trg;
+					WS_targets_relative.push_back(trg);
+				}
+			}
 			else
 			{
 				mrpt::poses::CPoint2D pos;
 				in >> pos;
-				WS_target_relative = mrpt::math::TPoint2D(pos);
+				WS_targets_relative.push_back(mrpt::math::TPoint2D(pos));
 			}
 
 			if (version >= 16) {
@@ -474,7 +497,8 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 			else {
 				navDynState = CParameterizedTrajectoryGenerator::TNavDynamicState();
 				navDynState.curVelLocal = cur_vel_local;
-				navDynState.relTarget = WS_target_relative;
+				if (!WS_targets_relative.empty()) 
+					navDynState.relTarget = WS_targets_relative[0];
 			}
 
 

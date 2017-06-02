@@ -35,8 +35,8 @@ namespace mrpt
 
 			struct NAV_IMPEXP TResultInfo
 			{
-				/** For each candidate (vector indices), the numerical evaluation of all scores defined in TParamsBase::formula_score. 
-				  * A value of 0 means unsuitable candidate. */
+				/** For each candidate (vector indices), the numerical evaluation of all scores defined in TParamsBase::formula_score.
+				  * A value of 0 in all scores, or an empty map, means unsuitable candidate. */
 				std::vector<std::map<std::string, double> > score_values;
 
 				std::vector<double>      final_evaluation;  //!< The final evaluation score for each candidate
