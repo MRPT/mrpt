@@ -49,6 +49,7 @@ class BASE_IMPEXP FrameTransformerInterface
 {
 public:
 	typedef typename SE_traits<DIM>::pose_t pose_t;  //!< This will be mapped to CPose2D (DIM=2) or CPose3D (DIM=3)
+	typedef typename SE_traits<DIM>::lightweight_pose_t lightweight_pose_t;  //!< This will be mapped to mrpt::math::TPose2D (DIM=2) or mrpt::math::TPose3D (DIM=3)
 
 	FrameTransformerInterface();
 	virtual ~FrameTransformerInterface();
@@ -68,10 +69,28 @@ public:
 	virtual FrameLookUpStatus lookupTransform(
 		const std::string & target_frame,
 		const std::string & source_frame,
-		pose_t & child_wrt_parent,
+		lightweight_pose_t & child_wrt_parent,
 		const mrpt::system::TTimeStamp query_time = INVALID_TIMESTAMP,
 		const double timeout_secs = .0   //!< Timeout
 	) = 0;
+
+	/** \overload */
+	FrameLookUpStatus lookupTransform(
+		const std::string & target_frame,
+		const std::string & source_frame,
+		pose_t & child_wrt_parent,
+		const mrpt::system::TTimeStamp query_time = INVALID_TIMESTAMP,
+		const double timeout_secs = .0   //!< Timeout
+	)
+	{
+		lightweight_pose_t p;
+		FrameLookUpStatus ret = lookupTransform(target_frame, source_frame,p, query_time, timeout_secs);
+		child_wrt_parent = pose_t(p);
+		return ret;
+	}
+	
+
+	
 
 }; // End of class def.
 
@@ -92,7 +111,7 @@ public:
 	// See base docs
 	virtual void sendTransform(const std::string & parent_frame,const std::string & child_frame,const typename base_t::pose_t & child_wrt_parent, const mrpt::system::TTimeStamp & timestamp = mrpt::system::now() )  MRPT_OVERRIDE;
 	// See base docs
-	virtual FrameLookUpStatus lookupTransform(const std::string & target_frame, const std::string & source_frame, typename base_t::pose_t & child_wrt_parent, const mrpt::system::TTimeStamp query_time = INVALID_TIMESTAMP, const double timeout_secs = .0) MRPT_OVERRIDE;
+	virtual FrameLookUpStatus lookupTransform(const std::string & target_frame, const std::string & source_frame, typename base_t::lightweight_pose_t & child_wrt_parent, const mrpt::system::TTimeStamp query_time = INVALID_TIMESTAMP, const double timeout_secs = .0) MRPT_OVERRIDE;
 
 protected:
 	//double m_max_extrapolation_time;  //!< for extrapolation in the past or in the future [s]

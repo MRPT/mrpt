@@ -394,11 +394,21 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		}
 
 
-		if (m_navigationParams->target.target_frame_id!=m_curPoseVel.pose_frame_id)
+		for (auto &t : targets)
 		{
-			MRPT_TODO("Support submapping navigation");
-			// m_frame_tf->lookupTransform(...);
-			THROW_EXCEPTION_FMT("Different frame_id's are not supported yet!: target_frame_id=`%s` != pose_frame_id=`%s`", m_navigationParams->target.target_frame_id.c_str(), m_curPoseVel.pose_frame_id.c_str());
+			if ( t.target_frame_id != m_curPoseVel.pose_frame_id)
+			{
+				if (m_frame_tf == nullptr) {
+					THROW_EXCEPTION_FMT("Different frame_id's but no frame_tf object attached!: target_frame_id=`%s` != pose_frame_id=`%s`", t.target_frame_id.c_str(), m_curPoseVel.pose_frame_id.c_str());
+				}
+				mrpt::math::TPose2D robot_frame2map_frame;
+				m_frame_tf->lookupTransform(t.target_frame_id, m_curPoseVel.pose_frame_id, robot_frame2map_frame);
+
+				MRPT_LOG_DEBUG_FMT("frame_tf: target_frame_id=`%s` as seen from pose_frame_id=`%s` = %s", t.target_frame_id.c_str(), m_curPoseVel.pose_frame_id.c_str(), robot_frame2map_frame.asString().c_str());
+
+				t.target_coords = robot_frame2map_frame + t.target_coords;
+				t.target_frame_id = m_curPoseVel.pose_frame_id; // Now the coordinates are in the same frame than robot pose
+			}
 		}
 
 		std::vector<TPose2D> relTargets;
