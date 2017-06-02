@@ -406,7 +406,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		std::transform(
 			targets.begin(), targets.end(), // in
 			std::back_inserter(relTargets), // out
-			[curPoseExtrapol](auto &it) { return it->target_coords - curPoseExtrapol; }
+			[curPoseExtrapol](auto &e) { return e.target_coords - curPoseExtrapol; }
 		);
 		ASSERT_EQUAL_(relTargets.size(),targets.size());
 
@@ -543,7 +543,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				std::transform(
 					targets.begin(), targets.end(), // in
 					std::back_inserter(relTargets_NOPs), // out
-					[robot_pose_at_send_cmd](auto &it) { return it->target_coords - robot_pose_at_send_cmd; }
+					[robot_pose_at_send_cmd](auto &e) { return e.target_coords - robot_pose_at_send_cmd; }
 				);
 				ASSERT_EQUAL_(relTargets_NOPs.size(), targets.size());
 
@@ -844,11 +844,30 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 
 	const double   ref_dist = cm.PTG->getRefDistance();
 
-	
 	// Replaced by: TP_Targets[i].*
 	//const double   target_dir    = (TP_Target.x!=0 || TP_Target.y!=0) ? atan2( TP_Target.y, TP_Target.x) : 0.0;
 	//const int      target_k = static_cast<int>( cm.PTG->alpha2index( target_dir ) );
 	//const double   target_d_norm   = TP_Target.norm();
+
+	// We need to evaluate the movement wrt to ONE target of the possibly many input ones.
+	// Policy: use the target whose TP-Space direction is closer to this candidate direction:
+	size_t selected_trg_idx = 0;
+	{
+		double best_trg_angdist = std::numeric_limits<double>::max();
+		for (size_t i = 0; i < TP_Targets.size(); i++)
+		{
+			const double angdist = std::abs(mrpt::math::angDistance(TP_Targets[i].target_alpha, cm.direction));
+			if (angdist < best_trg_angdist) {
+				best_trg_angdist = angdist;
+				selected_trg_idx = i;
+			}
+		}
+	}
+	ASSERT_(selected_trg_idx<WS_Targets.size());
+	const auto WS_Target = WS_Targets[selected_trg_idx];
+	const auto TP_Target = TP_Targets[selected_trg_idx];
+
+	const double target_d_norm = TP_Target.target_dist;
 
 	// Picked movement direction:
 	const int      move_k   = static_cast<int>( cm.PTG->alpha2index( cm.direction ) );
@@ -883,8 +902,8 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 	// Start storing params in the candidate move structure: 
 	cm.props["ptg_idx"] = ptg_idx4weights;
 	cm.props["ref_dist"] = ref_dist;
-	cm.props["target_dir"] = target_dir;
-	cm.props["target_k"] = target_k;
+	cm.props["target_dir"] = TP_Target.target_alpha;
+	cm.props["target_k"] = TP_Target.target_k;
 	cm.props["target_d_norm"] = target_d_norm;
 	cm.props["move_k"] = move_k;
 	double & move_cur_d = cm.props["move_cur_d"] = 0;  // current robot path normalized distance over path (0 unless in a NOP cmd)
@@ -895,12 +914,12 @@ void CAbstractPTGBasedReactive::calc_move_candidate_scores(
 	cm.props["robpose_x"] = pose.x;
 	cm.props["robpose_y"] = pose.y;
 	cm.props["robpose_phi"] = pose.phi;
-	cm.props["ptg_priority"] = cm.PTG->getScorePriority() *  cm.PTG->evalPathRelativePriority(target_k, target_d_norm);
+	cm.props["ptg_priority"] = cm.PTG->getScorePriority() *  cm.PTG->evalPathRelativePriority(TP_Target.target_k, target_d_norm);
 	const bool is_slowdown =
 		this_is_PTG_continuation ?
 		m_lastSentVelCmd.was_slowdown
 		:
-		(cm.PTG->supportSpeedAtTarget() && target_k == move_k);
+		(cm.PTG->supportSpeedAtTarget() && TP_Target.target_k == move_k);
 	cm.props["is_slowdown"] = is_slowdown ? 1:0;
 
 	// Factor 1: Free distance for the chosen PTG and "alpha" in the TP-Space:
@@ -1261,6 +1280,7 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
 	double timeForTPObsTransformation = .0, timeForHolonomicMethod = .0;
 
 	// Normal PTG validity filter: check if target falls into the PTG domain:
+	bool any_TPTarget_is_valid = false;
 	if (use_this_ptg)
 	{
 		for (size_t i=0;i<relTargets.size();i++)
@@ -1270,17 +1290,17 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
 
 			ptg_target.valid_TP = ptg->inverseMap_WS2TP(trg.x, trg.y, ptg_target.target_k, ptg_target.target_dist);
 			if (!ptg_target.valid_TP) continue;
-			
+
+			any_TPTarget_is_valid = true;
 			ptg_target.target_alpha = ptg->index2alpha(ptg_target.target_k);
 			ptg_target.TP_Target.x = cos(ptg_target.target_alpha) * ptg_target.target_dist;
 			ptg_target.TP_Target.y = sin(ptg_target.target_alpha) * ptg_target.target_dist;
 		}
 	}
 
-	MRPT_TODO("cont");
-	if (!ipf.valid_TP)
+	if (!any_TPTarget_is_valid)
 	{
-		newLogRec.additional_debug_msgs[mrpt::format("mov_candidate_%u", static_cast<unsigned int>(indexPTG))] = "PTG discarded since target is out of domain.";
+		newLogRec.additional_debug_msgs[mrpt::format("mov_candidate_%u", static_cast<unsigned int>(indexPTG))] = "PTG discarded since target(s) is(are) out of domain.";
 
 		{   // Invalid PTG (target out of reachable space):
 			// - holonomicMovement= Leave default values
@@ -1333,7 +1353,11 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
 			ni.maxObstacleDist = 1.0;
 			ni.maxRobotSpeed = 1.0; // So, we use a normalized max speed here.
 			ni.obstacles = ipf.TP_Obstacles;  // Normalized [0,1]
-			ni.target = ipf.TP_Target; // Normalized [0,1]
+			
+			ni.targets.clear(); // Normalized [0,1]
+			for (const auto &t : ipf.targets) {
+				ni.targets.push_back( t.TP_Target );
+			}
 
 			CAbstractHolonomicReactiveMethod::NavOutput no;
 
@@ -1419,7 +1443,10 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
 
 		metaprogramming::copy_container_typecasting(ipf.TP_Obstacles, ipp.TP_Obstacles);
 		ipp.clearance = ipf.clearance;
-		ipp.TP_Target = ipf.TP_Target;
+		ipp.TP_Targets.clear();
+		for (const auto &t : ipf.targets) {
+			ipp.TP_Targets.push_back(t.TP_Target);
+		}
 		ipp.HLFR = HLFR;
 		ipp.desiredDirection = cm.direction;
 		ipp.desiredSpeed = cm.speed;
