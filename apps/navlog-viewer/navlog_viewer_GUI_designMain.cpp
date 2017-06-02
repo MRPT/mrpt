@@ -508,7 +508,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 	WX_START_TRY
 
 	const int i = this->slidLog->GetValue();
-	if (i >= m_logdata.size()) return;
+	if (i >= int(m_logdata.size())) return;
 
 	// In the future, we could handle more log classes. For now, only "CLogFileRecordPtr":
 	CLogFileRecordPtr logptr = CLogFileRecordPtr(m_logdata[i]);

@@ -337,7 +337,7 @@ bool CReactiveNavigationSystem3D::checkCollisionWithLatestObstacles() const
 			const double R = ptg->getMaxRobotRadius();
 			for (size_t obs = 0; obs < nObs; obs++)
 			{
-				const double ox = xs[obs], oy = ys[obs], oz = zs[obs];
+				const double ox = xs[obs], oy = ys[obs];
 				if (ox >= -R && ox <= R &&
 					oy >= -R && oy <= R &&
 					ptg->isPointInsideRobotShape(ox, oy)

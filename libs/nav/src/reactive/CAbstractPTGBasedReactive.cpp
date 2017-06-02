@@ -406,7 +406,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		std::transform(
 			targets.begin(), targets.end(), // in
 			std::back_inserter(relTargets), // out
-			[curPoseExtrapol](auto &e) { return e.target_coords - curPoseExtrapol; }
+			[curPoseExtrapol](const CAbstractNavigator::TargetInfo &e) { return e.target_coords - curPoseExtrapol; }
 		);
 		ASSERT_EQUAL_(relTargets.size(),targets.size());
 
@@ -543,7 +543,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				std::transform(
 					targets.begin(), targets.end(), // in
 					std::back_inserter(relTargets_NOPs), // out
-					[robot_pose_at_send_cmd](auto &e) { return e.target_coords - robot_pose_at_send_cmd; }
+					[robot_pose_at_send_cmd](const CAbstractNavigator::TargetInfo &e) { return e.target_coords - robot_pose_at_send_cmd; }
 				);
 				ASSERT_EQUAL_(relTargets_NOPs.size(), targets.size());
 
