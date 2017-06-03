@@ -107,15 +107,6 @@ namespace mrpt
 			MRPT_END
 		}
 
-
-		/** The complementary error function of a Normal distribution
-		  */
-		double BASE_IMPEXP  erfc(const double x);
-
-		/** The error function of a Normal distribution
-		  */
-		double BASE_IMPEXP   erf(const double x);
-
 		/** Evaluates the Gaussian distribution quantile for the probability value p=[0,1].
 		  *  The employed approximation is that from Peter J. Acklam (pjacklam@online.no),
 		  *  freely available in http://home.online.no/~pjacklam.

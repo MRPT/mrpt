@@ -11,3 +11,4 @@ SOURCE_DATE_EPOCH
 *.DS_Store
 .Spotlight-V100
 Session.vim
+otherlibs/eigen3

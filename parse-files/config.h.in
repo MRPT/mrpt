@@ -288,10 +288,6 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 #cmakedefine HAVE_OPENTHREAD
 #endif
 
-#ifndef HAVE_ERF
-#cmakedefine HAVE_ERF
-#endif
-
 #ifndef HAVE_POSIX_MEMALIGN
 #cmakedefine HAVE_POSIX_MEMALIGN
 #endif

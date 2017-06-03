@@ -21,6 +21,7 @@
 #include <mrpt/math/CMatrixD.h>
 #include <mrpt/utils/types_math.h>
 #include <mrpt/math/ops_matrices.h>
+#include <cmath> // erf(), ...
 
 #include <algorithm>
 
@@ -908,57 +909,6 @@ namespace mrpt
 double  math::normalPDF(double x, double mu, double std)
 {
 	return  ::exp( -0.5 * square((x-mu)/std) ) / (std*2.506628274631000502415765284811) ;
-}
-
-
-/*---------------------------------------------------------------
-						erfc
- ---------------------------------------------------------------*/
-double  math::erfc(const double x)
-{
-#if defined(HAVE_ERF)
-	return ::erfc(x);
-#else
-// copied from TMath for those platforms which do not have a
-// C99 compliant compiler
-
-// Compute the complementary error function erfc(x).
-// Erfc(x) = (2/sqrt(pi)) Integral(exp(-t^2))dt between x and infinity
-//
-//--- Nve 14-nov-1998 UU-SAP Utrecht
-
-// The parameters of the Chebyshev fit
-const double a1 = -1.26551223,   a2 = 1.00002368,
-a3 =  0.37409196,   a4 = 0.09678418,
-a5 = -0.18628806,   a6 = 0.27886807,
-a7 = -1.13520398,   a8 = 1.48851587,
-a9 = -0.82215223,  a10 = 0.17087277;
-
-double v = 1.0; // The return value
-double z = ::fabs(x);
-
-if (z <= 0) return v; // erfc(0)=1
-
-double t = 1.0/(1.0+0.5*z);
-
-v = t* ::exp((-z*z) +a1+t*(a2+t*(a3+t*(a4+t*(a5+t*(a6+t*(a7+t*(a8+t*(a9+t*a10)))))))));
-
-if (x < 0) v = 2.0-v; // erfc(-x)=2-erfc(x)
-
-return v;
-#endif
-}
-
-/*---------------------------------------------------------------
-						erf
- ---------------------------------------------------------------*/
-double  math::erf(double x)
-{
-#if defined(HAVE_ERF)
-	return ::erf(x);
-#else
-	return (1.0 - math::erfc(x));
-#endif
 }
 
 /*---------------------------------------------------------------
@@ -2137,7 +2087,7 @@ std::pair<double, double> mrpt::math::noncentralChi2PDF_CDF(unsigned int degrees
 		i = 1;
 		lans = -0.5 * (arg + std::log(arg)) - lnrtpi2;
 		dans = std::exp(lans);
-		pans = mrpt::math::erf(std::sqrt(arg/2.0));
+		pans = std::erf(std::sqrt(arg/2.0));
 	}
 	else
 	{
@@ -2196,5 +2146,5 @@ double mrpt::math::noncentralChi2CDF(unsigned int degreesOfFreedom, double nonce
 	const double a = degreesOfFreedom + noncentrality;
 	const double b = (a + noncentrality) / square(a);
 	const double t = (std::pow((double)arg / a, 1.0/3.0) - (1.0 - 2.0 / 9.0 * b)) / std::sqrt(2.0 / 9.0 * b);
-	return 0.5*(1.0 + mrpt::math::erf(t/std::sqrt(2.0)));
+	return 0.5*(1.0 + std::erf(t/std::sqrt(2.0)));
 }
