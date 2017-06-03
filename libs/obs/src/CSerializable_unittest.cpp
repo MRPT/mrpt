@@ -12,12 +12,18 @@
 
 #include <mrpt/utils/CMemoryStream.h>
 #include <gtest/gtest.h>
+#include <mrpt/utils/CTraitsTest.h>
 
 using namespace mrpt;
 using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;
+
+MRPT_TODO("Make this and lstClasses[] with one single macro?");
+template class mrpt::utils::CTraitsTest<CObservation2DRangeScan>;
+template class mrpt::utils::CTraitsTest<CObservation3DRangeScan>;
+// ...
 
 // Defined in tests/test_main.cpp
 namespace mrpt { namespace utils {

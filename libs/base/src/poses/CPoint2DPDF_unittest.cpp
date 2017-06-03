@@ -8,12 +8,11 @@
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/poses/CPoint2DPDF.h>
-#include <mrpt/utils/CTraitsTest.h>
+//#include <mrpt/utils/CTraitsTest.h>  // can't run this on a virtual class
 
 using namespace mrpt;
 using namespace mrpt::poses;
 using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;
-
 
