@@ -8,7 +8,10 @@
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/math/CRuntimeCompiledExpression.h>
+#include <mrpt/utils/CTraitsTest.h>
 #include <gtest/gtest.h>
+
+template class mrpt::utils::CTraitsTest<mrpt::math::CRuntimeCompiledExpression>;
 
 using namespace mrpt;
 using namespace mrpt::utils;
