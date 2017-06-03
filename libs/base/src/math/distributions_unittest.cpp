@@ -57,18 +57,18 @@ TEST(distributions,erfc)
 {
 	const double eps2 = 1e-7;
 
-	EXPECT_NEAR( mrpt::math::erfc(0), 1, eps );
-	EXPECT_NEAR( mrpt::math::erfc(1), 0.157299207050285, eps2 );
-	EXPECT_NEAR( mrpt::math::erfc(2), 0.004677734981047, eps2 );
+	EXPECT_NEAR(std::erfc(0), 1, eps );
+	EXPECT_NEAR(std::erfc(1), 0.157299207050285, eps2 );
+	EXPECT_NEAR(std::erfc(2), 0.004677734981047, eps2 );
 }
 
 TEST(distributions,erf)
 {
 	const double eps2 = 1e-7;
 
-	EXPECT_NEAR( mrpt::math::erf(0), 0, eps );
-	EXPECT_NEAR( mrpt::math::erf(1), 0.842700792949715, eps2 );
-	EXPECT_NEAR( mrpt::math::erf(2), 0.995322265018953, eps2 );
+	EXPECT_NEAR(std::erf(0), 0, eps );
+	EXPECT_NEAR(std::erf(1), 0.842700792949715, eps2 );
+	EXPECT_NEAR(std::erf(2), 0.995322265018953, eps2 );
 }
 
 TEST(distributions,normalCDF)

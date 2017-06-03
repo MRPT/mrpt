@@ -23,8 +23,10 @@
 	- All pointer typedefs are now in their respective classes.
 	- Using a variant type from the mapbox variant library, and added serialization with variants(To be replaced by std::variant eventually).
 - <b>Detailed list of changes:</b>
-	- ()...)
-
+	- Changes in libraries:
+		- \ref mrpt_base_grp
+			- Removed functions (replaced by C++11/14 standard library):
+				- mrpt::math::erf, mrpt::math::erfc
 
 <hr>
 <a name="1.5.0">
