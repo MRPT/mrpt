@@ -10,19 +10,19 @@
 #define  CTraitsTest_H
 
 #include <type_traits>
-/*---------------------------------------------------------------
-        Class
-  ---------------------------------------------------------------*/
+
 namespace mrpt
 {
-        namespace utils
-        {
+		namespace utils
+		{
 		template<typename T>
 		class CTraitsTest{
-			static_assert(std::is_move_constructible<T>(), "Can't move");
-			static_assert(std::is_copy_constructible<T>(), "Can't copy");
-			static_assert(std::is_move_assignable<T>(), "Can't move assign");
-			static_assert(std::is_copy_assignable<T>(), "Can't copy assign");
+			CTraitsTest() {
+				static_assert(std::is_move_constructible<T>(), "Can't move");
+				static_assert(std::is_copy_constructible<T>(), "Can't copy");
+				static_assert(std::is_move_assignable<T>(), "Can't move assign");
+				static_assert(std::is_copy_assignable<T>(), "Can't copy assign");
+			}
 		};
 	}
 }
