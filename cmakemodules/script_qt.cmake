@@ -14,7 +14,7 @@ if (USE_QT)
 		list(APPEND Qt5_COMPONENTS_LIBS "")
 
 		set(location_type LOCATION_RELEASE)
-		if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+		if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
 			set(location_type LOCATION_DEBUG)
 		endif()
 		
