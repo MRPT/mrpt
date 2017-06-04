@@ -100,6 +100,7 @@
 		- \ref mrpt_opengl_grp
 			- [ABI change] mrpt::opengl::CAxis now has many new options exposed to configure its look.
 			- mrpt::opengl::CSetOfLines can now optionally show vertices as dots.
+			- lib3DS is no longer shipped as an embedded version. A system library in Linux is required to use mrpt::opengl::C3DSScene. Use mrpt::opengl::CAssimpModel as a more powerful alternative.
 		- \ref mrpt_slam_grp
 			- [API change] mrpt::slam::CMetricMapBuilder::TOptions does not have a `verbose` field anymore. It's supersedded now by the verbosity level of the CMetricMapBuilder class itself.
 			- [API change] getCurrentMetricMapEstimation() renamed mrpt::slam::CMultiMetricMapPDF::getAveragedMetricMapEstimation() to avoid confusions.
