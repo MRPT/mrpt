@@ -2,15 +2,27 @@
 #define DIALOGDETECTOR_H
 
 #include <QDialog>
+#include <string>
+#include <QString>
 
-class DialogDetector : public QDialog
+
+using namespace std;
+class DetectorDialog : public QDialog
 {
     Q_OBJECT
 public:
-    DialogDetector();
-    explicit MyDialog(QWidget *parent = 0);
-    ~MyDialog();
-    
+
+    explicit DetectorDialog(QWidget *parent = 0, QString  str="/home", int detector=0);
+    void computeDetector(int detector_id);
+
+public:
+    QWidget *detector_gui;
+    string file_path;
+
+public slots:
+    void onshow_results_clicked();
+    void oncloseDialog_clicked();
+
 };
 
 #endif // DIALOGDETECTOR_H
