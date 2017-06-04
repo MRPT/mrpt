@@ -19,7 +19,7 @@
 #include <mrpt/utils/CStream.h>
 
 /* STD */
-#include <stdint.h>
+#include <cstdint>
 
 using namespace boost::python;
 

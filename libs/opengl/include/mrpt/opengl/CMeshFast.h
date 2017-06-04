@@ -150,10 +150,10 @@ namespace mrpt
 
 			/** Render
 			  */
-			void  render_dl() const MRPT_OVERRIDE;
+			void  render_dl() const override;
 
 			/** Evaluates the bounding box of this object (including possible children) in the coordinate frame of the object parent. */
-			void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const MRPT_OVERRIDE;
+			void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const override;
 
 			/** Assigns a texture image, and disable transparency.
 			  */

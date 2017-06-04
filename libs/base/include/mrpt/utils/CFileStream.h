@@ -38,8 +38,8 @@ namespace mrpt
 		class BASE_IMPEXP  CFileStream : public CStream
 		{
 		protected:
-			size_t  Read(void *Buffer, size_t Count) MRPT_OVERRIDE;
-			size_t  Write(const void *Buffer, size_t Count) MRPT_OVERRIDE;
+			size_t  Read(void *Buffer, size_t Count) override;
+			size_t  Write(const void *Buffer, size_t Count) override;
 		private:
 			std::fstream 	m_f;		//!< The actual input file stream.
 		public:
@@ -72,10 +72,10 @@ namespace mrpt
 			/** Method for moving to a specified position in the streamed resource.
 			 *   See documentation of CStream::Seek
 			 */
-			uint64_t Seek(uint64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning) MRPT_OVERRIDE;
+			uint64_t Seek(uint64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning) override;
 
-			uint64_t getTotalBytesCount() MRPT_OVERRIDE; //!< Method for getting the total number of bytes writen to buffer.
-			uint64_t getPosition() MRPT_OVERRIDE; //!< Method for getting the current cursor position, where 0 is the first byte and TotalBytesCount-1 the last one
+			uint64_t getTotalBytesCount() override; //!< Method for getting the total number of bytes writen to buffer.
+			uint64_t getPosition() override; //!< Method for getting the current cursor position, where 0 is the first byte and TotalBytesCount-1 the last one
 			uint64_t getPositionI(); //!< The current Input cursor position, where 0 is the first byte
 			uint64_t getPositionO(); //!< The current Input cursor position, where 0 is the first byte
 

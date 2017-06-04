@@ -91,7 +91,7 @@ namespace poses
 		static inline void resize(const size_t n) { if (n!=static_size) throw std::logic_error(format("Try to change the size of CPoint3D to %u.",static_cast<unsigned>(n))); }
 		/** @} */
 
-		void setToNaN() MRPT_OVERRIDE;
+		void setToNaN() override;
 
 	}; // End of class def.
 	DEFINE_SERIALIZABLE_POST( CPoint3D )

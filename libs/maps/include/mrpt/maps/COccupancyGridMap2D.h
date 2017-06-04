@@ -111,7 +111,7 @@ namespace maps
 
 		bool m_is_empty; //!< True upon construction; used by isEmpty()
 
-		virtual void OnPostSuccesfulInsertObs(const mrpt::obs::CObservation *) MRPT_OVERRIDE; //!< See base class
+		virtual void OnPostSuccesfulInsertObs(const mrpt::obs::CObservation *) override; //!< See base class
 
 		float voroni_free_threshold; //!< The free-cells threshold used to compute the Voronoi diagram.
 
@@ -148,7 +148,7 @@ namespace maps
 		/** One of the methods that can be selected for implementing "computeObservationLikelihood". */
 		double	 computeObservationLikelihood_likelihoodField_II(const mrpt::obs::CObservation *obs,const mrpt::poses::CPose2D &takenFrom );
 
-		virtual void  internal_clear( ) MRPT_OVERRIDE; //!< Clear the map: It set all cells to their default occupancy value (0.5), without changing the resolution (the grid extension is reset to the default values).
+		virtual void  internal_clear( ) override; //!< Clear the map: It set all cells to their default occupancy value (0.5), without changing the resolution (the grid extension is reset to the default values).
 
 		 /** Insert the observation information into this map.
 		  *
@@ -159,7 +159,7 @@ namespace maps
 		  *
 		  * \sa insertionOptions, CObservation::insertObservationInto
 		  */
-		 virtual bool  internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = nullptr ) MRPT_OVERRIDE;
+		 virtual bool  internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = nullptr ) override;
 
 	public:
 		/** Read-only access to the raw cell contents (cells are in log-odd units) */
@@ -206,7 +206,7 @@ namespace maps
 		 * \param additionalMargin If set to true (default), an additional margin of a few meters will be added to the grid, ONLY if the new coordinates are larger than current ones.
 		 * \sa setSize
 		 */
-		void  resizeGrid(float new_x_min,float new_x_max,float new_y_min,float new_y_max,float new_cells_default_value = 0.5f, bool additionalMargin = true) MRPT_NO_THROWS;
+		void  resizeGrid(float new_x_min,float new_x_max,float new_y_min,float new_y_max,float new_cells_default_value = 0.5f, bool additionalMargin = true) noexcept;
 
 		/** Returns the area of the gridmap, in square meters */
 		inline double getArea() const { return size_x*size_y*mrpt::math::square(resolution); }
@@ -356,8 +356,8 @@ namespace maps
 			 *	modeSelection=1		; 0=blah, 1=blah,...
 			 *  \endcode
 			 */
-			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
-			void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
+			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) override; // See base docs
+			void dumpToTextStream(mrpt::utils::CStream &out) const override; // See base docs
 
 			float    mapAltitude; //!< The altitude (z-axis) of 2D scans (within a 0.01m tolerance) for they to be inserted in this map!
 			bool     useMapAltitude; //!< The parameter "mapAltitude" has effect while inserting observations in the grid only if this is true.
@@ -402,8 +402,8 @@ namespace maps
 			 *	modeSelection=1		; 0=blah, 1=blah,...
 			 *  \endcode
 			 */
-			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
-			void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
+			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) override; // See base docs
+			void dumpToTextStream(mrpt::utils::CStream &out) const override; // See base docs
 
 			TLikelihoodMethod	likelihoodMethod;  //!< The selected method to compute an observation likelihood
 			float    LF_stdHit; //!< [LikelihoodField] The laser range "sigma" used in computations; Default value = 0.35
@@ -722,7 +722,7 @@ namespace maps
 
 		/** Returns a 3D plane with its texture being the occupancy grid and transparency proportional to "uncertainty" (i.e. a value of 0.5 is fully transparent)
 		  */
-		void getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr &outObj) const MRPT_OVERRIDE;
+		void getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr &outObj) const override;
 
 		/** Get a point cloud with all (border) occupied cells as points */
 		void getAsPointCloud( mrpt::maps::CSimplePointsMap &pm, const float occup_threshold = 0.5f ) const;
@@ -730,7 +730,7 @@ namespace maps
 		/** Returns true upon map construction or after calling clear(), the return
 		  *  changes to false upon successful insertObservation() or any other method to load data in the map.
 		  */
-		bool isEmpty() const MRPT_OVERRIDE;
+		bool isEmpty() const override;
 
 		/** Load the gridmap from a image in a file (the format can be any supported by CImage::loadFromFile).
 		 * \param file The file to be loaded.
@@ -756,14 +756,14 @@ namespace maps
 			const mrpt::poses::CPose2D         & otherMapPose,
 			mrpt::utils::TMatchingPairList     & correspondences,
 			const TMatchingParams & params,
-			TMatchingExtraResults & extraResults ) const MRPT_OVERRIDE;
+			TMatchingExtraResults & extraResults ) const override;
 
 
 		/** See docs in base class: in this class this always returns 0 */
-		float compute3DMatchingRatio(const mrpt::maps::CMetricMap *otherMap, const mrpt::poses::CPose3D &otherMapPose, const TMatchingRatioParams &params) const MRPT_OVERRIDE;
+		float compute3DMatchingRatio(const mrpt::maps::CMetricMap *otherMap, const mrpt::poses::CPose3D &otherMapPose, const TMatchingRatioParams &params) const override;
 
 		/** This virtual method saves the map to a file "filNamePrefix"+< some_file_extension >, as an image or in any other applicable way (Notice that other methods to save the map may be implemented in classes implementing this virtual interface).  */
-		void  saveMetricMapRepresentationToFile(const std::string	&filNamePrefix) const MRPT_OVERRIDE;
+		void  saveMetricMapRepresentationToFile(const std::string	&filNamePrefix) const override;
 
 		/** The structure used to store the set of Voronoi diagram
 		 *    critical points.
@@ -782,9 +782,9 @@ namespace maps
 
 	private:
 		// See docs in base class
-		double internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom ) MRPT_OVERRIDE;
+		double internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom ) override;
 		// See docs in base class
-		bool internal_canComputeObservationLikelihood( const mrpt::obs::CObservation *obs ) const MRPT_OVERRIDE;
+		bool internal_canComputeObservationLikelihood( const mrpt::obs::CObservation *obs ) const override;
 
 		/** Returns a byte with the occupancy of the 8 sorrounding cells.
 		 * \param cx The cell index

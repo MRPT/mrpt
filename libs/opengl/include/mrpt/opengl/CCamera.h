@@ -87,10 +87,10 @@ namespace mrpt
 
 
 			/** Render does nothing here. */
-			void  render()  const MRPT_OVERRIDE {  }
+			void  render()  const override {  }
 
 			/** In this class, returns a fixed box (max,max,max), (-max,-max,-max). */
-			virtual void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const MRPT_OVERRIDE;
+			virtual void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const override;
 
 			/** Constructor
 			  */

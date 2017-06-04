@@ -72,9 +72,9 @@ namespace obs
 		const_iterator end() const { return sensedData.end(); }
 
 		// See base class docs
-		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const MRPT_OVERRIDE;
-		void setSensorPose( const mrpt::poses::CPose3D &newSensorPose ) MRPT_OVERRIDE;
-		void getDescriptionAsText(std::ostream &o) const MRPT_OVERRIDE;
+		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const override;
+		void setSensorPose( const mrpt::poses::CPose3D &newSensorPose ) override;
+		void getDescriptionAsText(std::ostream &o) const override;
 
 	}; // End of class def.
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CObservationRange , CObservation,OBS_IMPEXP )

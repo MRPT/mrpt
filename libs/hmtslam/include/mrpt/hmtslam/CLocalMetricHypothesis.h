@@ -199,13 +199,13 @@ namespace mrpt
 			void  prediction_and_update_pfAuxiliaryPFOptimal(
 				const mrpt::obs::CActionCollection	* action,
 				const mrpt::obs::CSensoryFrame		* observation,
-				const bayes::CParticleFilter::TParticleFilterOptions &PF_options ) MRPT_OVERRIDE;
+				const bayes::CParticleFilter::TParticleFilterOptions &PF_options ) override;
 
 			/** The PF algorithm implementation.  */
 			void  prediction_and_update_pfOptimalProposal(
 				const mrpt::obs::CActionCollection	* action,
 				const mrpt::obs::CSensoryFrame		* observation,
-				const bayes::CParticleFilter::TParticleFilterOptions &PF_options ) MRPT_OVERRIDE;
+				const bayes::CParticleFilter::TParticleFilterOptions &PF_options ) override;
 			/** @}
 			 */
 

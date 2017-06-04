@@ -9,7 +9,11 @@
 
 #include <mrpt/utils/circular_buffer.h>
 #include <mrpt/random.h>
+#include <mrpt/utils/CTraitsTest.h>
+
 #include <gtest/gtest.h>
+
+template class mrpt::utils::CTraitsTest<mrpt::utils::circular_buffer<char> >;
 
 typedef int cb_t;
 

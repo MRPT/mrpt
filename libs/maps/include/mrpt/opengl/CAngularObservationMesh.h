@@ -196,7 +196,7 @@ namespace opengl	{
 			}
 		};
 
-		void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const MRPT_OVERRIDE;
+		void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const override;
 
 	protected:
 		void updateMesh() const; //!< Updates the mesh, if needed. It's a const method, but modifies mutable content.
@@ -245,12 +245,12 @@ namespace opengl	{
 		  * Renderizes the object.
 		  * \sa mrpt::opengl::CRenderizable
 		  */
-		virtual void render_dl() const MRPT_OVERRIDE;
+		virtual void render_dl() const override;
 		/**
 		  * Traces a ray to the object, returning the distance to a given pose through its X axis.
 		  * \sa mrpt::opengl::CRenderizable,trace2DSetOfRays,trace1DSetOfRays
 		  */
-		bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const MRPT_OVERRIDE;
+		bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const override;
 		/**
 		  * Sets the pitch bounds for this range.
 		  */

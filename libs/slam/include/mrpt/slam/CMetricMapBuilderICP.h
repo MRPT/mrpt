@@ -44,8 +44,8 @@ namespace slam
 			TConfigParams (mrpt::utils::VerbosityLevel &parent_verbosity_level);
 			TConfigParams &operator=(const TConfigParams &other);  //Copy assignment
 
-			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
-			void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
+			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) override; // See base docs
+			void dumpToTextStream(mrpt::utils::CStream &out) const override; // See base docs
 			/** (default:false) Match against the occupancy grid or the points map? The former is quicker but less precise. */
 			bool	matchAgainstTheGrid;
 
@@ -74,11 +74,11 @@ namespace slam
 		void  initialize(
 			const mrpt::maps::CSimpleMap &initialMap  = mrpt::maps::CSimpleMap(),
 			mrpt::poses::CPosePDF *x0 = nullptr
-			) MRPT_OVERRIDE;
+			) override;
 
 		/** Returns a copy of the current best pose estimation as a pose PDF.
 		  */
-		mrpt::poses::CPose3DPDF::Ptr  getCurrentPoseEstimation() const MRPT_OVERRIDE;
+		mrpt::poses::CPose3DPDF::Ptr  getCurrentPoseEstimation() const override;
 
 		 /** Sets the "current map file", thus that map will be loaded if it exists or a new one will be created if it does not, and the updated map will be save to that file when destroying the object.
 		   */
@@ -92,7 +92,7 @@ namespace slam
 		 */
 		void  processActionObservation(
 			mrpt::obs::CActionCollection	&action,
-			mrpt::obs::CSensoryFrame		&in_SF ) MRPT_OVERRIDE;
+			mrpt::obs::CSensoryFrame		&in_SF ) override;
 
 		/**  The main method of this class: Process one odometry or sensor observation.
 		    The new entry point of the algorithm (the old one  was processActionObservation, which now is a wrapper to
@@ -102,21 +102,21 @@ namespace slam
 		void  processObservation(const mrpt::obs::CObservation::Ptr &obs);
 
 		/** Fills "out_map" with the set of "poses"-"sensory-frames", thus the so far built map */
-		void  getCurrentlyBuiltMap(mrpt::maps::CSimpleMap &out_map) const MRPT_OVERRIDE;
+		void  getCurrentlyBuiltMap(mrpt::maps::CSimpleMap &out_map) const override;
 
 		/** Returns the 2D points of current local map */
 		void  getCurrentMapPoints( std::vector<float> &x, std::vector<float> &y);
 
-		const mrpt::maps::CMultiMetricMap* getCurrentlyBuiltMetricMap() const MRPT_OVERRIDE;
+		const mrpt::maps::CMultiMetricMap* getCurrentlyBuiltMetricMap() const override;
 
 		/** Returns just how many sensory-frames are stored in the currently build map */
-		unsigned int  getCurrentlyBuiltMapSize() MRPT_OVERRIDE;
+		unsigned int  getCurrentlyBuiltMapSize() override;
 
 		/** A useful method for debugging: the current map (and/or poses) estimation is dumped to an image file.
 		  * \param file The output file name
 		  * \param formatEMF_BMP Output format = true:EMF, false:BMP
 		  */
-		void  saveCurrentEstimationToImage(const std::string &file, bool formatEMF_BMP = true) MRPT_OVERRIDE;
+		void  saveCurrentEstimationToImage(const std::string &file, bool formatEMF_BMP = true) override;
 
 	 private:
 		 /** The set of observations that leads to current map: */

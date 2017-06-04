@@ -1,14 +1,13 @@
 # Check for system lib3ds:
 # ===================================================
-SET(CMAKE_MRPT_HAS_LIB3DS 1)	# Always present: system or built-in
-SET(CMAKE_MRPT_HAS_LIB3DS_SYSTEM 0)
+SET(CMAKE_MRPT_HAS_LIB3DS 0)
 
 IF(UNIX)
 	FIND_FILE(LIB3DS_CONFIG_FILE lib3ds-config)
 	IF(LIB3DS_CONFIG_FILE)
 		MARK_AS_ADVANCED(LIB3DS_CONFIG_FILE)
 
-		SET(CMAKE_MRPT_HAS_LIB3DS_SYSTEM 1)
+		SET(CMAKE_MRPT_HAS_LIB3DS 1)
 
 		# Get the config params:
 		EXECUTE_PROCESS(COMMAND ${LIB3DS_CONFIG_FILE} --libs
@@ -20,7 +19,7 @@ IF(UNIX)
 			MESSAGE("Error invoking lib3ds config file:\n ${LIB3DS_CONFIG_FILE} --libs")
 		ENDIF(${CMAKE_LIB3DS_CONFIG_RES})
 
-		SET(MRPT_3DS_LIBS 3ds) #APPEND_MRPT_LIBS(3ds)
+		SET(MRPT_3DS_LIBS 3ds)
 
 		EXECUTE_PROCESS(COMMAND ${LIB3DS_CONFIG_FILE} --cflags
 			RESULT_VARIABLE CMAKE_LIB3DS_CONFIG_RES
@@ -35,6 +34,6 @@ IF(UNIX)
 
 	ENDIF(LIB3DS_CONFIG_FILE)
 ELSE(UNIX)
-	# In windows we always have the embedded version
+	# In windows we dont have easy access to this library
 ENDIF(UNIX)
 

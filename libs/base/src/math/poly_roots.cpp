@@ -26,7 +26,7 @@ const double eps=1e-14;
 // In case 3 real roots: => x[0], x[1], x[2], return 3
 //         2 real roots: x[0], x[1],          return 2
 //         1 real root : x[0], x[1] +- i*x[2], return 1
-int mrpt::math::solve_poly3(double *x,double a,double b,double c)  MRPT_NO_THROWS {	// solve cubic equation x^3 + a*x^2 + b*x + c
+int mrpt::math::solve_poly3(double *x,double a,double b,double c) noexcept {	// solve cubic equation x^3 + a*x^2 + b*x + c
 	double a2 = a*a;
 	double q  = (a2 - 3*b)/9;
 	double r  = (a*(2*a2-9*b) + 27*c)/54;
@@ -212,7 +212,7 @@ double N4Step(double x, double a,double b,double c,double d)	// one Newton step 
 // return 4: 4 real roots x[0], x[1], x[2], x[3], possible multiple roots
 // return 2: 2 real roots x[0], x[1] and complex x[2]±i*x[3],
 // return 0: two pair of complex roots: x[0]+-i*x[1],  x[2]+-i*x[3],
-int  mrpt::math::solve_poly4(double *x,double a,double b,double c,double d)  MRPT_NO_THROWS {	// solve equation x^4 + a*x^3 + b*x^2 + c*x + d by Dekart-Euler method
+int  mrpt::math::solve_poly4(double *x,double a,double b,double c,double d)  noexcept {	// solve equation x^4 + a*x^3 + b*x^2 + c*x + d by Dekart-Euler method
 	// move to a=0:
 	double d1 = d + 0.25*a*( 0.25*b*a - 3./64*a*a*a - c);
 	double c1 = c + 0.5*a*(0.25*a*a - b);
@@ -290,7 +290,7 @@ static double SolveP5_1(double a,double b,double c,double d,double e)	// return 
 	return x2;
 } // SolveP5_1(double a,double b,double c,double d,double e)	// return real root of x^5 + a*x^4 + b*x^3 + c*x^2 + d*x + e = 0
 //-----------------------------------------------------------------------------
-int  mrpt::math::solve_poly5(double *x,double a,double b,double c,double d,double e)  MRPT_NO_THROWS	// solve equation x^5 + a*x^4 + b*x^3 + c*x^2 + d*x + e = 0
+int  mrpt::math::solve_poly5(double *x,double a,double b,double c,double d,double e)  noexcept	// solve equation x^5 + a*x^4 + b*x^3 + c*x^2 + d*x + e = 0
 {
 	double r = x[0] = SolveP5_1(a,b,c,d,e);
 	double a1 = a+r, b1=b+r*a1, c1=c+r*b1, d1=d+r*c1;
@@ -299,7 +299,7 @@ int  mrpt::math::solve_poly5(double *x,double a,double b,double c,double d,doubl
 //-----------------------------------------------------------------------------
 
 // a*x^2 + b*x + c = 0
-int mrpt::math::solve_poly2(double a, double b, double c, double &r1, double &r2)  MRPT_NO_THROWS
+int mrpt::math::solve_poly2(double a, double b, double c, double &r1, double &r2)  noexcept
 {
 	if (std::abs(a)<eps)
 	{

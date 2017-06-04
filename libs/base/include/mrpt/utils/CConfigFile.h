@@ -36,7 +36,7 @@ namespace utils
 
 	protected:
 		/** A virtual method to write a generic string  */
-		void  writeString(const std::string &section,const std::string &name, const std::string &str) MRPT_OVERRIDE;
+		void  writeString(const std::string &section,const std::string &name, const std::string &str) override;
 
 		/** A virtual method to read a generic string.
 		 * \exception std::exception If the key name is not found and "failIfNotFound" is true. Otherwise the "defaultValue" is returned. */
@@ -44,7 +44,7 @@ namespace utils
 			const std::string &section,
 			const std::string &name,
 			const std::string &defaultStr,
-			bool failIfNotFound = false) const MRPT_OVERRIDE;
+			bool failIfNotFound = false) const override;
 
 	public:
 		/** Constructor that opens a configuration file. */
@@ -70,10 +70,10 @@ namespace utils
 		virtual ~CConfigFile();
 
 		/** Returns a list with all the section names. */
-		virtual void getAllSections( vector_string	&sections ) const MRPT_OVERRIDE;
+		virtual void getAllSections( vector_string	&sections ) const override;
 
 		/** Returs a list with all the keys into a section. */
-		virtual void getAllKeys( const std::string &section, vector_string	&keys ) const MRPT_OVERRIDE;
+		virtual void getAllKeys( const std::string &section, vector_string	&keys ) const override;
 
 	}; // End of class def.
 

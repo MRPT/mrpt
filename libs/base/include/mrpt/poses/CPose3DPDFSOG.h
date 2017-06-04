@@ -81,12 +81,12 @@ namespace poses
 		const_iterator begin() const { return m_modes.begin(); }
 		const_iterator end()const { return m_modes.end(); }
 
-		void getMean(CPose3D &mean_pose) const MRPT_OVERRIDE; //!< Returns an estimate of the pose, (the mean, or mathematical expectation of the PDF), computed as a weighted average over all m_particles. \sa getCovariance
-		void getCovarianceAndMean(mrpt::math::CMatrixDouble66 &cov,CPose3D &mean_point) const MRPT_OVERRIDE; //!< Returns an estimate of the pose covariance matrix (6x6 cov matrix) and the mean, both at once. \sa getMean
+		void getMean(CPose3D &mean_pose) const override; //!< Returns an estimate of the pose, (the mean, or mathematical expectation of the PDF), computed as a weighted average over all m_particles. \sa getCovariance
+		void getCovarianceAndMean(mrpt::math::CMatrixDouble66 &cov,CPose3D &mean_point) const override; //!< Returns an estimate of the pose covariance matrix (6x6 cov matrix) and the mean, both at once. \sa getMean
 		void normalizeWeights(); //!< Normalize the weights in m_modes such as the maximum log-weight is 0.
 		void getMostLikelyMode( CPose3DPDFGaussian& outVal ) const; //!< Return the Gaussian mode with the highest likelihood (or an empty Gaussian if there are no modes in this SOG)
 
-		void copyFrom(const CPose3DPDF &o) MRPT_OVERRIDE; //!< Copy operator, translating if necesary (for example, between particles and gaussian representations)
+		void copyFrom(const CPose3DPDF &o) override; //!< Copy operator, translating if necesary (for example, between particles and gaussian representations)
 
 		/** Save the density to a text file, with the following format:
 		  *  There is one row per Gaussian "mode", and each row contains 10 elements:
@@ -105,18 +105,18 @@ namespace poses
 		  *   - C56 (Covariance elements)
 		  *
 		 */
-		void saveToTextFile(const std::string &file) const MRPT_OVERRIDE;
+		void saveToTextFile(const std::string &file) const override;
 
 		/** this = p (+) this. This can be used to convert a PDF from local coordinates to global, providing the point (newReferenceBase) from which
 		  *   "to project" the current pdf. Result PDF substituted the currently stored one in the object. */
-		void changeCoordinatesReference(const CPose3D &newReferenceBase ) MRPT_OVERRIDE;
+		void changeCoordinatesReference(const CPose3D &newReferenceBase ) override;
 
 		/** Bayesian fusion of two pose distributions, then save the result in this object (WARNING: Currently p1 must be a mrpt::poses::CPose3DPDFSOG object and p2 a mrpt::poses::CPose3DPDFSOG object) */
-		void bayesianFusion( const CPose3DPDF &p1,const  CPose3DPDF &p2 ) MRPT_OVERRIDE;
+		void bayesianFusion( const CPose3DPDF &p1,const  CPose3DPDF &p2 ) override;
 
-		void drawSingleSample( CPose3D &outPart ) const MRPT_OVERRIDE; //!< Draws a single sample from the distribution
-		void drawManySamples( size_t N, std::vector<mrpt::math::CVectorDouble> & outSamples ) const MRPT_OVERRIDE; //!< Draws a number of samples from the distribution, and saves as a list of 1x6 vectors, where each row contains a (x,y,z,yaw,pitch,roll) datum
-		void inverse(CPose3DPDF &o) const MRPT_OVERRIDE; //!< Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF
+		void drawSingleSample( CPose3D &outPart ) const override; //!< Draws a single sample from the distribution
+		void drawManySamples( size_t N, std::vector<mrpt::math::CVectorDouble> & outSamples ) const override; //!< Draws a number of samples from the distribution, and saves as a list of 1x6 vectors, where each row contains a (x,y,z,yaw,pitch,roll) datum
+		void inverse(CPose3DPDF &o) const override; //!< Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF
 
 		void appendFrom( const CPose3DPDFSOG &o ); //!< Append the Gaussian modes from "o" to the current set of modes of "this" density
 

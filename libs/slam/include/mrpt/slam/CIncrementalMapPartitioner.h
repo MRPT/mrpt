@@ -51,8 +51,8 @@ namespace mrpt { namespace slam {
 
 			void loadFromConfigFile(
 					const mrpt::utils::CConfigFileBase &source,
-					const std::string &section) MRPT_OVERRIDE; // See base docs
-			void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
+					const std::string &section) override; // See base docs
+			void dumpToTextStream(mrpt::utils::CStream &out) const override; // See base docs
 
 			/**\brief The partition threshold for bisection in range [0,2], default=1.0
 			 *

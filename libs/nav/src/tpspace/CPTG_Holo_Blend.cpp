@@ -618,7 +618,7 @@ void CPTG_Holo_Blend::updateTPObstacleSingle(double ox, double oy, uint16_t k, d
 	for (int i = 0; i<num_real_sols; i++)
 	{
 		if (roots[i] == roots[i] && // not NaN
-			mrpt::math::isFinite(roots[i]) &&
+			std::isfinite(roots[i]) &&
 			roots[i] >= .0 &&
 			roots[i] <= T_ramp*1.01)
 		{

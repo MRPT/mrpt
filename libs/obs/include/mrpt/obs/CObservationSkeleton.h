@@ -66,9 +66,9 @@ namespace obs
 			left_shoulder, left_elbow, left_hand, left_hip, left_knee, left_foot,
 			right_shoulder, right_elbow, right_hand, right_hip, right_knee, right_foot;
 
-		void getSensorPose( mrpt::poses::CPose3D & out_sensorPose) const  MRPT_OVERRIDE { out_sensorPose = sensorPose; }
-		void setSensorPose( const mrpt::poses::CPose3D & newSensorPose ) MRPT_OVERRIDE { sensorPose = newSensorPose; }
-		void getDescriptionAsText(std::ostream &o) const MRPT_OVERRIDE;
+		void getSensorPose( mrpt::poses::CPose3D & out_sensorPose) const  override { out_sensorPose = sensorPose; }
+		void setSensorPose( const mrpt::poses::CPose3D & newSensorPose ) override { sensorPose = newSensorPose; }
+		void getDescriptionAsText(std::ostream &o) const override;
 
 	}; // End of class def.
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CObservationSkeleton , CObservation, OBS_IMPEXP)

@@ -61,8 +61,8 @@ namespace mrpt
 				  */
 				TOptions();
 
-				void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
-				void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
+				void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) override; // See base docs
+				void dumpToTextStream(mrpt::utils::CStream &out) const override; // See base docs
 
 				std::string		vocab_path,vocabName;
 				double			p_obs_given_exists, p_at_new_place, df_lik_smooth;

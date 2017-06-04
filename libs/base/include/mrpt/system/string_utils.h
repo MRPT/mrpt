@@ -24,7 +24,7 @@ namespace mrpt
 		 * The extra parameter "context" must be a pointer to a "char*" variable, which needs no initialization and is used to save information between calls to strtok.
 		 * \sa system::tokenize
 		 */
-		char BASE_IMPEXP  *strtok(char *str, const char *strDelimit, char **context) MRPT_NO_THROWS;
+		char BASE_IMPEXP  *strtok(char *str, const char *strDelimit, char **context) noexcept;
 
 		/** Tokenizes a string according to a set of delimiting characters.
 		 * Example:
@@ -43,13 +43,13 @@ namespace mrpt
 			const std::string       & inString,
 			const std::string       & inDelimiters,
 			std::deque<std::string> & outTokens,
-			bool                      skipBlankTokens = true) MRPT_NO_THROWS;
+			bool                      skipBlankTokens = true) noexcept;
 		/** \overload */
 		void BASE_IMPEXP  tokenize(
 			const std::string        & inString,
 			const std::string        & inDelimiters,
 			std::vector<std::string> & outTokens,
-			bool                       skipBlankTokens = true) MRPT_NO_THROWS;
+			bool                       skipBlankTokens = true) noexcept;
 
 		/**  Removes leading and trailing spaces */
 		std::string BASE_IMPEXP trim(const std::string &str);

@@ -64,7 +64,7 @@ namespace mrpt
 			  */
 			inline void clear() { CMetricMap::clear(); }
 
-			float cell2float(const THeightGridmapCell& c) const MRPT_OVERRIDE {
+			float cell2float(const THeightGridmapCell& c) const override {
 				return float(c.h);
 			}
 
@@ -84,15 +84,15 @@ namespace mrpt
 				double resolution = 0.1
 				);
 
-			 bool isEmpty() const MRPT_OVERRIDE; //!< Returns true if the map is empty/no observation has been inserted.
+			 bool isEmpty() const override; //!< Returns true if the map is empty/no observation has been inserted.
 
 			/** Parameters related with inserting observations into the map */
 			struct MAPS_IMPEXP TInsertionOptions : public utils::CLoadableOptions
 			{
 				TInsertionOptions(); //!< Default values loader
 
-				void   loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
-				void   dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
+				void   loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) override; // See base docs
+				void   dumpToTextStream(mrpt::utils::CStream &out) const override; // See base docs
 
 				bool   filterByHeight; //!< Whether to perform filtering by z-coordinate (default=false): coordinates are always RELATIVE to the robot for this filter.vvv
 				float  z_min,z_max; //!< Only when filterByHeight is true: coordinates are always RELATIVE to the robot for this filter.
@@ -101,13 +101,13 @@ namespace mrpt
 			} insertionOptions;
 
 			/** See docs in base class: in this class it always returns 0 */
-			float compute3DMatchingRatio(const mrpt::maps::CMetricMap *otherMap, const mrpt::poses::CPose3D &otherMapPose, const TMatchingRatioParams &params) const MRPT_OVERRIDE;
+			float compute3DMatchingRatio(const mrpt::maps::CMetricMap *otherMap, const mrpt::poses::CPose3D &otherMapPose, const TMatchingRatioParams &params) const override;
 
-			void  saveMetricMapRepresentationToFile(const std::string &filNamePrefix) const MRPT_OVERRIDE; // See base class docs
+			void  saveMetricMapRepresentationToFile(const std::string &filNamePrefix) const override; // See base class docs
 
 			/** Returns a 3D object representing the map: by default, it will be a mrpt::opengl::CMesh object, unless
 			  *   it is specified otherwise in mrpt::global_settings::HEIGHTGRIDMAP_EXPORT3D_AS_MESH */
-			void getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr &outObj) const MRPT_OVERRIDE;
+			void getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr &outObj) const override;
 
 			/** Return the type of the gas distribution map, according to parameters passed on construction */
 			TMapRepresentation	 getMapType();
@@ -115,20 +115,20 @@ namespace mrpt
 			/** Return the number of cells with at least one height data inserted. */
 			size_t countObservedCells() const;
 
-			virtual bool insertIndividualPoint(const double x,const double y,const double z, const CHeightGridMap2D_Base::TPointInsertParams & params = CHeightGridMap2D_Base::TPointInsertParams() ) MRPT_OVERRIDE;
-			virtual double dem_get_resolution() const  MRPT_OVERRIDE;
-			virtual size_t dem_get_size_x() const  MRPT_OVERRIDE;
-			virtual size_t dem_get_size_y() const  MRPT_OVERRIDE;
-			virtual bool   dem_get_z_by_cell(const size_t cx, const size_t cy, double &z_out) const  MRPT_OVERRIDE;
-			virtual bool   dem_get_z(const double x, const double y, double &z_out) const  MRPT_OVERRIDE;
-			virtual void   dem_update_map() MRPT_OVERRIDE;
+			virtual bool insertIndividualPoint(const double x,const double y,const double z, const CHeightGridMap2D_Base::TPointInsertParams & params = CHeightGridMap2D_Base::TPointInsertParams() ) override;
+			virtual double dem_get_resolution() const  override;
+			virtual size_t dem_get_size_x() const  override;
+			virtual size_t dem_get_size_y() const  override;
+			virtual bool   dem_get_z_by_cell(const size_t cx, const size_t cy, double &z_out) const  override;
+			virtual bool   dem_get_z(const double x, const double y, double &z_out) const  override;
+			virtual void   dem_update_map() override;
 
 			TMapRepresentation  m_mapType;  //!< The map representation type of this map
 
 			// See docs in base class
-			void  internal_clear() MRPT_OVERRIDE;
-			bool  internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = nullptr ) MRPT_OVERRIDE;
-			double internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom ) MRPT_OVERRIDE;
+			void  internal_clear() override;
+			bool  internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = nullptr ) override;
+			double internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom ) override;
 
 			MAP_DEFINITION_START(CHeightGridMap2D,MAPS_IMPEXP)
 				double min_x,max_x,min_y,max_y,resolution;	//!< See CHeightGridMap2D::CHeightGridMap2D

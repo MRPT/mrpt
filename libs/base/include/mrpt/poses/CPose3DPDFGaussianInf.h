@@ -74,23 +74,23 @@ namespace mrpt
 
 			/** Returns an estimate of the pose, (the mean, or mathematical expectation of the PDF).
  			 * \sa getCovariance */
-			void getMean(CPose3D &mean_pose) const MRPT_OVERRIDE {
+			void getMean(CPose3D &mean_pose) const override {
 				mean_pose = mean;
 			}
-			bool isInfType() const MRPT_OVERRIDE { return true; }
+			bool isInfType() const override { return true; }
 
 			/** Returns an estimate of the pose covariance matrix (6x6 cov matrix) and the mean, both at once.
 		   * \sa getMean  */
-			void getCovarianceAndMean(mrpt::math::CMatrixDouble66 &cov,CPose3D &mean_point) const MRPT_OVERRIDE {
+			void getCovarianceAndMean(mrpt::math::CMatrixDouble66 &cov,CPose3D &mean_point) const override {
 				mean_point = this->mean;
 				this->cov_inv.inv(cov);
 			}
 
 			/** Returns the information (inverse covariance) matrix (a STATE_LEN x STATE_LEN matrix) \sa getMean, getCovarianceAndMean */
-			virtual void getInformationMatrix(mrpt::math::CMatrixDouble66 &inf) const MRPT_OVERRIDE { inf=cov_inv; }
+			virtual void getInformationMatrix(mrpt::math::CMatrixDouble66 &inf) const override { inf=cov_inv; }
 
 			/** Copy operator, translating if necesary (for example, between particles and gaussian representations) */
-			void  copyFrom(const CPose3DPDF &o) MRPT_OVERRIDE;
+			void  copyFrom(const CPose3DPDF &o) override;
 
 			/** Copy operator, translating if necesary (for example, between particles and gaussian representations) */
 			void  copyFrom(const CPosePDF &o);
@@ -100,17 +100,17 @@ namespace mrpt
 			void copyFrom( const CPose3DQuatPDFGaussian &o);
 
 			/** Save the PDF to a text file, containing the 3D pose in the first line, then the covariance matrix in next 3 lines. */
-			void  saveToTextFile(const std::string &file) const MRPT_OVERRIDE;
+			void  saveToTextFile(const std::string &file) const override;
 
 			/** this = p (+) this. This can be used to convert a PDF from local coordinates to global, providing the point (newReferenceBase) from which
 		   *   "to project" the current pdf. Result PDF substituted the currently stored one in the object. */
-			void  changeCoordinatesReference(  const CPose3D &newReferenceBase ) MRPT_OVERRIDE;
+			void  changeCoordinatesReference(  const CPose3D &newReferenceBase ) override;
 
 			/** Draws a single sample from the distribution */
-			void  drawSingleSample( CPose3D &outPart ) const MRPT_OVERRIDE;
+			void  drawSingleSample( CPose3D &outPart ) const override;
 
 			/** Draws a number of samples from the distribution, and saves as a list of 1x6 vectors, where each row contains a (x,y,phi) datum. */
-			void  drawManySamples( size_t N, std::vector<mrpt::math::CVectorDouble> & outSamples ) const MRPT_OVERRIDE;
+			void  drawManySamples( size_t N, std::vector<mrpt::math::CVectorDouble> & outSamples ) const override;
 
 			/** Bayesian fusion of two points gauss. distributions, then save the result in this object.
 		   *  The process is as follows:<br>
@@ -121,10 +121,10 @@ namespace mrpt
 		   *    S = (S1<sup>-1</sup> + S2<sup>-1</sup>)<sup>-1</sup>;
 		   *    x = S * ( S1<sup>-1</sup>*x1 + S2<sup>-1</sup>*x2 );
 		   */
-			void  bayesianFusion( const CPose3DPDF &p1, const CPose3DPDF &p2 ) MRPT_OVERRIDE;
+			void  bayesianFusion( const CPose3DPDF &p1, const CPose3DPDF &p2 ) override;
 
 			/** Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF */
-			void	 inverse(CPose3DPDF &o) const MRPT_OVERRIDE;
+			void	 inverse(CPose3DPDF &o) const override;
 
 			/** Unary - operator, returns the PDF of the inverse pose.  */
 			inline CPose3DPDFGaussianInf operator -() const

@@ -40,12 +40,12 @@ namespace mrpt
 		CPTG_DiffDrive_alpha(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) {
 			loadFromConfigFile(cfg,sSection);
 		}
-		virtual void loadFromConfigFile(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) MRPT_OVERRIDE;
-		virtual void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const MRPT_OVERRIDE;
+		virtual void loadFromConfigFile(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) override;
+		virtual void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const override;
 
-		std::string getDescription() const MRPT_OVERRIDE;
-		void ptgDiffDriveSteeringFunction( float alpha, float t,float x, float y, float phi, float &v, float &w ) const MRPT_OVERRIDE;
-		void loadDefaultParams() MRPT_OVERRIDE;
+		std::string getDescription() const override;
+		void ptgDiffDriveSteeringFunction( float alpha, float t,float x, float y, float phi, float &v, float &w ) const override;
+		void loadDefaultParams() override;
 
 	 protected:
 		double cte_a0v, cte_a0w;

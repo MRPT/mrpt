@@ -428,7 +428,7 @@ public:
 	gui::CDisplayWindow3D			window;
 	COpenGLScene::Ptr					scene;
 
-	bool getCurrentPoseAndSpeeds( mrpt::math::TPose2D &curPose, mrpt::math::TTwist2D &curVel, mrpt::system::TTimeStamp &timestamp, mrpt::math::TPose2D &odomPose, std::string &pose_frame_id) MRPT_OVERRIDE
+	bool getCurrentPoseAndSpeeds( mrpt::math::TPose2D &curPose, mrpt::math::TTwist2D &curVel, mrpt::system::TTimeStamp &timestamp, mrpt::math::TPose2D &odomPose, std::string &pose_frame_id) override
 	{
 		curPose = robotSim.getCurrentGTPose();
 		curVel  = robotSim.getCurrentGTVel();
@@ -437,7 +437,7 @@ public:
 		return true;
 	}
 
-	bool senseObstacles( mrpt::maps::CSimplePointsMap 	&obstacles, mrpt::system::TTimeStamp &timestamp ) MRPT_OVERRIDE
+	bool senseObstacles( mrpt::maps::CSimplePointsMap 	&obstacles, mrpt::system::TTimeStamp &timestamp ) override
 	{
 		last_pose = new_pose;
 		new_pose =  CPose2D(robotSim.getCurrentGTPose() );
@@ -824,9 +824,9 @@ public:
 					float y, float targetAllowedDistance, bool targetIsRelative = false)
 	{
 		CAbstractNavigator::TNavigationParams navparams;
-		navparams.target = mrpt::math::TPose2D(x,y,0);
-		navparams.targetAllowedDistance = targetAllowedDistance;
-		navparams.targetIsRelative = targetIsRelative;
+		navparams.target.target_coords = mrpt::math::TPose2D(x,y,0);
+		navparams.target.targetAllowedDistance = targetAllowedDistance;
+		navparams.target.targetIsRelative = targetIsRelative;
 		if (!targetIsRelative)
 			target = CPose2D(x, y, 0);
 		else

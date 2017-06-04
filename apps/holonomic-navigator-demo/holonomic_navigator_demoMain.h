@@ -147,8 +147,8 @@ class holonomic_navigator_demoFrame: public wxFrame
 			double SENSOR_RANGE_NOISE_STD;
 
 			TOptions();
-			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
-			void saveToConfigFile(mrpt::utils::CConfigFileBase &source,const std::string &section) const MRPT_OVERRIDE; // See base docs
+			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) override; // See base docs
+			void saveToConfigFile(mrpt::utils::CConfigFileBase &source,const std::string &section) const override; // See base docs
 		};
 
 		TOptions m_simul_options;

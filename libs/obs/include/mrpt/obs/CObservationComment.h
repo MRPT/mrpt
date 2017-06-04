@@ -44,9 +44,9 @@ namespace obs
 		std::string text;
 
 		// See base class docs
-		void getSensorPose( mrpt::poses::CPose3D & ) const MRPT_OVERRIDE {  }
-		void setSensorPose( const mrpt::poses::CPose3D & ) MRPT_OVERRIDE {  }
-		void getDescriptionAsText(std::ostream &o) const MRPT_OVERRIDE;
+		void getSensorPose( mrpt::poses::CPose3D & ) const override {  }
+		void setSensorPose( const mrpt::poses::CPose3D & ) override {  }
+		void getDescriptionAsText(std::ostream &o) const override;
 
 	}; // End of class def.
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CObservationComment , CObservation, OBS_IMPEXP)

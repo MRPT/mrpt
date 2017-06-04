@@ -235,7 +235,7 @@ namespace mrpt
 			  *  This method must support (x,y) values OUT of the actual image size without neither
 			  *   raising exceptions, nor leading to memory access errors.
 			  */
-			void  setPixel(int x, int y, size_t color) MRPT_OVERRIDE;
+			void  setPixel(int x, int y, size_t color) override;
 
 			/** Changes the property of the image stating if the top-left corner (vs. bottom-left) is the coordinate reference */
 			void  setOriginTopLeft(bool val);
@@ -254,7 +254,7 @@ namespace mrpt
 				int x1, int y1,
 				const mrpt::utils::TColor color,
 				unsigned int	width = 1,
-				TPenStyle		penStyle = psSolid) MRPT_OVERRIDE;
+				TPenStyle		penStyle = psSolid) override;
 
 			/** Draws a circle of a given radius.
 			  * \param x The center - x coordinate in pixels.
@@ -268,7 +268,7 @@ namespace mrpt
 				int				y,
 				int				radius,
 				const mrpt::utils::TColor &color = mrpt::utils::TColor(255,255,255),
-				unsigned int	width = 1) MRPT_OVERRIDE;
+				unsigned int	width = 1) override;
 
 			void equalizeHistInPlace(); //!< Equalize the image histogram, replacing the original image. \note RGB images are first converted to HSV color space, then equalized for brightness (V)
 			void equalizeHist( CImage  &outImg ) const; //!< Equalize the image histogram, saving the new image in the given output object.  \note RGB images are first converted to HSV color space, then equalized for brightness (V)
@@ -559,8 +559,8 @@ namespace mrpt
 			/** @name Query image properties
 			    @{ */
 
-			size_t getWidth() const MRPT_OVERRIDE; //!< Returns the width of the image in pixels \sa getSize
-			size_t getHeight() const MRPT_OVERRIDE; //!< Returns the height of the image in pixels \sa getSize
+			size_t getWidth() const override; //!< Returns the width of the image in pixels \sa getSize
+			size_t getHeight() const override; //!< Returns the height of the image in pixels \sa getSize
 
 			void getSize(TImageSize &s) const; //!< Return the size of the image \sa getWidth, getHeight
 			/** Return the size of the image \sa getWidth, getHeight */
@@ -661,14 +661,14 @@ namespace mrpt
 			  *   \note Modifications to the memory copy of the image are not automatically saved to disk.
 			  *  \sa unload, isExternallyStored
 			  */
-			void setExternalStorage( const std::string &fileName ) MRPT_NO_THROWS;
+			void setExternalStorage( const std::string &fileName ) noexcept;
 
 			static std::string IMAGES_PATH_BASE;		//!< By default, "."  \sa setExternalStorage
 
 			/** See setExternalStorage(). */
-			bool isExternallyStored() const MRPT_NO_THROWS { return m_imgIsExternalStorage; }
+			bool isExternallyStored() const noexcept { return m_imgIsExternalStorage; }
 
-			inline std::string  getExternalStorageFile() const MRPT_NO_THROWS //!< Only if isExternallyStored() returns true. \sa getExternalStorageFileAbsolutePath
+			inline std::string  getExternalStorageFile() const noexcept //!< Only if isExternallyStored() returns true. \sa getExternalStorageFileAbsolutePath
 			{
 				return m_externalFile;
 			}
@@ -693,7 +693,7 @@ namespace mrpt
 			  *  If called for an image without the flag "external storage", it is simply ignored.
 			  * \sa setExternalStorage, forceLoad
 			  */
-			void unload()  const MRPT_NO_THROWS;
+			void unload()  const noexcept;
 
 			/** @}  */
 			// ================================================================
@@ -929,7 +929,7 @@ namespace mrpt
 					bool			originTopLeft );
 
 			/** Release the internal IPL image, if not nullptr or read-only. */
-			void releaseIpl(bool thisIsExternalImgUnload = false) MRPT_NO_THROWS;
+			void releaseIpl(bool thisIsExternalImgUnload = false) noexcept;
 
 			/** Checks if the image is of type "external storage", and if so and not loaded yet, load it. */
 			void makeSureImageIsLoaded() const throw (std::exception,utils::CExceptionExternalImageNotFound );

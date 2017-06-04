@@ -33,23 +33,23 @@ namespace poses
 		mrpt::math::CMatrixDouble22  cov; //!< The 2x2 covariance matrix
 
 		 /** Returns an estimate of the point, (the mean, or mathematical expectation of the PDF) */
-		void getMean(CPoint2D &p) const MRPT_OVERRIDE {
+		void getMean(CPoint2D &p) const override {
 			p = this->mean;
 		}
 
 		/** Returns an estimate of the point covariance matrix (2x2 cov matrix) and the mean, both at once. \sa getMean */
-		void getCovarianceAndMean(mrpt::math::CMatrixDouble22 &out_cov,CPoint2D &mean_point) const  MRPT_OVERRIDE{
+		void getCovarianceAndMean(mrpt::math::CMatrixDouble22 &out_cov,CPoint2D &mean_point) const  override{
 			out_cov = this->cov;
 			mean_point = this->mean;
 		}
 
-		void copyFrom(const CPoint2DPDF &o) MRPT_OVERRIDE; //!< Copy operator, translating if necesary (for example, between particles and gaussian representations)
+		void copyFrom(const CPoint2DPDF &o) override; //!< Copy operator, translating if necesary (for example, between particles and gaussian representations)
 
-		void saveToTextFile(const std::string &file) const MRPT_OVERRIDE; //!< Save PDF's particles to a text file, containing the 2D pose in the first line, then the covariance matrix in next 3 lines
+		void saveToTextFile(const std::string &file) const override; //!< Save PDF's particles to a text file, containing the 2D pose in the first line, then the covariance matrix in next 3 lines
 
 		/** this = p (+) this. This can be used to convert a PDF from local coordinates to global, providing the point (newReferenceBase) from which
 		  *   "to project" the current pdf. Result PDF substituted the currently stored one in the object. Both the mean value and the covariance matrix are updated correctly. */
-		void changeCoordinatesReference( const CPose3D &newReferenceBase ) MRPT_OVERRIDE;
+		void changeCoordinatesReference( const CPose3D &newReferenceBase ) override;
 
 		/** Bayesian fusion of two points gauss. distributions, then save the result in this object.
 		  *  The process is as follows:<br>
@@ -79,14 +79,14 @@ namespace poses
 		  */
 		double productIntegralNormalizedWith( const CPoint2DPDFGaussian &p) const;
 
-		void drawSingleSample(CPoint2D  &outSample) const MRPT_OVERRIDE; //!< Draw a sample from the pdf
+		void drawSingleSample(CPoint2D  &outSample) const override; //!< Draw a sample from the pdf
 
 		/** Bayesian fusion of two point distributions (product of two distributions->new distribution), then save the result in this object (WARNING: See implementing classes to see classes that can and cannot be mixtured!)
 		  * \param p1 The first distribution to fuse
 		  * \param p2 The second distribution to fuse
 		  * \param minMahalanobisDistToDrop If set to different of 0, the result of very separate Gaussian modes (that will result in negligible components) in SOGs will be dropped to reduce the number of modes in the output.
 		  */
-		void bayesianFusion( const CPoint2DPDF &p1, const CPoint2DPDF &p2, const double &minMahalanobisDistToDrop = 0) MRPT_OVERRIDE;
+		void bayesianFusion( const CPoint2DPDF &p1, const CPoint2DPDF &p2, const double &minMahalanobisDistToDrop = 0) override;
 
 		double mahalanobisDistanceTo( const CPoint2DPDFGaussian & other ) const; //!< Returns the Mahalanobis distance from this PDF to another PDF, that is, it's evaluation at (0,0,0)
 		double mahalanobisDistanceToPoint( const double x, const double y ) const; //!< Returns the Mahalanobis distance from this PDF to some point

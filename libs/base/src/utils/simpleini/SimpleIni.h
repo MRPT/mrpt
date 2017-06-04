@@ -183,7 +183,7 @@ public:
         FILE * m_file;
     public:
         FileWriter(FILE * a_file) : m_file(a_file) { }
-		void Write(const char * a_pBuf) MRPT_OVERRIDE  {
+		void Write(const char * a_pBuf) override  {
             fputs(a_pBuf, m_file);
         }
     private:
@@ -196,7 +196,7 @@ public:
         std::string & m_string;
     public:
         StringWriter(std::string & a_string) : m_string(a_string) { }
-		void Write(const char * a_pBuf) MRPT_OVERRIDE {
+		void Write(const char * a_pBuf) override {
             m_string.append(a_pBuf);
         }
     private:
@@ -2071,7 +2071,7 @@ struct MRPT_IniFileParser : public SI_ConvertA<char>
 
 	virtual size_t SizeFromStore(
 		const char *    a_pInputData,
-		size_t          a_uInputDataLen) MRPT_OVERRIDE
+		size_t          a_uInputDataLen) override
 	{
 		SI_ASSERT(a_uInputDataLen != (size_t)-1);
 		return do_parse(a_pInputData, a_uInputDataLen, nullptr);
@@ -2081,7 +2081,7 @@ struct MRPT_IniFileParser : public SI_ConvertA<char>
 		const char *    a_pInputData,
 		size_t          a_uInputDataLen,
 		char *       a_pOutputData,
-		size_t          a_uOutputDataSize) MRPT_OVERRIDE
+		size_t          a_uOutputDataSize) override
 	{
 		this->do_parse(a_pInputData, a_uInputDataLen, a_pOutputData);
 		return true;

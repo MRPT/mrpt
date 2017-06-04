@@ -37,7 +37,7 @@ namespace mrpt
 			void updatePoly() const;
 			void unloadTexture();
 
-			void  render_texturedobj() const MRPT_OVERRIDE;
+			void  render_texturedobj() const override;
 
 		public:
 			/** Set the texture coordinates of the four corners (in the range 0-1). */
@@ -69,8 +69,8 @@ namespace mrpt
 			/** Class factory  */
 			static CTexturedPlane::Ptr Create(float x_min, float x_max, float y_min, float y_max);
 
-			virtual bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const MRPT_OVERRIDE;
-			virtual void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const MRPT_OVERRIDE;
+			virtual bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const override;
+			virtual void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const override;
 
 			/** Constructor
 			  */

@@ -396,8 +396,8 @@ namespace mrpt
 				  */
 				TOptions();
 
-				void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
-				void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
+				void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) override; // See base docs
+				void dumpToTextStream(mrpt::utils::CStream &out) const override; // See base docs
 
 
 				std::string	LOG_OUTPUT_DIR;		//!< [LOGGING] If it is not an empty string (""), a directory with that name will be created and log files save there.

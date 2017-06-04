@@ -66,28 +66,7 @@ namespace mrpt
 			*/
 		bool BASE_IMPEXP loadVector( utils::CFileStream &f, std::vector<double> &d);
 
-
-        /** Returns true if the number is NaN. */
-        bool BASE_IMPEXP  isNaN(float  f) MRPT_NO_THROWS;
-
-        /** Returns true if the number is NaN. */
-        bool  BASE_IMPEXP isNaN(double f) MRPT_NO_THROWS;
-
-        /** Returns true if the number is non infinity. */
-        bool BASE_IMPEXP  isFinite(float f) MRPT_NO_THROWS;
-
-        /** Returns true if the number is non infinity.  */
-        bool  BASE_IMPEXP isFinite(double f) MRPT_NO_THROWS;
-
         void BASE_IMPEXP medianFilter( const std::vector<double> &inV, std::vector<double> &outV, const int &winSize, const int &numberOfSigmas = 2 );
-
-#ifdef HAVE_LONG_DOUBLE
-		/** Returns true if the number is NaN. */
-        bool  BASE_IMPEXP isNaN(long double f) MRPT_NO_THROWS;
-
-        /** Returns true if the number is non infinity. */
-        bool BASE_IMPEXP  isFinite(long double f) MRPT_NO_THROWS;
-#endif
 
 		/** Generates an equidistant sequence of numbers given the first one, the last one and the desired number of points.
 		  \sa sequence */

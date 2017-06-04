@@ -26,8 +26,8 @@ namespace mrpt
 		{
 
 		protected:
-			size_t  Read(void *Buffer, size_t Count) MRPT_OVERRIDE;
-			size_t  Write(const void *Buffer, size_t Count) MRPT_OVERRIDE;
+			size_t  Read(void *Buffer, size_t Count) override;
+			size_t  Write(const void *Buffer, size_t Count) override;
 		private:
 			void		*m_f;
 			uint64_t	m_file_size;	//!< Compressed file size
@@ -57,11 +57,11 @@ namespace mrpt
 			bool is_open() { return fileOpenCorrectly(); } //!< Returns true if the file was open without errors.
 			bool checkEOF(); //!< Will be true if EOF has been already reached.
 
-			uint64_t getTotalBytesCount() MRPT_OVERRIDE; //!< Method for getting the total number of <b>compressed</b> bytes of in the file (the physical size of the compressed file).
-			uint64_t getPosition() MRPT_OVERRIDE; //!< Method for getting the current cursor position in the <b>compressed</b>, where 0 is the first byte and TotalBytesCount-1 the last one.
+			uint64_t getTotalBytesCount() override; //!< Method for getting the total number of <b>compressed</b> bytes of in the file (the physical size of the compressed file).
+			uint64_t getPosition() override; //!< Method for getting the current cursor position in the <b>compressed</b>, where 0 is the first byte and TotalBytesCount-1 the last one.
 
 			/** This method is not implemented in this class */
-			uint64_t Seek(uint64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning) MRPT_OVERRIDE
+			uint64_t Seek(uint64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning) override
 			{
             MRPT_UNUSED_PARAM(Offset); MRPT_UNUSED_PARAM(Origin);
 				THROW_EXCEPTION("Seek is not implemented in this class");

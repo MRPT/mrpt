@@ -92,7 +92,7 @@ namespace maps
 			);
 
 		/** Erases all added observations and start again with an empty gridmap. */
-		void clear() MRPT_OVERRIDE;
+		void clear() override;
 
 		/** Save the current estimated mean values to a CSV file (compatible with Paraview) with fields `x y z mean_value`.
 		  * Optionally, std deviations can be also saved to another file with fields `x y z stddev_value`, if `filName_stddev` is provided.
@@ -134,7 +134,7 @@ namespace maps
 			double new_x_min, double new_x_max,
 			double new_y_min, double new_y_max,
 			double new_z_min, double new_z_max,
-			const TRandomFieldVoxel& defaultValueNewvoxels, double additionalMarginMeters = 2.0) MRPT_OVERRIDE;
+			const TRandomFieldVoxel& defaultValueNewvoxels, double additionalMarginMeters = 2.0) override;
 
 		/** Changes the size of the grid, erasing previous contents.If `resolution_z`<0, the same resolution will be used for all dimensions x,y,z as given in `resolution_xy` \sa resize.*/
 		virtual void setSize(
@@ -142,7 +142,7 @@ namespace maps
 			const double y_min, const double y_max,
 			const double z_min, const double z_max,
 			const double resolution_xy, const double resolution_z = -1.0,
-			const  TRandomFieldVoxel* fill_value = nullptr) MRPT_OVERRIDE;
+			const  TRandomFieldVoxel* fill_value = nullptr) override;
 
 		/** Base class for user-supplied objects capable of describing voxels connectivity, used to build prior factors of the MRF graph. \sa setvoxelsConnectivity() */
 		struct MAPS_IMPEXP ConnectivityDescriptor
@@ -199,9 +199,9 @@ namespace maps
 			double obsValue;       //!< Observation value
 			double Lambda;         //!< "Information" of the observation (=inverse of the variance)
 
-			double evaluateResidual() const MRPT_OVERRIDE;
-			double getInformation() const  MRPT_OVERRIDE;
-			void evalJacobian(double &dr_dx) const MRPT_OVERRIDE;
+			double evaluateResidual() const override;
+			double getInformation() const  override;
+			void evalJacobian(double &dr_dx) const override;
 
 			TObservationGMRF(CRandomFieldGridMap3D &parent) : obsValue(.0), Lambda(.0), m_parent(&parent) {}
 		private:
@@ -212,9 +212,9 @@ namespace maps
 		{
 			double Lambda;         //!< "Information" of the observation (=inverse of the variance)
 
-			double evaluateResidual() const MRPT_OVERRIDE;
-			double getInformation() const MRPT_OVERRIDE;
-			void evalJacobian(double &dr_dx_i, double &dr_dx_j) const MRPT_OVERRIDE;
+			double evaluateResidual() const override;
+			double getInformation() const override;
+			void evalJacobian(double &dr_dx_i, double &dr_dx_j) const override;
 
 			TPriorFactorGMRF(CRandomFieldGridMap3D &parent) : Lambda(.0), m_parent(&parent) {}
 		private:

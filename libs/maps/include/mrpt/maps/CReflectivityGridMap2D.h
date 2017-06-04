@@ -54,7 +54,7 @@ namespace mrpt
 			  */
 			inline void clear() { CMetricMap::clear(); }
 
-			float cell2float(const int8_t& c) const MRPT_OVERRIDE
+			float cell2float(const int8_t& c) const override
 			{
 				return m_logodd_lut.l2p(c);
 			}
@@ -63,7 +63,7 @@ namespace mrpt
 			CReflectivityGridMap2D(double x_min = -2, double x_max = 2, double y_min = -2, double y_max = 2,double resolution = 0.1);
 
 			 /** Returns true if the map is empty/no observation has been inserted. */
-			 bool isEmpty() const MRPT_OVERRIDE;
+			 bool isEmpty() const override;
 
 
 			/** Parameters related with inserting observations into the map.
@@ -73,16 +73,16 @@ namespace mrpt
 				/** Default values loader */
 				TInsertionOptions();
 
-				void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
-				void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
+				void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) override; // See base docs
+				void dumpToTextStream(mrpt::utils::CStream &out) const override; // See base docs
 			} insertionOptions;
 
 			/** See docs in base class: in this class this always returns 0 */
-			float compute3DMatchingRatio(const mrpt::maps::CMetricMap *otherMap, const mrpt::poses::CPose3D &otherMapPose, const TMatchingRatioParams &params) const MRPT_OVERRIDE;
+			float compute3DMatchingRatio(const mrpt::maps::CMetricMap *otherMap, const mrpt::poses::CPose3D &otherMapPose, const TMatchingRatioParams &params) const override;
 
-			void saveMetricMapRepresentationToFile(const std::string &filNamePrefix ) const MRPT_OVERRIDE;
+			void saveMetricMapRepresentationToFile(const std::string &filNamePrefix ) const override;
 
-			void getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr &outObj) const MRPT_OVERRIDE;
+			void getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr &outObj) const override;
 
 			/** Returns the grid as a 8-bit graylevel image, where each pixel is a cell (output image is RGB only if forceRGB is true) */
 			void  getAsImage( utils::CImage	&img, bool verticalFlip = false, bool forceRGB=false) const;
@@ -90,9 +90,9 @@ namespace mrpt
 		protected:
 
 			// See docs in base class
-			void  internal_clear() MRPT_OVERRIDE;
-			bool  internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = nullptr ) MRPT_OVERRIDE;
-			double internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom )  MRPT_OVERRIDE;
+			void  internal_clear() override;
+			bool  internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = nullptr ) override;
+			double internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom )  override;
 
 			MAP_DEFINITION_START(CReflectivityGridMap2D,MAPS_IMPEXP)
 				double min_x,max_x,min_y,max_y,resolution;	//!< See CReflectivityGridMap2DOptions::CReflectivityGridMap2DOptions

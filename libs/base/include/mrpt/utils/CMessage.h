@@ -10,7 +10,7 @@
 #define  CMessage_H
 
 #include <mrpt/utils/core_defs.h>
-#include <mrpt/utils/mrpt_stdint.h>
+#include <cstdint>
 #include <mrpt/utils/CSerializable.h>
 #include <vector>
 

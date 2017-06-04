@@ -12,11 +12,11 @@
 #include <mrpt/config.h>
 
 #define _USE_MATH_DEFINES // (For VS to define M_PI, etc. in cmath)
-#include <cmath> // floor()
+#include <cmath> // floor(),isnan(),...
 #include <string>
 #include <mrpt/base/link_pragmas.h>
 #include <mrpt/utils/mrpt_macros.h>
-#include <mrpt/utils/mrpt_stdint.h>
+#include <cstdint>
 
 /** This is the global namespace for all Mobile Robot Programming Toolkit (MRPT) libraries. */
 namespace mrpt
@@ -30,11 +30,6 @@ namespace mrpt
 
 	namespace math
 	{
-		bool BASE_IMPEXP isNaN(float v) MRPT_NO_THROWS;
-		bool BASE_IMPEXP isNaN(double v) MRPT_NO_THROWS;
-		bool BASE_IMPEXP isFinite(float v) MRPT_NO_THROWS;
-		bool BASE_IMPEXP isFinite(double v) MRPT_NO_THROWS;
-
 		// This inline function is used everywhere, so just move it here even it's not a forward declaration!
 		/*! Returns the size of the matrix in the i'th dimension: 1=rows, 2=columns (MATLAB-compatible function)
 		  *  \note Template argument MATRIXLIKE can be: mrpt::math::CMatrixTemplate, mrpt::math::CMatrixTemplateNumeric, mrpt::math::CMatrixFixedNumeric
@@ -59,8 +54,8 @@ namespace mrpt
 	namespace utils
 	{
 		class CFileStream;
-		void BASE_IMPEXP global_profiler_enter(const char *func_name) MRPT_NO_THROWS;
-		void BASE_IMPEXP global_profiler_leave(const char *func_name) MRPT_NO_THROWS;
+		void BASE_IMPEXP global_profiler_enter(const char *func_name) noexcept;
+		void BASE_IMPEXP global_profiler_leave(const char *func_name) noexcept;
 
 		struct CProfilerProxy {
 			const char*f;

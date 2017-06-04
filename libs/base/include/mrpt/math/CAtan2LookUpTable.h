@@ -24,12 +24,12 @@ namespace math
 	class BASE_IMPEXP CAtan2LookUpTable
 	{
 	public:
-		CAtan2LookUpTable() MRPT_NO_THROWS;
-		CAtan2LookUpTable(double xmin,double xmax,double ymin,double ymax, double resolution) MRPT_NO_THROWS;
-		void resize(double xmin,double xmax,double ymin,double ymax, double resolution) MRPT_NO_THROWS;
+		CAtan2LookUpTable() noexcept;
+		CAtan2LookUpTable(double xmin,double xmax,double ymin,double ymax, double resolution) noexcept;
+		void resize(double xmin,double xmax,double ymin,double ymax, double resolution) noexcept;
 
 		/** Returns the precomputed value for atan2(y,x). \return false if out of grid bounds. */
-		bool atan2(double y,double x, double &out_atan2) const MRPT_NO_THROWS;
+		bool atan2(double y,double x, double &out_atan2) const noexcept;
 
 		double getXMin() const { return m_grid.getXMin(); }
 		double getXMax() const { return m_grid.getXMax(); }
@@ -57,12 +57,12 @@ namespace math
 	class BASE_IMPEXP CAtan2LookUpTableMultiRes
 	{
 	public:
-		CAtan2LookUpTableMultiRes() MRPT_NO_THROWS;
-		CAtan2LookUpTableMultiRes(const std::map<double,double> & lst_resolutions2extensions ) MRPT_NO_THROWS;  //!< See CAtan2LookUpTableMultiRes for a discussion of the parameters
-		void resize(const std::map<double,double> & lst_resolutions2extensions) MRPT_NO_THROWS;  //!< See CAtan2LookUpTableMultiRes for a discussion of the parameters
+		CAtan2LookUpTableMultiRes() noexcept;
+		CAtan2LookUpTableMultiRes(const std::map<double,double> & lst_resolutions2extensions ) noexcept;  //!< See CAtan2LookUpTableMultiRes for a discussion of the parameters
+		void resize(const std::map<double,double> & lst_resolutions2extensions) noexcept;  //!< See CAtan2LookUpTableMultiRes for a discussion of the parameters
 
 		/** Returns the precomputed value for atan2(y,x). \return false if out of grid bounds. */
-		bool atan2(double y,double x, double &out_atan2) const MRPT_NO_THROWS;
+		bool atan2(double y,double x, double &out_atan2) const noexcept;
 	private:
 		std::map<double,mrpt::utils::CDynamicGrid<double> > m_grids;  //!< Maps from maximum (X,Y) coordinates to LUT for [-L,L]x[-L,L] square area.
 	};

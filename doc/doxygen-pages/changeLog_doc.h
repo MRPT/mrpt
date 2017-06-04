@@ -23,8 +23,12 @@
 	- All pointer typedefs are now in their respective classes.
 	- Using a variant type from the mapbox variant library, and added serialization with variants(To be replaced by std::variant eventually).
 - <b>Detailed list of changes:</b>
-	- ()...)
-
+	- Changes in libraries:
+		- \ref mrpt_base_grp
+			- Removed functions (replaced by C++11/14 standard library):
+				- mrpt::math::erf, mrpt::math::erfc, std::isfinite, mrpt::math::std::isnan
+		- \ref mrpt_nav_grp
+			- Removed deprecated mrpt::nav::THolonomicMethod.
 
 <hr>
 <a name="1.5.0">
@@ -114,6 +118,7 @@
 		- \ref mrpt_opengl_grp
 			- [ABI change] mrpt::opengl::CAxis now has many new options exposed to configure its look.
 			- mrpt::opengl::CSetOfLines can now optionally show vertices as dots.
+			- lib3DS is no longer shipped as an embedded version. A system library in Linux is required to use mrpt::opengl::C3DSScene. Use mrpt::opengl::CAssimpModel as a more powerful alternative.
 		- \ref mrpt_slam_grp
 			- [API change] mrpt::slam::CMetricMapBuilder::TOptions does not have a `verbose` field anymore. It's supersedded now by the verbosity level of the CMetricMapBuilder class itself.
 			- [API change] getCurrentMetricMapEstimation() renamed mrpt::slam::CMultiMetricMapPDF::getAveragedMetricMapEstimation() to avoid confusions.

@@ -600,7 +600,7 @@ namespace mrpt
 						graph_t * m_g; // The original graph
 
 						VisitorComputePoses(graph_t *g) : m_g(g) { }
-						virtual void OnVisitNode(const TNodeID parent_id, const typename dijkstra_t::tree_graph_t::Visitor::tree_t::TEdgeInfo &edge_to_child, const size_t depth_level) MRPT_OVERRIDE
+						virtual void OnVisitNode(const TNodeID parent_id, const typename dijkstra_t::tree_graph_t::Visitor::tree_t::TEdgeInfo &edge_to_child, const size_t depth_level) override
 						{
 							MRPT_UNUSED_PARAM(depth_level);
 							const TNodeID  child_id = edge_to_child.id;

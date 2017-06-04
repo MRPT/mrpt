@@ -62,7 +62,7 @@ namespace mrpt
 			///Get the method used to update voxels colour
 			TColourUpdate getVoxelColourMethod() {return m_colour_method;}
 
-			virtual void getAsOctoMapVoxels(mrpt::opengl::COctoMapVoxels &gl_obj) const MRPT_OVERRIDE;
+			virtual void getAsOctoMapVoxels(mrpt::opengl::COctoMapVoxels &gl_obj) const override;
 
 			MAP_DEFINITION_START(CColouredOctoMap,MAPS_IMPEXP)
 				double resolution;	//!< The finest resolution of the octomap (default: 0.10 meters)
@@ -71,7 +71,7 @@ namespace mrpt
 			MAP_DEFINITION_END(CColouredOctoMap,MAPS_IMPEXP)
 
 		protected:
-			bool internal_insertObservation(const mrpt::obs::CObservation *obs,const mrpt::poses::CPose3D *robotPose) MRPT_OVERRIDE;
+			bool internal_insertObservation(const mrpt::obs::CObservation *obs,const mrpt::poses::CPose3D *robotPose) override;
 
 			TColourUpdate m_colour_method;		//!Method used to updated voxels colour.
 

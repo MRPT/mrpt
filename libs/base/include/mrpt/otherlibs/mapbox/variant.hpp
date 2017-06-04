@@ -75,6 +75,7 @@ public:
 
 }; // class bad_variant_access
 
+#if 0 // this causes spureous warnings in MSVC 2015-17
 template <typename R = void>
 struct MAPBOX_VARIANT_DEPRECATED static_visitor
 {
@@ -84,6 +85,7 @@ protected:
     static_visitor() {}
     ~static_visitor() {}
 };
+#endif
 
 #if !defined(MAPBOX_VARIANT_MINIMIZE_SIZE)
 using type_index_t = unsigned int;

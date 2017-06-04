@@ -617,7 +617,6 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
 	gl_rel_target = mrpt::opengl::CPointCloud::Create();
 	gl_rel_target->setPointSize(7);
 	gl_rel_target->setColor_u8(TColor(0,0,255));
-	gl_rel_target->insertPoint(0,0,0);
 	m_plotLocalView->m_openGLScene->insert(gl_rel_target);
 
 	gl_rel_robot = mrpt::opengl::CPointCloud::Create();
@@ -1035,7 +1034,11 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 		}
 
 		// TP Target:
-		gl_rel_target->setLocation( lfr.infoPerPTG[sel_PTG].TP_Target );
+		gl_rel_target->clear();
+		for (const auto &t : lfr.infoPerPTG[sel_PTG].TP_Targets) {
+			gl_rel_target->insertPoint(t.x, t.y, .0);
+		}
+
 		// TP Robot:
 		gl_rel_robot->setLocation(lfr.infoPerPTG[sel_PTG].TP_Robot);
 
@@ -1271,10 +1274,10 @@ void reactive_navigator_demoframe::Onplot3DMouseClick(wxMouseEvent& event)
 
 			// Issue a new navigation cmd:
 			CAbstractPTGBasedReactive::TNavigationParamsPTG   navParams;
-			navParams.target.x = m_targetPoint.x ;
-			navParams.target.y = m_targetPoint.y ;
-			navParams.targetAllowedDistance = 0.40f;
-			navParams.targetIsRelative = false;
+			navParams.target.target_coords.x = m_targetPoint.x ;
+			navParams.target.target_coords.y = m_targetPoint.y ;
+			navParams.target.targetAllowedDistance = 0.40f;
+			navParams.target.targetIsRelative = false;
 
 			// Optional: restrict the PTGs to use
 			//navParams.restrict_PTG_indices.push_back(1);

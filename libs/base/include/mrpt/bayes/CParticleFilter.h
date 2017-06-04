@@ -81,8 +81,8 @@ namespace mrpt
 			{
 			public:
 				TParticleFilterOptions(); //!< Initilization of default parameters
-				void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
-				void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
+				void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) override; // See base docs
+				void dumpToTextStream(mrpt::utils::CStream &out) const override; // See base docs
 
 				bool         adaptiveSampleSize; //!< A flag that indicates whether the CParticleFilterCapable object should perform adative sample size (default=false).
 				double       BETA; //!< The resampling of particles will be performed when ESS (in range [0,1]) < BETA (default is 0.5)

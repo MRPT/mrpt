@@ -237,7 +237,7 @@ endif()
 # ----------------------------------------------------------------------------
 # Other sub-scripts:
 # ----------------------------------------------------------------------------
-include(cmakemodules/script_gridmap_options.cmake REQUIRED) # Enable Intel Threading Building Blocks (TBB) lib?
+include(cmakemodules/script_gridmap_options.cmake REQUIRED) # Gridmap options
 
 include(cmakemodules/script_phidget.cmake REQUIRED)     # Support for phidget Interface Kit with proximity sensor device :
 include(cmakemodules/script_videre_svs.cmake REQUIRED)  # Support for Videre Design stereo camera:
@@ -259,7 +259,6 @@ include(cmakemodules/script_jpeg.cmake REQUIRED)        # Check for jpeg
 include(cmakemodules/script_swissrange.cmake REQUIRED)  # Support for SWISSRANGE 3D camera:
 include(cmakemodules/script_SIMD.cmake REQUIRED)        # SSE2/SSE3/... optimization options
 include(cmakemodules/script_gtest.cmake REQUIRED)       # Unit testing lib
-include(cmakemodules/script_clang.cmake REQUIRED)       # clang library (For UTFConvert)
 include(cmakemodules/script_national_instruments.cmake REQUIRED)  # NI C library
 include(cmakemodules/script_sift_hess.cmake REQUIRED)   # SIFT Hess implementation
 include(cmakemodules/script_xsens.cmake REQUIRED)       # XSens Motion trackers / IMU drivers
@@ -616,12 +615,6 @@ if(MSVC)
 	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
 
 endif()
-
-IF(CMAKE_COMPILER_IS_GNUCXX AND NOT APPLE)
-	# --as-needed: Avoid unnecesary libraries (.so dependencies):
-	#SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--as-needed")
-	#SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--as-needed")
-ENDIF()
 
 IF($ENV{VERBOSE})
 	MESSAGE(STATUS "Final CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")

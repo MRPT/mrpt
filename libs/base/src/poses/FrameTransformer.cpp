@@ -65,7 +65,7 @@ template <int DIM>
 FrameLookUpStatus FrameTransformer<DIM>::lookupTransform(
 	const std::string & target_frame,
 	const std::string & source_frame,
-	typename base_t::pose_t & child_wrt_parent,
+	typename base_t::lightweight_pose_t & child_wrt_parent,
 	const mrpt::system::TTimeStamp query_time,
 	const double timeout_secs)
 {

@@ -67,9 +67,9 @@ namespace obs
 		std::vector<TObservationENose>		m_readings;
 
 		// See base class docs
-		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const MRPT_OVERRIDE;
-		void setSensorPose( const mrpt::poses::CPose3D &newSensorPose ) MRPT_OVERRIDE;
-		void getDescriptionAsText(std::ostream &o) const MRPT_OVERRIDE;
+		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const override;
+		void setSensorPose( const mrpt::poses::CPose3D &newSensorPose ) override;
+		void getDescriptionAsText(std::ostream &o) const override;
 
 					/** Declares a class within "CObservationGasSensors" that represents a set of gas concentration readings from the modelation of a MOS gas sensor readings.
 					 * This class provides the parameters and functions to simulate the inverse model of a MOS gas sensor.

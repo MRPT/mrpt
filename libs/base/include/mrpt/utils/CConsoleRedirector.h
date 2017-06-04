@@ -94,7 +94,7 @@ namespace mrpt
 			}
 
 		private:
-			int	overflow(int c) MRPT_OVERRIDE
+			int	overflow(int c) override
 			{
 				sync();
 
@@ -115,7 +115,7 @@ namespace mrpt
 				return 0;
 			}
 
-			int	sync() MRPT_OVERRIDE
+			int	sync() override
 			{
 				m_cs.lock();
 				if (pbase() != pptr())

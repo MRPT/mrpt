@@ -67,45 +67,45 @@ namespace mrpt
 			void changeRobotCircularShapeRadius( const double R );
 
 			// See base class docs:
-			virtual size_t getPTG_count() const  MRPT_OVERRIDE { return PTGs.size(); }
-			virtual CParameterizedTrajectoryGenerator* getPTG(size_t i)  MRPT_OVERRIDE { ASSERT_(i<PTGs.size()); return PTGs[i]; }
-			virtual const CParameterizedTrajectoryGenerator* getPTG(size_t i) const  MRPT_OVERRIDE { ASSERT_(i<PTGs.size()); return PTGs[i]; }
-			virtual bool checkCollisionWithLatestObstacles()  const MRPT_OVERRIDE;
+			virtual size_t getPTG_count() const  override { return PTGs.size(); }
+			virtual CParameterizedTrajectoryGenerator* getPTG(size_t i)  override { ASSERT_(i<PTGs.size()); return PTGs[i]; }
+			virtual const CParameterizedTrajectoryGenerator* getPTG(size_t i) const  override { ASSERT_(i<PTGs.size()); return PTGs[i]; }
+			virtual bool checkCollisionWithLatestObstacles()  const override;
 
 			struct NAV_IMPEXP TReactiveNavigatorParams : public mrpt::utils::CLoadableOptions
 			{
 				double min_obstacles_height, max_obstacles_height; // The range of "z" coordinates for obstacles to be considered
 
-				virtual void loadFromConfigFile(const mrpt::utils::CConfigFileBase &c, const std::string &s) MRPT_OVERRIDE;
-				virtual void saveToConfigFile(mrpt::utils::CConfigFileBase &c, const std::string &s) const MRPT_OVERRIDE;
+				virtual void loadFromConfigFile(const mrpt::utils::CConfigFileBase &c, const std::string &s) override;
+				virtual void saveToConfigFile(mrpt::utils::CConfigFileBase &c, const std::string &s) const override;
 				TReactiveNavigatorParams();
 			};
 
 			TReactiveNavigatorParams params_reactive_nav;
 
-			virtual void loadConfigFile(const mrpt::utils::CConfigFileBase &c) MRPT_OVERRIDE; // See base class docs!
-			virtual void saveConfigFile(mrpt::utils::CConfigFileBase &c) const MRPT_OVERRIDE; // See base class docs!
+			virtual void loadConfigFile(const mrpt::utils::CConfigFileBase &c) override; // See base class docs!
+			virtual void saveConfigFile(mrpt::utils::CConfigFileBase &c) const override; // See base class docs!
 
 		private:
 			std::vector<CParameterizedTrajectoryGenerator*>	PTGs;  //!< The list of PTGs to use for navigation
 
 			// Steps for the reactive navigation sytem.
 			// ----------------------------------------------------------------------------
-			virtual void STEP1_InitPTGs() MRPT_OVERRIDE;
+			virtual void STEP1_InitPTGs() override;
 
 			// See docs in parent class
-			bool implementSenseObstacles(mrpt::system::TTimeStamp &obs_timestamp) MRPT_OVERRIDE;
+			bool implementSenseObstacles(mrpt::system::TTimeStamp &obs_timestamp) override;
 		protected:
 			mrpt::math::CPolygon m_robotShape;     //!< The robot 2D shape model. Only one of `robot_shape` or `robot_shape_circular_radius` will be used in each PTG
 			double m_robotShapeCircularRadius;   //!< Radius of the robot if approximated as a circle. Only one of `robot_shape` or `robot_shape_circular_radius` will be used in each PTG
 
 			/** Generates a pointcloud of obstacles, and the robot shape, to be saved in the logging record for the current timestep */
-			virtual void loggingGetWSObstaclesAndShape(CLogFileRecord &out_log) MRPT_OVERRIDE;
+			virtual void loggingGetWSObstaclesAndShape(CLogFileRecord &out_log) override;
 
 			mrpt::maps::CSimplePointsMap m_WS_Obstacles;  //!< The obstacle points, as seen from the local robot frame.
 			mrpt::maps::CSimplePointsMap m_WS_Obstacles_original;  //!< Obstacle points, before filtering (if filtering is enabled).
 			// See docs in parent class
-			void STEP3_WSpaceToTPSpace(const size_t ptg_idx, std::vector<double> &out_TPObstacles, mrpt::nav::ClearanceDiagram &out_clearance, const mrpt::math::TPose2D &rel_pose_PTG_origin_wrt_sense, const bool eval_clearance) MRPT_OVERRIDE;
+			void STEP3_WSpaceToTPSpace(const size_t ptg_idx, std::vector<double> &out_TPObstacles, mrpt::nav::ClearanceDiagram &out_clearance, const mrpt::math::TPose2D &rel_pose_PTG_origin_wrt_sense, const bool eval_clearance) override;
 
 		}; // end class
 	}
