@@ -206,7 +206,7 @@ double	 CBeaconMap::internal_computeObservationLikelihood(
 
 			if (beac!=nullptr &&
 				it_obs->sensedDistance > 0 &&
-				!isNaN(it_obs->sensedDistance))
+				!std::isnan(it_obs->sensedDistance))
 			{
 				float sensedRange = it_obs->sensedDistance;
 
