@@ -12,7 +12,7 @@
 #include <mrpt/base/link_pragmas.h>
 #include <mrpt/utils/CStream.h>
 #include <string>
-#include <memory> // for auto_ptr<>, unique_ptr<>
+#include <memory> // for unique_ptr<>
 
 namespace mrpt
 {
