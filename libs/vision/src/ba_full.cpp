@@ -14,7 +14,7 @@
 #include <mrpt/math/CSparseMatrix.h>
 #include <mrpt/math/ops_containers.h>
 
-#include <memory>  // std::auto_ptr, unique_ptr
+#include <memory>  // unique_ptr
 
 #include "ba_internals.h"
 

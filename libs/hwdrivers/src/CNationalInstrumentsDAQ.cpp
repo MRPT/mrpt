@@ -107,22 +107,6 @@ CNationalInstrumentsDAQ::TInfoPerTask::TInfoPerTask() :
 	task()
 { }
 
-// Copy ctor (needed for the auto_ptr semantics)
-/*
-CNationalInstrumentsDAQ::TInfoPerTask::TInfoPerTask(const TInfoPerTask &o) :
-	taskHandle(o.taskHandle),
-	hThread(o.hThread),
-	read_pipe(o.read_pipe.get()),
-	write_pipe(o.write_pipe.get()),
-	must_close(o.must_close),
-	is_closed(o.is_closed),
-	new_obs_available(0),
-	task(o.task)
-{
-	const_cast<TInfoPerTask*>(&o)->read_pipe.release();
-	const_cast<TInfoPerTask*>(&o)->write_pipe.release();
-}
-*/
 
 /* -----------------------------------------------------
                 Constructor

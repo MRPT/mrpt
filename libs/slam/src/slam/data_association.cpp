@@ -29,7 +29,7 @@
 
 #include <set>
 #include <numeric>  // accumulate
-#include <memory>   // auto_ptr, unique_ptr
+#include <memory>   // unique_ptr
 
 #include <mrpt/otherlibs/nanoflann/nanoflann.hpp> // For kd-tree's
 #include <mrpt/math/KDTreeCapable.h>   // For kd-tree's

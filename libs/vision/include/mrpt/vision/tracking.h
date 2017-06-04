@@ -21,7 +21,7 @@
 
 #include <mrpt/utils/metaprogramming.h>
 
-#include <memory> 	// for auto_ptr, unique_ptr
+#include <memory> 	// for unique_ptr
 
 namespace mrpt
 {
