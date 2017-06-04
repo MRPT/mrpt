@@ -782,7 +782,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 }
 
 
-void CAbstractPTGBasedReactive::STEP8_GenerateLogRecord(CLogFileRecord &newLogRec,const std::vector<TPose2D>& relTargets,int nSelectedPTG, const mrpt::kinematics::CVehicleVelCmdPtr &new_vel_cmd, const int nPTGs, const bool best_is_NOP_cmdvel, const mrpt::math::TPose2D &rel_cur_pose_wrt_last_vel_cmd_NOP, const mrpt::math::TPose2D &rel_pose_PTG_origin_wrt_sense_NOP, const double executionTimeValue, const double tim_changeSpeed, const mrpt::system::TTimeStamp &tim_start_iteration)
+void CAbstractPTGBasedReactive::STEP8_GenerateLogRecord(CLogFileRecord &newLogRec,const std::vector<TPose2D>& relTargets,int nSelectedPTG, const mrpt::kinematics::CVehicleVelCmd::Ptr &new_vel_cmd, const int nPTGs, const bool best_is_NOP_cmdvel, const mrpt::math::TPose2D &rel_cur_pose_wrt_last_vel_cmd_NOP, const mrpt::math::TPose2D &rel_pose_PTG_origin_wrt_sense_NOP, const double executionTimeValue, const double tim_changeSpeed, const mrpt::system::TTimeStamp &tim_start_iteration)
 {
 	// ---------------------------------------
 	// STEP8: Generate log record
