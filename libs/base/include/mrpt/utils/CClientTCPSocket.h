@@ -10,7 +10,7 @@
 #define  CClientTCPSocket_H
 
 #include <mrpt/utils/core_defs.h>
-#include <mrpt/utils/mrpt_stdint.h>
+#include <cstdint>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/utils/net_utils.h>
 #include <string>

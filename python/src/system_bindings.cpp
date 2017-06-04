@@ -5,7 +5,7 @@
 #include <mrpt/system/datetime.h>
 
 /* STD */
-#include <stdint.h>
+#include <cstdint>
 
 /* namespaces */
 using namespace boost::python;

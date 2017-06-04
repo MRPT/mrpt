@@ -11,7 +11,7 @@
 #define CLogOddsGridMap2D_H
 
 #include <mrpt/utils/core_defs.h>
-#include <mrpt/utils/mrpt_stdint.h>
+#include <cstdint>
 #include <vector>
 
 namespace mrpt
