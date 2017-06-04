@@ -181,7 +181,15 @@ namespace mrpt { namespace graphslam {
  *
  *
  * \note Implementation can be found in the file \em CGraphSlamEngine_impl.h
+ *
+ * \note Class contains an instance of the
+ * mrpt::maps::COccupancyGridMap2D and mrpt::maps::COctomap classes and it
+ * parses the configuration parameters from the "MappingParameters" section.
+ * Refer to those classes for documentation on their .ini configuration
+ * parameters
+ *
  * \ingroup mrpt_graphslam_grp
+ * // TODO - have the ini sections in named variables for potential modifications
  */
 template<class GRAPH_T=typename mrpt::graphs::CNetworkOfPoses2DInf>
 class CGraphSlamEngine : public mrpt::utils::COutputLogger {
@@ -314,6 +322,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 * since the last time the gridmap was computed.
 		 *
 		 * \sa computeMap
+		 * \todo TODO Implement compile-time polymorphism
 		 */
 		void getMap(mrpt::maps::COccupancyGridMap2DPtr map,
 				mrpt::system::TTimeStamp* acquisition_time=NULL) const;
@@ -513,10 +522,29 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 * - Properties fo class at the current time
 		 * - Logging of commands until current time
 		 *
-		 * \note Decider/Optimizer classes should also implement a getDescriptiveReport
-		 * method for printing information on their part of the execution.
+		 * \note Decider/Optimizer classes should also implement the \a
+		 * getDescriptiveReport method for printing information on their part of
+		 * the execution.
 		 */
 		void getDescriptiveReport(std::string* report_str) const;
+		/**\name Map parameters */
+		/**\{*/
+		void loadMapParams(const std::string& fname);
+		/**\brief Load the COccupancyGridMap parameters
+		 * \note Method called only when using 2D poses, thus 2D SLAM
+		 */
+		void loadMapParamsInternal(
+				const mrpt::poses::CPose2D& p_unused,
+				const std::string& fname,
+				const std::string& sec);
+		/**\brief Load the COctomap  parameters
+		 * \note Method called only when using 3D poses, thus 3D SLAM
+		 * */
+		void loadMapParamsInternal(
+				const mrpt::poses::CPose3D& p_unused,
+				const std::string& fname,
+				const std::string& sec);
+		/**\}*/
 		/** \name Initialization of Visuals
 		 * Methods used for initializing various visualization features relevant to
 		 * the application at hand. If the visual feature is specified by the user
@@ -531,7 +559,8 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 
 		mrpt::opengl::CSetOfObjectsPtr initRobotModelVisualization();
 		/**\brief Method to help overcome the partial template specialization
-		 * restriction of C++. Apply polymorphism by overloading function arguments instead
+		 * restriction of C++. Apply polymorphism by overloading function arguments
+		 * instead
 		 */
 		/**\{ */
 		mrpt::opengl::CSetOfObjectsPtr initRobotModelVisualizationInternal(
@@ -574,8 +603,9 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 */
 		virtual mrpt::poses::CPose3D getLSPoseForGridMapVisualization(
 				const mrpt::utils::TNodeID nodeID) const;
-		/**\brief Set the properties of the map visual object based on the nodeID that
-		 * it was produced by.
+		/**\brief Set the properties of the map visual object based on the nodeID
+		 * that it was produced by.
+		 *
 		 * Derived classes may override this method if they want to have different
 		 * visual properties (color, shape etc.) for different nodeIDs.
 		 *
@@ -598,7 +628,8 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 					mrpt::utils::TNodeID,
 					mrpt::obs::CObservation2DRangeScanPtr>& nodes_to_laser_scans2D,
 				bool full_update=false);
-		/**\brief Display the next ground truth position in the visualization window.
+		/**\brief Display the next ground truth position in the visualization
+		 * window.
 		 *
 		 * \sa updateOdometryVisualization
 		 */
@@ -690,8 +721,9 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 				const mrpt::obs::CActionCollectionPtr action,
 				const mrpt::obs::CSensoryFramePtr observations,
 				const mrpt::obs::CObservationPtr observation);
-		// TODO - move these somewhere else.
 		/**\name Class specific supplementary functions.
+		 * Methods are utilised in the SLAM metric evaluation
+		 * \todo TODO move them somewhere else.. outside class
 		 */
 		/**\{*/
 		static double accumulateAngleDiffs(
@@ -974,6 +1006,8 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 */
 		bool m_request_to_exit;
 
+		std::string m_class_name;
+
 		/**\name Map-related objects
 		 * \brief Cached version and corresponding flag of map
 		 */
@@ -993,8 +1027,6 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 */
 		mutable mrpt::system::TTimeStamp m_map_acq_time;
 		/**\}*/
-
-		std::string m_class_name;
 		/**\brief Track the first node registration occurance
 		 *
 		 * Handy so that we can assign a measurement to the root node as well.
@@ -1013,6 +1045,20 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 */
 		static const std::string header_sep;
 		static const std::string report_sep;
+
+		/**\name Section names in the .ini file
+		 *
+		 * See initialization list for these values
+		 */
+		/**\{*/
+		const std::string m_sec_general_params;
+		const std::string m_sec_nrd_params;
+		const std::string m_sec_erd_params;
+		const std::string m_sec_gso_params;
+		const std::string m_sec_viz_params;
+		const std::string m_sec_map_params;
+		/**\}*/
+
 };
 
 } } // end of namespaces

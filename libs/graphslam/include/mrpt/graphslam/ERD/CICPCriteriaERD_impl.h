@@ -27,6 +27,10 @@ CICPCriteriaERD<GRAPH_T>::CICPCriteriaERD():
 	this->m_last_total_num_nodes = 2;
 	this->logFmt(LVL_DEBUG, "Initialized class object");
 
+	// do not use this since it affects LCs when we use a radius around the latest
+	// registered node
+	this->m_use_mahal_distance_init_ICP = false;
+
 	MRPT_END;
 }
 
@@ -55,7 +59,18 @@ template<class GRAPH_T> bool CICPCriteriaERD<GRAPH_T>::updateState(
 	}
 
 	if (observation.present()) { // observation-only rawlog format
-		this->getIncomingObs(observation);
+		if (IS_CLASS(observation, CObservation2DRangeScan)) {
+			this->m_last_laser_scan2D =
+				static_cast<mrpt::obs::CObservation2DRangeScanPtr>(observation);
+		}
+		if (IS_CLASS(observation, CObservation3DRangeScan)) {
+			this->m_last_laser_scan3D =
+				static_cast<mrpt::obs::CObservation3DRangeScanPtr>(observation);
+			// just load the range/intensity images - CGraphSlanEngine takes care
+			// of the path
+			this->m_last_laser_scan3D->load();
+		}
+
 
 		// New node has been registered.
 		// add the last laser_scan
@@ -69,16 +84,16 @@ template<class GRAPH_T> bool CICPCriteriaERD<GRAPH_T>::updateState(
 					this->m_last_laser_scan3D;
 			}
 		}
-	}
+	} // end if observation.present()
 	else { // action-observations rawlog format
 		// append current laser scan
 		this->m_last_laser_scan2D =
 			observations->getObservationByClass<CObservation2DRangeScan>();
 		if (registered_new_node && this->m_last_laser_scan2D) {
-			this->m_nodes_to_laser_scans2D[
-				this->m_graph->nodeCount()-1] = this->m_last_laser_scan2D;
+			this->m_nodes_to_laser_scans2D[this->m_graph->nodeCount()-1] =
+				this->m_last_laser_scan2D;
 		}
-	}
+	} // end else
 
 	// edge registration procedure - same for both rawlog formats
 	if (registered_new_node) {
@@ -92,6 +107,31 @@ template<class GRAPH_T> bool CICPCriteriaERD<GRAPH_T>::updateState(
 	return true;
 	MRPT_END;
 } // end of updateState
+
+template<class GRAPH_T>
+void CICPCriteriaERD<GRAPH_T>::registerNewEdge(
+		const mrpt::utils::TNodeID& from,
+		const mrpt::utils::TNodeID& to,
+		const constraint_t& rel_edge ) {
+	MRPT_START;
+	using namespace mrpt::utils;
+	using namespace mrpt::math;
+	using namespace std;
+	parent_t::registerNewEdge(from, to, rel_edge);
+
+	this->m_edge_types_to_nums["ICP2D"]++;
+	//  keep track of the registered edges...
+	if (absDiff(to, from) > this->m_LC_min_nodeid_diff)  {
+		this->m_edge_types_to_nums["LC"]++;
+		this->m_just_inserted_lc = true;
+		this->logFmt(LVL_INFO, "\tLoop Closure edge!");
+	}
+	else {
+		this->m_just_inserted_lc = false;
+	}
+	MRPT_END;
+} // end of registerNewEdge
+
 
 
 template<class GRAPH_T>
@@ -237,11 +277,6 @@ void CICPCriteriaERD<GRAPH_T>::loadParams(const std::string& source_fname) {
 			section,
 			"ICP_max_distance",
 			10, false);
-
-	this->m_use_mahal_distance_init_ICP = source.read_bool(
-			section,
-			"use_mahal_distance",
-			true, false);
 
 	MRPT_END;
 } // end of loadParamas
