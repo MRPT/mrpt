@@ -57,8 +57,8 @@ namespace maps
 		{
 			TInsertionOptions();	//!< Default values loader
 
-			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
-			void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
+			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) override; // See base docs
+			void dumpToTextStream(mrpt::utils::CStream &out) const override; // See base docs
 
 			/** @name For all mapping methods
 			    @{ */
@@ -78,10 +78,10 @@ namespace maps
 		} insertionOptions;
 
 		/** Returns a 3D object representing the map */
-		virtual void getAs3DObject( mrpt::opengl::CSetOfObjects::Ptr &outObj ) const MRPT_OVERRIDE;
+		virtual void getAs3DObject( mrpt::opengl::CSetOfObjects::Ptr &outObj ) const override;
 
 		/** Returns two 3D objects representing the mean and variance maps */
-		virtual void  getAs3DObject ( mrpt::opengl::CSetOfObjects::Ptr	&meanObj, mrpt::opengl::CSetOfObjects::Ptr	&varObj ) const MRPT_OVERRIDE;
+		virtual void  getAs3DObject ( mrpt::opengl::CSetOfObjects::Ptr	&meanObj, mrpt::opengl::CSetOfObjects::Ptr	&varObj ) const override;
 
 		/** Returns the 3D object representing the wind grid information */
 		void  getWindAs3DObject( mrpt::opengl::CSetOfObjects::Ptr &windObj) const;
@@ -123,14 +123,14 @@ namespace maps
 	protected:
 
 		/** Get the part of the options common to all CRandomFieldGridMap2D classes */
-		virtual CRandomFieldGridMap2D::TInsertionOptionsCommon * getCommonInsertOptions()  MRPT_OVERRIDE {
+		virtual CRandomFieldGridMap2D::TInsertionOptionsCommon * getCommonInsertOptions()  override {
 			return &insertionOptions;
 		}
 
 		// See docs in base class
-		void  internal_clear() MRPT_OVERRIDE;
-		bool  internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = nullptr ) MRPT_OVERRIDE;
-		double internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom ) MRPT_OVERRIDE;
+		void  internal_clear() override;
+		bool  internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = nullptr ) override;
+		double internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom ) override;
 
 		 /** Builds a LookUp table with the values of the Gaussian Weights result of the wind advection
 		 *   for a specific std_windNoise_phi value.

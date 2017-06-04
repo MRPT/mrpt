@@ -405,7 +405,7 @@ void CObservationVelodyneScan::generatePointCloud(const TGeneratePointCloudParam
 			// Reset point cloud:
 			me_.point_cloud.clear();
 		}
-		void add_point(double pt_x,double pt_y, double pt_z,uint8_t pt_intensity, const mrpt::system::TTimeStamp &tim, const float azimuth) MRPT_OVERRIDE {
+		void add_point(double pt_x,double pt_y, double pt_z,uint8_t pt_intensity, const mrpt::system::TTimeStamp &tim, const float azimuth) override {
 			me_.point_cloud.x.push_back( pt_x );
 			me_.point_cloud.y.push_back( pt_y );
 			me_.point_cloud.z.push_back( pt_z );
@@ -448,7 +448,7 @@ void CObservationVelodyneScan::generatePointCloudAlongSE3Trajectory(
 			me_(me),vehicle_path_(vehicle_path),out_points_(out_points),results_stats_(results_stats),last_query_tim_(INVALID_TIMESTAMP),last_query_valid_(false) 
 		{
 		}
-		void add_point(double pt_x,double pt_y, double pt_z,uint8_t pt_intensity, const mrpt::system::TTimeStamp &tim, const float azimuth) MRPT_OVERRIDE
+		void add_point(double pt_x,double pt_y, double pt_z,uint8_t pt_intensity, const mrpt::system::TTimeStamp &tim, const float azimuth) override
 		{
 			// Use a cache since it's expected that the same timestamp is queried several times in a row:
 			if (last_query_tim_!=tim) {

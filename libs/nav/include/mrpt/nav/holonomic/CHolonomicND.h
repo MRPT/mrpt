@@ -55,7 +55,7 @@ namespace mrpt
 		CHolonomicND( const mrpt::utils::CConfigFileBase *INI_FILE = nullptr );
 
 		// See base class docs
-		void navigate(const NavInput & ni, NavOutput &no) MRPT_OVERRIDE;
+		void navigate(const NavInput & ni, NavOutput &no) override;
 
 		/** The structure used to store a detected gap in obstacles. */
 		struct TGap
@@ -79,8 +79,8 @@ namespace mrpt
 		};
 
 		/**  Initialize the parameters of the navigator. */
-		void  initialize(const mrpt::utils::CConfigFileBase &INI_FILE) MRPT_OVERRIDE;
-		virtual void saveConfigFile(mrpt::utils::CConfigFileBase &c) const MRPT_OVERRIDE; // See base class docs
+		void  initialize(const mrpt::utils::CConfigFileBase &INI_FILE) override;
+		virtual void saveConfigFile(mrpt::utils::CConfigFileBase &c) const override; // See base class docs
 
 		/** Algorithm options */
 		struct NAV_IMPEXP TOptions : public mrpt::utils::CLoadableOptions
@@ -92,14 +92,14 @@ namespace mrpt
 
 
 			TOptions();
-			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
-			void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg ,const std::string &section) const MRPT_OVERRIDE; // See base docs
+			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) override; // See base docs
+			void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg ,const std::string &section) const override; // See base docs
 		};
 
 		TOptions options;  //!< Parameters of the algorithm (can be set manually or loaded from CHolonomicND::initialize or options.loadFromConfigFile(), etc.)
 
-		double getTargetApproachSlowDownDistance() const MRPT_OVERRIDE { return options.TARGET_SLOW_APPROACHING_DISTANCE; }
-		void setTargetApproachSlowDownDistance(const double dist) MRPT_OVERRIDE { options.TARGET_SLOW_APPROACHING_DISTANCE = dist; }
+		double getTargetApproachSlowDownDistance() const override { return options.TARGET_SLOW_APPROACHING_DISTANCE; }
+		void setTargetApproachSlowDownDistance(const double dist) override { options.TARGET_SLOW_APPROACHING_DISTANCE = dist; }
 
 	private:
 		unsigned int m_last_selected_sector;

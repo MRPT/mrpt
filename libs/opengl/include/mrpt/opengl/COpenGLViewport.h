@@ -381,7 +381,7 @@ namespace mrpt
 		class OPENGL_IMPEXP mrptEventGLPreRender : public mrpt::utils::mrptEvent
 		{
 		protected:
-			void do_nothing() MRPT_OVERRIDE { } //!< Just to allow this class to be polymorphic
+			void do_nothing() override { } //!< Just to allow this class to be polymorphic
 		public:
 			inline mrptEventGLPreRender(const COpenGLViewport* obj) : source_viewport(obj) { }
 			const COpenGLViewport * const source_viewport;
@@ -398,7 +398,7 @@ namespace mrpt
 		class OPENGL_IMPEXP mrptEventGLPostRender : public mrpt::utils::mrptEvent
 		{
 		protected:
-			void do_nothing()  MRPT_OVERRIDE { } //!< Just to allow this class to be polymorphic
+			void do_nothing()  override { } //!< Just to allow this class to be polymorphic
 		public:
 			inline mrptEventGLPostRender(const COpenGLViewport* obj) : source_viewport(obj) { }
 			const COpenGLViewport * const source_viewport;

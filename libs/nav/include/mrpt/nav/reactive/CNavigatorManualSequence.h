@@ -26,13 +26,13 @@ namespace nav
 
 		/** @name Initialization API
 		  * @{ */
-		virtual void loadConfigFile(const mrpt::utils::CConfigFileBase &c) MRPT_OVERRIDE; // See base class docs!
-		virtual void saveConfigFile(mrpt::utils::CConfigFileBase &c) const MRPT_OVERRIDE; // See base class docs!
-		void initialize() MRPT_OVERRIDE; //!< Must be called for loading collision grids, etc. before invoking any navigation command
+		virtual void loadConfigFile(const mrpt::utils::CConfigFileBase &c) override; // See base class docs!
+		virtual void saveConfigFile(mrpt::utils::CConfigFileBase &c) const override; // See base class docs!
+		void initialize() override; //!< Must be called for loading collision grids, etc. before invoking any navigation command
 		/** @} */
 
 		/** Overriden in this class to ignore the cancel/pause/... commands */
-		void navigationStep() MRPT_OVERRIDE;
+		void navigationStep() override;
 
 		struct TVelCmd
 		{
@@ -42,12 +42,12 @@ namespace nav
 		std::map<double,TVelCmd>  programmed_orders; //!< map [time_in_secs_since_beginning] -> orders.
 
 	protected:
-		virtual void onStartNewNavigation() MRPT_OVERRIDE { }
+		virtual void onStartNewNavigation() override { }
 
 	private:
 		// Not used in this class:
-		virtual void navigate( const TNavigationParams *params ) MRPT_OVERRIDE { }
-		virtual void  performNavigationStep( )  MRPT_OVERRIDE { } 
+		virtual void navigate( const TNavigationParams *params ) override { }
+		virtual void  performNavigationStep( )  override { } 
 	};
 }	
 }

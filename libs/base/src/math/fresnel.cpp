@@ -53,24 +53,24 @@ long double lfresnel_cos_alt(long double x)
 	return (x < 0.0L) ? -c : c;
 }
 
-long double mrpt::math::lfresnel_sin_integral(long double x) MRPT_NO_THROWS
+long double mrpt::math::lfresnel_sin_integral(long double x) noexcept
 {
 	long double sqrt_2_o_pi = 7.978845608028653558798921198687637369517e-1L;
 	return lfresnel_sin_alt(x/ sqrt_2_o_pi);
 }
 
-long double mrpt::math::lfresnel_cos_integral(long double x) MRPT_NO_THROWS
+long double mrpt::math::lfresnel_cos_integral(long double x) noexcept
 {
 	long double sqrt_2_o_pi = 7.978845608028653558798921198687637369517e-1L;
 	return lfresnel_cos_alt(x / sqrt_2_o_pi);
 }
 
-double mrpt::math::fresnel_sin_integral(double x) MRPT_NO_THROWS
+double mrpt::math::fresnel_sin_integral(double x) noexcept
 {
 	return static_cast<double>(lfresnel_sin_integral(static_cast<long double>(x)));
 }
 
-double mrpt::math::fresnel_cos_integral(double x) MRPT_NO_THROWS
+double mrpt::math::fresnel_cos_integral(double x) noexcept
 {
 	return static_cast<double>(lfresnel_cos_integral(static_cast<long double>(x)));
 }

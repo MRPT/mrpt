@@ -281,8 +281,8 @@ namespace nav
 		 *   - `${sKeyPrefix}ref_distance`: The maximum distance in PTGs [meters]
 		 *   - `${sKeyPrefix}score_priority`: When used in path planning, a multiplying factor (default=1.0) for the scores for this PTG. Assign values <1 to PTGs with low priority.
 		 */
-		virtual void loadFromConfigFile(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) MRPT_OVERRIDE;
-		virtual void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const MRPT_OVERRIDE;
+		virtual void loadFromConfigFile(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) override;
+		virtual void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const override;
 
 
 		/** Auxiliary function for rendering */
@@ -359,21 +359,21 @@ protected:
 		/** Robot shape must be set before initialization, either from ctor params or via this method. */
 		void setRobotShape(const mrpt::math::CPolygon & robotShape);
 		const mrpt::math::CPolygon & getRobotShape() const { return m_robotShape; }
-		double getMaxRobotRadius() const MRPT_OVERRIDE;
-		virtual double evalClearanceToRobotShape(const double ox, const double oy) const MRPT_OVERRIDE;
+		double getMaxRobotRadius() const override;
+		virtual double evalClearanceToRobotShape(const double ox, const double oy) const override;
 		/** @} */
-		bool isPointInsideRobotShape(const double x, const double y) const MRPT_OVERRIDE;
-		void add_robotShape_to_setOfLines(mrpt::opengl::CSetOfLines &gl_shape, const mrpt::poses::CPose2D &origin = mrpt::poses::CPose2D ()) const  MRPT_OVERRIDE;
+		bool isPointInsideRobotShape(const double x, const double y) const override;
+		void add_robotShape_to_setOfLines(mrpt::opengl::CSetOfLines &gl_shape, const mrpt::poses::CPose2D &origin = mrpt::poses::CPose2D ()) const  override;
 	protected:
 		virtual void internal_processNewRobotShape() = 0; //!< Will be called whenever the robot shape is set / updated
 		mrpt::math::CPolygon m_robotShape;
 		double m_robotMaxRadius;
 		void loadShapeFromConfigFile(const mrpt::utils::CConfigFileBase & source,const std::string & section);
-		void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const MRPT_OVERRIDE;
+		void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const override;
 		void internal_shape_loadFromStream(mrpt::utils::CStream &in);
 		void internal_shape_saveToStream(mrpt::utils::CStream &out) const;
 		/** Loads a set of default parameters; provided  exclusively for the PTG-configurator tool. */
-		void loadDefaultParams() MRPT_OVERRIDE;
+		void loadDefaultParams() override;
 	};
 
 	/** Base class for all PTGs using a 2D circular robot shape model.
@@ -390,20 +390,20 @@ protected:
 		/** Robot shape must be set before initialization, either from ctor params or via this method. */
 		void setRobotShapeRadius(const double robot_radius);
 		double getRobotShapeRadius() const { return m_robotRadius; }
-		double getMaxRobotRadius() const MRPT_OVERRIDE;
-		virtual double evalClearanceToRobotShape(const double ox, const double oy) const MRPT_OVERRIDE;
+		double getMaxRobotRadius() const override;
+		virtual double evalClearanceToRobotShape(const double ox, const double oy) const override;
 		/** @} */
-		void add_robotShape_to_setOfLines(mrpt::opengl::CSetOfLines &gl_shape, const mrpt::poses::CPose2D &origin = mrpt::poses::CPose2D ()) const  MRPT_OVERRIDE;
-		bool isPointInsideRobotShape(const double x, const double y) const MRPT_OVERRIDE;
+		void add_robotShape_to_setOfLines(mrpt::opengl::CSetOfLines &gl_shape, const mrpt::poses::CPose2D &origin = mrpt::poses::CPose2D ()) const  override;
+		bool isPointInsideRobotShape(const double x, const double y) const override;
 	protected:
 		virtual void internal_processNewRobotShape() = 0; //!< Will be called whenever the robot shape is set / updated
 		double m_robotRadius;
 		void loadShapeFromConfigFile(const mrpt::utils::CConfigFileBase & source,const std::string & section);
-		void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const MRPT_OVERRIDE;
+		void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const override;
 		void internal_shape_loadFromStream(mrpt::utils::CStream &in);
 		void internal_shape_saveToStream(mrpt::utils::CStream &out) const;
 		/** Loads a set of default parameters; provided  exclusively for the PTG-configurator tool. */
-		void loadDefaultParams() MRPT_OVERRIDE;
+		void loadDefaultParams() override;
 	};
 
 }

@@ -1626,7 +1626,7 @@ void  math::idft2_complex(
 /*---------------------------------------------------------------
 						isNan
  ---------------------------------------------------------------*/
-bool mrpt::math::isNaN(float v) MRPT_NO_THROWS
+bool mrpt::math::isNaN(float v) noexcept
 {
 #if defined(__BORLANDC__) || defined(_MSC_VER)
 		return 0!=_isnan((double)v);
@@ -1639,7 +1639,7 @@ bool mrpt::math::isNaN(float v) MRPT_NO_THROWS
 
 /** Returns true if value is Not-a-number (NAN)
   */
-bool mrpt::math::isNaN(double v) MRPT_NO_THROWS
+bool mrpt::math::isNaN(double v) noexcept
 {
 #if defined(__BORLANDC__) || defined(_MSC_VER)
 		return 0!=_isnan(v);
@@ -1652,7 +1652,7 @@ bool mrpt::math::isNaN(double v) MRPT_NO_THROWS
 
 /** Returns true if value is finite
   */
-bool mrpt::math::isFinite(float v) MRPT_NO_THROWS
+bool mrpt::math::isFinite(float v) noexcept
 {
 #if defined(__BORLANDC__) || defined(_MSC_VER)
 		return 0!=_finite(v);
@@ -1666,7 +1666,7 @@ bool mrpt::math::isFinite(float v) MRPT_NO_THROWS
 
 /** Returns true if value is finite
   */
-bool mrpt::math::isFinite(double v) MRPT_NO_THROWS
+bool mrpt::math::isFinite(double v) noexcept
 {
 #if defined(__BORLANDC__) || defined(_MSC_VER)
 		return 0!=_finite(v);
@@ -1682,7 +1682,7 @@ bool mrpt::math::isFinite(double v) MRPT_NO_THROWS
 	/*---------------------------------------------------------------
 							isnan
 	---------------------------------------------------------------*/
-	bool  mrpt::math::isNaN(long double f) MRPT_NO_THROWS
+	bool  mrpt::math::isNaN(long double f) noexcept
 	{
 #if MRPT_CHECK_VISUALC_VERSION(14) || defined(__GNUC__)
 		return std::isnan(f);
@@ -1694,7 +1694,7 @@ bool mrpt::math::isFinite(double v) MRPT_NO_THROWS
 	/*---------------------------------------------------------------
 							isFinite
 	---------------------------------------------------------------*/
-	bool  mrpt::math::isFinite(long double f) MRPT_NO_THROWS
+	bool  mrpt::math::isFinite(long double f) noexcept
 	{
 #if MRPT_CHECK_VISUALC_VERSION(14) || defined(__GNUC__)
 		return std::isfinite(f);

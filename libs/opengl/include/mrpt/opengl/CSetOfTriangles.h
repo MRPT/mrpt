@@ -118,19 +118,19 @@ namespace mrpt
 			/** Enables or disables transparency. */
 			inline void enableTransparency( bool v )	{ m_enableTransparency = v; CRenderizableDisplayList::notifyChange(); }
 
-			CRenderizable& setColor_u8(const mrpt::utils::TColor &c) MRPT_OVERRIDE;
-			CRenderizable& setColorR_u8(const uint8_t r) MRPT_OVERRIDE;
-			CRenderizable& setColorG_u8(const uint8_t g) MRPT_OVERRIDE;
-			CRenderizable& setColorB_u8(const uint8_t b) MRPT_OVERRIDE;
-			CRenderizable& setColorA_u8(const uint8_t a) MRPT_OVERRIDE;
+			CRenderizable& setColor_u8(const mrpt::utils::TColor &c) override;
+			CRenderizable& setColorR_u8(const uint8_t r) override;
+			CRenderizable& setColorG_u8(const uint8_t g) override;
+			CRenderizable& setColorB_u8(const uint8_t b) override;
+			CRenderizable& setColorA_u8(const uint8_t a) override;
 
 			/** Render
 			  */
-			void render_dl() const MRPT_OVERRIDE;
+			void render_dl() const override;
 
 			/** Ray tracing
 			  */
-			bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const MRPT_OVERRIDE;
+			bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const override;
 
 			/**
 			  * Gets the polygon cache.
@@ -174,7 +174,7 @@ namespace mrpt
 			}
 
 			/** Evaluates the bounding box of this object (including possible children) in the coordinate frame of the object parent. */
-			void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const MRPT_OVERRIDE;
+			void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const override;
 
 			/** Constructor
 			  */

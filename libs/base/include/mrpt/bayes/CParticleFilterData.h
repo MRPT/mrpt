@@ -35,24 +35,24 @@ namespace bayes
 		/// CRTP helper method
 		inline       Derived& derived()       { return *static_cast<Derived*>(this); }
 
-		double getW(size_t i) const MRPT_OVERRIDE
+		double getW(size_t i) const override
 		{
 			if (i>=derived().m_particles.size()) THROW_EXCEPTION_FMT("Index %i is out of range!",(int)i);
 			return derived().m_particles[i].log_w;
 		}
 
-		void setW(size_t i, double w) MRPT_OVERRIDE
+		void setW(size_t i, double w) override
 		{
 			if (i>=derived().m_particles.size()) THROW_EXCEPTION_FMT("Index %i is out of range!",(int)i);
 			derived().m_particles[i].log_w = w;
 		}
 
-		size_t particlesCount() const MRPT_OVERRIDE
+		size_t particlesCount() const override
 		{
 			return derived().m_particles.size();
 		}
 
-        double normalizeWeights( double *out_max_log_w = nullptr ) MRPT_OVERRIDE
+        double normalizeWeights( double *out_max_log_w = nullptr ) override
 		{
 			MRPT_START
 			if (derived().m_particles.empty()) return 0;
@@ -75,7 +75,7 @@ namespace bayes
 			MRPT_END
 		}
 
-		double ESS() const MRPT_OVERRIDE
+		double ESS() const override
 		{
 			MRPT_START
 			double	cum = 0;
@@ -95,7 +95,7 @@ namespace bayes
 		}
 
 		/** Replaces the old particles by copies determined by the indexes in "indx", performing an efficient copy of the necesary particles only and allowing the number of particles to change.*/
-		void  performSubstitution( const std::vector<size_t> &indx) MRPT_OVERRIDE
+		void  performSubstitution( const std::vector<size_t> &indx) override
 		{
 			MRPT_START
 			particle_list_t                      parts;

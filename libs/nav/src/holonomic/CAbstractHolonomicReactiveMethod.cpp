@@ -47,7 +47,7 @@ mrpt::nav::CParameterizedTrajectoryGenerator * CAbstractHolonomicReactiveMethod:
 	return m_associatedPTG;
 }
 
-CAbstractHolonomicReactiveMethod * CAbstractHolonomicReactiveMethod::Create(const std::string &className) MRPT_NO_THROWS
+CAbstractHolonomicReactiveMethod * CAbstractHolonomicReactiveMethod::Create(const std::string &className) noexcept
 {
 	try 
 	{

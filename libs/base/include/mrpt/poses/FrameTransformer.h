@@ -90,9 +90,9 @@ public:
 	~FrameTransformer();
 
 	// See base docs
-	virtual void sendTransform(const std::string & parent_frame,const std::string & child_frame,const typename base_t::pose_t & child_wrt_parent, const mrpt::system::TTimeStamp & timestamp = mrpt::system::now() )  MRPT_OVERRIDE;
+	virtual void sendTransform(const std::string & parent_frame,const std::string & child_frame,const typename base_t::pose_t & child_wrt_parent, const mrpt::system::TTimeStamp & timestamp = mrpt::system::now() )  override;
 	// See base docs
-	virtual FrameLookUpStatus lookupTransform(const std::string & target_frame, const std::string & source_frame, typename base_t::pose_t & child_wrt_parent, const mrpt::system::TTimeStamp query_time = INVALID_TIMESTAMP, const double timeout_secs = .0) MRPT_OVERRIDE;
+	virtual FrameLookUpStatus lookupTransform(const std::string & target_frame, const std::string & source_frame, typename base_t::pose_t & child_wrt_parent, const mrpt::system::TTimeStamp query_time = INVALID_TIMESTAMP, const double timeout_secs = .0) override;
 
 protected:
 	//double m_max_extrapolation_time;  //!< for extrapolation in the past or in the future [s]

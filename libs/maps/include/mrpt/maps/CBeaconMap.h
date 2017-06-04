@@ -53,9 +53,9 @@ namespace maps
 		TSequenceBeacons		m_beacons;  //!< The individual beacons
 
 		// See docs in base class
-		virtual void  internal_clear() MRPT_OVERRIDE;
-		virtual bool  internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = nullptr ) MRPT_OVERRIDE;
-		double	 internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom ) MRPT_OVERRIDE;
+		virtual void  internal_clear() override;
+		virtual bool  internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = nullptr ) override;
+		double	 internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom ) override;
 
 	public:
 		/** Constructor */
@@ -95,7 +95,7 @@ namespace maps
 		}
 
 		// See docs in base class
-		float compute3DMatchingRatio(const mrpt::maps::CMetricMap *otherMap, const mrpt::poses::CPose3D &otherMapPose, const TMatchingRatioParams &params) const MRPT_OVERRIDE;
+		float compute3DMatchingRatio(const mrpt::maps::CMetricMap *otherMap, const mrpt::poses::CPose3D &otherMapPose, const TMatchingRatioParams &params) const override;
 
 		 /** With this struct options are provided to the likelihood computations */
 		 struct MAPS_IMPEXP TLikelihoodOptions : public utils::CLoadableOptions
@@ -105,8 +105,8 @@ namespace maps
 			 */
 			 TLikelihoodOptions();
 
-			 void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
-			 void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
+			 void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) override; // See base docs
+			 void dumpToTextStream(mrpt::utils::CStream &out) const override; // See base docs
 
 			 /** The standard deviation used for Beacon ranges likelihood (default=0.08m).
 			   */
@@ -120,8 +120,8 @@ namespace maps
 		 public:
 			/** Initilization of default parameters */
 			 TInsertionOptions();
-			 void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
-			 void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
+			 void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) override; // See base docs
+			 void dumpToTextStream(mrpt::utils::CStream &out) const override; // See base docs
 
 			/** Insert a new beacon as a set of montecarlo samples (default=true), or, if false, as a sum of gaussians (see mrpt::maps::CBeacon).
 			  * \sa MC_performResampling
@@ -189,7 +189,7 @@ namespace maps
 			const mrpt::poses::CPose2D         & otherMapPose,
 			mrpt::utils::TMatchingPairList     & correspondences,
 			const TMatchingParams & params,
-			TMatchingExtraResults & extraResults ) const MRPT_OVERRIDE;
+			TMatchingExtraResults & extraResults ) const override;
 
 		/** Perform a search for correspondences between "this" and another lansmarks map:
 		  *  Firsly, the landmarks' descriptor is used to find correspondences, then inconsistent ones removed by
@@ -216,7 +216,7 @@ namespace maps
 
 		/** Returns true if the map is empty/no observation has been inserted.
 		   */
-		bool isEmpty() const MRPT_OVERRIDE;
+		bool isEmpty() const override;
 
 		/** Simulates a reading toward each of the beacons in the landmarks map, if any.
 		  * \param in_robotPose This robot pose is used to simulate the ranges to each beacon.
@@ -235,7 +235,7 @@ namespace maps
 		  *		- "filNamePrefix"+"_3D.3DScene": A 3D scene with a "ground plane grid" and the set of ellipsoids in 3D.
 		  *		- "filNamePrefix"+"_covs.m": A textual representation (see saveToTextFile)
 		  */
-		void  saveMetricMapRepresentationToFile(const std::string	&filNamePrefix ) const MRPT_OVERRIDE;
+		void  saveMetricMapRepresentationToFile(const std::string	&filNamePrefix ) const override;
 
 		/** Save a text file with a row per beacon, containing this 11 elements:
 		  *  - X Y Z: Mean values
@@ -245,7 +245,7 @@ namespace maps
 		  */
 		void saveToTextFile(const std::string &fil) const;
 
-		void getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr &outObj) const MRPT_OVERRIDE; //!< Returns a 3D object representing the map.
+		void getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr &outObj) const override; //!< Returns a 3D object representing the map.
 
 		const CBeacon * getBeaconByID( CBeacon::TBeaconID  id ) const; //!< Returns a pointer to the beacon with the given ID, or nullptr if it does not exist.
 		CBeacon * getBeaconByID( CBeacon::TBeaconID  id ); 		//!< Returns a pointer to the beacon with the given ID, or nullptr if it does not exist.

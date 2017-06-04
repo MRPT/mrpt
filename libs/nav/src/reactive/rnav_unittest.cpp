@@ -72,10 +72,10 @@ void run_rnav_test(
 		{
 		}
 
-		void sendNavigationStartEvent ()  MRPT_OVERRIDE { }
-		void sendNavigationEndEvent() MRPT_OVERRIDE { }
+		void sendNavigationStartEvent ()  override { }
+		void sendNavigationEndEvent() override { }
 
-		bool senseObstacles(mrpt::maps::CSimplePointsMap &obstacles, mrpt::system::TTimeStamp &timestamp) MRPT_OVERRIDE
+		bool senseObstacles(mrpt::maps::CSimplePointsMap &obstacles, mrpt::system::TTimeStamp &timestamp) override
 		{
 			obstacles.clear();
 			timestamp = mrpt::system::now();

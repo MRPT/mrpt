@@ -54,31 +54,31 @@ namespace nav
 		
 		/** The default implementation in this class relies on a look-up-table. Derived classes may redefine this to closed-form expressions, when they exist.
 		  * See full docs in base class CParameterizedTrajectoryGenerator::inverseMap_WS2TP() */
-		virtual bool inverseMap_WS2TP(double x, double y, int &out_k, double &out_d, double tolerance_dist = 0.10) const MRPT_OVERRIDE;
+		virtual bool inverseMap_WS2TP(double x, double y, int &out_k, double &out_d, double tolerance_dist = 0.10) const override;
 		
 		/** In this class, `out_action_cmd` contains: [0]: linear velocity (m/s),  [1]: angular velocity (rad/s). 
 		  * See more docs in CParameterizedTrajectoryGenerator::directionToMotionCommand() */
-		virtual mrpt::kinematics::CVehicleVelCmd::Ptr directionToMotionCommand( uint16_t k) const MRPT_OVERRIDE;
-		virtual mrpt::kinematics::CVehicleVelCmd::Ptr getSupportedKinematicVelocityCommand() const MRPT_OVERRIDE;
+		virtual mrpt::kinematics::CVehicleVelCmd::Ptr directionToMotionCommand( uint16_t k) const override;
+		virtual mrpt::kinematics::CVehicleVelCmd::Ptr getSupportedKinematicVelocityCommand() const override;
 
 		/** Launches an exception in this class: it is not allowed in numerical integration-based PTGs to change the reference distance 
 		  * after initialization. */
-		virtual void setRefDistance(const double refDist) MRPT_OVERRIDE;
+		virtual void setRefDistance(const double refDist) override;
 
 		// Access to PTG paths (see docs in base class)
-		size_t getPathStepCount(uint16_t k) const MRPT_OVERRIDE;
-		void getPathPose(uint16_t k, uint32_t step, mrpt::math::TPose2D &p) const MRPT_OVERRIDE;
-		double getPathDist(uint16_t k, uint32_t step) const MRPT_OVERRIDE;
-		bool getPathStepForDist(uint16_t k, double dist, uint32_t &out_step) const MRPT_OVERRIDE;
-		double getPathStepDuration() const MRPT_OVERRIDE;
-		double getMaxLinVel() const MRPT_OVERRIDE { return V_MAX; }
-		double getMaxAngVel() const MRPT_OVERRIDE { return W_MAX; }
+		size_t getPathStepCount(uint16_t k) const override;
+		void getPathPose(uint16_t k, uint32_t step, mrpt::math::TPose2D &p) const override;
+		double getPathDist(uint16_t k, uint32_t step) const override;
+		bool getPathStepForDist(uint16_t k, double dist, uint32_t &out_step) const override;
+		double getPathStepDuration() const override;
+		double getMaxLinVel() const override { return V_MAX; }
+		double getMaxAngVel() const override { return W_MAX; }
 
-		void updateTPObstacle(double ox, double oy, std::vector<double> &tp_obstacles) const MRPT_OVERRIDE;
-		void updateTPObstacleSingle(double ox, double oy, uint16_t k, double &tp_obstacle_k) const MRPT_OVERRIDE;
+		void updateTPObstacle(double ox, double oy, std::vector<double> &tp_obstacles) const override;
+		void updateTPObstacleSingle(double ox, double oy, uint16_t k, double &tp_obstacle_k) const override;
 		
 		/** This family of PTGs ignores the dynamic states */
-		virtual void onNewNavDynamicState() MRPT_OVERRIDE {
+		virtual void onNewNavDynamicState() override {
 			// Do nothing.
 		}
 
@@ -90,9 +90,9 @@ namespace nav
 protected:
 		CPTG_DiffDrive_CollisionGridBased();
 
-		void internal_processNewRobotShape() MRPT_OVERRIDE;
-		void internal_initialize(const std::string & cacheFilename = std::string(), const bool verbose = true) MRPT_OVERRIDE;
-		void internal_deinitialize() MRPT_OVERRIDE;
+		void internal_processNewRobotShape() override;
+		void internal_initialize(const std::string & cacheFilename = std::string(), const bool verbose = true) override;
+		void internal_deinitialize() override;
 
 		/** Possible values in "params" (those in CParameterizedTrajectoryGenerator, which is called internally, plus):
 		 *   - `${sKeyPrefix}resolution`: The cell size
@@ -101,10 +101,10 @@ protected:
 		 *
 		 * See docs of derived classes for additional parameters in setParams()
 		 */
-		virtual void loadFromConfigFile(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) MRPT_OVERRIDE;
-		virtual void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const MRPT_OVERRIDE;
+		virtual void loadFromConfigFile(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) override;
+		virtual void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const override;
 
-		virtual void loadDefaultParams() MRPT_OVERRIDE;
+		virtual void loadDefaultParams() override;
 
 		double V_MAX, W_MAX;
 		double turningRadiusReference;
@@ -112,8 +112,8 @@ protected:
 		double                     m_resolution;
 		double m_stepTimeDuration;
 
-		void internal_readFromStream(mrpt::utils::CStream &in) MRPT_OVERRIDE;
-		void internal_writeToStream(mrpt::utils::CStream &out) const  MRPT_OVERRIDE;
+		void internal_readFromStream(mrpt::utils::CStream &in) override;
+		void internal_writeToStream(mrpt::utils::CStream &out) const  override;
 
 		/** Numerically solve the diferential equations to generate a family of trajectories */
 		void simulateTrajectories(

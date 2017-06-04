@@ -59,13 +59,13 @@ namespace utils
 		/** Introduces a virtual method responsible for reading from the stream (This method BLOCKS)
 		  * This method is implemented as a call to "readAsync" with infinite timeouts.
 		  * \sa readAsync */
-		size_t  Read(void *Buffer, size_t Count) MRPT_OVERRIDE;
+		size_t  Read(void *Buffer, size_t Count) override;
 
 		/** Introduces a virtual method responsible for writing to the stream.
 		  *  Write attempts to write up to Count bytes to Buffer, and returns the number of bytes actually written.
 		  *  This method is implemented as a call to "writeAsync" with infinite timeouts.
 		  * \sa writeAsync */
-		size_t  Write(const void *Buffer, size_t Count) MRPT_OVERRIDE;
+		size_t  Write(const void *Buffer, size_t Count) override;
 
 		/** Returns a description of the last Sockets error */
 		std::string  getLastErrorStr() { return mrpt::utils::net::getLastSocketErrorStr(); }
@@ -100,7 +100,7 @@ namespace utils
 		void  sendString( const std::string &str );
 
 		/** This virtual method has no effect in this implementation over a TCP socket, and its use raises an exception */
-		uint64_t Seek(uint64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning) MRPT_OVERRIDE
+		uint64_t Seek(uint64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning) override
 		{
 		    MRPT_START
 			MRPT_UNUSED_PARAM(Offset); MRPT_UNUSED_PARAM(Origin);
@@ -109,7 +109,7 @@ namespace utils
 		}
 
 		/** This virtual method has no effect in this implementation over a TCP socket, and its use raises an exception */
-		uint64_t getTotalBytesCount() MRPT_OVERRIDE
+		uint64_t getTotalBytesCount() override
 		{
 		    MRPT_START
 			THROW_EXCEPTION("This method has no effect in this class!");
@@ -117,7 +117,7 @@ namespace utils
 		}
 
 		/** This virtual method has no effect in this implementation over a TCP socket, and its use raises an exception */
-		uint64_t getPosition() MRPT_OVERRIDE
+		uint64_t getPosition() override
 		{
 		    MRPT_START
 			THROW_EXCEPTION("This method has no effect in this class!");

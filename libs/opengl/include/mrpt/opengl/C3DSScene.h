@@ -32,10 +32,10 @@ namespace mrpt
 
 			/** Render child objects.
 			  */
-			void  render_dl() const MRPT_OVERRIDE;
+			void  render_dl() const override;
 
 			/** Evaluates the bounding box of this object (including possible children) in the coordinate frame of the object parent. */
-			void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const MRPT_OVERRIDE;
+			void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const override;
 
 			/**  Loads a scene from a 3DS file (3D Studio format) into this object, from either plain .3ds format, or in gzip compressed .3ds.gz format.
 			  *    Previous contents are lost.
@@ -58,7 +58,7 @@ namespace mrpt
 			void enableExtraAmbientLight(bool enable=true) { m_enable_extra_lighting=enable; CRenderizableDisplayList::notifyChange(); }
 
 			/* Simulation of ray-trace. */
-			bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const MRPT_OVERRIDE;
+			bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const override;
 
 			/** Default constructor
 			  */

@@ -52,13 +52,13 @@ namespace utils
 		  *  This method must support (x,y) values OUT of the actual image size without neither
 		  *   raising exceptions, nor leading to memory access errors.
 		  */
-		void  setPixel( int x, int y, size_t color) MRPT_OVERRIDE;
+		void  setPixel( int x, int y, size_t color) override;
 
 		/** Returns the width of the image in pixels (this currently has no applicability for a EMF file...) */
-		size_t  getWidth() const MRPT_OVERRIDE { return 640; }
+		size_t  getWidth() const override { return 640; }
 
 		/** Returns the height of the image in pixels (this currently has no applicability for a EMF file...) */
-		size_t getHeight() const MRPT_OVERRIDE {return 480;}
+		size_t getHeight() const override {return 480;}
 
 		/** Draws an image as a bitmap at a given position.
 		  * \param x0 The top-left corner x coordinates on this canvas where the image is to be drawn
@@ -66,7 +66,7 @@ namespace utils
 		  * \param img The image to be drawn in this canvas
 		  *  This method may be redefined in some classes implementing this interface in a more appropiate manner.
 		  */
-		void  drawImage(int x, int y, const utils::CImage	&img ) MRPT_OVERRIDE;
+		void  drawImage(int x, int y, const utils::CImage	&img ) override;
 
 		/** Draws a line.
 		  * \param x0 The starting point x coordinate
@@ -82,7 +82,7 @@ namespace utils
 			int x1, int y1,
 			const mrpt::utils::TColor color,
 			unsigned int	width = 1,
-			TPenStyle		penStyle = psSolid) MRPT_OVERRIDE;
+			TPenStyle		penStyle = psSolid) override;
 
 		/** Places a text label.
 		  * \param x0 The x coordinates
@@ -97,7 +97,7 @@ namespace utils
 			int x0, int y0,
 			const std::string	&str,
 			const mrpt::utils::TColor color
-			) MRPT_OVERRIDE;
+			) override;
 
 		/** Select the current font used when drawing text.
 		  * \param fontName The face name of a font (e.g. "Arial","System",...)
@@ -124,7 +124,7 @@ namespace utils
 			int x, int y,
 			const utils::CImage	&img,
 			float rotation,
-			float scale ) MRPT_OVERRIDE
+			float scale ) override
 		{
 			CCanvas::drawImage(x,y,img,rotation,scale);
 		}

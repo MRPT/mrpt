@@ -30,10 +30,10 @@ namespace mrpt
 
 	namespace math
 	{
-		bool BASE_IMPEXP isNaN(float v) MRPT_NO_THROWS;
-		bool BASE_IMPEXP isNaN(double v) MRPT_NO_THROWS;
-		bool BASE_IMPEXP isFinite(float v) MRPT_NO_THROWS;
-		bool BASE_IMPEXP isFinite(double v) MRPT_NO_THROWS;
+		bool BASE_IMPEXP isNaN(float v) noexcept;
+		bool BASE_IMPEXP isNaN(double v) noexcept;
+		bool BASE_IMPEXP isFinite(float v) noexcept;
+		bool BASE_IMPEXP isFinite(double v) noexcept;
 
 		// This inline function is used everywhere, so just move it here even it's not a forward declaration!
 		/*! Returns the size of the matrix in the i'th dimension: 1=rows, 2=columns (MATLAB-compatible function)
@@ -59,8 +59,8 @@ namespace mrpt
 	namespace utils
 	{
 		class CFileStream;
-		void BASE_IMPEXP global_profiler_enter(const char *func_name) MRPT_NO_THROWS;
-		void BASE_IMPEXP global_profiler_leave(const char *func_name) MRPT_NO_THROWS;
+		void BASE_IMPEXP global_profiler_enter(const char *func_name) noexcept;
+		void BASE_IMPEXP global_profiler_leave(const char *func_name) noexcept;
 
 		struct CProfilerProxy {
 			const char*f;

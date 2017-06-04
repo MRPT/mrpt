@@ -132,7 +132,7 @@ namespace obs
 		mrpt::system::TTimeStamp     originalReceivedTimestamp; //!< The local computer-based timestamp based on the reception of the message in the computer. \sa has_satellite_timestamp, CObservation::timestamp in the base class, which should contain the accurate satellite-based UTC timestamp. 
 		bool                         has_satellite_timestamp;   //!< If true, CObservation::timestamp has been generated from accurate satellite clock. Otherwise, no GPS data is available and timestamps are based on the local computer clock.
 
-		mrpt::system::TTimeStamp getOriginalReceivedTimeStamp() const MRPT_OVERRIDE; // See base class docs
+		mrpt::system::TTimeStamp getOriginalReceivedTimeStamp() const override; // See base class docs
 
 		/** See \a point_cloud and \a scan_packets */
 		struct OBS_IMPEXP TPointCloud
@@ -212,9 +212,9 @@ namespace obs
 
 		/** @} */
 		
-		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const MRPT_OVERRIDE { out_sensorPose = sensorPose; } // See base class docs
-		void setSensorPose( const mrpt::poses::CPose3D &newSensorPose ) MRPT_OVERRIDE { sensorPose = newSensorPose; } // See base class docs
-		void getDescriptionAsText(std::ostream &o) const MRPT_OVERRIDE; // See base class docs
+		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const override { out_sensorPose = sensorPose; } // See base class docs
+		void setSensorPose( const mrpt::poses::CPose3D &newSensorPose ) override { sensorPose = newSensorPose; } // See base class docs
+		void getDescriptionAsText(std::ostream &o) const override; // See base class docs
 
 	}; // End of class def.
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CObservationVelodyneScan, CObservation, OBS_IMPEXP)

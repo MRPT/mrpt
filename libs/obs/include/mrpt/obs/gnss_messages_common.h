@@ -72,9 +72,9 @@ public:
 
 #define GNSS_MESSAGE_BINARY_BLOCK(DATA_PTR,DATA_LEN) \
 	protected: \
-		void internal_writeToStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE { \
+		void internal_writeToStream(mrpt::utils::CStream &out) const override { \
 			out << static_cast<uint32_t>(DATA_LEN); out.WriteBuffer(DATA_PTR,DATA_LEN); } \
-		void internal_readFromStream(mrpt::utils::CStream &in) MRPT_OVERRIDE { \
+		void internal_readFromStream(mrpt::utils::CStream &in) override { \
 			uint32_t nBytesInStream; in >> nBytesInStream; \
 			ASSERT_EQUAL_(nBytesInStream,DATA_LEN); \
 			in.ReadBuffer(DATA_PTR,DATA_LEN); } \
@@ -91,7 +91,7 @@ public:
 		content_t() { ::memset(this,0,sizeof(*this)); } \
 	}; \
 	content_t  fields; /** Message content, accesible by individual fields */ \
-	void dumpToStream( mrpt::utils::CStream &out ) const MRPT_OVERRIDE;
+	void dumpToStream( mrpt::utils::CStream &out ) const override;
 
 
 #define GNSS_BINARY_MSG_DEFINITION_MID_END \

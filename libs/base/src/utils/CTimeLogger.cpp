@@ -41,14 +41,14 @@ namespace mrpt
 {
 	namespace utils
 	{
-		CTimeLogger& global_profiler_getref() MRPT_NO_THROWS {
+		CTimeLogger& global_profiler_getref() noexcept {
 			return global_profiler;
 		}
 
-		void global_profiler_enter(const char *func_name) MRPT_NO_THROWS {
+		void global_profiler_enter(const char *func_name) noexcept {
 			global_profiler.enter(func_name);
 		}
-		void global_profiler_leave(const char *func_name) MRPT_NO_THROWS {
+		void global_profiler_leave(const char *func_name) noexcept {
 			global_profiler.leave(func_name);
 		}
 	}
@@ -85,7 +85,6 @@ CTimeLogger &CTimeLogger::operator =(const CTimeLogger&o)
 	m_data = o.m_data;
 	return *this;
 }
-#if MRPT_HAS_CXX11
 CTimeLogger::CTimeLogger(CTimeLogger&&o) :
 	COutputLogger(o),
 	m_enabled(o.m_enabled),
@@ -101,8 +100,6 @@ CTimeLogger &CTimeLogger::operator =(CTimeLogger&&o)
 	m_data = o.m_data;
 	return *this;
 }
-#endif
-
 
 void CTimeLogger::clear(bool deep_clear)
 {

@@ -150,7 +150,7 @@ namespace maps
 		  */
 		virtual float squareDistanceToClosestCorrespondence(
 			float   x0,
-			float   y0 ) const MRPT_OVERRIDE;
+			float   y0 ) const override;
 
 		inline float squareDistanceToClosestCorrespondenceT(const mrpt::math::TPoint2D &p0) const	{
 			return squareDistanceToClosestCorrespondence(static_cast<float>(p0.x),static_cast<float>(p0.y));
@@ -164,8 +164,8 @@ namespace maps
 		 {
 			/** Initilization of default parameters */
 			TInsertionOptions( );
-			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
-			void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
+			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) override; // See base docs
+			void dumpToTextStream(mrpt::utils::CStream &out) const override; // See base docs
 
 			float   minDistBetweenLaserPoints;   //!< The minimum distance between points (in 3D): If two points are too close, one of them is not inserted into the map. Default is 0.02 meters.
 			bool    addToExistingPointsMap;      //!< Applicable to "loadFromRangeScan" only! If set to false, the points from the scan are loaded, clearing all previous content. Default is false.
@@ -192,8 +192,8 @@ namespace maps
 			 */
 			TLikelihoodOptions( );
 			virtual ~TLikelihoodOptions() {}
-			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
-			void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
+			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) override; // See base docs
+			void dumpToTextStream(mrpt::utils::CStream &out) const override; // See base docs
 
 			void writeToStream(mrpt::utils::CStream &out) const;		//!< Binary dump to stream - for usage in derived classes' serialization
 			void readFromStream(mrpt::utils::CStream &in);			//!< Binary dump to stream - for usage in derived classes' serialization
@@ -261,7 +261,7 @@ namespace maps
 		bool  save3D_to_text_file(const std::string &file)const;
 
 		/** This virtual method saves the map to a file "filNamePrefix"+< some_file_extension >, as an image or in any other applicable way (Notice that other methods to save the map may be implemented in classes implementing this virtual interface) */
-		void  saveMetricMapRepresentationToFile(const std::string	&filNamePrefix)const MRPT_OVERRIDE
+		void  saveMetricMapRepresentationToFile(const std::string	&filNamePrefix)const override
 		{
 			std::string		fil( filNamePrefix + std::string(".txt") );
 			save3D_to_text_file( fil );
@@ -487,7 +487,7 @@ namespace maps
 			const mrpt::poses::CPose2D         & otherMapPose,
 			mrpt::utils::TMatchingPairList     & correspondences,
 			const TMatchingParams & params,
-			TMatchingExtraResults & extraResults ) const MRPT_OVERRIDE;
+			TMatchingExtraResults & extraResults ) const override;
 
 		// See docs in base class
 		virtual void  determineMatching3D(
@@ -495,10 +495,10 @@ namespace maps
 			const mrpt::poses::CPose3D         & otherMapPose,
 			mrpt::utils::TMatchingPairList     & correspondences,
 			const TMatchingParams & params,
-			TMatchingExtraResults & extraResults ) const MRPT_OVERRIDE;
+			TMatchingExtraResults & extraResults ) const override;
 
 		// See docs in base class
-		float compute3DMatchingRatio(const mrpt::maps::CMetricMap *otherMap, const mrpt::poses::CPose3D &otherMapPose, const TMatchingRatioParams &params) const MRPT_OVERRIDE;
+		float compute3DMatchingRatio(const mrpt::maps::CMetricMap *otherMap, const mrpt::poses::CPose3D &otherMapPose, const TMatchingRatioParams &params) const override;
 
 		/** Computes the matchings between this and another 3D points map.
 		   This method matches each point in the other map with the centroid of the 3 closest points in 3D
@@ -588,7 +588,7 @@ namespace maps
 
 		/** Returns true if the map is empty/no observation has been inserted.
 		   */
-		virtual bool isEmpty() const MRPT_OVERRIDE;
+		virtual bool isEmpty() const override;
 
 		/** STL-like method to check whether the map is empty: */
 		inline bool  empty() const { return isEmpty(); }
@@ -597,13 +597,13 @@ namespace maps
 		  *  The color of the points is given by the static variables: COLOR_3DSCENE_R,COLOR_3DSCENE_G,COLOR_3DSCENE_B
 		  * \sa mrpt::global_settings::POINTSMAPS_3DOBJECT_POINTSIZE
 		  */
-		virtual void getAs3DObject( mrpt::opengl::CSetOfObjects::Ptr &outObj ) const MRPT_OVERRIDE;
+		virtual void getAs3DObject( mrpt::opengl::CSetOfObjects::Ptr &outObj ) const override;
 
 		/** If the map is a simple points map or it's a multi-metric map that contains EXACTLY one simple points map, return it.
 			* Otherwise, return NULL
 			*/
-		virtual const mrpt::maps::CSimplePointsMap * getAsSimplePointsMap() const MRPT_OVERRIDE { return nullptr; }
-		virtual       mrpt::maps::CSimplePointsMap * getAsSimplePointsMap()       MRPT_OVERRIDE { return nullptr; }
+		virtual const mrpt::maps::CSimplePointsMap * getAsSimplePointsMap() const override { return nullptr; }
+		virtual       mrpt::maps::CSimplePointsMap * getAsSimplePointsMap()       override { return nullptr; }
 
 
 		/** This method returns the largest distance from the origin to any of the points, such as a sphere centered at the origin with this radius cover ALL the points in the map (the results are buffered, such as, if the map is not modified, the second call will be much faster than the first one). */
@@ -662,7 +662,7 @@ namespace maps
 
 
 		// See docs in base class
-		virtual double internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom ) MRPT_OVERRIDE;
+		virtual double internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom ) override;
 
 		/** @name PCL library support
 			@{ */
@@ -794,7 +794,7 @@ namespace maps
 		/** This is a common version of CMetricMap::insertObservation() for point maps (actually, CMetricMap::internal_insertObservation),
 		  *   so derived classes don't need to worry implementing that method unless something special is really necesary.
 		  * See mrpt::maps::CPointsMap for the enumeration of types of observations which are accepted. */
-		bool  internal_insertObservation(const mrpt::obs::CObservation *obs,const mrpt::poses::CPose3D *robotPose) MRPT_OVERRIDE;
+		bool  internal_insertObservation(const mrpt::obs::CObservation *obs,const mrpt::poses::CPose3D *robotPose) override;
 
 		/** Helper method for ::copyFrom() */
 		void  base_copyFrom(const CPointsMap &obj);
@@ -803,19 +803,19 @@ namespace maps
 		/** @name PLY Import virtual methods to implement in base classes
 			@{ */
 		/** In a base class, reserve memory to prepare subsequent calls to PLY_import_set_face */
-		virtual void PLY_import_set_face_count(const size_t N) MRPT_OVERRIDE { MRPT_UNUSED_PARAM(N); }
+		virtual void PLY_import_set_face_count(const size_t N) override { MRPT_UNUSED_PARAM(N); }
 
 		/** In a base class, will be called after PLY_import_set_vertex_count() once for each loaded point.
 		  *  \param pt_color Will be nullptr if the loaded file does not provide color info.
 		  */
-		virtual void PLY_import_set_vertex(const size_t idx, const mrpt::math::TPoint3Df &pt, const mrpt::utils::TColorf *pt_color = nullptr) MRPT_OVERRIDE;
+		virtual void PLY_import_set_vertex(const size_t idx, const mrpt::math::TPoint3Df &pt, const mrpt::utils::TColorf *pt_color = nullptr) override;
 		/** @} */
 
 		/** @name PLY Export virtual methods to implement in base classes
 			@{ */
-		size_t PLY_export_get_vertex_count() const MRPT_OVERRIDE;
-		size_t PLY_export_get_face_count() const MRPT_OVERRIDE { return 0; }
-		virtual void PLY_export_get_vertex(const size_t idx,mrpt::math::TPoint3Df &pt,bool &pt_has_color,mrpt::utils::TColorf &pt_color) const MRPT_OVERRIDE;
+		size_t PLY_export_get_vertex_count() const override;
+		size_t PLY_export_get_face_count() const override { return 0; }
+		virtual void PLY_export_get_vertex(const size_t idx,mrpt::math::TPoint3Df &pt,bool &pt_has_color,mrpt::utils::TColorf &pt_color) const override;
 		/** @} */
 
 		/** The minimum and maximum height for a certain laser scan to be inserted into this map

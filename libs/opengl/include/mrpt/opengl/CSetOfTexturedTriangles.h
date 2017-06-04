@@ -52,13 +52,13 @@ namespace mrpt
 			};
 
 			/** Evaluates the bounding box of this object (including possible children) in the coordinate frame of the object parent. */
-			void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const MRPT_OVERRIDE;
+			void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const override;
 
 		protected:
 			/** Triangle array. */
 			std::vector<TTriangle>	m_triangles;
 
-			void  render_texturedobj( ) const MRPT_OVERRIDE;
+			void  render_texturedobj( ) const override;
 
 		public:
 			void clearTriangles( ) { m_triangles.clear(); CRenderizableDisplayList::notifyChange(); }
@@ -68,7 +68,7 @@ namespace mrpt
 			void insertTriangle( const TTriangle &t ) { m_triangles.push_back(t); CRenderizableDisplayList::notifyChange(); }
 
 
-			virtual bool traceRay( const mrpt::poses::CPose3D &o,double &dist ) const MRPT_OVERRIDE;
+			virtual bool traceRay( const mrpt::poses::CPose3D &o,double &dist ) const override;
 
 			/** Constructor
 			  */

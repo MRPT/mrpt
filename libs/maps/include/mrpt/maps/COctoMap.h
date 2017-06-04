@@ -39,7 +39,7 @@ namespace mrpt
 			 COctoMap(const double resolution=0.10);          //!< Default constructor
 			 virtual ~COctoMap(); //!< Destructor
 
-			virtual void getAsOctoMapVoxels(mrpt::opengl::COctoMapVoxels &gl_obj) const MRPT_OVERRIDE;
+			virtual void getAsOctoMapVoxels(mrpt::opengl::COctoMapVoxels &gl_obj) const override;
 
 			MAP_DEFINITION_START(COctoMap,MAPS_IMPEXP)
 				double resolution;	//!< The finest resolution of the octomap (default: 0.10 meters)
@@ -48,7 +48,7 @@ namespace mrpt
 			MAP_DEFINITION_END(COctoMap,MAPS_IMPEXP)
 
 		protected:
-			bool internal_insertObservation(const mrpt::obs::CObservation *obs,const mrpt::poses::CPose3D *robotPose) MRPT_OVERRIDE;
+			bool internal_insertObservation(const mrpt::obs::CObservation *obs,const mrpt::poses::CPose3D *robotPose) override;
 		}; // End of class def.
 		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( COctoMap , CMetricMap, MAPS_IMPEXP )
 	} // End of namespace

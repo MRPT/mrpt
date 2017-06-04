@@ -43,7 +43,7 @@ struct OBS_IMPEXP Message_NMEA_GGA : public gnss_message
 	};
 	content_t  fields; //!< Message content, accesible by individual fields
 	
-	void dumpToStream( mrpt::utils::CStream &out ) const MRPT_OVERRIDE; // See docs in base
+	void dumpToStream( mrpt::utils::CStream &out ) const override; // See docs in base
 
 	/**  Return the geodetic coords as a mrpt::topography::TGeodeticCoords structure (requires linking against mrpt-topography)
 		*   Call as: getAsStruct<TGeodeticCoords>(); */
@@ -64,8 +64,8 @@ struct OBS_IMPEXP Message_NMEA_GGA : public gnss_message
 		return TGEODETICCOORDS(fields.latitude_degrees,fields.longitude_degrees,fields.altitude_meters);
 	}
 
-	bool getAllFieldDescriptions( std::ostream &o ) const MRPT_OVERRIDE;
-	bool getAllFieldValues( std::ostream &o ) const MRPT_OVERRIDE;
+	bool getAllFieldDescriptions( std::ostream &o ) const override;
+	bool getAllFieldValues( std::ostream &o ) const override;
 };
 
 /** NMEA datum: GLL. \sa mrpt::obs::CObservationGPS  */
@@ -84,9 +84,9 @@ struct OBS_IMPEXP Message_NMEA_GLL : public gnss_message
 		content_t();
 	};
 	content_t  fields; //!< Message content, accesible by individual fields
-	void dumpToStream( mrpt::utils::CStream &out ) const MRPT_OVERRIDE; // See docs in base
-	bool getAllFieldDescriptions( std::ostream &o ) const MRPT_OVERRIDE;
-	bool getAllFieldValues( std::ostream &o ) const MRPT_OVERRIDE;
+	void dumpToStream( mrpt::utils::CStream &out ) const override; // See docs in base
+	bool getAllFieldDescriptions( std::ostream &o ) const override;
+	bool getAllFieldValues( std::ostream &o ) const override;
 };
 
 /** NMEA datum: RMC. \sa mrpt::obs::CObservationGPS   */
@@ -114,9 +114,9 @@ struct OBS_IMPEXP Message_NMEA_RMC : public gnss_message
 
 	mrpt::system::TTimeStamp getDateAsTimestamp() const; //!< Build an MRPT timestamp with the year/month/day of this observation.
 
-	void dumpToStream( mrpt::utils::CStream &out ) const MRPT_OVERRIDE; // See docs in base
-	bool getAllFieldDescriptions( std::ostream &o ) const MRPT_OVERRIDE;
-	bool getAllFieldValues( std::ostream &o ) const MRPT_OVERRIDE;
+	void dumpToStream( mrpt::utils::CStream &out ) const override; // See docs in base
+	bool getAllFieldDescriptions( std::ostream &o ) const override;
+	bool getAllFieldValues( std::ostream &o ) const override;
 };
 
 /** NMEA datum: VTG. \sa mrpt::obs::CObservationGPS  */
@@ -133,9 +133,9 @@ struct OBS_IMPEXP Message_NMEA_VTG : public gnss_message
 		content_t();
 	};
 	content_t  fields; //!< Message content, accesible by individual fields
-	void dumpToStream( mrpt::utils::CStream &out ) const MRPT_OVERRIDE; // See docs in base
-	bool getAllFieldDescriptions( std::ostream &o ) const MRPT_OVERRIDE;
-	bool getAllFieldValues( std::ostream &o ) const MRPT_OVERRIDE;
+	void dumpToStream( mrpt::utils::CStream &out ) const override; // See docs in base
+	bool getAllFieldDescriptions( std::ostream &o ) const override;
+	bool getAllFieldValues( std::ostream &o ) const override;
 };
 
 /** NMEA datum: ZDA. \sa mrpt::obs::CObservationGPS   */
@@ -159,9 +159,9 @@ struct OBS_IMPEXP Message_NMEA_ZDA : public gnss_message
 	mrpt::system::TTimeStamp getDateTimeAsTimestamp() const; //!< Build an MRPT UTC timestamp with the year/month/day + hour/minute/sec of this observation.
 	mrpt::system::TTimeStamp getDateAsTimestamp() const; //!< Build an MRPT timestamp with the year/month/day of this observation.
 
-	void dumpToStream( mrpt::utils::CStream &out ) const MRPT_OVERRIDE; // See docs in base
-	bool getAllFieldDescriptions( std::ostream &o ) const MRPT_OVERRIDE;
-	bool getAllFieldValues( std::ostream &o ) const MRPT_OVERRIDE;
+	void dumpToStream( mrpt::utils::CStream &out ) const override; // See docs in base
+	bool getAllFieldDescriptions( std::ostream &o ) const override;
+	bool getAllFieldValues( std::ostream &o ) const override;
 };
 #pragma pack(pop) // End of pack = 1
 } } } // End of namespaces

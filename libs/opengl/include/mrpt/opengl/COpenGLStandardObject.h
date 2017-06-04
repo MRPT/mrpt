@@ -45,14 +45,14 @@ namespace mrpt	{
 			  * Render.
 			  * \sa mrpt::opengl::CRenderizable
 			  */
-			virtual void render_dl() const MRPT_OVERRIDE;
+			virtual void render_dl() const override;
 			/** Evaluates the bounding box of this object (including possible children) in the coordinate frame of the object parent. */
-			void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const MRPT_OVERRIDE;
+			void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const override;
 			/**
 			  * Ray Tracing. Will always return false, since objects of this class are not intended to have geometric properties.
 			  * \sa mrpt::opengl::CRenderizable
 			  */
-			bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const MRPT_OVERRIDE;
+			bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const override;
 			/**
 			  * Creation of object from type, vertices, chunk size and a list of enabled openGL flags.
 			  * \throw std::logic_error if the number of vertices is not an exact multiple of the chunk size.

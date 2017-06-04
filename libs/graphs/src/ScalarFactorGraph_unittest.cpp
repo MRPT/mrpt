@@ -27,15 +27,15 @@ struct MySimpleUnaryEdge : public ScalarFactorGraph::UnaryFactorVirtualBase
 		this->node_id = nodeid;
 	}
 
-	double evaluateResidual() const MRPT_OVERRIDE
+	double evaluateResidual() const override
 	{
 		return m_parent[node_id] - m_observation;
 	}
-	double getInformation() const MRPT_OVERRIDE
+	double getInformation() const override
 	{
 		return m_information;
 	}
-	void evalJacobian(double &dr_dx) const MRPT_OVERRIDE
+	void evalJacobian(double &dr_dx) const override
 	{
 		dr_dx = 1.0;
 	}
@@ -55,15 +55,15 @@ struct MySimpleBinaryEdge : public ScalarFactorGraph::BinaryFactorVirtualBase
 		this->node_id_j = nodeid_j;
 	}
 
-	double evaluateResidual() const MRPT_OVERRIDE
+	double evaluateResidual() const override
 	{
 		return m_parent[node_id_i] - m_parent[node_id_j];
 	}
-	double getInformation() const MRPT_OVERRIDE
+	double getInformation() const override
 	{
 		return m_information;
 	}
-	void evalJacobian(double &dr_dx_i, double &dr_dx_j ) const MRPT_OVERRIDE
+	void evalJacobian(double &dr_dx_i, double &dr_dx_j ) const override
 	{
 		dr_dx_i = +1.0;
 		dr_dx_j = -1.0;

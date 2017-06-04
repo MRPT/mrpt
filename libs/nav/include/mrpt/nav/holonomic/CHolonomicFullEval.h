@@ -52,10 +52,10 @@ namespace mrpt
 		CHolonomicFullEval( const mrpt::utils::CConfigFileBase *INI_FILE = nullptr );
 
 		// See base class docs
-		void navigate(const NavInput & ni, NavOutput &no) MRPT_OVERRIDE;
+		void navigate(const NavInput & ni, NavOutput &no) override;
 
-		virtual void initialize(const mrpt::utils::CConfigFileBase &INI_FILE) MRPT_OVERRIDE; // See base class docs
-		virtual void saveConfigFile(mrpt::utils::CConfigFileBase &c) const MRPT_OVERRIDE; // See base class docs
+		virtual void initialize(const mrpt::utils::CConfigFileBase &INI_FILE) override; // See base class docs
+		virtual void saveConfigFile(mrpt::utils::CConfigFileBase &c) const override; // See base class docs
 
 		/** Algorithm options */
 		struct NAV_IMPEXP TOptions : public mrpt::utils::CLoadableOptions
@@ -75,14 +75,14 @@ namespace mrpt
 			double gap_width_ratio_threshold;   //!<  Ratio [0,1], times path_count, gives the minimum gap width to accept a direct motion towards target.
 
 			TOptions();
-			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
-			void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg ,const std::string &section) const MRPT_OVERRIDE; // See base docs
+			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) override; // See base docs
+			void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg ,const std::string &section) const override; // See base docs
 		};
 
 		TOptions options;  //!< Parameters of the algorithm (can be set manually or loaded from CHolonomicFullEval::initialize or options.loadFromConfigFile(), etc.)
 
-		double getTargetApproachSlowDownDistance() const MRPT_OVERRIDE { return options.TARGET_SLOW_APPROACHING_DISTANCE; }
-		void setTargetApproachSlowDownDistance(const double dist) MRPT_OVERRIDE { options.TARGET_SLOW_APPROACHING_DISTANCE = dist; }
+		double getTargetApproachSlowDownDistance() const override { return options.TARGET_SLOW_APPROACHING_DISTANCE; }
+		void setTargetApproachSlowDownDistance(const double dist) override { options.TARGET_SLOW_APPROACHING_DISTANCE = dist; }
 
 	private:
 		unsigned int m_last_selected_sector;
@@ -106,7 +106,7 @@ namespace mrpt
 		double               evaluation;
 		mrpt::math::CMatrixD dirs_scores; //!< Individual scores for each direction: (i,j), i (row) are directions, j (cols) are scores. Not all directions may have evaluations, in which case a "-1" value will be found.
 
-		const mrpt::math::CMatrixD * getDirectionScores() const MRPT_OVERRIDE { return &dirs_scores; }
+		const mrpt::math::CMatrixD * getDirectionScores() const override { return &dirs_scores; }
 	};
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(CLogFileRecord_FullEval, CHolonomicLogFileRecord, NAV_IMPEXP)
 

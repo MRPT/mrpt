@@ -91,7 +91,7 @@ namespace mrpt
 
 		/** Class factory from class name, e.g. `"CHolonomicVFF"`, etc.
 		  * \exception std::logic_error On invalid or missing parameters. */
-		static CAbstractHolonomicReactiveMethod * Create(const std::string &className) MRPT_NO_THROWS;
+		static CAbstractHolonomicReactiveMethod * Create(const std::string &className) noexcept;
 
 		void setAssociatedPTG(mrpt::nav::CParameterizedTrajectoryGenerator *ptg); //!< Optionally, sets the associated PTG, just in case a derived class requires this info (not required for methods where the robot kinematics are totally abstracted)
 		mrpt::nav::CParameterizedTrajectoryGenerator * getAssociatedPTG() const; //!< Returns the pointer set by setAssociatedPTG()

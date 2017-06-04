@@ -49,16 +49,16 @@ namespace opengl	{
 		/** Render
 		  * \sa mrpt::opengl::CRenderizable
 		  */
-		void render_dl() const MRPT_OVERRIDE;
+		void render_dl() const override;
 
 		/** Evaluates the bounding box of this object (including possible children) in the coordinate frame of the object parent. */
-		void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const MRPT_OVERRIDE;
+		void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const override;
 		
 		/**
 		  * Ray tracing.
 		  * \sa mrpt::opengl::CRenderizable
 		  */
-		bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const MRPT_OVERRIDE;
+		bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const override;
 		
 		inline void setLineWidth(float width) { m_lineWidth = width; CRenderizableDisplayList::notifyChange(); }
 		inline float getLineWidth() const { return m_lineWidth; }

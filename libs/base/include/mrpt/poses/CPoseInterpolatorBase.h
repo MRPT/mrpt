@@ -65,23 +65,11 @@ namespace poses {
 
 		inline iterator begin() { return m_path.begin(); }
 		inline const_iterator begin() const { return m_path.begin(); }
-		inline const_iterator cbegin() const {
-#if MRPT_HAS_CXX11
-			return m_path.cbegin();
-#else
-			return m_path.begin();
-#endif
-		}
+		inline const_iterator cbegin() const { return m_path.cbegin(); }
 
 		inline iterator end() { return m_path.end(); }
 		inline const_iterator end() const { return m_path.end(); }
-		inline const_iterator cend() const {
-#if MRPT_HAS_CXX11
-			return m_path.cend();
-#else
-			return m_path.end();
-#endif
-		}
+		inline const_iterator cend() const { return m_path.cend(); }
 
 		inline reverse_iterator rbegin() { return m_path.rbegin(); }
 		inline const_reverse_iterator rbegin() const { return m_path.rbegin(); }

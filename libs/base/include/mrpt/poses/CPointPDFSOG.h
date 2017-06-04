@@ -110,10 +110,10 @@ namespace mrpt
 			bool empty() const { return m_modes.empty(); } //!< Return whether there is any Gaussian mode.
 
 			 /** Returns an estimate of the point, (the mean, or mathematical expectation of the PDF) \sa getCovariance   */
-			void getMean(CPoint3D &mean_point) const MRPT_OVERRIDE;
+			void getMean(CPoint3D &mean_point) const override;
 
 			/** Returns an estimate of the point covariance matrix (3x3 cov matrix) and the mean, both at once. \sa getMean */
-			void getCovarianceAndMean(mrpt::math::CMatrixDouble33 &cov,CPoint3D &mean_point) const MRPT_OVERRIDE;
+			void getCovarianceAndMean(mrpt::math::CMatrixDouble33 &cov,CPoint3D &mean_point) const override;
 
 			/** Normalize the weights in m_modes such as the maximum log-weight is 0 */
 			void  normalizeWeights();
@@ -124,7 +124,7 @@ namespace mrpt
 			/** Computes the "Effective sample size" (typical measure for Particle Filters), applied to the weights of the individual Gaussian modes, as a measure of the equality of the modes (in the range [0,total # of modes]). */
 			double ESS() const;
 
-			void  copyFrom(const CPointPDF &o) MRPT_OVERRIDE; //!< Copy operator, translating if necesary (for example, between particles and gaussian representations)
+			void  copyFrom(const CPointPDF &o) override; //!< Copy operator, translating if necesary (for example, between particles and gaussian representations)
 
 			/** Save the density to a text file, with the following format:
 			  *  There is one row per Gaussian "mode", and each row contains 10 elements:
@@ -140,21 +140,21 @@ namespace mrpt
 			  *   - C23 (Covariance elements)
 			  *
 			 */
-			void  saveToTextFile(const std::string &file) const MRPT_OVERRIDE;
+			void  saveToTextFile(const std::string &file) const override;
 
 			/** this = p (+) this. This can be used to convert a PDF from local coordinates to global, providing the point (newReferenceBase) from which
 			  *   "to project" the current pdf. Result PDF substituted the currently stored one in the object. */
-			void  changeCoordinatesReference(const CPose3D &newReferenceBase ) MRPT_OVERRIDE;
+			void  changeCoordinatesReference(const CPose3D &newReferenceBase ) override;
 
 			/** Draw a sample from the pdf. */
-			void drawSingleSample(CPoint3D  &outSample) const MRPT_OVERRIDE;
+			void drawSingleSample(CPoint3D  &outSample) const override;
 
 			/** Bayesian fusion of two point distributions (product of two distributions->new distribution), then save the result in this object (WARNING: See implementing classes to see classes that can and cannot be mixtured!)
 			  * \param p1 The first distribution to fuse
 			  * \param p2 The second distribution to fuse
 			  * \param minMahalanobisDistToDrop If set to different of 0, the result of very separate Gaussian modes (that will result in negligible components) in SOGs will be dropped to reduce the number of modes in the output.
 			  */
-			void  bayesianFusion( const CPointPDF &p1, const CPointPDF &p2, const double &minMahalanobisDistToDrop = 0) MRPT_OVERRIDE;
+			void  bayesianFusion( const CPointPDF &p1, const CPointPDF &p2, const double &minMahalanobisDistToDrop = 0) override;
 
 
 			/** Evaluates the PDF within a rectangular grid and saves the result in a matrix (each row contains values for a fixed y-coordinate value).

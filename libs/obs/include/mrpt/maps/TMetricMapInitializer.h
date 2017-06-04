@@ -43,8 +43,8 @@ namespace mrpt
 			  *  - `<sectionNamePrefix>_insertOpts`
 			  *  - `<sectionNamePrefix>_likelihoodOpts`
 			  */
-			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &sectionNamePrefix) MRPT_OVERRIDE; // See base docs
-			void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
+			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &sectionNamePrefix) override; // See base docs
+			void dumpToTextStream(mrpt::utils::CStream &out) const override; // See base docs
 
 			/** Query the map type (C++ class), as set by the factory method MapDefinition() */
 			const mrpt::utils::TRuntimeClassId::Ptr & getMetricMapClassType() const { return metricMapClassType; }
@@ -288,10 +288,10 @@ namespace mrpt
 			  *
 			  * \note Examples of map definitions can be found in the '.ini' files provided in the demo directories: "share/mrpt/config-files/"
 			  */
-			void  loadFromConfigFile(const mrpt::utils::CConfigFileBase  &source,const std::string &sectionName) MRPT_OVERRIDE;
+			void  loadFromConfigFile(const mrpt::utils::CConfigFileBase  &source,const std::string &sectionName) override;
 
 			/** This method dumps the options of the multi-metric map AND those of every internal map. */
-			void  dumpToTextStream(mrpt::utils::CStream	&out) const MRPT_OVERRIDE;
+			void  dumpToTextStream(mrpt::utils::CStream	&out) const override;
 		};
 
 

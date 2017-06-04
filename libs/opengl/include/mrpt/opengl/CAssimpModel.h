@@ -42,10 +42,10 @@ namespace mrpt
 			DEFINE_SERIALIZABLE( CAssimpModel )
 
 		public:
-			void  render_dl() const MRPT_OVERRIDE; //!< Render child objects
+			void  render_dl() const override; //!< Render child objects
 
 			/** Evaluates the bounding box of this object (including possible children) in the coordinate frame of the object parent. */
-			void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const MRPT_OVERRIDE;
+			void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const override;
 
 			/**  Loads a scene from a file in any supported file. 
 			  * \exception std::runtime_error On any error during loading or importing the file.
@@ -59,7 +59,7 @@ namespace mrpt
 			void evaluateAnimation( double time_anim );
 
 			/* Simulation of ray-trace. */
-			bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const MRPT_OVERRIDE;
+			bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const override;
 
 			struct TInfoPerTexture
 			{

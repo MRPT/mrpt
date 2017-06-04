@@ -64,7 +64,7 @@ namespace mrpt
 
 			/** Render child objects.
 			  */
-			void  render() const MRPT_OVERRIDE;
+			void  render() const override;
 
 			/** Clear the list of objects in the scene, deleting objects' memory.
 			  */
@@ -101,15 +101,15 @@ namespace mrpt
 			/** Retrieves a list of all objects in text form  */
 			void dumpListOfObjects( mrpt::utils::CStringList  &lst );
 
-			virtual bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const MRPT_OVERRIDE;
+			virtual bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const override;
 
-			virtual CRenderizable& setColor_u8(const mrpt::utils::TColor &c) MRPT_OVERRIDE;
-			virtual CRenderizable& setColorR_u8(const uint8_t r) MRPT_OVERRIDE;
-			virtual CRenderizable& setColorG_u8(const uint8_t g) MRPT_OVERRIDE;
-			virtual CRenderizable& setColorB_u8(const uint8_t b) MRPT_OVERRIDE;
-			virtual CRenderizable& setColorA_u8(const uint8_t a) MRPT_OVERRIDE;
+			virtual CRenderizable& setColor_u8(const mrpt::utils::TColor &c) override;
+			virtual CRenderizable& setColorR_u8(const uint8_t r) override;
+			virtual CRenderizable& setColorG_u8(const uint8_t g) override;
+			virtual CRenderizable& setColorB_u8(const uint8_t b) override;
+			virtual CRenderizable& setColorA_u8(const uint8_t a) override;
 			bool contains(const CRenderizable::Ptr &obj) const;
-			virtual void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const MRPT_OVERRIDE;
+			virtual void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const override;
 
 			/** @name pose_pdf -> 3d objects auxiliary templates
 			    @{ */

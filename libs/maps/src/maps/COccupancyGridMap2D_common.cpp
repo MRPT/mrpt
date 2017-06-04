@@ -209,7 +209,7 @@ void  COccupancyGridMap2D::setSize(
 /*---------------------------------------------------------------
 						ResizeGrid
   ---------------------------------------------------------------*/
-void  COccupancyGridMap2D::resizeGrid(float new_x_min,float new_x_max,float new_y_min,float new_y_max,float new_cells_default_value, bool additionalMargin) MRPT_NO_THROWS
+void  COccupancyGridMap2D::resizeGrid(float new_x_min,float new_x_max,float new_y_min,float new_y_max,float new_cells_default_value, bool additionalMargin) noexcept
 {
 	unsigned int			extra_x_izq=0,extra_y_arr=0,new_size_x=0,new_size_y=0;
 	std::vector<cellType>	new_map;
