@@ -51,7 +51,7 @@
 #include <vector>
 #include <list>
 
-#include <mrpt/utils/mrpt_stdint.h>    // compiler-independent version of "stdint.h"
+#include <cstdint>
 
 #include <mrpt/otherlibs/octomap/math/Vector3.h>
 #include <mrpt/otherlibs/octomap/math/Pose6D.h>

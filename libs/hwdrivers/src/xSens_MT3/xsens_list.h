@@ -10,7 +10,7 @@
 #ifndef _XSENS_LIST_H_2006_06_08
 #define _XSENS_LIST_H_2006_06_08
 
-#include <mrpt/utils/mrpt_stdint.h>
+#include <cstdint>
 
 #ifndef _JANITORS_H_2006_05_01
 #	include "xsens_janitors.h"

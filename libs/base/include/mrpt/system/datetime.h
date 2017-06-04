@@ -10,7 +10,7 @@
 #define  MRPT_SYSTEM_DATETIME_H
 
 #include <mrpt/base/link_pragmas.h>
-#include <mrpt/utils/mrpt_stdint.h>    // compiler-independent version of "stdint.h"
+#include <cstdint>
 #include <string>
 
 /** Represents an invalid timestamp, where applicable. */

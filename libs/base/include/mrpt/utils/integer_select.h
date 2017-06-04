@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include <mrpt/utils/mrpt_stdint.h>
+#include <cstdint>
 
 namespace mrpt
 {

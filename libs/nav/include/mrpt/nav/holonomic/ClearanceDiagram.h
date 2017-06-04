@@ -10,7 +10,7 @@
 
 #include <vector>
 #include <map>
-#include <mrpt/utils/mrpt_stdint.h>    // compiler-independent version of "stdint.h"
+#include <cstdint>
 #include <mrpt/opengl/opengl_frwds.h>
 #include <mrpt/nav/link_pragmas.h>
 namespace mrpt { namespace utils { class CStream; } }

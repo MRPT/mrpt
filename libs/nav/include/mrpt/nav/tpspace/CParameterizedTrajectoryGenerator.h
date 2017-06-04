@@ -14,7 +14,7 @@
 #include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/math/CPolygon.h>
-#include <mrpt/utils/mrpt_stdint.h>    // compiler-independent version of "stdint.h"
+#include <cstdint>
 #include <mrpt/nav/link_pragmas.h>
 #include <mrpt/nav/holonomic/ClearanceDiagram.h>
 #include <mrpt/poses/CPose2D.h>

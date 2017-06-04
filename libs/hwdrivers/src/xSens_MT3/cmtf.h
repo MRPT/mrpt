@@ -10,7 +10,7 @@
 #define _CMT_FILE_DEF_H_2007_01_24
 
 #include <stdio.h>
-#include <mrpt/utils/mrpt_stdint.h>
+#include <cstdint>
 
 #ifndef _WIN32
 #   include <sys/types.h>

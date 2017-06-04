@@ -14,7 +14,7 @@
 #include <mrpt/opengl/CSetOfObjects.h>
 
 /* std */
-#include <stdint.h>
+#include <cstdint>
 
 /* namespaces */
 using namespace boost::python;
