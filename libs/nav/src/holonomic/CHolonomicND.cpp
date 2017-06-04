@@ -71,7 +71,7 @@ void CHolonomicND::navigate(const NavInput & ni, NavOutput &no)
 
 
 	// Select best gap:
-	searchBestGap(ni.obstacles,1.0/* max obs range*/, gaps,trg,selectedSector,evaluation,situation,riskEvaluation,log);
+	searchBestGap(ni.obstacles,1.0/* max obs range*/, gaps,trg,selectedSector,evaluation,situation,riskEvaluation,*log);
 
 	if (situation == SITUATION_NO_WAY_FOUND)
 	{

@@ -87,10 +87,10 @@ namespace mrpt
 		{
 			TargetInfo  target; //!< Navigation target
 
-			virtual std::string getAsText() const MRPT_OVERRIDE; //!< Gets navigation params as a human-readable format
-			virtual TNavigationParamsBase* clone() const MRPT_OVERRIDE { return new TNavigationParams(*this); }
+			virtual std::string getAsText() const override; //!< Gets navigation params as a human-readable format
+			virtual TNavigationParamsBase* clone() const override { return new TNavigationParams(*this); }
 		protected:
-			virtual bool isEqual(const TNavigationParamsBase& o) const MRPT_OVERRIDE;
+			virtual bool isEqual(const TNavigationParamsBase& o) const override;
 		};
 
 		/** \name Navigation control API

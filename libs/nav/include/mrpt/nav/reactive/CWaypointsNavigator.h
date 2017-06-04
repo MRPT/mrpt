@@ -41,10 +41,10 @@ namespace mrpt
 			  * but the priority is for the latest ones in the sequence. */
 			std::vector<mrpt::nav::CAbstractNavigator::TargetInfo>  multiple_targets;
 
-			virtual std::string getAsText() const MRPT_OVERRIDE;
-			virtual TNavigationParamsBase* clone() const MRPT_OVERRIDE { return new TNavigationParamsWaypoints(*this); }
+			virtual std::string getAsText() const override;
+			virtual TNavigationParamsBase* clone() const override { return new TNavigationParamsWaypoints(*this); }
 		protected:
-			virtual bool isEqual(const CAbstractNavigator::TNavigationParamsBase& o) const MRPT_OVERRIDE;
+			virtual bool isEqual(const CAbstractNavigator::TNavigationParamsBase& o) const override;
 		};
 
 		CWaypointsNavigator( CRobot2NavInterface &robot_interface_impl );  //!< ctor
