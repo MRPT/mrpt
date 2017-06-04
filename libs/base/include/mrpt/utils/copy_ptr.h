@@ -41,7 +41,6 @@ namespace mrpt
 				ptr_base_t::m_ptr = typename ptr_base_t::copier_t().copy(o.m_ptr);
 				return *this;
 			}
-#if (__cplusplus>199711L)
 			/** move ctor */
 			copy_ptr(copy_ptr<T> && o) : ptr_base_t(o) {}
 			/** move operator */
@@ -51,7 +50,6 @@ namespace mrpt
 				o.m_ptr = nullptr;
 				return *this;
 			}
-#endif
 		};
 
 		/** @} */  // end of grouping

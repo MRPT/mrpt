@@ -186,10 +186,8 @@ namespace maps
 			ProxyFilterContainerByClass(ProxyFilterContainerByClass<SELECTED_CLASS_PTR, CONTAINER>& ) : m_source() {} // m_source init in parent copy ctor
 
 			ProxyFilterContainerByClass<SELECTED_CLASS_PTR, CONTAINER>& operator=(const ProxyFilterContainerByClass<SELECTED_CLASS_PTR, CONTAINER>&o) { return *this; } // Do nothing, we must keep refs to our own parent
-#if (__cplusplus>199711L)
 			ProxyFilterContainerByClass(ProxyFilterContainerByClass<SELECTED_CLASS_PTR, CONTAINER>&& ) : m_source() {}  // m_source init in parent copy ctor
 			ProxyFilterContainerByClass<SELECTED_CLASS_PTR, CONTAINER>& operator=(ProxyFilterContainerByClass<SELECTED_CLASS_PTR, CONTAINER>&&o) { return *this; } // Do nothing, we must keep refs to our own parent
-#endif
 			bool empty() const { return size()==0; }
 			size_t size() const {
 				size_t cnt=0;
@@ -222,10 +220,8 @@ namespace maps
 			ProxySelectorContainerByClass(CONTAINER &source) : m_source(&source) {}
 			ProxySelectorContainerByClass(ProxySelectorContainerByClass<SELECTED_CLASS_PTR, CONTAINER>& ) : m_source() {} // m_source init in parent copy ctor
 			ProxySelectorContainerByClass<SELECTED_CLASS_PTR, CONTAINER>& operator=(const ProxySelectorContainerByClass<SELECTED_CLASS_PTR, CONTAINER>&o) { return *this; } // Do nothing, we must keep refs to our own parent
-#if (__cplusplus>199711L)
 			ProxySelectorContainerByClass(ProxySelectorContainerByClass<SELECTED_CLASS_PTR, CONTAINER>&& ) : m_source() {} // m_source init in parent copy ctor
 			ProxySelectorContainerByClass<SELECTED_CLASS_PTR, CONTAINER>& operator=(ProxySelectorContainerByClass<SELECTED_CLASS_PTR, CONTAINER>&&o) { return *this; } // Do nothing, we must keep refs to our own parent
-#endif
 
 			operator const SELECTED_CLASS_PTR & () const { internal_update_ref(); return m_ret; }
 			explicit operator bool() const { internal_update_ref(); return m_ret ? true : false; }
@@ -280,10 +276,8 @@ namespace maps
 		CMultiMetricMap(const CMultiMetricMap &o);
 		CMultiMetricMap& operator =(const CMultiMetricMap &o);
 
-#if (__cplusplus>199711L)
 		CMultiMetricMap(CMultiMetricMap &&o);
 		CMultiMetricMap& operator =(CMultiMetricMap &&o);
-#endif
 
 		/** Sets the list of internal map according to the passed list of map initializers (Current maps' content will be deleted!) */
 		void  setListOfMaps( const mrpt::maps::TSetOfMetricMapInitializers	*initializers );
