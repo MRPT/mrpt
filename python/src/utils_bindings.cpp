@@ -13,7 +13,7 @@
 #include <mrpt/utils/CLoadableOptions.h>
 
 /* STD */
-#include <stdint.h>
+#include <cstdint>
 
 using namespace boost::python;
 using namespace mrpt::utils;

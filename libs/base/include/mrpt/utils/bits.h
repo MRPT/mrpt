@@ -16,7 +16,7 @@
 #include <string>
 #include <mrpt/base/link_pragmas.h>
 #include <mrpt/utils/mrpt_macros.h>
-#include <mrpt/utils/mrpt_stdint.h>
+#include <cstdint>
 
 /** This is the global namespace for all Mobile Robot Programming Toolkit (MRPT) libraries. */
 namespace mrpt
