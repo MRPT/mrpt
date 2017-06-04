@@ -1,40 +1,50 @@
 #include "CMainWindow.h"
-#include "GLWidget.h"
+#include "CGLWidget.h"
+#include "CDocument.h"
 
 #include <QMenu>
 #include <QMenuBar>
 #include <QAction>
 #include <QFileDialog>
 
+#include "ui_CMainWindow.h"
+
 
 CMainWindow::CMainWindow(QWidget *parent)
 	: QMainWindow(parent)
-	, glWidget_(new GlWidget(this))
+	, m_document(nullptr)
+	, m_tabwidget(new QTabWidget(this))
+	, m_ui(std::make_unique<Ui::CMainWindow>())
 {
-	initMenu();
-	QMainWindow::setCentralWidget(glWidget_);
+	m_ui->setupUi(this);
+	QObject::connect(m_ui->openAction, SIGNAL(triggered(bool)), SLOT(openMap()));
+	QMainWindow::setCentralWidget(m_tabwidget);
 }
 
 CMainWindow::~CMainWindow()
 {
-
-}
-
-void CMainWindow::initMenu()
-{
-	setMenuBar(new QMenuBar(this));
-	QMenu* file_menu = menuBar()->addMenu(QObject::tr("File"));
-	QAction* new_file  = new QAction(tr("New"), this);
-	file_menu->addAction(new_file);
-
-	QAction* load_file  = new QAction(tr("Load"), this);
-	file_menu->addAction(load_file);
-	QObject::connect(load_file, SIGNAL(triggered(bool)), SLOT(openMap()));
+	delete m_document;
 }
 
 void CMainWindow::openMap()
 {
-	QString file_name = QFileDialog::getOpenFileName(this, tr("Open File"), "", tr("Files (*.simplemap)"));
-	QString config_name = QFileDialog::getOpenFileName(this, tr("Open Config File"), "", tr("Files (*.ini)"));
-	glWidget_->loadFile(file_name, config_name);
+	if (m_document)
+		delete m_document;
+
+
+	QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), "", tr("Files (*.simplemap)"));
+	QString configName = QFileDialog::getOpenFileName(this, tr("Open Config File"), "", tr("Files (*.ini)"));
+
+	if (fileName.size() && configName.size())
+	{
+		m_document = new CDocument(fileName.toStdString(), configName.toStdString());
+
+		auto renderizableMaps = m_document->renderizableMaps();
+		for(auto &it: renderizableMaps)
+		{
+			CGlWidget *gl = new CGlWidget(m_tabwidget);
+			gl->fillMap(it.second);
+			m_tabwidget->addTab(gl, QString::fromStdString(it.first));
+		}
+	}
 }

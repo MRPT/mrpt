@@ -9,21 +9,28 @@ include(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CM
 #-----------------------------------------------------------------
 project(robot-map-gui)
 
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 if(CMAKE_MRPT_HAS_Qt5 AND CMAKE_MRPT_HAS_OPENGL_GLUT)
 
 	set(CPP_FILES
 		robot-map-gui_main.cpp
 		gui/CMainWindow.cpp
-		gui/GLWidget.cpp
+		gui/CGLWidget.cpp
+
+		CDocument.cpp
 		)
 
 	set(FILES_TO_MOC
 		gui/CMainWindow.h
-		gui/GLWidget.h
+		gui/CGLWidget.h
 		)
 
+	set(FILES_TO_UIC
+		gui/CMainWindow.ui
+		)
 	qt5_wrap_cpp(moc_cpps ${FILES_TO_MOC})
+	qt5_wrap_ui(uic_cpps ${FILES_TO_UIC})
 
 	# ---------------------------------------------
 	# TARGET:
@@ -32,6 +39,7 @@ if(CMAKE_MRPT_HAS_Qt5 AND CMAKE_MRPT_HAS_OPENGL_GLUT)
 	add_executable(${PROJECT_NAME}
 		${CPP_FILES}
 		${moc_cpps}
+		${uic_cpps}
 		${MRPT_VERSION_RC_FILE}
 		)
 
