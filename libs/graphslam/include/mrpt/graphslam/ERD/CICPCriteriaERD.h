@@ -152,6 +152,10 @@ class CICPCriteriaERD :
 		// protected functions
 		//////////////////////////////////////////////////////////////
 
+		void registerNewEdge(
+				const mrpt::utils::TNodeID& from,
+				const mrpt::utils::TNodeID& to,
+				const constraint_t& rel_edge );
 		void checkIfInvalidDataset(mrpt::obs::CActionCollectionPtr action,
 				mrpt::obs::CSensoryFramePtr observations,
 				mrpt::obs::CObservationPtr observation );

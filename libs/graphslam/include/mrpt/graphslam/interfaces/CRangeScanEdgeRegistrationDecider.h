@@ -153,33 +153,6 @@ class CRangeScanEdgeRegistrationDecider :
 				mrpt::obs::CObservation2DRangeScanPtr& scan,
 				const node_props_t* node_props=NULL) const;
 
-		/**\name Manipulation of observations manipulation.
-		 *
-		 * Methods for manipulating the underlying storage of the
-		 * observation that the specific decider implementations.
-		 * \note Defining a generic way of dealing with the underlying
-		 * measurements, allows for flexible storage as well as possible
-		 * modification to the method behavior.
-		 */
-		/**\{*/
-		/** \name Latest observation getter methods
-		 *
-		 * \brief Fetch the latest observation that the current instance
-		 * received (most probably during a call to the updateState method). Handles
-		 * exclusively CObservation* (observation-only format)
-		 *
-		 * \warning Use these methods as-is in the derived classes. Most likely
-		 * there will be no reason for overriding and that will shadow the
-		 * overloads.
-		 */
-		/**\{*/
-		void getIncomingObs(mrpt::obs::CObservationPtr obs);
-		void getIncomingObs(mrpt::obs::CObservation2DRangeScanPtr obs);
-		void getIncomingObs(mrpt::obs::CObservation3DRangeScanPtr obs);
-		/**\}*/
-
-		/**\}*/
-
 		virtual void notifyOfWindowEvents(
 				const std::map<std::string, bool>& events_occurred);
 
@@ -261,7 +234,7 @@ class CRangeScanEdgeRegistrationDecider :
 		 */
 		TSlidingWindow m_mahal_distance_ICP_odom_win;
 		/**\brief if set to false, instance will not take into account the
-		 * mahalanobis distance when evaluating potential edges
+		 * mahalanobis distance when evaluating potential edges.
 		 *
 		 * By default True.
 		 *
@@ -299,6 +272,9 @@ class CRangeScanEdgeRegistrationDecider :
 
 		double m_offset_y_icp_goodness;
 		int m_text_index_icp_goodness;
+
+		double m_offset_y_mahal;
+		int m_text_index_mahal;
 
 
 		private:

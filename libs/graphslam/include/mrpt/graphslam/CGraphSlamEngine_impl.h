@@ -49,7 +49,14 @@ CGraphSlamEngine<GRAPH_T>::CGraphSlamEngine(
 	m_robot_model_size(1),
 	m_graph_section("graph_sec"), // give the CCriticalSection a name for easier debugging
 	m_class_name("CGraphSlamEngine"),
-	m_is_first_time_node_reg(true)
+	m_map_is_cached(false),
+	m_is_first_time_node_reg(true),
+	m_sec_general_params("GeneralConfiguration"),
+	m_sec_nrd_params("NodeRegistrationDeciderParameters"),
+	m_sec_erd_params("EdgeRegistrationDeciderParameters"),
+	m_sec_gso_params("OptimizerParameters"),
+	m_sec_viz_params("VisualizationParameters"),
+	m_sec_map_params("MappingParameters")
 {
 	this->initClass();
 };
@@ -215,6 +222,31 @@ void CGraphSlamEngine<GRAPH_T>::initClass() {
 	m_edge_reg->setCriticalSectionPtr(&m_graph_section);
 	m_optimizer->setCriticalSectionPtr(&m_graph_section);
 
+	// Initialization of possible map structures
+	m_gridmap_cached = mrpt::maps::COccupancyGridMap2D::Create();
+	m_octomap_cached = mrpt::maps::COctoMap::Create();
+	//{
+		//mrpt::maps::COccupancyGridMap2DPtr gridmap = mrpt::maps::COccupancyGridMap2D::Create();
+
+		//m_gridmap_cached = gridmap;
+  //}
+
+  // COctoMap Initialization
+  {
+		mrpt::maps::COctoMapPtr octomap = mrpt::maps::COctoMap::Create();
+
+		// TODO - adjust the insertionoptions...
+		// TODO - Read these from the .ini file
+  	octomap->insertionOptions.setOccupancyThres(0.5);
+  	octomap->insertionOptions.setProbHit(0.7);
+  	octomap->insertionOptions.setProbMiss(0.4);
+  	octomap->insertionOptions.setClampingThresMin(0.1192);
+  	octomap->insertionOptions.setClampingThresMax(0.971);
+
+  	m_octomap_cached = octomap;
+  }
+
+
 	// Load the parameters that each one of the self/deciders/optimizer classes
 	// needs
 	this->loadParams(m_config_fname);
@@ -337,7 +369,7 @@ void CGraphSlamEngine<GRAPH_T>::initClass() {
 				"Toggle Estimated trajectory visualization");
 		m_win_observer->registerKeystroke(m_keystroke_map,
 				"Toggle Map visualization");
-	}
+	} // if m_enable_visuals
 
 	// register the types of edges
 	vector<string> vec_edge_types;
@@ -407,44 +439,6 @@ void CGraphSlamEngine<GRAPH_T>::initClass() {
 	}
 
 	m_init_timestamp = INVALID_TIMESTAMP;
-
-	// COccupancyGridMap2D Initialization
-	{
-		mrpt::maps::COccupancyGridMap2DPtr gridmap = mrpt::maps::COccupancyGridMap2D::Create();
-
-		gridmap->setSize(
-				/* min_x = */ -20.0f,
-				/* float max_x = */ 20.0f,
-				/* float min_y = */ -20.0f,
-				/* float max_y = */ 20.0f,
-				/* float resolution = */ 0.05f);
-
-		// TODO - Read these from the .ini file
-		// observation insertion options
-  	gridmap->insertionOptions.maxOccupancyUpdateCertainty = 0.8f;
-  	gridmap->insertionOptions.maxDistanceInsertion = 5;
-  	gridmap->insertionOptions.wideningBeamsWithDistance = true;
-  	gridmap->insertionOptions.decimation = 2;
-
-	  m_gridmap_cached = gridmap;
-		m_map_is_cached = false;
-  }
-
-  // COctoMap Initialization
-  {
-		mrpt::maps::COctoMapPtr octomap = mrpt::maps::COctoMap::Create();
-
-		// TODO - adjust the insertionoptions...
-		// TODO - Read these from the .ini file
-  	octomap->insertionOptions.setOccupancyThres(0.5);
-  	octomap->insertionOptions.setProbHit(0.7);
-  	octomap->insertionOptions.setProbMiss(0.4);
-  	octomap->insertionOptions.setClampingThresMin(0.1192);
-  	octomap->insertionOptions.setClampingThresMax(0.971);
-
-  	m_octomap_cached = octomap;
-  	m_map_is_cached = false;
-  }
 
 	// In case we are given an RGBD TUM Dataset - try and read the info file so
 	// that we know how to play back the GT poses.
@@ -939,12 +933,12 @@ inline void CGraphSlamEngine<GRAPH_T>::computeMap() const {
 
 		m_map_is_cached = true;
 		m_map_acq_time = mrpt::system::now();
-	}
+	} // end if 2D Pose
 	else { // 3D Pose
 		//MRPT_LOG_DEBUG_STREAM("Computing the Octomap...");
 		THROW_EXCEPTION("Not Implemented Yet. Method is to compute a COctoMap");
 		//MRPT_LOG_DEBUG_STREAM("Computed COctoMap successfully.");
-	}
+	} // end of 3D pose
 
 
 	MRPT_END;
@@ -960,23 +954,22 @@ void CGraphSlamEngine<GRAPH_T>::loadParams(
 			mrpt::format("\nConfiguration file not found: \n%s\n", fname.c_str()));
 
 	MRPT_LOG_INFO_STREAM("Reading the .ini file... ");
-	MRPT_LOG_INFO_STREAM("Reading the .ini file... ");
 	CConfigFile cfg_file(fname);
 
 	// Section: GeneralConfiguration
 	// ////////////////////////////////
 	m_user_decides_about_output_dir = cfg_file.read_bool(
-			"GeneralConfiguration",
+			m_sec_general_params,
 			"user_decides_about_output_dir",
 			false, false);
 	m_GT_file_format = cfg_file.read_string(
-			"GeneralConfiguration",
+			m_sec_general_params,
 			"ground_truth_file_format",
 			"NavSimul", false);
 
 	// Minimum verbosity level of the logger
 	int min_verbosity_level = cfg_file.read_int(
-			"GeneralConfiguration",
+			m_sec_general_params,
 			"class_verbosity",
 			1, false);
 	this->setMinLoggingLevel(VerbosityLevel(min_verbosity_level));
@@ -986,44 +979,46 @@ void CGraphSlamEngine<GRAPH_T>::loadParams(
 
 	// map visualization
 	m_visualize_map = cfg_file.read_bool(
-			"VisualizationParameters",
+			m_sec_viz_params,
 			"visualize_map",
 			true, false);
 
 	// odometry-only visualization
 	m_visualize_odometry_poses = cfg_file.read_bool(
-			"VisualizationParameters",
+			m_sec_viz_params,
 			"visualize_odometry_poses",
 			true, false);
 	m_visualize_estimated_trajectory = cfg_file.read_bool(
-			"VisualizationParameters",
+			m_sec_viz_params,
 			"visualize_estimated_trajectory",
 			true, false);
 
 	// GT configuration visualization
 	m_visualize_GT = cfg_file.read_bool(
-			"VisualizationParameters",
+			m_sec_viz_params,
 			"visualize_ground_truth",
 			true, false);
 	// SLAM metric plot
 	m_visualize_SLAM_metric = cfg_file.read_bool(
-			"VisualizationParameters",
+			m_sec_viz_params,
 			"visualize_SLAM_metric",
 			true, false);
 
 	// Viewports flags
 	m_enable_curr_pos_viewport = cfg_file.read_bool(
-			"VisualizationParameters",
+			m_sec_viz_params,
 			"enable_curr_pos_viewport",
 			true, false);
 	m_enable_range_viewport = cfg_file.read_bool(
-			"VisualizationParameters",
+			m_sec_viz_params,
 			"enable_range_viewport",
 			false, false);
 	m_enable_intensity_viewport = cfg_file.read_bool(
-			"VisualizationParameters",
+			m_sec_viz_params,
 			"enable_intensity_viewport",
 			false, false);
+
+	this->loadMapParams(fname);
 
 	m_node_reg->loadParams(fname);
 	m_edge_reg->loadParams(fname);
@@ -1034,7 +1029,51 @@ void CGraphSlamEngine<GRAPH_T>::loadParams(
 } // end of loadParams
 
 template<class GRAPH_T>
-std::string CGraphSlamEngine<GRAPH_T>::getParamsAsString() const {
+void CGraphSlamEngine<GRAPH_T>::loadMapParams(const std::string& fname) {
+	const pose_t p_unused; // for choosing the appropirate method
+	this->loadMapParamsInternal(p_unused, fname, m_sec_map_params);
+} // end of loadMapParams
+
+template<class GRAPH_T>
+void CGraphSlamEngine<GRAPH_T>::loadMapParamsInternal(
+		const mrpt::poses::CPose2D& p_unused,
+		const std::string& fname,
+		const std::string& sec) {
+
+	mrpt::maps::COccupancyGridMap2DPtr& g = m_gridmap_cached;
+	mrpt::maps::COccupancyGridMap2D::TInsertionOptions& opts = g->insertionOptions;
+	opts.loadFromConfigFileName(fname, sec);
+
+	mrpt::utils::CConfigFile cfg_file(fname);
+	float resolution = cfg_file.read_float(
+			m_sec_map_params,
+			"resolution",
+			0.05f, false);
+
+	g->setSize(
+			/* min_x = */ -20.0f,
+			/* float max_x = */ 20.0f,
+			/* float min_y = */ -20.0f,
+			/* float max_y = */ 20.0f,
+			/* float resolution = */ resolution);
+
+} // end of loadMapParamsInternal
+
+template<class GRAPH_T>
+void CGraphSlamEngine<GRAPH_T>::loadMapParamsInternal(
+		const mrpt::poses::CPose3D& p_unused,
+		const std::string& fname,
+		const std::string& sec) {
+
+	mrpt::maps::COctoMapPtr& o = m_octomap_cached;
+	mrpt::maps::COctoMap::TInsertionOptions& opts = o->insertionOptions;
+	opts.loadFromConfigFileName(fname, sec);
+
+} // end of loadMapParamsInternal
+
+template<class GRAPH_T>
+std::string CGraphSlamEngine<GRAPH_T>::
+getParamsAsString() const {
 	MRPT_START;
 
 	std::string str;
@@ -2389,7 +2428,7 @@ void CGraphSlamEngine<GRAPH_T>::computeSlamMetric(mrpt::utils::TNodeID nodeID, s
 	pose_t prev_node_pos = m_graph.nodes[prev_it->first];
 	pose_t prev_gt_pos = m_GT_poses[prev_it->second];
 
-	// temporary constraint type 
+	// temporary constraint type
 	constraint_t c;
 
 	for (std::map<mrpt::utils::TNodeID, size_t>::const_iterator

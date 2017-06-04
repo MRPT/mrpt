@@ -59,6 +59,11 @@ void CRangeScanEdgeRegistrationDecider<GRAPH_T>::loadParams(
 			"ICP_goodness_thresh",
 			-1, false);
 
+	m_use_mahal_distance_init_ICP = source.read_bool(
+			section_erd,
+			"use_mahal_distance_init_ICP",
+			true, false);
+
 	MRPT_END;
 } // end of loadParams
 
@@ -209,6 +214,7 @@ bool CRangeScanEdgeRegistrationDecider<GRAPH_T>::getPropsOfNodeID(
 
 	if (node_props) {
 		// Pose
+		MRPT_TODO("Use approximatelyEqual instead of !=")
 		if (node_props->pose != global_pose_t()) {
 			*pose = node_props->pose;
 			filled_pose = true;
@@ -218,7 +224,7 @@ bool CRangeScanEdgeRegistrationDecider<GRAPH_T>::getPropsOfNodeID(
 			scan = node_props->scan;
 			filled_scan = true;
 		}
-	}
+	} // end if node_props
 
 	// TODO - What if the node_props->pose is indeed 0?
 	ASSERTMSG_(!(filled_pose ^ filled_scan),
@@ -418,25 +424,6 @@ updateLaserScansVisualization() {
 } // end of updateLaserScansVisualization
 
 template<class GRAPH_T>
-void CRangeScanEdgeRegistrationDecider<GRAPH_T>::getIncomingObs(
-		mrpt::obs::CObservationPtr obs) {
-	m_last_obs = obs;
-} // end of getIncomingObs
-
-template<class GRAPH_T>
-void CRangeScanEdgeRegistrationDecider<GRAPH_T>::getIncomingObs(
-		mrpt::obs::CObservation2DRangeScanPtr obs) {
-	this->m_last_laser_scan2D = obs;
-} // end of getIncomingObs
-
-template<class GRAPH_T>
-void CRangeScanEdgeRegistrationDecider<GRAPH_T>::getIncomingObs(
-		mrpt::obs::CObservation3DRangeScanPtr obs) {
-	this->m_last_laser_scan3D = obs;
-	this->m_last_laser_scan3D->load(); // load the images into memory
-} // end of getIncomingObs
-
-template<class GRAPH_T>
 void CRangeScanEdgeRegistrationDecider<GRAPH_T>::notifyOfWindowEvents(
 		const std::map<std::string, bool>& events_occurred) {
 	MRPT_START;
@@ -518,6 +505,20 @@ void CRangeScanEdgeRegistrationDecider<GRAPH_T>::initMiscActions() {
 	// so the text message can be displayed at the correct position
 	if (m_ICP_goodness_thresh > 0) {
 		this->fixICPGoodnessThresh(m_ICP_goodness_thresh);
+	}
+
+	// Textmessage: Mahalanobis distance - Initial-ICP
+	if (this->m_win_manager) {
+		const std::string title = mrpt::format(
+				"Use mahalanobis distance ICP-init: %s",
+				(m_use_mahal_distance_init_ICP? "True" : "False"));
+		this->m_win_manager->assignTextMessageParameters(
+				/* offset_y*	= */ &m_offset_y_mahal,
+				/* text_index* = */ &m_text_index_mahal);
+		this->m_win_manager->addTextMessage(5,-m_offset_y_mahal,
+				title,
+				mrpt::utils::TColorf(1, 1, 1),
+				/* unique_index = */ m_text_index_mahal);
 	}
 
 }
