@@ -1,12 +1,14 @@
 #include "mainwindow.h"
-#include <stdio.h>
-#include <stdlib.h>
 #include <vector>
 #include <string>
 #include <string.h>
 #include <iostream>
+#include "detectordialog.h"
+#include <QButtonGroup>
+
 
 using namespace std;
+
 void MainWindow::on_button_generate_clicked()
 {
     ReadInputFormat();
@@ -28,8 +30,6 @@ void MainWindow::button_close_clicked()
     this->close();
     return;
 }
-
-
 /*
  *
  * this function is called to show the performance of the selected detector on the input selected by the user
@@ -48,7 +48,12 @@ void MainWindow::on_detector_button_clicked()
     // CALL DETECTOR DIALOG HERE TO CREATE DIALOG FOR PARAMETERS/EVALUATION
 
     QString details("You have selected the DETECTOR" + QString::number(detector_selected) + " ,The selected image "+ QString::number(currentInputIndex) + " has the following characteristics");
-    QMessageBox::information(this,"Detector Characteristics for the selected input", details);
+    //QMessageBox::information(this,"Detector Characteristics for the selected input", details);
+
+    buttonGroup1->checkedId();
+    cout << groupBox->isEnabled();
+    //connect(window_gui,SIGNAL(objectNameChanged(inputFilePath)),detect_dialog,SLOT());
+    DetectorDialog detect_dialog(this, inputFilePath->text(), detector_selected);//= new DetectorDialog(d);
 }
 
 /*
@@ -113,6 +118,7 @@ void MainWindow::ReadInputFormat()
     currentInputIndex = inputs->currentIndex();
 
     //store the detector chosen here
+    //detector_selected = buttonGroup1->checkedId();
     for(int i=0 ; i<NUM_DETECTORS ; i++)
     {
         detector_selected = -1;
@@ -146,15 +152,21 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
     window_gui->setWindowTitle("GUI app for benchmarking image detectors and descriptord");
 
     //Initialize the detectors here
-    QGroupBox *groupBox = new QGroupBox(tr("Select your detector"));
-    string detector_names[] = {"Harris Corner Detector", "Detectorf",
-                     "FAST Detector", "LSD Detector",
-                     "AKAZE Detector"};
+    groupBox = new QGroupBox(tr("Select your detector"));
+
+    buttonGroup1 = new QButtonGroup;
+    string detector_names[] = {"KLT Detector", "Harris Corner Detector",
+                     "BCD (Binary Corner Detector)", "SIFT",
+                     "SURF", "FAST Detector",
+                     "FASTER Detector", "AKAZE Detector",
+                     "LSD Detector"};
     for(int i=0 ; i<NUM_DETECTORS ; i++)
     {
         detectors[i] = new QRadioButton(this);
         detectors[i]->setText(detector_names[i].c_str());
+        buttonGroup1->addButton(detectors[i]);
     }
+
     QPushButton *detector_button = new QPushButton;
     detector_button->setText("Evaluate Detector");
     connect(detector_button, SIGNAL(clicked(bool)),this, SLOT(on_detector_button_clicked()));
@@ -164,16 +176,20 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
         vbox->addWidget(detectors[i]);
     }
     vbox->addWidget(detector_button);
+
     groupBox->setLayout(vbox);
 
 
 
 
+
     //initialize the descriptors here
-    QGroupBox *groupBox2 = new QGroupBox(tr("Select your descriptor"));
+    groupBox2 = new QGroupBox(tr("Select your descriptor"));
     string descriptor_names[] = {"SIFT Descriptor", "SURF Descriptor",
-                                  "LATCH Descriptor", "BLD Descriptor",
-                                  "BRIEF Descriptors"};
+                                 "Intensity-domain spin image descriptor", "Polar Images descriptor",
+                                 "Log-polar image descriptor", "LATCH Descriptor",
+                                 "BLD Descriptor"};
+                                  //"BRIEF Descriptors"};
     for(int i=0 ; i<NUM_DETECTORS ; i++)
     {
         descriptors[i] = new QRadioButton(this);
