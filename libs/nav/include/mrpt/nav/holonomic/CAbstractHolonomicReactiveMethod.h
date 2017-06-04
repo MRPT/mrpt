@@ -26,17 +26,6 @@ namespace mrpt
 	  * \ingroup mrpt_nav_grp
 	  * @{ */
 	  
-	/** The implemented reactive navigation methods. This enum works with mrpt::utils::TEnumType.
-	  * Since MRPT 1.5.0 the preferred way to select a holonomic method is, instead of this enum, 
-	  *  via the class factory method CAbstractHolonomicReactiveMethod::Create() via the class name. */
-	enum THolonomicMethod
-	{
-		hmVIRTUAL_FORCE_FIELDS = 0,  //!< CHolonomicVFF
-		hmSEARCH_FOR_BEST_GAP = 1,   //!< CHolonomicND
-		hmFULL_EVAL = 2              //!< CHolonomicFullEval
-	};
-
-
 	/** A base class for holonomic reactive navigation methods.
 	 *  \sa CHolonomicVFF,CHolonomicND,CHolonomicFullEval, CReactiveNavigationSystem
 	 */
@@ -108,23 +97,7 @@ namespace mrpt
 	  /** @} */
 
   }
-	// Specializations MUST occur at the same namespace:
-	namespace utils
-	{
-		template <>
-		struct TEnumTypeFiller<nav::THolonomicMethod>
-		{
-			typedef nav::THolonomicMethod enum_t;
-			static void fill(bimap<enum_t,std::string>  &m_map)
-			{
-				m_map.insert(nav::hmVIRTUAL_FORCE_FIELDS, "hmVIRTUAL_FORCE_FIELDS");
-				m_map.insert(nav::hmSEARCH_FOR_BEST_GAP, "hmSEARCH_FOR_BEST_GAP");
-				m_map.insert(nav::hmFULL_EVAL, "hmFULL_EVAL");
-			}
-		};
-	} // End of namespace
 }
-
 
 #endif
 

@@ -111,9 +111,6 @@ namespace mrpt
 			*/
 		void setHolonomicMethod(const std::string & method, const mrpt::utils::CConfigFileBase & cfgBase);
 
-		MRPT_DEPRECATED("Use the signature with a class name string instead of an enum.")
-		void setHolonomicMethod(THolonomicMethod method, const mrpt::utils::CConfigFileBase & cfgBase);
-
 		/** Provides a copy of the last log record with information about execution.
 			* \param o An object where the log will be stored into.
 			* \note Log records are not prepared unless either "enableLogFile" is enabled in the constructor or "enableLogFile()" has been called.
