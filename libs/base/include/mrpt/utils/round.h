@@ -11,7 +11,7 @@
 
 #include <mrpt/utils/SSE_types.h>  // needed by SSE intrinsics used in some inline functions below.
 #define _USE_MATH_DEFINES // (For VS to define M_PI, etc. in cmath)
-#include <cmath> // pow()
+#include <cmath> // pow(), lrint()
 
 namespace mrpt
 {
@@ -28,18 +28,8 @@ namespace mrpt
 		#if MRPT_HAS_SSE2
 			__m128d t = _mm_set_sd( value );
 			return _mm_cvtsd_si32(t);
-		#elif (defined WIN32 || defined _WIN32) && !defined WIN64 && !defined _WIN64 && defined _MSC_VER
-			int t;
-			__asm
-			{
-				fld value;
-				fistp t;
-			}
-			return t;
-		#elif defined HAVE_LRINT || defined __GNUC__
-			return static_cast<int>(lrint(value));
 		#else
-			return static_cast<int>(value + 0.5);
+			return static_cast<int>(lrint(value));
 		#endif
 		}
 
@@ -50,18 +40,8 @@ namespace mrpt
 		#if MRPT_HAS_SSE2 && MRPT_WORD_SIZE==64
 			__m128d t = _mm_set_sd( value );
 			return _mm_cvtsd_si64(t);
-		#elif (defined WIN32 || defined _WIN32) && !defined WIN64 && !defined _WIN64 && defined _MSC_VER
-			long t;
-			__asm
-			{
-				fld value;
-				fistp t;
-			}
-			return t;
-		#elif defined HAVE_LRINT || defined __GNUC__
-			return lrint(value);
 		#else
-			return static_cast<long>(value + 0.5);
+			return lrint(value);
 		#endif
 		}
 
