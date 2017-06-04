@@ -76,9 +76,6 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 /* PCL (The pointclouds library): */
 #define MRPT_HAS_PCL           ${CMAKE_MRPT_HAS_PCL}
 
-/* TBB (Intel threading lib): */
-#define MRPT_HAS_TBB           ${CMAKE_MRPT_HAS_TBB}
-
 /** The file ftdi.h exists (Linux only) */
 #define MRPT_HAS_FTDI             ${CMAKE_MRPT_HAS_FTDI}
 #define MRPT_FTDI_VERSION         0x${LIBFTDI_VERSION_MAJOR}${LIBFTDI_VERSION_MINOR}0

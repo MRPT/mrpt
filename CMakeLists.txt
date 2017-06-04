@@ -237,7 +237,7 @@ endif()
 # ----------------------------------------------------------------------------
 # Other sub-scripts:
 # ----------------------------------------------------------------------------
-include(cmakemodules/script_gridmap_options.cmake REQUIRED) # Enable Intel Threading Building Blocks (TBB) lib?
+include(cmakemodules/script_gridmap_options.cmake REQUIRED) # Gridmap options
 
 include(cmakemodules/script_phidget.cmake REQUIRED)     # Support for phidget Interface Kit with proximity sensor device :
 include(cmakemodules/script_videre_svs.cmake REQUIRED)  # Support for Videre Design stereo camera:
