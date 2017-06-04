@@ -280,6 +280,19 @@ MARK_AS_ADVANCED(FORCE MRPT_ALWAYS_CHECKS_DEBUG)
 OPTION(MRPT_ALWAYS_CHECKS_DEBUG_MATRICES "Additional checks even in Release (Only in matrix classes)" "OFF")
 MARK_AS_ADVANCED(FORCE MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
 
+# For CMAKE 3.3 and greater, include-what-you-use option
+# ===================================================
+IF(CMAKE_VERSION VERSION_GREATER 3.3)
+	SET(USE_IWYU ON CACHE BOOL "If you want to use include-what-you-use, enable this")
+	IF(USE_IWYU)
+		FIND_PROGRAM(iwyu_path NAMES include-what-you-use iwyu)
+		IF(NOT iwyu_path)
+		  MESSAGE(FATAL_ERROR "Could not find the program include-what-you-use")
+		ENDIF()
+		set_property(GLOBAL PROPERTY CXX_INCLUDE_WHAT_YOU_USE ${iwyu_path})
+	ENDIF()
+ENDIF()
+
 # ---------------------------------------------------------------------------
 # Create the minimum list of libraries required by an application that
 #  uses the MRPT C++ library. This must be passed to "TARGET_LINK_LIBRARIES"
