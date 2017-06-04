@@ -57,7 +57,7 @@ namespace mrpt
 			virtual size_t  Write(const void *Buffer, size_t Count) = 0;
 
 			/** Read the object */
-			void internal_ReadObject(CSerializable &newObj, const std::string &className, bool isOldFormat, int8_t version);
+			void internal_ReadObject(CSerializable *newObj, const std::string &className, bool isOldFormat, int8_t version);
 
 			/** Read the object Header*/
 			void internal_ReadObjectHeader(std::string &className, bool &isOldFormat, int8_t &version);
@@ -196,14 +196,18 @@ namespace mrpt
 				bool isOldFormat;
 				int8_t version;
 				internal_ReadObjectHeader(strClassName, isOldFormat, version);
-				const TRuntimeClassId *classId = findRegisteredClass( strClassName );
-				if(strClassName == "nullptr")
+				if (strClassName != "nullptr")
 				{
+					const TRuntimeClassId *classId = findRegisteredClass(strClassName);
+					obj.reset(dynamic_cast<CSerializable *>(classId->createObject()));
+				}
+				internal_ReadObject(obj.get() /* may be nullptr */, strClassName, isOldFormat, version); // must be called to read the END FLAG byte
+				if (!obj) {
 					return typename T::Ptr();
 				}
-				obj.reset(dynamic_cast<CSerializable *>(classId->createObject()));
-				internal_ReadObject(*obj,strClassName, isOldFormat, version);
-				return std::dynamic_pointer_cast<T>(obj);
+				else {
+					return std::dynamic_pointer_cast<T>(obj);
+				}
 			}
 		private:
 			template <typename RET>
@@ -246,13 +250,17 @@ namespace mrpt
 				internal_ReadObjectHeader(strClassName, isOldFormat, version);
 				const TRuntimeClassId *classId = findRegisteredClass( strClassName );
 				if(!classId) THROW_EXCEPTION_FMT("Stored object has class '%s' which is not registered!",strClassName.c_str())
-				if(strClassName == "nullptr")
+				if(strClassName != "nullptr")
 				{
+					obj.reset(dynamic_cast<CSerializable *>(classId->createObject()));
+				}
+				internal_ReadObject(obj.get(),strClassName, isOldFormat, version);
+				if (!obj) {
 					return mrpt::utils::variant<T...>();
 				}
-				obj.reset(dynamic_cast<CSerializable *>(classId->createObject()));
-				internal_ReadObject(*obj,strClassName, isOldFormat, version);
-				return ReadVariant_helper<mrpt::utils::variant<T...>,T...>(obj);
+				else {
+					return ReadVariant_helper<mrpt::utils::variant<T...>, T...>(obj);
+				}
 			}
 
 
