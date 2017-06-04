@@ -1,8 +1,13 @@
 #pragma once
 #include <QMainWindow>
+#include <memory>
 
-
-class GlWidget;
+namespace Ui
+{
+class CMainWindow;
+}
+class CGlWidget;
+class CDocument;
 
 class CMainWindow : public QMainWindow {
 	Q_OBJECT
@@ -15,7 +20,8 @@ private slots:
 	void openMap();
 
 private:
-	void initMenu();
+	CDocument *m_document;
+	QTabWidget *m_tabwidget;
 
-	GlWidget *glWidget_;
+	std::unique_ptr<Ui::CMainWindow> m_ui;
 };
