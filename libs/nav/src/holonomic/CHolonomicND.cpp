@@ -64,19 +64,14 @@ void CHolonomicND::navigate(const NavInput & ni, NavOutput &no)
 
 	// Search gaps:
 	gaps.clear();
-	gapsEstimator( ni.obstacles, ni.target, gaps);
+	ASSERT_(!ni.targets.empty());
+	const auto trg = *ni.targets.rbegin();
+
+	gapsEstimator( ni.obstacles, trg, gaps);
 
 
 	// Select best gap:
-	searchBestGap(	ni.obstacles,
-					1.0,
-					gaps,
-					ni.target,
-					selectedSector,
-					evaluation,
-					situation,
-					riskEvaluation,
-					*log);
+	searchBestGap(ni.obstacles,1.0/* max obs range*/, gaps,trg,selectedSector,evaluation,situation,riskEvaluation,log);
 
 	if (situation == SITUATION_NO_WAY_FOUND)
 	{
@@ -92,7 +87,7 @@ void CHolonomicND::navigate(const NavInput & ni, NavOutput &no)
 		// Speed control: Reduction factors
 		// ---------------------------------------------
 		const double targetNearnessFactor = m_enableApproachTargetSlowDown ? 
-			std::min(1.0, ni.target.norm() / (options.TARGET_SLOW_APPROACHING_DISTANCE / ptg_ref_dist))
+			std::min(1.0, trg.norm() / (options.TARGET_SLOW_APPROACHING_DISTANCE / ptg_ref_dist))
 			:
 			1.0;
 

@@ -127,8 +127,8 @@ void run_rnav_test(
 
 	// Nav:
 	CAbstractNavigator::TNavigationParams np;
-	np.target = mrpt::math::TPose2D(nav_target);
-	np.targetAllowedDistance = 0.35f;
+	np.target.target_coords = mrpt::math::TPose2D(nav_target);
+	np.target.targetAllowedDistance = 0.35f;
 
 	rnav.navigate(&np);
 

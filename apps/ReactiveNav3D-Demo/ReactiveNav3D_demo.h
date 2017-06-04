@@ -824,9 +824,9 @@ public:
 					float y, float targetAllowedDistance, bool targetIsRelative = false)
 	{
 		CAbstractNavigator::TNavigationParams navparams;
-		navparams.target = mrpt::math::TPose2D(x,y,0);
-		navparams.targetAllowedDistance = targetAllowedDistance;
-		navparams.targetIsRelative = targetIsRelative;
+		navparams.target.target_coords = mrpt::math::TPose2D(x,y,0);
+		navparams.target.targetAllowedDistance = targetAllowedDistance;
+		navparams.target.targetIsRelative = targetIsRelative;
 		if (!targetIsRelative)
 			target = CPose2D(x, y, 0);
 		else

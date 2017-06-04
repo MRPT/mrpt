@@ -112,45 +112,14 @@ MAKE_FIXED_DOUBLE_MATRIX_GETSET(6, 6)
 
 // end of CMatrix
 
-// re-implement inline functions, otherwise they are not included inside pymrpt.so
+// Explicit instantiations:
 namespace mrpt{ namespace math {
 
-    template <class T>
-    void wrapTo2PiInPlace(T &a)
-    {
-        bool was_neg = a<0;
-        a = fmod(a, static_cast<T>(2.0*M_PI) );
-        if (was_neg) a+=static_cast<T>(2.0*M_PI);
-    }
-
-    template <class T>
-    T wrapTo2Pi(T a) {
-        wrapTo2PiInPlace(a);
-        return a;
-    }
-
-    template <class T>
-    T wrapToPi(T a)
-    {
-        return wrapTo2Pi( a + static_cast<T>(M_PI) )-static_cast<T>(M_PI);
-    }
-
-    template <class T>
-    void wrapToPiInPlace(T &a)
-    {
-        a = wrapToPi(a);
-    }
-
-    template <class T>
-    T angDistance(T from, T to)
-    {
-        wrapToPiInPlace(from);
-        wrapToPiInPlace(to);
-        T d = to-from;
-        if (d>M_PI)  d-=2.*M_PI;
-        else if (d<-M_PI) d+=2.*M_PI;
-        return d;
-    }
+template void wrapTo2PiInPlace<double>(double &a);
+template double wrapTo2Pi<double>(double a);
+template double wrapToPi<double>(double a);
+template void wrapToPiInPlace<double>(double &a);
+template double angDistance<double>(double from, double to);
 
 } }
 

@@ -159,7 +159,7 @@ int CMultiObjectiveMotionOptimizerBase::decide(const std::vector<mrpt::nav::TCan
 	// For each assert, evaluate it (*after* score normalization)
 	for (unsigned int mov_idx = 0; mov_idx < movs.size(); ++mov_idx)
 	{
-		const auto &m = movs[mov_idx];
+		//const auto &m = movs[mov_idx];
 		bool assert_failed = false;
 		{
 			for (auto &ma : m_movement_assert_exprs)
