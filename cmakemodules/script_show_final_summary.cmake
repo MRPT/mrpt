@@ -125,7 +125,7 @@ MESSAGE(STATUS " ______________________ OPTIONAL LIBRARIES _____________________
 SHOW_CONFIG_LINE_SYSTEM("Assimp (3D models)                  " CMAKE_MRPT_HAS_ASSIMP "[Version: ${ASSIMP_VERSION}]")
 SHOW_CONFIG_LINE_SYSTEM("ffmpeg libs (Video streaming)       " CMAKE_MRPT_HAS_FFMPEG "[avcodec ${LIBAVCODEC_VERSION}, avutil ${LIBAVUTIL_VERSION}, avformat ${LIBAVFORMAT_VERSION}]")
 SHOW_CONFIG_LINE_SYSTEM("gtest (Google unit testing library) " CMAKE_MRPT_HAS_GTEST )
-SHOW_CONFIG_LINE_SYSTEM("lib3ds (3DStudio scenes)            " CMAKE_MRPT_HAS_LIB3DS)
+SHOW_CONFIG_LINE("lib3ds (3DStudio scenes)            " CMAKE_MRPT_HAS_LIB3DS)
 SHOW_CONFIG_LINE_SYSTEM("libjpeg (jpeg)                      " CMAKE_MRPT_HAS_JPEG)
 SHOW_CONFIG_LINE_SYSTEM("liblas (ASPRS LAS LiDAR format)     " CMAKE_MRPT_HAS_LIBLAS)
 SHOW_CONFIG_LINE("mexplus                                    " CMAKE_MRPT_HAS_MATLAB)
