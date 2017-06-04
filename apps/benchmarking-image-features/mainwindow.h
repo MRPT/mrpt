@@ -1,7 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
-#define NUM_DETECTORS 5
-#define NUM_DESCRIPTORS 5
+#define NUM_DETECTORS 9
+#define NUM_DESCRIPTORS 7
 
 #include <QMainWindow>
 #include <QObject>
@@ -25,6 +25,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
+#include "opencv2/core.hpp"
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/calib3d/calib3d.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+
+using namespace cv;
 using namespace std;
 
 class MainWindow : public QMainWindow
@@ -46,25 +52,21 @@ public:
     int detector_selected;
     int descriptor_selected;
 
+    QGroupBox *groupBox;
+    QGroupBox *groupBox2;
+
+    QButtonGroup *buttonGroup1;
+    QButtonGroup *buttonGroup2;
+
     QComboBox *inputs;
     QLineEdit *inputFilePath;
-
-    QRadioButton *detector1;
-    QRadioButton *detector2;
-    QRadioButton *detector3;
-    QRadioButton *detector4;
-    QRadioButton *detector5;
 
     QRadioButton *detectors[NUM_DETECTORS];
     QRadioButton *descriptors[NUM_DESCRIPTORS];
 
 
-    QRadioButton *descriptor1;
-    QRadioButton *descriptor2;
-    QRadioButton *descriptor3;
-    QRadioButton *descriptor4;
-    QRadioButton *descriptor5;
 signals:
+
 
 public slots:
     void on_button_generate_clicked();
