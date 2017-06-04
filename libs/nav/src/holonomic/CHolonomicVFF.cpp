@@ -78,7 +78,10 @@ void CHolonomicVFF::navigate(const NavInput & ni, NavOutput &no)
 	const double obstacleNearnessFactor = std::min( 1.0, 6.0/resultantForce.norm());
 
 	// Target:
-	const double ang = atan2(ni.target.y, ni.target.x );
+	ASSERT_(!ni.targets.empty());
+	const auto trg = *ni.targets.rbegin();
+
+	const double ang = atan2(trg.y, trg.x );
 	const double mod = options.TARGET_ATTRACTIVE_FORCE;
 	resultantForce += mrpt::math::TPoint2D(cos(ang) * mod, sin(ang) * mod );
 
@@ -90,7 +93,7 @@ void CHolonomicVFF::navigate(const NavInput & ni, NavOutput &no)
 	// ---------------------------------------------
 	if (m_enableApproachTargetSlowDown)
 	{
-		const double targetNearnessFactor = std::min(1.0, ni.target.norm() / (options.TARGET_SLOW_APPROACHING_DISTANCE/ ptg_ref_dist));
+		const double targetNearnessFactor = std::min(1.0, trg.norm() / (options.TARGET_SLOW_APPROACHING_DISTANCE/ ptg_ref_dist));
 		no.desiredSpeed = ni.maxRobotSpeed * std::min(obstacleNearnessFactor, targetNearnessFactor);
 	}
 }

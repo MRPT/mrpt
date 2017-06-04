@@ -43,7 +43,7 @@ namespace nav
 		{
 			std::string              PTG_desc;      //!< A short description for the applied PTG
 			mrpt::math::CVectorFloat TP_Obstacles;  //!< Distances until obstacles, in "pseudometers", first index for -PI direction, last one for PI direction.
-			mrpt::math::TPoint2D     TP_Target;     //!< Target location in TP-Space
+			std::vector<mrpt::math::TPoint2D>  TP_Targets;     //!< Target(s) location in TP-Space
 			mrpt::math::TPoint2D     TP_Robot;      //!< Robot location in TP-Space: normally (0,0), except during "NOP cmd vel" steps
 			double timeForTPObsTransformation,timeForHolonomicMethod;  //!< Time, in seconds.
 			double desiredDirection,desiredSpeed;          //!< The results from the holonomic method.
@@ -74,7 +74,7 @@ namespace nav
 		mrpt::maps::CSimplePointsMap  WS_Obstacles, WS_Obstacles_original;  //!< The WS-Obstacles
 		mrpt::math::TPose2D           robotPoseLocalization, robotPoseOdometry; //!< The robot pose (from odometry and from the localization/SLAM system).
 		mrpt::math::TPose2D           relPoseSense, relPoseVelCmd; //! Relative poses (wrt to robotPoseLocalization) for extrapolated paths at two instants: time of obstacle sense, and future pose of motion comman
-		mrpt::math::TPoint2D          WS_target_relative;  //!< The relative location of target point in WS.
+		std::vector<mrpt::math::TPose2D> WS_targets_relative;  //!< The relative location of target(s) in Workspace.
 
 		mrpt::kinematics::CVehicleVelCmd::Ptr    cmd_vel;  //!< The final motion command sent to robot, in "m/sec" and "rad/sec".
 		mrpt::kinematics::CVehicleVelCmd::Ptr    cmd_vel_original;  //!< Motion command as comes out from the PTG, before scaling speed limit filtering.

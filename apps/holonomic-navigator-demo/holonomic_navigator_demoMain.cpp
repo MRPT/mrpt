@@ -592,7 +592,7 @@ void holonomic_navigator_demoFrame::simulateOneStep(double time_step)
 	//tictac.Tic();
 	CAbstractHolonomicReactiveMethod::NavOutput no;
 	CAbstractHolonomicReactiveMethod::NavInput ni;
-	ni.target = relTargetPose;
+	ni.targets.push_back(relTargetPose);
 	
 	ni.obstacles.resize(simulatedScan.getScanSize());
 	for (unsigned int i = 0; i < ni.obstacles.size(); i++)
