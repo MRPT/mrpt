@@ -138,7 +138,7 @@ SHOW_CONFIG_LINE_SYSTEM("PCL (Pointscloud library)           " CMAKE_MRPT_HAS_PC
 SHOW_CONFIG_LINE("SuiteSparse                                " CMAKE_MRPT_HAS_SUITESPARSE)
 SHOW_CONFIG_LINE("VTK                                        " CMAKE_MRPT_HAS_VTK)
 SHOW_CONFIG_LINE_SYSTEM("wxWidgets                           " CMAKE_MRPT_HAS_WXWIDGETS)
-SHOW_CONFIG_LINE_SYSTEM("Qt5                                 " CMAKE_MRPT_HAS_Qt5)
+SHOW_CONFIG_LINE("Qt5                                 " CMAKE_MRPT_HAS_Qt5)
 SHOW_CONFIG_LINE_SYSTEM("yamlcpp (YAML file format)          " CMAKE_MRPT_HAS_YAMLCPP "[Version: ${LIBYAMLCPP_VERSION}]")
 MESSAGE(STATUS  "")
 
