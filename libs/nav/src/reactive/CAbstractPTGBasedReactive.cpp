@@ -10,9 +10,6 @@
 #include "nav-precomp.h" // Precomp header
 
 #include <mrpt/nav/reactive/CAbstractPTGBasedReactive.h>
-#include <mrpt/nav/holonomic/CHolonomicVFF.h>  // TODO: Remove for MRPT 2.0
-#include <mrpt/nav/holonomic/CHolonomicND.h> // TODO: Remove for MRPT 2.0
-#include <mrpt/nav/holonomic/CHolonomicFullEval.h> // TODO: Remove for MRPT 2.0
 #include <mrpt/system/filesystem.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/math/geometry.h>
@@ -191,20 +188,6 @@ void CAbstractPTGBasedReactive::getLastLogRecord( CLogFileRecord &o )
 	o = lastLogRecord;
 }
 
-// TODO: Remove for MRPT 2.0
-static std::string holoMethodEnum2ClassName(const THolonomicMethod method)
-{
-	std::string className;
-	switch (method)
-	{
-	case hmSEARCH_FOR_BEST_GAP:  className = "CHolonomicND";  break;
-	case hmVIRTUAL_FORCE_FIELDS: className = "CHolonomicVFF"; break;
-	case hmFULL_EVAL: className = "CHolonomicFullEval"; break;
-	default: THROW_EXCEPTION_FMT("Unknown Holonomic method: %u", static_cast<unsigned int>(method))
-	};
-	return className;
-}
-
 void CAbstractPTGBasedReactive::deleteHolonomicObjects()
 {
 	for (size_t i=0;i<m_holonomicMethod.size();i++)
@@ -230,11 +213,6 @@ void CAbstractPTGBasedReactive::setHolonomicMethod(const std::string & method, c
 		m_holonomicMethod[i]->setAssociatedPTG(this->getPTG(i));
 		m_holonomicMethod[i]->initialize(ini); // load params
 	}
-}
-
-void CAbstractPTGBasedReactive::setHolonomicMethod(const THolonomicMethod method, const mrpt::utils::CConfigFileBase &ini)
-{
-	setHolonomicMethod(holoMethodEnum2ClassName(method), ini);
 }
 
 // The main method: executes one time-iteration of the reactive navigation algorithm.
@@ -816,12 +794,6 @@ void CAbstractPTGBasedReactive::STEP8_GenerateLogRecord(CLogFileRecord &newLogRe
 	newLogRec.ptg_last_k_NOP = m_lastSentVelCmd.ptg_alpha_index;
 	newLogRec.ptg_last_navDynState = m_lastSentVelCmd.ptg_dynState;
 
-	// Last entry in info-per-PTG:
-	{
-		CLogFileRecord::TInfoPerPTG &ipp = *newLogRec.infoPerPTG.rbegin();
-		if (!ipp.HLFR) ipp.HLFR = CLogFileRecord_VFF::Create();
-	}
-
 	m_timelogger.leave("navigationStep.populate_log_info");
 
 	//  Save to log file:
@@ -1311,11 +1283,6 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
 	if (!any_TPTarget_is_valid)
 	{
 		newLogRec.additional_debug_msgs[mrpt::format("mov_candidate_%u", static_cast<unsigned int>(indexPTG))] = "PTG discarded since target(s) is(are) out of domain.";
-
-		{   // Invalid PTG (target out of reachable space):
-			// - holonomicMovement= Leave default values
-			HLFR = CLogFileRecord_VFF::Create();
-		}
 	}
 	else
 	{

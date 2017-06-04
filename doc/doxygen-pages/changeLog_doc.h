@@ -27,6 +27,8 @@
 		- \ref mrpt_base_grp
 			- Removed functions (replaced by C++11/14 standard library):
 				- mrpt::math::erf, mrpt::math::erfc, std::isfinite, mrpt::math::std::isnan
+		- \ref mrpt_nav_grp
+			- Removed deprecated mrpt::nav::THolonomicMethod.
 
 <hr>
 <a name="1.5.0">
