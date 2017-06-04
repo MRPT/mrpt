@@ -75,18 +75,17 @@ namespace mrpt
 		MRPT_MAKE_ALIGNED_OPERATOR_NEW
 
 		/** The struct for configuring navigation requests to CAbstractPTGBasedReactive and derived classes. */
-		struct NAV_IMPEXP TNavigationParamsPTG : public CAbstractNavigator::TNavigationParams
+		struct NAV_IMPEXP TNavigationParamsPTG : public CWaypointsNavigator::TNavigationParamsWaypoints
 		{
 			/** (Default=empty) Optionally, a list of PTG indices can be sent such that
 			 *  the navigator will restrict itself to only employ those PTGs. */
 			std::vector<size_t>    restrict_PTG_indices;
 
-			TNavigationParamsPTG() { }
-			virtual ~TNavigationParamsPTG() { }
-			virtual std::string getAsText() const MRPT_OVERRIDE;
-			virtual TNavigationParams* clone() const MRPT_OVERRIDE { return new TNavigationParamsPTG(*this); }
+			virtual std::string getAsText() const override;
+			virtual TNavigationParamsBase* clone() const override { return new TNavigationParamsPTG(*this); }
+		protected:
+			virtual bool isEqual(const CAbstractNavigator::TNavigationParamsBase& o) const override;
 		};
-
 
 		/** Constructor.
 		  * \param[in] react_iterf_impl An instance of an object that implement all the required interfaces to read from and control a robot.
@@ -104,16 +103,13 @@ namespace mrpt
 		/** Must be called for loading collision grids, or the first navigation command may last a long time to be executed.
 		  * Internally, it just calls STEP1_CollisionGridsBuilder().
 		  */
-		void initialize() MRPT_OVERRIDE;
+		void initialize() override;
 
 		/** Selects which one from the set of available holonomic methods will be used
 			*  into transformed TP-Space, and sets its configuration from a configuration file.
 			* Available methods: class names of those derived from CAbstractHolonomicReactiveMethod
 			*/
 		void setHolonomicMethod(const std::string & method, const mrpt::utils::CConfigFileBase & cfgBase);
-
-		MRPT_DEPRECATED("Use the signature with a class name string instead of an enum.")
-		void setHolonomicMethod(THolonomicMethod method, const mrpt::utils::CConfigFileBase & cfgBase);
 
 		/** Provides a copy of the last log record with information about execution.
 			* \param o An object where the log will be stored into.
@@ -167,15 +163,15 @@ namespace mrpt
 			bool  evaluate_clearance; //!< Default: false
 			double max_dist_for_timebased_path_prediction; //!< Max dist [meters] to use time-based path prediction for NOP evaluation.
 
-			virtual void loadFromConfigFile(const mrpt::utils::CConfigFileBase &c, const std::string &s) MRPT_OVERRIDE;
-			virtual void saveToConfigFile(mrpt::utils::CConfigFileBase &c, const std::string &s) const MRPT_OVERRIDE;
+			virtual void loadFromConfigFile(const mrpt::utils::CConfigFileBase &c, const std::string &s) override;
+			virtual void saveToConfigFile(mrpt::utils::CConfigFileBase &c, const std::string &s) const override;
 			TAbstractPTGNavigatorParams();
 		};
 
 		TAbstractPTGNavigatorParams params_abstract_ptg_navigator;
 
-		virtual void loadConfigFile(const mrpt::utils::CConfigFileBase &c) MRPT_OVERRIDE; // See base class docs!
-		virtual void saveConfigFile(mrpt::utils::CConfigFileBase &c) const MRPT_OVERRIDE; // See base class docs!
+		virtual void loadConfigFile(const mrpt::utils::CConfigFileBase &c) override; // See base class docs!
+		virtual void saveConfigFile(mrpt::utils::CConfigFileBase &c) const override; // See base class docs!
 
 
 		/** Enables/disables the detailed time logger (default:disabled upon construction)
@@ -211,7 +207,7 @@ namespace mrpt
 
 	protected:
 		/** The main method for the navigator */
-		virtual void  performNavigationStep() MRPT_OVERRIDE;
+		virtual void  performNavigationStep() override;
 
 		std::vector<CAbstractHolonomicReactiveMethod*>  m_holonomicMethod;   //!< The holonomic navigation algorithm (one object per PTG, so internal states are maintained)
 		mrpt::utils::CStream  *m_logFile, *m_prev_logfile;         //!< The current log file stream, or nullptr if not being used
@@ -237,7 +233,7 @@ namespace mrpt
 		mrpt::math::LowPassFilter_IIR1  tim_changeSpeed_avr, timoff_obstacles_avr, timoff_curPoseAndSpeed_avr, timoff_sendVelCmd_avr;
 		/** @} */
 
-		virtual bool impl_waypoint_is_reachable(const mrpt::math::TPoint2D &wp_local_wrt_robot) const MRPT_OVERRIDE; // See docs in base class
+		virtual bool impl_waypoint_is_reachable(const mrpt::math::TPoint2D &wp_local_wrt_robot) const override; // See docs in base class
 
 		// Steps for the reactive navigation sytem.
 		// ----------------------------------------------------------------------------
@@ -255,12 +251,22 @@ namespace mrpt
 		/** Generates a pointcloud of obstacles, and the robot shape, to be saved in the logging record for the current timestep */
 		virtual void loggingGetWSObstaclesAndShape(CLogFileRecord &out_log) = 0;
 
+		struct PTGTarget
+		{
+			bool                 valid_TP;   //!< For each PTG, whether target falls into the PTG domain.
+			mrpt::math::TPoint2D TP_Target;  //!< The Target, in TP-Space (x,y)
+			double               target_alpha, target_dist;  //!< TP-Target
+			int                  target_k; //!< The discrete version of target_alpha
+
+			PTGTarget() : valid_TP(false) {}
+		};
+
 		/** Scores \a holonomicMovement */
 		void calc_move_candidate_scores(TCandidateMovementPTG         & holonomicMovement,
 			const std::vector<double>        & in_TPObstacles,
 			const mrpt::nav::ClearanceDiagram & in_clearance,
-			const mrpt::math::TPose2D  & WS_Target,
-			const mrpt::math::TPoint2D & TP_Target,
+			const std::vector<mrpt::math::TPose2D>  & WS_Targets,
+			const std::vector<PTGTarget> & TP_Targets,
 			CLogFileRecord::TInfoPerPTG & log,
 			CLogFileRecord & newLogRec,
 			const bool this_is_PTG_continuation,
@@ -270,9 +276,10 @@ namespace mrpt
 
 		/** Return the [0,1] velocity scale of raw PTG cmd_vel */
 		virtual double generate_vel_cmd(const TCandidateMovementPTG &in_movement, mrpt::kinematics::CVehicleVelCmd::Ptr &new_vel_cmd );
-		void STEP8_GenerateLogRecord(CLogFileRecord &newLogRec, const mrpt::math::TPose2D& relTarget, int nSelectedPTG, const mrpt::kinematics::CVehicleVelCmd::Ptr &new_vel_cmd, int nPTGs, const bool best_is_NOP_cmdvel, const math::TPose2D &rel_cur_pose_wrt_last_vel_cmd_NOP, const math::TPose2D &rel_pose_PTG_origin_wrt_sense_NOP, const double executionTimeValue, const double tim_changeSpeed, const mrpt::system::TTimeStamp &tim_start_iteration);
+		void STEP8_GenerateLogRecord(CLogFileRecord &newLogRec, const std::vector<mrpt::math::TPose2D>& relTargets, int nSelectedPTG, const mrpt::kinematics::CVehicleVelCmd::Ptr &new_vel_cmd, int nPTGs, const bool best_is_NOP_cmdvel, const math::TPose2D &rel_cur_pose_wrt_last_vel_cmd_NOP, const math::TPose2D &rel_pose_PTG_origin_wrt_sense_NOP, const double executionTimeValue, const double tim_changeSpeed, const mrpt::system::TTimeStamp &tim_start_iteration);
+		
 		void preDestructor(); //!< To be called during children destructors to assure thread-safe destruction, and free of shared objects.
-		virtual void onStartNewNavigation() MRPT_OVERRIDE;
+		virtual void onStartNewNavigation() override;
 
 		bool m_closing_navigator; //!< Signal that the destructor has been called, so no more calls are accepted from other threads
 
@@ -284,10 +291,7 @@ namespace mrpt
 
 		struct TInfoPerPTG
 		{
-			bool                 valid_TP;   //!< For each PTG, whether the target falls into the PTG domain.
-			mrpt::math::TPoint2D TP_Target; //!< The Target, in TP-Space (x,y)
-			double               target_alpha,target_dist;  //!< TP-Target
-			int                  target_k; //!< The discrete version of target_alpha
+			std::vector<PTGTarget> targets;
 			std::vector<double>  TP_Obstacles; //!< One distance per discretized alpha value, describing the "polar plot" of TP obstacles.
 			ClearanceDiagram     clearance;    //!< Clearance for each path
 		};
@@ -297,7 +301,7 @@ namespace mrpt
 
 		void build_movement_candidate(CParameterizedTrajectoryGenerator * ptg,
 			const size_t indexPTG,
-			const mrpt::math::TPose2D &relTarget,
+			const std::vector<mrpt::math::TPose2D> &relTargets,
 			const mrpt::math::TPose2D &rel_pose_PTG_origin_wrt_sense,
 			TInfoPerPTG &ipf,
 			TCandidateMovementPTG &holonomicMovement,
@@ -313,7 +317,6 @@ namespace mrpt
 		{
 			int ptg_index; //!< 0-based index of used PTG
 			int ptg_alpha_index; //!< Path index for selected PTG
-			int tp_target_k;     //!< Path index of target in TP-space in this instant
 			mrpt::system::TTimeStamp tim_send_cmd_vel; //!< Timestamp of when the cmd was sent
 			TRobotPoseVel  poseVel;  //!< Robot pose & velocities and timestamp of when it was queried
 			double colfreedist_move_k; //!< TP-Obstacles in the move direction at the instant of picking this movement
@@ -331,9 +334,11 @@ namespace mrpt
 	private:
 		void deleteHolonomicObjects(); //!< Delete m_holonomicMethod
 
-		mrpt::math::TPose2D m_lastTarget; //!< To detect changes
 		std::string m_navlogfiles_dir; //!< Default: "./reactivenav.logs"
 
+		double m_expr_var_k, m_expr_var_k_target, m_expr_var_num_paths;
+		TNavigationParams  *m_copy_prev_navParams; //!< A copy of last-iteration navparams, used to detect changes
+		
 	}; // end of CAbstractPTGBasedReactive
   }
 }

@@ -203,7 +203,6 @@ CMultiMetricMap& CMultiMetricMap::operator =(const CMultiMetricMap &o)
 	return *this;
 }
 
-#if (__cplusplus>199711L)
 CMultiMetricMap::CMultiMetricMap(CMultiMetricMap &&o) :
 	maps(std::move(o.maps)),
 	ALL_PROXIES_INIT,
@@ -217,7 +216,6 @@ CMultiMetricMap& CMultiMetricMap::operator =(CMultiMetricMap &&o)
 	m_ID = o.m_ID;
 	return *this;
 }
-#endif
 
 /*---------------------------------------------------------------
 			setListOfMaps

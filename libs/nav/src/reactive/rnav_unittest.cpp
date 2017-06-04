@@ -72,10 +72,10 @@ void run_rnav_test(
 		{
 		}
 
-		void sendNavigationStartEvent ()  MRPT_OVERRIDE { }
-		void sendNavigationEndEvent() MRPT_OVERRIDE { }
+		void sendNavigationStartEvent ()  override { }
+		void sendNavigationEndEvent() override { }
 
-		bool senseObstacles(mrpt::maps::CSimplePointsMap &obstacles, mrpt::system::TTimeStamp &timestamp) MRPT_OVERRIDE
+		bool senseObstacles(mrpt::maps::CSimplePointsMap &obstacles, mrpt::system::TTimeStamp &timestamp) override
 		{
 			obstacles.clear();
 			timestamp = mrpt::system::now();
@@ -127,8 +127,8 @@ void run_rnav_test(
 
 	// Nav:
 	CAbstractNavigator::TNavigationParams np;
-	np.target = mrpt::math::TPose2D(nav_target);
-	np.targetAllowedDistance = 0.35f;
+	np.target.target_coords = mrpt::math::TPose2D(nav_target);
+	np.target.targetAllowedDistance = 0.35f;
 
 	rnav.navigate(&np);
 

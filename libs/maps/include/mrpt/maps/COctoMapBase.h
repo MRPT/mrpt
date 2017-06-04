@@ -86,8 +86,8 @@ namespace mrpt
 					return *this;
 				}
 
-				void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
-				void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
+				void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) override; // See base docs
+				void dumpToTextStream(mrpt::utils::CStream &out) const override; // See base docs
 
 				double maxrange;  //!< maximum range for how long individual beams are inserted (default -1: complete beam)
 				bool pruning;     //!< whether the tree is (losslessly) pruned after insertion (default: true)
@@ -148,8 +148,8 @@ namespace mrpt
 				TLikelihoodOptions( );
 				virtual ~TLikelihoodOptions() {}
 
-				void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
-				void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
+				void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) override; // See base docs
+				void dumpToTextStream(mrpt::utils::CStream &out) const override; // See base docs
 
 				void writeToStream(mrpt::utils::CStream &out) const;		//!< Binary dump to stream
 				void readFromStream(mrpt::utils::CStream &in);			//!< Binary dump to stream
@@ -160,9 +160,9 @@ namespace mrpt
 			TLikelihoodOptions  likelihoodOptions;
 
 			/** Returns true if the map is empty/no observation has been inserted */
-			virtual bool isEmpty() const MRPT_OVERRIDE;
+			virtual bool isEmpty() const override;
 
-			virtual void  saveMetricMapRepresentationToFile(const std::string	&filNamePrefix) const MRPT_OVERRIDE;
+			virtual void  saveMetricMapRepresentationToFile(const std::string	&filNamePrefix) const override;
 
 			/** Options for the conversion of a mrpt::maps::COctoMap into a mrpt::opengl::COctoMapVoxels */
 			struct TRenderingOptions
@@ -192,7 +192,7 @@ namespace mrpt
 			/** Returns a 3D object representing the map.
 				* \sa renderingOptions
 				*/
-			virtual void  getAs3DObject( mrpt::opengl::CSetOfObjects::Ptr	&outObj ) const MRPT_OVERRIDE
+			virtual void  getAs3DObject( mrpt::opengl::CSetOfObjects::Ptr	&outObj ) const override
 			{
 				mrpt::opengl::COctoMapVoxels::Ptr gl_obj = mrpt::opengl::COctoMapVoxels::Create();
 				this->getAsOctoMapVoxels(*gl_obj);
@@ -290,7 +290,7 @@ namespace mrpt
 
 
 		protected:
-			virtual void  internal_clear() MRPT_OVERRIDE {  m_octomap.clear(); }
+			virtual void  internal_clear() override {  m_octomap.clear(); }
 
 			/**  Builds the list of 3D points in global coordinates for a generic observation. Used for both, insertObservation() and computeLikelihood().
 			  * \param[out] point3d_sensorPt Is a pointer to a "point3D".
@@ -303,7 +303,7 @@ namespace mrpt
 
 		private:
 			// See docs in base class
-			virtual double	 internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom ) MRPT_OVERRIDE;
+			virtual double	 internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom ) override;
 
 		}; // End of class def.
 	} // End of namespace

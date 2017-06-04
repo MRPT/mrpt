@@ -159,7 +159,7 @@ namespace mrpt
 			static CSetOfLines::Ptr Create(const std::vector<mrpt::math::TSegment3D> &sgms, const bool antiAliasing = true);
 
 			/** Render */
-			void  render_dl() const MRPT_OVERRIDE;
+			void  render_dl() const override;
 
 			//Iterator management
 			typedef std::vector<mrpt::math::TSegment3D>::iterator iterator;	//!< Iterator to the set.
@@ -205,7 +205,7 @@ namespace mrpt
 			}
 
 			/** Evaluates the bounding box of this object (including possible children) in the coordinate frame of the object parent. */
-			void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const MRPT_OVERRIDE;
+			void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const override;
 
 			void enableAntiAliasing(bool enable=true) { m_antiAliasing =enable; CRenderizableDisplayList::notifyChange(); }
 			bool isAntiAliasingEnabled() const { return m_antiAliasing; }

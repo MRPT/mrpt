@@ -844,7 +844,7 @@ void  CRandomFieldGridMap2D::resize(
 							}
 						}
 
-						ASSERT_( !isNaN( m_cov(i,j) ) );
+						ASSERT_( !std::isnan( m_cov(i,j) ) );
 
 					} // for j
 				}
@@ -882,17 +882,17 @@ void  CRandomFieldGridMap2D::resize(
 							dist = m_resolution*sqrt( static_cast<double>( square(cx1-cx2) +  square(cy1-cy2) ));
 							double K = sqrt(m_cov(i,i)*m_cov(j,j));
 
-							if ( isNaN( K ) )
+							if ( std::isnan( K ) )
 							{
 								printf("c(i,i)=%e   c(j,j)=%e\n",m_cov(i,i),m_cov(j,j));
-								ASSERT_( !isNaN( K ) );
+								ASSERT_( !std::isnan( K ) );
 							}
 
 							m_cov(i,j) = K * exp( -0.5 * square( dist/m_insertOptions_common->KF_covSigma ) );
 							m_cov(j,i) = m_cov(i,j);
 						}
 
-						ASSERT_( !isNaN( m_cov(i,j) ) );
+						ASSERT_( !std::isnan( m_cov(i,j) ) );
 					}
 				} // for j
 			} // for i

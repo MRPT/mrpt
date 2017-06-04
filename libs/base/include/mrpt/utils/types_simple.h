@@ -11,7 +11,7 @@
 
 #include <vector>
 #include <string>
-#include <mrpt/utils/mrpt_stdint.h>    // compiler-independent version of "stdint.h"
+#include <cstdint>
 
 namespace mrpt
 {

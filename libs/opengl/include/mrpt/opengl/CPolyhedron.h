@@ -124,7 +124,7 @@ namespace opengl	{
 		static CPolyhedron::Ptr Create(const std::vector<mrpt::math::TPolygon3D> &polys);
 
 		/** Evaluates the bounding box of this object (including possible children) in the coordinate frame of the object parent. */
-		void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const MRPT_OVERRIDE;
+		void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const override;
 
 		//Static methods to create frequent polyhedra. More bizarre polyhedra are intended to be added in a near future.
 
@@ -469,12 +469,12 @@ namespace opengl	{
 		  * Render
 		  * \sa CRenderizable
 		  */
-		void render_dl() const MRPT_OVERRIDE;
+		void render_dl() const override;
 		/**
 		  * Ray trace
 		  * \sa CRenderizable
 		  */
-		bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const MRPT_OVERRIDE;
+		bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const override;
 		/**
 		  * Gets a list with the polyhedron's vertices.
 		  */

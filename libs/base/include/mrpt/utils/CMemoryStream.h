@@ -26,8 +26,8 @@ namespace utils
 	class BASE_IMPEXP CMemoryStream : public CStream
 	{
 	protected:
-		size_t Read(void *Buffer, size_t Count) MRPT_OVERRIDE;
-		size_t Write(const void *Buffer, size_t Count) MRPT_OVERRIDE;
+		size_t Read(void *Buffer, size_t Count) override;
+		size_t Write(const void *Buffer, size_t Count) override;
 
 		/** Internal data */
 		void_ptr_noncopy m_memory;
@@ -54,11 +54,11 @@ namespace utils
 		void changeSize( uint64_t newSize ); //!< Change size. This would be rarely used. Use ">>" operators for writing to stream \sa Stream
 
 		// See docs in base class
-		uint64_t Seek(uint64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning) MRPT_OVERRIDE;
+		uint64_t Seek(uint64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning) override;
 		/** Returns the total size of the internal buffer  */
-		uint64_t getTotalBytesCount() MRPT_OVERRIDE;
+		uint64_t getTotalBytesCount() override;
 		/** Method for getting the current cursor position, where 0 is the first byte and TotalBytesCount-1 the last one */
-		uint64_t getPosition() MRPT_OVERRIDE;
+		uint64_t getPosition() override;
 
 		/** Method for getting a pointer to the raw stored data. The lenght in bytes is given by getTotalBytesCount */
 		void* getRawBufferData();

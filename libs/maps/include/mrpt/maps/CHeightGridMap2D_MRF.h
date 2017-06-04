@@ -49,33 +49,33 @@ namespace maps
 		{
 			TInsertionOptions();	//!< Default values loader
 
-			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
-			void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
+			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) override; // See base docs
+			void dumpToTextStream(mrpt::utils::CStream &out) const override; // See base docs
 		} insertionOptions;
 
 		/** Returns a 3D object representing the map */
-		virtual void getAs3DObject( mrpt::opengl::CSetOfObjects::Ptr &outObj ) const MRPT_OVERRIDE;
+		virtual void getAs3DObject( mrpt::opengl::CSetOfObjects::Ptr &outObj ) const override;
 
 		/** Returns two 3D objects representing the mean and variance maps */
-		virtual void  getAs3DObject ( mrpt::opengl::CSetOfObjects::Ptr	&meanObj, mrpt::opengl::CSetOfObjects::Ptr	&varObj ) const MRPT_OVERRIDE;
+		virtual void  getAs3DObject ( mrpt::opengl::CSetOfObjects::Ptr	&meanObj, mrpt::opengl::CSetOfObjects::Ptr	&varObj ) const override;
 
-		virtual bool insertIndividualPoint(const double x,const double y,const double z, const CHeightGridMap2D_Base::TPointInsertParams & params = CHeightGridMap2D_Base::TPointInsertParams() ) MRPT_OVERRIDE;
-		virtual double dem_get_resolution() const  MRPT_OVERRIDE;
-		virtual size_t dem_get_size_x() const  MRPT_OVERRIDE;
-		virtual size_t dem_get_size_y() const  MRPT_OVERRIDE;
-		virtual bool   dem_get_z_by_cell(const size_t cx, const size_t cy, double &z_out) const  MRPT_OVERRIDE;
-		virtual bool   dem_get_z(const double x, const double y, double &z_out) const  MRPT_OVERRIDE;
-		virtual void   dem_update_map() MRPT_OVERRIDE;
+		virtual bool insertIndividualPoint(const double x,const double y,const double z, const CHeightGridMap2D_Base::TPointInsertParams & params = CHeightGridMap2D_Base::TPointInsertParams() ) override;
+		virtual double dem_get_resolution() const  override;
+		virtual size_t dem_get_size_x() const  override;
+		virtual size_t dem_get_size_y() const  override;
+		virtual bool   dem_get_z_by_cell(const size_t cx, const size_t cy, double &z_out) const  override;
+		virtual bool   dem_get_z(const double x, const double y, double &z_out) const  override;
+		virtual void   dem_update_map() override;
 
 		/** Get the part of the options common to all CRandomFieldGridMap2D classes */
-		virtual CRandomFieldGridMap2D::TInsertionOptionsCommon * getCommonInsertOptions()  MRPT_OVERRIDE {
+		virtual CRandomFieldGridMap2D::TInsertionOptionsCommon * getCommonInsertOptions()  override {
 			return &insertionOptions;
 		}
 
 		// See docs in base class
-		void  internal_clear() MRPT_OVERRIDE;
-		bool  internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = nullptr ) MRPT_OVERRIDE;
-		double internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom ) MRPT_OVERRIDE;
+		void  internal_clear() override;
+		bool  internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = nullptr ) override;
+		double internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom ) override;
 
 		MAP_DEFINITION_START(CHeightGridMap2D_MRF,MAPS_IMPEXP)
 			bool    run_map_estimation_at_ctor;  //!< Runs map estimation at start up (Default:true)

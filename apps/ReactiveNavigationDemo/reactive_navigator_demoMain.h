@@ -233,8 +233,8 @@ class reactive_navigator_demoframe: public wxFrame
 
 
 			TOptions();
-			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
-			void saveToConfigFile(mrpt::utils::CConfigFileBase &source,const std::string &section) const MRPT_OVERRIDE; // See base docs
+			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) override; // See base docs
+			void saveToConfigFile(mrpt::utils::CConfigFileBase &source,const std::string &section) const override; // See base docs
 		};
 
 		TOptions m_simul_options;
@@ -271,12 +271,12 @@ class reactive_navigator_demoframe: public wxFrame
 				mrpt::nav::CRobot2NavInterfaceForSimulator_DiffDriven(simul),
 				MyNavIFBase(ref_latest_obstacles)
 			{}
-			bool senseObstacles(mrpt::maps::CSimplePointsMap &obstacles, mrpt::system::TTimeStamp &timestamp) MRPT_OVERRIDE {
+			bool senseObstacles(mrpt::maps::CSimplePointsMap &obstacles, mrpt::system::TTimeStamp &timestamp) override {
 				obstacles = latest_obstacles;
 				timestamp = mrpt::system::now();
 				return true;
 			}
-			bool changeSpeedsNOP() MRPT_OVERRIDE { return true; }
+			bool changeSpeedsNOP() override { return true; }
 		};
 		class MyRobot2NavInterface_Holo : public mrpt::nav::CRobot2NavInterfaceForSimulator_Holo, public MyNavIFBase
 		{
@@ -285,12 +285,12 @@ class reactive_navigator_demoframe: public wxFrame
 				mrpt::nav::CRobot2NavInterfaceForSimulator_Holo(simul),
 				MyNavIFBase(ref_latest_obstacles)
 			{}
-			bool senseObstacles( mrpt::maps::CSimplePointsMap &obstacles, mrpt::system::TTimeStamp &timestamp ) MRPT_OVERRIDE {
+			bool senseObstacles( mrpt::maps::CSimplePointsMap &obstacles, mrpt::system::TTimeStamp &timestamp ) override {
 				obstacles = latest_obstacles;
 				timestamp = mrpt::system::now();
 				return true;
 			}
-			bool changeSpeedsNOP() MRPT_OVERRIDE { return true; }
+			bool changeSpeedsNOP() override { return true; }
 		};
 
 		std::unique_ptr<mrpt::nav::CAbstractNavigator>  m_navMethod;

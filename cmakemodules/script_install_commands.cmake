@@ -60,13 +60,6 @@ IF(WIN32)
 		ENDFOREACH(F)
 	ENDIF (EXISTS "${OpenCV_DIR}/bin/Release")
 
-        # Intel TBB dlls
-        if(CMAKE_MRPT_HAS_TBB)
-            string(REGEX REPLACE "/lib" "/bin" TBB_DLL_DIR "${TBB_LIB_DIR}")
-            install(PROGRAMS "${TBB_DLL_DIR}/tbb.dll" DESTINATION bin COMPONENT main)
-            install(PROGRAMS "${TBB_DLL_DIR}/tbb_debug.dll" DESTINATION bin COMPONENT main)
-        endif(CMAKE_MRPT_HAS_TBB)
-
 	# ffmpeg:
 	IF (EXISTS "${FFMPEG_WIN32_ROOT_DIR}/bin")
 		FILE(GLOB_RECURSE EXTRA_DLLS "${FFMPEG_WIN32_ROOT_DIR}/bin/*.dll")

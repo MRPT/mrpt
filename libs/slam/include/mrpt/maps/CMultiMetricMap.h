@@ -124,16 +124,16 @@ namespace maps
 		DEFINE_SERIALIZABLE( CMultiMetricMap )
 	protected:
 		void deleteAllMaps(); //!< Deletes all maps and clears the internal lists of maps (with clear_unique(), so user copies remain alive)
-		void internal_clear() MRPT_OVERRIDE; //!< Clear all elements of the map.
+		void internal_clear() override; //!< Clear all elements of the map.
 		// See base class docs
-		bool internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = nullptr ) MRPT_OVERRIDE;
+		bool internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = nullptr ) override;
 		/** Returns true if any of the inner maps is able to compute a sensible likelihood function for this observation.
 		 * \param obs The observation.
 		 * \sa computeObservationLikelihood
 		 */
-		bool internal_canComputeObservationLikelihood( const mrpt::obs::CObservation *obs ) const MRPT_OVERRIDE;
+		bool internal_canComputeObservationLikelihood( const mrpt::obs::CObservation *obs ) const override;
 		// See docs in base class
-		double	 internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom ) MRPT_OVERRIDE;
+		double	 internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom ) override;
 
 	public:
 		/** @name Access to internal list of maps: direct list, iterators, utility methods and proxies
@@ -186,10 +186,8 @@ namespace maps
 			ProxyFilterContainerByClass(ProxyFilterContainerByClass<SELECTED_CLASS_PTR, CONTAINER>& ) : m_source() {} // m_source init in parent copy ctor
 
 			ProxyFilterContainerByClass<SELECTED_CLASS_PTR, CONTAINER>& operator=(const ProxyFilterContainerByClass<SELECTED_CLASS_PTR, CONTAINER>&o) { return *this; } // Do nothing, we must keep refs to our own parent
-#if (__cplusplus>199711L)
 			ProxyFilterContainerByClass(ProxyFilterContainerByClass<SELECTED_CLASS_PTR, CONTAINER>&& ) : m_source() {}  // m_source init in parent copy ctor
 			ProxyFilterContainerByClass<SELECTED_CLASS_PTR, CONTAINER>& operator=(ProxyFilterContainerByClass<SELECTED_CLASS_PTR, CONTAINER>&&o) { return *this; } // Do nothing, we must keep refs to our own parent
-#endif
 			bool empty() const { return size()==0; }
 			size_t size() const {
 				size_t cnt=0;
@@ -222,10 +220,8 @@ namespace maps
 			ProxySelectorContainerByClass(CONTAINER &source) : m_source(&source) {}
 			ProxySelectorContainerByClass(ProxySelectorContainerByClass<SELECTED_CLASS_PTR, CONTAINER>& ) : m_source() {} // m_source init in parent copy ctor
 			ProxySelectorContainerByClass<SELECTED_CLASS_PTR, CONTAINER>& operator=(const ProxySelectorContainerByClass<SELECTED_CLASS_PTR, CONTAINER>&o) { return *this; } // Do nothing, we must keep refs to our own parent
-#if (__cplusplus>199711L)
 			ProxySelectorContainerByClass(ProxySelectorContainerByClass<SELECTED_CLASS_PTR, CONTAINER>&& ) : m_source() {} // m_source init in parent copy ctor
 			ProxySelectorContainerByClass<SELECTED_CLASS_PTR, CONTAINER>& operator=(ProxySelectorContainerByClass<SELECTED_CLASS_PTR, CONTAINER>&&o) { return *this; } // Do nothing, we must keep refs to our own parent
-#endif
 
 			operator const SELECTED_CLASS_PTR & () const { internal_update_ref(); return m_ret; }
 			explicit operator bool() const { internal_update_ref(); return m_ret ? true : false; }
@@ -280,17 +276,15 @@ namespace maps
 		CMultiMetricMap(const CMultiMetricMap &o);
 		CMultiMetricMap& operator =(const CMultiMetricMap &o);
 
-#if (__cplusplus>199711L)
 		CMultiMetricMap(CMultiMetricMap &&o);
 		CMultiMetricMap& operator =(CMultiMetricMap &&o);
-#endif
 
 		/** Sets the list of internal map according to the passed list of map initializers (Current maps' content will be deleted!) */
 		void  setListOfMaps( const mrpt::maps::TSetOfMetricMapInitializers	*initializers );
 		/** \overload */
 		void  setListOfMaps( const mrpt::maps::TSetOfMetricMapInitializers	&initializers ) { this->setListOfMaps(&initializers); }
 
-		bool  isEmpty() const MRPT_OVERRIDE; //!< Returns true if all maps returns true to their isEmpty() method, which is map-dependent. Read the docs of each map class
+		bool  isEmpty() const override; //!< Returns true if all maps returns true to their isEmpty() method, which is map-dependent. Read the docs of each map class
 
 		// See docs in base class.
 		virtual void  determineMatching2D(
@@ -298,28 +292,28 @@ namespace maps
 			const mrpt::poses::CPose2D         & otherMapPose,
 			mrpt::utils::TMatchingPairList     & correspondences,
 			const mrpt::maps::TMatchingParams & params,
-			mrpt::maps::TMatchingExtraResults & extraResults ) const MRPT_OVERRIDE;
+			mrpt::maps::TMatchingExtraResults & extraResults ) const override;
 
 		/** See the definition in the base class: Calls in this class become a call to every single map in this set. */
-		float compute3DMatchingRatio(const mrpt::maps::CMetricMap *otherMap, const mrpt::poses::CPose3D &otherMapPose, const TMatchingRatioParams &params) const MRPT_OVERRIDE;
+		float compute3DMatchingRatio(const mrpt::maps::CMetricMap *otherMap, const mrpt::poses::CPose3D &otherMapPose, const TMatchingRatioParams &params) const override;
 
 		/** The implementation in this class just calls all the corresponding method of the contained metric maps */
-		void  saveMetricMapRepresentationToFile(const std::string	&filNamePrefix ) const MRPT_OVERRIDE;
+		void  saveMetricMapRepresentationToFile(const std::string	&filNamePrefix ) const override;
 
 		/** This method is called at the end of each "prediction-update-map insertion" cycle within "mrpt::slam::CMetricMapBuilderRBPF::processActionObservation".
 		  *  This method should normally do nothing, but in some cases can be used to free auxiliary cached variables.
 		  */
-		void  auxParticleFilterCleanUp() MRPT_OVERRIDE;
+		void  auxParticleFilterCleanUp() override;
 
 		/** Returns a 3D object representing the map.
 		  */
-		void getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr &outObj) const MRPT_OVERRIDE;
+		void getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr &outObj) const override;
 
 		/** If the map is a simple point map or it's a multi-metric map that contains EXACTLY one simple point map, return it.
 			* Otherwise, return NULL
 			*/
-		virtual const mrpt::maps::CSimplePointsMap * getAsSimplePointsMap() const MRPT_OVERRIDE;
-		virtual       mrpt::maps::CSimplePointsMap * getAsSimplePointsMap() MRPT_OVERRIDE;
+		virtual const mrpt::maps::CSimplePointsMap * getAsSimplePointsMap() const override;
+		virtual       mrpt::maps::CSimplePointsMap * getAsSimplePointsMap() override;
 
 		/** An auxiliary variable that can be used freely by the users (this will be copied to other maps using the copy constructor, copy operator, streaming,etc) The default value is 0.
 		  */

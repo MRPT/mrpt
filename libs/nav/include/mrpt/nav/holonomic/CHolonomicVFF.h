@@ -56,10 +56,10 @@ namespace mrpt
 		CHolonomicVFF(const mrpt::utils::CConfigFileBase *INI_FILE=nullptr);
 
 		// See base class docs
-		void navigate(const NavInput & ni, NavOutput &no) MRPT_OVERRIDE;
+		void navigate(const NavInput & ni, NavOutput &no) override;
 
-		void initialize(const mrpt::utils::CConfigFileBase &INI_FILE) MRPT_OVERRIDE; // See base class docs
-		virtual void saveConfigFile(mrpt::utils::CConfigFileBase &c) const MRPT_OVERRIDE; // See base class docs
+		void initialize(const mrpt::utils::CConfigFileBase &INI_FILE) override; // See base class docs
+		virtual void saveConfigFile(mrpt::utils::CConfigFileBase &c) const override; // See base class docs
 
 		/** Algorithm options */
 		struct NAV_IMPEXP TOptions : public mrpt::utils::CLoadableOptions
@@ -68,14 +68,14 @@ namespace mrpt
 			double TARGET_ATTRACTIVE_FORCE;          //!< Dimension-less (may have to be tuned depending on the density of obstacle sampling) (Default: 20)
 
 			TOptions();
-			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
-			void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg ,const std::string &section) const MRPT_OVERRIDE; // See base docs
+			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) override; // See base docs
+			void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg ,const std::string &section) const override; // See base docs
 		};
 
 		TOptions options;  //!< Parameters of the algorithm (can be set manually or loaded from CHolonomicVFF::initialize or options.loadFromConfigFile(), etc.)
 
-		double getTargetApproachSlowDownDistance() const MRPT_OVERRIDE { return options.TARGET_SLOW_APPROACHING_DISTANCE; }
-		void setTargetApproachSlowDownDistance(const double dist) MRPT_OVERRIDE { options.TARGET_SLOW_APPROACHING_DISTANCE = dist; }
+		double getTargetApproachSlowDownDistance() const override { return options.TARGET_SLOW_APPROACHING_DISTANCE; }
+		void setTargetApproachSlowDownDistance(const double dist) override { options.TARGET_SLOW_APPROACHING_DISTANCE = dist; }
 
 	};
 	 DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CHolonomicVFF, CAbstractHolonomicReactiveMethod, NAV_IMPEXP )

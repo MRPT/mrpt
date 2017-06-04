@@ -76,10 +76,8 @@ namespace mrpt
 			// We must define these 4 because of the definition of a virtual dtor (compiler will not generate the defaults)
 			CTimeLogger(const CTimeLogger&o);
 			CTimeLogger &operator =(const CTimeLogger&o);
-#if MRPT_HAS_CXX11
 			CTimeLogger(CTimeLogger&&o);
 			CTimeLogger &operator =(CTimeLogger&&o);
-#endif
 
 			std::string getStatsAsText(const size_t column_width=80) const; //!< Dump all stats to a multi-line text string. \sa dumpAllStats, saveToCVSFile
 			void getStats(std::map<std::string,TCallStats> &out_stats) const; //!< Returns all the current stats as a map: section_name => stats. \sa getStatsAsText, dumpAllStats, saveToCVSFile
@@ -135,9 +133,9 @@ namespace mrpt
 
 		/** @name Auxiliary stuff for the global profiler used in MRPT_START / MRPT_END macros.
 		  @{ */
-		void BASE_IMPEXP global_profiler_enter(const char *func_name) MRPT_NO_THROWS;
-		void BASE_IMPEXP global_profiler_leave(const char *func_name) MRPT_NO_THROWS;
-		mrpt::utils::CTimeLogger BASE_IMPEXP & global_profiler_getref() MRPT_NO_THROWS;
+		void BASE_IMPEXP global_profiler_enter(const char *func_name) noexcept;
+		void BASE_IMPEXP global_profiler_leave(const char *func_name) noexcept;
+		mrpt::utils::CTimeLogger BASE_IMPEXP & global_profiler_getref() noexcept;
 		/** @} */
 
 	} // End of namespace

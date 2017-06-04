@@ -26,17 +26,6 @@ namespace mrpt
 	  * \ingroup mrpt_nav_grp
 	  * @{ */
 	  
-	/** The implemented reactive navigation methods. This enum works with mrpt::utils::TEnumType.
-	  * Since MRPT 1.5.0 the preferred way to select a holonomic method is, instead of this enum, 
-	  *  via the class factory method CAbstractHolonomicReactiveMethod::Create() via the class name. */
-	enum THolonomicMethod
-	{
-		hmVIRTUAL_FORCE_FIELDS = 0,  //!< CHolonomicVFF
-		hmSEARCH_FOR_BEST_GAP = 1,   //!< CHolonomicND
-		hmFULL_EVAL = 2              //!< CHolonomicFullEval
-	};
-
-
 	/** A base class for holonomic reactive navigation methods.
 	 *  \sa CHolonomicVFF,CHolonomicND,CHolonomicFullEval, CReactiveNavigationSystem
 	 */
@@ -53,10 +42,10 @@ namespace mrpt
 			  * Distances can be dealed as "meters", although when used inside the PTG-based navigation system, they are "pseudometers", normalized to the range [0,1].
 			  */
 			std::vector<double>   obstacles;
-			mrpt::math::TPoint2D  target;            //!< The relative location (x,y) of target point. In the same units than `obstacles`
-			double                maxRobotSpeed;     //!< Maximum robot speed, in the same units than `obstacles`, per second.
-			double                maxObstacleDist;   //!< Maximum expected value to be found in `obstacles`. Typically, values in `obstacles` larger or equal to this value mean there is no visible obstacle in that direction.
-			mrpt::nav::ClearanceDiagram *clearance;  //!< The computed clearance for each direction (optional in some implementations). Leave to default (nullptr) if not needed.
+			std::vector<mrpt::math::TPoint2D> targets; //!< Relative location (x,y) of target point(s). In the same units than `obstacles`. If many, last targets have higher priority.
+			double                maxRobotSpeed;       //!< Maximum robot speed, in the same units than `obstacles`, per second.
+			double                maxObstacleDist;     //!< Maximum expected value to be found in `obstacles`. Typically, values in `obstacles` larger or equal to this value mean there is no visible obstacle in that direction.
+			mrpt::nav::ClearanceDiagram *clearance;    //!< The computed clearance for each direction (optional in some implementations). Leave to default (NULL) if not needed.
 
 			NavInput();
 		};
@@ -91,7 +80,7 @@ namespace mrpt
 
 		/** Class factory from class name, e.g. `"CHolonomicVFF"`, etc.
 		  * \exception std::logic_error On invalid or missing parameters. */
-		static CAbstractHolonomicReactiveMethod * Create(const std::string &className) MRPT_NO_THROWS;
+		static CAbstractHolonomicReactiveMethod * Create(const std::string &className) noexcept;
 
 		void setAssociatedPTG(mrpt::nav::CParameterizedTrajectoryGenerator *ptg); //!< Optionally, sets the associated PTG, just in case a derived class requires this info (not required for methods where the robot kinematics are totally abstracted)
 		mrpt::nav::CParameterizedTrajectoryGenerator * getAssociatedPTG() const; //!< Returns the pointer set by setAssociatedPTG()
@@ -108,23 +97,7 @@ namespace mrpt
 	  /** @} */
 
   }
-	// Specializations MUST occur at the same namespace:
-	namespace utils
-	{
-		template <>
-		struct TEnumTypeFiller<nav::THolonomicMethod>
-		{
-			typedef nav::THolonomicMethod enum_t;
-			static void fill(bimap<enum_t,std::string>  &m_map)
-			{
-				m_map.insert(nav::hmVIRTUAL_FORCE_FIELDS, "hmVIRTUAL_FORCE_FIELDS");
-				m_map.insert(nav::hmSEARCH_FOR_BEST_GAP, "hmSEARCH_FOR_BEST_GAP");
-				m_map.insert(nav::hmFULL_EVAL, "hmFULL_EVAL");
-			}
-		};
-	} // End of namespace
 }
-
 
 #endif
 

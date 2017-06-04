@@ -11,6 +11,7 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DQuat.h>
 #include <gtest/gtest.h>
+#include <mrpt/utils/CTraitsTest.h>
 
 using namespace mrpt;
 using namespace mrpt::poses;
@@ -18,7 +19,9 @@ using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;
 
-
+template class mrpt::utils::CTraitsTest<mrpt::poses::CPose3DQuat>;
+template class mrpt::utils::CTraitsTest<mrpt::poses::CPose3D>;
+template class mrpt::utils::CTraitsTest<mrpt::math::CQuaternionDouble>;
 
 class QuaternionTests : public ::testing::Test {
 protected:

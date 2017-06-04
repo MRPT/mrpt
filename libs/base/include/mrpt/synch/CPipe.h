@@ -12,7 +12,7 @@
 #include <mrpt/base/link_pragmas.h>
 #include <mrpt/utils/CStream.h>
 #include <string>
-#include <memory> // for auto_ptr<>, unique_ptr<>
+#include <memory> // for unique_ptr<>
 
 namespace mrpt
 {
@@ -91,12 +91,12 @@ namespace mrpt
 #else
 			int m_pipe_file;
 #endif
-			virtual size_t  Read(void *Buffer, size_t Count) MRPT_OVERRIDE;
-			virtual size_t  Write(const void *Buffer, size_t Count) MRPT_OVERRIDE;
+			virtual size_t  Read(void *Buffer, size_t Count) override;
+			virtual size_t  Write(const void *Buffer, size_t Count) override;
 
-			virtual uint64_t Seek(uint64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning) MRPT_OVERRIDE; //!< Without effect in this class
-			virtual uint64_t getTotalBytesCount() MRPT_OVERRIDE; //!< Without effect in this class
-			virtual uint64_t getPosition() MRPT_OVERRIDE; //!< Without effect in this class
+			virtual uint64_t Seek(uint64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning) override; //!< Without effect in this class
+			virtual uint64_t getTotalBytesCount() override; //!< Without effect in this class
+			virtual uint64_t getPosition() override; //!< Without effect in this class
 		}; // end of CPipeBaseEndPoint
 		static_assert(!std::is_copy_constructible<CPipeBaseEndPoint>::value && !std::is_copy_assignable<CPipeBaseEndPoint>::value, "Copy Check");
 		

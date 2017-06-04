@@ -15,16 +15,16 @@
 
 using namespace mrpt::math;
 
-CAtan2LookUpTable::CAtan2LookUpTable() MRPT_NO_THROWS
+CAtan2LookUpTable::CAtan2LookUpTable() noexcept
 {
 	this->resize(-1.0,1.0,-1.0,1.0,0.5);
 }
-CAtan2LookUpTable::CAtan2LookUpTable(double xmin,double xmax,double ymin,double ymax, double resolution) MRPT_NO_THROWS
+CAtan2LookUpTable::CAtan2LookUpTable(double xmin,double xmax,double ymin,double ymax, double resolution) noexcept
 {
 	this->resize(xmin,xmax,ymin,ymax,resolution);
 }
 
-void CAtan2LookUpTable::resize(double xmin,double xmax,double ymin,double ymax, double resolution) MRPT_NO_THROWS
+void CAtan2LookUpTable::resize(double xmin,double xmax,double ymin,double ymax, double resolution) noexcept
 {
 	const double def = .0;
 	if (m_grid.getResolution()==resolution)
@@ -50,7 +50,7 @@ void CAtan2LookUpTable::resize(double xmin,double xmax,double ymin,double ymax, 
 	}
 }
 
-bool CAtan2LookUpTable::atan2(double y,double x, double &out_atan2) const MRPT_NO_THROWS
+bool CAtan2LookUpTable::atan2(double y,double x, double &out_atan2) const noexcept
 {
 	const double *cp = m_grid.cellByPos(x,y);
 	if (!cp) return false;
@@ -60,14 +60,14 @@ bool CAtan2LookUpTable::atan2(double y,double x, double &out_atan2) const MRPT_N
 
 
 
-CAtan2LookUpTableMultiRes::CAtan2LookUpTableMultiRes() MRPT_NO_THROWS
+CAtan2LookUpTableMultiRes::CAtan2LookUpTableMultiRes() noexcept
 {
 }
-CAtan2LookUpTableMultiRes::CAtan2LookUpTableMultiRes(const std::map<double,double> & lst_resolutions2extensions ) MRPT_NO_THROWS
+CAtan2LookUpTableMultiRes::CAtan2LookUpTableMultiRes(const std::map<double,double> & lst_resolutions2extensions ) noexcept
 {
 	resize(lst_resolutions2extensions);
 }
-void CAtan2LookUpTableMultiRes::resize(const std::map<double,double> & lst_resolutions2extensions) MRPT_NO_THROWS
+void CAtan2LookUpTableMultiRes::resize(const std::map<double,double> & lst_resolutions2extensions) noexcept
 {
 	m_grids.clear();
 
@@ -97,7 +97,7 @@ void CAtan2LookUpTableMultiRes::resize(const std::map<double,double> & lst_resol
 	}
 }
 
-bool CAtan2LookUpTableMultiRes::atan2(double y,double x, double &out_atan2) const MRPT_NO_THROWS
+bool CAtan2LookUpTableMultiRes::atan2(double y,double x, double &out_atan2) const noexcept
 {
 	for (const auto & it : m_grids)
 	{

@@ -145,7 +145,7 @@ namespace mrpt
 		class GUI_IMPEXP mrptEventWindowChar : public mrpt::utils::mrptEvent
 		{
 		protected:
-			virtual void do_nothing() MRPT_OVERRIDE { } //!< Just to allow this class to be polymorphic
+			virtual void do_nothing() override { } //!< Just to allow this class to be polymorphic
 		public:
 			inline mrptEventWindowChar(
 				CBaseGUIWindow *obj,
@@ -166,7 +166,7 @@ namespace mrpt
 		class GUI_IMPEXP mrptEventWindowResize : public mrpt::utils::mrptEvent
 		{
 		protected:
-			virtual void do_nothing() MRPT_OVERRIDE { } //!< Just to allow this class to be polymorphic
+			virtual void do_nothing() override { } //!< Just to allow this class to be polymorphic
 		public:
 			inline mrptEventWindowResize(
 				CBaseGUIWindow *obj,
@@ -187,7 +187,7 @@ namespace mrpt
 		class GUI_IMPEXP mrptEventMouseDown : public mrpt::utils::mrptEvent
 		{
 		protected:
-			virtual void do_nothing() MRPT_OVERRIDE { } //!< Just to allow this class to be polymorphic
+			virtual void do_nothing() override { } //!< Just to allow this class to be polymorphic
 		public:
 			inline mrptEventMouseDown (
 				CBaseGUIWindow *obj,
@@ -215,7 +215,7 @@ namespace mrpt
 		class GUI_IMPEXP mrptEventWindowClosed : public mrpt::utils::mrptEvent
 		{
 		protected:
-			virtual void do_nothing() MRPT_OVERRIDE { } //!< Just to allow this class to be polymorphic
+			virtual void do_nothing() override { } //!< Just to allow this class to be polymorphic
 		public:
 			inline mrptEventWindowClosed (
 				CBaseGUIWindow *obj,

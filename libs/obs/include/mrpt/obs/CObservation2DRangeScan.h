@@ -137,9 +137,9 @@ namespace obs
 		void setScanHasIntensity(bool setHasIntensityFlag); //!< Marks this scan as having or not intensity data.
 
 		// See base class docs
-		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const MRPT_OVERRIDE { out_sensorPose = sensorPose; }
-		void setSensorPose( const mrpt::poses::CPose3D &newSensorPose ) MRPT_OVERRIDE { sensorPose = newSensorPose; }
-		void getDescriptionAsText(std::ostream &o) const MRPT_OVERRIDE;
+		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const override { out_sensorPose = sensorPose; }
+		void setSensorPose( const mrpt::poses::CPose3D &newSensorPose ) override { sensorPose = newSensorPose; }
+		void getDescriptionAsText(std::ostream &o) const override;
 
 		/** A general method to truncate the scan by defining a minimum valid distance and a maximum valid angle as well as minimun and maximum heights
 		   (NOTE: the laser z-coordinate must be provided).

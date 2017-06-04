@@ -55,20 +55,42 @@ namespace mrpt
 		CAbstractNavigator( CRobot2NavInterface &robot_interface_impl );  //!< ctor
 		virtual ~CAbstractNavigator(); //!< dtor
 
-		/** The struct for configuring navigation requests. Used in CAbstractPTGBasedReactive::navigate() */
-		struct NAV_IMPEXP TNavigationParams
+		/** Individual target info in CAbstractNavigator::TNavigationParamsBase and derived classes */
+		struct NAV_IMPEXP TargetInfo
 		{
-			mrpt::math::TPose2D target;                //!< Coordinates of desired target location. Heading may be ignored by some reactive implementations.
+			mrpt::math::TPose2D target_coords;         //!< Coordinates of desired target location. Heading may be ignored by some reactive implementations.
 			std::string         target_frame_id;       //!< (Default="map") Frame ID in which target is given. Optional, use only for submapping applications.
 			float               targetAllowedDistance; //!< (Default=0.5 meters) Allowed distance to target in order to end the navigation.
 			bool                targetIsRelative;      //!< (Default=false) Whether the \a target coordinates are in global coordinates (false) or are relative to the current robot pose (true).
 			double              targetDesiredRelSpeed; //!< (Default=.05) Desired relative speed (wrt maximum speed), in range [0,1], of the vehicle at target. Holonomic nav methods will perform "slow down" approaching target only if this is "==.0". Intermediary values will be honored only by the higher-level navigator, based on straight-line Euclidean distances.
 			bool                targetIsIntermediaryWaypoint; // !< (Default=false) If true, event callback `sendWaypointReachedEvent()` will be called instead of `sendNavigationEndEvent()`
 
-			TNavigationParams(); //!< Ctor with default values
-			virtual ~TNavigationParams() {}
-			virtual std::string getAsText() const; //!< Gets navigation params as a human-readable format
-			virtual TNavigationParams* clone() const { return new TNavigationParams(*this); }
+			TargetInfo();
+			std::string getAsText() const; //!< Gets navigation params as a human-readable format
+			bool operator==(const TargetInfo&o) const;
+			bool operator!=(const TargetInfo&o) const { return !(*this==o); }
+		};
+
+		/** Base for all high-level navigation commands. See derived classes */
+		struct NAV_IMPEXP TNavigationParamsBase
+		{
+			virtual ~TNavigationParamsBase() {}
+			virtual std::string getAsText() const =0; //!< Gets navigation params as a human-readable format
+			virtual TNavigationParamsBase* clone() const = 0;
+		protected:
+			friend bool NAV_IMPEXP operator==(const TNavigationParamsBase&, const TNavigationParamsBase&);
+			virtual bool isEqual(const TNavigationParamsBase& o) const =0;
+		};
+
+		/** The struct for configuring navigation requests. Used in CAbstractPTGBasedReactive::navigate() */
+		struct NAV_IMPEXP TNavigationParams : public TNavigationParamsBase
+		{
+			TargetInfo  target; //!< Navigation target
+
+			virtual std::string getAsText() const override; //!< Gets navigation params as a human-readable format
+			virtual TNavigationParamsBase* clone() const override { return new TNavigationParams(*this); }
+		protected:
+			virtual bool isEqual(const TNavigationParamsBase& o) const override;
 		};
 
 		/** \name Navigation control API
@@ -124,8 +146,8 @@ namespace mrpt
 			double dist_to_target_for_sending_event;  //!< Default value=0, means use the "targetAllowedDistance" passed by the user in the navigation request.
 			double alarm_seems_not_approaching_target_timeout; //!< navigator timeout (seconds) [Default=30 sec]
 
-			virtual void loadFromConfigFile(const mrpt::utils::CConfigFileBase &c, const std::string &s) MRPT_OVERRIDE;
-			virtual void saveToConfigFile(mrpt::utils::CConfigFileBase &c, const std::string &s) const MRPT_OVERRIDE;
+			virtual void loadFromConfigFile(const mrpt::utils::CConfigFileBase &c, const std::string &s) override;
+			virtual void saveToConfigFile(mrpt::utils::CConfigFileBase &c, const std::string &s) const override;
 			TAbstractNavigatorParams();
 		};
 
@@ -204,6 +226,9 @@ namespace mrpt
 	public:
 		MRPT_MAKE_ALIGNED_OPERATOR_NEW
 	};
+
+	bool NAV_IMPEXP operator==(const CAbstractNavigator::TNavigationParamsBase&, const CAbstractNavigator::TNavigationParamsBase&);
+
   }
 
 	// Specializations MUST occur at the same namespace:

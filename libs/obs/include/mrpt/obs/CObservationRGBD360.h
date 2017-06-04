@@ -95,9 +95,9 @@ namespace obs
 		float	stdError;	//!< The "sigma" error of the device in meters, used while inserting the scan in an occupancy grid.
 
 		// See base class docs
-		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const MRPT_OVERRIDE { out_sensorPose = sensorPose; }
-		void setSensorPose( const mrpt::poses::CPose3D &newSensorPose ) MRPT_OVERRIDE { sensorPose = newSensorPose; }
-		void getDescriptionAsText(std::ostream &o) const MRPT_OVERRIDE;
+		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const override { out_sensorPose = sensorPose; }
+		void setSensorPose( const mrpt::poses::CPose3D &newSensorPose ) override { sensorPose = newSensorPose; }
+		void getDescriptionAsText(std::ostream &o) const override;
 
 	}; // End of class def.
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CObservationRGBD360, CObservation, OBS_IMPEXP )

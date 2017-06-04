@@ -70,12 +70,12 @@ namespace poses
 		inline const CPose3DQuat & getPoseMean() const { return mean; }
 		inline       CPose3DQuat & getPoseMean()       { return mean; }
 
-		void getMean(CPose3DQuat &mean_pose) const MRPT_OVERRIDE; //!< Returns an estimate of the pose, (the mean, or mathematical expectation of the PDF). \sa getCovariance
-		void getCovarianceAndMean(mrpt::math::CMatrixDouble77 &cov,CPose3DQuat &mean_point) const MRPT_OVERRIDE; //!< Returns an estimate of the pose covariance matrix (7x7 cov matrix) and the mean, both at once. \sa getMean
-		void copyFrom(const CPose3DQuatPDF &o) MRPT_OVERRIDE; //!< Copy operator, translating if necesary (for example, between particles and gaussian representations)
+		void getMean(CPose3DQuat &mean_pose) const override; //!< Returns an estimate of the pose, (the mean, or mathematical expectation of the PDF). \sa getCovariance
+		void getCovarianceAndMean(mrpt::math::CMatrixDouble77 &cov,CPose3DQuat &mean_point) const override; //!< Returns an estimate of the pose covariance matrix (7x7 cov matrix) and the mean, both at once. \sa getMean
+		void copyFrom(const CPose3DQuatPDF &o) override; //!< Copy operator, translating if necesary (for example, between particles and gaussian representations)
 		void copyFrom(const CPosePDF &o); //!< Copy operator, translating if necesary (for example, between particles and gaussian representations)
 		void copyFrom(const CPose3DPDFGaussian &o); //!< Copy operator, translating if necesary (for example, between particles and gaussian representations)
-		void saveToTextFile(const std::string &file) const MRPT_OVERRIDE; //!< Save the PDF to a text file, containing the 3D pose in the first line (x y z qr qx qy qz), then the covariance matrix in the next 7 lines.
+		void saveToTextFile(const std::string &file) const override; //!< Save the PDF to a text file, containing the 3D pose in the first line (x y z qr qx qy qz), then the covariance matrix in the next 7 lines.
 
 		/** this = p (+) this. This can be used to convert a PDF from local coordinates to global, providing the point (newReferenceBase) from which
 		  *   "to project" the current pdf. Result PDF substituted the currently stored one in the object. */
@@ -84,11 +84,11 @@ namespace poses
 		/** this = p (+) this. This can be used to convert a PDF from local coordinates to global, providing the point (newReferenceBase) from which
 		  *   "to project" the current pdf. Result PDF substituted the currently stored one in the object.
 		  */
-		void  changeCoordinatesReference(  const CPose3D &newReferenceBase ) MRPT_OVERRIDE;
+		void  changeCoordinatesReference(  const CPose3D &newReferenceBase ) override;
 
-		void drawSingleSample( CPose3DQuat &outPart ) const MRPT_OVERRIDE;//!< Draws a single sample from the distribution
-		void drawManySamples( size_t N, std::vector<mrpt::math::CVectorDouble> & outSamples ) const MRPT_OVERRIDE; //!< Draws a number of samples from the distribution, and saves as a list of 1x7 vectors, where each row contains a (x,y,z,qr,qx,qy,qz) datum.
-		void inverse(CPose3DQuatPDF &o) const MRPT_OVERRIDE; //!< Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF
+		void drawSingleSample( CPose3DQuat &outPart ) const override;//!< Draws a single sample from the distribution
+		void drawManySamples( size_t N, std::vector<mrpt::math::CVectorDouble> & outSamples ) const override; //!< Draws a number of samples from the distribution, and saves as a list of 1x7 vectors, where each row contains a (x,y,z,qr,qx,qy,qz) datum.
+		void inverse(CPose3DQuatPDF &o) const override; //!< Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF
 
 		/** Unary - operator, returns the PDF of the inverse pose.  */
 		inline CPose3DQuatPDFGaussian operator -() const

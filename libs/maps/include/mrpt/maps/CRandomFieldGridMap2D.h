@@ -126,7 +126,7 @@ namespace maps
 		inline void clear() { CMetricMap::clear(); }
 
 		// This method is just used for the ::saveToTextFile() method in base class.
-		float cell2float(const TRandomFieldCell& c) const MRPT_OVERRIDE
+		float cell2float(const TRandomFieldCell& c) const override
 		{
 			return c.kf_mean;
 		}
@@ -158,7 +158,7 @@ namespace maps
 		 /** Returns true if the map is empty/no observation has been inserted (in this class it always return false,
 		   * unless redefined otherwise in base classes)
 		   */
-		virtual bool isEmpty() const MRPT_OVERRIDE;
+		virtual bool isEmpty() const override;
 
 		/** Save the current map as a graphical file (BMP,PNG,...).
 		  * The file format will be derived from the file extension (see  CImage::saveToFile )
@@ -228,7 +228,7 @@ namespace maps
 		};
 
 		/** Changes the size of the grid, maintaining previous contents. \sa setSize */
-		virtual void  resize(double new_x_min, double new_x_max, double new_y_min, double new_y_max, const TRandomFieldCell& defaultValueNewCells, double additionalMarginMeters = 1.0f ) MRPT_OVERRIDE;
+		virtual void  resize(double new_x_min, double new_x_max, double new_y_min, double new_y_max, const TRandomFieldCell& defaultValueNewCells, double additionalMarginMeters = 1.0f ) override;
 
 		/** Changes the size of the grid, erasing previous contents.
 		  *  \param[in] connectivity_descriptor Optional user-supplied object that will visit all grid cells to define their connectivity with neighbors and the strength of existing edges. If present, it overrides all options in insertionOptions
@@ -259,10 +259,10 @@ namespace maps
 		void setCellsConnectivity(const ConnectivityDescriptor::Ptr &new_connectivity_descriptor);
 
 		/** See docs in base class: in this class this always returns 0 */
-		float compute3DMatchingRatio(const mrpt::maps::CMetricMap *otherMap, const mrpt::poses::CPose3D &otherMapPose, const TMatchingRatioParams &params) const MRPT_OVERRIDE;
+		float compute3DMatchingRatio(const mrpt::maps::CMetricMap *otherMap, const mrpt::poses::CPose3D &otherMapPose, const TMatchingRatioParams &params) const override;
 
 		/** The implementation in this class just calls all the corresponding method of the contained metric maps */
-		virtual void  saveMetricMapRepresentationToFile(const std::string &filNamePrefix) const MRPT_OVERRIDE;
+		virtual void  saveMetricMapRepresentationToFile(const std::string &filNamePrefix) const override;
 
 		/** Save a matlab ".m" file which represents as 3D surfaces the mean and a given confidence level for the concentration of each cell.
 		  *  This method can only be called in a KF map model.
@@ -274,7 +274,7 @@ namespace maps
 		void  getAsMatlab3DGraphScript(std::string  &out_script) const;
 
 		/** Returns a 3D object representing the map (mean) */
-		virtual void getAs3DObject( mrpt::opengl::CSetOfObjects::Ptr &outObj ) const MRPT_OVERRIDE;
+		virtual void getAs3DObject( mrpt::opengl::CSetOfObjects::Ptr &outObj ) const override;
 
 		/** Returns two 3D objects representing the mean and variance maps */
 		virtual void  getAs3DObject ( mrpt::opengl::CSetOfObjects::Ptr	&meanObj, mrpt::opengl::CSetOfObjects::Ptr	&varObj ) const;
@@ -364,9 +364,9 @@ namespace maps
 			double Lambda;         //!< "Information" of the observation (=inverse of the variance)
 			bool   time_invariant; //!< whether the observation will lose weight (lambda) as time goes on (default false)
 
-			double evaluateResidual() const MRPT_OVERRIDE;
-			double getInformation() const  MRPT_OVERRIDE;
-			void evalJacobian(double &dr_dx) const MRPT_OVERRIDE;
+			double evaluateResidual() const override;
+			double getInformation() const  override;
+			void evalJacobian(double &dr_dx) const override;
 
 			TObservationGMRF( CRandomFieldGridMap2D &parent ) : obsValue(.0), Lambda(.0), time_invariant(false), m_parent(&parent) {}
 		private:
@@ -377,9 +377,9 @@ namespace maps
 		{
 			double Lambda;         //!< "Information" of the observation (=inverse of the variance)
 
-			double evaluateResidual() const MRPT_OVERRIDE;
-			double getInformation() const MRPT_OVERRIDE;
-			void evalJacobian(double &dr_dx_i, double &dr_dx_j) const MRPT_OVERRIDE;
+			double evaluateResidual() const override;
+			double getInformation() const override;
+			void evalJacobian(double &dr_dx_i, double &dr_dx_j) const override;
 
 			TPriorFactorGMRF(CRandomFieldGridMap2D &parent) : Lambda(.0), m_parent(&parent) {}
 		private:
@@ -440,7 +440,7 @@ namespace maps
 		void  recoverMeanAndCov() const;
 
 		/** Erase all the contents of the map */
-		virtual void  internal_clear() MRPT_OVERRIDE;
+		virtual void  internal_clear() override;
 
 		/** Check if two cells of the gridmap (m_map) are connected, based on the provided occupancy gridmap*/
 		bool exist_relation_between2cells(

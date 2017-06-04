@@ -29,12 +29,12 @@ namespace mrpt
 		{
 			DEFINE_VIRTUAL_MRPT_OBJECT(CMultiObjectiveMotionOptimizerBase)
 		public:
-			static CMultiObjectiveMotionOptimizerBase * Create(const std::string &className) MRPT_NO_THROWS; //!< Class factory from C++ class name
+			static CMultiObjectiveMotionOptimizerBase * Create(const std::string &className) noexcept; //!< Class factory from C++ class name
 
 			struct NAV_IMPEXP TResultInfo
 			{
-				/** For each candidate (vector indices), the numerical evaluation of all scores defined in TParamsBase::formula_score. 
-				  * A value of 0 means unsuitable candidate. */
+				/** For each candidate (vector indices), the numerical evaluation of all scores defined in TParamsBase::formula_score.
+				  * A value of 0 in all scores, or an empty map, means unsuitable candidate. */
 				std::vector<std::map<std::string, double> > score_values;
 
 				std::vector<double>      final_evaluation;  //!< The final evaluation score for each candidate
@@ -68,8 +68,8 @@ namespace mrpt
 				  * across all candidates, such that the maximum value is 1. */
 				std::vector<std::string> scores_to_normalize;
 
-				virtual void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source, const std::string &section) MRPT_OVERRIDE; // See base docs
-				virtual void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg, const std::string &section) const MRPT_OVERRIDE; // See base docs
+				virtual void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source, const std::string &section) override; // See base docs
+				virtual void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg, const std::string &section) const override; // See base docs
 			};
 
 			virtual void clear();  //!< Resets the object state; use if the parameters change, so they are re-read and applied.

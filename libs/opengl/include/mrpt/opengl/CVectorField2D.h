@@ -192,11 +192,11 @@ namespace mrpt
 			static CVectorField2D::Ptr Create(const mrpt::math::CMatrixFloat &Matrix_x, const mrpt::math::CMatrixFloat &Matrix_y, float	xmin=-1, float xmax=1, float ymin=-1, float ymax=1);
 			/** Render
 			  */
-			void  render_dl() const MRPT_OVERRIDE;
+			void  render_dl() const override;
 
 
 			/** Evaluates the bounding box of this object (including possible children) in the coordinate frame of the object parent. */
-			void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const MRPT_OVERRIDE;
+			void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const override;
 
 			void enableAntiAliasing(bool enable=true) { m_antiAliasing = enable; CRenderizableDisplayList::notifyChange(); }
 			bool isAntiAliasingEnabled() const { return m_antiAliasing; }

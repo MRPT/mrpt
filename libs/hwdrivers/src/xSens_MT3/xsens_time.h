@@ -9,7 +9,7 @@
 #ifndef _XSENS_TIME_2006_09_12
 #define _XSENS_TIME_2006_09_12
 
-#include <mrpt/utils/mrpt_stdint.h>
+#include <cstdint>
 
 #include <time.h>
 

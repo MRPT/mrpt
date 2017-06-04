@@ -433,12 +433,14 @@ void CStream::internal_ReadObjectHeader(std::string &strClassName, bool &isOldFo
 } // end method
 
 
-void CStream::internal_ReadObject(CSerializable &obj, const std::string &strClassName, bool isOldFormat, int8_t version)
+void CStream::internal_ReadObject(CSerializable *obj, const std::string &strClassName, bool isOldFormat, int8_t version)
 {
 	try
 	{
-		if(strClassName != "nullptr")
-		       obj.readFromStream( *this, (int)version );
+		if (obj) {
+			// Not de-serializing an "nullptr":
+			obj->readFromStream(*this, (int)version);
+		}
 		if (!isOldFormat)
 		{
 			uint8_t endFlag;
@@ -452,9 +454,9 @@ void CStream::internal_ReadObject(CSerializable &obj, const std::string &strClas
 	{
 		throw;
 	}
-	catch(std::exception &e)
+	catch(std::exception &)
 	{
-	       THROW_TYPED_EXCEPTION("Cannot read object due to EOF", CExceptionEOF);
+		THROW_TYPED_EXCEPTION("Cannot read object due to EOF", CExceptionEOF);
 	}
 	catch (...) {
 		THROW_EXCEPTION("Unexpected runtime error!");
@@ -483,7 +485,7 @@ void CStream::ReadObject(CSerializable *existingObj)
 	if (!id2) THROW_EXCEPTION_FMT("Stored object has class '%s' which is not registered!",strClassName.c_str());
 	if ( id!=id2 ) THROW_EXCEPTION(format("Stored class does not match with existing object!!:\n Stored: %s\n Expected: %s", id2->className,id->className ));
 
-	internal_ReadObject(*existingObj, strClassName, isOldFormat, version);
+	internal_ReadObject(existingObj, strClassName, isOldFormat, version);
 }
 
 /*---------------------------------------------------------------

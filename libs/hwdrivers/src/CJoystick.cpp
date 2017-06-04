@@ -33,7 +33,7 @@
 	#include <errno.h>
 	#include <string.h>
 	#include <stdlib.h>
-	#include <stdint.h>
+	#include <cstdint>
 
 	#if defined(MRPT_OS_LINUX) && defined(HAVE_LINUX_INPUT_H)
 		#include <linux/input.h>

@@ -88,13 +88,13 @@ namespace opengl	{
 		float getVertFOVUp() const { return mrpt::utils::RAD2DEG(m_fov_vert_up); }
 
 		/** Render \sa mrpt::opengl::CRenderizable */
-		void render_dl() const MRPT_OVERRIDE;
+		void render_dl() const override;
 
 		/** Ray tracing. \sa mrpt::opengl::CRenderizable */
-		bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const MRPT_OVERRIDE;
+		bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const override;
 
 		/** Evaluates the bounding box of this object (including possible children) in the coordinate frame of the object parent. */
-		void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const MRPT_OVERRIDE;
+		void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const override;
 
 		/** Basic empty constructor. Set all parameters to default. */
 		CFrustum();

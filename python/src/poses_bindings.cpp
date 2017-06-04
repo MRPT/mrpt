@@ -15,7 +15,7 @@
 
 /* STD */
 #include "math.h"
-#include <stdint.h>
+#include <cstdint>
 
 using namespace boost::python;
 using namespace mrpt::poses;
