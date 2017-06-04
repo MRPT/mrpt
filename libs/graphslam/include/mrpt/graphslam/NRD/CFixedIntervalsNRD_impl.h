@@ -73,92 +73,28 @@ bool CFixedIntervalsNRD<GRAPH_T>::updateState(
 		}
 	} // ELSE - FORMAT #1
 
-	bool registered = this->checkRegistrationCondition();
+	bool registered_new_node = this->checkRegistrationCondition();
 
-	if (registered) {
+	if (registered_new_node) {
 		if (m_observation_only_rawlog) {
 			// keep track of the odometry-only pose_t at the last inserted graph node
 			m_last_odometry_only_pose = m_curr_odometry_only_pose;
 		}
 	}
 
-	return registered;
+	return registered_new_node;
 
 	MRPT_END;
 } // end of updateState
 
 template<class GRAPH_T>
-bool CFixedIntervalsNRD<GRAPH_T>::checkRegistrationCondition() {
-	MRPT_START;
-
-	// check that a node has already been registered - if not, default to (0,0,0)
-	pose_t last_pose_inserted = this->m_prev_registered_nodeID != INVALID_NODEID?
-		this->m_graph->nodes.at(this->m_prev_registered_nodeID): pose_t();
-
-	// odometry criterion
-	bool registered = false;
-
-	if (this->checkRegistrationCondition(
-				last_pose_inserted,
-				this->getCurrentRobotPosEstimation())) {
-		registered = this->registerNewNodeAtEnd();
-	}
-
-	return registered;
-	MRPT_END;
-} // end of checkRegistrationCondition
-
-template<class GRAPH_T>
-bool CFixedIntervalsNRD<GRAPH_T>::checkRegistrationCondition(
-		const mrpt::poses::CPose2D& p1,
-		const mrpt::poses::CPose2D& p2) const {
-	using namespace mrpt::math;
-	
-	bool res = false;
-	if ((p1.distanceTo(p2) > params.registration_max_distance) ||
-			(fabs(wrapToPi(p1.phi() - p2.phi())) > params.registration_max_angle)) {
-		res = true;
-	}
-
-	return res;
-} // end of checkRegistrationCondition2D
-
-template<class GRAPH_T>
-bool CFixedIntervalsNRD<GRAPH_T>::checkRegistrationCondition(
-		const mrpt::poses::CPose3D& p1,
-		const mrpt::poses::CPose3D& p2) const {
-	using namespace mrpt::math;
-	
-	bool res = false;
-	if ((p1.distanceTo(p2) > params.registration_max_distance) ||
-			(fabs(wrapToPi(p1.roll() - p2.roll())) > params.registration_max_angle) ||
-			(fabs(wrapToPi(p1.pitch() - p2.pitch())) > params.registration_max_angle) ||
-			(fabs(wrapToPi(p1.yaw() - p2.yaw())) > params.registration_max_angle)) {
-		res = true;
-	}
-
-	return res;
-} // end of checkRegistrationCondition3D
-
-template<class GRAPH_T>
 void CFixedIntervalsNRD<GRAPH_T>::loadParams(const std::string& source_fname) {
-	MRPT_START;
-	using namespace mrpt::utils;
 	parent_t::loadParams(source_fname);
-
-	params.loadFromConfigFileName(source_fname,
-			"NodeRegistrationDeciderParameters");
-
-	MRPT_END;
 }
 
 template<class GRAPH_T>
 void CFixedIntervalsNRD<GRAPH_T>::printParams() const {
-	MRPT_START;
 	parent_t::printParams();
-	params.dumpToConsole();
-
-	MRPT_END;
 }
 
 template<class GRAPH_T>
@@ -166,14 +102,11 @@ void CFixedIntervalsNRD<GRAPH_T>::getDescriptiveReport(std::string* report_str) 
 	MRPT_START;
 	using namespace std;
 
-	const std::string report_sep(2, '\n');
-	const std::string header_sep(80, '#');
-
 	// Report on graph
 	stringstream class_props_ss;
 	class_props_ss << "Strategy: " <<
 		"Fixed Odometry-based Intervals" << std::endl;
-	class_props_ss << header_sep << std::endl;
+	class_props_ss << this->header_sep << std::endl;
 
 	// time and output logging
 	const std::string time_res = this->m_time_logger.getStatsAsText();
@@ -184,82 +117,14 @@ void CFixedIntervalsNRD<GRAPH_T>::getDescriptiveReport(std::string* report_str) 
 	parent_t::getDescriptiveReport(report_str);
 
 	*report_str += class_props_ss.str();
-	*report_str += report_sep;
-
-	// configuration parameters
-	*report_str += params.getAsString();
-	*report_str += report_sep;
+	*report_str += this->report_sep;
 
 	// loggers results
 	*report_str += time_res;
-	*report_str += report_sep;
+	*report_str += this->report_sep;
 
 	*report_str += output_res;
-	*report_str += report_sep;
-
-	MRPT_END;
-}
-
-// TParams
-//////////////////////////////////////////////////////////////
-template<class GRAPH_T>
-CFixedIntervalsNRD<GRAPH_T>::TParams::TParams() {
-}
-template<class GRAPH_T>
-CFixedIntervalsNRD<GRAPH_T>::TParams::~TParams() {
-}
-template<class GRAPH_T>
-void CFixedIntervalsNRD<GRAPH_T>::TParams::dumpToTextStream(
-		mrpt::utils::CStream &out) const {
-	MRPT_START;
-	out.printf("%s", this->getAsString().c_str());
-	MRPT_END;
-}
-template<class GRAPH_T>
-void CFixedIntervalsNRD<GRAPH_T>::TParams::loadFromConfigFile(
-		const mrpt::utils::CConfigFileBase &source,
-		const std::string &section) {
-	MRPT_START;
-	using namespace mrpt::math;
-	using namespace mrpt::utils;
-
-	registration_max_distance = source.read_double( section,
-			"registration_max_distance",
-			0.5 /* meter */, false);
-	registration_max_angle = source.read_double( section,
-			"registration_max_angle",
-			60 /* degrees */, false);
-	registration_max_angle = DEG2RAD(registration_max_angle);
-
-	MRPT_END;
-}
-
-template<class GRAPH_T>
-void CFixedIntervalsNRD<GRAPH_T>::TParams::
-getAsString(std::string* params_out) const {
-	MRPT_START;
-	using namespace mrpt::math;
-	using namespace mrpt::utils;
-
-	double max_angle_deg = RAD2DEG(registration_max_angle);
-	params_out->clear();
-
-	*params_out +=
-		"------------------[ Fixed Intervals Node Registration ]------------------\n";
-	*params_out += mrpt::format(
-			"Max distance for registration = %.2f m\n", registration_max_distance);
-	*params_out += mrpt::format(
-			"Max angle for registration    = %.2f deg\n", max_angle_deg);
-
-	MRPT_END;
-}
-template<class GRAPH_T>
-std::string CFixedIntervalsNRD<GRAPH_T>::TParams::getAsString() const {
-	MRPT_START;
-
-	std::string str;
-	this->getAsString(&str);
-	return str;
+	*report_str += this->report_sep;
 
 	MRPT_END;
 }
