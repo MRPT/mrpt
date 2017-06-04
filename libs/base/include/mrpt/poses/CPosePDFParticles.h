@@ -45,7 +45,7 @@ namespace mrpt
 
 			/** Copy operator, translating if necesary (for example, between m_particles and gaussian representations)
 			  */
-			void  copyFrom(const CPosePDF &o) MRPT_OVERRIDE;
+			void  copyFrom(const CPosePDF &o) override;
 
 			 /** Reset the PDF to a single point: All m_particles will be set exactly to the supplied pose.
 			  * \param location The location to set all the m_particles.
@@ -89,12 +89,12 @@ namespace mrpt
 			 /** Returns an estimate of the pose, (the mean, or mathematical expectation of the PDF).
 			   * \sa getCovariance
 			   */
-			void getMean(CPose2D &mean_pose) const MRPT_OVERRIDE;
+			void getMean(CPose2D &mean_pose) const override;
 
 			/** Returns an estimate of the pose covariance matrix (3x3 cov matrix) and the mean, both at once.
 			  * \sa getMean
 			  */
-			void getCovarianceAndMean(mrpt::math::CMatrixDouble33 &cov,CPose2D &mean_point) const MRPT_OVERRIDE;
+			void getCovarianceAndMean(mrpt::math::CMatrixDouble33 &cov,CPose2D &mean_point) const override;
 
 			/** Returns the pose of the i'th particle.
 			  */
@@ -102,7 +102,7 @@ namespace mrpt
 
 			/** Save PDF's m_particles to a text file. In each line it will go: "x y phi weight"
 			 */
-			void  saveToTextFile(const std::string &file) const MRPT_OVERRIDE;
+			void  saveToTextFile(const std::string &file) const override;
 
 			/** Get the m_particles count (equivalent to "particlesCount")
 			 */
@@ -111,11 +111,11 @@ namespace mrpt
 			/** this = p (+) this. This can be used to convert a PDF from local coordinates to global, providing the point (newReferenceBase) from which
 			  *   "to project" the current pdf. Result PDF substituted the currently stored one in the object.
 			  */
-			void  changeCoordinatesReference( const CPose3D &newReferenceBase ) MRPT_OVERRIDE;
+			void  changeCoordinatesReference( const CPose3D &newReferenceBase ) override;
 
 			/** Draws a single sample from the distribution (WARNING: weights are assumed to be normalized!)
 			  */
-			void  drawSingleSample(CPose2D &outPart ) const MRPT_OVERRIDE;
+			void  drawSingleSample(CPose2D &outPart ) const override;
 
 			/** Appends (pose-composition) a given pose "p" to each particle
 			  */
@@ -127,7 +127,7 @@ namespace mrpt
 
 			/** Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF
 			  */
-			void	 inverse(CPosePDF &o) const MRPT_OVERRIDE;
+			void	 inverse(CPosePDF &o) const override;
 
 			/** Returns the particle with the highest weight.
 			  */
@@ -135,7 +135,7 @@ namespace mrpt
 
 			/** Bayesian fusion.
 			  */
-			void  bayesianFusion( const CPosePDF &p1,const  CPosePDF &p2, const double & minMahalanobisDistToDrop = 0 ) MRPT_OVERRIDE;
+			void  bayesianFusion( const CPosePDF &p1,const  CPosePDF &p2, const double & minMahalanobisDistToDrop = 0 ) override;
 
 			/** Evaluates the PDF at a given arbitrary point as reconstructed by a Parzen window.
 			  * \sa saveParzenPDFToTextFile

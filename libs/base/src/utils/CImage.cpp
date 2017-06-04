@@ -1892,7 +1892,7 @@ void  CImage::getAsMatrixTiled( CMatrix &outMatrix )  const
 /*---------------------------------------------------------------
 						setExternalStorage
  ---------------------------------------------------------------*/
-void CImage::setExternalStorage( const std::string &fileName ) MRPT_NO_THROWS
+void CImage::setExternalStorage( const std::string &fileName ) noexcept
 {
 	releaseIpl();
 	m_externalFile = fileName;
@@ -1902,7 +1902,7 @@ void CImage::setExternalStorage( const std::string &fileName ) MRPT_NO_THROWS
 /*---------------------------------------------------------------
 						unload
  ---------------------------------------------------------------*/
-void CImage::unload() const MRPT_NO_THROWS
+void CImage::unload() const noexcept
 {
 	if (m_imgIsExternalStorage)
 		const_cast<CImage*>(this)->releaseIpl( true ); // Do NOT mark the image as NON external
@@ -1911,7 +1911,7 @@ void CImage::unload() const MRPT_NO_THROWS
 /*---------------------------------------------------------------
 						releaseIpl
  ---------------------------------------------------------------*/
-void CImage::releaseIpl(bool thisIsExternalImgUnload) MRPT_NO_THROWS
+void CImage::releaseIpl(bool thisIsExternalImgUnload) noexcept
 {
 #if MRPT_HAS_OPENCV
 	if (img && !m_imgIsReadOnly)

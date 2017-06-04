@@ -43,42 +43,6 @@
 #	define __has_extension __has_feature // Compatibility with pre-3.0 compilers.
 #endif
 
-
-/** Does the compiler support C++11? */
-#if (__cplusplus>199711L || MRPT_CHECK_VISUALC_VERSION(11) )
-#	define MRPT_HAS_CXX11  1
-#else
-#	define MRPT_HAS_CXX11  0
-#endif
-
-/** C++11 "override" for virtuals: */
-#if MRPT_HAS_CXX11
-#	define MRPT_OVERRIDE  override
-#else
-#	define MRPT_OVERRIDE
-#endif
-
-/** C++11 deleted function declarations */
-#if MRPT_CHECK_VISUALC_VERSION(12) || __has_extension(cxx_deleted_functions) || (MRPT_CHECK_GCC_VERSION(4,4) && MRPT_HAS_CXX11)
-#	define MRPT_DELETED_FUNC   =delete
-#else
-#	define MRPT_DELETED_FUNC
-#endif
-
-/** C++11 noexcept: Used after member declarations */
-#if MRPT_CHECK_VISUALC_VERSION(14) || __has_extension(cxx_noexcept) || (MRPT_CHECK_GCC_VERSION(4,6) && MRPT_HAS_CXX11)
-#	define MRPT_NO_THROWS noexcept
-#else
-#	define MRPT_NO_THROWS  throw()
-#endif
-
-/** C++11 unique_ptr<> */
-#if MRPT_CHECK_VISUALC_VERSION(10) || (MRPT_CHECK_GCC_VERSION(4,4) || defined(__clang__)) && (MRPT_HAS_CXX11 || defined(__GXX_EXPERIMENTAL_CXX0X__))
-#	define MRPT_HAS_UNIQUE_PTR  1
-#else
-#	define MRPT_HAS_UNIQUE_PTR  0
-#endif
-
 // A cross-compiler definition for "deprecated"-warnings
 /** Usage: MRPT_DEPRECATED("Use XX instead") void myFunc(double); */
 #if defined(__clang__) && defined(__has_extension)

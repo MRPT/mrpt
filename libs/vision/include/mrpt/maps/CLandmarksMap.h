@@ -60,8 +60,8 @@ namespace maps
 		DEFINE_SERIALIZABLE( CLandmarksMap )
 
 	private:
-		void internal_clear() MRPT_OVERRIDE;
-		bool internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = nullptr ) MRPT_OVERRIDE;
+		void internal_clear() override;
+		bool internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = nullptr ) override;
 
 	public:
 		/** Computes the (logarithmic) likelihood that a given observation was taken from a given pose in the world being modeled with this map.
@@ -77,7 +77,7 @@ namespace maps
 		 *
 		 * \sa Used in particle filter algorithms, see: CMultiMetricMapPDF::update
 		 */
-		double internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom ) MRPT_OVERRIDE;
+		double internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom ) override;
 
 
 		static mrpt::utils::TColorf		COLOR_LANDMARKS_IN_3DSCENES;  //!< The color of landmark ellipsoids in CLandmarksMap::getAs3DObject
@@ -169,7 +169,7 @@ namespace maps
 		 /**** END FAMD *****/
 
 		// See docs in base class
-		float compute3DMatchingRatio(const mrpt::maps::CMetricMap *otherMap, const mrpt::poses::CPose3D &otherMapPose, const TMatchingRatioParams &params) const MRPT_OVERRIDE;
+		float compute3DMatchingRatio(const mrpt::maps::CMetricMap *otherMap, const mrpt::poses::CPose3D &otherMapPose, const TMatchingRatioParams &params) const override;
 
 		 /** With this struct options are provided to the observation insertion process.
 		  */
@@ -180,8 +180,8 @@ namespace maps
 			 */
 			TInsertionOptions(	);
 
-			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
-			void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
+			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) override; // See base docs
+			void dumpToTextStream(mrpt::utils::CStream &out) const override; // See base docs
 
 			/** If set to true (default), the insertion of a CObservationImage in the map will insert SIFT 3D features.
 			  */
@@ -265,8 +265,8 @@ namespace maps
 		 public:
 			TLikelihoodOptions();
 
-			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
-			void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
+			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) override; // See base docs
+			void dumpToTextStream(mrpt::utils::CStream &out) const override; // See base docs
 
 			/** @name Parameters for: 2D LIDAR scans
 			  * @{ */
@@ -477,7 +477,7 @@ namespace maps
 
 		/** Returns true if the map is empty/no observation has been inserted.
 		   */
-		bool isEmpty() const MRPT_OVERRIDE;
+		bool isEmpty() const override;
 
 		/** Simulates a noisy reading toward each of the beacons in the landmarks map, if any.
 		  * \param in_robotPose This robot pose is used to simulate the ranges to each beacon.
@@ -525,15 +525,15 @@ namespace maps
 		  *		- "filNamePrefix"+"_3D.m": A script for MATLAB for drawing landmarks as 3D ellipses.
 		  *		- "filNamePrefix"+"_3D.3DScene": A 3D scene with a "ground plane grid" and the set of ellipsoids in 3D.
 		  */
-		void  saveMetricMapRepresentationToFile(const std::string &filNamePrefix) const MRPT_OVERRIDE;
+		void  saveMetricMapRepresentationToFile(const std::string &filNamePrefix) const override;
 
 		/** Returns a 3D object representing the map.
 		  * \sa COLOR_LANDMARKS_IN_3DSCENES
 		  */
-		void getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr &outObj) const MRPT_OVERRIDE;
+		void getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr &outObj) const override;
 
 		// See base docs
-		virtual void  auxParticleFilterCleanUp() MRPT_OVERRIDE;
+		virtual void  auxParticleFilterCleanUp() override;
 
 		MAP_DEFINITION_START(CLandmarksMap,VISION_IMPEXP)
 			typedef std::pair<mrpt::math::TPoint3D,unsigned int> TPairIdBeacon;

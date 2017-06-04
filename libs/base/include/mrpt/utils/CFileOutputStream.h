@@ -25,8 +25,8 @@ namespace utils
 	class BASE_IMPEXP CFileOutputStream : public CStream
 	{
 	protected:
-		size_t Read(void *Buffer, size_t Count) MRPT_OVERRIDE;
-		size_t Write(const void *Buffer, size_t Count) MRPT_OVERRIDE;
+		size_t Read(void *Buffer, size_t Count) override;
+		size_t Write(const void *Buffer, size_t Count) override;
 	private:
 		std::ofstream 	m_of;		//!< The actual output file stream.
 
@@ -65,13 +65,13 @@ namespace utils
 		bool is_open() { return fileOpenCorrectly(); } //!< Returns true if the file was open without errors.
 
 		// See base class docs
-		uint64_t Seek(uint64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning) MRPT_OVERRIDE;
+		uint64_t Seek(uint64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning) override;
 
 		/** Method for getting the total number of bytes writen to buffer */
-		uint64_t getTotalBytesCount() MRPT_OVERRIDE;
+		uint64_t getTotalBytesCount() override;
 
 		/** Method for getting the current cursor position, where 0 is the first byte and TotalBytesCount-1 the last one */
-		uint64_t getPosition() MRPT_OVERRIDE;
+		uint64_t getPosition() override;
 	}; // End of class def.
 	static_assert(!std::is_copy_constructible<CFileOutputStream>::value && !std::is_copy_assignable<CFileOutputStream>::value, "Copy Check");
 	} // End of namespace

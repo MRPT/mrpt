@@ -31,16 +31,16 @@ namespace mrpt
 			CVehicleVelCmd_Holo();
 			CVehicleVelCmd_Holo(double vel, double dir_local, double ramp_time, double rot_speed);
 			virtual ~CVehicleVelCmd_Holo();
-			size_t getVelCmdLength() const MRPT_OVERRIDE;
-			std::string getVelCmdDescription(const int index) const MRPT_OVERRIDE;
-			double getVelCmdElement(const int index) const  MRPT_OVERRIDE;
-			void setVelCmdElement(const int index, const double val)  MRPT_OVERRIDE;
-			bool isStopCmd() const MRPT_OVERRIDE;
-			void setToStop() MRPT_OVERRIDE;
+			size_t getVelCmdLength() const override;
+			std::string getVelCmdDescription(const int index) const override;
+			double getVelCmdElement(const int index) const  override;
+			void setVelCmdElement(const int index, const double val)  override;
+			bool isStopCmd() const override;
+			void setToStop() override;
 
 			// See base class docs.
-			void cmdVel_scale(double vel_scale) MRPT_OVERRIDE;
-			double cmdVel_limits(const mrpt::kinematics::CVehicleVelCmd &prev_vel_cmd, const double beta, const TVelCmdParams &params)  MRPT_OVERRIDE;
+			void cmdVel_scale(double vel_scale) override;
+			double cmdVel_limits(const mrpt::kinematics::CVehicleVelCmd &prev_vel_cmd, const double beta, const TVelCmdParams &params)  override;
 		};
 		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(CVehicleVelCmd_Holo, CVehicleVelCmd, KINEMATICS_IMPEXP)
 

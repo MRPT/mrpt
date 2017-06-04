@@ -163,9 +163,9 @@ namespace mrpt
 			void setMinRange(double new_min);//!< Changes the camera min clip range (z) (used for gluPerspective). The window is not updated with this method, call "forceRepaint" to update the 3D view.
 			void setMaxRange(double new_max);//!< Changes the camera max clip range (z) (used for gluPerspective. The window is not updated with this method, call "forceRepaint" to update the 3D view.
 			void setFOV(float v);//!< Changes the camera field of view (in degrees) (used for gluPerspective). The window is not updated with this method, call "forceRepaint" to update the 3D view.
-			void resize( unsigned int width, unsigned int height) MRPT_OVERRIDE; //!< Resizes the window, stretching the image to fit into the display area.
-			void setPos( int x, int y ) MRPT_OVERRIDE;//!< Changes the position of the window on the screen.
-			void setWindowTitle( const std::string &str ) MRPT_OVERRIDE;//!<  Changes the window title.
+			void resize( unsigned int width, unsigned int height) override; //!< Resizes the window, stretching the image to fit into the display area.
+			void setPos( int x, int y ) override;//!< Changes the position of the window on the screen.
+			void setWindowTitle( const std::string &str ) override;//!<  Changes the window title.
 			void setCameraElevationDeg( float deg );//!< Changes the camera parameters programatically
 			void setCameraAzimuthDeg( float deg );//!< Changes the camera parameters programatically
 			void setCameraPointingToPoint( float x,float y, float z );//!< Changes the camera parameters programatically
@@ -178,8 +178,8 @@ namespace mrpt
 			bool isCameraProjective() const;//!< Sets the camera as projective, or orthogonal
 			void useCameraFromScene(bool useIt = true);//!< If set to true (default = false), the mouse-based scene navigation will be disabled and the camera position will be determined by the opengl viewports in the 3D scene
 			bool getLastMousePositionRay(mrpt::math::TLine3D &ray) const;//!< Gets the 3D ray for the direction line of the pixel where the mouse cursor is at. \return False if the window is closed. \sa getLastMousePosition
-			virtual bool getLastMousePosition(int &x, int &y) const MRPT_OVERRIDE;//!< Gets the last x,y pixel coordinates of the mouse. \return False if the window is closed. \sa getLastMousePositionRay
-			virtual void setCursorCross(bool cursorIsCross) MRPT_OVERRIDE;//!< Set cursor style to default (cursorIsCross=false) or to a cross (cursorIsCross=true) \sa getLastMousePositionRay
+			virtual bool getLastMousePosition(int &x, int &y) const override;//!< Gets the last x,y pixel coordinates of the mouse. \return False if the window is closed. \sa getLastMousePositionRay
+			virtual void setCursorCross(bool cursorIsCross) override;//!< Set cursor style to default (cursorIsCross=false) or to a cross (cursorIsCross=true) \sa getLastMousePositionRay
 
 			/** Start to save rendered images to disk.
 			  *  Images will be saved independently as png files, depending on
@@ -326,7 +326,7 @@ namespace mrpt
 		class GUI_IMPEXP mrptEvent3DWindowGrabImageFile : public mrpt::utils::mrptEvent
 		{
 		protected:
-			virtual void do_nothing() MRPT_OVERRIDE { } //!< Just to allow this class to be polymorphic
+			virtual void do_nothing() override { } //!< Just to allow this class to be polymorphic
 		public:
 			inline mrptEvent3DWindowGrabImageFile(
 				CDisplayWindow3D *obj,

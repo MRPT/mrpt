@@ -168,7 +168,7 @@ mrpt::system::unitsFormat(const double val,int nDecimalDigits, bool middle_space
 /*---------------------------------------------------------------
 						strtok
 ---------------------------------------------------------------*/
-char *mrpt::system::strtok( char *str, const char *strDelimit, char **context ) MRPT_NO_THROWS
+char *mrpt::system::strtok( char *str, const char *strDelimit, char **context ) noexcept
 {
 #if defined(_MSC_VER) && (_MSC_VER>=1400)
 	// Use a secure version in Visual Studio 2005:
@@ -189,7 +189,7 @@ void  my_tokenize(
 	const std::string  & inString,
 	const std::string  & inDelimiters,
 	CONTAINER &outTokens,
-	bool skipBlankTokens) MRPT_NO_THROWS
+	bool skipBlankTokens) noexcept
 {
 	outTokens.clear();
 	
@@ -231,7 +231,7 @@ void  mrpt::system::tokenize(
 	const std::string			&inString,
 	const std::string			&inDelimiters,
 	std::deque<std::string>	&outTokens,
-	bool skipBlankTokens) MRPT_NO_THROWS
+	bool skipBlankTokens) noexcept
 {
 	my_tokenize(inString,inDelimiters,outTokens,skipBlankTokens);
 }
@@ -240,7 +240,7 @@ void  mrpt::system::tokenize(
 	const std::string			&inString,
 	const std::string			&inDelimiters,
 	std::vector<std::string>	&outTokens,
-	bool skipBlankTokens) MRPT_NO_THROWS
+	bool skipBlankTokens) noexcept
 {
 	my_tokenize(inString,inDelimiters,outTokens,skipBlankTokens);
 }

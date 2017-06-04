@@ -47,7 +47,7 @@ namespace mrpt
 			void enableRadiusIndependentOfEyeDistance(bool v=true)  { m_keepRadiusIndependentEyeDistance=v; CRenderizableDisplayList::notifyChange(); }
 
 			/** \sa CRenderizableDisplayList */
-			bool should_skip_display_list_cache() const  MRPT_OVERRIDE { return m_keepRadiusIndependentEyeDistance; }
+			bool should_skip_display_list_cache() const  override { return m_keepRadiusIndependentEyeDistance; }
 
 			/** Class factory  */
 			static CSphere::Ptr Create(
@@ -56,14 +56,14 @@ namespace mrpt
 				int					nDivsLatitude = 20 );
 
 			/** Render */
-			void  render_dl() const MRPT_OVERRIDE;
+			void  render_dl() const override;
 
 			/** Evaluates the bounding box of this object (including possible children) in the coordinate frame of the object parent. */
-			void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const MRPT_OVERRIDE;
+			void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const override;
 
 			/** Ray tracing
 			  */
-			bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const MRPT_OVERRIDE;
+			bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const override;
 
 			/** Constructor
 			  */

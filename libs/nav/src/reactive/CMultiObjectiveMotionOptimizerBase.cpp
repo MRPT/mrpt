@@ -190,7 +190,7 @@ void CMultiObjectiveMotionOptimizerBase::clear()
 	m_score_exprs.clear();
 }
 
-CMultiObjectiveMotionOptimizerBase * CMultiObjectiveMotionOptimizerBase::Create(const std::string &className) MRPT_NO_THROWS
+CMultiObjectiveMotionOptimizerBase * CMultiObjectiveMotionOptimizerBase::Create(const std::string &className) noexcept
 {
 	try 
 	{

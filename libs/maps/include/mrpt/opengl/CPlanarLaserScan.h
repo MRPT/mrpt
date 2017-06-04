@@ -117,9 +117,9 @@ namespace mrpt
 
 			/** Render
 			  */
-			void  render_dl() const MRPT_OVERRIDE;
+			void  render_dl() const override;
 
-			void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const MRPT_OVERRIDE;
+			void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const override;
 
 			/** Constructor
 			  */

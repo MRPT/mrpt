@@ -45,9 +45,9 @@ namespace mrpt
 			mrpt::math::TTwist2D velocityLocal; //!< Velocity, in the robot (local) frame of reference (+X=forward).
 
 			// See base class docs
-			void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const MRPT_OVERRIDE { out_sensorPose=mrpt::poses::CPose3D(0,0,0); }
-			void setSensorPose( const mrpt::poses::CPose3D & ) MRPT_OVERRIDE {  }
-			void getDescriptionAsText(std::ostream &o) const MRPT_OVERRIDE;
+			void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const override { out_sensorPose=mrpt::poses::CPose3D(0,0,0); }
+			void setSensorPose( const mrpt::poses::CPose3D & ) override {  }
+			void getDescriptionAsText(std::ostream &o) const override;
 
 		}; // End of class def.
 		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CObservationOdometry, CObservation,OBS_IMPEXP  )

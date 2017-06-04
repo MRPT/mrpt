@@ -131,7 +131,7 @@ namespace mrpt
 				{
 					std::ostringstream  &m_s;
 					CMyVisitor(std::ostringstream &s) : m_s(s) { }
-					virtual void OnVisitNode( const TNodeID parent, const typename mrpt::graphs::CDirectedTree<TYPE_EDGES>::Visitor::tree_t::TEdgeInfo &edge_to_child, const size_t depth_level ) MRPT_OVERRIDE {
+					virtual void OnVisitNode( const TNodeID parent, const typename mrpt::graphs::CDirectedTree<TYPE_EDGES>::Visitor::tree_t::TEdgeInfo &edge_to_child, const size_t depth_level ) override {
 						m_s << std::string(depth_level*5, ' ') << (edge_to_child.reverse ? "<-" : "->" ) //;
 							<< edge_to_child.id << std::endl;
 					}

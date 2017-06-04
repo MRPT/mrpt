@@ -88,7 +88,7 @@ namespace mrpt
 		public:
 
 			/** Evaluates the bounding box of this object (including possible children) in the coordinate frame of the object parent. */
-			virtual void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const MRPT_OVERRIDE
+			virtual void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const override
 			{
 				this->octree_getBoundingBox(bb_min, bb_max);
 			}
@@ -190,7 +190,7 @@ namespace mrpt
 			/** @} */
 
 			/** Render */
-			void  render() const MRPT_OVERRIDE;
+			void  render() const override;
 
 			/** Render a subset of points (required by octree renderer) */
 			void  render_subset(const bool all, const std::vector<size_t>& idxs, const float render_area_sqpixels ) const;
@@ -199,22 +199,22 @@ namespace mrpt
 			/** @name PLY Import virtual methods to implement in base classes
 			    @{ */
 			/** In a base class, reserve memory to prepare subsequent calls to PLY_import_set_vertex */
-			virtual void PLY_import_set_vertex_count(const size_t N) MRPT_OVERRIDE;
+			virtual void PLY_import_set_vertex_count(const size_t N) override;
 			/** In a base class, reserve memory to prepare subsequent calls to PLY_import_set_face */
-			virtual void PLY_import_set_face_count(const size_t N) MRPT_OVERRIDE {
+			virtual void PLY_import_set_face_count(const size_t N) override {
 				MRPT_UNUSED_PARAM(N);
 			}
 			/** In a base class, will be called after PLY_import_set_vertex_count() once for each loaded point.
 			  *  \param pt_color Will be nullptr if the loaded file does not provide color info.
 			  */
-			virtual void PLY_import_set_vertex(const size_t idx, const mrpt::math::TPoint3Df &pt, const mrpt::utils::TColorf *pt_color = nullptr) MRPT_OVERRIDE;
+			virtual void PLY_import_set_vertex(const size_t idx, const mrpt::math::TPoint3Df &pt, const mrpt::utils::TColorf *pt_color = nullptr) override;
 			/** @} */
 
 			/** @name PLY Export virtual methods to implement in base classes
 			    @{ */
-			size_t PLY_export_get_vertex_count() const MRPT_OVERRIDE;
-			size_t PLY_export_get_face_count() const MRPT_OVERRIDE { return 0; }
-			void   PLY_export_get_vertex(const size_t idx,mrpt::math::TPoint3Df &pt,bool &pt_has_color,mrpt::utils::TColorf &pt_color) const MRPT_OVERRIDE;
+			size_t PLY_export_get_vertex_count() const override;
+			size_t PLY_export_get_face_count() const override { return 0; }
+			void   PLY_export_get_vertex(const size_t idx,mrpt::math::TPoint3Df &pt,bool &pt_has_color,mrpt::utils::TColorf &pt_color) const override;
 			/** @} */
 		};
 		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CPointCloudColoured, CRenderizable, OPENGL_IMPEXP )

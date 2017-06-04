@@ -133,11 +133,11 @@ namespace obs
 		void clear(); //!< Empties this observation, clearing the container \a messages
 		void swap(CObservationGPS &o);
 
-		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const MRPT_OVERRIDE { out_sensorPose = sensorPose; } // See base class docs
-		void setSensorPose( const mrpt::poses::CPose3D &newSensorPose ) MRPT_OVERRIDE { sensorPose = newSensorPose; } // See base class docs
-		void getDescriptionAsText(std::ostream &o) const MRPT_OVERRIDE; // See base class docs
+		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const override { out_sensorPose = sensorPose; } // See base class docs
+		void setSensorPose( const mrpt::poses::CPose3D &newSensorPose ) override { sensorPose = newSensorPose; } // See base class docs
+		void getDescriptionAsText(std::ostream &o) const override; // See base class docs
 
-		mrpt::system::TTimeStamp getOriginalReceivedTimeStamp() const MRPT_OVERRIDE; // See base class docs
+		mrpt::system::TTimeStamp getOriginalReceivedTimeStamp() const override; // See base class docs
 		/** @} */
 
 		/** @name Deprecated, backwards compatible (MRPT <1.4.0) data and types

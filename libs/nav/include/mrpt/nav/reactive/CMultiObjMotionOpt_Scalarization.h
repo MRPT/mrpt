@@ -30,28 +30,28 @@ namespace mrpt
 		public:
 			CMultiObjMotionOpt_Scalarization();
 
-			void loadConfigFile(const mrpt::utils::CConfigFileBase & c) MRPT_OVERRIDE;
-			void saveConfigFile(mrpt::utils::CConfigFileBase & c) const MRPT_OVERRIDE;
+			void loadConfigFile(const mrpt::utils::CConfigFileBase & c) override;
+			void saveConfigFile(mrpt::utils::CConfigFileBase & c) const override;
 
 			struct NAV_IMPEXP TParams : public mrpt::nav::CMultiObjectiveMotionOptimizerBase::TParamsBase
 			{
 				std::string  scalar_score_formula;  //!< A formula that takes all/a subset of scores and generates a scalar global score.
 
 				TParams();
-				void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source, const std::string &section) MRPT_OVERRIDE; // See base docs
-				void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg, const std::string &section) const MRPT_OVERRIDE; // See base docs
+				void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source, const std::string &section) override; // See base docs
+				void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg, const std::string &section) const override; // See base docs
 			};
 
 			TParams parameters;
 
-			virtual void clear() MRPT_OVERRIDE;
+			virtual void clear() override;
 
 		protected:
 			mrpt::math::CRuntimeCompiledExpression m_expr_scalar_formula;
 			std::map<std::string, double>          m_expr_scalar_vars;
 
 			// This virtual method is called by decide().
-			int impl_decide(const std::vector<mrpt::nav::TCandidateMovementPTG> &movs, TResultInfo &extra_info) MRPT_OVERRIDE;
+			int impl_decide(const std::vector<mrpt::nav::TCandidateMovementPTG> &movs, TResultInfo &extra_info) override;
 		};
 		DEFINE_MRPT_OBJECT_POST_CUSTOM_LINKAGE(CMultiObjMotionOpt_Scalarization, NAV_IMPEXP)
 

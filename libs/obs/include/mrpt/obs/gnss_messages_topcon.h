@@ -53,10 +53,10 @@ struct OBS_IMPEXP Message_TOPCON_PZS : public gnss_message
 	inline TGEODETICCOORDS getAsStruct() const {
 		return TGEODETICCOORDS(latitude_degrees,longitude_degrees,height_meters);
 	}
-	void dumpToStream( mrpt::utils::CStream &out ) const MRPT_OVERRIDE; // See docs in base
+	void dumpToStream( mrpt::utils::CStream &out ) const override; // See docs in base
 protected:
-	void internal_writeToStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE;
-	void internal_readFromStream(mrpt::utils::CStream &in) MRPT_OVERRIDE;
+	void internal_writeToStream(mrpt::utils::CStream &out) const override;
+	void internal_readFromStream(mrpt::utils::CStream &in) override;
 };
 
 /** TopCon mmGPS devices: SATS, a generic structure for statistics about tracked satelites and their positions. \sa mrpt::obs::CObservationGPS   */
@@ -70,10 +70,10 @@ struct OBS_IMPEXP Message_TOPCON_SATS : public gnss_message
 	mrpt::vector_signed_byte ELs; //!< Elevation (in degrees, 0-90) for each satellite in USIs.
 	mrpt::vector_signed_word AZs; //!< Azimuth (in degrees, 0-360) for each satellite in USIs.
 
-	void dumpToStream( mrpt::utils::CStream &out ) const MRPT_OVERRIDE; // See docs in base
+	void dumpToStream( mrpt::utils::CStream &out ) const override; // See docs in base
 protected:
-	void internal_writeToStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE;
-	void internal_readFromStream(mrpt::utils::CStream &in) MRPT_OVERRIDE;
+	void internal_writeToStream(mrpt::utils::CStream &out) const override;
+	void internal_readFromStream(mrpt::utils::CStream &in) override;
 };
 
 } } } // End of namespaces

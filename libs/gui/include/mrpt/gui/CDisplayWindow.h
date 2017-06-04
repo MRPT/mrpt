@@ -52,10 +52,10 @@ namespace mrpt
 			virtual ~CDisplayWindow();
 
 			/** Gets the last x,y pixel coordinates of the mouse. \return False if the window is closed. */
-			virtual bool getLastMousePosition(int &x, int &y) const MRPT_OVERRIDE;
+			virtual bool getLastMousePosition(int &x, int &y) const override;
 
 			/** Set cursor style to default (cursorIsCross=false) or to a cross (cursorIsCross=true) */
-			virtual void setCursorCross(bool cursorIsCross) MRPT_OVERRIDE;
+			virtual void setCursorCross(bool cursorIsCross) override;
 
 			/** Show a given color or grayscale image on the window and print a set of points on it.
 			 *  It adapts the size of the window to that of the image.
@@ -183,11 +183,11 @@ namespace mrpt
 
 			/** Resizes the window, stretching the image to fit into the display area.
 			 */
-			void  resize( unsigned int width, unsigned int height ) MRPT_OVERRIDE;
+			void  resize( unsigned int width, unsigned int height ) override;
 
 			/** Changes the position of the window on the screen.
 			 */
-			void  setPos( int x, int y ) MRPT_OVERRIDE;
+			void  setPos( int x, int y ) override;
 
 			/** Enables or disables the visualization of cursor coordinates on the window caption (default = enabled).
 			  */
@@ -198,7 +198,7 @@ namespace mrpt
 
 			/** Changes the window title text.
 			  */
-			void  setWindowTitle( const std::string &str ) MRPT_OVERRIDE;
+			void  setWindowTitle( const std::string &str ) override;
 
 		}; // End of class def.
 

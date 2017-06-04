@@ -503,7 +503,7 @@ namespace poses
 
 		/** @} */
 
-		void setToNaN() MRPT_OVERRIDE;
+		void setToNaN() override;
 
 		typedef CPose3D  type_value; //!< Used to emulate CPosePDF types, for example, in mrpt::graphs::CNetworkOfPoses
 		enum { is_3D_val = 1 };

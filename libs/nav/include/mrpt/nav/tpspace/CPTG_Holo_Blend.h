@@ -32,31 +32,31 @@ namespace mrpt
 		CPTG_Holo_Blend(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection);
 		virtual ~CPTG_Holo_Blend();
 
-		virtual void loadFromConfigFile(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) MRPT_OVERRIDE;
-		virtual void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const MRPT_OVERRIDE;
-		virtual void loadDefaultParams() MRPT_OVERRIDE;
-		virtual bool supportVelCmdNOP() const MRPT_OVERRIDE;
-		virtual double maxTimeInVelCmdNOP(int path_k) const MRPT_OVERRIDE;
+		virtual void loadFromConfigFile(const mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) override;
+		virtual void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const override;
+		virtual void loadDefaultParams() override;
+		virtual bool supportVelCmdNOP() const override;
+		virtual double maxTimeInVelCmdNOP(int path_k) const override;
 
-		std::string getDescription() const MRPT_OVERRIDE;
-		bool inverseMap_WS2TP(double x, double y, int &out_k, double &out_d, double tolerance_dist = 0.10) const MRPT_OVERRIDE;
-		bool PTG_IsIntoDomain( double x, double y ) const MRPT_OVERRIDE;
-		void onNewNavDynamicState() MRPT_OVERRIDE;
+		std::string getDescription() const override;
+		bool inverseMap_WS2TP(double x, double y, int &out_k, double &out_d, double tolerance_dist = 0.10) const override;
+		bool PTG_IsIntoDomain( double x, double y ) const override;
+		void onNewNavDynamicState() override;
 
 		/** Converts a discretized "alpha" value into a feasible motion command or action. See derived classes for the meaning of these actions */
-		virtual mrpt::kinematics::CVehicleVelCmd::Ptr directionToMotionCommand(uint16_t k) const MRPT_OVERRIDE;
-		virtual mrpt::kinematics::CVehicleVelCmd::Ptr getSupportedKinematicVelocityCommand() const MRPT_OVERRIDE;
+		virtual mrpt::kinematics::CVehicleVelCmd::Ptr directionToMotionCommand(uint16_t k) const override;
+		virtual mrpt::kinematics::CVehicleVelCmd::Ptr getSupportedKinematicVelocityCommand() const override;
 
-		size_t getPathStepCount(uint16_t k) const MRPT_OVERRIDE;
-		void getPathPose(uint16_t k, uint32_t step, mrpt::math::TPose2D &p) const MRPT_OVERRIDE;
-		double getPathDist(uint16_t k, uint32_t step) const  MRPT_OVERRIDE;
-		bool getPathStepForDist(uint16_t k, double dist, uint32_t &out_step) const MRPT_OVERRIDE;
-		double getPathStepDuration() const MRPT_OVERRIDE;
-		double getMaxLinVel() const MRPT_OVERRIDE { return V_MAX; }
-		double getMaxAngVel() const MRPT_OVERRIDE { return W_MAX; }
+		size_t getPathStepCount(uint16_t k) const override;
+		void getPathPose(uint16_t k, uint32_t step, mrpt::math::TPose2D &p) const override;
+		double getPathDist(uint16_t k, uint32_t step) const  override;
+		bool getPathStepForDist(uint16_t k, double dist, uint32_t &out_step) const override;
+		double getPathStepDuration() const override;
+		double getMaxLinVel() const override { return V_MAX; }
+		double getMaxAngVel() const override { return W_MAX; }
 
-		void updateTPObstacle(double ox, double oy, std::vector<double> &tp_obstacles) const MRPT_OVERRIDE;
-		void updateTPObstacleSingle(double ox, double oy, uint16_t k, double &tp_obstacle_k) const MRPT_OVERRIDE;
+		void updateTPObstacle(double ox, double oy, std::vector<double> &tp_obstacles) const override;
+		void updateTPObstacleSingle(double ox, double oy, uint16_t k, double &tp_obstacle_k) const override;
 
 		static double PATH_TIME_STEP;  //!< Duration of each PTG "step"  (default: 10e-3=10 ms)
 		static double eps;             //!< Mathematical "epsilon", to detect ill-conditioned situations (e.g. 1/0) (Default: 1e-4)
@@ -79,9 +79,9 @@ namespace mrpt
 
 		void internal_construct_exprs();
 
-		void internal_processNewRobotShape() MRPT_OVERRIDE;
-		void internal_initialize(const std::string & cacheFilename = std::string(), const bool verbose = true) MRPT_OVERRIDE;
-		void internal_deinitialize() MRPT_OVERRIDE;
+		void internal_processNewRobotShape() override;
+		void internal_initialize(const std::string & cacheFilename = std::string(), const bool verbose = true) override;
+		void internal_deinitialize() override;
 
 	public:
 

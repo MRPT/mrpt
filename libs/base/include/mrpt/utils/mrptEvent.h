@@ -58,7 +58,7 @@ namespace mrpt
 		class BASE_IMPEXP mrptEventOnDestroy : public mrptEvent
 		{
 		protected:
-			void do_nothing()  MRPT_OVERRIDE { } //!< Just to allow this class to be polymorphic
+			void do_nothing()  override { } //!< Just to allow this class to be polymorphic
 		public:
 			inline mrptEventOnDestroy(const CObservable *obj) : source_object(obj) { }
 

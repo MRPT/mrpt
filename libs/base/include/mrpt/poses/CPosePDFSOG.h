@@ -131,12 +131,12 @@ namespace mrpt
 			  */
 			void mergeModes( double max_KLd = 0.5, bool verbose = false );
 
-			void getMean(CPose2D &mean_pose) const MRPT_OVERRIDE; //!< Returns an estimate of the pose, (the mean, or mathematical expectation of the PDF) \sa getCovariance
-			void getCovarianceAndMean(mrpt::math::CMatrixDouble33 &cov,CPose2D &mean_point) const MRPT_OVERRIDE; //!< Returns an estimate of the pose covariance matrix (3x3 cov matrix) and the mean, both at once. \sa getMean
+			void getMean(CPose2D &mean_pose) const override; //!< Returns an estimate of the pose, (the mean, or mathematical expectation of the PDF) \sa getCovariance
+			void getCovarianceAndMean(mrpt::math::CMatrixDouble33 &cov,CPose2D &mean_point) const override; //!< Returns an estimate of the pose covariance matrix (3x3 cov matrix) and the mean, both at once. \sa getMean
 			void getMostLikelyCovarianceAndMean(mrpt::math::CMatrixDouble33 &cov,CPose2D &mean_point) const; //!< For the most likely Gaussian mode in the SOG, returns the pose covariance matrix (3x3 cov matrix) and the mean. \sa getMean
 			void normalizeWeights(); //!< Normalize the weights in m_modes such as the maximum log-weight is 0
 
-			void  copyFrom(const CPosePDF &o) MRPT_OVERRIDE; //!< Copy operator, translating if necesary (for example, between particles and gaussian representations)
+			void  copyFrom(const CPosePDF &o) override; //!< Copy operator, translating if necesary (for example, between particles and gaussian representations)
 
 			/** Save the density to a text file, with the following format:
 			  *  There is one row per Gaussian "mode", and each row contains 10 elements:
@@ -151,16 +151,16 @@ namespace mrpt
 			  *   - C13 (Covariance elements)
 			  *   - C23 (Covariance elements)
 			  */
-			void saveToTextFile(const std::string &file) const MRPT_OVERRIDE;
+			void saveToTextFile(const std::string &file) const override;
 
 			/** this = p (+) this. This can be used to convert a PDF from local coordinates to global, providing the point (newReferenceBase) from which
 			  *   "to project" the current pdf. Result PDF substituted the currently stored one in the object. */
-			void changeCoordinatesReference(const CPose3D &newReferenceBase ) MRPT_OVERRIDE;
+			void changeCoordinatesReference(const CPose3D &newReferenceBase ) override;
 
 			void rotateAllCovariances(const double &ang); //!< Rotate all the covariance matrixes by replacing them by \f$ \mathbf{R}~\mathbf{COV}~\mathbf{R}^t \f$, where \f$ \mathbf{R} = \left[ \begin{array}{ccc} \cos\alpha & -\sin\alpha & 0 \\ \sin\alpha & \cos\alpha & 0 \\ 0 & 0 & 1 \end{array}\right] \f$
-			void drawSingleSample( CPose2D &outPart ) const MRPT_OVERRIDE; //!< Draws a single sample from the distribution
-			void drawManySamples( size_t N, std::vector<mrpt::math::CVectorDouble> & outSamples ) const MRPT_OVERRIDE; //!< Draws a number of samples from the distribution, and saves as a list of 1x3 vectors, where each row contains a (x,y,phi) datum.
-			void inverse(CPosePDF &o) const MRPT_OVERRIDE; //!< Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF
+			void drawSingleSample( CPose2D &outPart ) const override; //!< Draws a single sample from the distribution
+			void drawManySamples( size_t N, std::vector<mrpt::math::CVectorDouble> & outSamples ) const override; //!< Draws a number of samples from the distribution, and saves as a list of 1x3 vectors, where each row contains a (x,y,phi) datum.
+			void inverse(CPosePDF &o) const override; //!< Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF
 
 			void operator += ( const mrpt::poses::CPose2D &Ap); //!< Makes: thisPDF = thisPDF + Ap, where "+" is pose composition (both the mean, and the covariance matrix are updated).
 
@@ -179,7 +179,7 @@ namespace mrpt
 				bool		sumOverAllPhis = false );
 
 			/** Bayesian fusion of two pose distributions, then save the result in this object (WARNING: Currently p1 must be a mrpt::poses::CPosePDFSOG object and p2 a mrpt::poses::CPosePDFGaussian object) */
-			void  bayesianFusion(const  CPosePDF &p1,const  CPosePDF &p2, const double &minMahalanobisDistToDrop=0 ) MRPT_OVERRIDE;
+			void  bayesianFusion(const  CPosePDF &p1,const  CPosePDF &p2, const double &minMahalanobisDistToDrop=0 ) override;
 
 		}; // End of class def.
 		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE( CPosePDFSOG , CPosePDF )

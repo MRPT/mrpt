@@ -42,29 +42,29 @@ namespace mrpt
 			/** An OS-independent version of sprintf (Notice the bufSize param, which may be ignored in some compilers)
 			  *  \sa utils::format
 			  */
-			int BASE_IMPEXP sprintf(char *buf, size_t bufSize, const char *format, ...) MRPT_NO_THROWS MRPT_printf_format_check(3,4);
+			int BASE_IMPEXP sprintf(char *buf, size_t bufSize, const char *format, ...) noexcept MRPT_printf_format_check(3,4);
 
 			/** An OS-independent version of vsprintf (Notice the bufSize param, which may be ignored in some compilers)
 			  */
-			int BASE_IMPEXP vsprintf(char *buf, size_t bufSize, const char *format, va_list args) MRPT_NO_THROWS;
+			int BASE_IMPEXP vsprintf(char *buf, size_t bufSize, const char *format, va_list args) noexcept;
 
 			/** An OS-independent version of vsnprintf (Notice the bufSize param, which may be ignored in some compilers)
 			  */
-			int BASE_IMPEXP vsnprintf(char *buf, size_t bufSize, const char *format, va_list args) MRPT_NO_THROWS;
+			int BASE_IMPEXP vsnprintf(char *buf, size_t bufSize, const char *format, va_list args) noexcept;
 
 			/** An OS-independent version of fopen.
 			  * \return It will always return nullptr on any error.
 			  */
-			FILE BASE_IMPEXP *fopen(const char *fileName,const char *mode) MRPT_NO_THROWS;
+			FILE BASE_IMPEXP *fopen(const char *fileName,const char *mode) noexcept;
 
 			/** An OS-independent version of fopen (std::string version)
 			  * \return It will always return nullptr on any error.
 			  */
-			FILE BASE_IMPEXP *fopen(const std::string &fileName,const char *mode) MRPT_NO_THROWS;
+			FILE BASE_IMPEXP *fopen(const std::string &fileName,const char *mode) noexcept;
 
 			/** An OS-independent version of fprintf
 			  */
-			int BASE_IMPEXP fprintf(FILE *fil, const char *format, ...)  MRPT_NO_THROWS MRPT_printf_format_check(2,3);
+			int BASE_IMPEXP fprintf(FILE *fil, const char *format, ...)  noexcept MRPT_printf_format_check(2,3);
 
 			/** An OS-independent version of fclose.
 			  * \exception std::exception On trying to close a nullptr file descriptor.
@@ -74,32 +74,32 @@ namespace mrpt
 			/** An OS-independent version of strcat.
 			  * \return It will always return the "dest" pointer.
 			  */
-			char BASE_IMPEXP * strcat(char *dest, size_t destSize, const char *source) MRPT_NO_THROWS;
+			char BASE_IMPEXP * strcat(char *dest, size_t destSize, const char *source) noexcept;
 
 			/** An OS-independent version of strcpy.
 			  * \return It will always return the "dest" pointer.
 			  */
-			char  BASE_IMPEXP *strcpy(char *dest, size_t destSize, const char *source) MRPT_NO_THROWS;
+			char  BASE_IMPEXP *strcpy(char *dest, size_t destSize, const char *source) noexcept;
 
 			/** An OS-independent version of strcmp.
 			  * \return It will return 0 when both strings are equal, casi sensitive.
 			  */
-			int BASE_IMPEXP _strcmp(const char*str1,const char*str2) MRPT_NO_THROWS;
+			int BASE_IMPEXP _strcmp(const char*str1,const char*str2) noexcept;
 
 			/** An OS-independent version of strcmpi.
 			  * \return It will return 0 when both strings are equal, casi insensitive.
 			  */
-			int BASE_IMPEXP _strcmpi(const char*str1,const char*str2) MRPT_NO_THROWS;
+			int BASE_IMPEXP _strcmpi(const char*str1,const char*str2) noexcept;
 
 			/** An OS-independent version of strncmp.
 			  * \return It will return 0 when both strings are equal, casi sensitive.
 			  */
-			int BASE_IMPEXP _strncmp(const char*str,const char*subStr,size_t count) MRPT_NO_THROWS;
+			int BASE_IMPEXP _strncmp(const char*str,const char*subStr,size_t count) noexcept;
 
 			/** An OS-independent version of strnicmp.
 			  * \return It will return 0 when both strings are equal, casi insensitive.
 			  */
-			int BASE_IMPEXP _strnicmp(const char*str,const char*subStr,size_t count) MRPT_NO_THROWS;
+			int BASE_IMPEXP _strnicmp(const char*str,const char*subStr,size_t count) noexcept;
 
 			/** An OS-independent version of strtoll.
 			  */
@@ -118,16 +118,16 @@ namespace mrpt
 				void *dest,
 				size_t destSize,
 				const void	*src,
-				size_t copyCount) MRPT_NO_THROWS;
+				size_t copyCount) noexcept;
 
 			/** An OS-independent version of getch, which waits until a key is pushed.
 			  * \return The pushed key code
 			  */
-			int BASE_IMPEXP getch() MRPT_NO_THROWS;
+			int BASE_IMPEXP getch() noexcept;
 
 			/** An OS-independent version of kbhit, which returns true if a key has been pushed.
 			  */
-			bool BASE_IMPEXP kbhit() MRPT_NO_THROWS;
+			bool BASE_IMPEXP kbhit() noexcept;
 
 			/** @} */
 
@@ -137,7 +137,7 @@ namespace mrpt
 		  * @{ */
 
 		/** Shows the message "Press any key to continue" (or other custom message) to the current standard output and returns when a key is pressed */
-		void BASE_IMPEXP pause(const std::string &msg = std::string("Press any key to continue...")) MRPT_NO_THROWS;
+		void BASE_IMPEXP pause(const std::string &msg = std::string("Press any key to continue...")) noexcept;
 
 		/** Clears the console window */
 		void BASE_IMPEXP clearConsole();

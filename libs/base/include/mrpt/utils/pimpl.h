@@ -24,10 +24,6 @@ namespace mrpt {
 		template <typename T>
 		struct pimpl
 		{
-			// This should be only parsed by MRPT sources (which since 1.5.0 require C++11). 
-			// It does not matter if user code, using C++98, does not see this declaration, since PIMPL 
-			// are always "private" or "protected".
-#if MRPT_HAS_UNIQUE_PTR
 			std::unique_ptr<T> ptr;
 
 			// All these must be defined in a .cpp file with PIMPL_DEFINE(_TYPE), after including the 
@@ -38,7 +34,6 @@ namespace mrpt {
 			pimpl& operator=(pimpl&& op) noexcept;   //
 			pimpl(const pimpl& op);                   // and copyable
 			pimpl& operator=(const pimpl& op);        //
-#endif
 		};
 	}
 }

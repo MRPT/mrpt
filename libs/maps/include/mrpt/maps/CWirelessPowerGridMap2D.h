@@ -48,23 +48,23 @@ namespace maps
 		{
 			TInsertionOptions();	//!< Default values loader
 
-			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
-			void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
+			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) override; // See base docs
+			void dumpToTextStream(mrpt::utils::CStream &out) const override; // See base docs
 
 		} insertionOptions;
 
-		void getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr &outObj) const MRPT_OVERRIDE; //!< Returns a 3D object representing the map 
+		void getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr &outObj) const override; //!< Returns a 3D object representing the map 
 
 	protected:
 		/** Get the part of the options common to all CRandomFieldGridMap2D classes */
-		virtual CRandomFieldGridMap2D::TInsertionOptionsCommon * getCommonInsertOptions() MRPT_OVERRIDE {
+		virtual CRandomFieldGridMap2D::TInsertionOptionsCommon * getCommonInsertOptions() override {
 			return &insertionOptions;
 		}
 
 		// See docs in derived class
-		void  internal_clear() MRPT_OVERRIDE;
-		bool  internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = nullptr ) MRPT_OVERRIDE;
-		double internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom ) MRPT_OVERRIDE;
+		void  internal_clear() override;
+		bool  internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = nullptr ) override;
+		double internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom ) override;
 
 		MAP_DEFINITION_START(CWirelessPowerGridMap2D,MAPS_IMPEXP)
 			double min_x,max_x,min_y,max_y,resolution;	//!< See CWirelessPowerGridMap2D::CWirelessPowerGridMap2D

@@ -187,7 +187,7 @@ string mrpt::system::MRPT_getVersion()
 /*---------------------------------------------------------------
 						sprintf
 ---------------------------------------------------------------*/
-int os::sprintf(char *buf, size_t bufSize, const char *format, ...) MRPT_NO_THROWS
+int os::sprintf(char *buf, size_t bufSize, const char *format, ...) noexcept
 {
 	MRPT_UNUSED_PARAM(bufSize);
 
@@ -210,7 +210,7 @@ int os::sprintf(char *buf, size_t bufSize, const char *format, ...) MRPT_NO_THRO
 /*---------------------------------------------------------------
 					vsprintf
 ---------------------------------------------------------------*/
-int os::vsprintf(char *buf, size_t bufSize, const char *format, va_list args) MRPT_NO_THROWS
+int os::vsprintf(char *buf, size_t bufSize, const char *format, va_list args) noexcept
 {
 	MRPT_UNUSED_PARAM(bufSize);
 #if defined(_MSC_VER) && (_MSC_VER>=1400)
@@ -225,7 +225,7 @@ int os::vsprintf(char *buf, size_t bufSize, const char *format, va_list args) MR
 /*---------------------------------------------------------------
 				vsnprintf
 ---------------------------------------------------------------*/
-int os::vsnprintf(char *buf, size_t bufSize, const char *format, va_list args) MRPT_NO_THROWS
+int os::vsnprintf(char *buf, size_t bufSize, const char *format, va_list args) noexcept
 {
 #if defined(_MSC_VER)
 	#if (_MSC_VER>=1400)
@@ -243,7 +243,7 @@ int os::vsnprintf(char *buf, size_t bufSize, const char *format, va_list args) M
 /*---------------------------------------------------------------
 					fopen
 ---------------------------------------------------------------*/
-FILE * os::fopen(const std::string &fileName,const char *mode) MRPT_NO_THROWS
+FILE * os::fopen(const std::string &fileName,const char *mode) noexcept
 {
 	return fopen(fileName.c_str(),mode);
 }
@@ -251,7 +251,7 @@ FILE * os::fopen(const std::string &fileName,const char *mode) MRPT_NO_THROWS
 /*---------------------------------------------------------------
 					fopen
 ---------------------------------------------------------------*/
-FILE * os::fopen(const char *fileName,const char *mode) MRPT_NO_THROWS
+FILE * os::fopen(const char *fileName,const char *mode) noexcept
 {
 #if defined(_MSC_VER) && (_MSC_VER>=1400)
 	// Use a secure version in Visual Studio 2005:
@@ -277,7 +277,7 @@ void os::fclose(FILE *f)
 /*---------------------------------------------------------------
 						strcat
 ---------------------------------------------------------------*/
-char * os::strcat(char *dest, size_t destSize, const char *source) MRPT_NO_THROWS
+char * os::strcat(char *dest, size_t destSize, const char *source) noexcept
 {
 	MRPT_UNUSED_PARAM(destSize);
 
@@ -292,7 +292,7 @@ char * os::strcat(char *dest, size_t destSize, const char *source) MRPT_NO_THROW
 /*---------------------------------------------------------------
 						strcpy
 ---------------------------------------------------------------*/
-char * os::strcpy(char *dest, size_t destSize, const char *source) MRPT_NO_THROWS
+char * os::strcpy(char *dest, size_t destSize, const char *source) noexcept
 {
 	MRPT_UNUSED_PARAM(destSize);
 
@@ -308,7 +308,7 @@ char * os::strcpy(char *dest, size_t destSize, const char *source) MRPT_NO_THROW
 /*---------------------------------------------------------------
 						strcmp
 ---------------------------------------------------------------*/
-int os::_strcmp(const char*str1,const char*str2) MRPT_NO_THROWS
+int os::_strcmp(const char*str1,const char*str2) noexcept
 {
 	return ::strcmp(str1,str2);
 }
@@ -316,7 +316,7 @@ int os::_strcmp(const char*str1,const char*str2) MRPT_NO_THROWS
 /*---------------------------------------------------------------
 						strcmpi
 ---------------------------------------------------------------*/
-int os::_strcmpi(const char*str1,const char*str2) MRPT_NO_THROWS
+int os::_strcmpi(const char*str1,const char*str2) noexcept
 {
 #ifdef MRPT_OS_WINDOWS
     #if defined(_MSC_VER) && (_MSC_VER>=1400)
@@ -332,7 +332,7 @@ int os::_strcmpi(const char*str1,const char*str2) MRPT_NO_THROWS
 /** An OS-independent version of strncmp.
 * \return It will return 0 when both strings are equal, casi sensitive.
 */
-int os::_strncmp(const char*str1,const char*str2,size_t count) MRPT_NO_THROWS
+int os::_strncmp(const char*str1,const char*str2,size_t count) noexcept
 {
     return ::strncmp(str1,str2,count);
 }
@@ -340,7 +340,7 @@ int os::_strncmp(const char*str1,const char*str2,size_t count) MRPT_NO_THROWS
 /** An OS-independent version of strnicmp.
 * \return It will return 0 when both strings are equal, casi insensitive.
 */
-int os::_strnicmp(const char*str1,const char*str2,size_t count) MRPT_NO_THROWS
+int os::_strnicmp(const char*str1,const char*str2,size_t count) noexcept
 {
 #if defined(_MSC_VER)
 	return ::_strnicmp(str1,str2,count);
@@ -358,7 +358,7 @@ void os::memcpy(
 	void		*dest,
 	size_t		destSize,
 	const void	*src,
-	size_t		copyCount) MRPT_NO_THROWS
+	size_t		copyCount) noexcept
 {
 #if defined(_MSC_VER) && (_MSC_VER>=1400)
 	::memcpy_s(dest,destSize,src,copyCount);
@@ -371,7 +371,7 @@ void os::memcpy(
 /*---------------------------------------------------------------
 						getch
 ---------------------------------------------------------------*/
-int os::getch() MRPT_NO_THROWS
+int os::getch() noexcept
 {
 #ifdef MRPT_OS_WINDOWS
 	return ::getch(); // cin.get();
@@ -392,7 +392,7 @@ int os::getch() MRPT_NO_THROWS
 /*---------------------------------------------------------------
 						kbhit
 ---------------------------------------------------------------*/
-bool os::kbhit() MRPT_NO_THROWS
+bool os::kbhit() noexcept
 {
 #ifdef MRPT_OS_WINDOWS
     #if defined(_MSC_VER) && (_MSC_VER>=1400)
@@ -408,7 +408,7 @@ bool os::kbhit() MRPT_NO_THROWS
 /*---------------------------------------------------------------
 						os::fprintf
 ---------------------------------------------------------------*/
-int os::fprintf(FILE *fil, const char *frm, ...) MRPT_NO_THROWS
+int os::fprintf(FILE *fil, const char *frm, ...) noexcept
 {
 	int			result;
 	va_list		ap;
@@ -431,7 +431,7 @@ int os::fprintf(FILE *fil, const char *frm, ...) MRPT_NO_THROWS
 /*---------------------------------------------------------------
 					mrpt::system::pause
 ---------------------------------------------------------------*/
-void mrpt::system::pause(const std::string &msg) MRPT_NO_THROWS
+void mrpt::system::pause(const std::string &msg) noexcept
 {
 	std::cout << msg << std::endl;
 	os::getch();

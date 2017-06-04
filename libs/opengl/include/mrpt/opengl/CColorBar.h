@@ -54,14 +54,14 @@ namespace opengl	{
 		/** Render
 		  * \sa mrpt::opengl::CRenderizable
 		  */
-		void render_dl() const MRPT_OVERRIDE;
+		void render_dl() const override;
 
 		void setColormap(const mrpt::utils::TColormap colormap);
 		void setColorAndValueLimits(double col_min, double col_max, double value_min, double value_max);
 		void enableDepthTest(bool enable);
 
 		/** Evaluates the bounding box of this object (including possible children) in the coordinate frame of the object parent. */
-		void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const MRPT_OVERRIDE;
+		void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const override;
 
 		/** Basic empty constructor. Set all parameters to default. */ 
 		CColorBar(

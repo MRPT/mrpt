@@ -159,10 +159,10 @@ namespace mrpt
 			using ConstPtr = std::shared_ptr<const class_name>; \
 			_STATIC_LINKAGE_ mrpt::utils::TRuntimeClassId  runtimeClassId; \
 			_STATIC_LINKAGE_ const mrpt::utils::TRuntimeClassId *classinfo; \
-			_VIRTUAL_LINKAGE_ const mrpt::utils::TRuntimeClassId* GetRuntimeClass() const MRPT_OVERRIDE; \
+			_VIRTUAL_LINKAGE_ const mrpt::utils::TRuntimeClassId* GetRuntimeClass() const override; \
 			_STATIC_LINKAGE_ mrpt::utils::CObject* CreateObject(); \
 			_STATIC_LINKAGE_ class_name::Ptr Create(); \
-			_VIRTUAL_LINKAGE_ mrpt::utils::CObject *clone() const MRPT_OVERRIDE; \
+			_VIRTUAL_LINKAGE_ mrpt::utils::CObject *clone() const override; \
 			/*! @} */ \
 		public: \
 			MRPT_MAKE_ALIGNED_OPERATOR_NEW \
@@ -236,7 +236,7 @@ namespace mrpt
 			using Ptr = std::shared_ptr<class_name>; \
 			using ConstPtr = std::shared_ptr<const class_name>; \
 			static const mrpt::utils::TRuntimeClassId runtimeClassId; \
-			virtual const mrpt::utils::TRuntimeClassId* GetRuntimeClass() const MRPT_OVERRIDE; \
+			virtual const mrpt::utils::TRuntimeClassId* GetRuntimeClass() const override; \
 			friend class mrpt::utils::CStream; \
 		/*! @}  */ \
 

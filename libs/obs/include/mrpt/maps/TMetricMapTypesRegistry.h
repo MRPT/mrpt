@@ -52,8 +52,8 @@ namespace mrpt
 			#define MAP_DEFINITION_END(_CLASS_NAME_,_LINKAGE_) \
 						TMapDefinition();\
 					protected: \
-						void loadFromConfigFile_map_specific(const mrpt::utils::CConfigFileBase  &source, const std::string &sectionNamePrefix) MRPT_OVERRIDE; \
-						void dumpToTextStream_map_specific(mrpt::utils::CStream	&out) const MRPT_OVERRIDE; \
+						void loadFromConfigFile_map_specific(const mrpt::utils::CConfigFileBase  &source, const std::string &sectionNamePrefix) override; \
+						void dumpToTextStream_map_specific(mrpt::utils::CStream	&out) const override; \
 					}; \
 					/** Returns default map definition initializer. See mrpt::maps::TMetricMapInitializer */ \
 					static mrpt::maps::TMetricMapInitializer* MapDefinition(); \

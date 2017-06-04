@@ -120,7 +120,7 @@ namespace mrpt
 
 			/** Copy operator, translating if necesary (for example, between particles and gaussian representations)
 			  */
-			void  copyFrom(const CPosePDF &o) MRPT_OVERRIDE;
+			void  copyFrom(const CPosePDF &o) override;
 
 			 /** Reset the PDF to a single point: All particles will be set exactly to the supplied pose.
 			  * \param location The location to set all the particles.
@@ -148,7 +148,7 @@ namespace mrpt
 			 /** Returns an estimate of the pose, i.e. a "mean value", computed
 			  *   as a weighted average over all particles.
 			  */
-			void getMean(CPose2D  &p) const MRPT_OVERRIDE;
+			void getMean(CPose2D  &p) const override;
 
 			 /** Returns an estimate of the pose-state, i.e. a "mean value", computed as a weighted average over all particles.
 			  */
@@ -156,7 +156,7 @@ namespace mrpt
 
 			/** Returns an estimate of the pose covariance matrix (3x3 cov.matrix  for x,y,phi variables)
 			  */
-			void getCovarianceAndMean(mrpt::math::CMatrixDouble33 &C, CPose2D &p) const MRPT_OVERRIDE;
+			void getCovarianceAndMean(mrpt::math::CMatrixDouble33 &C, CPose2D &p) const override;
 
 			/** Returns the pose of the i'th particle.
 			  */
@@ -175,7 +175,7 @@ namespace mrpt
 			void  prediction_and_update_pfStandardProposal(
 				const mrpt::obs::CActionCollection	* action,
 				const mrpt::obs::CSensoryFrame		* observation,
-				const bayes::CParticleFilter::TParticleFilterOptions &PF_options ) MRPT_OVERRIDE;
+				const bayes::CParticleFilter::TParticleFilterOptions &PF_options ) override;
 
 			 /** Update the particles, predicting the posterior of robot pose and map after a movement command.
 			  *  This method has additional configuration parameters in "options".
@@ -189,11 +189,11 @@ namespace mrpt
 			void  prediction_and_update_pfAuxiliaryPFOptimal(
 				const mrpt::obs::CActionCollection	* actions,
 				const mrpt::obs::CSensoryFrame		* sf,
-				const bayes::CParticleFilter::TParticleFilterOptions &PF_options ) MRPT_OVERRIDE;
+				const bayes::CParticleFilter::TParticleFilterOptions &PF_options ) override;
 
 			/** Save PDF's particles to a text file. In each line it will go: "x y phi weight"
 			 */
-			void  saveToTextFile(const std::string &file) const MRPT_OVERRIDE;
+			void  saveToTextFile(const std::string &file) const override;
 
 			/** Get the particles count (equivalent to "particlesCount")
 			 */
@@ -202,15 +202,15 @@ namespace mrpt
 			/** This can be used to convert a PDF from local coordinates to global, providing the point (newReferenceBase) from which
 			  *   "to proyect" the current pdf. Result PDF substituted the currently stored one in the object.
 			  */
-			void  changeCoordinatesReference( const mrpt::poses::CPose3D &newReferenceBase ) MRPT_OVERRIDE;
+			void  changeCoordinatesReference( const mrpt::poses::CPose3D &newReferenceBase ) override;
 
 			/** Draws a single sample from the distribution (WARNING: weights are assumed to be normalized!)
 			  */
-			void  drawSingleSample(mrpt::poses::CPose2D &outPart ) const MRPT_OVERRIDE;
+			void  drawSingleSample(mrpt::poses::CPose2D &outPart ) const override;
 
 			/** Draws a number of samples from the distribution, and saves as a list of 1x3 vectors, where each row contains a (x,y,phi) datum.
 			  */
-			void  drawManySamples( size_t N, std::vector<mrpt::math::CVectorDouble> & outSamples ) const MRPT_OVERRIDE;
+			void  drawManySamples( size_t N, std::vector<mrpt::math::CVectorDouble> & outSamples ) const override;
 
 			/** Appends (pose-composition) a given pose "p" to each particle
 			  */
@@ -218,7 +218,7 @@ namespace mrpt
 
 			/** Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF
 			  */
-			void	 inverse(mrpt::poses::CPosePDF &o) const MRPT_OVERRIDE;
+			void	 inverse(mrpt::poses::CPosePDF &o) const override;
 
 			/** Returns the particle with the highest weight.
 			  */
@@ -226,7 +226,7 @@ namespace mrpt
 
 			/** Bayesian fusion.
 			  */
-			void  bayesianFusion( const mrpt::poses::CPosePDF &p1, const mrpt::poses::CPosePDF &p2, const double&minMahalanobisDistToDrop = 0 ) MRPT_OVERRIDE;
+			void  bayesianFusion( const mrpt::poses::CPosePDF &p1, const mrpt::poses::CPosePDF &p2, const double&minMahalanobisDistToDrop = 0 ) override;
 
 			/** Evaluates the PDF at a given arbitrary point as reconstructed by a Parzen window.
 			  * \sa saveParzenPDFToTextFile

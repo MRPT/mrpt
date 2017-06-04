@@ -34,12 +34,12 @@ namespace kinematics
 		 */
 		void sendVelRampCmd(double vel, double dir, double ramp_time, double rot_speed);
 
-		void sendVelCmd(const CVehicleVelCmd &cmd_vel) MRPT_OVERRIDE {
+		void sendVelCmd(const CVehicleVelCmd &cmd_vel) override {
 			const kinematic_cmd_t* cmd = dynamic_cast<const kinematic_cmd_t*>(&cmd_vel);
 			ASSERTMSG_(cmd, "Wrong vehicle kinematic class, expected `CVehicleVelCmd_Holo`");
 			sendVelRampCmd(cmd->vel, cmd->dir_local + m_odometry.phi /* local to odometry dir */ ,cmd->ramp_time,cmd->rot_speed);
 		}
-		CVehicleVelCmd::Ptr getVelCmdType() const MRPT_OVERRIDE {
+		CVehicleVelCmd::Ptr getVelCmdType() const override {
 			return CVehicleVelCmd::Ptr(new kinematic_cmd_t());
 		}
 
@@ -57,8 +57,8 @@ namespace kinematics
 		TVelRampCmd m_vel_ramp_cmd; //!< the last cmd received from the user.
 		/** @} */
 		
-		void internal_simulControlStep(const double dt) MRPT_OVERRIDE;
-		void internal_clear() MRPT_OVERRIDE;
+		void internal_simulControlStep(const double dt) override;
+		void internal_clear() override;
 
 	};
 }

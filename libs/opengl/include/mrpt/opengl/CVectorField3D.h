@@ -260,11 +260,11 @@ namespace mrpt
 			static CVectorField3D::Ptr Create(const mrpt::math::CMatrixFloat x_vf_ini, const mrpt::math::CMatrixFloat y_vf_ini, const mrpt::math::CMatrixFloat z_vf_ini, const mrpt::math::CMatrixFloat x_p_ini, const mrpt::math::CMatrixFloat y_p_ini, const mrpt::math::CMatrixFloat z_p_ini);
 			/** Render
 				*/
-			void  render_dl() const MRPT_OVERRIDE;
+			void  render_dl() const override;
 
 
 			/** Evaluates the bounding box of this object (including possible children) in the coordinate frame of the object parent. */
-			void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const MRPT_OVERRIDE;
+			void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const override;
 
 			void enableAntiAliasing(bool enable=true) { m_antiAliasing = enable; CRenderizableDisplayList::notifyChange(); }
 			void enableColorFromModule(bool enable=true) { m_colorFromModule = enable; CRenderizableDisplayList::notifyChange(); }

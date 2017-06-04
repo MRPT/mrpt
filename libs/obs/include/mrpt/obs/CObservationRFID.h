@@ -53,13 +53,13 @@ namespace obs
 
 		/** @} */
 
-		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const MRPT_OVERRIDE;
+		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const override;
 		/** A general method to change the sensor pose on the robot.
 		  *  It has no effects in this class
 		  * \sa getSensorPose  */
-		void setSensorPose( const mrpt::poses::CPose3D &newSensorPose ) MRPT_OVERRIDE;
+		void setSensorPose( const mrpt::poses::CPose3D &newSensorPose ) override;
 		// See base class docs
-		void getDescriptionAsText(std::ostream &o) const MRPT_OVERRIDE;
+		void getDescriptionAsText(std::ostream &o) const override;
 
 	}; // End of class def.
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CObservationRFID, CObservation, OBS_IMPEXP)

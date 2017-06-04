@@ -83,23 +83,23 @@ namespace maps
 		 /** Returns an estimate of the point, (the mean, or mathematical expectation of the PDF).
 		   * \sa getCovariance
 		   */
-		void getMean(mrpt::poses::CPoint3D &mean_point) const MRPT_OVERRIDE;
+		void getMean(mrpt::poses::CPoint3D &mean_point) const override;
 
 		/** Returns an estimate of the point covariance matrix (3x3 cov matrix) and the mean, both at once.
 		  * \sa getMean
 		  */
-		void getCovarianceAndMean(mrpt::math::CMatrixDouble33 &cov,mrpt::poses::CPoint3D &mean_point) const MRPT_OVERRIDE;
+		void getCovarianceAndMean(mrpt::math::CMatrixDouble33 &cov,mrpt::poses::CPoint3D &mean_point) const override;
 
 		/** Copy operator, translating if necesary (for example, between particles and gaussian representations) */
-		void  copyFrom(const mrpt::poses::CPointPDF &o) MRPT_OVERRIDE;
+		void  copyFrom(const mrpt::poses::CPointPDF &o) override;
 
 		/** Save PDF's particles to a text file. See derived classes for more information about the format of generated files */
-		void  saveToTextFile(const std::string &file) const MRPT_OVERRIDE;
+		void  saveToTextFile(const std::string &file) const override;
 
 		/** this = p (+) this. This can be used to convert a PDF from local coordinates to global, providing the point (newReferenceBase) from which
 		  *   "to project" the current pdf. Result PDF substituted the currently stored one in the object.
 		  */
-		void  changeCoordinatesReference( const mrpt::poses::CPose3D &newReferenceBase ) MRPT_OVERRIDE;
+		void  changeCoordinatesReference( const mrpt::poses::CPose3D &newReferenceBase ) override;
 
 		/** Saves a 3D representation of the beacon into a given OpenGL scene  */
 		void  getAs3DObject( mrpt::opengl::CSetOfObjects::Ptr	&outObj ) const;
@@ -108,14 +108,14 @@ namespace maps
 		void getAsMatlabDrawCommands( utils::CStringList &out_Str ) const;
 
 		/** Draw a sample from the pdf. */
-		void drawSingleSample(mrpt::poses::CPoint3D &outSample) const MRPT_OVERRIDE;
+		void drawSingleSample(mrpt::poses::CPoint3D &outSample) const override;
 
 		/** Bayesian fusion of two point distributions (product of two distributions->new distribution), then save the result in this object (WARNING: See implementing classes to see classes that can and cannot be mixtured!)
 		  * \param p1 The first distribution to fuse
 		  * \param p2 The second distribution to fuse
 		  * \param minMahalanobisDistToDrop If set to different of 0, the result of very separate Gaussian modes (that will result in negligible components) in SOGs will be dropped to reduce the number of modes in the output.
 		  */
-		void  bayesianFusion(const  CPointPDF &p1,const  CPointPDF &p2, const double &minMahalanobisDistToDrop = 0) MRPT_OVERRIDE;
+		void  bayesianFusion(const  CPointPDF &p1,const  CPointPDF &p2, const double &minMahalanobisDistToDrop = 0) override;
 
 		/** Compute the observation model p(z_t|x_t) for a given observation (range value), and return it as an approximate SOG.
 		  *  Note that if the beacon is a SOG itself, the number of gaussian modes will be square.

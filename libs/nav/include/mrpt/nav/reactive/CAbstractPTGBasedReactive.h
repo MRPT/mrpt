@@ -83,8 +83,8 @@ namespace mrpt
 
 			TNavigationParamsPTG() { }
 			virtual ~TNavigationParamsPTG() { }
-			virtual std::string getAsText() const MRPT_OVERRIDE;
-			virtual TNavigationParams* clone() const MRPT_OVERRIDE { return new TNavigationParamsPTG(*this); }
+			virtual std::string getAsText() const override;
+			virtual TNavigationParams* clone() const override { return new TNavigationParamsPTG(*this); }
 		};
 
 
@@ -104,7 +104,7 @@ namespace mrpt
 		/** Must be called for loading collision grids, or the first navigation command may last a long time to be executed.
 		  * Internally, it just calls STEP1_CollisionGridsBuilder().
 		  */
-		void initialize() MRPT_OVERRIDE;
+		void initialize() override;
 
 		/** Selects which one from the set of available holonomic methods will be used
 			*  into transformed TP-Space, and sets its configuration from a configuration file.
@@ -167,15 +167,15 @@ namespace mrpt
 			bool  evaluate_clearance; //!< Default: false
 			double max_dist_for_timebased_path_prediction; //!< Max dist [meters] to use time-based path prediction for NOP evaluation.
 
-			virtual void loadFromConfigFile(const mrpt::utils::CConfigFileBase &c, const std::string &s) MRPT_OVERRIDE;
-			virtual void saveToConfigFile(mrpt::utils::CConfigFileBase &c, const std::string &s) const MRPT_OVERRIDE;
+			virtual void loadFromConfigFile(const mrpt::utils::CConfigFileBase &c, const std::string &s) override;
+			virtual void saveToConfigFile(mrpt::utils::CConfigFileBase &c, const std::string &s) const override;
 			TAbstractPTGNavigatorParams();
 		};
 
 		TAbstractPTGNavigatorParams params_abstract_ptg_navigator;
 
-		virtual void loadConfigFile(const mrpt::utils::CConfigFileBase &c) MRPT_OVERRIDE; // See base class docs!
-		virtual void saveConfigFile(mrpt::utils::CConfigFileBase &c) const MRPT_OVERRIDE; // See base class docs!
+		virtual void loadConfigFile(const mrpt::utils::CConfigFileBase &c) override; // See base class docs!
+		virtual void saveConfigFile(mrpt::utils::CConfigFileBase &c) const override; // See base class docs!
 
 
 		/** Enables/disables the detailed time logger (default:disabled upon construction)
@@ -211,7 +211,7 @@ namespace mrpt
 
 	protected:
 		/** The main method for the navigator */
-		virtual void  performNavigationStep() MRPT_OVERRIDE;
+		virtual void  performNavigationStep() override;
 
 		std::vector<CAbstractHolonomicReactiveMethod*>  m_holonomicMethod;   //!< The holonomic navigation algorithm (one object per PTG, so internal states are maintained)
 		mrpt::utils::CStream  *m_logFile, *m_prev_logfile;         //!< The current log file stream, or nullptr if not being used
@@ -237,7 +237,7 @@ namespace mrpt
 		mrpt::math::LowPassFilter_IIR1  tim_changeSpeed_avr, timoff_obstacles_avr, timoff_curPoseAndSpeed_avr, timoff_sendVelCmd_avr;
 		/** @} */
 
-		virtual bool impl_waypoint_is_reachable(const mrpt::math::TPoint2D &wp_local_wrt_robot) const MRPT_OVERRIDE; // See docs in base class
+		virtual bool impl_waypoint_is_reachable(const mrpt::math::TPoint2D &wp_local_wrt_robot) const override; // See docs in base class
 
 		// Steps for the reactive navigation sytem.
 		// ----------------------------------------------------------------------------
@@ -272,7 +272,7 @@ namespace mrpt
 		virtual double generate_vel_cmd(const TCandidateMovementPTG &in_movement, mrpt::kinematics::CVehicleVelCmd::Ptr &new_vel_cmd );
 		void STEP8_GenerateLogRecord(CLogFileRecord &newLogRec, const mrpt::math::TPose2D& relTarget, int nSelectedPTG, const mrpt::kinematics::CVehicleVelCmd::Ptr &new_vel_cmd, int nPTGs, const bool best_is_NOP_cmdvel, const math::TPose2D &rel_cur_pose_wrt_last_vel_cmd_NOP, const math::TPose2D &rel_pose_PTG_origin_wrt_sense_NOP, const double executionTimeValue, const double tim_changeSpeed, const mrpt::system::TTimeStamp &tim_start_iteration);
 		void preDestructor(); //!< To be called during children destructors to assure thread-safe destruction, and free of shared objects.
-		virtual void onStartNewNavigation() MRPT_OVERRIDE;
+		virtual void onStartNewNavigation() override;
 
 		bool m_closing_navigator; //!< Signal that the destructor has been called, so no more calls are accepted from other threads
 

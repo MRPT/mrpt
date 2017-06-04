@@ -169,8 +169,8 @@ namespace mrpt
 			/** Initilization of default parameters */
 			TStereoSystemParams(	);
 
-			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
-			void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
+			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) override; // See base docs
+			void dumpToTextStream(mrpt::utils::CStream &out) const override; // See base docs
 
 			/** Method for propagating the feature's image coordinate uncertainty into 3D space. Default value: Prop_Linear
 			  */
@@ -334,8 +334,8 @@ namespace mrpt
 			/** Constructor */
 			TMatchingOptions( );
 
-			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
-			void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
+			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) override; // See base docs
+			void dumpToTextStream(mrpt::utils::CStream &out) const override; // See base docs
 
 #define COPY_MEMBER(_m) this->_m = o._m;
 #define CHECK_MEMBER(_m) this->_m == o._m
@@ -455,9 +455,9 @@ namespace mrpt
 				highScl1( _hwscl1 ), highScl2( _hwscl2 ), searchAreaSize( _searchAreaSize ), lastSeenThreshold( _lsth ), timesSeenThreshold( _tsth ),
 				minFeaturesToFind( _minFeaturesToFind ), minFeaturesToBeLost(_minFeaturesToBeLost)  {}
 
-			void loadFromConfigFile( const mrpt::utils::CConfigFileBase &cfg, const std::string &section ) MRPT_OVERRIDE;
-			void saveToConfigFile( mrpt::utils::CConfigFileBase &cfg, const std::string &section ) const MRPT_OVERRIDE;
-			void dumpToTextStream( mrpt::utils::CStream &out) const MRPT_OVERRIDE;
+			void loadFromConfigFile( const mrpt::utils::CConfigFileBase &cfg, const std::string &section ) override;
+			void saveToConfigFile( mrpt::utils::CConfigFileBase &cfg, const std::string &section ) const override;
+			void dumpToTextStream( mrpt::utils::CStream &out) const override;
 
 		}; // end TMultiResDescMatchOptions
 
@@ -506,9 +506,9 @@ namespace mrpt
 					scales[k] = _scales[k];
 			}
 
-			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) MRPT_OVERRIDE; // See base docs
-			void saveToConfigFile( mrpt::utils::CConfigFileBase &cfg, const std::string &section ) const MRPT_OVERRIDE; // See base docs
-			void dumpToTextStream(mrpt::utils::CStream &out) const MRPT_OVERRIDE; // See base docs
+			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) override; // See base docs
+			void saveToConfigFile( mrpt::utils::CConfigFileBase &cfg, const std::string &section ) const override; // See base docs
+			void dumpToTextStream(mrpt::utils::CStream &out) const override; // See base docs
 
 		}; // end TMultiResDescOptions
 

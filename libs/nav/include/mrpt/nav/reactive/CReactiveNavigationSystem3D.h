@@ -88,19 +88,19 @@ namespace mrpt
 			void changeRobotShape( TRobotShape robotShape );
 
 			// See base class docs:
-			virtual bool checkCollisionWithLatestObstacles()  const MRPT_OVERRIDE;
-			virtual size_t getPTG_count() const  MRPT_OVERRIDE { ASSERT_(!m_ptgmultilevel.empty());  return m_ptgmultilevel.size(); }
-			virtual CParameterizedTrajectoryGenerator* getPTG(size_t i)  MRPT_OVERRIDE {
+			virtual bool checkCollisionWithLatestObstacles()  const override;
+			virtual size_t getPTG_count() const  override { ASSERT_(!m_ptgmultilevel.empty());  return m_ptgmultilevel.size(); }
+			virtual CParameterizedTrajectoryGenerator* getPTG(size_t i)  override {
 				ASSERT_(!m_ptgmultilevel.empty() && !m_ptgmultilevel[i].PTGs.empty())
 				return m_ptgmultilevel[i].PTGs[0];  // Return for the 0'th level (ptgs are replicated at each level)
 			}
-			virtual const CParameterizedTrajectoryGenerator* getPTG(size_t i) const  MRPT_OVERRIDE {
+			virtual const CParameterizedTrajectoryGenerator* getPTG(size_t i) const  override {
 				ASSERT_(!m_ptgmultilevel.empty() && !m_ptgmultilevel[i].PTGs.empty())
 				return m_ptgmultilevel[i].PTGs[0];  // Return for the 0'th level (ptgs are replicated at each level)
 			}
 
-			virtual void loadConfigFile(const mrpt::utils::CConfigFileBase &c) MRPT_OVERRIDE; // See base class docs!
-			virtual void saveConfigFile(mrpt::utils::CConfigFileBase &c) const MRPT_OVERRIDE; // See base class docs!
+			virtual void loadConfigFile(const mrpt::utils::CConfigFileBase &c) override; // See base class docs!
+			virtual void saveConfigFile(mrpt::utils::CConfigFileBase &c) const override; // See base class docs!
 
 		private:
 			// ------------------------------------------------------
@@ -134,16 +134,16 @@ namespace mrpt
 
 			// Steps for the reactive navigation sytem.
 			// ----------------------------------------------------------------------------
-			virtual void STEP1_InitPTGs() MRPT_OVERRIDE;
+			virtual void STEP1_InitPTGs() override;
 
 			// See docs in parent class
-			bool implementSenseObstacles(mrpt::system::TTimeStamp &obs_timestamp) MRPT_OVERRIDE;
+			bool implementSenseObstacles(mrpt::system::TTimeStamp &obs_timestamp) override;
 
 			// See docs in parent class
-			void STEP3_WSpaceToTPSpace(const size_t ptg_idx,std::vector<double> &out_TPObstacles, mrpt::nav::ClearanceDiagram &out_clearance, const mrpt::math::TPose2D &rel_pose_PTG_origin_wrt_sense, const bool eval_clearance) MRPT_OVERRIDE;
+			void STEP3_WSpaceToTPSpace(const size_t ptg_idx,std::vector<double> &out_TPObstacles, mrpt::nav::ClearanceDiagram &out_clearance, const mrpt::math::TPose2D &rel_pose_PTG_origin_wrt_sense, const bool eval_clearance) override;
 
 			/** Generates a pointcloud of obstacles, and the robot shape, to be saved in the logging record for the current timestep */
-			virtual void loggingGetWSObstaclesAndShape(CLogFileRecord &out_log) MRPT_OVERRIDE;
+			virtual void loggingGetWSObstaclesAndShape(CLogFileRecord &out_log) override;
 
 
 		}; // end class

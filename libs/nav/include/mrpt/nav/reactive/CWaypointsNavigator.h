@@ -37,8 +37,8 @@ namespace mrpt
 		virtual ~CWaypointsNavigator(); //!< dtor
 
 		// Overriden to call the general navigationStep(), plus waypoint selection logic.
-		virtual void navigationStep() MRPT_OVERRIDE;
-		virtual void cancel() MRPT_OVERRIDE; //!< Cancel current navegation.
+		virtual void navigationStep() override;
+		virtual void cancel() override; //!< Cancel current navegation.
 
 		/** \name Waypoint navigation control API
 		  * @{ */
@@ -71,15 +71,15 @@ namespace mrpt
 			double  waypoint_angle_tolerance;             //!< [rad] Angular error tolerance for waypoints with an assigned heading (Default: 5 deg)
 			double  rel_speed_for_stop_waypoints;         //!< [0,1] Relative speed when aiming at a stop-point waypoint (Default=0.10)
 
-			virtual void loadFromConfigFile(const mrpt::utils::CConfigFileBase &c, const std::string &s) MRPT_OVERRIDE;
-			virtual void saveToConfigFile(mrpt::utils::CConfigFileBase &c, const std::string &s) const MRPT_OVERRIDE;
+			virtual void loadFromConfigFile(const mrpt::utils::CConfigFileBase &c, const std::string &s) override;
+			virtual void saveToConfigFile(mrpt::utils::CConfigFileBase &c, const std::string &s) const override;
 			TWaypointsNavigatorParams();
 		};
 
 		TWaypointsNavigatorParams params_waypoints_navigator;
 
-		virtual void loadConfigFile(const mrpt::utils::CConfigFileBase &c) MRPT_OVERRIDE; // See base class docs!
-		virtual void saveConfigFile(mrpt::utils::CConfigFileBase &c) const MRPT_OVERRIDE; // See base class docs!
+		virtual void loadConfigFile(const mrpt::utils::CConfigFileBase &c) override; // See base class docs!
+		virtual void saveConfigFile(mrpt::utils::CConfigFileBase &c) const override; // See base class docs!
 
 	protected:
 		TWaypointStatusSequence  m_waypoint_nav_status; //!< The latest waypoints navigation command and the up-to-date control status.
@@ -90,9 +90,9 @@ namespace mrpt
 		  * the given point; `false` otherwise: if way is blocked or there is missing information, the point is out of range, etc. */
 		virtual bool impl_waypoint_is_reachable(const mrpt::math::TPoint2D &wp_local_wrt_robot) const = 0;
 
-		virtual void onStartNewNavigation() MRPT_OVERRIDE;
+		virtual void onStartNewNavigation() override;
 
-		virtual bool checkHasReachedTarget(const double targetDist) const MRPT_OVERRIDE;
+		virtual bool checkHasReachedTarget(const double targetDist) const override;
 		virtual void waypoints_navigationStep(); //!< The waypoints-specific part of navigationStep()
 
 	private:
