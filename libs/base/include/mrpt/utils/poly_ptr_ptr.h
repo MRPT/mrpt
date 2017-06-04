@@ -46,7 +46,6 @@ namespace mrpt
 				m_smartptr.reset(dynamic_cast<typename T::element_type *>(o_ptr->clone()));
 				return *this;
 			}
-#if (__cplusplus>199711L)
 			/** move ctor */
 			poly_ptr_ptr(poly_ptr_ptr && o) {
 				m_smartptr = o.m_smartptr;
@@ -59,7 +58,6 @@ namespace mrpt
 				o.m_smartptr.reset();
 				return *this;
 			}
-#endif
 			~poly_ptr_ptr() {}
 
 			typename T::element_type * get() {

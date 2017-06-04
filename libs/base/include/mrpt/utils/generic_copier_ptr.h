@@ -60,7 +60,6 @@ namespace mrpt
 					m_ptr=o.m_ptr;
 					o.m_ptr = nullptr;
 				}
-#if (__cplusplus>199711L)
 				/** move ctor */
 				generic_copier_ptr(generic_copier_ptr<T, Copier> && o) {
 					m_ptr = o.m_ptr;
@@ -73,7 +72,6 @@ namespace mrpt
 					o.m_ptr = nullptr;
 					return *this;
 				}
-#endif
 
 				T * operator->() {
 					if (m_ptr) return m_ptr;
