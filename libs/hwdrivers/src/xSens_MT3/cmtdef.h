@@ -10,7 +10,7 @@
 #ifndef _CMTDEF_H_2006_05_01
 #define _CMTDEF_H_2006_05_01
 
-#include <mrpt/utils/mrpt_stdint.h>
+#include <cstdint>
 #include <mrpt/utils/mrpt_macros.h>
 #include <time.h>
 

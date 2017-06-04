@@ -28,7 +28,7 @@
 #include <mrpt/poses/CPosePDFParticles.h>
 
 /* STD */
-#include <stdint.h>
+#include <cstdint>
 
 using namespace boost::python;
 
