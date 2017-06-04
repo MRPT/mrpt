@@ -219,8 +219,21 @@ bool CICPCriteriaNRD<GRAPH_T>::checkRegistrationCondition2D() {
 template<class GRAPH_T>
 bool CICPCriteriaNRD<GRAPH_T>::updateState3D(
 		mrpt::obs::CObservation3DRangeScanPtr scan3d) {
-	THROW_EXCEPTION("Not yet implemented.");
-	return false;
+	MRPT_START;
+	bool registered_new_node = false;
+
+	m_curr_laser_scan3D = scan3d;
+	if (m_last_laser_scan3D.null()) {
+		// initialize the last_laser_scan here - afterwards updated inside the
+		// checkRegistrationCondition*D method
+		m_last_laser_scan3D = m_curr_laser_scan3D;
+	}
+	else {
+		registered_new_node = checkRegistrationCondition3D();
+	}
+
+	return registered_new_node;
+	MRPT_END;
 } // end of updateState3D
 
 template<class GRAPH_T>
