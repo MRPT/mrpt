@@ -454,9 +454,9 @@ void CStream::internal_ReadObject(CSerializable *obj, const std::string &strClas
 	{
 		throw;
 	}
-	catch(std::exception &e)
+	catch(std::exception &)
 	{
-	       THROW_TYPED_EXCEPTION("Cannot read object due to EOF", CExceptionEOF);
+		THROW_TYPED_EXCEPTION("Cannot read object due to EOF", CExceptionEOF);
 	}
 	catch (...) {
 		THROW_EXCEPTION("Unexpected runtime error!");

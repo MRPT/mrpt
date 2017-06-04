@@ -199,13 +199,8 @@
 #	define ASSERT_(f) \
 		ASSERTMSG_(f, std::string("Assert condition failed: ") + ::std::string(#f) )
 
-/** Throws an exception if the number is NaN, IND, or +/-INF, or return the same number otherwise.
-  */
-#define MRPT_CHECK_NORMAL_NUMBER(v) \
-	{ \
-		if (math::isNaN(v)) THROW_EXCEPTION("Check failed (value is NaN)"); \
-		if (!math::isFinite(v)) THROW_EXCEPTION("Check failed (value is not finite)"); \
-	}
+/** Throws an exception if the number is NaN, IND, or +/-INF, or return the same number otherwise. */
+#define MRPT_CHECK_NORMAL_NUMBER(v) { ASSERT_(std::isfinite(v)); ASSERT_(!std::isnan(v)); }
 
 // Static asserts: use compiler version if we have a modern GCC (>=4.3) or MSVC (>=2010) version, otherwise rely on custom implementation:
 #define MRPT_COMPILE_TIME_ASSERT(expression) static_assert(expression,#expression);

@@ -26,7 +26,7 @@
 	- Changes in libraries:
 		- \ref mrpt_base_grp
 			- Removed functions (replaced by C++11/14 standard library):
-				- mrpt::math::erf, mrpt::math::erfc
+				- mrpt::math::erf, mrpt::math::erfc, std::isfinite, mrpt::math::std::isnan
 
 <hr>
 <a name="1.5.0">

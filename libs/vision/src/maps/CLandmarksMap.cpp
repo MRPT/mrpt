@@ -308,7 +308,7 @@ double	 CLandmarksMap::internal_computeObservationLikelihood(
 			{
 				if ((lm_it->getType() == featBeacon )&&
 					(lm_it->ID == sensedID)&&
-					(!mrpt::math::isNaN(it->sensedDistance)))
+					(!std::isnan(it->sensedDistance)))
 				{
 					lm_it->getPose( beaconPDF );
 					beacon3D = beaconPDF.mean;

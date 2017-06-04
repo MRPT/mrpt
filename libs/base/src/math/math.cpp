@@ -1021,7 +1021,7 @@ double  math::normalQuantile(double p)
 		2.445134137142996e+00,  3.754408661907416e+00
 		};
 
-	ASSERT_(!isNaN(p))
+	ASSERT_(!std::isnan(p))
 	ASSERT_(p < 1.0 && p > 0.0)
 
 	q = min(p,1-p);
@@ -1091,8 +1091,8 @@ double  math::normalCDF(double u)
 		};
 	double y, z;
 
-	ASSERT_( !isNaN(u) );
-	ASSERT_(  isFinite(u) );
+	ASSERT_( !std::isnan(u) );
+	ASSERT_(  std::isfinite(u) );
 
 	y = fabs(u);
 	if (y <= 0.46875* 1.4142135623730950488016887242097 )
@@ -1621,89 +1621,6 @@ void  math::idft2_complex(
 
 	MRPT_END
 }
-
-
-/*---------------------------------------------------------------
-						isNan
- ---------------------------------------------------------------*/
-bool mrpt::math::isNaN(float v) noexcept
-{
-#if defined(__BORLANDC__) || defined(_MSC_VER)
-		return 0!=_isnan((double)v);
-#elif defined(__GNUC__)
-		return isnan(v);
-#else
-        return false;
-#endif
-}
-
-/** Returns true if value is Not-a-number (NAN)
-  */
-bool mrpt::math::isNaN(double v) noexcept
-{
-#if defined(__BORLANDC__) || defined(_MSC_VER)
-		return 0!=_isnan(v);
-#elif defined(__GNUC__)
-		return std::isnan(v);
-#else
-        return false;
-#endif
-}
-
-/** Returns true if value is finite
-  */
-bool mrpt::math::isFinite(float v) noexcept
-{
-#if defined(__BORLANDC__) || defined(_MSC_VER)
-		return 0!=_finite(v);
-#elif defined(__GNUC__)
-		return std::isfinite(v);
-#else
-        return false;
-#endif
-}
-
-
-/** Returns true if value is finite
-  */
-bool mrpt::math::isFinite(double v) noexcept
-{
-#if defined(__BORLANDC__) || defined(_MSC_VER)
-		return 0!=_finite(v);
-#elif defined(__GNUC__)
-		return isfinite(v);
-#else
-        return false;
-#endif
-}
-
-
-#ifdef HAVE_LONG_DOUBLE
-	/*---------------------------------------------------------------
-							isnan
-	---------------------------------------------------------------*/
-	bool  mrpt::math::isNaN(long double f) noexcept
-	{
-#if MRPT_CHECK_VISUALC_VERSION(14) || defined(__GNUC__)
-		return std::isnan(f);
-#else
-		return 0!=_isnan(f);
-#endif
-	}
-
-	/*---------------------------------------------------------------
-							isFinite
-	---------------------------------------------------------------*/
-	bool  mrpt::math::isFinite(long double f) noexcept
-	{
-#if MRPT_CHECK_VISUALC_VERSION(14) || defined(__GNUC__)
-		return std::isfinite(f);
-#else
-		return 0!=_finite(f);
-#endif
-	}
-#endif
-
 
 // Loads a vector from a text file:
 bool math::loadVector( CFileStream &f, ::std::vector<int> &d)
