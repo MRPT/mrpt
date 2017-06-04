@@ -9,6 +9,9 @@
 
 #include "opengl-precomp.h"  // Precompiled header
 
+#include <mrpt/config.h>
+
+#if MRPT_HAS_LIB3DS
 // Include the lib3ds library:
 #include <lib3ds/file.h>
 #include <lib3ds/background.h>
@@ -19,6 +22,7 @@
 #include <lib3ds/matrix.h>
 #include <lib3ds/vector.h>
 #include <lib3ds/light.h>
+#endif
 
 #include <mrpt/opengl/C3DSScene.h>
 #include <mrpt/opengl/CTexturedPlane.h>
@@ -44,14 +48,17 @@ using namespace std;
 IMPLEMENTS_SERIALIZABLE( C3DSScene, CRenderizableDisplayList, mrpt::opengl )
 
 
-void render_node(Lib3dsNode *node,Lib3dsFile	*file);
-void light_update(Lib3dsLight *l,Lib3dsFile	*file);
+#if MRPT_HAS_LIB3DS
+static void render_node(Lib3dsNode *node,Lib3dsFile	*file);
+static void light_update(Lib3dsLight *l,Lib3dsFile	*file);
+#endif
 
 /*---------------------------------------------------------------
 							render
   ---------------------------------------------------------------*/
 void   C3DSScene::render_dl() const
 {
+#if MRPT_HAS_LIB3DS
 #if MRPT_HAS_OPENGL_GLUT
 	MRPT_START
 
@@ -134,8 +141,12 @@ void   C3DSScene::render_dl() const
 	glDisable(GL_CULL_FACE);
 	MRPT_END
 #endif
+#else
+	THROW_EXCEPTION("This class requires compiling MRPT against lib3ds");
+#endif
 }
 
+#if MRPT_HAS_LIB3DS
 
 // texture size: by now minimum standard
 #define	TEX_XSIZE	1024
@@ -169,7 +180,7 @@ const char *datapath= ".";
 * Render node recursively, first children, then parent.
 * Each node receives its own OpenGL display list.
 */
-void render_node(Lib3dsNode *node, Lib3dsFile	*file)
+static void render_node(Lib3dsNode *node, Lib3dsFile	*file)
 {
 #if MRPT_HAS_OPENGL_GLUT
   {
@@ -402,7 +413,7 @@ void render_node(Lib3dsNode *node, Lib3dsFile	*file)
 * Update information about a light.  Try to find corresponding nodes
 * if possible, and copy values from nodes into light struct.
 */
-void light_update(Lib3dsLight *l,Lib3dsFile	*file)
+static void light_update(Lib3dsLight *l,Lib3dsFile	*file)
 {
   Lib3dsNode *ln, *sn;
 
@@ -417,8 +428,7 @@ void light_update(Lib3dsLight *l,Lib3dsFile	*file)
   if( sn != NULL )
     memcpy(l->spot, sn->data.spot.pos, sizeof(Lib3dsVector));
 }
-
-
+#endif
 
 
 /*---------------------------------------------------------------
@@ -427,6 +437,7 @@ void light_update(Lib3dsLight *l,Lib3dsFile	*file)
   ---------------------------------------------------------------*/
 void  C3DSScene::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
+#if MRPT_HAS_LIB3DS
 	if (version)
 		*version = 2;
 	else
@@ -446,8 +457,10 @@ void  C3DSScene::writeToStream(mrpt::utils::CStream &out,int *version) const
 		out << chunk;
 
 		out << m_enable_extra_lighting; // Added in version 1
-
 	}
+#else
+	THROW_EXCEPTION("This class requires compiling MRPT against lib3ds");
+#endif
 }
 
 /*---------------------------------------------------------------
@@ -456,6 +469,7 @@ void  C3DSScene::writeToStream(mrpt::utils::CStream &out,int *version) const
   ---------------------------------------------------------------*/
 void  C3DSScene::readFromStream(mrpt::utils::CStream &in,int version)
 {
+#if MRPT_HAS_LIB3DS
 	switch(version)
 	{
 	case 0:
@@ -508,6 +522,9 @@ void  C3DSScene::readFromStream(mrpt::utils::CStream &in,int version)
 
 	};
 	CRenderizableDisplayList::notifyChange();
+#else
+THROW_EXCEPTION("This class requires compiling MRPT against lib3ds");
+#endif
 }
 
 /*---------------------------------------------------------------
@@ -544,6 +561,7 @@ void   C3DSScene::clear()
 
 void C3DSScene::loadFrom3DSFile( const std::string &filepath )
 {
+#if MRPT_HAS_LIB3DS
 	clear();
 	CRenderizableDisplayList::notifyChange();
 
@@ -598,13 +616,7 @@ void C3DSScene::loadFrom3DSFile( const std::string &filepath )
 	float	sx, sy, sz, size;	/* bounding box dimensions */
 	float	cx, cy, cz;		/* bounding box center */
 
-#if 1 //def lib3ds_file_bounding_box_of_nodes
 	lib3ds_file_bounding_box_of_nodes(file, LIB3DS_TRUE, LIB3DS_FALSE, LIB3DS_FALSE, bmin, bmax);
-#else
-	bmin[0] = -2;  bmax[0] = -2;
-	bmin[1] = -2;  bmax[1] = -2;
-	bmin[2] = -2;  bmax[2] = -2;
-#endif
 
 	for (int k=0;k<3;k++) {
 		m_bbox_min[k] = bmin[k];
@@ -669,15 +681,22 @@ void C3DSScene::loadFrom3DSFile( const std::string &filepath )
   lib3ds_file_eval(file,0.);
 
   m_3dsfile->file = file;
+#else
+THROW_EXCEPTION("This class requires compiling MRPT against lib3ds");
+#endif
 }
 
 void C3DSScene::evaluateAnimation( double time_anim )
 {
+#if MRPT_HAS_LIB3DS
 	if (m_3dsfile->file)
 	{
 		CRenderizableDisplayList::notifyChange();
 		lib3ds_file_eval( (Lib3dsFile*) m_3dsfile->file, time_anim );
 	}
+#else
+THROW_EXCEPTION("This class requires compiling MRPT against lib3ds");
+#endif
 }
 
 void C3DSScene::getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const
@@ -697,11 +716,13 @@ C3DSScene::TImpl3DS::TImpl3DS() : file(NULL)
 
 C3DSScene::TImpl3DS::~TImpl3DS()
 {
+#if MRPT_HAS_LIB3DS
 	if (file)
 	{
 		lib3ds_file_free( (Lib3dsFile*) file);
 		file= NULL;
 	}
+#endif
 }
 
 bool C3DSScene::traceRay(const mrpt::poses::CPose3D &o,double &dist) const	{

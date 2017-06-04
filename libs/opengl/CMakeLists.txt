@@ -13,13 +13,6 @@ IF(CMAKE_MRPT_HAS_OPENGL_GLUT AND NOT CMAKE_MRPT_HAS_GLUT_SYSTEM)
 	INCLUDE_DIRECTORIES("${MRPT_LIBS_ROOT}/opengl/include/otherlibs/freeglut/")
 ENDIF()
 
-# Embedded version of lib3ds?
-IF(NOT CMAKE_MRPT_HAS_LIB3DS_SYSTEM)
-	LIST(APPEND opengl_EXTRA_SRCS		"${MRPT_LIBS_ROOT}/opengl/src/lib3ds/*.c" "${MRPT_LIBS_ROOT}/opengl/src/lib3ds/*.h")
-	LIST(APPEND opengl_EXTRA_SRCS_NAME 	"lib3ds" "lib3ds")
-	INCLUDE_DIRECTORIES("${MRPT_SOURCE_DIR}/libs/opengl/src/")
-ENDIF()
-
 # Embedded version of Glew:
 IF(WIN32)
 	LIST(APPEND opengl_EXTRA_SRCS		"${MRPT_SOURCE_DIR}/libs/opengl/src/glew/src/*.c" "${MRPT_SOURCE_DIR}/libs/opengl/src/glew/include/*.h")
@@ -65,7 +58,6 @@ IF(BUILD_mrpt-opengl)
 	IF(MRPT_ENABLE_PRECOMPILED_HDRS)
 		IF (MSVC)
 			set_source_files_properties(
-				${lib3ds_FILES}
 				${freeglut_FILES}
 				${glew_FILES}
 				PROPERTIES COMPILE_FLAGS "/Y-"
