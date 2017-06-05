@@ -403,6 +403,14 @@ CPose3D CPose2D::operator -(const CPose3D& b) const
 	return CPose3D( RES );
 }
 
+CPose2D CPose2D::getOppositeScalar() const
+{
+	return CPose2D(
+			-m_coords[0],
+			-m_coords[1],
+			-m_phi);
+}
+
 
 void CPose2D::asString(std::string &s) const
 {

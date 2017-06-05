@@ -296,6 +296,10 @@ namespace poses
 
 		/** @} */  // compositions
 
+		/** Return the opposite of the current pose instance by taking the negative
+		 * of all its components \a individually
+		 */
+		CPose3D getOppositeScalar() const;
 
 		/** @name Access and modify contents
 			@{ */
