@@ -152,10 +152,6 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 #define MRPT_HAS_SSE4_2  ${CMAKE_MRPT_HAS_SSE4_2}   // This value can be set to 0 from CMake with DISABLE_SSE4_2
 #define MRPT_HAS_SSE4_A  ${CMAKE_MRPT_HAS_SSE4_A}   // This value can be set to 0 from CMake with DISABLE_SSE4_A
 
-
-/** Whether to include the ActivMedia Robotics ARIA: */
-#define MRPT_HAS_ARIA ${CMAKE_MRPT_HAS_ARIA}
-
 /** Whether to include RoboPeak LIDAR: */
 #define MRPT_HAS_ROBOPEAK_LIDAR ${CMAKE_MRPT_HAS_ROBOPEAK_LIDAR}
 

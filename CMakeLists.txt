@@ -138,20 +138,6 @@ if (ENABLE_SOLUTION_FOLDERS)
   set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "CMakeTargets")
 endif ()
 
-
-# Build the ARIA library?
-SET(DEFAULT_BUILD_ARIA ON) # Default: Yes
-if (${CMAKE_MRPT_KERNEL} MATCHES "GNU")   # Unless in HURD
-	SET(DEFAULT_BUILD_ARIA OFF)
-endif ()
-# Decl option:
-SET(BUILD_ARIA ${DEFAULT_BUILD_ARIA} CACHE BOOL "Build an embedded version of ActivMedia ARIA library (interface to mobile robots)")
-IF(BUILD_ARIA)
-	SET(CMAKE_MRPT_HAS_ARIA 1)
-ELSE()
-	SET(CMAKE_MRPT_HAS_ARIA 0)
-ENDIF()
-
 # Build the RoboPeak Lidar library?
 SET(DEFAULT_BUILD_ROBOPEAK_LIDAR ON) # Default: Yes
 if (${CMAKE_MRPT_KERNEL} MATCHES "GNU" OR APPLE)   # Unless in HURD

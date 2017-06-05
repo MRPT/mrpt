@@ -29,7 +29,6 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_hwdrivers)
 	CIMUXSens::doRegister();
 	CIMUXSens_MT4::doRegister();
 	CCameraSensor::doRegister();
-	CActivMediaRobotBase::doRegister();
 	CWirelessPower::doRegister();
 	CRaePID::doRegister();
 	CImpinjRFID::doRegister();
@@ -53,4 +52,3 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_hwdrivers)
 	CVelodyneScanner::doRegister();
 #endif
 }
-
