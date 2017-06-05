@@ -13,7 +13,7 @@
 #ifndef FREENECT_INTERNAL_H
 #define FREENECT_INTERNAL_H
 
-#include <cstdint>
+#include <stdint.h>
 
 #include "libfreenect.h"
 
