@@ -835,6 +835,12 @@ void CObservation3DRangeScan::resizePoints3DVectors(const size_t WH)
 	points3D_idxs_y.resize( WH );
 }
 
+size_t CObservation3DRangeScan::getScanSize() const {
+	// x,y,z vectors have the same size.
+	return points3D_x.size();
+
+}
+
 // Similar to calling "rangeImage.setSize(H,W)" but this method provides memory pooling to speed-up the memory allocation.
 void CObservation3DRangeScan::rangeImage_setSize(const int H, const int W)
 {
