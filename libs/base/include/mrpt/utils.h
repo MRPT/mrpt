@@ -81,5 +81,7 @@
 // Adapter patterns:
 #include <mrpt/utils/adapters.h>
 
+#include <mrpt/utils/pose_utils.h>
+
 #endif
 
