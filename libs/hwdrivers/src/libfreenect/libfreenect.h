@@ -10,7 +10,7 @@
 #ifndef LIBFREENECT_H
 #define LIBFREENECT_H
 
-#include <mrpt/utils/mrpt_stdint.h>
+#include <cstdint>
 
 #ifdef __cplusplus
 extern "C" {
