@@ -71,7 +71,13 @@ class CRegistrationDeciderOrOptimizer :
 		 */
 		virtual void setWindowManagerPtr(
 				mrpt::graphslam::CWindowManager* win_manager);
-
+		/**\brief Get the name of the rawlog file.
+		 *
+		 * This method is automatically called in the CGraphSlamEngine initialization
+		 * method. However fname is empty in case we are running graphSLAM online
+		 * (e.g. via the ROS-wrapper)
+		 */
+		virtual void setRawlogFile(const std::string& fname);
 		/**\brief Fetch a mrpt::synch::CCriticalSection for locking the GRAPH_T
 		 * resource.
 		 *
@@ -91,7 +97,7 @@ class CRegistrationDeciderOrOptimizer :
 		 * \exception std::exception If the method is called without having first
 		 * provided a CDisplayWindow3D* to the class instance
 		 *
-		 * \sa setWindowManagerPtr, updateVisuals
+		 * \sa setWindowManagerPtr, updateVisuals, initializeViewports
 		 */
 		virtual void initializeVisuals(); 
 		/**\brief Update the relevant visual features in CDisplayWindow.
@@ -99,7 +105,7 @@ class CRegistrationDeciderOrOptimizer :
 		 *\exception std::exception If the method is called without having first
 		 * provided a CDisplayWindow3D* to the class instance
 		 *
-		 * \sa setWindowManagerPtr, initializeVisuals
+		 * \sa setWindowManagerPtr, initializeVisuals, updteViewports
 		 */
 		virtual void updateVisuals();
 		/**\brief Get a list of the window events that happened since the last call.
@@ -166,6 +172,23 @@ class CRegistrationDeciderOrOptimizer :
 		/**\brief Pointer to the CWindowManager object used to store
 		 * visuals-related instances
 		 */
+		/**\brief Initialize the viewports for the current decider / optimizer
+		 *
+		 * \warning This method is automatically called at the end of
+		 * CRegistrationDeciderOrOptimizer::initializeVisuals
+		 *
+		 * \sa initializeVisuals, updateViewports
+		 */
+		virtual void initViewports();
+		/**\brief Update the viewports for the current decider / optimizer
+		 *
+		 * \warning This method is automatically called at the end of
+		 * CRegistrationDeciderOrOptimizer::updateVisuals
+		 *
+		 * \sa initializeVisuals, updateViewports
+		 */
+		virtual void updateViewports();
+
 		mrpt::graphslam::CWindowManager* m_win_manager;
 		/**\brief Window to use */
 		mrpt::gui::CDisplayWindow3D* m_win;
@@ -183,6 +206,8 @@ class CRegistrationDeciderOrOptimizer :
 		 * multi-robot SLAM operations
 		 */
 		bool is_mr_slam_class;
+
+		std::string m_rawlog_fname;
 
 		/**\brief Separator string to be used in debugging messages
 		 */

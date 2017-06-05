@@ -10,6 +10,12 @@
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/datetime.h>
+#include <mrpt/system/os.h>
+#include <mrpt/utils/CFileOutputStream.h>
+#include <mrpt/utils/CFileInputStream.h>
+#include <mrpt/utils/CImage.h>
 #include <mrpt/utils/TColor.h>
 #include <mrpt/utils/mrpt_stdint.h>
 
@@ -37,7 +43,20 @@ namespace mrpt { namespace graphslam { namespace deciders {
  *   + \a Description   : Threshold for accepting a scan-matching edge between
  *   the current and previous nodes. If "-1" an adaptive threshold is going to
  *   be used
-
+ *
+ * - \b enable_range_viewport
+ *   + \a Section       : VisualizationParameters
+ *   + \a Default value : TRUE
+ *   + \a Required      : FALSE
+ *   + \a Description   : Applicable only when dealing with RGB-D datasets
+ *
+ * - \b enable_intensity_viewport
+ *   + \a Section       : VisualizationParameters
+ *   + \a Default value : FALSE
+ *   + \a Required      : FALSE
+ *   + \a Description   : Applicable only when dealing with RGB-D datasets
+ *
+ * \todo update docs for ini configuration files -> see loadParams
  *
  */
 template<class GRAPH_T>
@@ -63,11 +82,18 @@ class CRangeScanEdgeRegistrationDecider :
 		typedef typename GRAPH_T::constraint_t::type_value pose_t;
 		typedef typename GRAPH_T::global_pose_t global_pose_t;
 		typedef mrpt::graphslam::detail::TNodeProps<GRAPH_T> node_props_t;
+		typedef mrpt::math::CMatrixFixedNumeric<double,
+						constraint_t::state_length,
+						constraint_t::state_length> inf_mat_t;
 
 		CRangeScanEdgeRegistrationDecider();
 		virtual ~CRangeScanEdgeRegistrationDecider();
 
 		protected:
+
+		void initClassInternal(const mrpt::poses::CPose2D& p_unused);
+		void initClassInternal(const mrpt::poses::CPose3D& p_unused);
+
 		/**\name Helper structs */
 		/**\{*/
 		/**
@@ -166,6 +192,24 @@ class CRangeScanEdgeRegistrationDecider :
 		*/
 		virtual void toggleLaserScansVisualization();
 		/**\}*/
+
+		virtual void initViewports();
+		virtual void updateViewports();
+		/**\name Scene Viewports */
+		/**\{*/
+		virtual void initViewportsInternal(const mrpt::poses::CPose2D& p_unused);
+		/**\brief Viewports initialization for RGBD datasets */
+		virtual void initViewportsInternal(const mrpt::poses::CPose3D& p_unused);
+		virtual void initRangeImageViewport();
+		virtual void initIntensityImageViewport();
+		virtual void updateRangeImageViewport();
+		virtual void updateIntensityImageViewport();
+		virtual void updateViewportsInternal(const mrpt::poses::CPose2D& p_unused);
+		/**\brief Viewports initialization for RGBD datasets */
+		virtual void updateViewportsInternal(const mrpt::poses::CPose3D& p_unused);
+		/**\}*/
+
+		void alignOpticalWithMRPTFrame();
 
 		/**\brief Fetch a list of nodes with regards to the given nodeID for
 		 	* which to try and add scan matching edges
@@ -266,8 +310,8 @@ class CRangeScanEdgeRegistrationDecider :
 		/**\}*/
 
 		/**\brief Factor used for accepting an ICP Constraint as valid.
-			*
-			*/
+		 *
+		 */
 		double m_consec_icp_constraint_factor;
 
 		double m_offset_y_icp_goodness;
@@ -276,6 +320,46 @@ class CRangeScanEdgeRegistrationDecider :
 		double m_offset_y_mahal;
 		int m_text_index_mahal;
 
+		bool m_enable_intensity_viewport;
+		bool m_enable_range_viewport;
+
+		/** keep track of the storage directory for the 3DRangeScan depth/range
+		 */
+		/**\{*/
+		std::string m_img_external_storage_dir;
+		std::string m_img_prev_path_base;
+		/**\}*/
+
+		/** \brief frame transformation from the RGBD_TUM ground-truth to the MRPT
+		 * reference frame
+		 */
+		mrpt::math::CMatrixDouble33  m_rot_TUM_to_MRPT;
+
+		/**\brief Struct responsible for keeping the parameters of the .info file
+		 * in RGBD related datasets
+		 */
+		struct TRGBDInfoFileParams {
+			TRGBDInfoFileParams();
+			TRGBDInfoFileParams(const std::string& rawlog_fname);
+			~TRGBDInfoFileParams();
+
+			void initTRGBDInfoFileParams();
+			/**\brief Parse the RGBD information file to gain information about the
+			 * rawlog file contents
+			 */
+			void parseFile();
+			void setRawlogFile(const std::string& rawlog_fname);
+
+			/**\brief Format for the parameters in the info file:
+			 * <em>string literal - related value</em> (kept in a string
+			 * representation)
+			 */
+			std::map<std::string, std::string> fields;
+
+			std::string info_fname;
+
+
+		} m_info_params;
 
 		private:
 		/**\brief Fixed goodness value.

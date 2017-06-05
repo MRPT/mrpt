@@ -14,10 +14,50 @@ CRangeScanEdgeRegistrationDecider():
 {
 	m_mahal_distance_ICP_odom_win.resizeWindow(200); // use the last X mahal. distance values
 	m_goodness_threshold_win.resizeWindow(200);
+
+	pose_t p_unused;
+	initClassInternal(p_unused);
 }
 
 template<class GRAPH_T>
-CRangeScanEdgeRegistrationDecider<GRAPH_T>::~CRangeScanEdgeRegistrationDecider() { }
+void CRangeScanEdgeRegistrationDecider<GRAPH_T>::initClassInternal(
+		const mrpt::poses::CPose2D& p_unused) {
+} // end of initClassInternal
+
+template<class GRAPH_T>
+void CRangeScanEdgeRegistrationDecider<GRAPH_T>::initClassInternal(
+		const mrpt::poses::CPose3D& p_unused) {
+	using namespace mrpt::utils;
+
+	// keep the last path - change back to it after rawlog parsing
+	m_img_prev_path_base = CImage::IMAGES_PATH_BASE;
+
+	{
+		m_info_params.setRawlogFile(this->m_rawlog_fname);
+		m_info_params.parseFile();
+		// set the rate at which we read from the GT poses vector
+		int num_of_objects = std::atoi(
+				m_info_params.fields["Overall number of objects"].c_str());
+
+		MRPT_LOG_INFO_STREAM("Overall number of objects in rawlog: " << num_of_objects);
+	}
+
+
+	std::string rawlog_fname_noext = system::extractFileName(this->m_rawlog_fname);
+	std::string rawlog_dir = system::extractFileDirectory(this->m_rawlog_fname);
+	std::string m_img_external_storage_dir = rawlog_dir + rawlog_fname_noext
+		+ "_Images/";
+	CImage::IMAGES_PATH_BASE = m_img_external_storage_dir;
+
+} // end of initClassInternal
+
+template<class GRAPH_T>
+CRangeScanEdgeRegistrationDecider<GRAPH_T>::~CRangeScanEdgeRegistrationDecider() {
+
+	MRPT_LOG_DEBUG_STREAM("Changing back the CImage PATH");
+	mrpt::utils::CImage::IMAGES_PATH_BASE = m_img_prev_path_base;
+
+}
 
 template<class GRAPH_T>
 void CRangeScanEdgeRegistrationDecider<GRAPH_T>::loadParams(
@@ -64,6 +104,17 @@ void CRangeScanEdgeRegistrationDecider<GRAPH_T>::loadParams(
 			"use_mahal_distance_init_ICP",
 			true, false);
 
+	// viewports
+	m_enable_range_viewport = source.read_bool(
+			section_viz,
+			"enable_range_viewport",
+			true, false);
+	m_enable_intensity_viewport = source.read_bool(
+			section_viz,
+			"enable_intensity_viewport",
+			true, false);
+
+
 	MRPT_END;
 } // end of loadParams
 
@@ -79,6 +130,10 @@ void CRangeScanEdgeRegistrationDecider<GRAPH_T>::printParams() const {
 			<< (m_visualize_laser_scans? "TRUE": "FALSE") << endl;
 	cout << "Scan-matching ICP Constraint factor         = "
 		<< m_consec_icp_constraint_factor << endl;
+	cout << "Enable range img viewport       = "
+		<< ( m_enable_range_viewport ? "TRUE" : "FALSE" ) << endl;
+	cout << "Enable intensity img viewport   = "
+		<< ( m_enable_intensity_viewport ? "TRUE" : "FALSE" ) << endl;
 
 	MRPT_END;
 }
@@ -364,6 +419,141 @@ void CRangeScanEdgeRegistrationDecider<GRAPH_T>::initializeVisuals() {
 } // end of initializeVisuals
 
 template<class GRAPH_T>
+void CRangeScanEdgeRegistrationDecider<GRAPH_T>::initViewports() {
+	pose_t p_unused;
+	this->initViewportsInternal(p_unused);
+}
+
+template<class GRAPH_T>
+void CRangeScanEdgeRegistrationDecider<GRAPH_T>::updateViewports() {
+	pose_t p_unused;
+	this->updateViewportsInternal(p_unused);
+}
+
+
+template<class GRAPH_T>
+void CRangeScanEdgeRegistrationDecider<GRAPH_T>::initViewportsInternal(
+		const mrpt::poses::CPose2D& p_unused) {
+} // end if initViewportsInternal
+
+template<class GRAPH_T>
+void CRangeScanEdgeRegistrationDecider<GRAPH_T>::initViewportsInternal(
+		const mrpt::poses::CPose3D& p_unused) {
+
+	if (m_enable_range_viewport) {
+		this->initRangeImageViewport();
+	}
+	if (m_enable_intensity_viewport) {
+		this->initIntensityImageViewport();
+	}
+} // end if initViewportsInternal
+
+template<class GRAPH_T>
+void CRangeScanEdgeRegistrationDecider<GRAPH_T>::updateViewportsInternal(
+		const mrpt::poses::CPose2D& p_unused) {
+} // end if updateViewportsInternal
+
+template<class GRAPH_T>
+void CRangeScanEdgeRegistrationDecider<GRAPH_T>::updateViewportsInternal(
+		const mrpt::poses::CPose3D& p_unused) {
+
+	if (m_enable_range_viewport &&
+			!m_last_laser_scan3D.null() &&
+			m_last_laser_scan3D->hasRangeImage) {
+		this->updateRangeImageViewport();
+	}
+
+	if (m_enable_intensity_viewport &&
+			!m_last_laser_scan3D.null() &&
+			m_last_laser_scan3D->hasIntensityImage) {
+		this->updateIntensityImageViewport();
+	}
+
+} // end if updateViewportsInternal
+
+
+template<class GRAPH_T>
+void CRangeScanEdgeRegistrationDecider<GRAPH_T>::initRangeImageViewport() {
+	MRPT_START;
+	using namespace mrpt::opengl;
+
+	COpenGLScenePtr scene = this->m_win->get3DSceneAndLock();
+	COpenGLViewportPtr viewp_range;
+
+	viewp_range = scene->createViewport("viewp_range");
+	double x,y,h,w;
+	this->m_win_manager->assignViewportParameters(&x, &y, &w, &h);
+	viewp_range->setViewportPosition(x, y, h, w);
+
+	this->m_win->unlockAccess3DScene();
+	this->m_win->forceRepaint();
+
+	MRPT_END;
+} // end of initRangeImageViewport
+
+template<class GRAPH_T>
+void CRangeScanEdgeRegistrationDecider<GRAPH_T>::updateRangeImageViewport() {
+	MRPT_START;
+	using namespace mrpt::math;
+	using namespace mrpt::opengl;
+
+	CMatrixFloat range2D;
+	mrpt::utils::CImage img;
+
+	// load the image if not already loaded..
+	m_last_laser_scan3D->load();
+	range2D = m_last_laser_scan3D->rangeImage * (1.0f/5.0);
+	img.setFromMatrix(range2D);
+
+	COpenGLScenePtr scene = this->m_win->get3DSceneAndLock();
+	COpenGLViewportPtr viewp_range = scene->getViewport("viewp_range");
+	viewp_range->setImageView(img);
+	this->m_win->unlockAccess3DScene();
+	this->m_win->forceRepaint();
+
+	MRPT_END;
+} // end of updateRangeImageViewport
+
+
+template<class GRAPH_T>
+void CRangeScanEdgeRegistrationDecider<GRAPH_T>::initIntensityImageViewport() {
+	MRPT_START;
+	using namespace mrpt::opengl;
+
+	COpenGLScenePtr scene = this->m_win->get3DSceneAndLock();
+	COpenGLViewportPtr viewp_intensity;
+
+	viewp_intensity = scene->createViewport("viewp_intensity");
+	double x, y, w, h;
+	this->m_win_manager->assignViewportParameters(&x, &y, &w, &h);
+	viewp_intensity->setViewportPosition(x, y, w, h);
+
+	this->m_win->unlockAccess3DScene();
+	this->m_win->forceRepaint();
+
+	MRPT_END;
+} // end of initIntensityImageViewport
+
+template<class GRAPH_T>
+void CRangeScanEdgeRegistrationDecider<GRAPH_T>::updateIntensityImageViewport() {
+	MRPT_START;
+	using namespace mrpt::opengl;
+
+	// load the image if not already loaded..
+	m_last_laser_scan3D->load();
+
+	COpenGLScenePtr scene = this->m_win->get3DSceneAndLock();
+	COpenGLViewportPtr viewp_intensity = scene->getViewport("viewp_intensity");
+	viewp_intensity->setImageView(m_last_laser_scan3D->intensityImage);
+	this->m_win->unlockAccess3DScene();
+	this->m_win->forceRepaint();
+
+	MRPT_END;
+} // end of updateIntensityImageViewport
+
+
+
+template<class GRAPH_T>
 void CRangeScanEdgeRegistrationDecider<GRAPH_T>::updateVisuals() {
 	MRPT_START;
 
@@ -476,7 +666,7 @@ mahalanobisDistanceInitToICPEdge(
 	(rel_edge.getMeanVal()-initial_estim).getAsVector(mean_diff);
 
 	// covariance matrix
-	CMatrixDouble33 cov_mat; rel_edge.getCovariance(cov_mat);
+	inf_mat_t cov_mat; rel_edge.getCovariance(cov_mat);
 
 	// mahalanobis distance computation
 	double mahal_distance = mrpt::math::mahalanobisDistance2(mean_diff, cov_mat);
@@ -546,6 +736,149 @@ void CRangeScanEdgeRegistrationDecider<GRAPH_T>::fixICPGoodnessThresh(
 	MRPT_LOG_WARN_STREAM("Using fixed goodness threshold: " <<
 			this->m_ICP_goodness_thresh_fixed);
 } // end of fixICPGoodenssThresh
+
+template<class GRAPH_T>
+void CRangeScanEdgeRegistrationDecider<GRAPH_T>::alignOpticalWithMRPTFrame() {
+	MRPT_START;
+	using namespace std;
+	using namespace mrpt::math;
+	using namespace mrpt::utils;
+
+	// aligning GT (optical) frame with the MRPT frame
+	// Set the rotation matrix from the corresponding RPY angles
+	// MRPT Frame: X->forward; Y->Left; Z->Upward
+	// Optical Frame: X->Right; Y->Downward; Z->Forward
+
+	// rotz
+	double anglez = DEG2RAD(0.0);
+	const double tmpz[] = {
+		cos(anglez),     -sin(anglez), 0,
+		sin(anglez),     cos(anglez),  0,
+		0,               0,            1  };
+	CMatrixDouble rotz(3, 3, tmpz);
+
+	// roty
+	double angley = DEG2RAD(0.0);
+	//double angley = DEG2RAD(90.0);
+	const double tmpy[] = {
+		cos(angley),      0,      sin(angley),
+		0,                1,      0,
+		-sin(angley),     0,      cos(angley)  };
+	CMatrixDouble roty(3, 3, tmpy);
+
+	// rotx
+	//double anglex = DEG2RAD(-90.0);
+	double anglex = DEG2RAD(0.0);
+	const double tmpx[] = {
+		1,        0,               0,
+		0,        cos(anglex),     -sin(anglex),
+		0,        sin(anglex),     cos(anglex)  };
+	CMatrixDouble rotx(3, 3, tmpx);
+
+	stringstream ss_out;
+	ss_out << "\nConstructing the rotation matrix for the GroundTruth Data..."
+		<< endl;
+	m_rot_TUM_to_MRPT = rotz * roty * rotx;
+
+	ss_out << "Rotation matrices for optical=>MRPT transformation" << endl;
+	ss_out << "rotz: " << endl << rotz << endl;
+	ss_out << "roty: " << endl << roty << endl;
+	ss_out << "rotx: " << endl << rotx << endl;
+	ss_out << "Full rotation matrix: " << endl << m_rot_TUM_to_MRPT << endl;
+
+	MRPT_LOG_DEBUG_STREAM(ss_out);
+
+	MRPT_END;
+} // end of alignOpticalWithMRPTFrame
+
+
+// TRGBDInfoFileParams
+// ////////////////////////////////
+
+template<class GRAPH_T>
+CRangeScanEdgeRegistrationDecider<GRAPH_T>::
+TRGBDInfoFileParams::TRGBDInfoFileParams(const std::string& rawlog_fname) {
+
+	this->setRawlogFile(rawlog_fname);
+	this->initTRGBDInfoFileParams();
+} // end of TRGBDInfoFileParams::TRGBDInfoFileParams
+template<class GRAPH_T>
+CRangeScanEdgeRegistrationDecider<GRAPH_T>::
+TRGBDInfoFileParams::TRGBDInfoFileParams() {
+	this->initTRGBDInfoFileParams();
+} // end of TRGBDInfoFileParams::TRGBDInfoFileParams
+template<class GRAPH_T>
+CRangeScanEdgeRegistrationDecider<GRAPH_T>::
+TRGBDInfoFileParams::~TRGBDInfoFileParams() { }
+
+template<class GRAPH_T>
+void CRangeScanEdgeRegistrationDecider<GRAPH_T>::TRGBDInfoFileParams::setRawlogFile(
+		const std::string& rawlog_fname) {
+
+	// get the correct info filename from the rawlog_fname
+	std::string dir = mrpt::system::extractFileDirectory(rawlog_fname);
+	std::string rawlog_filename = mrpt::system::extractFileName(rawlog_fname);
+	std::string name_prefix = "rawlog_";
+	std::string name_suffix = "_info.txt";
+	info_fname = dir + name_prefix + rawlog_filename + name_suffix;
+} // end of TRGBDInfoFileParams::setRawlogFile
+
+template<class GRAPH_T>
+void CRangeScanEdgeRegistrationDecider<GRAPH_T>::
+TRGBDInfoFileParams::initTRGBDInfoFileParams() {
+	// fields to use
+	fields["Overall number of objects"] = "";
+	fields["Observations format"] = "";
+} // end of TRGBDInfoFileParams::initTRGBDInfoFileParams
+
+template<class GRAPH_T>
+void CRangeScanEdgeRegistrationDecider<GRAPH_T>::TRGBDInfoFileParams::parseFile() {
+	ASSERT_FILE_EXISTS_(info_fname);
+	using namespace std;
+	using namespace mrpt::utils;
+
+	// open file
+	CFileInputStream info_file(info_fname);
+	ASSERTMSG_(info_file.fileOpenCorrectly(),
+			"\nTRGBDInfoFileParams::parseFile: Couldn't open info file\n");
+
+	string curr_line;
+	size_t line_cnt = 0;
+
+	// parse until you find an empty line.
+	while (true) {
+		info_file.readLine(curr_line);
+		line_cnt++;
+		if (curr_line.size() == 0)
+			break;
+	}
+
+	// parse the meaningful data
+	while (info_file.readLine(curr_line)) {
+		// split current line at ":"
+		vector<string> curr_tokens;
+		mrpt::system::tokenize(curr_line, ":", curr_tokens);
+
+		ASSERT_EQUAL_(curr_tokens.size(), 2);
+
+		// evaluate the name. if name in info struct then fill the corresponding
+		// info struct parameter with the value_part in the file.
+		std::string literal_part = mrpt::system::trim(curr_tokens[0]);
+		std::string value_part   = mrpt::system::trim(curr_tokens[1]);
+
+		for (std::map<std::string, std::string>::iterator it = fields.begin();
+				it != fields.end(); ++it) {
+			if (mrpt::system::strCmpI(it->first, literal_part)) {
+				it->second = value_part;
+			}
+		}
+
+		line_cnt++;
+	}
+
+} // end of TRGBDInfoFileParams::parseFile
+
+////////////////////////////////////////////////////////////////////////////////
 
 
 } } } // end of namespaces

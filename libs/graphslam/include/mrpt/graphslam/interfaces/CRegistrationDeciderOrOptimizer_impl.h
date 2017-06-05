@@ -76,6 +76,15 @@ void CRegistrationDeciderOrOptimizer<GRAPH_T>::setWindowManagerPtr(
 }
 
 template<class GRAPH_T>
+void CRegistrationDeciderOrOptimizer<GRAPH_T>::setRawlogFile(
+		const std::string& fname) {
+	MRPT_LOG_INFO_STREAM("Setting the Rawlog file: " << 
+			(fname.empty() ? "NONE" : fname));
+
+	this->m_rawlog_fname = fname;
+}
+
+template<class GRAPH_T>
 void CRegistrationDeciderOrOptimizer<GRAPH_T>::setCriticalSectionPtr(
 		mrpt::synch::CCriticalSection* graph_section) {
 
@@ -101,6 +110,7 @@ void CRegistrationDeciderOrOptimizer<GRAPH_T>::dumpVisibilityErrorMsg(
 template<class GRAPH_T>
 void CRegistrationDeciderOrOptimizer<GRAPH_T>::initializeVisuals() {
 	this->assertVisualsVars();
+	this->initViewports();
 	m_initialized_visuals = true;
 }
 
@@ -114,6 +124,18 @@ void CRegistrationDeciderOrOptimizer<GRAPH_T>::assertVisualsVars() {
 template<class GRAPH_T>
 void CRegistrationDeciderOrOptimizer<GRAPH_T>::updateVisuals() {
 	ASSERT_(m_initialized_visuals);
+
+	this->updateViewports();
+}
+
+template<class GRAPH_T>
+void CRegistrationDeciderOrOptimizer<GRAPH_T>::initViewports() {
+	MRPT_LOG_DEBUG_STREAM("Initializing viewports...");
+
+}
+template<class GRAPH_T>
+void CRegistrationDeciderOrOptimizer<GRAPH_T>::updateViewports() {
+	MRPT_LOG_DEBUG_STREAM("Updating viewports...");
 }
 
 template<class GRAPH_T>

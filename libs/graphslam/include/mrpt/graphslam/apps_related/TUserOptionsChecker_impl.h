@@ -10,14 +10,14 @@
 // implementation of the TUserOptionsChecker class template methods
 namespace mrpt { namespace graphslam { namespace apps {
 
-template<class GRAPH_t>
-TUserOptionsChecker<GRAPH_t>::TUserOptionsChecker():
+template<class GRAPH_T>
+TUserOptionsChecker<GRAPH_T>::TUserOptionsChecker():
 	sep_header(40, '='),
 	sep_subheader(20, '-')
 { }
 
-template<class GRAPH_t>
-TUserOptionsChecker<GRAPH_t>::~TUserOptionsChecker(){
+template<class GRAPH_T>
+TUserOptionsChecker<GRAPH_T>::~TUserOptionsChecker(){
 	using namespace std;
 
 	// release the instances holding the descriptions of the available
@@ -37,8 +37,8 @@ TUserOptionsChecker<GRAPH_t>::~TUserOptionsChecker(){
 
 }
 
-template<class GRAPH_t>
-void TUserOptionsChecker<GRAPH_t>::createDeciderOptimizerMappings() {
+template<class GRAPH_T>
+void TUserOptionsChecker<GRAPH_T>::createDeciderOptimizerMappings() {
 	MRPT_START;
 
 	using namespace mrpt::graphslam::deciders;
@@ -48,64 +48,52 @@ void TUserOptionsChecker<GRAPH_t>::createDeciderOptimizerMappings() {
 
 	// node registration deciders
 	node_regs_map["CEmptyNRD"] =
-		&createNodeRegistrationDecider<CEmptyNRD<GRAPH_t> >;
+		&createNodeRegistrationDecider<CEmptyNRD<GRAPH_T> >;
 	node_regs_map["CFixedIntervalsNRD"] =
-			&createNodeRegistrationDecider<CFixedIntervalsNRD<GRAPH_t> >;
+			&createNodeRegistrationDecider<CFixedIntervalsNRD<GRAPH_T> >;
 	// edge registration deciders
 	edge_regs_map["CEmptyERD"] =
-		&createEdgeRegistrationDecider<CEmptyERD<GRAPH_t> >;
+		&createEdgeRegistrationDecider<CEmptyERD<GRAPH_T> >;
 	// optimizers
 	optimizers_map["CLevMarqGSO"] =
-		&createGraphSlamOptimizer<CLevMarqGSO<GRAPH_t> >;
+		&createGraphSlamOptimizer<CLevMarqGSO<GRAPH_T> >;
 	optimizers_map["CEmptyGSO"] =
-		&createGraphSlamOptimizer<CLevMarqGSO<GRAPH_t> >;
+		&createGraphSlamOptimizer<CLevMarqGSO<GRAPH_T> >;
+	node_regs_map["CICPCriteriaNRD"] =
+		&createNodeRegistrationDecider<CICPCriteriaNRD<GRAPH_T> >;
 
 	// create the decider optimizer, specific to the GRAPH_T template type
-	this->_createDeciderOptimizerMappings();
-
+	this->createDeciderOptimizerMappingsInternal();
 
 	MRPT_END;
-}
-
-template<class GRAPH_t>
-void TUserOptionsChecker<GRAPH_t>::_createDeciderOptimizerMappings() {
-}
+} // end of createDeciderOptimizerMappings
 
 // deciders/optpimizers specific to the 2D SLAM cases
 template<>
-inline void TUserOptionsChecker<mrpt::graphs::CNetworkOfPoses2DInf>::_createDeciderOptimizerMappings() {
-	using namespace mrpt::graphs;
+inline void TUserOptionsChecker<mrpt::graphs::CNetworkOfPoses2DInf>::
+createDeciderOptimizerMappingsInternal() {
 	using namespace mrpt::graphslam::deciders;
-
-	node_regs_map["CICPCriteriaNRD"] =
-		&createNodeRegistrationDecider<CICPCriteriaNRD<CNetworkOfPoses2DInf> >;
 	edge_regs_map["CICPCriteriaERD"] =
-			&createEdgeRegistrationDecider<CICPCriteriaERD<CNetworkOfPoses2DInf> >;
+			&createEdgeRegistrationDecider<CICPCriteriaERD<mrpt::graphs::CNetworkOfPoses2DInf> >;
 	edge_regs_map["CLoopCloserERD"] =
-			&createEdgeRegistrationDecider<CLoopCloserERD<CNetworkOfPoses2DInf> >;
-
+			&createEdgeRegistrationDecider<CLoopCloserERD<mrpt::graphs::CNetworkOfPoses2DInf> >;
 }
 template<>
-inline void TUserOptionsChecker<mrpt::graphs::CNetworkOfPoses2DInf_NA>::_createDeciderOptimizerMappings() {
-	using namespace mrpt::graphs;
+inline void TUserOptionsChecker<mrpt::graphs::CNetworkOfPoses2DInf_NA>::
+createDeciderOptimizerMappingsInternal() {
 	using namespace mrpt::graphslam::deciders;
-
-	node_regs_map["CICPCriteriaNRD"] =
-		&createNodeRegistrationDecider<CICPCriteriaNRD<CNetworkOfPoses2DInf_NA> >;
 	edge_regs_map["CICPCriteriaERD"] =
-			&createEdgeRegistrationDecider<CICPCriteriaERD<CNetworkOfPoses2DInf_NA> >;
+			&createEdgeRegistrationDecider<CICPCriteriaERD<mrpt::graphs::CNetworkOfPoses2DInf_NA> >;
 	edge_regs_map["CLoopCloserERD"] =
-			&createEdgeRegistrationDecider<CLoopCloserERD<CNetworkOfPoses2DInf_NA> >;
+			&createEdgeRegistrationDecider<CLoopCloserERD<mrpt::graphs::CNetworkOfPoses2DInf_NA> >;
 }
-
-// deciders/optpimizers specific to the 3D SLAM cases
 template<>
-inline void TUserOptionsChecker<mrpt::graphs::CNetworkOfPoses3DInf>::_createDeciderOptimizerMappings() {
+inline void TUserOptionsChecker<mrpt::graphs::CNetworkOfPoses3DInf>::
+createDeciderOptimizerMappingsInternal() { }
 
-}
 
-template<class GRAPH_t>
-void TUserOptionsChecker<GRAPH_t>::dumpRegistrarsToConsole(
+template<class GRAPH_T>
+void TUserOptionsChecker<GRAPH_T>::dumpRegistrarsToConsole(
 		std::string reg_type/*="all"*/) const {
 	MRPT_START;
 	using namespace std;
@@ -158,8 +146,8 @@ void TUserOptionsChecker<GRAPH_t>::dumpRegistrarsToConsole(
 	MRPT_END;
 }
 
-template<class GRAPH_t>
-void TUserOptionsChecker<GRAPH_t>::dumpOptimizersToConsole() const {
+template<class GRAPH_T>
+void TUserOptionsChecker<GRAPH_T>::dumpOptimizersToConsole() const {
 	MRPT_START;
 
 	using namespace std;
@@ -187,8 +175,8 @@ void TUserOptionsChecker<GRAPH_t>::dumpOptimizersToConsole() const {
 	MRPT_END;
 }
 
-template<class GRAPH_t>
-bool TUserOptionsChecker<GRAPH_t>::checkRegistrationDeciderExists(
+template<class GRAPH_T>
+bool TUserOptionsChecker<GRAPH_T>::checkRegistrationDeciderExists(
 		std::string given_reg,
 		std::string reg_type) const {
 	MRPT_START;
@@ -208,7 +196,6 @@ bool TUserOptionsChecker<GRAPH_t>::checkRegistrationDeciderExists(
 			dec_it != regs_descriptions.end(); ++dec_it) {
 		TRegistrationDeciderProps* dec = *dec_it;
 
-		// TODO - check this
 		// if decider is not suitable for the selected SLAM type, ignore.
 		pose_t p;
 		if ((!dec->is_slam_2d && IS_CLASS(&p, CPose2D)) ||
@@ -228,8 +215,8 @@ bool TUserOptionsChecker<GRAPH_t>::checkRegistrationDeciderExists(
 	MRPT_END;
 }
 
-template<class GRAPH_t>
-bool TUserOptionsChecker<GRAPH_t>::checkOptimizerExists(std::string given_opt) const {
+template<class GRAPH_T>
+bool TUserOptionsChecker<GRAPH_T>::checkOptimizerExists(std::string given_opt) const {
 	MRPT_START;
 	using namespace std;
 	using  namespace mrpt;
@@ -259,8 +246,8 @@ bool TUserOptionsChecker<GRAPH_t>::checkOptimizerExists(std::string given_opt) c
 	MRPT_END;
 }
 
-template<class GRAPH_t>
-void TUserOptionsChecker<GRAPH_t>::populateDeciderOptimizerProperties() {
+template<class GRAPH_T>
+void TUserOptionsChecker<GRAPH_T>::populateDeciderOptimizerProperties() {
 	MRPT_START;
 
 	// reset the vectors - in case they contain any elements
@@ -290,6 +277,7 @@ void TUserOptionsChecker<GRAPH_t>::populateDeciderOptimizerProperties() {
 		dec->observations_used.push_back("CObservation2DRangeScan - Format #2");
 		dec->observations_used.push_back("CObservation3DRangeScan - Format #2");
 		dec->is_slam_2d = true;
+		dec->is_slam_3d = true;
 
 		regs_descriptions.push_back(dec);
 	}
@@ -314,6 +302,7 @@ void TUserOptionsChecker<GRAPH_t>::populateDeciderOptimizerProperties() {
 		dec->observations_used.push_back("CObservation2DRangeScan - Format #1, #2");
 		dec->observations_used.push_back("CObservation3DRangeScan - Format #2");
 		dec->is_slam_2d = true;
+		dec->is_slam_3d = true;
 
 		regs_descriptions.push_back(dec);
 	}

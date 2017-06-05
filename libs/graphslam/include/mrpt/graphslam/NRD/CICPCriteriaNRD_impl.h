@@ -69,23 +69,20 @@ bool CICPCriteriaNRD<GRAPH_T>::updateState(
 
 			// not incremental - gives the absolute odometry reading - no InfMat
 			// either
-			m_curr_odometry_only_pose = obs_odometry->odometry;
+			m_curr_odometry_only_pose = pose_t(obs_odometry->odometry);
 			m_latest_odometry_PDF.mean =
 				m_curr_odometry_only_pose - m_last_odometry_only_pose;
-
 		}
-
 	}
 	else { // action-observations rawlog
-		// Action part
-		if (action->getBestMovementEstimation()) {
-			// if it exists use the odometry information to reject wrong ICP matches
-			CActionRobotMovement2DPtr robot_move =
-				action->getBestMovementEstimation();
-			CPosePDFPtr increment = robot_move->poseChange.get_ptr();
-			CPosePDFGaussianInf increment_gaussian;
-			increment_gaussian.copyFrom(*increment);
-			m_latest_odometry_PDF += increment_gaussian;
+		// if the odometry exists use it to reject wrong ICP matches
+		mrpt::poses::CPose3DPDFGaussian move_pdf;
+		bool found = action->getFirstMovementEstimation(move_pdf);
+		if (found) {
+			// update the relative PDF of the path since the LAST node was inserted
+			constraint_t incr_constraint;
+			incr_constraint.copyFrom(move_pdf);
+			this->m_latest_odometry_PDF += incr_constraint;
 		}
 
 		// observations part
@@ -94,12 +91,11 @@ bool CICPCriteriaNRD<GRAPH_T>::updateState(
 				observations->getObservationByClass<CObservation2DRangeScan>();
 			registered_new_node = updateState2D(curr_laser_scan);
 		}
-		else if (observations->getObservationByClass<CObservation3DRangeScan>()){	// 3D - EXPERIMENTAL, has not been tested
+		else if (observations->getObservationByClass<CObservation3DRangeScan>()){
 			CObservation3DRangeScanPtr curr_laser_scan =
 				observations->getObservationByClass<CObservation3DRangeScan>();
 			registered_new_node = updateState3D(curr_laser_scan);
 		}
-
 	}
 
 	this->m_time_logger.leave("updateState");

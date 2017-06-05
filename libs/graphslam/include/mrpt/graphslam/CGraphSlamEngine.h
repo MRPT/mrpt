@@ -60,7 +60,6 @@
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/utils/types_simple.h>
 #include <mrpt/utils/TColor.h>
-#include <mrpt/utils/CImage.h>
 #include <mrpt/utils/COutputLogger.h>
 #include <mrpt/utils/pose_utils.h>
 
@@ -122,16 +121,6 @@ namespace mrpt { namespace graphslam {
  *   to do about the new output directory. By default output directory from
  *   previous run is overwritten by the directory of the current run.
  *
- * - \b ground_truth_file_format
- *   + \a Section       : GeneralConfiguration
- *   + \a Default value : NavSimul
- *   + \a Required      : FALSE
- *   + \a Description   : Specify the format of the ground-truth file if one is
- *   provided. Currently CGraphSlamEngine supports ground truth files generated
- *   by the GridMapNavSimul tool or ground truth files corresponding to
- *   RGBD-TUM datasets.
- *   + \a Available Options: NavSimul, RGBD_TUM
- *
  * - \b class_verbosity
  *   + \a Section       : GeneralConfiguration
  *   + \a Default value : 1 (LVL_INFO)
@@ -165,18 +154,6 @@ namespace mrpt { namespace graphslam {
  * - \b enable_curr_pos_viewport
  *   + \a Section       : VisualizationParameters
  *   + \a Default value : TRUE
- *   + \a Required      : FALSE
- *   + \a Description   : Applicable only when dealing with RGB-D datasets
- *
- * - \b enable_range_viewport
- *   + \a Section       : VisualizationParameters
- *   + \a Default value : TRUE
- *   + \a Required      : FALSE
- *   + \a Description   : Applicable only when dealing with RGB-D datasets
- *
- * - \b enable_intensity_viewport
- *   + \a Section       : VisualizationParameters
- *   + \a Default value : FALSE
  *   + \a Required      : FALSE
  *   + \a Description   : Applicable only when dealing with RGB-D datasets
  *
@@ -506,9 +483,6 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		/**\{*/
 		void initVisualization();
 
-		void initRangeImageViewport();
-		void initIntensityImageViewport();
-
 		mrpt::opengl::CSetOfObjectsPtr initRobotModelVisualization();
 		/**\brief Method to help overcome the partial template specialization
 		 * restriction of C++. Apply polymorphism by overloading function arguments
@@ -537,17 +511,6 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		/**\brief Wrapper around the deciders/optimizer updateVisuals methods
 		 */
 		void updateAllVisuals();
-		/**\brief In RGB-D TUM Datasets update the Range image displayed in a
-		 * seperate viewport
-		 */
-		void updateRangeImageViewport();
-		/**\brief In RGB-D TUM Datasets update the Intensity image displayed in a
-		 * seperate viewport
-		 */
-		void updateIntensityImageViewport();
-		/**\brief Update the viewport responsible for displaying the graph-building
-		 * procedure in the estimated position of the robot
-		 */
 		virtual void updateCurrPosViewport();
 		/**\brief return the 3D Pose of a LaserScan that is to be visualized.
 		 *
@@ -629,7 +592,6 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 				mrpt::obs::CObservation2DRangeScan& laser_scan_in,
 				mrpt::obs::CObservation2DRangeScan* laser_scan_out,
 				const int keep_every_n_entries = 2);
-		void alignOpticalWithMRPTFrame();
 		/**\brief Query the observer instance for any user events.
 		 *
 		 * Query the given observer for any events (keystrokes, mouse clicks,
@@ -793,8 +755,6 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		bool m_visualize_estimated_trajectory;
 		bool m_visualize_SLAM_metric;
 		bool m_enable_curr_pos_viewport;
-		bool m_enable_intensity_viewport;
-		bool m_enable_range_viewport;
 		/**\}*/
 
 		/**\brief Indicated if program is temporarily paused by the user
@@ -860,8 +820,6 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		std::vector<pose_t> m_odometry_poses;
 		std::vector<pose_t> m_GT_poses;
 
-		std::string m_GT_file_format;
-
 		/**\brief Map of NodeIDs to their corresponding LaserScans.
 		 */
 		nodes_to_scans2D_t m_nodes_to_laser_scans2D;
@@ -870,9 +828,6 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		mrpt::obs::CObservation2DRangeScanPtr m_last_laser_scan2D;
 		/**\brief First recorded laser scan - assigned to the root */
 		mrpt::obs::CObservation2DRangeScanPtr m_first_laser_scan2D;
-		/**\brief Last laser scan that the current class instance received.
-		 */
-		mrpt::obs::CObservation3DRangeScanPtr m_last_laser_scan3D;
 
 		/**\name Trajectories colors */
 		/**\{*/
@@ -883,10 +838,6 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		mrpt::utils::TColor m_current_constraint_type_color;
 		/**\}*/
 
-		/** \brief frame transformation from the RGBD_TUM GrountTruth to the MRPT
-		 * reference frame
-		 */
-		mrpt::math::CMatrixDouble33  m_rot_TUM_to_MRPT;
  		/** How big are the robots going to be in the scene */
 		size_t m_robot_model_size;
 		/**\brief Internal counter for querying for the number of nodeIDs.
@@ -899,11 +850,6 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 */
 		mrpt::synch::CCriticalSection m_graph_section;
 
-		// keep track of the storage directory for the 3DRangeScan depth/range
-		// images
-		std::string m_img_external_storage_dir;
-		std::string m_img_prev_path_base;
-
 		/**\name Slam Metric related variables */
 		/**\{*/
 		/**\brief Map from nodeIDs to their corresponding closest GT pose index. 
@@ -914,31 +860,6 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		double m_curr_deformation_energy;
 		std::vector<double> m_deformation_energy_vec;
 		/**\}*/
-
-		/**\brief Struct responsible for keeping the parameters of the .info file
-		 * in RGBD related datasets
-		 */
-		struct TRGBDInfoFileParams {
-			TRGBDInfoFileParams();
-			TRGBDInfoFileParams(const std::string& rawlog_fname);
-			~TRGBDInfoFileParams();
-
-			void initTRGBDInfoFileParams();
-			/**\brief Parse the RGBD information file to gain information about the rawlog
-			 * file contents
-			 */
-			void parseFile();
-			void setRawlogFile(const std::string& rawlog_fname);
-
-			/**\brief Format for the parameters in the info file:
-			 * <em>string literal - related value</em> (kept in a string representation)
-			 */
-			std::map<std::string, std::string> fields;
-
-			std::string info_fname;
-
-
-		} m_info_params;
 
 		/**\brief Time it took to record the dataset.
 		 * Processing time should (at least) be equal to the grab time for the
