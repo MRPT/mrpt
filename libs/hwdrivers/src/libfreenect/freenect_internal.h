@@ -10,7 +10,7 @@
 #ifndef FREENECT_INTERNAL_H
 #define FREENECT_INTERNAL_H
 
-#include <mrpt/utils/mrpt_stdint.h>
+#include <cstdint>
 
 #include "libfreenect.h"
 
