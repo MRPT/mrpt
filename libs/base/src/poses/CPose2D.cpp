@@ -383,6 +383,10 @@ void CPose2D::fromString(const std::string &s)
 	phi( DEG2RAD(m.get_unsafe(0,2)) );
 }
 
+void CPose2D::fromStringRaw(const std::string &s) {
+	this->fromString("[" + s + "]");
+}
+
 double CPose2D::distance2DFrobeniusTo( const CPose2D & p) const
 {
      return std::sqrt(square(p.x()-x())+square(p.y()-y())+4*(1-cos(p.phi()-phi())));
