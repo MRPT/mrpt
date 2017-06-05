@@ -57,6 +57,9 @@ bool CIncrementalNodeRegistrationDecider<GRAPH_T>::checkRegistrationConditionPos
 		const mrpt::poses::CPose3D& p2) const {
 	using namespace mrpt::math;
 	
+std::cout << "In checkRegistrationConditionPose:\np1: " << p1.asString() <<
+	"\np2: " << p1.asString() << std::endl;
+
 	bool res = false;
 	if ((p1.distanceTo(p2) > params.registration_max_distance) ||
 			(fabs(wrapToPi(p1.roll() - p2.roll())) > params.registration_max_angle) ||

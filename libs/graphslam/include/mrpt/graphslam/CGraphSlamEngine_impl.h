@@ -38,6 +38,7 @@ CGraphSlamEngine<GRAPH_T>::CGraphSlamEngine(
 	m_rawlog_fname(rawlog_fname),
 	m_fname_GT(fname_GT),
 	m_GT_poses_step(1),
+	m_observation_only_dataset(false),
 	m_win_manager(win_manager),
 	m_paused_message("Program is paused. Press \"p/P\" to resume."),
 	m_text_index_paused_message(345), // just a large number.
@@ -76,12 +77,6 @@ CGraphSlamEngine<GRAPH_T>::~CGraphSlamEngine() {
 			MRPT_LOG_INFO_STREAM("Closing file: " << (it->first));
 			(it->second)->close();
 		}
-	}
-
-	// change back the CImage path
-	if (mrpt::system::strCmpI(m_GT_file_format, "rgbd_tum")) {
-		MRPT_LOG_DEBUG_STREAM("Changing back the CImage PATH");
-		CImage::IMAGES_PATH_BASE = m_img_prev_path_base;
 	}
 
 	// delete the CDisplayWindowPlots object
@@ -192,8 +187,6 @@ void CGraphSlamEngine<GRAPH_T>::initClass() {
 	// set the CDisplayWindowPlots pointer to null for starters, we don't know if
 	// we are using it
 	m_win_plot = NULL;
-
-	m_observation_only_dataset = false;
 	m_request_to_exit = false;
 
 	// max node number already in the graph
@@ -216,6 +209,13 @@ void CGraphSlamEngine<GRAPH_T>::initClass() {
 		m_optimizer->setWindowManagerPtr(m_win_manager);
 		m_edge_counter.setWindowManagerPtr(m_win_manager);
 	}
+
+	// pass the rawlog filename in all cases - empty filename in case of online
+	// graphSLAM
+	m_node_reg->setRawlogFile(m_rawlog_fname);
+	m_edge_reg->setRawlogFile(m_rawlog_fname);
+	m_optimizer->setRawlogFile(m_rawlog_fname);
+	
 
 	// pass a lock in case of multithreaded implementation
 	m_node_reg->setCriticalSectionPtr(&m_graph_section);
@@ -259,8 +259,6 @@ void CGraphSlamEngine<GRAPH_T>::initClass() {
 		m_visualize_estimated_trajectory = 0;
 		m_visualize_SLAM_metric          = 0;
 		m_enable_curr_pos_viewport       = 0;
-		m_enable_range_viewport          = 0;
-		m_enable_intensity_viewport      = 0;
 	}
 
 	m_use_GT = !m_fname_GT.empty();
@@ -301,33 +299,13 @@ void CGraphSlamEngine<GRAPH_T>::initClass() {
 		}
 		// estimated trajectory visualization
 		this->initEstimatedTrajectoryVisualization();
+
 		// current robot pose  viewport
 		if (m_enable_curr_pos_viewport) {
 			this->initCurrPosViewport();
 		}
 	}
 
-	// change the CImage path in case of RGBD datasets
-	if (mrpt::system::strCmpI(m_GT_file_format, "rgbd_tum")) {
-		// keep the last path - change back to it after rawlog parsing
-		m_img_prev_path_base = CImage::IMAGES_PATH_BASE;
-
-		std::string rawlog_fname_noext = system::extractFileName(m_rawlog_fname);
-		std::string rawlog_dir = system::extractFileDirectory(m_rawlog_fname);
-		std::string m_img_external_storage_dir = rawlog_dir + rawlog_fname_noext
-			+ "_Images/";
-		CImage::IMAGES_PATH_BASE = m_img_external_storage_dir;
-	}
-
-	// 3DRangeScans viewports initialization, in case of RGBD datasets
-	if (mrpt::system::strCmpI(m_GT_file_format, "rgbd_tum")) {
-		if (m_enable_range_viewport) {
-			this->initRangeImageViewport();
-		}
-		if (m_enable_intensity_viewport) {
-			this->initIntensityImageViewport();
-		}
-	}
 	// axis
 	if (m_enable_visuals) {
 		COpenGLScenePtr scene = m_win->get3DSceneAndLock();
@@ -435,23 +413,6 @@ void CGraphSlamEngine<GRAPH_T>::initClass() {
 
 	m_init_timestamp = INVALID_TIMESTAMP;
 
-	// In case we are given an RGBD TUM Dataset - try and read the info file so
-	// that we know how to play back the GT poses.
-	try {
-		m_info_params.setRawlogFile(m_rawlog_fname);
-		m_info_params.parseFile();
-		// set the rate at which we read from the GT poses vector
-		int num_of_objects = std::atoi(
-				m_info_params.fields["Overall number of objects"].c_str());
-		m_GT_poses_step = m_GT_poses.size() / num_of_objects;
-
-		MRPT_LOG_INFO_STREAM("Overall number of objects in rawlog: "<< num_of_objects);
-		MRPT_LOG_INFO_STREAM("Setting the Ground truth read step to: "<< m_GT_poses_step);
-	}
-	catch (std::exception& e) {
-		MRPT_LOG_INFO_STREAM("RGBD_TUM info file was not found: " << e.what());
-	}
-
 	// SLAM evaluation metric
 	m_curr_deformation_energy = 0;
 	if (m_visualize_SLAM_metric) {
@@ -526,7 +487,6 @@ bool CGraphSlamEngine<GRAPH_T>::_execGraphSlamStep(
 			m_observation_only_dataset = true; // false by default
 		}
 		else {
-			MRPT_LOG_DEBUG_STREAM("Action-observation dataset!");
 			MRPT_LOG_DEBUG_STREAM("Action-observation dataset!");
 			ASSERT_(action.present());
 			m_observation_only_dataset = false;
@@ -633,11 +593,6 @@ bool CGraphSlamEngine<GRAPH_T>::_execGraphSlamStep(
 
 			m_curr_odometry_only_pose = pose_t(obs_odometry->odometry);
 			m_odometry_poses.push_back(m_curr_odometry_only_pose);
-		}
-		else if (IS_CLASS(observation, CObservation3DRangeScan)) {
-			m_last_laser_scan3D =
-				static_cast<mrpt::obs::CObservation3DRangeScanPtr>(observation);
-
 		}
 	}
 	else {
@@ -751,41 +706,23 @@ bool CGraphSlamEngine<GRAPH_T>::_execGraphSlamStep(
 	// ensure that the GT is visualized at the same rate as the SLAM procedure
 	// handle RGBD-TUM datasets manually. Advance the GT index accordingly
 	if (m_use_GT) {
-		if (mrpt::system::strCmpI(m_GT_file_format, "rgbd_tum")) { // 1/loop
-		  if (m_enable_visuals) {
-			  this->updateGTVisualization(); // I have already taken care of the step
-			}
-			m_GT_poses_index += m_GT_poses_step;
-		}
-		else if (mrpt::system::strCmpI(m_GT_file_format, "navsimul")) {
-			if (m_observation_only_dataset) { // 1/2loops
-				if (rawlog_entry % 2 == 0) {
-		      if (m_enable_visuals) {
-			      this->updateGTVisualization(); // I have already taken care of the step
-			    }
-					m_GT_poses_index += m_GT_poses_step;
-				}
-			}
-			else { // 1/loop
-				// get both action and observation at a single step - same rate as GT
+		if (m_observation_only_dataset) { // 1/2loops
+			if (rawlog_entry % 2 == 0) {
 		    if (m_enable_visuals) {
 			    this->updateGTVisualization(); // I have already taken care of the step
 			  }
 				m_GT_poses_index += m_GT_poses_step;
 			}
 		}
-	}
-
-	// 3DRangeScans viewports update
-	if (mrpt::system::strCmpI(m_GT_file_format, "rgbd_tum")) {
-		if (m_enable_range_viewport && !m_last_laser_scan3D.null()) {
-			this->updateRangeImageViewport();
-		}
-
-		if (m_enable_intensity_viewport && !m_last_laser_scan3D.null()) {
-			this->updateIntensityImageViewport();
+		else { // 1/loop
+			// get both action and observation at a single step - same rate as GT
+		  if (m_enable_visuals) {
+			  this->updateGTVisualization(); // I have already taken care of the step
+			}
+			m_GT_poses_index += m_GT_poses_step;
 		}
 	}
+
 
 	// Query for events and take corresponding actions
 	if (m_enable_visuals) {
@@ -957,10 +894,6 @@ void CGraphSlamEngine<GRAPH_T>::loadParams(
 			m_sec_general_params,
 			"user_decides_about_output_dir",
 			false, false);
-	m_GT_file_format = cfg_file.read_string(
-			m_sec_general_params,
-			"ground_truth_file_format",
-			"NavSimul", false);
 
 	// Minimum verbosity level of the logger
 	int min_verbosity_level = cfg_file.read_int(
@@ -1004,15 +937,6 @@ void CGraphSlamEngine<GRAPH_T>::loadParams(
 			m_sec_viz_params,
 			"enable_curr_pos_viewport",
 			true, false);
-	m_enable_range_viewport = cfg_file.read_bool(
-			m_sec_viz_params,
-			"enable_range_viewport",
-			false, false);
-	m_enable_intensity_viewport = cfg_file.read_bool(
-			m_sec_viz_params,
-			"enable_intensity_viewport",
-			false, false);
-
 	this->loadMapParams(fname);
 
 	m_node_reg->loadParams(fname);
@@ -1092,8 +1016,6 @@ void CGraphSlamEngine<GRAPH_T>::getParamsAsString(
 	ss_out << "Config filename                 = "
 		<< m_config_fname << std::endl;
 
-	ss_out << "Ground Truth File format        = "
-		<< m_GT_file_format << std::endl;
 	ss_out << "Ground Truth filename           = "
 		<< m_fname_GT << std::endl;
 
@@ -1111,10 +1033,6 @@ void CGraphSlamEngine<GRAPH_T>::getParamsAsString(
 
 	ss_out << "Enable curr. position viewport  = "
 		<< ( m_enable_curr_pos_viewport ? "TRUE" : "FALSE" ) << endl;
-	ss_out << "Enable range img viewport       = "
-		<< ( m_enable_range_viewport ? "TRUE" : "FALSE" ) << endl;
-	ss_out << "Enable intensity img viewport   = "
-		<< ( m_enable_intensity_viewport ? "TRUE" : "FALSE" ) << endl;
 
 	ss_out << "-----------------------------------------------------------"
 		<< std::endl;
@@ -1178,26 +1096,6 @@ void CGraphSlamEngine<GRAPH_T>::initResultsFile(
 } // end if initResultsFile
 
 template<class GRAPH_T>
-void CGraphSlamEngine<GRAPH_T>::initRangeImageViewport() {
-	MRPT_START;
-	ASSERT_(m_enable_visuals);
-	using namespace mrpt::opengl;
-
-	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
-	COpenGLViewportPtr viewp_range;
-
-	viewp_range = scene->createViewport("viewp_range");
-	double x,y,h,w;
-	m_win_manager->assignViewportParameters(&x, &y, &w, &h);
-	viewp_range->setViewportPosition(x, y, h, w);
-
-	m_win->unlockAccess3DScene();
-	m_win->forceRepaint();
-
-	MRPT_END;
-} // end of initRangeImageViewport
-
-template<class GRAPH_T>
 void CGraphSlamEngine<GRAPH_T>::updateAllVisuals() {
 	MRPT_START;
 	mrpt::synch::CCriticalSectionLocker m_graph_lock(&m_graph_section);
@@ -1210,79 +1108,6 @@ void CGraphSlamEngine<GRAPH_T>::updateAllVisuals() {
 	m_time_logger.leave("Visuals");
 	MRPT_END;
 } // end of updateAllVisuals
-
-template<class GRAPH_T>
-void CGraphSlamEngine<GRAPH_T>::updateRangeImageViewport() {
-	MRPT_START;
-	ASSERT_(m_enable_visuals);
-	using namespace mrpt::math;
-	using namespace mrpt::opengl;
-
-	if (m_last_laser_scan3D->hasRangeImage) {
-
-	// TODO - make this a static class member - or at least a private member of the class
-	CMatrixFloat range2D;
-	mrpt::utils::CImage img;
-
-	// load the image if not already loaded..
-	m_last_laser_scan3D->load();
-	range2D = m_last_laser_scan3D->rangeImage * (1.0f/5.0); // TODO - without the magic number?
-	img.setFromMatrix(range2D);
-
-	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
-	COpenGLViewportPtr viewp_range = scene->getViewport("viewp_range");
-	viewp_range->setImageView(img);
-	m_win->unlockAccess3DScene();
-	m_win->forceRepaint();
-
-	}
-
-	MRPT_END;
-} // end of updateRangeImageViewport
-
-template<class GRAPH_T>
-void CGraphSlamEngine<GRAPH_T>::initIntensityImageViewport() {
-	MRPT_START;
-	ASSERT_(m_enable_visuals);
-	using namespace mrpt::opengl;
-
-	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
-	COpenGLViewportPtr viewp_intensity;
-
-	viewp_intensity = scene->createViewport("viewp_intensity");
-	double x, y, w, h;
-	m_win_manager->assignViewportParameters(&x, &y, &w, &h);
-	viewp_intensity->setViewportPosition(x, y, w, h);
-
-	m_win->unlockAccess3DScene();
-	m_win->forceRepaint();
-
-	MRPT_END;
-} // end of initIntensityImageViewport
-
-template<class GRAPH_T>
-void CGraphSlamEngine<GRAPH_T>::updateIntensityImageViewport() {
-	MRPT_START;
-	ASSERT_(m_enable_visuals);
-	using namespace mrpt::opengl;
-
-	if (m_last_laser_scan3D->hasIntensityImage) {
-	mrpt::utils::CImage img ;
-
-	// load the image if not already loaded..
-	m_last_laser_scan3D->load();
-	img = m_last_laser_scan3D->intensityImage;
-
-	COpenGLScenePtr scene = m_win->get3DSceneAndLock();
-	COpenGLViewportPtr viewp_intensity = scene->getViewport("viewp_intensity");
-	viewp_intensity->setImageView(img);
-	m_win->unlockAccess3DScene();
-	m_win->forceRepaint();
-
-	}
-
-	MRPT_END;
-} // end of updateIntensityImageViewport
 
 template<class GRAPH_T>
 mrpt::opengl::CSetOfObjectsPtr CGraphSlamEngine<GRAPH_T>::initRobotModelVisualization() {
@@ -1355,60 +1180,6 @@ inline void CGraphSlamEngine<GRAPH_T>::updateCurrPosViewport() {
 
 	MRPT_END;
 }
-
-template<class GRAPH_T>
-void CGraphSlamEngine<GRAPH_T>::alignOpticalWithMRPTFrame() {
-	MRPT_START;
-	using namespace std;
-	using namespace mrpt::math;
-	using namespace mrpt::utils;
-
-	// aligning GT (optical) frame with the MRPT frame
-	// Set the rotation matrix from the corresponding RPY angles
-	// MRPT Frame: X->forward; Y->Left; Z->Upward
-	// Optical Frame: X->Right; Y->Downward; Z->Forward
-	ASSERT_(m_has_read_config);
-	// rotz
-	double anglez = DEG2RAD(0.0);
-	const double tmpz[] = {
-		cos(anglez),     -sin(anglez), 0,
-		sin(anglez),     cos(anglez),  0,
-		0,               0,            1  };
-	CMatrixDouble rotz(3, 3, tmpz);
-
-	// roty
-	double angley = DEG2RAD(0.0);
-	//double angley = DEG2RAD(90.0);
-	const double tmpy[] = {
-		cos(angley),      0,      sin(angley),
-		0,                1,      0,
-		-sin(angley),     0,      cos(angley)  };
-	CMatrixDouble roty(3, 3, tmpy);
-
-	// rotx
-	//double anglex = DEG2RAD(-90.0);
-	double anglex = DEG2RAD(0.0);
-	const double tmpx[] = {
-		1,        0,               0,
-		0,        cos(anglex),     -sin(anglex),
-		0,        sin(anglex),     cos(anglex)  };
-	CMatrixDouble rotx(3, 3, tmpx);
-
-	stringstream ss_out;
-	ss_out << "\nConstructing the rotation matrix for the GroundTruth Data..."
-		<< endl;
-	m_rot_TUM_to_MRPT = rotz * roty * rotx;
-
-	ss_out << "Rotation matrices for optical=>MRPT transformation" << endl;
-	ss_out << "rotz: " << endl << rotz << endl;
-	ss_out << "roty: " << endl << roty << endl;
-	ss_out << "rotx: " << endl << rotx << endl;
-	ss_out << "Full rotation matrix: " << endl << m_rot_TUM_to_MRPT << endl;
-
-	MRPT_LOG_DEBUG_STREAM(ss_out);
-
-	MRPT_END;
-} // end of alignOpticalWithMRPTFrame
 
 template<class GRAPH_T>
 void CGraphSlamEngine<GRAPH_T>::queryObserverForEvents() {
@@ -2056,92 +1827,6 @@ updateEstimatedTrajectoryVisualization(bool full_update) {
 	MRPT_END;
 } // end of updateEstimatedTrajectoryVisualization
 
-
-// TRGBDInfoFileParams
-// ////////////////////////////////
-template<class GRAPH_T>
-CGraphSlamEngine<GRAPH_T>::
-TRGBDInfoFileParams::TRGBDInfoFileParams(const std::string& rawlog_fname) {
-
-	this->setRawlogFile(rawlog_fname);
-	this->initTRGBDInfoFileParams();
-}
-template<class GRAPH_T>
-CGraphSlamEngine<GRAPH_T>::
-TRGBDInfoFileParams::TRGBDInfoFileParams() {
-	this->initTRGBDInfoFileParams();
-}
-template<class GRAPH_T>
-CGraphSlamEngine<GRAPH_T>::
-TRGBDInfoFileParams::~TRGBDInfoFileParams() { }
-
-template<class GRAPH_T>
-void CGraphSlamEngine<GRAPH_T>::TRGBDInfoFileParams::setRawlogFile(
-		const std::string& rawlog_fname) {
-
-	// get the correct info filename from the rawlog_fname
-	std::string dir = mrpt::system::extractFileDirectory(rawlog_fname);
-	std::string rawlog_filename = mrpt::system::extractFileName(rawlog_fname);
-	std::string name_prefix = "rawlog_";
-	std::string name_suffix = "_info.txt";
-	info_fname = dir + name_prefix + rawlog_filename + name_suffix;
-}
-
-template<class GRAPH_T>
-void CGraphSlamEngine<GRAPH_T>::
-TRGBDInfoFileParams::initTRGBDInfoFileParams() {
-	// fields to use
-	fields["Overall number of objects"] = "";
-	fields["Observations format"] = "";
-}
-
-template<class GRAPH_T>
-void CGraphSlamEngine<GRAPH_T>::TRGBDInfoFileParams::parseFile() {
-	ASSERT_FILE_EXISTS_(info_fname);
-	using namespace std;
-	using namespace mrpt::utils;
-
-	// open file
-	CFileInputStream info_file(info_fname);
-	ASSERTMSG_(info_file.fileOpenCorrectly(),
-			"\nTRGBDInfoFileParams::parseFile: Couldn't open info file\n");
-
-	string curr_line;
-	size_t line_cnt = 0;
-
-	// parse until you find an empty line.
-	while (true) {
-		info_file.readLine(curr_line);
-		line_cnt++;
-		if (curr_line.size() == 0)
-			break;
-	}
-
-	// parse the meaningful data
-	while (info_file.readLine(curr_line)) {
-		// split current line at ":"
-		vector<string> curr_tokens;
-		mrpt::system::tokenize(curr_line, ":", curr_tokens);
-
-		ASSERT_EQUAL_(curr_tokens.size(), 2);
-
-		// evaluate the name. if name in info struct then fill the corresponding
-		// info struct parameter with the value_part in the file.
-		std::string literal_part = mrpt::system::trim(curr_tokens[0]);
-		std::string value_part   = mrpt::system::trim(curr_tokens[1]);
-
-		for (std::map<std::string, std::string>::iterator it = fields.begin();
-				it != fields.end(); ++it) {
-			if (mrpt::system::strCmpI(it->first, literal_part)) {
-				it->second = value_part;
-			}
-		}
-
-		line_cnt++;
-	}
-
-}
-////////////////////////////////////////////////////////////////////////////////
 
 template<class GRAPH_T>
 void CGraphSlamEngine<GRAPH_T>::saveGraph(

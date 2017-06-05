@@ -12,6 +12,8 @@
 #include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/system/string_utils.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/os.h>
 #include <mrpt/utils/mrpt_macros.h>
 #include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/utils/CFileInputStream.h>
@@ -45,6 +47,8 @@ namespace mrpt { namespace utils {
 				mrpt::poses::CPose3D& p) {
 			std::vector<std::string> curr_tokens;
 			mrpt::system::tokenize(s, " ", curr_tokens);
+
+			MRPT_TODO("Is the transformation of frames needed?");
 
 			ASSERTMSG_(curr_tokens.size() == 7,
 					mrpt::format(
@@ -93,6 +97,7 @@ namespace mrpt { namespace utils {
 			p_quat.fromStringRaw(s);
 			p = mrpt::poses::CPose3D(p_quat);
 		} // end of getPoseFromString
+
 
 	} // end of namespace internal
 
@@ -166,13 +171,15 @@ namespace mrpt { namespace utils {
 		}
 
 		// handle the first pose as an offset
-		POSE_T pose_offset;
+		POSE_T pose_offset_opposite;
 		if (substract_init_offset) {
+			POSE_T pose_offset;
 			getPoseFromString(
 					std::string(
 						curr_line.begin() + curr_line.find_first_of(" \t") + 1,
 						curr_line.end()),
 					pose_offset);
+			pose_offset_opposite = pose_offset.getOppositeScalar();
 		}
 
 		// parse the file - get timestamp and pose and fill in the vector
@@ -194,7 +201,7 @@ namespace mrpt { namespace utils {
 
 			// scalar substraction of initial offset
 			if (substract_init_offset) {
-				curr_pose.addComponents(POSE_T() - pose_offset);
+				curr_pose.addComponents(pose_offset_opposite);
 			}		
 
 			// push the newly created pose
