@@ -74,7 +74,6 @@ void CIncrementalNodeRegistrationDecider<GRAPH_T>::loadParams(
 	MRPT_START;
 	using namespace mrpt::utils;
 	parent_t::loadParams(source_fname);
-std::cout << "TODO - Remove me. Kalimera ==> " << 5 << std::endl;
 
 	params.loadFromConfigFileName(source_fname,
 			"NodeRegistrationDeciderParameters");
@@ -86,7 +85,6 @@ template<class GRAPH_T>
 void CIncrementalNodeRegistrationDecider<GRAPH_T>::printParams() const {
 	MRPT_START;
 	parent_t::printParams();
-std::cout << "TODO - Remove me. Kalimera ==> " << 4 << std::endl;
 	params.dumpToConsole();
 
 	MRPT_END;
@@ -109,7 +107,6 @@ void CIncrementalNodeRegistrationDecider<GRAPH_T>::getDescriptiveReport(
 
 template<class GRAPH_T>
 CIncrementalNodeRegistrationDecider<GRAPH_T>::TParams::TParams() {
-std::cout << "TODO - Remove me. Kalimera ==> " << 2 << std::endl;
 }
 
 template<class GRAPH_T>
@@ -119,7 +116,6 @@ CIncrementalNodeRegistrationDecider<GRAPH_T>::TParams::~TParams() {
 template<class GRAPH_T>
 void CIncrementalNodeRegistrationDecider<GRAPH_T>::TParams::dumpToTextStream(
 		mrpt::utils::CStream &out) const {
-std::cout << "TODO - Remove me. Kalimera ==> " << 3 << std::endl;
 	MRPT_START;
 	out.printf("%s", this->getAsString().c_str());
 	MRPT_END;
@@ -132,7 +128,6 @@ void CIncrementalNodeRegistrationDecider<GRAPH_T>::TParams::loadFromConfigFile(
 	MRPT_START;
 	using namespace mrpt::math;
 	using namespace mrpt::utils;
-std::cout << "TODO - Remove me. Kalimera ==> " << 6 << std::endl;
 
 	registration_max_distance = source.read_double(
 			section,
@@ -156,7 +151,6 @@ getAsString(std::string* params_out) const {
 
 	double max_angle_deg = RAD2DEG(registration_max_angle);
 	params_out->clear();
-std::cout << "TODO - Remove me. Kalimera ==> " << 1 << std::endl;
 
 	*params_out +=
 		"------------------[ Fixed Intervals Incremental Node Registration ]------------------\n";
