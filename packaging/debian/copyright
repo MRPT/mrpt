@@ -335,21 +335,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       http://www.stanford.edu/~darthur/kmpp.zip
 
  * libfreenect.
- The libfreenect project is covered under a dual Apache v2/GPL v2
- license. The licensing criteria are listed below, as well as at the
- top of each source file in the repo.
-   http://www.openkinect.org
    
  Copyright (c) 2010 individual OpenKinect contributors. See the CONTRIB
  file for details.
 
  This code is licensed to you under the terms of the Apache License,
- version 2.0, or, at your option, the terms of the GNU General Public
- License, version 2.0. See the APACHE20 and GPL2 files for the text of
- the licenses, or the following URLs:
+ version 2.0. See the APACHE20 file for the text of
+ the license, or the following URL:
  http://www.apache.org/licenses/LICENSE-2.0
- http://www.gnu.org/licenses/gpl-2.0.txt
-
+ 
  * RPly library.
  Copyright (C) 2003-2005 Diego Nehab. MIT License.
   http://w3.impa.br/~diego/software/rply/
