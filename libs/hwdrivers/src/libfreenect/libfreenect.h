@@ -13,7 +13,7 @@
 #ifndef LIBFREENECT_H
 #define LIBFREENECT_H
 
-#include <cstdint>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
