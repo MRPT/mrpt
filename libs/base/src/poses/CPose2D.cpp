@@ -244,7 +244,7 @@ void CPose2D::inverseComposeFrom(const CPose2D& A, const CPose2D& B )
  Scalar sum of components: This is diferent from poses
    composition, which is implemented as "+" operators in "CPose" derived classes.
  ---------------------------------------------------------------*/
-void CPose2D::AddComponents(const CPose2D &p)
+void CPose2D::addComponents(const CPose2D &p)
 {
 	m_coords[0]+=p.m_coords[0];
 	m_coords[1]+=p.m_coords[1];
