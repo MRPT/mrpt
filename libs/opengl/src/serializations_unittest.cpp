@@ -28,7 +28,6 @@ namespace mrpt { namespace utils {
 TEST(SerializeTestOpenGL, WriteReadToMem)
 {
 	const mrpt::utils::TRuntimeClassId* lstClasses[] = {
-		CLASS_ID( C3DSScene ),
 		CLASS_ID( CAxis ),
 		CLASS_ID( CBox ),
 		CLASS_ID( CFrustum ),
@@ -84,4 +83,3 @@ TEST(SerializeTestOpenGL, WriteReadToMem)
 		}
 	}
 }
-
