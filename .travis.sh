@@ -16,13 +16,11 @@ function build ()
   # gcc is too slow and we have a time limit in Travis CI: exclude examples when building with gcc
   if [ "$CC" == "gcc" ]; then
     BUILD_EXAMPLES=FALSE
-    BUILD_ARIA=FALSE
   else
     BUILD_EXAMPLES=TRUE
-    BUILD_ARIA=ON
   fi
 
-  cmake $MRPT_DIR -DBUILD_EXAMPLES=$BUILD_EXAMPLES -DBUILD_APPLICATIONS=TRUE -DBUILD_TESTING=FALSE -DBUILD_ARIA=$BUILD_ARIA
+  cmake $MRPT_DIR -DBUILD_EXAMPLES=$BUILD_EXAMPLES -DBUILD_APPLICATIONS=TRUE -DBUILD_TESTING=FALSE
   make -j2
 
 	cd $MRPT_DIR
@@ -40,7 +38,7 @@ function test ()
   fi
 
   mkdir $BUILD_DIR && cd $BUILD_DIR
-  cmake $MRPT_DIR -DBUILD_APPLICATIONS=FALSE -DBUILD_ARIA=FALSE -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
+  cmake $MRPT_DIR -DBUILD_APPLICATIONS=FALSE -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
   # Remove gdb use for coverage test reports.
   # Use `test_gdb` to show stack traces of failing unit tests.
 #  if command_exists gdb ; then

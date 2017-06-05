@@ -36,7 +36,6 @@ MRPT_WARNING("Including <mrpt/hwdrivers.h> makes compilation much slower, consid
 #include <mrpt/hwdrivers/CSerialPort.h>
 #include <mrpt/hwdrivers/CIMUXSens.h>
 #include <mrpt/hwdrivers/CIMUXSens_MT4.h>
-#include <mrpt/hwdrivers/CActivMediaRobotBase.h>
 #include <mrpt/hwdrivers/CJoystick.h>
 #include <mrpt/hwdrivers/CCameraSensor.h>
 #include <mrpt/hwdrivers/CPtuDPerception.h>

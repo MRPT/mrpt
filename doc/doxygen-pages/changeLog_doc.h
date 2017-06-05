@@ -115,6 +115,7 @@
 				- mrpt::hwdrivers::CBoardDLMS
 				- mrpt::hwdrivers::CPtuHokuyo
 			- mrpt::hwdrivers::CHokuyoURG no longer as a "verbose" field. It's superseded now by the COutputLogger interface.
+			- mrpt::hwdrivers::CActivMediaRobotBase and the embedded ARIA library have been removed. Nowadays, one can access to ARIA robots via ROS packages more easily than via MRPT.
 		- \ref mrpt_maps_grp
 			- mrpt::maps::CMultiMetricMapPDF added method CMultiMetricMapPDF::prediction_and_update_pfAuxiliaryPFStandard().
 		- \ref mrpt_nav_grp

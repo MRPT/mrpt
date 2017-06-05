@@ -241,7 +241,6 @@ IF(BUILD_EXAMPLES)
 			SerialPort_test
 			FTDI_USB_enumerate_test
 			joystick
-			pioneerRobotDemo
 			captureVideoFFmpeg
 			ptuDPerception
 			tuMicos
