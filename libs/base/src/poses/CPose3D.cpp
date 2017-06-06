@@ -780,7 +780,7 @@ void CPose3D::exp(const mrpt::math::CArrayNumeric<double,6> & mu, CPose3D &out_p
 
 CArrayDouble<3> CPose3D::ln_rotation() const
 {
-	Sophus::SO3<double> R = this->m_ROT;
+	Sophus::SO3<double> R(this->m_ROT);
 	return R.log();
 }
 
