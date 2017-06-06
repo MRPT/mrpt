@@ -142,17 +142,6 @@ namespace mrpt
                      */
                     bool lhm(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat);
                     
-                    /**
-                     * @brief \cite chandra SO(3) - PnP: Gradient descent based local search optimization
-                     * @param[in] obj_pts   Object points in Camera Co-ordinate system {C} nX3 array [p_x p_y p_z]
-                     * @param[in] img_pts Image points in pixels nX3 array containing pixel data from camera [u, v, 1]
-                     * @param[in] n number of 2D-3D correspondences
-                     * @param[in] cam_intrinsic Camera Intrinsic matrix
-                     * @param[out] pose_mat Output pose vector 6X1, pose_mat[0:2]-> Translation, pose_mat[3:5] -> Quaternion vector component 
-                     * @return success flag
-                     * @return 
-                     */
-                    bool so3(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat);
             };
             
             /** @}  */ // end of grouping
