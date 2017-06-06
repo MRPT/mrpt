@@ -754,9 +754,6 @@ void CPose3D::inverseComposePoint(const double gx,const double gy,const double g
 	}
 }
 
-/** Exponentiate a Vector in the SE3 Lie Algebra to generate a new CPose3D.
-  * \note Method from TooN (C) Tom Drummond (GNU GPL)
-  */
 CPose3D CPose3D::exp(const mrpt::math::CArrayNumeric<double,6> & mu,bool pseudo_exponential )
 {
 	CPose3D P(UNINITIALIZED_POSE);
@@ -793,18 +790,13 @@ CMatrixDouble33 CPose3D::exp_rotation(const mrpt::math::CArrayNumeric<double,3> 
 	return R.matrix();
 }
 
-/** Take the logarithm of the 3x4 matrix defined by this pose, generating the corresponding vector in the SE3 Lie Algebra.
-  * \note Method from TooN (C) Tom Drummond (GNU GPL)
-  */
 void CPose3D::ln(CArrayDouble<6> &result) const
 {
 	const Sophus::SE3<double> RT(m_ROT, m_coords);
 	result = RT.log();
 }
 
-MRPT_TODO("Port this to Sophus?");
-/* The following code fragments are from TooN and RobotVision packages.
-*/
+/* The following code fragments are based on formulas originally reported in the TooN and RobotVision packages */
 namespace mrpt
 {
 	namespace poses
@@ -901,8 +893,6 @@ namespace mrpt
 			}
 			M3x9(a,B,J);
 		}
-
-
 	}
 }
 
