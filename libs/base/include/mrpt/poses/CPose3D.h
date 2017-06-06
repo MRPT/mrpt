@@ -458,20 +458,17 @@ namespace poses
 		    @{ */
 
 		/** Exponentiate a Vector in the SE(3) Lie Algebra to generate a new CPose3D (static method).
-		  * \param pseudo_exponential If set to true, XYZ are copied from the first three elements in the vector instead of using the proper Lie Algebra formulas (this is actually the common practice in robotics literature).
-		  * \note Method from TooN (C) Tom Drummond (GNU GPL) */
+		  * \param pseudo_exponential If set to true, XYZ are copied from the first three elements in the vector instead of using the proper Lie Algebra formulas (this is actually the common practice in robotics literature).  */
 		static CPose3D exp(const mrpt::math::CArrayNumeric<double,6> & vect, bool pseudo_exponential = false);
 
 		/** \overload */
 		static void exp(const mrpt::math::CArrayNumeric<double,6> & vect, CPose3D &out_pose, bool pseudo_exponential = false);
 
-		/** Exponentiate a vector in the Lie algebra to generate a new SO(3) (a 3x3 rotation matrix).
-		  * \note Method from TooN (C) Tom Drummond (GNU GPL) */
+		/** Exponentiate a vector in the Lie algebra to generate a new SO(3) (a 3x3 rotation matrix). */
 		static mrpt::math::CMatrixDouble33 exp_rotation(const mrpt::math::CArrayNumeric<double,3> & vect);
 
 
 		/** Take the logarithm of the 3x4 matrix defined by this pose, generating the corresponding vector in the SE(3) Lie Algebra.
-		  * \note Method from TooN (C) Tom Drummond (GNU GPL)
 		  * \sa ln_jacob
 		  */
 		void ln(mrpt::math::CArrayDouble<6> &out_ln) const;
@@ -480,7 +477,6 @@ namespace poses
 		inline mrpt::math::CArrayDouble<6> ln() const { mrpt::math::CArrayDouble<6> ret; ln(ret); return ret; }
 
 		/** Jacobian of the logarithm of the 3x4 matrix defined by this pose.
-		  * \note Method from TooN (C) Tom Drummond (GNU GPL)
 		  * \sa ln
 		  */
 		void ln_jacob(mrpt::math::CMatrixFixedNumeric<double,6,12> &J) const;
@@ -490,8 +486,7 @@ namespace poses
 		  */
 		static void ln_rot_jacob(const mrpt::math::CMatrixDouble33 &R, mrpt::math::CMatrixFixedNumeric<double,3,9> &M);
 
-		/** Take the logarithm of the 3x3 rotation matrix, generating the corresponding vector in the Lie Algebra.
-		  * \note Method from TooN (C) Tom Drummond (GNU GPL) */
+		/** Take the logarithm of the 3x3 rotation matrix, generating the corresponding vector in the Lie Algebra */
 		mrpt::math::CArrayDouble<3> ln_rotation() const;
 
 		/** The Jacobian d (e^eps * D) / d eps , with eps=increment in Lie Algebra.

@@ -38,10 +38,8 @@
 #include <mrpt/utils/CSerializable.h>                        // for CSeriali...
 #include <mrpt/utils/bits.h>                                 // for square
 #include <mrpt/math/utils_matlab.h>
-
-#ifndef M_SQRT1_2
-#define M_SQRT1_2 0.70710678118654752440
-#endif
+#include <mrpt/otherlibs/sophus/so3.hpp>
+#include <mrpt/otherlibs/sophus/se3.hpp>
 
 using namespace mrpt;
 using namespace mrpt::math;
@@ -768,165 +766,31 @@ CPose3D CPose3D::exp(const mrpt::math::CArrayNumeric<double,6> & mu,bool pseudo_
 
 void CPose3D::exp(const mrpt::math::CArrayNumeric<double,6> & mu, CPose3D &out_pose, bool pseudo_exponential)
 {
-	static const double one_6th = 1.0/6.0;
-	static const double one_20th = 1.0/20.0;
-
-	CArrayDouble<3> mu_xyz;
-	for (int i=0;i<3;i++) mu_xyz[i] = mu[i];
-
-	CArrayDouble<3> w;
-	for (int i=0;i<3;i++) w[i] = mu[3+i];
-
-	const double theta_sq = w.squareNorm(); // w*w;
-	const double theta = std::sqrt(theta_sq);
-	double A, B;
-
-	CArrayDouble<3> cross;
-	mrpt::math::crossProduct3D(w, mu_xyz, cross );
-
-	if (theta_sq < 1e-8)
+	if (pseudo_exponential)
 	{
-		A = 1.0 - one_6th * theta_sq;
-		B = 0.5;
-
-		if (!pseudo_exponential)
-		{
-			out_pose.m_coords[0] = mu_xyz[0] + 0.5 * cross[0];
-			out_pose.m_coords[1] = mu_xyz[1] + 0.5 * cross[1];
-			out_pose.m_coords[2] = mu_xyz[2] + 0.5 * cross[2];
-		}
+		auto R = Sophus::SO3<double>::exp( mu.block<3,1>(3,0) );
+		out_pose.setRotationMatrix(R.matrix());
+		out_pose.x(mu[0]);
+		out_pose.y(mu[1]);
+		out_pose.z(mu[2]);
 	}
 	else
 	{
-		double C;
-		if (theta_sq < 1e-6)
-		{
-			C = one_6th*(1.0 - one_20th * theta_sq);
-			A = 1.0 - theta_sq * C;
-			B = 0.5 - 0.25 * one_6th * theta_sq;
-		}
-		else
-		{
-			const double inv_theta = 1.0/theta;
-			A = sin(theta) * inv_theta;
-			B = (1 - cos(theta)) * (inv_theta * inv_theta);
-			C = (1 - A) * (inv_theta * inv_theta);
-		}
-
-		CArrayDouble<3> w_cross;	// = w^cross
-		mrpt::math::crossProduct3D(w, cross, w_cross );
-
-		if (!pseudo_exponential)
-		{
-			//result.get_translation() = mu_xyz + B * cross + C * (w ^ cross);
-			out_pose.m_coords[0] = mu_xyz[0] + B * cross[0] + C * w_cross[0];
-			out_pose.m_coords[1] = mu_xyz[1] + B * cross[1] + C * w_cross[1];
-			out_pose.m_coords[2] = mu_xyz[2] + B * cross[2] + C * w_cross[2];
-		}
+		auto R = Sophus::SE3<double>::exp(mu);
+		out_pose = CPose3D( CMatrixDouble44(R.matrix()));
 	}
-
-	// 3x3 rotation part:
-	mrpt::math::rodrigues_so3_exp(w, A, B, out_pose.m_ROT);
-
-	if (pseudo_exponential) out_pose.m_coords = mu_xyz;
-	// else: has been already filled in above.
 }
 
-
-
-/** Take the logarithm of the 3x3 rotation matrix, generating the corresponding vector in the Lie Algebra.
-  * \note Method from TooN (C) Tom Drummond (GNU GPL)
-  */
 CArrayDouble<3> CPose3D::ln_rotation() const
 {
-	CArrayDouble<3> result;
-
-	const double cos_angle = (m_ROT.trace() - 1.0) * 0.5;
-	result[0] = (m_ROT(2,1)-m_ROT(1,2))*0.5;
-	result[1] = (m_ROT(0,2)-m_ROT(2,0))*0.5;
-	result[2] = (m_ROT(1,0)-m_ROT(0,1))*0.5;
-
-	double sin_angle_abs = result.norm(); //sqrt(result*result);
-	if (cos_angle > M_SQRT1_2)
-	{            // [0 - Pi/4[ use asin
-		if(sin_angle_abs > 0){
-			result *= asin(sin_angle_abs) / sin_angle_abs;
-		}
-	}
-	else if( cos_angle > -M_SQRT1_2)
-	{    // [Pi/4 - 3Pi/4[ use acos, but antisymmetric part
-		double angle = acos(cos_angle);
-		result *= angle / sin_angle_abs;
-	}
-	else
-	{  // rest use symmetric part
-		// antisymmetric part vanishes, but still large rotation, need information from symmetric part
-		const double angle = M_PI - asin(sin_angle_abs);
-		const double
-			d0 = m_ROT(0,0) - cos_angle,
-			d1 = m_ROT(1,1) - cos_angle,
-			d2 = m_ROT(2,2) - cos_angle;
-		CArrayDouble<3> r2;
-		if(fabs(d0) > fabs(d1) && fabs(d0) > fabs(d2))
-		{ // first is largest, fill with first column
-			r2[0] = d0;
-			r2[1] = (m_ROT(1,0)+m_ROT(0,1))*0.5;
-			r2[2] = (m_ROT(0,2)+m_ROT(2,0))*0.5;
-		}
-		else if(fabs(d1) > fabs(d2))
-		{ 			    // second is largest, fill with second column
-			r2[0] = (m_ROT(1,0)+m_ROT(0,1))*0.5;
-			r2[1] = d1;
-			r2[2] = (m_ROT(2,1)+m_ROT(1,2))*0.5;
-		}
-		else
-		{							    // third is largest, fill with third column
-			r2[0] = (m_ROT(0,2)+m_ROT(2,0))*0.5;
-			r2[1] = (m_ROT(2,1)+m_ROT(1,2))*0.5;
-			r2[2] = d2;
-		}
-		// flip, if we point in the wrong direction!
-		if( mrpt::math::dotProduct<CArrayDouble<3>,CArrayDouble<3> >(r2,result) < 0)
-			r2 *= -1;
-		result = r2;
-		result *= (angle/r2.norm());
-	}
-	return result;
+	Sophus::SO3<double> R = this->m_ROT;
+	return R.log();
 }
 
-/** Exponentiate a vector in the Lie algebra to generate a new SO3 (a 3x3 rotation matrix).
-  * \note Method from TooN (C) Tom Drummond (GNU GPL) */
 CMatrixDouble33 CPose3D::exp_rotation(const mrpt::math::CArrayNumeric<double,3> & w)
 {
-	using std::sqrt;
-	using std::sin;
-	using std::cos;
-
-	static const double one_6th = 1.0/6.0;
-	static const double one_20th = 1.0/20.0;
-
-	const double theta_sq = w.squareNorm(); //w*w;
-	const double theta = sqrt(theta_sq);
-	double A, B;
-	//Use a Taylor series expansion near zero. This is required for
-	//accuracy, since sin t / t and (1-cos t)/t^2 are both 0/0.
-	if (theta_sq < 1e-8) {
-		A = 1.0 - one_6th * theta_sq;
-		B = 0.5;
-	} else {
-		if (theta_sq < 1e-6) {
-			B = 0.5 - 0.25 * one_6th * theta_sq;
-			A = 1.0 - theta_sq * one_6th*(1.0 - one_20th * theta_sq);
-		} else {
-			const double inv_theta = 1.0/theta;
-			A = sin(theta) * inv_theta;
-			B = (1 - cos(theta)) * (inv_theta * inv_theta);
-		}
-	}
-
-	CMatrixDouble33 result(UNINITIALIZED_MATRIX);
-	mrpt::math::rodrigues_so3_exp(w, A, B, result);
-	return result;
+	auto R = Sophus::SO3<double>::exp(w);
+	return R.matrix();
 }
 
 /** Take the logarithm of the 3x4 matrix defined by this pose, generating the corresponding vector in the SE3 Lie Algebra.
@@ -934,37 +798,11 @@ CMatrixDouble33 CPose3D::exp_rotation(const mrpt::math::CArrayNumeric<double,3> 
   */
 void CPose3D::ln(CArrayDouble<6> &result) const
 {
-	CArrayDouble<3> rot = this->ln_rotation();
-	const double theta =  rot.norm(); //sqrt(rot*rot);
-
-	double shtot = 0.5;
-	if(theta > 0.00001)
-		shtot = sin(theta*0.5)/theta;
-
-	// now do the rotation
-	CArrayDouble<3> rot_half = rot;
-	rot_half*=-0.5;
-	const CMatrixDouble33 halfrotator = CPose3D::exp_rotation(rot_half);
-
-	CArrayDouble<3> rottrans; // = halfrotator * xyz;
-	halfrotator.multiply_Ab(m_coords, rottrans);
-
-	if(theta > 0.001)
-	{
-		rottrans -= rot * ( m_coords.dot(rot) * (1-2*shtot) / rot.squareNorm() ); //(rot*rot));
-	}
-	else
-	{
-		rottrans -= rot * ( m_coords.dot(rot)/24);
-	}
-
-	rottrans *= 1.0/(2 * shtot);
-
-	for (int i=0;i<3;i++) result[i] = rottrans[i];
-	for (int i=0;i<3;i++) result[3+i] = rot[i];
+	const Sophus::SE3<double> RT(m_ROT, m_coords);
+	result = RT.log();
 }
 
-
+MRPT_TODO("Port this to Sophus?");
 /* The following code fragments are from TooN and RobotVision packages.
 */
 namespace mrpt
