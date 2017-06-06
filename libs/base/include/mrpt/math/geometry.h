@@ -963,54 +963,6 @@ namespace mrpt
 			MRPT_END
 		}
 
-
-		/** Compute a rotation exponential using the Rodrigues Formula.
-		  * The rotation axis is given by \f$\vec{w}\f$, and the rotation angle must
-		  * be computed using \f$ \theta = |\vec{w}|\f$. This is provided as a separate
-		  * function primarily to allow fast and rough matrix exponentials using fast
-		  * and rough approximations to \e A and \e B.
-		  *
-		  * \param w Vector about which to rotate.
-		  * \param A \f$\frac{\sin \theta}{\theta}\f$
-		  * \param B \f$\frac{1 - \cos \theta}{\theta^2}\f$
-		  * \param R Matrix to hold the return value.
-		  * \sa CPose3D
-		  * \note Method from TooN (C) Tom Drummond (GNU GPL)
-		  */
-		template <typename VECTOR_LIKE, typename Precision, typename MATRIX_LIKE>
-		inline void rodrigues_so3_exp(const VECTOR_LIKE& w, const Precision A,const Precision B,MATRIX_LIKE & R)
-		{
-			ASSERT_EQUAL_(w.size(),3)
-			ASSERT_EQUAL_(R.getColCount(),3)
-			ASSERT_EQUAL_(R.getRowCount(),3)
-			{
-				const Precision wx2 = (Precision)w[0]*w[0];
-				const Precision wy2 = (Precision)w[1]*w[1];
-				const Precision wz2 = (Precision)w[2]*w[2];
-				R(0,0) = 1.0 - B*(wy2 + wz2);
-				R(1,1) = 1.0 - B*(wx2 + wz2);
-				R(2,2) = 1.0 - B*(wx2 + wy2);
-			}
-			{
-				const Precision a = A*w[2];
-				const Precision b = B*(w[0]*w[1]);
-				R(0,1) = b - a;
-				R(1,0) = b + a;
-			}
-			{
-				const Precision a = A*w[1];
-				const Precision b = B*(w[0]*w[2]);
-				R(0,2) = b + a;
-				R(2,0) = b - a;
-			}
-			{
-				const Precision a = A*w[0];
-				const Precision b = B*(w[1]*w[2]);
-				R(1,2) = b - a;
-				R(2,1) = b + a;
-			}
-		}
-
 		/** @} */  // end of misc. geom. methods
 
 		/** @} */  // end of grouping
