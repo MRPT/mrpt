@@ -60,7 +60,7 @@ BEGIN_EVENT_TABLE(CDlgPoseEst,wxDialog)
 END_EVENT_TABLE()
 
 CDlgPoseEst::CPNP_PTR pose_algos[9] = {
-	&mrpt::vision::pnp::CPnP::epnp, &mrpt::vision::pnp::CPnP::dls, &mrpt::vision::pnp::CPnP::upnp, &mrpt::vision::pnp::CPnP::p3p, &mrpt::vision::pnp::CPnP::lhm, &mrpt::vision::pnp::CPnP::posit, &mrpt::vision::pnp::CPnP::ppnp, &mrpt::vision::pnp::CPnP::rpnp, &mrpt::vision::pnp::CPnP::so3 }
+	&mrpt::vision::pnp::CPnP::epnp, &mrpt::vision::pnp::CPnP::dls, &mrpt::vision::pnp::CPnP::upnp, &mrpt::vision::pnp::CPnP::p3p, &mrpt::vision::pnp::CPnP::lhm, &mrpt::vision::pnp::CPnP::posit, &mrpt::vision::pnp::CPnP::ppnp, &mrpt::vision::pnp::CPnP::rpnp }
 ;
 
 CDlgPoseEst::CDlgPoseEst(wxWindow* parent,wxWindowID id,const wxPoint& pos,const wxSize& size)
