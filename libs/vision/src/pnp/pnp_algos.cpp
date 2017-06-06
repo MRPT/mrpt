@@ -41,7 +41,6 @@
 #include "posit.h"
 #include "lhm.h"
 #include "rpnp.h"
-#include <mrpt/otherlibs/sophus/so3.hpp>
 
 bool mrpt::vision::pnp::CPnP::dls(const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat){
     try{
