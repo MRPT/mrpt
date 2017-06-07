@@ -33,13 +33,41 @@ const std::map<std::string, CRenderizable::Ptr> CDocument::renderizableMaps() co
 {
 	std::map<std::string, CRenderizable::Ptr> renderizable;
 
-	CSimplePointsMap::Ptr prt = m_metricmap.getMapByClass<CSimplePointsMap>();
-	if (prt.get())
 	{
-		CSetOfObjects::Ptr obj = CSetOfObjects::Create();
-		prt->getAs3DObject(obj);
-		renderizable.emplace("Points map", obj);
+		CSimplePointsMap::Ptr prt = m_metricmap.getMapByClass<CSimplePointsMap>();
+		if (prt.get())
+		{
+			CSetOfObjects::Ptr obj = CSetOfObjects::Create();
+			prt->getAs3DObject(obj);
+			renderizable.emplace("Points map", obj);
+		}
 	}
-
+	{
+		COccupancyGridMap2D::Ptr prt = m_metricmap.getMapByClass<COccupancyGridMap2D>();
+		if (prt.get())
+		{
+			CSetOfObjects::Ptr obj = CSetOfObjects::Create();
+			prt->getAs3DObject(obj);
+			renderizable.emplace("Occupancy grid", obj);
+		}
+	}
+	{
+		CBeaconMap::Ptr prt = m_metricmap.getMapByClass<CBeaconMap>();
+		if (prt.get())
+		{
+			CSetOfObjects::Ptr obj = CSetOfObjects::Create();
+			prt->getAs3DObject(obj);
+			renderizable.emplace("Beacon", obj);
+		}
+	}
+	{
+		CLandmarksMap::Ptr prt = m_metricmap.getMapByClass<CLandmarksMap>();
+		if (prt.get())
+		{
+			CSetOfObjects::Ptr obj = CSetOfObjects::Create();
+			prt->getAs3DObject(obj);
+			renderizable.emplace("CLandmarksMap", obj);
+		}
+	}
 	return renderizable;
 }

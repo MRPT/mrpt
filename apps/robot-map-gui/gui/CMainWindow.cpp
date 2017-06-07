@@ -13,12 +13,12 @@
 CMainWindow::CMainWindow(QWidget *parent)
 	: QMainWindow(parent)
 	, m_document(nullptr)
-	, m_tabwidget(new QTabWidget(this))
+	//, m_tabwidget(new QTabWidget(this))
 	, m_ui(std::make_unique<Ui::CMainWindow>())
 {
 	m_ui->setupUi(this);
 	QObject::connect(m_ui->openAction, SIGNAL(triggered(bool)), SLOT(openMap()));
-	QMainWindow::setCentralWidget(m_tabwidget);
+	//QMainWindow::setCentralWidget(m_tabwidget);
 }
 
 CMainWindow::~CMainWindow()
@@ -40,11 +40,12 @@ void CMainWindow::openMap()
 		m_document = new CDocument(fileName.toStdString(), configName.toStdString());
 
 		auto renderizableMaps = m_document->renderizableMaps();
+		m_ui->m_tabWidget->clear();
 		for(auto &it: renderizableMaps)
 		{
-			CGlWidget *gl = new CGlWidget(m_tabwidget);
+			CGlWidget *gl = new CGlWidget(m_ui->m_tabWidget);
 			gl->fillMap(it.second);
-			m_tabwidget->addTab(gl, QString::fromStdString(it.first));
+			m_ui->m_tabWidget->addTab(gl, QString::fromStdString(it.first));
 		}
 	}
 }
