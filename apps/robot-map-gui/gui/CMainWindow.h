@@ -21,7 +21,7 @@ private slots:
 
 private:
 	CDocument *m_document;
-	QTabWidget *m_tabwidget;
+	//QTabWidget *m_tabwidget;
 
 	std::unique_ptr<Ui::CMainWindow> m_ui;
 };
