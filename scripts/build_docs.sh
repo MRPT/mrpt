@@ -228,7 +228,8 @@ CHM_FILENAME="libMRPT-$MRPT_VERSION_STR.chm"
 #   ...
 #
 printf "Generating DOXYGEN project..."
-eval "echo \"`cat doxygen_project.txt.in`\"" > doxygen_project.txt
+envsubst < doxygen_project.txt.in > doxygen_project.txt
+
 printf "OK\n"
 
 printf "Parsing header (.h.in) files for version variables..."
