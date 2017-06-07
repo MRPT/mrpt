@@ -4,6 +4,7 @@
 #include "mrpt/maps/CSimpleMap.h"
 #include "mrpt/maps/CMultiMetricMap.h"
 #include "mrpt/opengl/CRenderizable.h"
+#include "mrpt/utils/CConfigFile.h"
 
 
 class CDocument
@@ -14,6 +15,7 @@ public:
 
 	const std::map<std::string, mrpt::opengl::CRenderizable::Ptr> renderizableMaps() const;
 
+	const mrpt::maps::CSimpleMap &simplemap() const;
 private:
 	mrpt::maps::CSimpleMap m_simplemap;
 	mrpt::maps::CMultiMetricMap m_metricmap;

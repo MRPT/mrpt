@@ -69,5 +69,13 @@ const std::map<std::string, CRenderizable::Ptr> CDocument::renderizableMaps() co
 			renderizable.emplace("CLandmarksMap", obj);
 		}
 	}
+
+
+
 	return renderizable;
+}
+
+const CSimpleMap &CDocument::simplemap() const
+{
+	return m_simplemap;
 }
