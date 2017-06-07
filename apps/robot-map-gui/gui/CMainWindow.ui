@@ -21,7 +21,7 @@
        <widget class="QTabWidget" name="m_tabWidget"/>
       </item>
       <item>
-       <widget class="QTableView" name="tableView">
+       <widget class="QTableView" name="m_tableView">
         <property name="minimumSize">
          <size>
           <width>307</width>

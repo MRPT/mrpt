@@ -1,6 +1,7 @@
 #include "CMainWindow.h"
 #include "CGLWidget.h"
 #include "CDocument.h"
+#include "observationTree/CObservationTreeModel.h"
 
 #include <QMenu>
 #include <QMenuBar>
@@ -47,5 +48,8 @@ void CMainWindow::openMap()
 			gl->fillMap(it.second);
 			m_ui->m_tabWidget->addTab(gl, QString::fromStdString(it.first));
 		}
+
+		CObservationTreeModel *model = new CObservationTreeModel(m_document->simplemap(), m_ui->m_tableView);
+		m_ui->m_tableView->setModel(model);
 	}
 }
