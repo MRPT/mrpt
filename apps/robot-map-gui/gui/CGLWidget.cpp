@@ -120,5 +120,12 @@ void CGlWidget::mouseReleaseEvent(QMouseEvent *event)
 
 void CGlWidget::wheelEvent(QWheelEvent *event)
 {
+	COpenGLViewport::Ptr view = m_3Dscene->getViewport("main");
+	ASSERT_(view);
+	CCamera &cam = view->getCamera();
+
+	float zoom = cam.getZoomDistance() - (event->delta() / 60);
+	cam.setZoomDistance(zoom);
+	update();
 	QGLWidget::wheelEvent(event);
 }
