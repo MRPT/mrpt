@@ -1,5 +1,5 @@
 /* +---------------------------------------------------------------------------+
- |                     Mobile Robot Programming Toolkit (MRPT)               |
+ 	 |                     Mobile Robot Programming Toolkit (MRPT)               |
 	 |                          http://www.mrpt.org/                             |
 	 |                                                                           |
 	 | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
