@@ -70,6 +70,7 @@ void run_rnav_test(
 			CRobot2NavInterfaceForSimulator_DiffDriven(sim),
 			m_grid(grid)
 		{
+			this->setMinLoggingLevel(mrpt::utils::LVL_ERROR); // less verbose output for tests
 		}
 
 		void sendNavigationStartEvent ()  MRPT_OVERRIDE { }
