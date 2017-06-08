@@ -10,11 +10,11 @@
 #include "nav-precomp.h" // Precomp header
 #include <mrpt/utils/COutputLogger.h>
 #include <mrpt/nav/reactive/CRobot2NavInterface.h>
-#include <iostream>
 
 using namespace mrpt::nav;
 
-CRobot2NavInterface::CRobot2NavInterface()
+CRobot2NavInterface::CRobot2NavInterface() :
+	mrpt::utils::COutputLogger("CRobot2NavInterface")
 {
 }
 CRobot2NavInterface::~CRobot2NavInterface()
@@ -22,9 +22,7 @@ CRobot2NavInterface::~CRobot2NavInterface()
 }
 bool CRobot2NavInterface::changeSpeedsNOP()
 {
-	MRPT_UNSCOPED_LOGGER_START;
 	MRPT_LOG_THROTTLE_INFO(10.0, "[changeSpeedsNOP] Doing nothing : not implemented in user's derived class.");
-	MRPT_UNSCOPED_LOGGER_END;
 	return true;
 }
 
@@ -35,44 +33,49 @@ mrpt::kinematics::CVehicleVelCmd::Ptr CRobot2NavInterface::getAlignCmd(const dou
 
 bool CRobot2NavInterface::startWatchdog(float T_ms)
 {
-	std::cout << "[startWatchdog] Period=" << T_ms << "ms. Doing nothing: not implemented in user's derived class." << std::endl;
+	MRPT_LOG_INFO_FMT("[startWatchdog] Period=%.03f ms. Doing nothing: not implemented in user's derived class.", T_ms);
 	return true;
 }
 
 bool CRobot2NavInterface::stopWatchdog() 
 {
-	std::cout << "[stopWatchdog] Doing nothing: not implemented in user's derived class." << std::endl;
+	MRPT_LOG_INFO("[stopWatchdog] Doing nothing: not implemented in user's derived class.");
 	return true;
 }
 
 void CRobot2NavInterface::sendNavigationStartEvent() 
 {
-	std::cout << "[sendNavigationStartEvent] Doing nothing: not implemented in user's derived class." << std::endl; 
+	MRPT_LOG_INFO("[sendNavigationStartEvent] Doing nothing: not implemented in user's derived class.");
 }
 void CRobot2NavInterface::sendNavigationEndEvent() 
 {
-	std::cout << "[sendNavigationEndEvent] Doing nothing: not implemented in user's derived class." << std::endl;
+	MRPT_LOG_INFO("[sendNavigationEndEvent] Doing nothing: not implemented in user's derived class.");
 }
 void CRobot2NavInterface::sendWaypointReachedEvent(int waypoint_index, bool reached_nSkipped) 
 {
-	std::cout << "[sendWaypointReachedEvent] Marking waypoint #" << waypoint_index << " as done. Reason: " << (reached_nSkipped ? "Physically reached" : "Skipped") << std::endl;
+	MRPT_LOG_INFO_STREAM("[sendWaypointReachedEvent] Marking waypoint #" << waypoint_index << " as done. Reason: " << (reached_nSkipped ? "Physically reached" : "Skipped") );
 }
 void CRobot2NavInterface::sendNewWaypointTargetEvent(int waypoint_index) 
 {
-	std::cout << "[sendNewWaypointTargetEvent] Navigating towards waypoint #" << waypoint_index << std::endl;
+	MRPT_LOG_INFO_STREAM("[sendNewWaypointTargetEvent] Navigating towards waypoint #" << waypoint_index);
 }
 void CRobot2NavInterface::sendNavigationEndDueToErrorEvent()
 {
-	std::cout << "[sendNavigationEndDueToErrorEvent] Doing nothing: not implemented in user's derived class." << std::endl;
+	MRPT_LOG_INFO("[sendNavigationEndDueToErrorEvent] Doing nothing: not implemented in user's derived class.");
 }
 void CRobot2NavInterface::sendWaySeemsBlockedEvent() 
 {
-	std::cout << "[sendWaySeemsBlockedEvent] Doing nothing: not implemented in user's derived class." << std::endl;
+	MRPT_LOG_INFO("[sendWaySeemsBlockedEvent] Doing nothing: not implemented in user's derived class.");
 }
 void CRobot2NavInterface::sendApparentCollisionEvent()
 {
-	std::cout << "[sendApparentCollisionEvent] Doing nothing: not implemented in user's derived class." << std::endl;
+	MRPT_LOG_INFO("[sendApparentCollisionEvent] Doing nothing: not implemented in user's derived class.");
 }
+void CRobot2NavInterface::sendCannotGetCloserToBlockedTargetEvent()
+{
+	MRPT_LOG_INFO("[sendCannotGetCloserToBlockedTargetEvent] Doing nothing: not implemented in user's derived class.");
+}
+
 double CRobot2NavInterface::getNavigationTime() {
 	return m_navtime.Tac();
 }

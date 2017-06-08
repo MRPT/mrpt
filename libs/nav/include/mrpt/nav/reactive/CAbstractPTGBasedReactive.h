@@ -202,9 +202,6 @@ namespace mrpt
 		void setTargetApproachSlowDownDistance(const double dist);  //!< Changes this parameter in all inner holonomic navigator instances [m].
 		double getTargetApproachSlowDownDistance() const;  //!< Returns this parameter for the first inner holonomic navigator instances  [m] (should be the same in all of them?)
 
-		/** To be called after "sensing obstacles", this method must return `true` if any obstacle point lies inside the robot 2D area / 3D volume. \sa STEP2_SenseObstacles() */
-		virtual bool checkCollisionWithLatestObstacles() const = 0;
-
 	protected:
 		/** The main method for the navigator */
 		virtual void  performNavigationStep() override;

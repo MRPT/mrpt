@@ -114,17 +114,6 @@ TEST_F(CPnPTest, lhm_TEST)
     EXPECT_LE(err_t, 2);
 }
 
-TEST_F(CPnPTest, so3_TEST)
-{
-    cpnp.so3(obj_pts, img_pts, n, I3, pose_est);
-    
-    t_est<<pose_est(0), pose_est(1), pose_est(2);
-    
-    double err_t = (t-t_est).norm();
-    
-    EXPECT_LE(err_t, 2);
-}
-
 TEST_F(CPnPTest, dls_TEST)
 {
     cpnp.dls(obj_pts, img_pts, n, I3, pose_est);

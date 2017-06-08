@@ -61,7 +61,7 @@ Description: Mobile Robot Programming Toolkit - Documentation and examples
  efficiently is another goal of MRPT, supported by several classes and
  applications.
  .
- The MRPT is free software and is released under the GPL.
+ The MRPT is free software and is released under the BSD-new.
  .
  This package provides the documentation and examples of MRPT, and the book
   Writing Scientific Applications with the Mobile Robot Programming Toolkit
