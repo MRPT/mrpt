@@ -38,7 +38,7 @@ template<class GRAPH_T>
 bool CRegistrationDeciderOrOptimizer<GRAPH_T>::updateState(
 		mrpt::obs::CActionCollectionPtr action,
 		mrpt::obs::CSensoryFramePtr observations,
-		mrpt::obs::CObservationPtr observation ) { }
+		mrpt::obs::CObservationPtr observation ) { return false; }
 
 template<class GRAPH_T>
 void CRegistrationDeciderOrOptimizer<GRAPH_T>::initializeLoggers(
