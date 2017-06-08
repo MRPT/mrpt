@@ -271,12 +271,6 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 * \sa saveGraph
 		 */
 		void save3DScene(const std::string* fname_in=NULL) const;
-		/**\brief Read the configuration variables from the <em>.ini file</em>
-		 * specified by the user.
-		 * Method is automatically called, upon CGraphSlamEngine initialization
-		 *
-		 */
-		void loadParams(const std::string& fname);
 		/**\brief Fill in the provided string with the class configuration
 		 * parameters.
 		 *
@@ -323,7 +317,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 * Method is a wrapper around CGraphSlamEngine::getParamsAsString method
 		 * \sa getParamsAsString
 		 */
-		void printParams() const;
+		virtual void printParams() const;
 		/**\brief Wrapper method around _execGraphSlamStep.
 		 *
 		 * Handy for not having to specify any action/observations objects
@@ -931,6 +925,17 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		const std::string m_sec_viz_params;
 		const std::string m_sec_map_params;
 		/**\}*/
+
+	private:
+		/**\brief Read the configuration variables from the <em>.ini file</em>
+		 * specified by the user.
+		 * Method is automatically called, upon CGraphSlamEngine initialization
+		 *
+		 * \warning DO NOT override this method in any derived class since this is
+		 * called in the constructor of CGraphSlamEngine. Instead make a new method
+		 * and specifically call that.
+		 */
+		void loadParams(const std::string& fname);
 
 };
 
