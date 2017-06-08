@@ -353,18 +353,21 @@ bool CAbstractNavigator::stop(bool isEmergencyStop)
 
 CAbstractNavigator::TAbstractNavigatorParams::TAbstractNavigatorParams() :
 	dist_to_target_for_sending_event(0),
-	alarm_seems_not_approaching_target_timeout(30)
+	alarm_seems_not_approaching_target_timeout(30),
+	dist_check_target_is_blocked(0.6)
 {
 }
 void CAbstractNavigator::TAbstractNavigatorParams::loadFromConfigFile(const mrpt::utils::CConfigFileBase &c, const std::string &s)
 {
 	MRPT_LOAD_CONFIG_VAR_CS(dist_to_target_for_sending_event, double);
 	MRPT_LOAD_CONFIG_VAR_CS(alarm_seems_not_approaching_target_timeout, double);
+	MRPT_LOAD_CONFIG_VAR_CS(dist_check_target_is_blocked, double);	
 }
 void CAbstractNavigator::TAbstractNavigatorParams::saveToConfigFile(mrpt::utils::CConfigFileBase &c, const std::string &s) const
 {
 	MRPT_SAVE_CONFIG_VAR_COMMENT(dist_to_target_for_sending_event, "Default value=0, means use the `targetAllowedDistance` passed by the user in the navigation request.");
 	MRPT_SAVE_CONFIG_VAR_COMMENT(alarm_seems_not_approaching_target_timeout, "navigator timeout (seconds) [Default=30 sec]");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(dist_check_target_is_blocked, "When closer than this distance, check if the target is blocked to abort navigation with an error. [Default=0.6 m]");
 }
 
 bool mrpt::nav::operator==(const CAbstractNavigator::TNavigationParamsBase& a, const CAbstractNavigator::TNavigationParamsBase&b)
@@ -461,8 +464,24 @@ void CAbstractNavigator::performNavigationStepNavigating(bool call_virtual_nav_m
 				// Too much time have passed?
 				if (mrpt::system::timeDifference(m_badNavAlarm_lastMinDistTime, mrpt::system::getCurrentTime()) > params_abstract_navigator.alarm_seems_not_approaching_target_timeout)
 				{
-					MRPT_LOG_WARN("--------------------------------------------\nWARNING: Timeout for approaching toward the target expired!! Aborting navigation!! \n---------------------------------\n");
+					MRPT_LOG_WARN("Timeout approaching the target. Aborting navigation.");
+
 					m_navigationState = NAV_ERROR;
+					m_robot.sendWaySeemsBlockedEvent();
+					return;
+				}
+			}
+
+			// Check if the target seems to be at reach, but it's clearly occupied by obstacles:
+			if (targetDist < params_abstract_navigator.dist_check_target_is_blocked)
+			{
+				const auto rel_trg = m_navigationParams->target.target_coords - m_curPoseVel.pose;
+				const bool is_col = checkCollisionWithLatestObstacles(rel_trg);
+				if (is_col)
+				{
+					MRPT_LOG_WARN("Target seems to be blocked by obstacles. Aborting navigation.");
+					m_navigationState = NAV_ERROR;
+					m_robot.sendCannotGetCloserToBlockedTargetEvent();
 					m_robot.sendWaySeemsBlockedEvent();
 					return;
 				}
@@ -482,4 +501,10 @@ void CAbstractNavigator::performNavigationStepNavigating(bool call_virtual_nav_m
 	{
 		MRPT_LOG_ERROR("[CAbstractNavigator::navigationStep] Untyped exception!");
 	}
+}
+
+bool CAbstractNavigator::checkCollisionWithLatestObstacles(const mrpt::math::TPose2D &relative_robot_pose) const
+{
+	// Default impl:
+	return false;
 }
