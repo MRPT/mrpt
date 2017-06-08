@@ -331,7 +331,7 @@ bool CReactiveNavigationSystem3D::checkCollisionWithLatestObstacles(const mrpt::
 
 		for (size_t i = 0; i < 1 /* assume all PTGs share the same robot shape! */; i++)
 		{
-			const auto ptg = this->m_ptgmultilevel[idxH].PTGs[i];
+			const auto ptg = this->m_ptgmultilevel[i].PTGs[idxH];
 			ASSERT_(ptg != nullptr);
 
 			const double R = ptg->getMaxRobotRadius();
