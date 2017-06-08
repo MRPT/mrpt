@@ -473,7 +473,8 @@ void CAbstractNavigator::performNavigationStepNavigating(bool call_virtual_nav_m
 			}
 
 			// Check if the target seems to be at reach, but it's clearly occupied by obstacles:
-			if (targetDist < params_abstract_navigator.dist_check_target_is_blocked)
+			if ( (!m_navigationParams->target.targetIsIntermediaryWaypoint || m_navigationParams->target.targetDesiredRelSpeed < 1 ) &&
+				targetDist < params_abstract_navigator.dist_check_target_is_blocked)
 			{
 				const auto rel_trg = m_navigationParams->target.target_coords - m_curPoseVel.pose;
 				const bool is_col = checkCollisionWithLatestObstacles(rel_trg);
