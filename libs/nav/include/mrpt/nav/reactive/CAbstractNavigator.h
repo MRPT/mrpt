@@ -145,6 +145,7 @@ namespace mrpt
 		{
 			double dist_to_target_for_sending_event;  //!< Default value=0, means use the "targetAllowedDistance" passed by the user in the navigation request.
 			double alarm_seems_not_approaching_target_timeout; //!< navigator timeout (seconds) [Default=30 sec]
+			double dist_check_target_is_blocked;     //!< (Default value=0.6) When closer than this distance, check if the target is blocked to abort navigation with an error.
 
 			virtual void loadFromConfigFile(const mrpt::utils::CConfigFileBase &c, const std::string &s) override;
 			virtual void saveToConfigFile(mrpt::utils::CConfigFileBase &c, const std::string &s) const override;
@@ -190,6 +191,11 @@ namespace mrpt
 		  * If true is returned here, the end-of-navigation event will be sent out (only for non-intermediary targets).
 		  */
 		virtual bool checkHasReachedTarget(const double targetDist) const;
+
+		/** Checks whether the robot shape, when placed at the given pose (relative to the current pose), 
+		* is colliding with any of the latest known obstacles.
+		* Default implementation: always returns false. */
+		virtual bool checkCollisionWithLatestObstacles(const mrpt::math::TPose2D &relative_robot_pose) const;
 
 		TState             m_navigationState;  //!< Current internal state of navigator:
 		TNavigationParams  *m_navigationParams;  //!< Current navigation parameters

@@ -319,7 +319,7 @@ void CReactiveNavigationSystem3D::loggingGetWSObstaclesAndShape(CLogFileRecord &
 	out_log.robotShape_radius = m_robotShape.getRadius(0);
 }
 
-bool CReactiveNavigationSystem3D::checkCollisionWithLatestObstacles() const
+bool CReactiveNavigationSystem3D::checkCollisionWithLatestObstacles(const mrpt::math::TPose2D &relative_robot_pose) const
 {
 	const size_t nSlices = m_robotShape.size();
 
@@ -331,16 +331,19 @@ bool CReactiveNavigationSystem3D::checkCollisionWithLatestObstacles() const
 
 		for (size_t i = 0; i < 1 /* assume all PTGs share the same robot shape! */; i++)
 		{
-			const auto ptg = this->m_ptgmultilevel[idxH].PTGs[i];
+			const auto ptg = this->m_ptgmultilevel[i].PTGs[idxH];
 			ASSERT_(ptg != nullptr);
 
 			const double R = ptg->getMaxRobotRadius();
 			for (size_t obs = 0; obs < nObs; obs++)
 			{
-				const double ox = xs[obs], oy = ys[obs];
-				if (ox >= -R && ox <= R &&
-					oy >= -R && oy <= R &&
-					ptg->isPointInsideRobotShape(ox, oy)
+				const double gox = xs[obs], goy = ys[obs];
+				mrpt::math::TPoint2D lo;
+				relative_robot_pose.inverseComposePoint(mrpt::math::TPoint2D(gox, goy), lo);
+
+				if (lo.x >= -R && lo.x <= R &&
+					lo.y >= -R && lo.y <= R &&
+					ptg->isPointInsideRobotShape(lo.x, lo.y)
 					)
 				{
 					return true; // collision!

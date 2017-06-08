@@ -12,6 +12,7 @@
 #include <mrpt/nav/link_pragmas.h>
 #include <mrpt/obs/obs_frwds.h> // CSimplePointsMap
 #include <mrpt/utils/CTicTac.h>
+#include <mrpt/utils/COutputLogger.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/kinematics/CVehicleVelCmd.h>
 
@@ -35,7 +36,7 @@ namespace mrpt
 	  * \sa CReactiveNavigationSystem, CAbstractNavigator
 	  *  \ingroup nav_reactive
 	  */
-	class NAV_IMPEXP CRobot2NavInterface
+	class NAV_IMPEXP CRobot2NavInterface : public mrpt::utils::COutputLogger
 	{
 	public:
 		CRobot2NavInterface();
@@ -106,6 +107,8 @@ namespace mrpt
 		  */
 		virtual bool senseObstacles( mrpt::maps::CSimplePointsMap &obstacles, mrpt::system::TTimeStamp &timestamp) = 0;
 
+		/** @name Navigation event callbacks 
+		  * @{ */
 		/** Callback: Start of navigation command */
 		virtual void sendNavigationStartEvent();
 		
@@ -128,6 +131,11 @@ namespace mrpt
 
 		/** Callback: Apparent collision event (i.e. there is at least one obstacle point inside the robot shape) */
 		virtual void sendApparentCollisionEvent();
+
+		/** Callback: Target seems to be blocked by an obstacle. This event is invoked before ending navigation with an ERROR state and another call to sendWaySeemsBlockedEvent(). */
+		virtual void sendCannotGetCloserToBlockedTargetEvent();
+
+		/** @} */
 
 		/** Returns the number of seconds ellapsed since the constructor of this class was invoked, or since 
 		  * the last call of resetNavigationTimer(). This will be normally wall-clock time, except in simulators where this method will return simulation time. */

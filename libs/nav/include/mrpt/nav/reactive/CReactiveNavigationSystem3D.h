@@ -88,7 +88,7 @@ namespace mrpt
 			void changeRobotShape( TRobotShape robotShape );
 
 			// See base class docs:
-			virtual bool checkCollisionWithLatestObstacles()  const override;
+			virtual bool checkCollisionWithLatestObstacles(const mrpt::math::TPose2D &relative_robot_pose)  const override;
 			virtual size_t getPTG_count() const  override { ASSERT_(!m_ptgmultilevel.empty());  return m_ptgmultilevel.size(); }
 			virtual CParameterizedTrajectoryGenerator* getPTG(size_t i)  override {
 				ASSERT_(!m_ptgmultilevel.empty() && !m_ptgmultilevel[i].PTGs.empty())

@@ -70,7 +70,7 @@ namespace mrpt
 			virtual size_t getPTG_count() const  override { return PTGs.size(); }
 			virtual CParameterizedTrajectoryGenerator* getPTG(size_t i)  override { ASSERT_(i<PTGs.size()); return PTGs[i]; }
 			virtual const CParameterizedTrajectoryGenerator* getPTG(size_t i) const  override { ASSERT_(i<PTGs.size()); return PTGs[i]; }
-			virtual bool checkCollisionWithLatestObstacles()  const override;
+			virtual bool checkCollisionWithLatestObstacles(const mrpt::math::TPose2D &relative_robot_pose)  const override;
 
 			struct NAV_IMPEXP TReactiveNavigatorParams : public mrpt::utils::CLoadableOptions
 			{

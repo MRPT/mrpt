@@ -266,7 +266,7 @@ CReactiveNavigationSystem::TReactiveNavigatorParams::TReactiveNavigatorParams() 
 {
 }
 
-bool CReactiveNavigationSystem::checkCollisionWithLatestObstacles() const
+bool CReactiveNavigationSystem::checkCollisionWithLatestObstacles(const mrpt::math::TPose2D &relative_robot_pose) const
 {
 	ASSERT_(!PTGs.empty());
 	size_t nObs;
@@ -280,12 +280,17 @@ bool CReactiveNavigationSystem::checkCollisionWithLatestObstacles() const
 		const double R = ptg->getMaxRobotRadius();
 		for (size_t obs = 0; obs < nObs; obs++)
 		{
-			const double ox = xs[obs], oy = ys[obs], oz = zs[obs];
-			if (oz >= params_reactive_nav.min_obstacles_height && 
-				oz <= params_reactive_nav.max_obstacles_height && 
-				ox>=-R && ox<=R && 
-				oy>=-R && oy<=R &&
-				ptg->isPointInsideRobotShape(ox,oy)
+			const double gox = xs[obs], goy = ys[obs], oz = zs[obs];
+			if (oz < params_reactive_nav.min_obstacles_height ||
+				oz > params_reactive_nav.max_obstacles_height) {
+				continue;
+			}
+			mrpt::math::TPoint2D lo;
+			relative_robot_pose.inverseComposePoint(mrpt::math::TPoint2D(gox, goy), lo);
+
+			if (lo.x>=-R && lo.x<=R &&
+				lo.y>=-R && lo.y<=R &&
+				ptg->isPointInsideRobotShape(lo.x, lo.y)
 				)
 			{
 				return true; // collision!
