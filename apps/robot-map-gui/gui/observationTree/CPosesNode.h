@@ -6,21 +6,21 @@
 #include "mrpt/maps/CSimpleMap.h"
 
 
+namespace mrpt{namespace poses{class CPose3D;}}
+
 class CPosesNode :public CNode
 {
 public:
-	CPosesNode(CNode *parent, const mrpt::maps::CSimpleMap::TPosePDFSensFramePair &poseSensFramePair);
+	CPosesNode(CNode *parent, mrpt::poses::CPose3D::Ptr pose);
 	virtual ~CPosesNode() = default;
 
 	virtual int childCount() const;
-	virtual const CNode* parentItem() const;
 	virtual CNode* child(int id);
 	virtual void addNewChild();
 
 
 private:
-	CNode *parent_;
-
+	mrpt::poses::CPose3D::Ptr m_pose;
 };
 
 

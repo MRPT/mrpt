@@ -3,6 +3,8 @@
 
 #include "CRootNode.h"
 
+#include <memory>
+
 
 namespace mrpt{namespace maps{class CSimpleMap;}}
 
@@ -27,6 +29,6 @@ private:
 	int findMyRowId(const CNode* node) const;
 
 	const mrpt::maps::CSimpleMap& m_simplemap;
-	CRootNode *rootNode_;
+	std::unique_ptr<CRootNode> rootNode_;
 
 };

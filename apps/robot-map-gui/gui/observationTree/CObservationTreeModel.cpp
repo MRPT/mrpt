@@ -4,7 +4,7 @@
 CObservationTreeModel::CObservationTreeModel(const mrpt::maps::CSimpleMap &simplemap, QObject *parent)
 	: QAbstractTableModel(parent)
 	, m_simplemap(simplemap)
-	, rootNode_(new CRootNode(simplemap))
+	, rootNode_(std::make_unique<CRootNode>(simplemap))
 {
 }
 
@@ -62,7 +62,7 @@ QModelIndex CObservationTreeModel::index(int row, int column, const QModelIndex 
 QModelIndex CObservationTreeModel::parent(const QModelIndex &index) const
 {
 	CNode* node = getNodeFromIndexSafe(index);
-	if (node == rootNode_)
+	if (node == rootNode_.get())
 		return QModelIndex();
 
 	const CNode* parent = node->parentItem();
@@ -75,7 +75,7 @@ CNode *CObservationTreeModel::getNodeFromIndexSafe(const QModelIndex &index) con
 {
 	CNode* node;
 	if (!index.isValid() || !index.internalPointer())
-		node = rootNode_;
+		node = rootNode_.get();
 	else
 		node = static_cast<CNode*>(index.internalPointer());
 

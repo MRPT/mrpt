@@ -8,6 +8,7 @@ class CMainWindow;
 }
 class CGlWidget;
 class CDocument;
+class CObservationTreeModel;
 
 class CMainWindow : public QMainWindow {
 	Q_OBJECT
@@ -21,7 +22,7 @@ private slots:
 
 private:
 	CDocument *m_document;
-	//QTabWidget *m_tabwidget;
+	CObservationTreeModel *m_model;
 
 	std::unique_ptr<Ui::CMainWindow> m_ui;
 };

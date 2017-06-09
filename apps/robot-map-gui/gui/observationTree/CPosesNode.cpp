@@ -8,17 +8,17 @@ using namespace mrpt::maps;
 using namespace mrpt::poses;
 
 
-std::string getNameFromPosePair(const CSimpleMap::TPosePDFSensFramePair &poseSensFramePair)
+std::string getNameFromPose(const CPose3D::Ptr pose)
 {
-	CPose3D pose = poseSensFramePair.first->getMeanVal();
 	std::string str;
-	pose.asString(str);
+	pose->asString(str);
 	return str;
 }
 
-CPosesNode::CPosesNode(CNode *parent, const CSimpleMap::TPosePDFSensFramePair &poseSensFramePair)
-	: CNode(getNameFromPosePair(poseSensFramePair))
-	, parent_(parent)
+
+CPosesNode::CPosesNode(CNode *parent, CPose3D::Ptr pose)
+	: CNode(parent, "Frame" + getNameFromPose(pose))
+	, m_pose(pose)
 {
 
 }
@@ -28,10 +28,6 @@ int CPosesNode::childCount() const
 	return 0;
 }
 
-const CNode *CPosesNode::parentItem() const
-{
-	return nullptr;
-}
 
 CNode *CPosesNode::child(int id)
 {

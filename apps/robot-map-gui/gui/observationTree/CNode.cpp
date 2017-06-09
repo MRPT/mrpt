@@ -1,10 +1,16 @@
 #include "CNode.h"
 
 
-CNode::CNode(const std::string& name)
-	: name_(name)
+CNode::CNode(CNode *parent, const std::string& name)
+	: m_parent(parent)
+	, name_(name)
 {
 
+}
+
+const CNode *CNode::parentItem() const
+{
+	return m_parent;
 }
 
 const CNode*CNode::child(int id) const
