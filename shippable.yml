@@ -7,8 +7,6 @@ env:
 matrix:
   include:
   - compiler: gcc
-    env: TASK="prefetch"
-  - compiler: gcc
     env: TASK="build" CCACHE_SLOPPINESS="pch_defines,time_macros"
   - compiler: clang
     env: TASK="build" CCACHE_SLOPPINESS="pch_defines,time_macros"
@@ -48,8 +46,6 @@ build:
     - sudo apt-get install -y lcov
     - sudo apt-get install -y ruby rubygems-integration
     - sudo gem install coveralls-lcov
-    # this one is missing in the docker image? TODO: Pull-request to https://github.com/dry-dock/u16cppall/blob/master/install.sh
-    - sudo update-alternatives --install /usr/bin/gcov gcov /usr/bin/gcov-6 90
     - bash .travis.sh
 
 after_success:
