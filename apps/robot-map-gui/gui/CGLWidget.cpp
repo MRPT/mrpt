@@ -5,6 +5,7 @@
 #include "mrpt/utils/CFileGZOutputStream.h"
 #include "mrpt/utils/CFileGZInputStream.h"
 #include "mrpt/opengl/CGridPlaneXY.h"
+#include "mrpt/opengl/CPointCloud.h"
 
 #include "cmath"
 
@@ -54,12 +55,47 @@ CGlWidget::CGlWidget(QWidget *parent)
 
 }
 
-void CGlWidget::fillMap(const CRenderizable::Ptr &renderizableMap)
+void CGlWidget::fillMap(const CSetOfObjects::Ptr &renderizableMap)
 {
 	COpenGLViewport::Ptr view = m_3Dscene->getViewport("main");
 	ASSERT_(view);
 	view->insert(renderizableMap);
+
+	m_map = renderizableMap;
+
 	update();
+}
+
+void CGlWidget::setSelected(const math::TPose3D &pose)
+{
+	CPointCloud::Ptr points = CPointCloud::Create();
+	points->insertPoint(pose.x, pose.y, pose.z);
+	points->setColor(mrpt::utils::TColorf(mrpt::utils::TColor::red));
+	points->setPointSize(10.);
+	m_map->insert(points);
+	update();
+	/*
+	for (auto it = m_map->begin(); it != m_map->end(); ++it)
+	{
+		CPointCloud *points = dynamic_cast<CPointCloud *>(it->get());
+		if (points)
+		{
+			for (int i = 0; i < points->size(); ++i)
+			{
+				if (points->getPoint(i) == mrpt::math::TPoint3D(pose.x, pose.y, pose.z))
+				{
+					(*it)->setColorR(1);
+					(*it)->setColorG(0);
+				}
+				else
+				{
+					(*it)->setColorR(0);
+					(*it)->setColorG(1);
+				}
+			}
+		}
+
+	}*/
 }
 
 void CGlWidget::initializeGL()

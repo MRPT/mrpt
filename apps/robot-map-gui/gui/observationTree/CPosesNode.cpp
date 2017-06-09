@@ -8,16 +8,16 @@ using namespace mrpt::maps;
 using namespace mrpt::poses;
 
 
-std::string getNameFromPose(const CPose3D::Ptr pose)
+std::string getNameFromPose(const CPose3D& pose)
 {
 	std::string str;
-	pose->asString(str);
+	pose.asString(str);
 	return str;
 }
 
 
-CPosesNode::CPosesNode(CNode *parent, CPose3D::Ptr pose)
-	: CNode(parent, "Frame" + getNameFromPose(pose))
+CPosesNode::CPosesNode(CNode *parent, const CPose3D& pose, const std::string &name)
+	: CNode(parent, name + getNameFromPose(pose))
 	, m_pose(pose)
 {
 
@@ -37,6 +37,11 @@ CNode *CPosesNode::child(int id)
 void CPosesNode::addNewChild()
 {
 	return;
+}
+
+CPose3D CPosesNode::getPose() const
+{
+	return m_pose;
 }
 
 

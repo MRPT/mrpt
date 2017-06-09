@@ -25,6 +25,7 @@ public:
 
 	virtual TypeObject type() const;
 	virtual const std::string& displayName() const;
+
 private:
 
 	std::string name_;

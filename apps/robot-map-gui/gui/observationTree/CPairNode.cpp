@@ -2,6 +2,7 @@
 #include "CPosesNode.h"
 
 #include "mrpt/poses/CPose3DPDF.h"
+#include "mrpt/obs/CObservation2DRangeScan.h"
 
 
 using namespace mrpt;
@@ -18,20 +19,20 @@ std::string getNameFromPosePair(const CSimpleMap::TPosePDFSensFramePair &poseSen
 	return str;
 }
 
-CPose3D::Ptr getPose(CObservation::Ptr obs)
+CPose3D getPoseFromObservation(CObservation::Ptr obs)
 {
 	CPose3D::Ptr pose = CPose3D::Create();
 	obs->getSensorPose(*pose);
-	return pose;
+	return *(pose.get());
 }
 
 CPairNode::CPairNode(CNode *parent, const CSimpleMap::TPosePDFSensFramePair &poseSensFramePair)
-	: CNode(parent, "Pose " + getNameFromPosePair(poseSensFramePair))
+	: CPosesNode(parent, poseSensFramePair.first->getMeanVal(), "Pose ")
 {
 	CSensoryFrame::Ptr frame = poseSensFramePair.second;
 	for (auto iter = frame->begin(); iter != frame->end(); ++iter)
 	{
-		m_observation.push_back(std::make_unique<CPosesNode>(this, getPose(*iter)));
+		m_observation.push_back(std::make_unique<CPosesNode>(this, getPoseFromObservation(*iter), "Frame "));
 	}
 }
 
@@ -49,5 +50,4 @@ void CPairNode::addNewChild()
 {
 	return;
 }
-
 

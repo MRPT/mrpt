@@ -13,7 +13,7 @@ public:
 	CDocument(const std::string& fileName, const std::string& config);
 	~CDocument();
 
-	const std::map<std::string, mrpt::opengl::CRenderizable::Ptr> renderizableMaps() const;
+	const std::map<std::string, mrpt::opengl::CSetOfObjects::Ptr> renderizableMaps() const;
 
 	const mrpt::maps::CSimpleMap &simplemap() const;
 private:
