@@ -2,11 +2,13 @@
 #include "CGLWidget.h"
 #include "CDocument.h"
 #include "observationTree/CObservationTreeModel.h"
+#include "observationTree/CPosesNode.h"
 
 #include <QMenu>
 #include <QMenuBar>
 #include <QAction>
 #include <QFileDialog>
+#include <QTreeWidgetItem>
 
 #include "ui_CMainWindow.h"
 
@@ -18,7 +20,8 @@ CMainWindow::CMainWindow(QWidget *parent)
 	, m_ui(std::make_unique<Ui::CMainWindow>())
 {
 	m_ui->setupUi(this);
-	QObject::connect(m_ui->openAction, SIGNAL(triggered(bool)), SLOT(openMap()));
+	QObject::connect(m_ui->openAction,		SIGNAL(triggered(bool)),			SLOT(openMap()));
+	QObject::connect(m_ui->m_treeView,	SIGNAL(clicked(const QModelIndex &)),	SLOT(itemClicked(const QModelIndex &)));
 }
 
 CMainWindow::~CMainWindow()
@@ -60,4 +63,21 @@ void CMainWindow::openMap()
 	m_ui->m_treeView->setModel(m_model);
 	m_ui->m_treeView->header()->close();
 
+}
+
+void CMainWindow::itemClicked(const QModelIndex &index)
+{
+	CNode* node = m_model->getNodeFromIndexSafe(index);
+	CPosesNode *posesNode = dynamic_cast<CPosesNode *>(node);
+
+	if (posesNode)
+	{
+		for (int i = 0; i < m_ui->m_tabWidget->count(); ++i)
+		{
+			QWidget *w = m_ui->m_tabWidget->widget(i);
+			CGlWidget *gl = dynamic_cast<CGlWidget *>(w);
+			if (gl)
+				gl->setSelected(posesNode->getPose());
+		}
+	}
 }

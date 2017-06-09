@@ -9,6 +9,7 @@ class CMainWindow;
 class CGlWidget;
 class CDocument;
 class CObservationTreeModel;
+class QTreeWidgetItem;
 
 class CMainWindow : public QMainWindow {
 	Q_OBJECT
@@ -19,6 +20,7 @@ public:
 
 private slots:
 	void openMap();
+	void itemClicked(const QModelIndex &index);
 
 private:
 	CDocument *m_document;

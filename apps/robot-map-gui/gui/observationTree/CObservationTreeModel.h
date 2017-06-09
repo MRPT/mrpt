@@ -24,8 +24,8 @@ public:
 	virtual QModelIndex index(int row, int column, const QModelIndex &parent) const override;
 	virtual QModelIndex parent(const QModelIndex &index) const override;
 
-private:
 	CNode* getNodeFromIndexSafe(const QModelIndex& index) const;
+private:
 	int findMyRowId(const CNode* node) const;
 
 	const mrpt::maps::CSimpleMap& m_simplemap;

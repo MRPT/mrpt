@@ -10,7 +10,8 @@ class CGlWidget : public QGLWidget
 {
 public:
 	CGlWidget(QWidget* parent=nullptr);
-	void fillMap(const mrpt::opengl::CRenderizable::Ptr &renderizableMap);
+	void fillMap(const mrpt::opengl::CSetOfObjects::Ptr &renderizableMap);
+	void setSelected(const mrpt::math::TPose3D &pose);
 
 protected:
 	virtual void mousePressEvent(QMouseEvent *event) override;
@@ -26,4 +27,5 @@ public:
 	mrpt::opengl::COpenGLScene::Ptr m_3Dscene;
 	QPoint m_previsionPos;
 	bool m_isPressMouse;
+	mrpt::opengl::CSetOfObjects::Ptr m_map;
 };

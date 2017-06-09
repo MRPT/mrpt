@@ -29,9 +29,9 @@ CDocument::~CDocument()
 
 }
 
-const std::map<std::string, CRenderizable::Ptr> CDocument::renderizableMaps() const
+const std::map<std::string, CSetOfObjects::Ptr> CDocument::renderizableMaps() const
 {
-	std::map<std::string, CRenderizable::Ptr> renderizable;
+	std::map<std::string, CSetOfObjects::Ptr> renderizable;
 
 	{
 		CSimplePointsMap::Ptr prt = m_metricmap.getMapByClass<CSimplePointsMap>();
@@ -42,6 +42,12 @@ const std::map<std::string, CRenderizable::Ptr> CDocument::renderizableMaps() co
 			renderizable.emplace("Points map", obj);
 		}
 	}
+
+
+
+
+
+
 	{
 		COccupancyGridMap2D::Ptr prt = m_metricmap.getMapByClass<COccupancyGridMap2D>();
 		if (prt.get())
@@ -66,7 +72,7 @@ const std::map<std::string, CRenderizable::Ptr> CDocument::renderizableMaps() co
 		{
 			CSetOfObjects::Ptr obj = CSetOfObjects::Create();
 			prt->getAs3DObject(obj);
-			renderizable.emplace("CLandmarksMap", obj);
+			renderizable.emplace("Landmarks", obj);
 		}
 	}
 
