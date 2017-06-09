@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <memory>
 
 
 class CNode
@@ -12,11 +13,11 @@ public:
 		Frame = 2
 	};
 
-	CNode(const std::string& name);
+	CNode(CNode *parent, const std::string& name);
 	virtual ~CNode() = default;
 
 	virtual int childCount() const = 0;
-	virtual const CNode* parentItem() const = 0;
+	virtual const CNode* parentItem() const;
 	virtual CNode* child(int id) = 0;
 	virtual void addNewChild() = 0;
 
@@ -27,6 +28,7 @@ public:
 private:
 
 	std::string name_;
+	CNode *m_parent;
 };
 
 

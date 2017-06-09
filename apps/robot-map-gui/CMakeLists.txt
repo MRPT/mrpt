@@ -23,6 +23,7 @@ if(CMAKE_MRPT_HAS_Qt5 AND CMAKE_MRPT_HAS_OPENGL_GLUT)
 		gui/observationTree/CNode.cpp
 		gui/observationTree/CRootNode.cpp
 		gui/observationTree/CPosesNode.cpp
+		gui/observationTree/CPairNode.cpp
 
 		)
 

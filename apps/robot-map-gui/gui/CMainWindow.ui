@@ -14,29 +14,15 @@
    <string>Main Window</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QHBoxLayout" name="horizontalLayout">
+   <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout_2">
-      <item>
-       <widget class="QTabWidget" name="m_tabWidget"/>
-      </item>
-      <item>
-       <widget class="QTableView" name="m_tableView">
-        <property name="minimumSize">
-         <size>
-          <width>307</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>307</width>
-          <height>16777215</height>
-         </size>
-        </property>
-       </widget>
-      </item>
-     </layout>
+     <widget class="QSplitter" name="splitter">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <widget class="QTabWidget" name="m_tabWidget"/>
+      <widget class="QTreeView" name="m_treeView"/>
+     </widget>
     </item>
    </layout>
   </widget>

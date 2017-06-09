@@ -1,5 +1,5 @@
 #include "CRootNode.h"
-#include "CPosesNode.h"
+#include "CPairNode.h"
 
 #include <cassert>
 
@@ -8,11 +8,11 @@ using namespace mrpt;
 using namespace mrpt::maps;
 
 CRootNode::CRootNode(const CSimpleMap &simplemap)
-	: CNode ("")
+	: CNode (nullptr, "")
 {
 	for (auto iter = simplemap.begin(); iter != simplemap.end(); ++iter)
 	{
-		CPosesNode *node = new CPosesNode(this, *iter);
+		CPairNode *node = new CPairNode(this, *iter);
 		m_posesNode.push_back(node);
 
 	}
@@ -20,18 +20,13 @@ CRootNode::CRootNode(const CSimpleMap &simplemap)
 
 int CRootNode::childCount() const
 {
-	return 1;
+	return m_posesNode.size();
 }
 
 CNode* CRootNode::child(int id)
 {
 	assert(id <= m_posesNode.size());
 	return m_posesNode[id];
-}
-
-const CNode* CRootNode::parentItem() const
-{
-	return nullptr;
 }
 
 void CRootNode::addNewChild()

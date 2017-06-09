@@ -17,7 +17,6 @@ public:
 public:
 	virtual int childCount() const override;
 	virtual CNode* child(int id) override;
-	virtual const CNode* parentItem() const override;
 	virtual void addNewChild() override;
 
 private:
