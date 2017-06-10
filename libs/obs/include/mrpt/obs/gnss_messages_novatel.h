@@ -76,7 +76,7 @@ enum nv_position_type_t {
 	SINGLE = 16,
 	PSRDIFF = 17,
 	WAAS = 18,
-	PROPOGATED = 19,
+	PROPAGATED = 19,
 	OMNISTAR = 20,
 	L1_FLOAT = 32,
 	IONOFREE_FLOAT = 33,

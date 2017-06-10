@@ -118,7 +118,7 @@ const std::string OBS_IMPEXP & nv_oem6_position_type::enum2str(int val)
 #define DEF_TYPESTR(_NAME) val2str[nv_oem6_position_type::_NAME] = #_NAME;
 		DEF_TYPESTR(NONE)			DEF_TYPESTR(FIXEDPOS)		DEF_TYPESTR(FIXEDHEIGHT)	DEF_TYPESTR(Reserved)
 		DEF_TYPESTR(FLOATCONV)		DEF_TYPESTR(WIDELANE)		DEF_TYPESTR(NARROWLANE)	DEF_TYPESTR(DOPPLER_VELOCITY)
-		DEF_TYPESTR(SINGLE)		DEF_TYPESTR(PSRDIFF)		DEF_TYPESTR(WAAS)			DEF_TYPESTR(PROPOGATED)
+		DEF_TYPESTR(SINGLE)		DEF_TYPESTR(PSRDIFF)		DEF_TYPESTR(WAAS)			DEF_TYPESTR(PROPAGATED)
 		DEF_TYPESTR(OMNISTAR)		DEF_TYPESTR(L1_FLOAT)		DEF_TYPESTR(IONOFREE_FLOAT)	DEF_TYPESTR(NARROW_FLOAT)
 		DEF_TYPESTR(L1_INT)		DEF_TYPESTR(WIDE_INT)		DEF_TYPESTR(NARROW_INT)		DEF_TYPESTR(RTK_DIRECT_INS)
 		DEF_TYPESTR(INS)			DEF_TYPESTR(INS_PSRSP)		DEF_TYPESTR(INS_PSRDIFF)		DEF_TYPESTR(INS_RTKFLOAT)
@@ -312,7 +312,7 @@ void Message_NV_OEM6_VERSION::dumpToStream( mrpt::utils::CStream &out ) const
 	out.printf("[Novatel OEM6 VERSION]\n");
 	out.printf(" Number of components: %u\n", static_cast<unsigned int>(this->num_comps));
 	for (unsigned i=0;i<components.size();i++){
-		out.printf(" Component #%u:\n  Model: `%.*s`\n  Serial: `%.*s`\n  SW version:`%.*s`\n",i, 
+		out.printf(" Component #%u:\n  Model: `%.*s`\n  Serial: `%.*s`\n  SW version:`%.*s`\n",i,
 			(int)sizeof(components[i].model), components[i].model,
 			(int)sizeof(components[i].serial), components[i].serial,
 			(int)sizeof(components[i].swversion), components[i].swversion

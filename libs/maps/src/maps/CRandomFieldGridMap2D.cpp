@@ -1821,7 +1821,7 @@ void  CRandomFieldGridMap2D::insertObservation_KF2(
 {
 	MRPT_START
 
-	MRPT_LOG_DEBUG_STREAM( "Inserting KF2: (" << normReading << ") at Postion" << point << endl);
+	MRPT_LOG_DEBUG_STREAM( "Inserting KF2: (" << normReading << ") at Position" << point << endl);
 
 	const signed	W = m_insertOptions_common->KF_W_size;
 	const size_t	K = 2*W*(W+1)+1;

@@ -32,7 +32,7 @@
 
 <hr>
 <a name="1.5.0">
-<h2>Version 1.5.0: (Under development)  </h2></a>
+<h2>Version 1.5.0: Released 10-JUN-2017</h2></a>
 	- Changes in apps:
 		- New app [PTG-configurator](http://www.mrpt.org/list-of-mrpt-apps/application-ptg-configurator/)
 		- [ReactiveNavigationDemo](http://www.mrpt.org/list-of-mrpt-apps/application-reactivenavigationdemo/) has been totally rebuilt as a 3D visualizer capable of testing different navigation algorithms and robot kinematics.

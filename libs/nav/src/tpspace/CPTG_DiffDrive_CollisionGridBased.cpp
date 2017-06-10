@@ -632,7 +632,7 @@ void CPTG_DiffDrive_CollisionGridBased::internal_initialize(const std::string & 
 	mrpt::utils::CTicTac tictac;
 	tictac.Tic();
 
-	if (verbose) cout << "Initilizing PTG '" << cacheFilename << "'...";
+	if (verbose) cout << "Initializing PTG '" << cacheFilename << "'...";
 
 	// Simulate paths:
 	const float min_dist = 0.015f;

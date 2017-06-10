@@ -272,7 +272,7 @@ namespace mrpt
 
 			bool isOpen() const; //!< Whether there is a working connection to the sensor
 
-			/** Close the conection to the sensor (not need to call it manually unless desired for some reason,
+			/** Close the Connection to the sensor (not need to call it manually unless desired for some reason,
 			  * since it's called at destructor) */
 			void close();
 

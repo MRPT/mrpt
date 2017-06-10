@@ -85,7 +85,7 @@ namespace mrpt
 			}encoders;
 
 
-			/** Establish conection with Rovio and log in its system: Important, fill out "options" members *BEFORE* calling this method.
+			/** Establish Connection with Rovio and log in its system: Important, fill out "options" members *BEFORE* calling this method.
 			  *  \exception std::runtime On errors
 			  */ 
 			void initialize(); //string &errormsg_out, std::string url_out="150.214.109.134", std::string user_out="admin", std::string password_out="investigacion");

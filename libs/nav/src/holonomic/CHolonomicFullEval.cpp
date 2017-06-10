@@ -630,7 +630,7 @@ void CHolonomicFullEval::TOptions::saveToConfigFile(mrpt::utils::CConfigFileBase
 	MRPT_SAVE_CONFIG_VAR_COMMENT(TOO_CLOSE_OBSTACLE, "Directions with collision-free distances below this threshold are not elegible.");
 	MRPT_SAVE_CONFIG_VAR_COMMENT(TARGET_SLOW_APPROACHING_DISTANCE, "Start to reduce speed when closer than this to target.");
 	MRPT_SAVE_CONFIG_VAR_COMMENT(OBSTACLE_SLOW_DOWN_DISTANCE,"Start to reduce speed when clearance is below this value ([0,1] ratio wrt obstacle reference/max distance)");
-	MRPT_SAVE_CONFIG_VAR_COMMENT(HYSTERESIS_SECTOR_COUNT,"Range of `sectors` (directions) for hysteresis over succesive timesteps");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(HYSTERESIS_SECTOR_COUNT,"Range of `sectors` (directions) for hysteresis over successive timesteps");
 	MRPT_SAVE_CONFIG_VAR_COMMENT(LOG_SCORE_MATRIX, "Save the entire score matrix in log files");
 	MRPT_SAVE_CONFIG_VAR_COMMENT(clearance_threshold_ratio, "Ratio [0,1], times path_count, gives the minimum number of paths at each side of a target direction to be accepted as desired direction");
 	MRPT_SAVE_CONFIG_VAR_COMMENT(gap_width_ratio_threshold, "Ratio [0,1], times path_count, gives the minimum gap width to accept a direct motion towards target.");

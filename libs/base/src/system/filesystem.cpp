@@ -386,7 +386,7 @@ bool mrpt::system::copyFile(
 	// Is source a directory?
 	if ( !fil_exs )
 	{
-		if (outErrStr) *outErrStr = string("Source does not exist or permision denied!: ")+org;
+		if (outErrStr) *outErrStr = string("Source does not exist or permission denied!: ")+org;
 		return false;
 	}
 	if (dir_exs)
@@ -427,7 +427,7 @@ bool mrpt::system::copyFile(
 			// It exists, but cannot overwrite it:
 
 #ifdef MRPT_OS_WINDOWS
-			// Try changing the permisions of the target file:
+			// Try changing the permissions of the target file:
 			DWORD dwProp = GetFileAttributesA( trg.c_str() );
 			if (dwProp==INVALID_FILE_ATTRIBUTES)
 			{
@@ -456,7 +456,7 @@ bool mrpt::system::copyFile(
 				return false;
 			}
 #else
-			// Try changing the permisions of the target file:
+			// Try changing the permissions of the target file:
 			if (chmod( trg.c_str(), S_IRWXU | S_IRGRP | S_IROTH ) )
 			{
 				if (outErrStr) *outErrStr = string("Cannot set file permissions for target file, trying to remove a possible read-only attribute after first attempt of copy failed, for: ")+trg;
