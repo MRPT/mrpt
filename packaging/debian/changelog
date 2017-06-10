@@ -1,3 +1,11 @@
+mrpt (1:1.5.0-1) unstable; urgency=medium
+
+  * New version of upstream sources.
+  * Fix lintian error license-problem-convert-utf-code
+  * Builds with newer GCC versions (Closes: #853563)
+
+ -- Jose Luis Blanco (University of Malaga) <joseluisblancoc@gmail.com>  Sun, 11 Jun 2017 00:06:13 +0200
+
 mrpt (1:1.4.0-7) unstable; urgency=medium
 
   * Fix FTBFS in testing due to unit test crash related to eigenvectors
@@ -89,7 +97,7 @@ mrpt (1:1.2.2-1.1) unstable; urgency=medium
   * Fix FTBFS on many architectures by fixing disabling of use of SSE4.
 
  -- Olly Betts <olly@survex.com>  Tue, 14 Oct 2014 14:22:01 +1300
- 
+
 mrpt (1:1.2.2-1) unstable; urgency=medium
 
   * New version of upstream sources.
@@ -131,7 +139,7 @@ mrpt (1:1.0.1-1) unstable; urgency=low
   * Fixed typo in short description of libmrpt-kinematics1.0 (Closes: #703923)
   * Fixed wrong dependencies of libmrpt-dev
   * Fix of Lintian's hardening-no-fortify-functions
-  * Fixed embedded copy of libeigen-dev in mrpt sources 
+  * Fixed embedded copy of libeigen-dev in mrpt sources
     package (Closes: #707860)
 
  -- Jose Luis Blanco (University of Malaga) <joseluisblancoc@gmail.com>  Sun, 12 May 2013 14:05:55 +0200
@@ -244,7 +252,7 @@ mrpt (0.6.5svn807-2) unstable; urgency=low
 mrpt (0.6.5svn807-1) unstable; urgency=low
 
   * New version of upstream sources.
-  * Applications separated in individual packages, "mrpt-apps" still 
+  * Applications separated in individual packages, "mrpt-apps" still
     exists as a virtual package.
   * Fixed desktop-mimetype-without-update-call
 
@@ -337,4 +345,3 @@ mrpt (0.6.0-1) unstable; urgency=low
   * Initial packaging (Closes: #495520)
 
  -- Jose Luis Blanco (University of Malaga) <joseluisblancoc@gmail.com>  Wed, 06 Aug 2008 19:12:19 +0200
-

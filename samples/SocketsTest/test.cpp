@@ -31,7 +31,7 @@ void thread_server()
 
 		if (client)
 		{
-			printf("[Server] Conection accepted\n");
+			printf("[Server] Connection accepted\n");
 
 			// Load test image:
 			CImage	img;

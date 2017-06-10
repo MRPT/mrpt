@@ -36,7 +36,7 @@ namespace mrpt
 	 * // 4: Clearness to nearest obstacle along path
 	 * TARGET_SLOW_APPROACHING_DISTANCE = 0.20   // Start to reduce speed when closer than this to target [m]
 	 * TOO_CLOSE_OBSTACLE               = 0.02   // Directions with collision-free distances below this threshold are not elegible.
-	 * HYSTERESIS_SECTOR_COUNT          = 5      // Range of "sectors" (directions) for hysteresis over succesive timesteps
+	 * HYSTERESIS_SECTOR_COUNT          = 5      // Range of "sectors" (directions) for hysteresis over successive timesteps
 	 * PHASE1_FACTORS   = 0 1 2                  // Indices of the factors above to be considered in phase 1
 	 * PHASE2_FACTORS   = 3 4                    // Indices of the factors above to be considered in phase 2
 	 * PHASE1_THRESHOLD = 0.75                   // Phase1 scores must be above this relative range threshold [0,1] to be considered in phase 2 (Default:`0.75`)
@@ -63,7 +63,7 @@ namespace mrpt
 			double TOO_CLOSE_OBSTACLE;  //!< Directions with collision-free distances below this threshold are not elegible.
 			double TARGET_SLOW_APPROACHING_DISTANCE; //!< Start to reduce speed when closer than this to target  [m]
 			double OBSTACLE_SLOW_DOWN_DISTANCE;      //!< Start to reduce speed when clearance is below this value ([0,1] ratio wrt obstacle reference/max distance)
-			double HYSTERESIS_SECTOR_COUNT; //!< Range of "sectors" (directions) for hysteresis over succesive timesteps
+			double HYSTERESIS_SECTOR_COUNT; //!< Range of "sectors" (directions) for hysteresis over successive timesteps
 			std::vector<double>   factorWeights;  //!< See docs above
 			std::vector<int32_t>  factorNormalizeOrNot; //!< 0/1 to normalize factors.
 			std::vector<std::vector<int32_t> >  PHASE_FACTORS; //!< Factor indices [0,4] for the factors to consider in each phase 1,2,...N of the movement decision (Defaults: `PHASE1_FACTORS=0 1 2`, `PHASE2_FACTORS=`3 4`)

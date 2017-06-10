@@ -2,12 +2,10 @@ language: c
 
 env:
   global:
-    - secure: cp5oUQ80fWqlbWrnjp+Mblp9wyn2SXZu2Wx7FKLHaG9txTcVj86wSqMF3+qnyDN/vgd0u3C0GA1dND7xBIJRnkhWCwNyglXAr7L6UCRK4IRi3lGC/ZxFthcJHljFFkh+8ss/+v7E7eu9fDC2ph5a7baDookIs5c9jaFJcYEkkEakaSjtbLk7QqxrizsMrRa2pOMOq7bq7lE47VaE0BO7fZYk+CAN0Byjh5OnDUK1tznHnryjiCCxa5WIcNw/LkMU8x4lb5xxSy7+mZdlNzWRKdtsf5W4wdAk+JOrZrFFuiK4J3cxsHwYel4Yxcswgr8GnJxGo5whC/2/f+SoXMREdQ==
+    - secure: CoCDaURJpzTksnkRx6Yjdw9Tl5DZYd2/hPsPEcESNRUNZgqwD1TXPTcbsXQuG2fv5nyovEwMVguztHb49W2snVpBCikee56oqZrqAUv8QDgM0RslWwjLLjbUjBAV0rFP1yooVEgK07StNqlDU+GEftAvTP7CuAow6x990tWFhhDXupTN5PsNFNYaPWL2mDXBXoCjvWdP4RkOSw0SYxPGfzGftOHzbzohIm720BVGELn3G8myOKE/zG050ixvdow5kzxOXuzKNLxLXVq/7R89qO3yT452/FF6r0Cx841bzEVL5Ks7rnpNu/qpqR9vccpiGfikyL1dDDfoRSt0djOyPA==
 
 matrix:
   include:
-  - compiler: gcc
-    env: TASK="prefetch"
   - compiler: gcc
     env: TASK="build" CCACHE_SLOPPINESS="pch_defines,time_macros"
   - compiler: clang
@@ -48,8 +46,6 @@ build:
     - sudo apt-get install -y lcov
     - sudo apt-get install -y ruby rubygems-integration
     - sudo gem install coveralls-lcov
-    # this one is missing in the docker image? TODO: Pull-request to https://github.com/dry-dock/u16cppall/blob/master/install.sh
-    - sudo update-alternatives --install /usr/bin/gcov gcov /usr/bin/gcov-6 90
     - bash .travis.sh
 
 after_success:

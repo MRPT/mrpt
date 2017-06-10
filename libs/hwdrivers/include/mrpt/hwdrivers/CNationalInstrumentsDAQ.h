@@ -35,7 +35,7 @@ namespace mrpt
 		*  Samples will be returned inside mrpt::obs::CObservationRawDAQ in "packets" of a predefined number of samples, which can 
 		*  be changed by the user through the "samplesPerChannelToRead" parameter of each task.
 		*
-		*  For multichannels tasks, samples will be **interleaved**. For example, the readings from succesive timesteps for 4 ADC channels 
+		*  For multichannels tasks, samples will be **interleaved**. For example, the readings from successive timesteps for 4 ADC channels 
 		*  will be available in the ADC vector inside mrpt::obs::CObservationRawDAQ in this order:
 		*
 		*   - A0[0] A1[0] A2[0] A3[0]  A0[1] A1[1] A2[1] A3[1]  A0[2] A1[2] A2[2] A3[2] ...
