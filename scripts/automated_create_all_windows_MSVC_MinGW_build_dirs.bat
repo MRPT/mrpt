@@ -17,47 +17,27 @@ set MRPT_BASE_DIR=mrpt
 
 REM =================== SET ALL IMPORTANT PATHS ===================
 
-set msvc11_DIR=C:\Program Files (x86)\Microsoft Visual Studio 11.0
-set msvc12_DIR=C:\Program Files (x86)\Microsoft Visual Studio 12.0
 set msvc14_DIR=C:\Program Files (x86)\Microsoft Visual Studio 14.0
+set msvc15_DIR=D:\Program Files (x86)\Microsoft Visual Studio\2017\Community
 
-set CMAKE_DIR=C:\Program Files (x86)\CMake\bin\
-set LIBUSBDIR=D:\code\libusb-win32-bin-1.2.6.0
+set CMAKE_DIR=C:\Program Files\CMake\bin\
+set LIBUSBDIR=D:\code\libusb-win32-bin
 REM MinGW directories will be: %MINGW_ROOT%-32 and %MINGW_ROOT%-64  
 REM  (NOTE: Use "/" for paths in this one)
 set MINGW_ROOT=D:/MinGW
 set MINGW_ROOT_BKSLH=D:\MinGW
 REM === wxWidgets directory base name will be: %WX_ROOT%
-set WX_ROOT=D:/code/wxWidgets-3.0.2
+set WX_ROOT=D:/code/wxWidgets-3.1.0
 REM MSVC Redistributables: %MSVC_REDIST_BASE_DIR%/%COMP%/vcredist_%ARCH%.exe
 set MSVC_REDIST_BASE_DIR=D:/code/MSVC_Redist
 
 REM WinPCAP
-set PCAP_ROOT=D:/code/WpdPack
-
+set PCAP_ROOT=D:/code/WpdPack_4_1_2
 
 REM Since mrpt 1.3.0 we can build against libusb (for libfreenect) and will work in all systems (even w/o drivers)
 set KINECT=1
 
 REM ==============================================================
-
-REM msvc11 ========================
-:gen11
-set COMP=msvc11
-
-set ARCHN=32
-call :subGen
-set ARCHN=64
-call :subGen
-
-REM msvc12 ========================
-:gen12
-set COMP=msvc12
-
-set ARCHN=32
-call :subGen
-set ARCHN=64
-call :subGen
 
 
 REM msvc14 ========================
@@ -66,6 +46,17 @@ set COMP=msvc14
 set ARCHN=32
 call :subGen
 
+set ARCHN=64
+call :subGen
+
+goto End
+
+REM msvc15 ========================
+:gen15
+set COMP=msvc15
+
+set ARCHN=32
+call :subGen
 set ARCHN=64
 call :subGen
 
@@ -97,25 +88,23 @@ set MSVC_REDIST=%MSVC_REDIST_BASE_DIR%/%COMP%/vcredist_%ARCH%.exe
 
 if %COMP%==mingw GOTO :subGen_mingw
 REM Visual Studio --------------------------
-if %COMP%==msvc9 set MSVC_DIR=%msvc9_DIR%
-if %COMP%==msvc10 set MSVC_DIR=%msvc10_DIR%
-if %COMP%==msvc11 set MSVC_DIR=%msvc11_DIR%
 if %COMP%==msvc12 set MSVC_DIR=%msvc12_DIR%
 if %COMP%==msvc14 set MSVC_DIR=%msvc14_DIR%
-if %COMP%==msvc9 set CMAKE_GEN=Visual Studio 9 2008
-if %COMP%==msvc10 set CMAKE_GEN=Visual Studio 10 2010
-if %COMP%==msvc11 set CMAKE_GEN=Visual Studio 11 2012
+if %COMP%==msvc15 set MSVC_DIR=%msvc15_DIR%
+
 if %COMP%==msvc12 set CMAKE_GEN=Visual Studio 12 2013
 if %COMP%==msvc14 set CMAKE_GEN=Visual Studio 14 2015
+if %COMP%==msvc14 set CMAKE_GEN=Visual Studio 15 2017
 if %ARCHN%==64 set CMAKE_GEN=%CMAKE_GEN% Win64
 
 set CMAKE_EXTRA1=-DINSTALL_MSVC_REDISTRIBUTABLE=%MSVC_REDIST%
 set CMAKE_EXTRA2=
 set CMAKE_EXTRA3=
 
-if %COMP%==msvc11 set WXLIB_DIR=vc110
-if %COMP%==msvc12 set WXLIB_DIR=vc120
 if %COMP%==msvc14 set WXLIB_DIR=vc140
+if %COMP%==msvc14 set WXLIB_DIR=vc140
+if %COMP%==msvc15 set WXLIB_DIR=vc150
+if %COMP%==msvc15 set WXLIB_DIR=vc150
 if %ARCHN%==64 set WXLIB_DIR=%WXLIB_DIR%_x64
 
 
