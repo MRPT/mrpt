@@ -306,7 +306,7 @@ void TUserOptionsChecker<GRAPH_t>::populateDeciderOptimizerProperties() {
 	{ // CICPCriteriaERD
 		TRegistrationDeciderProps* dec = new TRegistrationDeciderProps;
 		dec->name = "CICPCriteriaERD";
-		dec->description = "Register a new edge by alligning the provided 2D/3D RangeScans of 2 nodes. Uses the goodness of the ICP Alignment as the criterium for adding a new edge";
+		dec->description = "Register a new edge by aligning the provided 2D/3D RangeScans of 2 nodes. Uses the goodness of the ICP Alignment as the criterium for adding a new edge";
 		dec->type = "Edge";
 		dec->rawlog_format = "Both";
 		dec->observations_used.push_back("CObservation2DRangeScan - Format #1, #2");

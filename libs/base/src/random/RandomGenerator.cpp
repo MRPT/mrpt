@@ -227,7 +227,7 @@ void  CRandomGenerator::drawGaussianMultivariate(
 		for (size_t d=0;d<dim;d++) out_result[d]+= (*mean)[d];
 
 	MRPT_END_WITH_CLEAN_UP( \
-		printf("\nEXCEPTION: Dumping variables for debuging:\n"); \
+		printf("\nEXCEPTION: Dumping variables for debugging:\n"); \
 		std::cout << "Z:\n" << Z << "D:\n" << D << "Cov:\n" << cov; \
 		try \
 		{ \

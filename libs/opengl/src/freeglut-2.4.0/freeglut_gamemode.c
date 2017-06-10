@@ -484,7 +484,7 @@ int FGAPIENTRY glutEnterGameMode( void )
          * more changes and investigation.
          */
 
-        /* Get the current postion of the drawable area on screen */
+        /* Get the current Position of the drawable area on screen */
         XTranslateCoordinates(
             fgDisplay.Display,
             fgStructure.CurrentWindow->Window.Handle,

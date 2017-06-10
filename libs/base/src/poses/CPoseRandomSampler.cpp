@@ -93,7 +93,7 @@ void CPoseRandomSampler::setPosePDF( const CPosePDF *pdf )
     }
     else
     {
-        THROW_EXCEPTION_FMT("Unsuported class: %s", m_pdf2D->GetRuntimeClass()->className );
+        THROW_EXCEPTION_FMT("Unsupported class: %s", m_pdf2D->GetRuntimeClass()->className );
     }
 
 
@@ -144,12 +144,12 @@ void CPoseRandomSampler::setPosePDF( const CPose3DPDF *pdf )
     MRPT_END
 }
 
-void CPoseRandomSampler::setPosePDF( const CPose3DPDFPtr &pdf ) { 
-	setPosePDF(pdf.pointer()); 
+void CPoseRandomSampler::setPosePDF( const CPose3DPDFPtr &pdf ) {
+	setPosePDF(pdf.pointer());
 }
 
-void CPoseRandomSampler::setPosePDF( const CPosePDFPtr &pdf ) { 
-	setPosePDF(pdf.pointer()); 
+void CPoseRandomSampler::setPosePDF( const CPosePDFPtr &pdf ) {
+	setPosePDF(pdf.pointer());
 }
 
 /*---------------------------------------------------------------
@@ -392,4 +392,3 @@ CPose3D &CPoseRandomSampler::getSamplingMean3D(CPose3D &out_mean) const
 	return out_mean;
 	MRPT_END
 }
-
