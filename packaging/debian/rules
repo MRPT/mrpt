@@ -6,7 +6,7 @@
 export DH_DEBUG=1
 export DH_VERBOSE=1
 
-export DEB_BUILD_MAINT_OPTIONS=hardening=+all,-pie,+fortify
+export DEB_BUILD_MAINT_OPTIONS=hardening=+all,+pie,+fortify
 
 # For multiarch support:
 DEB_HOST_ARCH ?= $(shell dpkg-architecture -qDEB_HOST_ARCH)

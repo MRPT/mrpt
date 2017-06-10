@@ -2,7 +2,7 @@
 
 graphslam-engine - Construct and solve robot pose graphs from .rawlog dataset files
 
-I<Note:>As the graphslam-engine application still under developement, current
+I<Note:>As the graphslam-engine application still under development, current
 manpage may be outdated. Refer to the MRPT doxygen class documentation and the
 corresponding application documentation for the latest features and usage
 instructions
