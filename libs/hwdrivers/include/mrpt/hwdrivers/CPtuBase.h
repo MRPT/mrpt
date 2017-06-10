@@ -229,7 +229,7 @@ namespace mrpt
 
 			virtual bool init(const std::string &port)=0;
 
-			/** Close conection with serial port */
+			/** Close Connection with serial port */
 
 			virtual void close()=0;
 
