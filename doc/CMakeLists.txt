@@ -29,7 +29,7 @@ FIND_PACKAGE(Doxygen)
 # documentation_performance_html
 # --------------------------------
 if(TARGET mrpt-perfdata2html)
-	GET_TARGET_PROPERTY(PERF2HTML_GENERATED_EXE mrpt-perfdata2html LOCATION)
+	SET(PERF2HTML_GENERATED_EXE "$<TARGET_FILE:mrpt-perfdata2html>")
 	add_custom_target(documentation_performance_html
 		COMMAND 		${PERF2HTML_GENERATED_EXE} "${MRPT_SOURCE_DIR}/doc/perf-data/"
 		WORKING_DIRECTORY	${MRPT_SOURCE_DIR}/
