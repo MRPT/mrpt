@@ -26,9 +26,6 @@ if(COMMAND cmake_policy)
 	if(POLICY CMP0053)
 		cmake_policy(SET CMP0053 OLD) # Simplify variable reference and escape sequence evaluation.
 	endif()
-	if(POLICY CMP0026)
-		cmake_policy(SET CMP0026 OLD) # Allow using the LOCATION target property.
-	endif()
 	if(POLICY CMP0037)
 		cmake_policy(SET CMP0037 OLD)  # Allow defining target "test"
 	endif()
@@ -654,6 +651,8 @@ IF (NOT MSVC AND NOT CMAKE_VERSION VERSION_LESS "2.8.12")
 	include(cmakemodules/cotire.cmake REQUIRED) # COmpiler TIme REducer helper for PCH
 	set_directory_properties(PROPERTIES COTIRE_ADD_UNITY_BUILD FALSE) # Disable unity targets
 ENDIF()
+
+add_custom_target(all_mrpt_libs ALL) # all_mrpt_libs: target to build all mrpt-* modules
 
 # ----------------------------------------------------------------------------
 #      					PROCESS SUBDIRECTORIES:

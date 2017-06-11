@@ -120,11 +120,10 @@ if NOT %COMP%==mingw set EXTRA_MINGW_PATHS=
 if %COMP%==mingw set EXTRA_MINGW_PATHS=;%MINGW_ROOT_BKSLH%-%ARCHN%\bin
 
 echo SET PATH=C:\Windows\system32;C:\Windows%EXTRA_MINGW_PATHS%;%CMAKE_DIR%;C:\Program Files\TortoiseSVN\bin;%CD%\bin\Release;%CD%\bin\Debug > %PATH_FIL%
-if NOT %COMP%==mingw echo call "%MSVC_DIR%\VC\vcvarsall.bat" %ARCH_NAME% >> %PATH_FIL%
 
 echo call %PATH_FIL% > AUTOBUILD.bat
-if NOT %COMP%==mingw echo msbuild OpenCV.sln /p:Configuration=Release >> AUTOBUILD.bat
-if NOT %COMP%==mingw echo msbuild OpenCV.sln /p:Configuration=Debug >> AUTOBUILD.bat
+if NOT %COMP%==mingw echo cmake --build . --config Release >> AUTOBUILD.bat
+if NOT %COMP%==mingw echo cmake --build . --config Debug >> AUTOBUILD.bat
 if %COMP%==mingw echo %MINGW_ROOT_BKSLH%-%ARCHN%\bin\mingw32-make -j4 >> AUTOBUILD.bat
 
 REM ---------------- Call CMake ----------------
