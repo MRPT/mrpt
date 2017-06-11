@@ -29,9 +29,6 @@ if(COMMAND cmake_policy)
 	if(POLICY CMP0053)
 		cmake_policy(SET CMP0053 OLD) # Simplify variable reference and escape sequence evaluation.
 	endif()
-	if(POLICY CMP0026)
-		cmake_policy(SET CMP0026 OLD) # Allow using the LOCATION target property.
-	endif()
 	if(POLICY CMP0037)
 		cmake_policy(SET CMP0037 OLD)  # Allow defining target "test"
 	endif()
