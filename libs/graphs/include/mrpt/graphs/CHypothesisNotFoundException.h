@@ -12,6 +12,7 @@
 
 #include <mrpt/utils/types_simple.h>
 #include <mrpt/utils/mrpt_macros.h>
+#include <mrpt/graphs/link_pragmas.h>
 
 #include <stdexcept>
 #include <iostream>
@@ -19,7 +20,7 @@
 #include <sstream>
 
 // TODO - include docstring, group etc.
-class HypothesisNotFoundException: public std::runtime_error {
+class GRAPHS_IMPEXP HypothesisNotFoundException: public std::runtime_error {
  	public:
 		HypothesisNotFoundException(
 				mrpt::utils::TNodeID from,
