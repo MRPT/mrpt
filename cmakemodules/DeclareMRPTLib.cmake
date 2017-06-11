@@ -144,7 +144,6 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 	IF (NOT ${headers_only})
 		add_definitions(-DBUILDING_mrpt_${name})
 
-
 		# A libray target:
 		ADD_LIBRARY(mrpt-${name}
 			${all_${name}_srcs}      # sources
@@ -158,6 +157,8 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 
 	ENDIF (NOT ${headers_only})
 
+	add_dependencies(all_mrpt_libs mrpt-${name}) # for target: all_mrpt_libs
+	
 	# Append to list of all mrpt-* libraries:
 	if("${ALL_MRPT_LIBS}" STREQUAL "")  # first one is different to avoid an empty first list element ";mrpt-xxx"
 		SET(ALL_MRPT_LIBS "mrpt-${name}" CACHE INTERNAL "")  # This emulates global vars
