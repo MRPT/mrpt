@@ -2408,14 +2408,14 @@ void CGraphSlamEngine<GRAPH_T>::computeSlamMetric(mrpt::utils::TNodeID nodeID, s
 
 template<class GRAPH_T>
 double CGraphSlamEngine<GRAPH_T>::accumulateAngleDiffs(
-				mrpt::poses::CPose2D p1,
-				mrpt::poses::CPose2D p2) {
+	const mrpt::poses::CPose2D &p1,
+	const mrpt::poses::CPose2D &p2) {
 	return mrpt::math::wrapToPi(p1.phi() - p2.phi());
 }
 template<class GRAPH_T>
 double CGraphSlamEngine<GRAPH_T>::accumulateAngleDiffs(
-				mrpt::poses::CPose3D p1,
-				mrpt::poses::CPose3D p2) {
+	const mrpt::poses::CPose3D &p1,
+	const mrpt::poses::CPose3D &p2) {
 	using namespace mrpt::math;
 	double res = 0;
 
