@@ -648,6 +648,8 @@ IF (NOT MSVC AND NOT CMAKE_VERSION VERSION_LESS "2.8.12")
 	set_directory_properties(PROPERTIES COTIRE_ADD_UNITY_BUILD FALSE) # Disable unity targets
 ENDIF()
 
+add_custom_target(all_mrpt_libs ALL) # all_mrpt_libs: target to build all mrpt-* modules
+
 # ----------------------------------------------------------------------------
 #      					PROCESS SUBDIRECTORIES:
 # ----------------------------------------------------------------------------
