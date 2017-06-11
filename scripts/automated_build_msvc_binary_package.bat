@@ -9,9 +9,6 @@ REM  > automated_build_msvc_binary_package.bat <PATH_TO_MRPT_SRCS>
 REM
 REM ---------------------------------------------------------------------------
 
-REM  Extra params we want on all public binary releases:
-set EXTRA_CMAKE_VARS=-DDISABLE_SWISSRANGER_3DCAM_LIBS=ON -DDISABLE_PCL=ON -DDISABLE_NationalInstruments=ON -DENABLE_SOLUTION_FOLDERS=OFF 
-
 set MSVC_VERBOSITY=normal
 
 REM Make sure params are OK:
@@ -22,34 +19,29 @@ IF NOT EXIST "%1\version_prefix.txt" GOTO SHOW_USAGE2
 
 IF EXIST ".\version_prefix.txt" GOTO NO_GOOD
 
-REM 1) re-call CMake
+REM 1) Compile debug libs (so Cmake find them in the next run)
 REM ----------------------------------------------
-cmake . %1 %EXTRA_CMAKE_VARS%
+cmake --build . --config Debug --target all_mrpt_libs
 IF %ERRORLEVEL% NEQ 0 GOTO BAD_RETCODE
 
-REM 2) Compile debug libs (so Cmake find them in the next run)
-REM ----------------------------------------------
-devenv libs\ALL_MRPT_LIBS.sln /Build Debug
-IF %ERRORLEVEL% NEQ 0 GOTO BAD_RETCODE
-
-REM 3) re-call CMake to detect the debug libs
+REM 2) re-call CMake to detect the debug libs
 REM ----------------------------------------------
 cmake . 
 IF %ERRORLEVEL% NEQ 0 GOTO BAD_RETCODE
 
-REM 4) Do unit tests:
+REM 3) Do unit tests:
 REM ----------------------------------------------
-devenv tests\tests.sln /Build Release
+cmake --build . --config Release --target test
 IF %ERRORLEVEL% NEQ 0 GOTO BAD_RETCODE
 
-REM 5) All seem OK. Build all.
+REM 4) All seem OK. Build all.
 REM ----------------------------------------------
-devenv MRPT.sln /Build Release
+cmake --build . --config Release
 IF %ERRORLEVEL% NEQ 0 GOTO BAD_RETCODE
 
-REM 6) Build package:
+REM 5) Build package:
 REM ----------------------------------------------
-devenv MRPT.sln /Build release /project PACKAGE
+cmake --build . --config Release --target PACKAGE
 
 goto END_BATCH
 REM ============== END ====================

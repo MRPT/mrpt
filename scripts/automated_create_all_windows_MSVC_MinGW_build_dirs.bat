@@ -94,7 +94,7 @@ if %COMP%==msvc15 set MSVC_DIR=%msvc15_DIR%
 
 if %COMP%==msvc12 set CMAKE_GEN=Visual Studio 12 2013
 if %COMP%==msvc14 set CMAKE_GEN=Visual Studio 14 2015
-if %COMP%==msvc14 set CMAKE_GEN=Visual Studio 15 2017
+if %COMP%==msvc15 set CMAKE_GEN=Visual Studio 15 2017
 if %ARCHN%==64 set CMAKE_GEN=%CMAKE_GEN% Win64
 
 set CMAKE_EXTRA1=-DINSTALL_MSVC_REDISTRIBUTABLE=%MSVC_REDIST%
@@ -102,9 +102,7 @@ set CMAKE_EXTRA2=
 set CMAKE_EXTRA3=
 
 if %COMP%==msvc14 set WXLIB_DIR=vc140
-if %COMP%==msvc14 set WXLIB_DIR=vc140
-if %COMP%==msvc15 set WXLIB_DIR=vc150
-if %COMP%==msvc15 set WXLIB_DIR=vc150
+if %COMP%==msvc15 set WXLIB_DIR=vc141
 if %ARCHN%==64 set WXLIB_DIR=%WXLIB_DIR%_x64
 
 
@@ -142,7 +140,6 @@ if NOT %COMP%==mingw set EXTRA_MINGW_PATHS=
 if %COMP%==mingw set EXTRA_MINGW_PATHS=;%MINGW_ROOT_BKSLH%-%ARCHN%\bin
 
 echo SET PATH=C:\Windows\system32;C:\Windows%EXTRA_MINGW_PATHS%;C:\Program Files\TortoiseSVN\bin;d:\code\opencv-%COMP%-%ARCH%\bin\Release;d:\code\opencv-%COMP%-%ARCH%\bin\Debug;%WXLIBDIR%;%FFMPEGDIR%/bin;%LIBUSBDIR%\bin\%ARCH_NAME%;%CMAKE_DIR%;%CD%\bin\Release;%CD%\bin\Debug > %PATH_FIL%
-if NOT %COMP%==mingw echo call "%MSVC_DIR%\VC\vcvarsall.bat" %ARCH_NAME% >> %PATH_FIL%
 
 echo call %PATH_FIL% > AUTOBUILD.bat
 rem ----- COMPILE ----- 
@@ -164,8 +161,6 @@ REM Create Project:
 echo on
 "%CMAKE_DIR%\cmake.exe" %MRPT_SRC_DIR% -G "%CMAKE_GEN%" %ALL_PARAMS% -Wno-dev %CMAKE_EXTRA1% %CMAKE_EXTRA2% %CMAKE_EXTRA3%
 
-REM and insist to make sure wxWidgets and other vars have been fixed:
-"%CMAKE_DIR%\cmake.exe" . -Wno-dev %ALL_PARAMS%
 echo off
 
 
