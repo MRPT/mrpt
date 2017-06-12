@@ -43,7 +43,7 @@
 *  - `mrpt::utils::CObject::duplicate()` has been removed, use the equivalent (redundant) `mrpt::utils::CObject::clone()`.
 *
 * **Optional changes**
-*   - Use the `Foo::Const::Ptr` smart pointers when possible instead of its non-const counterpart.
+*   - Use the `Foo::ConstPtr` smart pointers when possible instead of its non-const counterpart.
 *
 *
 */
