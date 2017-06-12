@@ -172,7 +172,7 @@ template<class GRAPH_T=typename mrpt::graphs::CNetworkOfPoses2DInf>
 class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 	public:
 
-		/**\brief Handy typedefs */
+ 		/**\brief Handy typedefs */
 		/**\{*/
 		/**\brief Map for managing output file streams.*/
 		typedef std::map<std::string, mrpt::utils::CFileOutputStream*> fstreams_out;

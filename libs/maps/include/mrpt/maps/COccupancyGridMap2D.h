@@ -549,13 +549,13 @@ namespace maps
 		* \sa laserScanSimulatorWithUncertainty(), sonarSimulator(), COccupancyGridMap2D::RAYTRACE_STEP_SIZE_IN_CELL_UNITS
 		 */
 		void  laserScanSimulator(
-				mrpt::obs::CObservation2DRangeScan	        &inout_Scan,
-				const mrpt::poses::CPose2D					&robotPose,
-				float						    threshold = 0.6f,
-				size_t						    N = 361,
-				float						    noiseStd = 0,
-				unsigned int				    decimation = 1,
-				float							angleNoiseStd = mrpt::utils::DEG2RAD(0) ) const;
+				mrpt::obs::CObservation2DRangeScan &inout_Scan,
+				const mrpt::poses::CPose2D &robotPose,
+				float threshold = 0.6f,
+				size_t N = 361,
+				float noiseStd = 0,
+				unsigned int decimation = 1,
+				float angleNoiseStd = mrpt::utils::DEG2RAD(0) ) const;
 
 		/** Simulates the observations of a sonar rig into the current grid map.
 		 *   The simulated ranges are stored in a CObservationRange object, which is also used
