@@ -227,6 +227,19 @@ CHM_FILENAME="libMRPT-$MRPT_VERSION_STR.chm"
 #   $MRPT_LIST_DIRECTORIES
 #   ...
 #
+export MRPT_VERSION_STR
+export MRPT_LIST_DIRECTORIES
+export VISION_CITATION_FILES
+export MRPT_LIST_INPUT
+export MRPT_EXAMPLE_PATH
+export genHTML
+export outCHM
+export CHM_FILENAME
+export HHC_INVOKING_CODE
+export MRPT_USE_SEARCHENGINE
+export genLATEX
+export genRTF
+
 printf "Generating DOXYGEN project..."
 envsubst < doxygen_project.txt.in > doxygen_project.txt
 
