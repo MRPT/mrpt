@@ -88,7 +88,7 @@ namespace mrpt
 			float getLineWidth() const { return  m_line_width;}
 
 			void setPointsWidth(float w) { m_points_width=w; }
-			
+
 			/**\brief Wrappers that accept a TColor instance and delegate
 			 * implementation to their counterpart set*Color methods 
 			 */

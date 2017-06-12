@@ -90,7 +90,7 @@ class CRegistrationDeciderOrOptimizer :
 		 * thread runs.
 		 */
 		virtual void setCriticalSectionPtr(
-				mrpt::synch::CCriticalSection* graph_section); 
+				mrpt::synch::CCriticalSection* graph_section);
 		/**\brief Initialize visual objects in CDisplayWindow (e.g. \em add an
 		 * object to scene).
 		 *
@@ -99,7 +99,7 @@ class CRegistrationDeciderOrOptimizer :
 		 *
 		 * \sa setWindowManagerPtr, updateVisuals, initializeViewports
 		 */
-		virtual void initializeVisuals(); 
+		virtual void initializeVisuals();
 		/**\brief Update the relevant visual features in CDisplayWindow.
 		 *
 		 *\exception std::exception If the method is called without having first

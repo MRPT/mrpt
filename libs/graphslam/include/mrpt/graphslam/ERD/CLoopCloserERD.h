@@ -647,7 +647,7 @@ class CLoopCloserERD:
 		const mrpt::utils::TColor m_curr_node_covariance_color;
 		double m_offset_y_curr_node_covariance;
 		 int m_text_index_curr_node_covariance;
-		
+
 		/**\name Partition vectors */
 		/**\{ */
 		/**\brief Previous partitions vector */
@@ -684,16 +684,16 @@ class CLoopCloserERD:
 		 */
 		double m_lc_icp_constraint_factor;
 		/**\brief Indicate whethet to use scan-matching at all during graphSLAM [on
-		 * by default].
+		 * * by default].
 		 *
 		 * \warning It is strongly recomended that the user does not set this to
 		 * false (via the .ini file). graphSLAM may diverge significantly if no
 		 * scan-matching is not used.
 		 */
 		bool m_use_scan_matching;
- 		/**\brief How many of the previous nodes nodes to check ICP against?
- 		 *
- 		 */
+		/**\brief How many of the previous nodes nodes to check ICP against?
+		 *
+		 */
 		int m_prev_nodes_for_ICP;
 
 };

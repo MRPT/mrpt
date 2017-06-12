@@ -448,12 +448,12 @@ namespace poses
 			ASSERTMSG_(mrpt::math::size(m,1)==1 && mrpt::math::size(m,2)==6, "Wrong size of vector in ::fromString");
 		 	this->setFromValues(m.get_unsafe(0,0),m.get_unsafe(0,1),m.get_unsafe(0,2),DEG2RAD(m.get_unsafe(0,3)),DEG2RAD(m.get_unsafe(0,4)),DEG2RAD(m.get_unsafe(0,5)));
 		}
-		 /** Same as fromString, but without requiring the square brackets in the
-		 	* string
-		 	*/
-		 void fromStringRaw(const std::string &s) {
-		 	 this->fromString("[" + s + "]");
-		 }
+		/** Same as fromString, but without requiring the square brackets in the
+		 * string
+		 */
+		void fromStringRaw(const std::string &s) {
+			this->fromString("[" + s + "]");
+		}
 
 		/** Return true if the 6D pose represents a Z axis almost exactly vertical (upwards or downwards), with a given tolerance (if set to 0 exact horizontality is tested). */
 		bool isHorizontal( const double tolerance=0) const;

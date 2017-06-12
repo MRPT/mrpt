@@ -7,10 +7,10 @@ template<class GRAPH_T>
 CRangeScanEdgeRegistrationDecider<GRAPH_T>::
 CRangeScanEdgeRegistrationDecider():
 	m_last_total_num_nodes(0),
- 	m_use_mahal_distance_init_ICP(true),
+	m_use_mahal_distance_init_ICP(true),
 	m_keystroke_laser_scans("l"),
- 	m_planar_laser_scan_obj_name("laser_scan_viz"),
- 	m_icp_goodness_thresh_is_fixed(false)
+	m_planar_laser_scan_obj_name("laser_scan_viz"),
+	m_icp_goodness_thresh_is_fixed(false)
 {
 	m_mahal_distance_ICP_odom_win.resizeWindow(200); // use the last X mahal. distance values
 	m_goodness_threshold_win.resizeWindow(200);
@@ -238,7 +238,7 @@ bool CRangeScanEdgeRegistrationDecider<GRAPH_T>::getICPEdge(
 		initial_estim = ad_params->init_estim;
 	}
 	else {
- 		initial_estim = to_pose - from_pose;
+		initial_estim = to_pose - from_pose;
  	}
 
 	MRPT_LOG_DEBUG_STREAM("from_pose: " << from_pose
@@ -403,7 +403,7 @@ template<class GRAPH_T>
 void CRangeScanEdgeRegistrationDecider<GRAPH_T>::initializeVisuals() {
 	MRPT_START;
 
-	// assign a text message for displaying the ICP goodness value 
+	// assign a text message for displaying the ICP goodness value
 	this->m_win_manager->assignTextMessageParameters(
 			/* offset_y*	= */ &m_offset_y_icp_goodness,
 			/* text_index* = */ &m_text_index_icp_goodness);
