@@ -65,7 +65,7 @@ namespace mrpt { namespace graphslam { namespace deciders {
  * ### .ini Configuration Parameters
  *
  * \htmlinclude graphslam-engine_config_params_preamble.txt
- 
+ *
  * - \b LC_min_nodeid_diff
  *  + \a Section       : GeneralConfiguration
  *  + \a Default value : 30

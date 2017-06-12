@@ -96,12 +96,10 @@ class CRangeScanEdgeRegistrationDecider :
 
 		/**\name Helper structs */
 		/**\{*/
-		/**
-	 	* \brief Struct for passing additional parameters to the getICPEdge call
-	 	*
-	 	* Handy for overriding the search to the \a GRAPH_T::nodes map or the
-	 	* search for the node's LaserScan
-	 	*/
+		/** \brief Struct for passing additional parameters to the getICPEdge call
+		 * Handy for overriding the search to the \a GRAPH_T::nodes map or the
+		 * search for the node's LaserScan
+		 */
 		struct TGetICPEdgeAdParams {
 			typedef TGetICPEdgeAdParams self_t;
 
@@ -129,20 +127,18 @@ class CRangeScanEdgeRegistrationDecider :
 			}
 		};
 
-		/**\brief Get the ICP Edge between the provided nodes.
-	 	 *
-	 	 * Handy for not having to manually fetch the laser scans, as the method
-	 	 * takes care of this.
-	 	 *
-	 	 * \param[out] icp_info Struct that will be filled with the results of the
-	 	 * ICP operation
-	 	 *
-	 	 * \param[in] ad_params Pointer to additional parameters in the getICPEdge call
-	 	 *
-	 	 * \return True if operation was successful, false otherwise (e.g. if the
-	 	 * either of the nodes' CObservation2DRangeScan object does not contain
-	 	 * valid data.
-	 	 */
+		/**\brief Get the ICP Edge between the provided nodes.  Handy for not
+		 * having to manually fetch the laser scans, as the method takes care of
+		 * this.
+		 *
+		 * \param[out] icp_info Struct that will be filled with the results of the
+		 * ICP operation
+		 * \param[in] ad_params Pointer to additional parameters in the getICPEdge
+		 * call
+		 * \return True if operation was successful, false otherwise (e.g. if the
+		 * either of the nodes' CObservation2DRangeScan object does not contain
+		 * valid data.
+		 */
 		virtual bool getICPEdge(
 				const mrpt::utils::TNodeID& from,
 				const mrpt::utils::TNodeID& to,
@@ -158,7 +154,7 @@ class CRangeScanEdgeRegistrationDecider :
 		 * instance.
 		 * \param[out] node_props Pointer to the TNodeProps struct to be filled.
 		 *
-		 * 
+		 *
 		 * \return True if operation was successful, false otherwise.
 		 */
 		virtual bool fillNodePropsFromGroupParams(
@@ -212,16 +208,16 @@ class CRangeScanEdgeRegistrationDecider :
 		void alignOpticalWithMRPTFrame();
 
 		/**\brief Fetch a list of nodes with regards to the given nodeID for
-		 	* which to try and add scan matching edges
-		 	*
-		 	* \param[in] curr_nodeID Reference node ID which is to be used for
-		 	* fetching the list of nodes
-		 	*
-		 	* \param[out] nodes_set Pointer to list of nodes that is filled by the
-		 	* method at hand.
-		 	*
-		 	* \sa addScanMatchingEdges
-		 	*/
+		 * which to try and add scan matching edges
+		 *
+		 * \param[in] curr_nodeID Reference node ID which is to be used for
+		 * fetching the list of nodes
+		 *
+		 * \param[out] nodes_set Pointer to list of nodes that is filled by the
+		 * method at hand.
+		 *
+		 * \sa addScanMatchingEdges
+		 */
 		virtual void fetchNodeIDsForScanMatching(
 				const mrpt::utils::TNodeID& curr_nodeID,
 				std::set<mrpt::utils::TNodeID>* nodes_set) = 0;
@@ -265,9 +261,9 @@ class CRangeScanEdgeRegistrationDecider :
 		nodes_to_scans2D_t  m_nodes_to_laser_scans2D;
 		nodes_to_scans3D_t  m_nodes_to_laser_scans3D;
 		/**\}*/
- 		/**\brief Keep track of the total number of registered nodes since the last
- 		 * time class method was called
- 		 */
+		/**\brief Keep track of the total number of registered nodes since the last
+		 * time class method was called
+		 */
 		size_t m_last_total_num_nodes;
 
 		/**\name ICP-related variables */
