@@ -1,5 +1,4 @@
 # C++ coding style for MRPT
-===
 
 ## General rules
 
@@ -80,24 +79,26 @@ your `.vimrc` to enable the aforementioned settings.
 
 * Member variables of a `struct` should have **no** suffix or prefix, e.g: 
 
-        struct TFoo {
-          int num_iters;
-        };
+  ```c++
+  struct TFoo {
+    int num_iters;
+  };
+  ```
 
 * Public variable of a `class` should have **no** suffic or prefix.
     Private/protected members should have the `m_` prefix or, alternatively, the
     `_` suffix. For *methods*, use **lower camel case** or K&R style, e.g.
 
-```c++
-    class CBar {
-    public:
-      int num_iters;
-      void doSomething(); // Lower camel case (preferred)
-      void do_something(); // K&R style (second style option)
-    private:
-      int m_handle;
-    };
-```
+  ```c++
+  class CBar {
+  public:
+    int num_iters;
+    void doSomething(); // Lower camel case (preferred)
+    void do_something(); // K&R style (second style option)
+  private:
+    int m_handle;
+  };
+  ```
 
 * In general, typedefs will use lowercase with underscores, e.g. `typedef
     std::vector<int> vector_int;`
