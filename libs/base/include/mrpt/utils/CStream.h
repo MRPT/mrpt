@@ -429,7 +429,7 @@ namespace mrpt
 	#if MRPT_WORD_SIZE!=32  // If it's 32 bit, size_t <=> uint32_t
 		CStream BASE_IMPEXP & operator >> (mrpt::utils::CStream&s, std::vector<size_t> &a);
 	#endif
-		// 
+		//
 		template <typename T, typename std::enable_if<std::is_base_of<mrpt::utils::CSerializable, T>::value>::type* = nullptr>
 		mrpt::utils::CStream& operator>>(mrpt::utils::CStream& in, typename std::shared_ptr<T> &pObj)
 		{

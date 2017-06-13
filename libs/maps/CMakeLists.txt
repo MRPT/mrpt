@@ -20,6 +20,11 @@ IF(CMAKE_MRPT_HAS_LIBLAS)
 	INCLUDE_DIRECTORIES(${LAS_INCLUDE_DIRS})
 ENDIF()
 
+IF(CMAKE_MRPT_HAS_VTK)
+	LINK_DIRECTORIES(${VTK_LIBRARY_DIRS})
+	INCLUDE_DIRECTORIES(${VTK_INCLUDE_DIRS})
+ENDIF()
+
 #---------------------------------------------
 # Macro declared in "DeclareMRPTLib.cmake":
 #---------------------------------------------

@@ -24,7 +24,6 @@
  #include <vtkCellArray.h>
  #include <vtkPoints.h>
  #include <vtkXMLStructuredGridWriter.h>
- #include <vtkStructuredGrid.h>
  #include <vtkSmartPointer.h>
 #endif
 
