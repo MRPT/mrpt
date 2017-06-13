@@ -35,6 +35,12 @@ CRegistrationDeciderOrOptimizer<GRAPH_T>::~CRegistrationDeciderOrOptimizer() {
 }
 
 template<class GRAPH_T>
+bool CRegistrationDeciderOrOptimizer<GRAPH_T>::updateState(
+		mrpt::obs::CActionCollectionPtr action,
+		mrpt::obs::CSensoryFramePtr observations,
+		mrpt::obs::CObservationPtr observation ) { return false; }
+
+template<class GRAPH_T>
 void CRegistrationDeciderOrOptimizer<GRAPH_T>::initializeLoggers(
 		const std::string& name) {
 	using namespace std;
@@ -70,16 +76,41 @@ void CRegistrationDeciderOrOptimizer<GRAPH_T>::setWindowManagerPtr(
 }
 
 template<class GRAPH_T>
+void CRegistrationDeciderOrOptimizer<GRAPH_T>::setRawlogFile(
+		const std::string& fname) {
+	MRPT_LOG_INFO_STREAM("Setting the Rawlog file: " << 
+			(fname.empty() ? "NONE" : fname));
+
+	this->m_rawlog_fname = fname;
+}
+
+template<class GRAPH_T>
 void CRegistrationDeciderOrOptimizer<GRAPH_T>::setCriticalSectionPtr(
 		mrpt::synch::CCriticalSection* graph_section) {
 
 	m_graph_section = graph_section;
 	this->logFmt(mrpt::utils::LVL_DEBUG, "Fetched the CCRiticalSection successfully");
 }
+template<class GRAPH_T>
+void CRegistrationDeciderOrOptimizer<GRAPH_T>::dumpVisibilityErrorMsg(
+		std::string viz_flag, int sleep_time /* = 500 ms */) {
+	MRPT_START;
+
+	this->logFmt(mrpt::utils::LVL_ERROR,
+			"Cannot toggle visibility of specified object.\n "
+			"Make sure that the corresponding visualization flag ( %s "
+			") is set to true in the .ini file.\n",
+			viz_flag.c_str());
+	mrpt::system::sleep(sleep_time);
+
+	MRPT_END;
+}
+
 
 template<class GRAPH_T>
 void CRegistrationDeciderOrOptimizer<GRAPH_T>::initializeVisuals() {
 	this->assertVisualsVars();
+	this->initViewports();
 	m_initialized_visuals = true;
 }
 
@@ -93,6 +124,18 @@ void CRegistrationDeciderOrOptimizer<GRAPH_T>::assertVisualsVars() {
 template<class GRAPH_T>
 void CRegistrationDeciderOrOptimizer<GRAPH_T>::updateVisuals() {
 	ASSERT_(m_initialized_visuals);
+
+	this->updateViewports();
+}
+
+template<class GRAPH_T>
+void CRegistrationDeciderOrOptimizer<GRAPH_T>::initViewports() {
+	MRPT_LOG_DEBUG_STREAM("Initializing viewports...");
+
+}
+template<class GRAPH_T>
+void CRegistrationDeciderOrOptimizer<GRAPH_T>::updateViewports() {
+	MRPT_LOG_DEBUG_STREAM("Updating viewports...");
 }
 
 template<class GRAPH_T>
@@ -131,6 +174,17 @@ void CRegistrationDeciderOrOptimizer<GRAPH_T>::setGraphPtr(GRAPH_T* graph) {
 template<class GRAPH_T>
 bool CRegistrationDeciderOrOptimizer<GRAPH_T>::isMultiRobotSlamClass() {
 	return is_mr_slam_class;
+}
+
+template<class GRAPH_T>
+void CRegistrationDeciderOrOptimizer<GRAPH_T>::
+setVerbosityLevelFromSection(std::string source_fname, std::string section) {
+	mrpt::utils::CConfigFile source(source_fname);
+	int level = source.read_int(
+			section,
+			"class_verbosity",
+			1, false);
+	this->setMinLoggingLevel(mrpt::utils::VerbosityLevel(level));
 }
 
 } } // end of namespaces

@@ -23,6 +23,7 @@
 #include <mrpt/graphslam/misc/CWindowManager.h>
 #include "CRegistrationDeciderOrOptimizer.h"
 
+#include <sstream>
 
 namespace mrpt { namespace graphslam { namespace deciders {
 
@@ -81,6 +82,8 @@ class CNodeRegistrationDecider :
 				mrpt::obs::CActionCollectionPtr action,
 				mrpt::obs::CSensoryFramePtr observations,
 				mrpt::obs::CObservationPtr observation ) = 0;
+		virtual void loadParams(const std::string& source_fname);
+		virtual void printParams() const;
 		virtual void getDescriptiveReport(std::string* report_str) const; 
 
 	protected:

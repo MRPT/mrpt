@@ -169,6 +169,14 @@ namespace mrpt {
 			/** alias of setMinLoggingLevel() */
 			void setVerbosityLevel(const VerbosityLevel level);
 
+			/**\brief Get the minimum logging level in std::string representation
+			 *
+			 * \sa getMinLoggingLevel, setMinLoggingLevel
+			 */
+			std::string getMinLoggingLevelStr() const {
+				return logging_levels_to_names[this->getMinLoggingLevel()];
+			};
+
 			/** \sa setMinLoggingLevel */
 			VerbosityLevel getMinLoggingLevel() const { return m_min_verbosity_level; }
 			bool isLoggingLevelVisible(VerbosityLevel level) const { return m_min_verbosity_level <= level; }

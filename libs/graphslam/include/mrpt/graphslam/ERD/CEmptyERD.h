@@ -14,6 +14,7 @@
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/CRawlog.h>
 
+#include <mrpt/graphs/CNetworkOfPoses.h>
 #include <mrpt/graphslam/interfaces/CEdgeRegistrationDecider.h>
 
 namespace mrpt { namespace graphslam { namespace deciders {
@@ -38,6 +39,10 @@ class CEmptyERD:
 				mrpt::obs::CSensoryFramePtr observations,
 				mrpt::obs::CObservationPtr observation );
 
+		void fetchNodeIDsForScanMatching(
+				const mrpt::utils::TNodeID& curr_nodeID,
+				std::set<mrpt::utils::TNodeID>* nodes_set);
+
 	private:
 		void registerNewEdge(
 				const mrpt::utils::TNodeID& from,
@@ -56,7 +61,12 @@ template<class GRAPH_T>
 bool CEmptyERD<GRAPH_T>::updateState(
 		mrpt::obs::CActionCollectionPtr action,
 		mrpt::obs::CSensoryFramePtr observations,
-		mrpt::obs::CObservationPtr observation ) {return true;}
+		mrpt::obs::CObservationPtr observation) {return true;}
+
+template<class GRAPH_T>
+void CEmptyERD<GRAPH_T>::fetchNodeIDsForScanMatching(
+		const mrpt::utils::TNodeID& curr_nodeID,
+		std::set<mrpt::utils::TNodeID>* nodes_set) { }
 
 template<class GRAPH_T>
 void CEmptyERD<GRAPH_T>::registerNewEdge(

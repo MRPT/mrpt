@@ -60,8 +60,8 @@
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/utils/types_simple.h>
 #include <mrpt/utils/TColor.h>
-#include <mrpt/utils/CImage.h>
 #include <mrpt/utils/COutputLogger.h>
+#include <mrpt/utils/pose_utils.h>
 
 #include <mrpt/graphslam/misc/CEdgeCounter.h>
 #include <mrpt/graphslam/interfaces/CNodeRegistrationDecider.h>
@@ -88,19 +88,16 @@ namespace mrpt { namespace graphslam {
  * constraints (edges) and solve it to find an estimation of the actual robot
  * trajectory.
  *
- * // TODO - change this description
  * The template arguments are listed below:
  * - \em GRAPH_T: The type of Graph to be constructed and optimized. Currently
  *   CGraphSlamEngine works only with CPosePDFGaussianInf GRAPH_T instances.
- * - \em NODE_REGISTRAR: Class responsible of adding new nodes in the graph.
- *   Class should at least implement the deciders::CNodeRegistrationDecider
- *   interface provided in CNodeRegistrationDecider.h file.
- * - \em EDGE_REGISTRAR: Class responsible of adding new edges in the graph.
- *   Class should at least implement the deciders::CEdgeRegistrationDecider
- *   interface provided in CEdgeRegistrationDecider.h file.
- * - \em OPTIMIZER: Class responsible of optimizing the graph. Class should at
- *   least implement the optimizers::CGraphSlamOptimizer interface provided
- *   in CGraphSlamOptimizer.h file.
+ *
+ * Class holds the following decider optimizer instances that change the
+ * behavior according to the derived classes that are actually used
+ *
+ * - CNodeRegistrationDecider
+ * - CEdgeRegistrationDecider
+ * - CGraphSlamOptimizer
  *
  * \note The GRAPH_T resource is accessed after having locked the relevant section
  * \em m_graph_section. Critical section is also <em> locked prior to the calls
@@ -124,21 +121,10 @@ namespace mrpt { namespace graphslam {
  *   to do about the new output directory. By default output directory from
  *   previous run is overwritten by the directory of the current run.
  *
- * - \b ground_truth_file_format
- *   + \a Section       : GeneralConfiguration
- *   + \a Default value : NavSimul
- *   + \a Required      : FALSE
- *   + \a Description   : Specify the format of the ground-truth file if one is
- *   provided. Currently CGraphSlamEngine supports ground truth files generated
- *   by the GridMapNavSimul tool or ground truth files corresponding to
- *   RGBD-TUM datasets.
- *   + \a Available Options: NavSimul, RGBD_TUM
- *
  * - \b class_verbosity
  *   + \a Section       : GeneralConfiguration
  *   + \a Default value : 1 (LVL_INFO)
  *   + \a Required      : FALSE
- *
  *
  * - \b visualize_map
  *   + \a Section       : VisualizationParameters
@@ -171,27 +157,22 @@ namespace mrpt { namespace graphslam {
  *   + \a Required      : FALSE
  *   + \a Description   : Applicable only when dealing with RGB-D datasets
  *
- * - \b enable_range_viewport
- *   + \a Section       : VisualizationParameters
- *   + \a Default value : TRUE
- *   + \a Required      : FALSE
- *   + \a Description   : Applicable only when dealing with RGB-D datasets
- *
- * - \b enable_intensity_viewport
- *   + \a Section       : VisualizationParameters
- *   + \a Default value : FALSE
- *   + \a Required      : FALSE
- *   + \a Description   : Applicable only when dealing with RGB-D datasets
- *
  *
  * \note Implementation can be found in the file \em CGraphSlamEngine_impl.h
+ *
+ * \note Class contains an instance of the
+ * mrpt::maps::COccupancyGridMap2D and mrpt::maps::COctomap classes and it
+ * parses the configuration parameters from the "MappingParameters" section.
+ * Refer to those classes for documentation on their .ini configuration
+ * parameters
+ *
  * \ingroup mrpt_graphslam_grp
  */
 template<class GRAPH_T=typename mrpt::graphs::CNetworkOfPoses2DInf>
 class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 	public:
 
-		/**\brief Handy typedefs */
+ 		/**\brief Handy typedefs */
 		/**\{*/
 		/**\brief Map for managing output file streams.*/
 		typedef std::map<std::string, mrpt::utils::CFileOutputStream*> fstreams_out;
@@ -210,7 +191,6 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 
 		/**\brief Constructor of CGraphSlamEngine class template.
 		 *
-		 * // TODO - remove the deprecated arguments
 		 * \param[in] config_file .ini file containing the configuration
 		 * parameters for the CGraphSlamEngine as well as the deciders/optimizer
 		 * classes that CGraphSlamEngine is using
@@ -227,12 +207,17 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 * robot. Currently the class can read ground truth files corresponding
 		 * either to <em>RGBD - TUM datasets</em> or to rawlog files generated with
 		 * the \em GridMapNavSimul MRPT application.
-		 * // TODO add the deciders/optimizer
 		 *
+		 * \param[in] node_reg Pointer to the CNodeRegistrationDecider instance
+		 * that is to be used
+		 * \param[in] edge_reg Pointer to the CEdgeRegistrationDecider instance
+		 * that is to be used
+		 * \param[in] optimizer Pointer to the CGraphSlamOptimizer instance
+		 * that is to be used
 		 *
-		 * \note If a NULL CWindowManager pointer is porovided, the application
+		 * \note If a NULL CWindowManager pointer is provided, the application
 		 * runs on <em> headless mode </em>. In this case, no visual feedback is
-		 * given but application receives a big boost in performance
+		 * given but application receives a big boost in performance.
 		 */
 		CGraphSlamEngine(
 				const std::string& config_file,
@@ -264,11 +249,16 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 */
 		virtual void getNodeIDsOfEstimatedTrajectory(
 				std::set<mrpt::utils::TNodeID>* nodes_set) const;
+		/**\brief Wrapper method for the decider's optimizer initMiscAction classes
+		 * \warning Actions of this method run at the end of instance initialization
+		 */
+		virtual void initMiscActions();
+
 		/**\brief Wrapper method around the GRAPH_T::saveToTextFile method.
 		 * Method saves the graph in the format used by TORO & HoG-man strategies
 		 *
-		 * \param[in] fname_in Name of the generated graph file - Defaults to "output_graph" if not
-		 * set by the user
+		 * \param[in] fname_in Name of the generated graph file - Defaults to
+		 * "output_graph" if not set by the user
 		 *
 		 * \sa save3DScene, http://www.mrpt.org/Robotics_file_formats
 		 */
@@ -281,13 +271,8 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 * \sa saveGraph
 		 */
 		void save3DScene(const std::string* fname_in=NULL) const;
-		/**\brief Read the configuration variables from the <em>.ini file</em> specified by
-		 * the user.
-		 * Method is automatically called, upon CGraphSlamEngine initialization
-		 *
-		 */
-		void loadParams(const std::string& fname);
-		/**\brief Fill in the provided string with the class configuration parameters.
+		/**\brief Fill in the provided string with the class configuration
+		 * parameters.
 		 *
 		 * \sa printParams
 		 */
@@ -313,6 +298,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 * since the last time the gridmap was computed.
 		 *
 		 * \sa computeMap
+		 * \todo TODO Implement compile-time polymorphism
 		 */
 		void getMap(mrpt::maps::COccupancyGridMap2DPtr map,
 				mrpt::system::TTimeStamp* acquisition_time=NULL) const;
@@ -331,7 +317,7 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 * Method is a wrapper around CGraphSlamEngine::getParamsAsString method
 		 * \sa getParamsAsString
 		 */
-		void printParams() const;
+		virtual void printParams() const;
 		/**\brief Wrapper method around _execGraphSlamStep.
 		 *
 		 * Handy for not having to specify any action/observations objects
@@ -361,59 +347,6 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		const GRAPH_T& getGraph() const { return m_graph; }
 		/**\brief Return the filename of the used rawlog file.*/
 		inline std::string getRawlogFname() {return m_rawlog_fname;}
-
-		/**\name ground-truth parsing methods */
-		/**\{*/
-		/**\brief Parse the ground truth .txt file and fill in the corresponding
-		 * gt_poses vector.
-		 *
-		 * It is assumed that the rawlog, thererfore the groundtruth file has been
-		 * generated using the <em>GridMapNavSimul</em> MRPT application. If not
-		 * user should abide the ground-truth file format to that of the files
-		 * generated by the GridMapNavSimul app.
-		 *
-		 * \sa readGTFileRGBD_TUM
-		 *
-		 * \param[in] fname_GT Ground truth filename from which the measurements
-		 * are to be read
-		 * \param[out] gt_poses std::vector which is to contain the 2D ground truth
-		 * poses.
-		 * \param[out] gt_timestamps std::vector which is to contain the timestamps
-		 * for the corresponding ground truth poses. Ignore this argument if
-		 * timestamps are not needed.
-		 */
-		static void readGTFile(
-				const std::string& fname_GT,
-				std::vector<mrpt::poses::CPose2D>* gt_poses,
-				std::vector<mrpt::system::TTimeStamp>* gt_timestamps=NULL);
-		static void readGTFile(
-				const std::string& fname_GT,
-				std::vector<mrpt::poses::CPose3D>* gt_poses,
-				std::vector<mrpt::system::TTimeStamp>* gt_timestamps=NULL);
-		/**\brief Parse the ground truth .txt file and fill in the corresponding
-		 * m_GT_poses vector. The poses returned are given with regards to the
-		 * MRPT reference frame.
-		 *
-		 * It is assumed that the groundtruth file has been generated using the
-		 * <em>rgbd_dataset2rawlog</em> MRPT tool.
-		 *
-		 * \param[in] fname_GT Ground truth filename from which the measurements
-		 * are to be read
-		 * \param[out] gt_poses std::vector which is to contain the
-		 * 2D ground truth poses.
-		 * \param[out] gt_timestamps std::vector which is to contain the timestamps
-		 * for the corresponding ground truth poses. Ignore this argument if
-		 * timestamps are not needed.
-		 *
-		 * \sa readGTFile,
-		 * http://www.mrpt.org/Collection_of_Kinect_RGBD_datasets_with_ground_truth_CVPR_TUM_2011
-		 */
-		static void readGTFileRGBD_TUM(
-				const std::string& fname_GT,
-				std::vector<mrpt::poses::CPose2D>* gt_poses,
-				std::vector<mrpt::system::TTimeStamp>* gt_timestamps=NULL);
-
-		/**\}*/
 
 		/**\brief Generate and write to a corresponding report for each of the
 		 * respective self/decider/optimizer classes.
@@ -512,10 +445,29 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 * - Properties fo class at the current time
 		 * - Logging of commands until current time
 		 *
-		 * \note Decider/Optimizer classes should also implement a getDescriptiveReport
-		 * method for printing information on their part of the execution.
+		 * \note Decider/Optimizer classes should also implement the \a
+		 * getDescriptiveReport method for printing information on their part of
+		 * the execution.
 		 */
 		void getDescriptiveReport(std::string* report_str) const;
+		/**\name Map parameters */
+		/**\{*/
+		void loadMapParams(const std::string& fname);
+		/**\brief Load the COccupancyGridMap parameters
+		 * \note Method called only when using 2D poses, thus 2D SLAM
+		 */
+		void loadMapParamsInternal(
+				const mrpt::poses::CPose2D& p_unused,
+				const std::string& fname,
+				const std::string& sec);
+		/**\brief Load the COctomap  parameters
+		 * \note Method called only when using 3D poses, thus 3D SLAM
+		 * */
+		void loadMapParamsInternal(
+				const mrpt::poses::CPose3D& p_unused,
+				const std::string& fname,
+				const std::string& sec);
+		/**\}*/
 		/** \name Initialization of Visuals
 		 * Methods used for initializing various visualization features relevant to
 		 * the application at hand. If the visual feature is specified by the user
@@ -525,12 +477,10 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		/**\{*/
 		void initVisualization();
 
-		void initRangeImageViewport();
-		void initIntensityImageViewport();
-
 		mrpt::opengl::CSetOfObjectsPtr initRobotModelVisualization();
 		/**\brief Method to help overcome the partial template specialization
-		 * restriction of C++. Apply polymorphism by overloading function arguments instead
+		 * restriction of C++. Apply polymorphism by overloading function arguments
+		 * instead
 		 */
 		/**\{ */
 		mrpt::opengl::CSetOfObjectsPtr initRobotModelVisualizationInternal(
@@ -555,17 +505,6 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		/**\brief Wrapper around the deciders/optimizer updateVisuals methods
 		 */
 		void updateAllVisuals();
-		/**\brief In RGB-D TUM Datasets update the Range image displayed in a
-		 * seperate viewport
-		 */
-		void updateRangeImageViewport();
-		/**\brief In RGB-D TUM Datasets update the Intensity image displayed in a
-		 * seperate viewport
-		 */
-		void updateIntensityImageViewport();
-		/**\brief Update the viewport responsible for displaying the graph-building
-		 * procedure in the estimated position of the robot
-		 */
 		virtual void updateCurrPosViewport();
 		/**\brief return the 3D Pose of a LaserScan that is to be visualized.
 		 *
@@ -573,8 +512,9 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 */
 		virtual mrpt::poses::CPose3D getLSPoseForGridMapVisualization(
 				const mrpt::utils::TNodeID nodeID) const;
-		/**\brief Set the properties of the map visual object based on the nodeID that
-		 * it was produced by.
+		/**\brief Set the properties of the map visual object based on the nodeID
+		 * that it was produced by.
+		 *
 		 * Derived classes may override this method if they want to have different
 		 * visual properties (color, shape etc.) for different nodeIDs.
 		 *
@@ -597,7 +537,8 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 					mrpt::utils::TNodeID,
 					mrpt::obs::CObservation2DRangeScanPtr>& nodes_to_laser_scans2D,
 				bool full_update=false);
-		/**\brief Display the next ground truth position in the visualization window.
+		/**\brief Display the next ground truth position in the visualization
+		 * window.
 		 *
 		 * \sa updateOdometryVisualization
 		 */
@@ -645,7 +586,6 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 				mrpt::obs::CObservation2DRangeScan& laser_scan_in,
 				mrpt::obs::CObservation2DRangeScan* laser_scan_out,
 				const int keep_every_n_entries = 2);
-		void alignOpticalWithMRPTFrame(); // TODO - either use it or remove it
 		/**\brief Query the observer instance for any user events.
 		 *
 		 * Query the given observer for any events (keystrokes, mouse clicks,
@@ -689,8 +629,9 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 				const mrpt::obs::CActionCollectionPtr action,
 				const mrpt::obs::CSensoryFramePtr observations,
 				const mrpt::obs::CObservationPtr observation);
-		// TODO - move these somewhere else.
 		/**\name Class specific supplementary functions.
+		 * Methods are utilised in the SLAM metric evaluation
+		 * \todo TODO move them somewhere else.. outside class
 		 */
 		/**\{*/
 		static double accumulateAngleDiffs(
@@ -808,8 +749,6 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		bool m_visualize_estimated_trajectory;
 		bool m_visualize_SLAM_metric;
 		bool m_enable_curr_pos_viewport;
-		bool m_enable_intensity_viewport;
-		bool m_enable_range_viewport;
 		/**\}*/
 
 		/**\brief Indicated if program is temporarily paused by the user
@@ -875,8 +814,6 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		std::vector<pose_t> m_odometry_poses;
 		std::vector<pose_t> m_GT_poses;
 
-		std::string m_GT_file_format;
-
 		/**\brief Map of NodeIDs to their corresponding LaserScans.
 		 */
 		nodes_to_scans2D_t m_nodes_to_laser_scans2D;
@@ -885,9 +822,6 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		mrpt::obs::CObservation2DRangeScanPtr m_last_laser_scan2D;
 		/**\brief First recorded laser scan - assigned to the root */
 		mrpt::obs::CObservation2DRangeScanPtr m_first_laser_scan2D;
-		/**\brief Last laser scan that the current class instance received.
-		 */
-		mrpt::obs::CObservation3DRangeScanPtr m_last_laser_scan3D;
 
 		/**\name Trajectories colors */
 		/**\{*/
@@ -898,10 +832,6 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		mrpt::utils::TColor m_current_constraint_type_color;
 		/**\}*/
 
-		// frame transformation from the RGBD_TUM GrountTruth to the MRPT
-		// reference frame
-		// TODO - either use it or lose it...
-		mrpt::math::CMatrixDouble33  m_rot_TUM_to_MRPT;
  		/** How big are the robots going to be in the scene */
 		size_t m_robot_model_size;
 		/**\brief Internal counter for querying for the number of nodeIDs.
@@ -914,11 +844,6 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 */
 		mrpt::synch::CCriticalSection m_graph_section;
 
-		// keep track of the storage directory for the 3DRangeScan depth/range
-		// images
-		std::string m_img_external_storage_dir;
-		std::string m_img_prev_path_base;
-
 		/**\name Slam Metric related variables */
 		/**\{*/
 		/**\brief Map from nodeIDs to their corresponding closest GT pose index. 
@@ -929,31 +854,6 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		double m_curr_deformation_energy;
 		std::vector<double> m_deformation_energy_vec;
 		/**\}*/
-
-		/**\brief Struct responsible for keeping the parameters of the .info file
-		 * in RGBD related datasets
-		 */
-		struct TRGBDInfoFileParams {
-			TRGBDInfoFileParams();
-			TRGBDInfoFileParams(const std::string& rawlog_fname);
-			~TRGBDInfoFileParams();
-
-			void initTRGBDInfoFileParams();
-			/**\brief Parse the RGBD information file to gain information about the rawlog
-			 * file contents
-			 */
-			void parseFile();
-			void setRawlogFile(const std::string& rawlog_fname);
-
-			/**\brief Format for the parameters in the info file:
-			 * <em>string literal - related value</em> (kept in a string representation)
-			 */
-			std::map<std::string, std::string> fields;
-
-			std::string info_fname;
-
-
-		} m_info_params;
 
 		/**\brief Time it took to record the dataset.
 		 * Processing time should (at least) be equal to the grab time for the
@@ -972,6 +872,8 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 * pressed by pressign ctrl-c)
 		 */
 		bool m_request_to_exit;
+
+		std::string m_class_name;
 
 		/**\name Map-related objects
 		 * \brief Cached version and corresponding flag of map
@@ -992,8 +894,6 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 */
 		mutable mrpt::system::TTimeStamp m_map_acq_time;
 		/**\}*/
-
-		std::string m_class_name;
 		/**\brief Track the first node registration occurance
 		 *
 		 * Handy so that we can assign a measurement to the root node as well.
@@ -1012,6 +912,31 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 */
 		static const std::string header_sep;
 		static const std::string report_sep;
+
+		/**\name Section names in the .ini file
+		 *
+		 * See initialization list for these values
+		 */
+		/**\{*/
+		const std::string m_sec_general_params;
+		const std::string m_sec_nrd_params;
+		const std::string m_sec_erd_params;
+		const std::string m_sec_gso_params;
+		const std::string m_sec_viz_params;
+		const std::string m_sec_map_params;
+		/**\}*/
+
+	private:
+		/**\brief Read the configuration variables from the <em>.ini file</em>
+		 * specified by the user.
+		 * Method is automatically called, upon CGraphSlamEngine initialization
+		 *
+		 * \warning DO NOT override this method in any derived class since this is
+		 * called in the constructor of CGraphSlamEngine. Instead make a new method
+		 * and specifically call that.
+		 */
+		void loadParams(const std::string& fname);
+
 };
 
 } } // end of namespaces

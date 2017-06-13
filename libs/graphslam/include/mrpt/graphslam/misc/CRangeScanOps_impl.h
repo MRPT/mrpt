@@ -13,7 +13,7 @@
 namespace mrpt { namespace graphslam { namespace deciders {
 
 template<class GRAPH_T>
-void CRangeScanOps<GRAPH_T>::getICPEdge(
+void CRangeScanOps<GRAPH_T>::_getICPEdge(
 		const mrpt::obs::CObservation2DRangeScan& from,
 		const mrpt::obs::CObservation2DRangeScan& to,
 		constraint_t* rel_edge,
@@ -49,13 +49,14 @@ void CRangeScanOps<GRAPH_T>::getICPEdge(
 	if (icp_info) *icp_info = info;
 
 	MRPT_END;
-}
+} // end of _getICPEdge
+
 template<class GRAPH_T>
-void CRangeScanOps<GRAPH_T>::getICPEdge(
+void CRangeScanOps<GRAPH_T>::_getICPEdge(
 		const mrpt::obs::CObservation3DRangeScan& from,
 		const mrpt::obs::CObservation3DRangeScan& to,
 		constraint_t* rel_edge,
-		const mrpt::poses::CPose2D* initial_pose_in /* =NULL */,
+		const mrpt::poses::CPose3D* initial_pose_in /* =NULL */,
 		mrpt::slam::CICP::TReturnInfo* icp_info /* =NULL */) {
 	MRPT_START;
 
@@ -72,13 +73,10 @@ void CRangeScanOps<GRAPH_T>::getICPEdge(
 	m1.insertObservation(&from);
 	m2.insertObservation(&to);
 
-	//this->decimatePointsMap(&m1, [> keep every = */ 40, /* low_lim = <] 5000);
-	//this->decimatePointsMap(&m2, [> keep every = */ 40, /* low_lim = <] 5000);
-
 	// If given, use initial_pose_in as a first guess for the ICP
 	mrpt::poses::CPose3D initial_pose;
 	if (initial_pose_in) {
-		initial_pose = mrpt::poses::CPose3D(*initial_pose_in);
+		initial_pose = *initial_pose_in;
 	}
 
 	mrpt::poses::CPose3DPDFPtr pdf = params.icp.Align3D(
@@ -89,22 +87,13 @@ void CRangeScanOps<GRAPH_T>::getICPEdge(
 			(void*)&info);
 
 	// return the edge regardless of the goodness of the alignment
-	// copy from the 3D PDF
-	// NULLIFY contraint_t if Z displacement is high (normally this should be 0)
-	// since we are moving in 2D
-	if (fabs(pdf->getMeanVal().z()) < 0.1) {
-		rel_edge->copyFrom(*pdf);
-	}
-	else {
-		rel_edge = NULL;
-	}
+	rel_edge->copyFrom(*pdf);
 
 	// if given, fill the TReturnInfo Struct
 	if (icp_info) *icp_info = info;
 
-
 	MRPT_END;
-}
+} // end of _getICPEdge
 
 template<class GRAPH_T>
 void CRangeScanOps<GRAPH_T>::decimatePointsMap(
@@ -133,7 +122,7 @@ void CRangeScanOps<GRAPH_T>::decimatePointsMap(
 	//std::cout << "Map size: " << map_size << " => " << m->size() << std::endl;
 
 	MRPT_END;
-}
+} // end of decimatePointsMap
 
 template<class GRAPH_T>
 bool CRangeScanOps<GRAPH_T>::convert3DTo2DRangeScan(
@@ -158,7 +147,7 @@ bool CRangeScanOps<GRAPH_T>::convert3DTo2DRangeScan(
 
 	return success;
 	MRPT_END;
-}
+} // end of convert3DTo2DRangeScan
 
 // TParameter
 // //////////////////////////////////

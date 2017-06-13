@@ -549,13 +549,13 @@ namespace maps
 		* \sa laserScanSimulatorWithUncertainty(), sonarSimulator(), COccupancyGridMap2D::RAYTRACE_STEP_SIZE_IN_CELL_UNITS
 		 */
 		void  laserScanSimulator(
-				mrpt::obs::CObservation2DRangeScan	        &inout_Scan,
-				const mrpt::poses::CPose2D					&robotPose,
-				float						    threshold = 0.6f,
-				size_t						    N = 361,
-				float						    noiseStd = 0,
-				unsigned int				    decimation = 1,
-				float							angleNoiseStd = mrpt::utils::DEG2RAD(0) ) const;
+				mrpt::obs::CObservation2DRangeScan &inout_Scan,
+				const mrpt::poses::CPose2D &robotPose,
+				float threshold = 0.6f,
+				size_t N = 361,
+				float noiseStd = 0,
+				unsigned int decimation = 1,
+				float angleNoiseStd = mrpt::utils::DEG2RAD(0) ) const;
 
 		/** Simulates the observations of a sonar rig into the current grid map.
 		 *   The simulated ranges are stored in a CObservationRange object, which is also used
@@ -808,11 +808,11 @@ namespace maps
 		int  direction2idx(int dx, int dy);
 
 
-		MAP_DEFINITION_START(COccupancyGridMap2D,MAPS_IMPEXP)
-			float	min_x,max_x,min_y,max_y,resolution;	//!< See COccupancyGridMap2D::COccupancyGridMap2D
-			mrpt::maps::COccupancyGridMap2D::TInsertionOptions	insertionOpts;	//!< Observations insertion options
-			mrpt::maps::COccupancyGridMap2D::TLikelihoodOptions	likelihoodOpts;	//!< Probabilistic observation likelihood options
-		MAP_DEFINITION_END(COccupancyGridMap2D,MAPS_IMPEXP)
+		MAP_DEFINITION_START(COccupancyGridMap2D,MAPS_IMPEXP);
+		float	min_x,max_x,min_y,max_y,resolution;	//!< See COccupancyGridMap2D::COccupancyGridMap2D
+		mrpt::maps::COccupancyGridMap2D::TInsertionOptions	insertionOpts;	//!< Observations insertion options
+		mrpt::maps::COccupancyGridMap2D::TLikelihoodOptions	likelihoodOpts;	//!< Probabilistic observation likelihood options
+		MAP_DEFINITION_END(COccupancyGridMap2D,MAPS_IMPEXP);
 
 	};
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( COccupancyGridMap2D, CMetricMap, MAPS_IMPEXP )

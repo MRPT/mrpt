@@ -33,7 +33,7 @@ namespace mrpt
 			  * This is diferent from poses/point composition, which is implemented as "+" operators in classes derived from "CPose"
 			  */
 			template <class OTHERCLASS>
-			inline void AddComponents(const OTHERCLASS &b)
+			inline void addComponents(const OTHERCLASS &b)
 			{
 				const int dims = std::min( size_t(DERIVEDCLASS::static_size), size_t(OTHERCLASS::is3DPoseOrPoint() ? 3:2));
 				for (int i=0;i<dims;i++)

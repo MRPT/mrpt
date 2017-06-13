@@ -16,6 +16,7 @@
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/utils/TColor.h>
 
 
 namespace mrpt
@@ -88,6 +89,24 @@ namespace mrpt
 
 			void setPointsWidth(float w) { m_points_width=w; }
 
+			/**\brief Wrappers that accept a TColor instance and delegate
+			 * implementation to their counterpart set*Color methods 
+			 */
+			/**\{*/
+			inline void setLineColor(mrpt::utils::TColor c) {
+				this->setLineColor(c.R, c.G, c.B, c.A);
+			}
+			inline void setPointsColor(mrpt::utils::TColor c) {
+				this->setPointsColor(c.R, c.G, c.B, c.A);
+			}
+			inline void setSurfaceColor(mrpt::utils::TColor c) {
+				this->setSurfaceColor(c.R, c.G, c.B, c.A);
+			}
+			/**\}*/
+
+			/**\brief Color-setter methods for various properties of the LaserScan
+			 */
+			/**\{*/
 			void setLineColor(float R,float G, float B, float A=1.0f)
 			{
 				m_line_R=R;
@@ -109,6 +128,7 @@ namespace mrpt
 				m_plane_B=B;
 				m_plane_A=A;
 			}
+			/**\}*/
 
 			void setScan( const mrpt::obs::CObservation2DRangeScan	&scan)
 			{

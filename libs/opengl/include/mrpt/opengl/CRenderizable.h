@@ -60,8 +60,8 @@ namespace mrpt
 			/** @name Changes the appearance of the object to render
 			    @{ */
 
-			void setName(const std::string &n) { m_name=n; }	//!< Changes the name of the object
-			const std::string &getName() const { return m_name; }		//!< Returns the name of the object
+			void setName(const std::string &n) { m_name=n; } //!< Changes the name of the object
+			const std::string &getName() const { return m_name; } //!< Returns the name of the object
 
 			inline bool isVisible() const /** Is the object visible? \sa setVisibility */  { return m_visible; }
 			inline void setVisibility(bool visible=true) /** Set object visibility (default=true) \sa isVisible */  { m_visible=visible; }
@@ -69,12 +69,12 @@ namespace mrpt
 			inline void enableShowName(bool showName=true) { m_show_name=showName; }	//!< Enables or disables showing the name of the object as a label when rendering
 			inline bool isShowNameEnabled() const { return m_show_name; }	//!< \sa enableShowName
 
-			CRenderizable& setPose( const mrpt::poses::CPose3D &o );	//!< Set the 3D pose from a mrpt::poses::CPose3D object (return a ref to this)
-			CRenderizable& setPose( const mrpt::poses::CPose2D &o );	//!< Set the 3D pose from a mrpt::poses::CPose3D object (return a ref to this)
-			CRenderizable& setPose( const mrpt::math::TPose3D &o );	//!< Set the 3D pose from a  mrpt::math::TPose3D object (return a ref to this)
-			CRenderizable& setPose( const mrpt::math::TPose2D &o );	//!< Set the 3D pose from a  mrpt::math::TPose3D object (return a ref to this)
-			CRenderizable& setPose( const mrpt::poses::CPoint3D &o );	//!< Set the 3D pose from a mrpt::poses::CPose3D object (return a ref to this)
-			CRenderizable& setPose( const mrpt::poses::CPoint2D &o );	//!< Set the 3D pose from a mrpt::poses::CPose3D object (return a ref to this)
+			CRenderizable& setPose( const mrpt::poses::CPose3D &o ); //!< Set the 3D pose from a mrpt::poses::CPose3D object \return a ref to this
+			CRenderizable& setPose( const mrpt::poses::CPose2D &o ); //!< Set the 3D pose from a mrpt::poses::CPose2D object \return a ref to this
+			CRenderizable& setPose( const mrpt::math::TPose3D &o ); //!< Set the 3D pose from a  mrpt::math::TPose3D object \return a ref to this
+			CRenderizable& setPose( const mrpt::math::TPose2D &o ); //!< Set the 3D pose from a  mrpt::math::TPose2D object \return a ref to this
+			CRenderizable& setPose( const mrpt::poses::CPoint3D &o ); //!< Set the 3D pose from a mrpt::poses::CPoint3D object \return a ref to this
+			CRenderizable& setPose( const mrpt::poses::CPoint2D &o ); //!< Set the 3D pose from a mrpt::poses::CPoint2D object \return a ref to this
 
 			mrpt::math::TPose3D getPose() const;	//!< Returns the 3D pose of the object as TPose3D
 			/** Returns a const ref to the 3D pose of the object as mrpt::poses::CPose3D (which explicitly contains the 3x3 rotation matrix) */

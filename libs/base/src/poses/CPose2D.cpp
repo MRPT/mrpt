@@ -244,7 +244,7 @@ void CPose2D::inverseComposeFrom(const CPose2D& A, const CPose2D& B )
  Scalar sum of components: This is diferent from poses
    composition, which is implemented as "+" operators in "CPose" derived classes.
  ---------------------------------------------------------------*/
-void CPose2D::AddComponents(const CPose2D &p)
+void CPose2D::addComponents(const CPose2D &p)
 {
 	m_coords[0]+=p.m_coords[0];
 	m_coords[1]+=p.m_coords[1];
@@ -383,6 +383,10 @@ void CPose2D::fromString(const std::string &s)
 	phi( DEG2RAD(m.get_unsafe(0,2)) );
 }
 
+void CPose2D::fromStringRaw(const std::string &s) {
+	this->fromString("[" + s + "]");
+}
+
 double CPose2D::distance2DFrobeniusTo( const CPose2D & p) const
 {
      return std::sqrt(square(p.x()-x())+square(p.y()-y())+4*(1-cos(p.phi()-phi())));
@@ -397,6 +401,14 @@ CPose3D CPose2D::operator -(const CPose3D& b) const
 	CMatrixDouble44 RES(UNINITIALIZED_MATRIX);
 	RES.multiply(B_INV,HM);
 	return CPose3D( RES );
+}
+
+CPose2D CPose2D::getOppositeScalar() const
+{
+	return CPose2D(
+			-m_coords[0],
+			-m_coords[1],
+			-m_phi);
 }
 
 
