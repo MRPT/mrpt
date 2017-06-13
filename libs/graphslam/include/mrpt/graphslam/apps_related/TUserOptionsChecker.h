@@ -102,23 +102,23 @@ struct GRAPHSLAM_IMPEXP TOptimizerProps :
  *
  * \ingroup mrpt_graphslam_grp
  */
-template<class GRAPH_t>
+template<class GRAPH_T>
 struct TUserOptionsChecker {
 	/**\name handy typedefs for the creation of deciders/optimzer instances from
 	 * the corresponding strings
 	 */
 	/**\{*/
-	typedef typename GRAPH_t::constraint_t constraint_t;
-		typedef typename GRAPH_t::constraint_t::type_value pose_t;
+	typedef typename GRAPH_T::constraint_t constraint_t;
+		typedef typename GRAPH_T::constraint_t::type_value pose_t;
 	typedef std::map<
 		std::string,
-		mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_t>*(*)()> node_regs_t;
+		mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_T>*(*)()> node_regs_t;
 	typedef std::map<
 		std::string,
-		mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_t>*(*)()> edge_regs_t;
+		mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_T>*(*)()> edge_regs_t;
 	typedef std::map<
 		std::string,
-		mrpt::graphslam::optimizers::CGraphSlamOptimizer<GRAPH_t>*(*)()> optimizers_t;
+		mrpt::graphslam::optimizers::CGraphSlamOptimizer<GRAPH_T>*(*)()> optimizers_t;
 
 	/**\}*/
 
@@ -138,7 +138,7 @@ struct TUserOptionsChecker {
 	 *
 	 */
 	virtual void createDeciderOptimizerMappings();
-	virtual void _createDeciderOptimizerMappings();
+	virtual void createDeciderOptimizerMappingsInternal();
 	/**\brief Populate the available decider, optimizer classes available in
 	 * user applications
 	 */
@@ -178,17 +178,17 @@ struct TUserOptionsChecker {
  	 */
 	/**\{*/
 	template<class T>
-	static mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_t>*
+	static mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_T>*
 	createNodeRegistrationDecider() {
 		return new T;
 	}
 	template<class T>
-	static mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_t>*
+	static mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_T>*
 	createEdgeRegistrationDecider() {
 		return new T;
 	}
 	template<class T>
-	static mrpt::graphslam::optimizers::CGraphSlamOptimizer<GRAPH_t>*
+	static mrpt::graphslam::optimizers::CGraphSlamOptimizer<GRAPH_T>*
 	createGraphSlamOptimizer() {
 		return new T;
 	}

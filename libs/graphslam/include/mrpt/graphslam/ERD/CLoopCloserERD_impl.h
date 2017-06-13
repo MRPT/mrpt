@@ -24,8 +24,6 @@ CLoopCloserERD<GRAPH_T>::CLoopCloserERD():
 	m_dijkstra_node_count_thresh(3)
 {
 	this->initializeLoggers("CLoopCloserERD");
-	m_edge_types_to_nums["ICP2D"] = 0;
-	m_edge_types_to_nums["LC"] = 0;
 	MRPT_LOG_DEBUG_STREAM("Initialized class object");
 }
 
@@ -69,11 +67,11 @@ bool CLoopCloserERD<GRAPH_T>::updateState(
 	{
 		CObservation2DRangeScanPtr scan =
 			getObservation<CObservation2DRangeScan>(observations, observation);
-		if (scan.present()) { m_last_laser_scan2D = scan; }
+		if (scan.present()) { this->m_last_laser_scan2D = scan; }
 	}
 
 	if (!m_first_laser_scan.present()) {
-		m_first_laser_scan = m_last_laser_scan2D;
+		m_first_laser_scan = this->m_last_laser_scan2D;
 	}
 
 	// check possible prior node registration
@@ -108,20 +106,22 @@ bool CLoopCloserERD<GRAPH_T>::updateState(
 
 		// register the new node-laserScan pair
 		this->m_nodes_to_laser_scans2D[this->m_graph->nodeCount()-1] =
-			m_last_laser_scan2D;
+			this->m_last_laser_scan2D;
 
-		if (m_laser_params.use_scan_matching) {
+		if (m_use_scan_matching) {
 			// scan match with previous X nodes
 			this->addScanMatchingEdges(this->m_graph->nodeCount()-1);
 		}
 
 		// update partitioning scheme with the latest pose/measurement
-		m_partitions_full_update = (
-				(this->m_graph->nodeCount() %
-				 m_lc_params.full_partition_per_nodes) == 0 ||
-				this->m_just_inserted_lc) ?  true: false;
+		// UPDATE: This is not needed. Partitions aren't affected at all and also
+		// this slows down execution considerably
+		//m_partitions_full_update = (
+				//(this->m_graph->nodeCount() %
+				 //m_lc_params.full_partition_per_nodes) == 0 ||
+				//this->m_just_inserted_lc) ?  true: false;
 
-		this->updateMapPartitions(m_partitions_full_update,
+		this->updateMapPartitions(/*full_update = */ false,
 				/* is_first_time_node_reg = */ num_registered == 2);
 
 		// check for loop closures
@@ -139,244 +139,7 @@ bool CLoopCloserERD<GRAPH_T>::updateState(
 	this->m_time_logger.leave("updateState");
 	return true;
 	MRPT_END;
-}
-
-template<class GRAPH_T>
-void CLoopCloserERD<GRAPH_T>::fetchNodeIDsForScanMatching(
-		const mrpt::utils::TNodeID& curr_nodeID,
-		std::set<mrpt::utils::TNodeID>* nodes_set) {
-	ASSERT_(nodes_set);
-
-	// deal with the case that less than `prev_nodes_for_ICP` nodes have been
-	// registered
-	int fetched_nodeIDs = 0;
-	for (int nodeID_i = static_cast<int>(curr_nodeID)-1;
-			((fetched_nodeIDs <= this->m_laser_params.prev_nodes_for_ICP) &&
-			 (nodeID_i >= 0)); // <----- I *have* to use int (instead of unsigned) if I use this condition
-			--nodeID_i) {
-		nodes_set->insert(nodeID_i);
-		fetched_nodeIDs++;
-	}
-} // end of fetchNodeIDsForScanMatching
-
-template<class GRAPH_T>
-void CLoopCloserERD<GRAPH_T>::addScanMatchingEdges(
-		const mrpt::utils::TNodeID& curr_nodeID) {
-	MRPT_START;
-	using namespace std;
-	using namespace mrpt;
-	using namespace mrpt::utils;
-	using namespace mrpt::obs;
-	using namespace mrpt::math;
-
-	// get a list of nodes to check ICP against
-	MRPT_LOG_DEBUG_STREAM("Adding ICP Constraints for nodeID: " <<
-		curr_nodeID);
-
-	std::set<TNodeID> nodes_set;
-	this->fetchNodeIDsForScanMatching(curr_nodeID, &nodes_set);
-
-
-	// try adding ICP constraints with each node in the previous set
-	for (std::set<TNodeID>::const_iterator node_it = nodes_set.begin();
-			node_it != nodes_set.end(); ++node_it) {
-
-		constraint_t rel_edge;
-		mrpt::slam::CICP::TReturnInfo icp_info;
-
-		MRPT_LOG_DEBUG_STREAM("Fetching laser scan for nodes: " << *node_it
-				<<  "==> " << curr_nodeID);
-
-		bool found_edge = this->getICPEdge(
-				*node_it,
-				curr_nodeID,
-				&rel_edge,
-				&icp_info);
-		if (!found_edge) continue;
-
-		// keep track of the recorded goodness values
-		// TODO - rethink on these condition.
-		if (!isNaN(icp_info.goodness) || icp_info.goodness != 0) {
-			m_laser_params.goodness_threshold_win.addNewMeasurement(icp_info.goodness);
-		}
-		double goodness_thresh =
-			m_laser_params.goodness_threshold_win.getMedian() *
-			m_consec_icp_constraint_factor;
-		bool accept_goodness = icp_info.goodness > goodness_thresh;
-		MRPT_LOG_DEBUG_STREAM("Curr. Goodness: " << icp_info.goodness
-				<< "|\t Threshold: " << goodness_thresh << " => " << (accept_goodness? "ACCEPT" : "REJECT"));
-
-		// make sure that the suggested edge makes sense with regards to current
-		// graph config - check against the current position difference
-		bool accept_mahal_distance = this->mahalanobisDistanceOdometryToICPEdge(
-				*node_it, curr_nodeID, rel_edge);
-
-		// criterion for registering a new node
-		if (accept_goodness && accept_mahal_distance) {
-			this->registerNewEdge(*node_it, curr_nodeID, rel_edge);
-		}
-	}
-
-	MRPT_END;
-} // end of addScanMatchingEdges
-template<class GRAPH_T>
-bool CLoopCloserERD<GRAPH_T>::getICPEdge(
-		const mrpt::utils::TNodeID& from,
-		const mrpt::utils::TNodeID& to,
-		constraint_t* rel_edge,
-		mrpt::slam::CICP::TReturnInfo* icp_info,
-		const TGetICPEdgeAdParams* ad_params/*=NULL*/) {
-	MRPT_START;
-	ASSERT_(rel_edge);
-	this->m_time_logger.enter("getICPEdge");
-
-	using namespace mrpt::obs;
-	using namespace mrpt::utils;
-	using namespace std;
-	using namespace mrpt::graphslam::detail;
-
-	// fetch the relevant laser scans and poses of the nodeIDs
-	// If given in the additional params struct, use those values instead of
-	// searching in the class std::map(s)
-	CObservation2DRangeScanPtr from_scan, to_scan;
-	global_pose_t from_pose;
-	global_pose_t to_pose;
-
-	MRPT_LOG_DEBUG_STREAM("****In getICPEdge method: ");
-	if (ad_params) {
-		MRPT_LOG_DEBUG_STREAM("TGetICPEdgeAdParams:\n"
-			<< ad_params->getAsString() << endl);
-	}
-
-	// from-node parameters
-	const node_props_t* from_params = ad_params ? &ad_params->from_params : NULL;
-	bool from_success = this->getPropsOfNodeID(from, &from_pose, from_scan, from_params); // TODO
-	// to-node parameters
-	const node_props_t* to_params = ad_params ? &ad_params->to_params : NULL;
-	bool to_success = this->getPropsOfNodeID(to, &to_pose, to_scan, to_params);
-
-
-	if (!from_success || !to_success) {
-		MRPT_LOG_DEBUG_STREAM(
-			"Either node #" << from <<
-			" or node #" << to <<
-			" doesn't contain a valid LaserScan. Ignoring this...");
-		return false;
-	}
-
-	// make use of initial node position difference for the ICP edge
-	// from_node pose
-	pose_t initial_estim;
-	if (ad_params) {
-		initial_estim = ad_params->init_estim;
-	}
-	else {
- 		initial_estim = to_pose - from_pose;
- 	}
-
-	MRPT_LOG_DEBUG_STREAM("from_pose: " << from_pose
-		<< "| to_pose: " << to_pose
-		<< "| init_estim: " << initial_estim);
-
-	range_ops_t::getICPEdge(
-			*from_scan,
-			*to_scan,
-			rel_edge,
-			&initial_estim,
-			icp_info);
-	MRPT_LOG_DEBUG_STREAM("*************");
-
-	this->m_time_logger.leave("getICPEdge");
-	return true;
-	MRPT_END;
-} // end of getICPEdge
-
-template<class GRAPH_T>
-bool CLoopCloserERD<GRAPH_T>::fillNodePropsFromGroupParams(
-		const mrpt::utils::TNodeID& nodeID,
-		const std::map<mrpt::utils::TNodeID, node_props_t>& group_params,
-		node_props_t* node_props) {
-	ASSERT_(node_props);
-
-	//MRPT_LOG_DEBUG_STREAM(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-	//MRPT_LOG_DEBUG_STREAM("Running fillNodePropsFromGroupParams for nodeID \""
-		//<< nodeID << "\"");
-
-	// Make sure that the given nodeID exists in the group_params
-	typename std::map<mrpt::utils::TNodeID, node_props_t>::const_iterator
-		search = group_params.find(nodeID);
-	bool res = false;
-	if (search == group_params.end()) {
-		//MRPT_LOG_DEBUG_STREAM("Operation failed.");
-	}
-	else {
-		*node_props = search->second;
-		res = true;
-		//MRPT_LOG_DEBUG_STREAM("Properties filled: " << node_props->getAsString());
-	}
-
-	//MRPT_LOG_DEBUG_STREAM("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
-	return res;
-
-}
-
-template<class GRAPH_T>
-bool CLoopCloserERD<GRAPH_T>::getPropsOfNodeID(
-		const mrpt::utils::TNodeID& nodeID,
-		global_pose_t* pose,
-		mrpt::obs::CObservation2DRangeScanPtr& scan,
-		const node_props_t* node_props/*=NULL*/) const {
-
-	// make sure output instances are valid
-	ASSERT_(pose);
-
-	bool filled_pose = false;
-	bool filled_scan = false;
-
-	if (node_props) {
-		// Pose
-		if (node_props->pose != global_pose_t()) {
-			*pose = node_props->pose;
-			filled_pose = true;
-		}
-		// LaserScan
-		if (node_props->scan.present()) {
-			scan = node_props->scan;
-			filled_scan = true;
-		}
-	}
-
-	// TODO - What if the node_props->pose is indeed 0?
-	ASSERTMSG_(!(filled_pose ^ filled_scan),
-			format("Either BOTH or NONE of the filled_pose, filled_scan should be set."
-				"NodeID:  [%lu]", static_cast<unsigned long>(nodeID)));
-
-	//
-	// fill with class data if not yet available
-	//
-	if (!filled_pose) {
-		// fill with class data if not yet available
-		typename GRAPH_T::global_poses_t::const_iterator search =
-			this->m_graph->nodes.find(nodeID);
-		if (search != this->m_graph->nodes.end()) {
-			*pose = search->second;
-			filled_pose = true;
-		}
-		else {
-			MRPT_LOG_WARN_STREAM("pose not found for nodeID: " << nodeID);
-		}
-	}
-	if (!filled_scan) {
-		typename nodes_to_scans2D_t::const_iterator search =
-			this->m_nodes_to_laser_scans2D.find(nodeID);
-		if (search != this->m_nodes_to_laser_scans2D.end()) {
-			scan = search->second;
-			filled_scan = true;
-		}
-	}
-
-	return filled_pose && filled_scan;
-}
+} // end of updateStates
 
 template<class GRAPH_T>
 void CLoopCloserERD<GRAPH_T>::checkPartitionsForLC(
@@ -677,6 +440,7 @@ void CLoopCloserERD<GRAPH_T>::generateHypotsPool(
 	MRPT_START;
 	using namespace mrpt::utils;
 	using namespace mrpt;
+	using namespace std;
 
 	ASSERTMSG_(generated_hypots,
 			"generateHypotsPool: Given hypotsp_t pointer is invalid.");
@@ -742,11 +506,9 @@ void CLoopCloserERD<GRAPH_T>::generateHypotsPool(
 				if (ad_params) {
 
 					icp_ad_params = new TGetICPEdgeAdParams;
-					//from_success = fillNodePropsFromGroupParams(
-					fillNodePropsFromGroupParams(
+					this->fillNodePropsFromGroupParams(
 							*b_it, ad_params->groupB_params, &icp_ad_params->from_params);
-					//to_success = fillNodePropsFromGroupParams(
-					fillNodePropsFromGroupParams(
+					this->fillNodePropsFromGroupParams(
 							*a_it, ad_params->groupA_params, &icp_ad_params->to_params);
 
 					//MRPT_LOG_DEBUG_STREAM(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
@@ -779,7 +541,7 @@ void CLoopCloserERD<GRAPH_T>::generateHypotsPool(
 				//
 				// Goodness Threshold
 				double goodness_thresh =
-					m_laser_params.goodness_threshold_win.getMedian() *
+					this->m_goodness_threshold_win.getMedian() *
 					m_lc_icp_constraint_factor;
 				bool accept_goodness = icp_info.goodness > goodness_thresh;
 				MRPT_LOG_DEBUG_STREAM( "generateHypotsPool:\nCurr. Goodness: " << icp_info.goodness
@@ -1527,44 +1289,6 @@ popMinUncertaintyPath(
 }
 
 template<class GRAPH_T>
-bool CLoopCloserERD<GRAPH_T>::mahalanobisDistanceOdometryToICPEdge(
-		const mrpt::utils::TNodeID& from, const mrpt::utils::TNodeID& to, const
-		constraint_t& rel_edge) {
-	MRPT_START;
-
-	using namespace std;
-	using namespace mrpt::math;
-	using namespace mrpt::utils;
-
-	// mean difference
-	pose_t initial_estim = this->m_graph->nodes.at(to) - this->m_graph->nodes.at(from);
-	dynamic_vector<double> mean_diff;
-	(rel_edge.getMeanVal()-initial_estim).getAsVector(mean_diff);
-	
-	// covariance matrix
-	CMatrixDouble33 cov_mat; rel_edge.getCovariance(cov_mat);
-
-	// mahalanobis distance computation
-	double mahal_distance = mrpt::math::mahalanobisDistance2(mean_diff, cov_mat);
-	bool mahal_distance_null = isNaN(mahal_distance);
-	if (!mahal_distance_null) {
-		m_laser_params.mahal_distance_ICP_odom_win.addNewMeasurement(mahal_distance);
-	}
-
-	//double threshold = m_laser_params.mahal_distance_ICP_odom_win.getMean() +
-		//2*m_laser_params.mahal_distance_ICP_odom_win.getStdDev();
-	double threshold = m_laser_params.mahal_distance_ICP_odom_win.getMedian()*4;
-	bool accept_edge = (threshold >= mahal_distance && !mahal_distance_null) ? true : false;
-
-	//cout << "Suggested Edge: " << rel_edge.getMeanVal() << "|\tInitial Estim.: " << initial_estim
-		//<< "|\tMahalanobis Dist: " << mahal_distance << "|\tThresh.: " << threshold
-		//<< " => " << (accept_edge? "ACCEPT": "REJECT") << endl;
-
-	return accept_edge;
-	MRPT_END;
-}
-
-template<class GRAPH_T>
 void CLoopCloserERD<GRAPH_T>::registerHypothesis(const hypot_t& hypot) {
 	//MRPT_LOG_DEBUG_STREAM("Registering hypothesis: " <<
 		//hypot.getAsString([>oneline=<] true));
@@ -1582,59 +1306,25 @@ void CLoopCloserERD<GRAPH_T>::registerNewEdge(
 	using namespace std;
 	parent_t::registerNewEdge(from, to, rel_edge);
 
-	//  keep track of the registered edges...
-	m_edge_types_to_nums["ICP2D"]++;
-
+	this->m_edge_types_to_nums["ICP2D"]++;
 	//  keep track of the registered edges...
 	if (absDiff(to, from) > m_lc_params.LC_min_nodeid_diff)  {
-		m_edge_types_to_nums["LC"]++;
+		this->m_edge_types_to_nums["LC"]++;
 		this->m_just_inserted_lc = true;
 		this->logFmt(LVL_INFO, "\tLoop Closure edge!");
 	}
 	else {
 		this->m_just_inserted_lc = false;
 	}
-
-	//  actuall registration
-	this->m_graph->insertEdge(from, to, rel_edge);
-
 	MRPT_END;
 }
 
-template<class GRAPH_T>
-void CLoopCloserERD<GRAPH_T>::setWindowManagerPtr(
-		mrpt::graphslam::CWindowManager* win_manager) {
-	// call parent_t class method
-	parent_t::setWindowManagerPtr(win_manager);
-
-	using namespace mrpt::utils;
-
-	// may still be null..
-	if (this->m_win_manager) {
-
-		if (this->m_win_observer) {
-			this->m_win_observer->registerKeystroke(m_laser_params.keystroke_laser_scans,
-					"Toggle LaserScans Visualization");
-			this->m_win_observer->registerKeystroke(m_lc_params.keystroke_map_partitions,
-					"Toggle Map Partitions Visualization");
-
-		}
-
-		this->logFmt(LVL_DEBUG,
-				"Fetched the window manager, window observer  successfully.");
-	}
-
-}
 template<class GRAPH_T>
 void CLoopCloserERD<GRAPH_T>::notifyOfWindowEvents(
 		const std::map<std::string, bool>& events_occurred) {
 	MRPT_START;
 	parent_t::notifyOfWindowEvents(events_occurred);
 
-	// laser scans
-	if (events_occurred.at(m_laser_params.keystroke_laser_scans)) {
-		this->toggleLaserScansVisualization();
-	}
 	// map partitions
 	if (events_occurred.at(m_lc_params.keystroke_map_partitions)) {
 		this->toggleMapPartitionsVisualization();
@@ -1907,118 +1597,11 @@ void CLoopCloserERD<GRAPH_T>::computeCentroidOfNodesVector(
 } // end of computeCentroidOfNodesVector
 
 template<class GRAPH_T>
-void CLoopCloserERD<GRAPH_T>::initLaserScansVisualization() {
-	MRPT_START;
-
-
-	// laser scan visualization
-	if (m_laser_params.visualize_laser_scans) {
-		mrpt::opengl::COpenGLScenePtr scene = this->m_win->get3DSceneAndLock();
-
-		mrpt::opengl::CPlanarLaserScanPtr laser_scan_viz = 
-			mrpt::opengl::CPlanarLaserScan::Create();
-		laser_scan_viz->enablePoints(true);
-		laser_scan_viz->enableLine(true);
-		laser_scan_viz->enableSurface(true);
-		laser_scan_viz->setSurfaceColor(
-				m_laser_params.laser_scans_color.R,
-				m_laser_params.laser_scans_color.G,
-				m_laser_params.laser_scans_color.B,
-				m_laser_params.laser_scans_color.A);
-
-		laser_scan_viz->setName("laser_scan_viz");
-
-		scene->insert(laser_scan_viz);
-		this->m_win->unlockAccess3DScene();
-		this->m_win->forceRepaint();
-	}
-
-	MRPT_END;
-}
-
-template<class GRAPH_T>
-void CLoopCloserERD<GRAPH_T>::updateLaserScansVisualization() {
-	MRPT_START;
-
-	// update laser scan visual
-	if (m_laser_params.visualize_laser_scans && !m_last_laser_scan2D.null()) {
-		mrpt::opengl::COpenGLScenePtr scene = this->m_win->get3DSceneAndLock();
-
-		mrpt::opengl::CRenderizablePtr obj = scene->getByName("laser_scan_viz");
-		mrpt::opengl::CPlanarLaserScanPtr laser_scan_viz =
-			static_cast<mrpt::opengl::CPlanarLaserScanPtr>(obj);
-		ASSERT_(laser_scan_viz.present());
-		laser_scan_viz->setScan(*m_last_laser_scan2D);
-
-		// set the pose of the laser scan
-		typename GRAPH_T::global_poses_t::const_iterator search =
-			this->m_graph->nodes.find(this->m_graph->nodeCount()-1);
-		if (search != this->m_graph->nodes.end()) {
-			laser_scan_viz->setPose(search->second);
-			// put the laser scan underneath the graph, so that you can still
-			// visualize the loop closures with the nodes ahead
-			laser_scan_viz->setPose(mrpt::poses::CPose3D(
-						laser_scan_viz->getPoseX(), laser_scan_viz->getPoseY(), -0.15,
-						mrpt::utils::DEG2RAD(laser_scan_viz->getPoseYaw()),
-						mrpt::utils::DEG2RAD(laser_scan_viz->getPosePitch()),
-						mrpt::utils::DEG2RAD(laser_scan_viz->getPoseRoll())
-						));
-		}
-
-		this->m_win->unlockAccess3DScene();
-		this->m_win->forceRepaint();
-	}
-
-	MRPT_END;
-}
-
-
-template<class GRAPH_T>
-void CLoopCloserERD<GRAPH_T>::toggleLaserScansVisualization() {
-	MRPT_START;
-	ASSERTMSG_(this->m_win, "No CDisplayWindow3D* was provided");
-	ASSERTMSG_(this->m_win_manager, "No CWindowManager* was provided");
-	using namespace mrpt::utils;
-
-	this->logFmt(LVL_INFO, "Toggling LaserScans visualization...");
-
-	mrpt::opengl::COpenGLScenePtr scene = this->m_win->get3DSceneAndLock();
-
-	if (m_laser_params.visualize_laser_scans) {
-		mrpt::opengl::CRenderizablePtr obj = scene->getByName("laser_scan_viz");
-		obj->setVisibility(!obj->isVisible());
-	}
-	else {
-		this->dumpVisibilityErrorMsg("visualize_laser_scans");
-	}
-
-	this->m_win->unlockAccess3DScene();
-	this->m_win->forceRepaint();
-
-	MRPT_END;
-}
-
-
-template<class GRAPH_T>
-void CLoopCloserERD<GRAPH_T>::getEdgesStats(
-		std::map<std::string, int>* edge_types_to_num) const {
-	MRPT_START;
-	*edge_types_to_num = m_edge_types_to_nums;
-	MRPT_END;
-}
-
-template<class GRAPH_T>
 void CLoopCloserERD<GRAPH_T>::initializeVisuals() {
 	MRPT_START;
 	parent_t::initializeVisuals();
-	//MRPT_LOG_DEBUG_STREAM("Initializing visuals");
-	this->m_time_logger.enter("Visuals");
+	this->m_time_logger.enter("ERD::Visuals");
 
-	ASSERTMSG_(m_laser_params.has_read_config,
-			"Configuration parameters aren't loaded yet");
-	if (m_laser_params.visualize_laser_scans) {
-		this->initLaserScansVisualization();
-	}
 	if (m_lc_params.visualize_map_partitions) {
 		this->initMapPartitionsVisualization();
 	}
@@ -2027,7 +1610,12 @@ void CLoopCloserERD<GRAPH_T>::initializeVisuals() {
 		this->initCurrCovarianceVisualization();
 	}
 
-	this->m_time_logger.leave("Visuals");
+	// keystrokes
+	this->m_win_observer->registerKeystroke(
+			m_lc_params.keystroke_map_partitions,
+			"Toggle Map Partitions Visualization");
+
+	this->m_time_logger.leave("ERD::Visuals");
 	MRPT_END;
 }
 template<class GRAPH_T>
@@ -2035,11 +1623,8 @@ void CLoopCloserERD<GRAPH_T>::updateVisuals() {
 	MRPT_START;
 	parent_t::updateVisuals();
 	//MRPT_LOG_DEBUG_STREAM("Updating visuals");
-	this->m_time_logger.enter("Visuals");
+	this->m_time_logger.enter("ERD::Visuals");
 
-	if (m_laser_params.visualize_laser_scans) {
-		this->updateLaserScansVisualization();
-	}
 	if (m_lc_params.visualize_map_partitions) {
 		this->updateMapPartitionsVisualization();
 	}
@@ -2047,7 +1632,7 @@ void CLoopCloserERD<GRAPH_T>::updateVisuals() {
 		this->updateCurrCovarianceVisualization();
 	}
 
-	this->m_time_logger.leave("Visuals");
+	this->m_time_logger.leave("ERD::Visuals");
 	MRPT_END;
 }
 
@@ -2125,53 +1710,36 @@ void CLoopCloserERD<GRAPH_T>::updateCurrCovarianceVisualization() {
 }
 
 template<class GRAPH_T>
-void CLoopCloserERD<GRAPH_T>::dumpVisibilityErrorMsg(
-		std::string viz_flag, int sleep_time /* = 500 milliseconds */) {
-	MRPT_START;
-
-	this->logFmt(mrpt::utils::LVL_ERROR,
-			"Cannot toggle visibility of specified object.\n "
-			"Make sure that the corresponding visualization flag ( %s "
-			") is set to true in the .ini file.\n",
-			viz_flag.c_str());
-	mrpt::system::sleep(sleep_time);
-
-	MRPT_END;
-}
-
-
-template<class GRAPH_T>
 void CLoopCloserERD<GRAPH_T>::loadParams(const std::string& source_fname) {
 	MRPT_START;
 	parent_t::loadParams(source_fname);
 
+	std::string section ="EdgeRegistrationDeciderParameters";
+
 	m_partitioner.options.loadFromConfigFileName(source_fname,
-			"EdgeRegistrationDeciderParameters");
-	m_laser_params.loadFromConfigFileName(source_fname,
-			"EdgeRegistrationDeciderParameters");
+			section);
 	m_lc_params.loadFromConfigFileName(source_fname,
-			"EdgeRegistrationDeciderParameters");
+			section);
 
 	mrpt::utils::CConfigFile source(source_fname);
 
-	m_consec_icp_constraint_factor = source.read_double(
-			"EdgeRegistrationDeciderParameters",
-			"consec_icp_constraint_factor",
-			0.90, false);
+	m_use_scan_matching = source.read_bool(
+			section,
+			"use_scan_matching",
+			true, false);
+
 	m_lc_icp_constraint_factor = source.read_double(
-			"EdgeRegistrationDeciderParameters",
+			section,
 			"lc_icp_constraint_factor",
 			0.70, false);
 
+	// how many of the previous nodes to check ICP against
+	m_prev_nodes_for_ICP = source.read_int(
+			section,
+			"prev_nodes_for_ICP",
+			10, false);
 
-	// set the logging level if given by the user
-	int min_verbosity_level = source.read_int(
-			"EdgeRegistrationDeciderParameters",
-			"class_verbosity",
-			1, false);
 
-
-	this->setMinLoggingLevel(mrpt::utils::VerbosityLevel(min_verbosity_level));
 	MRPT_END;
 }
 template<class GRAPH_T>
@@ -2183,13 +1751,15 @@ void CLoopCloserERD<GRAPH_T>::printParams() const {
 
 	parent_t::printParams();
 	m_partitioner.options.dumpToConsole();
-	m_laser_params.dumpToConsole();
 	m_lc_params.dumpToConsole();
 
-	cout << "Scan-matching ICP Constraint factor: " << m_consec_icp_constraint_factor << endl;
-	cout << "Loop-closure ICP Constraint factor:  " << m_lc_icp_constraint_factor << endl;
+	cout << "Use scan-matching constraints               : "
+		<< (m_use_scan_matching? "TRUE": "FALSE") << endl;
+	cout << "Loop-closure ICP Constraint factor          : "
+		<< m_lc_icp_constraint_factor << endl;
+	cout << "Num. of previous nodes to check ICP against : "
+		<< m_prev_nodes_for_ICP << endl;
 
-	MRPT_LOG_DEBUG_STREAM("Printed the relevant parameters");
 	MRPT_END;
 }
 
@@ -2319,59 +1889,28 @@ void CLoopCloserERD<GRAPH_T>::updateMapPartitions(
 	MRPT_END;
 } // end of updateMapPartitions
 
-// TLaserParams
-// //////////////////////////////////
-
 template<class GRAPH_T>
-CLoopCloserERD<GRAPH_T>::TLaserParams::TLaserParams():
-	laser_scans_color(0, 20, 255),
-	keystroke_laser_scans("l"),
-	has_read_config(false)
-{
-	mahal_distance_ICP_odom_win.resizeWindow(200); // use the last X mahalanobis distance values
-	goodness_threshold_win.resizeWindow(200); // use the last X ICP values
-}
+void CLoopCloserERD<GRAPH_T>::fetchNodeIDsForScanMatching(
+		const mrpt::utils::TNodeID& curr_nodeID,
+		std::set<mrpt::utils::TNodeID>* nodes_set) {
+	ASSERT_(nodes_set);
 
-template<class GRAPH_T>
-CLoopCloserERD<GRAPH_T>::TLaserParams::~TLaserParams() { }
-
-template<class GRAPH_T>
-void CLoopCloserERD<GRAPH_T>::TLaserParams::dumpToTextStream(
-		mrpt::utils::CStream &out) const {
-	MRPT_START;
-
-	out.printf("Use scan-matching constraints               = %s\n",
-			use_scan_matching? "TRUE": "FALSE");
-	out.printf("Num. of previous nodes to check ICP against =  %d\n",
-			prev_nodes_for_ICP);
-	out.printf("Visualize laser scans                       = %s\n",
-			visualize_laser_scans? "TRUE": "FALSE");
-
-	MRPT_END;
-}
-template<class GRAPH_T>
-void CLoopCloserERD<GRAPH_T>::TLaserParams::loadFromConfigFile(
-		const mrpt::utils::CConfigFileBase& source,
-		const std::string& section) {
-	MRPT_START;
-
-	use_scan_matching = source.read_bool(
-			section,
-			"use_scan_matching",
-			true, false);
-		prev_nodes_for_ICP = source.read_int( // how many nodes to check ICP against
-			section,
-			"prev_nodes_for_ICP",
-			10, false);
-	visualize_laser_scans = source.read_bool(
-			"VisualizationParameters",
-			"visualize_laser_scans",
-			true, false);
+	// deal with the case that less than `prev_nodes_for_ICP` nodes have been
+	// registered
+	int fetched_nodeIDs = 0;
+	// vvvv I *have* to use int (instead of unsigned) if I use this condition vv
+	for (int nodeID_i = static_cast<int>(curr_nodeID)-1;
+			((fetched_nodeIDs <= this->m_prev_nodes_for_ICP) &&
+			 (nodeID_i >= 0));  //<--
+			--nodeID_i) {
+		nodes_set->insert(nodeID_i);
+		fetched_nodeIDs++;
+	}
+} // end of fetchNodeIDsForScanMatching
 
 
-	has_read_config = true;
-	MRPT_END;
-}
+
+
 // TLoopClosureParams
 // //////////////////////////////////
 
@@ -2406,8 +1945,6 @@ void CLoopCloserERD<GRAPH_T>::TLoopClosureParams::dumpToTextStream(
 		LC_eigenvalues_ratio_thresh << endl;
 	ss << "Check only current node's partition for loop closures = " <<
 		(LC_check_curr_partition_only? "TRUE": "FALSE") << endl;
-	ss << "New registered nodes required for full partitioning   = " <<
-		full_partition_per_nodes << endl;
 	ss << "Visualize map partitions                              = " <<
 		(visualize_map_partitions?  "TRUE": "FALSE") << endl;
 
@@ -2437,10 +1974,6 @@ void CLoopCloserERD<GRAPH_T>::TLoopClosureParams::loadFromConfigFile(
 			section,
 			"LC_check_curr_partition_only",
 			true, false);
-	full_partition_per_nodes = source.read_int(
-			section,
-			"full_partition_per_nodes",
-			50, false);
 	visualize_map_partitions = source.read_bool(
 			"VisualizationParameters",
 			"visualize_map_partitions",

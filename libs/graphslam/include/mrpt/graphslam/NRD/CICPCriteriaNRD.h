@@ -15,29 +15,20 @@
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
-#include <mrpt/poses/CPosePDF.h>
-#include <mrpt/poses/CPose3DPDF.h>
-#include <mrpt/poses/CRobot2DPoseEstimator.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
-#include <mrpt/utils/CLoadableOptions.h>
-#include <mrpt/utils/CConfigFile.h>
-#include <mrpt/utils/CConfigFileBase.h>
-#include <mrpt/utils/CStream.h>
 #include <mrpt/utils/types_simple.h>
 #include <mrpt/slam/CICP.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/threads.h>
+#include <mrpt/math/utils.h>
 
-#include <mrpt/graphslam/interfaces/CNodeRegistrationDecider.h>
+#include <mrpt/graphslam/interfaces/CIncrementalNodeRegistrationDecider.h>
 #include <mrpt/graphslam/misc/CRangeScanOps.h>
 #include <mrpt/graphslam/misc/TSlidingWindow.h>
-
-#include <string>
-#include <math.h>
 
 namespace mrpt { namespace graphslam { namespace deciders {
 
@@ -52,7 +43,7 @@ namespace mrpt { namespace graphslam { namespace deciders {
  * node. If the norm or the angle of the latter surpasses certain thresholds
  * (which are read from an external .ini file) then a new node is added to the
  * graph)
- * \sa loadParams, TParams::loadFromConfigFile
+ * \sa loadParams
  *
  * Decider *does not guarantee* thread safety when accessing the GRAPH_T
  * resource. This is handled by the CGraphSlamEngine class.
@@ -64,25 +55,6 @@ namespace mrpt { namespace graphslam { namespace deciders {
  * - Graph Type: CPosePDFGaussianInf
  * - Observations Used: CObservation2DRangeScan, CObservation3DRangeScan
  * - Node Registration Strategy: Fixed Intervals
- *
- * ### .ini Configuration Parameters
- *
- * \htmlinclude config_params_preamble.txt
- *
- * - \b class_verbosity
- *   + \a Section       : NodeRegistrationDeciderParameters
- *   + \a default value : 1 (LVL_INFO)
- *   + \a Required      : FALSE
- *
- * - \b registration_max_distance
- *  + \a Section       : NodeRegistrationDeciderParameters
- *  + \a Default value : 0.5 // meters
- *  + \a Required      : FALSE
- *
- * - \b registration_max_angle
- *  + \a Section       : NodeRegistrationDeciderParameters
- *  + \a Default value : 10 // degrees
- *  + \a Required      : FALSE
  *
  * \note Since the decider inherits from the CRangeScanOps
  * class, it parses the configuration parameters of the latter as well from the
@@ -99,7 +71,7 @@ namespace mrpt { namespace graphslam { namespace deciders {
  */
 template<class GRAPH_T>
 class CICPCriteriaNRD:
-	public virtual mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_T>,
+	public virtual mrpt::graphslam::deciders::CIncrementalNodeRegistrationDecider<GRAPH_T>,
 	public mrpt::graphslam::deciders::CRangeScanOps<GRAPH_T>
 {
 	public:
@@ -119,11 +91,13 @@ class CICPCriteriaNRD:
 		/**\brief Typedef for accessing methods of the RangeScanRegistrationDecider
 		 * parent class.
 		 */
-		typedef mrpt::graphslam::deciders::CRangeScanOps<GRAPH_T>
-			range_ops_t;
+		typedef mrpt::graphslam::deciders::CRangeScanOps<GRAPH_T> range_ops_t;
 		typedef CICPCriteriaNRD<GRAPH_T> decider_t; /**< self type - Handy typedef */
 		/**\brief Node Registration Decider */
-		typedef mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_T> parent_t;
+		typedef mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_T> node_reg;
+		typedef mrpt::graphslam::deciders::CIncrementalNodeRegistrationDecider<GRAPH_T> incr_reg;
+		typedef incr_reg parent_t;
+
 		/**\}*/
 
 		/**\brief Class constructor */
@@ -142,10 +116,6 @@ class CICPCriteriaNRD:
 		 * helps in separating the 2D, 3D RangeScans handling altogether, which in
 		 * turn simplifies the overall procedure
 		 *
-		 * Order of calls:
-		 * updateState (calls) ==> updateState2D/3D ==> 
-		 * checkRegistrationCondition2D/3D ==> CheckRegistrationCondition
-		 *
 		 * \sa updateState2D, updateState3D
 		 */
 		bool updateState(
@@ -156,51 +126,31 @@ class CICPCriteriaNRD:
 		 * 2DRangeScan information.
 		 * \sa updateState3D
 		 */
-		bool updateState2D(mrpt::obs::CObservation2DRangeScanPtr observation);
+		bool updateState2D(mrpt::obs::CObservation2DRangeScanPtr scan);
 		/**\brief Specialized updateState method used solely when dealing with
 		 * 3DRangeScan information.
 		 * \sa updateState2D
 		 */
-		bool updateState3D(mrpt::obs::CObservation3DRangeScanPtr observation);
-
-		struct TParams: public mrpt::utils::CLoadableOptions {
-			public:
-				TParams(decider_t& d);
-				~TParams();
-
-				decider_t& decider; /**< Reference to outer decider class */
-
-				void loadFromConfigFile(
-						const mrpt::utils::CConfigFileBase &source,
-						const std::string &section);
-				void 	dumpToTextStream(mrpt::utils::CStream &out) const;
-
-				double registration_max_distance; /**< Maximum distance for new node registration */
-				double registration_max_angle; /**< Maximum angle difference for new node registration */
-		};
-
-		// Public members
-		// ////////////////////////////
-		TParams params;
+		bool updateState3D(mrpt::obs::CObservation3DRangeScanPtr scan);
 
 	protected:
 		// protected functions
 		//////////////////////////////////////////////////////////////
-		bool checkRegistrationCondition();
 		/**\brief Specialized checkRegistrationCondtion method used solely when
 		 * dealing with 2DRangeScan information
-		 * \sa checkRegistrationCondition3D
 		 */
-		bool checkRegistrationCondition2D();
-		/**\brief Specialized checkRegistrationCondition method used solely when
+		bool checkRegistrationConditionLS(
+				mrpt::obs::CObservation2DRangeScanPtr& last_laser_scan,
+				mrpt::obs::CObservation2DRangeScanPtr& curr_laser_scan); 
+		/**\brief Specialized checkRegistrationConditionLS method used solely when
 		 * dealing with 3DRangeScan information
-		 * \sa checkRegistrationCondition2D
 		 */
-		bool checkRegistrationCondition3D();
+		bool checkRegistrationConditionLS(
+				mrpt::obs::CObservation3DRangeScanPtr& last_laser_scan,
+				mrpt::obs::CObservation3DRangeScanPtr& curr_laser_scan); 
 
 		// protected members
 		//////////////////////////////////////////////////////////////
-		bool m_is_using_3DScan;
 
 		/**\brief handy laser scans to use in the class methods
 		 */
@@ -242,10 +192,6 @@ class CICPCriteriaNRD:
 		 * limit.
 		 */
 		TSlidingWindow m_mahal_distance_ICP_odom;
-
-		// criteria for adding new a new node
-		bool m_use_angle_difference_node_reg;
-		bool m_use_distance_node_reg;
 
 		/**How many times we used the ICP Edge instead of Odometry edge*/
 		int m_times_used_ICP;

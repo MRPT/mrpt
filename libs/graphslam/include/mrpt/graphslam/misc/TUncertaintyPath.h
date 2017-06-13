@@ -104,7 +104,7 @@ struct TUncertaintyPath : public mrpt::utils::CLoadableOptions {
 	bool operator!=(const self_t& other) const;
 
 	friend std::ostream& operator<<(std::ostream& o, const self_t& obj) {
-		o << obj.getAsString() << endl;
+		o << obj.getAsString() << std::endl;
 		return o;
 	}
 

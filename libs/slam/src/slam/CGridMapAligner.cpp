@@ -137,7 +137,11 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 	}
 	else THROW_EXCEPTION("Metric maps must be of classes COccupancyGridMap2D or CMultiMetricMap")
 
-	ASSERT_( m1->getResolution() == m2->getResolution() );
+	ASSERTMSG_(m1->getResolution() == m2->getResolution(), 
+			mrpt::format(
+				"Different resolutions for m1, m2:\n\tres(m1) = %f\n\tres(m2) = %f\n",
+				m1->getResolution(),
+				m2->getResolution()));
 
 	// The algorithm output auxiliar info:
 	// -------------------------------------------------
@@ -1098,26 +1102,26 @@ void  CGridMapAligner::TConfigParams::loadFromConfigFile(
 {
 	MRPT_LOAD_CONFIG_VAR_CAST(methodSelection, int, TAlignerMethod, 	iniFile, section)
 
-	MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(featsPerSquareMeter, float , iniFile, section )
+	MRPT_LOAD_CONFIG_VAR(featsPerSquareMeter, float , iniFile, section )
 	MRPT_LOAD_CONFIG_VAR(ransac_SOG_sigma_m, float , iniFile, section )
 
-	MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(threshold_max, float , iniFile, section )
-	MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(threshold_delta, float , iniFile, section )
+	MRPT_LOAD_CONFIG_VAR(threshold_max, float , iniFile, section )
+	MRPT_LOAD_CONFIG_VAR(threshold_delta, float , iniFile, section )
 
-	MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(min_ICP_goodness, float,   iniFile, section)
-	MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(max_ICP_mahadist, double,   iniFile, section)
+	MRPT_LOAD_CONFIG_VAR(min_ICP_goodness, float,   iniFile, section)
+	MRPT_LOAD_CONFIG_VAR(max_ICP_mahadist, double,   iniFile, section)
 
-	MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(maxKLd_for_merge, float,   iniFile, section)
-	MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(ransac_minSetSizeRatio, float,   iniFile, section)
-	MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(ransac_mahalanobisDistanceThreshold, float,   iniFile, section)
-	MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(ransac_chi2_quantile, double,   iniFile, section)
-	MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(ransac_prob_good_inliers, double,   iniFile, section)
+	MRPT_LOAD_CONFIG_VAR(maxKLd_for_merge, float,   iniFile, section)
+	MRPT_LOAD_CONFIG_VAR(ransac_minSetSizeRatio, float,   iniFile, section)
+	MRPT_LOAD_CONFIG_VAR(ransac_mahalanobisDistanceThreshold, float,   iniFile, section)
+	MRPT_LOAD_CONFIG_VAR(ransac_chi2_quantile, double,   iniFile, section)
+	MRPT_LOAD_CONFIG_VAR(ransac_prob_good_inliers, double,   iniFile, section)
 
 	MRPT_LOAD_CONFIG_VAR(save_feat_coors, bool,   iniFile,section )
 	MRPT_LOAD_CONFIG_VAR(debug_show_corrs, bool,   iniFile,section )
 	MRPT_LOAD_CONFIG_VAR(debug_save_map_pairs, bool,   iniFile,section )
 
-	MRPT_LOAD_CONFIG_VAR_CAST_NO_DEFAULT(feature_descriptor,int, TDescriptorType,  iniFile, section)
+	MRPT_LOAD_CONFIG_VAR_CAST(feature_descriptor,int, TDescriptorType,  iniFile, section)
 	feature_detector_options.loadFromConfigFile(iniFile,section);
 }
 

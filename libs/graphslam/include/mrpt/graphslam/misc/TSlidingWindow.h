@@ -50,29 +50,29 @@ struct GRAPHSLAM_IMPEXP TSlidingWindow: public mrpt::utils::CLoadableOptions {
 		TSlidingWindow(std::string name="window");
 		~TSlidingWindow();
 		/**\brief Return the current median value.  */
-		double getMedian();
+		double getMedian() const;
 		/**\brief Return the current mean value.  */
-		double getMean();
+		double getMean() const;
 		/**\brief Return the Standard deviation of the current measurement vector*/
-		double getStdDev();
+		double getStdDev() const;
 		/**\brief Determine whether the incoming measurement is inside the
 		 * [-3sigma, +3sigma] boundaries from the current mean value.
 		 *
 		 * \return True if it's inside the uncertainty boundaries
 		 */
-		bool evaluateMeasurementInGaussian(double measurement);
+		bool evaluateMeasurementInGaussian(double measurement) const;
 		/**\brief Determine whether the incoming measurement is over the current
 		 * mean value.
 		 *
 		 * \return True if it's above the mean
 		 */
-		bool evaluateMeasurementAbove(double value);
+		bool evaluateMeasurementAbove(double value) const;
 		/**\brief Determine whether the incoming measurement is *less or equal* to
 		 * the current mean value.
 		 *
 		 * \return True if it's <= to the mean
 		 */
-		bool evaluateMeasurementBelow(double value);
+		bool evaluateMeasurementBelow(double value) const;
 		/**\brief Update the sliding window by appending a new measurement */
 		void addNewMeasurement(double measurement);
 		/** Resize the window.
@@ -104,12 +104,12 @@ struct GRAPHSLAM_IMPEXP TSlidingWindow: public mrpt::utils::CLoadableOptions {
 		/**\brief Name of the TSlidingWindow Instance at hand */
 		std::string m_name;
 
-		double m_mean_cached; /**< Cached mean value */
-		double m_median_cached; /**< Cached median value */
-		double m_std_dev_cached; /**< Cached version of the standard deviation */
-		bool m_mean_updated; /**< Is the mean up-to-date? */
-		bool m_median_updated; /**< Is the median up-to-date? */
-		bool m_std_dev_updated; /**< Is the standard deviation up-to-date? */
+		mutable double m_mean_cached; /**< Cached mean value */
+		mutable double m_median_cached; /**< Cached median value */
+		mutable double m_std_dev_cached; /**< Cached version of the standard deviation */
+		mutable bool m_mean_updated; /**< Is the mean up-to-date? */
+		mutable bool m_median_updated; /**< Is the median up-to-date? */
+		mutable bool m_std_dev_updated; /**< Is the standard deviation up-to-date? */
 
 		/**\brief flag is raised the first time that
 		 * TSlidingWindow::addNewMeasurement is

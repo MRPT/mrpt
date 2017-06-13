@@ -15,8 +15,12 @@
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/graphs/CNetworkOfPoses.h>
+#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/utils/COutputLogger.h>
 #include <mrpt/utils/CTimeLogger.h>
+#include <mrpt/system/os.h>
+#include <mrpt/system/threads.h>
 #include <mrpt/graphslam/misc/CWindowManager.h>
 
 #include <string>
@@ -67,7 +71,13 @@ class CRegistrationDeciderOrOptimizer :
 		 */
 		virtual void setWindowManagerPtr(
 				mrpt::graphslam::CWindowManager* win_manager);
-
+		/**\brief Get the name of the rawlog file.
+		 *
+		 * This method is automatically called in the CGraphSlamEngine initialization
+		 * method. However fname is empty in case we are running graphSLAM online
+		 * (e.g. via the ROS-wrapper)
+		 */
+		virtual void setRawlogFile(const std::string& fname);
 		/**\brief Fetch a mrpt::synch::CCriticalSection for locking the GRAPH_T
 		 * resource.
 		 *
@@ -80,22 +90,22 @@ class CRegistrationDeciderOrOptimizer :
 		 * thread runs.
 		 */
 		virtual void setCriticalSectionPtr(
-				mrpt::synch::CCriticalSection* graph_section); 
+				mrpt::synch::CCriticalSection* graph_section);
 		/**\brief Initialize visual objects in CDisplayWindow (e.g. \em add an
 		 * object to scene).
 		 *
 		 * \exception std::exception If the method is called without having first
 		 * provided a CDisplayWindow3D* to the class instance
 		 *
-		 * \sa setWindowManagerPtr, updateVisuals
+		 * \sa setWindowManagerPtr, updateVisuals, initializeViewports
 		 */
-		virtual void initializeVisuals(); 
+		virtual void initializeVisuals();
 		/**\brief Update the relevant visual features in CDisplayWindow.
 		 *
 		 *\exception std::exception If the method is called without having first
 		 * provided a CDisplayWindow3D* to the class instance
 		 *
-		 * \sa setWindowManagerPtr, initializeVisuals
+		 * \sa setWindowManagerPtr, initializeVisuals, updteViewports
 		 */
 		virtual void updateVisuals();
 		/**\brief Get a list of the window events that happened since the last call.
@@ -113,6 +123,12 @@ class CRegistrationDeciderOrOptimizer :
 		 * screen in a unified/compact way.
 		 */
 		virtual void printParams() const;
+		/**\brief Read the verbosity level from a specific section of a .ini file.
+		 *
+		 * Utility method for all the derived classes to set this level in a
+		 * consistent manner
+		 */
+		void setVerbosityLevelFromSection(std::string source_fname, std::string section);
 		/**\brief Fill the provided string with a detailed report of the
 		 * decider/optimizer state.
 		 *
@@ -135,9 +151,13 @@ class CRegistrationDeciderOrOptimizer :
 		virtual void setClassName(const std::string& name);
 		bool isMultiRobotSlamClass();
 
+		virtual void initMiscActions() { }
+
 		std::string getClassName() const { return m_class_name; };
 
 	protected:
+		void dumpVisibilityErrorMsg(std::string viz_flag,
+				int sleep_time=500 /* ms */);
 		/**\brief Handy function for making all the visuals assertions in a
 		 * compact manner
 		 */
@@ -152,6 +172,23 @@ class CRegistrationDeciderOrOptimizer :
 		/**\brief Pointer to the CWindowManager object used to store
 		 * visuals-related instances
 		 */
+		/**\brief Initialize the viewports for the current decider / optimizer
+		 *
+		 * \warning This method is automatically called at the end of
+		 * CRegistrationDeciderOrOptimizer::initializeVisuals
+		 *
+		 * \sa initializeVisuals, updateViewports
+		 */
+		virtual void initViewports();
+		/**\brief Update the viewports for the current decider / optimizer
+		 *
+		 * \warning This method is automatically called at the end of
+		 * CRegistrationDeciderOrOptimizer::updateVisuals
+		 *
+		 * \sa initializeVisuals, updateViewports
+		 */
+		virtual void updateViewports();
+
 		mrpt::graphslam::CWindowManager* m_win_manager;
 		/**\brief Window to use */
 		mrpt::gui::CDisplayWindow3D* m_win;
@@ -169,6 +206,8 @@ class CRegistrationDeciderOrOptimizer :
 		 * multi-robot SLAM operations
 		 */
 		bool is_mr_slam_class;
+
+		std::string m_rawlog_fname;
 
 		/**\brief Separator string to be used in debugging messages
 		 */
