@@ -128,14 +128,18 @@
 				- Parameters are no longer passed via a mrpt::utils::TParameters class, but via a mrpt::utils::CConfigFileBase which makes parameter passing to PTGs much more maintainable and consistent.
 				- PTGs now have a score_priority field to manually set hints about preferences for path planning.
 				- PTGs are now mrpt::utils::CLoadableOptions classes
-			- \ref mrpt_graphslam_grp
-				 - Extend mrpt-graphslam lib to execute simulated/real-time graphSLAM.
-				 	 mrpt-graphslam supports 2D/3D execution of graphSLAM, utilizing
-				 	 LaserScans, odometry information.
-				 - Develop application `graphslam-engine` that executes graphSLAM via
-				 	 the mrpt-graphslam lib
 			- New classes:
 				- mrpt::nav::CMultiObjectiveMotionOptimizerBase
+		- \ref mrpt_graphslam_grp
+			- Extend mrpt-graphslam lib to execute simulated/real-time graphSLAM.
+				mrpt-graphslam supports 2D/3D execution of graphSLAM, utilizing
+				LaserScans, odometry information.
+			- Develop application `graphslam-engine` that executes graphSLAM via
+				the mrpt-graphslam lib
+			- mrpt::grpahslam::CGraphSlamEngine as the generic object that
+			   manages graphSLAM, Node/Edge registration decider
+			   classes under the mrpt::graphslam::deciders namesapce, optimizer
+			   wrapper classes under mrpt::graphslam::optimizers
 	- Changes in build system:
 		- [Windows only] `DLL`s/`LIB`s now have the signature `lib-${name}${2-digits-version}${compiler-name}_{x32|x64}.{dll/lib}`, allowing several MRPT versions to coexist in the system PATH.
 		- [Visual Studio only] There are no longer `pragma comment(lib...)` in any MRPT header, so it is the user responsibility to correctly tell user projects to link against MRPT libraries.
