@@ -792,7 +792,7 @@ void CFormEdit::executeOperationOnRawlog( TRawlogFilter operation, const char *e
     string              errorMsg;
     wxString			auxStr;
 
-	CSensoryFrame::Ptr dummy_sf = CSensoryFrame::Create();
+	CSensoryFrame::Ptr dummy_sf = std::make_shared<CSensoryFrame>();
 
     // Apply changes:
     int 	changes = 0;

@@ -388,7 +388,7 @@ void CICPCriteriaERD<GRAPH_T>::initializeVisuals() {
 	if (params.ICP_max_distance > 0) {
 		COpenGLScene::Ptr scene = this->m_win->get3DSceneAndLock();
 
-		CDisk::Ptr obj = CDisk::Create();
+		CDisk::Ptr obj = std::make_shared<CDisk>();
 		pose_t initial_pose;
 		obj->setPose(initial_pose);
 		obj->setName("ICP_max_distance");
@@ -404,7 +404,7 @@ void CICPCriteriaERD<GRAPH_T>::initializeVisuals() {
 	if (params.visualize_laser_scans) {
 		COpenGLScene::Ptr scene = this->m_win->get3DSceneAndLock();
 
-		CPlanarLaserScan::Ptr laser_scan_viz = mrpt::opengl::CPlanarLaserScan::Create();
+		CPlanarLaserScan::Ptr laser_scan_viz = std::make_shared<mrpt::opengl::CPlanarLaserScan>();
 		laser_scan_viz->enablePoints(true);
 		laser_scan_viz->enableLine(true);
 		laser_scan_viz->enableSurface(true);

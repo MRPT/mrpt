@@ -155,13 +155,13 @@ int main(int argc, char**argv)
 					mrpt::maps::CPointsMap::Ptr  new_map;
 					if (SF)
 					{
-						new_map = mrpt::maps::CSimplePointsMap::Create();
+						new_map = std::make_shared<mrpt::maps::CSimplePointsMap>();
 						// new_map->insertionOptions.minDistBetweenLaserPoints = 0;
 						SF->insertObservationsInto(new_map);
 					}
 					else if (obs)
 					{
-						new_map = mrpt::maps::CSimplePointsMap::Create();
+						new_map = std::make_shared<mrpt::maps::CSimplePointsMap>();
 						// new_map->insertionOptions.minDistBetweenLaserPoints = 0;
 						new_map->insertObservation(obs.get());
 					}

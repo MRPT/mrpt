@@ -35,25 +35,6 @@ CHMHMapArc::CHMHMapArc(
 	// To the graph:
 }
 
-CHMHMapArc::Ptr CHMHMapArc::Create(
-	const CHMHMapNode::TNodeID		&from,
-	const CHMHMapNode::TNodeID		&to,
-	const THypothesisIDSet			&hyps,
-	CHierarchicalMHMap		*parent) 
-{
-	CHMHMapArc::Ptr obj = CHMHMapArc::Ptr(new CHMHMapArc(from,to,hyps,parent));
-	if (parent) 
-	{
-		parent->onArcAddition(obj);
-		CHMHMapNode::Ptr node;
-		if ( (node = parent->getNodeByID(from)))
-			node->onArcAddition(obj);
-		if ( (node = parent->getNodeByID(to)))
-			node->onArcAddition(obj);
-	}
-	return obj;
-}
-
 
 /*---------------------------------------------------------------
 						Other constructor
@@ -76,25 +57,6 @@ CHMHMapArc::CHMHMapArc(
 	// parent will be nullptr only inside a ">>" operation, as a temporal
 	//  initialization of an empty object with the default constructor:
 }
-
-CHMHMapArc::Ptr CHMHMapArc::Create(
-	CHMHMapNode::Ptr		&from,
-	CHMHMapNode::Ptr		&to,
-	const THypothesisIDSet		&hyps,
-	CHierarchicalMHMap			*parent)
-{
-	CHMHMapArc::Ptr obj = CHMHMapArc::Ptr(new CHMHMapArc(from,to,hyps,parent));
-	if (parent) 
-	{
-		// To the graph:
-		parent->onArcAddition(obj);
-		// To the nodes:
-		if (from)	from->onArcAddition(obj);
-		if (to)		to->onArcAddition(obj);
-	}
-	return obj;
-}
-
 
 /*---------------------------------------------------------------
 						Destructor
@@ -208,7 +170,7 @@ void TArcList::read( utils::CStream &in )
 	BASE::clear();
 	for (i=0;i<n;i++)
 	{
-		CHMHMapArc::Ptr theObj = CHMHMapArc::Create();
+		CHMHMapArc::Ptr theObj = std::make_shared<CHMHMapArc>();
 		in >> *theObj;
 		this->push_back( theObj );
 	}

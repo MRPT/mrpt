@@ -24,11 +24,6 @@ using namespace std;
 
 IMPLEMENTS_SERIALIZABLE( CMesh3D, CRenderizableDisplayList, mrpt::opengl )
 
-CMesh3D::Ptr CMesh3D::Create(bool enableTransparency, bool enableShowEdges, bool enableShowFaces, bool enableShowVertices)
-{
-	return CMesh3D::Ptr(new CMesh3D(enableTransparency, enableShowEdges, enableShowFaces, enableShowVertices));
-}
-
 CMesh3D::CMesh3D(bool enableTransparency, bool antiAliasing , bool enableShowEdges , bool enableShowFaces, bool enableShowVertices ) :
 	m_enableTransparency(enableTransparency),
 	m_antiAliasing(antiAliasing),

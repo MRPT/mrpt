@@ -50,10 +50,6 @@ CMesh::~CMesh()
 }
 
 
-CMesh::Ptr CMesh::Create(bool enableTransparency, float xMin, float xMax , float yMin , float yMax  )
-{
-	return CMesh::Ptr( new CMesh( enableTransparency, xMin ,xMax , yMin ,yMax ) );
-}
 void CMesh::updateTriangles() const	{
 	CRenderizableDisplayList::notifyChange();
 

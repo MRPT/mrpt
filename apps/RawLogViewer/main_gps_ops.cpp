@@ -156,18 +156,18 @@ void xRawLogViewerFrame::OnMenuDrawGPSPath(wxCommandEvent& event)
 	}
 
 	// Window 3d:
-	winGPSPath = CDisplayWindow3D::Create(format("GPS path, %i points (%s) %.03f meters length", int(M), the_label.c_str(), overall_distance ) );
+	winGPSPath = std::make_shared<CDisplayWindow3D>(format("GPS path, %i points (%s) %.03f meters length", int(M), the_label.c_str(), overall_distance ) );
 
 	COpenGLScene scene;
-	CPointCloud::Ptr  gl_path = CPointCloud::Create();
+	CPointCloud::Ptr  gl_path = std::make_shared<CPointCloud>();
 	gl_path->setAllPoints(xs,ys,zs);
 	gl_path->setColor(0,0,1);
 
 	gl_path->setPointSize(3);
 
 	scene.insert( gl_path );
-	scene.insert( CGridPlaneXY::Ptr( CGridPlaneXY::Create(-300,300,-300,300,0,10)));
-	scene.insert( CAxis::Ptr( CAxis::Create(-300,-300,-50, 300,300,50, 1.0, 3, true  ) ) );
+	scene.insert( CGridPlaneXY::Ptr( std::make_shared<CGridPlaneXY>(-300,300,-300,300,0,10)));
+	scene.insert( CAxis::Ptr( std::make_shared<CAxis>(-300,-300,-50, 300,300,50, 1.0, 3, true  ) ) );
 
 	COpenGLScene::Ptr the_scene = winGPSPath->get3DSceneAndLock();
 	*the_scene = scene;
@@ -176,11 +176,11 @@ void xRawLogViewerFrame::OnMenuDrawGPSPath(wxCommandEvent& event)
 
 
 	// 2D wins:
-	winGPSPath2D_xy = CDisplayWindowPlots::Create( format("GPS path - XY (%s)", the_label.c_str() ) );
+	winGPSPath2D_xy = std::make_shared<CDisplayWindowPlots>( format("GPS path - XY (%s)", the_label.c_str() ) );
 	winGPSPath2D_xy->plot(xs,ys,"b");
 	winGPSPath2D_xy->axis_fit(true);
 
-	winGPSPath2D_xz = CDisplayWindowPlots::Create( format("GPS path - XZ (%s)", the_label.c_str() ) );
+	winGPSPath2D_xz = std::make_shared<CDisplayWindowPlots>( format("GPS path - XZ (%s)", the_label.c_str() ) );
 	winGPSPath2D_xz->plot(xs,zs,"b");
 	winGPSPath2D_xz->axis_fit(true);
 

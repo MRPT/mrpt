@@ -187,7 +187,7 @@ namespace mrpt {
 						feat.pt.y < h_off )
 					{
 						// Add new feature:
-						CFeature::Ptr ft		= CFeature::Create();
+						CFeature::Ptr ft		= std::make_shared<CFeature>();
 						ft->type			= featFAST;
 						ft->ID				= ++max_feat_ID_at_input;
 						ft->x				= feat.pt.x;

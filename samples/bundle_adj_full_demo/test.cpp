@@ -408,14 +408,14 @@ int main(int argc, char **argv)
 
 
 		{	// Ground plane:
-			CGridPlaneXY::Ptr obj = CGridPlaneXY::Create(-200,200,-200,200,0, 5);
+			CGridPlaneXY::Ptr obj = std::make_shared<CGridPlaneXY>(-200,200,-200,200,0, 5);
 			obj->setColor(0.7,0.7,0.7);
 			scene->insert(obj);
 		}
 
 		if (!landmark_points_real.empty())
 		{	// Feature points: ground truth
-			CPointCloud::Ptr obj =  CPointCloud::Create();
+			CPointCloud::Ptr obj =  std::make_shared<CPointCloud>();
 			obj->setPointSize(2);
 			obj->setColor(0,0,0);
 			obj->loadFromPointsList(landmark_points_real);
@@ -424,7 +424,7 @@ int main(int argc, char **argv)
 		}
 		if (!landmark_points_noisy.empty())
 		{	// Feature points: noisy
-			CPointCloud::Ptr obj =  CPointCloud::Create();
+			CPointCloud::Ptr obj =  std::make_shared<CPointCloud>();
 			obj->setPointSize(4);
 			obj->setColor(0.7,0.2,0.2, 0);
 			obj->loadFromPointsList(landmark_points_noisy);
@@ -433,7 +433,7 @@ int main(int argc, char **argv)
 		}
 
 		{	// Feature points: estimated
-			CPointCloud::Ptr obj =  CPointCloud::Create();
+			CPointCloud::Ptr obj =  std::make_shared<CPointCloud>();
 			obj->setPointSize(3);
 			obj->setColor(0,0,1, 1.0);
 			obj->loadFromPointsList(landmark_points);
@@ -480,7 +480,7 @@ mrpt::opengl::CSetOfObjects::Ptr framePosesVecVisualize(
 	const double  len,
 	const double  lineWidth)
 {
-	mrpt::opengl::CSetOfObjects::Ptr obj = mrpt::opengl::CSetOfObjects::Create();
+	mrpt::opengl::CSetOfObjects::Ptr obj = std::make_shared<mrpt::opengl::CSetOfObjects>();
 
 	for (size_t i=0;i<poses.size();i++)
 	{

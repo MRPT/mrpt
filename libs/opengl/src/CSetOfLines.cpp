@@ -23,10 +23,6 @@ using namespace std;
 
 IMPLEMENTS_SERIALIZABLE( CSetOfLines, CRenderizableDisplayList, mrpt::opengl )
 
-CSetOfLines::Ptr CSetOfLines::Create(const std::vector<TSegment3D> &sgms, const bool antiAliasing)
-{
-	return CSetOfLines::Ptr(new CSetOfLines(sgms,antiAliasing));
-}
 /** Constructor */
 CSetOfLines::CSetOfLines()
 	: mSegments(),mLineWidth(1.0),m_antiAliasing(true), m_verticesPointSize(.0f)

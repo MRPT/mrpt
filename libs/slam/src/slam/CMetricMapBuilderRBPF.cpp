@@ -284,7 +284,7 @@ void  CMetricMapBuilderRBPF::initialize(
   ---------------------------------------------------------------*/
 CPose3DPDF::Ptr CMetricMapBuilderRBPF::getCurrentPoseEstimation() const
 {
-	CPose3DPDFParticles::Ptr posePDF = CPose3DPDFParticles::Create();
+	CPose3DPDFParticles::Ptr posePDF = std::make_shared<CPose3DPDFParticles>();
 	mapPDF.getEstimatedPosePDF(*posePDF);
 	return posePDF;
 }

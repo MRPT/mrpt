@@ -1658,7 +1658,7 @@ void slamdemoFrame::executeOneStep()
 	double executionTime;
 	static CTicTac tictac;
 	{
-		CActionCollection::Ptr act = CActionCollection::Create();
+		CActionCollection::Ptr act = std::make_shared<CActionCollection>();
 		CActionRobotMovement2D  actmov;
 		CActionRobotMovement2D::TMotionModelOptions odo_opts;
 		odo_opts.modelSelection = CActionRobotMovement2D::mmGaussian;
@@ -1681,7 +1681,7 @@ void slamdemoFrame::executeOneStep()
 		actmov.timestamp = mrpt::system::now();
 		act->insert(actmov);
 
-		CSensoryFrame::Ptr sf = CSensoryFrame::Create();
+		CSensoryFrame::Ptr sf = std::make_shared<CSensoryFrame>();
 		m_lastObservation.timestamp = mrpt::system::now();
 		m_lastObservation.sensorLabel = "SIMUL_2D_RB";
 
@@ -2001,7 +2001,7 @@ void slamdemoFrame::OnMenuSaveFilterState(wxCommandEvent& event)
 		string filName( dialog.GetPath().mb_str() );
 
 		// Save as 3D objects:
-		mrpt::opengl::CSetOfObjects::Ptr obj3D = mrpt::opengl::CSetOfObjects::Create();
+		mrpt::opengl::CSetOfObjects::Ptr obj3D = std::make_shared<mrpt::opengl::CSetOfObjects>();
 		m_SLAM.getAs3DObject(obj3D);
 
 		mrpt::opengl::COpenGLScene scene;

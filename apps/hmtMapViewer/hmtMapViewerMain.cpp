@@ -395,7 +395,7 @@ hmtMapViewerFrame::hmtMapViewerFrame(wxWindow* parent,wxWindowID id)
 	m_canvas_HMAP = new CMyGLCanvas( Panel6, wxID_ANY, wxDefaultPosition, wxDefaultSize );
 	Panel6->SetMinSize( wxSize(200,200) );
 	m_canvas_HMAP->SetMinSize( wxSize(200,200) );
-	m_canvas_HMAP->m_openGLScene->insert( opengl::CGridPlaneXY::Create() );
+	m_canvas_HMAP->m_openGLScene->insert( std::make_shared<opengl::CGridPlaneXY>() );
 
     FlexGridSizer6->Add(m_canvas_HMAP, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
 
@@ -403,7 +403,7 @@ hmtMapViewerFrame::hmtMapViewerFrame(wxWindow* parent,wxWindowID id)
 	m_canvas_LMH = new CMyGLCanvas( Panel7, wxID_ANY, wxDefaultPosition, wxDefaultSize );
 	Panel7->SetMinSize( wxSize(200,200) );
 	m_canvas_LMH->SetMinSize( wxSize(200,200) );
-	m_canvas_LMH->m_openGLScene->insert( opengl::CGridPlaneXY::Create() );
+	m_canvas_LMH->m_openGLScene->insert( std::make_shared<opengl::CGridPlaneXY>() );
     FlexGridSizer7->Add(m_canvas_LMH, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
 
 	m_canvas_LMH->cameraPointingX = 0;
@@ -604,13 +604,13 @@ void hmtMapViewerFrame::updateLocalMapView()
 	if (obj->GetRuntimeClass()==CLASS_ID(CHMHMapNode))
 	{
 		// The 3D view:
-		opengl::CSetOfObjects::Ptr objs = opengl::CSetOfObjects::Create();
+		opengl::CSetOfObjects::Ptr objs = std::make_shared<opengl::CSetOfObjects>();
 
 		// -------------------------------------------
 		// Draw a grid on the ground:
 		// -------------------------------------------
 		{
-			opengl::CGridPlaneXY::Ptr obj = opengl::CGridPlaneXY::Create(-100,100,-100,100,0,5);
+			opengl::CGridPlaneXY::Ptr obj = std::make_shared<opengl::CGridPlaneXY>(-100,100,-100,100,0,5);
 			obj->setColor(0.4,0.4,0.4);
 			objs->insert(obj);  // it will free the memory
 		}
@@ -666,7 +666,7 @@ void hmtMapViewerFrame::updateLocalMapView()
 				// ---------------------------------------------------------
 				if (nRound==0)
 				{
-					opengl::CSetOfObjects::Ptr objMap= opengl::CSetOfObjects::Create();
+					opengl::CSetOfObjects::Ptr objMap= std::make_shared<opengl::CSetOfObjects>();
 					obj_mmap->getAs3DObject(objMap);
 					objMap->setPose( refPoseThisArea.mean );
 					objs->insert(objMap);
@@ -684,7 +684,7 @@ void hmtMapViewerFrame::updateLocalMapView()
 						float y_min = obj_mmap->m_gridMaps[0]->getYMin();
 						float y_max = obj_mmap->m_gridMaps[0]->getYMax();
 
-						opengl::CSetOfLines::Ptr objBB = opengl::CSetOfLines::Create();
+						opengl::CSetOfLines::Ptr objBB = std::make_shared<opengl::CSetOfLines>();
 						objBB->setColor(0,0,1);
 						objBB->setLineWidth( 4.0f );
 
@@ -717,7 +717,7 @@ void hmtMapViewerFrame::updateLocalMapView()
 					// -----------------------------------------------
 					if (refPoseThisArea.cov(0,0)!=0 || refPoseThisArea.cov(1,1)!=0)
 					{
-						opengl::CEllipsoid::Ptr ellip = opengl::CEllipsoid::Create();
+						opengl::CEllipsoid::Ptr ellip = std::make_shared<opengl::CEllipsoid>();
 						ellip->setPose( refPoseThisArea.mean );
 						ellip->enableDrawSolid3D(false);
 

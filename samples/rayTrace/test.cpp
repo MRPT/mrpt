@@ -92,16 +92,16 @@ void guideLines(const CPose3D &base,CSetOfLines::Ptr &lines,float dist)	{
 //Add objects at your will to check results
 void generateObjects(CSetOfObjects::Ptr &world)	{
     // create object, give it a random pose/color, insert it in the world
-	CDisk::Ptr dsk=CDisk::Create();
+	CDisk::Ptr dsk=std::make_shared<CDisk>();
 	dsk->setDiskRadius(MYRANDG(5,5),MYRANDG(5));
 	configRandom(dsk);
 	world->insert(dsk);
 
-	CSphere::Ptr sph=CSphere::Create(MYRANDG(5,1));
+	CSphere::Ptr sph=std::make_shared<CSphere>(MYRANDG(5,1));
 	configRandom(sph);
 	world->insert(sph);
 
-	CTexturedPlane::Ptr pln=CTexturedPlane::Create(MYRANDG(10,-10),MYRANDG(10),MYRANDG(10,-10),MYRANDG(10));
+	CTexturedPlane::Ptr pln=std::make_shared<CTexturedPlane>(MYRANDG(10,-10),MYRANDG(10),MYRANDG(10,-10),MYRANDG(10));
 	configRandom(pln);
 	world->insert(pln);
 
@@ -111,11 +111,11 @@ void generateObjects(CSetOfObjects::Ptr &world)	{
 		world->insert(poly);
 	}
 
-	CCylinder::Ptr cil=CCylinder::Create(MYRANDG(3.0,3.0),MYRANDG(3.0,1.0),MYRANDG(2.0f,3.0f),50,1);
+	CCylinder::Ptr cil=std::make_shared<CCylinder>(MYRANDG(3.0,3.0),MYRANDG(3.0,1.0),MYRANDG(2.0f,3.0f),50,1);
 	configRandom(cil);
 	world->insert(cil);
 
-	CEllipsoid::Ptr ell=CEllipsoid::Create();
+	CEllipsoid::Ptr ell=std::make_shared<CEllipsoid>();
 	CMatrixDouble md=CMatrixDouble(3,3);
 	for (size_t i=0;i<3;i++) md(i,i)=MYRANDG(8.0,1.0);
 	for (size_t i=0;i<3;i++)	{
@@ -131,17 +131,17 @@ void display()	{
 	CDisplayWindow3D window("Ray trace demo",640,480);
 	window.setPos(10,10);
 	std::this_thread::sleep_for(20ms);
-	COpenGLScene::Ptr scene1=COpenGLScene::Create();
+	COpenGLScene::Ptr scene1=std::make_shared<COpenGLScene>();
 	//COpenGLScene::Ptr &scene1=window.get3DSceneAndLock();
-	opengl::CGridPlaneXY::Ptr plane1=CGridPlaneXY::Create(-20,20,-20,20,0,1);
+	opengl::CGridPlaneXY::Ptr plane1=std::make_shared<CGridPlaneXY>(-20,20,-20,20,0,1);
 	plane1->setColor(GRID_R,GRID_G,GRID_B);
 	scene1->insert(plane1);
-	scene1->insert(CAxis::Create(-5,-5,-5,5,5,5,2.5,3,true));
-	CSetOfObjects::Ptr world=CSetOfObjects::Create();
+	scene1->insert(std::make_shared<CAxis>(-5,-5,-5,5,5,5,2.5,3,true));
+	CSetOfObjects::Ptr world=std::make_shared<CSetOfObjects>();
 	generateObjects(world);
 	scene1->insert(world);
 	CPose3D basePose=randomPose();
-	CAngularObservationMesh::Ptr aom=CAngularObservationMesh::Create();
+	CAngularObservationMesh::Ptr aom=std::make_shared<CAngularObservationMesh>();
 	CTicTac t;
 	t.Tic();
 	CAngularObservationMesh::trace2DSetOfRays(scene1,basePose,aom,CAngularObservationMesh::TDoubleRange::CreateFromAmount(-M_PI/2,0,HOW_MANY_PITCHS),CAngularObservationMesh::TDoubleRange::CreateFromAperture(M_PI,HOW_MANY_YAWS));
@@ -149,8 +149,8 @@ void display()	{
 	aom->setColor(0,1,0);
 	aom->setWireframe(true);
 	//Comment to stop showing traced rays and scan range guidelines.
-	CSetOfLines::Ptr traced=CSetOfLines::Create();
-	CSetOfLines::Ptr guides=CSetOfLines::Create();
+	CSetOfLines::Ptr traced=std::make_shared<CSetOfLines>();
+	CSetOfLines::Ptr guides=std::make_shared<CSetOfLines>();
 	aom->getTracedRays(traced);
 	traced->setLineWidth(1.5);
 	traced->setColor(1,0,0);
@@ -160,13 +160,13 @@ void display()	{
 
 	//Uncomment to show also traced rays who got lost.
 	/*
-	CSetOfLines::Ptr untraced=CSetOfLines::Create();
+	CSetOfLines::Ptr untraced=std::make_shared<CSetOfLines>();
 	aom->getUntracedRays(untraced,20);
 	untraced->setLineWidth(1);
 	untraced->setColor(1,1,1,0.5);
 	scene1->insert(untraced);
 	*/
-	CSphere::Ptr point=CSphere::Create(0.2);
+	CSphere::Ptr point=std::make_shared<CSphere>(0.2);
 	point->setColor(0,1,0);
 	point->setPose(basePose);
 	scene1->insert(point);
@@ -178,10 +178,10 @@ void display()	{
 	window.setCameraElevationDeg(25.0f);
 	COpenGLScene::Ptr &scene2=window2.get3DSceneAndLock();
 	scene2->insert(aom);
-	opengl::CGridPlaneXY::Ptr plane2=CGridPlaneXY::Create(-20,20,-20,20,0,1);
+	opengl::CGridPlaneXY::Ptr plane2=std::make_shared<CGridPlaneXY>(-20,20,-20,20,0,1);
 	plane2->setColor(GRID_R,GRID_G,GRID_B);
 	scene2->insert(plane2);
-	scene2->insert(CAxis::Create(-5,-5,-5,5,5,5,2.5,3,true));
+	scene2->insert(std::make_shared<CAxis>(-5,-5,-5,5,5,5,2.5,3,true));
 	window2.unlockAccess3DScene();
 	window2.setCameraElevationDeg(25.0f);
 

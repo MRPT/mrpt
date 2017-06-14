@@ -190,8 +190,6 @@ void CAbstractPTGBasedReactive::getLastLogRecord( CLogFileRecord &o )
 
 void CAbstractPTGBasedReactive::deleteHolonomicObjects()
 {
-	for (size_t i=0;i<m_holonomicMethod.size();i++)
-		delete m_holonomicMethod[i];
 	m_holonomicMethod.clear();
 }
 
@@ -206,7 +204,7 @@ void CAbstractPTGBasedReactive::setHolonomicMethod(const std::string & method, c
 
 	for (size_t i = 0; i<nPTGs; i++)
 	{
-		m_holonomicMethod[i] = CAbstractHolonomicReactiveMethod::Create(method);
+		m_holonomicMethod[i] = CAbstractHolonomicReactiveMethod::Factory(method);
 		if (!m_holonomicMethod[i])
 			THROW_EXCEPTION_FMT("Non-registered holonomic method className=`%s`", method.c_str());
 
@@ -432,7 +430,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				relTargets, rel_pose_PTG_origin_wrt_sense,
 				ipf, cm,
 				newLogRec, false /* this is a regular PTG reactive case */,
-				m_holonomicMethod[indexPTG],
+				*m_holonomicMethod[indexPTG],
 				tim_start_iteration,
 				*m_navigationParams
 				);
@@ -553,7 +551,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 					relTargets_NOPs, rel_pose_PTG_origin_wrt_sense_NOP,
 					m_infoPerPTG[nPTGs], candidate_movs[nPTGs],
 					newLogRec, true /* this is the PTG continuation (NOP) choice */,
-					m_holonomicMethod[m_lastSentVelCmd.ptg_index],
+					*m_holonomicMethod[m_lastSentVelCmd.ptg_index],
 					tim_start_iteration,
 					*m_navigationParams,
 					rel_cur_pose_wrt_last_vel_cmd_NOP);
@@ -1231,7 +1229,7 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
 	TCandidateMovementPTG &cm,
 	CLogFileRecord &newLogRec,
 	const bool this_is_PTG_continuation,
-	mrpt::nav::CAbstractHolonomicReactiveMethod *holoMethod,
+	mrpt::nav::CAbstractHolonomicReactiveMethod &holoMethod,
 	const mrpt::system::TTimeStamp tim_start_iteration,
 	const TNavigationParams &navp,
 	const mrpt::math::TPose2D &rel_cur_pose_wrt_last_vel_cmd_NOP
@@ -1320,9 +1318,8 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
 		{
 			tictac.Tic();
 
-			ASSERT_(holoMethod);
 			// Slow down if we are approaching the final target, etc.
-			holoMethod->enableApproachTargetSlowDown(navp.target.targetDesiredRelSpeed<.11);
+			holoMethod.enableApproachTargetSlowDown(navp.target.targetDesiredRelSpeed<.11);
 
 			// Prepare holonomic algorithm call:
 			CAbstractHolonomicReactiveMethod::NavInput ni;
@@ -1338,7 +1335,7 @@ void CAbstractPTGBasedReactive::build_movement_candidate(
 
 			CAbstractHolonomicReactiveMethod::NavOutput no;
 
-			holoMethod->navigate(ni, no);
+			holoMethod.navigate(ni, no);
 
 			// Extract resuls:
 			cm.direction = no.desiredDirection;
@@ -1529,7 +1526,7 @@ void CAbstractPTGBasedReactive::loadConfigFile(const mrpt::utils::CConfigFileBas
 	}
 
 	// Movement chooser:
-	m_multiobjopt = CMultiObjectiveMotionOptimizerBase::Ptr(CMultiObjectiveMotionOptimizerBase::Create(params_abstract_ptg_navigator.motion_decider_method));
+	m_multiobjopt = CMultiObjectiveMotionOptimizerBase::Factory(params_abstract_ptg_navigator.motion_decider_method);
 	if (!m_multiobjopt)
 		THROW_EXCEPTION_FMT("Non-registered CMultiObjectiveMotionOptimizerBase className=`%s`", params_abstract_ptg_navigator.motion_decider_method.c_str());
 

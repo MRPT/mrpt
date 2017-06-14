@@ -55,19 +55,19 @@ CPose3D SCAN2_POSE_ERROR (0.15,-0.07,0.10, -0.03, 0.1, 0.1 );
  */
 void generateObjects(CSetOfObjects::Ptr &world)
 {
-	CSphere::Ptr sph=CSphere::Create(0.5);
+	CSphere::Ptr sph=std::make_shared<CSphere>(0.5);
 	sph->setLocation(0,0,0);
 	sph->setColor(1,0,0);
 	world->insert(sph);
 
-	CDisk::Ptr pln= opengl::CDisk::Create();
+	CDisk::Ptr pln= std::make_shared<opengl::CDisk>();
 	pln->setDiskRadius(2);
 	pln->setPose(CPose3D(0,0,0,0,DEG2RAD(5),DEG2RAD(5)));
 	pln->setColor(0.8,0,0);
 	world->insert(pln);
 
 	{
-		CDisk::Ptr pln= opengl::CDisk::Create();
+		CDisk::Ptr pln= std::make_shared<opengl::CDisk>();
 		pln->setDiskRadius(2);
 		pln->setPose(CPose3D(0,0,0,DEG2RAD(30),DEG2RAD(-20),DEG2RAD(-2)));
 		pln->setColor(0.9,0,0);
@@ -78,23 +78,23 @@ void generateObjects(CSetOfObjects::Ptr &world)
 void test_icp3D()
 {
 	// Create the reference objects:
-	COpenGLScene::Ptr scene1=COpenGLScene::Create();
-	COpenGLScene::Ptr scene2=COpenGLScene::Create();
-	COpenGLScene::Ptr scene3=COpenGLScene::Create();
+	COpenGLScene::Ptr scene1=std::make_shared<COpenGLScene>();
+	COpenGLScene::Ptr scene2=std::make_shared<COpenGLScene>();
+	COpenGLScene::Ptr scene3=std::make_shared<COpenGLScene>();
 
-	opengl::CGridPlaneXY::Ptr plane1=CGridPlaneXY::Create(-20,20,-20,20,0,1);
+	opengl::CGridPlaneXY::Ptr plane1=std::make_shared<CGridPlaneXY>(-20,20,-20,20,0,1);
 	plane1->setColor(0.3,0.3,0.3);
 	scene1->insert(plane1);
 	scene2->insert(plane1);
 	scene3->insert(plane1);
 
-	CSetOfObjects::Ptr world=CSetOfObjects::Create();
+	CSetOfObjects::Ptr world=std::make_shared<CSetOfObjects>();
 	generateObjects(world);
 	scene1->insert(world);
 
 	// Perform the 3D scans:
-	CAngularObservationMesh::Ptr aom1=CAngularObservationMesh::Create();
-	CAngularObservationMesh::Ptr aom2=CAngularObservationMesh::Create();
+	CAngularObservationMesh::Ptr aom1=std::make_shared<CAngularObservationMesh>();
+	CAngularObservationMesh::Ptr aom2=std::make_shared<CAngularObservationMesh>();
 
 	cout << "Performing ray-tracing..." << endl;
 	CAngularObservationMesh::trace2DSetOfRays(scene1,viewpoint1,aom1,CAngularObservationMesh::TDoubleRange::CreateFromAperture(M_PI,HOW_MANY_PITCHS),CAngularObservationMesh::TDoubleRange::CreateFromAperture(M_PI,HOW_MANY_YAWS));
@@ -132,8 +132,8 @@ void test_icp3D()
 	M2_noisy.changeCoordinatesReference( SCAN2_POSE_ERROR );
 
 
-	CSetOfObjects::Ptr  PTNS1 = CSetOfObjects::Create();
-	CSetOfObjects::Ptr  PTNS2 = CSetOfObjects::Create();
+	CSetOfObjects::Ptr  PTNS1 = std::make_shared<CSetOfObjects>();
+	CSetOfObjects::Ptr  PTNS2 = std::make_shared<CSetOfObjects>();
 
 	CPointsMap::COLOR_3DSCENE_R = 1;
 	CPointsMap::COLOR_3DSCENE_G = 0;
@@ -180,7 +180,7 @@ void test_icp3D()
 
 
 	// Aligned maps:
-	CSetOfObjects::Ptr  PTNS2_ALIGN = CSetOfObjects::Create();
+	CSetOfObjects::Ptr  PTNS2_ALIGN = std::make_shared<CSetOfObjects>();
 
 	M2_noisy.changeCoordinatesReference( CPose3D()-mean );
 	M2_noisy.getAs3DObject(PTNS2_ALIGN);

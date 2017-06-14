@@ -25,7 +25,7 @@ namespace mrpt
 		  *  New observations can be added using:
 		  *
 		  * \code
-		  * CObservationXXX::Ptr	o = CObservationXXX::Create();  // Create a smart pointer containing an object of class "CObservationXXX"
+		  * CObservationXXX::Ptr	o = std::make_shared<CObservationXXX>();  // Create a smart pointer containing an object of class "CObservationXXX"
 		  * o->(...)
 		  *
 		  * CSensoryFrame	 sf;

@@ -91,8 +91,8 @@ void COpenNI2_RGBD360::doProcess()
 
 	bool	thereIs, hwError;
 
-	CObservationRGBD360::Ptr newObs = CObservationRGBD360::Create();
-	//	CObservation3DRangeScan::Ptr newObs = CObservation3DRangeScan::Create();
+	CObservationRGBD360::Ptr newObs = std::make_shared<CObservationRGBD360>();
+	//	CObservation3DRangeScan::Ptr newObs = std::make_shared<CObservation3DRangeScan>();
 
    assert(getNumDevices() > 0);
 	//  unsigned sensor_id = COpenNI2Generic::vOpenDevices.front();
@@ -199,7 +199,7 @@ void COpenNI2_RGBD360::getNextObservation(
 				if (++m_preview_decim_counter_range>m_preview_window_decimation)
 				{
 					m_preview_decim_counter_range=0;
-					if (!m_win_range[sensor_id])	{ m_win_range[sensor_id] = mrpt::gui::CDisplayWindow::Create("Preview RANGE"); m_win_range[sensor_id]->setPos(5,5+250*sensor_id); }
+					if (!m_win_range[sensor_id])	{ m_win_range[sensor_id] = std::make_shared<mrpt::gui::CDisplayWindow>("Preview RANGE"); m_win_range[sensor_id]->setPos(5,5+250*sensor_id); }
 
 					// Normalize the image
 					mrpt::utils::CImage  img;
@@ -213,7 +213,7 @@ void COpenNI2_RGBD360::getNextObservation(
 				if (++m_preview_decim_counter_rgb>m_preview_window_decimation)
 				{
 					m_preview_decim_counter_rgb=0;
-					if (!m_win_int[sensor_id])		{ m_win_int[sensor_id] = mrpt::gui::CDisplayWindow::Create("Preview INTENSITY"); m_win_int[sensor_id]->setPos(330,5+250*sensor_id); }
+					if (!m_win_int[sensor_id])		{ m_win_int[sensor_id] = std::make_shared<mrpt::gui::CDisplayWindow>("Preview INTENSITY"); m_win_int[sensor_id]->setPos(330,5+250*sensor_id); }
 					m_win_int[sensor_id]->showImage(out_obs.intensityImages[sensor_id] );
 				}
 			}

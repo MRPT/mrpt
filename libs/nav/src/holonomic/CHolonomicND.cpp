@@ -59,7 +59,7 @@ void CHolonomicND::navigate(const NavInput & ni, NavOutput &no)
 	double				evaluation;
 
 	// Create a log record for returning data.
-	CLogFileRecord_ND::Ptr  log = CLogFileRecord_ND::Create();
+	CLogFileRecord_ND::Ptr  log = std::make_shared<CLogFileRecord_ND>();
 	no.logRecord = log;
 
 	// Search gaps:

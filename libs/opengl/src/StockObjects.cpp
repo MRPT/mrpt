@@ -32,11 +32,11 @@ using namespace std;
   ---------------------------------------------------------------*/
 CSetOfObjects::Ptr stock_objects::RobotPioneer()
 {
-	CSetOfObjects::Ptr	ret = CSetOfObjects::Create();
+	CSetOfObjects::Ptr	ret = std::make_shared<CSetOfObjects>();
 
 	ret->setName("theRobot");
 
-	CSetOfTriangles::Ptr obj = CSetOfTriangles::Create();
+	CSetOfTriangles::Ptr obj = std::make_shared<CSetOfTriangles>();
 
 	// Add triangles:
 	CSetOfTriangles::TTriangle	trian;
@@ -128,7 +128,7 @@ CSetOfObjects::Ptr stock_objects::RobotPioneer()
   ---------------------------------------------------------------*/
 CSetOfObjects::Ptr stock_objects::CornerXYZ(float scale)
 {
-	CSetOfObjects::Ptr ret = CSetOfObjects::Create();
+	CSetOfObjects::Ptr ret = std::make_shared<CSetOfObjects>();
 
 	CArrow::Ptr obj = CArrow::Create(
 			0,0,0,
@@ -163,7 +163,7 @@ CSetOfObjects::Ptr stock_objects::CornerXYZ(float scale)
   ---------------------------------------------------------------*/
 CSetOfObjects::Ptr stock_objects::RobotRhodon()
 {
-	CSetOfObjects::Ptr ret = CSetOfObjects::Create();
+	CSetOfObjects::Ptr ret = std::make_shared<CSetOfObjects>();
 	float height = 0;
 
 	vector<TPoint2D> level1;
@@ -207,12 +207,12 @@ CSetOfObjects::Ptr stock_objects::RobotRhodon()
 	ret->insert( obj3 );
 
 
-	opengl::CCylinder::Ptr obj4 = opengl::CCylinder::Create(0.05f, 0.05f, 0.4f, 20, 20);
+	opengl::CCylinder::Ptr obj4 = std::make_shared<opengl::CCylinder>(0.05f, 0.05f, 0.4f, 20, 20);
 	obj4->setLocation(0,0,0.73);
 	obj4->setColor(0,0,0.9);
 	ret->insert( obj4 );
 
-	opengl::CCylinder::Ptr obj5 = opengl::CCylinder::Create(0.05f, 0.05f, 0.4f, 20, 20);
+	opengl::CCylinder::Ptr obj5 = std::make_shared<opengl::CCylinder>(0.05f, 0.05f, 0.4f, 20, 20);
 	obj5->setPose(CPose3D(0.32,0,0.89,0,-1,0));
 	obj5->setColor(0,0,0.9);
 	ret->insert( obj5 );
@@ -225,7 +225,7 @@ CSetOfObjects::Ptr stock_objects::RobotRhodon()
   ---------------------------------------------------------------*/
 CSetOfObjects::Ptr stock_objects::RobotGiraff()
 {
-	CSetOfObjects::Ptr ret = CSetOfObjects::Create();
+	CSetOfObjects::Ptr ret = std::make_shared<CSetOfObjects>();
 	float height = 0;
 	
 	//Base
@@ -289,7 +289,7 @@ CSetOfObjects::Ptr stock_objects::RobotGiraff()
 
 CSetOfObjects::Ptr stock_objects::CornerXYZEye()
 {
-	CSetOfObjects::Ptr ret = CSetOfObjects::Create();
+	CSetOfObjects::Ptr ret = std::make_shared<CSetOfObjects>();
 	CPose3D rotation;
 
 	CArrow::Ptr obj = CArrow::Create(
@@ -326,17 +326,17 @@ CSetOfObjects::Ptr stock_objects::CornerXYZEye()
 CSetOfObjects::Ptr stock_objects::BumblebeeCamera()
 {
 
-	CSetOfObjects::Ptr camera = opengl::CSetOfObjects::Create();
+	CSetOfObjects::Ptr camera = std::make_shared<opengl::CSetOfObjects>();
 
 	CPolyhedron::Ptr rect = opengl::CPolyhedron::CreateCubicPrism( -0.02, 0.14, -0.02, 0.02, 0, -0.04 );
 	rect->setColor( 1, 0.8, 0 );
 
 	camera->insert( rect );
 
-	CCylinder::Ptr lCam = opengl::CCylinder::Create( 0.01f,0.01f, 0.003f, 10, 10 );
+	CCylinder::Ptr lCam = std::make_shared<opengl::CCylinder>( 0.01f,0.01f, 0.003f, 10, 10 );
 	lCam->setColor( 1,0,0 );
 
-	CCylinder::Ptr rCam = opengl::CCylinder::Create( 0.01f,0.01f, 0.003f, 10, 10 );
+	CCylinder::Ptr rCam = std::make_shared<opengl::CCylinder>( 0.01f,0.01f, 0.003f, 10, 10 );
 	rCam->setPose( CPose3D(0.12,0,0) );
 	rCam->setColor( 0,0,0 );
 
@@ -349,24 +349,24 @@ CSetOfObjects::Ptr stock_objects::BumblebeeCamera()
 
 CSetOfObjects::Ptr stock_objects::CornerXYZSimple(float scale, float lineWidth)
 {
-	CSetOfObjects::Ptr ret = CSetOfObjects::Create();
+	CSetOfObjects::Ptr ret = std::make_shared<CSetOfObjects>();
 
 	{
-		CSimpleLine::Ptr lin = CSimpleLine::Create();
+		CSimpleLine::Ptr lin = std::make_shared<CSimpleLine>();
 		lin->setLineWidth(lineWidth);
 		lin->setColor(1,0,0);
 		lin->setLineCoords(0,0,0, scale,0,0);
 		ret->insert(lin);
 	}
 	{
-		CSimpleLine::Ptr lin = CSimpleLine::Create();
+		CSimpleLine::Ptr lin = std::make_shared<CSimpleLine>();
 		lin->setLineWidth(lineWidth);
 		lin->setColor(0,1,0);
 		lin->setLineCoords(0,0,0, 0,scale,0);
 		ret->insert(lin);
 	}
 	{
-		CSimpleLine::Ptr lin = CSimpleLine::Create();
+		CSimpleLine::Ptr lin = std::make_shared<CSimpleLine>();
 		lin->setLineWidth(lineWidth);
 		lin->setColor(0,0,1);
 		lin->setLineCoords(0,0,0, 0,0,scale);
@@ -377,17 +377,17 @@ CSetOfObjects::Ptr stock_objects::CornerXYZSimple(float scale, float lineWidth)
 
 CSetOfObjects::Ptr stock_objects::CornerXYSimple(float scale, float lineWidth)
 {
-	CSetOfObjects::Ptr ret = CSetOfObjects::Create();
+	CSetOfObjects::Ptr ret = std::make_shared<CSetOfObjects>();
 
 	{
-		CSimpleLine::Ptr lin = CSimpleLine::Create();
+		CSimpleLine::Ptr lin = std::make_shared<CSimpleLine>();
 		lin->setLineWidth(lineWidth);
 		lin->setColor(1,0,0);
 		lin->setLineCoords(0,0,0, scale,0,0);
 		ret->insert(lin);
 	}
 	{
-		CSimpleLine::Ptr lin = CSimpleLine::Create();
+		CSimpleLine::Ptr lin = std::make_shared<CSimpleLine>();
 		lin->setLineWidth(lineWidth);
 		lin->setColor(0,1,0);
 		lin->setLineCoords(0,0,0, 0,scale,0);
@@ -398,27 +398,27 @@ CSetOfObjects::Ptr stock_objects::CornerXYSimple(float scale, float lineWidth)
 
 CSetOfObjects::Ptr stock_objects::Hokuyo_URG()
 {
-	CSetOfObjects::Ptr ret = CSetOfObjects::Create();
+	CSetOfObjects::Ptr ret = std::make_shared<CSetOfObjects>();
 
 	{
-		CBox::Ptr base = CBox::Create(TPoint3D(-0.025,-0.025,-0.0575),TPoint3D(0.025,0.025,-0.0185));
+		CBox::Ptr base = std::make_shared<CBox>(TPoint3D(-0.025,-0.025,-0.0575),TPoint3D(0.025,0.025,-0.0185));
 		base->setColor(0.7,0.7,0.7);
 		ret->insert(base);
 	}
 	{
-		CCylinder::Ptr cyl1 = CCylinder::Create(0.02f,0.02f,0.01f);
+		CCylinder::Ptr cyl1 = std::make_shared<CCylinder>(0.02f,0.02f,0.01f);
 		cyl1->setColor(0,0,0);
 		cyl1->setPose(CPoint3D(0,0,-0.014));
 		ret->insert(cyl1);
 	}
 	{
-		CCylinder::Ptr cyl2 = CCylinder::Create(0.02f,0.0175f,0.01f);
+		CCylinder::Ptr cyl2 = std::make_shared<CCylinder>(0.02f,0.0175f,0.01f);
 		cyl2->setColor(0,0,0);
 		cyl2->setPose(CPoint3D(0,0,-0.004));
 		ret->insert(cyl2);
 	}
 	{
-		CCylinder::Ptr cyl3 = CCylinder::Create(0.0175f,0.0175f,0.01f);
+		CCylinder::Ptr cyl3 = std::make_shared<CCylinder>(0.0175f,0.0175f,0.01f);
 		cyl3->setColor(0,0,0);
 		cyl3->setPose(CPoint3D(0,0,0.004));
 		ret->insert(cyl3);
@@ -429,27 +429,27 @@ CSetOfObjects::Ptr stock_objects::Hokuyo_URG()
 
 CSetOfObjects::Ptr stock_objects::Hokuyo_UTM()
 {
-	CSetOfObjects::Ptr ret = CSetOfObjects::Create();
+	CSetOfObjects::Ptr ret = std::make_shared<CSetOfObjects>();
 
 	{
-		CBox::Ptr base = CBox::Create(TPoint3D(-0.03,-0.03,-0.055),TPoint3D(0.03,0.03,-0.014));
+		CBox::Ptr base = std::make_shared<CBox>(TPoint3D(-0.03,-0.03,-0.055),TPoint3D(0.03,0.03,-0.014));
 		base->setColor(0,0,0);
 		ret->insert(base);
 	}
 	{
-		CCylinder::Ptr cyl1 = CCylinder::Create(0.028f,0.024f,0.028f);
+		CCylinder::Ptr cyl1 = std::make_shared<CCylinder>(0.028f,0.024f,0.028f);
 		cyl1->setColor(0,0,0);
 		cyl1->setPose(CPose3D(0,0,-0.014));
 		ret->insert(cyl1);
 	}
 	{
-		CCylinder::Ptr cyl2 = CCylinder::Create(0.028f,0.028f,0.01f);
+		CCylinder::Ptr cyl2 = std::make_shared<CCylinder>(0.028f,0.028f,0.01f);
 		cyl2->setColor(1,69/255.0,0);
 		cyl2->setPose(CPoint3D(0,0,0.014));
 		ret->insert(cyl2);
 	}
 	{
-		CCylinder::Ptr cyl3 = CCylinder::Create(0.028f,0.028f,0.01f);
+		CCylinder::Ptr cyl3 = std::make_shared<CCylinder>(0.028f,0.028f,0.01f);
 		cyl3->setColor(0,0,0);
 		cyl3->setPose(CPoint3D(0,0,0.024));
 		ret->insert(cyl3);
@@ -460,53 +460,53 @@ CSetOfObjects::Ptr stock_objects::Hokuyo_UTM()
 
 CSetOfObjects::Ptr stock_objects::Househam_Sprayer()
 {
-	CSetOfObjects::Ptr ret = CSetOfObjects::Create();
+	CSetOfObjects::Ptr ret = std::make_shared<CSetOfObjects>();
 
 	{
-		CBox::Ptr cabin = CBox::Create(TPoint3D(0.878,0.723,-0.12),TPoint3D(-0.258,-0.723,-1.690));
+		CBox::Ptr cabin = std::make_shared<CBox>(TPoint3D(0.878,0.723,-0.12),TPoint3D(-0.258,-0.723,-1.690));
 		cabin->setColor(0.7,0.7,0.7);
 		ret->insert(cabin);
 	}
 	{
-		CBox::Ptr back = CBox::Create(TPoint3D(-0.258,0.723,-0.72),TPoint3D(-5.938,-0.723,-1.690));
+		CBox::Ptr back = std::make_shared<CBox>(TPoint3D(-0.258,0.723,-0.72),TPoint3D(-5.938,-0.723,-1.690));
 		back->setColor(1,1,1);
 		ret->insert(back);
 	}
     {
-		CBox::Ptr boomAxis = CBox::Create(TPoint3D(-5.938,0.723,-1.0),TPoint3D(-6.189,-0.723,-1.690));
+		CBox::Ptr boomAxis = std::make_shared<CBox>(TPoint3D(-5.938,0.723,-1.0),TPoint3D(-6.189,-0.723,-1.690));
 		boomAxis->setColor(0,0,0);
 		ret->insert(boomAxis);
 	}
 	{
-		CBox::Ptr boom1 = CBox::Create(TPoint3D(-5.938,0.723,-1.0),TPoint3D(-6.189,11.277,-1.620));
+		CBox::Ptr boom1 = std::make_shared<CBox>(TPoint3D(-5.938,0.723,-1.0),TPoint3D(-6.189,11.277,-1.620));
 		boom1->setColor(0,1,0);
 		ret->insert(boom1);
 	}
 	{
-		CBox::Ptr boom2 = CBox::Create(TPoint3D(-5.938,-0.723,-1.0),TPoint3D(-6.189,-11.277,-1.620));
+		CBox::Ptr boom2 = std::make_shared<CBox>(TPoint3D(-5.938,-0.723,-1.0),TPoint3D(-6.189,-11.277,-1.620));
 		boom2->setColor(0,1,0);
 		ret->insert(boom2);
 	}
 	{
-		CCylinder::Ptr cyl1 = CCylinder::Create(0.716f,0.716f,0.387f,30);
+		CCylinder::Ptr cyl1 = std::make_shared<CCylinder>(0.716f,0.716f,0.387f,30);
 		cyl1->setColor(0,0,0);
 		cyl1->setPose(CPose3D(-0.710,0.923,-2.480,0,0,DEG2RAD(90)));
 		ret->insert(cyl1);
 	}
 	{
-		CCylinder::Ptr cyl2 = CCylinder::Create(0.716f,0.716f,0.387f,30);
+		CCylinder::Ptr cyl2 = std::make_shared<CCylinder>(0.716f,0.716f,0.387f,30);
 		cyl2->setColor(0,0,0);
 		cyl2->setPose(CPose3D(-3.937,0.923,-2.480,0,0,DEG2RAD(90)));
 		ret->insert(cyl2);
 	}
 	{
-		CCylinder::Ptr cyl1 = CCylinder::Create(0.716f,0.716f,0.387f,30);
+		CCylinder::Ptr cyl1 = std::make_shared<CCylinder>(0.716f,0.716f,0.387f,30);
 		cyl1->setColor(0,0,0);
 		cyl1->setPose(CPose3D(-0.710,-0.423,-2.480,0,0,DEG2RAD(90)));
 		ret->insert(cyl1);
 	}
 	{
-		CCylinder::Ptr cyl2 = CCylinder::Create(0.716f,0.716f,0.387f,30);
+		CCylinder::Ptr cyl2 = std::make_shared<CCylinder>(0.716f,0.716f,0.387f,30);
 		cyl2->setColor(0,0,0);
 		cyl2->setPose(CPose3D(-3.937,-0.423,-2.480,0,0,DEG2RAD(90)));
 		ret->insert(cyl2);

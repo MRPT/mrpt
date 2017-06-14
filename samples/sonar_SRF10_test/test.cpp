@@ -40,9 +40,9 @@ int main()
 		CDisplayWindow3D	wind("Sonar representation");
 		COpenGLScene::Ptr		&scene = wind.get3DSceneAndLock();
 
-		scene->insert( mrpt::opengl::CGridPlaneXY::Create( -20,20,-20,20,0,1 ) );
+		scene->insert( std::make_shared<mrpt::opengl::CGridPlaneXY>( -20,20,-20,20,0,1 ) );
 		scene->insert( mrpt::opengl::stock_objects::RobotPioneer() );
-		//scene->insert( mrpt::opengl::CCylinder::Create(1, 1, 2.0f) );
+		//scene->insert( std::make_shared<mrpt::opengl::CCylinder>(1, 1, 2.0f) );
 		wind.unlockAccess3DScene();
 
 		// Load configuration:
@@ -92,7 +92,7 @@ int main()
 						mrpt::opengl::CRenderizable::Ptr objPtr = scene->getByName( obj );
 						if( !objPtr )
 						{
-							sonarRange = mrpt::opengl::CCylinder::Create(0.0f,0.0f,1.0f,30,10);
+							sonarRange = std::make_shared<mrpt::opengl::CCylinder>(0.0f,0.0f,1.0f,30,10);
 							sonarRange->setName( obj );
 							scene->insert( sonarRange );
 						}

@@ -425,7 +425,7 @@ void CHolonomicFullEval::navigate(const NavInput & ni, NavOutput &no)
 	ASSERT_(!ni.targets.empty());
 
 	// Create a log record for returning data.
-	CLogFileRecord_FullEval::Ptr log = CLogFileRecord_FullEval::Create();
+	CLogFileRecord_FullEval::Ptr log = std::make_shared<CLogFileRecord_FullEval>();
 	no.logRecord = log;
 
 	const size_t numTrgs = ni.targets.size();

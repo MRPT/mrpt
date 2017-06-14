@@ -275,7 +275,7 @@ void MapBuilding_ICP_Live(const string &INI_FILENAME)
 #if MRPT_HAS_WXWIDGETS
 	if (SHOW_PROGRESS_3D_REAL_TIME)
 	{
-		win3D = mrpt::gui::CDisplayWindow3D::Create("icp-slam-live | Part of the MRPT project", 800, 600);
+		win3D = std::make_shared<mrpt::gui::CDisplayWindow3D>("icp-slam-live | Part of the MRPT project", 800, 600);
 		win3D->setCameraZoom(20);
 		win3D->setCameraAzimuthDeg(-45);
 	}
@@ -376,7 +376,7 @@ void MapBuilding_ICP_Live(const string &INI_FILENAME)
 			CPose3D robotPose;
 			mapBuilder.getCurrentPoseEstimation()->getMean(robotPose);
 
-			COpenGLScene::Ptr		scene = COpenGLScene::Create();
+			COpenGLScene::Ptr		scene = std::make_shared<COpenGLScene>();
 
 			COpenGLViewport::Ptr view=scene->getViewport("main");
 			ASSERT_(view);
@@ -396,7 +396,7 @@ void MapBuilding_ICP_Live(const string &INI_FILENAME)
 			}
 
 			// The ground:
-			mrpt::opengl::CGridPlaneXY::Ptr groundPlane = mrpt::opengl::CGridPlaneXY::Create(-200,200,-200,200,0,5);
+			mrpt::opengl::CGridPlaneXY::Ptr groundPlane = std::make_shared<mrpt::opengl::CGridPlaneXY>(-200,200,-200,200,0,5);
 			groundPlane->setColor(0.4,0.4,0.4);
 			view->insert( groundPlane );
 			view_map->insert( CRenderizable::Ptr( groundPlane) ); // A copy
@@ -414,12 +414,12 @@ void MapBuilding_ICP_Live(const string &INI_FILENAME)
 
 			// The maps:
 			{
-				opengl::CSetOfObjects::Ptr obj = opengl::CSetOfObjects::Create();
+				opengl::CSetOfObjects::Ptr obj = std::make_shared<opengl::CSetOfObjects>();
 				mostLikMap->getAs3DObject( obj );
 				view->insert(obj);
 
 				// Only the point map:
-				opengl::CSetOfObjects::Ptr ptsMap = opengl::CSetOfObjects::Create();
+				opengl::CSetOfObjects::Ptr ptsMap = std::make_shared<opengl::CSetOfObjects>();
 				if (mostLikMap->m_pointsMaps.size())
 				{
 					mostLikMap->m_pointsMaps[0]->getAs3DObject(ptsMap);
@@ -448,7 +448,7 @@ void MapBuilding_ICP_Live(const string &INI_FILENAME)
 				for (size_t i=0;i<lst_current_laser_scans.size();i++)
 				{
 					// Create opengl object and load scan data from the scan observation:
-					opengl::CPlanarLaserScan::Ptr obj = opengl::CPlanarLaserScan::Create();
+					opengl::CPlanarLaserScan::Ptr obj = std::make_shared<opengl::CPlanarLaserScan>();
 					obj->setScan(*lst_current_laser_scans[i]);
 					obj->setPose( curRobotPose );
 					obj->setSurfaceColor(1.0f,0.0f,0.0f, 0.5f);

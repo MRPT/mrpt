@@ -149,7 +149,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_robustMatch(
 
 	// The PDF to estimate:
 	// ------------------------------------------------------
-	CPosePDFSOG::Ptr pdf_SOG = CPosePDFSOG::Create();
+	CPosePDFSOG::Ptr pdf_SOG = std::make_shared<CPosePDFSOG>();
 
 	// Extract features from grid-maps:
 	// ------------------------------------------------------
@@ -916,7 +916,7 @@ CPosePDF::Ptr CGridMapAligner::AlignPDF_correlation(
 
 	// The PDF to estimate:
 	// ------------------------------------------------------
-	CPosePDFGaussian::Ptr PDF = CPosePDFGaussian::Create();
+	CPosePDFGaussian::Ptr PDF = std::make_shared<CPosePDFGaussian>();
 
 	// Determine the extension to compute the correlation into:
 	// ----------------------------------------------------------

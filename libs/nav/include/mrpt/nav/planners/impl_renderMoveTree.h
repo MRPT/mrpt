@@ -32,7 +32,7 @@ void PlannerTPS_VirtualBase::renderMoveTree(
 	using std::string;
 
 	// Build a model of the vehicle shape: 
-	mrpt::opengl::CSetOfLines::Ptr gl_veh_shape = mrpt::opengl::CSetOfLines::Create();
+	mrpt::opengl::CSetOfLines::Ptr gl_veh_shape = std::make_shared<mrpt::opengl::CSetOfLines>();
 	double xyzcorners_scale; // Size of XYZ corners (scaled to vehicle dimensions)
 	{
 		gl_veh_shape->setLineWidth(options.vehicle_line_width);
@@ -77,7 +77,7 @@ void PlannerTPS_VirtualBase::renderMoveTree(
 	// "ground"
 	if (options.ground_xy_grid_frequency>0)
 	{
-		mrpt::opengl::CGridPlaneXY::Ptr obj = mrpt::opengl::CGridPlaneXY::Create(pi.world_bbox_min.x, pi.world_bbox_max.x, pi.world_bbox_min.y, pi.world_bbox_max.y, 0, options.ground_xy_grid_frequency);
+		mrpt::opengl::CGridPlaneXY::Ptr obj = std::make_shared<mrpt::opengl::CGridPlaneXY>(pi.world_bbox_min.x, pi.world_bbox_max.x, pi.world_bbox_min.y, pi.world_bbox_max.y, 0, options.ground_xy_grid_frequency);
 		obj->setColor_u8(options.color_ground_xy_grid);
 		scene.insert(obj);
 	}
@@ -189,7 +189,7 @@ void PlannerTPS_VirtualBase::renderMoveTree(
 					const mrpt::nav::CParameterizedTrajectoryGenerator * ptg = m_PTGs[node.edge_to_parent->ptg_index].get();
 
 				// Create the path shape, in relative coords to the parent node:
-				mrpt::opengl::CSetOfLines::Ptr obj = mrpt::opengl::CSetOfLines::Create();
+				mrpt::opengl::CSetOfLines::Ptr obj = std::make_shared<mrpt::opengl::CSetOfLines>();
 				obj->setPose(mrpt::poses::CPose3D(parent_state)); // Points are relative to this pose: let OpenGL to deal with the coords. composition
 
 				ptg->renderPathAsSimpleLine(node.edge_to_parent->ptg_K, *obj, 0.25f /*decimation*/, node.edge_to_parent->ptg_dist /*max path length*/);
@@ -231,7 +231,7 @@ void PlannerTPS_VirtualBase::renderMoveTree(
 	// Obstacles:
 	if (options.draw_obstacles)
 	{
-		mrpt::opengl::CPointCloud::Ptr obj = mrpt::opengl::CPointCloud::Create();
+		mrpt::opengl::CPointCloud::Ptr obj = std::make_shared<mrpt::opengl::CPointCloud>();
 
 		obj->loadFromPointsMap(&pi.obstacles_points);
 		obj->setPose(mrpt::poses::CPose3D(mrpt::poses::CPose2D(0.0, 0.0, 0.0))); // Points are relative to the origin
@@ -245,7 +245,7 @@ void PlannerTPS_VirtualBase::renderMoveTree(
 	// Draw this AFTER the global map so it's visible:
 	if (options.draw_obstacles && options.local_obs_from_nearest_pose && options.x_nearest_pose)
 	{
-		mrpt::opengl::CPointCloud::Ptr obj = mrpt::opengl::CPointCloud::Create();
+		mrpt::opengl::CPointCloud::Ptr obj = std::make_shared<mrpt::opengl::CPointCloud>();
 
 		obj->loadFromPointsMap(options.local_obs_from_nearest_pose);
 		obj->setPose(*options.x_nearest_pose); // Points are relative to this pose: let OpenGL to deal with the coords. composition
@@ -278,7 +278,7 @@ void PlannerTPS_VirtualBase::renderMoveTree(
 	// Log msg:
 	if (!options.log_msg.empty())
 	{
-		mrpt::opengl::CText3D::Ptr gl_txt = mrpt::opengl::CText3D::Create(options.log_msg, "sans", options.log_msg_scale);
+		mrpt::opengl::CText3D::Ptr gl_txt = std::make_shared<mrpt::opengl::CText3D>(options.log_msg, "sans", options.log_msg_scale);
 		gl_txt->setLocation(options.log_msg_position);
 		scene.insert(gl_txt);
 	}

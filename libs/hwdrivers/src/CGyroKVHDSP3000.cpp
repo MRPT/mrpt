@@ -66,7 +66,7 @@ void CGyroKVHDSP3000::doProcess()
 		return;
 	
 	string msg;
-	CObservationIMU::Ptr observationGyro = CObservationIMU::Create();
+	CObservationIMU::Ptr observationGyro = std::make_shared<CObservationIMU>();
 	observationGyro->timestamp = mrpt::system::now();
 
 	msg = m_serialPort->ReadString(-1,nullptr,"\n");

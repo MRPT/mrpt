@@ -193,7 +193,7 @@ CMyGLCanvasBase::CMyGLCanvasBase(wxWindow *parent, wxWindowID id,const wxPoint& 
         m_init(false),
         m_mouseLastX(0),m_mouseLastY(0)
 {
-    m_openGLScene = COpenGLScene::Create();
+    m_openGLScene = std::make_shared<COpenGLScene>();
 
     mouseClickX=0;
 	mouseClickY=0;

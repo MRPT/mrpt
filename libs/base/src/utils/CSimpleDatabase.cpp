@@ -69,7 +69,7 @@ void  CSimpleDatabase::readFromStream(mrpt::utils::CStream &in, int version)
 		{
 			in >> aux;
 
-			CSimpleDatabaseTable::Ptr newTb = CSimpleDatabaseTable::Create();
+			CSimpleDatabaseTable::Ptr newTb = std::make_shared<CSimpleDatabaseTable>();
 			in >> (*newTb);
 
 			m_tables[aux] = newTb;
@@ -222,7 +222,7 @@ string	 CSimpleDatabase::tablesName(size_t tableIndex) const
  ---------------------------------------------------------------*/
 CSimpleDatabaseTable::Ptr  CSimpleDatabase::createTable(const string &name)
 {
-	CSimpleDatabaseTable::Ptr table = CSimpleDatabaseTable::Create();
+	CSimpleDatabaseTable::Ptr table = std::make_shared<CSimpleDatabaseTable>();
 	m_tables[name] = table;
 	return table;
 }

@@ -62,6 +62,7 @@ namespace mrpt
 			NavOutput();
 		};
 
+		static CAbstractHolonomicReactiveMethod::Ptr Factory(const std::string &className) noexcept;
 
 		/** Invokes the holonomic navigation algorithm itself. See the description of the input/output structures for details on each parameter. */
 		virtual void navigate(const NavInput & ni, NavOutput &no) = 0;

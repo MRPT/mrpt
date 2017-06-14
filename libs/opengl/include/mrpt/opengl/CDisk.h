@@ -58,13 +58,11 @@ namespace mrpt
 			  */
 			bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const override;
 
-			static CDisk::Ptr Create(float radiusOut,float radiusIn,uint32_t slices=50,uint32_t loops=4);
-
 			/** Constructor
 			  */
 			CDisk():m_radiusIn(0),m_radiusOut(1),m_nSlices(50),m_nLoops(4) {}
 
-			CDisk(float rOut,float rIn,uint32_t slices,uint32_t loops):m_radiusIn(rIn),m_radiusOut(rOut),m_nSlices(slices),m_nLoops(loops)	{}
+			CDisk(float rOut,float rIn,uint32_t slices = 50, uint32_t loops = 4):m_radiusIn(rIn),m_radiusOut(rOut),m_nSlices(slices),m_nLoops(loops)	{}
 
 			/** Private, virtual destructor: only can be deleted from smart pointers */
 			virtual ~CDisk() { }

@@ -198,7 +198,7 @@ CDlgPoseEst::CDlgPoseEst(wxWindow* parent,wxWindowID id,const wxPoint& pos,const
 	pose_mat << -25, 25, 100, -0.1, 0.25, 0.5;
 	//*)
 
-	scene = mrpt::opengl::COpenGLScene::Create();
+	scene = std::make_shared<mrpt::opengl::COpenGLScene>();
 	cor   = mrpt::opengl::stock_objects::CornerXYZ();
 	cor1  = mrpt::opengl::stock_objects::CornerXYZ();
 
@@ -207,7 +207,7 @@ CDlgPoseEst::CDlgPoseEst(wxWindow* parent,wxWindowID id,const wxPoint& pos,const
 	const double        check_squares_length_X_meters = 0.005 * atof( string(edLengthX->GetValue().mb_str()).c_str() );
 	const double        check_squares_length_Y_meters = 0.005 * atof( string(edLengthY->GetValue().mb_str()).c_str() );
 
-	grid  = opengl::CGridPlaneXY::Create(0,check_size_y*check_squares_length_Y_meters, 0, check_size_x*check_squares_length_X_meters, 0, check_squares_length_Y_meters );
+	grid  = std::make_shared<opengl::CGridPlaneXY>(0,check_size_y*check_squares_length_Y_meters, 0, check_size_x*check_squares_length_X_meters, 0, check_squares_length_Y_meters );
 	scene->insert( grid );
 
 	mrpt::poses::CPose3D pose1;
@@ -338,7 +338,7 @@ void CDlgPoseEst::OntimCaptureTrigger(wxTimerEvent& event)
 		{
 			CObservation3DRangeScan::Ptr obs3D = std::dynamic_pointer_cast<CObservation3DRangeScan>(obs);
 
-			CObservationImage::Ptr obsImg = CObservationImage::Create();
+			CObservationImage::Ptr obsImg = std::make_shared<CObservationImage>();
 			obsImg->timestamp = obs3D->timestamp;
 			ASSERT_(obs3D->hasIntensityImage)
 			obsImg->image = obs3D->intensityImage;

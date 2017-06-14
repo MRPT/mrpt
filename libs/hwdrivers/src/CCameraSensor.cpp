@@ -603,7 +603,7 @@ void CCameraSensor::getNextFrame( vector<CSerializable::Ptr> & out_obs )
 
 	if (m_cap_cv)
 	{
-		obs = CObservationImage::Create();
+		obs = std::make_shared<CObservationImage>();
 		if (!m_cap_cv->getObservation( *obs ))
 		{	// Error
 			m_state = CGenericSensor::ssError;
@@ -613,7 +613,7 @@ void CCameraSensor::getNextFrame( vector<CSerializable::Ptr> & out_obs )
 	}
 	else if (m_cap_dc1394)
 	{
-		obs = CObservationImage::Create();
+		obs = std::make_shared<CObservationImage>();
 		if (!m_cap_dc1394->getObservation( *obs ))
 		{	// Error
 			m_state = CGenericSensor::ssError;
@@ -623,7 +623,7 @@ void CCameraSensor::getNextFrame( vector<CSerializable::Ptr> & out_obs )
 	}
 	else if (m_cap_swissranger)
 	{
-		obs3D = CObservation3DRangeScan::Create();
+		obs3D = std::make_shared<CObservation3DRangeScan>();
 
 		bool there_is_obs, hardware_error;
 		m_cap_swissranger->getNextObservation(*obs3D, there_is_obs, hardware_error);
@@ -637,7 +637,7 @@ void CCameraSensor::getNextFrame( vector<CSerializable::Ptr> & out_obs )
 	}
 	else if (m_cap_kinect)
 	{
-		obs3D = CObservation3DRangeScan::Create();
+		obs3D = std::make_shared<CObservation3DRangeScan>();
 
 		// Specially at start-up, there may be a delay grabbing so a few calls return false: add a timeout.
 		const mrpt::system::TTimeStamp t0 = mrpt::system::now();
@@ -663,7 +663,7 @@ void CCameraSensor::getNextFrame( vector<CSerializable::Ptr> & out_obs )
 	}
 	else if (m_cap_openni2)
 	{
-		obs3D = CObservation3DRangeScan::Create();
+		obs3D = std::make_shared<CObservation3DRangeScan>();
 		// Specially at start-up, there may be a delay grabbing so a few calls return false: add a timeout.
 		const mrpt::system::TTimeStamp t0 = mrpt::system::now();
 		double max_timeout = 3.0; // seconds
@@ -683,7 +683,7 @@ void CCameraSensor::getNextFrame( vector<CSerializable::Ptr> & out_obs )
 	}
 	else if (m_cap_bumblebee_dc1394)
 	{
-		stObs = CObservationStereoImages::Create();
+		stObs = std::make_shared<CObservationStereoImages>();
 		if (!m_cap_bumblebee_dc1394->getStereoObservation( *stObs )) {
 			m_state = CGenericSensor::ssError;
 			THROW_EXCEPTION("Error grabbing stereo images");
@@ -694,7 +694,7 @@ void CCameraSensor::getNextFrame( vector<CSerializable::Ptr> & out_obs )
 	}
 	else if (m_cap_svs)
 	{
-		stObs = CObservationStereoImages::Create();
+		stObs = std::make_shared<CObservationStereoImages>();
 
 		if(!m_cap_svs->getStereoObservation(*stObs))
 		{
@@ -708,7 +708,7 @@ void CCameraSensor::getNextFrame( vector<CSerializable::Ptr> & out_obs )
 	}
 	else if (m_cap_ffmpeg)
 	{
-		obs = CObservationImage::Create();
+		obs = std::make_shared<CObservationImage>();
 
 		if (!m_cap_ffmpeg->retrieveFrame( obs->image ))
 		{	// Error
@@ -729,7 +729,7 @@ void CCameraSensor::getNextFrame( vector<CSerializable::Ptr> & out_obs )
 		if( m_img_dir_is_stereo )
 		{
 
-			stObs = CObservationStereoImages::Create();
+			stObs = std::make_shared<CObservationStereoImages>();
 			if( !stObs->imageLeft.loadFromFile( format(auxL.c_str(), m_img_dir_counter) ) )
 			{
 				m_state = CGenericSensor::ssError;
@@ -746,7 +746,7 @@ void CCameraSensor::getNextFrame( vector<CSerializable::Ptr> & out_obs )
 		else
 		{
 			// use only left image prefix
-			obs = CObservationImage::Create();
+			obs = std::make_shared<CObservationImage>();
 			if( !obs->image.loadFromFile( format(auxL.c_str(), m_img_dir_counter++) ) )
 			{
 				m_state = CGenericSensor::ssError;
@@ -836,12 +836,12 @@ void CCameraSensor::getNextFrame( vector<CSerializable::Ptr> & out_obs )
 		bool ok;
 		if (!m_cap_flycap->isStereo()) // Mono image
 		{
-			obs = CObservationImage::Create();
+			obs = std::make_shared<CObservationImage>();
 			ok = m_cap_flycap->getObservation(*obs);
 		}
 		else // Stereo camera connected
 		{
-			stObs = CObservationStereoImages::Create();
+			stObs = std::make_shared<CObservationStereoImages>();
 			ok = m_cap_flycap->getObservation(*stObs);
 		}
 
@@ -854,7 +854,7 @@ void CCameraSensor::getNextFrame( vector<CSerializable::Ptr> & out_obs )
 	}
 	else if (m_cap_flycap_stereo_l && m_cap_flycap_stereo_r)
 	{
-		stObs = CObservationStereoImages::Create();
+		stObs = std::make_shared<CObservationStereoImages>();
 
 		CObservationImage obsL,obsR;
 
@@ -887,8 +887,8 @@ void CCameraSensor::getNextFrame( vector<CSerializable::Ptr> & out_obs )
 	}
 	else if( m_cap_duo3d )
 	{
-		stObs = CObservationStereoImages::Create();
-		obsIMU = CObservationIMU::Create();
+		stObs = std::make_shared<CObservationStereoImages>();
+		obsIMU = std::make_shared<CObservationIMU>();
 
 		bool thereIsIMG, thereIsIMU;
 		m_cap_duo3d->getObservations(*stObs,*obsIMU,thereIsIMG,thereIsIMU);
@@ -1042,7 +1042,7 @@ void CCameraSensor::getNextFrame( vector<CSerializable::Ptr> & out_obs )
 				if (stObs) caption+="-LEFT";
 				if (m_preview_decimation>1)
 					caption += format(" (decimation: %i)",m_preview_decimation);
-				m_preview_win1 = mrpt::gui::CDisplayWindow::Create(caption);
+				m_preview_win1 = std::make_shared<mrpt::gui::CDisplayWindow>(caption);
 			}
 			if (stObs && !m_preview_win2)
 			{
@@ -1050,7 +1050,7 @@ void CCameraSensor::getNextFrame( vector<CSerializable::Ptr> & out_obs )
 				if (stObs) caption+="-RIGHT";
 				if (m_preview_decimation>1)
 					caption += format(" (decimation: %i)",m_preview_decimation);
-				m_preview_win2 = mrpt::gui::CDisplayWindow::Create(caption);
+				m_preview_win2 = std::make_shared<mrpt::gui::CDisplayWindow>(caption);
 			}
 			// Monocular image or Left from a stereo pair:
 			if (m_preview_win1->isOpen())

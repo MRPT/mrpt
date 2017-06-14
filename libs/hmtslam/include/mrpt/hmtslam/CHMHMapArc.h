@@ -54,7 +54,7 @@ namespace mrpt
 			  */
 			 void  onNodeDestruction(CHMHMapNode *node);
 
-		private:
+		public:
 			/** Private constructor (see ::Create class factory)
 			  */
 			CHMHMapArc(
@@ -66,23 +66,6 @@ namespace mrpt
 			/** Alternative constructor, using pointers for convenience.
 			  */
 			CHMHMapArc(
-				CHMHMapNode::Ptr		&from,
-				CHMHMapNode::Ptr		&to,
-				const THypothesisIDSet		&hyps,
-				CHierarchicalMHMap			*parent);
-
-		public:
-			/** Constructor from node IDs
-			  */
-			static CHMHMapArc::Ptr Create(
-				const CHMHMapNode::TNodeID		&from,
-				const CHMHMapNode::TNodeID		&to,
-				const THypothesisIDSet			&hyps = THypothesisIDSet(),
-				CHierarchicalMHMap		*parent=nullptr);
-
-			/** Alternative constructor, using pointers for convenience.
-			  */
-			static CHMHMapArc::Ptr Create(
 				CHMHMapNode::Ptr		&from,
 				CHMHMapNode::Ptr		&to,
 				const THypothesisIDSet		&hyps,

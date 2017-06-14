@@ -153,7 +153,7 @@ int main(int argc, char **argv)
 							gd_est.readingsVoltage.push_back(MOXmodel_estimation);
 							gd_est.eNosePoseOnTheRobot = MOXmodel_pose;
 
-							mrpt::obs::CObservationGasSensors::Ptr obs_GDM = CObservationGasSensors::Create();
+							mrpt::obs::CObservationGasSensors::Ptr obs_GDM = std::make_shared<CObservationGasSensors>();
 							obs_GDM->sensorLabel = "GDM";
 							// modify timestamp to deal with the delay of the model
 							obs_GDM->timestamp = MOXmodel_timestamp;

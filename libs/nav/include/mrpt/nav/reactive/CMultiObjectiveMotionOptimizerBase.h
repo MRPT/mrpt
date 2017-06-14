@@ -29,7 +29,7 @@ namespace mrpt
 		{
 			DEFINE_VIRTUAL_MRPT_OBJECT(CMultiObjectiveMotionOptimizerBase)
 		public:
-			static CMultiObjectiveMotionOptimizerBase * Create(const std::string &className) noexcept; //!< Class factory from C++ class name
+			static CMultiObjectiveMotionOptimizerBase::Ptr Factory(const std::string &className) noexcept; //!< Class factory from C++ class name
 
 			struct NAV_IMPEXP TResultInfo
 			{
