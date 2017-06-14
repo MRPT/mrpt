@@ -32,6 +32,23 @@ CPoseRandomSampler::CPoseRandomSampler()
 {
 }
 
+CPoseRandomSampler::CPoseRandomSampler(const CPoseRandomSampler &o)
+{
+	if (o.m_pdf2D) m_pdf2D.reset( dynamic_cast<const CPosePDF*>(o.m_pdf2D->clone()) );
+	if (o.m_pdf3D) m_pdf3D.reset( dynamic_cast<const CPose3DPDF*>(o.m_pdf3D->clone()) );
+}
+
+CPoseRandomSampler & CPoseRandomSampler::operator =(const CPoseRandomSampler &o)
+{
+	if (&o==this) return *this;
+	m_pdf2D.reset();
+	m_pdf3D.reset();
+	if (o.m_pdf2D) m_pdf2D.reset( dynamic_cast<const CPosePDF*>(o.m_pdf2D->clone()) );
+	if (o.m_pdf3D) m_pdf3D.reset( dynamic_cast<const CPose3DPDF*>(o.m_pdf3D->clone()) );
+	return *this;
+}
+
+
 /*---------------------------------------------------------------
             clear
   ---------------------------------------------------------------*/
