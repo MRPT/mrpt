@@ -372,10 +372,12 @@ void CLevMarqGSO<GRAPH_T>::toggleOptDistanceVisualization() {
 template<class GRAPH_T>
 void CLevMarqGSO<GRAPH_T>::optimizeGraph() {
 	MRPT_START;
+	using namespace std;
 
-	this->logFmt(mrpt::utils::LVL_DEBUG,
-			"In optimizeGraph\n\tThreadID: %lu\n\tTrying to grab lock... ",
-			std::this_thread::get_id());
+	MRPT_LOG_DEBUG_STREAM(
+			"optimizeGraph:: ThreadID:" << endl << "\t" <<
+			std::this_thread::get_id() <<
+			endl << "\t" << "Trying to grab lock... ");
 
 	std::lock_guard<std::mutex> m_graph_lock(*this->m_graph_section);
 	this->_optimizeGraph();
