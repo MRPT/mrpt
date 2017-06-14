@@ -72,14 +72,11 @@ CDlgLog::CDlgLog(wxWindow* parent,wxWindowID id,const wxPoint& pos,const wxSize&
 	Connect(wxID_ANY,wxEVT_CLOSE_WINDOW,(wxObjectEventFunction)&CDlgLog::OnClose);
 	//*)
 
-
-	m_redirector = new CMyRedirector(edLog,  false, 0, true,  /* thread_safe */ true,  /*Also dump to cout*/ true );
+	m_redirector.reset(new CMyRedirector(edLog,  false, 0, true,  /* thread_safe */ true,  /*Also dump to cout*/ true ));
 }
 
 CDlgLog::~CDlgLog()
 {
-	mrpt::utils::delete_safe(m_redirector);
-
 	//(*Destroy(CDlgLog)
 	//*)
 }

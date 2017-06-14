@@ -18,6 +18,7 @@
 #include <wx/timer.h>
 //*)
 
+#include <memory> // unique_ptr
 #include <mrpt/gui/CMyRedirector.h>
 
 
@@ -45,7 +46,7 @@ class CDlgLog: public wxDialog
 		//*)
 
 
-		CMyRedirector  *m_redirector;
+		std::unique_ptr<CMyRedirector> m_redirector;
 
 	private:
 

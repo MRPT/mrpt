@@ -103,8 +103,7 @@ BEGIN_EVENT_TABLE(holonomic_navigator_demoFrame,wxFrame)
     //*)
 END_EVENT_TABLE()
 
-holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent,wxWindowID id) :
-        m_holonomicMethod   ( nullptr ),
+holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent,wxWindowID id)
 	m_gridMap(),
 	m_targetPoint(-5,-7),
 	m_robotPose(0,0,0),
@@ -541,11 +540,11 @@ void holonomic_navigator_demoFrame::reinitSimulator()
 	WX_START_TRY
 
 	// Delete old & build new navigator:
-	mrpt::utils::delete_safe(m_holonomicMethod);
+	m_holonomicMethod.reset();
 	switch (rbHoloMethod->GetSelection())
 	{
-	case 0: m_holonomicMethod = new mrpt::nav::CHolonomicVFF(); break;
-	case 1: m_holonomicMethod = new mrpt::nav::CHolonomicND(); break;
+	case 0: m_holonomicMethod.reset(new mrpt::nav::CHolonomicVFF); break;
+	case 1: m_holonomicMethod.reset(new mrpt::nav::CHolonomicND); break;
 	default:
 		throw std::runtime_error("Invalid holonomic method selected!");
 	};
@@ -593,7 +592,7 @@ void holonomic_navigator_demoFrame::simulateOneStep(double time_step)
 	CAbstractHolonomicReactiveMethod::NavOutput no;
 	CAbstractHolonomicReactiveMethod::NavInput ni;
 	ni.targets.push_back(relTargetPose);
-	
+
 	ni.obstacles.resize(simulatedScan.getScanSize());
 	for (unsigned int i = 0; i < ni.obstacles.size(); i++)
 		ni.obstacles[i] = simulatedScan.getScanRange(i);

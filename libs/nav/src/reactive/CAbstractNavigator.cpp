@@ -88,7 +88,6 @@ CAbstractNavigator::CAbstractNavigator(CRobot2NavInterface &react_iterf_impl) :
 	m_lastNavigationState ( IDLE ),
 	m_navigationEndEventSent(false),
 	m_navigationState     ( IDLE ),
-	m_navigationParams    ( nullptr ),
 	m_robot               ( react_iterf_impl ),
 	m_frame_tf            (nullptr),
 	m_curPoseVel          (),
@@ -105,7 +104,6 @@ CAbstractNavigator::CAbstractNavigator(CRobot2NavInterface &react_iterf_impl) :
 // Dtor:
 CAbstractNavigator::~CAbstractNavigator()
 {
-	mrpt::utils::delete_safe( m_navigationParams );
 }
 
 /*---------------------------------------------------------------
@@ -252,9 +250,8 @@ void CAbstractNavigator::navigate(const CAbstractNavigator::TNavigationParams *p
 	m_navigationEndEventSent = false;
 
 	// Copy data:
-	mrpt::utils::delete_safe(m_navigationParams);
-	m_navigationParams = dynamic_cast<CAbstractNavigator::TNavigationParams *>(params->clone());
-	ASSERT_(m_navigationParams!=nullptr);
+	m_navigationParams.reset( dynamic_cast<CAbstractNavigator::TNavigationParams *>(params->clone()) );
+	ASSERT_(m_navigationParams);
 
 	// Transform: relative -> absolute, if needed.
 	if ( m_navigationParams->target.targetIsRelative )
@@ -360,7 +357,7 @@ void CAbstractNavigator::TAbstractNavigatorParams::loadFromConfigFile(const mrpt
 {
 	MRPT_LOAD_CONFIG_VAR_CS(dist_to_target_for_sending_event, double);
 	MRPT_LOAD_CONFIG_VAR_CS(alarm_seems_not_approaching_target_timeout, double);
-	MRPT_LOAD_CONFIG_VAR_CS(dist_check_target_is_blocked, double);	
+	MRPT_LOAD_CONFIG_VAR_CS(dist_check_target_is_blocked, double);
 }
 void CAbstractNavigator::TAbstractNavigatorParams::saveToConfigFile(mrpt::utils::CConfigFileBase &c, const std::string &s) const
 {

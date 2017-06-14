@@ -102,8 +102,7 @@ BEGIN_EVENT_TABLE(hmt_slam_guiFrame,wxFrame)
     //*)
 END_EVENT_TABLE()
 
-hmt_slam_guiFrame::hmt_slam_guiFrame(wxWindow* parent,wxWindowID id)  :
-        m_hmtslam(nullptr)
+hmt_slam_guiFrame::hmt_slam_guiFrame(wxWindow* parent,wxWindowID id)
 {
 	// Load my custom icons:
 #if wxCHECK_VERSION(2, 8, 0)
@@ -451,7 +450,7 @@ hmt_slam_guiFrame::hmt_slam_guiFrame(wxWindow* parent,wxWindowID id)  :
 
 	cout << "Initializing HMT-SLAM visual application...\n";
 
-	m_hmtslam = new CHMTSLAM();
+	m_hmtslam.reset(new CHMTSLAM());
 
 
 	cout << "Initializing HMT-SLAM visual application DONE.\n";
@@ -475,8 +474,6 @@ hmt_slam_guiFrame::~hmt_slam_guiFrame()
 	// Stop thread:
 	m_thread_in_queue.push(new TThreadMsg(OP_QUIT_THREAD));
 	m_hThreadHMTSLAM.join();
-
-	delete_safe(m_hmtslam);
 
     //(*Destroy(hmt_slam_guiFrame)
     //*)

@@ -81,20 +81,6 @@ CCameraSensor::CCameraSensor() :
 	m_img_dir_counter		(0),
 	// ---
 	m_external_images_own_thread(false),
-	m_cap_cv             (nullptr),
-	m_cap_dc1394         (nullptr),
-	m_cap_flycap         (nullptr),
-	m_cap_flycap_stereo_l(nullptr),
-	m_cap_flycap_stereo_r(nullptr),
-	m_cap_bumblebee_dc1394(nullptr),
-	m_cap_svs            (nullptr),
-	m_cap_ffmpeg         (nullptr),
-	m_cap_rawlog         (nullptr),
-	m_cap_swissranger    (nullptr),
-	m_cap_kinect         (nullptr),
-	m_cap_openni2        (nullptr),
-	m_cap_image_dir		(nullptr),
-	m_cap_duo3d			(nullptr),
 	m_camera_grab_decimator (0),
 	m_camera_grab_decimator_counter(0),
 	m_preview_counter	(0),
@@ -134,7 +120,7 @@ void CCameraSensor::initialize()
 		}
 
 		cout << format("[CCameraSensor::initialize] opencv camera, index: %i type: %i...\n", int(m_cv_camera_index),idx);
-		m_cap_cv = new CImageGrabber_OpenCV( m_cv_camera_index, TCameraType(idx), m_cv_options );
+		m_cap_cv.reset(new CImageGrabber_OpenCV( m_cv_camera_index, TCameraType(idx), m_cv_options ));
 
 		if (!m_cap_cv->isOpen())
 		{
@@ -146,7 +132,7 @@ void CCameraSensor::initialize()
 	{
 		//m_cap_dc1394
 		cout << format("[CCameraSensor::initialize] dc1394 camera, GUID: 0x%lX  UNIT:%d...\n", long(m_dc1394_camera_guid),m_dc1394_camera_unit);
-		m_cap_dc1394 = new CImageGrabber_dc1394( m_dc1394_camera_guid, m_dc1394_camera_unit, m_dc1394_options, true /* verbose */ );
+		m_cap_dc1394.reset(new CImageGrabber_dc1394( m_dc1394_camera_guid, m_dc1394_camera_unit, m_dc1394_options, true /* verbose */ ));
 
 		if (!m_cap_dc1394->isOpen())
 		{
@@ -157,18 +143,18 @@ void CCameraSensor::initialize()
 	else if (m_grabber_type=="bumblebee_dc1394")
 	{
 		cout << format("[CCameraSensor::initialize] bumblebee_libdc1394 camera: GUID:0x%08X Index:%i FPS:%f...\n", (unsigned int)( m_bumblebee_dc1394_camera_guid ), m_bumblebee_dc1394_camera_unit, m_bumblebee_dc1394_framerate );
-		m_cap_bumblebee_dc1394 = new CStereoGrabber_Bumblebee_libdc1394( m_bumblebee_dc1394_camera_guid,m_bumblebee_dc1394_camera_unit, m_bumblebee_dc1394_framerate );
+		m_cap_bumblebee_dc1394.reset(new CStereoGrabber_Bumblebee_libdc1394( m_bumblebee_dc1394_camera_guid,m_bumblebee_dc1394_camera_unit, m_bumblebee_dc1394_framerate ));
 	}
 	else if(m_grabber_type=="svs")
 	{
 		cout << format("[CCameraSensor::initialize] SVS camera: %u...\n", (unsigned int)( m_svs_camera_index ) );
-		m_cap_svs = new CStereoGrabber_SVS( m_svs_camera_index, m_svs_options );
+		m_cap_svs.reset(new CStereoGrabber_SVS( m_svs_camera_index, m_svs_options ));
 	}
 	else if (m_grabber_type=="ffmpeg")
 	{
 		//m_cap_ffmpeg
 		cout << format("[CCameraSensor::initialize] FFmpeg stream: %s...\n", m_ffmpeg_url.c_str() );
-		m_cap_ffmpeg = new CFFMPEG_InputStream();
+		m_cap_ffmpeg.reset(new CFFMPEG_InputStream());
 
 		if (!m_cap_ffmpeg->openURL( m_ffmpeg_url, m_capture_grayscale ))
 		{
@@ -179,7 +165,7 @@ void CCameraSensor::initialize()
 	else if (m_grabber_type=="swissranger")
 	{
 		cout << "[CCameraSensor::initialize] SwissRanger camera...\n";
-		m_cap_swissranger = new CSwissRanger3DCamera();
+		m_cap_swissranger.reset(new CSwissRanger3DCamera());
 
 		m_cap_swissranger->setOpenFromUSB( m_sr_open_from_usb );
 		m_cap_swissranger->setOpenIPAddress(m_sr_ip_address);
@@ -205,7 +191,7 @@ void CCameraSensor::initialize()
 	else if (m_grabber_type=="kinect")
 	{
 		cout << "[CCameraSensor::initialize] Kinect camera...\n";
-		m_cap_kinect = new CKinect();
+		m_cap_kinect.reset(new CKinect());
 		m_cap_kinect->enableGrab3DPoints( m_kinect_save_3d );
 		m_cap_kinect->enableGrabDepth ( m_kinect_save_range_img );
 		m_cap_kinect->enableGrabRGB( m_kinect_save_intensity_img );
@@ -227,7 +213,7 @@ void CCameraSensor::initialize()
 	else if (m_grabber_type=="openni2")
 	{
 		cout << "[CCameraSensor::initialize] OpenNI2 sensor...\n";
-        m_cap_openni2 = new COpenNI2Sensor();
+		m_cap_openni2.reset(new COpenNI2Sensor());
 		m_cap_openni2->enableGrab3DPoints( m_kinect_save_3d ); // It uses the same options as the Kinect grabber
 		m_cap_openni2->enableGrabDepth ( m_kinect_save_range_img );
 		m_cap_openni2->enableGrabRGB( m_kinect_save_intensity_img );
@@ -249,13 +235,13 @@ void CCameraSensor::initialize()
 	{
 		//m_cap_image_dir
 		cout << format("[CCameraSensor::initialize] Image dir: %s...\n", m_img_dir_url.c_str() );
-		m_cap_image_dir = new std::string();
+		m_cap_image_dir.reset(new std::string());
 	}
 	else if (m_grabber_type=="rawlog")
 	{
 		//m_cap_rawlog
 		cout << format("[CCameraSensor::initialize] Rawlog stream: %s...\n", m_rawlog_file.c_str() );
-		m_cap_rawlog = new CFileGZInputStream();
+		m_cap_rawlog.reset(new CFileGZInputStream());
 
 		if (! m_cap_rawlog->open(m_rawlog_file) )
 		{
@@ -272,7 +258,7 @@ void CCameraSensor::initialize()
 		try
 		{
 			// Open camera and start capture:
-			m_cap_flycap = new CImageGrabber_FlyCapture2( m_flycap_options );
+			m_cap_flycap.reset(new CImageGrabber_FlyCapture2( m_flycap_options ));
 		} catch (std::exception &)
 		{
 			m_state = CGenericSensor::ssError;
@@ -285,8 +271,8 @@ void CCameraSensor::initialize()
 		try
 		{
 			// Open camera and start capture:
-			m_cap_flycap_stereo_l = new CImageGrabber_FlyCapture2();
-			m_cap_flycap_stereo_r = new CImageGrabber_FlyCapture2();
+			m_cap_flycap_stereo_l.reset(new CImageGrabber_FlyCapture2());
+			m_cap_flycap_stereo_r.reset(CImageGrabber_FlyCapture2());
 
 			cout << "[CCameraSensor::initialize] PGR FlyCapture2 stereo camera: Openning LEFT camera...\n";
 			m_cap_flycap_stereo_l->open(m_flycap_stereo_options[0], false /* don't start grabbing */ );
@@ -322,7 +308,7 @@ void CCameraSensor::initialize()
 		// Open it:
 		try
 		{
-			m_cap_duo3d = new CDUO3DCamera( m_duo3d_options );		
+			m_cap_duo3d.reset(new CDUO3DCamera( m_duo3d_options ));
 		} catch (std::exception &e)
 		{
 			m_state = CGenericSensor::ssError;
@@ -360,19 +346,19 @@ void CCameraSensor::initialize()
    ----------------------------------------------------- */
 void CCameraSensor::close()
 {
-	delete_safe(m_cap_cv);
-	delete_safe(m_cap_dc1394);
-	delete_safe(m_cap_flycap);
-	delete_safe(m_cap_flycap_stereo_l);
-	delete_safe(m_cap_flycap_stereo_r);
-	delete_safe(m_cap_bumblebee_dc1394);
-	delete_safe(m_cap_ffmpeg);
-	delete_safe(m_cap_rawlog);
-	delete_safe(m_cap_swissranger);
-	delete_safe(m_cap_kinect);
-	delete_safe(m_cap_svs);
-	delete_safe(m_cap_image_dir);
-	delete_safe(m_cap_duo3d);
+	m_cap_cv.reset();
+	m_cap_dc1394.reset();
+	m_cap_flycap.reset();
+	m_cap_flycap_stereo_l.reset();
+	m_cap_flycap_stereo_r.reset();
+	m_cap_bumblebee_dc1394.reset();
+	m_cap_ffmpeg.reset();
+	m_cap_rawlog.reset();
+	m_cap_swissranger.reset();
+	m_cap_kinect.reset();
+	m_cap_svs.reset();
+	m_cap_image_dir.reset();
+	m_cap_duo3d.reset();
 
 	m_state = CGenericSensor::ssInitializing;
 
@@ -735,7 +721,7 @@ void CCameraSensor::getNextFrame( vector<CSerializable::Ptr> & out_obs )
 				m_state = CGenericSensor::ssError;
 				THROW_EXCEPTION("Error reading images from directory");
 			}
-			std::string auxR = format( "%s/%s", m_img_dir_url.c_str(), m_img_dir_right_format.c_str() );			
+			std::string auxR = format( "%s/%s", m_img_dir_url.c_str(), m_img_dir_right_format.c_str() );
 			if( !stObs->imageRight.loadFromFile( format(auxR.c_str(), m_img_dir_counter++)) )
 			{
 				m_state = CGenericSensor::ssError;
@@ -1112,7 +1098,7 @@ void CCameraSensor::getNextFrame( vector<CSerializable::Ptr> & out_obs )
 
 	if (delayed_insertion_in_obs_queue)
 	{
-		if( m_cap_duo3d && m_cap_duo3d->captureIMUIsSet() && obsIMU )	
+		if( m_cap_duo3d && m_cap_duo3d->captureIMUIsSet() && obsIMU )
 			out_obs.push_back( CObservation::Ptr(obsIMU) );
 	}
 	else
@@ -1120,7 +1106,7 @@ void CCameraSensor::getNextFrame( vector<CSerializable::Ptr> & out_obs )
 		if( stObs )		out_obs.push_back( CObservation::Ptr(stObs) );
 		if( obs )		out_obs.push_back( CObservation::Ptr(obs) );
 		if( obs3D )		out_obs.push_back( CObservation::Ptr(obs3D) );
-	} 
+	}
 	return;
 }
 
@@ -1221,7 +1207,7 @@ CCameraSensor::Ptr mrpt::hwdrivers::prepareVideoSourceFromUserSelection()
 	if (!future.get().accepted_by_user)
 		return CCameraSensor::Ptr();
 
-	CCameraSensor::Ptr cam = CCameraSensor::Ptr(new CCameraSensor);
+	CCameraSensor::Ptr cam = std::make_shared<CCameraSensor>();
 	cam->loadConfig(future.get().selectedConfig,"CONFIG");
 	cam->initialize();	// This will raise an exception if neccesary
 
@@ -1244,7 +1230,7 @@ CCameraSensor::Ptr mrpt::hwdrivers::prepareVideoSourceFromPanel(void *_panel)
 		writeConfigFromVideoSourcePanel(_panel,"CONFIG",&cfg);
 
 		// Try to open the camera:
-		CCameraSensor::Ptr video = CCameraSensor::Ptr( new CCameraSensor());
+		CCameraSensor::Ptr video = std::make_shared<CCameraSensor>();
 		video->loadConfig(cfg,"CONFIG");
 
 		// This will raise an exception if neccesary

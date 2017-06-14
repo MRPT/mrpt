@@ -14,6 +14,7 @@
 
 #include <mrpt/utils.h>
 #include <mrpt/system/filesystem.h>
+#include <memory>
 
 using namespace std;
 using namespace mrpt;
@@ -33,7 +34,7 @@ void hmt_slam_guiFrame::thread_HMTSLAM()
 
 		bool is_running_slam = false;
 
-                CFileGZInputStream  *fInRawlog = nullptr;
+		std::unique_ptr<CFileGZInputStream> fInRawlog;
 		std::string 		OUT_DIR="./HMTSLAM_OUT";
 		unsigned int		rawlogEntry = 0; // step = 0;
 
@@ -72,7 +73,7 @@ void hmt_slam_guiFrame::thread_HMTSLAM()
 				if (is_running_slam && !old_is_running)
 				{
 					// This is the FIRST iteration:
-					if (fInRawlog) delete_safe(fInRawlog);
+					fInRawlog.reset();
 
 					// From the text block:
 					//CConfigFileMemory  cfg( std::string(edRestParams->GetValue().mb_str()) );
@@ -84,7 +85,7 @@ void hmt_slam_guiFrame::thread_HMTSLAM()
 					}
 					else
 					{
-						fInRawlog = new CFileGZInputStream(fil);
+						fInRawlog.reset(new CFileGZInputStream(fil));
 						m_hmtslam->logFmt(mrpt::utils::LVL_INFO,"RAWLOG FILE: \n%s\n",fil.c_str());
 						OUT_DIR = "HMT_SLAM_OUTPUT"; //cfg.read_string("HMT-SLAM","LOG_OUTPUT_DIR", "HMT_SLAM_OUTPUT");
 
@@ -99,7 +100,7 @@ void hmt_slam_guiFrame::thread_HMTSLAM()
 				} // end first iteration
 
 				if (!is_running_slam && fInRawlog)
-					delete_safe(fInRawlog);
+					fInRawlog.reset();
 
 				if (is_running_slam)
 				{
@@ -156,10 +157,6 @@ void hmt_slam_guiFrame::thread_HMTSLAM()
 			}
 
 		} // while running
-
-		if (fInRawlog)
-			delete_safe(fInRawlog);
-
 	}
 	catch (std::exception &e)
 	{

@@ -30,19 +30,12 @@ IMPLEMENTS_GENERIC_SENSOR(CEnoseModular,mrpt::hwdrivers)
 CEnoseModular::CEnoseModular( ) :
 	m_usbSerialNumber 	("ENOSE002"),
 	m_COM_port			(),
-	m_COM_baud			(115200),
-	m_stream_FTDI		(nullptr),
-	m_stream_SERIAL		(nullptr)
+	m_COM_baud			(115200)
 {
 	m_sensorLabel = "EnoseModular";
 	first_reading = true;
 }
 
-CEnoseModular::~CEnoseModular( )
-{
-	delete_safe(m_stream_FTDI);
-	delete_safe(m_stream_SERIAL);
-}
 
 /*-------------------------------------------------------------
 					loadConfig_sensorSpecific
@@ -77,8 +70,8 @@ CStream *CEnoseModular::checkConnectionAndConnect()
 	if (!m_stream_FTDI && !m_stream_SERIAL)
 	{
 		if (!m_COM_port.empty())
-				m_stream_SERIAL = new CSerialPort();
-		else 	m_stream_FTDI = new CInterfaceFTDI();
+				m_stream_SERIAL.reset(new CSerialPort);
+		else 	m_stream_FTDI.reset(new CInterfaceFTDI);
 	}
 
 
@@ -110,7 +103,7 @@ CStream *CEnoseModular::checkConnectionAndConnect()
 		try
 		{
 			m_stream_SERIAL->open(m_COM_port);
-			m_stream_SERIAL->setConfig(m_COM_baud);			
+			m_stream_SERIAL->setConfig(m_COM_baud);
 			//m_stream_SERIAL->setTimeouts(25,1,100, 1,20);
 			m_stream_SERIAL->setTimeouts(50,1,100, 1,20);
 			std::this_thread::sleep_for(10ms);
@@ -136,27 +129,27 @@ bool CEnoseModular::getObservation( mrpt::obs::CObservationGasSensors &obs )
 	{
 		// Connected?
 		CStream *comms = checkConnectionAndConnect();
-		
+
 		if (!comms)
 		{
 			cout << "ERORR: Problem connecting to Device." << endl;
 			return false;
 		}
 
-		
+
 		CObservationGasSensors::TObservationENose	newRead;
 		obs.m_readings.clear();
 
 		//---------------------------- Enose Modular FRAME --------------------------------------------------
 		// Wait for e-nose frame:	<0x69><0x91><lenght><body><0x96> "Bytes"
 		// Where <body> = <temp>[<SensorID_H><SensorID_L><Sensor_Value>] x N_senosrs
-		// Modular-nose provides a 4B+body frame lenght 
+		// Modular-nose provides a 4B+body frame lenght
 
 		mrpt::utils::CMessage		msg;
 		bool time_out = false;
 		mrpt::system::TTimeStamp t1 = mrpt::system::getCurrentLocalTime();
 		double time_out_val = 1;	//seconds
-		
+
 		while (!comms->receiveMessage( msg ) && !time_out)
 		{
 			if (mrpt::system::timeDifference(t1,mrpt::system::getCurrentLocalTime()) > time_out_val )
@@ -178,7 +171,7 @@ bool CEnoseModular::getObservation( mrpt::obs::CObservationGasSensors &obs )
 			// Prepare the Enose observation
 			newRead.sensorTypes.clear();
 			newRead.readingsVoltage.clear();
-			newRead.hasTemperature = true;			
+			newRead.hasTemperature = true;
 			newRead.isActive = true;
 
 			// Do we have the sensor position?
@@ -206,32 +199,32 @@ bool CEnoseModular::getObservation( mrpt::obs::CObservationGasSensors &obs )
 				//memcpy( &sensorType, &msg.content[idx*3+1], 2*sizeof(msg.content[0]) );
 				memcpy( &sensorType_temp, &msg.content[idx*3+1], sizeof(msg.content[0]) );
 				int sensorType = sensorType_temp << (8) ;
-				memcpy( &sensorType, &msg.content[idx*3+2], sizeof(msg.content[0]) );				
-								
+				memcpy( &sensorType, &msg.content[idx*3+2], sizeof(msg.content[0]) );
+
 				//Add sensor Type (ID)
 				newRead.sensorTypes.push_back(sensorType);
 
 				// Transform from ADC value[8bits] to [0-0.6] volt range:
 				newRead.readingsVoltage.push_back( ( msg.content[idx*3+3] * 0.6f) / 255.0f  );
-				
+
 			}
-			
+
 			//Purge buffers
 			purgeBuffers();
 
 			// Add data to observation:
 			obs.m_readings.push_back( newRead );
 			obs.sensorLabel = m_sensorLabel;
-			obs.timestamp = mrpt::system::getCurrentTime();			
+			obs.timestamp = mrpt::system::getCurrentTime();
 			return !obs.m_readings.empty();	// Done OK!
 
-		} 
+		}
 		else
 		{
 			cout << "Message was empty" << endl;
 			return false;
 		}
-		
+
 	}
 	catch(exception &e)
 	{
@@ -275,16 +268,15 @@ void CEnoseModular::doProcess()
 -------------------------------------------------------------*/
 void CEnoseModular::purgeBuffers()
 {
-	if (!checkConnectionAndConnect()) 
+	if (!checkConnectionAndConnect())
 		return;
 
 	if (m_stream_FTDI)
 	{	// FTDI pipe
-		m_stream_FTDI->Purge();		
+		m_stream_FTDI->Purge();
 	}
 	else
 	{	//Serial pipe
 		m_stream_SERIAL->purgeBuffers();
 	}
 }
-

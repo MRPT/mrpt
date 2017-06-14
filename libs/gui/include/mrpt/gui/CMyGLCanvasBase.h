@@ -14,6 +14,7 @@
 #include <mrpt/opengl/CTextMessageCapable.h>
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/gui/link_pragmas.h>
+#include <memory> // unique_ptr
 
 namespace mrpt { namespace gui { } }  // At least declare the existence of the namespace mrpt::gui even if we don't have wxWidgets libs
 
@@ -44,8 +45,8 @@ namespace mrpt { namespace gui { } }  // At least declare the existence of the n
 #include <wx/dcclient.h>
 
 // To avoid conflicts between Eigen & X11 headers
-#ifdef Success 
-#	undef Success 
+#ifdef Success
+#	undef Success
 #endif
 
 
@@ -58,7 +59,7 @@ namespace mrpt
 		  * \ingroup mrpt_gui_grp
 		  */
 		class GUI_IMPEXP CMyGLCanvasBase :
-			public wxGLCanvas, 
+			public wxGLCanvas,
 			public mrpt::opengl::CTextMessageCapable
 		{
 		public:
@@ -158,7 +159,7 @@ namespace mrpt
 			mrpt::opengl::COpenGLScene::Ptr		m_openGLScene;
 
 		protected:
-			wxGLContext *m_gl_context;
+			std::unique_ptr<wxGLContext> m_gl_context;
 			bool   m_init;
 
 			int 	m_mouseLastX,m_mouseLastY;
@@ -184,4 +185,3 @@ namespace mrpt
 #endif		// wxUSE_GLCANVAS
 #endif 		// MRPT_HAS_WXWIDGETS
 #endif 		// CMyGLCanvas_H
-

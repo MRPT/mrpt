@@ -15,31 +15,32 @@
 #include <mrpt/poses/CPose3DPDF.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/math/math_frwds.h>
+#include <memory> // unique_ptr
 
 namespace mrpt
 {
     namespace poses
     {
-        /** An efficient generator of random samples drawn from a given 2D (CPosePDF) or 3D (CPose3DPDF) pose probability density function (pdf).
-         * This class keeps an internal state which speeds up the sequential generation of samples. It can manage
-         *  any kind of pose PDF.
+		/** An efficient generator of random samples drawn from a given 2D (CPosePDF) or 3D (CPose3DPDF) pose probability density function (pdf).
+		 * This class keeps an internal state which speeds up the sequential generation of samples. It can manage
+		 *  any kind of pose PDF.
 		 *
-         * Use with CPoseRandomSampler::setPosePDF, then CPoseRandomSampler::drawSample to draw values.
+		 * Use with CPoseRandomSampler::setPosePDF, then CPoseRandomSampler::drawSample to draw values.
 		 *
-         * Notice that you can pass a 2D or 3D pose PDF, then ask for a 2D or 3D sample. This class always returns
-         *  the kind of sample you ask it for, but will skip missing terms or fill out with zeroes as required.
+		 * Notice that you can pass a 2D or 3D pose PDF, then ask for a 2D or 3D sample. This class always returns
+		 *  the kind of sample you ask it for, but will skip missing terms or fill out with zeroes as required.
 		 * Specifically, when sampling 3D poses from a 2D pose pdf, this class will be smart enought to draw only
 		 *  the 3 required dimensions, avoiding a waste of time with the other 3 missing components.
-         *
+		 *
 		 * \ingroup poses_pdf_grp
-         * \sa CPosePDF, CPose3DPDF
-         */
-        class BASE_IMPEXP CPoseRandomSampler
-        {
-        protected:
+		 * \sa CPosePDF, CPose3DPDF
+		 */
+		class BASE_IMPEXP CPoseRandomSampler
+		{
+		protected:
 			// Only ONE of these can be not-NULL at a time.
-			CPosePDF*   m_pdf2D;        //!< A local copy of the PDF
-			CPose3DPDF* m_pdf3D;        //!< A local copy of the PDF
+			std::unique_ptr<const CPosePDF>   m_pdf2D;        //!< A local copy of the PDF
+			std::unique_ptr<const CPose3DPDF> m_pdf3D;        //!< A local copy of the PDF
 
 			mrpt::math::CMatrixDouble33 m_fastdraw_gauss_Z3;
 			mrpt::math::CMatrixDouble66 m_fastdraw_gauss_Z6;
@@ -54,9 +55,6 @@ namespace mrpt
         public:
 			/** Default constructor */
 			CPoseRandomSampler();
-
-			/** Destructor */
-			~CPoseRandomSampler();
 
 			/** This method must be called to select the PDF from which to draw samples.
 			  * \sa drawSample

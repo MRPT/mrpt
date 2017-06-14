@@ -16,6 +16,7 @@
 
 #include <mrpt/obs/CObservationGasSensors.h>
 #include <mrpt/utils/CConfigFileBase.h>
+#include <memory> // unique_ptr
 
 
 namespace mrpt
@@ -66,10 +67,8 @@ namespace mrpt
 
 
 			// Only one of these two streams will be !=nullptr and open for each specific eNose board!
-			/**  FTDI comms pipe (when not in serial port mode) */
-			CInterfaceFTDI	*m_stream_FTDI;
-			/**  Serial port comms */
-			CSerialPort		*m_stream_SERIAL;
+			std::unique_ptr<CInterfaceFTDI> m_stream_FTDI; //!< FTDI comms pipe (when not in serial port mode)
+			std::unique_ptr<CSerialPort> m_stream_SERIAL; //!< Serial port comms
 
 			/** The 3D pose of the master + N slave eNoses on the robot (meters & radians) */
 			std::vector<float>	enose_poses_x,enose_poses_y,enose_poses_z,enose_poses_yaw,enose_poses_pitch,enose_poses_roll;
@@ -90,10 +89,6 @@ namespace mrpt
 			  *  The constructor will try to open the device. You can check if it failed calling "isOpen()".
 			  */
 			CBoardENoses( );
-
-			/** Destructor
-			  */
-			virtual ~CBoardENoses();
 
 			/** Set the active chamber (afected by poluted air) on the device
 			  * \return true on success, false on communications errors or device not found.
@@ -139,5 +134,3 @@ namespace mrpt
 
 
 #endif
-
-
