@@ -78,7 +78,7 @@ CStream *CEnoseModular::checkConnectionAndConnect()
 	if (m_stream_FTDI)
 	{	// FTDI pipe ==================
 		if (m_stream_FTDI->isOpen())
-			return m_stream_FTDI;
+			return m_stream_FTDI.get();
 		try
 		{
 			m_stream_FTDI->OpenBySerialNumber( m_usbSerialNumber );
@@ -87,7 +87,7 @@ CStream *CEnoseModular::checkConnectionAndConnect()
 			std::this_thread::sleep_for(10ms);
 			m_stream_FTDI->SetLatencyTimer(1);
 			m_stream_FTDI->SetTimeouts(10,100);
-			return m_stream_FTDI;
+			return m_stream_FTDI.get();
 		}
 		catch(...)
 		{	// Error opening device:
@@ -99,7 +99,7 @@ CStream *CEnoseModular::checkConnectionAndConnect()
 	{	// Serial pipe ==================
 		ASSERT_(m_stream_SERIAL)
 		if (m_stream_SERIAL->isOpen())
-			return m_stream_SERIAL;
+			return m_stream_SERIAL.get();
 		try
 		{
 			m_stream_SERIAL->open(m_COM_port);
@@ -109,7 +109,7 @@ CStream *CEnoseModular::checkConnectionAndConnect()
 			std::this_thread::sleep_for(10ms);
 			m_stream_SERIAL->purgeBuffers();
 			std::this_thread::sleep_for(10ms);
-			return m_stream_SERIAL;
+			return m_stream_SERIAL.get();
 		}
 		catch(...)
 		{	// Error opening device:

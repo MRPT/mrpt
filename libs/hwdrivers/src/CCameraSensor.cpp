@@ -272,7 +272,7 @@ void CCameraSensor::initialize()
 		{
 			// Open camera and start capture:
 			m_cap_flycap_stereo_l.reset(new CImageGrabber_FlyCapture2());
-			m_cap_flycap_stereo_r.reset(CImageGrabber_FlyCapture2());
+			m_cap_flycap_stereo_r.reset(new CImageGrabber_FlyCapture2());
 
 			cout << "[CCameraSensor::initialize] PGR FlyCapture2 stereo camera: Openning LEFT camera...\n";
 			m_cap_flycap_stereo_l->open(m_flycap_stereo_options[0], false /* don't start grabbing */ );
@@ -283,9 +283,10 @@ void CCameraSensor::initialize()
 			// Now, start grabbing "simultaneously":
 			if (m_fcs_start_synch_capture)
 			{
-				const CImageGrabber_FlyCapture2 *cams[2];
-				cams[0] = m_cap_flycap_stereo_l;
-				cams[1] = m_cap_flycap_stereo_r;
+				const CImageGrabber_FlyCapture2 *cams[2] = {
+					m_cap_flycap_stereo_l.get(),
+					m_cap_flycap_stereo_r.get()
+				};
 				CImageGrabber_FlyCapture2::startSyncCapture(2,cams);
 			}
 			else

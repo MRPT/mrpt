@@ -259,7 +259,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		// Semantic is: any of the target is good. If several targets are reachable, head to latest one.
 		std::vector<CAbstractNavigator::TargetInfo>  targets;
 		{
-			auto p = dynamic_cast<const CWaypointsNavigator::TNavigationParamsWaypoints*>(m_navigationParams);
+			auto p = dynamic_cast<const CWaypointsNavigator::TNavigationParamsWaypoints*>(m_navigationParams.get());
 			if (p && !p->multiple_targets.empty())
 			{
 				targets = p->multiple_targets;

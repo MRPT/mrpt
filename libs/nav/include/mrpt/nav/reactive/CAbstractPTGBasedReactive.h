@@ -208,7 +208,7 @@ namespace mrpt
 		virtual void  performNavigationStep() override;
 
 		std::vector<CAbstractHolonomicReactiveMethod::Ptr>  m_holonomicMethod;   //!< The holonomic navigation algorithm (one object per PTG, so internal states are maintained)
-		unique_ptr<mrpt::utils::CStream>  m_logFile;
+		std::unique_ptr<mrpt::utils::CStream>  m_logFile;
 		mrpt::utils::CStream  *m_prev_logfile;         //!< The current log file stream, or nullptr if not being used
 		bool                   m_enableKeepLogRecords; //!< See enableKeepLogRecords
 		CLogFileRecord lastLogRecord;  //!< The last log

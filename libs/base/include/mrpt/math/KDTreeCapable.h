@@ -75,9 +75,6 @@ namespace mrpt
 			/// Constructor
 			inline KDTreeCapable() : m_kdtree_is_uptodate(false)  { }
 
-			/// Destructor (nothing needed to do here)
-			inline ~KDTreeCapable() { }
-
 			/// CRTP helper method
 			inline const Derived& derived() const { return *static_cast<const Derived*>(this); }
 			/// CRTP helper method
@@ -677,16 +674,17 @@ namespace mrpt
 			template <int _DIM = -1>
 			struct TKDTreeDataHolder
 			{
+				inline TKDTreeDataHolder() {}
 				/** Copy constructor: It actually does NOT copy the kd-tree, a new object will be created if required!   */
-				inline TKDTreeDataHolder(const TKDTreeDataHolder &) { }
+				inline TKDTreeDataHolder(const TKDTreeDataHolder &) : TKDTreeDataHolder() {}
 				/** Copy operator: It actually does NOT copy the kd-tree, a new object will be created if required!  */
-				inline TKDTreeDataHolder& operator =(const TKDTreeDataHolder &o) {
+				inline TKDTreeDataHolder& operator =(const TKDTreeDataHolder &o) noexcept {
 					if (&o!=this) clear();
 					return *this;
 				}
 
 				/** Free memory (if allocated)  */
-				inline void clear()	{ index.reset(); }
+				inline void clear()	noexcept { index.reset(); }
 
 				typedef nanoflann::KDTreeSingleIndexAdaptor<metric_t,Derived, _DIM> kdtree_index_t;
 
@@ -720,7 +718,7 @@ namespace mrpt
 					m_kdtree2d_data.query_point.resize(2);
 					if (N)
 					{
-						m_kdtree2d_data.index = new tree2d_t(2, derived(),  nanoflann::KDTreeSingleIndexAdaptorParams(kdtree_search_params.leaf_max_size) );
+						m_kdtree2d_data.index.reset(new tree2d_t(2, derived(),  nanoflann::KDTreeSingleIndexAdaptorParams(kdtree_search_params.leaf_max_size) ));
 						m_kdtree2d_data.index->buildIndex();
 					}
 					m_kdtree_is_uptodate = true;
@@ -745,7 +743,7 @@ namespace mrpt
 					m_kdtree3d_data.query_point.resize(3);
 					if (N)
 					{
-						m_kdtree3d_data.index = new tree3d_t(3, derived(),  nanoflann::KDTreeSingleIndexAdaptorParams(kdtree_search_params.leaf_max_size) );
+						m_kdtree3d_data.index.reset(new tree3d_t(3, derived(),  nanoflann::KDTreeSingleIndexAdaptorParams(kdtree_search_params.leaf_max_size) ));
 						m_kdtree3d_data.index->buildIndex();
 					}
 					m_kdtree_is_uptodate = true;

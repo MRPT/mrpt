@@ -56,6 +56,9 @@ namespace mrpt
 			/** Default constructor */
 			CPoseRandomSampler();
 
+			CPoseRandomSampler(const CPoseRandomSampler &o);
+			CPoseRandomSampler & operator =(const CPoseRandomSampler &o);
+
 			/** This method must be called to select the PDF from which to draw samples.
 			  * \sa drawSample
 			  */
