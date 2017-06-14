@@ -721,7 +721,7 @@ void CPosePDFSOG::getMostLikelyCovarianceAndMean(CMatrixDouble33 &cov,CPose2D &m
 //
 //	for (const_iterator it=m_modes.begin();it!=m_modes.end();++it)
 //	{
-//		opengl::CEllipsoid::Ptr ellip = opengl::CEllipsoid::Create();
+//		opengl::CEllipsoid::Ptr ellip = std::make_shared<opengl::CEllipsoid>();
 //
 //		ellip->setPose( CPose3D((it)->mean.x(), (it)->mean.y(), (it)->mean.phi()) );
 //		ellip->setCovMatrix((it)->cov);

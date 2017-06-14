@@ -168,7 +168,7 @@ void  CRangeBearingKFSLAM2D::processActionObservation(
 	// =============================================================
 	if (options.create_simplemap)
 	{
-		CPosePDFGaussian::Ptr	auxPosePDF = CPosePDFGaussian::Create();
+		CPosePDFGaussian::Ptr	auxPosePDF = std::make_shared<CPosePDFGaussian>();
 		getCurrentRobotPose( *auxPosePDF );
 		m_SFs.insert( auxPosePDF , SF );
 	}
@@ -889,7 +889,7 @@ void  CRangeBearingKFSLAM2D::getAs3DObject( mrpt::opengl::CSetOfObjects::Ptr	&ou
     pointGauss.cov = COV;
 
     {
-		opengl::CEllipsoid::Ptr ellip = opengl::CEllipsoid::Create();
+		opengl::CEllipsoid::Ptr ellip = std::make_shared<opengl::CEllipsoid>();
 
 		ellip->setPose(pointGauss.mean);
 		ellip->setCovMatrix(pointGauss.cov);
@@ -911,7 +911,7 @@ void  CRangeBearingKFSLAM2D::getAs3DObject( mrpt::opengl::CSetOfObjects::Ptr	&ou
         m_pkk.extractMatrix(3+2*i,3+2*i,2,2, COV);
         pointGauss.cov = COV;
 
-		opengl::CEllipsoid::Ptr ellip = opengl::CEllipsoid::Create();
+		opengl::CEllipsoid::Ptr ellip = std::make_shared<opengl::CEllipsoid>();
 
 		ellip->setName( format( "%u",static_cast<unsigned int>(i) ) );
 		ellip->enableShowName(true);

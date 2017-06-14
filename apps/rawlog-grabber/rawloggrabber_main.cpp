@@ -216,7 +216,7 @@ int main(int argc, char **argv)
 					{
 						CObservationOdometry::Ptr odom = std::dynamic_pointer_cast<CObservationOdometry>( it->second );
 
-						CActionRobotMovement2D::Ptr act = CActionRobotMovement2D::Create();
+						CActionRobotMovement2D::Ptr act = std::make_shared<CActionRobotMovement2D>();
 						act->timestamp = odom->timestamp;
 
 						// Compute the increment since the last reading:

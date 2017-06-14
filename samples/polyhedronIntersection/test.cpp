@@ -88,7 +88,7 @@ CSetOfLines::Ptr getIntersections(const vector<pair<CPolyhedron::Ptr,CPolyhedron
 		}
 		TObject3D::getSegments(ints,sgms);
 	#endif
-	CSetOfLines::Ptr lns=CSetOfLines::Create(sgms);
+	CSetOfLines::Ptr lns=std::make_shared<CSetOfLines>(sgms);
 	lns->setLineWidth(9);
 	randomColor(lns,1.0);
 	return lns;
@@ -125,12 +125,12 @@ pair<CPolyhedron::Ptr,CPolyhedron::Ptr> addPairOfPolys(CPolyhedron::Ptr p1,CPoly
 void display()	{
 	CDisplayWindow3D window("Polyhedra Intersection demo",640,480);
 	window.resize(640,480);
-	COpenGLScene::Ptr scene1=COpenGLScene::Create();
-	opengl::CGridPlaneXY::Ptr plane1=CGridPlaneXY::Create(-25,25,-25,25,0,1);
+	COpenGLScene::Ptr scene1=std::make_shared<COpenGLScene>();
+	opengl::CGridPlaneXY::Ptr plane1=std::make_shared<CGridPlaneXY>(-25,25,-25,25,0,1);
 	plane1->setColor(GRID_R,GRID_G,GRID_B);
 	scene1->insert(plane1);
-	scene1->insert(CAxis::Create(-5,-5,-5,5,5,5,2.5,3,true));
-	CSetOfObjects::Ptr objs=CSetOfObjects::Create();
+	scene1->insert(std::make_shared<CAxis>(-5,-5,-5,5,5,5,2.5,3,true));
+	CSetOfObjects::Ptr objs=std::make_shared<CSetOfObjects>();
 	vector<pair<CPolyhedron::Ptr,CPolyhedron::Ptr> > polys;
 	polys.reserve(16);
 	//Addition of polyhedra. Add more polyhedra at wish, but try to avoid intersections with other pairs, for better visualization.

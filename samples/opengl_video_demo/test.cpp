@@ -37,13 +37,13 @@ void TestOpenGLVideo()
 	CDisplayWindow3D	win("Demo of video textures with MRPT's OpenGL objects",640,480);
 
 	// XY Grid
-	opengl::CGridPlaneXY::Ptr gl_ground = opengl::CGridPlaneXY::Create(-7,7,-7,7,0,1);
+	opengl::CGridPlaneXY::Ptr gl_ground = std::make_shared<opengl::CGridPlaneXY>(-7,7,-7,7,0,1);
 	gl_ground->setColor(0.7,0.7,0.7);
 
 	// An opengl plane with the video texture
-	opengl::CTexturedPlane::Ptr gl_plane1 = opengl::CTexturedPlane::Create(0,1,0,0.75); // 4/3 aspect ratio
-	opengl::CTexturedPlane::Ptr gl_plane2 = opengl::CTexturedPlane::Create(0,1,0,0.75);
-	opengl::CTexturedPlane::Ptr gl_plane3 = opengl::CTexturedPlane::Create(0,1,0,0.75);
+	opengl::CTexturedPlane::Ptr gl_plane1 = std::make_shared<opengl::CTexturedPlane>(0,1,0,0.75); // 4/3 aspect ratio
+	opengl::CTexturedPlane::Ptr gl_plane2 = std::make_shared<opengl::CTexturedPlane>(0,1,0,0.75);
+	opengl::CTexturedPlane::Ptr gl_plane3 = std::make_shared<opengl::CTexturedPlane>(0,1,0,0.75);
 
 	gl_plane1->setPose(mrpt::poses::CPose3D(0,0,1, DEG2RAD(0), DEG2RAD(0), DEG2RAD(-90)));
 	gl_plane2->setPose(mrpt::poses::CPose3D(1,0,1, DEG2RAD(120), DEG2RAD(0), DEG2RAD(-90)));

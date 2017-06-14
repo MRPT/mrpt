@@ -190,7 +190,7 @@ inline void CLevMarqGSO<GRAPH_T>::updateGraphVisualization() {
 
 	//CSetOfObjects::Ptr graph_obj =
 		//graph_tools::graph_visualize(*this->m_graph, viz_params.cfg);
-	CSetOfObjects::Ptr graph_obj = CSetOfObjects::Create();
+	CSetOfObjects::Ptr graph_obj = std::make_shared<CSetOfObjects>();
 	this->m_graph->getAs3DObject(graph_obj, viz_params.cfg);
 
 	graph_obj->setName("optimized_graph");
@@ -308,7 +308,7 @@ initOptDistanceVisualizationInternal(
 		const mrpt::poses::CPose2D& p_unused) {
 	using namespace mrpt::opengl;
 
-	CDisk::Ptr obj = CDisk::Create();
+	CDisk::Ptr obj = std::make_shared<CDisk>();
 	obj->setDiskRadius(
 			opt_params.optimization_distance,
 			opt_params.optimization_distance-0.1);
@@ -322,7 +322,7 @@ initOptDistanceVisualizationInternal(
 		const mrpt::poses::CPose3D& p_unused) {
 	using namespace mrpt::opengl;
 
-	CSphere::Ptr obj = CSphere::Create();
+	CSphere::Ptr obj = std::make_shared<CSphere>();
 	obj->setRadius(opt_params.optimization_distance);
 	obj->setColor_u8(
 			opt_params.optimization_distance_color.R,

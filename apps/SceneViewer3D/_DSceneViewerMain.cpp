@@ -658,7 +658,7 @@ void _DSceneViewerFrame::OnNewScene(wxCommandEvent& event)
 	updateTitle();
 
     {
-		mrpt::opengl::CGridPlaneXY::Ptr obj = mrpt::opengl::CGridPlaneXY::Create( -50,50,-50,50,0,1 );
+		mrpt::opengl::CGridPlaneXY::Ptr obj = std::make_shared<mrpt::opengl::CGridPlaneXY>( -50,50,-50,50,0,1 );
 	    obj->setColor(0.3,0.3,0.3);
 	    m_canvas->m_openGLScene->insert( obj );
     }
@@ -958,7 +958,7 @@ void _DSceneViewerFrame::OnInsert3DS(wxCommandEvent& event)
 
 		saveLastUsedDirectoryToCfgFile(fil);
 
-		mrpt::opengl::CAssimpModel::Ptr	obj3D = mrpt::opengl::CAssimpModel::Create();
+		mrpt::opengl::CAssimpModel::Ptr	obj3D = std::make_shared<mrpt::opengl::CAssimpModel>();
 		obj3D->loadScene( fil );
 		obj3D->setPose( mrpt::math::TPose3D(0,0,0, DEG2RAD(.0),DEG2RAD(0.),DEG2RAD(90.0) ) );
 		m_canvas->m_openGLScene->insert( obj3D );
@@ -1346,7 +1346,7 @@ void func_get_octbb(const mrpt::opengl::CRenderizable::Ptr &o)
 	if (IS_CLASS(o,CPointCloud))
 	{
 		CPointCloud::Ptr obj = std::dynamic_pointer_cast<CPointCloud>(o);
-		CSetOfObjects::Ptr new_bb = CSetOfObjects::Create();
+		CSetOfObjects::Ptr new_bb = std::make_shared<CSetOfObjects>();
 		obj->octree_get_graphics_boundingboxes(*new_bb);
 		aux_gl_octrees_bb->insert(new_bb );
 	}
@@ -1354,7 +1354,7 @@ void func_get_octbb(const mrpt::opengl::CRenderizable::Ptr &o)
 	if (IS_CLASS(o,CPointCloudColoured))
 	{
 		CPointCloudColoured::Ptr obj = std::dynamic_pointer_cast<CPointCloudColoured>(o);
-		CSetOfObjects::Ptr new_bb = CSetOfObjects::Create();
+		CSetOfObjects::Ptr new_bb = std::make_shared<CSetOfObjects>();
 		obj->octree_get_graphics_boundingboxes(*new_bb);
 		aux_gl_octrees_bb->insert(new_bb );
 	}
@@ -1383,7 +1383,7 @@ void _DSceneViewerFrame::OnmnuItemShowCloudOctreesSelected(wxCommandEvent& event
 					gl_octrees_bb = std::dynamic_pointer_cast<CSetOfObjects>(obj);
 				else
 				{
-					gl_octrees_bb = CSetOfObjects::Create();
+					gl_octrees_bb = std::make_shared<CSetOfObjects>();
 					gl_octrees_bb->setName( name_octrees_bb_globj );
 					m_canvas->m_openGLScene->insert(gl_octrees_bb);
 				}
@@ -1442,12 +1442,12 @@ void _DSceneViewerFrame::OnMenuItemImportPLYPointCloud(wxCommandEvent& event)
 
 		if (dlgPLY.rbClass->GetSelection()==0)
 		{
-		     gl_points     = opengl::CPointCloud::Create();
+		     gl_points     = std::make_shared<opengl::CPointCloud>();
 			 ply_obj = gl_points.get();
 		}
 		else
 		{
-			gl_points_col = opengl::CPointCloudColoured::Create();
+			gl_points_col = std::make_shared<opengl::CPointCloudColoured>();
 			ply_obj = gl_points_col.get();
 		}
 
@@ -1465,11 +1465,11 @@ void _DSceneViewerFrame::OnMenuItemImportPLYPointCloud(wxCommandEvent& event)
 		else
 		{
 			// Set the point cloud as the only object in scene:
-			m_canvas->m_openGLScene = opengl::COpenGLScene::Create();
+			m_canvas->m_openGLScene = std::make_shared<opengl::COpenGLScene>();
 
 			if (dlgPLY.cbXYGrid->GetValue())
 			{
-				mrpt::opengl::CGridPlaneXY::Ptr obj = mrpt::opengl::CGridPlaneXY::Create( -50,50,-50,50,0,1 );
+				mrpt::opengl::CGridPlaneXY::Ptr obj = std::make_shared<mrpt::opengl::CGridPlaneXY>( -50,50,-50,50,0,1 );
 				obj->setColor(0.3,0.3,0.3);
 				m_canvas->m_openGLScene->insert( obj );
 			}
@@ -1799,9 +1799,9 @@ void _DSceneViewerFrame::OnmnuImportLASSelected(wxCommandEvent& event)
 		opengl::CPointCloudColoured::Ptr gl_points_col;
 
 		if (dlgPLY.rbClass->GetSelection()==0)
-			gl_points     = opengl::CPointCloud::Create();
+			gl_points     = std::make_shared<opengl::CPointCloud>();
 		else
-			gl_points_col = opengl::CPointCloudColoured::Create();
+			gl_points_col = std::make_shared<opengl::CPointCloudColoured>();
 
 		mrpt::maps::CColouredPointsMap pts_map;
 		mrpt::maps::LAS_HeaderInfo  las_hdr;
@@ -1834,11 +1834,11 @@ void _DSceneViewerFrame::OnmnuImportLASSelected(wxCommandEvent& event)
 		const double scene_size = bb_min.distanceTo(bb_max);
 
 		// Set the point cloud as the only object in scene:
-		m_canvas->m_openGLScene = opengl::COpenGLScene::Create();
+		m_canvas->m_openGLScene = std::make_shared<opengl::COpenGLScene>();
 
 		if (dlgPLY.cbXYGrid->GetValue())
 		{
-			mrpt::opengl::CGridPlaneXY::Ptr obj = mrpt::opengl::CGridPlaneXY::Create( bb_min.x,bb_max.x, bb_min.y,bb_max.y, 0, scene_size*0.02 );
+			mrpt::opengl::CGridPlaneXY::Ptr obj = std::make_shared<mrpt::opengl::CGridPlaneXY>( bb_min.x,bb_max.x, bb_min.y,bb_max.y, 0, scene_size*0.02 );
 			obj->setColor(0.3,0.3,0.3);
 			m_canvas->m_openGLScene->insert( obj );
 		}

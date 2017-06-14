@@ -43,7 +43,7 @@ void TestSLERP()
 	// Modify the scene:
 	// ------------------------------------------------------
 	{
-		opengl::CGridPlaneXY::Ptr obj = opengl::CGridPlaneXY::Create(-20,20,-20,20,0,1);
+		opengl::CGridPlaneXY::Ptr obj = std::make_shared<opengl::CGridPlaneXY>(-20,20,-20,20,0,1);
 		obj->setColor(0.4,0.4,0.4);
 		theScene->insert( obj);
 	}

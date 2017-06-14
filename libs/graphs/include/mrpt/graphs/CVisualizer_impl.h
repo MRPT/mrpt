@@ -116,7 +116,7 @@ drawNodePoints(mrpt::opengl::CSetOfObjects::Ptr& object,
 	const unsigned int nodes_point_color = viz_params->getWithDefaultVal(
 			"nodes_point_color", (unsigned int)0xA0A0A0);
 
-	CPointCloud::Ptr pnts = CPointCloud::Create();
+	CPointCloud::Ptr pnts = std::make_shared<CPointCloud>();
 	pnts->setColor(TColorf(TColor(nodes_point_color)));
 	pnts->setPointSize(nodes_point_size);
 
@@ -165,7 +165,7 @@ drawNodeCorners(mrpt::opengl::CSetOfObjects::Ptr& object,
 			(m_is_3D_graph ?
 			 stock_objects::CornerXYZSimple(nodes_corner_scale, 1.0 /*line width*/):
 			 stock_objects::CornerXYSimple(nodes_corner_scale, 1.0 /*line width*/))
-			: CSetOfObjects::Create();
+			: std::make_shared<CSetOfObjects>();
 		gl_corner->setPose(p);
 		if (show_ID_labels) { // don't show IDs twice!
 			gl_corner->setName(format("%u",static_cast<unsigned int>(n_it->first)));
@@ -204,7 +204,7 @@ drawEdgeRelPoses(mrpt::opengl::CSetOfObjects::Ptr& object,
 		if (n_it!=m_graph.nodes.end()) {
 			const CPose3D pSource = CPose3D(n_it->second);
 			// Create a set of objects at that pose and do the rest in relative coords:
-			mrpt::opengl::CSetOfObjects::Ptr gl_rel_edge = mrpt::opengl::CSetOfObjects::Create();
+			mrpt::opengl::CSetOfObjects::Ptr gl_rel_edge = std::make_shared<mrpt::opengl::CSetOfObjects>();
 			gl_rel_edge->setPose(pSource);
 
 			const typename GRAPH_T::constraint_no_pdf_t & edge_pose = edge_it->second.getPoseMean();
@@ -240,7 +240,7 @@ drawEdges(mrpt::opengl::CSetOfObjects::Ptr& object,
 	using namespace mrpt::utils;
 	ASSERTMSG_(viz_params, "Pointer to viz_params was not provided.");
 
-	CSetOfLines::Ptr  gl_edges = CSetOfLines::Create();
+	CSetOfLines::Ptr  gl_edges = std::make_shared<CSetOfLines>();
 	const unsigned int edge_color = viz_params->getWithDefaultVal(
 			"edge_color", (unsigned int)0x400000FF);
 	const double edge_width = viz_params->getWithDefaultVal(

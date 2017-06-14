@@ -1367,7 +1367,7 @@ void  CRandomFieldGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjects::Ptr	&ou
 	if (!genericMapParams.enableSaveAs3DObject) return;
 
 	//Returns only the mean map
-	mrpt::opengl::CSetOfObjects::Ptr other_obj = mrpt::opengl::CSetOfObjects::Create();
+	mrpt::opengl::CSetOfObjects::Ptr other_obj = std::make_shared<mrpt::opengl::CSetOfObjects>();
 	getAs3DObject(outObj, other_obj);
 }
 
@@ -1403,9 +1403,9 @@ void  CRandomFieldGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjects::Ptr	&me
 		{
 			// for Kalman models:
 			// ----------------------------------
-			opengl::CSetOfTriangles::Ptr obj_m = opengl::CSetOfTriangles::Create();
+			opengl::CSetOfTriangles::Ptr obj_m = std::make_shared<opengl::CSetOfTriangles>();
 			obj_m->enableTransparency(true);
-			opengl::CSetOfTriangles::Ptr obj_v = opengl::CSetOfTriangles::Create();
+			opengl::CSetOfTriangles::Ptr obj_v = std::make_shared<opengl::CSetOfTriangles>();
 			obj_v->enableTransparency(true);
 
 			//  Compute mean max/min values:
@@ -1520,9 +1520,9 @@ void  CRandomFieldGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjects::Ptr	&me
 		{
 			// Draw for Kernel model:
 			// ----------------------------------
-			opengl::CSetOfTriangles::Ptr obj_m = opengl::CSetOfTriangles::Create();
+			opengl::CSetOfTriangles::Ptr obj_m = std::make_shared<opengl::CSetOfTriangles>();
 			obj_m->enableTransparency(true);
-			opengl::CSetOfTriangles::Ptr obj_v = opengl::CSetOfTriangles::Create();
+			opengl::CSetOfTriangles::Ptr obj_v = std::make_shared<opengl::CSetOfTriangles>();
 			obj_v->enableTransparency(true);
 
 			//  Compute mean max/min values:

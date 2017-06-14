@@ -199,7 +199,7 @@ void  CFeatureExtraction::extractFeaturesFASTER_N(
 		}
 
 		// All tests passed: add new feature:
-		CFeature::Ptr ft		= CFeature::Create();
+		CFeature::Ptr ft		= std::make_shared<CFeature>();
 		ft->type			= type_of_this_feature;
 		ft->ID				= nextID++;
 		ft->x				= feat.pt.x;

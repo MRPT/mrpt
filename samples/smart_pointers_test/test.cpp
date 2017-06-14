@@ -20,11 +20,11 @@ using namespace std;
 void TestSmartPointers()
 {
 	// Create a smart pointer to a CPose3D:
-	CPose3D::Ptr	p3D  = CPose3D::Create();
+	CPose3D::Ptr	p3D  = std::make_shared<CPose3D>();
 	p3D->setFromValues( 1, 2, 3, DEG2RAD(30),DEG2RAD(-45),DEG2RAD(-30)  );
 
 	// And a smart pointer to a CPose2D:
-	CPose2D::Ptr	p2D  = std::make_shared<CPose2D>();  // This is exactly the same than calling ::Create()
+	CPose2D::Ptr	p2D  = std::make_shared<CPose2D>();  // This is exactly the same than calling std::make_shared<>()
 	p2D->x( 4 );
 	p2D->phi( DEG2RAD(90) );
 

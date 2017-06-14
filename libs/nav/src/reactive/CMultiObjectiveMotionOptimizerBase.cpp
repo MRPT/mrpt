@@ -190,7 +190,7 @@ void CMultiObjectiveMotionOptimizerBase::clear()
 	m_score_exprs.clear();
 }
 
-CMultiObjectiveMotionOptimizerBase * CMultiObjectiveMotionOptimizerBase::Create(const std::string &className) noexcept
+CMultiObjectiveMotionOptimizerBase::Ptr CMultiObjectiveMotionOptimizerBase::Factory(const std::string &className) noexcept
 {
 	try 
 	{
@@ -200,8 +200,7 @@ CMultiObjectiveMotionOptimizerBase * CMultiObjectiveMotionOptimizerBase::Create(
 		const mrpt::utils::TRuntimeClassId *classId = mrpt::utils::findRegisteredClass(className);
 		if (!classId) return nullptr;
 
-		CMultiObjectiveMotionOptimizerBase *holo = dynamic_cast<CMultiObjectiveMotionOptimizerBase*>(classId->createObject());
-		return holo;
+		return CMultiObjectiveMotionOptimizerBase::Ptr(dynamic_cast<CMultiObjectiveMotionOptimizerBase*>(classId->createObject()));
 	}
 	catch (...)
 	{

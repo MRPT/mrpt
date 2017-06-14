@@ -150,7 +150,7 @@ int main ( int argc, char** argv )
 	window.setCameraElevationDeg(5);
 	scene = window.get3DSceneAndLock();
 
-	opengl::CPointCloudColoured::Ptr kinectp = opengl::CPointCloudColoured::Create();
+	opengl::CPointCloudColoured::Ptr kinectp = std::make_shared<opengl::CPointCloudColoured>();
 	kinectp->enablePointSmooth(true);
 	kinectp->setPointSize(2);
 	scene->insert( kinectp );

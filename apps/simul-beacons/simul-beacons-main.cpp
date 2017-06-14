@@ -200,7 +200,7 @@ int main(int argc, char ** argv)
 			else	incPose = CPose2D(0,0,0);
 
             // Simulate observations:
-            CObservationBeaconRanges::Ptr obs=CObservationBeaconRanges::Create();
+            CObservationBeaconRanges::Ptr obs=std::make_shared<CObservationBeaconRanges>();
             obs->minSensorDistance=minSensorDistance;
             obs->maxSensorDistance=maxSensorDistance;
             obs->stdError=stdError;

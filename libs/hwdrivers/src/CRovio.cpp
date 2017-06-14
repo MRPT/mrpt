@@ -244,7 +244,7 @@ void CRovio::thread_video()	//This function takes a frame and waits until getLas
 
 		while(!m_videothread_must_exit)
 		{
-			CObservationImage::Ptr obs = CObservationImage::Create();
+			CObservationImage::Ptr obs = std::make_shared<CObservationImage>();
 
 			if (in_video.retrieveFrame(obs->image) )
 			{

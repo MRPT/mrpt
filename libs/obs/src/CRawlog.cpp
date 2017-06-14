@@ -75,7 +75,7 @@ void  CRawlog::addObservationMemoryReference( const CObservation::Ptr &observati
 
 void  CRawlog::addAction( CAction &action )
 {
-	CActionCollection::Ptr temp = CActionCollection::Create();
+	CActionCollection::Ptr temp = std::make_shared<CActionCollection>();
 	temp->insert( action );
 	m_seqOfActObs.push_back( temp );
 }

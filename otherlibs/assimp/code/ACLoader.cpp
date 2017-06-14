@@ -667,7 +667,7 @@ aiNode* AC3DImporter::ConvertObjectSection(Object& object,
 			// collect all meshes using the same material group.
 			if (object.subDiv)	{
 				if (configEvalSubdivision) {
-					boost::scoped_ptr<Subdivider> div(Subdivider::Create(Subdivider::CATMULL_CLARKE));
+					boost::scoped_ptr<Subdivider> div(std::make_shared<Subdivider>(Subdivider::CATMULL_CLARKE));
 					DefaultLogger::get()->info("AC3D: Evaluating subdivision surface: "+object.name);
 
 					std::vector<aiMesh*> cpy(meshes.size()-oldm,nullptr);

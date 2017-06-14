@@ -55,7 +55,7 @@ protected:
 // ------------------------------------------------------
 void TestObserverPattern()
 {
-	CSimplePointsMap::Ptr  map1 = CSimplePointsMap::Create();
+	CSimplePointsMap::Ptr  map1 = std::make_shared<CSimplePointsMap>();
 
 	CObservation2DRangeScan	 obs = getScan();
 

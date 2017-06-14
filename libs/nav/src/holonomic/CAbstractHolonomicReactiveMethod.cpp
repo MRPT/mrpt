@@ -47,7 +47,7 @@ mrpt::nav::CParameterizedTrajectoryGenerator * CAbstractHolonomicReactiveMethod:
 	return m_associatedPTG;
 }
 
-CAbstractHolonomicReactiveMethod * CAbstractHolonomicReactiveMethod::Create(const std::string &className) noexcept
+CAbstractHolonomicReactiveMethod::Ptr CAbstractHolonomicReactiveMethod::Factory(const std::string &className) noexcept
 {
 	try 
 	{
@@ -57,14 +57,15 @@ CAbstractHolonomicReactiveMethod * CAbstractHolonomicReactiveMethod::Create(cons
 		const mrpt::utils::TRuntimeClassId *classId = mrpt::utils::findRegisteredClass( className );
 		if (!classId) return nullptr;
 
-		CAbstractHolonomicReactiveMethod *holo = dynamic_cast<CAbstractHolonomicReactiveMethod*>( classId->createObject() );
-		return holo;
+		return CAbstractHolonomicReactiveMethod::Ptr(
+				dynamic_cast<CAbstractHolonomicReactiveMethod*>( classId->createObject() ));
 	}
 	catch (...)
 	{
 		return nullptr;
 	}
 }
+
 
 CAbstractHolonomicReactiveMethod::NavInput::NavInput() :
 	targets(),

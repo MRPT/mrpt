@@ -32,7 +32,7 @@ struct MyConnectivityVisitor : public mrpt::maps::CRandomFieldGridMap2D::Connect
 		size_t icx, size_t icy,               //!< (cx,cy) for node "i"
 		size_t jcx, size_t jcy,               //!< (cx,cy) for node "j"
 		double &out_edge_information          //!< Must output here the inverse of the variance of the constraint edge.
-	) MRPT_OVERRIDE
+	) override
 	{
 		out_edge_information = 1.0/(1.0+ icx+icy);
 		return true;
@@ -60,7 +60,7 @@ void Example_GMRF()
 	gasmap.setCellsConnectivity(conn);
 	gasmap.clear(); // for the connectivity to be taken into account.
 
-	mrpt::opengl::CPointCloud::Ptr gl_data = mrpt::opengl::CPointCloud::Create();
+	mrpt::opengl::CPointCloud::Ptr gl_data = std::make_shared<mrpt::opengl::CPointCloud>();
 	gl_data->setPointSize(3.0f);
 
 	for (int i=0;i<20;i++)
@@ -79,7 +79,7 @@ void Example_GMRF()
 	gasmap.updateMapEstimation();
 
 	// 3D view:
-	mrpt::opengl::CSetOfObjects::Ptr glObj = mrpt::opengl::CSetOfObjects::Create();
+	mrpt::opengl::CSetOfObjects::Ptr glObj = std::make_shared<mrpt::opengl::CSetOfObjects>();
 	gasmap.getAs3DObject( glObj );
 
 	mrpt::gui::CDisplayWindow3D win("Map",640,480);

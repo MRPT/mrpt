@@ -101,7 +101,7 @@ void xRawLogViewerFrame::OnMenuCompactRawlog(wxCommandEvent& event)
 				// Before leaving the last SF, leave only one observation for each sensorLabel:
 				if (onlyOnePerLabel && lastSF)
 				{
-					CSensoryFrame::Ptr newSF = CSensoryFrame::Create();
+					CSensoryFrame::Ptr newSF = std::make_shared<CSensoryFrame>();
 					set<string> knownLabels;
 
 					for (CSensoryFrame::const_iterator o=lastSF->begin();o!=lastSF->end();++o)
@@ -250,7 +250,7 @@ void xRawLogViewerFrame::OnMenuLossLessDecimate(wxCommandEvent& event)
 
 			// Add observations to the accum. SF:
 			if (!accum_sf)
-				accum_sf = CSensoryFrame::Create();
+				accum_sf = std::make_shared<CSensoryFrame>();
 
 			// Copy pointers to observations only (fast):
 			accum_sf->moveFrom( *std::dynamic_pointer_cast<CSensoryFrame>(obj) );
@@ -391,7 +391,7 @@ void xRawLogViewerFrame::OnMenuLossLessDecFILE(wxCommandEvent& event)
 
 				// Add observations to the accum. SF:
 				if (!accum_sf)
-					accum_sf = CSensoryFrame::Create();
+					accum_sf = std::make_shared<CSensoryFrame>();
 
 				// Copy pointers to observations only (fast):
 				accum_sf->moveFrom( *std::dynamic_pointer_cast<CSensoryFrame>(newObj) );
@@ -405,7 +405,7 @@ void xRawLogViewerFrame::OnMenuLossLessDecFILE(wxCommandEvent& event)
 					accum_sf.reset();
 
 					// INSERT ACTIONS:
-					CActionCollection::Ptr actsCol = CActionCollection::Create();
+					CActionCollection::Ptr actsCol = std::make_shared<CActionCollection>();
 					if (cummMovementInit)
 					{
 						CActionRobotMovement2D	cummMovement;
@@ -723,7 +723,7 @@ void xRawLogViewerFrame::OnMenuConvertObservationOnly(wxCommandEvent& event)
 						odometry_accum = odometry_accum + actOdom->poseChange->getMeanVal();
 
 						// Generate "odometry obs":
-						CObservationOdometry::Ptr  newO = CObservationOdometry::Create();
+						CObservationOdometry::Ptr  newO = std::make_shared<CObservationOdometry>();
 						newO->sensorLabel = "odometry";
 						newO->timestamp   = actOdom->timestamp!=INVALID_TIMESTAMP ?  actOdom->timestamp : lastValidObsTime;
 						newO->odometry    = odometry_accum;

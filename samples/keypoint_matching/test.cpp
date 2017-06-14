@@ -87,9 +87,9 @@ void TestExtractMatchProjectAndPaint()
 
     CDisplayWindow3D    win3D("3D Map");
     COpenGLScene::Ptr		&scene3D    = win3D.get3DSceneAndLock();
-	CSetOfObjects::Ptr    map3D       = CSetOfObjects::Create();
+	CSetOfObjects::Ptr    map3D       = std::make_shared<CSetOfObjects>();
 	outMap.getAs3DObject( map3D );
-    CGridPlaneXY::Ptr	gridXY	        = CGridPlaneXY::Create(-10,10,-10,10,0,1);
+    CGridPlaneXY::Ptr	gridXY	        = std::make_shared<CGridPlaneXY>(-10,10,-10,10,0,1);
 
 	scene3D->insert( gridXY );
 	scene3D->insert( map3D );

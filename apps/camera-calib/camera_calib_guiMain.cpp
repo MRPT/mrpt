@@ -722,7 +722,7 @@ void camera_calib_guiDialog::OnlbFilesSelect(wxCommandEvent& event)
 
 void camera_calib_guiDialog::show3Dview()
 {
-	mrpt::opengl::COpenGLScene::Ptr	scene = mrpt::opengl::COpenGLScene::Create();
+	mrpt::opengl::COpenGLScene::Ptr	scene = std::make_shared<mrpt::opengl::COpenGLScene>();
 
 	const unsigned int  check_size_x = edSizeX->GetValue();
 	const unsigned int  check_size_y = edSizeY->GetValue();
@@ -731,7 +731,7 @@ void camera_calib_guiDialog::show3Dview()
 
 	if (!check_squares_length_X_meters || !check_squares_length_Y_meters) return;
 
-	opengl::CGridPlaneXY::Ptr	grid = opengl::CGridPlaneXY::Create(0,check_size_x*check_squares_length_X_meters, 0, check_size_y*check_squares_length_Y_meters, 0, check_squares_length_X_meters );
+	opengl::CGridPlaneXY::Ptr	grid = std::make_shared<opengl::CGridPlaneXY>(0,check_size_x*check_squares_length_X_meters, 0, check_size_y*check_squares_length_Y_meters, 0, check_squares_length_X_meters );
 	scene->insert( grid );
 
 	for (TCalibrationImageList::iterator it=lst_images.begin();it!=lst_images.end();++it)

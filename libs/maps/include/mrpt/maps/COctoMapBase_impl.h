@@ -141,7 +141,7 @@ namespace mrpt
 			// Save as 3D Scene:
 			{
 				mrpt::opengl::COpenGLScene scene;
-				mrpt::opengl::CSetOfObjects::Ptr obj3D = mrpt::opengl::CSetOfObjects::Create();
+				mrpt::opengl::CSetOfObjects::Ptr obj3D = std::make_shared<mrpt::opengl::CSetOfObjects>();
 
 				this->getAs3DObject(obj3D);
 
