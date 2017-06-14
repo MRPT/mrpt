@@ -31,18 +31,10 @@ IMPLEMENTS_GENERIC_SENSOR(CBoardENoses,mrpt::hwdrivers)
 CBoardENoses::CBoardENoses( ) :
 	m_usbSerialNumber 	("ENOSE001"),
 	m_COM_port			(),
-	m_COM_baud			(115200),
-	m_stream_FTDI		(nullptr),
-	m_stream_SERIAL		(nullptr)
+	m_COM_baud			(115200)
 {
 	m_sensorLabel = "ENOSE";
 	first_reading = true;
-}
-
-CBoardENoses::~CBoardENoses( )
-{
-	delete_safe(m_stream_FTDI);
-	delete_safe(m_stream_SERIAL);
 }
 
 /*-------------------------------------------------------------
@@ -114,8 +106,8 @@ bool CBoardENoses::queryFirmwareVersion( string &out_firmwareVersion )
 	catch(...)
 	{
 		// Close everything and start again:
-		delete_safe(m_stream_SERIAL);
-		delete_safe(m_stream_FTDI);
+		m_stream_SERIAL.reset();
+		m_stream_FTDI.reset();
 		return false;
 	}
 }
@@ -130,8 +122,8 @@ CStream *CBoardENoses::checkConnectionAndConnect()
 	if (!m_stream_FTDI && !m_stream_SERIAL)
 	{
 		if (!m_COM_port.empty())
-				m_stream_SERIAL = new CSerialPort();
-		else 	m_stream_FTDI = new CInterfaceFTDI();
+				m_stream_SERIAL.reset(new CSerialPort);
+		else 	m_stream_FTDI.reset(new CInterfaceFTDI);
 	}
 
 
@@ -207,7 +199,7 @@ bool CBoardENoses::getObservation( mrpt::obs::CObservationGasSensors &obs )
 		// Wait for e-nose frame:	<0x69><0x91><lenght><body><0x96> "Bytes"
 		// Where <body> = [Numchamber, Activechamber, N sensors*M chambers*2, 2 timestamp] of uint16_t
 		// MCE-nose provides a 136B body lenght which makes 140B total frame lenght
-		
+
 		if (!comms->receiveMessage( msg ))
 		{
 			return false;
@@ -222,7 +214,7 @@ bool CBoardENoses::getObservation( mrpt::obs::CObservationGasSensors &obs )
 
 		if (msg.content.size()>0)
 		{
-			// Copy to a vector of 16bit integers:			
+			// Copy to a vector of 16bit integers:
 			memcpy( &readings[0],&msg.content[0],msg.content.size() * sizeof(msg.content[0]) );
 
 			//HEADER Frame [ Nº of chambers/enoses (16b) , Active Chamber (16b)]
@@ -411,8 +403,8 @@ bool CBoardENoses::setActiveChamber( unsigned char chamber )
 	catch(...)
 	{
 		// Close everything and start again:
-		delete_safe(m_stream_SERIAL);
-		delete_safe(m_stream_FTDI);
+		m_stream_SERIAL.reset();
+		m_stream_FTDI.reset();
 		return false;
 	}
 }

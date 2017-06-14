@@ -39,7 +39,7 @@
 #	undef Button3
 #endif
 
-
+#include <memory> // unique_ptr
 #include <mrpt/hmtslam.h>
 
 
@@ -191,7 +191,7 @@ class hmt_slam_guiFrame: public wxFrame
         // DATA =============================
 		CDlgLog  *m_logWin;
 
-		mrpt::hmtslam::CHMTSLAM *m_hmtslam;   //!< The main HMT-SLAM object, keeps the HMT map and does HMT SLAM.
+		std::unique_ptr<mrpt::hmtslam::CHMTSLAM> m_hmtslam;   //!< The main HMT-SLAM object, keeps the HMT map and does HMT SLAM.
 
 
 		// DATA ABOUT THREAD OF HMT-SLAM ---------------|

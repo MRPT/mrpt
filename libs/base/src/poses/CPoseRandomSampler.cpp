@@ -28,32 +28,17 @@ using namespace mrpt::random;
 /*---------------------------------------------------------------
         Constructor
   ---------------------------------------------------------------*/
-CPoseRandomSampler::CPoseRandomSampler() :
-    m_pdf2D(nullptr),
-    m_pdf3D(nullptr),
-    m_fastdraw_gauss_Z3(),
-	m_fastdraw_gauss_Z6(),
-    m_fastdraw_gauss_M_2D(),
-    m_fastdraw_gauss_M_3D()
+CPoseRandomSampler::CPoseRandomSampler()
 {
 }
-
-/*---------------------------------------------------------------
-            Destructor
-  ---------------------------------------------------------------*/
-CPoseRandomSampler::~CPoseRandomSampler()
-{
-    clear();
-}
-
 
 /*---------------------------------------------------------------
             clear
   ---------------------------------------------------------------*/
 void CPoseRandomSampler::clear()
 {
-	mrpt::utils::delete_safe( m_pdf2D );
-	mrpt::utils::delete_safe( m_pdf3D );
+	m_pdf2D.reset();
+	m_pdf3D.reset();
 }
 
 /*---------------------------------------------------------------
@@ -64,10 +49,10 @@ void CPoseRandomSampler::setPosePDF( const CPosePDF *pdf )
     MRPT_START
 
     clear();
-    m_pdf2D = static_cast<CPosePDF*>( pdf->clone() );
+	m_pdf2D.reset(static_cast<CPosePDF*>( pdf->clone() ));
 
     // According to the PDF type:
-    if ( IS_CLASS(m_pdf2D,CPosePDFGaussian ) )
+	if ( IS_CLASS(m_pdf2D.get(),CPosePDFGaussian ) )
     {
 		const CPosePDFGaussian* gPdf = static_cast<const CPosePDFGaussian*>(pdf);
 		const CMatrixDouble33 &cov = gPdf->cov;
@@ -87,7 +72,7 @@ void CPoseRandomSampler::setPosePDF( const CPosePDF *pdf )
 		m_fastdraw_gauss_Z3.multiply( m_fastdraw_gauss_Z3, D);
     }
     else
-    if ( IS_CLASS(m_pdf2D,CPosePDFParticles ) )
+	if ( IS_CLASS(m_pdf2D.get(),CPosePDFParticles ) )
     {
     	return; // Nothing to prepare.
     }
@@ -109,10 +94,10 @@ void CPoseRandomSampler::setPosePDF( const CPose3DPDF *pdf )
     MRPT_START
 
     clear();
-    m_pdf3D = static_cast<CPose3DPDF*>( pdf->clone() );
+	m_pdf3D.reset(static_cast<CPose3DPDF*>( pdf->clone() ));
 
     // According to the PDF type:
-    if ( IS_CLASS(m_pdf3D,CPose3DPDFGaussian ) )
+	if ( IS_CLASS(m_pdf3D.get(),CPose3DPDFGaussian ) )
     {
 		const CPose3DPDFGaussian* gPdf = static_cast<const CPose3DPDFGaussian*>(pdf);
 		const CMatrixDouble66 &cov = gPdf->cov;
@@ -132,7 +117,7 @@ void CPoseRandomSampler::setPosePDF( const CPose3DPDF *pdf )
 		m_fastdraw_gauss_Z6.multiply( m_fastdraw_gauss_Z6, D);
     }
     else
-    if ( IS_CLASS(m_pdf3D,CPose3DPDFParticles ) )
+	if ( IS_CLASS(m_pdf3D.get(),CPose3DPDFParticles ) )
     {
     	return; // Nothing to prepare.
     }
@@ -144,12 +129,12 @@ void CPoseRandomSampler::setPosePDF( const CPose3DPDF *pdf )
     MRPT_END
 }
 
-void CPoseRandomSampler::setPosePDF( const CPose3DPDF::Ptr &pdf ) { 
-	setPosePDF(pdf.get()); 
+void CPoseRandomSampler::setPosePDF( const CPose3DPDF::Ptr &pdf ) {
+	setPosePDF(pdf.get());
 }
 
-void CPoseRandomSampler::setPosePDF( const CPosePDF::Ptr &pdf ) { 
-	setPosePDF(pdf.get()); 
+void CPoseRandomSampler::setPosePDF( const CPosePDF::Ptr &pdf ) {
+	setPosePDF(pdf.get());
 }
 
 /*---------------------------------------------------------------
@@ -210,7 +195,7 @@ void CPoseRandomSampler::do_sample_2D( CPose2D &p ) const
 	ASSERT_(m_pdf2D);
 
 	// According to the PDF type:
-	if ( IS_CLASS(m_pdf2D,CPosePDFGaussian ) )
+	if ( IS_CLASS(m_pdf2D.get(),CPosePDFGaussian ) )
 	{
 		// ------------------------------
 		//      A single gaussian:
@@ -230,7 +215,7 @@ void CPoseRandomSampler::do_sample_2D( CPose2D &p ) const
 		p.normalizePhi();
 	}
 	else
-	if ( IS_CLASS(m_pdf2D,CPosePDFSOG ) )
+	if ( IS_CLASS(m_pdf2D.get(),CPosePDFSOG ) )
 	{
 		// -------------------------------------
 		//      			SOG
@@ -238,12 +223,12 @@ void CPoseRandomSampler::do_sample_2D( CPose2D &p ) const
 		THROW_EXCEPTION("TODO");
 	}
 	else
-	if ( IS_CLASS(m_pdf2D,CPosePDFParticles ) )
+	if ( IS_CLASS(m_pdf2D.get(),CPosePDFParticles ) )
 	{
 		// -------------------------------------
 		//      Particles: just sample as usual
 		// -------------------------------------
-		const CPosePDFParticles* pdf = static_cast<const CPosePDFParticles*>(m_pdf2D);
+		const CPosePDFParticles* pdf = static_cast<const CPosePDFParticles*>(m_pdf2D.get());
 		pdf->drawSingleSample(p);
 	}
 	else
@@ -261,7 +246,7 @@ void CPoseRandomSampler::do_sample_3D( CPose3D &p ) const
 	ASSERT_(m_pdf3D);
 
 	// According to the PDF type:
-	if ( IS_CLASS(m_pdf3D,CPose3DPDFGaussian ) )
+	if ( IS_CLASS(m_pdf3D.get(),CPose3DPDFGaussian ) )
 	{
 		// ------------------------------
 		//      A single gaussian:
@@ -284,7 +269,7 @@ void CPoseRandomSampler::do_sample_3D( CPose3D &p ) const
 			m_fastdraw_gauss_M_3D.roll() + rndVector[5] );
 	}
 	else
-	if ( IS_CLASS(m_pdf3D,CPose3DPDFSOG ) )
+	if ( IS_CLASS(m_pdf3D.get(),CPose3DPDFSOG ) )
 	{
 		// -------------------------------------
 		//      			SOG
@@ -292,12 +277,12 @@ void CPoseRandomSampler::do_sample_3D( CPose3D &p ) const
 		THROW_EXCEPTION("TODO");
 	}
 	else
-	if ( IS_CLASS(m_pdf3D,CPose3DPDFParticles ) )
+	if ( IS_CLASS(m_pdf3D.get(),CPose3DPDFParticles ) )
 	{
 		// -------------------------------------
 		//      Particles: just sample as usual
 		// -------------------------------------
-		const CPose3DPDFParticles* pdf = static_cast<const CPose3DPDFParticles*>(m_pdf3D);
+		const CPose3DPDFParticles* pdf = static_cast<const CPose3DPDFParticles*>(m_pdf3D.get());
 		pdf->drawSingleSample(p);
 	}
 	else

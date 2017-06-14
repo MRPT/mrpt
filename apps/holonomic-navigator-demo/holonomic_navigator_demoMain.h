@@ -33,6 +33,7 @@
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>			// It's in the lib mrpt-maps
 #include <mrpt/maps/COccupancyGridMap2D.h>
+#include <memory> // unique_ptr
 
 // JLBC: Unix X headers have these funny things...
 #ifdef Button1
@@ -45,8 +46,8 @@
 #	undef Button7
 #endif
 // To avoid conflicts between Eigen & X11 headers
-#ifdef Success 
-#	undef Success 
+#ifdef Success
+#	undef Success
 #endif
 
 
@@ -163,7 +164,7 @@ class holonomic_navigator_demoFrame: public wxFrame
         };
 
 
-		mrpt::nav::CAbstractHolonomicReactiveMethod *m_holonomicMethod;
+		std::unique_ptr<mrpt::nav::CAbstractHolonomicReactiveMethod> m_holonomicMethod;
 		mrpt::maps::COccupancyGridMap2D  m_gridMap;
 		mrpt::math::TPoint2D             m_targetPoint;
 		mrpt::math::TPose2D              m_robotPose;

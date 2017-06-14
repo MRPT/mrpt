@@ -15,7 +15,7 @@
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/obs/CObservationGasSensors.h>
 #include <mrpt/utils/CConfigFileBase.h>
-
+#include <memory> // unique_ptr
 
 namespace mrpt
 {
@@ -63,12 +63,9 @@ namespace mrpt
 			std::string		m_COM_port;  //!< If not an empty string (default), will open that serial port, otherwise will try to open USB FTDI device "m_usbSerialNumber"
 			unsigned int 	m_COM_baud;	 //!< Default=115200
 
-
 			// Only one of these two streams will be !=nullptr and open for each specific eNose board!
-			/**  FTDI comms pipe (when not in serial port mode) */
-			CInterfaceFTDI	*m_stream_FTDI;
-			/**  Serial port comms */
-			CSerialPort		*m_stream_SERIAL;
+			std::unique_ptr<CInterfaceFTDI> m_stream_FTDI; //!< FTDI comms pipe (when not in serial port mode)
+			std::unique_ptr<CSerialPort> m_stream_SERIAL; //!< Serial port comms
 
 			/** The 3D pose of the master + N slave eNoses on the robot (meters & radians) */
 			std::vector<float>	enose_poses_x,enose_poses_y,enose_poses_z,enose_poses_yaw,enose_poses_pitch,enose_poses_roll;
@@ -93,10 +90,6 @@ namespace mrpt
 			  */
 			CEnoseModular( );
 
-			/** Destructor
-			  */
-			virtual ~CEnoseModular();
-
 			/** Request the master eNose the latest readings from all the eNoses.
 			  *  The output observation contains a valid timestamp and 3D positions if "loadConfig" has been called previously.
 			  * \return true if OK, false if there were any error.
@@ -105,7 +98,7 @@ namespace mrpt
 
 
 			// See docs in parent class
-			void  doProcess();		
+			void  doProcess();
 
 
 

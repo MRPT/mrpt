@@ -21,6 +21,7 @@
 #include <mrpt/math/filters.h>
 #include <mrpt/math/CPolygon.h>
 #include <mrpt/maps/CPointCloudFilterBase.h>
+#include <memory> // unique_ptr
 
 namespace mrpt
 {
@@ -207,7 +208,8 @@ namespace mrpt
 		virtual void  performNavigationStep() override;
 
 		std::vector<CAbstractHolonomicReactiveMethod::Ptr>  m_holonomicMethod;   //!< The holonomic navigation algorithm (one object per PTG, so internal states are maintained)
-		mrpt::utils::CStream  *m_logFile, *m_prev_logfile;         //!< The current log file stream, or nullptr if not being used
+		unique_ptr<mrpt::utils::CStream>  m_logFile;
+		mrpt::utils::CStream  *m_prev_logfile;         //!< The current log file stream, or nullptr if not being used
 		bool                   m_enableKeepLogRecords; //!< See enableKeepLogRecords
 		CLogFileRecord lastLogRecord;  //!< The last log
 		mrpt::kinematics::CVehicleVelCmd::Ptr m_last_vel_cmd ; //!< Last velocity commands
@@ -274,7 +276,7 @@ namespace mrpt
 		/** Return the [0,1] velocity scale of raw PTG cmd_vel */
 		virtual double generate_vel_cmd(const TCandidateMovementPTG &in_movement, mrpt::kinematics::CVehicleVelCmd::Ptr &new_vel_cmd );
 		void STEP8_GenerateLogRecord(CLogFileRecord &newLogRec, const std::vector<mrpt::math::TPose2D>& relTargets, int nSelectedPTG, const mrpt::kinematics::CVehicleVelCmd::Ptr &new_vel_cmd, int nPTGs, const bool best_is_NOP_cmdvel, const math::TPose2D &rel_cur_pose_wrt_last_vel_cmd_NOP, const math::TPose2D &rel_pose_PTG_origin_wrt_sense_NOP, const double executionTimeValue, const double tim_changeSpeed, const mrpt::system::TTimeStamp &tim_start_iteration);
-		
+
 		void preDestructor(); //!< To be called during children destructors to assure thread-safe destruction, and free of shared objects.
 		virtual void onStartNewNavigation() override;
 
@@ -334,8 +336,8 @@ namespace mrpt
 		std::string m_navlogfiles_dir; //!< Default: "./reactivenav.logs"
 
 		double m_expr_var_k, m_expr_var_k_target, m_expr_var_num_paths;
-		TNavigationParams  *m_copy_prev_navParams; //!< A copy of last-iteration navparams, used to detect changes
-		
+		std::unique_ptr<TNavigationParams> m_copy_prev_navParams; //!< A copy of last-iteration navparams, used to detect changes
+
 	}; // end of CAbstractPTGBasedReactive
   }
 }

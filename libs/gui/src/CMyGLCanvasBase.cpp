@@ -63,7 +63,7 @@ END_EVENT_TABLE()
 
 void CMyGLCanvasBase::OnWindowCreation(wxWindowCreateEvent &ev)
 {
-	if (!m_gl_context) m_gl_context=new wxGLContext(this);
+	if (!m_gl_context) m_gl_context.reset(new wxGLContext(this));
 }
 
 void CMyGLCanvasBase::OnMouseDown(wxMouseEvent& event)
@@ -188,10 +188,9 @@ void CMyGLCanvasBase::OnMouseWheel(wxMouseEvent& event)
 static int WX_GL_ATTR_LIST[] = { WX_GL_DOUBLEBUFFER, WX_GL_RGBA, WX_GL_DEPTH_SIZE, 24,  0 };
 
 CMyGLCanvasBase::CMyGLCanvasBase(wxWindow *parent, wxWindowID id,const wxPoint& pos, const wxSize& size, long style, const wxString& name) :
-		wxGLCanvas(parent, id, WX_GL_ATTR_LIST, pos, size, style|wxFULL_REPAINT_ON_RESIZE , name ),
-        m_gl_context(nullptr),
-        m_init(false),
-        m_mouseLastX(0),m_mouseLastY(0)
+	wxGLCanvas(parent, id, WX_GL_ATTR_LIST, pos, size, style|wxFULL_REPAINT_ON_RESIZE , name ),
+	m_init(false),
+	m_mouseLastX(0),m_mouseLastY(0)
 {
     m_openGLScene = std::make_shared<COpenGLScene>();
 
@@ -209,7 +208,7 @@ CMyGLCanvasBase::CMyGLCanvasBase(wxWindow *parent, wxWindowID id,const wxPoint& 
 	useCameraFromScene	= false;
 
     cameraZoomDistance	= 40;
-	cameraFOV           = 30; 
+	cameraFOV           = 30;
     cameraElevationDeg 	= 45;
     cameraAzimuthDeg	= 45;
 
@@ -241,8 +240,6 @@ CMyGLCanvasBase::CMyGLCanvasBase(wxWindow *parent, wxWindowID id,const wxPoint& 
 
 CMyGLCanvasBase::~CMyGLCanvasBase()
 {
-	m_openGLScene.reset();
-	delete_safe(m_gl_context);
 }
 
 void CMyGLCanvasBase::OnChar( wxKeyEvent& event )
@@ -409,4 +406,3 @@ void CMyGLCanvasBase::setCameraPose(const mrpt::poses::CPose3D &camPose)
 }
 
 #endif // MRPT_HAS_WXWIDGETS
-

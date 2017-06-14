@@ -14,6 +14,7 @@
 // nanoflann library:
 #include <mrpt/otherlibs/nanoflann/nanoflann.hpp>
 #include <mrpt/math/lightweight_geom_data.h>
+#include <memory> // unique_ptr
 
 namespace mrpt
 {
@@ -676,31 +677,24 @@ namespace mrpt
 			template <int _DIM = -1>
 			struct TKDTreeDataHolder
 			{
-                /** Init the pointer to nullptr. */
-                inline TKDTreeDataHolder() : index(nullptr),m_dim(_DIM), m_num_points(0) { }
-
 				/** Copy constructor: It actually does NOT copy the kd-tree, a new object will be created if required!   */
-                inline TKDTreeDataHolder(const TKDTreeDataHolder &)  : index(nullptr),m_dim(_DIM), m_num_points(0) { }
-
+				inline TKDTreeDataHolder(const TKDTreeDataHolder &) { }
 				/** Copy operator: It actually does NOT copy the kd-tree, a new object will be created if required!  */
 				inline TKDTreeDataHolder& operator =(const TKDTreeDataHolder &o) {
 					if (&o!=this) clear();
 					return *this;
 				}
 
-				/** Free memory (if allocated) */
-				inline ~TKDTreeDataHolder() { clear(); }
-
 				/** Free memory (if allocated)  */
-				inline void clear()	{ mrpt::utils::delete_safe( index ); }
+				inline void clear()	{ index.reset(); }
 
 				typedef nanoflann::KDTreeSingleIndexAdaptor<metric_t,Derived, _DIM> kdtree_index_t;
 
-                kdtree_index_t *index;  //!< nullptr or the up-to-date index
+				std::unique_ptr<kdtree_index_t> index;  //!< nullptr or the up-to-date index
 
 				std::vector<num_t> query_point;
-				size_t           m_dim;         //!< Dimensionality. typ: 2,3
-				size_t           m_num_points;
+				size_t           m_dim = _DIM;         //!< Dimensionality. typ: 2,3
+				size_t           m_num_points = 0;
 			};
 
 			mutable TKDTreeDataHolder<2>  m_kdtree2d_data;
