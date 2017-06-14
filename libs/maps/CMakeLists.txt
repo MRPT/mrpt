@@ -21,18 +21,6 @@ IF(CMAKE_MRPT_HAS_LIBLAS)
 	INCLUDE_DIRECTORIES(${LAS_INCLUDE_DIRS})
 ENDIF()
 
-# vtk
-IF (${VERBOSE})
-	message(STATUS "VTK:")
-	message(STATUS "  INCLUDE_DIRS: ${VTK_INCLUDE_DIRS}")
-	message(STATUS "  VTK_LIBRARY_DIRS: ${VTK_LIBRARY_DIRS}")
-	message(STATUS "  VTK_LIBRARIES: ${VTK_LIBRARIES}")
-ENDIF()
-IF(CMAKE_MRPT_HAS_VTK)
-	LINK_DIRECTORIES(${VTK_LIBRARY_DIRS})
-	INCLUDE_DIRECTORIES(${VTK_INCLUDE_DIRS})
-ENDIF()
-
 #---------------------------------------------
 # Macro declared in "DeclareMRPTLib.cmake":
 #---------------------------------------------
@@ -57,6 +45,7 @@ IF(BUILD_mrpt-maps)
 	ENDIF()
 
 	IF (CMAKE_MRPT_HAS_VTK)
+        INCLUDE(${VTK_USE_FILE})
 		target_link_libraries(mrpt-maps ${VTK_LIBRARIES})
 	ENDIF()
 
