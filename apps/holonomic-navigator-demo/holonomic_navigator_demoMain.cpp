@@ -103,7 +103,7 @@ BEGIN_EVENT_TABLE(holonomic_navigator_demoFrame,wxFrame)
     //*)
 END_EVENT_TABLE()
 
-holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent,wxWindowID id)
+holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent,wxWindowID id) :
 	m_gridMap(),
 	m_targetPoint(-5,-7),
 	m_robotPose(0,0,0),
