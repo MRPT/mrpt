@@ -10,7 +10,7 @@
 
 #include <mrpt/utils/core_defs.h>
 #include <mrpt/tfest/link_pragmas.h>
-//#include <functional>
+#include <functional>
 
 namespace mrpt
 {
@@ -26,7 +26,7 @@ namespace mrpt
 			size_t idx_this, idx_other;
 		};
 
-		typedef bool (*TFunctorCheckPotentialMatch)(const TPotentialMatch &pm, void *user_data);
+		typedef std::function< bool (const TPotentialMatch &)> TFunctorCheckPotentialMatch;
 
 		/** @} */  // end of grouping
 	}
