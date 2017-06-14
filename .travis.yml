@@ -33,6 +33,7 @@ addons:
     - libudev-dev
     - libboost-python-dev
     - libpython-dev python-numpy
+    - qtbase5-dev
 
 before_install:
   - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew update          ; fi
