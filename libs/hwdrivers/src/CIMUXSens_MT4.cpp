@@ -402,7 +402,7 @@ void CIMUXSens_MT4::doProcess()
 		// Data properly collected: extract data fields
 		// -------------------------------------------------
 		m_state		= ssWorking;
-		CObservationIMU::Ptr obs			= CObservationIMU::Create();
+		CObservationIMU::Ptr obs			= std::make_shared<CObservationIMU>();
 
 		if (packet.containsOrientation())
 		{

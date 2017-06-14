@@ -367,12 +367,32 @@ void CPolyhedron::TPolyhedronFace::getCenter(const vector<TPoint3D> &vrts,TPoint
 	p.z/=N;
 }
 
-CPolyhedron::Ptr CPolyhedron::Create(const std::vector<math::TPolygon3D> &polys)	{
-	vector<TPoint3D> vertices(0);
-	vector<TPolyhedronFace> faces;
-	if (getVerticesAndFaces(polys,vertices,faces)) return Create(vertices,faces);
-	else return CreateEmpty();
+CPolyhedron::CPolyhedron(const std::vector<math::TPolygon3D> &polys) :
+	mEdges(),
+	mWireframe(false),
+	mLineWidth(1),
+	polygonsUpToDate(false)
+{
+	std::vector<TPoint3D> vertices(0);
+	std::vector<TPolyhedronFace> faces;
+	if (!getVerticesAndFaces(polys,vertices,faces))
+		throw std::logic_error("Can't create CPolygon");
+	mVertices = std::move(vertices);
+	mFaces = std::move(faces);
+
+	InitFromVertAndFaces(vertices, faces);
 }
+
+CPolyhedron::CPolyhedron(const vector<TPoint3D> &vertices,const vector<vector<uint32_t> > &faces) {
+	vector<TPolyhedronFace> aux;
+	for (vector<vector<uint32_t> >::const_iterator it=faces.begin();it!=faces.end();++it)   {
+		TPolyhedronFace f;
+		f.vertices=*it;
+		aux.push_back(f);
+	}
+	InitFromVertAndFaces(vertices, aux);
+}
+
 
 CPolyhedron::Ptr CPolyhedron::CreateCubicPrism(double x1,double x2,double y1,double y2,double z1,double z2)	{
 	vector<TPoint3D> verts;
@@ -985,7 +1005,7 @@ CPolyhedron::Ptr CPolyhedron::getDual() const	{
 			index++;
 		}
 	}
-	return Create(vertices,faces);
+	return std::make_shared<CPolyhedron>(vertices,faces);
 }
 
 CPolyhedron::Ptr CPolyhedron::truncate(double factor) const	{
@@ -1042,7 +1062,7 @@ CPolyhedron::Ptr CPolyhedron::truncate(double factor) const	{
 				}
 			}
 		}
-		return Create(vertices,faces);
+		return std::make_shared<CPolyhedron>(vertices,faces);
 	}	else if (factor==1)	{
 		size_t NE=mEdges.size();
 		size_t NV=mVertices.size();
@@ -1084,7 +1104,7 @@ CPolyhedron::Ptr CPolyhedron::truncate(double factor) const	{
 				f.push_back(where);
 			}
 		}
-		return Create(vertices,faces);
+		return std::make_shared<CPolyhedron>(vertices,faces);
 	}	else return CreateEmpty();
 }
 
@@ -1151,7 +1171,7 @@ CPolyhedron::Ptr CPolyhedron::cantellate(double factor) const	{
 			f.push_back(tmp);
 		}
 	}
-	return Create(vertices,faces);
+	return std::make_shared<CPolyhedron>(vertices,faces);
 }
 
 CPolyhedron::Ptr CPolyhedron::augment(double height) const	{
@@ -1540,18 +1560,6 @@ void CPolyhedron::getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoin
 	return CreateNoCheck(verts,faces);
 }*/
 
-CPolyhedron::Ptr CPolyhedron::Create(const vector<TPoint3D> &vertices,const vector<vector<uint32_t> > &faces)	{
-	vector<TPolyhedronFace> aux;
-	for (vector<vector<uint32_t> >::const_iterator it=faces.begin();it!=faces.end();++it)	{
-		TPolyhedronFace f;
-		f.vertices=*it;
-		aux.push_back(f);
-	}
-	return Create(vertices,aux);
-}
-CPolyhedron::Ptr CPolyhedron::Create(const vector<TPoint3D> &vertices,const vector<TPolyhedronFace> &faces)	{
-	return CPolyhedron::Ptr(new CPolyhedron(vertices,faces,true));
-}
 CPolyhedron::Ptr CPolyhedron::CreateTetrahedron(double radius)	{
 	CPolyhedron::Ptr tetra=CreateJohnsonSolidWithConstantBase(3,radius*sqrt(8.0)/3.0,"P+");
 	for (vector<TPoint3D>::iterator it=tetra->mVertices.begin();it!=tetra->mVertices.end();++it) it->z-=radius/3;

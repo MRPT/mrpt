@@ -47,16 +47,6 @@ CHMHMapNode::CHMHMapNode(
 	}
 }
 
-CHMHMapNode::Ptr CHMHMapNode::Create(
-	CHierarchicalMHMap		*parent,
-	const THypothesisIDSet	&hyps )
-{
-	CHMHMapNode::Ptr obj = CHMHMapNode::Ptr( new CHMHMapNode(parent,hyps) );
-	if (parent) parent->onNodeAddition(obj);
-	return obj;
-}
-
-
 /*---------------------------------------------------------------
 					Destructor
   ---------------------------------------------------------------*/

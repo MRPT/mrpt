@@ -1098,7 +1098,7 @@ void  CHierarchicalMapMHPartition::getAs3DScene(
 	// First: Clear and add the cool "ground grid" :-P
 	outScene.clear();
 	{
-		mrpt::opengl::CGridPlaneXY::Ptr obj = mrpt::opengl::CGridPlaneXY::Create( -500,500,-500,500,0,5 );
+		mrpt::opengl::CGridPlaneXY::Ptr obj = std::make_shared<mrpt::opengl::CGridPlaneXY>( -500,500,-500,500,0,5 );
 		obj->setColor(0.3,0.3,0.3);
 		outScene.insert( obj );
 	}
@@ -1155,7 +1155,7 @@ void  CHierarchicalMapMHPartition::getAs3DScene(
 		CMultiMetricMap::Ptr metricMap = node->m_annotations.getAs<CMultiMetricMap>(NODE_ANNOTATION_METRIC_MAPS, hypothesisID);
 		if (metricMap) //ASSERT_(metricMap);
 		{
-			mrpt::opengl::CSetOfObjects::Ptr objTex = mrpt::opengl::CSetOfObjects::Create();
+			mrpt::opengl::CSetOfObjects::Ptr objTex = std::make_shared<mrpt::opengl::CSetOfObjects>();
 			metricMap->getAs3DObject( objTex );
 			objTex->setPose( pose );
 			outScene.insert( objTex );
@@ -1175,7 +1175,7 @@ void  CHierarchicalMapMHPartition::getAs3DScene(
 		const CPose3D		meanPose= CPose3D(it2->second);
 
 		// The sphere of the node:
-		mrpt::opengl::CSphere::Ptr objSphere = mrpt::opengl::CSphere::Create();
+		mrpt::opengl::CSphere::Ptr objSphere = std::make_shared<mrpt::opengl::CSphere>();
 
 		objSphere->setName( node->m_label );
 		objSphere->setColor(0,0,1);
@@ -1189,7 +1189,7 @@ void  CHierarchicalMapMHPartition::getAs3DScene(
 		outScene.insert( objSphere );
 
 		// The label with the name of the node:
-		mrpt::opengl::CText::Ptr objText = mrpt::opengl::CText::Create();
+		mrpt::opengl::CText::Ptr objText = std::make_shared<mrpt::opengl::CText>();
 	//	objText->m_str = node->m_label;
 		objText->setString( format("%li",(long int)node->getID()) );
 		//objText->m_fontHeight = 20;
@@ -1212,7 +1212,7 @@ void  CHierarchicalMapMHPartition::getAs3DScene(
 
 				CPose3D auxPose( pose + SF_pose );
 
-				mrpt::opengl::CDisk::Ptr glObj = mrpt::opengl::CDisk::Create();
+				mrpt::opengl::CDisk::Ptr glObj = std::make_shared<mrpt::opengl::CDisk>();
 
 				glObj->setColor(1,0,0);
 
@@ -1232,7 +1232,7 @@ void  CHierarchicalMapMHPartition::getAs3DScene(
 				outScene.insert( glObj );
 
 				// And a line up-to the node:
-				mrpt::opengl::CSimpleLine::Ptr objLine = mrpt::opengl::CSimpleLine::Create();
+				mrpt::opengl::CSimpleLine::Ptr objLine = std::make_shared<mrpt::opengl::CSimpleLine>();
 
 				objLine->setColor(1,0,0, 0.2);
 				objLine->setLineWidth(1.5);
@@ -1257,7 +1257,7 @@ void  CHierarchicalMapMHPartition::getAs3DScene(
 				CPose3D		poseTo( nodesMeanPoses.find(arc->getNodeTo())->second );
 
 				// Draw the line:
-				mrpt::opengl::CSimpleLine::Ptr objLine = mrpt::opengl::CSimpleLine::Create();
+				mrpt::opengl::CSimpleLine::Ptr objLine = std::make_shared<mrpt::opengl::CSimpleLine>();
 
 				objLine->setColor(0,1,0, 0.5);
 				objLine->setLineWidth(5);

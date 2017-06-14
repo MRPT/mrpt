@@ -39,7 +39,7 @@ namespace mrpt
 				const bool is_3D_graph = constraint_t::is_3D();
 
 				// create opengl obejct to be filled.
-				CSetOfObjects::Ptr ret = CSetOfObjects::Create();
+				CSetOfObjects::Ptr ret = std::make_shared<CSetOfObjects>();
 
 				// graph visualization parameters
 				const bool show_ID_labels               =  0!=extra_params.getWithDefaultVal("show_ID_labels", 0);
@@ -76,14 +76,14 @@ namespace mrpt
 
 					// Create ground plane:
 					const double grid_frequency = 5.0;
-					CGridPlaneXY::Ptr grid = CGridPlaneXY::Create(BB_min.x, BB_max.x, BB_min.y, BB_max.y, BB_min.z, grid_frequency);
+					CGridPlaneXY::Ptr grid = std::make_shared<CGridPlaneXY>(BB_min.x, BB_max.x, BB_min.y, BB_max.y, BB_min.z, grid_frequency);
 					grid->setColor(0.3,0.3,0.3);
 					ret->insert(grid);
 				} // end show_ground_grid
 
 				// Draw nodes as thick points:
 				if (nodes_point_size>0) {
-					CPointCloud::Ptr pnts = CPointCloud::Create();
+					CPointCloud::Ptr pnts = std::make_shared<CPointCloud>();
 					pnts->setColor(TColorf(TColor(nodes_point_color)));
 					pnts->setPointSize(nodes_point_size);
 
@@ -114,7 +114,7 @@ namespace mrpt
 							(is_3D_graph ?
 							 stock_objects::CornerXYZSimple(nodes_corner_scale, 1.0 /*line width*/):
 							 stock_objects::CornerXYSimple(nodes_corner_scale, 1.0 /*line width*/))
-							: CSetOfObjects::Create();
+							: std::make_shared<CSetOfObjects>();
 						gl_corner->setPose(p);
 						if (show_ID_labels) // don't show IDs twice!
 						{
@@ -140,7 +140,7 @@ namespace mrpt
 						if (itNod!=g.nodes.end()) {
 							const CPose3D pSource = CPose3D(itNod->second);
 							// Create a set of objects at that pose and do the rest in relative coords:
-							mrpt::opengl::CSetOfObjects::Ptr gl_rel_edge = mrpt::opengl::CSetOfObjects::Create();
+							mrpt::opengl::CSetOfObjects::Ptr gl_rel_edge = std::make_shared<mrpt::opengl::CSetOfObjects>();
 							gl_rel_edge->setPose(pSource);
 
 							const typename GRAPH_T::constraint_no_pdf_t & edge_pose = itEd->second.getPoseMean();
@@ -155,7 +155,7 @@ namespace mrpt
 							gl_rel_edge->insert(gl_edge_corner);
 
 							mrpt::opengl::CSimpleLine::Ptr gl_line =
-								mrpt::opengl::CSimpleLine::Create(0,0,0, edge_pose_pt.x(), edge_pose_pt.y(), edge_pose_pt.z());
+								std::make_shared<mrpt::opengl::CSimpleLine>(0,0,0, edge_pose_pt.x(), edge_pose_pt.y(), edge_pose_pt.z());
 							gl_line->setColor_u8(col8bit);
 							gl_line->setLineWidth(edge_width);
 							gl_rel_edge->insert(gl_line);
@@ -166,7 +166,7 @@ namespace mrpt
 				}
 
 				if (show_edges) {
-					CSetOfLines::Ptr  gl_edges = CSetOfLines::Create();
+					CSetOfLines::Ptr  gl_edges = std::make_shared<CSetOfLines>();
 					const TColor col8bit(edge_color & 0xffffff, edge_color >> 24);
 
 					gl_edges->setColor_u8(col8bit);

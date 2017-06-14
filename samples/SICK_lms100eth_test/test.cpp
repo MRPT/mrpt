@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
 
     COpenGLScene::Ptr ptr_scene = win3D.get3DSceneAndLock();
 
-    opengl::CPlanarLaserScan::Ptr obj = opengl::CPlanarLaserScan::Create();
+    opengl::CPlanarLaserScan::Ptr obj = std::make_shared<opengl::CPlanarLaserScan>();
     obj->clear();
     obj->setColor(0,0,1);
     obj->setName( "scan_LMS100" );

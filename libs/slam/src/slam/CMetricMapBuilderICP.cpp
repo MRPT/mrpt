@@ -352,7 +352,7 @@ void  CMetricMapBuilderICP::processObservation(const CObservation::Ptr &obs)
 			CPosePDFGaussian	posePDF(currentKnownRobotPose);
 			CPose3DPDF::Ptr  pose3D = CPose3DPDF::Ptr( CPose3DPDF::createFrom2D( posePDF ) );
 
-			CSensoryFrame::Ptr sf = CSensoryFrame::Create();
+			CSensoryFrame::Ptr sf = std::make_shared<CSensoryFrame>();
 			sf->insert(obs);
 
 			SF_Poses_seq.insert( pose3D, sf );
@@ -388,7 +388,7 @@ void  CMetricMapBuilderICP::processActionObservation(
 	{
 		m_auxAccumOdometry.composeFrom( m_auxAccumOdometry, movEstimation->poseChange->getMeanVal() );
 
-		CObservationOdometry::Ptr obs = CObservationOdometry::Create();
+		CObservationOdometry::Ptr obs = std::make_shared<CObservationOdometry>();
 		obs->timestamp = movEstimation->timestamp;
 		obs->odometry = m_auxAccumOdometry;
 		this->processObservation(obs);
@@ -427,7 +427,7 @@ CPose3DPDF::Ptr CMetricMapBuilderICP::getCurrentPoseEstimation() const
 	m_lastPoseEst.getLatestRobotPose(pdf2D.mean);
 	pdf2D.cov = m_lastPoseEst_cov;
 
-	CPose3DPDFGaussian::Ptr pdf3D = CPose3DPDFGaussian::Create();
+	CPose3DPDFGaussian::Ptr pdf3D = std::make_shared<CPose3DPDFGaussian>();
 	pdf3D->copyFrom(pdf2D);
 	return pdf3D;
 }

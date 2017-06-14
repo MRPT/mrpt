@@ -206,7 +206,7 @@ namespace mrpt
 		/** The main method for the navigator */
 		virtual void  performNavigationStep() override;
 
-		std::vector<CAbstractHolonomicReactiveMethod*>  m_holonomicMethod;   //!< The holonomic navigation algorithm (one object per PTG, so internal states are maintained)
+		std::vector<CAbstractHolonomicReactiveMethod::Ptr>  m_holonomicMethod;   //!< The holonomic navigation algorithm (one object per PTG, so internal states are maintained)
 		mrpt::utils::CStream  *m_logFile, *m_prev_logfile;         //!< The current log file stream, or nullptr if not being used
 		bool                   m_enableKeepLogRecords; //!< See enableKeepLogRecords
 		CLogFileRecord lastLogRecord;  //!< The last log
@@ -304,7 +304,7 @@ namespace mrpt
 			TCandidateMovementPTG &holonomicMovement,
 			CLogFileRecord &newLogRec,
 			const bool this_is_PTG_continuation,
-			mrpt::nav::CAbstractHolonomicReactiveMethod *holoMethod,
+			mrpt::nav::CAbstractHolonomicReactiveMethod &holoMethod,
 			const mrpt::system::TTimeStamp tim_start_iteration,
 			const TNavigationParams &navp = TNavigationParams(),
 			const mrpt::math::TPose2D &relPoseVelCmd_NOP = mrpt::poses::CPose2D()

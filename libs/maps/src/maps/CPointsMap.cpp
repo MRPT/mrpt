@@ -751,7 +751,7 @@ void  CPointsMap::getAs3DObject( mrpt::opengl::CSetOfObjects::Ptr	&outObj ) cons
 {
 	if (!genericMapParams.enableSaveAs3DObject) return;
 
-	opengl::CPointCloud::Ptr  obj = opengl::CPointCloud::Create();
+	opengl::CPointCloud::Ptr  obj = std::make_shared<opengl::CPointCloud>();
 
 	obj->loadFromPointsMap(this);
 	obj->setColor( CPointsMap::COLOR_3DSCENE_R, CPointsMap::COLOR_3DSCENE_G, CPointsMap::COLOR_3DSCENE_B, 1 );
@@ -1472,7 +1472,7 @@ void internal_build_points_map_from_scan2D(const mrpt::obs::CObservation2DRangeS
 	if (out_map)
 		return; // Already done!
 
-	out_map = CSimplePointsMap::Create();
+	out_map = std::make_shared<CSimplePointsMap>();
 
 	if (insertOps)
 		static_cast<CSimplePointsMap*>(out_map.get())->insertionOptions = *static_cast<const CPointsMap::TInsertionOptions*>(insertOps);

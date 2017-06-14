@@ -215,7 +215,7 @@ void xRawLogViewerFrame::OnMenuMono2Stereo(wxCommandEvent& event)
 					CObservationImage::Ptr o_l = std::dynamic_pointer_cast<CObservationImage>( obs_l );
 					CObservationImage::Ptr o_r = std::dynamic_pointer_cast<CObservationImage>( obs_r );
 
-					CObservationStereoImages::Ptr		new_obs = CObservationStereoImages::Create();
+					CObservationStereoImages::Ptr		new_obs = std::make_shared<CObservationStereoImages>();
 
 					new_obs->timestamp = ( o_l->timestamp + o_r->timestamp ) >> 1;
 					new_obs->sensorLabel = lb_stereo;

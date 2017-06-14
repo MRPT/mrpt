@@ -87,8 +87,8 @@ void thread_grabbing(TThreadParam &p)
 		while (!hard_error && !p.quit)
 		{
 			// Grab new observation from the camera:
-			CObservation3DRangeScan::Ptr  obs     = CObservation3DRangeScan::Create(); // Smart pointers to observations
-			CObservationIMU::Ptr          obs_imu = CObservationIMU::Create();
+			CObservation3DRangeScan::Ptr  obs     = std::make_shared<CObservation3DRangeScan>(); // Smart pointers to observations
+			CObservationIMU::Ptr          obs_imu = std::make_shared<CObservationIMU>();
 
 			kinect.getNextObservation(*obs,*obs_imu,there_is_obs,hard_error);
 
@@ -175,10 +175,10 @@ void Test_Kinect()
 	win3D.setCameraPointingToPoint(2.5,0,0);
 
 #if !defined(VIEW_AS_OCTOMAP)
-	mrpt::opengl::CPointCloudColoured::Ptr gl_points = mrpt::opengl::CPointCloudColoured::Create();
+	mrpt::opengl::CPointCloudColoured::Ptr gl_points = std::make_shared<mrpt::opengl::CPointCloudColoured>();
 	gl_points->setPointSize(2.5);
 #else
-	mrpt::opengl::COctoMapVoxels::Ptr gl_voxels = mrpt::opengl::COctoMapVoxels::Create();
+	mrpt::opengl::COctoMapVoxels::Ptr gl_voxels = std::make_shared<mrpt::opengl::COctoMapVoxels>();
 #endif
 
 	const double aspect_ratio =  480.0 / 640.0; // kinect.getRowCount() / double( kinect.getColCount() );
@@ -193,7 +193,7 @@ void Test_Kinect()
 #else
 		scene->insert( gl_voxels );
 #endif
-		scene->insert( mrpt::opengl::CGridPlaneXY::Create() );
+		scene->insert( std::make_shared<mrpt::opengl::CGridPlaneXY>() );
 		scene->insert( mrpt::opengl::stock_objects::CornerXYZ() );
 
 		const int VW_WIDTH = 250;	// Size of the viewport into the window, in pixel units.

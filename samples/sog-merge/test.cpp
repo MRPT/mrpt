@@ -56,10 +56,10 @@ void Test_SoG_Merge()
 
 	{
 		COpenGLScene	scene;
-		CSetOfObjects::Ptr  o = CSetOfObjects::Create();
+		CSetOfObjects::Ptr  o = std::make_shared<CSetOfObjects>();
 		pdf.getAs3DObject(o);
 		scene.insert(o);
-		scene.insert( CGridPlaneXY::Create(-5,5,-5,5,0,1) );
+		scene.insert( std::make_shared<CGridPlaneXY>(-5,5,-5,5,0,1) );
 		CFileGZOutputStream("sog_before.3Dscene") << scene;
 
 	#if MRPT_HAS_WXWIDGETS
@@ -83,10 +83,10 @@ void Test_SoG_Merge()
 
 	{
 		COpenGLScene	scene;
-		CSetOfObjects::Ptr  o = CSetOfObjects::Create();
+		CSetOfObjects::Ptr  o = std::make_shared<CSetOfObjects>();
 		pdf.getAs3DObject(o);
 		scene.insert(o);
-		scene.insert( CGridPlaneXY::Create(-5,5,-5,5,0,1) );
+		scene.insert( std::make_shared<CGridPlaneXY>(-5,5,-5,5,0,1) );
 		CFileGZOutputStream("sog_after.3Dscene") << scene;
 
 	#if MRPT_HAS_WXWIDGETS

@@ -26,10 +26,6 @@ using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(CGeneralizedCylinder,CRenderizableDisplayList,mrpt::opengl)
 
-CGeneralizedCylinder::Ptr CGeneralizedCylinder::Create(const std::vector<TPoint3D> &axis,const std::vector<TPoint3D> &generatrix)	
-{
-	return CGeneralizedCylinder::Ptr(new CGeneralizedCylinder(axis,generatrix));
-}
 void CGeneralizedCylinder::TQuadrilateral::calculateNormal()	{
 	double ax=points[1].x-points[0].x;
 	double ay=points[1].y-points[0].y;
@@ -163,7 +159,7 @@ void generatePolygon(CPolyhedron::Ptr &poly,const vector<TPoint3D> &profile,cons
 	for (size_t i=0;i<profile.size();i++) pose.composePoint(profile[i].x,profile[i].y,profile[i].z,p[i].x,p[i].y,p[i].z);
 	vector<math::TPolygon3D> convexPolys;
 	if (!math::splitInConvexComponents(p,convexPolys)) convexPolys.push_back(p);
-	poly=CPolyhedron::Create(convexPolys);
+	poly=std::make_shared<CPolyhedron>(convexPolys);
 }
 
 void CGeneralizedCylinder::getOrigin(CPolyhedron::Ptr &poly) const	{
@@ -223,7 +219,7 @@ void CGeneralizedCylinder::getClosedSection(size_t index1,size_t index2,mrpt::op
 	for (size_t i=0;i<nr+1;i++) tmp[i]=i*(nc+1);
 	faces.push_back(tmp);
 	for (size_t i=0;i<nr+1;i++) tmp[i]=i*(nc+2)-1;
-	poly=CPolyhedron::Create(vertices,faces);
+	poly=std::make_shared<CPolyhedron>(vertices,faces);
 }
 
 void CGeneralizedCylinder::removeVisibleSectionAtStart()	{

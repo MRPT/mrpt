@@ -39,7 +39,7 @@ bool CMetricMap_insertObservationPtr(CMetricMap& self, const CObservation::Ptr& 
 
 CSetOfObjects::Ptr CMetricMap_getAs3DObject(CMetricMap &self)
 {
-    CSetOfObjects::Ptr outObj = CSetOfObjects::Create();
+    CSetOfObjects::Ptr outObj = std::make_shared<CSetOfObjects>();
     self.getAs3DObject(outObj);
     return outObj;
 }
@@ -137,7 +137,7 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(COccupancyGridMap2D_loadFromBitmapFile_ov
 // CPointsMap
 mrpt::opengl::CSetOfObjects::Ptr CPointsMap_getAs3DObject(CPointsMap &self)
 {
-    mrpt::opengl::CSetOfObjects::Ptr outObj = mrpt::opengl::CSetOfObjects::Create();
+    mrpt::opengl::CSetOfObjects::Ptr outObj = std::make_shared<mrpt::opengl::CSetOfObjects>();
     self.getAs3DObject(outObj);
     return outObj;
 }
@@ -227,7 +227,7 @@ void TSetOfMetricMapInitializers_push_back(TSetOfMetricMapInitializers& self, TM
 // CMultiMetricMap
 mrpt::opengl::CSetOfObjects::Ptr CMultiMetricMap_getAs3DObject(CMultiMetricMap &self)
 {
-    mrpt::opengl::CSetOfObjects::Ptr outObj = mrpt::opengl::CSetOfObjects::Create();
+    mrpt::opengl::CSetOfObjects::Ptr outObj = std::make_shared<mrpt::opengl::CSetOfObjects>();
     self.getAs3DObject(outObj);
     return outObj;
 }

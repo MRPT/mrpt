@@ -194,7 +194,7 @@ namespace mrpt
 				*/
 			virtual void  getAs3DObject( mrpt::opengl::CSetOfObjects::Ptr	&outObj ) const override
 			{
-				mrpt::opengl::COctoMapVoxels::Ptr gl_obj = mrpt::opengl::COctoMapVoxels::Create();
+				mrpt::opengl::COctoMapVoxels::Ptr gl_obj = std::make_shared<mrpt::opengl::COctoMapVoxels>();
 				this->getAsOctoMapVoxels(*gl_obj);
 				outObj->insert(gl_obj);
 			}

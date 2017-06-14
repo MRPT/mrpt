@@ -25,10 +25,6 @@ using namespace std;
 
 IMPLEMENTS_SERIALIZABLE( CDisk, CRenderizableDisplayList, mrpt::opengl )
 
-CDisk::Ptr CDisk::Create(float radiusOut,float radiusIn,uint32_t slices,uint32_t loops)	
-{
-	return CDisk::Ptr(new CDisk(radiusOut,radiusIn,slices,loops));
-}
 /*---------------------------------------------------------------
 							render
   ---------------------------------------------------------------*/

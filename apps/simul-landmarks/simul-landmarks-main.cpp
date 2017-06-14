@@ -290,7 +290,7 @@ int main(int argc, char ** argv)
 			}
 
             // Simulate observations:
-            CObservationBearingRange::Ptr obs=CObservationBearingRange::Create();
+            CObservationBearingRange::Ptr obs=std::make_shared<CObservationBearingRange>();
 
             obs->minSensorDistance=minSensorDistance;
             obs->maxSensorDistance=maxSensorDistance;
@@ -393,13 +393,13 @@ int main(int argc, char ** argv)
 
 			mrpt::opengl::COpenGLScene::Ptr &scene = win.get3DSceneAndLock();
 
-			scene->insert( mrpt::opengl::CGridPlaneXY::Create( min_x-10,max_x+10,min_y-10,max_y+10,0 ));
+			scene->insert( std::make_shared<mrpt::opengl::CGridPlaneXY>( min_x-10,max_x+10,min_y-10,max_y+10,0 ));
 			scene->insert( mrpt::opengl::stock_objects::CornerXYZ() );
 
 			// Insert all landmarks:
 			for (CLandmarksMap::TCustomSequenceLandmarks::const_iterator it=landmarkMap.landmarks.begin();it!=landmarkMap.landmarks.end();++it)
 			{
-				mrpt::opengl::CSphere::Ptr lm = mrpt::opengl::CSphere::Create();
+				mrpt::opengl::CSphere::Ptr lm = std::make_shared<mrpt::opengl::CSphere>();
 				lm->setColor(1,0,0);
 				lm->setRadius(0.1f);
 				lm->setLocation( it->pose_mean );
@@ -410,7 +410,7 @@ int main(int argc, char ** argv)
 
 			// Insert all robot poses:
 			const size_t N = size(GT_path,1);
-			mrpt::opengl::CSetOfLines::Ptr  pathLines = mrpt::opengl::CSetOfLines::Create();
+			mrpt::opengl::CSetOfLines::Ptr  pathLines = std::make_shared<mrpt::opengl::CSetOfLines>();
 			pathLines->setColor(0,0,1,0.5);
 			pathLines->setLineWidth(3.0);
 			pathLines->resize(N-1);

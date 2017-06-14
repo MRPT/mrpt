@@ -53,7 +53,7 @@ bool mrpt::obs::carmen_log_parse_line(
 		std::istringstream  S;  // Read from the string as if it was a stream
 		S.str(line);
 
-		CObservation2DRangeScan::Ptr obsLaser_ptr = CObservation2DRangeScan::Create();
+		CObservation2DRangeScan::Ptr obsLaser_ptr = std::make_shared<CObservation2DRangeScan>();
 		CObservation2DRangeScan* obsLaser = obsLaser_ptr.get(); // Faster access
 
 		// Parse:
@@ -116,7 +116,7 @@ bool mrpt::obs::carmen_log_parse_line(
 
 		// Create odometry observation:
 		{
-			CObservationOdometry::Ptr obsOdo_ptr = CObservationOdometry::Create();
+			CObservationOdometry::Ptr obsOdo_ptr = std::make_shared<CObservationOdometry>();
 
 			obsOdo_ptr->timestamp = obs_time;
 			obsOdo_ptr->odometry = CPose2D(globalRobotPose);
@@ -138,7 +138,7 @@ bool mrpt::obs::carmen_log_parse_line(
 		std::istringstream  S;  // Read from the string as if it was a stream
 		S.str(line);
 
-		CObservation2DRangeScan::Ptr obsLaser_ptr = CObservation2DRangeScan::Create();
+		CObservation2DRangeScan::Ptr obsLaser_ptr = std::make_shared<CObservation2DRangeScan>();
 		CObservation2DRangeScan* obsLaser = obsLaser_ptr.get(); // Faster access
 
 		// Parse:
@@ -198,7 +198,7 @@ bool mrpt::obs::carmen_log_parse_line(
 
 		// Create odometry observation:
 		{
-			CObservationOdometry::Ptr obsOdo_ptr = CObservationOdometry::Create();
+			CObservationOdometry::Ptr obsOdo_ptr = std::make_shared<CObservationOdometry>();
 
 			obsOdo_ptr->timestamp = obs_time;
 			obsOdo_ptr->odometry = CPose2D(globalRobotPose);

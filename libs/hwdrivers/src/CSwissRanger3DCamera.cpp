@@ -163,7 +163,7 @@ void CSwissRanger3DCamera::doProcess()
 
 	bool	thereIs, hwError;
 
-	CObservation3DRangeScan::Ptr newObs = CObservation3DRangeScan::Create();
+	CObservation3DRangeScan::Ptr newObs = std::make_shared<CObservation3DRangeScan>();
 
 	getNextObservation( *newObs, thereIs, hwError );
 
@@ -518,7 +518,7 @@ void CSwissRanger3DCamera::getNextObservation(
 			if (++decim>10)
 			{
 				decim=0;
-				if (!m_win_range)	{ m_win_range = mrpt::gui::CDisplayWindow::Create("Preview RANGE"); m_win_range->setPos(5,5); }
+				if (!m_win_range)	{ m_win_range = std::make_shared<mrpt::gui::CDisplayWindow>("Preview RANGE"); m_win_range->setPos(5,5); }
 
 				mrpt::utils::CImage  img;
 				// Normalize the image
@@ -534,7 +534,7 @@ void CSwissRanger3DCamera::getNextObservation(
 			if (++decim>10)
 			{
 				decim=0;
-				if (!m_win_int)		{ m_win_int = mrpt::gui::CDisplayWindow::Create("Preview INTENSITY"); m_win_int->setPos(300,5); }
+				if (!m_win_int)		{ m_win_int = std::make_shared<mrpt::gui::CDisplayWindow>("Preview INTENSITY"); m_win_int->setPos(300,5); }
 				m_win_int->showImage(_out_obs.intensityImage );
 			}
 		}

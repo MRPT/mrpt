@@ -104,7 +104,7 @@ void CGillAnemometer::doProcess()
 		THROW_EXCEPTION("Cannot open the serial port");
 	}
 
-	mrpt::obs::CObservationWindSensor::Ptr obsPtr = mrpt::obs::CObservationWindSensor::Create();
+	mrpt::obs::CObservationWindSensor::Ptr obsPtr = std::make_shared<mrpt::obs::CObservationWindSensor>();
 	bool have_reading = false;
 	std::string wind_reading;
 	bool time_out = false;

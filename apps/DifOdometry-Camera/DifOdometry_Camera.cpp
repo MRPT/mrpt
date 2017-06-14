@@ -230,7 +230,7 @@ void CDifodoCamera::initializeScene()
 	light0.setPosition(0,0,1,1);
 
 	//Grid (ground)
-	CGridPlaneXY::Ptr ground = CGridPlaneXY::Create();
+	CGridPlaneXY::Ptr ground = std::make_shared<CGridPlaneXY>();
 	scene->insert( ground );
 
 	//Reference
@@ -241,13 +241,13 @@ void CDifodoCamera::initializeScene()
 	//------------------------------------------------------
 
 	//DifOdo camera
-	CBox::Ptr camera_odo = CBox::Create(math::TPoint3D(-0.02,-0.1,-0.01),math::TPoint3D(0.02,0.1,0.01));
+	CBox::Ptr camera_odo = std::make_shared<CBox>(math::TPoint3D(-0.02,-0.1,-0.01),math::TPoint3D(0.02,0.1,0.01));
 	camera_odo->setPose(cam_pose + rel_lenspose);
 	camera_odo->setColor(0,1,0);
 	scene->insert( camera_odo );
 
 	//Frustum
-	opengl::CFrustum::Ptr FOV = opengl::CFrustum::Create(0.3, 2, 57.3*fovh, 57.3*fovv, 1.f, true, false);
+	opengl::CFrustum::Ptr FOV = std::make_shared<opengl::CFrustum>(0.3, 2, 57.3*fovh, 57.3*fovv, 1.f, true, false);
 	FOV->setColor(0.7,0.7,0.7);
 	FOV->setPose(cam_pose);
 	scene->insert( FOV );
@@ -259,7 +259,7 @@ void CDifodoCamera::initializeScene()
 	scene->insert( reference_gt );
 
 	//Camera points
-	CPointCloudColoured::Ptr cam_points = CPointCloudColoured::Create();
+	CPointCloudColoured::Ptr cam_points = std::make_shared<CPointCloudColoured>();
 	cam_points->setPointSize(2);
 	cam_points->enablePointSmooth(1);
 	cam_points->setPose(cam_pose);
@@ -270,12 +270,12 @@ void CDifodoCamera::initializeScene()
 	//-------------------------------------------------------------
 
 	//Dif Odometry
-	CSetOfLines::Ptr traj_lines_odo = CSetOfLines::Create();
+	CSetOfLines::Ptr traj_lines_odo = std::make_shared<CSetOfLines>();
 	traj_lines_odo->setLocation(0,0,0);
 	traj_lines_odo->setColor(0,0.6,0);
 	traj_lines_odo->setLineWidth(6);
 	scene->insert( traj_lines_odo );
-	CPointCloud::Ptr traj_points_odo = CPointCloud::Create();
+	CPointCloud::Ptr traj_points_odo = std::make_shared<CPointCloud>();
 	traj_points_odo->setColor(0,0.6,0);
 	traj_points_odo->setPointSize(4);
 	traj_points_odo->enablePointSmooth(1);
@@ -283,7 +283,7 @@ void CDifodoCamera::initializeScene()
 
 	//Ellipsoid showing covariance
 	math::CMatrixFloat33 cov3d = 20.f*est_cov.topLeftCorner(3,3);
-	CEllipsoid::Ptr ellip = CEllipsoid::Create();
+	CEllipsoid::Ptr ellip = std::make_shared<CEllipsoid>();
 	ellip->setCovMatrix(cov3d);
 	ellip->setQuantiles(2.0);
 	ellip->setColor(1.0, 1.0, 1.0, 0.5);

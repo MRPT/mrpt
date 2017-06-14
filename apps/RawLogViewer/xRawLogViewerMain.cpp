@@ -1513,7 +1513,7 @@ void xRawLogViewerFrame::loadRawlogFile(
 				if ( entryIndex>=first && (last==-1 || entryIndex<=last)  )
 				{
 					CPose2D::Ptr poseChange = std::dynamic_pointer_cast<CPose2D>(newObj);
-					CActionCollection::Ptr temp = CActionCollection::Create();
+					CActionCollection::Ptr temp = std::make_shared<CActionCollection>();
 					CActionRobotMovement2D		action;
 					CActionRobotMovement2D::TMotionModelOptions	options;
 					action.computeFromOdometry( *poseChange, options);
@@ -2047,7 +2047,7 @@ void xRawLogViewerFrame::OnMenuGenerateBeaconList(wxCommandEvent& event)
 							if (k<obs->sensedData.size())
 								rng = obs->sensedData[k].sensedDistance;
 
-							if (isNaN(rng)) rng = 0;
+							if (std::isnan(rng)) rng = 0;
 
 							::fprintf(f,"%f ", rng);
 						}
@@ -2070,7 +2070,7 @@ void xRawLogViewerFrame::OnMenuGenerateBeaconList(wxCommandEvent& event)
 						if (k<obs->sensedData.size())
 							rng = obs->sensedData[k].sensedDistance;
 
-						if (isNaN(rng)) rng = 0;
+						if (std::isnan(rng)) rng = 0;
 
 						::fprintf(f,"%f ", rng);
 					}
@@ -2917,7 +2917,7 @@ void xRawLogViewerFrame::OnCountBadScans(wxCommandEvent& event)
 						{
 							if (obsScan->validRange[k])
 								thisValid = true;
-							if ( mrpt::math::isNaN(obsScan->scan[k]))
+							if (std::isnan(obsScan->scan[k]))
 								thisValid = false;
 						}
 
@@ -2938,7 +2938,7 @@ void xRawLogViewerFrame::OnCountBadScans(wxCommandEvent& event)
 					{
 						if (obsScan->validRange[k])
 							thisValid = true;
-						if ( mrpt::math::isNaN(obsScan->scan[k]))
+						if (std::isnan(obsScan->scan[k]))
 							thisValid = false;
 					}
 
@@ -3210,10 +3210,10 @@ void xRawLogViewerFrame::OnRemoveSpecificRangeMeas(wxCommandEvent& event)
 						{
 							bool filter = false;
 
-							if ( isNaN(obs->sensedData[q].sensedDistance) )
+							if ( std::isnan(obs->sensedData[q].sensedDistance) )
 								obs->sensedData[q].sensedDistance = 0;
 
-							filter = isNaN(obs_2->sensedData[q].sensedDistance);
+							filter = std::isnan(obs_2->sensedData[q].sensedDistance);
 
 							if (!filter)
 								filter = (obs->sensedData[q].sensedDistance   == obs_1->sensedData[q].sensedDistance &&

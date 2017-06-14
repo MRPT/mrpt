@@ -153,8 +153,8 @@ void CKinect::doProcess()
 {
 	bool	thereIs, hwError;
 
-	CObservation3DRangeScan::Ptr newObs     = CObservation3DRangeScan::Create();
-	CObservationIMU::Ptr         newObs_imu = CObservationIMU::Create();
+	CObservation3DRangeScan::Ptr newObs     = std::make_shared<CObservation3DRangeScan>();
+	CObservationIMU::Ptr         newObs_imu = std::make_shared<CObservationIMU>();
 
 	getNextObservation( *newObs, *newObs_imu, thereIs, hwError );
 
@@ -604,7 +604,7 @@ void CKinect::getNextObservation(
 			if (++m_preview_decim_counter_range>m_preview_window_decimation)
 			{
 				m_preview_decim_counter_range=0;
-				if (!m_win_range)	{ m_win_range = mrpt::gui::CDisplayWindow::Create("Preview RANGE"); m_win_range->setPos(5,5); }
+				if (!m_win_range)	{ m_win_range = std::make_shared<mrpt::gui::CDisplayWindow>("Preview RANGE"); m_win_range->setPos(5,5); }
 
 				// Normalize the image
 				mrpt::utils::CImage  img;
@@ -618,7 +618,7 @@ void CKinect::getNextObservation(
 			if (++m_preview_decim_counter_rgb>m_preview_window_decimation)
 			{
 				m_preview_decim_counter_rgb=0;
-				if (!m_win_int)		{ m_win_int = mrpt::gui::CDisplayWindow::Create("Preview INTENSITY"); m_win_int->setPos(300,5); }
+				if (!m_win_int)		{ m_win_int = std::make_shared<mrpt::gui::CDisplayWindow>("Preview INTENSITY"); m_win_int->setPos(300,5); }
 				m_win_int->showImage(_out_obs.intensityImage );
 			}
 		}

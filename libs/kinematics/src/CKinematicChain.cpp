@@ -143,7 +143,7 @@ const float R = 0.01f;
 void addBar_D(mrpt::opengl::CSetOfObjects::Ptr &objs, const double d)
 {
 
-	mrpt::opengl::CCylinder::Ptr gl_cyl = mrpt::opengl::CCylinder::Create(R,R, d );
+	mrpt::opengl::CCylinder::Ptr gl_cyl = std::make_shared<mrpt::opengl::CCylinder>(R,R, d );
 	gl_cyl->setColor_u8( mrpt::utils::TColor(0x00,0x00,0xff) );
 	gl_cyl->setName("cyl.d");
 
@@ -152,7 +152,7 @@ void addBar_D(mrpt::opengl::CSetOfObjects::Ptr &objs, const double d)
 
 void addBar_A(mrpt::opengl::CSetOfObjects::Ptr &objs, const double a)
 {
-	mrpt::opengl::CCylinder::Ptr gl_cyl2 = mrpt::opengl::CCylinder::Create(R,R, -a );
+	mrpt::opengl::CCylinder::Ptr gl_cyl2 = std::make_shared<mrpt::opengl::CCylinder>(R,R, -a );
 	gl_cyl2->setColor_u8( mrpt::utils::TColor(0xff,0x00,0x00) );
 	gl_cyl2->setPose( mrpt::poses::CPose3D(0,0,0, 0, DEG2RAD(90),0) );
 	gl_cyl2->setName("cyl.a");

@@ -434,7 +434,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 				// Create new area in the H-MAP:
 				std::lock_guard<std::mutex>  lock(m_map_cs );
 
-				CHMHMapNode::Ptr newArea = CHMHMapNode::Create( &m_map );
+				CHMHMapNode::Ptr newArea = std::make_shared<CHMHMapNode>( &m_map );
 
 				// For now, the area exists in this hypothesis only:
 				newArea->m_hypotheses.insert( LMH->m_ID );
@@ -444,7 +444,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 				CMultiMetricMap::Ptr emptyMap = CMultiMetricMap::Ptr( new CMultiMetricMap(&m_options.defaultMapsInitializers) );
 				newArea->m_annotations.setMemoryReference( NODE_ANNOTATION_METRIC_MAPS,     emptyMap, 		LMH->m_ID );
 
-				CRobotPosesGraph::Ptr emptyPoseGraph = CRobotPosesGraph::Create();
+				CRobotPosesGraph::Ptr emptyPoseGraph = std::make_shared<CRobotPosesGraph>();
 				newArea->m_annotations.setMemoryReference( NODE_ANNOTATION_POSES_GRAPH, emptyPoseGraph, LMH->m_ID );
 
 				// Set ID in list:
@@ -721,7 +721,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 								if (!newArc)
 								{
 									// Create a new one:
-									newArc = CHMHMapArc::Create(
+									newArc = std::make_shared<CHMHMapArc>(
 										nodeB,  // Source
 										node_c,		// Target
 										LMH->m_ID,	// Hypos
@@ -1115,7 +1115,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 				// If not found, create it now:
 				if (!newArc)
 				{
-					newArc = CHMHMapArc::Create(
+					newArc = std::make_shared<CHMHMapArc>(
 						area_a_ID,  // Source
 						area_b_ID,		// Target
 						theArcHypos,	// Hypos
@@ -1385,13 +1385,13 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 		{
 			COpenGLScene	sceneLSLAM;
 			// Generate the metric maps 3D view...
-			opengl::CSetOfObjects::Ptr maps3D = opengl::CSetOfObjects::Create();
+			opengl::CSetOfObjects::Ptr maps3D = std::make_shared<opengl::CSetOfObjects>();
 			maps3D->setName( "metric-maps" );
 			LMH->getMostLikelyParticle()->d->metricMaps.getAs3DObject( maps3D );
 			sceneLSLAM.insert( maps3D );
 
 			// ...and the robot poses, areas, etc:
-			opengl::CSetOfObjects::Ptr LSLAM_3D = opengl::CSetOfObjects::Create();
+			opengl::CSetOfObjects::Ptr LSLAM_3D = std::make_shared<opengl::CSetOfObjects>();
 			LSLAM_3D->setName("LSLAM_3D");
 			LMH->getAs3DScene( LSLAM_3D );
 			sceneLSLAM.insert( LSLAM_3D );

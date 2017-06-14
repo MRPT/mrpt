@@ -208,7 +208,7 @@ bool CColouredOctoMap::internal_insertObservation(const mrpt::obs::CObservation 
 		o->load(); // Just to make sure the points are loaded from an external source, if that's the case...
 
 		// Project 3D points & color:
-		mrpt::opengl::CPointCloudColoured::Ptr pts = mrpt::opengl::CPointCloudColoured::Create();
+		mrpt::opengl::CPointCloudColoured::Ptr pts = std::make_shared<mrpt::opengl::CPointCloudColoured>();
 		T3DPointsProjectionParams proj_params;
 		proj_params.PROJ3D_USE_LUT = true;
 		proj_params.robotPoseInTheWorld = robotPose;

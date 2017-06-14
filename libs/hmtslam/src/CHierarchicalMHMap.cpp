@@ -104,7 +104,7 @@ void  CHierarchicalMHMap::readFromStream(mrpt::utils::CStream &in, int version)
 			in >> n;
 			for (i=0;i<n;i++)
             {
-				CHMHMapNode::Ptr node = CHMHMapNode::Create(this); // This insert the node in my internal list via the callback method
+				CHMHMapNode::Ptr node = std::make_shared<CHMHMapNode>(this); // This insert the node in my internal list via the callback method
             	in >> *node;
             }
 
@@ -114,7 +114,7 @@ void  CHierarchicalMHMap::readFromStream(mrpt::utils::CStream &in, int version)
             {
 				 // This insert the node in my internal list via the callback method
 				CHMHMapNode::Ptr p1, p2;
-				CHMHMapArc::Ptr arc = CHMHMapArc::Create( p1, p2, THypothesisIDSet() ,this);
+				CHMHMapArc::Ptr arc = std::make_shared<CHMHMapArc>( p1, p2, THypothesisIDSet() ,this);
             	in >> *arc;
             }
 
@@ -214,7 +214,7 @@ void CHierarchicalMHMap::loadFromXMLfile(std::string fileName)
 		for (j=0;j<numnodes;j++)
 		{
 				CHMHMapNode::Ptr node;
-				node=CHMHMapNode::Create(this);
+				node=std::make_shared<CHMHMapNode>(this);
 				node->m_label=table->get(j,"nodename");
 				nodemap.insert(IDPair( atoi(table->get(j,"id").c_str()),node)   );
 				node->m_nodeType.setType(table->get(j,"nodetype"));
@@ -252,7 +252,7 @@ void CHierarchicalMHMap::loadFromXMLfile(std::string fileName)
 				nodeto=nodemapit->second;
 				std::cout<<"added arc from "<< nodefrom->m_label << " to " <<nodeto->m_label<<std::endl;
 
-				arc=CHMHMapArc::Create(nodefrom,nodeto,0,this);
+				arc=std::make_shared<CHMHMapArc>(nodefrom,nodeto,0,this);
 				arc->m_arcType.setType(table->get(j,"arctype"));
 				arc->m_hypotheses.insert( COMMON_TOPOLOG_HYP);
 
@@ -260,7 +260,7 @@ void CHierarchicalMHMap::loadFromXMLfile(std::string fileName)
 				if (atoi(table->get(j,"bidirectional").c_str())==1)
 				{
 					printf("Creating bidirectional arc\n");
-					arcrev=CHMHMapArc::Create(nodeto,nodefrom,0,this);
+					arcrev=std::make_shared<CHMHMapArc>(nodeto,nodefrom,0,this);
 					arcrev->m_arcType.setType(table->get(j,"arctype"));
 					arcrev->m_hypotheses.insert( COMMON_TOPOLOG_HYP);
 
@@ -283,7 +283,7 @@ void CHierarchicalMHMap::loadFromXMLfile(std::string fileName)
 				{
 					if (type=="placePose")
 					{
-						CPoint2D::Ptr o=CPoint2D::Create();
+						CPoint2D::Ptr o=std::make_shared<CPoint2D>();
 						o->fromString(value);
 
 						CHMHMapNode::Ptr node=getNodeByID(nodeanotmapit->second);

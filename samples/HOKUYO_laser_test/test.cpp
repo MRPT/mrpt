@@ -148,7 +148,7 @@ void Test_HOKUYO()
 
 			/*
 			COpenGLScene			scene3D;
-			opengl::CPointCloud::Ptr	points = opengl::CPointCloud::Create();
+			opengl::CPointCloud::Ptr	points = std::make_shared<opengl::CPointCloud>();
 			points->loadFromPointsMap(&map);
 			scene3D.insert(points);
 			CFileStream("_out_point_cloud.3Dscene",fomWrite) << scene3D;
