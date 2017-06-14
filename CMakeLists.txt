@@ -18,7 +18,7 @@ PROJECT(MRPT)
 #        Setup CMake
 # -------------------------
 CMAKE_MINIMUM_REQUIRED(VERSION 3.1)
-set (CMAKE_CXX_STANDARD 14)  # Require C++11 (C++14?)
+set (CMAKE_CXX_STANDARD 14)  # Require C++14
 SET(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS 1) # Allow empty endif() and such (since CMake 2.4)
 if(COMMAND cmake_policy)
 	cmake_policy(SET CMP0003 NEW) # We don't want to mix relative and absolute paths in linker lib lists.
@@ -448,13 +448,6 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
 		# No need to be pendantic in old C files, most of them from 3rd parties anyway...
  		#SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pedantic")
 	ENDIF()
-
-	# Enable C++11 features in GCC 4.7+
-	IF (NOT CMAKE_MRPT_GCC_VERSION LESS 47)
-		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-	ELSEIF(NOT CMAKE_MRPT_GCC_VERSION LESS 46)
-		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
-	ENDIF ()
 
 	# Parallel stdlibc++?
 	IF(MRPT_ENABLE_LIBSTD_PARALLEL_MODE)
