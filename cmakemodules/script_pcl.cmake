@@ -14,10 +14,11 @@ IF(NOT DISABLE_PCL)
 	# PCL library:
 	# --------------------------------------------
 	find_package(PCL COMPONENTS io common registration visualization segmentation surface QUIET)
-	if (PCL_FOUND)
+	if(PCL_FOUND AND PCL_IO_FOUND AND PCL_COMMON_FOUND AND PCL_REGISTRATION_FOUND AND PCL_VISUALIZATION_FOUND AND PCL_SURFACE_FOUND)
+
 		# Filter: It seems clang + c++11 fails to build against PCL (for clang <3.5):
 		if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" AND NOT CMAKE_MRPT_CLANG_VERSION GREATER 34)
-			MESSAGE(STATUS "*Warning* Disabling PCL because of incompatibility between clang ${CMAKE_MRPT_CLANG_VERSION} and PCL with c++11 enabled")
+			MESSAGE(WARNING "Disabling PCL because of incompatibility between clang ${CMAKE_MRPT_CLANG_VERSION} and PCL with c++11 enabled")
 			SET(DISABLE_PCL ON)
 			RETURN()
 		endif ()
@@ -28,9 +29,9 @@ IF(NOT DISABLE_PCL)
 		INCLUDE_DIRECTORIES(${PCL_INCLUDE_DIRS})
 		link_directories(${PCL_LIBRARY_DIRS})
 		add_definitions(${PCL_DEFINITIONS})
-		
+
 		IF (NOT Boost_FOUND)
-			MESSAGE("*MRPT ERROR MESSAGE*: PCL requires Boost. Either disable PCL (with DISABLE_PCL=ON) or, to fix the error, create the entries BOOST_ROOT and BOOST_LIBRARYDIR and set them to the correct values")
+			MESSAGE(FATAL_ERROR "PCL requires Boost. Either disable PCL (with DISABLE_PCL=ON) or, to fix the error, create the entries BOOST_ROOT and BOOST_LIBRARYDIR and set them to the correct values")
 		ENDIF (NOT Boost_FOUND)
 
 		IF($ENV{VERBOSE})
@@ -40,14 +41,14 @@ IF(NOT DISABLE_PCL)
 			MESSAGE(STATUS " Definitions : ${PCL_DEFINITIONS}")
 			MESSAGE(STATUS " Libraries   : ${PCL_LIBRARIES}")
 		ENDIF($ENV{VERBOSE})
-		
+
 		# Add PCL directories as "-isystem" to avoid warnings:
 		ADD_DIRECTORIES_AS_ISYSTEM(PCL_INCLUDE_DIRS)
 
-	endif(PCL_FOUND)
+	endif()
 
 	# Undo backups: (read above)
 	#set(wxWidgets_LIB_DIR ${BCK_wxWidgets_LIB_DIR})
 	#set(wxWidgets_LIBRARIES ${BCK_wxWidgets_LIBRARIES})
-	
-ENDIF(NOT DISABLE_PCL)
+
+ENDIF()
