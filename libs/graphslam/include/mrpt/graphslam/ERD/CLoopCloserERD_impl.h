@@ -196,7 +196,8 @@ void CLoopCloserERD<GRAPH_T>::addScanMatchingEdges(
 
 		// keep track of the recorded goodness values
 		// TODO - rethink on these condition.
-		if (!std::isnan(icp_info.goodness) || icp_info.goodness != 0) {
+		if (!isnan(icp_info.goodness) ||
+				!approximatelyEqual(static_cast<double>(icp_info.goodness), 0.0)) {
 			m_laser_params.goodness_threshold_win.addNewMeasurement(icp_info.goodness);
 		}
 		double goodness_thresh =
@@ -1415,8 +1416,8 @@ void CLoopCloserERD<GRAPH_T>::getMinUncertaintyPath(
 	//cout << "getMinUncertaintyPath: " << from << " => " << to << endl;
 
 	// don't add to the path_between_nodes, just fill it in afterwards
-	path_between_nodes->clear(); 
-	
+	path_between_nodes->clear();
+
 	// iterate over all the edges, ignore the ones that are all 0s - find the
 	// one that is with the lowest uncertainty
 	double curr_determinant = 0;
@@ -1441,7 +1442,7 @@ void CLoopCloserERD<GRAPH_T>::getMinUncertaintyPath(
 		CMatrixDouble33 inf_mat;
 		curr_edge.getInformationMatrix(inf_mat);
 
-		if (inf_mat == CMatrixDouble33() || std::isnan(inf_mat(0,0))) {
+		if (inf_mat == CMatrixDouble33() || isnan(inf_mat(0,0))) {
 			inf_mat.unit();
 			curr_edge.cov_inv = inf_mat;
 		}
