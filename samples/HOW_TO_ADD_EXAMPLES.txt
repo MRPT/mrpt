@@ -17,7 +17,7 @@ How to create new examples under the MRPT tree:
 6) An automatically generated CMake script will be created in:
    [MRPT]/samples/foo/CMakeLists.txt
 
-7) Add both files to the repository:
-   git add [MRPT]/samples/foo/CMakeLists.txt [MRPT]/samples/foo/test.cpp
+7) Add the source file (but not the cmake file) to the repository:
+   git add [MRPT]/samples/foo/test.cpp
 
 done!
