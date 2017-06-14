@@ -68,15 +68,15 @@ void TestCamera3DFaceDetection( CCameraSensor::Ptr cam )
 	mrpt::opengl::COpenGLScene::Ptr &scene = win3D.get3DSceneAndLock();
 	mrpt::opengl::COpenGLScene::Ptr scene2;
 
-	mrpt::opengl::CPointCloudColoured::Ptr gl_points = mrpt::opengl::CPointCloudColoured::Create();
+	mrpt::opengl::CPointCloudColoured::Ptr gl_points = std::make_shared<mrpt::opengl::CPointCloudColoured>();
 	gl_points->setPointSize(4.5);
 
-	mrpt::opengl::CPointCloudColoured::Ptr gl_points2 = mrpt::opengl::CPointCloudColoured::Create();
+	mrpt::opengl::CPointCloudColoured::Ptr gl_points2 = std::make_shared<mrpt::opengl::CPointCloudColoured>();
 	gl_points2->setPointSize(4.5);
 
 	// Create the Opengl object for the point cloud:
 	scene->insert( gl_points );
-	scene->insert( mrpt::opengl::CGridPlaneXY::Create() );
+	scene->insert( std::make_shared<mrpt::opengl::CGridPlaneXY>() );
 	scene->insert( mrpt::opengl::stock_objects::CornerXYZ() );
 
 	win3D.unlockAccess3DScene();
@@ -94,7 +94,7 @@ void TestCamera3DFaceDetection( CCameraSensor::Ptr cam )
 		scene2 = win3D2.get3DSceneAndLock();
 
 		scene2->insert( gl_points2 );
-		scene2->insert( mrpt::opengl::CGridPlaneXY::Create() );
+		scene2->insert( std::make_shared<mrpt::opengl::CGridPlaneXY>() );
 		
 		win3D2.unlockAccess3DScene();
 	}

@@ -268,7 +268,7 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 	CDisplayWindow3D::Ptr	win3D;
 	if (SHOW_PROGRESS_3D_REAL_TIME)
 	{
-		win3D = CDisplayWindow3D::Create("pf-localization - The MRPT project", 1000, 600);
+		win3D = std::make_shared<CDisplayWindow3D>("pf-localization - The MRPT project", 1000, 600);
 		win3D->setCameraZoom(20);
 		win3D->setCameraAzimuthDeg(-45);
 		//win3D->waitForKey();
@@ -295,9 +295,9 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 	}
 
 	{
-		scene.insert( mrpt::opengl::CGridPlaneXY::Create(-50,50,-50,50,0,5) );
+		scene.insert( std::make_shared<mrpt::opengl::CGridPlaneXY>(-50,50,-50,50,0,5) );
 
-		CSetOfObjects::Ptr gl_obj = CSetOfObjects::Create();
+		CSetOfObjects::Ptr gl_obj = std::make_shared<CSetOfObjects>();
 		metricMap.getAs3DObject(gl_obj);
 		scene.insert(gl_obj);
 
@@ -466,12 +466,12 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 
 					// SF: Just one observation:
 					// ------------------------------------------------------
-					observations = CSensoryFrame::Create();
+					observations = std::make_shared<CSensoryFrame>();
 					observations->insert(obs);
 
 					// ActionCollection: Just one action with a dummy odometry
 					// ------------------------------------------------------
-					action       = CActionCollection::Create();
+					action       = std::make_shared<CActionCollection>();
 
 					CActionRobotMovement2D dummy_odom;
 
@@ -528,7 +528,7 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 								CRenderizable::Ptr grid_ground = ptrScene->getByName("ground_lines");
 								if (!grid_ground)
 								{
-									grid_ground = mrpt::opengl::CGridPlaneXY::Create(-50,50,-50,50,0,5);
+									grid_ground = std::make_shared<mrpt::opengl::CGridPlaneXY>(-50,50,-50,50,0,5);
 									grid_ground->setName("ground_lines");
 									ptrScene->insert(grid_ground);
 									ptrScene->insert( stock_objects::CornerXYZSimple(1.0f,3.0f) );
@@ -541,7 +541,7 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 								CRenderizable::Ptr GTpt = ptrScene->getByName("GT");
 								if (!GTpt)
 								{
-									GTpt = CDisk::Create();
+									GTpt = std::make_shared<CDisk>();
 									GTpt->setName( "GT" );
 									GTpt->setColor(0,0,0, 0.9);
 
@@ -568,7 +568,7 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 								CRenderizable::Ptr	ellip = ptrScene->getByName("parts_cov");
 								if (!ellip)
 								{
-									ellip = CEllipsoid::Create();
+									ellip = std::make_shared<CEllipsoid>();
 									ellip->setName( "parts_cov");
 									ellip->setColor(1,0,0, 0.6);
 
@@ -588,7 +588,7 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 								CRenderizable::Ptr scanPts = ptrScene->getByName("scan");
 								if (!scanPts)
 								{
-									scanPts = CPointCloud::Create();
+									scanPts = std::make_shared<CPointCloud>();
 									scanPts->setName( "scan" );
 									scanPts->setColor(1,0,0, 0.9);
 									getAs<CPointCloud>(scanPts)->enableColorFromZ(false);
@@ -795,8 +795,8 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 							CRenderizable::Ptr GTpt = scene.getByName("GT");
 							if (!GTpt)
 							{
-								GTpt = CDisk::Create();
-								GTpt = CDisk::Create();
+								GTpt = std::make_shared<CDisk>();
+								GTpt = std::make_shared<CDisk>();
 								GTpt->setName( "GT" );
 								GTpt->setColor(0,0,0, 0.9);
 
@@ -822,7 +822,7 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 							CRenderizable::Ptr	ellip = scene.getByName("parts_cov");
 							if (!ellip)
 							{
-								ellip = CEllipsoid::Create();
+								ellip = std::make_shared<CEllipsoid>();
 								ellip->setName( "parts_cov");
 								ellip->setColor(1,0,0, 0.6);
 
@@ -842,7 +842,7 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 							CRenderizable::Ptr scanPts = scene.getByName("scan");
 							if (!scanPts)
 							{
-								scanPts = CPointCloud::Create();
+								scanPts = std::make_shared<CPointCloud>();
 								scanPts->setName( "scan" );
 								scanPts->setColor(1,0,0, 0.9);
 								getAs<CPointCloud>(scanPts)->enableColorFromZ(false);

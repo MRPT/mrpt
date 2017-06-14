@@ -927,7 +927,7 @@ void CFeatureList::loadFromTextFile( const std::string &filename )
 	{
 		try
 		{
-			CFeature::Ptr feat_ptr = CFeature::Create();
+			CFeature::Ptr feat_ptr = std::make_shared<CFeature>();
 			CFeature*   feat = feat_ptr.get(); // for faster access
 
  			int _ID;

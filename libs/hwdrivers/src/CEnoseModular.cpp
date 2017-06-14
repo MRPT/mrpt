@@ -255,7 +255,7 @@ bool CEnoseModular::getObservation( mrpt::obs::CObservationGasSensors &obs )
 */
 void CEnoseModular::doProcess()
 {
-	CObservationGasSensors::Ptr obs= CObservationGasSensors::Create();
+	CObservationGasSensors::Ptr obs= std::make_shared<CObservationGasSensors>();
 
 	if (getObservation(*obs))
 	{

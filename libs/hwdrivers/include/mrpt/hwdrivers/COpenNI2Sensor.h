@@ -84,7 +84,7 @@ namespace mrpt
 		  *    rendering with mrpt::maps::CMetricMap::getAs3DObject() or alternatively with:
 		  *
 		  *  \code
-		  *    mrpt::opengl::CPointCloudColoured::Ptr gl_points = mrpt::opengl::CPointCloudColoured::Create();
+		  *    mrpt::opengl::CPointCloudColoured::Ptr gl_points = std::make_shared<mrpt::opengl::CPointCloudColoured>();
 		  *    gl_points->loadFromPointsMap(&pntsMap);
 		  *  \endcode
 		  *

@@ -52,8 +52,8 @@ void CNavigatorManualSequence::loadConfigFile(const mrpt::utils::CConfigFileBase
 		const size_t nComps = toks.size() - 1;
 		switch (nComps)
 		{
-		case 2: krc.cmd_vel = mrpt::kinematics::CVehicleVelCmd_DiffDriven::Create(); break;
-		case 4: krc.cmd_vel = mrpt::kinematics::CVehicleVelCmd_Holo::Create(); break;
+		case 2: krc.cmd_vel = std::make_shared<mrpt::kinematics::CVehicleVelCmd_DiffDriven>(); break;
+		case 4: krc.cmd_vel = std::make_shared<mrpt::kinematics::CVehicleVelCmd_Holo>(); break;
 		default:
 			THROW_EXCEPTION("Expected 2 or 4 velocity components!");
 		};

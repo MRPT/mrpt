@@ -304,7 +304,7 @@ void CGraphSlamEngine<GRAPH_T>::initClass() {
 	if (m_enable_visuals) {
 		COpenGLScene::Ptr scene = m_win->get3DSceneAndLock();
 
-		CAxis::Ptr obj = CAxis::Create();
+		CAxis::Ptr obj = std::make_shared<CAxis>();
 		obj->setFrequency(5);
 		obj->enableTickMarks();
 		obj->setAxisLimits(-10,-10,-10, 10,10,10);
@@ -409,7 +409,7 @@ void CGraphSlamEngine<GRAPH_T>::initClass() {
 
 	// COccupancyGridMap2D Initialization
 	{
-		mrpt::maps::COccupancyGridMap2D::Ptr gridmap = mrpt::maps::COccupancyGridMap2D::Create();
+		mrpt::maps::COccupancyGridMap2D::Ptr gridmap = std::make_shared<mrpt::maps::COccupancyGridMap2D>();
 
 		gridmap->setSize(
 				/* min_x = */ -20.0f,
@@ -431,7 +431,7 @@ void CGraphSlamEngine<GRAPH_T>::initClass() {
 
   // COctoMap Initialization
   {
-		mrpt::maps::COctoMap::Ptr octomap = mrpt::maps::COctoMap::Create();
+		mrpt::maps::COctoMap::Ptr octomap = std::make_shared<mrpt::maps::COctoMap>();
 
 		// TODO - adjust the insertionoptions...
 		// TODO - Read these from the .ini file
@@ -851,7 +851,7 @@ void CGraphSlamEngine<GRAPH_T>::getMap(
 	MRPT_START;
 
 	if (!map) {
-		map = mrpt::maps::COccupancyGridMap2D::Create();
+		map = std::make_shared<mrpt::maps::COccupancyGridMap2D>();
 	}
 	ASSERT_(map);
 
@@ -1755,7 +1755,7 @@ template<class GRAPH_T>
 void CGraphSlamEngine<GRAPH_T>::initMapVisualization() {
 	using namespace mrpt::opengl;
 
-	CSetOfObjects::Ptr map_obj = CSetOfObjects::Create();
+	CSetOfObjects::Ptr map_obj = std::make_shared<CSetOfObjects>();
 	map_obj->setName("map");
 	COpenGLScene::Ptr& scene = this->m_win->get3DSceneAndLock();
 	scene->insert(map_obj);
@@ -1833,7 +1833,7 @@ void CGraphSlamEngine<GRAPH_T>::updateMapVisualization(
 			CRenderizable::Ptr obj = map_obj->getByName(scan_name.str());
 			CSetOfObjects::Ptr scan_obj = std::dynamic_pointer_cast<CSetOfObjects>(obj);
 			if (!scan_obj) {
-				scan_obj = CSetOfObjects::Create();
+				scan_obj = std::make_shared<CSetOfObjects>();
 
 				// creating and inserting the observation in the CSetOfObjects
 				mrpt::maps::CSimplePointsMap m;
@@ -1928,7 +1928,7 @@ void CGraphSlamEngine<GRAPH_T>::initGTVisualization() {
 			"Visualization of data was requested but no CDisplayWindow3D pointer was provided");
 
 	// point cloud
-	CPointCloud::Ptr GT_cloud = CPointCloud::Create();
+	CPointCloud::Ptr GT_cloud = std::make_shared<CPointCloud>();
 	GT_cloud->setPointSize(1.0);
 	GT_cloud->enablePointSmooth();
 	GT_cloud->enableColorFromX(false);
@@ -2004,7 +2004,7 @@ void CGraphSlamEngine<GRAPH_T>::initOdometryVisualization() {
 	using namespace mrpt::opengl;
 
 	// point cloud
-	CPointCloud::Ptr odometry_poses_cloud = CPointCloud::Create();
+	CPointCloud::Ptr odometry_poses_cloud = std::make_shared<CPointCloud>();
 	odometry_poses_cloud->setPointSize(1.0);
 	odometry_poses_cloud->enablePointSmooth();
 	odometry_poses_cloud->enableColorFromX(false);
@@ -2077,7 +2077,7 @@ void CGraphSlamEngine<GRAPH_T>::initEstimatedTrajectoryVisualization() {
 	using namespace mrpt::utils;
 
 	// SetOfLines
-	CSetOfLines::Ptr estimated_traj_setoflines = CSetOfLines::Create();
+	CSetOfLines::Ptr estimated_traj_setoflines = std::make_shared<CSetOfLines>();
 	estimated_traj_setoflines->setColor_u8(m_estimated_traj_color);
 	estimated_traj_setoflines->setLineWidth(1.5);
 	estimated_traj_setoflines->setName("estimated_traj_setoflines");

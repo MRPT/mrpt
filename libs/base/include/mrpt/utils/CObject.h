@@ -161,7 +161,6 @@ namespace mrpt
 			_STATIC_LINKAGE_ const mrpt::utils::TRuntimeClassId *classinfo; \
 			_VIRTUAL_LINKAGE_ const mrpt::utils::TRuntimeClassId* GetRuntimeClass() const override; \
 			_STATIC_LINKAGE_ mrpt::utils::CObject* CreateObject(); \
-			_STATIC_LINKAGE_ class_name::Ptr Create(); \
 			_VIRTUAL_LINKAGE_ mrpt::utils::CObject *clone() const override; \
 			/*! @} */ \
 		public: \
@@ -211,8 +210,6 @@ namespace mrpt
 		#define IMPLEMENTS_MRPT_OBJECT(class_name, base,NameSpace) \
 			mrpt::utils::CObject* NameSpace::class_name::CreateObject() \
 				{ return static_cast<mrpt::utils::CObject*>( new NameSpace::class_name ); } \
-			NameSpace::class_name::Ptr NameSpace::class_name::Create() \
-				{ return NameSpace::class_name::Ptr( new NameSpace::class_name ); } \
 			const mrpt::utils::TRuntimeClassId* NameSpace::class_name::_GetBaseClass() \
 				{ return CLASS_ID(base); } \
 			mrpt::utils::TRuntimeClassId NameSpace::class_name::runtimeClassId = { \

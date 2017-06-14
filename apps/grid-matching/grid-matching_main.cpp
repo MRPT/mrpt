@@ -260,7 +260,7 @@ void do_grid_align()
 
 				if (NOISE_IN_POSE)
 				{
-					CPosePDFGaussian::Ptr newPDF = CPosePDFGaussian::Create();
+					CPosePDFGaussian::Ptr newPDF = std::make_shared<CPosePDFGaussian>();
 					newPDF->copyFrom(*PDF);
 
 					// Change the pose:
@@ -374,9 +374,9 @@ void do_grid_align()
 					if (SAVE_SOG_3DSCENE)
 					{
 						COpenGLScene				scene3D;
-						opengl::CSetOfObjects::Ptr	thePDF3D = opengl::CSetOfObjects::Create();
+						opengl::CSetOfObjects::Ptr	thePDF3D = std::make_shared<opengl::CSetOfObjects>();
 						pdf_SOG->getAs3DObject( thePDF3D );
-						opengl::CGridPlaneXY::Ptr	gridXY	= opengl::CGridPlaneXY::Create(-10,10,-10,10,0,1);
+						opengl::CGridPlaneXY::Ptr	gridXY	= std::make_shared<opengl::CGridPlaneXY>(-10,10,-10,10,0,1);
 						scene3D.insert( gridXY	);
 						scene3D.insert( thePDF3D );
 						CFileGZOutputStream("_out_SoG.3Dscene") << scene3D;
@@ -431,13 +431,13 @@ void do_grid_align()
 							CPointsMap::COLOR_3DSCENE_R = 0;
 							CPointsMap::COLOR_3DSCENE_G = 0;
 							CPointsMap::COLOR_3DSCENE_B = 1;
-							CSetOfObjects::Ptr obj1 = CSetOfObjects::Create();
+							CSetOfObjects::Ptr obj1 = std::make_shared<CSetOfObjects>();
 							the_map1.getAs3DObject( obj1 );
 
 							CPointsMap::COLOR_3DSCENE_R = 1;
 							CPointsMap::COLOR_3DSCENE_G = 0;
 							CPointsMap::COLOR_3DSCENE_B = 0;
-							CSetOfObjects::Ptr obj2 = CSetOfObjects::Create();
+							CSetOfObjects::Ptr obj2 = std::make_shared<CSetOfObjects>();
 							the_map2.getAs3DObject( obj2 );
 
 							obj2->setPose(x);
@@ -446,7 +446,7 @@ void do_grid_align()
 							scene.insert(obj2);
 
 							// Add also the borders of the maps:
-							CSetOfLines::Ptr	lines = CSetOfLines::Create();
+							CSetOfLines::Ptr	lines = std::make_shared<CSetOfLines>();
 							lines->setLineWidth(3);
 							lines->setColor(0,0,1);
 
@@ -531,8 +531,8 @@ void do_grid_align()
 				// only for the case of non "--match":
 				if (!lm1 && !lm2)
 				{
-					lm1 = CLandmarksMap::Create();
-					lm2 = CLandmarksMap::Create();
+					lm1 = std::make_shared<CLandmarksMap>();
+					lm2 = std::make_shared<CLandmarksMap>();
 
 					gridfeatextract.extractFeatures(*grid1,*lm1, N1, gridAlign.options.feature_descriptor, gridAlign.options.feature_detector_options );
 					gridfeatextract.extractFeatures(*grid2,*lm2, N2, gridAlign.options.feature_descriptor, gridAlign.options.feature_detector_options );

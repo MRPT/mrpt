@@ -332,7 +332,7 @@ void Run_KF_SLAM( CConfigFile &cfgFile, const std::string &rawlogFileName )
 
 	if (SHOW_3D_LIVE)
 	{
-		win3d = mrpt::gui::CDisplayWindow3D::Create("KF-SLAM live view",800,500);
+		win3d = std::make_shared<mrpt::gui::CDisplayWindow3D>("KF-SLAM live view",800,500);
 
 		win3d->addTextMessage(0.01,0.96,"Red: Estimated path",TColorf(0.8f,0.8f,0.8f),100,MRPT_GLUT_BITMAP_HELVETICA_10);
 		win3d->addTextMessage(0.01,0.93,"Black: Ground truth path",TColorf(0.8f,0.8f,0.8f),101,MRPT_GLUT_BITMAP_HELVETICA_10);
@@ -555,16 +555,16 @@ void Run_KF_SLAM( CConfigFile &cfgFile, const std::string &rawlogFileName )
 			// Save 3D view of the filter state:
 			if (win3d || ( SAVE_3D_SCENES && !(step % SAVE_LOG_FREQUENCY) ) )
 			{
-				COpenGLScene::Ptr   scene3D = COpenGLScene::Create();
+				COpenGLScene::Ptr   scene3D = std::make_shared<COpenGLScene>();
 				{
-					opengl::CGridPlaneXY::Ptr grid = opengl::CGridPlaneXY::Create(-1000,1000,-1000,1000,0,5);
+					opengl::CGridPlaneXY::Ptr grid = std::make_shared<opengl::CGridPlaneXY>(-1000,1000,-1000,1000,0,5);
 					grid->setColor(0.4,0.4,0.4);
 					scene3D->insert( grid );
 				}
 
 				// Robot path:
 				{
-					opengl::CSetOfLines::Ptr linesPath = opengl::CSetOfLines::Create();
+					opengl::CSetOfLines::Ptr linesPath = std::make_shared<opengl::CSetOfLines>();
 					linesPath->setColor(1,0,0);
 
 					TPose3D init_pose;
@@ -604,7 +604,7 @@ void Run_KF_SLAM( CConfigFile &cfgFile, const std::string &rawlogFileName )
 				// Do we have a ground truth?
 				if (size(GT_PATH,2)==6 || size(GT_PATH,2)==3)
 				{
-					opengl::CSetOfLines::Ptr GT_path = opengl::CSetOfLines::Create();
+					opengl::CSetOfLines::Ptr GT_path = std::make_shared<opengl::CSetOfLines>();
 					GT_path->setColor(0,0,0);
 					size_t N = std::min(size(GT_PATH,1), meanPath.size() );
 
@@ -644,7 +644,7 @@ void Run_KF_SLAM( CConfigFile &cfgFile, const std::string &rawlogFileName )
 				{
 					const typename ekfslam_t::TDataAssocInfo & da = mapping.getLastDataAssociation();
 
-					mrpt::opengl::CSetOfLines::Ptr lins = mrpt::opengl::CSetOfLines::Create();
+					mrpt::opengl::CSetOfLines::Ptr lins = std::make_shared<mrpt::opengl::CSetOfLines>();
 					lins->setLineWidth(1.2f);
 					lins->setColor(1,1,1);
 					for (std::map<observation_index_t,prediction_index_t>::const_iterator it=da.results.associations.begin();it!=da.results.associations.end();++it)
@@ -667,7 +667,7 @@ void Run_KF_SLAM( CConfigFile &cfgFile, const std::string &rawlogFileName )
 
 				// The current state of KF-SLAM:
 				{
-					opengl::CSetOfObjects::Ptr  objs = opengl::CSetOfObjects::Create();
+					opengl::CSetOfObjects::Ptr  objs = std::make_shared<opengl::CSetOfObjects>();
 					mapping.getAs3DObject(objs);
 					scene3D->insert( objs );
 				}

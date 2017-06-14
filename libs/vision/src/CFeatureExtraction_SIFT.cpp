@@ -244,7 +244,7 @@ void  CFeatureExtraction::extractFeaturesSIFT(
 
 			for( size_t i = 0; i < nFeats; i++ )
 			{
-				CFeature::Ptr feat	= CFeature::Create();
+				CFeature::Ptr feat	= std::make_shared<CFeature>();
 
 				feat->type			= featSIFT;			// Type
 				feat->ID			= init_ID + i;		// Identifier
@@ -384,7 +384,7 @@ void  CFeatureExtraction::extractFeaturesSIFT(
 
 				if( options.patchSize==0 || ( (xBorderSup < (int)imgW) && (xBorderInf > 0) && (yBorderSup < (int)imgH) && (yBorderInf > 0) ) )
 				{
-					CFeature::Ptr ft		= CFeature::Create();
+					CFeature::Ptr ft		= std::make_shared<CFeature>();
 					ft->type			= featSIFT;
 					ft->ID				= nextID++;
 					ft->x				= cv_feats[i].pt.x;
@@ -447,7 +447,7 @@ void  CFeatureExtraction::extractFeaturesSIFT(
 
 				if (options.patchSize == 0 || ((xBorderSup < (int)imgW) && (xBorderInf > 0) && (yBorderSup < (int)imgH) && (yBorderInf > 0)))
 				{
-					CFeature::Ptr ft = CFeature::Create();
+					CFeature::Ptr ft = std::make_shared<CFeature>();
 					ft->type = featSIFT;
 					ft->ID = nextID++;
 					ft->x = cv_feats[i].pt.x;
@@ -684,7 +684,7 @@ void CFeatureExtraction::convertCvSeqInCFeatureList( void* features_, CFeatureLi
 	for( int k = 0; k < n; k++ )
 	{
 		thisFeat			= (feature*)cvGetSeqElem( features, k );
-		CFeature::Ptr feat	= CFeature::Create();
+		CFeature::Ptr feat	= std::make_shared<CFeature>();
 		feat->ID			= (TFeatureID)(k + init_ID);
 		feat->x				= usingROI ? thisFeat->x + ROI.xMin : thisFeat->x;
 		feat->y				= usingROI ? thisFeat->y + ROI.yMin : thisFeat->y;

@@ -780,11 +780,11 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(wxWindow* parent,wxWindow
 
 	// Prepare 3D scene: (of live view)
 	// ------------------------------------------
-	m_plot3D->m_openGLScene = mrpt::opengl::COpenGLScene::Create();
+	m_plot3D->m_openGLScene = std::make_shared<mrpt::opengl::COpenGLScene>();
 
 	// Ground plane:
 	{
-		mrpt::opengl::CGridPlaneXY::Ptr obj = mrpt::opengl::CGridPlaneXY::Create(-10,10, -10,10, 0, 1);
+		mrpt::opengl::CGridPlaneXY::Ptr obj = std::make_shared<mrpt::opengl::CGridPlaneXY>(-10,10, -10,10, 0, 1);
 		obj->setColor_u8( TColor(200,200,200) );
 		m_plot3D->m_openGLScene->insert(obj);
 	}
@@ -792,7 +792,7 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(wxWindow* parent,wxWindow
 	//m_plot3D->m_openGLScene->insert( mrpt::opengl::stock_objects::CornerXYZSimple(0.5,2) );
 
 	// 3D points:
-	m_gl_3d_points = mrpt::opengl::CPointCloudColoured::Create();
+	m_gl_3d_points = std::make_shared<mrpt::opengl::CPointCloudColoured>();
 	m_gl_3d_points->setPointSize(2);
 	m_plot3D->m_openGLScene->insert( m_gl_3d_points );
 
@@ -945,7 +945,7 @@ void kinect_calibrate_guiDialog::thread_grabbing()
 		while (!hard_error && !p.quit)
 		{
 			// Grab new observation from the camera:
-			CObservation3DRangeScan::Ptr  obs     = CObservation3DRangeScan::Create(); // Smart pointers to observations
+			CObservation3DRangeScan::Ptr  obs     = std::make_shared<CObservation3DRangeScan>(); // Smart pointers to observations
 
 			kinect.getNextObservation(*obs,there_is_obs,hard_error);
 
@@ -2169,11 +2169,11 @@ void kinect_calibrate_guiDialog::CalibUpdate3DViewCameras()
 {
 	WX_START_TRY
 
-	mrpt::opengl::COpenGLScene::Ptr scene = mrpt::opengl::COpenGLScene::Create();
+	mrpt::opengl::COpenGLScene::Ptr scene = std::make_shared<mrpt::opengl::COpenGLScene>();
 
 	// Ground plane:
 	{
-		mrpt::opengl::CGridPlaneXY::Ptr obj = mrpt::opengl::CGridPlaneXY::Create(-10,10, -10,10, 0, 1);
+		mrpt::opengl::CGridPlaneXY::Ptr obj = std::make_shared<mrpt::opengl::CGridPlaneXY>(-10,10, -10,10, 0, 1);
 		obj->setColor_u8( TColor(200,200,200) );
 		scene->insert(obj);
 	}
@@ -2192,9 +2192,9 @@ void kinect_calibrate_guiDialog::CalibUpdate3DViewCameras()
 
 	if (!check_squares_length_X_meters || !check_squares_length_Y_meters) return;
 
-	opengl::CSetOfObjects::Ptr gl_objs = opengl::CSetOfObjects::Create();
+	opengl::CSetOfObjects::Ptr gl_objs = std::make_shared<opengl::CSetOfObjects>();
 
-	opengl::CGridPlaneXY::Ptr	grid = opengl::CGridPlaneXY::Create(0,check_size_x*check_squares_length_X_meters, 0, check_size_y*check_squares_length_Y_meters, 0, check_squares_length_X_meters );
+	opengl::CGridPlaneXY::Ptr	grid = std::make_shared<opengl::CGridPlaneXY>(0,check_size_x*check_squares_length_X_meters, 0, check_size_y*check_squares_length_Y_meters, 0, check_squares_length_X_meters );
 	gl_objs->insert( grid );
 
 	const size_t N = m_calib_result.left_cam_poses.size();

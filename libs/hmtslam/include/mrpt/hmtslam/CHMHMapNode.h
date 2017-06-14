@@ -72,17 +72,10 @@ namespace mrpt
 			  */
 			mrpt::utils::safe_ptr<CHierarchicalMHMap>	m_parent;
 
-		private:
-			/** Private constructor (see ::Create class factory)
-			  */
-			CHMHMapNode(
-				CHierarchicalMHMap		*parent = nullptr,
-				const THypothesisIDSet	&hyps = THypothesisIDSet() );
-
 		public:
-			/** Class factory
-			  */
-			static std::shared_ptr<CHMHMapNode> Create(
+			/** Constructor
+			 */
+			CHMHMapNode(
 				CHierarchicalMHMap		*parent = nullptr,
 				const THypothesisIDSet	&hyps = THypothesisIDSet() );
 

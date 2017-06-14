@@ -49,7 +49,7 @@ void CHolonomicVFF::navigate(const NavInput & ni, NavOutput &no)
 	const double ptg_ref_dist = ptg ? ptg->getRefDistance() : 1.0;
 
 	// Create a log record for returning data.
-	no.logRecord = CLogFileRecord_VFF::Create();
+	no.logRecord = std::make_shared<CLogFileRecord_VFF>();
 
 	// Forces vector:
 	mrpt::math::TPoint2D resultantForce(0,0),instantaneousForce(0,0);

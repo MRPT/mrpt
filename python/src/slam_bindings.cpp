@@ -161,7 +161,7 @@ CPosePDFGaussian CRangeBearingKFSLAM2D_getCurrentRobotPose(CRangeBearingKFSLAM2D
 
 mrpt::opengl::CSetOfObjects::Ptr CRangeBearingKFSLAM2D_getAs3DObject(CRangeBearingKFSLAM2D& self)
 {
-    mrpt::opengl::CSetOfObjects::Ptr outObj = mrpt::opengl::CSetOfObjects::Create();
+    mrpt::opengl::CSetOfObjects::Ptr outObj = std::make_shared<mrpt::opengl::CSetOfObjects>();
     self.getAs3DObject(outObj);
     return outObj;
 }
@@ -234,7 +234,7 @@ void CMonteCarloLocalization2D_readParticlesFromStream(CMonteCarloLocalization2D
 
 mrpt::opengl::CSetOfObjects::Ptr CMonteCarloLocalization2D_getAs3DObject(CMonteCarloLocalization2D& self)
 {
-    mrpt::opengl::CSetOfObjects::Ptr outObj = mrpt::opengl::CSetOfObjects::Create();
+    mrpt::opengl::CSetOfObjects::Ptr outObj = std::make_shared<mrpt::opengl::CSetOfObjects>();
     self.getAs3DObject(outObj);
     return outObj;
 }
@@ -320,7 +320,7 @@ void CMonteCarloLocalization3D_readParticlesFromStream(CMonteCarloLocalization3D
 
 mrpt::opengl::CSetOfObjects::Ptr CMonteCarloLocalization3D_getAs3DObject(CMonteCarloLocalization3D& self)
 {
-    mrpt::opengl::CSetOfObjects::Ptr outObj = mrpt::opengl::CSetOfObjects::Create();
+    mrpt::opengl::CSetOfObjects::Ptr outObj = std::make_shared<mrpt::opengl::CSetOfObjects>();
     self.getAs3DObject(outObj);
     return outObj;
 }

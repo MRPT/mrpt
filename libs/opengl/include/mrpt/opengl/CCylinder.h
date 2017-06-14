@@ -45,8 +45,6 @@ namespace opengl	{
 		  */
 		bool mHasTopBase,mHasBottomBase;
 	public:
-		/** Constructor with two radii. Allows the construction of any cylinder. */
-		static CCylinder::Ptr Create(const float baseRadius,const float topRadius,const float height=1,const int slices=10,const int stacks=10);
 		/** Render
 		  * \sa mrpt::opengl::CRenderizable
 		  */
@@ -156,7 +154,9 @@ namespace opengl	{
 		/**
 		  * Complete constructor. Allows the configuration of every parameter.
 		  */
-		CCylinder(const float baseRadius,const float topRadius,const float height,const int slices,const int stacks):mBaseRadius(baseRadius),mTopRadius(topRadius),mHeight(height),mSlices(slices),mStacks(stacks),mHasTopBase(true),mHasBottomBase(true)	{};
+		/** Constructor with two radii. Allows the construction of any cylinder. */
+		CCylinder(const float baseRadius,const float topRadius,const float height=1,const int slices=10,const int stacks=10)
+			:mBaseRadius(baseRadius),mTopRadius(topRadius),mHeight(height),mSlices(slices),mStacks(stacks),mHasTopBase(true),mHasBottomBase(true)	{};
 		/**
 		  * Destructor.
 		  */

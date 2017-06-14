@@ -107,22 +107,6 @@ namespace opengl	{
 		  */
 		mutable bool polygonsUpToDate;
 	public:
-		/**
-		  * Creation of a polyhedron from its vertices and faces.
-		  * \throw logic_error if the polyhedron definition has flaws (bad vertex indices, etc.).
-		  */
-		static CPolyhedron::Ptr Create(const std::vector<mrpt::math::TPoint3D> &vertices,const std::vector<std::vector<uint32_t> > &faces);
-		/**
-		  * Creation of a polyhedron from its vertices and faces.
-		  * \throw logic_error if the polyhedron definition has flaws (bad vertex indices, etc.).
-		  */
-		static CPolyhedron::Ptr Create(const std::vector<mrpt::math::TPoint3D> &vertices,const std::vector<TPolyhedronFace> &faces);
-		/**
-		  * Creation from a set of polygons.
-		  * \sa mrpt::math::TPolygon3D
-		  */
-		static CPolyhedron::Ptr Create(const std::vector<mrpt::math::TPolygon3D> &polys);
-
 		/** Evaluates the bounding box of this object (including possible children) in the coordinate frame of the object parent. */
 		void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const override;
 
@@ -679,6 +663,7 @@ namespace opengl	{
 		  * Returns how many faces converge in a given vertex.
 		  */
 		size_t facesInVertex(size_t vertex) const;
+	public:
 		/**
 		  * Basic empty constructor.
 		  */
@@ -687,13 +672,20 @@ namespace opengl	{
 		  * Basic constructor with a list of vertices and another of faces, checking for correctness.
 		  */
 		inline CPolyhedron(const std::vector<mrpt::math::TPoint3D> &vertices,const std::vector<TPolyhedronFace> &faces,bool doCheck=true):mVertices(vertices),mEdges(),mFaces(faces),mWireframe(false),mLineWidth(1),polygonsUpToDate(false)	{
-			if (doCheck) if (!checkConsistence(vertices,faces)) throw std::logic_error("Face list accesses a vertex out of range");
+			InitFromVertAndFaces(vertices, faces, doCheck);
+		}
+		inline void InitFromVertAndFaces(const std::vector<mrpt::math::TPoint3D> &vertices,const std::vector<TPolyhedronFace> &faces,bool doCheck=true){
+			if (doCheck && !checkConsistence(vertices,faces)) throw std::logic_error("Face list accesses a vertex out of range");
 			for (std::vector<TPolyhedronFace>::iterator it=mFaces.begin();it!=mFaces.end();++it)	{
 				if (!setNormal(*it,doCheck)) throw std::logic_error("Bad face specification");
 				addEdges(*it);
 			}
 		}
-	public:
+
+		CPolyhedron(const std::vector<math::TPolygon3D> &polys);
+		
+		CPolyhedron(const std::vector<mrpt::math::TPoint3D> &vertices, const std::vector<std::vector<uint32_t> > &faces);
+
 		/** Creates a polyhedron without checking its correctness. */
 		static CPolyhedron::Ptr CreateNoCheck(const std::vector<mrpt::math::TPoint3D> &vertices,const std::vector<TPolyhedronFace> &faces);
 		/** Creates an empty Polyhedron. */

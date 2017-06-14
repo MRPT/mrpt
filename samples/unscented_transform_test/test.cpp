@@ -80,11 +80,11 @@ void Test_SUT()
 	cout << "y_cov: "  << endl << y_cov << endl << endl;
 
 	// 3D view:
-	mrpt::opengl::COpenGLScene::Ptr scene = mrpt::opengl::COpenGLScene::Create();
-	scene->insert( opengl::CGridPlaneXY::Create(-10,10,-10,10, 0, 1));
+	mrpt::opengl::COpenGLScene::Ptr scene = std::make_shared<mrpt::opengl::COpenGLScene>();
+	scene->insert( std::make_shared<opengl::CGridPlaneXY>(-10,10,-10,10, 0, 1));
 
 	{
-		opengl::CEllipsoid::Ptr el = opengl::CEllipsoid::Create();
+		opengl::CEllipsoid::Ptr el = std::make_shared<opengl::CEllipsoid>();
 		el->enableDrawSolid3D(false);
 		el->setLocation(y_mean[0],y_mean[1],y_mean[2]);
 		el->setCovMatrix(y_cov);
@@ -117,7 +117,7 @@ void Test_SUT()
 		extractColumnFromVectorOfVectors(i,MC_samples,MC_y[i]);
 
 	{
-		opengl::CEllipsoid::Ptr el = opengl::CEllipsoid::Create();
+		opengl::CEllipsoid::Ptr el = std::make_shared<opengl::CEllipsoid>();
 		el->enableDrawSolid3D(false);
 		el->setLocation(y_mean[0],y_mean[1],y_mean[2]);
 		el->setCovMatrix(y_cov);
@@ -154,7 +154,7 @@ void Test_SUT()
 	cout << "y_cov: "  << endl << y_cov << endl;
 
 	{
-		opengl::CEllipsoid::Ptr el = opengl::CEllipsoid::Create();
+		opengl::CEllipsoid::Ptr el = std::make_shared<opengl::CEllipsoid>();
 		el->enableDrawSolid3D(false);
 		el->setLocation(y_mean[0],y_mean[1],y_mean[2]);
 		el->setCovMatrix(y_cov);
@@ -177,7 +177,7 @@ void Test_SUT()
 
 	for (int i=0;i<3;i++)
 	{
-		winHistos[i] = mrpt::gui::CDisplayWindowPlots::Create(format("MC-based histogram of the %i dim",i),300,150);
+		winHistos[i] = std::make_shared<mrpt::gui::CDisplayWindowPlots>(format("MC-based histogram of the %i dim",i),300,150);
 
 		std::vector<double> X;
 		std::vector<double> H = mrpt::math::histogram(MC_y[i],MC_y[i].minimum(),MC_y[i].maximum(),40, true, &X);

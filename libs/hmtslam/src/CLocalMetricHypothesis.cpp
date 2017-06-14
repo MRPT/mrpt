@@ -74,7 +74,7 @@ void CLocalMetricHypothesis::getAs3DScene( opengl::CSetOfObjects::Ptr &objs ) co
 	// Draw a grid on the ground:
 	// -------------------------------------------
 	{
-		opengl::CGridPlaneXY::Ptr obj = opengl::CGridPlaneXY::Create(-100,100,-100,100,0,5);
+		opengl::CGridPlaneXY::Ptr obj = std::make_shared<opengl::CGridPlaneXY>(-100,100,-100,100,0,5);
 		obj->setColor(0.4,0.4,0.4);
 
 		objs->insert(obj);  // it will free the memory
@@ -115,7 +115,7 @@ void CLocalMetricHypothesis::getAs3DScene( opengl::CSetOfObjects::Ptr &objs ) co
 	// -----------------------------------------
 	const CPose3D meanCurPose = lstPoses[ m_currentRobotPose ].getMeanVal();
 	{
-		opengl::CCamera::Ptr cam = opengl::CCamera::Create();
+		opengl::CCamera::Ptr cam = std::make_shared<opengl::CCamera>();
 		cam->setZoomDistance(85);
 		cam->setAzimuthDegrees(45 + RAD2DEG(meanCurPose.yaw()));
 		cam->setElevationDegrees(45);
@@ -130,7 +130,7 @@ void CLocalMetricHypothesis::getAs3DScene( opengl::CSetOfObjects::Ptr &objs ) co
 
 	for (it=lstPoses.begin(); it!=lstPoses.end();it++)
 	{
-		opengl::CEllipsoid::Ptr ellip = opengl::CEllipsoid::Create();
+		opengl::CEllipsoid::Ptr ellip = std::make_shared<opengl::CEllipsoid>();
 		// Color depending on being into the current area:
 		if ( m_nodeIDmemberships.find(it->first)->second == m_nodeIDmemberships.find(m_currentRobotPose)->second )
 			ellip->setColor(0,0,1);
@@ -226,7 +226,7 @@ void CLocalMetricHypothesis::getAs3DScene( opengl::CSetOfObjects::Ptr &objs ) co
 			CPose3DPDFGaussian   pdf;
 			pdf.copyFrom( *pdfParts );
 
-			opengl::CSimpleLine::Ptr line = opengl::CSimpleLine::Create();
+			opengl::CSimpleLine::Ptr line = std::make_shared<opengl::CSimpleLine>();
 			line->setColor(0.8,0.8,0.8, 0.3);
 			line->setLineWidth(2);
 
@@ -257,7 +257,7 @@ void CLocalMetricHypothesis::getAs3DScene( opengl::CSetOfObjects::Ptr &objs ) co
 
 				const CPose3DPDFGaussian  *hisPdf = & hisIt->second.m_pose;
 
-				opengl::CSimpleLine::Ptr line = opengl::CSimpleLine::Create();
+				opengl::CSimpleLine::Ptr line = std::make_shared<opengl::CSimpleLine>();
 				line->m_color_R = 0.2f;
 				line->m_color_G = 0.8f;
 				line->m_color_B = 0.2f;
@@ -286,7 +286,7 @@ void CLocalMetricHypothesis::getAs3DScene( opengl::CSetOfObjects::Ptr &objs ) co
 
 		for ( itMeans = areas_mean.begin(); itMeans!=areas_mean.end(); itMeans++ )
 		{
-			opengl::CSphere::Ptr sphere = opengl::CSphere::Create();
+			opengl::CSphere::Ptr sphere = std::make_shared<opengl::CSphere>();
 
 			if (itMeans->first == m_nodeIDmemberships.find( m_currentRobotPose)->second )
 			{   // Color of current area
@@ -305,7 +305,7 @@ void CLocalMetricHypothesis::getAs3DScene( opengl::CSetOfObjects::Ptr &objs ) co
 			objs->insert( sphere );
 
 			// And text label:
-			opengl::CText::Ptr txt = opengl::CText::Create();
+			opengl::CText::Ptr txt = std::make_shared<opengl::CText>();
 			txt->setColor(1,1,1);
 
 			const CHMHMapNode::Ptr node = m_parent->m_map.getNodeByID( itMeans->first );
@@ -343,7 +343,7 @@ void CLocalMetricHypothesis::getAs3DScene( opengl::CSetOfObjects::Ptr &objs ) co
 					if ( trgAreaPoseIt != areas_mean.end() )
 					{
 						// Yes, target node of the arc is in the LMH: Draw it:
-						opengl::CSimpleLine::Ptr line = opengl::CSimpleLine::Create();
+						opengl::CSimpleLine::Ptr line = std::make_shared<opengl::CSimpleLine>();
 						line->setColor(0.8,0.8,0);
 						line->setLineWidth(3);
 
@@ -784,7 +784,7 @@ void CLocalMetricHypothesis::updateAreaFromLMH(
 		if (!annot)
 		{
 			// Add it now:
-			posesGraph = CRobotPosesGraph::Create();
+			posesGraph = std::make_shared<CRobotPosesGraph>();
 			node->m_annotations.setMemoryReference(NODE_ANNOTATION_POSES_GRAPH, posesGraph, m_ID);
 		}
 		else

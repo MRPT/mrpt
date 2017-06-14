@@ -22,11 +22,6 @@ using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(CFrustum,CRenderizableDisplayList,mrpt::opengl)
 
-CFrustum::Ptr CFrustum::Create(float near_distance, float far_distance, float horz_FOV_degrees, float vert_FOV_degrees, float lineWidth, bool draw_lines, bool draw_planes)
-{
-	return CFrustum::Ptr(new CFrustum(near_distance,far_distance,horz_FOV_degrees,vert_FOV_degrees,lineWidth,draw_lines,draw_planes));
-}
-
 /*---------------------------------------------------------------
 							render
   ---------------------------------------------------------------*/

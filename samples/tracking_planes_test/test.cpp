@@ -971,7 +971,7 @@ CFeatureList ExtractFeaturesFrame1(IplImage *img, CFeatureList &f_out)//, double
 	CFeatureList::iterator		itFeat;
 	for( int i = 0; i < count ; i++ )
 	{
-		CFeature::Ptr feat = CFeature::Create();
+		CFeature::Ptr feat = std::make_shared<CFeature>();
 			feat->x			= points[1][i].x;
 			feat->y			= points[1][i].y;
 			feat->ID = i;
@@ -1223,7 +1223,7 @@ int main()
 		count = boot.size();
 		for( i = 0; i < count ; i++ )	//Copy boot to flow_klt
 		{
-			CFeature::Ptr feat = CFeature::Create();
+			CFeature::Ptr feat = std::make_shared<CFeature>();
 				feat->x			= boot[i]->x;
 				feat->y			= boot[i]->y;
 				feat->ID = i;
@@ -1269,7 +1269,7 @@ int main()
 
 	//	for( i = 0; i < count; i++)
 	//	{
-	//		CFeature::Ptr feat = CFeature::Create();
+	//		CFeature::Ptr feat = std::make_shared<CFeature>();
 	//		fscanf_s(file, "%f\t%f", &x, &y);
 	//		feat->x			=  x;
 	//		feat->y			=  y;
@@ -1393,7 +1393,7 @@ int main()
 		//		cvTermCriteria(CV_TERMCRIT_ITER|CV_TERMCRIT_EPS,20,0.03));
 		//	for(i=0; i<numFeatTri; i++)
 		//	{
-		//	CFeature::Ptr feat = CFeature::Create();
+		//	CFeature::Ptr feat = std::make_shared<CFeature>();
 		//					feat->x			= puntos[i].x;
 		//					feat->y			= puntos[i].y;
 		//					feat->ID		= 0;
@@ -1698,7 +1698,7 @@ int main()
 				//CFeatureList::iterator		itFeat;
 				//for( i = 0; i < count ; i++ )
 				//{
-				//	CFeature::Ptr feat = CFeature::Create();
+				//	CFeature::Ptr feat = std::make_shared<CFeature>();
 				//		feat->x			= points[1][i].x;
 				//		feat->y			= points[1][i].y;
 				//		feat->ID = i;
@@ -1931,7 +1931,7 @@ int main()
 				distance2 = 0;
 				for(i=0; i<countT; i++)
 				{
-					//CFeature::Ptr feat = CFeature::Create();
+					//CFeature::Ptr feat = std::make_shared<CFeature>();
 					//feat->x			= pointsT[1][i].x;
 					//feat->y			= pointsT[1][i].y;
 					//feat->ID		= i;
