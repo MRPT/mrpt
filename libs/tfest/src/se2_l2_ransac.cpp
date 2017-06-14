@@ -277,7 +277,7 @@ bool tfest::se2_l2_robust(
 				mrpt::tfest::TPotentialMatch pm;
 				pm.idx_this  = corr_j.this_idx;
 				pm.idx_other = corr_j.other_idx;
-				if (! (*params.user_individual_compat_callback)(pm,params.user_individual_compat_callback_userdata))
+				if (! params.user_individual_compat_callback(pm))
 					continue; // Skip this one!
 			}
 
