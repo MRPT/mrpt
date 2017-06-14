@@ -3210,7 +3210,7 @@ void xRawLogViewerFrame::OnRemoveSpecificRangeMeas(wxCommandEvent& event)
 						{
 							bool filter = false;
 
-							if ( std::isnan(obs->sensedData[q].sensedDistance) )
+							if (std::isnan(obs->sensedData[q].sensedDistance) )
 								obs->sensedData[q].sensedDistance = 0;
 
 							filter = std::isnan(obs_2->sensedData[q].sensedDistance);
