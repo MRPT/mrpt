@@ -43,6 +43,7 @@ build:
     - sudo apt-get install -y libproj-dev
     - sudo apt-get install -y libboost-python-dev
     - sudo apt-get install -y libpython-dev python-numpy
+    - sudo apt-get install -y qtbase5-dev
     - sudo apt-get install -y lcov
     - sudo apt-get install -y ruby rubygems-integration
     - sudo gem install coveralls-lcov
