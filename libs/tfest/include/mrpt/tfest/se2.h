@@ -98,9 +98,7 @@ namespace mrpt
 				probability_find_good_model( 0.999 ),
 				ransac_min_nSimulations( 1500 ),
 				max_rmse_to_end(0),
-				verbose(false),
-				user_individual_compat_callback(nullptr),
-				user_individual_compat_callback_userdata(nullptr)
+				verbose(false)
 			{
 			}
 		};
