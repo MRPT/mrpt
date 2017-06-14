@@ -29,7 +29,7 @@ struct OBS_IMPEXP gnss_message {
 	void readFromStream(mrpt::utils::CStream &in); //!< Load from binary stream into this existing object. Launches an exception upon error.
 
 	bool isOfType(const gnss_message_type_t type_id) const;
-	template <class MSG_CLASS> 
+	template <class MSG_CLASS>
 	bool isOfClass() const { return isOfType(MSG_CLASS::msg_type); }
 
 	static gnss_message* readAndBuildFromStream(mrpt::utils::CStream &in); //!< Load from binary stream and creates object detecting its type (class factory). Launches an exception upon error
@@ -48,7 +48,7 @@ protected:
 };
 
 /** A smart pointer to a GNSS message. \sa gnss_message, mrpt::obs::CObservationGPS  */
-struct OBS_IMPEXP gnss_message_ptr 
+struct OBS_IMPEXP gnss_message_ptr
 {
 protected:
 	gnss_message *ptr;
@@ -83,7 +83,7 @@ public:
 #define GNSS_BINARY_MSG_DEFINITION_START(_MSG_ID) \
 	struct OBS_IMPEXP Message_##_MSG_ID : public gnss_message { \
 		GNSS_MESSAGE_BINARY_BLOCK(&fields,sizeof(fields)) \
-		enum { msg_type = _MSG_ID };  /* Static msg type (member expected by templates)*/ \
+		enum : uint32_t { msg_type = _MSG_ID };  /* Static msg type (member expected by templates)*/ \
 		Message_##_MSG_ID() : gnss_message((gnss_message_type_t)msg_type) {} \
 		struct OBS_IMPEXP content_t {
 
@@ -122,4 +122,3 @@ struct OBS_IMPEXP UTC_time
 
 #pragma pack(pop) // End of pack = 1
 } } } // End of namespaces
-

@@ -20,7 +20,7 @@ namespace gnss {
 /** Novatel OEM6 regular header structure \sa mrpt::obs::CObservationGPS  */
 struct OBS_IMPEXP nv_oem6_header_t
 {
-	enum {
+	enum : uint8_t {
 		SYNCH0 = 0xAA,
 		SYNCH1 = 0X44,
 		SYNCH2 = 0x12
@@ -47,7 +47,7 @@ struct OBS_IMPEXP nv_oem6_header_t
 /** Novatel OEM6 short header structure \sa mrpt::obs::CObservationGPS  */
 struct OBS_IMPEXP nv_oem6_short_header_t
 {
-	enum {
+	enum : uint8_t {
 		SYNCH0 = 0xAA,
 		SYNCH1 = 0X44,
 		SYNCH2 = 0x13
@@ -64,7 +64,7 @@ struct OBS_IMPEXP nv_oem6_short_header_t
 
 namespace nv_oem6_position_type {
 /** Novatel OEM6 firmware reference, table 84; Novatel SPAN on OEM6 firmware manual, table 26. */
-enum nv_position_type_t {
+enum nv_position_type_t : uint32_t {
 	NONE = 0,
 	FIXEDPOS = 1,
 	FIXEDHEIGHT = 2,
@@ -99,7 +99,7 @@ enum nv_position_type_t {
 
 namespace nv_oem6_solution_status {
 /** Novatel OEM6 firmware reference, table 85 */
-enum nv_solution_status_t {
+enum nv_solution_status_t : uint32_t {
 	SOL_COMPUTED = 0,		//!< solution computed
 	INSUFFICIENT_OBS,	//!< insufficient observations
 	NO_CONVERGENCE,		//!< noconvergence
@@ -107,7 +107,7 @@ enum nv_solution_status_t {
 	COV_TRACE,			//!< covariance trace exceeds maximum (trace>1000m)
 	TEST_DIST,			//!< test distance exceeded (max of 3 rejections if distance > 10km)
 	COLD_START,			//!< not yet converged from cold start
-	V_H_LIMIT,			//!< height or velocity limits exceeded 
+	V_H_LIMIT,			//!< height or velocity limits exceeded
 	VARIANCE,			//!< variance exceeds limits
 	RESIDUALS,			//!< residuals are too large
 	DELTA_POS,			//!< delta position is too large
@@ -124,10 +124,10 @@ enum nv_solution_status_t {
 }
 namespace nv_oem6_ins_status_type {
 /** Novatel SPAN on OEM6 firmware reference, table 33 */
-enum nv_ins_status_type_t {
+enum nv_ins_status_type_t : uint32_t{
 	INS_INACTIVE = 0, //IMU logs are present, but the alignment routine has not started; INS is inactive.
 	INS_ALIGNING = 1, // INS is in alignment mode.
-	INS_HIGH_VARIANCE = 2, // The INS solution is in navigation mode but the azimuth solution uncertainty has exceeded the threshold. 
+	INS_HIGH_VARIANCE = 2, // The INS solution is in navigation mode but the azimuth solution uncertainty has exceeded the threshold.
 	INS_SOLUTION_GOOD = 3, // The INS filter is in navigation mode and the INS solution is good.
 	INS_SOLUTION_FREE = 6, // The INS filter is in navigation mode and the GNSS solution is suspected to be in error.
 	INS_ALIGNMENT_COMPLETE = 7, // The INS filter is in navigation mode, but not enough vehicle dynamics have been experienced for the system to be within specifications.
@@ -144,7 +144,7 @@ struct OBS_IMPEXP Message_NV_OEM6_GENERIC_FRAME : public gnss_message
 	{}
 	nv_oem6_header_t     header;  //!< Frame header
 	std::vector<uint8_t> msg_body;
-	
+
 	void dumpToStream( mrpt::utils::CStream &out ) const override; // See docs in base
 protected:
 	void internal_writeToStream(mrpt::utils::CStream &out) const override;
@@ -158,7 +158,7 @@ struct OBS_IMPEXP Message_NV_OEM6_GENERIC_SHORT_FRAME : public gnss_message
 	{}
 	nv_oem6_short_header_t  header;  //!< Frame header
 	std::vector<uint8_t>    msg_body;
-	
+
 	void dumpToStream( mrpt::utils::CStream &out ) const override; // See docs in base
 protected:
 	void internal_writeToStream(mrpt::utils::CStream &out) const override;
@@ -169,8 +169,8 @@ protected:
 /** Novatel frame: NV_OEM6_BESTPOS. \sa mrpt::obs::CObservationGPS  */
 GNSS_BINARY_MSG_DEFINITION_START(NV_OEM6_BESTPOS)
 	nv_oem6_header_t   header;  //!< Frame header
-	uint32_t   solution_stat;   //!< nv_oem6_solution_status::nv_solution_status_t
-	uint32_t   position_type;   //!< nv_oem6_position_type::nv_position_type_t
+	nv_oem6_solution_status::nv_solution_status_t solution_stat;
+	nv_oem6_position_type::nv_position_type_t position_type;
 	double     lat,lon,hgt;     //!< [deg], [deg], hgt over sea level[m]
 	float      undulation;
 	uint32_t   datum_id;
@@ -202,7 +202,7 @@ GNSS_BINARY_MSG_DEFINITION_START(NV_OEM6_INSPVAS)
 		double     lat,lon,hgt;
 		double     vel_north,vel_east,vel_up;
 		double     roll,pitch,azimuth;
-		uint32_t   ins_status; //!< nv_oem6_ins_status_type::nv_ins_status_type_t
+		nv_oem6_ins_status_type::nv_ins_status_type_t ins_status;
 		uint32_t   crc;
 GNSS_BINARY_MSG_DEFINITION_MID
 	/**  Return the geodetic coords as a mrpt::topography::TGeodeticCoords structure (requires linking against mrpt-topography)
@@ -310,8 +310,8 @@ GNSS_BINARY_MSG_DEFINITION_MID_END
 /** Novatel frame: NV_OEM6_MARKPOS. \sa mrpt::obs::CObservationGPS  */
 GNSS_BINARY_MSG_DEFINITION_START(NV_OEM6_MARKPOS)
 	nv_oem6_header_t   header;  //!< Frame header
-	uint32_t   solution_stat;   //!< nv_oem6_solution_status::nv_solution_status_t
-	uint32_t   position_type;   //!< nv_oem6_position_type::nv_position_type_t
+	nv_oem6_solution_status::nv_solution_status_t solution_stat;
+	nv_oem6_position_type::nv_position_type_t position_type;
 	double     lat,lon,hgt;     //!< [deg], [deg], hgt over sea level[m]
 	float      undulation;
 	uint32_t   datum_id;
