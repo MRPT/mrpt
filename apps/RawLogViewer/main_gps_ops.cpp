@@ -993,9 +993,9 @@ void filter_delGPSNan(
             {
             	CObservationGPS::Ptr o = std::dynamic_pointer_cast<CObservationGPS>(*it);
             	if (o->has_GGA_datum &&
-					(mrpt::math::isNaN(o->getMsgByClass<gnss::Message_NMEA_GGA>().fields.latitude_degrees) ||
-					 mrpt::math::isNaN(o->getMsgByClass<gnss::Message_NMEA_GGA>().fields.longitude_degrees) ||
-					 mrpt::math::isNaN(o->getMsgByClass<gnss::Message_NMEA_GGA>().fields.altitude_meters) ) )
+					(std::isnan(o->getMsgByClass<gnss::Message_NMEA_GGA>().fields.latitude_degrees) ||
+					 std::isnan(o->getMsgByClass<gnss::Message_NMEA_GGA>().fields.longitude_degrees) ||
+					 std::isnan(o->getMsgByClass<gnss::Message_NMEA_GGA>().fields.altitude_meters) ) )
 				{
 					it = SF->erase(it);
 					changesCount++;
