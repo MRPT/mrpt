@@ -1,8 +1,8 @@
 language: c
 
-env:
-  global:
-    - secure: CoCDaURJpzTksnkRx6Yjdw9Tl5DZYd2/hPsPEcESNRUNZgqwD1TXPTcbsXQuG2fv5nyovEwMVguztHb49W2snVpBCikee56oqZrqAUv8QDgM0RslWwjLLjbUjBAV0rFP1yooVEgK07StNqlDU+GEftAvTP7CuAow6x990tWFhhDXupTN5PsNFNYaPWL2mDXBXoCjvWdP4RkOSw0SYxPGfzGftOHzbzohIm720BVGELn3G8myOKE/zG050ixvdow5kzxOXuzKNLxLXVq/7R89qO3yT452/FF6r0Cx841bzEVL5Ks7rnpNu/qpqR9vccpiGfikyL1dDDfoRSt0djOyPA==
+#env:
+#  global:
+#    - secure: CoCDaURJpzTksnkRx6Yjdw9Tl5DZYd2/hPsPEcESNRUNZgqwD1TXPTcbsXQuG2fv5nyovEwMVguztHb49W2snVpBCikee56oqZrqAUv8QDgM0RslWwjLLjbUjBAV0rFP1yooVEgK07StNqlDU+GEftAvTP7CuAow6x990tWFhhDXupTN5PsNFNYaPWL2mDXBXoCjvWdP4RkOSw0SYxPGfzGftOHzbzohIm720BVGELn3G8myOKE/zG050ixvdow5kzxOXuzKNLxLXVq/7R89qO3yT452/FF6r0Cx841bzEVL5Ks7rnpNu/qpqR9vccpiGfikyL1dDDfoRSt0djOyPA==
 
 matrix:
   include:
@@ -17,6 +17,7 @@ build:
   cache: true
   pre_ci_boot:
     image_name: drydock/u16cppall
+    image_tag: prod
   ci:
     - sudo add-apt-repository -y ppa:jolting/backport
     - sudo apt-get update
