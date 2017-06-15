@@ -57,7 +57,7 @@ namespace mrpt
 			std::vector<mrpt::math::TPoint2D> targets; //!< Relative location (x,y) of target point(s). In the same units than `obstacles`. If many, last targets have higher priority.
 			double                maxRobotSpeed;       //!< Maximum robot speed, in the same units than `obstacles`, per second.
 			double                maxObstacleDist;     //!< Maximum expected value to be found in `obstacles`. Typically, values in `obstacles` larger or equal to this value mean there is no visible obstacle in that direction.
-			mrpt::nav::ClearanceDiagram *clearance;    //!< The computed clearance for each direction (optional in some implementations). Leave to default (NULL) if not needed.
+			const mrpt::nav::ClearanceDiagram *clearance;    //!< The computed clearance for each direction (optional in some implementations). Leave to default (NULL) if not needed.
 
 			NavInput();
 		};
