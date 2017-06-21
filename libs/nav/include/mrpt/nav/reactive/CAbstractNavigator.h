@@ -145,6 +145,7 @@ namespace mrpt
 			double dist_to_target_for_sending_event;  //!< Default value=0, means use the "targetAllowedDistance" passed by the user in the navigation request.
 			double alarm_seems_not_approaching_target_timeout; //!< navigator timeout (seconds) [Default=30 sec]
 			double dist_check_target_is_blocked;     //!< (Default value=0.6) When closer than this distance, check if the target is blocked to abort navigation with an error.
+			int hysteresis_check_target_is_blocked;  // (Default=3) How many steps should the condition for dist_check_target_is_blocked be fulfilled to raise an event
 
 			virtual void loadFromConfigFile(const mrpt::utils::CConfigFileBase &c, const std::string &s) MRPT_OVERRIDE;
 			virtual void saveToConfigFile(mrpt::utils::CConfigFileBase &c, const std::string &s) const MRPT_OVERRIDE;
@@ -159,6 +160,7 @@ namespace mrpt
 	private:
 		TState  m_lastNavigationState; //!< Last internal state of navigator:
 		bool    m_navigationEndEventSent; //!< Will be false until the navigation end is sent, and it is reset with each new command
+		int m_counter_check_target_is_blocked;
 
 		/** Called before starting a new navigation. Internally, it calls to child-implemented onStartNewNavigation() */
 		void internal_onStartNewNavigation();
