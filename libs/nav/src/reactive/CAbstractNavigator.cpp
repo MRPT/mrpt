@@ -141,6 +141,13 @@ void  CAbstractNavigator::suspend()
 {
 	mrpt::synch::CCriticalSectionLocker csl(&m_nav_cs);
 
+	// Issue an "stop" if we are moving:
+	if (m_curPoseVel.timestamp != INVALID_TIMESTAMP && 
+		(std::abs(m_curPoseVel.velLocal.vx)>1e-4 || std::abs(m_curPoseVel.velLocal.vy)>1e-4 || std::abs(m_curPoseVel.velLocal.omega)>1e-4))
+	{
+		this->stop(false /*not an emergency stop*/);
+	}
+
 	MRPT_LOG_DEBUG("CAbstractNavigator::suspend() called.");
 	if ( m_navigationState == NAVIGATING )
 		m_navigationState  = SUSPENDED;
