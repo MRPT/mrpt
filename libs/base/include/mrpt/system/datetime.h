@@ -34,13 +34,13 @@ namespace mrpt
 		 */
 		struct TTimeParts
 		{
-			uint16_t	year;	/** The year */
-			uint8_t		month;  /** Month (1-12) */
-			uint8_t		day;    /** Day (1-31) */
-			uint8_t		hour;   /** Hour (0-23) */
-			uint8_t		minute; /** Minute (0-59) */
-			double		second; /** Seconds (0.0000-59.9999) */
-			uint8_t		day_of_week; /** Day of week (1:Sunday, 7:Saturday) */
+			uint16_t	year;	//!< The year (full 4 digits)
+			uint8_t		month;  //!< Month (1-12)
+			uint8_t		day;    //!< Day (1-31)
+			uint8_t		hour;   //!< Hour (0-23)
+			uint8_t		minute; //!< Minute (0-59)
+			double		second; //!< Seconds (0.0000-59.9999) 
+			uint8_t		day_of_week; //!< Day of week (1:Sunday, 7:Saturday) 
 			int			daylight_saving;
 		};
 
