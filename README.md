@@ -1,24 +1,10 @@
 The MRPT project 
 ====================================================
-<table>
-<tr>
-<td align="center" valign="top"> <a href="https://travis-ci.org/MRPT/mrpt"><img alt="Travis status" src="https://travis-ci.org/MRPT/mrpt.png?branch=master"></a></td>
-<td align="center" valign="top"> <a href="https://app.shippable.com/github/MRPT/mrpt"><img alt="Run status" src="https://api.shippable.com/projects/58cf0760a99a110500e3164b/badge?branch=master"></a></td>
-<td align="center" valign="top"> (Appveyor)  </td>
-<td rowspan="2" valign="middle"> <a href="https://github.com/MRPT/mrpt/releases"><img alt="GitHub release" src="https://img.shields.io/github/release/MRPT/mrpt.svg"></a>
-<td  rowspan="2" valign=""> <a href="https://coveralls.io/github/MRPT/mrpt?branch=master"><img alt="Coverage Status" src="https://coveralls.io/repos/github/MRPT/mrpt/badge.svg?branch=master"></a> </td>
-</td>
-<td rowspan="2" valign="middle">
-<a href="https://github.com/MRPT/mrpt/blob/master/doc/LICENSE.txt"><img alt="BSD3 License" src="http://img.shields.io/badge/license-BSD3-brightgreen.svg"></a>
-<br>
-<a href="https://gitter.im/MRPT/mrpt"><img alt="[Join the chat at https://gitter.im/MRPT/mrpt" src="https://badges.gitter.im/Join%20Chat.svg"></a>
-</td>
-</tr>
-<tr>
-<td colspan="2" align="center">CI: GNU/Linux & OSX</td>
-<td align="center">CI: Windows</td>
-</tr>
-</table>
+[![Travis](https://travis-ci.org/MRPT/mrpt.png?branch=master)](https://travis-ci.org/MRPT/mrpt)
+[![Shippable](http://150.214.150.101:50000/projects/5940153f75d24b06002327b7/badge?branch=master)](http://150.214.150.101:50001/github/MRPT/mrpt)
+[![Coverage Badge](http://150.214.150.101:50000/projects/5940153f75d24b06002327b7/coverageBadge?branch=master)](http://150.214.150.101:50001/github/MRPT/mrpt)
+[![Releases](https://img.shields.io/github/release/MRPT/mrpt.svg)](https://github.com/MRPT/mrpt/releases)
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/MRPT/mrpt)
 
 ## 1. Introduction
 <img align="right" src="https://mrpt.github.io/imgs/mrpt-videos-mix2.gif">
