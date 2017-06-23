@@ -3,25 +3,25 @@
 
 #include "CNode.h"
 
-#include "mrpt/maps/CSimpleMap.h"
+#include "mrpt/poses.h"
 
 
-namespace mrpt{namespace poses{class CPose3D;}}
-
-class CPosesNode :public CNode
+class CPoseNode :public CNode
 {
 public:
-	CPosesNode(CNode *parent, const mrpt::poses::CPose3D &pose, const std::string &name);
-	virtual ~CPosesNode() = default;
+	CPoseNode(CNode *parent, const mrpt::poses::CPose3D &pose);
+	~CPoseNode() = default;
 
-	virtual int childCount() const;
-	virtual CNode* child(int id);
-	virtual void addNewChild();
+	int childCount() const override;
+	CNode* child(int id) override;
+	std::string displayName() const override;
+	ObjectType type() const override;
 
 	mrpt::poses::CPose3D getPose() const;
 
 private:
 	mrpt::poses::CPose3D m_pose;
+
 };
 
 

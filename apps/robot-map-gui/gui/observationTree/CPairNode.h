@@ -1,23 +1,29 @@
 #pragma once
-#include <string>
+#include "CNode.h"
 
-#include "CPosesNode.h"
+#include <string>
 
 #include "mrpt/maps/CSimpleMap.h"
 
 
-class CPairNode :public CPosesNode
+class CObservationsNode;
+class CPoseNode;
+
+class CPairNode :public CNode
 {
 public:
 	CPairNode(CNode *parent, const mrpt::maps::CSimpleMap::TPosePDFSensFramePair &poseSensFramePair);
-	virtual ~CPairNode() = default;
+	virtual ~CPairNode();
 
-	virtual int childCount() const;
-	virtual CNode* child(int id);
-	virtual void addNewChild();
+	int childCount() const;
+	CNode* child(int id);
+	ObjectType type() const override;
+	std::string displayName() const override;
 
 private:
-	std::vector<std::unique_ptr<CPosesNode> > m_observation;
+	std::unique_ptr<CPoseNode>  m_pose;
+	std::unique_ptr<CObservationsNode> m_observations;
+
 };
 
 

@@ -44,8 +44,8 @@ CGlWidget::CGlWidget(QWidget *parent)
 	// The camera pointing to the current robot pose:
 	{
 		CCamera &cam = view->getCamera();
-		cam.setAzimuthDegrees(-50);
-		cam.setElevationDegrees(50);
+		cam.setAzimuthDegrees(-90);
+		cam.setElevationDegrees(90);
 		cam.setZoomDistance(40);
 		cam.setOrthogonal(false);
 	}

@@ -4,44 +4,41 @@
 
 
 using namespace mrpt;
-using namespace mrpt::maps;
 using namespace mrpt::poses;
 
-
-std::string getNameFromPose(const CPose3D& pose)
-{
-	std::string str;
-	pose.asString(str);
-	return str;
-}
-
-
-CPosesNode::CPosesNode(CNode *parent, const CPose3D& pose, const std::string &name)
-	: CNode(parent, name + getNameFromPose(pose))
+CPoseNode::CPoseNode(CNode *parent, const CPose3D& pose)
+	: CNode(parent)
 	, m_pose(pose)
 {
 
 }
 
-int CPosesNode::childCount() const
+int CPoseNode::childCount() const
 {
 	return 0;
 }
 
 
-CNode *CPosesNode::child(int id)
+CNode *CPoseNode::child(int id)
 {
 	return nullptr;
 }
 
-void CPosesNode::addNewChild()
-{
-	return;
-}
 
-CPose3D CPosesNode::getPose() const
+CPose3D CPoseNode::getPose() const
 {
 	return m_pose;
 }
 
+std::string CPoseNode::displayName() const
+{
+	std::string str;
+	m_pose.asString(str);
+	return "Pose: " + str;
+}
 
+
+CNode::ObjectType CPoseNode::type() const
+{
+	return ObjectType::Pos;
+}

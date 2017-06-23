@@ -1,53 +1,50 @@
 #include "CPairNode.h"
-#include "CPosesNode.h"
 
-#include "mrpt/poses/CPose3DPDF.h"
-#include "mrpt/obs/CObservation2DRangeScan.h"
+#include "CPosesNode.h"
+#include "CObservationsNode.h"
 
 
 using namespace mrpt;
 using namespace mrpt::maps;
-using namespace mrpt::poses;
-using namespace mrpt::obs;
 
-
-std::string getNameFromPosePair(const CSimpleMap::TPosePDFSensFramePair &poseSensFramePair)
-{
-	CPose3D pose = poseSensFramePair.first->getMeanVal();
-	std::string str;
-	pose.asString(str);
-	return str;
-}
-
-CPose3D getPoseFromObservation(CObservation::Ptr obs)
-{
-	CPose3D::Ptr pose = CPose3D::Create();
-	obs->getSensorPose(*pose);
-	return *(pose.get());
-}
 
 CPairNode::CPairNode(CNode *parent, const CSimpleMap::TPosePDFSensFramePair &poseSensFramePair)
-	: CPosesNode(parent, poseSensFramePair.first->getMeanVal(), "Pose ")
+	: CNode(parent)
+	, m_pose(std::make_unique<CPoseNode>(this, poseSensFramePair.first->getMeanVal()))
+	, m_observations(std::make_unique<CObservationsNode>(this, poseSensFramePair.second))
 {
-	CSensoryFrame::Ptr frame = poseSensFramePair.second;
-	for (auto iter = frame->begin(); iter != frame->end(); ++iter)
-	{
-		m_observation.push_back(std::make_unique<CPosesNode>(this, getPoseFromObservation(*iter), "Frame "));
-	}
+
+}
+
+CPairNode::~CPairNode()
+{
+
 }
 
 int CPairNode::childCount() const
 {
-	return m_observation.size();
+	return 2;
 }
 
 CNode *CPairNode::child(int id)
 {
-	return m_observation.at(id).get();
+	switch (id) {
+	case 0:
+		return m_pose.get();
+	case 1:
+		return m_observations.get();
+	default:
+		return nullptr;
+	};
 }
 
-void CPairNode::addNewChild()
+
+CNode::ObjectType CPairNode::type() const
 {
-	return;
+	return ObjectType::PosWithObservationPair;
 }
 
+std::string CPairNode::displayName() const
+{
+	return "Position";
+}
