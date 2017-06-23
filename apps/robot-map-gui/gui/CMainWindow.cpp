@@ -1,3 +1,11 @@
+/* +---------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)               |
+   |                          http://www.mrpt.org/                             |
+   |                                                                           |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
+   | Released under BSD License. See details in http://www.mrpt.org/License    |
+   +---------------------------------------------------------------------------+ */
 #include "CMainWindow.h"
 #include "CGLWidget.h"
 #include "CDocument.h"
@@ -35,7 +43,7 @@ CMainWindow::~CMainWindow()
 
 void CMainWindow::openMap()
 {
-	QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), "", tr("Files (*.simplemap)"));
+	QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), "", tr("Files (*.simplemap, *.simplemap.gz)"));
 	QString configName = QFileDialog::getOpenFileName(this, tr("Open Config File"), "", tr("Files (*.ini)"));
 
 	if (fileName.size() == 0 || configName.size() == 0)
