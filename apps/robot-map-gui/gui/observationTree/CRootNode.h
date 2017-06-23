@@ -11,14 +11,15 @@ class CRootNode : public CNode
 {
 public:
 	CRootNode(const mrpt::maps::CSimpleMap &simplemap);
-	virtual ~CRootNode() = default;
+	~CRootNode() = default;
 
 	// INode interface
-public:
-	virtual int childCount() const override;
-	virtual CNode* child(int id) override;
-	virtual void addNewChild() override;
+	int childCount() const override;
+	CNode* child(int id) override;
+	ObjectType type() const override;
+	std::string displayName() const override;
 
 private:
 	std::vector<CNode *> m_posesNode;
+
 };

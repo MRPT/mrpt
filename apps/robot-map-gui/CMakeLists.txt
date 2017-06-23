@@ -24,7 +24,9 @@ if(CMAKE_MRPT_HAS_Qt5 AND CMAKE_MRPT_HAS_OPENGL_GLUT)
 		gui/observationTree/CRootNode.cpp
 		gui/observationTree/CPosesNode.cpp
 		gui/observationTree/CPairNode.cpp
-
+		gui/observationTree/CObservationsNode.cpp
+		gui/observationTree/CBaseObservationNode.cpp
+		gui/observationTree/CRangeScanNode.cpp
 		)
 
 	set(FILES_TO_MOC

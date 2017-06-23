@@ -6,29 +6,34 @@
 class CNode
 {
 public:
-	enum class TypeObject
+	enum class ObjectType
 	{
-		Node = 0,
-		Pose = 1,
-		Frame = 2
+		Root = 0,
+		PosWithObservationPair = 1,
+		Observations = 3,
+		Pos = 4,
+		RangeScan = 5
+
 	};
 
-	CNode(CNode *parent, const std::string& name);
+	CNode(CNode *parent);
 	virtual ~CNode() = default;
 
 	virtual int childCount() const = 0;
-	virtual const CNode* parentItem() const;
 	virtual CNode* child(int id) = 0;
-	virtual void addNewChild() = 0;
+	virtual ObjectType type() const  = 0;
+	virtual std::string displayName() const = 0;
+
+	virtual const CNode* parentItem() const;
+
+	///Add new child to node. Optional to override.
+	virtual void addNewChild();
 
 	const CNode* child(int id) const;
 
-	virtual TypeObject type() const;
-	virtual const std::string& displayName() const;
 
 private:
 
-	std::string name_;
 	CNode *m_parent;
 };
 

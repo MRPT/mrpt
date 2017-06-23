@@ -68,7 +68,7 @@ void CMainWindow::openMap()
 void CMainWindow::itemClicked(const QModelIndex &index)
 {
 	CNode* node = m_model->getNodeFromIndexSafe(index);
-	CPosesNode *posesNode = dynamic_cast<CPosesNode *>(node);
+	CPoseNode *posesNode = dynamic_cast<CPoseNode *>(node);
 
 	if (posesNode)
 	{

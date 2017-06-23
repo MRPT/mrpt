@@ -1,14 +1,12 @@
 #include "CRootNode.h"
 #include "CPairNode.h"
 
-#include <cassert>
-
 
 using namespace mrpt;
 using namespace mrpt::maps;
 
 CRootNode::CRootNode(const CSimpleMap &simplemap)
-	: CNode (nullptr, "")
+	: CNode (nullptr)
 {
 	for (auto iter = simplemap.begin(); iter != simplemap.end(); ++iter)
 	{
@@ -29,9 +27,13 @@ CNode* CRootNode::child(int id)
 	return m_posesNode[id];
 }
 
-void CRootNode::addNewChild()
+
+CNode::ObjectType CRootNode::type() const
 {
-	return;
+	return ObjectType::Root;
 }
 
-
+std::string CRootNode::displayName() const
+{
+	return "root";
+}
