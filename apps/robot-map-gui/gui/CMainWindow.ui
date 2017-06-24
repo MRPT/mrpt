@@ -14,15 +14,9 @@
    <string>Main Window</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout">
+   <layout class="QHBoxLayout" name="horizontalLayout_2">
     <item>
-     <widget class="QSplitter" name="splitter">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <widget class="QTabWidget" name="m_tabWidget"/>
-      <widget class="QTreeView" name="m_treeView"/>
-     </widget>
+     <widget class="QTabWidget" name="m_tabWidget"/>
     </item>
    </layout>
   </widget>
@@ -45,10 +39,81 @@
     <property name="title">
      <string>Help</string>
     </property>
-    <addaction name="aboutAction"/>
+    <addaction name="m_aboutAction"/>
+   </widget>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+    <addaction name="m_actionShowObs"/>
+    <addaction name="m_actionShowConfig"/>
    </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuTools"/>
    <addaction name="menuHelp"/>
+  </widget>
+  <widget class="QDockWidget" name="m_dockWidgetObs">
+   <property name="windowTitle">
+    <string>Observations</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <property name="spacing">
+      <number>0</number>
+     </property>
+     <property name="leftMargin">
+      <number>0</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="QTreeView" name="m_treeView"/>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="m_dockWidgetConfig">
+   <property name="windowTitle">
+    <string>Configuration</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>8</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_2">
+    <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <property name="spacing">
+      <number>0</number>
+     </property>
+     <property name="leftMargin">
+      <number>0</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="CConfigWidget" name="m_configWidget" native="true"/>
+     </item>
+    </layout>
+   </widget>
   </widget>
   <action name="openAction">
    <property name="text">
@@ -65,7 +130,7 @@
     <string>Save</string>
    </property>
   </action>
-  <action name="aboutAction">
+  <action name="m_aboutAction">
    <property name="text">
     <string>About</string>
    </property>
@@ -75,7 +140,102 @@
     <string>Load Tsv table</string>
    </property>
   </action>
+  <action name="m_actionShowObs">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show observations tree</string>
+   </property>
+  </action>
+  <action name="m_actionShowConfig">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show configuration</string>
+   </property>
+  </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>CConfigWidget</class>
+   <extends>QWidget</extends>
+   <header>gui/configWidget/CConfigWidget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>m_actionShowConfig</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>m_dockWidgetConfig</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>319</x>
+     <y>369</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_actionShowObs</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>m_dockWidgetObs</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>518</x>
+     <y>135</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_dockWidgetConfig</sender>
+   <signal>visibilityChanged(bool)</signal>
+   <receiver>m_actionShowConfig</receiver>
+   <slot>setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>319</x>
+     <y>369</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_dockWidgetObs</sender>
+   <signal>visibilityChanged(bool)</signal>
+   <receiver>m_actionShowObs</receiver>
+   <slot>setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>518</x>
+     <y>135</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

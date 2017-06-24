@@ -7,35 +7,30 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 #pragma once
-#include <QMainWindow>
+#include <QWidget>
 
 #include <memory>
 
 
 namespace Ui
 {
-class CMainWindow;
+class CConfigWidget;
 }
-class CGlWidget;
-class CDocument;
-class CObservationTreeModel;
-class QTreeWidgetItem;
 
-class CMainWindow : public QMainWindow
+class CConfigWidget: public QWidget
 {
 	Q_OBJECT
-
 public:
-	CMainWindow(QWidget *parent = 0);
-	virtual ~CMainWindow();
+	CConfigWidget(QWidget *parent = nullptr);
+	virtual ~CConfigWidget();
+
+signals:
+	void updateConfig(QString configName);
 
 private slots:
-	void openMap();
-	void itemClicked(const QModelIndex &index);
+	void openConfig();
+	void saveConfig();
 
 private:
-	CDocument *m_document;
-	CObservationTreeModel *m_model;
-
-	std::unique_ptr<Ui::CMainWindow> m_ui;
+	std::unique_ptr<Ui::CConfigWidget> m_ui;
 };

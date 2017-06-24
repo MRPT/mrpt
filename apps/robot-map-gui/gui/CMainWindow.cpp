@@ -43,7 +43,7 @@ CMainWindow::~CMainWindow()
 
 void CMainWindow::openMap()
 {
-	QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), "", tr("Files (*.simplemap, *.simplemap.gz)"));
+	QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), "", tr("Files (*.simplemap *.simplemap.gz)"));
 	QString configName = QFileDialog::getOpenFileName(this, tr("Open Config File"), "", tr("Files (*.ini)"));
 
 	if (fileName.size() == 0 || configName.size() == 0)
