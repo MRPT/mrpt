@@ -443,6 +443,10 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		for (size_t indexPTG=0;indexPTG<nPTGs;indexPTG++)
 		{
 			CParameterizedTrajectoryGenerator * ptg = getPTG(indexPTG);
+
+			// Ensure the method knows about its associated PTG:
+			m_holonomicMethod[indexPTG]->setAssociatedPTG(this->getPTG(indexPTG));
+
 			TInfoPerPTG &ipf = m_infoPerPTG[indexPTG];
 
 			// The picked movement in TP-Space (to be determined by holonomic method below)
@@ -568,6 +572,8 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 					newLogRec.additional_debug_msgs["rel_cur_pose_wrt_last_vel_cmd_NOP(interp)"] = rel_cur_pose_wrt_last_vel_cmd_NOP.asString();
 					newLogRec.additional_debug_msgs["robot_odom_at_send_cmd(interp)"] = robot_odom_at_send_cmd.asString();
 				}
+
+				// No need to call setAssociatedPTG(), already correctly associated above.
 
 				ASSERT_(m_navigationParams);
 				build_movement_candidate(
