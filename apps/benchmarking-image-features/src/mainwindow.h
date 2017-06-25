@@ -2,8 +2,8 @@
 #define MAINWINDOW_H
 #define NUM_DETECTORS 12
 #define NUM_DESCRIPTORS 7
-#define IMAGE_WIDTH 500
-#define IMAGE_HEIGHT 500
+#define IMAGE_WIDTH 400
+#define IMAGE_HEIGHT 400
 
 
 #include <QMainWindow>
@@ -59,6 +59,13 @@ public:
 
     QLabel *sample_image;
     QImage my_image;
+
+    // for image decimation
+    Mat dst1, tmp1;
+    Mat dst2, tmp2;
+    double downsampled_clicked=1;
+    double upsampled_clicked=1;
+    double sampling_rate=1;
 
     QPushButton *button_generate;
     QPushButton *button_close;
@@ -234,6 +241,9 @@ public slots:
 
     void on_next_button_clicked();
     void on_prev_button_clicked();
+
+    void on_upsample_clicked();
+    void on_downsample_clicked();
 
 };
 
