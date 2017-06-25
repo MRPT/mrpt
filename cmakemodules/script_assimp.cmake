@@ -28,7 +28,7 @@ IF(PKG_CONFIG_FOUND)
 	ENDIF (ASSIMP_FOUND)
 ENDIF(PKG_CONFIG_FOUND)
 
-IF (NOT ASSIMP_FOUND)
+IF (NOT ASSIMP_FOUND AND EXISTS "${MRPT_SOURCE_DIR}/otherlibs/assimp/")
 	SET(BUILD_ASSIMP ON CACHE BOOL "Build an embedded version of Assimp (3D models importer)")
 	IF (BUILD_ASSIMP)
 
@@ -84,7 +84,7 @@ IF (NOT ASSIMP_FOUND)
 			)
 		
 	ENDIF (BUILD_ASSIMP)
-ENDIF(NOT ASSIMP_FOUND)
+ENDIF()
 
 IF (ASSIMP_FOUND_VIA_CMAKE)
 	# override wrong target libs in -config.cmake file:
