@@ -29,6 +29,7 @@ void MainWindow::on_button_generate_clicked()
 
     int numDescriptors = featsImage1.size();
 
+
     visualize_dialog = new VisualizeDialog(this, inputFilePath->text(), detector_selected, descriptor_selected, numDescriptors,  featsImage1, featsImage2 );
 
 
@@ -896,6 +897,79 @@ void MainWindow::on_prev_button_clicked()
     displayImagesWithoutDetector();
 }
 
+void MainWindow::on_downsample_clicked()
+{
+    sampling_rate -= 0.1;
+    ReadInputFormat();
+
+    img1.loadFromFile(file_path1);
+    cv::Mat cvImg1 = cv::cvarrToMat(img1.getAs<IplImage>());
+
+    //Size(int(downsampled_clicked*cvImg1.cols),int(downsampled_clicked*cvImg1.rows);
+
+    cv::Mat temp1 (cvImg1.cols,cvImg1.rows,cvImg1.type());
+    cvtColor(cvImg1, temp1, CV_BGR2RGB);
+    QImage disp1 = QImage((uchar*) temp1.data, temp1.cols, temp1.rows, temp1.step, QImage::Format_RGB888);
+
+    QImage qscaled1 = disp1.scaled(int(IMAGE_WIDTH*sampling_rate), int(IMAGE_HEIGHT*sampling_rate), Qt::KeepAspectRatio);
+    image1->setPixmap(QPixmap::fromImage(qscaled1));
+
+
+     if(currentInputIndex == 1)
+    {
+        img2.loadFromFile(file_path2);
+        cv::Mat cvImg2 = cv::cvarrToMat(img2.getAs<IplImage>());
+
+        //Size(int(downsampled_clicked*cvImg1.cols),int(downsampled_clicked*cvImg1.rows);
+
+        cv::Mat temp2 (cvImg2.cols,cvImg2.rows,cvImg2.type());
+        cvtColor(cvImg2, temp2, CV_BGR2RGB);
+        QImage disp2 = QImage((uchar*) temp2.data, temp2.cols, temp2.rows, temp2.step, QImage::Format_RGB888);
+        //cout << "right before scaling the qimage" << endl;
+        QImage qscaled2 = disp2.scaled(int(IMAGE_WIDTH*sampling_rate), int(IMAGE_HEIGHT*sampling_rate), Qt::KeepAspectRatio);
+        image2->setPixmap(QPixmap::fromImage(qscaled2));
+    }
+    // add qline edit to ask from the user the downsampling factor, here its 0.1
+
+
+}
+
+void MainWindow::on_upsample_clicked()
+{
+    sampling_rate += 0.1;
+    ReadInputFormat();
+
+    img1.loadFromFile(file_path1);
+    cv::Mat cvImg1 = cv::cvarrToMat(img1.getAs<IplImage>());
+
+    //Size(int(downsampled_clicked*cvImg1.cols),int(downsampled_clicked*cvImg1.rows);
+
+    cv::Mat temp1 (cvImg1.cols,cvImg1.rows,cvImg1.type());
+    cvtColor(cvImg1, temp1, CV_BGR2RGB);
+    QImage disp1 = QImage((uchar*) temp1.data, temp1.cols, temp1.rows, temp1.step, QImage::Format_RGB888);
+
+    QImage qscaled1 = disp1.scaled(int(IMAGE_WIDTH*sampling_rate), int(IMAGE_HEIGHT*sampling_rate), Qt::KeepAspectRatio);
+    image1->setPixmap(QPixmap::fromImage(qscaled1));
+
+
+    if(currentInputIndex == 1)
+    {
+        img2.loadFromFile(file_path2);
+        cv::Mat cvImg2 = cv::cvarrToMat(img2.getAs<IplImage>());
+
+        //Size(int(downsampled_clicked*cvImg1.cols),int(downsampled_clicked*cvImg1.rows);
+
+        cv::Mat temp2 (cvImg2.cols,cvImg2.rows,cvImg2.type());
+        cvtColor(cvImg2, temp2, CV_BGR2RGB);
+        QImage disp2 = QImage((uchar*) temp2.data, temp2.cols, temp2.rows, temp2.step, QImage::Format_RGB888);
+        cout << "right before scaling the qimage" << endl;
+        QImage qscaled2 = disp2.scaled(int(IMAGE_WIDTH*sampling_rate), int(IMAGE_HEIGHT*sampling_rate), Qt::KeepAspectRatio);
+        image2->setPixmap(QPixmap::fromImage(qscaled2));
+    }
+    // add qline edit to ask from the user the downsampling factor, here its 0.1
+
+
+}
 MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
 {
     current_imageIndex = 0;
@@ -964,12 +1038,12 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
     //Displaying the pair of images here
     groupBox_images = new QGroupBox ("Single Image");
     image1 = new QLabel;
-    qimage1.load("/home/raghavender/Downloads/image1.jpg"); // replace this with initial image of select an image by specifying path
+    qimage1.load("../../apps/benchmarking-image-features/images/1.png"); // replace this with initial image of select an image by specifying path
     QImage qscaled1 = qimage1.scaled(IMAGE_WIDTH, IMAGE_HEIGHT, Qt::KeepAspectRatio);
     image1->setPixmap(QPixmap::fromImage(qscaled1));
 
     image2 = new QLabel;
-    qimage2.load("/home/raghavender/Downloads/image1.jpg"); // replace this with initial image of select an image by specifying path
+    qimage2.load("../../apps/benchmarking-image-features/images/2.png"); // replace this with initial image of select an image by specifying path
     QImage qscaled2 = qimage2.scaled(IMAGE_WIDTH, IMAGE_HEIGHT, Qt::KeepAspectRatio);
     image2->setPixmap(QPixmap::fromImage(qscaled2));
 
@@ -1049,6 +1123,7 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
     param5 = new QLabel("Enter Parameter 5 value for the detector: ");
     param5_edit = new QLineEdit;
     param5_edit->setText("enter param value");
+
 
     QLabel *descriptor_param_label = new QLabel("<b>Descriptor Parameters: </b>");
 
@@ -1142,16 +1217,33 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
     hbox2->addWidget(next_button);
     groupBox_buttons2->setLayout(hbox2);
 
-    layout_grid = new QGridLayout;
-    layout_grid->addWidget(groupBox1,1,0,1,1);
-    layout_grid->addWidget(groupBox2,1,1,1,1);
-    layout_grid->addWidget(groupBox_images,2,0,2,2);
-    layout_grid->addWidget(inputGroupBox,1,2,1,1);
-    layout_grid->addWidget(groupBox_buttons2,4,0,1,2);
-    layout_grid->addWidget(groupBox_buttons,5,0,2,2);
 
-    layout_grid->addWidget(userOptionsGroupBox,2,2,1,1);
-    layout_grid->addWidget(paramsGroupBox,3,2,1,1);
+    QGroupBox *decimateImage = new QGroupBox;
+    QVBoxLayout *vbox3 = new QVBoxLayout;
+    QPushButton *upsample = new QPushButton("UpSample");
+    QPushButton *downsample = new QPushButton("DownSample");
+    QLabel *decimateLabel = new QLabel("<b>Image Decimation options </b>");
+    connect(upsample, SIGNAL(clicked(bool)), this, SLOT(on_upsample_clicked()));
+    connect(downsample, SIGNAL(clicked(bool)), this, SLOT(on_downsample_clicked()));
+
+    vbox3->addWidget(decimateLabel);
+    vbox3->addWidget(upsample);
+    vbox3->addWidget(downsample);
+
+    decimateImage->setLayout(vbox3);
+
+
+    layout_grid = new QGridLayout;
+    layout_grid->addWidget(groupBox1,0,0,1,1);
+    layout_grid->addWidget(groupBox2,0,1,1,1);
+    layout_grid->addWidget(groupBox_images,1,0,2,2);
+    layout_grid->addWidget(inputGroupBox,0,2,1,1);
+    layout_grid->addWidget(groupBox_buttons2,3,0,1,1);
+    layout_grid->addWidget(groupBox_buttons,4,0,1,1);
+
+    layout_grid->addWidget(userOptionsGroupBox,1,2,1,1);
+    layout_grid->addWidget(paramsGroupBox,2,2,1,1);
+    layout_grid->addWidget(decimateImage,3,2,1,1);
 
 
     window_gui->setLayout(layout_grid);
