@@ -29,7 +29,7 @@ CMainWindow::CMainWindow(QWidget *parent)
 {
 	m_ui->setupUi(this);
 	QObject::connect(m_ui->openAction,		SIGNAL(triggered(bool)),			SLOT(openMap()));
-	QObject::connect(m_ui->m_treeView,	SIGNAL(clicked(const QModelIndex &)),	SLOT(itemClicked(const QModelIndex &)));
+	QObject::connect(m_ui->m_observationsTree,	SIGNAL(clicked(const QModelIndex &)),	SLOT(itemClicked(const QModelIndex &)));
 }
 
 CMainWindow::~CMainWindow()
@@ -67,10 +67,8 @@ void CMainWindow::openMap()
 
 	if (m_model)
 		delete m_model;
-	m_model = new CObservationTreeModel(m_document->simplemap(), m_ui->m_treeView);
-	m_ui->m_treeView->setModel(m_model);
-	m_ui->m_treeView->header()->close();
-
+	m_model = new CObservationTreeModel(m_document->simplemap(), m_ui->m_observationsTree);
+	m_ui->m_observationsTree->setModel(m_model);
 }
 
 void CMainWindow::itemClicked(const QModelIndex &index)
