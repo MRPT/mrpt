@@ -7,31 +7,35 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 #pragma once
-#include <QWidget>
+#include <QDialog>
 
 #include <memory>
 
 
+class QListWidget;
 namespace Ui
 {
-class CConfigWidget;
+class CSelectType;
 }
 
-class CConfigWidget: public QWidget
+class CSelectType: public QDialog
 {
-	Q_OBJECT
 public:
-	CConfigWidget(QWidget *parent = nullptr);
-	virtual ~CConfigWidget();
-
-signals:
-	void updateConfig(QString configName);
-
-private slots:
-	void openConfig();
-	void saveConfig();
-	void addMap();
+	enum TypeOfMaps
+	{
+		None = -1,
+		PointsMap = 0,
+		Occupancy = 1,
+		Landmarks = 2,
+		Beacon = 3,
+		GasGrid = 4
+	};
+	CSelectType(QWidget *parent = nullptr);
+	virtual ~CSelectType();
+	TypeOfMaps selectedItem() const;
 
 private:
-	std::unique_ptr<Ui::CConfigWidget> m_ui;
+	void addItem(const QString &name, TypeOfMaps type);
+
+	std::unique_ptr<Ui::CSelectType> m_ui;
 };

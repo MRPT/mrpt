@@ -8,9 +8,12 @@
    +---------------------------------------------------------------------------+ */
 #include "CConfigWidget.h"
 #include "ui_CConfigWidget.h"
+#include "CSelectType.h"
 
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QListWidget>
+#include <QDebug>
 
 
 CConfigWidget::CConfigWidget(QWidget *parent)
@@ -20,6 +23,7 @@ CConfigWidget::CConfigWidget(QWidget *parent)
 	m_ui->setupUi(this);
 	QObject::connect(m_ui->m_loadConfig, SIGNAL(released()), SLOT(openConfig()));
 	QObject::connect(m_ui->m_saveConfig, SIGNAL(released()), SLOT(saveConfig()));
+	QObject::connect(m_ui->m_add, SIGNAL(released()), SLOT(addMap()));
 }
 
 CConfigWidget::~CConfigWidget()
@@ -57,4 +61,11 @@ void CConfigWidget::saveConfig()
 
 	QDataStream out(&file);
 	out.setVersion(QDataStream::Qt_5_8);
+}
+
+void CConfigWidget::addMap()
+{
+	CSelectType *dialog = new CSelectType();
+	int result = dialog->exec();
+	qDebug() << result;
 }

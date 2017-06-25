@@ -28,17 +28,20 @@ if(CMAKE_MRPT_HAS_Qt5 AND CMAKE_MRPT_HAS_OPENGL_GLUT)
 		gui/observationTree/CBaseObservationNode.cpp
 		gui/observationTree/CRangeScanNode.cpp
 		gui/configWidget/CConfigWidget.cpp
+		gui/configWidget/CSelectType.cpp
 		)
 
 	set(FILES_TO_MOC
 		gui/CMainWindow.h
 		gui/CGLWidget.h
 		gui/configWidget/CConfigWidget.h
+		gui/configWidget/CSelectType.h
 		)
 
 	set(FILES_TO_UIC
 		gui/CMainWindow.ui
 		gui/configWidget/CConfigWidget.ui
+		gui/configWidget/CSelectType.ui
 		)
 	qt5_wrap_cpp(moc_cpps ${FILES_TO_MOC})
 	qt5_wrap_ui(uic_cpps ${FILES_TO_UIC})
