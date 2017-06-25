@@ -15,6 +15,21 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout_2">
+    <property name="spacing">
+     <number>0</number>
+    </property>
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
     <item>
      <widget class="QTabWidget" name="m_tabWidget"/>
     </item>
@@ -52,6 +67,33 @@
    <addaction name="menuTools"/>
    <addaction name="menuHelp"/>
   </widget>
+  <widget class="QDockWidget" name="m_dockWidgetConfig">
+   <property name="windowTitle">
+    <string>Configuration</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="CConfigWidget" name="m_configWidget">
+    <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <property name="spacing">
+      <number>0</number>
+     </property>
+     <property name="leftMargin">
+      <number>6</number>
+     </property>
+     <property name="topMargin">
+      <number>6</number>
+     </property>
+     <property name="rightMargin">
+      <number>6</number>
+     </property>
+     <property name="bottomMargin">
+      <number>6</number>
+     </property>
+    </layout>
+   </widget>
+  </widget>
   <widget class="QDockWidget" name="m_dockWidgetObs">
    <property name="windowTitle">
     <string>Observations</string>
@@ -60,57 +102,25 @@
     <number>2</number>
    </attribute>
    <widget class="QWidget" name="dockWidgetContents">
-    <property name="enabled">
-     <bool>true</bool>
-    </property>
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <property name="spacing">
-      <number>0</number>
-     </property>
+    <layout class="QVBoxLayout" name="verticalLayout">
      <property name="leftMargin">
-      <number>0</number>
+      <number>6</number>
      </property>
      <property name="topMargin">
       <number>0</number>
      </property>
      <property name="rightMargin">
-      <number>0</number>
+      <number>6</number>
      </property>
      <property name="bottomMargin">
-      <number>0</number>
+      <number>6</number>
      </property>
      <item>
-      <widget class="QTreeView" name="m_treeView"/>
-     </item>
-    </layout>
-   </widget>
-  </widget>
-  <widget class="QDockWidget" name="m_dockWidgetConfig">
-   <property name="windowTitle">
-    <string>Configuration</string>
-   </property>
-   <attribute name="dockWidgetArea">
-    <number>8</number>
-   </attribute>
-   <widget class="QWidget" name="dockWidgetContents_2">
-    <layout class="QHBoxLayout" name="horizontalLayout_3">
-     <property name="spacing">
-      <number>0</number>
-     </property>
-     <property name="leftMargin">
-      <number>0</number>
-     </property>
-     <property name="topMargin">
-      <number>0</number>
-     </property>
-     <property name="rightMargin">
-      <number>0</number>
-     </property>
-     <property name="bottomMargin">
-      <number>0</number>
-     </property>
-     <item>
-      <widget class="CConfigWidget" name="m_configWidget" native="true"/>
+      <widget class="QTreeView" name="m_observationsTree">
+       <attribute name="headerVisible">
+        <bool>false</bool>
+       </attribute>
+      </widget>
      </item>
     </layout>
    </widget>
@@ -190,22 +200,6 @@
    </hints>
   </connection>
   <connection>
-   <sender>m_actionShowObs</sender>
-   <signal>triggered(bool)</signal>
-   <receiver>m_dockWidgetObs</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>518</x>
-     <y>135</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>m_dockWidgetConfig</sender>
    <signal>visibilityChanged(bool)</signal>
    <receiver>m_actionShowConfig</receiver>
@@ -222,14 +216,30 @@
    </hints>
   </connection>
   <connection>
+   <sender>m_actionShowObs</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>m_dockWidgetObs</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>511</x>
+     <y>375</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
    <sender>m_dockWidgetObs</sender>
    <signal>visibilityChanged(bool)</signal>
    <receiver>m_actionShowObs</receiver>
    <slot>setChecked(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>518</x>
-     <y>135</y>
+     <x>511</x>
+     <y>375</y>
     </hint>
     <hint type="destinationlabel">
      <x>-1</x>

@@ -58,9 +58,6 @@ CGlWidget::CGlWidget(QWidget *parent)
 		cam.setOrthogonal(false);
 	}
 
-
-
-
 }
 
 void CGlWidget::fillMap(const CSetOfObjects::Ptr &renderizableMap)
@@ -81,29 +78,6 @@ void CGlWidget::setSelected(const math::TPose3D &pose)
 	points->setColor(mrpt::utils::TColorf(mrpt::utils::TColor::red));
 	points->setPointSize(10.);
 	m_map->insert(points);
-	update();
-	/*
-	for (auto it = m_map->begin(); it != m_map->end(); ++it)
-	{
-		CPointCloud *points = dynamic_cast<CPointCloud *>(it->get());
-		if (points)
-		{
-			for (int i = 0; i < points->size(); ++i)
-			{
-				if (points->getPoint(i) == mrpt::math::TPoint3D(pose.x, pose.y, pose.z))
-				{
-					(*it)->setColorR(1);
-					(*it)->setColorG(0);
-				}
-				else
-				{
-					(*it)->setColorR(0);
-					(*it)->setColorG(1);
-				}
-			}
-		}
-
-	}*/
 }
 
 void CGlWidget::initializeGL()
