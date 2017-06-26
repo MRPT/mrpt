@@ -6,43 +6,19 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
-#pragma once
-#include <QWidget>
-
-#include <memory>
+#include "COccupancyConfig.h"
+#include "ui_COccupancyConfig.h"
 
 
-class QListWidgetItem;
-namespace Ui
+
+COccupancyConfig::COccupancyConfig(QWidget *parent)
+	: QWidget(parent)
+	, m_ui(std::make_unique<Ui::COccupancyConfig>())
 {
-class CConfigWidget;
+	m_ui->setupUi(this);
 }
 
-class CConfigWidget: public QWidget
+COccupancyConfig::~COccupancyConfig()
 {
-	Q_OBJECT
-public:
-	CConfigWidget(QWidget *parent = nullptr);
-	virtual ~CConfigWidget();
 
-signals:
-	void updateConfig(QString configName);
-
-private slots:
-	void openConfig();
-	void saveConfig();
-	void addMap();
-	void currentConfigChanged(QListWidgetItem *current, QListWidgetItem *);
-
-private:
-	enum TypeOfConfig
-	{
-		General = 0,
-		PointsMap = 1,
-		Occupancy = 2,
-		Landmarks = 3,
-		Beacon = 4,
-		GasGrid = 5
-	};
-	std::unique_ptr<Ui::CConfigWidget> m_ui;
-};
+}

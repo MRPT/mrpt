@@ -9,10 +9,13 @@
 #include "CConfigWidget.h"
 #include "ui_CConfigWidget.h"
 #include "CSelectType.h"
+#include "COccupancyConfig.h"
 
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QListWidget>
+#include <QListWidgetItem>
+#include <QCheckBox>
 #include <QDebug>
 
 
@@ -24,6 +27,27 @@ CConfigWidget::CConfigWidget(QWidget *parent)
 	QObject::connect(m_ui->m_loadConfig, SIGNAL(released()), SLOT(openConfig()));
 	QObject::connect(m_ui->m_saveConfig, SIGNAL(released()), SLOT(saveConfig()));
 	QObject::connect(m_ui->m_add, SIGNAL(released()), SLOT(addMap()));
+
+
+	QListWidgetItem *item = new QListWidgetItem("General", m_ui->m_config);
+	item->setData(Qt::UserRole, TypeOfConfig::General);
+	m_ui->m_config->addItem(item);
+
+	QListWidgetItem *item2 = new QListWidgetItem("Occupancy", m_ui->m_config);
+	item2->setData(Qt::UserRole, TypeOfConfig::Occupancy);
+	m_ui->m_config->addItem(item2);
+
+	QWidget* w = new QWidget();
+	w->setLayout(new QHBoxLayout(w));
+	w->layout()->addWidget(new QCheckBox("test", w));
+	m_ui->stackedWidget->addWidget(w);
+
+	m_ui->stackedWidget->addWidget(new COccupancyConfig(m_ui->stackedWidget));
+
+	QObject::connect(m_ui->m_config, SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)),
+					 this, SLOT(currentConfigChanged(QListWidgetItem *, QListWidgetItem *)));
+
+	m_ui->m_config->setCurrentItem(item);
 }
 
 CConfigWidget::~CConfigWidget()
@@ -65,7 +89,26 @@ void CConfigWidget::saveConfig()
 
 void CConfigWidget::addMap()
 {
-	CSelectType *dialog = new CSelectType();
+	std::unique_ptr<CSelectType> dialog = std::make_unique<CSelectType>();
 	int result = dialog->exec();
-	qDebug() << result;
+	if (result == QDialog::Accepted)
+	{
+		CSelectType::TypeOfMaps type = dialog->selectedItem();
+		qDebug() << type;
+	}
+}
+
+void CConfigWidget::currentConfigChanged(QListWidgetItem *current, QListWidgetItem */*previous*/)
+{
+	if (!current)
+		return;
+	TypeOfConfig type = static_cast<TypeOfConfig>(current->data(Qt::UserRole).toInt());
+	if (type == General)
+	{
+		m_ui->stackedWidget->setCurrentIndex(0);
+	}
+	else if (type == Occupancy)
+	{
+		m_ui->stackedWidget->setCurrentIndex(1);
+	}
 }
