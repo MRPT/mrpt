@@ -9,13 +9,13 @@ if(CMAKE_MRPT_HAS_Qt5)
 
         set(CPP_FILES src/main.cpp
         src/mainwindow.cpp
-	src/visualizedialog.cpp 
+	#src/visualizedialog.cpp 
 	)
 
 
         set(FILES_TO_MOC
                 src/mainwindow.h
-                src/visualizedialog.h
+                #src/visualizedialog.h
                 )
 
         qt5_wrap_cpp(moc_cpps ${FILES_TO_MOC})
