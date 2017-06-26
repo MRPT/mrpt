@@ -4,6 +4,23 @@
 #define NUM_DESCRIPTORS 7
 #define IMAGE_WIDTH 400
 #define IMAGE_HEIGHT 400
+#define WIDGET_HEIGHT 30
+#define PARAMS_HEIGHT 30
+#define PARAMS_WIDTH 80
+#define WIDGET_WIDTH 160
+#define BUTTON_WIDTH 150
+#define BUTTON_HEIGHT 30
+
+
+
+//for the visualize descriptor part
+#define DESCRIPTOR_WIDTH 100
+#define DESCRIPTOR_HEIGHT 100
+#define DESCRIPTOR_GRID_SIZE 9
+#define DESCRIPTOR_ROW_SIZE 3
+
+#define DESCRIPTOR_GRID_SIZE2 9
+#define MAX_DESC 500
 
 
 #include <QMainWindow>
@@ -24,6 +41,8 @@
 #include <QFileDialog>
 #include <QMap>
 #include <QtGui>
+#include "./qt_custom_plot/qcustomplot.h"
+#include <QVector>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -37,7 +56,7 @@
 
 
 #include <mrpt/vision/CFeatureExtraction.h>
-#include "visualizedialog.h"
+//#include "visualizedialog.h"
 
 
 using namespace cv;
@@ -55,20 +74,17 @@ public:
 public:
     QWidget *window_gui;
     QLabel *detector_label;
-    VisualizeDialog *visualize_dialog;
+    //VisualizeDialog *visualize_dialog;
 
     QLabel *sample_image;
     QImage my_image;
 
     // for image decimation
-    Mat dst1, tmp1;
-    Mat dst2, tmp2;
-    double downsampled_clicked=1;
-    double upsampled_clicked=1;
-    double sampling_rate=1;
+    double sampling_rate;
 
     QPushButton *button_generate;
     QPushButton *button_close;
+    QPushButton *next_desc;
 
     QPushButton *prev_button;
     QPushButton *next_button;
@@ -82,7 +98,7 @@ public:
     int detector_selected;
     int descriptor_selected;
 
-    QGroupBox *groupBox1;
+    QGroupBox *groupBox1; // has the
     QGroupBox *groupBox2;
     QGroupBox *groupBox_images;
 
@@ -129,6 +145,9 @@ public:
 
     //provide user options like stereo matching, activate/deactivate non-maximal suppression, image decimation, step-by-step playback of images.
     QCheckBox *stereo_matching;
+
+    //image decimation options
+    QLineEdit *decimateFactor;
 
 
     QLabel *output1;
@@ -212,6 +231,24 @@ public:
 
     }log_polar_opts;
 
+
+
+
+    //FOR THE VISUALIZE DESCRIPTOR PART
+
+    QLabel *images_static[DESCRIPTOR_GRID_SIZE];
+    QLabel *images_static_sift_surf[DESCRIPTOR_GRID_SIZE2];
+    QImage descriptors[DESCRIPTOR_GRID_SIZE];
+
+    QGridLayout *desc_VisualizeGrid;
+
+    int numDesc1, numDesc2;
+    int cnt; // counter to iterate over all the descriptors
+
+
+    QLabel *images_label_coordinates[DESCRIPTOR_GRID_SIZE];
+    QLabel *images_label_coordinates_sift_surf[DESCRIPTOR_GRID_SIZE2];
+
 signals:
     //void currentIndexChanged(int index);
 
@@ -222,6 +259,7 @@ public:
     void fillDescriptorInfo();
     void readFilesFromFolder(int next_prev);
     void displayImagesWithoutDetector();
+    void initializeParameters();
 
 public slots:
     void on_button_generate_clicked();
@@ -242,8 +280,7 @@ public slots:
     void on_next_button_clicked();
     void on_prev_button_clicked();
 
-    void on_upsample_clicked();
-    void on_downsample_clicked();
+    void on_sample_clicked();
 
 };
 
