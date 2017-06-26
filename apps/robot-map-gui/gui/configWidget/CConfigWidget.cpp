@@ -10,6 +10,7 @@
 #include "ui_CConfigWidget.h"
 #include "CSelectType.h"
 #include "COccupancyConfig.h"
+#include "CPointsConfig.h"
 
 #include <QFileDialog>
 #include <QMessageBox>
@@ -37,12 +38,17 @@ CConfigWidget::CConfigWidget(QWidget *parent)
 	item2->setData(Qt::UserRole, TypeOfConfig::Occupancy);
 	m_ui->m_config->addItem(item2);
 
+	QListWidgetItem *item3 = new QListWidgetItem("PointsMap", m_ui->m_config);
+	item3->setData(Qt::UserRole, TypeOfConfig::PointsMap);
+	m_ui->m_config->addItem(item3);
+
 	QWidget* w = new QWidget();
 	w->setLayout(new QHBoxLayout(w));
 	w->layout()->addWidget(new QCheckBox("test", w));
 	m_ui->stackedWidget->addWidget(w);
 
 	m_ui->stackedWidget->addWidget(new COccupancyConfig(m_ui->stackedWidget));
+	m_ui->stackedWidget->addWidget(new CPointsConfig(m_ui->stackedWidget));
 
 	QObject::connect(m_ui->m_config, SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)),
 					 this, SLOT(currentConfigChanged(QListWidgetItem *, QListWidgetItem *)));
@@ -110,5 +116,9 @@ void CConfigWidget::currentConfigChanged(QListWidgetItem *current, QListWidgetIt
 	else if (type == Occupancy)
 	{
 		m_ui->stackedWidget->setCurrentIndex(1);
+	}
+	else if (type == PointsMap)
+	{
+		m_ui->stackedWidget->setCurrentIndex(2);
 	}
 }
