@@ -12,37 +12,16 @@
 #include <memory>
 
 
-class QListWidgetItem;
 namespace Ui
 {
-class CConfigWidget;
+class COccupancyConfig;
 }
-
-class CConfigWidget: public QWidget
+class COccupancyConfig: public QWidget
 {
-	Q_OBJECT
 public:
-	CConfigWidget(QWidget *parent = nullptr);
-	virtual ~CConfigWidget();
-
-signals:
-	void updateConfig(QString configName);
-
-private slots:
-	void openConfig();
-	void saveConfig();
-	void addMap();
-	void currentConfigChanged(QListWidgetItem *current, QListWidgetItem *);
+	COccupancyConfig(QWidget *parent = nullptr);
+	virtual ~COccupancyConfig();
 
 private:
-	enum TypeOfConfig
-	{
-		General = 0,
-		PointsMap = 1,
-		Occupancy = 2,
-		Landmarks = 3,
-		Beacon = 4,
-		GasGrid = 5
-	};
-	std::unique_ptr<Ui::CConfigWidget> m_ui;
+	std::unique_ptr<Ui::COccupancyConfig> m_ui;
 };

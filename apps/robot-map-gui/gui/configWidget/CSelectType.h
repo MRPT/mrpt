@@ -13,6 +13,7 @@
 
 
 class QListWidget;
+class QListWidgetItem;
 namespace Ui
 {
 class CSelectType;
