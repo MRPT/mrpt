@@ -11,6 +11,7 @@
 #include "CSelectType.h"
 #include "COccupancyConfig.h"
 #include "CPointsConfig.h"
+#include "CBeaconConfig.h"
 
 #include <mrpt/utils/CFileOutputStream.h>
 
@@ -114,31 +115,16 @@ void CConfigWidget::addMap()
 		case Occupancy:
 		{
 			addWidget(TypeOfConfig::Occupancy, "occupancyGrid", new COccupancyConfig(m_ui->stackedWidget));
-
-
-
-			/*
-
-
-
-			using internal::TMetricMapTypesRegistry;
-			TMetricMapTypesRegistry & mmr = TMetricMapTypesRegistry::Instance();
-			const std::string sMapName("occupancyGrid");
-			TMetricMapInitializer *mi = mmr.factoryMapDefinition(sMapName);
-			ASSERT_(mi);
-
-			std::string sectionName  =  "MappingApplication";
-			const std::string sMapSectionsPrefix = mrpt::format("%s_%s_%02u",sectionName.c_str(),sMapName.c_str(),i);
-			mi->loadFromConfigFile(ini,sMapSectionsPrefix);
-*/
-
-			emit addedMap();
+			break;
+		}
+		case Beacon:
+		{
+			addWidget(TypeOfConfig::Beacon, "beaconMap", new CBeaconConfig(m_ui->stackedWidget));
 			break;
 		}
 		default:
 			break;
 		}
-		qDebug() << type;
 	}
 }
 
@@ -190,4 +176,6 @@ void CConfigWidget::addWidget(CConfigWidget::TypeOfConfig type, const QString &n
 	m_ui->m_config->addItem(item);
 	m_ui->stackedWidget->addWidget(w);
 	it->second.push_back(w);
+
+	emit addedMap();
 }
