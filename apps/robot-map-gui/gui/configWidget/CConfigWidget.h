@@ -9,7 +9,12 @@
 #pragma once
 #include <QWidget>
 
+#include "CBaseConfig.h"
+
 #include <memory>
+
+#include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/maps/TMetricMapInitializer.h>
 
 
 class QListWidgetItem;
@@ -22,11 +27,24 @@ class CConfigWidget: public QWidget
 {
 	Q_OBJECT
 public:
+	enum TypeOfConfig
+	{
+		None = -1,
+		General = 0,
+		PointsMap = 1,
+		Occupancy = 2,
+		Landmarks = 3,
+		Beacon = 4,
+		GasGrid = 5
+	};
 	CConfigWidget(QWidget *parent = nullptr);
 	virtual ~CConfigWidget();
+	mrpt::maps::TSetOfMetricMapInitializers updateConfig();
+
 
 signals:
-	void updateConfig(QString configName);
+	void addedMap();
+	void updatedConfig();
 
 private slots:
 	void openConfig();
@@ -35,14 +53,8 @@ private slots:
 	void currentConfigChanged(QListWidgetItem *current, QListWidgetItem *);
 
 private:
-	enum TypeOfConfig
-	{
-		General = 0,
-		PointsMap = 1,
-		Occupancy = 2,
-		Landmarks = 3,
-		Beacon = 4,
-		GasGrid = 5
-	};
 	std::unique_ptr<Ui::CConfigWidget> m_ui;
+	std::map<TypeOfConfig, std::vector< CBaseConfig *>> m_configs;
+
+	void addWidget(TypeOfConfig type, const QString &name, CBaseConfig* w);
 };

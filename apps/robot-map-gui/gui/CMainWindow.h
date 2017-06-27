@@ -11,6 +11,8 @@
 
 #include <memory>
 
+#include <mrpt/opengl/CSetOfObjects.h>
+
 
 namespace Ui
 {
@@ -30,8 +32,10 @@ public:
 	virtual ~CMainWindow();
 
 private slots:
+	void addMap(mrpt::opengl::CSetOfObjects::Ptr set, std::string name);
 	void openMap();
 	void itemClicked(const QModelIndex &index);
+	void updateConfig();
 
 private:
 	CDocument *m_document;

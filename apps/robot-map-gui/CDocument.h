@@ -18,8 +18,11 @@
 class CDocument
 {
 public:
-	CDocument(const std::string& fileName, const std::string& config);
+	CDocument(const std::string& fileName);
 	~CDocument();
+
+	void setListOfMaps(mrpt::maps::TSetOfMetricMapInitializers &mapCfg);
+	void setConfig(const std::string& config);
 
 	const std::map<std::string, mrpt::opengl::CSetOfObjects::Ptr> renderizableMaps() const;
 

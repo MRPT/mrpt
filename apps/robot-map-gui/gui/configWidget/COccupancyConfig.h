@@ -7,21 +7,26 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 #pragma once
-#include <QWidget>
+#include "CBaseConfig.h"
 
 #include <memory>
+#include <mrpt/maps/COccupancyGridMap2D.h>
 
 
-namespace Ui
+namespace Ui{class COccupancyConfig;}
+namespace mrpt
 {
-class COccupancyConfig;
+namespace utils{class CFileOutputStream;}
 }
-class COccupancyConfig: public QWidget
+
+class COccupancyConfig: public CBaseConfig
 {
 public:
 	COccupancyConfig(QWidget *parent = nullptr);
 	virtual ~COccupancyConfig();
 
+	virtual const std::string getName() override;
+	virtual void updateConfiguration(mrpt::maps::TMetricMapInitializer *options) override;
 private:
 	std::unique_ptr<Ui::COccupancyConfig> m_ui;
 };

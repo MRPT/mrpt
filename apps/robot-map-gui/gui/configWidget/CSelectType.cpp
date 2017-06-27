@@ -8,6 +8,7 @@
    +---------------------------------------------------------------------------+ */
 #include "CSelectType.h"
 #include "ui_CSelectType.h"
+#include "CConfigWidget.h"
 
 #include <QListWidget>
 
@@ -18,11 +19,11 @@ CSelectType::CSelectType(QWidget *parent)
 {
 	m_ui->setupUi(this);
 
-	addItem(tr("Points Map"), TypeOfMaps::PointsMap);
-	addItem(tr("Occupancy"), TypeOfMaps::Occupancy);
-	addItem(tr("Landmarks"), TypeOfMaps::Landmarks);
-	addItem(tr("Beacon"), TypeOfMaps::Beacon);
-	addItem(tr("GasGrid"), TypeOfMaps::GasGrid);
+	addItem(tr("Points Map"), CConfigWidget::PointsMap);
+	addItem(tr("Occupancy"), CConfigWidget::Occupancy);
+	addItem(tr("Landmarks"), CConfigWidget::Landmarks);
+	addItem(tr("Beacon"), CConfigWidget::Beacon);
+	addItem(tr("GasGrid"), CConfigWidget::GasGrid);
 }
 
 CSelectType::~CSelectType()
@@ -30,16 +31,16 @@ CSelectType::~CSelectType()
 
 }
 
-CSelectType::TypeOfMaps CSelectType::selectedItem() const
+int CSelectType::selectedItem() const
 {
 	QListWidgetItem * item = m_ui->m_typeList->currentItem();
 	if (!item)
-		return None;
+		return -1;
 
-	return static_cast<TypeOfMaps>(item->data(Qt::UserRole).toInt());
+	return item->data(Qt::UserRole).toInt();
 }
 
-void CSelectType::addItem(const QString &name, CSelectType::TypeOfMaps type)
+void CSelectType::addItem(const QString &name, CConfigWidget::TypeOfConfig type)
 {
 	QListWidgetItem *item = new QListWidgetItem(name, m_ui->m_typeList);
 	item->setData(Qt::UserRole, type);

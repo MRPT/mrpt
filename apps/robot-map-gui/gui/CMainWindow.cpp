@@ -29,6 +29,8 @@ CMainWindow::CMainWindow(QWidget *parent)
 {
 	m_ui->setupUi(this);
 	QObject::connect(m_ui->openAction,		SIGNAL(triggered(bool)),			SLOT(openMap()));
+	QObject::connect(m_ui->m_configWidget, SIGNAL(updatedConfig()), SLOT(updateConfig()));
+	QObject::connect(m_ui->m_configWidget, SIGNAL(addedMap(mrpt::opengl::CSetOfObjects::Ptr, std::string)), SLOT(addMap(mrpt::opengl::CSetOfObjects::Ptr, std::string)));
 	QObject::connect(m_ui->m_observationsTree,	SIGNAL(clicked(const QModelIndex &)),	SLOT(itemClicked(const QModelIndex &)));
 }
 
@@ -41,19 +43,24 @@ CMainWindow::~CMainWindow()
 		delete m_model;
 }
 
+void CMainWindow::addMap(mrpt::opengl::CSetOfObjects::Ptr set, std::string name)
+{
+	CGlWidget *gl = new CGlWidget(m_ui->m_tabWidget);
+	gl->fillMap(set);
+	m_ui->m_tabWidget->addTab(gl, QString::fromStdString(name));
+}
+
 void CMainWindow::openMap()
 {
 	QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), "", tr("Files (*.simplemap *.simplemap.gz)"));
-	QString configName = QFileDialog::getOpenFileName(this, tr("Open Config File"), "", tr("Files (*.ini)"));
 
-	if (fileName.size() == 0 || configName.size() == 0)
+	if (fileName.size() == 0)
 		return;
-
 
 	if (m_document)
 		delete m_document;
 
-	m_document = new CDocument(fileName.toStdString(), configName.toStdString());
+	m_document = new CDocument(fileName.toStdString());
 
 	auto renderizableMaps = m_document->renderizableMaps();
 	m_ui->m_tabWidget->clear();
@@ -63,7 +70,6 @@ void CMainWindow::openMap()
 		gl->fillMap(it.second);
 		m_ui->m_tabWidget->addTab(gl, QString::fromStdString(it.first));
 	}
-
 
 	if (m_model)
 		delete m_model;
@@ -86,4 +92,20 @@ void CMainWindow::itemClicked(const QModelIndex &index)
 				gl->setSelected(posesNode->getPose());
 		}
 	}
+}
+
+void CMainWindow::updateConfig()
+{
+	mrpt::maps::TSetOfMetricMapInitializers mapCfg = m_ui->m_configWidget->updateConfig();
+	m_document->setListOfMaps(mapCfg);
+
+	auto renderizableMaps = m_document->renderizableMaps();
+	m_ui->m_tabWidget->clear();
+	for(auto &it: renderizableMaps)
+	{
+		CGlWidget *gl = new CGlWidget(m_ui->m_tabWidget);
+		gl->fillMap(it.second);
+		m_ui->m_tabWidget->addTab(gl, QString::fromStdString(it.first));
+	}
+
 }

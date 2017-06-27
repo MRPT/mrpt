@@ -17,8 +17,67 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
+     <widget class="QWidget" name="generic">
+      <attribute name="title">
+       <string>Generic</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_4">
+       <item>
+        <widget class="QRadioButton" name="enableSaveAs3DObject">
+         <property name="text">
+          <string>enableSaveAs3DObject</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+         <property name="autoExclusive">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QRadioButton" name="enableObservationLikelihood">
+         <property name="text">
+          <string>enableObservationLikelihood</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+         <property name="autoExclusive">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QRadioButton" name="enableObservationInsertion">
+         <property name="text">
+          <string>enableObservationInsertion</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+         <property name="autoExclusive">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_4">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
      <widget class="QWidget" name="creation">
       <attribute name="title">
        <string>Creation</string>
@@ -27,7 +86,14 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_9">
          <item>
-          <widget class="QDoubleSpinBox" name="min_x"/>
+          <widget class="QDoubleSpinBox" name="min_x">
+           <property name="minimum">
+            <double>-99.000000000000000</double>
+           </property>
+           <property name="value">
+            <double>-10.000000000000000</double>
+           </property>
+          </widget>
          </item>
          <item>
           <widget class="QLabel" name="label_8">
@@ -54,7 +120,14 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_10">
          <item>
-          <widget class="QDoubleSpinBox" name="max_x"/>
+          <widget class="QDoubleSpinBox" name="max_x">
+           <property name="minimum">
+            <double>-99.000000000000000</double>
+           </property>
+           <property name="value">
+            <double>10.000000000000000</double>
+           </property>
+          </widget>
          </item>
          <item>
           <widget class="QLabel" name="label_9">
@@ -81,7 +154,14 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_11">
          <item>
-          <widget class="QDoubleSpinBox" name="min_y"/>
+          <widget class="QDoubleSpinBox" name="min_y">
+           <property name="minimum">
+            <double>-99.000000000000000</double>
+           </property>
+           <property name="value">
+            <double>-10.000000000000000</double>
+           </property>
+          </widget>
          </item>
          <item>
           <widget class="QLabel" name="label_10">
@@ -108,7 +188,14 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_12">
          <item>
-          <widget class="QDoubleSpinBox" name="max_y"/>
+          <widget class="QDoubleSpinBox" name="max_y">
+           <property name="minimum">
+            <double>-99.000000000000000</double>
+           </property>
+           <property name="value">
+            <double>10.000000000000000</double>
+           </property>
+          </widget>
          </item>
          <item>
           <widget class="QLabel" name="label_11">
@@ -135,7 +222,11 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_13">
          <item>
-          <widget class="QDoubleSpinBox" name="mapAltitude_6"/>
+          <widget class="QDoubleSpinBox" name="mapAltitude_6">
+           <property name="value">
+            <double>0.050000000000000</double>
+           </property>
+          </widget>
          </item>
          <item>
           <widget class="QLabel" name="label_12">
@@ -182,7 +273,11 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout">
          <item>
-          <widget class="QDoubleSpinBox" name="mapAltitude"/>
+          <widget class="QDoubleSpinBox" name="mapAltitude">
+           <property name="value">
+            <double>0.300000000000000</double>
+           </property>
+          </widget>
          </item>
          <item>
           <widget class="QLabel" name="label">
@@ -222,7 +317,11 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_2">
          <item>
-          <widget class="QDoubleSpinBox" name="maxDistanceInsertion"/>
+          <widget class="QDoubleSpinBox" name="maxDistanceInsertion">
+           <property name="value">
+            <double>15.000000000000000</double>
+           </property>
+          </widget>
          </item>
          <item>
           <widget class="QLabel" name="label_2">
@@ -249,7 +348,11 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_3">
          <item>
-          <widget class="QDoubleSpinBox" name="maxOccupancyUpdateCertainty"/>
+          <widget class="QDoubleSpinBox" name="maxOccupancyUpdateCertainty">
+           <property name="value">
+            <double>0.650000000000000</double>
+           </property>
+          </widget>
          </item>
          <item>
           <widget class="QLabel" name="label_3">
@@ -289,7 +392,11 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_7">
          <item>
-          <widget class="QSpinBox" name="decimation"/>
+          <widget class="QSpinBox" name="decimation">
+           <property name="value">
+            <number>1</number>
+           </property>
+          </widget>
          </item>
          <item>
           <widget class="QLabel" name="label_7">
@@ -316,7 +423,20 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_4">
          <item>
-          <widget class="QDoubleSpinBox" name="horizontalTolerance"/>
+          <widget class="QDoubleSpinBox" name="horizontalTolerance">
+           <property name="decimals">
+            <number>6</number>
+           </property>
+           <property name="minimum">
+            <double>0.000001000000000</double>
+           </property>
+           <property name="singleStep">
+            <double>0.000001000000000</double>
+           </property>
+           <property name="value">
+            <double>0.000873000000000</double>
+           </property>
+          </widget>
          </item>
          <item>
           <widget class="QLabel" name="label_4">
@@ -343,7 +463,11 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_5">
          <item>
-          <widget class="QDoubleSpinBox" name="CFD_features_gaussian_size"/>
+          <widget class="QDoubleSpinBox" name="CFD_features_gaussian_size">
+           <property name="value">
+            <double>1.000000000000000</double>
+           </property>
+          </widget>
          </item>
          <item>
           <widget class="QLabel" name="label_5">
@@ -370,7 +494,11 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_6">
          <item>
-          <widget class="QDoubleSpinBox" name="CFD_features_median_size"/>
+          <widget class="QDoubleSpinBox" name="CFD_features_median_size">
+           <property name="value">
+            <double>3.000000000000000</double>
+           </property>
+          </widget>
          </item>
          <item>
           <widget class="QLabel" name="label_6">
@@ -400,7 +528,7 @@
           <string>wideningBeamsWithDistance</string>
          </property>
          <property name="checked">
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
          <property name="autoExclusive">
           <bool>false</bool>
@@ -430,7 +558,11 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_14">
          <item>
-          <widget class="QSpinBox" name="likelihoodMethod"/>
+          <widget class="QSpinBox" name="likelihoodMethod">
+           <property name="value">
+            <number>4</number>
+           </property>
+          </widget>
          </item>
          <item>
           <widget class="QLabel" name="label_13">
@@ -488,7 +620,11 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_16">
          <item>
-          <widget class="QDoubleSpinBox" name="LF_zHit"/>
+          <widget class="QDoubleSpinBox" name="LF_zHit">
+           <property name="value">
+            <double>0.950000000000000</double>
+           </property>
+          </widget>
          </item>
          <item>
           <widget class="QLabel" name="label_15">
@@ -515,7 +651,11 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_17">
          <item>
-          <widget class="QDoubleSpinBox" name="LF_zRandom"/>
+          <widget class="QDoubleSpinBox" name="LF_zRandom">
+           <property name="value">
+            <double>0.050000000000000</double>
+           </property>
+          </widget>
          </item>
          <item>
           <widget class="QLabel" name="label_16">
@@ -575,7 +715,7 @@
          <item>
           <widget class="QSpinBox" name="LF_decimation">
            <property name="value">
-            <number>1</number>
+            <number>5</number>
            </property>
           </widget>
          </item>
@@ -604,7 +744,11 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_20">
          <item>
-          <widget class="QDoubleSpinBox" name="LF_maxRange_2"/>
+          <widget class="QDoubleSpinBox" name="LF_maxCorrsDistance">
+           <property name="value">
+            <double>0.300000000000000</double>
+           </property>
+          </widget>
          </item>
          <item>
           <widget class="QLabel" name="label_19">
@@ -634,7 +778,7 @@
           <string>LF_useSquareDist</string>
          </property>
          <property name="checked">
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
          <property name="autoExclusive">
           <bool>false</bool>
@@ -647,7 +791,7 @@
           <string>LF_alternateAverageMethod</string>
          </property>
          <property name="checked">
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
          <property name="autoExclusive">
           <bool>false</bool>
@@ -659,7 +803,7 @@
          <item>
           <widget class="QDoubleSpinBox" name="MI_exponent">
            <property name="value">
-            <double>5.000000000000000</double>
+            <double>2.500000000000000</double>
            </property>
           </widget>
          </item>
@@ -688,7 +832,11 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_22">
          <item>
-          <widget class="QSpinBox" name="MI_skip_rays"/>
+          <widget class="QSpinBox" name="MI_skip_rays">
+           <property name="value">
+            <number>10</number>
+           </property>
+          </widget>
          </item>
          <item>
           <widget class="QLabel" name="label_21">
@@ -715,7 +863,11 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_23">
          <item>
-          <widget class="QDoubleSpinBox" name="MI_ratio_max_distance"/>
+          <widget class="QDoubleSpinBox" name="MI_ratio_max_distance">
+           <property name="value">
+            <double>1.500000000000000</double>
+           </property>
+          </widget>
          </item>
          <item>
           <widget class="QLabel" name="label_22">
@@ -755,7 +907,11 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_24">
          <item>
-          <widget class="QSpinBox" name="rayTracing_decimation"/>
+          <widget class="QSpinBox" name="rayTracing_decimation">
+           <property name="value">
+            <number>10</number>
+           </property>
+          </widget>
          </item>
          <item>
           <widget class="QLabel" name="label_23">
@@ -782,7 +938,11 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_25">
          <item>
-          <widget class="QDoubleSpinBox" name="rayTracing_stdHit"/>
+          <widget class="QDoubleSpinBox" name="rayTracing_stdHit">
+           <property name="value">
+            <double>1.000000000000000</double>
+           </property>
+          </widget>
          </item>
          <item>
           <widget class="QLabel" name="label_24">
@@ -874,7 +1034,7 @@
           <string>enableLikelihoodCache</string>
          </property>
          <property name="checked">
-          <bool>false</bool>
+          <bool>true</bool>
          </property>
          <property name="autoExclusive">
           <bool>false</bool>

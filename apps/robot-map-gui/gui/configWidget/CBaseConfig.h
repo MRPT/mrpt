@@ -6,30 +6,23 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
+
 #pragma once
-#include <QDialog>
-
-#include <memory>
-
-#include "CConfigWidget.h"
+#include <QWidget>
 
 
-class QListWidget;
-class QListWidgetItem;
-namespace Ui
-{
-class CSelectType;
+namespace mrpt {
+namespace maps {class TMapGenericParams; class TMetricMapInitializer;}
+namespace utils {class CLoadableOptions;}
 }
 
-class CSelectType: public QDialog
+class CBaseConfig: public QWidget
 {
 public:
-	CSelectType(QWidget *parent = nullptr);
-	virtual ~CSelectType();
-	int selectedItem() const;
+	CBaseConfig(QWidget *parent = nullptr);
+	virtual ~CBaseConfig() = default;
 
-private:
-	void addItem(const QString &name, CConfigWidget::TypeOfConfig type);
-
-	std::unique_ptr<Ui::CSelectType> m_ui;
+	virtual const std::string getName() = 0;
+	virtual void updateConfiguration(mrpt::maps::TMetricMapInitializer *options) {}
 };
+

@@ -9,32 +9,43 @@
 #include "CDocument.h"
 
 #include "mrpt/utils/CFileGZInputStream.h"
+#include "mrpt/utils/CFileOutputStream.h"
 #include "mrpt/utils/CConfigFile.h"
 
+
+const std::string METRIC_MAP_CONFIG_SECTION  =  "MappingApplication";
 
 using namespace mrpt;
 using namespace mrpt::opengl;
 using namespace mrpt::maps;
 using namespace mrpt::utils;
 
-CDocument::CDocument(const std::string &fileName, const std::string &config)
+CDocument::CDocument(const std::string &fileName)
 	: m_simplemap(CSimpleMap())
 	, m_metricmap(CMultiMetricMap())
 {
 	CFileGZInputStream file(fileName.c_str());
 	file >> m_simplemap;
 
-	std::string METRIC_MAP_CONFIG_SECTION  =  "MappingApplication";
+}
+
+CDocument::~CDocument()
+{
+}
+
+void CDocument::setListOfMaps(TSetOfMetricMapInitializers &mapCfg)
+{
+	m_metricmap.setListOfMaps( &mapCfg );
+	m_metricmap.loadFromProbabilisticPosesAndObservations(m_simplemap);
+}
+
+void CDocument::setConfig(const std::string &config)
+{
 	TSetOfMetricMapInitializers mapCfg;
 	mapCfg.loadFromConfigFile( CConfigFile(config), METRIC_MAP_CONFIG_SECTION);
 
 	m_metricmap.setListOfMaps( &mapCfg );
 	m_metricmap.loadFromProbabilisticPosesAndObservations(m_simplemap);
-}
-
-CDocument::~CDocument()
-{
-
 }
 
 const std::map<std::string, CSetOfObjects::Ptr> CDocument::renderizableMaps() const
@@ -57,6 +68,10 @@ const std::map<std::string, CSetOfObjects::Ptr> CDocument::renderizableMaps() co
 			CSetOfObjects::Ptr obj = CSetOfObjects::Create();
 			ptr->getAs3DObject(obj);
 			renderizable.emplace("Occupancy grid", obj);
+
+			CFileOutputStream f("/home/lisgein/tmp/test.ini", false);
+			ptr->insertionOptions.dumpToTextStream(f);
+			ptr->likelihoodOptions.dumpToTextStream(f);
 		}
 	}
 	{

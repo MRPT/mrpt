@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 #pragma once
-#include <QWidget>
+#include "CBaseConfig.h"
 
 #include <memory>
 
@@ -16,11 +16,14 @@ namespace Ui
 {
 class CPointsConfig;
 }
-class CPointsConfig: public QWidget
+class CPointsConfig: public CBaseConfig
 {
 public:
 	CPointsConfig(QWidget *parent = nullptr);
 	virtual ~CPointsConfig();
+
+	virtual const std::string getName() override;
+	virtual void updateConfiguration(mrpt::maps::TMetricMapInitializer *options) override;
 
 private:
 	std::unique_ptr<Ui::CPointsConfig> m_ui;

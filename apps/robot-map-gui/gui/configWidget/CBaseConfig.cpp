@@ -6,30 +6,11 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
-#pragma once
-#include <QDialog>
-
-#include <memory>
-
-#include "CConfigWidget.h"
+#include "CBaseConfig.h"
 
 
-class QListWidget;
-class QListWidgetItem;
-namespace Ui
+CBaseConfig::CBaseConfig(QWidget *parent)
+	: QWidget(parent)
 {
-class CSelectType;
+
 }
-
-class CSelectType: public QDialog
-{
-public:
-	CSelectType(QWidget *parent = nullptr);
-	virtual ~CSelectType();
-	int selectedItem() const;
-
-private:
-	void addItem(const QString &name, CConfigWidget::TypeOfConfig type);
-
-	std::unique_ptr<Ui::CSelectType> m_ui;
-};
