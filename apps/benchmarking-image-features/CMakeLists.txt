@@ -9,12 +9,14 @@ if(CMAKE_MRPT_HAS_Qt5)
 
         set(CPP_FILES src/main.cpp
         src/mainwindow.cpp
+	src/my_qlabel.cpp
 	#src/visualizedialog.cpp 
 	)
 
 
         set(FILES_TO_MOC
                 src/mainwindow.h
+		src/my_qlabel.h
                 #src/visualizedialog.h
                 )
 
