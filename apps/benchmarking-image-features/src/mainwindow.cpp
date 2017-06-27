@@ -11,6 +11,10 @@
 
 #include <opencv2/plot.hpp>
 #include <mrpt/utils/metaprogramming.h>
+#include <mrpt/math/data_utils.h>
+#include <QEvent>
+#include <QMouseEvent>
+
 
 using namespace cv::line_descriptor;
 using namespace mrpt::vision;
@@ -25,24 +29,114 @@ using namespace cv::xfeatures2d;
 
 QImage qimage_1[MAX_DESC], qimage_2[MAX_DESC];
 QLabel *images1[MAX_DESC], *images2[MAX_DESC];
+
+QImage qimage_1_plots_distances[MAX_DESC], qimage_2_plots_distances[MAX_DESC];
+QLabel *images1_plots_distances[MAX_DESC], *images2_plots_distances[MAX_DESC];
+QLabel *featureMatchingInfo[MAX_DESC];
+
+
+
+
+//MAX_DESC is 500
+cv::Mat cvImg1;
+
+
+void MainWindow::computeMinMax(CVectorDouble distances, int &min_idx, double &min_dist, int &max_idx, double &max_dist)
+{
+    int pos;
+    double min = 10000;
+    for(int i=0 ;i < distances.size() ;i++)
+    {
+        //if(distances.)
+
+    }
+}
+
 /*
  * This button is used to visualize the descriptors
  */
-
 void MainWindow::on_button_generate_clicked()
 {
-    next_desc->setVisible(true);
+
     //ReadInputFormat();
-    //int numDescriptors = featsImage1.size();
-    //visualize_dialog = new VisualizeDialog(this, inputFilePath->text(), detector_selected, descriptor_selected, numDescriptors,  featsImage1, featsImage2 );
-
-    if(cnt >= numDesc1-9)
-    {
-        return;
-    }
-
+    numDesc1 = featsImage1.size();
     for (unsigned int i1 = 0; i1 < numDesc1; i1++)
     {
+        // do the following only if stereo images
+        if(currentInputIndex == 1 || currentInputIndex == 4)
+        {
+            CVectorDouble distances(featsImage2.size());
+            if (descriptor_selected != -1) {
+                for (unsigned int i2 = 0; i2 < featsImage2.size(); i2++)
+                    distances[i2] = featsImage1[i1]->descriptorDistanceTo(*featsImage2[i2]);
+            } else{
+                for(unsigned int i2=0 ; i2<featsImage2.size() ; i2++)
+                    distances[i2] = featsImage1[i1]->patchCorrelationTo(*featsImage2[i2]);
+            }
+            double min_dist = 0, max_dist = 0;
+            size_t min_dist_idx = 0, max_dist_idx = 0;
+
+            distances.minimum_maximum(min_dist, max_dist, &min_dist_idx, &max_dist_idx);
+
+            const double dist_std = mrpt::math::stddev(distances);
+
+            cout << "Min Distance : " << min_dist << " for image2 feature # " << min_dist_idx << "Distances sigma " << dist_std << endl;
+
+            stringstream info;
+            info << "Feature (Image1) #" << i1 <<" matches Feature (Image2) #" << min_dist_idx << "with distance" << min_dist << "Distances sigma " << dist_std;
+            string info_temp = info.str();
+            featureMatchingInfo[i1] = new QLabel();
+            featureMatchingInfo[i1]->setText(QString::fromStdString(info_temp));
+
+
+            for(int i=0 ; i< distances.size() ; i++)
+               ;// cout << distances.row(i).x() << " Distances" << endl;
+
+
+
+
+            Mat xData, yData, display;
+            Ptr<plot::Plot2d> plot;
+            int len = distances.size();
+            xData.create(1, len, CV_64F);//1 Row, 100 columns, Double
+            yData.create(1, len, CV_64F);
+
+            for(int i = 0; i<len; ++i)
+            {
+                xData.at<double>(i) = i;
+                yData.at<double>(i) = distances.row(i).x();
+                cout << yData.at<double>(i) << "  " << xData.at<double>(i) << endl;
+            }
+            plot = plot::createPlot2d(xData, yData);
+            plot->setPlotSize(len, 1);
+            plot->setMaxX(distances.size());
+            plot->setMinX(-15);
+            plot->setMaxY(max_dist*1.15);
+            plot->setMinY(-0.15*max_dist);
+            plot->setNeedPlotLine(false);
+            plot->render(display);
+            plot->setPlotLineWidth(6);
+            plot->setPlotLineColor(Scalar(255,0,0));
+            plot->setPlotBackgroundColor(Scalar(255,255,255));
+            plot->setPlotGridColor(Scalar(255,255,0));
+            //imshow("plots", display);
+            //waitKey();
+
+
+            cv::Mat temp1(display.cols, display.rows, display.type());
+            cvtColor(display, temp1, CV_RGB2BGR);
+            //imshow("temp ", temp1);
+            //waitKey();
+            QImage dest1 = QImage((uchar *) temp1.data, temp1.cols, temp1.rows, temp1.step,
+                                  QImage::Format_RGB888);
+            qimage_1_plots_distances[i1] = dest1.scaled(4*DESCRIPTOR_HEIGHT, 5*DESCRIPTOR_WIDTH, Qt::KeepAspectRatio);
+            images1_plots_distances[i1] = new QLabel;
+            images1_plots_distances[i1]->setPixmap(QPixmap::fromImage(qimage_1_plots_distances[i1]));
+
+        }
+
+
+
         //tictac.Tic();
 
         // Display the current descriptor in its window and the best descriptor from the other image:
@@ -77,9 +171,7 @@ void MainWindow::on_button_generate_clicked()
                     auxImg1.setFromMatrix(M1);
 
                 }
-
                 //cout << "before the while loop" << auxImg1.getWidth() << "  "<< auxImg1.getHeight() << "  " <<  endl;
-
                 while (auxImg1.getWidth() < 100 && auxImg1.getHeight() < 100)
                     auxImg1.scaleImage(auxImg1.getWidth() * 2, auxImg1.getHeight() * 2, IMG_INTERP_NN);
 
@@ -95,78 +187,84 @@ void MainWindow::on_button_generate_clicked()
                 qimage_1[i1] = dest1.scaled(DESCRIPTOR_HEIGHT, DESCRIPTOR_WIDTH, Qt::KeepAspectRatio);
                 images1[i1] = new QLabel;
                 images1[i1]->setPixmap(QPixmap::fromImage(qimage_1[i1]));
-
-                //cout << "after the image 1 setting, the while loop" << endl;
-
             }
                 break;
             case 0: { // descSIFT
-                vector<double> v1;
-                mrpt::utils::metaprogramming::copy_container_typecasting(featsImage1[i1]->descriptors.SIFT, v1);
-
+                vector<uint8_t > v1;
+                //mrpt::utils::metaprogramming::copy_container_typecasting(featsImage1[i1]->descriptors.SIFT, v1);
+                v1 = featsImage1[i1]->descriptors.SIFT;
                 cout << v1.size() << " SIFT Descriptor " << v1.at(2) << " " << v1.at(3) << " " << v1.at(4) << " "
                      << endl;
 
-                cout << "before the plot" << endl;
-                Mat data( v1.size(), 1, CV_64F );
-                int gg = 0;
+                Mat xData, yData, display;
+                Ptr<plot::Plot2d> plot;
+                int len = v1.size();
+                xData.create(1, len, CV_64F);//1 Row, 100 columns, Double
+                yData.create(1, len, CV_64F);
 
-
-                // this does not work currently need to correct this
-                /*for(int i=0 ; i<v1.size() ; i++)
+                for(int i = 0; i<len; ++i)
                 {
-                    data.at(i,gg) = v1.at(i);
-                }*/
-                randu( data, 0, 500 ); // random values
+                    xData.at<double>(i) = i;
+                    yData.at<double>(i) = v1.at(i);
+                    //cout << yData.at<double>(i) << "  " << xData.at<double>(i) << endl;
+                }
+                plot = plot::createPlot2d(xData, yData);
+                plot->setPlotSize(len, 1);
+                plot->setMaxX(len);
+                plot->setMinX(0);
+                plot->setMaxY(1);
+                plot->setMinY(-1);
+                plot->render(display);
 
-                Mat plot_result;
 
-                Ptr<plot::Plot2d> plot = plot::createPlot2d( data );
-                plot->setPlotBackgroundColor( Scalar( 50, 50, 50 ) ); // i think it is not implemented yet
-                plot->setPlotLineColor( Scalar( 50, 50, 255 ) );
-                plot->render( plot_result );
-
-                //imshow( "plot", plot_result );
-                //waitKey();
-
-                cout << "after the plot" << endl;
-
-                cout << plot_result.cols << " cols " << plot_result.rows << "  rows " << plot_result.type() << " type" << endl;
-                cv::Mat temp1(plot_result.cols, plot_result.rows, plot_result.type());
-                cvtColor(plot_result, temp1, CV_RGB2BGR);
+                cv::Mat temp1(display.cols, display.rows, display.type());
+                cvtColor(display, temp1, CV_RGB2BGR);
                 //imshow("temp ", temp1);
                 //waitKey();
                 QImage dest1 = QImage((uchar *) temp1.data, temp1.cols, temp1.rows, temp1.step,
                                       QImage::Format_RGB888);
-                qimage_1[i1] = dest1.scaled(2*DESCRIPTOR_HEIGHT, 3*DESCRIPTOR_WIDTH, Qt::KeepAspectRatio);
+                qimage_1[i1] = dest1.scaled(4*DESCRIPTOR_HEIGHT, 5*DESCRIPTOR_WIDTH, Qt::KeepAspectRatio);
                 images1[i1] = new QLabel;
                 images1[i1]->setPixmap(QPixmap::fromImage(qimage_1[i1]));
-
-
-                /*   vector<double> x;
-                   for(int i=0; i <v1.size() ; i++)
-                   {
-                       x.at(i) = i;
-                   }
-                   QVector<double> vector_x;
-                   vector_x.fromStdVector(x);
-
-                   QVector<double> vector1;
-                   vector1.fromStdVector(v1);
-                   QCustomPlot *customPlot = new QCustomPlot;
-                   customPlot->addGraph();
-                   customPlot->graph(0)->setData(vector1,vector_x);*/
-
-
-
-                //winptrPlot_descr1->plot( v1 );
-                //winptrPlot_descr2->plot( v2 );
 
             }
                 break;
             case 1: { // descSURF
-                //winptrPlot_descr1->plot( feats1[i1]->descriptors.SURF );
-                //winptrPlot_descr1->axis_fit();
+                vector<float> v1;
+                //cout << "SURF Features size: " << featsImage1.size() << endl;
+                //mrpt::utils::metaprogramming::copy_container_typecasting(featsImage1[i1]->descriptors.SIFT, v1);
+                v1 = featsImage1[i1]->descriptors.SURF;
+
+                Mat xData, yData, display;
+                Ptr<plot::Plot2d> plot;
+                int len = v1.size();
+                xData.create(1, len, CV_64F);//1 Row, 100 columns, Double
+                yData.create(1, len, CV_64F);
+
+                for(int i = 0; i<len; ++i)
+                {
+                    xData.at<double>(i) = i;
+                    yData.at<double>(i) = v1.at(i);
+                    //cout << yData.at<double>(i) << "  " << xData.at<double>(i) << endl;
+                }
+                plot = plot::createPlot2d(xData, yData);
+                plot->setPlotSize(len, 1);
+                plot->setMaxX(len);
+                plot->setMinX(0);
+                plot->setMaxY(1);
+                plot->setMinY(-1);
+                plot->render(display);
+
+
+                cv::Mat temp1(display.cols, display.rows, display.type());
+                cvtColor(display, temp1, CV_RGB2BGR);
+                //imshow("temp ", temp1);
+                //waitKey();
+                QImage dest1 = QImage((uchar *) temp1.data, temp1.cols, temp1.rows, temp1.step,
+                                      QImage::Format_RGB888);
+                qimage_1[i1] = dest1.scaled(4*DESCRIPTOR_HEIGHT, 5*DESCRIPTOR_WIDTH, Qt::KeepAspectRatio);
+                images1[i1] = new QLabel;
+                images1[i1]->setPixmap(QPixmap::fromImage(qimage_1[i1]));
             }
                 break;
             default: {
@@ -175,88 +273,6 @@ void MainWindow::on_button_generate_clicked()
                 break;
         }
     }// end of for loop
-
-
-    cv::Mat desc_Ref_img = imread(file_path1, IMREAD_ANYCOLOR); // cv::cvarrToMat(img1.getAs<IplImage>());
-    // images1 have all the descriptors
-
-    if(descriptor_selected == 2 || descriptor_selected == 3 || descriptor_selected == 4)
-    {
-        for (int i = 0; i < DESCRIPTOR_GRID_SIZE; i++) {
-            images_static[i] = images1[cnt];
-
-            //desc_VisualizeGrid->replaceWidget(images_static[i],images1[cnt]);
-            //images_static[i] = images1[cnt];
-
-
-            //desc_VisualizeGrid->replaceWidget(images_static[i],images_static[i]);
-            // now following lines are for computing the x and y coordinate
-            images_label_coordinates[i] = new QLabel;
-            float temp_x = featsImage1.getFeatureX(cnt); // get the descriptor x coordinate corresponding to images1[cnt]
-            float temp_y = featsImage1.getFeatureY(cnt);
-            stringstream ss;
-            ss << temp_x << "," << temp_y << endl;
-            string str = ss.str();
-
-
-            cout << str << endl;
-            stringstream ss2;
-            ss2 << i ;
-            string str2 = ss2.str();
-
-            images_label_coordinates[i]->setText(QString::fromStdString(str2));
-            circle(desc_Ref_img, Point(temp_x, temp_y), 5, Scalar(0,0,255), 2, 8, 0); // plot the circles on the appropriate points as per the shown descriptors
-            putText(desc_Ref_img, str2, Point(temp_x,temp_y), 5, 2, Scalar(255,0,0),2,8,0);
-
-            cnt++; // global counter for iterating over images and labels
-
-
-            int i_t = 2*(i/DESCRIPTOR_ROW_SIZE);
-            int j_t = 2*(i%DESCRIPTOR_ROW_SIZE);
-            desc_VisualizeGrid->addWidget(images_static[i],i_t,j_t,1,1);
-            desc_VisualizeGrid->addWidget(images_label_coordinates[i],i_t+1, j_t+1, 1,1);
-
-
-        }
-    }
-    else if(descriptor_selected == 0 || descriptor_selected == 1)
-    {
-        for (int i = 0; i < DESCRIPTOR_GRID_SIZE2; i++)
-        {
-            images_static_sift_surf[i] = images1[cnt];
-            images_label_coordinates_sift_surf[i] = new QLabel;
-
-            float temp_x = featsImage1.getFeatureX(cnt); // get the descriptor x coordinate corresponding to images1[cnt]
-            float temp_y = featsImage1.getFeatureY(cnt);
-
-            stringstream ss;
-            ss << temp_x << " , " << temp_y << endl;
-            string str = ss.str();
-            images_label_coordinates_sift_surf[i]->setText(QString::fromStdString(str));
-            cout << str << endl;
-
-
-            circle(desc_Ref_img, Point(temp_x, temp_y), 5, Scalar(1), 2, 8, 0); // plot the circles on the appropriate points as per the shown descriptors
-
-
-            cnt++; // global counter for iterating over images and labels
-
-
-            int i_t = 2*(i/DESCRIPTOR_ROW_SIZE);
-            int j_t = 2*(i%DESCRIPTOR_ROW_SIZE);
-            desc_VisualizeGrid->addWidget(images_static_sift_surf[i],i_t,j_t,1,1);
-            desc_VisualizeGrid->addWidget(images_label_coordinates_sift_surf[i],i_t+1, j_t+1, 1,1);
-        }
-    }
-
-
-    cv::Mat temp1 (desc_Ref_img.cols,desc_Ref_img.rows,desc_Ref_img.type());
-    cvtColor(desc_Ref_img, temp1, CV_BGR2RGB);
-    QImage dest1 = QImage((uchar*) temp1.data, temp1.cols, temp1.rows, temp1.step, QImage::Format_RGB888);
-    QImage qscaled1 = dest1.scaled(IMAGE_WIDTH, IMAGE_HEIGHT, Qt::KeepAspectRatio);
-    image1->setPixmap(QPixmap::fromImage(qscaled1));
-
-
 }
 
 
@@ -704,7 +720,7 @@ void MainWindow::fillDescriptorInfo()
 
         fext.options.SIFTOptions.threshold = SIFT_opts.threshold;
         fext.options.SIFTOptions.edgeThreshold = SIFT_opts.edge_threshold;
-        fext.options.SIFTOptions.implementation = CFeatureExtraction::LoweBinary;
+        fext.options.SIFTOptions.implementation = CFeatureExtraction::OpenCV;
     }
     else if(descriptor_selected == 1)
     {
@@ -796,7 +812,7 @@ void MainWindow::on_detector_button_clicked()
     //save to file
     featsImage1.saveToTextFile("./KeyPoints1.txt");
 
-    cv::Mat cvImg1 = cv::cvarrToMat(img1.getAs<IplImage>());
+    cvImg1 = cv::cvarrToMat(img1.getAs<IplImage>());
     // Drawing a circle around corners for image 1
     //C++: void circle(Mat& img, Point center, int radius, const Scalar& color, int thickness=1, int lineType=8, int shift=0)
     for(int i=0 ; i<featsImage1.size() ; i++)
@@ -928,9 +944,6 @@ void MainWindow::on_descriptor_button_clicked()
     cout << "Time Elapsed : " << tic.Tac() << endl;
 
 }
-
-
-
 
 /*
  *
@@ -1330,10 +1343,11 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
     button_generate = new QPushButton("Visualize Descriptors");
     button_generate->setFixedSize(BUTTON_WIDTH,BUTTON_HEIGHT);
     connect(button_generate, SIGNAL(clicked(bool)), this,SLOT(on_button_generate_clicked()));
-    next_desc = new QPushButton("Next Descriptor");
+
+    /*next_desc = new QPushButton("Next Descriptor");
     next_desc->setFixedSize(BUTTON_WIDTH,BUTTON_HEIGHT);
     connect(next_desc, SIGNAL(clicked(bool)), this,SLOT(on_button_generate_clicked()));
-
+*/
 
     /*  QVBoxLayout *vbox2 = new QVBoxLayout;
 
@@ -1353,23 +1367,35 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
     vbox->addWidget(descriptors_select,1,1);
     vbox->addWidget(descriptor_button,2,1);
     vbox->addWidget(button_generate,3,0);
-    vbox->addWidget(next_desc,3,1);
-    next_desc->setVisible(false);
+    //vbox->addWidget(next_desc,3,1);
+    //next_desc->setVisible(false);
     groupBox1->setLayout(vbox);
 
 
 
     //Displaying the pair of images here
     groupBox_images = new QGroupBox ("Single Image");
-    image1 = new QLabel;
+    image1 = new my_qlabel;
     qimage1.load("../../apps/benchmarking-image-features/images/1.png"); // replace this with initial image of select an image by specifying path
-    QImage qscaled1 = qimage1.scaled(IMAGE_WIDTH, IMAGE_HEIGHT, Qt::KeepAspectRatio);
+    QImage qscaled1 = qimage1.scaled(IMAGE_WIDTH, IMAGE_HEIGHT, Qt::KeepAspectRatioByExpanding);
     image1->setPixmap(QPixmap::fromImage(qscaled1));
 
     image2 = new QLabel;
     qimage2.load("../../apps/benchmarking-image-features/images/2.png"); // replace this with initial image of select an image by specifying path
-    QImage qscaled2 = qimage2.scaled(IMAGE_WIDTH, IMAGE_HEIGHT, Qt::KeepAspectRatio);
-    image2->setPixmap(QPixmap::fromImage(qscaled2));
+    //QImage qscaled2 = qimage2.scaled(IMAGE_WIDTH, IMAGE_HEIGHT, Qt::KeepAspectRatio);
+    image2->setPixmap(QPixmap::fromImage(qimage2));
+
+
+
+
+
+    connect(image1, SIGNAL(Mouse_Pos()), this, SLOT(Mouse_current_pos()));
+    connect(image1, SIGNAL(Mouse_Pressed()), this, SLOT(Mouse_current_pos()));
+    connect(image1, SIGNAL(Mouse_Left()), this, SLOT(Mouse_left()));
+
+
+
+
 
     QGridLayout *hbox_images = new QGridLayout;
     hbox_images->addWidget(image1,0,0);
@@ -1549,18 +1575,17 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
 
     for(int i=0 ; i< DESCRIPTOR_GRID_SIZE ; i++)
     {
-        images_label_coordinates[i] = new QLabel("*");
-        images_static[i] = new QLabel;
-        descriptors[i].load("/home/raghavender/Downloads/images1.jpg"); // replace this with initial image of select an image by specifying path
-        QImage qscaled1 = descriptors[i].scaled(DESCRIPTOR_WIDTH, DESCRIPTOR_HEIGHT, Qt::KeepAspectRatio);
-        images_static[i]->setPixmap(QPixmap::fromImage(qscaled1));
+        images_label_coordinates = new QLabel("*");
+        images_static = new QLabel;
+        descriptors.load("/home/raghavender/Downloads/images1.jpg"); // replace this with initial image of select an image by specifying path
+        QImage qscaled1 = descriptors.scaled(DESCRIPTOR_WIDTH, DESCRIPTOR_HEIGHT, Qt::KeepAspectRatio);
+        images_static->setPixmap(QPixmap::fromImage(qscaled1));
         int i_t = 2*(i/DESCRIPTOR_ROW_SIZE);
         int j_t = 2*(i%DESCRIPTOR_ROW_SIZE);
         //desc_VisualizeGrid->addWidget(images_static[i],i_t,j_t,1,1);
         //desc_VisualizeGrid->addWidget(images_label_coordinates[i],i_t+1, j_t+1, 1,1);
     }
-    for(int i=0 ; i<DESCRIPTOR_GRID_SIZE2 ; i++)
-        images_static_sift_surf[i] = new QLabel;
+    images_static_sift_surf = new QLabel;
 
     desc_images->setLayout(desc_VisualizeGrid);
 
@@ -1581,7 +1606,11 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
     layout_grid->addWidget(groupBox1,2,4,3,2);
     layout_grid->addWidget(inputGroupBox,5,4,6,1);
     layout_grid->addWidget(decimateImage,11,4,2,1);
-    layout_grid->addWidget(paramsGroupBox,13,4,12,2);
+    layout_grid->addWidget(userOptionsGroupBox,13,4,1,1);
+    layout_grid->addWidget(paramsGroupBox,14,4,12,2);
+
+
+
 
     //layout_grid->addWidget(groupBox_buttons2,3,0,1,1);
     //layout_grid->addWidget(groupBox_buttons,4,0,1,1);
@@ -1594,7 +1623,152 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
     layout_grid->setSizeConstraint(QLayout::SetMinimumSize);
 
 
+
+    //layout_grid->addWidget(sample2,14,0,2,2);
+
     window_gui->setLayout(layout_grid);
     window_gui->show();
 }
 
+
+
+void MainWindow::Mouse_current_pos(){
+
+    //cout << "Mouse current_pos "<< endl ;
+    stringstream ss;
+    ss << "x : " << image1->x << " y : "<< image1->y ;
+    string str = ss.str();
+    //cout << str << "Mouse current_pos "<< endl ;
+    QString ss2 = QString::fromStdString(str);
+    //param1_desc->setText(ss2);
+
+
+
+    mouse_x = image1->x;
+    mouse_y = image1->y - 40 ; // -40 as it is the padding added due to a hidden reason
+
+    double x[numDesc1],y[numDesc1];
+    for(int i=0 ; i <numDesc1 ; i++)
+    {
+        x[i] = featsImage1.getFeatureX(i);
+        y[i] = featsImage1.getFeatureY(i);
+    }
+
+
+    cv::Mat desc_Ref_img = imread(file_path1, IMREAD_ANYCOLOR); // cv::cvarrToMat(img1.getAs<IplImage>());
+    // images1 have all the descriptors
+    int pos = findClosest(mouse_x, mouse_y, x, y, numDesc1);
+    if(descriptor_selected == 2 || descriptor_selected == 3 || descriptor_selected == 4)
+    {
+
+        float temp_x = featsImage1.getFeatureX(pos); // get the descriptor x coordinate corresponding to images1[cnt]
+        float temp_y = featsImage1.getFeatureY(pos);
+        //cout << mouse_x << " mouse _x " << mouse_y << " mouse _y" <<endl;
+        //cout << temp_x << " desc _x " << temp_y << " desc _y" <<endl;
+        stringstream ss;
+        ss << temp_x << "," << temp_y << endl;
+        string str = ss.str();
+        //cout << str << endl;
+        stringstream ss2;
+        ss2 << "#" << endl;
+        string str2 = ss2.str();
+
+
+        images_static= images1[pos];
+
+        // now following lines are for computing the x and y coordinate
+        images_label_coordinates = new QLabel;
+
+        images_label_coordinates->setText(QString::fromStdString(str2));
+        circle(desc_Ref_img, Point(temp_x, temp_y), 5, Scalar(0,0,255), 2, 8, 0); // plot the circles on the appropriate points as per the shown descriptors
+        //putText(desc_Ref_img, str2, Point(temp_x,temp_y), 5, 2, Scalar(255,0,0),2,8,0);
+        //cnt++; // global counter for iterating over images and labels
+
+
+        desc_VisualizeGrid->removeWidget(images_static_sift_surf);
+        desc_VisualizeGrid->removeWidget(images_static);
+        desc_VisualizeGrid->addWidget(images_static,0,0,1,1);
+        //desc_VisualizeGrid->addWidget(images_label_coordinates,i_t+1, j_t+1, 1,1);
+
+    }
+    else if(descriptor_selected == 0 || descriptor_selected == 1)
+    {
+
+        //featureMatched->clear();
+        //featureMatched->destroy(true,true);
+        //featureMatched->destroyed();
+        images_plots_sift_surf = images1_plots_distances[pos];
+        images_static_sift_surf = images1[pos];
+        featureMatched = featureMatchingInfo[pos];
+        images_label_coordinates_sift_surf = new QLabel;
+
+
+        float temp_x = featsImage1.getFeatureX(pos); // get the descriptor x coordinate corresponding to images1[cnt]
+        float temp_y = featsImage1.getFeatureY(pos);
+
+        stringstream ss;
+        ss << temp_x << " , " << temp_y << endl;
+        string str = ss.str();
+        images_label_coordinates_sift_surf->setText(QString::fromStdString(str));
+        cout << str << endl;
+
+
+
+
+        circle(desc_Ref_img, Point(temp_x, temp_y), 5, Scalar(255,0,0), 2, 8, 0); // plot the circles on the appropriate points as per the shown descriptors
+
+
+        desc_VisualizeGrid->removeWidget(images_static);
+        desc_VisualizeGrid->removeWidget(images_static_sift_surf);
+        desc_VisualizeGrid->removeWidget(featureMatched);
+        desc_VisualizeGrid->addWidget(images_static_sift_surf,0,0,1,1);
+        desc_VisualizeGrid->addWidget(images_plots_sift_surf,0,1,1,1);  // add the image distance plot with respect to other features in image 1
+
+        desc_VisualizeGrid->addWidget(featureMatched, 1,0,1,1); // add the label telling about the feature matching ingo
+
+        //desc_VisualizeGrid->addWidget(images_label_coordinates_sift_surf,i_t+1, j_t+1, 1,1);
+
+        //cnt++; // global counter for iterating over images and labels
+    }
+
+    cv::Mat temp1 (desc_Ref_img.cols,desc_Ref_img.rows,desc_Ref_img.type());
+    cvtColor(desc_Ref_img, temp1, CV_BGR2RGB);
+    QImage dest1 = QImage((uchar*) temp1.data, temp1.cols, temp1.rows, temp1.step, QImage::Format_RGB888);
+    QImage qscaled1 = dest1.scaled(IMAGE_WIDTH, IMAGE_HEIGHT, Qt::KeepAspectRatio);
+    image1->setPixmap(QPixmap::fromImage(qscaled1));
+
+
+
+}
+void MainWindow::Mouse_Pressed(){
+    //param2_desc->setText("Mouse Pressed");
+    cout << "Mouse Pressed" << endl;
+
+
+}
+void MainWindow::Mouse_left(){
+
+    //param2_desc->setText("Mouse Pressed");
+
+    cout <<  "Mouse left "<< endl ;
+
+
+}
+int MainWindow::findClosest(double x, double y, double X[], double Y[], int n)
+{
+    double dist = 10000;
+    double temp_dist ;
+    int pos = 0;
+    for(int i=0 ; i<n ; i++)
+    {
+        temp_dist = sqrt(pow((X[i]-x),2)+pow((Y[i] -y),2));
+
+        if(temp_dist < dist)
+        {
+            dist = temp_dist;
+            pos = i;
+        }
+    }
+    return pos;
+
+}

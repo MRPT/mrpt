@@ -43,6 +43,9 @@
 #include <QtGui>
 #include <QVector>
 
+#include <QMouseEvent>
+#include <QEvent>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
@@ -56,12 +59,16 @@
 
 #include <mrpt/vision/CFeatureExtraction.h>
 //#include "visualizedialog.h"
-
+#include "my_qlabel.h"
 
 using namespace cv;
 using namespace std;
+
 using namespace mrpt::vision;
 using namespace mrpt::utils;
+
+using namespace mrpt::math;
+using namespace mrpt;
 
 class MainWindow : public QMainWindow
 {
@@ -112,7 +119,7 @@ public:
     QComboBox *detectors_select;
     QComboBox *descriptors_select;
 
-    QLabel *image1;
+    my_qlabel *image1;
     QLabel *image2;
     QImage qimage1;
     QImage qimage2;
@@ -234,10 +241,10 @@ public:
 
 
     //FOR THE VISUALIZE DESCRIPTOR PART
-
-    QLabel *images_static[DESCRIPTOR_GRID_SIZE];
-    QLabel *images_static_sift_surf[DESCRIPTOR_GRID_SIZE2];
-    QImage descriptors[DESCRIPTOR_GRID_SIZE];
+public:
+    QLabel *images_static;
+    QLabel *images_static_sift_surf;
+    QImage descriptors;
 
     QGridLayout *desc_VisualizeGrid;
 
@@ -245,10 +252,20 @@ public:
     int cnt; // counter to iterate over all the descriptors
 
 
-    QLabel *images_label_coordinates[DESCRIPTOR_GRID_SIZE];
-    QLabel *images_label_coordinates_sift_surf[DESCRIPTOR_GRID_SIZE2];
+    QLabel *images_label_coordinates;
+    QLabel *images_label_coordinates_sift_surf;
+    QLabel *featureMatched;
+
+    QLabel *images_plots_sift_surf;
+
+    double  mouse_x, mouse_y;
+
+
+    my_qlabel *sample2;
 
 signals:
+
+
     //void currentIndexChanged(int index);
 
 public:
@@ -259,6 +276,17 @@ public:
     void readFilesFromFolder(int next_prev);
     void displayImagesWithoutDetector();
     void initializeParameters();
+
+    int findClosest(double x, double y, double X[], double Y[], int n);
+    void computeMinMax(CVectorDouble distances, int &min_idx, double &min_dist, int &max_idx, double &max_dist);
+
+
+
+
+private slots:
+    void Mouse_current_pos();
+    void Mouse_Pressed();
+    void Mouse_left();
 
 public slots:
     void on_button_generate_clicked();
