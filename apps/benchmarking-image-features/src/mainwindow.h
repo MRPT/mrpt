@@ -41,7 +41,6 @@
 #include <QFileDialog>
 #include <QMap>
 #include <QtGui>
-#include "./qt_custom_plot/qcustomplot.h"
 #include <QVector>
 
 #include <stdio.h>
