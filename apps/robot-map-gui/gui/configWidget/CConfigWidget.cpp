@@ -12,6 +12,8 @@
 #include "COccupancyConfig.h"
 #include "CPointsConfig.h"
 
+#include <mrpt/utils/CFileOutputStream.h>
+
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QListWidget>
@@ -19,6 +21,9 @@
 #include <QCheckBox>
 #include <QDebug>
 
+
+using namespace mrpt;
+using namespace maps;
 
 CConfigWidget::CConfigWidget(QWidget *parent)
 	: QWidget(parent)
@@ -34,24 +39,15 @@ CConfigWidget::CConfigWidget(QWidget *parent)
 	item->setData(Qt::UserRole, TypeOfConfig::General);
 	m_ui->m_config->addItem(item);
 
-	QListWidgetItem *item2 = new QListWidgetItem("Occupancy", m_ui->m_config);
-	item2->setData(Qt::UserRole, TypeOfConfig::Occupancy);
-	m_ui->m_config->addItem(item2);
-
-	QListWidgetItem *item3 = new QListWidgetItem("PointsMap", m_ui->m_config);
-	item3->setData(Qt::UserRole, TypeOfConfig::PointsMap);
-	m_ui->m_config->addItem(item3);
-
 	QWidget* w = new QWidget();
 	w->setLayout(new QHBoxLayout(w));
 	w->layout()->addWidget(new QCheckBox("test", w));
 	m_ui->stackedWidget->addWidget(w);
 
-	m_ui->stackedWidget->addWidget(new COccupancyConfig(m_ui->stackedWidget));
-	m_ui->stackedWidget->addWidget(new CPointsConfig(m_ui->stackedWidget));
 
 	QObject::connect(m_ui->m_config, SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)),
 					 this, SLOT(currentConfigChanged(QListWidgetItem *, QListWidgetItem *)));
+	QObject::connect(m_ui->m_apply, SIGNAL(released()), this, SIGNAL(updatedConfig()));
 
 	m_ui->m_config->setCurrentItem(item);
 }
@@ -89,8 +85,15 @@ void CConfigWidget::saveConfig()
 		return;
 	}
 
-	QDataStream out(&file);
-	out.setVersion(QDataStream::Qt_5_8);
+	mrpt::utils::CFileOutputStream f(configName.toStdString(), true);
+
+	for (int i = 0; i < m_ui->stackedWidget->count(); ++i)
+	{
+		QWidget *w = m_ui->stackedWidget->widget(i);
+		COccupancyConfig *o = dynamic_cast<COccupancyConfig*>(w);
+
+	}
+
 }
 
 void CConfigWidget::addMap()
@@ -99,7 +102,42 @@ void CConfigWidget::addMap()
 	int result = dialog->exec();
 	if (result == QDialog::Accepted)
 	{
-		CSelectType::TypeOfMaps type = dialog->selectedItem();
+		int type = dialog->selectedItem();
+		TypeOfConfig typeOfConfig = static_cast<TypeOfConfig>(type);
+		switch (typeOfConfig)
+		{
+		case PointsMap:
+		{
+			addWidget(TypeOfConfig::PointsMap, "pointsMap", new CPointsConfig(m_ui->stackedWidget));
+			break;
+		}
+		case Occupancy:
+		{
+			addWidget(TypeOfConfig::Occupancy, "occupancyGrid", new COccupancyConfig(m_ui->stackedWidget));
+
+
+
+			/*
+
+
+
+			using internal::TMetricMapTypesRegistry;
+			TMetricMapTypesRegistry & mmr = TMetricMapTypesRegistry::Instance();
+			const std::string sMapName("occupancyGrid");
+			TMetricMapInitializer *mi = mmr.factoryMapDefinition(sMapName);
+			ASSERT_(mi);
+
+			std::string sectionName  =  "MappingApplication";
+			const std::string sMapSectionsPrefix = mrpt::format("%s_%s_%02u",sectionName.c_str(),sMapName.c_str(),i);
+			mi->loadFromConfigFile(ini,sMapSectionsPrefix);
+*/
+
+			emit addedMap();
+			break;
+		}
+		default:
+			break;
+		}
 		qDebug() << type;
 	}
 }
@@ -108,17 +146,48 @@ void CConfigWidget::currentConfigChanged(QListWidgetItem *current, QListWidgetIt
 {
 	if (!current)
 		return;
-	TypeOfConfig type = static_cast<TypeOfConfig>(current->data(Qt::UserRole).toInt());
-	if (type == General)
+
+	m_ui->stackedWidget->setCurrentIndex(m_ui->m_config->currentRow());
+}
+
+TSetOfMetricMapInitializers CConfigWidget::updateConfig()
+{
+
+	using internal::TMetricMapTypesRegistry;
+	TMetricMapTypesRegistry & mmr = TMetricMapTypesRegistry::Instance();
+	TSetOfMetricMapInitializers mapCfg;
+	MRPT_START
+	mapCfg.clear();
+	for (auto &it: m_configs)
 	{
-		m_ui->stackedWidget->setCurrentIndex(0);
+		int index = 0;
+		for (auto &map : it.second)
+		{
+			const std::string sMapName = map->getName();
+			TMetricMapInitializer *mi = mmr.factoryMapDefinition(sMapName);
+			ASSERT_(mi);
+
+			map->updateConfiguration(mi);
+			mapCfg.push_back(TMetricMapInitializer::Ptr(mi));
+			++index;
+		}
 	}
-	else if (type == Occupancy)
-	{
-		m_ui->stackedWidget->setCurrentIndex(1);
-	}
-	else if (type == PointsMap)
-	{
-		m_ui->stackedWidget->setCurrentIndex(2);
-	}
+	MRPT_END
+	return mapCfg;
+}
+
+void CConfigWidget::addWidget(CConfigWidget::TypeOfConfig type, const QString &name, CBaseConfig *w)
+{
+	auto it = m_configs.find(type);
+	if (it == m_configs.end())
+		it = m_configs.emplace(type, std::vector<CBaseConfig *>()).first;
+
+
+	int numberOfType = it->second.size();
+
+	QListWidgetItem *item = new QListWidgetItem( name + QString::number(numberOfType), m_ui->m_config);
+	item->setData(Qt::UserRole, type);
+	m_ui->m_config->addItem(item);
+	m_ui->stackedWidget->addWidget(w);
+	it->second.push_back(w);
 }

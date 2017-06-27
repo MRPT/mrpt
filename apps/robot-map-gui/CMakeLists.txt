@@ -29,6 +29,7 @@ if(CMAKE_MRPT_HAS_Qt5 AND CMAKE_MRPT_HAS_OPENGL_GLUT)
 		gui/observationTree/CRangeScanNode.cpp
 		gui/configWidget/CConfigWidget.cpp
 		gui/configWidget/CSelectType.cpp
+		gui/configWidget/CBaseConfig.cpp
 		gui/configWidget/CPointsConfig.cpp
 		gui/configWidget/COccupancyConfig.cpp
 		)
