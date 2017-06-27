@@ -31,8 +31,10 @@ if(CMAKE_MRPT_HAS_Qt5 AND CMAKE_MRPT_HAS_OPENGL_GLUT)
 		gui/configWidget/CSelectType.cpp
 		gui/configWidget/CBaseConfig.cpp
 		gui/configWidget/CPointsConfig.cpp
+		gui/configWidget/CBeaconConfig.cpp
 		gui/configWidget/COccupancyConfig.cpp
 		)
+
 
 	set(FILES_TO_MOC
 		gui/CMainWindow.h
@@ -46,6 +48,7 @@ if(CMAKE_MRPT_HAS_Qt5 AND CMAKE_MRPT_HAS_OPENGL_GLUT)
 		gui/configWidget/CSelectType.ui
 		gui/configWidget/CPointsConfig.ui
 		gui/configWidget/COccupancyConfig.ui
+		gui/configWidget/CBeaconConfig.ui
 		)
 	qt5_wrap_cpp(moc_cpps ${FILES_TO_MOC})
 	qt5_wrap_ui(uic_cpps ${FILES_TO_UIC})

@@ -6,23 +6,25 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
-
 #pragma once
-#include <QWidget>
+#include "CBaseConfig.h"
+
+#include <memory>
 
 
-namespace mrpt {
-namespace maps {class TMapGenericParams; class TMetricMapInitializer;}
-namespace utils {class CLoadableOptions;}
+namespace Ui
+{
+class CBeaconConfig;
 }
-
-class CBaseConfig: public QWidget
+class CBeaconConfig: public CBaseConfig
 {
 public:
-	CBaseConfig(QWidget *parent = nullptr);
-	virtual ~CBaseConfig() = default;
+	CBeaconConfig(QWidget *parent = nullptr);
+	virtual ~CBeaconConfig();
+	virtual void updateConfiguration(mrpt::maps::TMetricMapInitializer *options) override;
+	virtual const std::string getName() override;
 
-	virtual const std::string getName() = 0;
-	virtual void updateConfiguration(mrpt::maps::TMetricMapInitializer *options) = 0;
+private:
+	std::unique_ptr<Ui::CBeaconConfig> m_ui;
 };
 

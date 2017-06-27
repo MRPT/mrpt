@@ -40,17 +40,17 @@ void CPointsConfig::updateConfiguration(mrpt::maps::TMetricMapInitializer *optio
 	mapDefination->genericMapParams.enableObservationInsertion = m_ui->enableObservationInsertion;
 
 
-	mapDefination->insertionOpts.minDistBetweenLaserPoints = m_ui->minDistBetweenLaserPoints.value();
+	mapDefination->insertionOpts.minDistBetweenLaserPoints = m_ui->minDistBetweenLaserPoints->value();
 	mapDefination->insertionOpts.addToExistingPointsMap = m_ui->addToExistingPointsMap->isChecked();
 	mapDefination->insertionOpts.also_interpolate = m_ui->also_interpolate->isChecked();
 	mapDefination->insertionOpts.disableDeletion = m_ui->disableDeletion->isChecked();
 	mapDefination->insertionOpts.fuseWithExisting = m_ui->fuseWithExisting->isChecked();
 	mapDefination->insertionOpts.isPlanarMap = m_ui->isPlanarMap->isChecked();
-	mapDefination->insertionOpts.horizontalTolerance = m_ui->horizontalTolerance.value();
-	mapDefination->insertionOpts.maxDistForInterpolatePoints = m_ui->maxDistForInterpolatePoints.value();
+	mapDefination->insertionOpts.horizontalTolerance = m_ui->horizontalTolerance->value();
+	mapDefination->insertionOpts.maxDistForInterpolatePoints = m_ui->maxDistForInterpolatePoints->value();
 	mapDefination->insertionOpts.insertInvalidPoints = m_ui->insertInvalidPoints->isChecked();
 
-	mapDefination->likelihoodOpts.sigma_dist = m_ui->sigma_dist.value();
-	mapDefination->likelihoodOpts.max_corr_distance = m_ui->max_corr_distance.value();
-	mapDefination->likelihoodOpts.decimation = m_ui->decimation.value();
+	mapDefination->likelihoodOpts.sigma_dist = m_ui->sigma_dist->value();
+	mapDefination->likelihoodOpts.max_corr_distance = m_ui->max_corr_distance->value();
+	mapDefination->likelihoodOpts.decimation = m_ui->decimation->value();
 }
