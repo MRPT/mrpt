@@ -1,7 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 #define NUM_DETECTORS 12
-#define NUM_DESCRIPTORS 7
+#define NUM_DESCRIPTORS 8
 #define IMAGE_WIDTH 400
 #define IMAGE_HEIGHT 400
 #define WIDGET_HEIGHT 30
@@ -10,6 +10,7 @@
 #define WIDGET_WIDTH 160
 #define BUTTON_WIDTH 150
 #define BUTTON_HEIGHT 30
+#define CIRCLE_THICKNESS 4
 
 
 
@@ -244,6 +245,10 @@ public:
 public:
     QLabel *images_static;
     QLabel *images_static_sift_surf;
+
+    QLabel *images_static2;
+    QLabel *images_static_sift_surf2;
+
     QImage descriptors;
 
     QGridLayout *desc_VisualizeGrid;
@@ -259,9 +264,20 @@ public:
     QLabel *images_plots_sift_surf;
 
     double  mouse_x, mouse_y;
+    int old, newer;
+    bool flag_descriptor_match;
+    bool flag_read_files_bug;
 
 
     my_qlabel *sample2;
+
+
+    // variables for bug fixes
+
+    bool evaluate_detector_clicked;
+    bool evaluate_descriptor_clicked;
+    bool visualize_descriptor_clicked;
+    bool activate_stereo_matching;
 
 signals:
 
