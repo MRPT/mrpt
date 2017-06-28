@@ -69,8 +69,7 @@ void CConfigWidget::openConfig()
 		QMessageBox::information(this, tr("Unable to open file"), file.errorString());
 		return;
 	}
-
-
+	emit openedConfig(configName.toStdString());
 }
 
 void CConfigWidget::saveConfig()
@@ -84,15 +83,6 @@ void CConfigWidget::saveConfig()
 	{
 		QMessageBox::information(this, tr("Unable to open file"), file.errorString());
 		return;
-	}
-
-	mrpt::utils::CFileOutputStream f(configName.toStdString(), true);
-
-	for (int i = 0; i < m_ui->stackedWidget->count(); ++i)
-	{
-		QWidget *w = m_ui->stackedWidget->widget(i);
-		COccupancyConfig *o = dynamic_cast<COccupancyConfig*>(w);
-
 	}
 
 }
