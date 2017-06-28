@@ -101,7 +101,8 @@ of type CMetricMapBuilderRBPF  */
 		/** Destructor. */
 		virtual ~CMetricMapBuilderRBPF( );
 
-		/** Initialize the method, starting with a known location PDF "x0"(if supplied, set to NULL to left unmodified) and a given fixed, past map. */
+		/** Initialize the method, starting with a known location PDF "x0" 
+		  * (or set to NULL to use the last keyframe in the simplemap) and a given fixed, past map. */
 		void  initialize(
 			const mrpt::maps::CSimpleMap		&initialMap  = mrpt::maps::CSimpleMap(),
 			mrpt::poses::CPosePDF					*x0 = NULL
