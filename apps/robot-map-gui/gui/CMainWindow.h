@@ -32,12 +32,15 @@ public:
 	virtual ~CMainWindow();
 
 private slots:
-	void addMap(mrpt::opengl::CSetOfObjects::Ptr set, std::string name);
 	void openMap();
 	void itemClicked(const QModelIndex &index);
 	void updateConfig();
+	void updateConfig(const std::string str);
 
+	void addMap(mrpt::opengl::CSetOfObjects::Ptr set, std::string name);
 private:
+	void updateRenderMapFromConfig();
+
 	CDocument *m_document;
 	CObservationTreeModel *m_model;
 

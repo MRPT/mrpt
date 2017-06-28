@@ -45,6 +45,7 @@ public:
 signals:
 	void addedMap();
 	void updatedConfig();
+	void openedConfig(const std::string str);
 
 private slots:
 	void openConfig();

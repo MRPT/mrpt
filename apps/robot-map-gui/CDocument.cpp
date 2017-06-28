@@ -75,6 +75,15 @@ const std::map<std::string, CSetOfObjects::Ptr> CDocument::renderizableMaps() co
 		}
 	}
 	{
+		CGasConcentrationGridMap2D::Ptr ptr = m_metricmap.getMapByClass<CGasConcentrationGridMap2D>();
+		if (ptr.get())
+		{
+			CSetOfObjects::Ptr obj = CSetOfObjects::Create();
+			ptr->getAs3DObject(obj);
+			renderizable.emplace("Gas concentration grid", obj);
+		}
+	}
+	{
 		CBeaconMap::Ptr ptr = m_metricmap.getMapByClass<CBeaconMap>();
 		if (ptr.get())
 		{
