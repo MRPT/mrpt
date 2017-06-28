@@ -13,6 +13,23 @@
 <p> <b>Note:</b> <i>If you are displaying a local version of this page and you have not built the whole HTML documentation, the links above will be broken. Either build the documentation invoking <code>make documentation_html</code> or [browse it on-line](http://www.mrpt.org/).</i></p>
 
 <hr>
+<a name="1.5.2">
+<h2>Version 1.5.2: (Under development)  </h2></a>
+- <b>Detailed list of changes:</b>
+	- Changes in libraries:
+		- \ref mrpt_slam_grp
+			- rbpf-slam: Add support for simplemap continuation.
+
+<hr>
+<a name="1.5.1">
+<h2>Version 1.5.1: Released 21/JUN/2017  </h2></a>
+- <b>Detailed list of changes:</b>
+	- Changes in libraries:
+		- \ref mrpt_nav_grp
+			- fix const-correctness: [commit](https://github.com/MRPT/mrpt/commit/7e79003d2adeb7b170fa04e0bc34d42707e07306)
+			- More flexible callback behavior: [commit](https://github.com/MRPT/mrpt/commit/5b054336a1ac75f6e4f8741e5049971917a2980a)
+
+<hr>
 <a name="1.5.0">
 <h2>Version 1.5.0: Released 10-JUN-2017</h2></a>
 	- Changes in apps:
