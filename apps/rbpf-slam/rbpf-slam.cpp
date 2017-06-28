@@ -71,6 +71,7 @@ int  PROGRESS_WINDOW_WIDTH=600, PROGRESS_WINDOW_HEIGHT=500;
 
 std::string         METRIC_MAP_CONTINUATION_GRIDMAP_FILE; // .gridmap file
 mrpt::math::TPose2D METRIC_MAP_CONTINUATION_START_POSE;
+std::string         SIMPLEMAP_CONTINUATION; // .simplemap file
 
 // Forward declaration.
 void MapBuilding_RBPF();
@@ -121,6 +122,7 @@ int main(int argc, char **argv)
 		SHOW_PROGRESS_IN_WINDOW = iniFile.read_bool("MappingApplication","SHOW_PROGRESS_IN_WINDOW", false);
 		SHOW_PROGRESS_IN_WINDOW_DELAY_MS = iniFile.read_int("MappingApplication","SHOW_PROGRESS_IN_WINDOW_DELAY_MS",1);
 		METRIC_MAP_CONTINUATION_GRIDMAP_FILE = iniFile.read_string("MappingApplication","METRIC_MAP_CONTINUATION_GRIDMAP_FILE","");
+		MRPT_LOAD_CONFIG_VAR(SIMPLEMAP_CONTINUATION, string, iniFile, "MappingApplication");
 
 		METRIC_MAP_CONTINUATION_START_POSE.x = iniFile.read_double("MappingApplication","METRIC_MAP_CONTINUATION_START_POSE_X",.0);
 		METRIC_MAP_CONTINUATION_START_POSE.y = iniFile.read_double("MappingApplication","METRIC_MAP_CONTINUATION_START_POSE_Y",.0);
@@ -231,6 +233,12 @@ void MapBuilding_RBPF()
 			ASSERTMSG_(it_grid.present(), "No gridmap in multimetric map definition, but metric map continuation was set (!)" );
 			it_grid->copyMapContentFrom( gridmap );
 		}
+	}
+	if (!SIMPLEMAP_CONTINUATION.empty())
+	{
+		mrpt::maps::CSimpleMap init_map;
+		mrpt::utils::CFileGZInputStream(SIMPLEMAP_CONTINUATION) >> init_map;
+		mapBuilder.initialize(init_map);
 	}
 
 	// ---------------------------------

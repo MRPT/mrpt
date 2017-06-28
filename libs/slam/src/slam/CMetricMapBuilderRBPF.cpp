@@ -258,19 +258,23 @@ void  CMetricMapBuilderRBPF::initialize(
 	// Enter critical section (updating map)
 	enterCriticalSection();
 
-	MRPT_LOG_INFO_STREAM( "[initialize] Called with " << initialMap.size() << " nodes in fixed map\n"); 
-	if (x0) {
-		MRPT_LOG_INFO_STREAM( "[initialize] x0: " << x0->getMeanVal() << "\n"); 
-	} else {
-		MRPT_LOG_INFO_STREAM( "[initialize] x0: (Not supplied)\n");
-	}
+	MRPT_LOG_INFO_STREAM( "[initialize] Called with " << initialMap.size() << " nodes in fixed map"); 
 
 	this->clear();
-	if (x0) {
-		const CPose2D meanPose = x0->getMeanVal();
-		// Clear maps for each particle & set pose:
-		mapPDF.clear( meanPose );
+	mrpt::poses::CPose3D curPose;
+	if (x0)
+	{
+		curPose = mrpt::poses::CPose3D(x0->getMeanVal());
 	}
+	else if (!initialMap.empty())
+	{
+		// get pose of last keyframe:
+		curPose = initialMap.rbegin()->first->getMeanVal();
+	}
+	MRPT_LOG_INFO_STREAM("[initialize] Initial pose: " << curPose);
+
+	// Clear maps for each particle & set pose:
+	mapPDF.clear(initialMap,curPose);
 
 	// Leaving critical section (updating map)
 	leaveCriticalSection();
