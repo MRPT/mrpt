@@ -148,6 +148,9 @@ namespace maps
 		/** Clear all elements of the maps, and restore all paths to a single starting pose */
 		void  clear( const mrpt::poses::CPose2D &initialPose );
 		void  clear( const mrpt::poses::CPose3D &initialPose ); //!< \overload
+		/** Resets the map by loading an already-mapped map for past poses. 
+		  * Current robot pose should be normally set to the last keyframe in the simplemap. */
+		void  clear(const mrpt::maps::CSimpleMap &prevMap, const mrpt::poses::CPose3D &currentPose);
 
 		 /** Returns the estimate of the robot pose as a particles PDF for the instant of time "timeStep", from 0 to N-1.
 		  * \sa getEstimatedPosePDF
