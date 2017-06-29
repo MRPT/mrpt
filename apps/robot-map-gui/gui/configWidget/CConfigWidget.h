@@ -10,11 +10,13 @@
 #include <QWidget>
 
 #include "CBaseConfig.h"
+#include "TypeOfConfig.h"
 
 #include <memory>
 
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/maps/TMetricMapInitializer.h>
+#include <mrpt/maps/CMultiMetricMap.h>
 
 
 class QListWidgetItem;
@@ -27,19 +29,10 @@ class CConfigWidget: public QWidget
 {
 	Q_OBJECT
 public:
-	enum TypeOfConfig
-	{
-		None = -1,
-		General = 0,
-		PointsMap = 1,
-		Occupancy = 2,
-		Landmarks = 3,
-		Beacon = 4,
-		GasGrid = 5
-	};
 	CConfigWidget(QWidget *parent = nullptr);
 	virtual ~CConfigWidget();
-	mrpt::maps::TSetOfMetricMapInitializers updateConfig();
+	mrpt::maps::TSetOfMetricMapInitializers config();
+	void setConfig(const mrpt::maps::CMultiMetricMap::TListMaps &config);
 
 
 signals:
@@ -54,8 +47,10 @@ private slots:
 	void currentConfigChanged(QListWidgetItem *current, QListWidgetItem *);
 
 private:
+	CBaseConfig *configByType(TypeOfConfig type) const;
+
 	std::unique_ptr<Ui::CConfigWidget> m_ui;
 	std::map<TypeOfConfig, std::vector< CBaseConfig *>> m_configs;
 
-	void addWidget(TypeOfConfig type, const QString &name, CBaseConfig* w);
+	int addWidget(TypeOfConfig type, CBaseConfig* w);
 };

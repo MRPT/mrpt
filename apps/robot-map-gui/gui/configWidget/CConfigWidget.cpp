@@ -12,6 +12,8 @@
 #include "COccupancyConfig.h"
 #include "CPointsConfig.h"
 #include "CBeaconConfig.h"
+#include "CLandmarksConfig.h"
+#include "CGasGridConfig.h"
 
 #include <mrpt/utils/CFileOutputStream.h>
 
@@ -25,6 +27,7 @@
 
 using namespace mrpt;
 using namespace maps;
+using namespace opengl;
 
 CConfigWidget::CConfigWidget(QWidget *parent)
 	: QWidget(parent)
@@ -84,6 +87,14 @@ void CConfigWidget::saveConfig()
 		QMessageBox::information(this, tr("Unable to open file"), file.errorString());
 		return;
 	}
+	mrpt::utils::CFileOutputStream f(configName.toStdString(), true);
+
+	for (int i = 0; i < m_ui->stackedWidget->count(); ++i)
+	{
+		QWidget *w = m_ui->stackedWidget->widget(i);
+		COccupancyConfig *o = dynamic_cast<COccupancyConfig*>(w);
+		Q_UNUSED(o);
+	}
 
 }
 
@@ -95,26 +106,9 @@ void CConfigWidget::addMap()
 	{
 		int type = dialog->selectedItem();
 		TypeOfConfig typeOfConfig = static_cast<TypeOfConfig>(type);
-		switch (typeOfConfig)
-		{
-		case PointsMap:
-		{
-			addWidget(TypeOfConfig::PointsMap, "pointsMap", new CPointsConfig(m_ui->stackedWidget));
-			break;
-		}
-		case Occupancy:
-		{
-			addWidget(TypeOfConfig::Occupancy, "occupancyGrid", new COccupancyConfig(m_ui->stackedWidget));
-			break;
-		}
-		case Beacon:
-		{
-			addWidget(TypeOfConfig::Beacon, "beaconMap", new CBeaconConfig(m_ui->stackedWidget));
-			break;
-		}
-		default:
-			break;
-		}
+		CBaseConfig *w = configByType(typeOfConfig);
+		if (w)
+			addWidget(typeOfConfig, w);
 	}
 }
 
@@ -126,9 +120,39 @@ void CConfigWidget::currentConfigChanged(QListWidgetItem *current, QListWidgetIt
 	m_ui->stackedWidget->setCurrentIndex(m_ui->m_config->currentRow());
 }
 
-TSetOfMetricMapInitializers CConfigWidget::updateConfig()
+CBaseConfig *CConfigWidget::configByType(TypeOfConfig type) const
 {
+	switch (type)
+	{
+	case TypeOfConfig::PointsMap:
+	{
+		return new CPointsConfig(m_ui->stackedWidget);
+	}
+	case TypeOfConfig::Occupancy:
+	{
+		return new COccupancyConfig(m_ui->stackedWidget);
+	}
+	case TypeOfConfig::Beacon:
+	{
+		return new CBeaconConfig(m_ui->stackedWidget);
+	}
+	case TypeOfConfig::GasGrid:
+	{
+		return new CGasGridConfig(m_ui->stackedWidget);
+	}
+	case TypeOfConfig::Landmarks:
+	{
+		return new CLandmarksConfig(m_ui->stackedWidget);
+	}
+	default:
+		break;
+	}
+	return nullptr;
 
+}
+
+TSetOfMetricMapInitializers CConfigWidget::config()
+{
 	using internal::TMetricMapTypesRegistry;
 	TMetricMapTypesRegistry & mmr = TMetricMapTypesRegistry::Instance();
 	TSetOfMetricMapInitializers mapCfg;
@@ -139,7 +163,7 @@ TSetOfMetricMapInitializers CConfigWidget::updateConfig()
 		int index = 0;
 		for (auto &map : it.second)
 		{
-			const std::string sMapName = map->getName();
+			const std::string sMapName = map->getName().toStdString();
 			TMetricMapInitializer *mi = mmr.factoryMapDefinition(sMapName);
 			ASSERT_(mi);
 
@@ -149,10 +173,72 @@ TSetOfMetricMapInitializers CConfigWidget::updateConfig()
 		}
 	}
 	MRPT_END
-	return mapCfg;
+			return mapCfg;
 }
 
-void CConfigWidget::addWidget(CConfigWidget::TypeOfConfig type, const QString &name, CBaseConfig *w)
+void CConfigWidget::setConfig(const CMultiMetricMap::TListMaps &config)
+{
+	for (auto iter = config.begin(); iter != config.end(); ++iter)
+	{
+		bool found = false;
+		{
+			CSimplePointsMap::Ptr ptr = std::dynamic_pointer_cast<CSimplePointsMap>(iter->get_ptr());
+			if (ptr.get())
+			{
+				CPointsConfig *pConfig = new CPointsConfig(m_ui->stackedWidget);
+				addWidget(TypeOfConfig::PointsMap, pConfig);
+				pConfig->updateConfiguration(ptr->MapDefinition());
+				found = true;
+			}
+		}
+		if (!found)
+		{
+			COccupancyGridMap2D::Ptr ptr = std::dynamic_pointer_cast<COccupancyGridMap2D>(iter->get_ptr());
+			if (ptr.get())
+			{
+				COccupancyConfig *pConfig = new COccupancyConfig(m_ui->stackedWidget);
+				addWidget(TypeOfConfig::Occupancy, pConfig);
+				pConfig->updateConfiguration(ptr->MapDefinition());
+				found = true;
+			}
+		}
+		if (!found)
+		{
+			CGasConcentrationGridMap2D::Ptr ptr = std::dynamic_pointer_cast<CGasConcentrationGridMap2D>(iter->get_ptr());
+			if (ptr.get())
+			{
+				CGasGridConfig *pConfig = new CGasGridConfig(m_ui->stackedWidget);
+				addWidget(TypeOfConfig::GasGrid, pConfig);
+				pConfig->updateConfiguration(ptr->MapDefinition());
+				found = true;
+			}
+		}
+		if (!found)
+		{
+			CBeaconMap::Ptr ptr = std::dynamic_pointer_cast<CBeaconMap>(iter->get_ptr());
+			if (ptr.get())
+			{
+				CBeaconConfig *pConfig = new CBeaconConfig(m_ui->stackedWidget);
+				addWidget(TypeOfConfig::Beacon, pConfig);
+				pConfig->updateConfiguration(ptr->MapDefinition());
+				found = true;
+			}
+		}
+		if (!found)
+		{
+			CLandmarksMap::Ptr ptr = std::dynamic_pointer_cast<CLandmarksMap>(iter->get_ptr());
+			if (ptr.get())
+			{
+				CLandmarksConfig *pConfig = new CLandmarksConfig(m_ui->stackedWidget);
+				addWidget(TypeOfConfig::Landmarks, pConfig);
+				pConfig->updateConfiguration(ptr->MapDefinition());
+				found = true;
+			}
+		}
+	}
+}
+
+int CConfigWidget::addWidget(TypeOfConfig type, CBaseConfig *w)
 {
 	auto it = m_configs.find(type);
 	if (it == m_configs.end())
@@ -161,11 +247,14 @@ void CConfigWidget::addWidget(CConfigWidget::TypeOfConfig type, const QString &n
 
 	int numberOfType = it->second.size();
 
-	QListWidgetItem *item = new QListWidgetItem( name + QString::number(numberOfType), m_ui->m_config);
+	QListWidgetItem *item = new QListWidgetItem( w->getName() + QString::number(numberOfType), m_ui->m_config);
 	item->setData(Qt::UserRole, type);
 	m_ui->m_config->addItem(item);
 	m_ui->stackedWidget->addWidget(w);
+
+	int index = it->second.size();
 	it->second.push_back(w);
 
 	emit addedMap();
+	return index;
 }

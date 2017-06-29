@@ -19,10 +19,10 @@ class CPointsConfig;
 class CPointsConfig: public CBaseConfig
 {
 public:
-	CPointsConfig(QWidget *parent = nullptr);
+	CPointsConfig(QWidget *parent);
 	virtual ~CPointsConfig();
 
-	virtual const std::string getName() override;
+	virtual const QString getName() override;
 	virtual void updateConfiguration(mrpt::maps::TMetricMapInitializer *options) override;
 
 private:

@@ -30,6 +30,7 @@ CMainWindow::CMainWindow(QWidget *parent)
 	m_ui->setupUi(this);
 	QObject::connect(m_ui->openAction,		SIGNAL(triggered(bool)),			SLOT(openMap()));
 	QObject::connect(m_ui->m_configWidget, SIGNAL(openedConfig(const std::string)), SLOT(updateConfig(const std::string)));
+	QObject::connect(m_ui->m_configWidget, SIGNAL(addedMap()), SLOT(updateConfig()));
 	QObject::connect(m_ui->m_configWidget, SIGNAL(updatedConfig()), SLOT(updateConfig()));
 	QObject::connect(m_ui->m_observationsTree,	SIGNAL(clicked(const QModelIndex &)),	SLOT(itemClicked(const QModelIndex &)));
 }
@@ -41,13 +42,13 @@ CMainWindow::~CMainWindow()
 
 	if (m_model)
 		delete m_model;
+
+	delete m_ui->m_configWidget;
 }
 
-void CMainWindow::addMap(mrpt::opengl::CSetOfObjects::Ptr set, std::string name)
+void CMainWindow::addMap(std::string name)
 {
-	CGlWidget *gl = new CGlWidget(m_ui->m_tabWidget);
-	gl->fillMap(set);
-	m_ui->m_tabWidget->addTab(gl, QString::fromStdString(name));
+	updateRenderMapFromConfig();
 }
 
 void CMainWindow::openMap()
@@ -89,7 +90,7 @@ void CMainWindow::itemClicked(const QModelIndex &index)
 
 void CMainWindow::updateConfig()
 {
-	mrpt::maps::TSetOfMetricMapInitializers mapCfg = m_ui->m_configWidget->updateConfig();
+	mrpt::maps::TSetOfMetricMapInitializers mapCfg = m_ui->m_configWidget->config();
 	m_document->setListOfMaps(mapCfg);
 	updateRenderMapFromConfig();
 }
@@ -97,6 +98,9 @@ void CMainWindow::updateConfig()
 void CMainWindow::updateConfig(const std::string str)
 {
 	m_document->setConfig(str);
+
+	auto config = m_document->config();
+	m_ui->m_configWidget->setConfig(config);
 	updateRenderMapFromConfig();
 }
 

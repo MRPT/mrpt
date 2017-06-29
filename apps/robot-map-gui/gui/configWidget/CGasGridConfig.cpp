@@ -6,43 +6,29 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
-#pragma once
-#include <QMainWindow>
-
-#include <memory>
-
-#include <mrpt/opengl/CSetOfObjects.h>
+#include "CGasGridConfig.h"
+#include "ui_CGasGridConfig.h"
+#include "TypeOfConfig.h"
 
 
-namespace Ui
+CGasGridConfig::CGasGridConfig(QWidget *parent)
+	: CBaseConfig(parent)
+	, m_ui(std::make_unique<Ui::CGasGridConfig>())
 {
-class CMainWindow;
+	m_ui->setupUi(this);
 }
-class CGlWidget;
-class CDocument;
-class CObservationTreeModel;
-class QTreeWidgetItem;
 
-class CMainWindow : public QMainWindow
+CGasGridConfig::~CGasGridConfig()
 {
-	Q_OBJECT
 
-public:
-	CMainWindow(QWidget *parent = 0);
-	virtual ~CMainWindow();
+}
 
-private slots:
-	void openMap();
-	void itemClicked(const QModelIndex &index);
-	void updateConfig();
-	void updateConfig(const std::string str);
+const QString CGasGridConfig::getName()
+{
+	return QString::fromStdString(typeToName(TypeOfConfig::GasGrid));
+}
 
-	void addMap(const std::string name);
-private:
-	void updateRenderMapFromConfig();
-
-	CDocument *m_document;
-	CObservationTreeModel *m_model;
-
-	std::unique_ptr<Ui::CMainWindow> m_ui;
-};
+void CGasGridConfig::updateConfiguration(mrpt::maps::TMetricMapInitializer *options)
+{
+	Q_UNUSED(options);
+}

@@ -37,77 +37,106 @@ void CDocument::setListOfMaps(TSetOfMetricMapInitializers &mapCfg)
 {
 	m_metricmap.setListOfMaps( &mapCfg );
 	m_metricmap.loadFromProbabilisticPosesAndObservations(m_simplemap);
+
+	m_typeConfigs.clear();
+	m_typeConfigs.emplace(TypeOfConfig::PointsMap, std::vector<MetricPolyPtr>());
+	m_typeConfigs.emplace(TypeOfConfig::Occupancy, std::vector<MetricPolyPtr>());
+	m_typeConfigs.emplace(TypeOfConfig::Landmarks, std::vector<MetricPolyPtr>());
+	m_typeConfigs.emplace(TypeOfConfig::Beacon, std::vector<MetricPolyPtr>());
+	m_typeConfigs.emplace(TypeOfConfig::GasGrid, std::vector<MetricPolyPtr>());
+
+
+	for (auto iter = m_metricmap.begin(); iter != m_metricmap.end(); ++iter)
+	{
+		TypeOfConfig type = TypeOfConfig::None;
+		{
+			CSimplePointsMap::Ptr ptr = std::dynamic_pointer_cast<CSimplePointsMap>(iter->get_ptr());
+			if (ptr.get())
+				type = TypeOfConfig::PointsMap;
+
+		}
+		if (type == TypeOfConfig::None)
+		{
+			COccupancyGridMap2D::Ptr ptr = std::dynamic_pointer_cast<COccupancyGridMap2D>(iter->get_ptr());
+			if (ptr.get())
+				type = TypeOfConfig::Occupancy;
+		}
+		if (type == TypeOfConfig::None)
+		{
+			CGasConcentrationGridMap2D::Ptr ptr = std::dynamic_pointer_cast<CGasConcentrationGridMap2D>(iter->get_ptr());
+			if (ptr.get())
+				type = TypeOfConfig::GasGrid;
+		}
+		if (type == TypeOfConfig::None)
+		{
+			CBeaconMap::Ptr ptr = std::dynamic_pointer_cast<CBeaconMap>(iter->get_ptr());
+			if (ptr.get())
+				type = TypeOfConfig::Beacon;
+		}
+		if (type == TypeOfConfig::None)
+		{
+			CLandmarksMap::Ptr ptr = std::dynamic_pointer_cast<CLandmarksMap>(iter->get_ptr());
+			if (ptr.get())
+				type = TypeOfConfig::Landmarks;
+		}
+		if (type != TypeOfConfig::None)
+		{
+			m_typeConfigs.find(type)->second.push_back(iter->get_ptr());
+		}
+	}
 }
 
 void CDocument::setConfig(const std::string &config)
 {
 	TSetOfMetricMapInitializers mapCfg;
 	mapCfg.loadFromConfigFile( CConfigFile(config), METRIC_MAP_CONFIG_SECTION);
-
-	m_metricmap.setListOfMaps( &mapCfg );
-	m_metricmap.loadFromProbabilisticPosesAndObservations(m_simplemap);
+	setListOfMaps(mapCfg);
 }
 
-const std::map<std::string, CSetOfObjects::Ptr> CDocument::renderizableMaps() const
+const RenderizableMaps CDocument::renderizableMaps()
 {
-	std::map<std::string, CSetOfObjects::Ptr> renderizable;
+	RenderizableMaps renderizable;
 
-	{
-		CSimplePointsMap::Ptr ptr = m_metricmap.getMapByClass<CSimplePointsMap>();
-		if (ptr.get())
-		{
-			CSetOfObjects::Ptr obj = CSetOfObjects::Create();
-			ptr->getAs3DObject(obj);
-			renderizable.emplace("Points map", obj);
-		}
-	}
-	{
-		COccupancyGridMap2D::Ptr ptr = m_metricmap.getMapByClass<COccupancyGridMap2D>();
-		if (ptr.get())
-		{
-			CSetOfObjects::Ptr obj = CSetOfObjects::Create();
-			ptr->getAs3DObject(obj);
-			renderizable.emplace("Occupancy grid", obj);
-
-			CFileOutputStream f("/home/lisgein/tmp/test.ini", false);
-			ptr->insertionOptions.dumpToTextStream(f);
-			ptr->likelihoodOptions.dumpToTextStream(f);
-		}
-	}
-	{
-		CGasConcentrationGridMap2D::Ptr ptr = m_metricmap.getMapByClass<CGasConcentrationGridMap2D>();
-		if (ptr.get())
-		{
-			CSetOfObjects::Ptr obj = CSetOfObjects::Create();
-			ptr->getAs3DObject(obj);
-			renderizable.emplace("Gas concentration grid", obj);
-		}
-	}
-	{
-		CBeaconMap::Ptr ptr = m_metricmap.getMapByClass<CBeaconMap>();
-		if (ptr.get())
-		{
-			CSetOfObjects::Ptr obj = CSetOfObjects::Create();
-			ptr->getAs3DObject(obj);
-			renderizable.emplace("Beacon", obj);
-		}
-	}
-	{
-		CLandmarksMap::Ptr ptr = m_metricmap.getMapByClass<CLandmarksMap>();
-		if (ptr.get())
-		{
-			CSetOfObjects::Ptr obj = CSetOfObjects::Create();
-			ptr->getAs3DObject(obj);
-			renderizable.emplace("Landmarks", obj);
-		}
-	}
-
-
-
+	addMapToRenderizableMaps(TypeOfConfig::PointsMap, renderizable);
+	addMapToRenderizableMaps(TypeOfConfig::Occupancy, renderizable);
+	addMapToRenderizableMaps(TypeOfConfig::Landmarks, renderizable);
+	addMapToRenderizableMaps(TypeOfConfig::Beacon, renderizable);
+	//addMapToRenderizableMaps(TypeOfConfig::GasGrid, renderizable);
 	return renderizable;
 }
 
 const CSimpleMap &CDocument::simplemap() const
 {
 	return m_simplemap;
+}
+
+const CMultiMetricMap::TListMaps &CDocument::config() const
+{
+	return m_metricmap.maps;
+}
+
+const TypeConfig &CDocument::typeConfig() const
+{
+	return m_typeConfigs;
+}
+
+void CDocument::addMapToRenderizableMaps(TypeOfConfig type, RenderizableMaps &renderMaps)
+{
+	auto iter = m_typeConfigs.find(type);
+	if (iter != m_typeConfigs.end())
+	{
+		std::string name = typeToName(type);
+		int index = 0;
+		for (auto &map: iter->second)
+		{
+			CMetricMap::Ptr ptr = std::dynamic_pointer_cast<CMetricMap>(map.get_ptr());
+			if (ptr.get())
+			{
+				CSetOfObjects::Ptr obj = CSetOfObjects::Create();
+				ptr->getAs3DObject(obj);
+				renderMaps.emplace(name + std::to_string(index), obj);
+			}
+			++index;
+		}
+	}
 }

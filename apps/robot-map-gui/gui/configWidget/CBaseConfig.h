@@ -19,10 +19,10 @@ namespace utils {class CLoadableOptions;}
 class CBaseConfig: public QWidget
 {
 public:
-	CBaseConfig(QWidget *parent = nullptr);
+	CBaseConfig(QWidget *parent);
 	virtual ~CBaseConfig() = default;
 
-	virtual const std::string getName() = 0;
+	virtual const QString getName() = 0;
 	virtual void updateConfiguration(mrpt::maps::TMetricMapInitializer *options) = 0;
 };
 

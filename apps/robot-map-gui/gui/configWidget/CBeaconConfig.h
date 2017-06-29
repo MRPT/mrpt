@@ -19,10 +19,10 @@ class CBeaconConfig;
 class CBeaconConfig: public CBaseConfig
 {
 public:
-	CBeaconConfig(QWidget *parent = nullptr);
+	CBeaconConfig(QWidget *parent);
 	virtual ~CBeaconConfig();
 	virtual void updateConfiguration(mrpt::maps::TMetricMapInitializer *options) override;
-	virtual const std::string getName() override;
+	virtual const QString getName() override;
 
 private:
 	std::unique_ptr<Ui::CBeaconConfig> m_ui;

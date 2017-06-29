@@ -14,6 +14,13 @@
 #include "mrpt/opengl/CRenderizable.h"
 #include "mrpt/utils/CConfigFile.h"
 
+#include "gui/configWidget/CConfigWidget.h"
+#include "TypeOfConfig.h"
+
+
+typedef mrpt::utils::poly_ptr_ptr<mrpt::maps::CMetricMap::Ptr> MetricPolyPtr;
+typedef std::map<std::string, mrpt::opengl::CSetOfObjects::Ptr> RenderizableMaps;
+typedef std::map<TypeOfConfig, std::vector<MetricPolyPtr> > TypeConfig;
 
 class CDocument
 {
@@ -24,10 +31,19 @@ public:
 	void setListOfMaps(mrpt::maps::TSetOfMetricMapInitializers &mapCfg);
 	void setConfig(const std::string& config);
 
-	const std::map<std::string, mrpt::opengl::CSetOfObjects::Ptr> renderizableMaps() const;
+	const RenderizableMaps renderizableMaps();
 
 	const mrpt::maps::CSimpleMap &simplemap() const;
+	const mrpt::maps::CMultiMetricMap::TListMaps &config() const;
+
+
+	const TypeConfig& typeConfig() const;
+
+
 private:
+	void addMapToRenderizableMaps(TypeOfConfig type, RenderizableMaps& renderMaps);
+
 	mrpt::maps::CSimpleMap m_simplemap;
 	mrpt::maps::CMultiMetricMap m_metricmap;
+	TypeConfig m_typeConfigs;
 };

@@ -7,42 +7,36 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 #pragma once
-#include <QMainWindow>
-
-#include <memory>
-
-#include <mrpt/opengl/CSetOfObjects.h>
+#include <string>
 
 
-namespace Ui
+enum TypeOfConfig
 {
-class CMainWindow;
-}
-class CGlWidget;
-class CDocument;
-class CObservationTreeModel;
-class QTreeWidgetItem;
-
-class CMainWindow : public QMainWindow
-{
-	Q_OBJECT
-
-public:
-	CMainWindow(QWidget *parent = 0);
-	virtual ~CMainWindow();
-
-private slots:
-	void openMap();
-	void itemClicked(const QModelIndex &index);
-	void updateConfig();
-	void updateConfig(const std::string str);
-
-	void addMap(const std::string name);
-private:
-	void updateRenderMapFromConfig();
-
-	CDocument *m_document;
-	CObservationTreeModel *m_model;
-
-	std::unique_ptr<Ui::CMainWindow> m_ui;
+	None = -1,
+	General = 0,
+	PointsMap = 1,
+	Occupancy = 2,
+	Landmarks = 3,
+	Beacon = 4,
+	GasGrid = 5
 };
+
+inline std::string typeToName(TypeOfConfig type)
+{
+	switch (type) {
+	case PointsMap:
+		return "pointsMap";
+	case Occupancy:
+		return "occupancyGrid";
+	case Landmarks:
+		return "landmarksMap";
+	case Beacon:
+		return "beaconMap";
+	case GasGrid:
+		return "gasGrid";
+	default:
+		break;
+	}
+
+	return "";
+}

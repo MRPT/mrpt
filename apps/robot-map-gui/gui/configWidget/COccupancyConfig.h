@@ -22,10 +22,10 @@ namespace utils{class CFileOutputStream;}
 class COccupancyConfig: public CBaseConfig
 {
 public:
-	COccupancyConfig(QWidget *parent = nullptr);
+	COccupancyConfig(QWidget *parent);
 	virtual ~COccupancyConfig();
 
-	virtual const std::string getName() override;
+	virtual const QString getName() override;
 	virtual void updateConfiguration(mrpt::maps::TMetricMapInitializer *options) override;
 private:
 	std::unique_ptr<Ui::COccupancyConfig> m_ui;
