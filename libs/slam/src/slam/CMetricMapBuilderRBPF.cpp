@@ -255,8 +255,7 @@ void  CMetricMapBuilderRBPF::initialize(
 		const CSimpleMap &initialMap,
 		const CPosePDF  *x0 )
 {
-	// Enter critical section (updating map)
-	enterCriticalSection();
+	mrpt::synch::CCriticalSectionLocker csl(&critZoneChangingMap); // Enter critical section (updating map)
 
 	MRPT_LOG_INFO_STREAM( "[initialize] Called with " << initialMap.size() << " nodes in fixed map"); 
 
@@ -276,8 +275,6 @@ void  CMetricMapBuilderRBPF::initialize(
 	// Clear maps for each particle & set pose:
 	mapPDF.clear(initialMap,curPose);
 
-	// Leaving critical section (updating map)
-	leaveCriticalSection();
 }
 
 
