@@ -8,7 +8,6 @@
    +---------------------------------------------------------------------------+ */
 #include "CSelectType.h"
 #include "ui_CSelectType.h"
-#include "CConfigWidget.h"
 
 #include <QListWidget>
 
@@ -19,11 +18,11 @@ CSelectType::CSelectType(QWidget *parent)
 {
 	m_ui->setupUi(this);
 
-	addItem(tr("Points Map"), CConfigWidget::PointsMap);
-	addItem(tr("Occupancy"), CConfigWidget::Occupancy);
-	addItem(tr("Landmarks"), CConfigWidget::Landmarks);
-	addItem(tr("Beacon"), CConfigWidget::Beacon);
-	addItem(tr("GasGrid"), CConfigWidget::GasGrid);
+	addItem(tr("Points Map"), TypeOfConfig::PointsMap);
+	addItem(tr("Occupancy"), TypeOfConfig::Occupancy);
+	addItem(tr("Landmarks"), TypeOfConfig::Landmarks);
+	addItem(tr("Beacon"), TypeOfConfig::Beacon);
+	addItem(tr("GasGrid"), TypeOfConfig::GasGrid);
 }
 
 CSelectType::~CSelectType()
@@ -40,7 +39,7 @@ int CSelectType::selectedItem() const
 	return item->data(Qt::UserRole).toInt();
 }
 
-void CSelectType::addItem(const QString &name, CConfigWidget::TypeOfConfig type)
+void CSelectType::addItem(const QString &name, TypeOfConfig type)
 {
 	QListWidgetItem *item = new QListWidgetItem(name, m_ui->m_typeList);
 	item->setData(Qt::UserRole, type);

@@ -8,6 +8,7 @@
    +---------------------------------------------------------------------------+ */
 #include "CPointsConfig.h"
 #include "ui_CPointsConfig.h"
+#include "TypeOfConfig.h"
 
 #include <mrpt/maps/CSimplePointsMap.h>
 
@@ -25,9 +26,9 @@ CPointsConfig::~CPointsConfig()
 
 }
 
-const std::string CPointsConfig::getName()
+const QString CPointsConfig::getName()
 {
-	return "pointsMap";
+	return QString::fromStdString(typeToName(TypeOfConfig::PointsMap));
 }
 
 void CPointsConfig::updateConfiguration(mrpt::maps::TMetricMapInitializer *options)

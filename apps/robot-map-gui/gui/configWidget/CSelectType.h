@@ -11,7 +11,7 @@
 
 #include <memory>
 
-#include "CConfigWidget.h"
+#include "TypeOfConfig.h"
 
 
 class QListWidget;
@@ -29,7 +29,7 @@ public:
 	int selectedItem() const;
 
 private:
-	void addItem(const QString &name, CConfigWidget::TypeOfConfig type);
+	void addItem(const QString &name, TypeOfConfig type);
 
 	std::unique_ptr<Ui::CSelectType> m_ui;
 };

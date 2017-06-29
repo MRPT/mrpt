@@ -17,7 +17,7 @@
 class CGlWidget : public QGLWidget
 {
 public:
-	CGlWidget(QWidget* parent=nullptr);
+	CGlWidget(QWidget* parent);
 	void fillMap(const mrpt::opengl::CSetOfObjects::Ptr &renderizableMap);
 	void setSelected(const mrpt::math::TPose3D &pose);
 

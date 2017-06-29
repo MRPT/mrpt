@@ -8,6 +8,7 @@
    +---------------------------------------------------------------------------+ */
 #include "COccupancyConfig.h"
 #include "ui_COccupancyConfig.h"
+#include "TypeOfConfig.h"
 
 #include <mrpt/utils/CFileOutputStream.h>
 
@@ -29,9 +30,9 @@ COccupancyConfig::~COccupancyConfig()
 
 }
 
-const std::string COccupancyConfig::getName()
+const QString COccupancyConfig::getName()
 {
-	return "occupancyGrid";
+	return QString::fromStdString(typeToName(TypeOfConfig::Occupancy));
 }
 
 void COccupancyConfig::updateConfiguration(TMetricMapInitializer *options)

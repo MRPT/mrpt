@@ -7,42 +7,24 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 #pragma once
-#include <QMainWindow>
+#include "CBaseConfig.h"
 
 #include <memory>
-
-#include <mrpt/opengl/CSetOfObjects.h>
 
 
 namespace Ui
 {
-class CMainWindow;
+class CGasGridConfig;
 }
-class CGlWidget;
-class CDocument;
-class CObservationTreeModel;
-class QTreeWidgetItem;
-
-class CMainWindow : public QMainWindow
+class CGasGridConfig: public CBaseConfig
 {
-	Q_OBJECT
-
 public:
-	CMainWindow(QWidget *parent = 0);
-	virtual ~CMainWindow();
+	CGasGridConfig(QWidget *parent);
+	virtual ~CGasGridConfig();
 
-private slots:
-	void openMap();
-	void itemClicked(const QModelIndex &index);
-	void updateConfig();
-	void updateConfig(const std::string str);
+	virtual const QString getName() override;
+	virtual void updateConfiguration(mrpt::maps::TMetricMapInitializer *options) override;
 
-	void addMap(const std::string name);
 private:
-	void updateRenderMapFromConfig();
-
-	CDocument *m_document;
-	CObservationTreeModel *m_model;
-
-	std::unique_ptr<Ui::CMainWindow> m_ui;
+	std::unique_ptr<Ui::CGasGridConfig> m_ui;
 };

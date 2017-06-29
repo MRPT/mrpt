@@ -6,43 +6,30 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
-#pragma once
-#include <QMainWindow>
-
-#include <memory>
-
-#include <mrpt/opengl/CSetOfObjects.h>
+#include "CLandmarksConfig.h"
+#include "ui_CLandmarksConfig.h"
+#include "TypeOfConfig.h"
 
 
-namespace Ui
+CLandmarksConfig::CLandmarksConfig(QWidget *parent)
+	: CBaseConfig(parent)
+	, m_ui(std::make_unique<Ui::CLandmarksConfig>())
 {
-class CMainWindow;
+	m_ui->setupUi(this);
 }
-class CGlWidget;
-class CDocument;
-class CObservationTreeModel;
-class QTreeWidgetItem;
 
-class CMainWindow : public QMainWindow
+
+CLandmarksConfig::~CLandmarksConfig()
 {
-	Q_OBJECT
 
-public:
-	CMainWindow(QWidget *parent = 0);
-	virtual ~CMainWindow();
+}
 
-private slots:
-	void openMap();
-	void itemClicked(const QModelIndex &index);
-	void updateConfig();
-	void updateConfig(const std::string str);
+const QString CLandmarksConfig::getName()
+{
+	return QString::fromStdString(typeToName(TypeOfConfig::Landmarks));
+}
 
-	void addMap(const std::string name);
-private:
-	void updateRenderMapFromConfig();
-
-	CDocument *m_document;
-	CObservationTreeModel *m_model;
-
-	std::unique_ptr<Ui::CMainWindow> m_ui;
-};
+void CLandmarksConfig::updateConfiguration(mrpt::maps::TMetricMapInitializer *options)
+{
+	Q_UNUSED(options);
+}

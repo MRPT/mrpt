@@ -8,6 +8,7 @@
    +---------------------------------------------------------------------------+ */
 #include "CBeaconConfig.h"
 #include "ui_CBeaconConfig.h"
+#include "TypeOfConfig.h"
 
 #include <mrpt/maps/CBeaconMap.h>
 
@@ -46,7 +47,7 @@ void CBeaconConfig::updateConfiguration(mrpt::maps::TMetricMapInitializer *optio
 	mapDefination->insertionOpts.SOG_separationConstant = m_ui->SOG_separationConstant->value();
 }
 
-const std::string CBeaconConfig::getName()
+const QString CBeaconConfig::getName()
 {
-	return "beaconMap";
+	return QString::fromStdString(typeToName(TypeOfConfig::Beacon));
 }
