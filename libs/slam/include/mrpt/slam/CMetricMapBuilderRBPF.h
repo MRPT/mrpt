@@ -104,9 +104,9 @@ of type CMetricMapBuilderRBPF  */
 		/** Initialize the method, starting with a known location PDF "x0" 
 		  * (or set to NULL to use the last keyframe in the simplemap) and a given fixed, past map. */
 		void  initialize(
-			const mrpt::maps::CSimpleMap		&initialMap  = mrpt::maps::CSimpleMap(),
-			mrpt::poses::CPosePDF					*x0 = NULL
-			);
+			const mrpt::maps::CSimpleMap  &initialMap  = mrpt::maps::CSimpleMap(),
+			const mrpt::poses::CPosePDF   *x0 = NULL
+			) MRPT_OVERRIDE;
 
 		/** Clear all elements of the maps.
 		  */

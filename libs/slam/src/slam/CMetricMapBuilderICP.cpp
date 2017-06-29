@@ -437,7 +437,7 @@ CPose3DPDFPtr CMetricMapBuilderICP::getCurrentPoseEstimation() const
   ---------------------------------------------------------------*/
 void  CMetricMapBuilderICP::initialize(
 	const CSimpleMap  &initialMap,
-	CPosePDF					*x0 )
+	const CPosePDF *x0 )
 {
 	MRPT_START
 
