@@ -252,8 +252,8 @@ void  CMetricMapBuilderRBPF::processActionObservation(
 					initialize
   ---------------------------------------------------------------*/
 void  CMetricMapBuilderRBPF::initialize(
-		const CSimpleMap		&initialMap,
-		CPosePDF					*x0 )
+		const CSimpleMap &initialMap,
+		const CPosePDF  *x0 )
 {
 	// Enter critical section (updating map)
 	enterCriticalSection();
