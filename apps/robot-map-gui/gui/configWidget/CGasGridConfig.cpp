@@ -59,6 +59,11 @@ void CGasGridConfig::updateConfiguration(mrpt::maps::TMetricMapInitializer *opti
 	mapDefination->insertionOpts.default_wind_speed = m_ui->default_wind_speed->value();
 }
 
+TypeOfConfig CGasGridConfig::type() const
+{
+	return TypeOfConfig::GasGrid;
+}
+
 void CGasGridConfig::setCreationOpt(float min_x, float max_x, float min_y, float max_y, float resolution)
 {
 	m_ui->min_x->setValue(min_x);

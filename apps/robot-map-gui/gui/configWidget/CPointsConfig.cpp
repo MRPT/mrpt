@@ -51,8 +51,11 @@ void CPointsConfig::updateConfiguration(mrpt::maps::TMetricMapInitializer *optio
 	mapDefination->insertionOpts.horizontalTolerance = m_ui->horizontalTolerance->value();
 	mapDefination->insertionOpts.maxDistForInterpolatePoints = m_ui->maxDistForInterpolatePoints->value();
 	mapDefination->insertionOpts.insertInvalidPoints = m_ui->insertInvalidPoints->isChecked();
+}
 
-
+TypeOfConfig CPointsConfig::type() const
+{
+	return TypeOfConfig::PointsMap;
 }
 
 void CPointsConfig::setInsertOpt(const mrpt::maps::CPointsMap::TInsertionOptions &insertOpt)

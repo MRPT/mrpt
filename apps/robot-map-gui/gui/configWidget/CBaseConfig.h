@@ -10,6 +10,8 @@
 #pragma once
 #include <QWidget>
 
+#include "TypeOfConfig.h"
+
 
 namespace mrpt {
 namespace maps {class TMapGenericParams; class TMetricMapInitializer;}
@@ -24,5 +26,6 @@ public:
 
 	virtual const QString getName() = 0;
 	virtual void updateConfiguration(mrpt::maps::TMetricMapInitializer *options) = 0;
+	virtual TypeOfConfig type() const = 0;
 };
 

@@ -7,6 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 #pragma once
+
 #include "CBaseConfig.h"
 
 #include <memory>
@@ -26,9 +27,11 @@ public:
 
 	virtual void updateConfiguration(mrpt::maps::TMetricMapInitializer *options) override;
 	virtual const QString getName() override;
+	virtual TypeOfConfig type() const override;
 
 	void setInsertOpt(const mrpt::maps::CBeaconMap::TInsertionOptions &insertOpt = mrpt::maps::CBeaconMap::TInsertionOptions());
 	void setLikelihoodOpt(const mrpt::maps::CBeaconMap::TLikelihoodOptions &likelihoodOpt = mrpt::maps::CBeaconMap::TLikelihoodOptions());
+
 
 private:
 	std::unique_ptr<Ui::CBeaconConfig> m_ui;

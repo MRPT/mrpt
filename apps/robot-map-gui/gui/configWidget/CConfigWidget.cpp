@@ -115,7 +115,25 @@ void CConfigWidget::addMap()
 
 void CConfigWidget::removeMap()
 {
+	int currentRow = m_ui->m_config->currentRow();
+	if (currentRow <= 0)
+		return;
 
+	QWidget * w = m_ui->stackedWidget->widget(currentRow);
+	assert(w);
+
+	CBaseConfig *base = dynamic_cast<CBaseConfig *>(w);
+	assert(base);
+
+	TypeOfConfig type = base->type();
+
+	auto it = m_configs.find(type);
+	if (it != m_configs.end())
+	{
+		m_configs.erase(it);
+		m_ui->m_config->takeItem(m_ui->m_config->currentRow());
+		emit removedMap();
+	}
 }
 
 void CConfigWidget::currentConfigChanged(QListWidgetItem *current, QListWidgetItem */*previous*/)
