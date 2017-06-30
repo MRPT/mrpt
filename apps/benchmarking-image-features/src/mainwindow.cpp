@@ -667,6 +667,35 @@ void MainWindow::on_detector_choose(int choice)
         param5->setVisible(false);
         param5_edit->setVisible(false);
     }
+    else if (choice == 10)
+    {
+        param1->setText("Descriptor Size: ");
+        param2->setText("Descriptor Channels: ");
+        param3->setText("Threshold: ");
+        param4->setText("nOctaves: ");
+        param5->setText("nOctave Layers");
+        param1_edit->setText("0");
+        param2_edit->setText("3");
+        param3_edit->setText("0.001");
+        param4_edit->setText("4");
+        param5_edit->setText("4");
+
+    }
+    else if (choice == 11)
+    {
+        param1->setText("Scale: ");
+        param4->setText("nOctaves: ");
+        param1_edit->setText("2");
+        param2_edit->setText("1");
+
+        param3->setVisible(false);
+        param4->setVisible(false);
+        param5->setVisible(false);
+        param3_edit->setVisible(false);
+        param4_edit->setVisible(false);
+        param5_edit->setVisible(false);
+
+    }
     else
     {
         makeAllDetectorParamsVisible(false);
@@ -904,6 +933,35 @@ void MainWindow::fillDetectorInfo()
         fext.options.ORBOptions.scale_factor = ORB_opts.scale_factor;
 
     }
+    else if(detector_selected == 10) // AKAZE Feature detector
+    {
+        fext.options.featsType = featAKAZE;
+
+        AKAZE_opts.descriptor_size = param1_edit->text().toInt();
+        AKAZE_opts.descriptor_channels = param2_edit->text().toInt();
+        AKAZE_opts.threshold = param3_edit->text().toFloat();
+        AKAZE_opts.nOctaves = param4_edit->text().toInt();
+        AKAZE_opts.nOctaveLayers = param5_edit->text().toInt();
+
+        fext.options.AKAZEOptions.descriptor_size = AKAZE_opts.descriptor_size;
+        fext.options.AKAZEOptions.descriptor_channels = AKAZE_opts.descriptor_channels;
+        fext.options.AKAZEOptions.threshold = AKAZE_opts.threshold;
+        fext.options.AKAZEOptions.nOctaves = AKAZE_opts.nOctaves;
+        fext.options.AKAZEOptions.nOctaveLayers = AKAZE_opts.nOctaveLayers;
+
+    }
+    else if(detector_selected == 11) // AKAZE Feature detector
+    {
+        fext.options.featsType = featLSD;
+
+        LSD_opts.scale = param1_edit->text().toInt();
+        LSD_opts.nOctaves = param2_edit->text().toInt();
+
+
+        fext.options.LSDOptions.scale = LSD_opts.scale;
+        fext.options.LSDOptions.nOctaves = LSD_opts.nOctaves;
+
+    }
 }
 
 void MainWindow::fillDescriptorInfo()
@@ -1037,6 +1095,7 @@ void MainWindow::on_detector_button_clicked()
             }
         }
     }
+    //cout << "in detector" << endl;
 
     // Feature Extraction Starts here
     fillDetectorInfo();
@@ -1045,8 +1104,10 @@ void MainWindow::on_detector_button_clicked()
     featsImage1.clear();
     fext.detectFeatures(img1, featsImage1, 0, numFeats);
     //save to file
+    cout << "before saving to file" << endl;
     featsImage1.saveToTextFile("./KeyPoints1.txt");
 
+    cout << "after saving to file" << endl;
     cvImg1 = cv::cvarrToMat(img1.getAs<IplImage>());
     // Drawing a circle around corners for image 1
     //C++: void circle(Mat& img, Point center, int radius, const Scalar& color, int thickness=1, int lineType=8, int shift=0)
@@ -1056,6 +1117,7 @@ void MainWindow::on_detector_button_clicked()
         int temp_y = (int) featsImage1.getFeatureY(i);
         circle(cvImg1, Point(temp_x, temp_y), 5, Scalar(0,255,0), CIRCLE_THICKNESS, 8, 0);
     }
+    drawLineLSD(cvImg1);
 
 
     // converting the cv::Mat to a QImage and changing the resolution of the output images
@@ -1084,6 +1146,7 @@ void MainWindow::on_detector_button_clicked()
             int temp_y = (int) featsImage2.getFeatureY(i);
             circle(cvImg2, Point(temp_x, temp_y), 5, Scalar(0,255,0), CIRCLE_THICKNESS, 8, 0);
         }
+        drawLineLSD(cvImg2);
 
         cv::Mat temp2(cvImg2.cols, cvImg2.rows, cvImg2.type());
         cvtColor(cvImg2, temp2, CV_BGR2RGB);
@@ -1907,7 +1970,24 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
 
 }
 
-
+void MainWindow::drawLineLSD(Mat img)
+{
+    if(detector_selected == 11)
+    {
+        for (int i = 0; i < featsImage1.size(); i++)
+        {
+            float temp_x1 = featsImage1.getByID(i).get()->x2[0];
+            float temp_x2 = featsImage1.getByID(i).get()->x2[1];
+            float temp_y1 = featsImage1.getByID(i).get()->y2[0];
+            float temp_y2 = featsImage1.getByID(i).get()->y2[1];
+            /* get a random color */
+            int R = ( rand() % (int) ( 255 + 1 ) );
+            int G = ( rand() % (int) ( 255 + 1 ) );
+            int B = ( rand() % (int) ( 255 + 1 ) );
+            line(img,Point(temp_x1,temp_y1), Point(temp_x2,temp_y2),Scalar(R,G,B), 3);
+        }
+    }
+}
 
 void MainWindow::Mouse_Pressed()
 {
@@ -2016,7 +2096,10 @@ void MainWindow::Mouse_Pressed()
                 int temp_y = (int) featsImage2.getFeatureY(i);
                 circle(cvImg2, Point(temp_x, temp_y), 5, Scalar(0,255,0), CIRCLE_THICKNESS, 8, 0);
             }
+            drawLineLSD(cvImg2);
+
             circle(cvImg2, Point(featsImage2.getFeatureX(temp_idx), featsImage2.getFeatureY(temp_idx)), 5, Scalar(255,0,0), CIRCLE_THICKNESS, 8, 0);
+
 
             cv::Mat temp2(cvImg2.cols, cvImg2.rows, cvImg2.type());
             cvtColor(cvImg2, temp2, CV_BGR2RGB);
@@ -2108,6 +2191,7 @@ void MainWindow::Mouse_Pressed()
                 int temp_y = (int) featsImage2.getFeatureY(i);
                 circle(cvImg2, Point(temp_x, temp_y), 5, Scalar(0,255,0), CIRCLE_THICKNESS, 8, 0);
             }
+            drawLineLSD(cvImg2);
             circle(cvImg2, Point(featsImage2.getFeatureX(temp_idx), featsImage2.getFeatureY(temp_idx)), 5, Scalar(255,0,0), CIRCLE_THICKNESS, 8, 0);
 
             cv::Mat temp2(cvImg2.cols, cvImg2.rows, cvImg2.type());

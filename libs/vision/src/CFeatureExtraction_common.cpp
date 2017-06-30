@@ -219,6 +219,13 @@ void CFeatureExtraction::detectFeatures(
 			extractFeaturesORB(img, feats, init_ID, nDesiredFeatures, ROI);
 			break;
 
+		case featAKAZE:
+			extractFeaturesAKAZE(img, feats, init_ID, nDesiredFeatures, ROI);
+            break;
+        case featLSD:
+            extractFeaturesLSD(img, feats, init_ID, nDesiredFeatures, ROI);
+            break;
+
 		default:
 			THROW_EXCEPTION("options.method has an invalid value!");
 			break;
@@ -350,11 +357,32 @@ CFeatureExtraction::TOptions::TOptions(const TFeatureType _featsType)
 	PolarImagesOptions.radius = 20;
 
 	// LogPolarImagesOptions
+<<<<<<< 9354ec70dbc397a631a9d1c3eb0c743abf52645b
 	LogPolarImagesOptions.radius = 30;
 	LogPolarImagesOptions.num_angles =
 		16;  // Log-Polar image patch will have dimensions WxH, with:
 	// W=num_angles,  H= rho_scale * log(radius)
 	LogPolarImagesOptions.rho_scale = 5;
+=======
+	LogPolarImagesOptions.radius		= 30;
+	LogPolarImagesOptions.num_angles	= 16; // Log-Polar image patch will have dimensions WxH, with:  W=num_angles,  H= rho_scale * log(radius)
+	LogPolarImagesOptions.rho_scale		= 5;
+
+    // added by Raghavender Sahdev
+	// AKAZEOptions
+	AKAZEOptions.diffusivity  			= 1; // KAZE::DIFF_PM_G2 maps to 1; http://docs.opencv.org/trunk/d3/d61/classcv_1_1KAZE.html
+	AKAZEOptions.nOctaveLayers			= 4;
+	AKAZEOptions.nOctaves				= 4;
+	AKAZEOptions.threshold				= 0.001f;
+	AKAZEOptions.descriptor_channels	= 3;
+	AKAZEOptions.descriptor_size		= 0;
+	AKAZEOptions.descriptor_type		= 5; //AKAZE::DESCRIPTOR_MLDB maps to 5 in open cv; http://docs.opencv.org/trunk/d8/d30/classcv_1_1AKAZE.html
+
+    //LSD Options
+    LSDOptions.scale                    = 2;
+    LSDOptions.nOctaves                 = 1;
+
+>>>>>>> work done from June 27 to June 29: added AKAZE and LSD detectors
 }
 
 /*---------------------------------------------------------------
@@ -413,6 +441,18 @@ void CFeatureExtraction::TOptions::dumpToTextStream(
 	LOADABLEOPTS_DUMP_VAR(LogPolarImagesOptions.num_angles, int)
 	LOADABLEOPTS_DUMP_VAR(LogPolarImagesOptions.rho_scale, double)
 
+	// # added by Raghavender Sahdev
+	LOADABLEOPTS_DUMP_VAR(AKAZEOptions.descriptor_type, int)
+	LOADABLEOPTS_DUMP_VAR(AKAZEOptions.descriptor_size,int)
+	LOADABLEOPTS_DUMP_VAR(AKAZEOptions.descriptor_channels,int)
+	LOADABLEOPTS_DUMP_VAR(AKAZEOptions.threshold,float)
+	LOADABLEOPTS_DUMP_VAR(AKAZEOptions.nOctaves,int)
+	LOADABLEOPTS_DUMP_VAR(AKAZEOptions.nOctaveLayers,int)
+	LOADABLEOPTS_DUMP_VAR(AKAZEOptions.diffusivity,int)
+
+    LOADABLEOPTS_DUMP_VAR(LSDOptions.nOctaves,int)
+    LOADABLEOPTS_DUMP_VAR(LSDOptions.scale,int)
+
 	out.printf("\n");
 }
 
@@ -422,6 +462,7 @@ void CFeatureExtraction::TOptions::dumpToTextStream(
 void CFeatureExtraction::TOptions::loadFromConfigFile(
 	const mrpt::utils::CConfigFileBase& iniFile, const std::string& section)
 {
+<<<<<<< 9354ec70dbc397a631a9d1c3eb0c743abf52645b
 	featsType = iniFile.read_enum(section, "featsType", featsType);
 	MRPT_LOAD_CONFIG_VAR(patchSize, int, iniFile, section)
 	MRPT_LOAD_CONFIG_VAR(FIND_SUBPIXEL, bool, iniFile, section)
@@ -478,4 +519,69 @@ void CFeatureExtraction::TOptions::loadFromConfigFile(
 		LogPolarImagesOptions.num_angles, int, iniFile, section)
 	MRPT_LOAD_CONFIG_VAR(
 		LogPolarImagesOptions.rho_scale, double, iniFile, section)
+=======
+	MRPT_LOAD_CONFIG_VAR_CAST(featsType, int, TFeatureType, iniFile,section)
+	MRPT_LOAD_CONFIG_VAR(patchSize, int,  iniFile, section)
+	MRPT_LOAD_CONFIG_VAR(FIND_SUBPIXEL, bool,  iniFile, section)
+	MRPT_LOAD_CONFIG_VAR(useMask, bool,  iniFile, section)
+	MRPT_LOAD_CONFIG_VAR(addNewFeatures, bool,  iniFile, section)
+
+	//string sect = section;
+	MRPT_LOAD_CONFIG_VAR(harrisOptions.k,double,  iniFile,section)
+	MRPT_LOAD_CONFIG_VAR(harrisOptions.radius,int,  iniFile,section)
+	MRPT_LOAD_CONFIG_VAR(harrisOptions.threshold,float,  iniFile,section)
+	MRPT_LOAD_CONFIG_VAR(harrisOptions.sigma,float,  iniFile,section)
+	MRPT_LOAD_CONFIG_VAR(harrisOptions.min_distance,float,  iniFile,section)
+
+	MRPT_LOAD_CONFIG_VAR(KLTOptions.min_distance,float,  iniFile,section)
+	MRPT_LOAD_CONFIG_VAR(KLTOptions.threshold,float,  iniFile,section)
+	MRPT_LOAD_CONFIG_VAR(KLTOptions.radius,int,  iniFile,section)
+
+	MRPT_LOAD_CONFIG_VAR_CAST(SIFTOptions.implementation,int,TSIFTImplementation, iniFile,section)
+	MRPT_LOAD_CONFIG_VAR(SIFTOptions.threshold,double,  iniFile,section)
+	MRPT_LOAD_CONFIG_VAR(SIFTOptions.edgeThreshold,double,  iniFile,section)
+
+	MRPT_LOAD_CONFIG_VAR(SURFOptions.rotation_invariant,bool,  iniFile,section)
+	MRPT_LOAD_CONFIG_VAR(SURFOptions.hessianThreshold,int,  iniFile,section)
+	MRPT_LOAD_CONFIG_VAR(SURFOptions.nOctaves,int,  iniFile,section)
+	MRPT_LOAD_CONFIG_VAR(SURFOptions.nLayersPerOctave,int,  iniFile,section)
+
+	MRPT_LOAD_CONFIG_VAR(FASTOptions.threshold,int,  iniFile,section)
+	MRPT_LOAD_CONFIG_VAR(FASTOptions.nonmax_suppression,bool,  iniFile,section)
+	MRPT_LOAD_CONFIG_VAR(FASTOptions.min_distance,float,  iniFile,section)
+	MRPT_LOAD_CONFIG_VAR(FASTOptions.use_KLT_response,bool,  iniFile,section)
+
+	MRPT_LOAD_CONFIG_VAR(ORBOptions.extract_patch,bool,  iniFile,section)
+	MRPT_LOAD_CONFIG_VAR(ORBOptions.min_distance,int,  iniFile,section)
+	MRPT_LOAD_CONFIG_VAR(ORBOptions.n_levels,int,  iniFile,section)
+	MRPT_LOAD_CONFIG_VAR(ORBOptions.scale_factor,float,  iniFile,section)
+
+	MRPT_LOAD_CONFIG_VAR(SpinImagesOptions.hist_size_distance,int,  iniFile,section)
+	MRPT_LOAD_CONFIG_VAR(SpinImagesOptions.hist_size_intensity,int,  iniFile,section)
+	MRPT_LOAD_CONFIG_VAR(SpinImagesOptions.radius,int,  iniFile,section)
+	MRPT_LOAD_CONFIG_VAR(SpinImagesOptions.std_dist,float,  iniFile,section)
+	MRPT_LOAD_CONFIG_VAR(SpinImagesOptions.std_intensity,float,  iniFile,section)
+
+	MRPT_LOAD_CONFIG_VAR(PolarImagesOptions.bins_angle,int,  iniFile,section)
+	MRPT_LOAD_CONFIG_VAR(PolarImagesOptions.bins_distance,int,  iniFile,section)
+	MRPT_LOAD_CONFIG_VAR(PolarImagesOptions.radius,int,  iniFile,section)
+
+	MRPT_LOAD_CONFIG_VAR(LogPolarImagesOptions.radius,int,  iniFile,section)
+	MRPT_LOAD_CONFIG_VAR(LogPolarImagesOptions.num_angles,int,  iniFile,section)
+	MRPT_LOAD_CONFIG_VAR(LogPolarImagesOptions.rho_scale,double,  iniFile,section)
+
+		// #added by Raghavender Sahdev
+	MRPT_LOAD_CONFIG_VAR(AKAZEOptions.descriptor_type,int,  iniFile,section)
+	MRPT_LOAD_CONFIG_VAR(AKAZEOptions.descriptor_size,int,  iniFile,section)
+	MRPT_LOAD_CONFIG_VAR(AKAZEOptions.descriptor_channels,int,  iniFile,section)
+	MRPT_LOAD_CONFIG_VAR(AKAZEOptions.threshold,float, iniFile,section)
+	MRPT_LOAD_CONFIG_VAR(AKAZEOptions.nOctaves,int,  iniFile,section)
+    MRPT_LOAD_CONFIG_VAR(AKAZEOptions.nOctaveLayers,int, iniFile,section)
+    MRPT_LOAD_CONFIG_VAR(AKAZEOptions.diffusivity,int,  iniFile,section)
+
+    MRPT_LOAD_CONFIG_VAR(LSDOptions.nOctaves,int, iniFile,section)
+    MRPT_LOAD_CONFIG_VAR(LSDOptions.scale,int,  iniFile,section)
+
+
+>>>>>>> work done from June 27 to June 29: added AKAZE and LSD detectors
 }

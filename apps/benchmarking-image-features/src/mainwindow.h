@@ -215,6 +215,33 @@ public:
         bool extract_patch;
     }ORB_opts;
 
+
+    /*int  	descriptor_type = AKAZE::DESCRIPTOR_MLDB,
+    int  	descriptor_size = 0,
+    int  	descriptor_channels = 3,
+    float  	threshold = 0.001f,
+    int  	nOctaves = 4,
+    int  	nOctaveLayers = 4,
+    int  	diffusivity = KAZE::DIFF_PM_G2
+    */
+
+// not providing option to choose descriptor_type and diffusivity, using default values currently
+    struct AKAZEOptions
+    {
+        //int descriptor_type
+        int  	descriptor_size;
+        int  	descriptor_channels;
+        float  	threshold ;
+        int  	nOctaves;
+        int  	nOctaveLayers;
+        //int  	diffusivity;
+    }AKAZE_opts;
+    struct LSDOptions
+    {
+        int  	scale;
+        int  	nOctaves;
+    }LSD_opts;
+
     //DESCRIPTOR OPTIONS
     struct SpinImageOptions
     {
@@ -295,7 +322,7 @@ public:
 
     int findClosest(double x, double y, double X[], double Y[], int n);
     void computeMinMax(CVectorDouble distances, int &min_idx, double &min_dist, int &max_idx, double &max_dist);
-
+    void drawLineLSD(Mat img);
 
 
 

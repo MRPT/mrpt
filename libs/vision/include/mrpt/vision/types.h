@@ -264,10 +264,49 @@ struct VISION_IMPEXP TStereoSystemParams : public mrpt::utils::CLoadableOptions
 	  */
 	enum TUnc_Prop_Method
 	{
+<<<<<<< 9354ec70dbc397a631a9d1c3eb0c743abf52645b
 		/** Linear propagation of the uncertainty
 		  */
 		Prop_Linear = -1,
 		/** Uncertainty propagation through the Unscented Transformation
+=======
+		/** \addtogroup mrpt_vision_grp
+		  *  @{ */
+		typedef uint64_t TFeatureID;	//!< Definition of a feature ID
+
+		typedef	uint64_t TLandmarkID;   //!< Unique IDs for landmarks
+		typedef uint64_t TCameraPoseID; //!< Unique IDs for camera frames (poses)
+
+		typedef mrpt::aligned_containers<TCameraPoseID,mrpt::poses::CPose3D>::map_t  TFramePosesMap;        //!< A list of camera frames (6D poses) indexed by unique IDs.
+		typedef mrpt::aligned_containers<mrpt::poses::CPose3D>::vector_t             TFramePosesVec;        //!< A list of camera frames (6D poses), which assumes indexes are unique, consecutive IDs.
+
+		typedef std::map<TLandmarkID,mrpt::math::TPoint3D>   TLandmarkLocationsMap; //!< A list of landmarks (3D points) indexed by unique IDs.
+		typedef std::vector<mrpt::math::TPoint3D>            TLandmarkLocationsVec; //!< A list of landmarks (3D points), which assumes indexes are unique, consecutive IDs.
+
+
+		/** Types of features - This means that the point has been detected with this algorithm, which is independent of additional descriptors a feature may also have
+		*/
+		enum TFeatureType
+		{
+			featNotDefined = -1,	//!< Non-defined feature (also used for Occupancy features)
+			featKLT = 0,			//!< Kanade-Lucas-Tomasi feature [SHI'94]
+			featHarris,				//!< Harris border and corner detector [HARRIS]
+			featBCD,				//!< Binary corder detector
+			featSIFT,				//!< Scale Invariant Feature Transform [LOWE'04]
+			featSURF,				//!< Speeded Up Robust Feature [BAY'06]
+			featBeacon,				//!< A especial case: this is not an image feature, but a 2D/3D beacon (used for range-only SLAM from mrpt::maps::CLandmark)
+			featFAST,				//!< FAST feature detector, OpenCV's implementation ("Faster and better: A machine learning approach to corner detection", E. Rosten, R. Porter and T. Drummond, PAMI, 2009).
+			featFASTER9,			//!< FASTER-9 detector, Edward Rosten's libcvd implementation optimized for SSE2.
+			featFASTER10,			//!< FASTER-9 detector, Edward Rosten's libcvd implementation optimized for SSE2.
+			featFASTER12,			//!< FASTER-9 detector, Edward Rosten's libcvd implementation optimized for SSE2.
+			featORB,					//!< ORB detector and descriptor, OpenCV's implementation ("ORB: an efficient alternative to SIFT or SURF", E. Rublee, V. Rabaud, K. Konolige, G. Bradski, ICCV, 2012).
+			// #added by Raghavender Sahdev
+			featAKAZE,           	//!< AKAZE detector, OpenCV's implementation
+			featLSD         		//!< LSD detector, OpenCV's implementation
+		};
+
+		/** The bitwise OR combination of values of TDescriptorType are used in CFeatureExtraction::computeDescriptors to indicate which descriptors are to be computed for features.
+>>>>>>> work done from June 27 to June 29: added AKAZE and LSD detectors
 		  */
 		Prop_UT,
 		/** Uncertainty propagation through the Scaled Unscented Transformation

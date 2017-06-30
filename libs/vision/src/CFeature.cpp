@@ -252,6 +252,7 @@ void CFeature::dumpToTextStream(mrpt::utils::CStream& out) const
 	out.printf("Type:                           ");
 	switch (type)
 	{
+<<<<<<< 9354ec70dbc397a631a9d1c3eb0c743abf52645b
 		case -1:
 			out.printf("Not defined\n");
 			break;
@@ -288,6 +289,21 @@ void CFeature::dumpToTextStream(mrpt::utils::CStream& out) const
 		case 10:
 			out.printf("ORB");
 			break;
+=======
+	case -1: out.printf("Not defined\n"); break;
+	case 0: out.printf("KLT\n"); break;
+	case 1: out.printf("Harris\n"); break;
+	case 2: out.printf("BCD\n"); break;
+	case 3: out.printf("SIFT\n"); break;
+	case 4: out.printf("SURF\n"); break;
+	case 5: out.printf("Beacon\n"); break;
+	case 6: out.printf("FAST\n"); break;
+	case 7: out.printf("FASTER-9\n"); break;
+	case 8: out.printf("FASTER-10\n"); break;
+	case 9: out.printf("FASTER-12\n"); break;
+	case 10:out.printf("ORB\n"); break;
+	case 11:out.printf("AKAZE"); break;
+>>>>>>> work done from June 27 to June 29: added AKAZE and LSD detectors
 	}
 	out.printf("Status:                         ");
 	switch (track_status)

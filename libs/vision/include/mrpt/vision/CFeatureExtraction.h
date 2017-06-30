@@ -129,6 +129,7 @@ class VISION_IMPEXP CFeatureExtraction
 		/** KLT Options */
 		struct VISION_IMPEXP TKLTOptions
 		{
+<<<<<<< 9354ec70dbc397a631a9d1c3eb0c743abf52645b
 			int radius;  // size of the block of pixels used
 			float threshold;  // (default=0.1) for rejecting weak local maxima
 			// (with min_eig < threshold*max(eig_image))
@@ -183,6 +184,173 @@ class VISION_IMPEXP CFeatureExtraction
 				  extract_patch(false)
 			{
 			}
+=======
+		public:
+			enum TSIFTImplementation
+			{
+				LoweBinary = 0,
+				CSBinary,
+				VedaldiBinary,
+				Hess,
+				OpenCV
+			};
+
+
+			/** The set of parameters for all the detectors & descriptor algorithms */
+			struct VISION_IMPEXP TOptions : public utils::CLoadableOptions
+			{
+				/** Initalizer */
+				TOptions(const TFeatureType featsType = featKLT);
+
+				void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) override; // See base docs
+				void dumpToTextStream(mrpt::utils::CStream &out) const override; // See base docs
+
+				/** Type of the extracted features
+				*/
+				TFeatureType featsType;
+
+				/** Size of the patch to extract, or 0 if no patch is desired (default=21).
+				  */
+				unsigned int patchSize;
+
+				/** Whether to use a mask for determining the regions where not to look for keypoints (default=false).
+				  */
+				bool useMask;
+
+				/** Whether to add the found features to the input feature list or clear it before adding them (default=false).
+				  */
+				bool addNewFeatures;
+
+				/** Indicates if subpixel accuracy is desired for the extracted points (only applicable to KLT and Harris features)
+				  */
+				bool FIND_SUBPIXEL;
+
+				/** KLT Options */
+				struct VISION_IMPEXP TKLTOptions
+				{
+					int		radius;			// size of the block of pixels used
+					float	threshold;		// (default=0.1) for rejecting weak local maxima (with min_eig < threshold*max(eig_image))
+					float	min_distance;	// minimum distance between features
+					bool	tile_image;		// splits the image into 8 tiles and search for the best points in all of them (distribute the features over all the image)
+				} KLTOptions;
+
+				/** Harris Options */
+				struct VISION_IMPEXP THarrisOptions
+				{
+					float	threshold;		// (default=0.005) for rejecting weak local maxima (with min_eig < threshold*max(eig_image))
+					float	k;				// k factor for the Harris algorithm
+					float	sigma;			// standard deviation for the gaussian smoothing function
+					int		radius;			// size of the block of pixels used
+					float	min_distance;	// minimum distance between features
+					bool	tile_image;		// splits the image into 8 tiles and search for the best points in all of them (distribute the features over all the image)
+				} harrisOptions;
+
+				/** BCD Options */
+				struct VISION_IMPEXP TBCDOptions
+				{
+				} BCDOptions;
+
+				/** FAST and FASTER Options */
+				struct VISION_IMPEXP TFASTOptions
+				{
+					int 	threshold;  //!< default= 20
+					float	min_distance;	//!< (default=5) minimum distance between features (in pixels)
+					bool	nonmax_suppression;		//!< Default = true
+					bool    use_KLT_response; //!< (default=false) If true, use CImage::KLT_response to compute the response at each point instead of the FAST "standard response".
+				} FASTOptions;
+
+				/** ORB Options */
+				struct VISION_IMPEXP TORBOptions
+				{
+					TORBOptions() : n_levels(8), min_distance(0), scale_factor(1.2f),extract_patch(false) {}
+
+					size_t	n_levels;
+					size_t	min_distance;
+					float	scale_factor;
+					bool	extract_patch;
+				} ORBOptions;
+
+				/** SIFT Options  */
+				struct VISION_IMPEXP TSIFTOptions
+				{
+					TSIFTOptions() : threshold(0.04), edgeThreshold(10) { }
+
+					TSIFTImplementation implementation;  //!< Default: Hess (OpenCV should be preferred, but its nonfree module is not always available by default in all systems)
+					double threshold;  //!< default= 0.04
+					double edgeThreshold; //!< default= 10
+				} SIFTOptions;
+
+				struct VISION_IMPEXP TSURFOptions
+				{
+					TSURFOptions() : rotation_invariant(true),hessianThreshold(600), nOctaves(2), nLayersPerOctave(4) { }
+
+					/** SURF Options
+					  */
+					bool   rotation_invariant; //!< Compute the rotation invariant SURF (dim=128) if set to true (default), or the smaller uSURF otherwise (dim=64)
+					int    hessianThreshold;   //!< Default: 600
+					int    nOctaves;           //!< Default: 2
+					int    nLayersPerOctave;   //!< Default: 4
+				} SURFOptions;
+
+				struct VISION_IMPEXP TSpinImagesOptions
+				{
+					/** SpinImages Options
+					  */
+					unsigned int hist_size_intensity; //!< Number of bins in the "intensity" axis of the 2D histogram (default=10).
+					unsigned int hist_size_distance;  //!< Number of bins in the "distance" axis of the 2D histogram (default=10).
+					float        std_dist;      //!< Standard deviation in "distance", used for the "soft histogram" (default=0.4 pixels)
+					float        std_intensity; //!< Standard deviation in "intensity", used for the "soft histogram" (default=20 units [0,255])
+					unsigned int radius;		//!< Maximum radius of the area of which the histogram is built, in pixel units (default=20 pixels)
+				} SpinImagesOptions;
+
+				/** PolarImagesOptions Options
+				  */
+				struct VISION_IMPEXP TPolarImagesOptions
+				{
+					unsigned int bins_angle;     //!< Number of bins in the "angular" axis of the polar image (default=8).
+					unsigned int bins_distance;  //!< Number of bins in the "distance" axis of the polar image (default=6).
+					unsigned int radius;         //!< Maximum radius of the area of which the polar image is built, in pixel units (default=20 pixels)
+				} PolarImagesOptions;
+
+				/** LogPolarImagesOptions Options
+				  */
+				struct VISION_IMPEXP TLogPolarImagesOptions
+				{
+					unsigned int radius;		//!< Maximum radius of the area of which the log polar image is built, in pixel units (default=30 pixels)
+					unsigned int num_angles;	//!< (default=16) Log-Polar image patch will have dimensions WxH, with:  W=num_angles,  H= rho_scale * log(radius)
+					double rho_scale;			//!< (default=5) Log-Polar image patch will have dimensions WxH, with:  W=num_angles,  H= rho_scale * log(radius)
+				} LogPolarImagesOptions;
+
+				// # added by Raghavender Sahdev
+                /** AKAZEOptions Options
+                 */
+                struct VISION_IMPEXP TAKAZEOptions
+                {
+                    int  	descriptor_type;
+                    int  	descriptor_size;
+                    int  	descriptor_channels;
+                    float  	threshold;
+                    int  	nOctaves;
+                    int  	nOctaveLayers;
+                    int  	diffusivity;
+                } AKAZEOptions;
+
+                /** LSDOptions Options
+				 */
+                struct VISION_IMPEXP LSDOptions
+                {
+                    int  	scale;
+                    int  	nOctaves;
+                } LSDOptions;
+
+			};
+
+			TOptions options;  //!< Set all the parameters of the desired method here before calling "detectFeatures"
+
+			/** Constructor
+			*/
+			CFeatureExtraction();
+>>>>>>> work done from June 27 to June 29: added AKAZE and LSD detectors
 
 			size_t n_levels;
 			size_t min_distance;
@@ -486,6 +654,7 @@ class VISION_IMPEXP CFeatureExtraction
 				unsigned int		nDesiredFeatures = 0) const;
 #endif
 
+<<<<<<< 9354ec70dbc397a631a9d1c3eb0c743abf52645b
 	/** Extract features from the image based on the KLT method.
 	* \param img The image from where to extract the images.
 	* \param feats The list of extracted features.
@@ -641,4 +810,196 @@ class VISION_IMPEXP CFeatureExtraction
 };  // end of class
 }  // end of namespace
 }  // end of namespace
+=======
+			/** Extract features from the image based on the KLT method.
+			* \param img The image from where to extract the images.
+			* \param feats The list of extracted features.
+			* \param nDesiredFeatures Number of features to be extracted. Default: authomatic.
+			*/
+			void  extractFeaturesKLT(
+				const mrpt::utils::CImage		&img,
+				CFeatureList			&feats,
+				unsigned int			init_ID = 0,
+				unsigned int			nDesiredFeatures = 0,
+				const TImageROI			&ROI = TImageROI()) const;
+
+			// ------------------------------------------------------------------------------------
+			//											BCD
+			// ------------------------------------------------------------------------------------
+			/** Extract features from the image based on the BCD method.
+			* \param img The image from where to extract the images.
+			* \param feats The list of extracted features.
+			* \param nDesiredFeatures Number of features to be extracted. Default: authomatic.
+			* \param ROI (op. input) Region of Interest. Default: All the image.
+			*/
+			void  extractFeaturesBCD(
+				const mrpt::utils::CImage 		&img,
+				CFeatureList			&feats,
+				unsigned int			init_ID = 0,
+				unsigned int			nDesiredFeatures = 0,
+				const TImageROI			&ROI = TImageROI()) const;
+
+			// ------------------------------------------------------------------------------------
+			//											SIFT
+			// ------------------------------------------------------------------------------------
+			/** Extract features from the image based on the SIFT method.
+			* \param img The image from where to extract the images.
+			* \param feats The list of extracted features.
+			* \param nDesiredFeatures Number of features to be extracted. Default: authomatic.
+			* \param ROI (op. input) Region of Interest. Default: All the image.
+			*/
+			void  extractFeaturesSIFT(
+				const mrpt::utils::CImage		&img,
+				CFeatureList			&feats,
+				unsigned int			init_ID = 0,
+				unsigned int			nDesiredFeatures = 0,
+				const TImageROI			&ROI = TImageROI()) const;
+
+			// ------------------------------------------------------------------------------------
+			//											ORB
+			// ------------------------------------------------------------------------------------
+			/** Extract features from the image based on the ORB method.
+			* \param img The image from where to extract the images.
+			* \param feats The list of extracted features.
+			* \param nDesiredFeatures Number of features to be extracted. Default: authomatic.
+			*/
+			void  extractFeaturesORB(
+				const mrpt::utils::CImage			&img,
+				CFeatureList			&feats,
+				const unsigned int		init_ID = 0,
+				const unsigned int		nDesiredFeatures = 0,
+				const TImageROI			    & ROI = TImageROI()) const;
+
+
+			// ------------------------------------------------------------------------------------
+			//											SURF
+			// ------------------------------------------------------------------------------------
+			/** Extract features from the image based on the SURF method.
+			* \param img The image from where to extract the images.
+			* \param feats The list of extracted features.
+			* \param nDesiredFeatures Number of features to be extracted. Default: authomatic.
+			*/
+			void  extractFeaturesSURF(
+				const mrpt::utils::CImage		&img,
+				CFeatureList			&feats,
+				unsigned int			init_ID = 0,
+				unsigned int			nDesiredFeatures = 0,
+				const TImageROI			&ROI = TImageROI())  const;
+
+			// ------------------------------------------------------------------------------------
+			//											FAST
+			// ------------------------------------------------------------------------------------
+			/** Extract features from the image based on the FAST method.
+			* \param img The image from where to extract the images.
+			* \param feats The list of extracted features.
+			* \param nDesiredFeatures Number of features to be extracted. Default: authomatic.
+			*/
+			void  extractFeaturesFAST(
+				const mrpt::utils::CImage			&img,
+				CFeatureList			&feats,
+				unsigned int			init_ID = 0,
+				unsigned int			nDesiredFeatures = 0,
+				const TImageROI			    & ROI = TImageROI(),
+				const mrpt::math::CMatrixBool           * mask= nullptr) const;
+
+			/** Edward's "FASTER & Better" detector, N=9,10,12 */
+			void  extractFeaturesFASTER_N(
+				const int               N,
+				const mrpt::utils::CImage			&img,
+				CFeatureList			&feats,
+				unsigned int			init_ID = 0,
+				unsigned int			nDesiredFeatures = 0,
+				const TImageROI			    & ROI = TImageROI()) const;
+
+
+
+			// # added by Raghavender Sahdev
+            //-------------------------------------------------------------------------------------
+            //                               AKAZE
+            //-------------------------------------------------------------------------------------
+            /** Extract features from the image based on the AKAZE method.
+            * \param img The image from where to extract the images.
+            * \param feats The list of extracted features.
+            * \param nDesiredFeatures Number of features to be extracted. Default: authomatic.
+            */
+            void  extractFeaturesAKAZE(
+                    const mrpt::utils::CImage	& inImg,
+                    CFeatureList			    & feats,
+                    unsigned int			    init_ID,
+                    unsigned int			    nDesiredFeatures,
+                    const TImageROI			    & ROI = TImageROI())  const;
+
+            //-------------------------------------------------------------------------------------
+            //                               LSD
+            //-------------------------------------------------------------------------------------
+            /** Extract features from the image based on the LSD method.
+            * \param img The image from where to extract the images.
+            * \param feats The list of extracted features.
+            * \param nDesiredFeatures Number of features to be extracted. Default: authomatic.
+            */
+            void  extractFeaturesLSD(
+                    const mrpt::utils::CImage	& inImg,
+                    CFeatureList			    & feats,
+                    unsigned int			    init_ID,
+                    unsigned int			    nDesiredFeatures,
+                    const TImageROI			    & ROI = TImageROI())  const;
+
+
+			// ------------------------------------------------------------------------------------
+			//								my_scale_space_extrema
+			// ------------------------------------------------------------------------------------
+			/** Computes extrema in the scale space.
+			* \param dog_pyr Pyramid of images.
+			* \param octvs Number of considered octaves.
+			* \param intvls Number of intervales in octaves.
+			*/
+			void* my_scale_space_extrema(
+				CFeatureList &featList, void* dog_pyr,
+				int octvs, int intvls, double contr_thr, int curv_thr,
+				void* storage ) const;
+
+			/** Adjust scale if the image was initially doubled.
+			* \param features The sequence of features.
+			*/
+			void	my_adjust_for_img_dbl( void* features ) const;
+
+			/** Gets the number of times that a point in the image is higher or lower than the surroundings in the image-scale space
+			* \param dog_pyr Pyramid of images.
+			* \param octvs Number of considered octaves.
+			* \param intvls Number of intervales in octaves.
+			* \param row The row of the feature in the original image.
+			* \param col The column of the feature in the original image.
+			* \param nMin [out]: Times that the feature is lower than the surroundings.
+			* \param nMax [out]: Times that the feature is higher than the surroundings.
+			*/
+			void	getTimesExtrema( void* dog_pyr, int octvs, int intvls, float row, float col, unsigned int &nMin, unsigned int &nMax ) const;
+
+			/** Computes the Laplacian value of the feature in the corresponing image in the pyramid.
+			* \param dog_pyr Pyramid of images.
+			* \param octvs Number of considered octaves.
+			* \param intvls Number of intervales in octaves.
+			* \param row The row of the feature in the original image.
+			* \param col The column of the feature in the original image.
+			*/
+			double	getLaplacianValue( void* dog_pyr, int octvs, int intvls, float row, float col ) const;
+
+			/** Append a sequence of openCV features into an MRPT feature list.
+			* \param features The sequence of features.
+			* \param list [in-out] The list of MRPT features.
+			* \param init_ID [in] The initial ID for the new features.
+			*/
+			void	insertCvSeqInCFeatureList( void* features, CFeatureList &list, unsigned int init_ID = 0 ) const;
+
+			/** Converts a sequence of openCV features into an MRPT feature list.
+			* \param features The sequence of features.
+			* \param list [in-out] The list of MRPT features.
+			* \param init_ID [in][optional] The initial ID for the features (default = 0).
+			* \param ROI [in][optional] The initial ID for the features (default = empty ROI -> not used).
+			*/
+			void	convertCvSeqInCFeatureList( void* features, CFeatureList &list, unsigned int init_ID = 0, const TImageROI &ROI = TImageROI() ) const;
+
+		}; // end of class
+	} // end of namespace
+} // end of namespace
+>>>>>>> work done from June 27 to June 29: added AKAZE and LSD detectors
 #endif
