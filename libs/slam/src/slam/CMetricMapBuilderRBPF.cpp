@@ -116,13 +116,13 @@ void  CMetricMapBuilderRBPF::processActionObservation(
 		CActionRobotMovement2DPtr act2D = action.getActionByClass<CActionRobotMovement2D>();
 		if (act3D)
 		{
-			MRPT_LOG_DEBUG("processActionObservation(): Input action is CActionRobotMovement3D");
+			MRPT_LOG_DEBUG_STREAM("processActionObservation(): Input action is CActionRobotMovement3D=" << act3D->poseChange.getMeanVal().asString());
 			odoIncrementSinceLastMapUpdate += act3D->poseChange.getMeanVal();
 			odoIncrementSinceLastLocalization += act3D->poseChange;
 		}
 		else if (act2D)
 		{
-			MRPT_LOG_DEBUG("processActionObservation(): Input action is CActionRobotMovement2D");
+			MRPT_LOG_DEBUG_STREAM("processActionObservation(): Input action is CActionRobotMovement2D=" << act2D->poseChange->getMeanVal().asString());
 			odoIncrementSinceLastMapUpdate += mrpt::poses::CPose3D(act2D->poseChange->getMeanVal());
 			odoIncrementSinceLastLocalization.mean += mrpt::poses::CPose3D(act2D->poseChange->getMeanVal());
 		}
