@@ -32,3 +32,18 @@ void CGasGridConfig::updateConfiguration(mrpt::maps::TMetricMapInitializer *opti
 {
 	Q_UNUSED(options);
 }
+
+void CGasGridConfig::setCreationOpt(float min_x, float max_x, float min_y, float max_y, float resolution)
+{
+
+}
+
+void CGasGridConfig::setInsertOpt(const mrpt::maps::CGasConcentrationGridMap2D::TInsertionOptions &insertOpt)
+{
+
+}
+
+void CGasGridConfig::setMapTypeOpt(const mrpt::maps::CRandomFieldGridMap2D::TMapRepresentation &mapType)
+{
+
+}

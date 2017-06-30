@@ -10,19 +10,15 @@
 #include "ui_CPointsConfig.h"
 #include "TypeOfConfig.h"
 
-#include <mrpt/maps/CSimplePointsMap.h>
 
-/*
-
-
-
-
-*/
 CPointsConfig::CPointsConfig(QWidget *parent)
 	: CBaseConfig(parent)
 	, m_ui(std::make_unique<Ui::CPointsConfig>())
 {
 	m_ui->setupUi(this);
+
+	setInsertOpt();
+	setLikelihoodOpt();
 }
 
 
@@ -56,7 +52,26 @@ void CPointsConfig::updateConfiguration(mrpt::maps::TMetricMapInitializer *optio
 	mapDefination->insertionOpts.maxDistForInterpolatePoints = m_ui->maxDistForInterpolatePoints->value();
 	mapDefination->insertionOpts.insertInvalidPoints = m_ui->insertInvalidPoints->isChecked();
 
-	mapDefination->likelihoodOpts.sigma_dist = m_ui->sigma_dist->value();
-	mapDefination->likelihoodOpts.max_corr_distance = m_ui->max_corr_distance->value();
-	mapDefination->likelihoodOpts.decimation = m_ui->decimation->value();
+
+}
+
+void CPointsConfig::setInsertOpt(const mrpt::maps::CPointsMap::TInsertionOptions &insertOpt)
+{
+	m_ui->minDistBetweenLaserPoints->setValue(insertOpt.minDistBetweenLaserPoints);
+	m_ui->addToExistingPointsMap->setChecked(insertOpt.addToExistingPointsMap);
+	m_ui->also_interpolate->setChecked(insertOpt.also_interpolate);
+	m_ui->disableDeletion->setChecked(insertOpt.disableDeletion);
+	m_ui->fuseWithExisting->setChecked(insertOpt.fuseWithExisting);
+	m_ui->isPlanarMap->setChecked(insertOpt.isPlanarMap);
+	m_ui->horizontalTolerance->setValue(insertOpt.horizontalTolerance);
+	m_ui->maxDistForInterpolatePoints->setValue(insertOpt.maxDistForInterpolatePoints);
+	m_ui->insertInvalidPoints->setChecked(insertOpt.insertInvalidPoints);
+
+}
+
+void CPointsConfig::setLikelihoodOpt(const mrpt::maps::CPointsMap::TLikelihoodOptions &likelihoodOpt)
+{
+	m_ui->sigma_dist->setValue(likelihoodOpt.sigma_dist);
+	m_ui->max_corr_distance->setValue(likelihoodOpt.max_corr_distance);
+	m_ui->decimation->setValue(likelihoodOpt.decimation);
 }

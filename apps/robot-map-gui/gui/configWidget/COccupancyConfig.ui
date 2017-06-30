@@ -17,7 +17,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="generic">
       <attribute name="title">
@@ -222,7 +222,7 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_13">
          <item>
-          <widget class="QDoubleSpinBox" name="mapAltitude_6">
+          <widget class="QDoubleSpinBox" name="resolution">
            <property name="value">
             <double>0.050000000000000</double>
            </property>
@@ -558,11 +558,7 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_14">
          <item>
-          <widget class="QSpinBox" name="likelihoodMethod">
-           <property name="value">
-            <number>4</number>
-           </property>
-          </widget>
+          <widget class="QComboBox" name="likelihoodMethod"/>
          </item>
          <item>
           <widget class="QLabel" name="label_13">

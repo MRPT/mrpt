@@ -11,6 +11,8 @@
 
 #include <memory>
 
+#include <mrpt/maps/CGasConcentrationGridMap2D.h>
+
 
 namespace Ui
 {
@@ -24,6 +26,11 @@ public:
 
 	virtual const QString getName() override;
 	virtual void updateConfiguration(mrpt::maps::TMetricMapInitializer *options) override;
+
+	void setCreationOpt(float min_x, float max_x, float min_y, float max_y, float resolution);
+	void setInsertOpt(const mrpt::maps::CGasConcentrationGridMap2D::TInsertionOptions &insertOpt = mrpt::maps::CGasConcentrationGridMap2D::TInsertionOptions());
+	void setMapTypeOpt(const mrpt::maps::CGasConcentrationGridMap2D::TMapRepresentation &mapType);
+
 
 private:
 	std::unique_ptr<Ui::CGasGridConfig> m_ui;

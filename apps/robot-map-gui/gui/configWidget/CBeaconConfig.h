@@ -11,6 +11,8 @@
 
 #include <memory>
 
+#include <mrpt/maps/CBeaconMap.h>
+
 
 namespace Ui
 {
@@ -21,8 +23,12 @@ class CBeaconConfig: public CBaseConfig
 public:
 	CBeaconConfig(QWidget *parent);
 	virtual ~CBeaconConfig();
+
 	virtual void updateConfiguration(mrpt::maps::TMetricMapInitializer *options) override;
 	virtual const QString getName() override;
+
+	void setInsertOpt(const mrpt::maps::CBeaconMap::TInsertionOptions &insertOpt = mrpt::maps::CBeaconMap::TInsertionOptions());
+	void setLikelihoodOpt(const mrpt::maps::CBeaconMap::TLikelihoodOptions &likelihoodOpt = mrpt::maps::CBeaconMap::TLikelihoodOptions());
 
 private:
 	std::unique_ptr<Ui::CBeaconConfig> m_ui;

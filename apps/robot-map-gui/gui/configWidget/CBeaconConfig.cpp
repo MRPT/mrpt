@@ -10,14 +10,18 @@
 #include "ui_CBeaconConfig.h"
 #include "TypeOfConfig.h"
 
-#include <mrpt/maps/CBeaconMap.h>
 
+using namespace mrpt;
+using namespace maps;
 
 CBeaconConfig::CBeaconConfig(QWidget *parent)
 	: CBaseConfig(parent)
 	, m_ui(std::make_unique<Ui::CBeaconConfig>())
 {
 	m_ui->setupUi(this);
+
+	setInsertOpt();
+	setLikelihoodOpt();
 }
 
 CBeaconConfig::~CBeaconConfig()
@@ -45,9 +49,31 @@ void CBeaconConfig::updateConfiguration(mrpt::maps::TMetricMapInitializer *optio
 	mapDefination->insertionOpts.SOG_thresholdNegligible = m_ui->SOG_thresholdNegligible->value();
 	mapDefination->insertionOpts.SOG_maxDistBetweenGaussians = m_ui->SOG_maxDistBetweenGaussians->value();
 	mapDefination->insertionOpts.SOG_separationConstant = m_ui->SOG_separationConstant->value();
+
+	mapDefination->likelihoodOpts.rangeStd = m_ui->rangeStd->value();
 }
 
 const QString CBeaconConfig::getName()
 {
 	return QString::fromStdString(typeToName(TypeOfConfig::Beacon));
+}
+
+void CBeaconConfig::setInsertOpt(const mrpt::maps::CBeaconMap::TInsertionOptions &insertOpt)
+{
+	m_ui->insertAsMonteCarlo->setChecked(insertOpt.insertAsMonteCarlo);
+	m_ui->maxElevation_deg->setValue(insertOpt.maxElevation_deg);
+	m_ui->minElevation_deg->setValue(insertOpt.minElevation_deg);
+	m_ui->MC_numSamplesPerMeter->setValue(insertOpt.MC_numSamplesPerMeter);
+	m_ui->MC_maxStdToGauss->setValue(insertOpt.MC_maxStdToGauss);
+	m_ui->MC_thresholdNegligible->setValue(insertOpt.MC_thresholdNegligible);
+	m_ui->MC_performResampling->setChecked(insertOpt.MC_performResampling);
+	m_ui->MC_afterResamplingNoise->setValue(insertOpt.MC_afterResamplingNoise);
+	m_ui->SOG_thresholdNegligible->setValue(insertOpt.SOG_thresholdNegligible);
+	m_ui->SOG_maxDistBetweenGaussians->setValue(insertOpt.SOG_maxDistBetweenGaussians);
+	m_ui->SOG_separationConstant->setValue(insertOpt.SOG_separationConstant);
+}
+
+void CBeaconConfig::setLikelihoodOpt(const mrpt::maps::CBeaconMap::TLikelihoodOptions &likelihoodOpt)
+{
+	m_ui->rangeStd->setValue(likelihoodOpt.rangeStd);
 }
