@@ -105,6 +105,12 @@ void  CMultiMetricMapPDF::clear( const CPose3D &initialPose )
 void CMultiMetricMapPDF::clear(const mrpt::maps::CSimpleMap &prevMap, const mrpt::poses::CPose3D &currentPose)
 {
 	const size_t nParts = m_particles.size(), nOldKeyframes = prevMap.size();
+	if(nOldKeyframes == 0)
+	{
+		//prevMap is empty, so reset the map
+		clear(currentPose);
+		return;
+	}
 	for (size_t idxPart = 0; idxPart<nParts; idxPart++)
 	{
 		auto &p = m_particles[idxPart];
