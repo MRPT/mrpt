@@ -37,6 +37,7 @@ CConfigWidget::CConfigWidget(QWidget *parent)
 	QObject::connect(m_ui->m_loadConfig, SIGNAL(released()), SLOT(openConfig()));
 	QObject::connect(m_ui->m_saveConfig, SIGNAL(released()), SLOT(saveConfig()));
 	QObject::connect(m_ui->m_add, SIGNAL(released()), SLOT(addMap()));
+	QObject::connect(m_ui->m_remove, SIGNAL(released()), SLOT(removeMap()));
 
 
 	QListWidgetItem *item = new QListWidgetItem("General", m_ui->m_config);
@@ -51,7 +52,7 @@ CConfigWidget::CConfigWidget(QWidget *parent)
 
 	QObject::connect(m_ui->m_config, SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)),
 					 this, SLOT(currentConfigChanged(QListWidgetItem *, QListWidgetItem *)));
-	QObject::connect(m_ui->m_apply, SIGNAL(released()), this, SIGNAL(updatedConfig()));
+	QObject::connect(m_ui->m_apply, SIGNAL(released()), this, SIGNAL(applyConfigurationForCurrentMaps()));
 
 	m_ui->m_config->setCurrentItem(item);
 }
@@ -110,6 +111,11 @@ void CConfigWidget::addMap()
 		if (w)
 			addWidget(typeOfConfig, w);
 	}
+}
+
+void CConfigWidget::removeMap()
+{
+
 }
 
 void CConfigWidget::currentConfigChanged(QListWidgetItem *current, QListWidgetItem */*previous*/)

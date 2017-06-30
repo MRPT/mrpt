@@ -30,6 +30,7 @@ CMainWindow::CMainWindow(QWidget *parent)
 	m_ui->setupUi(this);
 	QObject::connect(m_ui->openAction,		SIGNAL(triggered(bool)),			SLOT(openMap()));
 	QObject::connect(m_ui->m_configWidget, SIGNAL(openedConfig(const std::string)), SLOT(updateConfig(const std::string)));
+	QObject::connect(m_ui->m_configWidget, SIGNAL(applyConfigurationForCurrentMaps()), SLOT(applyConfigurationForCurrentMaps()));
 	QObject::connect(m_ui->m_configWidget, SIGNAL(addedMap()), SLOT(updateConfig()));
 	QObject::connect(m_ui->m_configWidget, SIGNAL(updatedConfig()), SLOT(updateConfig()));
 	QObject::connect(m_ui->m_observationsTree,	SIGNAL(clicked(const QModelIndex &)),	SLOT(itemClicked(const QModelIndex &)));
@@ -44,11 +45,6 @@ CMainWindow::~CMainWindow()
 		delete m_model;
 
 	delete m_ui->m_configWidget;
-}
-
-void CMainWindow::addMap(std::string name)
-{
-	updateRenderMapFromConfig();
 }
 
 void CMainWindow::openMap()
@@ -102,6 +98,25 @@ void CMainWindow::updateConfig(const std::string str)
 	auto config = m_document->config();
 	m_ui->m_configWidget->setConfig(config);
 	updateRenderMapFromConfig();
+}
+
+void CMainWindow::applyConfigurationForCurrentMaps()
+{
+	mrpt::maps::TSetOfMetricMapInitializers mapCfg = m_ui->m_configWidget->config();
+	m_document->setListOfMaps(mapCfg);
+
+	auto renderizableMaps = m_document->renderizableMaps();
+	for (int i = 0; i < m_ui->m_tabWidget->count(); ++i)
+	{
+		std::string name = m_ui->m_tabWidget->tabText(i).toStdString();
+		auto it = renderizableMaps.find(name);
+		assert(it != renderizableMaps.end());
+
+		CGlWidget *gl = dynamic_cast<CGlWidget *>(m_ui->m_tabWidget->widget(i));
+		assert(gl);
+
+		gl->fillMap(it->second);
+	}
 }
 
 void CMainWindow::updateRenderMapFromConfig()

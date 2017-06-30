@@ -12,7 +12,12 @@
 
 #include <mrpt/maps/CSimplePointsMap.h>
 
+/*
 
+
+
+
+*/
 CPointsConfig::CPointsConfig(QWidget *parent)
 	: CBaseConfig(parent)
 	, m_ui(std::make_unique<Ui::CPointsConfig>())
