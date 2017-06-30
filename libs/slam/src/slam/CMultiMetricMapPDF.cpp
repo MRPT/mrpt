@@ -289,15 +289,19 @@ void  CMultiMetricMapPDF::readFromStream(mrpt::utils::CStream &in, int version)
 /*---------------------------------------------------------------
 						getLastPose
  ---------------------------------------------------------------*/
-const TPose3D* CMultiMetricMapPDF::getLastPose(const size_t i) const
+TPose3D CMultiMetricMapPDF::getLastPose(const size_t i, bool &is_valid_pose) const
 {
 	if (i>=m_particles.size()) THROW_EXCEPTION("Particle index out of bounds!");
 
-	size_t	n = m_particles[i].d->robotPath.size();
-
-	if (n)
-			return &m_particles[i].d->robotPath[n-1];
-	else	return NULL;
+	if (m_particles[i].d->robotPath.empty())
+	{
+		is_valid_pose = false;
+		return TPose3D(0,0,0,0,0,0);
+	}
+	else
+	{
+		return *m_particles[i].d->robotPath.rbegin();
+	}
 }
 
 const CMultiMetricMap * CMultiMetricMapPDF::getAveragedMetricMapEstimation( )
@@ -440,7 +444,9 @@ bool CMultiMetricMapPDF::insertObservation(CSensoryFrame	&sf)
 	bool anymap = false;
 	for (size_t i=0;i<M;i++)
 	{
-		const CPose3D robotPose(*getLastPose(i));
+		bool pose_is_valid;
+		const CPose3D robotPose = CPose3D(getLastPose(i, pose_is_valid));
+		//ASSERT_(pose_is_valid); // if not, use the default (0,0,0)
 		const bool map_modified = sf.insertObservationsInto( &m_particles[i].d->mapTillNow, &robotPose );
 		anymap = anymap || map_modified;
 	}

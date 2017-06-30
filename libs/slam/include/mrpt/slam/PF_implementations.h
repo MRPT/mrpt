@@ -37,7 +37,7 @@ namespace mrpt
 		  *   otherwise, return false AND accumulate the odometry so when we have an observation we didn't lose a thing.
 		  *   On return=true, the "m_movementDrawer" member is loaded and ready to draw samples of the increment of pose since last step.
 		  *  This method is smart enough to accumulate CActionRobotMovement2D or CActionRobotMovement3D, whatever comes in.
-		  *   \ingroup mrpt_slam_grp 
+		  *   \ingroup mrpt_slam_grp
 		  */
 		template <class PARTICLE_TYPE,class MYSELF>
 		template <class BINTYPE>
@@ -196,10 +196,12 @@ namespace mrpt
 					{
 						// Generate gaussian-distributed 2D-pose increments according to mean-cov:
 						m_movementDrawer.drawSample( incrPose );
-						mrpt::poses::CPose3D finalPose = mrpt::poses::CPose3D(*getLastPose(i)) + incrPose;
+						bool pose_is_valid;
+						const mrpt::math::TPose3D finalPose = mrpt::math::TPose3D(mrpt::poses::CPose3D(getLastPose(i,pose_is_valid)) + incrPose);
+						//ASSERT_(pose_is_valid); Use the default (0,0,0) if path is empty.
 
 						// Update the particle with the new pose: this part is caller-dependant and must be implemented there:
-						PF_SLAM_implementation_custom_update_particle_with_new_pose( me->m_particles[i].d.get(), mrpt::math::TPose3D(finalPose) );
+						PF_SLAM_implementation_custom_update_particle_with_new_pose( me->m_particles[i].d.get(), finalPose );
 					}
 				}
 				else
@@ -234,7 +236,9 @@ namespace mrpt
 
 						// generate the new particle:
 						const size_t drawn_idx = me->fastDrawSample(PF_options);
-						const mrpt::poses::CPose3D newPose = mrpt::poses::CPose3D(*getLastPose(drawn_idx)) + increment_i;
+						bool pose_is_valid;
+						const mrpt::poses::CPose3D newPose = mrpt::poses::CPose3D(getLastPose(drawn_idx,pose_is_valid)) + increment_i;
+						//ASSERT_(pose_is_valid); Use the default (0,0,0) if path is empty.
 						const mrpt::math::TPose3D newPose_s = newPose;
 
 						// Add to the new particles list:
@@ -286,9 +290,10 @@ namespace mrpt
 				// Compute all the likelihood values & update particles weight:
 				for (size_t i=0;i<M;i++)
 				{
-					const mrpt::math::TPose3D  *partPose= getLastPose(i); // Take the particle data:
-					mrpt::poses::CPose3D  partPose2 = mrpt::poses::CPose3D(*partPose);
-					const double obs_log_likelihood = PF_SLAM_computeObservationLikelihoodForParticle(PF_options,i,*sf,partPose2);
+					bool pose_is_valid;
+					const mrpt::poses::CPose3D partPose = mrpt::poses::CPose3D(getLastPose(i,pose_is_valid)); // Take the particle data:
+					//ASSERT_(pose_is_valid); Use the default (0,0,0) if path is empty.
+					const double obs_log_likelihood = PF_SLAM_computeObservationLikelihoodForParticle(PF_options,i,*sf,partPose);
 					me->m_particles[i].log_w += obs_log_likelihood * PF_options.powFactor;
 				} // for each particle "i"
 
@@ -347,7 +352,9 @@ namespace mrpt
 			size_t  N = PF_options.pfAuxFilterOptimal_MaximumSearchSamples;
 			ASSERT_(N>1)
 
-			const mrpt::poses::CPose3D oldPose = mrpt::poses::CPose3D(*me->getLastPose(index));
+			bool pose_is_valid;
+			const mrpt::poses::CPose3D oldPose = mrpt::poses::CPose3D(me->getLastPose(index,pose_is_valid));
+			//ASSERT_(pose_is_valid); Use the default (0,0,0) if path is empty.
 			mrpt::math::CVectorDouble   vectLiks(N,0);		// The vector with the individual log-likelihoods.
 			mrpt::poses::CPose3D			drawnSample;
 			for (size_t q=0;q<N;q++)
@@ -413,7 +420,9 @@ namespace mrpt
 
 			// Take the previous particle weight:
 			const double cur_logweight = myObj->m_particles[index].log_w;
-			const mrpt::poses::CPose3D oldPose = mrpt::poses::CPose3D(*myObj->getLastPose(index));
+			bool pose_is_valid;
+			const mrpt::poses::CPose3D oldPose = mrpt::poses::CPose3D(myObj->getLastPose(index,pose_is_valid));
+			//ASSERT_(pose_is_valid); Use the default (0,0,0) if path is empty.
 
 			if (!PF_options.pfAuxFilterStandard_FirstStageWeightsMonteCarlo)
 			{
@@ -851,7 +860,9 @@ namespace mrpt
 				me->logStr(mrpt::utils::LVL_DEBUG, "[PF_SLAM_aux_perform_one_rejection_sampling_step] Warning: Discarding very unlikely particle.");
 			}
 
-			const mrpt::poses::CPose3D oldPose =  mrpt::poses::CPose3D(*getLastPose(k));	// Get the current pose of the k'th particle
+			bool pose_is_valid;
+			const mrpt::poses::CPose3D oldPose =  mrpt::poses::CPose3D(getLastPose(k,pose_is_valid));	// Get the current pose of the k'th particle
+			//ASSERT_(pose_is_valid); Use the default (0,0,0) if path is empty.
 
 			//   (b) Rejection-sampling: Draw a new robot pose from x[k],
 			//       and accept it with probability p(zk|x) / maxLikelihood:

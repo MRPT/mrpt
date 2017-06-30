@@ -184,9 +184,8 @@
  */
 #define THROW_STACKED_EXCEPTION(e)	\
 	{\
-		std::string _tse_str(mrpt::format("%s\n",  e.what()));\
-		_tse_str+= mrpt::format("- Function Name: %s\n", __CURRENT_FUNCTION_NAME__);\
-		_tse_str+= mrpt::format("- Line %i:\n", __LINE__ );\
+		std::string _tse_str(e.what());\
+		_tse_str+= mrpt::format(" %s:%i: In `%s`\n", __FILE__,__LINE__, __CURRENT_FUNCTION_NAME__);\
 		throw std::logic_error( _tse_str );\
 	}
 

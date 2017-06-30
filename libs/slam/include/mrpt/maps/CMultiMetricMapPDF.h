@@ -148,7 +148,7 @@ namespace maps
 		/** Clear all elements of the maps, and restore all paths to a single starting pose */
 		void  clear( const mrpt::poses::CPose2D &initialPose );
 		void  clear( const mrpt::poses::CPose3D &initialPose ); //!< \overload
-		/** Resets the map by loading an already-mapped map for past poses. 
+		/** Resets the map by loading an already-mapped map for past poses.
 		  * Current robot pose should be normally set to the last keyframe in the simplemap. */
 		void  clear(const mrpt::maps::CSimpleMap &prevMap, const mrpt::poses::CPose3D &currentPose);
 
@@ -212,8 +212,7 @@ namespace maps
 			/** \name Virtual methods that the PF_implementations assume exist.
 			    @{ */
 
-			/** Return a pointer to the last robot pose in the i'th particle (or NULL if it's a path and it's empty). */
-			const mrpt::math::TPose3D * getLastPose(const size_t i) const MRPT_OVERRIDE;
+			mrpt::math::TPose3D getLastPose(const size_t i, bool &pose_is_valid) const MRPT_OVERRIDE; // see docs in base
 
 			void PF_SLAM_implementation_custom_update_particle_with_new_pose(
 				CParticleDataContent *particleData,

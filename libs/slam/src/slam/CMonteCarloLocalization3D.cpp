@@ -90,13 +90,12 @@ CMonteCarloLocalization3D::~CMonteCarloLocalization3D()
 /*---------------------------------------------------------------
 						getLastPose
  ---------------------------------------------------------------*/
-const TPose3D* CMonteCarloLocalization3D::getLastPose(const size_t i) const
+ TPose3D CMonteCarloLocalization3D::getLastPose(const size_t i, bool &is_valid_pose) const
 {
 	if (i>=m_particles.size()) THROW_EXCEPTION("Particle index out of bounds!");
-	static TPose3D auxHolder;
+	is_valid_pose = true;
 	ASSERTDEB_(m_particles[i].d!=NULL)
-	auxHolder = TPose3D(*m_particles[i].d);
-	return &auxHolder;
+	return TPose3D(*m_particles[i].d);
 }
 
 
@@ -234,6 +233,3 @@ void CMonteCarloLocalization3D::PF_SLAM_implementation_replaceByNewParticleSet(
 		old_particles[i].d.reset(new CPose3D(newParticles[i]));
 	}
 }
-
-
-
