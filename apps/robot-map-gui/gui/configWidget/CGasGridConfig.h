@@ -29,7 +29,7 @@ public:
 
 	void setCreationOpt(float min_x, float max_x, float min_y, float max_y, float resolution);
 	void setInsertOpt(const mrpt::maps::CGasConcentrationGridMap2D::TInsertionOptions &insertOpt = mrpt::maps::CGasConcentrationGridMap2D::TInsertionOptions());
-	void setMapTypeOpt(const mrpt::maps::CGasConcentrationGridMap2D::TMapRepresentation &mapType);
+	void setMapTypeOpt(const mrpt::maps::CGasConcentrationGridMap2D::TMapRepresentation &);
 
 
 private:
