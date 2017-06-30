@@ -40,10 +40,13 @@ signals:
 	void updatedConfig();
 	void openedConfig(const std::string str);
 
+	void applyConfigurationForCurrentMaps();
+
 private slots:
 	void openConfig();
 	void saveConfig();
 	void addMap();
+	void removeMap();
 	void currentConfigChanged(QListWidgetItem *current, QListWidgetItem *);
 
 private:

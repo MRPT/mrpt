@@ -101,7 +101,7 @@ const RenderizableMaps CDocument::renderizableMaps()
 	addMapToRenderizableMaps(TypeOfConfig::Occupancy, renderizable);
 	addMapToRenderizableMaps(TypeOfConfig::Landmarks, renderizable);
 	addMapToRenderizableMaps(TypeOfConfig::Beacon, renderizable);
-	//addMapToRenderizableMaps(TypeOfConfig::GasGrid, renderizable);
+	addMapToRenderizableMaps(TypeOfConfig::GasGrid, renderizable);
 	return renderizable;
 }
 
