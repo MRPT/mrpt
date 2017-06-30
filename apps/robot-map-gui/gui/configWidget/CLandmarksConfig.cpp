@@ -10,9 +10,6 @@
 #include "ui_CLandmarksConfig.h"
 #include "TypeOfConfig.h"
 
-#include <mrpt/maps/CLandmarksMap.h>
-#include <QComboBox>
-
 
 using namespace mrpt;
 using namespace maps;
@@ -42,109 +39,8 @@ CLandmarksConfig::CLandmarksConfig(QWidget *parent)
 	m_ui->implementation->addItem("Hess", CFeatureExtraction::Hess);
 	m_ui->implementation->addItem("OpenCV", CFeatureExtraction::OpenCV);
 
-	{
-		CLandmarksMap::TInsertionOptions defaultInsert;
-
-		m_ui->insert_SIFTs_from_monocular_images->setChecked(defaultInsert.insert_SIFTs_from_monocular_images);
-		m_ui->insert_SIFTs_from_stereo_images->setChecked(defaultInsert.insert_SIFTs_from_stereo_images);
-		m_ui->insert_Landmarks_from_range_scans->setChecked(defaultInsert.insert_Landmarks_from_range_scans);
-
-		m_ui->SiftCorrRatioThreshold->setValue(defaultInsert.insert_Landmarks_from_range_scans);
-		m_ui->SiftLikelihoodThreshold->setValue(defaultInsert.insert_Landmarks_from_range_scans);
-		m_ui->SiftEDDThreshold->setValue(defaultInsert.insert_Landmarks_from_range_scans);
-		m_ui->SIFTMatching3DMethod->setValue(defaultInsert.SIFTMatching3DMethod);
-
-		m_ui->SIFTsLoadDistanceOfTheMean->setValue(defaultInsert.SIFTsLoadDistanceOfTheMean);
-		m_ui->SIFTsLoadEllipsoidWidth->setValue(defaultInsert.SIFTsLoadEllipsoidWidth);
-		m_ui->SIFTs_stdXY->setValue(defaultInsert.SIFTs_stdXY);
-		m_ui->SIFTs_stdDisparity->setValue(defaultInsert.SIFTs_stdDisparity);
-		m_ui->SIFTs_numberOfKLTKeypoints->setValue(defaultInsert.SIFTs_numberOfKLTKeypoints);
-		m_ui->SIFTs_stereo_maxDepth->setValue(defaultInsert.SIFTs_stereo_maxDepth);
-		m_ui->SIFTs_epipolar_TH->setValue(defaultInsert.SIFTs_epipolar_TH);
-		m_ui->PLOT_IMAGES->setChecked(defaultInsert.PLOT_IMAGES);
-	}
-	{
-		CLandmarksMap::TLikelihoodOptions defaultLikelihood;
-
-		m_ui->rangeScan2D_decimation->setValue(defaultLikelihood.rangeScan2D_decimation);
-		m_ui->SIFTs_sigma_euclidean_dist->setValue(defaultLikelihood.SIFTs_sigma_euclidean_dist);
-		m_ui->SIFTs_sigma_descriptor_dist->setValue(defaultLikelihood.SIFTs_sigma_descriptor_dist);
-		m_ui->SIFTs_mahaDist_std->setValue(defaultLikelihood.SIFTs_mahaDist_std);
-		m_ui->SIFTnullCorrespondenceDistance->setValue(defaultLikelihood.SIFTnullCorrespondenceDistance);
-		m_ui->SIFTs_decimation->setValue(defaultLikelihood.SIFTs_decimation);
-
-
-		m_ui->beaconRangesStd->setValue(defaultLikelihood.beaconRangesStd);
-		m_ui->beaconRangesUseObservationStd->setChecked(defaultLikelihood.beaconRangesUseObservationStd);
-		m_ui->extRobotPoseStd->setValue(defaultLikelihood.extRobotPoseStd);
-		m_ui->GPS_sigma->setValue(defaultLikelihood.GPS_sigma);
-
-
-		m_ui->longitude->setValue(defaultLikelihood.GPSOrigin.longitude);
-		m_ui->latitude->setValue(defaultLikelihood.GPSOrigin.latitude);
-		m_ui->altitude->setValue(defaultLikelihood.GPSOrigin.altitude);
-		m_ui->ang->setValue(defaultLikelihood.GPSOrigin.ang);
-		m_ui->x_shift->setValue(defaultLikelihood.GPSOrigin.x_shift);
-		m_ui->y_shift->setValue(defaultLikelihood.GPSOrigin.y_shift);
-		m_ui->min_sat->setValue(defaultLikelihood.GPSOrigin.min_sat);
-
-		m_ui->TFeatureType->setCurrentIndex(defaultLikelihood.SIFT_feat_options.featsType + 1);
-
-		m_ui->patchSize->setValue(defaultLikelihood.SIFT_feat_options.patchSize);
-
-		m_ui->useMask->setChecked(defaultLikelihood.SIFT_feat_options.useMask);
-		m_ui->addNewFeatures->setChecked(defaultLikelihood.SIFT_feat_options.addNewFeatures);
-		m_ui->FIND_SUBPIXEL->setChecked(defaultLikelihood.SIFT_feat_options.FIND_SUBPIXEL);
-
-		m_ui->radiusKLTOptions->setValue(defaultLikelihood.SIFT_feat_options.KLTOptions.radius);
-		m_ui->thresholdKLTOptions->setValue(defaultLikelihood.SIFT_feat_options.KLTOptions.threshold);
-		m_ui->min_distanceKLTOptions->setValue(defaultLikelihood.SIFT_feat_options.KLTOptions.min_distance);
-		m_ui->tile_imageKLTOptions->setChecked(defaultLikelihood.SIFT_feat_options.KLTOptions.tile_image);
-
-		m_ui->thresholdHarris->setValue(defaultLikelihood.SIFT_feat_options.harrisOptions.threshold);
-		m_ui->k->setValue(defaultLikelihood.SIFT_feat_options.harrisOptions.k);
-		m_ui->sigma->setValue(defaultLikelihood.SIFT_feat_options.harrisOptions.sigma);
-		m_ui->radiusHarris->setValue(defaultLikelihood.SIFT_feat_options.harrisOptions.radius);
-		m_ui->min_distanceHarris->setValue(defaultLikelihood.SIFT_feat_options.harrisOptions.min_distance);
-		m_ui->tile_imageHarris->setChecked(defaultLikelihood.SIFT_feat_options.harrisOptions.tile_image);
-
-		m_ui->thresholdFASTOptions->setValue(defaultLikelihood.SIFT_feat_options.FASTOptions.threshold);
-		m_ui->min_distanceFASTOptions->setValue(defaultLikelihood.SIFT_feat_options.FASTOptions.min_distance);
-		m_ui->nonmax_suppression->setChecked(defaultLikelihood.SIFT_feat_options.FASTOptions.nonmax_suppression);
-		m_ui->use_KLT_response->setChecked(defaultLikelihood.SIFT_feat_options.FASTOptions.use_KLT_response);
-
-		m_ui->n_levels->setValue(defaultLikelihood.SIFT_feat_options.ORBOptions.n_levels);
-		m_ui->min_distanceORBOptions->setValue(defaultLikelihood.SIFT_feat_options.ORBOptions.min_distance);
-		m_ui->scale_factor->setValue(defaultLikelihood.SIFT_feat_options.ORBOptions.scale_factor);
-		m_ui->extract_patch->setChecked(defaultLikelihood.SIFT_feat_options.ORBOptions.extract_patch);
-
-		m_ui->implementation->setCurrentIndex(defaultLikelihood.SIFT_feat_options.SIFTOptions.implementation);
-
-		m_ui->thresholdSIFTOptions->setValue(defaultLikelihood.SIFT_feat_options.SIFTOptions.threshold);
-		m_ui->edgeThreshold->setValue(defaultLikelihood.SIFT_feat_options.SIFTOptions.edgeThreshold);
-
-		m_ui->rotation_invariant->setChecked(defaultLikelihood.SIFT_feat_options.SURFOptions.rotation_invariant);
-		m_ui->hessianThreshold->setValue(defaultLikelihood.SIFT_feat_options.SURFOptions.hessianThreshold);
-		m_ui->nOctaves->setValue(defaultLikelihood.SIFT_feat_options.SURFOptions.nOctaves);
-		m_ui->nLayersPerOctave->setValue(defaultLikelihood.SIFT_feat_options.SURFOptions.nLayersPerOctave);
-
-		m_ui->hist_size_intensity->setValue(defaultLikelihood.SIFT_feat_options.SpinImagesOptions.hist_size_intensity);
-		m_ui->hist_size_distance->setValue(defaultLikelihood.SIFT_feat_options.SpinImagesOptions.hist_size_distance);
-		m_ui->std_dist->setValue(defaultLikelihood.SIFT_feat_options.SpinImagesOptions.std_dist);
-		m_ui->std_intensity->setValue(defaultLikelihood.SIFT_feat_options.SpinImagesOptions.std_intensity);
-		m_ui->radiusSpinImagesOptions->setValue(defaultLikelihood.SIFT_feat_options.SpinImagesOptions.radius);
-
-		m_ui->bins_angle->setValue(defaultLikelihood.SIFT_feat_options.PolarImagesOptions.bins_angle);
-		m_ui->bins_distance->setValue(defaultLikelihood.SIFT_feat_options.PolarImagesOptions.bins_distance);
-		m_ui->radiusPolarImagesOptions->setValue(defaultLikelihood.SIFT_feat_options.PolarImagesOptions.radius);
-
-		m_ui->radiusLogPolarImagesOptions->setValue(defaultLikelihood.SIFT_feat_options.LogPolarImagesOptions.radius);
-		m_ui->num_angles->setValue(defaultLikelihood.SIFT_feat_options.LogPolarImagesOptions.num_angles);
-		m_ui->rho_scale->setValue(defaultLikelihood.SIFT_feat_options.LogPolarImagesOptions.rho_scale);
-
-
-
-	}
+	setInsertOpt();
+	setLikelihoodOpt();
 }
 
 CLandmarksConfig::~CLandmarksConfig()
@@ -159,7 +55,6 @@ const QString CLandmarksConfig::getName()
 
 void CLandmarksConfig::updateConfiguration(mrpt::maps::TMetricMapInitializer *options)
 {
-	Q_UNUSED(options);
 	CLandmarksMap::TMapDefinition *mapDefination = dynamic_cast<CLandmarksMap::TMapDefinition *>(options);
 	assert(mapDefination);
 
@@ -258,4 +153,106 @@ void CLandmarksConfig::updateConfiguration(mrpt::maps::TMetricMapInitializer *op
 	mapDefination->likelihoodOpts.SIFT_feat_options.LogPolarImagesOptions.num_angles = m_ui->num_angles->value();
 	mapDefination->likelihoodOpts.SIFT_feat_options.LogPolarImagesOptions.rho_scale = m_ui->rho_scale->value();
 }
+
+void CLandmarksConfig::setInsertOpt(const CLandmarksMap::TInsertionOptions &insertOpt)
+{
+	m_ui->insert_SIFTs_from_monocular_images->setChecked(insertOpt.insert_SIFTs_from_monocular_images);
+	m_ui->insert_SIFTs_from_stereo_images->setChecked(insertOpt.insert_SIFTs_from_stereo_images);
+	m_ui->insert_Landmarks_from_range_scans->setChecked(insertOpt.insert_Landmarks_from_range_scans);
+
+	m_ui->SiftCorrRatioThreshold->setValue(insertOpt.insert_Landmarks_from_range_scans);
+	m_ui->SiftLikelihoodThreshold->setValue(insertOpt.insert_Landmarks_from_range_scans);
+	m_ui->SiftEDDThreshold->setValue(insertOpt.insert_Landmarks_from_range_scans);
+	m_ui->SIFTMatching3DMethod->setValue(insertOpt.SIFTMatching3DMethod);
+
+	m_ui->SIFTsLoadDistanceOfTheMean->setValue(insertOpt.SIFTsLoadDistanceOfTheMean);
+	m_ui->SIFTsLoadEllipsoidWidth->setValue(insertOpt.SIFTsLoadEllipsoidWidth);
+	m_ui->SIFTs_stdXY->setValue(insertOpt.SIFTs_stdXY);
+	m_ui->SIFTs_stdDisparity->setValue(insertOpt.SIFTs_stdDisparity);
+	m_ui->SIFTs_numberOfKLTKeypoints->setValue(insertOpt.SIFTs_numberOfKLTKeypoints);
+	m_ui->SIFTs_stereo_maxDepth->setValue(insertOpt.SIFTs_stereo_maxDepth);
+	m_ui->SIFTs_epipolar_TH->setValue(insertOpt.SIFTs_epipolar_TH);
+	m_ui->PLOT_IMAGES->setChecked(insertOpt.PLOT_IMAGES);
+}
+
+void CLandmarksConfig::setLikelihoodOpt(const CLandmarksMap::TLikelihoodOptions &likelihoodOpt)
+{
+	m_ui->rangeScan2D_decimation->setValue(likelihoodOpt.rangeScan2D_decimation);
+	m_ui->SIFTs_sigma_euclidean_dist->setValue(likelihoodOpt.SIFTs_sigma_euclidean_dist);
+	m_ui->SIFTs_sigma_descriptor_dist->setValue(likelihoodOpt.SIFTs_sigma_descriptor_dist);
+	m_ui->SIFTs_mahaDist_std->setValue(likelihoodOpt.SIFTs_mahaDist_std);
+	m_ui->SIFTnullCorrespondenceDistance->setValue(likelihoodOpt.SIFTnullCorrespondenceDistance);
+	m_ui->SIFTs_decimation->setValue(likelihoodOpt.SIFTs_decimation);
+
+
+	m_ui->beaconRangesStd->setValue(likelihoodOpt.beaconRangesStd);
+	m_ui->beaconRangesUseObservationStd->setChecked(likelihoodOpt.beaconRangesUseObservationStd);
+	m_ui->extRobotPoseStd->setValue(likelihoodOpt.extRobotPoseStd);
+	m_ui->GPS_sigma->setValue(likelihoodOpt.GPS_sigma);
+
+
+	m_ui->longitude->setValue(likelihoodOpt.GPSOrigin.longitude);
+	m_ui->latitude->setValue(likelihoodOpt.GPSOrigin.latitude);
+	m_ui->altitude->setValue(likelihoodOpt.GPSOrigin.altitude);
+	m_ui->ang->setValue(likelihoodOpt.GPSOrigin.ang);
+	m_ui->x_shift->setValue(likelihoodOpt.GPSOrigin.x_shift);
+	m_ui->y_shift->setValue(likelihoodOpt.GPSOrigin.y_shift);
+	m_ui->min_sat->setValue(likelihoodOpt.GPSOrigin.min_sat);
+
+	m_ui->TFeatureType->setCurrentIndex(likelihoodOpt.SIFT_feat_options.featsType + 1);
+
+	m_ui->patchSize->setValue(likelihoodOpt.SIFT_feat_options.patchSize);
+
+	m_ui->useMask->setChecked(likelihoodOpt.SIFT_feat_options.useMask);
+	m_ui->addNewFeatures->setChecked(likelihoodOpt.SIFT_feat_options.addNewFeatures);
+	m_ui->FIND_SUBPIXEL->setChecked(likelihoodOpt.SIFT_feat_options.FIND_SUBPIXEL);
+
+	m_ui->radiusKLTOptions->setValue(likelihoodOpt.SIFT_feat_options.KLTOptions.radius);
+	m_ui->thresholdKLTOptions->setValue(likelihoodOpt.SIFT_feat_options.KLTOptions.threshold);
+	m_ui->min_distanceKLTOptions->setValue(likelihoodOpt.SIFT_feat_options.KLTOptions.min_distance);
+	m_ui->tile_imageKLTOptions->setChecked(likelihoodOpt.SIFT_feat_options.KLTOptions.tile_image);
+
+	m_ui->thresholdHarris->setValue(likelihoodOpt.SIFT_feat_options.harrisOptions.threshold);
+	m_ui->k->setValue(likelihoodOpt.SIFT_feat_options.harrisOptions.k);
+	m_ui->sigma->setValue(likelihoodOpt.SIFT_feat_options.harrisOptions.sigma);
+	m_ui->radiusHarris->setValue(likelihoodOpt.SIFT_feat_options.harrisOptions.radius);
+	m_ui->min_distanceHarris->setValue(likelihoodOpt.SIFT_feat_options.harrisOptions.min_distance);
+	m_ui->tile_imageHarris->setChecked(likelihoodOpt.SIFT_feat_options.harrisOptions.tile_image);
+
+	m_ui->thresholdFASTOptions->setValue(likelihoodOpt.SIFT_feat_options.FASTOptions.threshold);
+	m_ui->min_distanceFASTOptions->setValue(likelihoodOpt.SIFT_feat_options.FASTOptions.min_distance);
+	m_ui->nonmax_suppression->setChecked(likelihoodOpt.SIFT_feat_options.FASTOptions.nonmax_suppression);
+	m_ui->use_KLT_response->setChecked(likelihoodOpt.SIFT_feat_options.FASTOptions.use_KLT_response);
+
+	m_ui->n_levels->setValue(likelihoodOpt.SIFT_feat_options.ORBOptions.n_levels);
+	m_ui->min_distanceORBOptions->setValue(likelihoodOpt.SIFT_feat_options.ORBOptions.min_distance);
+	m_ui->scale_factor->setValue(likelihoodOpt.SIFT_feat_options.ORBOptions.scale_factor);
+	m_ui->extract_patch->setChecked(likelihoodOpt.SIFT_feat_options.ORBOptions.extract_patch);
+
+	m_ui->implementation->setCurrentIndex(likelihoodOpt.SIFT_feat_options.SIFTOptions.implementation);
+
+	m_ui->thresholdSIFTOptions->setValue(likelihoodOpt.SIFT_feat_options.SIFTOptions.threshold);
+	m_ui->edgeThreshold->setValue(likelihoodOpt.SIFT_feat_options.SIFTOptions.edgeThreshold);
+
+	m_ui->rotation_invariant->setChecked(likelihoodOpt.SIFT_feat_options.SURFOptions.rotation_invariant);
+	m_ui->hessianThreshold->setValue(likelihoodOpt.SIFT_feat_options.SURFOptions.hessianThreshold);
+	m_ui->nOctaves->setValue(likelihoodOpt.SIFT_feat_options.SURFOptions.nOctaves);
+	m_ui->nLayersPerOctave->setValue(likelihoodOpt.SIFT_feat_options.SURFOptions.nLayersPerOctave);
+
+	m_ui->hist_size_intensity->setValue(likelihoodOpt.SIFT_feat_options.SpinImagesOptions.hist_size_intensity);
+	m_ui->hist_size_distance->setValue(likelihoodOpt.SIFT_feat_options.SpinImagesOptions.hist_size_distance);
+	m_ui->std_dist->setValue(likelihoodOpt.SIFT_feat_options.SpinImagesOptions.std_dist);
+	m_ui->std_intensity->setValue(likelihoodOpt.SIFT_feat_options.SpinImagesOptions.std_intensity);
+	m_ui->radiusSpinImagesOptions->setValue(likelihoodOpt.SIFT_feat_options.SpinImagesOptions.radius);
+
+	m_ui->bins_angle->setValue(likelihoodOpt.SIFT_feat_options.PolarImagesOptions.bins_angle);
+	m_ui->bins_distance->setValue(likelihoodOpt.SIFT_feat_options.PolarImagesOptions.bins_distance);
+	m_ui->radiusPolarImagesOptions->setValue(likelihoodOpt.SIFT_feat_options.PolarImagesOptions.radius);
+
+	m_ui->radiusLogPolarImagesOptions->setValue(likelihoodOpt.SIFT_feat_options.LogPolarImagesOptions.radius);
+	m_ui->num_angles->setValue(likelihoodOpt.SIFT_feat_options.LogPolarImagesOptions.num_angles);
+	m_ui->rho_scale->setValue(likelihoodOpt.SIFT_feat_options.LogPolarImagesOptions.rho_scale);
+
+}
+
 

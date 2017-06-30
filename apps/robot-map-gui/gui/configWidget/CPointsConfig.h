@@ -11,6 +11,8 @@
 
 #include <memory>
 
+#include <mrpt/maps/CSimplePointsMap.h>
+
 
 namespace Ui
 {
@@ -24,6 +26,9 @@ public:
 
 	virtual const QString getName() override;
 	virtual void updateConfiguration(mrpt::maps::TMetricMapInitializer *options) override;
+
+	void setInsertOpt(const mrpt::maps::CSimplePointsMap::TInsertionOptions &insertOpt = mrpt::maps::CSimplePointsMap::TInsertionOptions());
+	void setLikelihoodOpt(const mrpt::maps::CSimplePointsMap::TLikelihoodOptions &likelihoodOpt = mrpt::maps::CSimplePointsMap::TLikelihoodOptions());
 
 private:
 	std::unique_ptr<Ui::CPointsConfig> m_ui;

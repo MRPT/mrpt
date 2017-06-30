@@ -27,6 +27,11 @@ public:
 
 	virtual const QString getName() override;
 	virtual void updateConfiguration(mrpt::maps::TMetricMapInitializer *options) override;
+
+	void setCreationOpt(float min_x, float max_x, float min_y, float max_y, float resolution);
+	void setInsertOpt(const mrpt::maps::COccupancyGridMap2D::TInsertionOptions &insertOpt = mrpt::maps::COccupancyGridMap2D::TInsertionOptions());
+	void setLikelihoodOpt(const mrpt::maps::COccupancyGridMap2D::TLikelihoodOptions &likelihoodOpt = mrpt::maps::COccupancyGridMap2D::TLikelihoodOptions());
+
 private:
 	std::unique_ptr<Ui::COccupancyConfig> m_ui;
 };

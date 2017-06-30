@@ -193,7 +193,8 @@ void CConfigWidget::setConfig(const CMultiMetricMap::TListMaps &config)
 			{
 				CPointsConfig *pConfig = new CPointsConfig(m_ui->stackedWidget);
 				addWidget(TypeOfConfig::PointsMap, pConfig);
-				pConfig->updateConfiguration(ptr->MapDefinition());
+				pConfig->setInsertOpt(ptr->insertionOptions);
+				pConfig->setLikelihoodOpt(ptr->likelihoodOptions);
 				found = true;
 			}
 		}
@@ -204,7 +205,9 @@ void CConfigWidget::setConfig(const CMultiMetricMap::TListMaps &config)
 			{
 				COccupancyConfig *pConfig = new COccupancyConfig(m_ui->stackedWidget);
 				addWidget(TypeOfConfig::Occupancy, pConfig);
-				pConfig->updateConfiguration(ptr->MapDefinition());
+				pConfig->setCreationOpt(ptr->getXMin(), ptr->getXMax(), ptr->getYMin(), ptr->getYMax(), ptr->getResolution());
+				pConfig->setInsertOpt(ptr->insertionOptions);
+				pConfig->setLikelihoodOpt(ptr->likelihoodOptions);
 				found = true;
 			}
 		}
@@ -215,7 +218,9 @@ void CConfigWidget::setConfig(const CMultiMetricMap::TListMaps &config)
 			{
 				CGasGridConfig *pConfig = new CGasGridConfig(m_ui->stackedWidget);
 				addWidget(TypeOfConfig::GasGrid, pConfig);
-				pConfig->updateConfiguration(ptr->MapDefinition());
+				pConfig->setCreationOpt(ptr->getXMin(), ptr->getXMax(), ptr->getYMin(), ptr->getYMax(), ptr->getResolution());
+				pConfig->setInsertOpt(ptr->insertionOptions);
+				//pConfig->setMapTypeOpt(ptr->mapType);
 				found = true;
 			}
 		}
@@ -226,7 +231,8 @@ void CConfigWidget::setConfig(const CMultiMetricMap::TListMaps &config)
 			{
 				CBeaconConfig *pConfig = new CBeaconConfig(m_ui->stackedWidget);
 				addWidget(TypeOfConfig::Beacon, pConfig);
-				pConfig->updateConfiguration(ptr->MapDefinition());
+				pConfig->setInsertOpt(ptr->insertionOptions);
+				pConfig->setLikelihoodOpt(ptr->likelihoodOptions);
 				found = true;
 			}
 		}
@@ -237,7 +243,8 @@ void CConfigWidget::setConfig(const CMultiMetricMap::TListMaps &config)
 			{
 				CLandmarksConfig *pConfig = new CLandmarksConfig(m_ui->stackedWidget);
 				addWidget(TypeOfConfig::Landmarks, pConfig);
-				pConfig->updateConfiguration(ptr->MapDefinition());
+				pConfig->setInsertOpt(ptr->insertionOptions);
+				pConfig->setLikelihoodOpt(ptr->likelihoodOptions);
 				found = true;
 			}
 		}

@@ -11,6 +11,8 @@
 
 #include <memory>
 
+#include <mrpt/maps/CLandmarksMap.h>
+
 
 namespace Ui
 {
@@ -24,6 +26,9 @@ public:
 
 	virtual const QString getName() override;
 	virtual void updateConfiguration(mrpt::maps::TMetricMapInitializer *options) override;
+
+	void setInsertOpt(const mrpt::maps::CLandmarksMap::TInsertionOptions &insertOpt = mrpt::maps::CLandmarksMap::TInsertionOptions());
+	void setLikelihoodOpt(const mrpt::maps::CLandmarksMap::TLikelihoodOptions &likelihoodOpt = mrpt::maps::CLandmarksMap::TLikelihoodOptions());
 
 private:
 	std::unique_ptr<Ui::CLandmarksConfig> m_ui;
