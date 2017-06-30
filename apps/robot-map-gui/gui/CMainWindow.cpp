@@ -32,6 +32,7 @@ CMainWindow::CMainWindow(QWidget *parent)
 	QObject::connect(m_ui->m_configWidget, SIGNAL(openedConfig(const std::string)), SLOT(updateConfig(const std::string)));
 	QObject::connect(m_ui->m_configWidget, SIGNAL(applyConfigurationForCurrentMaps()), SLOT(applyConfigurationForCurrentMaps()));
 	QObject::connect(m_ui->m_configWidget, SIGNAL(addedMap()), SLOT(updateConfig()));
+	QObject::connect(m_ui->m_configWidget, SIGNAL(removedMap()), SLOT(updateConfig()));
 	QObject::connect(m_ui->m_configWidget, SIGNAL(updatedConfig()), SLOT(updateConfig()));
 	QObject::connect(m_ui->m_observationsTree,	SIGNAL(clicked(const QModelIndex &)),	SLOT(itemClicked(const QModelIndex &)));
 }

@@ -26,6 +26,7 @@ public:
 
 	virtual const QString getName() override;
 	virtual void updateConfiguration(mrpt::maps::TMetricMapInitializer *options) override;
+	virtual TypeOfConfig type() const override;
 
 	void setCreationOpt(float min_x, float max_x, float min_y, float max_y, float resolution);
 	void setInsertOpt(const mrpt::maps::CGasConcentrationGridMap2D::TInsertionOptions &insertOpt = mrpt::maps::CGasConcentrationGridMap2D::TInsertionOptions());

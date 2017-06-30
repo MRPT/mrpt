@@ -37,6 +37,7 @@ public:
 
 signals:
 	void addedMap();
+	void removedMap();
 	void updatedConfig();
 	void openedConfig(const std::string str);
 

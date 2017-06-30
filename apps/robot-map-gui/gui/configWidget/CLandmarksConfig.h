@@ -26,6 +26,7 @@ public:
 
 	virtual const QString getName() override;
 	virtual void updateConfiguration(mrpt::maps::TMetricMapInitializer *options) override;
+	virtual TypeOfConfig type() const override;
 
 	void setInsertOpt(const mrpt::maps::CLandmarksMap::TInsertionOptions &insertOpt = mrpt::maps::CLandmarksMap::TInsertionOptions());
 	void setLikelihoodOpt(const mrpt::maps::CLandmarksMap::TLikelihoodOptions &likelihoodOpt = mrpt::maps::CLandmarksMap::TLikelihoodOptions());

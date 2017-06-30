@@ -94,6 +94,11 @@ void COccupancyConfig::updateConfiguration(TMetricMapInitializer *options)
 	mapDefination->likelihoodOpts.enableLikelihoodCache = m_ui->enableLikelihoodCache->isChecked();
 }
 
+TypeOfConfig COccupancyConfig::type() const
+{
+	return TypeOfConfig::Occupancy;
+}
+
 void COccupancyConfig::setCreationOpt(float		min_x,
 									  float		max_x,
 									  float		min_y,

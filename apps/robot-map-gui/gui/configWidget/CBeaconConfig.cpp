@@ -8,7 +8,6 @@
    +---------------------------------------------------------------------------+ */
 #include "CBeaconConfig.h"
 #include "ui_CBeaconConfig.h"
-#include "TypeOfConfig.h"
 
 
 using namespace mrpt;
@@ -56,6 +55,11 @@ void CBeaconConfig::updateConfiguration(mrpt::maps::TMetricMapInitializer *optio
 const QString CBeaconConfig::getName()
 {
 	return QString::fromStdString(typeToName(TypeOfConfig::Beacon));
+}
+
+TypeOfConfig CBeaconConfig::type() const
+{
+	return TypeOfConfig::Beacon;
 }
 
 void CBeaconConfig::setInsertOpt(const mrpt::maps::CBeaconMap::TInsertionOptions &insertOpt)

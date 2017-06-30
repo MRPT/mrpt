@@ -154,6 +154,11 @@ void CLandmarksConfig::updateConfiguration(mrpt::maps::TMetricMapInitializer *op
 	mapDefination->likelihoodOpts.SIFT_feat_options.LogPolarImagesOptions.rho_scale = m_ui->rho_scale->value();
 }
 
+TypeOfConfig CLandmarksConfig::type() const
+{
+	return TypeOfConfig::Landmarks;
+}
+
 void CLandmarksConfig::setInsertOpt(const CLandmarksMap::TInsertionOptions &insertOpt)
 {
 	m_ui->insert_SIFTs_from_monocular_images->setChecked(insertOpt.insert_SIFTs_from_monocular_images);
