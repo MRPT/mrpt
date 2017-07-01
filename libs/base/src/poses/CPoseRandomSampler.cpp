@@ -46,6 +46,73 @@ CPoseRandomSampler::~CPoseRandomSampler()
     clear();
 }
 
+CPoseRandomSampler::CPoseRandomSampler(const CPoseRandomSampler &o) :
+	m_pdf2D(NULL),
+	m_pdf3D(NULL)
+{
+	if (o.m_pdf2D) m_pdf2D = dynamic_cast<CPosePDF*>(o.m_pdf2D->duplicate());
+	if (o.m_pdf3D) m_pdf3D = dynamic_cast<CPose3DPDF*>(o.m_pdf3D->duplicate());
+	m_fastdraw_gauss_Z3 = o.m_fastdraw_gauss_Z3;
+	m_fastdraw_gauss_Z6 = o.m_fastdraw_gauss_Z6;
+	m_fastdraw_gauss_M_2D = o.m_fastdraw_gauss_M_2D;
+	m_fastdraw_gauss_M_3D = o.m_fastdraw_gauss_M_3D;
+
+}
+CPoseRandomSampler & CPoseRandomSampler::operator =(const CPoseRandomSampler &o)
+{
+	if (this == &o) return *this;
+	this->clear();
+	if (o.m_pdf2D) m_pdf2D = dynamic_cast<CPosePDF*>(o.m_pdf2D->duplicate()); else m_pdf2D = NULL;
+	if (o.m_pdf3D) m_pdf3D = dynamic_cast<CPose3DPDF*>(o.m_pdf3D->duplicate()); else m_pdf3D = NULL;
+	m_fastdraw_gauss_Z3 = o.m_fastdraw_gauss_Z3;
+	m_fastdraw_gauss_Z6 = o.m_fastdraw_gauss_Z6;
+	m_fastdraw_gauss_M_2D = o.m_fastdraw_gauss_M_2D;
+	m_fastdraw_gauss_M_3D = o.m_fastdraw_gauss_M_3D;
+	return *this;
+}
+#if MRPT_HAS_CXX11
+CPoseRandomSampler::CPoseRandomSampler(CPoseRandomSampler &&o) :
+	m_pdf2D(nullptr),
+	m_pdf3D(nullptr)
+{
+	if (o.m_pdf2D)
+	{
+		m_pdf2D = o.m_pdf2D;
+		o.m_pdf2D = nullptr;
+	}
+	if (o.m_pdf3D)
+	{
+		m_pdf3D = o.m_pdf3D;
+		o.m_pdf3D = nullptr;
+	}
+	m_fastdraw_gauss_Z3 = std::move(o.m_fastdraw_gauss_Z3);
+	m_fastdraw_gauss_Z6 = std::move(o.m_fastdraw_gauss_Z6);
+	m_fastdraw_gauss_M_2D = std::move(o.m_fastdraw_gauss_M_2D);
+	m_fastdraw_gauss_M_3D = std::move(o.m_fastdraw_gauss_M_3D);
+}
+CPoseRandomSampler & CPoseRandomSampler::operator =(CPoseRandomSampler &&o)
+{
+	if (this == &o) return *this;
+	this->clear();
+	if (o.m_pdf2D)
+	{
+		m_pdf2D = o.m_pdf2D;
+		o.m_pdf2D = nullptr;
+	}
+	if (o.m_pdf3D)
+	{
+		m_pdf3D = o.m_pdf3D;
+		o.m_pdf3D = nullptr;
+	}
+	m_fastdraw_gauss_Z3 = std::move(o.m_fastdraw_gauss_Z3);
+	m_fastdraw_gauss_Z6 = std::move(o.m_fastdraw_gauss_Z6);
+	m_fastdraw_gauss_M_2D = std::move(o.m_fastdraw_gauss_M_2D);
+	m_fastdraw_gauss_M_3D = std::move(o.m_fastdraw_gauss_M_3D);
+	return *this;
+}
+#endif
+
+
 
 /*---------------------------------------------------------------
             clear
