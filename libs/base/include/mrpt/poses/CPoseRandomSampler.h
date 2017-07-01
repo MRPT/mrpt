@@ -50,11 +50,15 @@ namespace mrpt
 			void do_sample_3D( CPose3D &p ) const;	//!< Used internally: sample from m_pdf3D
 
         public:
-            /** Default constructor */
-            CPoseRandomSampler();
+            CPoseRandomSampler(); //!< Ctor
+            ~CPoseRandomSampler(); //!< Dtor
 
-            /** Destructor */
-            ~CPoseRandomSampler();
+			CPoseRandomSampler(const CPoseRandomSampler &o);
+			CPoseRandomSampler & operator =(const CPoseRandomSampler &o);
+#if MRPT_HAS_CXX11
+			CPoseRandomSampler(CPoseRandomSampler &&o);
+			CPoseRandomSampler & operator =(CPoseRandomSampler &&o);
+#endif
 
             /** This method must be called to select the PDF from which to draw samples.
               * \sa drawSample
