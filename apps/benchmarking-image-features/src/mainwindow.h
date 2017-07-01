@@ -265,6 +265,13 @@ public:
 
     }log_polar_opts;
 
+    struct BLDOptions
+    {
+        int ksize_;
+        int reductionRatio;
+        int numOfOctave;
+        int widthOfBand;
+    }BLD_opts;
 
 
 

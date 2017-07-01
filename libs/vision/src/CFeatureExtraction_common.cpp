@@ -46,11 +46,17 @@ void CFeatureExtraction::detectFeatures(
 {
 	switch (options.featsType)
 	{
+<<<<<<< e9c054811456ca207ceff28039b490df9e6159f4
 		case featHarris:
 			MRPT_TODO(
 				"Refactor: check if OpenCV's tile method can be directly "
 				"called to save space here?")
 			if (options.harrisOptions.tile_image)
+=======
+        case featHarris:
+			MRPT_TODO("Refactor: check if OpenCV's tile method can be directly called to save space here?")
+			if( options.harrisOptions.tile_image )
+>>>>>>> work done from June 29 to June 30: added BLD Descriptor
 			{
 				mrpt::utils::CTicTac tictac;
 
@@ -219,6 +225,7 @@ void CFeatureExtraction::detectFeatures(
 			extractFeaturesORB(img, feats, init_ID, nDesiredFeatures, ROI);
 			break;
 
+		// # added by Raghavender Sahdev
 		case featAKAZE:
 			extractFeaturesAKAZE(img, feats, init_ID, nDesiredFeatures, ROI);
             break;
@@ -273,7 +280,12 @@ void CFeatureExtraction::computeDescriptors(
 		this->internal_computeORBDescriptors(in_img, inout_features);
 		++nDescComputed;
 	}
-
+	// # added by Raghavender Sahdev
+	if ((in_descriptor_list & descBLD) != 0)
+	{
+		this->internal_computeBLDLineDescriptors(in_img,inout_features);
+		++nDescComputed;
+	}
 	if (!nDescComputed)
 		THROW_EXCEPTION_FMT(
 			"No known descriptor value found in in_descriptor_list=%u",
@@ -382,7 +394,16 @@ CFeatureExtraction::TOptions::TOptions(const TFeatureType _featsType)
     LSDOptions.scale                    = 2;
     LSDOptions.nOctaves                 = 1;
 
+<<<<<<< e9c054811456ca207ceff28039b490df9e6159f4
 >>>>>>> work done from June 27 to June 29: added AKAZE and LSD detectors
+=======
+	// BLD Options
+	//BLDOptions.ksize_ = 11;
+    BLDOptions.numOfOctave              = 1;
+    BLDOptions.widthOfBand              = 7;
+    BLDOptions.reductionRatio           = 2;
+
+>>>>>>> work done from June 29 to June 30: added BLD Descriptor
 }
 
 /*---------------------------------------------------------------
@@ -452,6 +473,10 @@ void CFeatureExtraction::TOptions::dumpToTextStream(
 
     LOADABLEOPTS_DUMP_VAR(LSDOptions.nOctaves,int)
     LOADABLEOPTS_DUMP_VAR(LSDOptions.scale,int)
+
+    LOADABLEOPTS_DUMP_VAR(BLDOptions.numOfOctave,int)
+    LOADABLEOPTS_DUMP_VAR(BLDOptions.reductionRatio,int)
+    LOADABLEOPTS_DUMP_VAR(BLDOptions.widthOfBand,int)
 
 	out.printf("\n");
 }
@@ -581,6 +606,11 @@ void CFeatureExtraction::TOptions::loadFromConfigFile(
 
     MRPT_LOAD_CONFIG_VAR(LSDOptions.nOctaves,int, iniFile,section)
     MRPT_LOAD_CONFIG_VAR(LSDOptions.scale,int,  iniFile,section)
+
+    MRPT_LOAD_CONFIG_VAR(BLDOptions.numOfOctave,int, iniFile,section)
+    MRPT_LOAD_CONFIG_VAR(BLDOptions.widthOfBand,int,  iniFile,section)
+    MRPT_LOAD_CONFIG_VAR(BLDOptions.reductionRatio,int, iniFile,section)
+
 
 
 >>>>>>> work done from June 27 to June 29: added AKAZE and LSD detectors

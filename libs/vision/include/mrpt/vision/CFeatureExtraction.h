@@ -337,11 +337,22 @@ class VISION_IMPEXP CFeatureExtraction
 
                 /** LSDOptions Options
 				 */
-                struct VISION_IMPEXP LSDOptions
+                struct VISION_IMPEXP TLSDOptions
                 {
                     int  	scale;
                     int  	nOctaves;
                 } LSDOptions;
+
+				/** BLDOptions Descriptor Options
+				 */
+				struct VISION_IMPEXP TBLDOptions
+				{
+					int ksize_;
+					int reductionRatio;
+					int widthOfBand;
+					int numOfOctave;
+
+				} BLDOptions;
 
 			};
 
@@ -515,6 +526,7 @@ class VISION_IMPEXP CFeatureExtraction
 									unsigned int nDesiredFeats = 0) const;
 #endif
 
+<<<<<<< e9c054811456ca207ceff28039b490df9e6159f4
 	/** @name Static methods with low-level detector functionality
 		@{ */
 
@@ -640,6 +652,120 @@ class VISION_IMPEXP CFeatureExtraction
 	*/
 	void internal_computeLogPolarImageDescriptors(
 		const mrpt::utils::CImage& in_img, CFeatureList& in_features) const;
+=======
+			/** @name Static methods with low-level detector functionality
+			    @{ */
+
+			/** A SSE2-optimized implementation of FASTER-9 (requires img to be grayscale). If SSE2 is not available, it gratefully falls back to a non-optimized version.
+			  *
+			  *  Only the pt.{x,y} fields are filled out for each feature: the rest of fields are left <b>uninitialized</b> and their content is <b>undefined</b>.
+			  *  Note that (x,y) are already scaled to the 0-level image coordinates if octave>0, by means of:
+			  *
+			  *  \code
+			  *    pt.x = detected.x << octave;
+			  *    pt.y = detected.y << octave;
+			  *  \endcode
+			  *
+			  * If \a append_to_list is true, the \a corners list is not cleared before adding the newly detected feats.
+			  *
+			  * If a valid pointer is provided for \a out_feats_index_by_row, upon return you will find a vector with
+			  *  as many entries as rows in the image (the real number of rows, disregarding the value of \a octave).
+			  * The number in each entry is the 0-based index (in \a corners) of
+			  *  the first feature that falls in that line of the image. This index can be used to fasten looking for correspondences.
+			  *
+			  * \ingroup mrptvision_features
+			  */
+			static void detectFeatures_SSE2_FASTER9(
+				const mrpt::utils::CImage &img,
+				TSimpleFeatureList & corners,
+				const int threshold = 20,
+				bool append_to_list = false,
+				uint8_t octave = 0,
+				std::vector<size_t> * out_feats_index_by_row = nullptr );
+
+			/** Just like \a detectFeatures_SSE2_FASTER9() for another version of the detector.
+			  * \ingroup mrptvision_features */
+			static void detectFeatures_SSE2_FASTER10(
+				const mrpt::utils::CImage &img,
+				TSimpleFeatureList & corners,
+				const int threshold = 20,
+				bool append_to_list = false,
+				uint8_t octave = 0,
+				std::vector<size_t> * out_feats_index_by_row = nullptr );
+
+			/** Just like \a detectFeatures_SSE2_FASTER9() for another version of the detector.
+			  * \ingroup mrptvision_features */
+			static void detectFeatures_SSE2_FASTER12(
+				const mrpt::utils::CImage &img,
+				TSimpleFeatureList & corners,
+				const int threshold = 20,
+				bool append_to_list = false,
+				uint8_t octave = 0,
+				std::vector<size_t> * out_feats_index_by_row = nullptr );
+
+			/** @} */
+
+		private:
+			/** Compute the SIFT descriptor of the provided features into the input image
+			* \param in_img (input) The image from where to compute the descriptors.
+			* \param in_features (input/output) The list of features whose descriptors are going to be computed.
+			*
+			* \note The SIFT descriptors for already located features can only be computed through the Hess and
+			        CSBinary implementations which may be specified in CFeatureExtraction::TOptions::SIFTOptions.
+			*/
+			void  internal_computeSiftDescriptors( const mrpt::utils::CImage	&in_img,
+										  CFeatureList		&in_features) const;
+
+
+			/** Compute the SURF descriptor of the provided features into the input image
+			* \param in_img (input) The image from where to compute the descriptors.
+			* \param in_features (input/output) The list of features whose descriptors are going to be computed.
+			*/
+			void  internal_computeSurfDescriptors( const mrpt::utils::CImage	&in_img,
+										  CFeatureList		&in_features) const;
+
+			/** Compute the ORB descriptor of the provided features into the input image
+			* \param in_img (input) The image from where to compute the descriptors.
+			* \param in_features (input/output) The list of features whose descriptors are going to be computed.
+			*/
+			void  internal_computeORBDescriptors( const mrpt::utils::CImage	&in_img,
+										  CFeatureList		&in_features) const;
+
+			/** Compute the intensity-domain spin images descriptor of the provided features into the input image
+			* \param in_img (input) The image from where to compute the descriptors.
+			* \param in_features (input/output) The list of features whose descriptors are going to be computed.
+			*
+			* \note Additional parameters from CFeatureExtraction::TOptions::SpinImagesOptions are used in this method.
+			*/
+			void  internal_computeSpinImageDescriptors( const mrpt::utils::CImage	&in_img,
+										  CFeatureList		&in_features) const;
+
+			/** Compute a polar-image descriptor of the provided features into the input image
+			* \param in_img (input) The image from where to compute the descriptors.
+			* \param in_features (input/output) The list of features whose descriptors are going to be computed.
+			*
+			* \note Additional parameters from CFeatureExtraction::TOptions::PolarImagesOptions are used in this method.
+			*/
+			void  internal_computePolarImageDescriptors( const mrpt::utils::CImage	&in_img,
+										  CFeatureList		&in_features) const;
+
+			/** Compute a log-polar image descriptor of the provided features into the input image
+			* \param in_img (input) The image from where to compute the descriptors.
+			* \param in_features (input/output) The list of features whose descriptors are going to be computed.
+			*
+			* \note Additional parameters from CFeatureExtraction::TOptions::LogPolarImagesOptions are used in this method.
+			*/
+			void  internal_computeLogPolarImageDescriptors( const mrpt::utils::CImage	&in_img,
+															CFeatureList		&in_features) const;
+			/** Compute a BSL descriptor of the provided features into the input image
+			* \param in_img (input) The image from where to compute the descriptors.
+			* \param in_features (input/output) The list of features whose descriptors are going to be computed.
+			*
+			* \note Additional parameters from CFeatureExtraction::TOptions::LogPolarImagesOptions are used in this method.
+			*/
+			void  internal_computeBLDLineDescriptors( const mrpt::utils::CImage	&in_img,
+															CFeatureList		&in_features) const;
+>>>>>>> work done from June 29 to June 30: added BLD Descriptor
 
 #if 0  // Delete? see comments in .cpp
 			/** Select good features using the openCV implementation of the KLT method.
