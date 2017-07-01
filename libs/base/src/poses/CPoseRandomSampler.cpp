@@ -64,12 +64,12 @@ void CPoseRandomSampler::setPosePDF( const CPosePDF *pdf )
     MRPT_START
 
     clear();
-    m_pdf2D = static_cast<CPosePDF*>( pdf->duplicate() );
+    m_pdf2D = dynamic_cast<CPosePDF*>( pdf->duplicate() );
 
     // According to the PDF type:
     if ( IS_CLASS(m_pdf2D,CPosePDFGaussian ) )
     {
-		const CPosePDFGaussian* gPdf = static_cast<const CPosePDFGaussian*>(pdf);
+		const CPosePDFGaussian* gPdf = static_cast<const CPosePDFGaussian*>(m_pdf2D);
 		const CMatrixDouble33 &cov = gPdf->cov;
 
 		m_fastdraw_gauss_M_2D = gPdf->mean;
@@ -109,12 +109,12 @@ void CPoseRandomSampler::setPosePDF( const CPose3DPDF *pdf )
     MRPT_START
 
     clear();
-    m_pdf3D = static_cast<CPose3DPDF*>( pdf->duplicate() );
+    m_pdf3D = dynamic_cast<CPose3DPDF*>( pdf->duplicate() );
 
     // According to the PDF type:
     if ( IS_CLASS(m_pdf3D,CPose3DPDFGaussian ) )
     {
-		const CPose3DPDFGaussian* gPdf = static_cast<const CPose3DPDFGaussian*>(pdf);
+		const CPose3DPDFGaussian* gPdf = dynamic_cast<const CPose3DPDFGaussian*>(m_pdf3D);
 		const CMatrixDouble66 &cov = gPdf->cov;
 
 		m_fastdraw_gauss_M_3D = gPdf->mean;
@@ -243,7 +243,7 @@ void CPoseRandomSampler::do_sample_2D( CPose2D &p ) const
 		// -------------------------------------
 		//      Particles: just sample as usual
 		// -------------------------------------
-		const CPosePDFParticles* pdf = static_cast<const CPosePDFParticles*>(m_pdf2D);
+		const CPosePDFParticles* pdf = dynamic_cast<const CPosePDFParticles*>(m_pdf2D);
 		pdf->drawSingleSample(p);
 	}
 	else
