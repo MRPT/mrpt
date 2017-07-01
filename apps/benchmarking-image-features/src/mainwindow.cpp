@@ -459,6 +459,85 @@ void MainWindow::on_button_generate_clicked()
 
 
             } break;
+
+            case 6: { // descBLD
+                vector<uint8_t > v1,v2;
+                //mrpt::utils::metaprogramming::copy_container_typecasting(featsImage1[i1]->descriptors.SIFT, v1);
+                v1 = featsImage1[i1]->descriptors.BLD;
+
+
+
+                Mat xData, yData, display;
+                Ptr<plot::Plot2d> plot;
+                int len = v1.size();
+                xData.create(1, len, CV_64F);//1 Row, 100 columns, Double
+                yData.create(1, len, CV_64F);
+
+                for(int i = 0; i<len; ++i)
+                {
+                    xData.at<double>(i) = i;
+                    yData.at<double>(i) = v1.at(i);
+                    //cout << yData.at<double>(i) << "  " << xData.at<double>(i) << endl;
+                }
+                plot = plot::createPlot2d(xData, yData);
+                plot->setPlotSize(len, 1);
+                plot->setMaxX(len);
+                plot->setMinX(0);
+                plot->setMaxY(257);
+                plot->setMinY(-2);
+                plot->render(display);
+
+
+                cv::Mat temp1(display.cols, display.rows, display.type());
+                cvtColor(display, temp1, CV_RGB2BGR);
+                //imshow("temp ", temp1);
+                //waitKey();
+                QImage dest1 = QImage((uchar *) temp1.data, temp1.cols, temp1.rows, temp1.step,
+                                      QImage::Format_RGB888);
+                qimage_1[i1] = dest1.scaled(4*DESCRIPTOR_HEIGHT, 5*DESCRIPTOR_WIDTH, Qt::KeepAspectRatio);
+                images1[i1] = new QLabel;
+                images1[i1]->setPixmap(QPixmap::fromImage(qimage_1[i1]));
+
+                if(currentInputIndex == 1 || currentInputIndex == 4)
+                {
+                    v2 = featsImage2[min_dist_idx]->descriptors.BLD;
+                    Mat xData, yData, display2;
+                    Ptr<plot::Plot2d> plot;
+                    int len = v2.size();
+                    xData.create(1, len, CV_64F);//1 Row, 100 columns, Double
+                    yData.create(1, len, CV_64F);
+
+                    for(int i = 0; i<len; ++i)
+                    {
+                        xData.at<double>(i) = i;
+                        yData.at<double>(i) = v2.at(i);
+                        //cout << yData.at<double>(i) << "  " << xData.at<double>(i) << endl;
+                    }
+                    plot = plot::createPlot2d(xData, yData);
+                    plot->setPlotSize(len, 1);
+                    plot->setMaxX(len);
+                    plot->setMinX(0);
+                    plot->setMaxY(257);
+                    plot->setMinY(-2);
+                    plot->render(display2);
+
+
+                    cv::Mat temp2(display2.cols, display2.rows, display2.type());
+                    cvtColor(display2, temp2, CV_RGB2BGR);
+                    //imshow("temp ", temp1);
+                    //waitKey();
+                    QImage dest2 = QImage((uchar *) temp2.data, temp2.cols, temp2.rows, temp2.step,
+                                          QImage::Format_RGB888);
+                    qimage_2[i1] = dest2.scaled(4*DESCRIPTOR_HEIGHT, 5*DESCRIPTOR_WIDTH, Qt::KeepAspectRatio);
+                    images2[i1] = new QLabel;
+                    images2[i1]->setPixmap(QPixmap::fromImage(qimage_2[i1]));
+                }
+
+            }
+                break;
+
+
+
             default: {
                 cerr << "Descriptor specified is not handled yet" << endl;
             }
@@ -546,7 +625,7 @@ void MainWindow::on_descriptor_choose(int choice)
         param4_edit_desc->setVisible(false);
         param5_edit_desc->setVisible(false);
     }
-    else if (choice == 5)
+    else if (choice == 5) // ORB Descriptor
     {
         param1_desc->setText("Extract Patch ");
         param2_desc->setText("Min Distance:: ");
@@ -557,8 +636,26 @@ void MainWindow::on_descriptor_choose(int choice)
         param3_edit_desc->setText("8");
         param4_edit_desc->setText("1.2");
 
-        param5->setVisible(false);
-        param5_edit->setVisible(false);
+        param5_desc->setVisible(false);
+        param5_edit_desc->setVisible(false);
+    }
+    else if (choice == 6) // BLD Descriptor
+    {
+        int ksize_;
+        int reductionRatio;
+        int numOfOctave;
+        int widthOfBand;
+        param1_desc->setText("nOctaves ");
+        param2_desc->setText("reduction Ratio: ");
+        param3_desc->setText("width of Band: ");
+        param4_desc->setText("ksize: ");
+        param1_edit_desc->setText("1");
+        param2_edit_desc->setText("2");
+        param3_edit_desc->setText("7");
+        param4_edit_desc->setText("1");
+
+        param5_desc->setVisible(false);
+        param5_edit_desc->setVisible(false);
     }
     else
     {
@@ -816,40 +913,40 @@ void MainWindow::fillDetectorInfo()
 
     if(detector_selected == 0) // 0 = KLT Detector
     {
-        klt_opts.min_distance = param1_edit->text().toFloat();
-        klt_opts.radius = param2_edit->text().toInt();
-        klt_opts.threshold = param3_edit->text().toFloat();
-        string temp_str = param4_edit->text().toStdString();
+        klt_opts.min_distance       = param1_edit->text().toFloat();
+        klt_opts.radius             = param2_edit->text().toInt();
+        klt_opts.threshold          = param3_edit->text().toFloat();
+        string temp_str             = param4_edit->text().toStdString();
         bool temp_bool = temp_str.compare("true") == 0;
         klt_opts.tile_image = temp_bool;
 
         fext.options.featsType = featKLT;
 
-        fext.options.KLTOptions.min_distance =klt_opts.min_distance;
-        fext.options.KLTOptions.radius = klt_opts.radius;
-        fext.options.KLTOptions.threshold = klt_opts.threshold;
-        fext.options.KLTOptions.tile_image = klt_opts.tile_image;
+        fext.options.KLTOptions.min_distance    = klt_opts.min_distance;
+        fext.options.KLTOptions.radius          = klt_opts.radius;
+        fext.options.KLTOptions.threshold       = klt_opts.threshold;
+        fext.options.KLTOptions.tile_image      = klt_opts.tile_image;
 
         cout << "detecting KLT Features " << endl ;
     }
     else if(detector_selected == 1) //Harris Features
     {
-        harris_opts.threshold = param1_edit->text().toFloat();
-        harris_opts.k = param2_edit->text().toFloat();
-        harris_opts.sigma = param3_edit->text().toFloat();
-        harris_opts.radius = param4_edit->text().toFloat();
-        string temp_str = param5_edit->text().toStdString();
+        harris_opts.threshold       = param1_edit->text().toFloat();
+        harris_opts.k               = param2_edit->text().toFloat();
+        harris_opts.sigma           = param3_edit->text().toFloat();
+        harris_opts.radius          = param4_edit->text().toFloat();
+        string temp_str             = param5_edit->text().toStdString();
         bool temp_bool = temp_str.compare("true") ? false : true;
         harris_opts.tile_image = temp_bool;
 
         fext.options.featsType = featHarris;
 
-        fext.options.harrisOptions.threshold = harris_opts.threshold;//0.005;
-        fext.options.harrisOptions.k =  harris_opts.k;  // default sensitivity
-        fext.options.harrisOptions.sigma = harris_opts.sigma;  // default from matlab smoothing filter
-        fext.options.harrisOptions.radius = harris_opts.radius;  // default block size
+        fext.options.harrisOptions.threshold    = harris_opts.threshold;//0.005;
+        fext.options.harrisOptions.k            =  harris_opts.k;  // default sensitivity
+        fext.options.harrisOptions.sigma        = harris_opts.sigma;  // default from matlab smoothing filter
+        fext.options.harrisOptions.radius       = harris_opts.radius;  // default block size
         //fext.options.harrisOptions.min_distance = 100;
-        fext.options.harrisOptions.tile_image = harris_opts.tile_image;
+        fext.options.harrisOptions.tile_image   = harris_opts.tile_image;
 
         cout << "detecting Harris Features " << endl ;
     }
@@ -861,13 +958,13 @@ void MainWindow::fillDetectorInfo()
     }
     else if(detector_selected == 3) // SIFT Detector
     {
-        SIFT_opts.threshold = param1_edit->text().toFloat();
-        SIFT_opts.edge_threshold = param2_edit->text().toFloat();
+        SIFT_opts.threshold         = param1_edit->text().toFloat();
+        SIFT_opts.edge_threshold    = param2_edit->text().toFloat();
 
         fext.options.featsType = featSIFT;
 
-        fext.options.SIFTOptions.threshold = SIFT_opts.threshold;
-        fext.options.SIFTOptions.edgeThreshold = SIFT_opts.edge_threshold;
+        fext.options.SIFTOptions.threshold      = SIFT_opts.threshold;
+        fext.options.SIFTOptions.edgeThreshold  = SIFT_opts.edge_threshold;
         //fext.options.SIFTOptions.implementation = CFeatureExtraction::CSBinary;
 
         cout << "detecting SIFT Features " << endl ;
@@ -876,28 +973,28 @@ void MainWindow::fillDetectorInfo()
     else if (detector_selected == 4) // 4= SURF Detector
     {
         fext.options.featsType = featSURF;
-        SURF_opts.hessianThreshold = param1_edit->text().toInt();
-        SURF_opts.nLayersPerOctave = param2_edit->text().toInt();
-        SURF_opts.nOctaves = param3_edit->text().toInt();
-        string temp_str = param4_edit->text().toStdString();
+        SURF_opts.hessianThreshold      = param1_edit->text().toInt();
+        SURF_opts.nLayersPerOctave      = param2_edit->text().toInt();
+        SURF_opts.nOctaves              = param3_edit->text().toInt();
+        string temp_str                 = param4_edit->text().toStdString();
         bool temp_bool = temp_str.compare("true") == 0;
         SURF_opts.rotation_invariant = temp_bool;
         cout <<  temp_bool << endl;
 
-        fext.options.SURFOptions.hessianThreshold = SURF_opts.hessianThreshold;
-        fext.options.SURFOptions.nLayersPerOctave = SURF_opts.nLayersPerOctave;
-        fext.options.SURFOptions.nOctaves = SURF_opts.nOctaves;
+        fext.options.SURFOptions.hessianThreshold   = SURF_opts.hessianThreshold;
+        fext.options.SURFOptions.nLayersPerOctave   = SURF_opts.nLayersPerOctave;
+        fext.options.SURFOptions.nOctaves           = SURF_opts.nOctaves;
         fext.options.SURFOptions.rotation_invariant = SURF_opts.rotation_invariant;
     }
     else if(detector_selected == 5 || detector_selected == 6 || detector_selected == 7 || detector_selected == 8) //FAST detector and its variants
     {
-        fast_opts.threshold = param1_edit->text().toFloat();
-        fast_opts.min_distance = param2_edit->text().toFloat();
-        string temp_str = param3_edit->text().toStdString();
+        fast_opts.threshold         = param1_edit->text().toFloat();
+        fast_opts.min_distance      = param2_edit->text().toFloat();
+        string temp_str             = param3_edit->text().toStdString();
         bool temp_bool = temp_str.compare("true") == 0;
         fast_opts.use_KLT_response = temp_bool;
 
-        temp_str = param4_edit->text().toStdString();
+        temp_str        = param4_edit->text().toStdString();
         temp_bool = temp_str.compare("true") == 0;
         fast_opts.non_max_suppresion = temp_bool;
 
@@ -910,56 +1007,56 @@ void MainWindow::fillDetectorInfo()
         else
             fext.options.featsType = featFASTER12;
 
-        fext.options.FASTOptions.threshold = fast_opts.threshold;
-        fext.options.FASTOptions.min_distance = fast_opts.min_distance;
-        fext.options.FASTOptions.use_KLT_response = fast_opts.use_KLT_response;
+        fext.options.FASTOptions.threshold          = fast_opts.threshold;
+        fext.options.FASTOptions.min_distance       = fast_opts.min_distance;
+        fext.options.FASTOptions.use_KLT_response   = fast_opts.use_KLT_response;
         fext.options.FASTOptions.nonmax_suppression = fast_opts.non_max_suppresion;
     }
     else if(detector_selected == 9) // ORB Feature detector
     {
         fext.options.featsType = featORB;
 
-        ORB_opts.min_distance = param1_edit->text().toInt();
-        string temp_str = param2_edit->text().toStdString();
-        bool temp_bool = temp_str.compare("true") == 0;
-        ORB_opts.extract_patch = temp_bool;
-        ORB_opts.n_levels = param3_edit->text().toInt();
-        ORB_opts.scale_factor = param4_edit->text().toFloat();
+        ORB_opts.min_distance       = param1_edit->text().toInt();
+        string temp_str             = param2_edit->text().toStdString();
+        bool temp_bool              = temp_str.compare("true") == 0;
+        ORB_opts.extract_patch      = temp_bool;
+        ORB_opts.n_levels           = param3_edit->text().toInt();
+        ORB_opts.scale_factor       = param4_edit->text().toFloat();
 
 
-        fext.options.ORBOptions.min_distance = ORB_opts.min_distance;
-        fext.options.ORBOptions.extract_patch = ORB_opts.extract_patch;
-        fext.options.ORBOptions.n_levels = ORB_opts.n_levels;
-        fext.options.ORBOptions.scale_factor = ORB_opts.scale_factor;
+        fext.options.ORBOptions.min_distance    = ORB_opts.min_distance;
+        fext.options.ORBOptions.extract_patch   = ORB_opts.extract_patch;
+        fext.options.ORBOptions.n_levels        = ORB_opts.n_levels;
+        fext.options.ORBOptions.scale_factor    = ORB_opts.scale_factor;
 
     }
     else if(detector_selected == 10) // AKAZE Feature detector
     {
         fext.options.featsType = featAKAZE;
 
-        AKAZE_opts.descriptor_size = param1_edit->text().toInt();
-        AKAZE_opts.descriptor_channels = param2_edit->text().toInt();
-        AKAZE_opts.threshold = param3_edit->text().toFloat();
-        AKAZE_opts.nOctaves = param4_edit->text().toInt();
-        AKAZE_opts.nOctaveLayers = param5_edit->text().toInt();
+        AKAZE_opts.descriptor_size          = param1_edit->text().toInt();
+        AKAZE_opts.descriptor_channels      = param2_edit->text().toInt();
+        AKAZE_opts.threshold                = param3_edit->text().toFloat();
+        AKAZE_opts.nOctaves                 = param4_edit->text().toInt();
+        AKAZE_opts.nOctaveLayers            = param5_edit->text().toInt();
 
-        fext.options.AKAZEOptions.descriptor_size = AKAZE_opts.descriptor_size;
-        fext.options.AKAZEOptions.descriptor_channels = AKAZE_opts.descriptor_channels;
-        fext.options.AKAZEOptions.threshold = AKAZE_opts.threshold;
-        fext.options.AKAZEOptions.nOctaves = AKAZE_opts.nOctaves;
-        fext.options.AKAZEOptions.nOctaveLayers = AKAZE_opts.nOctaveLayers;
+        fext.options.AKAZEOptions.descriptor_size       = AKAZE_opts.descriptor_size;
+        fext.options.AKAZEOptions.descriptor_channels   = AKAZE_opts.descriptor_channels;
+        fext.options.AKAZEOptions.threshold             = AKAZE_opts.threshold;
+        fext.options.AKAZEOptions.nOctaves              = AKAZE_opts.nOctaves;
+        fext.options.AKAZEOptions.nOctaveLayers         = AKAZE_opts.nOctaveLayers;
 
     }
-    else if(detector_selected == 11) // AKAZE Feature detector
+    else if(detector_selected == 11) // LSD Feature detector
     {
         fext.options.featsType = featLSD;
 
-        LSD_opts.scale = param1_edit->text().toInt();
-        LSD_opts.nOctaves = param2_edit->text().toInt();
+        LSD_opts.scale      = param1_edit->text().toInt();
+        LSD_opts.nOctaves   = param2_edit->text().toInt();
 
 
-        fext.options.LSDOptions.scale = LSD_opts.scale;
-        fext.options.LSDOptions.nOctaves = LSD_opts.nOctaves;
+        fext.options.LSDOptions.scale       = LSD_opts.scale;
+        fext.options.LSDOptions.nOctaves    = LSD_opts.nOctaves;
 
     }
 }
@@ -979,73 +1076,73 @@ void MainWindow::fillDescriptorInfo()
 
     if(descriptor_selected == 0) //!< SIFT Descriptors
     {
-        SIFT_opts.threshold = param1_edit_desc->text().toFloat();
-        SIFT_opts.edge_threshold = param2_edit_desc->text().toFloat();
+        SIFT_opts.threshold         = param1_edit_desc->text().toFloat();
+        SIFT_opts.edge_threshold    = param2_edit_desc->text().toFloat();
 
         desc_to_compute = TDescriptorType (1); //!< SIFT descriptors
 
-        fext.options.SIFTOptions.threshold = SIFT_opts.threshold;
-        fext.options.SIFTOptions.edgeThreshold = SIFT_opts.edge_threshold;
+        fext.options.SIFTOptions.threshold      = SIFT_opts.threshold;
+        fext.options.SIFTOptions.edgeThreshold  = SIFT_opts.edge_threshold;
         //fext.options.SIFTOptions.implementation = CFeatureExtraction::CSBinary;
     }
     else if(descriptor_selected == 1)
     {
         desc_to_compute = TDescriptorType (2); //!< SURF descriptors
 
-        SURF_opts.hessianThreshold = param1_edit_desc->text().toInt();
-        SURF_opts.nLayersPerOctave = param2_edit_desc->text().toInt();
-        SURF_opts.nOctaves = param3_edit_desc->text().toInt();
-        string temp_str = param4_edit_desc->text().toStdString();
+        SURF_opts.hessianThreshold      = param1_edit_desc->text().toInt();
+        SURF_opts.nLayersPerOctave      = param2_edit_desc->text().toInt();
+        SURF_opts.nOctaves              = param3_edit_desc->text().toInt();
+        string temp_str                 = param4_edit_desc->text().toStdString();
         bool temp_bool = temp_str.compare("true") == 0;
         SURF_opts.rotation_invariant = temp_bool;
         cout <<  temp_bool << endl;
 
-        fext.options.SURFOptions.hessianThreshold =  SURF_opts.hessianThreshold;
-        fext.options.SURFOptions.nLayersPerOctave =  SURF_opts.nLayersPerOctave;
-        fext.options.SURFOptions.nOctaves = SURF_opts.nOctaves;
-        fext.options.SURFOptions.rotation_invariant = SURF_opts.rotation_invariant;
+        fext.options.SURFOptions.hessianThreshold       =  SURF_opts.hessianThreshold;
+        fext.options.SURFOptions.nLayersPerOctave       =  SURF_opts.nLayersPerOctave;
+        fext.options.SURFOptions.nOctaves               = SURF_opts.nOctaves;
+        fext.options.SURFOptions.rotation_invariant     = SURF_opts.rotation_invariant;
     }
     else if(descriptor_selected == 2)
     {
         desc_to_compute = TDescriptorType(4); //!< Intensity-domain spin image descriptors
 
-        spin_opts.radius = param1_edit_desc->text().toInt();
-        spin_opts.hist_size_intensity = param2_edit_desc->text().toInt();
-        spin_opts.hist_size_distance = param3_edit_desc->text().toInt();
-        spin_opts.std_dist = param4_edit_desc->text().toFloat();
-        spin_opts.std_intensity = param5_edit_desc->text().toFloat();
+        spin_opts.radius                = param1_edit_desc->text().toInt();
+        spin_opts.hist_size_intensity   = param2_edit_desc->text().toInt();
+        spin_opts.hist_size_distance    = param3_edit_desc->text().toInt();
+        spin_opts.std_dist              = param4_edit_desc->text().toFloat();
+        spin_opts.std_intensity         = param5_edit_desc->text().toFloat();
 
 
-        fext.options.SpinImagesOptions.radius = spin_opts.radius;
-        fext.options.SpinImagesOptions.hist_size_intensity = spin_opts.hist_size_intensity;
-        fext.options.SpinImagesOptions.hist_size_distance = spin_opts.hist_size_distance ;
-        fext.options.SpinImagesOptions.std_dist = spin_opts.std_dist;
-        fext.options.SpinImagesOptions.std_intensity = spin_opts.std_intensity;
+        fext.options.SpinImagesOptions.radius               = spin_opts.radius;
+        fext.options.SpinImagesOptions.hist_size_intensity  = spin_opts.hist_size_intensity;
+        fext.options.SpinImagesOptions.hist_size_distance   = spin_opts.hist_size_distance ;
+        fext.options.SpinImagesOptions.std_dist             = spin_opts.std_dist;
+        fext.options.SpinImagesOptions.std_intensity        = spin_opts.std_intensity;
 
     }
     else if(descriptor_selected == 3)
     {
         desc_to_compute = TDescriptorType(8); //!< Polar image descriptor
 
-        polar_opts.radius = param1_edit_desc->text().toInt();
-        polar_opts.bins_angle = param2_edit_desc->text().toInt();
-        polar_opts.bins_distance = param3_edit_desc->text().toInt();
+        polar_opts.radius           = param1_edit_desc->text().toInt();
+        polar_opts.bins_angle       = param2_edit_desc->text().toInt();
+        polar_opts.bins_distance    = param3_edit_desc->text().toInt();
 
-        fext.options.PolarImagesOptions.radius = polar_opts.radius;
-        fext.options.PolarImagesOptions.bins_angle = polar_opts.bins_angle;
-        fext.options.PolarImagesOptions.bins_distance = polar_opts.bins_distance;
+        fext.options.PolarImagesOptions.radius          = polar_opts.radius;
+        fext.options.PolarImagesOptions.bins_angle      = polar_opts.bins_angle;
+        fext.options.PolarImagesOptions.bins_distance   = polar_opts.bins_distance;
     }
     else if(descriptor_selected == 4)
     {
         desc_to_compute = TDescriptorType (16); //!< Log-Polar image descriptor
 
-        log_polar_opts.radius = param1_edit_desc->text().toInt();
-        log_polar_opts.num_angles = param2_edit_desc->text().toInt();
-        log_polar_opts.rho_scale = param3_edit_desc->text().toFloat();
+        log_polar_opts.radius       = param1_edit_desc->text().toInt();
+        log_polar_opts.num_angles   = param2_edit_desc->text().toInt();
+        log_polar_opts.rho_scale    = param3_edit_desc->text().toFloat();
 
-        fext.options.LogPolarImagesOptions.radius = log_polar_opts.radius;
-        fext.options.LogPolarImagesOptions.num_angles = log_polar_opts.num_angles;
-        fext.options.LogPolarImagesOptions.rho_scale = log_polar_opts.rho_scale;
+        fext.options.LogPolarImagesOptions.radius       = log_polar_opts.radius;
+        fext.options.LogPolarImagesOptions.num_angles   = log_polar_opts.num_angles;
+        fext.options.LogPolarImagesOptions.rho_scale    = log_polar_opts.rho_scale;
     }
     else if(descriptor_selected == 5)
     {
@@ -1056,15 +1153,30 @@ void MainWindow::fillDescriptorInfo()
         ORB_opts.extract_patch  = temp_bool;
         cout <<  temp_bool << endl;
 
-        ORB_opts.min_distance = param2_edit_desc->text().toInt();
-        ORB_opts.n_levels = param3_edit_desc->text().toInt();
-        ORB_opts.scale_factor = param4_edit_desc->text().toFloat();
+        ORB_opts.min_distance       = param2_edit_desc->text().toInt();
+        ORB_opts.n_levels           = param3_edit_desc->text().toInt();
+        ORB_opts.scale_factor       = param4_edit_desc->text().toFloat();
 
-        fext.options.ORBOptions.extract_patch = ORB_opts.extract_patch;
-        fext.options.ORBOptions.min_distance = ORB_opts.min_distance;
-        fext.options.ORBOptions.n_levels = ORB_opts.n_levels;
-        fext.options.ORBOptions.scale_factor = ORB_opts.scale_factor;
+        fext.options.ORBOptions.extract_patch       = ORB_opts.extract_patch;
+        fext.options.ORBOptions.min_distance        = ORB_opts.min_distance;
+        fext.options.ORBOptions.n_levels            = ORB_opts.n_levels;
+        fext.options.ORBOptions.scale_factor        = ORB_opts.scale_factor;
 
+    }
+    else if(descriptor_selected == 6)
+    {
+        desc_to_compute = TDescriptorType (64); //!< BLD image descriptor
+
+
+        BLD_opts.numOfOctave        = param1_edit_desc->text().toInt();
+        BLD_opts.widthOfBand        = param2_edit_desc->text().toInt();
+        BLD_opts.reductionRatio     = param3_edit_desc->text().toInt();
+        BLD_opts.ksize_             = param4_edit_desc->text().toInt();
+
+        fext.options.BLDOptions.numOfOctave         = BLD_opts.numOfOctave;
+        fext.options.BLDOptions.widthOfBand         = BLD_opts.widthOfBand;
+        fext.options.BLDOptions.reductionRatio      = BLD_opts.reductionRatio;
+        fext.options.BLDOptions.ksize_              = BLD_opts.ksize_;
     }
 }
 
@@ -1156,39 +1268,6 @@ void MainWindow::on_detector_button_clicked()
         cout << "Number of Features in image 2: " << featsImage2.size() << endl;
 
     }
-
-    /*if(detector_selected == 9)
-    {
-        computeBSD();
-    }
-
-    if(detector_selected == 10)
-    {
-        cv::Mat img = imread(file_path1);
-        cv::Mat img2 = imread(file_path2);
-
-
-        int scale = param1_edit->text().toInt();
-        int numOctaves = param2_edit->text().toInt();
-
-        cv::Mat ff = computeLSD(img,scale,numOctaves);
-        cv::Mat ff2 = computeLSD(img2,scale,numOctaves);
-
-        qimage1 = QImage((uchar*) ff.data, ff.cols, ff.rows, ff.step, QImage::Format_RGB888);
-        //image1->setPixmap(QPixmap::fromImage(qimage1));
-
-        QImage qsmall1 = qimage1.scaled(IMAGE_WIDTH, IMAGE_HEIGHT, Qt::KeepAspectRatio);
-        image1->setPixmap(QPixmap::fromImage(qsmall1));
-
-
-        qimage2 = QImage((uchar*) ff2.data, ff2.cols, ff2.rows, ff2.step, QImage::Format_RGB888);
-        QImage qsmall2 = qimage2.scaled(IMAGE_WIDTH, IMAGE_HEIGHT, Qt::KeepAspectRatio);
-        //image2->setPixmap(QPixmap::fromImage(qimage2));
-
-        image2->setPixmap(QPixmap::fromImage(qsmall2));
-
-
-    }*/
 }
 
 /*
@@ -1220,7 +1299,9 @@ void MainWindow::on_descriptor_button_clicked()
     else if (descriptor_selected == 4)
         desc_to_compute = TDescriptorType (16); //!< Log-Polar image descriptor
     else if (descriptor_selected == 5)
-        desc_to_compute = TDescriptorType (32); //!< Log-Polar image descriptor
+        desc_to_compute = TDescriptorType (32); //!< ORB image descriptor
+    else if (descriptor_selected == 6)
+        desc_to_compute = TDescriptorType (64); //!< BLD image descriptor
 
 
     if(desc_to_compute != descAny)
@@ -1642,7 +1723,7 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
     string descriptor_names[] = {"SIFT Descriptor", "SURF Descriptor",
                                  "Intensity-domain spin image descriptor", "Polar Images descriptor",
                                  "Log-polar image descriptor", "ORB Descriptor",
-                                 "LATCH Descriptor", "BLD Descriptor"};
+                                 "BLD Descriptor", "LATCH Descriptor"};
     //"BRIEF Descriptors"};
 
     descriptors_select = new QComboBox;
@@ -2147,7 +2228,7 @@ void MainWindow::Mouse_Pressed()
 
 
     }
-    else if(descriptor_selected == 0 || descriptor_selected == 1 || descriptor_selected == 5)
+    else if(descriptor_selected == 0 || descriptor_selected == 1 || descriptor_selected == 5 || descriptor_selected == 6)
     {
 
         //featureMatched->clear();

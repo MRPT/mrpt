@@ -308,8 +308,50 @@ struct VISION_IMPEXP TStereoSystemParams : public mrpt::utils::CLoadableOptions
 		/** The bitwise OR combination of values of TDescriptorType are used in CFeatureExtraction::computeDescriptors to indicate which descriptors are to be computed for features.
 >>>>>>> work done from June 27 to June 29: added AKAZE and LSD detectors
 		  */
+<<<<<<< e9c054811456ca207ceff28039b490df9e6159f4
 		Prop_UT,
 		/** Uncertainty propagation through the Scaled Unscented Transformation
+=======
+		enum TDescriptorType
+		{
+			descAny				= 0,  //!< Used in some methods to mean "any of the present descriptors"
+			descSIFT            = 1,  //!< SIFT descriptors
+			descSURF			= 2,  //!< SURF descriptors
+			descSpinImages      = 4,  //!< Intensity-domain spin image descriptors
+			descPolarImages     = 8,  //!< Polar image descriptor
+			descLogPolarImages	= 16,  //!< Log-Polar image descriptor
+			descORB				= 32,  //!< Bit-based feature descriptor
+			// #added by Raghavender Sahdev
+			descBLD				= 64   //!< BLD Line descriptor
+		};
+
+		enum TFeatureTrackStatus
+		{
+			// Init value
+			status_IDLE 	= 0,	//!< Inactive (right after detection, and before being tried to track)
+
+			// Ok:
+			status_TRACKED 	= 5,	//!< Feature correctly tracked
+
+			// Bad:
+			status_OOB		= 1,	//!< Feature fell Out Of Bounds (out of the image limits, too close to image borders)
+			status_LOST 	= 10	//!< Unable to track this feature (mismatch is too high for the given tracking window: lack of texture? oclussion?)
+		};
+
+
+		/** One feature observation entry, used within sequences with TSequenceFeatureObservations */
+		struct VISION_IMPEXP TFeatureObservation
+		{
+			inline TFeatureObservation() { }
+			inline TFeatureObservation(const TLandmarkID _id_feature, const TCameraPoseID  _id_frame, const mrpt::utils::TPixelCoordf &_px) : id_feature(_id_feature), id_frame(_id_frame), px(_px) { }
+
+			TLandmarkID    id_feature;  //!< A unique ID of this feature
+			TCameraPoseID  id_frame;    //!< A unique ID of a "frame" (camera position) from where the feature was observed.
+			mrpt::utils::TPixelCoordf   px;          //!< The pixel coordinates of the observed feature
+		};
+
+		/** One relative feature observation entry, used with some relative bundle-adjustment functions.
+>>>>>>> work done from June 29 to June 30: added BLD Descriptor
 		  */
 		Prop_SUT
 	};

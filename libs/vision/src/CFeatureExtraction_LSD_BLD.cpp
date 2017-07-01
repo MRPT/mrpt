@@ -127,14 +127,14 @@ void  CFeatureExtraction::extractFeaturesLSD(const mrpt::utils::CImage &inImg, C
         unsigned int	cont		= 0;
         TFeatureID		nextID		= init_ID;
 
-        cout << "I am in extractFeaturesAKAZE 4" << endl ;
+
         if( !options.addNewFeatures )
             feats.clear();
 
         /* draw lines extracted from octave 0 */
         if( output.channels() == 1 )
             cvtColor( output, output, COLOR_GRAY2BGR );
-        cout << "I am in extractFeaturesAKAZE 5" << endl ;
+
 
         while( cont != nMax && i!=N )
         {
@@ -144,14 +144,13 @@ void  CFeatureExtraction::extractFeaturesLSD(const mrpt::utils::CImage &inImg, C
 
             if(kl.octave == 0)
             {
-                cout << "I am in extractFeaturesAKAZE 6" << endl;
+
                 Point pt1 = Point2f(kl.startPointX, kl.startPointY);
                 Point pt2 = Point2f(kl.endPointX, kl.endPointY);
 
                 kp.pt.x = (pt1.x + pt2.x) / 2;
                 kp.pt.y = (pt1.y + pt2.y) / 2;
                 i++;
-                cout << "I am in extractFeaturesAKAZE 7" << endl;
                 // Patch out of the image??
                 const int xBorderInf = (int) floor(kp.pt.x - size_2);
                 const int xBorderSup = (int) floor(kp.pt.x + size_2);
@@ -171,7 +170,6 @@ void  CFeatureExtraction::extractFeaturesLSD(const mrpt::utils::CImage &inImg, C
                 ft->x2[1] = pt2.x;
                 ft->y2[0] = pt1.y;
                 ft->y2[1] = pt2.y;
-                cout << "I am in extractFeaturesAKAZE 7" << endl;
                 ft->response		= kl.response;
                 //ft->orientation		= kp.angle;
                 ft->scale			= kl.octave;
@@ -190,7 +188,6 @@ void  CFeatureExtraction::extractFeaturesLSD(const mrpt::utils::CImage &inImg, C
             ++cont;
             //cout << ft->x << "  " << ft->y << endl;
         }
-        cout << "I am in extractFeaturesAKAZE 7" << endl ;
         //feats.resize( cont );  // JL: really needed???
 
 #	endif
@@ -199,3 +196,69 @@ void  CFeatureExtraction::extractFeaturesLSD(const mrpt::utils::CImage &inImg, C
 
 
 }
+
+
+/************************************************************************************************
+*						internal_computeBLDDescriptors
+************************************************************************************************/
+void  CFeatureExtraction::internal_computeBLDLineDescriptors(
+        const mrpt::utils::CImage &in_img,
+        CFeatureList &in_features) const
+{
+//#if HAVE_OPENCV_WITH_SURF
+    using namespace cv;
+
+    if (in_features.empty()) return;
+
+	const CImage img_grayscale(in_img, FAST_REF_OR_CONVERT_TO_GRAY);
+	const Mat img = cvarrToMat( img_grayscale.getAs<IplImage>() );
+
+	vector<KeyPoint> cv_feats; // OpenCV keypoint output vector
+	Mat              cv_descs; // OpenCV descriptor output
+
+
+    cv::Mat mask = Mat::ones( img.size(), CV_8UC1 );
+
+    BinaryDescriptor::Params params;
+    params.ksize_               = options.BLDOptions.ksize_;
+    params.reductionRatio       = options.BLDOptions.reductionRatio;
+    params.numOfOctave_         = options.BLDOptions.numOfOctave;
+    params.widthOfBand_         = options.BLDOptions.widthOfBand;
+
+    Ptr<BinaryDescriptor> bd2 = BinaryDescriptor::createBinaryDescriptor(params);
+    /* compute lines */
+    std::vector<KeyLine> keylines;
+
+    bd2->detect( img, keylines, mask );
+
+    /* compute descriptors */
+
+    bd2->compute( img, keylines, cv_descs);
+
+
+    keylines.resize(in_features.size());
+
+
+
+//gb redesign end
+	// -----------------------------------------------------------------
+	// MRPT Wrapping
+	// -----------------------------------------------------------------
+	CFeatureList::iterator	itList;
+	int i;
+	for (i=0, itList=in_features.begin();itList!=in_features.end();itList++,i++)
+	{
+		CFeature::Ptr ft = *itList;
+
+        // Get the BLD descriptor
+		ft->descriptors.BLD.resize( cv_descs.cols );
+		for( int m = 0; m < cv_descs.cols; ++m )
+			ft->descriptors.BLD[m] = cv_descs.at<int>(i,m);		// Get the SURF descriptor
+	} // end for
+
+//#else
+  //  THROW_EXCEPTION("Method not available: MRPT compiled without OpenCV, or against a version of OpenCV without SURF")
+//#endif //MRPT_HAS_OPENCV
+}  // end internal_computeSurfDescriptors
+
+

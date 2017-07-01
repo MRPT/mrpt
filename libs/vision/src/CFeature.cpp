@@ -302,8 +302,13 @@ void CFeature::dumpToTextStream(mrpt::utils::CStream& out) const
 	case 8: out.printf("FASTER-10\n"); break;
 	case 9: out.printf("FASTER-12\n"); break;
 	case 10:out.printf("ORB\n"); break;
+<<<<<<< e9c054811456ca207ceff28039b490df9e6159f4
 	case 11:out.printf("AKAZE"); break;
 >>>>>>> work done from June 27 to June 29: added AKAZE and LSD detectors
+=======
+	case 11:out.printf("AKAZE\n"); break;
+    case 12:out.printf("LSD"); break;
+>>>>>>> work done from June 29 to June 30: added BLD Descriptor
 	}
 	out.printf("Status:                         ");
 	switch (track_status)
@@ -347,10 +352,19 @@ void CFeature::dumpToTextStream(mrpt::utils::CStream& out) const
 	descriptors.hasDescriptorPolarImg() ? out.printf("Yes\n")
 										: out.printf("No\n");
 	out.printf("Has Log Polar descriptor?:      ");
+<<<<<<< e9c054811456ca207ceff28039b490df9e6159f4
 	descriptors.hasDescriptorLogPolarImg() ? out.printf("Yes\n")
 										   : out.printf("No\n");
 	out.printf("Has ORB descriptor?:			");
 	descriptors.hasDescriptorORB() ? out.printf("Yes\n") : out.printf("No\n");
+=======
+	descriptors.hasDescriptorLogPolarImg() ? out.printf("Yes\n") : out.printf("No\n");
+    out.printf("Has ORB descriptor?:			");
+    descriptors.hasDescriptorORB() ? out.printf("Yes\n") : out.printf("No\n");
+    //# added by Raghavender Sahdev
+    out.printf("Has BLD descriptor?:			");
+    descriptors.hasDescriptorBLD() ? out.printf("Yes\n") : out.printf("No\n");
+>>>>>>> work done from June 29 to June 30: added BLD Descriptor
 
 	out.printf("Has multiscale?:                ");
 	if (!descriptors.hasDescriptorMultiSIFT())
@@ -403,7 +417,14 @@ void CFeature::writeToStream(mrpt::utils::CStream& out, int* version) const
 			<< descriptors.SpinImg << descriptors.SpinImg_range_rows
 			<< descriptors.PolarImg << descriptors.LogPolarImg
 			<< descriptors.polarImgsNoRotation
+<<<<<<< e9c054811456ca207ceff28039b490df9e6159f4
 			<< descriptors.multiSIFTDescriptors << descriptors.ORB;
+=======
+			<< descriptors.multiSIFTDescriptors
+			<< descriptors.ORB
+            //# ADDED by Raghavender Sahdev
+            << descriptors.BLD;
+>>>>>>> work done from June 29 to June 30: added BLD Descriptor
 	}
 }
 
@@ -425,6 +446,7 @@ void CFeature::readFromStream(mrpt::utils::CStream& in, int version)
 					initialDepth >> p3D >> multiScales >> multiOrientations >>
 					multiHashCoeffs;
 			}
+<<<<<<< e9c054811456ca207ceff28039b490df9e6159f4
 			in >> descriptors.SIFT >> descriptors.SURF >> descriptors.SpinImg >>
 				descriptors.SpinImg_range_rows >> descriptors.PolarImg >>
 				descriptors.LogPolarImg >> descriptors.polarImgsNoRotation;
@@ -437,6 +459,28 @@ void CFeature::readFromStream(mrpt::utils::CStream& in, int version)
 		break;
 		default:
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+=======
+			in  >> descriptors.SIFT
+				>> descriptors.SURF
+				>> descriptors.SpinImg
+				>> descriptors.SpinImg_range_rows
+				>> descriptors.PolarImg
+				>> descriptors.LogPolarImg
+				>> descriptors.polarImgsNoRotation
+                // # added by Raghavender Sahdev
+                >> descriptors.BLD;
+			if( version > 0 )
+				in  >> descriptors.multiSIFTDescriptors;
+			if( version > 1 )
+				in 	>> descriptors.ORB;
+
+			type		    = (TFeatureType)aux_type;
+			track_status	= (TFeatureTrackStatus)aux_KLTS;
+		} break;
+	default:
+		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+
+>>>>>>> work done from June 29 to June 30: added BLD Descriptor
 	};
 }
 
@@ -469,6 +513,7 @@ CFeature::CFeature()
 }
 
 // Ctor
+<<<<<<< e9c054811456ca207ceff28039b490df9e6159f4
 CFeature::TDescriptors::TDescriptors()
 	: SIFT(),
 	  SURF(),
@@ -480,6 +525,18 @@ CFeature::TDescriptors::TDescriptors()
 	  ORB()
 {
 }
+=======
+CFeature::TDescriptors::TDescriptors() :
+	SIFT(),
+	SURF(),
+	SpinImg(), SpinImg_range_rows(0),
+	PolarImg(0,0),
+	LogPolarImg(0,0),
+	polarImgsNoRotation(false),
+	ORB(),
+    BLD()
+{ }
+>>>>>>> work done from June 29 to June 30: added BLD Descriptor
 
 // Return false only for Blob detectors (SIFT, SURF)
 bool CFeature::isPointFeature() const
@@ -529,11 +586,20 @@ float CFeature::descriptorDistanceTo(
 			descriptorToUse = descPolarImages;
 		else if (descriptors.hasDescriptorLogPolarImg())
 			descriptorToUse = descLogPolarImages;
+<<<<<<< e9c054811456ca207ceff28039b490df9e6159f4
 		else if (descriptors.hasDescriptorORB())
 			descriptorToUse = descORB;
 		else
 			THROW_EXCEPTION(
 				"Feature has no descriptors and descriptorToUse=descAny")
+=======
+        else if (descriptors.hasDescriptorORB())
+            descriptorToUse = descORB;
+        // # BLD descriptors
+        else if (descriptors.hasDescriptorBLD())
+            descriptorToUse = descBLD;
+		else THROW_EXCEPTION("Feature has no descriptors and descriptorToUse=descAny")
+>>>>>>> work done from June 29 to June 30: added BLD Descriptor
 	}
 
 	switch (descriptorToUse)
@@ -556,12 +622,22 @@ float CFeature::descriptorDistanceTo(
 			return descriptorLogPolarImgDistanceTo(
 				oFeature, minAng, normalize_distances);
 		}
+<<<<<<< e9c054811456ca207ceff28039b490df9e6159f4
 		case descORB:
 			return float(descriptorORBDistanceTo(oFeature));
 		default:
 			THROW_EXCEPTION_FMT(
 				"Unknown value for 'descriptorToUse'=%u",
 				(unsigned)descriptorToUse);
+=======
+        case descORB:
+            return float(descriptorORBDistanceTo(oFeature));
+        // # added by Raghavender Sahdev
+        case descBLD:
+            return (descriptorBLDDistanceTo(oFeature));
+	default:
+		THROW_EXCEPTION_FMT("Unknown value for 'descriptorToUse'=%u",(unsigned)descriptorToUse);
+>>>>>>> work done from June 29 to June 30: added BLD Descriptor
 	}
 
 	MRPT_END
@@ -852,12 +928,38 @@ uint8_t CFeature::descriptorORBDistanceTo(const CFeature& oFeature) const
 	return float(distance);
 }  // end-descriptorORBDistanceTo
 
+
+// # added by Raghavender Sahdev
+// --------------------------------------------------
+// descriptorBLDDistanceTo
+// --------------------------------------------------
+float CFeature::descriptorBLDDistanceTo( const CFeature &oFeature, bool normalize_distances ) const
+{
+    ASSERT_( this->descriptors.BLD.size() == oFeature.descriptors.BLD.size() );
+    ASSERT_( this->descriptors.hasDescriptorBLD() && oFeature.descriptors.hasDescriptorBLD() )
+
+    float dist = 0.0f;
+    std::vector<unsigned char>::const_iterator itDesc1, itDesc2;
+    for( itDesc1 = this->descriptors.BLD.begin(), itDesc2 = oFeature.descriptors.BLD.begin();
+         itDesc1 != this->descriptors.BLD.end();
+         itDesc1++, itDesc2++ )
+    {
+        dist += square(*itDesc1 - *itDesc2);
+    }
+    if (normalize_distances) dist/= this->descriptors.BLD.size();
+    dist = sqrt(dist);
+    if (normalize_distances) dist/= 64.0f;
+    return dist;
+} // end descriptorBLDDistanceTo
+
+
 // --------------------------------------------------
 //              saveToTextFile
 // --------------------------------------------------
 void CFeature::saveToTextFile(const std::string& filename, bool APPEND)
 {
 	MRPT_START
+<<<<<<< e9c054811456ca207ceff28039b490df9e6159f4
 	//    "%% Dump of mrpt::vision::CFeatureList. Each line format is:\n"
 	//    "%% ID TYPE X Y ORIENTATION SCALE TRACK_STATUS RESPONSE HAS_SIFT
 	//    [SIFT] HAS_SURF [SURF] HAS_MULTI [MULTI_i] HAS_ORB [ORB]"
@@ -930,6 +1032,76 @@ void CFeature::saveToTextFile(const std::string& filename, bool APPEND)
 			f.printf("%d ", this->descriptors.ORB[k]);
 
 	f.printf("\n");
+=======
+//    "%% Dump of mrpt::vision::CFeatureList. Each line format is:\n"
+//    "%% ID TYPE X Y ORIENTATION SCALE TRACK_STATUS RESPONSE HAS_SIFT [SIFT] HAS_SURF [SURF] HAS_MULTI [MULTI_i] HAS_ORB [ORB]"
+//    "%% \\---------------------- feature ------------------/ \\--------- descriptors -------/\n"
+//    "%% with:\n"
+//    "%%  TYPE  : The used detector: 0:KLT, 1: Harris, 2: BCD, 3: SIFT, 4: SURF, 5: Beacon, 6: FAST\n"
+//    "%%  HAS_* : 1 if a descriptor of that type is associated to the feature. \n"
+//    "%%  SIFT  : Present if HAS_SIFT=1: N DESC_0 ... DESC_N-1 \n"
+//    "%%  SURF  : Present if HAS_SURF=1: N DESC_0 ... DESC_N-1 \n"
+//	  "%%  MULTI : Present if HAS_MULTI=1: SCALE ORI N DESC_0 ... DESC_N-1"
+//	  "%%  ORB   : Present if HAS_ORB=1: VALUE
+//    "%%-------------------------------------------------------------------------------------------\n");
+	CFileOutputStream	f;
+
+	if( !f.open(filename,APPEND) )
+		THROW_EXCEPTION( "[CFeature::saveToTextFile] ERROR: File could not be open for writing" );
+
+    f.printf("%5u %2d %7.3f %7.3f %6.2f %6.2f %2d %6.3f ",
+            (unsigned int)this->ID, (int)this->get_type(), this->x, this->y,
+            this->orientation, this->scale,
+            (int)this->track_status, this->response );
+
+    f.printf("%2d ", int(this->descriptors.hasDescriptorSIFT() ? 1:0) );
+    if( this->descriptors.hasDescriptorSIFT() )
+    {
+        f.printf("%4d ", int(this->descriptors.SIFT.size()) );
+        for( unsigned int k = 0; k < this->descriptors.SIFT.size(); k++ )
+            f.printf( "%4d ", this->descriptors.SIFT[k]);
+    }
+
+    f.printf("%2d ", int(this->descriptors.hasDescriptorSURF() ? 1:0) );
+    if( this->descriptors.hasDescriptorSURF() )
+    {
+        f.printf("%4d ", int(this->descriptors.SURF.size()) );
+        for( unsigned int k = 0; k < this->descriptors.SURF.size(); k++ )
+            f.printf( "%8.5f ", this->descriptors.SURF[k]);
+    }
+
+    f.printf("%2d ", int(this->descriptors.hasDescriptorMultiSIFT() ? 1:0) );
+    if( this->descriptors.hasDescriptorMultiSIFT() )
+    {
+        for( int k = 0; k < int(this->multiScales.size()); ++k )
+        {
+            for( int m = 0; m < int(this->multiOrientations[k].size()); ++m )
+            {
+                f.printf("%.2f %6.2f ", this->multiScales[k], this->multiOrientations[k][m] );
+                f.printf("%4d ", int(this->descriptors.multiSIFTDescriptors[k][m].size()) );
+                for( unsigned int n = 0; n < this->descriptors.multiSIFTDescriptors[k][m].size(); ++n )
+                    f.printf( "%4d ", this->descriptors.multiSIFTDescriptors[k][m][n]);
+            }
+        } // end-for
+    } // end-if
+
+	f.printf("%2d ", int(this->descriptors.hasDescriptorORB() ? 1:0) );
+	if( this->descriptors.hasDescriptorORB() )
+		for( size_t k = 0; k < this->descriptors.ORB.size(); ++k )
+			f.printf("%d ", this->descriptors.ORB[k] );
+
+
+    // # ADDED by Raghavender Sahdev
+    f.printf("%2d ", int(this->descriptors.hasDescriptorBLD() ? 1:0) );
+    if( this->descriptors.hasDescriptorBLD() )
+    {
+        f.printf("%4d ", int(this->descriptors.BLD.size()) );
+        for( unsigned int k = 0; k < this->descriptors.BLD.size(); k++ )
+            f.printf( "%4d ", this->descriptors.BLD[k]);
+    }
+
+    f.printf( "\n");
+>>>>>>> work done from June 29 to June 30: added BLD Descriptor
 	f.close();
 
 	MRPT_END
@@ -1001,6 +1173,14 @@ void CFeatureList::saveToTextFile(const std::string& filename, bool APPEND)
 			for (unsigned int k = 0; k < (*it)->descriptors.SURF.size(); k++)
 				f.printf("%8.5f ", (*it)->descriptors.SURF[k]);
 		}
+        // # added by Raghavender Sahdev
+        f.printf("%2d ", int((*it)->descriptors.hasDescriptorBLD() ? 1:0) );
+        if( (*it)->descriptors.hasDescriptorBLD() )
+        {
+            f.printf("%4d ", int((*it)->descriptors.BLD.size()) );
+            for( unsigned int k = 0; k < (*it)->descriptors.BLD.size(); k++ )
+                f.printf( "%4d ", (*it)->descriptors.BLD[k]);
+        }
 
 		f.printf("\n");
 	}  // end for
@@ -1063,6 +1243,24 @@ void CFeatureList::loadFromTextFile(const std::string& filename)
 
 				if (!line) throw std::string("SIFT-data");
 			}
+
+            //# ADDED by Raghavender Sahdev
+            int hasBLD;
+            if (!(line >> hasBLD)) throw std::string("hasBLD");
+            if (hasBLD)
+            {
+                size_t N;
+                if (!(line >> N)) throw std::string("BLD-len");
+                feat->descriptors.BLD.resize(N);
+                for (size_t i=0;i<N;i++)
+                {
+                    int val;
+                    line >> val;
+                    feat->descriptors.BLD[i] = val; // DON'T read directly SIFT[i] since it's a uint8_t, interpreted as a cha
+                }
+
+                if (!line)  throw std::string("BLD-data");
+            }
 
 			int hasSURF;
 			if (!(line >> hasSURF)) throw std::string("hasSURF");
@@ -1313,6 +1511,13 @@ bool CFeature::getFirstDescriptorAsMatrix(mrpt::math::CMatrixFloat& desc) const
 			desc(0, i) = descriptors.SIFT[i];
 		return true;
 	}
+    else if (descriptors.hasDescriptorBLD())
+    {
+        desc.setSize(1,descriptors.BLD.size());
+        for (size_t i=0;i<descriptors.BLD.size();i++)
+            desc(0,i)=descriptors.BLD[i];
+        return true;
+    }
 	else if (descriptors.hasDescriptorSURF())
 	{
 		desc.setSize(1, descriptors.SURF.size());

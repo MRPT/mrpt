@@ -329,7 +329,9 @@ class VISION_IMPEXP CFeatureList
 				mrpt::math::CMatrix			    LogPolarImg;				//!< A log-polar image centered at the interest point
 				bool						    polarImgsNoRotation;		//!< If set to true (manually, default=false) the call to "descriptorDistanceTo" will not consider all the rotations between polar image descriptors (PolarImg, LogPolarImg)
 				std::deque<std::vector<std::vector<int32_t> > >    multiSIFTDescriptors;   //!< A set of SIFT-like descriptors for each orientation and scale of the multiResolution feature (there is a vector of descriptors for each scale)
-				std::vector<uint8_t>			ORB;						//!< ORB feature descriptor	
+				std::vector<uint8_t>			ORB;						//!< ORB feature descriptor
+				// # added by Raghavender Sadev
+				std::vector<uint8_t>			BLD;						//!< BLD feature descriptor
 
 				bool hasDescriptorSIFT() const { return !SIFT.empty(); };                       //!< Whether this feature has this kind of descriptor
 				bool hasDescriptorSURF() const { return !SURF.empty(); }                        //!< Whether this feature has this kind of descriptor
@@ -340,6 +342,8 @@ class VISION_IMPEXP CFeatureList
                     return (multiSIFTDescriptors.size() > 0 && multiSIFTDescriptors[0].size() > 0); //!< Whether this feature has this kind of descriptor
                 }
 				bool hasDescriptorORB() const { return !ORB.empty(); }						//!< Whether this feature has this kind of descriptor
+				//# added by Raghavender Sahdev
+				bool hasDescriptorBLD() const { return !BLD.empty(); }						//!< Whether this feature has this kind of descriptor
 			}
 			descriptors;
 
@@ -390,7 +394,11 @@ class VISION_IMPEXP CFeatureList
 				bool normalize_distances = true ) const;
 
 			/** Computes the Hamming distance "this" and the "other" descriptor ORB descriptor */
-			uint8_t descriptorORBDistanceTo( const CFeature &oFeature ) const; 
+			uint8_t descriptorORBDistanceTo( const CFeature &oFeature ) const;
+
+			// # added by Raghavender Sahdev
+			/** Computes the Euclidean Distance between "this" and the "other" descriptors */
+			float descriptorBLDDistanceTo( const CFeature &oFeature, bool normalize_distances = true ) const;
 
 			/** Save the feature to a text file in this format:
               *    "%% Dump of mrpt::vision::CFeatureList. Each line format is:\n"
