@@ -322,7 +322,8 @@ struct VISION_IMPEXP TStereoSystemParams : public mrpt::utils::CLoadableOptions
 			descLogPolarImages	= 16,  //!< Log-Polar image descriptor
 			descORB				= 32,  //!< Bit-based feature descriptor
 			// #added by Raghavender Sahdev
-			descBLD				= 64   //!< BLD Line descriptor
+			descBLD				= 64,  //!< BLD Line descriptor
+			descLATCH			= 128  //!< LATCH Line descriptor
 		};
 
 		enum TFeatureTrackStatus

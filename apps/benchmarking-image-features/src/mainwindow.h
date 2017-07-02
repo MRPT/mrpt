@@ -59,7 +59,7 @@
 
 
 #include <mrpt/vision/CFeatureExtraction.h>
-//#include "visualizedialog.h"
+
 #include "my_qlabel.h"
 
 using namespace cv;
@@ -272,6 +272,13 @@ public:
         int numOfOctave;
         int widthOfBand;
     }BLD_opts;
+
+    struct LATCHOptions
+    {
+        int bytes;
+        bool rotationInvariance;
+        int half_ssd_size;
+    }LATCH_opts;
 
 
 

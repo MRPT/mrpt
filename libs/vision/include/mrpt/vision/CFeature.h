@@ -332,6 +332,7 @@ class VISION_IMPEXP CFeatureList
 				std::vector<uint8_t>			ORB;						//!< ORB feature descriptor
 				// # added by Raghavender Sadev
 				std::vector<uint8_t>			BLD;						//!< BLD feature descriptor
+				std::vector<uint8_t>			LATCH;						//!< LATCH feature descriptor
 
 				bool hasDescriptorSIFT() const { return !SIFT.empty(); };                       //!< Whether this feature has this kind of descriptor
 				bool hasDescriptorSURF() const { return !SURF.empty(); }                        //!< Whether this feature has this kind of descriptor
@@ -344,6 +345,7 @@ class VISION_IMPEXP CFeatureList
 				bool hasDescriptorORB() const { return !ORB.empty(); }						//!< Whether this feature has this kind of descriptor
 				//# added by Raghavender Sahdev
 				bool hasDescriptorBLD() const { return !BLD.empty(); }						//!< Whether this feature has this kind of descriptor
+				bool hasDescriptorLATCH() const { return !LATCH.empty(); }						//!< Whether this feature has this kind of descriptor
 			}
 			descriptors;
 
@@ -399,6 +401,8 @@ class VISION_IMPEXP CFeatureList
 			// # added by Raghavender Sahdev
 			/** Computes the Euclidean Distance between "this" and the "other" descriptors */
 			float descriptorBLDDistanceTo( const CFeature &oFeature, bool normalize_distances = true ) const;
+			/** Computes the Euclidean Distance between "this" and the "other" descriptors */
+			float descriptorLATCHDistanceTo( const CFeature &oFeature, bool normalize_distances = true ) const;
 
 			/** Save the feature to a text file in this format:
               *    "%% Dump of mrpt::vision::CFeatureList. Each line format is:\n"

@@ -1,5 +1,4 @@
 #include "mainwindow.h"
-//#include "visualizedialog.h"
 #include <QButtonGroup>
 #include <QtWidgets>
 #include <dirent.h>
@@ -7,13 +6,11 @@
 #include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
 #include <opencv2/line_descriptor.hpp>
-#include "opencv2/core/utility.hpp"
 
 #include <opencv2/plot.hpp>
 #include <mrpt/utils/metaprogramming.h>
 #include <mrpt/math/data_utils.h>
-#include <QEvent>
-#include <QMouseEvent>
+
 
 
 using namespace cv::line_descriptor;
@@ -34,8 +31,6 @@ QImage qimage_1_plots_distances[MAX_DESC], qimage_2_plots_distances[MAX_DESC];
 QLabel *images1_plots_distances[MAX_DESC], *images2_plots_distances[MAX_DESC];
 QLabel *featureMatchingInfo[MAX_DESC];
 int min_dist_indexes[MAX_DESC];
-
-
 
 
 //MAX_DESC is 500
@@ -235,179 +230,64 @@ void MainWindow::on_button_generate_clicked()
             }
                 break;
                 // FOR THE FOLLOWING SIFT, SURF AND ORB CLEAN THE CODE LATER BY REDUCING SIZ TO 1/3RD AS MOST OF IT IS DUPLICATED
-            case 0: { // descSIFT
-                vector<uint8_t > v1,v2;
-                //mrpt::utils::metaprogramming::copy_container_typecasting(featsImage1[i1]->descriptors.SIFT, v1);
-                v1 = featsImage1[i1]->descriptors.SIFT;
-
-
-
-                Mat xData, yData, display;
-                Ptr<plot::Plot2d> plot;
-                int len = v1.size();
-                xData.create(1, len, CV_64F);//1 Row, 100 columns, Double
-                yData.create(1, len, CV_64F);
-
-                for(int i = 0; i<len; ++i)
-                {
-                    xData.at<double>(i) = i;
-                    yData.at<double>(i) = v1.at(i);
-                    //cout << yData.at<double>(i) << "  " << xData.at<double>(i) << endl;
-                }
-                plot = plot::createPlot2d(xData, yData);
-                plot->setPlotSize(len, 1);
-                plot->setMaxX(len);
-                plot->setMinX(0);
-                plot->setMaxY(1);
-                plot->setMinY(-1);
-                plot->render(display);
-
-
-                cv::Mat temp1(display.cols, display.rows, display.type());
-                cvtColor(display, temp1, CV_RGB2BGR);
-                //imshow("temp ", temp1);
-                //waitKey();
-                QImage dest1 = QImage((uchar *) temp1.data, temp1.cols, temp1.rows, temp1.step,
-                                      QImage::Format_RGB888);
-                qimage_1[i1] = dest1.scaled(4*DESCRIPTOR_HEIGHT, 5*DESCRIPTOR_WIDTH, Qt::KeepAspectRatio);
-                images1[i1] = new QLabel;
-                images1[i1]->setPixmap(QPixmap::fromImage(qimage_1[i1]));
-
-                if(currentInputIndex == 1 || currentInputIndex == 4)
-                {
-                    v2 = featsImage2[min_dist_idx]->descriptors.SIFT;
-                    Mat xData, yData, display2;
-                    Ptr<plot::Plot2d> plot;
-                    int len = v2.size();
-                    xData.create(1, len, CV_64F);//1 Row, 100 columns, Double
-                    yData.create(1, len, CV_64F);
-
-                    for(int i = 0; i<len; ++i)
-                    {
-                        xData.at<double>(i) = i;
-                        yData.at<double>(i) = v2.at(i);
-                        //cout << yData.at<double>(i) << "  " << xData.at<double>(i) << endl;
-                    }
-                    plot = plot::createPlot2d(xData, yData);
-                    plot->setPlotSize(len, 1);
-                    plot->setMaxX(len);
-                    plot->setMinX(0);
-                    plot->setMaxY(1);
-                    plot->setMinY(-1);
-                    plot->render(display2);
-
-
-                    cv::Mat temp2(display2.cols, display2.rows, display2.type());
-                    cvtColor(display2, temp2, CV_RGB2BGR);
-                    //imshow("temp ", temp1);
-                    //waitKey();
-                    QImage dest2 = QImage((uchar *) temp2.data, temp2.cols, temp2.rows, temp2.step,
-                                          QImage::Format_RGB888);
-                    qimage_2[i1] = dest2.scaled(4*DESCRIPTOR_HEIGHT, 5*DESCRIPTOR_WIDTH, Qt::KeepAspectRatio);
-                    images2[i1] = new QLabel;
-                    images2[i1]->setPixmap(QPixmap::fromImage(qimage_2[i1]));
-                }
-
-            }
-                break;
-            case 1: { // descSURF
-                vector<float> v1, v2;
-                //cout << "SURF Features size: " << featsImage1.size() << endl;
-                //mrpt::utils::metaprogramming::copy_container_typecasting(featsImage1[i1]->descriptors.SIFT, v1);
-                v1 = featsImage1[i1]->descriptors.SURF;
-                if(currentInputIndex == 1 || currentInputIndex == 4)
-                    v2 = featsImage2[min_dist_idx]->descriptors.SURF;
-
-                Mat xData, yData, display;
-                Ptr<plot::Plot2d> plot;
-                int len = v1.size();
-                xData.create(1, len, CV_64F);//1 Row, 100 columns, Double
-                yData.create(1, len, CV_64F);
-
-                for(int i = 0; i<len; ++i)
-                {
-                    xData.at<double>(i) = i;
-                    yData.at<double>(i) = v1.at(i);
-                    //cout << yData.at<double>(i) << "  " << xData.at<double>(i) << endl;
-                }
-                plot = plot::createPlot2d(xData, yData);
-                plot->setPlotSize(len, 1);
-                plot->setMaxX(len);
-                plot->setMinX(0);
-                plot->setMaxY(1);
-                plot->setMinY(-1);
-                plot->render(display);
-
-
-                cv::Mat temp1(display.cols, display.rows, display.type());
-                cvtColor(display, temp1, CV_RGB2BGR);
-                //imshow("temp ", temp1);
-                //waitKey();
-                QImage dest1 = QImage((uchar *) temp1.data, temp1.cols, temp1.rows, temp1.step,
-                                      QImage::Format_RGB888);
-                qimage_1[i1] = dest1.scaled(4*DESCRIPTOR_HEIGHT, 5*DESCRIPTOR_WIDTH, Qt::KeepAspectRatio);
-                images1[i1] = new QLabel;
-                images1[i1]->setPixmap(QPixmap::fromImage(qimage_1[i1]));
-
-                if(currentInputIndex == 1 || currentInputIndex == 4)
-                {
-                    Mat xData, yData, display;
-                    Ptr<plot::Plot2d> plot;
-                    int len = v2.size();
-                    xData.create(1, len, CV_64F);//1 Row, 100 columns, Double
-                    yData.create(1, len, CV_64F);
-
-                    for(int i = 0; i<len; ++i)
-                    {
-                        xData.at<double>(i) = i;
-                        yData.at<double>(i) = v2.at(i);
-                        //cout << yData.at<double>(i) << "  " << xData.at<double>(i) << endl;
-                    }
-                    plot = plot::createPlot2d(xData, yData);
-                    plot->setPlotSize(len, 1);
-                    plot->setMaxX(len);
-                    plot->setMinX(0);
-                    plot->setMaxY(1);
-                    plot->setMinY(-1);
-                    plot->render(display);
-
-
-                    cv::Mat temp1(display.cols, display.rows, display.type());
-                    cvtColor(display, temp1, CV_RGB2BGR);
-                    //imshow("temp ", temp1);
-                    //waitKey();
-                    QImage dest1 = QImage((uchar *) temp1.data, temp1.cols, temp1.rows, temp1.step,
-                                          QImage::Format_RGB888);
-                    qimage_2[i1] = dest1.scaled(4*DESCRIPTOR_HEIGHT, 5*DESCRIPTOR_WIDTH, Qt::KeepAspectRatio);
-                    images2[i1] = new QLabel;
-                    images2[i1]->setPixmap(QPixmap::fromImage(qimage_2[i1]));
-                }
-            }
-                break;
-            case 5:
+            case 0: // descSIFT
+            case 1: // desccSURF
+            case 5: // descORB
+            case 6: // descBLD
+            case 7: // descLATCH
             {
-
                 vector<uint8_t > v1,v2;
-                v1 = featsImage1[i1]->descriptors.ORB;
+                vector<float> v1_surf, v2_surf; // since SURF descriptors are floating numbers
+                //mrpt::utils::metaprogramming::copy_container_typecasting(featsImage1[i1]->descriptors.SIFT, v1);
+
+                if(descriptor_selected == 0)
+                    v1 = featsImage1[i1]->descriptors.SIFT;
+                else if(descriptor_selected == 1)
+                    v1_surf = featsImage1[i1]->descriptors.SURF;
+                else if (descriptor_selected == 5)
+                    v1 = featsImage1[i1]->descriptors.ORB;
+                else if (descriptor_selected == 6)
+                    v1 = featsImage1[i1]->descriptors.BLD;
+                else if (descriptor_selected == 7)
+                    v1 = featsImage1[i1]->descriptors.LATCH;
+
+
 
                 Mat xData, yData, display;
                 Ptr<plot::Plot2d> plot;
-                int len = v1.size();
-                xData.create(1, len, CV_64F);//1 Row, 100 columns, Double
+                int len ;
+                if(descriptor_selected != 1)
+                    len = v1.size();
+                else
+                    len = v1_surf.size();
+
+                xData.create(1, len, CV_64F);//1 Row, len columns, Double
                 yData.create(1, len, CV_64F);
 
                 for(int i = 0; i<len; ++i)
                 {
                     xData.at<double>(i) = i;
-                    yData.at<double>(i) = v1.at(i);
+                    if(descriptor_selected != 1)
+                        yData.at<double>(i) = v1.at(i);
+                    else
+                        yData.at<double>(i) = v1_surf.at(i);
                     //cout << yData.at<double>(i) << "  " << xData.at<double>(i) << endl;
+                }
+                int max_y, min_y;
+                if(descriptor_selected != 1){
+                    max_y = 257;
+                    min_y = -2;
+                }
+                else{
+                    max_y = 1;
+                    min_y = -1;
                 }
                 plot = plot::createPlot2d(xData, yData);
                 plot->setPlotSize(len, 1);
                 plot->setMaxX(len);
                 plot->setMinX(0);
-                plot->setMaxY(350);
-                plot->setMinY(-350);
+                plot->setMaxY(max_y);
+                plot->setMinY(min_y);
                 plot->render(display);
 
 
@@ -421,109 +301,52 @@ void MainWindow::on_button_generate_clicked()
                 images1[i1] = new QLabel;
                 images1[i1]->setPixmap(QPixmap::fromImage(qimage_1[i1]));
 
+
                 if(currentInputIndex == 1 || currentInputIndex == 4)
                 {
-                    v2 = featsImage2[min_dist_idx]->descriptors.ORB;
+                    if(descriptor_selected == 0)
+                        v2 = featsImage2[min_dist_idx]->descriptors.SIFT;
+                    else if(descriptor_selected == 1)
+                        v2_surf = featsImage2[min_dist_idx]->descriptors.SURF;
+                    else if (descriptor_selected == 5)
+                        v2 = featsImage2[min_dist_idx]->descriptors.ORB;
+                    else if (descriptor_selected == 6)
+                        v2 = featsImage2[min_dist_idx]->descriptors.BLD;
+                    else if (descriptor_selected == 7)
+                        v2 = featsImage2[min_dist_idx]->descriptors.LATCH;
+
 
                     Mat xData, yData, display;
                     Ptr<plot::Plot2d> plot;
-                    int len = v2.size();
-                    xData.create(1, len, CV_64F);//1 Row, 100 columns, Double
+                    int len;
+                    if(descriptor_selected != 1)
+                        len = v2.size();
+                    else
+                        len = v2_surf.size();
+
+                    xData.create(1, len, CV_64F);//1 Row, len columns, Double
                     yData.create(1, len, CV_64F);
 
                     for(int i = 0; i<len; ++i)
                     {
                         xData.at<double>(i) = i;
-                        yData.at<double>(i) = v2.at(i);
+                        if(descriptor_selected != 1)
+                            yData.at<double>(i) = v2.at(i);
+                        else
+                            yData.at<double>(i) = v2_surf.at(i);
                         //cout << yData.at<double>(i) << "  " << xData.at<double>(i) << endl;
                     }
                     plot = plot::createPlot2d(xData, yData);
                     plot->setPlotSize(len, 1);
                     plot->setMaxX(len);
                     plot->setMinX(0);
-                    plot->setMaxY(350);
-                    plot->setMinY(-350);
+                    plot->setMaxY(max_y);
+                    plot->setMinY(min_y);
                     plot->render(display);
 
 
-                    cv::Mat temp1(display.cols, display.rows, display.type());
-                    cvtColor(display, temp1, CV_RGB2BGR);
-                    //imshow("temp ", temp1);
-                    //waitKey();
-                    QImage dest1 = QImage((uchar *) temp1.data, temp1.cols, temp1.rows, temp1.step,
-                                          QImage::Format_RGB888);
-                    qimage_2[i1] = dest1.scaled(4*DESCRIPTOR_HEIGHT, 5*DESCRIPTOR_WIDTH, Qt::KeepAspectRatio);
-                    images2[i1] = new QLabel;
-                    images2[i1]->setPixmap(QPixmap::fromImage(qimage_2[i1]));
-                }
-
-
-            } break;
-
-            case 6: { // descBLD
-                vector<uint8_t > v1,v2;
-                //mrpt::utils::metaprogramming::copy_container_typecasting(featsImage1[i1]->descriptors.SIFT, v1);
-                v1 = featsImage1[i1]->descriptors.BLD;
-
-
-
-                Mat xData, yData, display;
-                Ptr<plot::Plot2d> plot;
-                int len = v1.size();
-                xData.create(1, len, CV_64F);//1 Row, 100 columns, Double
-                yData.create(1, len, CV_64F);
-
-                for(int i = 0; i<len; ++i)
-                {
-                    xData.at<double>(i) = i;
-                    yData.at<double>(i) = v1.at(i);
-                    //cout << yData.at<double>(i) << "  " << xData.at<double>(i) << endl;
-                }
-                plot = plot::createPlot2d(xData, yData);
-                plot->setPlotSize(len, 1);
-                plot->setMaxX(len);
-                plot->setMinX(0);
-                plot->setMaxY(257);
-                plot->setMinY(-2);
-                plot->render(display);
-
-
-                cv::Mat temp1(display.cols, display.rows, display.type());
-                cvtColor(display, temp1, CV_RGB2BGR);
-                //imshow("temp ", temp1);
-                //waitKey();
-                QImage dest1 = QImage((uchar *) temp1.data, temp1.cols, temp1.rows, temp1.step,
-                                      QImage::Format_RGB888);
-                qimage_1[i1] = dest1.scaled(4*DESCRIPTOR_HEIGHT, 5*DESCRIPTOR_WIDTH, Qt::KeepAspectRatio);
-                images1[i1] = new QLabel;
-                images1[i1]->setPixmap(QPixmap::fromImage(qimage_1[i1]));
-
-                if(currentInputIndex == 1 || currentInputIndex == 4)
-                {
-                    v2 = featsImage2[min_dist_idx]->descriptors.BLD;
-                    Mat xData, yData, display2;
-                    Ptr<plot::Plot2d> plot;
-                    int len = v2.size();
-                    xData.create(1, len, CV_64F);//1 Row, 100 columns, Double
-                    yData.create(1, len, CV_64F);
-
-                    for(int i = 0; i<len; ++i)
-                    {
-                        xData.at<double>(i) = i;
-                        yData.at<double>(i) = v2.at(i);
-                        //cout << yData.at<double>(i) << "  " << xData.at<double>(i) << endl;
-                    }
-                    plot = plot::createPlot2d(xData, yData);
-                    plot->setPlotSize(len, 1);
-                    plot->setMaxX(len);
-                    plot->setMinX(0);
-                    plot->setMaxY(257);
-                    plot->setMinY(-2);
-                    plot->render(display2);
-
-
-                    cv::Mat temp2(display2.cols, display2.rows, display2.type());
-                    cvtColor(display2, temp2, CV_RGB2BGR);
+                    cv::Mat temp2(display.cols, display.rows, display.type());
+                    cvtColor(display, temp2, CV_RGB2BGR);
                     //imshow("temp ", temp1);
                     //waitKey();
                     QImage dest2 = QImage((uchar *) temp2.data, temp2.cols, temp2.rows, temp2.step,
@@ -535,8 +358,6 @@ void MainWindow::on_button_generate_clicked()
 
             }
                 break;
-
-
 
             default: {
                 cerr << "Descriptor specified is not handled yet" << endl;
@@ -641,10 +462,6 @@ void MainWindow::on_descriptor_choose(int choice)
     }
     else if (choice == 6) // BLD Descriptor
     {
-        int ksize_;
-        int reductionRatio;
-        int numOfOctave;
-        int widthOfBand;
         param1_desc->setText("nOctaves ");
         param2_desc->setText("reduction Ratio: ");
         param3_desc->setText("width of Band: ");
@@ -654,6 +471,20 @@ void MainWindow::on_descriptor_choose(int choice)
         param3_edit_desc->setText("7");
         param4_edit_desc->setText("1");
 
+        param5_desc->setVisible(false);
+        param5_edit_desc->setVisible(false);
+    }
+    else if (choice == 7) // LATCH Descriptor
+    {
+        param1_desc->setText("sizeDescriptor (bytes) ");
+        param2_desc->setText("rotation invariance: ");
+        param3_desc->setText("half_ssd_size: ");
+        param1_edit_desc->setText("32");
+        param2_edit_desc->setText("true");
+        param3_edit_desc->setText("3");
+
+        param4_desc->setVisible(false);
+        param4_edit_desc->setVisible(false);
         param5_desc->setVisible(false);
         param5_edit_desc->setVisible(false);
     }
@@ -1178,6 +1009,22 @@ void MainWindow::fillDescriptorInfo()
         fext.options.BLDOptions.reductionRatio      = BLD_opts.reductionRatio;
         fext.options.BLDOptions.ksize_              = BLD_opts.ksize_;
     }
+    else if(descriptor_selected == 6)
+    {
+        desc_to_compute = TDescriptorType (128); //!< LATCH image descriptor
+
+        string temp_str = param2_edit_desc->text().toStdString();
+        bool temp_bool = temp_str.compare("true") == 0;
+        LATCH_opts.rotationInvariance  = temp_bool;
+        cout <<  temp_bool << endl;
+
+        LATCH_opts.bytes            = param1_edit_desc->text().toInt();
+        LATCH_opts.half_ssd_size    = param3_edit_desc->text().toInt();
+
+        fext.options.LATCHOptions.bytes                 = LATCH_opts.bytes;
+        fext.options.LATCHOptions.rotationInvariance    = LATCH_opts.rotationInvariance;
+        fext.options.LATCHOptions.half_ssd_size         = LATCH_opts.half_ssd_size;
+    }
 }
 
 /*
@@ -1192,6 +1039,11 @@ void MainWindow::on_detector_button_clicked()
 
     //read inputs from user
     ReadInputFormat();
+    /*if(numFeats >=500)
+    {
+        QMessageBox::information(this, "Reduce Number of Features","Please enter less than 500 number of features!!");
+        return;
+    }*/
     if( detector_selected == -1 || file_path1.empty())
     {
         QMessageBox::information(this, "Image/Detector/Descriptor read error","Please specify a valid inputs for the image / detector..");
@@ -1302,6 +1154,8 @@ void MainWindow::on_descriptor_button_clicked()
         desc_to_compute = TDescriptorType (32); //!< ORB image descriptor
     else if (descriptor_selected == 6)
         desc_to_compute = TDescriptorType (64); //!< BLD image descriptor
+    else if (descriptor_selected == 7)
+        desc_to_compute = TDescriptorType (128); //!< LATCH image descriptor
 
 
     if(desc_to_compute != descAny)
@@ -2228,7 +2082,7 @@ void MainWindow::Mouse_Pressed()
 
 
     }
-    else if(descriptor_selected == 0 || descriptor_selected == 1 || descriptor_selected == 5 || descriptor_selected == 6)
+    else if(descriptor_selected == 0 || descriptor_selected == 1 || descriptor_selected == 5 || descriptor_selected == 6 || descriptor_selected == 7)
     {
 
         //featureMatched->clear();
