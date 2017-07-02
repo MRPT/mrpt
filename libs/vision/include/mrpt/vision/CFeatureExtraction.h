@@ -354,6 +354,15 @@ class VISION_IMPEXP CFeatureExtraction
 
 				} BLDOptions;
 
+				/** LATCHOptions Descriptor
+				 */
+				struct VISION_IMPEXP TLATCHOptions
+				{
+					int  	bytes;// = 32,
+					bool  	rotationInvariance;// = true,
+					int  	half_ssd_size;// = 3
+				}LATCHOptions;
+
 			};
 
 			TOptions options;  //!< Set all the parameters of the desired method here before calling "detectFeatures"
@@ -757,15 +766,27 @@ class VISION_IMPEXP CFeatureExtraction
 			*/
 			void  internal_computeLogPolarImageDescriptors( const mrpt::utils::CImage	&in_img,
 															CFeatureList		&in_features) const;
-			/** Compute a BSL descriptor of the provided features into the input image
+			/** Compute a BLD descriptor of the provided features into the input image
 			* \param in_img (input) The image from where to compute the descriptors.
 			* \param in_features (input/output) The list of features whose descriptors are going to be computed.
 			*
 			* \note Additional parameters from CFeatureExtraction::TOptions::LogPolarImagesOptions are used in this method.
 			*/
 			void  internal_computeBLDLineDescriptors( const mrpt::utils::CImage	&in_img,
+<<<<<<< 3002cb85ae5b578062934061aefc0e4376f193c1
 															CFeatureList		&in_features) const;
 >>>>>>> work done from June 29 to June 30: added BLD Descriptor
+=======
+													  CFeatureList		&in_features) const;
+			/** Compute a LATCH descriptor of the provided features into the input image
+			* \param in_img (input) The image from where to compute the descriptors.
+			* \param in_features (input/output) The list of features whose descriptors are going to be computed.
+			*
+			* \note Additional parameters from CFeatureExtraction::TOptions::LogPolarImagesOptions are used in this method.
+			*/
+			void  internal_computeLATCHDescriptors( const mrpt::utils::CImage	&in_img,
+													  CFeatureList		&in_features) const;
+>>>>>>> work done from June 30 to July 1 : added LATCH Descriptor
 
 #if 0  // Delete? see comments in .cpp
 			/** Select good features using the openCV implementation of the KLT method.
