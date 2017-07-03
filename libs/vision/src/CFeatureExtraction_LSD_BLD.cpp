@@ -2,14 +2,6 @@
 // Created by raghavender on 28/06/17.
 //
 
-
-#include "opencv2/core.hpp"
-
-#include "opencv2/features2d.hpp"
-#include "opencv2/xfeatures2d.hpp"
-#include <opencv2/opencv.hpp>
-#include <opencv2/line_descriptor.hpp>
-
 #include <vector>
 #include <iostream>
 
@@ -20,7 +12,15 @@
 #include <mrpt/vision/CFeatureExtraction.h> // important import
 #include <mrpt/utils/CMemoryStream.h>
 #include <mrpt/otherlibs/do_opencv_includes.h>
+
+#ifdef HAVE_OPENCV_FEATURES2D
+# include <opencv2/features2d/features2d.hpp>
+#endif
+#ifdef HAVE_OPENCV_XFEATURES2D
+# include <opencv2/xfeatures2d.hpp>
+# include <opencv2/line_descriptor.hpp>
 using namespace cv::line_descriptor;
+#endif
 
 
 using namespace mrpt::vision;
@@ -30,7 +30,6 @@ using namespace mrpt::math;
 using namespace mrpt;
 
 using namespace std;
-using namespace cv;
 
 
 void  CFeatureExtraction::extractFeaturesLSD(const mrpt::utils::CImage &inImg, CFeatureList &feats,
@@ -53,23 +52,15 @@ void  CFeatureExtraction::extractFeaturesLSD(const mrpt::utils::CImage &inImg, C
         // Make sure we operate on a gray-scale version of the image:
         const CImage inImg_gray( inImg, FAST_REF_OR_CONVERT_TO_GRAY );
 
-        // JL: Instead of
-        //	int aux = options.FASTOptions.threshold; ....
-        //  It's better to use an adaptive threshold, controlled from our caller outside.
 
 #if MRPT_OPENCV_VERSION_NUM >= 0x211
 
-//    cv::Mat *mask ;
-//    if( _mask )
-//       mask = static_cast<cv::Mat*>(_mask);
 
         const Mat theImg = cvarrToMat( inImg_gray.getAs<IplImage>() );
-
-
         /* create a random binary mask */
         cv::Mat mask = Mat::ones( theImg.size(), CV_8UC1 );
 
-        /* create a pointer to a BinaryDescriptor object with deafult parameters */
+
         Ptr<LSDDetector> bd = LSDDetector::createLSDDetector();
 
         /* create a structure to store extracted lines */
@@ -259,6 +250,6 @@ void  CFeatureExtraction::internal_computeBLDLineDescriptors(
 //#else
   //  THROW_EXCEPTION("Method not available: MRPT compiled without OpenCV, or against a version of OpenCV without SURF")
 //#endif //MRPT_HAS_OPENCV
-}  // end internal_computeSurfDescriptors
+}  // end internal_computeBLDDescriptors
 
 

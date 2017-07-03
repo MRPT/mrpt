@@ -281,11 +281,16 @@ void CFeatureExtraction::computeDescriptors(
 		++nDescComputed;
 	}
 	// # added by Raghavender Sahdev
-	if ((in_descriptor_list & descBLD) != 0)
-	{
-		this->internal_computeBLDLineDescriptors(in_img,inout_features);
-		++nDescComputed;
-	}
+        if ((in_descriptor_list & descBLD) != 0)
+        {
+            this->internal_computeBLDLineDescriptors(in_img,inout_features);
+            ++nDescComputed;
+        }
+        if ((in_descriptor_list & descLATCH) != 0)
+        {
+            this->internal_computeLATCHDescriptors(in_img,inout_features);
+            ++nDescComputed;
+        }
 	if (!nDescComputed)
 		THROW_EXCEPTION_FMT(
 			"No known descriptor value found in in_descriptor_list=%u",
@@ -403,7 +408,14 @@ CFeatureExtraction::TOptions::TOptions(const TFeatureType _featsType)
     BLDOptions.widthOfBand              = 7;
     BLDOptions.reductionRatio           = 2;
 
+<<<<<<< a4d2659c7889d4694b3c85f8df79291ee499736f
 >>>>>>> work done from June 29 to June 30: added BLD Descriptor
+=======
+    LATCHOptions.bytes                  = 32;
+    LATCHOptions.half_ssd_size          = 3;
+    LATCHOptions.rotationInvariance     = true;
+
+>>>>>>> work done from July 1 to July 2: added comments for functions, still need to do for variables
 }
 
 /*---------------------------------------------------------------
@@ -477,6 +489,10 @@ void CFeatureExtraction::TOptions::dumpToTextStream(
     LOADABLEOPTS_DUMP_VAR(BLDOptions.numOfOctave,int)
     LOADABLEOPTS_DUMP_VAR(BLDOptions.reductionRatio,int)
     LOADABLEOPTS_DUMP_VAR(BLDOptions.widthOfBand,int)
+
+    LOADABLEOPTS_DUMP_VAR(LATCHOptions.bytes,int)
+    LOADABLEOPTS_DUMP_VAR(LATCHOptions.half_ssd_size,int)
+    LOADABLEOPTS_DUMP_VAR(LATCHOptions.rotationInvariance, bool)
 
 	out.printf("\n");
 }
@@ -610,6 +626,10 @@ void CFeatureExtraction::TOptions::loadFromConfigFile(
     MRPT_LOAD_CONFIG_VAR(BLDOptions.numOfOctave,int, iniFile,section)
     MRPT_LOAD_CONFIG_VAR(BLDOptions.widthOfBand,int,  iniFile,section)
     MRPT_LOAD_CONFIG_VAR(BLDOptions.reductionRatio,int, iniFile,section)
+
+    MRPT_LOAD_CONFIG_VAR(LATCHOptions.bytes,int, iniFile,section)
+    MRPT_LOAD_CONFIG_VAR(LATCHOptions.half_ssd_size,int,  iniFile,section)
+    MRPT_LOAD_CONFIG_VAR(LATCHOptions.rotationInvariance,bool, iniFile,section)
 
 
 
