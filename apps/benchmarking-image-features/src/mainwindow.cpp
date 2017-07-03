@@ -37,20 +37,9 @@ int min_dist_indexes[MAX_DESC];
 cv::Mat cvImg1;
 
 
-void MainWindow::computeMinMax(CVectorDouble distances, int &min_idx, double &min_dist, int &max_idx, double &max_dist)
-{
-    int pos;
-    double min = 10000;
-    for(int i=0 ;i < distances.size() ;i++)
-    {
-        //if(distances.)
-
-    }
-}
-
-/*
- * This button is used to visualize the descriptors
- */
+/************************************************************************************************
+*					    On Button Generate Clicked: visualize descriptor                        *
+************************************************************************************************/
 void MainWindow::on_button_generate_clicked()
 {
 
@@ -367,13 +356,20 @@ void MainWindow::on_button_generate_clicked()
     }// end of for loop
 }
 
-
+/************************************************************************************************
+*								On Close Clicked        								        *
+************************************************************************************************/
 void MainWindow::button_close_clicked()
 {
     window_gui->close();
     this->close();
     return;
 }
+
+
+/************************************************************************************************
+*								On Descriptor Choose    								        *
+************************************************************************************************/
 void MainWindow::on_descriptor_choose(int choice)
 {
     makeAllDescriptorParamsVisible(true);
@@ -495,6 +491,11 @@ void MainWindow::on_descriptor_choose(int choice)
         param1_desc->setVisible(true);
     }
 }
+
+
+/************************************************************************************************
+*								On Detector Choose      								        *
+************************************************************************************************/
 void MainWindow::on_detector_choose(int choice)
 {
 
@@ -631,6 +632,10 @@ void MainWindow::on_detector_choose(int choice)
         param1->setVisible(true);
     }
 }
+
+/************************************************************************************************
+*								On StereoMatching Checked   							        *
+************************************************************************************************/
 void MainWindow::onStereoMatchingChecked(int state)
 {
     if(stereo_matching->isChecked() && (currentInputIndex == 1 || currentInputIndex == 4))
@@ -653,6 +658,9 @@ void MainWindow::onStereoMatchingChecked(int state)
 
 }
 
+/************************************************************************************************
+*								Make Detector Params Visbile    						        *
+************************************************************************************************/
 void MainWindow::makeAllDetectorParamsVisible(bool flag)
 {
     param1->setVisible(flag);
@@ -666,6 +674,10 @@ void MainWindow::makeAllDetectorParamsVisible(bool flag)
     param4_edit->setVisible(flag);
     param5_edit->setVisible(flag);
 }
+
+/************************************************************************************************
+*								Make Descriptor Params Visible							        *
+************************************************************************************************/
 void MainWindow::makeAllDescriptorParamsVisible(bool flag)
 {
     param1_desc->setVisible(flag);
@@ -680,6 +692,9 @@ void MainWindow::makeAllDescriptorParamsVisible(bool flag)
     param5_edit_desc->setVisible(flag);
 }
 
+/************************************************************************************************
+*								On File Input Choose        							        *
+************************************************************************************************/
 void MainWindow::on_file_input_choose(int choice)
 {
     // HIDE input file path 2, browse button 2, image2 for cases : single image,  image raw log and single image dataset
@@ -729,6 +744,9 @@ void MainWindow::on_file_input_choose(int choice)
     }
 }
 
+/************************************************************************************************
+*								Fill Detector Info        								        *
+************************************************************************************************/
 void MainWindow::fillDetectorInfo()
 {
     numFeats = numFeaturesLineEdit->text().toInt();
@@ -892,6 +910,9 @@ void MainWindow::fillDetectorInfo()
     }
 }
 
+/************************************************************************************************
+*								Fill Descriptor Info       								        *
+************************************************************************************************/
 void MainWindow::fillDescriptorInfo()
 {
     //clear CDescriptor storage data variable before each button click
@@ -1027,11 +1048,9 @@ void MainWindow::fillDescriptorInfo()
     }
 }
 
-/*
- *
- * this function is called to show the performance of the selected detector on the input selected by the user
- * the performance metric displayed is in terms of repeatability, dispersion of image, computational cost, number of found points, etc.
- * */
+/************************************************************************************************
+*								On Detector Button Clicked 								        *
+************************************************************************************************/
 void MainWindow::on_detector_button_clicked()
 {
 
@@ -1066,7 +1085,11 @@ void MainWindow::on_detector_button_clicked()
 
     // Clearing the features list is very important to avoid mixing subsequent button clicks output
     featsImage1.clear();
+    CTicTac clock;
+    clock.Tic();
     fext.detectFeatures(img1, featsImage1, 0, numFeats);
+    double elapsedTime = clock.Tac();
+
     //save to file
     cout << "before saving to file" << endl;
     featsImage1.saveToTextFile("./KeyPoints1.txt");
@@ -1081,7 +1104,7 @@ void MainWindow::on_detector_button_clicked()
         int temp_y = (int) featsImage1.getFeatureY(i);
         circle(cvImg1, Point(temp_x, temp_y), 5, Scalar(0,255,0), CIRCLE_THICKNESS, 8, 0);
     }
-    drawLineLSD(cvImg1);
+    drawLineLSD(cvImg1, 0); // 0 means draw line on left image
 
 
     // converting the cv::Mat to a QImage and changing the resolution of the output images
@@ -1110,7 +1133,7 @@ void MainWindow::on_detector_button_clicked()
             int temp_y = (int) featsImage2.getFeatureY(i);
             circle(cvImg2, Point(temp_x, temp_y), 5, Scalar(0,255,0), CIRCLE_THICKNESS, 8, 0);
         }
-        drawLineLSD(cvImg2);
+        drawLineLSD(cvImg2, 1); // 1 means draw on right image
 
         cv::Mat temp2(cvImg2.cols, cvImg2.rows, cvImg2.type());
         cvtColor(cvImg2, temp2, CV_BGR2RGB);
@@ -1122,11 +1145,10 @@ void MainWindow::on_detector_button_clicked()
     }
 }
 
-/*
- *
- * this function is called to show the performance of the selected descriptor on the input selected by the user
- * the performance metric displayed is in terms of percentage of patches matched, descriptor distance between close matches, false positives/negatives, computational cost, etc.
- * */
+
+/************************************************************************************************
+*								On Descriptor Button Clicked 							        *
+************************************************************************************************/
 void MainWindow::on_descriptor_button_clicked()
 {
 
@@ -1186,10 +1208,9 @@ void MainWindow::on_descriptor_button_clicked()
 
 }
 
-/*
- *
- * this function browses for the image files that the user can select or the directory that the user can select
- * */
+/************************************************************************************************
+*								On Browse Button Clicked     							        *
+************************************************************************************************/
 void MainWindow::on_browse_button_clicked()
 {
     flag_read_files_bug = true;
@@ -1234,6 +1255,9 @@ void MainWindow::on_browse_button_clicked()
     }
 }
 
+/************************************************************************************************
+*								On Browse Button2 Clicked    							        *
+************************************************************************************************/
 void MainWindow::on_browse_button_clicked2()
 {
     flag_read_files_bug = true;
@@ -1273,10 +1297,9 @@ void MainWindow::on_browse_button_clicked2()
 
 }
 
-/*
- * This function reads and stores the states of the user selections and can be used by other functions when required
- *
- **/
+/************************************************************************************************
+*								Read Input Format           							        *
+************************************************************************************************/
 void MainWindow::ReadInputFormat()
 {
     // store the input type here
@@ -1301,12 +1324,10 @@ void MainWindow::ReadInputFormat()
     }
 }
 
-/*
- * this function reads the files from a folder, the function is called when the user presses the next or previous button
- * WORKS CORRECTLY
- *  assumption both folders of the stereo image dataset have the same number of images
- */
-void MainWindow::readFilesFromFolder(int next_prev) // indicate 1 for next and 0 for prev being pressed
+/************************************************************************************************
+*								Read Files From Folder   								        *
+************************************************************************************************/
+void MainWindow::readFilesFromFolder(int next_prev)
 {
     cout << " You clicked me" <<endl;
     ReadInputFormat();
@@ -1376,10 +1397,9 @@ void MainWindow::readFilesFromFolder(int next_prev) // indicate 1 for next and 0
         current_imageIndex = (--current_imageIndex) %  files_fullpath.size();
 }
 
-/*
- * this function displays the images without detectors, function is called when NEXT or PREVIOUS buttons are pressed
- * WORKS CORRECTLY
- */
+/************************************************************************************************
+*								Display Images Without Detectors    					        *
+************************************************************************************************/
 void MainWindow::displayImagesWithoutDetector()
 {
     // DISPLAYING THE NEXT IMAGE AS A QIMAGE WITHOUT DETECTOR, DETECTOR WILL APPEAR ON THE IMAGE WHEN EVALUATE DETECTOR BUTTON IS CLICKED
@@ -1409,6 +1429,10 @@ void MainWindow::displayImagesWithoutDetector()
         image2->setPixmap(QPixmap::fromImage(qscaled2));
     }
 }
+
+/************************************************************************************************
+*								On Next Button Clicked              					        *
+************************************************************************************************/
 void MainWindow::on_next_button_clicked()
 {
     // read files from the folder and move to the next image accordingly
@@ -1418,6 +1442,9 @@ void MainWindow::on_next_button_clicked()
     displayImagesWithoutDetector();
 }
 
+/************************************************************************************************
+*								On Previous Button Clicked          					        *
+************************************************************************************************/
 void MainWindow::on_prev_button_clicked()
 {
     // read files from the folder and move to the previous image accordingly
@@ -1428,6 +1455,9 @@ void MainWindow::on_prev_button_clicked()
 }
 
 
+/************************************************************************************************
+*								On Sample Clicked (Image Decimation)   					        *
+************************************************************************************************/
 void MainWindow::on_sample_clicked()
 {
     float factor = decimateFactor->text().toFloat();
@@ -1465,6 +1495,10 @@ void MainWindow::on_sample_clicked()
 
 
 }
+
+/************************************************************************************************
+*								Initialize Parameters   								        *
+************************************************************************************************/
 void MainWindow::initializeParameters()
 {
     //detector information parameters fill in here from the user
@@ -1529,6 +1563,10 @@ void MainWindow::initializeParameters()
     param4_desc->setBaseSize(WIDGET_WIDTH, WIDGET_HEIGHT);
     param5_desc->setBaseSize(WIDGET_WIDTH, WIDGET_HEIGHT);
 }
+
+/************************************************************************************************
+*								Main Window Contructor   								        *
+************************************************************************************************/
 MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
 {
     current_imageIndex = 0;
@@ -1537,7 +1575,6 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
     descriptor_selected = 0;
     sampling_rate = 1;
     cnt = 0;
-
 
     evaluate_detector_clicked = false;
     evaluate_descriptor_clicked = false;
@@ -1867,17 +1904,6 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
     //layout_grid->addWidget(userOptionsGroupBox,13,4,1,1);
     layout_grid->addWidget(paramsGroupBox,14,4,12,2);
 
-
-
-
-    //layout_grid->addWidget(groupBox_buttons2,3,0,1,1);
-    //layout_grid->addWidget(groupBox_buttons,4,0,1,1);
-
-    //layout_grid->addWidget(userOptionsGroupBox,1,2,1,1);
-    //layout_grid->addWidget(paramsGroupBox,2,2,1,1);
-    //layout_grid->addWidget(decimateImage,3,2,1,1);
-
-
     layout_grid->setSizeConstraint(QLayout::SetMinimumSize);
     flag_descriptor_match = false;
 
@@ -1905,25 +1931,45 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
 
 }
 
-void MainWindow::drawLineLSD(Mat img)
+/************************************************************************************************
+*								Draw LSD Line Detector   								        *
+************************************************************************************************/
+void MainWindow::drawLineLSD(Mat img, int image_left_right)
 {
     if(detector_selected == 11)
     {
-        for (int i = 0; i < featsImage1.size(); i++)
-        {
-            float temp_x1 = featsImage1.getByID(i).get()->x2[0];
-            float temp_x2 = featsImage1.getByID(i).get()->x2[1];
-            float temp_y1 = featsImage1.getByID(i).get()->y2[0];
-            float temp_y2 = featsImage1.getByID(i).get()->y2[1];
-            /* get a random color */
-            int R = ( rand() % (int) ( 255 + 1 ) );
-            int G = ( rand() % (int) ( 255 + 1 ) );
-            int B = ( rand() % (int) ( 255 + 1 ) );
-            line(img,Point(temp_x1,temp_y1), Point(temp_x2,temp_y2),Scalar(R,G,B), 3);
+        if(image_left_right == 0) {
+            for (int i = 0; i < featsImage1.size(); i++) {
+                float temp_x1 = featsImage1.getByID(i).get()->x2[0];
+                float temp_x2 = featsImage1.getByID(i).get()->x2[1];
+                float temp_y1 = featsImage1.getByID(i).get()->y2[0];
+                float temp_y2 = featsImage1.getByID(i).get()->y2[1];
+                /* get a random color */
+                int R = (rand() % (int) (255 + 1));
+                int G = (rand() % (int) (255 + 1));
+                int B = (rand() % (int) (255 + 1));
+                line(img, Point(temp_x1, temp_y1), Point(temp_x2, temp_y2), Scalar(R, G, B), 3);
+            }
+        } else{
+            for (int i = 0; i < featsImage2.size(); i++) {
+                float temp_x1 = featsImage2.getByID(i).get()->x2[0];
+                float temp_x2 = featsImage2.getByID(i).get()->x2[1];
+                float temp_y1 = featsImage2.getByID(i).get()->y2[0];
+                float temp_y2 = featsImage2.getByID(i).get()->y2[1];
+                /* get a random color */
+                int R = (rand() % (int) (255 + 1));
+                int G = (rand() % (int) (255 + 1));
+                int B = (rand() % (int) (255 + 1));
+                line(img, Point(temp_x1, temp_y1), Point(temp_x2, temp_y2), Scalar(R, G, B), 3);
+            }
         }
     }
 }
 
+
+/************************************************************************************************
+*								Mouse Pressed Slot         								        *
+************************************************************************************************/
 void MainWindow::Mouse_Pressed()
 {
 
@@ -2031,7 +2077,7 @@ void MainWindow::Mouse_Pressed()
                 int temp_y = (int) featsImage2.getFeatureY(i);
                 circle(cvImg2, Point(temp_x, temp_y), 5, Scalar(0,255,0), CIRCLE_THICKNESS, 8, 0);
             }
-            drawLineLSD(cvImg2);
+            drawLineLSD(cvImg2, 1); // 1 means right image
 
             circle(cvImg2, Point(featsImage2.getFeatureX(temp_idx), featsImage2.getFeatureY(temp_idx)), 5, Scalar(255,0,0), CIRCLE_THICKNESS, 8, 0);
 
@@ -2126,7 +2172,7 @@ void MainWindow::Mouse_Pressed()
                 int temp_y = (int) featsImage2.getFeatureY(i);
                 circle(cvImg2, Point(temp_x, temp_y), 5, Scalar(0,255,0), CIRCLE_THICKNESS, 8, 0);
             }
-            drawLineLSD(cvImg2);
+            drawLineLSD(cvImg2, 1 ); // 1 means draw on right image
             circle(cvImg2, Point(featsImage2.getFeatureX(temp_idx), featsImage2.getFeatureY(temp_idx)), 5, Scalar(255,0,0), CIRCLE_THICKNESS, 8, 0);
 
             cv::Mat temp2(cvImg2.cols, cvImg2.rows, cvImg2.type());
@@ -2187,13 +2233,19 @@ void MainWindow::Mouse_Pressed()
 
 
 }
+
+/************************************************************************************************
+*								Mouse Current Pos Slot     								        *
+************************************************************************************************/
 void MainWindow::Mouse_current_pos(){
     //param2_desc->setText("Mouse Pressed");
     cout << "Mouse Pressed" << endl;
     cout << image1->x << " x " << image1->y << endl;
-
-
 }
+
+/************************************************************************************************
+*								Mouse Left Slot         								        *
+************************************************************************************************/
 void MainWindow::Mouse_left(){
 
     //param2_desc->setText("Mouse Pressed");
@@ -2202,6 +2254,10 @@ void MainWindow::Mouse_left(){
 
 
 }
+
+/************************************************************************************************
+*								Find Closest Point       								        *
+************************************************************************************************/
 int MainWindow::findClosest(double x, double y, double X[], double Y[], int n)
 {
     double dist = 10000;

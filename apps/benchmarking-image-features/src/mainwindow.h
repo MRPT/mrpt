@@ -74,9 +74,7 @@ using namespace mrpt;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
-public:
-    explicit MainWindow(QWidget *parent=0);
-    void ReadInputFormat();
+
 
 public:
     QWidget *window_gui;
@@ -164,9 +162,11 @@ public:
     CImage img1, img2;
     TDescriptorType desc_to_compute;
 
-    int numFeats;
+    int numFeats; //  number of features
 
     // Detector OPTIONS
+
+    /** FAST Options */
     struct FASTOptions
     {
         float threshold;
@@ -175,6 +175,7 @@ public:
         bool use_KLT_response;
     }fast_opts;
 
+    /** KLT Options */
     struct KLTOptions
     {
         float threshold;
@@ -183,6 +184,7 @@ public:
         bool tile_image;
     }klt_opts;
 
+    /** Harris Options */
     struct HarrisOptions
     {
         float threshold;
@@ -193,12 +195,14 @@ public:
         bool tile_image;
     }harris_opts;
 
+    /** SIFT Options */
     struct SIFTOptions
     {
         float edge_threshold;
         float threshold;
     }SIFT_opts;
 
+    /** SURF Options */
     struct SURFOptions
     {
         int hessianThreshold;
@@ -207,6 +211,7 @@ public:
         bool rotation_invariant;
     }SURF_opts;
 
+    /** ORB Options */
     struct ORBOptions
     {
         int min_distance;
@@ -215,17 +220,8 @@ public:
         bool extract_patch;
     }ORB_opts;
 
-
-    /*int  	descriptor_type = AKAZE::DESCRIPTOR_MLDB,
-    int  	descriptor_size = 0,
-    int  	descriptor_channels = 3,
-    float  	threshold = 0.001f,
-    int  	nOctaves = 4,
-    int  	nOctaveLayers = 4,
-    int  	diffusivity = KAZE::DIFF_PM_G2
-    */
-
-// not providing option to choose descriptor_type and diffusivity, using default values currently
+    // not providing option to choose descriptor_type and diffusivity, using default values currently
+    /** AKAZE Options */
     struct AKAZEOptions
     {
         //int descriptor_type
@@ -236,6 +232,8 @@ public:
         int  	nOctaveLayers;
         //int  	diffusivity;
     }AKAZE_opts;
+
+    /** LSD Options */
     struct LSDOptions
     {
         int  	scale;
@@ -243,6 +241,8 @@ public:
     }LSD_opts;
 
     //DESCRIPTOR OPTIONS
+    /** SpinImagesOptions Options
+                    */
     struct SpinImageOptions
     {
         int radius;
@@ -251,12 +251,18 @@ public:
         float std_dist;
         float std_intensity;
     }spin_opts;
+
+    /** PolarImagesOptions Options
+				  */
     struct PolarImageOptions
     {
         int radius;
         int bins_angle;
         int bins_distance;
     }polar_opts;
+
+    /** LogPolarImagesOptions Options
+				  */
     struct LogPolarOptions
     {
         int radius;
@@ -265,6 +271,8 @@ public:
 
     }log_polar_opts;
 
+    /** BLDOptions Options
+				  */
     struct BLDOptions
     {
         int ksize_;
@@ -273,6 +281,8 @@ public:
         int widthOfBand;
     }BLD_opts;
 
+    /** LATCHOptions Options
+				  */
     struct LATCHOptions
     {
         int bytes;
@@ -321,49 +331,193 @@ public:
     bool activate_stereo_matching;
 
 signals:
-
-
-    //void currentIndexChanged(int index);
+    // None yet
 
 public:
+
+    /**
+     * MainWindow(QWidget) constructor which creates all the widgets and displays them on screen registers all the signals and slots for the buttons, comboboxes, etc.
+     * it sets the layout/sizes for all the widgets to be displayed in the QMain window
+     * @param window_gui asks a QWidget default=0
+     */
+    explicit MainWindow(QWidget *parent=0);
+
+    /**
+     * readInputFormat() reads and stores the states of the user selections for different inputs like (currentInputIndex,
+     * detector_selected, descriptor selected, file_path1 and file_path2) and can be used by other functions when required
+     */
+    void ReadInputFormat();
+
+    /**
+     * makeAllDetectorParamsVisible(bool) makes all the detector parameters (QLabel, QLineEdits) in the main window either visible or hides them depending on the flag variable's value
+     * @param flag variable to store if all labels/text fields are to be made visible or hidden
+     */
     void makeAllDetectorParamsVisible(bool flag);
+
+    /**
+     * makeAllDescriptorParamsVisible(bool) makes all the descriptors parameters (QLabel, QLineEdits) in the main window either visible or hides them depending on the flag variable's value
+     * @param flag variable to store if all labels/text fields are to be made visible or hidden
+     */
     void makeAllDescriptorParamsVisible(bool flag);
+
+    /**
+     * fillDetectorInfo() function is used to fill in the required parameters for the chosen detector, the parameters entered
+     * by the user are read and stored in the appropriate variables, later these values are stored in the fext.options.DETECTOR.parameter field
+     * example fext.options.KLTOptions.min_distance, fext.options.harrisOptions.sigma, etc.
+     */
     void fillDetectorInfo();
+
+    /**
+     * fillDescriptorInfo() function is used to fill in the required parameters for the chosen descriptor, the parameters entered
+     * by the user are read and stored in the appropriate variables, later these values are stored in the fext.options.DESCRIPTOR.parameter field
+     * example fext.options.SURFOptions.hessianThreshold, fext.options.SIFTOptions.edgeThreshold, etc.
+     */
     void fillDescriptorInfo();
+
+    /**
+      * readFilesFromFolder(int) reads the files from a folder, the function is called when the user presses the next or previous button
+      * it iterates over the images present in the image dataset folder specified by the user
+      * the function works under the assumption both the stereo image datasets have the same number of images
+      * @param next_prev indicates 1 for next image and 0 for previous button being pressed
+      */
     void readFilesFromFolder(int next_prev);
+
+    /**
+     * displayImagesWithoutDetector() function displays the images without detectors as QLabels, this function is called when NEXT or PREVIOUS buttons are pressed
+     */
     void displayImagesWithoutDetector();
+
+    /**
+     * initializeParameters() initializes the content for the detector/descriptor QLabels/QLineEdits, it also sets the size of these labels and text fields
+     */
     void initializeParameters();
 
+    /**
+     * findClosest function finds the closest point to the input (x,y) coordinates from the array of points (X[],Y[])
+     * the function is called when the user clicks on a key-point in the QLabel which has the QImage
+     * @param x input mouse click's x-coordinate
+     * @param y input mouse click's y-coordinate
+     * @param X input array of X coordinates which has all key-points' x-coordinates
+     * @param Y input array of Y coordinates which has all key-points' y-coordinates
+     * @param n input the size of the X[],Y[] array of key-points
+     * @return returns the index of the closest key-point to that clicked by the mouse
+     */
     int findClosest(double x, double y, double X[], double Y[], int n);
-    void computeMinMax(CVectorDouble distances, int &min_idx, double &min_dist, int &max_idx, double &max_dist);
-    void drawLineLSD(Mat img);
 
+    /**
+     * drawLineLSD() draws the lines (LSD line detectors) in the image on the key-points for the image.
+     * @param img the input image on which the lines need to be drawn
+     * @param image_left_right  this indicates the image on which to draw the lines (0: left; 1:right)
+     */
+    void drawLineLSD(Mat img, int image_left_right);
 
 
 private slots:
+
+    /**
+     * Mouse_current_pos() slot function simply used to test the functionality of MouseEvents, not currently used
+     */
     void Mouse_current_pos();
+
+    /**
+     * Mouse_Pressed() slot function called when the user clicks on a particular point in the QLabel for image 1 in the GUI, it finds the closest keypoint in image1
+     * and shows the corresponding best image in image2, it reads the descriptors stored by the on_button_generate_clicked() from global variables
+     * it then displays the descriptors from the single/stereo images onto the GUI
+     * also shows the plot of all descriptor distances in image2 to the descriptor (around key-point) clicked by the user
+     */
     void Mouse_Pressed();
+
+    /**
+     * Mouse_left() slot function called when mouse leaves the QLabel on which this function is registeres as slot, not currently used
+     */
     void Mouse_left();
 
+
 public slots:
+
+    /**
+     * on_button_generate_clicked() is called when user clicks on visualize descriptor.
+     * the function computes and stores the visualizations in memory to be later used when the user clicks on the QLabel to show the descriptors.
+     * the function populates all the descriptors in the left and right images in appropriate variables and also stores the which of the descriptors in image1
+     * match best to those in image2.
+     */
     void on_button_generate_clicked();
+
+    /**
+     * button_close_clicked() simply closes the wondow
+     */
     void button_close_clicked();
 
+    /**
+     * on_detector_button_clicked() function shows the performance of the selected detector on the input image/dataset selected by the user
+     * detected key-points are shown on the images which are rendered as QLabels
+     * For the case when user selects SingleImage/StereoImage Dataset, this calls the readFilesFromFolder(int) function which stores the file names for all images present in the folder
+     * this function also calls fillDetectorInfo to populate detector parameters
+     * the performance metric displayed is in terms of repeatability, dispersion of image, computational cost, number of found points, etc.
+     * */
     void on_detector_button_clicked();
+
+    /**
+     * on_descriptor_button_clicked() slot function is called when the user clicks the evaluate Descriptor button, it computes the selected descriptor from the QComboBox
+     * for the image and stores the descriptor in the featsImage1 and featsImage2 variables.
+     * the function calls the fillDescriptorInfo() function which fills the parameters for the selected descriptor
+     */
     void on_descriptor_button_clicked();
 
+    /**
+     * on_browse_button_clicked() slot function browses for the image files that the user can select or the directory that the user can select for the first image/folder
+     * it stores the file paths in the appropriate global variables which are then used by other functions to read the images from
+     */
     void on_browse_button_clicked();
+
+    /**
+     * on_browse_button_clicked2() slot function browses for the image files that the user can select or the directory that the user can select for the second image/folder
+     * it stores the file paths in the appropriate global variables which are then used by other functions to read the images from
+     */
     void on_browse_button_clicked2();
 
+    /**
+     * on_descriptor_choose() slot function is called when the user selects the descriptor from the list of available descriptors from the QComboBox
+     * the function populates the QLabels and the QLineEdits for the selected descriptor option, it also hides the QLabels and QLineEdits that are not required
+     * @param choice stores the descriptor chosen by the user
+     */
     void on_descriptor_choose(int choice);
+
+    /**
+     * on_detector_choose() slot function is called when the user selects the detector from the list of available detectors from the QComboBox
+     * the function populates the QLabels and the QLineEdits for the selected detector option, it also hides the QLabels and QLineEdits that are not required
+     * @param choice stores the detector chosen by the user
+     */
     void on_detector_choose(int choice);
 
+    /**
+     * on_file_input_choose(int) slot function is called when the user selects the type of the input to be used from the QCombo
+     * @param choice stores the type of input selected, 0: single image, 1: stereo iamge, 2: image raw log file, 3: single image dataset, 4: stereo image dataset
+     */
     void on_file_input_choose(int choice);
+
+    /**
+     * this function is currently not required as stereo matching is done by mouse clicks
+     * @param state
+     */
     void onStereoMatchingChecked(int state);
 
+    /**
+     * on_next_button_clicked() function is called when the user clicks on the next button to iterate over the images in the dataset
+     * this function calls the readFilesFromFolder(int) and displayImagesWithoutDetector() functions
+     */
     void on_next_button_clicked();
+
+    /**
+     * on_prev_button_clicked() function is called when the user clicks on the previous button to iterate over the images in the dataset
+     * this function calls the readFilesFromFolder(int) and displayImagesWithoutDetector() functions
+     */
     void on_prev_button_clicked();
 
+    /**
+     * on_sample_clicked() slot function decimates the image by the decimation factor entered by the user
+     * e.g, entering 0.1 enlarges the image to 110% and -0.2 reduces it to 80% of its actual resolution
+     */
     void on_sample_clicked();
 
 };
