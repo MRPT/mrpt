@@ -17,26 +17,27 @@
 //  GRAPHSLAM_IMPEXP, mrpt_xxx_EXPORTS
 
 /*   The macros below for DLL import/export are required for Windows only.
-    Mostly all the definitions in this file are copied or at least graphslamd
-     on the file wx/dlimpexp.h, written by Vadim Zeitlin and published
+	Mostly all the definitions in this file are copied or at least graphslamd
+	 on the file wx/dlimpexp.h, written by Vadim Zeitlin and published
 	 under the wxWindows licence.
 */
 #if defined(MRPT_OS_WINDOWS)
-	#define MRPT_GRAPHSLAM_EXPORT __declspec(dllexport)
-	#define MRPT_GRAPHSLAM_IMPORT __declspec(dllimport)
+#define MRPT_GRAPHSLAM_EXPORT __declspec(dllexport)
+#define MRPT_GRAPHSLAM_IMPORT __declspec(dllimport)
 #else
-#    define MRPT_GRAPHSLAM_EXPORT
-#    define MRPT_GRAPHSLAM_IMPORT
+#define MRPT_GRAPHSLAM_EXPORT
+#define MRPT_GRAPHSLAM_IMPORT
 #endif
 
 /*  Macros that map to export declaration when building the DLL, to import
-	declaration if using it or to nothing at all if we are not compiling as DLL */
+	declaration if using it or to nothing at all if we are not compiling as DLL
+   */
 #if defined(MRPT_BUILT_AS_DLL)
-#	if defined(mrpt_graphslam_EXPORTS)  /* Building the DLL */
-#		define GRAPHSLAM_IMPEXP MRPT_GRAPHSLAM_EXPORT
-#	else  /* Using the DLL */
-#		define GRAPHSLAM_IMPEXP MRPT_GRAPHSLAM_IMPORT
-#	endif
+#if defined(mrpt_graphslam_EXPORTS) /* Building the DLL */
+#define GRAPHSLAM_IMPEXP MRPT_GRAPHSLAM_EXPORT
+#else /* Using the DLL */
+#define GRAPHSLAM_IMPEXP MRPT_GRAPHSLAM_IMPORT
+#endif
 #else /* not making nor using DLL */
-#    define GRAPHSLAM_IMPEXP
+#define GRAPHSLAM_IMPEXP
 #endif

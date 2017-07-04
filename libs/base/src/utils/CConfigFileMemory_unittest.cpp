@@ -21,19 +21,20 @@ TEST(CConfigFileMemory, readwrite)
 {
 	const std::string a = "check", b = "test", c = "final //comments";
 	CConfigFileMemory first;
-	first.write(a,b,c);
-	EXPECT_STREQ("final", first.read_string(a,b,b).c_str());	
+	first.write(a, b, c);
+	EXPECT_STREQ("final", first.read_string(a, b, b).c_str());
 }
 
 TEST(CConfigFileMemory, Sections)
 {
 	vector_string sections;
 	CConfigFileMemory second;
-	second.write("one","name","val");
-	second.write("two","names","value");
+	second.write("one", "name", "val");
+	second.write("two", "names", "value");
 	second.getAllSections(sections);
 	EXPECT_EQ(2U, sections.size());
-	if (sections.size() == 2) {  // avoid potential crash if fails
+	if (sections.size() == 2)
+	{  // avoid potential crash if fails
 		EXPECT_STREQ("one", sections[0].c_str());
 		EXPECT_STREQ("two", sections[1].c_str());
 	}
@@ -43,11 +44,12 @@ TEST(CConfigFileMemory, Names)
 {
 	vector_string names;
 	CConfigFileMemory third;
-	third.write("sec","name","val");
-	third.write("sec","names","value");
+	third.write("sec", "name", "val");
+	third.write("sec", "names", "value");
 	third.getAllKeys("sec", names);
 	EXPECT_EQ(2U, names.size());
-	if (names.size() == 2) {  // avoid potential crash if fails
+	if (names.size() == 2)
+	{  // avoid potential crash if fails
 		EXPECT_STREQ("name", names[0].c_str());
 		EXPECT_STREQ("names", names[1].c_str());
 	}
@@ -59,25 +61,26 @@ TEST(CConfigFileMemory, setFromString)
 		"# example config file from std::string\n"
 		"[test]\n"
 		"key_num = 4\n"
-		"key_str = pepe\n"
-		;
+		"key_str = pepe\n";
 
 	CConfigFileMemory cfg;
 	cfg.setContent(sampleCfgTxt);
 
 	EXPECT_EQ(cfg.read_int("test", "key_num", 0), 4);
-	EXPECT_EQ(cfg.read_string("test","key_str",""),std::string("pepe"));
+	EXPECT_EQ(cfg.read_string("test", "key_str", ""), std::string("pepe"));
 }
 
-// Being able of read 
+// Being able of read
 const std::string sampleCfgTxt =
-"[test]\n"
-"key_str = this is a \\\n"
-"long value that can be \\\n"
-"split into several lines \\\n"
-"but read as a single line. \n";
+	"[test]\n"
+	"key_str = this is a \\\n"
+	"long value that can be \\\n"
+	"split into several lines \\\n"
+	"but read as a single line. \n";
 ;
-const std::string expectedStr = std::string("this is a long value that can be split into several lines but read as a single line.");
+const std::string expectedStr = std::string(
+	"this is a long value that can be split into several lines but read as a "
+	"single line.");
 
 TEST(CConfigFileMemory, readMultiLineStrings)
 {
@@ -125,6 +128,6 @@ TEST(CConfigFileMemory, parseVariables)
 	EXPECT_EQ(cfg.read_int("test", "var2", 0), 10);
 	EXPECT_EQ(cfg.read_int("test", "var3", 0), -30);
 	EXPECT_NEAR(cfg.read_double("test", "var4", .0), 20.0, 1e-6);
-	EXPECT_NEAR(cfg.read_double("test", "var5", .0), 40.0,1e-6);
+	EXPECT_NEAR(cfg.read_double("test", "var5", .0), 40.0, 1e-6);
 	EXPECT_EQ(cfg.read_string("test", "varstr1", ""), std::string("MAXSPEED"));
 }

@@ -20,15 +20,10 @@ XsUdev::XsUdev(void)
 	initLibrary();
 }
 
-XsUdev::~XsUdev(void)
-{
-	delete m_libraryLoader;
-}
-
+XsUdev::~XsUdev(void) { delete m_libraryLoader; }
 void XsUdev::initLibrary()
 {
-	if (!m_libraryLoader->isLoaded())
-		m_libraryLoader->load("libudev.so");
+	if (!m_libraryLoader->isLoaded()) m_libraryLoader->load("libudev.so");
 
 	m_uDev.unew = nullptr;
 	m_uDev.unref = nullptr;
@@ -50,19 +45,43 @@ void XsUdev::initLibrary()
 	{
 		m_uDev.unew = (uDEV_new*)m_libraryLoader->resolve("udev_new");
 		m_uDev.unref = (uDEV_unref*)m_libraryLoader->resolve("udev_unref");
-		m_uDev.device_unref = (uDEV_device_unref*)m_libraryLoader->resolve("udev_device_unref");
-		m_uDev.enumerate_new = (uDEV_enumerate_new*)m_libraryLoader->resolve("udev_enumerate_new");
-		m_uDev.enumerate_add_match_subsystem = (uDEV_enumerate_add_match_subsystem*)m_libraryLoader->resolve("udev_enumerate_add_match_subsystem");
-		m_uDev.enumerate_scan_devices = (uDEV_enumerate_scan_devices*)m_libraryLoader->resolve("udev_enumerate_scan_devices");
-		m_uDev.enumerate_get_list_entry = (uDEV_enumerate_get_list_entry*)m_libraryLoader->resolve("udev_enumerate_get_list_entry");
-		m_uDev.enumerate_unref = (uDEV_enumerate_unref*)m_libraryLoader->resolve("udev_enumerate_unref");
-		m_uDev.list_entry_get_next = (uDEV_list_entry_get_next*)m_libraryLoader->resolve("udev_list_entry_get_next");
-		m_uDev.list_entry_get_name = (uDEV_list_entry_get_name*)m_libraryLoader->resolve("udev_list_entry_get_name");
-		m_uDev.device_new_from_syspath = (uDEV_device_new_from_syspath*)m_libraryLoader->resolve("udev_device_new_from_syspath");
-		m_uDev.device_get_parent = (uDEV_device_get_parent*)m_libraryLoader->resolve("udev_device_get_parent");
-		m_uDev.device_get_devnode = (uDEV_device_get_devnode*)m_libraryLoader->resolve("udev_device_get_devnode");
-		m_uDev.device_get_parent_with_subsystem_devtype = (uDEV_device_get_parent_with_subsystem_devtype*)m_libraryLoader->resolve("udev_device_get_parent_with_subsystem_devtype");
-		m_uDev.device_get_sysattr_value = (uDEV_device_get_sysattr_value*)m_libraryLoader->resolve("udev_device_get_sysattr_value");
+		m_uDev.device_unref =
+			(uDEV_device_unref*)m_libraryLoader->resolve("udev_device_unref");
+		m_uDev.enumerate_new =
+			(uDEV_enumerate_new*)m_libraryLoader->resolve("udev_enumerate_new");
+		m_uDev.enumerate_add_match_subsystem =
+			(uDEV_enumerate_add_match_subsystem*)m_libraryLoader->resolve(
+				"udev_enumerate_add_match_subsystem");
+		m_uDev.enumerate_scan_devices =
+			(uDEV_enumerate_scan_devices*)m_libraryLoader->resolve(
+				"udev_enumerate_scan_devices");
+		m_uDev.enumerate_get_list_entry =
+			(uDEV_enumerate_get_list_entry*)m_libraryLoader->resolve(
+				"udev_enumerate_get_list_entry");
+		m_uDev.enumerate_unref =
+			(uDEV_enumerate_unref*)m_libraryLoader->resolve(
+				"udev_enumerate_unref");
+		m_uDev.list_entry_get_next =
+			(uDEV_list_entry_get_next*)m_libraryLoader->resolve(
+				"udev_list_entry_get_next");
+		m_uDev.list_entry_get_name =
+			(uDEV_list_entry_get_name*)m_libraryLoader->resolve(
+				"udev_list_entry_get_name");
+		m_uDev.device_new_from_syspath =
+			(uDEV_device_new_from_syspath*)m_libraryLoader->resolve(
+				"udev_device_new_from_syspath");
+		m_uDev.device_get_parent =
+			(uDEV_device_get_parent*)m_libraryLoader->resolve(
+				"udev_device_get_parent");
+		m_uDev.device_get_devnode =
+			(uDEV_device_get_devnode*)m_libraryLoader->resolve(
+				"udev_device_get_devnode");
+		m_uDev.device_get_parent_with_subsystem_devtype =
+			(uDEV_device_get_parent_with_subsystem_devtype*)m_libraryLoader
+				->resolve("udev_device_get_parent_with_subsystem_devtype");
+		m_uDev.device_get_sysattr_value =
+			(uDEV_device_get_sysattr_value*)m_libraryLoader->resolve(
+				"udev_device_get_sysattr_value");
 	}
 }
 
@@ -70,11 +89,12 @@ void XsUdev::initLibrary()
 
 	This reads the udev configuration file, and fills in the default values.
 
-	The initial refcount is 1, and needs to be decremented to release the resources of the udev library context.
+	The initial refcount is 1, and needs to be decremented to release the
+   resources of the udev library context.
 
 	\returns a new udev library context
 */
-udev *XsUdev::unew(void)
+udev* XsUdev::unew(void)
 {
 	if (m_uDev.unew)
 		return m_uDev.unew();
@@ -88,7 +108,7 @@ udev *XsUdev::unew(void)
 
 	If the refcount reaches zero, the resources of the context will be released.
 */
-udev *XsUdev::unref(struct udev *udev)
+udev* XsUdev::unref(struct udev* udev)
 {
 	if (m_uDev.unref)
 		return m_uDev.unref(udev);
@@ -103,7 +123,7 @@ udev *XsUdev::unref(struct udev *udev)
 	\param udev_device udev device
 	\return NULL
 */
-udev_device *XsUdev::device_unref(struct udev_device *udev_device)
+udev_device* XsUdev::device_unref(struct udev_device* udev_device)
 {
 	if (m_uDev.device_unref)
 		return m_uDev.device_unref(udev_device);
@@ -116,7 +136,7 @@ udev_device *XsUdev::device_unref(struct udev_device *udev_device)
 
 	\return an enumeration context.
 */
-udev_enumerate *XsUdev::enumerate_new(struct udev *udev)
+udev_enumerate* XsUdev::enumerate_new(struct udev* udev)
 {
 	if (m_uDev.enumerate_new)
 		return m_uDev.enumerate_new(udev);
@@ -126,10 +146,12 @@ udev_enumerate *XsUdev::enumerate_new(struct udev *udev)
 
 /*! \brief Match only devices belonging to a certain kernel subsystem.
 	\param udev_enumerate context
-	\param subsystem  filter for a subsystem of the device to include in the list
+	\param subsystem  filter for a subsystem of the device to include in the
+   list
 	\return: 0 on success, otherwise a negative error value.
 */
-int XsUdev::enumerate_add_match_subsystem(struct udev_enumerate *udev_enumerate, const char *subsystem)
+int XsUdev::enumerate_add_match_subsystem(
+	struct udev_enumerate* udev_enumerate, const char* subsystem)
 {
 	if (m_uDev.enumerate_add_match_subsystem)
 		return m_uDev.enumerate_add_match_subsystem(udev_enumerate, subsystem);
@@ -137,11 +159,12 @@ int XsUdev::enumerate_add_match_subsystem(struct udev_enumerate *udev_enumerate,
 		return -1;
 }
 
-/*! \brief Scan /sys for all devices which match the given filters. No matches will return all currently available devices.
+/*! \brief Scan /sys for all devices which match the given filters. No matches
+   will return all currently available devices.
 	\param udev_enumerate udev enumeration context
 	\return 0 on success, otherwise a negative error value.
 */
-int XsUdev::enumerate_scan_devices(struct udev_enumerate *udev_enumerate)
+int XsUdev::enumerate_scan_devices(struct udev_enumerate* udev_enumerate)
 {
 	if (m_uDev.enumerate_scan_devices)
 		return m_uDev.enumerate_scan_devices(udev_enumerate);
@@ -154,7 +177,7 @@ int XsUdev::enumerate_scan_devices(struct udev_enumerate *udev_enumerate)
 	\param list_entry current entry
 	\return udev_list_entry, nullptr if no more entries are available.
 */
-udev_list_entry *XsUdev::list_entry_get_next(struct udev_list_entry *list_entry)
+udev_list_entry* XsUdev::list_entry_get_next(struct udev_list_entry* list_entry)
 {
 	if (m_uDev.list_entry_get_next)
 		return m_uDev.list_entry_get_next(list_entry);
@@ -166,7 +189,8 @@ udev_list_entry *XsUdev::list_entry_get_next(struct udev_list_entry *list_entry)
 	\param udev_enumerate context
 	\return a udev_list_entry.
 */
-udev_list_entry *XsUdev::enumerate_get_list_entry(struct udev_enumerate *udev_enumerate)
+udev_list_entry* XsUdev::enumerate_get_list_entry(
+	struct udev_enumerate* udev_enumerate)
 {
 	if (m_uDev.enumerate_get_list_entry)
 		return m_uDev.enumerate_get_list_entry(udev_enumerate);
@@ -176,13 +200,14 @@ udev_list_entry *XsUdev::enumerate_get_list_entry(struct udev_enumerate *udev_en
 
 /*! \brief Drop a reference of an enumeration context.
 
-	If the refcount reaches zero, all resources of the enumeration context will be released.
+	If the refcount reaches zero, all resources of the enumeration context will
+   be released.
 
 	\param udev_enumerate context
 
 	\return: NULL
 */
-udev_enumerate *XsUdev::enumerate_unref(struct udev_enumerate *udev_enumerate)
+udev_enumerate* XsUdev::enumerate_unref(struct udev_enumerate* udev_enumerate)
 {
 	if (m_uDev.enumerate_unref)
 		return m_uDev.enumerate_unref(udev_enumerate);
@@ -194,7 +219,7 @@ udev_enumerate *XsUdev::enumerate_unref(struct udev_enumerate *udev_enumerate)
 	\param list_entry: current entry
 	\return the name string of this entry.
 */
-const char *XsUdev::list_entry_get_name(struct udev_list_entry *list_entry)
+const char* XsUdev::list_entry_get_name(struct udev_list_entry* list_entry)
 {
 	if (m_uDev.list_entry_get_name)
 		return m_uDev.list_entry_get_name(list_entry);
@@ -202,15 +227,18 @@ const char *XsUdev::list_entry_get_name(struct udev_list_entry *list_entry)
 		return "";
 }
 
-/*! \brief Create new udev device, and fill in information from the sys device and the udev database entry.
+/*! \brief Create new udev device, and fill in information from the sys device
+   and the udev database entry.
 
-	The syspath is the absolute path to the device, including the sys mount point.
+	The syspath is the absolute path to the device, including the sys mount
+   point.
 
 	\param udev udev library context
 	\param syspath sys device path including sys directory
 	\return a new udev device, or nullptr, if it does not exist
 */
-udev_device *XsUdev::device_new_from_syspath(struct udev *udev, const char *syspath)
+udev_device* XsUdev::device_new_from_syspath(
+	struct udev* udev, const char* syspath)
 {
 	if (m_uDev.device_new_from_syspath)
 		return m_uDev.device_new_from_syspath(udev, syspath);
@@ -218,17 +246,20 @@ udev_device *XsUdev::device_new_from_syspath(struct udev *udev, const char *sysp
 		return nullptr;
 }
 
-/*! \brief Find the next parent device, and fill in information from the sys device and the udev database entry.
+/*! \brief Find the next parent device, and fill in information from the sys
+   device and the udev database entry.
 
-	Returned device is not referenced. It is attached to the child device, and will be cleaned up when the child device is cleaned up.
-	It is not necessarily just the upper level directory, empty or not recognized sys directories are ignored.
+	Returned device is not referenced. It is attached to the child device, and
+   will be cleaned up when the child device is cleaned up.
+	It is not necessarily just the upper level directory, empty or not
+   recognized sys directories are ignored.
 
 	It can be called as many times as needed, without caring about references.
 
 	\param udev_device: the device to start searching from
 	\return a new udev device, or nullptr, if it no parent exist.
 */
-udev_device *XsUdev::device_get_parent(struct udev_device *udev_device)
+udev_device* XsUdev::device_get_parent(struct udev_device* udev_device)
 {
 	if (m_uDev.device_get_parent)
 		return m_uDev.device_get_parent(udev_device);
@@ -241,9 +272,10 @@ udev_device *XsUdev::device_get_parent(struct udev_device *udev_device)
 	The path is an absolute path, and starts with the device directory.
 
 	\param udev_device udev device
-	\return the device node file name of the udev device, or nullptr if no device node exists
+	\return the device node file name of the udev device, or nullptr if no
+   device node exists
 */
-const char *XsUdev::device_get_devnode(struct udev_device *udev_device)
+const char* XsUdev::device_get_devnode(struct udev_device* udev_device)
 {
 	if (m_uDev.device_get_devnode)
 		return m_uDev.device_get_devnode(udev_device);
@@ -251,11 +283,15 @@ const char *XsUdev::device_get_devnode(struct udev_device *udev_device)
 		return "";
 }
 
-/*! \brief Find the next parent device, with a matching subsystem and devtypevalue, and fill in information from the sys device and the udev database entry.
+/*! \brief Find the next parent device, with a matching subsystem and
+   devtypevalue, and fill in information from the sys device and the udev
+   database entry.
 
-	If devtype is nullptr, only subsystem is checked, and any devtype will match.
+	If devtype is nullptr, only subsystem is checked, and any devtype will
+   match.
 
-	Returned device is not referenced. It is attached to the child device, and will be cleaned up when the child device is cleaned up.
+	Returned device is not referenced. It is attached to the child device, and
+   will be cleaned up when the child device is cleaned up.
 
 	It can be called as many times as needed, without caring about references.
 
@@ -264,24 +300,29 @@ const char *XsUdev::device_get_devnode(struct udev_device *udev_device)
 	\param devtype the type (DEVTYPE) of the device
 	\return a new udev device, or nullptr if no matching parent exists.
 */
-udev_device *XsUdev::device_get_parent_with_subsystem_devtype(struct udev_device *udev_device, const char *subsystem, const char *devtype)
+udev_device* XsUdev::device_get_parent_with_subsystem_devtype(
+	struct udev_device* udev_device, const char* subsystem, const char* devtype)
 {
 	if (m_uDev.device_get_parent_with_subsystem_devtype)
-		return m_uDev.device_get_parent_with_subsystem_devtype(udev_device, subsystem, devtype);
+		return m_uDev.device_get_parent_with_subsystem_devtype(
+			udev_device, subsystem, devtype);
 	else
 		return nullptr;
 }
 
 /*! \brief Get a sys attribute value
 
-	The retrieved value is cached in the device. Repeated calls will return the same value and not open the attribute again.
+	The retrieved value is cached in the device. Repeated calls will return the
+   same value and not open the attribute again.
 
 	\param udev_device udev device
 	\param sysattr attribute name
 
-	\return the content of a sys attribute file, or nullptr if there is no sys attribute value.
+	\return the content of a sys attribute file, or nullptr if there is no sys
+   attribute value.
 */
-const char *XsUdev::device_get_sysattr_value(struct udev_device *udev_device, const char *sysattr)
+const char* XsUdev::device_get_sysattr_value(
+	struct udev_device* udev_device, const char* sysattr)
 {
 	if (m_uDev.device_get_sysattr_value)
 		return m_uDev.device_get_sysattr_value(udev_device, sysattr);
@@ -289,4 +330,4 @@ const char *XsUdev::device_get_sysattr_value(struct udev_device *udev_device, co
 		return "";
 }
 
-#endif // patch for MRPT
+#endif  // patch for MRPT

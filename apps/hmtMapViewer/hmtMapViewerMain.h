@@ -32,151 +32,140 @@
 
 class CMyGLCanvas;
 
-
-class hmtMapViewerFrame: public wxFrame
+class hmtMapViewerFrame : public wxFrame
 {
-    public:
+   public:
+	hmtMapViewerFrame(wxWindow* parent, wxWindowID id = -1);
+	virtual ~hmtMapViewerFrame();
 
-        hmtMapViewerFrame(wxWindow* parent,wxWindowID id = -1);
-        virtual ~hmtMapViewerFrame();
+	bool AskForOpenHMTMap(std::string& fil);
 
+	// Returns true if OK.
+	bool loadHTMSLAMFromFile(const std::string& filePath);
 
-        bool AskForOpenHMTMap( std::string &fil );
+	// Rebuilds the tree view on the left panel.
+	void rebuildTreeView();
 
-        // Returns true if OK.
-        bool loadHTMSLAMFromFile( const std::string &filePath );
+	void updateGlobalMapView();
+	void updateLocalMapView();
 
-        // Rebuilds the tree view on the left panel.
-        void rebuildTreeView();
+	/** File loaded now. */
+	std::string m_curFileOpen;
 
-        void updateGlobalMapView();
-        void updateLocalMapView();
+   private:
+	//(*Handlers(hmtMapViewerFrame)
+	void OnQuit(wxCommandEvent& event);
+	void OnAbout(wxCommandEvent& event);
+	void OnMenuLoad(wxCommandEvent& event);
+	void OnMenuOverlapBtw2(wxCommandEvent& event);
+	void OnMenuTranslationBtw2(wxCommandEvent& event);
+	void OntreeViewSelectionChanged(wxTreeEvent& event);
+	void OnmenuExportLocalMapsSelected(wxCommandEvent& event);
+	void OnTopologicalModel_Gridmap(wxCommandEvent& event);
+	void OnTopologicalModel_Fabmap(wxCommandEvent& event);
+	//*)
 
+	//(*Identifiers(hmtMapViewerFrame)
+	static const long ID_STATICTEXT1;
+	static const long ID_STATICTEXT2;
+	static const long ID_CHOICE1;
+	static const long ID_PANEL5;
+	static const long ID_TREECTRL1;
+	static const long ID_PANEL9;
+	static const long ID_TEXTCTRL1;
+	static const long ID_PANEL8;
+	static const long ID_SPLITTERWINDOW3;
+	static const long ID_PANEL1;
+	static const long ID_STATICTEXT3;
+	static const long ID_PANEL6;
+	static const long ID_PANEL3;
+	static const long ID_STATICTEXT4;
+	static const long ID_PANEL7;
+	static const long ID_PANEL4;
+	static const long ID_SPLITTERWINDOW2;
+	static const long ID_PANEL2;
+	static const long ID_SPLITTERWINDOW1;
+	static const long ID_MENUITEM1;
+	static const long ID_MENUITEM4;
+	static const long idMenuQuit;
+	static const long ID_MENUITEM2;
+	static const long ID_MENUITEM3;
+	static const long ID_MENUITEM6;
+	static const long ID_MENUITEM7;
+	static const long ID_MENUITEM5;
+	static const long idMenuAbout;
+	static const long ID_STATUSBAR1;
+	static const long ID_TOOLBARITEM1;
+	static const long ID_TOOLBARITEM2;
+	static const long ID_TOOLBAR1;
+	//*)
 
-        /** File loaded now. */
-        std::string     m_curFileOpen;      
+	static const long ID_TIMER1;
 
-    private:
+	//(*Declarations(hmtMapViewerFrame)
+	wxPanel* Panel6;
+	wxPanel* Panel1;
+	wxPanel* Panel7;
+	wxStatusBar* StatusBar1;
+	wxMenuItem* menuExportLocalMaps;
+	wxChoice* cbHypos;
+	wxMenu* Menu3;
+	wxPanel* Panel8;
+	wxPanel* Panel9;
+	wxStaticText* StaticText1;
+	wxPanel* Panel2;
+	wxToolBarToolBase* ToolBarItem2;
+	wxSplitterWindow* SplitterWindow1;
+	wxStaticText* StaticText3;
+	wxMenu* MenuItem6;
+	wxPanel* Panel4;
+	wxSplitterWindow* SplitterWindow2;
+	wxMenuItem* MenuItem3;
+	wxPanel* Panel5;
+	wxSplitterWindow* SplitterWindow3;
+	wxToolBar* ToolBar1;
+	wxPanel* Panel3;
+	wxTextCtrl* edLog;
+	wxMenuItem* MenuItem5;
+	wxStaticText* StaticText4;
+	wxToolBarToolBase* ToolBarItem1;
+	wxStaticText* StaticText2;
+	wxMenuItem* MenuItem7;
+	wxMenuItem* MenuItem4;
+	wxTreeCtrl* treeView;
+	wxMenuItem* MenuItem8;
+	//*)
 
-        //(*Handlers(hmtMapViewerFrame)
-        void OnQuit(wxCommandEvent& event);
-        void OnAbout(wxCommandEvent& event);
-        void OnMenuLoad(wxCommandEvent& event);
-        void OnMenuOverlapBtw2(wxCommandEvent& event);
-        void OnMenuTranslationBtw2(wxCommandEvent& event);
-        void OntreeViewSelectionChanged(wxTreeEvent& event);
-        void OnmenuExportLocalMapsSelected(wxCommandEvent& event);
-        void OnTopologicalModel_Gridmap(wxCommandEvent& event);
-        void OnTopologicalModel_Fabmap(wxCommandEvent& event);
-        //*)
+	DECLARE_EVENT_TABLE()
 
-        //(*Identifiers(hmtMapViewerFrame)
-        static const long ID_STATICTEXT1;
-        static const long ID_STATICTEXT2;
-        static const long ID_CHOICE1;
-        static const long ID_PANEL5;
-        static const long ID_TREECTRL1;
-        static const long ID_PANEL9;
-        static const long ID_TEXTCTRL1;
-        static const long ID_PANEL8;
-        static const long ID_SPLITTERWINDOW3;
-        static const long ID_PANEL1;
-        static const long ID_STATICTEXT3;
-        static const long ID_PANEL6;
-        static const long ID_PANEL3;
-        static const long ID_STATICTEXT4;
-        static const long ID_PANEL7;
-        static const long ID_PANEL4;
-        static const long ID_SPLITTERWINDOW2;
-        static const long ID_PANEL2;
-        static const long ID_SPLITTERWINDOW1;
-        static const long ID_MENUITEM1;
-        static const long ID_MENUITEM4;
-        static const long idMenuQuit;
-        static const long ID_MENUITEM2;
-        static const long ID_MENUITEM3;
-        static const long ID_MENUITEM6;
-        static const long ID_MENUITEM7;
-        static const long ID_MENUITEM5;
-        static const long idMenuAbout;
-        static const long ID_STATUSBAR1;
-        static const long ID_TOOLBARITEM1;
-        static const long ID_TOOLBARITEM2;
-        static const long ID_TOOLBAR1;
-        //*)
+	CMyGLCanvas* m_canvas_HMAP;
+	CMyGLCanvas* m_canvas_LMH;
 
-		static const long ID_TIMER1;
-
-        //(*Declarations(hmtMapViewerFrame)
-        wxPanel* Panel6;
-        wxPanel* Panel1;
-        wxPanel* Panel7;
-        wxStatusBar* StatusBar1;
-        wxMenuItem* menuExportLocalMaps;
-        wxChoice* cbHypos;
-        wxMenu* Menu3;
-        wxPanel* Panel8;
-        wxPanel* Panel9;
-        wxStaticText* StaticText1;
-        wxPanel* Panel2;
-        wxToolBarToolBase* ToolBarItem2;
-        wxSplitterWindow* SplitterWindow1;
-        wxStaticText* StaticText3;
-        wxMenu* MenuItem6;
-        wxPanel* Panel4;
-        wxSplitterWindow* SplitterWindow2;
-        wxMenuItem* MenuItem3;
-        wxPanel* Panel5;
-        wxSplitterWindow* SplitterWindow3;
-        wxToolBar* ToolBar1;
-        wxPanel* Panel3;
-        wxTextCtrl* edLog;
-        wxMenuItem* MenuItem5;
-        wxStaticText* StaticText4;
-        wxToolBarToolBase* ToolBarItem1;
-        wxStaticText* StaticText2;
-        wxMenuItem* MenuItem7;
-        wxMenuItem* MenuItem4;
-        wxTreeCtrl* treeView;
-        wxMenuItem* MenuItem8;
-        //*)
-
-        DECLARE_EVENT_TABLE()
-
-
-        CMyGLCanvas		*m_canvas_HMAP;
-        CMyGLCanvas		*m_canvas_LMH;
-
-		wxTimer timAutoLoad;
-		void OntimAutoLoadTrigger(wxTimerEvent& event);
+	wxTimer timAutoLoad;
+	void OntimAutoLoadTrigger(wxTimerEvent& event);
 };
 
-
 #ifdef wxUSE_UNICODE
-#define _U(x) wxString((x),wxConvUTF8)
-#define _UU(x,y) wxString((x),y)
+#define _U(x) wxString((x), wxConvUTF8)
+#define _UU(x, y) wxString((x), y)
 #else
 #define _U(x) (x)
-#define _UU(x,y) (x)
+#define _UU(x, y) (x)
 #endif
 
-
 #define WX_START_TRY \
-    try \
-    {
+	try              \
+	{
+#define WX_END_TRY                                                         \
+	}                                                                      \
+	catch (std::exception & e)                                             \
+	{                                                                      \
+		wxMessageBox(                                                      \
+			wxString(e.what(), wxConvUTF8), wxT("Exception"), wxOK, this); \
+	}                                                                      \
+	catch (...)                                                            \
+	{                                                                      \
+		wxMessageBox(_("Untyped exception!"), _("Exception"), wxOK, this); \
+	}
 
-
-#define WX_END_TRY \
-    } \
-	catch(std::exception &e) \
-    { \
-        wxMessageBox( wxString(e.what(),wxConvUTF8), wxT("Exception"), wxOK, this); \
-    } \
-    catch(...) \
-    { \
-        wxMessageBox( _("Untyped exception!"), _("Exception"), wxOK, this); \
-    }
-
-
-
-#endif // HMTMAPVIEWERMAIN_H
+#endif  // HMTMAPVIEWERMAIN_H

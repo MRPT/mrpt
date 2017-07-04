@@ -14,8 +14,7 @@
 
 template class mrpt::utils::CTraitsTest<mrpt::poses::CPose2DInterpolator>;
 
-
-TEST(CPose2DInterpolator,interp)
+TEST(CPose2DInterpolator, interp)
 {
 	using namespace mrpt::poses;
 	using mrpt::math::TPose2D;
@@ -26,18 +25,19 @@ TEST(CPose2DInterpolator,interp)
 
 	CPose2DInterpolator pose_path;
 
-	pose_path.insert( t0, TPose2D(1.,2.,DEG2RAD(30.0)) );
-	pose_path.insert( t0+2*dt, TPose2D(1.+3.,2.+4., DEG2RAD(30.0+20.0) ));
+	pose_path.insert(t0, TPose2D(1., 2., DEG2RAD(30.0)));
+	pose_path.insert(
+		t0 + 2 * dt, TPose2D(1. + 3., 2. + 4., DEG2RAD(30.0 + 20.0)));
 
 	TPose2D interp;
 	bool valid;
-	pose_path.interpolate(t0+dt,interp,valid);
+	pose_path.interpolate(t0 + dt, interp, valid);
 
 	EXPECT_TRUE(valid);
 
-	const TPose2D interp_good(1.+1.5,2.+2.0,DEG2RAD(30.0+10.0) );
-	for (unsigned int i=0;i<interp_good.size();i++) {
+	const TPose2D interp_good(1. + 1.5, 2. + 2.0, DEG2RAD(30.0 + 10.0));
+	for (unsigned int i = 0; i < interp_good.size(); i++)
+	{
 		EXPECT_NEAR(interp_good[i], interp[i], 1e-4);
 	}
 }
-

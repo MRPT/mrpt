@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include "obs-precomp.h"   // Precompiled headers
+#include "obs-precomp.h"  // Precompiled headers
 
 #include <mrpt/utils/CStream.h>
 #include <mrpt/maps/CMetricMap.h>
@@ -26,17 +26,13 @@ using namespace mrpt::math;
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(CMetricMap, CSerializable, mrpt::maps)
 
-CMetricMap::CMetricMap()
-{
-}
-
+CMetricMap::CMetricMap() {}
 /** Erase all the contents of the map */
-void  CMetricMap::clear()
+void CMetricMap::clear()
 {
 	internal_clear();
-	publishEvent( mrptEventMetricMapClear(this) );
+	publishEvent(mrptEventMetricMapClear(this));
 }
-
 
 /*---------------------------------------------------------------
 Load the map contents from a CSensFrameProbSequence object,
@@ -45,27 +41,28 @@ This is automaticed invoking "insertObservation" for each
 observation at the mean 3D robot pose as given by
 the "poses::CPosePDF" in the CSensFrameProbSequence object.
   ---------------------------------------------------------------*/
-void  CMetricMap::loadFromProbabilisticPosesAndObservations(const mrpt::maps::CSimpleMap &sfSeq )
+void CMetricMap::loadFromProbabilisticPosesAndObservations(
+	const mrpt::maps::CSimpleMap& sfSeq)
 {
-	CPose3DPDF::Ptr		posePDF;
-	CSensoryFrame::Ptr	sf;
+	CPose3DPDF::Ptr posePDF;
+	CSensoryFrame::Ptr sf;
 	const size_t n = sfSeq.size();
 
 	// Erase previous contents:
 	this->clear();
 
 	// Insert new content:
-	for (size_t i=0;i<n;i++)
+	for (size_t i = 0; i < n; i++)
 	{
-		sfSeq.get(i,posePDF, sf);
+		sfSeq.get(i, posePDF, sf);
 
-		CPose3D		robotPose;
+		CPose3D robotPose;
 		posePDF->getMean(robotPose);
 
 		sf->insertObservationsInto(
-				this,		// Insert into THIS map.
-				&robotPose	// At this pose.
-				);
+			this,  // Insert into THIS map.
+			&robotPose  // At this pose.
+			);
 	}
 }
 
@@ -73,68 +70,69 @@ void  CMetricMap::loadFromProbabilisticPosesAndObservations(const mrpt::maps::CS
 						computeObservationsLikelihood
   ---------------------------------------------------------------*/
 double CMetricMap::computeObservationsLikelihood(
-	const CSensoryFrame &sf,
-	const CPose2D &takenFrom )
+	const CSensoryFrame& sf, const CPose2D& takenFrom)
 {
 	double lik = 0;
-	for (CSensoryFrame::const_iterator it=sf.begin();it!=sf.end();++it)
-		lik += computeObservationLikelihood( it->get(), takenFrom );
+	for (CSensoryFrame::const_iterator it = sf.begin(); it != sf.end(); ++it)
+		lik += computeObservationLikelihood(it->get(), takenFrom);
 
 	return lik;
 }
 
-double CMetricMap::computeObservationLikelihood( const CObservation *obs, const CPose2D &takenFrom )
+double CMetricMap::computeObservationLikelihood(
+	const CObservation* obs, const CPose2D& takenFrom)
 {
-	return computeObservationLikelihood(obs,CPose3D(takenFrom));
+	return computeObservationLikelihood(obs, CPose3D(takenFrom));
 }
 
 /*---------------------------------------------------------------
 				canComputeObservationLikelihood
   ---------------------------------------------------------------*/
-bool CMetricMap::canComputeObservationsLikelihood( const CSensoryFrame &sf ) const
+bool CMetricMap::canComputeObservationsLikelihood(const CSensoryFrame& sf) const
 {
 	bool can = false;
-	for (CSensoryFrame::const_iterator it=sf.begin();!can && it!=sf.end();++it)
-		can = can || canComputeObservationLikelihood( it->get()  );
+	for (CSensoryFrame::const_iterator it = sf.begin(); !can && it != sf.end();
+		 ++it)
+		can = can || canComputeObservationLikelihood(it->get());
 	return can;
 }
 
 bool CMetricMap::insertObservation(
-	const CObservation *obs,
-	const CPose3D *robotPose)
+	const CObservation* obs, const CPose3D* robotPose)
 {
-	if (!genericMapParams.enableObservationInsertion)
-		return false;
+	if (!genericMapParams.enableObservationInsertion) return false;
 
-	bool done = internal_insertObservation(obs,robotPose);
+	bool done = internal_insertObservation(obs, robotPose);
 	if (done)
 	{
 		OnPostSuccesfulInsertObs(obs);
-		publishEvent( mrptEventMetricMapInsert(this,obs,robotPose) );
+		publishEvent(mrptEventMetricMapInsert(this, obs, robotPose));
 	}
 	return done;
 }
 
 bool CMetricMap::insertObservationPtr(
-	const CObservation::Ptr &obs,
-	const CPose3D *robotPose)
+	const CObservation::Ptr& obs, const CPose3D* robotPose)
 {
 	MRPT_START
-	if (!obs) { THROW_EXCEPTION("Trying to pass a null pointer."); }
-	return insertObservation(obs.get(),robotPose);
+	if (!obs)
+	{
+		THROW_EXCEPTION("Trying to pass a null pointer.");
+	}
+	return insertObservation(obs.get(), robotPose);
 	MRPT_END
 }
 
-bool CMetricMap::canComputeObservationLikelihood( const CObservation::Ptr &obs ) const {
+bool CMetricMap::canComputeObservationLikelihood(
+	const CObservation::Ptr& obs) const
+{
 	return canComputeObservationLikelihood(obs.get());
 }
 
-void  CMetricMap::determineMatching2D(
-	const mrpt::maps::CMetricMap      * otherMap,
-	const CPose2D         & otherMapPose,
-	TMatchingPairList     & correspondences,
-	const TMatchingParams & params,
-	TMatchingExtraResults & extraResults ) const
+void CMetricMap::determineMatching2D(
+	const mrpt::maps::CMetricMap* otherMap, const CPose2D& otherMapPose,
+	TMatchingPairList& correspondences, const TMatchingParams& params,
+	TMatchingExtraResults& extraResults) const
 {
 	MRPT_UNUSED_PARAM(otherMap);
 	MRPT_UNUSED_PARAM(otherMapPose);
@@ -145,14 +143,11 @@ void  CMetricMap::determineMatching2D(
 	THROW_EXCEPTION("Virtual method not implemented in derived class.")
 	MRPT_END
 }
-
 
 void CMetricMap::determineMatching3D(
-	const mrpt::maps::CMetricMap      * otherMap,
-	const CPose3D         & otherMapPose,
-	TMatchingPairList     & correspondences,
-	const TMatchingParams & params,
-	TMatchingExtraResults & extraResults ) const
+	const mrpt::maps::CMetricMap* otherMap, const CPose3D& otherMapPose,
+	TMatchingPairList& correspondences, const TMatchingParams& params,
+	TMatchingExtraResults& extraResults) const
 {
 	MRPT_UNUSED_PARAM(otherMap);
 	MRPT_UNUSED_PARAM(otherMapPose);
@@ -164,8 +159,10 @@ void CMetricMap::determineMatching3D(
 	MRPT_END
 }
 
-
-float  CMetricMap::compute3DMatchingRatio(const mrpt::maps::CMetricMap *otherMap, const mrpt::poses::CPose3D &otherMapPose, const TMatchingRatioParams &params) const
+float CMetricMap::compute3DMatchingRatio(
+	const mrpt::maps::CMetricMap* otherMap,
+	const mrpt::poses::CPose3D& otherMapPose,
+	const TMatchingRatioParams& params) const
 {
 	MRPT_UNUSED_PARAM(otherMap);
 	MRPT_UNUSED_PARAM(otherMapPose);
@@ -176,8 +173,7 @@ float  CMetricMap::compute3DMatchingRatio(const mrpt::maps::CMetricMap *otherMap
 }
 
 float CMetricMap::squareDistanceToClosestCorrespondence(
-	float x0,
-	float y0 ) const
+	float x0, float y0) const
 {
 	MRPT_UNUSED_PARAM(x0);
 	MRPT_UNUSED_PARAM(y0);
@@ -186,16 +182,20 @@ float CMetricMap::squareDistanceToClosestCorrespondence(
 	MRPT_END
 }
 
-bool CMetricMap::canComputeObservationLikelihood( const mrpt::obs::CObservation *obs ) const
-{ 
-	if (genericMapParams.enableObservationLikelihood)
-			return internal_canComputeObservationLikelihood(obs); 
-	else return false;
-}
-
-double CMetricMap::computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom )
+bool CMetricMap::canComputeObservationLikelihood(
+	const mrpt::obs::CObservation* obs) const
 {
 	if (genericMapParams.enableObservationLikelihood)
-			return internal_computeObservationLikelihood(obs,takenFrom); 
-	else return false;
+		return internal_canComputeObservationLikelihood(obs);
+	else
+		return false;
+}
+
+double CMetricMap::computeObservationLikelihood(
+	const mrpt::obs::CObservation* obs, const mrpt::poses::CPose3D& takenFrom)
+{
+	if (genericMapParams.enableObservationLikelihood)
+		return internal_computeObservationLikelihood(obs, takenFrom);
+	else
+		return false;
 }

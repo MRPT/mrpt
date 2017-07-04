@@ -10,7 +10,6 @@
 #ifndef TUNCERTAINTYPATH_H
 #define TUNCERTAINTYPATH_H
 
-
 #include <mrpt/graphs/CNetworkOfPoses.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/data_utils.h>
@@ -24,8 +23,10 @@
 #include <string>
 #include <sstream>
 
-namespace mrpt { namespace graphslam {
-
+namespace mrpt
+{
+namespace graphslam
+{
 /**\brief Holds the data of an information path.
  *
  * Path comprises of nodes (TNodeID type) and constraints between them.
@@ -34,8 +35,9 @@ namespace mrpt { namespace graphslam {
  * \sa mrpt::deciders::CLoopCloserERD
  * \ingroup mrpt_graphslam_grp
  */
-template<class GRAPH_T=typename mrpt::graphs::CNetworkOfPoses2DInf>
-struct TUncertaintyPath : public mrpt::utils::CLoadableOptions {
+template <class GRAPH_T = typename mrpt::graphs::CNetworkOfPoses2DInf>
+struct TUncertaintyPath : public mrpt::utils::CLoadableOptions
+{
 	/**\brief Handy typedefs */
 	/**\{*/
 	/**\brief type of graph constraints */
@@ -50,9 +52,8 @@ struct TUncertaintyPath : public mrpt::utils::CLoadableOptions {
 	TUncertaintyPath();
 	TUncertaintyPath(const mrpt::utils::TNodeID& starting_node);
 	TUncertaintyPath(
-			const mrpt::utils::TNodeID& starting_node,
-			const mrpt::utils::TNodeID& ending_node,
-			const constraint_t& edge);
+		const mrpt::utils::TNodeID& starting_node,
+		const mrpt::utils::TNodeID& ending_node, const constraint_t& edge);
 	~TUncertaintyPath();
 	void clear();
 	/**\return True if it is indeed empty.
@@ -63,17 +64,15 @@ struct TUncertaintyPath : public mrpt::utils::CLoadableOptions {
 	 * Call to this method practically checks if the give nodes match the source
 	 * and destination nodeIDs.
 	 *
-	 * \exception std::runtime_error in case the conditions don't hold 
+	 * \exception std::runtime_error in case the conditions don't hold
 	 */
 	void assertIsBetweenNodeIDs(
-			const mrpt::utils::TNodeID& from,
-			const mrpt::utils::TNodeID& to) const;
+		const mrpt::utils::TNodeID& from, const mrpt::utils::TNodeID& to) const;
 
 	// no need to load anything..
 	void loadFromConfigFile(
-			const mrpt::utils::CConfigFileBase &source,
-			const std::string &section);
-	void 	dumpToTextStream(mrpt::utils::CStream &out) const;
+		const mrpt::utils::CConfigFileBase& source, const std::string& section);
+	void dumpToTextStream(mrpt::utils::CStream& out) const;
 	std::string getAsString() const;
 	void getAsString(std::string* str) const;
 
@@ -87,23 +86,20 @@ struct TUncertaintyPath : public mrpt::utils::CLoadableOptions {
 	 *
 	 * \return True if the current path does have a lower uncertainty
 	 */
-	bool hasLowerUncertaintyThan(
-			const self_t& other) const;
+	bool hasLowerUncertaintyThan(const self_t& other) const;
 	/**\brief add a new link in the current path.
 	 *
 	 * Add the node that the path traverses and the information matrix of
 	 * the extra link
 	 */
-	void addToPath(
-			const mrpt::utils::TNodeID& node,
-			const constraint_t& edge);
-	self_t& operator+=(
-			const self_t& other);
+	void addToPath(const mrpt::utils::TNodeID& node, const constraint_t& edge);
+	self_t& operator+=(const self_t& other);
 	// results...
 	bool operator==(const self_t& other) const;
 	bool operator!=(const self_t& other) const;
 
-	friend std::ostream& operator<<(std::ostream& o, const self_t& obj) {
+	friend std::ostream& operator<<(std::ostream& o, const self_t& obj)
+	{
 		o << obj.getAsString() << endl;
 		return o;
 	}
@@ -122,10 +118,9 @@ struct TUncertaintyPath : public mrpt::utils::CLoadableOptions {
 	bool determinant_is_updated;
 	double determinant_cached;
 	/**\}*/
-
 };
-
-} } // end of namespaces
+}
+}  // end of namespaces
 
 #include "TUncertaintyPath_impl.h"
 

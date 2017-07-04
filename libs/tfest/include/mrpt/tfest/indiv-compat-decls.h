@@ -14,20 +14,23 @@
 
 namespace mrpt
 {
-	namespace tfest
-	{
-		/** \addtogroup mrpt_tfest_grp
-		  * @{ */
+namespace tfest
+{
+/** \addtogroup mrpt_tfest_grp
+  * @{ */
 
-		/** For each individual-compatibility (IC) test, the indices of the candidate match between elements in both reference frames. 
-			* \sa TSE3RobustParams::user_individual_compat_callback , TSE2RobustParams::user_individual_compat_callback
-			*/
-		struct TFEST_IMPEXP TPotentialMatch {
-			size_t idx_this, idx_other;
-		};
+/** For each individual-compatibility (IC) test, the indices of the candidate
+ * match between elements in both reference frames.
+	* \sa TSE3RobustParams::user_individual_compat_callback ,
+ * TSE2RobustParams::user_individual_compat_callback
+	*/
+struct TFEST_IMPEXP TPotentialMatch
+{
+	size_t idx_this, idx_other;
+};
 
-		typedef std::function< bool (const TPotentialMatch &)> TFunctorCheckPotentialMatch;
+typedef std::function<bool(const TPotentialMatch&)> TFunctorCheckPotentialMatch;
 
-		/** @} */  // end of grouping
-	}
-} // End of namespace
+/** @} */  // end of grouping
+}
+}  // End of namespace

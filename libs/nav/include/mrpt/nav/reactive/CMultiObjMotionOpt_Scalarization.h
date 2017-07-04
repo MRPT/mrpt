@@ -13,49 +13,59 @@
 
 namespace mrpt
 {
-	namespace nav
+namespace nav
+{
+/** Implementation of multi-objective motion chooser using scalarization: a
+ * user-given formula is used to
+  * collapse all the scores into a single scalar score. The candidate with the
+ * highest positive score is selected.
+  * Note that assert expressions are honored via the base class
+ * CMultiObjectiveMotionOptimizerBase
+  *
+  * \sa CReactiveNavigationSystem, CReactiveNavigationSystem3D
+  * \ingroup nav_reactive
+  */
+class NAV_IMPEXP CMultiObjMotionOpt_Scalarization
+	: public mrpt::nav::CMultiObjectiveMotionOptimizerBase
+{
+	DEFINE_MRPT_OBJECT(CMultiObjMotionOpt_Scalarization)
+
+   public:
+	CMultiObjMotionOpt_Scalarization();
+
+	void loadConfigFile(const mrpt::utils::CConfigFileBase& c) override;
+	void saveConfigFile(mrpt::utils::CConfigFileBase& c) const override;
+
+	struct NAV_IMPEXP TParams
+		: public mrpt::nav::CMultiObjectiveMotionOptimizerBase::TParamsBase
 	{
+		/** A formula that takes all/a subset of scores and generates a scalar
+		 * global score. */
+		std::string scalar_score_formula;
 
-			/** Implementation of multi-objective motion chooser using scalarization: a user-given formula is used to 
-			  * collapse all the scores into a single scalar score. The candidate with the highest positive score is selected.
-			  * Note that assert expressions are honored via the base class CMultiObjectiveMotionOptimizerBase
-			  *
-			  * \sa CReactiveNavigationSystem, CReactiveNavigationSystem3D
-			  * \ingroup nav_reactive
-			  */
-		class NAV_IMPEXP CMultiObjMotionOpt_Scalarization: public mrpt::nav::CMultiObjectiveMotionOptimizerBase
-		{
-			DEFINE_MRPT_OBJECT(CMultiObjMotionOpt_Scalarization)
+		TParams();
+		void loadFromConfigFile(
+			const mrpt::utils::CConfigFileBase& source,
+			const std::string& section) override;  // See base docs
+		void saveToConfigFile(
+			mrpt::utils::CConfigFileBase& cfg,
+			const std::string& section) const override;  // See base docs
+	};
 
-		public:
-			CMultiObjMotionOpt_Scalarization();
+	TParams parameters;
 
-			void loadConfigFile(const mrpt::utils::CConfigFileBase & c) override;
-			void saveConfigFile(mrpt::utils::CConfigFileBase & c) const override;
+	virtual void clear() override;
 
-			struct NAV_IMPEXP TParams : public mrpt::nav::CMultiObjectiveMotionOptimizerBase::TParamsBase
-			{
-				/** A formula that takes all/a subset of scores and generates a scalar global score. */
-				std::string  scalar_score_formula;  
+   protected:
+	mrpt::math::CRuntimeCompiledExpression m_expr_scalar_formula;
+	std::map<std::string, double> m_expr_scalar_vars;
 
-				TParams();
-				void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source, const std::string &section) override; // See base docs
-				void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg, const std::string &section) const override; // See base docs
-			};
-
-			TParams parameters;
-
-			virtual void clear() override;
-
-		protected:
-			mrpt::math::CRuntimeCompiledExpression m_expr_scalar_formula;
-			std::map<std::string, double>          m_expr_scalar_vars;
-
-			// This virtual method is called by decide().
-			int impl_decide(const std::vector<mrpt::nav::TCandidateMovementPTG> &movs, TResultInfo &extra_info) override;
-		};
-		DEFINE_MRPT_OBJECT_POST_CUSTOM_LINKAGE(CMultiObjMotionOpt_Scalarization, NAV_IMPEXP)
-
-	}
+	// This virtual method is called by decide().
+	int impl_decide(
+		const std::vector<mrpt::nav::TCandidateMovementPTG>& movs,
+		TResultInfo& extra_info) override;
+};
+DEFINE_MRPT_OBJECT_POST_CUSTOM_LINKAGE(
+	CMultiObjMotionOpt_Scalarization, NAV_IMPEXP)
 }
-
+}

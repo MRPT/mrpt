@@ -17,32 +17,32 @@
 #include <wx/textctrl.h>
 //*)
 
-class CLogView: public wxDialog
+class CLogView : public wxDialog
 {
-	public:
+   public:
+	CLogView(
+		wxWindow* parent, wxWindowID id = wxID_ANY,
+		const wxPoint& pos = wxDefaultPosition,
+		const wxSize& size = wxDefaultSize);
+	virtual ~CLogView();
 
-		CLogView(wxWindow* parent,wxWindowID id=wxID_ANY,const wxPoint& pos=wxDefaultPosition,const wxSize& size=wxDefaultSize);
-		virtual ~CLogView();
+	//(*Declarations(CLogView)
+	wxButton* btnOk;
+	wxTextCtrl* edLog;
+	//*)
 
-		//(*Declarations(CLogView)
-		wxButton* btnOk;
-		wxTextCtrl* edLog;
-		//*)
+   protected:
+	//(*Identifiers(CLogView)
+	static const long ID_TEXTCTRL1;
+	static const long ID_BUTTON1;
+	//*)
 
-	protected:
+   private:
+	//(*Handlers(CLogView)
+	void OnbtnOkClick(wxCommandEvent& event);
+	//*)
 
-		//(*Identifiers(CLogView)
-		static const long ID_TEXTCTRL1;
-		static const long ID_BUTTON1;
-		//*)
-
-	private:
-
-		//(*Handlers(CLogView)
-		void OnbtnOkClick(wxCommandEvent& event);
-		//*)
-
-		DECLARE_EVENT_TABLE()
+	DECLARE_EVENT_TABLE()
 };
 
 #endif

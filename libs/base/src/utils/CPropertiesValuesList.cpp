@@ -9,7 +9,6 @@
 
 #include "base-precomp.h"  // Precompiled headers
 
-
 #include <mrpt/utils/CPropertiesValuesList.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/system/os.h>
@@ -25,27 +24,27 @@ IMPLEMENTS_SERIALIZABLE(CPropertiesValuesList, CSerializable, mrpt::utils)
 /*---------------------------------------------------------------
 						writeToStream
  ---------------------------------------------------------------*/
-void  CPropertiesValuesList::writeToStream(mrpt::utils::CStream &out, int *out_Version) const
+void CPropertiesValuesList::writeToStream(
+	mrpt::utils::CStream& out, int* out_Version) const
 {
 	if (out_Version)
 		*out_Version = 0;
 	else
 	{
-		uint32_t	i,n = (uint32_t)size();
-		uint8_t		isNull;
+		uint32_t i, n = (uint32_t)size();
+		uint8_t isNull;
 		out << n;
 
-		for (i=0;i<n;i++)
+		for (i = 0; i < n; i++)
 		{
 			// Name:
 			out << m_properties[i].name.c_str();
 
 			// Object:
-			isNull = m_properties[i].value ? 1:0;
+			isNull = m_properties[i].value ? 1 : 0;
 			out << isNull;
 
-			if (m_properties[i].value)
-				out << *m_properties[i].value;
+			if (m_properties[i].value) out << *m_properties[i].value;
 		}
 	}
 }
@@ -53,14 +52,15 @@ void  CPropertiesValuesList::writeToStream(mrpt::utils::CStream &out, int *out_V
 /*---------------------------------------------------------------
 						readFromStream
  ---------------------------------------------------------------*/
-void  CPropertiesValuesList::readFromStream(mrpt::utils::CStream &in, int version)
+void CPropertiesValuesList::readFromStream(
+	mrpt::utils::CStream& in, int version)
 {
-	switch(version)
+	switch (version)
 	{
-	case 0:
+		case 0:
 		{
-			uint32_t	i,n;
-			uint8_t		isNull;
+			uint32_t i, n;
+			uint8_t isNull;
 
 			// Erase previous contents:
 			clear();
@@ -68,9 +68,9 @@ void  CPropertiesValuesList::readFromStream(mrpt::utils::CStream &in, int versio
 			in >> n;
 
 			m_properties.resize(n);
-			for (i=0;i<n;i++)
+			for (i = 0; i < n; i++)
 			{
-				char	nameBuf[1024];
+				char nameBuf[1024];
 				// Name:
 				in >> nameBuf;
 				m_properties[i].name = nameBuf;
@@ -79,61 +79,56 @@ void  CPropertiesValuesList::readFromStream(mrpt::utils::CStream &in, int versio
 				in >> isNull;
 
 				if (isNull)
-					m_properties[i].value.reset(  static_cast<CSerializable*>(nullptr) );
+					m_properties[i].value.reset(
+						static_cast<CSerializable*>(nullptr));
 				else
 					in >> m_properties[i].value;
 			}
-		} break;
-	default:
-		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
-
+		}
+		break;
+		default:
+			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
 	};
 }
-
 
 /*---------------------------------------------------------------
 						Constructor
  ---------------------------------------------------------------*/
-CPropertiesValuesList::CPropertiesValuesList()
-{
-}
-
+CPropertiesValuesList::CPropertiesValuesList() {}
 /*---------------------------------------------------------------
 						Destructor
  ---------------------------------------------------------------*/
-CPropertiesValuesList::~CPropertiesValuesList()
-{
-	clear();
-}
-
+CPropertiesValuesList::~CPropertiesValuesList() { clear(); }
 /*---------------------------------------------------------------
 					Copy Constructor
  ---------------------------------------------------------------*/
-CPropertiesValuesList::CPropertiesValuesList(const CPropertiesValuesList &o) :
-	m_properties	( o.m_properties )
+CPropertiesValuesList::CPropertiesValuesList(const CPropertiesValuesList& o)
+	: m_properties(o.m_properties)
 {
-	for (std::vector<TPropertyValuePair>::iterator it=m_properties.begin();it!=m_properties.end();++it)
+	for (std::vector<TPropertyValuePair>::iterator it = m_properties.begin();
+		 it != m_properties.end(); ++it)
 		it->value.reset(dynamic_cast<CSerializable*>(it->value->clone()));
 }
 
 /*---------------------------------------------------------------
 					Copy
  ---------------------------------------------------------------*/
-CPropertiesValuesList & CPropertiesValuesList::operator = (const CPropertiesValuesList &o)
+CPropertiesValuesList& CPropertiesValuesList::operator=(
+	const CPropertiesValuesList& o)
 {
-	if (this!=&o) return *this;
+	if (this != &o) return *this;
 
 	m_properties = o.m_properties;
-	for (std::vector<TPropertyValuePair>::iterator it=m_properties.begin();it!=m_properties.end();++it)
-		it->value.reset(dynamic_cast<CSerializable *>(it->value->clone()));
+	for (std::vector<TPropertyValuePair>::iterator it = m_properties.begin();
+		 it != m_properties.end(); ++it)
+		it->value.reset(dynamic_cast<CSerializable*>(it->value->clone()));
 	return *this;
 }
-
 
 /*---------------------------------------------------------------
 						clear
  ---------------------------------------------------------------*/
-void  CPropertiesValuesList::clear()
+void CPropertiesValuesList::clear()
 {
 	MRPT_START
 	m_properties.clear();
@@ -143,64 +138,68 @@ void  CPropertiesValuesList::clear()
 /*---------------------------------------------------------------
 						get
  ---------------------------------------------------------------*/
-CSerializable::Ptr  CPropertiesValuesList::get(const std::string &propertyName)const
+CSerializable::Ptr CPropertiesValuesList::get(
+	const std::string& propertyName) const
 {
-	for (std::vector<TPropertyValuePair>::const_iterator it=m_properties.begin();it!=m_properties.end();++it)
+	for (std::vector<TPropertyValuePair>::const_iterator it =
+			 m_properties.begin();
+		 it != m_properties.end(); ++it)
 	{
-		if (!os::_strcmpi(propertyName.c_str(),it->name.c_str()))
+		if (!os::_strcmpi(propertyName.c_str(), it->name.c_str()))
 			return it->value;
 	}
 	// Not found:
 	return CSerializable::Ptr();
 }
 
-
 /*---------------------------------------------------------------
 						set
  ---------------------------------------------------------------*/
-void  CPropertiesValuesList::set(const std::string &propertyName, const CSerializable::Ptr &obj)
+void CPropertiesValuesList::set(
+	const std::string& propertyName, const CSerializable::Ptr& obj)
 {
 	MRPT_START
 
-	for (std::vector<TPropertyValuePair>::iterator it=m_properties.begin();it!=m_properties.end();++it)
+	for (std::vector<TPropertyValuePair>::iterator it = m_properties.begin();
+		 it != m_properties.end(); ++it)
 	{
-		if (!os::_strcmpi(propertyName.c_str(),it->name.c_str()))
+		if (!os::_strcmpi(propertyName.c_str(), it->name.c_str()))
 		{
 			// Delete current contents:
 			// Copy new value:
-			if (!obj)	it->value.reset();
-			else		it->value = obj; //->clone();
+			if (!obj)
+				it->value.reset();
+			else
+				it->value = obj;  //->clone();
 			return;
 		}
 	}
 
 	// Insert:
-	TPropertyValuePair	newPair;
+	TPropertyValuePair newPair;
 	newPair.name = std::string(propertyName);
 	newPair.value = obj;
 	m_properties.push_back(newPair);
 
-	MRPT_END_WITH_CLEAN_UP( \
-		printf("Exception while setting annotation '%s'",propertyName.c_str()); \
-		);
+	MRPT_END_WITH_CLEAN_UP(
+		printf(
+			"Exception while setting annotation '%s'", propertyName.c_str()););
 }
 
 /*---------------------------------------------------------------
 						size
  ---------------------------------------------------------------*/
-size_t  CPropertiesValuesList::size()const
-{
-	return m_properties.size();
-}
-
+size_t CPropertiesValuesList::size() const { return m_properties.size(); }
 /*---------------------------------------------------------------
 						getPropertyNames
  ---------------------------------------------------------------*/
-std::vector<std::string>  CPropertiesValuesList::getPropertyNames()const
+std::vector<std::string> CPropertiesValuesList::getPropertyNames() const
 {
-	std::vector<std::string>	ret;
+	std::vector<std::string> ret;
 
-	for (std::vector<TPropertyValuePair>::const_iterator it=m_properties.begin();it!=m_properties.end();++it)
+	for (std::vector<TPropertyValuePair>::const_iterator it =
+			 m_properties.begin();
+		 it != m_properties.end(); ++it)
 		ret.push_back(it->name);
 
 	return ret;

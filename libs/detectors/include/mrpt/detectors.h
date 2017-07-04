@@ -10,7 +10,6 @@
 #ifndef _mrpt_detectors_H
 #define _mrpt_detectors_H
 
-
 #include <mrpt/detectors/CDetectableObject.h>
 #include <mrpt/detectors/CObjectDetection.h>
 #include <mrpt/detectors/CCascadeClassifierDetection.h>

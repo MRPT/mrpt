@@ -13,26 +13,36 @@
 #include "xsushortvector.h"
 
 #ifndef __cplusplus
-#define XSSCRDATA_INITIALIZER {XSUSHORTVECTOR_INITIALIZER, XSUSHORTVECTOR_INITIALIZER, XSUSHORTVECTOR_INITIALIZER, {0, 0, 0, 0}}
+#define XSSCRDATA_INITIALIZER                                   \
+	{                                                           \
+		XSUSHORTVECTOR_INITIALIZER, XSUSHORTVECTOR_INITIALIZER, \
+			XSUSHORTVECTOR_INITIALIZER,                         \
+		{                                                       \
+			0, 0, 0, 0                                          \
+		}                                                       \
+	}
 #endif
 
 #define XS_EXTRA_TEMPERATURE_CHANNELS 3
 #define XS_MAX_TEMPERATURE_CHANNELS ((XS_EXTRA_TEMPERATURE_CHANNELS) + 1)
 
 /*! \brief Container for raw sensor measurement data
-	\details This structure contains raw measurement data from the sensors on the device.
-	This data is unscaled, the bias has not been subtracted and no error correction has been applied.
+	\details This structure contains raw measurement data from the sensors on
+   the device.
+	This data is unscaled, the bias has not been subtracted and no error
+   correction has been applied.
 */
-struct XsScrData {
+struct XsScrData
+{
 	/** The raw accelerometer data */
-	XsUShortVector	m_acc;	
+	XsUShortVector m_acc;
 	/** The raw gyroscope data */
-	XsUShortVector	m_gyr;	
+	XsUShortVector m_gyr;
 	/** The raw magnetometer data */
-	XsUShortVector	m_mag;	
+	XsUShortVector m_mag;
 	/** The temperature data */
-	uint16_t		m_temp[XS_MAX_TEMPERATURE_CHANNELS];	
+	uint16_t m_temp[XS_MAX_TEMPERATURE_CHANNELS];
 };
 typedef struct XsScrData XsScrData;
 
-#endif // file guard
+#endif  // file guard

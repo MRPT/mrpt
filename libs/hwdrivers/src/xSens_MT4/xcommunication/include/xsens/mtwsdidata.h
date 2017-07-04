@@ -19,27 +19,29 @@ struct XsRange;
 struct MtwSdiData
 {
 	/** The ID of the device that generated the data */
-	XsDeviceId		m_deviceId;			
+	XsDeviceId m_deviceId;
 	/** Indicates if the time sync is in order (unused) */
-	uint8_t			m_timeSync;			
-	/** The first frame number of the SDI interval. The time of the interval is [first, last) */
-	uint16_t		m_firstFrameNumber;	
-	/** The last frame number of the SDI interval. The time of the interval is [first, last) */
-	uint16_t		m_lastFrameNumber;	
+	uint8_t m_timeSync;
+	/** The first frame number of the SDI interval. The time of the interval is
+	 * [first, last) */
+	uint16_t m_firstFrameNumber;
+	/** The last frame number of the SDI interval. The time of the interval is
+	 * [first, last) */
+	uint16_t m_lastFrameNumber;
 	/** The gyroscope bias used during the SDI interval */
-	XsVector3		m_currentBias;		
+	XsVector3 m_currentBias;
 	/** The orientation increment (delta Q) over the interval */
-	XsQuaternion	m_orientationIncrement;	
+	XsQuaternion m_orientationIncrement;
 	/** The velocity increment (delta V) over the interval */
-	XsVector3		m_velocityIncrement;	
+	XsVector3 m_velocityIncrement;
 	/** reserved */
-	bool			m_aidingData;		
+	bool m_aidingData;
 	/** The barometer value during the interval */
-	double			m_barometer;		
+	double m_barometer;
 	/** The magnetometer values during the interval */
-	XsVector3		m_magnetoMeter;		
+	XsVector3 m_magnetoMeter;
 	/** The Received Signal Strength Indication (RSSI) of the message */
-	int8_t			m_rssi;				
+	int8_t m_rssi;
 
 	MtwSdiData();
 	MtwSdiData(const MtwSdiData& other);
@@ -57,4 +59,4 @@ struct MtwSdiData
 	double rssi() const;
 };
 
-#endif // file guard
+#endif  // file guard

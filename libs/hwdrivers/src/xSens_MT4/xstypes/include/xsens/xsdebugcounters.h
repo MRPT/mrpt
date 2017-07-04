@@ -11,7 +11,8 @@
 
 #include "xsatomicint.h"
 
-// These counters are only available in the non-public version of the XsTypes library
+// These counters are only available in the non-public version of the XsTypes
+// library
 // For the public version, they will all always have a 0 value.
 
 #ifdef __cplusplus
@@ -28,7 +29,7 @@ extern XsAtomicInt XSTYPES_DLL_API XsArray_allocCount;
 extern XsAtomicInt XSTYPES_DLL_API XsArray_freeCount;
 
 #ifdef __cplusplus
-} // extern "C"
+}  // extern "C"
 #endif
 
 #endif

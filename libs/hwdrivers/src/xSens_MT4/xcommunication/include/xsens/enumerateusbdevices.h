@@ -13,4 +13,4 @@
 
 bool xsEnumerateUsbDevices(XsPortInfoList& ports);
 
-#endif // file guard
+#endif  // file guard

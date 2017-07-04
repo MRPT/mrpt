@@ -16,37 +16,43 @@
 
 namespace mrpt
 {
-	namespace slam
-	{
-		/** The struct for passing extra simulation parameters to the prediction stage
-			*    when running a particle filter.
-			*   \ingroup mrpt_slam_grp
-			*/
-		struct SLAM_IMPEXP TMonteCarloLocalizationParams
-		{
-			/** Default settings method.
-				*/
-			TMonteCarloLocalizationParams();
+namespace slam
+{
+/** The struct for passing extra simulation parameters to the prediction stage
+	*    when running a particle filter.
+	*   \ingroup mrpt_slam_grp
+	*/
+struct SLAM_IMPEXP TMonteCarloLocalizationParams
+{
+	/** Default settings method.
+		*/
+	TMonteCarloLocalizationParams();
 
-			/** Copy constructor: take care of knowing what you do, since this copies pointers. */
-			TMonteCarloLocalizationParams( const TMonteCarloLocalizationParams &o );
+	/** Copy constructor: take care of knowing what you do, since this copies
+	 * pointers. */
+	TMonteCarloLocalizationParams(const TMonteCarloLocalizationParams& o);
 
-			/** Copy operator: take care of knowing what you do, since this copies pointers. */
-			TMonteCarloLocalizationParams & operator =(const TMonteCarloLocalizationParams &o);
+	/** Copy operator: take care of knowing what you do, since this copies
+	 * pointers. */
+	TMonteCarloLocalizationParams& operator=(
+		const TMonteCarloLocalizationParams& o);
 
-			/** [update stage] Must be set to a metric map used to estimate the likelihood of observations
-				*/
-			mrpt::maps::CMetricMap *metricMap;
+	/** [update stage] Must be set to a metric map used to estimate the
+	 * likelihood of observations
+		*/
+	mrpt::maps::CMetricMap* metricMap;
 
-			/** [update stage] Alternative way (if metricMap==nullptr): A metric map is supplied for each particle: There must be the same maps here as pose m_particles.
-				*/
-			mrpt::maps::TMetricMapList		metricMaps;
+	/** [update stage] Alternative way (if metricMap==nullptr): A metric map is
+	 * supplied for each particle: There must be the same maps here as pose
+	 * m_particles.
+		*/
+	mrpt::maps::TMetricMapList metricMaps;
 
-			/** Parameters for dynamic sample size, KLD method. */
-			TKLDParams			KLD_params; 
-		};
+	/** Parameters for dynamic sample size, KLD method. */
+	TKLDParams KLD_params;
+};
 
-	} // End of namespace
-} // End of namespace
+}  // End of namespace
+}  // End of namespace
 
 #endif

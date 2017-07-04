@@ -7,7 +7,6 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-
 #include <Eigen/Dense>
 #include <gtest/gtest.h>
 
@@ -16,14 +15,14 @@ using namespace std;
 
 /** A macro for obtaining the name of the current function:  */
 #if defined(__BORLANDC__)
-		#define	__CURRENT_FUNCTION_NAME__	__FUNC__
-#elif defined(_MSC_VER) && (_MSC_VER>=1300)
-		#define	__CURRENT_FUNCTION_NAME__	__FUNCTION__
-#elif defined(_MSC_VER) && (_MSC_VER<1300)
-		// Visual C++ 6 HAS NOT A __FUNCTION__ equivalent.
-#define	__CURRENT_FUNCTION_NAME__	::system::extractFileName(__FILE__).c_str()
+#define __CURRENT_FUNCTION_NAME__ __FUNC__
+#elif defined(_MSC_VER) && (_MSC_VER >= 1300)
+#define __CURRENT_FUNCTION_NAME__ __FUNCTION__
+#elif defined(_MSC_VER) && (_MSC_VER < 1300)
+// Visual C++ 6 HAS NOT A __FUNCTION__ equivalent.
+#define __CURRENT_FUNCTION_NAME__ ::system::extractFileName(__FILE__).c_str()
 #else
-		#define	__CURRENT_FUNCTION_NAME__	__PRETTY_FUNCTION__
+#define __CURRENT_FUNCTION_NAME__ __PRETTY_FUNCTION__
 #endif
 
 #if 0

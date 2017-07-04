@@ -16,14 +16,8 @@
 
 using namespace mrpt::utils;
 
-CRateTimer::CRateTimer(const double rate_hz)
-{
-	setRate(rate_hz);
-}
-CRateTimer::~CRateTimer()
-{
-}
-
+CRateTimer::CRateTimer(const double rate_hz) { setRate(rate_hz); }
+CRateTimer::~CRateTimer() {}
 void CRateTimer::setRate(const double rate_hz)
 {
 	ASSERT_ABOVE_(rate_hz, 0.0);
@@ -34,9 +28,8 @@ bool CRateTimer::sleep()
 	const double elapsed_tim = m_tictac.Tac();
 	m_tictac.Tic();
 	const double period = 1.0 / m_rate_hz;
-	const int64_t wait_tim_us = 1000000L *( period- elapsed_tim);
-	if (wait_tim_us < 0)
-		return false;
-	std::this_thread::sleep_for( std::chrono::microseconds(wait_tim_us));
+	const int64_t wait_tim_us = 1000000L * (period - elapsed_tim);
+	if (wait_tim_us < 0) return false;
+	std::this_thread::sleep_for(std::chrono::microseconds(wait_tim_us));
 	return true;
 }

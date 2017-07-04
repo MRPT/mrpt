@@ -9,7 +9,6 @@
 
 #include "base-precomp.h"  // Precompiled headers
 
-
 #include <mrpt/utils/CMHPropertiesValuesList.h>
 #include <mrpt/system/os.h>
 #include <stdio.h>
@@ -23,17 +22,18 @@ IMPLEMENTS_SERIALIZABLE(CMHPropertiesValuesList, CSerializable, mrpt::utils)
 /*---------------------------------------------------------------
 						writeToStream
  ---------------------------------------------------------------*/
-void  CMHPropertiesValuesList::writeToStream(mrpt::utils::CStream &out, int *out_Version) const
+void CMHPropertiesValuesList::writeToStream(
+	mrpt::utils::CStream& out, int* out_Version) const
 {
 	if (out_Version)
 		*out_Version = 0;
 	else
 	{
-		uint32_t	i,n = (uint32_t)m_properties.size();
-		uint8_t		isNull;
+		uint32_t i, n = (uint32_t)m_properties.size();
+		uint8_t isNull;
 		out << n;
 
-		for (i=0;i<n;i++)
+		for (i = 0; i < n; i++)
 		{
 			// Name:
 			out << m_properties[i].name.c_str();
@@ -42,28 +42,26 @@ void  CMHPropertiesValuesList::writeToStream(mrpt::utils::CStream &out, int *out
 			isNull = !m_properties[i].value;
 			out << isNull;
 
-			if (!isNull)
-				out << *m_properties[i].value;
+			if (!isNull) out << *m_properties[i].value;
 
 			// Hypot. ID:
 			out << m_properties[i].ID;
 		}
-
 	}
-
 }
 
 /*---------------------------------------------------------------
 						readFromStream
  ---------------------------------------------------------------*/
-void  CMHPropertiesValuesList::readFromStream(mrpt::utils::CStream &in, int version)
+void CMHPropertiesValuesList::readFromStream(
+	mrpt::utils::CStream& in, int version)
 {
-	switch(version)
+	switch (version)
 	{
-	case 0:
+		case 0:
 		{
-			uint32_t	i,n;
-			uint8_t		isNull;
+			uint32_t i, n;
+			uint8_t isNull;
 
 			// Erase previous contents:
 			clear();
@@ -71,9 +69,9 @@ void  CMHPropertiesValuesList::readFromStream(mrpt::utils::CStream &in, int vers
 			in >> n;
 
 			m_properties.resize(n);
-			for (i=0;i<n;i++)
+			for (i = 0; i < n; i++)
 			{
-				char	nameBuf[1024];
+				char nameBuf[1024];
 				// Name:
 				in >> nameBuf;
 				m_properties[i].name = nameBuf;
@@ -89,35 +87,25 @@ void  CMHPropertiesValuesList::readFromStream(mrpt::utils::CStream &in, int vers
 				// Hypot. ID:
 				in >> m_properties[i].ID;
 			}
-
-		} break;
-	default:
-		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
-
+		}
+		break;
+		default:
+			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
 	};
 }
-
 
 /*---------------------------------------------------------------
 						Constructor
  ---------------------------------------------------------------*/
-CMHPropertiesValuesList::CMHPropertiesValuesList()
-{
-
-}
-
+CMHPropertiesValuesList::CMHPropertiesValuesList() {}
 /*---------------------------------------------------------------
 						Destructor
  ---------------------------------------------------------------*/
-CMHPropertiesValuesList::~CMHPropertiesValuesList()
-{
-	clear();
-}
-
+CMHPropertiesValuesList::~CMHPropertiesValuesList() { clear(); }
 /*---------------------------------------------------------------
 						clear
  ---------------------------------------------------------------*/
-void  CMHPropertiesValuesList::clear()
+void CMHPropertiesValuesList::clear()
 {
 	MRPT_START
 	m_properties.clear();
@@ -127,17 +115,17 @@ void  CMHPropertiesValuesList::clear()
 /*---------------------------------------------------------------
 						get
  ---------------------------------------------------------------*/
-CSerializable::Ptr  CMHPropertiesValuesList::get(
-	const char    *propertyName,
-	const int64_t &hypothesis_ID) const
+CSerializable::Ptr CMHPropertiesValuesList::get(
+	const char* propertyName, const int64_t& hypothesis_ID) const
 {
 	std::vector<TPropertyValueIDTriplet>::const_iterator it;
-	for (it=m_properties.begin();it!=m_properties.end();++it)
-		if (!os::_strcmpi(propertyName,it->name.c_str()) && it->ID == hypothesis_ID )
+	for (it = m_properties.begin(); it != m_properties.end(); ++it)
+		if (!os::_strcmpi(propertyName, it->name.c_str()) &&
+			it->ID == hypothesis_ID)
 			return it->value;
 
-	for (it=m_properties.begin();it!=m_properties.end();++it)
-		if (!os::_strcmpi(propertyName,it->name.c_str()) && it->ID == 0 )
+	for (it = m_properties.begin(); it != m_properties.end(); ++it)
+		if (!os::_strcmpi(propertyName, it->name.c_str()) && it->ID == 0)
 			return it->value;
 
 	// Not found:
@@ -147,12 +135,14 @@ CSerializable::Ptr  CMHPropertiesValuesList::get(
 /*---------------------------------------------------------------
 						getAnyHypothesis
  ---------------------------------------------------------------*/
-CSerializable::Ptr  CMHPropertiesValuesList::getAnyHypothesis(const char *propertyName) const
+CSerializable::Ptr CMHPropertiesValuesList::getAnyHypothesis(
+	const char* propertyName) const
 {
-	for (std::vector<TPropertyValueIDTriplet>::const_iterator it=m_properties.begin();it!=m_properties.end();++it)
+	for (std::vector<TPropertyValueIDTriplet>::const_iterator it =
+			 m_properties.begin();
+		 it != m_properties.end(); ++it)
 	{
-		if (!os::_strcmpi(propertyName,it->name.c_str()) )
-			return it->value;
+		if (!os::_strcmpi(propertyName, it->name.c_str())) return it->value;
 	}
 	// Not found:
 	return CSerializable::Ptr();
@@ -161,52 +151,55 @@ CSerializable::Ptr  CMHPropertiesValuesList::getAnyHypothesis(const char *proper
 /*---------------------------------------------------------------
 						set
  ---------------------------------------------------------------*/
-void  CMHPropertiesValuesList::set(
-	const char *propertyName,
-	const CSerializable::Ptr &obj,
-	const int64_t &hypothesis_ID)
+void CMHPropertiesValuesList::set(
+	const char* propertyName, const CSerializable::Ptr& obj,
+	const int64_t& hypothesis_ID)
 {
 	MRPT_START
 
-	for (std::vector<TPropertyValueIDTriplet>::iterator it=m_properties.begin();it!=m_properties.end();++it)
+	for (std::vector<TPropertyValueIDTriplet>::iterator it =
+			 m_properties.begin();
+		 it != m_properties.end(); ++it)
 	{
-		if ( it->ID == hypothesis_ID && !os::_strcmpi(propertyName,it->name.c_str()) )
+		if (it->ID == hypothesis_ID &&
+			!os::_strcmpi(propertyName, it->name.c_str()))
 		{
 			// Delete current contents:
 			// Copy new value:
-			it->value.reset(dynamic_cast<CSerializable *>(obj->clone()));
+			it->value.reset(dynamic_cast<CSerializable*>(obj->clone()));
 
-			//if (!obj)	it->value.clear();
-			//else		it->value = obj; //->clone();
+			// if (!obj)	it->value.clear();
+			// else		it->value = obj; //->clone();
 			return;
 		}
 	}
 
 	// Insert:
-	TPropertyValueIDTriplet	newPair;
+	TPropertyValueIDTriplet newPair;
 	newPair.name = std::string(propertyName);
 	newPair.value = obj;
-	newPair.ID    = hypothesis_ID;
+	newPair.ID = hypothesis_ID;
 	m_properties.push_back(newPair);
 
-	MRPT_END_WITH_CLEAN_UP( \
-		printf("Exception while setting annotation '%s'",propertyName); \
-		);
+	MRPT_END_WITH_CLEAN_UP(
+		printf("Exception while setting annotation '%s'", propertyName););
 }
 
 /*---------------------------------------------------------------
 						setMemoryReference
  ---------------------------------------------------------------*/
-void  CMHPropertiesValuesList::setMemoryReference(
-	const char *propertyName,
-	const CSerializable::Ptr &obj,
-	const int64_t & hypothesis_ID)
+void CMHPropertiesValuesList::setMemoryReference(
+	const char* propertyName, const CSerializable::Ptr& obj,
+	const int64_t& hypothesis_ID)
 {
 	MRPT_START
 
-	for (std::vector<TPropertyValueIDTriplet>::iterator it=m_properties.begin();it!=m_properties.end();++it)
+	for (std::vector<TPropertyValueIDTriplet>::iterator it =
+			 m_properties.begin();
+		 it != m_properties.end(); ++it)
 	{
-		if ( it->ID == hypothesis_ID && !os::_strcmpi(propertyName,it->name.c_str()) )
+		if (it->ID == hypothesis_ID &&
+			!os::_strcmpi(propertyName, it->name.c_str()))
 		{
 			// Delete current contents & set a copy of the same smart pointer:
 			it->value = obj;
@@ -215,39 +208,38 @@ void  CMHPropertiesValuesList::setMemoryReference(
 	}
 
 	// Insert:
-	TPropertyValueIDTriplet	newPair;
+	TPropertyValueIDTriplet newPair;
 	newPair.name = std::string(propertyName);
 	newPair.value = obj;
-	newPair.ID    = hypothesis_ID;
+	newPair.ID = hypothesis_ID;
 	m_properties.push_back(newPair);
 
-	MRPT_END_WITH_CLEAN_UP( \
-		printf("Exception while setting annotation '%s'",propertyName); \
-		);
+	MRPT_END_WITH_CLEAN_UP(
+		printf("Exception while setting annotation '%s'", propertyName););
 }
-
-
 
 /*---------------------------------------------------------------
 						getPropertyNames
  ---------------------------------------------------------------*/
-std::vector<std::string>  CMHPropertiesValuesList::getPropertyNames() const
+std::vector<std::string> CMHPropertiesValuesList::getPropertyNames() const
 {
-	std::vector<std::string>	ret;
+	std::vector<std::string> ret;
 
-	for (std::vector<TPropertyValueIDTriplet>::const_iterator it=m_properties.begin();it!=m_properties.end();++it)
+	for (std::vector<TPropertyValueIDTriplet>::const_iterator it =
+			 m_properties.begin();
+		 it != m_properties.end(); ++it)
 	{
 		bool isNew = true;
-		for (std::vector<std::string>::iterator itS = ret.begin(); itS!=ret.end(); ++itS)
+		for (std::vector<std::string>::iterator itS = ret.begin();
+			 itS != ret.end(); ++itS)
 		{
-			if ( (*itS) == it->name )
+			if ((*itS) == it->name)
 			{
 				isNew = false;
 				break;
 			}
 		}
-		if (isNew)
-			ret.push_back(it->name);	// Yes, it is new:
+		if (isNew) ret.push_back(it->name);  // Yes, it is new:
 	}
 
 	return ret;
@@ -256,50 +248,59 @@ std::vector<std::string>  CMHPropertiesValuesList::getPropertyNames() const
 /*---------------------------------------------------------------
 						remove
  ---------------------------------------------------------------*/
-void  CMHPropertiesValuesList::remove(
-	const char *propertyName,
-	const int64_t & hypothesis_ID)
+void CMHPropertiesValuesList::remove(
+	const char* propertyName, const int64_t& hypothesis_ID)
 {
-	for (std::vector<TPropertyValueIDTriplet>::iterator it=m_properties.begin();it!=m_properties.end(); )
-		if (!os::_strcmpi(propertyName,it->name.c_str()) && it->ID == hypothesis_ID )
-				it = m_properties.erase(it);
-		else	++it;
+	for (std::vector<TPropertyValueIDTriplet>::iterator it =
+			 m_properties.begin();
+		 it != m_properties.end();)
+		if (!os::_strcmpi(propertyName, it->name.c_str()) &&
+			it->ID == hypothesis_ID)
+			it = m_properties.erase(it);
+		else
+			++it;
 }
 
 /*---------------------------------------------------------------
 						removeAll
  ---------------------------------------------------------------*/
-void  CMHPropertiesValuesList::removeAll( const int64_t & hypothesis_ID)
+void CMHPropertiesValuesList::removeAll(const int64_t& hypothesis_ID)
 {
-	for (std::vector<TPropertyValueIDTriplet>::iterator it=m_properties.begin();it!=m_properties.end();)
-		if (it->ID == hypothesis_ID )
-				it = m_properties.erase(it);
-		else	++it;
+	for (std::vector<TPropertyValueIDTriplet>::iterator it =
+			 m_properties.begin();
+		 it != m_properties.end();)
+		if (it->ID == hypothesis_ID)
+			it = m_properties.erase(it);
+		else
+			++it;
 }
-
-
 
 /*---------------------------------------------------------------
 						Copy
  ---------------------------------------------------------------*/
-CMHPropertiesValuesList::CMHPropertiesValuesList( const CMHPropertiesValuesList& o ) :
-	m_properties ( o.m_properties )
+CMHPropertiesValuesList::CMHPropertiesValuesList(
+	const CMHPropertiesValuesList& o)
+	: m_properties(o.m_properties)
 {
-	for (std::vector<TPropertyValueIDTriplet>::iterator it=m_properties.begin();it!=m_properties.end();++it)
+	for (std::vector<TPropertyValueIDTriplet>::iterator it =
+			 m_properties.begin();
+		 it != m_properties.end(); ++it)
 		it->value.reset(dynamic_cast<CSerializable*>(it->value->clone()));
 }
 
 /*---------------------------------------------------------------
 						Copy
  ---------------------------------------------------------------*/
-CMHPropertiesValuesList & CMHPropertiesValuesList::operator =( const CMHPropertiesValuesList& o )
+CMHPropertiesValuesList& CMHPropertiesValuesList::operator=(
+	const CMHPropertiesValuesList& o)
 {
-	if (this==&o) return *this;
+	if (this == &o) return *this;
 
 	m_properties = o.m_properties;
 
-	for (std::vector<TPropertyValueIDTriplet>::iterator it=m_properties.begin();it!=m_properties.end();++it)
-		it->value.reset(dynamic_cast<CSerializable *>(it->value->clone()));
+	for (std::vector<TPropertyValueIDTriplet>::iterator it =
+			 m_properties.begin();
+		 it != m_properties.end(); ++it)
+		it->value.reset(dynamic_cast<CSerializable*>(it->value->clone()));
 	return *this;
 }
-

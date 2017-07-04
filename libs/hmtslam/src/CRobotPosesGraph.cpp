@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include "hmtslam-precomp.h" // Precomp header
+#include "hmtslam-precomp.h"  // Precomp header
 
 #include <mrpt/hmtslam/CRobotPosesGraph.h>
 
@@ -17,26 +17,25 @@ using namespace mrpt::poses;
 using namespace mrpt::hmtslam;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE( CRobotPosesGraph, CSerializable , mrpt::hmtslam)
-
+IMPLEMENTS_SERIALIZABLE(CRobotPosesGraph, CSerializable, mrpt::hmtslam)
 
 /*---------------------------------------------------------------
 						writeToStream
   ---------------------------------------------------------------*/
-void  CRobotPosesGraph::writeToStream(mrpt::utils::CStream &out,int *version) const
+void CRobotPosesGraph::writeToStream(
+	mrpt::utils::CStream& out, int* version) const
 {
 	if (version)
 		*version = 0;
 	else
 	{
-		uint32_t   N = static_cast<uint32_t>(size());
+		uint32_t N = static_cast<uint32_t>(size());
 		out << N;
 
-		for (std::map<TPoseID,TPoseInfo>::const_iterator it=begin();it!=end();++it)
+		for (std::map<TPoseID, TPoseInfo>::const_iterator it = begin();
+			 it != end(); ++it)
 		{
-			out << it->first
-			    << it->second.sf
-			    << it->second.pdf;
+			out << it->first << it->second.sf << it->second.pdf;
 		}
 	}
 }
@@ -44,53 +43,53 @@ void  CRobotPosesGraph::writeToStream(mrpt::utils::CStream &out,int *version) co
 /*---------------------------------------------------------------
 						readFromStream
   ---------------------------------------------------------------*/
-void  CRobotPosesGraph::readFromStream(mrpt::utils::CStream &in,int version)
+void CRobotPosesGraph::readFromStream(mrpt::utils::CStream& in, int version)
 {
-	switch(version)
+	switch (version)
 	{
-	case 0:
+		case 0:
 		{
-			uint32_t   i,N;
+			uint32_t i, N;
 			in >> N;
 			clear();
 
-			for (i=0;i<N;i++)
+			for (i = 0; i < N; i++)
 			{
-				TPoseID  poseid;
+				TPoseID poseid;
 				in >> poseid;
 
-				TPoseInfo  &info = (*this)[poseid];
+				TPoseInfo& info = (*this)[poseid];
 
-				in >> info.sf
-				   >> info.pdf;
+				in >> info.sf >> info.pdf;
 			}
-
-		} break;
-	default:
-		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
-
+		}
+		break;
+		default:
+			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
 	};
 }
 
 /*---------------------------------------------------------------
 					insertIntoMetricMap
   ---------------------------------------------------------------*/
-void CRobotPosesGraph::insertIntoMetricMap( CMultiMetricMap	&metricMap ) const
+void CRobotPosesGraph::insertIntoMetricMap(CMultiMetricMap& metricMap) const
 {
-	CPose3D  meanPose;
-	for (std::map<TPoseID,TPoseInfo>::const_iterator it=begin();it!=end();++it)
+	CPose3D meanPose;
+	for (std::map<TPoseID, TPoseInfo>::const_iterator it = begin(); it != end();
+		 ++it)
 	{
 		it->second.pdf.getMean(meanPose);
-		it->second.sf.insertObservationsInto( &metricMap, &meanPose );
+		it->second.sf.insertObservationsInto(&metricMap, &meanPose);
 	}
 }
 
 /*---------------------------------------------------------------
 					convertIntoSimplemap
   ---------------------------------------------------------------*/
-void CRobotPosesGraph::convertIntoSimplemap( CSimpleMap &out_simplemap) const
+void CRobotPosesGraph::convertIntoSimplemap(CSimpleMap& out_simplemap) const
 {
 	out_simplemap.clear();
-	for (std::map<TPoseID,TPoseInfo>::const_iterator it=begin();it!=end();++it)
-		out_simplemap.insert( &it->second.pdf, it->second.sf );
+	for (std::map<TPoseID, TPoseInfo>::const_iterator it = begin(); it != end();
+		 ++it)
+		out_simplemap.insert(&it->second.pdf, it->second.sf);
 }

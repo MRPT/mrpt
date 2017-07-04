@@ -15,32 +15,34 @@
 
 namespace mrpt
 {
-  namespace nav
-  {
+namespace nav
+{
+/** \addtogroup nav_holo Holonomic navigation methods
+  * \ingroup mrpt_nav_grp
+  * @{ */
 
-	/** \addtogroup nav_holo Holonomic navigation methods
-	  * \ingroup mrpt_nav_grp
-	  * @{ */
+/** A base class for log records for different holonomic navigation methods.
+ *
+ * \sa CReactiveNavigationSystem, CHolonomicLogFileRecord
+ */
+class NAV_IMPEXP CHolonomicLogFileRecord : public utils::CSerializable
+{
+	DEFINE_VIRTUAL_SERIALIZABLE(CHolonomicLogFileRecord)
+   public:
+	/** Final [0] and alternative [1..N] evaluation scores for each direction,
+	 * in the same order of TP-Obstacles. May be not filled by all methods. */
+	std::vector<std::vector<double>> dirs_eval;
 
-	/** A base class for log records for different holonomic navigation methods.
-	 *
-	 * \sa CReactiveNavigationSystem, CHolonomicLogFileRecord
-	 */
-	class NAV_IMPEXP CHolonomicLogFileRecord : public utils::CSerializable
+	virtual const mrpt::math::CMatrixD* getDirectionScores() const
 	{
-		DEFINE_VIRTUAL_SERIALIZABLE( CHolonomicLogFileRecord )
-	public:
-		/** Final [0] and alternative [1..N] evaluation scores for each direction, in the same order of TP-Obstacles. May be not filled by all methods. */
-		std::vector<std::vector<double> >  dirs_eval; 
+		return nullptr;
+	}
+};
+DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
+	CHolonomicLogFileRecord, mrpt::utils::CSerializable, NAV_IMPEXP)
 
-		virtual const mrpt::math::CMatrixD * getDirectionScores() const { return nullptr; }
-	};
-	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(CHolonomicLogFileRecord, mrpt::utils::CSerializable, NAV_IMPEXP)
-
-	  /** @} */
-  }
+/** @} */
+}
 }
 
-
 #endif
-

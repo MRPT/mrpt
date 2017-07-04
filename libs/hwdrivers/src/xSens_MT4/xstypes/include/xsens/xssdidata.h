@@ -18,35 +18,36 @@ struct XsSdiData;
 #ifdef __cplusplus
 extern "C" {
 #else
-#define XSSDIDATA_INITIALIZER {XSQUATERNION_INITIALIZER, XSVECTOR3_INITIALIZER}
+#define XSSDIDATA_INITIALIZER                           \
+	{                                                   \
+		XSQUATERNION_INITIALIZER, XSVECTOR3_INITIALIZER \
+	}
 #endif
 
-XSTYPES_DLL_API void XsSdiData_construct(struct XsSdiData* thisPtr, const XsReal* orientationIncrement, const XsReal* velocityIncrement);
+XSTYPES_DLL_API void XsSdiData_construct(
+	struct XsSdiData* thisPtr, const XsReal* orientationIncrement,
+	const XsReal* velocityIncrement);
 XSTYPES_DLL_API void XsSdiData_destruct(struct XsSdiData* thisPtr);
 
 #ifdef __cplusplus
-} // extern "C"
+}  // extern "C"
 #endif
 
 struct XsSdiData
 {
 #ifdef __cplusplus
 	//! \brief Construct an empty object
-	inline XsSdiData()
-	{
-	}
-
+	inline XsSdiData() {}
 	//! \brief Construct an initialized object
 	inline XsSdiData(const XsQuaternion& dq, const XsVector& dv)
-		: m_orientationIncrement(dq)
-		, m_velocityIncrement(dv)
+		: m_orientationIncrement(dq), m_velocityIncrement(dv)
 	{
 	}
 
 	//! \brief Copy constructor
 	inline XsSdiData(const XsSdiData& other)
-		: m_orientationIncrement(other.m_orientationIncrement)
-		, m_velocityIncrement(other.m_velocityIncrement)
+		: m_orientationIncrement(other.m_orientationIncrement),
+		  m_velocityIncrement(other.m_velocityIncrement)
 	{
 	}
 
@@ -92,15 +93,15 @@ struct XsSdiData
 		m_velocityIncrement = dv;
 	}
 
-private:
+   private:
 #endif
 
 	/** The orientation increment */
-	XsQuaternion m_orientationIncrement;	
+	XsQuaternion m_orientationIncrement;
 	/** The velocity increment */
-	XsVector3    m_velocityIncrement;		
+	XsVector3 m_velocityIncrement;
 };
 
 typedef struct XsSdiData XsSdiData;
 
-#endif	// file guard
+#endif  // file guard

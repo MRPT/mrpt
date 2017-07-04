@@ -11,8 +11,8 @@
 
 #include <mrpt/utils/initializer.h>
 
-//using namespace mrpt::graphs;
-//using namespace mrpt::utils;
+// using namespace mrpt::graphs;
+// using namespace mrpt::utils;
 
 MRPT_INITIALIZER(registerAllClasses_mrpt_graphs)
 {
@@ -21,4 +21,3 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_graphs)
 
 #endif
 }
-

@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include "vision-precomp.h"   // Precompiled headers
+#include "vision-precomp.h"  // Precompiled headers
 
 #define MRPT_NO_WARN_BIG_HDR
 #include <mrpt/vision.h>
@@ -23,12 +23,11 @@ using namespace mrpt::maps;
 MRPT_INITIALIZER(registerAllClasses_mrpt_vision)
 {
 #if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
-	registerClass( CLASS_ID( CFeature ) );
+	registerClass(CLASS_ID(CFeature));
 
-	registerClass( CLASS_ID( CLandmark ) );
-	registerClass( CLASS_ID( CLandmarksMap ) );
+	registerClass(CLASS_ID(CLandmark));
+	registerClass(CLASS_ID(CLandmarksMap));
 
-	registerClass( CLASS_ID( CObservationVisualLandmarks ) );
+	registerClass(CLASS_ID(CObservationVisualLandmarks));
 #endif
 }
-

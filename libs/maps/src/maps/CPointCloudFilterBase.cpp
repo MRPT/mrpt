@@ -7,22 +7,15 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include "maps-precomp.h" // Precomp header
+#include "maps-precomp.h"  // Precomp header
 
 #include <mrpt/maps/CPointCloudFilterBase.h>
 
 using namespace mrpt::maps;
 
-CPointCloudFilterBase::CPointCloudFilterBase()
-{
-}
-
-CPointCloudFilterBase::~CPointCloudFilterBase()
-{
-}
-
-mrpt::maps::CPointCloudFilterBase::TExtraFilterParams::TExtraFilterParams() :
-	out_deletion_mask(nullptr),
-	do_not_delete(false)
+CPointCloudFilterBase::CPointCloudFilterBase() {}
+CPointCloudFilterBase::~CPointCloudFilterBase() {}
+mrpt::maps::CPointCloudFilterBase::TExtraFilterParams::TExtraFilterParams()
+	: out_deletion_mask(nullptr), do_not_delete(false)
 {
 }

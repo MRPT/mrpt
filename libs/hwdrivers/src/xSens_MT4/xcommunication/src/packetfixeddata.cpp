@@ -10,34 +10,35 @@
 #include "packetfixeddata.h"
 
 #ifdef LOG_PACKET
-#	include "xslog.h"
-#	define PACKETLOG	XSENSLOG
+#include "xslog.h"
+#define PACKETLOG XSENSLOG
 #else
-#	define PACKETLOG(...)
+#define PACKETLOG(...)
 #endif
 
 /*! \brief Default constructor, creates an empty (invalid) object
 */
 PacketFixedData::PacketFixedData()
-	: m_infoList(nullptr)
-	, m_formatList(nullptr)
-	, m_idList(nullptr)
-	, m_xm(false)
-	, m_itemCount(0)
+	: m_infoList(nullptr),
+	  m_formatList(nullptr),
+	  m_idList(nullptr),
+	  m_xm(false),
+	  m_itemCount(0)
 {
 	PACKETLOG("%s creating default %p\n", __FUNCTION__, this);
 }
 
-/*! \brief Sized constructor, creates an object with room for \a count device's worth of data
+/*! \brief Sized constructor, creates an object with room for \a count device's
+   worth of data
 	\details The constructor sets the xbus flag to false
 	\param count The number of devices whose metadata is stored in the object
 */
 PacketFixedData::PacketFixedData(uint16_t count)
-	: m_infoList(nullptr)
-	, m_formatList(nullptr)
-	, m_idList(nullptr)
-	, m_xm(false)
-	, m_itemCount(count)
+	: m_infoList(nullptr),
+	  m_formatList(nullptr),
+	  m_idList(nullptr),
+	  m_xm(false),
+	  m_itemCount(count)
 {
 	PACKETLOG("%s creating %p with %d items\n", __FUNCTION__, this, count);
 	m_formatList = new XsDataFormat[m_itemCount];
@@ -49,11 +50,11 @@ PacketFixedData::PacketFixedData(uint16_t count)
 	\param p The object to copy the contents from
 */
 PacketFixedData::PacketFixedData(const PacketFixedData& p)
-	: m_infoList(nullptr)
-	, m_formatList(nullptr)
-	, m_idList(nullptr)
-	, m_xm(false)
-	, m_itemCount(0)
+	: m_infoList(nullptr),
+	  m_formatList(nullptr),
+	  m_idList(nullptr),
+	  m_xm(false),
+	  m_itemCount(0)
 {
 	PACKETLOG("%s creating %p from %p\n", __FUNCTION__, this, &p);
 	*this = p;
@@ -75,10 +76,9 @@ PacketFixedData::~PacketFixedData()
 /*! \brief Assignment operator, copies contents from \a data
 	\param data The object to copy from
 */
-void PacketFixedData::operator = (const PacketFixedData& data)
+void PacketFixedData::operator=(const PacketFixedData& data)
 {
-	if (this == &data)
-		return;
+	if (this == &data) return;
 
 	PACKETLOG("%s copy from %p to %p\n", __FUNCTION__, &data, this);
 
@@ -104,4 +104,3 @@ void PacketFixedData::operator = (const PacketFixedData& data)
 
 	PACKETLOG("%s exit\n", __FUNCTION__);
 }
-

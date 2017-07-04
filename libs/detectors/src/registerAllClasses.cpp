@@ -18,9 +18,8 @@ using namespace mrpt::utils;
 MRPT_INITIALIZER(registerAllClasses_mrpt_detectors)
 {
 #if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
-	registerClass( CLASS_ID( CDetectableObject ) );
-	registerClass( CLASS_ID( CDetectable2D ) );
-	registerClass( CLASS_ID( CDetectable3D ) );
+	registerClass(CLASS_ID(CDetectableObject));
+	registerClass(CLASS_ID(CDetectable2D));
+	registerClass(CLASS_ID(CDetectable3D));
 #endif
 }
-

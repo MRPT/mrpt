@@ -14,23 +14,25 @@
 /*!	\addtogroup enums Global enumerations
 	@{
 */
-/*! \brief Synchronization line identifiers for the Mk4 devices, only to be used directly in Xbus messages */
+/*! \brief Synchronization line identifiers for the Mk4 devices, only to be used
+ * directly in Xbus messages */
 enum SyncLineMk4
 {
 	/** External clock sync \ref XSL_ClockIn */
-	XSL4_ClockIn = 0,		
+	XSL4_ClockIn = 0,
 	/** GPS clock sync \ref XSL_GpsClockIn */
-	XSL4_GpsClockIn = 1,	
+	XSL4_GpsClockIn = 1,
 	/** Send data line \ref XSL_In1 */
-	XSL4_In = 2,			
+	XSL4_In = 2,
 	/** Bidirectional sync line, configured as input \ref XSL_Bi1In */
-	XSL4_BiIn = 3,			
+	XSL4_BiIn = 3,
 	/** Bidirectional sync line, configured as output \ref XSL_Bi1Out */
-	XSL4_BiOut = 4,			
+	XSL4_BiOut = 4,
 	/** External Timepulse input \ref XSL_ExtTimepulseIn */
 	XSL4_ExtTimepulseIn = 5,
-	/** Serial data sync option, use XMID_ReqData message id for this \ref XSL_ReqData */
-	XSL4_ReqData = 6,		
+	/** Serial data sync option, use XMID_ReqData message id for this \ref
+	   XSL_ReqData */
+	XSL4_ReqData = 6,
 
 	XSL4_Invalid
 };
@@ -45,7 +47,7 @@ XsSyncLine xsl4ToXsl(SyncLineMk4 mk4Line);
 SyncLineMk4 xslToXsl4(XsSyncLine line);
 
 #ifdef __cplusplus
-} // extern "C"
+}  // extern "C"
 #endif
 
-#endif // file guard
+#endif  // file guard

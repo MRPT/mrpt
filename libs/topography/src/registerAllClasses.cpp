@@ -21,4 +21,3 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_topography)
 //	registerClass( CLASS_ID( XXXX ) );
 #endif
 }
-

@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include "hwdrivers-precomp.h"   // Precompiled headers
+#include "hwdrivers-precomp.h"  // Precompiled headers
 
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/obs/CAction.h>
@@ -22,20 +22,20 @@ using namespace std;
 /*-------------------------------------------------------------
 						Constructor
 -------------------------------------------------------------*/
-CGenericSensor::CGenericSensor() :
-	m_process_rate(0),
-	m_max_queue_len(200),
-	m_grab_decimation(0),
-	m_sensorLabel("UNNAMED_SENSOR"),
-	m_grab_decimation_counter(0),
-	m_state( ssInitializing ),
-	m_verbose(false),
-	m_path_for_external_images	(),
-	m_external_images_format	("png"),
-	m_external_images_jpeg_quality (95)
+CGenericSensor::CGenericSensor()
+	: m_process_rate(0),
+	  m_max_queue_len(200),
+	  m_grab_decimation(0),
+	  m_sensorLabel("UNNAMED_SENSOR"),
+	  m_grab_decimation_counter(0),
+	  m_state(ssInitializing),
+	  m_verbose(false),
+	  m_path_for_external_images(),
+	  m_external_images_format("png"),
+	  m_external_images_jpeg_quality(95)
 {
-	const char * sVerbose = getenv("MRPT_HWDRIVERS_VERBOSE");
-	m_verbose = (sVerbose!=nullptr) && atoi(sVerbose)!=0;
+	const char* sVerbose = getenv("MRPT_HWDRIVERS_VERBOSE");
+	m_verbose = (sVerbose != nullptr) && atoi(sVerbose) != 0;
 }
 
 /*-------------------------------------------------------------
@@ -50,65 +50,66 @@ CGenericSensor::~CGenericSensor()
 /*-------------------------------------------------------------
 						appendObservations
 -------------------------------------------------------------*/
-void CGenericSensor::appendObservations( const std::vector<mrpt::utils::CSerializable::Ptr> &objs)
+void CGenericSensor::appendObservations(
+	const std::vector<mrpt::utils::CSerializable::Ptr>& objs)
 {
-	if (++m_grab_decimation_counter>=m_grab_decimation)
+	if (++m_grab_decimation_counter >= m_grab_decimation)
 	{
 		m_grab_decimation_counter = 0;
 
-		std::lock_guard<std::mutex>	lock( m_csObjList );
+		std::lock_guard<std::mutex> lock(m_csObjList);
 
-		for (size_t i=0;i<objs.size();i++)
+		for (size_t i = 0; i < objs.size(); i++)
 		{
-			const CSerializable::Ptr &obj = objs[i];
+			const CSerializable::Ptr& obj = objs[i];
 			if (!obj) continue;
 
 			// It must be a CObservation or a CAction!
-			TTimeStamp	timestamp;
+			TTimeStamp timestamp;
 
-			if ( obj->GetRuntimeClass()->derivedFrom( CLASS_ID(CAction) ) )
+			if (obj->GetRuntimeClass()->derivedFrom(CLASS_ID(CAction)))
 			{
-				timestamp = dynamic_cast<CAction *>(obj.get())->timestamp;
+				timestamp = dynamic_cast<CAction*>(obj.get())->timestamp;
+			}
+			else if (
+				obj->GetRuntimeClass()->derivedFrom(CLASS_ID(CObservation)))
+			{
+				timestamp = dynamic_cast<CObservation*>(obj.get())->timestamp;
 			}
 			else
-			if ( obj->GetRuntimeClass()->derivedFrom( CLASS_ID(CObservation) ) )
-			{
-				timestamp = dynamic_cast<CObservation *>(obj.get())->timestamp;
-			}
-			else THROW_EXCEPTION("Passed object must be CObservation.");
+				THROW_EXCEPTION("Passed object must be CObservation.");
 
 			// Add it:
-			m_objList.insert( TListObsPair(timestamp, obj) );
+			m_objList.insert(TListObsPair(timestamp, obj));
 		}
 	}
 }
 
-
 /*-------------------------------------------------------------
 						getObservations
 -------------------------------------------------------------*/
-void CGenericSensor::getObservations( TListObservations	&lstObjects )
+void CGenericSensor::getObservations(TListObservations& lstObjects)
 {
-	std::lock_guard<std::mutex>	lock( m_csObjList );
+	std::lock_guard<std::mutex> lock(m_csObjList);
 	lstObjects = m_objList;
-	m_objList.clear();			// Memory of objects will be freed by invoker.
+	m_objList.clear();  // Memory of objects will be freed by invoker.
 }
-
 
 /*-------------------------------------------------------------
 
 						createSensor
 
 -------------------------------------------------------------*/
-CGenericSensor* CGenericSensor::createSensor(const std::string &className)
+CGenericSensor* CGenericSensor::createSensor(const std::string& className)
 {
-	registered_sensor_classes_t & regs = get_registered_sensor_classes();
-	const registered_sensor_classes_t::iterator it=regs.find(className);
-	return it==regs.end() ? nullptr : it->second->ptrCreateObject();
+	registered_sensor_classes_t& regs = get_registered_sensor_classes();
+	const registered_sensor_classes_t::iterator it = regs.find(className);
+	return it == regs.end() ? nullptr : it->second->ptrCreateObject();
 }
 
 // Singleton
-CGenericSensor::registered_sensor_classes_t & CGenericSensor::get_registered_sensor_classes()
+CGenericSensor::registered_sensor_classes_t&
+	CGenericSensor::get_registered_sensor_classes()
 {
 	static registered_sensor_classes_t reg;
 	return reg;
@@ -119,30 +120,33 @@ CGenericSensor::registered_sensor_classes_t & CGenericSensor::get_registered_sen
 -------------------------------------------------------------*/
 void CGenericSensor::registerClass(const TSensorClassId* pNewClass)
 {
-	registered_sensor_classes_t & regs = get_registered_sensor_classes();
-	regs[ pNewClass->className ] = pNewClass;
+	registered_sensor_classes_t& regs = get_registered_sensor_classes();
+	regs[pNewClass->className] = pNewClass;
 }
 
-
-
-/** Loads the generic settings common to any sensor (See CGenericSensor), then call to "loadConfig_sensorSpecific"
-  *  \exception This method throws an exception with a descriptive message if some critical parameter is missing or has an invalid value.
+/** Loads the generic settings common to any sensor (See CGenericSensor), then
+ * call to "loadConfig_sensorSpecific"
+  *  \exception This method throws an exception with a descriptive message if
+ * some critical parameter is missing or has an invalid value.
   */
-void  CGenericSensor::loadConfig(
-	const mrpt::utils::CConfigFileBase &cfg,
-	const std::string			&sect )
+void CGenericSensor::loadConfig(
+	const mrpt::utils::CConfigFileBase& cfg, const std::string& sect)
 {
 	MRPT_START
 
-	m_process_rate  = cfg.read_double(sect,"process_rate",0 );  // Leave it to 0 so rawlog-grabber can detect if it's not set by the user.
-	m_max_queue_len = static_cast<size_t>(cfg.read_int(sect,"max_queue_len",int(m_max_queue_len)));
-	m_grab_decimation = static_cast<size_t>(cfg.read_int(sect,"grab_decimation",int(m_grab_decimation)));
+	m_process_rate = cfg.read_double(
+		sect, "process_rate", 0);  // Leave it to 0 so rawlog-grabber can detect
+	// if it's not set by the user.
+	m_max_queue_len = static_cast<size_t>(
+		cfg.read_int(sect, "max_queue_len", int(m_max_queue_len)));
+	m_grab_decimation = static_cast<size_t>(
+		cfg.read_int(sect, "grab_decimation", int(m_grab_decimation)));
 
-	m_sensorLabel	= cfg.read_string( sect, "sensorLabel", m_sensorLabel );
+	m_sensorLabel = cfg.read_string(sect, "sensorLabel", m_sensorLabel);
 
 	m_grab_decimation_counter = 0;
 
-	loadConfig_sensorSpecific(cfg,sect);
+	loadConfig_sensorSpecific(cfg, sect);
 
 	MRPT_END
 }

@@ -26,54 +26,47 @@ using namespace std;
 /*---------------------------------------------------------------
 						dumpToFile
   ---------------------------------------------------------------*/
-void  TMatchingPairList::dumpToFile(const std::string &fileName) const
+void TMatchingPairList::dumpToFile(const std::string& fileName) const
 {
-	CFileOutputStream  f(fileName);
+	CFileOutputStream f(fileName);
 	ASSERT_(f.fileOpenCorrectly())
 
-	for (const_iterator it=begin();it!=end();++it)
+	for (const_iterator it = begin(); it != end(); ++it)
 	{
-		f.printf("%u %u %f %f %f %f %f %f %f\n",
-				it->this_idx,
-				it->other_idx,
-				it->this_x,
-				it->this_y,
-				it->this_z,
-				it->other_x,
-				it->other_y,
-				it->other_z,
-				it->errorSquareAfterTransformation);
+		f.printf(
+			"%u %u %f %f %f %f %f %f %f\n", it->this_idx, it->other_idx,
+			it->this_x, it->this_y, it->this_z, it->other_x, it->other_y,
+			it->other_z, it->errorSquareAfterTransformation);
 	}
 }
 
 /*---------------------------------------------------------------
 						saveAsMATLABScript
   ---------------------------------------------------------------*/
-void TMatchingPairList::saveAsMATLABScript( const std::string &filName ) const
+void TMatchingPairList::saveAsMATLABScript(const std::string& filName) const
 {
-	FILE	*f = os::fopen(filName.c_str(),"wt");
+	FILE* f = os::fopen(filName.c_str(), "wt");
 
-	fprintf(f,"%% ----------------------------------------------------\n");
-	fprintf(f,"%%  File generated automatically by the MRPT method:\n");
-	fprintf(f,"%%   saveAsMATLABScript  \n");
-	fprintf(f,"%%  Before calling this script, define the color of lines, eg:\n");
-	fprintf(f,"%%     colorLines=[1 1 1]");
-	fprintf(f,"%%               J.L. Blanco (C) 2005-2012 \n");
-	fprintf(f,"%% ----------------------------------------------------\n\n");
+	fprintf(f, "%% ----------------------------------------------------\n");
+	fprintf(f, "%%  File generated automatically by the MRPT method:\n");
+	fprintf(f, "%%   saveAsMATLABScript  \n");
+	fprintf(
+		f, "%%  Before calling this script, define the color of lines, eg:\n");
+	fprintf(f, "%%     colorLines=[1 1 1]");
+	fprintf(f, "%%               J.L. Blanco (C) 2005-2012 \n");
+	fprintf(f, "%% ----------------------------------------------------\n\n");
 
-	fprintf(f,"axis equal; hold on;\n");
-	for (const_iterator it=begin();it!=end();++it)
+	fprintf(f, "axis equal; hold on;\n");
+	for (const_iterator it = begin(); it != end(); ++it)
 	{
-		fprintf(f,"line([%f %f],[%f %f],'Color',colorLines);\n",
-				it->this_x,
-				it->other_x,
-				it->this_y,
-				it->other_y );
-		fprintf(f,"set(plot([%f %f],[%f %f],'.'),'Color',colorLines,'MarkerSize',15);\n",
-				it->this_x,
-				it->other_x,
-				it->this_y,
-				it->other_y );
+		fprintf(
+			f, "line([%f %f],[%f %f],'Color',colorLines);\n", it->this_x,
+			it->other_x, it->this_y, it->other_y);
+		fprintf(
+			f,
+			"set(plot([%f %f],[%f "
+			"%f],'.'),'Color',colorLines,'MarkerSize',15);\n",
+			it->this_x, it->other_x, it->this_y, it->other_y);
 	}
 	os::fclose(f);
 }
@@ -81,137 +74,140 @@ void TMatchingPairList::saveAsMATLABScript( const std::string &filName ) const
 /*---------------------------------------------------------------
 						indexOtherMapHasCorrespondence
   ---------------------------------------------------------------*/
-bool  TMatchingPairList::indexOtherMapHasCorrespondence(size_t idx) const
+bool TMatchingPairList::indexOtherMapHasCorrespondence(size_t idx) const
 {
-	for (const_iterator it=begin();it!=end();++it) {
-		if (it->other_idx == idx) 
-			return true;
+	for (const_iterator it = begin(); it != end(); ++it)
+	{
+		if (it->other_idx == idx) return true;
 	}
 	return false;
 }
 
-bool mrpt::utils::operator < (const TMatchingPair& a, const TMatchingPair& b)
+bool mrpt::utils::operator<(const TMatchingPair& a, const TMatchingPair& b)
 {
-	if (a.this_idx==b.this_idx)
-			return (a.this_idx<b.this_idx);
-	else	return (a.other_idx<b.other_idx);
+	if (a.this_idx == b.this_idx)
+		return (a.this_idx < b.this_idx);
+	else
+		return (a.other_idx < b.other_idx);
 }
 
-
-bool mrpt::utils::operator == (const TMatchingPair& a,const TMatchingPair& b)
+bool mrpt::utils::operator==(const TMatchingPair& a, const TMatchingPair& b)
 {
-	return (a.this_idx==b.this_idx) && (a.other_idx==b.other_idx);
+	return (a.this_idx == b.this_idx) && (a.other_idx == b.other_idx);
 }
 
-bool mrpt::utils::operator == (const TMatchingPairList& a,const TMatchingPairList& b)
+bool mrpt::utils::operator==(
+	const TMatchingPairList& a, const TMatchingPairList& b)
 {
-	if (a.size()!=b.size())
-		return false;
-	for (TMatchingPairList::const_iterator it1=a.begin(),it2=b.begin();it1!=a.end();++it1,++it2)
-		if (!  ( (*it1)==(*it2)))
-			return false;
+	if (a.size() != b.size()) return false;
+	for (TMatchingPairList::const_iterator it1 = a.begin(), it2 = b.begin();
+		 it1 != a.end(); ++it1, ++it2)
+		if (!((*it1) == (*it2))) return false;
 	return true;
 }
-
 
 /*---------------------------------------------------------------
 						overallSquareError
   ---------------------------------------------------------------*/
-float TMatchingPairList::overallSquareError( const CPose2D &q ) const
+float TMatchingPairList::overallSquareError(const CPose2D& q) const
 {
-	vector<float> errs( size() );
-	squareErrorVector(q,errs);
-	return math::sum( errs );
+	vector<float> errs(size());
+	squareErrorVector(q, errs);
+	return math::sum(errs);
 }
 
 /*---------------------------------------------------------------
 						overallSquareErrorAndPoints
   ---------------------------------------------------------------*/
 float TMatchingPairList::overallSquareErrorAndPoints(
-	const CPose2D &q,
-	vector<float> &xs,
-	vector<float> &ys ) const
+	const CPose2D& q, vector<float>& xs, vector<float>& ys) const
 {
-	vector<float> errs( size() );
-	squareErrorVector(q,errs,xs,ys);
-	return math::sum( errs );
+	vector<float> errs(size());
+	squareErrorVector(q, errs, xs, ys);
+	return math::sum(errs);
 }
 
 /*---------------------------------------------------------------
 					TMatchingPairList::contains
   ---------------------------------------------------------------*/
-bool TMatchingPairList::contains (const TMatchingPair &p) const
+bool TMatchingPairList::contains(const TMatchingPair& p) const
 {
-	for (const_iterator corresp=begin();corresp!=end();++corresp)
-		if ( *corresp == p )
-			return true;
+	for (const_iterator corresp = begin(); corresp != end(); ++corresp)
+		if (*corresp == p) return true;
 	return false;
 }
 
 /*---------------------------------------------------------------
 						squareErrorVector
   ---------------------------------------------------------------*/
-void  TMatchingPairList::squareErrorVector(const CPose2D &q, vector<float> &out_sqErrs ) const
+void TMatchingPairList::squareErrorVector(
+	const CPose2D& q, vector<float>& out_sqErrs) const
 {
-	out_sqErrs.resize( size() );
+	out_sqErrs.resize(size());
 	// *    \f[ e_i = | x_{this} -  q \oplus x_{other}  |^2 \f]
 
 	const float ccos = cos(q.phi());
 	const float csin = sin(q.phi());
-	const float qx   = q.x();
-	const float qy   = q.y();
+	const float qx = q.x();
+	const float qy = q.y();
 
-	const_iterator 			corresp;
-	vector<float>::iterator	e_i;
-	for (corresp=begin(), e_i = out_sqErrs.begin();corresp!=end();++corresp, ++e_i)
+	const_iterator corresp;
+	vector<float>::iterator e_i;
+	for (corresp = begin(), e_i = out_sqErrs.begin(); corresp != end();
+		 ++corresp, ++e_i)
 	{
 		float xx = qx + ccos * corresp->other_x - csin * corresp->other_y;
 		float yy = qy + csin * corresp->other_x + ccos * corresp->other_y;
-		*e_i = square( corresp->this_x - xx ) + square( corresp->this_y - yy );
+		*e_i = square(corresp->this_x - xx) + square(corresp->this_y - yy);
 	}
 }
 
 /*---------------------------------------------------------------
 						squareErrorVector
   ---------------------------------------------------------------*/
-void  TMatchingPairList::squareErrorVector(
-	const CPose2D &q,
-	vector<float> &out_sqErrs,
-	vector<float> &xs,
-	vector<float> &ys ) const
+void TMatchingPairList::squareErrorVector(
+	const CPose2D& q, vector<float>& out_sqErrs, vector<float>& xs,
+	vector<float>& ys) const
 {
-	out_sqErrs.resize( size() );
-	xs.resize( size() );
-	ys.resize( size() );
+	out_sqErrs.resize(size());
+	xs.resize(size());
+	ys.resize(size());
 
 	// *    \f[ e_i = | x_{this} -  q \oplus x_{other}  |^2 \f]
 
 	const float ccos = cos(q.phi());
 	const float csin = sin(q.phi());
-	const float qx   = q.x();
-	const float qy   = q.y();
+	const float qx = q.x();
+	const float qy = q.y();
 
-	const_iterator 			corresp;
-	vector<float>::iterator	e_i, xx, yy;
-	for (corresp=begin(), e_i = out_sqErrs.begin(), xx = xs.begin(), yy = ys.begin();corresp!=end();++corresp, ++e_i, ++xx,++yy)
+	const_iterator corresp;
+	vector<float>::iterator e_i, xx, yy;
+	for (corresp = begin(), e_i = out_sqErrs.begin(), xx = xs.begin(),
+		yy = ys.begin();
+		 corresp != end(); ++corresp, ++e_i, ++xx, ++yy)
 	{
 		*xx = qx + ccos * corresp->other_x - csin * corresp->other_y;
 		*yy = qy + csin * corresp->other_x + ccos * corresp->other_y;
-		*e_i = square( corresp->this_x - *xx ) + square( corresp->this_y - *yy );
+		*e_i = square(corresp->this_x - *xx) + square(corresp->this_y - *yy);
 	}
 }
 
-void TMatchingPairList::filterUniqueRobustPairs(const size_t num_elements_this_map, TMatchingPairList &out_filtered_list) const
+void TMatchingPairList::filterUniqueRobustPairs(
+	const size_t num_elements_this_map,
+	TMatchingPairList& out_filtered_list) const
 {
-	std::vector<TMatchingPairConstPtr> bestMatchForThisMap(num_elements_this_map, TMatchingPairConstPtr(nullptr));
+	std::vector<TMatchingPairConstPtr> bestMatchForThisMap(
+		num_elements_this_map, TMatchingPairConstPtr(nullptr));
 	out_filtered_list.clear();
 
 	// 1) Go through all the correspondences and keep the best corresp.
 	//    for each "global map" (this) point.
-	for (auto &c : *this)
+	for (auto& c : *this)
 	{
 		if (bestMatchForThisMap[c.this_idx] == nullptr ||  // first one
-			c.errorSquareAfterTransformation < bestMatchForThisMap[c.this_idx]->errorSquareAfterTransformation // or better
+			c.errorSquareAfterTransformation <
+				bestMatchForThisMap[c.this_idx]
+					->errorSquareAfterTransformation  // or better
 			)
 		{
 			bestMatchForThisMap[c.this_idx] = &c;
@@ -220,10 +216,9 @@ void TMatchingPairList::filterUniqueRobustPairs(const size_t num_elements_this_m
 
 	//   2) Go again through the list of correspondences and remove those
 	//       who are not the best one for their corresponding global map.
-	for (auto &c : *this) {
+	for (auto& c : *this)
+	{
 		if (bestMatchForThisMap[c.this_idx] == &c)
-			out_filtered_list.push_back(c); // Add to the output
+			out_filtered_list.push_back(c);  // Add to the output
 	}
 }
-
-

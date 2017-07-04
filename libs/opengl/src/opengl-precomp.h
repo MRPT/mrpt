@@ -15,4 +15,3 @@
 #include <mrpt/opengl/CRenderizable.h>
 
 #endif
-

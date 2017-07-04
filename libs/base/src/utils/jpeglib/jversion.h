@@ -7,7 +7,6 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
+#define JVERSION "6b  27-Mar-1998"
 
-#define JVERSION	"6b  27-Mar-1998"
-
-#define JCOPYRIGHT	"Copyright (C) 1998, Thomas G. Lane"
+#define JCOPYRIGHT "Copyright (C) 1998, Thomas G. Lane"

@@ -17,16 +17,17 @@ using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace std;
 
-bool internal::dynamic_grid_txt_saver::saveToTextFile(const std::string &fileName) const
+bool internal::dynamic_grid_txt_saver::saveToTextFile(
+	const std::string& fileName) const
 {
-	FILE	*f=os::fopen(fileName.c_str(),"wt");
-	if(!f) return false;
+	FILE* f = os::fopen(fileName.c_str(), "wt");
+	if (!f) return false;
 	const unsigned int sy = getSizeY(), sx = getSizeX();
-	for (unsigned int cy=0;cy<sy;cy++)
+	for (unsigned int cy = 0; cy < sy; cy++)
 	{
-		for (unsigned int cx=0;cx<sx;cx++)
-			os::fprintf(f,"%f ", getCellAsFloat(cx,cy) );
-		os::fprintf(f,"\n");
+		for (unsigned int cx = 0; cx < sx; cx++)
+			os::fprintf(f, "%f ", getCellAsFloat(cx, cy));
+		os::fprintf(f, "\n");
 	}
 	os::fclose(f);
 	return true;

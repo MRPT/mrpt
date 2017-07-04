@@ -25,4 +25,3 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_kinematics)
 	registerClass(CLASS_ID(CVehicleVelCmd_Holo));
 #endif
 }
-

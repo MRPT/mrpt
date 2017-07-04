@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include "obs-precomp.h"   // Precompiled headers
+#include "obs-precomp.h"  // Precompiled headers
 
 #include <mrpt/obs/CAction.h>
 #include <mrpt/utils/CStream.h>
@@ -15,21 +15,13 @@
 using namespace mrpt::obs;
 using namespace mrpt::utils;
 
-
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(CAction, CSerializable, mrpt::obs)
-
 
 /*---------------------------------------------------------------
 			Constructor
   ---------------------------------------------------------------*/
-CAction::CAction() : timestamp( INVALID_TIMESTAMP )
-{
-
-}
-
+CAction::CAction() : timestamp(INVALID_TIMESTAMP) {}
 /*---------------------------------------------------------------
 			Destructor
   ---------------------------------------------------------------*/
-CAction::~CAction()
-{
-}
+CAction::~CAction() {}

@@ -48,117 +48,142 @@ using namespace mrpt::utils;
 
 using mrpt::opengl::CAngularObservationMesh;
 
-//Increase this values to get more precision. It will also increase run time.
-const size_t HOW_MANY_YAWS=150;
-const size_t HOW_MANY_PITCHS=75;
+// Increase this values to get more precision. It will also increase run time.
+const size_t HOW_MANY_YAWS = 150;
+const size_t HOW_MANY_PITCHS = 75;
 
-const float RANDOM_POSE_DISTANCE=10;
+const float RANDOM_POSE_DISTANCE = 10;
 
-inline double MYRAND1()	{
-//	return static_cast<float>(rand()%prec)/prec;
-	return randomGenerator.drawUniform(0,1);
+inline double MYRAND1()
+{
+	//	return static_cast<float>(rand()%prec)/prec;
+	return randomGenerator.drawUniform(0, 1);
 }
 
-inline double MYRANDG(double scale,double shift=0)	{
-//	return shift+(static_cast<float>(rand()%prec)/prec)*scale;
-	return shift+scale*randomGenerator.drawUniform(0,1);
+inline double MYRANDG(double scale, double shift = 0)
+{
+	//	return shift+(static_cast<float>(rand()%prec)/prec)*scale;
+	return shift + scale * randomGenerator.drawUniform(0, 1);
 }
 
-CPose3D randomPose()	{
-	return CPose3D(MYRANDG(2*RANDOM_POSE_DISTANCE,-RANDOM_POSE_DISTANCE),MYRANDG(2*RANDOM_POSE_DISTANCE,-RANDOM_POSE_DISTANCE),MYRANDG(2*RANDOM_POSE_DISTANCE,-RANDOM_POSE_DISTANCE),MYRAND1(),MYRAND1(),MYRAND1());
+CPose3D randomPose()
+{
+	return CPose3D(
+		MYRANDG(2 * RANDOM_POSE_DISTANCE, -RANDOM_POSE_DISTANCE),
+		MYRANDG(2 * RANDOM_POSE_DISTANCE, -RANDOM_POSE_DISTANCE),
+		MYRANDG(2 * RANDOM_POSE_DISTANCE, -RANDOM_POSE_DISTANCE), MYRAND1(),
+		MYRAND1(), MYRAND1());
 }
 
 /**
  * Call configRandom given the address of an object and assign random pose and
  * color to it
  */
-void configRandom(const CRenderizable::Ptr &obj)	{
-	obj->setColor(MYRAND1(),MYRAND1(),MYRAND1(),MYRANDG(0.75,0.25));
+void configRandom(const CRenderizable::Ptr& obj)
+{
+	obj->setColor(MYRAND1(), MYRAND1(), MYRAND1(), MYRANDG(0.75, 0.25));
 	obj->setPose(randomPose());
 }
 
-void guideLines(const CPose3D &base,CSetOfLines::Ptr &lines,float dist)	{
-	CPoint3D pDist=CPoint3D(dist,0,0);
+void guideLines(const CPose3D& base, CSetOfLines::Ptr& lines, float dist)
+{
+	CPoint3D pDist = CPoint3D(dist, 0, 0);
 	CPoint3D pps[4];
-	pps[0]=base+pDist;
-	pps[1]=base+CPose3D(0,0,0,0,-M_PI/2,0)+pDist;
-	pps[2]=base+CPose3D(0,0,0,-M_PI/2,0,0)+pDist;
-	pps[3]=base+CPose3D(0,0,0,M_PI/2,0,0)+pDist;
-	for (size_t i=0;i<4;i++) lines->appendLine(base.x(),base.y(),base.z(),pps[i].x(),pps[i].y(),pps[i].z());
+	pps[0] = base + pDist;
+	pps[1] = base + CPose3D(0, 0, 0, 0, -M_PI / 2, 0) + pDist;
+	pps[2] = base + CPose3D(0, 0, 0, -M_PI / 2, 0, 0) + pDist;
+	pps[3] = base + CPose3D(0, 0, 0, M_PI / 2, 0, 0) + pDist;
+	for (size_t i = 0; i < 4; i++)
+		lines->appendLine(
+			base.x(), base.y(), base.z(), pps[i].x(), pps[i].y(), pps[i].z());
 	lines->setLineWidth(5);
-	lines->setColor(0,0,1);
+	lines->setColor(0, 0, 1);
 }
 
-//Add objects at your will to check results
-void generateObjects(CSetOfObjects::Ptr &world)	{
-    // create object, give it a random pose/color, insert it in the world
-	CDisk::Ptr dsk=std::make_shared<CDisk>();
-	dsk->setDiskRadius(MYRANDG(5,5),MYRANDG(5));
+// Add objects at your will to check results
+void generateObjects(CSetOfObjects::Ptr& world)
+{
+	// create object, give it a random pose/color, insert it in the world
+	CDisk::Ptr dsk = std::make_shared<CDisk>();
+	dsk->setDiskRadius(MYRANDG(5, 5), MYRANDG(5));
 	configRandom(dsk);
 	world->insert(dsk);
 
-	CSphere::Ptr sph=std::make_shared<CSphere>(MYRANDG(5,1));
+	CSphere::Ptr sph = std::make_shared<CSphere>(MYRANDG(5, 1));
 	configRandom(sph);
 	world->insert(sph);
 
-	CTexturedPlane::Ptr pln=std::make_shared<CTexturedPlane>(MYRANDG(10,-10),MYRANDG(10),MYRANDG(10,-10),MYRANDG(10));
+	CTexturedPlane::Ptr pln = std::make_shared<CTexturedPlane>(
+		MYRANDG(10, -10), MYRANDG(10), MYRANDG(10, -10), MYRANDG(10));
 	configRandom(pln);
 	world->insert(pln);
 
-	for (size_t i=0;i<5;i++)	{
-		CPolyhedron::Ptr poly=CPolyhedron::CreateRandomPolyhedron(MYRANDG(2,2));
+	for (size_t i = 0; i < 5; i++)
+	{
+		CPolyhedron::Ptr poly =
+			CPolyhedron::CreateRandomPolyhedron(MYRANDG(2, 2));
 		configRandom(poly);
 		world->insert(poly);
 	}
 
-	CCylinder::Ptr cil=std::make_shared<CCylinder>(MYRANDG(3.0,3.0),MYRANDG(3.0,1.0),MYRANDG(2.0f,3.0f),50,1);
+	CCylinder::Ptr cil = std::make_shared<CCylinder>(
+		MYRANDG(3.0, 3.0), MYRANDG(3.0, 1.0), MYRANDG(2.0f, 3.0f), 50, 1);
 	configRandom(cil);
 	world->insert(cil);
 
-	CEllipsoid::Ptr ell=std::make_shared<CEllipsoid>();
-	CMatrixDouble md=CMatrixDouble(3,3);
-	for (size_t i=0;i<3;i++) md(i,i)=MYRANDG(8.0,1.0);
-	for (size_t i=0;i<3;i++)	{
-		size_t ii=(i+1)%3;
-		md(i,ii)=md(ii,i)=MYRANDG(sqrt(md(i,i)*md(ii,ii)));
+	CEllipsoid::Ptr ell = std::make_shared<CEllipsoid>();
+	CMatrixDouble md = CMatrixDouble(3, 3);
+	for (size_t i = 0; i < 3; i++) md(i, i) = MYRANDG(8.0, 1.0);
+	for (size_t i = 0; i < 3; i++)
+	{
+		size_t ii = (i + 1) % 3;
+		md(i, ii) = md(ii, i) = MYRANDG(sqrt(md(i, i) * md(ii, ii)));
 	}
 	ell->setCovMatrix(md);
 	configRandom(std::dynamic_pointer_cast<CRenderizable>(ell));
 	world->insert(ell);
 }
 
-void display()	{
-	CDisplayWindow3D window("Ray trace demo",640,480);
-	window.setPos(10,10);
+void display()
+{
+	CDisplayWindow3D window("Ray trace demo", 640, 480);
+	window.setPos(10, 10);
 	std::this_thread::sleep_for(20ms);
-	COpenGLScene::Ptr scene1=std::make_shared<COpenGLScene>();
-	//COpenGLScene::Ptr &scene1=window.get3DSceneAndLock();
-	opengl::CGridPlaneXY::Ptr plane1=std::make_shared<CGridPlaneXY>(-20,20,-20,20,0,1);
-	plane1->setColor(GRID_R,GRID_G,GRID_B);
+	COpenGLScene::Ptr scene1 = std::make_shared<COpenGLScene>();
+	// COpenGLScene::Ptr &scene1=window.get3DSceneAndLock();
+	opengl::CGridPlaneXY::Ptr plane1 =
+		std::make_shared<CGridPlaneXY>(-20, 20, -20, 20, 0, 1);
+	plane1->setColor(GRID_R, GRID_G, GRID_B);
 	scene1->insert(plane1);
-	scene1->insert(std::make_shared<CAxis>(-5,-5,-5,5,5,5,2.5,3,true));
-	CSetOfObjects::Ptr world=std::make_shared<CSetOfObjects>();
+	scene1->insert(std::make_shared<CAxis>(-5, -5, -5, 5, 5, 5, 2.5, 3, true));
+	CSetOfObjects::Ptr world = std::make_shared<CSetOfObjects>();
 	generateObjects(world);
 	scene1->insert(world);
-	CPose3D basePose=randomPose();
-	CAngularObservationMesh::Ptr aom=std::make_shared<CAngularObservationMesh>();
+	CPose3D basePose = randomPose();
+	CAngularObservationMesh::Ptr aom =
+		std::make_shared<CAngularObservationMesh>();
 	CTicTac t;
 	t.Tic();
-	CAngularObservationMesh::trace2DSetOfRays(scene1,basePose,aom,CAngularObservationMesh::TDoubleRange::CreateFromAmount(-M_PI/2,0,HOW_MANY_PITCHS),CAngularObservationMesh::TDoubleRange::CreateFromAperture(M_PI,HOW_MANY_YAWS));
-	cout<<"Elapsed time: "<<t.Tac()<<" seconds.\n";
-	aom->setColor(0,1,0);
+	CAngularObservationMesh::trace2DSetOfRays(
+		scene1, basePose, aom,
+		CAngularObservationMesh::TDoubleRange::CreateFromAmount(
+			-M_PI / 2, 0, HOW_MANY_PITCHS),
+		CAngularObservationMesh::TDoubleRange::CreateFromAperture(
+			M_PI, HOW_MANY_YAWS));
+	cout << "Elapsed time: " << t.Tac() << " seconds.\n";
+	aom->setColor(0, 1, 0);
 	aom->setWireframe(true);
-	//Comment to stop showing traced rays and scan range guidelines.
-	CSetOfLines::Ptr traced=std::make_shared<CSetOfLines>();
-	CSetOfLines::Ptr guides=std::make_shared<CSetOfLines>();
+	// Comment to stop showing traced rays and scan range guidelines.
+	CSetOfLines::Ptr traced = std::make_shared<CSetOfLines>();
+	CSetOfLines::Ptr guides = std::make_shared<CSetOfLines>();
 	aom->getTracedRays(traced);
 	traced->setLineWidth(1.5);
-	traced->setColor(1,0,0);
-	guideLines(basePose,guides,10);
+	traced->setColor(1, 0, 0);
+	guideLines(basePose, guides, 10);
 	scene1->insert(traced);
 	scene1->insert(guides);
 
-	//Uncomment to show also traced rays who got lost.
+	// Uncomment to show also traced rays who got lost.
 	/*
 	CSetOfLines::Ptr untraced=std::make_shared<CSetOfLines>();
 	aom->getUntracedRays(untraced,20);
@@ -166,42 +191,49 @@ void display()	{
 	untraced->setColor(1,1,1,0.5);
 	scene1->insert(untraced);
 	*/
-	CSphere::Ptr point=std::make_shared<CSphere>(0.2);
-	point->setColor(0,1,0);
+	CSphere::Ptr point = std::make_shared<CSphere>(0.2);
+	point->setColor(0, 1, 0);
 	point->setPose(basePose);
 	scene1->insert(point);
-	CDisplayWindow3D window2("Observed mesh",640,480);
-	window2.setPos(660,10);
+	CDisplayWindow3D window2("Observed mesh", 640, 480);
+	window2.setPos(660, 10);
 	std::this_thread::sleep_for(20ms);
-	window.get3DSceneAndLock()=scene1;
+	window.get3DSceneAndLock() = scene1;
 	window.unlockAccess3DScene();
 	window.setCameraElevationDeg(25.0f);
-	COpenGLScene::Ptr &scene2=window2.get3DSceneAndLock();
+	COpenGLScene::Ptr& scene2 = window2.get3DSceneAndLock();
 	scene2->insert(aom);
-	opengl::CGridPlaneXY::Ptr plane2=std::make_shared<CGridPlaneXY>(-20,20,-20,20,0,1);
-	plane2->setColor(GRID_R,GRID_G,GRID_B);
+	opengl::CGridPlaneXY::Ptr plane2 =
+		std::make_shared<CGridPlaneXY>(-20, 20, -20, 20, 0, 1);
+	plane2->setColor(GRID_R, GRID_G, GRID_B);
 	scene2->insert(plane2);
-	scene2->insert(std::make_shared<CAxis>(-5,-5,-5,5,5,5,2.5,3,true));
+	scene2->insert(std::make_shared<CAxis>(-5, -5, -5, 5, 5, 5, 2.5, 3, true));
 	window2.unlockAccess3DScene();
 	window2.setCameraElevationDeg(25.0f);
 
 	window.waitForKey();
 }
 
-int main()	{
-	uint32_t s=mrpt::system::getCurrentTime();
-	//uint32_t s=1000000;
-	cout<<"Random seed: "<<s<<'\n';
+int main()
+{
+	uint32_t s = mrpt::system::getCurrentTime();
+	// uint32_t s=1000000;
+	cout << "Random seed: " << s << '\n';
 	mrpt::random::randomGenerator.randomize(s);
-	try	{
+	try
+	{
 		display();
 		return 0;
-	}	catch (const exception &e)	{
-		cout<<"Error: "<<e.what()<<'.'<<endl;
+	}
+	catch (const exception& e)
+	{
+		cout << "Error: " << e.what() << '.' << endl;
 		mrpt::system::pause();
 		return -1;
-	}	catch (...)	{
-		cout<<"Unknown Error.\n";
+	}
+	catch (...)
+	{
+		cout << "Unknown Error.\n";
 		return -1;
 	}
 }

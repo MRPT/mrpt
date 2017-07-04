@@ -12,22 +12,24 @@
 
 namespace mrpt
 {
-	namespace math
-	{
-		/** \name Container initializer from pose classes
-		  * @{
-		  */
+namespace math
+{
+/** \name Container initializer from pose classes
+  * @{
+  */
 
-		/** Conversion of poses to MRPT containers (vector/matrix) */
-		template <class CONTAINER,class POINT_OR_POSE>
-		CONTAINER & containerFromPoseOrPoint(CONTAINER &C, const POINT_OR_POSE &p) {
-			const size_t DIMS = POINT_OR_POSE::static_size;
-			C.resize(DIMS,1);
-			for (size_t i=0;i<DIMS;i++)  C.coeffRef(i,0)= static_cast<typename CONTAINER::Scalar>(p[i]);
-			return C;
-		}
+/** Conversion of poses to MRPT containers (vector/matrix) */
+template <class CONTAINER, class POINT_OR_POSE>
+CONTAINER& containerFromPoseOrPoint(CONTAINER& C, const POINT_OR_POSE& p)
+{
+	const size_t DIMS = POINT_OR_POSE::static_size;
+	C.resize(DIMS, 1);
+	for (size_t i = 0; i < DIMS; i++)
+		C.coeffRef(i, 0) = static_cast<typename CONTAINER::Scalar>(p[i]);
+	return C;
+}
 
-		/** @} */
+/** @} */
 
-	} // End of math namespace
-} // End of mrpt namespace
+}  // End of math namespace
+}  // End of mrpt namespace

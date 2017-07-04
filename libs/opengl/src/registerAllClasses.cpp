@@ -59,9 +59,8 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_opengl)
 	registerClass(CLASS_ID(CVectorField2D));
 	registerClass(CLASS_ID(CVectorField3D));
 
-	// These ones are in the lib: mrpt-obsmaps
-	//registerClass( CLASS_ID( CPlanarLaserScan ) );
-	//registerClass( CLASS_ID( CAngularObservationMesh ) );
+// These ones are in the lib: mrpt-obsmaps
+// registerClass( CLASS_ID( CPlanarLaserScan ) );
+// registerClass( CLASS_ID( CAngularObservationMesh ) );
 #endif
 }
-

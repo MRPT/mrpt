@@ -13,71 +13,87 @@
 
 namespace mrpt
 {
-	namespace opengl
+namespace opengl
+{
+/** A line segment
+  *  \sa opengl::COpenGLScene
+  * \ingroup mrpt_opengl_grp
+  */
+class OPENGL_IMPEXP CSimpleLine : public CRenderizableDisplayList
+{
+	DEFINE_SERIALIZABLE(CSimpleLine)
+
+   protected:
+	float m_x0, m_y0, m_z0;
+	float m_x1, m_y1, m_z1;
+	float m_lineWidth;
+	bool m_antiAliasing;
+
+   public:
+	void setLineWidth(float w)
 	{
+		m_lineWidth = w;
+		CRenderizableDisplayList::notifyChange();
+	}
+	float getLineWidth() const { return m_lineWidth; }
+	void enableAntiAliasing(bool enable = true)
+	{
+		m_antiAliasing = enable;
+		CRenderizableDisplayList::notifyChange();
+	}
+	bool isAntiAliasingEnabled() const { return m_antiAliasing; }
+	void setLineCoords(
+		float x0, float y0, float z0, float x1, float y1, float z1)
+	{
+		m_x0 = x0;
+		m_y0 = y0;
+		m_z0 = z0;
+		m_x1 = x1;
+		m_y1 = y1;
+		m_z1 = z1;
+		CRenderizableDisplayList::notifyChange();
+	}
 
+	void getLineCoords(
+		float& x0, float& y0, float& z0, float& x1, float& y1, float& z1) const
+	{
+		x0 = m_x0;
+		y0 = m_y0;
+		z0 = m_z0;
+		x1 = m_x1;
+		y1 = m_y1;
+		z1 = m_z1;
+	}
 
+	/** Render
+	  */
+	void render_dl() const override;
 
-		/** A line segment
-		  *  \sa opengl::COpenGLScene
-		  * \ingroup mrpt_opengl_grp
-		  */
-		class OPENGL_IMPEXP CSimpleLine : public CRenderizableDisplayList
-		{
-			DEFINE_SERIALIZABLE( CSimpleLine )
+	/** Class factory */
+	static CSimpleLine::Ptr Create(
+		float x0, float y0, float z0, float x1, float y1, float z1,
+		float lineWidth = 1);
 
-		protected:
-			float	m_x0,m_y0,m_z0;
-			float	m_x1,m_y1,m_z1;
-            float	m_lineWidth;
-			bool    m_antiAliasing;
-		public:
-			void setLineWidth(float w) { m_lineWidth=w; CRenderizableDisplayList::notifyChange(); }
-			float getLineWidth() const { return  m_lineWidth;}
+	/** Evaluates the bounding box of this object (including possible children)
+	 * in the coordinate frame of the object parent. */
+	void getBoundingBox(
+		mrpt::math::TPoint3D& bb_min,
+		mrpt::math::TPoint3D& bb_max) const override;
 
-			void enableAntiAliasing(bool enable=true) { m_antiAliasing =enable; CRenderizableDisplayList::notifyChange(); }
-			bool isAntiAliasingEnabled() const { return m_antiAliasing; }
+	/** Constructor
+	  */
+	CSimpleLine(
+		float x0 = 0, float y0 = 0, float z0 = 0, float x1 = 0, float y1 = 0,
+		float z1 = 0, float lineWidth = 1, bool antiAliasing = true);
 
-			void setLineCoords(float x0,float y0,float z0, float x1, float y1, float z1)
-			{
-				m_x0=x0; m_y0=y0; m_z0=z0;
-				m_x1=x1; m_y1=y1; m_z1=z1;
-				CRenderizableDisplayList::notifyChange();
-			}
+	/** Private, virtual destructor: only can be deleted from smart pointers */
+	virtual ~CSimpleLine() {}
+};
+DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
+	CSimpleLine, CRenderizableDisplayList, OPENGL_IMPEXP)
 
-			void getLineCoords(float &x0,float &y0,float &z0, float &x1, float &y1, float &z1) const
-			{
-				x0=m_x0; y0=m_y0; z0=m_z0;
-				x1=m_x1; y1=m_y1; z1=m_z1;
-			}
+}  // end namespace
 
-			/** Render
-			  */
-			void  render_dl() const override;
-
-			/** Class factory */
-			static CSimpleLine::Ptr Create(
-				float x0,float y0, float z0,
-				float x1,float y1, float z1, float lineWidth = 1 );
-
-			/** Evaluates the bounding box of this object (including possible children) in the coordinate frame of the object parent. */
-			void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const override;
-
-			/** Constructor
-			  */
-			CSimpleLine(
-				float x0=0,float y0=0, float z0=0,
-				float x1=0,float y1=0, float z1=0, float lineWidth = 1, 
-				bool antiAliasing = true);
-
-			/** Private, virtual destructor: only can be deleted from smart pointers */
-			virtual ~CSimpleLine() { }
-		};
-		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CSimpleLine, CRenderizableDisplayList, OPENGL_IMPEXP )
-
-	} // end namespace
-
-} // End of namespace
-
+}  // End of namespace
 
 #endif

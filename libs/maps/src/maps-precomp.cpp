@@ -7,6 +7,4 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include "maps-precomp.h" // Precomp header
-
-
+#include "maps-precomp.h"  // Precomp header

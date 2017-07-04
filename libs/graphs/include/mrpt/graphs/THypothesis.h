@@ -18,8 +18,12 @@
 #include <string>
 #include <sstream>
 
-namespace mrpt { namespace graphs{ namespace detail {
-
+namespace mrpt
+{
+namespace graphs
+{
+namespace detail
+{
 /**\brief An edge hypothesis between two nodeIDs.
  *
  * Struct practically provides a wrapper around the GRAPH_T::constraint_t
@@ -29,8 +33,9 @@ namespace mrpt { namespace graphs{ namespace detail {
  * \sa mrpt::deciders::CLoopCloserERD
  * \ingroup mrpt_graphs_grp
  */
-template<class GRAPH_T>
-struct THypothesis {
+template <class GRAPH_T>
+struct THypothesis
+{
 	/**\brief Handy typedefs */
 	/**\{*/
 	/**\brief type of graph constraints */
@@ -47,8 +52,8 @@ struct THypothesis {
 	 *
 	 */
 	/**\{*/
-	std::string getAsString(bool oneline=true) const;
-	void getAsString(std::string* str, bool oneline=true) const;
+	std::string getAsString(bool oneline = true) const;
+	void getAsString(std::string* str, bool oneline = true) const;
 	/**\}*/
 
 	/**\brief Getter methods for the underlying edge
@@ -74,7 +79,8 @@ struct THypothesis {
 
 	/**\brief Reverse the hypothesis.
 	 *
-	 * Reversing implies, at least, changing order of from/to nodes and reversing
+	 * Reversing implies, at least, changing order of from/to nodes and
+	 * reversing
 	 * the underlying edge
 	 */
 	void inverseHypothesis();
@@ -90,7 +96,7 @@ struct THypothesis {
 	/**\brief Goodness value corresponding to the hypothesis edge
 	 *
 	 * \note For ICP edges this resolves to the CICP goodness measure for the
-	 * alignment operation. 
+	 * alignment operation.
 	 *
 	 * \sa edge, mrpt::slam::CICP::goodness
 	 */
@@ -105,25 +111,26 @@ struct THypothesis {
 	 * \return True if ends are the given ones
 	 */
 	bool hasEnds(
-			const mrpt::utils::TNodeID from,
-			const mrpt::utils::TNodeID to) const;
+		const mrpt::utils::TNodeID from, const mrpt::utils::TNodeID to) const;
 
 	/**\brief Handy operator for using THypothesis in std::set
 	 */
 	bool operator<(const self_t& other) const;
 
-	inline friend std::ostream& operator<<(std::ostream& o, const THypothesis<GRAPH_T>& h) {
-		o << h.getAsString(/*oneline=*/ true) << std::endl;
+	inline friend std::ostream& operator<<(
+		std::ostream& o, const THypothesis<GRAPH_T>& h)
+	{
+		o << h.getAsString(/*oneline=*/true) << std::endl;
 		return o;
 	}
 
-	private:
+   private:
 	/**\brief Edge connecting the two nodes */
 	constraint_t edge;
-
 };
-
-} } } // end of namespaces
+}
+}
+}  // end of namespaces
 
 #include "THypothesis_impl.h"
 

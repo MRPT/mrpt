@@ -20,169 +20,182 @@
 
 namespace mrpt
 {
-	namespace hwdrivers
+namespace hwdrivers
+{
+/** A client for NTRIP (HTTP) sources of differential GPS corrections from
+  *internet servers, or Global navigation satellite system (GNSS) internet
+  *radio.
+  *  Usage:
+  *		- To open the server, invoke "open" with the proper parameters. Then use
+  *"stream_data" to read the read data.
+  *		- To obtain a list of all the mountpoints available at a given NTRIP
+  *Caster, call "retrieveListOfMountpoints" (it's a static method).
+  *
+  *  It is not neccesary to call "close", the connection is ended at
+  *destruction.
+  *
+  * \note For a good reference of the NTRIP protocol, see
+  *http://gnss.itacyl.es/opencms/opencms/system/modules/es.jcyl.ita.site.gnss/resources/documentos_gnss/NtripDocumentation.pdf
+  * \ingroup mrpt_hwdrivers_grp
+  *
+  */
+class HWDRIVERS_IMPEXP CNTRIPClient
+{
+   public:
+	/** A descriptor of one stream in an NTRIP Caster - See
+	 * CNTRIPClient::retrieveListOfMountpoints
+	 */
+	struct HWDRIVERS_IMPEXP TMountPoint
 	{
-		/** A client for NTRIP (HTTP) sources of differential GPS corrections from internet servers, or Global navigation satellite system (GNSS) internet radio.
-		  *  Usage:
-		  *		- To open the server, invoke "open" with the proper parameters. Then use "stream_data" to read the read data.
-		  *		- To obtain a list of all the mountpoints available at a given NTRIP Caster, call "retrieveListOfMountpoints" (it's a static method).
-		  *
-		  *  It is not neccesary to call "close", the connection is ended at destruction.
-		  *
-		  * \note For a good reference of the NTRIP protocol, see http://gnss.itacyl.es/opencms/opencms/system/modules/es.jcyl.ita.site.gnss/resources/documentos_gnss/NtripDocumentation.pdf
-		  * \ingroup mrpt_hwdrivers_grp
-		  *
-		  */
-		class HWDRIVERS_IMPEXP CNTRIPClient
+		std::string mountpoint_name;
+		/** City name */
+		std::string id;
+		/** RTCM 2.3, RTCM 3, CMR+, etc... */
+		std::string format;
+		std::string format_details;
+		/** 0: No carrier phase, 1: L1, 2: L1+L2 */
+		int carrier;
+		/** GPS, ... */
+		std::string nav_system;
+		/** IGS, ... */
+		std::string network;
+		/** ITA, ESP, DEU,... */
+		std::string country_code;
+		double latitude, longitude;
+		bool needs_nmea;
+		bool net_ref_stations;
+		std::string generator_model;
+		/** "none" */
+		std::string compr_encryp;
+		/** "N": none, "B": basic, "D": digest */
+		char authentication;
+		bool pay_service;
+		int stream_bitspersec;
+		std::string extra_info;
+
+		TMountPoint()
+			: carrier(0),
+			  latitude(0),
+			  longitude(0),
+			  needs_nmea(false),
+			  net_ref_stations(false),
+			  authentication('B'),
+			  pay_service(false),
+			  stream_bitspersec(0)
 		{
-		public:
+		}
+	};
 
-			/** A descriptor of one stream in an NTRIP Caster - See CNTRIPClient::retrieveListOfMountpoints
-			 */
-			struct HWDRIVERS_IMPEXP TMountPoint
-			{
-				std::string	mountpoint_name;
-				/** City name */
-				std::string	id;  
-				/** RTCM 2.3, RTCM 3, CMR+, etc... */
-				std::string	format; 
-				std::string	format_details;
-				/** 0: No carrier phase, 1: L1, 2: L1+L2 */
-				int		carrier; 
-				/** GPS, ... */
-				std::string	nav_system;	
-				/** IGS, ... */
-				std::string	network;	
-				/** ITA, ESP, DEU,... */
-				std::string	country_code;	
-				double	latitude, longitude;
-				bool	needs_nmea;
-				bool	net_ref_stations;
-				std::string	generator_model;
-				/** "none" */
-				std::string	compr_encryp;		
-				/** "N": none, "B": basic, "D": digest */
-				char	authentication;		
-				bool	pay_service;
-				int		stream_bitspersec;
-				std::string  extra_info;
+	/** Used in CNTRIPClient::retrieveListOfMountpoints */
+	typedef std::list<TMountPoint> TListMountPoints;
 
-				TMountPoint() :
-					carrier(0),
-					latitude(0),
-					longitude(0),
-					needs_nmea(false),
-					net_ref_stations(false),
-					authentication('B'),
-					pay_service(false),
-					stream_bitspersec(0)
-				{}
+	/**  The arguments for connecting to a NTRIP stream, used in
+	 * CNTRIPClient::open
+	  */
+	struct HWDRIVERS_IMPEXP NTRIPArgs
+	{
+		std::string server;
+		int port;
+		std::string user;
+		std::string password;
+		std::string mountpoint;
 
-			};
+		/** Default params */
+		NTRIPArgs()
+			: server("www.euref-ip.net"),
+			  port(2101),
+			  user(""),
+			  password(""),
+			  mountpoint()
+		{
+		}
+	};
 
-			/** Used in CNTRIPClient::retrieveListOfMountpoints */
-			typedef std::list<TMountPoint> TListMountPoints; 
+   protected:
+	/** The working thread */
+	void private_ntrip_thread();
 
-			/**  The arguments for connecting to a NTRIP stream, used in CNTRIPClient::open
-			  */
-			struct HWDRIVERS_IMPEXP NTRIPArgs
-			{
-				std::string	server;
-				int		port;
-				std::string	user;
-				std::string	password;
-				std::string	mountpoint;
+	std::thread m_thread;
+	std::promise<void> m_sem_sock_closed;
+	std::promise<void> m_sem_first_connect_done;
 
-				/** Default params */
-				NTRIPArgs() :
-					server		( "www.euref-ip.net" ),
-					port		( 2101 ),
-					user		( "" ),
-					password	( "" ),
-					mountpoint	( )
-				{
-				}
-			};
+	mutable bool m_thread_exit;
+	/** Will be "true" between "open" and "close" */
+	mutable bool m_thread_do_process;
+	mutable bool m_waiting_answer_connection;
 
-		protected:
-			/** The working thread */
-			void private_ntrip_thread(); 
+	enum TConnResult
+	{
+		connOk = 0,
+		connError,
+		connUnauthorized
+	};
 
-			std::thread  m_thread;
-			std::promise<void>  m_sem_sock_closed;
-			std::promise<void>  m_sem_first_connect_done;
+	mutable TConnResult m_answer_connection;
+	/** All the parameters for the NTRIP connection */
+	mutable NTRIPArgs m_args;
 
-			mutable bool m_thread_exit;
-			/** Will be "true" between "open" and "close" */
-			mutable bool m_thread_do_process; 
-			mutable bool m_waiting_answer_connection;
+	/** Buffer for data to be sent back to the server */
+	mrpt::synch::MT_buffer m_upload_data;
 
-			enum TConnResult {
-				connOk = 0,
-				connError,
-				connUnauthorized
-			};
+   public:
+	/** Default constructor */
+	CNTRIPClient();
+	/** Default destructor */
+	virtual ~CNTRIPClient();
 
-			mutable TConnResult m_answer_connection;
-			/** All the parameters for the NTRIP connection */
-			mutable NTRIPArgs  m_args;  
+	/** Tries to open a given NTRIP stream and, if successful, launches a thread
+	 * for continuously reading from it.
+	  * \sa close, stream_data
+	  *
+	  * \return false On any kind of error, with a description of the error in
+	 * errmsg, if provided.
+	  */
+	bool open(const NTRIPArgs& params, std::string& out_errmsg);
 
-			/** Buffer for data to be sent back to the server */
-			mrpt::synch::MT_buffer   m_upload_data;  
+	/** Closes the connection.
+	  * \sa open
+	  */
+	void close();
 
-		public:
-			/** Default constructor */
-			CNTRIPClient();   
-			/** Default destructor */
-			virtual ~CNTRIPClient();   
+	/** The buffer with all the bytes so-far read from the NTRIP server stream.
+	  * Call its "readAndClear" method in a timely fashion to get the stream
+	 * contents.
+	  * \sa open, close
+	  */
+	mrpt::synch::MT_buffer stream_data;
 
-			/** Tries to open a given NTRIP stream and, if successful, launches a thread for continuously reading from it.
-			  * \sa close, stream_data
-			  *
-			  * \return false On any kind of error, with a description of the error in errmsg, if provided.
-			  */
-			bool open(const NTRIPArgs &params, std::string &out_errmsg);
+	/** Connect to a given NTRIP caster and get the list of all available
+	  *mountpoints and their parameters.
+	  *  Note that the authentication parameters "auth_user" and "auth_pass"
+	  *will be left empty in most situations, since LISTING the Caster normally
+	  *doesn't require special rights.
+	  *
+	  * Example:
+	  * \code
+	  *	 CNTRIPClient::TListMountPoints	lst;
+	  *	 std::string errMsg;
+	  *	 bool ret =
+	  *CNTRIPClient::retrieveListOfMountpoints(lst,errMsg,"www.euref-ip.net",
+	  *2101);
+	  * \endcode
+	  *
+	  * \return False on any error, then "errmsg" holds the reason.
+	  */
+	static bool retrieveListOfMountpoints(
+		TListMountPoints& out_list, std::string& out_errmsg,
+		const std::string& server, int port = 2101,
+		const std::string& auth_user = std::string(),
+		const std::string& auth_pass = std::string());
 
-			/** Closes the connection.
-			  * \sa open
-			  */
-			void close();
+	/** Enqueues a string to be sent back to the NTRIP server (e.g. GGA frames)
+	 */
+	void sendBackToServer(const std::string& data);
 
-			/** The buffer with all the bytes so-far read from the NTRIP server stream.
-			  * Call its "readAndClear" method in a timely fashion to get the stream contents.
-			  * \sa open, close
-			  */
-			mrpt::synch::MT_buffer   stream_data;
+};  // End of class
 
-			/** Connect to a given NTRIP caster and get the list of all available mountpoints and their parameters.
-			  *  Note that the authentication parameters "auth_user" and "auth_pass" will be left empty in most situations, since LISTING the Caster normally doesn't require special rights.
-			  *
-			  * Example:
-			  * \code
-			  *	 CNTRIPClient::TListMountPoints	lst;
-			  *	 std::string errMsg;
-			  *	 bool ret = CNTRIPClient::retrieveListOfMountpoints(lst,errMsg,"www.euref-ip.net", 2101);
-			  * \endcode
-			  *
-			  * \return False on any error, then "errmsg" holds the reason.
-			  */
-			static bool retrieveListOfMountpoints(
-				TListMountPoints	&out_list,
-				std::string				&out_errmsg,
-				const std::string		&server,
-				int					port = 2101,
-				const std::string		&auth_user = std::string(),
-				const std::string		&auth_pass = std::string()
-				);
+}  // End of namespace
 
-			/** Enqueues a string to be sent back to the NTRIP server (e.g. GGA frames) */
-			void sendBackToServer(const std::string &data);
-			
-
-		};	// End of class
-
-	} // End of namespace
-
-} // End of namespace
+}  // End of namespace
 
 #endif

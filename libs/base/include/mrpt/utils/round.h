@@ -10,52 +10,54 @@
 #pragma once
 
 #include <mrpt/utils/SSE_types.h>  // needed by SSE intrinsics used in some inline functions below.
-#define _USE_MATH_DEFINES // (For VS to define M_PI, etc. in cmath)
-#include <cmath> // pow(), lrint()
+#define _USE_MATH_DEFINES  // (For VS to define M_PI, etc. in cmath)
+#include <cmath>  // pow(), lrint()
 
 namespace mrpt
 {
-	namespace utils
-	{
-		/** \addtogroup mrpt_round Round functions (in #include <mrpt/utils/round.h>)
-		  *  \ingroup mrpt_base_grp
-		  * @{ */
+namespace utils
+{
+/** \addtogroup mrpt_round Round functions (in #include <mrpt/utils/round.h>)
+  *  \ingroup mrpt_base_grp
+  * @{ */
 
-		/** Returns the closer integer (int) to x */
-		template <typename T>
-		inline int round(const T value)
-		{
-		#if MRPT_HAS_SSE2
-			__m128d t = _mm_set_sd( value );
-			return _mm_cvtsd_si32(t);
-		#else
-			return static_cast<int>(lrint(value));
-		#endif
-		}
+/** Returns the closer integer (int) to x */
+template <typename T>
+inline int round(const T value)
+{
+#if MRPT_HAS_SSE2
+	__m128d t = _mm_set_sd(value);
+	return _mm_cvtsd_si32(t);
+#else
+	return static_cast<int>(lrint(value));
+#endif
+}
 
-		/** Returns the closer integer (long) to x */
-		template <typename T>
-		inline long round_long(const T value)
-		{
-		#if MRPT_HAS_SSE2 && MRPT_WORD_SIZE==64
-			__m128d t = _mm_set_sd( value );
-			return _mm_cvtsd_si64(t);
-		#else
-			return lrint(value);
-		#endif
-		}
+/** Returns the closer integer (long) to x */
+template <typename T>
+inline long round_long(const T value)
+{
+#if MRPT_HAS_SSE2 && MRPT_WORD_SIZE == 64
+	__m128d t = _mm_set_sd(value);
+	return _mm_cvtsd_si64(t);
+#else
+	return lrint(value);
+#endif
+}
 
-		/** Round a decimal number up to the given 10'th power (eg, to 1000,100,10, and also fractions)
-		  *  power10 means round up to: 1 -> 10, 2 -> 100, 3 -> 1000, ...  -1 -> 0.1, -2 -> 0.01, ...
-		  */
-		template <class T>
-		T round_10power(T val, int power10)
-		{
-			long double F = ::pow((long double)10.0,-(long double)power10);
-			long int t = mrpt::utils::round_long( val * F );
-			return T(t/F);
-		}
+/** Round a decimal number up to the given 10'th power (eg, to 1000,100,10, and
+ * also fractions)
+  *  power10 means round up to: 1 -> 10, 2 -> 100, 3 -> 1000, ...  -1 -> 0.1, -2
+ * -> 0.01, ...
+  */
+template <class T>
+T round_10power(T val, int power10)
+{
+	long double F = ::pow((long double)10.0, -(long double)power10);
+	long int t = mrpt::utils::round_long(val * F);
+	return T(t / F);
+}
 
-		/** @} */
-	} // End of namespace
-} // end of namespace
+/** @} */
+}  // End of namespace
+}  // end of namespace

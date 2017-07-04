@@ -15,29 +15,34 @@
 #ifdef __cplusplus
 extern "C" {
 #else
-#define XSTRIGGERINDICATIONDATA_INITIALIZER	{ 0, 0, 0, 0 }
+#define XSTRIGGERINDICATIONDATA_INITIALIZER \
+	{                                       \
+		0, 0, 0, 0                          \
+	}
 #endif
 
 struct XsTriggerIndicationData;
 
-XSTYPES_DLL_API void XsTriggerIndicationData_destruct(struct XsTriggerIndicationData* thisPtr);
-XSTYPES_DLL_API int XsTriggerIndicationData_valid(const struct XsTriggerIndicationData* thisPtr);
+XSTYPES_DLL_API void XsTriggerIndicationData_destruct(
+	struct XsTriggerIndicationData* thisPtr);
+XSTYPES_DLL_API int XsTriggerIndicationData_valid(
+	const struct XsTriggerIndicationData* thisPtr);
 
 #ifdef __cplusplus
-} // extern "C"
+}  // extern "C"
 #endif
 
-
 /*! \brief Data for a trigger indication message */
-struct XsTriggerIndicationData {
+struct XsTriggerIndicationData
+{
 	/** The line number */
-	uint8_t m_line;			
+	uint8_t m_line;
 	/** The polarity */
-	uint8_t m_polarity;		
+	uint8_t m_polarity;
 	/** The timestamp */
-	uint32_t m_timestamp;	
+	uint32_t m_timestamp;
 	/** The frame number */
-	uint16_t m_frameNumber;	
+	uint16_t m_frameNumber;
 
 #ifdef __cplusplus
 	/*! Constructor
@@ -46,16 +51,18 @@ struct XsTriggerIndicationData {
 		\param[in] timestamp Timestamp
 		\param[in] frameNumber Frame number
 	*/
-	explicit XsTriggerIndicationData(uint8_t line = 0, uint8_t polarity = 0, uint32_t timestamp = 0, uint16_t frameNumber = 0)
-	  : m_line(line), m_polarity(polarity), m_timestamp(timestamp), m_frameNumber(frameNumber)
-	{}
-
-	/*! \brief \copybrief XsTriggerIndicationData_destruct */
-	inline void clear()
+	explicit XsTriggerIndicationData(
+		uint8_t line = 0, uint8_t polarity = 0, uint32_t timestamp = 0,
+		uint16_t frameNumber = 0)
+		: m_line(line),
+		  m_polarity(polarity),
+		  m_timestamp(timestamp),
+		  m_frameNumber(frameNumber)
 	{
-		XsTriggerIndicationData_destruct(this);
 	}
 
+	/*! \brief \copybrief XsTriggerIndicationData_destruct */
+	inline void clear() { XsTriggerIndicationData_destruct(this); }
 	/*! \brief \copybrief XsTriggerIndicationData_valid */
 	inline bool valid() const
 	{
@@ -66,4 +73,4 @@ struct XsTriggerIndicationData {
 
 typedef struct XsTriggerIndicationData XsTriggerIndicationData;
 
-#endif // file guard
+#endif  // file guard

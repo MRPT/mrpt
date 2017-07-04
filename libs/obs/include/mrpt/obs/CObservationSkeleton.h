@@ -18,62 +18,78 @@ namespace mrpt
 {
 namespace obs
 {
+/** This class stores a skeleton as tracked by OPENNI2 & NITE2 libraries from
+ * PrimeSense sensors
+ *
+ * \sa CObservation
+ * \note Class introduced in MRPT 1.3.1
+ * \ingroup mrpt_obs_grp
+ */
+class OBS_IMPEXP CObservationSkeleton : public CObservation
+{
+	DEFINE_SERIALIZABLE(CObservationSkeleton)
 
-
-	/** This class stores a skeleton as tracked by OPENNI2 & NITE2 libraries from PrimeSense sensors
-	 *
-	 * \sa CObservation
-	 * \note Class introduced in MRPT 1.3.1
-	 * \ingroup mrpt_obs_grp
-	 */
-	class OBS_IMPEXP CObservationSkeleton : public CObservation
+   public:
+	/** Constructor.
+	*/
+	CObservationSkeleton()
+		: sensorPose(),
+		  head(),
+		  neck(),
+		  torso(),
+		  left_shoulder(),
+		  left_elbow(),
+		  left_hand(),
+		  left_hip(),
+		  left_knee(),
+		  left_foot(),
+		  right_shoulder(),
+		  right_elbow(),
+		  right_hand(),
+		  right_hip(),
+		  right_knee(),
+		  right_foot()
 	{
-		DEFINE_SERIALIZABLE( CObservationSkeleton )
+	}
 
-	 public:
-		/** Constructor.
-		*/
-		CObservationSkeleton(  ) :
-			sensorPose(),
-			head(), neck(), torso(), 
-			left_shoulder(), left_elbow(), left_hand(), left_hip(), left_knee(), left_foot(),
-			right_shoulder(), right_elbow(), right_hand(), right_hip(), right_knee(), right_foot()
-		{}
+	/** Destructor
+	*/
+	virtual ~CObservationSkeleton() {}
+	/** The pose of the sensor on the robot. */
+	mrpt::poses::CPose3D sensorPose;
 
-		/** Destructor
-		*/
-		virtual ~CObservationSkeleton()
-		{ }
+	/** A generic joint for the skeleton observation */
+	struct OBS_IMPEXP TSkeletonJoint
+	{
+		/** Default constructor */
+		TSkeletonJoint() : x(.0), y(.0), z(.0), conf(.0) {}
+		/** 3D position */
+		double x, y, z;
 
-		/** The pose of the sensor on the robot. */
-		mrpt::poses::CPose3D  sensorPose;
+		/** Confidence value [0...1] */
+		double conf;
+	};
 
-		/** A generic joint for the skeleton observation */
-		struct OBS_IMPEXP TSkeletonJoint
-		{
-			/** Default constructor */
-			TSkeletonJoint() : x(.0), y(.0), z(.0), conf(.0) {}
+	/** The skeleton joints (15)*/
+	TSkeletonJoint head, neck, torso, left_shoulder, left_elbow, left_hand,
+		left_hip, left_knee, left_foot, right_shoulder, right_elbow, right_hand,
+		right_hip, right_knee, right_foot;
 
-			/** 3D position */
-			double x,y,z;
+	void getSensorPose(mrpt::poses::CPose3D& out_sensorPose) const override
+	{
+		out_sensorPose = sensorPose;
+	}
+	void setSensorPose(const mrpt::poses::CPose3D& newSensorPose) override
+	{
+		sensorPose = newSensorPose;
+	}
+	void getDescriptionAsText(std::ostream& o) const override;
 
-			/** Confidence value [0...1] */
-			double conf;
-		};
+};  // End of class def.
+DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
+	CObservationSkeleton, CObservation, OBS_IMPEXP)
 
-		/** The skeleton joints (15)*/
-		TSkeletonJoint head, neck, torso, 
-			left_shoulder, left_elbow, left_hand, left_hip, left_knee, left_foot,
-			right_shoulder, right_elbow, right_hand, right_hip, right_knee, right_foot;
-
-		void getSensorPose( mrpt::poses::CPose3D & out_sensorPose) const  override { out_sensorPose = sensorPose; }
-		void setSensorPose( const mrpt::poses::CPose3D & newSensorPose ) override { sensorPose = newSensorPose; }
-		void getDescriptionAsText(std::ostream &o) const override;
-
-	}; // End of class def.
-	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CObservationSkeleton , CObservation, OBS_IMPEXP)
-
-	} // End of namespace
-} // End of namespace
+}  // End of namespace
+}  // End of namespace
 
 #endif

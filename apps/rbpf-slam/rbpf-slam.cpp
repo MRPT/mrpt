@@ -13,7 +13,7 @@
 	AUTHOR: Jose Luis Blanco Claraco <joseluisblancoc@gmail.com>
 
 	See README.txt for instructions or
-         http://www.mrpt.org/Application:rbpf-slam
+		 http://www.mrpt.org/Application:rbpf-slam
   ---------------------------------------------------------------*/
 
 #include <mrpt/slam/CMetricMapBuilderRBPF.h>
@@ -51,12 +51,12 @@ using namespace std;
 /*****************************************************
 			Config params
  *****************************************************/
-std::string  INI_FILENAME;
-std::string  RAWLOG_FILE;
+std::string INI_FILENAME;
+std::string RAWLOG_FILE;
 unsigned int rawlog_offset;
-std::string  OUT_DIR_STD;
-const char *OUT_DIR;
-int  LOG_FREQUENCY;
+std::string OUT_DIR_STD;
+const char* OUT_DIR;
+int LOG_FREQUENCY;
 bool GENERATE_LOG_JOINT_H;
 bool GENERATE_LOG_INFO;
 bool SAVE_POSE_LOG;
@@ -65,68 +65,95 @@ bool SAVE_3D_SCENE;
 bool CAMERA_3DSCENE_FOLLOWS_ROBOT;
 
 bool SHOW_PROGRESS_IN_WINDOW;
-int  SHOW_PROGRESS_IN_WINDOW_DELAY_MS;
-int  PROGRESS_WINDOW_WIDTH=600, PROGRESS_WINDOW_HEIGHT=500;
+int SHOW_PROGRESS_IN_WINDOW_DELAY_MS;
+int PROGRESS_WINDOW_WIDTH = 600, PROGRESS_WINDOW_HEIGHT = 500;
 
-std::string         METRIC_MAP_CONTINUATION_GRIDMAP_FILE; // .gridmap file
+std::string METRIC_MAP_CONTINUATION_GRIDMAP_FILE;  // .gridmap file
 mrpt::math::TPose2D METRIC_MAP_CONTINUATION_START_POSE;
 
 // Forward declaration.
 void MapBuilding_RBPF();
 
-
 // ------------------------------------------------------
 //						MAIN
 // ------------------------------------------------------
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
 	try
 	{
 		printf(" rbpf-slam - Part of the MRPT\n");
-		printf(" MRPT C++ Library: %s - Sources timestamp: %s\n", MRPT_getVersion().c_str(), MRPT_getCompilationDate().c_str());
-		printf("-------------------------------------------------------------------\n");
+		printf(
+			" MRPT C++ Library: %s - Sources timestamp: %s\n",
+			MRPT_getVersion().c_str(), MRPT_getCompilationDate().c_str());
+		printf(
+			"------------------------------------------------------------------"
+			"-\n");
 
 		// Process arguments:
-		if (argc<2)
+		if (argc < 2)
 		{
-			printf("Usage: %s <config_file.ini> [<dataset.rawlog>]\n\n",argv[0]);
+			printf(
+				"Usage: %s <config_file.ini> [<dataset.rawlog>]\n\n", argv[0]);
 			mrpt::system::pause();
 			return -1;
 		}
 
-		INI_FILENAME = std::string( argv[1] );
+		INI_FILENAME = std::string(argv[1]);
 		ASSERT_FILE_EXISTS_(INI_FILENAME)
 
-		string override_rawlog_file; 
-		if (argc>=3)
-			override_rawlog_file = string(argv[2]);
+		string override_rawlog_file;
+		if (argc >= 3) override_rawlog_file = string(argv[2]);
 
-
-		CConfigFile		iniFile( INI_FILENAME );
+		CConfigFile iniFile(INI_FILENAME);
 
 		// ------------------------------------------
 		//			Load config from file:
 		// ------------------------------------------
-		RAWLOG_FILE			 = !override_rawlog_file.empty() ? override_rawlog_file : iniFile.read_string("MappingApplication","rawlog_file","",  /*Force existence:*/ true);
-		rawlog_offset		 = iniFile.read_int("MappingApplication","rawlog_offset",0);
-		OUT_DIR_STD			 = iniFile.read_string("MappingApplication","logOutput_dir","log_out",  /*Force existence:*/ true);
-		LOG_FREQUENCY		 = iniFile.read_int("MappingApplication","LOG_FREQUENCY",5,  /*Force existence:*/ true);
-		GENERATE_LOG_JOINT_H = iniFile.read_bool("MappingApplication","GENERATE_LOG_JOINT_H", false);
-		GENERATE_LOG_INFO    = iniFile.read_bool("MappingApplication","GENERATE_LOG_INFO", false);
-		SAVE_POSE_LOG		 = iniFile.read_bool("MappingApplication","SAVE_POSE_LOG", false);
-		SAVE_MAP_IMAGES		 = iniFile.read_bool("MappingApplication","SAVE_MAP_IMAGES", false);
-		SAVE_3D_SCENE        = iniFile.read_bool("MappingApplication","SAVE_3D_SCENE", false);
-		CAMERA_3DSCENE_FOLLOWS_ROBOT = iniFile.read_bool("MappingApplication","CAMERA_3DSCENE_FOLLOWS_ROBOT", true);
-		SHOW_PROGRESS_IN_WINDOW = iniFile.read_bool("MappingApplication","SHOW_PROGRESS_IN_WINDOW", false);
-		SHOW_PROGRESS_IN_WINDOW_DELAY_MS = iniFile.read_int("MappingApplication","SHOW_PROGRESS_IN_WINDOW_DELAY_MS",1);
-		METRIC_MAP_CONTINUATION_GRIDMAP_FILE = iniFile.read_string("MappingApplication","METRIC_MAP_CONTINUATION_GRIDMAP_FILE","");
+		RAWLOG_FILE = !override_rawlog_file.empty()
+						  ? override_rawlog_file
+						  : iniFile.read_string(
+								"MappingApplication", "rawlog_file", "",
+								/*Force existence:*/ true);
+		rawlog_offset =
+			iniFile.read_int("MappingApplication", "rawlog_offset", 0);
+		OUT_DIR_STD = iniFile.read_string(
+			"MappingApplication", "logOutput_dir", "log_out",
+			/*Force existence:*/ true);
+		LOG_FREQUENCY = iniFile.read_int(
+			"MappingApplication", "LOG_FREQUENCY", 5,
+			/*Force existence:*/ true);
+		GENERATE_LOG_JOINT_H = iniFile.read_bool(
+			"MappingApplication", "GENERATE_LOG_JOINT_H", false);
+		GENERATE_LOG_INFO =
+			iniFile.read_bool("MappingApplication", "GENERATE_LOG_INFO", false);
+		SAVE_POSE_LOG =
+			iniFile.read_bool("MappingApplication", "SAVE_POSE_LOG", false);
+		SAVE_MAP_IMAGES =
+			iniFile.read_bool("MappingApplication", "SAVE_MAP_IMAGES", false);
+		SAVE_3D_SCENE =
+			iniFile.read_bool("MappingApplication", "SAVE_3D_SCENE", false);
+		CAMERA_3DSCENE_FOLLOWS_ROBOT = iniFile.read_bool(
+			"MappingApplication", "CAMERA_3DSCENE_FOLLOWS_ROBOT", true);
+		SHOW_PROGRESS_IN_WINDOW = iniFile.read_bool(
+			"MappingApplication", "SHOW_PROGRESS_IN_WINDOW", false);
+		SHOW_PROGRESS_IN_WINDOW_DELAY_MS = iniFile.read_int(
+			"MappingApplication", "SHOW_PROGRESS_IN_WINDOW_DELAY_MS", 1);
+		METRIC_MAP_CONTINUATION_GRIDMAP_FILE = iniFile.read_string(
+			"MappingApplication", "METRIC_MAP_CONTINUATION_GRIDMAP_FILE", "");
 
-		METRIC_MAP_CONTINUATION_START_POSE.x = iniFile.read_double("MappingApplication","METRIC_MAP_CONTINUATION_START_POSE_X",.0);
-		METRIC_MAP_CONTINUATION_START_POSE.y = iniFile.read_double("MappingApplication","METRIC_MAP_CONTINUATION_START_POSE_Y",.0);
-		METRIC_MAP_CONTINUATION_START_POSE.phi = DEG2RAD( iniFile.read_double("MappingApplication","METRIC_MAP_CONTINUATION_START_POSE_PHI_DEG",.0) );
+		METRIC_MAP_CONTINUATION_START_POSE.x = iniFile.read_double(
+			"MappingApplication", "METRIC_MAP_CONTINUATION_START_POSE_X", .0);
+		METRIC_MAP_CONTINUATION_START_POSE.y = iniFile.read_double(
+			"MappingApplication", "METRIC_MAP_CONTINUATION_START_POSE_Y", .0);
+		METRIC_MAP_CONTINUATION_START_POSE.phi = DEG2RAD(
+			iniFile.read_double(
+				"MappingApplication",
+				"METRIC_MAP_CONTINUATION_START_POSE_PHI_DEG", .0));
 
-		MRPT_LOAD_CONFIG_VAR(PROGRESS_WINDOW_WIDTH, int,  iniFile, "MappingApplication");
-		MRPT_LOAD_CONFIG_VAR(PROGRESS_WINDOW_HEIGHT, int,  iniFile, "MappingApplication");
+		MRPT_LOAD_CONFIG_VAR(
+			PROGRESS_WINDOW_WIDTH, int, iniFile, "MappingApplication");
+		MRPT_LOAD_CONFIG_VAR(
+			PROGRESS_WINDOW_HEIGHT, int, iniFile, "MappingApplication");
 
 		// easier!
 		OUT_DIR = OUT_DIR_STD.c_str();
@@ -134,34 +161,42 @@ int main(int argc, char **argv)
 		// Print params:
 		printf("Running with the following parameters:\n");
 		printf(" RAWLOG file:'%s'\n", RAWLOG_FILE.c_str());
-		printf(" Output directory:\t\t\t'%s'\n",OUT_DIR);
-		printf(" Log record freq:\t\t\t%u\n",LOG_FREQUENCY);
-		printf("  GENERATE_LOG_JOINT_H:\t\t\t%c\n", GENERATE_LOG_JOINT_H ? 'Y':'N');
-		printf("  GENERATE_LOG_INFO:\t\t\t%c\n", GENERATE_LOG_INFO ? 'Y':'N');
-		printf("  SAVE_MAP_IMAGES:\t\t\t%c\n", SAVE_MAP_IMAGES ? 'Y':'N');
-		printf("  SAVE_3D_SCENE:\t\t\t%c\n", SAVE_3D_SCENE ? 'Y':'N');
-		printf("  SAVE_POSE_LOG:\t\t\t%c\n", SAVE_POSE_LOG ? 'Y':'N');
-		printf("  CAMERA_3DSCENE_FOLLOWS_ROBOT:\t%c\n",CAMERA_3DSCENE_FOLLOWS_ROBOT ? 'Y':'N');
-		printf("  SHOW_PROGRESS_IN_WINDOW:\t%c\n",SHOW_PROGRESS_IN_WINDOW ? 'Y':'N');
+		printf(" Output directory:\t\t\t'%s'\n", OUT_DIR);
+		printf(" Log record freq:\t\t\t%u\n", LOG_FREQUENCY);
+		printf(
+			"  GENERATE_LOG_JOINT_H:\t\t\t%c\n",
+			GENERATE_LOG_JOINT_H ? 'Y' : 'N');
+		printf("  GENERATE_LOG_INFO:\t\t\t%c\n", GENERATE_LOG_INFO ? 'Y' : 'N');
+		printf("  SAVE_MAP_IMAGES:\t\t\t%c\n", SAVE_MAP_IMAGES ? 'Y' : 'N');
+		printf("  SAVE_3D_SCENE:\t\t\t%c\n", SAVE_3D_SCENE ? 'Y' : 'N');
+		printf("  SAVE_POSE_LOG:\t\t\t%c\n", SAVE_POSE_LOG ? 'Y' : 'N');
+		printf(
+			"  CAMERA_3DSCENE_FOLLOWS_ROBOT:\t%c\n",
+			CAMERA_3DSCENE_FOLLOWS_ROBOT ? 'Y' : 'N');
+		printf(
+			"  SHOW_PROGRESS_IN_WINDOW:\t%c\n",
+			SHOW_PROGRESS_IN_WINDOW ? 'Y' : 'N');
 		printf("\n");
 
 		// Checks:
-		ASSERT_(RAWLOG_FILE.size()>0);
+		ASSERT_(RAWLOG_FILE.size() > 0);
 		ASSERT_FILE_EXISTS_(RAWLOG_FILE)
 
 		// Set relative path for externally-stored images in rawlogs:
-		string	rawlog_images_path = extractFileDirectory( RAWLOG_FILE );
-		rawlog_images_path+="/Images";
-		CImage::IMAGES_PATH_BASE = rawlog_images_path;		// Set it.
+		string rawlog_images_path = extractFileDirectory(RAWLOG_FILE);
+		rawlog_images_path += "/Images";
+		CImage::IMAGES_PATH_BASE = rawlog_images_path;  // Set it.
 
 		// Run:
 		MapBuilding_RBPF();
 
-		//pause();
+		// pause();
 		return 0;
-	} catch (std::exception &e)
+	}
+	catch (std::exception& e)
 	{
-		std::cerr << e.what() << std::endl << "Program finished for an exception!!" << std::endl;
+		std::cerr << e.what() << std::endl
+				  << "Program finished for an exception!!" << std::endl;
 		mrpt::system::pause();
 		return -1;
 	}
@@ -180,75 +215,85 @@ void MapBuilding_RBPF()
 {
 	MRPT_START
 
-	CTicTac								tictac,tictacGlobal,tictac_JH;
-	int									step = 0;
-	CSimpleMap				finalMap;
-	float								t_exec;
-	COccupancyGridMap2D::TEntropyInfo	entropy;
+	CTicTac tictac, tictacGlobal, tictac_JH;
+	int step = 0;
+	CSimpleMap finalMap;
+	float t_exec;
+	COccupancyGridMap2D::TEntropyInfo entropy;
 
-	char								strFil[1000];
+	char strFil[1000];
 
-	size_t								rawlogEntry = 0;
-	CFileGZInputStream					rawlogFile( RAWLOG_FILE );
+	size_t rawlogEntry = 0;
+	CFileGZInputStream rawlogFile(RAWLOG_FILE);
 
 	// ---------------------------------
 	//		MapPDF opts
 	// ---------------------------------
-	CMetricMapBuilderRBPF::TConstructionOptions		rbpfMappingOptions;
+	CMetricMapBuilderRBPF::TConstructionOptions rbpfMappingOptions;
 
-	rbpfMappingOptions.loadFromConfigFile(CConfigFile(INI_FILENAME),"MappingApplication");
+	rbpfMappingOptions.loadFromConfigFile(
+		CConfigFile(INI_FILENAME), "MappingApplication");
 	rbpfMappingOptions.dumpToConsole();
 
 	// ---------------------------------
 	//		Constructor
 	// ---------------------------------
-	CMetricMapBuilderRBPF mapBuilder( rbpfMappingOptions );
+	CMetricMapBuilderRBPF mapBuilder(rbpfMappingOptions);
 
 	// handle the case of metric map continuation
-	if ( !METRIC_MAP_CONTINUATION_GRIDMAP_FILE.empty() )
+	if (!METRIC_MAP_CONTINUATION_GRIDMAP_FILE.empty())
 	{
-		CSimpleMap       dummySimpleMap;
+		CSimpleMap dummySimpleMap;
 		CPosePDFGaussian startPose;
 
-		startPose.mean.x( METRIC_MAP_CONTINUATION_START_POSE.x );
-		startPose.mean.y( METRIC_MAP_CONTINUATION_START_POSE.y );
-		startPose.mean.phi( METRIC_MAP_CONTINUATION_START_POSE.phi );
+		startPose.mean.x(METRIC_MAP_CONTINUATION_START_POSE.x);
+		startPose.mean.y(METRIC_MAP_CONTINUATION_START_POSE.y);
+		startPose.mean.phi(METRIC_MAP_CONTINUATION_START_POSE.phi);
 		startPose.cov.setZero();
 
 		mrpt::maps::COccupancyGridMap2D gridmap;
 		{
-			mrpt::utils::CFileGZInputStream f(METRIC_MAP_CONTINUATION_GRIDMAP_FILE);
+			mrpt::utils::CFileGZInputStream f(
+				METRIC_MAP_CONTINUATION_GRIDMAP_FILE);
 			f >> gridmap;
 		}
 
-		mapBuilder.initialize(dummySimpleMap,&startPose);
+		mapBuilder.initialize(dummySimpleMap, &startPose);
 
-		for (CMultiMetricMapPDF::CParticleList::iterator it=mapBuilder.mapPDF.m_particles.begin();it!=mapBuilder.mapPDF.m_particles.end();++it) {
+		for (CMultiMetricMapPDF::CParticleList::iterator it =
+				 mapBuilder.mapPDF.m_particles.begin();
+			 it != mapBuilder.mapPDF.m_particles.end(); ++it)
+		{
 			CRBPFParticleData* part_d = it->d.get();
-			CMultiMetricMap &mmap = part_d->mapTillNow;
-			mrpt::maps::COccupancyGridMap2D::Ptr it_grid = mmap.getMapByClass<mrpt::maps::COccupancyGridMap2D>();
-			ASSERTMSG_(it_grid, "No gridmap in multimetric map definition, but metric map continuation was set (!)" );
-			it_grid->copyMapContentFrom( gridmap );
+			CMultiMetricMap& mmap = part_d->mapTillNow;
+			mrpt::maps::COccupancyGridMap2D::Ptr it_grid =
+				mmap.getMapByClass<mrpt::maps::COccupancyGridMap2D>();
+			ASSERTMSG_(
+				it_grid,
+				"No gridmap in multimetric map definition, but metric map "
+				"continuation was set (!)");
+			it_grid->copyMapContentFrom(gridmap);
 		}
 	}
 
 	// ---------------------------------
 	//   CMetricMapBuilder::TOptions
 	// ---------------------------------
-	//mapBuilder.setVerbosityLevel(  mrpt::utils::LVL_DEBUG );  // default value: as loaded from config file
-	mapBuilder.options.enableMapUpdating		= true;
-	mapBuilder.options.debugForceInsertion		= false;
+	// mapBuilder.setVerbosityLevel(  mrpt::utils::LVL_DEBUG );  // default
+	// value: as loaded from config file
+	mapBuilder.options.enableMapUpdating = true;
+	mapBuilder.options.debugForceInsertion = false;
 
 	randomGenerator.randomize();
 
 	// Prepare output directory:
 	// --------------------------------
-	//os::sprintf(strFil,1000,"%s/*.*",OUT_DIR);
+	// os::sprintf(strFil,1000,"%s/*.*",OUT_DIR);
 	deleteFilesInDirectory(OUT_DIR);
 	createDirectory(OUT_DIR);
 
-	string OUT_DIR_MAPS= format("%s/maps",OUT_DIR);
-	string OUT_DIR_3D= format("%s/3D",OUT_DIR);
+	string OUT_DIR_MAPS = format("%s/maps", OUT_DIR);
+	string OUT_DIR_3D = format("%s/3D", OUT_DIR);
 
 	deleteFilesInDirectory(OUT_DIR_MAPS);
 	createDirectory(OUT_DIR_MAPS);
@@ -256,19 +301,20 @@ void MapBuilding_RBPF()
 	deleteFilesInDirectory(OUT_DIR_3D);
 	createDirectory(OUT_DIR_3D);
 
-
 	// Open log files:
 	// ----------------------------------
-	CFileOutputStream   f_log (format("%s/log_times.txt",OUT_DIR));
-	CFileOutputStream   f_info (format("%s/log_info.txt",OUT_DIR));
-	CFileOutputStream   f_jinfo (format("%s/log_jinfo.txt",OUT_DIR));
-	CFileOutputStream   f_path (format("%s/log_estimated_path.txt",OUT_DIR));
-	CFileOutputStream   f_pathOdo (format("%s/log_odometry_path.txt",OUT_DIR));
-	CFileOutputStream   f_partStats (format("%s/log_ParticlesStats.txt",OUT_DIR));
+	CFileOutputStream f_log(format("%s/log_times.txt", OUT_DIR));
+	CFileOutputStream f_info(format("%s/log_info.txt", OUT_DIR));
+	CFileOutputStream f_jinfo(format("%s/log_jinfo.txt", OUT_DIR));
+	CFileOutputStream f_path(format("%s/log_estimated_path.txt", OUT_DIR));
+	CFileOutputStream f_pathOdo(format("%s/log_odometry_path.txt", OUT_DIR));
+	CFileOutputStream f_partStats(format("%s/log_ParticlesStats.txt", OUT_DIR));
 
 	f_log.printf(
-		"%% time_step  execution_time(ms)  map_size(#frames)  frame_inserted? \n"
-		"%%-------------------------------------------------------------------\n");
+		"%% time_step  execution_time(ms)  map_size(#frames)  frame_inserted? "
+		"\n"
+		"%%-------------------------------------------------------------------"
+		"\n");
 
 	f_info.printf(
 		"%% EMI    H    EMMI    effecMappedArea  effecMappedCells \n"
@@ -286,26 +332,26 @@ void MapBuilding_RBPF()
 		"%% time_step   #particles   ESS \n"
 		"%%------------------------------\n");
 
-
 	// ----------------------------------------------------------
 	//						Map Building
 	// ----------------------------------------------------------
-	CActionCollection::Ptr					action;
-	CSensoryFrame::Ptr						observations;
-	std::deque<CObservationGasSensors::Ptr>	gasObservations;
-	std::deque<CObservationWirelessPower::Ptr>	wifiObservations;
-	CPose3D  odoPose(0,0,0);
+	CActionCollection::Ptr action;
+	CSensoryFrame::Ptr observations;
+	std::deque<CObservationGasSensors::Ptr> gasObservations;
+	std::deque<CObservationWirelessPower::Ptr> wifiObservations;
+	CPose3D odoPose(0, 0, 0);
 
-    CDisplayWindow3D    *win3D = nullptr;
+	CDisplayWindow3D* win3D = nullptr;
 
-    if (SHOW_PROGRESS_IN_WINDOW)
-    {
-		win3D = new CDisplayWindow3D("RBPF-SLAM @ MRPT C++ Library", PROGRESS_WINDOW_WIDTH, PROGRESS_WINDOW_HEIGHT);
+	if (SHOW_PROGRESS_IN_WINDOW)
+	{
+		win3D = new CDisplayWindow3D(
+			"RBPF-SLAM @ MRPT C++ Library", PROGRESS_WINDOW_WIDTH,
+			PROGRESS_WINDOW_HEIGHT);
 		win3D->setCameraZoom(40);
 		win3D->setCameraAzimuthDeg(-50);
 		win3D->setCameraElevationDeg(70);
-    }
-
+	}
 
 	tictacGlobal.Tic();
 	for (;;)
@@ -313,63 +359,65 @@ void MapBuilding_RBPF()
 		if (os::kbhit())
 		{
 			char c = os::getch();
-			if (c==27)
-				break;
+			if (c == 27) break;
 		}
 
 		// Load action/observation pair from the rawlog:
 		// --------------------------------------------------
-		if (! CRawlog::readActionObservationPair( rawlogFile, action, observations, rawlogEntry) )
-			break; // file EOF
+		if (!CRawlog::readActionObservationPair(
+				rawlogFile, action, observations, rawlogEntry))
+			break;  // file EOF
 
-		if (rawlogEntry>=rawlog_offset)
+		if (rawlogEntry >= rawlog_offset)
 		{
 			// Update odometry:
 			{
-				CActionRobotMovement2D::Ptr act= action->getBestMovementEstimation();
+				CActionRobotMovement2D::Ptr act =
+					action->getBestMovementEstimation();
 				if (act)
-					odoPose = odoPose + CPose3D( act->poseChange->getMeanVal() );
+					odoPose = odoPose + CPose3D(act->poseChange->getMeanVal());
 				else
 				{
-					CActionRobotMovement3D::Ptr act3D = action->getActionByClass<CActionRobotMovement3D>();
-					if (act3D)
-						odoPose = odoPose + act3D->poseChange.mean;
+					CActionRobotMovement3D::Ptr act3D =
+						action->getActionByClass<CActionRobotMovement3D>();
+					if (act3D) odoPose = odoPose + act3D->poseChange.mean;
 				}
 			}
 
-			double observations_timestamp_double=0;
-			if (observations && observations->size()>0)
-				observations_timestamp_double = mrpt::system::timestampTotime_t( (*observations->begin())->timestamp );
+			double observations_timestamp_double = 0;
+			if (observations && observations->size() > 0)
+				observations_timestamp_double = mrpt::system::timestampTotime_t(
+					(*observations->begin())->timestamp);
 
 			// Execute:
 			// ----------------------------------------
 			tictac.Tic();
-				mapBuilder.processActionObservation( *action, *observations );
+			mapBuilder.processActionObservation(*action, *observations);
 			t_exec = tictac.Tac();
-			printf("Map building executed in %.03fms\n", 1000.0f*t_exec );
-
+			printf("Map building executed in %.03fms\n", 1000.0f * t_exec);
 
 			// Info log:
 			// -----------
-			f_log.printf("%u %f %i %i\n",
-				static_cast<unsigned int>(step),
-				1000.0f*t_exec,
-				mapBuilder.getCurrentlyBuiltMapSize(),
-				mapBuilder.m_statsLastIteration.observationsInserted ? int(1):int(0)
-				);
+			f_log.printf(
+				"%u %f %i %i\n", static_cast<unsigned int>(step),
+				1000.0f * t_exec, mapBuilder.getCurrentlyBuiltMapSize(),
+				mapBuilder.m_statsLastIteration.observationsInserted ? int(1)
+																	 : int(0));
 
 			CPose3DPDF::Ptr curPDFptr = mapBuilder.getCurrentPoseEstimation();
-			CPose3DPDFParticles	curPDF;
+			CPose3DPDFParticles curPDF;
 
-			if ( IS_CLASS( curPDFptr, CPose3DPDFParticles ) )
+			if (IS_CLASS(curPDFptr, CPose3DPDFParticles))
 			{
-				CPose3DPDFParticles::Ptr pp= std::dynamic_pointer_cast<CPose3DPDFParticles>(curPDFptr);
+				CPose3DPDFParticles::Ptr pp =
+					std::dynamic_pointer_cast<CPose3DPDFParticles>(curPDFptr);
 				curPDF = *pp;
 			}
 
-			if (0==(step % LOG_FREQUENCY))
+			if (0 == (step % LOG_FREQUENCY))
 			{
-				const CMultiMetricMap *mostLikMap = mapBuilder.mapPDF.getCurrentMostLikelyMetricMap();
+				const CMultiMetricMap* mostLikMap =
+					mapBuilder.mapPDF.getCurrentMostLikelyMetricMap();
 
 				if (GENERATE_LOG_INFO)
 				{
@@ -377,20 +425,22 @@ void MapBuilding_RBPF()
 
 					tictac_JH.Tic();
 
-					const CMultiMetricMap * avrMap = mapBuilder.mapPDF.getAveragedMetricMapEstimation();
-					ASSERT_(avrMap->m_gridMaps.size()>0 );
+					const CMultiMetricMap* avrMap =
+						mapBuilder.mapPDF.getAveragedMetricMapEstimation();
+					ASSERT_(avrMap->m_gridMaps.size() > 0);
 					COccupancyGridMap2D::Ptr grid = avrMap->m_gridMaps[0];
-					grid->computeEntropy( entropy );
+					grid->computeEntropy(entropy);
 
-					grid->saveAsBitmapFile(format("%s/EMMI_gridmap_%03u.bmp",OUT_DIR,step));
+					grid->saveAsBitmapFile(
+						format("%s/EMMI_gridmap_%03u.bmp", OUT_DIR, step));
 
-					f_info.printf("%f %f %f %f %lu\n",
-						entropy.I,
-						entropy.H,
-						entropy.mean_I,
-						entropy.effectiveMappedArea,
+					f_info.printf(
+						"%f %f %f %f %lu\n", entropy.I, entropy.H,
+						entropy.mean_I, entropy.effectiveMappedArea,
 						entropy.effectiveMappedCells);
-					printf("Ok\n EMI = %.04f    EMMI=%.04f (in %.03fms)\n",entropy.I, entropy.mean_I,1000.0f*tictac_JH.Tac());
+					printf(
+						"Ok\n EMI = %.04f    EMMI=%.04f (in %.03fms)\n",
+						entropy.I, entropy.mean_I, 1000.0f * tictac_JH.Tac());
 				}
 
 				// Pose log:
@@ -398,7 +448,8 @@ void MapBuilding_RBPF()
 				if (SAVE_POSE_LOG)
 				{
 					printf("Saving pose log information...");
-					curPDF.saveToTextFile( format("%s/mapbuild_posepdf_%03u.txt",OUT_DIR,step) );
+					curPDF.saveToTextFile(
+						format("%s/mapbuild_posepdf_%03u.txt", OUT_DIR, step));
 					printf("Ok\n");
 				}
 
@@ -410,13 +461,16 @@ void MapBuilding_RBPF()
 
 					//  Most likely maps:
 					// ----------------------------------------
-					mostLikMap->saveMetricMapRepresentationToFile( format("%s/mapbuilt_%05u_",OUT_DIR_MAPS.c_str(),step) );
+					mostLikMap->saveMetricMapRepresentationToFile(
+						format(
+							"%s/mapbuilt_%05u_", OUT_DIR_MAPS.c_str(), step));
 
-					if (mostLikMap->m_gridMaps.size()>0)
+					if (mostLikMap->m_gridMaps.size() > 0)
 					{
-						CImage		img;
-						mapBuilder.drawCurrentEstimationToImage( &img );
-						img.saveToFile(format("%s/mapping_%05u.png",OUT_DIR,step));
+						CImage img;
+						mapBuilder.drawCurrentEstimationToImage(&img);
+						img.saveToFile(
+							format("%s/mapping_%05u.png", OUT_DIR, step));
 					}
 
 					printf("Ok!\n");
@@ -426,205 +480,228 @@ void MapBuilding_RBPF()
 				COpenGLScene::Ptr scene;
 				if (SAVE_3D_SCENE || SHOW_PROGRESS_IN_WINDOW)
 				{
-				    scene = std::make_shared<COpenGLScene>();
+					scene = std::make_shared<COpenGLScene>();
 
 					// The ground:
-					mrpt::opengl::CGridPlaneXY::Ptr groundPlane = std::make_shared<mrpt::opengl::CGridPlaneXY>(-200,200,-200,200,0,5);
-					groundPlane->setColor(0.4,0.4,0.4);
-					scene->insert( groundPlane );
+					mrpt::opengl::CGridPlaneXY::Ptr groundPlane =
+						std::make_shared<mrpt::opengl::CGridPlaneXY>(
+							-200, 200, -200, 200, 0, 5);
+					groundPlane->setColor(0.4, 0.4, 0.4);
+					scene->insert(groundPlane);
 
 					// The camera pointing to the current robot pose:
 					if (CAMERA_3DSCENE_FOLLOWS_ROBOT)
 					{
-						mrpt::opengl::CCamera::Ptr objCam = std::make_shared<mrpt::opengl::CCamera>();
-						CPose3D		robotPose;
+						mrpt::opengl::CCamera::Ptr objCam =
+							std::make_shared<mrpt::opengl::CCamera>();
+						CPose3D robotPose;
 						curPDF.getMean(robotPose);
 
 						objCam->setPointingAt(robotPose);
 						objCam->setAzimuthDegrees(-30);
 						objCam->setElevationDegrees(30);
-						scene->insert( objCam );
+						scene->insert(objCam);
 					}
 					// Draw the map(s):
-					mrpt::opengl::CSetOfObjects::Ptr objs = std::make_shared<mrpt::opengl::CSetOfObjects>();
-					mostLikMap->getAs3DObject( objs );
-					scene->insert( objs );
+					mrpt::opengl::CSetOfObjects::Ptr objs =
+						std::make_shared<mrpt::opengl::CSetOfObjects>();
+					mostLikMap->getAs3DObject(objs);
+					scene->insert(objs);
 
 					// Draw the robot particles:
-					size_t		M = mapBuilder.mapPDF.particlesCount();
-					mrpt::opengl::CSetOfLines::Ptr objLines = std::make_shared<mrpt::opengl::CSetOfLines>();
-					objLines->setColor(0,1,1);
-					for (size_t i=0;i<M;i++)
+					size_t M = mapBuilder.mapPDF.particlesCount();
+					mrpt::opengl::CSetOfLines::Ptr objLines =
+						std::make_shared<mrpt::opengl::CSetOfLines>();
+					objLines->setColor(0, 1, 1);
+					for (size_t i = 0; i < M; i++)
 					{
-						std::deque<TPose3D>		path;
-						mapBuilder.mapPDF.getPath(i,path);
+						std::deque<TPose3D> path;
+						mapBuilder.mapPDF.getPath(i, path);
 
-						float	x0=0,y0=0,z0=0;
-						for (size_t k=0;k<path.size();k++)
+						float x0 = 0, y0 = 0, z0 = 0;
+						for (size_t k = 0; k < path.size(); k++)
 						{
 							objLines->appendLine(
-								x0, y0, z0+0.001,
-								path[k].x, path[k].y, path[k].z+0.001 );
-							x0=path[k].x;
-							y0=path[k].y;
-							z0=path[k].z;
+								x0, y0, z0 + 0.001, path[k].x, path[k].y,
+								path[k].z + 0.001);
+							x0 = path[k].x;
+							y0 = path[k].y;
+							z0 = path[k].z;
 						}
 					}
-					scene->insert( objLines );
+					scene->insert(objLines);
 
 					// An ellipsoid:
-					CPose3D			lastMeanPose;
-					float			minDistBtwPoses=-1;
-					std::deque<TPose3D>		dummyPath;
-					mapBuilder.mapPDF.getPath(0,dummyPath);
-					for (int k=(int)dummyPath.size()-1;k>=0;k--)
+					CPose3D lastMeanPose;
+					float minDistBtwPoses = -1;
+					std::deque<TPose3D> dummyPath;
+					mapBuilder.mapPDF.getPath(0, dummyPath);
+					for (int k = (int)dummyPath.size() - 1; k >= 0; k--)
 					{
-						CPose3DPDFParticles	poseParts;
-						mapBuilder.mapPDF.getEstimatedPosePDFAtTime(k,poseParts);
+						CPose3DPDFParticles poseParts;
+						mapBuilder.mapPDF.getEstimatedPosePDFAtTime(
+							k, poseParts);
 
-						CPose3D		meanPose;
+						CPose3D meanPose;
 						CMatrixDouble66 COV;
-						poseParts.getCovarianceAndMean(COV,meanPose);
+						poseParts.getCovarianceAndMean(COV, meanPose);
 
-						if ( meanPose.distanceTo(lastMeanPose)>minDistBtwPoses )
+						if (meanPose.distanceTo(lastMeanPose) > minDistBtwPoses)
 						{
-							CMatrixDouble33 COV3 = COV.block(0,0,3,3);
+							CMatrixDouble33 COV3 = COV.block(0, 0, 3, 3);
 
-							minDistBtwPoses = 6 * sqrt(COV3(0,0)+COV3(1,1));
+							minDistBtwPoses = 6 * sqrt(COV3(0, 0) + COV3(1, 1));
 
-							opengl::CEllipsoid::Ptr objEllip = std::make_shared<opengl::CEllipsoid>();
-							objEllip->setLocation(meanPose.x(), meanPose.y(), meanPose.z() + 0.001 );
-							objEllip->setCovMatrix(COV3, COV3(2,2)==0 ? 2:3 );
+							opengl::CEllipsoid::Ptr objEllip =
+								std::make_shared<opengl::CEllipsoid>();
+							objEllip->setLocation(
+								meanPose.x(), meanPose.y(),
+								meanPose.z() + 0.001);
+							objEllip->setCovMatrix(
+								COV3, COV3(2, 2) == 0 ? 2 : 3);
 
-							objEllip->setColor(0,0,1);
+							objEllip->setColor(0, 0, 1);
 							objEllip->enableDrawSolid3D(false);
-							scene->insert( objEllip );
+							scene->insert(objEllip);
 
 							lastMeanPose = meanPose;
 						}
 					}
-				} // end if show or save 3D scene->
+				}  // end if show or save 3D scene->
 
-                if (SAVE_3D_SCENE)
-                {	// Save as file:
-					CFileGZOutputStream(format("%s/buildingmap_%05u.3Dscene",OUT_DIR_3D.c_str(),step)) << *scene;
+				if (SAVE_3D_SCENE)
+				{  // Save as file:
+					CFileGZOutputStream(
+						format(
+							"%s/buildingmap_%05u.3Dscene", OUT_DIR_3D.c_str(),
+							step))
+						<< *scene;
 				}
 
-                if (SHOW_PROGRESS_IN_WINDOW)
-                {
-                    COpenGLScene::Ptr &scenePtr = win3D->get3DSceneAndLock();
-                    scenePtr = scene;
-                    win3D->unlockAccess3DScene();
+				if (SHOW_PROGRESS_IN_WINDOW)
+				{
+					COpenGLScene::Ptr& scenePtr = win3D->get3DSceneAndLock();
+					scenePtr = scene;
+					win3D->unlockAccess3DScene();
 
-                    win3D->forceRepaint();
-                    int add_delay = SHOW_PROGRESS_IN_WINDOW_DELAY_MS - t_exec*1000;
-                    if (add_delay>0)
-                        std::this_thread::sleep_for(std::chrono::milliseconds(add_delay));
-                }
-                /*else
-                {
-                    // Free scene:
-                    delete scene;
-                    scene=nullptr;
-                }
+					win3D->forceRepaint();
+					int add_delay =
+						SHOW_PROGRESS_IN_WINDOW_DELAY_MS - t_exec * 1000;
+					if (add_delay > 0)
+						std::this_thread::sleep_for(
+							std::chrono::milliseconds(add_delay));
+				}
+				/*else
+				{
+					// Free scene:
+					delete scene;
+					scene=nullptr;
+				}
 				*/
 
-
-			// Save the weighted entropy of each map:
-			// ----------------------------------------
+				// Save the weighted entropy of each map:
+				// ----------------------------------------
 				if (GENERATE_LOG_JOINT_H)
 				{
 					printf("Saving joint H...");
 					tictac_JH.Tic();
 
-					double  H_joint = mapBuilder.getCurrentJointEntropy();
-					double  H_path  = mapBuilder.mapPDF.getCurrentEntropyOfPaths();
-					f_jinfo.printf("%e %e\n",H_joint,H_path);
-					printf("Ok\t joint-H=%f\t(in %.03fms)\n",H_joint,1000.0f*tictac_JH.Tac());
+					double H_joint = mapBuilder.getCurrentJointEntropy();
+					double H_path =
+						mapBuilder.mapPDF.getCurrentEntropyOfPaths();
+					f_jinfo.printf("%e %e\n", H_joint, H_path);
+					printf(
+						"Ok\t joint-H=%f\t(in %.03fms)\n", H_joint,
+						1000.0f * tictac_JH.Tac());
 				}
 
-			} // end of LOG_FREQ
-
+			}  // end of LOG_FREQ
 
 			// Save the memory usage:
 			// ------------------------------------------------------------------
 			{
 				printf("Saving memory usage...");
-				unsigned long	memUsage = getMemoryUsage();
-				FILE		*f=os::fopen(format("%s/log_MemoryUsage.txt",OUT_DIR).c_str(),"at");
+				unsigned long memUsage = getMemoryUsage();
+				FILE* f = os::fopen(
+					format("%s/log_MemoryUsage.txt", OUT_DIR).c_str(), "at");
 				if (f)
 				{
-					os::fprintf(f,"%u\t%lu\n",step,memUsage);
+					os::fprintf(f, "%u\t%lu\n", step, memUsage);
 					os::fclose(f);
 				}
-				printf("Ok! (%.04fMb)\n", ((float)memUsage)/(1024*1024) );
+				printf("Ok! (%.04fMb)\n", ((float)memUsage) / (1024 * 1024));
 			}
 
 			// Save the parts stats:
-			f_partStats.printf("%u %u %f\n",
-					(unsigned int)step,
-					(unsigned int)curPDF.size(),
-					curPDF.ESS()
-					);
+			f_partStats.printf(
+				"%u %u %f\n", (unsigned int)step, (unsigned int)curPDF.size(),
+				curPDF.ESS());
 
 			// Save the robot estimated pose for each step:
-			CPose3D   meanPose;
+			CPose3D meanPose;
 			mapBuilder.getCurrentPoseEstimation()->getMean(meanPose);
 
-			f_path.printf("%i %f %f %f %f %f %f %f\n",
-				(int)rawlogEntry,
-				meanPose.x(), meanPose.y(), meanPose.z(),
-				meanPose.yaw(), meanPose.pitch(), meanPose.roll(),
-				observations_timestamp_double
-				 );
+			f_path.printf(
+				"%i %f %f %f %f %f %f %f\n", (int)rawlogEntry, meanPose.x(),
+				meanPose.y(), meanPose.z(), meanPose.yaw(), meanPose.pitch(),
+				meanPose.roll(), observations_timestamp_double);
 
-			f_pathOdo.printf("%i\t%f\t%f\t%f\t%f\t%f\t%f\n", step, odoPose.x(), odoPose.y(), odoPose.z(), odoPose.yaw(), odoPose.pitch(), odoPose.roll() );
+			f_pathOdo.printf(
+				"%i\t%f\t%f\t%f\t%f\t%f\t%f\n", step, odoPose.x(), odoPose.y(),
+				odoPose.z(), odoPose.yaw(), odoPose.pitch(), odoPose.roll());
 
-		} // end of if "rawlog_offset"...
+		}  // end of if "rawlog_offset"...
 
 		step++;
-		printf("\n---------------- STEP %u | RAWLOG ENTRY %u ----------------\n",step, (unsigned)rawlogEntry);
+		printf(
+			"\n---------------- STEP %u | RAWLOG ENTRY %u ----------------\n",
+			step, (unsigned)rawlogEntry);
 
 		// Free memory:
 		action.reset();
 		observations.reset();
-	}; // end while
+	};  // end while
 
-	printf("\n---------------- END!! (total time: %.03f sec) ----------------\n",tictacGlobal.Tac());
+	printf(
+		"\n---------------- END!! (total time: %.03f sec) ----------------\n",
+		tictacGlobal.Tac());
 
 	// Save map:
 	mapBuilder.getCurrentlyBuiltMap(finalMap);
 
-	CFileOutputStream		filOut(format("%s/_finalmap_.simplemap",OUT_DIR));
+	CFileOutputStream filOut(format("%s/_finalmap_.simplemap", OUT_DIR));
 	filOut << finalMap;
 
 	// Save gridmap extend (if exists):
-	const CMultiMetricMap *mostLikMap = mapBuilder.mapPDF.getCurrentMostLikelyMetricMap();
-	if (mostLikMap->m_gridMaps.size()>0)
+	const CMultiMetricMap* mostLikMap =
+		mapBuilder.mapPDF.getCurrentMostLikelyMetricMap();
+	if (mostLikMap->m_gridMaps.size() > 0)
 	{
-		CMatrix		auxMat(1,4);
-		auxMat(0,0) = mostLikMap->m_gridMaps[0]->getXMin();
-		auxMat(0,1) = mostLikMap->m_gridMaps[0]->getXMax();
-		auxMat(0,2) = mostLikMap->m_gridMaps[0]->getYMin();
-		auxMat(0,3) = mostLikMap->m_gridMaps[0]->getYMax();
-		auxMat.saveToTextFile(format("%s/finalGridmapSize.txt",OUT_DIR),MATRIX_FORMAT_FIXED);
+		CMatrix auxMat(1, 4);
+		auxMat(0, 0) = mostLikMap->m_gridMaps[0]->getXMin();
+		auxMat(0, 1) = mostLikMap->m_gridMaps[0]->getXMax();
+		auxMat(0, 2) = mostLikMap->m_gridMaps[0]->getYMin();
+		auxMat(0, 3) = mostLikMap->m_gridMaps[0]->getYMax();
+		auxMat.saveToTextFile(
+			format("%s/finalGridmapSize.txt", OUT_DIR), MATRIX_FORMAT_FIXED);
 	}
 
 	// Save the most likely path of the particle set
-	FILE *f_pathPart;
+	FILE* f_pathPart;
 
-	os::sprintf(strFil,1000,"%s/most_likely_path.txt",OUT_DIR);
-	f_pathPart = os::fopen(strFil,"wt");
+	os::sprintf(strFil, 1000, "%s/most_likely_path.txt", OUT_DIR);
+	f_pathPart = os::fopen(strFil, "wt");
 
-    ASSERT_( f_pathPart != nullptr );
+	ASSERT_(f_pathPart != nullptr);
 
-	std::deque<TPose3D>				outPath;
-	std::deque<TPose3D>::iterator	itPath;
+	std::deque<TPose3D> outPath;
+	std::deque<TPose3D>::iterator itPath;
 
-	mapBuilder.getCurrentMostLikelyPath( outPath );
+	mapBuilder.getCurrentMostLikelyPath(outPath);
 
-	for( itPath = outPath.begin(); itPath != outPath.end(); itPath++ )
-		os::fprintf( f_pathPart, "%.3f %.3f %.3f\n", itPath->x, itPath->y, itPath->yaw);
+	for (itPath = outPath.begin(); itPath != outPath.end(); itPath++)
+		os::fprintf(
+			f_pathPart, "%.3f %.3f %.3f\n", itPath->x, itPath->y, itPath->yaw);
 
 	os::fclose(f_pathPart);
 
@@ -637,9 +714,9 @@ void MapBuilding_RBPF()
 	// Close 3D window, if any:
 	if (win3D)
 	{
-	    mrpt::system::pause();
-	    delete win3D;
-        win3D=nullptr;
+		mrpt::system::pause();
+		delete win3D;
+		win3D = nullptr;
 	}
 
 	MRPT_END

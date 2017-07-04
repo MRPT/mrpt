@@ -9,18 +9,16 @@
 
 #include "base-precomp.h"  // Precompiled headers
 
-
 #include <mrpt/utils/types.h>
 #include <mrpt/utils/TPixelCoord.h>
 
 using namespace mrpt::utils;
 using namespace std;
 
-
 /*---------------------------------------------------------------
 					<< for TPixelCoordf
  ---------------------------------------------------------------*/
-std::ostream& mrpt::utils::operator <<(std::ostream& o, const TPixelCoordf& p)
+std::ostream& mrpt::utils::operator<<(std::ostream& o, const TPixelCoordf& p)
 {
 	o << "(" << p.x << "," << p.y << ")";
 	return o;
@@ -29,7 +27,7 @@ std::ostream& mrpt::utils::operator <<(std::ostream& o, const TPixelCoordf& p)
 /*---------------------------------------------------------------
 					<< for TPixelCoord
  ---------------------------------------------------------------*/
-std::ostream& mrpt::utils::operator <<(std::ostream& o, const TPixelCoord& p)
+std::ostream& mrpt::utils::operator<<(std::ostream& o, const TPixelCoord& p)
 {
 	o << "(" << p.x << "," << p.y << ")";
 	return o;

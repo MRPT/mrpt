@@ -15,7 +15,7 @@ struct XsDataPacket;
 
 class PacketStamper
 {
-public:
+   public:
 	static const int64_t MTSCBOUNDARY;
 	static const int64_t MTSCBOUNDARY_LOWMASK;
 	static const int64_t MTSCBOUNDARY_HIGHMASK;
@@ -26,10 +26,13 @@ public:
 	static const int64_t SC8BOUNDARY_HIGHMASK;
 	static const int64_t SC8BOUNDARY_HALF;
 
-	static int64_t calculateLargePacketCounter8(int64_t frameCounter, int64_t lastCounter);
-	static int64_t calculateLargePacketCounter(int64_t frameCounter, int64_t lastCounter);
-	static int64_t calculateLargeSampleTime(int64_t frameTime, int64_t lastTime);
+	static int64_t calculateLargePacketCounter8(
+		int64_t frameCounter, int64_t lastCounter);
+	static int64_t calculateLargePacketCounter(
+		int64_t frameCounter, int64_t lastCounter);
+	static int64_t calculateLargeSampleTime(
+		int64_t frameTime, int64_t lastTime);
 	static int64_t stampPacket(XsDataPacket& pack, XsDataPacket& highest);
 };
 
-#endif // file guard
+#endif  // file guard

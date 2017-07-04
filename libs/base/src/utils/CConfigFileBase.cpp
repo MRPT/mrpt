@@ -20,34 +20,62 @@ using namespace mrpt::system;
 int mrpt::utils::MRPT_SAVE_NAME_PADDING = 50;
 int mrpt::utils::MRPT_SAVE_VALUE_PADDING = 20;
 
-CConfigFileBase::~CConfigFileBase()
+CConfigFileBase::~CConfigFileBase() {}
+void CConfigFileBase::write(
+	const std::string& section, const std::string& name, double value,
+	const int name_padding_width, const int value_padding_width,
+	const std::string& comment)
 {
+	writeString(
+		section, name,
+		format(
+			((std::abs(value) > 1e-4 && std::abs(value) < 1e4) || value == .0)
+				? "%f"
+				: "%e",
+			value),
+		name_padding_width, value_padding_width, comment);
+}
+void CConfigFileBase::write(
+	const std::string& section, const std::string& name, float value,
+	const int name_padding_width, const int value_padding_width,
+	const std::string& comment)
+{
+	writeString(
+		section, name,
+		format(
+			((std::abs(value) > 1e-4f && std::abs(value) < 1e4f) ||
+			 value == .0f)
+				? "%f"
+				: "%e",
+			value),
+		name_padding_width, value_padding_width, comment);
 }
 
-void  CConfigFileBase::write(const std::string &section, const std::string &name, double value, const int name_padding_width, const int value_padding_width, const std::string &comment )
+/** Write a generic string with optional padding and a comment field ("// ...")
+ * at the end of the line. */
+void CConfigFileBase::writeString(
+	const std::string& section, const std::string& name, const std::string& str,
+	const int name_padding_width, const int value_padding_width,
+	const std::string& comment)
 {
-	writeString(section, name, format(((std::abs(value)>1e-4 && std::abs(value)<1e4 ) || value==.0)? "%f" : "%e",value), name_padding_width,value_padding_width,comment);
-}
-void  CConfigFileBase::write(const std::string &section, const std::string &name, float value, const int name_padding_width, const int value_padding_width, const std::string &comment )
-{
-	writeString(section, name, format(((std::abs(value)>1e-4f && std::abs(value)<1e4f ) || value==.0f) ? "%f" : "%e",value), name_padding_width,value_padding_width,comment);
-}
-
-/** Write a generic string with optional padding and a comment field ("// ...") at the end of the line. */
-void  CConfigFileBase::writeString(const std::string &section,const std::string &name, const std::string &str, const int name_padding_width, const int value_padding_width, const std::string &comment)
-{
-	if (name_padding_width<1 && value_padding_width<1 && comment.empty())
-		this->writeString(section,name,str);  // Default (old) behavior.
+	if (name_padding_width < 1 && value_padding_width < 1 && comment.empty())
+		this->writeString(section, name, str);  // Default (old) behavior.
 
 	std::string name_pad;
-	if (name_padding_width>=1)
-	     name_pad = mrpt::format("%*s",-name_padding_width, name.c_str());  // negative width: printf right padding
-	else name_pad = name;
+	if (name_padding_width >= 1)
+		name_pad = mrpt::format(
+			"%*s", -name_padding_width,
+			name.c_str());  // negative width: printf right padding
+	else
+		name_pad = name;
 
 	std::string value_pad;
-	if (value_padding_width>=1)
-	     value_pad = mrpt::format(" %*s",-value_padding_width, str.c_str());   // negative width: printf right padding
-	else value_pad = str;
+	if (value_padding_width >= 1)
+		value_pad = mrpt::format(
+			" %*s", -value_padding_width,
+			str.c_str());  // negative width: printf right padding
+	else
+		value_pad = str;
 
 	if (!comment.empty())
 	{
@@ -55,94 +83,122 @@ void  CConfigFileBase::writeString(const std::string &section,const std::string 
 		value_pad += comment;
 	}
 
-	this->writeString(section,name_pad,value_pad);
+	this->writeString(section, name_pad, value_pad);
 }
-
 
 /*---------------------------------------------------------------
 					read_double
  ---------------------------------------------------------------*/
-double  CConfigFileBase::read_double(const std::string &section, const std::string &name, double defaultValue, bool failIfNotFound ) const
+double CConfigFileBase::read_double(
+	const std::string& section, const std::string& name, double defaultValue,
+	bool failIfNotFound) const
 {
-	return atof( readString(section,name,format("%.16e",defaultValue),failIfNotFound).c_str());
+	return atof(
+		readString(section, name, format("%.16e", defaultValue), failIfNotFound)
+			.c_str());
 }
 
 /*---------------------------------------------------------------
 					read_float
  ---------------------------------------------------------------*/
-float  CConfigFileBase::read_float(const std::string &section, const std::string &name, float defaultValue, bool failIfNotFound ) const
+float CConfigFileBase::read_float(
+	const std::string& section, const std::string& name, float defaultValue,
+	bool failIfNotFound) const
 {
-	return (float)atof( readString(section,name,format("%.10e",defaultValue),failIfNotFound).c_str());
+	return (float)atof(
+		readString(section, name, format("%.10e", defaultValue), failIfNotFound)
+			.c_str());
 }
 
 /*---------------------------------------------------------------
 					read_int
  ---------------------------------------------------------------*/
-int  CConfigFileBase::read_int(const std::string &section, const std::string &name, int defaultValue, bool failIfNotFound ) const
+int CConfigFileBase::read_int(
+	const std::string& section, const std::string& name, int defaultValue,
+	bool failIfNotFound) const
 {
-	return atoi( readString(section,name,format("%i",defaultValue),failIfNotFound).c_str());
+	return atoi(
+		readString(section, name, format("%i", defaultValue), failIfNotFound)
+			.c_str());
 }
-
 
 /*---------------------------------------------------------------
 					read_uint64_t
  ---------------------------------------------------------------*/
-uint64_t CConfigFileBase::read_uint64_t(const std::string &section, const std::string &name, uint64_t defaultValue, bool failIfNotFound ) const
+uint64_t CConfigFileBase::read_uint64_t(
+	const std::string& section, const std::string& name, uint64_t defaultValue,
+	bool failIfNotFound) const
 {
-	string s = readString(section,name,format("%lu",(long unsigned int)defaultValue),failIfNotFound);
-	return mrpt::system::os::_strtoull(s.c_str(),nullptr, 0);
+	string s = readString(
+		section, name, format("%lu", (long unsigned int)defaultValue),
+		failIfNotFound);
+	return mrpt::system::os::_strtoull(s.c_str(), nullptr, 0);
 }
 
 /*---------------------------------------------------------------
 					read_bool
  ---------------------------------------------------------------*/
-bool  CConfigFileBase::read_bool(const std::string &section, const std::string &name, bool defaultValue, bool failIfNotFound ) const
+bool CConfigFileBase::read_bool(
+	const std::string& section, const std::string& name, bool defaultValue,
+	bool failIfNotFound) const
 {
-	const string s = mrpt::system::lowerCase(trim(readString(section,name,string(defaultValue ? "1":"0"),failIfNotFound)));
-	if (s=="true") return true;
-	if (s=="false") return false;
-	if (s=="yes") return true;
-	if (s=="no") return false;
+	const string s = mrpt::system::lowerCase(
+		trim(
+			readString(
+				section, name, string(defaultValue ? "1" : "0"),
+				failIfNotFound)));
+	if (s == "true") return true;
+	if (s == "false") return false;
+	if (s == "yes") return true;
+	if (s == "no") return false;
 	return (0 != atoi(s.c_str()));
 }
 
 /*---------------------------------------------------------------
 					read_string
  ---------------------------------------------------------------*/
-std::string  CConfigFileBase::read_string(const std::string &section, const std::string &name, const std::string &defaultValue, bool failIfNotFound ) const
+std::string CConfigFileBase::read_string(
+	const std::string& section, const std::string& name,
+	const std::string& defaultValue, bool failIfNotFound) const
 {
-	return mrpt::system::trim(readString(section, name, defaultValue,failIfNotFound ));
+	return mrpt::system::trim(
+		readString(section, name, defaultValue, failIfNotFound));
 }
 
 /*---------------------------------------------------------------
 					read_string_first_word
  ---------------------------------------------------------------*/
-std::string  CConfigFileBase::read_string_first_word(const std::string &section, const std::string &name, const std::string &defaultValue, bool failIfNotFound ) const
+std::string CConfigFileBase::read_string_first_word(
+	const std::string& section, const std::string& name,
+	const std::string& defaultValue, bool failIfNotFound) const
 {
-	string s = readString(section, name, defaultValue,failIfNotFound );
-	vector_string  auxStrs;
-	mrpt::system::tokenize(s,"[], \t", auxStrs);
+	string s = readString(section, name, defaultValue, failIfNotFound);
+	vector_string auxStrs;
+	mrpt::system::tokenize(s, "[], \t", auxStrs);
 	if (auxStrs.empty())
 	{
 		if (failIfNotFound)
 		{
-			THROW_EXCEPTION( format("Value '%s' seems to be present in section '%s' but, are all whitespaces??",
-				name.c_str(),
-				section.c_str()  ) );
+			THROW_EXCEPTION(
+				format(
+					"Value '%s' seems to be present in section '%s' but, are "
+					"all whitespaces??",
+					name.c_str(), section.c_str()));
 		}
-		else return "";
+		else
+			return "";
 	}
-	else return auxStrs[0];
+	else
+		return auxStrs[0];
 }
 
 /** Checks if a given section exists (name is case insensitive) */
-bool CConfigFileBase::sectionExists( const std::string &section_name) const
+bool CConfigFileBase::sectionExists(const std::string& section_name) const
 {
 	vector_string sects;
 	getAllSections(sects);
-	for (vector_string::iterator s=sects.begin();s!=sects.end();++s)
-		if (!mrpt::system::os::_strcmpi(section_name.c_str(), s->c_str() ))
+	for (vector_string::iterator s = sects.begin(); s != sects.end(); ++s)
+		if (!mrpt::system::os::_strcmpi(section_name.c_str(), s->c_str()))
 			return true;
 	return false;
 }
-

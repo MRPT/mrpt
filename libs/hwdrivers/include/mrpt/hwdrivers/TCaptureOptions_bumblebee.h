@@ -12,24 +12,26 @@
 
 namespace mrpt
 {
-	namespace hwdrivers
-	{
-		/** Options used when creating a bumblebee camera capture object
-		  * \sa CStereoGrabber_Bumblebee, CStereoGrabber_Bumblebee_dc1394
-		  * \ingroup mrpt_hwdrivers_grp
-		  */
-		struct HWDRIVERS_IMPEXP TCaptureOptions_bumblebee
-		{
-			TCaptureOptions_bumblebee();
+namespace hwdrivers
+{
+/** Options used when creating a bumblebee camera capture object
+  * \sa CStereoGrabber_Bumblebee, CStereoGrabber_Bumblebee_dc1394
+  * \ingroup mrpt_hwdrivers_grp
+  */
+struct HWDRIVERS_IMPEXP TCaptureOptions_bumblebee
+{
+	TCaptureOptions_bumblebee();
 
-			/** Capture resolution (Default: 640x480) */
-			int	frame_width, frame_height;	
-			/** Indicates if the Bumblebee camera must capture color images (Default: false -> grayscale) */
-			bool color;						
-			/** Indicates if the Bumblebee camera must capture rectified images (Default: true -> rectified) */
-			bool getRectified;				
-			/** Bumblebee camera frame rate (Default: 15 fps) */
-			double framerate;				
-		};
-	}
+	/** Capture resolution (Default: 640x480) */
+	int frame_width, frame_height;
+	/** Indicates if the Bumblebee camera must capture color images (Default:
+	 * false -> grayscale) */
+	bool color;
+	/** Indicates if the Bumblebee camera must capture rectified images
+	 * (Default: true -> rectified) */
+	bool getRectified;
+	/** Bumblebee camera frame rate (Default: 15 fps) */
+	double framerate;
+};
+}
 }

@@ -33,20 +33,22 @@
 
 #include "arch/macOS/arch_macOS.h"
 
-
-namespace rp{ namespace arch{
+namespace rp
+{
+namespace arch
+{
 _u64 getus()
 {
-    timeval now;
-    gettimeofday(&now,nullptr);
-    return now.tv_sec*1000000 + now.tv_usec;
+	timeval now;
+	gettimeofday(&now, nullptr);
+	return now.tv_sec * 1000000 + now.tv_usec;
 }
-    
+
 _u32 rp_getms()
 {
-    timeval now;
-    gettimeofday(&now,nullptr);
-    return now.tv_sec*1000L + now.tv_usec/1000L;
+	timeval now;
+	gettimeofday(&now, nullptr);
+	return now.tv_sec * 1000L + now.tv_usec / 1000L;
 }
-    
-}}
+}
+}

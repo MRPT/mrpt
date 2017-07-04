@@ -18,13 +18,16 @@
 #include "CRawlogProcessor.h"
 
 // Declarations:
-#define VERBOSE_COUT	if (verbose) std::cout << "[rawlog-edit] "
+#define VERBOSE_COUT \
+	if (verbose) std::cout << "[rawlog-edit] "
 
-#define DECLARE_OP_FUNCTION(_NAME) void _NAME(mrpt::utils::CFileGZInputStream &in_rawlog, TCLAP::CmdLine &cmdline, bool verbose)
-
+#define DECLARE_OP_FUNCTION(_NAME)                                           \
+	void _NAME(                                                              \
+		mrpt::utils::CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline, \
+		bool verbose)
 
 /** Auxiliary struct that performs all the checks and create the
-     output rawlog stream, publishing it as "out_rawlog"
+	 output rawlog stream, publishing it as "out_rawlog"
 */
 struct TOutputRawlogCreator
 {
@@ -39,11 +42,8 @@ struct TOutputRawlogCreator
 // Return false if not not set, an exception if args doesn't exist
 // ======================================================================
 template <typename T>
-bool getArgValue(TCLAP::CmdLine &cmdline, const std::string &arg_name, T &out_val);
-bool isFlagSet(TCLAP::CmdLine &cmdline, const std::string &arg_name);
-
-
+bool getArgValue(
+	TCLAP::CmdLine& cmdline, const std::string& arg_name, T& out_val);
+bool isFlagSet(TCLAP::CmdLine& cmdline, const std::string& arg_name);
 
 #endif
-
-

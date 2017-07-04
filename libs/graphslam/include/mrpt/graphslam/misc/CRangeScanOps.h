@@ -27,8 +27,12 @@
 #include <iostream>
 #include <vector>
 
-namespace mrpt { namespace graphslam { namespace deciders {
-
+namespace mrpt
+{
+namespace graphslam
+{
+namespace deciders
+{
 /**\brief Class for keeping together all the RangeScanner-related functions.
  *
  * ## Description
@@ -77,15 +81,16 @@ namespace mrpt { namespace graphslam { namespace deciders {
  *
  * \ingroup mrpt_graphslam_grp
  */
-template<class GRAPH_T=typename mrpt::graphs::CNetworkOfPoses2DInf>
-class CRangeScanOps {
+template <class GRAPH_T = typename mrpt::graphs::CNetworkOfPoses2DInf>
+class CRangeScanOps
+{
 	/**\brief Handy typedefs */
 	/**\{*/
 	typedef typename GRAPH_T::constraint_t constraint_t;
 	typedef CRangeScanOps<GRAPH_T> self_t;
 	/**\}*/
 
-	protected:
+   protected:
 	// Protected methods
 	// ////////////////////////////////////////////////////////////
 
@@ -96,68 +101,69 @@ class CRangeScanOps {
 	 * TReturnInfo struct
 	 */
 	void getICPEdge(
-			const mrpt::obs::CObservation2DRangeScan& from,
-			const mrpt::obs::CObservation2DRangeScan& to,
-			constraint_t* rel_edge,
-			const mrpt::poses::CPose2D* initial_pose=nullptr,
-			mrpt::slam::CICP::TReturnInfo* icp_info=nullptr);
+		const mrpt::obs::CObservation2DRangeScan& from,
+		const mrpt::obs::CObservation2DRangeScan& to, constraint_t* rel_edge,
+		const mrpt::poses::CPose2D* initial_pose = nullptr,
+		mrpt::slam::CICP::TReturnInfo* icp_info = nullptr);
 	/**\brief Align the 3D range scans provided and find the potential edge that
 	 * can transform the one into the other.
 	 *
-	 * Fills the 2D part (rel_edge) of the 3D constraint between the scans, since
+	 * Fills the 2D part (rel_edge) of the 3D constraint between the scans,
+	 * since
 	 * we are interested in computing the 2D alignment. User can optionally ask
 	 * that additional information be returned in a TReturnInfo struct
 	 */
 	void getICPEdge(
-			const mrpt::obs::CObservation3DRangeScan& from,
-			const mrpt::obs::CObservation3DRangeScan& to,
-			constraint_t* rel_edge,
-			const mrpt::poses::CPose2D* initial_pose=nullptr,
-			mrpt::slam::CICP::TReturnInfo* icp_info=nullptr);
+		const mrpt::obs::CObservation3DRangeScan& from,
+		const mrpt::obs::CObservation3DRangeScan& to, constraint_t* rel_edge,
+		const mrpt::poses::CPose2D* initial_pose = nullptr,
+		mrpt::slam::CICP::TReturnInfo* icp_info = nullptr);
 	/**\brief Reduce the size of the given CPointsMap by keeping one out of
 	 * "keep_point_every" points.
 	 *
 	 * \note If low_lim is set then the PointsMap will contain at least low_lim
-	 * measurements, regardless of keep_point_every value. Set low_lim to 0 if no
+	 * measurements, regardless of keep_point_every value. Set low_lim to 0 if
+	 * no
 	 * lower limit is to be specified
 	 */
-	void decimatePointsMap(mrpt::maps::CPointsMap* m,
-			size_t keep_point_every=4,
-			size_t low_lim=0);
+	void decimatePointsMap(
+		mrpt::maps::CPointsMap* m, size_t keep_point_every = 4,
+		size_t low_lim = 0);
 	/**\brief Wrapper around the CObservation3DRangeScan::convertTo2DScan
 	 * corresponding method
 	 *
 	 * \return True if operation was successful, false otherwise
 	 */
 	bool convert3DTo2DRangeScan(
-			/*from = */ mrpt::obs::CObservation3DRangeScan::Ptr& scan3D_in,
-			/*to   = */ mrpt::obs::CObservation2DRangeScan::Ptr* scan2D_out=nullptr);
+		/*from = */ mrpt::obs::CObservation3DRangeScan::Ptr& scan3D_in,
+		/*to   = */ mrpt::obs::CObservation2DRangeScan::Ptr* scan2D_out =
+			nullptr);
 
-	struct TParams: public mrpt::utils::CLoadableOptions {
-		public:
-			TParams();
-			~TParams();
+	struct TParams : public mrpt::utils::CLoadableOptions
+	{
+	   public:
+		TParams();
+		~TParams();
 
-			void loadFromConfigFile(
-					const mrpt::utils::CConfigFileBase &source,
-					const std::string &section);
-			void 	dumpToTextStream(mrpt::utils::CStream &out) const;
+		void loadFromConfigFile(
+			const mrpt::utils::CConfigFileBase& source,
+			const std::string& section);
+		void dumpToTextStream(mrpt::utils::CStream& out) const;
 
-			mrpt::slam::CICP icp;
+		mrpt::slam::CICP icp;
 
-			/**\brief Struct holding the parameters of 3D to the corresponding 2D
-			 * range scan conversion.
-			 */
-			mrpt::obs::T3DPointsTo2DScanParams conversion_params;
+		/**\brief Struct holding the parameters of 3D to the corresponding 2D
+		 * range scan conversion.
+		 */
+		mrpt::obs::T3DPointsTo2DScanParams conversion_params;
 
-			bool has_read_config;
+		bool has_read_config;
 	};
 	TParams params;
-
 };
-
-} } } // end of namespaces
+}
+}
+}  // end of namespaces
 
 #include "CRangeScanOps_impl.h"
 #endif /* end of include guard: CRANGESCANOPS_H */
-

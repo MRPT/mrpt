@@ -23,23 +23,22 @@ IMPLEMENT_APP(slamdemoApp)
 
 using namespace std;
 
-
 bool slamdemoApp::OnInit()
 {
 	// Starting in wxWidgets 2.9.0, we must reset numerics locale to "C",
-	//  if we want numbers to use "." in all countries. The App::OnInit() is a perfect place to undo
+	//  if we want numbers to use "." in all countries. The App::OnInit() is a
+	//  perfect place to undo
 	//  the default wxWidgets settings. (JL @ Sep-2009)
-	wxSetlocale(LC_NUMERIC,wxString(wxT("C")));
+	wxSetlocale(LC_NUMERIC, wxString(wxT("C")));
 
-    wxInitAllImageHandlers();
+	wxInitAllImageHandlers();
 
 	// Process command line args?
 	bool gotoGUI = true;
 
-        win = new slamdemoFrame(nullptr);
+	win = new slamdemoFrame(nullptr);
 
-	if (argc>1)
-		gotoGUI = doCommandLineProcess();
+	if (argc > 1) gotoGUI = doCommandLineProcess();
 
 	if (gotoGUI)
 	{
@@ -51,74 +50,77 @@ bool slamdemoApp::OnInit()
 	else
 	{
 		delete win;
-                win=nullptr;
-		return false; // Exit now.
+		win = nullptr;
+		return false;  // Exit now.
 	}
 }
 
-// Auxiliary class to allow text output in Win32 (in Linux the console keeps working for GUIs).
+// Auxiliary class to allow text output in Win32 (in Linux the console keeps
+// working for GUIs).
 #ifdef MRPT_OS_WINDOWS
 
-std::ostringstream  out_cmdLine;
+std::ostringstream out_cmdLine;
 
 class CMyCmdLineOut : public TCLAP::StdOutput
 {
-public:
-	CMyCmdLineOut() : StdOutput(out_cmdLine)
-	{
-	}
-
+   public:
+	CMyCmdLineOut() : StdOutput(out_cmdLine) {}
 };
 
 #endif
 
-
-// Executes the program in "batch" mode, where the user passes some command-line args
+// Executes the program in "batch" mode, where the user passes some command-line
+// args
 bool slamdemoApp::doCommandLineProcess()
 {
 	// Declare the supported options.
-	TCLAP::CmdLine cmd("2d-slam-demo", ' ', mrpt::system::MRPT_getVersion().c_str());
+	TCLAP::CmdLine cmd(
+		"2d-slam-demo", ' ', mrpt::system::MRPT_getVersion().c_str());
 
-	TCLAP::ValueArg<std::string> arg_cfgFil("c","config","Config file to load",false,"","params.ini",cmd);
-	TCLAP::SwitchArg arg_nogui("n","nogui","Don't stay in the GUI, exit after the experiment.",cmd, false);
-	TCLAP::SwitchArg arg_norun("r","norun","Just load the config file, don't run it.",cmd, false);
+	TCLAP::ValueArg<std::string> arg_cfgFil(
+		"c", "config", "Config file to load", false, "", "params.ini", cmd);
+	TCLAP::SwitchArg arg_nogui(
+		"n", "nogui", "Don't stay in the GUI, exit after the experiment.", cmd,
+		false);
+	TCLAP::SwitchArg arg_norun(
+		"r", "norun", "Just load the config file, don't run it.", cmd, false);
 
 #ifdef MRPT_OS_WINDOWS
-	CMyCmdLineOut  out_buf;
+	CMyCmdLineOut out_buf;
 	cmd.setOutput(&out_buf);
 #endif
 
-	vector<char*>  auxArgs(argc);
-	for (int i=0;i<argc;i++)
+	vector<char*> auxArgs(argc);
+	for (int i = 0; i < argc; i++)
 	{
-		wxString  s(argv[i]);
-		auxArgs[i]=new char[s.size()+10];
-		strcpy(auxArgs[i],s.ToUTF8().data());
+		wxString s(argv[i]);
+		auxArgs[i] = new char[s.size() + 10];
+		strcpy(auxArgs[i], s.ToUTF8().data());
 	}
 
 	// Parse arguments:
-	bool res_parse = cmd.parse( argc, &auxArgs[0] );
+	bool res_parse = cmd.parse(argc, &auxArgs[0]);
 
 	// Free aux mem:
-	for (int i=0;i<argc;i++)
-		delete[] auxArgs[i];
+	for (int i = 0; i < argc; i++) delete[] auxArgs[i];
 
 	if (!res_parse)
 	{
 #ifdef MRPT_OS_WINDOWS
 		if (!out_cmdLine.str().empty())
-			wxMessageBox(_U(out_cmdLine.str().c_str()),_("2d-slam-demo"));
+			wxMessageBox(_U(out_cmdLine.str().c_str()), _("2d-slam-demo"));
 #endif
 		return false;
 	}
 
 	const std::string cfgFil = arg_cfgFil.getValue();
 
-	if ( !mrpt::system::fileExists(cfgFil) )
+	if (!mrpt::system::fileExists(cfgFil))
 	{
 		cerr << "The indicated config file does not exist: " << cfgFil << endl;
 #ifdef MRPT_OS_WINDOWS
-		wxMessageBox(wxT("The indicated config file does not exist"),_("2d-slam-demo"));
+		wxMessageBox(
+			wxT("The indicated config file does not exist"), _("2d-slam-demo"));
 #endif
 		return false;
 	}
@@ -136,11 +138,11 @@ bool slamdemoApp::doCommandLineProcess()
 		{
 			DoBatchExperiments(cfgFil);
 		}
-		catch (std::exception &e)
+		catch (std::exception& e)
 		{
 			cerr << e.what() << endl;
 #ifdef MRPT_OS_WINDOWS
-			wxMessageBox(_U(e.what()),_("2d-slam-demo"));
+			wxMessageBox(_U(e.what()), _("2d-slam-demo"));
 #endif
 		}
 	}

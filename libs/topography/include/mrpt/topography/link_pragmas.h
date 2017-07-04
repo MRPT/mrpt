@@ -17,27 +17,27 @@
 //  TOPO_IMPEXP, mrpt_xxx_EXPORTS
 
 /*   The macros below for DLL import/export are required for Windows only.
-    Mostly all the definitions in this file are copied or at least topod
-     on the file wx/dlimpexp.h, written by Vadim Zeitlin and published
+	Mostly all the definitions in this file are copied or at least topod
+	 on the file wx/dlimpexp.h, written by Vadim Zeitlin and published
 	 under the wxWindows licence.
 */
 #if defined(MRPT_OS_WINDOWS)
-	#define MRPT_TOPO_EXPORT __declspec(dllexport)
-	#define MRPT_TOPO_IMPORT __declspec(dllimport)
+#define MRPT_TOPO_EXPORT __declspec(dllexport)
+#define MRPT_TOPO_IMPORT __declspec(dllimport)
 #else
-#    define MRPT_TOPO_EXPORT
-#    define MRPT_TOPO_IMPORT
+#define MRPT_TOPO_EXPORT
+#define MRPT_TOPO_IMPORT
 #endif
 
 /*  Macros that map to export declaration when building the DLL, to import
-	declaration if using it or to nothing at all if we are not compiling as DLL */
+	declaration if using it or to nothing at all if we are not compiling as DLL
+   */
 #if defined(MRPT_BUILT_AS_DLL)
-#	if defined(mrpt_topography_EXPORTS)  /* Building the DLL */
-#		define TOPO_IMPEXP MRPT_TOPO_EXPORT
-#	else  /* Using the DLL */
-#		define TOPO_IMPEXP MRPT_TOPO_IMPORT
-#	endif
-#else /* not making nor using DLL */
-#    define TOPO_IMPEXP
+#if defined(mrpt_topography_EXPORTS) /* Building the DLL */
+#define TOPO_IMPEXP MRPT_TOPO_EXPORT
+#else /* Using the DLL */
+#define TOPO_IMPEXP MRPT_TOPO_IMPORT
 #endif
-
+#else /* not making nor using DLL */
+#define TOPO_IMPEXP
+#endif

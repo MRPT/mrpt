@@ -52,6 +52,4 @@
 // Main graphslam-engine header
 #include "graphslam/CGraphSlamEngine.h"
 
-
-
 #endif

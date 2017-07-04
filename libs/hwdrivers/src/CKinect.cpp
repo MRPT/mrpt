@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include "hwdrivers-precomp.h"   // Precompiled headers
+#include "hwdrivers-precomp.h"  // Precompiled headers
 
 #include <mrpt/hwdrivers/CKinect.h>
 #include <mrpt/utils/CTimeLogger.h>
@@ -24,31 +24,30 @@ using namespace mrpt::obs;
 using namespace mrpt::poses;
 using namespace std;
 
-IMPLEMENTS_GENERIC_SENSOR(CKinect,mrpt::hwdrivers)
+IMPLEMENTS_GENERIC_SENSOR(CKinect, mrpt::hwdrivers)
 
 // Whether to profile memory allocations:
 //#define KINECT_PROFILE_MEM_ALLOC
 
 #if MRPT_HAS_KINECT_FREENECT
-#	include <libfreenect.h>
+#include <libfreenect.h>
 #else
-#	define KINECT_W 640
-#	define KINECT_H 480
+#define KINECT_W 640
+#define KINECT_H 480
 #endif
 
 #if MRPT_HAS_KINECT_FREENECT
-	// Macros to convert the opaque pointers in the class header:
-	#define f_ctx  reinterpret_cast<freenect_context*>(m_f_ctx)
-	#define f_ctx_ptr  reinterpret_cast<freenect_context**>(&m_f_ctx)
-	#define f_dev  reinterpret_cast<freenect_device*>(m_f_dev)
-	#define f_dev_ptr  reinterpret_cast<freenect_device**>(&m_f_dev)
-#endif // MRPT_HAS_KINECT_FREENECT
-
+// Macros to convert the opaque pointers in the class header:
+#define f_ctx reinterpret_cast<freenect_context*>(m_f_ctx)
+#define f_ctx_ptr reinterpret_cast<freenect_context**>(&m_f_ctx)
+#define f_dev reinterpret_cast<freenect_device*>(m_f_dev)
+#define f_dev_ptr reinterpret_cast<freenect_device**>(&m_f_dev)
+#endif  // MRPT_HAS_KINECT_FREENECT
 
 #ifdef KINECT_PROFILE_MEM_ALLOC
 mrpt::utils::CTimeLogger alloc_tim;
 #endif
-//int int a;
+// int int a;
 
 void CKinect::calculate_range2meters()
 {
@@ -57,54 +56,57 @@ void CKinect::calculate_range2meters()
 	const float k2 = 2842.5f;
 	const float k3 = 0.1236f;
 
-	for (size_t i=0; i<KINECT_RANGES_TABLE_LEN; i++)
-			m_range2meters[i] = k3 * tanf(i/k2 + k1);
+	for (size_t i = 0; i < KINECT_RANGES_TABLE_LEN; i++)
+		m_range2meters[i] = k3 * tanf(i / k2 + k1);
 
 #else
-	for (size_t i=0; i<KINECT_RANGES_TABLE_LEN; i++)
+	for (size_t i = 0; i < KINECT_RANGES_TABLE_LEN; i++)
 		m_range2meters[i] = 1.0f / (i * (-0.0030711016) + 3.3309495161);
 #endif
 
 	// Minimum/Maximum range means error:
 	m_range2meters[0] = 0;
-	m_range2meters[KINECT_RANGES_TABLE_LEN-1] = 0;
+	m_range2meters[KINECT_RANGES_TABLE_LEN - 1] = 0;
 }
 
 /*-------------------------------------------------------------
 		ctor
  -------------------------------------------------------------*/
-CKinect::CKinect()  :
-	m_sensorPoseOnRobot(),
-	m_preview_window(false),
-	m_preview_window_decimation(1),
-	m_preview_decim_counter_range(0),
-	m_preview_decim_counter_rgb(0),
+CKinect::CKinect()
+	: m_sensorPoseOnRobot(),
+	  m_preview_window(false),
+	  m_preview_window_decimation(1),
+	  m_preview_decim_counter_range(0),
+	  m_preview_decim_counter_rgb(0),
 
 #if MRPT_HAS_KINECT_FREENECT
-	m_f_ctx(nullptr), // The "freenect_context", or nullptr if closed
-	m_f_dev(nullptr), // The "freenect_device", or nullptr if closed
-	m_tim_latest_depth(0),
-	m_tim_latest_rgb(0),
+	  m_f_ctx(nullptr),  // The "freenect_context", or nullptr if closed
+	  m_f_dev(nullptr),  // The "freenect_device", or nullptr if closed
+	  m_tim_latest_depth(0),
+	  m_tim_latest_rgb(0),
 #endif
-	m_relativePoseIntensityWRTDepth(0,-0.02,0, DEG2RAD(-90),DEG2RAD(0),DEG2RAD(-90)),
-	m_initial_tilt_angle(360),
-	m_user_device_number(0),
-	m_grab_image(true),
-	m_grab_depth(true),
-	m_grab_3D_points(true),
-	m_grab_IMU(true)
+	  m_relativePoseIntensityWRTDepth(
+		  0, -0.02, 0, DEG2RAD(-90), DEG2RAD(0), DEG2RAD(-90)),
+	  m_initial_tilt_angle(360),
+	  m_user_device_number(0),
+	  m_grab_image(true),
+	  m_grab_depth(true),
+	  m_grab_3D_points(true),
+	  m_grab_IMU(true)
 {
 	calculate_range2meters();
 
 	// Get maximum range:
-	m_maxRange=m_range2meters[KINECT_RANGES_TABLE_LEN-2];  // Recall: r[Max-1] means error.
+	m_maxRange = m_range2meters[KINECT_RANGES_TABLE_LEN -
+								2];  // Recall: r[Max-1] means error.
 
 	// Default label:
 	m_sensorLabel = "KINECT";
 
 	// =========== Default params ===========
 	// ----- RGB -----
-	m_cameraParamsRGB.ncols = 640; // By default set 640x480, on connect we'll update this.
+	m_cameraParamsRGB.ncols =
+		640;  // By default set 640x480, on connect we'll update this.
 	m_cameraParamsRGB.nrows = 480;
 
 	m_cameraParamsRGB.cx(328.94272028759258);
@@ -126,42 +128,39 @@ CKinect::CKinect()  :
 	m_cameraParamsDepth.dist.zeros();
 
 #if !MRPT_HAS_KINECT
-	THROW_EXCEPTION("MRPT was compiled without support for Kinect. Please, rebuild it.")
+	THROW_EXCEPTION(
+		"MRPT was compiled without support for Kinect. Please, rebuild it.")
 #endif
 }
 
 /*-------------------------------------------------------------
 			dtor
  -------------------------------------------------------------*/
-CKinect::~CKinect()
-{
-	this->close();
-}
-
-/** This method can or cannot be implemented in the derived class, depending on the need for it.
-*  \exception This method must throw an exception with a descriptive message if some critical error is found.
+CKinect::~CKinect() { this->close(); }
+/** This method can or cannot be implemented in the derived class, depending on
+* the need for it.
+*  \exception This method must throw an exception with a descriptive message if
+* some critical error is found.
 */
-void CKinect::initialize()
-{
-	open();
-}
-
+void CKinect::initialize() { open(); }
 /** This method will be invoked at a minimum rate of "process_rate" (Hz)
-*  \exception This method must throw an exception with a descriptive message if some critical error is found.
+*  \exception This method must throw an exception with a descriptive message if
+* some critical error is found.
 */
 void CKinect::doProcess()
 {
-	bool	thereIs, hwError;
+	bool thereIs, hwError;
 
-	CObservation3DRangeScan::Ptr newObs     = std::make_shared<CObservation3DRangeScan>();
-	CObservationIMU::Ptr         newObs_imu = std::make_shared<CObservationIMU>();
+	CObservation3DRangeScan::Ptr newObs =
+		std::make_shared<CObservation3DRangeScan>();
+	CObservationIMU::Ptr newObs_imu = std::make_shared<CObservationIMU>();
 
-	getNextObservation( *newObs, *newObs_imu, thereIs, hwError );
+	getNextObservation(*newObs, *newObs_imu, thereIs, hwError);
 
 	if (hwError)
 	{
 		m_state = ssError;
-	    THROW_EXCEPTION("Couldn't communicate to the Kinect sensor!");
+		THROW_EXCEPTION("Couldn't communicate to the Kinect sensor!");
 	}
 
 	if (thereIs)
@@ -169,30 +168,34 @@ void CKinect::doProcess()
 		m_state = ssWorking;
 
 		vector<CSerializable::Ptr> objs;
-		if (m_grab_image || m_grab_depth || m_grab_3D_points)  objs.push_back(newObs);
-		if (m_grab_IMU)  objs.push_back(newObs_imu);
+		if (m_grab_image || m_grab_depth || m_grab_3D_points)
+			objs.push_back(newObs);
+		if (m_grab_IMU) objs.push_back(newObs_imu);
 
-		appendObservations( objs );
+		appendObservations(objs);
 	}
 }
 
-/** Loads specific configuration for the device from a given source of configuration parameters, for example, an ".ini" file, loading from the section "[iniSection]" (see utils::CConfigFileBase and derived classes)
-*  \exception This method must throw an exception with a descriptive message if some critical parameter is missing or has an invalid value.
+/** Loads specific configuration for the device from a given source of
+* configuration parameters, for example, an ".ini" file, loading from the
+* section "[iniSection]" (see utils::CConfigFileBase and derived classes)
+*  \exception This method must throw an exception with a descriptive message if
+* some critical parameter is missing or has an invalid value.
 */
-void  CKinect::loadConfig_sensorSpecific(
-	const mrpt::utils::CConfigFileBase &configSource,
-	const std::string			&iniSection )
+void CKinect::loadConfig_sensorSpecific(
+	const mrpt::utils::CConfigFileBase& configSource,
+	const std::string& iniSection)
 {
 	m_sensorPoseOnRobot.setFromValues(
-		configSource.read_float(iniSection,"pose_x",0),
-		configSource.read_float(iniSection,"pose_y",0),
-		configSource.read_float(iniSection,"pose_z",0),
-		DEG2RAD( configSource.read_float(iniSection,"pose_yaw",0) ),
-		DEG2RAD( configSource.read_float(iniSection,"pose_pitch",0) ),
-		DEG2RAD( configSource.read_float(iniSection,"pose_roll",0) )
-		);
+		configSource.read_float(iniSection, "pose_x", 0),
+		configSource.read_float(iniSection, "pose_y", 0),
+		configSource.read_float(iniSection, "pose_z", 0),
+		DEG2RAD(configSource.read_float(iniSection, "pose_yaw", 0)),
+		DEG2RAD(configSource.read_float(iniSection, "pose_pitch", 0)),
+		DEG2RAD(configSource.read_float(iniSection, "pose_roll", 0)));
 
-	m_preview_window = configSource.read_bool(iniSection,"preview_window",m_preview_window);
+	m_preview_window =
+		configSource.read_bool(iniSection, "preview_window", m_preview_window);
 
 	// "Stereo" calibration data:
 	// [<SECTION>_LEFT]  // Depth
@@ -202,39 +205,55 @@ void  CKinect::loadConfig_sensorSpecific(
 	// [<SECTION>_LEFT2RIGHT_POSE]
 	//  pose_quaternion = [x y z qr qx qy qz]
 
-	const mrpt::poses::CPose3D twist(0,0,0,DEG2RAD(-90),DEG2RAD(0),DEG2RAD(-90));
+	const mrpt::poses::CPose3D twist(
+		0, 0, 0, DEG2RAD(-90), DEG2RAD(0), DEG2RAD(-90));
 
-	mrpt::utils::TStereoCamera  sc;
-	sc.leftCamera  = m_cameraParamsDepth;  // Load default values so that if we fail to load from cfg at least we have some reasonable numbers.
+	mrpt::utils::TStereoCamera sc;
+	sc.leftCamera = m_cameraParamsDepth;  // Load default values so that if we
+	// fail to load from cfg at least we
+	// have some reasonable numbers.
 	sc.rightCamera = m_cameraParamsRGB;
-	sc.rightCameraPose = mrpt::poses::CPose3DQuat(m_relativePoseIntensityWRTDepth - twist);
+	sc.rightCameraPose =
+		mrpt::poses::CPose3DQuat(m_relativePoseIntensityWRTDepth - twist);
 
-	try {
-		sc.loadFromConfigFile(iniSection,configSource);
-	} catch (std::exception &e) {
-		std::cout << "[CKinect::loadConfig_sensorSpecific] Warning: Ignoring error loading calibration parameters:\n" << e.what();
+	try
+	{
+		sc.loadFromConfigFile(iniSection, configSource);
+	}
+	catch (std::exception& e)
+	{
+		std::cout << "[CKinect::loadConfig_sensorSpecific] Warning: Ignoring "
+					 "error loading calibration parameters:\n"
+				  << e.what();
 	}
 	m_cameraParamsDepth = sc.leftCamera;
-	m_cameraParamsRGB   = sc.rightCamera;
-	m_relativePoseIntensityWRTDepth = twist + mrpt::poses::CPose3D(sc.rightCameraPose);
+	m_cameraParamsRGB = sc.rightCamera;
+	m_relativePoseIntensityWRTDepth =
+		twist + mrpt::poses::CPose3D(sc.rightCameraPose);
 
 	// Id:
-	m_user_device_number = configSource.read_int(iniSection,"device_number",m_user_device_number );
+	m_user_device_number = configSource.read_int(
+		iniSection, "device_number", m_user_device_number);
 
-	m_grab_image = configSource.read_bool(iniSection,"grab_image",m_grab_image);
-	m_grab_depth = configSource.read_bool(iniSection,"grab_depth",m_grab_depth);
-	m_grab_3D_points = configSource.read_bool(iniSection,"grab_3D_points",m_grab_3D_points);
-	m_grab_IMU = configSource.read_bool(iniSection,"grab_IMU",m_grab_IMU );
+	m_grab_image =
+		configSource.read_bool(iniSection, "grab_image", m_grab_image);
+	m_grab_depth =
+		configSource.read_bool(iniSection, "grab_depth", m_grab_depth);
+	m_grab_3D_points =
+		configSource.read_bool(iniSection, "grab_3D_points", m_grab_3D_points);
+	m_grab_IMU = configSource.read_bool(iniSection, "grab_IMU", m_grab_IMU);
 
-	m_video_channel = configSource.read_enum<TVideoChannel>(iniSection,"video_channel",m_video_channel);
+	m_video_channel = configSource.read_enum<TVideoChannel>(
+		iniSection, "video_channel", m_video_channel);
 
 	{
-		std::string s = configSource.read_string(iniSection,"relativePoseIntensityWRTDepth","");
-		if (!s.empty())
-			m_relativePoseIntensityWRTDepth.fromString(s);
+		std::string s = configSource.read_string(
+			iniSection, "relativePoseIntensityWRTDepth", "");
+		if (!s.empty()) m_relativePoseIntensityWRTDepth.fromString(s);
 	}
 
-	m_initial_tilt_angle = configSource.read_int(iniSection,"initial_tilt_angle",m_initial_tilt_angle);
+	m_initial_tilt_angle = configSource.read_int(
+		iniSection, "initial_tilt_angle", m_initial_tilt_angle);
 }
 
 bool CKinect::isOpen() const
@@ -248,22 +267,21 @@ bool CKinect::isOpen() const
 #
 }
 
-
 #if MRPT_HAS_KINECT_FREENECT
 // ========  GLOBAL CALLBACK FUNCTIONS ========
-void depth_cb(freenect_device *dev, void *v_depth, uint32_t timestamp)
+void depth_cb(freenect_device* dev, void* v_depth, uint32_t timestamp)
 {
 	const freenect_frame_mode frMode = freenect_get_current_video_mode(dev);
 
-	uint16_t *depth = reinterpret_cast<uint16_t *>(v_depth);
+	uint16_t* depth = reinterpret_cast<uint16_t*>(v_depth);
 
-	CKinect *obj = reinterpret_cast<CKinect*>(freenect_get_user(dev));
+	CKinect* obj = reinterpret_cast<CKinect*>(freenect_get_user(dev));
 
 	// Update of the timestamps at the end:
-	std::lock_guard<std::mutex> lock(obj->internal_latest_obs_cs() );
-	CObservation3DRangeScan &obs = obj->internal_latest_obs();
+	std::lock_guard<std::mutex> lock(obj->internal_latest_obs_cs());
+	CObservation3DRangeScan& obs = obj->internal_latest_obs();
 
-	obs.hasRangeImage  = true;
+	obs.hasRangeImage = true;
 	obs.range_is_depth = true;
 
 #ifdef KINECT_PROFILE_MEM_ALLOC
@@ -271,87 +289,92 @@ void depth_cb(freenect_device *dev, void *v_depth, uint32_t timestamp)
 #endif
 
 	// This method will try to exploit memory pooling if possible:
-	obs.rangeImage_setSize(frMode.height,frMode.width);
+	obs.rangeImage_setSize(frMode.height, frMode.width);
 
 #ifdef KINECT_PROFILE_MEM_ALLOC
 	alloc_tim.leave("depth_cb alloc");
 #endif
 
-	const CKinect::TDepth2RangeArray &r2m = obj->getRawDepth2RangeConversion();
-	for (int r=0;r<frMode.height;r++)
-		for (int c=0;c<frMode.width;c++)
+	const CKinect::TDepth2RangeArray& r2m = obj->getRawDepth2RangeConversion();
+	for (int r = 0; r < frMode.height; r++)
+		for (int c = 0; c < frMode.width; c++)
 		{
-			// For now, quickly save the depth as it comes from the sensor, it'll
+			// For now, quickly save the depth as it comes from the sensor,
+			// it'll
 			//  transformed later on in getNextObservation()
 			const uint16_t v = *depth++;
-			obs.rangeImage.coeffRef(r,c) = r2m[v & KINECT_RANGES_TABLE_MASK];
+			obs.rangeImage.coeffRef(r, c) = r2m[v & KINECT_RANGES_TABLE_MASK];
 		}
 	obj->internal_tim_latest_depth() = timestamp;
 }
 
-void rgb_cb(freenect_device *dev, void *img_data, uint32_t timestamp)
+void rgb_cb(freenect_device* dev, void* img_data, uint32_t timestamp)
 {
-	CKinect *obj = reinterpret_cast<CKinect*>(freenect_get_user(dev));
+	CKinect* obj = reinterpret_cast<CKinect*>(freenect_get_user(dev));
 	const freenect_frame_mode frMode = freenect_get_current_video_mode(dev);
 
 	// Update of the timestamps at the end:
-	std::lock_guard<std::mutex> lock(obj->internal_latest_obs_cs() );
-	CObservation3DRangeScan &obs = obj->internal_latest_obs();
+	std::lock_guard<std::mutex> lock(obj->internal_latest_obs_cs());
+	CObservation3DRangeScan& obs = obj->internal_latest_obs();
 
 #ifdef KINECT_PROFILE_MEM_ALLOC
 	alloc_tim.enter("depth_rgb loadFromMemoryBuffer");
 #endif
 
 	obs.hasIntensityImage = true;
-	if (obj->getVideoChannel()==CKinect::VIDEO_CHANNEL_RGB)
+	if (obj->getVideoChannel() == CKinect::VIDEO_CHANNEL_RGB)
 	{
-	     // Color image: We asked for Bayer data, so we can decode it outselves here
-	     //  and avoid having to reorder Green<->Red channels, as would be needed with
-	     //  the RGB image from freenect.
-          obs.intensityImageChannel = mrpt::obs::CObservation3DRangeScan::CH_VISIBLE;
-          obs.intensityImage.resize(frMode.width, frMode.height, CH_RGB, true /* origin=top-left */ );
+		// Color image: We asked for Bayer data, so we can decode it outselves
+		// here
+		//  and avoid having to reorder Green<->Red channels, as would be needed
+		//  with
+		//  the RGB image from freenect.
+		obs.intensityImageChannel =
+			mrpt::obs::CObservation3DRangeScan::CH_VISIBLE;
+		obs.intensityImage.resize(
+			frMode.width, frMode.height, CH_RGB, true /* origin=top-left */);
 
 #if MRPT_HAS_OPENCV
-#	if MRPT_OPENCV_VERSION_NUM<0x200
-		  // Version for VERY OLD OpenCV versions:
-		  IplImage *src_img_bayer = cvCreateImageHeader(cvSize(frMode.width,frMode.height),8,1);
-		  src_img_bayer->imageDataOrigin = reinterpret_cast<char*>(img_data);
-		  src_img_bayer->imageData = src_img_bayer->imageDataOrigin;
-		  src_img_bayer->widthStep = frMode.width;
+#if MRPT_OPENCV_VERSION_NUM < 0x200
+		// Version for VERY OLD OpenCV versions:
+		IplImage* src_img_bayer =
+			cvCreateImageHeader(cvSize(frMode.width, frMode.height), 8, 1);
+		src_img_bayer->imageDataOrigin = reinterpret_cast<char*>(img_data);
+		src_img_bayer->imageData = src_img_bayer->imageDataOrigin;
+		src_img_bayer->widthStep = frMode.width;
 
-		  IplImage *dst_img_RGB = obs.intensityImage.getAs<IplImage>();
+		IplImage* dst_img_RGB = obs.intensityImage.getAs<IplImage>();
 
-          // Decode Bayer image:
-		  cvCvtColor(src_img_bayer, dst_img_RGB, CV_BayerGB2BGR);
+		// Decode Bayer image:
+		cvCvtColor(src_img_bayer, dst_img_RGB, CV_BayerGB2BGR);
 
-#	else
-		  // Version for modern OpenCV:
-          const cv::Mat  src_img_bayer( frMode.height, frMode.width, CV_8UC1, img_data, frMode.width );
-
-          cv::Mat        dst_img_RGB= cv::cvarrToMat( obs.intensityImage.getAs<IplImage>(), false /* dont copy buffers */ );
-
-          // Decode Bayer image:
-          cv::cvtColor(src_img_bayer, dst_img_RGB, CV_BayerGB2BGR);
-#	endif
 #else
-     THROW_EXCEPTION("Need building with OpenCV!")
-#endif
+		// Version for modern OpenCV:
+		const cv::Mat src_img_bayer(
+			frMode.height, frMode.width, CV_8UC1, img_data, frMode.width);
 
+		cv::Mat dst_img_RGB = cv::cvarrToMat(
+			obs.intensityImage.getAs<IplImage>(),
+			false /* dont copy buffers */);
+
+		// Decode Bayer image:
+		cv::cvtColor(src_img_bayer, dst_img_RGB, CV_BayerGB2BGR);
+#endif
+#else
+		THROW_EXCEPTION("Need building with OpenCV!")
+#endif
 	}
 	else
 	{
-	     // IR data: grayscale 8bit
-          obs.intensityImageChannel = mrpt::obs::CObservation3DRangeScan::CH_IR;
-          obs.intensityImage.loadFromMemoryBuffer(
-               frMode.width,
-               frMode.height,
-               false, // Color image?
-               reinterpret_cast<unsigned char*>(img_data)
-               );
-
+		// IR data: grayscale 8bit
+		obs.intensityImageChannel = mrpt::obs::CObservation3DRangeScan::CH_IR;
+		obs.intensityImage.loadFromMemoryBuffer(
+			frMode.width, frMode.height,
+			false,  // Color image?
+			reinterpret_cast<unsigned char*>(img_data));
 	}
 
-	//obs.intensityImage.setChannelsOrder_RGB();
+// obs.intensityImage.setChannelsOrder_RGB();
 
 #ifdef KINECT_PROFILE_MEM_ALLOC
 	alloc_tim.leave("depth_rgb loadFromMemoryBuffer");
@@ -360,24 +383,23 @@ void rgb_cb(freenect_device *dev, void *img_data, uint32_t timestamp)
 	obj->internal_tim_latest_rgb() = timestamp;
 }
 // ========  END OF GLOBAL CALLBACK FUNCTIONS ========
-#endif // MRPT_HAS_KINECT_FREENECT
-
+#endif  // MRPT_HAS_KINECT_FREENECT
 
 void CKinect::open()
 {
-	if (isOpen())
-		close();
+	if (isOpen()) close();
 
 	// Alloc memory, if this is the first time:
-	m_buf_depth.resize(640*480*3); // We'll resize this below if needed
-	m_buf_rgb.resize(640*480*3);
+	m_buf_depth.resize(640 * 480 * 3);  // We'll resize this below if needed
+	m_buf_rgb.resize(640 * 480 * 3);
 
 #if MRPT_HAS_KINECT_FREENECT  // ----> libfreenect
 	// Try to open the device:
 	if (freenect_init(f_ctx_ptr, nullptr) < 0)
 		THROW_EXCEPTION("freenect_init() failed")
 
-	freenect_set_log_level(f_ctx,
+	freenect_set_log_level(
+		f_ctx,
 #ifdef _DEBUG
 		FREENECT_LOG_DEBUG
 #else
@@ -386,42 +408,41 @@ void CKinect::open()
 		);
 
 	int nr_devices = freenect_num_devices(f_ctx);
-	//printf("[CKinect] Number of devices found: %d\n", nr_devices);
+	// printf("[CKinect] Number of devices found: %d\n", nr_devices);
 
-	if (!nr_devices)
-		THROW_EXCEPTION("No Kinect devices found.")
+	if (!nr_devices) THROW_EXCEPTION("No Kinect devices found.")
 
 	// Open the given device number:
 	if (freenect_open_device(f_ctx, f_dev_ptr, m_user_device_number) < 0)
-		THROW_EXCEPTION_FMT("Error opening Kinect sensor with index: %d",m_user_device_number)
+		THROW_EXCEPTION_FMT(
+			"Error opening Kinect sensor with index: %d", m_user_device_number)
 
 	// Setup:
-	if (m_initial_tilt_angle!=360) // 360 means no motor command.
-          setTiltAngleDegrees(m_initial_tilt_angle);
-	freenect_set_led(f_dev,LED_RED);
+	if (m_initial_tilt_angle != 360)  // 360 means no motor command.
+		setTiltAngleDegrees(m_initial_tilt_angle);
+	freenect_set_led(f_dev, LED_RED);
 	freenect_set_depth_callback(f_dev, depth_cb);
 	freenect_set_video_callback(f_dev, rgb_cb);
 
 	// rgb or IR channel:
 	const freenect_frame_mode desiredFrMode = freenect_find_video_mode(
 		FREENECT_RESOLUTION_MEDIUM,
-		m_video_channel==VIDEO_CHANNEL_IR ?
-			FREENECT_VIDEO_IR_8BIT
-			:
-			FREENECT_VIDEO_BAYER // FREENECT_VIDEO_RGB: Use Bayer instead so we can directly decode it here
+		m_video_channel == VIDEO_CHANNEL_IR
+			? FREENECT_VIDEO_IR_8BIT
+			: FREENECT_VIDEO_BAYER  // FREENECT_VIDEO_RGB: Use Bayer instead so
+		// we can directly decode it here
 		);
 
 	// Switch to that video mode:
-	if (freenect_set_video_mode(f_dev, desiredFrMode)<0)
+	if (freenect_set_video_mode(f_dev, desiredFrMode) < 0)
 		THROW_EXCEPTION("Error setting Kinect video mode.")
-
 
 	// Get video mode:
 	const freenect_frame_mode frMode = freenect_get_current_video_mode(f_dev);
 
 	// Realloc mem:
-	m_buf_depth.resize(frMode.width*frMode.height*3);
-	m_buf_rgb.resize(frMode.width*frMode.height*3);
+	m_buf_depth.resize(frMode.width * frMode.height * 3);
+	m_buf_rgb.resize(frMode.width * frMode.height * 3);
 
 	// Save resolution:
 	m_cameraParamsRGB.ncols = frMode.width;
@@ -433,18 +454,20 @@ void CKinect::open()
 	freenect_set_video_buffer(f_dev, &m_buf_rgb[0]);
 	freenect_set_depth_buffer(f_dev, &m_buf_depth[0]);
 
-	freenect_set_depth_mode(f_dev, freenect_find_depth_mode(FREENECT_RESOLUTION_MEDIUM, FREENECT_DEPTH_10BIT));
+	freenect_set_depth_mode(
+		f_dev, freenect_find_depth_mode(
+				   FREENECT_RESOLUTION_MEDIUM, FREENECT_DEPTH_10BIT));
 
 	// Set user data = pointer to "this":
 	freenect_set_user(f_dev, this);
 
-	if (freenect_start_depth(f_dev)<0)
+	if (freenect_start_depth(f_dev) < 0)
 		THROW_EXCEPTION("Error starting depth streaming.")
 
-	if (freenect_start_video(f_dev)<0)
+	if (freenect_start_video(f_dev) < 0)
 		THROW_EXCEPTION("Error starting video streaming.")
 
-#endif // MRPT_HAS_KINECT_FREENECT
+#endif  // MRPT_HAS_KINECT_FREENECT
 }
 
 void CKinect::close()
@@ -458,20 +481,21 @@ void CKinect::close()
 	}
 	m_f_dev = nullptr;
 
-	if (f_ctx)
-		freenect_shutdown(f_ctx);
+	if (f_ctx) freenect_shutdown(f_ctx);
 	m_f_ctx = nullptr;
-#endif // MRPT_HAS_KINECT_FREENECT
+#endif  // MRPT_HAS_KINECT_FREENECT
 }
 
-/** Changes the video channel to open (RGB or IR) - you can call this method before start grabbing or in the middle of streaming and the video source will change on the fly.
+/** Changes the video channel to open (RGB or IR) - you can call this method
+   before start grabbing or in the middle of streaming and the video source will
+   change on the fly.
 	Default is RGB channel.
 */
-void  CKinect::setVideoChannel(const TVideoChannel vch)
+void CKinect::setVideoChannel(const TVideoChannel vch)
 {
 #if MRPT_HAS_KINECT_FREENECT
 	m_video_channel = vch;
-	if (!isOpen()) return; // Nothing else to do here.
+	if (!isOpen()) return;  // Nothing else to do here.
 
 	// rgb or IR channel:
 	freenect_stop_video(f_dev);
@@ -479,97 +503,107 @@ void  CKinect::setVideoChannel(const TVideoChannel vch)
 	// rgb or IR channel:
 	const freenect_frame_mode desiredFrMode = freenect_find_video_mode(
 		FREENECT_RESOLUTION_MEDIUM,
-		m_video_channel==VIDEO_CHANNEL_IR ?
-			FREENECT_VIDEO_IR_8BIT
-			:
-			FREENECT_VIDEO_BAYER // FREENECT_VIDEO_RGB: Use Bayer instead so we can directly decode it here
+		m_video_channel == VIDEO_CHANNEL_IR
+			? FREENECT_VIDEO_IR_8BIT
+			: FREENECT_VIDEO_BAYER  // FREENECT_VIDEO_RGB: Use Bayer instead so
+		// we can directly decode it here
 		);
 
 	// Switch to that video mode:
-	if (freenect_set_video_mode(f_dev, desiredFrMode)<0)
+	if (freenect_set_video_mode(f_dev, desiredFrMode) < 0)
 		THROW_EXCEPTION("Error setting Kinect video mode.")
 
 	freenect_start_video(f_dev);
 
 #else
 	MRPT_UNUSED_PARAM(vch);
-#endif // MRPT_HAS_KINECT_FREENECT
+#endif  // MRPT_HAS_KINECT_FREENECT
 }
 
-
-/** The main data retrieving function, to be called after calling loadConfig() and initialize().
-  *  \param out_obs The output retrieved observation (only if there_is_obs=true).
+/** The main data retrieving function, to be called after calling loadConfig()
+ * and initialize().
+  *  \param out_obs The output retrieved observation (only if
+ * there_is_obs=true).
   *  \param there_is_obs If set to false, there was no new observation.
   *  \param hardware_error True on hardware/comms error.
   *
   * \sa doProcess
   */
 void CKinect::getNextObservation(
-	mrpt::obs::CObservation3DRangeScan &_out_obs,
-	bool &there_is_obs,
-	bool &hardware_error )
+	mrpt::obs::CObservation3DRangeScan& _out_obs, bool& there_is_obs,
+	bool& hardware_error)
 {
-	there_is_obs=false;
+	there_is_obs = false;
 	hardware_error = false;
 
 #if MRPT_HAS_KINECT_FREENECT
 
-	static const double max_wait_seconds = 1./25.;
-	static const TTimeStamp max_wait = mrpt::system::secondsToTimestamp(max_wait_seconds);
+	static const double max_wait_seconds = 1. / 25.;
+	static const TTimeStamp max_wait =
+		mrpt::system::secondsToTimestamp(max_wait_seconds);
 
 	// Mark previous observation's timestamp as out-dated:
-	m_latest_obs.hasPoints3D        = false;
-	m_latest_obs.hasRangeImage      = false;
-	m_latest_obs.hasIntensityImage  = false;
+	m_latest_obs.hasPoints3D = false;
+	m_latest_obs.hasRangeImage = false;
+	m_latest_obs.hasIntensityImage = false;
 	m_latest_obs.hasConfidenceImage = false;
 
 	const TTimeStamp tim0 = mrpt::system::now();
 
-	// Reset these timestamp flags so if they are !=0 in the next call we're sure they're new frames.
+	// Reset these timestamp flags so if they are !=0 in the next call we're
+	// sure they're new frames.
 	m_latest_obs_cs.lock();
-	m_tim_latest_rgb   = 0;
+	m_tim_latest_rgb = 0;
 	m_tim_latest_depth = 0;
 	m_latest_obs_cs.unlock();
 
-	while (freenect_process_events(f_ctx)>=0 && mrpt::system::now()<(tim0+max_wait) )
+	while (freenect_process_events(f_ctx) >= 0 &&
+		   mrpt::system::now() < (tim0 + max_wait))
 	{
 		// Got a new frame?
-		if ( (!m_grab_image || m_tim_latest_rgb!=0) &&   // If we are NOT grabbing RGB or we are and there's a new frame...
-			 (!m_grab_depth || m_tim_latest_depth!=0)    // If we are NOT grabbing Depth or we are and there's a new frame...
-		   )
+		if ((!m_grab_image ||
+			 m_tim_latest_rgb != 0) &&  // If we are NOT grabbing RGB or we are
+			// and there's a new frame...
+			(!m_grab_depth ||
+			 m_tim_latest_depth != 0)  // If we are NOT grabbing Depth or we are
+			// and there's a new frame...
+			)
 		{
-			// Approx: 0.5ms delay between depth frame (first) and RGB frame (second).
-			//cout << "m_tim_latest_rgb: " << m_tim_latest_rgb << " m_tim_latest_depth: "<< m_tim_latest_depth <<endl;
-			there_is_obs=true;
+			// Approx: 0.5ms delay between depth frame (first) and RGB frame
+			// (second).
+			// cout << "m_tim_latest_rgb: " << m_tim_latest_rgb << "
+			// m_tim_latest_depth: "<< m_tim_latest_depth <<endl;
+			there_is_obs = true;
 			break;
 		}
 	}
 
-	// Handle the case when there is NOT depth frames (if there's something very close blocking the IR sensor) but we have RGB:
-	if ( (m_grab_image && m_tim_latest_rgb!=0) &&
-		 (m_grab_depth && m_tim_latest_depth==0) )
+	// Handle the case when there is NOT depth frames (if there's something very
+	// close blocking the IR sensor) but we have RGB:
+	if ((m_grab_image && m_tim_latest_rgb != 0) &&
+		(m_grab_depth && m_tim_latest_depth == 0))
 	{
 		// Mark the entire range data as invalid:
 		m_latest_obs.hasRangeImage = true;
 		m_latest_obs.range_is_depth = true;
 
-		m_latest_obs_cs.lock(); // Important: if system is running slow, etc. we cannot tell for sure that the depth buffer is not beeing filled right now:
-		m_latest_obs.rangeImage.setSize(m_cameraParamsDepth.nrows,m_cameraParamsDepth.ncols);
-		m_latest_obs.rangeImage.setConstant(0); // "0" means: error in range
+		m_latest_obs_cs.lock();  // Important: if system is running slow, etc.
+		// we cannot tell for sure that the depth
+		// buffer is not beeing filled right now:
+		m_latest_obs.rangeImage.setSize(
+			m_cameraParamsDepth.nrows, m_cameraParamsDepth.ncols);
+		m_latest_obs.rangeImage.setConstant(0);  // "0" means: error in range
 		m_latest_obs_cs.unlock();
-		there_is_obs=true;
+		there_is_obs = true;
 	}
 
-
-	if (!there_is_obs)
-		return;
-
+	if (!there_is_obs) return;
 
 	// We DO have a fresh new observation:
 
 	// Quick save the observation to the user's object:
 	m_latest_obs_cs.lock();
-		_out_obs.swap(m_latest_obs);
+	_out_obs.swap(m_latest_obs);
 	m_latest_obs_cs.unlock();
 #endif
 
@@ -580,46 +614,56 @@ void CKinect::getNextObservation(
 	_out_obs.sensorPose = m_sensorPoseOnRobot;
 	_out_obs.relativePoseIntensityWRTDepth = m_relativePoseIntensityWRTDepth;
 
-	_out_obs.cameraParams          = m_cameraParamsDepth;
+	_out_obs.cameraParams = m_cameraParamsDepth;
 	_out_obs.cameraParamsIntensity = m_cameraParamsRGB;
 
 	// 3D point cloud:
-	if ( _out_obs.hasRangeImage && m_grab_3D_points )
+	if (_out_obs.hasRangeImage && m_grab_3D_points)
 	{
 		_out_obs.project3DPointsFromDepthImage();
 
-		if ( !m_grab_depth )
+		if (!m_grab_depth)
 		{
 			_out_obs.hasRangeImage = false;
-			_out_obs.rangeImage.resize(0,0);
+			_out_obs.rangeImage.resize(0, 0);
 		}
-
 	}
 
 	// preview in real-time?
 	if (m_preview_window)
 	{
-		if ( _out_obs.hasRangeImage )
+		if (_out_obs.hasRangeImage)
 		{
-			if (++m_preview_decim_counter_range>m_preview_window_decimation)
+			if (++m_preview_decim_counter_range > m_preview_window_decimation)
 			{
-				m_preview_decim_counter_range=0;
-				if (!m_win_range)	{ m_win_range = std::make_shared<mrpt::gui::CDisplayWindow>("Preview RANGE"); m_win_range->setPos(5,5); }
+				m_preview_decim_counter_range = 0;
+				if (!m_win_range)
+				{
+					m_win_range = std::make_shared<mrpt::gui::CDisplayWindow>(
+						"Preview RANGE");
+					m_win_range->setPos(5, 5);
+				}
 
 				// Normalize the image
-				mrpt::utils::CImage  img;
+				mrpt::utils::CImage img;
 				img.setFromMatrix(_out_obs.rangeImage);
-				CMatrixFloat r = _out_obs.rangeImage * float(1.0/this->m_maxRange);
+				CMatrixFloat r =
+					_out_obs.rangeImage * float(1.0 / this->m_maxRange);
 				m_win_range->showImage(img);
 			}
 		}
-		if ( _out_obs.hasIntensityImage )
+		if (_out_obs.hasIntensityImage)
 		{
-			if (++m_preview_decim_counter_rgb>m_preview_window_decimation)
+			if (++m_preview_decim_counter_rgb > m_preview_window_decimation)
 			{
-				m_preview_decim_counter_rgb=0;
-				if (!m_win_int)		{ m_win_int = std::make_shared<mrpt::gui::CDisplayWindow>("Preview INTENSITY"); m_win_int->setPos(300,5); }
-				m_win_int->showImage(_out_obs.intensityImage );
+				m_preview_decim_counter_rgb = 0;
+				if (!m_win_int)
+				{
+					m_win_int = std::make_shared<mrpt::gui::CDisplayWindow>(
+						"Preview INTENSITY");
+					m_win_int->setPos(300, 5);
+				}
+				m_win_int->showImage(_out_obs.intensityImage);
 			}
 		}
 	}
@@ -634,19 +678,18 @@ void CKinect::getNextObservation(
 				getNextObservation (with IMU)
 ----------------------------------------------------- */
 void CKinect::getNextObservation(
-	mrpt::obs::CObservation3DRangeScan &out_obs,
-	mrpt::obs::CObservationIMU         &out_obs_imu,
-	bool &there_is_obs,
-	bool &hardware_error )
+	mrpt::obs::CObservation3DRangeScan& out_obs,
+	mrpt::obs::CObservationIMU& out_obs_imu, bool& there_is_obs,
+	bool& hardware_error)
 {
 	// First, try getting the RGB+Depth data:
-	getNextObservation(out_obs,there_is_obs, hardware_error);
+	getNextObservation(out_obs, there_is_obs, hardware_error);
 
 	// If successful, fill out the accelerometer data:
 	if (there_is_obs && this->m_grab_IMU)
 	{
-		double acc_x=0,acc_y=0,acc_z=0; // In m/s^2
-		bool  has_good_acc=false;
+		double acc_x = 0, acc_y = 0, acc_z = 0;  // In m/s^2
+		bool has_good_acc = false;
 
 #if MRPT_HAS_KINECT_FREENECT
 		{
@@ -655,7 +698,7 @@ void CKinect::getNextObservation(
 			if (state)
 			{
 				has_good_acc = true;
-				double lx,ly,lz;
+				double lx, ly, lz;
 				freenect_get_mks_accel(state, &lx, &ly, &lz);
 
 				// Convert to a unified coordinate system:
@@ -673,10 +716,10 @@ void CKinect::getNextObservation(
 		if (has_good_acc)
 		{
 			out_obs_imu.sensorLabel = out_obs.sensorLabel + "_IMU";
-			out_obs_imu.timestamp   = out_obs.timestamp;
+			out_obs_imu.timestamp = out_obs.timestamp;
 			out_obs_imu.sensorPose = out_obs.sensorPose;
 
-			for (size_t i=0;i<out_obs_imu.dataIsPresent.size();i++)
+			for (size_t i = 0; i < out_obs_imu.dataIsPresent.size(); i++)
 				out_obs_imu.dataIsPresent[i] = false;
 
 			out_obs_imu.dataIsPresent[IMU_X_ACC] = true;
@@ -690,45 +733,45 @@ void CKinect::getNextObservation(
 	}
 }
 
-
 /* -----------------------------------------------------
 				setPathForExternalImages
 ----------------------------------------------------- */
-void CKinect::setPathForExternalImages( const std::string &directory )
+void CKinect::setPathForExternalImages(const std::string& directory)
 {
 	MRPT_UNUSED_PARAM(directory);
 	// Ignore for now. It seems performance is better grabbing everything
-	// to a single big file than creating hundreds of smaller files per second...
+	// to a single big file than creating hundreds of smaller files per
+	// second...
 	return;
 
-//	if (!mrpt::system::createDirectory( directory ))
-//	{
-//		THROW_EXCEPTION_FMT("Error: Cannot create the directory for externally saved images: %s",directory.c_str() )
-//	}
-//	m_path_for_external_images = directory;
+	//	if (!mrpt::system::createDirectory( directory ))
+	//	{
+	//		THROW_EXCEPTION_FMT("Error: Cannot create the directory for
+	// externally
+	// saved images: %s",directory.c_str() )
+	//	}
+	//	m_path_for_external_images = directory;
 }
-
 
 /** Change tilt angle \note Sensor must be open first. */
 void CKinect::setTiltAngleDegrees(double angle)
 {
-	ASSERTMSG_(isOpen(),"Sensor must be open first")
+	ASSERTMSG_(isOpen(), "Sensor must be open first")
 
 #if MRPT_HAS_KINECT_FREENECT
-	freenect_set_tilt_degs(f_dev,angle);
+	freenect_set_tilt_degs(f_dev, angle);
 #else
 	MRPT_UNUSED_PARAM(angle);
 #endif
-
 }
 
 double CKinect::getTiltAngleDegrees()
 {
-	ASSERTMSG_(isOpen(),"Sensor must be open first")
+	ASSERTMSG_(isOpen(), "Sensor must be open first")
 
 #if MRPT_KINECT_WITH_FREENECT
 	freenect_update_tilt_state(f_dev);
-	freenect_raw_tilt_state *ts=freenect_get_tilt_state(f_dev);
+	freenect_raw_tilt_state* ts = freenect_get_tilt_state(f_dev);
 	return freenect_get_tilt_degs(ts);
 #else
 	return 0;

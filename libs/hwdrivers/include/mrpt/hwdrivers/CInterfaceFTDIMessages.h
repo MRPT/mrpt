@@ -15,15 +15,14 @@
 
 namespace mrpt
 {
-	namespace hwdrivers
-	{
-		/** Since MRPT 0.9.1 this class has no extra functionality, since the methods for sending/receiving messages are not in CStream.
-		 */
-		typedef CInterfaceFTDI  CInterfaceFTDIMessages;
+namespace hwdrivers
+{
+/** Since MRPT 0.9.1 this class has no extra functionality, since the methods
+ * for sending/receiving messages are not in CStream.
+ */
+typedef CInterfaceFTDI CInterfaceFTDIMessages;
 
-	} // end of namespace
-} // end of namespace
+}  // end of namespace
+}  // end of namespace
 
 #endif
-
-

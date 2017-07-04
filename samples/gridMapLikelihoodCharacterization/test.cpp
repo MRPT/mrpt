@@ -25,56 +25,58 @@ using namespace mrpt::poses;
 using namespace std;
 
 #include <mrpt/examples_config.h>
-string   myDataDir( MRPT_EXAMPLES_BASE_DIRECTORY + string("gridMapLikelihoodCharacterization/") );
+string myDataDir(
+	MRPT_EXAMPLES_BASE_DIRECTORY +
+	string("gridMapLikelihoodCharacterization/"));
 
 // Default .ini file:
-string   iniFile( myDataDir+string("config_likelihood.ini") );
-
+string iniFile(myDataDir + string("config_likelihood.ini"));
 
 // ------------------------------------------------------
 //				theMainThing
 // ------------------------------------------------------
 void theMainThing()
 {
-	COccupancyGridMap2D			gridMap;
-	CObservation2DRangeScan		obsScan;
-	CTicTac						tictac;
+	COccupancyGridMap2D gridMap;
+	CObservation2DRangeScan obsScan;
+	CTicTac tictac;
 
 	// Load the grid map from file
 	// ----------------------------------------------
 	obsScan.aperture = M_2PIf;
 
 	ASSERT_(mrpt::system::fileExists(iniFile));
-	CConfigFile	cfgFile(iniFile);
+	CConfigFile cfgFile(iniFile);
 
-	string  bmp=cfgFile.read_string("Params","bitmap_file","",true);
-	float	res=cfgFile.read_float("Params","evaluation_grid_resolution",0.1f,true);
+	string bmp = cfgFile.read_string("Params", "bitmap_file", "", true);
+	float res =
+		cfgFile.read_float("Params", "evaluation_grid_resolution", 0.1f, true);
 
-	float evalgrid_x_min=0,evalgrid_x_max=0;
-	float evalgrid_y_min=0,evalgrid_y_max=0;
+	float evalgrid_x_min = 0, evalgrid_x_max = 0;
+	float evalgrid_y_min = 0, evalgrid_y_max = 0;
 
 	MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(evalgrid_x_min, float, cfgFile, "Params");
 	MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(evalgrid_x_max, float, cfgFile, "Params");
 	MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(evalgrid_y_min, float, cfgFile, "Params");
 	MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(evalgrid_y_max, float, cfgFile, "Params");
 
-	int type_experiment=0;
+	int type_experiment = 0;
 	MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(type_experiment, int, cfgFile, "Params");
 
 	// Gridmap:
-	string   GRIDMAP_FILE( myDataDir+bmp );
+	string GRIDMAP_FILE(myDataDir + bmp);
 
-	gridMap.loadFromBitmapFile( GRIDMAP_FILE, 0.05f );
+	gridMap.loadFromBitmapFile(GRIDMAP_FILE, 0.05f);
 	gridMap.saveAsBitmapFile("./out_gridmap.png");
 
-	if (type_experiment==0)
+	if (type_experiment == 0)
 	{
 		// Simulate scan:
 		// ----------------------------------------------
 		obsScan.aperture = M_PIf;
 		obsScan.maxRange = 80.0f;
 		obsScan.rightToLeft = true;
-		gridMap.laserScanSimulator( obsScan, CPose2D(0,0,0), 0.5f, 180 );
+		gridMap.laserScanSimulator(obsScan, CPose2D(0, 0, 0), 0.5f, 180);
 	}
 	else
 	{
@@ -83,50 +85,50 @@ void theMainThing()
 		obsScan.aperture = 0;
 		obsScan.maxRange = 80.0f;
 		obsScan.rightToLeft = true;
-        obsScan.resizeScanAndAssign(1, 0.0, true);
+		obsScan.resizeScanAndAssign(1, 0.0, true);
 	}
 
 	// Set options:
 	// ----------------------------------------------
-	gridMap.likelihoodOptions.loadFromConfigFile( cfgFile, "LikelihoodOptions" );
+	gridMap.likelihoodOptions.loadFromConfigFile(cfgFile, "LikelihoodOptions");
 	gridMap.likelihoodOptions.dumpToConsole();
 
 	// Perform simulation:
 	// ----------------------------------------------
 	printf("Performing simulation (saving to out_lik.txt)...");
 
-	FILE	*f=os::fopen("out_lik.txt","wt");
+	FILE* f = os::fopen("out_lik.txt", "wt");
 	ASSERT_(f);
 
-	CSimplePointsMap	pointsMap;
+	CSimplePointsMap pointsMap;
 	pointsMap.clear();
-	pointsMap.insertPoint(0,0);
+	pointsMap.insertPoint(0, 0);
 
 	tictac.Tic();
 
+	float phi = (float)DEG2RAD(0);
 
-	float	phi = (float)DEG2RAD( 0 );
+	CPose2D nullPose(0, 0, phi);
 
-	CPose2D		nullPose(0,0,phi);
-
-	for (float y=evalgrid_y_min;y<evalgrid_y_max;y+=res)
+	for (float y = evalgrid_y_min; y < evalgrid_y_max; y += res)
 	{
-		for (float x=evalgrid_x_min;x<evalgrid_x_max;x+=res)
+		for (float x = evalgrid_x_min; x < evalgrid_x_max; x += res)
 		{
-			nullPose.x( x );
-			nullPose.y( y );
-			fprintf(f,"%e ", gridMap.computeObservationLikelihood( &obsScan, nullPose) );
-		} // for y
-		fprintf(f,"\n");
-	} // for x
+			nullPose.x(x);
+			nullPose.y(y);
+			fprintf(
+				f, "%e ",
+				gridMap.computeObservationLikelihood(&obsScan, nullPose));
+		}  // for y
+		fprintf(f, "\n");
+	}  // for x
 
 	printf("Done!\n");
 
-	printf("Time:%fms\n", 1000.0f*tictac.Tac() );
+	printf("Time:%fms\n", 1000.0f * tictac.Tac());
 
 	os::fclose(f);
 }
-
 
 int main()
 {
@@ -135,7 +137,8 @@ int main()
 		theMainThing();
 
 		return 0;
-	} catch (std::exception &e)
+	}
+	catch (std::exception& e)
 	{
 		std::cout << "MRPT exception:\n" << e.what() << std::endl;
 		return -1;
@@ -145,5 +148,4 @@ int main()
 		printf("Runtime exception!!");
 		return -1;
 	}
-
 }

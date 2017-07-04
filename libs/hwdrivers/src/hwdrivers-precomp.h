@@ -15,5 +15,3 @@
 #include <mrpt/hwdrivers/CGenericSensor.h>
 
 #endif
-
-

@@ -15,7 +15,7 @@
 // Standard headers:
 #include <cstddef>
 #include <cstdlib>
-#define _USE_MATH_DEFINES // (For VS to define M_PI, etc. in cmath)
+#define _USE_MATH_DEFINES  // (For VS to define M_PI, etc. in cmath)
 #include <cmath>
 // C++ STL Library:
 #include <vector>
@@ -32,4 +32,3 @@
 #include <mrpt/utils/types_simple.h>
 //
 #endif
-

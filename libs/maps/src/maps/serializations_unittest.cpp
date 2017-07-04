@@ -7,7 +7,6 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-
 #define MRPT_NO_WARN_BIG_HDR  // Yes, we really want to include all classes.
 #include <mrpt/maps.h>
 
@@ -20,32 +19,32 @@ using namespace mrpt::maps;
 using namespace mrpt::obs;
 using namespace std;
 
-
-// Create a set of classes, then serialize and deserialize to test possible bugs:
+// Create a set of classes, then serialize and deserialize to test possible
+// bugs:
 TEST(SerializeTestMaps, WriteReadToMem)
 {
 	const mrpt::utils::TRuntimeClassId* lstClasses[] = {
-		CLASS_ID( CBeacon ),
-		CLASS_ID( CBeaconMap ),
-		CLASS_ID( CColouredPointsMap),
-		CLASS_ID( CGasConcentrationGridMap2D),
-		CLASS_ID( CWirelessPowerGridMap2D),
-		CLASS_ID( CHeightGridMap2D),
-		CLASS_ID( CReflectivityGridMap2D),
-		CLASS_ID( COccupancyGridMap2D),
-		CLASS_ID( CSimplePointsMap),
-		CLASS_ID( CRandomFieldGridMap3D ),
-		CLASS_ID( CWeightedPointsMap),
-		CLASS_ID( COctoMap)
-		};
+		CLASS_ID(CBeacon),
+		CLASS_ID(CBeaconMap),
+		CLASS_ID(CColouredPointsMap),
+		CLASS_ID(CGasConcentrationGridMap2D),
+		CLASS_ID(CWirelessPowerGridMap2D),
+		CLASS_ID(CHeightGridMap2D),
+		CLASS_ID(CReflectivityGridMap2D),
+		CLASS_ID(COccupancyGridMap2D),
+		CLASS_ID(CSimplePointsMap),
+		CLASS_ID(CRandomFieldGridMap3D),
+		CLASS_ID(CWeightedPointsMap),
+		CLASS_ID(COctoMap)};
 
-	for (size_t i=0;i<sizeof(lstClasses)/sizeof(lstClasses[0]);i++)
+	for (size_t i = 0; i < sizeof(lstClasses) / sizeof(lstClasses[0]); i++)
 	{
 		try
 		{
-			CMemoryStream  buf;
+			CMemoryStream buf;
 			{
-				CSerializable* o = static_cast<CSerializable*>(lstClasses[i]->createObject());
+				CSerializable* o =
+					static_cast<CSerializable*>(lstClasses[i]->createObject());
 				buf << *o;
 				delete o;
 			}
@@ -54,11 +53,11 @@ TEST(SerializeTestMaps, WriteReadToMem)
 			buf.Seek(0);
 			buf >> recons;
 		}
-		catch(std::exception &e)
+		catch (std::exception& e)
 		{
-			GTEST_FAIL() <<
-				"Exception during serialization test for class '"<< lstClasses[i]->className <<"':\n" << e.what() << endl;
+			GTEST_FAIL() << "Exception during serialization test for class '"
+						 << lstClasses[i]->className << "':\n"
+						 << e.what() << endl;
 		}
 	}
 }
-

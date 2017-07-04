@@ -19,155 +19,190 @@
 
 namespace mrpt
 {
-	namespace maps
+namespace maps
+{
+/** A cloud of points in 2D or 3D, which can be built from a sequence of laser
+ * scans.
+ *    This class stores the coordinates (x,y,z) and a "weight", or counter of
+ * how many times that point has been seen, used only if points fusion is
+ * enabled in the options structure.
+ * \sa CMetricMap, CPoint, mrpt::utils::CSerializable, CSimplePointsMap
+ * \ingroup mrpt_maps_grp
+ */
+class MAPS_IMPEXP CWeightedPointsMap : public CPointsMap
+{
+	DEFINE_SERIALIZABLE(CWeightedPointsMap)
+
+   public:
+	/** Default constructor */
+	CWeightedPointsMap();
+	/** Destructor */
+	virtual ~CWeightedPointsMap();
+
+	// --------------------------------------------
+	/** @name Pure virtual interfaces to be implemented by any class derived
+	   from CPointsMap
+		@{ */
+	virtual void reserve(size_t newLength) override;  // See base class docs
+	virtual void resize(size_t newLength) override;  // See base class docs
+	virtual void setSize(size_t newLength) override;  // See base class docs
+
+	/** Changes the coordinates of the given point (0-based index), *without*
+	 * checking for out-of-bounds and *without* calling mark_as_modified() \sa
+	 * setPoint */
+	virtual void setPointFast(size_t index, float x, float y, float z) override;
+
+	/** The virtual method for \a insertPoint() *without* calling
+	 * mark_as_modified()   */
+	virtual void insertPointFast(float x, float y, float z = 0) override;
+
+	/** Virtual assignment operator, to be implemented in derived classes  */
+	virtual void copyFrom(const CPointsMap& obj) override;
+
+	/** Get all the data fields for one point as a vector: [X Y Z WEIGHT]
+	  *  Unlike getPointAllFields(), this method does not check for index out of
+	 * bounds
+	  * \sa getPointAllFields, setPointAllFields, setPointAllFieldsFast
+	  */
+	virtual void getPointAllFieldsFast(
+		const size_t index, std::vector<float>& point_data) const override
 	{
-
-
-		/** A cloud of points in 2D or 3D, which can be built from a sequence of laser scans.
-		 *    This class stores the coordinates (x,y,z) and a "weight", or counter of how many times that point has been seen, used only if points fusion is enabled in the options structure.
-		 * \sa CMetricMap, CPoint, mrpt::utils::CSerializable, CSimplePointsMap
-	  	 * \ingroup mrpt_maps_grp
-		 */
-		class MAPS_IMPEXP CWeightedPointsMap : public CPointsMap
-		{
-			DEFINE_SERIALIZABLE( CWeightedPointsMap )
-
-		 public:
-			 /** Default constructor */
-			 CWeightedPointsMap();          
-			 /** Destructor */
-			 virtual ~CWeightedPointsMap(); 
-
-			// --------------------------------------------
-			/** @name Pure virtual interfaces to be implemented by any class derived from CPointsMap
-				@{ */
-			virtual void reserve(size_t newLength) override; // See base class docs
-			virtual void resize(size_t newLength) override; // See base class docs
-			virtual void setSize(size_t newLength) override;  // See base class docs
-
-			/** Changes the coordinates of the given point (0-based index), *without* checking for out-of-bounds and *without* calling mark_as_modified() \sa setPoint */
-			virtual void  setPointFast(size_t index,float x, float y, float z) override;
-
-			/** The virtual method for \a insertPoint() *without* calling mark_as_modified()   */
-			virtual void  insertPointFast( float x, float y, float z = 0 ) override;
-
-			 /** Virtual assignment operator, to be implemented in derived classes  */
-			 virtual void  copyFrom(const CPointsMap &obj) override;
-
-			/** Get all the data fields for one point as a vector: [X Y Z WEIGHT]
-			  *  Unlike getPointAllFields(), this method does not check for index out of bounds
-			  * \sa getPointAllFields, setPointAllFields, setPointAllFieldsFast
-			  */
-			virtual void  getPointAllFieldsFast( const size_t index, std::vector<float> & point_data ) const override {
-				point_data.resize(4);
-				point_data[0] = x[index];
-				point_data[1] = y[index];
-				point_data[2] = z[index];
-				point_data[3] = pointWeight[index];
-			}
-
-			/** Set all the data fields for one point as a vector: [X Y Z WEIGHT]
-			  *  Unlike setPointAllFields(), this method does not check for index out of bounds
-			  * \sa setPointAllFields, getPointAllFields, getPointAllFieldsFast
-			  */
-			virtual void  setPointAllFieldsFast( const size_t index, const std::vector<float> & point_data ) override {
-				ASSERTDEB_(point_data.size()==4)
-				x[index] = point_data[0];
-				y[index] = point_data[1];
-				z[index] = point_data[2];
-				pointWeight[index] = point_data[3];
-			}
-
-			/** See CPointsMap::loadFromRangeScan() */
-			virtual void  loadFromRangeScan(
-				const mrpt::obs::CObservation2DRangeScan &rangeScan,
-				const mrpt::poses::CPose3D				  *robotPose = nullptr ) override;
-
-			/** See CPointsMap::loadFromRangeScan() */
-			virtual void  loadFromRangeScan(
-				const mrpt::obs::CObservation3DRangeScan &rangeScan,
-				const mrpt::poses::CPose3D				  *robotPose = nullptr ) override;
-
-		protected:
-
-			/** Auxiliary method called from within \a addFrom() automatically, to finish the copying of class-specific data  */
-			virtual void  addFrom_classSpecific(const CPointsMap &anotherMap, const size_t nPreviousPoints) override;
-
-			// Friend methods:
-			template <class Derived> friend struct detail::loadFromRangeImpl;
-			template <class Derived> friend struct detail::pointmap_traits;
-
-		public:
-
-			/** @} */
-			// --------------------------------------------
-
-			/// Sets the point weight, which is ignored in all classes but those which actually store that field (Note: No checks are done for out-of-bounds index). \sa getPointWeight
-			virtual void setPointWeight(size_t index,unsigned long w) override { pointWeight[index]=w; }
-			/// Gets the point weight, which is ignored in all classes (defaults to 1) but in those which actually store that field (Note: No checks are done for out-of-bounds index).  \sa setPointWeight
-			virtual unsigned int getPointWeight(size_t index) const override { return pointWeight[index]; }
-
-		protected:
-			/** The points weights */
-			std::vector<uint32_t>  pointWeight;  
-
-			/** Clear the map, erasing all the points.
-			 */
-			virtual void internal_clear() override;
-
-		protected:
-			/** @name PLY Import virtual methods to implement in base classes
-			    @{ */
-			/** In a base class, reserve memory to prepare subsequent calls to PLY_import_set_vertex */
-			virtual void PLY_import_set_vertex_count(const size_t N) override;
-			/** @} */
-
-			MAP_DEFINITION_START(CWeightedPointsMap,MAPS_IMPEXP)
-				/** Observations insertion options */
-				mrpt::maps::CPointsMap::TInsertionOptions   insertionOpts;	
-				/** Probabilistic observation likelihood options */
-				mrpt::maps::CPointsMap::TLikelihoodOptions  likelihoodOpts;	
-			MAP_DEFINITION_END(CWeightedPointsMap,MAPS_IMPEXP)
-		}; // End of class def.
-		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CWeightedPointsMap , CPointsMap, MAPS_IMPEXP )
-	} // End of namespace
-
-	namespace utils
-	{
-		/** Specialization mrpt::utils::PointCloudAdapter<mrpt::maps::CWeightedPointsMap>  \ingroup mrpt_adapters_grp*/
-		template <>
-		class PointCloudAdapter<mrpt::maps::CWeightedPointsMap> : public detail::PointCloudAdapterHelperNoRGB<mrpt::maps::CWeightedPointsMap,float>
-		{
-		private:
-			mrpt::maps::CWeightedPointsMap &m_obj;
-		public:
-			/** The type of each point XYZ coordinates */
-			typedef float  coords_t;         
-			/** Has any color RGB info? */
-			static const int HAS_RGB   = 0;  
-			/** Has native RGB info (as floats)? */
-			static const int HAS_RGBf  = 0;  
-			/** Has native RGB info (as uint8_t)? */
-			static const int HAS_RGBu8 = 0;  
-
-			/** Constructor (accept a const ref for convenience) */
-			inline PointCloudAdapter(const mrpt::maps::CWeightedPointsMap &obj) : m_obj(*const_cast<mrpt::maps::CWeightedPointsMap*>(&obj)) { }
-			/** Get number of points */
-			inline size_t size() const { return m_obj.size(); }
-			/** Set number of points (to uninitialized values) */
-			inline void resize(const size_t N) { m_obj.resize(N); }
-
-			/** Get XYZ coordinates of i'th point */
-			template <typename T>
-			inline void getPointXYZ(const size_t idx, T &x,T &y, T &z) const {
-				m_obj.getPointFast(idx,x,y,z);
-			}
-			/** Set XYZ coordinates of i'th point */
-			inline void setPointXYZ(const size_t idx, const coords_t x,const coords_t y, const coords_t z) {
-				m_obj.setPointFast(idx,x,y,z);
-			}
-		}; // end of PointCloudAdapter<mrpt::maps::CPointsMap>
+		point_data.resize(4);
+		point_data[0] = x[index];
+		point_data[1] = y[index];
+		point_data[2] = z[index];
+		point_data[3] = pointWeight[index];
 	}
-} // End of namespace
+
+	/** Set all the data fields for one point as a vector: [X Y Z WEIGHT]
+	  *  Unlike setPointAllFields(), this method does not check for index out of
+	 * bounds
+	  * \sa setPointAllFields, getPointAllFields, getPointAllFieldsFast
+	  */
+	virtual void setPointAllFieldsFast(
+		const size_t index, const std::vector<float>& point_data) override
+	{
+		ASSERTDEB_(point_data.size() == 4)
+		x[index] = point_data[0];
+		y[index] = point_data[1];
+		z[index] = point_data[2];
+		pointWeight[index] = point_data[3];
+	}
+
+	/** See CPointsMap::loadFromRangeScan() */
+	virtual void loadFromRangeScan(
+		const mrpt::obs::CObservation2DRangeScan& rangeScan,
+		const mrpt::poses::CPose3D* robotPose = nullptr) override;
+
+	/** See CPointsMap::loadFromRangeScan() */
+	virtual void loadFromRangeScan(
+		const mrpt::obs::CObservation3DRangeScan& rangeScan,
+		const mrpt::poses::CPose3D* robotPose = nullptr) override;
+
+   protected:
+	/** Auxiliary method called from within \a addFrom() automatically, to
+	 * finish the copying of class-specific data  */
+	virtual void addFrom_classSpecific(
+		const CPointsMap& anotherMap, const size_t nPreviousPoints) override;
+
+	// Friend methods:
+	template <class Derived>
+	friend struct detail::loadFromRangeImpl;
+	template <class Derived>
+	friend struct detail::pointmap_traits;
+
+   public:
+	/** @} */
+	// --------------------------------------------
+
+	/// Sets the point weight, which is ignored in all classes but those which
+	/// actually store that field (Note: No checks are done for out-of-bounds
+	/// index). \sa getPointWeight
+	virtual void setPointWeight(size_t index, unsigned long w) override
+	{
+		pointWeight[index] = w;
+	}
+	/// Gets the point weight, which is ignored in all classes (defaults to 1)
+	/// but in those which actually store that field (Note: No checks are done
+	/// for out-of-bounds index).  \sa setPointWeight
+	virtual unsigned int getPointWeight(size_t index) const override
+	{
+		return pointWeight[index];
+	}
+
+   protected:
+	/** The points weights */
+	std::vector<uint32_t> pointWeight;
+
+	/** Clear the map, erasing all the points.
+	 */
+	virtual void internal_clear() override;
+
+   protected:
+	/** @name PLY Import virtual methods to implement in base classes
+		@{ */
+	/** In a base class, reserve memory to prepare subsequent calls to
+	 * PLY_import_set_vertex */
+	virtual void PLY_import_set_vertex_count(const size_t N) override;
+	/** @} */
+
+	MAP_DEFINITION_START(CWeightedPointsMap, MAPS_IMPEXP)
+	/** Observations insertion options */
+	mrpt::maps::CPointsMap::TInsertionOptions insertionOpts;
+	/** Probabilistic observation likelihood options */
+	mrpt::maps::CPointsMap::TLikelihoodOptions likelihoodOpts;
+	MAP_DEFINITION_END(CWeightedPointsMap, MAPS_IMPEXP)
+};  // End of class def.
+DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
+	CWeightedPointsMap, CPointsMap, MAPS_IMPEXP)
+}  // End of namespace
+
+namespace utils
+{
+/** Specialization
+ * mrpt::utils::PointCloudAdapter<mrpt::maps::CWeightedPointsMap>  \ingroup
+ * mrpt_adapters_grp*/
+template <>
+class PointCloudAdapter<mrpt::maps::CWeightedPointsMap>
+	: public detail::PointCloudAdapterHelperNoRGB<
+		  mrpt::maps::CWeightedPointsMap, float>
+{
+   private:
+	mrpt::maps::CWeightedPointsMap& m_obj;
+
+   public:
+	/** The type of each point XYZ coordinates */
+	typedef float coords_t;
+	/** Has any color RGB info? */
+	static const int HAS_RGB = 0;
+	/** Has native RGB info (as floats)? */
+	static const int HAS_RGBf = 0;
+	/** Has native RGB info (as uint8_t)? */
+	static const int HAS_RGBu8 = 0;
+
+	/** Constructor (accept a const ref for convenience) */
+	inline PointCloudAdapter(const mrpt::maps::CWeightedPointsMap& obj)
+		: m_obj(*const_cast<mrpt::maps::CWeightedPointsMap*>(&obj))
+	{
+	}
+	/** Get number of points */
+	inline size_t size() const { return m_obj.size(); }
+	/** Set number of points (to uninitialized values) */
+	inline void resize(const size_t N) { m_obj.resize(N); }
+	/** Get XYZ coordinates of i'th point */
+	template <typename T>
+	inline void getPointXYZ(const size_t idx, T& x, T& y, T& z) const
+	{
+		m_obj.getPointFast(idx, x, y, z);
+	}
+	/** Set XYZ coordinates of i'th point */
+	inline void setPointXYZ(
+		const size_t idx, const coords_t x, const coords_t y, const coords_t z)
+	{
+		m_obj.setPointFast(idx, x, y, z);
+	}
+};  // end of PointCloudAdapter<mrpt::maps::CPointsMap>
+}
+}  // End of namespace
 
 #endif

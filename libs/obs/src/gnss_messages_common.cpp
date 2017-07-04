@@ -7,74 +7,77 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include "obs-precomp.h"   // Precompiled headers
+#include "obs-precomp.h"  // Precompiled headers
 
-#include <mrpt/obs/gnss_messages.h> // Must include all message classes so we can implemente the class factory here
+#include <mrpt/obs/gnss_messages.h>  // Must include all message classes so we can implemente the class factory here
 #include <mrpt/utils/CMemoryStream.h>
 #include <map>
 
 using namespace std;
 using namespace mrpt::obs::gnss;
 
-#define LIST_ALL_MSGS \
-	/* ====== NMEA ======  */ \
-	DOFOR(NMEA_GGA) \
-	DOFOR(NMEA_RMC) \
-	DOFOR(NMEA_ZDA) \
-	DOFOR(NMEA_VTG) \
-	DOFOR(NMEA_GLL) \
-	/* ====== TopCon mmGPS ====== */  \
-	DOFOR(TOPCON_PZS) \
-	DOFOR(TOPCON_SATS) \
-	/* ====== Novatel OEM6 ======  */  \
-	DOFOR(NV_OEM6_GENERIC_FRAME) \
-	DOFOR(NV_OEM6_BESTPOS) \
-	/* ====== Novatel SPAN+OEM6 ====== */  \
-	DOFOR(NV_OEM6_GENERIC_SHORT_FRAME) \
-	DOFOR(NV_OEM6_INSPVAS) \
-	DOFOR(NV_OEM6_RANGECMP) \
-	DOFOR(NV_OEM6_RXSTATUS) \
-	DOFOR(NV_OEM6_RAWEPHEM) \
-	DOFOR(NV_OEM6_VERSION) \
-	DOFOR(NV_OEM6_RAWIMUS) \
-	DOFOR(NV_OEM6_MARKPOS) \
-	DOFOR(NV_OEM6_MARKTIME) \
-	DOFOR(NV_OEM6_MARK2TIME) \
-	DOFOR(NV_OEM6_IONUTC) \
-
+#define LIST_ALL_MSGS                     \
+	/* ====== NMEA ======  */             \
+	DOFOR(NMEA_GGA)                       \
+	DOFOR(NMEA_RMC)                       \
+	DOFOR(NMEA_ZDA)                       \
+	DOFOR(NMEA_VTG)                       \
+	DOFOR(NMEA_GLL)                       \
+	/* ====== TopCon mmGPS ====== */      \
+	DOFOR(TOPCON_PZS)                     \
+	DOFOR(TOPCON_SATS)                    \
+	/* ====== Novatel OEM6 ======  */     \
+	DOFOR(NV_OEM6_GENERIC_FRAME)          \
+	DOFOR(NV_OEM6_BESTPOS)                \
+	/* ====== Novatel SPAN+OEM6 ====== */ \
+	DOFOR(NV_OEM6_GENERIC_SHORT_FRAME)    \
+	DOFOR(NV_OEM6_INSPVAS)                \
+	DOFOR(NV_OEM6_RANGECMP)               \
+	DOFOR(NV_OEM6_RXSTATUS)               \
+	DOFOR(NV_OEM6_RAWEPHEM)               \
+	DOFOR(NV_OEM6_VERSION)                \
+	DOFOR(NV_OEM6_RAWIMUS)                \
+	DOFOR(NV_OEM6_MARKPOS)                \
+	DOFOR(NV_OEM6_MARKTIME)               \
+	DOFOR(NV_OEM6_MARK2TIME)              \
+	DOFOR(NV_OEM6_IONUTC)
 
 // Class factory:
-gnss_message*  gnss_message::Factory(const gnss_message_type_t msg_id)
+gnss_message* gnss_message::Factory(const gnss_message_type_t msg_id)
 {
-#define DOFOR(_MSG_ID)  case _MSG_ID: return new Message_##_MSG_ID();
+#define DOFOR(_MSG_ID) \
+	case _MSG_ID:      \
+		return new Message_##_MSG_ID();
 	switch (msg_id)
 	{
 		LIST_ALL_MSGS
-	default:
-		return nullptr;
+		default:
+			return nullptr;
 	};
 #undef DOFOR
 }
 bool gnss_message::FactoryKnowsMsgType(const gnss_message_type_t msg_id)
 {
-#define DOFOR(_MSG_ID)  case _MSG_ID: return true;
+#define DOFOR(_MSG_ID) \
+	case _MSG_ID:      \
+		return true;
 	switch (msg_id)
 	{
 		LIST_ALL_MSGS
-	default:
-		return false;
+		default:
+			return false;
 	};
 #undef DOFOR
 }
 
-const std::string & gnss_message::getMessageTypeAsString() const
+const std::string& gnss_message::getMessageTypeAsString() const
 {
 	static bool first_call = true;
-	static std::map<gnss_message_type_t,std::string>  gnss_type2str;
+	static std::map<gnss_message_type_t, std::string> gnss_type2str;
 	if (first_call)
 	{
-		first_call=false;
-#define DOFOR(_MSG_ID)  gnss_type2str[_MSG_ID] = #_MSG_ID;
+		first_call = false;
+#define DOFOR(_MSG_ID) gnss_type2str[_MSG_ID] = #_MSG_ID;
 		LIST_ALL_MSGS
 #undef DOFOR
 	}
@@ -82,9 +85,8 @@ const std::string & gnss_message::getMessageTypeAsString() const
 	return gnss_type2str[this->message_type];
 }
 
-
 // Save to binary stream. Launches an exception upon error
-void gnss_message::writeToStream(mrpt::utils::CStream &out) const
+void gnss_message::writeToStream(mrpt::utils::CStream& out) const
 {
 	const int32_t msg_id = message_type;
 	out << msg_id;
@@ -92,37 +94,41 @@ void gnss_message::writeToStream(mrpt::utils::CStream &out) const
 }
 
 // Load from binary stream. Launches an exception upon error
-void gnss_message::readFromStream(mrpt::utils::CStream &in)
+void gnss_message::readFromStream(mrpt::utils::CStream& in)
 {
 	int32_t msg_id;
 	in >> msg_id;
-	ASSERT_EQUAL_((int32_t)msg_id,this->message_type);
+	ASSERT_EQUAL_((int32_t)msg_id, this->message_type);
 	this->internal_readFromStream(in);
 }
 
-// Load from binary stream and creates object detecting its type (class factory). Launches an exception upon error
-gnss_message* gnss_message::readAndBuildFromStream(mrpt::utils::CStream &in)
+// Load from binary stream and creates object detecting its type (class
+// factory). Launches an exception upon error
+gnss_message* gnss_message::readAndBuildFromStream(mrpt::utils::CStream& in)
 {
 	int32_t msg_id;
 	in >> msg_id;
-	gnss_message* msg = gnss_message::Factory(static_cast<gnss_message_type_t>(msg_id) );
+	gnss_message* msg =
+		gnss_message::Factory(static_cast<gnss_message_type_t>(msg_id));
 	if (!msg)
-		THROW_EXCEPTION_FMT("Error deserializing gnss_message: unknown message type '%i'",static_cast<int>(msg_id));
+		THROW_EXCEPTION_FMT(
+			"Error deserializing gnss_message: unknown message type '%i'",
+			static_cast<int>(msg_id));
 	msg->internal_readFromStream(in);
 	return msg;
 }
 
-
 // Ctor (default: nullptr pointer)
-gnss_message_ptr::gnss_message_ptr() : ptr(nullptr)
-{}
+gnss_message_ptr::gnss_message_ptr() : ptr(nullptr) {}
 // Ctor:Makes a copy of the pointee
-gnss_message_ptr::gnss_message_ptr(const gnss_message_ptr &o)
+gnss_message_ptr::gnss_message_ptr(const gnss_message_ptr& o)
 {
-	if (!o.ptr) {
-		ptr=nullptr;
+	if (!o.ptr)
+	{
+		ptr = nullptr;
 	}
-	else {
+	else
+	{
 		mrpt::utils::CMemoryStream buf;
 		o->writeToStream(buf);
 		buf.Seek(0);
@@ -130,17 +136,21 @@ gnss_message_ptr::gnss_message_ptr(const gnss_message_ptr &o)
 	}
 }
 /** Assigns a pointer */
-gnss_message_ptr::gnss_message_ptr(const gnss_message* p) : 
-	ptr(const_cast<gnss_message*>(p)) 
-{ 
+gnss_message_ptr::gnss_message_ptr(const gnss_message* p)
+	: ptr(const_cast<gnss_message*>(p))
+{
 }
 void gnss_message_ptr::set(gnss_message* p)
 {
-	if (ptr) { delete ptr; ptr=nullptr; }
+	if (ptr)
+	{
+		delete ptr;
+		ptr = nullptr;
+	}
 	ptr = p;
 }
 // Makes a copy of the pointee
-gnss_message_ptr &gnss_message_ptr::operator =(const gnss_message_ptr&o)
+gnss_message_ptr& gnss_message_ptr::operator=(const gnss_message_ptr& o)
 {
 	mrpt::utils::CMemoryStream buf;
 	o->writeToStream(buf);
@@ -150,30 +160,35 @@ gnss_message_ptr &gnss_message_ptr::operator =(const gnss_message_ptr&o)
 }
 gnss_message_ptr::~gnss_message_ptr()
 {
-	if (ptr) { delete ptr; ptr=nullptr; }
+	if (ptr)
+	{
+		delete ptr;
+		ptr = nullptr;
+	}
 }
 
 // ---------------------------------------
-UTC_time::UTC_time() :
-	hour(0), minute(0), sec(0)
+UTC_time::UTC_time() : hour(0), minute(0), sec(0) {}
+void UTC_time::writeToStream(mrpt::utils::CStream& out) const
 {
-}
-void UTC_time::writeToStream(mrpt::utils::CStream &out) const {
 	out << hour << minute << sec;
 }
-void UTC_time::readFromStream(mrpt::utils::CStream &in) {
+void UTC_time::readFromStream(mrpt::utils::CStream& in)
+{
 	in >> hour >> minute >> sec;
 }
 
-// Build an MRPT timestamp with the hour/minute/sec of this structure and the date from the given timestamp.
-mrpt::system::TTimeStamp UTC_time::getAsTimestamp(const mrpt::system::TTimeStamp &date) const
+// Build an MRPT timestamp with the hour/minute/sec of this structure and the
+// date from the given timestamp.
+mrpt::system::TTimeStamp UTC_time::getAsTimestamp(
+	const mrpt::system::TTimeStamp& date) const
 {
 	using namespace mrpt::system;
 
 	TTimeParts parts;
-	timestampToParts(date,parts, false /* UTC, not local */);
+	timestampToParts(date, parts, false /* UTC, not local */);
 
-	parts.hour   = this->hour;
+	parts.hour = this->hour;
 	parts.minute = this->minute;
 	parts.second = this->sec;
 

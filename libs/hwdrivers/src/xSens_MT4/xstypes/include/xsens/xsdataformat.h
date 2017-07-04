@@ -14,11 +14,12 @@
 #include "xsoutputsettings.h"
 
 /*! \brief A structure for storing data formats. */
-struct XsDataFormat {
+struct XsDataFormat
+{
 	/** The stored output mode */
-	XsOutputMode		m_outputMode;		
+	XsOutputMode m_outputMode;
 	/** The stored output settings */
-	XsOutputSettings	m_outputSettings;	
+	XsOutputSettings m_outputSettings;
 
 #ifdef __cplusplus
 	/*! \brief Construct an XsDataFormat specifier
@@ -26,28 +27,36 @@ struct XsDataFormat {
 	  \param mode the outputmode
 	  \param settings the output settings
 	*/
-	inline explicit XsDataFormat(const XsOutputMode mode = XS_DEFAULT_OUTPUT_MODE, const XsOutputSettings settings = XS_DEFAULT_OUTPUT_SETTINGS)
-				: m_outputMode(mode), m_outputSettings(settings) {}
+	inline explicit XsDataFormat(
+		const XsOutputMode mode = XS_DEFAULT_OUTPUT_MODE,
+		const XsOutputSettings settings = XS_DEFAULT_OUTPUT_SETTINGS)
+		: m_outputMode(mode), m_outputSettings(settings)
+	{
+	}
 
 	//! Copy constructor
-	inline XsDataFormat(const XsDataFormat& other) : m_outputMode(other.m_outputMode), m_outputSettings(other.m_outputSettings) {}
+	inline XsDataFormat(const XsDataFormat& other)
+		: m_outputMode(other.m_outputMode),
+		  m_outputSettings(other.m_outputSettings)
+	{
+	}
 
 	//! Assignment operator
-	inline const XsDataFormat& operator = (const XsDataFormat& other)
+	inline const XsDataFormat& operator=(const XsDataFormat& other)
 	{
-		//lint --e{1529} assignment to self ok
+		// lint --e{1529} assignment to self ok
 		m_outputMode = other.m_outputMode;
 		m_outputSettings = other.m_outputSettings;
 		return *this;
 	}
 
 	//! Equality operator
-	inline bool operator == (const XsDataFormat& other) const
+	inline bool operator==(const XsDataFormat& other) const
 	{
-		return m_outputMode == other.m_outputMode && m_outputSettings == other.m_outputSettings;
+		return m_outputMode == other.m_outputMode &&
+			   m_outputSettings == other.m_outputSettings;
 	}
 #endif
 };
 
-#endif	// file guard
-
+#endif  // file guard

@@ -24,9 +24,9 @@
 #include <stddef.h>
 #include <stdio.h>
 #include "pstdint.h"
-#define _strnicmp	strncasecmp
+#define _strnicmp strncasecmp
 typedef int32_t XsIoHandle;
 
 #endif
 
-#endif	// file guard
+#endif  // file guard

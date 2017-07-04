@@ -21,21 +21,21 @@ using namespace mrpt::gui;
 using namespace mrpt::utils;
 using namespace std;
 
-
-string SERIAL_NAME;	// Name of the serial port to open
+string SERIAL_NAME;  // Name of the serial port to open
 
 // ------------------------------------------------------
 //				Test_RPLIDAR
 // ------------------------------------------------------
 void Test_RPLIDAR()
 {
-	CRoboPeakLidar  laser;
-	string 			serName;
+	CRoboPeakLidar laser;
+	string serName;
 
 	if (SERIAL_NAME.empty())
 	{
-		std::cout << "Enter the serial port name (e.g. COM1, ttyS0, ttyUSB0, ttyACM0): ";
-		getline(cin,serName);
+		std::cout << "Enter the serial port name (e.g. COM1, ttyS0, ttyUSB0, "
+					 "ttyACM0): ";
+		getline(cin, serName);
 	}
 	else
 	{
@@ -44,7 +44,7 @@ void Test_RPLIDAR()
 	}
 
 	// Set the laser serial port:
-	laser.setSerialPort( serName );
+	laser.setSerialPort(serName);
 
 	// Show GUI preview:
 	laser.showPreview(true);
@@ -53,57 +53,55 @@ void Test_RPLIDAR()
 	printf("Turning laser ON...\n");
 	if (laser.turnOn())
 		printf("Initialization OK!\n");
-	else {
+	else
+	{
 		printf("Initialization failed!\n");
 		return;
 	}
 
 	cout << "Press any key to stop capturing..." << endl;
 
-	CTicTac     tictac;
+	CTicTac tictac;
 	tictac.Tic();
 
 	while (!mrpt::system::os::kbhit())
 	{
-		bool						thereIsObservation,hardError;
-		CObservation2DRangeScan		obs;
+		bool thereIsObservation, hardError;
+		CObservation2DRangeScan obs;
 
-		laser.doProcessSimple( thereIsObservation, obs, hardError );
+		laser.doProcessSimple(thereIsObservation, obs, hardError);
 
-		if (hardError)
-			printf("[TEST] Hardware error=true!!\n");
+		if (hardError) printf("[TEST] Hardware error=true!!\n");
 
 		if (thereIsObservation)
 		{
 			double FPS = 1.0 / tictac.Tac();
 
-			printf("Scan received: %u ranges, FOV: %.02fdeg, %.03fHz: mid rang=%fm\n",
-				(unsigned int)obs.scan.size(),
-				RAD2DEG(obs.aperture),
-				FPS,
-				obs.scan[obs.scan.size()/2]);
+			printf(
+				"Scan received: %u ranges, FOV: %.02fdeg, %.03fHz: mid "
+				"rang=%fm\n",
+				(unsigned int)obs.scan.size(), RAD2DEG(obs.aperture), FPS,
+				obs.scan[obs.scan.size() / 2]);
 
-			obs.sensorPose = mrpt::poses::CPose3D(0,0,0);
+			obs.sensorPose = mrpt::poses::CPose3D(0, 0, 0);
 
 			tictac.Tic();
 		}
 
 		std::this_thread::sleep_for(5ms);
 	};
-
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
 	try
 	{
-	    if (argc>1)
-            SERIAL_NAME = string(argv[1]);
+		if (argc > 1) SERIAL_NAME = string(argv[1]);
 
 		Test_RPLIDAR();
 		return 0;
-
-	} catch (std::exception &e)
+	}
+	catch (std::exception& e)
 	{
 		std::cout << "EXCEPCION: " << e.what() << std::endl;
 		return -1;

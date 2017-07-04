@@ -19,53 +19,50 @@ using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE( CText, CRenderizable, mrpt::opengl )
+IMPLEMENTS_SERIALIZABLE(CText, CRenderizable, mrpt::opengl)
 
 /*---------------------------------------------------------------
 							Constructor
   ---------------------------------------------------------------*/
-CText::CText( const string &str )
+CText::CText(const string& str)
 {
-	m_str 	= str;
+	m_str = str;
 
-    m_fontName = "Arial";
-    m_fontHeight = 10;
-    m_fontWidth = 0;
+	m_fontName = "Arial";
+	m_fontHeight = 10;
+	m_fontWidth = 0;
 }
 
 /*---------------------------------------------------------------
 							Destructor
   ---------------------------------------------------------------*/
-CText::~CText()
-{
-}
-
+CText::~CText() {}
 /*---------------------------------------------------------------
 							render
   ---------------------------------------------------------------*/
-void   CText::render() const
+void CText::render() const
 {
 #if MRPT_HAS_OPENGL_GLUT
-    glDisable(GL_DEPTH_TEST);
-    glDisable(GL_LIGHTING);
+	glDisable(GL_DEPTH_TEST);
+	glDisable(GL_LIGHTING);
 
-	glColor4ub(m_color.R,m_color.G,m_color.B,m_color.A);
-    // Set the "cursor" to the XYZ position:
-    glRasterPos3f(0,0,0);//m_x,m_y,m_z);
+	glColor4ub(m_color.R, m_color.G, m_color.B, m_color.A);
+	// Set the "cursor" to the XYZ position:
+	glRasterPos3f(0, 0, 0);  // m_x,m_y,m_z);
 
-    // Call the lists for drawing the text:
-	renderTextBitmap( m_str.c_str(), GLUT_BITMAP_TIMES_ROMAN_10 );
+	// Call the lists for drawing the text:
+	renderTextBitmap(m_str.c_str(), GLUT_BITMAP_TIMES_ROMAN_10);
 
-    glEnable(GL_LIGHTING);
-    glEnable(GL_DEPTH_TEST);
+	glEnable(GL_LIGHTING);
+	glEnable(GL_DEPTH_TEST);
 #endif
 }
 
 /*---------------------------------------------------------------
    Implements the writing to a CStream capability of
-     CSerializable objects
+	 CSerializable objects
   ---------------------------------------------------------------*/
-void  CText::writeToStream(mrpt::utils::CStream &out,int *version) const
+void CText::writeToStream(mrpt::utils::CStream& out, int* version) const
 {
 	if (version)
 		*version = 1;
@@ -73,9 +70,8 @@ void  CText::writeToStream(mrpt::utils::CStream &out,int *version) const
 	{
 		writeToStreamRender(out);
 		out << m_str;
-        out << m_fontName;
-        out << (uint32_t)m_fontHeight << (uint32_t)m_fontWidth;
-
+		out << m_fontName;
+		out << (uint32_t)m_fontHeight << (uint32_t)m_fontWidth;
 	}
 }
 
@@ -83,30 +79,33 @@ void  CText::writeToStream(mrpt::utils::CStream &out,int *version) const
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void  CText::readFromStream(mrpt::utils::CStream &in,int version)
+void CText::readFromStream(mrpt::utils::CStream& in, int version)
 {
-	switch(version)
+	switch (version)
 	{
-	case 0:
-	case 1:
+		case 0:
+		case 1:
 		{
-			uint32_t	i;
+			uint32_t i;
 			readFromStreamRender(in);
 			in >> m_str;
-			if (version>=1)
+			if (version >= 1)
 			{
 				in >> m_fontName;
-				in >> i; m_fontHeight = i;
-				in >> i; m_fontWidth = i;
+				in >> i;
+				m_fontHeight = i;
+				in >> i;
+				m_fontWidth = i;
 			}
-		} break;
-	default:
-		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
-
+		}
+		break;
+		default:
+			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
 	};
 }
 
-void CText::getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const
+void CText::getBoundingBox(
+	mrpt::math::TPoint3D& bb_min, mrpt::math::TPoint3D& bb_max) const
 {
 	bb_min.x = 0;
 	bb_min.y = 0;

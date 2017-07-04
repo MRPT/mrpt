@@ -9,7 +9,6 @@
 
 #include "base-precomp.h"  // Precompiled headers
 
-
 #include <mrpt/poses/CPointPDFGaussian.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/math/matrix_serialization.h>
@@ -23,59 +22,51 @@ using namespace mrpt::math;
 using namespace mrpt::random;
 using namespace mrpt::system;
 
-IMPLEMENTS_SERIALIZABLE( CPointPDFGaussian, CPointPDF, mrpt::poses )
-
+IMPLEMENTS_SERIALIZABLE(CPointPDFGaussian, CPointPDF, mrpt::poses)
 
 /*---------------------------------------------------------------
 	Constructor
   ---------------------------------------------------------------*/
-CPointPDFGaussian::CPointPDFGaussian() : mean(0,0,0), cov()
+CPointPDFGaussian::CPointPDFGaussian() : mean(0, 0, 0), cov() {}
+/*---------------------------------------------------------------
+	Constructor
+  ---------------------------------------------------------------*/
+CPointPDFGaussian::CPointPDFGaussian(
+	const CPoint3D& init_Mean, const CMatrixDouble33& init_Cov)
+	: mean(init_Mean), cov(init_Cov)
 {
-
 }
 
 /*---------------------------------------------------------------
 	Constructor
   ---------------------------------------------------------------*/
-CPointPDFGaussian::CPointPDFGaussian(
-	const CPoint3D	&init_Mean,
-	const CMatrixDouble33 &init_Cov ) : mean(init_Mean), cov(init_Cov)
-{
-
-}
-
-/*---------------------------------------------------------------
-	Constructor
-  ---------------------------------------------------------------*/
-CPointPDFGaussian::CPointPDFGaussian(
-	const CPoint3D	&init_Mean ) : mean(init_Mean), cov()
+CPointPDFGaussian::CPointPDFGaussian(const CPoint3D& init_Mean)
+	: mean(init_Mean), cov()
 {
 	cov.zeros();
 }
 
-
 /*---------------------------------------------------------------
 						getMean
-  Returns an estimate of the pose, (the mean, or mathematical expectation of the PDF)
+  Returns an estimate of the pose, (the mean, or mathematical expectation of the
+ PDF)
  ---------------------------------------------------------------*/
-void CPointPDFGaussian::getMean(CPoint3D &p) const
-{
-	p=mean;
-}
-
+void CPointPDFGaussian::getMean(CPoint3D& p) const { p = mean; }
 /*---------------------------------------------------------------
 						getCovarianceAndMean
  ---------------------------------------------------------------*/
-void CPointPDFGaussian::getCovarianceAndMean(CMatrixDouble33 &C,CPoint3D &p) const
+void CPointPDFGaussian::getCovarianceAndMean(
+	CMatrixDouble33& C, CPoint3D& p) const
 {
-	p=mean;
-	C=cov;
+	p = mean;
+	C = cov;
 }
 
 /*---------------------------------------------------------------
 						writeToStream
   ---------------------------------------------------------------*/
-void  CPointPDFGaussian::writeToStream(mrpt::utils::CStream &out,int *version) const
+void CPointPDFGaussian::writeToStream(
+	mrpt::utils::CStream& out, int* version) const
 {
 	if (version)
 		*version = 1;
@@ -88,52 +79,52 @@ void  CPointPDFGaussian::writeToStream(mrpt::utils::CStream &out,int *version) c
 /*---------------------------------------------------------------
 						readFromStream
   ---------------------------------------------------------------*/
-void  CPointPDFGaussian::readFromStream(mrpt::utils::CStream &in,int version)
+void CPointPDFGaussian::readFromStream(mrpt::utils::CStream& in, int version)
 {
-	switch(version)
+	switch (version)
 	{
-	case 0:
+		case 0:
 		{
 			in >> mean;
 
 			CMatrix c;
-			in >> c; cov = c.cast<double>();
-		} break;
-	case 1:
+			in >> c;
+			cov = c.cast<double>();
+		}
+		break;
+		case 1:
 		{
 			in >> mean >> cov;
-		} break;
-	default:
-		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
-
+		}
+		break;
+		default:
+			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
 	};
 }
 
-
-void  CPointPDFGaussian::copyFrom(const CPointPDF &o)
+void CPointPDFGaussian::copyFrom(const CPointPDF& o)
 {
-	if (this == &o) return;		// It may be used sometimes
+	if (this == &o) return;  // It may be used sometimes
 
 	// Convert to gaussian pdf:
-	o.getCovarianceAndMean(cov,mean);
+	o.getCovarianceAndMean(cov, mean);
 }
 
 /*---------------------------------------------------------------
 
   ---------------------------------------------------------------*/
-void  CPointPDFGaussian::saveToTextFile(const std::string &file) const
+void CPointPDFGaussian::saveToTextFile(const std::string& file) const
 {
 	MRPT_START
 
-	FILE	*f=os::fopen(file.c_str(),"wt");
+	FILE* f = os::fopen(file.c_str(), "wt");
 	if (!f) return;
 
-	os::fprintf(f,"%f %f %f\n", mean.x(), mean.y(), mean.z() );
+	os::fprintf(f, "%f %f %f\n", mean.x(), mean.y(), mean.z());
 
-	os::fprintf(f,"%f %f %f\n", cov(0,0),cov(0,1),cov(0,2) );
-	os::fprintf(f,"%f %f %f\n", cov(1,0),cov(1,1),cov(1,2) );
-	os::fprintf(f,"%f %f %f\n", cov(2,0),cov(2,1),cov(2,2) );
-
+	os::fprintf(f, "%f %f %f\n", cov(0, 0), cov(0, 1), cov(0, 2));
+	os::fprintf(f, "%f %f %f\n", cov(1, 0), cov(1, 1), cov(1, 2));
+	os::fprintf(f, "%f %f %f\n", cov(2, 0), cov(2, 1), cov(2, 2));
 
 	os::fclose(f);
 
@@ -143,47 +134,52 @@ void  CPointPDFGaussian::saveToTextFile(const std::string &file) const
 /*---------------------------------------------------------------
 						changeCoordinatesReference
  ---------------------------------------------------------------*/
-void  CPointPDFGaussian::changeCoordinatesReference(const CPose3D &newReferenceBase )
+void CPointPDFGaussian::changeCoordinatesReference(
+	const CPose3D& newReferenceBase)
 {
-	const CMatrixDouble33 &M = newReferenceBase.getRotationMatrix();
+	const CMatrixDouble33& M = newReferenceBase.getRotationMatrix();
 
 	// The mean:
 	mean = newReferenceBase + mean;
 
 	// The covariance:
-	M.multiply_HCHt(CMatrixDouble33(cov), cov); // save in cov
+	M.multiply_HCHt(CMatrixDouble33(cov), cov);  // save in cov
 }
 
 /*---------------------------------------------------------------
 					bayesianFusion
  ---------------------------------------------------------------*/
-void  CPointPDFGaussian::bayesianFusion( const CPointPDFGaussian &p1, const CPointPDFGaussian &p2 )
+void CPointPDFGaussian::bayesianFusion(
+	const CPointPDFGaussian& p1, const CPointPDFGaussian& p2)
 {
 	MRPT_START
 
-	CMatrixDouble	x1(3,1),x2(3,1),x(3,1);
-	CMatrixDouble	C1( p1.cov );
-	CMatrixDouble	C2( p2.cov );
-	CMatrixDouble	C1_inv = C1.inv();
-	CMatrixDouble	C2_inv = C2.inv();
-	CMatrixDouble	C;
+	CMatrixDouble x1(3, 1), x2(3, 1), x(3, 1);
+	CMatrixDouble C1(p1.cov);
+	CMatrixDouble C2(p2.cov);
+	CMatrixDouble C1_inv = C1.inv();
+	CMatrixDouble C2_inv = C2.inv();
+	CMatrixDouble C;
 
-	x1(0,0) = p1.mean.x(); x1(1,0) = p1.mean.y(); x1(2,0) = p1.mean.z();
-	x2(0,0) = p2.mean.x(); x2(1,0) = p2.mean.y(); x2(2,0) = p2.mean.z();
-
+	x1(0, 0) = p1.mean.x();
+	x1(1, 0) = p1.mean.y();
+	x1(2, 0) = p1.mean.z();
+	x2(0, 0) = p2.mean.x();
+	x2(1, 0) = p2.mean.y();
+	x2(2, 0) = p2.mean.z();
 
 	C = (C1_inv + C2_inv).inv();
 	cov = C;
 
-	x = C * ( C1_inv*x1 + C2_inv*x2 );
+	x = C * (C1_inv * x1 + C2_inv * x2);
 
-	mean.x( x(0,0) );
-	mean.y( x(1,0) );
-	mean.z( x(2,0) );
+	mean.x(x(0, 0));
+	mean.y(x(1, 0));
+	mean.z(x(2, 0));
 
-//	std::cout << "IN1: " << x1 << "\n" << C1 << "\n";
-//	std::cout << "IN2: " << x2 << "\n" << C2 << "\n";
-//	std::cout << "OUT: " << x << "\n" << C << "\n";
+	//	std::cout << "IN1: " << x1 << "\n" << C1 << "\n";
+	//	std::cout << "IN2: " << x2 << "\n" << C2 << "\n";
+	//	std::cout << "OUT: " << x << "\n" << C << "\n";
 
 	MRPT_END
 }
@@ -191,7 +187,7 @@ void  CPointPDFGaussian::bayesianFusion( const CPointPDFGaussian &p1, const CPoi
 /*---------------------------------------------------------------
 					productIntegralWith
  ---------------------------------------------------------------*/
-double  CPointPDFGaussian::productIntegralWith( const CPointPDFGaussian &p) const
+double CPointPDFGaussian::productIntegralWith(const CPointPDFGaussian& p) const
 {
 	MRPT_START
 
@@ -201,18 +197,18 @@ double  CPointPDFGaussian::productIntegralWith( const CPointPDFGaussian &p) cons
 	//   Gaussians variables amounts to simply the evaluation of
 	//   a normal PDF at (0,0), with mean=M1-M2 and COV=COV1+COV2
 	// ---------------------------------------------------------------
-	CMatrixDouble33 C = cov; C+=p.cov;	// Sum of covs:
+	CMatrixDouble33 C = cov;
+	C += p.cov;  // Sum of covs:
 	CMatrixDouble33 C_inv;
 	C.inv(C_inv);
 
-	CMatrixDouble31	MU(UNINITIALIZED_MATRIX); // Diff. of means
-	MU.get_unsafe(0,0) = mean.x() - p.mean.x();
-	MU.get_unsafe(1,0) = mean.y() - p.mean.y();
-	MU.get_unsafe(2,0) = mean.z() - p.mean.z();
+	CMatrixDouble31 MU(UNINITIALIZED_MATRIX);  // Diff. of means
+	MU.get_unsafe(0, 0) = mean.x() - p.mean.x();
+	MU.get_unsafe(1, 0) = mean.y() - p.mean.y();
+	MU.get_unsafe(2, 0) = mean.z() - p.mean.z();
 
-	return std::pow( M_2PI, -0.5*state_length )
-		* (1.0/std::sqrt( C.det() ))
-		* exp( -0.5* MU.multiply_HtCH_scalar(C_inv) );
+	return std::pow(M_2PI, -0.5 * state_length) * (1.0 / std::sqrt(C.det())) *
+		   exp(-0.5 * MU.multiply_HtCH_scalar(C_inv));
 
 	MRPT_END
 }
@@ -220,7 +216,8 @@ double  CPointPDFGaussian::productIntegralWith( const CPointPDFGaussian &p) cons
 /*---------------------------------------------------------------
 					productIntegralWith2D
  ---------------------------------------------------------------*/
-double  CPointPDFGaussian::productIntegralWith2D( const CPointPDFGaussian &p) const
+double CPointPDFGaussian::productIntegralWith2D(
+	const CPointPDFGaussian& p) const
 {
 	MRPT_START
 
@@ -230,19 +227,19 @@ double  CPointPDFGaussian::productIntegralWith2D( const CPointPDFGaussian &p) co
 	//   Gaussians variables amounts to simply the evaluation of
 	//   a normal PDF at (0,0), with mean=M1-M2 and COV=COV1+COV2
 	// ---------------------------------------------------------------
-	CMatrixDouble22 C = cov.block(0,0,2,2);
-	C+=p.cov.block(0,0,2,2);	// Sum of covs:
+	CMatrixDouble22 C = cov.block(0, 0, 2, 2);
+	C += p.cov.block(0, 0, 2, 2);  // Sum of covs:
 
 	CMatrixDouble22 C_inv;
 	C.inv(C_inv);
 
-	CMatrixDouble21	MU(UNINITIALIZED_MATRIX); // Diff. of means
-	MU.get_unsafe(0,0) = mean.x() - p.mean.x();
-	MU.get_unsafe(1,0) = mean.y() - p.mean.y();
+	CMatrixDouble21 MU(UNINITIALIZED_MATRIX);  // Diff. of means
+	MU.get_unsafe(0, 0) = mean.x() - p.mean.x();
+	MU.get_unsafe(1, 0) = mean.y() - p.mean.y();
 
-	return std::pow( M_2PI, -0.5*(state_length-1) )
-		* (1.0/std::sqrt( C.det() ))
-		* exp( -0.5* MU.multiply_HtCH_scalar(C_inv) );
+	return std::pow(M_2PI, -0.5 * (state_length - 1)) *
+		   (1.0 / std::sqrt(C.det())) *
+		   exp(-0.5 * MU.multiply_HtCH_scalar(C_inv));
 
 	MRPT_END
 }
@@ -250,33 +247,35 @@ double  CPointPDFGaussian::productIntegralWith2D( const CPointPDFGaussian &p) co
 /*---------------------------------------------------------------
 					productIntegralNormalizedWith
  ---------------------------------------------------------------*/
-double  CPointPDFGaussian::productIntegralNormalizedWith( const CPointPDFGaussian &p) const
+double CPointPDFGaussian::productIntegralNormalizedWith(
+	const CPointPDFGaussian& p) const
 {
-	return std::exp( -0.5*square(mahalanobisDistanceTo(p)) );
+	return std::exp(-0.5 * square(mahalanobisDistanceTo(p)));
 }
 
 /*---------------------------------------------------------------
 					productIntegralNormalizedWith
  ---------------------------------------------------------------*/
-double  CPointPDFGaussian::productIntegralNormalizedWith2D( const CPointPDFGaussian &p) const
+double CPointPDFGaussian::productIntegralNormalizedWith2D(
+	const CPointPDFGaussian& p) const
 {
-	return std::exp( -0.5*square(mahalanobisDistanceTo(p,true)) );
+	return std::exp(-0.5 * square(mahalanobisDistanceTo(p, true)));
 }
 
 /*---------------------------------------------------------------
 					drawSingleSample
  ---------------------------------------------------------------*/
-void CPointPDFGaussian::drawSingleSample(CPoint3D &outSample) const
+void CPointPDFGaussian::drawSingleSample(CPoint3D& outSample) const
 {
 	MRPT_START
 
 	CVectorDouble vec;
-	randomGenerator.drawGaussianMultivariate(vec,cov);
+	randomGenerator.drawGaussianMultivariate(vec, cov);
 
-	ASSERT_(vec.size()==3);
-	outSample.x( mean.x() + vec[0] );
-	outSample.y( mean.y() + vec[1] );
-	outSample.z( mean.z() + vec[2] );
+	ASSERT_(vec.size() == 3);
+	outSample.x(mean.x() + vec[0]);
+	outSample.y(mean.y() + vec[1]);
+	outSample.z(mean.z() + vec[2]);
 
 	MRPT_END
 }
@@ -284,14 +283,16 @@ void CPointPDFGaussian::drawSingleSample(CPoint3D &outSample) const
 /*---------------------------------------------------------------
 					bayesianFusion
  ---------------------------------------------------------------*/
-void  CPointPDFGaussian::bayesianFusion( const CPointPDF &p1_, const CPointPDF &p2_,const double &minMahalanobisDistToDrop )
+void CPointPDFGaussian::bayesianFusion(
+	const CPointPDF& p1_, const CPointPDF& p2_,
+	const double& minMahalanobisDistToDrop)
 {
 	MRPT_UNUSED_PARAM(minMahalanobisDistToDrop);
 	MRPT_START
 
 	// p1: CPointPDFGaussian, p2: CPosePDFGaussian:
-	ASSERT_( p1_.GetRuntimeClass() == CLASS_ID(CPointPDFGaussian) );
-	ASSERT_( p2_.GetRuntimeClass() == CLASS_ID(CPointPDFGaussian) );
+	ASSERT_(p1_.GetRuntimeClass() == CLASS_ID(CPointPDFGaussian));
+	ASSERT_(p2_.GetRuntimeClass() == CLASS_ID(CPointPDFGaussian));
 
 	THROW_EXCEPTION("TODO!!!");
 
@@ -301,13 +302,14 @@ void  CPointPDFGaussian::bayesianFusion( const CPointPDF &p1_, const CPointPDF &
 /*---------------------------------------------------------------
 					mahalanobisDistanceTo
  ---------------------------------------------------------------*/
-double CPointPDFGaussian::mahalanobisDistanceTo( const CPointPDFGaussian & other, bool only_2D  ) const
+double CPointPDFGaussian::mahalanobisDistanceTo(
+	const CPointPDFGaussian& other, bool only_2D) const
 {
 	// The difference in means:
 	CMatrixDouble13 deltaX;
-	deltaX.get_unsafe(0,0) = other.mean.x() - mean.x();
-	deltaX.get_unsafe(0,1) = other.mean.y() - mean.y();
-	deltaX.get_unsafe(0,2) = other.mean.z() - mean.z();
+	deltaX.get_unsafe(0, 0) = other.mean.x() - mean.x();
+	deltaX.get_unsafe(0, 1) = other.mean.y() - mean.y();
+	deltaX.get_unsafe(0, 2) = other.mean.z() - mean.z();
 
 	// The inverse of the combined covs:
 	CMatrixDouble33 COV = other.cov;
@@ -317,16 +319,14 @@ double CPointPDFGaussian::mahalanobisDistanceTo( const CPointPDFGaussian & other
 	{
 		CMatrixDouble33 COV_inv;
 		COV.inv(COV_inv);
-		return sqrt( deltaX.multiply_HCHt_scalar(COV_inv) );
+		return sqrt(deltaX.multiply_HCHt_scalar(COV_inv));
 	}
 	else
 	{
-		CMatrixDouble22 C = COV.block(0,0,2,2);
+		CMatrixDouble22 C = COV.block(0, 0, 2, 2);
 		CMatrixDouble22 COV_inv;
 		C.inv(COV_inv);
-		CMatrixDouble12 deltaX2 = deltaX.block(0,0,1,2);
-		return std::sqrt( deltaX2.multiply_HCHt_scalar(COV_inv) );
+		CMatrixDouble12 deltaX2 = deltaX.block(0, 0, 1, 2);
+		return std::sqrt(deltaX2.multiply_HCHt_scalar(COV_inv));
 	}
-
-
 }

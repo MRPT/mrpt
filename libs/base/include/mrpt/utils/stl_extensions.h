@@ -6,8 +6,8 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef  stl_extensions_H
-#define  stl_extensions_H
+#ifndef stl_extensions_H
+#define stl_extensions_H
 
 // These are "STL extensions" but have their own files for clarity
 #include <mrpt/utils/circular_buffer.h>

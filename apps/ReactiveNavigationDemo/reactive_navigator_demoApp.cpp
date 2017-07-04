@@ -19,20 +19,21 @@ IMPLEMENT_APP(reactive_navigator_demoApp)
 bool reactive_navigator_demoApp::OnInit()
 {
 	// Starting in wxWidgets 2.9.0, we must reset numerics locale to "C",
-	//  if we want numbers to use "." in all countries. The App::OnInit() is a perfect place to undo
+	//  if we want numbers to use "." in all countries. The App::OnInit() is a
+	//  perfect place to undo
 	//  the default wxWidgets settings. (JL @ Sep-2009)
-	wxSetlocale(LC_NUMERIC,wxString(wxT("C")));
+	wxSetlocale(LC_NUMERIC, wxString(wxT("C")));
 
-    //(*AppInitialize
-    bool wxsOK = true;
-    wxInitAllImageHandlers();
-    if ( wxsOK )
-    {
-    	reactive_navigator_demoframe* Frame = new reactive_navigator_demoframe(0);
-    	Frame->Show();
-    	SetTopWindow(Frame);
-    }
-    //*)
-    return wxsOK;
-
+	//(*AppInitialize
+	bool wxsOK = true;
+	wxInitAllImageHandlers();
+	if (wxsOK)
+	{
+		reactive_navigator_demoframe* Frame =
+			new reactive_navigator_demoframe(0);
+		Frame->Show();
+		SetTopWindow(Frame);
+	}
+	//*)
+	return wxsOK;
 }

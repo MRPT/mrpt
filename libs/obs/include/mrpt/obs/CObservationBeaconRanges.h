@@ -19,59 +19,68 @@ namespace mrpt
 {
 namespace obs
 {
+/** Declares a class derived from "CObservation" that represents one (or more)
+ * range measurements to labeled beacons.
+ * \sa CObservation
+ * \ingroup mrpt_obs_grp
+ */
+class OBS_IMPEXP CObservationBeaconRanges : public CObservation
+{
+	DEFINE_SERIALIZABLE(CObservationBeaconRanges)
 
-	/** Declares a class derived from "CObservation" that represents one (or more) range measurements to labeled beacons.
-	 * \sa CObservation
-	 * \ingroup mrpt_obs_grp
-	 */
-	class OBS_IMPEXP CObservationBeaconRanges : public CObservation
+   public:
+	/** ctor */
+	CObservationBeaconRanges();
+
+	/** Info about sensor */
+	float minSensorDistance, maxSensorDistance;
+	/** The "sigma" of the sensor, assuming a zero-mean Gaussian noise model. */
+	float stdError;
+
+	/** Each one of the measurements */
+	struct OBS_IMPEXP TMeasurement
 	{
-		DEFINE_SERIALIZABLE( CObservationBeaconRanges )
-
-	 public:
-		/** ctor */
-		CObservationBeaconRanges( ); 
-
-		/** Info about sensor */
-		float  minSensorDistance, maxSensorDistance;  
-		/** The "sigma" of the sensor, assuming a zero-mean Gaussian noise model. */
-		float  stdError; 
-
-		/** Each one of the measurements */
-		struct OBS_IMPEXP TMeasurement
+		TMeasurement()
+			: sensorLocationOnRobot(),
+			  sensedDistance(0),
+			  beaconID(INVALID_BEACON_ID)
 		{
-			TMeasurement() : sensorLocationOnRobot(), sensedDistance(0),beaconID(INVALID_BEACON_ID)
-			{}
+		}
 
-			/** Position of the sensor on the robot */
-			mrpt::poses::CPoint3D sensorLocationOnRobot; 
-			/** The sensed range itself (in meters). */
-			float                 sensedDistance; 
-			/** The ID of the sensed beacon (or INVALID_BEACON_ID if unknown) */
-			int32_t               beaconID; 
-		};
+		/** Position of the sensor on the robot */
+		mrpt::poses::CPoint3D sensorLocationOnRobot;
+		/** The sensed range itself (in meters). */
+		float sensedDistance;
+		/** The ID of the sensed beacon (or INVALID_BEACON_ID if unknown) */
+		int32_t beaconID;
+	};
 
-		/** The list of observed ranges */
-		std::deque<TMeasurement> sensedData; 
+	/** The list of observed ranges */
+	std::deque<TMeasurement> sensedData;
 
-		/** The (X,Y,PHI) pose estimated by the UWB software, for comparison purposes (Added in streamming version 1) */
-		mrpt::poses::CPose2D auxEstimatePose; 
+	/** The (X,Y,PHI) pose estimated by the UWB software, for comparison
+	 * purposes (Added in streamming version 1) */
+	mrpt::poses::CPose2D auxEstimatePose;
 
+	/** Prints out the contents of the object  */
+	void debugPrintOut();
 
-		/** Prints out the contents of the object  */ 
-		void  debugPrintOut(); 
+	void getSensorPose(mrpt::poses::CPose3D& out_sensorPose)
+		const override;  // See base class docs.
+	void setSensorPose(const mrpt::poses::CPose3D& newSensorPose)
+		override;  // See base class docs.
+	void getDescriptionAsText(
+		std::ostream& o) const override;  // See base class docs
 
-		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const override;// See base class docs.
-		void setSensorPose( const mrpt::poses::CPose3D &newSensorPose ) override;// See base class docs.
-		void getDescriptionAsText(std::ostream &o) const override;// See base class docs
+	/** Easy look-up into the vector sensedData, returns the range for a given
+	 * beacon, or 0 if the beacon is not observed */
+	float getSensedRangeByBeaconID(int32_t beaconID);
 
-		/** Easy look-up into the vector sensedData, returns the range for a given beacon, or 0 if the beacon is not observed */
-		float getSensedRangeByBeaconID(int32_t beaconID);
+};  // End of class def.
+DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
+	CObservationBeaconRanges, CObservation, OBS_IMPEXP)
 
-	}; // End of class def.
-	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CObservationBeaconRanges, CObservation, OBS_IMPEXP  )
-
-	} // End of namespace
-} // End of namespace
+}  // End of namespace
+}  // End of namespace
 
 #endif

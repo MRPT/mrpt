@@ -12,10 +12,10 @@
 
 //#include "cxcore.h"
 // Universal include for all versions of OpenCV
-#include <mrpt/otherlibs/do_opencv_includes.h> 
+#include <mrpt/otherlibs/do_opencv_includes.h>
 
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif
 
 /******************************** Structures *********************************/
@@ -32,7 +32,6 @@ struct detection_data
 };
 
 struct feature;
-
 
 /******************************* Defs and macros *****************************/
 
@@ -91,8 +90,7 @@ struct feature;
 #define SIFT_INT_DESCR_FCTR 512.0
 
 /* returns a feature's detection data */
-#define feat_detection_data(f) ( (struct detection_data*)(f->feature_data) )
-
+#define feat_detection_data(f) ((struct detection_data*)(f->feature_data))
 
 /*************************** Function Prototypes *****************************/
 
@@ -106,9 +104,7 @@ detected features are stored in the array pointed to by \a feat.
 @return Returns the number of features stored in \a feat or -1 on failure
 @see _sift_features()
 */
-extern int sift_features( IplImage* img, struct feature** feat );
-
-
+extern int sift_features(IplImage* img, struct feature** feat);
 
 /**
 Finda SIFT features in an image using user-specified parameter values.  All
@@ -135,13 +131,13 @@ pixel values in the range [0, 1]
 @return Returns the number of keypoints stored in \a feat or -1 on failure
 @see sift_features()
 */
-extern int _sift_features( IplImage* img, struct feature** feat, int intvls,
-						  double sigma, double contr_thr, int curv_thr,
-						  int img_dbl, int descr_width, int descr_hist_bins );
-
+extern int _sift_features(
+	IplImage* img, struct feature** feat, int intvls, double sigma,
+	double contr_thr, int curv_thr, int img_dbl, int descr_width,
+	int descr_hist_bins);
 
 #ifdef __cplusplus
-  }
+}
 #endif
 
 #endif

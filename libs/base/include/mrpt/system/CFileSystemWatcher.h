@@ -6,8 +6,8 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef  CFileSystemWatcher_H
-#define  CFileSystemWatcher_H
+#ifndef CFileSystemWatcher_H
+#define CFileSystemWatcher_H
 
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/system/os.h>
@@ -16,80 +16,89 @@
 
 namespace mrpt
 {
-	namespace system
+namespace system
+{
+/** This class subscribes to notifications of file system changes, thus it can
+ * be used to efficiently stay informed about changes in a directory tree.
+  *  - Windows: Requires Windows 2000 or newer.
+  *  - Linux: Requires kernel 2.6.13 or newer.
+  *  Using this class in an old Linux or other unsoported system (Unix,etc...)
+ * has no effect, i.e. no notification will be ever received.
+  *  \sa CDirectoryExplorer
+ * \ingroup mrpt_base_grp
+  */
+class BASE_IMPEXP CFileSystemWatcher
+{
+   public:
+	/** Each of the changes detected by utils::CFileSystemWatcher
+	  */
+	struct BASE_IMPEXP TFileSystemChange
 	{
-		/** This class subscribes to notifications of file system changes, thus it can be used to efficiently stay informed about changes in a directory tree.
-		  *  - Windows: Requires Windows 2000 or newer.
-		  *  - Linux: Requires kernel 2.6.13 or newer.
-		  *  Using this class in an old Linux or other unsoported system (Unix,etc...) has no effect, i.e. no notification will be ever received.
-		  *  \sa CDirectoryExplorer
-		 * \ingroup mrpt_base_grp
-		  */
-		class BASE_IMPEXP CFileSystemWatcher
+		TFileSystemChange()
+			: path(),
+			  isDir(false),
+			  eventModified(false),
+			  eventCloseWrite(false),
+			  eventDeleted(false),
+			  eventMovedTo(false),
+			  eventMovedFrom(false),
+			  eventCreated(false),
+			  eventAccessed(false)
 		{
-		public:
-			/** Each of the changes detected by utils::CFileSystemWatcher
-			  */
-			struct BASE_IMPEXP TFileSystemChange
-			{
-				TFileSystemChange() : 
-					path(), isDir(false),
-					eventModified(false), eventCloseWrite(false),
-					eventDeleted(false), eventMovedTo(false),
-					eventMovedFrom(false), eventCreated(false),
-					eventAccessed(false) {}
+		}
 
-				/** Complete path of the file/directory that has changed. */
-				std::string path; 				
-				/** Whether the event happened to a file or a directory. */
-				bool 		isDir;				
-				bool 		eventModified;
-				bool 		eventCloseWrite;
-				bool 		eventDeleted;
-				bool 		eventMovedTo;
-				bool 		eventMovedFrom;
-				bool 		eventCreated;
-				bool		eventAccessed;
-			};
+		/** Complete path of the file/directory that has changed. */
+		std::string path;
+		/** Whether the event happened to a file or a directory. */
+		bool isDir;
+		bool eventModified;
+		bool eventCloseWrite;
+		bool eventDeleted;
+		bool eventMovedTo;
+		bool eventMovedFrom;
+		bool eventCreated;
+		bool eventAccessed;
+	};
 
-			typedef std::deque<TFileSystemChange>	TFileSystemChangeList;
+	typedef std::deque<TFileSystemChange> TFileSystemChangeList;
 
-			/** Creates the subscription to a specified path.
-			  * \param path The file or directory to watch.
-			  */
-			CFileSystemWatcher(	const std::string &path );
+	/** Creates the subscription to a specified path.
+	  * \param path The file or directory to watch.
+	  */
+	CFileSystemWatcher(const std::string& path);
 
-			/** Destructor
-			  */
-			virtual ~CFileSystemWatcher();
+	/** Destructor
+	  */
+	virtual ~CFileSystemWatcher();
 
-			/** Call this method sometimes to get the list of changes in the watched directory.
-			  *  \sa processChange
-			  */
-			void getChanges( TFileSystemChangeList &out_list );
+	/** Call this method sometimes to get the list of changes in the watched
+	 * directory.
+	  *  \sa processChange
+	  */
+	void getChanges(TFileSystemChangeList& out_list);
 
-		private:
-			/** Ended in "/" */
-			std::string		m_watchedDirectory; 
-	#ifdef MRPT_OS_WINDOWS
-			void	*m_hNotif;
-			std::thread m_watchThread;
-			/** Watch thread; only needed in win32 */
-			void thread_win32_watch(); 
-			mrpt::utils::CThreadSafeQueue<TFileSystemChange>  m_queue_events_win32;
+   private:
+	/** Ended in "/" */
+	std::string m_watchedDirectory;
+#ifdef MRPT_OS_WINDOWS
+	void* m_hNotif;
+	std::thread m_watchThread;
+	/** Watch thread; only needed in win32 */
+	void thread_win32_watch();
+	mrpt::utils::CThreadSafeQueue<TFileSystemChange> m_queue_events_win32;
 
-	#endif
+#endif
 
-	#if defined(MRPT_OS_LINUX) || defined(MRPT_OS_APPLE)
-			/** The fd returned by inotify_init. */
-			int 	m_fd;  
-			/** The fd of the watch. */
-			int 	m_wd;  
-	#endif
+#if defined(MRPT_OS_LINUX) || defined(MRPT_OS_APPLE)
+	/** The fd returned by inotify_init. */
+	int m_fd;
+	/** The fd of the watch. */
+	int m_wd;
+#endif
 
-		}; // End of class def.
+};  // End of class def.
 
-	} // End of namespace
-} // End of namespace
+}  // End of namespace
+}  // End of namespace
 
 #endif

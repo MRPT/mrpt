@@ -12,4 +12,3 @@
 #include <gtest/gtest.h>
 
 template class mrpt::utils::CTraitsTest<mrpt::poses::CPoseRandomSampler>;
-
