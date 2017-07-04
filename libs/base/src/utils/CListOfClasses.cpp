@@ -13,41 +13,42 @@
 using namespace mrpt;
 using namespace mrpt::utils;
 
-
-bool CListOfClasses::containsDerivedFrom( const mrpt::utils::TRuntimeClassId* id ) const
-{ 
-	for (const_iterator it=begin();it!=end();++it)
-		if ( (*it)->derivedFrom(id) )
-			return true;
+bool CListOfClasses::containsDerivedFrom(
+	const mrpt::utils::TRuntimeClassId* id) const
+{
+	for (const_iterator it = begin(); it != end(); ++it)
+		if ((*it)->derivedFrom(id)) return true;
 	return false;
 }
 
 std::string CListOfClasses::toString() const
 {
 	std::string s;
-	for (const_iterator it=begin();it!=end();++it)
+	for (const_iterator it = begin(); it != end(); ++it)
 	{
-		if (it!=begin()) s+=", ";
-		s+=std::string( (*it)->className );
+		if (it != begin()) s += ", ";
+		s += std::string((*it)->className);
 	}
-	return s;			
+	return s;
 }
 
-void CListOfClasses::fromString(const std::string &s)
+void CListOfClasses::fromString(const std::string& s)
 {
 	MRPT_TRY_START
-	
+
 	this->clear();
 	std::vector<std::string> lstClasses;
-	mrpt::system::tokenize(s," ,",lstClasses);
-	
-	for (size_t i=0;i<lstClasses.size();i++)
+	mrpt::system::tokenize(s, " ,", lstClasses);
+
+	for (size_t i = 0; i < lstClasses.size(); i++)
 	{
-		const mrpt::utils::TRuntimeClassId* id = mrpt::utils::findRegisteredClass(lstClasses[i]);
-		ASSERTMSG_(id!=nullptr, format("Unknown class name: %s",lstClasses[i].c_str()))
+		const mrpt::utils::TRuntimeClassId* id =
+			mrpt::utils::findRegisteredClass(lstClasses[i]);
+		ASSERTMSG_(
+			id != nullptr,
+			format("Unknown class name: %s", lstClasses[i].c_str()))
 		this->insert(id);
 	}
 
 	MRPT_TRY_END
 }
-

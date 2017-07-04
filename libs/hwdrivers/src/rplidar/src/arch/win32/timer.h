@@ -35,12 +35,15 @@
 
 #include "rptypes.h"
 
-#define delay(x)   ::Sleep(x)
+#define delay(x) ::Sleep(x)
 
-namespace rp{ namespace arch{
-    void HPtimer_reset();
-    _u32 getHDTimer();
-}}
+namespace rp
+{
+namespace arch
+{
+void HPtimer_reset();
+_u32 getHDTimer();
+}
+}
 
-#define getms()   rp::arch::getHDTimer()
-
+#define getms() rp::arch::getHDTimer()

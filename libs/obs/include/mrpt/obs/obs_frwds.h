@@ -12,24 +12,24 @@
 // Forward declarations for the library "mrpt-obs"
 namespace mrpt
 {
-	namespace obs
-	{
-		class CObservation;
-		class CSensoryFrame;
-		class CObservation2DRangeScan;
-		class CObservation3DRangeScan;
-		class CObservationVelodyneScan;
-		class CObservationRange;
-		class CObservationBeaconRanges;
-		class CObservationBearingRange;
-		class CObservationStereoImages;
-		class CObservationGPS;
-	}
-	namespace maps
-	{
-		class CMetricMap;
-		class CPointsMap;
-		class CSimplePointsMap;
-		class CSimpleMap;
-	}
+namespace obs
+{
+class CObservation;
+class CSensoryFrame;
+class CObservation2DRangeScan;
+class CObservation3DRangeScan;
+class CObservationVelodyneScan;
+class CObservationRange;
+class CObservationBeaconRanges;
+class CObservationBearingRange;
+class CObservationStereoImages;
+class CObservationGPS;
+}
+namespace maps
+{
+class CMetricMap;
+class CPointsMap;
+class CSimplePointsMap;
+class CSimpleMap;
+}
 }

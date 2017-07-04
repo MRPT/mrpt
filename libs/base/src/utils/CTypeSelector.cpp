@@ -24,69 +24,69 @@ IMPLEMENTS_SERIALIZABLE(CTypeSelector, CSerializable, mrpt::utils)
 /*---------------------------------------------------------------
 						writeToStream
  ---------------------------------------------------------------*/
-void  CTypeSelector::writeToStream(mrpt::utils::CStream &out, int *out_Version) const
+void CTypeSelector::writeToStream(
+	mrpt::utils::CStream& out, int* out_Version) const
 {
 	if (out_Version)
 		*out_Version = 0;
 	else
 	{
-		std::vector<std::string>::const_iterator	it;
-		uint32_t							n = (uint32_t)possibleTypes.size();
+		std::vector<std::string>::const_iterator it;
+		uint32_t n = (uint32_t)possibleTypes.size();
 
 		out << n;
 
-		for (it=possibleTypes.begin();it<possibleTypes.end();++it)
+		for (it = possibleTypes.begin(); it < possibleTypes.end(); ++it)
 			out << *it;
 
 		// Selection:
 		out << (uint32_t)selection;
 	}
-
 }
 
 /*---------------------------------------------------------------
 						readFromStream
  ---------------------------------------------------------------*/
-void  CTypeSelector::readFromStream(mrpt::utils::CStream &in, int version)
+void CTypeSelector::readFromStream(mrpt::utils::CStream& in, int version)
 {
-	switch(version)
+	switch (version)
 	{
-	case 0:
+		case 0:
 		{
-			uint32_t	i,n;
+			uint32_t i, n;
 
 			in >> n;
 
 			possibleTypes.clear();
 
-			for (i=0;i<n;i++)
+			for (i = 0; i < n; i++)
 			{
-				std::string		aux;
+				std::string aux;
 				in >> aux;
-				possibleTypes.push_back( aux );
+				possibleTypes.push_back(aux);
 			}
 
 			// Selection:
-			in >> i; selection = i;
-		} break;
-	default:
-		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
-
+			in >> i;
+			selection = i;
+		}
+		break;
+		default:
+			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
 	};
 }
-
 
 /*---------------------------------------------------------------
 						Constructor
  ---------------------------------------------------------------*/
-CTypeSelector::CTypeSelector(	std::string		posibilitiesList,
-								std::string		defaultType )
+CTypeSelector::CTypeSelector(
+	std::string posibilitiesList, std::string defaultType)
 {
 	// Init:
 	possibleTypes.clear();
 
 	// Extract tokens from the string:
-	mrpt::system::tokenize(posibilitiesList,",",possibleTypes);
+	mrpt::system::tokenize(posibilitiesList, ",", possibleTypes);
 
 	// Select default type:
 	setType(defaultType);
@@ -95,16 +95,13 @@ CTypeSelector::CTypeSelector(	std::string		posibilitiesList,
 /*---------------------------------------------------------------
 						Destructor
  ---------------------------------------------------------------*/
-CTypeSelector::~CTypeSelector()
-{
-}
-
+CTypeSelector::~CTypeSelector() {}
 /*---------------------------------------------------------------
 					getType
  ---------------------------------------------------------------*/
-std::string  CTypeSelector::getType()const
+std::string CTypeSelector::getType() const
 {
-	if (selection>=possibleTypes.size())
+	if (selection >= possibleTypes.size())
 		THROW_EXCEPTION("current selection index is out of bounds!");
 
 	return possibleTypes[selection];
@@ -113,13 +110,13 @@ std::string  CTypeSelector::getType()const
 /*---------------------------------------------------------------
 						setType
  ---------------------------------------------------------------*/
-void  CTypeSelector::setType(const std::string  &type)
+void CTypeSelector::setType(const std::string& type)
 {
-	size_t		i,n = possibleTypes.size();
+	size_t i, n = possibleTypes.size();
 
-	for (i=0;i<n;i++)
+	for (i = 0; i < n; i++)
 	{
-		if (!os::_strcmpi(type.c_str(),possibleTypes[i].c_str()))
+		if (!os::_strcmpi(type.c_str(), possibleTypes[i].c_str()))
 		{
 			// Select:
 			selection = (unsigned int)i;
@@ -128,13 +125,15 @@ void  CTypeSelector::setType(const std::string  &type)
 	}
 
 	// Not in the list:
-	THROW_EXCEPTION_FMT("Type '%s' is not one of the posibilities", type.c_str());
+	THROW_EXCEPTION_FMT(
+		"Type '%s' is not one of the posibilities", type.c_str());
 }
 
 /*---------------------------------------------------------------
 					getTypePosibilities
  ---------------------------------------------------------------*/
-void  CTypeSelector::getTypePosibilities( std::vector<std::string> &outPosibilities)const
+void CTypeSelector::getTypePosibilities(
+	std::vector<std::string>& outPosibilities) const
 {
 	outPosibilities = possibleTypes;
 }
@@ -142,28 +141,27 @@ void  CTypeSelector::getTypePosibilities( std::vector<std::string> &outPosibilit
 /*---------------------------------------------------------------
 					isType
  ---------------------------------------------------------------*/
-bool 	CTypeSelector::isType(const char *type) const
+bool CTypeSelector::isType(const char* type) const
 {
-	return !strcmp( possibleTypes[selection].c_str(),type);
+	return !strcmp(possibleTypes[selection].c_str(), type);
 }
 
 /*---------------------------------------------------------------
 					isType
  ---------------------------------------------------------------*/
-bool 	CTypeSelector::isType(const std::string &type) const
+bool CTypeSelector::isType(const std::string& type) const
 {
-	return !strcmp( possibleTypes[selection].c_str(),type.c_str());
+	return !strcmp(possibleTypes[selection].c_str(), type.c_str());
 }
 
 /*---------------------------------------------------------------
 					checkTypeIndex
  ---------------------------------------------------------------*/
-int CTypeSelector::checkTypeIndex(const std::string &type) const
+int CTypeSelector::checkTypeIndex(const std::string& type) const
 {
-	size_t	n = possibleTypes.size();
-	for (size_t i=0;i<n;i++)
-		if (!os::_strcmpi(type.c_str(),possibleTypes[i].c_str()))
-			return int(i);	// Found:
-	return -1; // Not found
+	size_t n = possibleTypes.size();
+	for (size_t i = 0; i < n; i++)
+		if (!os::_strcmpi(type.c_str(), possibleTypes[i].c_str()))
+			return int(i);  // Found:
+	return -1;  // Not found
 }
-

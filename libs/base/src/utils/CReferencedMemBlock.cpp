@@ -13,26 +13,20 @@
 
 using namespace mrpt::utils;
 
-CReferencedMemBlock::CReferencedMemBlock(size_t mem_block_size) :
-	m_data( new std::vector<char>(mem_block_size) )
+CReferencedMemBlock::CReferencedMemBlock(size_t mem_block_size)
+	: m_data(new std::vector<char>(mem_block_size))
 {
 }
 
-CReferencedMemBlock::~CReferencedMemBlock()
-{
-}
-
+CReferencedMemBlock::~CReferencedMemBlock() {}
 void CReferencedMemBlock::resize(size_t mem_block_size)
 {
 	m_data->resize(mem_block_size);
 }
 
-unsigned int CReferencedMemBlock::alias_count() const 
+unsigned int CReferencedMemBlock::alias_count() const
 {
-	return m_data.use_count(); 
+	return m_data.use_count();
 }
 
-void CReferencedMemBlock::clear() 
-{
-	m_data.reset(); 
-}
+void CReferencedMemBlock::clear() { m_data.reset(); }

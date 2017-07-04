@@ -14,9 +14,9 @@
 
 class xRawLogViewerApp : public wxApp
 {
-public:
-    virtual bool OnInit();
-    virtual int OnExit();
+   public:
+	virtual bool OnInit();
+	virtual int OnExit();
 };
 
-#endif // XRAWLOGVIEWERAPP_H
+#endif  // XRAWLOGVIEWERAPP_H

@@ -15,7 +15,7 @@
 
 template class mrpt::utils::CTraitsTest<mrpt::poses::CPose3DInterpolator>;
 
-TEST(CPose3DInterpolator,interp)
+TEST(CPose3DInterpolator, interp)
 {
 	using namespace mrpt::poses;
 	using mrpt::math::TPose3D;
@@ -26,15 +26,26 @@ TEST(CPose3DInterpolator,interp)
 
 	CPose3DInterpolator pose_path;
 
-	pose_path.insert( t0, TPose3D(1.,2.,3., DEG2RAD(30.0), DEG2RAD(.0),DEG2RAD(.0) ) );
-	pose_path.insert( t0+2*dt, TPose3D(1.+3.,2.+4.,3.+5., DEG2RAD(30.0+20.0), DEG2RAD(.0),DEG2RAD(.0) ) );
+	pose_path.insert(
+		t0, TPose3D(1., 2., 3., DEG2RAD(30.0), DEG2RAD(.0), DEG2RAD(.0)));
+	pose_path.insert(
+		t0 + 2 * dt, TPose3D(
+						 1. + 3., 2. + 4., 3. + 5., DEG2RAD(30.0 + 20.0),
+						 DEG2RAD(.0), DEG2RAD(.0)));
 
 	TPose3D interp;
 	bool valid;
-	pose_path.interpolate(t0+dt,interp,valid);
+	pose_path.interpolate(t0 + dt, interp, valid);
 
 	EXPECT_TRUE(valid);
-	const TPose3D interp_good(1.+1.5,2.+2.0,3.+2.5, DEG2RAD(30.0+10.0), DEG2RAD(.0),DEG2RAD(.0) );
-	EXPECT_NEAR(.0, (CPose3D(interp_good).getHomogeneousMatrixVal() - CPose3D(interp).getHomogeneousMatrixVal()).array().abs().sum(), 1e-4);
+	const TPose3D interp_good(
+		1. + 1.5, 2. + 2.0, 3. + 2.5, DEG2RAD(30.0 + 10.0), DEG2RAD(.0),
+		DEG2RAD(.0));
+	EXPECT_NEAR(
+		.0, (CPose3D(interp_good).getHomogeneousMatrixVal() -
+			 CPose3D(interp).getHomogeneousMatrixVal())
+				.array()
+				.abs()
+				.sum(),
+		1e-4);
 }
-

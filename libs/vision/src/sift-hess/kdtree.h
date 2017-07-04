@@ -7,14 +7,12 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-
 #ifndef KDTREE_H
 #define KDTREE_H
 
 //#include "cxcore.h"
 // Universal include for all versions of OpenCV
-#include <mrpt/otherlibs/do_opencv_includes.h> 
-
+#include <mrpt/otherlibs/do_opencv_includes.h>
 
 /********************************* Structures ********************************/
 
@@ -23,15 +21,14 @@ struct feature;
 /** a node in a k-d tree */
 struct kd_node
 {
-	int ki;                      /**< partition key index */
-	double kv;                   /**< partition key value */
-	int leaf;                    /**< 1 if node is a leaf, 0 otherwise */
-	struct feature* features;    /**< features at this node */
-	int n;                       /**< number of features */
-	struct kd_node* kd_left;     /**< left child */
-	struct kd_node* kd_right;    /**< right child */
+	int ki; /**< partition key index */
+	double kv; /**< partition key value */
+	int leaf; /**< 1 if node is a leaf, 0 otherwise */
+	struct feature* features; /**< features at this node */
+	int n; /**< number of features */
+	struct kd_node* kd_left; /**< left child */
+	struct kd_node* kd_right; /**< right child */
 };
-
 
 /*************************** Function Prototypes *****************************/
 
@@ -43,9 +40,7 @@ A function to build a k-d tree database from keypoints in an array.
 
 @return Returns the root of a kd tree built from \a features.
 */
-extern struct kd_node* kdtree_build( struct feature* features, int n );
-
-
+extern struct kd_node* kdtree_build(struct feature* features, int n);
 
 /**
 Finds an image feature's approximate k nearest neighbors in a kd tree using
@@ -61,9 +56,9 @@ Best Bin First search.
 @return Returns the number of neighbors found and stored in \a nbrs, or
 	-1 on error.
 */
-extern int kdtree_bbf_knn( struct kd_node* kd_root, struct feature* feat,
-						  int k, struct feature*** nbrs, int max_nn_chks );
-
+extern int kdtree_bbf_knn(
+	struct kd_node* kd_root, struct feature* feat, int k,
+	struct feature*** nbrs, int max_nn_chks);
 
 /**
 Finds an image feature's approximate k nearest neighbors within a specified
@@ -83,18 +78,15 @@ spatial region in a kd tree using Best Bin First search.
 	(in case \a k neighbors could not be found before examining
 	\a max_nn_checks keypoint entries).
 */
-extern int kdtree_bbf_spatial_knn( struct kd_node* kd_root,
-								struct feature* feat, int k,
-								struct feature*** nbrs, int max_nn_chks,
-								CvRect rect, int model );
-
+extern int kdtree_bbf_spatial_knn(
+	struct kd_node* kd_root, struct feature* feat, int k,
+	struct feature*** nbrs, int max_nn_chks, CvRect rect, int model);
 
 /**
 De-allocates memory held by a kd tree
 
 @param kd_root pointer to the root of a kd tree
 */
-extern void kdtree_release( struct kd_node* kd_root );
-
+extern void kdtree_release(struct kd_node* kd_root);
 
 #endif

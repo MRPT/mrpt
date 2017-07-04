@@ -24,129 +24,132 @@ using namespace std;
 DECLARE_OP_FUNCTION(op_export_imu_txt)
 {
 	// A class to do this operation:
-	class CRawlogProcessor_ExportIMU_TXT : public CRawlogProcessorOnEachObservation
+	class CRawlogProcessor_ExportIMU_TXT
+		: public CRawlogProcessorOnEachObservation
 	{
-	protected:
-		string	m_inFile;
+	   protected:
+		string m_inFile;
 
-		map<string, FILE*>	lstFiles;
-		string				m_filPrefix;
+		map<string, FILE*> lstFiles;
+		string m_filPrefix;
 
-	public:
-		size_t				m_entriesSaved;
+	   public:
+		size_t m_entriesSaved;
 
-
-		CRawlogProcessor_ExportIMU_TXT(CFileGZInputStream &in_rawlog, TCLAP::CmdLine &cmdline, bool verbose) :
-			CRawlogProcessorOnEachObservation(in_rawlog,cmdline,verbose),
-			m_entriesSaved(0)
+		CRawlogProcessor_ExportIMU_TXT(
+			CFileGZInputStream& in_rawlog, TCLAP::CmdLine& cmdline,
+			bool verbose)
+			: CRawlogProcessorOnEachObservation(in_rawlog, cmdline, verbose),
+			  m_entriesSaved(0)
 		{
-			getArgValue<string>(cmdline,"input",m_inFile);
+			getArgValue<string>(cmdline, "input", m_inFile);
 
 			m_filPrefix =
-				extractFileDirectory(m_inFile) +
-				extractFileName(m_inFile);
+				extractFileDirectory(m_inFile) + extractFileName(m_inFile);
 		}
 
 		// return false on any error.
-		bool processOneObservation(CObservation::Ptr  &o)
+		bool processOneObservation(CObservation::Ptr& o)
 		{
-			if (!IS_CLASS(o, CObservationIMU ) )
-				return true;
+			if (!IS_CLASS(o, CObservationIMU)) return true;
 
-			const CObservationIMU* obs = dynamic_cast<CObservationIMU*>(o.get());
+			const CObservationIMU* obs =
+				dynamic_cast<CObservationIMU*>(o.get());
 
-			map<string, FILE*>::const_iterator  it = lstFiles.find( obs->sensorLabel );
+			map<string, FILE*>::const_iterator it =
+				lstFiles.find(obs->sensorLabel);
 
-			FILE *f_this;
+			FILE* f_this;
 
-			if ( it==lstFiles.end() )	// A new file for this sensorlabel??
+			if (it == lstFiles.end())  // A new file for this sensorlabel??
 			{
 				const std::string fileName =
-					m_filPrefix+
-					string("_") +
-					fileNameStripInvalidChars( obs->sensorLabel ) +
+					m_filPrefix + string("_") +
+					fileNameStripInvalidChars(obs->sensorLabel) +
 					string(".txt");
 
 				VERBOSE_COUT << "Writing IMU TXT file: " << fileName << endl;
 
-				f_this = lstFiles[ obs->sensorLabel ] = os::fopen( fileName.c_str(), "wt");
+				f_this = lstFiles[obs->sensorLabel] =
+					os::fopen(fileName.c_str(), "wt");
 				if (!f_this)
-					THROW_EXCEPTION_FMT("Cannot open output file for write: %s", fileName.c_str() );
+					THROW_EXCEPTION_FMT(
+						"Cannot open output file for write: %s",
+						fileName.c_str());
 
 				// The first line is a description of the columns:
-				::fprintf(f_this,
+				::fprintf(
+					f_this,
 					"%% "
-					"%14s "				// TIMESTAMP
-					"%22s %22s %22s "	// IMU_{X,Y,Z}_ACC
-					"%22s %22s %22s "	// IMU_YAW_VEL...
-					"%22s %22s %22s "	// IMU_X_VEL...
-					"%22s %22s %22s "	// IMU_YAW...
-					"%22s %22s %22s "	// IMU_X...
-					"%22s %22s %22s "   // MAG_X MAG_Y MAG_Z
-					"%22s %22s %22s "   // PRESS ALTIT TEMP
-					"\n"
-					,
-					"Time",
-					"IMU_X_ACC","IMU_Y_ACC","IMU_Z_ACC",
-					"IMU_YAW_VEL","IMU_PITCH_VEL","IMU_ROLL_VEL",
-					"IMU_X_VEL","IMU_Y_VEL","IMU_Z_VEL",
-					"IMU_YAW","IMU_PITCH","IMU_ROLL",
-					"IMU_X","IMU_Y","IMU_Z",
-					"MAG_X","MAG_Y","MAG_Z",
-					"PRESS","ALTITUDE","TEMPERATURE"
-					);
+					"%14s "  // TIMESTAMP
+					"%22s %22s %22s "  // IMU_{X,Y,Z}_ACC
+					"%22s %22s %22s "  // IMU_YAW_VEL...
+					"%22s %22s %22s "  // IMU_X_VEL...
+					"%22s %22s %22s "  // IMU_YAW...
+					"%22s %22s %22s "  // IMU_X...
+					"%22s %22s %22s "  // MAG_X MAG_Y MAG_Z
+					"%22s %22s %22s "  // PRESS ALTIT TEMP
+					"\n",
+					"Time", "IMU_X_ACC", "IMU_Y_ACC", "IMU_Z_ACC",
+					"IMU_YAW_VEL", "IMU_PITCH_VEL", "IMU_ROLL_VEL", "IMU_X_VEL",
+					"IMU_Y_VEL", "IMU_Z_VEL", "IMU_YAW", "IMU_PITCH",
+					"IMU_ROLL", "IMU_X", "IMU_Y", "IMU_Z", "MAG_X", "MAG_Y",
+					"MAG_Z", "PRESS", "ALTITUDE", "TEMPERATURE");
 			}
 			else
 				f_this = it->second;
 
+			ASSERT_(obs->dataIsPresent.size() == obs->rawMeasurements.size());
+			size_t nValuesPerRow = obs->dataIsPresent.size();
 
-            ASSERT_( obs->dataIsPresent.size()==obs->rawMeasurements.size() );
-            size_t nValuesPerRow = obs->dataIsPresent.size();
+			// For each entry in this sequence: Compute the timestamp and save
+			// all 15 values:
+			ASSERT_(obs->timestamp != INVALID_TIMESTAMP);
+			TTimeStamp t = obs->timestamp;
 
-            // For each entry in this sequence: Compute the timestamp and save all 15 values:
-            ASSERT_(obs->timestamp!=INVALID_TIMESTAMP);
-            TTimeStamp	t  = obs->timestamp;
+			double sampleTime = timestampTotime_t(t);
 
-            double 	sampleTime = timestampTotime_t(t);
-
-            // Time:
-            ::fprintf(f_this,"%14.4f ",sampleTime);
-            ASSERT_( obs->rawMeasurements.size()==obs->rawMeasurements.size() );
-            for (size_t idx=0;idx<nValuesPerRow;idx++)
-                ::fprintf(f_this,"%23.16f ",obs->dataIsPresent[idx] ? obs->rawMeasurements[idx] : 0);
-            ::fprintf(f_this,"\n");
+			// Time:
+			::fprintf(f_this, "%14.4f ", sampleTime);
+			ASSERT_(obs->rawMeasurements.size() == obs->rawMeasurements.size());
+			for (size_t idx = 0; idx < nValuesPerRow; idx++)
+				::fprintf(
+					f_this, "%23.16f ",
+					obs->dataIsPresent[idx] ? obs->rawMeasurements[idx] : 0);
+			::fprintf(f_this, "\n");
 
 			m_entriesSaved++;
 
-			return true; // All ok
+			return true;  // All ok
 		}
-
 
 		// Destructor: close files and generate summary files:
 		~CRawlogProcessor_ExportIMU_TXT()
 		{
-			for (map<string, FILE*>::const_iterator  it=lstFiles.begin();it!=lstFiles.end();++it)
+			for (map<string, FILE*>::const_iterator it = lstFiles.begin();
+				 it != lstFiles.end(); ++it)
 			{
 				os::fclose(it->second);
 			}
 
 			// Save the joint file:
 			// -------------------------
-			VERBOSE_COUT << "Number of different IMU sensorLabels     : " << lstFiles.size() << endl;
+			VERBOSE_COUT << "Number of different IMU sensorLabels     : "
+						 << lstFiles.size() << endl;
 
 			lstFiles.clear();
-		} // end of destructor
-
+		}  // end of destructor
 	};
 
 	// Process
 	// ---------------------------------
-	CRawlogProcessor_ExportIMU_TXT proc(in_rawlog,cmdline,verbose);
+	CRawlogProcessor_ExportIMU_TXT proc(in_rawlog, cmdline, verbose);
 	proc.doProcessRawlog();
 
 	// Dump statistics:
 	// ---------------------------------
-	VERBOSE_COUT << "Time to process file (sec)        : " << proc.m_timToParse << "\n";
-	VERBOSE_COUT << "Number of records saved           : " << proc.m_entriesSaved << "\n";
-
+	VERBOSE_COUT << "Time to process file (sec)        : " << proc.m_timToParse
+				 << "\n";
+	VERBOSE_COUT << "Number of records saved           : "
+				 << proc.m_entriesSaved << "\n";
 }

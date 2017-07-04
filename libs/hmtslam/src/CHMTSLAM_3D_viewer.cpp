@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include "hmtslam-precomp.h" // Precomp header
+#include "hmtslam-precomp.h"  // Precomp header
 
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/random.h>
@@ -28,57 +28,62 @@ using namespace std::literals;
 	Optional 3D real-time viewer within HMT-SLAM
 
   ---------------------------------------------------------------*/
-void CHMTSLAM::thread_3D_viewer(  )
+void CHMTSLAM::thread_3D_viewer()
 {
-	CHMTSLAM	*obj = this;
-	CTicTac							tictac;
+	CHMTSLAM* obj = this;
+	CTicTac tictac;
 
 	try
 	{
 		// Start thread:
 		// -------------------------
-		obj->logFmt(mrpt::utils::LVL_DEBUG,"[thread_3D_viewer] Thread started (ID=0x%08lX)\n", std::this_thread::get_id() );
+		obj->logFmt(
+			mrpt::utils::LVL_DEBUG,
+			"[thread_3D_viewer] Thread started (ID=0x%08lX)\n",
+			std::this_thread::get_id());
 
 		// --------------------------------------------
 		//    The main loop
 		//  Executes until termination is signaled
 		// --------------------------------------------
-		while ( !obj->m_terminateThreads )
+		while (!obj->m_terminateThreads)
 		{
 			std::this_thread::sleep_for(100ms);
-		};	// end while execute thread
+		};  // end while execute thread
 
 		// Finish thread:
 		// -------------------------
-		time_t timCreat,timExit; double timCPU=0;
+		time_t timCreat, timExit;
+		double timCPU = 0;
 		MRPT_TODO("Fix thread times")
-		//try { mrpt::system::getCurrentThreadTimes( timCreat,timExit,timCPU); } catch(...) {};
-		//obj->logFmt(mrpt::utils::LVL_DEBUG,"[thread_3D_viewer] Thread finished. CPU time used:%.06f secs \n",timCPU);
+		// try { mrpt::system::getCurrentThreadTimes( timCreat,timExit,timCPU);
+		// } catch(...) {};
+		// obj->logFmt(mrpt::utils::LVL_DEBUG,"[thread_3D_viewer] Thread
+		// finished. CPU time used:%.06f secs \n",timCPU);
 		obj->m_terminationFlag_3D_viewer = true;
-
 	}
-	catch(std::exception &e)
+	catch (std::exception& e)
 	{
 		obj->m_terminationFlag_3D_viewer = true;
 
 		// Release semaphores:
 
-		obj->logFmt(mrpt::utils::LVL_ERROR,"%s", e.what() );
+		obj->logFmt(mrpt::utils::LVL_ERROR, "%s", e.what());
 
 		// DEBUG: Terminate application:
-		obj->m_terminateThreads	= true;
-
+		obj->m_terminateThreads = true;
 	}
-	catch(...)
+	catch (...)
 	{
 		obj->m_terminationFlag_3D_viewer = true;
 
-		obj->logFmt(mrpt::utils::LVL_ERROR,
+		obj->logFmt(
+			mrpt::utils::LVL_ERROR,
 			"\n---------------------- EXCEPTION CAUGHT! ---------------------\n"
-			" In CHierarchicalMappingFramework::thread_3D_viewer. Unexpected runtime error!!\n");
+			" In CHierarchicalMappingFramework::thread_3D_viewer. Unexpected "
+			"runtime error!!\n");
 
 		// DEBUG: Terminate application:
-		obj->m_terminateThreads	= true;
+		obj->m_terminateThreads = true;
 	}
-
 }

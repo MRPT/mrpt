@@ -17,9 +17,12 @@ using namespace mrpt::utils;
 using namespace std;
 
 // Defined in tests/test_main.cpp
-namespace mrpt { namespace utils {
-	extern std::string MRPT_GLOBAL_UNITTEST_SRC_DIR;
-  }
+namespace mrpt
+{
+namespace utils
+{
+extern std::string MRPT_GLOBAL_UNITTEST_SRC_DIR;
+}
 }
 
 #include <mrpt/config.h>
@@ -27,17 +30,19 @@ namespace mrpt { namespace utils {
 
 TEST(CVelodyneScanner, sample_vlp16_dataset)
 {
-	const string fil = MRPT_GLOBAL_UNITTEST_SRC_DIR + string("/tests/sample_velodyne_vlp16_gps.pcap");
+	const string fil = MRPT_GLOBAL_UNITTEST_SRC_DIR +
+					   string("/tests/sample_velodyne_vlp16_gps.pcap");
 
 	if (!mrpt::system::fileExists(fil))
 	{
-		std::cerr << "WARNING: Skipping test due to missing file: " << fil << "\n";
+		std::cerr << "WARNING: Skipping test due to missing file: " << fil
+				  << "\n";
 		return;
 	}
 
 	CVelodyneScanner velodyne;
 
-	velodyne.setModelName( mrpt::hwdrivers::CVelodyneScanner::VLP16);
+	velodyne.setModelName(mrpt::hwdrivers::CVelodyneScanner::VLP16);
 	velodyne.setPCAPInputFile(fil);
 	velodyne.setPCAPInputFileReadOnce(true);
 	velodyne.enableVerbose(false);
@@ -45,35 +50,39 @@ TEST(CVelodyneScanner, sample_vlp16_dataset)
 
 	velodyne.initialize();
 
-	size_t nScans = 0, nGPS=0;
+	size_t nScans = 0, nGPS = 0;
 	bool rx_ok = true;
-	for (size_t i=0;i<1000 && rx_ok;i++)
+	for (size_t i = 0; i < 1000 && rx_ok; i++)
 	{
 		mrpt::obs::CObservationVelodyneScan::Ptr scan;
-		mrpt::obs::CObservationGPS::Ptr          gps;
-		rx_ok = velodyne.getNextObservation(scan,gps);
-		if (scan) { nScans++;
-		scan->generatePointCloud();
+		mrpt::obs::CObservationGPS::Ptr gps;
+		rx_ok = velodyne.getNextObservation(scan, gps);
+		if (scan)
+		{
+			nScans++;
+			scan->generatePointCloud();
 		}
-		if (gps)  nGPS++;
+		if (gps) nGPS++;
 	};
-	EXPECT_EQ(nScans,4U);
-	EXPECT_GT(nGPS,0U);
+	EXPECT_EQ(nScans, 4U);
+	EXPECT_GT(nGPS, 0U);
 }
 
 TEST(CVelodyneScanner, sample_hdl32_dataset)
 {
-	const string fil = MRPT_GLOBAL_UNITTEST_SRC_DIR + string("/tests/sample_velodyne_hdl32.pcap");
+	const string fil = MRPT_GLOBAL_UNITTEST_SRC_DIR +
+					   string("/tests/sample_velodyne_hdl32.pcap");
 
 	if (!mrpt::system::fileExists(fil))
 	{
-		std::cerr << "WARNING: Skipping test due to missing file: " << fil << "\n";
+		std::cerr << "WARNING: Skipping test due to missing file: " << fil
+				  << "\n";
 		return;
 	}
 
 	CVelodyneScanner velodyne;
 
-	velodyne.setModelName( mrpt::hwdrivers::CVelodyneScanner::HDL32);
+	velodyne.setModelName(mrpt::hwdrivers::CVelodyneScanner::HDL32);
 	velodyne.setPCAPInputFile(fil);
 	velodyne.setPCAPInputFileReadOnce(true);
 	velodyne.enableVerbose(false);
@@ -82,18 +91,17 @@ TEST(CVelodyneScanner, sample_hdl32_dataset)
 	velodyne.initialize();
 
 	size_t nScans = 0;
-//	size_t nGPS=0;
+	//	size_t nGPS=0;
 	bool rx_ok = true;
-	for (size_t i=0;i<1000 && rx_ok;i++)
+	for (size_t i = 0; i < 1000 && rx_ok; i++)
 	{
 		mrpt::obs::CObservationVelodyneScan::Ptr scan;
-		mrpt::obs::CObservationGPS::Ptr          gps;
-		rx_ok = velodyne.getNextObservation(scan,gps);
+		mrpt::obs::CObservationGPS::Ptr gps;
+		rx_ok = velodyne.getNextObservation(scan, gps);
 		if (scan) nScans++;
-//		if (gps)  nGPS++;
+		//		if (gps)  nGPS++;
 	};
-	EXPECT_EQ(nScans,3U);
+	EXPECT_EQ(nScans, 3U);
 }
 
-#endif // MRPT_HAS_LIBPCAP
-
+#endif  // MRPT_HAS_LIBPCAP

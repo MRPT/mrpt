@@ -21,34 +21,35 @@ using namespace mrpt::system;
 using namespace mrpt::hwdrivers;
 using namespace std;
 
-string SERIAL_NAME;	// Name of the serial port to open
+string SERIAL_NAME;  // Name of the serial port to open
 
 // ------------------------------------------------------
 //				Test_GPS
 // ------------------------------------------------------
 void Test_GPS()
 {
-	CGPSInterface		gps;
+	CGPSInterface gps;
 
-	string 			serName;
+	string serName;
 	cout << "GPS test application." << endl << endl;
 
 	if (mrpt::system::fileExists("./CONFIG_gps.ini"))
 	{
 		cout << "Using configuration from './CONFIG_gps.ini'" << endl;
-		CConfigFile			iniFile("./CONFIG_gps.ini");
-		gps.loadConfig( iniFile,"GPS");
+		CConfigFile iniFile("./CONFIG_gps.ini");
+		gps.loadConfig(iniFile, "GPS");
 	}
 	else
 	{
 		if (SERIAL_NAME.empty())
 		{
-		    cout << "Enter the serial port name (e.g. COM1, ttyS0, ttyUSB0, ttyACM0): ";
-		    getline(cin,serName);
+			cout << "Enter the serial port name (e.g. COM1, ttyS0, ttyUSB0, "
+					"ttyACM0): ";
+			getline(cin, serName);
 		}
 		else
 		{
-		    cout << "Using serial port: " << SERIAL_NAME << endl;
+			cout << "Using serial port: " << SERIAL_NAME << endl;
 			serName = SERIAL_NAME;
 		}
 
@@ -56,22 +57,21 @@ void Test_GPS()
 		gps.setSerialPortName(serName);
 	}
 
-
-	FILE	*f= os::fopen("gps_log.txt","wt");
+	FILE* f = os::fopen("gps_log.txt", "wt");
 	if (!f) return;
 
-//	bool					thereisData;
-//	mrpt::obs::CObservationGPS	gpsData;
+	//	bool					thereisData;
+	//	mrpt::obs::CObservationGPS	gpsData;
 
-	CGenericSensor::TListObservations			lstObs;
-	CGenericSensor::TListObservations::iterator 	itObs;
+	CGenericSensor::TListObservations lstObs;
+	CGenericSensor::TListObservations::iterator itObs;
 
-	while (! mrpt::system::os::kbhit())
+	while (!mrpt::system::os::kbhit())
 	{
 		gps.doProcess();
 		std::this_thread::sleep_for(500ms);
 
-		gps.getObservations( lstObs );
+		gps.getObservations(lstObs);
 
 		if (lstObs.empty())
 		{
@@ -79,11 +79,14 @@ void Test_GPS()
 		}
 		else
 		{
-			for (itObs=lstObs.begin();itObs!=lstObs.end();itObs++)
+			for (itObs = lstObs.begin(); itObs != lstObs.end(); itObs++)
 			{
-				ASSERT_(itObs->second->GetRuntimeClass()==CLASS_ID(CObservationGPS));
+				ASSERT_(
+					itObs->second->GetRuntimeClass() ==
+					CLASS_ID(CObservationGPS));
 
-				CObservationGPS::Ptr gpsData=std::dynamic_pointer_cast<CObservationGPS>(itObs->second);
+				CObservationGPS::Ptr gpsData =
+					std::dynamic_pointer_cast<CObservationGPS>(itObs->second);
 				gpsData->dumpToConsole();
 			}
 			lstObs.clear();
@@ -99,8 +102,8 @@ int main()
 	{
 		Test_GPS();
 		return 0;
-
-	} catch (std::exception &e)
+	}
+	catch (std::exception& e)
 	{
 		std::cout << "EXCEPCION: " << e.what() << std::endl;
 		return -1;
@@ -110,5 +113,4 @@ int main()
 		printf("Another exception!!");
 		return -1;
 	}
-
 }

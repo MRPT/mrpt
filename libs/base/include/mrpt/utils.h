@@ -82,4 +82,3 @@
 #include <mrpt/utils/adapters.h>
 
 #endif
-

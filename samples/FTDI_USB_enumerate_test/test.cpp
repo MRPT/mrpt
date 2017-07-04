@@ -20,28 +20,29 @@ using namespace mrpt::hwdrivers;
 using namespace mrpt::utils;
 using namespace std;
 
-
 // ------------------------------------------------------
 //				Test_EnumerateDevices
 // ------------------------------------------------------
 void Test_EnumerateDevices()
 {
-	CInterfaceFTDI	usbDevice;
+	CInterfaceFTDI usbDevice;
 
-	unsigned long		nConectedDevices;
+	unsigned long nConectedDevices;
 
 	TFTDIDeviceList lstDevs;
 
 	while (!mrpt::system::os::kbhit())
 	{
 		// Create list of devices:
-		usbDevice.ListAllDevices( lstDevs );
+		usbDevice.ListAllDevices(lstDevs);
 
 		nConectedDevices = (unsigned long)lstDevs.size();
 
-		cout << "There are " << nConectedDevices << " USB devices - " << mrpt::system::dateTimeToString( mrpt::system::getCurrentTime() ) << endl;
+		cout << "There are " << nConectedDevices << " USB devices - "
+			 << mrpt::system::dateTimeToString(mrpt::system::getCurrentTime())
+			 << endl;
 
-		for (size_t i=0;i<nConectedDevices;i++)
+		for (size_t i = 0; i < nConectedDevices; i++)
 			cout << lstDevs[i] << endl;
 
 		printf("\nPRESS ANY KEY TO END THE PROGRAM...\n\n");
@@ -56,7 +57,8 @@ int main()
 	{
 		Test_EnumerateDevices();
 		return 0;
-	} catch (std::exception &e)
+	}
+	catch (std::exception& e)
 	{
 		std::cout << "EXCEPCION: " << e.what() << std::endl;
 		return -1;
@@ -66,6 +68,4 @@ int main()
 		printf("Another exception!!");
 		return -1;
 	}
-
 }
-

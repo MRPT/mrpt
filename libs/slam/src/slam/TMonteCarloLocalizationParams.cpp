@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include "slam-precomp.h"   // Precompiled headerss
+#include "slam-precomp.h"  // Precompiled headerss
 
 #include <mrpt/slam/TMonteCarloLocalizationParams.h>
 
@@ -19,21 +19,21 @@ using namespace std;
 /*---------------------------------------------------------------
 					TMonteCarloLocalizationParams
  ---------------------------------------------------------------*/
-TMonteCarloLocalizationParams::TMonteCarloLocalizationParams() :
-	metricMap(nullptr),
-	metricMaps(),
-	KLD_params()
+TMonteCarloLocalizationParams::TMonteCarloLocalizationParams()
+	: metricMap(nullptr), metricMaps(), KLD_params()
 {
 }
 
-TMonteCarloLocalizationParams::TMonteCarloLocalizationParams( const TMonteCarloLocalizationParams &o )
+TMonteCarloLocalizationParams::TMonteCarloLocalizationParams(
+	const TMonteCarloLocalizationParams& o)
 {
 	*this = o;
 }
 
-
-/** Copy operator: take care of knowing what you do, since this copies pointers. */
-TMonteCarloLocalizationParams & TMonteCarloLocalizationParams::operator =(const TMonteCarloLocalizationParams &o)
+/** Copy operator: take care of knowing what you do, since this copies pointers.
+ */
+TMonteCarloLocalizationParams& TMonteCarloLocalizationParams::operator=(
+	const TMonteCarloLocalizationParams& o)
 {
 	metricMap = o.metricMap;
 	metricMaps = o.metricMaps;

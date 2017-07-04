@@ -20,26 +20,28 @@ using namespace mrpt::poses;
 using namespace mrpt::maps;
 
 // PlannerSimple2D
-tuple PlannerSimple2D_computePath(PlannerSimple2D &self, COccupancyGridMap2D &theMap, CPose2D &origin, CPose2D &target)
+tuple PlannerSimple2D_computePath(
+	PlannerSimple2D& self, COccupancyGridMap2D& theMap, CPose2D& origin,
+	CPose2D& target)
 {
-    // function args
-    std::deque<mrpt::math::TPoint2D> path;
-    bool notFound;
-    // invoke function
-    self.computePath(theMap, origin, target, path, notFound);
-    // convert to python compatible
-    boost::python::list ret_val;
-    boost::python::list py_path;
-    for (uint32_t i = 0; i < path.size(); ++i) {
-        py_path.append(path[i]);
-    }
-    // setup return value
-    ret_val.append(py_path);
-    ret_val.append(notFound);
-    return tuple(ret_val);
+	// function args
+	std::deque<mrpt::math::TPoint2D> path;
+	bool notFound;
+	// invoke function
+	self.computePath(theMap, origin, target, path, notFound);
+	// convert to python compatible
+	boost::python::list ret_val;
+	boost::python::list py_path;
+	for (uint32_t i = 0; i < path.size(); ++i)
+	{
+		py_path.append(path[i]);
+	}
+	// setup return value
+	ret_val.append(py_path);
+	ret_val.append(notFound);
+	return tuple(ret_val);
 }
 // end of PlannerSimple2D
-
 
 // exporter
 void export_nav()
@@ -50,8 +52,11 @@ void export_nav()
 	// PlannerSimple2D
 	{
 		class_<PlannerSimple2D>("PlannerSimple2D", init<>())
-			.def("computePath", &PlannerSimple2D_computePath, "This method compute the optimal path for a circular robot, in the given occupancy grid map, from the origin location to a target point.")
-			.def_readwrite("robotRadius", &PlannerSimple2D::robotRadius)
-		;
+			.def(
+				"computePath", &PlannerSimple2D_computePath,
+				"This method compute the optimal path for a circular robot, in "
+				"the given occupancy grid map, from the origin location to a "
+				"target point.")
+			.def_readwrite("robotRadius", &PlannerSimple2D::robotRadius);
 	}
 }

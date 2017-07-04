@@ -15,8 +15,12 @@
 #include <mrpt/graphs/TMRSlamNodeAnnotations.h>
 #include <utility>
 
-namespace mrpt { namespace graphs { namespace detail {
-
+namespace mrpt
+{
+namespace graphs
+{
+namespace detail
+{
 // (Dummy) standard version
 //////////////////////////////////////////////////////////
 
@@ -29,69 +33,68 @@ namespace mrpt { namespace graphs { namespace detail {
  * runs specifically for TMRSlamNodeAnnotations as the 3rd template argument.
  *
  */
-template<
-	class CPOSE, // Type of edges
-	class MAPS_IMPLEMENTATION, // Use std::map<> vs. std::vector<>
-	class NODE_ANNOTATIONS=mrpt::graphs::detail::TMRSlamNodeAnnotations,
-	class EDGE_ANNOTATIONS=mrpt::graphs::detail::edge_annotations_empty
-	>
-class CMRVisualizer:
-	public CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS, EDGE_ANNOTATIONS>
+template <class CPOSE,  // Type of edges
+		  class MAPS_IMPLEMENTATION,  // Use std::map<> vs. std::vector<>
+		  class NODE_ANNOTATIONS = mrpt::graphs::detail::TMRSlamNodeAnnotations,
+		  class EDGE_ANNOTATIONS = mrpt::graphs::detail::edge_annotations_empty>
+class CMRVisualizer : public CVisualizer<CPOSE, MAPS_IMPLEMENTATION,
+										 NODE_ANNOTATIONS, EDGE_ANNOTATIONS>
 {
-public:
-	typedef CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS, EDGE_ANNOTATIONS>
+   public:
+	typedef CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS,
+						EDGE_ANNOTATIONS>
 		parent;
-	typedef mrpt::graphs::CNetworkOfPoses<
-		CPOSE,
-		MAPS_IMPLEMENTATION,
-		NODE_ANNOTATIONS,
-		EDGE_ANNOTATIONS> GRAPH_T;
+	typedef mrpt::graphs::CNetworkOfPoses<CPOSE, MAPS_IMPLEMENTATION,
+										  NODE_ANNOTATIONS, EDGE_ANNOTATIONS>
+		GRAPH_T;
 
 	CMRVisualizer(const GRAPH_T& graph_in);
 
 	~CMRVisualizer();
-	void drawNodePoints(mrpt::opengl::CSetOfObjects::Ptr& object,
-			const mrpt::utils::TParametersDouble* viz_params=NULL) const;
-	void drawEdges(mrpt::opengl::CSetOfObjects::Ptr& object,
-			const mrpt::utils::TParametersDouble* viz_params=NULL) const;
+	void drawNodePoints(
+		mrpt::opengl::CSetOfObjects::Ptr& object,
+		const mrpt::utils::TParametersDouble* viz_params = NULL) const;
+	void drawEdges(
+		mrpt::opengl::CSetOfObjects::Ptr& object,
+		const mrpt::utils::TParametersDouble* viz_params = NULL) const;
 
-private:
+   private:
 };
 
 // Specialized version
 //////////////////////////////////////////////////////////
 
-template<
-	class CPOSE, // Type of edges
-	class MAPS_IMPLEMENTATION, // Use std::map<> vs. std::vector<>
-	class EDGE_ANNOTATIONS
-	>
-class CMRVisualizer<CPOSE, MAPS_IMPLEMENTATION, TMRSlamNodeAnnotations, EDGE_ANNOTATIONS>:
-	public CVisualizer<CPOSE, MAPS_IMPLEMENTATION, TMRSlamNodeAnnotations, EDGE_ANNOTATIONS>
+template <class CPOSE,  // Type of edges
+		  class MAPS_IMPLEMENTATION,  // Use std::map<> vs. std::vector<>
+		  class EDGE_ANNOTATIONS>
+class CMRVisualizer<CPOSE, MAPS_IMPLEMENTATION, TMRSlamNodeAnnotations,
+					EDGE_ANNOTATIONS>
+	: public CVisualizer<CPOSE, MAPS_IMPLEMENTATION, TMRSlamNodeAnnotations,
+						 EDGE_ANNOTATIONS>
 {
-public:
-	typedef CVisualizer<CPOSE, MAPS_IMPLEMENTATION, TMRSlamNodeAnnotations, EDGE_ANNOTATIONS>
+   public:
+	typedef CVisualizer<CPOSE, MAPS_IMPLEMENTATION, TMRSlamNodeAnnotations,
+						EDGE_ANNOTATIONS>
 		parent;
 	typedef mrpt::graphs::CNetworkOfPoses<
-		CPOSE,
-		MAPS_IMPLEMENTATION,
-		TMRSlamNodeAnnotations,
-		EDGE_ANNOTATIONS> GRAPH_T;
+		CPOSE, MAPS_IMPLEMENTATION, TMRSlamNodeAnnotations, EDGE_ANNOTATIONS>
+		GRAPH_T;
 
 	CMRVisualizer(const GRAPH_T& graph_in);
 
 	~CMRVisualizer();
-	void drawNodePoints(mrpt::opengl::CSetOfObjects::Ptr& object,
-			const mrpt::utils::TParametersDouble* viz_params=NULL) const;
-	void drawEdges(mrpt::opengl::CSetOfObjects::Ptr& object,
-			const mrpt::utils::TParametersDouble* viz_params=NULL) const;
+	void drawNodePoints(
+		mrpt::opengl::CSetOfObjects::Ptr& object,
+		const mrpt::utils::TParametersDouble* viz_params = NULL) const;
+	void drawEdges(
+		mrpt::opengl::CSetOfObjects::Ptr& object,
+		const mrpt::utils::TParametersDouble* viz_params = NULL) const;
 
-private:
+   private:
 };
-
-
-
-} } } // end of namespaces
+}
+}
+}  // end of namespaces
 
 #include <mrpt/graphs/CMRVisualizer_impl.h>
 

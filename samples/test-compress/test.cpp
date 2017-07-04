@@ -18,49 +18,53 @@ using namespace mrpt::math;
 using namespace mrpt::system;
 using namespace std;
 
-
 // ------------------------------------------------------
 //						MAIN
 // ------------------------------------------------------
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
 	try
 	{
-		if (argc<2)
+		if (argc < 2)
 		{
-			cerr << "Usage: test-compress <input_file> [compression level 1-9]" << endl;
+			cerr << "Usage: test-compress <input_file> [compression level 1-9]"
+				 << endl;
 			return -1;
 		}
 
-		vector_byte	buf;
+		vector_byte buf;
 
-		if (!mrpt::system::loadBinaryFile( buf, argv[1]))
+		if (!mrpt::system::loadBinaryFile(buf, argv[1]))
 		{
 			cerr << "Error loading file: " << argv[1] << endl;
 			return -1;
 		}
 
-		string	gzfile = format("%s.gz",argv[1]);
-		int		compress_level = 9;
-		if (argc>=3)
+		string gzfile = format("%s.gz", argv[1]);
+		int compress_level = 9;
+		if (argc >= 3)
 		{
-			compress_level = atoi( argv[2] );
+			compress_level = atoi(argv[2]);
 		}
-		CTicTac	tictac;
+		CTicTac tictac;
 
 		tictac.Tic();
 
-		if (!mrpt::compress::zip::compress_gz_file( gzfile, buf, compress_level))
+		if (!mrpt::compress::zip::compress_gz_file(gzfile, buf, compress_level))
 		{
 			cerr << "Error writing compressing file: " << gzfile << endl;
 			return -1;
 		}
 
 		double t = tictac.Tac();
-		cout << format("Compressed %s (compress level=%i) in %.04f seconds.",gzfile.c_str(),compress_level,t) << endl;
+		cout << format(
+					"Compressed %s (compress level=%i) in %.04f seconds.",
+					gzfile.c_str(), compress_level, t)
+			 << endl;
 
 		return 0;
-	} catch (std::exception &e)
+	}
+	catch (std::exception& e)
 	{
 		std::cout << "MRPT exception caught: " << e.what() << std::endl;
 		return -1;

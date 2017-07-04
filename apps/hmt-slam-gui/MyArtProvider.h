@@ -16,11 +16,9 @@
 
 class CMyArtProvider : public wxArtProvider
 {
-protected:
-    virtual wxBitmap CreateBitmap(const wxArtID& id,
-                                  const wxArtClient& client,
-                                  const wxSize& size);
+   protected:
+	virtual wxBitmap CreateBitmap(
+		const wxArtID& id, const wxArtClient& client, const wxSize& size);
 };
 
-#endif // MYARTPROVIDER_H
-
+#endif  // MYARTPROVIDER_H

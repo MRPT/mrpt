@@ -35,26 +35,28 @@ void register_tests_atan2lut();
 void register_tests_strings();
 // -------------------------------------------------
 
-using TestFunctor = std::function<double(int,int)>; // return run-time in secs.
+using TestFunctor =
+	std::function<double(int, int)>;  // return run-time in secs.
 
 struct TestData
 {
-	TestData(const char*nam,TestFunctor f,int a1=0,int a2=0) : name(nam),func(f),arg1(a1),arg2(a2) { }
+	TestData(const char* nam, TestFunctor f, int a1 = 0, int a2 = 0)
+		: name(nam), func(f), arg1(a1), arg2(a2)
+	{
+	}
 
-	const char *name;
+	const char* name;
 	TestFunctor func;
-	int arg1,arg2;
+	int arg1, arg2;
 };
 
 // Common data & functions available to all performance modules:
 extern std::list<TestData> lstTests;
 
 extern const float SCAN_RANGES_1[361];
-extern const char  SCAN_VALID_1[361];
+extern const char SCAN_VALID_1[361];
 
-
-void dummy_do_nothing_with_string(const std::string &s);
-void getTestImage(unsigned int img_index, mrpt::utils::CImage &out_img );
-
+void dummy_do_nothing_with_string(const std::string& s);
+void getTestImage(unsigned int img_index, mrpt::utils::CImage& out_img);
 
 #endif

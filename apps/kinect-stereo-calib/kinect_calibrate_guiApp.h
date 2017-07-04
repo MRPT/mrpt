@@ -21,8 +21,8 @@
 
 class kinect_calibrate_guiApp : public wxApp
 {
-    public:
-        virtual bool OnInit();
+   public:
+	virtual bool OnInit();
 };
 
-#endif // KINECT_CALIBRATE_GUIAPP_H
+#endif  // KINECT_CALIBRATE_GUIAPP_H

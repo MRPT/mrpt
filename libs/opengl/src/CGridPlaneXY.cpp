@@ -19,55 +19,44 @@ using namespace mrpt::opengl;
 using namespace mrpt::utils;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE( CGridPlaneXY, CRenderizableDisplayList, mrpt::opengl )
+IMPLEMENTS_SERIALIZABLE(CGridPlaneXY, CRenderizableDisplayList, mrpt::opengl)
 
 CGridPlaneXY::Ptr CGridPlaneXY::Create(
-				float xMin,
-				float xMax,
-				float yMin,
-				float yMax,
-				float z,
-				float frequency, 
-				float lineWidth,
-				bool  antiAliasing)
+	float xMin, float xMax, float yMin, float yMax, float z, float frequency,
+	float lineWidth, bool antiAliasing)
 {
-	return CGridPlaneXY::Ptr( new CGridPlaneXY(xMin,xMax,yMin,yMax, z, frequency,lineWidth,antiAliasing ) );
+	return CGridPlaneXY::Ptr(
+		new CGridPlaneXY(
+			xMin, xMax, yMin, yMax, z, frequency, lineWidth, antiAliasing));
 }
 /** Constructor  */
 CGridPlaneXY::CGridPlaneXY(
-	float xMin,
-	float xMax,
-	float yMin,
-	float yMax,
-	float z,
-	float frequency,
-	float lineWidth,
-	bool  antiAliasing
-	) :
-	m_xMin(xMin),
-	m_xMax(xMax),
-	m_yMin(yMin),
-	m_yMax(yMax),
-	m_plane_z(z),
-	m_frequency(frequency),
-	m_lineWidth(lineWidth),
-	m_antiAliasing(antiAliasing)
+	float xMin, float xMax, float yMin, float yMax, float z, float frequency,
+	float lineWidth, bool antiAliasing)
+	: m_xMin(xMin),
+	  m_xMax(xMax),
+	  m_yMin(yMin),
+	  m_yMax(yMax),
+	  m_plane_z(z),
+	  m_frequency(frequency),
+	  m_lineWidth(lineWidth),
+	  m_antiAliasing(antiAliasing)
 {
 }
 
 /*---------------------------------------------------------------
 					render_dl
   ---------------------------------------------------------------*/
-void   CGridPlaneXY::render_dl() const
+void CGridPlaneXY::render_dl() const
 {
 #if MRPT_HAS_OPENGL_GLUT
-	ASSERT_(m_frequency>=0)
+	ASSERT_(m_frequency >= 0)
 
 	// Enable antialiasing:
 	if (m_antiAliasing)
 	{
-		glPushAttrib( GL_COLOR_BUFFER_BIT | GL_LINE_BIT );
-		glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+		glPushAttrib(GL_COLOR_BUFFER_BIT | GL_LINE_BIT);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glEnable(GL_BLEND);
 		glEnable(GL_LINE_SMOOTH);
 	}
@@ -76,16 +65,16 @@ void   CGridPlaneXY::render_dl() const
 	glDisable(GL_LIGHTING);  // Disable lights when drawing lines
 	glBegin(GL_LINES);
 
-	for (float y=m_yMin;y<=m_yMax;y+=m_frequency)
+	for (float y = m_yMin; y <= m_yMax; y += m_frequency)
 	{
-		glVertex3f( m_xMin,y,m_plane_z );
-		glVertex3f( m_xMax,y,m_plane_z );
+		glVertex3f(m_xMin, y, m_plane_z);
+		glVertex3f(m_xMax, y, m_plane_z);
 	}
 
-	for (float x=m_xMin;x<=m_xMax;x+=m_frequency)
+	for (float x = m_xMin; x <= m_xMax; x += m_frequency)
 	{
-		glVertex3f( x,m_yMin,m_plane_z );
-		glVertex3f( x,m_yMax,m_plane_z );
+		glVertex3f(x, m_yMin, m_plane_z);
+		glVertex3f(x, m_yMax, m_plane_z);
 	}
 
 	glEnd();
@@ -102,11 +91,10 @@ void   CGridPlaneXY::render_dl() const
 
 /*---------------------------------------------------------------
    Implements the writing to a CStream capability of
-     CSerializable objects
+	 CSerializable objects
   ---------------------------------------------------------------*/
-void  CGridPlaneXY::writeToStream(mrpt::utils::CStream &out,int *version) const
+void CGridPlaneXY::writeToStream(mrpt::utils::CStream& out, int* version) const
 {
-
 	if (version)
 		*version = 1;
 	else
@@ -115,7 +103,7 @@ void  CGridPlaneXY::writeToStream(mrpt::utils::CStream &out,int *version) const
 		out << m_xMin << m_xMax;
 		out << m_yMin << m_yMax << m_plane_z;
 		out << m_frequency;
-		out << m_lineWidth << m_antiAliasing; // v1
+		out << m_lineWidth << m_antiAliasing;  // v1
 	}
 }
 
@@ -123,35 +111,34 @@ void  CGridPlaneXY::writeToStream(mrpt::utils::CStream &out,int *version) const
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void  CGridPlaneXY::readFromStream(mrpt::utils::CStream &in,int version)
+void CGridPlaneXY::readFromStream(mrpt::utils::CStream& in, int version)
 {
-
-	switch(version)
+	switch (version)
 	{
-	case 0:
-	case 1:
+		case 0:
+		case 1:
 		{
 			readFromStreamRender(in);
 			in >> m_xMin >> m_xMax;
 			in >> m_yMin >> m_yMax >> m_plane_z;
 			in >> m_frequency;
-			if (version>=1)
+			if (version >= 1)
 				in >> m_lineWidth >> m_antiAliasing;
 			else
 			{
-				m_lineWidth=1.0f;
-				m_antiAliasing=true;
+				m_lineWidth = 1.0f;
+				m_antiAliasing = true;
 			}
-
-		} break;
-	default:
-		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
-
+		}
+		break;
+		default:
+			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
 	};
 	CRenderizableDisplayList::notifyChange();
 }
 
-void CGridPlaneXY::getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const
+void CGridPlaneXY::getBoundingBox(
+	mrpt::math::TPoint3D& bb_min, mrpt::math::TPoint3D& bb_max) const
 {
 	bb_min.x = m_xMin;
 	bb_min.y = m_yMin;

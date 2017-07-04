@@ -18,68 +18,66 @@ using namespace mrpt::utils;
 using namespace mrpt::gui;
 
 #include <mrpt/examples_config.h>
-std::string   myDataDir = MRPT_EXAMPLES_BASE_DIRECTORY + string("checkerboardDetectors/");
+std::string myDataDir =
+	MRPT_EXAMPLES_BASE_DIRECTORY + string("checkerboardDetectors/");
 
 // ------------------------------------------------------
 //				TestCheckerboardDetectors
 // ------------------------------------------------------
 void TestCheckerboardDetectors()
 {
-	CTimeLogger  timlog;
+	CTimeLogger timlog;
 
 	// Load img:
 	CImage img;
-	if (!img.loadFromFile( myDataDir + string("test_1_checkerboard_9x6.jpg")) )
+	if (!img.loadFromFile(myDataDir + string("test_1_checkerboard_9x6.jpg")))
 		throw std::runtime_error("Can't load demo image!");
 
 	// Detect multiple-checkerboards:
-	vector<TPixelCoordf> 	cornerCoords;
-	const unsigned int  checkerboard_size_x  = 6;
-	const unsigned int  checkerboard_size_y  = 9;
+	vector<TPixelCoordf> cornerCoords;
+	const unsigned int checkerboard_size_x = 6;
+	const unsigned int checkerboard_size_y = 9;
 
 	// Detect:
 	timlog.enter("findChessboardCorners [OpenCV]");
 
-	//bool detectOk1 = 
+	// bool detectOk1 =
 	mrpt::vision::findChessboardCorners(
-		img,
-		cornerCoords,
-		checkerboard_size_x, checkerboard_size_y,
-		true, // normalize_image
-		false // useScaramuzzaMethod
+		img, cornerCoords, checkerboard_size_x, checkerboard_size_y,
+		true,  // normalize_image
+		false  // useScaramuzzaMethod
 		);
 
 	timlog.leave("findChessboardCorners [OpenCV]");
 
 	// Draw:
 	CImage img_detect1 = img;
-	img_detect1.drawChessboardCorners(cornerCoords,checkerboard_size_x,checkerboard_size_y);
-
+	img_detect1.drawChessboardCorners(
+		cornerCoords, checkerboard_size_x, checkerboard_size_y);
 
 	timlog.enter("findChessboardCorners [Scaramuzza]");
 
-	//bool detectOk2 = 
+	// bool detectOk2 =
 	mrpt::vision::findChessboardCorners(
-		img,
-		cornerCoords,
-		checkerboard_size_x, checkerboard_size_y,
-		true, // normalize_image
-		true // useScaramuzzaMethod
+		img, cornerCoords, checkerboard_size_x, checkerboard_size_y,
+		true,  // normalize_image
+		true  // useScaramuzzaMethod
 		);
 
 	timlog.leave("findChessboardCorners [Scaramuzza]");
 
 	// Draw:
 	CImage img_detect2 = img;
-	img_detect2.drawChessboardCorners(cornerCoords,checkerboard_size_x,checkerboard_size_y);
+	img_detect2.drawChessboardCorners(
+		cornerCoords, checkerboard_size_x, checkerboard_size_y);
 
-	//ASSERT_(detectOk1 && detectOk2);
+	// ASSERT_(detectOk1 && detectOk2);
 
 	// Show results:
-	CDisplayWindow  win1("Detected checkerboard (OpenCV)");
+	CDisplayWindow win1("Detected checkerboard (OpenCV)");
 	win1.showImage(img_detect1);
 
-	CDisplayWindow  win2("Detected checkerboard (Scaramuzza)");
+	CDisplayWindow win2("Detected checkerboard (Scaramuzza)");
 	win2.showImage(img_detect2);
 
 	timlog.dumpAllStats();
@@ -92,8 +90,6 @@ void TestCheckerboardDetectors()
 	}
 }
 
-
-
 // ------------------------------------------------------
 //						MAIN
 // ------------------------------------------------------
@@ -103,7 +99,8 @@ int main()
 	{
 		TestCheckerboardDetectors();
 		return 0;
-	} catch (std::exception &e)
+	}
+	catch (std::exception& e)
 	{
 		std::cout << "MRPT exception caught: " << e.what() << std::endl;
 		return -1;
@@ -114,4 +111,3 @@ int main()
 		return -1;
 	}
 }
-

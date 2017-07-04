@@ -18,40 +18,45 @@ namespace mrpt
 {
 namespace obs
 {
+/** This represents a measurement of the wireless strength perceived by the
+ * robot.
+ *  The signal level is given as a percentage.
+ *
+ * \sa CObservation, mrpt::hwdrivers::CWirelessPower for a software sensor
+ * capable of reading this kind of observations.
+ * \ingroup mrpt_obs_grp
+ */
+class OBS_IMPEXP CObservationWirelessPower : public CObservation
+{
+	DEFINE_SERIALIZABLE(CObservationWirelessPower)
 
-	/** This represents a measurement of the wireless strength perceived by the robot.
-	 *  The signal level is given as a percentage.
-	 *
-	 * \sa CObservation, mrpt::hwdrivers::CWirelessPower for a software sensor capable of reading this kind of observations.
-	 * \ingroup mrpt_obs_grp
-	 */
-	class OBS_IMPEXP CObservationWirelessPower : public CObservation
-	{
-		DEFINE_SERIALIZABLE( CObservationWirelessPower )
+   public:
+	/** Constructor */
+	CObservationWirelessPower();
 
-	 public:
-		/** Constructor */
-		CObservationWirelessPower( );
+	/** @name The data members
+	 * @{ */
 
-		 /** @name The data members
-		  * @{ */
+	/** The power or signal strength as sensed by the Wifi receiver (In
+	 * percentage: [0-100]) */
+	double power;
+	/** The location of the sensing antenna on the robot coordinate framework */
+	mrpt::poses::CPose3D sensorPoseOnRobot;
 
-		/** The power or signal strength as sensed by the Wifi receiver (In percentage: [0-100]) */
-		double power;  
-		/** The location of the sensing antenna on the robot coordinate framework */
-		mrpt::poses::CPose3D  sensorPoseOnRobot; 
+	/** @} */
 
-		/** @} */
+	void getSensorPose(mrpt::poses::CPose3D& out_sensorPose)
+		const override;  // See base class docs
+	void setSensorPose(const mrpt::poses::CPose3D& newSensorPose)
+		override;  // See base class docs
+	void getDescriptionAsText(
+		std::ostream& o) const override;  // See base class docs
 
-		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const override;// See base class docs
-		void setSensorPose( const mrpt::poses::CPose3D &newSensorPose ) override;// See base class docs
-		void getDescriptionAsText(std::ostream &o) const override;// See base class docs
+};  // End of class def.
+DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
+	CObservationWirelessPower, CObservation, OBS_IMPEXP)
 
-	}; // End of class def.
-	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CObservationWirelessPower, CObservation, OBS_IMPEXP)
-
-
-	} // End of namespace
-} // End of namespace
+}  // End of namespace
+}  // End of namespace
 
 #endif

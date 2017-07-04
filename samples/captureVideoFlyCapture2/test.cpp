@@ -19,14 +19,14 @@ using namespace mrpt::obs;
 using namespace mrpt::gui;
 using namespace std;
 
-
 // ------------------------------------------------------
 //				TestCapture_FlyCapture2
 // ------------------------------------------------------
 
 void TestCapture_FlyCapture2()
 {
-	cout << " FlyCapture2 version: " << CImageGrabber_FlyCapture2::getFC2version() << std::endl;
+	cout << " FlyCapture2 version: "
+		 << CImageGrabber_FlyCapture2::getFC2version() << std::endl;
 
 	// Create camera object:
 	CImageGrabber_FlyCapture2 capture;
@@ -34,12 +34,11 @@ void TestCapture_FlyCapture2()
 	// Open camera:
 	TCaptureOptions_FlyCapture2 cam_options;
 
-	cam_options.framerate="FRAMERATE_30";
-	cam_options.videomode="VIDEOMODE_1280x960RGB";
-	//cam_options.videomode="VIDEOMODE_1280x960Y8";
+	cam_options.framerate = "FRAMERATE_30";
+	cam_options.videomode = "VIDEOMODE_1280x960RGB";
+	// cam_options.videomode="VIDEOMODE_1280x960Y8";
 
 	capture.open(cam_options);
-
 
 	CTicTac tictac;
 	cout << "Press any key to stop capture to 'capture.rawlog'..." << endl;
@@ -50,13 +49,15 @@ void TestCapture_FlyCapture2()
 
 	int cnt = 0;
 
-	CObservationImage::Ptr obs= std::make_shared<CObservationImage>();  // Memory will be freed by SF destructor in each loop.
+	CObservationImage::Ptr obs =
+		std::make_shared<CObservationImage>();  // Memory will be freed by SF
+	// destructor in each loop.
 
 	while (!mrpt::system::os::kbhit())
 	{
-		if ( (cnt++ % 20) == 0 )
+		if ((cnt++ % 20) == 0)
 		{
-			if (cnt>0)
+			if (cnt > 0)
 			{
 				double t = tictac.Tac();
 				double FPS = 20 / t;
@@ -65,29 +66,28 @@ void TestCapture_FlyCapture2()
 			tictac.Tic();
 		}
 
-		if (!capture.getObservation( *obs ))
+		if (!capture.getObservation(*obs))
 		{
 			cerr << "Error retrieving images!" << endl;
 			break;
 		}
 
-		cout << "."; cout.flush();
-		if (win.isOpen())
-			win.showImage( obs->image );
+		cout << ".";
+		cout.flush();
+		if (win.isOpen()) win.showImage(obs->image);
 
 		fil << obs;
 	}
-
 }
 
-
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
 	try
 	{
 		TestCapture_FlyCapture2();
 		return 0;
-	} catch (std::exception &e)
+	}
+	catch (std::exception& e)
 	{
 		std::cout << "MRPT exception caught: " << e.what() << std::endl;
 		return -1;
@@ -97,5 +97,4 @@ int main(int argc, char **argv)
 		printf("Another exception!!");
 		return -1;
 	}
-
 }

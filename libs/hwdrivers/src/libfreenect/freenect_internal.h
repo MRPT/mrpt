@@ -6,7 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-   
+
 #ifndef FREENECT_INTERNAL_H
 #define FREENECT_INTERNAL_H
 
@@ -14,15 +14,16 @@
 
 #include "libfreenect.h"
 
-typedef void (*fnusb_iso_cb)(freenect_device *dev, uint8_t *buf, int len);
+typedef void (*fnusb_iso_cb)(freenect_device* dev, uint8_t* buf, int len);
 
 #include "usb_libusb10.h"
 
-struct _freenect_context {
+struct _freenect_context
+{
 	freenect_loglevel log_level;
 	freenect_log_cb log_cb;
 	fnusb_ctx usb;
-	freenect_device *first;
+	freenect_device* first;
 };
 
 #define LL_FATAL FREENECT_LOG_FATAL
@@ -34,13 +35,15 @@ struct _freenect_context {
 #define LL_SPEW FREENECT_LOG_SPEW
 #define LL_FLOOD FREENECT_LOG_FLOOD
 
-
 #ifdef _WIN32
 #include <stdarg.h>
 #include <stdio.h>
-void fn_log(freenect_context *ctx, freenect_loglevel level, const char *fmt, ...);
+void fn_log(
+	freenect_context* ctx, freenect_loglevel level, const char* fmt, ...);
 #else
-void fn_log(freenect_context *ctx, freenect_loglevel level, const char *fmt, ...) __attribute__ ((format (printf, 3, 4)));
+void fn_log(
+	freenect_context* ctx, freenect_loglevel level, const char* fmt, ...)
+	__attribute__((format(printf, 3, 4)));
 #endif
 
 #define FN_LOG(level, ...) fn_log(ctx, level, __VA_ARGS__)
@@ -55,13 +58,10 @@ void fn_log(freenect_context *ctx, freenect_loglevel level, const char *fmt, ...
 #define FN_FLOOD(...) FN_LOG(LL_FLOOD, __VA_ARGS__)
 
 #ifdef FN_BIGENDIAN
-static inline uint16_t fn_le16(uint16_t d)
-{
-	return (d<<8) | (d>>8);
-}
+static inline uint16_t fn_le16(uint16_t d) { return (d << 8) | (d >> 8); }
 static inline uint32_t fn_le32(uint32_t d)
 {
-	return (d<<24) | ((d<<8)&0xFF0000) | ((d>>8)&0xFF00) | (d>>24);
+	return (d << 24) | ((d << 8) & 0xFF0000) | ((d >> 8) & 0xFF00) | (d >> 24);
 }
 #else
 #define fn_le16(x) (x)
@@ -71,14 +71,15 @@ static inline uint32_t fn_le32(uint32_t d)
 #define DEPTH_PKTSIZE 1760
 #define VIDEO_PKTSIZE 1920
 
-#define DEPTH_PKTDSIZE (DEPTH_PKTSIZE-12)
-#define VIDEO_PKTDSIZE (VIDEO_PKTSIZE-12)
+#define DEPTH_PKTDSIZE (DEPTH_PKTSIZE - 12)
+#define VIDEO_PKTDSIZE (VIDEO_PKTSIZE - 12)
 
 #define VID_MICROSOFT 0x45e
 #define PID_NUI_CAMERA 0x02ae
 #define PID_NUI_MOTOR 0x02b0
 
-typedef struct {
+typedef struct
+{
 	int running;
 	uint8_t flag;
 	int synced;
@@ -95,16 +96,17 @@ typedef struct {
 	uint32_t last_timestamp;
 	uint32_t timestamp;
 	int split_bufs;
-	void *lib_buf;
-	void *usr_buf;
-	uint8_t *raw_buf;
-	void *proc_buf;
+	void* lib_buf;
+	void* usr_buf;
+	uint8_t* raw_buf;
+	void* proc_buf;
 } packet_stream;
 
-struct _freenect_device {
-	freenect_context *parent;
-	freenect_device *next;
-	void *user_data;
+struct _freenect_device
+{
+	freenect_context* parent;
+	freenect_device* next;
+	void* user_data;
 
 	// Cameras
 	fnusb_dev usb_cam;

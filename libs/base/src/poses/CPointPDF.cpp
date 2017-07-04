@@ -14,5 +14,4 @@
 
 using namespace mrpt::poses;
 
-IMPLEMENTS_VIRTUAL_SERIALIZABLE( CPointPDF, CSerializable, mrpt::poses )
-
+IMPLEMENTS_VIRTUAL_SERIALIZABLE(CPointPDF, CSerializable, mrpt::poses)

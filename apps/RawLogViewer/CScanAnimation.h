@@ -29,94 +29,93 @@
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
 
-class CScanAnimation: public wxDialog
+class CScanAnimation : public wxDialog
 {
-	public:
+   public:
+	CScanAnimation(
+		wxWindow* parent, wxWindowID id = wxID_ANY,
+		const wxPoint& pos = wxDefaultPosition,
+		const wxSize& size = wxDefaultSize);
+	virtual ~CScanAnimation();
 
-		CScanAnimation(wxWindow* parent,wxWindowID id=wxID_ANY,const wxPoint& pos=wxDefaultPosition,const wxSize& size=wxDefaultSize);
-		virtual ~CScanAnimation();
+	//(*Declarations(CScanAnimation)
+	wxBoxSizer* BoxSizer4;
+	wxStaticText* StaticText22;
+	wxButton* btnStop;
+	wxRadioButton* rbLoaded;
+	wxSlider* slPos;
+	wxBoxSizer* BoxSizer5;
+	wxSpinCtrl* edDelay;
+	wxStaticText* StaticText2;
+	wxButton* btnClose;
+	wxStaticText* StaticText1;
+	wxButton* btnJump;
+	wxStaticText* lbNumScans;
+	wxButton* btnPickInput;
+	wxSpinCtrl* edIndex;
+	wxFlexGridSizer* FlexGridSizer8;
+	wxCheckBox* cbAllowMix;
+	wxRadioButton* rbFile;
+	wxStaticBoxSizer* StaticBoxSizer1;
+	wxStaticText* lbNumPoints;
+	wxButton* btnPlay;
+	CMyGLCanvas* m_plot3D;
+	wxTextCtrl* edFile;
+	//*)
 
-		//(*Declarations(CScanAnimation)
-		wxBoxSizer* BoxSizer4;
-		wxStaticText* StaticText22;
-		wxButton* btnStop;
-		wxRadioButton* rbLoaded;
-		wxSlider* slPos;
-		wxBoxSizer* BoxSizer5;
-		wxSpinCtrl* edDelay;
-		wxStaticText* StaticText2;
-		wxButton* btnClose;
-		wxStaticText* StaticText1;
-		wxButton* btnJump;
-		wxStaticText* lbNumScans;
-		wxButton* btnPickInput;
-		wxSpinCtrl* edIndex;
-		wxFlexGridSizer* FlexGridSizer8;
-		wxCheckBox* cbAllowMix;
-		wxRadioButton* rbFile;
-		wxStaticBoxSizer* StaticBoxSizer1;
-		wxStaticText* lbNumPoints;
-		wxButton* btnPlay;
-		CMyGLCanvas* m_plot3D;
-		wxTextCtrl* edFile;
-		//*)
+   protected:
+	//(*Identifiers(CScanAnimation)
+	static const long ID_RADIOBUTTON1;
+	static const long ID_RADIOBUTTON2;
+	static const long ID_STATICTEXT22;
+	static const long ID_TEXTCTRL11;
+	static const long ID_BUTTON5;
+	static const long ID_BUTTON1;
+	static const long ID_BUTTON2;
+	static const long ID_STATICTEXT4;
+	static const long ID_SPINCTRL2;
+	static const long ID_CHECKBOX1;
+	static const long ID_BUTTON3;
+	static const long ID_XY_GLCANVAS;
+	static const long ID_SLIDER1;
+	static const long ID_STATICTEXT1;
+	static const long ID_SPINCTRL1;
+	static const long ID_BUTTON4;
+	static const long ID_STATICTEXT2;
+	static const long ID_STATICTEXT3;
+	//*)
 
-	protected:
+   private:
+	//(*Handlers(CScanAnimation)
+	void OnbtnPlayClick(wxCommandEvent& event);
+	void OnbtnStopClick(wxCommandEvent& event);
+	void OnbtnCloseClick(wxCommandEvent& event);
+	void OnslPosCmdScrollChanged(wxScrollEvent& event);
+	void OnbtnJumpClick(wxCommandEvent& event);
+	void OnslPosCmdScroll(wxScrollEvent& event);
+	void OnbtnPickInputClick(wxCommandEvent& event);
+	void OnInit(wxInitDialogEvent& event);
+	void OnrbLoadedSelect(wxCommandEvent& event);
+	void OnrbFile(wxCommandEvent& event);
+	void OncbAllowMixClick(wxCommandEvent& event);
+	//*)
 
-		//(*Identifiers(CScanAnimation)
-		static const long ID_RADIOBUTTON1;
-		static const long ID_RADIOBUTTON2;
-		static const long ID_STATICTEXT22;
-		static const long ID_TEXTCTRL11;
-		static const long ID_BUTTON5;
-		static const long ID_BUTTON1;
-		static const long ID_BUTTON2;
-		static const long ID_STATICTEXT4;
-		static const long ID_SPINCTRL2;
-		static const long ID_CHECKBOX1;
-		static const long ID_BUTTON3;
-		static const long ID_XY_GLCANVAS;
-		static const long ID_SLIDER1;
-		static const long ID_STATICTEXT1;
-		static const long ID_SPINCTRL1;
-		static const long ID_BUTTON4;
-		static const long ID_STATICTEXT2;
-		static const long ID_STATICTEXT3;
-		//*)
+	DECLARE_EVENT_TABLE()
 
-	private:
+	bool m_stop;
+	bool m_mixlasers;
 
-		//(*Handlers(CScanAnimation)
-		void OnbtnPlayClick(wxCommandEvent& event);
-		void OnbtnStopClick(wxCommandEvent& event);
-		void OnbtnCloseClick(wxCommandEvent& event);
-		void OnslPosCmdScrollChanged(wxScrollEvent& event);
-		void OnbtnJumpClick(wxCommandEvent& event);
-		void OnslPosCmdScroll(wxScrollEvent& event);
-		void OnbtnPickInputClick(wxCommandEvent& event);
-		void OnInit(wxInitDialogEvent& event);
-		void OnrbLoadedSelect(wxCommandEvent& event);
-		void OnrbFile(wxCommandEvent& event);
-		void OncbAllowMixClick(wxCommandEvent& event);
-		//*)
+	struct TRenderObject
+	{
+		mrpt::system::TTimeStamp timestamp;
+		mrpt::opengl::CRenderizable::Ptr obj;
+	};
+	typedef std::map<std::string, TRenderObject> TListGlObjects;
+	/** All the observations added to the map. */
+	TListGlObjects m_gl_objects;
 
-		DECLARE_EVENT_TABLE()
-
-		bool			m_stop;
-		bool			m_mixlasers;
-
-		struct TRenderObject
-		{
-			mrpt::system::TTimeStamp       timestamp;
-			mrpt::opengl::CRenderizable::Ptr obj;
-		};
-		typedef std::map<std::string,TRenderObject> TListGlObjects;
-		/** All the observations added to the map. */
-		TListGlObjects  m_gl_objects;  
-
-		void RebuildMaps();
-		void BuildMapAndRefresh( mrpt::obs::CSensoryFrame *sf);
-
+	void RebuildMaps();
+	void BuildMapAndRefresh(mrpt::obs::CSensoryFrame* sf);
 };
 
 #endif

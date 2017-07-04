@@ -60,4 +60,3 @@
 #include <time.h>
 
 #include "arch/linux/timer.h"
-

@@ -15,11 +15,12 @@
 //--------------------------------------------------------------------------------
 class ProtocolHandler : public virtual IProtocolHandler
 {
-public:
+   public:
 	ProtocolHandler();
 	virtual ~ProtocolHandler();
 
-	virtual MessageLocation findMessage(XsMessage& rcv, const XsByteArray& raw) const;
+	virtual MessageLocation findMessage(
+		XsMessage& rcv, const XsByteArray& raw) const;
 	virtual int minimumMessageSize() const;
 	virtual int maximumMessageSize() const;
 	virtual int type() const;
@@ -30,4 +31,4 @@ public:
 
 //--------------------------------------------------------------------------------
 
-#endif	// file guard
+#endif  // file guard

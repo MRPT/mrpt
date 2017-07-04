@@ -6,29 +6,28 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef  CMemoryChunk_H
-#define  CMemoryChunk_H
+#ifndef CMemoryChunk_H
+#define CMemoryChunk_H
 
 #include <mrpt/utils/CMemoryStream.h>
 #include <mrpt/utils/CSerializable.h>
 
 namespace mrpt
 {
-	namespace utils
-	{
+namespace utils
+{
+/** A memory buffer (implements CStream) which can be itself serialized.
+ *
+ * \sa CStream
+ * \ingroup mrpt_base_grp
+ */
+class BASE_IMPEXP CMemoryChunk : public CSerializable, public CMemoryStream
+{
+	DEFINE_SERIALIZABLE(CMemoryChunk)
 
-		/** A memory buffer (implements CStream) which can be itself serialized.
-		 *
-		 * \sa CStream
-		 * \ingroup mrpt_base_grp
-		 */
-		class BASE_IMPEXP CMemoryChunk : public CSerializable, public CMemoryStream
-		{
-			DEFINE_SERIALIZABLE( CMemoryChunk )
+};  // End of class def.
+DEFINE_SERIALIZABLE_POST_CUSTOM_BASE(CMemoryChunk, mrpt::utils::CSerializable)
 
-		}; // End of class def.
-		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE( CMemoryChunk, mrpt::utils::CSerializable )
-
-	} // End of namespace
-} // end of namespace
+}  // End of namespace
+}  // end of namespace
 #endif

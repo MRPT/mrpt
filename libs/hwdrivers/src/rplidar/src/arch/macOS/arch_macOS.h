@@ -47,7 +47,6 @@
 #include <iostream>
 #include <string>
 
-
 // POSIX specific
 extern "C" {
 #include <unistd.h>
@@ -62,4 +61,3 @@ extern "C" {
 }
 
 #include "arch/macOS/timer.h"
-

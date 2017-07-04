@@ -13,65 +13,63 @@
 
 namespace mrpt
 {
-	namespace hmtslam
+namespace hmtslam
+{
+/** \ingroup mrpt_hmtslam_grp */
+class CTopLCDetector_FabMap : public CTopLCDetectorBase
+{
+   protected:
+	CTopLCDetector_FabMap(CHMTSLAM* hmtslam);
+
+	void* m_fabmap;  // FabMapInstance*
+
+   public:
+	/** A class factory, to be implemented in derived classes.
+	  */
+	static CTopLCDetectorBase* createNewInstance(CHMTSLAM* hmtslam)
 	{
-		/** \ingroup mrpt_hmtslam_grp */
-		class CTopLCDetector_FabMap : public CTopLCDetectorBase
-		{
-		protected:
-			CTopLCDetector_FabMap( CHMTSLAM *hmtslam );
+		return static_cast<CTopLCDetectorBase*>(
+			new CTopLCDetector_FabMap(hmtslam));
+	}
 
-			void *m_fabmap;		// FabMapInstance*
+	/** Destructor */
+	virtual ~CTopLCDetector_FabMap();
 
-		public:
-			/** A class factory, to be implemented in derived classes.
-			  */
-			static CTopLCDetectorBase* createNewInstance( CHMTSLAM *hmtslam )
-			{
-				return static_cast<CTopLCDetectorBase*>(new CTopLCDetector_FabMap(hmtslam));
-			}
+	/** This method must compute the topological observation model.
+	  * \param out_log_lik The output, a log-likelihood.
+	  * \return nullptr (empty smart pointer), or a PDF of the estimated
+	 * translation between the two areas (can be a multi-modal PDF).
+	  */
+	mrpt::poses::CPose3DPDF::Ptr computeTopologicalObservationModel(
+		const THypothesisID& hypID, const CHMHMapNode::Ptr& currentArea,
+		const CHMHMapNode::Ptr& refArea, double& out_log_lik);
 
-			/** Destructor */
-			virtual ~CTopLCDetector_FabMap();
+	/** Hook method for being warned about the insertion of a new poses into the
+	 * maps.
+	  *  This should be independent of hypothesis IDs.
+	  */
+	void OnNewPose(const TPoseID& poseID, const mrpt::obs::CSensoryFrame* SF);
 
-			/** This method must compute the topological observation model.
-			  * \param out_log_lik The output, a log-likelihood.
-			  * \return nullptr (empty smart pointer), or a PDF of the estimated translation between the two areas (can be a multi-modal PDF).
-			  */
-			mrpt::poses::CPose3DPDF::Ptr computeTopologicalObservationModel(
-				const THypothesisID		&hypID,
-				const CHMHMapNode::Ptr	&currentArea,
-				const CHMHMapNode::Ptr	&refArea,
-				double					&out_log_lik
-				 );
+	/** Options for a TLC-detector of type FabMap, used from CHMTSLAM
+	  */
+	struct TOptions : public utils::CLoadableOptions
+	{
+		/** Initialization of default params
+		  */
+		TOptions();
 
-			/** Hook method for being warned about the insertion of a new poses into the maps.
-			  *  This should be independent of hypothesis IDs.
-			  */
-			void OnNewPose(
-				const TPoseID 			&poseID,
-				const mrpt::obs::CSensoryFrame		*SF );
+		void loadFromConfigFile(
+			const mrpt::utils::CConfigFileBase& source,
+			const std::string& section) override;  // See base docs
+		void dumpToTextStream(
+			mrpt::utils::CStream& out) const override;  // See base docs
 
+		std::string vocab_path, vocabName;
+		double p_obs_given_exists, p_at_new_place, df_lik_smooth;
+	};
 
-			/** Options for a TLC-detector of type FabMap, used from CHMTSLAM 
-			  */
-			struct TOptions : public utils::CLoadableOptions
-			{
-				/** Initialization of default params
-				  */
-				TOptions();
-
-				void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) override; // See base docs
-				void dumpToTextStream(mrpt::utils::CStream &out) const override; // See base docs
-
-				std::string		vocab_path,vocabName;
-				double			p_obs_given_exists, p_at_new_place, df_lik_smooth;
-			};
-
-
-		}; // end class
-	} // end namespace
-} // end namespace
-
+};  // end class
+}  // end namespace
+}  // end namespace
 
 #endif

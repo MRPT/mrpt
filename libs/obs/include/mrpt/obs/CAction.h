@@ -14,43 +14,43 @@
 
 #include <mrpt/obs/link_pragmas.h>
 
-
 namespace mrpt
 {
 /** \ingroup mrpt_obs_grp */
 namespace obs
 {
+/** Declares a class for storing a robot action. It is used in
+ * mrpt::obs::CRawlog,
+ *    for logs storage and particle filter based simulations.
+ *  See derived classes for implementations.
+ *
+ * \sa CActionCollection, CRawlog
+ * \ingroup mrpt_obs_grp
+ */
+class OBS_IMPEXP CAction : public mrpt::utils::CSerializable
+{
+	DEFINE_VIRTUAL_SERIALIZABLE(CAction)
 
-	/** Declares a class for storing a robot action. It is used in mrpt::obs::CRawlog,
-	 *    for logs storage and particle filter based simulations.
-	 *  See derived classes for implementations.
-	 *
-	 * \sa CActionCollection, CRawlog
-	 * \ingroup mrpt_obs_grp
+	/** Default constructor
+	  */
+	CAction();
+
+	/** Constructor
+	  */
+	virtual ~CAction();
+
+	/** The associated time-stamp.
+	  *  This was added at 2-Dec-2007, new serialization versions have been
+	 * added to derived classes to manage this time-stamp.
+	  *  Prior versions will be read as having a INVALID_TIMESTAMP value.
 	 */
-	class OBS_IMPEXP CAction : public mrpt::utils::CSerializable
-	{
-		DEFINE_VIRTUAL_SERIALIZABLE( CAction )
+	mrpt::system::TTimeStamp timestamp;
 
-		/** Default constructor
-  		  */
-		CAction();
+};  // End of class def.
+DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
+	CAction, mrpt::utils::CSerializable, OBS_IMPEXP)
 
-		/** Constructor
-  		  */
-		virtual ~CAction();
-
-		 /** The associated time-stamp.
-		   *  This was added at 2-Dec-2007, new serialization versions have been added to derived classes to manage this time-stamp.
-		   *  Prior versions will be read as having a INVALID_TIMESTAMP value.
-		  */
-		mrpt::system::TTimeStamp	timestamp;
-
-	}; // End of class def.
-	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CAction, mrpt::utils::CSerializable, OBS_IMPEXP )
-
-
-	} // End of namespace
-} // End of namespace
+}  // End of namespace
+}  // End of namespace
 
 #endif

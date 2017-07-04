@@ -16,11 +16,12 @@
 	\details These values are used by the XsDevice::requestInfo function and
 	XsCallback::onInfoResponse functions.
 */
-enum XsInfoRequest {
-	 XIR_BatteryLevel = 0
-	,XIR_GpsSvInfo
+enum XsInfoRequest
+{
+	XIR_BatteryLevel = 0,
+	XIR_GpsSvInfo
 };
 /*! @} */
 typedef enum XsInfoRequest XsInfoRequest;
 
-#endif // file guard
+#endif  // file guard

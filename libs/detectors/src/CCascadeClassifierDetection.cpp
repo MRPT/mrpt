@@ -15,7 +15,7 @@
 #include <mrpt/obs/CObservation3DRangeScan.h>
 
 // Universal include for all versions of OpenCV
-#include <mrpt/otherlibs/do_opencv_includes.h> 
+#include <mrpt/otherlibs/do_opencv_includes.h>
 
 #include <thread>
 
@@ -24,22 +24,24 @@ using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace std;
 
-#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM>=0x200
+#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM >= 0x200
 using namespace cv;
 #endif
 
-#define CASCADE  (reinterpret_cast<CascadeClassifier*>(m_cascade))
-#define CASCADE_CONST  (reinterpret_cast<const CascadeClassifier*>(m_cascade))
+#define CASCADE (reinterpret_cast<CascadeClassifier*>(m_cascade))
+#define CASCADE_CONST (reinterpret_cast<const CascadeClassifier*>(m_cascade))
 
 // ------------------------------------------------------
 //				CCascadeClassifierDetection
 // ------------------------------------------------------
 
-CCascadeClassifierDetection::CCascadeClassifierDetection( )
+CCascadeClassifierDetection::CCascadeClassifierDetection()
 {
-	// Check if MRPT is using OpenCV
-#if !MRPT_HAS_OPENCV ||  MRPT_OPENCV_VERSION_NUM<0x200
-	THROW_EXCEPTION("CCascadeClassifierDetection class requires MRPT built against OpenCV >=2.0")
+// Check if MRPT is using OpenCV
+#if !MRPT_HAS_OPENCV || MRPT_OPENCV_VERSION_NUM < 0x200
+	THROW_EXCEPTION(
+		"CCascadeClassifierDetection class requires MRPT built against OpenCV "
+		">=2.0")
 #endif
 }
 
@@ -49,7 +51,7 @@ CCascadeClassifierDetection::CCascadeClassifierDetection( )
 
 CCascadeClassifierDetection::~CCascadeClassifierDetection()
 {
-#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM>=0x200
+#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM >= 0x200
 	delete CASCADE;
 #endif
 }
@@ -58,24 +60,27 @@ CCascadeClassifierDetection::~CCascadeClassifierDetection()
 //						  init
 // ------------------------------------------------------
 
-void CCascadeClassifierDetection::init(const mrpt::utils::CConfigFileBase &config)
+void CCascadeClassifierDetection::init(
+	const mrpt::utils::CConfigFileBase& config)
 {
-#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM>=0x200
+#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM >= 0x200
 	// load configuration values
-	m_options.cascadeFileName		= config.read_string("CascadeClassifier","cascadeFilename","");
-	m_options.scaleFactor			= config.read_double("DetectionOptions","scaleFactor",1.1);
-	m_options.minNeighbors			= config.read_int("DetectionOptions","minNeighbors",3);
-	m_options.flags					= config.read_int("DetectionOptions","flags",0);
-	m_options.minSize				= config.read_int("DetectionOptions","minSize",30);
+	m_options.cascadeFileName =
+		config.read_string("CascadeClassifier", "cascadeFilename", "");
+	m_options.scaleFactor =
+		config.read_double("DetectionOptions", "scaleFactor", 1.1);
+	m_options.minNeighbors =
+		config.read_int("DetectionOptions", "minNeighbors", 3);
+	m_options.flags = config.read_int("DetectionOptions", "flags", 0);
+	m_options.minSize = config.read_int("DetectionOptions", "minSize", 30);
 
 	m_cascade = new CascadeClassifier();
 
 	// Load cascade classifier from file
-	CASCADE->load( m_options.cascadeFileName );
+	CASCADE->load(m_options.cascadeFileName);
 
 	// Check if cascade is empty
-	if ( CASCADE->empty() )
-		throw  std::runtime_error("Incorrect cascade file.");
+	if (CASCADE->empty()) throw std::runtime_error("Incorrect cascade file.");
 #endif
 }
 
@@ -83,54 +88,60 @@ void CCascadeClassifierDetection::init(const mrpt::utils::CConfigFileBase &confi
 //				detectObjects (*CObservation)
 // ------------------------------------------------------
 
-void CCascadeClassifierDetection::detectObjects_Impl(const CObservation *obs, vector_detectable_object &detected)
+void CCascadeClassifierDetection::detectObjects_Impl(
+	const CObservation* obs, vector_detectable_object& detected)
 {
-#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM>=0x200
+#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM >= 0x200
 	// Obtain image from generic observation
-	const mrpt::utils::CImage *img = nullptr;
+	const mrpt::utils::CImage* img = nullptr;
 
-	if (IS_CLASS(obs,CObservationImage))
+	if (IS_CLASS(obs, CObservationImage))
 	{
 		const CObservationImage* o = static_cast<const CObservationImage*>(obs);
 		img = &o->image;
 	}
-	else if ( IS_CLASS(obs,CObservationStereoImages) )
+	else if (IS_CLASS(obs, CObservationStereoImages))
 	{
-		const CObservationStereoImages* o = static_cast<const CObservationStereoImages*>(obs);
+		const CObservationStereoImages* o =
+			static_cast<const CObservationStereoImages*>(obs);
 		img = &o->imageLeft;
 	}
-	else if (IS_CLASS(obs, CObservation3DRangeScan ) )
+	else if (IS_CLASS(obs, CObservation3DRangeScan))
 	{
-		const CObservation3DRangeScan* o = static_cast<const CObservation3DRangeScan*>(obs);
+		const CObservation3DRangeScan* o =
+			static_cast<const CObservation3DRangeScan*>(obs);
 		img = &o->intensityImage;
 	}
 	if (!img)
 	{
-	    std::this_thread::sleep_for(2ms);
-	    return;
+		std::this_thread::sleep_for(2ms);
+		return;
 	}
 
 	vector<Rect> objects;
 
 	// Some needed preprocessing
-	const CImage img_gray( *img, FAST_REF_OR_CONVERT_TO_GRAY );
+	const CImage img_gray(*img, FAST_REF_OR_CONVERT_TO_GRAY);
 
 	// Convert to IplImage and copy it
-	const IplImage *image = img_gray.getAs<IplImage>();
+	const IplImage* image = img_gray.getAs<IplImage>();
 
 	// Detect objects
-	CASCADE->detectMultiScale( cv::cvarrToMat(image), objects, m_options.scaleFactor,
-								m_options.minNeighbors, m_options.flags,
-								Size(m_options.minSize,m_options.minSize) );
+	CASCADE->detectMultiScale(
+		cv::cvarrToMat(image), objects, m_options.scaleFactor,
+		m_options.minNeighbors, m_options.flags,
+		Size(m_options.minSize, m_options.minSize));
 
 	unsigned int N = objects.size();
-	//detected.resize( N );
+	// detected.resize( N );
 
 	// Convert from cv::Rect to vision::CDetectable2D
-	for ( unsigned int i = 0; i < N; i++ )
+	for (unsigned int i = 0; i < N; i++)
 	{
-		CDetectable2D::Ptr obj =
-			CDetectable2D::Ptr( new CDetectable2D( objects[i].x, objects[i].y, objects[i].height, objects[i].width ) );
+		CDetectable2D::Ptr obj = CDetectable2D::Ptr(
+			new CDetectable2D(
+				objects[i].x, objects[i].y, objects[i].height,
+				objects[i].width));
 
 		detected.push_back((CDetectableObject::Ptr)obj);
 	}

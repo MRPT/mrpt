@@ -15,27 +15,30 @@ namespace mrpt
 {
 namespace bayes
 {
-	/** A template class for holding a the data and the weight of a particle.
-	*    Particles are composed of two parts:
-	 *		- A state vector descritor, which in this case can be any user defined CSerializable class
-	 *		- A (logarithmic) weight value.
-	 *
-	 *  This structure is used within CParticleFilterData, see that class for more information.
-	 * \ingroup mrpt_base_grp
-	 */
-	template <class T>
-	struct CProbabilityParticle
-	{
-	public:
-		/** The data associated with this particle. The use of copy_ptr<> allows relying on compiler-generated copy ctor, etc. */
-		mrpt::utils::copy_ptr<T> d;   
-		/** The (logarithmic) weight value for this particle. */
-		double log_w; 
+/** A template class for holding a the data and the weight of a particle.
+*    Particles are composed of two parts:
+ *		- A state vector descritor, which in this case can be any user defined
+*CSerializable class
+ *		- A (logarithmic) weight value.
+ *
+ *  This structure is used within CParticleFilterData, see that class for more
+*information.
+ * \ingroup mrpt_base_grp
+ */
+template <class T>
+struct CProbabilityParticle
+{
+   public:
+	/** The data associated with this particle. The use of copy_ptr<> allows
+	 * relying on compiler-generated copy ctor, etc. */
+	mrpt::utils::copy_ptr<T> d;
+	/** The (logarithmic) weight value for this particle. */
+	double log_w;
 
-		/** Default constructor */
-		CProbabilityParticle() : d(), log_w(.0) {}
-	};
+	/** Default constructor */
+	CProbabilityParticle() : d(), log_w(.0) {}
+};
 
-	} // end namespace
-} // end namespace
+}  // end namespace
+}  // end namespace
 #endif

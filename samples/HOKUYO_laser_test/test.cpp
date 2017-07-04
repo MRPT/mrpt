@@ -24,40 +24,44 @@ using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace std;
 
-
-string SERIAL_NAME;	// Name of the serial port to open
+string SERIAL_NAME;  // Name of the serial port to open
 
 // ------------------------------------------------------
 //				Test_HOKUYO
 // ------------------------------------------------------
 void Test_HOKUYO()
 {
-	CHokuyoURG		laser;
+	CHokuyoURG laser;
 
-	string 			serName, type;
+	string serName, type;
 
-	string			ip;
+	string ip;
 
-	unsigned int	port;
+	unsigned int port;
 
 	cout << "Specify the type of the Hokuyo connection, usb or ethernet: ";
-	getline(cin,type);
+	getline(cin, type);
 
-	while ( (mrpt::system::lowerCase(type) != "usb" ) && ( mrpt::system::lowerCase(type) != "ethernet" ) )
+	while ((mrpt::system::lowerCase(type) != "usb") &&
+		   (mrpt::system::lowerCase(type) != "ethernet"))
 	{
 		cout << "Incorrect type" << endl;
 		cout << "Specify the type of the Hokuyo connection, usb or ethernet: ";
-		getline(cin,type);
+		getline(cin, type);
 	}
 
-	cout << endl << endl << "HOKUYO laser range finder test application." << endl << endl;
+	cout << endl
+		 << endl
+		 << "HOKUYO laser range finder test application." << endl
+		 << endl;
 
-	if ( mrpt::system::lowerCase(type) == "usb" )
+	if (mrpt::system::lowerCase(type) == "usb")
 	{
 		if (SERIAL_NAME.empty())
 		{
-			cout << "Enter the serial port name (e.g. COM1, ttyS0, ttyUSB0, ttyACM0): ";
-			getline(cin,serName);
+			cout << "Enter the serial port name (e.g. COM1, ttyS0, ttyUSB0, "
+					"ttyACM0): ";
+			getline(cin, serName);
 		}
 		else
 		{
@@ -66,24 +70,22 @@ void Test_HOKUYO()
 		}
 
 		// Set the laser serial port:
-		laser.setSerialPort( serName );
-
+		laser.setSerialPort(serName);
 	}
 	else
 	{
 		cout << "Enter the ip direction: ";
-		getline(cin,ip);
+		getline(cin, ip);
 
 		cout << "Enter the port number: ";
 		cin >> port;
 
 		// Set the laser serial port:
-		laser.setIPandPort( ip, port );
-
+		laser.setIPandPort(ip, port);
 	}
 	string intensity;
 	cout << endl << endl << "Enable intensity [y/n]:";
-	getline(cin,intensity);
+	getline(cin, intensity);
 	laser.setIntensityMode(mrpt::system::lowerCase(intensity) == "y");
 
 	// Config: Use defaults + selected port ( serial or ethernet )
@@ -98,70 +100,68 @@ void Test_HOKUYO()
 	}
 
 #if MRPT_HAS_WXWIDGETS
-	CDisplayWindowPlots		win("Laser scans");
+	CDisplayWindowPlots win("Laser scans");
 #endif
 
 	cout << "Press any key to stop capturing..." << endl;
 
-	CTicTac     tictac;
+	CTicTac tictac;
 	tictac.Tic();
 
 	while (!mrpt::system::os::kbhit())
 	{
-		bool						thereIsObservation,hardError;
-		CObservation2DRangeScan		obs;
+		bool thereIsObservation, hardError;
+		CObservation2DRangeScan obs;
 
-		laser.doProcessSimple( thereIsObservation, obs, hardError );
+		laser.doProcessSimple(thereIsObservation, obs, hardError);
 
-		if (hardError)
-			printf("[TEST] Hardware error=true!!\n");
+		if (hardError) printf("[TEST] Hardware error=true!!\n");
 
 		if (thereIsObservation)
 		{
-		    double FPS = 1.0 / tictac.Tac();
+			double FPS = 1.0 / tictac.Tac();
 
+			printf(
+				"Scan received: %u ranges, FOV: %.02fdeg, %.03fHz: mid "
+				"rang=%fm\n",
+				(unsigned int)obs.scan.size(), RAD2DEG(obs.aperture), FPS,
+				obs.scan[obs.scan.size() / 2]);
 
-			printf("Scan received: %u ranges, FOV: %.02fdeg, %.03fHz: mid rang=%fm\n",
-				(unsigned int)obs.scan.size(),
-				RAD2DEG(obs.aperture),
-				FPS,
-				obs.scan[obs.scan.size()/2]);
-
-			if(obs.hasIntensity())
+			if (obs.hasIntensity())
 			{
 				size_t i;
 				std::cout << "[ ";
-				for(i = 0; i < obs.intensity.size()-1; i++)
+				for (i = 0; i < obs.intensity.size() - 1; i++)
 				{
 					std::cout << obs.intensity[i] << ",\t";
-					if(i%10==9) std::cout << std::endl;
+					if (i % 10 == 9) std::cout << std::endl;
 				}
 				std::cout << obs.intensity[i] << " ]" << std::endl;
 			}
 
-			obs.sensorPose = CPose3D(0,0,0);
+			obs.sensorPose = CPose3D(0, 0, 0);
 
-			mrpt::maps::CSimplePointsMap		theMap;
-			theMap.insertionOptions.minDistBetweenLaserPoints	= 0;
-			theMap.insertObservation( &obs );
-			//map.save2D_to_text_file("_out_scan.txt");
+			mrpt::maps::CSimplePointsMap theMap;
+			theMap.insertionOptions.minDistBetweenLaserPoints = 0;
+			theMap.insertObservation(&obs);
+// map.save2D_to_text_file("_out_scan.txt");
 
-			/*
-			COpenGLScene			scene3D;
-			opengl::CPointCloud::Ptr	points = std::make_shared<opengl::CPointCloud>();
-			points->loadFromPointsMap(&map);
-			scene3D.insert(points);
-			CFileStream("_out_point_cloud.3Dscene",fomWrite) << scene3D;
-			*/
+/*
+COpenGLScene			scene3D;
+opengl::CPointCloud::Ptr	points = std::make_shared<opengl::CPointCloud>();
+points->loadFromPointsMap(&map);
+scene3D.insert(points);
+CFileStream("_out_point_cloud.3Dscene",fomWrite) << scene3D;
+*/
 
 #if MRPT_HAS_WXWIDGETS
-			std::vector<float>	xs,ys,zs;
-			theMap.getAllPoints(xs,ys,zs);
-			win.plot(xs,ys,".b3");
+			std::vector<float> xs, ys, zs;
+			theMap.getAllPoints(xs, ys, zs);
+			win.plot(xs, ys, ".b3");
 			win.axis_equal();
 #endif
 
-            tictac.Tic();
+			tictac.Tic();
 		}
 
 		std::this_thread::sleep_for(15ms);
@@ -170,19 +170,19 @@ void Test_HOKUYO()
 	laser.turnOff();
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
 	try
 	{
-	    if (argc>1)
-        {
-            SERIAL_NAME = string(argv[1]);
-        }
+		if (argc > 1)
+		{
+			SERIAL_NAME = string(argv[1]);
+		}
 
 		Test_HOKUYO();
 		return 0;
-
-	} catch (std::exception &e)
+	}
+	catch (std::exception& e)
 	{
 		std::cout << "EXCEPCION: " << e.what() << std::endl;
 		return -1;
@@ -192,5 +192,4 @@ int main(int argc, char **argv)
 		printf("Another exception!!");
 		return -1;
 	}
-
 }

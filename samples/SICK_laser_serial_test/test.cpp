@@ -23,84 +23,83 @@ using namespace mrpt::hwdrivers;
 using namespace mrpt::poses;
 using namespace std;
 
-
-string SERIAL_NAME;	// Name of the serial port to open
+string SERIAL_NAME;  // Name of the serial port to open
 
 // ------------------------------------------------------
 //				Test_PLS
 // ------------------------------------------------------
 void TestPLS()
 {
-	CSickLaserSerial	laser;
+	CSickLaserSerial laser;
 
 	cout << "SICK LMS thru serial port test application." << endl << endl;
 
 	if (SERIAL_NAME.empty())
 	{
-        cout << "Enter the serial port name (e.g. COM1, ttyS0, ttyUSB0, ttyACM0): ";
-        getline(cin,SERIAL_NAME);
+		cout << "Enter the serial port name (e.g. COM1, ttyS0, ttyUSB0, "
+				"ttyACM0): ";
+		getline(cin, SERIAL_NAME);
 	}
 	else
 	{
-        cout << "Using serial port: " << SERIAL_NAME << endl;
+		cout << "Using serial port: " << SERIAL_NAME << endl;
 	}
 
 	laser.setSerialPort(SERIAL_NAME);
 
 #if 1
-	//laser.setBaudRate(500000);
+	// laser.setBaudRate(500000);
 	laser.setBaudRate(9600);
 	laser.setScanFOV(180);
 	laser.setScanResolution(50);  // 25=0.25deg, 50=0.5deg, 100=1deg
-	//laser.setMillimeterMode(true);
+// laser.setMillimeterMode(true);
 #endif
 
-
 #if MRPT_HAS_WXWIDGETS
-	CDisplayWindowPlots		win("Laser scans");
+	CDisplayWindowPlots win("Laser scans");
 #endif
 
 	// Load config:
-	//laser.loadConfig( CConfigFile( "./LASER_SCAN_TEST.ini") ,"PLS#1" );
+	// laser.loadConfig( CConfigFile( "./LASER_SCAN_TEST.ini") ,"PLS#1" );
 
 	cout << "Trying to initialize the laser..." << endl;
-	laser.initialize(); // This will raise an exception on error
+	laser.initialize();  // This will raise an exception on error
 	cout << "Initialized OK!" << endl;
 
 	while (!mrpt::system::os::kbhit())
 	{
-		bool						thereIsObservation,hardError;
-		CObservation2DRangeScan		obs;
+		bool thereIsObservation, hardError;
+		CObservation2DRangeScan obs;
 
 		try
 		{
-			laser.doProcessSimple( thereIsObservation, obs, hardError );
+			laser.doProcessSimple(thereIsObservation, obs, hardError);
 		}
-		catch (std::exception &e)
+		catch (std::exception& e)
 		{
 			cerr << e.what() << endl;
 			hardError = true;
 		}
 
-		if (hardError)
-			printf("[TEST] Hardware error=true!!\n");
+		if (hardError) printf("[TEST] Hardware error=true!!\n");
 
 		if (thereIsObservation)
 		{
-			printf("[TEST] Observation received (%u ranges over %.02fdeg, mid=%.03f)!!\n",
-				(unsigned int)obs.scan.size(),
-				RAD2DEG(obs.aperture),
-				obs.scan[obs.scan.size()/2]);
+			printf(
+				"[TEST] Observation received (%u ranges over %.02fdeg, "
+				"mid=%.03f)!!\n",
+				(unsigned int)obs.scan.size(), RAD2DEG(obs.aperture),
+				obs.scan[obs.scan.size() / 2]);
 
-			obs.sensorPose = CPose3D(0,0,0);
-			mrpt::maps::CSimplePointsMap		theMap;
-			theMap.insertionOptions.minDistBetweenLaserPoints	= 0;
-			theMap.insertObservation( &obs );
+			obs.sensorPose = CPose3D(0, 0, 0);
+			mrpt::maps::CSimplePointsMap theMap;
+			theMap.insertionOptions.minDistBetweenLaserPoints = 0;
+			theMap.insertObservation(&obs);
 
 #if MRPT_HAS_WXWIDGETS
-			std::vector<float>	xs,ys,zs;
-			theMap.getAllPoints(xs,ys,zs);
-			win.plot(xs,ys,".b3");
+			std::vector<float> xs, ys, zs;
+			theMap.getAllPoints(xs, ys, zs);
+			win.plot(xs, ys, ".b3");
 			win.axis_equal();
 #endif
 		}
@@ -110,19 +109,19 @@ void TestPLS()
 	laser.turnOff();
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
 	try
 	{
-	    if (argc>1)
-        {
-            SERIAL_NAME = string(argv[1]);
-        }
+		if (argc > 1)
+		{
+			SERIAL_NAME = string(argv[1]);
+		}
 
 		TestPLS();
 		return 0;
-
-	} catch (std::exception &e)
+	}
+	catch (std::exception& e)
 	{
 		std::cout << "EXCEPCION: " << e.what() << std::endl;
 		return -1;
@@ -132,6 +131,4 @@ int main(int argc, char **argv)
 		printf("Another exception!!");
 		return -1;
 	}
-
 }
-

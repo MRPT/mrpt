@@ -18,7 +18,6 @@ using namespace mrpt::obs;
 using namespace mrpt::hwdrivers;
 using namespace std;
 
-
 // ------------------------------------------------------
 //				TestCameraCaptureAsk
 // ------------------------------------------------------
@@ -32,47 +31,47 @@ void TestCameraCaptureAsk()
 		return;
 	}
 
-	CDisplayWindow  win("Live video");
+	CDisplayWindow win("Live video");
 
 	cout << "Press 's' to save frames.\nClose the window to exit.\n";
 
 	double counter = 0;
-	mrpt::utils::CTicTac	tictac;
+	mrpt::utils::CTicTac tictac;
 
 	while (win.isOpen())
 	{
-		if( !counter )
-			tictac.Tic();
+		if (!counter) tictac.Tic();
 
-		mrpt::obs::CObservation::Ptr  obs = cam->getNextFrame();
+		mrpt::obs::CObservation::Ptr obs = cam->getNextFrame();
 		ASSERT_(obs);
 
-		CImage *img = nullptr;
+		CImage* img = nullptr;
 
-		if (IS_CLASS(obs,CObservationImage))
+		if (IS_CLASS(obs, CObservationImage))
 		{
-			CObservationImage::Ptr o=std::dynamic_pointer_cast<CObservationImage>(obs);
+			CObservationImage::Ptr o =
+				std::dynamic_pointer_cast<CObservationImage>(obs);
 			img = &o->image;
 		}
-		else if (IS_CLASS(obs,CObservationStereoImages))
+		else if (IS_CLASS(obs, CObservationStereoImages))
 		{
-			CObservationStereoImages::Ptr o=std::dynamic_pointer_cast<CObservationStereoImages>(obs);
+			CObservationStereoImages::Ptr o =
+				std::dynamic_pointer_cast<CObservationStereoImages>(obs);
 			img = &o->imageRight;
 		}
-		else if (IS_CLASS(obs,CObservation3DRangeScan))
+		else if (IS_CLASS(obs, CObservation3DRangeScan))
 		{
-			CObservation3DRangeScan::Ptr o=std::dynamic_pointer_cast<CObservation3DRangeScan>(obs);
-			if (o->hasIntensityImage)
-				img = &o->intensityImage;
+			CObservation3DRangeScan::Ptr o =
+				std::dynamic_pointer_cast<CObservation3DRangeScan>(obs);
+			if (o->hasIntensityImage) img = &o->intensityImage;
 		}
 
-		if (img)
-			win.showImage(*img);
+		if (img) win.showImage(*img);
 
-		if( ++counter == 10 )
+		if (++counter == 10)
 		{
 			double t = tictac.Tac();
-			cout << "Frame Rate: " << counter/t << " fps" << endl;
+			cout << "Frame Rate: " << counter / t << " fps" << endl;
 			counter = 0;
 		}
 
@@ -82,21 +81,20 @@ void TestCameraCaptureAsk()
 			const int key_code = mrpt::system::os::getch();
 			switch (key_code)
 			{
-			case 's':
-			case 'S':
+				case 's':
+				case 'S':
 				{
-					static int cnt=0;
-					const std::string sFile = mrpt::format("frame%05i.png",cnt++);
+					static int cnt = 0;
+					const std::string sFile =
+						mrpt::format("frame%05i.png", cnt++);
 					cout << "Saving frame to: " << sFile << endl;
 					img->saveToFile(sFile);
 				}
 				break;
-			default:
-				break;
-
+				default:
+					break;
 			};
 		}
-
 
 		std::this_thread::sleep_for(2ms);
 	}
@@ -114,7 +112,8 @@ int main()
 		TestCameraCaptureAsk();
 
 		return 0;
-	} catch (std::exception &e)
+	}
+	catch (std::exception& e)
 	{
 		std::cout << "MRPT exception caught: " << e.what() << std::endl;
 		return -1;
@@ -125,4 +124,3 @@ int main()
 		return -1;
 	}
 }
-

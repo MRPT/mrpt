@@ -47,5 +47,4 @@
 
 #include <mrpt/poses/SE_traits.h>
 
-
 #endif

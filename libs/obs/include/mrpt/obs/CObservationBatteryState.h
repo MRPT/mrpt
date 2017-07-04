@@ -18,55 +18,61 @@ namespace mrpt
 {
 namespace obs
 {
+/** This represents a measurement of the batteries on the robot.
+ *  The battery levels are in volts in the form of the public members:
+ *	- voltageMainRobotBattery
+ *	- voltageMainRobotComputer
+ *  - voltageOtherBatteries
+ *
+ *  There are boolean flags for signaling when the corresponding values have
+ *been filled out or not.
+ *
+ * \sa CObservation
+ * \ingroup mrpt_obs_grp
+ */
+class OBS_IMPEXP CObservationBatteryState : public CObservation
+{
+	DEFINE_SERIALIZABLE(CObservationBatteryState)
 
-	/** This represents a measurement of the batteries on the robot.
-	 *  The battery levels are in volts in the form of the public members:
-	 *	- voltageMainRobotBattery
-	 *	- voltageMainRobotComputer
-	 *  - voltageOtherBatteries
-	 *
-	 *  There are boolean flags for signaling when the corresponding values have been filled out or not.
-	 *
-	 * \sa CObservation
-	 * \ingroup mrpt_obs_grp
+   public:
+	/** Constructor
 	 */
-	class OBS_IMPEXP CObservationBatteryState : public CObservation
-	{
-		DEFINE_SERIALIZABLE( CObservationBatteryState )
+	CObservationBatteryState();
 
-	 public:
-		/** Constructor
-		 */
-		CObservationBatteryState( );
+	/** The data members
+	 * \sa voltageMainRobotBatteryIsValid,voltageMainRobotComputerIsValid
+	 */
+	double voltageMainRobotBattery, voltageMainRobotComputer;
 
-		 /** The data members
-		  * \sa voltageMainRobotBatteryIsValid,voltageMainRobotComputerIsValid
-		  */
-		double voltageMainRobotBattery, voltageMainRobotComputer;
+	/** These values must be true if the corresponding fields contain valid
+	 * values.
+	  * \sa voltageMainRobotBattery,voltageMainRobotComputer
+	  */
+	bool voltageMainRobotBatteryIsValid, voltageMainRobotComputerIsValid;
 
-		/** These values must be true if the corresponding fields contain valid values.
-		  * \sa voltageMainRobotBattery,voltageMainRobotComputer
-		  */
-		bool   voltageMainRobotBatteryIsValid,voltageMainRobotComputerIsValid;
+	/** The users can use this vector for any arbitrary number of batteries or
+	 * any other analog measurements.
+	  * \sa voltageOtherBatteriesValid
+	  */
+	mrpt::math::CVectorDouble voltageOtherBatteries;
 
-		/** The users can use this vector for any arbitrary number of batteries or any other analog measurements.
-		  * \sa voltageOtherBatteriesValid
-		  */
-		mrpt::math::CVectorDouble voltageOtherBatteries;
+	/** These values must be true if the corresponding fields contain valid
+	 * values (it MUST has the same size than voltageOtherBatteries)
+	  */
+	vector_bool voltageOtherBatteriesValid;
 
-		/** These values must be true if the corresponding fields contain valid values (it MUST has the same size than voltageOtherBatteries)
-		  */
-		vector_bool   voltageOtherBatteriesValid;
+	void getSensorPose(mrpt::poses::CPose3D& out_sensorPose)
+		const override;  // See base class docs.
+	void setSensorPose(const mrpt::poses::CPose3D& newSensorPose)
+		override;  // See base class docs.
+	void getDescriptionAsText(
+		std::ostream& o) const override;  // See base class docs
 
-		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const override;// See base class docs.
-		void setSensorPose( const mrpt::poses::CPose3D &newSensorPose ) override;// See base class docs.
-		void getDescriptionAsText(std::ostream &o) const override;// See base class docs
+};  // End of class def.
+DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
+	CObservationBatteryState, CObservation, OBS_IMPEXP)
 
-	}; // End of class def.
-	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CObservationBatteryState, CObservation, OBS_IMPEXP)
-
-
-	} // End of namespace
-} // End of namespace
+}  // End of namespace
+}  // End of namespace
 
 #endif

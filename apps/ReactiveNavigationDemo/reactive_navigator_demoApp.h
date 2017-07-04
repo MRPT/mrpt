@@ -14,8 +14,8 @@
 
 class reactive_navigator_demoApp : public wxApp
 {
-    public:
-        virtual bool OnInit();
+   public:
+	virtual bool OnInit();
 };
 
-#endif // HOLONOMIC_NAVIGATOR_DEMOAPP_H
+#endif  // HOLONOMIC_NAVIGATOR_DEMOAPP_H

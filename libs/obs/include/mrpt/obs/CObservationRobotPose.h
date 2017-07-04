@@ -17,32 +17,35 @@ namespace mrpt
 {
 namespace obs
 {
+/** An observation providing an alternative robot pose from an external source.
+ * \sa CObservation
+ * \ingroup mrpt_obs_grp
+ */
+class OBS_IMPEXP CObservationRobotPose : public CObservation
+{
+	DEFINE_SERIALIZABLE(CObservationRobotPose)
+   public:
+	/** Default ctor */
+	CObservationRobotPose();
 
-	/** An observation providing an alternative robot pose from an external source.
-	 * \sa CObservation
-	 * \ingroup mrpt_obs_grp
-	 */
-	class OBS_IMPEXP CObservationRobotPose : public CObservation
-	{
-		DEFINE_SERIALIZABLE( CObservationRobotPose )
-	 public:
-		/** Default ctor */
-		CObservationRobotPose( );  
+	/** The observed robot pose */
+	mrpt::poses::CPose3DPDFGaussian pose;
 
-		/** The observed robot pose */
-		mrpt::poses::CPose3DPDFGaussian pose; 
+	/** The pose of the sensor on the robot/vehicle */
+	mrpt::poses::CPose3D sensorPose;
 
-		/** The pose of the sensor on the robot/vehicle */
-		mrpt::poses::CPose3D sensorPose; 
+	void getSensorPose(mrpt::poses::CPose3D& out_sensorPose)
+		const override;  // See base class docs.
+	void setSensorPose(const mrpt::poses::CPose3D& newSensorPose)
+		override;  // See base class docs.
+	void getDescriptionAsText(
+		std::ostream& o) const override;  // See base class docs
 
-		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const override;// See base class docs.
-		void setSensorPose( const mrpt::poses::CPose3D &newSensorPose ) override;// See base class docs.
-		void getDescriptionAsText(std::ostream &o) const override;// See base class docs
+};  // End of class def.
+DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
+	CObservationRobotPose, CObservation, OBS_IMPEXP)
 
-	}; // End of class def.
-	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CObservationRobotPose, CObservation, OBS_IMPEXP  )
-
-	} // End of namespace
-} // End of namespace
+}  // End of namespace
+}  // End of namespace
 
 #endif

@@ -9,7 +9,6 @@
 
 #include "opengl-precomp.h"  // Precompiled header
 
-
 #include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/CRenderizableDisplayList.h>
@@ -30,33 +29,25 @@ using namespace std;
 
 // Include libraries in linking:
 #if MRPT_HAS_OPENGL_GLUT
-	#ifdef MRPT_OS_WINDOWS
-		// WINDOWS:
-		#if defined(_MSC_VER) || defined(__BORLANDC__)
-			#pragma comment (lib,"opengl32.lib")
-			#pragma comment (lib,"GlU32.lib")
-		#endif
-	#endif	// MRPT_OS_WINDOWS
-#endif // MRPT_HAS_OPENGL_GLUT
+#ifdef MRPT_OS_WINDOWS
+// WINDOWS:
+#if defined(_MSC_VER) || defined(__BORLANDC__)
+#pragma comment(lib, "opengl32.lib")
+#pragma comment(lib, "GlU32.lib")
+#endif
+#endif  // MRPT_OS_WINDOWS
+#endif  // MRPT_HAS_OPENGL_GLUT
 
-
-IMPLEMENTS_SERIALIZABLE( COpenGLScene, CRenderizableDisplayList, mrpt::opengl )
-
+IMPLEMENTS_SERIALIZABLE(COpenGLScene, CRenderizableDisplayList, mrpt::opengl)
 
 /*---------------------------------------------------------------
 						Constructor
 ---------------------------------------------------------------*/
-COpenGLScene::COpenGLScene( ) :
-	m_followCamera(false)
-{
-	createViewport("main");
-}
-
+COpenGLScene::COpenGLScene() : m_followCamera(false) { createViewport("main"); }
 /*--------------------------------------------------------------
 					Copy constructor
   ---------------------------------------------------------------*/
-COpenGLScene::COpenGLScene( const COpenGLScene &obj ) :
-	CSerializable()
+COpenGLScene::COpenGLScene(const COpenGLScene& obj) : CSerializable()
 {
 	(*this) = obj;
 }
@@ -64,26 +55,21 @@ COpenGLScene::COpenGLScene( const COpenGLScene &obj ) :
 /*---------------------------------------------------------------
 						Destructor:
  ---------------------------------------------------------------*/
-COpenGLScene::~COpenGLScene()
-{
-	clear(false);
-}
-
+COpenGLScene::~COpenGLScene() { clear(false); }
 /*---------------------------------------------------------------
 		Clear the scene.
  ---------------------------------------------------------------*/
-void  COpenGLScene::clear( bool createMainViewport  )
+void COpenGLScene::clear(bool createMainViewport)
 {
 	m_viewports.clear();
 
-	if (createMainViewport)
-		createViewport("main");
+	if (createMainViewport) createViewport("main");
 }
 
 /*---------------------------------------------------------------
 						  =
  ---------------------------------------------------------------*/
-COpenGLScene& COpenGLScene::operator =( const COpenGLScene &obj )
+COpenGLScene& COpenGLScene::operator=(const COpenGLScene& obj)
 {
 	if (this != &obj)
 	{
@@ -91,7 +77,9 @@ COpenGLScene& COpenGLScene::operator =( const COpenGLScene &obj )
 
 		clear();
 		m_viewports = obj.m_viewports;
-		for_each(m_viewports.begin(),m_viewports.end(), metaprogramming::ObjectMakeUnique() );
+		for_each(
+			m_viewports.begin(), m_viewports.end(),
+			metaprogramming::ObjectMakeUnique());
 	}
 	return *this;
 }
@@ -99,32 +87,36 @@ COpenGLScene& COpenGLScene::operator =( const COpenGLScene &obj )
 /*---------------------------------------------------------------
 						render
  ---------------------------------------------------------------*/
-void  COpenGLScene::render() const
+void COpenGLScene::render() const
 {
 	MRPT_START
 
 #if MRPT_HAS_OPENGL_GLUT
-	// We need the size of the viewport at the beginning: should be the whole window:
-	GLint	win_dims[4];
-	glGetIntegerv( GL_VIEWPORT, win_dims );
+	// We need the size of the viewport at the beginning: should be the whole
+	// window:
+	GLint win_dims[4];
+	glGetIntegerv(GL_VIEWPORT, win_dims);
 
-	for (TListViewports::const_iterator it=m_viewports.begin();it!=m_viewports.end();++it)
-		(*it)->render( win_dims[2],win_dims[3] );
+	for (TListViewports::const_iterator it = m_viewports.begin();
+		 it != m_viewports.end(); ++it)
+		(*it)->render(win_dims[2], win_dims[3]);
 
 	// Assure we restore the original viewport:
-	glViewport( win_dims[0],win_dims[1],win_dims[2],win_dims[3] );
+	glViewport(win_dims[0], win_dims[1], win_dims[2], win_dims[3]);
 
 #else
-	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENGL_GLUT=0! OpenGL functions are not implemented");
+	THROW_EXCEPTION(
+		"The MRPT has been compiled with MRPT_HAS_OPENGL_GLUT=0! OpenGL "
+		"functions are not implemented");
 #endif
 	MRPT_END
 }
 
 /*---------------------------------------------------------------
    Implements the writing to a CStream capability of
-     CSerializable objects
+	 CSerializable objects
   ---------------------------------------------------------------*/
-void  COpenGLScene::writeToStream(mrpt::utils::CStream &out,int *version) const
+void COpenGLScene::writeToStream(mrpt::utils::CStream& out, int* version) const
 {
 	if (version)
 		*version = 1;
@@ -132,10 +124,11 @@ void  COpenGLScene::writeToStream(mrpt::utils::CStream &out,int *version) const
 	{
 		out << m_followCamera;
 
-		uint32_t	n;
+		uint32_t n;
 		n = (uint32_t)m_viewports.size();
 		out << n;
-		for (TListViewports::const_iterator	it=m_viewports.begin();it!=m_viewports.end();++it)
+		for (TListViewports::const_iterator it = m_viewports.begin();
+			 it != m_viewports.end(); ++it)
 			out << **it;
 	}
 }
@@ -144,122 +137,127 @@ void  COpenGLScene::writeToStream(mrpt::utils::CStream &out,int *version) const
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void  COpenGLScene::readFromStream(mrpt::utils::CStream &in,int version)
+void COpenGLScene::readFromStream(mrpt::utils::CStream& in, int version)
 {
-	switch(version)
+	switch (version)
 	{
-	case 0:
+		case 0:
 		{
 			// Old style: Just one viewport:
 			clear(true);
 			COpenGLViewport::Ptr view = m_viewports[0];
 
 			// Load objects:
-			uint32_t	n;
+			uint32_t n;
 			in >> n;
 
 			view->clear();
 			view->m_objects.resize(n);
-			for_each(view->m_objects.begin(), view->m_objects.end(), metaprogramming::ObjectReadFromStream(&in) );
+			for_each(
+				view->m_objects.begin(), view->m_objects.end(),
+				metaprogramming::ObjectReadFromStream(&in));
 		}
 		break;
-	case 1:
+		case 1:
 		{
 			in >> m_followCamera;
 
-			uint32_t	i,n;
+			uint32_t i, n;
 			in >> n;
 			clear(false);
 
-
-			for (i=0;i<n;i++)
+			for (i = 0; i < n; i++)
 			{
 				CSerializable::Ptr newObj;
 				in >> newObj;
 
-				COpenGLViewport::Ptr	newView = std::dynamic_pointer_cast<COpenGLViewport>(newObj);
+				COpenGLViewport::Ptr newView =
+					std::dynamic_pointer_cast<COpenGLViewport>(newObj);
 				newView->m_parent = this;
-				m_viewports.push_back( newView );
+				m_viewports.push_back(newView);
 			}
-
-		} break;
-	default:
-		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
-
+		}
+		break;
+		default:
+			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
 	};
 }
 
 /*---------------------------------------------------------------
 							insert
   ---------------------------------------------------------------*/
-void COpenGLScene::insert( const CRenderizable::Ptr &newObject, const std::string &viewportName )
+void COpenGLScene::insert(
+	const CRenderizable::Ptr& newObject, const std::string& viewportName)
 {
 	MRPT_START
-	for (TListViewports::iterator it = m_viewports.begin();it!= m_viewports.end();++it)
+	for (TListViewports::iterator it = m_viewports.begin();
+		 it != m_viewports.end(); ++it)
 	{
-		if ((*it)->m_name == viewportName )
+		if ((*it)->m_name == viewportName)
 		{
 			(*it)->insert(newObject);
 			return;
 		}
 	}
-	THROW_EXCEPTION_FMT("Error: viewport '%s' not found.",viewportName.c_str());
+	THROW_EXCEPTION_FMT(
+		"Error: viewport '%s' not found.", viewportName.c_str());
 	MRPT_END
 }
 
 /*---------------------------------------------------------------
 							getByName
   ---------------------------------------------------------------*/
-CRenderizable::Ptr	COpenGLScene::getByName( const string &str, const string &viewportName )
+CRenderizable::Ptr COpenGLScene::getByName(
+	const string& str, const string& viewportName)
 {
 	MRPT_UNUSED_PARAM(viewportName);
 	CRenderizable::Ptr obj;
-	for (TListViewports::iterator it=m_viewports.begin();it!=m_viewports.end();++it)
-		if ( (obj = (*it)->getByName(str) ) )
-			break;
+	for (TListViewports::iterator it = m_viewports.begin();
+		 it != m_viewports.end(); ++it)
+		if ((obj = (*it)->getByName(str))) break;
 	return obj;
 }
 
 /*---------------------------------------------------------------
 					initializeAllTextures
   ---------------------------------------------------------------*/
-void  COpenGLScene::initializeAllTextures()
+void COpenGLScene::initializeAllTextures()
 {
-	for (TListViewports::iterator it=m_viewports.begin();it!=m_viewports.end();++it)
+	for (TListViewports::iterator it = m_viewports.begin();
+		 it != m_viewports.end(); ++it)
 		(*it)->initializeAllTextures();
 }
 
 /*--------------------------------------------------------------
 					dumpListOfObjects
   ---------------------------------------------------------------*/
-void COpenGLScene::dumpListOfObjects( utils::CStringList  &lst )
+void COpenGLScene::dumpListOfObjects(utils::CStringList& lst)
 {
 	lst.clear();
 
-	for (TListViewports::iterator	it=m_viewports.begin();it!=m_viewports.end();++it)
+	for (TListViewports::iterator it = m_viewports.begin();
+		 it != m_viewports.end(); ++it)
 	{
-		lst.add( string("VIEWPORT: ")+ (*it)->m_name );
+		lst.add(string("VIEWPORT: ") + (*it)->m_name);
 		lst.add("============================================");
 		(*it)->dumpListOfObjects(lst);
 	}
 }
 
-
-
 /*--------------------------------------------------------------
 					createViewport
   ---------------------------------------------------------------*/
-COpenGLViewport::Ptr COpenGLScene::createViewport( const string &viewportName )
+COpenGLViewport::Ptr COpenGLScene::createViewport(const string& viewportName)
 {
 	MRPT_START
 
 	COpenGLViewport::Ptr old = getViewport(viewportName);
-	if (old)
-		return old;
+	if (old) return old;
 
-	COpenGLViewport::Ptr theNew = COpenGLViewport::Ptr( new COpenGLViewport(this, viewportName) );
+	COpenGLViewport::Ptr theNew =
+		COpenGLViewport::Ptr(new COpenGLViewport(this, viewportName));
 	m_viewports.push_back(theNew);
-	return  theNew;
+	return theNew;
 
 	MRPT_END
 }
@@ -267,21 +265,22 @@ COpenGLViewport::Ptr COpenGLScene::createViewport( const string &viewportName )
 /*--------------------------------------------------------------
 					getViewport
   ---------------------------------------------------------------*/
-COpenGLViewport::Ptr COpenGLScene::getViewport( const std::string &viewportName ) const
+COpenGLViewport::Ptr COpenGLScene::getViewport(
+	const std::string& viewportName) const
 {
 	MRPT_START
-	for (TListViewports::const_iterator it = m_viewports.begin();it!=m_viewports.end();++it)
-		if ( (*it)->m_name == viewportName)
-			return *it;
+	for (TListViewports::const_iterator it = m_viewports.begin();
+		 it != m_viewports.end(); ++it)
+		if ((*it)->m_name == viewportName) return *it;
 	return COpenGLViewport::Ptr();
 	MRPT_END
 }
 
-
 /*--------------------------------------------------------------
 					removeObject
   ---------------------------------------------------------------*/
-void COpenGLScene::removeObject( const CRenderizable::Ptr &obj, const std::string &viewportName )
+void COpenGLScene::removeObject(
+	const CRenderizable::Ptr& obj, const std::string& viewportName)
 {
 	MRPT_START
 
@@ -292,43 +291,61 @@ void COpenGLScene::removeObject( const CRenderizable::Ptr &obj, const std::strin
 	MRPT_END
 }
 
-bool COpenGLScene::traceRay(const mrpt::poses::CPose3D &o,double &dist) const	{
-	bool found=false;
+bool COpenGLScene::traceRay(const mrpt::poses::CPose3D& o, double& dist) const
+{
+	bool found = false;
 	double tmp;
-	for (TListViewports::const_iterator it=m_viewports.begin();it!=m_viewports.end();++it)	{
-		const COpenGLViewport::Ptr &vp=*it;
-		for (CListOpenGLObjects::const_iterator it2=vp->m_objects.begin();it2!=vp->m_objects.end();++it2) if ((*it2)->traceRay(o,tmp))	{
-			if (!found)	{
-				found=true;
-				dist=tmp;
-			}	else if (tmp<dist) dist=tmp;
-		}
+	for (TListViewports::const_iterator it = m_viewports.begin();
+		 it != m_viewports.end(); ++it)
+	{
+		const COpenGLViewport::Ptr& vp = *it;
+		for (CListOpenGLObjects::const_iterator it2 = vp->m_objects.begin();
+			 it2 != vp->m_objects.end(); ++it2)
+			if ((*it2)->traceRay(o, tmp))
+			{
+				if (!found)
+				{
+					found = true;
+					dist = tmp;
+				}
+				else if (tmp < dist)
+					dist = tmp;
+			}
 	}
 	return found;
 }
 
-
-bool COpenGLScene::saveToFile(const std::string &fil) const
+bool COpenGLScene::saveToFile(const std::string& fil) const
 {
-	try {
+	try
+	{
 		CFileGZOutputStream(fil) << *this;
 		return true;
 	}
-	catch (...)	{ return false;	}
+	catch (...)
+	{
+		return false;
+	}
 }
 
-bool COpenGLScene::loadFromFile(const std::string &fil)
+bool COpenGLScene::loadFromFile(const std::string& fil)
 {
-	try {
+	try
+	{
 		CFileGZInputStream(fil) >> *this;
 		return true;
 	}
-	catch (...)	{ return false;	}
+	catch (...)
+	{
+		return false;
+	}
 }
 
-
-/** Evaluates the bounding box of this object (including possible children) in the coordinate frame of the object parent. */
-void COpenGLScene::getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max,const std::string &vpn) const
+/** Evaluates the bounding box of this object (including possible children) in
+ * the coordinate frame of the object parent. */
+void COpenGLScene::getBoundingBox(
+	mrpt::math::TPoint3D& bb_min, mrpt::math::TPoint3D& bb_max,
+	const std::string& vpn) const
 {
 	COpenGLViewport::Ptr vp = this->getViewport(vpn);
 	ASSERTMSG_(vp, "No opengl viewport exists with the given name")

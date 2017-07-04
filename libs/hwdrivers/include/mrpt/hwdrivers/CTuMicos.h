@@ -16,330 +16,320 @@
 
 namespace mrpt
 {
-	namespace hwdrivers
-	{
-		/** This class implements initialization and comunication methods to
-		  * control a Tilt Unit model DT-80, working in radians .
-		  * \ingroup mrpt_hwdrivers_grp
-		  */
-		class HWDRIVERS_IMPEXP CTuMicos : public CPtuBase, public mrpt::utils::COutputLogger
-		{
+namespace hwdrivers
+{
+/** This class implements initialization and comunication methods to
+  * control a Tilt Unit model DT-80, working in radians .
+  * \ingroup mrpt_hwdrivers_grp
+  */
+class HWDRIVERS_IMPEXP CTuMicos : public CPtuBase,
+								  public mrpt::utils::COutputLogger
+{
+   public:
+	/** Default constructor */
 
-		public:
+	CTuMicos(){};
 
-			/** Default constructor */
+	/** Destructor */
 
-			CTuMicos() {};
+	virtual ~CTuMicos() { close(); }
+	/*************************** Commands ***************************/
 
-			/** Destructor */
+   public:
+	/** Search limit forward */
 
-			virtual ~CTuMicos(){ close(); }
+	virtual bool rangeMeasure();
 
-		/*************************** Commands ***************************/
+	/** Specification of positions in absolute terms */
 
-		public:
+	virtual bool moveToAbsPos(char axis, double nRad);
 
-			/** Search limit forward */
+	/** Query position in absolute terms */
 
-			virtual bool rangeMeasure();
+	virtual bool absPosQ(char axis, double& nRad);
 
-			/** Specification of positions in absolute terms */
+	/** Specify desired axis position as an offset from the current position. \n
+	*	This method recives the number of radians to move.
+	*	\code
+	*	Example of use:
+	*		TT-500 *
+	*		A *
+	*		TO * Current Tilt position is -500
+	*		TO500 *
+	*		A *
+	*		TT * Current Pan position is 1000
+	*	\endcode
+	*/
 
-			virtual bool moveToAbsPos(char axis,double nRad);
+	virtual bool moveToOffPos(char axis, double nRad);
 
-			/** Query position in absolute terms */
+	/** Query position in relative terms */
 
-			virtual bool absPosQ(char axis,double &nRad);
+	virtual bool offPosQ(char axis, double& nRad);
 
-			/** Specify desired axis position as an offset from the current position. \n
-			*	This method recives the number of radians to move.
-			*	\code
-			*	Example of use:
-			*		TT-500 *
-			*		A *
-			*		TO * Current Tilt position is -500
-			*		TO500 *
-			*		A *
-			*		TT * Current Pan position is 1000 
-			*	\endcode
-			*/
+	/** Query max movement limit of a axis in absolute terms */
 
-			virtual bool moveToOffPos(char axis,double nRad);
+	virtual bool maxPosQ(char axis, double& nRad);
 
-			/** Query position in relative terms */
+	/** Query min movement limit of a axis in absolute terms */
 
-			virtual bool offPosQ(char axis,double &nRad);
+	virtual bool minPosQ(char axis, double& nRad);
 
-			/** Query max movement limit of a axis in absolute terms */
+	/** Query if exist movement limits */
 
-			virtual bool maxPosQ(char axis,double &nRad);
+	virtual bool enableLimitsQ(bool& enable);  // Query if exist some limit
 
-			/** Query min movement limit of a axis in absolute terms */
+	/** Enable/Disable movement limits */
 
-			virtual bool minPosQ(char axis,double &nRad);
+	virtual bool enableLimits(bool set);
 
-			/** Query if exist movement limits */
+	/** With I mode (default) instructs pan-tilt unit to immediately
+	*	execute positional commands. \n
+	*	In S mode instructs pan-tilt unit to execute positional commands
+	*	only when an Await Position Command Completion command is executed
+	*	or when put into Immediate Execution Mode. \n
+	*	\code
+	*	Example of use of S mode:
+	*		DR *
+	*		S *
+	*		PP1500 *
+	*		TP-900 *
+	*		PP * Current Pan position is 0
+	*		TP * Current Tilt position is 0
+	*		A *
+	*		PP * Current Pan position is 1500
+	*		TP * Current Tilt position is -900
+	*	\endcode
+	*/
 
-			virtual bool enableLimitsQ(bool &enable); // Query if exist some limit
+	virtual bool inmediateExecution(bool set);
 
-			/** Enable/Disable movement limits */
+	/** Wait the finish of the last position command to
+	*	continue accept commands
+	*/
 
-			virtual bool enableLimits(bool set);
+	virtual bool aWait(void);
 
-			/** With I mode (default) instructs pan-tilt unit to immediately
-			*	execute positional commands. \n
-			*	In S mode instructs pan-tilt unit to execute positional commands
-			*	only when an Await Position Command Completion command is executed
-			*	or when put into Immediate Execution Mode. \n
-			*	\code
-			*	Example of use of S mode:
-			*		DR *
-			*		S *
-			*		PP1500 *
-			*		TP-900 *
-			*		PP * Current Pan position is 0
-			*		TP * Current Tilt position is 0
-			*		A *
-			*		PP * Current Pan position is 1500
-			*		TP * Current Tilt position is -900
-			*	\endcode
-			*/
+	/** Inmediately stop all */
 
-			virtual bool inmediateExecution(bool set);
+	virtual bool haltAll();
 
-			/** Wait the finish of the last position command to
-			*	continue accept commands
-			*/
+	/** Inmediately stop */
 
-			virtual bool aWait(void);
+	virtual bool halt(char axis);
 
-			/** Inmediately stop all */
+	/** Specification of turn speed */
 
-			virtual bool haltAll();
+	virtual bool speed(char axis, double radSec);
 
-			/** Inmediately stop */
+	/** Query turn speed */
 
-			virtual bool halt(char axis);
+	virtual bool speedQ(char axis, double& radSec);
 
-			/** Specification of turn speed */
+	/** Specification (de/a)celeration in turn */
 
-			virtual bool  speed(char axis,double radSec);
+	virtual bool aceleration(char axis, double radSec2);
 
-			/** Query turn speed */
+	/** Query (de/a)celeration in turn */
 
-			virtual bool  speedQ(char axis,double &radSec);
+	virtual bool acelerationQ(char axis, double& radSec2);
 
-			/** Specification (de/a)celeration in turn */
+	/** Specification of velocity to which start and finish
+	*	the (de/a)celeration
+	*/
 
-			virtual bool  aceleration(char axis,double radSec2);
+	virtual bool baseSpeed(char axis, double radSec);
 
-			/** Query (de/a)celeration in turn */
+	/** Query velocity to which start and finish
+	*	the (de/a)celeration
+	*/
 
-			virtual bool  acelerationQ(char axis,double &radSec2);
+	virtual bool baseSpeedQ(char axis, double& radSec);
 
-			/** Specification of velocity to which start and finish
-			*	the (de/a)celeration
-			*/
+	/** Specification of velocity upper limit */
 
-			virtual bool  baseSpeed(char axis,double radSec);
+	virtual bool upperSpeed(char axis, double radSec);
 
-			/** Query velocity to which start and finish
-			*	the (de/a)celeration
-			*/
+	/** Query velocity upper limit */
 
-			virtual bool  baseSpeedQ(char axis,double &radSec);
+	virtual bool upperSpeedQ(char axis, double& radSec);
 
-			/** Specification of velocity upper limit */
+	/** Specification of velocity lower limit */
 
-			virtual bool upperSpeed(char axis,double radSec);
+	virtual bool lowerSpeed(char axis, double radSec);
 
-			/** Query velocity upper limit */
+	/** Query velocity lower limit */
 
-			virtual bool upperSpeedQ(char axis,double &radSec);
+	virtual bool lowerSpeedQ(char axis, double& radSec);
 
-			/** Specification of velocity lower limit */
+	/** Reset PTU to initial state */
 
-			virtual bool lowerSpeed(char axis,double radSec);
+	virtual bool reset(void);
 
-			/** Query velocity lower limit */
+	/** Save or restart default values */
 
-			virtual bool lowerSpeedQ(char axis,double &radSec);
+	virtual bool save(void);
 
-			/** Reset PTU to initial state */
+	/** Restore default values */
 
-			virtual bool reset(void);
+	virtual bool restoreDefaults(void);
 
-			/** Save or restart default values */
+	/** Restore factory default values */
 
-			virtual bool save(void);
+	virtual bool restoreFactoryDefaults(void);
 
-			/** Restore default values */
+	/** Version and CopyRights */
 
-			virtual bool restoreDefaults(void);
+	virtual bool version(char* nVersion);
 
-			/** Restore factory default values */
+	/** Number of version */
 
-			virtual bool restoreFactoryDefaults(void);
+	virtual void nversion(double& nVersion);
 
-			/** Version and CopyRights */
+	/** Query power mode */
 
-			virtual bool version(char * nVersion);
+	virtual bool powerModeQ(bool transit, char& mode);
 
-			/** Number of version */
+	/** Specification of power mode */
 
-			virtual void nversion(double &nVersion);
+	virtual bool powerMode(bool transit, char mode);
 
-			/** Query power mode */
+	/** Clear controller internal stack */
 
-			virtual bool powerModeQ(bool transit,char &mode);
+	bool clear();
 
-			/** Specification of power mode */
+	/** Set limits of movement */
 
-			virtual bool powerMode(bool transit,char mode);
+	virtual bool setLimits(char axis, double& l, double& u);
 
-			/** Clear controller internal stack */
+	/* Change motion direction */
 
-			bool clear();
+	virtual bool changeMotionDir();
 
-			/** Set limits of movement */
+	/**************************** State Queries ********************/
 
-			virtual bool setLimits(char axis, double &l, double &u);
-			
-			/* Change motion direction */
+	virtual int checkErrors();
 
-			virtual bool changeMotionDir();
+	/** Clear errors **/
 
+	virtual void clearErrors() {}
+	/*************************** Other member methods *****************/
 
-		/**************************** State Queries ********************/
-			
-			virtual int checkErrors();
-			
-			/** Clear errors **/
+   public:
+	/** PTU and serial port initialization */
 
-			virtual void clearErrors() { }
+	virtual bool init(const std::string& port);
 
+	/** Close Connection with serial port */
 
-		/*************************** Other member methods *****************/
+	virtual void close();
 
-		public:
+	/** To obtains the mistake for use discrete values when the movement
+	*	is expressed in radians. Parameters are the absolute position in
+	*	radians and the axis desired
+	*/
 
-			/** PTU and serial port initialization */
+	virtual double radError(char axis, double nRadMoved);
 
-			virtual bool init(const std::string &port);
+	/**  To obtain the discrete value for a number of radians */
 
-			/** Close Connection with serial port */
+	virtual long radToPos(char axis, double nRad);
 
-			virtual void close();
+	/** To obtain the number of radians for a discrete value */
 
-			/** To obtains the mistake for use discrete values when the movement
-			*	is expressed in radians. Parameters are the absolute position in
-			*	radians and the axis desired
-			*/
+	virtual double posToRad(char axis, long nPos);
 
-			virtual double radError(char axis,double nRadMoved);
+	/** Performs a scan in the axis indicated and whit the precision desired. \n
+	*		\param <axis> {Pan or Till} \n
+	*		\param <tWait> {Wait time betwen commands} \n
+	*		\param <initial> {initial position}
+	*		\param <final> {final position}
+	*		\param <radPre> {radians precision for the scan}
+	*/
 
-			/**  To obtain the discrete value for a number of radians */
+	virtual bool scan(
+		char axis, int wait, float initial, float final, double radPre);
 
-			virtual long radToPos(char axis,double nRad);
+	/** Query verbose mode */
 
-			/** To obtain the number of radians for a discrete value */
+	virtual bool verboseQ(bool& modo);
 
-			virtual double posToRad(char axis,long nPos);
+	/** Set verbose. \n
+	*	\conde
+	*	Example of response with FV (verbose) active:
+	*		FV *
+	*		PP * Current pan position is 0
+	*		Example of response with FT (terse) active:
+	*		FT *
+	*		PP * 0
+	*	\endcode
+	*/
 
-			/** Performs a scan in the axis indicated and whit the precision desired. \n
-			*		\param <axis> {Pan or Till} \n
-			*		\param <tWait> {Wait time betwen commands} \n
-			*		\param <initial> {initial position}
-			*		\param <final> {final position}
-			*		\param <radPre> {radians precision for the scan}
-			*/
+	virtual bool verbose(bool set);
 
-			virtual bool scan(char axis, int wait, float initial, float final, double radPre);
-						
-			/** Query verbose mode */
+	/** Query echo mode */
 
-			virtual bool verboseQ(bool &modo);
+	virtual bool echoModeQ(bool& mode);
 
-			/** Set verbose. \n
-			*	\conde
-			*	Example of response with FV (verbose) active:
-			*		FV *
-			*		PP * Current pan position is 0
-			*		Example of response with FT (terse) active:
-			*		FT *
-			*		PP * 0
-			*	\endcode
-			*/
+	/** Enable/Disable echo response with command. \n
+	*	\code
+	*	Example of use (EE supposed):
+	*		PP * 22
+	*		ED *
+	*		<pp entered again, but not echoed>* 22
+	*	\endcode
+	*/
 
-			virtual bool verbose(bool set);
+	virtual bool echoMode(bool mode);
 
-			/** Query echo mode */
+	/** Query the pan and tilt resolution per position moved
+	*	and initialize local atributes
+	*/
 
-			virtual bool echoModeQ(bool &mode);
+	virtual bool resolution(void);
 
-			/** Enable/Disable echo response with command. \n
-			*	\code
-			*	Example of use (EE supposed):
-			*		PP * 22
-			*		ED *
-			*		<pp entered again, but not echoed>* 22
-			*	\endcode
-			*/
+	/** Check if ptu is moving */
 
-			virtual bool echoMode(bool mode);
+	virtual double status(double& rad);
 
-			/** Query the pan and tilt resolution per position moved
-			*	and initialize local atributes
-			*/
+	/*************************** Methods for internal use ****************/
 
-			virtual bool resolution(void);
+   private:
+	/** To transmition commands to the PTU */
 
-			/** Check if ptu is moving */
+	virtual bool transmit(const char* command);
 
-			virtual double status(double &rad);
+	/** To receive the responseof the PTU */
 
+	virtual bool receive(const char* command, char* response);
 
-		/*************************** Methods for internal use ****************/
+	/** Used to obtains a number of radians */
 
-		private:
+	virtual bool radQuerry(char axis, char command, double& nRad);
 
-			/** To transmition commands to the PTU */
+	/** Method used for asign a number of radians with a command */
 
-			virtual bool transmit(const char * command);
+	virtual bool radAsign(char axis, char command, double nRad);
 
-			/** To receive the responseof the PTU */
+	/** Convert string to double */
 
-			virtual bool receive(const char * command,char * response);
+	static double convertToDouble(char* sDouble);
 
-			/** Used to obtains a number of radians */
+	/** Convert string to long */
 
-			virtual bool radQuerry(char axis,char command,double &nRad);
+	static long convertToLong(char* sLong);
 
-			/** Method used for asign a number of radians with a command */
+	/**************************** Atributes ********************/
 
-			virtual bool radAsign(char axis,char command,double nRad);
+   public:
+	/* Index of the Tilt axis in use */
 
-			/** Convert string to double */
+	int axis_index;
 
-			static double convertToDouble(char *sDouble);
+};  // End of class
 
-			/** Convert string to long */
+}  // End of namespace
 
-			static long convertToLong(char *sLong);
-
-		/**************************** Atributes ********************/
-
-		public:
-
-			/* Index of the Tilt axis in use */
-
-			int axis_index;
-
-
-		};	// End of class
-
-	} // End of namespace
-
-} // End of namespace
+}  // End of namespace
 
 #endif
