@@ -31,7 +31,21 @@ QImage qimage_1_plots_distances[MAX_DESC], qimage_2_plots_distances[MAX_DESC];
 QLabel *images1_plots_distances[MAX_DESC], *images2_plots_distances[MAX_DESC];
 QLabel *featureMatchingInfo[MAX_DESC];
 int min_dist_indexes[MAX_DESC];
+double min_distances[MAX_DESC];
 
+string evaluation_info;
+
+string detector_names[] = {"KLT Detector", "Harris Corner Detector",
+                           "BCD (Binary Corner Detector)", "SIFT",
+                           "SURF", "FAST Detector",
+                           "FASTER9 Detector", "FASTER10 Detector",
+                           "FASTER12", "ORB Detector",
+                           "AKAZE Detector", "LSD Detector"};
+
+string descriptor_names[] = {"SIFT Descriptor", "SURF Descriptor",
+                             "Intensity-domain spin image descriptor", "Polar Images descriptor",
+                             "Log-polar image descriptor", "ORB Descriptor",
+                             "BLD Descriptor", "LATCH Descriptor"};
 
 //MAX_DESC is 500
 cv::Mat cvImg1;
@@ -71,9 +85,12 @@ void MainWindow::on_button_generate_clicked()
 
             cout << "Min Distance : " << min_dist << " for image2 feature # " << min_dist_idx << "Distances sigma " << dist_std << endl;
             min_dist_indexes[i1] = min_dist_idx;
+            min_distances[i1] = min_dist;
 
             stringstream info;
             info << "<b>Feature (Image1) # " << i1 <<" matches Feature (Image2) # " << min_dist_idx <<  "<br/> with distance " << min_dist << ", Distances sigma <b> " << dist_std;
+
+
             string info_temp = info.str();
             featureMatchingInfo[i1] = new QLabel();
             featureMatchingInfo[i1]->setText(QString::fromStdString(info_temp));
@@ -1088,7 +1105,7 @@ void MainWindow::on_detector_button_clicked()
     CTicTac clock;
     clock.Tic();
     fext.detectFeatures(img1, featsImage1, 0, numFeats);
-    double elapsedTime = clock.Tac();
+    elapsedTime_detector = clock.Tac();
 
     //save to file
     cout << "before saving to file" << endl;
@@ -1102,7 +1119,8 @@ void MainWindow::on_detector_button_clicked()
     {
         int temp_x = (int) featsImage1.getFeatureX(i);
         int temp_y = (int) featsImage1.getFeatureY(i);
-        circle(cvImg1, Point(temp_x, temp_y), 5, Scalar(0,255,0), CIRCLE_THICKNESS, 8, 0);
+        //circle(cvImg1, Point(temp_x, temp_y), 5, Scalar(0,255,0), CIRCLE_THICKNESS, 8, 0);
+        drawMarker(cvImg1, Point(temp_x, temp_y),  Scalar(0, 255, 0), MARKER_CROSS, CROSS_SIZE, CROSS_THICKNESS);
     }
     drawLineLSD(cvImg1, 0); // 0 means draw line on left image
 
@@ -1131,7 +1149,8 @@ void MainWindow::on_detector_button_clicked()
         for (int i = 0; i < featsImage2.size(); i++) {
             int temp_x = (int) featsImage2.getFeatureX(i);
             int temp_y = (int) featsImage2.getFeatureY(i);
-            circle(cvImg2, Point(temp_x, temp_y), 5, Scalar(0,255,0), CIRCLE_THICKNESS, 8, 0);
+            //circle(cvImg2, Point(temp_x, temp_y), 5, Scalar(0,255,0), CIRCLE_THICKNESS, 8, 0);
+            drawMarker(cvImg2, Point(temp_x, temp_y),  Scalar(0, 255, 0), MARKER_CROSS, CROSS_SIZE, CROSS_THICKNESS);
         }
         drawLineLSD(cvImg2, 1); // 1 means draw on right image
 
@@ -1143,6 +1162,21 @@ void MainWindow::on_detector_button_clicked()
         cout << "Number of Features in image 2: " << featsImage2.size() << endl;
 
     }
+
+
+    stringstream detect_info;
+    detect_info << "<b> Detector Info </b>"
+                << "<br/>Detector_Selected: " << detector_names[detector_selected]
+                << "<br/>Time Taken: " << elapsedTime_detector
+                << "<br/>Number of Detected Key-points in Image 1: " << featsImage1.size()
+                ;
+    if(currentInputIndex == 1 || currentInputIndex == 4)
+        detect_info << "<br/>Number of Detected Key-points in Image 2: " << featsImage2.size();
+    detect_info << endl;
+    string temp_info = detect_info.str();
+    detector_info->setText(QString::fromStdString(temp_info));
+    detector_info->setVisible(true);
+    descriptor_info->setVisible(false);
 }
 
 
@@ -1183,12 +1217,14 @@ void MainWindow::on_descriptor_button_clicked()
     if(desc_to_compute != descAny)
         fext.options.patchSize = 0;
 
-
+    CTicTac clock_describe;
+    clock_describe.Tic();
     // find a way to clear off past detector/descriptor info stored in featsImage
 
     if(desc_to_compute != TDescriptorType(-1) && desc_to_compute !=descAny)
     {
         fext.computeDescriptors(img1, featsImage1, desc_to_compute);
+        elapsedTime_descriptor = clock_describe.Tac();
         if (currentInputIndex == 1 || currentInputIndex == 4)
         {
             fext.computeDescriptors(img2, featsImage2, desc_to_compute);
@@ -1201,10 +1237,42 @@ void MainWindow::on_descriptor_button_clicked()
 
     }
     // storing size of descriptors for visualizer
-    numDesc1 = featsImage1.size();
-    numDesc2 = featsImage2.size();
+    if(descriptor_selected == 0)
+        numDesc1 = featsImage1.getByID(0).get()->descriptors.SIFT.size(); //!< SIFT descriptors
+    else if (descriptor_selected == 1)
+        numDesc1 = featsImage1.getByID(0).get()->descriptors.SURF.size(); //!< SURF descriptors
+    else if (descriptor_selected == 2)
+        numDesc1 = featsImage1.getByID(0).get()->descriptors.SpinImg.size(); //!< Intensity-domain spin image descriptor
+    else if (descriptor_selected == 3)
+        numDesc1 = featsImage1.getByID(0).get()->descriptors.PolarImg.size(); //!< Polar image descriptor
+    else if (descriptor_selected == 4)
+        numDesc1 = featsImage1.getByID(0).get()->descriptors.LogPolarImg.size(); //!< Log-Polar image descriptor
+    else if (descriptor_selected == 5)
+        numDesc1 = featsImage1.getByID(0).get()->descriptors.ORB.size(); //!< ORB image descriptor
+    else if (descriptor_selected == 6)
+        numDesc1 = featsImage1.getByID(0).get()->descriptors.BLD.size(); //!< BLD image descriptor
+    else if (descriptor_selected == 7)
+        numDesc1 = featsImage1.getByID(0).get()->descriptors.LATCH.size(); //!< LATCH image descriptor
+    stringstream descript_info;
+    descript_info << "<br/><br/><b> Descriptor Info: </b> "
+                  <<"<br/>Descriptor Selected: " << descriptor_names[descriptor_selected]
+                  << "<br/>Time Elapsed: " << elapsedTime_descriptor
+                  << "<br/>Size of Descriptor: " << numDesc1
+                  <<  endl;
 
+
+    string temp_info1 = detector_info->text().toStdString();
+    string temp_info2 = descript_info.str();
+
+    stringstream concat;
+    concat << temp_info1 << " " << temp_info2;
+
+    evaluation_info = concat.str();
+    descriptor_info->setText(QString::fromStdString(concat.str()));
     cout << "Time Elapsed : " << tic.Tac() << endl;
+    detector_info->setVisible(false);
+    descriptor_info->setVisible(true);
+
 
 }
 
@@ -1565,7 +1633,7 @@ void MainWindow::initializeParameters()
 }
 
 /************************************************************************************************
-*								Main Window Contructor   								        *
+*								Main Window Constructor   								        *
 ************************************************************************************************/
 MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
 {
@@ -1580,6 +1648,9 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
     evaluate_descriptor_clicked = false;
     visualize_descriptor_clicked = false;
     flag_read_files_bug = true;
+    elapsedTime_detector = 0;
+    elapsedTime_descriptor = 0;
+    closest_dist = 0;
 
 
     window_gui = new QWidget;
@@ -1587,12 +1658,7 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
 
     //Initialize the detectors here
     groupBox1 = new QGroupBox;
-    string detector_names[] = {"KLT Detector", "Harris Corner Detector",
-                               "BCD (Binary Corner Detector)", "SIFT",
-                               "SURF", "FAST Detector",
-                               "FASTER9 Detector", "FASTER10 Detector",
-                               "FASTER12", "ORB Detector",
-                               "AKAZE Detector", "LSD Detector"};
+
 
     detectors_select = new QComboBox;
 
@@ -1610,12 +1676,6 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
 
 
     //Initialize the descriptors here
-    //groupBox2 = new QGroupBox(tr("Select your descriptor"));
-    string descriptor_names[] = {"SIFT Descriptor", "SURF Descriptor",
-                                 "Intensity-domain spin image descriptor", "Polar Images descriptor",
-                                 "Log-polar image descriptor", "ORB Descriptor",
-                                 "BLD Descriptor", "LATCH Descriptor"};
-    //"BRIEF Descriptors"};
 
     descriptors_select = new QComboBox;
     for(int i=0 ; i<NUM_DESCRIPTORS ; i++)
@@ -1677,6 +1737,12 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
     QImage qscaled2 = qimage2.scaled(IMAGE_WIDTH, IMAGE_HEIGHT, Qt::KeepAspectRatio);
     image2->setPixmap(QPixmap::fromImage(qimage2));
 
+    detector_info = new QLabel;
+    descriptor_info = new QLabel;
+
+    stringstream detect_info;
+    detector_info->setText("");
+    descriptor_info->setText("");
 
 
 
@@ -1692,6 +1758,9 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
     QGridLayout *hbox_images = new QGridLayout;
     hbox_images->addWidget(image1,0,0,1,1);
     hbox_images->addWidget(image2,0,1,1,1);
+    hbox_images->addWidget(detector_info,0,2,1,1);
+    hbox_images->addWidget(descriptor_info,0,2,1,1);
+
     groupBox_images->setLayout(hbox_images);
 
 
@@ -2075,12 +2144,14 @@ void MainWindow::Mouse_Pressed()
             for (int i = 0; i < featsImage2.size(); i++) {
                 int temp_x = (int) featsImage2.getFeatureX(i);
                 int temp_y = (int) featsImage2.getFeatureY(i);
-                circle(cvImg2, Point(temp_x, temp_y), 5, Scalar(0,255,0), CIRCLE_THICKNESS, 8, 0);
+                //circle(cvImg2, Point(temp_x, temp_y), 5, Scalar(0,255,0), CIRCLE_THICKNESS, 8, 0);
+                drawMarker(cvImg2, Point(temp_x, temp_y),  Scalar(0, 255, 0), MARKER_CROSS, CROSS_SIZE, CROSS_THICKNESS);
             }
             drawLineLSD(cvImg2, 1); // 1 means right image
 
-            circle(cvImg2, Point(featsImage2.getFeatureX(temp_idx), featsImage2.getFeatureY(temp_idx)), 5, Scalar(255,0,0), CIRCLE_THICKNESS, 8, 0);
+            //circle(cvImg2, Point(featsImage2.getFeatureX(temp_idx), featsImage2.getFeatureY(temp_idx)), 5, Scalar(255,0,0), CIRCLE_THICKNESS, 8, 0);
 
+            drawMarker(cvImg2, Point(featsImage2.getFeatureX(temp_idx), featsImage2.getFeatureY(temp_idx)),  Scalar(255, 0, 0), MARKER_CROSS, CROSS_SIZE, CROSS_THICKNESS);
 
             cv::Mat temp2(cvImg2.cols, cvImg2.rows, cvImg2.type());
             cvtColor(cvImg2, temp2, CV_BGR2RGB);
@@ -2094,7 +2165,8 @@ void MainWindow::Mouse_Pressed()
         images_label_coordinates = new QLabel;
 
         images_label_coordinates->setText(QString::fromStdString(str2));
-        circle(desc_Ref_img, Point(temp_x, temp_y), 5, Scalar(0,0,255), CIRCLE_THICKNESS, 8, 0); // plot the circles on the appropriate points as per the shown descriptors
+        //circle(desc_Ref_img, Point(temp_x, temp_y), 5, Scalar(0,0,255), CIRCLE_THICKNESS, 8, 0); // plot the circles on the appropriate points as per the shown descriptors
+        drawMarker(desc_Ref_img, Point(temp_x, temp_y),  Scalar(0, 255, 0), MARKER_CROSS, CROSS_SIZE, CROSS_THICKNESS);
         //putText(desc_Ref_img, str2, Point(temp_x,temp_y), 5, 2, Scalar(255,0,0),2,8,0);
         //cnt++; // global counter for iterating over images and labels
 
@@ -2170,10 +2242,12 @@ void MainWindow::Mouse_Pressed()
             for (int i = 0; i < featsImage2.size(); i++) {
                 int temp_x = (int) featsImage2.getFeatureX(i);
                 int temp_y = (int) featsImage2.getFeatureY(i);
-                circle(cvImg2, Point(temp_x, temp_y), 5, Scalar(0,255,0), CIRCLE_THICKNESS, 8, 0);
+                //circle(cvImg2, Point(temp_x, temp_y), 5, Scalar(0,255,0), CIRCLE_THICKNESS, 8, 0);
+                drawMarker(cvImg2, Point(temp_x,temp_y), Scalar(0,255,0), MARKER_CROSS, CROSS_SIZE, CROSS_THICKNESS);
             }
             drawLineLSD(cvImg2, 1 ); // 1 means draw on right image
-            circle(cvImg2, Point(featsImage2.getFeatureX(temp_idx), featsImage2.getFeatureY(temp_idx)), 5, Scalar(255,0,0), CIRCLE_THICKNESS, 8, 0);
+            //circle(cvImg2, Point(featsImage2.getFeatureX(temp_idx), featsImage2.getFeatureY(temp_idx)), 5, Scalar(255,0,0), CIRCLE_THICKNESS, 8, 0);
+            drawMarker(cvImg2, Point(featsImage2.getFeatureX(temp_idx), featsImage2.getFeatureY(temp_idx)),  Scalar(255, 0, 0), MARKER_CROSS, CROSS_SIZE, CROSS_THICKNESS);
 
             cv::Mat temp2(cvImg2.cols, cvImg2.rows, cvImg2.type());
             cvtColor(cvImg2, temp2, CV_BGR2RGB);
@@ -2197,8 +2271,8 @@ void MainWindow::Mouse_Pressed()
 
 
 
-        circle(desc_Ref_img, Point(temp_x, temp_y), 5, Scalar(255,0,0), CIRCLE_THICKNESS, 8, 0); // plot the circles on the appropriate points as per the shown descriptors
-
+        //circle(desc_Ref_img, Point(temp_x, temp_y), 5, Scalar(255,0,0), CIRCLE_THICKNESS, 8, 0); // plot the circles on the appropriate points as per the shown descriptors
+        drawMarker(desc_Ref_img, Point(temp_x, temp_y),  Scalar(255, 0, 0), MARKER_CROSS, CROSS_SIZE, CROSS_THICKNESS);
         images_static_sift_surf->setVisible(true);
         if(currentInputIndex == 1 || currentInputIndex == 4) {
             images_static_sift_surf2->setVisible(true);
@@ -2231,6 +2305,11 @@ void MainWindow::Mouse_Pressed()
     image1->setPixmap(QPixmap::fromImage(qscaled1));
 
 
+    closest_dist = min_distances[pos];
+
+    stringstream str_temp;
+    str_temp << evaluation_info << "<br/>Descriptor Distance between closest match: " << closest_dist << endl;
+    descriptor_info->setText(QString::fromStdString(str_temp.str()));
 
 }
 

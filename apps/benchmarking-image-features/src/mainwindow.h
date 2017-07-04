@@ -11,6 +11,8 @@
 #define BUTTON_WIDTH 150
 #define BUTTON_HEIGHT 30
 #define CIRCLE_THICKNESS 4
+#define CROSS_THICKNESS 3
+#define CROSS_SIZE 20
 
 
 
@@ -78,7 +80,6 @@ class MainWindow : public QMainWindow
 
 public:
     QWidget *window_gui;
-    QLabel *detector_label;
     //VisualizeDialog *visualize_dialog;
 
     QLabel *sample_image;
@@ -304,7 +305,7 @@ public:
 
     QGridLayout *desc_VisualizeGrid;
 
-    int numDesc1, numDesc2;
+    long numDesc1, numDesc2;
     int cnt; // counter to iterate over all the descriptors
 
 
@@ -329,6 +330,16 @@ public:
     bool evaluate_descriptor_clicked;
     bool visualize_descriptor_clicked;
     bool activate_stereo_matching;
+
+
+    //! <Parameters for Evaluations Characteristiscs
+
+    double elapsedTime_detector;
+    double elapsedTime_descriptor;
+    QLabel *detector_info;
+    QLabel *descriptor_info;
+    double closest_dist;
+
 
 signals:
     // None yet
