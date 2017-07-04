@@ -162,7 +162,7 @@ void CAbstractPTGBasedReactive::enableLogFile(bool enable)
 					THROW_EXCEPTION_FMT("Error opening log file: `%s`",aux);
 				}
 				else {
-					m_logFile.reset(fil.get());
+					m_logFile.reset(fil.release());
 				}
 			}
 
