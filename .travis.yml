@@ -36,7 +36,7 @@ addons:
     - qtbase5-dev
 
 before_install:
-  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew update          ; fi
+  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew update; fi
 
 install:
   - if [ "$TRAVIS_OS_NAME" == "osx" ]; then
@@ -48,9 +48,11 @@ install:
     fi
   - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$CXX" = "g++" ]; then export CXX="g++-6"; fi
   - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$CXX" == "clang++" ]; then export CXX="clang++-3.8"; fi
+  - pip install -r travis/python_reqs.txt
 
 script:
-  - bash .travis.sh
+  - bash travis/check_style.sh
+  - bash travis/travis_main.sh
 
 env:
   global:
@@ -77,3 +79,7 @@ matrix:
   - compiler: clang
     os: osx
     env: TASK="test"
+  - language: python
+    os: linux
+    env: TASK="lint"
+

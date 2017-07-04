@@ -1,20 +1,20 @@
 # MRPT codebase to comply with ClangFormat
 
 The following instructions offer a summary of the formatting/style changes
-applied in <TODO Add date>,
+applied on <TODO Add date>,
 as well as handy solutions for solving formatting problems and for making this
-transition as smooth as possible for all MRPT developers.
+transition as smooth as possible.
 
 ## Line-wrapping
 
-It has been decided that MRPT code is to be wrapped at **80** lines. This has
-the following consequences:
+MRPT code is to be wrapped at **80** lines. This has the following consequences:
 
 - Long inline doxygen comments `//!< ...` are to be wrapped up and indented at
     the same line. This is not most likely not what the developer wants. To get
     around this replace them standard `/** ... */` comments or any other
     alternative outlined in the [doxygen
     docs](https://www.stack.nl/~dimitri/doxygen/manual/docblocks.html).
+
     For bulk reformatting of these comments one may use `sed` as in [this
     script](https://github.com/bergercookie/clang_git_format/blob/master/scripts/convert_inline_doxygen_comments.sh).
 
@@ -23,12 +23,12 @@ the following consequences:
     convention for the `//!<...` commenting which is placed to the right of the
     variable/directive.
 
-- Long inline standard C comments `// ...` haven't been replaced prior to
-    running clang-format in the codebase. If these exceeded the chars limit they
-    were wrapped in the next line, which, again, isn't that the original
+- Long inline standard C comments `// ...` weren't  been replaced prior to
+    running clang-format in the codebase. If these exceeded the chars limit,
+    they were wrapped in the next line, which, again, isn't that the original
     developer would have wanted. However, they don't affect either the doxygen
     documentation (they aren't parsed at all) or the code compilation, so they
-    are left (wrapped) for now. If something similar is encountered, please
+    are left (wrapped) for now. If you encounter such a case, please
     manually fix the comments (e.g., put them prior to the directive they are
     meant for) and make a PR.
 
@@ -49,6 +49,30 @@ travis test fails). You have two options on this:
 
 The **first option** is strongly suggested, but if that fails, resort to the
 second.
+
+## Comply new code with ClangFormat
+
+The clang-format configuration that MRPT uses can be found [here](TODO - Add
+link to .clang-format at MRPT root). To check whether your existing code
+complies with this, you can run the check_style.sh script from the MRPT root.
+
+To format your changes according to the `.clang-format` configuration, either:
+
+- Run `clang-format` directly specifying the location of your files (beware to
+    use the ClangFormat version specified in [clang_git_format/config.py](TODO -
+    Add link to config file):
+
+- Run it on the whole codebase. Since the MRPT codebase is already formatted,
+    only your changes are going to be modified. use the
+    [clang_format_codebase.sh script](TODO - Add link) from the MRPT root
+    directory.
+
+
+To make sure that your changes comply with ClangFormat, run the
+[check_style.sh script](TODO - Add link) from the MRPT root directory. The
+`check_style.sh` script is also used to validate that your changes comply, when
+you make a Pull-Request to the MRPT upstream repo.
+
 
 ## IDEs
 
