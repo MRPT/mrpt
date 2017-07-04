@@ -10,6 +10,8 @@
 #ifndef CMyGLCanvas_H
 #define CMyGLCanvas_H
 
+#include <mrpt/gui/CGlCanvasBase.h>
+
 #include <mrpt/opengl/opengl_fonts.h>
 #include <mrpt/opengl/CTextMessageCapable.h>
 #include <mrpt/opengl/COpenGLScene.h>
@@ -58,6 +60,7 @@ namespace mrpt
 		  * \ingroup mrpt_gui_grp
 		  */
 		class GUI_IMPEXP CMyGLCanvasBase :
+			public CGlCanvasBase,
 			public wxGLCanvas, 
 			public mrpt::opengl::CTextMessageCapable
 		{
@@ -78,93 +81,34 @@ namespace mrpt
 
 			void OnMouseDown(wxMouseEvent& event);
 			void OnMouseMove(wxMouseEvent& event);
-			void OnMouseUp(wxMouseEvent& event);
+			void OnMouseUp(wxMouseEvent&);
 			void OnMouseWheel(wxMouseEvent& event);
 
 			void Render();
 			void InitGL();
 
-			// Visualization params:
-			float	cameraPointingX,cameraPointingY,cameraPointingZ;
-			float	cameraZoomDistance;
-			float	cameraElevationDeg,cameraAzimuthDeg;
-			bool	cameraIsProjective;
-			float   cameraFOV;
-
-			/** If set to true (default=false), the cameraPointingX,... parameters are ignored and the camera stored in the 3D scene is used instead.
-			  */
-			bool    useCameraFromScene;
-
 			/** Set the camera from a CPose3D, which defines the +X,+Y axis as image place RIGHT and UP dirctions, and -Z as towards the pointing direction.
 			  */
 			void setCameraPose(const mrpt::poses::CPose3D &camPose);
 
-
-			float	clearColorR,clearColorG,clearColorB;
-
-			static float  SENSIBILITY_DEG_PER_PIXEL;		// Default = 0.1
-
 			/**  Methods that can be implemented in custom derived classes  */
 			virtual void OnCharCustom( wxKeyEvent& event ) {
-            MRPT_UNUSED_PARAM(event);
-         }
+				MRPT_UNUSED_PARAM(event);
+			}
 
 			virtual void OnPreRender() { }
 			virtual void OnPostRender()  { }
 			virtual void OnPostRenderSwapBuffers(double At, wxPaintDC &dc) {
-            MRPT_UNUSED_PARAM(At); MRPT_UNUSED_PARAM(dc);
-         }
+				MRPT_UNUSED_PARAM(At); MRPT_UNUSED_PARAM(dc);
+			}
 
 			virtual void OnRenderError( const wxString &str ) {
-            MRPT_UNUSED_PARAM(str);
-         }
-
-			/** Overload this method to limit the capabilities of the user to move the camera using the mouse.
-			  *  For all these variables:
-			  *  - cameraPointingX
-			  *  - cameraPointingY
-			  *  - cameraPointingZ
-			  *  - cameraZoomDistance
-			  *  - cameraElevationDeg
-			  *  - cameraAzimuthDeg
-			  *
-			  *  A "new_NAME" variable will be passed with the temptative new value after the user action.
-			  *   The default behavior should be to copy all the new variables to the variables listed above
-			  *   but in the middle any find of user-defined filter can be implemented.
-			  */
-			virtual void OnUserManuallyMovesCamera(
-				float	new_cameraPointingX,
-				float 	new_cameraPointingY,
-				float 	new_cameraPointingZ,
-				float	new_cameraZoomDistance,
-				float	new_cameraElevationDeg,
-				float	new_cameraAzimuthDeg )
-			{
-				cameraPointingX 	= new_cameraPointingX;
-				cameraPointingY 	= new_cameraPointingY;
-				cameraPointingZ 	= new_cameraPointingZ;
-				cameraZoomDistance 	= new_cameraZoomDistance;
-				cameraElevationDeg 	= new_cameraElevationDeg ;
-				cameraAzimuthDeg 	= new_cameraAzimuthDeg;
+				MRPT_UNUSED_PARAM(str);
 			}
-
-			inline void getLastMousePosition(int &x,int& y) const {
-				x =m_mouseLastX;
-				y =m_mouseLastY;
-			}
-
-			/**  At constructor an empty scene is created. The object is freed at GL canvas destructor.
-			  */
-			mrpt::opengl::COpenGLScene::Ptr		m_openGLScene;
 
 		protected:
 			wxGLContext *m_gl_context;
 			bool   m_init;
-
-			int 	m_mouseLastX,m_mouseLastY;
-
-			int 	mouseClickX,mouseClickY;
-			bool 	mouseClicked;
 
 			long           m_Key;
 			unsigned long  m_StartTime;
