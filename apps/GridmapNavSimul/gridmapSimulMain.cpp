@@ -35,7 +35,6 @@
 #include "../wx-common/mrpt_logo.xpm"
 #include "imgs/app_icon_gridmapsimul.xpm"
 
-#include <mrpt/gui/CMyRedirector.h>
 #include "CAboutBox.h"
 
 #include <mrpt/system/filesystem.h>
