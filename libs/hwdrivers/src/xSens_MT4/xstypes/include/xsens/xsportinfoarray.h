@@ -19,39 +19,43 @@ extern "C" {
 extern XsArrayDescriptor const XSTYPES_DLL_API g_xsPortInfoArrayDescriptor;
 
 #ifndef __cplusplus
-#define XSPORTINFOARRAY_INITIALIZER	XSARRAY_INITIALIZER(&g_xsPortInfoArrayDescriptor)
+#define XSPORTINFOARRAY_INITIALIZER \
+	XSARRAY_INITIALIZER(&g_xsPortInfoArrayDescriptor)
 struct XsPortInfo;
 
 XSARRAY_STRUCT(XsPortInfoArray, struct XsPortInfo);
 typedef struct XsPortInfoArray XsPortInfoArray;
 
-XSTYPES_DLL_API void XsPortInfoArray_construct(XsPortInfoArray* thisPtr, XsSize count, struct XsPortInfo const* src);
+XSTYPES_DLL_API void XsPortInfoArray_construct(
+	XsPortInfoArray* thisPtr, XsSize count, struct XsPortInfo const* src);
 #else
-} // extern "C"
+}  // extern "C"
 #endif
 
 #ifdef __cplusplus
-struct XsPortInfoArray : public XsArrayImpl<XsPortInfo, g_xsPortInfoArrayDescriptor, XsPortInfoArray> {
+struct XsPortInfoArray
+	: public XsArrayImpl<XsPortInfo, g_xsPortInfoArrayDescriptor,
+						 XsPortInfoArray>
+{
 	//! \brief Constructs an XsPortInfoArray
 	inline explicit XsPortInfoArray(XsSize sz = 0, XsPortInfo const* src = 0)
-		 : ArrayImpl(sz, src)
+		: ArrayImpl(sz, src)
 	{
 	}
 
 	//! \brief Constructs an XsPortInfoArray as a copy of \a other
-	inline XsPortInfoArray(XsPortInfoArray const& other)
-		 : ArrayImpl(other)
-	{
-	}
-
-	//! \brief Constructs an XsPortInfoArray that references the data supplied in \a ref
-	inline explicit XsPortInfoArray(XsPortInfo* ref, XsSize sz, XsDataFlags flags = XSDF_None)
+	inline XsPortInfoArray(XsPortInfoArray const& other) : ArrayImpl(other) {}
+	//! \brief Constructs an XsPortInfoArray that references the data supplied
+	//! in \a ref
+	inline explicit XsPortInfoArray(
+		XsPortInfo* ref, XsSize sz, XsDataFlags flags = XSDF_None)
 		: ArrayImpl(ref, sz, flags)
 	{
 	}
 
 #ifndef XSENS_NOITERATOR
-	//! \brief Constructs an XsPortInfoArray with the array bound by the supplied iterators \a beginIt and \a endIt
+	//! \brief Constructs an XsPortInfoArray with the array bound by the
+	//! supplied iterators \a beginIt and \a endIt
 	template <typename Iterator>
 	inline XsPortInfoArray(Iterator beginIt, Iterator endIt)
 		: ArrayImpl(beginIt, endIt)
@@ -61,4 +65,4 @@ struct XsPortInfoArray : public XsArrayImpl<XsPortInfo, g_xsPortInfoArrayDescrip
 };
 #endif
 
-#endif // file guard
+#endif  // file guard

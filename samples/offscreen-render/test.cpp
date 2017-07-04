@@ -19,12 +19,14 @@ using namespace mrpt::opengl;
 // ------------------------------------------------------
 //				TestOffscreenRender
 // ------------------------------------------------------
-int TestOffscreenRender(int argc,char *argv[])
+int TestOffscreenRender(int argc, char* argv[])
 {
-	if (argc!=5)
+	if (argc != 5)
 	{
-		cerr << "Usage: " << argv[0] << " <FILE.3Dscene> <WIDTH> <HEIGHT> <OUTPUT_IMAGE>\n"
-		    " Output image can be in many formats: .png, .jpg, .tif, etc.\n";
+		cerr
+			<< "Usage: " << argv[0]
+			<< " <FILE.3Dscene> <WIDTH> <HEIGHT> <OUTPUT_IMAGE>\n"
+			   " Output image can be in many formats: .png, .jpg, .tif, etc.\n";
 		return 1;
 	}
 
@@ -33,8 +35,8 @@ int TestOffscreenRender(int argc,char *argv[])
 	const int height = atoi(argv[3]);
 	const string sOut = argv[4];
 
-	ASSERT_ABOVE_(width,0)
-	ASSERT_ABOVE_(height,0)
+	ASSERT_ABOVE_(width, 0)
+	ASSERT_ABOVE_(height, 0)
 
 	COpenGLScene scene;
 	CFileGZInputStream f(sFil);
@@ -66,8 +68,9 @@ int main(int argc, char* argv[])
 {
 	try
 	{
-		return TestOffscreenRender(argc,argv);
-	} catch (std::exception &e)
+		return TestOffscreenRender(argc, argv);
+	}
+	catch (std::exception& e)
 	{
 		std::cout << "MRPT exception caught: " << e.what() << std::endl;
 		return -1;

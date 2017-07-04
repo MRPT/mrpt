@@ -16,54 +16,66 @@
 
 #include <mrpt/graphslam/interfaces/CEdgeRegistrationDecider.h>
 
-namespace mrpt { namespace graphslam { namespace deciders {
-
+namespace mrpt
+{
+namespace graphslam
+{
+namespace deciders
+{
 /**\brief Empty Edge Registration Decider
  *
  * Handy when you are testing other parts of the application but not the
  * specific registration procedure
  */
-template<class GRAPH_T=typename mrpt::graphs::CNetworkOfPoses2DInf >
-class CEmptyERD:
-	public mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_T>
+template <class GRAPH_T = typename mrpt::graphs::CNetworkOfPoses2DInf>
+class CEmptyERD
+	: public mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_T>
 {
-	public:
-		typedef typename GRAPH_T::constraint_t constraint_t;
+   public:
+	typedef typename GRAPH_T::constraint_t constraint_t;
 
-		CEmptyERD();
-		~CEmptyERD();
+	CEmptyERD();
+	~CEmptyERD();
 
-		bool updateState(
-				mrpt::obs::CActionCollection::Ptr action,
-				mrpt::obs::CSensoryFrame::Ptr observations,
-				mrpt::obs::CObservation::Ptr observation );
+	bool updateState(
+		mrpt::obs::CActionCollection::Ptr action,
+		mrpt::obs::CSensoryFrame::Ptr observations,
+		mrpt::obs::CObservation::Ptr observation);
 
-	private:
-		void registerNewEdge(
-				const mrpt::utils::TNodeID& from,
-				const mrpt::utils::TNodeID& to,
-				const constraint_t& rel_edge );
+   private:
+	void registerNewEdge(
+		const mrpt::utils::TNodeID& from, const mrpt::utils::TNodeID& to,
+		const constraint_t& rel_edge);
 };
 
 //////////////////////////////////////////////////////////////////////////////
 
-template<class GRAPH_T>
-CEmptyERD<GRAPH_T>::CEmptyERD() { }
-template<class GRAPH_T>
-CEmptyERD<GRAPH_T>::~CEmptyERD() { }
+template <class GRAPH_T>
+CEmptyERD<GRAPH_T>::CEmptyERD()
+{
+}
+template <class GRAPH_T>
+CEmptyERD<GRAPH_T>::~CEmptyERD()
+{
+}
 
-template<class GRAPH_T>
+template <class GRAPH_T>
 bool CEmptyERD<GRAPH_T>::updateState(
-		mrpt::obs::CActionCollection::Ptr action,
-		mrpt::obs::CSensoryFrame::Ptr observations,
-		mrpt::obs::CObservation::Ptr observation ) {return true;}
+	mrpt::obs::CActionCollection::Ptr action,
+	mrpt::obs::CSensoryFrame::Ptr observations,
+	mrpt::obs::CObservation::Ptr observation)
+{
+	return true;
+}
 
-template<class GRAPH_T>
+template <class GRAPH_T>
 void CEmptyERD<GRAPH_T>::registerNewEdge(
-		const mrpt::utils::TNodeID& from,
-		const mrpt::utils::TNodeID& to,
-		const constraint_t& rel_edge ) { }
-
-} } } // end of namespaces
+	const mrpt::utils::TNodeID& from, const mrpt::utils::TNodeID& to,
+	const constraint_t& rel_edge)
+{
+}
+}
+}
+}  // end of namespaces
 
 #endif /* end of include guard: CEmptyERD_H */

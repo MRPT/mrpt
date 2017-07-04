@@ -14,7 +14,8 @@
 */
 /*! \brief Synchronization roles
 */
-enum XsSyncRole {
+enum XsSyncRole
+{
 	XSR_Slave,
 	XSR_None,
 	XSR_MasterSlave,
@@ -23,4 +24,4 @@ enum XsSyncRole {
 /*! @} */
 typedef enum XsSyncRole XsSyncRole;
 
-#endif // file guard
+#endif  // file guard

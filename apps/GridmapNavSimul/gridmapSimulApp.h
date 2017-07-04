@@ -14,9 +14,9 @@
 
 class gridmapSimulApp : public wxApp
 {
-    public:
-        virtual bool OnInit();
-        virtual int  OnExit();
+   public:
+	virtual bool OnInit();
+	virtual int OnExit();
 };
 
-#endif // gridmapSimulAPP_H
+#endif  // gridmapSimulAPP_H

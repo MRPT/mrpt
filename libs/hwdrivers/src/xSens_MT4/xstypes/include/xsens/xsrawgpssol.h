@@ -16,7 +16,10 @@
 #endif
 
 #ifndef __cplusplus
-#define XSRAWGPSSOL_INITIALIZER { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
+#define XSRAWGPSSOL_INITIALIZER                           \
+	{                                                     \
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 \
+	}
 #endif
 
 /*! \brief A container for NAV-SOL data
@@ -24,50 +27,49 @@
 struct XsRawGpsSol
 {
 	/** Gps time of week (ms) */
-	uint32_t	m_itow;		
+	uint32_t m_itow;
 	/** Nanoseconds remainder of rounded ms above, range -500000 .. 500000 */
-	int32_t		m_frac;		
+	int32_t m_frac;
 	/** GPS week (GPS time) */
-	int16_t		m_week;		
-	uint8_t		m_gpsfix;	/*!< GPSfix Type, range 0..4
-								0x00 = No Fix
-								0x01 = Dead Reckoning only
-								0x02 = 2D-Fix
-								0x03 = 3D-Fix
-								0x04 = GPS + dead reckoning combined
-								0x05..0xff: reserved
-							*/
-	uint8_t		m_flags;	/*!< 0x01=GPSfixOK (i.e. within DOP & ACC Masks)
-								 0x02=DiffSoln (is DGPS used)
-								 0x04=WKNSET (is Week Number valid)
-								 0x08=TOWSET (is Time of Week valid)
-								 0x?0=reserved
-							*/
+	int16_t m_week;
+	uint8_t m_gpsfix; /*!< GPSfix Type, range 0..4
+						  0x00 = No Fix
+						  0x01 = Dead Reckoning only
+						  0x02 = 2D-Fix
+						  0x03 = 3D-Fix
+						  0x04 = GPS + dead reckoning combined
+						  0x05..0xff: reserved
+					  */
+	uint8_t m_flags; /*!< 0x01=GPSfixOK (i.e. within DOP & ACC Masks)
+						  0x02=DiffSoln (is DGPS used)
+						  0x04=WKNSET (is Week Number valid)
+						  0x08=TOWSET (is Time of Week valid)
+						  0x?0=reserved
+					 */
 	/** ECEF X position (cm) */
-	int32_t		m_ecef_x;	
+	int32_t m_ecef_x;
 	/** ECEF Y position (cm) */
-	int32_t		m_ecef_y;	
+	int32_t m_ecef_y;
 	/** ECEF Z position (cm) */
-	int32_t		m_ecef_z;	
+	int32_t m_ecef_z;
 	/** Position Accuracy Estimate (cm) */
-	uint32_t	m_pacc;		
+	uint32_t m_pacc;
 	/** ECEF X velocity (cm/s) */
-	int32_t		m_ecef_vx;	
+	int32_t m_ecef_vx;
 	/** ECEF Y velocity (cm/s) */
-	int32_t		m_ecef_vy;	
+	int32_t m_ecef_vy;
 	/** ECEF Z velocity (cm/s) */
-	int32_t		m_ecef_vz;	
+	int32_t m_ecef_vz;
 	/** Speed Accuracy Estimate (cm/s) */
-	uint32_t	m_sacc;		
+	uint32_t m_sacc;
 	/** Position DOP */
-	uint16_t	m_pdop;		
+	uint16_t m_pdop;
 	/** Reserved */
-	uint8_t		m_res1;		
+	uint8_t m_res1;
 	/** Number of SVs used in Nav Solution */
-	uint8_t		m_numsv;	
+	uint8_t m_numsv;
 	/** Reserved */
-	uint32_t	m_res2;		
-
+	uint32_t m_res2;
 };
 typedef struct XsRawGpsSol XsRawGpsSol;
 
@@ -75,4 +77,4 @@ typedef struct XsRawGpsSol XsRawGpsSol;
 #pragma pack(pop)
 #endif
 
-#endif // file guard
+#endif  // file guard

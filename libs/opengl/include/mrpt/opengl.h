@@ -43,8 +43,10 @@
 #include <mrpt/opengl/CTexturedPlane.h>
 #include <mrpt/opengl/C3DSScene.h>
 #include <mrpt/opengl/CAssimpModel.h>
-//#include <mrpt/opengl/CPlanarLaserScan.h>			// It's in the lib mrpt-maps now
-//#include <mrpt/opengl/CAngularObservationMesh.h>	// It's in the lib mrpt-maps now
+//#include <mrpt/opengl/CPlanarLaserScan.h>			// It's in the lib mrpt-maps
+// now
+//#include <mrpt/opengl/CAngularObservationMesh.h>	// It's in the lib mrpt-maps
+// now
 #include <mrpt/opengl/CCylinder.h>
 #include <mrpt/opengl/CPolyhedron.h>
 #include <mrpt/opengl/CGeneralizedCylinder.h>
@@ -60,6 +62,5 @@
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/opengl/pose_pdfs.h>
 #include <mrpt/opengl/graph_tools.h>
-
 
 #endif

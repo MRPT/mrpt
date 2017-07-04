@@ -15,5 +15,3 @@
 #include <mrpt/nav/reactive/CAbstractNavigator.h>
 
 #endif
-
-

@@ -12,4 +12,3 @@
 #include <mrpt/config.h>
 
 #include <mrpt/hmtslam/CHMTSLAM.h>
-

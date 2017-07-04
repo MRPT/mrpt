@@ -13,27 +13,28 @@
 	@{
 */
 /*! \brief Serial control lines. */
-enum XsControlLine {
+enum XsControlLine
+{
 	/** pin 1: Carrier Detect */
-	XCL_DCD		= 0x0001,		
+	XCL_DCD = 0x0001,
 	/** pin 2: Received Data */
-	XCL_RD		= 0x0002,		
+	XCL_RD = 0x0002,
 	/** pin 3: Transmitted Data */
-	XCL_TD		= 0x0004,		
+	XCL_TD = 0x0004,
 	/** pin 4: Data Terminal Ready */
-	XCL_DTR		= 0x0008,		
+	XCL_DTR = 0x0008,
 	/** pin 5: Common Ground */
-	XCL_GND		= 0x0010,		
+	XCL_GND = 0x0010,
 	/** pin 6: Data Set Ready */
-	XCL_DSR		= 0x0020,		
+	XCL_DSR = 0x0020,
 	/** pin 7: Request To Send */
-	XCL_RTS		= 0x0040,		
+	XCL_RTS = 0x0040,
 	/** pin 8: Clear To Send */
-	XCL_CTS		= 0x0080,		
+	XCL_CTS = 0x0080,
 	/** pin 9: Ring Indicator */
-	XCL_RI		= 0x0100		
+	XCL_RI = 0x0100
 };
 /*! @} */
 typedef enum XsControlLine XsControlLine;
 
-#endif // file guard
+#endif  // file guard

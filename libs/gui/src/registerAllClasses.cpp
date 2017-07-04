@@ -17,6 +17,4 @@
 using namespace mrpt::gui;
 using namespace mrpt::utils;
 
-MRPT_INITIALIZER(registerAllClasses_mrpt_gui)
-{
-}
+MRPT_INITIALIZER(registerAllClasses_mrpt_gui) {}

@@ -18,26 +18,26 @@ extern "C" {
 
 XSTYPES_DLL_API void* xsMalloc(size_t sz);
 XSTYPES_DLL_API void* xsRealloc(void* ptr, size_t sz);
-XSTYPES_DLL_API void  xsFree(void* ptr);
+XSTYPES_DLL_API void xsFree(void* ptr);
 
 XSTYPES_DLL_API void* xsAlignedMalloc(size_t sz);
 XSTYPES_DLL_API void* xsAlignedRealloc(void* ptr, size_t sz);
-XSTYPES_DLL_API void  xsAlignedFree(void* ptr);
+XSTYPES_DLL_API void xsAlignedFree(void* ptr);
 
 #ifndef xsMathMalloc
-#define xsMathMalloc(n)		xsAlignedMalloc(n)
+#define xsMathMalloc(n) xsAlignedMalloc(n)
 #endif
 
 #ifndef xsMathRealloc
-#define xsMathRealloc(p, n)	xsAlignedRealloc(p,n)
+#define xsMathRealloc(p, n) xsAlignedRealloc(p, n)
 #endif
 
 #ifndef xsMathFree
-#define xsMathFree(p)		xsAlignedFree(p)
+#define xsMathFree(p) xsAlignedFree(p)
 #endif
 
 #ifdef __cplusplus
-} // extern "C"
+}  // extern "C"
 #endif
 
-#endif // XSMALLOC_H
+#endif  // XSMALLOC_H

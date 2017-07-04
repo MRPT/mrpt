@@ -14,9 +14,9 @@
 
 class _DSceneViewerApp : public wxApp
 {
-    public:
-        virtual bool OnInit();
-		virtual int OnExit();
+   public:
+	virtual bool OnInit();
+	virtual int OnExit();
 };
 
-#endif // _DSCENEVIEWERAPP_H
+#endif  // _DSCENEVIEWERAPP_H

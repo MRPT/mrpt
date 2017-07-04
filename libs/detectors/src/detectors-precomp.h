@@ -15,4 +15,3 @@
 #include <mrpt/detectors/CDetectableObject.h>
 
 #endif
-

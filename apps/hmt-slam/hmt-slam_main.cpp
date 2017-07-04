@@ -7,11 +7,10 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-
 /*---------------------------------------------------------------
-    APPLICATION: Hybrid Metric-Topological SLAM implementation
-    FILE: hmt-slam_main.cpp
-    AUTHOR: Jose Luis Blanco Claraco <joseluisblancoc@gmail.com>
+	APPLICATION: Hybrid Metric-Topological SLAM implementation
+	FILE: hmt-slam_main.cpp
+	AUTHOR: Jose Luis Blanco Claraco <joseluisblancoc@gmail.com>
 
 	See README.txt for instructions.
   ---------------------------------------------------------------*/
@@ -35,42 +34,48 @@ using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace std;
 
-std::string		configFile;
+std::string configFile;
 
-#define  STEPS_BETWEEN_WAITING_FOR_QUEUE_EMPTY   10
+#define STEPS_BETWEEN_WAITING_FOR_QUEUE_EMPTY 10
 
 void Run_HMT_SLAM();
 
 // ------------------------------------------------------
 //						MAIN
 // ------------------------------------------------------
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
 	try
 	{
-		CConsoleRedirector	dbg_out_file("./DEBUG_log_streaming.txt",true, true,false,0 );
+		CConsoleRedirector dbg_out_file(
+			"./DEBUG_log_streaming.txt", true, true, false, 0);
 
 		printf(" HMT-SLAM version 0.2 - Part of the MRPT\n");
-		printf(" MRPT C++ Library: %s - Sources timestamp: %s\n", MRPT_getVersion().c_str(), MRPT_getCompilationDate().c_str() );
-		printf("-------------------------------------------------------------------\n");
+		printf(
+			" MRPT C++ Library: %s - Sources timestamp: %s\n",
+			MRPT_getVersion().c_str(), MRPT_getCompilationDate().c_str());
+		printf(
+			"------------------------------------------------------------------"
+			"-\n");
 
 		// Process arguments:
-		if (argc<2)
+		if (argc < 2)
 		{
 			printf("Use: hmt-slam <config_file>\n\nPush any key to exit...\n");
 			os::getch();
 			return -1;
 		}
 
-		configFile = std::string( argv[1] );
+		configFile = std::string(argv[1]);
 
 		Run_HMT_SLAM();
 
 		return 0;
 	}
-	catch (std::exception &e)
+	catch (std::exception& e)
 	{
-		std::cerr << e.what() << std::endl << "Program finished for an exception!!" << std::endl;
+		std::cerr << e.what() << std::endl
+				  << "Program finished for an exception!!" << std::endl;
 		mrpt::system::pause();
 		return -1;
 	}
@@ -87,59 +92,62 @@ int main(int argc, char **argv)
 // ------------------------------------------------------
 void Run_HMT_SLAM()
 {
-	CHMTSLAM			mapping;
+	CHMTSLAM mapping;
 
-	CConfigFile			cfgFile( configFile );
-	std::string			rawlogFileName;
+	CConfigFile cfgFile(configFile);
+	std::string rawlogFileName;
 
 	// wait for threads init. (Just to do not mix debug strings on console)
 	std::this_thread::sleep_for(100ms);
 
 	// The rawlog file:
 	// ----------------------------------------
-	rawlogFileName = cfgFile.read_string("HMT-SLAM","rawlog_file",std::string("log.rawlog"));
-	unsigned int	rawlog_offset = cfgFile.read_int("HMT-SLAM","rawlog_offset",0);
+	rawlogFileName = cfgFile.read_string(
+		"HMT-SLAM", "rawlog_file", std::string("log.rawlog"));
+	unsigned int rawlog_offset =
+		cfgFile.read_int("HMT-SLAM", "rawlog_offset", 0);
 
-	mapping.logFmt(mrpt::utils::LVL_INFO, "RAWLOG FILE: \n%s\n",rawlogFileName.c_str());
+	mapping.logFmt(
+		mrpt::utils::LVL_INFO, "RAWLOG FILE: \n%s\n", rawlogFileName.c_str());
 
-	const std::string OUT_DIR =  cfgFile.read_string("HMT-SLAM","LOG_OUTPUT_DIR", "HMT_SLAM_OUTPUT");
+	const std::string OUT_DIR =
+		cfgFile.read_string("HMT-SLAM", "LOG_OUTPUT_DIR", "HMT_SLAM_OUTPUT");
 
+	ASSERT_FILE_EXISTS_(rawlogFileName)
+	CFileGZInputStream rawlogFile(rawlogFileName);
 
-	ASSERT_FILE_EXISTS_( rawlogFileName )
-	CFileGZInputStream	 rawlogFile( rawlogFileName);
-
-	mapping.logFmt(mrpt::utils::LVL_INFO, "---------------------------------------------------\n\n");
-
+	mapping.logFmt(
+		mrpt::utils::LVL_INFO,
+		"---------------------------------------------------\n\n");
 
 	// Set relative path for externally-stored images in rawlogs:
-	string	rawlog_images_path = extractFileDirectory( rawlogFileName );
-	rawlog_images_path+="/Images";
-	CImage::IMAGES_PATH_BASE = rawlog_images_path;		// Set it.
-
+	string rawlog_images_path = extractFileDirectory(rawlogFileName);
+	rawlog_images_path += "/Images";
+	CImage::IMAGES_PATH_BASE = rawlog_images_path;  // Set it.
 
 	// Load the config options for mapping:
 	// ----------------------------------------
-	mapping.loadOptions( configFile );
-
-
+	mapping.loadOptions(configFile);
 
 	//			INITIALIZATION
 	// ----------------------------------------
-	//utils::CRandomGenerator::Randomize( );	// Not necesary (called inside the classes)
+	// utils::CRandomGenerator::Randomize( );	// Not necesary (called inside
+	// the
+	// classes)
 	mapping.initializeEmptyMap();
 
 	// The main loop:
 	// ---------------------------------------
-	unsigned int			rawlogEntry = 0, step = 0;
-	bool					finish=false;
+	unsigned int rawlogEntry = 0, step = 0;
+	bool finish = false;
 
-	while  (!finish && !mapping.abortedDueToErrors() )
+	while (!finish && !mapping.abortedDueToErrors())
 	{
 		if (os::kbhit())
-        {
-			char	pushKey = os::getch();
+		{
+			char pushKey = os::getch();
 			finish = 27 == pushKey;
-        }
+		}
 
 		// Load next object from the rawlog:
 		// ----------------------------------------
@@ -149,57 +157,81 @@ void Run_HMT_SLAM()
 			rawlogFile >> objFromRawlog;
 			rawlogEntry++;
 		}
-		catch(std::exception &) { break; }
-		catch(...) { printf("Untyped exception reading rawlog file!!\n");break;}
-
-		if (rawlogEntry>=rawlog_offset)
+		catch (std::exception&)
 		{
+			break;
+		}
+		catch (...)
+		{
+			printf("Untyped exception reading rawlog file!!\n");
+			break;
+		}
 
+		if (rawlogEntry >= rawlog_offset)
+		{
 			// Process the action and observations:
 			// --------------------------------------------
-			if (IS_CLASS(objFromRawlog,CActionCollection))
+			if (IS_CLASS(objFromRawlog, CActionCollection))
 			{
-				mapping.pushAction( std::dynamic_pointer_cast<CActionCollection>( objFromRawlog) ); // Memory will be freed in mapping class
+				mapping.pushAction(
+					std::dynamic_pointer_cast<CActionCollection>(
+						objFromRawlog));  // Memory will be freed in mapping
+				// class
 			}
-			else if (IS_CLASS(objFromRawlog,CSensoryFrame))
+			else if (IS_CLASS(objFromRawlog, CSensoryFrame))
 			{
-				mapping.pushObservations( std::dynamic_pointer_cast<CSensoryFrame>( objFromRawlog) ); // Memory will be freed in mapping class
+				mapping.pushObservations(
+					std::dynamic_pointer_cast<CSensoryFrame>(
+						objFromRawlog));  // Memory will be freed in mapping
+				// class
 			}
-			else if (IS_CLASS(objFromRawlog,CObservation))
+			else if (IS_CLASS(objFromRawlog, CObservation))
 			{
-				mapping.pushObservation( std::dynamic_pointer_cast<CObservation>( objFromRawlog) ); // Memory will be freed in mapping class
+				mapping.pushObservation(
+					std::dynamic_pointer_cast<CObservation>(
+						objFromRawlog));  // Memory will be freed in mapping
+				// class
 			}
-			else THROW_EXCEPTION("Invalid object class from rawlog!!")
-
+			else
+				THROW_EXCEPTION("Invalid object class from rawlog!!")
 
 			// Wait for the mapping framework processed the data
 			// ---------------------------------------------------
-			if ((rawlogEntry % STEPS_BETWEEN_WAITING_FOR_QUEUE_EMPTY)==0)
-				while (!mapping.isInputQueueEmpty() && !os::kbhit() && !mapping.abortedDueToErrors() )
+			if ((rawlogEntry % STEPS_BETWEEN_WAITING_FOR_QUEUE_EMPTY) == 0)
+				while (!mapping.isInputQueueEmpty() && !os::kbhit() &&
+					   !mapping.abortedDueToErrors())
 				{
 					std::this_thread::sleep_for(2ms);
 				}
-		} // (rawlogEntry>=rawlog_offset)
+		}  // (rawlogEntry>=rawlog_offset)
 
-		mapping.logFmt(mrpt::utils::LVL_INFO, "======== Rawlog entries processed: %i ========\n", rawlogEntry);
+		mapping.logFmt(
+			mrpt::utils::LVL_INFO,
+			"======== Rawlog entries processed: %i ========\n", rawlogEntry);
 
-        step++;
+		step++;
 
-	};	// end "while(1)"
+	};  // end "while(1)"
 
-	mapping.logFmt(mrpt::utils::LVL_INFO, "********* Application finished!! 3 seconds to exit... **********\n");
+	mapping.logFmt(
+		mrpt::utils::LVL_INFO,
+		"********* Application finished!! 3 seconds to exit... **********\n");
 	std::this_thread::sleep_for(1000ms);
-	mapping.logFmt(mrpt::utils::LVL_INFO, "********* Application finished!! 2 seconds to exit... **********\n");
+	mapping.logFmt(
+		mrpt::utils::LVL_INFO,
+		"********* Application finished!! 2 seconds to exit... **********\n");
 	std::this_thread::sleep_for(1000ms);
-	mapping.logFmt(mrpt::utils::LVL_INFO, "********* Application finished!! 1 second to exit... **********\n");
+	mapping.logFmt(
+		mrpt::utils::LVL_INFO,
+		"********* Application finished!! 1 second to exit... **********\n");
 	std::this_thread::sleep_for(1000ms);
 
 	{
-		string final_file = OUT_DIR+string("/final_map.hmtslam");
-		mapping.logFmt(mrpt::utils::LVL_WARN, "\n Saving FINAL HMT-MAP to file: %s\n",final_file.c_str());
-		CFileGZOutputStream	fil(final_file);
-		mapping.saveState( fil );
+		string final_file = OUT_DIR + string("/final_map.hmtslam");
+		mapping.logFmt(
+			mrpt::utils::LVL_WARN, "\n Saving FINAL HMT-MAP to file: %s\n",
+			final_file.c_str());
+		CFileGZOutputStream fil(final_file);
+		mapping.saveState(fil);
 	}
 }
-
-

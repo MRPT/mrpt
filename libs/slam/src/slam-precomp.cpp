@@ -7,7 +7,4 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include "slam-precomp.h"   // Precompiled headers
-
-
-
+#include "slam-precomp.h"  // Precompiled headers

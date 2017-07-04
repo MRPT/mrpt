@@ -13,6 +13,6 @@
 
 class ptgConfiguratorApp : public wxApp
 {
-    public:
-        virtual bool OnInit();
+   public:
+	virtual bool OnInit();
 };

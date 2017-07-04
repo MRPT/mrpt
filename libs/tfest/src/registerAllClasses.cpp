@@ -21,4 +21,3 @@ MRPT_INITIALIZER(registerAllClasses_mrpt_tfest)
 //	registerClass( CLASS_ID( XXXX ) );
 #endif
 }
-

@@ -22,15 +22,15 @@ class slamdemoFrame;
 class slamdemoApp : public wxApp
 {
 	bool doCommandLineProcess();
-	void DoBatchExperiments(const std::string &cfgFil);
+	void DoBatchExperiments(const std::string& cfgFil);
 
 	slamdemoFrame* win;
 
-    public:
-        virtual bool OnInit();
+   public:
+	virtual bool OnInit();
 
-	private:
-		bool  m_option_norun;
+   private:
+	bool m_option_norun;
 };
 
-#endif // SLAMDEMOAPP_H
+#endif  // SLAMDEMOAPP_H

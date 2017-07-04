@@ -7,7 +7,6 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-
 /*---------------------------------------------------------------
 	APPLICATION: robot-map-gui
 	FILE: robot-map-gui_main.cpp
@@ -19,12 +18,10 @@
 
 #include "gui/CMainWindow.h"
 
-
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
 	QApplication app(argc, argv);
 	CMainWindow mainWindow;
 	mainWindow.show();
 	return app.exec();
 }
-

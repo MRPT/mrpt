@@ -8,4 +8,3 @@
    +------------------------------------------------------------------------+ */
 
 #include "kinematics-precomp.h"  // Precompiled headers
-

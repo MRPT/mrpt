@@ -10,12 +10,12 @@
 
 namespace libusbemu
 {
-  namespace failguard
-  {
-    const bool Check();
+namespace failguard
+{
+const bool Check();
 
-    void WaitDecision();
+void WaitDecision();
 
-    const bool Abort();
-  }
+const bool Abort();
+}
 }

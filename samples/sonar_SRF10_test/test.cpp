@@ -32,29 +32,33 @@ int main()
 {
 	try
 	{
-		CBoardSonars		sonarBoard;
-		CObservationRange	obs;
-		std::string			firmVers;
-		CTicTac				tictac;
+		CBoardSonars sonarBoard;
+		CObservationRange obs;
+		std::string firmVers;
+		CTicTac tictac;
 
-		CDisplayWindow3D	wind("Sonar representation");
-		COpenGLScene::Ptr		&scene = wind.get3DSceneAndLock();
+		CDisplayWindow3D wind("Sonar representation");
+		COpenGLScene::Ptr& scene = wind.get3DSceneAndLock();
 
-		scene->insert( std::make_shared<mrpt::opengl::CGridPlaneXY>( -20,20,-20,20,0,1 ) );
-		scene->insert( mrpt::opengl::stock_objects::RobotPioneer() );
-		//scene->insert( std::make_shared<mrpt::opengl::CCylinder>(1, 1, 2.0f) );
+		scene->insert(
+			std::make_shared<mrpt::opengl::CGridPlaneXY>(
+				-20, 20, -20, 20, 0, 1));
+		scene->insert(mrpt::opengl::stock_objects::RobotPioneer());
+		// scene->insert( std::make_shared<mrpt::opengl::CCylinder>(1, 1, 2.0f)
+		// );
 		wind.unlockAccess3DScene();
 
 		// Load configuration:
-		ASSERT_( mrpt::system::fileExists("CONFIG_sonars.ini") );
+		ASSERT_(mrpt::system::fileExists("CONFIG_sonars.ini"));
 		CConfigFile conf("CONFIG_sonars.ini");
-		sonarBoard.loadConfig( conf, "BOARD_SONAR_CONFIG");
+		sonarBoard.loadConfig(conf, "BOARD_SONAR_CONFIG");
 
-		while ( !mrpt::system::os::kbhit() )
+		while (!mrpt::system::os::kbhit())
 		{
-			if (!sonarBoard.queryFirmwareVersion( firmVers ) )
+			if (!sonarBoard.queryFirmwareVersion(firmVers))
 			{
-				cout << "Cannot connect to USB device... Retrying in 1 sec" << endl;
+				cout << "Cannot connect to USB device... Retrying in 1 sec"
+					 << endl;
 				std::this_thread::sleep_for(1000ms);
 			}
 			else
@@ -70,41 +74,55 @@ int main()
 		cout << "?";
 
 		char c = os::getch();
-		if (c=='1')
+		if (c == '1')
 		{
-			while ( !mrpt::system::os::kbhit() )
+			while (!mrpt::system::os::kbhit())
 			{
 				tictac.Tic();
-				if (sonarBoard.getObservation( obs ))
+				if (sonarBoard.getObservation(obs))
 				{
 					double T = tictac.Tac();
 					mrpt::system::clearConsole();
 
-					printf("RX: %u ranges in %.03fms\n",(unsigned int)obs.sensedData.size(), T*1000);
+					printf(
+						"RX: %u ranges in %.03fms\n",
+						(unsigned int)obs.sensedData.size(), T * 1000);
 					scene = wind.get3DSceneAndLock();
-					for (size_t i=0;i<obs.sensedData.size();i++)
+					for (size_t i = 0; i < obs.sensedData.size(); i++)
 					{
-						printf("[ID:%i]=%15f   0x%04X\n",obs.sensedData[i].sensorID,obs.sensedData[i].sensedDistance, (int)(100*obs.sensedData[i].sensedDistance) );
+						printf(
+							"[ID:%i]=%15f   0x%04X\n",
+							obs.sensedData[i].sensorID,
+							obs.sensedData[i].sensedDistance,
+							(int)(100 * obs.sensedData[i].sensedDistance));
 
 						// Show the distances
-						std::string obj = format("sonar%i",obs.sensedData[i].sensorID);
+						std::string obj =
+							format("sonar%i", obs.sensedData[i].sensorID);
 						mrpt::opengl::CCylinder::Ptr sonarRange;
-						mrpt::opengl::CRenderizable::Ptr objPtr = scene->getByName( obj );
-						if( !objPtr )
+						mrpt::opengl::CRenderizable::Ptr objPtr =
+							scene->getByName(obj);
+						if (!objPtr)
 						{
-							sonarRange = std::make_shared<mrpt::opengl::CCylinder>(0.0f,0.0f,1.0f,30,10);
-							sonarRange->setName( obj );
-							scene->insert( sonarRange );
+							sonarRange =
+								std::make_shared<mrpt::opengl::CCylinder>(
+									0.0f, 0.0f, 1.0f, 30, 10);
+							sonarRange->setName(obj);
+							scene->insert(sonarRange);
 						}
 						else
-							sonarRange = std::dynamic_pointer_cast<CCylinder>( objPtr );
+							sonarRange =
+								std::dynamic_pointer_cast<CCylinder>(objPtr);
 
-						sonarRange->setRadii( 0, tan( obs.sensorConeApperture )*obs.sensedData[i].sensedDistance );
-						sonarRange->setPose( mrpt::poses::CPose3D(obs.sensedData[i].sensorPose)+CPose3D(0,0,0,0,DEG2RAD(90.0),0) );
-						sonarRange->setHeight( obs.sensedData[i].sensedDistance );
+						sonarRange->setRadii(
+							0, tan(obs.sensorConeApperture) *
+								   obs.sensedData[i].sensedDistance);
+						sonarRange->setPose(
+							mrpt::poses::CPose3D(obs.sensedData[i].sensorPose) +
+							CPose3D(0, 0, 0, 0, DEG2RAD(90.0), 0));
+						sonarRange->setHeight(obs.sensedData[i].sensedDistance);
 						sonarRange->enableShowName();
-						sonarRange->setColor( 0, 0, 1, 0.25 );
-
+						sonarRange->setColor(0, 0, 1, 0.25);
 					}
 					wind.unlockAccess3DScene();
 					wind.repaint();
@@ -112,34 +130,34 @@ int main()
 				else
 				{
 					cerr << "Error rx..." << endl;
-					//return -1;
+					// return -1;
 				}
 
 				std::this_thread::sleep_for(200ms);
 			}
 		}
-		else
-		if (c=='2')
+		else if (c == '2')
 		{
-			int		curAddr,newAddr;
+			int curAddr, newAddr;
 			cout << "Enter current address: (decimal, 0 to 15)" << endl;
-			if (1==scanf("%i",&curAddr))
+			if (1 == scanf("%i", &curAddr))
 			{
 				cout << "Enter new address: (decimal, 0 to 15)" << endl;
-				if (1==scanf("%i",&newAddr))
+				if (1 == scanf("%i", &newAddr))
 				{
-					ASSERT_(curAddr>=0 && curAddr<16);
-					ASSERT_(newAddr>=0 && newAddr<16);
-					printf("Changing address %i --> %i... ",curAddr,newAddr);
+					ASSERT_(curAddr >= 0 && curAddr < 16);
+					ASSERT_(newAddr >= 0 && newAddr < 16);
+					printf("Changing address %i --> %i... ", curAddr, newAddr);
 
-					if (sonarBoard.programI2CAddress(curAddr,newAddr) )
-							printf(" DONE!\n");
-					else	printf(" ERROR!\n");
+					if (sonarBoard.programI2CAddress(curAddr, newAddr))
+						printf(" DONE!\n");
+					else
+						printf(" ERROR!\n");
 				}
 			}
 		}
 	}
-	catch(std::exception &e)
+	catch (std::exception& e)
 	{
 		cerr << e.what() << endl;
 		return -1;
@@ -147,4 +165,3 @@ int main()
 
 	return 0;
 }
-

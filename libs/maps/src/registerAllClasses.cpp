@@ -21,27 +21,25 @@ using namespace mrpt::opengl;
 MRPT_INITIALIZER(registerAllClasses_mrpt_maps)
 {
 #if !defined(DISABLE_MRPT_AUTO_CLASS_REGISTRATION)
-	registerClass( CLASS_ID( CBeacon ) );
-	registerClass( CLASS_ID( CBeaconMap ) );
+	registerClass(CLASS_ID(CBeacon));
+	registerClass(CLASS_ID(CBeaconMap));
 
-	registerClass( CLASS_ID( CPointsMap ) );
-	registerClass( CLASS_ID( CSimplePointsMap ) );
-	registerClass( CLASS_ID( CColouredPointsMap ) );
-	registerClass( CLASS_ID( CWeightedPointsMap ) );
-	registerClass( CLASS_ID( COccupancyGridMap2D ) );
-	registerClass( CLASS_ID( CGasConcentrationGridMap2D ) );
-	registerClass( CLASS_ID( CWirelessPowerGridMap2D ) );
-	registerClass( CLASS_ID( CRandomFieldGridMap3D ) );
-	registerClass( CLASS_ID( CHeightGridMap2D ) );
-	registerClass( CLASS_ID( CHeightGridMap2D_MRF ) );
-	registerClass( CLASS_ID( CReflectivityGridMap2D ) );
+	registerClass(CLASS_ID(CPointsMap));
+	registerClass(CLASS_ID(CSimplePointsMap));
+	registerClass(CLASS_ID(CColouredPointsMap));
+	registerClass(CLASS_ID(CWeightedPointsMap));
+	registerClass(CLASS_ID(COccupancyGridMap2D));
+	registerClass(CLASS_ID(CGasConcentrationGridMap2D));
+	registerClass(CLASS_ID(CWirelessPowerGridMap2D));
+	registerClass(CLASS_ID(CRandomFieldGridMap3D));
+	registerClass(CLASS_ID(CHeightGridMap2D));
+	registerClass(CLASS_ID(CHeightGridMap2D_MRF));
+	registerClass(CLASS_ID(CReflectivityGridMap2D));
 
-	registerClass( CLASS_ID( COctoMap ) );
-	registerClass( CLASS_ID( CColouredOctoMap ) );
+	registerClass(CLASS_ID(COctoMap));
+	registerClass(CLASS_ID(CColouredOctoMap));
 
-
-	registerClass( CLASS_ID( CAngularObservationMesh ) );
-	registerClass( CLASS_ID( CPlanarLaserScan ) ) ;
+	registerClass(CLASS_ID(CAngularObservationMesh));
+	registerClass(CLASS_ID(CPlanarLaserScan));
 #endif
 }
-

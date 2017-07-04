@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include "nav-precomp.h" // Precomp header
+#include "nav-precomp.h"  // Precomp header
 
 #include <mrpt/nav/holonomic/CHolonomicLogFileRecord.h>
 #include <mrpt/utils/CStream.h>
@@ -16,4 +16,5 @@ using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::nav;
 
-IMPLEMENTS_VIRTUAL_SERIALIZABLE( CHolonomicLogFileRecord, CSerializable, mrpt::nav )
+IMPLEMENTS_VIRTUAL_SERIALIZABLE(
+	CHolonomicLogFileRecord, CSerializable, mrpt::nav)

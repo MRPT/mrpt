@@ -17,48 +17,42 @@ using namespace mrpt;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 
-
 void mrpt::math::slerp(
-	const CPose3D  & p0,
-	const CPose3D  & p1,
-	const double     t,
-	CPose3D        & p)
+	const CPose3D& p0, const CPose3D& p1, const double t, CPose3D& p)
 {
-	CQuaternionDouble q0,q1,q;
+	CQuaternionDouble q0, q1, q;
 	p0.getAsQuaternion(q0);
 	p1.getAsQuaternion(q1);
 	// The quaternion part (this will raise exception on t not in [0,1])
-	mrpt::math::slerp(q0,q1,t, q);
+	mrpt::math::slerp(q0, q1, t, q);
 	// XYZ:
 	p = CPose3D(
-		q,
-		(1-t)*p0.x()+t*p1.x(),
-		(1-t)*p0.y()+t*p1.y(),
-		(1-t)*p0.z()+t*p1.z() );
+		q, (1 - t) * p0.x() + t * p1.x(), (1 - t) * p0.y() + t * p1.y(),
+		(1 - t) * p0.z() + t * p1.z());
 }
 
 void mrpt::math::slerp(
-	const CPose3DQuat & q0,
-	const CPose3DQuat & q1,
-	const double        t,
-	CPose3DQuat       & q)
+	const CPose3DQuat& q0, const CPose3DQuat& q1, const double t,
+	CPose3DQuat& q)
 {
 	// The quaternion part (this will raise exception on t not in [0,1])
-	mrpt::math::slerp(q0.quat(), q1.quat(),t, q.quat());
+	mrpt::math::slerp(q0.quat(), q1.quat(), t, q.quat());
 	// XYZ:
-	q.x( (1-t)*q0.x()+t*q1.x() );
-	q.y( (1-t)*q0.y()+t*q1.y() );
-	q.z( (1-t)*q0.z()+t*q1.z() );
+	q.x((1 - t) * q0.x() + t * q1.x());
+	q.y((1 - t) * q0.y() + t * q1.y());
+	q.z((1 - t) * q0.z() + t * q1.z());
 }
 
-void mrpt::math::slerp_ypr(const mrpt::math::TPose3D& q0, const mrpt::math::TPose3D & q1, const double t, mrpt::math::TPose3D & p)
+void mrpt::math::slerp_ypr(
+	const mrpt::math::TPose3D& q0, const mrpt::math::TPose3D& q1,
+	const double t, mrpt::math::TPose3D& p)
 {
-	mrpt::math::CQuaternionDouble quat0(UNINITIALIZED_QUATERNION), quat1(UNINITIALIZED_QUATERNION), q(UNINITIALIZED_QUATERNION);
+	mrpt::math::CQuaternionDouble quat0(UNINITIALIZED_QUATERNION),
+		quat1(UNINITIALIZED_QUATERNION), q(UNINITIALIZED_QUATERNION);
 	q0.getAsQuaternion(quat0);
 	q1.getAsQuaternion(quat1);
 	mrpt::math::slerp(quat0, quat1, t, q);
-	
+
 	p.x = p.y = p.z = 0;
 	q.rpy(p.roll, p.pitch, p.yaw);
 }
-

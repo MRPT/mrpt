@@ -8,4 +8,3 @@
    +------------------------------------------------------------------------+ */
 
 #include "detectors-precomp.h"  // Precompiled headers
-

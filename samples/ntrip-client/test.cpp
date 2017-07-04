@@ -17,19 +17,19 @@ using namespace mrpt::hwdrivers;
 using namespace mrpt::system;
 using namespace mrpt::utils;
 
-
 // ------------------------------------------------------
 //				TestNTRIP
 // ------------------------------------------------------
 void TestNTRIP()
 {
 	const string server = "www.euref-ip.net";
-	const int    server_port = 2101;
+	const int server_port = 2101;
 
-	CNTRIPClient::TListMountPoints	lst;
+	CNTRIPClient::TListMountPoints lst;
 	string errMsg;
 
-	bool ret = CNTRIPClient::retrieveListOfMountpoints(lst,errMsg,server, server_port);
+	bool ret = CNTRIPClient::retrieveListOfMountpoints(
+		lst, errMsg, server, server_port);
 
 	if (!ret)
 	{
@@ -45,37 +45,35 @@ void TestNTRIP()
 
 	// List:
 	// -----------------------------------
-	for (CNTRIPClient::TListMountPoints::const_iterator it=lst.begin();it!=lst.end();it++)
+	for (CNTRIPClient::TListMountPoints::const_iterator it = lst.begin();
+		 it != lst.end(); it++)
 	{
-		const CNTRIPClient::TMountPoint &m = *it;
-		cout <<
-			"MOUNT: " << m.mountpoint_name <<
-			"  | COUNTRY: "<< m.country_code <<
-			"  | NMEA?: " << m.needs_nmea <<
-			"  | FORMAT: " << m.format << " (" << m.id << ") " <<
-			m.extra_info <<
-			endl;
+		const CNTRIPClient::TMountPoint& m = *it;
+		cout << "MOUNT: " << m.mountpoint_name
+			 << "  | COUNTRY: " << m.country_code
+			 << "  | NMEA?: " << m.needs_nmea << "  | FORMAT: " << m.format
+			 << " (" << m.id << ") " << m.extra_info << endl;
 	}
 
 	// Now connect to a random server:
 	// -----------------------------------
-	CNTRIPClient	ntrip;
+	CNTRIPClient ntrip;
 	CNTRIPClient::NTRIPArgs params;
 
-	CNTRIPClient::TListMountPoints::iterator it=lst.begin();
-	//std::advance(it,8);
+	CNTRIPClient::TListMountPoints::iterator it = lst.begin();
+	// std::advance(it,8);
 
 	cout << "Connecting to: " << it->mountpoint_name << " - " << it->id << endl;
 	params.mountpoint = it->mountpoint_name;
 	params.server = server;
-	params.port   = server_port;
+	params.port = server_port;
 
-	params.user   = "";
+	params.user = "";
 	params.password = "";
 
 	string msgerr;
 
-	if (!ntrip.open(params,msgerr))
+	if (!ntrip.open(params, msgerr))
 	{
 		cout << "ERROR: " << msgerr << endl;
 	}
@@ -84,7 +82,7 @@ void TestNTRIP()
 		cout << "Reading stream... press any key to finish." << endl;
 
 		vector_byte dat;
-		while (!mrpt::system::os::kbhit() )
+		while (!mrpt::system::os::kbhit())
 		{
 			ntrip.stream_data.readAndClear(dat);
 			cout << "Read " << dat.size() << " bytes." << endl;
@@ -93,27 +91,26 @@ void TestNTRIP()
 	}
 }
 
-
 void TestNTRIP2()
 {
-	//const string server = "www.euref-ip.net";
+	// const string server = "www.euref-ip.net";
 	const string server = "193.144.251.13";
-	const int    server_port = 2101;
+	const int server_port = 2101;
 
 	// Now connect to a random server:
 	// -----------------------------------
-	CNTRIPClient	ntrip;
+	CNTRIPClient ntrip;
 	CNTRIPClient::NTRIPArgs params;
 
 	params.mountpoint = "ACOR0";
 	params.server = server;
-	params.port   = server_port;
-	params.user   = "";
+	params.port = server_port;
+	params.user = "";
 	params.password = "";
 
 	string msgerr;
 
-	if (!ntrip.open(params,msgerr))
+	if (!ntrip.open(params, msgerr))
 	{
 		cout << "ERROR: " << msgerr << endl;
 	}
@@ -122,7 +119,7 @@ void TestNTRIP2()
 		cout << "Reading stream... press any key to finish." << endl;
 
 		vector_byte dat;
-		while (!mrpt::system::os::kbhit() )
+		while (!mrpt::system::os::kbhit())
 		{
 			ntrip.stream_data.readAndClear(dat);
 			cout << "Read " << dat.size() << " bytes." << endl;
@@ -139,10 +136,11 @@ int main()
 	try
 	{
 		TestNTRIP();
-		//TestNTRIP2();
+		// TestNTRIP2();
 
 		return 0;
-	} catch (std::exception &e)
+	}
+	catch (std::exception& e)
 	{
 		std::cout << "MRPT exception caught: " << e.what() << std::endl;
 		return -1;
@@ -153,4 +151,3 @@ int main()
 		return -1;
 	}
 }
-

@@ -10,6 +10,6 @@
 #ifndef _mrpt_compress_H
 #define _mrpt_compress_H
 
-#include "compress/zip.h"              
+#include "compress/zip.h"
 
 #endif

@@ -24,8 +24,12 @@
 
 #include <iostream>
 
-namespace mrpt { namespace graphslam { namespace deciders {
-
+namespace mrpt
+{
+namespace graphslam
+{
+namespace deciders
+{
 /**\brief Fixed Intervals Odometry-based Node Registration
  *
  * ## Description
@@ -69,116 +73,119 @@ namespace mrpt { namespace graphslam { namespace deciders {
  *
  * \ingroup mrpt_graphslam_grp
  */
-template<class GRAPH_T=typename mrpt::graphs::CNetworkOfPoses2DInf>
-class CFixedIntervalsNRD:
-	public virtual mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_T>
+template <class GRAPH_T = typename mrpt::graphs::CNetworkOfPoses2DInf>
+class CFixedIntervalsNRD
+	: public virtual mrpt::graphslam::deciders::CNodeRegistrationDecider<
+		  GRAPH_T>
 {
-	public:
-		// Public functions
-		//////////////////////////////////////////////////////////////
+   public:
+	// Public functions
+	//////////////////////////////////////////////////////////////
 
-		/**\brief Handy typedefs */
-		/**\{*/
-		/**\brief Node Registration Decider */
-		typedef mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_T> node_reg;
+	/**\brief Handy typedefs */
+	/**\{*/
+	/**\brief Node Registration Decider */
+	typedef mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_T>
+		node_reg;
 
-		/**\brief type of graph constraints */
-		typedef typename GRAPH_T::constraint_t constraint_t;
-		/**\brief type of underlying poses (2D/3D). */
-		typedef typename GRAPH_T::constraint_t::type_value pose_t;
-		typedef typename GRAPH_T::global_pose_t global_pose_t;
+	/**\brief type of graph constraints */
+	typedef typename GRAPH_T::constraint_t constraint_t;
+	/**\brief type of underlying poses (2D/3D). */
+	typedef typename GRAPH_T::constraint_t::type_value pose_t;
+	typedef typename GRAPH_T::global_pose_t global_pose_t;
 
-		typedef mrpt::math::CMatrixFixedNumeric<double,
-						constraint_t::state_length,
-						constraint_t::state_length> inf_mat_t;
-		/**\brief Node Registration Decider */
-		typedef mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_T> parent_t;
-		/**\}*/
+	typedef mrpt::math::CMatrixFixedNumeric<double, constraint_t::state_length,
+											constraint_t::state_length>
+		inf_mat_t;
+	/**\brief Node Registration Decider */
+	typedef mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_T>
+		parent_t;
+	/**\}*/
 
-		/**\brief Class constructor */
-		CFixedIntervalsNRD();
-		/**\brief Class destructor */
-		~CFixedIntervalsNRD();
+	/**\brief Class constructor */
+	CFixedIntervalsNRD();
+	/**\brief Class destructor */
+	~CFixedIntervalsNRD();
 
+	void loadParams(const std::string& source_fname);
+	void printParams() const;
+	void getDescriptiveReport(std::string* report_str) const;
 
-		void loadParams(const std::string& source_fname);
-		void printParams() const;
-		void getDescriptiveReport(std::string* report_str) const;
+	/**\brief Method makes use of the CActionCollection/CObservation to update
+	 * the
+	 * odometry estimation from the last inserted pose
+	 *
+	 * \return True upon successful node registration in the graph
+	 */
+	bool updateState(
+		mrpt::obs::CActionCollection::Ptr action,
+		mrpt::obs::CSensoryFrame::Ptr observations,
+		mrpt::obs::CObservation::Ptr observation);
 
-		/**\brief Method makes use of the CActionCollection/CObservation to update the
-		 * odometry estimation from the last inserted pose
-		 *
-		 * \return True upon successful node registration in the graph
+	/**\brief Parameters structure for managing the relevant to the decider
+	 * variables in a compact manner
+	 */
+	struct TParams : public mrpt::utils::CLoadableOptions
+	{
+	   public:
+		TParams();
+		~TParams();
+
+		void loadFromConfigFile(
+			const mrpt::utils::CConfigFileBase& source,
+			const std::string& section);
+		void dumpToTextStream(mrpt::utils::CStream& out) const;
+		/**\brief Return a string with the configuration parameters
 		 */
-		bool updateState( mrpt::obs::CActionCollection::Ptr action,
-				mrpt::obs::CSensoryFrame::Ptr observations,
-				mrpt::obs::CObservation::Ptr observation );
+		void getAsString(std::string* params_out) const;
+		std::string getAsString() const;
 
-		/**\brief Parameters structure for managing the relevant to the decider
-		 * variables in a compact manner
-		 */
-		struct TParams: public mrpt::utils::CLoadableOptions {
-			public:
-				TParams();
-				~TParams();
+		// max values for new node registration
+		double registration_max_distance;
+		double registration_max_angle;
+	};
 
-				void loadFromConfigFile(
-						const mrpt::utils::CConfigFileBase &source,
-						const std::string &section);
-				void 	dumpToTextStream(mrpt::utils::CStream &out) const;
-				/**\brief Return a string with the configuration parameters
-				 */
-				void getAsString(std::string* params_out) const;
-				std::string getAsString() const;
+	// Public members
+	// ////////////////////////////
+	TParams params;
 
-				// max values for new node registration
-				double registration_max_distance;
-				double registration_max_angle;
-		};
+   protected:
+	// protected functions
+	//////////////////////////////////////////////////////////////
+	/**\name Registration Conditions Specifiers
+	 */
+	/**\{ */
+	/**\brief If estimated position surpasses the registration max values since
+	 * the previous registered node, register a new node in the graph.
+	 *
+	 * \return True on successful registration.
+	 */
+	bool checkRegistrationCondition();
+	bool checkRegistrationCondition(
+		const mrpt::poses::CPose2D& p1, const mrpt::poses::CPose2D& p2) const;
+	bool checkRegistrationCondition(
+		const mrpt::poses::CPose3D& p1, const mrpt::poses::CPose3D& p2) const;
+	/**\} */
 
-		// Public members
-		// ////////////////////////////
-		TParams params;
+	// protected members
+	//////////////////////////////////////////////////////////////
 
-	protected:
-		// protected functions
-		//////////////////////////////////////////////////////////////
-		/**\name Registration Conditions Specifiers
-		 */
-		/**\{ */
-		/**\brief If estimated position surpasses the registration max values since
-		 * the previous registered node, register a new node in the graph.
-		 *
-		 * \return True on successful registration.
-		 */
-		bool checkRegistrationCondition();
-		bool checkRegistrationCondition(
-				const mrpt::poses::CPose2D& p1,
-				const mrpt::poses::CPose2D& p2) const;
-		bool checkRegistrationCondition(
-				const mrpt::poses::CPose3D& p1,
-				const mrpt::poses::CPose3D& p2) const;
-		/**\} */
-
-		// protected members
-		//////////////////////////////////////////////////////////////
-
-		/**\brief pose_t estimation using only odometry information. Handy for
-		 * observation-only rawlogs.
-		 */
-		pose_t m_curr_odometry_only_pose;
-		/**\brief pose_t estimation using only odometry information. Handy for
-		 * observation-only rawlogs.
-		 */
-		pose_t m_last_odometry_only_pose;
-		/**\brief Keep track of whether we are reading from an observation-only
-		 * rawlog file or from an action-observation rawlog
-		 */
-		bool m_observation_only_rawlog;
-
+	/**\brief pose_t estimation using only odometry information. Handy for
+	 * observation-only rawlogs.
+	 */
+	pose_t m_curr_odometry_only_pose;
+	/**\brief pose_t estimation using only odometry information. Handy for
+	 * observation-only rawlogs.
+	 */
+	pose_t m_last_odometry_only_pose;
+	/**\brief Keep track of whether we are reading from an observation-only
+	 * rawlog file or from an action-observation rawlog
+	 */
+	bool m_observation_only_rawlog;
 };
-
-} } } // end of namespaces
+}
+}
+}  // end of namespaces
 
 #include "CFixedIntervalsNRD_impl.h"
 #endif /* end of include guard: CFIXEDINTERVALSNRD_H */

@@ -53,99 +53,79 @@ XSTYPES_DLL_API int64_t XsMath_doubleToInt64(double d);
 #endif
 
 #ifdef __cplusplus
-} // extern "C"
+}  // extern "C"
 
-namespace XsMath {
-	//! \brief The value e
-	static const XsReal& e = XsMath_e;
-	//! \brief The value pi
-	static const XsReal& pi = XsMath_pi;
-	//! \brief A really small value
-	static const XsReal& tinyValue = XsMath_tinyValue;
-	//! \brief A convincingly large number
-	static const XsReal& hugeValue = XsMath_hugeValue;
-	//! \brief A value related to the precision of floating point arithmetic (2.2204460492503131e-016)
-	static const XsReal& epsilon = XsMath_epsilon;
-	/*! \brief Square root of epsilon
-		\sa epsilon
-	*/
-	static const XsReal& sqrtEpsilon = XsMath_sqrtEpsilon;
-	//! \brief Value that represents the subnormal number in floating point wizardry
-	static const XsReal& denormalized = XsMath_denormalized;
-	/*! \brief Square root of denormalized
-		\sa denormalized
-	*/
-	static const XsReal& sqrtDenormalized = XsMath_sqrtDenormalized;
-	//! \brief Value to convert radians to degrees by multiplication
-	static const XsReal& rad2degValue = XsMath_rad2degValue;
-	//! \brief Value to convert degrees to radians by multiplication
-	static const XsReal& deg2radValue = XsMath_deg2radValue;
-	//! \brief 0
-	static const XsReal& zero = XsMath_zero;
-	//! \brief 0.25
-	static const XsReal& pt25 = XsMath_pt25;
-	//! \brief 0.5
-	static const XsReal& pt5 = XsMath_pt5;
-	//! \brief -0.5
-	static const XsReal& minusPt5 = XsMath_minusPt5;
-	//! \brief 1
-	static const XsReal& one = XsMath_one;
-	//! \brief -1
-	static const XsReal& minusOne = XsMath_minusOne;
-	//! \brief 2
-	static const XsReal& two = XsMath_two;
-	//! \brief 4
-	static const XsReal& four = XsMath_four;
-	//! \brief -2
-	static const XsReal& minusTwo = XsMath_minusTwo;
-	//! \brief -pi/2
-	static const XsReal& minusHalfPi = XsMath_minusHalfPi;
-	//! \brief pi/2
-	static const XsReal& halfPi = XsMath_halfPi;
-	//! \brief sqrt(2)
-	static const XsReal& sqrt2 = XsMath_sqrt2;
-	//! \brief infinity
-	static const XsReal& infinity = XsMath_infinity;
+namespace XsMath
+{
+//! \brief The value e
+static const XsReal& e = XsMath_e;
+//! \brief The value pi
+static const XsReal& pi = XsMath_pi;
+//! \brief A really small value
+static const XsReal& tinyValue = XsMath_tinyValue;
+//! \brief A convincingly large number
+static const XsReal& hugeValue = XsMath_hugeValue;
+//! \brief A value related to the precision of floating point arithmetic
+//! (2.2204460492503131e-016)
+static const XsReal& epsilon = XsMath_epsilon;
+/*! \brief Square root of epsilon
+	\sa epsilon
+*/
+static const XsReal& sqrtEpsilon = XsMath_sqrtEpsilon;
+//! \brief Value that represents the subnormal number in floating point wizardry
+static const XsReal& denormalized = XsMath_denormalized;
+/*! \brief Square root of denormalized
+	\sa denormalized
+*/
+static const XsReal& sqrtDenormalized = XsMath_sqrtDenormalized;
+//! \brief Value to convert radians to degrees by multiplication
+static const XsReal& rad2degValue = XsMath_rad2degValue;
+//! \brief Value to convert degrees to radians by multiplication
+static const XsReal& deg2radValue = XsMath_deg2radValue;
+//! \brief 0
+static const XsReal& zero = XsMath_zero;
+//! \brief 0.25
+static const XsReal& pt25 = XsMath_pt25;
+//! \brief 0.5
+static const XsReal& pt5 = XsMath_pt5;
+//! \brief -0.5
+static const XsReal& minusPt5 = XsMath_minusPt5;
+//! \brief 1
+static const XsReal& one = XsMath_one;
+//! \brief -1
+static const XsReal& minusOne = XsMath_minusOne;
+//! \brief 2
+static const XsReal& two = XsMath_two;
+//! \brief 4
+static const XsReal& four = XsMath_four;
+//! \brief -2
+static const XsReal& minusTwo = XsMath_minusTwo;
+//! \brief -pi/2
+static const XsReal& minusHalfPi = XsMath_minusHalfPi;
+//! \brief pi/2
+static const XsReal& halfPi = XsMath_halfPi;
+//! \brief sqrt(2)
+static const XsReal& sqrt2 = XsMath_sqrt2;
+//! \brief infinity
+static const XsReal& infinity = XsMath_infinity;
 
-
-	//! \brief \copybrief XsMath_asinClamped
-	inline XsReal asinClamped(XsReal x)
-	{
-		return XsMath_asinClamped(x);
-	}
-	//! \brief \copybrief XsMath_rad2deg
-	inline XsReal rad2deg(XsReal radians)
-	{
-		return XsMath_rad2deg(radians);
-	}
-	//! \brief \copybrief XsMath_deg2rad
-	inline XsReal deg2rad(XsReal degrees)
-	{
-		return XsMath_deg2rad(degrees);
-	}
-	//! \brief \copybrief XsMath_pow2
-	inline XsReal pow2(XsReal a)
-	{
-		return XsMath_pow2(a);
-	}
-	//! \brief \copybrief XsMath_pow3
-	inline XsReal pow3(XsReal a)
-	{
-		return XsMath_pow3(a);
-	}
-	//! \brief \copybrief XsMath_doubleToLong
-	inline int32_t doubleToLong(double d)
-	{
-		return XsMath_doubleToLong(d);
-	}
+//! \brief \copybrief XsMath_asinClamped
+inline XsReal asinClamped(XsReal x) { return XsMath_asinClamped(x); }
+//! \brief \copybrief XsMath_rad2deg
+inline XsReal rad2deg(XsReal radians) { return XsMath_rad2deg(radians); }
+//! \brief \copybrief XsMath_deg2rad
+inline XsReal deg2rad(XsReal degrees) { return XsMath_deg2rad(degrees); }
+//! \brief \copybrief XsMath_pow2
+inline XsReal pow2(XsReal a) { return XsMath_pow2(a); }
+//! \brief \copybrief XsMath_pow3
+inline XsReal pow3(XsReal a) { return XsMath_pow3(a); }
+//! \brief \copybrief XsMath_doubleToLong
+inline int32_t doubleToLong(double d) { return XsMath_doubleToLong(d); }
 #ifndef XSENS_NO_INT64
-	//! \brief \copybrief XsMath_doubleToInt64
-	inline int64_t doubleToInt64(double d)
-	{
-		return XsMath_doubleToInt64(d);
-	}
+//! \brief \copybrief XsMath_doubleToInt64
+inline int64_t doubleToInt64(double d) { return XsMath_doubleToInt64(d); }
 #endif
-}	// namespace
+}  // namespace
 #endif
 
-#endif // file guard
+#endif  // file guard

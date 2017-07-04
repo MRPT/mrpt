@@ -17,4 +17,3 @@
 #include <mrpt/obs/CSensoryFrame.h>
 
 #endif
-

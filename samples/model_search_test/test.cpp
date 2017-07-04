@@ -26,31 +26,27 @@ using namespace mrpt::random;
 using namespace mrpt::poses;
 using namespace std;
 
-struct Fit3DPlane {
-	typedef TPlane3D		Model;
-	typedef double			Real;
+struct Fit3DPlane
+{
+	typedef TPlane3D Model;
+	typedef double Real;
 
-	const std::vector<TPoint3D>&  allData;
+	const std::vector<TPoint3D>& allData;
 
-	Fit3DPlane( const std::vector<TPoint3D>& _allData ) : allData(_allData) {}
-
-	size_t getSampleCount( void ) const
+	Fit3DPlane(const std::vector<TPoint3D>& _allData) : allData(_allData) {}
+	size_t getSampleCount(void) const { return allData.size(); }
+	bool fitModel(const vector_size_t& useIndices, TPlane3D& model) const
 	{
-		return allData.size();
-	}
-
-	bool  fitModel( const vector_size_t& useIndices, TPlane3D& model ) const
-	{
-		ASSERT_(useIndices.size()==3);
-		TPoint3D  p1( allData[useIndices[0]] );
-		TPoint3D  p2( allData[useIndices[1]] );
-		TPoint3D  p3( allData[useIndices[2]] );
+		ASSERT_(useIndices.size() == 3);
+		TPoint3D p1(allData[useIndices[0]]);
+		TPoint3D p2(allData[useIndices[1]]);
+		TPoint3D p3(allData[useIndices[2]]);
 
 		try
 		{
-			model = TPlane( p1,p2,p3 );
+			model = TPlane(p1, p2, p3);
 		}
-		catch(exception &)
+		catch (exception&)
 		{
 			return false;
 		}
@@ -58,12 +54,11 @@ struct Fit3DPlane {
 		return true;
 	}
 
-	double testSample( size_t index, const TPlane3D& model ) const
+	double testSample(size_t index, const TPlane3D& model) const
 	{
-		return model.distance( allData[index] );
+		return model.distance(allData[index]);
 	}
 };
-
 
 // ------------------------------------------------------
 //				TestRANSAC
@@ -77,23 +72,25 @@ void TestRANSAC()
 	const size_t N_plane = 300;
 	const size_t N_noise = 100;
 
-	const double PLANE_EQ[4]={ 1,-1,1, -2 };
+	const double PLANE_EQ[4] = {1, -1, 1, -2};
 
 	std::vector<TPoint3D> data;
-	for (size_t i=0;i<N_plane;i++)
+	for (size_t i = 0; i < N_plane; i++)
 	{
-		const double xx = randomGenerator.drawUniform(-3,3);
-		const double yy = randomGenerator.drawUniform(-3,3);
-		const double zz = -(PLANE_EQ[3]+PLANE_EQ[0]*xx+PLANE_EQ[1]*yy)/PLANE_EQ[2];
-		data.push_back( TPoint3D(xx,yy,zz) );
+		const double xx = randomGenerator.drawUniform(-3, 3);
+		const double yy = randomGenerator.drawUniform(-3, 3);
+		const double zz =
+			-(PLANE_EQ[3] + PLANE_EQ[0] * xx + PLANE_EQ[1] * yy) / PLANE_EQ[2];
+		data.push_back(TPoint3D(xx, yy, zz));
 	}
 
-	for (size_t i=0;i<N_noise;i++)
+	for (size_t i = 0; i < N_noise; i++)
 	{
 		TPoint3D& p = data[i];
-		p += TPoint3D( randomGenerator.drawUniform(-4,4),
-					   randomGenerator.drawUniform(-4,4),
-					   randomGenerator.drawUniform(-4,4) );
+		p += TPoint3D(
+			randomGenerator.drawUniform(-4, 4),
+			randomGenerator.drawUniform(-4, 4),
+			randomGenerator.drawUniform(-4, 4));
 	}
 
 	// Run RANSAC
@@ -102,71 +99,73 @@ void TestRANSAC()
 	vector_size_t best_inliers;
 	const double DIST_THRESHOLD = 0.2;
 
-
-	CTicTac	tictac;
-	const size_t TIMES=100;
+	CTicTac tictac;
+	const size_t TIMES = 100;
 
 	bool found = false;
-	for (size_t iters=0;iters<TIMES;iters++)
+	for (size_t iters = 0; iters < TIMES; iters++)
 	{
 		ModelSearch search;
-		Fit3DPlane fit( data );
-		found = search.geneticSingleModel( fit, 3, DIST_THRESHOLD, 10, 100, best_model, best_inliers );
+		Fit3DPlane fit(data);
+		found = search.geneticSingleModel(
+			fit, 3, DIST_THRESHOLD, 10, 100, best_model, best_inliers);
 	}
-	cout << "Computation time (genetic): " << tictac.Tac()*1000.0/TIMES << " ms" << endl;
+	cout << "Computation time (genetic): " << tictac.Tac() * 1000.0 / TIMES
+		 << " ms" << endl;
 
-	for (size_t iters=0;iters<TIMES;iters++)
+	for (size_t iters = 0; iters < TIMES; iters++)
 	{
 		ModelSearch search;
-		Fit3DPlane fit( data );
-		found = search.ransacSingleModel( fit, 3, DIST_THRESHOLD, best_model, best_inliers );
+		Fit3DPlane fit(data);
+		found = search.ransacSingleModel(
+			fit, 3, DIST_THRESHOLD, best_model, best_inliers);
 	}
-	cout << "Computation time (ransac): " << tictac.Tac()*1000.0/TIMES << " ms" << endl;
+	cout << "Computation time (ransac): " << tictac.Tac() * 1000.0 / TIMES
+		 << " ms" << endl;
 
-	if( !found )
-		return;
+	if (!found) return;
 
-//	cout << "RANSAC finished: Best model: " << best_model << endl;
-//	cout << "Best inliers: " << best_inliers << endl;
-
+	//	cout << "RANSAC finished: Best model: " << best_model << endl;
+	//	cout << "Best inliers: " << best_inliers << endl;
 
 	// Show GUI
 	// --------------------------
-	mrpt::gui::CDisplayWindow3D  win("Set of points", 500,500);
+	mrpt::gui::CDisplayWindow3D win("Set of points", 500, 500);
 	opengl::COpenGLScene::Ptr scene = std::make_shared<opengl::COpenGLScene>();
 
-	scene->insert( std::make_shared<opengl::CGridPlaneXY>(-20,20,-20,20,0,1) );
-	scene->insert( opengl::stock_objects::CornerXYZ() );
+	scene->insert(
+		std::make_shared<opengl::CGridPlaneXY>(-20, 20, -20, 20, 0, 1));
+	scene->insert(opengl::stock_objects::CornerXYZ());
 
-	opengl::CPointCloud::Ptr  points = std::make_shared<opengl::CPointCloud>();
-	points->setColor(0,0,1);
+	opengl::CPointCloud::Ptr points = std::make_shared<opengl::CPointCloud>();
+	points->setColor(0, 0, 1);
 	points->setPointSize(3);
 	points->enableColorFromZ();
 
 	{
-		std::vector<float> x,y,z;
-		x.reserve( data.size() );
-		y.reserve( data.size() );
-		z.reserve( data.size() );
-		for( size_t i = 0; i < data.size(); i++ )
+		std::vector<float> x, y, z;
+		x.reserve(data.size());
+		y.reserve(data.size());
+		z.reserve(data.size());
+		for (size_t i = 0; i < data.size(); i++)
 		{
 			x.push_back(data[i].x);
 			y.push_back(data[i].y);
 			z.push_back(data[i].z);
 		}
-		points->setAllPointsFast(x,y,z);
+		points->setAllPointsFast(x, y, z);
 	}
 
+	scene->insert(points);
 
-	scene->insert( points );
+	opengl::CTexturedPlane::Ptr glPlane =
+		std::make_shared<opengl::CTexturedPlane>(-4, 4, -4, 4);
 
-	opengl::CTexturedPlane::Ptr glPlane = std::make_shared<opengl::CTexturedPlane>(-4,4,-4,4);
-
-	CPose3D   glPlanePose;
-	best_model.getAsPose3D( glPlanePose );
+	CPose3D glPlanePose;
+	best_model.getAsPose3D(glPlanePose);
 	glPlane->setPose(glPlanePose);
 
-	scene->insert( glPlane );
+	scene->insert(glPlane);
 
 	win.get3DSceneAndLock() = scene;
 	win.unlockAccess3DScene();
@@ -184,7 +183,8 @@ int main()
 	{
 		TestRANSAC();
 		return 0;
-	} catch (std::exception &e)
+	}
+	catch (std::exception& e)
 	{
 		std::cout << "MRPT exception caught: " << e.what() << std::endl;
 		return -1;

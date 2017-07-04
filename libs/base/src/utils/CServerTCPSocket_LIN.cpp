@@ -30,7 +30,6 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 
-
 using namespace mrpt;
 using namespace mrpt::utils;
 
@@ -38,27 +37,23 @@ using namespace mrpt::utils;
 					Constructor
  ---------------------------------------------------------------*/
 CServerTCPSocket::CServerTCPSocket(
-	unsigned short		listenPort,
-	const std::string	&IPaddress,
-	int               	maxConnectionsWaiting,
-	mrpt::utils::VerbosityLevel verbosityLevel
-	) :
-	COutputLogger("CServerTCPSocket")
+	unsigned short listenPort, const std::string& IPaddress,
+	int maxConnectionsWaiting, mrpt::utils::VerbosityLevel verbosityLevel)
+	: COutputLogger("CServerTCPSocket")
 {
 	MRPT_TRY_START;
 	setVerbosityLevel(verbosityLevel);
-	setupSocket( listenPort, IPaddress, maxConnectionsWaiting );
+	setupSocket(listenPort, IPaddress, maxConnectionsWaiting);
 	MRPT_TRY_END;
 }
 
 /*---------------------------------------------------------------
 					Destructor
  ---------------------------------------------------------------*/
-CServerTCPSocket::~CServerTCPSocket( )
+CServerTCPSocket::~CServerTCPSocket()
 {
 	// Delete socket:
-	if (m_serverSock != -1)
-		close( m_serverSock );
+	if (m_serverSock != -1) close(m_serverSock);
 }
 
-#endif // Linux
+#endif  // Linux

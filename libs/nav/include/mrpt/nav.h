@@ -30,4 +30,3 @@
 
 #include <mrpt/nav/planners/PlannerSimple2D.h>
 #include <mrpt/nav/planners/PlannerRRT_SE2_TPS.h>
-

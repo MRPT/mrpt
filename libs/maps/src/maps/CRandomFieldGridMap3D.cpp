@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include "maps-precomp.h" // Precomp header
+#include "maps-precomp.h"  // Precomp header
 
 #include <mrpt/maps/CRandomFieldGridMap3D.h>
 #include <mrpt/utils/CConfigFileBase.h>
@@ -17,14 +17,14 @@
 #include <mrpt/config.h>
 
 #if MRPT_HAS_VTK
- #include <vtkStructuredGrid.h>
- #include <vtkDoubleArray.h>
- #include <vtkPointData.h>
- #include <vtkVersion.h>
- #include <vtkCellArray.h>
- #include <vtkPoints.h>
- #include <vtkXMLStructuredGridWriter.h>
- #include <vtkSmartPointer.h>
+#include <vtkStructuredGrid.h>
+#include <vtkDoubleArray.h>
+#include <vtkPointData.h>
+#include <vtkVersion.h>
+#include <vtkCellArray.h>
+#include <vtkPoints.h>
+#include <vtkXMLStructuredGridWriter.h>
+#include <vtkSmartPointer.h>
 #endif
 
 using namespace mrpt;
@@ -32,50 +32,50 @@ using namespace mrpt::maps;
 using namespace mrpt::utils;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE(CRandomFieldGridMap3D, CSerializable,mrpt::maps)
+IMPLEMENTS_SERIALIZABLE(CRandomFieldGridMap3D, CSerializable, mrpt::maps)
 
 /*---------------------------------------------------------------
 						Constructor
   ---------------------------------------------------------------*/
 CRandomFieldGridMap3D::CRandomFieldGridMap3D(
-	double x_min, double x_max,
-	double y_min, double y_max,
-	double z_min, double z_max,
-	double voxel_size,
-	bool call_initialize_now
-) :
-	CDynamicGrid3D<TRandomFieldVoxel>( x_min,x_max,y_min,y_max, z_min, z_max, voxel_size /*xy*/, voxel_size /*z*/ ),
-	COutputLogger("CRandomFieldGridMap3D")
+	double x_min, double x_max, double y_min, double y_max, double z_min,
+	double z_max, double voxel_size, bool call_initialize_now)
+	: CDynamicGrid3D<TRandomFieldVoxel>(
+		  x_min, x_max, y_min, y_max, z_min, z_max, voxel_size /*xy*/,
+		  voxel_size /*z*/),
+	  COutputLogger("CRandomFieldGridMap3D")
 {
-	if (call_initialize_now)
-		this->internal_initialize();
+	if (call_initialize_now) this->internal_initialize();
 }
 
 /** Changes the size of the grid, erasing previous contents */
 void CRandomFieldGridMap3D::setSize(
-	const double x_min, const double x_max,
-	const double y_min, const double y_max,
-	const double z_min, const double z_max,
+	const double x_min, const double x_max, const double y_min,
+	const double y_max, const double z_min, const double z_max,
 	const double resolution_xy, const double resolution_z,
-	const  TRandomFieldVoxel* fill_value)
+	const TRandomFieldVoxel* fill_value)
 {
 	MRPT_START;
 
-	CDynamicGrid3D<TRandomFieldVoxel>::setSize(x_min, x_max, y_min, y_max, z_min, z_max, resolution_xy, resolution_z, fill_value);
+	CDynamicGrid3D<TRandomFieldVoxel>::setSize(
+		x_min, x_max, y_min, y_max, z_min, z_max, resolution_xy, resolution_z,
+		fill_value);
 	this->internal_initialize();
 
 	MRPT_END;
 }
 
-void  CRandomFieldGridMap3D::resize(
-	double new_x_min, double new_x_max,
-	double new_y_min, double new_y_max,
+void CRandomFieldGridMap3D::resize(
+	double new_x_min, double new_x_max, double new_y_min, double new_y_max,
 	double new_z_min, double new_z_max,
-	const TRandomFieldVoxel& defaultValueNewCells, double additionalMarginMeters)
+	const TRandomFieldVoxel& defaultValueNewCells,
+	double additionalMarginMeters)
 {
 	MRPT_START;
 
-	CDynamicGrid3D<TRandomFieldVoxel>::resize(new_x_min, new_x_max, new_y_min, new_y_max, new_z_min, new_z_max, defaultValueNewCells, additionalMarginMeters);
+	CDynamicGrid3D<TRandomFieldVoxel>::resize(
+		new_x_min, new_x_max, new_y_min, new_y_max, new_z_min, new_z_max,
+		defaultValueNewCells, additionalMarginMeters);
 	this->internal_initialize(false);
 
 	MRPT_END;
@@ -92,7 +92,7 @@ void CRandomFieldGridMap3D::internal_initialize(bool erase_prev_contents)
 	if (erase_prev_contents)
 	{
 		// Set the gridmap (m_map) to initial values:
-		TRandomFieldVoxel  def(0, 0); // mean, std
+		TRandomFieldVoxel def(0, 0);  // mean, std
 		fill(def);
 	}
 
@@ -112,49 +112,51 @@ void CRandomFieldGridMap3D::internal_initialize(bool erase_prev_contents)
 
 	// Initiating prior:
 	const size_t nodeCount = m_map.size();
-	ASSERT_EQUAL_(nodeCount, m_size_x*m_size_y*m_size_z);
-	ASSERT_EQUAL_(m_size_x_times_y, m_size_x*m_size_y);
+	ASSERT_EQUAL_(nodeCount, m_size_x * m_size_y * m_size_z);
+	ASSERT_EQUAL_(m_size_x_times_y, m_size_x * m_size_y);
 
-	MRPT_LOG_DEBUG_STREAM( "[internal_initialize] Creating priors for GMRF with " << nodeCount << " nodes." << std::endl);
+	MRPT_LOG_DEBUG_STREAM(
+		"[internal_initialize] Creating priors for GMRF with "
+		<< nodeCount << " nodes." << std::endl);
 	CTicTac tictac;
 	tictac.Tic();
 
-	m_mrf_factors_activeObs.resize(nodeCount); // Alloc space for obs
+	m_mrf_factors_activeObs.resize(nodeCount);  // Alloc space for obs
 	m_gmrf.initialize(nodeCount);
 
-	ConnectivityDescriptor * custom_connectivity = m_gmrf_connectivity.get(); // Use a raw ptr to avoid the cost in the inner loops
+	ConnectivityDescriptor* custom_connectivity =
+		m_gmrf_connectivity
+			.get();  // Use a raw ptr to avoid the cost in the inner loops
 
 	size_t cx = 0, cy = 0, cz = 0;
-	for (size_t j = 0; j<nodeCount; j++)
+	for (size_t j = 0; j < nodeCount; j++)
 	{
 		// add factors between this node and:
 		// 1) the right node: j +1
 		// 2) the back node:  j+m_size_x
 		// 3) the top node: j+m_size_x*m_size*y
 		//-------------------------------------------------
-		const size_t c_idx_to_check[3] = { cx,cy,cz };
-		const size_t c_idx_to_check_limits[3] = { m_size_x - 1,m_size_y - 1,m_size_z - 1 };
-		const size_t c_neighbor_idx_incr[3] = { 1,m_size_x,m_size_x_times_y };
+		const size_t c_idx_to_check[3] = {cx, cy, cz};
+		const size_t c_idx_to_check_limits[3] = {m_size_x - 1, m_size_y - 1,
+												 m_size_z - 1};
+		const size_t c_neighbor_idx_incr[3] = {1, m_size_x, m_size_x_times_y};
 
 		for (int dir = 0; dir < 3; dir++)
 		{
-			if (c_idx_to_check[dir] >= c_idx_to_check_limits[dir])
-				continue;
+			if (c_idx_to_check[dir] >= c_idx_to_check_limits[dir]) continue;
 
 			const size_t i = j + c_neighbor_idx_incr[dir];
-			ASSERT_(i<nodeCount);
+			ASSERT_(i < nodeCount);
 
 			double edge_lamdba = .0;
 			if (custom_connectivity != nullptr)
 			{
-				const bool is_connected = custom_connectivity->getEdgeInformation(
-					this,
-					cx, cy,cz,
-					cx + (dir == 0 ? 1 : 0), cy + (dir == 1 ? 1 : 0), cz+ (dir==2 ? 1:0),
-					edge_lamdba
-				);
-				if (!is_connected)
-					continue;
+				const bool is_connected =
+					custom_connectivity->getEdgeInformation(
+						this, cx, cy, cz, cx + (dir == 0 ? 1 : 0),
+						cy + (dir == 1 ? 1 : 0), cz + (dir == 2 ? 1 : 0),
+						edge_lamdba);
+				if (!is_connected) continue;
 			}
 			else
 			{
@@ -167,57 +169,70 @@ void CRandomFieldGridMap3D::internal_initialize(bool erase_prev_contents)
 			new_prior.Lambda = edge_lamdba;
 
 			m_mrf_factors_priors.push_back(new_prior);
-			m_gmrf.addConstraint(*m_mrf_factors_priors.rbegin()); // add to graph
+			m_gmrf.addConstraint(
+				*m_mrf_factors_priors.rbegin());  // add to graph
 		}
 
 		// Increment coordinates:
-		if (++cx >= m_size_x) {
+		if (++cx >= m_size_x)
+		{
 			cx = 0;
-			if (++cy >= m_size_y) {
+			if (++cy >= m_size_y)
+			{
 				cy = 0;
 				cz++;
 			}
 		}
-	} // end for "j"
+	}  // end for "j"
 
-	MRPT_LOG_DEBUG_STREAM( "[internal_initialize] Prior built in " << tictac.Tac() << " s\n" << std::endl);
+	MRPT_LOG_DEBUG_STREAM(
+		"[internal_initialize] Prior built in " << tictac.Tac() << " s\n"
+												<< std::endl);
 }
 
 /*---------------------------------------------------------------
 					TInsertionOptions
  ---------------------------------------------------------------*/
-CRandomFieldGridMap3D::TInsertionOptions::TInsertionOptions() :
-	GMRF_lambdaPrior			( 0.01f ),		// [GMRF model] The information (Lambda) of fixed map constraints
-	GMRF_skip_variance			(false)
+CRandomFieldGridMap3D::TInsertionOptions::TInsertionOptions()
+	: GMRF_lambdaPrior(0.01f),  // [GMRF model] The information (Lambda) of
+	  // fixed map constraints
+	  GMRF_skip_variance(false)
 {
 }
 
-void  CRandomFieldGridMap3D::TInsertionOptions::dumpToTextStream(mrpt::utils::CStream	&out) const
+void CRandomFieldGridMap3D::TInsertionOptions::dumpToTextStream(
+	mrpt::utils::CStream& out) const
 {
 	out.printf("GMRF_lambdaPrior                     = %f\n", GMRF_lambdaPrior);
-	out.printf("GMRF_skip_variance                   = %s\n", GMRF_skip_variance ? "true":"false");
+	out.printf(
+		"GMRF_skip_variance                   = %s\n",
+		GMRF_skip_variance ? "true" : "false");
 }
 
-void  CRandomFieldGridMap3D::TInsertionOptions::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase  &iniFile,
-	const std::string &section)
+void CRandomFieldGridMap3D::TInsertionOptions::loadFromConfigFile(
+	const mrpt::utils::CConfigFileBase& iniFile, const std::string& section)
 {
-	GMRF_lambdaPrior = iniFile.read_double(section.c_str(), "GMRF_lambdaPrior", GMRF_lambdaPrior);
-	GMRF_skip_variance = iniFile.read_bool(section.c_str(),"GMRF_skip_variance", GMRF_skip_variance);
+	GMRF_lambdaPrior = iniFile.read_double(
+		section.c_str(), "GMRF_lambdaPrior", GMRF_lambdaPrior);
+	GMRF_skip_variance = iniFile.read_bool(
+		section.c_str(), "GMRF_skip_variance", GMRF_skip_variance);
 }
 
-/** Save the current estimated grid to a VTK file (.vts) as a "structured grid". \sa saveAsCSV */
-bool CRandomFieldGridMap3D::saveAsVtkStructuredGrid(const std::string &fil) const
+/** Save the current estimated grid to a VTK file (.vts) as a "structured grid".
+ * \sa saveAsCSV */
+bool CRandomFieldGridMap3D::saveAsVtkStructuredGrid(
+	const std::string& fil) const
 {
-MRPT_START;
+	MRPT_START;
 #if MRPT_HAS_VTK
 
-	vtkStructuredGrid *vtkGrid = vtkStructuredGrid::New();
+	vtkStructuredGrid* vtkGrid = vtkStructuredGrid::New();
 	this->getAsVtkStructuredGrid(vtkGrid);
 
 	// Write file
-	vtkSmartPointer<vtkXMLStructuredGridWriter> writer = vtkSmartPointer<vtkXMLStructuredGridWriter>::New();
-	writer->SetFileName( fil.c_str() );
+	vtkSmartPointer<vtkXMLStructuredGridWriter> writer =
+		vtkSmartPointer<vtkXMLStructuredGridWriter>::New();
+	writer->SetFileName(fil.c_str());
 
 #if VTK_MAJOR_VERSION <= 5
 	writer->SetInput(vtkGrid);
@@ -229,35 +244,42 @@ MRPT_START;
 
 	vtkGrid->Delete();
 
-	return ret==0;
+	return ret == 0;
 #else
 	THROW_EXCEPTION("This method requires building MRPT against VTK!");
 #endif
-MRPT_END
+	MRPT_END
 }
 
-
-bool mrpt::maps::CRandomFieldGridMap3D::saveAsCSV(const std::string & filName_mean, const std::string & filName_stddev) const
+bool mrpt::maps::CRandomFieldGridMap3D::saveAsCSV(
+	const std::string& filName_mean, const std::string& filName_stddev) const
 {
 	CFileOutputStream f_mean, f_stddev;
 
-	if (!f_mean.open(filName_mean)) {
+	if (!f_mean.open(filName_mean))
+	{
 		return false;
-	} else {
+	}
+	else
+	{
 		f_mean.printf("x coord, y coord, z coord, scalar\n");
 	}
 
-	if (!filName_stddev.empty()) {
-		if (!f_stddev.open(filName_stddev)) {
+	if (!filName_stddev.empty())
+	{
+		if (!f_stddev.open(filName_stddev))
+		{
 			return false;
-		} else {
+		}
+		else
+		{
 			f_mean.printf("x coord, y coord, z coord, scalar\n");
 		}
 	}
 
 	const size_t nodeCount = m_map.size();
 	size_t cx = 0, cy = 0, cz = 0;
-	for (size_t j = 0; j<nodeCount; j++)
+	for (size_t j = 0; j < nodeCount; j++)
 	{
 		const double x = idx2x(cx), y = idx2y(cy), z = idx2z(cz);
 		const double mean_val = m_map[j].mean_value;
@@ -269,62 +291,74 @@ bool mrpt::maps::CRandomFieldGridMap3D::saveAsCSV(const std::string & filName_me
 			f_stddev.printf("%f, %f, %f, %e\n", x, y, z, stddev_val);
 
 		// Increment coordinates:
-		if (++cx >= m_size_x) {
+		if (++cx >= m_size_x)
+		{
 			cx = 0;
-			if (++cy >= m_size_y) {
+			if (++cy >= m_size_y)
+			{
 				cy = 0;
 				cz++;
 			}
 		}
-	} // end for "j"
+	}  // end for "j"
 
 	return true;
 }
 
 void CRandomFieldGridMap3D::updateMapEstimation()
 {
-	ASSERTMSG_(!m_mrf_factors_activeObs.empty(), "Cannot update a map with no observations!");
+	ASSERTMSG_(
+		!m_mrf_factors_activeObs.empty(),
+		"Cannot update a map with no observations!");
 
 	Eigen::VectorXd x_incr, x_var;
-	m_gmrf.updateEstimation(x_incr, insertionOptions.GMRF_skip_variance ? NULL:&x_var);
+	m_gmrf.updateEstimation(
+		x_incr, insertionOptions.GMRF_skip_variance ? NULL : &x_var);
 
 	ASSERT_(size_t(m_map.size()) == size_t(x_incr.size()));
-	ASSERT_(insertionOptions.GMRF_skip_variance || size_t(m_map.size()) == size_t(x_var.size()));
+	ASSERT_(
+		insertionOptions.GMRF_skip_variance ||
+		size_t(m_map.size()) == size_t(x_var.size()));
 
 	// Update Mean-Variance in the base grid class
-	for (size_t j = 0; j<m_map.size(); j++)
+	for (size_t j = 0; j < m_map.size(); j++)
 	{
 		m_map[j].mean_value += x_incr[j];
-		m_map[j].stddev_value = insertionOptions.GMRF_skip_variance ? .0 : std::sqrt(x_var[j]);
+		m_map[j].stddev_value =
+			insertionOptions.GMRF_skip_variance ? .0 : std::sqrt(x_var[j]);
 	}
 }
 
-void mrpt::maps::CRandomFieldGridMap3D::setVoxelsConnectivity(const ConnectivityDescriptor::Ptr & new_connectivity_descriptor)
+void mrpt::maps::CRandomFieldGridMap3D::setVoxelsConnectivity(
+	const ConnectivityDescriptor::Ptr& new_connectivity_descriptor)
 {
 	m_gmrf_connectivity = new_connectivity_descriptor;
 }
 
 bool CRandomFieldGridMap3D::insertIndividualReading(
 	/** [in] The value observed in the (x,y,z) position */
-	const double sensorReading,              
+	const double sensorReading,
 	/** [in] The variance of the sensor observation */
-	const double sensorVariance,             
+	const double sensorVariance,
 	/** [in] The (x,y,z) location */
-	const mrpt::math::TPoint3D & point,      
-	/** [in] Voxel interpolation method: how many voxels will be affected by the reading */
-	const TVoxelInterpolationMethod method,  
-	/** [in] Run a global map update after inserting this observatin (algorithm-dependant) */
-	const bool update_map                    
-)
+	const mrpt::math::TPoint3D& point,
+	/** [in] Voxel interpolation method: how many voxels will be affected by the
+	   reading */
+	const TVoxelInterpolationMethod method,
+	/** [in] Run a global map update after inserting this observatin
+	   (algorithm-dependant) */
+	const bool update_map)
 {
 	MRPT_START;
 
 	ASSERT_ABOVE_(sensorVariance, .0);
-	ASSERTMSG_(m_mrf_factors_activeObs.size()==m_map.size(), "Trying to insert observation in uninitialized map (!)");
+	ASSERTMSG_(
+		m_mrf_factors_activeObs.size() == m_map.size(),
+		"Trying to insert observation in uninitialized map (!)");
 
-	const size_t cell_idx = cellAbsIndexFromCXCYCZ(x2idx(point.x), y2idx(point.y), z2idx(point.z));
-	if (cell_idx == INVALID_VOXEL_IDX)
-		return false;
+	const size_t cell_idx =
+		cellAbsIndexFromCXCYCZ(x2idx(point.x), y2idx(point.y), z2idx(point.z));
+	if (cell_idx == INVALID_VOXEL_IDX) return false;
 
 	TObservationGMRF new_obs(*this);
 	new_obs.node_id = cell_idx;
@@ -332,17 +366,18 @@ bool CRandomFieldGridMap3D::insertIndividualReading(
 	new_obs.Lambda = 1.0 / sensorVariance;
 
 	m_mrf_factors_activeObs[cell_idx].push_back(new_obs);
-	m_gmrf.addConstraint(*m_mrf_factors_activeObs[cell_idx].rbegin()); // add to graph
+	m_gmrf.addConstraint(
+		*m_mrf_factors_activeObs[cell_idx].rbegin());  // add to graph
 
-	if (update_map)
-		this->updateMapEstimation();
+	if (update_map) this->updateMapEstimation();
 
 	return true;
 
 	MRPT_END;
 }
 
-void CRandomFieldGridMap3D::writeToStream(mrpt::utils::CStream &out, int *version) const
+void CRandomFieldGridMap3D::writeToStream(
+	mrpt::utils::CStream& out, int* version) const
 {
 	if (version)
 		*version = 0;
@@ -358,15 +393,15 @@ void CRandomFieldGridMap3D::writeToStream(mrpt::utils::CStream &out, int *versio
 		n = static_cast<uint32_t>(m_map.size());
 		out << n;
 
-		// Save the "m_map": This requires special handling for big endian systems:
+// Save the "m_map": This requires special handling for big endian systems:
 #if MRPT_IS_BIG_ENDIAN
-		for (uint32_t i = 0; i<n; i++)
+		for (uint32_t i = 0; i < n; i++)
 		{
 			out << m_map[i].mean_value << m_map[i].stddev_value;
 		}
 #else
 		// Little endian: just write all at once:
-		out.WriteBuffer(&m_map[0], sizeof(m_map[0])*m_map.size());
+		out.WriteBuffer(&m_map[0], sizeof(m_map[0]) * m_map.size());
 #endif
 
 		out << insertionOptions.GMRF_lambdaPrior
@@ -374,49 +409,52 @@ void CRandomFieldGridMap3D::writeToStream(mrpt::utils::CStream &out, int *versio
 	}
 }
 
-void CRandomFieldGridMap3D::readFromStream(mrpt::utils::CStream &in, int version)
+void CRandomFieldGridMap3D::readFromStream(
+	mrpt::utils::CStream& in, int version)
 {
 	switch (version)
 	{
-	case 0:
-	{
-		dyngridcommon_readFromStream(in);
+		case 0:
+		{
+			dyngridcommon_readFromStream(in);
 
-		// To assure compatibility: The size of each cell:
-		uint32_t n;
-		in >> n;
+			// To assure compatibility: The size of each cell:
+			uint32_t n;
+			in >> n;
 
-		ASSERT_EQUAL_(n, static_cast<uint32_t>(sizeof(TRandomFieldVoxel)));
-		// Load the map contents:
-		in >> n;
-		m_map.resize(n);
+			ASSERT_EQUAL_(n, static_cast<uint32_t>(sizeof(TRandomFieldVoxel)));
+			// Load the map contents:
+			in >> n;
+			m_map.resize(n);
 
-		// Read the note in writeToStream()
+// Read the note in writeToStream()
 #if MRPT_IS_BIG_ENDIAN
-		for (uint32_t i = 0; i<n; i++)
-			in >> m_map[i].mean_value >> m_map[i].stddev_value;
+			for (uint32_t i = 0; i < n; i++)
+				in >> m_map[i].mean_value >> m_map[i].stddev_value;
 #else
-		// Little endian: just read all at once:
-		in.ReadBuffer(&m_map[0], sizeof(m_map[0])*m_map.size());
+			// Little endian: just read all at once:
+			in.ReadBuffer(&m_map[0], sizeof(m_map[0]) * m_map.size());
 #endif
-		in >> insertionOptions.GMRF_lambdaPrior
-		   >> insertionOptions.GMRF_skip_variance;
-
-	} break;
-	default:
-		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
+			in >> insertionOptions.GMRF_lambdaPrior >>
+				insertionOptions.GMRF_skip_variance;
+		}
+		break;
+		default:
+			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version);
 	};
-
 }
 
-void CRandomFieldGridMap3D::getAsVtkStructuredGrid(vtkStructuredGrid* output, const std::string &label_mean, const std::string &label_stddev ) const
+void CRandomFieldGridMap3D::getAsVtkStructuredGrid(
+	vtkStructuredGrid* output, const std::string& label_mean,
+	const std::string& label_stddev) const
 {
 	MRPT_START;
 #if MRPT_HAS_VTK
 
-	const size_t nx = this->getSizeX(), ny = this->getSizeY(), nz = this->getSizeZ();
+	const size_t nx = this->getSizeX(), ny = this->getSizeY(),
+				 nz = this->getSizeZ();
 
-	const int num_values = nx*ny*nz;
+	const int num_values = nx * ny * nz;
 
 	vtkPoints* newPoints = vtkPoints::New();
 
@@ -448,21 +486,23 @@ void CRandomFieldGridMap3D::getAsVtkStructuredGrid(vtkStructuredGrid* output, co
 			std_arr->SetComponent(cc, 0, m_map[cc].stddev_value);
 
 			// Increment coordinates:
-			if (++cx >= m_size_x) {
+			if (++cx >= m_size_x)
+			{
 				cx = 0;
-				if (++cy >= m_size_y) {
+				if (++cy >= m_size_y)
+				{
 					cy = 0;
 					cz++;
 				}
 			}
 		}
-		ASSERT_( size_t( m_map.size() ) == size_t( numtuples ) );
+		ASSERT_(size_t(m_map.size()) == size_t(numtuples));
 	}
 
 	newPoints->SetData(newData);
 	newData->Delete();
 
-	output->SetExtent(0,nx-1, 0, ny-1, 0,nz-1);
+	output->SetExtent(0, nx - 1, 0, ny - 1, 0, nz - 1);
 	output->SetPoints(newPoints);
 	newPoints->Delete();
 
@@ -476,7 +516,7 @@ void CRandomFieldGridMap3D::getAsVtkStructuredGrid(vtkStructuredGrid* output, co
 
 #else
 	THROW_EXCEPTION("This method requires building MRPT against VTK!");
-#endif // VTK
+#endif  // VTK
 	MRPT_END;
 }
 
@@ -489,20 +529,22 @@ double CRandomFieldGridMap3D::TObservationGMRF::getInformation() const
 {
 	return this->Lambda;
 }
-void CRandomFieldGridMap3D::TObservationGMRF::evalJacobian(double &dr_dx) const
+void CRandomFieldGridMap3D::TObservationGMRF::evalJacobian(double& dr_dx) const
 {
 	dr_dx = 1.0;
 }
 // ============ TPriorFactorGMRF ===========
 double CRandomFieldGridMap3D::TPriorFactorGMRF::evaluateResidual() const
 {
-	return m_parent->m_map[this->node_id_i].mean_value - m_parent->m_map[this->node_id_j].mean_value;
+	return m_parent->m_map[this->node_id_i].mean_value -
+		   m_parent->m_map[this->node_id_j].mean_value;
 }
 double CRandomFieldGridMap3D::TPriorFactorGMRF::getInformation() const
 {
 	return this->Lambda;
 }
-void CRandomFieldGridMap3D::TPriorFactorGMRF::evalJacobian(double &dr_dx_i, double &dr_dx_j) const
+void CRandomFieldGridMap3D::TPriorFactorGMRF::evalJacobian(
+	double& dr_dx_i, double& dr_dx_j) const
 {
 	dr_dx_i = +1.0;
 	dr_dx_j = -1.0;

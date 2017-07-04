@@ -21,10 +21,10 @@ using namespace mrpt::gui;
 using namespace mrpt::math;
 using namespace std;
 
-
-
 #include <mrpt/examples_config.h>
-const string   sample_simplemap_file = MRPT_EXAMPLES_BASE_DIRECTORY + string("../share/mrpt/datasets/localization_demo.simplemap.gz");
+const string sample_simplemap_file =
+	MRPT_EXAMPLES_BASE_DIRECTORY +
+	string("../share/mrpt/datasets/localization_demo.simplemap.gz");
 
 // ------------------------------------------------------
 //				TestVoronoi
@@ -40,20 +40,19 @@ void TestVoronoi()
 	// Load simplemap:
 	cout << "Loading simplemap: " << sample_simplemap_file << endl;
 
-	CSimpleMap  simplemap;
+	CSimpleMap simplemap;
 	simplemap.loadFromFile(sample_simplemap_file);
 
 	// Load a grid map:
 	cout << "Building gridmap...\n";
 
-	COccupancyGridMap2D  gridmap(-5,5,  -5,5,  0.10);
+	COccupancyGridMap2D gridmap(-5, 5, -5, 5, 0.10);
 	gridmap.loadFromSimpleMap(simplemap);
 
 	// Build voronoi:
 	cout << "Building Voronoi diagram...\n";
 
-	gridmap.buildVoronoiDiagram(0.5,0.3);
-
+	gridmap.buildVoronoiDiagram(0.5, 0.3);
 
 	// Show results:
 	CImage img_grid;
@@ -62,25 +61,26 @@ void TestVoronoi()
 	CImage img_voronoi;
 	CMatrixDouble mat_voronoi;
 	gridmap.getVoronoiDiagram().getAsMatrix(mat_voronoi);
-	img_voronoi.setFromMatrix(mat_voronoi, false /* do normalization */ );
+	img_voronoi.setFromMatrix(mat_voronoi, false /* do normalization */);
 
 	// Show results:
-	CDisplayWindow   win1("Grid map");
+	CDisplayWindow win1("Grid map");
 	win1.showImage(img_grid);
 
-	CDisplayWindow   win2("Voronoi map");
+	CDisplayWindow win2("Voronoi map");
 	win2.showImage(img_voronoi);
 
 	mrpt::system::pause();
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
 	try
 	{
 		TestVoronoi();
 		return 0;
-	} catch (exception &e)
+	}
+	catch (exception& e)
 	{
 		cout << "MRPT exception caught: " << e.what() << endl;
 		return -1;
@@ -91,4 +91,3 @@ int main(int argc, char **argv)
 		return -1;
 	}
 }
-

@@ -11,13 +11,12 @@
 #include "jinclude.h"
 #include "mrpt_jpeglib.h"
 
-
 /*
  * jpeg_zigzag_order[i] is the zigzag-order position of the i'th element
  * of a DCT block read in natural order (left to right, top to bottom).
  */
 
-#if 0				/* This table is not actually needed in v6a */
+#if 0 /* This table is not actually needed in v6a */
 
 const int jpeg_zigzag_order[DCTSIZE2] = {
    0,  1,  5,  6, 14, 15, 27, 28,
@@ -46,42 +45,32 @@ const int jpeg_zigzag_order[DCTSIZE2] = {
  * fake entries.
  */
 
-const int jpeg_natural_order[DCTSIZE2+16] = {
-  0,  1,  8, 16,  9,  2,  3, 10,
- 17, 24, 32, 25, 18, 11,  4,  5,
- 12, 19, 26, 33, 40, 48, 41, 34,
- 27, 20, 13,  6,  7, 14, 21, 28,
- 35, 42, 49, 56, 57, 50, 43, 36,
- 29, 22, 15, 23, 30, 37, 44, 51,
- 58, 59, 52, 45, 38, 31, 39, 46,
- 53, 60, 61, 54, 47, 55, 62, 63,
- 63, 63, 63, 63, 63, 63, 63, 63, /* extra entries for safety in decoder */
- 63, 63, 63, 63, 63, 63, 63, 63
-};
-
+const int jpeg_natural_order[DCTSIZE2 + 16] =
+	{
+		0,  1,  8,  16, 9,  2,  3,  10, 17, 24, 32, 25, 18, 11, 4,
+		5,  12, 19, 26, 33, 40, 48, 41, 34, 27, 20, 13, 6,  7,  14,
+		21, 28, 35, 42, 49, 56, 57, 50, 43, 36, 29, 22, 15, 23, 30,
+		37, 44, 51, 58, 59, 52, 45, 38, 31, 39, 46, 53, 60, 61, 54,
+		47, 55, 62, 63, 63, 63, 63, 63, 63, 63, 63, 63, /* extra entries for
+														   safety in decoder */
+		63, 63, 63, 63, 63, 63, 63, 63};
 
 /*
  * Arithmetic utilities
  */
 
 GLOBAL(long)
-jdiv_round_up (long a, long b)
+jdiv_round_up(long a, long b)
 /* Compute a/b rounded up to next integer, ie, ceil(a/b) */
-/* Assumes a >= 0, b > 0 */
-{
-  return (a + b - 1L) / b;
-}
-
-
+/* Assumes a >= 0, b > 0 */ { return (a + b - 1L) / b; }
 GLOBAL(long)
-jround_up (long a, long b)
+jround_up(long a, long b)
 /* Compute a rounded up to next multiple of b, ie, ceil(a/b)*b */
 /* Assumes a >= 0, b > 0 */
 {
-  a += b - 1L;
-  return a - (a % b);
+	a += b - 1L;
+	return a - (a % b);
 }
-
 
 /* On normal machines we can apply MEMCOPY() and MEMZERO() to sample arrays
  * and coefficient-block arrays.  This won't work on 80x86 because the arrays
@@ -92,84 +81,85 @@ jround_up (long a, long b)
  * is not all that great, because these routines aren't very heavily used.)
  */
 
-#ifndef NEED_FAR_POINTERS	/* normal case, same as regular macros */
-#define FMEMCOPY(dest,src,size)	MEMCOPY(dest,src,size)
-#define FMEMZERO(target,size)	MEMZERO(target,size)
-#else				/* 80x86 case, define if we can */
+#ifndef NEED_FAR_POINTERS /* normal case, same as regular macros */
+#define FMEMCOPY(dest, src, size) MEMCOPY(dest, src, size)
+#define FMEMZERO(target, size) MEMZERO(target, size)
+#else /* 80x86 case, define if we can */
 #ifdef USE_FMEM
-#define FMEMCOPY(dest,src,size)	_fmemcpy((void FAR *)(dest), (const void FAR *)(src), (size_t)(size))
-#define FMEMZERO(target,size)	_fmemset((void FAR *)(target), 0, (size_t)(size))
+#define FMEMCOPY(dest, src, size) \
+	_fmemcpy((void FAR*)(dest), (const void FAR*)(src), (size_t)(size))
+#define FMEMZERO(target, size) _fmemset((void FAR*)(target), 0, (size_t)(size))
 #endif
 #endif
-
 
 GLOBAL(void)
-jcopy_sample_rows (JSAMPARRAY input_array, int source_row,
-		   JSAMPARRAY output_array, int dest_row,
-		   int num_rows, JDIMENSION num_cols)
+jcopy_sample_rows(
+	JSAMPARRAY input_array, int source_row, JSAMPARRAY output_array,
+	int dest_row, int num_rows, JDIMENSION num_cols)
 /* Copy some rows of samples from one place to another.
  * num_rows rows are copied from input_array[source_row++]
  * to output_array[dest_row++]; these areas may overlap for duplication.
  * The source and destination arrays must be at least as wide as num_cols.
  */
 {
-  JSAMPROW inptr, outptr;
+	JSAMPROW inptr, outptr;
 #ifdef FMEMCOPY
-  size_t count = (size_t) (num_cols * SIZEOF(JSAMPLE));
+	size_t count = (size_t)(num_cols * SIZEOF(JSAMPLE));
 #else
-  JDIMENSION count;
+	JDIMENSION count;
 #endif
-  int row;
+	int row;
 
-  input_array += source_row;
-  output_array += dest_row;
+	input_array += source_row;
+	output_array += dest_row;
 
-  for (row = num_rows; row > 0; row--) {
-    inptr = *input_array++;
-    outptr = *output_array++;
+	for (row = num_rows; row > 0; row--)
+	{
+		inptr = *input_array++;
+		outptr = *output_array++;
 #ifdef FMEMCOPY
-    FMEMCOPY(outptr, inptr, count);
+		FMEMCOPY(outptr, inptr, count);
 #else
-    for (count = num_cols; count > 0; count--)
-      *outptr++ = *inptr++;	/* needn't bother with GETJSAMPLE() here */
+		for (count = num_cols; count > 0; count--)
+			*outptr++ = *inptr++; /* needn't bother with GETJSAMPLE() here */
 #endif
-  }
+	}
 }
 
-
 GLOBAL(void)
-jcopy_block_row (JBLOCKROW input_row, JBLOCKROW output_row,
-		 JDIMENSION num_blocks)
+jcopy_block_row(
+	JBLOCKROW input_row, JBLOCKROW output_row, JDIMENSION num_blocks)
 /* Copy a row of coefficient blocks from one place to another. */
 {
 #ifdef FMEMCOPY
-  FMEMCOPY(output_row, input_row, num_blocks * (DCTSIZE2 * SIZEOF(JCOEF)));
+	FMEMCOPY(output_row, input_row, num_blocks * (DCTSIZE2 * SIZEOF(JCOEF)));
 #else
-  JCOEFPTR inptr, outptr;
-  long count;
+	JCOEFPTR inptr, outptr;
+	long count;
 
-  inptr = (JCOEFPTR) input_row;
-  outptr = (JCOEFPTR) output_row;
-  for (count = (long) num_blocks * DCTSIZE2; count > 0; count--) {
-    *outptr++ = *inptr++;
-  }
+	inptr = (JCOEFPTR)input_row;
+	outptr = (JCOEFPTR)output_row;
+	for (count = (long)num_blocks * DCTSIZE2; count > 0; count--)
+	{
+		*outptr++ = *inptr++;
+	}
 #endif
 }
 
-
 GLOBAL(void)
-jzero_far (void FAR * target, size_t bytestozero)
+jzero_far(void FAR* target, size_t bytestozero)
 /* Zero out a chunk of FAR memory. */
 /* This might be sample-array data, block-array data, or alloc_large data. */
 {
 #ifdef FMEMZERO
-  FMEMZERO(target, bytestozero);
+	FMEMZERO(target, bytestozero);
 #else
-  char FAR * ptr = (char FAR *) target;
-  size_t count;
+	char FAR* ptr = (char FAR*)target;
+	size_t count;
 
-  for (count = bytestozero; count > 0; count--) {
-    *ptr++ = 0;
-  }
+	for (count = bytestozero; count > 0; count--)
+	{
+		*ptr++ = 0;
+	}
 #endif
 }

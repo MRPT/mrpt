@@ -17,12 +17,17 @@ struct XsLibraryLoader;
 #ifdef __cplusplus
 extern "C" {
 #else
-#define XSLIBRARYLOADER_INITIALIZER { nullptr }
+#define XSLIBRARYLOADER_INITIALIZER \
+	{                               \
+		nullptr                     \
+	}
 typedef struct XsLibraryLoader XsLibraryLoader;
 #endif
 
-XSTYPES_DLL_API int XsLibraryLoader_load(XsLibraryLoader* thisp, const XsString* libraryName);
-XSTYPES_DLL_API void* XsLibraryLoader_resolve(const XsLibraryLoader* thisp, const char *functionName);
+XSTYPES_DLL_API int XsLibraryLoader_load(
+	XsLibraryLoader* thisp, const XsString* libraryName);
+XSTYPES_DLL_API void* XsLibraryLoader_resolve(
+	const XsLibraryLoader* thisp, const char* functionName);
 XSTYPES_DLL_API int XsLibraryLoader_unload(XsLibraryLoader* thisp);
 XSTYPES_DLL_API int XsLibraryLoader_isLoaded(const XsLibraryLoader* thisp);
 XSTYPES_DLL_API void XsLibraryLoader_getErrorString(XsString* error);
@@ -33,12 +38,12 @@ XSTYPES_DLL_API void XsLibraryLoader_getErrorString(XsString* error);
 
 /*! \brief The Xsens dynamic library loader base class
 */
-struct XsLibraryLoader {
+struct XsLibraryLoader
+{
 #ifdef __cplusplus
-public:
+   public:
 	/*! \brief Create a library loader */
-	inline XsLibraryLoader() :
-		m_handle(nullptr)
+	inline XsLibraryLoader() : m_handle(nullptr)
 	{
 		// avoid compiler warnings about
 		// an unused handle. It is used in the c implementations
@@ -46,11 +51,7 @@ public:
 	}
 
 	/*! \brief Destroy a library loader */
-	inline ~XsLibraryLoader()
-	{
-		unload();
-	}
-
+	inline ~XsLibraryLoader() { unload(); }
 	/*! \brief Load the library
 	  \param[in] libraryName the name of the library to load
 	  \return true if the library could be loaded, false otherwise
@@ -64,28 +65,21 @@ public:
 
 	  \return true if a library has been loaded, false otherwise
 	*/
-	inline bool isLoaded() const
-	{
-		return XsLibraryLoader_isLoaded(this) != 0;
-	}
-
+	inline bool isLoaded() const { return XsLibraryLoader_isLoaded(this) != 0; }
 	/*! \brief Resolve a function from the library
 
 	  \param[in] functionName the name of the function to resolve
-	  \return a pointer to the resolved function, nullptr if nothing could be resolved
+	  \return a pointer to the resolved function, nullptr if nothing could be
+	  resolved
 	*/
-	inline void* resolve(const char *functionName) const
+	inline void* resolve(const char* functionName) const
 	{
 		return XsLibraryLoader_resolve(this, functionName);
 	}
 
 	/*! \brief Unload the loaded library
 	*/
-	inline void unload() throw()
-	{
-		XsLibraryLoader_unload(this);
-	}
-
+	inline void unload() throw() { XsLibraryLoader_unload(this); }
 	/*! \brief Return a string describing the error that occurred
 
 	  Use this function after a function returned with an error to
@@ -99,9 +93,10 @@ public:
 		XsLibraryLoader_getErrorString(&rv);
 		return rv;
 	}
-private:
+
+   private:
 #endif
 	void* m_handle;
 };
 
-#endif //XSLIBRARYLOADER_H
+#endif  // XSLIBRARYLOADER_H

@@ -20,50 +20,47 @@
 #include <wx/statbmp.h>
 //*)
 
-class CAboutBox: public wxDialog
+class CAboutBox : public wxDialog
 {
-public:
+   public:
+	CAboutBox(wxWindow* parent, wxWindowID id = -1);
+	virtual ~CAboutBox();
 
-    CAboutBox(wxWindow* parent,wxWindowID id = -1);
-    virtual ~CAboutBox();
+	//(*Identifiers(CAboutBox)
+	static const long ID_STATICTEXT1;
+	static const long ID_STATICTEXT2;
+	static const long ID_STATICBITMAP1;
+	static const long ID_STATICLINE1;
+	static const long ID_TEXTCTRL1;
+	static const long ID_TEXTCTRL2;
+	static const long ID_TEXTCTRL3;
+	static const long ID_NOTEBOOK1;
+	static const long ID_BUTTON1;
+	//*)
 
-    //(*Identifiers(CAboutBox)
-    static const long ID_STATICTEXT1;
-    static const long ID_STATICTEXT2;
-    static const long ID_STATICBITMAP1;
-    static const long ID_STATICLINE1;
-    static const long ID_TEXTCTRL1;
-    static const long ID_TEXTCTRL2;
-    static const long ID_TEXTCTRL3;
-    static const long ID_NOTEBOOK1;
-    static const long ID_BUTTON1;
-    //*)
+   protected:
+	//(*Handlers(CAboutBox)
+	void OnInit(wxInitDialogEvent& event);
+	void OnButton1Click(wxCommandEvent& event);
+	void OnChar(wxKeyEvent& event);
+	//*)
 
-protected:
+	//(*Declarations(CAboutBox)
+	wxStaticText* lbProgName;
+	wxFlexGridSizer* FlexGridSizer1;
+	wxTextCtrl* lbLicense;
+	wxButton* Button1;
+	wxFlexGridSizer* FlexGridSizer4;
+	wxStaticLine* StaticLine1;
+	wxStaticText* lbBuild;
+	wxTextCtrl* TextCtrl1;
+	wxNotebook* Notebook1;
+	wxTextCtrl* lbInfo;
+	wxStaticBitmap* StaticBitmap1;
+	//*)
 
-    //(*Handlers(CAboutBox)
-    void OnInit(wxInitDialogEvent& event);
-    void OnButton1Click(wxCommandEvent& event);
-    void OnChar(wxKeyEvent& event);
-    //*)
-
-    //(*Declarations(CAboutBox)
-    wxStaticText* lbProgName;
-    wxFlexGridSizer* FlexGridSizer1;
-    wxTextCtrl* lbLicense;
-    wxButton* Button1;
-    wxFlexGridSizer* FlexGridSizer4;
-    wxStaticLine* StaticLine1;
-    wxStaticText* lbBuild;
-    wxTextCtrl* TextCtrl1;
-    wxNotebook* Notebook1;
-    wxTextCtrl* lbInfo;
-    wxStaticBitmap* StaticBitmap1;
-    //*)
-
-private:
-
-    DECLARE_EVENT_TABLE()
+   private:
+	DECLARE_EVENT_TABLE()
 };
 
 #endif

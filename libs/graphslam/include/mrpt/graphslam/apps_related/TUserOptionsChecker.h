@@ -29,70 +29,73 @@
 #include <iostream>
 #include <vector>
 
-namespace mrpt { namespace graphslam { namespace apps {
-
+namespace mrpt
+{
+namespace graphslam
+{
+namespace apps
+{
 /**\brief Properties struct for both the Registration Decider and Optimizer
 	* classes
 	*/
-struct GRAPHSLAM_IMPEXP TRegistrationDeciderOrOptimizerProps {
-	TRegistrationDeciderOrOptimizerProps():
-		name(""),
-		description(""),
-		is_mr_slam_class(false),
-		is_slam_2d(true), // by default the decider/optimizer is considered 2D
-		is_slam_3d(false) {}
+struct GRAPHSLAM_IMPEXP TRegistrationDeciderOrOptimizerProps
+{
+	TRegistrationDeciderOrOptimizerProps()
+		: name(""),
+		  description(""),
+		  is_mr_slam_class(false),
+		  is_slam_2d(
+			  true),  // by default the decider/optimizer is considered 2D
+		  is_slam_3d(false)
+	{
+	}
 	~TRegistrationDeciderOrOptimizerProps() {}
-
-  /**\brief Name of the decider or optimizer class
-   */
-  std::string name;
-  /**\brief General description of the decicder or optimizer class*/
-  std::string description;
-  /**\brief Class indicating if the current decider/optimizer class can be used
-   * in a multi-robot SLAM operation
-   */
-  bool is_mr_slam_class;
-  bool is_slam_2d;
-  bool is_slam_3d;
-
+	/**\brief Name of the decider or optimizer class
+	 */
+	std::string name;
+	/**\brief General description of the decicder or optimizer class*/
+	std::string description;
+	/**\brief Class indicating if the current decider/optimizer class can be
+	 * used
+	 * in a multi-robot SLAM operation
+	 */
+	bool is_mr_slam_class;
+	bool is_slam_2d;
+	bool is_slam_3d;
 };
 
 /**\brief Properties struct for the Registration Decider classes.
  *
  * \ingroup mrpt_graphslam_grp
  */
-struct GRAPHSLAM_IMPEXP TRegistrationDeciderProps :
-	public TRegistrationDeciderOrOptimizerProps
+struct GRAPHSLAM_IMPEXP TRegistrationDeciderProps
+	: public TRegistrationDeciderOrOptimizerProps
 {
-	TRegistrationDeciderProps():
-		type(""),
-		rawlog_format("") {}
+	TRegistrationDeciderProps() : type(""), rawlog_format("") {}
 	~TRegistrationDeciderProps() {}
-
-  /**\brief Type of decider.
-   *
-   * Available options are:
-   * - node
-   * - edge
-   */
-  std::string type;
- 	/**\brief Rawlog formats that the decider can be used in */
-  std::string rawlog_format;
-  /**\brief Measurements that the current decider class can utilize */
-  std::vector<std::string> observations_used;
+	/**\brief Type of decider.
+	 *
+	 * Available options are:
+	 * - node
+	 * - edge
+	 */
+	std::string type;
+	/**\brief Rawlog formats that the decider can be used in */
+	std::string rawlog_format;
+	/**\brief Measurements that the current decider class can utilize */
+	std::vector<std::string> observations_used;
 };
 
 /**\brief Properties struct for the Optimizer classes.
  *
  * \ingroup mrpt_graphslam_grp
  */
-struct GRAPHSLAM_IMPEXP TOptimizerProps :
-	public TRegistrationDeciderOrOptimizerProps
+struct GRAPHSLAM_IMPEXP TOptimizerProps
+	: public TRegistrationDeciderOrOptimizerProps
 {
 	TOptimizerProps() {}
 	~TOptimizerProps() {}
 };
-
 
 /**\brief Class containing the declarations of supplementary methods that can
  * be used in application-related code.
@@ -102,23 +105,27 @@ struct GRAPHSLAM_IMPEXP TOptimizerProps :
  *
  * \ingroup mrpt_graphslam_grp
  */
-template<class GRAPH_t>
-struct TUserOptionsChecker {
+template <class GRAPH_t>
+struct TUserOptionsChecker
+{
 	/**\name handy typedefs for the creation of deciders/optimzer instances from
 	 * the corresponding strings
 	 */
 	/**\{*/
 	typedef typename GRAPH_t::constraint_t constraint_t;
-		typedef typename GRAPH_t::constraint_t::type_value pose_t;
+	typedef typename GRAPH_t::constraint_t::type_value pose_t;
 	typedef std::map<
 		std::string,
-		mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_t>*(*)()> node_regs_t;
+		mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_t>* (*)()>
+		node_regs_t;
 	typedef std::map<
 		std::string,
-		mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_t>*(*)()> edge_regs_t;
+		mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_t>* (*)()>
+		edge_regs_t;
 	typedef std::map<
 		std::string,
-		mrpt::graphslam::optimizers::CGraphSlamOptimizer<GRAPH_t>*(*)()> optimizers_t;
+		mrpt::graphslam::optimizers::CGraphSlamOptimizer<GRAPH_t>* (*)()>
+		optimizers_t;
 
 	/**\}*/
 
@@ -144,52 +151,55 @@ struct TUserOptionsChecker {
 	 */
 	virtual void populateDeciderOptimizerProperties();
 	/**\brief Check if the given registrator decider exists in the vector of
- 	 * deciders.
- 	 * \param[in] given_reg String specifying the type of decider - This should
- 	 * either be "node" or "edge"
- 	 * \return True if it exists, false otherwise
- 	 */
+	 * deciders.
+	 * \param[in] given_reg String specifying the type of decider - This should
+	 * either be "node" or "edge"
+	 * \return True if it exists, false otherwise
+	 */
 	virtual bool checkRegistrationDeciderExists(
-			std::string given_reg,
-			std::string reg_type) const;
+		std::string given_reg, std::string reg_type) const;
 
 	/**\brief Check if the given optimizer exists in the vector of optimizers.
- 	 * \return True if it exists, false otherwise
- 	 */
-	virtual bool checkOptimizerExists(
-			std::string given_opt) const;
+	 * \return True if it exists, false otherwise
+	 */
+	virtual bool checkOptimizerExists(std::string given_opt) const;
 
-	/**\brief Print the registration deciders vector in a formatted manner to the
- 	 * standard output
- 	 * \param[in] reg_type Method prints both the node registration
- 	 * and edge registration deciders of the given vector unless specified
- 	 * otherwise. The available argument options are "node", "edge", "all"
- 	 */
-	virtual void dumpRegistrarsToConsole(std::string reg_type="all") const;
+	/**\brief Print the registration deciders vector in a formatted manner to
+	 * the
+	 * standard output
+	 * \param[in] reg_type Method prints both the node registration
+	 * and edge registration deciders of the given vector unless specified
+	 * otherwise. The available argument options are "node", "edge", "all"
+	 */
+	virtual void dumpRegistrarsToConsole(std::string reg_type = "all") const;
 	/**\brief Print the optimizers vector in a formatted manner to the standard
- 	 * output.
- 	 */
+	 * output.
+	 */
 	virtual void dumpOptimizersToConsole() const;
 
-	/**\name Methods for initializing decider/optimizer instances based on the user
- 	 * command line choices - http://stackoverflow.com/a/582456/2843583
- 	 *
- 	 * \warning Caller is responsible for deleting the initialized instances
- 	 */
+	/**\name Methods for initializing decider/optimizer instances based on the
+	 * user
+	 * command line choices - http://stackoverflow.com/a/582456/2843583
+	 *
+	 * \warning Caller is responsible for deleting the initialized instances
+	 */
 	/**\{*/
-	template<class T>
+	template <class T>
 	static mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_t>*
-	createNodeRegistrationDecider() {
+		createNodeRegistrationDecider()
+	{
 		return new T;
 	}
-	template<class T>
+	template <class T>
 	static mrpt::graphslam::deciders::CEdgeRegistrationDecider<GRAPH_t>*
-	createEdgeRegistrationDecider() {
+		createEdgeRegistrationDecider()
+	{
 		return new T;
 	}
-	template<class T>
+	template <class T>
 	static mrpt::graphslam::optimizers::CGraphSlamOptimizer<GRAPH_t>*
-	createGraphSlamOptimizer() {
+		createGraphSlamOptimizer()
+	{
 		return new T;
 	}
 	/**}*/
@@ -215,11 +225,10 @@ struct TUserOptionsChecker {
 
 	const std::string sep_header;
 	const std::string sep_subheader;
-
 };
-
-
-} } } // END OF NAMESPACES
+}
+}
+}  // END OF NAMESPACES
 #include "TUserOptionsChecker_impl.h"
 
 #endif /* end of include guard: TUSEROPTIONSCHECKER_H */
