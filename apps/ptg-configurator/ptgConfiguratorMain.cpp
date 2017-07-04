@@ -167,7 +167,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
     wxFlexGridSizer* FlexGridSizer1;
     wxFlexGridSizer* FlexGridSizer11;
     wxMenu* Menu2;
-    
+
     Create(parent, wxID_ANY, _("PTG configurator - Part of the MRPT project"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE, _T("wxID_ANY"));
     SetClientSize(wxSize(893,576));
     {
@@ -405,7 +405,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
     SetStatusBar(StatusBar1);
     FlexGridSizer1->SetSizeHints(this);
     Center();
-    
+
     Connect(ID_CHOICE1,wxEVT_COMMAND_CHOICE_SELECTED,(wxObjectEventFunction)&ptgConfiguratorframe::OncbPTGClassSelect);
     Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&ptgConfiguratorframe::OnbtnReloadParamsClick);
     Connect(ID_SPINCTRL1,wxEVT_COMMAND_SPINCTRL_UPDATED,(wxObjectEventFunction)&ptgConfiguratorframe::OnedPTGIndexChange);
@@ -432,7 +432,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
 	m_plot->Connect(wxEVT_LEFT_DOWN,(wxObjectEventFunction)&ptgConfiguratorframe::Onplot3DMouseClick,0,this);
 
 	// Redirect all output to control:
-	m_myRedirector = new CMyRedirector( edLog, true, 100, true);
+	m_myRedirector = new CMyRedirector( edLog, false, 100, true);
 
 
 	WX_START_TRY
@@ -458,7 +458,7 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent,wxWindowID id) :
 
 	gl_TPSpace_TP_obstacles = std::make_shared<mrpt::opengl::CSetOfObjects>();
 	gl_TPSpace_clearance = std::make_shared<mrpt::opengl::CMesh>(true, -5.0f, 5.0f, -5.0f, 5.0f);
-	gl_TPSpace_clearance_interp = std::make_shared<mrpt::opengl::CMesh>(true, -5.0f, 5.0f, -5.0f, 5.0f);	
+	gl_TPSpace_clearance_interp = std::make_shared<mrpt::opengl::CMesh>(true, -5.0f, 5.0f, -5.0f, 5.0f);
 	gl_TPSpace_clearance_interp->setVisibility(false);
 
 	gl_view_TPSpace->insert(gl_TPSpace_TP_obstacles);
@@ -760,7 +760,7 @@ void ptgConfiguratorframe::rebuild3Dview()
 				const double tim_render_cd = timer.Tac();
 
 				StatusBar1->SetStatusText(
-					wxString::Format(wxT("Clearance-diagram time: build=%ss render=%ss"), 
+					wxString::Format(wxT("Clearance-diagram time: build=%ss render=%ss"),
 					mrpt::system::unitsFormat(tim_build_cd, 2).c_str(),
 					mrpt::system::unitsFormat(tim_render_cd, 2).c_str()
 					), 3);
