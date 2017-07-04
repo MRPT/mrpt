@@ -1,14 +1,11 @@
-/*
- * This file is part of the OpenKinect Project. http://www.openkinect.org
- *
- * Copyright (c) 2010-2011 individual OpenKinect contributors. See the CONTRIB
- * file for details.
- *
- * This code is licensed to you under the terms of the Apache License, version
- * 2.0. See the APACHE20 file for the text of the license,
- * or the following URLs:
- * http://www.apache.org/licenses/LICENSE-2.0
- */   
+/* +------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)            |
+   |                          http://www.mrpt.org/                          |
+   |                                                                        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file     |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                |
+   | Released under BSD License. See details in http://www.mrpt.org/License |
+   +------------------------------------------------------------------------+ */
 
 #ifndef LIBFREENECT_H
 #define LIBFREENECT_H
