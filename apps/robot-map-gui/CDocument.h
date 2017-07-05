@@ -38,7 +38,6 @@ public:
 	const mrpt::maps::CSimpleMap &simplemap() const;
 	const mrpt::maps::CMultiMetricMap::TListMaps &config() const;
 
-
 	const TypeConfig& typeConfig() const;
 
 
@@ -48,4 +47,5 @@ private:
 	mrpt::maps::CSimpleMap m_simplemap;
 	mrpt::maps::CMultiMetricMap m_metricmap;
 	TypeConfig m_typeConfigs;
+
 };

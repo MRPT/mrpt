@@ -36,6 +36,9 @@ CMainWindow::CMainWindow(QWidget *parent)
 	QObject::connect(m_ui->m_configWidget, SIGNAL(removedMap()), SLOT(updateConfig()));
 	QObject::connect(m_ui->m_configWidget, SIGNAL(updatedConfig()), SLOT(updateConfig()));
 	QObject::connect(m_ui->m_observationsTree,	SIGNAL(clicked(const QModelIndex &)),	SLOT(itemClicked(const QModelIndex &)));
+
+
+	QObject::connect(m_ui->m_actionShowAllObs, SIGNAL(triggered(bool)), SLOT(showAllObservation(bool)));
 }
 
 CMainWindow::~CMainWindow()
@@ -47,6 +50,16 @@ CMainWindow::~CMainWindow()
 		delete m_model;
 
 	delete m_ui->m_configWidget;
+}
+
+void CMainWindow::showAllObservation(bool is)
+{
+	for (int i = 0; i < m_ui->m_tabWidget->count(); ++i)
+	{
+		CGlWidget *gl = dynamic_cast<CGlWidget *>(m_ui->m_tabWidget->widget(i));
+		assert(gl);
+		gl->setSelectedObservation(is);
+	}
 }
 
 void CMainWindow::openMap()
@@ -90,8 +103,8 @@ void CMainWindow::itemClicked(const QModelIndex &index)
 		{
 			QWidget *w = m_ui->m_tabWidget->widget(i);
 			CGlWidget *gl = dynamic_cast<CGlWidget *>(w);
-			if (gl)
-				gl->setSelected(posesNode->getPose());
+			assert(gl);
+			gl->setSelected(posesNode->getPose());
 		}
 	}
 }
@@ -155,6 +168,8 @@ void CMainWindow::updateRenderMapFromConfig()
 		CGlWidget *gl = new CGlWidget();
 		gl->fillMap(it.second);
 		m_ui->m_tabWidget->addTab(gl, QString::fromStdString(it.first));
+		gl->setDocument(m_document);
+		gl->setSelectedObservation(m_ui->m_actionShowAllObs->isChecked());
 	}
 }
 
@@ -164,4 +179,12 @@ void CMainWindow::createNewDocument()
 		delete m_document;
 
 	m_document = new CDocument();
+
+	for (int i = 0; i < m_ui->m_tabWidget->count(); ++i)
+	{
+		CGlWidget *gl = dynamic_cast<CGlWidget *>(m_ui->m_tabWidget->widget(i));
+		assert(gl);
+
+		gl->setDocument(m_document);
+	}
 }
