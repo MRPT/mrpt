@@ -38,7 +38,7 @@ build:
     - sudo apt-get install -y libgtest-dev
     - sudo apt-get install -y libeigen3-dev
     - sudo apt-get install -y libsuitesparse-dev
-    - sudo apt-get install -y libpcl-dev
+#    - sudo apt-get install -y libpcl-dev   # Disabled: seems to cause problems building with cotire?
     - sudo apt-get install -y libopenni2-dev
     - sudo apt-get install -y libudev-dev
     - sudo apt-get install -y libproj-dev
