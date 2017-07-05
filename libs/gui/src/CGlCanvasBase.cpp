@@ -9,6 +9,7 @@
 
 #include "gui-precomp.h"   // Precompiled headers
 #include <mrpt/gui/CGlCanvasBase.h>
+#include <mrpt/utils/CTicTac.h>
 
 
 using namespace mrpt;
@@ -133,6 +134,19 @@ void CGlCanvasBase::updateLastPos(int x, int y)
 	m_mouseLastY = y;
 }
 
+void CGlCanvasBase::resizeViewport(int w, int h)
+{
+	if (w == -1 || h == -1)
+		return;
+
+	glViewport(0,0,(GLint) w, (GLint) h);
+}
+
+void CGlCanvasBase::clearColors()
+{
+	glClearColor(clearColorR,clearColorG,clearColorB,1.0);
+}
+
 CGlCanvasBase::CamaraParams CGlCanvasBase::updatePan(CamaraParams &params, int x, int y)
 {
 	float	Ay = -(x - mouseClickX);
@@ -187,6 +201,86 @@ void CGlCanvasBase::updateCameraParams(CCamera &cam) const
 void CGlCanvasBase::setUseCameraFromScene(bool is)
 {
 	useCameraFromScene = is;
+}
+
+double CGlCanvasBase::renderCanvas(int width, int height)
+{
+	CTicTac tictac;
+	double	At = 0.1;
+
+	try
+	{
+		// Call PreRender user code:
+		preRender();
+
+
+		glPushAttrib(GL_ALL_ATTRIB_BITS);
+
+		// Set static configs:
+		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_ALPHA_TEST);
+		glEnable(GL_TEXTURE_2D);
+
+
+		// PART 1a: Set the viewport
+		// --------------------------------------
+		resizeViewport( (GLsizei)width, (GLsizei)height);
+
+		// Set the background color:
+		clearColors();
+
+		if (m_openGLScene)
+		{
+			// Set the camera params in the scene:
+			if (!useCameraFromScene)
+			{
+				COpenGLViewport::Ptr view= m_openGLScene->getViewport("main");
+				if (!view)
+				{
+					THROW_EXCEPTION("Fatal error: there is no 'main' viewport in the 3D scene!");
+				}
+
+				mrpt::opengl::CCamera & cam = view->getCamera();
+				updateCameraParams(cam);
+			}
+
+			// PART 2: Set the MODELVIEW matrix
+			// --------------------------------------
+			glMatrixMode(GL_MODELVIEW);
+			glLoadIdentity();
+
+			tictac.Tic();
+
+			// PART 3: Draw primitives:
+			// --------------------------------------
+			m_openGLScene->render();
+
+		} // end if "m_openGLScene!=nullptr"
+
+		postRender();
+
+		// Flush & swap buffers to disply new image:
+		glFlush();
+		swapBuffers();
+
+		At = tictac.Tac();
+
+		glPopAttrib();
+	}
+	catch (std::exception &e)
+	{
+		glPopAttrib();
+		const std::string err_msg = std::string("[CMyGLCanvasBase::Render] Exception!: ") +std::string(e.what());
+		std::cerr << err_msg;
+		renderError(err_msg);
+	}
+	catch (...)
+	{
+		glPopAttrib();
+		std::cerr << "Runtime error!" << std::endl;
+	}
+
+	return At;
 }
 
 

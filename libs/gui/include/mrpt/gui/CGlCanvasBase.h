@@ -20,7 +20,7 @@ namespace mrpt
 {
 namespace gui
 {
-/** This base class implements a working with opengl::Camera and a OpenGL canvas, and it's used in gui::CMyGLCanvasBase and gui::CQGLCanvasBase.
+/** This base class implements a working with opengl::Camera and a OpenGL canvas, and it's used in gui::CMyGLCanvasBase and gui::CQtGlCanvasBase.
 */
 class CGlCanvasBase
 {
@@ -43,6 +43,8 @@ public:
 	void setMousePos(int x, int y);
 	void setMouseClicked(bool is);
 	void updateLastPos(int x, int y);
+	void resizeViewport(int w, int h);
+	void clearColors();
 
 	CamaraParams updateZoom(CamaraParams &params, int x, int y);
 	CamaraParams updateZoom(CamaraParams &params, float delta);
@@ -108,7 +110,13 @@ public:
 	/**  At constructor an empty scene is created. The object is freed at GL canvas destructor.
 			  */
 	mrpt::opengl::COpenGLScene::Ptr		m_openGLScene;
+protected:
+	virtual void swapBuffers() = 0;
+	virtual void preRender() = 0;
+	virtual void postRender() = 0;
+	virtual void renderError(const std::string &err_msg) = 0;
 
+	virtual double renderCanvas(int width = -1, int height = -1);
 private:
 	int		m_mouseLastX, m_mouseLastY;
 	int		mouseClickX, mouseClickY;
