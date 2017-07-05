@@ -17,6 +17,7 @@
 #include <QAction>
 #include <QFileDialog>
 #include <QTreeWidgetItem>
+#include <QDebug>
 
 #include "ui_CMainWindow.h"
 
@@ -55,17 +56,27 @@ void CMainWindow::openMap()
 	if (fileName.size() == 0)
 		return;
 
-	if (m_document)
-		delete m_document;
+	createNewDocument();
 
-	m_document = new CDocument(fileName.toStdString());
+	try
+	{
+		m_document->loadSimpleMap(fileName.toStdString());
 
-	updateRenderMapFromConfig();
+		mrpt::maps::TSetOfMetricMapInitializers mapCfg = m_ui->m_configWidget->config();
+		m_document->setListOfMaps(mapCfg);
 
-	if (m_model)
-		delete m_model;
-	m_model = new CObservationTreeModel(m_document->simplemap(), m_ui->m_observationsTree);
-	m_ui->m_observationsTree->setModel(m_model);
+		updateRenderMapFromConfig();
+
+		if (m_model)
+			delete m_model;
+		m_model = new CObservationTreeModel(m_document->simplemap(), m_ui->m_observationsTree);
+		m_ui->m_observationsTree->setModel(m_model);
+	}
+	catch(std::exception &)
+	{
+		createNewDocument();
+		qDebug() << "Unexpected runtime error!";
+	}
 }
 
 void CMainWindow::itemClicked(const QModelIndex &index)
@@ -87,6 +98,8 @@ void CMainWindow::itemClicked(const QModelIndex &index)
 
 void CMainWindow::updateConfig()
 {
+	if (!m_document)
+		return;
 	mrpt::maps::TSetOfMetricMapInitializers mapCfg = m_ui->m_configWidget->config();
 	m_document->setListOfMaps(mapCfg);
 	updateRenderMapFromConfig();
@@ -94,6 +107,9 @@ void CMainWindow::updateConfig()
 
 void CMainWindow::updateConfig(const std::string str)
 {
+	if (!m_document)
+		return;
+
 	m_document->setConfig(str);
 
 	auto config = m_document->config();
@@ -103,6 +119,9 @@ void CMainWindow::updateConfig(const std::string str)
 
 void CMainWindow::applyConfigurationForCurrentMaps()
 {
+	if (!m_document)
+		return;
+
 	mrpt::maps::TSetOfMetricMapInitializers mapCfg = m_ui->m_configWidget->config();
 	m_document->setListOfMaps(mapCfg);
 
@@ -122,13 +141,27 @@ void CMainWindow::applyConfigurationForCurrentMaps()
 
 void CMainWindow::updateRenderMapFromConfig()
 {
+	for (int i = 0; i < m_ui->m_tabWidget->count(); ++i)
+	{
+		QWidget *w = m_ui->m_tabWidget->widget(i);
+		delete w;
+	}
+
 	m_ui->m_tabWidget->clear();
 
 	auto renderizableMaps = m_document->renderizableMaps();
 	for(auto &it: renderizableMaps)
 	{
-		CGlWidget *gl = new CGlWidget(m_ui->m_tabWidget);
+		CGlWidget *gl = new CGlWidget();
 		gl->fillMap(it.second);
 		m_ui->m_tabWidget->addTab(gl, QString::fromStdString(it.first));
 	}
+}
+
+void CMainWindow::createNewDocument()
+{
+	if (m_document)
+		delete m_document;
+
+	m_document = new CDocument();
 }

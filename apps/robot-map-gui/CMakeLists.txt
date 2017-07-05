@@ -13,6 +13,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 if(CMAKE_MRPT_HAS_Qt5 AND CMAKE_MRPT_HAS_OPENGL_GLUT)
 
+	add_definitions(-DMRPT_HAS_Qt5)
 	set(CPP_FILES
 		robot-map-gui_main.cpp
 		CDocument.cpp

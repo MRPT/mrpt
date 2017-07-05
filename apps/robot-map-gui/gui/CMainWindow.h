@@ -40,6 +40,7 @@ private slots:
 	void applyConfigurationForCurrentMaps();
 private:
 	void updateRenderMapFromConfig();
+	void createNewDocument();
 
 	CDocument *m_document;
 	CObservationTreeModel *m_model;

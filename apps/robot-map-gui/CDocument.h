@@ -25,8 +25,10 @@ typedef std::map<TypeOfConfig, std::vector<MetricPolyPtr> > TypeConfig;
 class CDocument
 {
 public:
-	CDocument(const std::string& fileName);
+	CDocument();
 	~CDocument();
+
+	void loadSimpleMap(const std::string &fileName);
 
 	void setListOfMaps(mrpt::maps::TSetOfMetricMapInitializers &mapCfg);
 	void setConfig(const std::string& config);
