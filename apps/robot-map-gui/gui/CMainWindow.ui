@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>640</width>
-    <height>480</height>
+    <width>802</width>
+    <height>663</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -40,7 +40,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>640</width>
+     <width>802</width>
      <height>19</height>
     </rect>
    </property>
@@ -62,6 +62,7 @@
     </property>
     <addaction name="m_actionShowObs"/>
     <addaction name="m_actionShowConfig"/>
+    <addaction name="m_actionShowAllObs"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuTools"/>
@@ -170,6 +171,17 @@
    </property>
    <property name="text">
     <string>Show configuration</string>
+   </property>
+  </action>
+  <action name="m_actionShowAllObs">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Show all observation</string>
    </property>
   </action>
  </widget>

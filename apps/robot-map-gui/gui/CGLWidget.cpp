@@ -14,8 +14,9 @@
 #include "mrpt/utils/CFileGZInputStream.h"
 #include "mrpt/opengl/CGridPlaneXY.h"
 #include "mrpt/opengl/CPointCloud.h"
-
 #include "mrpt/gui/CGlCanvasBase.h"
+
+#include "CDocument.h"
 
 #include "cmath"
 
@@ -29,6 +30,9 @@ using namespace mrpt::opengl;
 
 CGlWidget::CGlWidget(QWidget *parent)
 	: CQtGlCanvasBase(parent)
+	, m_observationSize(10.)
+	, m_doc(nullptr)
+	, m_isShowObs(false)
 {
 	COpenGLViewport::Ptr view = m_openGLScene->getViewport("main");
 	ASSERT_(view);
@@ -42,7 +46,11 @@ CGlWidget::CGlWidget(QWidget *parent)
 	// The camera pointing to the current robot pose:
 	CCamera &cam = view->getCamera();
 	updateCameraParams(cam);
+}
 
+CGlWidget::~CGlWidget()
+{
+	m_visiblePoints.clear();
 }
 
 void CGlWidget::fillMap(const CSetOfObjects::Ptr &renderizableMap)
@@ -53,14 +61,57 @@ void CGlWidget::fillMap(const CSetOfObjects::Ptr &renderizableMap)
 
 	m_map = renderizableMap;
 
-	update();
+	if (m_isShowObs)
+		setSelectedObservation(m_isShowObs);
+	else
+		update();
 }
 
 void CGlWidget::setSelected(const math::TPose3D &pose)
 {
+	if (!m_map)
+		return;
+
 	CPointCloud::Ptr points = CPointCloud::Create();
 	points->insertPoint(pose.x, pose.y, pose.z);
 	points->setColor(mrpt::utils::TColorf(mrpt::utils::TColor::red));
 	points->setPointSize(10.);
 	m_map->insert(points);
+
+	update();
+}
+
+void CGlWidget::setSelectedObservation(bool is)
+{
+	m_isShowObs = is;
+	if (!m_doc ||!m_map)
+		return;
+
+	if (is)
+		for (auto iter = m_doc->simplemap().begin(); iter != m_doc->simplemap().end(); ++iter)
+		{
+			CPointCloud::Ptr points = CPointCloud::Create();
+			math::TPose3D pose = iter->first->getMeanVal();
+			points->insertPoint(pose.x, pose.y, pose.z);
+			points->setColor(mrpt::utils::TColorf(mrpt::utils::TColor::red));
+			points->setPointSize(m_observationSize);
+
+			m_map->insert(points);
+			m_visiblePoints.push_back(points);
+		}
+	else
+	{
+		for (auto &iter: m_visiblePoints)
+			m_map->removeObject(iter);
+		m_visiblePoints.clear();
+	}
+
+	update();
+}
+
+void CGlWidget::setDocument(CDocument *doc)
+{
+	m_doc = doc;
+	if (m_isShowObs)
+		setSelectedObservation(m_isShowObs);
 }

@@ -32,6 +32,7 @@ public:
 	virtual ~CMainWindow();
 
 private slots:
+	void showAllObservation(bool is);
 	void openMap();
 	void itemClicked(const QModelIndex &index);
 	void updateConfig();

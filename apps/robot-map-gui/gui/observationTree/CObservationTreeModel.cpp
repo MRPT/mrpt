@@ -12,8 +12,13 @@
 CObservationTreeModel::CObservationTreeModel(const mrpt::maps::CSimpleMap &simplemap, QObject *parent)
 	: QAbstractTableModel(parent)
 	, m_simplemap(simplemap)
-	, rootNode_(std::make_unique<CRootNode>(simplemap))
+	, m_rootNode(std::make_unique<CRootNode>(simplemap))
 {
+	if (!simplemap.empty())
+		for (auto iter = simplemap.begin(); iter != simplemap.end(); ++iter)
+		{
+			m_poses.push_back(iter->first->getMeanVal());
+		}
 }
 
 CObservationTreeModel::~CObservationTreeModel()
@@ -70,7 +75,7 @@ QModelIndex CObservationTreeModel::index(int row, int column, const QModelIndex 
 QModelIndex CObservationTreeModel::parent(const QModelIndex &index) const
 {
 	CNode* node = getNodeFromIndexSafe(index);
-	if (node == rootNode_.get())
+	if (node == m_rootNode.get())
 		return QModelIndex();
 
 	const CNode* parent = node->parentItem();
@@ -83,12 +88,17 @@ CNode *CObservationTreeModel::getNodeFromIndexSafe(const QModelIndex &index) con
 {
 	CNode* node;
 	if (!index.isValid() || !index.internalPointer())
-		node = rootNode_.get();
+		node = m_rootNode.get();
 	else
 		node = static_cast<CNode*>(index.internalPointer());
 
 
 	return node;
+}
+
+const std::vector<mrpt::poses::CPose3D> &CObservationTreeModel::poses() const
+{
+	return m_poses;
 }
 
 int CObservationTreeModel::findMyRowId(const CNode *node) const

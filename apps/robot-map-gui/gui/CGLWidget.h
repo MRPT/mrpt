@@ -11,20 +11,31 @@
 
 #include "mrpt/gui/CQtGlCanvasBase.h"
 #include "mrpt/opengl/CSetOfObjects.h"
+#include "mrpt/opengl/CPointCloud.h"
 #include "mrpt/maps/CSimpleMap.h"
 #include "mrpt/maps/CMultiMetricMap.h"
 
+
+class CDocument;
 
 class CGlWidget : public mrpt::gui::CQtGlCanvasBase
 {
 public:
 	CGlWidget(QWidget* parent = nullptr);
-	virtual ~CGlWidget() = default;
+	virtual ~CGlWidget();
 
 	void fillMap(const mrpt::opengl::CSetOfObjects::Ptr &renderizableMap);
 	void setSelected(const mrpt::math::TPose3D &pose);
+	void setSelectedObservation(bool is);
+
+	void setDocument(CDocument *doc);
 
 
 private:
 	mrpt::opengl::CSetOfObjects::Ptr m_map;
+	CDocument* m_doc;
+	bool m_isShowObs;
+
+	float m_observationSize;
+	QVector<mrpt::opengl::CPointCloud::Ptr> m_visiblePoints;
 };

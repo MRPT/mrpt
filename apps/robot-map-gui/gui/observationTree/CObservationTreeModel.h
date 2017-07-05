@@ -33,10 +33,12 @@ public:
 	virtual QModelIndex parent(const QModelIndex &index) const override;
 
 	CNode* getNodeFromIndexSafe(const QModelIndex& index) const;
+	const std::vector<mrpt::poses::CPose3D> &poses() const;
 private:
 	int findMyRowId(const CNode* node) const;
 
 	const mrpt::maps::CSimpleMap& m_simplemap;
-	std::unique_ptr<CRootNode> rootNode_;
+	std::unique_ptr<CRootNode> m_rootNode;
+	std::vector<mrpt::poses::CPose3D> m_poses;
 
 };
