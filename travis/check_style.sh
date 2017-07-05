@@ -10,7 +10,7 @@
 
 # This is run by travis automatically from the root of the project
 
-set +e   # Make sure any error makes the script to return an error code
+set +e
 
 DIRS_IN="libs apps samples python"
 DIRS_OUT="otherlibs"
@@ -19,14 +19,12 @@ FORMAT_CODE_BIN="scripts/clang_git_format/format_code.py"
 
 function lint() {
 
-printf "check_style.sh: PWD=$PWD\n"
-printf "check_style.sh: toplevel=$(git rev-parse --show-toplevel)\n"
-
 # Get list of changed files for lint to run on. Grep only .h, .cpp files and
 # mind the DIRS_IN, DIRS_OUT vars
 
 # Following command fails if you "git commit --amend" - Works correctly on
 # standard commits
+echo "commit_range: $TRAVIS_COMMIT_RANGE"
 changed_files=$(git diff --name-only $TRAVIS_COMMIT_RANGE)
 printf "Summary of changed files:\n\n${changed_files}\n\n"
 
