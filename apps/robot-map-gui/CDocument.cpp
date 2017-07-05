@@ -12,6 +12,7 @@
 #include "mrpt/utils/CFileOutputStream.h"
 #include "mrpt/utils/CConfigFile.h"
 
+#include <QDebug>
 
 const std::string METRIC_MAP_CONFIG_SECTION  =  "MappingApplication";
 
@@ -20,21 +21,27 @@ using namespace mrpt::opengl;
 using namespace mrpt::maps;
 using namespace mrpt::utils;
 
-CDocument::CDocument(const std::string &fileName)
+CDocument::CDocument()
 	: m_simplemap(CSimpleMap())
 	, m_metricmap(CMultiMetricMap())
 {
-	CFileGZInputStream file(fileName.c_str());
-	file >> m_simplemap;
-
 }
 
 CDocument::~CDocument()
 {
 }
 
+void CDocument::loadSimpleMap(const std::string &fileName)
+{
+	CFileGZInputStream file(fileName.c_str());
+	file >> m_simplemap;
+}
+
 void CDocument::setListOfMaps(TSetOfMetricMapInitializers &mapCfg)
 {
+	if (mapCfg.size() == 0)
+		return;
+
 	m_metricmap.setListOfMaps( &mapCfg );
 	m_metricmap.loadFromProbabilisticPosesAndObservations(m_simplemap);
 
@@ -91,6 +98,9 @@ void CDocument::setConfig(const std::string &config)
 	TSetOfMetricMapInitializers mapCfg;
 	mapCfg.loadFromConfigFile( CConfigFile(config), METRIC_MAP_CONFIG_SECTION);
 	setListOfMaps(mapCfg);
+
+//	mrpt::utils::CFileOutputStream f("/home/lisgein/tmp/test.ini");
+//	mapCfg.dumpToTextStream(f);
 }
 
 const RenderizableMaps CDocument::renderizableMaps()
