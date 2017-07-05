@@ -65,6 +65,26 @@ void CMyGLCanvasBase::OnWindowCreation(wxWindowCreateEvent &ev)
 	if (!m_gl_context) m_gl_context=new wxGLContext(this);
 }
 
+void CMyGLCanvasBase::swapBuffers()
+{
+	SwapBuffers();
+}
+
+void CMyGLCanvasBase::preRender()
+{
+	OnPreRender();
+}
+
+void CMyGLCanvasBase::postRender()
+{
+	OnPostRender();
+}
+
+void CMyGLCanvasBase::renderError(const string &err_msg)
+{
+	OnRenderError( _U(err_msg.c_str()) );
+}
+
 void CMyGLCanvasBase::OnMouseDown(wxMouseEvent& event)
 {
 	setMousePos(event.GetX(), event.GetY());
@@ -168,9 +188,6 @@ void CMyGLCanvasBase::OnChar( wxKeyEvent& event )
 
 void CMyGLCanvasBase::Render()
 {
-	CTicTac tictac;
-	double	At = 0.1;
-
 	wxPaintDC dc(this);
 
 	if (!m_gl_context) { /*cerr << "[CMyGLCanvasBase::Render] No GL Context!" << endl;*/ return; }
@@ -183,83 +200,9 @@ void CMyGLCanvasBase::Render()
 		m_init = true;
 	}
 
-	try
-	{
-		// Call PreRender user code:
-		OnPreRender();
-
-
-		glPushAttrib(GL_ALL_ATTRIB_BITS);
-
-		// Set static configs:
-		glEnable(GL_DEPTH_TEST);
-		glEnable(GL_ALPHA_TEST);
-		glEnable(GL_TEXTURE_2D);
-
-
-		// PART 1a: Set the viewport
-		// --------------------------------------
-		int width, height;
-		GetClientSize(&width, &height);
-		glViewport(
-					0,
-					0,
-					(GLsizei)width,
-					(GLsizei)height);
-
-		// Set the background color:
-		glClearColor(clearColorR,clearColorG,clearColorB,1.0);
-
-		if (m_openGLScene)
-		{
-			// Set the camera params in the scene:
-			if (!useCameraFromScene)
-			{
-				COpenGLViewport::Ptr view= m_openGLScene->getViewport("main");
-				if (!view)
-				{
-					THROW_EXCEPTION("Fatal error: there is no 'main' viewport in the 3D scene!");
-				}
-
-				mrpt::opengl::CCamera & cam = view->getCamera();
-				updateCameraParams(cam);
-			}
-
-			// PART 2: Set the MODELVIEW matrix
-			// --------------------------------------
-			glMatrixMode(GL_MODELVIEW);
-			glLoadIdentity();
-
-			tictac.Tic();
-
-			// PART 3: Draw primitives:
-			// --------------------------------------
-			m_openGLScene->render();
-
-		} // end if "m_openGLScene!=nullptr"
-
-		OnPostRender();
-
-		// Flush & swap buffers to disply new image:
-		glFlush();
-		SwapBuffers();
-
-		At = tictac.Tac();
-
-		glPopAttrib();
-	}
-	catch (std::exception &e)
-	{
-		glPopAttrib();
-		const std::string err_msg = std::string("[CMyGLCanvasBase::Render] Exception!: ") +std::string(e.what());
-		std::cerr << err_msg;
-		OnRenderError( _U(err_msg.c_str()) );
-	}
-	catch (...)
-	{
-		glPopAttrib();
-		std::cerr << "Runtime error!" << std::endl;
-	}
+	int width, height;
+	GetClientSize(&width, &height);
+	double	At = renderCanvas(width, height);
 
 	OnPostRenderSwapBuffers( At, dc );
 
@@ -288,7 +231,7 @@ void CMyGLCanvasBase::OnSize(wxSizeEvent& event)
 		if (!m_gl_context) { /*cerr << "[CMyGLCanvasBase::Render] No GL Context!" << endl;*/ return; }
 		else SetCurrent(*m_gl_context);
 
-		glViewport(0, 0, (GLint) w, (GLint) h);
+		resizeViewport( w, h);
 	}
 }
 

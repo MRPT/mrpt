@@ -117,6 +117,10 @@ namespace mrpt
 
 			// Used to create the gl context at startup.
 			void OnWindowCreation(wxWindowCreateEvent &ev);
+			virtual void swapBuffers() override;
+			virtual void preRender() override;
+			virtual void postRender() override;
+			virtual void renderError(const std::string &err_msg) override;
 
 			DECLARE_EVENT_TABLE()
 
