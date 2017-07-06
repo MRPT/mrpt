@@ -12,6 +12,7 @@
 #include <mrpt/nav/reactive/CWaypointsNavigator.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/math/wrap2pi.h>
+#include <mrpt/system/backtrace.h>
 
 using namespace mrpt::nav;
 using namespace std;
@@ -34,7 +35,7 @@ std::string CWaypointsNavigator::TNavigationParamsWaypoints::getAsText() const
 bool CWaypointsNavigator::TNavigationParamsWaypoints::isEqual(const CAbstractNavigator::TNavigationParamsBase& rhs) const
 {
 	auto o = dynamic_cast<const CWaypointsNavigator::TNavigationParamsWaypoints*>(&rhs);
-	return o!=nullptr && 
+	return o!=nullptr &&
 		CAbstractNavigator::TNavigationParams::isEqual(rhs) &&
 		multiple_targets == o->multiple_targets;
 }
@@ -55,6 +56,13 @@ void CWaypointsNavigator::navigateWaypoints( const TWaypointSequence & nav_reque
 	MRPT_START
 
 	mrpt::synch::CCriticalSectionLocker csl(&m_nav_waypoints_cs);
+
+	if (this->isLoggingLevelVisible(mrpt::utils::LVL_DEBUG))
+	{
+		mrpt::system::TCallStackBackTrace bt;
+		mrpt::system::getCallStackBackTrace(bt);
+		MRPT_LOG_DEBUG_STREAM("[CWaypointsNavigator::navigationStep]" << bt.asString());
+	}
 
 	m_was_aligning = false;
 	m_waypoint_nav_status = TWaypointStatusSequence();
@@ -124,7 +132,7 @@ void CWaypointsNavigator::waypoints_navigationStep()
 		mrpt::math::TSegment2D robot_move_seg;
 		robot_move_seg.point1.x = m_curPoseVel.pose.x;
 		robot_move_seg.point1.y = m_curPoseVel.pose.y;
-		if (wps.last_robot_pose.x==TWaypoint::INVALID_NUM) 
+		if (wps.last_robot_pose.x==TWaypoint::INVALID_NUM)
 		{
 			robot_move_seg.point2 = robot_move_seg.point1;
 		}
@@ -209,10 +217,10 @@ void CWaypointsNavigator::waypoints_navigationStep()
 			}
 		}
 
-		// 2) More advanced policy: if available, use children class methods to decide 
+		// 2) More advanced policy: if available, use children class methods to decide
 		//     which is the best candidate for the next waypoint, if we can skip current one:
-		if (!wps.final_goal_reached && 
-			wps.waypoint_index_current_goal >= 0 && 
+		if (!wps.final_goal_reached &&
+			wps.waypoint_index_current_goal >= 0 &&
 			wps.waypoints[wps.waypoint_index_current_goal].allow_skip
 			)
 		{
@@ -235,7 +243,7 @@ void CWaypointsNavigator::waypoints_navigationStep()
 				const bool is_reachable = this->impl_waypoint_is_reachable(wp_local_wrt_robot);
 
 				if (is_reachable) {
-					// Robustness filter: only skip to a future waypoint if it is seen as "reachable" during 
+					// Robustness filter: only skip to a future waypoint if it is seen as "reachable" during
 					// a given number of timesteps:
 					if (++wps.waypoints[idx].counter_seen_reachable > params_waypoints_navigator.min_timesteps_confirm_skip_waypoints) {
 						most_advanced_wp = idx;
@@ -264,7 +272,7 @@ void CWaypointsNavigator::waypoints_navigationStep()
 		if (wps.waypoint_index_current_goal<0)
 			wps.waypoint_index_current_goal = 0;
 
-		// 3) Should I request a new (single target) navigation command? 
+		// 3) Should I request a new (single target) navigation command?
 		//    Only if the temporary goal changed:
 		if (wps.waypoint_index_current_goal>=0 && prev_wp_index!=wps.waypoint_index_current_goal)
 		{
@@ -276,7 +284,7 @@ void CWaypointsNavigator::waypoints_navigationStep()
 
 			// Send the current targets + "multitarget_look_ahead" additional ones to help the local planner.
 			CWaypointsNavigator::TNavigationParamsWaypoints nav_cmd;
-			
+
 			// Check skippable flag while traversing from current wp forward "multitarget_look_ahead" steps:
 			int wp_last_idx = wps.waypoint_index_current_goal;
 			for (int nstep = 0; wp_last_idx<int(wps.waypoints.size()) - 1 && nstep < params_waypoints_navigator.multitarget_look_ahead; ++nstep)
@@ -352,7 +360,7 @@ bool CWaypointsNavigator::isRelativePointReachable(const mrpt::math::TPoint2D &w
 void CWaypointsNavigator::loadConfigFile(const mrpt::utils::CConfigFileBase &c)
 {
 	MRPT_START
-	
+
 	params_waypoints_navigator.loadFromConfigFile(c, "CWaypointsNavigator");
 	CAbstractNavigator::loadConfigFile(c);
 
