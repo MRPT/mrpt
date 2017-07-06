@@ -10,15 +10,17 @@
 #include <mrpt/system/backtrace.h>
 #include <iostream>
 
-int func1(int a, int b)
+class Foo
 {
-	mrpt::system::TCallStackBackTrace bt;
-
-	mrpt::system::getCallStackBackTrace(bt);
-	std::cout << bt.asString();
-
-	return a + b;
-}
+public:
+	static int func1(int a, int b)
+	{
+		mrpt::system::TCallStackBackTrace bt;
+		mrpt::system::getCallStackBackTrace(bt);
+		std::cout << bt.asString();
+		return a + b;
+	}
+};
 
 // ------------------------------------------------------
 //						MAIN
@@ -28,6 +30,7 @@ int main()
 	try
 	{
 		func1(1, 2);
+		Foo::func1(1,2);
 
 		return 0;
 	} catch (std::exception &e)
