@@ -28,7 +28,8 @@ namespace nav
 		  * @{ */
 		virtual void loadConfigFile(const mrpt::utils::CConfigFileBase &c) override; // See base class docs!
 		virtual void saveConfigFile(mrpt::utils::CConfigFileBase &c) const override; // See base class docs!
-		void initialize() override; //!< Must be called for loading collision grids, etc. before invoking any navigation command
+		/** Must be called for loading collision grids, etc. before invoking any navigation command */
+		void initialize() override; 
 		/** @} */
 
 		/** Overriden in this class to ignore the cancel/pause/... commands */
@@ -36,10 +37,12 @@ namespace nav
 
 		struct TVelCmd
 		{
-			mrpt::kinematics::CVehicleVelCmd::Ptr cmd_vel; //!< all with the same meaning than in CRobot2NavInterface::changeSpeeds()
+			/** all with the same meaning than in CRobot2NavInterface::changeSpeeds() */
+			mrpt::kinematics::CVehicleVelCmd::Ptr cmd_vel; 
 		};
 
-		std::map<double,TVelCmd>  programmed_orders; //!< map [time_in_secs_since_beginning] -> orders.
+		/** map [time_in_secs_since_beginning] -> orders. */
+		std::map<double,TVelCmd>  programmed_orders; 
 
 	protected:
 		virtual void onStartNewNavigation() override { }

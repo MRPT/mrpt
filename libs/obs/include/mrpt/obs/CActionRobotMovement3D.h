@@ -59,9 +59,11 @@ namespace obs
 			/** The parameter to be passed to "computeFromOdometry". */
 			struct OBS_IMPEXP TMotionModelOptions
 			{
-				TMotionModelOptions(); //!< Default values loader.
+				/** Default values loader. */
+				TMotionModelOptions(); 
 
-				TDrawSampleMotionModel	modelSelection; //!< The model to be used.
+				/** The model to be used. */
+				TDrawSampleMotionModel	modelSelection; 
 
 
 				struct OBS_IMPEXP  TOptions_6DOFModel

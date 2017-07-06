@@ -56,7 +56,8 @@ namespace mrpt
 
 		private:
 
-			bool tryToOpenComms(std::string *err_msg=nullptr);	//!< Tries to open the com port and setup all the LMS protocol. Returns true if OK or already open.
+			/** Tries to open the com port and setup all the LMS protocol. Returns true if OK or already open. */
+			bool tryToOpenComms(std::string *err_msg=nullptr);	
 			bool waitContinuousSampleFrame(
                     uint8_t &out_prio,
                     uint8_t &out_pdu_format,
@@ -67,9 +68,12 @@ namespace mrpt
                     std::vector<uint8_t> &out_data,
                     std::vector<char> &out_raw_frame);
 
-			bool sendCANBusReaderSpeed();	        //!< Sends the specified speed to the CAN Converter.
-			bool CANBusOpenChannel();	            //!< Opens the CAN Channel
-			bool CANBusCloseChannel();	            //!< Closes the CAN Channel
+			/** Sends the specified speed to the CAN Converter. */
+			bool sendCANBusReaderSpeed();	        
+			/** Opens the CAN Channel */
+			bool CANBusOpenChannel();	            
+			/** Closes the CAN Channel */
+			bool CANBusCloseChannel();	            
 			bool CANBusAutoPoll();
 			bool CANBusPoll();
 			bool CANBusX1();
@@ -83,10 +87,14 @@ namespace mrpt
 
 			uint8_t			m_received_frame_buffer[2000];
 
-			std::string		m_com_port;		//!< If set to non-empty, the serial port will be attempted to be opened automatically when this class is first used to request data from the laser.
-			CSerialPort		*m_mySerialPort; //!< Will be !=nullptr only if I created it, so I must destroy it at the end.
-			int             m_com_baudRate; //!< Baudrate: 9600, 38400, 500000
-			unsigned int    m_nTries_connect; //!< Default = 1
+			/** If set to non-empty, the serial port will be attempted to be opened automatically when this class is first used to request data from the laser. */
+			std::string		m_com_port;		
+			/** Will be !=nullptr only if I created it, so I must destroy it at the end. */
+			CSerialPort		*m_mySerialPort; 
+			/** Baudrate: 9600, 38400, 500000 */
+			int             m_com_baudRate; 
+			/** Default = 1 */
+			unsigned int    m_nTries_connect; 
 			unsigned int    m_nTries_current;
 			int             m_canbus_speed;
 			bool            m_canreader_timestamp;  // for future work

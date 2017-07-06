@@ -36,9 +36,11 @@ struct XsMatrix3x3 : public XsMatrix {
 XSCPPPROTECTED
 #else
 struct XsMatrix3x3 {
-	struct XsMatrix m_matrix;	//!< The underlying XsMatrix
+	/** The underlying XsMatrix */
+	struct XsMatrix m_matrix;	
 #endif
-	XsReal XSCCONST m_fixedData[9];			//!< Fixed storage for the elements of the matrix
+	/** Fixed storage for the elements of the matrix */
+	XsReal XSCCONST m_fixedData[9];			
 
 #ifdef __cplusplus
 public:

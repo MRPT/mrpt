@@ -49,28 +49,39 @@ namespace mrpt
 			friend class CWindowDialogPlots;
 
 		private:
-			const int	m_CMD_CREATE_WIN;  //!< can be 200,300,400... See WxSubsystem
-			const int	m_CMD_DESTROY_WIN;  //!< can be 299,399,499... See WxSubsystem
+			/** can be 200,300,400... See WxSubsystem */
+			const int	m_CMD_CREATE_WIN;  
+			/** can be 299,399,499... See WxSubsystem */
+			const int	m_CMD_DESTROY_WIN;  
 			void*		m_winobj_voidptr;
 
 		protected:
-			mutable std::promise<void> m_threadReady;	//!< This semaphore will be signaled when the wx window is built and ready.
-			mutable std::promise<void> m_windowDestroyed; //!< This semaphore will be signaled when the wx window is destroyed.
-			std::string			m_caption;	//!< The caption of the window
-			mrpt::utils::void_ptr_noncopy	m_hwnd;	//!< The window handle
+			/** This semaphore will be signaled when the wx window is built and ready. */
+			mutable std::promise<void> m_threadReady;	
+			/** This semaphore will be signaled when the wx window is destroyed. */
+			mutable std::promise<void> m_windowDestroyed; 
+			/** The caption of the window */
+			std::string			m_caption;	
+			/** The window handle */
+			mrpt::utils::void_ptr_noncopy	m_hwnd;	
 
 			/* Auxiliary */
 			volatile bool             m_keyPushed;
 			volatile int              m_keyPushedCode;
 			volatile mrptKeyModifier  m_keyPushedModifier;
 
-			void createWxWindow(unsigned int initialWidth, unsigned int initialHeight); //!< Must be called by child classes just within the constructor.
-			void destroyWxWindow(); //!< Must be called by child classes in their destructors. The code cannot be put into this class' destructor.
+			/** Must be called by child classes just within the constructor. */
+			void createWxWindow(unsigned int initialWidth, unsigned int initialHeight); 
+			/** Must be called by child classes in their destructors. The code cannot be put into this class' destructor. */
+			void destroyWxWindow(); 
 
 		public:
-			void * getWxObject() { return m_hwnd.get(); } //!< Read-only access to the wxDialog object.
-			void notifyChildWindowDestruction();	//!< Called by wx main thread to set m_hwnd to NULL.
-			void notifySemThreadReady();	//!< Called by wx main thread to signal the semaphore that the wx window is built and ready.
+			/** Read-only access to the wxDialog object. */
+			void * getWxObject() { return m_hwnd.get(); } 
+			/** Called by wx main thread to set m_hwnd to NULL. */
+			void notifyChildWindowDestruction();	
+			/** Called by wx main thread to signal the semaphore that the wx window is built and ready. */
+			void notifySemThreadReady();	
 
 		public:
 			/** CMD_DESTROY_WIN can be 299,399,499... See WxSubsystem */
@@ -145,7 +156,8 @@ namespace mrpt
 		class GUI_IMPEXP mrptEventWindowChar : public mrpt::utils::mrptEvent
 		{
 		protected:
-			virtual void do_nothing() override { } //!< Just to allow this class to be polymorphic
+			/** Just to allow this class to be polymorphic */
+			virtual void do_nothing() override { } 
 		public:
 			inline mrptEventWindowChar(
 				CBaseGUIWindow *obj,
@@ -154,8 +166,10 @@ namespace mrpt
 				) : source_object(obj), char_code(_char_code), key_modifiers(_key_mod) { }
 
 			CBaseGUIWindow *source_object;
-			int 			char_code; //!< The virtual key code, as defined in <mrpt/gui/keycodes.h> (a replication of wxWidgets key codes).
-			mrptKeyModifier key_modifiers; //!< Modifiers (Shift, Control, etc...)
+			/** The virtual key code, as defined in <mrpt/gui/keycodes.h> (a replication of wxWidgets key codes). */
+			int 			char_code; 
+			/** Modifiers (Shift, Control, etc...) */
+			mrptKeyModifier key_modifiers; 
 		}; // End of class def.
 
 		/**  An event sent by a window upon resize.
@@ -166,7 +180,8 @@ namespace mrpt
 		class GUI_IMPEXP mrptEventWindowResize : public mrpt::utils::mrptEvent
 		{
 		protected:
-			virtual void do_nothing() override { } //!< Just to allow this class to be polymorphic
+			/** Just to allow this class to be polymorphic */
+			virtual void do_nothing() override { } 
 		public:
 			inline mrptEventWindowResize(
 				CBaseGUIWindow *obj,
@@ -187,7 +202,8 @@ namespace mrpt
 		class GUI_IMPEXP mrptEventMouseDown : public mrpt::utils::mrptEvent
 		{
 		protected:
-			virtual void do_nothing() override { } //!< Just to allow this class to be polymorphic
+			/** Just to allow this class to be polymorphic */
+			virtual void do_nothing() override { } 
 		public:
 			inline mrptEventMouseDown (
 				CBaseGUIWindow *obj,
@@ -215,7 +231,8 @@ namespace mrpt
 		class GUI_IMPEXP mrptEventWindowClosed : public mrpt::utils::mrptEvent
 		{
 		protected:
-			virtual void do_nothing() override { } //!< Just to allow this class to be polymorphic
+			/** Just to allow this class to be polymorphic */
+			virtual void do_nothing() override { } 
 		public:
 			inline mrptEventWindowClosed (
 				CBaseGUIWindow *obj,

@@ -20,10 +20,13 @@
 class CDifodoDatasets : public mrpt::vision::CDifodo {
 public:
 
-	mrpt::poses::CPose3D gt_pose;		//!< Groundtruth camera pose
-	mrpt::poses::CPose3D gt_oldpose;	//!< Groundtruth camera previous pose
+	/** Groundtruth camera pose */
+	mrpt::poses::CPose3D gt_pose;		
+	/** Groundtruth camera previous pose */
+	mrpt::poses::CPose3D gt_oldpose;	
 
-	mrpt::opengl::COpenGLScene::Ptr scene;	//!< Opengl scene
+	/** Opengl scene */
+	mrpt::opengl::COpenGLScene::Ptr scene;	
 	mrpt::gui::CDisplayWindow3D	window;
 	mrpt::obs::CRawlog	dataset;
 	std::ifstream		f_gt;
@@ -76,7 +79,10 @@ private:
 	bool groundtruth_ok;
 	bool last_groundtruth_ok;
 
-	double last_groundtruth;	//!< Timestamp of the last groundtruth read
-	double timestamp_obs;		//!< Timestamp of the last observation
-	double last_gt_data[7];		//!< Last ground truth read (x y z qx qy qz w)
+	/** Timestamp of the last groundtruth read */
+	double last_groundtruth;	
+	/** Timestamp of the last observation */
+	double timestamp_obs;		
+	/** Last ground truth read (x y z qx qy qz w) */
+	double last_gt_data[7];		
 };

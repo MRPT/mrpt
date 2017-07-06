@@ -52,10 +52,13 @@ namespace mrpt
 		{
 			DEFINE_GENERIC_SENSOR(CRoboPeakLidar)
 		public:
-			CRoboPeakLidar(); //!< Constructor
-			virtual ~CRoboPeakLidar();  //!< Destructor: turns the laser off.
+			/** Constructor */
+			CRoboPeakLidar(); 
+			/** Destructor: turns the laser off. */
+			virtual ~CRoboPeakLidar();  
 
-			virtual void initialize();  //!< Attempts to connect and turns the laser on. Raises an exception on error.
+			/** Attempts to connect and turns the laser on. Raises an exception on error. */
+			virtual void initialize();  
 
 			// See base class docs
 			virtual void  doProcessSimple(
@@ -65,18 +68,23 @@ namespace mrpt
 
 			/** If set to non-empty, the serial port will be attempted to be opened automatically when this class is first used to request data from the laser.  */
 			void setSerialPort(const std::string &port_name);
-			const std::string getSerialPort() { return m_com_port; }  //!< Returns the currently set serial port \sa setSerialPort
+			/** Returns the currently set serial port \sa setSerialPort */
+			const std::string getSerialPort() { return m_com_port; }  
 
-			virtual bool  turnOn();  //!< See base class docs
-			virtual bool  turnOff(); //!< See base class docs
+			/** See base class docs */
+			virtual bool  turnOn();  
+			/** See base class docs */
+			virtual bool  turnOff(); 
 
 			/** Returns true if the device is connected & operative */
 			bool getDeviceHealth() const;
 
-			void disconnect(); //!< Closes the comms with the laser. Shouldn't have to be directly needed by the user
+			/** Closes the comms with the laser. Shouldn't have to be directly needed by the user */
+			void disconnect(); 
 
 		protected:
-			poses::CPose3D  m_sensorPose;       //!< The sensor 6D pose:
+			/** The sensor 6D pose: */
+			poses::CPose3D  m_sensorPose;       
 			std::string     m_com_port;
 			int             m_com_port_baudrate;
 			void          * m_rplidar_drv;  // Opaque "RPlidarDriver*"

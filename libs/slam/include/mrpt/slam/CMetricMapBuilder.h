@@ -35,14 +35,17 @@ namespace slam
 	class SLAM_IMPEXP CMetricMapBuilder : public mrpt::utils::COutputLogger
 	{
 	protected:
-		std::mutex   critZoneChangingMap; //!< Critical zones
+		/** Critical zones */
+		std::mutex   critZoneChangingMap; 
 		/** Enter critical section for map updating */
 		inline void  enterCriticalSection() { critZoneChangingMap.lock(); }
 		/** Leave critical section for map updating */
 		inline void  leaveCriticalSection() { critZoneChangingMap.unlock(); }
 	public:
-		CMetricMapBuilder();           //!< Constructor
-		virtual ~CMetricMapBuilder( ); //!< Destructor.
+		/** Constructor */
+		CMetricMapBuilder();           
+		/** Destructor. */
+		virtual ~CMetricMapBuilder( ); 
 
 		// ---------------------------------------------------------------------
 		/** @name Pure virtual methods to implement in any particular SLAM algorithm
@@ -108,8 +111,10 @@ namespace slam
 			}
 
 			mrpt::utils::VerbosityLevel & verbosity_level;
-			bool	enableMapUpdating;   //!< Enable map updating, default is true.
-			bool	debugForceInsertion; //!< Always insert into map. Default is false: detect if necesary.
+			/** Enable map updating, default is true. */
+			bool	enableMapUpdating;   
+			/** Always insert into map. Default is false: detect if necesary. */
+			bool	debugForceInsertion; 
 
 			/** A list of observation classes (derived from mrpt::obs::CObservation) which will be always inserted in the map, disregarding the minimum insertion distances).
 			  *  Default: Empty. How to insert classes:

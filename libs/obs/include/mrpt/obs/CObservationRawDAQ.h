@@ -42,8 +42,10 @@ namespace obs
 		std::vector<float>    AIN_float;  /** Readings from analog input (ADCs) channels (vector length=channel count) in Volts. */
 		std::vector<double>   AIN_double; /** Readings from analog input (ADCs) channels (vector length=channel count) in Volts. */
 
-		uint16_t AIN_channel_count; //!< How many different ADC channels are present in the AIN_* vectors.
-		bool     AIN_interleaved; //!< Whether the channels are interleaved (A0 A1 A2 A0 A1 A2...) or not (A0 A0 A0 A1 A1 A1 A2 A2 A2...) in the AIN_* vectors.
+		/** How many different ADC channels are present in the AIN_* vectors. */
+		uint16_t AIN_channel_count; 
+		/** Whether the channels are interleaved (A0 A1 A2 A0 A1 A2...) or not (A0 A0 A0 A1 A1 A1 A2 A2 A2...) in the AIN_* vectors. */
+		bool     AIN_interleaved; 
 
 		std::vector<uint8_t>  AOUT_8bits;  /** Present output values for 8-bit analog output (DACs) channels (vector length=channel count) in DAC units.*/
 		std::vector<uint16_t> AOUT_16bits; /** Present output values for 16-bit analog output (DACs) channels (vector length=channel count) in DAC units.*/
@@ -56,7 +58,8 @@ namespace obs
 		std::vector<uint32_t> CNTRIN_32bits; /** Readings from ticks counters, such as quadrature encoders. (vector length=channel count) in ticks. */
 		std::vector<double>   CNTRIN_double; /** Readings from ticks counters, such as quadrature encoders. (vector length=channel count) in radians, degrees or any other unit (depends on the source driver). */
 
-		double sample_rate; //!< The sampling rate, in samples per second per channel
+		/** The sampling rate, in samples per second per channel */
+		double sample_rate; 
 
 		/** Not used in this class */
 		void getSensorPose( mrpt::poses::CPose3D & ) const  override{ }

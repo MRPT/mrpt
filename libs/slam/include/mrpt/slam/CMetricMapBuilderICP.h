@@ -49,12 +49,17 @@ namespace slam
 			/** (default:false) Match against the occupancy grid or the points map? The former is quicker but less precise. */
 			bool	matchAgainstTheGrid;
 
-			double insertionLinDistance;	//!< Minimum robot linear (m) displacement for a new observation to be inserted in the map.
-			double insertionAngDistance;	//!< Minimum robot angular (rad, deg when loaded from the .ini) displacement for a new observation to be inserted in the map.
-			double localizationLinDistance;	//!< Minimum robot linear (m) displacement for a new observation to be used to do ICP-based localization (otherwise, dead-reckon with odometry).
-			double localizationAngDistance;//!< Minimum robot angular (rad, deg when loaded from the .ini) displacement for a new observation to be used to do ICP-based localization (otherwise, dead-reckon with odometry).
+			/** Minimum robot linear (m) displacement for a new observation to be inserted in the map. */
+			double insertionLinDistance;	
+			/** Minimum robot angular (rad, deg when loaded from the .ini) displacement for a new observation to be inserted in the map. */
+			double insertionAngDistance;	
+			/** Minimum robot linear (m) displacement for a new observation to be used to do ICP-based localization (otherwise, dead-reckon with odometry). */
+			double localizationLinDistance;	
+			/** Minimum robot angular (rad, deg when loaded from the .ini) displacement for a new observation to be used to do ICP-based localization (otherwise, dead-reckon with odometry). */
+			double localizationAngDistance;
 
-			double minICPgoodnessToAccept;  //!< Minimum ICP goodness (0,1) to accept the resulting corrected position (default: 0.40)
+			/** Minimum ICP goodness (0,1) to accept the resulting corrected position (default: 0.40) */
+			double minICPgoodnessToAccept;  
 
 			mrpt::utils::VerbosityLevel &verbosity_level;
 
@@ -65,8 +70,10 @@ namespace slam
 
 		 };
 
-		 TConfigParams			ICP_options; //!< Options for the ICP-SLAM application \sa ICP_params
-		 CICP::TConfigParams	ICP_params;  //!< Options for the ICP algorithm itself \sa ICP_options
+		 /** Options for the ICP-SLAM application \sa ICP_params */
+		 TConfigParams			ICP_options; 
+		 /** Options for the ICP algorithm itself \sa ICP_options */
+		 CICP::TConfigParams	ICP_params;  
 
 		/** Initialize the method, starting with a known location PDF "x0"(if supplied, set to nullptr to left unmodified) and a given fixed, past map.
 		  *  This method MUST be called if using the default constructor, after loading the configuration into ICP_options. In particular, TConfigParams::mapInitializers
@@ -129,8 +136,10 @@ namespace slam
 		 std::string				currentMapFile;
 
 		 /** The pose estimation by the alignment algorithm (ICP). */
-		 mrpt::poses::CRobot2DPoseEstimator		m_lastPoseEst;  //!< Last pose estimation (Mean)
-		 mrpt::math::CMatrixDouble33			m_lastPoseEst_cov; //!< Last pose estimation (covariance)
+		 /** Last pose estimation (Mean) */
+		 mrpt::poses::CRobot2DPoseEstimator		m_lastPoseEst;  
+		 /** Last pose estimation (covariance) */
+		 mrpt::math::CMatrixDouble33			m_lastPoseEst_cov; 
 
 		 /** The estimated robot path:
 		   */
@@ -149,7 +158,8 @@ namespace slam
 			void updatePose(const mrpt::poses::CPose2D &p);
 		};
 		TDist    m_distSinceLastICP;
-		mrpt::aligned_containers<std::string,TDist>::map_t  m_distSinceLastInsertion; //!< Indexed by sensor label.
+		/** Indexed by sensor label. */
+		mrpt::aligned_containers<std::string,TDist>::map_t  m_distSinceLastInsertion; 
 		bool	 m_there_has_been_an_odometry;
 
 		void accumulateRobotDisplacementCounters(const mrpt::poses::CPose2D & new_pose);

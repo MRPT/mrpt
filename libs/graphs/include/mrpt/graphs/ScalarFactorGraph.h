@@ -48,29 +48,35 @@ namespace graphs
 		struct GRAPHS_IMPEXP FactorBase
 		{
 			virtual ~FactorBase();
-			virtual double evaluateResidual() const = 0; //!< Return the residual/error of this observation.
-			virtual double getInformation() const = 0; //!< Return the inverse of the variance of this constraint
+			/** Return the residual/error of this observation. */
+			virtual double evaluateResidual() const = 0; 
+			/** Return the inverse of the variance of this constraint */
+			virtual double getInformation() const = 0; 
 		};
 
 		/** Simple, scalar (1-dim) constraint (edge) for a GMRF */
 		struct GRAPHS_IMPEXP UnaryFactorVirtualBase : public FactorBase
 		{
 			size_t node_id;
-			virtual void evalJacobian(double &dr_dx) const = 0; //!< Returns the derivative of the residual wrt the node value
+			/** Returns the derivative of the residual wrt the node value */
+			virtual void evalJacobian(double &dr_dx) const = 0; 
 		};
 
 		/** Simple, scalar (1-dim) constraint (edge) for a GMRF */
 		struct GRAPHS_IMPEXP BinaryFactorVirtualBase : public FactorBase
 		{
 			size_t node_id_i, node_id_j;
-			virtual void evalJacobian(double &dr_dxi, double &dr_dxj) const = 0; //!< Returns the derivative of the residual wrt the node values
+			/** Returns the derivative of the residual wrt the node values */
+			virtual void evalJacobian(double &dr_dxi, double &dr_dxj) const = 0; 
 		};
 
-		void clear(); //!< Reset state: remove all constraints and nodes.
+		/** Reset state: remove all constraints and nodes. */
+		void clear(); 
 		
 		/** Initialize the GMRF internal state and copy the prior factors. */
 		void initialize(
-			const size_t nodeCount            //!< Number of unknown nodes in the MRF graph
+			/** Number of unknown nodes in the MRF graph */
+			const size_t nodeCount            
 		);
 
 		/** Insert constraints into the GMRF problem.
@@ -81,21 +87,25 @@ namespace graphs
 		void addConstraint(const UnaryFactorVirtualBase &listOfConstraints);
 		void addConstraint(const BinaryFactorVirtualBase &listOfConstraints);
 
-		bool eraseConstraint(const FactorBase &c); //!< Removes a constraint. Return true if found and deleted correctly.
+		/** Removes a constraint. Return true if found and deleted correctly. */
+		bool eraseConstraint(const FactorBase &c); 
 
 		void clearAllConstraintsByType_Unary() { m_factors_unary.clear(); }
 		void clearAllConstraintsByType_Binary() { m_factors_binary.clear(); }
 
 		void updateEstimation(
-			Eigen::VectorXd & solved_x_inc,                       //!< Output increment of the current estimate. Caller must add this vector to current state vector to obtain the optimal estimation.
-			Eigen::VectorXd * solved_variances = nullptr //!< If !=nullptr, the variances of each estimate will be stored here.
+			/** Output increment of the current estimate. Caller must add this vector to current state vector to obtain the optimal estimation. */
+			Eigen::VectorXd & solved_x_inc,                       
+			/** If !=nullptr, the variances of each estimate will be stored here. */
+			Eigen::VectorXd * solved_variances = nullptr 
 		);
 
 		bool isProfilerEnabled() const { return m_enable_profiler; }
 		void enableProfiler(bool enable=true) { m_enable_profiler=enable;}
 
 	private:
-		size_t          m_numNodes; //!< number of nodes in the graph
+		/** number of nodes in the graph */
+		size_t          m_numNodes; 
 
 		std::deque<const UnaryFactorVirtualBase*>  m_factors_unary;
 		std::deque<const BinaryFactorVirtualBase*> m_factors_binary;

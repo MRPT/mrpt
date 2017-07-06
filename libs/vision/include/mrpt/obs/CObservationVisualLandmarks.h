@@ -30,10 +30,13 @@ namespace obs
 		DEFINE_SERIALIZABLE( CObservationVisualLandmarks )
 
 	 public:
-		CObservationVisualLandmarks( );  //!< Constructor
+		/** Constructor */
+		CObservationVisualLandmarks( );  
 
-		mrpt::poses::CPose3D				refCameraPose; //!< The 3D pose of the reference camera relative to robot coordinates.
-		mrpt::maps::CLandmarksMap		landmarks;  //!< The landmarks, with coordinates origin in the camera reference system.
+		/** The 3D pose of the reference camera relative to robot coordinates. */
+		mrpt::poses::CPose3D				refCameraPose; 
+		/** The landmarks, with coordinates origin in the camera reference system. */
+		mrpt::maps::CLandmarksMap		landmarks;  
 
 		/** Implements the virtual method in charge of finding the likelihood between this
 		  *   and another observation, probably only of the same derived class. The operator

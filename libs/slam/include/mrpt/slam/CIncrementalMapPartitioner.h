@@ -34,8 +34,10 @@ namespace mrpt { namespace slam {
 		DEFINE_SERIALIZABLE(CIncrementalMapPartitioner)
 
 	public:
-		CIncrementalMapPartitioner(); //!< ctor
-		virtual ~CIncrementalMapPartitioner(); //!< dtor
+		/** ctor */
+		CIncrementalMapPartitioner(); 
+		/** dtor */
+		virtual ~CIncrementalMapPartitioner(); 
 
 		/*\brief  Initialization: Start of a new map, new internal matrices,...
 		  */

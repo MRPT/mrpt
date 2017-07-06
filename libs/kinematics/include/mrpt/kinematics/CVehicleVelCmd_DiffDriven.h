@@ -23,8 +23,10 @@ namespace kinematics
 	{
 		DEFINE_SERIALIZABLE(CVehicleVelCmd_DiffDriven)
 	public:
-		double lin_vel; //!< Linear velocity (m/s)
-		double ang_vel; //!< Angular velocity (rad/s)
+		/** Linear velocity (m/s) */
+		double lin_vel; 
+		/** Angular velocity (rad/s) */
+		double ang_vel; 
 
 		CVehicleVelCmd_DiffDriven();
 		virtual ~CVehicleVelCmd_DiffDriven();

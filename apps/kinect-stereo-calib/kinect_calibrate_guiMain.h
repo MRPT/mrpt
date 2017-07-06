@@ -61,7 +61,8 @@ struct TThreadParam
 	volatile double Hz;
 	volatile bool   select_IR_channel;
 
-	bool  flag_grab_depth; //!< Default: false = only grab intensity channel(s)
+	/** Default: false = only grab intensity channel(s) */
+	bool  flag_grab_depth; 
 
 	mrpt::obs::CObservation3DRangeScan::Ptr new_obs;     // RGB+D (+3D points)
 };

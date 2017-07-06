@@ -577,7 +577,8 @@ CRandomFieldGridMap2D::TInsertionOptionsCommon::TInsertionOptionsCommon() :
 
 	GMRF_lambdaPrior			( 0.01f ),		// [GMRF model] The information (Lambda) of fixed map constraints
 	GMRF_lambdaObs				( 10.0f ),		// [GMRF model] The initial information (Lambda) of each observation (this information will decrease with time)
-	GMRF_lambdaObsLoss			( 0.0f ),		//!< The loss of information of the observations with each iteration
+	/** The loss of information of the observations with each iteration */
+	GMRF_lambdaObsLoss			( 0.0f ),		
 
 	GMRF_use_occupancy_information	( false ),
 	GMRF_simplemap_file				( "" ),

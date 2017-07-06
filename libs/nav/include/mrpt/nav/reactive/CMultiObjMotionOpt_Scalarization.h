@@ -35,7 +35,8 @@ namespace mrpt
 
 			struct NAV_IMPEXP TParams : public mrpt::nav::CMultiObjectiveMotionOptimizerBase::TParamsBase
 			{
-				std::string  scalar_score_formula;  //!< A formula that takes all/a subset of scores and generates a scalar global score.
+				/** A formula that takes all/a subset of scores and generates a scalar global score. */
+				std::string  scalar_score_formula;  
 
 				TParams();
 				void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source, const std::string &section) override; // See base docs

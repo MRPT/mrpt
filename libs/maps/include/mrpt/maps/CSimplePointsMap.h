@@ -34,8 +34,10 @@ namespace mrpt
 			DEFINE_SERIALIZABLE( CSimplePointsMap )
 
 		 public:
-			 CSimplePointsMap();          //!< Default constructor
-			 virtual ~CSimplePointsMap(); //!< Destructor
+			 /** Default constructor */
+			 CSimplePointsMap();          
+			 /** Destructor */
+			 virtual ~CSimplePointsMap(); 
 
 			// --------------------------------------------
 			/** @name Pure virtual interfaces to be implemented by any class derived from CPointsMap
@@ -111,8 +113,10 @@ namespace mrpt
 			/** @} */
 
 			MAP_DEFINITION_START(CSimplePointsMap,MAPS_IMPEXP)
-				mrpt::maps::CPointsMap::TInsertionOptions   insertionOpts;	//!< Observations insertion options
-				mrpt::maps::CPointsMap::TLikelihoodOptions  likelihoodOpts;	//!< Probabilistic observation likelihood options
+				/** Observations insertion options */
+				mrpt::maps::CPointsMap::TInsertionOptions   insertionOpts;	
+				/** Probabilistic observation likelihood options */
+				mrpt::maps::CPointsMap::TLikelihoodOptions  likelihoodOpts;	
 			MAP_DEFINITION_END(CSimplePointsMap,MAPS_IMPEXP)
 
 		}; // End of class def.
@@ -128,10 +132,14 @@ namespace mrpt
 		private:
 			mrpt::maps::CSimplePointsMap &m_obj;
 		public:
-			typedef float  coords_t;         //!< The type of each point XYZ coordinates
-			static const int HAS_RGB   = 0;  //!< Has any color RGB info?
-			static const int HAS_RGBf  = 0;  //!< Has native RGB info (as floats)?
-			static const int HAS_RGBu8 = 0;  //!< Has native RGB info (as uint8_t)?
+			/** The type of each point XYZ coordinates */
+			typedef float  coords_t;         
+			/** Has any color RGB info? */
+			static const int HAS_RGB   = 0;  
+			/** Has native RGB info (as floats)? */
+			static const int HAS_RGBf  = 0;  
+			/** Has native RGB info (as uint8_t)? */
+			static const int HAS_RGBu8 = 0;  
 
 			/** Constructor (accept a const ref for convenience) */
 			inline PointCloudAdapter(const mrpt::maps::CSimplePointsMap &obj) : m_obj(*const_cast<mrpt::maps::CSimplePointsMap*>(&obj)) { }

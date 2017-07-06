@@ -23,12 +23,18 @@ using namespace std;
 IMPLEMENTS_SERIALIZABLE(CColorBar, CRenderizableDisplayList, mrpt::opengl)
 
 CColorBar::CColorBar(
-	const mrpt::utils::TColormap colormap, //!< The colormap to represent.
-	double width, double height,   //!< size of the color bar
-	double min_col, double max_col,  //!< limits for [0,1] colormap indices
-	double min_value, double max_value, //!< limits for values associated to extreme colors
-	const std::string &label_format, //!< sprintf-like format string for values
-	double label_font_size //!< Label text font size
+	/** The colormap to represent. */
+	const mrpt::utils::TColormap colormap, 
+	/** size of the color bar */
+	double width, double height,   
+	/** limits for [0,1] colormap indices */
+	double min_col, double max_col,  
+	/** limits for values associated to extreme colors */
+	double min_value, double max_value, 
+	/** sprintf-like format string for values */
+	const std::string &label_format, 
+	/** Label text font size */
+	double label_font_size 
 ) :
 	m_colormap(colormap),
 	m_width(width), m_height(height),
@@ -42,12 +48,18 @@ CColorBar::CColorBar(
 }
 
 CColorBar::Ptr CColorBar::Create(
-	const mrpt::utils::TColormap colormap, //!< The colormap to represent.
-	double width, double height,   //!< size of the color bar
-	double min_col, double max_col,  //!< limits for [0,1] colormap indices
-	double min_value, double max_value, //!< limits for values associated to extreme colors
-	const std::string &label_format, //!< sprintf-like format string for values
-	double label_font_size //!< Label text font size
+	/** The colormap to represent. */
+	const mrpt::utils::TColormap colormap, 
+	/** size of the color bar */
+	double width, double height,   
+	/** limits for [0,1] colormap indices */
+	double min_col, double max_col,  
+	/** limits for values associated to extreme colors */
+	double min_value, double max_value, 
+	/** sprintf-like format string for values */
+	const std::string &label_format, 
+	/** Label text font size */
+	double label_font_size 
 )
 {
 	return CColorBar::Ptr(new CColorBar(colormap,width,height,min_col,max_col, min_value, max_value, label_format, label_font_size));

@@ -31,7 +31,8 @@ namespace mrpt
 		{
 			cmGRAYSCALE = 0,
 			cmJET,
-			cmHOT           //!< [New in MRPT 1.5.0]
+			/** [New in MRPT 1.5.0] */
+			cmHOT           
 		};
 
 		/** Transform a float number in the range [0,1] into RGB components. Different colormaps are available. */

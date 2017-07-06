@@ -122,11 +122,16 @@ class CDlgPoseEst: public wxDialog
 
 		void threadProcessCorners();
 
-		std::thread		m_threadCorners;	//!< The thread for corner detection.
-		mrpt::obs::CObservationImage::Ptr  m_threadImgToProcess;  //!< Input for the thread, null if nothing pending
-		bool m_threadMustClose;  //!< Close signal
-		std::vector<mrpt::utils::TPixelCoordf>	m_threadResults;    //!< The detected corners, if threadResultsComputed=true
-		bool m_threadResultsComputed; //!< Put to true by the thread when done with an image
+		/** The thread for corner detection. */
+		std::thread		m_threadCorners;	
+		/** Input for the thread, null if nothing pending */
+		mrpt::obs::CObservationImage::Ptr  m_threadImgToProcess;  
+		/** Close signal */
+		bool m_threadMustClose;  
+		/** The detected corners, if threadResultsComputed=true */
+		std::vector<mrpt::utils::TPixelCoordf>	m_threadResults;    
+		/** Put to true by the thread when done with an image */
+		bool m_threadResultsComputed; 
 		bool m_threadIsClosed;
 
 		unsigned int m_check_size_x;

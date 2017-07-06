@@ -26,7 +26,8 @@ namespace mrpt
 	{
 	private:
 		mrpt::kinematics::CVehicleSimul_Holo & m_simul;
-		double m_simul_time_start; //!< for getNavigationTime
+		/** for getNavigationTime */
+		double m_simul_time_start; 
 
 	public:
 		CRobot2NavInterfaceForSimulator_Holo(mrpt::kinematics::CVehicleSimul_Holo &simul) : m_simul(simul),m_simul_time_start(.0) {}
@@ -93,7 +94,8 @@ namespace mrpt
 	{
 	private:
 		mrpt::kinematics::CVehicleSimul_DiffDriven & m_simul;
-		double m_simul_time_start; //!< for getNavigationTime
+		/** for getNavigationTime */
+		double m_simul_time_start; 
 
 	public:
 		CRobot2NavInterfaceForSimulator_DiffDriven(mrpt::kinematics::CVehicleSimul_DiffDriven &simul) : m_simul(simul),m_simul_time_start(.0) {}

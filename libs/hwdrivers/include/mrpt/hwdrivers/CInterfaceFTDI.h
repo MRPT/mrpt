@@ -147,7 +147,8 @@ namespace mrpt
 			  */
 			size_t  Read(void *Buffer, size_t Count);
 
-			mrpt::utils::circular_buffer<uint8_t>    m_readBuffer;  //!< Used in Read
+			/** Used in Read */
+			mrpt::utils::circular_buffer<uint8_t>    m_readBuffer;  
 
 			/** Introduces a pure virtual method responsible for writing to the stream.
 			 *  Write attempts to write up to Count bytes to Buffer, and returns the number of bytes actually written.

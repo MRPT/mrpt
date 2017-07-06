@@ -88,11 +88,15 @@ protected:
 	uint32_t m_timeout;
 
 	#ifdef _WIN32
-		DCB		m_commState;		//!< Stored settings about the serial port
-		HANDLE	m_handle;			//!< The serial port handle
+		/** Stored settings about the serial port */
+		DCB		m_commState;		
+		/** The serial port handle */
+		HANDLE	m_handle;			
 	#else
-		termios	m_commState;		//!< Stored settings about the serial port
-		int32_t		m_handle;			//!< The serial port handle
+		/** Stored settings about the serial port */
+		termios	m_commState;		
+		/** The serial port handle */
+		int32_t		m_handle;			
 		typedef int32_t HANDLE;
 	#endif
 public:

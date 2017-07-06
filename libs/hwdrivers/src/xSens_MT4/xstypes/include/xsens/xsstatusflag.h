@@ -19,14 +19,21 @@
 */
 
 enum XsStatusFlag {
-	 XSF_SelfTestOk			= 0x01		//!< Is set when the self test result was ok
-	,XSF_OrientationValid	= 0x02		//!< Is set when the computed orientation is valid. The orientation may be invalid during startup or when the sensor data is clipping during violent (for the device) motion
-	,XSF_GpsValid			= 0x04		//!< Is set when the device has a GPS receiver and the receiver says that there is a GPS position fix.
+	 /** Is set when the self test result was ok */
+	 XSF_SelfTestOk			= 0x01		
+	/** Is set when the computed orientation is valid. The orientation may be invalid during startup or when the sensor data is clipping during violent (for the device) motion */
+	,XSF_OrientationValid	= 0x02		
+	/** Is set when the device has a GPS receiver and the receiver says that there is a GPS position fix. */
+	,XSF_GpsValid			= 0x04		
 
-	,XSF_NoRotationMask				= 0x18		//!< If all of these flags are set, the No Rotation algorithm is running
-	,XSF_NoRotationAborted			= 0x10		//!< If only this flag is set (out of the XSF_NoRotationMask) then the No Rotation algorithm was aborted
-	,XSF_NoRotationSamplesRejected	= 0x08		//!< If only this flag is set (out of the XSF_NoRotationMask) then the No Rotation algorithm is running but has rejected samples
-	,XSF_NoRotationRunningNormally	= 0x18		//!< If all these flags are set (out of the XSF_NoRotationMask) then the No Rotation algorithm is running normally
+	/** If all of these flags are set, the No Rotation algorithm is running */
+	,XSF_NoRotationMask				= 0x18		
+	/** If only this flag is set (out of the XSF_NoRotationMask) then the No Rotation algorithm was aborted */
+	,XSF_NoRotationAborted			= 0x10		
+	/** If only this flag is set (out of the XSF_NoRotationMask) then the No Rotation algorithm is running but has rejected samples */
+	,XSF_NoRotationSamplesRejected	= 0x08		
+	/** If all these flags are set (out of the XSF_NoRotationMask) then the No Rotation algorithm is running normally */
+	,XSF_NoRotationRunningNormally	= 0x18		
 
 	,XSF_ClipAccX	= 0x00000100
 	,XSF_ClipAccY	= 0x00000200
@@ -38,10 +45,13 @@ enum XsStatusFlag {
 	,XSF_ClipMagY	= 0x00008000
 	,XSF_ClipMagZ	= 0x00010000
 
-	,XSF_SyncIn		= 0x00200000		//!< When set indicates a sync-in event has been triggered
-	,XSF_SyncOut	= 0x00400000		//!< When set Indicates a sync-out event has been generated
+	/** When set indicates a sync-in event has been triggered */
+	,XSF_SyncIn		= 0x00200000		
+	/** When set Indicates a sync-out event has been generated */
+	,XSF_SyncOut	= 0x00400000		
 
-	,XSF_FilterMode	= 0x03800000		//!< Mask for the 3 bit filter mode field
+	/** Mask for the 3 bit filter mode field */
+	,XSF_FilterMode	= 0x03800000		
 };
 
 /*! \brief Status flag bit offsets

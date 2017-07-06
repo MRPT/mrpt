@@ -170,11 +170,15 @@ namespace bayes
 	class CParticleFilterData
 	{
 	public:
-		typedef T                         CParticleDataContent; 	//!< This is the type inside the corresponding CParticleData class
-		typedef CProbabilityParticle<T>   CParticleData;			//!< Use this to refer to each element in the m_particles array.
-		typedef std::deque<CParticleData> CParticleList;			//!< Use this type to refer to the list of particles m_particles.
+		/** This is the type inside the corresponding CParticleData class */
+		typedef T                         CParticleDataContent; 	
+		/** Use this to refer to each element in the m_particles array. */
+		typedef CProbabilityParticle<T>   CParticleData;			
+		/** Use this type to refer to the list of particles m_particles. */
+		typedef std::deque<CParticleData> CParticleList;			
 
-		CParticleList  m_particles;	//!< The array of particles
+		/** The array of particles */
+		CParticleList  m_particles;	
 
 		/** Default constructor */
 		CParticleFilterData() : m_particles(0) {}

@@ -32,10 +32,13 @@ namespace mrpt
 			  */
 			struct OPENGL_IMPEXP TVertex
 			{
-				TVertex( ); //!< Default constructor			
+				/** Default constructor			 */
+				TVertex( ); 
 				TVertex(float x, float y, float z, uint32_t u, uint32_t v);
-				float m_x, m_y, m_z; //!< 3D vertex coordinates.
-				uint32_t m_u, m_v; //!< 2D texture coordinates. Notice that the texture coordinates are 2D pixels!!!
+				/** 3D vertex coordinates. */
+				float m_x, m_y, m_z; 
+				/** 2D texture coordinates. Notice that the texture coordinates are 2D pixels!!! */
+				uint32_t m_u, m_v; 
 				void writeToStream(mrpt::utils::CStream &out) const;
 				void readFromStream(mrpt::utils::CStream &in);
 			};
@@ -44,9 +47,11 @@ namespace mrpt
 			  */
 			struct OPENGL_IMPEXP TTriangle
 			{
-				TTriangle( ); //!< Default constructor
+				/** Default constructor */
+				TTriangle( ); 
 				TTriangle(TVertex v1, TVertex v2, TVertex v3);
-				TVertex	m_v1, m_v2, m_v3; //!< vertices
+				/** vertices */
+				TVertex	m_v1, m_v2, m_v3; 
 				void writeToStream(mrpt::utils::CStream &out) const;
 				void readFromStream(mrpt::utils::CStream &in);
 			};

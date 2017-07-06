@@ -39,8 +39,10 @@ namespace mrpt
 					eventMovedFrom(false), eventCreated(false),
 					eventAccessed(false) {}
 
-				std::string path; 				//!< Complete path of the file/directory that has changed.
-				bool 		isDir;				//!< Whether the event happened to a file or a directory.
+				/** Complete path of the file/directory that has changed. */
+				std::string path; 				
+				/** Whether the event happened to a file or a directory. */
+				bool 		isDir;				
 				bool 		eventModified;
 				bool 		eventCloseWrite;
 				bool 		eventDeleted;
@@ -67,18 +69,22 @@ namespace mrpt
 			void getChanges( TFileSystemChangeList &out_list );
 
 		private:
-			std::string		m_watchedDirectory; //!< Ended in "/"
+			/** Ended in "/" */
+			std::string		m_watchedDirectory; 
 	#ifdef MRPT_OS_WINDOWS
 			void	*m_hNotif;
 			std::thread m_watchThread;
-			void thread_win32_watch(); //!< Watch thread; only needed in win32
+			/** Watch thread; only needed in win32 */
+			void thread_win32_watch(); 
 			mrpt::utils::CThreadSafeQueue<TFileSystemChange>  m_queue_events_win32;
 
 	#endif
 
 	#if defined(MRPT_OS_LINUX) || defined(MRPT_OS_APPLE)
-			int 	m_fd;  //!< The fd returned by inotify_init.
-			int 	m_wd;  //!< The fd of the watch.
+			/** The fd returned by inotify_init. */
+			int 	m_fd;  
+			/** The fd of the watch. */
+			int 	m_wd;  
 	#endif
 
 		}; // End of class def.

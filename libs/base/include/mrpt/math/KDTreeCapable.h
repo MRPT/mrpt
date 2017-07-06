@@ -86,10 +86,12 @@ namespace mrpt
 					leaf_max_size(10)
 				{
 				}
-				size_t leaf_max_size; //!< Max points per leaf
+				/** Max points per leaf */
+				size_t leaf_max_size; 
 			};
 
-			TKDTreeSearchParams  kdtree_search_params; //!< Parameters to tune the ANN searches
+			/** Parameters to tune the ANN searches */
+			TKDTreeSearchParams  kdtree_search_params; 
 
 			/** @name Public utility methods to query the KD-tree
 				@{ */
@@ -688,17 +690,20 @@ namespace mrpt
 
 				typedef nanoflann::KDTreeSingleIndexAdaptor<metric_t,Derived, _DIM> kdtree_index_t;
 
-				std::unique_ptr<kdtree_index_t> index;  //!< nullptr or the up-to-date index
+				/** nullptr or the up-to-date index */
+				std::unique_ptr<kdtree_index_t> index;  
 
 				std::vector<num_t> query_point;
-				size_t           m_dim = _DIM;         //!< Dimensionality. typ: 2,3
+				/** Dimensionality. typ: 2,3 */
+				size_t           m_dim = _DIM;         
 				size_t           m_num_points = 0;
 			};
 
 			mutable TKDTreeDataHolder<2>  m_kdtree2d_data;
 			mutable TKDTreeDataHolder<3>  m_kdtree3d_data;
 			mutable TKDTreeDataHolder<>   m_kdtreeNd_data;
-			mutable bool                  m_kdtree_is_uptodate; //!< whether the KD tree needs to be rebuilt or not.
+			/** whether the KD tree needs to be rebuilt or not. */
+			mutable bool                  m_kdtree_is_uptodate; 
 
 			/// Rebuild, if needed the KD-tree for 2D (nDims=2), 3D (nDims=3), ... asking the child class for the data points.
 			void rebuild_kdTree_2D() const

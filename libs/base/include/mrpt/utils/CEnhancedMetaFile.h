@@ -30,8 +30,10 @@ namespace utils
 		std::string 		m_targetFile;
 
 	public:
-		static int LINUX_IMG_WIDTH;		//!< In Linux, the size of the bitmap image that emulates the EMF (Default:800)
-		static int LINUX_IMG_HEIGHT;	//!< In Linux, the size of the bitmap image that emulates the EMF (Default:600)
+		/** In Linux, the size of the bitmap image that emulates the EMF (Default:800) */
+		static int LINUX_IMG_WIDTH;		
+		/** In Linux, the size of the bitmap image that emulates the EMF (Default:600) */
+		static int LINUX_IMG_HEIGHT;	
 
 
 		/** Constructor

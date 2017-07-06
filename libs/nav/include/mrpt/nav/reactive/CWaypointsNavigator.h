@@ -47,12 +47,15 @@ namespace mrpt
 			virtual bool isEqual(const CAbstractNavigator::TNavigationParamsBase& o) const override;
 		};
 
-		CWaypointsNavigator( CRobot2NavInterface &robot_interface_impl );  //!< ctor
-		virtual ~CWaypointsNavigator(); //!< dtor
+		/** ctor */
+		CWaypointsNavigator( CRobot2NavInterface &robot_interface_impl );  
+		/** dtor */
+		virtual ~CWaypointsNavigator(); 
 
 		// Overriden to call the general navigationStep(), plus waypoint selection logic.
 		virtual void navigationStep() override;
-		virtual void cancel() override; //!< Cancel current navegation.
+		/** Cancel current navegation. */
+		virtual void cancel() override; 
 
 		/** \name Waypoint navigation control API
 		  * @{ */
@@ -80,11 +83,16 @@ namespace mrpt
 
 		struct NAV_IMPEXP TWaypointsNavigatorParams : public mrpt::utils::CLoadableOptions
 		{
-			double  max_distance_to_allow_skip_waypoint; //!< In meters. <0: unlimited
-			int     min_timesteps_confirm_skip_waypoints; //!< How many times shall a future waypoint be seen as reachable to skip to it (Default: 1)
-			double  waypoint_angle_tolerance;             //!< [rad] Angular error tolerance for waypoints with an assigned heading (Default: 5 deg)
-			double  rel_speed_for_stop_waypoints;         //!< [0,1] Relative speed when aiming at a stop-point waypoint (Default=0.10)
-			int     multitarget_look_ahead;               //!< >=0 number of waypoints to forward to the underlying navigation engine, to ease obstacles avoidance when a waypoint is blocked (Default=0 : none).
+			/** In meters. <0: unlimited */
+			double  max_distance_to_allow_skip_waypoint; 
+			/** How many times shall a future waypoint be seen as reachable to skip to it (Default: 1) */
+			int     min_timesteps_confirm_skip_waypoints; 
+			/** [rad] Angular error tolerance for waypoints with an assigned heading (Default: 5 deg) */
+			double  waypoint_angle_tolerance;             
+			/** [0,1] Relative speed when aiming at a stop-point waypoint (Default=0.10) */
+			double  rel_speed_for_stop_waypoints;         
+			/** >=0 number of waypoints to forward to the underlying navigation engine, to ease obstacles avoidance when a waypoint is blocked (Default=0 : none). */
+			int     multitarget_look_ahead;               
 
 			virtual void loadFromConfigFile(const mrpt::utils::CConfigFileBase &c, const std::string &s) override;
 			virtual void saveToConfigFile(mrpt::utils::CConfigFileBase &c, const std::string &s) const override;
@@ -97,7 +105,8 @@ namespace mrpt
 		virtual void saveConfigFile(mrpt::utils::CConfigFileBase &c) const override; // See base class docs!
 
 	protected:
-		TWaypointStatusSequence  m_waypoint_nav_status; //!< The latest waypoints navigation command and the up-to-date control status.
+		/** The latest waypoints navigation command and the up-to-date control status. */
+		TWaypointStatusSequence  m_waypoint_nav_status; 
 		std::recursive_mutex m_nav_waypoints_cs;
 
 		/** Implements the way to waypoint is free function in children classes: `true` must be returned 
@@ -108,10 +117,12 @@ namespace mrpt
 		virtual void onStartNewNavigation() override;
 
 		virtual bool checkHasReachedTarget(const double targetDist) const override;
-		virtual void waypoints_navigationStep(); //!< The waypoints-specific part of navigationStep()
+		/** The waypoints-specific part of navigationStep() */
+		virtual void waypoints_navigationStep(); 
 
 	private:
-		bool m_was_aligning; //!< Whether the last timestep was "is_aligning" in a waypoint with heading
+		/** Whether the last timestep was "is_aligning" in a waypoint with heading */
+		bool m_was_aligning; 
 		bool m_is_aligning;
 
 	};

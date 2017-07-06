@@ -31,8 +31,10 @@ namespace mrpt
 		  */
 		struct HWDRIVERS_IMPEXP TSensorClassId
 		{
-			const char*			className;						//!< Class name
-			CGenericSensor*		(*ptrCreateObject)();			//!< Pointer to class constructor
+			/** Class name */
+			const char*			className;						
+			/** Pointer to class constructor */
+			CGenericSensor*		(*ptrCreateObject)();			
 		};
 
 
@@ -98,34 +100,45 @@ namespace mrpt
 			static void registerClass(const TSensorClassId* pNewClass);
 
 		private:
-			std::mutex			m_csObjList;		//!< The critical section for m_objList
-			TListObservations				m_objList;		//!< The queue of objects to be returned by getObservations
+			/** The critical section for m_objList */
+			std::mutex			m_csObjList;		
+			/** The queue of objects to be returned by getObservations */
+			TListObservations				m_objList;		
 
 			/** Used in registerClass */
 			typedef std::map< std::string , const TSensorClassId *> registered_sensor_classes_t;
-			static registered_sensor_classes_t & get_registered_sensor_classes(); //!< Access to singleton
+			/** Access to singleton */
+			static registered_sensor_classes_t & get_registered_sensor_classes(); 
 
 		protected:
 			/** @name Common settings to any sensor, loaded in "loadConfig"
 			    @{ */
 
-			double	m_process_rate;  //!< See CGenericSensor
-			size_t	m_max_queue_len; //!< See CGenericSensor
-			size_t	m_grab_decimation;	//!< If set to N>=2, only 1 out of N observations will be saved to m_objList.
-			std::string  m_sensorLabel; //!< See CGenericSensor
+			/** See CGenericSensor */
+			double	m_process_rate;  
+			/** See CGenericSensor */
+			size_t	m_max_queue_len; 
+			/** If set to N>=2, only 1 out of N observations will be saved to m_objList. */
+			size_t	m_grab_decimation;	
+			/** See CGenericSensor */
+			std::string  m_sensorLabel; 
 
 			/** @} */
 
-			size_t	m_grab_decimation_counter; //!< Used when "m_grab_decimation" is enabled
+			/** Used when "m_grab_decimation" is enabled */
+			size_t	m_grab_decimation_counter; 
 
 			TSensorState    m_state;
 			bool            m_verbose;
 
 			// === Data for off-rawlog file external image directory ====
 			//  Only used by a few sensor classes.
-			std::string			m_path_for_external_images; //!< The path where to save off-rawlog images: empty means save images embedded in the rawlog.
-			std::string			m_external_images_format; //!< The extension ("jpg","gif","png",...) that determines the format of images saved externally \sa setPathForExternalImages
-			unsigned int		m_external_images_jpeg_quality; //!< For JPEG images, the quality (default=95%).
+			/** The path where to save off-rawlog images: empty means save images embedded in the rawlog. */
+			std::string			m_path_for_external_images; 
+			/** The extension ("jpg","gif","png",...) that determines the format of images saved externally \sa setPathForExternalImages */
+			std::string			m_external_images_format; 
+			/** For JPEG images, the quality (default=95%). */
+			unsigned int		m_external_images_jpeg_quality; 
 			// ======================================
 
 			/** This method must be called by derived classes to enqueue a new observation in the list to be returned by getObservations.

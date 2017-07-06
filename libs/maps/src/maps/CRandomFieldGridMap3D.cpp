@@ -305,11 +305,16 @@ void mrpt::maps::CRandomFieldGridMap3D::setVoxelsConnectivity(const Connectivity
 }
 
 bool CRandomFieldGridMap3D::insertIndividualReading(
-	const double sensorReading,              //!< [in] The value observed in the (x,y,z) position
-	const double sensorVariance,             //!< [in] The variance of the sensor observation
-	const mrpt::math::TPoint3D & point,      //!< [in] The (x,y,z) location
-	const TVoxelInterpolationMethod method,  //!< [in] Voxel interpolation method: how many voxels will be affected by the reading
-	const bool update_map                    //!< [in] Run a global map update after inserting this observatin (algorithm-dependant)
+	/** [in] The value observed in the (x,y,z) position */
+	const double sensorReading,              
+	/** [in] The variance of the sensor observation */
+	const double sensorVariance,             
+	/** [in] The (x,y,z) location */
+	const mrpt::math::TPoint3D & point,      
+	/** [in] Voxel interpolation method: how many voxels will be affected by the reading */
+	const TVoxelInterpolationMethod method,  
+	/** [in] Run a global map update after inserting this observatin (algorithm-dependant) */
+	const bool update_map                    
 )
 {
 	MRPT_START;

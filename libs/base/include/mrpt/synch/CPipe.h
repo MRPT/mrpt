@@ -50,7 +50,8 @@ namespace mrpt
 			static void initializePipe(CPipeReadEndPoint &outReadPipe, CPipeWriteEndPoint &outWritePipe);
 
 		private:
-			CPipe();  //!< No need to create any object of this class.
+			/** No need to create any object of this class. */
+			CPipe();  
 			~CPipe();
 		}; // end of CPipe
 
@@ -76,8 +77,10 @@ namespace mrpt
 			  */
 			std::string serialize();
 
-			unsigned int timeout_read_start_us;   //!< (Default=0) Timeout for read operations: microseconds (us) to wait for the first byte. 0 means infinite timeout.
-			unsigned int timeout_read_between_us; //!< (Default=0) Timeout between burst reads operations: microseconds (us) to wait between two partial reads inside one large read. 0 means infinite timeout.
+			/** (Default=0) Timeout for read operations: microseconds (us) to wait for the first byte. 0 means infinite timeout. */
+			unsigned int timeout_read_start_us;   
+			/** (Default=0) Timeout between burst reads operations: microseconds (us) to wait between two partial reads inside one large read. 0 means infinite timeout. */
+			unsigned int timeout_read_between_us; 
 
 			/** Returns false if the pipe was closed due to some error. */
 			inline bool isOpen() const { return m_pipe_file!=0; }
@@ -94,9 +97,12 @@ namespace mrpt
 			virtual size_t  Read(void *Buffer, size_t Count) override;
 			virtual size_t  Write(const void *Buffer, size_t Count) override;
 
-			virtual uint64_t Seek(uint64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning) override; //!< Without effect in this class
-			virtual uint64_t getTotalBytesCount() override; //!< Without effect in this class
-			virtual uint64_t getPosition() override; //!< Without effect in this class
+			/** Without effect in this class */
+			virtual uint64_t Seek(uint64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning) override; 
+			/** Without effect in this class */
+			virtual uint64_t getTotalBytesCount() override; 
+			/** Without effect in this class */
+			virtual uint64_t getPosition() override; 
 		}; // end of CPipeBaseEndPoint
 		static_assert(!std::is_copy_constructible<CPipeBaseEndPoint>::value && !std::is_copy_assignable<CPipeBaseEndPoint>::value, "Copy Check");
 		
@@ -111,7 +117,8 @@ namespace mrpt
 
 		private:
 			CPipeReadEndPoint();
-			void  WriteBuffer (const void *Buffer, size_t Count);  //!< Hide the write method in this read-only pipe.
+			/** Hide the write method in this read-only pipe. */
+			void  WriteBuffer (const void *Buffer, size_t Count);  
 
 		}; // end of CPipeReadEndPoint
 
@@ -126,7 +133,8 @@ namespace mrpt
 
 		private:
 			CPipeWriteEndPoint();
-			size_t ReadBuffer(void *Buffer, size_t Count);  //!< Hide the read method in this write-only pipe.
+			/** Hide the read method in this write-only pipe. */
+			size_t ReadBuffer(void *Buffer, size_t Count);  
 
 		}; // end of CPipeWriteEndPoint
 

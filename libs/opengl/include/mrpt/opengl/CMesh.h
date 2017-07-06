@@ -48,27 +48,42 @@ namespace mrpt
 			bool						m_isWireFrame;
 			bool						m_isImage;
 
-			math::CMatrix		Z;		//!< Z(x,y): Z-coordinate of the point (x,y)
+			/** Z(x,y): Z-coordinate of the point (x,y) */
+			math::CMatrix		Z;		
 			math::CMatrix		mask;
-			math::CMatrix		U, V;	//!< Texture coordinates
-			mutable math::CMatrix		C;		//!< Grayscale Color [0,1] for each cell, updated by updateColorsMatrix
-			mutable math::CMatrix		C_r;	//!< Red Component of the Color [0,1] for each cell, updated by updateColorsMatrix
-			mutable math::CMatrix		C_g;	//!< Green Component of the  Color [0,1] for each cell, updated by updateColorsMatrix
-			mutable math::CMatrix		C_b;	//!< Blue Component of the  Color [0,1] for each cell, updated by updateColorsMatrix
+			/** Texture coordinates */
+			math::CMatrix		U, V;	
+			/** Grayscale Color [0,1] for each cell, updated by updateColorsMatrix */
+			mutable math::CMatrix		C;		
+			/** Red Component of the Color [0,1] for each cell, updated by updateColorsMatrix */
+			mutable math::CMatrix		C_r;	
+			/** Green Component of the  Color [0,1] for each cell, updated by updateColorsMatrix */
+			mutable math::CMatrix		C_g;	
+			/** Blue Component of the  Color [0,1] for each cell, updated by updateColorsMatrix */
+			mutable math::CMatrix		C_b;	
 
-			mrpt::utils::TColormap		m_colorMap; //!< Used when m_colorFromZ is true
+			/** Used when m_colorFromZ is true */
+			mrpt::utils::TColormap		m_colorMap; 
 
-			mutable bool	m_modified_Z;		//!< Whether C is not up-to-date wrt to Z
-			mutable bool	m_modified_Image;	//!< Whether C is not up-to-date wrt to the texture image
+			/** Whether C is not up-to-date wrt to Z */
+			mutable bool	m_modified_Z;		
+			/** Whether C is not up-to-date wrt to the texture image */
+			mutable bool	m_modified_Image;	
 
-			void updateColorsMatrix() const;	//!< Called internally to assure C is updated.
-			void updateTriangles() const;		//!< Called internally to assure the triangle list is updated.
+			/** Called internally to assure C is updated. */
+			void updateColorsMatrix() const;	
+			/** Called internally to assure the triangle list is updated. */
+			void updateTriangles() const;		
 			void updatePolygons() const;	//<!Called internally to assure that the polygon list is updated.
 
-			float xMin,xMax,yMin,yMax;	//!< Mesh bounds
-			mutable std::vector<std::pair<CSetOfTriangles::TTriangle,TTriangleVertexIndices> > actualMesh;	//!< List of triangles in the mesh
-			mutable std::vector<std::pair<mrpt::math::TPoint3D,size_t> > vertex_normals; //!< The accumulated normals & counts for each vertex, so normals can be averaged.
-			mutable bool trianglesUpToDate;		//!<Whether the actual mesh needs to be recalculated
+			/** Mesh bounds */
+			float xMin,xMax,yMin,yMax;	
+			/** List of triangles in the mesh */
+			mutable std::vector<std::pair<CSetOfTriangles::TTriangle,TTriangleVertexIndices> > actualMesh;	
+			/** The accumulated normals & counts for each vertex, so normals can be averaged. */
+			mutable std::vector<std::pair<mrpt::math::TPoint3D,size_t> > vertex_normals; 
+			/**Whether the actual mesh needs to be recalculated */
+			mutable bool trianglesUpToDate;		
 			mutable bool polygonsUpToDate;	//<!Whether the polygon mesh (auxiliary structure for ray tracing) needs to be recalculated
 			mutable std::vector<mrpt::math::TPolygonWithPlane> tmpPolys;
 

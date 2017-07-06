@@ -97,7 +97,8 @@ namespace mrpt
 		  */
 		inline double timestampToDouble( const mrpt::system::TTimeStamp  t ) { return timestampTotime_t(t); }
 
-		double BASE_IMPEXP timeDifference( const mrpt::system::TTimeStamp t_first, const mrpt::system::TTimeStamp t_later ); //!< Returns the time difference from t1 to t2 (positive if t2 is posterior to t1), in seconds \sa secondsToTimestamp
+		/** Returns the time difference from t1 to t2 (positive if t2 is posterior to t1), in seconds \sa secondsToTimestamp */
+		double BASE_IMPEXP timeDifference( const mrpt::system::TTimeStamp t_first, const mrpt::system::TTimeStamp t_later ); 
 
 		/** Returns the current time, as a `double` (fractional version of time_t) instead of a `TTimeStamp`.
 		* \sa now(), timestampTotime_t() */
@@ -105,7 +106,8 @@ namespace mrpt
 			return mrpt::system::timestampTotime_t(mrpt::system::getCurrentTime());
 		}
 
-		mrpt::system::TTimeStamp BASE_IMPEXP timestampAdd( const mrpt::system::TTimeStamp tim, const double num_seconds); //!< Shifts a timestamp the given amount of seconds (>0: forwards in time, <0: backwards) \sa secondsToTimestamp
+		/** Shifts a timestamp the given amount of seconds (>0: forwards in time, <0: backwards) \sa secondsToTimestamp */
+		mrpt::system::TTimeStamp BASE_IMPEXP timestampAdd( const mrpt::system::TTimeStamp tim, const double num_seconds); 
 
 		/** Transform a time interval (in seconds) into TTimeStamp (e.g. which can be added to an existing valid timestamp)
 		  * \sa timeDifference

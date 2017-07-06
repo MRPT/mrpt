@@ -69,9 +69,11 @@ namespace maps
 		struct MAPS_IMPEXP TLaserRange2DInsertContext {
 			TLaserRange2DInsertContext(const mrpt::obs::CObservation2DRangeScan  &_rangeScan) : HM(mrpt::math::UNINITIALIZED_MATRIX), rangeScan(_rangeScan)
 			{ }
-		 mrpt::math::CMatrixDouble44	HM;  //!< Homog matrix of the local sensor pose within the robot
+		 /** Homog matrix of the local sensor pose within the robot */
+		 mrpt::math::CMatrixDouble44	HM;  
 			const mrpt::obs::CObservation2DRangeScan  &rangeScan;
-			std::vector<float>         fVars;  //!< Extra variables to be used as desired by the derived class.
+			/** Extra variables to be used as desired by the derived class. */
+			std::vector<float>         fVars;  
 			std::vector<unsigned int>  uVars;
 			std::vector<uint8_t>       bVars;
 		};
@@ -80,17 +82,22 @@ namespace maps
 		struct MAPS_IMPEXP TLaserRange3DInsertContext {
 			TLaserRange3DInsertContext(const mrpt::obs::CObservation3DRangeScan  &_rangeScan) : HM(mrpt::math::UNINITIALIZED_MATRIX), rangeScan(_rangeScan)
 			{ }
-			mrpt::math::CMatrixDouble44	HM;  //!< Homog matrix of the local sensor pose within the robot
+			/** Homog matrix of the local sensor pose within the robot */
+			mrpt::math::CMatrixDouble44	HM;  
 			const mrpt::obs::CObservation3DRangeScan  &rangeScan;
-			float scan_x, scan_y,scan_z; //!< In \a internal_loadFromRangeScan3D_prepareOneRange, these are the local coordinates of the scan points being inserted right now.
-			std::vector<float>         fVars;  //!< Extra variables to be used as desired by the derived class.
+			/** In \a internal_loadFromRangeScan3D_prepareOneRange, these are the local coordinates of the scan points being inserted right now. */
+			float scan_x, scan_y,scan_z; 
+			/** Extra variables to be used as desired by the derived class. */
+			std::vector<float>         fVars;  
 			std::vector<unsigned int>  uVars;
 			std::vector<uint8_t>       bVars;
 		};
 
 	 public:
-		 CPointsMap();            //!< Ctor
-		 virtual ~CPointsMap();   //!< Virtual destructor.
+		 /** Ctor */
+		 CPointsMap();            
+		 /** Virtual destructor. */
+		 virtual ~CPointsMap();   
 
 		// --------------------------------------------
 		/** @name Pure virtual interfaces to be implemented by any class derived from CPointsMap
@@ -167,21 +174,33 @@ namespace maps
 			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) override; // See base docs
 			void dumpToTextStream(mrpt::utils::CStream &out) const override; // See base docs
 
-			float   minDistBetweenLaserPoints;   //!< The minimum distance between points (in 3D): If two points are too close, one of them is not inserted into the map. Default is 0.02 meters.
-			bool    addToExistingPointsMap;      //!< Applicable to "loadFromRangeScan" only! If set to false, the points from the scan are loaded, clearing all previous content. Default is false.
-			bool    also_interpolate;            //!< If set to true, far points (<1m) are interpolated with samples at "minDistSqrBetweenLaserPoints" intervals (Default is false).
-			bool    disableDeletion;             //!< If set to false (default=true) points in the same plane as the inserted scan and inside the free space, are erased: i.e. they don't exist yet.
-			bool    fuseWithExisting;            //!< If set to true (default=false), inserted points are "fused" with previously existent ones. This shrink the size of the points map, but its slower.
-			bool    isPlanarMap;                 //!< If set to true, only HORIZONTAL (in the XY plane) measurements will be inserted in the map (Default value is false, thus 3D maps are generated). \sa	horizontalTolerance
-			float   horizontalTolerance;	     //!< The tolerance in rads in pitch & roll for a laser scan to be considered horizontal, considered only when isPlanarMap=true (default=0).
-			float   maxDistForInterpolatePoints; //!< The maximum distance between two points to interpolate between them (ONLY when also_interpolate=true)
-			bool    insertInvalidPoints;             //!< Points with x,y,z coordinates set to zero will also be inserted
+			/** The minimum distance between points (in 3D): If two points are too close, one of them is not inserted into the map. Default is 0.02 meters. */
+			float   minDistBetweenLaserPoints;   
+			/** Applicable to "loadFromRangeScan" only! If set to false, the points from the scan are loaded, clearing all previous content. Default is false. */
+			bool    addToExistingPointsMap;      
+			/** If set to true, far points (<1m) are interpolated with samples at "minDistSqrBetweenLaserPoints" intervals (Default is false). */
+			bool    also_interpolate;            
+			/** If set to false (default=true) points in the same plane as the inserted scan and inside the free space, are erased: i.e. they don't exist yet. */
+			bool    disableDeletion;             
+			/** If set to true (default=false), inserted points are "fused" with previously existent ones. This shrink the size of the points map, but its slower. */
+			bool    fuseWithExisting;            
+			/** If set to true, only HORIZONTAL (in the XY plane) measurements will be inserted in the map (Default value is false, thus 3D maps are generated). \sa	horizontalTolerance */
+			bool    isPlanarMap;                 
+			/** The tolerance in rads in pitch & roll for a laser scan to be considered horizontal, considered only when isPlanarMap=true (default=0). */
+			float   horizontalTolerance;	     
+			/** The maximum distance between two points to interpolate between them (ONLY when also_interpolate=true) */
+			float   maxDistForInterpolatePoints; 
+			/** Points with x,y,z coordinates set to zero will also be inserted */
+			bool    insertInvalidPoints;             
 
-			void writeToStream(mrpt::utils::CStream &out) const;		//!< Binary dump to stream - for usage in derived classes' serialization
-			void readFromStream(mrpt::utils::CStream &in);			//!< Binary dump to stream - for usage in derived classes' serialization
+			/** Binary dump to stream - for usage in derived classes' serialization */
+			void writeToStream(mrpt::utils::CStream &out) const;		
+			/** Binary dump to stream - for usage in derived classes' serialization */
+			void readFromStream(mrpt::utils::CStream &in);			
 		 };
 
-		TInsertionOptions insertionOptions; //!< The options used when inserting observations in the map
+		/** The options used when inserting observations in the map */
+		TInsertionOptions insertionOptions; 
 
 		 /** Options used when evaluating "computeObservationLikelihood" in the derived classes.
 		  * \sa CObservation::computeObservationLikelihood
@@ -195,12 +214,17 @@ namespace maps
 			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) override; // See base docs
 			void dumpToTextStream(mrpt::utils::CStream &out) const override; // See base docs
 
-			void writeToStream(mrpt::utils::CStream &out) const;		//!< Binary dump to stream - for usage in derived classes' serialization
-			void readFromStream(mrpt::utils::CStream &in);			//!< Binary dump to stream - for usage in derived classes' serialization
+			/** Binary dump to stream - for usage in derived classes' serialization */
+			void writeToStream(mrpt::utils::CStream &out) const;		
+			/** Binary dump to stream - for usage in derived classes' serialization */
+			void readFromStream(mrpt::utils::CStream &in);			
 
-            double 		sigma_dist; //!< Sigma squared (variance, in meters) of the exponential used to model the likelihood (default= 0.5^2 meters)
-			double 		max_corr_distance; //!< Maximum distance in meters to consider for the numerator divided by "sigma_dist", so that each point has a minimum (but very small) likelihood to avoid underflows (default=1.0 meters)
-			uint32_t	decimation; //!< Speed up the likelihood computation by considering only one out of N rays (default=10)
+            /** Sigma squared (variance, in meters) of the exponential used to model the likelihood (default= 0.5^2 meters) */
+            double 		sigma_dist; 
+			/** Maximum distance in meters to consider for the numerator divided by "sigma_dist", so that each point has a minimum (but very small) likelihood to avoid underflows (default=1.0 meters) */
+			double 		max_corr_distance; 
+			/** Speed up the likelihood computation by considering only one out of N rays (default=10) */
+			uint32_t	decimation; 
 		 };
 
 		 TLikelihoodOptions  likelihoodOptions;
@@ -774,9 +798,11 @@ namespace maps
 		}
 
 	protected:
-		std::vector<float>     x,y,z;        //!< The point coordinates
+		/** The point coordinates */
+		std::vector<float>     x,y,z;        
 
-		mrpt::obs::CSinCosLookUpTableFor2DScans  m_scans_sincos_cache; //!< Cache of sin/cos values for the latest 2D scan geometries.
+		/** Cache of sin/cos values for the latest 2D scan geometries. */
+		mrpt::obs::CSinCosLookUpTableFor2DScans  m_scans_sincos_cache; 
 
 		/** Auxiliary variables used in "getLargestDistanceFromOrigin"
 		  * \sa getLargestDistanceFromOrigin
@@ -854,10 +880,14 @@ namespace maps
 		private:
 			mrpt::maps::CPointsMap &m_obj;
 		public:
-			typedef float  coords_t;         //!< The type of each point XYZ coordinates
-			static const int HAS_RGB   = 0;  //!< Has any color RGB info?
-			static const int HAS_RGBf  = 0;  //!< Has native RGB info (as floats)?
-			static const int HAS_RGBu8 = 0;  //!< Has native RGB info (as uint8_t)?
+			/** The type of each point XYZ coordinates */
+			typedef float  coords_t;         
+			/** Has any color RGB info? */
+			static const int HAS_RGB   = 0;  
+			/** Has native RGB info (as floats)? */
+			static const int HAS_RGBf  = 0;  
+			/** Has native RGB info (as uint8_t)? */
+			static const int HAS_RGBu8 = 0;  
 
 			/** Constructor (accept a const ref for convenience) */
 			inline PointCloudAdapter(const mrpt::maps::CPointsMap &obj) : m_obj(*const_cast<mrpt::maps::CPointsMap*>(&obj)) { }

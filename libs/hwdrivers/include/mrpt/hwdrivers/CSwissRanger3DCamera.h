@@ -86,8 +86,10 @@ namespace mrpt
 			DEFINE_GENERIC_SENSOR(CSwissRanger3DCamera)
 
 		public:
-			CSwissRanger3DCamera();	 //!< Default ctor
-			~CSwissRanger3DCamera();	 //!< Default ctor
+			/** Default ctor */
+			CSwissRanger3DCamera();	 
+			/** Default ctor */
+			~CSwissRanger3DCamera();	 
 
 			/** Initializes the 3D camera - should be invoked after calling loadConfig()
 			  *  \exception This method must throw an exception with a descriptive message if some critical error is found.
@@ -112,10 +114,12 @@ namespace mrpt
 			void getNextObservation( mrpt::obs::CObservation3DRangeScan &out_obs, bool &there_is_obs, bool &hardware_error );
 
 
-			bool open(); //!< return false on error - Called automatically from initialize(), no need normally for the user to call this.
+			/** return false on error - Called automatically from initialize(), no need normally for the user to call this. */
+			bool open(); 
 			void close();
 
-			bool isOpen() const; //!< whether the camera is open and comms work ok. To be called after initialize()
+			/** whether the camera is open and comms work ok. To be called after initialize() */
+			bool isOpen() const; 
 
 			/** Get the row count in the camera images, loaded automatically upon camera open(). */
 			size_t getRowCount() const { return m_rows; }
@@ -188,10 +192,14 @@ namespace mrpt
 
 			mrpt::poses::CPose3D 	m_sensorPoseOnRobot;
 
-			bool m_save_3d;			//!< Save the 3D point cloud (default: true)
-			bool m_save_range_img;	//!< Save the 2D range image (default: true)
-			bool m_save_intensity_img; //!< Save the 2D intensity image (default: true)
-			bool m_save_confidence;	//!< Save the estimated confidence 2D image (default: false)
+			/** Save the 3D point cloud (default: true) */
+			bool m_save_3d;			
+			/** Save the 2D range image (default: true) */
+			bool m_save_range_img;	
+			/** Save the 2D intensity image (default: true) */
+			bool m_save_intensity_img; 
+			/** Save the estimated confidence 2D image (default: false) */
+			bool m_save_confidence;	
 
 			bool m_enable_img_hist_equal;
 			bool m_enable_median_filter;
@@ -200,18 +208,24 @@ namespace mrpt
 			bool m_enable_denoise_anf;
 
 
-			bool 	m_open_from_usb; //!< true: USB, false: ETH
+			/** true: USB, false: ETH */
+			bool 	m_open_from_usb; 
 			size_t 	m_usb_serial;
 			std::string  m_ip_address;
 
-			size_t  m_rows, m_cols; //!< Size of camera images, set on open()
-			unsigned int m_cam_serial_num; //!< Serial number of the camera, set on open()
-			double		m_maxRange;	//!< Max range, as deducted from the camera frequency.
+			/** Size of camera images, set on open() */
+			size_t  m_rows, m_cols; 
+			/** Serial number of the camera, set on open() */
+			unsigned int m_cam_serial_num; 
+			/** Max range, as deducted from the camera frequency. */
+			double		m_maxRange;	
 
-			bool		m_preview_window; //!< Show preview window while grabbing
+			/** Show preview window while grabbing */
+			bool		m_preview_window; 
 			mrpt::gui::CDisplayWindow::Ptr  m_win_range, m_win_int;
 
-			void *m_cam;  //!< opaque handler to SRCAM. nullptr means it's not open yet.
+			/** opaque handler to SRCAM. nullptr means it's not open yet. */
+			void *m_cam;  
 			
 			mrpt::utils::TCamera  	m_cameraParams; 
 

@@ -164,11 +164,14 @@ namespace mrpt
 
 			struct VISION_IMPEXP TExtraOutputInfo
 			{
-				size_t  raw_FAST_feats_detected;  //!< In the new_img with the last adaptive threshold
-				size_t  num_deleted_feats; //!< The number of features which were deleted due to OOB, bad tracking, etc... (only if "remove_lost_features" is enabled)
+				/** In the new_img with the last adaptive threshold */
+				size_t  raw_FAST_feats_detected;  
+				/** The number of features which were deleted due to OOB, bad tracking, etc... (only if "remove_lost_features" is enabled) */
+				size_t  num_deleted_feats; 
 			};
 
-			TExtraOutputInfo  last_execution_extra_info; //!< Updated with each call to trackFeatures()
+			/** Updated with each call to trackFeatures() */
+			TExtraOutputInfo  last_execution_extra_info; 
 
 		protected:
 			/** The tracking method implementation, to be implemented in children classes. */
@@ -180,7 +183,8 @@ namespace mrpt
 			/** This version falls back to the version with TSimpleFeatureList if the derived class does not implement it. */
 			virtual void trackFeatures_impl(const mrpt::utils::CImage &old_img,const mrpt::utils::CImage &new_img,CFeatureList &inout_featureList ) = 0;
 
-			mrpt::utils::CTimeLogger  m_timlog; //!< the internal time logger, disabled by default.
+			/** the internal time logger, disabled by default. */
+			mrpt::utils::CTimeLogger  m_timlog; 
 
 			/** This field is clared by \a trackFeatures() before calling \a trackFeatures_impl(), and
 			  *   can be filled out with newly defected FAST(ER) features in the latter.
@@ -194,9 +198,12 @@ namespace mrpt
 				const size_t desired_num_features);
 
 		private:
-			size_t		m_update_patches_counter;	//!< for use when "update_patches_every">=1
-			size_t		m_check_KLT_counter;	//!< For use when "check_KLT_response_every">=1
-			int			m_detector_adaptive_thres;  //!< For use in "add_new_features" == true
+			/** for use when "update_patches_every">=1 */
+			size_t		m_update_patches_counter;	
+			/** For use when "check_KLT_response_every">=1 */
+			size_t		m_check_KLT_counter;	
+			/** For use in "add_new_features" == true */
+			int			m_detector_adaptive_thres;  
 
 			template <typename FEATLIST>
 			void internal_trackFeatures(

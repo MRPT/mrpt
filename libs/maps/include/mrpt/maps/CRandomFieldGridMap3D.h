@@ -35,7 +35,8 @@ namespace maps
 #endif
 	struct MAPS_IMPEXP TRandomFieldVoxel
 	{
-		double mean_value, stddev_value; //!< Mean and sigma (standard deviation) estimated values for the voxel.
+		/** Mean and sigma (standard deviation) estimated values for the voxel. */
+		double mean_value, stddev_value; 
 
 		/** Constructor */
 		TRandomFieldVoxel(double _mean_value = .0, double _stddev_value = .0) :
@@ -77,7 +78,8 @@ namespace maps
 
 		DEFINE_SERIALIZABLE( CRandomFieldGridMap3D )
 	public:
-		static bool ENABLE_GMRF_PROFILER; //!< [default:false] Enables a profiler to show a performance report at application end.
+		/** [default:false] Enables a profiler to show a performance report at application end. */
+		static bool ENABLE_GMRF_PROFILER; 
 
 		/** Constructor. 
 		  * If you set call_initialize_now to false, the object will be initialized immediately (without the heavy initialization of the GMRF), 
@@ -111,23 +113,28 @@ namespace maps
 		  */
 		struct MAPS_IMPEXP TInsertionOptions : public mrpt::utils::CLoadableOptions
 		{
-			TInsertionOptions();  //!< Default values loader
+			/** Default values loader */
+			TInsertionOptions();  
 
 			/** See utils::CLoadableOptions */
 			void  loadFromConfigFile(
 				const mrpt::utils::CConfigFileBase  &source,
 				const std::string &section);
 
-			void  dumpToTextStream(mrpt::utils::CStream	&out) const; //!< See utils::CLoadableOptions
+			/** See utils::CLoadableOptions */
+			void  dumpToTextStream(mrpt::utils::CStream	&out) const; 
 
 			/** @name Gaussian Markov Random Fields method
 			    @{ */
-			double GMRF_lambdaPrior;		//!< The information (Lambda) of fixed map constraints
-			bool   GMRF_skip_variance;     //!< (Default:false) Skip the computation of the variance, just compute the mean
+			/** The information (Lambda) of fixed map constraints */
+			double GMRF_lambdaPrior;		
+			/** (Default:false) Skip the computation of the variance, just compute the mean */
+			bool   GMRF_skip_variance;     
 			/** @} */
 		};
 
-		TInsertionOptions insertionOptions; //!< \sa updateMapEstimation()
+		/** \sa updateMapEstimation() */
+		TInsertionOptions insertionOptions; 
 
 		/** Changes the size of the grid, maintaining previous contents. \sa setSize */
 		virtual void resize(
@@ -155,10 +162,14 @@ namespace maps
 			* \return true if connected (and the "information" value should be also updated in out_edge_information), false otherwise.
 			*/
 			virtual bool getEdgeInformation(
-				const CRandomFieldGridMap3D *parent,  //!< The parent map on which we are running
-				size_t icx, size_t icy, size_t icz,   //!< (cx,cy,cz) for node "i"
-				size_t jcx, size_t jcy, size_t jcz,   //!< (cx,cy,cz) for node "j"
-				double &out_edge_information          //!< Must output here the inverse of the variance of the constraint edge.
+				/** The parent map on which we are running */
+				const CRandomFieldGridMap3D *parent,  
+				/** (cx,cy,cz) for node "i" */
+				size_t icx, size_t icy, size_t icz,   
+				/** (cx,cy,cz) for node "j" */
+				size_t jcx, size_t jcy, size_t jcz,   
+				/** Must output here the inverse of the variance of the constraint edge. */
+				double &out_edge_information          
 			) = 0;
 		};
 
@@ -174,14 +185,20 @@ namespace maps
 		  * \return false if point is out of the grid extension.
 		  */
 		bool insertIndividualReading(
-			const double sensorReading,              //!< [in] The value observed in the (x,y,z) position
-			const double sensorVariance,             //!< [in] The variance of the sensor observation
-			const mrpt::math::TPoint3D & point,      //!< [in] The (x,y,z) location
-			const TVoxelInterpolationMethod method,  //!< [in] Voxel interpolation method: how many voxels will be affected by the reading
-			const bool update_map                    //!< [in] Run a global map update after inserting this observation (algorithm-dependant)
+			/** [in] The value observed in the (x,y,z) position */
+			const double sensorReading,              
+			/** [in] The variance of the sensor observation */
+			const double sensorVariance,             
+			/** [in] The (x,y,z) location */
+			const mrpt::math::TPoint3D & point,      
+			/** [in] Voxel interpolation method: how many voxels will be affected by the reading */
+			const TVoxelInterpolationMethod method,  
+			/** [in] Run a global map update after inserting this observation (algorithm-dependant) */
+			const bool update_map                    
 			);
 
-		void updateMapEstimation(); //!< Run the method-specific procedure required to ensure that the mean & variances are up-to-date with all inserted observations, using parameters in insertionOptions
+		/** Run the method-specific procedure required to ensure that the mean & variances are up-to-date with all inserted observations, using parameters in insertionOptions */
+		void updateMapEstimation(); 
 
 		/** Returns the 3D grid contents as an VTK grid. */
 		void getAsVtkStructuredGrid(vtkStructuredGrid* output, const std::string &label_mean = std::string("mean"), const std::string &label_stddev = std::string("stddev") ) const;
@@ -190,14 +207,17 @@ namespace maps
 		/** Internal: called called after each change of resolution, size, etc. to build the prior factor information */
 		void internal_initialize(bool erase_prev_contents = true);
 
-		ConnectivityDescriptor::Ptr m_gmrf_connectivity; //!< Empty: default
+		/** Empty: default */
+		ConnectivityDescriptor::Ptr m_gmrf_connectivity; 
 
 		mrpt::graphs::ScalarFactorGraph  m_gmrf;
 
 		struct TObservationGMRF : public mrpt::graphs::ScalarFactorGraph::UnaryFactorVirtualBase
 		{
-			double obsValue;       //!< Observation value
-			double Lambda;         //!< "Information" of the observation (=inverse of the variance)
+			/** Observation value */
+			double obsValue;       
+			/** "Information" of the observation (=inverse of the variance) */
+			double Lambda;         
 
 			double evaluateResidual() const override;
 			double getInformation() const  override;
@@ -210,7 +230,8 @@ namespace maps
 
 		struct TPriorFactorGMRF : public mrpt::graphs::ScalarFactorGraph::BinaryFactorVirtualBase
 		{
-			double Lambda;         //!< "Information" of the observation (=inverse of the variance)
+			/** "Information" of the observation (=inverse of the variance) */
+			double Lambda;         
 
 			double evaluateResidual() const override;
 			double getInformation() const override;
@@ -221,8 +242,10 @@ namespace maps
 			CRandomFieldGridMap3D *m_parent;
 		};
 
-		std::vector<std::deque<TObservationGMRF> > m_mrf_factors_activeObs; //!< Vector with the active observations and their respective Information, for each map cell.
-		std::deque<TPriorFactorGMRF>               m_mrf_factors_priors; //!< Vector with the precomputed priors for each GMRF model
+		/** Vector with the active observations and their respective Information, for each map cell. */
+		std::vector<std::deque<TObservationGMRF> > m_mrf_factors_activeObs; 
+		/** Vector with the precomputed priors for each GMRF model */
+		std::deque<TPriorFactorGMRF>               m_mrf_factors_priors; 
 
 
 	};

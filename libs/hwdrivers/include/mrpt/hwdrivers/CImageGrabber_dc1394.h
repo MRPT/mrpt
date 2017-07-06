@@ -76,32 +76,50 @@ namespace mrpt
 				ring_buffer_size(15)
 			{}
 
-			int		frame_width,frame_height;	//!< Capture resolution (Default: 640x480)
+			/** Capture resolution (Default: 640x480) */
+			int		frame_width,frame_height;	
 			grabber_dc1394_framerate_t		framerate;
 			grabber_dc1394_color_coding_t	color_coding;
 
-			int		mode7;			//!< -1: Normal mode, i>=0: use MODE7_i, then frame_width/height and color_coding are ignored.
+			/** -1: Normal mode, i>=0: use MODE7_i, then frame_width/height and color_coding are ignored. */
+			int		mode7;			
 
-			int		shutter;		//!< Shutter, -1=default:Do not change
-			int		gain;			//!< Gain, -1=default:Do not change
-			int		gamma;			//!< Gamma, -1=default:Do not change
-			int		brightness;		//!< Brightness, -1=default:Do not change
-			int		exposure;		//!< Exposure, -1=default:Do not change
-			int		sharpness;		//!< Sharpness, -1=default:Do not change
-			int		white_balance;	//!< White balance, -1=default:Do not change
-			int		shutter_mode;		//!< Shutter mode, -1=default:Do not change
-			int		gain_mode;			//!< Gain mode, -1=default:Do not change
-			int		gamma_mode;			//!< Gamma mode, -1=default:Do not change
-			int		brightness_mode;	//!< Brightness mode, -1=default:Do not change
-			int		exposure_mode;		//!< Exposure mode, -1=default:Do not change
-			int		sharpness_mode;		//!< Sharpness mode, -1=default:Do not change
-			int		white_balance_mode;	//!< White balance mode, -1=default:Do not change
-			bool  	deinterlace_stereo;	//!< For stereo cameras (eg PR Bumblebee)
+			/** Shutter, -1=default:Do not change */
+			int		shutter;		
+			/** Gain, -1=default:Do not change */
+			int		gain;			
+			/** Gamma, -1=default:Do not change */
+			int		gamma;			
+			/** Brightness, -1=default:Do not change */
+			int		brightness;		
+			/** Exposure, -1=default:Do not change */
+			int		exposure;		
+			/** Sharpness, -1=default:Do not change */
+			int		sharpness;		
+			/** White balance, -1=default:Do not change */
+			int		white_balance;	
+			/** Shutter mode, -1=default:Do not change */
+			int		shutter_mode;		
+			/** Gain mode, -1=default:Do not change */
+			int		gain_mode;			
+			/** Gamma mode, -1=default:Do not change */
+			int		gamma_mode;			
+			/** Brightness mode, -1=default:Do not change */
+			int		brightness_mode;	
+			/** Exposure mode, -1=default:Do not change */
+			int		exposure_mode;		
+			/** Sharpness mode, -1=default:Do not change */
+			int		sharpness_mode;		
+			/** White balance mode, -1=default:Do not change */
+			int		white_balance_mode;	
+			/** For stereo cameras (eg PR Bumblebee) */
+			bool  	deinterlace_stereo;	
 			int     trigger_power;
 			int     trigger_mode;
 			int     trigger_source;
 			int     trigger_polarity;
-			int     ring_buffer_size; //!< Size of the libdc1394 ring buffer
+			/** Size of the libdc1394 ring buffer */
+			int     ring_buffer_size; 
 		};
 
 		/** A class for grabing images from a IEEE1394 (Firewire) camera using the libdc1394-2 library.

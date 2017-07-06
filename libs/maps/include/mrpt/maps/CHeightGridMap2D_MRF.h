@@ -39,7 +39,8 @@ namespace maps
 			TMapRepresentation	mapType = mrGMRF_SD,
 			double x_min = -2, double x_max = 2,
 			double y_min = -2, double y_max = 2, double resolution = 0.5,
-			bool  run_first_map_estimation_now=true  //!< [in] Whether to call updateMapEstimation(). If false, make sure of calling that function before accessing map contents.
+			/** [in] Whether to call updateMapEstimation(). If false, make sure of calling that function before accessing map contents. */
+			bool  run_first_map_estimation_now=true  
 			);
 
 		/** Parameters related with inserting observations into the map */
@@ -47,7 +48,8 @@ namespace maps
 			public utils::CLoadableOptions,
 			public TInsertionOptionsCommon
 		{
-			TInsertionOptions();	//!< Default values loader
+			/** Default values loader */
+			TInsertionOptions();	
 
 			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) override; // See base docs
 			void dumpToTextStream(mrpt::utils::CStream &out) const override; // See base docs
@@ -78,10 +80,14 @@ namespace maps
 		double internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom ) override;
 
 		MAP_DEFINITION_START(CHeightGridMap2D_MRF,MAPS_IMPEXP)
-			bool    run_map_estimation_at_ctor;  //!< Runs map estimation at start up (Default:true)
-			double  min_x,max_x,min_y,max_y,resolution;	//!< See CHeightGridMap2D_MRF::CHeightGridMap2D_MRF
-			mrpt::maps::CHeightGridMap2D_MRF::TMapRepresentation  mapType;	//!< The kind of map representation (see CHeightGridMap2D_MRF::CHeightGridMap2D_MRF)
-			mrpt::maps::CHeightGridMap2D_MRF::TInsertionOptions   insertionOpts;	//!< Observations insertion options
+			/** Runs map estimation at start up (Default:true) */
+			bool    run_map_estimation_at_ctor;  
+			/** See CHeightGridMap2D_MRF::CHeightGridMap2D_MRF */
+			double  min_x,max_x,min_y,max_y,resolution;	
+			/** The kind of map representation (see CHeightGridMap2D_MRF::CHeightGridMap2D_MRF) */
+			mrpt::maps::CHeightGridMap2D_MRF::TMapRepresentation  mapType;	
+			/** Observations insertion options */
+			mrpt::maps::CHeightGridMap2D_MRF::TInsertionOptions   insertionOpts;	
 		MAP_DEFINITION_END(CHeightGridMap2D_MRF,MAPS_IMPEXP)
 	};
 

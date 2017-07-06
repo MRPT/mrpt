@@ -58,8 +58,10 @@ protected:
 
 	T*	m_list;
 public:
-	typedef T		value_type;		//!< The type of the value stored in this queue.
-	typedef size_t	size_type;		//!< The type of a 'size' value.
+	/** The type of the value stored in this queue. */
+	typedef T		value_type;		
+	/** The type of a 'size' value. */
+	typedef size_t	size_type;		
 
 	//! Create an empty queue with capacity size.
 	FifoQueue(size_type size=16, bool delOnOverwrite = true)
@@ -299,8 +301,10 @@ protected:
 
 	T*	m_list;
 public:
-	typedef T		value_type;		//!< The type of the value stored in this queue.
-	typedef size_t	size_type;		//!< The type of a 'size' value.
+	/** The type of the value stored in this queue. */
+	typedef T		value_type;		
+	/** The type of a 'size' value. */
+	typedef size_t	size_type;		
 
 	//! Create an empty queue with capacity size.
 	FifoQueueBasic(size_type size=16)

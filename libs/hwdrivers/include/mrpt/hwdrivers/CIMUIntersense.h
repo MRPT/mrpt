@@ -82,7 +82,8 @@ namespace mrpt
 			uint32_t					m_prediction;
 			bool						m_useBuffer;
 
-			unsigned int				m_toutCounter;				//!< Timeout counter (for internal use only)
+			/** Timeout counter (for internal use only) */
+			unsigned int				m_toutCounter;				
 
 			/** See the class documentation at the top for expected parameters */
 			void  loadConfig_sensorSpecific(

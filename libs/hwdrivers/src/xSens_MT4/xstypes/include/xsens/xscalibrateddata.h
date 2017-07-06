@@ -29,9 +29,12 @@ XSTYPES_DLL_API void XsCalibratedData_destruct(struct XsCalibratedData* thisPtr)
 
 struct XsCalibratedData
 {
-	XsVector3 m_acc;	//!< Accelerometer data
-	XsVector3 m_gyr;	//!< Gyroscope data
-	XsVector3 m_mag;	//!< Magnetometer data
+	/** Accelerometer data */
+	XsVector3 m_acc;	
+	/** Gyroscope data */
+	XsVector3 m_gyr;	
+	/** Magnetometer data */
+	XsVector3 m_mag;	
 
 #ifdef __cplusplus
 	//! \brief Constructor \sa XsCalibratedData_construct

@@ -23,10 +23,14 @@ namespace mrpt
 		{
 			DEFINE_SERIALIZABLE(CVehicleVelCmd_Holo)
 		public:
-			double vel;       //!< speed(m / s)
-			double dir_local; //!<: direction, **relative** to the current robot heading (radians). 0 means forward.
-			double ramp_time; //!<: Blending time between current and target time.
-			double rot_speed; //!<: (rad/s) rotational speed for rotating such as the robot slowly faces forward.
+			/** speed(m / s) */
+			double vel;       
+			/**: direction, **relative** to the current robot heading (radians). 0 means forward. */
+			double dir_local; 
+			/**: Blending time between current and target time. */
+			double ramp_time; 
+			/**: (rad/s) rotational speed for rotating such as the robot slowly faces forward. */
+			double rot_speed; 
 
 			CVehicleVelCmd_Holo();
 			CVehicleVelCmd_Holo(double vel, double dir_local, double ramp_time, double rot_speed);

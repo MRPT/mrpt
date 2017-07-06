@@ -302,12 +302,14 @@ CRenderizable& CRenderizable::setPose( const mrpt::math::TPose2D &o )
 	return *this;
 }
 
-CRenderizable& CRenderizable::setPose( const mrpt::poses::CPoint3D &o )	//!< Set the 3D pose from a mrpt::poses::CPose3D object
+/** Set the 3D pose from a mrpt::poses::CPose3D object */
+CRenderizable& CRenderizable::setPose( const mrpt::poses::CPoint3D &o )	
 {
 	m_pose.setFromValues(o.x(), o.y(), o.z(),  0,0,0 );
 	return *this;
 }
-CRenderizable& CRenderizable::setPose( const mrpt::poses::CPoint2D &o )	//!< Set the 3D pose from a mrpt::poses::CPose3D object
+/** Set the 3D pose from a mrpt::poses::CPose3D object */
+CRenderizable& CRenderizable::setPose( const mrpt::poses::CPoint2D &o )	
 {
 	m_pose.setFromValues(o.x(), o.y(),0,  0,0,0 );
 	return *this;

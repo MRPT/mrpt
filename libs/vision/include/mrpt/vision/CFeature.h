@@ -57,52 +57,88 @@ namespace mrpt
 			DEFINE_SERIALIZABLE( CFeature )
 
 		public:
-			float				x,y;			//!< Coordinates in the image
-			TFeatureID			ID;				//!< ID of the feature
-			mrpt::utils::CImage patch;			//!< A patch of the image surrounding the feature
-			uint16_t			patchSize;		//!< Size of the patch (patchSize x patchSize) (it must be an odd number)
-			TFeatureType		type;			//!< Type of the feature: featNotDefined, featSIFT, featKLT,	featHarris, featSURF, featBeacon
-			TFeatureTrackStatus	track_status;	//!< Status of the feature tracking process (old name: KLT_status)
-			float				response;		//!< A measure of the "goodness" of the feature (old name: KLT_val)
-			float				orientation;	//!< Main orientation of the feature
-			float				scale;			//!< Feature scale into the scale space
-			uint8_t				user_flags;		//!< A field for any other flags needed by the user (this has not a predefined meaning)
-			uint16_t            nTimesSeen;     //!< Number of frames it has been seen in a sequence of images.
-			uint16_t            nTimesNotSeen;  //!< Number of frames it has not been seen in a sequence of images.
-			uint16_t            nTimesLastSeen; //!< Number of frames since it was seen for the last time.
+			/** Coordinates in the image */
+			float				x,y;			
+			/** ID of the feature */
+			TFeatureID			ID;				
+			/** A patch of the image surrounding the feature */
+			mrpt::utils::CImage patch;			
+			/** Size of the patch (patchSize x patchSize) (it must be an odd number) */
+			uint16_t			patchSize;		
+			/** Type of the feature: featNotDefined, featSIFT, featKLT,	featHarris, featSURF, featBeacon */
+			TFeatureType		type;			
+			/** Status of the feature tracking process (old name: KLT_status) */
+			TFeatureTrackStatus	track_status;	
+			/** A measure of the "goodness" of the feature (old name: KLT_val) */
+			float				response;		
+			/** Main orientation of the feature */
+			float				orientation;	
+			/** Feature scale into the scale space */
+			float				scale;			
+			/** A field for any other flags needed by the user (this has not a predefined meaning) */
+			uint8_t				user_flags;		
+			/** Number of frames it has been seen in a sequence of images. */
+			uint16_t            nTimesSeen;     
+			/** Number of frames it has not been seen in a sequence of images. */
+			uint16_t            nTimesNotSeen;  
+			/** Number of frames since it was seen for the last time. */
+			uint16_t            nTimesLastSeen; 
 
-			double                          depth;              //!< The estimated depth in 3D of this feature wrt the camera in the current frame
-			double                          initialDepth;       //!< The estimated depth in 3D of this feature wrt the camera that took its image
-			mrpt::math::TPoint3D                        p3D;                //!< The estimated 3D point of this feature wrt its camera
-			std::deque<double>                   multiScales;        //!< A set of scales where the multi-resolution descriptor has been computed
-			std::deque<std::vector<double> >          multiOrientations;  //!< A vector of main orientations (there is a vector of orientations for each scale)
-			std::deque<std::vector<std::vector<int32_t> > >    multiHashCoeffs;    //!< A set of vectors containing the coefficients for a HASH table of descriptors
-			bool isPointFeature() const;		                //!< Return false only for Blob detectors (SIFT, SURF)
+			/** The estimated depth in 3D of this feature wrt the camera in the current frame */
+			double                          depth;              
+			/** The estimated depth in 3D of this feature wrt the camera that took its image */
+			double                          initialDepth;       
+			/** The estimated 3D point of this feature wrt its camera */
+			mrpt::math::TPoint3D                        p3D;                
+			/** A set of scales where the multi-resolution descriptor has been computed */
+			std::deque<double>                   multiScales;        
+			/** A vector of main orientations (there is a vector of orientations for each scale) */
+			std::deque<std::vector<double> >          multiOrientations;  
+			/** A set of vectors containing the coefficients for a HASH table of descriptors */
+			std::deque<std::vector<std::vector<int32_t> > >    multiHashCoeffs;    
+			/** Return false only for Blob detectors (SIFT, SURF) */
+			bool isPointFeature() const;		                
 
 			/** All the possible descriptors this feature may have */
 			struct VISION_IMPEXP TDescriptors
 			{
 				TDescriptors();  // Initialization
 
-				std::vector<uint8_t>	        SIFT;						//!< SIFT feature descriptor
-				std::vector<float>			    SURF;						//!< SURF feature descriptor
-				std::vector<float>			    SpinImg;					//!< The 2D histogram as a single row
-				uint16_t					    SpinImg_range_rows;			//!< The number of rows (corresponding to range bins in the 2D histogram) of the original matrix from which SpinImg was extracted as a vector.
-				mrpt::math::CMatrix			    PolarImg;					//!< A polar image centered at the interest point
-				mrpt::math::CMatrix			    LogPolarImg;				//!< A log-polar image centered at the interest point
-				bool						    polarImgsNoRotation;		//!< If set to true (manually, default=false) the call to "descriptorDistanceTo" will not consider all the rotations between polar image descriptors (PolarImg, LogPolarImg)
-				std::deque<std::vector<std::vector<int32_t> > >    multiSIFTDescriptors;   //!< A set of SIFT-like descriptors for each orientation and scale of the multiResolution feature (there is a vector of descriptors for each scale)
-				std::vector<uint8_t>			ORB;						//!< ORB feature descriptor	
+				/** SIFT feature descriptor */
+				std::vector<uint8_t>	        SIFT;						
+				/** SURF feature descriptor */
+				std::vector<float>			    SURF;						
+				/** The 2D histogram as a single row */
+				std::vector<float>			    SpinImg;					
+				/** The number of rows (corresponding to range bins in the 2D histogram) of the original matrix from which SpinImg was extracted as a vector. */
+				uint16_t					    SpinImg_range_rows;			
+				/** A polar image centered at the interest point */
+				mrpt::math::CMatrix			    PolarImg;					
+				/** A log-polar image centered at the interest point */
+				mrpt::math::CMatrix			    LogPolarImg;				
+				/** If set to true (manually, default=false) the call to "descriptorDistanceTo" will not consider all the rotations between polar image descriptors (PolarImg, LogPolarImg) */
+				bool						    polarImgsNoRotation;		
+				/** A set of SIFT-like descriptors for each orientation and scale of the multiResolution feature (there is a vector of descriptors for each scale) */
+				std::deque<std::vector<std::vector<int32_t> > >    multiSIFTDescriptors;   
+				/** ORB feature descriptor	 */
+				std::vector<uint8_t>			ORB;						
 
-				bool hasDescriptorSIFT() const { return !SIFT.empty(); };                       //!< Whether this feature has this kind of descriptor
-				bool hasDescriptorSURF() const { return !SURF.empty(); }                        //!< Whether this feature has this kind of descriptor
-				bool hasDescriptorSpinImg() const { return !SpinImg.empty(); };                 //!< Whether this feature has this kind of descriptor
-				bool hasDescriptorPolarImg() const { return PolarImg.rows()!=0; } ;             //!< Whether this feature has this kind of descriptor
-				bool hasDescriptorLogPolarImg() const { return LogPolarImg.rows()!=0; } ;       //!< Whether this feature has this kind of descriptor
+				/** Whether this feature has this kind of descriptor */
+				bool hasDescriptorSIFT() const { return !SIFT.empty(); };                       
+				/** Whether this feature has this kind of descriptor */
+				bool hasDescriptorSURF() const { return !SURF.empty(); }                        
+				/** Whether this feature has this kind of descriptor */
+				bool hasDescriptorSpinImg() const { return !SpinImg.empty(); };                 
+				/** Whether this feature has this kind of descriptor */
+				bool hasDescriptorPolarImg() const { return PolarImg.rows()!=0; } ;             
+				/** Whether this feature has this kind of descriptor */
+				bool hasDescriptorLogPolarImg() const { return LogPolarImg.rows()!=0; } ;       
 				bool hasDescriptorMultiSIFT() const {
-                    return (multiSIFTDescriptors.size() > 0 && multiSIFTDescriptors[0].size() > 0); //!< Whether this feature has this kind of descriptor
+                    /** Whether this feature has this kind of descriptor */
+                    return (multiSIFTDescriptors.size() > 0 && multiSIFTDescriptors[0].size() > 0); 
                 }
-				bool hasDescriptorORB() const { return !ORB.empty(); }						//!< Whether this feature has this kind of descriptor
+				/** Whether this feature has this kind of descriptor */
+				bool hasDescriptorORB() const { return !ORB.empty(); }						
 			}
 			descriptors;
 
@@ -212,7 +248,8 @@ namespace mrpt
 		protected:
 			typedef std::vector<CFeature::Ptr> TInternalFeatList;
 
-			TInternalFeatList  m_feats; //!< The actual container with the list of features
+			/** The actual container with the list of features */
+			TInternalFeatList  m_feats; 
 
 		public:
 			/** The type of the first feature in the list */

@@ -47,32 +47,48 @@ namespace mrpt
 			bool						m_colorFromZ;
 			bool						m_isImage;
 
-			mutable math::CMatrix		X;		//!< X(x,y): X-coordinate of the point (x,y)
-			mutable math::CMatrix		Y;		//!< Y(x,y): Y-coordinate of the point (x,y)
-			mutable math::CMatrix		Z;		//!< Z(x,y): Z-coordinate of the point (x,y)
+			/** X(x,y): X-coordinate of the point (x,y) */
+			mutable math::CMatrix		X;		
+			/** Y(x,y): Y-coordinate of the point (x,y) */
+			mutable math::CMatrix		Y;		
+			/** Z(x,y): Z-coordinate of the point (x,y) */
+			mutable math::CMatrix		Z;		
 
-			mutable math::CMatrix		C;		//!< Grayscale Color [0,1] for each cell, updated by updateColorsMatrix
-			mutable math::CMatrix		C_r;	//!< Red Component of the Color [0,1] for each cell, updated by updateColorsMatrix
-			mutable math::CMatrix		C_g;	//!< Green Component of the  Color [0,1] for each cell, updated by updateColorsMatrix
-			mutable math::CMatrix		C_b;	//!< Blue Component of the  Color [0,1] for each cell, updated by updateColorsMatrix
+			/** Grayscale Color [0,1] for each cell, updated by updateColorsMatrix */
+			mutable math::CMatrix		C;		
+			/** Red Component of the Color [0,1] for each cell, updated by updateColorsMatrix */
+			mutable math::CMatrix		C_r;	
+			/** Green Component of the  Color [0,1] for each cell, updated by updateColorsMatrix */
+			mutable math::CMatrix		C_g;	
+			/** Blue Component of the  Color [0,1] for each cell, updated by updateColorsMatrix */
+			mutable math::CMatrix		C_b;	
 
-			mrpt::utils::TColormap	m_colorMap; //!< Used when m_colorFromZ is true
-			float					m_pointSize; //!< By default is 1.0
-			bool					m_pointSmooth; //!< Default: false
+			/** Used when m_colorFromZ is true */
+			mrpt::utils::TColormap	m_colorMap; 
+			/** By default is 1.0 */
+			float					m_pointSize; 
+			/** Default: false */
+			bool					m_pointSmooth; 
 
-			mutable bool	m_modified_Z;		//!< Whether C is not up-to-date wrt to Z
-			mutable bool	m_modified_Image;	//!< Whether C is not up-to-date wrt to the texture image
+			/** Whether C is not up-to-date wrt to Z */
+			mutable bool	m_modified_Z;		
+			/** Whether C is not up-to-date wrt to the texture image */
+			mutable bool	m_modified_Image;	
 
-			void updateColorsMatrix() const;	//!< Called internally to assure C is updated.
+			/** Called internally to assure C is updated. */
+			void updateColorsMatrix() const;	
 			void updatePoints()	const;
 
-			float xMin,xMax,yMin,yMax;	//!< Mesh bounds
+			/** Mesh bounds */
+			float xMin,xMax,yMin,yMax;	
 
-			mutable bool pointsUpToDate;	//!<Whether the coordinates of the points needs to be recalculated
+			/**Whether the coordinates of the points needs to be recalculated */
+			mutable bool pointsUpToDate;	
 
 		public:
 
-			inline void setPointSize(float p) { m_pointSize=p; }  //!< By default is 1.0
+			/** By default is 1.0 */
+			inline void setPointSize(float p) { m_pointSize=p; }  
 			inline float getPointSize() const { return m_pointSize; }
 
 			inline void enablePointSmooth(bool enable=true) { m_pointSmooth=enable; }

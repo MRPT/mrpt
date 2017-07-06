@@ -252,7 +252,8 @@ class reactive_navigator_demoframe: public wxFrame
 
 		mrpt::maps::COccupancyGridMap2D  m_gridMap;
 		mrpt::math::TPoint2D             m_targetPoint;
-		bool                             m_is_running; //!< is simulator running or paused?
+		/** is simulator running or paused? */
+		bool                             m_is_running; 
 		mrpt::maps::CSimplePointsMap     m_latest_obstacles;
 		mrpt::nav::TWaypointSequence     m_waypoints_clicked;
 
@@ -299,8 +300,10 @@ class reactive_navigator_demoframe: public wxFrame
 		std::unique_ptr<mrpt::kinematics::CVehicleSimulVirtualBase> m_robotSimul;
 
 		mrpt::utils::CTicTac             m_runtime; // just for animations, this is not robot time
-		mrpt::math::TPoint2D             m_curCursorPos; //!< Of the cursor on the 3D view (in world coordinates at Z=0)
-		TCursorPickState                 m_cursorPickState;   //!< The state of the cursor onto the 3D view:
+		/** Of the cursor on the 3D view (in world coordinates at Z=0) */
+		mrpt::math::TPoint2D             m_curCursorPos; 
+		/** The state of the cursor onto the 3D view: */
+		TCursorPickState                 m_cursorPickState;   
 
 		mrpt::utils::CFileOutputStream   m_log_trajectory_file;
 

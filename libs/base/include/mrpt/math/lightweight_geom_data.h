@@ -32,7 +32,8 @@ namespace math	{
 	  */
 	struct BASE_IMPEXP TPoint2D	{
 		enum { static_size = 2 };
-		double x, y; //!< X,Y coordinates
+		/** X,Y coordinates */
+		double x, y; 
 		/** Constructor from TPose2D, discarding phi.
 		  * \sa TPose2D
 		  */
@@ -147,8 +148,10 @@ namespace math	{
 	  */
 	struct BASE_IMPEXP TPose2D	{
 		enum { static_size = 3 };
-		double x,y; //!< X,Y coordinates
-		double phi; //!< Orientation (rads)
+		/** X,Y coordinates */
+		double x,y; 
+		/** Orientation (rads) */
+		double phi; 
 		/** Implicit constructor from TPoint2D. Zeroes the phi coordinate.
 		  * \sa TPoint2D
 		  */
@@ -193,8 +196,10 @@ namespace math	{
 		void asString(std::string &s) const;
 		inline std::string asString() const { std::string s; asString(s); return s; }
 
-		mrpt::math::TPose2D operator+(const mrpt::math::TPose2D& b) const; //!< Operator "oplus" pose composition: "ret=this \oplus b"  \sa CPose2D
-		mrpt::math::TPose2D operator-(const mrpt::math::TPose2D& b) const; //!< Operator "ominus" pose composition: "ret=this \ominus b"  \sa CPose2D
+		/** Operator "oplus" pose composition: "ret=this \oplus b"  \sa CPose2D */
+		mrpt::math::TPose2D operator+(const mrpt::math::TPose2D& b) const; 
+		/** Operator "ominus" pose composition: "ret=this \ominus b"  \sa CPose2D */
+		mrpt::math::TPose2D operator-(const mrpt::math::TPose2D& b) const; 
 		inline void composePoint(const TPoint2D l, TPoint2D &g) const {
 			const double ccos = ::cos(phi), csin=::sin(phi);
 			g.x = x+ l.x * ccos - l.y * csin;
@@ -245,7 +250,8 @@ namespace math	{
 	  */
 	struct BASE_IMPEXP TPoint3D	{
 		enum { static_size = 3 };
-		double x,y,z; //!< X,Y,Z coordinates
+		/** X,Y,Z coordinates */
+		double x,y,z; 
 
 		/** Constructor from coordinates.  */
 		inline TPoint3D(double xx,double yy,double zz):x(xx),y(yy),z(zz)	{}
@@ -405,10 +411,14 @@ namespace math	{
 	  */
 	struct BASE_IMPEXP TPose3D	{
 		enum { static_size = 6 };
-		double x,y,z; //!< X,Y,Z, coords
-		double yaw; //!< Yaw coordinate (rotation angle over Z axis).
-		double pitch; //!< Pitch coordinate (rotation angle over Y axis).
-		double roll; //!< Roll coordinate (rotation angle over X coordinate).
+		/** X,Y,Z, coords */
+		double x,y,z; 
+		/** Yaw coordinate (rotation angle over Z axis). */
+		double yaw; 
+		/** Pitch coordinate (rotation angle over Y axis). */
+		double pitch; 
+		/** Roll coordinate (rotation angle over X coordinate). */
+		double roll; 
 		/** Implicit constructor from TPoint2D. Zeroes all the unprovided information.
 		  * \sa TPoint2D
 		  */
@@ -482,8 +492,10 @@ namespace math	{
 	  */
 	struct BASE_IMPEXP TPose3DQuat	{
 		enum { static_size = 7 };
-		double x,y,z;	//!< Translation in x,y,z
-		double qr,qx,qy,qz;  //!< Unit quaternion part, qr,qx,qy,qz
+		/** Translation in x,y,z */
+		double x,y,z;	
+		/** Unit quaternion part, qr,qx,qy,qz */
+		double qr,qx,qy,qz;  
 
 		/** Constructor from coordinates. */
 		inline TPose3DQuat(double _x,double _y,double _z,double _qr,double _qx, double _qy, double _qz):x(_x),y(_y),z(_z),qr(_qr),qx(_qx),qy(_qy),qz(_qz) {  }
@@ -1005,16 +1017,26 @@ namespace math	{
 	  */
 	class BASE_IMPEXP TPolygon2D:public std::vector<TPoint2D>	{
 	public:
-		double distance(const TPoint2D &point) const;            //!< Distance to a point (always >=0)
-		bool contains(const TPoint2D &point) const;              //!< Check whether a point is inside (or within geometryEpsilon of a polygon edge). This works for concave or convex polygons.
-		void getAsSegmentList(std::vector<TSegment2D> &v) const; //!< Gets as set of segments, instead of points.
-		void generate3DObject(TPolygon3D &p) const;              //!< Projects into 3D space, zeroing the z.
-		void getCenter(TPoint2D &p) const;                       //!< Polygon's central point.
-		bool isConvex() const;                                   //!< Checks whether is convex.
-		void removeRepeatedVertices();   //!< Erase repeated vertices.  \sa removeRedundantVertices
-		void removeRedundantVertices();  //!< Erase every redundant vertex from the polygon, saving space. \sa removeRepeatedVertices
-		void getPlotData(std::vector<double> &x,std::vector<double> &y) const; //!< Gets plot data, ready to use on a 2D plot. \sa mrpt::gui::CDisplayWindowPlots
-		void getBoundingBox(TPoint2D &min_coords, TPoint2D&max_coords) const;  //!< Get polygon bounding box. \exception On empty polygon
+		/** Distance to a point (always >=0) */
+		double distance(const TPoint2D &point) const;            
+		/** Check whether a point is inside (or within geometryEpsilon of a polygon edge). This works for concave or convex polygons. */
+		bool contains(const TPoint2D &point) const;              
+		/** Gets as set of segments, instead of points. */
+		void getAsSegmentList(std::vector<TSegment2D> &v) const; 
+		/** Projects into 3D space, zeroing the z. */
+		void generate3DObject(TPolygon3D &p) const;              
+		/** Polygon's central point. */
+		void getCenter(TPoint2D &p) const;                       
+		/** Checks whether is convex. */
+		bool isConvex() const;                                   
+		/** Erase repeated vertices.  \sa removeRedundantVertices */
+		void removeRepeatedVertices();   
+		/** Erase every redundant vertex from the polygon, saving space. \sa removeRepeatedVertices */
+		void removeRedundantVertices();  
+		/** Gets plot data, ready to use on a 2D plot. \sa mrpt::gui::CDisplayWindowPlots */
+		void getPlotData(std::vector<double> &x,std::vector<double> &y) const; 
+		/** Get polygon bounding box. \exception On empty polygon */
+		void getBoundingBox(TPoint2D &min_coords, TPoint2D&max_coords) const;  
 		/** Default constructor  */
 		TPolygon2D():std::vector<TPoint2D>() {}
 		/** Constructor for a given number of vertices, intializing them as garbage. */
@@ -1039,20 +1061,28 @@ namespace math	{
 	  */
 	class BASE_IMPEXP TPolygon3D:public std::vector<TPoint3D>	{
 	public:
-		double distance(const TPoint3D &point) const;  //!< Distance to point (always >=0)
-		bool contains(const TPoint3D &point) const;    //!< Check whether a point is inside (or within geometryEpsilon of a polygon edge). This works for concave or convex polygons.
-		void getAsSegmentList(std::vector<TSegment3D> &v) const; //!< Gets as set of segments, instead of set of points.
-		bool getPlane(TPlane &p) const; //!< Gets a plane which contains the polygon. Returns false if the polygon is skew and cannot be fit inside a plane.
+		/** Distance to point (always >=0) */
+		double distance(const TPoint3D &point) const;  
+		/** Check whether a point is inside (or within geometryEpsilon of a polygon edge). This works for concave or convex polygons. */
+		bool contains(const TPoint3D &point) const;    
+		/** Gets as set of segments, instead of set of points. */
+		void getAsSegmentList(std::vector<TSegment3D> &v) const; 
+		/** Gets a plane which contains the polygon. Returns false if the polygon is skew and cannot be fit inside a plane. */
+		bool getPlane(TPlane &p) const; 
 		/** Gets the best fitting plane, disregarding whether the polygon actually fits inside or not. \sa getBestFittingPlane */
 		void getBestFittingPlane(TPlane &p) const;
 		/** Projects into a 2D space, discarding the z. \sa getPlane,isSkew */
 		inline void generate2DObject(TPolygon2D &p) const	{
 			p=TPolygon2D(*this);
 		}
-		void getCenter(TPoint3D &p) const; //!< Get polygon's central point.
-		bool isSkew() const; //!< Check whether the polygon is skew. Returns true if there doesn't exist a plane in which the polygon can fit. \sa getBestFittingPlane
-		void removeRepeatedVertices(); //!< Remove polygon's repeated vertices.
-		void removeRedundantVertices(); //!< Erase every redundant vertex, thus saving space.
+		/** Get polygon's central point. */
+		void getCenter(TPoint3D &p) const; 
+		/** Check whether the polygon is skew. Returns true if there doesn't exist a plane in which the polygon can fit. \sa getBestFittingPlane */
+		bool isSkew() const; 
+		/** Remove polygon's repeated vertices. */
+		void removeRepeatedVertices(); 
+		/** Erase every redundant vertex, thus saving space. */
+		void removeRedundantVertices(); 
 		/** Default constructor. Creates a polygon with no vertices.  */
 		TPolygon3D():std::vector<TPoint3D>()	{}
 		/** Constructor for a given size. Creates a polygon with a fixed number of vertices, which are initialized to garbage. */
@@ -1625,8 +1655,10 @@ namespace math	{
 	  */
 	struct BASE_IMPEXP TTwist2D {
 		enum { static_size = 3 };
-		double vx,vy; //!< Velocity components: X,Y (m/s)
-		double omega; //!< Angular velocity (rad/s)
+		/** Velocity components: X,Y (m/s) */
+		double vx,vy; 
+		/** Angular velocity (rad/s) */
+		double omega; 
 
 		/** Constructor from components */
 		inline TTwist2D(double vx_,double vy_,double omega_):vx(vx_),vy(vy_),omega(omega_) {}
@@ -1645,7 +1677,8 @@ namespace math	{
 		void rotate(const double ang);
 		bool operator ==(const TTwist2D&o) const;
 		bool operator !=(const TTwist2D&o) const;
-		mrpt::math::TPose2D operator *(const double dt) const; //!< Returns the pose increment of multiplying each twist component times "dt" seconds.
+		/** Returns the pose increment of multiplying each twist component times "dt" seconds. */
+		mrpt::math::TPose2D operator *(const double dt) const; 
 		/** Returns a human-readable textual representation of the object (eg: "[vx vy omega]", omega in deg/s)
 		   * \sa fromString
 		   */
@@ -1665,8 +1698,10 @@ namespace math	{
 	  */
 	struct BASE_IMPEXP TTwist3D {
 		enum { static_size = 6 };
-		double vx,vy,vz; //!< Velocity components: X,Y (m/s)
-		double wx,wy,wz; //!< Angular velocity (rad/s)
+		/** Velocity components: X,Y (m/s) */
+		double vx,vy,vz; 
+		/** Angular velocity (rad/s) */
+		double wx,wy,wz; 
 
 		/** Constructor from components */
 		inline TTwist3D(double vx_,double vy_,double vz_,double wx_,double wy_,double wz_):vx(vx_),vy(vy_),vz(vz_),wx(wx_),wy(wy_),wz(wz_) {}

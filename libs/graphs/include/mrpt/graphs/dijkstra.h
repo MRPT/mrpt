@@ -124,13 +124,15 @@ namespace mrpt
 			const TNodeID      m_source_node_ID;
 
 			// Private typedefs:
-			typedef typename MAPS_IMPLEMENTATION::template map<TNodeID, std::set<TNodeID> >  list_all_neighbors_t; //!< A std::map (or a similar container according to MAPS_IMPLEMENTATION) with all the neighbors of every node.
+			/** A std::map (or a similar container according to MAPS_IMPLEMENTATION) with all the neighbors of every node. */
+			typedef typename MAPS_IMPLEMENTATION::template map<TNodeID, std::set<TNodeID> >  list_all_neighbors_t; 
 			typedef typename MAPS_IMPLEMENTATION::template map<TNodeID,TPairNodeIDs>  id2pairIDs_map_t;
 			typedef typename MAPS_IMPLEMENTATION::template map<TNodeID,TDistance>     id2dist_map_t;
 			typedef typename MAPS_IMPLEMENTATION::template map<TNodeID,TPrevious>     id2id_map_t;
 
 			// Intermediary and final results:
-			id2dist_map_t                  m_distances; //!< All the distances
+			/** All the distances */
+			id2dist_map_t                  m_distances; 
 			std::map<TNodeID,TDistance>    m_distances_non_visited; // Use a std::map here in all cases.
 			id2id_map_t                    m_prev_node;
 			id2pairIDs_map_t               m_prev_arc;
@@ -141,9 +143,12 @@ namespace mrpt
 			/** @name Useful typedefs
 			    @{ */
 
-			typedef TYPE_GRAPH                 graph_t;	//!< The type of the graph, typically a mrpt::graphs::CDirectedGraph<> or any other derived class
-			typedef typename graph_t::edge_t   edge_t;	    //!< The type of edge data in graph_t
-			typedef std::list<TPairNodeIDs>    edge_list_t; //!< A list of edges used to describe a path on the graph
+			/** The type of the graph, typically a mrpt::graphs::CDirectedGraph<> or any other derived class */
+			typedef TYPE_GRAPH                 graph_t;	
+			/** The type of edge data in graph_t */
+			typedef typename graph_t::edge_t   edge_t;	    
+			/** A list of edges used to describe a path on the graph */
+			typedef std::list<TPairNodeIDs>    edge_list_t; 
 
 			/** @} */
 

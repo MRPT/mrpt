@@ -38,16 +38,21 @@ namespace mrpt
 		template <> class BASE_IMPEXP SO_average<2>
 		{
 		public:
-			SO_average(); //!< Constructor
-			void clear(); //!< Resets the accumulator
-			void append(const double orientation_rad); //!< Adds a new orientation (radians) to the computation \sa get_average
-			void append(const double orientation_rad, const double weight); //!< Adds a new orientation (radians) to the weighted-average computation \sa get_average
+			/** Constructor */
+			SO_average(); 
+			/** Resets the accumulator */
+			void clear(); 
+			/** Adds a new orientation (radians) to the computation \sa get_average */
+			void append(const double orientation_rad); 
+			/** Adds a new orientation (radians) to the weighted-average computation \sa get_average */
+			void append(const double orientation_rad, const double weight); 
 			/** Returns the average orientation (radians). 
 			  * \exception std::logic_error If no data point were inserted. 
 			  * \exception std::runtime_error Upon undeterminate average value (ie the average lays exactly on the origin point) and \a enable_exception_on_undeterminate is set to true (otherwise, the 0 orientation would be returned)
 			  * \sa append */
 			double get_average() const; 
-			bool enable_exception_on_undeterminate; //!< (Default=false) Set to true if you want to raise an exception on undetermined average values.
+			/** (Default=false) Set to true if you want to raise an exception on undetermined average values. */
+			bool enable_exception_on_undeterminate; 
 		private:
 			double m_count;
 			double m_accum_x,m_accum_y;
@@ -64,16 +69,21 @@ namespace mrpt
 		template <> class BASE_IMPEXP SO_average<3>
 		{
 		public:
-			SO_average(); //!< Constructor
-			void clear(); //!< Resets the accumulator
-			void append(const Eigen::Matrix3d &M); //!< Adds a new orientation to the computation \sa get_average
-			void append(const Eigen::Matrix3d &M, const double weight); //!< Adds a new orientation to the weighted-average computation \sa get_average
+			/** Constructor */
+			SO_average(); 
+			/** Resets the accumulator */
+			void clear(); 
+			/** Adds a new orientation to the computation \sa get_average */
+			void append(const Eigen::Matrix3d &M); 
+			/** Adds a new orientation to the weighted-average computation \sa get_average */
+			void append(const Eigen::Matrix3d &M, const double weight); 
 			/** Returns the average orientation.
 			  * \exception std::logic_error If no data point were inserted. 
 			  * \exception std::runtime_error Upon undeterminate average value (ie there was a problem with the SVD) and \a enable_exception_on_undeterminate is set to true (otherwise, the 0 orientation would be returned)
 			  * \sa append */
 			Eigen::Matrix3d get_average() const; 
-			bool enable_exception_on_undeterminate; //!< (Default=false) Set to true if you want to raise an exception on undetermined average values.
+			/** (Default=false) Set to true if you want to raise an exception on undetermined average values. */
+			bool enable_exception_on_undeterminate; 
 		private:
 			double m_count;
 			Eigen::Matrix3d m_accum_rot;
@@ -88,16 +98,21 @@ namespace mrpt
 		template <> class BASE_IMPEXP SE_average<2>
 		{
 		public:
-			SE_average(); //!< Constructor
-			void clear(); //!< Resets the accumulator
-			void append(const mrpt::poses::CPose2D &p); //!< Adds a new pose to the computation \sa get_average
-			void append(const mrpt::poses::CPose2D &p, const double weight); //!< Adds a new pose to the weighted-average computation \sa get_average
+			/** Constructor */
+			SE_average(); 
+			/** Resets the accumulator */
+			void clear(); 
+			/** Adds a new pose to the computation \sa get_average */
+			void append(const mrpt::poses::CPose2D &p); 
+			/** Adds a new pose to the weighted-average computation \sa get_average */
+			void append(const mrpt::poses::CPose2D &p, const double weight); 
 			/** Returns the average pose.
 			  * \exception std::logic_error If no data point were inserted. 
 			  * \exception std::runtime_error Upon undeterminate average value (ie the average lays exactly on the origin point) and \a enable_exception_on_undeterminate is set to true (otherwise, the 0 orientation would be returned)
 			  * \sa append */
 			void get_average(mrpt::poses::CPose2D &out_mean) const; 
-			bool enable_exception_on_undeterminate; //!< (Default=false) Set to true if you want to raise an exception on undetermined average values.
+			/** (Default=false) Set to true if you want to raise an exception on undetermined average values. */
+			bool enable_exception_on_undeterminate; 
 		private:
 			double m_count;
 			double m_accum_x,m_accum_y;
@@ -113,16 +128,21 @@ namespace mrpt
 		template <> class BASE_IMPEXP SE_average<3>
 		{
 		public:
-			SE_average(); //!< Constructor
-			void clear(); //!< Resets the accumulator
-			void append(const mrpt::poses::CPose3D &p); //!< Adds a new pose to the computation \sa get_average
-			void append(const mrpt::poses::CPose3D &p, const double weight); //!< Adds a new pose to the weighted-average computation \sa get_average
+			/** Constructor */
+			SE_average(); 
+			/** Resets the accumulator */
+			void clear(); 
+			/** Adds a new pose to the computation \sa get_average */
+			void append(const mrpt::poses::CPose3D &p); 
+			/** Adds a new pose to the weighted-average computation \sa get_average */
+			void append(const mrpt::poses::CPose3D &p, const double weight); 
 			/** Returns the average pose.
 			  * \exception std::logic_error If no data point were inserted. 
 			  * \exception std::runtime_error Upon undeterminate average value (ie the average lays exactly on the origin point) and \a enable_exception_on_undeterminate is set to true (otherwise, the 0 orientation would be returned)
 			  * \sa append */
 			void get_average(mrpt::poses::CPose3D &out_mean) const; 
-			bool enable_exception_on_undeterminate; //!< (Default=false) Set to true if you want to raise an exception on undetermined average values.
+			/** (Default=false) Set to true if you want to raise an exception on undetermined average values. */
+			bool enable_exception_on_undeterminate; 
 		private:
 			double m_count;
 			double m_accum_x,m_accum_y,m_accum_z;

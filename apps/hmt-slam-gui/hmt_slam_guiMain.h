@@ -191,11 +191,13 @@ class hmt_slam_guiFrame: public wxFrame
         // DATA =============================
 		CDlgLog  *m_logWin;
 
-		std::unique_ptr<mrpt::hmtslam::CHMTSLAM> m_hmtslam;   //!< The main HMT-SLAM object, keeps the HMT map and does HMT SLAM.
+		/** The main HMT-SLAM object, keeps the HMT map and does HMT SLAM. */
+		std::unique_ptr<mrpt::hmtslam::CHMTSLAM> m_hmtslam;   
 
 
 		// DATA ABOUT THREAD OF HMT-SLAM ---------------|
-		std::thread  m_hThreadHMTSLAM; //!< Handle of HMT-SLAM thread
+		/** Handle of HMT-SLAM thread */
+		std::thread  m_hThreadHMTSLAM; 
 
 		void thread_HMTSLAM();
 

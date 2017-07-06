@@ -37,7 +37,8 @@ namespace utils
 	class BASE_IMPEXP CConfigFilePrefixer : public CConfigFileBase
 	{
 	private:
-		CConfigFileBase *m_bound_object; //!< The object we are wrapping
+		/** The object we are wrapping */
+		CConfigFileBase *m_bound_object; 
 		std::string      m_prefix_sections, m_prefix_keys;
 
 	protected:
@@ -58,7 +59,8 @@ namespace utils
 
 		std::string getSectionPrefix() const;
 		std::string getKeyPrefix() const;
-		CConfigFileBase *getBoundConfigFileBase() const;  //!< Returns the currently-bounded config source, or nullptr if none.
+		/** Returns the currently-bounded config source, or nullptr if none. */
+		CConfigFileBase *getBoundConfigFileBase() const;  
 
 		virtual ~CConfigFilePrefixer();
 

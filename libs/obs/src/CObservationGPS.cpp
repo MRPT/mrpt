@@ -310,9 +310,12 @@ bool TIMECONV_IsALeapYear( const unsigned short year )
 }
 
 bool TIMECONV_GetNumberOfDaysInMonth(
-	const unsigned short year,        //!< Universal Time Coordinated    [year]
-	const unsigned char month,        //!< Universal Time Coordinated    [1-12 months] 
-	unsigned char* days_in_month      //!< Days in the specified month   [1-28|29|30|31 days]
+	/** Universal Time Coordinated    [year] */
+	const unsigned short year,        
+	/** Universal Time Coordinated    [1-12 months]  */
+	const unsigned char month,        
+	/** Days in the specified month   [1-28|29|30|31 days] */
+	unsigned char* days_in_month      
 	)
 {
 	unsigned char utmp = 0;
@@ -337,7 +340,8 @@ bool TIMECONV_GetNumberOfDaysInMonth(
 	*days_in_month = utmp;
 	return true;
 }
-bool TIMECONV_GetUTCTimeFromJulianDate(const double julian_date,  //!< Number of days since noon Universal Time Jan 1, 4713 BCE (Julian calendar) [days]
+/** Number of days since noon Universal Time Jan 1, 4713 BCE (Julian calendar) [days] */
+bool TIMECONV_GetUTCTimeFromJulianDate(const double julian_date,  
 	mrpt::system::TTimeParts &utc
 	)
 {

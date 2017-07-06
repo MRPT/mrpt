@@ -66,7 +66,8 @@ namespace mrpt
 		class VISION_IMPEXP  CStereoRectifyMap
 		{
 		public:
-			CStereoRectifyMap(); //!< Default ctor
+			/** Default ctor */
+			CStereoRectifyMap(); 
 
 		/** @name Rectify map preparation and setting/getting of parameters
 		    @{ */
@@ -99,8 +100,10 @@ namespace mrpt
 			  */
 			const mrpt::utils::TStereoCamera & getRectifiedImageParams() const;
 
-			const mrpt::utils::TCamera & getRectifiedLeftImageParams() const;  //!< Just like \a getRectifiedImageParams() but for the left camera only
-			const mrpt::utils::TCamera & getRectifiedRightImageParams() const; //!< Just like \a getRectifiedImageParams() but for the right camera only
+			/** Just like \a getRectifiedImageParams() but for the left camera only */
+			const mrpt::utils::TCamera & getRectifiedLeftImageParams() const;  
+			/** Just like \a getRectifiedImageParams() but for the right camera only */
+			const mrpt::utils::TCamera & getRectifiedRightImageParams() const; 
 
 			/** Sets the \a alpha parameter which controls the zoom in/out of the rectified images, such that:
 			  *  - alpha=0 => rectified images are zoom in so that only valid pixels are visible
@@ -212,15 +215,19 @@ namespace mrpt
 			mrpt::utils::TImageSize m_resize_output_value;
 			mrpt::utils::TInterpolationMethod m_interpolation_method;
 
-			mutable mrpt::utils::CImage  m_cache1, m_cache2; //!< Memory caches for in-place rectification speed-up.
+			/** Memory caches for in-place rectification speed-up. */
+			mutable mrpt::utils::CImage  m_cache1, m_cache2; 
 
 			std::vector<int16_t>  m_dat_mapx_left,m_dat_mapx_right;
 			std::vector<uint16_t> m_dat_mapy_left,m_dat_mapy_right;
 
-			mrpt::utils::TStereoCamera  m_camera_params; //!< A copy of the data provided by the user
-			mrpt::utils::TStereoCamera  m_rectified_image_params; //!< Resulting images params
+			/** A copy of the data provided by the user */
+			mrpt::utils::TStereoCamera  m_camera_params; 
+			/** Resulting images params */
+			mrpt::utils::TStereoCamera  m_rectified_image_params; 
 
-			mrpt::poses::CPose3DQuat  m_rot_left, m_rot_right; //!< The rotation applied to the left/right camera so their virtual image plane is the same after rectification.
+			/** The rotation applied to the left/right camera so their virtual image plane is the same after rectification. */
+			mrpt::poses::CPose3DQuat  m_rot_left, m_rot_right; 
 
 			void internal_invalidate();
 

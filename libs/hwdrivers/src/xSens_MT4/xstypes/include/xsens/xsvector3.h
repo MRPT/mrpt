@@ -35,9 +35,11 @@ struct XsVector3 : public XsVector {
 XSCPPPROTECTED
 #else
 struct XsVector3 {
-	XsVector m_vector;		//!< The underlying vector
+	/** The underlying vector */
+	XsVector m_vector;		
 #endif
-	XsReal XSCCONST m_fixedData[3];				//!< Fixed size storage for the components in the vector
+	/** Fixed size storage for the components in the vector */
+	XsReal XSCCONST m_fixedData[3];				
 
 #ifdef __cplusplus
 public:

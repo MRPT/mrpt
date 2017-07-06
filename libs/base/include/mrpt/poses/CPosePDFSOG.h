@@ -72,20 +72,25 @@ namespace mrpt
 			const CListGaussianModes& getSOGModes() const { return m_modes; }
 
 		protected:
-			void assureSymmetry(); //!< Ensures the symmetry of the covariance matrix (eventually certain operations in the math-coprocessor lead to non-symmetric matrixes!)
+			/** Ensures the symmetry of the covariance matrix (eventually certain operations in the math-coprocessor lead to non-symmetric matrixes!) */
+			void assureSymmetry(); 
 
-			CListGaussianModes	m_modes; //!< The list of SOG modes
+			/** The list of SOG modes */
+			CListGaussianModes	m_modes; 
 
 		 public:
 			/** Default constructor
 			  * \param nModes The initial size of CPosePDFSOG::m_modes */
 			CPosePDFSOG( size_t nModes = 1 );
 
-			size_t size() const { return m_modes.size(); } //!< Return the number of Gaussian modes.
-			bool empty() const { return m_modes.empty(); } //!< Return whether there is any Gaussian mode.
+			/** Return the number of Gaussian modes. */
+			size_t size() const { return m_modes.size(); } 
+			/** Return whether there is any Gaussian mode. */
+			bool empty() const { return m_modes.empty(); } 
 
 
-			void clear(); //!< Clear the list of modes
+			/** Clear the list of modes */
+			void clear(); 
 
 			/** Access to individual beacons */
 			const TGaussianMode& operator [](size_t i) const {
@@ -121,7 +126,8 @@ namespace mrpt
 
 			iterator erase(iterator i) { return m_modes.erase(i); }
 
-			void resize(const size_t N); //!< Resize the number of SOG modes
+			/** Resize the number of SOG modes */
+			void resize(const size_t N); 
 
 			/** Merge very close modes so the overall number of modes is reduced while preserving the total distribution.
 			  *  This method uses the approach described in the paper:
@@ -131,12 +137,17 @@ namespace mrpt
 			  */
 			void mergeModes( double max_KLd = 0.5, bool verbose = false );
 
-			void getMean(CPose2D &mean_pose) const override; //!< Returns an estimate of the pose, (the mean, or mathematical expectation of the PDF) \sa getCovariance
-			void getCovarianceAndMean(mrpt::math::CMatrixDouble33 &cov,CPose2D &mean_point) const override; //!< Returns an estimate of the pose covariance matrix (3x3 cov matrix) and the mean, both at once. \sa getMean
-			void getMostLikelyCovarianceAndMean(mrpt::math::CMatrixDouble33 &cov,CPose2D &mean_point) const; //!< For the most likely Gaussian mode in the SOG, returns the pose covariance matrix (3x3 cov matrix) and the mean. \sa getMean
-			void normalizeWeights(); //!< Normalize the weights in m_modes such as the maximum log-weight is 0
+			/** Returns an estimate of the pose, (the mean, or mathematical expectation of the PDF) \sa getCovariance */
+			void getMean(CPose2D &mean_pose) const override; 
+			/** Returns an estimate of the pose covariance matrix (3x3 cov matrix) and the mean, both at once. \sa getMean */
+			void getCovarianceAndMean(mrpt::math::CMatrixDouble33 &cov,CPose2D &mean_point) const override; 
+			/** For the most likely Gaussian mode in the SOG, returns the pose covariance matrix (3x3 cov matrix) and the mean. \sa getMean */
+			void getMostLikelyCovarianceAndMean(mrpt::math::CMatrixDouble33 &cov,CPose2D &mean_point) const; 
+			/** Normalize the weights in m_modes such as the maximum log-weight is 0 */
+			void normalizeWeights(); 
 
-			void  copyFrom(const CPosePDF &o) override; //!< Copy operator, translating if necesary (for example, between particles and gaussian representations)
+			/** Copy operator, translating if necesary (for example, between particles and gaussian representations) */
+			void  copyFrom(const CPosePDF &o) override; 
 
 			/** Save the density to a text file, with the following format:
 			  *  There is one row per Gaussian "mode", and each row contains 10 elements:
@@ -157,15 +168,22 @@ namespace mrpt
 			  *   "to project" the current pdf. Result PDF substituted the currently stored one in the object. */
 			void changeCoordinatesReference(const CPose3D &newReferenceBase ) override;
 
-			void rotateAllCovariances(const double &ang); //!< Rotate all the covariance matrixes by replacing them by \f$ \mathbf{R}~\mathbf{COV}~\mathbf{R}^t \f$, where \f$ \mathbf{R} = \left[ \begin{array}{ccc} \cos\alpha & -\sin\alpha & 0 \\ \sin\alpha & \cos\alpha & 0 \\ 0 & 0 & 1 \end{array}\right] \f$
-			void drawSingleSample( CPose2D &outPart ) const override; //!< Draws a single sample from the distribution
-			void drawManySamples( size_t N, std::vector<mrpt::math::CVectorDouble> & outSamples ) const override; //!< Draws a number of samples from the distribution, and saves as a list of 1x3 vectors, where each row contains a (x,y,phi) datum.
-			void inverse(CPosePDF &o) const override; //!< Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF
+			/** Rotate all the covariance matrixes by replacing them by \f$ \mathbf{R}~\mathbf{COV}~\mathbf{R}^t \f$, where \f$ \mathbf{R} = \left[ \begin{array}{ccc} \cos\alpha & -\sin\alpha & 0 \\ \sin\alpha & \cos\alpha & 0 \\ 0 & 0 & 1 \end{array}\right] \f$ */
+			void rotateAllCovariances(const double &ang); 
+			/** Draws a single sample from the distribution */
+			void drawSingleSample( CPose2D &outPart ) const override; 
+			/** Draws a number of samples from the distribution, and saves as a list of 1x3 vectors, where each row contains a (x,y,phi) datum. */
+			void drawManySamples( size_t N, std::vector<mrpt::math::CVectorDouble> & outSamples ) const override; 
+			/** Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF */
+			void inverse(CPosePDF &o) const override; 
 
-			void operator += ( const mrpt::poses::CPose2D &Ap); //!< Makes: thisPDF = thisPDF + Ap, where "+" is pose composition (both the mean, and the covariance matrix are updated).
+			/** Makes: thisPDF = thisPDF + Ap, where "+" is pose composition (both the mean, and the covariance matrix are updated). */
+			void operator += ( const mrpt::poses::CPose2D &Ap); 
 
-			double  evaluatePDF( const mrpt::poses::CPose2D &x, bool sumOverAllPhis = false ) const; //!< Evaluates the PDF at a given point.
-			double  evaluateNormalizedPDF( const mrpt::poses::CPose2D &x ) const; //!< Evaluates the ratio PDF(x) / max_PDF(x*), that is, the normalized PDF in the range [0,1].
+			/** Evaluates the PDF at a given point. */
+			double  evaluatePDF( const mrpt::poses::CPose2D &x, bool sumOverAllPhis = false ) const; 
+			/** Evaluates the ratio PDF(x) / max_PDF(x*), that is, the normalized PDF in the range [0,1]. */
+			double  evaluateNormalizedPDF( const mrpt::poses::CPose2D &x ) const; 
 
 			/** Evaluates the PDF within a rectangular grid (and a fixed orientation) and saves the result in a matrix (each row contains values for a fixed y-coordinate value). */
 			void  evaluatePDFInArea(

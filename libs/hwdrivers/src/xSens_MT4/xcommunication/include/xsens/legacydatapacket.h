@@ -323,15 +323,24 @@ public:
 	inline const PacketFixedData* fixedData() const { return m_fixedData; }
 
 private:
-	PacketFixedData*		m_fixedData;			//!< Fixed packet data
-	mutable XsDeviceId		m_lastFoundId;	//!< Last found deviceId, speeds up searches
-	mutable uint16_t		m_lastFoundIndex;		//!< Index of last found deviceId, speeds up searches
-	XsMessage			m_msg;						//!< The message
-	XsTimeStamp		m_rtc;					//!< Sample time in ms, based on the sample counter
-	XsTimeStamp		m_toa;					//!< Time of arrival
-	XsTimeStamp		m_packetId;					//!< 64 bit sample counter
-	XsTimeStamp		m_triggerIn1;			//!< Trigger indication on line 1	\todo remove this
-	XsTimeStamp		m_triggerIn2;			//!< Trigger indication on line 2	\todo remove this
+	/** Fixed packet data */
+	PacketFixedData*		m_fixedData;			
+	/** Last found deviceId, speeds up searches */
+	mutable XsDeviceId		m_lastFoundId;	
+	/** Index of last found deviceId, speeds up searches */
+	mutable uint16_t		m_lastFoundIndex;		
+	/** The message */
+	XsMessage			m_msg;						
+	/** Sample time in ms, based on the sample counter */
+	XsTimeStamp		m_rtc;					
+	/** Time of arrival */
+	XsTimeStamp		m_toa;					
+	/** 64 bit sample counter */
+	XsTimeStamp		m_packetId;					
+	/** Trigger indication on line 1	\todo remove this */
+	XsTimeStamp		m_triggerIn1;			
+	/** Trigger indication on line 2	\todo remove this */
+	XsTimeStamp		m_triggerIn2;			
 };
 
 #endif	// file guard

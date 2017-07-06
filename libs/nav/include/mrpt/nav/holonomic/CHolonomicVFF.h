@@ -64,15 +64,18 @@ namespace mrpt
 		/** Algorithm options */
 		struct NAV_IMPEXP TOptions : public mrpt::utils::CLoadableOptions
 		{
-			double TARGET_SLOW_APPROACHING_DISTANCE; //!< For stopping gradually (Default: 0.10)
-			double TARGET_ATTRACTIVE_FORCE;          //!< Dimension-less (may have to be tuned depending on the density of obstacle sampling) (Default: 20)
+			/** For stopping gradually (Default: 0.10) */
+			double TARGET_SLOW_APPROACHING_DISTANCE; 
+			/** Dimension-less (may have to be tuned depending on the density of obstacle sampling) (Default: 20) */
+			double TARGET_ATTRACTIVE_FORCE;          
 
 			TOptions();
 			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) override; // See base docs
 			void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg ,const std::string &section) const override; // See base docs
 		};
 
-		TOptions options;  //!< Parameters of the algorithm (can be set manually or loaded from CHolonomicVFF::initialize or options.loadFromConfigFile(), etc.)
+		/** Parameters of the algorithm (can be set manually or loaded from CHolonomicVFF::initialize or options.loadFromConfigFile(), etc.) */
+		TOptions options;  
 
 		double getTargetApproachSlowDownDistance() const override { return options.TARGET_SLOW_APPROACHING_DISTANCE; }
 		void setTargetApproachSlowDownDistance(const double dist) override { options.TARGET_SLOW_APPROACHING_DISTANCE = dist; }

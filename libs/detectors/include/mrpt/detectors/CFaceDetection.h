@@ -73,25 +73,39 @@ namespace mrpt
 			
 		private:
 
-			std::thread		m_thread_checkIfFaceRegions;	//!< Thread that execute checkIfFaceRegions filter
-			std::thread		m_thread_checkIfFacePlaneCov;	//!< Thread that execute checkIfFacePlaneCov filter
-			std::thread		m_thread_checkIfDiagonalSurface;	//!< Thread that execute checkIfDiagonalSurface filter
+			/** Thread that execute checkIfFaceRegions filter */
+			std::thread		m_thread_checkIfFaceRegions;	
+			/** Thread that execute checkIfFacePlaneCov filter */
+			std::thread		m_thread_checkIfFacePlaneCov;	
+			/** Thread that execute checkIfDiagonalSurface filter */
+			std::thread		m_thread_checkIfDiagonalSurface;	
 
-			bool	m_checkIfFaceRegions_res;	//!< Save result of checkIfFaceRegions filter
-			bool	m_checkIfFacePlaneCov_res;	//!< Save result of checkIfFacePlaneCov filter
-			bool	m_checkIfDiagonalSurface_res;	//!< Save result of checkIfDiagonalSurface filter
+			/** Save result of checkIfFaceRegions filter */
+			bool	m_checkIfFaceRegions_res;	
+			/** Save result of checkIfFacePlaneCov filter */
+			bool	m_checkIfFacePlaneCov_res;	
+			/** Save result of checkIfDiagonalSurface filter */
+			bool	m_checkIfDiagonalSurface_res;	
 
-			bool	m_end_threads;	//!< Indicates to all threads that must finish their execution
+			/** Indicates to all threads that must finish their execution */
+			bool	m_end_threads;	
 			
-			std::promise<void> m_enter_checkIfFaceRegions;	//!< Indicates to thread_checkIfFaceRegions that exist a new face to analyze
-			std::promise<void> m_enter_checkIfFacePlaneCov;	//!< Indicates to thread_checkIfFacePlaneCov that exist a new face to analyze
-			std::promise<void> m_enter_checkIfDiagonalSurface;	//!< Indicates to thread_checkIfDiagonalSurface that exist a new face to analyze
+			/** Indicates to thread_checkIfFaceRegions that exist a new face to analyze */
+			std::promise<void> m_enter_checkIfFaceRegions;	
+			/** Indicates to thread_checkIfFacePlaneCov that exist a new face to analyze */
+			std::promise<void> m_enter_checkIfFacePlaneCov;	
+			/** Indicates to thread_checkIfDiagonalSurface that exist a new face to analyze */
+			std::promise<void> m_enter_checkIfDiagonalSurface;	
 
-			std::promise<void> m_leave_checkIfFaceRegions;	//!< Indicates to main thread that thread_checkIfFaceRegions has been completed analisis of the last face detected
-			std::promise<void> m_leave_checkIfFacePlaneCov;	//!< Indicates to main thread that thread_checkIfFacePlaneCov has been completed analisis of the last face detected
-			std::promise<void> m_leave_checkIfDiagonalSurface;	//!< Indicates to main thread that thread_checkIfDiagonalSurface has been completed analisis of the last face detected
+			/** Indicates to main thread that thread_checkIfFaceRegions has been completed analisis of the last face detected */
+			std::promise<void> m_leave_checkIfFaceRegions;	
+			/** Indicates to main thread that thread_checkIfFacePlaneCov has been completed analisis of the last face detected */
+			std::promise<void> m_leave_checkIfFacePlaneCov;	
+			/** Indicates to main thread that thread_checkIfDiagonalSurface has been completed analisis of the last face detected */
+			std::promise<void> m_leave_checkIfDiagonalSurface;	
 
-			mrpt::obs::CObservation3DRangeScan m_lastFaceDetected;	//!< Last face detected
+			/** Last face detected */
+			mrpt::obs::CObservation3DRangeScan m_lastFaceDetected;	
 
 			struct TMeasurement
 			{	

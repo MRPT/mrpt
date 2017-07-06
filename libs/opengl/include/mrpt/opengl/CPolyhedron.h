@@ -68,14 +68,18 @@ namespace opengl	{
 		  * Struct used to store a polyhedron face. Consists on a set of vertex indices and a normal vector.
 		  */
 		struct OPENGL_IMPEXP TPolyhedronFace	{
-			std::vector<uint32_t> vertices; //!< Vector of indices to the vertex list.
-			double normal[3]; //!< Normal vector.
+			/** Vector of indices to the vertex list. */
+			std::vector<uint32_t> vertices; 
+			/** Normal vector. */
+			double normal[3]; 
 			/** Fast default constructor. Initializes to garbage. */
 			TPolyhedronFace():vertices()	{}
 			/** Destructor.  */
 			~TPolyhedronFace()	{}
-			double area(const std::vector<mrpt::math::TPoint3D> &vertices) const; //!< Given a set of vertices, computes the area of this face.
-			void getCenter(const std::vector<mrpt::math::TPoint3D> &vertices, mrpt::math::TPoint3D &p) const; //!< Given a set of vertices, get this face's center.
+			/** Given a set of vertices, computes the area of this face. */
+			double area(const std::vector<mrpt::math::TPoint3D> &vertices) const; 
+			/** Given a set of vertices, get this face's center. */
+			void getCenter(const std::vector<mrpt::math::TPoint3D> &vertices, mrpt::math::TPoint3D &p) const; 
 		};
 	protected:
 		/**

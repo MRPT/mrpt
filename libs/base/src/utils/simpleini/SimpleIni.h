@@ -56,14 +56,20 @@ namespace mrpt
 		{
 
 enum SI_Error {
-    SI_OK       =  0,   //!< No error
-    SI_UPDATED  =  1,   //!< An existing value was updated
-    SI_INSERTED =  2,   //!< A new value was inserted
+    /** No error */
+    SI_OK       =  0,   
+    /** An existing value was updated */
+    SI_UPDATED  =  1,   
+    /** A new value was inserted */
+    SI_INSERTED =  2,   
 
     // note: test for any error with (retval < 0)
-    SI_FAIL     = -1,   //!< Generic failure
-    SI_NOMEM    = -2,   //!< Out of memory error
-    SI_FILE     = -3    //!< File error (see errno for detail error)
+    /** Generic failure */
+    SI_FAIL     = -1,   
+    /** Out of memory error */
+    SI_NOMEM    = -2,   
+    /** File error (see errno for detail error) */
+    SI_FILE     = -3    
 };
 
 #ifdef _WIN32

@@ -62,13 +62,17 @@ namespace mrpt
 			mrpt::system::TTimeStamp initial_timestamp;
 			bool first_reading;
 
-			std::string		m_COM_port;  //!< If not an empty string (default), will open that serial port, otherwise will try to open USB FTDI device "m_usbSerialNumber"
-			unsigned int 	m_COM_baud;	 //!< Default=115200
+			/** If not an empty string (default), will open that serial port, otherwise will try to open USB FTDI device "m_usbSerialNumber" */
+			std::string		m_COM_port;  
+			/** Default=115200 */
+			unsigned int 	m_COM_baud;	 
 
 
 			// Only one of these two streams will be !=nullptr and open for each specific eNose board!
-			std::unique_ptr<CInterfaceFTDI> m_stream_FTDI; //!< FTDI comms pipe (when not in serial port mode)
-			std::unique_ptr<CSerialPort> m_stream_SERIAL; //!< Serial port comms
+			/** FTDI comms pipe (when not in serial port mode) */
+			std::unique_ptr<CInterfaceFTDI> m_stream_FTDI; 
+			/** Serial port comms */
+			std::unique_ptr<CSerialPort> m_stream_SERIAL; 
 
 			/** The 3D pose of the master + N slave eNoses on the robot (meters & radians) */
 			std::vector<float>	enose_poses_x,enose_poses_y,enose_poses_z,enose_poses_yaw,enose_poses_pitch,enose_poses_roll;

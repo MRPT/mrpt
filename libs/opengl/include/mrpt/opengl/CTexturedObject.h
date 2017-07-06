@@ -33,9 +33,12 @@ namespace mrpt
 			mutable bool				m_texture_is_loaded;
 			mutable mrpt::utils::CImage	m_textureImage;
 			mutable mrpt::utils::CImage	m_textureImageAlpha;
-			mutable bool				m_enableTransparency;  //!< Of the texture using "m_textureImageAlpha"
-			mutable int					r_width,r_height;		//!< Size of the texture image, rounded up to next power of 2
-			mutable int					m_pad_x_right,m_pad_y_bottom; //!< The size of the fill in pixels in the textured image, w.r.t the image passed by the user.
+			/** Of the texture using "m_textureImageAlpha" */
+			mutable bool				m_enableTransparency;  
+			/** Size of the texture image, rounded up to next power of 2 */
+			mutable int					r_width,r_height;		
+			/** The size of the fill in pixels in the textured image, w.r.t the image passed by the user. */
+			mutable int					m_pad_x_right,m_pad_y_bottom; 
 
 			CTexturedObject();
 			virtual ~CTexturedObject();
@@ -44,7 +47,8 @@ namespace mrpt
 			virtual void  render_pre()  const;
 			virtual void  render_post() const;
 
-			virtual void  render_texturedobj() const = 0;  //!< Must be implemented by derived classes
+			/** Must be implemented by derived classes */
+			virtual void  render_texturedobj() const = 0;  
 
 			void  writeToStreamTexturedObject(mrpt::utils::CStream &out) const;
 			void  readFromStreamTexturedObject(mrpt::utils::CStream &in);

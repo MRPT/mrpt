@@ -36,7 +36,8 @@ namespace mrpt
 			DEFINE_SERIALIZABLE( CPosePDFParticles )
 
 		public:
-			void  clear(); //!< Free all the memory associated to m_particles, and set the number of parts = 0
+			/** Free all the memory associated to m_particles, and set the number of parts = 0 */
+			void  clear(); 
 
 			/** Constructor
 			  * \param M The number of m_particles.

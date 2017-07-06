@@ -26,9 +26,12 @@ namespace mrpt
 		class BASE_IMPEXP CConsoleRedirector : public std::streambuf
 		{
 		protected:
-			std::ofstream 	m_of;		//!< The text output file stream.
-			std::streambuf 	*sbOld;		//!< The "old" std::cout
-			std::streambuf 	*sbOld_cerr;		//!< The "old" std::cout
+			/** The text output file stream. */
+			std::ofstream 	m_of;		
+			/** The "old" std::cout */
+			std::streambuf 	*sbOld;		
+			/** The "old" std::cout */
+			std::streambuf 	*sbOld_cerr;		
 			bool 			m_also_to_console;
 			std::mutex	m_cs;
 

@@ -30,19 +30,32 @@ XSTYPES_DLL_API int XsGpsPvtData_empty(const struct XsGpsPvtData* thisPtr);
 
 /*! \brief Data from the GPS unit of a legacy MTi-G.*/
 struct XsGpsPvtData {
-	uint16_t	m_pressure;		//!< The pressure measurement in units of 2 Pascal, only valid if m_pressureAge is not 255
-	uint8_t		m_pressureAge;	//!< The age of the pressure measurement in packets. When it decreases relative to the previous packet, it indicates that new data is available.
-	uint32_t	m_itow;			//!< Integer time of week in ms
-	int32_t		m_latitude;		//!< Latitude in 1e-7 degrees
-	int32_t		m_longitude;	//!< Longitude in 1e-7 degrees
-	int32_t		m_height;		//!< Height in mm
-	int32_t		m_veln;			//!< Velocity towards north in cm/s
-	int32_t		m_vele;			//!< Velocity towards east in cm/s
-	int32_t		m_veld;			//!< Velocity towards down in cm/s
-	uint32_t	m_hacc;			//!< Horizontal accuracy estimate, expected error standard deviation in mm
-	uint32_t	m_vacc;			//!< Vertical accuracy estimate, expected error standard deviation in mm
-	uint32_t	m_sacc;			//!< Speed accuracy estimate, expected error standard deviation in cm/s
-	uint8_t		m_gpsAge;		//!< The age of the GPS measurement in packets. When it decreases relative to the previous packet, it indicates that new data is available.
+	/** The pressure measurement in units of 2 Pascal, only valid if m_pressureAge is not 255 */
+	uint16_t	m_pressure;		
+	/** The age of the pressure measurement in packets. When it decreases relative to the previous packet, it indicates that new data is available. */
+	uint8_t		m_pressureAge;	
+	/** Integer time of week in ms */
+	uint32_t	m_itow;			
+	/** Latitude in 1e-7 degrees */
+	int32_t		m_latitude;		
+	/** Longitude in 1e-7 degrees */
+	int32_t		m_longitude;	
+	/** Height in mm */
+	int32_t		m_height;		
+	/** Velocity towards north in cm/s */
+	int32_t		m_veln;			
+	/** Velocity towards east in cm/s */
+	int32_t		m_vele;			
+	/** Velocity towards down in cm/s */
+	int32_t		m_veld;			
+	/** Horizontal accuracy estimate, expected error standard deviation in mm */
+	uint32_t	m_hacc;			
+	/** Vertical accuracy estimate, expected error standard deviation in mm */
+	uint32_t	m_vacc;			
+	/** Speed accuracy estimate, expected error standard deviation in cm/s */
+	uint32_t	m_sacc;			
+	/** The age of the GPS measurement in packets. When it decreases relative to the previous packet, it indicates that new data is available. */
+	uint8_t		m_gpsAge;		
 
 #ifdef __cplusplus
 	/*! \brief \copybrief XsGpsPvtData_destruct */

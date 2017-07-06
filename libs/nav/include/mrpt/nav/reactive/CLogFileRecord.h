@@ -34,30 +34,45 @@ namespace nav
 		DEFINE_SERIALIZABLE( CLogFileRecord )
 
 	public:
-		CLogFileRecord();  //!< Constructor, builds an empty record.
+		/** Constructor, builds an empty record. */
+		CLogFileRecord();  
 
 		/** The structure used to store all relevant information about each
 		  *  transformation into TP-Space.
 		  *  \ingroup nav_reactive  */
 		struct NAV_IMPEXP TInfoPerPTG
 		{
-			std::string              PTG_desc;      //!< A short description for the applied PTG
-			mrpt::math::CVectorFloat TP_Obstacles;  //!< Distances until obstacles, in "pseudometers", first index for -PI direction, last one for PI direction.
-			std::vector<mrpt::math::TPoint2D>  TP_Targets;     //!< Target(s) location in TP-Space
-			mrpt::math::TPoint2D     TP_Robot;      //!< Robot location in TP-Space: normally (0,0), except during "NOP cmd vel" steps
-			double timeForTPObsTransformation,timeForHolonomicMethod;  //!< Time, in seconds.
-			double desiredDirection,desiredSpeed;          //!< The results from the holonomic method.
-			double evaluation;                       //!< Final score of this candidate
-			mrpt::utils::TParametersDouble  evalFactors;   //!< Evaluation factors
-			CHolonomicLogFileRecord::Ptr HLFR;          //!< Other useful info about holonomic method execution.
-			mrpt::nav::CParameterizedTrajectoryGenerator::Ptr ptg; //!< Only for the FIRST entry in a log file, this will contain a copy of the PTG with trajectories, suitable to render trajectories, etc.
-			mrpt::nav::ClearanceDiagram  clearance;    //!< Clearance for each path
+			/** A short description for the applied PTG */
+			std::string              PTG_desc;      
+			/** Distances until obstacles, in "pseudometers", first index for -PI direction, last one for PI direction. */
+			mrpt::math::CVectorFloat TP_Obstacles;  
+			/** Target(s) location in TP-Space */
+			std::vector<mrpt::math::TPoint2D>  TP_Targets;     
+			/** Robot location in TP-Space: normally (0,0), except during "NOP cmd vel" steps */
+			mrpt::math::TPoint2D     TP_Robot;      
+			/** Time, in seconds. */
+			double timeForTPObsTransformation,timeForHolonomicMethod;  
+			/** The results from the holonomic method. */
+			double desiredDirection,desiredSpeed;          
+			/** Final score of this candidate */
+			double evaluation;                       
+			/** Evaluation factors */
+			mrpt::utils::TParametersDouble  evalFactors;   
+			/** Other useful info about holonomic method execution. */
+			CHolonomicLogFileRecord::Ptr HLFR;          
+			/** Only for the FIRST entry in a log file, this will contain a copy of the PTG with trajectories, suitable to render trajectories, etc. */
+			mrpt::nav::CParameterizedTrajectoryGenerator::Ptr ptg; 
+			/** Clearance for each path */
+			mrpt::nav::ClearanceDiagram  clearance;    
 		};
 
 		mrpt::nav::CParameterizedTrajectoryGenerator::TNavDynamicState navDynState;
-		uint32_t  nPTGs;  //!< The number of PTGS:
-		mrpt::aligned_containers<TInfoPerPTG>::vector_t infoPerPTG; //!< The info for each applied PTG: must contain "nPTGs * nSecDistances" elements
-		int32_t   nSelectedPTG;   //!< The selected PTG.
+		/** The number of PTGS: */
+		uint32_t  nPTGs;  
+		/** The info for each applied PTG: must contain "nPTGs * nSecDistances" elements */
+		mrpt::aligned_containers<TInfoPerPTG>::vector_t infoPerPTG; 
+		/** The selected PTG. */
+		int32_t   nSelectedPTG;   
 
 		/** Known values: 
 		 *	- "executionTime": The total computation time, excluding sensing.
@@ -70,22 +85,33 @@ namespace nav
 		*	- "curPoseAndVel":  Time of querying robot pose and velocities.
 		 */
 		std::map<std::string, mrpt::system::TTimeStamp>  timestamps;
-		std::map<std::string, std::string>  additional_debug_msgs;  //!< Additional debug traces
-		mrpt::maps::CSimplePointsMap  WS_Obstacles, WS_Obstacles_original;  //!< The WS-Obstacles
-		mrpt::math::TPose2D           robotPoseLocalization, robotPoseOdometry; //!< The robot pose (from odometry and from the localization/SLAM system).
+		/** Additional debug traces */
+		std::map<std::string, std::string>  additional_debug_msgs;  
+		/** The WS-Obstacles */
+		mrpt::maps::CSimplePointsMap  WS_Obstacles, WS_Obstacles_original;  
+		/** The robot pose (from odometry and from the localization/SLAM system). */
+		mrpt::math::TPose2D           robotPoseLocalization, robotPoseOdometry; 
 		mrpt::math::TPose2D           relPoseSense, relPoseVelCmd; //! Relative poses (wrt to robotPoseLocalization) for extrapolated paths at two instants: time of obstacle sense, and future pose of motion comman
-		std::vector<mrpt::math::TPose2D> WS_targets_relative;  //!< The relative location of target(s) in Workspace.
+		/** The relative location of target(s) in Workspace. */
+		std::vector<mrpt::math::TPose2D> WS_targets_relative;  
 
-		mrpt::kinematics::CVehicleVelCmd::Ptr    cmd_vel;  //!< The final motion command sent to robot, in "m/sec" and "rad/sec".
-		mrpt::kinematics::CVehicleVelCmd::Ptr    cmd_vel_original;  //!< Motion command as comes out from the PTG, before scaling speed limit filtering.
-		mrpt::math::TTwist2D   cur_vel; //!< The actual robot velocities in global (map) coordinates, as read from sensors, in "m/sec" and "rad/sec".
-		mrpt::math::TTwist2D   cur_vel_local; //!< The actual robot velocities in local (robot) coordinates, as read from sensors, in "m/sec" and "rad/sec".
+		/** The final motion command sent to robot, in "m/sec" and "rad/sec". */
+		mrpt::kinematics::CVehicleVelCmd::Ptr    cmd_vel;  
+		/** Motion command as comes out from the PTG, before scaling speed limit filtering. */
+		mrpt::kinematics::CVehicleVelCmd::Ptr    cmd_vel_original;  
+		/** The actual robot velocities in global (map) coordinates, as read from sensors, in "m/sec" and "rad/sec". */
+		mrpt::math::TTwist2D   cur_vel; 
+		/** The actual robot velocities in local (robot) coordinates, as read from sensors, in "m/sec" and "rad/sec". */
+		mrpt::math::TTwist2D   cur_vel_local; 
 
-		mrpt::math::CVectorFloat robotShape_x,robotShape_y;  //!< The robot shape in WS. Used by PTGs derived from mrpt::nav::CPTG_RobotShape_Polygonal
-		double robotShape_radius;  //!< The circular robot radius. Used by PTGs derived from mrpt::nav::CPTG_RobotShape_Circular
+		/** The robot shape in WS. Used by PTGs derived from mrpt::nav::CPTG_RobotShape_Polygonal */
+		mrpt::math::CVectorFloat robotShape_x,robotShape_y;  
+		/** The circular robot radius. Used by PTGs derived from mrpt::nav::CPTG_RobotShape_Circular */
+		double robotShape_radius;  
 
 		// "NOP motion command" mode variables:
-		int16_t                ptg_index_NOP;  //!< Negative means no NOP mode evaluation, so the rest of "NOP variables" should be ignored.
+		/** Negative means no NOP mode evaluation, so the rest of "NOP variables" should be ignored. */
+		int16_t                ptg_index_NOP;  
 		uint16_t               ptg_last_k_NOP;
 		mrpt::math::TPose2D    rel_cur_pose_wrt_last_vel_cmd_NOP, rel_pose_PTG_origin_wrt_sense_NOP;
 		mrpt::nav::CParameterizedTrajectoryGenerator::TNavDynamicState ptg_last_navDynState;

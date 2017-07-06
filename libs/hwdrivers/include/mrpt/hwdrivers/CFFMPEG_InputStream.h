@@ -37,13 +37,17 @@ namespace mrpt
 		class HWDRIVERS_IMPEXP CFFMPEG_InputStream
 		{
 		private:
-			mrpt::utils::void_ptr_noncopy	m_state;	//!< The internal ffmpeg state
-			std::string  m_url;	//!< The open URL
+			/** The internal ffmpeg state */
+			mrpt::utils::void_ptr_noncopy	m_state;	
+			/** The open URL */
+			std::string  m_url;	
 			bool  m_grab_as_grayscale;
 
 		public:
-			CFFMPEG_InputStream();				//!< Default constructor, does not open any video source at startup
-			virtual ~CFFMPEG_InputStream();		//!< Destructor
+			/** Default constructor, does not open any video source at startup */
+			CFFMPEG_InputStream();				
+			/** Destructor */
+			virtual ~CFFMPEG_InputStream();		
 
 			/** Open a video file or a video stream (rtsp://)
 			  *  This can be used to open local video files (eg. "myVideo.avi", "c:\a.mpeg") and also IP cameras (e. "rtsp://a.b.c.d/live.sdp").
@@ -55,14 +59,16 @@ namespace mrpt
 			  */
 			bool openURL( const std::string &url, bool grab_as_grayscale = false, bool verbose = false );
 
-			bool isOpen() const;	//!< Return whether the video source was open correctly
+			/** Return whether the video source was open correctly */
+			bool isOpen() const;	
 
 			/** Close the video stream (this is called automatically at destruction).
 			  * \sa openURL
 			  */
 			void close();
 
-			double getVideoFPS() const;	//!< Get the frame-per-second (FPS) of the video source, or "-1" if the video is not open.
+			/** Get the frame-per-second (FPS) of the video source, or "-1" if the video is not open. */
+			double getVideoFPS() const;	
 
 			/** Get the next frame from the video stream.
 			  *  Note that for remote streams (IP cameras) this method may block until enough information is read to generate a new frame.

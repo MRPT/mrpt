@@ -65,16 +65,21 @@ enum JOINT {HEAD = 0, NECK, TORSO,
 			uint32_t							m_timeStartUI;
 			mrpt::system::TTimeStamp			m_timeStartTT;
 			
-			mrpt::poses::CPose3D				m_sensorPose;				//!< Sensor pose
-			int									m_nUsers;					//!< Number of detected users
+			/** Sensor pose */
+			mrpt::poses::CPose3D				m_sensorPose;				
+			/** Number of detected users */
+			int									m_nUsers;					
 
 			/** Preview window management */
 			bool									m_showPreview;
 			mrpt::gui::CDisplayWindow3D::Ptr			m_win;
-			std::vector< std::pair<JOINT,JOINT> >	m_linesToPlot;			//!< Lines between joints
-			std::vector<double>						m_joint_theta;			//!< Joint angles when no skeleton has been detected
+			/** Lines between joints */
+			std::vector< std::pair<JOINT,JOINT> >	m_linesToPlot;			
+			/** Joint angles when no skeleton has been detected */
+			std::vector<double>						m_joint_theta;			
 
-			unsigned int						m_toutCounter;				//!< Timeout counter (for internal use only)
+			/** Timeout counter (for internal use only) */
+			unsigned int						m_toutCounter;				
 
 			/** See the class documentation at the top for expected parameters */
 			void  loadConfig_sensorSpecific(

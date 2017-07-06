@@ -44,12 +44,17 @@ struct XsQuaternion {
 XSCPPPROTECTED
 	union {
 		struct {
-			XsReal m_w;		//!< Stores the w component of the quaternion
-			XsReal m_x;		//!< Stores the x component of the quaternion
-			XsReal m_y;		//!< Stores the y component of the quaternion
-			XsReal m_z;		//!< Stores the z component of the quaternion
+			/** Stores the w component of the quaternion */
+			XsReal m_w;		
+			/** Stores the x component of the quaternion */
+			XsReal m_x;		
+			/** Stores the y component of the quaternion */
+			XsReal m_y;		
+			/** Stores the z component of the quaternion */
+			XsReal m_z;		
 		};
-		XsReal m_data[4];	//!< Stores the quaternion in an array of four elements
+		/** Stores the quaternion in an array of four elements */
+		XsReal m_data[4];	
 	};
 #ifdef __cplusplus
 public:

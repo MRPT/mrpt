@@ -46,14 +46,16 @@ namespace maps
 			public utils::CLoadableOptions,
 			public TInsertionOptionsCommon
 		{
-			TInsertionOptions();	//!< Default values loader
+			/** Default values loader */
+			TInsertionOptions();	
 
 			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) override; // See base docs
 			void dumpToTextStream(mrpt::utils::CStream &out) const override; // See base docs
 
 		} insertionOptions;
 
-		void getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr &outObj) const override; //!< Returns a 3D object representing the map 
+		/** Returns a 3D object representing the map  */
+		void getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr &outObj) const override; 
 
 	protected:
 		/** Get the part of the options common to all CRandomFieldGridMap2D classes */
@@ -67,8 +69,10 @@ namespace maps
 		double internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom ) override;
 
 		MAP_DEFINITION_START(CWirelessPowerGridMap2D,MAPS_IMPEXP)
-			double min_x,max_x,min_y,max_y,resolution;	//!< See CWirelessPowerGridMap2D::CWirelessPowerGridMap2D
-			mrpt::maps::CWirelessPowerGridMap2D::TMapRepresentation	mapType;	//!< The kind of map representation (see CWirelessPowerGridMap2D::CWirelessPowerGridMap2D)
+			/** See CWirelessPowerGridMap2D::CWirelessPowerGridMap2D */
+			double min_x,max_x,min_y,max_y,resolution;	
+			/** The kind of map representation (see CWirelessPowerGridMap2D::CWirelessPowerGridMap2D) */
+			mrpt::maps::CWirelessPowerGridMap2D::TMapRepresentation	mapType;	
 			mrpt::maps::CWirelessPowerGridMap2D::TInsertionOptions	insertionOpts;
 		MAP_DEFINITION_END(CWirelessPowerGridMap2D,MAPS_IMPEXP)
 

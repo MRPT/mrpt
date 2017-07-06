@@ -35,13 +35,19 @@ namespace mrpt
 		{
 			DEFINE_SERIALIZABLE( CVectorField2D )
 		protected:
-			mrpt::math::CMatrix xcomp;				//!< X component of the vector field
-			mrpt::math::CMatrix ycomp;				//!< Y component of the vector field
+			/** X component of the vector field */
+			mrpt::math::CMatrix xcomp;				
+			/** Y component of the vector field */
+			mrpt::math::CMatrix ycomp;				
 
-			float	xMin,xMax,yMin,yMax;	//!< Grid bounds
-			float	m_LineWidth;			//!< By default is 1.0
-			float	m_pointSize;			//!< By default is 1.0
-			bool    m_antiAliasing;			//!< By default is true
+			/** Grid bounds */
+			float	xMin,xMax,yMin,yMax;	
+			/** By default is 1.0 */
+			float	m_LineWidth;			
+			/** By default is 1.0 */
+			float	m_pointSize;			
+			/** By default is true */
+			bool    m_antiAliasing;			
 
 			mrpt::utils::TColor m_point_color;
 			mrpt::utils::TColor m_field_color;

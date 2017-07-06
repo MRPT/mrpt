@@ -190,7 +190,8 @@ namespace mrpt
 			int				m_baudRate;
 			int				m_totalTimeout_ms,m_interBytesTimeout_ms;
 
-			mrpt::utils::CTicTac m_timer; //!< Used only in \a ReadString
+			/** Used only in \a ReadString */
+			mrpt::utils::CTicTac m_timer; 
 
 		#ifdef MRPT_OS_WINDOWS
 			// WINDOWS

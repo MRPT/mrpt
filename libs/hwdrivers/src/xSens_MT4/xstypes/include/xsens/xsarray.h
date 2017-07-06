@@ -50,13 +50,20 @@ struct XsArrayDescriptor {
 protected:
 	template <typename T, XsArrayDescriptor const& D, typename I> friend struct XsArrayImpl;
 #endif
-	XsSize itemSize;									//!< The size of an array item in bytes
-	void (*itemSwap)(void* a, void* b);					//!< The function to use for swapping the data of two array items. \param a Pointer to first item to swap. \param b Pointer to second item to swap.
-	void (*itemConstruct)(void* e);						//!< The function to use for constructing a new array item. May be 0 for simple types. \param e Pointer to item to construct.
-	void (*itemCopyConstruct)(void* e, void const* s);	//!< The function to use for constructing a new array item with a source initializer. This may not be 0. \param e Pointer to item to construct. \param s Pointer to source item to copy from.
-	void (*itemDestruct)(void* e);						//!< The function to use for destructing a array item. May be 0 for simple types. \param e Pointer to item to destruct.
-	void (*itemCopy)(void* to, void const* from);		//!< The function to use for copying the data of \a from to \a to. \param to Pointer to item to copy to. \param from Pointer to item to copy from.
-	int (*itemCompare)(void const* a, void const* b);	//!< The function to use for comparing two items. \param a Left hand side of comparison. \param b Right hand side of comparison. \returns The function will return 0 when the items are equal. When greater/less comparison is possible, the function should return < 0 if a < b and > 0 if a > b.
+	/** The size of an array item in bytes */
+	XsSize itemSize;									
+	/** The function to use for swapping the data of two array items. \param a Pointer to first item to swap. \param b Pointer to second item to swap. */
+	void (*itemSwap)(void* a, void* b);					
+	/** The function to use for constructing a new array item. May be 0 for simple types. \param e Pointer to item to construct. */
+	void (*itemConstruct)(void* e);						
+	/** The function to use for constructing a new array item with a source initializer. This may not be 0. \param e Pointer to item to construct. \param s Pointer to source item to copy from. */
+	void (*itemCopyConstruct)(void* e, void const* s);	
+	/** The function to use for destructing a array item. May be 0 for simple types. \param e Pointer to item to destruct. */
+	void (*itemDestruct)(void* e);						
+	/** The function to use for copying the data of \a from to \a to. \param to Pointer to item to copy to. \param from Pointer to item to copy from. */
+	void (*itemCopy)(void* to, void const* from);		
+	/** The function to use for comparing two items. \param a Left hand side of comparison. \param b Right hand side of comparison. \returns The function will return 0 when the items are equal. When greater/less comparison is possible, the function should return < 0 if a < b and > 0 if a > b. */
+	int (*itemCompare)(void const* a, void const* b);	
 };
 typedef struct XsArrayDescriptor XsArrayDescriptor;
 

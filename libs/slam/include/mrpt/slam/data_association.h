@@ -33,8 +33,10 @@ namespace mrpt
 		  */
 		enum TDataAssociationMethod
 		{
-			assocNN = 0,  	//!< Nearest-neighbor.
-			assocJCBB 	 	//!< JCBB: Joint Compatibility Branch & Bound [Neira, Tardos 2001].
+			/** Nearest-neighbor. */
+			assocNN = 0,  	
+			/** JCBB: Joint Compatibility Branch & Bound [Neira, Tardos 2001]. */
+			assocJCBB 	 	
 		};
 
 		/** Different metrics for data association, used in mrpt::slam::data_association
@@ -43,12 +45,16 @@ namespace mrpt
 		  */
 		enum TDataAssociationMetric
 		{
-			metricMaha= 0,  //!< Mahalanobis distance
-			metricML 	 	//!< Matching likelihood (See TDataAssociationMetric for a paper explaining this metric)
+			/** Mahalanobis distance */
+			metricMaha= 0,  
+			/** Matching likelihood (See TDataAssociationMetric for a paper explaining this metric) */
+			metricML 	 	
 		};
 
-		typedef size_t observation_index_t; //!< Used in mrpt::slam::TDataAssociationResults
-		typedef size_t prediction_index_t; //!< Used in mrpt::slam::TDataAssociationResults
+		/** Used in mrpt::slam::TDataAssociationResults */
+		typedef size_t observation_index_t; 
+		/** Used in mrpt::slam::TDataAssociationResults */
+		typedef size_t prediction_index_t; 
 
 		/** The results from mrpt::slam::data_association
 		  */
@@ -80,16 +86,20 @@ namespace mrpt
 			  * \note The types observation_index_t and prediction_index_t are just used for clarity, use normal size_t's.
 			  */
 			std::map<observation_index_t,prediction_index_t> associations;
-			double               distance; //!< The Joint Mahalanobis distance or matching likelihood of the best associations found.
+			/** The Joint Mahalanobis distance or matching likelihood of the best associations found. */
+			double               distance; 
 
 			/** Individual mahalanobis distances (or matching likelihood, depending on the selected metric) between predictions (row indices) & observations (column indices).
 			  *  Indices are for the appearing order in the arguments "Y_predictions_mean" & "Z_observations", they are NOT landmark IDs.
 			  */
 			mrpt::math::CMatrixDouble	indiv_distances;
-			mrpt::math::CMatrixBool		indiv_compatibility;  //!< The result of a chi2 test for compatibility using mahalanobis distance - Indices are like in "indiv_distances".
-			vector_uint					indiv_compatibility_counts; //!< The sum of each column of indiv_compatibility, that is, the number of compatible pairings for each observation.
+			/** The result of a chi2 test for compatibility using mahalanobis distance - Indices are like in "indiv_distances". */
+			mrpt::math::CMatrixBool		indiv_compatibility;  
+			/** The sum of each column of indiv_compatibility, that is, the number of compatible pairings for each observation. */
+			vector_uint					indiv_compatibility_counts; 
 
-			size_t		nNodesExploredInJCBB; //!< Only for the JCBB method,the number of recursive calls expent in the algorithm.
+			/** Only for the JCBB method,the number of recursive calls expent in the algorithm. */
+			size_t		nNodesExploredInJCBB; 
 		};
 
 

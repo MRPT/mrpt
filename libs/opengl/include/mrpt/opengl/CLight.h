@@ -27,19 +27,23 @@ namespace mrpt
 		  */
 		struct OPENGL_IMPEXP CLight
 		{
-			CLight(); //!< Default constructor, sets default values
+			/** Default constructor, sets default values */
+			CLight(); 
 
 			void setPosition(float x,float y,float z,float w);
 			void setDirection(float dx,float dy,float dz);
 
-			uint8_t light_ID; //!< OpenGL ID (typical range: 0-7)
+			/** OpenGL ID (typical range: 0-7) */
+			uint8_t light_ID; 
 
 			float	color_ambient[4];
 			float	color_diffuse[4];
 			float	color_specular[4];
 
-			float	position[4];  //!< [x,y,z,w]: w=0 means directional light, w=1 means a light at a real 3D position.
-			float	direction[3]; //!< [x,y,z]
+			/** [x,y,z,w]: w=0 means directional light, w=1 means a light at a real 3D position. */
+			float	position[4];  
+			/** [x,y,z] */
+			float	direction[3]; 
 			float	constant_attenuation;
 			float	linear_attenuation;
 			float	quadratic_attenuation;
@@ -49,7 +53,8 @@ namespace mrpt
 			void writeToStream(mrpt::utils::CStream &out) const;
 			void readFromStream(mrpt::utils::CStream &in);
 
-			void  sendToOpenGL() const; //!< Define the light in the current OpenGL rendering context (users normally don't need to call this explicitly, it's done from within a \sa COpenGLViewport)
+			/** Define the light in the current OpenGL rendering context (users normally don't need to call this explicitly, it's done from within a \sa COpenGLViewport) */
+			void  sendToOpenGL() const; 
 		};
 
 		OPENGL_IMPEXP mrpt::utils::CStream& operator>>(mrpt::utils::CStream& in,mrpt::opengl::CLight &o);
