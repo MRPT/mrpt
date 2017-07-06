@@ -216,7 +216,7 @@ namespace mrpt
 			uint32_t        m_numSegments;  
 			mutable mrpt::math::TPoint3D m_bb_min, m_bb_max;
 
-			/** Cholesky U triangular matrix cache. */ */
+			/** Cholesky U triangular matrix cache. */ 
 			mutable cov_matrix_t  m_U;  
 
 			void  thisclass_writeToStream(mrpt::utils::CStream &out) const
