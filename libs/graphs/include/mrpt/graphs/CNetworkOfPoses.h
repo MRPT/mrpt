@@ -102,7 +102,7 @@ namespace mrpt
 		public:
 			/** @name Typedef's
 			    @{ */
-			/** The base class "CDirectedGraph<CPOSE,EDGE_ANNOTATIONS>" */ */
+			/** The base class "CDirectedGraph<CPOSE,EDGE_ANNOTATIONS>" */ 
 			typedef mrpt::graphs::CDirectedGraph<CPOSE,EDGE_ANNOTATIONS> BASE;	
 			/** My own type */
 			typedef CNetworkOfPoses<CPOSE,MAPS_IMPLEMENTATION,NODE_ANNOTATIONS,EDGE_ANNOTATIONS> self_t; 

@@ -58,7 +58,7 @@ namespace obs
 		mrpt::poses::CPose2D auxEstimatePose; 
 
 
-		/** Prints out the contents of the object  */ */
+		/** Prints out the contents of the object  */ 
 		void  debugPrintOut(); 
 
 		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const override;// See base class docs.
