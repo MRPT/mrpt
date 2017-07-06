@@ -79,38 +79,30 @@ void mrpt::system::getCallStackBackTrace(TCallStackBackTrace &out_bt)
 	// Based on: https://gist.github.com/fmela/591333
 	void *callstack[framesToCapture];
 	const int nMaxFrames = sizeof(callstack) / sizeof(callstack[0]);
-	char buf[1024];
 	int nFrames = ::backtrace(callstack, nMaxFrames);
 	char **symbols = ::backtrace_symbols(callstack, nFrames);
 
-	std::ostringstream trace_buf;
-	for (unsigned int i = framesToSkip; i < nFrames; i++)
+	for (int i = (int)framesToSkip; i < nFrames; i++)
 	{
+		TCallStackEntry cse;
+		cse.address = callstack[i];
+
 		Dl_info info;
-		if (dladdr(callstack[i], &info) && info.dli_sname) 
+		if (dladdr(callstack[i], &info) && info.dli_sname)
 		{
 			char *demangled = NULL;
 			int status = -1;
-			if (info.dli_sname[0] == '_') 
+			if (info.dli_sname[0] == '_')
 			{
 				demangled = abi::__cxa_demangle(info.dli_sname, NULL, 0, &status);
 			}
-			snprintf(buf, sizeof(buf), "%-3d %*p %s + %zd\n",
-				i, int(2 + sizeof(void*) * 2), callstack[i],
-				status == 0 ? demangled :
-				info.dli_sname == 0 ? symbols[i] : info.dli_sname,
-				(char *)callstack[i] - (char *)info.dli_saddr);
+			cse.symbolNameOriginal = info.dli_sname == 0 ? symbols[i] : info.dli_sname;
+			cse.symbolName = status == 0 ? std::string(demangled) : cse.symbolNameOriginal;
 			free(demangled);
 		}
-		else {
-			snprintf(buf, sizeof(buf), "%-3d %*p %s\n",
-				i, int(2 + sizeof(void*) * 2), callstack[i], symbols[i]);
-		}
-		trace_buf << buf;
+		out_bt.backtrace_levels.emplace_back(cse);
 	}
 	free(symbols);
-	MRPT_TODO("finish this impl:");
-	std::cout << "stack:\n" << trace_buf.str();
 #endif
 }
 
@@ -121,10 +113,10 @@ mrpt::system::TCallStackBackTrace::TCallStackBackTrace()
 std::string mrpt::system::TCallStackBackTrace::asString() const
 {
 	std::ostringstream trace_buf;
-	trace_buf << "Backtrace:" << std::endl;
+	trace_buf << "Callstack backtrace:" << std::endl;
 	for (unsigned int i = 0; i < this->backtrace_levels.size(); i++)
 	{
-		trace_buf << mrpt::format("[%2d] %*p %s", i, int(2 + sizeof(void*) * 2), backtrace_levels[i].address, backtrace_levels[i].symbolName.c_str()) << std::endl;
+		trace_buf << mrpt::format("[%-2d] %*p %s", i, int(2 + sizeof(void*) * 2), backtrace_levels[i].address, backtrace_levels[i].symbolName.c_str()) << std::endl;
 	}
 	return trace_buf.str();
 }
