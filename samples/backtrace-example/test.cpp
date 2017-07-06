@@ -7,18 +7,37 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#ifndef _mrpt_system_H
-#define _mrpt_system_H
-
-#include <mrpt/system/CDirectoryExplorer.h>
-#include <mrpt/system/CFileSystemWatcher.h>
-#include <mrpt/system/datetime.h>
-#include <mrpt/system/filesystem.h>
-#include <mrpt/system/memory.h>
-#include <mrpt/system/CGenericMemoryPool.h>
-#include <mrpt/system/os.h>
-#include <mrpt/system/string_utils.h>
-#include <mrpt/system/threads.h>
 #include <mrpt/system/backtrace.h>
+#include <iostream>
 
-#endif
+int func1(int a, int b)
+{
+	mrpt::system::TCallStackBackTrace bt;
+
+	mrpt::system::getCallStackBackTrace(bt);
+	std::cout << bt.asString();
+
+	return a + b;
+}
+
+// ------------------------------------------------------
+//						MAIN
+// ------------------------------------------------------
+int main()
+{
+	try
+	{
+		func1(1, 2);
+
+		return 0;
+	} catch (std::exception &e)
+	{
+		std::cout << "MRPT exception caught: " << e.what() << std::endl;
+		return -1;
+	}
+	catch (...)
+	{
+		printf("Untyped exception!!");
+		return -1;
+	}
+}
