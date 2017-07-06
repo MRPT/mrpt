@@ -12,6 +12,7 @@
 #include <mrpt/nav/reactive/CAbstractNavigator.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/utils/CConfigFileMemory.h>
+#include <mrpt/system/backtrace.h>
 #include <limits>
 #include <typeinfo>
 
@@ -142,7 +143,7 @@ void  CAbstractNavigator::suspend()
 	mrpt::synch::CCriticalSectionLocker csl(&m_nav_cs);
 
 	// Issue an "stop" if we are moving:
-	if (m_curPoseVel.timestamp != INVALID_TIMESTAMP && 
+	if (m_curPoseVel.timestamp != INVALID_TIMESTAMP &&
 		(std::abs(m_curPoseVel.velLocal.vx)>1e-4 || std::abs(m_curPoseVel.velLocal.vy)>1e-4 || std::abs(m_curPoseVel.velLocal.omega)>1e-4))
 	{
 		this->stop(false /*not an emergency stop*/);
@@ -196,6 +197,13 @@ void CAbstractNavigator::navigationStep()
 {
 	mrpt::synch::CCriticalSectionLocker csl(&m_nav_cs);
 	mrpt::utils::CTimeLoggerEntry tle(m_timlog_delays, "CAbstractNavigator::navigationStep()");
+
+	if (this->isLoggingLevelVisible(mrpt::utils::LVL_DEBUG))
+	{
+		mrpt::system::TCallStackBackTrace bt;
+		mrpt::system::getCallStackBackTrace(bt);
+		MRPT_LOG_DEBUG_STREAM("[CAbstractNavigator::navigationStep]" << bt.asString());
+	}
 
 	const TState prevState = m_navigationState;
 	switch ( m_navigationState )
@@ -403,6 +411,13 @@ void CAbstractNavigator::performNavigationStepNavigating(bool call_virtual_nav_m
 {
 	try
 	{
+		if (this->isLoggingLevelVisible(mrpt::utils::LVL_DEBUG))
+		{
+			mrpt::system::TCallStackBackTrace bt;
+			mrpt::system::getCallStackBackTrace(bt);
+			MRPT_LOG_DEBUG_STREAM("[CAbstractNavigator::performNavigationStepNavigating]" << bt.asString());
+		}
+
 		if (m_lastNavigationState != NAVIGATING)
 		{
 			MRPT_LOG_INFO("[CAbstractNavigator::navigationStep()] Starting Navigation. Watchdog initiated...\n");
