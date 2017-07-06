@@ -37,10 +37,13 @@ namespace mrpt
 		/** Params of the optional callback provided by the user */
 		struct VISION_IMPEXP TImageStereoCallbackData
 		{
-			int     calibRound; //!< =-1:Processing images;  =0: Initial calib without distortion, =1: Calib of all parameters
+			/** =-1:Processing images;  =0: Initial calib without distortion, =1: Calib of all parameters */
+			int     calibRound; 
 			size_t current_iter;
-			double current_rmse; //!< Current root-mean square reprojection error (in pixels)
-			unsigned int nImgsProcessed, nImgsToProcess; //!< Info for calibRound==-1
+			/** Current root-mean square reprojection error (in pixels) */
+			double current_rmse; 
+			/** Info for calibRound==-1 */
+			unsigned int nImgsProcessed, nImgsToProcess; 
 		};
 
 		/** Prototype of optional user callback function. */
@@ -50,12 +53,16 @@ namespace mrpt
 		/** Input parameters for mrpt::vision::checkerBoardStereoCalibration */
 		struct VISION_IMPEXP TStereoCalibParams
 		{
-			unsigned int  check_size_x,check_size_y; //!< The number of squares in the checkerboard in the "X" & "Y" direction.
-			double        check_squares_length_X_meters,check_squares_length_Y_meters; //!< The size of each square in the checkerboard, in meters, in the "X" & "Y" axes.
+			/** The number of squares in the checkerboard in the "X" & "Y" direction. */
+			unsigned int  check_size_x,check_size_y; 
+			/** The size of each square in the checkerboard, in meters, in the "X" & "Y" axes. */
+			double        check_squares_length_X_meters,check_squares_length_Y_meters; 
 			bool          normalize_image;
 			bool          skipDrawDetectedImgs;
-			bool          verbose;                   //!< Show progress messages to std::cout console (default=true)
-			size_t        maxIters;                  //!< Maximum number of iterations of the optimizer (default=300)
+			/** Show progress messages to std::cout console (default=true) */
+			bool          verbose;                   
+			/** Maximum number of iterations of the optimizer (default=300) */
+			size_t        maxIters;                  
 
 			/** Select which distortion parameters (of both left/right cameras) will be optimzed:
 			  *  k1,k2,k3 are the r^2, r^4 and r^6 radial distorion coeficients, and t1 and t2 are the tangential distortion coeficients (see mrpt::utils::TCamera).
@@ -64,12 +71,16 @@ namespace mrpt
 			  */
 			bool          optimize_k1, optimize_k2, optimize_k3, optimize_t1, optimize_t2;
 
-			bool          use_robust_kernel; //!< Employ a Pseudo-Huber robustifier kernel (Default: false)
-			double        robust_kernel_param; //!< The parameter of the robust kernel, in pixels (only if use_robust_kernel=true) (Default=10)
+			/** Employ a Pseudo-Huber robustifier kernel (Default: false) */
+			bool          use_robust_kernel; 
+			/** The parameter of the robust kernel, in pixels (only if use_robust_kernel=true) (Default=10) */
+			double        robust_kernel_param; 
 
 
-			TSteroCalibCallbackFunctor  callback; //!< If set to !=nullptr, this function will be called within each Lev-Marq. iteration (don't do heavy stuff here since performance will degrade)
-			void * callback_user_param; //!< If using a callback function, you can use this to pass custom data to your callback.
+			/** If set to !=nullptr, this function will be called within each Lev-Marq. iteration (don't do heavy stuff here since performance will degrade) */
+			TSteroCalibCallbackFunctor  callback; 
+			/** If using a callback function, you can use this to pass custom data to your callback. */
+			void * callback_user_param; 
 
 			// Ctor: Set default values
 			TStereoCalibParams();
@@ -80,17 +91,23 @@ namespace mrpt
 		{
 			TStereoCalibResults();
 
-			mrpt::utils::TStereoCamera  cam_params;  //!< Recovered parameters of the stereo camera
-			mrpt::poses::CPose3D        right2left_camera_pose; //!< The pose of the left camera as seen from the right camera
+			/** Recovered parameters of the stereo camera */
+			mrpt::utils::TStereoCamera  cam_params;  
+			/** The pose of the left camera as seen from the right camera */
+			mrpt::poses::CPose3D        right2left_camera_pose; 
 
 			/** Poses of the origin of coordinates of the pattern wrt the left camera (i.e. the origin of coordinates, as seen from the different camera poses)
 			  */
 			mrpt::aligned_containers<mrpt::poses::CPose3D>::vector_t  left_cam_poses;
-			std::vector<bool> image_pair_was_used; //!< true if a checkerboard was correctly detected in both left/right images. false if it wasn't, so the image pair didn't make it to the optimization.
+			/** true if a checkerboard was correctly detected in both left/right images. false if it wasn't, so the image pair didn't make it to the optimization. */
+			std::vector<bool> image_pair_was_used; 
 
-			double  final_rmse;  //!< Final reprojection square Root Mean Square Error (in pixels).
-			size_t  final_iters; //!< Final number of optimization iterations executed.
-			size_t  final_number_good_image_pairs; //!< Number of image pairs in which valid checkerboards were correctly detected.
+			/** Final reprojection square Root Mean Square Error (in pixels). */
+			double  final_rmse;  
+			/** Final number of optimization iterations executed. */
+			size_t  final_iters; 
+			/** Number of image pairs in which valid checkerboards were correctly detected. */
+			size_t  final_number_good_image_pairs; 
 
 			/** The inverse variance (information/precision) of each of the 9 left/right camera parameters [fx fy cx cy k1 k2 k3 t1 t2].
 			  *  Those not estimated as indicated in TStereoCalibParams will be zeros (i.e. an "infinite uncertainty")

@@ -34,11 +34,16 @@ namespace mrpt
 			/** Information about the rendering process being issued. \sa See getCurrentRenderingInfo for more details */
 			struct OPENGL_IMPEXP TRenderInfo
 			{
-				int vp_x, vp_y, vp_width, vp_height;    //!< Rendering viewport geometry (in pixels)
-				Eigen::Matrix<float,4,4,Eigen::ColMajor>  proj_matrix;  //!< The 4x4 projection matrix
-				Eigen::Matrix<float,4,4,Eigen::ColMajor>  model_matrix;  //!< The 4x4 model transformation matrix
-				Eigen::Matrix<float,4,4,Eigen::ColMajor>  full_matrix;  //!< PROJ * MODEL
-				mrpt::math::TPoint3Df   camera_position;  //!< The 3D location of the camera
+				/** Rendering viewport geometry (in pixels) */
+				int vp_x, vp_y, vp_width, vp_height;    
+				/** The 4x4 projection matrix */
+				Eigen::Matrix<float,4,4,Eigen::ColMajor>  proj_matrix;  
+				/** The 4x4 model transformation matrix */
+				Eigen::Matrix<float,4,4,Eigen::ColMajor>  model_matrix;  
+				/** PROJ * MODEL */
+				Eigen::Matrix<float,4,4,Eigen::ColMajor>  full_matrix;  
+				/** The 3D location of the camera */
+				mrpt::math::TPoint3Df   camera_position;  
 
 				/** Computes the normalized coordinates (range=[0,1]) on the current rendering viewport of a
 				  * point with local coordinates (wrt to the current model matrix) of (x,y,z).

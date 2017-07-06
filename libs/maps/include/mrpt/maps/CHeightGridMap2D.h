@@ -30,11 +30,16 @@ namespace mrpt
 		/** The contents of each cell in a CHeightGridMap2D map */
 		struct MAPS_IMPEXP THeightGridmapCell
 		{
-			float     h;    //!< The current average height (in meters)
-			float     var;  //!< The current standard deviation of the height (in meters)
-			float     u;    //!< Auxiliary variable for storing the incremental mean value (in meters).
-			float     v;    //!< Auxiliary (in meters)
-			uint32_t  w;    //!< [For mrSimpleAverage model] The accumulated weight: initially zero if un-observed, increased by one for each observation
+			/** The current average height (in meters) */
+			float     h;    
+			/** The current standard deviation of the height (in meters) */
+			float     var;  
+			/** Auxiliary variable for storing the incremental mean value (in meters). */
+			float     u;    
+			/** Auxiliary (in meters) */
+			float     v;    
+			/** [For mrSimpleAverage model] The accumulated weight: initially zero if un-observed, increased by one for each observation */
+			uint32_t  w;    
 
 			THeightGridmapCell() : h(),var(),u(),v(),w() {}
 		};
@@ -84,18 +89,22 @@ namespace mrpt
 				double resolution = 0.1
 				);
 
-			 bool isEmpty() const override; //!< Returns true if the map is empty/no observation has been inserted.
+			 /** Returns true if the map is empty/no observation has been inserted. */
+			 bool isEmpty() const override; 
 
 			/** Parameters related with inserting observations into the map */
 			struct MAPS_IMPEXP TInsertionOptions : public utils::CLoadableOptions
 			{
-				TInsertionOptions(); //!< Default values loader
+				/** Default values loader */
+				TInsertionOptions(); 
 
 				void   loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) override; // See base docs
 				void   dumpToTextStream(mrpt::utils::CStream &out) const override; // See base docs
 
-				bool   filterByHeight; //!< Whether to perform filtering by z-coordinate (default=false): coordinates are always RELATIVE to the robot for this filter.vvv
-				float  z_min,z_max; //!< Only when filterByHeight is true: coordinates are always RELATIVE to the robot for this filter.
+				/** Whether to perform filtering by z-coordinate (default=false): coordinates are always RELATIVE to the robot for this filter.vvv */
+				bool   filterByHeight; 
+				/** Only when filterByHeight is true: coordinates are always RELATIVE to the robot for this filter. */
+				float  z_min,z_max; 
 
 				mrpt::utils::TColormap colorMap;
 			} insertionOptions;
@@ -123,7 +132,8 @@ namespace mrpt
 			virtual bool   dem_get_z(const double x, const double y, double &z_out) const  override;
 			virtual void   dem_update_map() override;
 
-			TMapRepresentation  m_mapType;  //!< The map representation type of this map
+			/** The map representation type of this map */
+			TMapRepresentation  m_mapType;  
 
 			// See docs in base class
 			void  internal_clear() override;
@@ -131,8 +141,10 @@ namespace mrpt
 			double internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom ) override;
 
 			MAP_DEFINITION_START(CHeightGridMap2D,MAPS_IMPEXP)
-				double min_x,max_x,min_y,max_y,resolution;	//!< See CHeightGridMap2D::CHeightGridMap2D
-				mrpt::maps::CHeightGridMap2D::TMapRepresentation	mapType;	//!< The kind of map representation (see CHeightGridMap2D::CHeightGridMap2D)
+				/** See CHeightGridMap2D::CHeightGridMap2D */
+				double min_x,max_x,min_y,max_y,resolution;	
+				/** The kind of map representation (see CHeightGridMap2D::CHeightGridMap2D) */
+				mrpt::maps::CHeightGridMap2D::TMapRepresentation	mapType;	
 				mrpt::maps::CHeightGridMap2D::TInsertionOptions	insertionOpts;
 			MAP_DEFINITION_END(CHeightGridMap2D,MAPS_IMPEXP)
 		};

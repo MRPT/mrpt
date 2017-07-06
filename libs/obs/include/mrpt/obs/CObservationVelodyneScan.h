@@ -74,8 +74,10 @@ namespace obs
 		static const float DISTANCE_RESOLUTION;  /**< meters */
 		static const float DISTANCE_MAX_UNITS;
 
-		static const uint16_t UPPER_BANK = 0xeeff;  //!< Blocks 0-31
-		static const uint16_t LOWER_BANK = 0xddff;  //!< Blocks 32-63
+		/** Blocks 0-31 */
+		static const uint16_t UPPER_BANK = 0xeeff;  
+		/** Blocks 32-63 */
+		static const uint16_t LOWER_BANK = 0xddff;  
 
 		static const int PACKET_SIZE     = 1206;
 		static const int POS_PACKET_SIZE = 512;
@@ -110,9 +112,12 @@ namespace obs
 		struct OBS_IMPEXP TVelodyneRawPacket
 		{
 			raw_block_t blocks[BLOCKS_PER_PACKET];
-			uint32_t gps_timestamp; //!< us from top of hour
-			uint8_t  laser_return_mode;  //!< 0x37: strongest, 0x38: last, 0x39: dual return
-			uint8_t  velodyne_model_ID;  //!< 0x21: HDL-32E, 0x22: VLP-16
+			/** us from top of hour */
+			uint32_t gps_timestamp; 
+			/** 0x37: strongest, 0x38: last, 0x39: dual return */
+			uint8_t  laser_return_mode;  
+			/** 0x21: HDL-32E, 0x22: VLP-16 */
+			uint8_t  velodyne_model_ID;  
 		};
 
 		/** Payload of one POSITION packet */
@@ -121,16 +126,23 @@ namespace obs
 			char     unused1[198];
 			uint32_t gps_timestamp;
 			uint32_t unused2;
-			char  NMEA_GPRMC[72+234]; //!< the full $GPRMC message, as received by Velodyne, terminated with "\r\n\0"
+			/** the full $GPRMC message, as received by Velodyne, terminated with "\r\n\0" */
+			char  NMEA_GPRMC[72+234]; 
 		};
 #pragma pack(pop)
 
-		double                       minRange,maxRange; //!< The maximum range allowed by the device, in meters (e.g. 100m). Stored here by the driver while capturing based on the sensor model.
-		mrpt::poses::CPose3D         sensorPose; //!< The 6D pose of the sensor on the robot/vehicle frame of reference
-		std::vector<TVelodyneRawPacket> scan_packets;  //!< The main content of this object: raw data packet from the LIDAR. \sa point_cloud
-		mrpt::obs::VelodyneCalibration  calibration;   //!< The calibration data for the LIDAR device. See mrpt::hwdrivers::CVelodyneScanner and mrpt::obs::VelodyneCalibration for details.
-		mrpt::system::TTimeStamp     originalReceivedTimestamp; //!< The local computer-based timestamp based on the reception of the message in the computer. \sa has_satellite_timestamp, CObservation::timestamp in the base class, which should contain the accurate satellite-based UTC timestamp. 
-		bool                         has_satellite_timestamp;   //!< If true, CObservation::timestamp has been generated from accurate satellite clock. Otherwise, no GPS data is available and timestamps are based on the local computer clock.
+		/** The maximum range allowed by the device, in meters (e.g. 100m). Stored here by the driver while capturing based on the sensor model. */
+		double                       minRange,maxRange; 
+		/** The 6D pose of the sensor on the robot/vehicle frame of reference */
+		mrpt::poses::CPose3D         sensorPose; 
+		/** The main content of this object: raw data packet from the LIDAR. \sa point_cloud */
+		std::vector<TVelodyneRawPacket> scan_packets;  
+		/** The calibration data for the LIDAR device. See mrpt::hwdrivers::CVelodyneScanner and mrpt::obs::VelodyneCalibration for details. */
+		mrpt::obs::VelodyneCalibration  calibration;   
+		/** The local computer-based timestamp based on the reception of the message in the computer. \sa has_satellite_timestamp, CObservation::timestamp in the base class, which should contain the accurate satellite-based UTC timestamp.  */
+		mrpt::system::TTimeStamp     originalReceivedTimestamp; 
+		/** If true, CObservation::timestamp has been generated from accurate satellite clock. Otherwise, no GPS data is available and timestamps are based on the local computer clock. */
+		bool                         has_satellite_timestamp;   
 
 		mrpt::system::TTimeStamp getOriginalReceivedTimeStamp() const override; // See base class docs
 
@@ -138,15 +150,20 @@ namespace obs
 		struct OBS_IMPEXP TPointCloud
 		{
 			std::vector<float>   x,y,z;
-			std::vector<uint8_t> intensity; //!< Color [0,255]
-			std::vector<mrpt::system::TTimeStamp> timestamp; //!< Timestamp for each point (if `generatePerPointTimestamp`=true in `TGeneratePointCloudParameters`), or empty vector if not populated (default).
-			std::vector<float>   azimuth; //!< Original azimuth of each point (if `generatePerPointAzimuth`=true, empty otherwise )
+			/** Color [0,255] */
+			std::vector<uint8_t> intensity; 
+			/** Timestamp for each point (if `generatePerPointTimestamp`=true in `TGeneratePointCloudParameters`), or empty vector if not populated (default). */
+			std::vector<mrpt::system::TTimeStamp> timestamp; 
+			/** Original azimuth of each point (if `generatePerPointAzimuth`=true, empty otherwise ) */
+			std::vector<float>   azimuth; 
 
 			inline size_t size() const {
 				return x.size();
 			}
-			void clear(); //!< Sets all vectors to zero length
-			void clear_deep(); //!< Like clear(), but also enforcing freeing memory
+			/** Sets all vectors to zero length */
+			void clear(); 
+			/** Like clear(), but also enforcing freeing memory */
+			void clear_deep(); 
 		};
 
 		/** Optionally, raw data can be converted into a 3D point cloud (local coordinates wrt the sensor, not the vehicle) 
@@ -159,21 +176,31 @@ namespace obs
 		  * @{ */
 		struct OBS_IMPEXP TGeneratePointCloudParameters
 		{
-			double minAzimuth_deg; //!< Minimum azimuth, in degrees (Default=0). Points will be generated only the the area of interest [minAzimuth, maxAzimuth]
-			double maxAzimuth_deg; //!< Minimum azimuth, in degrees (Default=360). Points will be generated only the the area of interest [minAzimuth, maxAzimuth]
-			float  minDistance,maxDistance; //!< Minimum (default=1.0f) and maximum (default: Infinity) distances/ranges for a point to be considered. Points must pass this (application specific) condition and also the minRange/maxRange values in CObservationVelodyneScan (sensor-specific).
+			/** Minimum azimuth, in degrees (Default=0). Points will be generated only the the area of interest [minAzimuth, maxAzimuth] */
+			double minAzimuth_deg; 
+			/** Minimum azimuth, in degrees (Default=360). Points will be generated only the the area of interest [minAzimuth, maxAzimuth] */
+			double maxAzimuth_deg; 
+			/** Minimum (default=1.0f) and maximum (default: Infinity) distances/ranges for a point to be considered. Points must pass this (application specific) condition and also the minRange/maxRange values in CObservationVelodyneScan (sensor-specific). */
+			float  minDistance,maxDistance; 
 			/** The limits of the 3D box (default=infinity) in sensor (not vehicle) local coordinates for the ROI filter \sa filterByROI */
 			float  ROI_x_min, ROI_x_max, ROI_y_min, ROI_y_max, ROI_z_min, ROI_z_max;
 			/** The limits of the 3D box (default=0) in sensor (not vehicle) local coordinates for the nROI filter \sa filterBynROI */
 			float  nROI_x_min, nROI_x_max, nROI_y_min, nROI_y_max, nROI_z_min, nROI_z_max;
-			float  isolatedPointsFilterDistance; //!< (Default:2.0 meters) Minimum distance between a point and its two neighbors to be considered an invalid point.
+			/** (Default:2.0 meters) Minimum distance between a point and its two neighbors to be considered an invalid point. */
+			float  isolatedPointsFilterDistance; 
 
-			bool   filterByROI; //!< Enable ROI filter (Default:false): add points inside a given 3D box
-			bool   filterBynROI; //!< Enable nROI filter (Default:false): do NOT add points inside a given 3D box
-			bool   filterOutIsolatedPoints; //!< (Default:false) Simple filter to remove spurious returns (e.g. Sun reflected on large water extensions)
-			bool   dualKeepStrongest, dualKeepLast; //!< (Default:true) In VLP16 dual mode, keep both or just one of the returns.
-			bool   generatePerPointTimestamp;       //!< (Default:false) If `true`, populate the vector timestamp
-			bool   generatePerPointAzimuth;         //!< (Default:false) If `true`, populate the vector azimuth
+			/** Enable ROI filter (Default:false): add points inside a given 3D box */
+			bool   filterByROI; 
+			/** Enable nROI filter (Default:false): do NOT add points inside a given 3D box */
+			bool   filterBynROI; 
+			/** (Default:false) Simple filter to remove spurious returns (e.g. Sun reflected on large water extensions) */
+			bool   filterOutIsolatedPoints; 
+			/** (Default:true) In VLP16 dual mode, keep both or just one of the returns. */
+			bool   dualKeepStrongest, dualKeepLast; 
+			/** (Default:false) If `true`, populate the vector timestamp */
+			bool   generatePerPointTimestamp;       
+			/** (Default:false) If `true`, populate the vector azimuth */
+			bool   generatePerPointAzimuth;         
 
 			TGeneratePointCloudParameters();
 		};
@@ -192,8 +219,10 @@ namespace obs
 		/** Results for generatePointCloudAlongSE3Trajectory() */
 		struct OBS_IMPEXP TGeneratePointCloudSE3Results
 		{
-			size_t num_points;                     //!< Number of points in the observation
-			size_t num_correctly_inserted_points;  //!< Number of points for which a valid interpolated SE(3) pose could be determined
+			/** Number of points in the observation */
+			size_t num_points;                     
+			/** Number of points for which a valid interpolated SE(3) pose could be determined */
+			size_t num_correctly_inserted_points;  
 			TGeneratePointCloudSE3Results();
 		};
 

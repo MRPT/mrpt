@@ -29,7 +29,8 @@ namespace mrpt
 		{
 			DEFINE_VIRTUAL_MRPT_OBJECT(CMultiObjectiveMotionOptimizerBase)
 		public:
-			static CMultiObjectiveMotionOptimizerBase::Ptr Factory(const std::string &className) noexcept; //!< Class factory from C++ class name
+			/** Class factory from C++ class name */
+			static CMultiObjectiveMotionOptimizerBase::Ptr Factory(const std::string &className) noexcept; 
 
 			struct NAV_IMPEXP TResultInfo
 			{
@@ -37,8 +38,10 @@ namespace mrpt
 				  * A value of 0 in all scores, or an empty map, means unsuitable candidate. */
 				std::vector<std::map<std::string, double> > score_values;
 
-				std::vector<double>      final_evaluation;  //!< The final evaluation score for each candidate
-				std::vector<std::string> log_entries;       //!< Optionally, debug logging info will be stored here by the implementor classes
+				/** The final evaluation score for each candidate */
+				std::vector<double>      final_evaluation;  
+				/** Optionally, debug logging info will be stored here by the implementor classes */
+				std::vector<std::string> log_entries;       
 			};
 
 			/** The main entry point for the class: returns the 0-based index of the best of the N motion candidates in `movs`. 
@@ -72,7 +75,8 @@ namespace mrpt
 				virtual void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg, const std::string &section) const override; // See base docs
 			};
 
-			virtual void clear();  //!< Resets the object state; use if the parameters change, so they are re-read and applied.
+			/** Resets the object state; use if the parameters change, so they are re-read and applied. */
+			virtual void clear();  
 
 		protected:
 			CMultiObjectiveMotionOptimizerBase(TParamsBase & params);
@@ -83,7 +87,8 @@ namespace mrpt
 
 			TParamsBase & m_params_base;
 
-			std::map<std::string, mrpt::math::CRuntimeCompiledExpression> m_score_exprs;  //!< score names -> score compiled expressions
+			/** score names -> score compiled expressions */
+			std::map<std::string, mrpt::math::CRuntimeCompiledExpression> m_score_exprs;  
 			std::vector<mrpt::math::CRuntimeCompiledExpression>  m_movement_assert_exprs;
 			std::map<std::string, double>     m_expr_vars;
 

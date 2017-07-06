@@ -131,12 +131,17 @@ namespace mrpt
 
 		struct NAV_IMPEXP TAbstractPTGNavigatorParams : public mrpt::utils::CLoadableOptions
 		{
-			std::string holonomic_method; //!< C++ class name of the holonomic navigation method to run in the transformed TP-Space
-			std::string motion_decider_method; //!< C++ class name of the motion chooser
+			/** C++ class name of the holonomic navigation method to run in the transformed TP-Space */
+			std::string holonomic_method; 
+			/** C++ class name of the motion chooser */
+			std::string motion_decider_method; 
 
-			std::string ptg_cache_files_directory; //!< (Default: ".")
-			double ref_distance;          //!< Maximum distance up to obstacles will be considered (D_{max} in papers).
-			double speedfilter_tau;     //!< Time constant (in seconds) for the low-pass filter applied to kinematic velocity commands (default=0: no filtering)
+			/** (Default: ".") */
+			std::string ptg_cache_files_directory; 
+			/** Maximum distance up to obstacles will be considered (D_{max} in papers). */
+			double ref_distance;          
+			/** Time constant (in seconds) for the low-pass filter applied to kinematic velocity commands (default=0: no filtering) */
+			double speedfilter_tau;     
 
 			/** In normalized distances, the start and end of a ramp function that scales the velocity
 			*  output from the holonomic navigator:
@@ -156,13 +161,18 @@ namespace mrpt
 			*/
 			double secure_distance_start, secure_distance_end;
 			bool   use_delays_model;
-			double max_distance_predicted_actual_path; //!< Max distance [meters] to discard current PTG and issue a new vel cmd (default= 0.05)
-			double min_normalized_free_space_for_ptg_continuation; //!< Min normalized dist [0,1] after current pose in a PTG continuation to allow it.
+			/** Max distance [meters] to discard current PTG and issue a new vel cmd (default= 0.05) */
+			double max_distance_predicted_actual_path; 
+			/** Min normalized dist [0,1] after current pose in a PTG continuation to allow it. */
+			double min_normalized_free_space_for_ptg_continuation; 
 
-			mrpt::kinematics::CVehicleVelCmd::TVelCmdParams robot_absolute_speed_limits; //!< Params related to speed limits.
+			/** Params related to speed limits. */
+			mrpt::kinematics::CVehicleVelCmd::TVelCmdParams robot_absolute_speed_limits; 
 			bool  enable_obstacle_filtering;
-			bool  evaluate_clearance; //!< Default: false
-			double max_dist_for_timebased_path_prediction; //!< Max dist [meters] to use time-based path prediction for NOP evaluation.
+			/** Default: false */
+			bool  evaluate_clearance; 
+			/** Max dist [meters] to use time-based path prediction for NOP evaluation. */
+			double max_dist_for_timebased_path_prediction; 
 
 			virtual void loadFromConfigFile(const mrpt::utils::CConfigFileBase &c, const std::string &s) override;
 			virtual void saveToConfigFile(mrpt::utils::CConfigFileBase &c, const std::string &s) const override;
@@ -186,9 +196,12 @@ namespace mrpt
 		/** Gives access to a const-ref to the internal time logger \sa enableTimeLog */
 		const mrpt::utils::CTimeLogger & getTimeLogger() const { return m_timelogger; }
 
-		virtual size_t getPTG_count() const = 0;  //!< Returns the number of different PTGs that have been setup
-		virtual CParameterizedTrajectoryGenerator* getPTG(size_t i) = 0; //!< Gets the i'th PTG
-		virtual const CParameterizedTrajectoryGenerator* getPTG(size_t i) const = 0; //!< Gets the i'th PTG
+		/** Returns the number of different PTGs that have been setup */
+		virtual size_t getPTG_count() const = 0;  
+		/** Gets the i'th PTG */
+		virtual CParameterizedTrajectoryGenerator* getPTG(size_t i) = 0; 
+		/** Gets the i'th PTG */
+		virtual const CParameterizedTrajectoryGenerator* getPTG(size_t i) const = 0; 
 
 		/** Get the current, global (honored for all PTGs) robot speed limits */
 		const mrpt::kinematics::CVehicleVelCmd::TVelCmdParams & getCurrentRobotSpeedLimits() const {
@@ -200,27 +213,38 @@ namespace mrpt
 			return params_abstract_ptg_navigator.robot_absolute_speed_limits;
 		}
 
-		void setTargetApproachSlowDownDistance(const double dist);  //!< Changes this parameter in all inner holonomic navigator instances [m].
-		double getTargetApproachSlowDownDistance() const;  //!< Returns this parameter for the first inner holonomic navigator instances  [m] (should be the same in all of them?)
+		/** Changes this parameter in all inner holonomic navigator instances [m]. */
+		void setTargetApproachSlowDownDistance(const double dist);  
+		/** Returns this parameter for the first inner holonomic navigator instances  [m] (should be the same in all of them?) */
+		double getTargetApproachSlowDownDistance() const;  
 
 	protected:
 		/** The main method for the navigator */
 		virtual void  performNavigationStep() override;
 
-		std::vector<CAbstractHolonomicReactiveMethod::Ptr>  m_holonomicMethod;   //!< The holonomic navigation algorithm (one object per PTG, so internal states are maintained)
+		/** The holonomic navigation algorithm (one object per PTG, so internal states are maintained) */
+		std::vector<CAbstractHolonomicReactiveMethod::Ptr>  m_holonomicMethod;   
 		std::unique_ptr<mrpt::utils::CStream>  m_logFile;
-		mrpt::utils::CStream  *m_prev_logfile;         //!< The current log file stream, or nullptr if not being used
-		bool                   m_enableKeepLogRecords; //!< See enableKeepLogRecords
-		CLogFileRecord lastLogRecord;  //!< The last log
-		mrpt::kinematics::CVehicleVelCmd::Ptr m_last_vel_cmd ; //!< Last velocity commands
+		/** The current log file stream, or nullptr if not being used */
+		mrpt::utils::CStream  *m_prev_logfile;         
+		/** See enableKeepLogRecords */
+		bool                   m_enableKeepLogRecords; 
+		/** The last log */
+		CLogFileRecord lastLogRecord;  
+		/** Last velocity commands */
+		mrpt::kinematics::CVehicleVelCmd::Ptr m_last_vel_cmd ; 
 
-		std::recursive_mutex  m_critZoneLastLog; //!< Critical zones
+		/** Critical zones */
+		std::recursive_mutex  m_critZoneLastLog; 
 
-		bool    m_enableConsoleOutput;  //!< Enables / disables the console debug output.
-		bool    m_init_done;            //!< Whether \a loadConfigFile() has been called or not.
+		/** Enables / disables the console debug output. */
+		bool    m_enableConsoleOutput;  
+		/** Whether \a loadConfigFile() has been called or not. */
+		bool    m_init_done;            
 		mrpt::utils::CTicTac	timerForExecutionPeriod;
 
-		mrpt::utils::CTimeLogger m_timelogger; //!< A complete time logger \sa enableTimeLog()
+		/** A complete time logger \sa enableTimeLog() */
+		mrpt::utils::CTimeLogger m_timelogger; 
 		bool  m_PTGsMustBeReInitialized;
 
 		/** @name Variables for CReactiveNavigationSystem::performNavigationStep
@@ -228,7 +252,8 @@ namespace mrpt
 		mrpt::utils::CTicTac totalExecutionTime, executionTime, tictac;
 		mrpt::math::LowPassFilter_IIR1  meanExecutionTime;
 		mrpt::math::LowPassFilter_IIR1  meanTotalExecutionTime;
-		mrpt::math::LowPassFilter_IIR1  meanExecutionPeriod;    //!< Runtime estimation of execution period of the method.
+		/** Runtime estimation of execution period of the method. */
+		mrpt::math::LowPassFilter_IIR1  meanExecutionPeriod;    
 		mrpt::math::LowPassFilter_IIR1  tim_changeSpeed_avr, timoff_obstacles_avr, timoff_curPoseAndSpeed_avr, timoff_sendVelCmd_avr;
 		/** @} */
 
@@ -252,10 +277,14 @@ namespace mrpt
 
 		struct PTGTarget
 		{
-			bool                 valid_TP;   //!< For each PTG, whether target falls into the PTG domain.
-			mrpt::math::TPoint2D TP_Target;  //!< The Target, in TP-Space (x,y)
-			double               target_alpha, target_dist;  //!< TP-Target
-			int                  target_k; //!< The discrete version of target_alpha
+			/** For each PTG, whether target falls into the PTG domain. */
+			bool                 valid_TP;   
+			/** The Target, in TP-Space (x,y) */
+			mrpt::math::TPoint2D TP_Target;  
+			/** TP-Target */
+			double               target_alpha, target_dist;  
+			/** The discrete version of target_alpha */
+			int                  target_k; 
 
 			PTGTarget() : valid_TP(false) {}
 		};
@@ -277,13 +306,16 @@ namespace mrpt
 		virtual double generate_vel_cmd(const TCandidateMovementPTG &in_movement, mrpt::kinematics::CVehicleVelCmd::Ptr &new_vel_cmd );
 		void STEP8_GenerateLogRecord(CLogFileRecord &newLogRec, const std::vector<mrpt::math::TPose2D>& relTargets, int nSelectedPTG, const mrpt::kinematics::CVehicleVelCmd::Ptr &new_vel_cmd, int nPTGs, const bool best_is_NOP_cmdvel, const math::TPose2D &rel_cur_pose_wrt_last_vel_cmd_NOP, const math::TPose2D &rel_pose_PTG_origin_wrt_sense_NOP, const double executionTimeValue, const double tim_changeSpeed, const mrpt::system::TTimeStamp &tim_start_iteration);
 
-		void preDestructor(); //!< To be called during children destructors to assure thread-safe destruction, and free of shared objects.
+		/** To be called during children destructors to assure thread-safe destruction, and free of shared objects. */
+		void preDestructor(); 
 		virtual void onStartNewNavigation() override;
 
-		bool m_closing_navigator; //!< Signal that the destructor has been called, so no more calls are accepted from other threads
+		/** Signal that the destructor has been called, so no more calls are accepted from other threads */
+		bool m_closing_navigator; 
 
 		mrpt::system::TTimeStamp m_WS_Obstacles_timestamp;
-		mrpt::maps::CPointCloudFilterBase::Ptr m_WS_filter;   //!< Default: none
+		/** Default: none */
+		mrpt::maps::CPointCloudFilterBase::Ptr m_WS_filter;   
 
 		mrpt::nav::CMultiObjectiveMotionOptimizerBase::Ptr m_multiobjopt;
 
@@ -291,11 +323,14 @@ namespace mrpt
 		struct TInfoPerPTG
 		{
 			std::vector<PTGTarget> targets;
-			std::vector<double>  TP_Obstacles; //!< One distance per discretized alpha value, describing the "polar plot" of TP obstacles.
-			ClearanceDiagram     clearance;    //!< Clearance for each path
+			/** One distance per discretized alpha value, describing the "polar plot" of TP obstacles. */
+			std::vector<double>  TP_Obstacles; 
+			/** Clearance for each path */
+			ClearanceDiagram     clearance;    
 		};
 
-		std::vector<TInfoPerPTG> m_infoPerPTG; //!< Temporary buffers for working with each PTG during a navigationStep()
+		/** Temporary buffers for working with each PTG during a navigationStep() */
+		std::vector<TInfoPerPTG> m_infoPerPTG; 
 		mrpt::system::TTimeStamp m_infoPerPTG_timestamp;
 
 		void build_movement_candidate(CParameterizedTrajectoryGenerator * ptg,
@@ -314,13 +349,19 @@ namespace mrpt
 
 		struct NAV_IMPEXP TSentVelCmd
 		{
-			int ptg_index; //!< 0-based index of used PTG
-			int ptg_alpha_index; //!< Path index for selected PTG
-			mrpt::system::TTimeStamp tim_send_cmd_vel; //!< Timestamp of when the cmd was sent
-			TRobotPoseVel  poseVel;  //!< Robot pose & velocities and timestamp of when it was queried
-			double colfreedist_move_k; //!< TP-Obstacles in the move direction at the instant of picking this movement
+			/** 0-based index of used PTG */
+			int ptg_index; 
+			/** Path index for selected PTG */
+			int ptg_alpha_index; 
+			/** Timestamp of when the cmd was sent */
+			mrpt::system::TTimeStamp tim_send_cmd_vel; 
+			/** Robot pose & velocities and timestamp of when it was queried */
+			TRobotPoseVel  poseVel;  
+			/** TP-Obstacles in the move direction at the instant of picking this movement */
+			double colfreedist_move_k; 
 			bool   was_slowdown;
-			double speed_scale;        //!< [0,1] scale of the raw cmd_vel as generated by the PTG
+			/** [0,1] scale of the raw cmd_vel as generated by the PTG */
+			double speed_scale;        
 			CParameterizedTrajectoryGenerator::TNavDynamicState ptg_dynState;
 
 			bool isValid() const;
@@ -331,12 +372,15 @@ namespace mrpt
 		TSentVelCmd m_lastSentVelCmd;
 
 	private:
-		void deleteHolonomicObjects(); //!< Delete m_holonomicMethod
+		/** Delete m_holonomicMethod */
+		void deleteHolonomicObjects(); 
 
-		std::string m_navlogfiles_dir; //!< Default: "./reactivenav.logs"
+		/** Default: "./reactivenav.logs" */
+		std::string m_navlogfiles_dir; 
 
 		double m_expr_var_k, m_expr_var_k_target, m_expr_var_num_paths;
-		std::unique_ptr<TNavigationParams> m_copy_prev_navParams; //!< A copy of last-iteration navparams, used to detect changes
+		/** A copy of last-iteration navparams, used to detect changes */
+		std::unique_ptr<TNavigationParams> m_copy_prev_navParams; 
 
 	}; // end of CAbstractPTGBasedReactive
   }

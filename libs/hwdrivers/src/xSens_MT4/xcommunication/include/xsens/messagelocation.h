@@ -13,8 +13,10 @@
 */
 class MessageLocation {
 public:
-	int m_startPos;	//!< The offset of the first byte of the message or -1 if no message
-	int m_size;		//!< The size of the message, when less than 0 it indicates the expected message size
+	/** The offset of the first byte of the message or -1 if no message */
+	int m_startPos;	
+	/** The size of the message, when less than 0 it indicates the expected message size */
+	int m_size;		
 
 	/*! \brief Constructor, initializes by default to an invalid message
 		\param start The offset of the first byte of the message

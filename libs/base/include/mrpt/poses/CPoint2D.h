@@ -38,7 +38,8 @@ namespace poses
 		DEFINE_SERIALIZABLE( CPoint2D )
 
 	public:
-		mrpt::math::CArrayDouble<2>   m_coords; //!< [x,y]
+		/** [x,y] */
+		mrpt::math::CArrayDouble<2>   m_coords; 
 
 	public:
 		 /** Constructor for initializing point coordinates. */
@@ -70,7 +71,8 @@ namespace poses
 
 		 /** @name STL-like methods and typedefs
 		   @{   */
-		typedef double         value_type;		//!< The type of the elements
+		/** The type of the elements */
+		typedef double         value_type;		
 		typedef double&        reference;
 		typedef const double&  const_reference;
 		typedef std::size_t    size_type;

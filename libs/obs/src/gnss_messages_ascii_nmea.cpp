@@ -170,7 +170,8 @@ Message_NMEA_RMC::content_t::content_t() :
 	positioning_mode('N')
 { }
 
-//!< Build an MRPT timestamp with the year/month/day of this observation.
+/** Build an MRPT timestamp with the year/month/day of this observation. */
+
 mrpt::system::TTimeStamp Message_NMEA_RMC::getDateAsTimestamp() const
 {
 	using namespace mrpt::system;
@@ -278,7 +279,8 @@ mrpt::system::TTimeStamp Message_NMEA_ZDA::getDateTimeAsTimestamp() const
 	return fields.UTCTime.getAsTimestamp( this->getDateAsTimestamp() );
 }
 
-//!< Build an MRPT timestamp with the year/month/day of this observation.
+/** Build an MRPT timestamp with the year/month/day of this observation. */
+
 mrpt::system::TTimeStamp Message_NMEA_ZDA::getDateAsTimestamp() const
 {
 	using namespace mrpt::system;

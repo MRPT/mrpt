@@ -82,33 +82,48 @@ namespace mrpt
 				ThreadLocks(const ThreadLocks&) {}
 				mutable std::mutex m_lock;
 			} threadLocks;
-			THypothesisID						m_ID;					//!< The unique ID of the hypothesis (Used for accessing mrpt::slam::CHierarchicalMHMap).
-			mrpt::utils::safe_ptr<CHMTSLAM>					m_parent;				//!< For quick access to our parent object.
-			TPoseID								m_currentRobotPose;		//!< The current robot pose (its global unique ID) for this hypothesis.
+			/** The unique ID of the hypothesis (Used for accessing mrpt::slam::CHierarchicalMHMap). */
+			THypothesisID						m_ID;					
+			/** For quick access to our parent object. */
+			mrpt::utils::safe_ptr<CHMTSLAM>					m_parent;				
+			/** The current robot pose (its global unique ID) for this hypothesis. */
+			TPoseID								m_currentRobotPose;		
 			//TNodeIDList							m_neighbors;			//!< The list of all areas sourronding the current one (this includes the current area itself).
-			TNodeIDSet							m_neighbors;			//!< The list of all areas sourronding the current one (this includes the current area itself).
-			std::map<TPoseID,CHMHMapNode::TNodeID> m_nodeIDmemberships; //!< The hybrid map node membership for each robot pose.
-			std::map<TPoseID,mrpt::obs::CSensoryFrame> 	m_SFs; 					//!< The SF gathered at each robot pose.
-			TPoseIDList							m_posesPendingAddPartitioner; //!< The list of poseIDs waiting to be added to the graph partitioner, what happens in the LSLAM thread main loop.
-			TNodeIDList							m_areasPendingTBI;		//!< The list of area IDs waiting to be processed by the TBI (topological bayesian inference) engines to search for potential loop-closures. Set in CHMTSLAM::LSLAM_process_message_from_AA, read in
+			/** The list of all areas sourronding the current one (this includes the current area itself). */
+			TNodeIDSet							m_neighbors;			
+			/** The hybrid map node membership for each robot pose. */
+			std::map<TPoseID,CHMHMapNode::TNodeID> m_nodeIDmemberships; 
+			/** The SF gathered at each robot pose. */
+			std::map<TPoseID,mrpt::obs::CSensoryFrame> 	m_SFs; 					
+			/** The list of poseIDs waiting to be added to the graph partitioner, what happens in the LSLAM thread main loop. */
+			TPoseIDList							m_posesPendingAddPartitioner; 
+			/** The list of area IDs waiting to be processed by the TBI (topological bayesian inference) engines to search for potential loop-closures. Set in CHMTSLAM::LSLAM_process_message_from_AA, read in */
+			TNodeIDList							m_areasPendingTBI;		
 
-			double								m_log_w;				//!< Log-weight of this hypothesis.
-			std::vector<std::map<TPoseID,double> >	m_log_w_metric_history;		//!< The historic log-weights of the metric observations inserted in this LMH, for each particle.
+			/** Log-weight of this hypothesis. */
+			double								m_log_w;				
+			/** The historic log-weights of the metric observations inserted in this LMH, for each particle. */
+			std::vector<std::map<TPoseID,double> >	m_log_w_metric_history;		
 			//std::map<TPoseID,double>	m_log_w_topol_history;		//!< The historic log-weights of the topological observations inserted in this LMH.
 
-			mrpt::obs::CActionRobotMovement2D				m_accumRobotMovement;	//!< Used in CLSLAM_RBPF_2DLASER
-			bool								m_accumRobotMovementIsValid;	//!< Used in CLSLAM_RBPF_2DLASER
+			/** Used in CLSLAM_RBPF_2DLASER */
+			mrpt::obs::CActionRobotMovement2D				m_accumRobotMovement;	
+			/** Used in CLSLAM_RBPF_2DLASER */
+			bool								m_accumRobotMovementIsValid;	
 
 			/** Used by AA thread */
 			struct TRobotPosesPartitioning
 			{
 				TRobotPosesPartitioning(){}
 				TRobotPosesPartitioning(const TRobotPosesPartitioning &o):partitioner(o.partitioner),idx2pose(o.idx2pose){}
-				mutable std::mutex		lock;  //!< CS to access the entire struct.
+				/** CS to access the entire struct. */
+				mutable std::mutex		lock;  
 				mrpt::slam::CIncrementalMapPartitioner			partitioner;
-				std::map<uint32_t,TPoseID> 		idx2pose;   //!< For the poses in "partitioner".
+				/** For the poses in "partitioner". */
+				std::map<uint32_t,TPoseID> 		idx2pose;   
 
-				unsigned int pose2idx(const TPoseID &id) const;  //!< Uses idx2pose to perform inverse searches.
+				/** Uses idx2pose to perform inverse searches. */
+				unsigned int pose2idx(const TPoseID &id) const;  
 
 			} m_robotPosesGraph;
 

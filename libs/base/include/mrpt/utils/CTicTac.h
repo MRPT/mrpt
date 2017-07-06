@@ -25,11 +25,14 @@ namespace utils
 	{
 
 	public:
-		CTicTac(); //!< Default constructor. Implicitly calls Tic()
+		/** Default constructor. Implicitly calls Tic() */
+		CTicTac(); 
 		CTicTac(const CTicTac &) = delete;
 		CTicTac& operator =(const CTicTac &) = delete;
-		void   Tic();  //!< Starts the stopwatch. \sa Tac
-		double Tac();  //!< Stops the stopwatch.  \return Returns the ellapsed time in seconds.  \sa Tic
+		/** Starts the stopwatch. \sa Tac */
+		void   Tic();  
+		/** Stops the stopwatch.  \return Returns the ellapsed time in seconds.  \sa Tic */
+		double Tac();  
 	private:
 		unsigned char largeInts[64];
 	}; // End of class def.

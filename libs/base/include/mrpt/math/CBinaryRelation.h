@@ -32,20 +32,32 @@ namespace mrpt	{	namespace math	{
 	private:
 		//TODO: VIRTUALIZE INSERTROWSANDCOLS!!! AND REIMPLEMENT IN CMATRIXTEMPLATEOBJECTS.
 
-		typedef typename detail::MatrixWrapper<U,UIsObject>::MatrixType MatrixType;	//!<Matrix type used to store the actual relation.
+		/**Matrix type used to store the actual relation. */
+		typedef typename detail::MatrixWrapper<U,UIsObject>::MatrixType MatrixType;	
 	public:
-		typedef U (*SimpleFunctionByReturnValue)(T,T);	//!< Simple function type, used to initialize chunks of the matrix.
-		typedef U (*FunctionByReturnValue)(const T &,const T &);	//!<Function type which obtains the relation value by a return value.
-		typedef void (*FunctionByReferencePass)(const T &,const T &,U &);	//!<Function type which obtains the relation value by reference pass.
-		typedef typename std::set<T>::const_iterator const_iterator;	//!<Constant iterator through the set elements.
-		typedef typename std::set<T>::const_reverse_iterator const_reverse_iterator;	//!<Constant reverse iterator through the set elements.
-		typedef CMatrixRowAccessor<U> AccessorForFirstElement;	//!<Accessor type to every value related to any element A, i.e., f(A,x).
-		typedef CMatrixColumnAccessor<U> AccessorForSecondElement;	//!<Accessor type to every value related to any element B, i.e., f(x,B).
-		typedef CConstMatrixRowAccessor<U> ConstAccessorForFirstElement;	//!<Const accessor type to every value related to any element A, i.e., f(A,x).
-		typedef CConstMatrixColumnAccessor<U> ConstAccessorForSecondElement;	//!<Const accessor type to every value related to any element B, i.e., f(x,B).
+		/** Simple function type, used to initialize chunks of the matrix. */
+		typedef U (*SimpleFunctionByReturnValue)(T,T);	
+		/**Function type which obtains the relation value by a return value. */
+		typedef U (*FunctionByReturnValue)(const T &,const T &);	
+		/**Function type which obtains the relation value by reference pass. */
+		typedef void (*FunctionByReferencePass)(const T &,const T &,U &);	
+		/**Constant iterator through the set elements. */
+		typedef typename std::set<T>::const_iterator const_iterator;	
+		/**Constant reverse iterator through the set elements. */
+		typedef typename std::set<T>::const_reverse_iterator const_reverse_iterator;	
+		/**Accessor type to every value related to any element A, i.e., f(A,x). */
+		typedef CMatrixRowAccessor<U> AccessorForFirstElement;	
+		/**Accessor type to every value related to any element B, i.e., f(x,B). */
+		typedef CMatrixColumnAccessor<U> AccessorForSecondElement;	
+		/**Const accessor type to every value related to any element A, i.e., f(A,x). */
+		typedef CConstMatrixRowAccessor<U> ConstAccessorForFirstElement;	
+		/**Const accessor type to every value related to any element B, i.e., f(x,B). */
+		typedef CConstMatrixColumnAccessor<U> ConstAccessorForSecondElement;	
 	private:
-		std::set<T> elements;	//!<Actual set of elements.
-		MatrixType relation;	//!<Matrix storing the relation.
+		/**Actual set of elements. */
+		std::set<T> elements;	
+		/**Matrix storing the relation. */
+		MatrixType relation;	
 
 		/**
 		  * Template used to make the function interface independent from the function type.

@@ -33,16 +33,21 @@ namespace mrpt
 			DEFINE_SERIALIZABLE( CObservationOdometry )
 
 		 public:
-			CObservationOdometry(); //!< Default ctor
+			/** Default ctor */
+			CObservationOdometry(); 
 
-			mrpt::poses::CPose2D odometry; //!< The absolute odometry measurement (IT IS NOT INCREMENTAL)
+			/** The absolute odometry measurement (IT IS NOT INCREMENTAL) */
+			mrpt::poses::CPose2D odometry; 
 
-			bool  hasEncodersInfo; //!< "true" means that "encoderLeftTicks" and "encoderRightTicks" contain valid values.
+			/** "true" means that "encoderLeftTicks" and "encoderRightTicks" contain valid values. */
+			bool  hasEncodersInfo; 
 			/** For differential-driven robots: The ticks count for each wheel in ABSOLUTE VALUE (IT IS NOT INCREMENTAL) (positive means FORWARD, for both wheels); \sa hasEncodersInfo  */
 			int32_t	 encoderLeftTicks,encoderRightTicks;
 
-			bool                 hasVelocities;  //!< "true" means that `velocityLocal` contains valid values.
-			mrpt::math::TTwist2D velocityLocal; //!< Velocity, in the robot (local) frame of reference (+X=forward).
+			/** "true" means that `velocityLocal` contains valid values. */
+			bool                 hasVelocities;  
+			/** Velocity, in the robot (local) frame of reference (+X=forward). */
+			mrpt::math::TTwist2D velocityLocal; 
 
 			// See base class docs
 			void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const override { out_sensorPose=mrpt::poses::CPose3D(0,0,0); }

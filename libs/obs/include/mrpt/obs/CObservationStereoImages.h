@@ -73,8 +73,10 @@ namespace obs
 		  *  The relation between the actual disparity and pixels and each value in this image is... ???????????  */
 		mrpt::utils::CImage imageDisparity;
 
-		bool   hasImageDisparity; //!< Whether imageDisparity actually contains data (Default upon construction: false)
-		bool   hasImageRight;        //!< Whether imageRight actually contains data  (Default upon construction: true)
+		/** Whether imageDisparity actually contains data (Default upon construction: false) */
+		bool   hasImageDisparity; 
+		/** Whether imageRight actually contains data  (Default upon construction: true) */
+		bool   hasImageRight;        
 
 		/** Parameters for the left/right cameras: individual intrinsic and distortion parameters of the cameras.
 		  * See the <a href="http://www.mrpt.org/Camera_Parameters" >tutorial</a> for a discussion of these parameters.
@@ -82,7 +84,8 @@ namespace obs
 		  */
 		mrpt::utils::TCamera		leftCamera, rightCamera;
 
-		mrpt::poses::CPose3DQuat	cameraPose;		//!< The pose of the LEFT camera, relative to the robot.
+		/** The pose of the LEFT camera, relative to the robot. */
+		mrpt::poses::CPose3DQuat	cameraPose;		
 
 		/** The pose of the right camera, relative to the left one:
 		  *  Note that using the conventional reference coordinates for the left
@@ -110,7 +113,8 @@ namespace obs
 		void setSensorPose( const mrpt::poses::CPose3D &newSensorPose ) override { cameraPose = mrpt::poses::CPose3DQuat(newSensorPose); }
 		void getDescriptionAsText(std::ostream &o) const override;
 
-		void swap( CObservationStereoImages &o); //!< Do an efficient swap of all data members of this object with "o".
+		/** Do an efficient swap of all data members of this object with "o". */
+		void swap( CObservationStereoImages &o); 
 
 	}; // End of class def.
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CObservationStereoImages , CObservation,OBS_IMPEXP )

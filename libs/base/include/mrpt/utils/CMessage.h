@@ -29,8 +29,10 @@ namespace mrpt
 		class BASE_IMPEXP CMessage
 		{
 		public:
-			uint32_t             type;  //!< An identifier of the message type (only the least-sig byte is typically sent)
-			std::vector<uint8_t> content; //!< The contents of the message (memory is automatically handled by the std::vector object)
+			/** An identifier of the message type (only the least-sig byte is typically sent) */
+			uint32_t             type;  
+			/** The contents of the message (memory is automatically handled by the std::vector object) */
+			std::vector<uint8_t> content; 
 
 			/** A method for serializing a MRPT's object into the content.
 			  *  Any modification to data in "content" after this will corrupt the object serialization.

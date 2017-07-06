@@ -258,7 +258,8 @@ namespace mrpt
 			inline double idx2z(int cz) const { return m_z_min + (cz)*m_resolution_z; }
 
 		protected:
-			mutable std::vector<T> m_map; //!< The cells
+			/** The cells */
+			mutable std::vector<T> m_map; 
 			/** Used only from logically const method that really need to modify the object */
 			inline std::vector<T> & m_map_castaway_const() const { return m_map; }
 

@@ -145,8 +145,10 @@ protected:
 			}
 			virtual ~CCollisionGrid() { }
 
-			bool saveToFile( mrpt::utils::CStream* fil, const mrpt::math::CPolygon & computed_robotShape ) const;	//!< Save to file, true = OK
-			bool loadFromFile( mrpt::utils::CStream* fil, const mrpt::math::CPolygon & current_robotShape );	//!< Load from file,  true = OK
+			/** Save to file, true = OK */
+			bool saveToFile( mrpt::utils::CStream* fil, const mrpt::math::CPolygon & computed_robotShape ) const;	
+			/** Load from file,  true = OK */
+			bool loadFromFile( mrpt::utils::CStream* fil, const mrpt::math::CPolygon & current_robotShape );	
 
 			/** For an obstacle (x,y), returns a vector with all the pairs (a,d) such as the robot collides */
 			const TCollisionCell & getTPObstacle( const float obsX, const float obsY) const;
@@ -164,7 +166,8 @@ protected:
 		bool saveColGridsToFile( const std::string &filename, const mrpt::math::CPolygon & computed_robotShape ) const;	// true = OK
 		bool loadColGridsFromFile( const std::string &filename, const mrpt::math::CPolygon & current_robotShape ); // true = OK
 
-		CCollisionGrid	m_collisionGrid; //!< The collision grid
+		/** The collision grid */
+		CCollisionGrid	m_collisionGrid; 
 
 		/** Specifies the min/max values for "k" and "n", respectively.
 		  * \sa m_lambdaFunctionOptimizer

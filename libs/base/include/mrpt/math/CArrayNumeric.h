@@ -28,7 +28,8 @@ namespace math
 		typedef T                    value_type;
 		typedef Eigen::Matrix<T,N,1> Base;
 
-		CArrayNumeric() {}  //!< Default constructor
+		/** Default constructor */
+		CArrayNumeric() {}  
 		/** Constructor from initial values ptr[0]-ptr[N-1] */
 		CArrayNumeric(const T*ptr) : Eigen::Matrix<T,N,1>(ptr) {}
 
@@ -57,8 +58,10 @@ namespace math
 		typedef CArrayNumeric<float,N> Base;
 		typedef CArrayFloat<N> mrpt_autotype;
 
-		CArrayFloat() {}  //!< Default constructor
-		CArrayFloat(const float*ptr) : CArrayNumeric<float,N>(ptr) {} //!< Constructor from initial values ptr[0]-ptr[N-1]
+		/** Default constructor */
+		CArrayFloat() {}  
+		/** Constructor from initial values ptr[0]-ptr[N-1] */
+		CArrayFloat(const float*ptr) : CArrayNumeric<float,N>(ptr) {} 
 
 		MRPT_MATRIX_CONSTRUCTORS_FROM_POSES(CArrayFloat)
 
@@ -77,8 +80,10 @@ namespace math
 		typedef CArrayNumeric<double,N> Base;
 		typedef CArrayDouble<N> mrpt_autotype;
 
-		CArrayDouble() {}  //!< Default constructor
-		CArrayDouble(const double*ptr) : CArrayNumeric<double,N>(ptr) {} //!< Constructor from initial values ptr[0]-ptr[N-1]
+		/** Default constructor */
+		CArrayDouble() {}  
+		/** Constructor from initial values ptr[0]-ptr[N-1] */
+		CArrayDouble(const double*ptr) : CArrayNumeric<double,N>(ptr) {} 
 
 		MRPT_MATRIX_CONSTRUCTORS_FROM_POSES(CArrayDouble)
 
@@ -97,8 +102,10 @@ namespace math
 		typedef CArrayNumeric<int,N> Base;
 		typedef CArrayInt<N> mrpt_autotype;
 
-		CArrayInt() {}  //!< Default constructor
-		CArrayInt(const int*ptr) : CArrayNumeric<int,N>(ptr) {} //!< Constructor from initial values ptr[0]-ptr[N-1]
+		/** Default constructor */
+		CArrayInt() {}  
+		/** Constructor from initial values ptr[0]-ptr[N-1] */
+		CArrayInt(const int*ptr) : CArrayNumeric<int,N>(ptr) {} 
 		MRPT_EIGEN_DERIVED_CLASS_CTOR_OPERATOR_EQUAL(CArrayInt) // Implements ctor and "operator =" for any other Eigen class
 	};
 
@@ -111,8 +118,10 @@ namespace math
 		typedef CArrayNumeric<unsigned int,N> Base;
 		typedef CArrayUInt<N> mrpt_autotype;
 
-		CArrayUInt() {}  //!< Default constructor
-		CArrayUInt(const unsigned int*ptr) : CArrayNumeric<unsigned int,N>(ptr) {} //!< Constructor from initial values ptr[0]-ptr[N-1]
+		/** Default constructor */
+		CArrayUInt() {}  
+		/** Constructor from initial values ptr[0]-ptr[N-1] */
+		CArrayUInt(const unsigned int*ptr) : CArrayNumeric<unsigned int,N>(ptr) {} 
 		MRPT_EIGEN_DERIVED_CLASS_CTOR_OPERATOR_EQUAL(CArrayUInt) // Implements ctor and "operator =" for any other Eigen class
 	};
 

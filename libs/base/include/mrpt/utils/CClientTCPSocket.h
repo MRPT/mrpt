@@ -51,10 +51,13 @@ namespace utils
 #	endif
 #else
 
-		int				m_hSock; //!< The handle for the connected TCP socket, or -1
+		/** The handle for the connected TCP socket, or -1 */
+		int				m_hSock; 
 #endif
-		std::string		m_remotePartIP; //!< The IP address of the remote part of the connection.
-		unsigned short	m_remotePartPort; //!< The TCP port of the remote part of the connection.
+		/** The IP address of the remote part of the connection. */
+		std::string		m_remotePartIP; 
+		/** The TCP port of the remote part of the connection. */
+		unsigned short	m_remotePartPort; 
 
 		/** Introduces a virtual method responsible for reading from the stream (This method BLOCKS)
 		  * This method is implemented as a call to "readAsync" with infinite timeouts.

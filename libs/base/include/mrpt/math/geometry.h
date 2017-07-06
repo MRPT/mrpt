@@ -25,19 +25,26 @@ namespace mrpt
 		  *  \ingroup mrpt_base_grp
 		  * @{ */
 
-		extern double BASE_IMPEXP geometryEpsilon; //!< Global epsilon to overcome small precision errors (Default=1e-5)
+		/** Global epsilon to overcome small precision errors (Default=1e-5) */
+		extern double BASE_IMPEXP geometryEpsilon; 
 
 		/** Slightly heavyweight type to speed-up calculations with polygons in 3D
 		  * \sa TPolygon3D,TPlane
 		  */
 		class BASE_IMPEXP TPolygonWithPlane	{
 		public:
-			TPolygon3D poly; //!< Actual polygon.
-			TPlane plane; //!< Plane containing the polygon.
-			mrpt::poses::CPose3D pose; //!< Plane's pose.  \sa inversePose
-			mrpt::poses::CPose3D inversePose; //!< Plane's inverse pose. \sa pose
-			TPolygon2D poly2D; //!< Polygon, after being projected to the plane using inversePose. \sa inversePose
-			TPolygonWithPlane(const TPolygon3D &p); //!< Constructor. Takes a polygon and computes each parameter.
+			/** Actual polygon. */
+			TPolygon3D poly; 
+			/** Plane containing the polygon. */
+			TPlane plane; 
+			/** Plane's pose.  \sa inversePose */
+			mrpt::poses::CPose3D pose; 
+			/** Plane's inverse pose. \sa pose */
+			mrpt::poses::CPose3D inversePose; 
+			/** Polygon, after being projected to the plane using inversePose. \sa inversePose */
+			TPolygon2D poly2D; 
+			/** Constructor. Takes a polygon and computes each parameter. */
+			TPolygonWithPlane(const TPolygon3D &p); 
 			/** Basic constructor. Needed to create containers  \sa TPolygonWithPlane(const TPolygon3D &) */
 			TPolygonWithPlane()	{}
 			/** Static method for vectors. Takes a set of polygons and creates every TPolygonWithPlane  */
@@ -280,10 +287,14 @@ namespace mrpt
 			project3D(segment.point2,newXYpose,newSegment.point2);
 		}
 
-		void BASE_IMPEXP project3D(const TLine3D &line,const mrpt::poses::CPose3D &newXYpose,TLine3D &newLine); //!< Uses the given pose 3D to project a line into a new base
-		void BASE_IMPEXP project3D(const TPlane &plane,const mrpt::poses::CPose3D &newXYpose,TPlane &newPlane); //!< Uses the given pose 3D to project a plane into a new base
-		void BASE_IMPEXP project3D(const TPolygon3D &polygon,const mrpt::poses::CPose3D &newXYpose,TPolygon3D &newPolygon); //!< Uses the given pose 3D to project a polygon into a new base
-		void BASE_IMPEXP project3D(const TObject3D &object,const mrpt::poses::CPose3D &newXYPose,TObject3D &newObject); //!< Uses the given pose 3D to project any 3D object into a new base.
+		/** Uses the given pose 3D to project a line into a new base */
+		void BASE_IMPEXP project3D(const TLine3D &line,const mrpt::poses::CPose3D &newXYpose,TLine3D &newLine); 
+		/** Uses the given pose 3D to project a plane into a new base */
+		void BASE_IMPEXP project3D(const TPlane &plane,const mrpt::poses::CPose3D &newXYpose,TPlane &newPlane); 
+		/** Uses the given pose 3D to project a polygon into a new base */
+		void BASE_IMPEXP project3D(const TPolygon3D &polygon,const mrpt::poses::CPose3D &newXYpose,TPolygon3D &newPolygon); 
+		/** Uses the given pose 3D to project any 3D object into a new base. */
+		void BASE_IMPEXP project3D(const TObject3D &object,const mrpt::poses::CPose3D &newXYPose,TObject3D &newObject); 
 
 		/** Projects any 3D object into the plane's base, using its inverse pose. If the object is exactly inside the plane, this projection will zero its Z coordinates */
 		template<class T> void project3D(const T &obj,const TPlane &newXYPlane,T &newObj)	{
@@ -317,9 +328,12 @@ namespace mrpt
 		}
 
 
-		void BASE_IMPEXP project2D(const TLine2D &line,const mrpt::poses::CPose2D &newXpose,TLine2D &newLine); //!< Uses the given pose 2D to project a line into a new base
-		void BASE_IMPEXP project2D(const TPolygon2D &polygon,const mrpt::poses::CPose2D &newXpose,TPolygon2D &newPolygon); //!< Uses the given pose 2D to project a polygon into a new base.
-		void BASE_IMPEXP project2D(const TObject2D &object,const mrpt::poses::CPose2D &newXpose,TObject2D &newObject); //!< Uses the given pose 2D to project any 2D object into a new base
+		/** Uses the given pose 2D to project a line into a new base */
+		void BASE_IMPEXP project2D(const TLine2D &line,const mrpt::poses::CPose2D &newXpose,TLine2D &newLine); 
+		/** Uses the given pose 2D to project a polygon into a new base. */
+		void BASE_IMPEXP project2D(const TPolygon2D &polygon,const mrpt::poses::CPose2D &newXpose,TPolygon2D &newPolygon); 
+		/** Uses the given pose 2D to project any 2D object into a new base */
+		void BASE_IMPEXP project2D(const TObject2D &object,const mrpt::poses::CPose2D &newXpose,TObject2D &newObject); 
 
 		/** Projects any 2D object into the line's base, using its inverse pose. If the object is exactly inside the line, this projection will zero its Y coordinate.
 		  * \tparam CPOSE2D set to mrpt::poses::CPose2D
@@ -431,33 +445,45 @@ namespace mrpt
 		/** @name Distances
 			@{
 		 */
-		double BASE_IMPEXP distance(const TPoint2D &p1,const TPoint2D &p2); //!< Gets the distance between two points in a 2D space.
-		double BASE_IMPEXP distance(const TPoint3D &p1,const TPoint3D &p2); //!< Gets the distance between two points in a 3D space.
-		double BASE_IMPEXP distance(const TLine2D &r1,const TLine2D &r2); //!<  Gets the distance between two lines in a 2D space.
-		double BASE_IMPEXP distance(const TLine3D &r1,const TLine3D &r2); //!<  Gets the distance between two lines in a 3D space.
-		double BASE_IMPEXP distance(const TPlane &p1,const TPlane &p2); //!<  Gets the distance between two planes. It will be zero if the planes are not parallel.
-		double BASE_IMPEXP distance(const TPolygon2D &p1,const TPolygon2D &p2);//!< Gets the distance between two polygons in a 2D space.
-		double BASE_IMPEXP distance(const TPolygon2D &p1,const TSegment2D &s2);//!< Gets the distance between a polygon and a segment in a 2D space.
+		/** Gets the distance between two points in a 2D space. */
+		double BASE_IMPEXP distance(const TPoint2D &p1,const TPoint2D &p2); 
+		/** Gets the distance between two points in a 3D space. */
+		double BASE_IMPEXP distance(const TPoint3D &p1,const TPoint3D &p2); 
+		/**  Gets the distance between two lines in a 2D space. */
+		double BASE_IMPEXP distance(const TLine2D &r1,const TLine2D &r2); 
+		/**  Gets the distance between two lines in a 3D space. */
+		double BASE_IMPEXP distance(const TLine3D &r1,const TLine3D &r2); 
+		/**  Gets the distance between two planes. It will be zero if the planes are not parallel. */
+		double BASE_IMPEXP distance(const TPlane &p1,const TPlane &p2); 
+		/** Gets the distance between two polygons in a 2D space. */
+		double BASE_IMPEXP distance(const TPolygon2D &p1,const TPolygon2D &p2);
+		/** Gets the distance between a polygon and a segment in a 2D space. */
+		double BASE_IMPEXP distance(const TPolygon2D &p1,const TSegment2D &s2);
 		/** Gets the distance between a segment and a polygon in a 2D space. */
 		inline double distance(const TSegment2D &s1,const TPolygon2D &p2)	{
 			return distance(p2,s1);
 		}
-		double BASE_IMPEXP distance(const TPolygon2D &p1,const TLine2D &l2);//!< Gets the distance between a polygon and a line in a 2D space.
+		/** Gets the distance between a polygon and a line in a 2D space. */
+		double BASE_IMPEXP distance(const TPolygon2D &p1,const TLine2D &l2);
 		inline double distance(const TLine2D &l1,const TPolygon2D &p2)	{
 			return distance(p2,l1);
 		}
-		double BASE_IMPEXP distance(const TPolygon3D &p1,const TPolygon3D &p2);//!< Gets the distance between two polygons in a 3D space.
-		double BASE_IMPEXP distance(const TPolygon3D &p1,const TSegment3D &s2);//!< Gets the distance between a polygon and a segment in a 3D space.
+		/** Gets the distance between two polygons in a 3D space. */
+		double BASE_IMPEXP distance(const TPolygon3D &p1,const TPolygon3D &p2);
+		/** Gets the distance between a polygon and a segment in a 3D space. */
+		double BASE_IMPEXP distance(const TPolygon3D &p1,const TSegment3D &s2);
 		/** Gets the distance between a segment and a polygon in a 3D space.*/
 		inline double distance(const TSegment3D &s1,const TPolygon3D &p2)	{
 			return distance(p2,s1);
 		}
-		double BASE_IMPEXP distance(const TPolygon3D &p1,const TLine3D &l2); //!< Gets the distance between a polygon and a line in a 3D space.
+		/** Gets the distance between a polygon and a line in a 3D space. */
+		double BASE_IMPEXP distance(const TPolygon3D &p1,const TLine3D &l2); 
 		/** Gets the distance between a line and a polygon in a 3D space */
 		inline double distance(const TLine3D &l1,const TPolygon3D &p2)	{
 			return distance(p2,l1);
 		}
-		double BASE_IMPEXP distance(const TPolygon3D &po,const TPlane &pl);//!< Gets the distance between a polygon and a plane.
+		/** Gets the distance between a polygon and a plane. */
+		double BASE_IMPEXP distance(const TPolygon3D &po,const TPlane &pl);
 		/** Gets the distance between a plane and a polygon.*/
 		inline double distance(const TPlane &pl,const TPolygon3D &po)	{
 			return distance(po,pl);

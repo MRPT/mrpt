@@ -27,9 +27,12 @@ namespace mrpt
 		class BASE_IMPEXP CRobot2DPoseEstimator
 		{
 		public:
-			CRobot2DPoseEstimator( ); //!< Default constructor
-			virtual ~CRobot2DPoseEstimator();	//!< Destructor
-			void reset(); //!< Resets all internal state.
+			/** Default constructor */
+			CRobot2DPoseEstimator( ); 
+			/** Destructor */
+			virtual ~CRobot2DPoseEstimator();	
+			/** Resets all internal state. */
+			void reset(); 
 
 			/** Updates the filter with new global-coordinates localization data from a localization or SLAM source. 
 			  * \param tim The timestamp of the sensor readings used to evaluate localization / SLAM.
@@ -71,23 +74,29 @@ namespace mrpt
 				max_localiz_age		( 4.0 )
 			{}
 
-			double  max_odometry_age; //!< To consider data old, in seconds
-			double  max_localiz_age; //!< To consider data old, in seconds
+			/** To consider data old, in seconds */
+			double  max_odometry_age; 
+			/** To consider data old, in seconds */
+			double  max_localiz_age; 
 			};
 
-			TOptions params; //!< parameters of the filter.
+			/** parameters of the filter. */
+			TOptions params; 
 
 		private:
 			std::mutex  m_cs;
 
 			mrpt::system::TTimeStamp    m_last_loc_time;
-			mrpt::math::TPose2D         m_last_loc;   //!< Last pose as estimated by the localization/SLAM subsystem.
+			/** Last pose as estimated by the localization/SLAM subsystem. */
+			mrpt::math::TPose2D         m_last_loc;   
 
-			mrpt::math::TPose2D         m_loc_odo_ref;  //!< The interpolated odometry position for the last "m_robot_pose" (used as "coordinates base" for subsequent odo readings)
+			/** The interpolated odometry position for the last "m_robot_pose" (used as "coordinates base" for subsequent odo readings) */
+			mrpt::math::TPose2D         m_loc_odo_ref;  
 
 			mrpt::system::TTimeStamp    m_last_odo_time;
 			mrpt::math::TPose2D         m_last_odo;
-			mrpt::math::TTwist2D        m_robot_vel_local; //!< Robot odometry-based velocity in a local frame of reference.
+			/** Robot odometry-based velocity in a local frame of reference. */
+			mrpt::math::TTwist2D        m_robot_vel_local; 
 
 			/** An auxiliary method to extrapolate the pose of a robot located at "p" with velocities (v,w) after a time delay "delta_time". */
 			static void extrapolateRobotPose(

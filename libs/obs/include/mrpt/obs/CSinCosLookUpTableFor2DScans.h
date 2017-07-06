@@ -50,7 +50,8 @@ namespace obs
 		const TSinCosValues & getSinCosForScan(const T2DScanProperties &scan_prop) const;
 
 	private:
-		mutable std::map<T2DScanProperties,TSinCosValues>  m_cache; //!< The cache of known scans and their sin/cos tables.
+		/** The cache of known scans and their sin/cos tables. */
+		mutable std::map<T2DScanProperties,TSinCosValues>  m_cache; 
 	};
 
 

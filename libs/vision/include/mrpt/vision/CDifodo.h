@@ -92,8 +92,10 @@ namespace mrpt
 			float g_mask[5][5];
 
 			/** Camera properties: */
-			float fovh;			//!<Horizontal field of view (rad)
-			float fovv;			//!<Vertical field of view (rad)
+			/**Horizontal field of view (rad) */
+			float fovh;			
+			/**Vertical field of view (rad) */
+			float fovv;			
 
 			/** The maximum resolution that will be considered by the visual odometry method.
 			  * As a rule, the higher the resolution the slower but more accurate the method becomes.
@@ -120,8 +122,10 @@ namespace mrpt
 			/** Speed filter parameters:
 			  * Previous_speed_const_weight - Directly weights the previous speed in order to calculate the filtered velocity. Recommended range - (0, 0.5)
 			  * Previous_speed_eig_weight - Weights the product of the corresponding eigenvalue and the previous velocity to calculate the filtered velocity*/
-			float previous_speed_const_weight;	//!<Default 0.05
-			float previous_speed_eig_weight;	//!<Default 0.5
+			/**Default 0.05 */
+			float previous_speed_const_weight;	
+			/**Default 0.5 */
+			float previous_speed_eig_weight;	
 
 			/** Transformations of the coarse-to-fine levels */
 			std::vector<Eigen::MatrixXf> transformations;
@@ -183,8 +187,10 @@ namespace mrpt
 			float execution_time;
 
 			/** Camera poses */
-			mrpt::poses::CPose3D cam_pose;		//!< Last camera pose
-			mrpt::poses::CPose3D cam_oldpose;	//!< Previous camera pose
+			/** Last camera pose */
+			mrpt::poses::CPose3D cam_pose;		
+			/** Previous camera pose */
+			mrpt::poses::CPose3D cam_oldpose;	
 
 			/** This method performs all the necessary steps to estimate the camera velocity once the new image is read,
 			    and updates the camera pose */

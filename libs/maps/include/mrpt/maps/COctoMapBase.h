@@ -43,9 +43,12 @@ namespace mrpt
 		class COctoMapBase : public mrpt::maps::CMetricMap
 		{
 		public:
-			typedef COctoMapBase<OCTREE,OCTREE_NODE> myself_t;       //!< The type of this MRPT class
-			typedef OCTREE                           octree_t;       //!< The type of the octree class in the "octomap" library.
-			typedef OCTREE_NODE                      octree_node_t;  //!< The type of nodes in the octree, in the "octomap" library.
+			/** The type of this MRPT class */
+			typedef COctoMapBase<OCTREE,OCTREE_NODE> myself_t;       
+			/** The type of the octree class in the "octomap" library. */
+			typedef OCTREE                           octree_t;       
+			/** The type of nodes in the octree, in the "octomap" library. */
+			typedef OCTREE_NODE                      octree_node_t;  
 
 
 			/** Constructor, defines the resolution of the octomap (length of each voxel side) */
@@ -71,7 +74,8 @@ namespace mrpt
 				/** Initilization of default parameters */
 				TInsertionOptions( myself_t &parent );
 
-				TInsertionOptions(); //!< Especial constructor, not attached to a real COctoMap object: used only in limited situations, since get*() methods don't work, etc.
+				/** Especial constructor, not attached to a real COctoMap object: used only in limited situations, since get*() methods don't work, etc. */
+				TInsertionOptions(); 
 				TInsertionOptions & operator = (const TInsertionOptions &o)
 				{
 					// Copy all but the m_parent pointer!
@@ -89,8 +93,10 @@ namespace mrpt
 				void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) override; // See base docs
 				void dumpToTextStream(mrpt::utils::CStream &out) const override; // See base docs
 
-				double maxrange;  //!< maximum range for how long individual beams are inserted (default -1: complete beam)
-				bool pruning;     //!< whether the tree is (losslessly) pruned after insertion (default: true)
+				/** maximum range for how long individual beams are inserted (default -1: complete beam) */
+				double maxrange;  
+				/** whether the tree is (losslessly) pruned after insertion (default: true) */
+				bool pruning;     
 
 				/// (key name in .ini files: "occupancyThres") sets the threshold for occupancy (sensor model) (Default=0.5)
 				void setOccupancyThres(double prob) { if(m_parent.get()) m_parent->m_octomap.setOccupancyThres(prob); }
@@ -136,7 +142,8 @@ namespace mrpt
 				double clampingThresMax; // sets the maximum threshold for occupancy clamping (sensor model) (Default=0.971, 3.5 in log odds)
 			};
 
-			TInsertionOptions insertionOptions; //!< The options used when inserting observations in the map
+			/** The options used when inserting observations in the map */
+			TInsertionOptions insertionOptions; 
 
 			/** Options used when evaluating "computeObservationLikelihood"
 			* \sa CObservation::computeObservationLikelihood
@@ -151,10 +158,13 @@ namespace mrpt
 				void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) override; // See base docs
 				void dumpToTextStream(mrpt::utils::CStream &out) const override; // See base docs
 
-				void writeToStream(mrpt::utils::CStream &out) const;		//!< Binary dump to stream
-				void readFromStream(mrpt::utils::CStream &in);			//!< Binary dump to stream
+				/** Binary dump to stream */
+				void writeToStream(mrpt::utils::CStream &out) const;		
+				/** Binary dump to stream */
+				void readFromStream(mrpt::utils::CStream &in);			
 
-				uint32_t	decimation; //!< Speed up the likelihood computation by considering only one out of N rays (default=1)
+				/** Speed up the likelihood computation by considering only one out of N rays (default=1) */
+				uint32_t	decimation; 
 			};
 
 			TLikelihoodOptions  likelihoodOptions;
@@ -167,13 +177,18 @@ namespace mrpt
 			/** Options for the conversion of a mrpt::maps::COctoMap into a mrpt::opengl::COctoMapVoxels */
 			struct TRenderingOptions
 			{
-				bool  generateGridLines;       //!< Generate grid lines for all octree nodes, useful to draw the "structure" of the octree, but computationally costly (Default: false)
+				/** Generate grid lines for all octree nodes, useful to draw the "structure" of the octree, but computationally costly (Default: false) */
+				bool  generateGridLines;       
 
-				bool  generateOccupiedVoxels;  //!< Generate voxels for the occupied volumes  (Default=true)
-				bool  visibleOccupiedVoxels;   //!< Set occupied voxels visible (requires generateOccupiedVoxels=true) (Default=true)
+				/** Generate voxels for the occupied volumes  (Default=true) */
+				bool  generateOccupiedVoxels;  
+				/** Set occupied voxels visible (requires generateOccupiedVoxels=true) (Default=true) */
+				bool  visibleOccupiedVoxels;   
 
-				bool  generateFreeVoxels;      //!< Generate voxels for the freespace (Default=true)
-				bool  visibleFreeVoxels;       //!< Set free voxels visible (requires generateFreeVoxels=true) (Default=true)
+				/** Generate voxels for the freespace (Default=true) */
+				bool  generateFreeVoxels;      
+				/** Set free voxels visible (requires generateFreeVoxels=true) (Default=true) */
+				bool  visibleFreeVoxels;       
 
 				TRenderingOptions() :
 					generateGridLines      (false),
@@ -183,8 +198,10 @@ namespace mrpt
 					visibleFreeVoxels      (true)
 				{ }
 
-				void writeToStream(mrpt::utils::CStream &out) const;		//!< Binary dump to stream
-				void readFromStream(mrpt::utils::CStream &in);			//!< Binary dump to stream
+				/** Binary dump to stream */
+				void writeToStream(mrpt::utils::CStream &out) const;		
+				/** Binary dump to stream */
+				void readFromStream(mrpt::utils::CStream &in);			
 			};
 
 			TRenderingOptions renderingOptions;
@@ -299,7 +316,8 @@ namespace mrpt
 			  */
 			bool internal_build_PointCloud_for_observation(const mrpt::obs::CObservation *obs,const mrpt::poses::CPose3D *robotPose, octomap::point3d &point3d_sensorPt, octomap::Pointcloud &ptr_scan) const;
 
-			OCTREE m_octomap; //!< The actual octo-map object.
+			/** The actual octo-map object. */
+			OCTREE m_octomap; 
 
 		private:
 			// See docs in base class

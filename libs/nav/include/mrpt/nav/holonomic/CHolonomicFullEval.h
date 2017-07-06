@@ -60,26 +60,38 @@ namespace mrpt
 		/** Algorithm options */
 		struct NAV_IMPEXP TOptions : public mrpt::utils::CLoadableOptions
 		{
-			double TOO_CLOSE_OBSTACLE;  //!< Directions with collision-free distances below this threshold are not elegible.
-			double TARGET_SLOW_APPROACHING_DISTANCE; //!< Start to reduce speed when closer than this to target  [m]
-			double OBSTACLE_SLOW_DOWN_DISTANCE;      //!< Start to reduce speed when clearance is below this value ([0,1] ratio wrt obstacle reference/max distance)
-			double HYSTERESIS_SECTOR_COUNT; //!< Range of "sectors" (directions) for hysteresis over successive timesteps
-			std::vector<double>   factorWeights;  //!< See docs above
-			std::vector<int32_t>  factorNormalizeOrNot; //!< 0/1 to normalize factors.
-			std::vector<std::vector<int32_t> >  PHASE_FACTORS; //!< Factor indices [0,4] for the factors to consider in each phase 1,2,...N of the movement decision (Defaults: `PHASE1_FACTORS=0 1 2`, `PHASE2_FACTORS=`3 4`)
-			std::vector<double>                 PHASE_THRESHOLDS;   //!< Phase 1,2,N-1... scores must be above this relative range threshold [0,1] to be considered in phase 2 (Default:`0.75`)
+			/** Directions with collision-free distances below this threshold are not elegible. */
+			double TOO_CLOSE_OBSTACLE;  
+			/** Start to reduce speed when closer than this to target  [m] */
+			double TARGET_SLOW_APPROACHING_DISTANCE; 
+			/** Start to reduce speed when clearance is below this value ([0,1] ratio wrt obstacle reference/max distance) */
+			double OBSTACLE_SLOW_DOWN_DISTANCE;      
+			/** Range of "sectors" (directions) for hysteresis over successive timesteps */
+			double HYSTERESIS_SECTOR_COUNT; 
+			/** See docs above */
+			std::vector<double>   factorWeights;  
+			/** 0/1 to normalize factors. */
+			std::vector<int32_t>  factorNormalizeOrNot; 
+			/** Factor indices [0,4] for the factors to consider in each phase 1,2,...N of the movement decision (Defaults: `PHASE1_FACTORS=0 1 2`, `PHASE2_FACTORS=`3 4`) */
+			std::vector<std::vector<int32_t> >  PHASE_FACTORS; 
+			/** Phase 1,2,N-1... scores must be above this relative range threshold [0,1] to be considered in phase 2 (Default:`0.75`) */
+			std::vector<double>                 PHASE_THRESHOLDS;   
 
-			bool LOG_SCORE_MATRIX; //!< (default:false, to save space)
+			/** (default:false, to save space) */
+			bool LOG_SCORE_MATRIX; 
 
-			double clearance_threshold_ratio;   //!<  Ratio [0,1], times path_count, gives the minimum number of paths at each side of a target direction to be accepted as desired direction
-			double gap_width_ratio_threshold;   //!<  Ratio [0,1], times path_count, gives the minimum gap width to accept a direct motion towards target.
+			/**  Ratio [0,1], times path_count, gives the minimum number of paths at each side of a target direction to be accepted as desired direction */
+			double clearance_threshold_ratio;   
+			/**  Ratio [0,1], times path_count, gives the minimum gap width to accept a direct motion towards target. */
+			double gap_width_ratio_threshold;   
 
 			TOptions();
 			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) override; // See base docs
 			void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg ,const std::string &section) const override; // See base docs
 		};
 
-		TOptions options;  //!< Parameters of the algorithm (can be set manually or loaded from CHolonomicFullEval::initialize or options.loadFromConfigFile(), etc.)
+		/** Parameters of the algorithm (can be set manually or loaded from CHolonomicFullEval::initialize or options.loadFromConfigFile(), etc.) */
+		TOptions options;  
 
 		double getTargetApproachSlowDownDistance() const override { return options.TARGET_SLOW_APPROACHING_DISTANCE; }
 		void setTargetApproachSlowDownDistance(const double dist) override { options.TARGET_SLOW_APPROACHING_DISTANCE = dist; }
@@ -87,7 +99,8 @@ namespace mrpt
 	private:
 		unsigned int m_last_selected_sector;
 		unsigned int direction2sector(const double a, const unsigned int N);
-		mrpt::math::CMatrixD m_dirs_scores; //!< Individual scores for each direction: (i,j), i (row) are directions, j (cols) are scores. Not all directions may have evaluations, in which case a "-1" value will be found.
+		/** Individual scores for each direction: (i,j), i (row) are directions, j (cols) are scores. Not all directions may have evaluations, in which case a "-1" value will be found. */
+		mrpt::math::CMatrixD m_dirs_scores; 
 		
 		virtual void postProcessDirectionEvaluations(std::vector<double> &dir_evals, const NavInput & ni, unsigned int trg_idx); // If desired, override in a derived class to manipulate the final evaluations of each directions
 
@@ -99,7 +112,8 @@ namespace mrpt
 			EvalOutput();
 		};
 
-		void evalSingleTarget(unsigned int target_idx, const NavInput & ni, EvalOutput &eo); //!< Evals one single target of the potentially many of them in NavInput
+		/** Evals one single target of the potentially many of them in NavInput */
+		void evalSingleTarget(unsigned int target_idx, const NavInput & ni, EvalOutput &eo); 
 	}; // end of CHolonomicFullEval
 
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CHolonomicFullEval, CAbstractHolonomicReactiveMethod, NAV_IMPEXP )
@@ -116,8 +130,10 @@ namespace mrpt
 		/** Member data */
 		int32_t              selectedSector;
 		double               evaluation;
-		mrpt::math::CMatrixD dirs_scores; //!< Individual scores for each direction: (i,j), i (row) are directions, j (cols) are scores. Not all directions may have evaluations, in which case a "-1" value will be found.
-		int32_t              selectedTarget; //!< Normally = 0. Can be >0 if multiple targets passed simultaneously.
+		/** Individual scores for each direction: (i,j), i (row) are directions, j (cols) are scores. Not all directions may have evaluations, in which case a "-1" value will be found. */
+		mrpt::math::CMatrixD dirs_scores; 
+		/** Normally = 0. Can be >0 if multiple targets passed simultaneously. */
+		int32_t              selectedTarget; 
 
 		const mrpt::math::CMatrixD * getDirectionScores() const override { return &dirs_scores; }
 	};

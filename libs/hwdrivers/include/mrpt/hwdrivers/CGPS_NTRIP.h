@@ -70,8 +70,10 @@ namespace mrpt
 			mrpt::hwdrivers::CGPSInterface  gps;
 			mrpt::hwdrivers::CNTRIPEmitter  ntrip;
 
-			CGPS_NTRIP();            //!< Constructor
-			virtual ~CGPS_NTRIP();   //!< Destructor
+			/** Constructor */
+			CGPS_NTRIP();            
+			/** Destructor */
+			virtual ~CGPS_NTRIP();   
 
 			void  doProcess();  // See docs in parent class
 

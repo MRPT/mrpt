@@ -24,45 +24,76 @@ namespace mrpt
 
 			/** @name Camera to open
 			  * @{ */
-			unsigned int camera_index;   //!< (Default=0) If open_by_guid==false, will open the i'th camera based on this 0-based index.
-			bool         open_by_guid;   //!< (Default=false) Set to true to force opening a camera by its GUID, in \a camera_guid
-			unsigned int camera_guid[4]; //!< GUID of the camera to open, only when open_by_guid==true.
+			/** (Default=0) If open_by_guid==false, will open the i'th camera based on this 0-based index. */
+			unsigned int camera_index;   
+			/** (Default=false) Set to true to force opening a camera by its GUID, in \a camera_guid */
+			bool         open_by_guid;   
+			/** GUID of the camera to open, only when open_by_guid==true. */
+			unsigned int camera_guid[4]; 
 			/** @} */
 
 			/** @name Camera settings
 			  * @{ */
-			std::string   videomode;  //!< (Default="", which means default) A string with a video mode, from the list available in [FlyCapture2::VideoMode](http://www.ptgrey.com/support/downloads/documents/flycapture/Doxygen/html/), eg. "VIDEOMODE_640x480Y8", etc.
-			std::string   framerate;  //!< (Default="", which means default) A string with a framerate, from the list available in [FlyCapture2::FrameRate](http://www.ptgrey.com/support/downloads/documents/flycapture/Doxygen/html/), eg. "FRAMERATE_30", etc.
-			std::string   grabmode;   //!< (Default="BUFFER_FRAMES") A string with a grab mode, from the list available in [FlyCapture2::GrabMode](http://www.ptgrey.com/support/downloads/documents/flycapture/Doxygen/html/)
-			unsigned int  numBuffers; //!< (Default=30) Number of images that can be stored in the buffer, if enabled with grabMode.
-			int           grabTimeout; //!< (Default=5000) Time in milliseconds that RetrieveBuffer() and WaitForBufferEvent() will wait for an image before timing out and returning.
+			/** (Default="", which means default) A string with a video mode, from the list available in [FlyCapture2::VideoMode](http://www.ptgrey.com/support/downloads/documents/flycapture/Doxygen/html/), eg. "VIDEOMODE_640x480Y8", etc. */
+			std::string   videomode;  
+			/** (Default="", which means default) A string with a framerate, from the list available in [FlyCapture2::FrameRate](http://www.ptgrey.com/support/downloads/documents/flycapture/Doxygen/html/), eg. "FRAMERATE_30", etc. */
+			std::string   framerate;  
+			/** (Default="BUFFER_FRAMES") A string with a grab mode, from the list available in [FlyCapture2::GrabMode](http://www.ptgrey.com/support/downloads/documents/flycapture/Doxygen/html/) */
+			std::string   grabmode;   
+			/** (Default=30) Number of images that can be stored in the buffer, if enabled with grabMode. */
+			unsigned int  numBuffers; 
+			/** (Default=5000) Time in milliseconds that RetrieveBuffer() and WaitForBufferEvent() will wait for an image before timing out and returning. */
+			int           grabTimeout; 
 
-			bool         trigger_enabled;   //!< (default=false) Enable non-free-running mode, only capturing when a given input trigger signal is detected. Refer to PGR docs.
-			unsigned int trigger_polarity;  //!< (default=0) Refer to PGR docs.
-			unsigned int trigger_source;    //!< (default=0) Refer to PGR docs.
-			unsigned int trigger_mode;      //!< (default=0) Refer to PGR docs.
+			/** (default=false) Enable non-free-running mode, only capturing when a given input trigger signal is detected. Refer to PGR docs. */
+			bool         trigger_enabled;   
+			/** (default=0) Refer to PGR docs. */
+			unsigned int trigger_polarity;  
+			/** (default=0) Refer to PGR docs. */
+			unsigned int trigger_source;    
+			/** (default=0) Refer to PGR docs. */
+			unsigned int trigger_mode;      
 
-			bool         strobe_enabled;    //!< (default=false) Enable the generation of a strobe signal in GPIO. Refer to PGR docs.
-			unsigned int strobe_source;     //!< (default=0)  Refer to PGR docs.
-			unsigned int strobe_polarity;   //!< (default=0)  Refer to PGR docs.
-			float        strobe_delay;      //!< (default=0.0) Delay in ms. Refer to PGR docs.
-			float        strobe_duration;   //!< (default=1.0) Pulse durationin ms. Refer to PGR docs.
+			/** (default=false) Enable the generation of a strobe signal in GPIO. Refer to PGR docs. */
+			bool         strobe_enabled;    
+			/** (default=0)  Refer to PGR docs. */
+			unsigned int strobe_source;     
+			/** (default=0)  Refer to PGR docs. */
+			unsigned int strobe_polarity;   
+			/** (default=0.0) Delay in ms. Refer to PGR docs. */
+			float        strobe_delay;      
+			/** (default=1.0) Pulse durationin ms. Refer to PGR docs. */
+			float        strobe_duration;   
 
-			bool         autoexposure_auto; //!< (default=true)
-			bool         autoexposure_onOff;//!< (default=true) Activate this feature
-			bool         autoexposure_abs;  //!< (default=true) Numeric mode (absolute or integer values)
-			float        autoexposure_EV;   //!< (default=0.0) Exposure Value, if autoexposure_auto=false
-			bool         shutter_auto;      //!< (default=true)
-			bool         shutter_abs;       //!< (default=true) Numeric mode (absolute or integer values)
-			float        shutter_time_ms;   //!< (default=4.0) Shutter time, if shutter_auto=false
-			bool         gain_auto;         //!< (default=true)
-			bool         gain_abs;          //!< (default=true) Numeric mode (absolute or integer values)
-			float        gain_dB;           //!< (default=0.0) Sensor gain, if gain_auto=false
+			/** (default=true) */
+			bool         autoexposure_auto; 
+			/** (default=true) Activate this feature */
+			bool         autoexposure_onOff;
+			/** (default=true) Numeric mode (absolute or integer values) */
+			bool         autoexposure_abs;  
+			/** (default=0.0) Exposure Value, if autoexposure_auto=false */
+			float        autoexposure_EV;   
+			/** (default=true) */
+			bool         shutter_auto;      
+			/** (default=true) Numeric mode (absolute or integer values) */
+			bool         shutter_abs;       
+			/** (default=4.0) Shutter time, if shutter_auto=false */
+			float        shutter_time_ms;   
+			/** (default=true) */
+			bool         gain_auto;         
+			/** (default=true) Numeric mode (absolute or integer values) */
+			bool         gain_abs;          
+			/** (default=0.0) Sensor gain, if gain_auto=false */
+			float        gain_dB;           
 
-			bool	stereo_mode;	//!< (default=false) Obtain images as stereo pairs with Flycapture2
-			bool	get_rectified;	//!< (default=false) Rectify stereo images (needs Triclops installed)
-			unsigned int rect_width;	//!< (default=640) Width for output rectified images
-			unsigned int rect_height;	//!< (default=480) Height for output rectified images
+			/** (default=false) Obtain images as stereo pairs with Flycapture2 */
+			bool	stereo_mode;	
+			/** (default=false) Rectify stereo images (needs Triclops installed) */
+			bool	get_rectified;	
+			/** (default=640) Width for output rectified images */
+			unsigned int rect_width;	
+			/** (default=480) Height for output rectified images */
+			unsigned int rect_height;	
 			/** @} */
 
 			/** Loads all the options from a config file.
@@ -130,17 +161,25 @@ namespace mrpt
 		class HWDRIVERS_IMPEXP  CImageGrabber_FlyCapture2
 		{
 		protected:
-			void *m_camera;      //!< Opaque pointer to the FlyCapture2::Camera object. nullptr if no camera is grabbing.
-			void *m_camera_info; //!< Opaque pointer to the FlyCapture2::CameraInfo object. nullptr if no camera is grabbing.
-			void *m_img_buffer;  //!< Opaque pointer to the FlyCapture2::Image, used as a temporary buffer and to avoid mem alloc/reallocs.
-			void *m_triclops;		//!< Opaque pointer to the TriclopsContext objetc. nullptr if no context is active.
+			/** Opaque pointer to the FlyCapture2::Camera object. nullptr if no camera is grabbing. */
+			void *m_camera;      
+			/** Opaque pointer to the FlyCapture2::CameraInfo object. nullptr if no camera is grabbing. */
+			void *m_camera_info; 
+			/** Opaque pointer to the FlyCapture2::Image, used as a temporary buffer and to avoid mem alloc/reallocs. */
+			void *m_img_buffer;  
+			/** Opaque pointer to the TriclopsContext objetc. nullptr if no context is active. */
+			void *m_triclops;		
 
 			// Camera intrinsic calibration
-			float			m_baseline;						//!< Camera baseline (only for stereo cameras)
-			float			m_focalLength;					//!< Camera focal length
-			float			m_centerCol, m_centerRow;		//!< Camera center coordinates
+			/** Camera baseline (only for stereo cameras) */
+			float			m_baseline;						
+			/** Camera focal length */
+			float			m_focalLength;					
+			/** Camera center coordinates */
+			float			m_centerCol, m_centerRow;		
 
-			TCaptureOptions_FlyCapture2	 m_options;			//!< Camera options
+			/** Camera options */
+			TCaptureOptions_FlyCapture2	 m_options;			
 
 		public:
 			/** Constructor that does not open a camera. \sa open() */

@@ -59,7 +59,8 @@ namespace mrpt
 			/** Return a read-only reference to the internal map KEY->VALUES */
 			const std::map<VALUE,KEY> &getInverseMap() const { return m_v2k; }
 
-			void clear() //!< Clear the contents of the bi-map.
+			/** Clear the contents of the bi-map. */
+			void clear() 
 			{
 				m_k2v.clear();
 				m_v2k.clear();

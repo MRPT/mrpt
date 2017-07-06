@@ -55,7 +55,8 @@ namespace mrpt
 		{
 		public:
 			// type definitions
-			typedef T              value_type;		//!< The type of the matrix elements
+			/** The type of the matrix elements */
+			typedef T              value_type;		
 			typedef T&             reference;
 			typedef const T&       const_reference;
 			typedef std::size_t    size_type;

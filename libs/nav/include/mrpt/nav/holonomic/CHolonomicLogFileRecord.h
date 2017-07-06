@@ -30,7 +30,8 @@ namespace mrpt
 	{
 		DEFINE_VIRTUAL_SERIALIZABLE( CHolonomicLogFileRecord )
 	public:
-		std::vector<std::vector<double> >  dirs_eval; //!< Final [0] and alternative [1..N] evaluation scores for each direction, in the same order of TP-Obstacles. May be not filled by all methods.
+		/** Final [0] and alternative [1..N] evaluation scores for each direction, in the same order of TP-Obstacles. May be not filled by all methods. */
+		std::vector<std::vector<double> >  dirs_eval; 
 
 		virtual const mrpt::math::CMatrixD * getDirectionScores() const { return nullptr; }
 	};

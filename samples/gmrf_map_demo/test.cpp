@@ -28,10 +28,14 @@ struct MyConnectivityVisitor : public mrpt::maps::CRandomFieldGridMap2D::Connect
 	* \return true if connected (and the "information" value should be also updated in out_edge_information), false otherwise.
 	*/
 	bool getEdgeInformation(
-		const CRandomFieldGridMap2D *parent,  //!< The parent map on which we are running
-		size_t icx, size_t icy,               //!< (cx,cy) for node "i"
-		size_t jcx, size_t jcy,               //!< (cx,cy) for node "j"
-		double &out_edge_information          //!< Must output here the inverse of the variance of the constraint edge.
+		/** The parent map on which we are running */
+		const CRandomFieldGridMap2D *parent,  
+		/** (cx,cy) for node "i" */
+		size_t icx, size_t icy,               
+		/** (cx,cy) for node "j" */
+		size_t jcx, size_t jcy,               
+		/** Must output here the inverse of the variance of the constraint edge. */
+		double &out_edge_information          
 	) override
 	{
 		out_edge_information = 1.0/(1.0+ icx+icy);

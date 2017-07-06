@@ -170,8 +170,10 @@ class holonomic_navigator_demoFrame: public wxFrame
 		mrpt::math::TPose2D              m_robotPose;
 
 		mrpt::utils::CTicTac             m_runtime;
-		mrpt::math::TPoint2D             m_curCursorPos; //!< Of the cursor on the 3D view (in world coordinates at Z=0)
-        TCursorPickState                 m_cursorPickState;   //!< The state of the cursor onto the 3D view:
+		/** Of the cursor on the 3D view (in world coordinates at Z=0) */
+		mrpt::math::TPoint2D             m_curCursorPos; 
+        /** The state of the cursor onto the 3D view: */
+        TCursorPickState                 m_cursorPickState;   
 
 		// ========= Opengl View: Map & robot  =======
 		mrpt::opengl::CSetOfObjects::Ptr		gl_grid;

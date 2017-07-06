@@ -28,10 +28,13 @@ namespace mrpt
 		class HWDRIVERS_IMPEXP  COpenNI2Generic
 		{
 		public:
-			COpenNI2Generic();	 //!< Default ctor (width=640, height=480, fps=30)
-			COpenNI2Generic(int width, int height, float fps = 30.0f, bool open_streams_now = true); //!< Ctor. \sa start()
+			/** Default ctor (width=640, height=480, fps=30) */
+			COpenNI2Generic();	 
+			/** Ctor. \sa start() */
+			COpenNI2Generic(int width, int height, float fps = 30.0f, bool open_streams_now = true); 
 
-			~COpenNI2Generic();	 //!< Default ctor
+			/** Default ctor */
+			~COpenNI2Generic();	 
 
 			/** The main data retrieving function, to be called after calling loadConfig() and initialize().
 			  *  \param out_img The output retrieved RGB image (only if there_is_obs=true).
@@ -93,13 +96,20 @@ namespace mrpt
 			*/
 			unsigned int openDeviceBySerial(const unsigned int SerialRequired);
 
-			bool getDeviceIDFromSerialNum(const unsigned int SerialRequired, int& sensor_id) const; //!< Get the ID of the device corresponding to 'SerialRequired'.
-			bool start(); //!< Open all sensor streams (normally called automatically at constructor, no need to call it manually). \return false on error \sa kill() to close
-			void kill(); //!< Kill the OpenNI2 driver \sa start()
-			bool isOpen(const unsigned sensor_id) const; //!< Whether there is a working connection to the sensor
-			void close(unsigned sensor_id = 0); //!< Close the connection to the sensor (no need to call it manually unless desired for some reason, since it's called at destructor
-			int getNumDevices()const; //!< The number of available devices at initialization
-			int getConnectedDevices(); //!< Get a list of the connected OpenNI2 sensors.
+			/** Get the ID of the device corresponding to 'SerialRequired'. */
+			bool getDeviceIDFromSerialNum(const unsigned int SerialRequired, int& sensor_id) const; 
+			/** Open all sensor streams (normally called automatically at constructor, no need to call it manually). \return false on error \sa kill() to close */
+			bool start(); 
+			/** Kill the OpenNI2 driver \sa start() */
+			void kill(); 
+			/** Whether there is a working connection to the sensor */
+			bool isOpen(const unsigned sensor_id) const; 
+			/** Close the connection to the sensor (no need to call it manually unless desired for some reason, since it's called at destructor */
+			void close(unsigned sensor_id = 0); 
+			/** The number of available devices at initialization */
+			int getNumDevices()const; 
+			/** Get a list of the connected OpenNI2 sensors. */
+			int getConnectedDevices(); 
 
 			/** @} */
 
@@ -126,7 +136,8 @@ namespace mrpt
 			bool  m_verbose;
 			void  showLog(const std::string& message)const;
 			/** The data that the RGBD sensors can return */
-			bool  m_grab_image, m_grab_depth, m_grab_3D_points ; //!< Default: all true
+			/** Default: all true */
+			bool  m_grab_image, m_grab_depth, m_grab_3D_points ; 
 		};	// End of class
 	} // End of NS
 } // End of NS

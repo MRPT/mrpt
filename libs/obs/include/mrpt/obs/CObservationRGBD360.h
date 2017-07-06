@@ -67,32 +67,47 @@ namespace obs
 		DEFINE_SERIALIZABLE( CObservationRGBD360 )
 
 	protected:
-		bool			m_points3D_external_stored; //!< If set to true, m_points3D_external_file is valid.
-		std::string		m_points3D_external_file;   //!< 3D points are in CImage::IMAGES_PATH_BASE+<this_file_name>
+		/** If set to true, m_points3D_external_file is valid. */
+		bool			m_points3D_external_stored; 
+		/** 3D points are in CImage::IMAGES_PATH_BASE+<this_file_name> */
+		std::string		m_points3D_external_file;   
 
-		bool			m_rangeImage_external_stored; //!< If set to true, m_rangeImage_external_file is valid.
-		std::string		m_rangeImage_external_file;   //!< rangeImage is in CImage::IMAGES_PATH_BASE+<this_file_name>
+		/** If set to true, m_rangeImage_external_file is valid. */
+		bool			m_rangeImage_external_stored; 
+		/** rangeImage is in CImage::IMAGES_PATH_BASE+<this_file_name> */
+		std::string		m_rangeImage_external_file;   
 
 	public:
-		CObservationRGBD360( );				//!< Default constructor
-		virtual ~CObservationRGBD360( ); 	//!< Destructor
+		/** Default constructor */
+		CObservationRGBD360( );				
+		/** Destructor */
+		virtual ~CObservationRGBD360( ); 	
 
 		static const unsigned int NUM_SENSORS = 2;
 
 		mrpt::system::TTimeStamp  timestamps[NUM_SENSORS];
 
-		bool hasRangeImage; 				//!< true means the field rangeImage contains valid data
-		mrpt::math::CMatrix rangeImages[NUM_SENSORS]; 	//!< If hasRangeImage=true, a matrix of floats with the range data as captured by the camera (in meters) \sa range_is_depth
+		/** true means the field rangeImage contains valid data */
+		bool hasRangeImage; 				
+		/** If hasRangeImage=true, a matrix of floats with the range data as captured by the camera (in meters) \sa range_is_depth */
+		mrpt::math::CMatrix rangeImages[NUM_SENSORS]; 	
 
-		void rangeImage_setSize(const int HEIGHT, const int WIDTH, const unsigned sensor_id); //!< Similar to calling "rangeImage.setSize(H,W)" but this method provides memory pooling to speed-up the memory allocation.
+		/** Similar to calling "rangeImage.setSize(H,W)" but this method provides memory pooling to speed-up the memory allocation. */
+		void rangeImage_setSize(const int HEIGHT, const int WIDTH, const unsigned sensor_id); 
 
-		bool hasIntensityImage;                    //!< true means the field intensityImage contains valid data
-		mrpt::utils::CImage intensityImages[NUM_SENSORS];        //!< If hasIntensityImage=true, a color or gray-level intensity image of the same size than "rangeImage"
-		mrpt::utils::TCamera sensorParamss[NUM_SENSORS];	//!< Projection parameters of the 8 RGBD sensor.
+		/** true means the field intensityImage contains valid data */
+		bool hasIntensityImage;                    
+		/** If hasIntensityImage=true, a color or gray-level intensity image of the same size than "rangeImage" */
+		mrpt::utils::CImage intensityImages[NUM_SENSORS];        
+		/** Projection parameters of the 8 RGBD sensor. */
+		mrpt::utils::TCamera sensorParamss[NUM_SENSORS];	
 
-		float  	maxRange;	//!< The maximum range allowed by the device, in meters (e.g. 8.0m, 5.0m,...)
-		mrpt::poses::CPose3D	sensorPose;	//!< The 6D pose of the sensor on the robot.
-		float	stdError;	//!< The "sigma" error of the device in meters, used while inserting the scan in an occupancy grid.
+		/** The maximum range allowed by the device, in meters (e.g. 8.0m, 5.0m,...) */
+		float  	maxRange;	
+		/** The 6D pose of the sensor on the robot. */
+		mrpt::poses::CPose3D	sensorPose;	
+		/** The "sigma" error of the device in meters, used while inserting the scan in an occupancy grid. */
+		float	stdError;	
 
 		// See base class docs
 		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const override { out_sensorPose = sensorPose; }

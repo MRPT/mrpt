@@ -265,13 +265,15 @@ class slamdemoFrame: public wxFrame
 		mrpt::poses::CPose2D					m_GT_pose;
 
 		mrpt::obs::CObservationBearingRange	m_lastObservation;
-		mrpt::vector_size_t						m_lastObservation_GT_indices; //!< Ground truth of the indices in the landmark map of the sensed landmarks.
+		/** Ground truth of the indices in the landmark map of the sensed landmarks. */
+		mrpt::vector_size_t						m_lastObservation_GT_indices; 
 
 		/** Reconstructed map estimated_map_idx -> real_map_idx for the landmarks.
 		     Used to evaluate the performance of data-association (D.A.)
 	      */
 		std::map<size_t,size_t>  m_estimatedIDX2realIDX;
-		std::set<size_t>  m_realIDX_already_mapped; //!< At least inserted in the map once (or more if due to errors it's more than once).
+		/** At least inserted in the map once (or more if due to errors it's more than once). */
+		std::set<size_t>  m_realIDX_already_mapped; 
 
 		/** The output rawlog file to save simulated sensor obs (if enabled) */
 		mrpt::utils::CFileGZOutputStream  m_rawlog_out_file;
@@ -292,7 +294,8 @@ class slamdemoFrame: public wxFrame
 			size_t    jcbb_iters;
 		};
 
-		std::vector<THistoric, Eigen::aligned_allocator<THistoric> >  m_historicData;	//!< A registry of all data for the simulation, used to compute errors, etc..
+		/** A registry of all data for the simulation, used to compute errors, etc.. */
+		std::vector<THistoric, Eigen::aligned_allocator<THistoric> >  m_historicData;	
 
 		/** Reset the simulator and re-generate the ground truth map
 		  *  map_type can be:
@@ -301,7 +304,8 @@ class slamdemoFrame: public wxFrame
 		  */
 		void resetSimulator( const std::string &map_type );
 
-		void executeOneStep(); //!< Executes 1 step of the simulator (does NOT update the graphs)
+		/** Executes 1 step of the simulator (does NOT update the graphs) */
+		void executeOneStep(); 
 
 
 		/** Update all the plots with the latest data
@@ -317,36 +321,46 @@ class slamdemoFrame: public wxFrame
 			void saveToConfigFile(mrpt::utils::CConfigFileBase &source,const std::string &section) const override; // See base docs
 			void dumpToTextStream(mrpt::utils::CStream &out) const override; // See base docs
 
-			int random_seed;	//!< -1: random, other, use as seed
+			/** -1: random, other, use as seed */
+			int random_seed;	
 
-			std::string  map_generator; //!< the parameter to resetSimulator
+			/** the parameter to resetSimulator */
+			std::string  map_generator; 
 
-			uint32_t  randomMap_nLMs; //!< # of landmarks in the random map
+			/** # of landmarks in the random map */
+			uint32_t  randomMap_nLMs; 
 
 			mrpt::poses::CPose2D  sensorOnTheRobot;
 
 			double		sensor_max_range;
 			double		sensor_min_range;
 			double		sensor_fov;
-			bool		sensorDistingishesLandmarks; //!< If false (default), data associatin must be done
+			/** If false (default), data associatin must be done */
+			bool		sensorDistingishesLandmarks; 
 
-			double		path_square_len; //!< Used to simulate the robot path
-			double		robot_step_length; //!< The length (in meters) of each robot forward step.
+			/** Used to simulate the robot path */
+			double		path_square_len; 
+			/** The length (in meters) of each robot forward step. */
+			double		robot_step_length; 
 
-			double		odometry_noise_std_xy; //!< sigma of the odometry errors in X/Y
-			double		odometry_noise_std_phi; //!< sigma of the odometry errors in PHI
+			/** sigma of the odometry errors in X/Y */
+			double		odometry_noise_std_xy; 
+			/** sigma of the odometry errors in PHI */
+			double		odometry_noise_std_phi; 
 
 			double		uncert_overestim_odom;
 			double		uncert_overestim_sensor;
 
 			bool		show_map_real_correspondences;
 
-			double		spurious_count_mean, spurious_count_std; //!< Mean and std of spurious readings per "sensor observation".
+			/** Mean and std of spurious readings per "sensor observation". */
+			double		spurious_count_mean, spurious_count_std; 
 
 		};
 
 
-		TSimulationOptions options; //!< Options used in the simulator
+		/** Options used in the simulator */
+		TSimulationOptions options; 
 
 };
 

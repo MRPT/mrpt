@@ -121,18 +121,23 @@ namespace mrpt
 					bb_max(-std::numeric_limits<float>::max(),-std::numeric_limits<float>::max(),-std::numeric_limits<float>::max() )
 				{ }
 
-				bool                  is_leaf;     //!< true: it's a leaf and \a pts has valid indices; false: \a children is valid.
+				/** true: it's a leaf and \a pts has valid indices; false: \a children is valid. */
+				bool                  is_leaf;     
 
 				// In all cases, the bounding_box:
 				mrpt::math::TPoint3Df  bb_min, bb_max;
 
 				// Fields used if is_leaf=true
-				std::vector<size_t>   pts;         //!< Point indices in the derived class that fall into this node.
-				bool                  all;         //!< true: All elements in the reference object; false: only those in \a pts
+				/** Point indices in the derived class that fall into this node. */
+				std::vector<size_t>   pts;         
+				/** true: All elements in the reference object; false: only those in \a pts */
+				bool                  all;         
 
 				// Fields used if is_leaf=false
-				mrpt::math::TPoint3Df center;      //!< [is_leaf=false] The center of the node, whose coordinates are used to decide between the 8 children nodes.
-				size_t                child_id[8]; //!< [is_leaf=false] The indices in \a m_octree_nodes of the 8 children.
+				/** [is_leaf=false] The center of the node, whose coordinates are used to decide between the 8 children nodes. */
+				mrpt::math::TPoint3Df center;      
+				/** [is_leaf=false] The indices in \a m_octree_nodes of the 8 children. */
+				size_t                child_id[8]; 
 
 				/** update bounding box with a new point: */
 				inline void update_bb(const mrpt::math::TPoint3Df &p)
@@ -200,14 +205,18 @@ namespace mrpt
 			{
 				inline TRenderQueueElement(const size_t id, float area_sq) : node_id(id), render_area_sqpixels(area_sq) {  }
 
-				size_t  node_id;              //!< The node ID to render
-				float   render_area_sqpixels; //!< The approximate size of the octree on the screen (squared pixels).
+				/** The node ID to render */
+				size_t  node_id;              
+				/** The approximate size of the octree on the screen (squared pixels). */
+				float   render_area_sqpixels; 
 			};
-			mutable std::vector<TRenderQueueElement>  m_render_queue; //!< The list of elements that really are visible and will be rendered.
+			/** The list of elements that really are visible and will be rendered. */
+			mutable std::vector<TRenderQueueElement>  m_render_queue; 
 
 
 			bool  m_octree_has_to_rebuild_all;
-			typename mrpt::aligned_containers<TNode>::deque_t  m_octree_nodes; //!< First one [0] is always the root node
+			/** First one [0] is always the root node */
+			typename mrpt::aligned_containers<TNode>::deque_t  m_octree_nodes; 
 
 			// Counters of visible octrees for each render:
 			volatile mutable size_t m_visible_octree_nodes, m_visible_octree_nodes_ongoing;

@@ -119,16 +119,23 @@ private:
 
 	union {
 		struct {
-			XsReal m_x;		//!< Stores the x component of the euler triplet
-			XsReal m_y;		//!< Stores the y component of the euler triplet
-			XsReal m_z;		//!< Stores the z component of the euler triplet
+			/** Stores the x component of the euler triplet */
+			XsReal m_x;		
+			/** Stores the y component of the euler triplet */
+			XsReal m_y;		
+			/** Stores the z component of the euler triplet */
+			XsReal m_z;		
 		};
 		struct {
-			XsReal m_roll;		//!< Stores the roll component of the euler triplet
-			XsReal m_pitch;		//!< Stores the pitch component of the euler triplet
-			XsReal m_yaw;		//!< Stores the yaw component of the euler triplet
+			/** Stores the roll component of the euler triplet */
+			XsReal m_roll;		
+			/** Stores the pitch component of the euler triplet */
+			XsReal m_pitch;		
+			/** Stores the yaw component of the euler triplet */
+			XsReal m_yaw;		
 		};
-		XsReal m_data[3];	//!< Stores the euler triplet in an array of three elements
+		/** Stores the euler triplet in an array of three elements */
+		XsReal m_data[3];	
 	};
 };
 

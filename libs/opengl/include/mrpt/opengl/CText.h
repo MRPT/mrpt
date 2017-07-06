@@ -43,10 +43,13 @@ namespace mrpt
             int				m_fontHeight, m_fontWidth;
 
 		public:
-			void setString( const std::string &s ) { m_str=s; } //!< Sets the text to display
-			std::string getString() const { return m_str; }  //!< Return the current text associated to this label
+			/** Sets the text to display */
+			void setString( const std::string &s ) { m_str=s; } 
+			/** Return the current text associated to this label */
+			std::string getString() const { return m_str; }  
 
-			void setFont(const std::string &s, int height ) { m_fontName=s; m_fontHeight=height; } //!< Sets the font (It has no effect yet!)
+			/** Sets the font (It has no effect yet!) */
+			void setFont(const std::string &s, int height ) { m_fontName=s; m_fontHeight=height; } 
 			std::string getFont() const { return m_fontName; }
 
 			/** Render */

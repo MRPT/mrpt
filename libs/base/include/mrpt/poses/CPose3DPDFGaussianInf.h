@@ -49,8 +49,10 @@ namespace mrpt
 			/** @name Data fields
 				@{   */
 
-			CPose3D				mean;		//!< The mean value
-			mrpt::math::CMatrixDouble66		cov_inv;	//!< The inverse of the 6x6 covariance matrix
+			/** The mean value */
+			CPose3D				mean;		
+			/** The inverse of the 6x6 covariance matrix */
+			mrpt::math::CMatrixDouble66		cov_inv;	
 
 			/** @} */
 
@@ -135,12 +137,18 @@ namespace mrpt
 			}
 
 
-			void operator += ( const CPose3D &Ap);  //!< Makes: thisPDF = thisPDF + Ap, where "+" is pose composition (both the mean, and the covariance matrix are updated)
-			void operator += ( const CPose3DPDFGaussianInf &Ap); //!< Makes: thisPDF = thisPDF + Ap, where "+" is pose composition (both the mean, and the covariance matrix are updated)
-			void operator -= ( const CPose3DPDFGaussianInf &Ap); //!< Makes: thisPDF = thisPDF - Ap, where "-" is pose inverse composition (both the mean, and the covariance matrix are updated)
-			double evaluatePDF( const CPose3D &x ) const; //!< Evaluates the PDF at a given point
-			double evaluateNormalizedPDF( const CPose3D &x ) const; //!< Evaluates the ratio PDF(x) / PDF(MEAN), that is, the normalized PDF in the range [0,1]
-			void getInvCovSubmatrix2D( mrpt::math::CMatrixDouble &out_cov ) const; //!< Returns a 3x3 matrix with submatrix of the inverse covariance for the variables (x,y,yaw) only
+			/** Makes: thisPDF = thisPDF + Ap, where "+" is pose composition (both the mean, and the covariance matrix are updated) */
+			void operator += ( const CPose3D &Ap);  
+			/** Makes: thisPDF = thisPDF + Ap, where "+" is pose composition (both the mean, and the covariance matrix are updated) */
+			void operator += ( const CPose3DPDFGaussianInf &Ap); 
+			/** Makes: thisPDF = thisPDF - Ap, where "-" is pose inverse composition (both the mean, and the covariance matrix are updated) */
+			void operator -= ( const CPose3DPDFGaussianInf &Ap); 
+			/** Evaluates the PDF at a given point */
+			double evaluatePDF( const CPose3D &x ) const; 
+			/** Evaluates the ratio PDF(x) / PDF(MEAN), that is, the normalized PDF in the range [0,1] */
+			double evaluateNormalizedPDF( const CPose3D &x ) const; 
+			/** Returns a 3x3 matrix with submatrix of the inverse covariance for the variables (x,y,yaw) only */
+			void getInvCovSubmatrix2D( mrpt::math::CMatrixDouble &out_cov ) const; 
 
 			/** Computes the Mahalanobis distance between the centers of two Gaussians.
  			 *  The variables with a variance exactly equal to 0 are not taken into account in the process, but

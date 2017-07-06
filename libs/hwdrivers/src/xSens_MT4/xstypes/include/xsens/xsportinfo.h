@@ -174,9 +174,12 @@ struct XsPortInfo {
 private:
 #endif
 
-	XsDeviceId m_deviceId;	//!< The device Id of main Xsens device detected on the port
-	char m_portName[256];	//!< The port name
-	XsBaudRate m_baudrate;	//!< The baudrate at which an Xsens device was detected, may be XBR_Invalid for pure USB ports
+	/** The device Id of main Xsens device detected on the port */
+	XsDeviceId m_deviceId;	
+	/** The port name */
+	char m_portName[256];	
+	/** The baudrate at which an Xsens device was detected, may be XBR_Invalid for pure USB ports */
+	XsBaudRate m_baudrate;	
 };
 
 #if defined(_MSC_VER)

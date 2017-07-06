@@ -102,8 +102,10 @@ struct XsRange {
 private:
 #endif
 
-	int m_first;	//!< Storage for the lower end of the range
-	int m_last;		//!< Storage for the upper end of the range
+	/** Storage for the lower end of the range */
+	int m_first;	
+	/** Storage for the upper end of the range */
+	int m_last;		
 };
 
 typedef struct XsRange XsRange;

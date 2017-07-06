@@ -168,13 +168,15 @@ void CObservationVelodyneScan::getDescriptionAsText(std::ostream &o) const
 	o << "Raw packet count: " << scan_packets.size() << "\n";
 }
 
-double HDL32AdjustTimeStamp(int firingblock, int dsr)  //!< [us]
+/** [us] */
+double HDL32AdjustTimeStamp(int firingblock, int dsr)  
 {
 	return 
 		(firingblock * HDR32_FIRING_TOFFSET) + 
 		(dsr * HDR32_DSR_TOFFSET);
 }
-double VLP16AdjustTimeStamp(int firingblock,int dsr,int firingwithinblock)  //!< [us]
+/** [us] */
+double VLP16AdjustTimeStamp(int firingblock,int dsr,int firingwithinblock)  
 {
 	return 
 		(firingblock * VLP16_BLOCK_TDURATION) + 

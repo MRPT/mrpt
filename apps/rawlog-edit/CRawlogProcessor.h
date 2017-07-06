@@ -197,7 +197,8 @@ namespace mrpt
 		public:
 			mrpt::utils::CFileGZOutputStream 	&m_out_rawlog;
 			size_t  				m_entries_removed, m_entries_parsed;
-			bool                    m_we_are_done_with_this_rawlog; //!< Set to true to indicate that we are sure we don't have to keep on reading.
+			/** Set to true to indicate that we are sure we don't have to keep on reading. */
+			bool                    m_we_are_done_with_this_rawlog; 
 
 			CRawlogProcessorFilterObservations(mrpt::utils::CFileGZInputStream &in_rawlog, TCLAP::CmdLine &cmdline, bool verbose, mrpt::utils::CFileGZOutputStream &out_rawlog) :
 				CRawlogProcessorOnEachObservation(in_rawlog,cmdline,verbose),

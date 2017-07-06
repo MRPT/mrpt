@@ -33,14 +33,17 @@ namespace mrpt
 		public:
 			using Ptr = std::shared_ptr<CDisplayWindowPlots>;
 
-			typedef void (* TCallbackMenu) (int menuID,float cursor_x, float cursor_y, void* userParam); //!< Type for the callback function used in setMenuCallback
+			/** Type for the callback function used in setMenuCallback */
+			typedef void (* TCallbackMenu) (int menuID,float cursor_x, float cursor_y, void* userParam); 
 
 		protected:
 			friend class CWindowDialogPlots;
 
-			bool		m_holdon;   	//!< Whether hold_on is enabled
+			/** Whether hold_on is enabled */
+			bool		m_holdon;   	
 			bool		m_holdon_just_disabled;
-			uint32_t  	m_holdon_cnt;	//!< Counter for hold_on
+			/** Counter for hold_on */
+			uint32_t  	m_holdon_cnt;	
 			TCallbackMenu m_callback;
 			void		*m_callback_param;
 

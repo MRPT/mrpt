@@ -35,10 +35,14 @@ namespace math
 	class BASE_IMPEXP CHistogram
 	{
 	private:
-		double	m_min,m_max;		//!< The histogram limits
-		double  m_binSizeInv;		//!< ((max-min)/nBins)^-1
-		std::vector<size_t>	m_bins;	//!< The bins counter
-		size_t m_count;				//!< The total elements count
+		/** The histogram limits */
+		double	m_min,m_max;		
+		/** ((max-min)/nBins)^-1 */
+		double  m_binSizeInv;		
+		/** The bins counter */
+		std::vector<size_t>	m_bins;	
+		/** The total elements count */
+		size_t m_count;				
 
 	public:
 		/** Constructor

@@ -21,7 +21,8 @@ namespace mrpt
 		// Use a queue for the pending register issues, but also an atomic counter, which is much faster to check than a CS.
 		std::atomic<int>	BASE_IMPEXP &           pending_class_registers_count();
 		CThreadSafeQueue<TRegisterFunction> BASE_IMPEXP &   pending_class_registers();
-		extern volatile bool BASE_IMPEXP                           pending_class_registers_modified; //!< Set to true if pending_class_registers() has been called after registerAllPendingClasses(). Startup value is false.
+		/** Set to true if pending_class_registers() has been called after registerAllPendingClasses(). Startup value is false. */
+		extern volatile bool BASE_IMPEXP                           pending_class_registers_modified; 
 
 	} // End of namespace
 } // End of namespace

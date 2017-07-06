@@ -88,14 +88,21 @@ namespace mrpt
 			}
 
 
-			TKFMethod	method;				//!< The method to employ (default: kfEKFNaive)
+			/** The method to employ (default: kfEKFNaive) */
+			TKFMethod	method;				
 			mrpt::utils::VerbosityLevel & verbosity_level;
-			int 		IKF_iterations;	//!< Number of refinement iterations, only for the IKF method.
-			bool		enable_profiler;//!< If enabled (default=false), detailed timing information will be dumped to the console thru a CTimerLog at the end of the execution.
-			bool		use_analytic_transition_jacobian;	//!< (default=true) If true, OnTransitionJacobian will be called; otherwise, the Jacobian will be estimated from a numeric approximation by calling several times to OnTransitionModel.
-			bool		use_analytic_observation_jacobian;	//!< (default=true) If true, OnObservationJacobians will be called; otherwise, the Jacobian will be estimated from a numeric approximation by calling several times to OnObservationModel.
-			bool		debug_verify_analytic_jacobians; //!< (default=false) If true, will compute all the Jacobians numerically and compare them to the analytical ones, throwing an exception on mismatch.
-			double		debug_verify_analytic_jacobians_threshold; //!< (default-1e-2) Sets the threshold for the difference between the analytic and the numerical jacobians
+			/** Number of refinement iterations, only for the IKF method. */
+			int 		IKF_iterations;	
+			/** If enabled (default=false), detailed timing information will be dumped to the console thru a CTimerLog at the end of the execution. */
+			bool		enable_profiler;
+			/** (default=true) If true, OnTransitionJacobian will be called; otherwise, the Jacobian will be estimated from a numeric approximation by calling several times to OnTransitionModel. */
+			bool		use_analytic_transition_jacobian;	
+			/** (default=true) If true, OnObservationJacobians will be called; otherwise, the Jacobian will be estimated from a numeric approximation by calling several times to OnObservationModel. */
+			bool		use_analytic_observation_jacobian;	
+			/** (default=false) If true, will compute all the Jacobians numerically and compare them to the analytical ones, throwing an exception on mismatch. */
+			bool		debug_verify_analytic_jacobians; 
+			/** (default-1e-2) Sets the threshold for the difference between the analytic and the numerical jacobians */
+			double		debug_verify_analytic_jacobians_threshold; 
 		};
 
 		/** Auxiliary functions, for internal usage of MRPT classes */
@@ -168,8 +175,10 @@ namespace mrpt
 			inline bool   isMapEmpty() const { return detail::isMapEmpty(*this); }
 
 
-			typedef KFTYPE kftype; //!< The numeric type used in the Kalman Filter (default=double)
-			typedef CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,FEAT_SIZE,ACT_SIZE,KFTYPE>  KFCLASS;  //!< My class, in a shorter name!
+			/** The numeric type used in the Kalman Filter (default=double) */
+			typedef KFTYPE kftype; 
+			/** My class, in a shorter name! */
+			typedef CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,FEAT_SIZE,ACT_SIZE,KFTYPE>  KFCLASS;  
 
 			// ---------- Many useful typedefs to short the notation a bit... --------
 			typedef Eigen::Matrix<KFTYPE,Eigen::Dynamic,1> KFVector;
@@ -218,8 +227,10 @@ namespace mrpt
 			/** @name Kalman filter state
 				@{ */
 
-			KFVector  m_xkk;  //!< The system state vector.
-			KFMatrix  m_pkk;  //!< The system full covariance matrix.
+			/** The system state vector. */
+			KFVector  m_xkk;  
+			/** The system full covariance matrix. */
+			KFMatrix  m_pkk;  
 
 			/** @} */
 
@@ -455,12 +466,15 @@ namespace mrpt
 				mrpt::utils::COutputLogger("CKalmanFilterCapable"),
 				KF_options(this->m_min_verbosity_level),
 				m_user_didnt_implement_jacobian(true) 
-			{} //!< Default constructor
-			virtual ~CKalmanFilterCapable() {}  //!< Destructor
+			/** Default constructor */
+			{} 
+			/** Destructor */
+			virtual ~CKalmanFilterCapable() {}  
 
 			mrpt::utils::CTimeLogger &getProfiler() { return m_timLogger; }
 
-			TKF_options KF_options;	//!< Generic options for the Kalman Filter algorithm itself.
+			/** Generic options for the Kalman Filter algorithm itself. */
+			TKF_options KF_options;	
 
 
 		private:
@@ -469,8 +483,10 @@ namespace mrpt
 			//  (The variables that go into the stack remains in the function body)
 			vector_KFArray_OBS		all_predictions;
 			vector_size_t  			predictLMidxs;
-			typename mrpt::aligned_containers<KFMatrix_OxV>::vector_t  Hxs; //!< The vector of all partial Jacobians dh[i]_dx for each prediction
-			typename mrpt::aligned_containers<KFMatrix_OxF>::vector_t  Hys; //!< The vector of all partial Jacobians dh[i]_dy[i] for each prediction
+			/** The vector of all partial Jacobians dh[i]_dx for each prediction */
+			typename mrpt::aligned_containers<KFMatrix_OxV>::vector_t  Hxs; 
+			/** The vector of all partial Jacobians dh[i]_dy[i] for each prediction */
+			typename mrpt::aligned_containers<KFMatrix_OxF>::vector_t  Hys; 
 			KFMatrix  				S;
 			KFMatrix 				Pkk_subset;
 			vector_KFArray_OBS 		Z;		// Each entry is one observation:

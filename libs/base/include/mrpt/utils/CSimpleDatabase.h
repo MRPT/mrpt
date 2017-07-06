@@ -100,8 +100,10 @@ public:
 	void deleteRecord(size_t recordIndex);
 
 private:
-	vector_string				field_names;	//!< Field names
-	std::vector<vector_string>	data;	//!< Data for each cell
+	/** Field names */
+	vector_string				field_names;	
+	/** Data for each cell */
+	std::vector<vector_string>	data;	
 
 }; // end of class definition
 

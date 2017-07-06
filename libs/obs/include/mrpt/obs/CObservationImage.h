@@ -53,7 +53,8 @@ namespace obs
 		   */
 		mrpt::utils::TCamera		cameraParams;
 
-		mrpt::utils::CImage		image; //!< The image captured by the camera, that is, the main piece of information of this observation.
+		/** The image captured by the camera, that is, the main piece of information of this observation. */
+		mrpt::utils::CImage		image; 
 
 		/** Computes the rectified (un-distorted) image, using the embeded distortion parameters.
 		  */

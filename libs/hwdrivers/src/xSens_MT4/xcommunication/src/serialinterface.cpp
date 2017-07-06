@@ -294,7 +294,8 @@ XsResultValue SerialInterface::open(const XsPortInfo& portInfo,
 		return (m_lastResult = XRV_INPUTCANNOTBEOPENED);
 	}
 
-	DCB commState;		//!< Stored settings about the serial port
+	/** Stored settings about the serial port */
+	DCB commState;		
 
 	commState.DCBlength = sizeof(DCB);
 

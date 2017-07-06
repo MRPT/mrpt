@@ -127,7 +127,8 @@ namespace mrpt
 		template <typename T>
 		inline int fix(T x) { return  x>0 ? static_cast<int>(floor(static_cast<double>(x))) : static_cast<int>(ceil(static_cast<double>(x))) ; }
 
-		using mrpt::math::square;  //!< Allow square() to be available under mrpt::math and mrpt::utils
+		/** Allow square() to be available under mrpt::math and mrpt::utils */
+		using mrpt::math::square;  
 
 		/** Utility to get a cast'ed pointer from a smart pointer */
 		template <class R, class SMART_PTR>

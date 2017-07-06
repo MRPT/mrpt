@@ -55,8 +55,10 @@ namespace mrpt
 				/** Constructor for providing a custom random seed to initialize the PRNG */
 				CRandomGenerator(const uint32_t seed) { randomize(seed); }
 
-				void randomize(const uint32_t seed);  //!< Initialize the PRNG from the given random seed
-				void randomize();	//!< Randomize the generators, based on current time
+				/** Initialize the PRNG from the given random seed */
+				void randomize(const uint32_t seed);  
+				/** Randomize the generators, based on current time */
+				void randomize();	
 
 			/** @} */
 

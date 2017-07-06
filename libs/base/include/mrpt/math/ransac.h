@@ -78,7 +78,8 @@ namespace mrpt
 
 		}; // end class
 
-		typedef RANSAC_Template<double> RANSAC;   //!< The default instance of RANSAC, for double type
+		/** The default instance of RANSAC, for double type */
+		typedef RANSAC_Template<double> RANSAC;   
 
 		/** @} */
 

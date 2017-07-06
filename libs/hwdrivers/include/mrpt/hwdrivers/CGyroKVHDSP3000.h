@@ -77,7 +77,8 @@ namespace mrpt
 			  */
 			bool 			searchPortAndConnect();
 
-            CSerialPort*			m_serialPort;			//!< The serial port connection
+            /** The serial port connection */
+            CSerialPort*			m_serialPort;			
 			GYRO_MODE		m_mode;
 			bool 						m_firstInteration;
 				        

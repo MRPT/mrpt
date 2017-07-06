@@ -56,7 +56,8 @@ public:
 
 	virtual ~CRawlogTreeView();
 
-	void OnDraw(wxDC& dc);	//!< Draws the rawlog items
+	/** Draws the rawlog items */
+	void OnDraw(wxDC& dc);	
 
     void AssignImageList(wxImageList *imageList)
     {
@@ -95,14 +96,19 @@ public:
 		return m_rawlog_start;
 	}
 
-	void SetSelectedItem( int index , bool force_refresh = false );	//!< Changes the selected item, if different, and raises user callback, if any.
+	/** Changes the selected item, if different, and raises user callback, if any. */
+	void SetSelectedItem( int index , bool force_refresh = false );	
 	int GetSelectedItem() const { return m_selectedItem; }
 
 protected:
-	mrpt::obs::CRawlog		*m_rawlog;	//!< A reference to the rawlog to be rendered.
-	wxImageList				*m_imageList; //!< We own this pointer
-	int						m_selectedItem; //!< Selected row, or -1 if none
-	std::string				m_rawlog_name;	//!< File name
+	/** A reference to the rawlog to be rendered. */
+	mrpt::obs::CRawlog		*m_rawlog;	
+	/** We own this pointer */
+	wxImageList				*m_imageList; 
+	/** Selected row, or -1 if none */
+	int						m_selectedItem; 
+	/** File name */
+	std::string				m_rawlog_name;	
 	wxRawlogTreeEventFunction	m_event_select_change;
 	wxWindow				*m_win_parent;
 
@@ -118,12 +124,15 @@ protected:
 		{
 		}
 
-		uint8_t				level;		//!< Hierarchy level: 0,1,2.
-                mrpt::utils::CSerializable::Ptr	data;	//!< The object, or nullptr
+		/** Hierarchy level: 0,1,2. */
+		uint8_t				level;		
+                /** The object, or nullptr */
+                mrpt::utils::CSerializable::Ptr	data;	
 		size_t		index;
 	};
 
-	std::vector<TNodeData>	m_tree_nodes;	//!< The nuimber of rows to display for the rawlog, used to compute the height
+	/** The nuimber of rows to display for the rawlog, used to compute the height */
+	std::vector<TNodeData>	m_tree_nodes;	
 
 	/** Returns an icon index depending on the class of the object in the tree view
 	  */

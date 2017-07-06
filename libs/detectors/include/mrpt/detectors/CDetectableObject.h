@@ -33,9 +33,11 @@ namespace mrpt
 
 		public:
 
-			std::string	m_id; //!< Must be an unique id for each detectable object
+			/** Must be an unique id for each detectable object */
+			std::string	m_id; 
 
-			mrpt::obs::CObservation::Ptr	obs; //!< Observation wich contain the deteted object
+			/** Observation wich contain the deteted object */
+			mrpt::obs::CObservation::Ptr	obs; 
 
 			inline void setObservation( mrpt::obs::CObservation::Ptr newObs ){	obs = newObs;	};
 
@@ -50,8 +52,10 @@ namespace mrpt
 
 		public:
 
-			float m_x, m_y; //!< 2D Coordinates of detected object
-			float m_height, m_width; //!< Size of detected object
+			/** 2D Coordinates of detected object */
+			float m_x, m_y; 
+			/** Size of detected object */
+			float m_height, m_width; 
 
 			/** Extra constructor */
 			CDetectable2D( const int &x = 0, const int &y = 0, const int &height = 0, const int &width = 0 )
@@ -100,7 +104,8 @@ namespace mrpt
 			};
 
 
-			float		m_z; //!< Z coordinate of detected object
+			/** Z coordinate of detected object */
+			float		m_z; 
 
 		}; // End of class
 		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CDetectable3D, mrpt::detectors::CDetectable2D, DETECTORS_IMPEXP )

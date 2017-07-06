@@ -23,8 +23,10 @@
 //! \brief A container for information of one satellite
 struct XsSvInfo 
 {
-	uint8_t m_chn;		//!< channel number, range 0..NCH-1
-	uint8_t m_svid;		//!< Satellite ID
+	/** channel number, range 0..NCH-1 */
+	uint8_t m_chn;		
+	/** Satellite ID */
+	uint8_t m_svid;		
 	uint8_t m_flags;	/*!< Bitmask, made up of the following bit values
 							0x01 = SV is used for navigation
 							0x02 = Differential correction data is available for this SV
@@ -43,10 +45,14 @@ struct XsSvInfo
 							5, 6: Code and Carrier locked
 							7: Code and Carrier locked, receiving 50bps data
 						*/
-	uint8_t	m_cno;		//!< Carrier to Noise Ratio (Signal Strength) (dbHz)
-	int8_t	m_elev;		//!< Elevation in integer (deg)
-	int16_t	m_azim;		//!< Azimuth in integer (deg)
-	int32_t m_prres;	//!< Pseudo range residual (cm)
+	/** Carrier to Noise Ratio (Signal Strength) (dbHz) */
+	uint8_t	m_cno;		
+	/** Elevation in integer (deg) */
+	int8_t	m_elev;		
+	/** Azimuth in integer (deg) */
+	int16_t	m_azim;		
+	/** Pseudo range residual (cm) */
+	int32_t m_prres;	
 };
 typedef struct XsSvInfo XsSvInfo;
 
@@ -54,11 +60,16 @@ typedef struct XsSvInfo XsSvInfo;
 */
 struct XsRawGpsSvInfo
 {
-	uint32_t m_itow;		//!< Gps time of week (ms)
-	uint8_t  m_nch;			//!< Number of channels range 0..16
-	uint8_t  m_res1;		//!< Reserved
-	uint16_t m_res2;		//!< Reserved
-	XsSvInfo m_svInfos[16];	//!< The information of all satellites, maxmimum 16
+	/** Gps time of week (ms) */
+	uint32_t m_itow;		
+	/** Number of channels range 0..16 */
+	uint8_t  m_nch;			
+	/** Reserved */
+	uint8_t  m_res1;		
+	/** Reserved */
+	uint16_t m_res2;		
+	/** The information of all satellites, maxmimum 16 */
+	XsSvInfo m_svInfos[16];	
 };
 typedef struct XsRawGpsSvInfo XsRawGpsSvInfo;
 

@@ -43,8 +43,10 @@ namespace poses
 		DEFINE_SERIALIZABLE( CPose3DRotVec )
 
 	public:
-		mrpt::math::CArrayDouble<3>   m_coords; //!< The translation vector [x,y,z]
-		mrpt::math::CArrayDouble<3>   m_rotvec; //!< The rotation vector [vx,vy,vz]
+		/** The translation vector [x,y,z] */
+		mrpt::math::CArrayDouble<3>   m_coords; 
+		/** The rotation vector [vx,vy,vz] */
+		mrpt::math::CArrayDouble<3>   m_rotvec; 
 
 		/** @name Constructors
 		    @{ */
@@ -374,7 +376,8 @@ namespace poses
 
 		/** @} */
 
-		typedef CPose3DRotVec  type_value; //!< Used to emulate CPosePDF types, for example, in mrpt::graphs::CNetworkOfPoses
+		/** Used to emulate CPosePDF types, for example, in mrpt::graphs::CNetworkOfPoses */
+		typedef CPose3DRotVec  type_value; 
 		enum { is_3D_val = 1 };
 		static inline bool is_3D() { return is_3D_val!=0; }
 		enum { rotation_dimensions = 3 };
@@ -388,7 +391,8 @@ namespace poses
 
 		/** @name STL-like methods and typedefs
 		   @{   */
-		typedef double         value_type;		//!< The type of the elements
+		/** The type of the elements */
+		typedef double         value_type;		
 		typedef double&        reference;
 		typedef const double&  const_reference;
 		typedef std::size_t    size_type;

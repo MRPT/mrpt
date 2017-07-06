@@ -64,14 +64,20 @@ protected:
 		uint16_t m_rawGpsGpsAge;
 		uint16_t m_size;
 	}*	m_infoList;
-	CmtDataFormat*	m_formatList;	//!< A list of the formats of the data items
-	bool m_xm;						//!< Indicates that xbus-formatting is used
+	/** A list of the formats of the data items */
+	CmtDataFormat*	m_formatList;	
+	/** Indicates that xbus-formatting is used */
+	bool m_xm;						
 
 public:
-	uint16_t	m_itemCount;	//!< The number of data items in the message
-	Message			m_msg;			//!< The message
-	TimeStamp		m_rtc;			//!< Sample time in ms, based on the sample counter
-	TimeStamp		m_toa;			//!< Time of arrival
+	/** The number of data items in the message */
+	uint16_t	m_itemCount;	
+	/** The message */
+	Message			m_msg;			
+	/** Sample time in ms, based on the sample counter */
+	TimeStamp		m_rtc;			
+	/** Time of arrival */
+	TimeStamp		m_toa;			
 
 	Packet(uint16_t items, bool xbus);
 	Packet(const Packet& pack);

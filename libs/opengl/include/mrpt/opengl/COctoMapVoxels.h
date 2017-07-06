@@ -62,12 +62,18 @@ namespace mrpt
 			/** The different coloring schemes, which modulate the generic mrpt::opengl::CRenderizable object color. Set with setVisualizationMode() */
 			enum visualization_mode_t
 			{
-				COLOR_FROM_HEIGHT,				//!< Color goes from black (at the bottom) to the chosen color (at the top)
-				COLOR_FROM_OCCUPANCY,			//!< Color goes from black (occupied voxel) to the chosen color (free voxel)
-				TRANSPARENCY_FROM_OCCUPANCY,	//!< Transparency goes from opaque (occupied voxel) to transparent (free voxel).
-				TRANS_AND_COLOR_FROM_OCCUPANCY,	//!< Color goes from black (occupaid voxel) to the chosen color (free voxel) and they are transparent
-				MIXED,							//!< Combination of COLOR_FROM_HEIGHT and TRANSPARENCY_FROM_OCCUPANCY
-				FIXED							//!< All cubes are of identical color.
+				/** Color goes from black (at the bottom) to the chosen color (at the top) */
+				COLOR_FROM_HEIGHT,				
+				/** Color goes from black (occupied voxel) to the chosen color (free voxel) */
+				COLOR_FROM_OCCUPANCY,			
+				/** Transparency goes from opaque (occupied voxel) to transparent (free voxel). */
+				TRANSPARENCY_FROM_OCCUPANCY,	
+				/** Color goes from black (occupaid voxel) to the chosen color (free voxel) and they are transparent */
+				TRANS_AND_COLOR_FROM_OCCUPANCY,	
+				/** Combination of COLOR_FROM_HEIGHT and TRANSPARENCY_FROM_OCCUPANCY */
+				MIXED,							
+				/** All cubes are of identical color. */
+				FIXED							
 			};
 
 
@@ -85,7 +91,8 @@ namespace mrpt
 			/** The info of each grid block */
 			struct OPENGL_IMPEXP TGridCube
 			{
-				mrpt::math::TPoint3D  min,max; //!< opposite corners of the cube
+				/** opposite corners of the cube */
+				mrpt::math::TPoint3D  min,max; 
 
 				TGridCube() {}
 				TGridCube(const mrpt::math::TPoint3D &min_,const mrpt::math::TPoint3D &max_) : min(min_),max(max_) { }
@@ -103,7 +110,8 @@ namespace mrpt
 			std::deque<TInfoPerVoxelSet>   m_voxel_sets;
 			std::vector<TGridCube>         m_grid_cubes;
 
-			mrpt::math::TPoint3D   m_bb_min, m_bb_max; //!< Cached bounding boxes
+			/** Cached bounding boxes */
+			mrpt::math::TPoint3D   m_bb_min, m_bb_max; 
 
 			bool					m_enable_lighting;
 			bool					m_enable_cube_transparency;

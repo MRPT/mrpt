@@ -230,8 +230,10 @@ class ptgConfiguratorframe: public wxFrame
 			cpsPickTarget
 		};
 
-		mrpt::math::TPoint2D             m_curCursorPos; //!< Of the cursor on the 3D view (in world coordinates at Z=0)
-		TCursorPickState                 m_cursorPickState;   //!< The state of the cursor onto the 3D view:
+		/** Of the cursor on the 3D view (in world coordinates at Z=0) */
+		mrpt::math::TPoint2D             m_curCursorPos; 
+		/** The state of the cursor onto the 3D view: */
+		TCursorPickState                 m_cursorPickState;   
 
 		// ========= Opengl View =======
 		mrpt::opengl::COpenGLViewport::Ptr  gl_view_WS, gl_view_TPSpace;

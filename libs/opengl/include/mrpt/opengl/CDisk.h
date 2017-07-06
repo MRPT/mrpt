@@ -43,8 +43,10 @@ namespace mrpt
 			float getInRadius() const { return m_radiusIn; }
 			float getOutRadius() const { return m_radiusOut; }
 
-			void setSlicesCount(uint32_t N) { m_nSlices=N; CRenderizableDisplayList::notifyChange(); }  //!< Default=50
-			void setLoopsCount(uint32_t N) { m_nLoops=N; CRenderizableDisplayList::notifyChange(); }  //!< Default=4
+			/** Default=50 */
+			void setSlicesCount(uint32_t N) { m_nSlices=N; CRenderizableDisplayList::notifyChange(); }  
+			/** Default=4 */
+			void setLoopsCount(uint32_t N) { m_nLoops=N; CRenderizableDisplayList::notifyChange(); }  
 
 
 			/** Render

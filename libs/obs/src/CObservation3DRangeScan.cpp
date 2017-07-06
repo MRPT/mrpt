@@ -56,7 +56,8 @@ bool CObservation3DRangeScan::EXTERNALS_AS_TEXT = false;
 	// Memory pool for XYZ points ----------------
 	struct CObservation3DRangeScan_Points_MemPoolParams
 	{
-		size_t WH; //!< Width*Height, that is, the number of 3D points
+		/** Width*Height, that is, the number of 3D points */
+		size_t WH; 
 		inline bool isSuitable(const CObservation3DRangeScan_Points_MemPoolParams &req) const {
 			return WH>=req.WH;
 		}
@@ -64,14 +65,16 @@ bool CObservation3DRangeScan::EXTERNALS_AS_TEXT = false;
 	struct CObservation3DRangeScan_Points_MemPoolData
 	{
 		std::vector<float> pts_x,pts_y,pts_z;
-		std::vector<uint16_t> idxs_x, idxs_y; //!< for each point, the corresponding (x,y) pixel coordinates
+		/** for each point, the corresponding (x,y) pixel coordinates */
+		std::vector<uint16_t> idxs_x, idxs_y; 
 	};
 	typedef mrpt::system::CGenericMemoryPool<CObservation3DRangeScan_Points_MemPoolParams,CObservation3DRangeScan_Points_MemPoolData> TMyPointsMemPool;
 
 	// Memory pool for the rangeImage matrix ----------------
 	struct CObservation3DRangeScan_Ranges_MemPoolParams
 	{
-		int H,W; //!< Size of matrix
+		/** Size of matrix */
+		int H,W; 
 		inline bool isSuitable(const CObservation3DRangeScan_Ranges_MemPoolParams &req) const {
 			return H==req.H && W==req.W;
 		}

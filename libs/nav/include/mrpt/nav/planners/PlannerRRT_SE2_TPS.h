@@ -67,7 +67,8 @@ namespace mrpt
 		class NAV_IMPEXP PlannerRRT_SE2_TPS : public PlannerTPS_VirtualBase
 		{
 		public:
-			typedef  mrpt::math::TPose2D  node_pose_t; //!< The type of poses at nodes
+			/** The type of poses at nodes */
+			typedef  mrpt::math::TPose2D  node_pose_t; 
 
 			struct NAV_IMPEXP TPlannerInput : public TPlannerInputTempl<node_pose_t, node_pose_t>
 			{

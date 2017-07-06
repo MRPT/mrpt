@@ -53,17 +53,26 @@ namespace mrpt
 			float		m_pointSize;
 
 			//Data
-			unsigned int	m_num_verts;	//!< Number of vertices of the mesh
-			unsigned int	m_num_faces;	//!< Number of faces of the mesh
-			bool			*m_is_quad;		//!< Pointer storing whether a face is a quad (1) or a triangle (0)
-			f_verts			*m_face_verts;	//!< Pointer storing the vertices that compose each face. Size: 4 x num_faces (4 for the possible max number - quad)
-			coord3D			*m_vert_coords; //!< Pointer storing the coordinates of the vertices. Size: 3 x num_vertices
-			coord3D			*m_normals;		//!< Pointer storing the face normals. Size: 3 x num_faces
+			/** Number of vertices of the mesh */
+			unsigned int	m_num_verts;	
+			/** Number of faces of the mesh */
+			unsigned int	m_num_faces;	
+			/** Pointer storing whether a face is a quad (1) or a triangle (0) */
+			bool			*m_is_quad;		
+			/** Pointer storing the vertices that compose each face. Size: 4 x num_faces (4 for the possible max number - quad) */
+			f_verts			*m_face_verts;	
+			/** Pointer storing the coordinates of the vertices. Size: 3 x num_vertices */
+			coord3D			*m_vert_coords; 
+			/** Pointer storing the face normals. Size: 3 x num_faces */
+			coord3D			*m_normals;		
 			
 			//Colors
-			float edge_color[4];			//!< Color of the edges (when shown)
-			float face_color[4];			//!< Color of the faces (when shown)
-			float vert_color[4];			//!< Color of the vertices (when shown)
+			/** Color of the edges (when shown) */
+			float edge_color[4];			
+			/** Color of the faces (when shown) */
+			float face_color[4];			
+			/** Color of the vertices (when shown) */
+			float vert_color[4];			
 			mrpt::utils::TColormap	m_colorMap; //Not used yet. I leave it here in case I want to use it in the future
 
 		public:

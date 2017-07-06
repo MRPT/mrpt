@@ -91,8 +91,10 @@ namespace maps
 		mrpt::maps::CMultiMetricMap			averageMap;
 		bool					averageMapIsUpdated;
 
-		mrpt::maps::CSimpleMap  SFs; //!< The SFs and their corresponding pose estimations
-		std::vector<uint32_t>   SF2robotPath; //!< A mapping between indexes in the SFs to indexes in the robot paths from particles.
+		/** The SFs and their corresponding pose estimations */
+		mrpt::maps::CSimpleMap  SFs; 
+		/** A mapping between indexes in the SFs to indexes in the robot paths from particles. */
+		std::vector<uint32_t>   SF2robotPath; 
 
 	public:
 
@@ -130,7 +132,8 @@ namespace maps
 
 			mrpt::slam::TKLDParams	KLD_params;
 
-			mrpt::slam::CICP::TConfigParams		icp_params; //!< ICP parameters, used only when "PF_algorithm=2" in the particle filter.
+			/** ICP parameters, used only when "PF_algorithm=2" in the particle filter. */
+			mrpt::slam::CICP::TConfigParams		icp_params; 
 
 		} options;
 
@@ -143,7 +146,8 @@ namespace maps
 
 		/** Clear all elements of the maps, and restore all paths to a single starting pose */
 		void  clear( const mrpt::poses::CPose2D &initialPose );
-		void  clear( const mrpt::poses::CPose3D &initialPose ); //!< \overload
+		/** \overload */
+		void  clear( const mrpt::poses::CPose3D &initialPose ); 
 
 		 /** Returns the estimate of the robot pose as a particles PDF for the instant of time "timeStep", from 0 to N-1.
 		  * \sa getEstimatedPosePDF
@@ -199,7 +203,8 @@ namespace maps
 		/** Rebuild the "expected" grid map. Used internally, do not call  */
 		void  rebuildAverageMap();
 
-		float newInfoIndex; //!< An index [0,1] measuring how much information an observation aports to the map (Typ. threshold=0.07)
+		/** An index [0,1] measuring how much information an observation aports to the map (Typ. threshold=0.07) */
+		float newInfoIndex; 
 
 	public:
 			/** \name Virtual methods that the PF_implementations assume exist.

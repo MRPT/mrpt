@@ -41,12 +41,16 @@ namespace mrpt
 		class VISION_IMPEXP CVideoFileWriter
 		{
 		private:
-			mrpt::utils::void_ptr_noncopy	m_video; //!< A pointer to CvVideoWriter
-			mrpt::utils::TImageSize		m_img_size; //!< A copy of the video size
+			/** A pointer to CvVideoWriter */
+			mrpt::utils::void_ptr_noncopy	m_video; 
+			/** A copy of the video size */
+			mrpt::utils::TImageSize		m_img_size; 
 
 		public:
-			CVideoFileWriter();	//!< Default constructor, which does not open any file
-			virtual ~CVideoFileWriter();		//!< Destructor
+			/** Default constructor, which does not open any file */
+			CVideoFileWriter();	
+			/** Destructor */
+			virtual ~CVideoFileWriter();		
 
 			/** Open a file for writing the video.
 			  *  \param out_file The video file to create for output.

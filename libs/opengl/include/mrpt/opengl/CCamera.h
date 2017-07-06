@@ -37,9 +37,12 @@ namespace mrpt
 			float 	m_distanceZoom;
 			float	m_azimuthDeg,m_elevationDeg;
 
-			bool	m_projectiveModel;	//!< If set to true (default), camera model is projective, otherwise, it's orthogonal.
-			float	m_projectiveFOVdeg;	//!< Field-of-View in degs, only when projectiveModel=true (default=30 deg).
-			bool	m_6DOFMode; //!< If set to true, camera pose is used when rendering the viewport
+			/** If set to true (default), camera model is projective, otherwise, it's orthogonal. */
+			bool	m_projectiveModel;	
+			/** Field-of-View in degs, only when projectiveModel=true (default=30 deg). */
+			float	m_projectiveFOVdeg;	
+			/** If set to true, camera pose is used when rendering the viewport */
+			bool	m_6DOFMode; 
 
 
 		public:
@@ -68,8 +71,10 @@ namespace mrpt
 			void setAzimuthDegrees(float ang) { m_azimuthDeg=ang; }
 			void setElevationDegrees(float ang) { m_elevationDeg=ang; }
 
-			void setProjectiveModel(bool v=true) { m_projectiveModel=v; } //!< Enable/Disable projective mode (vs. orthogonal)
-			void setOrthogonal(bool v=true) { m_projectiveModel=!v; }     //!< Enable/Disable orthogonal mode (vs. projective)
+			/** Enable/Disable projective mode (vs. orthogonal) */
+			void setProjectiveModel(bool v=true) { m_projectiveModel=v; } 
+			/** Enable/Disable orthogonal mode (vs. projective) */
+			void setOrthogonal(bool v=true) { m_projectiveModel=!v; }     
 			
 			/** Set 6DOFMode, if enabled camera is set according to its pose (default=false).
 			 *  Conventionally, eye is set looking towards the positive direction of Z axis.
@@ -82,8 +87,10 @@ namespace mrpt
 			bool isOrthogonal() const { return !m_projectiveModel; }
 			bool is6DOFMode() const { return m_6DOFMode; }
 
-			void setProjectiveFOVdeg(float ang) { m_projectiveFOVdeg=ang; }  //!< Field-of-View in degs, only when projectiveModel=true (default=30 deg).
-			float getProjectiveFOVdeg() const { return m_projectiveFOVdeg; }  //!< Field-of-View in degs, only when projectiveModel=true (default=30 deg).
+			/** Field-of-View in degs, only when projectiveModel=true (default=30 deg). */
+			void setProjectiveFOVdeg(float ang) { m_projectiveFOVdeg=ang; }  
+			/** Field-of-View in degs, only when projectiveModel=true (default=30 deg). */
+			float getProjectiveFOVdeg() const { return m_projectiveFOVdeg; }  
 
 
 			/** Render does nothing here. */

@@ -28,13 +28,20 @@ namespace mrpt
 		  */
 		struct VISION_IMPEXP TImageCalibData
 		{
-			mrpt::utils::CImage	img_original;     //!< This image will be automatically loaded from the file name passed to checkerBoardCameraCalibration
-			mrpt::utils::CImage	img_checkboard;   //!< At output, this will contain the detected checkerboard overprinted to the image.
-			mrpt::utils::CImage	img_rectified;    //!< At output, this will be the rectified image
-			std::vector<mrpt::utils::TPixelCoordf>	detected_corners; //!< At output, the detected corners (x,y) in pixel units.
-			mrpt::poses::CPose3D			reconstructed_camera_pose;   //!< At output, the reconstructed pose of the camera.
-			std::vector<mrpt::utils::TPixelCoordf>		projectedPoints_distorted;   //!< At output, only will have an empty vector if the checkerboard was not found in this image, or the predicted (reprojected) corners, which were used to estimate the average square error.
-			std::vector<mrpt::utils::TPixelCoordf>		projectedPoints_undistorted; //!< At output, like projectedPoints_distorted but for the undistorted image.
+			/** This image will be automatically loaded from the file name passed to checkerBoardCameraCalibration */
+			mrpt::utils::CImage	img_original;     
+			/** At output, this will contain the detected checkerboard overprinted to the image. */
+			mrpt::utils::CImage	img_checkboard;   
+			/** At output, this will be the rectified image */
+			mrpt::utils::CImage	img_rectified;    
+			/** At output, the detected corners (x,y) in pixel units. */
+			std::vector<mrpt::utils::TPixelCoordf>	detected_corners; 
+			/** At output, the reconstructed pose of the camera. */
+			mrpt::poses::CPose3D			reconstructed_camera_pose;   
+			/** At output, only will have an empty vector if the checkerboard was not found in this image, or the predicted (reprojected) corners, which were used to estimate the average square error. */
+			std::vector<mrpt::utils::TPixelCoordf>		projectedPoints_distorted;   
+			/** At output, like projectedPoints_distorted but for the undistorted image. */
+			std::vector<mrpt::utils::TPixelCoordf>		projectedPoints_undistorted; 
 
 			/** Empty all the data */
 			void clear() { *this = TImageCalibData(); }

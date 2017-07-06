@@ -32,7 +32,8 @@ namespace mrpt
 			/** The placeholders for the data */
 			std::map<double,double>	m_x2y;
 
-			bool	m_wrap2pi;		//!< Whether to wrap "y"
+			/** Whether to wrap "y" */
+			bool	m_wrap2pi;		
 
 		public:
 			/** Constructor with optional initial values. */

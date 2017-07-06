@@ -244,7 +244,8 @@ namespace mrpt {
 					newFeat.ID			= ++max_feat_ID_at_input;
 					newFeat.response	= feat.response;
 					newFeat.octave		= 0;
-					newFeat.track_status = status_IDLE;  //!< Inactive: right after detection, and before being tried to track
+					/** Inactive: right after detection, and before being tried to track */
+					newFeat.track_status = status_IDLE;  
 				}
 #elif 0
 				// Version with an occupancy grid:
@@ -310,7 +311,8 @@ namespace mrpt {
 					newFeat.ID			= ++max_feat_ID_at_input;
 					newFeat.response	= feat.response;
 					newFeat.octave		= 0;
-					newFeat.track_status = status_IDLE;  //!< Inactive: right after detection, and before being tried to track
+					/** Inactive: right after detection, and before being tried to track */
+					newFeat.track_status = status_IDLE;  
 				}
 #else
 				MRPT_UNUSED_PARAM(patchSize); MRPT_UNUSED_PARAM(cur_gray);
@@ -345,7 +347,8 @@ namespace mrpt {
 						newFeat.ID			= ++max_feat_ID_at_input;
 						newFeat.response	= feat.response;
 						newFeat.octave		= 0;
-						newFeat.track_status = status_IDLE;  //!< Inactive: right after detection, and before being tried to track
+						/** Inactive: right after detection, and before being tried to track */
+						newFeat.track_status = status_IDLE;  
 					}
 				}
 

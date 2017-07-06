@@ -43,8 +43,10 @@ namespace poses
 		DEFINE_SERIALIZABLE( CPose3DQuat )
 
 	public:
-		mrpt::math::CArrayDouble<3>     m_coords; //!< The translation vector [x,y,z]
-		mrpt::math::CQuaternionDouble   m_quat;   //!< The quaternion.
+		/** The translation vector [x,y,z] */
+		mrpt::math::CArrayDouble<3>     m_coords; 
+		/** The quaternion. */
+		mrpt::math::CQuaternionDouble   m_quat;   
 
 	public:
 		/** Read/Write access to the quaternion representing the 3D rotation. */
@@ -233,7 +235,8 @@ namespace poses
 			) const;
 
 	public:
-		typedef CPose3DQuat type_value; //!< Used to emulate CPosePDF types, for example, in mrpt::graphs::CNetworkOfPoses
+		/** Used to emulate CPosePDF types, for example, in mrpt::graphs::CNetworkOfPoses */
+		typedef CPose3DQuat type_value; 
 		enum { is_3D_val = 1 };
 		static inline bool is_3D() { return is_3D_val!=0; }
 		enum { rotation_dimensions = 3 };
@@ -245,7 +248,8 @@ namespace poses
 
 		/** @name STL-like methods and typedefs
 		   @{   */
-		typedef double         value_type;		//!< The type of the elements
+		/** The type of the elements */
+		typedef double         value_type;		
 		typedef double&        reference;
 		typedef const double&  const_reference;
 		typedef std::size_t    size_type;
@@ -269,9 +273,12 @@ namespace poses
 		{
 		private:
 			typedef std::iterator<std::random_access_iterator_tag,value_type> iterator_base;
-			CPose3DQuat *m_obj;		//!< A reference to the source of this iterator
-			size_t		m_cur_idx;	//!< The iterator points to this element.
-			typedef value_type T; //!< The type of the matrix elements
+			/** A reference to the source of this iterator */
+			CPose3DQuat *m_obj;		
+			/** The iterator points to this element. */
+			size_t		m_cur_idx;	
+			/** The type of the matrix elements */
+			typedef value_type T; 
 
 			inline void check_limits(bool allow_end = false) const
 			{
@@ -336,9 +343,12 @@ namespace poses
 		{
 		private:
 			typedef std::iterator<std::random_access_iterator_tag,value_type> iterator_base;
-			const CPose3DQuat *m_obj;		//!< A reference to the source of this iterator
-			size_t		m_cur_idx;	//!< The iterator points to this element.
-			typedef value_type T; //!< The type of the matrix elements
+			/** A reference to the source of this iterator */
+			const CPose3DQuat *m_obj;		
+			/** The iterator points to this element. */
+			size_t		m_cur_idx;	
+			/** The type of the matrix elements */
+			typedef value_type T; 
 
 			inline void check_limits(bool allow_end = false) const
 			{

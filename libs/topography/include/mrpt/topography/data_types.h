@@ -29,7 +29,8 @@ namespace mrpt
 		struct TOPO_IMPEXP TCoords
 		{
 			// Only keep one of the possible representations:
-			double decimal_value; //!< Also obtained directly through the double(void) operator using a TCoords anywhere were a double is expected.
+			/** Also obtained directly through the double(void) operator using a TCoords anywhere were a double is expected. */
+			double decimal_value; 
 
 			inline TCoords( const int _deg, const int _min, const double _sec ) { setDegMinSec(_deg,_min,_sec); }
 			inline TCoords( const double dec ) { setFromDecimal(dec); }
@@ -85,9 +86,12 @@ namespace mrpt
 			inline TEllipsoid() : sa( 6378137.0 ), sb( 6356752.314245 ), name("WGS84") {}
 			inline TEllipsoid( const double _sa, const double _sb, const std::string &_name ) : sa(_sa), sb(_sb), name(_name) {}
 
-			double sa;		//!< largest semiaxis of the reference ellipsoid (in meters)
-			double sb;		//!< smallest semiaxis of the reference ellipsoid (in meters)
-			std::string name;	//!< the ellipsoid name
+			/** largest semiaxis of the reference ellipsoid (in meters) */
+			double sa;		
+			/** smallest semiaxis of the reference ellipsoid (in meters) */
+			double sb;		
+			/** the ellipsoid name */
+			std::string name;	
 
 			static inline TEllipsoid Ellipsoid_WGS84() {					return TEllipsoid( 6378137.000, 6356752.314245, "WGS84" ); }
 			static inline TEllipsoid Ellipsoid_WGS72() {					return TEllipsoid( 6378135.000, 6356750.519915, "WGS72"  ); }
@@ -125,9 +129,12 @@ namespace mrpt
 
 			inline bool isClear() const { return lat.getDecimalValue()==0 && lon.getDecimalValue()==0 && height==0; }
 
-			TCoords lat;	//!< Latitude (in degrees)
-			TCoords lon;	//!< Longitude (in degrees)
-			double  height;	//!< Geodetic height (in meters)
+			/** Latitude (in degrees) */
+			TCoords lat;	
+			/** Longitude (in degrees) */
+			TCoords lon;	
+			/** Geodetic height (in meters) */
+			double  height;	
 
 		};
 
@@ -139,9 +146,12 @@ namespace mrpt
 		  */
 		struct TOPO_IMPEXP TDatum7Params
 		{
-			double dX, dY, dZ;		//!< Deltas (X,Y,Z)
-			double Rx, Ry, Rz;		//!< Rotation components (in secs)
-			double dS;				//!< Scale factor (in ppm) (Scale is 1+dS/1e6)
+			/** Deltas (X,Y,Z) */
+			double dX, dY, dZ;		
+			/** Rotation components (in secs) */
+			double Rx, Ry, Rz;		
+			/** Scale factor (in ppm) (Scale is 1+dS/1e6) */
+			double dS;				
 
 			inline TDatum7Params(
 				const double _dX, const double _dY, const double _dZ,
@@ -158,9 +168,11 @@ namespace mrpt
 
 		struct TOPO_IMPEXP TDatum7Params_TOPCON
 		{
-			double dX, dY, dZ;		//!< Deltas (X,Y,Z)
+			/** Deltas (X,Y,Z) */
+			double dX, dY, dZ;		
 			double m11, m12, m13, m21, m22, m23, m31, m32, m33;
-			double dS;				//!< Scale factor (in ppm) (Scale is 1+dS/1e6)
+			/** Scale factor (in ppm) (Scale is 1+dS/1e6) */
+			double dS;				
 
 			inline TDatum7Params_TOPCON(
 				const double _dX, const double _dY, const double _dZ,
@@ -180,10 +192,14 @@ namespace mrpt
 		  */
 		struct TOPO_IMPEXP TDatum10Params
 		{
-			double dX, dY, dZ; //!< Deltas (X,Y,Z)
-			double Xp, Yp, Zp; //!< To be substracted to the input point
-			double Rx, Ry, Rz; //!< Rotation components
-			double dS; //!< Scale factor (Scale is 1+dS)
+			/** Deltas (X,Y,Z) */
+			double dX, dY, dZ; 
+			/** To be substracted to the input point */
+			double Xp, Yp, Zp; 
+			/** Rotation components */
+			double Rx, Ry, Rz; 
+			/** Scale factor (Scale is 1+dS) */
+			double dS; 
 
 			inline TDatum10Params(
 				const double _dX, const double _dY, const double _dZ,
@@ -204,7 +220,8 @@ namespace mrpt
 		  */
 		struct TOPO_IMPEXP TDatumHelmert2D
 		{
-			double dX, dY;		//!< Deltas [X,Y]
+			/** Deltas [X,Y] */
+			double dX, dY;		
 			double alpha;		// The rotation about Z-axis (degrees)
 			double dS;			// Scale factor (Scale is 1+dS)
 			double Xp, Yp;		// Coordinates of the rotation point
@@ -236,9 +253,12 @@ namespace mrpt
 		  */
 		struct TOPO_IMPEXP TDatumHelmert3D
 		{
-			double dX, dY, dZ; //!< Deltas (X,Y,Z)
-			double Rx, Ry, Rz; //!< Rotation components
-			double dS; //!< Scale factor (Scale is 1+dS)
+			/** Deltas (X,Y,Z) */
+			double dX, dY, dZ; 
+			/** Rotation components */
+			double Rx, Ry, Rz; 
+			/** Scale factor (Scale is 1+dS) */
+			double dS; 
 
 			inline TDatumHelmert3D(
 				const double _dX, const double _dY, const double _dZ,
@@ -271,8 +291,10 @@ namespace mrpt
 		  */
 		struct TOPO_IMPEXP TDatum1DTransf
 		{
-			double dX, dY, DZ; //!< Deltas (X,Y,Z)
-			double dS; //!< Scale factor (Scale is 1+dS)
+			/** Deltas (X,Y,Z) */
+			double dX, dY, DZ; 
+			/** Scale factor (Scale is 1+dS) */
+			double dS; 
 
 			inline TDatum1DTransf(
 				const double _dX, const double _dY, const double _DZ,
@@ -288,9 +310,12 @@ namespace mrpt
 		  */
 		struct TOPO_IMPEXP TDatumTransfInterpolation
 		{
-			double dX, dY;		//!< Deltas (X,Y,Z)
-			double dSx, dSy;	//!< Scale factor in X and Y
-			double beta;		//!< Distortion angle
+			/** Deltas (X,Y,Z) */
+			double dX, dY;		
+			/** Scale factor in X and Y */
+			double dSx, dSy;	
+			/** Distortion angle */
+			double beta;		
 
 			inline TDatumTransfInterpolation(
 				const double _dX, const double _dY,

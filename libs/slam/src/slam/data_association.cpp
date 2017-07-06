@@ -48,7 +48,8 @@ namespace slam
 {
 	struct TAuxDataRecursiveJCBB
 	{
-		size_t nPredictions, nObservations, length_O; //!< Just to avoid recomputing them all the time.
+		/** Just to avoid recomputing them all the time. */
+		size_t nPredictions, nObservations, length_O; 
 		std::map<size_t,size_t>	currentAssociation;
 	};
 

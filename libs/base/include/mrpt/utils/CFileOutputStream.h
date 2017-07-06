@@ -28,7 +28,8 @@ namespace utils
 		size_t Read(void *Buffer, size_t Count) override;
 		size_t Write(const void *Buffer, size_t Count) override;
 	private:
-		std::ofstream 	m_of;		//!< The actual output file stream.
+		/** The actual output file stream. */
+		std::ofstream 	m_of;		
 
 	public:
 		 /** Constructor
@@ -61,8 +62,10 @@ namespace utils
 		/** Destructor */
 		virtual ~CFileOutputStream();
 
-		bool fileOpenCorrectly(); //!< Returns true if the file was open without errors.
-		bool is_open() { return fileOpenCorrectly(); } //!< Returns true if the file was open without errors.
+		/** Returns true if the file was open without errors. */
+		bool fileOpenCorrectly(); 
+		/** Returns true if the file was open without errors. */
+		bool is_open() { return fileOpenCorrectly(); } 
 
 		// See base class docs
 		uint64_t Seek(uint64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning) override;

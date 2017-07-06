@@ -47,9 +47,12 @@ namespace maps
 		std::string SystemIdentifier;
 		std::string SoftwareIdentifier;
 		std::string project_guid;
-		std::string spatial_reference_proj4;  //!< Proj.4 string describing the Spatial Reference System.
-		uint16_t    creation_year;//!< Creation date (Year number)
-		uint16_t    creation_DOY; //!< Creation day of year
+		/** Proj.4 string describing the Spatial Reference System. */
+		std::string spatial_reference_proj4;  
+		/** Creation date (Year number) */
+		uint16_t    creation_year;
+		/** Creation day of year */
+		uint16_t    creation_DOY; 
 
 		LAS_HeaderInfo() : creation_year(0),creation_DOY(0)
 		{}

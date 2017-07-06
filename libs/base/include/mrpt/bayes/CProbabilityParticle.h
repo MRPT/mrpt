@@ -27,8 +27,10 @@ namespace bayes
 	struct CProbabilityParticle
 	{
 	public:
-		mrpt::utils::copy_ptr<T> d;   //!< The data associated with this particle. The use of copy_ptr<> allows relying on compiler-generated copy ctor, etc.
-		double log_w; //!< The (logarithmic) weight value for this particle.
+		/** The data associated with this particle. The use of copy_ptr<> allows relying on compiler-generated copy ctor, etc. */
+		mrpt::utils::copy_ptr<T> d;   
+		/** The (logarithmic) weight value for this particle. */
+		double log_w; 
 
 		/** Default constructor */
 		CProbabilityParticle() : d(), log_w(.0) {}

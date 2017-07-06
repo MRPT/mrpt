@@ -207,9 +207,12 @@ namespace mrpt
 			/** @name Math operations (the interesting stuff...)
 				@{ */
 
-			void add_AB(const CSparseMatrix & A,const CSparseMatrix & B); //!< this = A+B
-			void multiply_AB(const CSparseMatrix & A,const CSparseMatrix & B); //!< this = A*B
-			void multiply_Ab(const mrpt::math::CVectorDouble &b, mrpt::math::CVectorDouble &out_res) const; //!< out_res = this * b
+			/** this = A+B */
+			void add_AB(const CSparseMatrix & A,const CSparseMatrix & B); 
+			/** this = A*B */
+			void multiply_AB(const CSparseMatrix & A,const CSparseMatrix & B); 
+			/** out_res = this * b */
+			void multiply_Ab(const mrpt::math::CVectorDouble &b, mrpt::math::CVectorDouble &out_res) const; 
 
 			inline CSparseMatrix operator + (const CSparseMatrix & other) const
 			{
@@ -361,7 +364,8 @@ namespace mrpt
 			private:
 				css * m_symbolic_structure;
 				csn * m_numeric_structure;
-				const CSparseMatrix *m_originalSM;  //!< A const reference to the original matrix used to build this decomposition.
+				/** A const reference to the original matrix used to build this decomposition. */
+				const CSparseMatrix *m_originalSM;  
 
 			public:
 				/** Constructor from a square definite-positive sparse matrix A, which can be use to solve Ax=b

@@ -199,22 +199,33 @@ namespace opengl	{
 		void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const override;
 
 	protected:
-		void updateMesh() const; //!< Updates the mesh, if needed. It's a const method, but modifies mutable content.
-		mutable std::vector<CSetOfTriangles::TTriangle> triangles; //!< Actual set of triangles to be displayed.
-		void addTriangle(const mrpt::math::TPoint3D &p1,const mrpt::math::TPoint3D &p2,const mrpt::math::TPoint3D &p3) const; //!< Internal method to add a triangle to the mutable mesh.
-		bool mWireframe; //!< Whether the mesh will be displayed wireframe or solid.
-		mutable bool meshUpToDate; //!< Mutable variable which controls if the object has suffered any change since last time the mesh was updated.
-		bool mEnableTransparency; //!< Whether the object may present transparencies or not.
-		mutable mrpt::math::CMatrixTemplate<mrpt::math::TPoint3D> actualMesh; //!< Mutable object with the mesh's points.
-		mutable mrpt::math::CMatrixB validityMatrix; //!< Scan validity matrix.
-		std::vector<double> pitchBounds; //!< Observation pitch range. When containing exactly two elements, they represent the bounds.
-		std::vector<mrpt::obs::CObservation2DRangeScan> scanSet;  //!< Actual scan set which is used to generate the mesh. 
+		/** Updates the mesh, if needed. It's a const method, but modifies mutable content. */
+		void updateMesh() const; 
+		/** Actual set of triangles to be displayed. */
+		mutable std::vector<CSetOfTriangles::TTriangle> triangles; 
+		/** Internal method to add a triangle to the mutable mesh. */
+		void addTriangle(const mrpt::math::TPoint3D &p1,const mrpt::math::TPoint3D &p2,const mrpt::math::TPoint3D &p3) const; 
+		/** Whether the mesh will be displayed wireframe or solid. */
+		bool mWireframe; 
+		/** Mutable variable which controls if the object has suffered any change since last time the mesh was updated. */
+		mutable bool meshUpToDate; 
+		/** Whether the object may present transparencies or not. */
+		bool mEnableTransparency; 
+		/** Mutable object with the mesh's points. */
+		mutable mrpt::math::CMatrixTemplate<mrpt::math::TPoint3D> actualMesh; 
+		/** Scan validity matrix. */
+		mutable mrpt::math::CMatrixB validityMatrix; 
+		/** Observation pitch range. When containing exactly two elements, they represent the bounds. */
+		std::vector<double> pitchBounds; 
+		/** Actual scan set which is used to generate the mesh.  */
+		std::vector<mrpt::obs::CObservation2DRangeScan> scanSet;  
 	public:
 		/**
 		  * Basic constructor.
 		  */
 		CAngularObservationMesh():mWireframe(true),meshUpToDate(false),mEnableTransparency(true),actualMesh(0,0),validityMatrix(0,0),pitchBounds(),scanSet()	{}
-		virtual ~CAngularObservationMesh()	{} //!< Empty destructor.
+		/** Empty destructor. */
+		virtual ~CAngularObservationMesh()	{} 
 		/**
 		  * Returns whether the object is configured as wireframe or solid.
 		  */

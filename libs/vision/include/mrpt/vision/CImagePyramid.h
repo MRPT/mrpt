@@ -53,8 +53,10 @@ namespace mrpt
 		class VISION_IMPEXP CImagePyramid
 		{
 		public:
-			CImagePyramid();   //!< Default constructor, does nothing
-			~CImagePyramid();  //!< Destructor, frees the stored images.
+			/** Default constructor, does nothing */
+			CImagePyramid();   
+			/** Destructor, frees the stored images. */
+			~CImagePyramid();  
 
 			/** Fills the vector \a images with the different octaves built from the input image.
 			  *  \param[in] img The input image. Can be either color or grayscale.

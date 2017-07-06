@@ -30,26 +30,38 @@ namespace mrpt
 
 			/** @name Image settings
 			  * @{ */
-			int			m_img_width;			//!< (Default = 640) Width of the captured image.
-			int			m_img_height;			//!< (Default = 480) Height of the captured image.
-			float		m_fps;					//!< (Default = 30) Frames per second <= 30.
-			float		m_exposure;				//!< (Default = 50) Exposure value.
-			float		m_led;					//!< (Default = 25) Led intensity (some device models).
-			float		m_gain;					//!< (Default = 10) Camera gain.
+			/** (Default = 640) Width of the captured image. */
+			int			m_img_width;			
+			/** (Default = 480) Height of the captured image. */
+			int			m_img_height;			
+			/** (Default = 30) Frames per second <= 30. */
+			float		m_fps;					
+			/** (Default = 50) Exposure value. */
+			float		m_exposure;				
+			/** (Default = 25) Led intensity (some device models). */
+			float		m_led;					
+			/** (Default = 10) Camera gain. */
+			float		m_gain;					
 			/** @} */
 
 			/** @name Behaviour selection
 			  * @{ */
-			bool		m_capture_imu;			//!< (Default = false) Capture IMU data.
-			bool		m_capture_rectified;	//!< (Default = true) Rectify images. Rectification map must be provided \sa m_rectify_map_filename.
-			bool		m_calibration_from_file;//!< (Default = true) Get calibration information from files provided by DUO3D Calibration App.
+			/** (Default = false) Capture IMU data. */
+			bool		m_capture_imu;			
+			/** (Default = true) Rectify images. Rectification map must be provided \sa m_rectify_map_filename. */
+			bool		m_capture_rectified;	
+			/** (Default = true) Get calibration information from files provided by DUO3D Calibration App. */
+			bool		m_calibration_from_file;
 			/** @} */
 			
 			/** @name Files specification
 			  * @{ */
-			std::string	m_rectify_map_filename;	//!< Rectification map file provided by DUO3D Calibration App (YML format).
-			std::string	m_intrinsic_filename;	//!< Intrinsic parameters file provided by DUO3D Calibration App (YML format).
-			std::string	m_extrinsic_filename;	//!< Extrinsic parameters file provided by DUO3D Calibration App (YML format).
+			/** Rectification map file provided by DUO3D Calibration App (YML format). */
+			std::string	m_rectify_map_filename;	
+			/** Intrinsic parameters file provided by DUO3D Calibration App (YML format). */
+			std::string	m_intrinsic_filename;	
+			/** Extrinsic parameters file provided by DUO3D Calibration App (YML format). */
+			std::string	m_extrinsic_filename;	
 			/** @} */
 
 			/** @name Others
@@ -131,9 +143,12 @@ namespace mrpt
 			// [INTERNAL]
 			mrpt::vision::CStereoRectifyMap m_rectify_map;
 
-			void * m_duo;          //!< Opaque pointer to DUO's DUOInstance
-			void * m_pframe_data; //!< Pointer, to be reinterpreted as "PDUOFrame"
-			void * m_evFrame;     //!< DUO's HANDLE
+			/** Opaque pointer to DUO's DUOInstance */
+			void * m_duo;          
+			/** Pointer, to be reinterpreted as "PDUOFrame" */
+			void * m_pframe_data; 
+			/** DUO's HANDLE */
+			void * m_evFrame;     
 
 		public:
 			/** Default Constructor (does not open the camera) */

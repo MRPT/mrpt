@@ -35,12 +35,16 @@ namespace mrpt
 			DEFINE_SERIALIZABLE( CLandmark )
 
 		public:
-			typedef	int64_t TLandmarkID;					//!< The type for the IDs of landmarks.
+			/** The type for the IDs of landmarks. */
+			typedef	int64_t TLandmarkID;					
 
-			std::vector<mrpt::vision::CFeature::Ptr> features;		//!< The set of features from which the landmark comes.
+			/** The set of features from which the landmark comes. */
+			std::vector<mrpt::vision::CFeature::Ptr> features;		
 
-			mrpt::math::TPoint3D pose_mean;					//!< The mean of the landmark 3D position.
-			mrpt::math::TPoint3D normal;					//!< The "normal" to the landmark, i.e. a unitary 3D vector towards the viewing direction, or a null vector if not applicable
+			/** The mean of the landmark 3D position. */
+			mrpt::math::TPoint3D pose_mean;					
+			/** The "normal" to the landmark, i.e. a unitary 3D vector towards the viewing direction, or a null vector if not applicable */
+			mrpt::math::TPoint3D normal;					
 			float	pose_cov_11,pose_cov_22,pose_cov_33,pose_cov_12,pose_cov_13,pose_cov_23;
 
 			/** An ID for the landmark (see details next...)
@@ -53,8 +57,10 @@ namespace mrpt
 			  * Note that this field is never fill out automatically, it must be set by the programmer if used.
 			  */
 			TLandmarkID					ID;
-			mrpt::system::TTimeStamp	timestampLastSeen;	//!< The last time that this landmark was observed.
-			uint32_t					seenTimesCount;		//!< The number of times that this landmark has been seen.
+			/** The last time that this landmark was observed. */
+			mrpt::system::TTimeStamp	timestampLastSeen;	
+			/** The number of times that this landmark has been seen. */
+			uint32_t					seenTimesCount;		
 
 			/** Returns the pose as an object:
 			  */

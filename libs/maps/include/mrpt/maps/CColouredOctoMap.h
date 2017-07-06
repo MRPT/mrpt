@@ -33,8 +33,10 @@ namespace mrpt
 			DEFINE_SERIALIZABLE( CColouredOctoMap )
 
 		 public:
-			 CColouredOctoMap(const double resolution=0.10);          //!< Default constructor
-			 virtual ~CColouredOctoMap(); //!< Destructor
+			 /** Default constructor */
+			 CColouredOctoMap(const double resolution=0.10);          
+			 /** Destructor */
+			 virtual ~CColouredOctoMap(); 
 
 			/** This allows the user to select the desired method to update voxels colour.
 				SET = Set the colour of the voxel at (x,y,z) directly
@@ -65,9 +67,12 @@ namespace mrpt
 			virtual void getAsOctoMapVoxels(mrpt::opengl::COctoMapVoxels &gl_obj) const override;
 
 			MAP_DEFINITION_START(CColouredOctoMap,MAPS_IMPEXP)
-				double resolution;	//!< The finest resolution of the octomap (default: 0.10 meters)
-				mrpt::maps::CColouredOctoMap::TInsertionOptions   insertionOpts;	//!< Observations insertion options
-				mrpt::maps::CColouredOctoMap::TLikelihoodOptions  likelihoodOpts;	//!< Probabilistic observation likelihood options
+				/** The finest resolution of the octomap (default: 0.10 meters) */
+				double resolution;	
+				/** Observations insertion options */
+				mrpt::maps::CColouredOctoMap::TInsertionOptions   insertionOpts;	
+				/** Probabilistic observation likelihood options */
+				mrpt::maps::CColouredOctoMap::TLikelihoodOptions  likelihoodOpts;	
 			MAP_DEFINITION_END(CColouredOctoMap,MAPS_IMPEXP)
 
 		protected:

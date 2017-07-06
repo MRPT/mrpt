@@ -36,8 +36,10 @@ namespace obs
 		 /** @name The data members
 		  * @{ */
 
-		double power;  //!< The power or signal strength as sensed by the Wifi receiver (In percentage: [0-100])
-		mrpt::poses::CPose3D  sensorPoseOnRobot; //!< The location of the sensing antenna on the robot coordinate framework
+		/** The power or signal strength as sensed by the Wifi receiver (In percentage: [0-100]) */
+		double power;  
+		/** The location of the sensing antenna on the robot coordinate framework */
+		mrpt::poses::CPose3D  sensorPoseOnRobot; 
 
 		/** @} */
 

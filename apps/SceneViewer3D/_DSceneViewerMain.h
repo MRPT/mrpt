@@ -209,7 +209,8 @@ class _DSceneViewerFrame: public wxFrame
 		CMyGLCanvas	*m_canvas;
 		wxTimer		*m_autoplayTimer;
 
-		std::vector<mrpt::opengl::CRenderizable::Ptr> m_selected_gl_objects; //!< The list of currently selected objects
+		/** The list of currently selected objects */
+		std::vector<mrpt::opengl::CRenderizable::Ptr> m_selected_gl_objects; 
 
         wxTimer 	m_tTravelling;
         bool		m_travelling_is_arbitrary;

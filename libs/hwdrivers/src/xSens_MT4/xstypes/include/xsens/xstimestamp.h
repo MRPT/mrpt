@@ -221,7 +221,8 @@ struct XsTimeStamp {
 private:
 #endif
 
-	int64_t m_msTime;		//!< The timestamp value
+	/** The timestamp value */
+	int64_t m_msTime;		
 };
 
 typedef struct XsTimeStamp XsTimeStamp;

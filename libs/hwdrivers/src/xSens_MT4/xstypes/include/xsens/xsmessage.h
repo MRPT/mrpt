@@ -110,10 +110,14 @@ XSTYPES_DLL_API int XsMessage_compare(XsMessage const* a, XsMessage const* b);
 	\details This structure is used to interpret the header of a message.
 */
 struct XsMessageHeader {
-	uint8_t m_preamble;  //!< \brief The message preamble (always 0xFA)
-	uint8_t m_busId;     //!< \brief The bus ID \sa XS_BID_MASTER XS_BID_BROADCAST XS_BID_MT
-	uint8_t m_messageId; //!< \brief The message ID \sa XsXbusMessageId
-	uint8_t m_length;    //!< \brief The length of the message \details A length of 255 means extended length is used
+	/** \brief The message preamble (always 0xFA) */
+	uint8_t m_preamble;  
+	/** \brief The bus ID \sa XS_BID_MASTER XS_BID_BROADCAST XS_BID_MT */
+	uint8_t m_busId;     
+	/** \brief The message ID \sa XsXbusMessageId */
+	uint8_t m_messageId; 
+	/** \brief The length of the message \details A length of 255 means extended length is used */
+	uint8_t m_length;    
 	//lint --e{18}
 	//! \brief Contains optional extended length of message and first byte of data buffer
 	union LengthData {
@@ -121,13 +125,20 @@ struct XsMessageHeader {
 		struct ExtendedLength {
 			//! \brief The high and low byte of the extended length
 			struct ExtendedParts {
-				uint8_t m_high;	//!< \brief High byte of extended length
-				uint8_t m_low;	//!< \brief Low byte of extended length
-			} m_length;			//!< \brief Extended length, only valid if normal length is 255
-			uint8_t m_data[1];	//!< \brief The first byte of the data buffer, the data buffer is always at least 1 byte since it has to contain the checksum, but it can be bigger.
-		} m_extended;			//!< \brief The extended length, only valid if normal length is 255
-		uint8_t m_data[1];		//!< \brief The first byte of the data buffer if length < 255, the data buffer is always at least 1 byte since it has to contain the checksum, but it can be bigger.
-	} m_datlen;	//!< \brief Data or length and data
+				/** \brief High byte of extended length */
+				uint8_t m_high;	
+				/** \brief Low byte of extended length */
+				uint8_t m_low;	
+			/** \brief Extended length, only valid if normal length is 255 */
+			} m_length;			
+			/** \brief The first byte of the data buffer, the data buffer is always at least 1 byte since it has to contain the checksum, but it can be bigger. */
+			uint8_t m_data[1];	
+		/** \brief The extended length, only valid if normal length is 255 */
+		} m_extended;			
+		/** \brief The first byte of the data buffer if length < 255, the data buffer is always at least 1 byte since it has to contain the checksum, but it can be bigger. */
+		uint8_t m_data[1];		
+	/** \brief Data or length and data */
+	} m_datlen;	
 } PACK_POST;	//lint !e659
 #ifdef _MSC_VER
 	#pragma pack(pop)

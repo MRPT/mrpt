@@ -37,7 +37,8 @@ namespace mrpt
 			std::vector<mrpt::math::TSegment3D> mSegments;
 			float   mLineWidth;
 			bool    m_antiAliasing;
-			float   m_verticesPointSize; //!< 0: means hidden
+			/** 0: means hidden */
+			float   m_verticesPointSize; 
 		public:
 			/**
 			  * Clear the list of segments
@@ -162,8 +163,10 @@ namespace mrpt
 			void  render_dl() const override;
 
 			//Iterator management
-			typedef std::vector<mrpt::math::TSegment3D>::iterator iterator;	//!< Iterator to the set.
-			typedef std::vector<mrpt::math::TSegment3D>::reverse_iterator reverse_iterator;	//!< Iterator to the set.
+			/** Iterator to the set. */
+			typedef std::vector<mrpt::math::TSegment3D>::iterator iterator;	
+			/** Iterator to the set. */
+			typedef std::vector<mrpt::math::TSegment3D>::reverse_iterator reverse_iterator;	
 
 			/**
 			  * Const iterator to the set.

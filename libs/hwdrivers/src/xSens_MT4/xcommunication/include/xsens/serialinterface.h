@@ -47,10 +47,13 @@ protected:
 	uint32_t m_timeout;
 
 	#ifdef _WIN32
-		XsIoHandle	m_handle;			//!< The serial port handle, also indicates if the port is open or not.
+		/** The serial port handle, also indicates if the port is open or not. */
+		XsIoHandle	m_handle;			
 	#else
-		termios	m_commState;		//!< Stored settings about the serial port
-		int32_t	m_handle;			//!< The serial port handle, also indicates if the port is open or not.
+		/** Stored settings about the serial port */
+		termios	m_commState;		
+		/** The serial port handle, also indicates if the port is open or not. */
+		int32_t	m_handle;			
 	#endif
 public:
 	SerialInterface();

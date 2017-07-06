@@ -69,7 +69,8 @@ namespace mrpt
 			  */
 			CPointPDFSOG( size_t nModes = 1 );
 
-			void clear(); //!< Clear all the gaussian modes
+			/** Clear all the gaussian modes */
+			void clear(); 
 
 			/** Access to individual beacons */
 			const TGaussianMode& operator [](size_t i) const {
@@ -105,9 +106,12 @@ namespace mrpt
 
 			iterator erase(iterator i) { return m_modes.erase(i); }
 
-			void resize(const size_t N); //!< Resize the number of SOG modes
-			size_t size() const { return m_modes.size(); } //!< Return the number of Gaussian modes.
-			bool empty() const { return m_modes.empty(); } //!< Return whether there is any Gaussian mode.
+			/** Resize the number of SOG modes */
+			void resize(const size_t N); 
+			/** Return the number of Gaussian modes. */
+			size_t size() const { return m_modes.size(); } 
+			/** Return whether there is any Gaussian mode. */
+			bool empty() const { return m_modes.empty(); } 
 
 			 /** Returns an estimate of the point, (the mean, or mathematical expectation of the PDF) \sa getCovariance   */
 			void getMean(CPoint3D &mean_point) const override;
@@ -124,7 +128,8 @@ namespace mrpt
 			/** Computes the "Effective sample size" (typical measure for Particle Filters), applied to the weights of the individual Gaussian modes, as a measure of the equality of the modes (in the range [0,total # of modes]). */
 			double ESS() const;
 
-			void  copyFrom(const CPointPDF &o) override; //!< Copy operator, translating if necesary (for example, between particles and gaussian representations)
+			/** Copy operator, translating if necesary (for example, between particles and gaussian representations) */
+			void  copyFrom(const CPointPDF &o) override; 
 
 			/** Save the density to a text file, with the following format:
 			  *  There is one row per Gaussian "mode", and each row contains 10 elements:

@@ -62,12 +62,18 @@ namespace mrpt
 			TColor& operator+=(const TColor& other);
 			TColor& operator-=(const TColor& other);
 
-			static TColor red; //!< Predefined colors
-			static TColor green;//!< Predefined colors
-			static TColor blue;//!< Predefined colors
-			static TColor white;//!< Predefined colors
-			static TColor black;//!< Predefined colors
-			static TColor gray;	//!< Predefined colors
+			/** Predefined colors */
+			static TColor red; 
+			/** Predefined colors */
+			static TColor green;
+			/** Predefined colors */
+			static TColor blue;
+			/** Predefined colors */
+			static TColor white;
+			/** Predefined colors */
+			static TColor black;
+			/** Predefined colors */
+			static TColor gray;	
 		};
 		// Text streaming:
 		std::ostream BASE_IMPEXP & operator << (std::ostream& o, const TColor & c);

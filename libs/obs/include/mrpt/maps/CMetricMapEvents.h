@@ -26,7 +26,8 @@ namespace obs { class CObservation; }
 		class mrptEventMetricMapClear : public mrpt::utils::mrptEvent
 		{
 		protected:
-			virtual void do_nothing() override { } //!< Just to allow this class to be polymorphic
+			/** Just to allow this class to be polymorphic */
+			virtual void do_nothing() override { } 
 		public:
 			inline mrptEventMetricMapClear(const mrpt::maps::CMetricMap   *smap) : source_map(smap) {}
 
@@ -40,7 +41,8 @@ namespace obs { class CObservation; }
 		class mrptEventMetricMapInsert : public mrpt::utils::mrptEvent
 		{
 		protected:
-			virtual void do_nothing() override { } //!< Just to allow this class to be polymorphic
+			/** Just to allow this class to be polymorphic */
+			virtual void do_nothing() override { } 
 		public:
 			inline mrptEventMetricMapInsert(const mrpt::maps::CMetricMap   *smap, const mrpt::obs::CObservation *obs,const mrpt::poses::CPose3D *robotPose ) : source_map(smap), inserted_obs(obs), inserted_robotPose(robotPose) { }
 

@@ -48,11 +48,16 @@ XSTYPES_DLL_API void XsMatrix_swap(XsMatrix* a, XsMatrix* b);
 #endif
 struct XsMatrix {
 XSCPPPROTECTED
-	XsReal* const m_data;		//!< Contained data
-	const XsSize m_rows;		//!< Number of rows in the matrix
-	const XsSize m_cols;		//!< Number of columns in the matrix
-	const XsSize m_stride;		//!< Number of items per row in memory (usually equal to cols but not always)
-	const int m_flags;			//!< Flags for data management
+	/** Contained data */
+	XsReal* const m_data;		
+	/** Number of rows in the matrix */
+	const XsSize m_rows;		
+	/** Number of columns in the matrix */
+	const XsSize m_cols;		
+	/** Number of items per row in memory (usually equal to cols but not always) */
+	const XsSize m_stride;		
+	/** Flags for data management */
+	const int m_flags;			
 
 #ifdef __cplusplus
 	//! \brief Return the data management flags of the matrix.

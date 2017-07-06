@@ -28,7 +28,8 @@ namespace mrpt
 		template <class GRAPH_T>
 		struct graphslam_traits
 		{
-			typedef GRAPH_T  graph_t;  //!< Typ:  mrpt::graphs::CNetworkOfPoses<...>
+			/** Typ:  mrpt::graphs::CNetworkOfPoses<...> */
+			typedef GRAPH_T  graph_t;  
 			typedef typename graph_t::edges_map_t::const_iterator   edge_const_iterator;
 			typedef typename graph_t::constraint_t                  edge_t;
 			typedef typename edge_t::type_value                     edge_poses_type;
@@ -57,8 +58,10 @@ namespace mrpt
 		/** Output information for mrpt::graphslam::optimize_graph_spa_levmarq() */
 		struct TResultInfoSpaLevMarq
 		{
-			size_t  num_iters;             //!< The number of LM iterations executed.
-			double  final_total_sq_error;  //!< The sum of all the squared errors for every constraint involved in the problem.
+			/** The number of LM iterations executed. */
+			size_t  num_iters;             
+			/** The sum of all the squared errors for every constraint involved in the problem. */
+			double  final_total_sq_error;  
 		};
 
 	/**  @} */  // end of grouping

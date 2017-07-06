@@ -37,8 +37,10 @@ XSTYPES_DLL_API void XsOutputConfiguration_swap(struct XsOutputConfiguration* a,
 	the data has no maximum frequency, but is sent along with appropriate packets (ie. packet counter)
 */
 struct XsOutputConfiguration {
-	XsDataIdentifier m_dataIdentifier;	//!< The data identifier
-	uint16_t m_frequency;				//!< The frequency
+	/** The data identifier */
+	XsDataIdentifier m_dataIdentifier;	
+	/** The frequency */
+	uint16_t m_frequency;				
 
 #ifdef __cplusplus
 	//! Constructor, initializes to an empty object

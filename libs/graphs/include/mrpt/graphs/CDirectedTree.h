@@ -16,7 +16,8 @@ namespace mrpt
 {
 	namespace graphs
 	{
-		using mrpt::utils::TNodeID; //!< Make available this typedef in this namespace too
+		/** Make available this typedef in this namespace too */
+		using mrpt::utils::TNodeID; 
 
 		/** A special kind of graph in the form of a tree with directed edges and optional edge annotations of templatized type "TYPE_EDGES".
 		  *  The tree is represented by means of:
@@ -50,9 +51,12 @@ namespace mrpt
 		public:
 			struct TEdgeInfo
 			{
-				TNodeID    id;      //!< The ID of the child node.
-				bool       reverse; //!< True if edge direction is child->parent, false if it's parent->child.
-				TYPE_EDGES data;    //!< User data for this edge.
+				/** The ID of the child node. */
+				TNodeID    id;      
+				/** True if edge direction is child->parent, false if it's parent->child. */
+				bool       reverse; 
+				/** User data for this edge. */
+				TYPE_EDGES data;    
 
 				/** Edge constructor from data */
 				TEdgeInfo(TNodeID child_id_, bool direction_child_to_parent=false, const TYPE_EDGES & edge_data = TYPE_EDGES() ) : id(child_id_), reverse(direction_child_to_parent), data(edge_data) { }
@@ -63,8 +67,10 @@ namespace mrpt
 
 			/** @name Data
 			    @{ */
-			TNodeID            root;               //!< The root of the tree
-			TMapNode2ListEdges edges_to_children;  //!< The edges of each node
+			/** The root of the tree */
+			TNodeID            root;               
+			/** The edges of each node */
+			TMapNode2ListEdges edges_to_children;  
 			/** @} */
 
 			/** @name Utilities

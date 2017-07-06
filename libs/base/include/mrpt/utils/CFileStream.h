@@ -41,7 +41,8 @@ namespace mrpt
 			size_t  Read(void *Buffer, size_t Count) override;
 			size_t  Write(const void *Buffer, size_t Count) override;
 		private:
-			std::fstream 	m_f;		//!< The actual input file stream.
+			/** The actual input file stream. */
+			std::fstream 	m_f;		
 		public:
 			 /** Constructor and open a file
 			  * \param fileName The file to be open in this stream
@@ -56,7 +57,8 @@ namespace mrpt
 			CFileStream(const CFileStream &) = delete;
 			CFileStream& operator =(const CFileStream &) = delete;
 			
-			virtual ~CFileStream(); //!< Destructor
+			/** Destructor */
+			virtual ~CFileStream(); 
 
 			/** Opens the file, returning true on success.
 			  * \param fileName The file to be open in this stream
@@ -64,20 +66,28 @@ namespace mrpt
 			  *  By default the file is opened for open and write and created if not found.
 			  */
 			bool open(const std::string &fileName, TFileOpenModes mode = fomRead | fomWrite );
-			void close(); //!< Closes the file
-			bool fileOpenCorrectly(); //!< Returns true if the file was open without errors.
-			bool is_open() { return fileOpenCorrectly(); } //!< Returns true if the file was open without errors.
-			bool checkEOF(); //!< Will be true if EOF has been already reached.
+			/** Closes the file */
+			void close(); 
+			/** Returns true if the file was open without errors. */
+			bool fileOpenCorrectly(); 
+			/** Returns true if the file was open without errors. */
+			bool is_open() { return fileOpenCorrectly(); } 
+			/** Will be true if EOF has been already reached. */
+			bool checkEOF(); 
 
 			/** Method for moving to a specified position in the streamed resource.
 			 *   See documentation of CStream::Seek
 			 */
 			uint64_t Seek(uint64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning) override;
 
-			uint64_t getTotalBytesCount() override; //!< Method for getting the total number of bytes writen to buffer.
-			uint64_t getPosition() override; //!< Method for getting the current cursor position, where 0 is the first byte and TotalBytesCount-1 the last one
-			uint64_t getPositionI(); //!< The current Input cursor position, where 0 is the first byte
-			uint64_t getPositionO(); //!< The current Input cursor position, where 0 is the first byte
+			/** Method for getting the total number of bytes writen to buffer. */
+			uint64_t getTotalBytesCount() override; 
+			/** Method for getting the current cursor position, where 0 is the first byte and TotalBytesCount-1 the last one */
+			uint64_t getPosition() override; 
+			/** The current Input cursor position, where 0 is the first byte */
+			uint64_t getPositionI(); 
+			/** The current Input cursor position, where 0 is the first byte */
+			uint64_t getPositionO(); 
 
 			/** Reads one string line from the file (until a new-line character)
 			  * \return true if a line has been read, false on EOF or error */

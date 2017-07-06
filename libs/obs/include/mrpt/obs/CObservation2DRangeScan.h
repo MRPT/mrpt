@@ -45,46 +45,69 @@ namespace obs
 		// This must be added for declaration of MEX-related functions
 		DECLARE_MEX_CONVERSION
 	private:
-		std::vector<float>   m_scan; //!< The range values of the scan, in meters. Must have same length than \a validRange
-		std::vector<int32_t> m_intensity; //!< The intensity values of the scan. If available, must have same length than \a validRange
-		std::vector<char>    m_validRange;  //!< It's false (=0) on no reflected rays, referenced to elements in \a scan
-		bool                 m_has_intensity; //!< Whether the intensity values are present or not. If not, space is saved during serialization.
+		/** The range values of the scan, in meters. Must have same length than \a validRange */
+		std::vector<float>   m_scan; 
+		/** The intensity values of the scan. If available, must have same length than \a validRange */
+		std::vector<int32_t> m_intensity; 
+		/** It's false (=0) on no reflected rays, referenced to elements in \a scan */
+		std::vector<char>    m_validRange;  
+		/** Whether the intensity values are present or not. If not, space is saved during serialization. */
+		bool                 m_has_intensity; 
 
 	public:
-		typedef std::vector<mrpt::math::CPolygon> TListExclusionAreas; //!< Used in filterByExclusionAreas
-		typedef std::vector<std::pair<mrpt::math::CPolygon,std::pair<double,double> > > TListExclusionAreasWithRanges; //!< Used in filterByExclusionAreas
+		/** Used in filterByExclusionAreas */
+		typedef std::vector<mrpt::math::CPolygon> TListExclusionAreas; 
+		/** Used in filterByExclusionAreas */
+		typedef std::vector<std::pair<mrpt::math::CPolygon,std::pair<double,double> > > TListExclusionAreasWithRanges; 
 
-		CObservation2DRangeScan(); //!< Default constructor
-		CObservation2DRangeScan(const CObservation2DRangeScan &o); //!< copy ctor
-		virtual ~CObservation2DRangeScan(); //!< Destructor
+		/** Default constructor */
+		CObservation2DRangeScan(); 
+		/** copy ctor */
+		CObservation2DRangeScan(const CObservation2DRangeScan &o); 
+		/** Destructor */
+		virtual ~CObservation2DRangeScan(); 
 
 		/** @name Scan data
 		    @{ */
-		void resizeScan(const size_t len); //!< Resizes all data vectors to allocate a given number of scan rays
-		void resizeScanAndAssign(const size_t len, const float rangeVal, const bool rangeValidity, const int32_t rangeIntensity = 0); //!< Resizes all data vectors to allocate a given number of scan rays and assign default values.
-		size_t getScanSize() const; //!< Get number of scan rays
+		/** Resizes all data vectors to allocate a given number of scan rays */
+		void resizeScan(const size_t len); 
+		/** Resizes all data vectors to allocate a given number of scan rays and assign default values. */
+		void resizeScanAndAssign(const size_t len, const float rangeVal, const bool rangeValidity, const int32_t rangeIntensity = 0); 
+		/** Get number of scan rays */
+		size_t getScanSize() const; 
 
-		mrpt::utils::ContainerReadOnlyProxyAccessor<std::vector<float> > scan; //!< The range values of the scan, in meters. Must have same length than \a validRange
+		/** The range values of the scan, in meters. Must have same length than \a validRange */
+		mrpt::utils::ContainerReadOnlyProxyAccessor<std::vector<float> > scan; 
 		float getScanRange(const size_t i) const;
 		void setScanRange(const size_t i, const float val);
 
-		mrpt::utils::ContainerReadOnlyProxyAccessor<std::vector<int32_t> >   intensity; //!< The intensity values of the scan. If available, must have same length than \a validRange
+		/** The intensity values of the scan. If available, must have same length than \a validRange */
+		mrpt::utils::ContainerReadOnlyProxyAccessor<std::vector<int32_t> >   intensity; 
 		int32_t getScanIntensity(const size_t i) const;
 		void setScanIntensity(const size_t i, const int val);
 
-		mrpt::utils::ContainerReadOnlyProxyAccessor<std::vector<char> >  validRange;  //!< It's false (=0) on no reflected rays, referenced to elements in \a scan
+		/** It's false (=0) on no reflected rays, referenced to elements in \a scan */
+		mrpt::utils::ContainerReadOnlyProxyAccessor<std::vector<char> >  validRange;  
 		bool  getScanRangeValidity(const size_t i) const;
 		void setScanRangeValidity(const size_t i, const bool val);
 
-		float                aperture; //!< The "aperture" or field-of-view of the range finder, in radians (typically M_PI = 180 degrees).
-		bool                 rightToLeft; //!< The scanning direction: true=counterclockwise; false=clockwise
-		float                maxRange; //!< The maximum range allowed by the device, in meters (e.g. 80m, 50m,...)
-		mrpt::poses::CPose3D sensorPose; //!< The 6D pose of the sensor on the robot at the moment of starting the scan.
-		float                stdError; //!< The "sigma" error of the device in meters, used while inserting the scan in an occupancy grid.
-		float                beamAperture; //!< The aperture of each beam, in radians, used to insert "thick" rays in the occupancy grid.
-		double               deltaPitch; //!< If the laser gathers data by sweeping in the pitch/elevation angle, this holds the increment in "pitch" (=-"elevation") between the beginning and the end of the scan (the sensorPose member stands for the pose at the beginning of the scan).
+		/** The "aperture" or field-of-view of the range finder, in radians (typically M_PI = 180 degrees). */
+		float                aperture; 
+		/** The scanning direction: true=counterclockwise; false=clockwise */
+		bool                 rightToLeft; 
+		/** The maximum range allowed by the device, in meters (e.g. 80m, 50m,...) */
+		float                maxRange; 
+		/** The 6D pose of the sensor on the robot at the moment of starting the scan. */
+		mrpt::poses::CPose3D sensorPose; 
+		/** The "sigma" error of the device in meters, used while inserting the scan in an occupancy grid. */
+		float                stdError; 
+		/** The aperture of each beam, in radians, used to insert "thick" rays in the occupancy grid. */
+		float                beamAperture; 
+		/** If the laser gathers data by sweeping in the pitch/elevation angle, this holds the increment in "pitch" (=-"elevation") between the beginning and the end of the scan (the sensorPose member stands for the pose at the beginning of the scan). */
+		double               deltaPitch; 
 
-		void getScanProperties(T2DScanProperties& p) const;  //!< Fill out a T2DScanProperties structure with the parameters of this scan
+		/** Fill out a T2DScanProperties structure with the parameters of this scan */
+		void getScanProperties(T2DScanProperties& p) const;  
 		/** @} */
 
 		void loadFromVectors(size_t nRays, const float *scanRanges, const char *scanValidity );
@@ -96,7 +119,8 @@ namespace obs
 		  *  It's a generic smart pointer to avoid depending here in the library mrpt-obs on classes on other libraries.
 		  */
 		mutable mrpt::maps::CMetricMap::Ptr  m_cachedMap;
-		void internal_buildAuxPointsMap( const void *options = nullptr ) const;  //!< Internal method, used from buildAuxPointsMap()
+		/** Internal method, used from buildAuxPointsMap() */
+		void internal_buildAuxPointsMap( const void *options = nullptr ) const;  
 	public:
 
 		/** Returns the cached points map representation of the scan, if already build with buildAuxPointsMap(), or nullptr otherwise.
@@ -133,8 +157,10 @@ namespace obs
 		  */
 		bool isPlanarScan(const double tolerance = 0) const;
 
-		bool hasIntensity() const; //!< Return true if scan has intensity
-		void setScanHasIntensity(bool setHasIntensityFlag); //!< Marks this scan as having or not intensity data.
+		/** Return true if scan has intensity */
+		bool hasIntensity() const; 
+		/** Marks this scan as having or not intensity data. */
+		void setScanHasIntensity(bool setHasIntensityFlag); 
 
 		// See base class docs
 		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const override { out_sensorPose = sensorPose; }
