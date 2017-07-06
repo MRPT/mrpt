@@ -22,7 +22,6 @@
 #include <mrpt/utils/CFileGZOutputStream.h>
 #include <mrpt/utils/CMemoryStream.h>
 #include <mrpt/maps/CPointCloudFilterByDistance.h>
-#include <mrpt/system/backtrace.h>
 #include <limits>
 #include <iomanip>
 #include <array>
@@ -245,14 +244,6 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 	if (m_closing_navigator) return;  // Are we closing in the main thread?
 	if (!m_init_done) THROW_EXCEPTION("Have you called loadConfigFile() before?")
 	ASSERT_(m_navigationParams)
-
-	if (this->isLoggingLevelVisible(mrpt::utils::LVL_DEBUG))
-	{
-		mrpt::system::TCallStackBackTrace bt;
-		mrpt::system::getCallStackBackTrace(bt);
-		MRPT_LOG_DEBUG_STREAM("[CAbstractPTGBasedReactive::CAbstractPTGBasedReactive] " << bt.asString());
-	}
-
 
 	const size_t nPTGs = this->getPTG_count();
 
