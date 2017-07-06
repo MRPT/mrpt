@@ -82,6 +82,10 @@ define_mrpt_lib(
 	)
 
 IF(BUILD_mrpt-base)
+	IF(WIN32)
+		target_link_libraries(mrpt-base Dbghelp) # For mrpt::system::getCallStackBackTrace()
+	ENDIF()
+
 	# Ignore precompiled headers in some sources:
 	IF(MRPT_ENABLE_PRECOMPILED_HDRS)
 		IF (MSVC)
