@@ -64,7 +64,8 @@ IF(BUILD_EXAMPLES)
 		se3
 		csparse_demo
 		threadsPipe
-    dirs_files_manipulation
+		dirs_files_manipulation
+		backtrace-example
 		)
 	SET(CMAKE_EXAMPLE_DEPS mrpt-base)
 	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
