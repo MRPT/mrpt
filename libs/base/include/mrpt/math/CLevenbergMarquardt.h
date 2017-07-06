@@ -61,8 +61,10 @@ namespace math
 		{
 			NUMTYPE		final_sqr_err;
 			size_t		iterations_executed;
-			VECTORTYPE	last_err_vector;		//!< The last error vector returned by the user-provided functor.
-			matrix_t	path;	//!< Each row is the optimized value at each iteration.
+			/** The last error vector returned by the user-provided functor. */
+			VECTORTYPE	last_err_vector;		
+			/** Each row is the optimized value at each iteration. */
+			matrix_t	path;	
 
 			/** This matrix can be used to obtain an estimate of the optimal parameters covariance matrix:
 			  *  \f[ COV = H M H^\top \f]
@@ -229,7 +231,8 @@ namespace math
 	}; // End of class def.
 
 
-	typedef CLevenbergMarquardtTempl<mrpt::math::CVectorDouble> CLevenbergMarquardt;  //!< The default name for the LM class is an instantiation for "double"
+	/** The default name for the LM class is an instantiation for "double" */
+	typedef CLevenbergMarquardtTempl<mrpt::math::CVectorDouble> CLevenbergMarquardt;  
 
 	} // End of namespace
 } // End of namespace

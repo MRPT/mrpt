@@ -68,7 +68,8 @@ namespace mrpt
 			  */
 			mutable mrpt::maps::CMetricMap::Ptr  m_cachedMap;
 
-			void internal_buildAuxPointsMap( const void *options = nullptr ) const;  //!< Internal method, used from buildAuxPointsMap()
+			/** Internal method, used from buildAuxPointsMap() */
+			void internal_buildAuxPointsMap( const void *options = nullptr ) const;  
 
 		public:
 

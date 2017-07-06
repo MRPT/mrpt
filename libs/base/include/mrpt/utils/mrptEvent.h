@@ -34,7 +34,8 @@ namespace mrpt
 		class BASE_IMPEXP mrptEvent
 		{
 		protected:
-			virtual void do_nothing() { } //!< Just to allow this class to be polymorphic
+			/** Just to allow this class to be polymorphic */
+			virtual void do_nothing() { } 
 		public:
 			/** Default ctor */
 			inline mrptEvent() : timestamp(mrpt::system::now()) { }
@@ -58,7 +59,8 @@ namespace mrpt
 		class BASE_IMPEXP mrptEventOnDestroy : public mrptEvent
 		{
 		protected:
-			void do_nothing()  override { } //!< Just to allow this class to be polymorphic
+			/** Just to allow this class to be polymorphic */
+			void do_nothing()  override { } 
 		public:
 			inline mrptEventOnDestroy(const CObservable *obj) : source_object(obj) { }
 

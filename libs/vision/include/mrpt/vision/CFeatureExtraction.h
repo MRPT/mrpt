@@ -125,10 +125,14 @@ namespace mrpt
 				/** FAST and FASTER Options */
 				struct VISION_IMPEXP TFASTOptions
 				{
-					int 	threshold;  //!< default= 20
-					float	min_distance;	//!< (default=5) minimum distance between features (in pixels)
-					bool	nonmax_suppression;		//!< Default = true
-					bool    use_KLT_response; //!< (default=false) If true, use CImage::KLT_response to compute the response at each point instead of the FAST "standard response".
+					/** default= 20 */
+					int 	threshold;  
+					/** (default=5) minimum distance between features (in pixels) */
+					float	min_distance;	
+					/** Default = true */
+					bool	nonmax_suppression;		
+					/** (default=false) If true, use CImage::KLT_response to compute the response at each point instead of the FAST "standard response". */
+					bool    use_KLT_response; 
 				} FASTOptions;
 
 				/** ORB Options */
@@ -147,9 +151,12 @@ namespace mrpt
 				{
 					TSIFTOptions() : threshold(0.04), edgeThreshold(10) { }
 
-					TSIFTImplementation implementation;  //!< Default: Hess (OpenCV should be preferred, but its nonfree module is not always available by default in all systems)
-					double threshold;  //!< default= 0.04
-					double edgeThreshold; //!< default= 10
+					/** Default: Hess (OpenCV should be preferred, but its nonfree module is not always available by default in all systems) */
+					TSIFTImplementation implementation;  
+					/** default= 0.04 */
+					double threshold;  
+					/** default= 10 */
+					double edgeThreshold; 
 				} SIFTOptions;
 
 				struct VISION_IMPEXP TSURFOptions
@@ -158,44 +165,60 @@ namespace mrpt
 
 					/** SURF Options
 					  */
-					bool   rotation_invariant; //!< Compute the rotation invariant SURF (dim=128) if set to true (default), or the smaller uSURF otherwise (dim=64)
-					int    hessianThreshold;   //!< Default: 600
-					int    nOctaves;           //!< Default: 2
-					int    nLayersPerOctave;   //!< Default: 4
+					/** Compute the rotation invariant SURF (dim=128) if set to true (default), or the smaller uSURF otherwise (dim=64) */
+					bool   rotation_invariant; 
+					/** Default: 600 */
+					int    hessianThreshold;   
+					/** Default: 2 */
+					int    nOctaves;           
+					/** Default: 4 */
+					int    nLayersPerOctave;   
 				} SURFOptions;
 
 				struct VISION_IMPEXP TSpinImagesOptions
 				{
 					/** SpinImages Options
 					  */
-					unsigned int hist_size_intensity; //!< Number of bins in the "intensity" axis of the 2D histogram (default=10).
-					unsigned int hist_size_distance;  //!< Number of bins in the "distance" axis of the 2D histogram (default=10).
-					float        std_dist;      //!< Standard deviation in "distance", used for the "soft histogram" (default=0.4 pixels)
-					float        std_intensity; //!< Standard deviation in "intensity", used for the "soft histogram" (default=20 units [0,255])
-					unsigned int radius;		//!< Maximum radius of the area of which the histogram is built, in pixel units (default=20 pixels)
+					/** Number of bins in the "intensity" axis of the 2D histogram (default=10). */
+					unsigned int hist_size_intensity; 
+					/** Number of bins in the "distance" axis of the 2D histogram (default=10). */
+					unsigned int hist_size_distance;  
+					/** Standard deviation in "distance", used for the "soft histogram" (default=0.4 pixels) */
+					float        std_dist;      
+					/** Standard deviation in "intensity", used for the "soft histogram" (default=20 units [0,255]) */
+					float        std_intensity; 
+					/** Maximum radius of the area of which the histogram is built, in pixel units (default=20 pixels) */
+					unsigned int radius;		
 				} SpinImagesOptions;
 
 				/** PolarImagesOptions Options
 				  */
 				struct VISION_IMPEXP TPolarImagesOptions
 				{
-					unsigned int bins_angle;     //!< Number of bins in the "angular" axis of the polar image (default=8).
-					unsigned int bins_distance;  //!< Number of bins in the "distance" axis of the polar image (default=6).
-					unsigned int radius;         //!< Maximum radius of the area of which the polar image is built, in pixel units (default=20 pixels)
+					/** Number of bins in the "angular" axis of the polar image (default=8). */
+					unsigned int bins_angle;     
+					/** Number of bins in the "distance" axis of the polar image (default=6). */
+					unsigned int bins_distance;  
+					/** Maximum radius of the area of which the polar image is built, in pixel units (default=20 pixels) */
+					unsigned int radius;         
 				} PolarImagesOptions;
 
 				/** LogPolarImagesOptions Options
 				  */
 				struct VISION_IMPEXP TLogPolarImagesOptions
 				{
-					unsigned int radius;		//!< Maximum radius of the area of which the log polar image is built, in pixel units (default=30 pixels)
-					unsigned int num_angles;	//!< (default=16) Log-Polar image patch will have dimensions WxH, with:  W=num_angles,  H= rho_scale * log(radius)
-					double rho_scale;			//!< (default=5) Log-Polar image patch will have dimensions WxH, with:  W=num_angles,  H= rho_scale * log(radius)
+					/** Maximum radius of the area of which the log polar image is built, in pixel units (default=30 pixels) */
+					unsigned int radius;		
+					/** (default=16) Log-Polar image patch will have dimensions WxH, with:  W=num_angles,  H= rho_scale * log(radius) */
+					unsigned int num_angles;	
+					/** (default=5) Log-Polar image patch will have dimensions WxH, with:  W=num_angles,  H= rho_scale * log(radius) */
+					double rho_scale;			
 				} LogPolarImagesOptions;
 
 			};
 
-			TOptions options;  //!< Set all the parameters of the desired method here before calling "detectFeatures"
+			/** Set all the parameters of the desired method here before calling "detectFeatures" */
+			TOptions options;  
 
 			/** Constructor
 			*/

@@ -29,20 +29,30 @@ namespace mrpt
 			virtual ~CVehicleVelCmd();
 			CVehicleVelCmd & operator =(const CVehicleVelCmd &other);
 
-			virtual size_t getVelCmdLength() const = 0;  //!< Get number of components in each velocity command
-			virtual std::string getVelCmdDescription(const int index) const = 0; //!< Get textual, human-readable description of each velocity command component
-			virtual double getVelCmdElement(const int index) const = 0;  //!< Get each velocity command component
-			virtual void setVelCmdElement(const int index, const double val) = 0;  //!< Set each velocity command component
-			virtual bool isStopCmd() const = 0; //!< Returns true if the command means "do not move" / "stop". \sa setToStop
-			virtual void setToStop() = 0; //!< Set to a command that means "do not move" / "stop". \sa isStopCmd
-			std::string asString() const; //!< Returns a human readable description of the cmd
+			/** Get number of components in each velocity command */
+			virtual size_t getVelCmdLength() const = 0;  
+			/** Get textual, human-readable description of each velocity command component */
+			virtual std::string getVelCmdDescription(const int index) const = 0; 
+			/** Get each velocity command component */
+			virtual double getVelCmdElement(const int index) const = 0;  
+			/** Set each velocity command component */
+			virtual void setVelCmdElement(const int index, const double val) = 0;  
+			/** Returns true if the command means "do not move" / "stop". \sa setToStop */
+			virtual bool isStopCmd() const = 0; 
+			/** Set to a command that means "do not move" / "stop". \sa isStopCmd */
+			virtual void setToStop() = 0; 
+			/** Returns a human readable description of the cmd */
+			std::string asString() const; 
 
 			/** Parameters that may be used by cmdVel_limits() in any derived classes. */
 			struct KINEMATICS_IMPEXP TVelCmdParams
 			{
-				double  robotMax_V_mps;       //!< Max. linear speed (m/s) [Default=-1 (not set), will raise exception if needed and not set]
-				double  robotMax_W_radps;     //!< Max. angular speed (rad/s) [Default=-1 (not set), will raise exception if needed and not set]
-				double  robotMinCurvRadius;   //!< Min. radius of curvature of paths (m) [Default=-1 (not set), will raise exception if needed and not set]
+				/** Max. linear speed (m/s) [Default=-1 (not set), will raise exception if needed and not set] */
+				double  robotMax_V_mps;       
+				/** Max. angular speed (rad/s) [Default=-1 (not set), will raise exception if needed and not set] */
+				double  robotMax_W_radps;     
+				/** Min. radius of curvature of paths (m) [Default=-1 (not set), will raise exception if needed and not set] */
+				double  robotMinCurvRadius;   
 
 				TVelCmdParams();
 				/** Load any parameter required by a CVehicleVelCmd derived class. */

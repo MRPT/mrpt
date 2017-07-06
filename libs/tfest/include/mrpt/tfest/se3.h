@@ -59,14 +59,22 @@ namespace mrpt
 		/** Parameters for se3_l2_robust(). See function for more details */
 		struct TFEST_IMPEXP TSE3RobustParams
 		{
-			unsigned int  ransac_minSetSize; //!< (Default=5)  The minimum amount of points in a set to start a consensus set. \sa ransac_maxSetSizePct
-			unsigned int  ransac_nmaxSimulations; //!< (Default=50) The maximum number of iterations of the RANSAC algorithm
-			double        ransac_maxSetSizePct; //!< (Default=0.5) The minimum ratio (0.0 - 1.0) of the input set that is considered to be inliers. *Important*: The minimum size of a consensus set to be accepted will be "INPUT_CORRESPONDENCES*ransac_maxSetSizePct".
-			double        ransac_threshold_lin; //!< (Default=0.05) The maximum distance in X,Y,Z for a solution to be considered as matching a candidate solution (In meters)
-			double        ransac_threshold_ang; //!< (Default=1 deg) The maximum angle (yaw,pitch,roll) for a solution to be considered as matching a candidate solution (In radians)
-			double        ransac_threshold_scale; //!< (Default=0.03) The maximum difference in scale for a solution to be considered as matching a candidate solution (dimensionless)
-			bool          forceScaleToUnity; //!< (Default=true) 
-			bool          verbose; //!< (Default=false)
+			/** (Default=5)  The minimum amount of points in a set to start a consensus set. \sa ransac_maxSetSizePct */
+			unsigned int  ransac_minSetSize; 
+			/** (Default=50) The maximum number of iterations of the RANSAC algorithm */
+			unsigned int  ransac_nmaxSimulations; 
+			/** (Default=0.5) The minimum ratio (0.0 - 1.0) of the input set that is considered to be inliers. *Important*: The minimum size of a consensus set to be accepted will be "INPUT_CORRESPONDENCES*ransac_maxSetSizePct". */
+			double        ransac_maxSetSizePct; 
+			/** (Default=0.05) The maximum distance in X,Y,Z for a solution to be considered as matching a candidate solution (In meters) */
+			double        ransac_threshold_lin; 
+			/** (Default=1 deg) The maximum angle (yaw,pitch,roll) for a solution to be considered as matching a candidate solution (In radians) */
+			double        ransac_threshold_ang; 
+			/** (Default=0.03) The maximum difference in scale for a solution to be considered as matching a candidate solution (dimensionless) */
+			double        ransac_threshold_scale; 
+			/** (Default=true)  */
+			bool          forceScaleToUnity; 
+			/** (Default=false) */
+			bool          verbose; 
 
 			/** If provided, this user callback will be invoked to determine the individual compatibility between each potential pair 
 			  * of elements. Can check image descriptors, geometrical properties, etc.
@@ -91,9 +99,12 @@ namespace mrpt
 		/** Output placeholder for se3_l2_robust() */
 		struct TFEST_IMPEXP TSE3RobustResult
 		{
-			mrpt::poses::CPose3DQuat        transformation; //!< The best transformation found
-			double                          scale;          //!< The estimated scale of the rigid transformation (should be very close to 1.0)
-			mrpt::vector_int                inliers_idx;    //!< Indexes within the `in_correspondences` list which corresponds with inliers
+			/** The best transformation found */
+			mrpt::poses::CPose3DQuat        transformation; 
+			/** The estimated scale of the rigid transformation (should be very close to 1.0) */
+			double                          scale;          
+			/** Indexes within the `in_correspondences` list which corresponds with inliers */
+			mrpt::vector_int                inliers_idx;    
 
 			TSE3RobustResult() : scale(.0)  { }
 		};

@@ -15,8 +15,10 @@
 
 /*! \brief A structure for storing data formats. */
 struct XsDataFormat {
-	XsOutputMode		m_outputMode;		//!< The stored output mode
-	XsOutputSettings	m_outputSettings;	//!< The stored output settings
+	/** The stored output mode */
+	XsOutputMode		m_outputMode;		
+	/** The stored output settings */
+	XsOutputSettings	m_outputSettings;	
 
 #ifdef __cplusplus
 	/*! \brief Construct an XsDataFormat specifier

@@ -25,7 +25,8 @@ namespace mrpt
 		{
 		private:
 			std::vector<T>  m_data;
-			size_t          m_size;  //!< not "const" to allow copy/move = ops.
+			/** not "const" to allow copy/move = ops. */
+			size_t          m_size;  
 			size_t          m_next_read,m_next_write;
 
 		public:

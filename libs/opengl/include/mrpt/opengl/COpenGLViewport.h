@@ -269,9 +269,11 @@ namespace mrpt
 
 			inline bool empty() const { return m_objects.empty(); }
 
-			opengl::CCamera& getCamera() { return m_camera;} //!< Get a reference to the camera associated with this viewport.
+			/** Get a reference to the camera associated with this viewport. */
+			opengl::CCamera& getCamera() { return m_camera;} 
 
-			const opengl::CCamera & getCamera() const { return m_camera;} //!< Get a reference to the camera associated with this viewport.
+			/** Get a reference to the camera associated with this viewport. */
+			const opengl::CCamera & getCamera() const { return m_camera;} 
 
 			/** Evaluates the bounding box of this object (including possible children) in the coordinate frame of the object parent. */
 			void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const;
@@ -280,7 +282,8 @@ namespace mrpt
 			// ------------------------------------------------------
 
 
-			virtual ~COpenGLViewport();  //!< Destructor: clears all objects.
+			/** Destructor: clears all objects. */
+			virtual ~COpenGLViewport();  
 
 
 		protected:
@@ -301,35 +304,54 @@ namespace mrpt
 
 			/** The camera associated to the viewport */
 			opengl::CCamera		m_camera;
-			utils::safe_ptr<COpenGLScene>  m_parent;   //!< The scene that contains this viewport.
-			bool			m_isCloned; //!< Set by setCloneView
-			bool			m_isClonedCamera; //!< Set by setCloneCamera
-			std::string		m_clonedViewport; //!< Only if m_isCloned=true
-			std::string		m_name; //!< The viewport's name
-			bool			m_isTransparent; //!< Whether to clear color buffer.
-			uint32_t        m_borderWidth;  //!< Default=0, the border around the viewport.
-			double			m_view_x, m_view_y,m_view_width,m_view_height; //!< The viewport position [0,1]
-			double			m_clip_min,m_clip_max; //!< The min/max clip depth distances (default: 0.1 - 10000)
+			/** The scene that contains this viewport. */
+			utils::safe_ptr<COpenGLScene>  m_parent;   
+			/** Set by setCloneView */
+			bool			m_isCloned; 
+			/** Set by setCloneCamera */
+			bool			m_isClonedCamera; 
+			/** Only if m_isCloned=true */
+			std::string		m_clonedViewport; 
+			/** The viewport's name */
+			std::string		m_name; 
+			/** Whether to clear color buffer. */
+			bool			m_isTransparent; 
+			/** Default=0, the border around the viewport. */
+			uint32_t        m_borderWidth;  
+			/** The viewport position [0,1] */
+			double			m_view_x, m_view_y,m_view_width,m_view_height; 
+			/** The min/max clip depth distances (default: 0.1 - 10000) */
+			double			m_clip_min,m_clip_max; 
 			bool			m_custom_backgb_color;
-			mrpt::utils::TColorf m_background_color;  //!< used only if m_custom_backgb_color
-			bool			m_isImageView; //!< Set by setImageView
+			/** used only if m_custom_backgb_color */
+			mrpt::utils::TColorf m_background_color;  
+			/** Set by setImageView */
+			bool			m_isImageView; 
 			//CRenderizable::Ptr m_imageview_quad ; //!< A mrpt::opengl::CTexturedPlane used after setImageView() is called
-			mrpt::utils::CImage::Ptr  m_imageview_img; //!< The image to display, after calling \a setImageView()
+			/** The image to display, after calling \a setImageView() */
+			mrpt::utils::CImage::Ptr  m_imageview_img; 
 
 			struct TLastProjectiveMatrixInfo
 			{
 				TLastProjectiveMatrixInfo() : eye(0,0,0),pointing(0,0,0),up(0,0,0), viewport_width(640), viewport_height(480), FOV(30), azimuth(0), elev(0), zoom(1),is_projective(true)
 				{}
-			 mrpt::math::TPoint3D 	eye;		//!< The camera is here.
-			 mrpt::math::TPoint3D 	pointing; 	//!< The camera points to here
-			 mrpt::math::TPoint3D	up; 		//!< Up vector of the camera.
-				size_t viewport_width, viewport_height; //!< In pixels. This may be smaller than the total render window.
-				float FOV; //!< FOV in degrees.
-				float azimuth, elev; //!< Camera elev & azimuth, in radians.
+			 /** The camera is here. */
+			 mrpt::math::TPoint3D 	eye;		
+			 /** The camera points to here */
+			 mrpt::math::TPoint3D 	pointing; 	
+			 /** Up vector of the camera. */
+			 mrpt::math::TPoint3D	up; 		
+				/** In pixels. This may be smaller than the total render window. */
+				size_t viewport_width, viewport_height; 
+				/** FOV in degrees. */
+				float FOV; 
+				/** Camera elev & azimuth, in radians. */
+				float azimuth, elev; 
 				float zoom;
 				bool is_projective;  // true: projective, false: ortho
 			};
-			mutable TLastProjectiveMatrixInfo m_lastProjMat;  //!< Info updated with each "render()" and used in "get3DRayForPixelCoord"
+			/** Info updated with each "render()" and used in "get3DRayForPixelCoord" */
+			mutable TLastProjectiveMatrixInfo m_lastProjMat;  
 
 			/** The list of objects that comprise the 3D scene.
 			  *  Objects are automatically deleted when calling "clear" or in the destructor.
@@ -381,7 +403,8 @@ namespace mrpt
 		class OPENGL_IMPEXP mrptEventGLPreRender : public mrpt::utils::mrptEvent
 		{
 		protected:
-			void do_nothing() override { } //!< Just to allow this class to be polymorphic
+			/** Just to allow this class to be polymorphic */
+			void do_nothing() override { } 
 		public:
 			inline mrptEventGLPreRender(const COpenGLViewport* obj) : source_viewport(obj) { }
 			const COpenGLViewport * const source_viewport;
@@ -398,7 +421,8 @@ namespace mrpt
 		class OPENGL_IMPEXP mrptEventGLPostRender : public mrpt::utils::mrptEvent
 		{
 		protected:
-			void do_nothing()  override { } //!< Just to allow this class to be polymorphic
+			/** Just to allow this class to be polymorphic */
+			void do_nothing()  override { } 
 		public:
 			inline mrptEventGLPostRender(const COpenGLViewport* obj) : source_viewport(obj) { }
 			const COpenGLViewport * const source_viewport;

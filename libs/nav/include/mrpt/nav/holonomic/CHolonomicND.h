@@ -88,7 +88,8 @@ namespace mrpt
 			double TOO_CLOSE_OBSTACLE,WIDE_GAP_SIZE_PERCENT,RISK_EVALUATION_SECTORS_PERCENT;
 			double RISK_EVALUATION_DISTANCE,MAX_SECTOR_DIST_FOR_D2_PERCENT;
 			double TARGET_SLOW_APPROACHING_DISTANCE;
-			std::vector<double> factorWeights;  //!< Vector of 4 weights: [0]=Free space, [1]=Dist. in sectors, [2]=Closer to target (Euclidean), [3]=Hysteresis
+			/** Vector of 4 weights: [0]=Free space, [1]=Dist. in sectors, [2]=Closer to target (Euclidean), [3]=Hysteresis */
+			std::vector<double> factorWeights;  
 
 
 			TOptions();
@@ -96,7 +97,8 @@ namespace mrpt
 			void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg ,const std::string &section) const override; // See base docs
 		};
 
-		TOptions options;  //!< Parameters of the algorithm (can be set manually or loaded from CHolonomicND::initialize or options.loadFromConfigFile(), etc.)
+		/** Parameters of the algorithm (can be set manually or loaded from CHolonomicND::initialize or options.loadFromConfigFile(), etc.) */
+		TOptions options;  
 
 		double getTargetApproachSlowDownDistance() const override { return options.TARGET_SLOW_APPROACHING_DISTANCE; }
 		void setTargetApproachSlowDownDistance(const double dist) override { options.TARGET_SLOW_APPROACHING_DISTANCE = dist; }

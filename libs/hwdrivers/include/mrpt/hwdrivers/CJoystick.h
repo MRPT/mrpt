@@ -31,8 +31,10 @@ namespace mrpt
 
 
 	#if defined(MRPT_OS_LINUX)
-			int			m_joy_fd;		//!< File FD for the joystick, or -1 if not open (Linux only)
-			int			m_joy_index;	//!< The index of the joystick open in m_joy_fd (Linux only)
+			/** File FD for the joystick, or -1 if not open (Linux only) */
+			int			m_joy_fd;		
+			/** The index of the joystick open in m_joy_fd (Linux only) */
+			int			m_joy_index;	
 			/** Using an event system we only have deltas, need to keep the whole joystick state (Linux only) */
 			vector_bool	m_joystate_btns;
 			/** Using an event system we only have deltas, need to keep the whole joystick state (Linux only) */

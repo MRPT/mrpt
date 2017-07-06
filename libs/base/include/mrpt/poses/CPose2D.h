@@ -39,11 +39,14 @@ namespace poses
 		DEFINE_SERIALIZABLE( CPose2D )
 
 	public:
-		mrpt::math::CArrayDouble<2>   m_coords; //!< [x,y]
+		/** [x,y] */
+		mrpt::math::CArrayDouble<2>   m_coords; 
 
 	protected:
-		double m_phi;  //!< The orientation of the pose, in radians.
-		mutable double m_cosphi, m_sinphi; //!< Precomputed cos() & sin() of phi.
+		/** The orientation of the pose, in radians. */
+		double m_phi;  
+		/** Precomputed cos() & sin() of phi. */
+		mutable double m_cosphi, m_sinphi; 
 		mutable bool   m_cossin_uptodate;
 
 		inline void update_cached_cos_sin() const {
@@ -92,7 +95,8 @@ namespace poses
 		 /** Set the phi angle of the 2D pose (in radians) */
 		 inline void phi(double angle) { m_phi=angle; m_cossin_uptodate=false; }
 
-		 inline void phi_incr(const double Aphi) { m_phi+=Aphi; m_cossin_uptodate=false; }  //!< Increment the PHI angle (without checking the 2 PI range, call normalizePhi is needed)
+		 /** Increment the PHI angle (without checking the 2 PI range, call normalizePhi is needed) */
+		 inline void phi_incr(const double Aphi) { m_phi+=Aphi; m_cossin_uptodate=false; }  
 
 		/** Returns a 1x3 vector with [x y phi] */
 		void getAsVector(mrpt::math::CVectorDouble &v) const;
@@ -104,8 +108,10 @@ namespace poses
 		   */
 		 void  getHomogeneousMatrix(mrpt::math::CMatrixDouble44 & out_HM ) const;
 
-		 void getRotationMatrix(mrpt::math::CMatrixDouble22 &R) const; //!< Returns the SE(2) 2x2 rotation matrix
-		 void getRotationMatrix(mrpt::math::CMatrixDouble33 &R) const; //!< Returns the equivalent SE(3) 3x3 rotation matrix, with (2,2)=1.
+		 /** Returns the SE(2) 2x2 rotation matrix */
+		 void getRotationMatrix(mrpt::math::CMatrixDouble22 &R) const; 
+		 /** Returns the equivalent SE(3) 3x3 rotation matrix, with (2,2)=1. */
+		 void getRotationMatrix(mrpt::math::CMatrixDouble33 &R) const; 
 
 		 inline mrpt::math::CMatrixDouble22 getRotationMatrix() const {
 			 mrpt::math::CMatrixDouble22 R(mrpt::math::UNINITIALIZED_MATRIX);
@@ -225,7 +231,8 @@ namespace poses
 		/** Returns the 2D distance from this pose/point to a 2D pose using the Frobenius distance. */
 		double distance2DFrobeniusTo( const CPose2D & p) const;
 
-		typedef CPose2D  type_value; //!< Used to emulate CPosePDF types, for example, in mrpt::graphs::CNetworkOfPoses
+		/** Used to emulate CPosePDF types, for example, in mrpt::graphs::CNetworkOfPoses */
+		typedef CPose2D  type_value; 
 		enum { is_3D_val = 0 };
 		static inline bool is_3D() { return is_3D_val!=0; }
 		enum { rotation_dimensions = 2 };
@@ -239,7 +246,8 @@ namespace poses
 
 		/** @name STL-like methods and typedefs
 		   @{   */
-		typedef double         value_type;		//!< The type of the elements
+		/** The type of the elements */
+		typedef double         value_type;		
 		typedef double&        reference;
 		typedef const double&  const_reference;
 		typedef std::size_t    size_type;
@@ -263,13 +271,16 @@ namespace poses
 	/** Unary - operator: return the inverse pose "-p" (Note that is NOT the same than a pose with negative x y phi) \sa CPose2D::inverse() */
 	CPose2D BASE_IMPEXP operator -(const CPose2D &p);
 
-	mrpt::math::TPoint2D BASE_IMPEXP  operator +(const CPose2D &pose, const mrpt::math::TPoint2D &pnt);  //!< Compose a 2D point from a new coordinate base given by a 2D pose.
+	/** Compose a 2D point from a new coordinate base given by a 2D pose. */
+	mrpt::math::TPoint2D BASE_IMPEXP  operator +(const CPose2D &pose, const mrpt::math::TPoint2D &pnt);  
 
 	bool BASE_IMPEXP operator==(const CPose2D &p1,const CPose2D &p2);
 	bool BASE_IMPEXP operator!=(const CPose2D &p1,const CPose2D &p2);
 
-	typedef mrpt::aligned_containers<CPose2D>::vector_t		StdVector_CPose2D; //!< Eigen aligment-compatible container
-	typedef mrpt::aligned_containers<CPose2D>::deque_t 		StdDeque_CPose2D; //!< Eigen aligment-compatible container
+	/** Eigen aligment-compatible container */
+	typedef mrpt::aligned_containers<CPose2D>::vector_t		StdVector_CPose2D; 
+	/** Eigen aligment-compatible container */
+	typedef mrpt::aligned_containers<CPose2D>::deque_t 		StdDeque_CPose2D; 
 
 	} // End of namespace
 } // End of namespace

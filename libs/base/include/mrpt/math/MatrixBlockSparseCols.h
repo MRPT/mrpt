@@ -45,11 +45,14 @@ namespace mrpt
 
 			struct TEntry
 			{
-				matrix_t   num;  //!< Numeric matrix
-				symbolic_t sym;  //!< Extra symbolic info
+				/** Numeric matrix */
+				matrix_t   num;  
+				/** Extra symbolic info */
+				symbolic_t sym;  
 			};
 
-			typedef typename mrpt::aligned_containers<size_t,TEntry>::map_t col_t; //!< Each compressed sparse column
+			/** Each compressed sparse column */
+			typedef typename mrpt::aligned_containers<size_t,TEntry>::map_t col_t; 
 
 		private:
 			/** -> cols[i]: i'th column.

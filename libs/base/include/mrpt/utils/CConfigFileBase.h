@@ -22,7 +22,8 @@ namespace utils
 	template <typename ENUMTYPE> struct TEnumType;
 	class CConfigFilePrefixer;
 
-	extern int BASE_IMPEXP MRPT_SAVE_NAME_PADDING, MRPT_SAVE_VALUE_PADDING; //!< Default padding sizes for macros MRPT_SAVE_CONFIG_VAR_COMMENT(), etc.
+	/** Default padding sizes for macros MRPT_SAVE_CONFIG_VAR_COMMENT(), etc. */
+	extern int BASE_IMPEXP MRPT_SAVE_NAME_PADDING, MRPT_SAVE_VALUE_PADDING; 
 
 	/** This class allows loading and storing values and vectors of different types from a configuration text, which can be implemented as a ".ini" file, a memory-stored string, etc...
 	  *   This is a virtual class, use only as a pointer to an implementation of one of the derived classes.
@@ -46,7 +47,8 @@ namespace utils
 		virtual std::string  readString(const std::string &section,const std::string &name,const std::string &defaultStr,bool failIfNotFound = false) const = 0;
 
 	public:
-		virtual ~CConfigFileBase(); //!< dtor
+		/** dtor */
+		virtual ~CConfigFileBase(); 
 
 		/** Returns a list with all the section names. */
 		virtual void getAllSections( vector_string	&sections ) const = 0 ;

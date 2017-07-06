@@ -42,26 +42,40 @@ namespace mrpt
 		{
 			DEFINE_SERIALIZABLE( CVectorField3D )
 		protected:
-			mrpt::math::CMatrix x_vf;				//!< X component of the vector field
-			mrpt::math::CMatrix y_vf;				//!< Y component of the vector field
-			mrpt::math::CMatrix z_vf;               //!< Z component of the vector field
+			/** X component of the vector field */
+			mrpt::math::CMatrix x_vf;				
+			/** Y component of the vector field */
+			mrpt::math::CMatrix y_vf;				
+			/** Z component of the vector field */
+			mrpt::math::CMatrix z_vf;               
 
-			mrpt::math::CMatrix x_p;                //!< X coordinate of the points at which the vector field is plotted
-			mrpt::math::CMatrix y_p;                //!< Y coordinate of the points at which the vector field is plotted
-			mrpt::math::CMatrix z_p;                //!< Z coordinate of the points at which the vector field is plotted
+			/** X coordinate of the points at which the vector field is plotted */
+			mrpt::math::CMatrix x_p;                
+			/** Y coordinate of the points at which the vector field is plotted */
+			mrpt::math::CMatrix y_p;                
+			/** Z coordinate of the points at which the vector field is plotted */
+			mrpt::math::CMatrix z_p;                
 
-			float	m_LineWidth;			//!< By default it is 1.0
-			float	m_pointSize;			//!< By default it is 1.0
-			bool    m_antiAliasing;			//!< By default it is true
-			bool    m_colorFromModule;      //!< By default it is false
-			bool	m_showPoints;			//!< By default it is true
+			/** By default it is 1.0 */
+			float	m_LineWidth;			
+			/** By default it is 1.0 */
+			float	m_pointSize;			
+			/** By default it is true */
+			bool    m_antiAliasing;			
+			/** By default it is false */
+			bool    m_colorFromModule;      
+			/** By default it is true */
+			bool	m_showPoints;			
 
 			mrpt::utils::TColor m_point_color;
 			mrpt::utils::TColor m_field_color;
 
-			mrpt::utils::TColor m_still_color;           //!< Color associated to fields with null module
-			mrpt::utils::TColor m_maxspeed_color;        //!< Color associated to fields whose module is equal or larger than 'm_maxspeed'
-			float  m_maxspeed;              //!< Value of the module of the motion field which will correspond to 'm_maxspeed_color'
+			/** Color associated to fields with null module */
+			mrpt::utils::TColor m_still_color;           
+			/** Color associated to fields whose module is equal or larger than 'm_maxspeed' */
+			mrpt::utils::TColor m_maxspeed_color;        
+			/** Value of the module of the motion field which will correspond to 'm_maxspeed_color' */
+			float  m_maxspeed;              
 
 		public:
 			/**

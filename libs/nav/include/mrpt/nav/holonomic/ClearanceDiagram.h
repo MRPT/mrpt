@@ -28,8 +28,10 @@ namespace nav {
 	class NAV_IMPEXP ClearanceDiagram
 	{
 	public:
-		ClearanceDiagram(); //!< default ctor
-		void clear(); //!< Reset to default, empty state
+		/** default ctor */
+		ClearanceDiagram(); 
+		/** Reset to default, empty state */
+		void clear(); 
 		/** Initializes the container to allocate `decimated_num_paths` entries, as a decimated 
 		  * subset of a total of `actual_num_paths` paths */
 		void resize(size_t actual_num_paths, size_t decimated_num_paths);
@@ -47,7 +49,8 @@ namespace nav {
 		void readFromStream(mrpt::utils::CStream &in);
 		void writeToStream(mrpt::utils::CStream &out) const;
 
-		typedef std::map<double, double> dist2clearance_t; //!< [TPS_distance] => normalized_clearance_for_exactly_that_robot_pose  */
+		/** [TPS_distance] => normalized_clearance_for_exactly_that_robot_pose  */ */
+		typedef std::map<double, double> dist2clearance_t; 
 		dist2clearance_t & get_path_clearance(size_t actual_k);
 		const dist2clearance_t & get_path_clearance(size_t actual_k) const;
 		

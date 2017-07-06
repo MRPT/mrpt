@@ -13,8 +13,10 @@
 
 #ifndef XSENS_SINGLE_PRECISION
 #include <stddef.h>
-typedef double XsReal;	//!< Defines the floating point type used by the Xsens libraries
-typedef size_t XsSize;	//!< XsSize must be unsigned number!
+/** Defines the floating point type used by the Xsens libraries */
+typedef double XsReal;	
+/** XsSize must be unsigned number! */
+typedef size_t XsSize;	
 # ifndef PRINTF_SIZET_MODIFIER
 #  if defined(XSENS_64BIT)
 #    define PRINTF_SIZET_MODIFIER "l"
@@ -23,8 +25,10 @@ typedef size_t XsSize;	//!< XsSize must be unsigned number!
 #  endif
 # endif // PRINTF_SIZET_MODIFIER
 #else
-typedef float XsReal;			//!< Defines the floating point type used by the Xsens libraries
-typedef unsigned int XsSize;	//!< XsSize must be unsigned number!
+/** Defines the floating point type used by the Xsens libraries */
+typedef float XsReal;			
+/** XsSize must be unsigned number! */
+typedef unsigned int XsSize;	
 #endif // XSENS_SINGLE_PRECISION
 
 
@@ -35,10 +39,14 @@ typedef unsigned int XsSize;	//!< XsSize must be unsigned number!
 	\details Normally, the user should never need to use these directly.
 */
 enum XsDataFlags {
-	 XSDF_None = 0				//!< No flag set
-	,XSDF_Managed = 1			//!< The contained data should be managed (freed) by the object, when false, the object assumes the memory is freed by some other process after its destruction
-	,XSDF_FixedSize = 2			//!< The contained data points to a fixed-size buffer, this allows creation of dynamic objects on the stack without malloc/free overhead.
-	,XSDF_Empty = 4				//!< The object contains undefined data / should be considered empty. Usually only relevant when XSDF_FixedSize is also set, as otherwise the data pointer will be nullptr and empty-ness is implicit.
+	 /** No flag set */
+	 XSDF_None = 0				
+	/** The contained data should be managed (freed) by the object, when false, the object assumes the memory is freed by some other process after its destruction */
+	,XSDF_Managed = 1			
+	/** The contained data points to a fixed-size buffer, this allows creation of dynamic objects on the stack without malloc/free overhead. */
+	,XSDF_FixedSize = 2			
+	/** The object contains undefined data / should be considered empty. Usually only relevant when XSDF_FixedSize is also set, as otherwise the data pointer will be nullptr and empty-ness is implicit. */
+	,XSDF_Empty = 4				
 };
 /*! @} */
 typedef enum XsDataFlags XsDataFlags;

@@ -99,8 +99,10 @@ public:
 	}
 
 private:
-	XsResultValue m_code;	//!< The supplied error code
-	XsString m_description;	//!< The supplied description, prefixed with a description of the error code
+	/** The supplied error code */
+	XsResultValue m_code;	
+	/** The supplied description, prefixed with a description of the error code */
+	XsString m_description;	
 };
 
 #endif // file guard

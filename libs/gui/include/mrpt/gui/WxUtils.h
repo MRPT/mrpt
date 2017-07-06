@@ -148,8 +148,10 @@ namespace mrpt
 			wxMRPTImageControl(	wxWindow *parent,wxWindowID winID,int x, int y, int width, int height);
 			virtual ~wxMRPTImageControl();
 
-			void AssignImage(wxBitmap *img); //!< Assigns this image. This object has the ownship of the image and will delete it when appropriate. Remember to call Refresh to display the image.
-			void AssignImage(const mrpt::utils::CImage &img); //!< Assigns this image. Remember to call Refresh to display the image.
+			/** Assigns this image. This object has the ownship of the image and will delete it when appropriate. Remember to call Refresh to display the image. */
+			void AssignImage(wxBitmap *img); 
+			/** Assigns this image. Remember to call Refresh to display the image. */
+			void AssignImage(const mrpt::utils::CImage &img); 
 			void GetBitmap(wxBitmap &bmp);
 
 			void OnPaint(wxPaintEvent &ev);

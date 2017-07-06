@@ -33,10 +33,14 @@ namespace maps
 	{
 		DEFINE_SERIALIZABLE( CSimpleMap )
 	public:
-		CSimpleMap(); //!< Default constructor (empty map)
-		CSimpleMap( const CSimpleMap &o ); //!< Copy constructor
-		virtual ~CSimpleMap(); //!< Destructor:
-		CSimpleMap & operator = ( const CSimpleMap& o); //!< Copy
+		/** Default constructor (empty map) */
+		CSimpleMap(); 
+		/** Copy constructor */
+		CSimpleMap( const CSimpleMap &o ); 
+		/** Destructor: */
+		virtual ~CSimpleMap(); 
+		/** Copy */
+		CSimpleMap & operator = ( const CSimpleMap& o); 
 
 		/** \name Map access and modification
 		  * @{ */
@@ -51,8 +55,10 @@ namespace maps
 		  * \return false on any error. */
 		bool loadFromFile(const std::string &filName);
 
-		size_t size() const; //!< Returns the count of pairs (pose,sensory data)
-		bool empty() const;  //!< Returns size()!=0
+		/** Returns the count of pairs (pose,sensory data) */
+		size_t size() const; 
+		/** Returns size()!=0 */
+		bool empty() const;  
 
 		/** Access to the i'th pair, first one is index '0'. NOTE: This method
 		  *  returns pointers to the objects inside the list, nor a copy of them,
@@ -112,7 +118,8 @@ namespace maps
 		  */
 		void  insert( const mrpt::poses::CPosePDF *in_posePDF, const mrpt::obs::CSensoryFrame::Ptr &in_SF );
 
-		void  clear(); //!< Remove all stored pairs.  \sa remove
+		/** Remove all stored pairs.  \sa remove */
+		void  clear(); 
 
 		/** Change the coordinate origin of all stored poses, for consistency with future new poses to enter in the system. */
 		void changeCoordinatesOrigin( const mrpt::poses::CPose3D  &newOrigin );

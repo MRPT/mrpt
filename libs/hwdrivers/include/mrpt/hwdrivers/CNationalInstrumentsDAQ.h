@@ -213,11 +213,16 @@ namespace mrpt
 				bool has_ci_period, has_ci_count_edges,has_ci_pulse_width,has_ci_lin_encoder,has_ci_ang_encoder, has_co_pulses;
 
 
-                double   samplesPerSecond;   //!< Sample clock config: samples per second. Continuous (infinite) sampling is assumed.
-                std::string sampleClkSource; //!< Sample clock source: may be empty (default value) for some channels.
-				uint32_t bufferSamplesPerChannel; //!< (Default=0) From NI's docs: The number of samples the buffer can hold for each channel in the task. Zero indicates no buffer should be allocated. Use a buffer size of 0 to perform a hardware-timed operation without using a buffer.
-				uint32_t samplesPerChannelToRead; //!< (Default=1000) The number of samples to grab at once from each channel.
-                std::string taskLabel;            //!< (Default="task###")
+                /** Sample clock config: samples per second. Continuous (infinite) sampling is assumed. */
+                double   samplesPerSecond;   
+                /** Sample clock source: may be empty (default value) for some channels. */
+                std::string sampleClkSource; 
+				/** (Default=0) From NI's docs: The number of samples the buffer can hold for each channel in the task. Zero indicates no buffer should be allocated. Use a buffer size of 0 to perform a hardware-timed operation without using a buffer. */
+				uint32_t bufferSamplesPerChannel; 
+				/** (Default=1000) The number of samples to grab at once from each channel. */
+				uint32_t samplesPerChannelToRead; 
+                /** (Default="task###") */
+                std::string taskLabel;            
 
 				struct HWDRIVERS_IMPEXP desc_ai_t
 				{
@@ -225,31 +230,39 @@ namespace mrpt
 
 					std::string physicalChannel, terminalConfig;
 					double minVal, maxVal;
-					unsigned int physicalChannelCount; //!< *IMPORTANT* This must be the total number of channels listed in "physicalChannel" (e.g. 4 for "Dev1/ai0:3")
+					/** *IMPORTANT* This must be the total number of channels listed in "physicalChannel" (e.g. 4 for "Dev1/ai0:3") */
+					unsigned int physicalChannelCount; 
 				} 
-				ai; //!< Analog inputs
+				/** Analog inputs */
+				ai; 
 				
 				struct HWDRIVERS_IMPEXP desc_ao_t
 				{
 					desc_ao_t() : physicalChannelCount(0),minVal(-10), maxVal(10) { }
 
 					std::string physicalChannel;
-					unsigned int physicalChannelCount; //!< *IMPORTANT* This must be the total number of channels listed in "physicalChannel" (e.g. 1 for "Dev1/ao0")
+					/** *IMPORTANT* This must be the total number of channels listed in "physicalChannel" (e.g. 1 for "Dev1/ao0") */
+					unsigned int physicalChannelCount; 
 					double minVal, maxVal;
 				} 
-				ao; //!< Analog outputs
+				/** Analog outputs */
+				ao; 
 
 				struct HWDRIVERS_IMPEXP desc_di_t
 				{
-					std::string line;  //!< The digital line (for example "Dev1/port0/line1")
+					/** The digital line (for example "Dev1/port0/line1") */
+					std::string line;  
 				} 
-				di; //!< Digital inputs (di)
+				/** Digital inputs (di) */
+				di; 
 
 				struct HWDRIVERS_IMPEXP desc_do_t
 				{
-					std::string line;   //!< The digital line (for example "Dev1/port0/line1")
+					/** The digital line (for example "Dev1/port0/line1") */
+					std::string line;   
 				} 
-				douts; //!< Digital outs (do)
+				/** Digital outs (do) */
+				douts; 
 
 				struct HWDRIVERS_IMPEXP desc_ci_period_t
 				{
@@ -260,7 +273,8 @@ namespace mrpt
 					double      measTime;
 					int         divisor; 
 				} 
-				ci_period; //!< Counter: period of a digital signal
+				/** Counter: period of a digital signal */
+				ci_period; 
 
 				struct HWDRIVERS_IMPEXP desc_ci_count_edges_t
 				{
@@ -269,7 +283,8 @@ namespace mrpt
 					std::string counter, edge, countDirection;
 					int         initialCount; 
 				} 
-				ci_count_edges; //!< Counter: period of a digital signal
+				/** Counter: period of a digital signal */
+				ci_count_edges; 
 
 				struct HWDRIVERS_IMPEXP desc_ci_pulse_width_t
 				{
@@ -278,7 +293,8 @@ namespace mrpt
 					std::string counter, units, startingEdge;
 					double      minVal,maxVal; 
 				} 
-				ci_pulse_width; //!< Counter: measure the width of a digital pulse
+				/** Counter: measure the width of a digital pulse */
+				ci_pulse_width; 
 
 				struct HWDRIVERS_IMPEXP desc_ci_lin_encoder_t
 				{
@@ -290,7 +306,8 @@ namespace mrpt
 					double      distPerPulse;
 					double      initialPos;
 				} 
-				ci_lin_encoder; //!< Counter: uses a linear encoder to measure linear position
+				/** Counter: uses a linear encoder to measure linear position */
+				ci_lin_encoder; 
 
 				struct HWDRIVERS_IMPEXP desc_ci_ang_encoder_t
 				{
@@ -303,7 +320,8 @@ namespace mrpt
 					double      initialAngle;
 					int         decimate, decimate_cnt; 
 				} 
-				ci_ang_encoder; //!< Counter: uses an angular encoder to measure angular position
+				/** Counter: uses an angular encoder to measure angular position */
+				ci_ang_encoder; 
 
 				struct HWDRIVERS_IMPEXP desc_co_pulses_t
 				{
@@ -312,7 +330,8 @@ namespace mrpt
 					std::string counter, idleState;
 					double      initialDelay,freq,dutyCycle;
 				} 
-				co_pulses; //!< Output counter: digital pulses output
+				/** Output counter: digital pulses output */
+				co_pulses; 
 
 			}; // end of TaskDescription
 			
@@ -328,7 +347,8 @@ namespace mrpt
 				const std::string	  &iniSection );
 
 		private:
-			std::vector<mrpt::obs::CObservationRawDAQ::Ptr> m_nextObservations; //!< A buffer for doProcess
+			/** A buffer for doProcess */
+			std::vector<mrpt::obs::CObservationRawDAQ::Ptr> m_nextObservations; 
 
 			struct TInfoPerTask
 			{
@@ -343,7 +363,8 @@ namespace mrpt
 				bool must_close, is_closed;
 				std::atomic<int>  new_obs_available;
 
-				TaskDescription task; //!< A copy of the original task description that generated this thread.
+				/** A copy of the original task description that generated this thread. */
+				TaskDescription task; 
 			};
 
 			std::list<TInfoPerTask> m_running_tasks;

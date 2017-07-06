@@ -70,11 +70,16 @@ namespace mrpt
 
 			/** @name Vectorized font params - Applicable only if font==MRPT_GLUT_BITMAP_NONE
 			    @{ */
-			std::string             vfont_name;  //!< Vectorized font name ("sans","mono","serif")
-			double                  vfont_scale; //!< Size of characters
-			TOpenGLFontStyle        vfont_style; //!< (default: NICE) See TOpenGLFontStyle.
-			double                  vfont_spacing; //!< (default: 1.5) Refer to mrpt::opengl::gl_utils::glDrawText
-			double                  vfont_kerning; //!< (default: 0.1) Refer to mrpt::opengl::gl_utils::glDrawText
+			/** Vectorized font name ("sans","mono","serif") */
+			std::string             vfont_name;  
+			/** Size of characters */
+			double                  vfont_scale; 
+			/** (default: NICE) See TOpenGLFontStyle. */
+			TOpenGLFontStyle        vfont_style; 
+			/** (default: 1.5) Refer to mrpt::opengl::gl_utils::glDrawText */
+			double                  vfont_spacing; 
+			/** (default: 0.1) Refer to mrpt::opengl::gl_utils::glDrawText */
+			double                  vfont_kerning; 
 			/** @} */
 		};
 

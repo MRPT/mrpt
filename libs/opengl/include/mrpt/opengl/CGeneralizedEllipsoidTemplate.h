@@ -58,8 +58,10 @@ namespace mrpt
 		class CGeneralizedEllipsoidTemplate : public CRenderizableDisplayList
 		{
 		public:
-			typedef mrpt::math::CMatrixFixedNumeric<double,DIM,DIM> cov_matrix_t;   //!< The type of fixed-size covariance matrices for this representation
-			typedef mrpt::math::CMatrixFixedNumeric<double,DIM,1> mean_vector_t;   //!< The type of fixed-size vector for this representation
+			/** The type of fixed-size covariance matrices for this representation */
+			typedef mrpt::math::CMatrixFixedNumeric<double,DIM,DIM> cov_matrix_t;   
+			/** The type of fixed-size vector for this representation */
+			typedef mrpt::math::CMatrixFixedNumeric<double,DIM,1> mean_vector_t;   
 
 			typedef mrpt::math::CMatrixFixedNumeric<float,DIM,1> array_parameter_t;
 			typedef mrpt::math::CMatrixFixedNumeric<float,DIM,1> array_point_t;
@@ -206,12 +208,16 @@ namespace mrpt
 			mutable cov_matrix_t m_cov;
 			mean_vector_t   m_mean;
 			mutable bool    m_needToRecomputeEigenVals;
-			float           m_quantiles;	//!< The number of "sigmas" for drawing the ellipse/ellipsoid (default=3)
-			float           m_lineWidth;	//!< The line width for 2D ellipses or 3D wireframe ellipsoids (default=1)
-			uint32_t        m_numSegments;  //!< Number of segments in 2D/3D ellipsoids (default=10)
+			/** The number of "sigmas" for drawing the ellipse/ellipsoid (default=3) */
+			float           m_quantiles;	
+			/** The line width for 2D ellipses or 3D wireframe ellipsoids (default=1) */
+			float           m_lineWidth;	
+			/** Number of segments in 2D/3D ellipsoids (default=10) */
+			uint32_t        m_numSegments;  
 			mutable mrpt::math::TPoint3D m_bb_min, m_bb_max;
 
-			mutable cov_matrix_t  m_U;  //!< Cholesky U triangular matrix cache. */
+			/** Cholesky U triangular matrix cache. */ */
+			mutable cov_matrix_t  m_U;  
 
 			void  thisclass_writeToStream(mrpt::utils::CStream &out) const
 			{

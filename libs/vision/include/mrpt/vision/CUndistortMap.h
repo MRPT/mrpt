@@ -46,7 +46,8 @@ namespace mrpt
 		class VISION_IMPEXP  CUndistortMap
 		{
 		public:
-			CUndistortMap(); //!< Default ctor
+			/** Default ctor */
+			CUndistortMap(); 
 
 			/** Prepares the mapping from the distortion parameters of a camera.
 			  * Must be called before invoking \a undistort().
@@ -73,7 +74,8 @@ namespace mrpt
 			std::vector<int16_t>  m_dat_mapx;
 			std::vector<uint16_t> m_dat_mapy;
 
-			mrpt::utils::TCamera  m_camera_params; //!< A copy of the data provided by the user
+			/** A copy of the data provided by the user */
+			mrpt::utils::TCamera  m_camera_params; 
 
 		}; // end class
 	} // end namespace

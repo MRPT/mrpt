@@ -36,8 +36,10 @@ namespace mrpt
 			DEFINE_VIRTUAL_SERIALIZABLE( CRenderizableDisplayList  )
 
 		private:
-			mutable unsigned int	m_dl; //!< Display list ID, for derived classes that want to use it (it's automatically deleted and freed on destruction of this base class).
-			mutable bool			m_dl_recreate; //!< If using display lists, this is true when the list must be updated (the object changes, it's the first rendering, etc...).
+			/** Display list ID, for derived classes that want to use it (it's automatically deleted and freed on destruction of this base class). */
+			mutable unsigned int	m_dl; 
+			/** If using display lists, this is true when the list must be updated (the object changes, it's the first rendering, etc...). */
+			mutable bool			m_dl_recreate; 
 
 		protected:
 			/** @name Methods accesible or implemented by derived classes 
@@ -70,12 +72,18 @@ namespace mrpt
 
 			/** @name Changes the appearance of the object to render (methods from CRenderizable that need to be redefined)
 			    @{ */
-			CRenderizable&  setColorR_u8(const uint8_t r) override	{m_color.R=r; notifyChange(); return *this;}	//!<Color components in the range [0,255] \return a ref to this
-			CRenderizable&  setColorG_u8(const uint8_t g) override	{m_color.G=g; notifyChange(); return *this;}	//!<Color components in the range [0,255] \return a ref to this
-			CRenderizable&  setColorB_u8(const uint8_t b) override	{m_color.B=b; notifyChange(); return *this;}	//!<Color components in the range [0,255] \return a ref to this
-			CRenderizable&  setColorA_u8(const uint8_t a) override	{m_color.A=a; notifyChange(); return *this;}	//!<Color components in the range [0,255] \return a ref to this
-			CRenderizable& setColor_u8( const mrpt::utils::TColor &c) override { CRenderizable::setColor_u8(c); notifyChange(); return *this; } //!< Changes the default object color \return a ref to this
-			inline CRenderizable& setColor_u8( uint8_t R, uint8_t G, uint8_t B, uint8_t A=255) { CRenderizable::setColor_u8(R,G,B,A);  notifyChange(); return *this; }	//!<Color components in the range [0,255] \return a ref to this
+			/**Color components in the range [0,255] \return a ref to this */
+			CRenderizable&  setColorR_u8(const uint8_t r) override	{m_color.R=r; notifyChange(); return *this;}	
+			/**Color components in the range [0,255] \return a ref to this */
+			CRenderizable&  setColorG_u8(const uint8_t g) override	{m_color.G=g; notifyChange(); return *this;}	
+			/**Color components in the range [0,255] \return a ref to this */
+			CRenderizable&  setColorB_u8(const uint8_t b) override	{m_color.B=b; notifyChange(); return *this;}	
+			/**Color components in the range [0,255] \return a ref to this */
+			CRenderizable&  setColorA_u8(const uint8_t a) override	{m_color.A=a; notifyChange(); return *this;}	
+			/** Changes the default object color \return a ref to this */
+			CRenderizable& setColor_u8( const mrpt::utils::TColor &c) override { CRenderizable::setColor_u8(c); notifyChange(); return *this; } 
+			/**Color components in the range [0,255] \return a ref to this */
+			inline CRenderizable& setColor_u8( uint8_t R, uint8_t G, uint8_t B, uint8_t A=255) { CRenderizable::setColor_u8(R,G,B,A);  notifyChange(); return *this; }	
 			/** @} */
 
 		};

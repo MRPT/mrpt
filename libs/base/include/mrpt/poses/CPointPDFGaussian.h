@@ -39,10 +39,13 @@ namespace poses
 		  */
 		CPointPDFGaussian( const CPoint3D &init_Mean, const mrpt::math::CMatrixDouble33 &init_Cov );
 
-		CPoint3D                    mean; //!< The mean value
-		mrpt::math::CMatrixDouble33 cov; //!< The 3x3 covariance matrix
+		/** The mean value */
+		CPoint3D                    mean; 
+		/** The 3x3 covariance matrix */
+		mrpt::math::CMatrixDouble33 cov; 
 
-		void getMean(CPoint3D &p) const override; //!< Returns an estimate of the point, (the mean, or mathematical expectation of the PDF)
+		/** Returns an estimate of the point, (the mean, or mathematical expectation of the PDF) */
+		void getMean(CPoint3D &p) const override; 
 
 		/** Returns an estimate of the point covariance matrix (3x3 cov matrix) and the mean, both at once.  \sa getMean */
 		void getCovarianceAndMean(mrpt::math::CMatrixDouble33 &cov,CPoint3D &mean_point) const override;

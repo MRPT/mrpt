@@ -87,7 +87,8 @@ namespace octomap {
 
     Pointcloud* scan;
     pose6d pose; ///< 6D pose from which the scan was performed
-    uint64_t id;   //!< JLBC: Changed from "unsigned int" so binarized versions are platform-independent.
+    /** JLBC: Changed from "unsigned int" so binarized versions are platform-independent. */
+    uint64_t id;   
 	 
   };
 

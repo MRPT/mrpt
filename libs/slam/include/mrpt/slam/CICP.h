@@ -25,8 +25,10 @@ namespace mrpt
 
 		/** ICP covariance estimation methods, used in mrpt::slam::CICP::options  \ingroup mrpt_slam_grp  */
 		enum TICPCovarianceMethod {
-			icpCovLinealMSE = 0,         //!< Use the covariance of the optimal registration, disregarding uncertainty in data association
-			icpCovFiniteDifferences      //!< Covariance of a least-squares optimizer (includes data association uncertainty)
+			/** Use the covariance of the optimal registration, disregarding uncertainty in data association */
+			icpCovLinealMSE = 0,         
+			/** Covariance of a least-squares optimizer (includes data association uncertainty) */
+			icpCovFiniteDifferences      
 		};
 
 		/** Several implementations of ICP (Iterative closest point) algorithms for aligning two point maps or a point map wrt a grid map.
@@ -57,33 +59,43 @@ namespace mrpt
 			class SLAM_IMPEXP TConfigParams : public utils::CLoadableOptions
 			{
 			public:
-				TConfigParams();	//!< Initializer for default values:
+				/** Initializer for default values: */
+				TConfigParams();	
 
 				void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) override; // See base docs
 				void dumpToTextStream(mrpt::utils::CStream &out) const override; // See base docs
 
 				/** @name Algorithms selection
 				    @{ */
-				TICPAlgorithm         ICP_algorithm; //!< The algorithm to use (default: icpClassic). See http://www.mrpt.org/tutorials/programming/scan-matching-and-icp/ for details
-				TICPCovarianceMethod  ICP_covariance_method; //!< The method to use for covariance estimation (Default: icpCovFiniteDifferences)
+				/** The algorithm to use (default: icpClassic). See http://www.mrpt.org/tutorials/programming/scan-matching-and-icp/ for details */
+				TICPAlgorithm         ICP_algorithm; 
+				/** The method to use for covariance estimation (Default: icpCovFiniteDifferences) */
+				TICPCovarianceMethod  ICP_covariance_method; 
 				/** @} */
 
 				/** @name Correspondence-finding criteria
 				    @{ */
-				bool  onlyClosestCorrespondences;  //!< The usual approach: to consider only the closest correspondence for each local point (Default to true)
+				/** The usual approach: to consider only the closest correspondence for each local point (Default to true) */
+				bool  onlyClosestCorrespondences;  
 				bool  onlyUniqueRobust;            //! Apart of "onlyClosestCorrespondences=true", if this option is enabled only the closest correspondence for each reference point will be kept (default=false).
 				/** @} */
 
 				/** @name Termination criteria
 				    @{ */
-				unsigned int	maxIterations;  //!< Maximum number of iterations to run.
-				float           minAbsStep_trans; //!< If the correction in all translation coordinates (X,Y,Z) is below this threshold (in meters), iterations are terminated (Default:1e-6)
-				float           minAbsStep_rot;   //!< If the correction in all rotation coordinates (yaw,pitch,roll) is below this threshold (in radians), iterations are terminated (Default:1e-6)
+				/** Maximum number of iterations to run. */
+				unsigned int	maxIterations;  
+				/** If the correction in all translation coordinates (X,Y,Z) is below this threshold (in meters), iterations are terminated (Default:1e-6) */
+				float           minAbsStep_trans; 
+				/** If the correction in all rotation coordinates (yaw,pitch,roll) is below this threshold (in radians), iterations are terminated (Default:1e-6) */
+				float           minAbsStep_rot;   
 				/** @} */
 
-				float	thresholdDist,thresholdAng; //!< Initial threshold distance for two points to become a correspondence.
-				float	ALFA;  //!< The scale factor for threshold everytime convergence is achieved.
-				float	smallestThresholdDist;  //!< The size for threshold such that iterations will stop, since it is considered precise enough.
+				/** Initial threshold distance for two points to become a correspondence. */
+				float	thresholdDist,thresholdAng; 
+				/** The scale factor for threshold everytime convergence is achieved. */
+				float	ALFA;  
+				/** The size for threshold such that iterations will stop, since it is considered precise enough. */
+				float	smallestThresholdDist;  
 
 				/** This is the normalization constant \f$ \sigma^2_p \f$ that is used to scale the whole 3x3 covariance.
 				  *  This has a default value of \f$ (0.02)^2 \f$, that is, a 2cm sigma.
@@ -91,24 +103,32 @@ namespace mrpt
 				  */
 				float	covariance_varPoints;
 
-				bool	doRANSAC;  //!< Perform a RANSAC step, mrpt::tfest::se2_l2_robust(), after the ICP convergence, to obtain a better estimation of the pose PDF.
+				/** Perform a RANSAC step, mrpt::tfest::se2_l2_robust(), after the ICP convergence, to obtain a better estimation of the pose PDF. */
+				bool	doRANSAC;  
 
 				/** @name RANSAC-step options for mrpt::tfest::se2_l2_robust() if \a doRANSAC=true
 				  * @{ */
 				unsigned int ransac_minSetSize,ransac_maxSetSize,ransac_nSimulations;
 				float        ransac_mahalanobisDistanceThreshold;
-				float        normalizationStd; //!< RANSAC-step option: The standard deviation in X,Y of landmarks/points which are being matched (used to compute covariances in the SoG)
+				/** RANSAC-step option: The standard deviation in X,Y of landmarks/points which are being matched (used to compute covariances in the SoG) */
+				float        normalizationStd; 
 				bool         ransac_fuseByCorrsMatch;
 				float        ransac_fuseMaxDiffXY, ransac_fuseMaxDiffPhi;
 				/** @} */
 
-				float   kernel_rho; //!< Cauchy kernel rho, for estimating the optimal transformation covariance, in meters (default = 0.07m)
-				bool    use_kernel; //!< Whether to use kernel_rho to smooth distances, or use distances directly (default=true)
-				float   Axy_aprox_derivatives; //!< [LM method only] The size of the perturbance in x & y used to estimate the Jacobians of the square error (default=0.05)
-				float   LM_initial_lambda; //!< [LM method only] The initial value of the lambda parameter in the LM method (default=1e-4)
+				/** Cauchy kernel rho, for estimating the optimal transformation covariance, in meters (default = 0.07m) */
+				float   kernel_rho; 
+				/** Whether to use kernel_rho to smooth distances, or use distances directly (default=true) */
+				bool    use_kernel; 
+				/** [LM method only] The size of the perturbance in x & y used to estimate the Jacobians of the square error (default=0.05) */
+				float   Axy_aprox_derivatives; 
+				/** [LM method only] The initial value of the lambda parameter in the LM method (default=1e-4) */
+				float   LM_initial_lambda; 
 
-				bool    skip_cov_calculation; //!< Skip the computation of the covariance (saves some time) (default=false)
-				bool    skip_quality_calculation;  //!< Skip the (sometimes) expensive evaluation of the term 'quality' at ICP output (Default=true)
+				/** Skip the computation of the covariance (saves some time) (default=false) */
+				bool    skip_cov_calculation; 
+				/** Skip the (sometimes) expensive evaluation of the term 'quality' at ICP output (Default=true) */
+				bool    skip_quality_calculation;  
 
 				/** Decimation of the point cloud being registered against the reference one (default=5) - set to 1 to have the older (MRPT <0.9.5) behavior
 				  *  of not approximating ICP by ignoring the correspondence of some points. The speed-up comes from a decimation of the number of KD-tree queries,
@@ -116,13 +136,15 @@ namespace mrpt
 				uint32_t        corresponding_points_decimation;
 			};
 
-			TConfigParams  options; //!< The options employed by the ICP align.
+			/** The options employed by the ICP align. */
+			TConfigParams  options; 
 
 			/** Constructor with the default options */
 			CICP() : options() { }
 			/** Constructor that directly set the ICP params from a given struct \sa options */
 			CICP(const TConfigParams &icpParams) : options(icpParams) { }
-			virtual ~CICP() { }	//!< Destructor
+			/** Destructor */
+			virtual ~CICP() { }	
 
 			/** The ICP algorithm return information*/
 			struct SLAM_IMPEXP TReturnInfo
@@ -133,9 +155,12 @@ namespace mrpt
 					quality(0)
 				{
 				}
-				unsigned short nIterations; //!< The number of executed iterations until convergence
-				float          goodness;    //!< A goodness measure for the alignment, it is a [0,1] range indicator of percentage of correspondences.
-				float          quality;     //!< A measure of the 'quality' of the local minimum of the sqr. error found by the method. Higher values are better. Low values will be found in ill-conditioned situations (e.g. a corridor)
+				/** The number of executed iterations until convergence */
+				unsigned short nIterations; 
+				/** A goodness measure for the alignment, it is a [0,1] range indicator of percentage of correspondences. */
+				float          goodness;    
+				/** A measure of the 'quality' of the local minimum of the sqr. error found by the method. Higher values are better. Low values will be found in ill-conditioned situations (e.g. a corridor) */
+				float          quality;     
 			};
 
 			/** An implementation of CMetricMapsAlignmentAlgorithm for the case of a point maps and a occupancy grid/point map.

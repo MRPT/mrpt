@@ -15,8 +15,10 @@
 	\details Contains the pressure data and the pressure age
 */
 struct XsPressure {
-	double		m_pressure;		//!< Pressure in Pascal
-	uint8_t		m_pressureAge;	//!< Age of pressure data in samples
+	/** Pressure in Pascal */
+	double		m_pressure;		
+	/** Age of pressure data in samples */
+	uint8_t		m_pressureAge;	
 };
 typedef struct XsPressure XsPressure;
 

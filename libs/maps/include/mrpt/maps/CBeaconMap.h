@@ -50,7 +50,8 @@ namespace maps
 		typedef std::deque<CBeacon>::const_iterator	const_iterator;
 
 	protected:
-		TSequenceBeacons		m_beacons;  //!< The individual beacons
+		/** The individual beacons */
+		TSequenceBeacons		m_beacons;  
 
 		// See docs in base class
 		virtual void  internal_clear() override;
@@ -61,7 +62,8 @@ namespace maps
 		/** Constructor */
 		CBeaconMap();
 
-		void resize(const size_t N); //!< Resize the number of SOG modes
+		/** Resize the number of SOG modes */
+		void resize(const size_t N); 
 
 		/** Access to individual beacons */
 		const CBeacon& operator [](size_t i) const {
@@ -245,15 +247,20 @@ namespace maps
 		  */
 		void saveToTextFile(const std::string &fil) const;
 
-		void getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr &outObj) const override; //!< Returns a 3D object representing the map.
+		/** Returns a 3D object representing the map. */
+		void getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr &outObj) const override; 
 
-		const CBeacon * getBeaconByID( CBeacon::TBeaconID  id ) const; //!< Returns a pointer to the beacon with the given ID, or nullptr if it does not exist.
-		CBeacon * getBeaconByID( CBeacon::TBeaconID  id ); 		//!< Returns a pointer to the beacon with the given ID, or nullptr if it does not exist.
+		/** Returns a pointer to the beacon with the given ID, or nullptr if it does not exist. */
+		const CBeacon * getBeaconByID( CBeacon::TBeaconID  id ) const; 
+		/** Returns a pointer to the beacon with the given ID, or nullptr if it does not exist. */
+		CBeacon * getBeaconByID( CBeacon::TBeaconID  id ); 		
 
 
 		MAP_DEFINITION_START(CBeaconMap,MAPS_IMPEXP)
-			mrpt::maps::CBeaconMap::TInsertionOptions	insertionOpts;	//!< Observations insertion options
-			mrpt::maps::CBeaconMap::TLikelihoodOptions	likelihoodOpts;	//!< Probabilistic observation likelihood options
+			/** Observations insertion options */
+			mrpt::maps::CBeaconMap::TInsertionOptions	insertionOpts;	
+			/** Probabilistic observation likelihood options */
+			mrpt::maps::CBeaconMap::TLikelihoodOptions	likelihoodOpts;	
 		MAP_DEFINITION_END(CBeaconMap,MAPS_IMPEXP)
 
 	}; // End of class def.

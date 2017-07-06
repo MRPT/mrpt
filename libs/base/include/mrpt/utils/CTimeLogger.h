@@ -71,7 +71,8 @@ namespace mrpt
 			};
 
 			CTimeLogger(bool enabled=true, const std::string& name=""); //! Default constructor
-			virtual ~CTimeLogger(); //!< Destructor
+			/** Destructor */
+			virtual ~CTimeLogger(); 
 
 			// We must define these 4 because of the definition of a virtual dtor (compiler will not generate the defaults)
 			CTimeLogger(const CTimeLogger&o);
@@ -79,14 +80,19 @@ namespace mrpt
 			CTimeLogger(CTimeLogger&&o);
 			CTimeLogger &operator =(CTimeLogger&&o);
 
-			std::string getStatsAsText(const size_t column_width=80) const; //!< Dump all stats to a multi-line text string. \sa dumpAllStats, saveToCVSFile
-			void getStats(std::map<std::string,TCallStats> &out_stats) const; //!< Returns all the current stats as a map: section_name => stats. \sa getStatsAsText, dumpAllStats, saveToCVSFile
-			void dumpAllStats(const size_t column_width=80) const; //!< Dump all stats through the COutputLogger interface. \sa getStatsAsText, saveToCVSFile
-			void clear(bool deep_clear=false); //!< Resets all stats. By default (deep_clear=false), all section names are remembered (not freed) so the cost of creating upon the first next call is avoided.
+			/** Dump all stats to a multi-line text string. \sa dumpAllStats, saveToCVSFile */
+			std::string getStatsAsText(const size_t column_width=80) const; 
+			/** Returns all the current stats as a map: section_name => stats. \sa getStatsAsText, dumpAllStats, saveToCVSFile */
+			void getStats(std::map<std::string,TCallStats> &out_stats) const; 
+			/** Dump all stats through the COutputLogger interface. \sa getStatsAsText, saveToCVSFile */
+			void dumpAllStats(const size_t column_width=80) const; 
+			/** Resets all stats. By default (deep_clear=false), all section names are remembered (not freed) so the cost of creating upon the first next call is avoided. */
+			void clear(bool deep_clear=false); 
 			void enable(bool enabled = true) { m_enabled = enabled; }
 			void disable() { m_enabled = false; }
 			bool isEnabled() const { return m_enabled;}
-			void saveToCSVFile(const std::string &csv_file)  const; 	//!< Dump all stats to a Comma Separated Values (CSV) file. \sa dumpAllStats
+			/** Dump all stats to a Comma Separated Values (CSV) file. \sa dumpAllStats */
+			void saveToCSVFile(const std::string &csv_file)  const; 	
 			void registerUserMeasure(const char *event_name, const double value);
 
 			void setName(const std::string& name) { m_name =  name; }

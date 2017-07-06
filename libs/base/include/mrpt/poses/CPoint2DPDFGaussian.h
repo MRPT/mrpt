@@ -25,12 +25,17 @@ namespace poses
 		DEFINE_SERIALIZABLE( CPoint2DPDFGaussian )
 
 	 public:
-		CPoint2DPDFGaussian(); //!< Default constructor
-		CPoint2DPDFGaussian( const CPoint2D &init_Mean ); //!< Constructor
-		CPoint2DPDFGaussian( const CPoint2D &init_Mean, const mrpt::math::CMatrixDouble22 &init_Cov ); //!< Constructor
+		/** Default constructor */
+		CPoint2DPDFGaussian(); 
+		/** Constructor */
+		CPoint2DPDFGaussian( const CPoint2D &init_Mean ); 
+		/** Constructor */
+		CPoint2DPDFGaussian( const CPoint2D &init_Mean, const mrpt::math::CMatrixDouble22 &init_Cov ); 
 
-		CPoint2D                     mean; //!< The mean value
-		mrpt::math::CMatrixDouble22  cov; //!< The 2x2 covariance matrix
+		/** The mean value */
+		CPoint2D                     mean; 
+		/** The 2x2 covariance matrix */
+		mrpt::math::CMatrixDouble22  cov; 
 
 		 /** Returns an estimate of the point, (the mean, or mathematical expectation of the PDF) */
 		void getMean(CPoint2D &p) const override {
@@ -43,9 +48,11 @@ namespace poses
 			mean_point = this->mean;
 		}
 
-		void copyFrom(const CPoint2DPDF &o) override; //!< Copy operator, translating if necesary (for example, between particles and gaussian representations)
+		/** Copy operator, translating if necesary (for example, between particles and gaussian representations) */
+		void copyFrom(const CPoint2DPDF &o) override; 
 
-		void saveToTextFile(const std::string &file) const override; //!< Save PDF's particles to a text file, containing the 2D pose in the first line, then the covariance matrix in next 3 lines
+		/** Save PDF's particles to a text file, containing the 2D pose in the first line, then the covariance matrix in next 3 lines */
+		void saveToTextFile(const std::string &file) const override; 
 
 		/** this = p (+) this. This can be used to convert a PDF from local coordinates to global, providing the point (newReferenceBase) from which
 		  *   "to project" the current pdf. Result PDF substituted the currently stored one in the object. Both the mean value and the covariance matrix are updated correctly. */
@@ -79,7 +86,8 @@ namespace poses
 		  */
 		double productIntegralNormalizedWith( const CPoint2DPDFGaussian &p) const;
 
-		void drawSingleSample(CPoint2D  &outSample) const override; //!< Draw a sample from the pdf
+		/** Draw a sample from the pdf */
+		void drawSingleSample(CPoint2D  &outSample) const override; 
 
 		/** Bayesian fusion of two point distributions (product of two distributions->new distribution), then save the result in this object (WARNING: See implementing classes to see classes that can and cannot be mixtured!)
 		  * \param p1 The first distribution to fuse
@@ -88,8 +96,10 @@ namespace poses
 		  */
 		void bayesianFusion( const CPoint2DPDF &p1, const CPoint2DPDF &p2, const double &minMahalanobisDistToDrop = 0) override;
 
-		double mahalanobisDistanceTo( const CPoint2DPDFGaussian & other ) const; //!< Returns the Mahalanobis distance from this PDF to another PDF, that is, it's evaluation at (0,0,0)
-		double mahalanobisDistanceToPoint( const double x, const double y ) const; //!< Returns the Mahalanobis distance from this PDF to some point
+		/** Returns the Mahalanobis distance from this PDF to another PDF, that is, it's evaluation at (0,0,0) */
+		double mahalanobisDistanceTo( const CPoint2DPDFGaussian & other ) const; 
+		/** Returns the Mahalanobis distance from this PDF to some point */
+		double mahalanobisDistanceToPoint( const double x, const double y ) const; 
 
 	}; // End of class def.
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE( CPoint2DPDFGaussian, CPoint2DPDF )

@@ -31,19 +31,28 @@ namespace mrpt
 		public:
 			// See base docs
 			void filter(
-				mrpt::maps::CPointsMap * inout_pointcloud,       //!< [in,out] The input pointcloud, which will be modified upon return after filtering.
-				const mrpt::system::TTimeStamp pc_timestamp,     //!< [in] The timestamp of the input pointcloud
-				const mrpt::poses::CPose3D & pc_reference_pose,  //!< [in] If nullptr, the PC is assumed to be given in global coordinates. Otherwise, it will be transformed from local coordinates to global using this transformation.
-				TExtraFilterParams * params = nullptr            //!< [in,out] additional in/out parameters
+				/** [in,out] The input pointcloud, which will be modified upon return after filtering. */
+				mrpt::maps::CPointsMap * inout_pointcloud,       
+				/** [in] The timestamp of the input pointcloud */
+				const mrpt::system::TTimeStamp pc_timestamp,     
+				/** [in] If nullptr, the PC is assumed to be given in global coordinates. Otherwise, it will be transformed from local coordinates to global using this transformation. */
+				const mrpt::poses::CPose3D & pc_reference_pose,  
+				/** [in,out] additional in/out parameters */
+				TExtraFilterParams * params = nullptr            
 			) override;
 
 			struct MAPS_IMPEXP TOptions : public mrpt::utils::CLoadableOptions
 			{
-				double min_dist;               //!< (Default: 0.05 m)
-				double angle_tolerance;        //!< (Default: 2 deg) Stored in rad.
-				double too_old_seconds;        //!< (Default: 1 s)
-				int    previous_keyframes;     //!< (Default: 1) How many previous keyframes will be compared with the latest pointcloud.
-				double max_deletion_ratio;     //!< (Default: 0.4) If the ratio [0,1] of points considered invalid ("deletion") is larger than this ratio, no point will be deleted since it'd be too suspicious and may indicate a failure of this filter.
+				/** (Default: 0.05 m) */
+				double min_dist;               
+				/** (Default: 2 deg) Stored in rad. */
+				double angle_tolerance;        
+				/** (Default: 1 s) */
+				double too_old_seconds;        
+				/** (Default: 1) How many previous keyframes will be compared with the latest pointcloud. */
+				int    previous_keyframes;     
+				/** (Default: 0.4) If the ratio [0,1] of points considered invalid ("deletion") is larger than this ratio, no point will be deleted since it'd be too suspicious and may indicate a failure of this filter. */
+				double max_deletion_ratio;     
 
 				TOptions();
 				void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source, const std::string &section) override; // See base docs

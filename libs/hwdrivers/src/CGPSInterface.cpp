@@ -381,7 +381,8 @@ void  CGPSInterface::doProcess()
 
 }
 
-//!< Queue out now the messages in \a m_just_parsed_messages, leaving it empty
+/** Queue out now the messages in \a m_just_parsed_messages, leaving it empty */
+
 void  CGPSInterface::flushParsedMessagesNow()
 {
 	// Generic observation data:

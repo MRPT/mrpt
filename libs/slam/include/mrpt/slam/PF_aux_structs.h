@@ -31,7 +31,8 @@ namespace mrpt
 			{
 				TPoseBin2D() : x(0),y(0),phi(0) { }
 
-				int	x,y,phi; //!< Bin indices
+				/** Bin indices */
+				int	x,y,phi; 
 
 				/** less-than ordering of bins for usage in STL containers */
 				struct SLAM_IMPEXP lt_operator
@@ -78,7 +79,8 @@ namespace mrpt
 			{
 				TPoseBin3D() : x(0),y(0),z(0),yaw(0),pitch(0),roll(0) { }
 
-				int	x,y,z,yaw,pitch,roll; //!< Bin indices
+				/** Bin indices */
+				int	x,y,z,yaw,pitch,roll; 
 
 				/** less-than ordering of bins for usage in STL containers */
 				struct SLAM_IMPEXP lt_operator

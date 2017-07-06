@@ -209,7 +209,8 @@ namespace mrpt
 			DEFINE_GENERIC_SENSOR(CKinect)
 
 		public:
-			typedef float TDepth2RangeArray[KINECT_RANGES_TABLE_LEN]; //!< A typedef for an array that converts raw depth to ranges in meters.
+			/** A typedef for an array that converts raw depth to ranges in meters. */
+			typedef float TDepth2RangeArray[KINECT_RANGES_TABLE_LEN]; 
 
 			/** RGB or IR video channel identifiers \sa setVideoChannel */
 			enum TVideoChannel {
@@ -217,8 +218,10 @@ namespace mrpt
 				VIDEO_CHANNEL_IR
 			};
 
-			CKinect();	 //!< Default ctor
-			~CKinect();	 //!< Default ctor
+			/** Default ctor */
+			CKinect();	 
+			/** Default ctor */
+			~CKinect();	 
 
 			/** Initializes the 3D camera - should be invoked after calling loadConfig() or setting the different parameters with the set*() methods.
 			  *  \exception This method must throw an exception with a descriptive message if some critical error is found.
@@ -270,7 +273,8 @@ namespace mrpt
 			  */
 			void open();
 
-			bool isOpen() const; //!< Whether there is a working connection to the sensor
+			/** Whether there is a working connection to the sensor */
+			bool isOpen() const; 
 
 			/** Close the Connection to the sensor (not need to call it manually unless desired for some reason,
 			  * since it's called at destructor) */
@@ -361,14 +365,18 @@ namespace mrpt
 
 			mrpt::poses::CPose3D 	m_sensorPoseOnRobot;
 
-			bool		m_preview_window; //!< Show preview window while grabbing
-			size_t 		m_preview_window_decimation; //!< If preview is enabled, only show 1 out of N images.
+			/** Show preview window while grabbing */
+			bool		m_preview_window; 
+			/** If preview is enabled, only show 1 out of N images. */
+			size_t 		m_preview_window_decimation; 
 			size_t      m_preview_decim_counter_range, m_preview_decim_counter_rgb;
 			mrpt::gui::CDisplayWindow::Ptr  m_win_range, m_win_int;
 
 #if MRPT_HAS_KINECT_FREENECT
-			void *m_f_ctx;  //!< The "freenect_context", or nullptr if closed
-			void *m_f_dev;  //!< The "freenect_device", or nullptr if closed
+			/** The "freenect_context", or nullptr if closed */
+			void *m_f_ctx;  
+			/** The "freenect_device", or nullptr if closed */
+			void *m_f_dev;  
 
 			// Data fields for use with the callback function:
 			mrpt::obs::CObservation3DRangeScan  m_latest_obs;
@@ -376,25 +384,36 @@ namespace mrpt
 			std::mutex     m_latest_obs_cs;
 #endif
 
-			mrpt::utils::TCamera  	m_cameraParamsRGB;  //!< Params for the RGB camera
-			mrpt::utils::TCamera  	m_cameraParamsDepth;  //!< Params for the Depth camera
-			mrpt::poses::CPose3D    m_relativePoseIntensityWRTDepth; //!< See mrpt::obs::CObservation3DRangeScan for a diagram of this pose
+			/** Params for the RGB camera */
+			mrpt::utils::TCamera  	m_cameraParamsRGB;  
+			/** Params for the Depth camera */
+			mrpt::utils::TCamera  	m_cameraParamsDepth;  
+			/** See mrpt::obs::CObservation3DRangeScan for a diagram of this pose */
+			mrpt::poses::CPose3D    m_relativePoseIntensityWRTDepth; 
 
-			int					m_initial_tilt_angle; //!< Set Kinect tilt to an initial deegre (it should be take in account in the sensor pose by the user)
+			/** Set Kinect tilt to an initial deegre (it should be take in account in the sensor pose by the user) */
+			int					m_initial_tilt_angle; 
 
-			double  m_maxRange; //!< Sensor max range (meters)
+			/** Sensor max range (meters) */
+			double  m_maxRange; 
 
-			int  m_user_device_number; //!< Number of device to open (0:first,...)
+			/** Number of device to open (0:first,...) */
+			int  m_user_device_number; 
 
-			bool  m_grab_image, m_grab_depth, m_grab_3D_points, m_grab_IMU ; //!< Default: all true
+			/** Default: all true */
+			bool  m_grab_image, m_grab_depth, m_grab_3D_points, m_grab_IMU ; 
 
-			TVideoChannel  m_video_channel; //!< The video channel to open: RGB or IR
+			/** The video channel to open: RGB or IR */
+			TVideoChannel  m_video_channel; 
 
 		private:
-			std::vector<uint8_t> m_buf_depth, m_buf_rgb; //!< Temporary buffers for image grabbing.
-			TDepth2RangeArray   m_range2meters; //!< The table raw depth -> range in meters
+			/** Temporary buffers for image grabbing. */
+			std::vector<uint8_t> m_buf_depth, m_buf_rgb; 
+			/** The table raw depth -> range in meters */
+			TDepth2RangeArray   m_range2meters; 
 
-			void calculate_range2meters(); //!< Compute m_range2meters at construction
+			/** Compute m_range2meters at construction */
+			void calculate_range2meters(); 
 
 		};	// End of class
 	} // End of NS

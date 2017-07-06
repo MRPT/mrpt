@@ -55,17 +55,22 @@ namespace maps
 			public utils::CLoadableOptions,
 			public TInsertionOptionsCommon
 		{
-			TInsertionOptions();	//!< Default values loader
+			/** Default values loader */
+			TInsertionOptions();	
 
 			void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) override; // See base docs
 			void dumpToTextStream(mrpt::utils::CStream &out) const override; // See base docs
 
 			/** @name For all mapping methods
 			    @{ */
-			std::string gasSensorLabel;	//!< The label of the CObservationGasSensor used to generate the map
-			uint16_t enose_id;			//!< id for the enose used to generate this map (must be < gasGrid_count)
-			uint16_t gasSensorType;		//!< The sensor type for the gas concentration map (0x0000 ->mean of all installed sensors, 0x2600, 0x6810, ...)
-			std::string windSensorLabel; //!< The label of the WindSenor used to simulate advection
+			/** The label of the CObservationGasSensor used to generate the map */
+			std::string gasSensorLabel;	
+			/** id for the enose used to generate this map (must be < gasGrid_count) */
+			uint16_t enose_id;			
+			/** The sensor type for the gas concentration map (0x0000 ->mean of all installed sensors, 0x2600, 0x6810, ...) */
+			uint16_t gasSensorType;		
+			/** The label of the WindSenor used to simulate advection */
+			std::string windSensorLabel; 
 
 			//[Advection Options]
 			bool useWindInformation;	//! Indicates if wind information must be used to simulate Advection
@@ -147,9 +152,12 @@ namespace maps
 		 mrpt::system::TTimeStamp timeLastSimulated;
 
 		MAP_DEFINITION_START(CGasConcentrationGridMap2D,MAPS_IMPEXP)
-			float	min_x,max_x,min_y,max_y,resolution;	//!< See CGasConcentrationGridMap2D::CGasConcentrationGridMap2D
-			mrpt::maps::CGasConcentrationGridMap2D::TMapRepresentation	mapType;	//!< The kind of map representation (see CGasConcentrationGridMap2D::CGasConcentrationGridMap2D)
-			mrpt::maps::CGasConcentrationGridMap2D::TInsertionOptions   insertionOpts;	//!< Observations insertion options
+			/** See CGasConcentrationGridMap2D::CGasConcentrationGridMap2D */
+			float	min_x,max_x,min_y,max_y,resolution;	
+			/** The kind of map representation (see CGasConcentrationGridMap2D::CGasConcentrationGridMap2D) */
+			mrpt::maps::CGasConcentrationGridMap2D::TMapRepresentation	mapType;	
+			/** Observations insertion options */
+			mrpt::maps::CGasConcentrationGridMap2D::TInsertionOptions   insertionOpts;	
 		MAP_DEFINITION_END(CGasConcentrationGridMap2D,MAPS_IMPEXP)
 
 	};

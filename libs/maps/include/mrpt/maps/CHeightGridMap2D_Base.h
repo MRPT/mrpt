@@ -39,8 +39,10 @@ namespace mrpt
 			/** Extra params for insertIndividualPoint() */
 			struct MAPS_IMPEXP TPointInsertParams
 			{
-				double pt_z_std; //!< (Default:0.0) If !=0, use this value as the uncertainty (standard deviation) for the point "z" coordinate, instead of the map-wise default value.
-				bool   update_map_after_insertion; //!< (default: true) run any required operation to ensure the map reflects the changes caused by this point. Otherwise, calling dem_update_map() is required.
+				/** (Default:0.0) If !=0, use this value as the uncertainty (standard deviation) for the point "z" coordinate, instead of the map-wise default value. */
+				double pt_z_std; 
+				/** (default: true) run any required operation to ensure the map reflects the changes caused by this point. Otherwise, calling dem_update_map() is required. */
+				bool   update_map_after_insertion; 
 
 				TPointInsertParams();
 			};
@@ -52,9 +54,12 @@ namespace mrpt
 			virtual double dem_get_resolution() const = 0;
 			virtual size_t dem_get_size_x() const = 0;
 			virtual size_t dem_get_size_y() const = 0;
-			virtual bool   dem_get_z_by_cell(const size_t cx, const size_t cy, double &z_out) const = 0; //!< Get cell 'z' by (cx,cy) cell indices. \return false if out of bounds or un-observed cell.
-			virtual bool   dem_get_z(const double x, const double y, double &z_out) const = 0; //!< Get cell 'z' (x,y) by metric coordinates. \return false if out of bounds or un-observed cell.
-			virtual void   dem_update_map() = 0; //!< Ensure that all observations are reflected in the map estimate
+			/** Get cell 'z' by (cx,cy) cell indices. \return false if out of bounds or un-observed cell. */
+			virtual bool   dem_get_z_by_cell(const size_t cx, const size_t cy, double &z_out) const = 0; 
+			/** Get cell 'z' (x,y) by metric coordinates. \return false if out of bounds or un-observed cell. */
+			virtual bool   dem_get_z(const double x, const double y, double &z_out) const = 0; 
+			/** Ensure that all observations are reflected in the map estimate */
+			virtual void   dem_update_map() = 0; 
 			/** @} */
 
 			/** Internal method called by internal_insertObservation() */

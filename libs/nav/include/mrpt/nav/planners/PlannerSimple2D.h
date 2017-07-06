@@ -30,8 +30,10 @@ namespace nav
 	class NAV_IMPEXP PlannerSimple2D
 	{
 	public:
-		PlannerSimple2D();  //!< Default constructor
-		virtual ~PlannerSimple2D() //!< Destructor
+		/** Default constructor */
+		PlannerSimple2D();  
+		/** Destructor */
+		virtual ~PlannerSimple2D() 
 		{
 		}
 
@@ -44,7 +46,8 @@ namespace nav
 		  */
 		float	minStepInReturnedPath;
 
-		float	robotRadius;  //!< The aproximate robot radius used in the planification. Default is 0.35m
+		/** The aproximate robot radius used in the planification. Default is 0.35m */
+		float	robotRadius;  
 
 		/** This method compute the optimal path for a circular robot, in the given
 		  *   occupancy grid map, from the origin location to a target point.

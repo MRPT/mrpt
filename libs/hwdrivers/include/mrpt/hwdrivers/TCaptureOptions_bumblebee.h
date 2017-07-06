@@ -22,10 +22,14 @@ namespace mrpt
 		{
 			TCaptureOptions_bumblebee();
 
-			int	frame_width, frame_height;	//!< Capture resolution (Default: 640x480)
-			bool color;						//!< Indicates if the Bumblebee camera must capture color images (Default: false -> grayscale)
-			bool getRectified;				//!< Indicates if the Bumblebee camera must capture rectified images (Default: true -> rectified)
-			double framerate;				//!< Bumblebee camera frame rate (Default: 15 fps)
+			/** Capture resolution (Default: 640x480) */
+			int	frame_width, frame_height;	
+			/** Indicates if the Bumblebee camera must capture color images (Default: false -> grayscale) */
+			bool color;						
+			/** Indicates if the Bumblebee camera must capture rectified images (Default: true -> rectified) */
+			bool getRectified;				
+			/** Bumblebee camera frame rate (Default: 15 fps) */
+			double framerate;				
 		};
 	}
 }

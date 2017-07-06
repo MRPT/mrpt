@@ -98,7 +98,8 @@ struct XsUShortVector {
 private:
 #endif
 
-	unsigned short m_data[3];	//!< vector component storage
+	/** vector component storage */
+	unsigned short m_data[3];	
 };
 
 typedef struct XsUShortVector XsUShortVector;

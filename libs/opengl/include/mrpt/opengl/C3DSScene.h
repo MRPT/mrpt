@@ -74,7 +74,8 @@ namespace mrpt
 			{
 				TImpl3DS();
 				~TImpl3DS();
-				void	*file;	//!< Lib3dsFile*
+				/** Lib3dsFile* */
+				void	*file;	
 			};
 
 			/** An internal pointer to the lib3ds library's object of type "Lib3dsFile"
@@ -83,7 +84,8 @@ namespace mrpt
 
 			/** Scale of the object */
 			//double	m_scale_x,m_scale_y,m_scale_z;
-			mrpt::math::TPoint3D   m_bbox_min, m_bbox_max; //!< Bounding box
+			/** Bounding box */
+			mrpt::math::TPoint3D   m_bbox_min, m_bbox_max; 
 
 			bool	m_enable_extra_lighting;
 

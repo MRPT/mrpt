@@ -29,10 +29,13 @@ namespace obs
 		DEFINE_SERIALIZABLE( CObservationBeaconRanges )
 
 	 public:
-		CObservationBeaconRanges( ); //!< ctor
+		/** ctor */
+		CObservationBeaconRanges( ); 
 
-		float  minSensorDistance, maxSensorDistance;  //!< Info about sensor
-		float  stdError; //!< The "sigma" of the sensor, assuming a zero-mean Gaussian noise model.
+		/** Info about sensor */
+		float  minSensorDistance, maxSensorDistance;  
+		/** The "sigma" of the sensor, assuming a zero-mean Gaussian noise model. */
+		float  stdError; 
 
 		/** Each one of the measurements */
 		struct OBS_IMPEXP TMeasurement
@@ -40,17 +43,23 @@ namespace obs
 			TMeasurement() : sensorLocationOnRobot(), sensedDistance(0),beaconID(INVALID_BEACON_ID)
 			{}
 
-			mrpt::poses::CPoint3D sensorLocationOnRobot; //!< Position of the sensor on the robot
-			float                 sensedDistance; //!< The sensed range itself (in meters).
-			int32_t               beaconID; //!< The ID of the sensed beacon (or INVALID_BEACON_ID if unknown)
+			/** Position of the sensor on the robot */
+			mrpt::poses::CPoint3D sensorLocationOnRobot; 
+			/** The sensed range itself (in meters). */
+			float                 sensedDistance; 
+			/** The ID of the sensed beacon (or INVALID_BEACON_ID if unknown) */
+			int32_t               beaconID; 
 		};
 
-		std::deque<TMeasurement> sensedData; //!< The list of observed ranges
+		/** The list of observed ranges */
+		std::deque<TMeasurement> sensedData; 
 
-		mrpt::poses::CPose2D auxEstimatePose; //!< The (X,Y,PHI) pose estimated by the UWB software, for comparison purposes (Added in streamming version 1)
+		/** The (X,Y,PHI) pose estimated by the UWB software, for comparison purposes (Added in streamming version 1) */
+		mrpt::poses::CPose2D auxEstimatePose; 
 
 
-		void  debugPrintOut(); //!< Prints out the contents of the object  */
+		/** Prints out the contents of the object  */ */
+		void  debugPrintOut(); 
 
 		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const override;// See base class docs.
 		void setSensorPose( const mrpt::poses::CPose3D &newSensorPose ) override;// See base class docs.

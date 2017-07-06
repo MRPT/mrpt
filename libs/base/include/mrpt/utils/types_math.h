@@ -77,8 +77,10 @@ namespace mrpt
 
 		};
 
-		typedef dynamic_vector<float>  CVectorFloat;  //!< Column vector, like Eigen::MatrixXf, but automatically initialized to zeros since construction
-		typedef dynamic_vector<double> CVectorDouble; //!< Column vector, like Eigen::MatrixXd, but automatically initialized to zeros since construction
+		/** Column vector, like Eigen::MatrixXf, but automatically initialized to zeros since construction */
+		typedef dynamic_vector<float>  CVectorFloat;  
+		/** Column vector, like Eigen::MatrixXd, but automatically initialized to zeros since construction */
+		typedef dynamic_vector<double> CVectorDouble; 
 	}
 
 	namespace utils

@@ -54,8 +54,10 @@ void CMesh::updateTriangles() const	{
 	CRenderizableDisplayList::notifyChange();
 
 // Remember:
-//mutable std::vector<std::pair<CSetOfTriangles::TTriangle,TTriangleVertexIndices> > actualMesh;	//!< List of triangles in the mesh
-//mutable std::vector<std::pair<mrpt::math::TPoint3D,size_t> > vertex_normals; //!< The accumulated normals & counts for each vertex, so normals can be averaged.
+/** List of triangles in the mesh */
+//mutable std::vector<std::pair<CSetOfTriangles::TTriangle,TTriangleVertexIndices> > actualMesh;	
+/** The accumulated normals & counts for each vertex, so normals can be averaged. */
+//mutable std::vector<std::pair<mrpt::math::TPoint3D,size_t> > vertex_normals; 
 
 	const size_t cols=Z.getColCount();
 	const size_t rows=Z.getRowCount();

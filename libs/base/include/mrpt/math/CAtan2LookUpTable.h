@@ -58,13 +58,16 @@ namespace math
 	{
 	public:
 		CAtan2LookUpTableMultiRes() noexcept;
-		CAtan2LookUpTableMultiRes(const std::map<double,double> & lst_resolutions2extensions ) noexcept;  //!< See CAtan2LookUpTableMultiRes for a discussion of the parameters
-		void resize(const std::map<double,double> & lst_resolutions2extensions) noexcept;  //!< See CAtan2LookUpTableMultiRes for a discussion of the parameters
+		/** See CAtan2LookUpTableMultiRes for a discussion of the parameters */
+		CAtan2LookUpTableMultiRes(const std::map<double,double> & lst_resolutions2extensions ) noexcept;  
+		/** See CAtan2LookUpTableMultiRes for a discussion of the parameters */
+		void resize(const std::map<double,double> & lst_resolutions2extensions) noexcept;  
 
 		/** Returns the precomputed value for atan2(y,x). \return false if out of grid bounds. */
 		bool atan2(double y,double x, double &out_atan2) const noexcept;
 	private:
-		std::map<double,mrpt::utils::CDynamicGrid<double> > m_grids;  //!< Maps from maximum (X,Y) coordinates to LUT for [-L,L]x[-L,L] square area.
+		/** Maps from maximum (X,Y) coordinates to LUT for [-L,L]x[-L,L] square area. */
+		std::map<double,mrpt::utils::CDynamicGrid<double> > m_grids;  
 	};
 
 } // end NS math

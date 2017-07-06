@@ -63,13 +63,17 @@ namespace obs
 	public:
 		typedef std::map<gnss::gnss_message_type_t, gnss::gnss_message_ptr> message_list_t;
 
-		CObservationGPS(); //!< ctor
+		/** ctor */
+		CObservationGPS(); 
 
 		/** @name GNSS (GPS) data fields
 		  * @{ */
-		mrpt::poses::CPose3D     sensorPose;//!< The sensor pose on the robot/vehicle
-		mrpt::system::TTimeStamp originalReceivedTimestamp; //!< The local computer-based timestamp based on the reception of the message in the computer. \sa CObservation::timestamp in the base class, which should contain the accurate satellite-based UTC timestamp.
-		bool                     has_satellite_timestamp;   //!< If true, CObservation::timestamp has been generated from accurate satellite clock. Otherwise, no GPS data is available and timestamps are based on the local computer clock.
+		/** The sensor pose on the robot/vehicle */
+		mrpt::poses::CPose3D     sensorPose;
+		/** The local computer-based timestamp based on the reception of the message in the computer. \sa CObservation::timestamp in the base class, which should contain the accurate satellite-based UTC timestamp. */
+		mrpt::system::TTimeStamp originalReceivedTimestamp; 
+		/** If true, CObservation::timestamp has been generated from accurate satellite clock. Otherwise, no GPS data is available and timestamps are based on the local computer clock. */
+		bool                     has_satellite_timestamp;   
 		/** The main piece of data in this class: a list of GNNS messages.
 		  * Normally users might prefer to access the list via the methods CObservationGPS::getMsgByClass() and CObservationGPS::setMsg()
 		  * Typically only one message, may be multiple if all have the same timestamp. */
@@ -128,9 +132,12 @@ namespace obs
 			return it==messages.end() ? dynamic_cast<MSG_CLASS*>(nullptr) : dynamic_cast<MSG_CLASS*>(it->second.get());
 		}
 
-		void dumpToStream( mrpt::utils::CStream &out ) const; //!< Dumps the contents of the observation in a human-readable form to a given output stream \sa dumpToConsole(), getDescriptionAsText()
-		void dumpToConsole(std::ostream &o = std::cout) const; //!< Dumps the contents of the observation in a human-readable form to an std::ostream (default=console)
-		void clear(); //!< Empties this observation, clearing the container \a messages
+		/** Dumps the contents of the observation in a human-readable form to a given output stream \sa dumpToConsole(), getDescriptionAsText() */
+		void dumpToStream( mrpt::utils::CStream &out ) const; 
+		/** Dumps the contents of the observation in a human-readable form to an std::ostream (default=console) */
+		void dumpToConsole(std::ostream &o = std::cout) const; 
+		/** Empties this observation, clearing the container \a messages */
+		void clear(); 
 		void swap(CObservationGPS &o);
 
 		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const override { out_sensorPose = sensorPose; } // See base class docs
@@ -142,11 +149,16 @@ namespace obs
 
 		/** @name Deprecated, backwards compatible (MRPT <1.4.0) data and types
 		  * @{ */
-		typedef gnss::UTC_time   TUTCTime;        //!< Deprecated, kept for backwards compatibility
-		typedef gnss::Message_TOPCON_PZS  TGPSDatum_PZS;  //!< Deprecated, kept for backwards compatibility
-		typedef gnss::Message_TOPCON_SATS TGPSDatum_SATS; //!< Deprecated, kept for backwards compatibility
-		typedef gnss::Message_NMEA_GGA    TGPSDatum_GGA;  //!< Deprecated, kept for backwards compatibility
-		typedef gnss::Message_NMEA_RMC    TGPSDatum_RMC;  //!< Deprecated, kept for backwards compatibility
+		/** Deprecated, kept for backwards compatibility */
+		typedef gnss::UTC_time   TUTCTime;        
+		/** Deprecated, kept for backwards compatibility */
+		typedef gnss::Message_TOPCON_PZS  TGPSDatum_PZS;  
+		/** Deprecated, kept for backwards compatibility */
+		typedef gnss::Message_TOPCON_SATS TGPSDatum_SATS; 
+		/** Deprecated, kept for backwards compatibility */
+		typedef gnss::Message_NMEA_GGA    TGPSDatum_GGA;  
+		/** Deprecated, kept for backwards compatibility */
+		typedef gnss::Message_NMEA_RMC    TGPSDatum_RMC;  
 
 		/** Proxy class for type-based testing existence of data inside CObservationGPS::messages */
 		template <mrpt::obs::gnss::gnss_message_type_t MSG_TYPE>
@@ -159,10 +171,14 @@ namespace obs
 		};
 
 		// Was: bool  has_GGA_datum;
-		internal_msg_test_proxy<gnss::NMEA_GGA>    has_GGA_datum;  //!< Evaluates as a bool; true if the corresponding field exists in \a messages.
-		internal_msg_test_proxy<gnss::NMEA_RMC>    has_RMC_datum;  //!< Evaluates as a bool; true if the corresponding field exists in \a messages.
-		internal_msg_test_proxy<gnss::TOPCON_PZS>  has_PZS_datum;  //!< Evaluates as a bool; true if the corresponding field exists in \a messages.
-		internal_msg_test_proxy<gnss::TOPCON_SATS> has_SATS_datum; //!< Evaluates as a bool; true if the corresponding field exists in \a messages.
+		/** Evaluates as a bool; true if the corresponding field exists in \a messages. */
+		internal_msg_test_proxy<gnss::NMEA_GGA>    has_GGA_datum;  
+		/** Evaluates as a bool; true if the corresponding field exists in \a messages. */
+		internal_msg_test_proxy<gnss::NMEA_RMC>    has_RMC_datum;  
+		/** Evaluates as a bool; true if the corresponding field exists in \a messages. */
+		internal_msg_test_proxy<gnss::TOPCON_PZS>  has_PZS_datum;  
+		/** Evaluates as a bool; true if the corresponding field exists in \a messages. */
+		internal_msg_test_proxy<gnss::TOPCON_SATS> has_SATS_datum; 
 		/** @} */
 
 		/** @name Utilities
@@ -170,8 +186,10 @@ namespace obs
 		static bool GPS_time_to_UTC(
 			uint16_t gps_week,double gps_sec,
 			const int leap_seconds_count /**< [in] GPS to UTC time number of leap seconds (normally grabbed from satellital live data) */,
-			mrpt::system::TTimeStamp &utc_out /**< [out] UTC timestamp */ ); //!< Return false on invalid input data
-		static bool GPS_time_to_UTC(uint16_t gps_week,double gps_sec,const int leap_seconds_count, mrpt::system::TTimeParts &utc_out); //!< \overload
+			/** Return false on invalid input data */
+			mrpt::system::TTimeStamp &utc_out /**< [out] UTC timestamp */ ); 
+		/** \overload */
+		static bool GPS_time_to_UTC(uint16_t gps_week,double gps_sec,const int leap_seconds_count, mrpt::system::TTimeParts &utc_out); 
 		/** @} */
 	}; // End of class def.
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CObservationGPS , CObservation, OBS_IMPEXP)

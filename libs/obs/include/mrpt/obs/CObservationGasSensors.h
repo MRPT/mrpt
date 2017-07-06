@@ -46,8 +46,10 @@ namespace obs
 				temperature()
 			{}
 
-			math::TPose3D      eNosePoseOnTheRobot;//!< The pose of the sensors on the robot
-			std::vector<float> readingsVoltage;//!< The set of readings (in volts) from the array of sensors (size of "sensorTypes" is the same that the size of "readingsVoltage")
+			/** The pose of the sensors on the robot */
+			math::TPose3D      eNosePoseOnTheRobot;
+			/** The set of readings (in volts) from the array of sensors (size of "sensorTypes" is the same that the size of "readingsVoltage") */
+			std::vector<float> readingsVoltage;
 
 			/** The kind of sensors in the array (size of "sensorTypes" is the same that the size of "readingsVoltage")
 			  *  The meaning of values for types of sensors is as follows:
@@ -58,9 +60,12 @@ namespace obs
 			  *  0x4161 : Figaro TGS 4161
 			  */
 			vector_int sensorTypes;
-			bool       hasTemperature;//!< Must be true for "temperature" to contain a valid measurement
-			float      temperature;//!< Sensed temperature in Celcius (valid if hasTemperature=true only)
-			bool       isActive;//!< True if the input to this chamber/enose is poluted air, False if clean air
+			/** Must be true for "temperature" to contain a valid measurement */
+			bool       hasTemperature;
+			/** Sensed temperature in Celcius (valid if hasTemperature=true only) */
+			float      temperature;
+			/** True if the input to this chamber/enose is poluted air, False if clean air */
+			bool       isActive;
 		};
 
 		/** One entry per e-nose on the robot */
@@ -85,15 +90,22 @@ namespace obs
 
 						/** @name MOS-model parameters
 						  *  @{  */
-						size_t        winNoise_size;              //!< The size of the mobile average window used to reduce noise on sensor reagings.
-						int           decimate_value;             //!< [useMOSmodel] The decimate frecuency applied after noise filtering
+						/** The size of the mobile average window used to reduce noise on sensor reagings. */
+						size_t        winNoise_size;              
+						/** [useMOSmodel] The decimate frecuency applied after noise filtering */
+						int           decimate_value;             
 						
-						float         a_rise;                     //!< tau = a*AMPLITUDE +b (linear relationship)
-						float         b_rise;                     //!< tau = a*AMPLITUDE +b (linear relationship)
-						float         a_decay;                    //!< tau = a*AMPLITUDE +b (linear relationship)
-						float         b_decay;                    //!< tau = a*AMPLITUDE +b (linear relationship)
+						/** tau = a*AMPLITUDE +b (linear relationship) */
+						float         a_rise;                     
+						/** tau = a*AMPLITUDE +b (linear relationship) */
+						float         b_rise;                     
+						/** tau = a*AMPLITUDE +b (linear relationship) */
+						float         a_decay;                    
+						/** tau = a*AMPLITUDE +b (linear relationship) */
+						float         b_decay;                    
 												
-						bool          save_maplog;                //!< If true save generated gas map as a log file
+						/** If true save generated gas map as a log file */
+						bool          save_maplog;                
 
 						/** @} */
 
@@ -108,21 +120,34 @@ namespace obs
 							*/
 						struct OBS_IMPEXP TdataMap
 						{
-								float						reading;			//!< Sensore reading
-								mrpt::system::TTimeStamp	timestamp;			//!< Timestamp of the observation
-								float						tau;				//!< tau value applied								
-								float						estimation;			//!< The value estimated according to the MOXmodel
-								float						reading_filtered;	//!< Reading after smooth (noise averaging)								
+								/** Sensore reading */
+								float						reading;			
+								/** Timestamp of the observation */
+								mrpt::system::TTimeStamp	timestamp;			
+								/** tau value applied								 */
+								float						tau;				
+								/** The value estimated according to the MOXmodel */
+								float						estimation;			
+								/** Reading after smooth (noise averaging)								 */
+								float						reading_filtered;	
 						};
 
-						TdataMap              last_Obs, temporal_Obs; //!< The content of each m_lastObservations in the estimation when using the option : MOS_MODEl (useMOSmodel =1)
-						std::vector<TdataMap> m_antiNoise_window;  //!< Vector to temporally store and averge readings to reduce noise
-						std::ofstream        *m_debug_dump;     //!< Ofstream to save to file option "save_maplog"
-						uint16_t              decimate_count; //!< Decimate value for oversampled enose readings
-						double                fixed_incT;  //!< To force e-nose samples to have fixed time increments
-						bool                  first_incT;  //!< To force e-nose samples to have fixed time increments
-						float                 min_reading;	//!< Minimum reading value till the moment, used as approximation to baeline level
-						bool                  first_iteration;  //!< To avoid the model estimation on first iteration
+						/** The content of each m_lastObservations in the estimation when using the option : MOS_MODEl (useMOSmodel =1) */
+						TdataMap              last_Obs, temporal_Obs; 
+						/** Vector to temporally store and averge readings to reduce noise */
+						std::vector<TdataMap> m_antiNoise_window;  
+						/** Ofstream to save to file option "save_maplog" */
+						std::ofstream        *m_debug_dump;     
+						/** Decimate value for oversampled enose readings */
+						uint16_t              decimate_count; 
+						/** To force e-nose samples to have fixed time increments */
+						double                fixed_incT;  
+						/** To force e-nose samples to have fixed time increments */
+						bool                  first_incT;  
+						/** Minimum reading value till the moment, used as approximation to baeline level */
+						float                 min_reading;	
+						/** To avoid the model estimation on first iteration */
+						bool                  first_iteration;  
 
 						/** Estimates the gas concentration based on readings and sensor model
 						  */

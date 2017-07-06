@@ -109,7 +109,8 @@ namespace mrpt {
 		class BASE_IMPEXP COutputLogger {
 		public:
 			static mrpt::system::TConsoleColor logging_levels_to_colors[NUMBER_OF_VERBOSITY_LEVELS];  //! Map from VerbosityLevels to their corresponding mrpt::system::TConsoleColor. Handy for coloring the input based on the verbosity of the message
-			static std::string logging_levels_to_names[NUMBER_OF_VERBOSITY_LEVELS]; //!< Map from VerbosityLevels to their corresponding names. Handy for printing the current message VerbosityLevel along with the actual content
+			/** Map from VerbosityLevels to their corresponding names. Handy for printing the current message VerbosityLevel along with the actual content */
+			static std::string logging_levels_to_names[NUMBER_OF_VERBOSITY_LEVELS]; 
 
 			/** @name Logging methods
 			  * @{ */
@@ -126,8 +127,10 @@ namespace mrpt {
 			   * \endcode
 			   */
 			COutputLogger(const std::string &name);
-			COutputLogger(); //!< Default class constructor. Name of the logger is initialized to "logStr"
-			virtual ~COutputLogger();  //!< virtual dtor (so we can derive classes from this one)
+			/** Default class constructor. Name of the logger is initialized to "logStr" */
+			COutputLogger(); 
+			/** virtual dtor (so we can derive classes from this one) */
+			virtual ~COutputLogger();  
 
 			/** \brief Main method to add the specified message string to the logger.
 			 * \sa logCond, logFmt */
@@ -156,8 +159,10 @@ namespace mrpt {
 			 */
 			void logCond(const VerbosityLevel level, bool cond, const std::string& msg_str) const;
 
-			void setLoggerName(const std::string& name);  //!< Set the name of the COutputLogger instance.  \sa getLoggerName
-			std::string getLoggerName() const; //!< Return the name of the COutputLogger instance.  \sa setLoggerName
+			/** Set the name of the COutputLogger instance.  \sa getLoggerName */
+			void setLoggerName(const std::string& name);  
+			/** Return the name of the COutputLogger instance.  \sa setLoggerName */
+			std::string getLoggerName() const; 
 
 			/** \brief Set the *minimum* logging level for which the incoming logs are going to be taken into account.
 			 *
@@ -173,8 +178,10 @@ namespace mrpt {
 			VerbosityLevel getMinLoggingLevel() const { return m_min_verbosity_level; }
 			bool isLoggingLevelVisible(VerbosityLevel level) const { return m_min_verbosity_level <= level; }
 
-			void getLogAsString(std::string& log_contents) const; //!< Fill the provided string with the contents of the logger's history in std::string representation
-			std::string getLogAsString() const; //!< Get the history of COutputLogger instance in a string representation.
+			/** Fill the provided string with the contents of the logger's history in std::string representation */
+			void getLogAsString(std::string& log_contents) const; 
+			/** Get the history of COutputLogger instance in a string representation. */
+			std::string getLogAsString() const; 
 
 			/** \brief Write the contents of the COutputLogger instance to an external file.
 			 *
@@ -192,12 +199,17 @@ namespace mrpt {
 			 * \sa writeToFile
 			 */
 			void dumpLogToConsole() const;
-			std::string getLoggerLastMsg() const;  //!< Return the last Tmsg instance registered in the logger history
-			void getLoggerLastMsg(std::string& msg_str) const; //!< Fill inputtted string with the contents of the last message in history
-			void loggerReset(); //!< Reset the contents of the logger instance. Called upon construction.
+			/** Return the last Tmsg instance registered in the logger history */
+			std::string getLoggerLastMsg() const;  
+			/** Fill inputtted string with the contents of the last message in history */
+			void getLoggerLastMsg(std::string& msg_str) const; 
+			/** Reset the contents of the logger instance. Called upon construction. */
+			void loggerReset(); 
 
-			bool logging_enable_console_output; //!< [Default=true] Set it to false in case you don't want the logged messages to be dumped to the output automatically.
-			bool logging_enable_keep_record;    //!< [Default=false] Enables storing all messages into an internal list. \sa writeLogToFile, getLogAsString
+			/** [Default=true] Set it to false in case you don't want the logged messages to be dumped to the output automatically. */
+			bool logging_enable_console_output; 
+			/** [Default=false] Enables storing all messages into an internal list. \sa writeLogToFile, getLogAsString */
+			bool logging_enable_keep_record;    
 
 			void logRegisterCallback(output_logger_callback_t  userFunc, void *userParam = NULL);
 			void logDeregisterCallback(output_logger_callback_t  userFunc, void *userParam = NULL);
@@ -267,7 +279,8 @@ namespace mrpt {
 				std::string body; /**< Actual content of the message. */
 			};
 
-			std::string generateStringFromFormat(const char* fmt, va_list argp) const; //!< Helper method for generating a std::string instance from printf-like arguments
+			/** Helper method for generating a std::string instance from printf-like arguments */
+			std::string generateStringFromFormat(const char* fmt, va_list argp) const; 
 
 			std::string m_logger_name;
 			mutable std::deque<TMsg> m_history;   // deque is better than vector to avoid memory reallocs

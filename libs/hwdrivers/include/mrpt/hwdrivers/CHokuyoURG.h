@@ -70,22 +70,33 @@ namespace mrpt
 			/** Used in CHokuyoURG::displayVersionInfo */
 			struct TSensorInfo
 			{
-				std::string		model;			//!< The sensor model
-				double			d_min,d_max;	//!< Min/Max ranges, in meters.
-				int				scans_per_360deg;	//!< Number of measuremens per 360 degrees.
-				int				scan_first,scan_last, scan_front;	//!< First, last, and front step of the scanner angular span.
-				int				motor_speed_rpm;		//!< Standard motor speed, rpm.
+				/** The sensor model */
+				std::string		model;			
+				/** Min/Max ranges, in meters. */
+				double			d_min,d_max;	
+				/** Number of measuremens per 360 degrees. */
+				int				scans_per_360deg;	
+				/** First, last, and front step of the scanner angular span. */
+				int				scan_first,scan_last, scan_front;	
+				/** Standard motor speed, rpm. */
+				int				motor_speed_rpm;		
 			};
 
 		private:
-			int		m_firstRange,m_lastRange;   //!< The first and last ranges to consider from the scan.
-			int		m_motorSpeed_rpm;           //!< The motor speed (default=600rpm)
-			poses::CPose3D	m_sensorPose;       //!< The sensor 6D pose:
-			mrpt::utils::circular_buffer<uint8_t> m_rx_buffer; //!< Auxiliary buffer for readings
+			/** The first and last ranges to consider from the scan. */
+			int		m_firstRange,m_lastRange;   
+			/** The motor speed (default=600rpm) */
+			int		m_motorSpeed_rpm;           
+			/** The sensor 6D pose: */
+			poses::CPose3D	m_sensorPose;       
+			/** Auxiliary buffer for readings */
+			mrpt::utils::circular_buffer<uint8_t> m_rx_buffer; 
 
-			std::string     m_lastSentMeasCmd; //!< The last sent measurement command (MDXXX), including the last 0x0A.
+			/** The last sent measurement command (MDXXX), including the last 0x0A. */
+			std::string     m_lastSentMeasCmd; 
 
-			bool			m_highSensMode;  //!< High sensitivity [HS] mode (default: false)
+			/** High sensitivity [HS] mode (default: false) */
+			bool			m_highSensMode;  
 			mrpt::gui::CDisplayWindow3D::Ptr m_win;
 
 			/** Enables the SCIP2.0 protocol (this must be called at the very begining!).
@@ -208,23 +219,30 @@ namespace mrpt
 			  */
 			bool  checkCOMisOpen();
 
-			double  		m_reduced_fov; //!< Used to reduce artificially the interval of scan ranges.
+			/** Used to reduce artificially the interval of scan ranges. */
+			double  		m_reduced_fov; 
 
-			std::string		m_com_port;		//!< If set to non-empty, the serial port will be attempted to be opened automatically when this class is first used to request data from the laser.
+			/** If set to non-empty, the serial port will be attempted to be opened automatically when this class is first used to request data from the laser. */
+			std::string		m_com_port;		
 
-			std::string		m_ip_dir;	//!< If set to non-empty and m_port_dir too, the program will try to connect to a Hokuyo using Ethernet communication
-			unsigned int	m_port_dir;	//!< If set to non-empty and m_ip_dir too, the program will try to connect to a Hokuyo using Ethernet communication
+			/** If set to non-empty and m_port_dir too, the program will try to connect to a Hokuyo using Ethernet communication */
+			std::string		m_ip_dir;	
+			/** If set to non-empty and m_ip_dir too, the program will try to connect to a Hokuyo using Ethernet communication */
+			unsigned int	m_port_dir;	
 
 			/** The information gathered when the laser is first open */
 			TSensorInfo		m_sensor_info;
 
 			bool			m_I_am_owner_serial_port;
 
-			uint32_t                 m_timeStartUI;	//!< Time of the first data packet, for synchronization purposes.
-			int                      m_timeStartSynchDelay;  //!< Counter to discard to first few packets before setting the correspondence between device and computer timestamps.
+			/** Time of the first data packet, for synchronization purposes. */
+			uint32_t                 m_timeStartUI;	
+			/** Counter to discard to first few packets before setting the correspondence between device and computer timestamps. */
+			int                      m_timeStartSynchDelay;  
 			mrpt::system::TTimeStamp m_timeStartTT;
 			bool                     m_disable_firmware_timestamp;
-			bool                     m_intensity;  //!< Get intensity from lidar scan (default: false)
+			/** Get intensity from lidar scan (default: false) */
+			bool                     m_intensity;  
 
 			/** See the class documentation at the top for expected parameters */
 			void  loadConfig_sensorSpecific(

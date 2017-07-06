@@ -27,9 +27,12 @@ CRuntimeCompiledExpression::CRuntimeCompiledExpression()
 }
 
 void CRuntimeCompiledExpression::compile(
-	const std::string &expression,                    //!< [in] The expression to be compiled.
-	const std::map<std::string, double> &variables,   //!< [in] Map of variables/constants by `name` ->  `value`. The references to the values in this map **must** be ensured to be valid thoughout all the life of the compiled expression.
-	const std::string &expr_name_for_error_reporting  //!< A descriptive name of this formula, to be used when generating error reports via an  exception, if needed
+	/** [in] The expression to be compiled. */
+	const std::string &expression,                    
+	/** [in] Map of variables/constants by `name` ->  `value`. The references to the values in this map **must** be ensured to be valid thoughout all the life of the compiled expression. */
+	const std::map<std::string, double> &variables,   
+	/** A descriptive name of this formula, to be used when generating error reports via an  exception, if needed */
+	const std::string &expr_name_for_error_reporting  
 )
 {
 	m_original_expr_str = expression;
@@ -56,7 +59,8 @@ double CRuntimeCompiledExpression::eval() const
 }
 
 void CRuntimeCompiledExpression::register_symbol_table(
-	const std::map<std::string, double *> &variables  //!< [in] Map of variables/constants by `name` ->  `value`. The references to the values in this map **must** be ensured to be valid thoughout all the life of the compiled expression.
+	/** [in] Map of variables/constants by `name` ->  `value`. The references to the values in this map **must** be ensured to be valid thoughout all the life of the compiled expression. */
+	const std::map<std::string, double *> &variables  
 )
 {
 	exprtk::symbol_table<double> symbol_table;

@@ -26,7 +26,8 @@ namespace mrpt
 		protected:
 			CImage::Ptr			m_img;
 			double					m_x0,m_x1, m_y0, m_y1;
-			double					m_pixel_size; //!< width * pixel_size = (x1-x0)
+			/** width * pixel_size = (x1-x0) */
+			double					m_pixel_size; 
 			TInterpolationMethod	m_method;
 
 		public:

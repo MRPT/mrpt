@@ -56,7 +56,8 @@ struct XsAtomicInt;
 	\brief Wrapper class for easy use of XsAtomicIntValue values
 */
 struct XsAtomicInt {
-	volatile XsAtomicIntValue m_value;				//!< The actual value
+	/** The actual value */
+	volatile XsAtomicIntValue m_value;				
 
 #ifdef __cplusplus
 	/*! \brief Initialize the value. */

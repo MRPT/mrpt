@@ -33,10 +33,13 @@ namespace utils
 		void_ptr_noncopy m_memory;
 		uint64_t         m_size, m_position, m_bytesWritten;
 		uint64_t         m_alloc_block_size;
-		bool             m_read_only;   //!< If the memory block does not belong to the object.
-		void resize(uint64_t newSize); //!< Resizes the internal buffer size.
+		/** If the memory block does not belong to the object. */
+		bool             m_read_only;   
+		/** Resizes the internal buffer size. */
+		void resize(uint64_t newSize); 
 	public:
-		CMemoryStream(); //!< Default constructor
+		/** Default constructor */
+		CMemoryStream(); 
 
 		/** Constructor to initilize the data in the stream from a block of memory (which is copied), and sets the current stream position at the beginning of the data.
 		 * \sa assignMemoryNotOwn */
@@ -47,11 +50,14 @@ namespace utils
 		  *  This method resets the write and read positions to the beginning. */
 		void assignMemoryNotOwn( const void *data, const uint64_t nBytesInData );
 
-		virtual ~CMemoryStream(); //!< Destructor
+		/** Destructor */
+		virtual ~CMemoryStream(); 
 
-		void Clear(); //!< Clears the memory buffer.
+		/** Clears the memory buffer. */
+		void Clear(); 
 
-		void changeSize( uint64_t newSize ); //!< Change size. This would be rarely used. Use ">>" operators for writing to stream \sa Stream
+		/** Change size. This would be rarely used. Use ">>" operators for writing to stream \sa Stream */
+		void changeSize( uint64_t newSize ); 
 
 		// See docs in base class
 		uint64_t Seek(uint64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning) override;
@@ -84,7 +90,8 @@ namespace utils
 			bool do_free;
 			TFreeFnDataForZMQ() : buf(nullptr), do_free(true) { }
 		};
-		void BASE_IMPEXP free_fn_for_zmq(void *data, void *hint); //!< Used in mrpt_send_to_zmq(). `hint` points to a `TFreeFnDataForZMQ` struct, to be freed here.
+		/** Used in mrpt_send_to_zmq(). `hint` points to a `TFreeFnDataForZMQ` struct, to be freed here. */
+		void BASE_IMPEXP free_fn_for_zmq(void *data, void *hint); 
 	}
 	} // End of namespace
 } // end of namespace

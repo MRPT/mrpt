@@ -33,7 +33,8 @@ namespace mrpt
 			float			m_yMin, m_yMax;
 
 			mutable bool polygonUpToDate;
-			mutable std::vector<mrpt::math::TPolygonWithPlane> tmpPoly;   //!< Used for ray-tracing
+			/** Used for ray-tracing */
+			mutable std::vector<mrpt::math::TPolygonWithPlane> tmpPoly;   
 			void updatePoly() const;
 			void unloadTexture();
 

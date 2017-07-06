@@ -29,10 +29,13 @@ namespace obs
 	  */
 	struct OBS_IMPEXP VelodyneCalibration
 	{
-		VelodyneCalibration(); //!< Default ctor (leaves all empty)
+		/** Default ctor (leaves all empty) */
+		VelodyneCalibration(); 
 		
-		bool empty() const; //!< Returns true if no calibration has been loaded yet
-		void clear(); //!< Clear all previous contents
+		/** Returns true if no calibration has been loaded yet */
+		bool empty() const; 
+		/** Clear all previous contents */
+		void clear(); 
 
 		/** Loads default calibration files for common LIDAR models.
 		  * \param[in] lidar_model Valid model names are: `VLP16`, `HDL32`

@@ -47,9 +47,12 @@ namespace opengl	{
 		DEFINE_SERIALIZABLE(CFrustum)
 
 	protected:
-		float  m_min_distance, m_max_distance;    //!< Near and far planes
-		float  m_fov_horz_left,m_fov_horz_right;  //!< Semi FOVs (in radians)
-		float  m_fov_vert_down,m_fov_vert_up;     //!< Semi FOVs (in radians)
+		/** Near and far planes */
+		float  m_min_distance, m_max_distance;    
+		/** Semi FOVs (in radians) */
+		float  m_fov_horz_left,m_fov_horz_right;  
+		/** Semi FOVs (in radians) */
+		float  m_fov_vert_down,m_fov_vert_up;     
 		bool   m_draw_lines, m_draw_planes;
 		float  m_lineWidth;
 		mrpt::utils::TColor  m_planes_color;

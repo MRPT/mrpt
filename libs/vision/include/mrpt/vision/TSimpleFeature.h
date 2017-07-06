@@ -33,15 +33,23 @@ namespace mrpt
 		template <typename PIXEL_COORD_TYPE>
 		struct TSimpleFeature_templ
 		{
-			typedef PIXEL_COORD_TYPE pixel_coords_t; //!< The type of \a pt
-			typedef typename PIXEL_COORD_TYPE::pixel_coord_t pixel_coord_t; //!< The type of pt.x and pt.y
+			/** The type of \a pt */
+			typedef PIXEL_COORD_TYPE pixel_coords_t; 
+			/** The type of pt.x and pt.y */
+			typedef typename PIXEL_COORD_TYPE::pixel_coord_t pixel_coord_t; 
 
-			pixel_coords_t      pt;             //!< Coordinates in the image
-			TFeatureID          ID;             //!< ID of the feature
-			TFeatureTrackStatus	track_status;	//!< Status of the feature tracking process
-			float				response;		//!< A measure of the "goodness" of the feature (typically, the KLT_response value)
-			uint8_t				octave;			//!< The image octave the image was found in: 0=original image, 1=1/2 image, 2=1/4 image, etc.
-			uint8_t				user_flags;		//!< A field for any other flags needed by the user (this has not a predefined meaning)
+			/** Coordinates in the image */
+			pixel_coords_t      pt;             
+			/** ID of the feature */
+			TFeatureID          ID;             
+			/** Status of the feature tracking process */
+			TFeatureTrackStatus	track_status;	
+			/** A measure of the "goodness" of the feature (typically, the KLT_response value) */
+			float				response;		
+			/** The image octave the image was found in: 0=original image, 1=1/2 image, 2=1/4 image, etc. */
+			uint8_t				octave;			
+			/** A field for any other flags needed by the user (this has not a predefined meaning) */
+			uint8_t				user_flags;		
 
 			/** Constructor that only sets the pt.{x,y} values, leaving all other values to *undefined values*. */
 			template <typename COORD_TYPE>
@@ -193,8 +201,10 @@ namespace mrpt
 			/** @} */
 
 		private:
-			TFeatureVector			m_feats; //!< The actual container with the list of features
-			std::vector<size_t>		m_first_index_per_row; //!< A LUT of the first feature index per row, to efficiently look for neighbors, etc.
+			/** The actual container with the list of features */
+			TFeatureVector			m_feats; 
+			/** A LUT of the first feature index per row, to efficiently look for neighbors, etc. */
+			std::vector<size_t>		m_first_index_per_row; 
 			mrpt::math::CMatrixBool m_occupied_sections;
 
 		}; // end of class

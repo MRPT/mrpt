@@ -28,28 +28,42 @@ namespace utils
 	class BASE_IMPEXP CConfigFileMemory : public CConfigFileBase
 	{
 	public:
-		CConfigFileMemory(); //!< Empty constructor. Upon construction, call any of the "setContent" method
-		CConfigFileMemory( const utils::CStringList &stringList ); //!< Constructor and initialize from a list of strings
-		CConfigFileMemory( const std::string &str ); //!< Constructor and initialize from string with the whole "config file"
-		virtual ~CConfigFileMemory(); //!< dtor
+		/** Empty constructor. Upon construction, call any of the "setContent" method */
+		CConfigFileMemory(); 
+		/** Constructor and initialize from a list of strings */
+		CConfigFileMemory( const utils::CStringList &stringList ); 
+		/** Constructor and initialize from string with the whole "config file" */
+		CConfigFileMemory( const std::string &str ); 
+		/** dtor */
+		virtual ~CConfigFileMemory(); 
 
-		CConfigFileMemory(const CConfigFileMemory& o); //!< Copy constructor
-		CConfigFileMemory& operator = (const CConfigFileMemory& o); //!< Copy operator
+		/** Copy constructor */
+		CConfigFileMemory(const CConfigFileMemory& o); 
+		/** Copy operator */
+		CConfigFileMemory& operator = (const CConfigFileMemory& o); 
 
-		void setContent(  const utils::CStringList &stringList  ); //!< Changes the contents of the virtual "config file"
-		void setContent(  const std::string &str ); //!< Changes the contents of the virtual "config file"
-		void getContent(std::string &str) const; //!< Return the current contents of the virtual "config file"
+		/** Changes the contents of the virtual "config file" */
+		void setContent(  const utils::CStringList &stringList  ); 
+		/** Changes the contents of the virtual "config file" */
+		void setContent(  const std::string &str ); 
+		/** Return the current contents of the virtual "config file" */
+		void getContent(std::string &str) const; 
 		/** \overload */
 		inline std::string getContent() const {  std::string s; getContent(s); return s; }
 
-		void getAllSections( vector_string	&sections ) const override; //!< Returns a list with all the section names
-		void getAllKeys( const std::string &section, vector_string	&keys ) const override; //!< Returs a list with all the keys into a section
+		/** Returns a list with all the section names */
+		void getAllSections( vector_string	&sections ) const override; 
+		/** Returs a list with all the keys into a section */
+		void getAllKeys( const std::string &section, vector_string	&keys ) const override; 
 
 	private:
-		void_ptr_noncopy m_ini; //!< The IniFile object
+		/** The IniFile object */
+		void_ptr_noncopy m_ini; 
 	protected:
-		void  writeString(const std::string &section, const std::string &name, const std::string &str) override; //!< A virtual method to write a generic string
-		std::string  readString(const std::string &section, const std::string &name, const std::string &defaultStr, bool failIfNotFound = false) const override; //!< A virtual method to read a generic string
+		/** A virtual method to write a generic string */
+		void  writeString(const std::string &section, const std::string &name, const std::string &str) override; 
+		/** A virtual method to read a generic string */
+		std::string  readString(const std::string &section, const std::string &name, const std::string &defaultStr, bool failIfNotFound = false) const override; 
 
 	}; // End of class def.
 

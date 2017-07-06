@@ -54,9 +54,12 @@ namespace mrpt
 		public:
 			struct node_t : public NODE_TYPE_DATA
 			{
-				mrpt::utils::TNodeID node_id;   //!< Duplicated ID (it's also in the map::iterator->first), but put here to make it available in path_t
-				mrpt::utils::TNodeID parent_id; //!< INVALID_NODEID for the root, a valid ID otherwise
-				EDGE_TYPE * edge_to_parent; //!< NULL for root, a valid edge otherwise
+				/** Duplicated ID (it's also in the map::iterator->first), but put here to make it available in path_t */
+				mrpt::utils::TNodeID node_id;   
+				/** INVALID_NODEID for the root, a valid ID otherwise */
+				mrpt::utils::TNodeID parent_id; 
+				/** NULL for root, a valid edge otherwise */
+				EDGE_TYPE * edge_to_parent; 
 				node_t(mrpt::utils::TNodeID node_id_, mrpt::utils::TNodeID parent_id_, EDGE_TYPE * edge_to_parent_, const NODE_TYPE_DATA &data) : 
 					NODE_TYPE_DATA(data),
 					node_id(node_id_),parent_id(parent_id_),
@@ -68,8 +71,10 @@ namespace mrpt
 
 			typedef mrpt::graphs::CDirectedTree<EDGE_TYPE> base_t;
 			typedef EDGE_TYPE edge_t;
-			typedef typename MAPS_IMPLEMENTATION::template map<mrpt::utils::TNodeID, node_t>  node_map_t;  //!< Map: TNode_ID => Node info
-			typedef std::list<node_t> path_t; //!< A topological path up-tree
+			/** Map: TNode_ID => Node info */
+			typedef typename MAPS_IMPLEMENTATION::template map<mrpt::utils::TNodeID, node_t>  node_map_t;  
+			/** A topological path up-tree */
+			typedef std::list<node_t> path_t; 
 
 			/** Finds the nearest node to a given pose, using the given metric */
 			template <class NODE_TYPE_FOR_METRIC>
@@ -156,19 +161,26 @@ namespace mrpt
 			}
 
 		private:
-			node_map_t  m_nodes;  //!< Info per node
+			/** Info per node */
+			node_map_t  m_nodes;  
 
 		}; // end TMoveTree
 
 		/** An edge for the move tree used for planning in SE2 and TP-space */
 		struct NAV_IMPEXP TMoveEdgeSE2_TP
 		{
-			mrpt::utils::TNodeID parent_id;  //!< The ID of the parent node in the tree
-			mrpt::math::TPose2D  end_state;  //!< state in SE2 as 2D pose (x, y, phi)  - \note: it is not possible to initialize a motion without a state
-			double cost;                //!< cost associated to each motion, this should be defined by the user according to a spefic cost function
-			int ptg_index;          //!< indicate the type of trajectory used for this motion
-			int ptg_K;              //!< identify the trajectory number K of the type ptg_index
-			double ptg_dist;        //!< identify the lenght of the trajectory for this motion
+			/** The ID of the parent node in the tree */
+			mrpt::utils::TNodeID parent_id;  
+			/** state in SE2 as 2D pose (x, y, phi)  - \note: it is not possible to initialize a motion without a state */
+			mrpt::math::TPose2D  end_state;  
+			/** cost associated to each motion, this should be defined by the user according to a spefic cost function */
+			double cost;                
+			/** indicate the type of trajectory used for this motion */
+			int ptg_index;          
+			/** identify the trajectory number K of the type ptg_index */
+			int ptg_K;              
+			/** identify the lenght of the trajectory for this motion */
+			double ptg_dist;        
 
 			TMoveEdgeSE2_TP ( const mrpt::utils::TNodeID parent_id_, const mrpt::math::TPose2D end_pose_ ) :
 				parent_id (parent_id_),
@@ -181,7 +193,8 @@ namespace mrpt
 
 		struct NAV_IMPEXP TNodeSE2
 		{
-			mrpt::math::TPose2D  state;  //!< state in SE2 as 2D pose (x, y, phi)
+			/** state in SE2 as 2D pose (x, y, phi) */
+			mrpt::math::TPose2D  state;  
 			TNodeSE2( const mrpt::math::TPose2D &state_) : state(state_) { }
 			TNodeSE2() {}
 		};
@@ -208,7 +221,8 @@ namespace mrpt
 
 		struct NAV_IMPEXP TNodeSE2_TP
 		{
-			mrpt::math::TPose2D  state;  //!< state in SE2 as 2D pose (x, y, phi)
+			/** state in SE2 as 2D pose (x, y, phi) */
+			mrpt::math::TPose2D  state;  
 			TNodeSE2_TP( const mrpt::math::TPose2D &state_) : state(state_) { }
 			TNodeSE2_TP() {}
 		};
@@ -241,7 +255,8 @@ namespace mrpt
 
 
 		//typedef TMoveTree<TNodeSE2   ,TMoveEdgeSE2> TMoveTreeSE2_TP;  //!< tree data structure for planning in SE2 
-		typedef TMoveTree<TNodeSE2_TP,TMoveEdgeSE2_TP> TMoveTreeSE2_TP;  //!< tree data structure for planning in SE2 within TP-Space manifolds
+		/** tree data structure for planning in SE2 within TP-Space manifolds */
+		typedef TMoveTree<TNodeSE2_TP,TMoveEdgeSE2_TP> TMoveTreeSE2_TP;  
 
 	  /** @} */
 	}

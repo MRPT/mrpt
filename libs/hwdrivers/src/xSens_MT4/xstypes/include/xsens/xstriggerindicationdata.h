@@ -30,10 +30,14 @@ XSTYPES_DLL_API int XsTriggerIndicationData_valid(const struct XsTriggerIndicati
 
 /*! \brief Data for a trigger indication message */
 struct XsTriggerIndicationData {
-	uint8_t m_line;			//!< The line number
-	uint8_t m_polarity;		//!< The polarity
-	uint32_t m_timestamp;	//!< The timestamp
-	uint16_t m_frameNumber;	//!< The frame number
+	/** The line number */
+	uint8_t m_line;			
+	/** The polarity */
+	uint8_t m_polarity;		
+	/** The timestamp */
+	uint32_t m_timestamp;	
+	/** The frame number */
+	uint16_t m_frameNumber;	
 
 #ifdef __cplusplus
 	/*! Constructor

@@ -80,7 +80,8 @@ namespace maps
 		double internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom ) override;
 
 
-		static mrpt::utils::TColorf		COLOR_LANDMARKS_IN_3DSCENES;  //!< The color of landmark ellipsoids in CLandmarksMap::getAs3DObject
+		/** The color of landmark ellipsoids in CLandmarksMap::getAs3DObject */
+		static mrpt::utils::TColorf		COLOR_LANDMARKS_IN_3DSCENES;  
 
 		typedef mrpt::maps::CLandmark  landmark_type;
 
@@ -270,7 +271,8 @@ namespace maps
 
 			/** @name Parameters for: 2D LIDAR scans
 			  * @{ */
-			unsigned int rangeScan2D_decimation; //!< The number of rays from a 2D range scan will be decimated by this factor (default = 1, no decimation)
+			/** The number of rays from a 2D range scan will be decimated by this factor (default = 1, no decimation) */
+			unsigned int rangeScan2D_decimation; 
 			/** @} */
 
 			/** @name Parameters for: images
@@ -279,7 +281,8 @@ namespace maps
 			double  SIFTs_sigma_descriptor_dist;
 			float   SIFTs_mahaDist_std;
 			float   SIFTnullCorrespondenceDistance;
-			int     SIFTs_decimation; //!< Considers 1 out of "SIFTs_decimation" visual landmarks in the observation during the likelihood computation.
+			/** Considers 1 out of "SIFTs_decimation" visual landmarks in the observation during the likelihood computation. */
+			int     SIFTs_decimation; 
 			/** Parameters of the SIFT feature detector/descriptors while inserting images in the landmark map.
 			  *  \note There exists another \a SIFT_feat_options field in the \a insertionOptions member.
 			  *  \note All parameters of this field can be loaded from a config file. See mrpt::vision::CFeatureExtraction::TOptions for the names of the expected fields. */
@@ -288,13 +291,16 @@ namespace maps
 
 			/** @name Parameters for: Range-only observation
 			  * @{ */
-			float  beaconRangesStd; //!< The standard deviation used for Beacon ranges likelihood (default=0.08) [meters] \sa beaconRangesUseObservationStd
-			bool   beaconRangesUseObservationStd; //!< (Default: false) If true, `beaconRangesStd` is ignored and each individual `CObservationBeaconRanges::stdError` field is used instead.
+			/** The standard deviation used for Beacon ranges likelihood (default=0.08) [meters] \sa beaconRangesUseObservationStd */
+			float  beaconRangesStd; 
+			/** (Default: false) If true, `beaconRangesStd` is ignored and each individual `CObservationBeaconRanges::stdError` field is used instead. */
+			bool   beaconRangesUseObservationStd; 
 			/** @} */
 
             /** @name Parameters for: External robot poses observation
               * @{ */
-            float  extRobotPoseStd; //!< The standard deviation used for external robot poses likelihood (default=0.05) [meters]
+            /** The standard deviation used for external robot poses likelihood (default=0.05) [meters] */
+            float  extRobotPoseStd; 
             /** @} */
 
 			/** @name Parameters for: GPS readings
@@ -306,17 +312,22 @@ namespace maps
 			{
 			public:
 				TGPSOrigin();
-				double	longitude;   //!< degrees
-				double	latitude;    //!< degrees
-				double	altitude;    //!< meters
+				/** degrees */
+				double	longitude;   
+				/** degrees */
+				double	latitude;    
+				/** meters */
+				double	altitude;    
 				/** These 3 params allow rotating and shifting GPS coordinates with other 2D maps (e.g. gridmaps).
 				  * - ang : Map rotation [deg]
 				  * - x_shift, y_shift: (x,y) offset [m] */
 				double	ang, x_shift, y_shift;
-				unsigned int min_sat; //!< Minimum number of sats to take into account the data
+				/** Minimum number of sats to take into account the data */
+				unsigned int min_sat; 
 			} GPSOrigin;
 
-			float GPS_sigma; //!< A constant "sigma" for GPS localization data (in meters)
+			/** A constant "sigma" for GPS localization data (in meters) */
+			float GPS_sigma; 
 			/** @} */
 
 		 } likelihoodOptions;
@@ -537,7 +548,8 @@ namespace maps
 
 		MAP_DEFINITION_START(CLandmarksMap,VISION_IMPEXP)
 			typedef std::pair<mrpt::math::TPoint3D,unsigned int> TPairIdBeacon;
-			std::deque<TPairIdBeacon> initialBeacons;	//!< Initial contents of the map, especified by a set of 3D Beacons with associated IDs
+			/** Initial contents of the map, especified by a set of 3D Beacons with associated IDs */
+			std::deque<TPairIdBeacon> initialBeacons;	
 			mrpt::maps::CLandmarksMap::TInsertionOptions	insertionOpts;
 			mrpt::maps::CLandmarksMap::TLikelihoodOptions	likelihoodOpts;
 		MAP_DEFINITION_END(CLandmarksMap,VISION_IMPEXP)

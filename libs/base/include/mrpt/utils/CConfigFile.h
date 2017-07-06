@@ -30,9 +30,12 @@ namespace utils
 	class BASE_IMPEXP CConfigFile : public CConfigFileBase
 	{
 	private:
-		std::string		m_file; //!< The name of the file
-		void_ptr_noncopy m_ini; //!< The interface to the file:
-		bool			m_modified; //!< If modified since load.
+		/** The name of the file */
+		std::string		m_file; 
+		/** The interface to the file: */
+		void_ptr_noncopy m_ini; 
+		/** If modified since load. */
+		bool			m_modified; 
 
 	protected:
 		/** A virtual method to write a generic string  */
@@ -61,7 +64,8 @@ namespace utils
 		/** Dumps the changes to the physical configuration file now, not waiting until destruction. */
 		void writeNow();
 
-		void discardSavingChanges(); //!< Discard saving (current) changes to physical file upon destruction
+		/** Discard saving (current) changes to physical file upon destruction */
+		void discardSavingChanges(); 
 
 		/** Returns the file currently open by this object. */
 		std::string getAssociatedFile() const { return m_file; }

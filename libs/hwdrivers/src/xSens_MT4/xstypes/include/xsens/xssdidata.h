@@ -95,8 +95,10 @@ struct XsSdiData
 private:
 #endif
 
-	XsQuaternion m_orientationIncrement;	//!< The orientation increment
-	XsVector3    m_velocityIncrement;		//!< The velocity increment
+	/** The orientation increment */
+	XsQuaternion m_orientationIncrement;	
+	/** The velocity increment */
+	XsVector3    m_velocityIncrement;		
 };
 
 typedef struct XsSdiData XsSdiData;

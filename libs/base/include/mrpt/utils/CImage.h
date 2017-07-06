@@ -270,8 +270,10 @@ namespace mrpt
 				const mrpt::utils::TColor &color = mrpt::utils::TColor(255,255,255),
 				unsigned int	width = 1) override;
 
-			void equalizeHistInPlace(); //!< Equalize the image histogram, replacing the original image. \note RGB images are first converted to HSV color space, then equalized for brightness (V)
-			void equalizeHist( CImage  &outImg ) const; //!< Equalize the image histogram, saving the new image in the given output object.  \note RGB images are first converted to HSV color space, then equalized for brightness (V)
+			/** Equalize the image histogram, replacing the original image. \note RGB images are first converted to HSV color space, then equalized for brightness (V) */
+			void equalizeHistInPlace(); 
+			/** Equalize the image histogram, saving the new image in the given output object.  \note RGB images are first converted to HSV color space, then equalized for brightness (V) */
+			void equalizeHist( CImage  &outImg ) const; 
 
 			/** Returns a new image scaled down to half its original size.
 			  * \exception std::exception On odd size
@@ -404,10 +406,13 @@ namespace mrpt
 			  */
 			void  normalize();
 
-			void flipVertical(bool also_swapRB = false); //!< Flips the image vertically. \sa swapRB(), flipHorizontal()
-			void flipHorizontal(); //!< Flips the image horizontally \sa swapRB(), flipVertical()
+			/** Flips the image vertically. \sa swapRB(), flipHorizontal() */
+			void flipVertical(bool also_swapRB = false); 
+			/** Flips the image horizontally \sa swapRB(), flipVertical() */
+			void flipHorizontal(); 
 
-			void swapRB(); //!< Swaps red and blue channels.
+			/** Swaps red and blue channels. */
+			void swapRB(); 
 
 			/** Rectify (un-distort) the image according to some camera parameters, and returns an output un-distorted image.
 			  * \param out_img The output rectified image
@@ -501,7 +506,8 @@ namespace mrpt
 			  */
 			void copyFastFrom( CImage &o );
 
-			void swap(CImage &o); //!< Very efficient swap of two images (just swap the internal pointers)
+			/** Very efficient swap of two images (just swap the internal pointers) */
+			void swap(CImage &o); 
 
 			/** @} */
 			// ================================================================
@@ -559,10 +565,13 @@ namespace mrpt
 			/** @name Query image properties
 			    @{ */
 
-			size_t getWidth() const override; //!< Returns the width of the image in pixels \sa getSize
-			size_t getHeight() const override; //!< Returns the height of the image in pixels \sa getSize
+			/** Returns the width of the image in pixels \sa getSize */
+			size_t getWidth() const override; 
+			/** Returns the height of the image in pixels \sa getSize */
+			size_t getHeight() const override; 
 
-			void getSize(TImageSize &s) const; //!< Return the size of the image \sa getWidth, getHeight
+			/** Return the size of the image \sa getWidth, getHeight */
+			void getSize(TImageSize &s) const; 
 			/** Return the size of the image \sa getWidth, getHeight */
 			inline TImageSize getSize() const {
 				TImageSize  ret;
@@ -663,12 +672,14 @@ namespace mrpt
 			  */
 			void setExternalStorage( const std::string &fileName ) noexcept;
 
-			static std::string IMAGES_PATH_BASE;		//!< By default, "."  \sa setExternalStorage
+			/** By default, "."  \sa setExternalStorage */
+			static std::string IMAGES_PATH_BASE;		
 
 			/** See setExternalStorage(). */
 			bool isExternallyStored() const noexcept { return m_imgIsExternalStorage; }
 
-			inline std::string  getExternalStorageFile() const noexcept //!< Only if isExternallyStored() returns true. \sa getExternalStorageFileAbsolutePath
+			/** Only if isExternallyStored() returns true. \sa getExternalStorageFileAbsolutePath */
+			inline std::string  getExternalStorageFile() const noexcept 
 			{
 				return m_externalFile;
 			}
@@ -907,7 +918,8 @@ namespace mrpt
 			/** @name Data members
 				@{ */
 
-			void 	*img;  //!< The internal IplImage pointer to the actual image content.
+			/** The internal IplImage pointer to the actual image content. */
+			void 	*img;  
 
 			/**  Set to true only when using setFromIplImageReadOnly.
 			  * \sa setFromIplImageReadOnly  */
@@ -916,7 +928,8 @@ namespace mrpt
 			  * \sa setExternalStorage
 			  */
 			mutable bool	m_imgIsExternalStorage;
-			mutable std::string 	m_externalFile;		//!< The file name of a external storage image.
+			/** The file name of a external storage image. */
+			mutable std::string 	m_externalFile;		
 
 			/** @} */
 

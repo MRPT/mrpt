@@ -58,22 +58,30 @@ namespace maps
 
 		union
 		{
-			double kf_mean;		//!< [KF-methods only] The mean value of this cell
-			double dm_mean;		//!< [Kernel-methods only] The cumulative weighted readings of this cell
-			double gmrf_mean;	//!< [GMRF only] The mean value of this cell
+			/** [KF-methods only] The mean value of this cell */
+			double kf_mean;		
+			/** [Kernel-methods only] The cumulative weighted readings of this cell */
+			double dm_mean;		
+			/** [GMRF only] The mean value of this cell */
+			double gmrf_mean;	
 		};
 
 		union
 		{
-			double kf_std;    //!< [KF-methods only] The standard deviation value of this cell
-			double dm_mean_w; //!< [Kernel-methods only] The cumulative weights (concentration = alpha * dm_mean / dm_mean_w + (1-alpha)*r0 )
+			/** [KF-methods only] The standard deviation value of this cell */
+			double kf_std;    
+			/** [Kernel-methods only] The cumulative weights (concentration = alpha * dm_mean / dm_mean_w + (1-alpha)*r0 ) */
+			double dm_mean_w; 
 			double gmrf_std;
 		};
 
-		double dmv_var_mean;   //!< [Kernel DM-V only] The cumulative weighted variance of this cell
+		/** [Kernel DM-V only] The cumulative weighted variance of this cell */
+		double dmv_var_mean;   
 
-		mrpt::system::TTimeStamp last_updated;	//!< [Dynamic maps only] The timestamp of the last time the cell was updated
-		double updated_std;			//!< [Dynamic maps only] The std cell value that was updated (to be used in the Forgetting_curve
+		/** [Dynamic maps only] The timestamp of the last time the cell was updated */
+		mrpt::system::TTimeStamp last_updated;	
+		/** [Dynamic maps only] The std cell value that was updated (to be used in the Forgetting_curve */
+		double updated_std;			
 	};
 
 #if defined(MRPT_IS_X86_AMD64)
@@ -135,13 +143,19 @@ namespace maps
 		  */
 		enum TMapRepresentation
 		{
-			mrKernelDM = 0,  //!< Gaussian kernel-based estimator (see discussion in mrpt::maps::CRandomFieldGridMap2D)
-			mrAchim = 0,     //!< Another alias for "mrKernelDM", for backwards compatibility (see discussion in mrpt::maps::CRandomFieldGridMap2D)
-			mrKalmanFilter,  //!< "Brute-force" Kalman filter (see discussion in mrpt::maps::CRandomFieldGridMap2D)
-			mrKalmanApproximate, //!< (see discussion in mrpt::maps::CRandomFieldGridMap2D)
-			mrKernelDMV,     //!< Double mean + variance Gaussian kernel-based estimator (see discussion in mrpt::maps::CRandomFieldGridMap2D)
+			/** Gaussian kernel-based estimator (see discussion in mrpt::maps::CRandomFieldGridMap2D) */
+			mrKernelDM = 0,  
+			/** Another alias for "mrKernelDM", for backwards compatibility (see discussion in mrpt::maps::CRandomFieldGridMap2D) */
+			mrAchim = 0,     
+			/** "Brute-force" Kalman filter (see discussion in mrpt::maps::CRandomFieldGridMap2D) */
+			mrKalmanFilter,  
+			/** (see discussion in mrpt::maps::CRandomFieldGridMap2D) */
+			mrKalmanApproximate, 
+			/** Double mean + variance Gaussian kernel-based estimator (see discussion in mrpt::maps::CRandomFieldGridMap2D) */
+			mrKernelDMV,     
 			// Removed in MRPT 1.5.0: mrGMRF_G,   //!< Gaussian Markov Random Field, Gaussian prior weights between neighboring cells up to a certain distance (see discussion in mrpt::maps::CRandomFieldGridMap2D)
-			mrGMRF_SD   //!< Gaussian Markov Random Field, squared differences prior weights between 4 neighboring cells (see discussion in mrpt::maps::CRandomFieldGridMap2D)
+			/** Gaussian Markov Random Field, squared differences prior weights between 4 neighboring cells (see discussion in mrpt::maps::CRandomFieldGridMap2D) */
+			mrGMRF_SD   
 		};
 
 		/** Constructor */
@@ -183,47 +197,69 @@ namespace maps
 		  */
 		struct MAPS_IMPEXP TInsertionOptionsCommon
 		{
-			TInsertionOptionsCommon();	//!< Default values loader
+			/** Default values loader */
+			TInsertionOptionsCommon();	
 
 			/** See utils::CLoadableOptions */
 			void  internal_loadFromConfigFile_common(
 				const mrpt::utils::CConfigFileBase  &source,
 				const std::string &section);
 
-			void  internal_dumpToTextStream_common(mrpt::utils::CStream	&out) const; //!< See utils::CLoadableOptions
+			/** See utils::CLoadableOptions */
+			void  internal_dumpToTextStream_common(mrpt::utils::CStream	&out) const; 
 
 			/** @name Kernel methods (mrKernelDM, mrKernelDMV)
 			    @{ */
-			float	sigma;	//!< The sigma of the "Parzen"-kernel Gaussian
-			float	cutoffRadius;	//!< The cutoff radius for updating cells.
-			float	R_min,R_max;	//!< Limits for normalization of sensor readings.
-			double	dm_sigma_omega;	//!< [DM/DM+V methods] The scaling parameter for the confidence "alpha" values (see the IROS 2009 paper; see CRandomFieldGridMap2D) */
+			/** The sigma of the "Parzen"-kernel Gaussian */
+			float	sigma;	
+			/** The cutoff radius for updating cells. */
+			float	cutoffRadius;	
+			/** Limits for normalization of sensor readings. */
+			float	R_min,R_max;	
+			/** [DM/DM+V methods] The scaling parameter for the confidence "alpha" values (see the IROS 2009 paper; see CRandomFieldGridMap2D) */ */
+			double	dm_sigma_omega;	
 			/** @} */
 
 			/** @name Kalman-filter methods (mrKalmanFilter, mrKalmanApproximate)
 			    @{ */
-			float	KF_covSigma;	//!< The "sigma" for the initial covariance value between cells (in meters).
-			float	KF_initialCellStd;	//!< The initial standard deviation of each cell's concentration (will be stored both at each cell's structure and in the covariance matrix as variances in the diagonal) (in normalized concentration units).
-			float	KF_observationModelNoise;	//!< The sensor model noise (in normalized concentration units).
-			float	KF_defaultCellMeanValue;	//!< The default value for the mean of cells' concentration.
-			uint16_t	KF_W_size;	//!< [mrKalmanApproximate] The size of the window of neighbor cells.
+			/** The "sigma" for the initial covariance value between cells (in meters). */
+			float	KF_covSigma;	
+			/** The initial standard deviation of each cell's concentration (will be stored both at each cell's structure and in the covariance matrix as variances in the diagonal) (in normalized concentration units). */
+			float	KF_initialCellStd;	
+			/** The sensor model noise (in normalized concentration units). */
+			float	KF_observationModelNoise;	
+			/** The default value for the mean of cells' concentration. */
+			float	KF_defaultCellMeanValue;	
+			/** [mrKalmanApproximate] The size of the window of neighbor cells. */
+			uint16_t	KF_W_size;	
 			/** @} */
 
 			/** @name Gaussian Markov Random Fields methods (mrGMRF_SD)
 			    @{ */
-			double GMRF_lambdaPrior;		//!< The information (Lambda) of fixed map constraints
-			double GMRF_lambdaObs;			//!< The initial information (Lambda) of each observation (this information will decrease with time)
-			double GMRF_lambdaObsLoss;		//!< The loss of information of the observations with each iteration
+			/** The information (Lambda) of fixed map constraints */
+			double GMRF_lambdaPrior;		
+			/** The initial information (Lambda) of each observation (this information will decrease with time) */
+			double GMRF_lambdaObs;			
+			/** The loss of information of the observations with each iteration */
+			double GMRF_lambdaObsLoss;		
 
-			bool GMRF_use_occupancy_information;	//!< whether to use information of an occupancy_gridmap map for building the GMRF
-			std::string GMRF_simplemap_file;		//!< simplemap_file name of the occupancy_gridmap
-			std::string GMRF_gridmap_image_file;	//!< image name of the occupancy_gridmap
-			double GMRF_gridmap_image_res;			//!< occupancy_gridmap resolution: size of each pixel (m)
-			size_t GMRF_gridmap_image_cx;			//!< Pixel coordinates of the origin for the occupancy_gridmap
-			size_t GMRF_gridmap_image_cy;			//!< Pixel coordinates of the origin for the occupancy_gridmap
+			/** whether to use information of an occupancy_gridmap map for building the GMRF */
+			bool GMRF_use_occupancy_information;	
+			/** simplemap_file name of the occupancy_gridmap */
+			std::string GMRF_simplemap_file;		
+			/** image name of the occupancy_gridmap */
+			std::string GMRF_gridmap_image_file;	
+			/** occupancy_gridmap resolution: size of each pixel (m) */
+			double GMRF_gridmap_image_res;			
+			/** Pixel coordinates of the origin for the occupancy_gridmap */
+			size_t GMRF_gridmap_image_cx;			
+			/** Pixel coordinates of the origin for the occupancy_gridmap */
+			size_t GMRF_gridmap_image_cy;			
 
-			double    GMRF_saturate_min, GMRF_saturate_max; //!< (Default:-inf,+inf) Saturate the estimated mean in these limits
-			bool      GMRF_skip_variance;     //!< (Default:false) Skip the computation of the variance, just compute the mean
+			/** (Default:-inf,+inf) Saturate the estimated mean in these limits */
+			double    GMRF_saturate_min, GMRF_saturate_max; 
+			/** (Default:false) Skip the computation of the variance, just compute the mean */
+			bool      GMRF_skip_variance;     
 			/** @} */
 		};
 
@@ -248,10 +284,14 @@ namespace maps
 			  * \return true if connected (and the "information" value should be also updated in out_edge_information), false otherwise.
 			  */
 			virtual bool getEdgeInformation(
-				const CRandomFieldGridMap2D *parent,  //!< The parent map on which we are running
-				size_t icx, size_t icy,               //!< (cx,cy) for node "i"
-				size_t jcx, size_t jcy,               //!< (cx,cy) for node "j"
-				double &out_edge_information          //!< Must output here the inverse of the variance of the constraint edge.
+				/** The parent map on which we are running */
+				const CRandomFieldGridMap2D *parent,  
+				/** (cx,cy) for node "i" */
+				size_t icx, size_t icy,               
+				/** (cx,cy) for node "j" */
+				size_t jcx, size_t jcy,               
+				/** Must output here the inverse of the variance of the constraint edge. */
+				double &out_edge_information          
 			) = 0;
 		};
 
@@ -279,7 +319,8 @@ namespace maps
 		/** Returns two 3D objects representing the mean and variance maps */
 		virtual void  getAs3DObject ( mrpt::opengl::CSetOfObjects::Ptr	&meanObj, mrpt::opengl::CSetOfObjects::Ptr	&varObj ) const;
 
-		TMapRepresentation	 getMapType(); //!< Return the type of the random-field grid map, according to parameters passed on construction.
+		/** Return the type of the random-field grid map, according to parameters passed on construction. */
+		TMapRepresentation	 getMapType(); 
 
 		/** Direct update of the map with a reading in a given position of the map, using
 		  *  the appropriate method according to mapType passed in the constructor.
@@ -287,11 +328,16 @@ namespace maps
 		  * This is a direct way to update the map, an alternative to the generic insertObservation() method which works with mrpt::obs::CObservation objects.
 		  */
 		void insertIndividualReading(
-			const double sensorReading,          //!< [in] The value observed in the (x,y) position
-			const mrpt::math::TPoint2D & point,  //!< [in] The (x,y) location
-			const bool update_map = true,        //!< [in] Run a global map update after inserting this observatin (algorithm-dependant)
-			const bool time_invariant = true,     //!< [in] Whether the observation "vanishes" with time (false) or not (true) [Only for GMRF methods]
-			const double reading_stddev = .0      //!< [in] The uncertainty (standard deviation) of the reading. Default="0.0" means use the default settings per map-wide parameters.
+			/** [in] The value observed in the (x,y) position */
+			const double sensorReading,          
+			/** [in] The (x,y) location */
+			const mrpt::math::TPoint2D & point,  
+			/** [in] Run a global map update after inserting this observatin (algorithm-dependant) */
+			const bool update_map = true,        
+			/** [in] Whether the observation "vanishes" with time (false) or not (true) [Only for GMRF methods] */
+			const bool time_invariant = true,     
+			/** [in] The uncertainty (standard deviation) of the reading. Default="0.0" means use the default settings per map-wide parameters. */
+			const double reading_stddev = .0      
 			);
 
 		enum TGridInterpolationMethod {
@@ -301,12 +347,18 @@ namespace maps
 
 		/** Returns the prediction of the measurement at some (x,y) coordinates, and its certainty (in the form of the expected variance).  */
 		virtual void predictMeasurement(
-			const double	x,                                 //!< [in] Query X coordinate
-			const double	y,                                 //!< [in] Query Y coordinate
-			double			&out_predict_response,             //!< [out] The output value
-			double			&out_predict_response_variance,    //!< [out] The output variance
-			bool			do_sensor_normalization,           //!< [in] Whether to renormalize the prediction to a predefined interval (`R` values in insertionOptions)
-			const TGridInterpolationMethod interp_method = gimNearest //!< [in] Interpolation method
+			/** [in] Query X coordinate */
+			const double	x,                                 
+			/** [in] Query Y coordinate */
+			const double	y,                                 
+			/** [out] The output value */
+			double			&out_predict_response,             
+			/** [out] The output variance */
+			double			&out_predict_response_variance,    
+			/** [in] Whether to renormalize the prediction to a predefined interval (`R` values in insertionOptions) */
+			bool			do_sensor_normalization,           
+			/** [in] Interpolation method */
+			const TGridInterpolationMethod interp_method = gimNearest 
 			);
 
 		/** Return the mean and covariance vector of the full Kalman filter estimate (works for all KF-based methods). */
@@ -318,7 +370,8 @@ namespace maps
 		/** Load the mean and STD vectors of the full Kalman filter estimate (works for all KF-based methods). */
 		void setMeanAndSTD( mrpt::math::CVectorDouble &out_means, mrpt::math::CVectorDouble &out_STD);
 
-		void updateMapEstimation(); //!< Run the method-specific procedure required to ensure that the mean & variances are up-to-date with all inserted observations.
+		/** Run the method-specific procedure required to ensure that the mean & variances are up-to-date with all inserted observations. */
+		void updateMapEstimation(); 
 
 		void enableVerbose(bool enable_verbose) { this->setMinLoggingLevel(mrpt::utils::LVL_DEBUG); }
 		bool isEnabledVerbose() const { return this->getMinLoggingLevel()== mrpt::utils::LVL_DEBUG; }
@@ -335,16 +388,19 @@ namespace maps
 		/** Get the part of the options common to all CRandomFieldGridMap2D classes */
 		virtual CRandomFieldGridMap2D::TInsertionOptionsCommon* getCommonInsertOptions() = 0;
 
-		TMapRepresentation	m_mapType; //!< The map representation type of this map, as passed in the constructor
+		/** The map representation type of this map, as passed in the constructor */
+		TMapRepresentation	m_mapType; 
 
-		mrpt::math::CMatrixD				m_cov;	//!< The whole covariance matrix, used for the Kalman Filter map representation.
+		/** The whole covariance matrix, used for the Kalman Filter map representation. */
+		mrpt::math::CMatrixD				m_cov;	
 
 		/** The compressed band diagonal matrix for the KF2 implementation.
 		  *   The format is a Nx(W^2+2W+1) matrix, one row per cell in the grid map with the
 		  *    cross-covariances between each cell and half of the window around it in the grid.
 		  */
 		mrpt::math::CMatrixD		m_stackedCov;
-		mutable bool	m_hasToRecoverMeanAndCov;       //!< Only for the KF2 implementation.
+		/** Only for the KF2 implementation. */
+		mutable bool	m_hasToRecoverMeanAndCov;       
 
 		/** @name Auxiliary vars for DM & DM+V methods
 		    @{ */
@@ -354,15 +410,19 @@ namespace maps
 		size_t              m_average_normreadings_count;
 		/** @} */
 
-		ConnectivityDescriptor::Ptr m_gmrf_connectivity; //!< Empty: default
+		/** Empty: default */
+		ConnectivityDescriptor::Ptr m_gmrf_connectivity; 
 
 		mrpt::graphs::ScalarFactorGraph  m_gmrf;
 
 		struct TObservationGMRF : public mrpt::graphs::ScalarFactorGraph::UnaryFactorVirtualBase
 		{
-			double obsValue;       //!< Observation value
-			double Lambda;         //!< "Information" of the observation (=inverse of the variance)
-			bool   time_invariant; //!< whether the observation will lose weight (lambda) as time goes on (default false)
+			/** Observation value */
+			double obsValue;       
+			/** "Information" of the observation (=inverse of the variance) */
+			double Lambda;         
+			/** whether the observation will lose weight (lambda) as time goes on (default false) */
+			bool   time_invariant; 
 
 			double evaluateResidual() const override;
 			double getInformation() const  override;
@@ -375,7 +435,8 @@ namespace maps
 
 		struct TPriorFactorGMRF : public mrpt::graphs::ScalarFactorGraph::BinaryFactorVirtualBase
 		{
-			double Lambda;         //!< "Information" of the observation (=inverse of the variance)
+			/** "Information" of the observation (=inverse of the variance) */
+			double Lambda;         
 
 			double evaluateResidual() const override;
 			double getInformation() const override;
@@ -387,8 +448,10 @@ namespace maps
 		};
 
 		// Important: converted to a std::list<> so pointers are NOT invalidated upon deletion.
-		std::vector<std::list<TObservationGMRF> > m_mrf_factors_activeObs; //!< Vector with the active observations and their respective Information
-		std::deque<TPriorFactorGMRF>               m_mrf_factors_priors; //!< Vector with the precomputed priors for each GMRF model
+		/** Vector with the active observations and their respective Information */
+		std::vector<std::list<TObservationGMRF> > m_mrf_factors_activeObs; 
+		/** Vector with the precomputed priors for each GMRF model */
+		std::deque<TPriorFactorGMRF>               m_mrf_factors_priors; 
 
 		/** The implementation of "insertObservation" for Achim Lilienthal's map models DM & DM+V.
 		  * \param normReading Is a [0,1] normalized concentration reading.

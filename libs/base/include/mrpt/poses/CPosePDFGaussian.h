@@ -40,8 +40,10 @@ namespace poses
 		/** @name Data fields
 			@{ */
 
-		CPose2D				mean;	//!< The mean value
-		mrpt::math::CMatrixDouble33		cov;	//!< The 3x3 covariance matrix
+		/** The mean value */
+		CPose2D				mean;	
+		/** The 3x3 covariance matrix */
+		mrpt::math::CMatrixDouble33		cov;	
 
 		/** @} */
 

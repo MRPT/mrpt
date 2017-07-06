@@ -40,9 +40,11 @@ namespace mrpt
 		class BASE_IMPEXP CCanvas
 		{
 		protected:
-			std::string     m_selectedFont; //!< The selected font name.
+			/** The selected font name. */
+			std::string     m_selectedFont; 
 
-			const uint32_t *m_selectedFontBitmaps; //!< Direct access to character bitmaps.
+			/** Direct access to character bitmaps. */
+			const uint32_t *m_selectedFontBitmaps; 
 
 		public:
 

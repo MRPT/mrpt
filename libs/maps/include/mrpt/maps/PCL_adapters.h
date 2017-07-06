@@ -30,10 +30,14 @@ namespace mrpt
 		private:
 			pcl::PointCloud<pcl::PointXYZ> &m_obj;
 		public:
-			typedef float  coords_t;         //!< The type of each point XYZ coordinates
-			static const int HAS_RGB   = 0;  //!< Has any color RGB info?
-			static const int HAS_RGBf  = 0;  //!< Has native RGB info (as floats)?
-			static const int HAS_RGBu8 = 0;  //!< Has native RGB info (as uint8_t)?
+			/** The type of each point XYZ coordinates */
+			typedef float  coords_t;         
+			/** Has any color RGB info? */
+			static const int HAS_RGB   = 0;  
+			/** Has native RGB info (as floats)? */
+			static const int HAS_RGBf  = 0;  
+			/** Has native RGB info (as uint8_t)? */
+			static const int HAS_RGBu8 = 0;  
 
 			/** Constructor (accept a const ref for convenience) */
 			inline PointCloudAdapter(const pcl::PointCloud<pcl::PointXYZ> &obj) : m_obj(*const_cast<pcl::PointCloud<pcl::PointXYZ>*>(&obj)) { }
@@ -70,10 +74,14 @@ namespace mrpt
 		private:
 			pcl::PointCloud<pcl::PointXYZRGB> &m_obj;
 		public:
-			typedef float  coords_t;         //!< The type of each point XYZ coordinates
-			static const int HAS_RGB   = 1;  //!< Has any color RGB info?
-			static const int HAS_RGBf  = 0;  //!< Has native RGB info (as floats)?
-			static const int HAS_RGBu8 = 1;  //!< Has native RGB info (as uint8_t)?
+			/** The type of each point XYZ coordinates */
+			typedef float  coords_t;         
+			/** Has any color RGB info? */
+			static const int HAS_RGB   = 1;  
+			/** Has native RGB info (as floats)? */
+			static const int HAS_RGBf  = 0;  
+			/** Has native RGB info (as uint8_t)? */
+			static const int HAS_RGBu8 = 1;  
 
 			/** Constructor (accept a const ref for convenience) */
 			inline PointCloudAdapter(const pcl::PointCloud<pcl::PointXYZRGB> &obj) : m_obj(*const_cast<pcl::PointCloud<pcl::PointXYZRGB>*>(&obj)) { }
@@ -156,10 +164,14 @@ namespace mrpt
 		private:
 			pcl::PointCloud<pcl::PointXYZRGBA> &m_obj;
 		public:
-			typedef float  coords_t;         //!< The type of each point XYZ coordinates
-			static const int HAS_RGB   = 1;  //!< Has any color RGB info?
-			static const int HAS_RGBf  = 0;  //!< Has native RGB info (as floats)?
-			static const int HAS_RGBu8 = 1;  //!< Has native RGB info (as uint8_t)?
+			/** The type of each point XYZ coordinates */
+			typedef float  coords_t;         
+			/** Has any color RGB info? */
+			static const int HAS_RGB   = 1;  
+			/** Has native RGB info (as floats)? */
+			static const int HAS_RGBf  = 0;  
+			/** Has native RGB info (as uint8_t)? */
+			static const int HAS_RGBu8 = 1;  
 
 			/** Constructor (accept a const ref for convenience) */
 			inline PointCloudAdapter(const pcl::PointCloud<pcl::PointXYZRGBA> &obj) : m_obj(*const_cast<pcl::PointCloud<pcl::PointXYZRGBA>*>(&obj)) { }

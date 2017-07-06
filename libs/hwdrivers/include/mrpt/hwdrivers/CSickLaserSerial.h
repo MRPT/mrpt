@@ -65,8 +65,10 @@ namespace mrpt
 
 		private:
 			bool	m_mm_mode;
-			int		m_scans_FOV; //!< 100 or 180 deg
-			int		m_scans_res; //!< 1/100th of deg: 100, 50 or 25
+			/** 100 or 180 deg */
+			int		m_scans_FOV; 
+			/** 1/100th of deg: 100, 50 or 25 */
+			int		m_scans_res; 
 
 			/** The sensor 6D pose: */
 			mrpt::math::TPose3D		m_sensorPose;
@@ -74,29 +76,42 @@ namespace mrpt
 			static int			CRC16_GEN_POL;
 
 
-			bool    tryToOpenComms(std::string *err_msg=nullptr);	//!< Tries to open the com port and setup all the LMS protocol. Returns true if OK or already open.
+			/** Tries to open the com port and setup all the LMS protocol. Returns true if OK or already open. */
+			bool    tryToOpenComms(std::string *err_msg=nullptr);	
 			bool  	waitContinuousSampleFrame( std::vector<float> &ranges, unsigned char &LMS_status, bool &is_mm_mode );
 
 
-			bool LMS_setupSerialComms();	//!< Assures laser is connected and operating at 38400, in its case returns true.
-			bool LMS_setupBaudrate(int baud);	//!< Send a command to change the LMS comms baudrate, return true if ACK is OK. baud can be: 9600, 19200, 38400, 500000
-			bool LMS_statusQuery();	//!< Send a status query and wait for the answer. Return true on OK.
-			bool LMS_waitACK(uint16_t timeout_ms); //!< Returns false if timeout
-			bool LMS_waitIncomingFrame(uint16_t timeout); //!< Returns false if timeout
-			bool LMS_sendMeasuringMode_cm_mm();  //!< Returns false on error
+			/** Assures laser is connected and operating at 38400, in its case returns true. */
+			bool LMS_setupSerialComms();	
+			/** Send a command to change the LMS comms baudrate, return true if ACK is OK. baud can be: 9600, 19200, 38400, 500000 */
+			bool LMS_setupBaudrate(int baud);	
+			/** Send a status query and wait for the answer. Return true on OK. */
+			bool LMS_statusQuery();	
+			/** Returns false if timeout */
+			bool LMS_waitACK(uint16_t timeout_ms); 
+			/** Returns false if timeout */
+			bool LMS_waitIncomingFrame(uint16_t timeout); 
+			/** Returns false on error */
+			bool LMS_sendMeasuringMode_cm_mm();  
 			bool LMS_startContinuousMode();
 			bool LMS_endContinuousMode();
 
-            bool SendCommandToSICK(const uint8_t *cmd,const uint16_t cmd_len); //!< Send header+command-data+crc and waits for ACK. Return false on error.
+            /** Send header+command-data+crc and waits for ACK. Return false on error. */
+            bool SendCommandToSICK(const uint8_t *cmd,const uint16_t cmd_len); 
 
 			uint8_t			m_received_frame_buffer[2000];
 
-			std::string		m_com_port;		//!< If set to non-empty, the serial port will be attempted to be opened automatically when this class is first used to request data from the laser.
-			CSerialPort		*m_mySerialPort; //!< Will be !=nullptr only if I created it, so I must destroy it at the end.
-			int             m_com_baudRate; //!< Baudrate: 9600, 38400, 500000
-			unsigned int    m_nTries_connect; //!< Default = 1
+			/** If set to non-empty, the serial port will be attempted to be opened automatically when this class is first used to request data from the laser. */
+			std::string		m_com_port;		
+			/** Will be !=nullptr only if I created it, so I must destroy it at the end. */
+			CSerialPort		*m_mySerialPort; 
+			/** Baudrate: 9600, 38400, 500000 */
+			int             m_com_baudRate; 
+			/** Default = 1 */
+			unsigned int    m_nTries_connect; 
 			unsigned int    m_nTries_current;
-            bool            m_skip_laser_config; //!< If true, doesn't send the initialization commands to the laser and go straight to capturing
+            /** If true, doesn't send the initialization commands to the laser and go straight to capturing */
+            bool            m_skip_laser_config; 
 
 		protected:
 			/** See the class documentation at the top for expected parameters */

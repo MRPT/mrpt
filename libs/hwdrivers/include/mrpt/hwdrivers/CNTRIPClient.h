@@ -42,19 +42,27 @@ namespace mrpt
 			struct HWDRIVERS_IMPEXP TMountPoint
 			{
 				std::string	mountpoint_name;
-				std::string	id;  //!< City name
-				std::string	format; //!< RTCM 2.3, RTCM 3, CMR+, etc...
+				/** City name */
+				std::string	id;  
+				/** RTCM 2.3, RTCM 3, CMR+, etc... */
+				std::string	format; 
 				std::string	format_details;
-				int		carrier; //!< 0: No carrier phase, 1: L1, 2: L1+L2
-				std::string	nav_system;	//!< GPS, ...
-				std::string	network;	//!< IGS, ...
-				std::string	country_code;	//!< ITA, ESP, DEU,...
+				/** 0: No carrier phase, 1: L1, 2: L1+L2 */
+				int		carrier; 
+				/** GPS, ... */
+				std::string	nav_system;	
+				/** IGS, ... */
+				std::string	network;	
+				/** ITA, ESP, DEU,... */
+				std::string	country_code;	
 				double	latitude, longitude;
 				bool	needs_nmea;
 				bool	net_ref_stations;
 				std::string	generator_model;
-				std::string	compr_encryp;		//!< "none"
-				char	authentication;		//!< "N": none, "B": basic, "D": digest
+				/** "none" */
+				std::string	compr_encryp;		
+				/** "N": none, "B": basic, "D": digest */
+				char	authentication;		
 				bool	pay_service;
 				int		stream_bitspersec;
 				std::string  extra_info;
@@ -72,7 +80,8 @@ namespace mrpt
 
 			};
 
-			typedef std::list<TMountPoint> TListMountPoints; //!< Used in CNTRIPClient::retrieveListOfMountpoints
+			/** Used in CNTRIPClient::retrieveListOfMountpoints */
+			typedef std::list<TMountPoint> TListMountPoints; 
 
 			/**  The arguments for connecting to a NTRIP stream, used in CNTRIPClient::open
 			  */
@@ -96,14 +105,16 @@ namespace mrpt
 			};
 
 		protected:
-			void private_ntrip_thread(); //!< The working thread
+			/** The working thread */
+			void private_ntrip_thread(); 
 
 			std::thread  m_thread;
 			std::promise<void>  m_sem_sock_closed;
 			std::promise<void>  m_sem_first_connect_done;
 
 			mutable bool m_thread_exit;
-			mutable bool m_thread_do_process; //!< Will be "true" between "open" and "close"
+			/** Will be "true" between "open" and "close" */
+			mutable bool m_thread_do_process; 
 			mutable bool m_waiting_answer_connection;
 
 			enum TConnResult {
@@ -113,13 +124,17 @@ namespace mrpt
 			};
 
 			mutable TConnResult m_answer_connection;
-			mutable NTRIPArgs  m_args;  //!< All the parameters for the NTRIP connection
+			/** All the parameters for the NTRIP connection */
+			mutable NTRIPArgs  m_args;  
 
-			mrpt::synch::MT_buffer   m_upload_data;  //!< Buffer for data to be sent back to the server
+			/** Buffer for data to be sent back to the server */
+			mrpt::synch::MT_buffer   m_upload_data;  
 
 		public:
-			CNTRIPClient();   //!< Default constructor
-			virtual ~CNTRIPClient();   //!< Default destructor
+			/** Default constructor */
+			CNTRIPClient();   
+			/** Default destructor */
+			virtual ~CNTRIPClient();   
 
 			/** Tries to open a given NTRIP stream and, if successful, launches a thread for continuously reading from it.
 			  * \sa close, stream_data

@@ -161,10 +161,13 @@ namespace mrpt
 
 			struct TWxMainThreadData
 			{
-				std::thread  m_wxMainThreadId; //!< The thread ID of wxMainThread, or 0 if it is not running.
-				std::promise<void> m_semWxMainThreadReady; //!< This is signaled when wxMainThread is ready.
+				/** The thread ID of wxMainThread, or 0 if it is not running. */
+				std::thread  m_wxMainThreadId; 
+				/** This is signaled when wxMainThread is ready. */
+				std::promise<void> m_semWxMainThreadReady; 
 				std::promise<void> m_done;
-				std::mutex m_csWxMainThreadId; //!< The critical section for accessing "m_wxMainThreadId"
+				/** The critical section for accessing "m_wxMainThreadId" */
+				std::mutex m_csWxMainThreadId; 
 			};
 
 			static TWxMainThreadData& GetWxMainThreadInstance();
@@ -304,7 +307,8 @@ namespace mrpt
 				wxPoint m_last_mouse_point, m_last_mouse_click;
 				//std::mutex	m_mouse_cs;
 
-				void AssignImage(wxBitmap *img); //!< Assigns this image. This object has the ownship of the image and will delete it when appropriate.
+				/** Assigns this image. This object has the ownship of the image and will delete it when appropriate. */
+				void AssignImage(wxBitmap *img); 
 				void GetBitmap(wxBitmap &bmp);
 
 				void OnPaint(wxPaintEvent &ev);
@@ -410,10 +414,14 @@ namespace mrpt
 				// wxChartPanel 			*m_chartPanel;
 				static const long           ID_PLOT;
 				static const long           ID_MENU_PRINT;
-				bool                        m_firstSubmenu; //!< to know whether to insert a separator the first time.
-				std::map<long,long>			m_ID2ID; //!< wxIDs to user IDs for submenus.
-				mrpt::math::TPoint2D  		m_curCursorPos;  //!< In graph coords
-				wxPoint 					m_last_mouse_point; //!< In pixels
+				/** to know whether to insert a separator the first time. */
+				bool                        m_firstSubmenu; 
+				/** wxIDs to user IDs for submenus. */
+				std::map<long,long>			m_ID2ID; 
+				/** In graph coords */
+				mrpt::math::TPoint2D  		m_curCursorPos;  
+				/** In pixels */
+				wxPoint 					m_last_mouse_point; 
 
 				void OnMenuSelected(wxCommandEvent& ev);
 				void OnMouseMove(wxMouseEvent& event);

@@ -46,23 +46,34 @@ namespace poses
 			double		phiMax = M_PIf
 			);
 
-		virtual ~CPosePDFGrid(); //!< Destructor
+		/** Destructor */
+		virtual ~CPosePDFGrid(); 
 
-		void copyFrom(const CPosePDF &o) override; //!< Copy operator, translating if necesary (for example, between particles and gaussian representations)
+		/** Copy operator, translating if necesary (for example, between particles and gaussian representations) */
+		void copyFrom(const CPosePDF &o) override; 
 
-		void normalize(); //!< Normalizes the PDF, such as all cells sum the unity.
-		void uniformDistribution(); //!< Assigns the same value to all the cells in the grid, so the sum 1.
-		void getMean(CPose2D &mean_pose) const override; //!< Returns an estimate of the pose, (the mean, or mathematical expectation of the PDF). \sa getCovariance
-		void getCovarianceAndMean(mrpt::math::CMatrixDouble33 &cov,CPose2D &mean_point) const override; //!< Returns an estimate of the pose covariance matrix (3x3 cov matrix) and the mean, both at once. \sa getMean
-		void saveToTextFile(const std::string &dataFile) const override; //!< Save the contents of the 3D grid in one file, as a vertical concatenation of rectangular matrix for the different "PHI" discrete levels, and the size in X,Y,and PHI in another file named "<filename>_dims.txt"
+		/** Normalizes the PDF, such as all cells sum the unity. */
+		void normalize(); 
+		/** Assigns the same value to all the cells in the grid, so the sum 1. */
+		void uniformDistribution(); 
+		/** Returns an estimate of the pose, (the mean, or mathematical expectation of the PDF). \sa getCovariance */
+		void getMean(CPose2D &mean_pose) const override; 
+		/** Returns an estimate of the pose covariance matrix (3x3 cov matrix) and the mean, both at once. \sa getMean */
+		void getCovarianceAndMean(mrpt::math::CMatrixDouble33 &cov,CPose2D &mean_point) const override; 
+		/** Save the contents of the 3D grid in one file, as a vertical concatenation of rectangular matrix for the different "PHI" discrete levels, and the size in X,Y,and PHI in another file named "<filename>_dims.txt" */
+		void saveToTextFile(const std::string &dataFile) const override; 
 
 		/** this = p (+) this. This can be used to convert a PDF from local coordinates to global, providing the point (newReferenceBase) from which
 		  *   "to project" the current pdf. Result PDF substituted the currently stored one in the object. */
 		void  changeCoordinatesReference( const CPose3D &newReferenceBase ) override;
-		void bayesianFusion(const  CPosePDF &p1,const  CPosePDF &p2, const double &minMahalanobisDistToDrop = 0 ) override; //!< Bayesian fusion of 2 densities (In the grid representation this becomes a pointwise multiplication)
-		void inverse(CPosePDF &o) const override; //!< Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF
-		void drawSingleSample( CPose2D &outPart ) const override; //!< Draws a single sample from the distribution (WARNING: weights are assumed to be normalized!)
-		void drawManySamples( size_t N, std::vector<mrpt::math::CVectorDouble> & outSamples ) const override; //!< Draws a number of samples from the distribution, and saves as a list of 1x3 vectors, where each row contains a (x,y,phi) datum.
+		/** Bayesian fusion of 2 densities (In the grid representation this becomes a pointwise multiplication) */
+		void bayesianFusion(const  CPosePDF &p1,const  CPosePDF &p2, const double &minMahalanobisDistToDrop = 0 ) override; 
+		/** Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF */
+		void inverse(CPosePDF &o) const override; 
+		/** Draws a single sample from the distribution (WARNING: weights are assumed to be normalized!) */
+		void drawSingleSample( CPose2D &outPart ) const override; 
+		/** Draws a number of samples from the distribution, and saves as a list of 1x3 vectors, where each row contains a (x,y,phi) datum. */
+		void drawManySamples( size_t N, std::vector<mrpt::math::CVectorDouble> & outSamples ) const override; 
 
 	}; // End of class def.
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE( CPosePDFGrid, CPosePDF   )

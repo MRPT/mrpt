@@ -30,10 +30,12 @@ namespace mrpt
 			size_t  Write(const void *Buffer, size_t Count) override;
 		private:
 			void		*m_f;
-			uint64_t	m_file_size;	//!< Compressed file size
+			/** Compressed file size */
+			uint64_t	m_file_size;	
 
 		public:
-			CFileGZInputStream(); //!< Constructor without open
+			/** Constructor without open */
+			CFileGZInputStream(); 
 
 			 /** Constructor and open
 			  * \param fileName The file to be open in this stream
@@ -45,20 +47,27 @@ namespace mrpt
 			CFileGZInputStream& operator =(const CFileGZInputStream &) = delete;
 
 
-			virtual ~CFileGZInputStream(); //!< Dtor
+			/** Dtor */
+			virtual ~CFileGZInputStream(); 
 
 			 /** Opens the file for read.
 			  * \param fileName The file to be open in this stream
 			  * \return false if there's an error opening the file, true otherwise
 			  */
 			bool open(const std::string &fileName );
-			void close(); //!< Closes the file
-			bool fileOpenCorrectly(); //!< Returns true if the file was open without errors.
-			bool is_open() { return fileOpenCorrectly(); } //!< Returns true if the file was open without errors.
-			bool checkEOF(); //!< Will be true if EOF has been already reached.
+			/** Closes the file */
+			void close(); 
+			/** Returns true if the file was open without errors. */
+			bool fileOpenCorrectly(); 
+			/** Returns true if the file was open without errors. */
+			bool is_open() { return fileOpenCorrectly(); } 
+			/** Will be true if EOF has been already reached. */
+			bool checkEOF(); 
 
-			uint64_t getTotalBytesCount() override; //!< Method for getting the total number of <b>compressed</b> bytes of in the file (the physical size of the compressed file).
-			uint64_t getPosition() override; //!< Method for getting the current cursor position in the <b>compressed</b>, where 0 is the first byte and TotalBytesCount-1 the last one.
+			/** Method for getting the total number of <b>compressed</b> bytes of in the file (the physical size of the compressed file). */
+			uint64_t getTotalBytesCount() override; 
+			/** Method for getting the current cursor position in the <b>compressed</b>, where 0 is the first byte and TotalBytesCount-1 the last one. */
+			uint64_t getPosition() override; 
 
 			/** This method is not implemented in this class */
 			uint64_t Seek(uint64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning) override

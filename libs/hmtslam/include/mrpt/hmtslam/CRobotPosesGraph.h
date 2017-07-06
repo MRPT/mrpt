@@ -25,8 +25,10 @@ namespace mrpt
 		/** Information kept for each robot pose used in CRobotPosesGraph */
 		struct HMTSLAM_IMPEXP TPoseInfo
 		{
-			mrpt::obs::CSensoryFrame			sf;   //!< The observations
-			mrpt::poses::CPose3DPDFParticles		pdf;  //!< The robot pose PDF
+			/** The observations */
+			mrpt::obs::CSensoryFrame			sf;   
+			/** The robot pose PDF */
+			mrpt::poses::CPose3DPDFParticles		pdf;  
 		};
 
 

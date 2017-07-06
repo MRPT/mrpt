@@ -77,12 +77,16 @@ namespace poses
         DECLARE_MEX_CONVERSION
 
 	public:
-		mrpt::math::CArrayDouble<3>   m_coords; //!< The translation vector [x,y,z] access directly or with x(), y(), z() setter/getter methods.
+		/** The translation vector [x,y,z] access directly or with x(), y(), z() setter/getter methods. */
+		mrpt::math::CArrayDouble<3>   m_coords; 
 	protected:
-		mrpt::math::CMatrixDouble33   m_ROT;    //!< The 3x3 rotation matrix, access with getRotationMatrix(), setRotationMatrix() (It's not safe to set this field as public)
+		/** The 3x3 rotation matrix, access with getRotationMatrix(), setRotationMatrix() (It's not safe to set this field as public) */
+		mrpt::math::CMatrixDouble33   m_ROT;    
 
-		mutable bool 	m_ypr_uptodate;			//!< Whether yaw/pitch/roll members are up-to-date since the last rotation matrix update.
-		mutable double	m_yaw, m_pitch, m_roll;	//!< These variables are updated every time that the object rotation matrix is modified (construction, loading from values, pose composition, etc )
+		/** Whether yaw/pitch/roll members are up-to-date since the last rotation matrix update. */
+		mutable bool 	m_ypr_uptodate;			
+		/** These variables are updated every time that the object rotation matrix is modified (construction, loading from values, pose composition, etc ) */
+		mutable double	m_yaw, m_pitch, m_roll;	
 
 		/** Rebuild the homog matrix from the angles. */
 		void  rebuildRotationMatrix();
@@ -387,9 +391,12 @@ namespace poses
 		  */
 		void  getYawPitchRoll( double &yaw, double &pitch, double &roll ) const;
 
-		inline double yaw() const { updateYawPitchRoll(); return m_yaw; }  //!< Get the YAW angle (in radians)  \sa setFromValues
-		inline double pitch() const { updateYawPitchRoll(); return m_pitch; }  //!< Get the PITCH angle (in radians) \sa setFromValues
-		inline double roll() const { updateYawPitchRoll(); return m_roll; }  //!< Get the ROLL angle (in radians) \sa setFromValues
+		/** Get the YAW angle (in radians)  \sa setFromValues */
+		inline double yaw() const { updateYawPitchRoll(); return m_yaw; }  
+		/** Get the PITCH angle (in radians) \sa setFromValues */
+		inline double pitch() const { updateYawPitchRoll(); return m_pitch; }  
+		/** Get the ROLL angle (in radians) \sa setFromValues */
+		inline double roll() const { updateYawPitchRoll(); return m_roll; }  
 
 		/** Returns a 1x6 vector with [x y z yaw pitch roll] */
 		void getAsVector(mrpt::math::CVectorDouble &v) const;
@@ -500,7 +507,8 @@ namespace poses
 
 		void setToNaN() override;
 
-		typedef CPose3D  type_value; //!< Used to emulate CPosePDF types, for example, in mrpt::graphs::CNetworkOfPoses
+		/** Used to emulate CPosePDF types, for example, in mrpt::graphs::CNetworkOfPoses */
+		typedef CPose3D  type_value; 
 		enum { is_3D_val = 1 };
 		static inline bool is_3D() { return is_3D_val!=0; }
 		enum { rotation_dimensions = 3 };
@@ -512,7 +520,8 @@ namespace poses
 
 		/** @name STL-like methods and typedefs
 		   @{   */
-		typedef double         value_type;		//!< The type of the elements
+		/** The type of the elements */
+		typedef double         value_type;		
 		typedef double&        reference;
 		typedef const double&  const_reference;
 		typedef std::size_t    size_type;

@@ -68,7 +68,8 @@ namespace mrpt
 			inline const_reverse_iterator 	rend() const 	{ return const_reverse_iterator(begin()); }
 			/** @} */
 		private:
-			vec_t  m_vec; //!< The actual container
+			/** The actual container */
+			vec_t  m_vec; 
 
 		public:
 			/** @name Constructors, read/write access and other operations

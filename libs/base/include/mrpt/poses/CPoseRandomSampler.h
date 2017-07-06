@@ -39,18 +39,23 @@ namespace mrpt
 		{
 		protected:
 			// Only ONE of these can be not-NULL at a time.
-			std::unique_ptr<const CPosePDF>   m_pdf2D;        //!< A local copy of the PDF
-			std::unique_ptr<const CPose3DPDF> m_pdf3D;        //!< A local copy of the PDF
+			/** A local copy of the PDF */
+			std::unique_ptr<const CPosePDF>   m_pdf2D;        
+			/** A local copy of the PDF */
+			std::unique_ptr<const CPose3DPDF> m_pdf3D;        
 
 			mrpt::math::CMatrixDouble33 m_fastdraw_gauss_Z3;
 			mrpt::math::CMatrixDouble66 m_fastdraw_gauss_Z6;
 			CPose2D         m_fastdraw_gauss_M_2D;
 			CPose3D         m_fastdraw_gauss_M_3D;
 
-			void clear(); //!< Clear internal pdf
+			/** Clear internal pdf */
+			void clear(); 
 
-			void do_sample_2D( CPose2D &p ) const;	//!< Used internally: sample from m_pdf2D
-			void do_sample_3D( CPose3D &p ) const;	//!< Used internally: sample from m_pdf3D
+			/** Used internally: sample from m_pdf2D */
+			void do_sample_2D( CPose2D &p ) const;	
+			/** Used internally: sample from m_pdf3D */
+			void do_sample_3D( CPose3D &p ) const;	
 
         public:
 			/** Default constructor */

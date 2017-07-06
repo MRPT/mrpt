@@ -55,9 +55,12 @@ namespace mrpt
 		/** Data associated to *each observation* in the Lev-Marq. model */
 		struct TResidJacobElement
 		{
-			Eigen::Matrix<double,4,1>  predicted_obs;  //!< [u_l v_l  u_r v_r]: left/right camera pixels
-			Eigen::Matrix<double,4,1>  residual;       //!<  = predicted_obs - observations
-			Eigen::Matrix<double,4,30> J; //!< Jacobian. 4=the two predicted pixels; 30=Read below for the meaning of these 30 variables
+			/** [u_l v_l  u_r v_r]: left/right camera pixels */
+			Eigen::Matrix<double,4,1>  predicted_obs;  
+			/**  = predicted_obs - observations */
+			Eigen::Matrix<double,4,1>  residual;       
+			/** Jacobian. 4=the two predicted pixels; 30=Read below for the meaning of these 30 variables */
+			Eigen::Matrix<double,4,30> J; 
 		};
 
 		typedef std::vector< mrpt::aligned_containers<TResidJacobElement>::vector_t > TResidualJacobianList;

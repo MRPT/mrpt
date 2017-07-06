@@ -45,7 +45,8 @@ namespace mrpt
 			DEFINE_SERIALIZABLE( CReflectivityGridMap2D )
 
 		protected:
-			static CLogOddsGridMapLUT<cell_t>  m_logodd_lut; //!< Lookup tables for log-odds
+			/** Lookup tables for log-odds */
+			static CLogOddsGridMapLUT<cell_t>  m_logodd_lut; 
 
 		public:
 
@@ -95,7 +96,8 @@ namespace mrpt
 			double internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom )  override;
 
 			MAP_DEFINITION_START(CReflectivityGridMap2D,MAPS_IMPEXP)
-				double min_x,max_x,min_y,max_y,resolution;	//!< See CReflectivityGridMap2DOptions::CReflectivityGridMap2DOptions
+				/** See CReflectivityGridMap2DOptions::CReflectivityGridMap2DOptions */
+				double min_x,max_x,min_y,max_y,resolution;	
 				mrpt::maps::CReflectivityGridMap2D::TInsertionOptions	insertionOpts;
 			MAP_DEFINITION_END(CReflectivityGridMap2D,MAPS_IMPEXP)
 		};

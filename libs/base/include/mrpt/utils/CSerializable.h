@@ -14,7 +14,8 @@
 #include <mrpt/utils/types_simple.h>
 
 #if MRPT_HAS_MATLAB
-typedef struct mxArray_tag mxArray; //!< Forward declaration for mxArray (avoid #including as much as possible to speed up compiling)
+/** Forward declaration for mxArray (avoid #including as much as possible to speed up compiling) */
+typedef struct mxArray_tag mxArray; 
 #endif
 
 namespace mrpt

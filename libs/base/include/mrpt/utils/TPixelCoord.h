@@ -20,7 +20,8 @@ namespace mrpt
 		/** A pair (x,y) of pixel coordinates (subpixel resolution). \ingroup mrpt_base_grp  */
 		struct BASE_IMPEXP TPixelCoordf
 		{
-			typedef float pixel_coord_t; //!< The type of \a x and \a y
+			/** The type of \a x and \a y */
+			typedef float pixel_coord_t; 
 
 			float x,y;
 
@@ -31,12 +32,14 @@ namespace mrpt
 			TPixelCoordf(const float _x,const float _y) : x(_x), y(_y) { }
 		};
 
-		std::ostream BASE_IMPEXP & operator <<(std::ostream& o, const TPixelCoordf& p); //!< Prints TPixelCoordf as "(x,y)"
+		/** Prints TPixelCoordf as "(x,y)" */
+		std::ostream BASE_IMPEXP & operator <<(std::ostream& o, const TPixelCoordf& p); 
 
 		/** A pair (x,y) of pixel coordinates (integer resolution). */
 		struct BASE_IMPEXP TPixelCoord
 		{
-			typedef int pixel_coord_t; //!< The type of \a x and \a y
+			/** The type of \a x and \a y */
+			typedef int pixel_coord_t; 
 
 			TPixelCoord() : x(0),y(0) { }
 			TPixelCoord(const int _x,const int _y) : x(_x), y(_y) { }
@@ -44,9 +47,11 @@ namespace mrpt
 			int x,y;
 		};
 
-		std::ostream BASE_IMPEXP & operator <<(std::ostream& o, const TPixelCoord& p); //!< Prints TPixelCoord as "(x,y)"
+		/** Prints TPixelCoord as "(x,y)" */
+		std::ostream BASE_IMPEXP & operator <<(std::ostream& o, const TPixelCoord& p); 
 
-		typedef TPixelCoord TImageSize; //!< A type for image sizes.
+		/** A type for image sizes. */
+		typedef TPixelCoord TImageSize; 
 
 	} // end namespace
 }

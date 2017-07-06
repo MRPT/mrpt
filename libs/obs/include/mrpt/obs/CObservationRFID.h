@@ -34,16 +34,20 @@ namespace obs
 
 		 /** @name The data members
 		  * @{ */
-		mrpt::poses::CPose3D  sensorPoseOnRobot; //!< The location of the sensing antenna on the robot coordinate framework
+		/** The location of the sensing antenna on the robot coordinate framework */
+		mrpt::poses::CPose3D  sensorPoseOnRobot; 
 
         /** Each of the individual readings of a RFID tag */
         struct OBS_IMPEXP TTagReading
         {
             TTagReading() : power(-1000) {}
 
-            double      power;  //!< The power or signal strength as sensed by the RFID receiver (in dBm)
-            std::string epc; //!< EPC code of the observed tag
-            std::string antennaPort; //!< Port of the antenna that did the reading
+            /** The power or signal strength as sensed by the RFID receiver (in dBm) */
+            double      power;  
+            /** EPC code of the observed tag */
+            std::string epc; 
+            /** Port of the antenna that did the reading */
+            std::string antennaPort; 
         };
 
         /** The vector of individual tag observations */

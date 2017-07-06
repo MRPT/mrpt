@@ -36,11 +36,16 @@ namespace opengl	{
 		DEFINE_SERIALIZABLE(CBox)
 
 	protected:
-		mrpt::math::TPoint3D  	m_corner_min,m_corner_max;		//!< Corners coordinates
-		bool 					m_wireframe;	//!< true: wireframe, false: solid
-		float					m_lineWidth; 	//!< For wireframe only.
-		bool			m_draw_border;		//!< Draw line borders to solid box with the given linewidth (default: true)
-		mrpt::utils::TColor     m_solidborder_color;    //!< Color of the solid box borders.
+		/** Corners coordinates */
+		mrpt::math::TPoint3D  	m_corner_min,m_corner_max;		
+		/** true: wireframe, false: solid */
+		bool 					m_wireframe;	
+		/** For wireframe only. */
+		float					m_lineWidth; 	
+		/** Draw line borders to solid box with the given linewidth (default: true) */
+		bool			m_draw_border;		
+		/** Color of the solid box borders. */
+		mrpt::utils::TColor     m_solidborder_color;    
 		
 	public:
 		/** Constructor returning a smart pointer to the newly created object. */

@@ -56,8 +56,10 @@ namespace mrpt
 		class CThreadSafeQueue
 		{
 		protected:
-			std::queue<T*> m_msgs; //!< The queue of messages. Memory is freed at destructor or by clients gathering messages.
-			mutable std::mutex			m_csQueue; //!< The critical section
+			/** The queue of messages. Memory is freed at destructor or by clients gathering messages. */
+			std::queue<T*> m_msgs; 
+			/** The critical section */
+			mutable std::mutex			m_csQueue; 
 		public:
 			/** Default ctor. */
 			CThreadSafeQueue() { }

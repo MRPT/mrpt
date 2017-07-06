@@ -392,7 +392,8 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		const double relTargetDist = relTargets.begin()->norm();
 
 		// PTG dynamic state
-		CParameterizedTrajectoryGenerator::TNavDynamicState ptg_dynState; //!< Allow PTGs to be responsive to target location, dynamics, etc.
+		/** Allow PTGs to be responsive to target location, dynamics, etc. */
+		CParameterizedTrajectoryGenerator::TNavDynamicState ptg_dynState; 
 
 		ptg_dynState.curVelLocal = m_curPoseVel.velLocal;
 		ptg_dynState.relTarget = relTargets[0];

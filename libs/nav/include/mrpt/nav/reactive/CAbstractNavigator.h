@@ -53,21 +53,29 @@ namespace mrpt
 	class NAV_IMPEXP CAbstractNavigator : public mrpt::utils::COutputLogger
 	{
 	public:
-		CAbstractNavigator( CRobot2NavInterface &robot_interface_impl );  //!< ctor
-		virtual ~CAbstractNavigator(); //!< dtor
+		/** ctor */
+		CAbstractNavigator( CRobot2NavInterface &robot_interface_impl );  
+		/** dtor */
+		virtual ~CAbstractNavigator(); 
 
 		/** Individual target info in CAbstractNavigator::TNavigationParamsBase and derived classes */
 		struct NAV_IMPEXP TargetInfo
 		{
-			mrpt::math::TPose2D target_coords;         //!< Coordinates of desired target location. Heading may be ignored by some reactive implementations.
-			std::string         target_frame_id;       //!< (Default="map") Frame ID in which target is given. Optional, use only for submapping applications.
-			float               targetAllowedDistance; //!< (Default=0.5 meters) Allowed distance to target in order to end the navigation.
-			bool                targetIsRelative;      //!< (Default=false) Whether the \a target coordinates are in global coordinates (false) or are relative to the current robot pose (true).
-			double              targetDesiredRelSpeed; //!< (Default=.05) Desired relative speed (wrt maximum speed), in range [0,1], of the vehicle at target. Holonomic nav methods will perform "slow down" approaching target only if this is "==.0". Intermediary values will be honored only by the higher-level navigator, based on straight-line Euclidean distances.
+			/** Coordinates of desired target location. Heading may be ignored by some reactive implementations. */
+			mrpt::math::TPose2D target_coords;         
+			/** (Default="map") Frame ID in which target is given. Optional, use only for submapping applications. */
+			std::string         target_frame_id;       
+			/** (Default=0.5 meters) Allowed distance to target in order to end the navigation. */
+			float               targetAllowedDistance; 
+			/** (Default=false) Whether the \a target coordinates are in global coordinates (false) or are relative to the current robot pose (true). */
+			bool                targetIsRelative;      
+			/** (Default=.05) Desired relative speed (wrt maximum speed), in range [0,1], of the vehicle at target. Holonomic nav methods will perform "slow down" approaching target only if this is "==.0". Intermediary values will be honored only by the higher-level navigator, based on straight-line Euclidean distances. */
+			double              targetDesiredRelSpeed; 
 			bool                targetIsIntermediaryWaypoint; // !< (Default=false) If true, event callback `sendWaypointReachedEvent()` will be called instead of `sendNavigationEndEvent()`
 
 			TargetInfo();
-			std::string getAsText() const; //!< Gets navigation params as a human-readable format
+			/** Gets navigation params as a human-readable format */
+			std::string getAsText() const; 
 			bool operator==(const TargetInfo&o) const;
 			bool operator!=(const TargetInfo&o) const { return !(*this==o); }
 		};
@@ -76,7 +84,8 @@ namespace mrpt
 		struct NAV_IMPEXP TNavigationParamsBase
 		{
 			virtual ~TNavigationParamsBase() {}
-			virtual std::string getAsText() const =0; //!< Gets navigation params as a human-readable format
+			/** Gets navigation params as a human-readable format */
+			virtual std::string getAsText() const =0; 
 			virtual TNavigationParamsBase* clone() const = 0;
 		protected:
 			friend bool NAV_IMPEXP operator==(const TNavigationParamsBase&, const TNavigationParamsBase&);
@@ -86,9 +95,11 @@ namespace mrpt
 		/** The struct for configuring navigation requests. Used in CAbstractPTGBasedReactive::navigate() */
 		struct NAV_IMPEXP TNavigationParams : public TNavigationParamsBase
 		{
-			TargetInfo  target; //!< Navigation target
+			/** Navigation target */
+			TargetInfo  target; 
 
-			virtual std::string getAsText() const override; //!< Gets navigation params as a human-readable format
+			/** Gets navigation params as a human-readable format */
+			virtual std::string getAsText() const override; 
 			virtual TNavigationParamsBase* clone() const override { return new TNavigationParams(*this); }
 		protected:
 			virtual bool isEqual(const TNavigationParamsBase& o) const override;
@@ -104,8 +115,10 @@ namespace mrpt
 		  * Each derived class *MUST* save its own parameters, and then call *ITS PARENT'S* overriden method to ensure all params are saved. */
 		virtual void saveConfigFile(mrpt::utils::CConfigFileBase &c) const;
 
-		virtual void initialize() = 0; //!<  Must be called before any other navigation command
-		virtual void navigationStep(); //!< This method must be called periodically in order to effectively run the navigation
+		/**  Must be called before any other navigation command */
+		virtual void initialize() = 0; 
+		/** This method must be called periodically in order to effectively run the navigation */
+		virtual void navigationStep(); 
 
 		/** Navigation request to a single target location. It starts a new navigation.
 		  * \param[in] params Pointer to structure with navigation info (its contents will be copied, so the original can be freely destroyed upon return if it was dynamically allocated.)
@@ -113,10 +126,14 @@ namespace mrpt
 		  */
 		virtual void navigate( const TNavigationParams *params );
 
-		virtual void cancel(); //!< Cancel current navegation.
-		virtual void resume(); //!< Continues with suspended navigation. \sa suspend
-		virtual void suspend(); //!< Suspend current navegation. \sa resume
-		virtual void resetNavError(); //!< Resets a `NAV_ERROR` state back to `IDLE`
+		/** Cancel current navegation. */
+		virtual void cancel(); 
+		/** Continues with suspended navigation. \sa suspend */
+		virtual void resume(); 
+		/** Suspend current navegation. \sa resume */
+		virtual void suspend(); 
+		/** Resets a `NAV_ERROR` state back to `IDLE` */
+		virtual void resetNavError(); 
 
 		/** The different states for the navigation system. */
 		enum TState {
@@ -144,9 +161,12 @@ namespace mrpt
 
 		struct NAV_IMPEXP TAbstractNavigatorParams : public mrpt::utils::CLoadableOptions
 		{
-			double dist_to_target_for_sending_event;  //!< Default value=0, means use the "targetAllowedDistance" passed by the user in the navigation request.
-			double alarm_seems_not_approaching_target_timeout; //!< navigator timeout (seconds) [Default=30 sec]
-			double dist_check_target_is_blocked;     //!< (Default value=0.6) When closer than this distance, check if the target is blocked to abort navigation with an error.
+			/** Default value=0, means use the "targetAllowedDistance" passed by the user in the navigation request. */
+			double dist_to_target_for_sending_event;  
+			/** navigator timeout (seconds) [Default=30 sec] */
+			double alarm_seems_not_approaching_target_timeout; 
+			/** (Default value=0.6) When closer than this distance, check if the target is blocked to abort navigation with an error. */
+			double dist_check_target_is_blocked;     
 
 			virtual void loadFromConfigFile(const mrpt::utils::CConfigFileBase &c, const std::string &s) override;
 			virtual void saveToConfigFile(mrpt::utils::CConfigFileBase &c, const std::string &s) const override;
@@ -159,8 +179,10 @@ namespace mrpt
 		const mrpt::utils::CTimeLogger & getDelaysTimeLogger() const { return m_timlog_delays; }
 
 	private:
-		TState  m_lastNavigationState; //!< Last internal state of navigator:
-		bool    m_navigationEndEventSent; //!< Will be false until the navigation end is sent, and it is reset with each new command
+		/** Last internal state of navigator: */
+		TState  m_lastNavigationState; 
+		/** Will be false until the navigation end is sent, and it is reset with each new command */
+		bool    m_navigationEndEventSent; 
 
 		/** Called before starting a new navigation. Internally, it calls to child-implemented onStartNewNavigation() */
 		void internal_onStartNewNavigation();
@@ -184,9 +206,12 @@ namespace mrpt
 		/** Stops the robot and set navigation state to error */
 		void doEmergencyStop( const std::string &msg );
 
-		virtual bool changeSpeeds(const mrpt::kinematics::CVehicleVelCmd &vel_cmd); //!< Default: forward call to m_robot.changeSpeed(). Can be overriden.
-		virtual bool changeSpeedsNOP(); //!< Default: forward call to m_robot.changeSpeedsNOP(). Can be overriden.
-		virtual bool stop(bool isEmergencyStop); //!< Default: forward call to m_robot.stop(). Can be overriden.
+		/** Default: forward call to m_robot.changeSpeed(). Can be overriden. */
+		virtual bool changeSpeeds(const mrpt::kinematics::CVehicleVelCmd &vel_cmd); 
+		/** Default: forward call to m_robot.changeSpeedsNOP(). Can be overriden. */
+		virtual bool changeSpeedsNOP(); 
+		/** Default: forward call to m_robot.stop(). Can be overriden. */
+		virtual bool stop(bool isEmergencyStop); 
 
 		/** Default implementation: check if target_dist is below the accepted distance.
 		  * If true is returned here, the end-of-navigation event will be sent out (only for non-intermediary targets).
@@ -198,33 +223,42 @@ namespace mrpt
 		* Default implementation: always returns false. */
 		virtual bool checkCollisionWithLatestObstacles(const mrpt::math::TPose2D &relative_robot_pose) const;
 
-		TState             m_navigationState;  //!< Current internal state of navigator:
-		std::unique_ptr<TNavigationParams> m_navigationParams;  //!< Current navigation parameters
+		/** Current internal state of navigator: */
+		TState             m_navigationState;  
+		/** Current navigation parameters */
+		std::unique_ptr<TNavigationParams> m_navigationParams;  
 
-		CRobot2NavInterface   &m_robot; //!< The navigator-robot interface.
+		/** The navigator-robot interface. */
+		CRobot2NavInterface   &m_robot; 
 
 		/** Optional, user-provided frame transformer.
 		  * Note: We dont have ownership of the pointee object! */
 		mrpt::poses::FrameTransformer<2> *m_frame_tf;
 
-		std::recursive_mutex m_nav_cs; //!< mutex for all navigation methods
+		/** mutex for all navigation methods */
+		std::recursive_mutex m_nav_cs; 
 
 		struct NAV_IMPEXP TRobotPoseVel
 		{
 			mrpt::math::TPose2D  pose;
 			mrpt::math::TTwist2D velGlobal, velLocal;
-			mrpt::math::TPose2D  rawOdometry;  //!< raw odometry (frame does not match to "pose", but is expected to be smoother in the short term).
+			/** raw odometry (frame does not match to "pose", but is expected to be smoother in the short term). */
+			mrpt::math::TPose2D  rawOdometry;  
 			mrpt::system::TTimeStamp timestamp;
-			std::string pose_frame_id; //!< map frame ID for `pose`
+			/** map frame ID for `pose` */
+			std::string pose_frame_id; 
 			TRobotPoseVel();
 		};
 
-		TRobotPoseVel m_curPoseVel; //!< Current robot pose (updated in CAbstractNavigator::navigationStep() )
+		/** Current robot pose (updated in CAbstractNavigator::navigationStep() ) */
+		TRobotPoseVel m_curPoseVel; 
 		double  m_last_curPoseVelUpdate_robot_time;
 		std::string m_last_curPoseVelUpdate_pose_frame_id;
-		mrpt::poses::CPose2DInterpolator m_latestPoses, m_latestOdomPoses; //!< Latest robot poses (updated in CAbstractNavigator::navigationStep() )
+		/** Latest robot poses (updated in CAbstractNavigator::navigationStep() ) */
+		mrpt::poses::CPose2DInterpolator m_latestPoses, m_latestOdomPoses; 
 
-		mrpt::utils::CTimeLogger m_timlog_delays; //!< Time logger to collect delay-related stats
+		/** Time logger to collect delay-related stats */
+		mrpt::utils::CTimeLogger m_timlog_delays; 
 
 		/** For sending an alarm (error event) when it seems that we are not approaching toward the target in a while... */
 		double                   m_badNavAlarm_minDistTarget;

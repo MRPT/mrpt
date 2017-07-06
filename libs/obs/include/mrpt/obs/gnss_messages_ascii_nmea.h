@@ -21,27 +21,40 @@ namespace gnss {
 struct OBS_IMPEXP Message_NMEA_GGA : public gnss_message
 {
 	GNSS_MESSAGE_BINARY_BLOCK(&fields,sizeof(fields))
-	enum { msg_type = NMEA_GGA };  //!< Static msg type (member expected by templates)
+	/** Static msg type (member expected by templates) */
+	enum { msg_type = NMEA_GGA };  
 	Message_NMEA_GGA() : gnss_message((gnss_message_type_t)msg_type)
 	{}
 
 	struct OBS_IMPEXP content_t
 	{
-		UTC_time UTCTime; //!< The GPS sensor measured timestamp (in UTC time)
-		double   latitude_degrees; //!< The measured latitude, in degrees (North:+ , South:-)
-		double   longitude_degrees; //!< The measured longitude, in degrees (East:+ , West:-)
-		uint8_t  fix_quality; //!< NMEA standard values: 0 = invalid, 1 = GPS fix (SPS), 2 = DGPS fix, 3 = PPS fix, 4 = Real Time Kinematic, 5 = Float RTK, 6 = estimated (dead reckoning) (2.3 feature), 7 = Manual input mode, 8 = Simulation mode */
-		double   altitude_meters; //!< The measured altitude, in meters (A).
-		double   geoidal_distance; //!< Undulation: Difference between the measured altitude and the geoid, in meters (B).
-		double   orthometric_altitude; //!< The measured orthometric altitude, in meters (A)+(B).
-		double   corrected_orthometric_altitude; //!< The corrected (only for TopCon mmGPS) orthometric altitude, in meters mmGPS(A+B).
-		uint32_t satellitesUsed; //!< The number of satelites used to compute this estimation.
-		bool     thereis_HDOP; //!< This states whether to take into account the value in the HDOP field.
-		float    HDOP; //!< The HDOP (Horizontal Dilution of Precision) as returned by the sensor.
+		/** The GPS sensor measured timestamp (in UTC time) */
+		UTC_time UTCTime; 
+		/** The measured latitude, in degrees (North:+ , South:-) */
+		double   latitude_degrees; 
+		/** The measured longitude, in degrees (East:+ , West:-) */
+		double   longitude_degrees; 
+		/** NMEA standard values: 0 = invalid, 1 = GPS fix (SPS), 2 = DGPS fix, 3 = PPS fix, 4 = Real Time Kinematic, 5 = Float RTK, 6 = estimated (dead reckoning) (2.3 feature), 7 = Manual input mode, 8 = Simulation mode */ */
+		uint8_t  fix_quality; 
+		/** The measured altitude, in meters (A). */
+		double   altitude_meters; 
+		/** Undulation: Difference between the measured altitude and the geoid, in meters (B). */
+		double   geoidal_distance; 
+		/** The measured orthometric altitude, in meters (A)+(B). */
+		double   orthometric_altitude; 
+		/** The corrected (only for TopCon mmGPS) orthometric altitude, in meters mmGPS(A+B). */
+		double   corrected_orthometric_altitude; 
+		/** The number of satelites used to compute this estimation. */
+		uint32_t satellitesUsed; 
+		/** This states whether to take into account the value in the HDOP field. */
+		bool     thereis_HDOP; 
+		/** The HDOP (Horizontal Dilution of Precision) as returned by the sensor. */
+		float    HDOP; 
 
 		content_t();
 	};
-	content_t  fields; //!< Message content, accesible by individual fields
+	/** Message content, accesible by individual fields */
+	content_t  fields; 
 	
 	void dumpToStream( mrpt::utils::CStream &out ) const override; // See docs in base
 
@@ -72,18 +85,24 @@ struct OBS_IMPEXP Message_NMEA_GGA : public gnss_message
 struct OBS_IMPEXP Message_NMEA_GLL : public gnss_message
 {
 	GNSS_MESSAGE_BINARY_BLOCK(&fields,sizeof(fields))
-	enum { msg_type = NMEA_GLL };  //!< Static msg type (member expected by templates)
+	/** Static msg type (member expected by templates) */
+	enum { msg_type = NMEA_GLL };  
 	Message_NMEA_GLL() : gnss_message((gnss_message_type_t)msg_type)
 	{}
 	struct OBS_IMPEXP content_t
 	{
-		UTC_time UTCTime; //!< The GPS sensor measured timestamp (in UTC time)
-		double   latitude_degrees; //!< The measured latitude, in degrees (North:+ , South:-)
-		double   longitude_degrees; //!< The measured longitude, in degrees (East:+ , West:-)
-		int8_t    validity_char; //!< This will be: 'A'=OK or 'V'=void
+		/** The GPS sensor measured timestamp (in UTC time) */
+		UTC_time UTCTime; 
+		/** The measured latitude, in degrees (North:+ , South:-) */
+		double   latitude_degrees; 
+		/** The measured longitude, in degrees (East:+ , West:-) */
+		double   longitude_degrees; 
+		/** This will be: 'A'=OK or 'V'=void */
+		int8_t    validity_char; 
 		content_t();
 	};
-	content_t  fields; //!< Message content, accesible by individual fields
+	/** Message content, accesible by individual fields */
+	content_t  fields; 
 	void dumpToStream( mrpt::utils::CStream &out ) const override; // See docs in base
 	bool getAllFieldDescriptions( std::ostream &o ) const override;
 	bool getAllFieldValues( std::ostream &o ) const override;
@@ -93,26 +112,38 @@ struct OBS_IMPEXP Message_NMEA_GLL : public gnss_message
 struct OBS_IMPEXP Message_NMEA_RMC : public gnss_message
 {
 	GNSS_MESSAGE_BINARY_BLOCK(&fields,sizeof(fields))
-	enum { msg_type = NMEA_RMC };  //!< Static msg type (member expected by templates)
+	/** Static msg type (member expected by templates) */
+	enum { msg_type = NMEA_RMC };  
 	Message_NMEA_RMC() : gnss_message((gnss_message_type_t)msg_type)
 	{}
 
 	struct OBS_IMPEXP content_t
 	{
-		UTC_time  UTCTime;       //!< The GPS sensor measured timestamp (in UTC time)
-		int8_t    validity_char; //!< This will be: 'A'=OK or 'V'=void
-		double    latitude_degrees; //!< The measured latitude, in degrees (North:+ , South:-)
-		double    longitude_degrees; //!< The measured longitude, in degrees (East:+ , West:-)
-		double    speed_knots; //!< Measured speed (in knots)
-		double    direction_degrees; //!< Measured speed direction (in degrees)
-		uint8_t   date_day, date_month,date_year; //!< Date: day (1-31), month (1-12), two-digits year (00-99)
-		double    magnetic_dir;      //!< Magnetic variation direction (East:+, West:-)
-		char      positioning_mode;  //!< 'A': Autonomous, 'D': Differential, 'N': Not valid, 'E': Estimated, 'M': Manual
+		/** The GPS sensor measured timestamp (in UTC time) */
+		UTC_time  UTCTime;       
+		/** This will be: 'A'=OK or 'V'=void */
+		int8_t    validity_char; 
+		/** The measured latitude, in degrees (North:+ , South:-) */
+		double    latitude_degrees; 
+		/** The measured longitude, in degrees (East:+ , West:-) */
+		double    longitude_degrees; 
+		/** Measured speed (in knots) */
+		double    speed_knots; 
+		/** Measured speed direction (in degrees) */
+		double    direction_degrees; 
+		/** Date: day (1-31), month (1-12), two-digits year (00-99) */
+		uint8_t   date_day, date_month,date_year; 
+		/** Magnetic variation direction (East:+, West:-) */
+		double    magnetic_dir;      
+		/** 'A': Autonomous, 'D': Differential, 'N': Not valid, 'E': Estimated, 'M': Manual */
+		char      positioning_mode;  
 		content_t();
 	};
-	content_t  fields; //!< Message content, accesible by individual fields
+	/** Message content, accesible by individual fields */
+	content_t  fields; 
 
-	mrpt::system::TTimeStamp getDateAsTimestamp() const; //!< Build an MRPT timestamp with the year/month/day of this observation.
+	/** Build an MRPT timestamp with the year/month/day of this observation. */
+	mrpt::system::TTimeStamp getDateAsTimestamp() const; 
 
 	void dumpToStream( mrpt::utils::CStream &out ) const override; // See docs in base
 	bool getAllFieldDescriptions( std::ostream &o ) const override;
@@ -123,16 +154,19 @@ struct OBS_IMPEXP Message_NMEA_RMC : public gnss_message
 struct OBS_IMPEXP Message_NMEA_VTG : public gnss_message
 {
 	GNSS_MESSAGE_BINARY_BLOCK(&fields,sizeof(fields))
-	enum { msg_type = NMEA_VTG };  //!< Static msg type (member expected by templates)
+	/** Static msg type (member expected by templates) */
+	enum { msg_type = NMEA_VTG };  
 	Message_NMEA_VTG() : gnss_message((gnss_message_type_t)msg_type)
 	{}
 	struct OBS_IMPEXP content_t
 	{
-		double  true_track, magnetic_track; //!< Degrees
+		/** Degrees */
+		double  true_track, magnetic_track; 
 		double  ground_speed_knots, ground_speed_kmh;
 		content_t();
 	};
-	content_t  fields; //!< Message content, accesible by individual fields
+	/** Message content, accesible by individual fields */
+	content_t  fields; 
 	void dumpToStream( mrpt::utils::CStream &out ) const override; // See docs in base
 	bool getAllFieldDescriptions( std::ostream &o ) const override;
 	bool getAllFieldValues( std::ostream &o ) const override;
@@ -142,22 +176,30 @@ struct OBS_IMPEXP Message_NMEA_VTG : public gnss_message
 struct OBS_IMPEXP Message_NMEA_ZDA : public gnss_message
 {
 	GNSS_MESSAGE_BINARY_BLOCK(&fields,sizeof(fields))
-	enum { msg_type = NMEA_ZDA };  //!< Static msg type (member expected by templates)
+	/** Static msg type (member expected by templates) */
+	enum { msg_type = NMEA_ZDA };  
 	Message_NMEA_ZDA() : gnss_message((gnss_message_type_t)msg_type)
 	{}
 
 	struct OBS_IMPEXP content_t
 	{
-		UTC_time  UTCTime;  //!< The GPS sensor measured timestamp (in UTC time)
-		uint8_t   date_day;      //!< 1-31
-		uint8_t   date_month;    //!< 1-12
-		uint16_t  date_year;     //!< 2000-...
+		/** The GPS sensor measured timestamp (in UTC time) */
+		UTC_time  UTCTime;  
+		/** 1-31 */
+		uint8_t   date_day;      
+		/** 1-12 */
+		uint8_t   date_month;    
+		/** 2000-... */
+		uint16_t  date_year;     
 		content_t();
 	};
-	content_t  fields; //!< Message content, accesible by individual fields
+	/** Message content, accesible by individual fields */
+	content_t  fields; 
 
-	mrpt::system::TTimeStamp getDateTimeAsTimestamp() const; //!< Build an MRPT UTC timestamp with the year/month/day + hour/minute/sec of this observation.
-	mrpt::system::TTimeStamp getDateAsTimestamp() const; //!< Build an MRPT timestamp with the year/month/day of this observation.
+	/** Build an MRPT UTC timestamp with the year/month/day + hour/minute/sec of this observation. */
+	mrpt::system::TTimeStamp getDateTimeAsTimestamp() const; 
+	/** Build an MRPT timestamp with the year/month/day of this observation. */
+	mrpt::system::TTimeStamp getDateAsTimestamp() const; 
 
 	void dumpToStream( mrpt::utils::CStream &out ) const override; // See docs in base
 	bool getAllFieldDescriptions( std::ostream &o ) const override;

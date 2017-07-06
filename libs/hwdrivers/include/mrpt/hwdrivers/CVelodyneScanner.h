@@ -122,8 +122,10 @@ namespace mrpt
 		{
 			DEFINE_GENERIC_SENSOR(CVelodyneScanner)
 		public:
-			static short int VELODYNE_DATA_UDP_PORT;  //!< Default: 2368. Change it if required.
-			static short int VELODYNE_POSITION_UDP_PORT;  //!< Default: 8308. Change it if required.
+			/** Default: 2368. Change it if required. */
+			static short int VELODYNE_DATA_UDP_PORT;  
+			/** Default: 8308. Change it if required. */
+			static short int VELODYNE_POSITION_UDP_PORT;  
 
 			/** LIDAR model types */
 			enum model_t {
@@ -147,34 +149,53 @@ namespace mrpt
 			typedef std::map<model_t,TModelProperties> model_properties_list_t;
 			/** Access to default sets of parameters for Velodyne LIDARs */
 			struct HWDRIVERS_IMPEXP TModelPropertiesFactory {
-				static const model_properties_list_t & get(); //!< Singleton access
-				static std::string getListKnownModels(); //!< Return human-readable string: "`VLP16`,`XXX`,..."
+				/** Singleton access */
+				static const model_properties_list_t & get(); 
+				/** Return human-readable string: "`VLP16`,`XXX`,..." */
+				static std::string getListKnownModels(); 
 			};
 
 		protected:
 			bool          m_initialized;
-			model_t       m_model;      //!< Default: "VLP16"
-			double        m_pos_packets_min_period; //!< Default: 0.5 seconds
-			double        m_pos_packets_timing_timeout; //!< Default: 30 seconds
-			std::string   m_device_ip;  //!< Default: "" (no IP-based filtering)
-			bool          m_pcap_verbose; //!< Default: true Output PCAP Info msgs
-			std::string   m_pcap_input_file; //!< Default: "" (do not operate from an offline file)
-			std::string   m_pcap_output_file; //!< Default: "" (do not dump to an offline file)
+			/** Default: "VLP16" */
+			model_t       m_model;      
+			/** Default: 0.5 seconds */
+			double        m_pos_packets_min_period; 
+			/** Default: 30 seconds */
+			double        m_pos_packets_timing_timeout; 
+			/** Default: "" (no IP-based filtering) */
+			std::string   m_device_ip;  
+			/** Default: true Output PCAP Info msgs */
+			bool          m_pcap_verbose; 
+			/** Default: "" (do not operate from an offline file) */
+			std::string   m_pcap_input_file; 
+			/** Default: "" (do not dump to an offline file) */
+			std::string   m_pcap_output_file; 
 			mrpt::poses::CPose3D m_sensorPose;
-			mrpt::obs:: VelodyneCalibration  m_velodyne_calib; //!< Device calibration file (supplied by vendor in an XML file)
+			/** Device calibration file (supplied by vendor in an XML file) */
+			mrpt::obs:: VelodyneCalibration  m_velodyne_calib; 
 			mrpt::system::TTimeStamp m_last_pos_packet_timestamp;
 
 			// offline operation:
-			void * m_pcap;             //!< opaque ptr: "pcap_t*"
-			void * m_pcap_out;         //!< opaque ptr: "pcap_t*"
-			void * m_pcap_dumper;      //!< opaque ptr: "pcap_dumper_t *"
-			void * m_pcap_bpf_program; //!< opaque ptr: bpf_program*
+			/** opaque ptr: "pcap_t*" */
+			void * m_pcap;             
+			/** opaque ptr: "pcap_t*" */
+			void * m_pcap_out;         
+			/** opaque ptr: "pcap_dumper_t *" */
+			void * m_pcap_dumper;      
+			/** opaque ptr: bpf_program* */
+			void * m_pcap_bpf_program; 
 			bool   m_pcap_file_empty;
-			unsigned int m_pcap_read_count; //!< number of pkts read from the file so far (for debugging)
-			bool   m_pcap_read_once;    //!< Default: false
-			bool   m_pcap_read_fast;    //!< (Default: false) If false, will use m_pcap_read_full_scan_delay_ms
-			double m_pcap_read_full_scan_delay_ms;    //!< (Default:100 ms) delay after each full scan read from a PCAP log
-			double m_pcap_repeat_delay; //!< Default: 0 (in seconds)
+			/** number of pkts read from the file so far (for debugging) */
+			unsigned int m_pcap_read_count; 
+			/** Default: false */
+			bool   m_pcap_read_once;    
+			/** (Default: false) If false, will use m_pcap_read_full_scan_delay_ms */
+			bool   m_pcap_read_fast;    
+			/** (Default:100 ms) delay after each full scan read from a PCAP log */
+			double m_pcap_read_full_scan_delay_ms;    
+			/** Default: 0 (in seconds) */
+			double m_pcap_repeat_delay; 
 
 
 			/** See the class documentation at the top for expected parameters */
@@ -220,7 +241,8 @@ namespace mrpt
 
 			const mrpt::obs:: VelodyneCalibration & getCalibration() const { return m_velodyne_calib; }
 			void setCalibration(const mrpt::obs::VelodyneCalibration & calib) { m_velodyne_calib=calib; }
-			bool loadCalibrationFile(const std::string & velodyne_xml_calib_file_path ); //!< Returns false on error. \sa mrpt::obs::VelodyneCalibration::loadFromXMLFile()
+			/** Returns false on error. \sa mrpt::obs::VelodyneCalibration::loadFromXMLFile() */
+			bool loadCalibrationFile(const std::string & velodyne_xml_calib_file_path ); 
 
 			/** Changes among STRONGEST, LAST, DUAL return types (via HTTP post interface).
 			  * Can be called at any instant, before or after initialize().
@@ -301,7 +323,8 @@ namespace mrpt
 			mrpt::system::TTimeStamp  & pos_pkt_time, uint8_t  *out_pos_buffer
 			);
 
-		mrpt::obs::CObservationVelodyneScan::Ptr m_rx_scan; //!< In progress RX scan
+		/** In progress RX scan */
+		mrpt::obs::CObservationVelodyneScan::Ptr m_rx_scan; 
 
 		mrpt::obs::gnss::Message_NMEA_RMC m_last_gps_rmc;
 		mrpt::system::TTimeStamp          m_last_gps_rmc_age;

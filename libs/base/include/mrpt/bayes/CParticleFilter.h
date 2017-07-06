@@ -80,20 +80,27 @@ namespace mrpt
 			struct BASE_IMPEXP TParticleFilterOptions : public mrpt::utils::CLoadableOptions
 			{
 			public:
-				TParticleFilterOptions(); //!< Initilization of default parameters
+				/** Initilization of default parameters */
+				TParticleFilterOptions(); 
 				void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) override; // See base docs
 				void dumpToTextStream(mrpt::utils::CStream &out) const override; // See base docs
 
-				bool         adaptiveSampleSize; //!< A flag that indicates whether the CParticleFilterCapable object should perform adative sample size (default=false).
-				double       BETA; //!< The resampling of particles will be performed when ESS (in range [0,1]) < BETA (default is 0.5)
-				unsigned int sampleSize; //!< The initial number of particles in the filter (it can change only if adaptiveSampleSize=true) (default=1)
+				/** A flag that indicates whether the CParticleFilterCapable object should perform adative sample size (default=false). */
+				bool         adaptiveSampleSize; 
+				/** The resampling of particles will be performed when ESS (in range [0,1]) < BETA (default is 0.5) */
+				double       BETA; 
+				/** The initial number of particles in the filter (it can change only if adaptiveSampleSize=true) (default=1) */
+				unsigned int sampleSize; 
 
 				/** In the algorithm "CParticleFilter::pfAuxiliaryPFOptimal" (and in "CParticleFilter::pfAuxiliaryPFStandard" only if pfAuxFilterStandard_FirstStageWeightsMonteCarlo = true) the number of samples for searching the maximum likelihood value and also to estimate the "first stage weights" (see papers!) (default=100)
 				  */
 				unsigned int pfAuxFilterOptimal_MaximumSearchSamples;
-				double		powFactor; //!< An optional step to "smooth" dramatic changes in the observation model to affect the variance of the particle weights, eg weight*=likelihood^powFactor (default=1 = no effects).
-				TParticleFilterAlgorithm		PF_algorithm; //!< The PF algorithm to use (default=pfStandardProposal) See TParticleFilterAlgorithm for the posibilities.
-				TParticleResamplingAlgorithm	resamplingMethod; //!< The resampling algorithm to use (default=prMultinomial).
+				/** An optional step to "smooth" dramatic changes in the observation model to affect the variance of the particle weights, eg weight*=likelihood^powFactor (default=1 = no effects). */
+				double		powFactor; 
+				/** The PF algorithm to use (default=pfStandardProposal) See TParticleFilterAlgorithm for the posibilities. */
+				TParticleFilterAlgorithm		PF_algorithm; 
+				/** The resampling algorithm to use (default=prMultinomial). */
+				TParticleResamplingAlgorithm	resamplingMethod; 
 
 				/** Only for PF_algorithm=pfAuxiliaryPFOptimal: If a given particle has a max_likelihood (from the a-priori estimate) below the maximum from all the samples - max_loglikelihood_dyn_range, then the particle is directly discarded.
 				  *  This is done to assure that the rejection sampling doesn't get stuck in an infinite loop trying to get an acceptable sample.
@@ -108,7 +115,8 @@ namespace mrpt
 				  */
 				bool pfAuxFilterStandard_FirstStageWeightsMonteCarlo;
 
-				bool pfAuxFilterOptimal_MLE; //!< (Default=false) In the algorithm "CParticleFilter::pfAuxiliaryPFOptimal", if set to true, do not perform rejection sampling, but just the most-likely (ML) particle found in the preliminary weight-determination stage.
+				/** (Default=false) In the algorithm "CParticleFilter::pfAuxiliaryPFOptimal", if set to true, do not perform rejection sampling, but just the most-likely (ML) particle found in the preliminary weight-determination stage. */
+				bool pfAuxFilterOptimal_MLE; 
 			};
 
 			/** Statistics for being returned from the "execute" method. */

@@ -91,28 +91,36 @@ namespace kinematics
 		}
 
 		void resetStatus(); //! Reset all simulator variables to 0 (except the simulation time). \sa resetTime
-		void resetTime(); //!< Reset time counter \sa resetStatus
+		/** Reset time counter \sa resetStatus */
+		void resetTime(); 
 
 		/** @} */
 
 	protected:
 		/** @name State vector
 		 *  @{ */
-		double                m_time;  //!< simulation running time
-		mrpt::math::TPose2D   m_GT_pose;  //!< ground truth pose in world coordinates.
-		mrpt::math::TTwist2D  m_GT_vel;   //!< Velocity in (x,y,omega)
-		mrpt::math::TTwist2D  m_odometric_vel;   //!< Velocity in (x,y,omega)
+		/** simulation running time */
+		double                m_time;  
+		/** ground truth pose in world coordinates. */
+		mrpt::math::TPose2D   m_GT_pose;  
+		/** Velocity in (x,y,omega) */
+		mrpt::math::TTwist2D  m_GT_vel;   
+		/** Velocity in (x,y,omega) */
+		mrpt::math::TTwist2D  m_odometric_vel;   
 		mrpt::math::TPose2D   m_odometry;
 		/** @} */
-		double m_firmware_control_period;  //!< The period at which the low-level controller updates velocities (Default: 0.5 ms)
+		/** The period at which the low-level controller updates velocities (Default: 0.5 ms) */
+		double m_firmware_control_period;  
 
-		bool    m_use_odo_error; //!< Whether to corrupt odometry with noise
+		/** Whether to corrupt odometry with noise */
+		bool    m_use_odo_error; 
 		double m_Ax_err_bias, m_Ax_err_std;
 		double m_Ay_err_bias, m_Ay_err_std;
 		double m_Aphi_err_bias, m_Aphi_err_std;
 
 		virtual void internal_simulControlStep(const double dt) = 0;
-		virtual void internal_clear() =0; //!< Resets all pending cmds
+		/** Resets all pending cmds */
+		virtual void internal_clear() =0; 
 	private:
 
 	};

@@ -25,8 +25,10 @@ namespace mrpt
 		{
             DEFINE_SERIALIZABLE( TStereoCamera )
         public:
-		    TCamera     leftCamera, rightCamera;  //!< Intrinsic and distortion parameters of the left and right cameras
-		    mrpt::poses::CPose3DQuat rightCameraPose;  //!< Pose of the right camera with respect to the coordinate origin of the left camera
+		    /** Intrinsic and distortion parameters of the left and right cameras */
+		    TCamera     leftCamera, rightCamera;  
+		    /** Pose of the right camera with respect to the coordinate origin of the left camera */
+		    mrpt::poses::CPose3DQuat rightCameraPose;  
 
             // Default constructor:
 		    TStereoCamera();

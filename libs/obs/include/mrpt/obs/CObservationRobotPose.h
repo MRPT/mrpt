@@ -26,11 +26,14 @@ namespace obs
 	{
 		DEFINE_SERIALIZABLE( CObservationRobotPose )
 	 public:
-		CObservationRobotPose( );  //!< Default ctor
+		/** Default ctor */
+		CObservationRobotPose( );  
 
-		mrpt::poses::CPose3DPDFGaussian pose; //!< The observed robot pose
+		/** The observed robot pose */
+		mrpt::poses::CPose3DPDFGaussian pose; 
 
-		mrpt::poses::CPose3D sensorPose; //!< The pose of the sensor on the robot/vehicle
+		/** The pose of the sensor on the robot/vehicle */
+		mrpt::poses::CPose3D sensorPose; 
 
 		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const override;// See base class docs.
 		void setSensorPose( const mrpt::poses::CPose3D &newSensorPose ) override;// See base class docs.

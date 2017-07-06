@@ -20,8 +20,10 @@ namespace mrpt
 {
 	namespace graphs
 	{
-		using mrpt::utils::TNodeID;      //!< Make available this typedef in this namespace too
-		using mrpt::utils::TPairNodeIDs; //!< Make available this typedef in this namespace too
+		/** Make available this typedef in this namespace too */
+		using mrpt::utils::TNodeID;      
+		/** Make available this typedef in this namespace too */
+		using mrpt::utils::TPairNodeIDs; 
 
 		/** \addtogroup mrpt_graphs_grp
 		    @{ */
@@ -29,9 +31,12 @@ namespace mrpt
 		/** Used in mrpt::graphs export functions to .dot files \sa mrpt::graphs::CDirectedGraph::saveAsDot */
 		struct TGraphvizExportParams
 		{
-			bool mark_edges_as_not_constraint;        //!< If true (default=false), an "[constraint=false]" will be added to all edges (see Graphviz docs).
-			std::map<TNodeID,std::string> node_names; //!< If provided, these textual names will be used for naming the nodes instead of their numeric IDs given in the edges.
-			std::map<TNodeID,std::string> node_props; //!< If provided, an extra line will be added setting Graphviz properties for each node, e.g. to set a node position, use the string "pos = \"x,y\""
+			/** If true (default=false), an "[constraint=false]" will be added to all edges (see Graphviz docs). */
+			bool mark_edges_as_not_constraint;        
+			/** If provided, these textual names will be used for naming the nodes instead of their numeric IDs given in the edges. */
+			std::map<TNodeID,std::string> node_names; 
+			/** If provided, an extra line will be added setting Graphviz properties for each node, e.g. to set a node position, use the string "pos = \"x,y\"" */
+			std::map<TNodeID,std::string> node_props; 
 
 			TGraphvizExportParams() : mark_edges_as_not_constraint(false)
 			{}
@@ -65,7 +70,8 @@ namespace mrpt
 			};
 
 
-			typedef typename mrpt::aligned_containers<TPairNodeIDs,edge_t>::multimap_t	edges_map_t;  //!< The type of the member \a edges
+			/** The type of the member \a edges */
+			typedef typename mrpt::aligned_containers<TPairNodeIDs,edge_t>::multimap_t	edges_map_t;  
 			typedef typename edges_map_t::iterator                iterator;
 			typedef typename edges_map_t::reverse_iterator        reverse_iterator;
 			typedef typename edges_map_t::const_iterator          const_iterator;
@@ -77,8 +83,10 @@ namespace mrpt
 			edges_map_t edges;
 
 
-			inline CDirectedGraph(const edges_map_t &obj) : edges(obj) { }  //!< Copy constructor from a multimap<pair< >, >
-			inline CDirectedGraph() : edges() {}  //!< Default constructor
+			/** Copy constructor from a multimap<pair< >, > */
+			inline CDirectedGraph(const edges_map_t &obj) : edges(obj) { }  
+			/** Default constructor */
+			inline CDirectedGraph() : edges() {}  
 
 			inline iterator begin() { return edges.begin(); }
 			inline iterator rbegin() { return edges.rbegin(); }
@@ -92,8 +100,10 @@ namespace mrpt
 			/** @name Edges/nodes utility methods
 				@{ */
 
-			inline size_t edgeCount() const { return edges.size(); }  //!< The number of edges in the graph
-			inline void clearEdges() { edges.clear(); } //!< Erase all edges
+			/** The number of edges in the graph */
+			inline size_t edgeCount() const { return edges.size(); }  
+			/** Erase all edges */
+			inline void clearEdges() { edges.clear(); } 
 
 
 			/** Insert an edge (from -> to) with the given edge value. \sa insertEdgeAtEnd */

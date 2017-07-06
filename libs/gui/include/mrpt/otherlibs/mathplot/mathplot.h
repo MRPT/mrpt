@@ -130,13 +130,20 @@ class WXDLLIMPEXP_MATHPLOT mpPrintout;
 /** Command IDs used by mpWindow */
 enum
 {
-    mpID_FIT = 2000,    //!< Fit view to match bounding box of all layers
-    mpID_ZOOM_IN,       //!< Zoom into view at clickposition / window center
-    mpID_ZOOM_OUT,      //!< Zoom out
-    mpID_CENTER,        //!< Center view on click position
-    mpID_LOCKASPECT,    //!< Lock x/y scaling aspect
-    mpID_HELP_MOUSE,    //!< Shows information about the mouse commands
-    mpID_PRINT     		//!< JL: Prints the graph
+    /** Fit view to match bounding box of all layers */
+    mpID_FIT = 2000,    
+    /** Zoom into view at clickposition / window center */
+    mpID_ZOOM_IN,       
+    /** Zoom out */
+    mpID_ZOOM_OUT,      
+    /** Center view on click position */
+    mpID_CENTER,        
+    /** Lock x/y scaling aspect */
+    mpID_LOCKASPECT,    
+    /** Shows information about the mouse commands */
+    mpID_HELP_MOUSE,    
+    /** JL: Prints the graph */
+    mpID_PRINT     		
 };
 
 //-----------------------------------------------------------------------------
@@ -144,11 +151,16 @@ enum
 //-----------------------------------------------------------------------------
 
 typedef enum __mp_Layer_Type {
-    mpLAYER_UNDEF,  //!< Layer type undefined
-    mpLAYER_AXIS,  //!< Axis type layer
-    mpLAYER_PLOT,  //!< Plot type layer
-    mpLAYER_INFO,   //!< Info box type layer
-    mpLAYER_BITMAP //!< Bitmap type layer
+    /** Layer type undefined */
+    mpLAYER_UNDEF,  
+    /** Axis type layer */
+    mpLAYER_AXIS,  
+    /** Plot type layer */
+    mpLAYER_PLOT,  
+    /** Info box type layer */
+    mpLAYER_INFO,   
+    /** Bitmap type layer */
+    mpLAYER_BITMAP 
 } mpLayerType;
 
 /** Plot layer, abstract base class.
@@ -326,15 +338,24 @@ public:
 	void SetBrush(wxBrush brush) { m_brush = brush; };
 
 protected:
-    wxFont   m_font;    //!< Layer's font
-    wxPen    m_pen;     //!< Layer's pen
-	wxBrush  m_brush;       //!< Layer's brush
-    wxString m_name;    //!< Layer's name
-    bool     m_continuous; //!< Specify if the layer will be plotted as a continuous line or a set of points.
-    bool     m_showName;  //!< States whether the name of the layer must be shown (default is true).
-    bool     m_drawOutsideMargins; //!< select if the layer should draw only inside margins or over all DC
-    mpLayerType m_type; //!< Define layer type, which is assigned by constructor
-	bool 	m_visible;	//!< Toggles layer visibility
+    /** Layer's font */
+    wxFont   m_font;    
+    /** Layer's pen */
+    wxPen    m_pen;     
+	/** Layer's brush */
+	wxBrush  m_brush;       
+    /** Layer's name */
+    wxString m_name;    
+    /** Specify if the layer will be plotted as a continuous line or a set of points. */
+    bool     m_continuous; 
+    /** States whether the name of the layer must be shown (default is true). */
+    bool     m_showName;  
+    /** select if the layer should draw only inside margins or over all DC */
+    bool     m_drawOutsideMargins; 
+    /** Define layer type, which is assigned by constructor */
+    mpLayerType m_type; 
+	/** Toggles layer visibility */
+	bool 	m_visible;	
     DECLARE_DYNAMIC_CLASS(mpLayer)
 };
 
@@ -407,10 +428,14 @@ public:
 	const wxRect& GetRectangle() { return m_dim; };
 
 protected:
-    wxRect m_dim;           //!< The bounding rectangle of the box. It may be resized dynamically by the Plot method.
-    wxPoint m_reference;    //!< Holds the reference point for movements
-    wxBrush m_brush;        //!< The brush to be used for the background
-    int m_winX, m_winY;     //!< Holds the mpWindow size. Used to rescale position when window is resized.
+    /** The bounding rectangle of the box. It may be resized dynamically by the Plot method. */
+    wxRect m_dim;           
+    /** Holds the reference point for movements */
+    wxPoint m_reference;    
+    /** The brush to be used for the background */
+    wxBrush m_brush;        
+    /** Holds the mpWindow size. Used to rescale position when window is resized. */
+    int m_winX, m_winY;     
 
     DECLARE_DYNAMIC_CLASS(mpInfoLayer)
 };
@@ -443,7 +468,8 @@ public:
     virtual void   Plot(wxDC & dc, mpWindow & w);
 
 protected:
-    wxString m_content; //!< string holding the coordinates to be drawn.
+    /** string holding the coordinates to be drawn. */
+    wxString m_content; 
 };
 
 /** @class mpInfoLegend
@@ -558,7 +584,8 @@ public:
     virtual void Plot(wxDC & dc, mpWindow & w);
 
 protected:
-    int m_flags; //!< Holds label alignment
+    /** Holds label alignment */
+    int m_flags; 
 
     DECLARE_DYNAMIC_CLASS(mpFX)
 };
@@ -590,7 +617,8 @@ public:
     virtual void Plot(wxDC & dc, mpWindow & w);
 
 protected:
-    int m_flags; //!< Holds label alignment
+    /** Holds label alignment */
+    int m_flags; 
 
     DECLARE_DYNAMIC_CLASS(mpFY)
 };
@@ -629,7 +657,8 @@ public:
 
 
 protected:
-    int m_flags; //!< Holds label alignment
+    /** Holds label alignment */
+    int m_flags; 
 
 	// Data to calculate label positioning
 	wxCoord maxDrawX, minDrawX, maxDrawY, minDrawY;
@@ -672,7 +701,8 @@ public:
     virtual void Plot(wxDC & dc, mpWindow & w);
 
 protected:
-    int m_flags; //!< Holds label alignment
+    /** Holds label alignment */
+    int m_flags; 
 
     DECLARE_DYNAMIC_CLASS(mpProfile)
 };
@@ -739,10 +769,14 @@ public:
 	const wxString& SetLabelFormat() { return m_labelFormat; };
 
 protected:
-    int m_flags; //!< Flag for axis alignment
-    bool m_ticks; //!< Flag to toggle between ticks or grid
-    unsigned int m_labelType; //!< Select labels mode: mpX_NORMAL for normal labels, mpX_TIME for time axis in hours, minutes, seconds
-	wxString m_labelFormat; //!< Format string used to print labels
+    /** Flag for axis alignment */
+    int m_flags; 
+    /** Flag to toggle between ticks or grid */
+    bool m_ticks; 
+    /** Select labels mode: mpX_NORMAL for normal labels, mpX_TIME for time axis in hours, minutes, seconds */
+    unsigned int m_labelType; 
+	/** Format string used to print labels */
+	wxString m_labelFormat; 
 
     DECLARE_DYNAMIC_CLASS(mpScaleX)
 };
@@ -792,9 +826,12 @@ public:
 	const wxString& SetLabelFormat() { return m_labelFormat; };
 
 protected:
-    int m_flags; //!< Flag for axis alignment
-    bool m_ticks; //!< Flag to toggle between ticks or grid
-	wxString m_labelFormat; //!< Format string used to print labels
+    /** Flag for axis alignment */
+    int m_flags; 
+    /** Flag to toggle between ticks or grid */
+    bool m_ticks; 
+	/** Format string used to print labels */
+	wxString m_labelFormat; 
 
     DECLARE_DYNAMIC_CLASS(mpScaleY)
 };
@@ -1188,29 +1225,51 @@ public:
     virtual bool UpdateBBox();
 
 protected:
-    void OnPaint         (wxPaintEvent     &event); //!< Paint handler, will plot all attached layers
-    void OnSize          (wxSizeEvent      &event); //!< Size handler, will update scroll bar sizes
+    /** Paint handler, will plot all attached layers */
+    void OnPaint         (wxPaintEvent     &event); 
+    /** Size handler, will update scroll bar sizes */
+    void OnSize          (wxSizeEvent      &event); 
     // void OnScroll2       (wxScrollWinEvent &event); //!< Scroll handler, will move canvas
-    void OnShowPopupMenu (wxMouseEvent     &event); //!< Mouse handler, will show context menu
-    void OnMouseRightDown(wxMouseEvent     &event); //!< Mouse handler, for detecting when the user drags with the right button or just "clicks" for the menu
-    void OnCenter        (wxCommandEvent   &event); //!< Context menu handler
-    void OnFit           (wxCommandEvent   &event); //!< Context menu handler
-    void OnZoomIn        (wxCommandEvent   &event); //!< Context menu handler
-    void OnZoomOut       (wxCommandEvent   &event); //!< Context menu handler
-    void OnLockAspect    (wxCommandEvent   &event); //!< Context menu handler
-    void OnMouseHelp     (wxCommandEvent   &event); //!< Context menu handler
-    void OnPrintMenu     (wxCommandEvent   &event); //!< Context menu handler
-    void OnMouseWheel    (wxMouseEvent     &event); //!< Mouse handler for the wheel
-    void OnMouseMove     (wxMouseEvent     &event); //!< Mouse handler for mouse motion (for pan)
-    void OnMouseLeftDown (wxMouseEvent     &event); //!< Mouse left click (for rect zoom)
-    void OnMouseLeftRelease (wxMouseEvent  &event); //!< Mouse left click (for rect zoom)
-    void OnScrollThumbTrack (wxScrollWinEvent &event); //!< Scroll thumb on scroll bar moving
-    void OnScrollPageUp     (wxScrollWinEvent &event); //!< Scroll page up
-    void OnScrollPageDown   (wxScrollWinEvent &event); //!< Scroll page down
-    void OnScrollLineUp     (wxScrollWinEvent &event); //!< Scroll line up
-    void OnScrollLineDown   (wxScrollWinEvent &event); //!< Scroll line down
-    void OnScrollTop        (wxScrollWinEvent &event); //!< Scroll to top
-    void OnScrollBottom     (wxScrollWinEvent &event); //!< Scroll to bottom
+    /** Mouse handler, will show context menu */
+    void OnShowPopupMenu (wxMouseEvent     &event); 
+    /** Mouse handler, for detecting when the user drags with the right button or just "clicks" for the menu */
+    void OnMouseRightDown(wxMouseEvent     &event); 
+    /** Context menu handler */
+    void OnCenter        (wxCommandEvent   &event); 
+    /** Context menu handler */
+    void OnFit           (wxCommandEvent   &event); 
+    /** Context menu handler */
+    void OnZoomIn        (wxCommandEvent   &event); 
+    /** Context menu handler */
+    void OnZoomOut       (wxCommandEvent   &event); 
+    /** Context menu handler */
+    void OnLockAspect    (wxCommandEvent   &event); 
+    /** Context menu handler */
+    void OnMouseHelp     (wxCommandEvent   &event); 
+    /** Context menu handler */
+    void OnPrintMenu     (wxCommandEvent   &event); 
+    /** Mouse handler for the wheel */
+    void OnMouseWheel    (wxMouseEvent     &event); 
+    /** Mouse handler for mouse motion (for pan) */
+    void OnMouseMove     (wxMouseEvent     &event); 
+    /** Mouse left click (for rect zoom) */
+    void OnMouseLeftDown (wxMouseEvent     &event); 
+    /** Mouse left click (for rect zoom) */
+    void OnMouseLeftRelease (wxMouseEvent  &event); 
+    /** Scroll thumb on scroll bar moving */
+    void OnScrollThumbTrack (wxScrollWinEvent &event); 
+    /** Scroll page up */
+    void OnScrollPageUp     (wxScrollWinEvent &event); 
+    /** Scroll page down */
+    void OnScrollPageDown   (wxScrollWinEvent &event); 
+    /** Scroll line up */
+    void OnScrollLineUp     (wxScrollWinEvent &event); 
+    /** Scroll line down */
+    void OnScrollLineDown   (wxScrollWinEvent &event); 
+    /** Scroll to top */
+    void OnScrollTop        (wxScrollWinEvent &event); 
+    /** Scroll to bottom */
+    void OnScrollBottom     (wxScrollWinEvent &event); 
 
     void DoScrollCalc    (const int position, const int orientation);
 
@@ -1220,26 +1279,44 @@ protected:
     void DoZoomOutYCalc  (const int         staticYpixel);
 
     //wxList m_layers;    //!< List of attached plot layers
-    wxLayerList m_layers; //!< List of attached plot layers
-    wxMenu m_popmenu;   //!< Canvas' context menu
-    bool   m_lockaspect;//!< Scale aspect is locked or not
+    /** List of attached plot layers */
+    wxLayerList m_layers; 
+    /** Canvas' context menu */
+    wxMenu m_popmenu;   
+    /** Scale aspect is locked or not */
+    bool   m_lockaspect;
     // bool   m_coordTooltip; //!< Selects whether to show coordinate tooltip
-	wxColour m_bgColour;	//!< Background Colour
-	wxColour m_fgColour;	//!< Foreground Colour
-	wxColour m_axColour;	//!< Axes Colour
+	/** Background Colour */
+	wxColour m_bgColour;	
+	/** Foreground Colour */
+	wxColour m_fgColour;	
+	/** Axes Colour */
+	wxColour m_axColour;	
 
-    double m_minX;      //!< Global layer bounding box, left border incl.
-    double m_maxX;      //!< Global layer bounding box, right border incl.
-    double m_minY;      //!< Global layer bounding box, bottom border incl.
-    double m_maxY;      //!< Global layer bounding box, top border incl.
-    double m_scaleX;    //!< Current view's X scale
-    double m_scaleY;    //!< Current view's Y scale
-    double m_posX;      //!< Current view's X position
-    double m_posY;      //!< Current view's Y position
-    int    m_scrX;      //!< Current view's X dimension
-    int    m_scrY;      //!< Current view's Y dimension
-    int    m_clickedX;  //!< Last mouse click X position, for centering and zooming the view
-    int    m_clickedY;  //!< Last mouse click Y position, for centering and zooming the view
+    /** Global layer bounding box, left border incl. */
+    double m_minX;      
+    /** Global layer bounding box, right border incl. */
+    double m_maxX;      
+    /** Global layer bounding box, bottom border incl. */
+    double m_minY;      
+    /** Global layer bounding box, top border incl. */
+    double m_maxY;      
+    /** Current view's X scale */
+    double m_scaleX;    
+    /** Current view's Y scale */
+    double m_scaleY;    
+    /** Current view's X position */
+    double m_posX;      
+    /** Current view's Y position */
+    double m_posY;      
+    /** Current view's X dimension */
+    int    m_scrX;      
+    /** Current view's Y dimension */
+    int    m_scrY;      
+    /** Last mouse click X position, for centering and zooming the view */
+    int    m_clickedX;  
+    /** Last mouse click Y position, for centering and zooming the view */
+    int    m_clickedY;  
 
     /** These are updated in Fit() only, and may be different from the real borders (layer coordinates) only if lock aspect ratio is true.
       */
@@ -1247,17 +1324,25 @@ protected:
 
     int m_marginTop, m_marginRight, m_marginBottom, m_marginLeft;
 
-    int         m_last_lx,m_last_ly;   //!< For double buffering
-    wxMemoryDC  m_buff_dc;             //!< For double buffering
-    wxBitmap    *m_buff_bmp;            //!< For double buffering
-    bool        m_enableDoubleBuffer;  //!< For double buffering
-    bool        m_enableMouseNavigation;  //!< For pan/zoom with the mouse.
+    /** For double buffering */
+    int         m_last_lx,m_last_ly;   
+    /** For double buffering */
+    wxMemoryDC  m_buff_dc;             
+    /** For double buffering */
+    wxBitmap    *m_buff_bmp;            
+    /** For double buffering */
+    bool        m_enableDoubleBuffer;  
+    /** For pan/zoom with the mouse. */
+    bool        m_enableMouseNavigation;  
     bool        m_mouseMovedAfterRightClick;
-    long        m_mouseRClick_X,m_mouseRClick_Y; //!< For the right button "drag" feature
-    int         m_mouseLClick_X, m_mouseLClick_Y; //!< Starting coords for rectangular zoom selection
+    /** For the right button "drag" feature */
+    long        m_mouseRClick_X,m_mouseRClick_Y; 
+    /** Starting coords for rectangular zoom selection */
+    int         m_mouseLClick_X, m_mouseLClick_Y; 
     bool        m_enableScrollBars;
     int         m_scrollX, m_scrollY;
-    mpInfoLayer* m_movingInfoLayer;      //!< For moving info layers over the window area
+    /** For moving info layers over the window area */
+    mpInfoLayer* m_movingInfoLayer;      
 
     DECLARE_DYNAMIC_CLASS(mpWindow)
     DECLARE_EVENT_TABLE()
@@ -1367,7 +1452,8 @@ public:
     double GetMaxY() { return m_maxY; }
 
 protected:
-    int     m_flags; //!< Holds label alignment
+    /** Holds label alignment */
+    int     m_flags; 
 
     DECLARE_DYNAMIC_CLASS(mpFXYVector)
 };
@@ -1398,8 +1484,10 @@ public:
     virtual bool HasBBox() { return FALSE; }
 
 protected:
-    int m_offsetx; //!< Holds offset for X in percentage
-    int m_offsety; //!< Holds offset for Y in percentage
+    /** Holds offset for X in percentage */
+    int m_offsetx; 
+    /** Holds offset for Y in percentage */
+    int m_offsety; 
 
     DECLARE_DYNAMIC_CLASS(mpText)
 };
@@ -1501,7 +1589,8 @@ public:
     void SetAlign(int align) { m_flags = align; };
 
 protected:
-    int m_flags; //!< Holds label alignment
+    /** Holds label alignment */
+    int m_flags; 
 
     /** The coordinates of the object (orientation "phi" is in radians).
       */
@@ -1727,7 +1816,8 @@ public:
     void SetAlign(int align) { m_flags = align; };
 
 protected:
-    int m_flags; //!< Holds label alignment
+    /** Holds label alignment */
+    int m_flags; 
 
     /** The internal copy of the Bitmap:
       */

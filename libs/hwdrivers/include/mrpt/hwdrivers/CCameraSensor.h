@@ -300,7 +300,8 @@ namespace mrpt
 			// Options for any grabber_type ------------------------------------
 			poses::CPose3D m_sensorPose;
 
-			std::string                m_grabber_type; //!< Can be "opencv",...
+			/** Can be "opencv",... */
+			std::string                m_grabber_type; 
 			bool									m_capture_grayscale;
 
 			// Options for grabber_type= opencv  ------------------------------------
@@ -333,18 +334,27 @@ namespace mrpt
 			std::string								m_rawlog_detected_images_dir;
 
 			// Options for grabber_type= swissranger -------------------------------------
-			bool 			m_sr_open_from_usb; //!< true: USB, false: ETH
+			/** true: USB, false: ETH */
+			bool 			m_sr_open_from_usb; 
 			std::string  	m_sr_ip_address;
-			bool 			m_sr_save_3d;			//!< Save the 3D point cloud (default: true)
-			bool 			m_sr_save_range_img;	//!< Save the 2D range image (default: true)
-			bool 			m_sr_save_intensity_img; //!< Save the 2D intensity image (default: true)
-			bool 			m_sr_save_confidence;	//!< Save the estimated confidence 2D image (default: false)
+			/** Save the 3D point cloud (default: true) */
+			bool 			m_sr_save_3d;			
+			/** Save the 2D range image (default: true) */
+			bool 			m_sr_save_range_img;	
+			/** Save the 2D intensity image (default: true) */
+			bool 			m_sr_save_intensity_img; 
+			/** Save the estimated confidence 2D image (default: false) */
+			bool 			m_sr_save_confidence;	
 
 			// Options for grabber_type= XBox kinect -------------------------------------
-			bool 			m_kinect_save_3d;			//!< Save the 3D point cloud (default: true)
-			bool 			m_kinect_save_range_img;	//!< Save the 2D range image (default: true)
-			bool 			m_kinect_save_intensity_img; //!< Save the 2D intensity image (default: true)
-			bool			m_kinect_video_rgb;			//!< Save RGB or IR channels (default:true)
+			/** Save the 3D point cloud (default: true) */
+			bool 			m_kinect_save_3d;			
+			/** Save the 2D range image (default: true) */
+			bool 			m_kinect_save_range_img;	
+			/** Save the 2D intensity image (default: true) */
+			bool 			m_kinect_save_intensity_img; 
+			/** Save RGB or IR channels (default:true) */
+			bool			m_kinect_video_rgb;			
 
 			// Options for grabber type= flycap -----------------------------------------
 			TCaptureOptions_FlyCapture2   m_flycap_options;
@@ -367,7 +377,8 @@ namespace mrpt
 			TCaptureOptions_DUO3D	m_duo3d_options;
 
 			// Other options:
-			bool				m_external_images_own_thread; //!< Whether to launch independent thread
+			/** Whether to launch independent thread */
+			bool				m_external_images_own_thread; 
 
 			/** See the class documentation at the top for expected parameters */
 			void  loadConfig_sensorSpecific(
@@ -376,36 +387,53 @@ namespace mrpt
 
 		private:
 			// Only one of these will be !=nullptr at a time ===========
-			std::unique_ptr<CImageGrabber_OpenCV> m_cap_cv;		//!< The OpenCV capture object.
-			std::unique_ptr<CImageGrabber_dc1394> m_cap_dc1394;	//!< The dc1394 capture object.
-			std::unique_ptr<CImageGrabber_FlyCapture2> m_cap_flycap;     //!< The FlyCapture2 object
-			std::unique_ptr<CImageGrabber_FlyCapture2> m_cap_flycap_stereo_l, m_cap_flycap_stereo_r;     //!< The FlyCapture2 object for stereo pairs
+			/** The OpenCV capture object. */
+			std::unique_ptr<CImageGrabber_OpenCV> m_cap_cv;		
+			/** The dc1394 capture object. */
+			std::unique_ptr<CImageGrabber_dc1394> m_cap_dc1394;	
+			/** The FlyCapture2 object */
+			std::unique_ptr<CImageGrabber_FlyCapture2> m_cap_flycap;     
+			/** The FlyCapture2 object for stereo pairs */
+			std::unique_ptr<CImageGrabber_FlyCapture2> m_cap_flycap_stereo_l, m_cap_flycap_stereo_r;     
 			std::unique_ptr<CStereoGrabber_Bumblebee_libdc1394> m_cap_bumblebee_dc1394;
-			std::unique_ptr<CStereoGrabber_SVS> m_cap_svs;	//!< The svs capture object.
-			std::unique_ptr<CFFMPEG_InputStream> m_cap_ffmpeg;	//!< The FFMPEG capture object
-			std::unique_ptr<mrpt::utils::CFileGZInputStream> m_cap_rawlog;	//!< The input file for rawlogs
-			std::unique_ptr<CSwissRanger3DCamera> m_cap_swissranger; //!< SR 3D camera object.
-			std::unique_ptr<CKinect> m_cap_kinect;    //!< Kinect camera object.
-			std::unique_ptr<COpenNI2Sensor> m_cap_openni2;  //!< OpenNI2 object.
-			std::unique_ptr<std::string> m_cap_image_dir;	//!< Read images from directory
-			std::unique_ptr<CDUO3DCamera> m_cap_duo3d;		//!< The DUO3D capture object
+			/** The svs capture object. */
+			std::unique_ptr<CStereoGrabber_SVS> m_cap_svs;	
+			/** The FFMPEG capture object */
+			std::unique_ptr<CFFMPEG_InputStream> m_cap_ffmpeg;	
+			/** The input file for rawlogs */
+			std::unique_ptr<mrpt::utils::CFileGZInputStream> m_cap_rawlog;	
+			/** SR 3D camera object. */
+			std::unique_ptr<CSwissRanger3DCamera> m_cap_swissranger; 
+			/** Kinect camera object. */
+			std::unique_ptr<CKinect> m_cap_kinect;    
+			/** OpenNI2 object. */
+			std::unique_ptr<COpenNI2Sensor> m_cap_openni2;  
+			/** Read images from directory */
+			std::unique_ptr<std::string> m_cap_image_dir;	
+			/** The DUO3D capture object */
+			std::unique_ptr<CDUO3DCamera> m_cap_duo3d;		
 			// =========================
 
 			int			m_camera_grab_decimator;
 			int			m_camera_grab_decimator_counter;
 
 			int							 m_preview_counter;
-			mrpt::gui::CDisplayWindow::Ptr m_preview_win1,m_preview_win2; //!< Normally we'll use only one window, but for stereo images we'll use two of them.
+			/** Normally we'll use only one window, but for stereo images we'll use two of them. */
+			mrpt::gui::CDisplayWindow::Ptr m_preview_win1,m_preview_win2; 
 
 			/** @name Stuff related to working threads to save images to disk
 			    @{ */
-			unsigned int		m_external_image_saver_count; //!< Number of working threads. Default:1, set to 2 in quad cores.
+			/** Number of working threads. Default:1, set to 2 in quad cores. */
+			unsigned int		m_external_image_saver_count; 
 			std::vector<std::thread>  m_threadImagesSaver;
 
 			bool 	m_threadImagesSaverShouldEnd;
-			std::mutex	m_csToSaveList;		//!< The critical section for m_toSaveList
-			std::vector<TListObservations>	m_toSaveList;		//!< The queues of objects to be returned by getObservations, one for each working thread.
-			void thread_save_images(unsigned int my_working_thread_index); //!< Thread to save images to files.
+			/** The critical section for m_toSaveList */
+			std::mutex	m_csToSaveList;		
+			/** The queues of objects to be returned by getObservations, one for each working thread. */
+			std::vector<TListObservations>	m_toSaveList;		
+			/** Thread to save images to files. */
+			void thread_save_images(unsigned int my_working_thread_index); 
 
 			TPreSaveUserHook  m_hook_pre_save;
 			void            * m_hook_pre_save_param;

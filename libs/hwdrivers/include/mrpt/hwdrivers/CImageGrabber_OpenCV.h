@@ -28,7 +28,8 @@ namespace mrpt
 			CAMERA_CV_VFL,
 			CAMERA_CV_VFW,
 			CAMERA_CV_MIL,
-			CAMERA_CV_DSHOW //!< Valid only with OpenCV >= 1.1.0
+			/** Valid only with OpenCV >= 1.1.0 */
+			CAMERA_CV_DSHOW 
 		};
 
 		/** Options used when creating an OpenCV capture object
@@ -45,10 +46,14 @@ namespace mrpt
 				ieee1394_grayscale(false)
 			{}
 
-			int		frame_width,frame_height;	//!< (All cameras) Capture resolution (0: Leave the default)
-			double  gain;			//!< (All cameras) Camera gain (0: Leave the default)
-			double 	ieee1394_fps;	//!< (IEEE1394 cameras) Frame rate for the capture (0: Leave the default).
-			bool    ieee1394_grayscale;	//!< (IEEE1394 cameras) Whether to grab grayscale images (Default=false).
+			/** (All cameras) Capture resolution (0: Leave the default) */
+			int		frame_width,frame_height;	
+			/** (All cameras) Camera gain (0: Leave the default) */
+			double  gain;			
+			/** (IEEE1394 cameras) Frame rate for the capture (0: Leave the default). */
+			double 	ieee1394_fps;	
+			/** (IEEE1394 cameras) Whether to grab grayscale images (Default=false). */
+			bool    ieee1394_grayscale;	
 		};
 
 		/** A class for grabing images from a "OpenCV"-compatible camera, or from an AVI video file.

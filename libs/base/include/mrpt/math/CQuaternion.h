@@ -73,14 +73,22 @@ namespace mrpt
 		 */
 
 
-		inline T  r()const {return (*this)[0];}	//!< Return r coordinate of the quaternion
-		inline T  x()const {return (*this)[1];}	//!< Return x coordinate of the quaternion
-		inline T  y()const {return (*this)[2];}	//!< Return y coordinate of the quaternion
-		inline T  z()const {return (*this)[3];}	//!< Return z coordinate of the quaternion
-		inline void  r(const T r) {(*this)[0]=r;}	//!< Set r coordinate of the quaternion
-		inline void  x(const T x) {(*this)[1]=x;}	//!< Set x coordinate of the quaternion
-		inline void  y(const T y) {(*this)[2]=y;}	//!< Set y coordinate of the quaternion
-		inline void  z(const T z) {(*this)[3]=z;}	//!< Set z coordinate of the quaternion
+		/** Return r coordinate of the quaternion */
+		inline T  r()const {return (*this)[0];}	
+		/** Return x coordinate of the quaternion */
+		inline T  x()const {return (*this)[1];}	
+		/** Return y coordinate of the quaternion */
+		inline T  y()const {return (*this)[2];}	
+		/** Return z coordinate of the quaternion */
+		inline T  z()const {return (*this)[3];}	
+		/** Set r coordinate of the quaternion */
+		inline void  r(const T r) {(*this)[0]=r;}	
+		/** Set x coordinate of the quaternion */
+		inline void  x(const T x) {(*this)[1]=x;}	
+		/** Set y coordinate of the quaternion */
+		inline void  y(const T y) {(*this)[2]=y;}	
+		/** Set z coordinate of the quaternion */
+		inline void  z(const T z) {(*this)[3]=z;}	
 
 		/**	Set this quaternion to the rotation described by a 3D (Rodrigues) rotation vector \f$ \mathbf{v} \f$:
 		  *   If \f$ \mathbf{v}=0 \f$, then the quaternion is \f$ \mathbf{q} = [1 ~ 0 ~ 0 ~ 0]^\top \f$, otherwise:
@@ -405,8 +413,10 @@ namespace mrpt
 
 		};	// end class
 
-		typedef CQuaternion<double> CQuaternionDouble;	//!< A quaternion of data type "double"
-		typedef CQuaternion<float>  CQuaternionFloat;	//!< A quaternion of data type "float"
+		/** A quaternion of data type "double" */
+		typedef CQuaternion<double> CQuaternionDouble;	
+		/** A quaternion of data type "float" */
+		typedef CQuaternion<float>  CQuaternionFloat;	
 
 	}	// end namespace
 

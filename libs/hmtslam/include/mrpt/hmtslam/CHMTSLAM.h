@@ -88,10 +88,12 @@ namespace mrpt
 			struct TMessageLSLAMfromAA
 			{
 				using Ptr = std::shared_ptr<TMessageLSLAMfromAA>;
-				THypothesisID				hypothesisID; //!< The hypothesis ID (LMH) for these results.
+				/** The hypothesis ID (LMH) for these results. */
+				THypothesisID				hypothesisID; 
 				std::vector< TPoseIDList >	partitions;
 
-				void dumpToConsole( ) const;  //!< for debugging only
+				/** for debugging only */
+				void dumpToConsole( ) const;  
 			};
 
 			/** Message definition:
@@ -102,8 +104,10 @@ namespace mrpt
 			struct TMessageLSLAMtoTBI
 			{
 				using Ptr = std::shared_ptr<TMessageLSLAMtoTBI>;
-				CLocalMetricHypothesis	*LMH;		//!< The LMH
-				TNodeIDList				 areaIDs;	//!< The areas to consider.
+				/** The LMH */
+				CLocalMetricHypothesis	*LMH;		
+				/** The areas to consider. */
+				TNodeIDList				 areaIDs;	
 			};
 
 			/** Message definition:
@@ -114,16 +118,19 @@ namespace mrpt
 			struct TMessageLSLAMfromTBI
 			{
 				using Ptr = std::shared_ptr<TMessageLSLAMfromTBI>;
-				THypothesisID				hypothesisID; //!< The hypothesis ID (LMH) for these results.
+				/** The hypothesis ID (LMH) for these results. */
+				THypothesisID				hypothesisID; 
 
-				CHMHMapNode::TNodeID		cur_area; //!< The area for who the loop-closure has been computed.
+				/** The area for who the loop-closure has been computed. */
+				CHMHMapNode::TNodeID		cur_area; 
 
 				struct TBI_info
 				{
 					TBI_info() : log_lik(0),delta_new_cur(0)
 					{}
 
-					double		log_lik;  //!< Log likelihood for this loop-closure.
+					/** Log likelihood for this loop-closure. */
+					double		log_lik;  
 
 					/** Depending on the loop-closure engine, an guess of the relative pose of "area_new" relative to "cur_area" is given here.
 					  *  If the SOG contains 0 modes, then the engine does not provide this information.
@@ -139,7 +146,8 @@ namespace mrpt
 			};
 
 
-			utils::CMessageQueue	m_LSLAM_queue;  //!< LSLAM thread input queue, messages of type CHMTSLAM::TMessageLSLAMfromAA
+			/** LSLAM thread input queue, messages of type CHMTSLAM::TMessageLSLAMfromAA */
+			utils::CMessageQueue	m_LSLAM_queue;  
 
 			/** @} */
 
@@ -218,7 +226,8 @@ namespace mrpt
 			/** Critical section for accessing m_map */
 			mutable std::mutex	m_map_cs;
 
-			mutable std::mutex	m_LMHs_cs; //!< Critical section for accessing m_LMHs
+			/** Critical section for accessing m_LMHs */
+			mutable std::mutex	m_LMHs_cs; 
 
 			/** @} */
 
@@ -241,7 +250,8 @@ namespace mrpt
 
 			/** @name HMT-SLAM sub-processes.
 				@{ */
-			void LSLAM_process_message( const mrpt::utils::CMessage &msg ); //!< Auxiliary method within thread_LSLAM
+			/** Auxiliary method within thread_LSLAM */
+			void LSLAM_process_message( const mrpt::utils::CMessage &msg ); 
 
 			/** No critical section locks are assumed at the entrance of this method.
 			  */
@@ -374,8 +384,10 @@ namespace mrpt
 
 			/** @name The important data.
 				@{ */
-			CHierarchicalMHMap									m_map;	//!< The hiearchical, multi-hypothesis graph-based map.
-			aligned_containers<THypothesisID, CLocalMetricHypothesis>::map_t m_LMHs;	//!< The list of LMHs at each instant.
+			/** The hiearchical, multi-hypothesis graph-based map. */
+			CHierarchicalMHMap									m_map;	
+			/** The list of LMHs at each instant. */
+			aligned_containers<THypothesisID, CLocalMetricHypothesis>::map_t m_LMHs;	
 			/** @} */
 
 			/** Called from LSLAM thread when log files must be created.
@@ -400,8 +412,10 @@ namespace mrpt
 				void dumpToTextStream(mrpt::utils::CStream &out) const override; // See base docs
 
 
-				std::string	LOG_OUTPUT_DIR;		//!< [LOGGING] If it is not an empty string (""), a directory with that name will be created and log files save there.
-				int			LOG_FREQUENCY;		//!< [LOGGING] One SLAM iteration out of "LOGGING_logFrequency", a log file will be generated.
+				/** [LOGGING] If it is not an empty string (""), a directory with that name will be created and log files save there. */
+				std::string	LOG_OUTPUT_DIR;		
+				/** [LOGGING] One SLAM iteration out of "LOGGING_logFrequency", a log file will be generated. */
+				int			LOG_FREQUENCY;		
 
 				/** [LSLAM] The method to use for local SLAM
 				  */
@@ -433,11 +447,14 @@ namespace mrpt
 				*/
 				mrpt::slam::CIncrementalMapPartitioner::TOptions	AA_options;
 
-				mrpt::maps::TSetOfMetricMapInitializers		defaultMapsInitializers;  //!< The default set of maps to be created in each particle
-				bayes::CParticleFilter::TParticleFilterOptions pf_options;	//!< These params are used from every LMH object.
+				/** The default set of maps to be created in each particle */
+				mrpt::maps::TSetOfMetricMapInitializers		defaultMapsInitializers;  
+				/** These params are used from every LMH object. */
+				bayes::CParticleFilter::TParticleFilterOptions pf_options;	
 				mrpt::slam::TKLDParams						KLD_params;
 
-				int  random_seed;	//!< 0 means randomize, use any other value to have repetitive experiments.
+				/** 0 means randomize, use any other value to have repetitive experiments. */
+				int  random_seed;	
 
 				/** A list of topological loop-closure detectors to use: can be one or more from this list:
 				  *  'gridmaps': Occupancy Grid matching.
@@ -445,8 +462,10 @@ namespace mrpt
 				  */
 				vector_string				TLC_detectors;
 
-				CTopLCDetector_GridMatching::TOptions	TLC_grid_options;	//!< Options passed to this TLC constructor
-				CTopLCDetector_FabMap::TOptions	TLC_fabmap_options;	//!< Options passed to this TLC constructor
+				/** Options passed to this TLC constructor */
+				CTopLCDetector_GridMatching::TOptions	TLC_grid_options;	
+				/** Options passed to this TLC constructor */
+				CTopLCDetector_FabMap::TOptions	TLC_fabmap_options;	
 
 			} m_options;
 
@@ -549,7 +568,8 @@ namespace mrpt
 				const bayes::CParticleFilter::TParticleFilterOptions &PF_options );
 
 		protected:
-			bool					m_insertNewRobotPose; //!<  For use within PF callback methods
+			/**  For use within PF callback methods */
+			bool					m_insertNewRobotPose; 
 
 			/** Auxiliary structure
 			  */

@@ -48,13 +48,15 @@ namespace kinematics
 		 *  @{ */
 		struct TVelRampCmd
 		{
-			double issue_time;  //!< time when the cmd was issued. (<0: invalid, means there are no pending cmds to execute)
+			/** time when the cmd was issued. (<0: invalid, means there are no pending cmds to execute) */
+			double issue_time;  
 			double target_vel_x, target_vel_y, ramp_time, rot_speed, dir;
 			mrpt::math::TTwist2D init_vel;
 
 			TVelRampCmd(): issue_time(-1.0) {}
 		};
-		TVelRampCmd m_vel_ramp_cmd; //!< the last cmd received from the user.
+		/** the last cmd received from the user. */
+		TVelRampCmd m_vel_ramp_cmd; 
 		/** @} */
 		
 		void internal_simulControlStep(const double dt) override;

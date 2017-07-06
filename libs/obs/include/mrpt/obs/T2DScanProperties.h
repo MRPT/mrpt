@@ -24,9 +24,11 @@ namespace obs
 	struct OBS_IMPEXP T2DScanProperties {
 		size_t  nRays;
 		double  aperture;
-		bool    rightToLeft; //!< Angles storage order: true=counterclockwise; false=clockwise
+		/** Angles storage order: true=counterclockwise; false=clockwise */
+		bool    rightToLeft; 
 	};
-	bool OBS_IMPEXP operator<(const T2DScanProperties&a, const T2DScanProperties&b);	//!< Order operator, so T2DScanProperties can appear in associative STL containers.
+	/** Order operator, so T2DScanProperties can appear in associative STL containers. */
+	bool OBS_IMPEXP operator<(const T2DScanProperties&a, const T2DScanProperties&b);	
 
 } // End of namespace
 } // End of namespace

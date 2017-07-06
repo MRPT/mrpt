@@ -25,10 +25,14 @@ namespace mrpt
 			ts_map_entry() : used(false), first( KEY() ), second() {}
 		};
 
-		void BASE_IMPEXP reduced_hash(const std::string &value, uint8_t &hash); //!< hash function used by ts_hash_map. Uses dbj2 method
-		void BASE_IMPEXP reduced_hash(const std::string &value, uint16_t &hash); //!< hash function used by ts_hash_map. Uses dbj2 method
-		void BASE_IMPEXP reduced_hash(const std::string &value, uint32_t &hash); //!< hash function used by ts_hash_map. Uses dbj2 method
-		void BASE_IMPEXP reduced_hash(const std::string &value, uint64_t &hash); //!< hash function used by ts_hash_map. Uses dbj2 method
+		/** hash function used by ts_hash_map. Uses dbj2 method */
+		void BASE_IMPEXP reduced_hash(const std::string &value, uint8_t &hash); 
+		/** hash function used by ts_hash_map. Uses dbj2 method */
+		void BASE_IMPEXP reduced_hash(const std::string &value, uint16_t &hash); 
+		/** hash function used by ts_hash_map. Uses dbj2 method */
+		void BASE_IMPEXP reduced_hash(const std::string &value, uint32_t &hash); 
+		/** hash function used by ts_hash_map. Uses dbj2 method */
+		void BASE_IMPEXP reduced_hash(const std::string &value, uint64_t &hash); 
 
 		/** A thread-safe (ts) container which minimally emulates a std::map<>'s [] and find() methods but which is implemented as a linear vector indexed by a hash of KEY.
 		  * Any custom hash function can be implemented, we don't rely by default on C++11 std::hash<> due to its limitation in some implementations.
@@ -99,8 +103,10 @@ namespace mrpt
 			};
 			/** @} */
 		private:
-			vec_t  m_vec;  //!< The actual container
-			size_t m_size; //!< Number of elements accessed with write access so far
+			/** The actual container */
+			vec_t  m_vec;  
+			/** Number of elements accessed with write access so far */
+			size_t m_size; 
 
 		public:
 			/** @name Constructors, read/write access and other operations

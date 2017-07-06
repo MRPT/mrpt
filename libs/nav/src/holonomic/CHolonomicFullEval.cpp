@@ -53,7 +53,8 @@ struct TGap
 	int    k_from, k_to;
 	double min_eval, max_eval;
 	bool   contains_target_k;
-	int    k_best_eval; //!< Direction with the best evaluation inside the gap.
+	/** Direction with the best evaluation inside the gap. */
+	int    k_best_eval; 
 
 	TGap() :
 		k_from(-1), k_to(-1), 

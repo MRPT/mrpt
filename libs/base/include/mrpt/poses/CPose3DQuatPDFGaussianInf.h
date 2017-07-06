@@ -56,8 +56,10 @@ namespace mrpt
 		CPose3DQuatPDFGaussianInf( const CPose3DQuat &init_Mean, const mrpt::math::CMatrixDouble77 &init_CovInv );
 
 
-		CPose3DQuat                  mean;  //!< The mean value
-		mrpt::math::CMatrixDouble77  cov_inv; //!< The 7x7 information matrix (the inverse of the covariance)
+		/** The mean value */
+		CPose3DQuat                  mean;  
+		/** The 7x7 information matrix (the inverse of the covariance) */
+		mrpt::math::CMatrixDouble77  cov_inv; 
 
 		inline const CPose3DQuat & getPoseMean() const { return mean; }
 		inline       CPose3DQuat & getPoseMean()       { return mean; }
@@ -77,7 +79,8 @@ namespace mrpt
 		/** Returns the information (inverse covariance) matrix (a STATE_LEN x STATE_LEN matrix) \sa getMean, getCovarianceAndMean */
 		void getInformationMatrix(mrpt::math::CMatrixDouble77 &inf) const override { inf=cov_inv; }
 
-		void copyFrom(const CPose3DQuatPDF &o) override; //!< Copy operator, translating if necesary (for example, between particles and gaussian representations)
+		/** Copy operator, translating if necesary (for example, between particles and gaussian representations) */
+		void copyFrom(const CPose3DQuatPDF &o) override; 
 
 		/** Save the PDF to a text file, containing the 3D pose in the first line (x y z qr qx qy qz), then the information matrix in the next 7 lines. */
 		void saveToTextFile(const std::string &file) const override;
@@ -91,9 +94,12 @@ namespace mrpt
 		void changeCoordinatesReference(  const CPose3D &newReferenceBase ) override;
 
 
-		void drawSingleSample( CPose3DQuat &outPart ) const override; //!< Draws a single sample from the distribution
-		void drawManySamples( size_t N, std::vector<mrpt::math::CVectorDouble> & outSamples ) const override; //!< Draws a number of samples from the distribution, and saves as a list of 1x7 vectors, where each row contains a (x,y,z,qr,qx,qy,qz) datum
-		void inverse(CPose3DQuatPDF &o) const override; //!< Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF
+		/** Draws a single sample from the distribution */
+		void drawSingleSample( CPose3DQuat &outPart ) const override; 
+		/** Draws a number of samples from the distribution, and saves as a list of 1x7 vectors, where each row contains a (x,y,z,qr,qx,qy,qz) datum */
+		void drawManySamples( size_t N, std::vector<mrpt::math::CVectorDouble> & outSamples ) const override; 
+		/** Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF */
+		void inverse(CPose3DQuatPDF &o) const override; 
 
 		/** Unary - operator, returns the PDF of the inverse pose.  */
 		inline CPose3DQuatPDFGaussianInf operator -() const
@@ -103,12 +109,17 @@ namespace mrpt
 			return p;
 		}
 
-		void operator += ( const CPose3DQuat &Ap); //!< Makes: thisPDF = thisPDF + Ap, where "+" is pose composition (both the mean, and the covariance matrix are updated).
-		void operator += ( const CPose3DQuatPDFGaussianInf &Ap); //!< Makes: thisPDF = thisPDF + Ap, where "+" is pose composition (both the mean, and the covariance matrix are updated) (see formulas in jacobiansPoseComposition ).
-		void operator -= ( const CPose3DQuatPDFGaussianInf &Ap);//!< Makes: thisPDF = thisPDF - Ap, where "-" is pose inverse composition (both the mean, and the covariance matrix are updated).
+		/** Makes: thisPDF = thisPDF + Ap, where "+" is pose composition (both the mean, and the covariance matrix are updated). */
+		void operator += ( const CPose3DQuat &Ap); 
+		/** Makes: thisPDF = thisPDF + Ap, where "+" is pose composition (both the mean, and the covariance matrix are updated) (see formulas in jacobiansPoseComposition ). */
+		void operator += ( const CPose3DQuatPDFGaussianInf &Ap); 
+		/** Makes: thisPDF = thisPDF - Ap, where "-" is pose inverse composition (both the mean, and the covariance matrix are updated). */
+		void operator -= ( const CPose3DQuatPDFGaussianInf &Ap);
 
-		double evaluatePDF( const CPose3DQuat &x ) const; //!< Evaluates the PDF at a given point
-		double  evaluateNormalizedPDF( const CPose3DQuat &x ) const; //!< Evaluates the ratio PDF(x) / PDF(MEAN), that is, the normalized PDF in the range [0,1]
+		/** Evaluates the PDF at a given point */
+		double evaluatePDF( const CPose3DQuat &x ) const; 
+		/** Evaluates the ratio PDF(x) / PDF(MEAN), that is, the normalized PDF in the range [0,1] */
+		double  evaluateNormalizedPDF( const CPose3DQuat &x ) const; 
 
 	}; // End of class def.
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE( CPose3DQuatPDFGaussianInf , CPose3DQuatPDF )

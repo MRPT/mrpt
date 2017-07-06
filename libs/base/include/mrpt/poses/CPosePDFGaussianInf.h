@@ -46,8 +46,10 @@ namespace mrpt
 			/** @name Data fields
 				@{ */
 
-			CPose2D		mean;	//!< The mean value
-			mrpt::math::CMatrixDouble33		cov_inv;	//!< The inverse of the 3x3 covariance matrix (the "information" matrix)
+			/** The mean value */
+			CPose2D		mean;	
+			/** The inverse of the 3x3 covariance matrix (the "information" matrix) */
+			mrpt::math::CMatrixDouble33		cov_inv;	
 
 			/** @} */
 

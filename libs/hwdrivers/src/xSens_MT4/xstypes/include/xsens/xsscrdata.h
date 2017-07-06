@@ -24,10 +24,14 @@
 	This data is unscaled, the bias has not been subtracted and no error correction has been applied.
 */
 struct XsScrData {
-	XsUShortVector	m_acc;	//!< The raw accelerometer data
-	XsUShortVector	m_gyr;	//!< The raw gyroscope data
-	XsUShortVector	m_mag;	//!< The raw magnetometer data
-	uint16_t		m_temp[XS_MAX_TEMPERATURE_CHANNELS];	//!< The temperature data
+	/** The raw accelerometer data */
+	XsUShortVector	m_acc;	
+	/** The raw gyroscope data */
+	XsUShortVector	m_gyr;	
+	/** The raw magnetometer data */
+	XsUShortVector	m_mag;	
+	/** The temperature data */
+	uint16_t		m_temp[XS_MAX_TEMPERATURE_CHANNELS];	
 };
 typedef struct XsScrData XsScrData;
 

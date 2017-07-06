@@ -48,8 +48,10 @@ template <int DIM>
 class BASE_IMPEXP FrameTransformerInterface
 {
 public:
-	typedef typename SE_traits<DIM>::pose_t pose_t;  //!< This will be mapped to CPose2D (DIM=2) or CPose3D (DIM=3)
-	typedef typename SE_traits<DIM>::lightweight_pose_t lightweight_pose_t;  //!< This will be mapped to mrpt::math::TPose2D (DIM=2) or mrpt::math::TPose3D (DIM=3)
+	/** This will be mapped to CPose2D (DIM=2) or CPose3D (DIM=3) */
+	typedef typename SE_traits<DIM>::pose_t pose_t;  
+	/** This will be mapped to mrpt::math::TPose2D (DIM=2) or mrpt::math::TPose3D (DIM=3) */
+	typedef typename SE_traits<DIM>::lightweight_pose_t lightweight_pose_t;  
 
 	FrameTransformerInterface();
 	virtual ~FrameTransformerInterface();
@@ -71,7 +73,8 @@ public:
 		const std::string & source_frame,
 		lightweight_pose_t & child_wrt_parent,
 		const mrpt::system::TTimeStamp query_time = INVALID_TIMESTAMP,
-		const double timeout_secs = .0   //!< Timeout
+		/** Timeout */
+		const double timeout_secs = .0   
 	) = 0;
 
 }; // End of class def.
@@ -101,7 +104,8 @@ public:
 		const std::string & source_frame,
 		typename base_t::pose_t & child_wrt_parent,
 		const mrpt::system::TTimeStamp query_time = INVALID_TIMESTAMP,
-		const double timeout_secs = .0   //!< Timeout
+		/** Timeout */
+		const double timeout_secs = .0   
 	)
 	{
 		typename base_t::lightweight_pose_t p;

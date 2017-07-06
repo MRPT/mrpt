@@ -57,11 +57,16 @@ namespace mrpt
 			mrpt::poses::CPose3DPDFGaussian		m_accumRobotMovement3D;
 			bool					m_accumRobotMovement3DIsValid;
 
-			mrpt::poses::CPoseRandomSampler				m_movementDrawer;						//!< Used in al PF implementations. \sa PF_SLAM_implementation_gatherActionsCheckBothActObs
-			mutable mrpt::math::CVectorDouble			m_pfAuxiliaryPFOptimal_estimatedProb;	//!< Auxiliary variable used in the "pfAuxiliaryPFOptimal" algorithm.
-			mutable mrpt::math::CVectorDouble			m_pfAuxiliaryPFStandard_estimatedProb;	//!< Auxiliary variable used in the "pfAuxiliaryPFStandard" algorithm.
-			mutable mrpt::math::CVectorDouble			m_pfAuxiliaryPFOptimal_maxLikelihood;						//!< Auxiliary variable used in the "pfAuxiliaryPFOptimal" algorithm.
-			mutable std::vector<mrpt::math::TPose3D>	m_pfAuxiliaryPFOptimal_maxLikDrawnMovement;		//!< Auxiliary variable used in the "pfAuxiliaryPFOptimal" algorithm.
+			/** Used in al PF implementations. \sa PF_SLAM_implementation_gatherActionsCheckBothActObs */
+			mrpt::poses::CPoseRandomSampler				m_movementDrawer;						
+			/** Auxiliary variable used in the "pfAuxiliaryPFOptimal" algorithm. */
+			mutable mrpt::math::CVectorDouble			m_pfAuxiliaryPFOptimal_estimatedProb;	
+			/** Auxiliary variable used in the "pfAuxiliaryPFStandard" algorithm. */
+			mutable mrpt::math::CVectorDouble			m_pfAuxiliaryPFStandard_estimatedProb;	
+			/** Auxiliary variable used in the "pfAuxiliaryPFOptimal" algorithm. */
+			mutable mrpt::math::CVectorDouble			m_pfAuxiliaryPFOptimal_maxLikelihood;						
+			/** Auxiliary variable used in the "pfAuxiliaryPFOptimal" algorithm. */
+			mutable std::vector<mrpt::math::TPose3D>	m_pfAuxiliaryPFOptimal_maxLikDrawnMovement;		
 			std::vector<bool>				m_pfAuxiliaryPFOptimal_maxLikMovementDrawHasBeenUsed;
 
 			/**  Compute w[i]*p(z_t | mu_t^i), with mu_t^i being

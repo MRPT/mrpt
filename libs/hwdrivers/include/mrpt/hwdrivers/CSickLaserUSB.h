@@ -62,7 +62,8 @@ namespace mrpt
 			CInterfaceFTDI		*m_usbConnection;
 			std::string			m_serialNumber;
 
-			uint32_t		m_timeStartUI;	//!< Time of the first data packet, for synchronization purposes.
+			/** Time of the first data packet, for synchronization purposes. */
+			uint32_t		m_timeStartUI;	
 			mrpt::system::TTimeStamp	m_timeStartTT;
 
 			/** The sensor 6D pose:

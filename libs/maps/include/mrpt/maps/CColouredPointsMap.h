@@ -213,9 +213,11 @@ namespace mrpt
 				float				d_max;
 			 };
 
-			 TColourOptions	colorScheme;	//!< The options employed when inserting laser scans in the map.
+			 /** The options employed when inserting laser scans in the map. */
+			 TColourOptions	colorScheme;	
 
-			 void resetPointsMinDist( float defValue = 2000.0f ); //!< Reset the minimum-observed-distance buffer for all the points to a predefined value
+			 /** Reset the minimum-observed-distance buffer for all the points to a predefined value */
+			 void resetPointsMinDist( float defValue = 2000.0f ); 
 
 			/** @name PCL library support
 				@{ */
@@ -308,10 +310,14 @@ namespace mrpt
 		private:
 			mrpt::maps::CColouredPointsMap &m_obj;
 		public:
-			typedef float  coords_t;         //!< The type of each point XYZ coordinates
-			static const int HAS_RGB   = 1;  //!< Has any color RGB info?
-			static const int HAS_RGBf  = 1;  //!< Has native RGB info (as floats)?
-			static const int HAS_RGBu8 = 0;  //!< Has native RGB info (as uint8_t)?
+			/** The type of each point XYZ coordinates */
+			typedef float  coords_t;         
+			/** Has any color RGB info? */
+			static const int HAS_RGB   = 1;  
+			/** Has native RGB info (as floats)? */
+			static const int HAS_RGBf  = 1;  
+			/** Has native RGB info (as uint8_t)? */
+			static const int HAS_RGBu8 = 0;  
 
 			/** Constructor (accept a const ref for convenience) */
 			inline PointCloudAdapter(const mrpt::maps::CColouredPointsMap &obj) : m_obj(*const_cast<mrpt::maps::CColouredPointsMap*>(&obj)) { }

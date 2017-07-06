@@ -47,14 +47,18 @@ namespace poses {
 	class BASE_IMPEXP CPoseInterpolatorBase
 	{
 	public:
-		CPoseInterpolatorBase(); //!< Default ctor: empty sequence of poses
+		/** Default ctor: empty sequence of poses */
+		CPoseInterpolatorBase(); 
 
 		/** @name Type definitions and STL-like container interface
 		 * @{ */
 
-		typedef typename mrpt::poses::SE_traits<DIM>::lightweight_pose_t pose_t;  //!< TPose2D or TPose3D
-		typedef typename mrpt::poses::SE_traits<DIM>::pose_t             cpose_t; //!< CPose2D or CPose3D
-		typedef typename mrpt::poses::SE_traits<DIM>::point_t            point_t; //!< TPoint2D or TPoint3D
+		/** TPose2D or TPose3D */
+		typedef typename mrpt::poses::SE_traits<DIM>::lightweight_pose_t pose_t;  
+		/** CPose2D or CPose3D */
+		typedef typename mrpt::poses::SE_traits<DIM>::pose_t             cpose_t; 
+		/** TPoint2D or TPoint3D */
+		typedef typename mrpt::poses::SE_traits<DIM>::point_t            point_t; 
 
 		typedef std::pair<mrpt::system::TTimeStamp,pose_t> TTimePosePair;
 		typedef std::map<mrpt::system::TTimeStamp,pose_t>  TPath;
@@ -96,7 +100,8 @@ namespace poses {
 		  *  It overwrites any previously existing pose at exactly the same time.
 		  */
 		void insert( mrpt::system::TTimeStamp t, const pose_t  &p);
-		void insert( mrpt::system::TTimeStamp t, const cpose_t &p); //!< Overload (slower)
+		/** Overload (slower) */
+		void insert( mrpt::system::TTimeStamp t, const cpose_t &p); 
 
 		/** Returns the pose at a given time, or interpolates using splines if there is not an exact match.
 		  * \param t The time of the point to interpolate.
@@ -105,19 +110,23 @@ namespace poses {
 		  * \return A reference to out_interp
 		  */
 		pose_t  &interpolate(mrpt::system::TTimeStamp t, pose_t  &out_interp, bool &out_valid_interp ) const;
-		cpose_t &interpolate(mrpt::system::TTimeStamp t, cpose_t &out_interp, bool &out_valid_interp) const; //!< \overload (slower)
+		/** \overload (slower) */
+		cpose_t &interpolate(mrpt::system::TTimeStamp t, cpose_t &out_interp, bool &out_valid_interp) const; 
 
-		void clear(); //!< Clears the current sequence of poses
+		/** Clears the current sequence of poses */
+		void clear(); 
 
 		/** Set value of the maximum time to consider interpolation.
 		 * If set to a negative value, the check is disabled (default behavior). */
 		void setMaxTimeInterpolation( double time );
-		double getMaxTimeInterpolation(); //!< Set value of the maximum time to consider interpolation
+		/** Set value of the maximum time to consider interpolation */
+		double getMaxTimeInterpolation(); 
 
 		/** Get the previous CPose3D in the map with a minimum defined distance.
 		* \return true if pose was found, false otherwise */
 		bool getPreviousPoseWithMinDistance( const mrpt::system::TTimeStamp &t, double distance, pose_t  &out_pose );
-		bool getPreviousPoseWithMinDistance( const mrpt::system::TTimeStamp &t, double distance, cpose_t &out_pose ); //!< \overload (slower)
+		/** \overload (slower) */
+		bool getPreviousPoseWithMinDistance( const mrpt::system::TTimeStamp &t, double distance, cpose_t &out_pose ); 
 
 		/** Saves the points in the interpolator to a text file, with this format:
 		  *  Each row contains these elements separated by spaces:
@@ -144,8 +153,10 @@ namespace poses {
 		/** Computes the bounding box in all Euclidean coordinates of the whole path. \exception std::exception On empty path */
 		void getBoundingBox(point_t &minCorner, point_t &maxCorner) const;
 
-		void setInterpolationMethod( TInterpolatorMethod method); //!< Change the method used to interpolate the robot path. The default method at construction is "imSpline". \sa getInterpolationMethod()
-		TInterpolatorMethod getInterpolationMethod() const; //!< Returns the currently set interpolation method.  \sa setInterpolationMethod()
+		/** Change the method used to interpolate the robot path. The default method at construction is "imSpline". \sa getInterpolationMethod() */
+		void setInterpolationMethod( TInterpolatorMethod method); 
+		/** Returns the currently set interpolation method.  \sa setInterpolationMethod() */
+		TInterpolatorMethod getInterpolationMethod() const; 
 
 		/** Filters by averaging one of the components of the pose data within the interpolator. The width of the filter is set by the number of samples.
 		  * \param component	[IN]	The index of the component to filter: 0 (x), 1 (y), 2 (z), 3 (yaw), 4 (pitch) or 5 (roll)
@@ -155,8 +166,10 @@ namespace poses {
 
 
 	protected:
-		TPath m_path; //!< The sequence of poses
-		double               maxTimeInterpolation; //!< Maximum time considered to interpolate. If the difference between the desired timestamp where to interpolate and the next timestamp stored in the map is bigger than this value, the interpolation will not be done.
+		/** The sequence of poses */
+		TPath m_path; 
+		/** Maximum time considered to interpolate. If the difference between the desired timestamp where to interpolate and the next timestamp stored in the map is bigger than this value, the interpolation will not be done. */
+		double               maxTimeInterpolation; 
 		TInterpolatorMethod  m_method;
 
 		void impl_interpolation(

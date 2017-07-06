@@ -193,7 +193,8 @@ namespace mrpt
 		/**  This declaration must be inserted in all CObject classes definition, after the class declaration. */
 #ifdef MRPT_1X_BACKCOMPATIB_SMARTPTR_NAMES
 		#define DEFINE_MRPT_OBJECT_POST_CUSTOM_LINKAGE2(class_name,class_name_LINKAGE_) \
-		using class_name##Ptr = class_name::Ptr; //!< MRPT 1.X backwards-compatible smart pointer name (to be removed in a future version of MRPT! Use CFoo::Ptr instead)
+		/** MRPT 1.X backwards-compatible smart pointer name (to be removed in a future version of MRPT! Use CFoo::Ptr instead) */
+		using class_name##Ptr = class_name::Ptr; 
 #else
 		#define DEFINE_MRPT_OBJECT_POST_CUSTOM_LINKAGE2(class_name,class_name_LINKAGE_)
 #endif

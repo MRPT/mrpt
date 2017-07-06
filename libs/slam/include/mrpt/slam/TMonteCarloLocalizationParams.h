@@ -42,7 +42,8 @@ namespace mrpt
 				*/
 			mrpt::maps::TMetricMapList		metricMaps;
 
-			TKLDParams			KLD_params; //!< Parameters for dynamic sample size, KLD method.
+			/** Parameters for dynamic sample size, KLD method. */
+			TKLDParams			KLD_params; 
 		};
 
 	} // End of namespace

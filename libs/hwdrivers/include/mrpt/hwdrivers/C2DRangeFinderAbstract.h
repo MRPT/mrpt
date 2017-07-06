@@ -45,16 +45,21 @@ namespace mrpt
 			  */
 			std::mutex	m_csChangeStream,m_csLastObservation;
 
-			mrpt::obs::CObservation2DRangeScan::Ptr		m_nextObservation;		//!< A dynamic object used as buffer in doProcess
+			/** A dynamic object used as buffer in doProcess */
+			mrpt::obs::CObservation2DRangeScan::Ptr		m_nextObservation;		
 
-			mrpt::obs::CObservation2DRangeScan::TListExclusionAreasWithRanges 	m_lstExclusionPolys;	//!< A list of optional exclusion polygons, in coordinates relative to the vehicle, that is, taking into account the "sensorPose".
-			std::vector<std::pair<double,double> >  m_lstExclusionAngles; //!< A list of pairs of angles <init,end> such as all sensor ranges falling in those forbiden angles will be marked as invalid.
+			/** A list of optional exclusion polygons, in coordinates relative to the vehicle, that is, taking into account the "sensorPose". */
+			mrpt::obs::CObservation2DRangeScan::TListExclusionAreasWithRanges 	m_lstExclusionPolys;	
+			/** A list of pairs of angles <init,end> such as all sensor ranges falling in those forbiden angles will be marked as invalid. */
+			std::vector<std::pair<double,double> >  m_lstExclusionAngles; 
 
-			bool            m_showPreview; //!< If true, shows a 3D window with a preview of the grabber data
+			/** If true, shows a 3D window with a preview of the grabber data */
+			bool            m_showPreview; 
 			mrpt::gui::CDisplayWindow3D::Ptr m_win;
 
 		protected:
-			utils::CStream					*m_stream;  //!< The I/O channel (will be nullptr if not bound).
+			/** The I/O channel (will be nullptr if not bound). */
+			utils::CStream					*m_stream;  
 
 			/** Should be call by derived classes at "loadConfig" (loads exclusion areas AND exclusion angles).
 			  *  This loads a sequence of vertices of a polygon given by its (x,y) coordinates relative to the vehicle, that is, taking into account the "sensorPose".
@@ -88,10 +93,13 @@ namespace mrpt
 			void processPreview(const mrpt::obs::CObservation2DRangeScan &obs);
 
 		public:
-			C2DRangeFinderAbstract();  //!< Default constructor
-			virtual ~C2DRangeFinderAbstract(); //!< Destructor
+			/** Default constructor */
+			C2DRangeFinderAbstract();  
+			/** Destructor */
+			virtual ~C2DRangeFinderAbstract(); 
 
-			void showPreview(bool enable=true) { m_showPreview=enable; } //!< Enables GUI visualization in real-time
+			/** Enables GUI visualization in real-time */
+			void showPreview(bool enable=true) { m_showPreview=enable; } 
 
 			/** Binds the object to a given I/O channel.
 			  *  The stream object must not be deleted before the destruction of this class.
@@ -106,7 +114,8 @@ namespace mrpt
 				mrpt::obs::CObservation2DRangeScan	&outObservation,
 				bool							&hardwareError );
 
-			void doProcess(); //!< Main method for a CGenericSensor
+			/** Main method for a CGenericSensor */
+			void doProcess(); 
 
 			/** Specific laser scanner "software drivers" must process here new data from the I/O stream, and, if a whole scan has arrived, return it.
 			  *  This method MUST BE CALLED in a timely fashion by the user to allow the proccessing of incoming data. It can be run in a different thread safely.

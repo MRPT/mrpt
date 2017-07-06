@@ -53,9 +53,11 @@ namespace mrpt
 			bool  getStereoObservation( mrpt::obs::CObservationStereoImages &out_observation );
 
 		protected:
-			mrpt::hwdrivers::CImageGrabber_dc1394	*m_firewire_capture;  //!< The actual capture object used in Linux / Mac.
+			/** The actual capture object used in Linux / Mac. */
+			mrpt::hwdrivers::CImageGrabber_dc1394	*m_firewire_capture;  
 
-			bool			m_bInitialized;					//!< If this has been correctly initiated
+			/** If this has been correctly initiated */
+			bool			m_bInitialized;					
 		};	// End of class
 		static_assert(!std::is_copy_constructible<CStereoGrabber_Bumblebee_libdc1394>::value && !std::is_copy_assignable<CStereoGrabber_Bumblebee_libdc1394>::value, "Copy Check");
 	} // End of NS

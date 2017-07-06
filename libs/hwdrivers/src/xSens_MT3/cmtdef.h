@@ -932,7 +932,8 @@ struct CmtVersion {
 struct CmtSyncInSettings {
 	uint16_t	m_mode;
 	uint16_t	m_skipFactor;
-	uint32_t	m_offset;		//!< Offset in ns
+	/** Offset in ns */
+	uint32_t	m_offset;		
 
 #ifndef _CMT_DLL_IMPORT
 	//! default constructor, initializes to the given (default) MT settings
@@ -947,8 +948,10 @@ struct CmtSyncInSettings {
 struct CmtSyncOutSettings {
 	uint16_t	m_mode;
 	uint16_t	m_skipFactor;
-	uint32_t	m_offset;		//!< Offset in ns
-	uint32_t	m_pulseWidth;	//!< Pulse width in ns
+	/** Offset in ns */
+	uint32_t	m_offset;		
+	/** Pulse width in ns */
+	uint32_t	m_pulseWidth;	
 
 #ifndef _CMT_DLL_IMPORT
 	//! default constructor, initializes to the given (default) MT settings
@@ -971,7 +974,8 @@ struct CmtUtcTime
 	uint8_t	m_hour;
 	uint8_t	m_minute;
 	uint8_t	m_second;
-	uint8_t	m_valid;	//!< When set to 1, the time is valid, when set to 2, the time part is valid, but the date may not be valid. when set to 0, the time is invalid and should be ignored.
+	/** When set to 1, the time is valid, when set to 2, the time part is valid, but the date may not be valid. when set to 0, the time is invalid and should be ignored. */
+	uint8_t	m_valid;	
 };
 
 //! A structure for storing device modes
@@ -1056,23 +1060,34 @@ struct CmtDeviceMode2 {
 
 //! A structure for storing scenario information
 struct CmtScenario {
-	uint8_t m_type;		//!< The type of the scenario. When set to 255 in an operation, the 'current' scenario is used.
-	uint8_t m_version;	//!< The version of the scenario.
-	char m_label[CMT_LEN_SCENARIOLABEL+1];		//!< The label of the scenario.
+	/** The type of the scenario. When set to 255 in an operation, the 'current' scenario is used. */
+	uint8_t m_type;		
+	/** The version of the scenario. */
+	uint8_t m_version;	
+	/** The label of the scenario. */
+	char m_label[CMT_LEN_SCENARIOLABEL+1];		
 	//bool m_inSensor;							//!< When set to true, the scenario is available in the sensor
-	char m_filterType;							//!< The type of filter this scenario is intended for '3': XKF-3, '6': XKF-6. \note The value is a character, so XKF-3 is '3', which is hex 0x33
+	/** The type of filter this scenario is intended for '3': XKF-3, '6': XKF-6. \note The value is a character, so XKF-3 is '3', which is hex 0x33 */
+	char m_filterType;							
 };
 
 #define CMT_MAX_OBJECTS		20
 
 enum CmtCallbackSelector {
-	CMT_CALLBACK_ONMEASUREMENTPREPARE	= 0,	//!< Callback function, called right before sending a GotoMeasurement message
-	CMT_CALLBACK_ONMEASUREMENTSTART		= 1,	//!< Callback function, called right after successfully switching to Measurement mode
-	CMT_CALLBACK_ONMEASUREMENTSTOP		= 2,	//!< Callback function, called right before switching from Measurement mode to Config mode
-	CMT_CALLBACK_ONPOSTPROCESS			= 3,	//!< Callback function, called when a full data bundle is available and has been processed by the CMT. The first void* parameter supplied to this function can be handed as the bundle parameter in cmtData... functions to manipulate the newly received bundle.
-	CMT_CALLBACK_ONBYTESRECEIVED		= 4,	//!< Callback function, called when bytes have been read from a port
-	CMT_CALLBACK_ONMESSAGERECEIVED		= 5,	//!< Callback function, called when a full message has been received from a port
-	CMT_CALLBACK_ONMESSAGESENT			= 6		//!< Callback function, called when a full message has been sent by a port
+	/** Callback function, called right before sending a GotoMeasurement message */
+	CMT_CALLBACK_ONMEASUREMENTPREPARE	= 0,	
+	/** Callback function, called right after successfully switching to Measurement mode */
+	CMT_CALLBACK_ONMEASUREMENTSTART		= 1,	
+	/** Callback function, called right before switching from Measurement mode to Config mode */
+	CMT_CALLBACK_ONMEASUREMENTSTOP		= 2,	
+	/** Callback function, called when a full data bundle is available and has been processed by the CMT. The first void* parameter supplied to this function can be handed as the bundle parameter in cmtData... functions to manipulate the newly received bundle. */
+	CMT_CALLBACK_ONPOSTPROCESS			= 3,	
+	/** Callback function, called when bytes have been read from a port */
+	CMT_CALLBACK_ONBYTESRECEIVED		= 4,	
+	/** Callback function, called when a full message has been received from a port */
+	CMT_CALLBACK_ONMESSAGERECEIVED		= 5,	
+	/** Callback function, called when a full message has been sent by a port */
+	CMT_CALLBACK_ONMESSAGESENT			= 6		
 };
 
 enum CmtQueueMode {
@@ -1095,10 +1110,14 @@ struct CmtBinaryData {
 
 //! \brief Structure for storing information about a serial port
 struct CmtPortInfo {
-	uint32_t m_baudrate;	//!< The baudrate at which an Xsens device was detected
-	uint32_t m_deviceId;	//!< The device Id of the detected Xsens device
-	uint8_t m_portNr;		//!< The port number
-	char m_portName[32];		//!< The port name
+	/** The baudrate at which an Xsens device was detected */
+	uint32_t m_baudrate;	
+	/** The device Id of the detected Xsens device */
+	uint32_t m_deviceId;	
+	/** The port number */
+	uint8_t m_portNr;		
+	/** The port name */
+	char m_portName[32];		
 
 	CmtPortInfo() : m_baudrate(0), m_deviceId(0), m_portNr(0)
 	{ }
@@ -1166,9 +1185,12 @@ struct CmtQuat {
 	double m_data[4];
 };
 struct CmtEuler {
-	double m_roll;		//!< The roll (rotation around x-axis / back-front-line)
-	double m_pitch;		//!< The pitch (rotation around y-axis / right-left-line)
-	double m_yaw;		//!< The yaw (rotation around z-axis / down-up-line)
+	/** The roll (rotation around x-axis / back-front-line) */
+	double m_roll;		
+	/** The pitch (rotation around y-axis / right-left-line) */
+	double m_pitch;		
+	/** The yaw (rotation around z-axis / down-up-line) */
+	double m_yaw;		
 };
 struct CmtMatrix {
 	double m_data[3][3];

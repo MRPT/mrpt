@@ -223,7 +223,8 @@ namespace mrpt
 			  * \sa genericMapParams, TMapGenericParams::enableSaveAs3DObject */
 			virtual void  getAs3DObject( mrpt::opengl::CSetOfObjects::Ptr	&outObj ) const = 0;
 
-			TMapGenericParams genericMapParams; //!< Common params to all maps
+			/** Common params to all maps */
+			TMapGenericParams genericMapParams; 
 
 			/** This method is called at the end of each "prediction-update-map insertion" cycle within "mrpt::slam::CMetricMapBuilderRBPF::processActionObservation".
 			  *  This method should normally do nothing, but in some cases can be used to free auxiliary cached variables.

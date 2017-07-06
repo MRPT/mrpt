@@ -28,24 +28,32 @@ namespace obs
 	{
 		DEFINE_SERIALIZABLE( CObservation6DFeatures )
 	 public:
-		CObservation6DFeatures( );  //!< Default ctor
+		/** Default ctor */
+		CObservation6DFeatures( );  
 
-		float	minSensorDistance, maxSensorDistance;  //!< Information about the sensor
+		/** Information about the sensor */
+		float	minSensorDistance, maxSensorDistance;  
 
 		/** Each one of the measurements */
 		struct OBS_IMPEXP TMeasurement
 		{
-			mrpt::poses::CPose3D pose; //!< The observed feature SE(3) pose with respect to the sensor
-			int32_t	             id;   //!< The feature ID, or INVALID_LANDMARK_ID if unidentified (default)
-			mrpt::math::CMatrixDouble66 inf_matrix; //!< The inverse of the observation covariance matrix (default:all zeros)
+			/** The observed feature SE(3) pose with respect to the sensor */
+			mrpt::poses::CPose3D pose; 
+			/** The feature ID, or INVALID_LANDMARK_ID if unidentified (default) */
+			int32_t	             id;   
+			/** The inverse of the observation covariance matrix (default:all zeros) */
+			mrpt::math::CMatrixDouble66 inf_matrix; 
 
-			TMeasurement(); //!< Ctor with default values
+			/** Ctor with default values */
+			TMeasurement(); 
 
 			MRPT_MAKE_ALIGNED_OPERATOR_NEW  // Required because we contain Eigen matrices
 		};
-		mrpt::aligned_containers<TMeasurement>::deque_t sensedFeatures; //!< The list of observed features
+		/** The list of observed features */
+		mrpt::aligned_containers<TMeasurement>::deque_t sensedFeatures; 
 
-		mrpt::poses::CPose3D sensorPose; //!< The pose of the sensor on the robot/vehicle
+		/** The pose of the sensor on the robot/vehicle */
+		mrpt::poses::CPose3D sensorPose; 
 
 		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const override;// See base class docs.
 		void setSensorPose( const mrpt::poses::CPose3D &newSensorPose ) override;// See base class docs.

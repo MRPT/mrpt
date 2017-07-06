@@ -21,8 +21,10 @@ namespace mrpt
 	/** This namespace contains representation of robot actions and observations */
 	namespace obs
 	{
-		#define INVALID_BEACON_ID  		(-1) //!< Used for CObservationBeaconRange, CBeacon, etc. \ingroup mrpt_obs_grp
-		#define INVALID_LANDMARK_ID 	(-1) //!< Used for CObservationBearingRange::TMeasurement::beaconID and others. \ingroup mrpt_obs_grp
+		/** Used for CObservationBeaconRange, CBeacon, etc. \ingroup mrpt_obs_grp */
+		#define INVALID_BEACON_ID  		(-1) 
+		/** Used for CObservationBearingRange::TMeasurement::beaconID and others. \ingroup mrpt_obs_grp */
+		#define INVALID_LANDMARK_ID 	(-1) 
 
 
 		/** Declares a class that represents any robot's observation.
@@ -41,14 +43,17 @@ namespace mrpt
 			DEFINE_VIRTUAL_SERIALIZABLE(CObservation)
 
 		protected:
-			void swap(CObservation &o);  //!< Swap with another observation, ONLY the data defined here in the base class CObservation. It's protected since it'll be only called from child classes that should know what else to swap appart from these common data.
+			/** Swap with another observation, ONLY the data defined here in the base class CObservation. It's protected since it'll be only called from child classes that should know what else to swap appart from these common data. */
+			void swap(CObservation &o);  
 
 		 public:
 
 		 /** @name Data common to any observation
 		     @{ */
-			mrpt::system::TTimeStamp timestamp; //!< The associated UTC time-stamp. Where available, this should contain the accurate satellite-based timestamp of the sensor reading. \sa getOriginalReceivedTimeStamp(), getTimeStamp()
-			std::string              sensorLabel;//!< An arbitrary label that can be used to identify the sensor.
+			/** The associated UTC time-stamp. Where available, this should contain the accurate satellite-based timestamp of the sensor reading. \sa getOriginalReceivedTimeStamp(), getTimeStamp() */
+			mrpt::system::TTimeStamp timestamp; 
+			/** An arbitrary label that can be used to identify the sensor. */
+			std::string              sensorLabel;
 
 			/** Returns CObservation::timestamp for all kind of observations \sa getOriginalReceivedTimeStamp() */
 			mrpt::system::TTimeStamp getTimeStamp() const { return timestamp;  }
@@ -56,7 +61,8 @@ namespace mrpt
 			virtual mrpt::system::TTimeStamp getOriginalReceivedTimeStamp() const { return timestamp; }
 		/** @} */
 
-		CObservation(); //!< Constructor: It sets the initial timestamp to current time
+		/** Constructor: It sets the initial timestamp to current time */
+		CObservation(); 
 
 		/** This method is equivalent to:
 		* \code

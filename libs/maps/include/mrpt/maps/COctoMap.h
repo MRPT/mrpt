@@ -36,15 +36,20 @@ namespace mrpt
 			DEFINE_SERIALIZABLE( COctoMap )
 
 		 public:
-			 COctoMap(const double resolution=0.10);          //!< Default constructor
-			 virtual ~COctoMap(); //!< Destructor
+			 /** Default constructor */
+			 COctoMap(const double resolution=0.10);          
+			 /** Destructor */
+			 virtual ~COctoMap(); 
 
 			virtual void getAsOctoMapVoxels(mrpt::opengl::COctoMapVoxels &gl_obj) const override;
 
 			MAP_DEFINITION_START(COctoMap,MAPS_IMPEXP)
-				double resolution;	//!< The finest resolution of the octomap (default: 0.10 meters)
-				mrpt::maps::COctoMap::TInsertionOptions   insertionOpts;	//!< Observations insertion options
-				mrpt::maps::COctoMap::TLikelihoodOptions  likelihoodOpts;	//!< Probabilistic observation likelihood options
+				/** The finest resolution of the octomap (default: 0.10 meters) */
+				double resolution;	
+				/** Observations insertion options */
+				mrpt::maps::COctoMap::TInsertionOptions   insertionOpts;	
+				/** Probabilistic observation likelihood options */
+				mrpt::maps::COctoMap::TLikelihoodOptions  likelihoodOpts;	
 			MAP_DEFINITION_END(COctoMap,MAPS_IMPEXP)
 
 		protected:

@@ -38,7 +38,8 @@ namespace obs {
 	struct OBS_IMPEXP TRangeImageFilter
 	{
 		TRangeImageFilterParams fp;
-		inline bool do_range_filter(size_t r, size_t c, const float D) const; //!< Returns true if the point (r,c) with depth D passes all filters.
+		/** Returns true if the point (r,c) with depth D passes all filters. */
+		inline bool do_range_filter(size_t r, size_t c, const float D) const; 
 		inline TRangeImageFilter(const TRangeImageFilterParams &filter_params) : fp(filter_params) {}
 		inline TRangeImageFilter() {}
 	};

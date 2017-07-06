@@ -198,7 +198,8 @@ namespace mrpt
 
 			typedef std::vector<COpenGLViewport::Ptr> TListViewports;
 
-			TListViewports		m_viewports;	//!< The list of viewports, indexed by name.
+			/** The list of viewports, indexed by name. */
+			TListViewports		m_viewports;	
 
 
 			template <typename FUNCTOR>

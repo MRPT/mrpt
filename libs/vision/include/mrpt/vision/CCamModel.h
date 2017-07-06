@@ -33,7 +33,8 @@ namespace mrpt
 		class VISION_IMPEXP  CCamModel : public mrpt::utils::CLoadableOptions
 		{
 		public:
-			mrpt::utils::TCamera cam;  //!< The parameters of a camera
+			/** The parameters of a camera */
+			mrpt::utils::TCamera cam;  
 
 			/** Default Constructor */
 			CCamModel();

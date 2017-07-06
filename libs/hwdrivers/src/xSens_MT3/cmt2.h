@@ -173,7 +173,8 @@ protected:
 		//! The last result of an operation
 	mutable XsensResultValue m_lastResult;
 
-	bool m_readOnly;				//!< When set to true, the file is read-only and attempts to write to it will fail
+	/** When set to true, the file is read-only and attempts to write to it will fail */
+	bool m_readOnly;				
 
 public:
 		//! Default constructor

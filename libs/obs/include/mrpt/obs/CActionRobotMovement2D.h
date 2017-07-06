@@ -41,21 +41,27 @@ namespace mrpt
 				emScan2DMatching
 			};
 
-			CActionRobotMovement2D(); //!< Constructor
+			/** Constructor */
+			CActionRobotMovement2D(); 
 
-			mrpt::utils::poly_ptr_ptr<mrpt::poses::CPosePDF::Ptr> poseChange; //!< The 2D pose change probabilistic estimation.
+			/** The 2D pose change probabilistic estimation. */
+			mrpt::utils::poly_ptr_ptr<mrpt::poses::CPosePDF::Ptr> poseChange; 
 			/** This is the raw odometry reading, and only is used when "estimationMethod" is "TEstimationMethod::emOdometry" */
 			mrpt::poses::CPose2D					rawOdometryIncrementReading;
-			TEstimationMethod		estimationMethod; //!< This fields indicates the way in which this estimation was obtained.
+			/** This fields indicates the way in which this estimation was obtained. */
+			TEstimationMethod		estimationMethod; 
 
-			bool					hasEncodersInfo; //!< If "true" means that "encoderLeftTicks" and "encoderRightTicks" contain valid values.
+			/** If "true" means that "encoderLeftTicks" and "encoderRightTicks" contain valid values. */
+			bool					hasEncodersInfo; 
 			/** For odometry only: the ticks count for each wheel FROM the last reading (positive means FORWARD, for both wheels);
 			  * \sa hasEncodersInfo
 			  */
 			int32_t					encoderLeftTicks,encoderRightTicks;
 
-			bool  hasVelocities; //!< If "true" means that "velocityLin" and "velocityAng" contain valid values.
-			mrpt::math::TTwist2D velocityLocal; //!< If "hasVelocities"=true, the robot velocity in local (robot frame, +X forward) coordinates.
+			/** If "true" means that "velocityLin" and "velocityAng" contain valid values. */
+			bool  hasVelocities; 
+			/** If "hasVelocities"=true, the robot velocity in local (robot frame, +X forward) coordinates. */
+			mrpt::math::TTwist2D velocityLocal; 
 
 			double velocityLin() const { return velocityLocal.vx; }
 			double velocityAng() const { return velocityLocal.omega; }
@@ -68,9 +74,11 @@ namespace mrpt
 			/** The parameter to be passed to "computeFromOdometry". */
 			struct OBS_IMPEXP TMotionModelOptions
 			{
-				TMotionModelOptions(); //!< Default values loader.
+				/** Default values loader. */
+				TMotionModelOptions(); 
 
-				TDrawSampleMotionModel	modelSelection; //!< The model to be used.
+				/** The model to be used. */
+				TDrawSampleMotionModel	modelSelection; 
 
 				/** Options for the gaussian model, which generates a CPosePDFGaussian object in poseChange 
 				  * See docs in : http://www.mrpt.org/tutorials/programming/odometry-and-motion-models/probabilistic_motion_models/

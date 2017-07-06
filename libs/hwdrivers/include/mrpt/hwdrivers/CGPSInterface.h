@@ -121,20 +121,27 @@ namespace mrpt
 				NOVATEL_OEM6
 			};
 
-			CGPSInterface(); //!< Default ctor
-			virtual ~CGPSInterface();  //!< Dtor
+			/** Default ctor */
+			CGPSInterface(); 
+			/** Dtor */
+			virtual ~CGPSInterface();  
 
 			void  doProcess(); // See docs in parent class
 
-			bool  isGPS_connected(); //!< Returns true if communications work, i.e. if some message has been received.
-			bool  isGPS_signalAcquired(); //!< Returns true if the last message from the GPS indicates that the signal from sats has been acquired.
+			/** Returns true if communications work, i.e. if some message has been received. */
+			bool  isGPS_connected(); 
+			/** Returns true if the last message from the GPS indicates that the signal from sats has been acquired. */
+			bool  isGPS_signalAcquired(); 
 
 			/** \name Set-up and configuration 
 			  * @{ */
-			void  setSerialPortName(const std::string &COM_port);  //!< Set the serial port to use (COM1, ttyUSB0, etc).
-			std::string getSerialPortName() const;  //!< Get the serial port to use (COM1, ttyUSB0, etc).
+			/** Set the serial port to use (COM1, ttyUSB0, etc). */
+			void  setSerialPortName(const std::string &COM_port);  
+			/** Get the serial port to use (COM1, ttyUSB0, etc). */
+			std::string getSerialPortName() const;  
 
-			void  setParser(PARSERS parser);  //!< Select the parser for incomming data, among the options enumerated in \a CGPSInterface
+			/** Select the parser for incomming data, among the options enumerated in \a CGPSInterface */
+			void  setParser(PARSERS parser);  
 			PARSERS getParser() const;
 
 			//void setExternCOM( CSerialPort *outPort, std::mutex *csOutPort ); // Replaced by bindStream() in MRPT 1.4.0
@@ -198,11 +205,13 @@ namespace mrpt
 			/** Implements custom messages to be sent to the GPS unit just after connection and before normal use.
 			  *  Returns false or raise an exception if something goes wrong. */
 			bool OnConnectionEstablished();
-			bool OnConnectionShutdown(); //!< Like OnConnectionEstablished() for sending optional shutdown commands
+			/** Like OnConnectionEstablished() for sending optional shutdown commands */
+			bool OnConnectionShutdown(); 
 
 			bool legacy_topcon_setup_commands();
 
-			mrpt::utils::CStream           *m_data_stream;    //!< Typically a CSerialPort created by this class, but may be set externally.
+			/** Typically a CSerialPort created by this class, but may be set externally. */
+			mrpt::utils::CStream           *m_data_stream;    
 			std::mutex  *m_data_stream_cs;
 			bool                            m_data_stream_is_external;
 
@@ -232,7 +241,8 @@ namespace mrpt
 			bool unsetJAVAD_AIM_mode();
 
 		private:
-			mrpt::utils::circular_buffer<uint8_t> m_rx_buffer; //!< Auxiliary buffer for readings
+			/** Auxiliary buffer for readings */
+			mrpt::utils::circular_buffer<uint8_t> m_rx_buffer; 
 			PARSERS      m_parser;
 			std::string  m_raw_dump_file_prefix;
 			std::string  m_COMname;
@@ -248,25 +258,36 @@ namespace mrpt
 
 			/** \name Legacy support for TopCon RTK configuration
 			  * @{ */
-			std::string		m_JAVAD_rtk_src_port; 	//!< If not empty, will send a cmd "set,/par/pos/pd/port,...". Example value: "/dev/ser/b"
-			unsigned int	m_JAVAD_rtk_src_baud; 	//!< Only used when "m_JAVAD_rtk_src_port" is not empty
-			std::string		m_JAVAD_rtk_format; 	//!< Only used when "m_JAVAD_rtk_src_port" is not empty: format of RTK corrections: "cmr", "rtcm", "rtcm3", etc.
+			/** If not empty, will send a cmd "set,/par/pos/pd/port,...". Example value: "/dev/ser/b" */
+			std::string		m_JAVAD_rtk_src_port; 	
+			/** Only used when "m_JAVAD_rtk_src_port" is not empty */
+			unsigned int	m_JAVAD_rtk_src_baud; 	
+			/** Only used when "m_JAVAD_rtk_src_port" is not empty: format of RTK corrections: "cmr", "rtcm", "rtcm3", etc. */
+			std::string		m_JAVAD_rtk_format; 	
 
-			bool            m_topcon_useAIMMode;           //!< Use this mode for receive RTK corrections from a external source through the primary port
-			bool            m_topcon_AIMConfigured;        //!< Indicates if the AIM has been properly set up.
-			double          m_topcon_data_period;          //!< The period in seconds which the data should be provided by the GPS
-			void JAVAD_sendMessage(const char*str, bool waitForAnswer = true); //!< Private auxiliary method. Raises exception on error.
+			/** Use this mode for receive RTK corrections from a external source through the primary port */
+			bool            m_topcon_useAIMMode;           
+			/** Indicates if the AIM has been properly set up. */
+			bool            m_topcon_AIMConfigured;        
+			/** The period in seconds which the data should be provided by the GPS */
+			double          m_topcon_data_period;          
+			/** Private auxiliary method. Raises exception on error. */
+			void JAVAD_sendMessage(const char*str, bool waitForAnswer = true); 
 			/** @} */
 
 			/** Returns true if the COM port is already open, or try to open it in other case.
 			  * \return true if everything goes OK, or false if there are problems opening the port. */
 			bool  tryToOpenTheCOM();
 
-			void  parseBuffer(); //!< Process data in "m_buffer" to extract GPS messages, and remove them from the buffer.
+			/** Process data in "m_buffer" to extract GPS messages, and remove them from the buffer. */
+			void  parseBuffer(); 
 
-			void  flushParsedMessagesNow();  //!< Queue out now the messages in \a m_just_parsed_messages, leaving it empty
-			mrpt::obs::CObservationGPS  m_just_parsed_messages; //!< A private copy of the last received gps datum
-			std::string   m_last_GGA; //!< Used in getLastGGA()
+			/** Queue out now the messages in \a m_just_parsed_messages, leaving it empty */
+			void  flushParsedMessagesNow();  
+			/** A private copy of the last received gps datum */
+			mrpt::obs::CObservationGPS  m_just_parsed_messages; 
+			/** Used in getLastGGA() */
+			std::string   m_last_GGA; 
 		}; // end class
 	} // end namespace
 

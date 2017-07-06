@@ -36,7 +36,8 @@ IMPLEMENTS_VIRTUAL_SERIALIZABLE( CTexturedObject, CRenderizableDisplayList, mrpt
 
 	struct CTexturedObject_MemPoolParams
 	{
-		size_t len; //!< size of the vector<unsigned char>
+		/** size of the vector<unsigned char> */
+		size_t len; 
 
 		inline bool isSuitable(const CTexturedObject_MemPoolParams &req) const {
 			return len==req.len;

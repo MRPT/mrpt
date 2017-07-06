@@ -40,7 +40,8 @@ namespace mrpt
 		class CDynamicGrid
 		{
 		protected:
-			std::vector<T> m_map; //!< The cells 
+			/** The cells  */
+			std::vector<T> m_map; 
 			/** Used only from logically const method that really need to modify the object */
 			inline std::vector<T> &	m_map_castaway_const() const  { return const_cast< std::vector<T>& >( m_map ); }
 

@@ -86,11 +86,16 @@ struct XsVersion {
 private:
 #endif
 
-	int m_major;			//!< The major part of the version number 
-	int m_minor;			//!< The minor part of the version number
-	int m_revision;			//!< The revision number of the version	
-	int m_build;			//!< The build number of the version
-	XsString m_extra;		//!< Storage for some extra information about the version
+	/** The major part of the version number  */
+	int m_major;			
+	/** The minor part of the version number */
+	int m_minor;			
+	/** The revision number of the version	 */
+	int m_revision;			
+	/** The build number of the version */
+	int m_build;			
+	/** Storage for some extra information about the version */
+	XsString m_extra;		
 };
 
 #endif // file guard

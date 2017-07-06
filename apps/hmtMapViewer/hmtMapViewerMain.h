@@ -53,7 +53,8 @@ class hmtMapViewerFrame: public wxFrame
         void updateLocalMapView();
 
 
-        std::string     m_curFileOpen;      //!< File loaded now.
+        /** File loaded now. */
+        std::string     m_curFileOpen;      
 
     private:
 

@@ -28,12 +28,17 @@ namespace mrpt
 		  */
 		struct KINEMATICS_IMPEXP TKinematicLink
 		{
-			double  theta;  //!< Rotation from X_i to X_{i+1} (radians)
-			double  d;      //!< Distance along Z_i to the common normal between Z_i and Z_{i+1}
-			double  a;      //!< Distance along the common normal (in the same direction than the new X_{i+1})
-			double  alpha;  //!< Rotation along X_{i+1} to transform Z_i into Z_{i+1}
+			/** Rotation from X_i to X_{i+1} (radians) */
+			double  theta;  
+			/** Distance along Z_i to the common normal between Z_i and Z_{i+1} */
+			double  d;      
+			/** Distance along the common normal (in the same direction than the new X_{i+1}) */
+			double  a;      
+			/** Rotation along X_{i+1} to transform Z_i into Z_{i+1} */
+			double  alpha;  
 
-			bool    is_prismatic; //!< "false": Is revolute ("q_i" is "theta"), "true": is prismatic ("q_i" is "d")
+			/** "false": Is revolute ("q_i" is "theta"), "true": is prismatic ("q_i" is "d") */
+			bool    is_prismatic; 
 
 			TKinematicLink(double _theta,double _d, double _a, double _alpha, bool _is_prismatic) : theta(_theta),d(_d),a(_a),alpha(_alpha),is_prismatic(_is_prismatic) {}
 			TKinematicLink() : theta(0),d(0),a(0),alpha(0),is_prismatic(false) { }
@@ -55,10 +60,13 @@ namespace mrpt
 			DEFINE_SERIALIZABLE( CKinematicChain )
 
 		private:
-			mutable std::vector<mrpt::opengl::CRenderizable::Ptr>  m_last_gl_objects; //!< Smart pointers to the last objects for each link, as returned in getAs3DObject(), for usage within update3DObject()
+			/** Smart pointers to the last objects for each link, as returned in getAs3DObject(), for usage within update3DObject() */
+			mutable std::vector<mrpt::opengl::CRenderizable::Ptr>  m_last_gl_objects; 
 
-			std::vector<TKinematicLink>  m_links;  //!< The links of this robot arm
-			mrpt::poses::CPose3D         m_origin; //!< The pose of the first link.
+			/** The links of this robot arm */
+			std::vector<TKinematicLink>  m_links;  
+			/** The pose of the first link. */
+			mrpt::poses::CPose3D         m_origin; 
 
 		public:
 

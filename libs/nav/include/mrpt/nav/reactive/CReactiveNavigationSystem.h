@@ -87,7 +87,8 @@ namespace mrpt
 			virtual void saveConfigFile(mrpt::utils::CConfigFileBase &c) const override; // See base class docs!
 
 		private:
-			std::vector<CParameterizedTrajectoryGenerator*>	PTGs;  //!< The list of PTGs to use for navigation
+			/** The list of PTGs to use for navigation */
+			std::vector<CParameterizedTrajectoryGenerator*>	PTGs;  
 
 			// Steps for the reactive navigation sytem.
 			// ----------------------------------------------------------------------------
@@ -96,14 +97,18 @@ namespace mrpt
 			// See docs in parent class
 			bool implementSenseObstacles(mrpt::system::TTimeStamp &obs_timestamp) override;
 		protected:
-			mrpt::math::CPolygon m_robotShape;     //!< The robot 2D shape model. Only one of `robot_shape` or `robot_shape_circular_radius` will be used in each PTG
-			double m_robotShapeCircularRadius;   //!< Radius of the robot if approximated as a circle. Only one of `robot_shape` or `robot_shape_circular_radius` will be used in each PTG
+			/** The robot 2D shape model. Only one of `robot_shape` or `robot_shape_circular_radius` will be used in each PTG */
+			mrpt::math::CPolygon m_robotShape;     
+			/** Radius of the robot if approximated as a circle. Only one of `robot_shape` or `robot_shape_circular_radius` will be used in each PTG */
+			double m_robotShapeCircularRadius;   
 
 			/** Generates a pointcloud of obstacles, and the robot shape, to be saved in the logging record for the current timestep */
 			virtual void loggingGetWSObstaclesAndShape(CLogFileRecord &out_log) override;
 
-			mrpt::maps::CSimplePointsMap m_WS_Obstacles;  //!< The obstacle points, as seen from the local robot frame.
-			mrpt::maps::CSimplePointsMap m_WS_Obstacles_original;  //!< Obstacle points, before filtering (if filtering is enabled).
+			/** The obstacle points, as seen from the local robot frame. */
+			mrpt::maps::CSimplePointsMap m_WS_Obstacles;  
+			/** Obstacle points, before filtering (if filtering is enabled). */
+			mrpt::maps::CSimplePointsMap m_WS_Obstacles_original;  
 			// See docs in parent class
 			void STEP3_WSpaceToTPSpace(const size_t ptg_idx, std::vector<double> &out_TPObstacles, mrpt::nav::ClearanceDiagram &out_clearance, const mrpt::math::TPose2D &rel_pose_PTG_origin_wrt_sense, const bool eval_clearance) override;
 

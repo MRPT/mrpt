@@ -47,11 +47,15 @@ namespace mrpt
 			                               // <size_t VEH_SIZE, size_t OBS_SIZE,   size_t FEAT_SIZE, size_t ACT_SIZE, size typename kftype = double>
 		{
 		 public:
-			typedef mrpt::math::TPoint2D landmark_point_t;  //!< Either mrpt::math::TPoint2D or mrpt::math::TPoint3D
+			/** Either mrpt::math::TPoint2D or mrpt::math::TPoint3D */
+			typedef mrpt::math::TPoint2D landmark_point_t;  
 
-			 CRangeBearingKFSLAM2D( ); //!< Default constructor
-			 virtual ~CRangeBearingKFSLAM2D();	//!< Destructor
-			 void reset(); //!< Reset the state of the SLAM filter: The map is emptied and the robot put back to (0,0,0).
+			 /** Default constructor */
+			 CRangeBearingKFSLAM2D( ); 
+			 /** Destructor */
+			 virtual ~CRangeBearingKFSLAM2D();	
+			 /** Reset the state of the SLAM filter: The map is emptied and the robot put back to (0,0,0). */
+			 void reset(); 
 
 			/** Process one new action and observations to update the map and robot pose estimate. See the description of the class at the top of this page.
 			 *  \param action May contain odometry
@@ -102,21 +106,29 @@ namespace mrpt
 				void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) override; // See base docs
 				void dumpToTextStream(mrpt::utils::CStream &out) const override; // See base docs
 
-				mrpt::math::CVectorFloat 	stds_Q_no_odo;	//!< A 3-length vector with the std. deviation of the transition model in (x,y,phi) used only when there is no odometry (if there is odo, its uncertainty values will be used instead); x y: In meters, phi: radians (but in degrees when loading from a configuration ini-file!)
-				float 			std_sensor_range, std_sensor_yaw;	//!< The std. deviation of the sensor (for the matrix R in the kalman filters), in meters and radians.
-				float 			quantiles_3D_representation;	//!< Default = 3
-				bool			create_simplemap; //!< Whether to fill m_SFs (default=false)
+				/** A 3-length vector with the std. deviation of the transition model in (x,y,phi) used only when there is no odometry (if there is odo, its uncertainty values will be used instead); x y: In meters, phi: radians (but in degrees when loading from a configuration ini-file!) */
+				mrpt::math::CVectorFloat 	stds_Q_no_odo;	
+				/** The std. deviation of the sensor (for the matrix R in the kalman filters), in meters and radians. */
+				float 			std_sensor_range, std_sensor_yaw;	
+				/** Default = 3 */
+				float 			quantiles_3D_representation;	
+				/** Whether to fill m_SFs (default=false) */
+				bool			create_simplemap; 
 
 				// Data association:
 				TDataAssociationMethod  data_assoc_method;
 				TDataAssociationMetric  data_assoc_metric;
-				double					data_assoc_IC_chi2_thres;  //!< Threshold in [0,1] for the chi2square test for individual compatibility between predictions and observations (default: 0.99)
-				TDataAssociationMetric  data_assoc_IC_metric;	   //!< Whether to use mahalanobis (->chi2 criterion) vs. Matching likelihood.
-				double					data_assoc_IC_ml_threshold;//!< Only if data_assoc_IC_metric==ML, the log-ML threshold (Default=0.0)
+				/** Threshold in [0,1] for the chi2square test for individual compatibility between predictions and observations (default: 0.99) */
+				double					data_assoc_IC_chi2_thres;  
+				/** Whether to use mahalanobis (->chi2 criterion) vs. Matching likelihood. */
+				TDataAssociationMetric  data_assoc_IC_metric;	   
+				/** Only if data_assoc_IC_metric==ML, the log-ML threshold (Default=0.0) */
+				double					data_assoc_IC_ml_threshold;
 
 			};
 
-			TOptions options; //!< The options for the algorithm
+			/** The options for the algorithm */
+			TOptions options; 
 
 
 			/** Save the current state of the filter (robot pose & map) to a MATLAB script which displays all the elements in 2D
@@ -319,7 +331,8 @@ namespace mrpt
 			/** The sequence of all the observations and the robot path (kept for debugging, statistics,etc) */
 			mrpt::maps::CSimpleMap      m_SFs;
 
-			TDataAssocInfo m_last_data_association; //!< Last data association
+			/** Last data association */
+			TDataAssocInfo m_last_data_association; 
 		}; // end class
 	} // End of namespace
 } // End of namespace

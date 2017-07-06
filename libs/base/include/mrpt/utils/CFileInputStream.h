@@ -27,7 +27,8 @@ namespace mrpt
 			size_t  Read(void *Buffer, size_t Count) override;
 			size_t  Write(const void *Buffer, size_t Count) override;
 		private:
-			std::ifstream 	m_if;		//!< The actual input file stream.
+			/** The actual input file stream. */
+			std::ifstream 	m_if;		
 		public:
 			 /** Constructor
 			  * \param fileName The file to be open in this stream
@@ -47,10 +48,14 @@ namespace mrpt
 			  * \return true on success.
 			  */
 			bool open(const std::string &fileName );
-			void close(); //!< Close the stream
-			bool fileOpenCorrectly(); //!< Returns true if the file was open without errors.
-			bool is_open() { return fileOpenCorrectly(); } //!< Returns true if the file was open without errors.
-			bool checkEOF(); //!< Will be true if EOF has been already reached.
+			/** Close the stream */
+			void close(); 
+			/** Returns true if the file was open without errors. */
+			bool fileOpenCorrectly(); 
+			/** Returns true if the file was open without errors. */
+			bool is_open() { return fileOpenCorrectly(); } 
+			/** Will be true if EOF has been already reached. */
+			bool checkEOF(); 
 
 			/** Method for moving to a specified position in the streamed resource.
 			 *   See documentation of CStream::Seek */

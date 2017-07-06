@@ -39,9 +39,12 @@ namespace obs
 		 /** @name The data members
 		  * @{ */
 
-		double speed;		//!< The wind speed in m/s
-		double direction;	//!< The wind flow direction in deg
-		mrpt::poses::CPose3D  sensorPoseOnRobot; //!< The location of the sensing anemometer on the robot coordinate framework
+		/** The wind speed in m/s */
+		double speed;		
+		/** The wind flow direction in deg */
+		double direction;	
+		/** The location of the sensing anemometer on the robot coordinate framework */
+		mrpt::poses::CPose3D  sensorPoseOnRobot; 
 
 		/** @} */
 

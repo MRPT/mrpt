@@ -47,17 +47,25 @@ namespace mrpt
 			 */
 			math::CMatrixD		m_eigVal,m_eigVec,m_prevComputedCov;
 
-			math::CMatrixD	m_cov;		//!< The 2x2 or 3x3 covariance matrix that will determine the aspect of the ellipsoid.
-			bool			m_drawSolid3D;	//!< If set to true (default), a whole ellipsoid surface will be drawn, or if set to "false" it will be drawn as a "wireframe".
-			float			m_quantiles;	//!< The number of "sigmas" for drawing the ellipse/ellipsoid (default=3)
-			unsigned int	m_2D_segments;	//!< The number of segments of a 2D ellipse (default=20)
-			unsigned int	m_3D_segments;	//!< The number of segments of a 3D ellipse (in both "axis") (default=20)
-			float			m_lineWidth;	//!< The line width for 2D ellipses or 3D wireframe ellipsoids (default=1)
+			/** The 2x2 or 3x3 covariance matrix that will determine the aspect of the ellipsoid. */
+			math::CMatrixD	m_cov;		
+			/** If set to true (default), a whole ellipsoid surface will be drawn, or if set to "false" it will be drawn as a "wireframe". */
+			bool			m_drawSolid3D;	
+			/** The number of "sigmas" for drawing the ellipse/ellipsoid (default=3) */
+			float			m_quantiles;	
+			/** The number of segments of a 2D ellipse (default=20) */
+			unsigned int	m_2D_segments;	
+			/** The number of segments of a 3D ellipse (in both "axis") (default=20) */
+			unsigned int	m_3D_segments;	
+			/** The line width for 2D ellipses or 3D wireframe ellipsoids (default=1) */
+			float			m_lineWidth;	
 			mutable mrpt::math::TPoint3D m_bb_min, m_bb_max;
 
 		public:
-			void setCovMatrix( const mrpt::math::CMatrixDouble &m, int resizeToSize = -1 ); //!< Set the 2x2 or 3x3 covariance matrix that will determine the aspect of the ellipsoid (if resizeToSize>0, the matrix will be cut to the square matrix of the given size)
-			void setCovMatrix( const mrpt::math::CMatrixFloat &m, int resizeToSize = -1 ); //!< Set the 2x2 or 3x3 covariance matrix that will determine the aspect of the ellipsoid (if resizeToSize>0, the matrix will be cut to the square matrix of the given size).
+			/** Set the 2x2 or 3x3 covariance matrix that will determine the aspect of the ellipsoid (if resizeToSize>0, the matrix will be cut to the square matrix of the given size) */
+			void setCovMatrix( const mrpt::math::CMatrixDouble &m, int resizeToSize = -1 ); 
+			/** Set the 2x2 or 3x3 covariance matrix that will determine the aspect of the ellipsoid (if resizeToSize>0, the matrix will be cut to the square matrix of the given size). */
+			void setCovMatrix( const mrpt::math::CMatrixFloat &m, int resizeToSize = -1 ); 
 
 			/**  Set the 2x2 or 3x3 covariance matrix that will determine the aspect of the ellipsoid (if resizeToSize>0, the matrix will be cut to the square matrix of the given size)
 			 */
@@ -75,14 +83,19 @@ namespace mrpt
 
 			mrpt::math::CMatrixDouble getCovMatrix() const { return mrpt::math::CMatrixDouble(m_cov); }
 
-			void enableDrawSolid3D(bool v) { m_drawSolid3D = v; CRenderizableDisplayList::notifyChange(); } //!< If set to true (default), a whole ellipsoid surface will be drawn, or if set to "false" it will be drawn as a "wireframe".
-			void setQuantiles(float q) { m_quantiles=q; CRenderizableDisplayList::notifyChange(); } //!< The number of "sigmas" for drawing the ellipse/ellipsoid (default=3)
+			/** If set to true (default), a whole ellipsoid surface will be drawn, or if set to "false" it will be drawn as a "wireframe". */
+			void enableDrawSolid3D(bool v) { m_drawSolid3D = v; CRenderizableDisplayList::notifyChange(); } 
+			/** The number of "sigmas" for drawing the ellipse/ellipsoid (default=3) */
+			void setQuantiles(float q) { m_quantiles=q; CRenderizableDisplayList::notifyChange(); } 
 			float getQuantiles() const { return m_quantiles; }
 
-			void set2DsegmentsCount(unsigned int N) { m_2D_segments=N; CRenderizableDisplayList::notifyChange(); }  //!< The number of segments of a 2D ellipse (default=20)
-			void set3DsegmentsCount(unsigned int N) { m_3D_segments=N; CRenderizableDisplayList::notifyChange(); } //!< The number of segments of a 3D ellipse (in both "axis") (default=20)
+			/** The number of segments of a 2D ellipse (default=20) */
+			void set2DsegmentsCount(unsigned int N) { m_2D_segments=N; CRenderizableDisplayList::notifyChange(); }  
+			/** The number of segments of a 3D ellipse (in both "axis") (default=20) */
+			void set3DsegmentsCount(unsigned int N) { m_3D_segments=N; CRenderizableDisplayList::notifyChange(); } 
 
-			void setLineWidth(float w) { m_lineWidth=w; CRenderizableDisplayList::notifyChange(); } //!< The line width for 2D ellipses or 3D wireframe ellipsoids (default=1)
+			/** The line width for 2D ellipses or 3D wireframe ellipsoids (default=1) */
+			void setLineWidth(float w) { m_lineWidth=w; CRenderizableDisplayList::notifyChange(); } 
 			float getLineWidth() const { return m_lineWidth; }
 
 

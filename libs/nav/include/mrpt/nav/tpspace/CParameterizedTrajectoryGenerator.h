@@ -32,8 +32,10 @@ namespace nav
 	  * \sa Used in CParameterizedTrajectoryGenerator::COLLISION_BEHAVIOR
 	  */
 	enum PTG_collision_behavior_t {
-		COLL_BEH_BACK_AWAY = 0,    //!< Favor getting back from too-close (almost collision) obstacles.
-		COLL_BEH_STOP              //!< Totally dissallow any movement if there is any too-close (almost collision) obstacles.
+		/** Favor getting back from too-close (almost collision) obstacles. */
+		COLL_BEH_BACK_AWAY = 0,    
+		/** Totally dissallow any movement if there is any too-close (almost collision) obstacles. */
+		COLL_BEH_STOP              
 	};
 
 	/** \defgroup nav_tpspace TP-Space and PTG classes
@@ -62,8 +64,10 @@ namespace nav
 	{
 		DEFINE_VIRTUAL_SERIALIZABLE(CParameterizedTrajectoryGenerator)
 	public:
-		CParameterizedTrajectoryGenerator(); //!< Default ctor. Must call `loadFromConfigFile()` before initialization
-		virtual ~CParameterizedTrajectoryGenerator() //!<  Destructor 
+		/** Default ctor. Must call `loadFromConfigFile()` before initialization */
+		CParameterizedTrajectoryGenerator(); 
+		/**  Destructor  */
+		virtual ~CParameterizedTrajectoryGenerator() 
 		{ }
 
 		/** The class factory for creating a PTG from a list of parameters in a section of a given config file (physical file or in memory).
@@ -80,7 +84,8 @@ namespace nav
 
 		/** @name Virtual interface of each PTG implementation
 		 *  @{ */
-		virtual std::string getDescription() const = 0 ; //!< Gets a short textual description of the PTG and its parameters
+		/** Gets a short textual description of the PTG and its parameters */
+		virtual std::string getDescription() const = 0 ; 
 
 	protected:
 		/** Must be called after setting all PTG parameters and before requesting converting obstacles to TP-Space, inverseMap_WS2TP(), etc. */
@@ -120,9 +125,12 @@ namespace nav
 		/** Dynamic state that may affect the PTG path parameterization. \ingroup nav_reactive  */
 		struct NAV_IMPEXP TNavDynamicState
 		{
-			mrpt::math::TTwist2D curVelLocal; //!< Current vehicle velocity (local frame of reference)
-			mrpt::math::TPose2D  relTarget;   //!< Current relative target location
-			double               targetRelSpeed; //!< Desired relative speed [0,1] at target. Default=0
+			/** Current vehicle velocity (local frame of reference) */
+			mrpt::math::TTwist2D curVelLocal; 
+			/** Current relative target location */
+			mrpt::math::TPose2D  relTarget;   
+			/** Desired relative speed [0,1] at target. Default=0 */
+			double               targetRelSpeed; 
 
 			TNavDynamicState();
 			bool operator ==(const TNavDynamicState& o) const;
@@ -222,7 +230,8 @@ namespace nav
 		void updateNavDynamicState(const TNavDynamicState &newState, const bool force_update = false);
 		const TNavDynamicState & getCurrentNavDynamicState() const { return m_nav_dyn_state; }
 
-		static std::string OUTPUT_DEBUG_PATH_PREFIX; //!< The path used as defaul output in, for example, debugDumpInFiles. (Default="./reactivenav.logs/")
+		/** The path used as defaul output in, for example, debugDumpInFiles. (Default="./reactivenav.logs/") */
+		static std::string OUTPUT_DEBUG_PATH_PREFIX; 
 
 		/** Must be called after setting all PTG parameters and before requesting converting obstacles to TP-Space, inverseMap_WS2TP(), etc. */
 		void initialize(const std::string & cacheFilename = std::string(), const bool verbose = true);
@@ -293,7 +302,8 @@ namespace nav
 		 */
 		static PTG_collision_behavior_t COLLISION_BEHAVIOR;
 
-		void initClearanceDiagram(ClearanceDiagram & cd) const; //!< Must be called to resize a CD to its correct size, before calling updateClearance()
+		/** Must be called to resize a CD to its correct size, before calling updateClearance() */
+		void initClearanceDiagram(ClearanceDiagram & cd) const; 
 
 		/** Updates the clearance diagram given one (ox,oy) obstacle point, in coordinates relative 
 		  * to the PTG path origin.
@@ -305,12 +315,17 @@ namespace nav
 
 protected:
 		double    refDistance;
-		uint16_t  m_alphaValuesCount; //!< The number of discrete values for "alpha" between -PI and +PI.
+		/** The number of discrete values for "alpha" between -PI and +PI. */
+		uint16_t  m_alphaValuesCount; 
 		double    m_score_priority;
-		uint16_t  m_clearance_num_points; //!< Number of steps for the piecewise-constant approximation of clearance from TPS distances [0,1] (Default=5) \sa updateClearance()
-		uint16_t  m_clearance_decimated_paths; //!< Number of paths for the decimated paths analysis of clearance
-		TNavDynamicState m_nav_dyn_state; //!< Updated before each nav step by 
-		uint16_t         m_nav_dyn_state_target_k; //!< Update in updateNavDynamicState(), contains the path index (k) for the target.
+		/** Number of steps for the piecewise-constant approximation of clearance from TPS distances [0,1] (Default=5) \sa updateClearance() */
+		uint16_t  m_clearance_num_points; 
+		/** Number of paths for the decimated paths analysis of clearance */
+		uint16_t  m_clearance_decimated_paths; 
+		/** Updated before each nav step by  */
+		TNavDynamicState m_nav_dyn_state; 
+		/** Update in updateNavDynamicState(), contains the path index (k) for the target. */
+		uint16_t         m_nav_dyn_state_target_k; 
 
 		static const uint16_t INVALID_PTG_PATH_INDEX = static_cast<uint16_t>(-1);
 
@@ -337,7 +352,8 @@ protected:
 	}; // end of class
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CParameterizedTrajectoryGenerator, mrpt::utils::CSerializable, NAV_IMPEXP )
 
-	using TListPTGPtr = std::vector<mrpt::nav::CParameterizedTrajectoryGenerator::Ptr>;  //!< A list of PTGs (smart pointers)
+	/** A list of PTGs (smart pointers) */
+	using TListPTGPtr = std::vector<mrpt::nav::CParameterizedTrajectoryGenerator::Ptr>;  
 
 	/** Base class for all PTGs using a 2D polygonal robot shape model.
 	 *  \ingroup nav_tpspace
@@ -359,7 +375,8 @@ protected:
 		bool isPointInsideRobotShape(const double x, const double y) const override;
 		void add_robotShape_to_setOfLines(mrpt::opengl::CSetOfLines &gl_shape, const mrpt::poses::CPose2D &origin = mrpt::poses::CPose2D ()) const  override;
 	protected:
-		virtual void internal_processNewRobotShape() = 0; //!< Will be called whenever the robot shape is set / updated
+		/** Will be called whenever the robot shape is set / updated */
+		virtual void internal_processNewRobotShape() = 0; 
 		mrpt::math::CPolygon m_robotShape;
 		double m_robotMaxRadius;
 		void loadShapeFromConfigFile(const mrpt::utils::CConfigFileBase & source,const std::string & section);
@@ -390,7 +407,8 @@ protected:
 		void add_robotShape_to_setOfLines(mrpt::opengl::CSetOfLines &gl_shape, const mrpt::poses::CPose2D &origin = mrpt::poses::CPose2D ()) const  override;
 		bool isPointInsideRobotShape(const double x, const double y) const override;
 	protected:
-		virtual void internal_processNewRobotShape() = 0; //!< Will be called whenever the robot shape is set / updated
+		/** Will be called whenever the robot shape is set / updated */
+		virtual void internal_processNewRobotShape() = 0; 
 		double m_robotRadius;
 		void loadShapeFromConfigFile(const mrpt::utils::CConfigFileBase & source,const std::string & section);
 		void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &sSection) const override;

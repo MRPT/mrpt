@@ -34,8 +34,10 @@ namespace mrpt
 		class SLAM_IMPEXP COccupancyGridMapFeatureExtractor : public mrpt::utils::CObserver
 		{
 		public:
-			COccupancyGridMapFeatureExtractor(); //!< Default ctor
-			~COccupancyGridMapFeatureExtractor(); //!< Destructor
+			/** Default ctor */
+			COccupancyGridMapFeatureExtractor(); 
+			/** Destructor */
+			~COccupancyGridMapFeatureExtractor(); 
 
 			/** Computes a set of distinctive landmarks from an occupancy grid, and store them (previous content is not erased!) into the given landmarks map.
 			  *   Landmarks type can be any declared in mrpt::vision::CFeatureExtraction::TOptions 
@@ -66,9 +68,11 @@ namespace mrpt
 				);
 
 		protected:
-			void OnEvent(const mrpt::utils::mrptEvent &e); //!< This will receive the events from maps in order to purge the cache.
+			/** This will receive the events from maps in order to purge the cache. */
+			void OnEvent(const mrpt::utils::mrptEvent &e); 
 			typedef std::map<const mrpt::maps::COccupancyGridMap2D*,mrpt::maps::CLandmarksMap::Ptr> TCache;
-			TCache m_cache; //!< A cache of already computed maps.
+			/** A cache of already computed maps. */
+			TCache m_cache; 
 
 
 		}; // End of class def.

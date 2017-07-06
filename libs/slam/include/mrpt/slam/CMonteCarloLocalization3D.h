@@ -33,7 +33,8 @@ namespace mrpt
 			public PF_implementation<mrpt::poses::CPose3D,CMonteCarloLocalization3D>
 		{
 		public:
-			TMonteCarloLocalizationParams	options; //!< MCL parameters
+			/** MCL parameters */
+			TMonteCarloLocalizationParams	options; 
 
 			/** Constructor
 			  * \param M The number of m_particles.

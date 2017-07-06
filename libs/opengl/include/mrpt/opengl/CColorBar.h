@@ -43,12 +43,18 @@ namespace opengl	{
 	public:
 		/** Constructor returning a smart pointer to the newly created object. */
 		static CColorBar::Ptr Create(
-			const mrpt::utils::TColormap colormap, //!< The colormap to represent.
-			double width, double height,   //!< size of the color bar
-			double min_col, double max_col,  //!< limits for [0,1] colormap indices
-			double min_value, double max_value, //!< limits for values associated to extreme colors
-			const std::string &label_format = std::string("%7.02f"), //!< sprintf-like format string for values
-			double label_font_size = .05 //!< Label text font size
+			/** The colormap to represent. */
+			const mrpt::utils::TColormap colormap, 
+			/** size of the color bar */
+			double width, double height,   
+			/** limits for [0,1] colormap indices */
+			double min_col, double max_col,  
+			/** limits for values associated to extreme colors */
+			double min_value, double max_value, 
+			/** sprintf-like format string for values */
+			const std::string &label_format = std::string("%7.02f"), 
+			/** Label text font size */
+			double label_font_size = .05 
 		);
 
 		/** Render
@@ -65,12 +71,18 @@ namespace opengl	{
 
 		/** Basic empty constructor. Set all parameters to default. */ 
 		CColorBar(
-			const mrpt::utils::TColormap colormap = mrpt::utils::cmGRAYSCALE , //!< The colormap to represent.
-			double width=0.2, double height=1.0,   //!< size of the color bar
-			double min_col=.0, double max_col=1.0,  //!< limits for [0,1] colormap indices
-			double min_value=.0, double max_value=1.0, //!< limits for values associated to extreme colors
-			const std::string &label_format= std::string("%7.02f"), //!< sprintf-like format string for values
-			double label_font_size = .05 //!< Label text font size
+			/** The colormap to represent. */
+			const mrpt::utils::TColormap colormap = mrpt::utils::cmGRAYSCALE , 
+			/** size of the color bar */
+			double width=0.2, double height=1.0,   
+			/** limits for [0,1] colormap indices */
+			double min_col=.0, double max_col=1.0,  
+			/** limits for values associated to extreme colors */
+			double min_value=.0, double max_value=1.0, 
+			/** sprintf-like format string for values */
+			const std::string &label_format= std::string("%7.02f"), 
+			/** Label text font size */
+			double label_font_size = .05 
 		);
 
 	};

@@ -26,11 +26,15 @@ namespace mrpt
 			TCaptureOptions_SVS(int _frame_width=640, int _frame_height=480 , double _framerate = 30, int _NDisp= 64,
                                                                 int _Corrsize=15, int _LR = false, int _Thresh = 10, int _Unique = 13, int _Horopter = 0,int _SpeckleSize = 100,bool _procesOnChip = true,bool _calDisparity = true);
 
-			int	frame_width, frame_height;	//!< Capture resolution (Default: 640x480)
+			/** Capture resolution (Default: 640x480) */
+			int	frame_width, frame_height;	
 
-			bool getRectified;				//!< Indicates if the STOC camera must capture rectified images (Default: true -> rectified)
-			double framerate;                               //!< STOC camera frame rate (Default: 30 fps)
-			int                                 m_NDisp;	//!< number of STOC's disparities (Default: 64 )
+			/** Indicates if the STOC camera must capture rectified images (Default: true -> rectified) */
+			bool getRectified;				
+			/** STOC camera frame rate (Default: 30 fps) */
+			double framerate;                               
+			/** number of STOC's disparities (Default: 64 ) */
+			int                                 m_NDisp;	
 			int                                 m_Corrsize; // correlation window size
 			int                                 m_LR;	// no left-right check, not available
 			int                                 m_Thresh;	// texture filter
@@ -61,7 +65,8 @@ namespace mrpt
         class HWDRIVERS_IMPEXP  CStereoGrabber_SVS
 	{
 		protected:
-			bool			m_bInitialized;					//!< If this has been correctly initiated
+			/** If this has been correctly initiated */
+			bool			m_bInitialized;					
 
 			void                     *m_videoObject;	// svsVideoImages*
 			void                     *m_stereoImage;	// svsStereoImage*

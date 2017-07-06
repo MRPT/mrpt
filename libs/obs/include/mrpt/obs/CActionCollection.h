@@ -31,11 +31,14 @@ namespace mrpt
 			DEFINE_SERIALIZABLE( CActionCollection )
 
 		protected:
-			std::deque<mrpt::utils::poly_ptr_ptr<CAction::Ptr> >	m_actions;  //!< The robot "actionss"
+			/** The robot "actionss" */
+			std::deque<mrpt::utils::poly_ptr_ptr<CAction::Ptr> >	m_actions;  
 
 		 public:
-			CActionCollection(); //!< ctor
-			CActionCollection( CAction &a ); //!< Constructor from a single action.
+			/** ctor */
+			CActionCollection(); 
+			/** Constructor from a single action. */
+			CActionCollection( CAction &a ); 
 
 			/** You can use CActionCollection::begin to get a iterator to the first element.
 			  */

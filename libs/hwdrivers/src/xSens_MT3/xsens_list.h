@@ -60,17 +60,22 @@ namespace xsens {
 	class List
 	{
 	private:
-		void operator = (const List& list);	//!< intentionally NOT implemented due to ambiguous nature
+		/** intentionally NOT implemented due to ambiguous nature */
+		void operator = (const List& list);	
 			//! Sorts the list in an ascending order, using the T::< operator.
 		void qSort(uint32_t left, uint32_t right);
 			//! Sorts the list in an ascending order, using the T::< operator on dereferenced list items.
 		void qSortDeref(uint32_t left, uint32_t right);
 
 	protected:
-		T* m_data;							//!< The array containing the items
-		uint32_t m_max;				//!< The current size of the data array
-		uint32_t m_count;				//!< The number of items currently in the list
-		JanitorClassFunc<List<T> >* m_jcf;	//!< Used to clean up the list on exit
+		/** The array containing the items */
+		T* m_data;							
+		/** The current size of the data array */
+		uint32_t m_max;				
+		/** The number of items currently in the list */
+		uint32_t m_count;				
+		/** Used to clean up the list on exit */
+		JanitorClassFunc<List<T> >* m_jcf;	
 		bool m_manage;
 
 			//! Construct a list as a reference to a raw list
@@ -199,7 +204,8 @@ namespace xsens {
 	class IntList : public List<uint32_t>
 	{
 	private:
-		void operator = (const IntList& list);	//!< intentionally NOT implemented due to ambiguous nature
+		/** intentionally NOT implemented due to ambiguous nature */
+		void operator = (const IntList& list);	
 	public:
 			//! Standard constructor, creates an empty list with some room for items.
 		IntList() : List<uint32_t>() {}

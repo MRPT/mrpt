@@ -58,8 +58,10 @@ namespace mrpt
 		void updateTPObstacle(double ox, double oy, std::vector<double> &tp_obstacles) const override;
 		void updateTPObstacleSingle(double ox, double oy, uint16_t k, double &tp_obstacle_k) const override;
 
-		static double PATH_TIME_STEP;  //!< Duration of each PTG "step"  (default: 10e-3=10 ms)
-		static double eps;             //!< Mathematical "epsilon", to detect ill-conditioned situations (e.g. 1/0) (Default: 1e-4)
+		/** Duration of each PTG "step"  (default: 10e-3=10 ms) */
+		static double PATH_TIME_STEP;  
+		/** Mathematical "epsilon", to detect ill-conditioned situations (e.g. 1/0) (Default: 1e-4) */
+		static double eps;             
 
 	protected:
 		double T_ramp_max;
@@ -73,9 +75,12 @@ namespace mrpt
 		mrpt::math::CRuntimeCompiledExpression m_expr_v, m_expr_w, m_expr_T_ramp;
 		double m_expr_dir;  // Used as symbol "dir" in m_expr_v and m_expr_w
 
-		double internal_get_v(const double dir) const;  //!< Evals expr_v
-		double internal_get_w(const double dir) const;  //!< Evals expr_w
-		double internal_get_T_ramp(const double dir) const;  //!< Evals expr_T_ramp
+		/** Evals expr_v */
+		double internal_get_v(const double dir) const;  
+		/** Evals expr_w */
+		double internal_get_w(const double dir) const;  
+		/** Evals expr_T_ramp */
+		double internal_get_T_ramp(const double dir) const;  
 
 		void internal_construct_exprs();
 

@@ -59,14 +59,20 @@ struct TThreadParam
 			Hz(0)
 	{ }
 
-	const bool     is_online;   //!< true: live grabbing from the sensor, false: from rawlog
-	const string   rawlog_file; //!< Only when is_online==false
-	const bool generate_3D_pointcloud_in_this_thread; //!< true: populate the 3D point fields in the output observation; false: only RGB and Depth images.
+	/** true: live grabbing from the sensor, false: from rawlog */
+	const bool     is_online;   
+	/** Only when is_online==false */
+	const string   rawlog_file; 
+	/** true: populate the 3D point fields in the output observation; false: only RGB and Depth images. */
+	const bool generate_3D_pointcloud_in_this_thread; 
 
-	volatile bool   quit;       //!< In/Out variable: Forces the thread to exit or indicates an error in the thread that caused it to end.
-	volatile double Hz;         //!< Out variable: Approx. capturing rate from the thread.
+	/** In/Out variable: Forces the thread to exit or indicates an error in the thread that caused it to end. */
+	volatile bool   quit;       
+	/** Out variable: Approx. capturing rate from the thread. */
+	volatile double Hz;         
 
-	CObservation3DRangeScan::Ptr new_obs;  //!< RGB+D (+ optionally, 3D point cloud)
+	/** RGB+D (+ optionally, 3D point cloud) */
+	CObservation3DRangeScan::Ptr new_obs;  
 };
 
 // Only for offline operation:

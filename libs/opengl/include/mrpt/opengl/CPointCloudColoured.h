@@ -65,8 +65,10 @@ namespace mrpt
 			inline const_iterator end() const { return m_points.end(); }
 
 
-			float				m_pointSize; //!< By default is 1.0
-			bool				m_pointSmooth; //!< Default: false
+			/** By default is 1.0 */
+			float				m_pointSize; 
+			/** Default: false */
+			bool				m_pointSmooth; 
 			mutable volatile size_t	m_last_rendered_count, m_last_rendered_count_ongoing;
 
 		public:
@@ -83,7 +85,8 @@ namespace mrpt
 			/** Private, virtual destructor: only can be deleted from smart pointers */
 			virtual ~CPointCloudColoured() { }
 
-			void markAllPointsAsNew(); //!< Do needed internal work if all points are new (octree rebuilt,...)
+			/** Do needed internal work if all points are new (octree rebuilt,...) */
+			void markAllPointsAsNew(); 
 
 		public:
 
@@ -160,9 +163,11 @@ namespace mrpt
 				B = m_points[index].B;
 			}
 
-			inline size_t size() const { return m_points.size(); } //!< Return the number of points
+			/** Return the number of points */
+			inline size_t size() const { return m_points.size(); } 
 
-			inline void clear() { m_points.clear(); markAllPointsAsNew(); }  //!< Erase all the points
+			/** Erase all the points */
+			inline void clear() { m_points.clear(); markAllPointsAsNew(); }  
 
 			/** Load the points from any other point map class supported by the adapter mrpt::utils::PointCloudAdapter. */
 			template <class POINTSMAP>
@@ -239,10 +244,14 @@ namespace mrpt
 		private:
 			mrpt::opengl::CPointCloudColoured &m_obj;
 		public:
-			typedef float  coords_t;  //!< The type of each point XYZ coordinates
-			static const int HAS_RGB   = 1;  //!< Has any color RGB info?
-			static const int HAS_RGBf  = 1;  //!< Has native RGB info (as floats)?
-			static const int HAS_RGBu8 = 0;  //!< Has native RGB info (as uint8_t)?
+			/** The type of each point XYZ coordinates */
+			typedef float  coords_t;  
+			/** Has any color RGB info? */
+			static const int HAS_RGB   = 1;  
+			/** Has native RGB info (as floats)? */
+			static const int HAS_RGBf  = 1;  
+			/** Has native RGB info (as uint8_t)? */
+			static const int HAS_RGBu8 = 0;  
 
 			/** Constructor (accept a const ref for convenience) */
 			inline PointCloudAdapter(const mrpt::opengl::CPointCloudColoured &obj) : m_obj(*const_cast<mrpt::opengl::CPointCloudColoured*>(&obj)) { }

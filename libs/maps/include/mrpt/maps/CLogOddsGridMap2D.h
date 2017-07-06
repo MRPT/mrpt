@@ -49,7 +49,8 @@ namespace mrpt
 		template <typename TCELL>
 		struct CLogOddsGridMap2D : public detail::logoddscell_traits<TCELL>
 		{
-			typedef TCELL cell_t; //!< The type of cells
+			/** The type of cells */
+			typedef TCELL cell_t; 
 			typedef detail::logoddscell_traits<TCELL>  traits_t;
 
 			/** Performs the Bayesian fusion of a new observation of a cell, without checking for grid limits nor updateInfoChangeOnly.
@@ -144,7 +145,8 @@ namespace mrpt
 		template <typename TCELL>
 		struct CLogOddsGridMapLUT : public detail::logoddscell_traits<TCELL>
 		{
-			typedef TCELL cell_t; //!< The type of
+			/** The type of */
+			typedef TCELL cell_t; 
 			typedef detail::logoddscell_traits<TCELL>  traits_t;
 
 			/** A lookup table to compute occupancy probabilities in [0,1] from integer log-odds values in the cells, using \f$ p(m_{xy}) = \frac{1}{1+exp(-log_odd)} \f$.

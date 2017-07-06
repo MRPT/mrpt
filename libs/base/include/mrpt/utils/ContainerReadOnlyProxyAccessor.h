@@ -22,8 +22,10 @@ namespace mrpt
 		template <typename STLCONTAINER>
 		struct ContainerReadOnlyProxyAccessor
 		{
-			ContainerReadOnlyProxyAccessor(STLCONTAINER &source) : m_source(source) { } //!< ctor: binds to source object
-			ContainerReadOnlyProxyAccessor(const ContainerReadOnlyProxyAccessor<STLCONTAINER> &) = delete; //!< (Deleted ctor) ignore copies (keep reference to original object)
+			/** ctor: binds to source object */
+			ContainerReadOnlyProxyAccessor(STLCONTAINER &source) : m_source(source) { } 
+			/** (Deleted ctor) ignore copies (keep reference to original object) */
+			ContainerReadOnlyProxyAccessor(const ContainerReadOnlyProxyAccessor<STLCONTAINER> &) = delete; 
 			/** Don't copy the reference to the source object, but copy the contained data. This is only allowed if the size of the buffers coincide. */
 			ContainerReadOnlyProxyAccessor<STLCONTAINER> & operator =(const ContainerReadOnlyProxyAccessor<STLCONTAINER> & o)
 			{

@@ -42,7 +42,8 @@ namespace mrpt
 			DEFINE_SERIALIZABLE( CAssimpModel )
 
 		public:
-			void  render_dl() const override; //!< Render child objects
+			/** Render child objects */
+			void  render_dl() const override; 
 
 			/** Evaluates the bounding box of this object (including possible children) in the coordinate frame of the object parent. */
 			void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const override;
@@ -63,13 +64,15 @@ namespace mrpt
 
 			struct TInfoPerTexture
 			{
-				size_t id_idx; //!< indices in \a m_textureIds. string::npos for non-initialized ones.
+				/** indices in \a m_textureIds. string::npos for non-initialized ones. */
+				size_t id_idx; 
 				mrpt::utils::CImage::Ptr img_rgb, img_alpha;
 				TInfoPerTexture() : id_idx(std::string::npos) {}
 			};
 
 			CAssimpModel( );
-			virtual ~CAssimpModel(); //!< Private, virtual destructor: only can be deleted from smart pointers
+			/** Private, virtual destructor: only can be deleted from smart pointers */
+			virtual ~CAssimpModel(); 
 		private:
 
 			/** A container for automatic deletion of lib3ds's scene when the last reference of the smart_ptr's is destroyed.
@@ -78,11 +81,13 @@ namespace mrpt
 			{
 				TImplAssimp();
 				~TImplAssimp();
-				void	*scene;	//!< aiScene*
+				/** aiScene* */
+				void	*scene;	
 			};
 			std::shared_ptr<TImplAssimp>	m_assimp_scene;
 
-			mrpt::math::TPoint3D   m_bbox_min, m_bbox_max; //!< Bounding box
+			/** Bounding box */
+			mrpt::math::TPoint3D   m_bbox_min, m_bbox_max; 
 
 			mutable bool m_textures_loaded;
 			std::string m_modelPath;

@@ -169,8 +169,10 @@ namespace mrpt
 
 		 public:
 
-			COpenNI2Sensor();	 //!< Default ctor
-			~COpenNI2Sensor();	 //!< Default ctor
+			/** Default ctor */
+			COpenNI2Sensor();	 
+			/** Default ctor */
+			~COpenNI2Sensor();	 
 
 			/** Set the serial number of the device to open.
 			  *  \exception This method must throw an exception when such serial number is not found among the connected devices.
@@ -259,19 +261,27 @@ namespace mrpt
 
 			mrpt::poses::CPose3D	m_sensorPoseOnRobot;
 
-			bool		m_preview_window; //!< Show preview window while grabbing
-			size_t 		m_preview_window_decimation; //!< If preview is enabled, only show 1 out of N images.
+			/** Show preview window while grabbing */
+			bool		m_preview_window; 
+			/** If preview is enabled, only show 1 out of N images. */
+			size_t 		m_preview_window_decimation; 
 			size_t      m_preview_decim_counter_range, m_preview_decim_counter_rgb;
 			mrpt::gui::CDisplayWindow::Ptr  m_win_range, m_win_int;
 
-			mrpt::utils::TCamera  	m_cameraParamsRGB;  //!< Params for the RGB camera
-			mrpt::utils::TCamera  	m_cameraParamsDepth;  //!< Params for the Depth camera
-			mrpt::poses::CPose3D    m_relativePoseIntensityWRTDepth; //!< See mrpt::obs::CObservation3DRangeScan for a diagram of this pose
+			/** Params for the RGB camera */
+			mrpt::utils::TCamera  	m_cameraParamsRGB;  
+			/** Params for the Depth camera */
+			mrpt::utils::TCamera  	m_cameraParamsDepth;  
+			/** See mrpt::obs::CObservation3DRangeScan for a diagram of this pose */
+			mrpt::poses::CPose3D    m_relativePoseIntensityWRTDepth; 
 
-			double  m_maxRange; //!< Sensor max range (meters)
+			/** Sensor max range (meters) */
+			double  m_maxRange; 
 
-			int  m_user_device_number; //!< Number of device to open (0:first,...)
-			int  m_serial_number; //!< Serial number of device to open
+			/** Number of device to open (0:first,...) */
+			int  m_user_device_number; 
+			/** Serial number of device to open */
+			int  m_serial_number; 
 
 		};	// End of class
 	} // End of NS

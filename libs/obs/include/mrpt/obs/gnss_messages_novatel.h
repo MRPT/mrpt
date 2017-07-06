@@ -94,33 +94,54 @@ enum nv_position_type_t : uint32_t {
 	OMNISTAR_XP = 65,
 	CDGPS = 66
 };
-	const std::string OBS_IMPEXP & enum2str(int val); //!< for nv_position_type_t
+	/** for nv_position_type_t */
+	const std::string OBS_IMPEXP & enum2str(int val); 
 }
 
 namespace nv_oem6_solution_status {
 /** Novatel OEM6 firmware reference, table 85 */
 enum nv_solution_status_t : uint32_t {
-	SOL_COMPUTED = 0,		//!< solution computed
-	INSUFFICIENT_OBS,	//!< insufficient observations
-	NO_CONVERGENCE,		//!< noconvergence
-	SINGULARITY,		//!< singularity at parameters matrix
-	COV_TRACE,			//!< covariance trace exceeds maximum (trace>1000m)
-	TEST_DIST,			//!< test distance exceeded (max of 3 rejections if distance > 10km)
-	COLD_START,			//!< not yet converged from cold start
-	V_H_LIMIT,			//!< height or velocity limits exceeded
-	VARIANCE,			//!< variance exceeds limits
-	RESIDUALS,			//!< residuals are too large
-	DELTA_POS,			//!< delta position is too large
-	NEGATIVE_VAR,		//!< negative variance
-	INTEGRITY_WARNING=13,	//!< large residuals make position unreliable
-	INS_INACTIVE,		//!< ins has not started yet
-	INS_ALIGNING,		//!< ins doing its coarse alignment
-	INS_BAD,			//!< ins position is bad
-	IMU_UNPLUGGED,		//!< no imu detected
-	PENDING = 18,		//!< when a fix position command is entered, the receiver computes its own position and determines if the fixed position is valid
-	INVALID_FIX			//!< the fixed position entered using the fix position command is not valid
+	/** solution computed */
+	SOL_COMPUTED = 0,		
+	/** insufficient observations */
+	INSUFFICIENT_OBS,	
+	/** noconvergence */
+	NO_CONVERGENCE,		
+	/** singularity at parameters matrix */
+	SINGULARITY,		
+	/** covariance trace exceeds maximum (trace>1000m) */
+	COV_TRACE,			
+	/** test distance exceeded (max of 3 rejections if distance > 10km) */
+	TEST_DIST,			
+	/** not yet converged from cold start */
+	COLD_START,			
+	/** height or velocity limits exceeded */
+	V_H_LIMIT,			
+	/** variance exceeds limits */
+	VARIANCE,			
+	/** residuals are too large */
+	RESIDUALS,			
+	/** delta position is too large */
+	DELTA_POS,			
+	/** negative variance */
+	NEGATIVE_VAR,		
+	/** large residuals make position unreliable */
+	INTEGRITY_WARNING=13,	
+	/** ins has not started yet */
+	INS_INACTIVE,		
+	/** ins doing its coarse alignment */
+	INS_ALIGNING,		
+	/** ins position is bad */
+	INS_BAD,			
+	/** no imu detected */
+	IMU_UNPLUGGED,		
+	/** when a fix position command is entered, the receiver computes its own position and determines if the fixed position is valid */
+	PENDING = 18,		
+	/** the fixed position entered using the fix position command is not valid */
+	INVALID_FIX			
 };
-	const std::string OBS_IMPEXP & enum2str(int val); //!< for nv_solution_status_t
+	/** for nv_solution_status_t */
+	const std::string OBS_IMPEXP & enum2str(int val); 
 }
 namespace nv_oem6_ins_status_type {
 /** Novatel SPAN on OEM6 firmware reference, table 33 */
@@ -134,7 +155,8 @@ enum nv_ins_status_type_t : uint32_t{
 	DETERMINING_ORIENTATION = 8, // INS is determining the IMU axis aligned with gravity.
 	WAITING_INITIALPOS = 9 // The INS filter has determined the IMU orientation and is awaiting an initial position estimate to begin the alignment process.
 };
-	const std::string OBS_IMPEXP & enum2str(int val); //!< for nv_ins_status_type_t
+	/** for nv_ins_status_type_t */
+	const std::string OBS_IMPEXP & enum2str(int val); 
 }
 
 /** Novatel generic frame (to store frames without a parser at the present time). \sa mrpt::obs::CObservationGPS  */
@@ -142,7 +164,8 @@ struct OBS_IMPEXP Message_NV_OEM6_GENERIC_FRAME : public gnss_message
 {
 	Message_NV_OEM6_GENERIC_FRAME() : gnss_message((gnss_message_type_t)NV_OEM6_GENERIC_FRAME)
 	{}
-	nv_oem6_header_t     header;  //!< Frame header
+	/** Frame header */
+	nv_oem6_header_t     header;  
 	std::vector<uint8_t> msg_body;
 
 	void dumpToStream( mrpt::utils::CStream &out ) const override; // See docs in base
@@ -156,7 +179,8 @@ struct OBS_IMPEXP Message_NV_OEM6_GENERIC_SHORT_FRAME : public gnss_message
 {
 	Message_NV_OEM6_GENERIC_SHORT_FRAME() : gnss_message((gnss_message_type_t)NV_OEM6_GENERIC_SHORT_FRAME)
 	{}
-	nv_oem6_short_header_t  header;  //!< Frame header
+	/** Frame header */
+	nv_oem6_short_header_t  header;  
 	std::vector<uint8_t>    msg_body;
 
 	void dumpToStream( mrpt::utils::CStream &out ) const override; // See docs in base
@@ -168,13 +192,16 @@ protected:
 
 /** Novatel frame: NV_OEM6_BESTPOS. \sa mrpt::obs::CObservationGPS  */
 GNSS_BINARY_MSG_DEFINITION_START(NV_OEM6_BESTPOS)
-	nv_oem6_header_t   header;  //!< Frame header
+	/** Frame header */
+	nv_oem6_header_t   header;  
 	nv_oem6_solution_status::nv_solution_status_t solution_stat;
 	nv_oem6_position_type::nv_position_type_t position_type;
-	double     lat,lon,hgt;     //!< [deg], [deg], hgt over sea level[m]
+	/** [deg], [deg], hgt over sea level[m] */
+	double     lat,lon,hgt;     
 	float      undulation;
 	uint32_t   datum_id;
-	float      lat_sigma, lon_sigma, hgt_sigma; //!< Uncertainties (all in [m])
+	/** Uncertainties (all in [m]) */
+	float      lat_sigma, lon_sigma, hgt_sigma; 
 	char       base_station_id[4];
 	float      diff_age, sol_age;
 	uint8_t    num_sats_tracked, num_sats_sol, num_sats_sol_L1, num_sats_sol_multi;
@@ -196,7 +223,8 @@ GNSS_BINARY_MSG_DEFINITION_MID_END
 
 /** Novatel frame: NV_OEM6_INSPVAS. \sa mrpt::obs::CObservationGPS  */
 GNSS_BINARY_MSG_DEFINITION_START(NV_OEM6_INSPVAS)
-		nv_oem6_short_header_t   header;  //!< Frame header
+		/** Frame header */
+		nv_oem6_short_header_t   header;  
 		uint32_t   week;
 		double     seconds_in_week;
 		double     lat,lon,hgt;
@@ -218,12 +246,16 @@ GNSS_BINARY_MSG_DEFINITION_MID_END
 
 /** Novatel frame: NV_OEM6_INSCOVS. \sa mrpt::obs::CObservationGPS  */
 GNSS_BINARY_MSG_DEFINITION_START(NV_OEM6_INSCOVS)
-	nv_oem6_short_header_t   header;  //!< Frame header
+	/** Frame header */
+	nv_oem6_short_header_t   header;  
 	uint32_t   week;
 	double     seconds_in_week;
-	double     pos_cov[9]; //!< Position covariance matrix in local level frame (metres squared) xx,xy,xz,yx,yy,yz,zx,zy,zz
-	double     att_cov[9]; //!< Attitude covariance matrix of the SPAN frame to the local level frame.  (deg sq) xx,xy,xz,yx,yy,yz,zx,zy,zz
-	double     vel_cov[9]; //!< Velocity covariance matrix in local level frame. (metres/second squared) xx,xy,xz,yx,yy,yz,zx,zy,zz
+	/** Position covariance matrix in local level frame (metres squared) xx,xy,xz,yx,yy,yz,zx,zy,zz */
+	double     pos_cov[9]; 
+	/** Attitude covariance matrix of the SPAN frame to the local level frame.  (deg sq) xx,xy,xz,yx,yy,yz,zx,zy,zz */
+	double     att_cov[9]; 
+	/** Velocity covariance matrix in local level frame. (metres/second squared) xx,xy,xz,yx,yy,yz,zx,zy,zz */
+	double     vel_cov[9]; 
 	uint32_t   crc;
 GNSS_BINARY_MSG_DEFINITION_MID
 	bool getAllFieldDescriptions( std::ostream &o ) const override;
@@ -239,7 +271,8 @@ struct OBS_IMPEXP Message_NV_OEM6_RANGECMP : public gnss_message
 		uint8_t data[24];
 	};
 
-	nv_oem6_header_t     header;  //!< Frame header
+	/** Frame header */
+	nv_oem6_header_t     header;  
 	uint32_t             num_obs;
 	std::vector<TCompressedRangeLog> obs_data;
 	uint32_t             crc;
@@ -252,7 +285,8 @@ protected:
 
 /** Novatel frame: NV_OEM6_RXSTATUS. \sa mrpt::obs::CObservationGPS  */
 GNSS_BINARY_MSG_DEFINITION_START(NV_OEM6_RXSTATUS)
-	nv_oem6_header_t   header;  //!< Frame header
+	/** Frame header */
+	nv_oem6_header_t   header;  
 	uint32_t   error, num_stats;
 	uint32_t   rxstat,rxstat_pri, rxstat_set, rxstat_clear;
 	uint32_t   aux1stat,aux1stat_pri,aux1stat_set,aux1stat_clear;
@@ -263,7 +297,8 @@ GNSS_BINARY_MSG_DEFINITION_END
 
 /** Novatel frame: NV_OEM6_RAWEPHEM. \sa mrpt::obs::CObservationGPS  */
 GNSS_BINARY_MSG_DEFINITION_START(NV_OEM6_RAWEPHEM)
-	nv_oem6_header_t   header;  //!< Frame header
+	/** Frame header */
+	nv_oem6_header_t   header;  
 	uint32_t   sat_prn, ref_week, ref_secs;
 	uint8_t    subframe1[30],subframe2[30],subframe3[30];
 	uint32_t   crc;
@@ -281,7 +316,8 @@ struct OBS_IMPEXP Message_NV_OEM6_VERSION : public gnss_message
 		char compdate[12], comptime[12];
 	};
 
-	nv_oem6_header_t     header;  //!< Frame header
+	/** Frame header */
+	nv_oem6_header_t     header;  
 	uint32_t             num_comps;
 	std::vector<TComponentVersion> components;
 	uint32_t             crc;
@@ -295,7 +331,8 @@ protected:
 
 /** Novatel frame: NV_OEM6_RAWIMUS. \sa mrpt::obs::CObservationGPS  */
 GNSS_BINARY_MSG_DEFINITION_START(NV_OEM6_RAWIMUS)
-	nv_oem6_short_header_t header;  //!< Frame header
+	/** Frame header */
+	nv_oem6_short_header_t header;  
 	uint32_t   week;
 	double     week_seconds;
 	uint32_t   imu_status;
@@ -309,10 +346,12 @@ GNSS_BINARY_MSG_DEFINITION_MID_END
 
 /** Novatel frame: NV_OEM6_MARKPOS. \sa mrpt::obs::CObservationGPS  */
 GNSS_BINARY_MSG_DEFINITION_START(NV_OEM6_MARKPOS)
-	nv_oem6_header_t   header;  //!< Frame header
+	/** Frame header */
+	nv_oem6_header_t   header;  
 	nv_oem6_solution_status::nv_solution_status_t solution_stat;
 	nv_oem6_position_type::nv_position_type_t position_type;
-	double     lat,lon,hgt;     //!< [deg], [deg], hgt over sea level[m]
+	/** [deg], [deg], hgt over sea level[m] */
+	double     lat,lon,hgt;     
 	float      undulation;
 	uint32_t   datum_id;
 	float      lat_sigma, lon_sigma, hgt_sigma;
@@ -335,7 +374,8 @@ GNSS_BINARY_MSG_DEFINITION_MID_END
 
 /** Novatel frame: NV_OEM6_MARKTIME. \sa mrpt::obs::CObservationGPS  */
 GNSS_BINARY_MSG_DEFINITION_START(NV_OEM6_MARKTIME)
-	nv_oem6_header_t header;  //!< Frame header
+	/** Frame header */
+	nv_oem6_header_t header;  
 	uint32_t   week;
 	double     week_seconds;
 	double     clock_offset, clock_offset_std;
@@ -349,7 +389,8 @@ GNSS_BINARY_MSG_DEFINITION_MID_END
 
 /** Novatel frame: NV_OEM6_MARK2TIME. \sa mrpt::obs::CObservationGPS  */
 GNSS_BINARY_MSG_DEFINITION_START(NV_OEM6_MARK2TIME)
-	nv_oem6_header_t header;  //!< Frame header
+	/** Frame header */
+	nv_oem6_header_t header;  
 	uint32_t   week;
 	double     week_seconds;
 	double     clock_offset, clock_offset_std;
@@ -363,15 +404,23 @@ GNSS_BINARY_MSG_DEFINITION_MID_END
 
 /** Novatel frame: NV_OEM6_IONUTC. \sa mrpt::obs::CObservationGPS  */
 GNSS_BINARY_MSG_DEFINITION_START(NV_OEM6_IONUTC)
-	nv_oem6_header_t header;  //!< Frame header
+	/** Frame header */
+	nv_oem6_header_t header;  
 	double     a0,a1,a2,a3,b0,b1,b2,b3; // Ionospheric alpha and beta constant terms parameters
-	uint32_t   utc_wn; //!< UTC reference week number
-	uint32_t   tot;    //!< Reference time of UTC params
-	double     A0,A1;  //!< UTC constant and 1st order terms
-	uint32_t   wn_lsf; //!< Future week number
-	uint32_t   dn;     //!< Day number (1=sunday, 7=saturday)
-	uint32_t   deltat_ls;     //!< Delta time due to leap seconds
-	uint32_t   deltat_lsf;    //!< Delta time due to leap seconds (future)
+	/** UTC reference week number */
+	uint32_t   utc_wn; 
+	/** Reference time of UTC params */
+	uint32_t   tot;    
+	/** UTC constant and 1st order terms */
+	double     A0,A1;  
+	/** Future week number */
+	uint32_t   wn_lsf; 
+	/** Day number (1=sunday, 7=saturday) */
+	uint32_t   dn;     
+	/** Delta time due to leap seconds */
+	uint32_t   deltat_ls;     
+	/** Delta time due to leap seconds (future) */
+	uint32_t   deltat_lsf;    
 	uint32_t   reserved;
 	uint32_t   crc;
 GNSS_BINARY_MSG_DEFINITION_END

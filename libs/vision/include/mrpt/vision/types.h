@@ -24,60 +24,90 @@ namespace mrpt
 	{
 		/** \addtogroup mrpt_vision_grp
 		  *  @{ */
-		typedef uint64_t TFeatureID;	//!< Definition of a feature ID
+		/** Definition of a feature ID */
+		typedef uint64_t TFeatureID;	
 
-		typedef	uint64_t TLandmarkID;   //!< Unique IDs for landmarks
-		typedef uint64_t TCameraPoseID; //!< Unique IDs for camera frames (poses)
+		/** Unique IDs for landmarks */
+		typedef	uint64_t TLandmarkID;   
+		/** Unique IDs for camera frames (poses) */
+		typedef uint64_t TCameraPoseID; 
 
-		typedef mrpt::aligned_containers<TCameraPoseID,mrpt::poses::CPose3D>::map_t  TFramePosesMap;        //!< A list of camera frames (6D poses) indexed by unique IDs.
-		typedef mrpt::aligned_containers<mrpt::poses::CPose3D>::vector_t             TFramePosesVec;        //!< A list of camera frames (6D poses), which assumes indexes are unique, consecutive IDs.
+		/** A list of camera frames (6D poses) indexed by unique IDs. */
+		typedef mrpt::aligned_containers<TCameraPoseID,mrpt::poses::CPose3D>::map_t  TFramePosesMap;        
+		/** A list of camera frames (6D poses), which assumes indexes are unique, consecutive IDs. */
+		typedef mrpt::aligned_containers<mrpt::poses::CPose3D>::vector_t             TFramePosesVec;        
 
-		typedef std::map<TLandmarkID,mrpt::math::TPoint3D>   TLandmarkLocationsMap; //!< A list of landmarks (3D points) indexed by unique IDs.
-		typedef std::vector<mrpt::math::TPoint3D>            TLandmarkLocationsVec; //!< A list of landmarks (3D points), which assumes indexes are unique, consecutive IDs.
+		/** A list of landmarks (3D points) indexed by unique IDs. */
+		typedef std::map<TLandmarkID,mrpt::math::TPoint3D>   TLandmarkLocationsMap; 
+		/** A list of landmarks (3D points), which assumes indexes are unique, consecutive IDs. */
+		typedef std::vector<mrpt::math::TPoint3D>            TLandmarkLocationsVec; 
 
 
 		/** Types of features - This means that the point has been detected with this algorithm, which is independent of additional descriptors a feature may also have
 		*/
 		enum TFeatureType
 		{
-			featNotDefined = -1,	//!< Non-defined feature (also used for Occupancy features)
-			featKLT = 0,			//!< Kanade-Lucas-Tomasi feature [SHI'94]
-			featHarris,				//!< Harris border and corner detector [HARRIS]
-			featBCD,				//!< Binary corder detector
-			featSIFT,				//!< Scale Invariant Feature Transform [LOWE'04]
-			featSURF,				//!< Speeded Up Robust Feature [BAY'06]
-			featBeacon,				//!< A especial case: this is not an image feature, but a 2D/3D beacon (used for range-only SLAM from mrpt::maps::CLandmark)
-			featFAST,				//!< FAST feature detector, OpenCV's implementation ("Faster and better: A machine learning approach to corner detection", E. Rosten, R. Porter and T. Drummond, PAMI, 2009).
-			featFASTER9,			//!< FASTER-9 detector, Edward Rosten's libcvd implementation optimized for SSE2.
-			featFASTER10,			//!< FASTER-9 detector, Edward Rosten's libcvd implementation optimized for SSE2.
-			featFASTER12,			//!< FASTER-9 detector, Edward Rosten's libcvd implementation optimized for SSE2.
-			featORB					//!< ORB detector and descriptor, OpenCV's implementation ("ORB: an efficient alternative to SIFT or SURF", E. Rublee, V. Rabaud, K. Konolige, G. Bradski, ICCV, 2012).
+			/** Non-defined feature (also used for Occupancy features) */
+			featNotDefined = -1,	
+			/** Kanade-Lucas-Tomasi feature [SHI'94] */
+			featKLT = 0,			
+			/** Harris border and corner detector [HARRIS] */
+			featHarris,				
+			/** Binary corder detector */
+			featBCD,				
+			/** Scale Invariant Feature Transform [LOWE'04] */
+			featSIFT,				
+			/** Speeded Up Robust Feature [BAY'06] */
+			featSURF,				
+			/** A especial case: this is not an image feature, but a 2D/3D beacon (used for range-only SLAM from mrpt::maps::CLandmark) */
+			featBeacon,				
+			/** FAST feature detector, OpenCV's implementation ("Faster and better: A machine learning approach to corner detection", E. Rosten, R. Porter and T. Drummond, PAMI, 2009). */
+			featFAST,				
+			/** FASTER-9 detector, Edward Rosten's libcvd implementation optimized for SSE2. */
+			featFASTER9,			
+			/** FASTER-9 detector, Edward Rosten's libcvd implementation optimized for SSE2. */
+			featFASTER10,			
+			/** FASTER-9 detector, Edward Rosten's libcvd implementation optimized for SSE2. */
+			featFASTER12,			
+			/** ORB detector and descriptor, OpenCV's implementation ("ORB: an efficient alternative to SIFT or SURF", E. Rublee, V. Rabaud, K. Konolige, G. Bradski, ICCV, 2012). */
+			featORB					
 		};
 
 		/** The bitwise OR combination of values of TDescriptorType are used in CFeatureExtraction::computeDescriptors to indicate which descriptors are to be computed for features.
 		  */
 		enum TDescriptorType
 		{
-			descAny				= 0,  //!< Used in some methods to mean "any of the present descriptors"
-			descSIFT            = 1,  //!< SIFT descriptors
-			descSURF			= 2,  //!< SURF descriptors
-			descSpinImages      = 4,  //!< Intensity-domain spin image descriptors
-			descPolarImages     = 8,  //!< Polar image descriptor
-			descLogPolarImages	= 16,  //!< Log-Polar image descriptor
-			descORB				= 32  //!< Bit-based feature descriptor
+			/** Used in some methods to mean "any of the present descriptors" */
+			descAny				= 0,  
+			/** SIFT descriptors */
+			descSIFT            = 1,  
+			/** SURF descriptors */
+			descSURF			= 2,  
+			/** Intensity-domain spin image descriptors */
+			descSpinImages      = 4,  
+			/** Polar image descriptor */
+			descPolarImages     = 8,  
+			/** Log-Polar image descriptor */
+			descLogPolarImages	= 16,  
+			/** Bit-based feature descriptor */
+			descORB				= 32  
 		};
 
 		enum TFeatureTrackStatus
 		{
 			// Init value
-			status_IDLE 	= 0,	//!< Inactive (right after detection, and before being tried to track)
+			/** Inactive (right after detection, and before being tried to track) */
+			status_IDLE 	= 0,	
 
 			// Ok:
-			status_TRACKED 	= 5,	//!< Feature correctly tracked
+			/** Feature correctly tracked */
+			status_TRACKED 	= 5,	
 
 			// Bad:
-			status_OOB		= 1,	//!< Feature fell Out Of Bounds (out of the image limits, too close to image borders)
-			status_LOST 	= 10	//!< Unable to track this feature (mismatch is too high for the given tracking window: lack of texture? oclussion?)
+			/** Feature fell Out Of Bounds (out of the image limits, too close to image borders) */
+			status_OOB		= 1,	
+			/** Unable to track this feature (mismatch is too high for the given tracking window: lack of texture? oclussion?) */
+			status_LOST 	= 10	
 		};
 
 
@@ -87,9 +117,12 @@ namespace mrpt
 			inline TFeatureObservation() { }
 			inline TFeatureObservation(const TLandmarkID _id_feature, const TCameraPoseID  _id_frame, const mrpt::utils::TPixelCoordf &_px) : id_feature(_id_feature), id_frame(_id_frame), px(_px) { }
 
-			TLandmarkID    id_feature;  //!< A unique ID of this feature
-			TCameraPoseID  id_frame;    //!< A unique ID of a "frame" (camera position) from where the feature was observed.
-			mrpt::utils::TPixelCoordf   px;          //!< The pixel coordinates of the observed feature
+			/** A unique ID of this feature */
+			TLandmarkID    id_feature;  
+			/** A unique ID of a "frame" (camera position) from where the feature was observed. */
+			TCameraPoseID  id_frame;    
+			/** The pixel coordinates of the observed feature */
+			mrpt::utils::TPixelCoordf   px;          
 		};
 
 		/** One relative feature observation entry, used with some relative bundle-adjustment functions.
@@ -99,8 +132,10 @@ namespace mrpt
 			inline TRelativeFeaturePos() { }
 			inline TRelativeFeaturePos(const mrpt::vision::TCameraPoseID  _id_frame_base, const mrpt::math::TPoint3D &_pos) : id_frame_base(_id_frame_base), pos(_pos) {  }
 
-			mrpt::vision::TCameraPoseID  id_frame_base;	//!< The ID of the camera frame which is the coordinate reference of \a pos
-			mrpt::math::TPoint3D         pos;  //!< The (x,y,z) location of the feature, wrt to the camera frame \a id_frame_base
+			/** The ID of the camera frame which is the coordinate reference of \a pos */
+			mrpt::vision::TCameraPoseID  id_frame_base;	
+			/** The (x,y,z) location of the feature, wrt to the camera frame \a id_frame_base */
+			mrpt::math::TPoint3D         pos;  
 		};
 
 		/** An index of feature IDs and their relative locations */
@@ -290,46 +325,69 @@ namespace mrpt
 			};
 
 			// For determining
-			bool	useEpipolarRestriction;		//!< Whether or not take into account the epipolar restriction for finding correspondences
-			bool	hasFundamentalMatrix;		//!< Whether or not there is a fundamental matrix
-			bool	parallelOpticalAxis;		//!< Whether or not the stereo rig has the optical axes parallel
-			bool	useXRestriction;			//!< Whether or not employ the x-coord restriction for finding correspondences (bumblebee camera, for example)
-			bool    addMatches;                 //!< Whether or not to add the matches found into the input matched list (if false the input list will be cleared before being filled with the new matches)
-			bool	useDisparityLimits;			//!< Whether or not use limits (min,max) for the disparity, see also 'min_disp, max_disp'
-			bool	enable_robust_1to1_match;	//!< Whether or not only permit matches that are consistent from left->right and right->left
+			/** Whether or not take into account the epipolar restriction for finding correspondences */
+			bool	useEpipolarRestriction;		
+			/** Whether or not there is a fundamental matrix */
+			bool	hasFundamentalMatrix;		
+			/** Whether or not the stereo rig has the optical axes parallel */
+			bool	parallelOpticalAxis;		
+			/** Whether or not employ the x-coord restriction for finding correspondences (bumblebee camera, for example) */
+			bool	useXRestriction;			
+			/** Whether or not to add the matches found into the input matched list (if false the input list will be cleared before being filled with the new matches) */
+			bool    addMatches;                 
+			/** Whether or not use limits (min,max) for the disparity, see also 'min_disp, max_disp' */
+			bool	useDisparityLimits;			
+			/** Whether or not only permit matches that are consistent from left->right and right->left */
+			bool	enable_robust_1to1_match;	
 
-			float	min_disp, max_disp;			//!< Disparity limits, see also 'useDisparityLimits'
+			/** Disparity limits, see also 'useDisparityLimits' */
+			float	min_disp, max_disp;			
 
 			mrpt::math::CMatrixDouble33 F;
 
 			// General
-			TMatchingMethod	matching_method;	//!< Matching method
-			float	epipolar_TH;				//!< Epipolar constraint (rows of pixels)
+			/** Matching method */
+			TMatchingMethod	matching_method;	
+			/** Epipolar constraint (rows of pixels) */
+			float	epipolar_TH;				
 
 			// SIFT
-			float	maxEDD_TH;					//!< Maximum Euclidean Distance Between SIFT Descriptors
-			float	EDD_RATIO;					//!< Boundary Ratio between the two lowest EDD
+			/** Maximum Euclidean Distance Between SIFT Descriptors */
+			float	maxEDD_TH;					
+			/** Boundary Ratio between the two lowest EDD */
+			float	EDD_RATIO;					
 
 			// KLT
-			float	minCC_TH;					//!< Minimum Value of the Cross Correlation
-			float	minDCC_TH;					//!< Minimum Difference Between the Maximum Cross Correlation Values
-			float	rCC_TH;						//!< Maximum Ratio Between the two highest CC values
+			/** Minimum Value of the Cross Correlation */
+			float	minCC_TH;					
+			/** Minimum Difference Between the Maximum Cross Correlation Values */
+			float	minDCC_TH;					
+			/** Maximum Ratio Between the two highest CC values */
+			float	rCC_TH;						
 
 			// SURF
-			float	maxEDSD_TH;					//!< Maximum Euclidean Distance Between SURF Descriptors
-			float	EDSD_RATIO;					//!< Boundary Ratio between the two lowest SURF EDSD
+			/** Maximum Euclidean Distance Between SURF Descriptors */
+			float	maxEDSD_TH;					
+			/** Boundary Ratio between the two lowest SURF EDSD */
+			float	EDSD_RATIO;					
 
 			// SAD
-			double	maxSAD_TH;                  //!< Minimum Euclidean Distance Between Sum of Absolute Differences
-			double  SAD_RATIO;                  //!< Boundary Ratio between the two highest SAD
+			/** Minimum Euclidean Distance Between Sum of Absolute Differences */
+			double	maxSAD_TH;                  
+			/** Boundary Ratio between the two highest SAD */
+			double  SAD_RATIO;                  
 
 			// ORB
-			double	maxORB_dist;				//!< Maximun distance between ORB descriptors
+			/** Maximun distance between ORB descriptors */
+			double	maxORB_dist;				
 
 //			// To estimate depth
-			bool    estimateDepth;              //!< Whether or not estimate the 3D position of the real features for the matches (only with parallelOpticalAxis by now).
-			double  maxDepthThreshold;          //!< The maximum allowed depth for the matching. If its computed depth is larger than this, the match won't be considered.
-//            double  fx,cx,cy,baseline;          //!< Intrinsic parameters of the stereo rig
+			/** Whether or not estimate the 3D position of the real features for the matches (only with parallelOpticalAxis by now). */
+			bool    estimateDepth;              
+			/** The maximum allowed depth for the matching. If its computed depth is larger than this, the match won't be considered. */
+			double  maxDepthThreshold;          
+/** Intrinsic parameters of the stereo rig */
+//            double  fx,cx,cy,baseline;          
 
 			/** Constructor */
 			TMatchingOptions( );
@@ -405,10 +463,14 @@ namespace mrpt
         {
             int                     nMatches;
 
-            std::vector<int>        firstListCorrespondences;    //!< Contains the indexes within the second list corresponding to the first one.
-            std::vector<int>        secondListCorrespondences;   //!< Contains the indexes within the first list corresponding to the second one.
-            std::vector<int>        firstListFoundScales;        //!< Contains the scales of the first list where the correspondence was found.
-            std::vector<double>     firstListDistance;           //!< Contains the distances between the descriptors.
+            /** Contains the indexes within the second list corresponding to the first one. */
+            std::vector<int>        firstListCorrespondences;    
+            /** Contains the indexes within the first list corresponding to the second one. */
+            std::vector<int>        secondListCorrespondences;   
+            /** Contains the scales of the first list where the correspondence was found. */
+            std::vector<int>        firstListFoundScales;        
+            /** Contains the distances between the descriptors. */
+            std::vector<double>     firstListDistance;           
 
             TMultiResMatchingOutput() : nMatches(0),
                 firstListCorrespondences(), secondListCorrespondences(),
@@ -420,22 +482,34 @@ namespace mrpt
 		*/
 		struct VISION_IMPEXP TMultiResDescMatchOptions : public mrpt::utils::CLoadableOptions
 		{
-			bool      useOriFilter;           //!< Whether or not use the filter based on orientation test
-			double    oriThreshold;           //!< The threshold for the orientation test
+			/** Whether or not use the filter based on orientation test */
+			bool      useOriFilter;           
+			/** The threshold for the orientation test */
+			double    oriThreshold;           
 
-			bool      useDepthFilter;         //!< Whether or not use the filter based on the depth test
+			/** Whether or not use the filter based on the depth test */
+			bool      useDepthFilter;         
 
-			double    matchingThreshold;      //!< The absolute threshold in descriptor distance for considering a match
-			double    matchingRatioThreshold; //!< The ratio between the two lowest distances threshold for considering a match
-			uint32_t  lowScl1, lowScl2;       //!< The lowest scales in the two features to be taken into account in the matching process
-			uint32_t  highScl1, highScl2;     //!< The highest scales in the two features to be taken into account in the matching process
+			/** The absolute threshold in descriptor distance for considering a match */
+			double    matchingThreshold;      
+			/** The ratio between the two lowest distances threshold for considering a match */
+			double    matchingRatioThreshold; 
+			/** The lowest scales in the two features to be taken into account in the matching process */
+			uint32_t  lowScl1, lowScl2;       
+			/** The highest scales in the two features to be taken into account in the matching process */
+			uint32_t  highScl1, highScl2;     
 
-			uint32_t  searchAreaSize;         //!< Size of the squared area where to search for a match.
-			uint32_t  lastSeenThreshold;      //!< The allowed number of frames since a certain feature was seen for the last time.
-			uint32_t  timesSeenThreshold;     //!< The minimum number of frames for a certain feature to be considered stable.
+			/** Size of the squared area where to search for a match. */
+			uint32_t  searchAreaSize;         
+			/** The allowed number of frames since a certain feature was seen for the last time. */
+			uint32_t  lastSeenThreshold;      
+			/** The minimum number of frames for a certain feature to be considered stable. */
+			uint32_t  timesSeenThreshold;     
 
-			uint32_t  minFeaturesToFind;      //!< The minimum number of features allowed in the system. If current number is below this value, more features will be found.
-			uint32_t  minFeaturesToBeLost;    //!< The minimum number of features allowed in the system to not be considered to be lost.
+			/** The minimum number of features allowed in the system. If current number is below this value, more features will be found. */
+			uint32_t  minFeaturesToFind;      
+			/** The minimum number of features allowed in the system to not be considered to be lost. */
+			uint32_t  minFeaturesToBeLost;    
 
 			/** Default constructor
 			  */
@@ -465,16 +539,25 @@ namespace mrpt
 		*/
 		struct VISION_IMPEXP TMultiResDescOptions : public mrpt::utils::CLoadableOptions
 		{
-			uint32_t        basePSize;          //!< The size of the base patch
-			std::vector<double>  scales;             //!< The set of scales relatives to the base patch
-			uint32_t        comLScl, comHScl;   //!< The subset of scales for which to compute the descriptors
-			double          sg1, sg2, sg3;      //!< The sigmas for the Gaussian kernels
-			bool            computeDepth;       //!< Whether or not to compute the depth of the feature
-			bool            blurImage;          //!< Whether or not to blur the image previously to compute the descriptors
-			double          fx,cx,cy,baseline;  //!< Intrinsic stereo pair parameters for computing the depth of the feature
-			bool            computeHashCoeffs;  //!< Whether or not compute the coefficients for mantaining a HASH table of descriptors (for relocalization)
+			/** The size of the base patch */
+			uint32_t        basePSize;          
+			/** The set of scales relatives to the base patch */
+			std::vector<double>  scales;             
+			/** The subset of scales for which to compute the descriptors */
+			uint32_t        comLScl, comHScl;   
+			/** The sigmas for the Gaussian kernels */
+			double          sg1, sg2, sg3;      
+			/** Whether or not to compute the depth of the feature */
+			bool            computeDepth;       
+			/** Whether or not to blur the image previously to compute the descriptors */
+			bool            blurImage;          
+			/** Intrinsic stereo pair parameters for computing the depth of the feature */
+			double          fx,cx,cy,baseline;  
+			/** Whether or not compute the coefficients for mantaining a HASH table of descriptors (for relocalization) */
+			bool            computeHashCoeffs;  
 
-			double          cropValue;          //!< The SIFT-like descriptor is cropped at this value during normalization
+			/** The SIFT-like descriptor is cropped at this value during normalization */
+			double          cropValue;          
 
 			/** Default constructor
 			  */

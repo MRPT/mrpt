@@ -26,8 +26,10 @@ namespace mrpt
 	typedef std::vector<uint8_t>     vector_byte;
 	typedef std::vector<uint16_t>    vector_word;
 	typedef std::vector<uint32_t>	 vector_uint;
-	typedef std::vector<bool>        vector_bool;	//!<  A type for passing a vector of bools.
-	typedef std::vector<std::string> vector_string;	//!<  A type for passing a vector of strings.
+	/**  A type for passing a vector of bools. */
+	typedef std::vector<bool>        vector_bool;	
+	/**  A type for passing a vector of strings. */
+	typedef std::vector<std::string> vector_string;	
 	/** @} */
 
 	namespace utils
@@ -42,8 +44,10 @@ namespace mrpt
 			typedef unsigned long POINTER_TYPE;
 		#endif
 
-		typedef uint64_t TNodeID;  //!< The type for node IDs in graphs of different types.
-		typedef std::pair<TNodeID,TNodeID> TPairNodeIDs; //!< A pair of node IDs.
+		/** The type for node IDs in graphs of different types. */
+		typedef uint64_t TNodeID;  
+		/** A pair of node IDs. */
+		typedef std::pair<TNodeID,TNodeID> TPairNodeIDs; 
 		#define INVALID_NODEID  static_cast<mrpt::utils::TNodeID>(-1)
 		/** @} */
 	} // end namespace

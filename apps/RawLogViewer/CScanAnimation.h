@@ -111,7 +111,8 @@ class CScanAnimation: public wxDialog
 			mrpt::opengl::CRenderizable::Ptr obj;
 		};
 		typedef std::map<std::string,TRenderObject> TListGlObjects;
-		TListGlObjects  m_gl_objects;  //!< All the observations added to the map.
+		/** All the observations added to the map. */
+		TListGlObjects  m_gl_objects;  
 
 		void RebuildMaps();
 		void BuildMapAndRefresh( mrpt::obs::CSensoryFrame *sf);

@@ -52,8 +52,10 @@ namespace mrpt
 		{
 			DEFINE_GENERIC_SENSOR(CIMUXSens_MT4)
 		protected:
-			int							m_port_bauds; //!< Baudrate, only for COM ports.
-			std::string					m_portname;   //!< The USB or COM port name (if blank -> autodetect)
+			/** Baudrate, only for COM ports. */
+			int							m_port_bauds; 
+			/** The USB or COM port name (if blank -> autodetect) */
+			std::string					m_portname;   
 			int      m_sampleFreq;
 
 			uint64_t					m_timeStartUI;

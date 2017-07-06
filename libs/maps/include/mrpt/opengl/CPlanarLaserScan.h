@@ -70,7 +70,8 @@ namespace mrpt
 			bool	m_enable_surface;
 
 		public:
-			void clear();	//!<< Clear the scan
+			/**< Clear the scan */
+			void clear();	
 
 			/** Show or hides the scanned points \sa sePointsWidth, setPointsColor*/
 			inline void enablePoints(bool enable=true) { m_enable_points=enable; CRenderizableDisplayList::notifyChange(); }

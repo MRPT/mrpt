@@ -60,8 +60,10 @@ namespace slam
 		float	localizeLinDistance,localizeAngDistance;
 
 
-		mrpt::poses::CPose3DPDFGaussian	odoIncrementSinceLastLocalization;	//!< Traveled distance since last localization update
-		mrpt::poses::CPose3D			odoIncrementSinceLastMapUpdate;		//!< Traveled distance since last map update
+		/** Traveled distance since last localization update */
+		mrpt::poses::CPose3DPDFGaussian	odoIncrementSinceLastLocalization;	
+		/** Traveled distance since last map update */
+		mrpt::poses::CPose3D			odoIncrementSinceLastMapUpdate;		
 
 	public:
 

@@ -42,7 +42,8 @@ namespace mrpt
 			TList                          m_pool;
 			std::mutex  m_pool_cs;
 			size_t                         m_maxPoolEntries;
-			bool                           & m_was_destroyed;  //!< With this trick we get rid of the "global destruction order fiasco" ;-)
+			/** With this trick we get rid of the "global destruction order fiasco" ;-) */
+			bool                           & m_was_destroyed;  
 
 			CGenericMemoryPool(const size_t max_pool_entries, bool &was_destroyed ) : m_maxPoolEntries(max_pool_entries), m_was_destroyed(was_destroyed)
 			{

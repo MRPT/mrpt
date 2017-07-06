@@ -41,9 +41,11 @@ namespace utils
 			int               maxConnectionsWaiting = 50,
 			mrpt::utils::VerbosityLevel verbosityLevel = mrpt::utils::LVL_INFO
 			);
-		virtual ~CServerTCPSocket( ); //!< Dtor
+		/** Dtor */
+		virtual ~CServerTCPSocket( ); 
 
-		bool isListening(); //!< Returns true if the socket was successfully open and it's bound to the desired port.
+		/** Returns true if the socket was successfully open and it's bound to the desired port. */
+		bool isListening(); 
 
 		/** Waits for an incoming connection (indefinitely, or with a given timeout)
 		  * The returned object represents the new connection, and MUST BE deleted by the user when no longer needed.

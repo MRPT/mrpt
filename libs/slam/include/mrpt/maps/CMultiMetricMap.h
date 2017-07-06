@@ -123,8 +123,10 @@ namespace maps
 	{
 		DEFINE_SERIALIZABLE( CMultiMetricMap )
 	protected:
-		void deleteAllMaps(); //!< Deletes all maps and clears the internal lists of maps (with clear_unique(), so user copies remain alive)
-		void internal_clear() override; //!< Clear all elements of the map.
+		/** Deletes all maps and clears the internal lists of maps (with clear_unique(), so user copies remain alive) */
+		void deleteAllMaps(); 
+		/** Clear all elements of the map. */
+		void internal_clear() override; 
 		// See base class docs
 		bool internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = nullptr ) override;
 		/** Returns true if any of the inner maps is able to compute a sensible likelihood function for this observation.
@@ -251,19 +253,32 @@ namespace maps
 
 		}; // end ProxySelectorContainerByClass
 
-		ProxyFilterContainerByClass<mrpt::maps::CSimplePointsMap::Ptr,TListMaps>           m_pointsMaps; //!< STL-like proxy to access this kind of maps in \ref maps
-		ProxyFilterContainerByClass<mrpt::maps::COccupancyGridMap2D::Ptr,TListMaps>        m_gridMaps;   //!< STL-like proxy to access this kind of maps in \ref maps
-		ProxyFilterContainerByClass<mrpt::maps::COctoMap::Ptr,TListMaps>                   m_octoMaps;   //!< STL-like proxy to access this kind of maps in \ref maps
-		ProxyFilterContainerByClass<mrpt::maps::CColouredOctoMap::Ptr,TListMaps>           m_colourOctoMaps;   //!< STL-like proxy to access this kind of maps in \ref maps
-		ProxyFilterContainerByClass<mrpt::maps::CGasConcentrationGridMap2D::Ptr,TListMaps> m_gasGridMaps;   //!< STL-like proxy to access this kind of maps in \ref maps
-		ProxyFilterContainerByClass<mrpt::maps::CWirelessPowerGridMap2D::Ptr,TListMaps>    m_wifiGridMaps;   //!< STL-like proxy to access this kind of maps in \ref maps
-		ProxyFilterContainerByClass<mrpt::maps::CHeightGridMap2D::Ptr,TListMaps>           m_heightMaps;   //!< STL-like proxy to access this kind of maps in \ref maps
-		ProxyFilterContainerByClass<mrpt::maps::CHeightGridMap2D_MRF::Ptr,TListMaps>       m_heightMRFMaps;   //!< STL-like proxy to access this kind of maps in \ref maps
-		ProxyFilterContainerByClass<mrpt::maps::CReflectivityGridMap2D::Ptr,TListMaps>     m_reflectivityMaps;   //!< STL-like proxy to access this kind of maps in \ref maps
-		ProxySelectorContainerByClass<mrpt::maps::CColouredPointsMap::Ptr,TListMaps>       m_colourPointsMap; //!< Proxy that looks like a smart pointer to the first matching object in \ref maps
-		ProxySelectorContainerByClass<mrpt::maps::CWeightedPointsMap::Ptr,TListMaps>       m_weightedPointsMap; //!< Proxy that looks like a smart pointer to the first matching object in \ref maps
-		ProxySelectorContainerByClass<mrpt::maps::CLandmarksMap::Ptr,TListMaps>            m_landmarksMap; //!< Proxy that looks like a smart pointer to the first matching object in \ref maps
-		ProxySelectorContainerByClass<mrpt::maps::CBeaconMap::Ptr,TListMaps>               m_beaconMap; //!< Proxy that looks like a smart pointer to the first matching object in \ref maps
+		/** STL-like proxy to access this kind of maps in \ref maps */
+		ProxyFilterContainerByClass<mrpt::maps::CSimplePointsMap::Ptr,TListMaps>           m_pointsMaps; 
+		/** STL-like proxy to access this kind of maps in \ref maps */
+		ProxyFilterContainerByClass<mrpt::maps::COccupancyGridMap2D::Ptr,TListMaps>        m_gridMaps;   
+		/** STL-like proxy to access this kind of maps in \ref maps */
+		ProxyFilterContainerByClass<mrpt::maps::COctoMap::Ptr,TListMaps>                   m_octoMaps;   
+		/** STL-like proxy to access this kind of maps in \ref maps */
+		ProxyFilterContainerByClass<mrpt::maps::CColouredOctoMap::Ptr,TListMaps>           m_colourOctoMaps;   
+		/** STL-like proxy to access this kind of maps in \ref maps */
+		ProxyFilterContainerByClass<mrpt::maps::CGasConcentrationGridMap2D::Ptr,TListMaps> m_gasGridMaps;   
+		/** STL-like proxy to access this kind of maps in \ref maps */
+		ProxyFilterContainerByClass<mrpt::maps::CWirelessPowerGridMap2D::Ptr,TListMaps>    m_wifiGridMaps;   
+		/** STL-like proxy to access this kind of maps in \ref maps */
+		ProxyFilterContainerByClass<mrpt::maps::CHeightGridMap2D::Ptr,TListMaps>           m_heightMaps;   
+		/** STL-like proxy to access this kind of maps in \ref maps */
+		ProxyFilterContainerByClass<mrpt::maps::CHeightGridMap2D_MRF::Ptr,TListMaps>       m_heightMRFMaps;   
+		/** STL-like proxy to access this kind of maps in \ref maps */
+		ProxyFilterContainerByClass<mrpt::maps::CReflectivityGridMap2D::Ptr,TListMaps>     m_reflectivityMaps;   
+		/** Proxy that looks like a smart pointer to the first matching object in \ref maps */
+		ProxySelectorContainerByClass<mrpt::maps::CColouredPointsMap::Ptr,TListMaps>       m_colourPointsMap; 
+		/** Proxy that looks like a smart pointer to the first matching object in \ref maps */
+		ProxySelectorContainerByClass<mrpt::maps::CWeightedPointsMap::Ptr,TListMaps>       m_weightedPointsMap; 
+		/** Proxy that looks like a smart pointer to the first matching object in \ref maps */
+		ProxySelectorContainerByClass<mrpt::maps::CLandmarksMap::Ptr,TListMaps>            m_landmarksMap; 
+		/** Proxy that looks like a smart pointer to the first matching object in \ref maps */
+		ProxySelectorContainerByClass<mrpt::maps::CBeaconMap::Ptr,TListMaps>               m_beaconMap; 
 
 		/** @} */
 
@@ -284,7 +299,8 @@ namespace maps
 		/** \overload */
 		void  setListOfMaps( const mrpt::maps::TSetOfMetricMapInitializers	&initializers ) { this->setListOfMaps(&initializers); }
 
-		bool  isEmpty() const override; //!< Returns true if all maps returns true to their isEmpty() method, which is map-dependent. Read the docs of each map class
+		/** Returns true if all maps returns true to their isEmpty() method, which is map-dependent. Read the docs of each map class */
+		bool  isEmpty() const override; 
 
 		// See docs in base class.
 		virtual void  determineMatching2D(

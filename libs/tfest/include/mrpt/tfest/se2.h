@@ -61,21 +61,32 @@ namespace mrpt
 		/** Parameters for se2_l2_robust(). See function for more details */
 		struct TFEST_IMPEXP TSE2RobustParams
 		{
-			unsigned int  ransac_minSetSize; //!< (Default=3)
-			unsigned int  ransac_maxSetSize; //!< (Default = 20)
-			double        ransac_mahalanobisDistanceThreshold; //!< (Default = 3.0)
-			unsigned int  ransac_nSimulations; //!< (Default = 0) If set to 0, an adaptive algorithm is used to determine the number of iterations, such as a good model is found with a probability p=0.999, or that passed as the parameter probability_find_good_model
+			/** (Default=3) */
+			unsigned int  ransac_minSetSize; 
+			/** (Default = 20) */
+			unsigned int  ransac_maxSetSize; 
+			/** (Default = 3.0) */
+			double        ransac_mahalanobisDistanceThreshold; 
+			/** (Default = 0) If set to 0, an adaptive algorithm is used to determine the number of iterations, such as a good model is found with a probability p=0.999, or that passed as the parameter probability_find_good_model */
+			unsigned int  ransac_nSimulations; 
 			/** (Default = true)  If true, the weight of Gaussian modes will be increased when an exact match in the
 			*   subset of correspondences for the modes is found. Otherwise, an approximate method is used as test by just looking at the
 			*   resulting X,Y,PHI means. Threshold in this case are: ransac_fuseMaxDiffXY, ransac_fuseMaxDiffPhi */
 			bool          ransac_fuseByCorrsMatch;
-			double        ransac_fuseMaxDiffXY; //!< (Default = 0.01)
-			double        ransac_fuseMaxDiffPhi; //!< (Default=0.1degree) (In radians)
-			bool          ransac_algorithmForLandmarks; //!< (Default = true) Use Mahalanobis distance (true) or Euclidean dist (false)
-			double        probability_find_good_model; //!< (Default = 0.999) See parameter ransac_nSimulations. When using `probability_find_good_model`, the minimum number of iterations can be set with `ransac_min_nSimulations`
-			unsigned int  ransac_min_nSimulations; //!< (Default = 1500) See parameter probability_find_good_model
-			double        max_rmse_to_end;  //!< Stop searching for solutions when the RMSE of one solution is below this threshold. Special value "0" means "auto", which employs "2*normalizationStd".
-			bool          verbose; //!< (Default=false)
+			/** (Default = 0.01) */
+			double        ransac_fuseMaxDiffXY; 
+			/** (Default=0.1degree) (In radians) */
+			double        ransac_fuseMaxDiffPhi; 
+			/** (Default = true) Use Mahalanobis distance (true) or Euclidean dist (false) */
+			bool          ransac_algorithmForLandmarks; 
+			/** (Default = 0.999) See parameter ransac_nSimulations. When using `probability_find_good_model`, the minimum number of iterations can be set with `ransac_min_nSimulations` */
+			double        probability_find_good_model; 
+			/** (Default = 1500) See parameter probability_find_good_model */
+			unsigned int  ransac_min_nSimulations; 
+			/** Stop searching for solutions when the RMSE of one solution is below this threshold. Special value "0" means "auto", which employs "2*normalizationStd". */
+			double        max_rmse_to_end;  
+			/** (Default=false) */
+			bool          verbose; 
 
 			/** If provided, this user callback will be invoked to determine the individual compatibility between each potential pair 
 			  * of elements. Can check image descriptors, geometrical properties, etc.
@@ -83,7 +94,8 @@ namespace mrpt
 			  */
 			//std::function<bool(TPotentialMatch)>  user_individual_compat_callback; // This could be used in the future when we enforce C++11 to users...
 			TFunctorCheckPotentialMatch  user_individual_compat_callback;
-			void * user_individual_compat_callback_userdata; //!< User data to be passed to user_individual_compat_callback()
+			/** User data to be passed to user_individual_compat_callback() */
+			void * user_individual_compat_callback_userdata; 
 
 			/** Default values */
 			TSE2RobustParams() :
@@ -106,9 +118,12 @@ namespace mrpt
 		/** Output placeholder for se2_l2_robust() */
 		struct TFEST_IMPEXP TSE2RobustResult
 		{
-			mrpt::poses::CPosePDFSOG        transformation; //!< The output as a set of transformations (sum of Gaussians)
-			mrpt::utils::TMatchingPairList  largestSubSet; //!< the largest consensus sub-set
-			unsigned int                    ransac_iters;  //!< Number of actual iterations executed 
+			/** The output as a set of transformations (sum of Gaussians) */
+			mrpt::poses::CPosePDFSOG        transformation; 
+			/** the largest consensus sub-set */
+			mrpt::utils::TMatchingPairList  largestSubSet; 
+			/** Number of actual iterations executed  */
+			unsigned int                    ransac_iters;  
 
 			TSE2RobustResult() : ransac_iters(0) { }
 		};

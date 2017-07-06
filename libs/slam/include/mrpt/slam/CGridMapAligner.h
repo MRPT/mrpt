@@ -57,7 +57,8 @@ namespace mrpt
 					float					*runningTime = nullptr,
 					void					*info = nullptr );
 
-			COccupancyGridMapFeatureExtractor	m_grid_feat_extr; //!< Grid map features extractor
+			/** Grid map features extractor */
+			COccupancyGridMapFeatureExtractor	m_grid_feat_extr; 
 		public:
 
 			CGridMapAligner() :
@@ -85,7 +86,8 @@ namespace mrpt
 				void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section) override; // See base docs
 				void dumpToTextStream(mrpt::utils::CStream &out) const override; // See base docs
 
-				TAlignerMethod		methodSelection;		//!< The aligner method:
+				/** The aligner method: */
+				TAlignerMethod		methodSelection;		
 
 				/** The feature descriptor to use: 0=detector already has descriptor, 1= SIFT, 2=SURF, 4=Spin images, 8=Polar images, 16=log-polar images */
 				mrpt::vision::TDescriptorType	feature_descriptor;
@@ -96,28 +98,41 @@ namespace mrpt
 				/** RANSAC-step options:
 				  * \sa CICP::robustRigidTransformation
 				  */
-				float	ransac_minSetSizeRatio;  //!< The ratio of landmarks that must be inliers to accepto an hypotheses (typ: 0.20)
-				float	ransac_SOG_sigma_m;	//!< The square root of the uncertainty normalization variance var_m (see papers...)
+				/** The ratio of landmarks that must be inliers to accepto an hypotheses (typ: 0.20) */
+				float	ransac_minSetSizeRatio;  
+				/** The square root of the uncertainty normalization variance var_m (see papers...) */
+				float	ransac_SOG_sigma_m;	
 
 				/** [amRobustMatch method only] RANSAC-step options:
 				  * \sa CICP::robustRigidTransformation
 				  */
 				float	ransac_mahalanobisDistanceThreshold;
 
-				double  ransac_chi2_quantile;	//!< [amModifiedRANSAC method only] The quantile used for chi-square thresholding (default=0.99)
+				/** [amModifiedRANSAC method only] The quantile used for chi-square thresholding (default=0.99) */
+				double  ransac_chi2_quantile;	
 
-				double	ransac_prob_good_inliers; //!< Probability of having a good inliers (def:0,9999), used for automatic number of iterations
-				float	featsPerSquareMeter;	//!< Features extraction from grid map: How many features to extract
-				float	threshold_max;		//!< Correspondences are considered if their distances are below this threshold (in the range [0,1]) (default=0.15).
-				float	threshold_delta;	//!< Correspondences are considered if their distances to the best match are below this threshold (in the range [0,1]) (default=0.15).
+				/** Probability of having a good inliers (def:0,9999), used for automatic number of iterations */
+				double	ransac_prob_good_inliers; 
+				/** Features extraction from grid map: How many features to extract */
+				float	featsPerSquareMeter;	
+				/** Correspondences are considered if their distances are below this threshold (in the range [0,1]) (default=0.15). */
+				float	threshold_max;		
+				/** Correspondences are considered if their distances to the best match are below this threshold (in the range [0,1]) (default=0.15). */
+				float	threshold_delta;	
 
-				float   min_ICP_goodness;	//!< The minimum goodness (0-1) of the post-matching ICP to accept a hypothesis as good (default=0.30)
-				double  max_ICP_mahadist;	//!< The maximum Mahalanobis distance between the initial and final poses in the ICP not to discard the hypothesis (default=10)
-				double  maxKLd_for_merge;	//!< Maximum KL-divergence for merging modes of the SOG (default=0.9)
+				/** The minimum goodness (0-1) of the post-matching ICP to accept a hypothesis as good (default=0.30) */
+				float   min_ICP_goodness;	
+				/** The maximum Mahalanobis distance between the initial and final poses in the ICP not to discard the hypothesis (default=10) */
+				double  max_ICP_mahadist;	
+				/** Maximum KL-divergence for merging modes of the SOG (default=0.9) */
+				double  maxKLd_for_merge;	
 
-				bool	save_feat_coors;	//!< DEBUG - Dump all feature correspondences in a directory "grid_feats"
-				bool	debug_show_corrs;	//!< DEBUG - Show graphs with the details of each feature correspondences
-				bool	debug_save_map_pairs;	//!< DEBUG - Save the pair of maps with all the pairings.
+				/** DEBUG - Dump all feature correspondences in a directory "grid_feats" */
+				bool	save_feat_coors;	
+				/** DEBUG - Show graphs with the details of each feature correspondences */
+				bool	debug_show_corrs;	
+				/** DEBUG - Save the pair of maps with all the pairings. */
+				bool	debug_save_map_pairs;	
 
 			} options;
 
@@ -164,9 +179,11 @@ namespace mrpt
 					float		dist;
 				};
 
-				std::vector<TPairPlusDistance>  correspondences_dists_maha;	//!< Mahalanobis distance for each potential correspondence
+				/** Mahalanobis distance for each potential correspondence */
+				std::vector<TPairPlusDistance>  correspondences_dists_maha;	
 
-				std::vector<double>	icp_goodness_all_sog_modes;	//!< The ICP goodness of all potential SOG modes at the stage "sog2", thus before the removing of "bad" ICP matches.
+				/** The ICP goodness of all potential SOG modes at the stage "sog2", thus before the removing of "bad" ICP matches. */
+				std::vector<double>	icp_goodness_all_sog_modes;	
 			};
 
 			/** The method for aligning a pair of 2D points map.

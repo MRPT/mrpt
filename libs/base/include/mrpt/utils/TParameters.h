@@ -110,8 +110,10 @@ namespace mrpt
 			}
 		};
 
-		typedef TParameters<double>       TParametersDouble; //!< See the generic template mrpt::utils::TParameters
-		typedef TParameters<std::string>  TParametersString; //!< See the generic template mrpt::utils::TParameters
+		/** See the generic template mrpt::utils::TParameters */
+		typedef TParameters<double>       TParametersDouble; 
+		/** See the generic template mrpt::utils::TParameters */
+		typedef TParameters<std::string>  TParametersString; 
 
 	} // end namespace
 }

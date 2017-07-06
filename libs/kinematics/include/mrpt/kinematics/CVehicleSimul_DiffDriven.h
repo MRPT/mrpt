@@ -55,7 +55,8 @@ namespace kinematics
 		}
 
 	private:
-		double m_v, m_w; //!< lin & angular velocity in the robot local frame.
+		/** lin & angular velocity in the robot local frame. */
+		double m_v, m_w; 
 			
 		/** Dynamic limitations of the robot.
 			* Approximation to non-infinity motor forces: A first order low-pass filter, using:
@@ -67,8 +68,10 @@ namespace kinematics
 			    Command_v, Command_w,
 				Command_v0, Command_w0;
 
-		double cTAU;  //!< The time-constants for the first order low-pass filter for the velocities changes.
-		double cDELAY; //!< The delay constant for the velocities changes
+		/** The time-constants for the first order low-pass filter for the velocities changes. */
+		double cTAU;  
+		/** The delay constant for the velocities changes */
+		double cDELAY; 
 
 		void internal_simulControlStep(const double dt) override;
 		void internal_clear() override;

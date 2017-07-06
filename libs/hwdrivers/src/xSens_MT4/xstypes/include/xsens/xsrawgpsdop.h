@@ -26,14 +26,22 @@
 */
 struct XsRawGpsDop
 {
-	uint32_t	m_itow;		//!< Gps time of week (ms)
-	uint16_t	m_gdop;		//!< Geometric DOP
-	uint16_t	m_pdop;		//!< Position DOP
-	uint16_t	m_tdop;		//!< Time DOP
-	uint16_t	m_vdop;		//!< Vertical DOP
-	uint16_t	m_hdop;		//!< Horizontal DOP
-	uint16_t	m_ndop;		//!< Northing DOP
-	uint16_t	m_edop;		//!< Easting DOP
+	/** Gps time of week (ms) */
+	uint32_t	m_itow;		
+	/** Geometric DOP */
+	uint16_t	m_gdop;		
+	/** Position DOP */
+	uint16_t	m_pdop;		
+	/** Time DOP */
+	uint16_t	m_tdop;		
+	/** Vertical DOP */
+	uint16_t	m_vdop;		
+	/** Horizontal DOP */
+	uint16_t	m_hdop;		
+	/** Northing DOP */
+	uint16_t	m_ndop;		
+	/** Easting DOP */
+	uint16_t	m_edop;		
 };
 typedef struct XsRawGpsDop XsRawGpsDop;
 

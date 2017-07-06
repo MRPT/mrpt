@@ -39,7 +39,8 @@ namespace obs
 		  */
 		float	minSensorDistance;
 		float	maxSensorDistance;
-		float	sensorConeApperture;  //!< Cone aperture of each ultrasonic beam, in radians.
+		/** Cone aperture of each ultrasonic beam, in radians. */
+		float	sensorConeApperture;  
 
 		struct OBS_IMPEXP TMeasurement
 		{
@@ -63,7 +64,8 @@ namespace obs
 		typedef std::deque<TMeasurement>::const_iterator    const_iterator;
 		typedef std::deque<TMeasurement>::iterator          iterator;
 
-		TMeasurementList sensedData; //!< All the measurements
+		/** All the measurements */
+		TMeasurementList sensedData; 
 
 
 		iterator begin() { return sensedData.begin(); }

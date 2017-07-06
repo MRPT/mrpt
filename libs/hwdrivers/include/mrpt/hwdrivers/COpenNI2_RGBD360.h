@@ -164,8 +164,10 @@ namespace mrpt
 
 		public:
 
-			COpenNI2_RGBD360();	 //!< Default ctor
-			~COpenNI2_RGBD360();	 //!< Default ctor
+			/** Default ctor */
+			COpenNI2_RGBD360();	 
+			/** Default ctor */
+			~COpenNI2_RGBD360();	 
 
 			/** Initializes the 3D camera - should be invoked after calling loadConfig() or setting the different parameters with the set*() methods.
 			  *  \exception This method must throw an exception with a descriptive message if some critical error is found.
@@ -229,14 +231,18 @@ namespace mrpt
 
 			static const int NUM_SENSORS = 2;
 
-			bool		m_preview_window; //!< Show preview window while grabbing
-			size_t 		m_preview_window_decimation; //!< If preview is enabled, only show 1 out of N images.
+			/** Show preview window while grabbing */
+			bool		m_preview_window; 
+			/** If preview is enabled, only show 1 out of N images. */
+			size_t 		m_preview_window_decimation; 
 			size_t      m_preview_decim_counter_range, m_preview_decim_counter_rgb;
 			mrpt::gui::CDisplayWindow::Ptr  m_win_range[NUM_SENSORS], m_win_int[NUM_SENSORS];
 
-			double  m_maxRange; //!< Sensor max range (meters)
+			/** Sensor max range (meters) */
+			double  m_maxRange; 
 
-			bool  m_grab_rgb, m_grab_depth, m_grab_3D_points ; //!< Default: all true
+			/** Default: all true */
+			bool  m_grab_rgb, m_grab_depth, m_grab_3D_points ; 
 
 		};	// End of class
 	} // End of NS

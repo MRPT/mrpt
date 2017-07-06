@@ -50,7 +50,8 @@ namespace TCLAP {
 class StdOutput : public CmdLineOutput
 {
 	protected:
-		std::ostream &m_my_output; //!< By JLBC for MRPT
+		/** By JLBC for MRPT */
+		std::ostream &m_my_output; 
 
 	public:
 		/**

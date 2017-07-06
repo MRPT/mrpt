@@ -21,8 +21,10 @@ namespace mrpt
 	namespace obs
 	{
 
-		typedef std::pair<mrpt::system::TTimeStamp, CObservation::Ptr>		TTimeObservationPair;		//!< For usage with CRawlog classes.
-		typedef std::multimap<mrpt::system::TTimeStamp, CObservation::Ptr>	TListTimeAndObservations;	//!< For usage with CRawlog classes.
+		/** For usage with CRawlog classes. */
+		typedef std::pair<mrpt::system::TTimeStamp, CObservation::Ptr>		TTimeObservationPair;		
+		/** For usage with CRawlog classes. */
+		typedef std::multimap<mrpt::system::TTimeStamp, CObservation::Ptr>	TListTimeAndObservations;	
 
 
 		/** This class stores a rawlog (robotic datasets) in one of two possible formats:
@@ -54,15 +56,21 @@ namespace mrpt
 
 		private:
 			typedef	std::vector<mrpt::utils::CSerializable::Ptr> TListObjects;
-			TListObjects	m_seqOfActObs;	//!< The list where the objects really are in.
+			/** The list where the objects really are in. */
+			TListObjects	m_seqOfActObs;	
 
-			CObservationComment		m_commentTexts;	//!< Comments of the rawlog.
+			/** Comments of the rawlog. */
+			CObservationComment		m_commentTexts;	
 
 		public:
-			void getCommentText( std::string &t) const;	//!< Returns the block of comment text for the rawlog
-			std::string getCommentText() const;			//!< Returns the block of comment text for the rawlog
-			void setCommentText( const std::string &t);	//!< Changes the block of comment text for the rawlog
-			void getCommentTextAsConfigFile( mrpt::utils::CConfigFileMemory &memCfg ) const; //!< Saves the block of comment text for the rawlog into the passed config file object.
+			/** Returns the block of comment text for the rawlog */
+			void getCommentText( std::string &t) const;	
+			/** Returns the block of comment text for the rawlog */
+			std::string getCommentText() const;			
+			/** Changes the block of comment text for the rawlog */
+			void setCommentText( const std::string &t);	
+			/** Saves the block of comment text for the rawlog into the passed config file object. */
+			void getCommentTextAsConfigFile( mrpt::utils::CConfigFileMemory &memCfg ) const; 
 
 			/** The type of each entry in a rawlog.
 			  * \sa CRawlog::getType

@@ -33,18 +33,24 @@ namespace mrpt
 
 			struct MAPS_IMPEXP TExtraFilterParams
 			{
-				std::vector<bool>  * out_deletion_mask; //!< If a pointer is provided to a user-given container, the list of points to be deleted will be marked here with `true`.
-				bool do_not_delete;                     //!< (Default:false) If true, only `out_deletion_mask` is filled in, but the filtered-out points will be not actually removed.
+				/** If a pointer is provided to a user-given container, the list of points to be deleted will be marked here with `true`. */
+				std::vector<bool>  * out_deletion_mask; 
+				/** (Default:false) If true, only `out_deletion_mask` is filled in, but the filtered-out points will be not actually removed. */
+				bool do_not_delete;                     
 
 				TExtraFilterParams();
 			};
 
 			/** Apply the filtering algorithm to the pointcloud. */
 			virtual void filter(
-				mrpt::maps::CPointsMap * inout_pointcloud,       //!< [in,out] The input pointcloud, which will be modified upon return after filtering.
-				const mrpt::system::TTimeStamp pc_timestamp,     //!< [in] The timestamp of the input pointcloud
-				const mrpt::poses::CPose3D & pc_reference_pose,  //!< [in] If nullptr, the PC is assumed to be given in global coordinates. Otherwise, it will be transformed from local coordinates to global using this transformation.
-				TExtraFilterParams * params = nullptr            //!< [in,out] additional in/out parameters
+				/** [in,out] The input pointcloud, which will be modified upon return after filtering. */
+				mrpt::maps::CPointsMap * inout_pointcloud,       
+				/** [in] The timestamp of the input pointcloud */
+				const mrpt::system::TTimeStamp pc_timestamp,     
+				/** [in] If nullptr, the PC is assumed to be given in global coordinates. Otherwise, it will be transformed from local coordinates to global using this transformation. */
+				const mrpt::poses::CPose3D & pc_reference_pose,  
+				/** [in,out] additional in/out parameters */
+				TExtraFilterParams * params = nullptr            
 			) = 0;
 		};
 

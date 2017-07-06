@@ -240,7 +240,8 @@ struct XsDeviceId {
 
 private:
 #endif
-	uint32_t m_deviceId;	//!< The actual device id
+	/** The actual device id */
+	uint32_t m_deviceId;	
 };
 
 typedef struct XsDeviceId XsDeviceId;

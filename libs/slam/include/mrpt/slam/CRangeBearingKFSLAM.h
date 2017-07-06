@@ -52,7 +52,8 @@ namespace mrpt
 			                               // <size_t VEH_SIZE,            size_t OBS_SIZE,        size_t FEAT_SIZE, size_t ACT_SIZE, size typename kftype = double>
 		{
 		 public:
-			typedef mrpt::math::TPoint3D landmark_point_t;  //!< Either mrpt::math::TPoint2D or mrpt::math::TPoint3D
+			/** Either mrpt::math::TPoint2D or mrpt::math::TPoint3D */
+			typedef mrpt::math::TPoint3D landmark_point_t;  
 
 			 /** Constructor. */
 			 CRangeBearingKFSLAM( );
@@ -60,7 +61,8 @@ namespace mrpt
 			 /** Destructor: */
 			 virtual ~CRangeBearingKFSLAM();
 
-			 void reset(); //!< Reset the state of the SLAM filter: The map is emptied and the robot put back to (0,0,0).
+			 /** Reset the state of the SLAM filter: The map is emptied and the robot put back to (0,0,0). */
+			 void reset(); 
 
 			/** Process one new action and observations to update the map and robot pose estimate. See the description of the class at the top of this page.
 			 *  \param action May contain odometry
@@ -170,13 +172,18 @@ namespace mrpt
 				// Data association:
 				TDataAssociationMethod  data_assoc_method;
 				TDataAssociationMetric  data_assoc_metric;
-				double					data_assoc_IC_chi2_thres;  //!< Threshold in [0,1] for the chi2square test for individual compatibility between predictions and observations (default: 0.99)
-				TDataAssociationMetric  data_assoc_IC_metric;	   //!< Whether to use mahalanobis (->chi2 criterion) vs. Matching likelihood.
-				double					data_assoc_IC_ml_threshold;//!< Only if data_assoc_IC_metric==ML, the log-ML threshold (Default=0.0)
+				/** Threshold in [0,1] for the chi2square test for individual compatibility between predictions and observations (default: 0.99) */
+				double					data_assoc_IC_chi2_thres;  
+				/** Whether to use mahalanobis (->chi2 criterion) vs. Matching likelihood. */
+				TDataAssociationMetric  data_assoc_IC_metric;	   
+				/** Only if data_assoc_IC_metric==ML, the log-ML threshold (Default=0.0) */
+				double					data_assoc_IC_ml_threshold;
 
-				bool			create_simplemap; //!< Whether to fill m_SFs (default=false)
+				/** Whether to fill m_SFs (default=false) */
+				bool			create_simplemap; 
 
-				bool		force_ignore_odometry; //!< Whether to ignore the input odometry and behave as if there was no odometry at all (default: false)
+				/** Whether to ignore the input odometry and behave as if there was no odometry at all (default: false) */
+				bool		force_ignore_odometry; 
 			} options;
 
 			/** Information for data-association:
@@ -412,7 +419,8 @@ namespace mrpt
 
 			std::vector<vector_uint>	m_lastPartitionSet;
 
-			TDataAssocInfo m_last_data_association; //!< Last data association
+			/** Last data association */
+			TDataAssocInfo m_last_data_association; 
 
 			/** Return the last odometry, as a pose increment. */
 			mrpt::poses::CPose3DQuat getIncrementFromOdometry() const;

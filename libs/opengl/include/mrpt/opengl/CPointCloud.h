@@ -51,12 +51,15 @@ namespace mrpt
 		protected:
 			enum Axis { colNone=0, colZ, colY, colX} m_colorFromDepth;
 			std::vector<float>	m_xs,m_ys,m_zs;
-			float           m_pointSize; //!< By default is 1.0
-			bool			m_pointSmooth; //!< Default: false
+			/** By default is 1.0 */
+			float           m_pointSize; 
+			/** Default: false */
+			bool			m_pointSmooth; 
 
 			mutable volatile size_t m_last_rendered_count, m_last_rendered_count_ongoing;
 
-			void markAllPointsAsNew(); //!< Do needed internal work if all points are new (octree rebuilt,...)
+			/** Do needed internal work if all points are new (octree rebuilt,...) */
+			void markAllPointsAsNew(); 
 
 		protected:
 			/** @name PLY Import virtual methods to implement in base classes
@@ -121,11 +124,15 @@ namespace mrpt
 				markAllPointsAsNew();
 			}
 
-			inline const std::vector<float> & getArrayX() const {return m_xs;} //!< Get a const reference to the internal array of X coordinates
-			inline const std::vector<float> & getArrayY() const {return m_ys;} //!< Get a const reference to the internal array of Y coordinates
-			inline const std::vector<float> & getArrayZ() const {return m_zs;} //!< Get a const reference to the internal array of Z coordinates
+			/** Get a const reference to the internal array of X coordinates */
+			inline const std::vector<float> & getArrayX() const {return m_xs;} 
+			/** Get a const reference to the internal array of Y coordinates */
+			inline const std::vector<float> & getArrayY() const {return m_ys;} 
+			/** Get a const reference to the internal array of Z coordinates */
+			inline const std::vector<float> & getArrayZ() const {return m_zs;} 
 
-			void clear();	//!< Empty the list of points.
+			/** Empty the list of points. */
+			void clear();	
 
 			/** Adds a new point to the cloud */
 			void insertPoint( float x,float y, float z );
@@ -208,7 +215,8 @@ namespace mrpt
 			inline void enableColorFromY(bool v=true) { m_colorFromDepth = v ? CPointCloud::colY : CPointCloud::colNone; }
 			inline void enableColorFromZ(bool v=true) { m_colorFromDepth = v ? CPointCloud::colZ : CPointCloud::colNone; }
 
-			inline void setPointSize(float p) { m_pointSize=p; }  //!< By default is 1.0
+			/** By default is 1.0 */
+			inline void setPointSize(float p) { m_pointSize=p; }  
 			inline float getPointSize() const { return m_pointSize; }
 
 			inline void enablePointSmooth(bool enable=true) { m_pointSmooth=enable; }
@@ -233,11 +241,14 @@ namespace mrpt
 			virtual ~CPointCloud() { }
 		private:
 
-			mutable float  m_min, m_max,m_max_m_min,m_max_m_min_inv; 	//!< Buffer for min/max coords when m_colorFromDepth is true.
-			mutable mrpt::utils::TColorf m_col_slop,m_col_slop_inv; //!< Color linear function slope
+			/** Buffer for min/max coords when m_colorFromDepth is true. */
+			mutable float  m_min, m_max,m_max_m_min,m_max_m_min_inv; 	
+			/** Color linear function slope */
+			mutable mrpt::utils::TColorf m_col_slop,m_col_slop_inv; 
 			mutable bool   m_minmax_valid;
 
-			mrpt::utils::TColorf	m_colorFromDepth_min, m_colorFromDepth_max;	//!< The colors used to interpolate when m_colorFromDepth is true.
+			/** The colors used to interpolate when m_colorFromDepth is true. */
+			mrpt::utils::TColorf	m_colorFromDepth_min, m_colorFromDepth_max;	
 
 			inline void internal_render_one_point(size_t i) const;
 		};
@@ -255,10 +266,14 @@ namespace mrpt
 		private:
 			mrpt::opengl::CPointCloud &m_obj;
 		public:
-			typedef float  coords_t;         //!< The type of each point XYZ coordinates
-			static const int HAS_RGB   = 0;  //!< Has any color RGB info?
-			static const int HAS_RGBf  = 0;  //!< Has native RGB info (as floats)?
-			static const int HAS_RGBu8 = 0;  //!< Has native RGB info (as uint8_t)?
+			/** The type of each point XYZ coordinates */
+			typedef float  coords_t;         
+			/** Has any color RGB info? */
+			static const int HAS_RGB   = 0;  
+			/** Has native RGB info (as floats)? */
+			static const int HAS_RGBf  = 0;  
+			/** Has native RGB info (as uint8_t)? */
+			static const int HAS_RGBu8 = 0;  
 
 			/** Constructor (accept a const ref for convenience) */
 			inline PointCloudAdapter(const mrpt::opengl::CPointCloud &obj) : m_obj(*const_cast<mrpt::opengl::CPointCloud*>(&obj)) { }
