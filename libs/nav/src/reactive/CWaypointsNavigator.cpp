@@ -12,7 +12,6 @@
 #include <mrpt/nav/reactive/CWaypointsNavigator.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/math/wrap2pi.h>
-#include <mrpt/system/backtrace.h>
 
 using namespace mrpt::nav;
 using namespace std;
@@ -56,13 +55,6 @@ void CWaypointsNavigator::navigateWaypoints( const TWaypointSequence & nav_reque
 	MRPT_START
 
 	mrpt::synch::CCriticalSectionLocker csl(&m_nav_waypoints_cs);
-
-	if (this->isLoggingLevelVisible(mrpt::utils::LVL_DEBUG))
-	{
-		mrpt::system::TCallStackBackTrace bt;
-		mrpt::system::getCallStackBackTrace(bt);
-		MRPT_LOG_DEBUG_STREAM("[CWaypointsNavigator::navigationStep]" << bt.asString());
-	}
 
 	m_was_aligning = false;
 	m_waypoint_nav_status = TWaypointStatusSequence();
