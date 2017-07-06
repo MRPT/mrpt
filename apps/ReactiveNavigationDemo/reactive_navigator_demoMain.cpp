@@ -482,7 +482,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
 	updateButtonsEnableState(false);
 
 	// Redirect all output to control:
-	m_myRedirector = new CMyRedirector( edLog, true, 100, true);
+	m_myRedirector = new CMyRedirector( edLog, false, 100, true);
 
 	WX_START_TRY
 
