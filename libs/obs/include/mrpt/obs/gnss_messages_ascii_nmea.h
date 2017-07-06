@@ -34,7 +34,7 @@ struct OBS_IMPEXP Message_NMEA_GGA : public gnss_message
 		double   latitude_degrees; 
 		/** The measured longitude, in degrees (East:+ , West:-) */
 		double   longitude_degrees; 
-		/** NMEA standard values: 0 = invalid, 1 = GPS fix (SPS), 2 = DGPS fix, 3 = PPS fix, 4 = Real Time Kinematic, 5 = Float RTK, 6 = estimated (dead reckoning) (2.3 feature), 7 = Manual input mode, 8 = Simulation mode */ */
+		/** NMEA standard values: 0 = invalid, 1 = GPS fix (SPS), 2 = DGPS fix, 3 = PPS fix, 4 = Real Time Kinematic, 5 = Float RTK, 6 = estimated (dead reckoning) (2.3 feature), 7 = Manual input mode, 8 = Simulation mode */ 
 		uint8_t  fix_quality; 
 		/** The measured altitude, in meters (A). */
 		double   altitude_meters; 

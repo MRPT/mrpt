@@ -216,7 +216,7 @@ namespace maps
 			float	cutoffRadius;	
 			/** Limits for normalization of sensor readings. */
 			float	R_min,R_max;	
-			/** [DM/DM+V methods] The scaling parameter for the confidence "alpha" values (see the IROS 2009 paper; see CRandomFieldGridMap2D) */ */
+			/** [DM/DM+V methods] The scaling parameter for the confidence "alpha" values (see the IROS 2009 paper; see CRandomFieldGridMap2D) */ 
 			double	dm_sigma_omega;	
 			/** @} */
 

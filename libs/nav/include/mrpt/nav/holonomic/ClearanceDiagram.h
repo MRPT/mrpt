@@ -49,7 +49,7 @@ namespace nav {
 		void readFromStream(mrpt::utils::CStream &in);
 		void writeToStream(mrpt::utils::CStream &out) const;
 
-		/** [TPS_distance] => normalized_clearance_for_exactly_that_robot_pose  */ */
+		/** [TPS_distance] => normalized_clearance_for_exactly_that_robot_pose  */ 
 		typedef std::map<double, double> dist2clearance_t; 
 		dist2clearance_t & get_path_clearance(size_t actual_k);
 		const dist2clearance_t & get_path_clearance(size_t actual_k) const;
