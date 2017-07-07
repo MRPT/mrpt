@@ -126,7 +126,7 @@ namespace mrpt
 		 */
 		struct BASE_IMPEXP CTimeLoggerEntry
 		{
-			CTimeLoggerEntry(CTimeLogger &logger, const char*section_name );
+			CTimeLoggerEntry(const CTimeLogger &logger, const char*section_name );
 			~CTimeLoggerEntry();
 			CTimeLogger &m_logger;
 			const char *m_section_name;
