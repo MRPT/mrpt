@@ -671,7 +671,7 @@ public:
 	/** @name MRPT plugin: Linear algebra & decomposition-based methods
 	    @{ */
 
-	/** Cholesky M=U<sup>T</sup> * U decomposition for simetric matrix (upper-half of the matrix will be actually ignored) */
+	/** Cholesky M=U<sup>T</sup> * U decomposition for symmetric matrix (upper-half of the matrix will be actually ignored) */
 	template <class MATRIX> EIGEN_STRONG_INLINE bool chol(MATRIX &U) const
 	{
 		Eigen::LLT<PlainObject> Chol = derived().template selfadjointView<Eigen::Lower>().llt();
