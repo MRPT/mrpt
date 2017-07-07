@@ -102,7 +102,7 @@ travis test fails). The procedure is outlined below:
 ## Comply new code with ClangFormat
 
 The ClangFormat configuration that MRPT uses can be found [here](TODO - Add
-link to .clang-format at scripts/clang_git_format/.clang_format). To check
+link to .clang-format at ROOT). To check
 whether your existing code complies with this, you can run the check_style.sh
 script from the MRPT root.
 
@@ -147,7 +147,7 @@ ClangFormat configuration while concurrently modifying/adding code.
 
 The plugin of your choice should:
 
-- Format code based on the `.clang-format` file symlinked in the MRPT root
+- Format code based on the `.clang-format` file placed in the MRPT root
     directory.
 - Use the ClangFormat **3.8.0** version. This is because part of the
     configuration directives are not compatible with previous ClangFormat
