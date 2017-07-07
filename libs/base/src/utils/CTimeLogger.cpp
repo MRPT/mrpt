@@ -299,7 +299,7 @@ double CTimeLogger::getLastTime(const std::string &name) const
 	else return it->second.last_t;
 }
 
-CTimeLoggerEntry::CTimeLoggerEntry(CTimeLogger &logger, const char*section_name ) : m_logger(logger),m_section_name(section_name)
+CTimeLoggerEntry::CTimeLoggerEntry(const CTimeLogger &logger, const char*section_name ) : m_logger(const_cast<CTimeLogger &>(logger)),m_section_name(section_name)
 {
 	m_logger.enter(m_section_name);
 }
