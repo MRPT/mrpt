@@ -13,7 +13,7 @@
 	AUTHOR: Jose Luis Blanco Claraco <joseluisblancoc@gmail.com>
 
 	See README.txt for instructions or
-          http://www.mrpt.org/Application:icp-slam
+          http://www.mrpt.org/list-of-mrpt-apps/application-icp-slam
   ---------------------------------------------------------------*/
 
 #include <mrpt/slam/CMetricMapBuilderICP.h>

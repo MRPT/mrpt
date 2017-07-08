@@ -113,7 +113,7 @@ namespace mrpt
 		  *  \param out_results [OUT] The results of the calibration, and its uncertainty measure, will be found here upon return.
 		  *
 		  * \return false on any error (more info will be dumped to cout), or true on success.
-		  * \note See also the ready-to-use application: <a href="http://www.mrpt.org/Application:kinect-calibrate" >kinect-calibrate</a>
+		  * \note See also the ready-to-use application: <a href="http://www.mrpt.org/list-of-mrpt-apps/application-kinect-calibrate" >kinect-calibrate</a>
 		  * \sa CImage::findChessboardCorners, checkerBoardCameraCalibration, mrpt::hwdrivers::CKinect
 		  */
 		bool VISION_IMPEXP checkerBoardStereoCalibration(

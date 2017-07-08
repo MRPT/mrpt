@@ -57,7 +57,7 @@ namespace mrpt
 		  * \param out_MSE  [OUT] If set to !=NULL, the mean square error of the reprojection will be stored here (in pixel units).
 		  * \param skipDrawDetectedImgs [IN] Whether to skip the generation of the undistorted and detected images in each TImageCalibData
 		  * \param useScaramuzzaAlternativeDetector [IN] Whether to use an alternative detector. See CImage::findChessboardCorners for more deatails and references.
-		  * \sa The <a href="http://www.mrpt.org/Application:camera-calib-gui" >camera-calib-gui application</a> is a user-friendly GUI to this class.
+		  * \sa The <a href="http://www.mrpt.org/list-of-mrpt-apps/application-camera-calib-gui" >camera-calib-gui application</a> is a user-friendly GUI to this class.
 		  * \return false on any error (more info will be dumped to cout), or true on success.
 		  * \sa CImage::findChessboardCorners, checkerBoardStereoCalibration
 		  */
@@ -86,7 +86,7 @@ namespace mrpt
 		  * \param out_MSE  [OUT] If set to !=NULL, the mean square error of the reprojection will be stored here (in pixel units).
 		  * \param skipDrawDetectedImgs [IN] Whether to skip the generation of the undistorted and detected images in each TImageCalibData
 		  * \param useScaramuzzaAlternativeDetector [IN] Whether to use an alternative detector. See CImage::findChessboardCorners for more deatails and references.
-		  * \sa The <a href="http://www.mrpt.org/Application:camera-calib-gui" >camera-calib-gui application</a> is a user-friendly GUI to this class.
+		  * \sa The <a href="http://www.mrpt.org/list-of-mrpt-apps/application-camera-calib-gui" >camera-calib-gui application</a> is a user-friendly GUI to this class.
 		  * \return false on any error (more info will be dumped to cout), or true on success.
 		  * \sa CImage::findChessboardCorners
 		  */

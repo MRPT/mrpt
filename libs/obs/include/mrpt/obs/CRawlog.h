@@ -34,7 +34,7 @@ namespace mrpt
 		 *
 		 *	Refer to the wiki page about <a href="http://www.mrpt.org/Rawlog_Format" >rawlog files</a>.
 		 *
-		 *  See also the application <a href="http://www.mrpt.org/Application:RawLogViewer" >RawLogViewer</a > for the GUI program that visualizes and manages rawlogs.
+		 *  See also the application <a href="http://www.mrpt.org/list-of-mrpt-apps/application-RawLogViewer" >RawLogViewer</a > for the GUI program that visualizes and manages rawlogs.
 		 *
 		 *  This class also publishes a static helper method for loading rawlog files in format #1: see CRawlog::readActionObservationPair
 		 *

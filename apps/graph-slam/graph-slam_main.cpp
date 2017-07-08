@@ -14,7 +14,7 @@
 
     See the "--help" output for list of supported operations and
      further instructions, the man-page or online docs at:
-         http://www.mrpt.org/Application:graph-slam
+         http://www.mrpt.org/list-of-mrpt-apps/application-graph-slam
  ---------------------------------------------------------------*/
 #include <mrpt/graphs.h>
 #include <mrpt/graphslam/levmarq.h>
