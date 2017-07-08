@@ -279,12 +279,18 @@ void  CMetricMapBuilderRBPF::initialize(
 
 
 /*---------------------------------------------------------------
-						getMarkovLocalization
+						getCurrentPoseEstimation
   ---------------------------------------------------------------*/
 CPose3DPDFPtr CMetricMapBuilderRBPF::getCurrentPoseEstimation() const
 {
 	CPose3DPDFParticlesPtr posePDF = CPose3DPDFParticles::Create();
 	mapPDF.getEstimatedPosePDF(*posePDF);
+
+	// Adds additional increment from accumulated odometry since last localization update:
+	for (auto &p : posePDF->m_particles)
+	{
+		(*p.d) = (*p.d) + this->odoIncrementSinceLastLocalization.mean;
+	}
 	return posePDF;
 }
 
