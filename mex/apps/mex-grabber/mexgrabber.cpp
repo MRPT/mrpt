@@ -15,7 +15,7 @@
              Jose Luis Blanco Claraco <joseluisblancoc@gmail.com>
 
     For instructions and details, see:
-     http://www.mrpt.org/Application:MEX-grabber
+     http://www.mrpt.org/list-of-mrpt-apps/application-MEX-grabber
   -----------------------------------------------------------------------------*/
 
 #include <mrpt/hwdrivers/CGenericSensor.h>

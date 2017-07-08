@@ -37,8 +37,8 @@ namespace mrpt
 		  *  The main method is "processActionObservation" which processes pairs of action/observation.
 		  *
 		  *   The following pages describe front-end applications based on this class:
-		  *		- http://www.mrpt.org/Application:2d-slam-demo
-		  *		- http://www.mrpt.org/Application:kf-slam
+		  *		- http://www.mrpt.org/list-of-mrpt-apps/application-2d-slam-demo/
+		  *		- http://www.mrpt.org/list-of-mrpt-apps/application-kf-slam/
 		  *
 		  * \sa CRangeBearingKFSLAM  \ingroup metric_slam_grp
 		  */

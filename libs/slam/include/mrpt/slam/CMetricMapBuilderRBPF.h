@@ -35,7 +35,7 @@ namespace slam
 	 *   A number of particle filter methods are implemented as well, by selecting the appropriate values in TConstructionOptions::PF_options.
 	 *   Not all the PF algorithms are implemented for all kinds of maps.
 	 *
-     *  For an example of usage, check the application "rbpf-slam", in "apps/RBPF-SLAM". See also the <a href="http://www.mrpt.org/Application:RBPF-SLAM" >wiki page</a>.
+     *  For an example of usage, check the application "rbpf-slam", in "apps/RBPF-SLAM". See also the <a href="http://www.mrpt.org/list-of-mrpt-apps/application-RBPF-SLAM" >wiki page</a>.
 	 *
 	 *  \note Since MRPT 0.7.2, the new variables "localizeLinDistance,localizeAngDistance" are introduced to provide a way to update the robot pose at a different rate than the map is updated.
 	 *  \note Since MRPT 0.7.1 the semantics of the parameters "insertionLinDistance" and "insertionAngDistance" changes: the entire RBFP is now NOT updated unless odometry increments surpass the threshold (previously, only the map was NOT updated). This is done to gain efficiency.

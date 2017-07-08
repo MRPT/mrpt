@@ -57,7 +57,7 @@ namespace mrpt
 		  *
 		  *  Read also the tutorial page online: http://www.mrpt.org/Rectifying_stereo_images
 		  *
-		  * \sa CUndistortMap, mrpt::obs::CObservationStereoImages, mrpt::utils::TCamera, the application <a href="http://www.mrpt.org/Application:camera-calib" >camera-calib</a> for calibrating a camera.
+		  * \sa CUndistortMap, mrpt::obs::CObservationStereoImages, mrpt::utils::TCamera, the application <a href="http://www.mrpt.org/list-of-mrpt-apps/application-camera-calib" >camera-calib</a> for calibrating a camera.
 		  *
 		  * \note This class provides a uniform wrap over different OpenCV versions. The "alpha" parameter is ignored if built against OpenCV 2.0.X
 		  *

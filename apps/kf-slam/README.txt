@@ -19,7 +19,7 @@ of the filter and the maps.
 The Kalman Filter can be selected to be a EKF, a IEKF, or a UKF.
 
 See the application description page for more information:
- http://www.mrpt.org/Application:KF-SLAM
+ http://www.mrpt.org/list-of-mrpt-apps/application-KF-SLAM
 
 --------------
  COMPILING

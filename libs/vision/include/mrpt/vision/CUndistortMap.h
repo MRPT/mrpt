@@ -40,7 +40,7 @@ namespace mrpt
 		  *
 		  * \endcode
 		  *
-		  * \sa CStereoRectifyMap, mrpt::utils::TCamera, the application <a href="http://www.mrpt.org/Application:camera-calib" >camera-calib</a> for calibrating a camera.
+		  * \sa CStereoRectifyMap, mrpt::utils::TCamera, the application <a href="http://www.mrpt.org/list-of-mrpt-apps/application-camera-calib" >camera-calib</a> for calibrating a camera.
 		  * \ingroup mrpt_vision_grp
 		  */
 		class VISION_IMPEXP  CUndistortMap

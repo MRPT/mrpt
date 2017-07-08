@@ -27,7 +27,7 @@ namespace mrpt
 		 *    - First version: By Antonio J. Ortiz de Galistea.
 		 *    - 2009-2010: Rewritten by various authors.
 		 *
-		 * \sa mrpt::utils::TCamera, CMonoSlam, the application <a href="http://www.mrpt.org/Application:camera-calib-gui" >camera-calib-gui</a> for calibrating a camera
+		 * \sa mrpt::utils::TCamera, CMonoSlam, the application <a href="http://www.mrpt.org/list-of-mrpt-apps/application-camera-calib-gui" >camera-calib-gui</a> for calibrating a camera
 		 * \ingroup mrpt_vision_grp
 		 */
 		class VISION_IMPEXP  CCamModel : public mrpt::utils::CLoadableOptions

@@ -57,7 +57,7 @@ namespace mrpt
 		  *
 		  *
 		  *  For more details on RawLogGrabber refer to the wiki page:
-		  *    http://www.mrpt.org/Application:RawLogGrabber
+		  *    http://www.mrpt.org/list-of-mrpt-apps/application-RawLogGrabber
 		  * \ingroup mrpt_hwdrivers_grp
  		  */
 		class HWDRIVERS_IMPEXP CGenericSensor: public mrpt::utils::CUncopiable
