@@ -29,7 +29,6 @@ int main()
 {
 	try
 	{
-		func1(1, 2);
 		Foo::func1(1,2);
 
 		return 0;
