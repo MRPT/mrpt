@@ -17,13 +17,13 @@
 using namespace mrpt;
 using namespace mrpt::obs;
 
-CObservationsNode::CObservationsNode(CNode *parent, const CSensoryFrame::Ptr &sensoryFrame)
+CObservationsNode::CObservationsNode(CNode *parent, const CSensoryFrame::Ptr &sensoryFrame, const poses::CPose3D &pose)
 	: CNode(parent)
 {
 	auto scanPtr = sensoryFrame->getObservationByClass<CObservation2DRangeScan>();
 	if (scanPtr)
 	{
-		m_observations.emplace_back(std::make_unique<CRangeScanNode>(this, scanPtr));
+		m_observations.emplace_back(std::make_unique<CRangeScanNode>(this, scanPtr, pose));
 	}
 }
 

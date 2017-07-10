@@ -17,10 +17,10 @@ using namespace mrpt::maps;
 
 CPairNode::CPairNode(CNode *parent, const CSimpleMap::TPosePDFSensFramePair &poseSensFramePair)
 	: CNode(parent)
-	, m_pose(std::make_unique<CPoseNode>(this, poseSensFramePair.first->getMeanVal()))
-	, m_observations(std::make_unique<CObservationsNode>(this, poseSensFramePair.second))
 {
-
+	mrpt::poses::CPose3D pos = poseSensFramePair.first->getMeanVal();
+	m_pose = std::make_unique<CPoseNode>(this, pos);
+	m_observations = std::make_unique<CObservationsNode>(this, poseSensFramePair.second, pos);
 }
 
 CPairNode::~CPairNode()
@@ -35,14 +35,12 @@ int CPairNode::childCount() const
 
 CNode *CPairNode::child(int id)
 {
-	switch (id) {
-	case 0:
-		return m_pose.get();
-	case 1:
-		return m_observations.get();
-	default:
-		return nullptr;
-	};
+	return getChild(id);
+}
+
+CNode *CPairNode::child(int id) const
+{
+	return getChild(id);
 }
 
 
@@ -54,4 +52,16 @@ CNode::ObjectType CPairNode::type() const
 std::string CPairNode::displayName() const
 {
 	return "Position";
+}
+
+CNode *CPairNode::getChild(int id) const
+{
+	switch (id) {
+	case 0:
+		return m_pose.get();
+	case 1:
+		return m_observations.get();
+	default:
+		return nullptr;
+	};
 }

@@ -20,7 +20,7 @@ class CBaseObservationNode;
 class CObservationsNode : public CNode
 {
 public:
-	CObservationsNode(CNode* parent, const mrpt::obs::CSensoryFrame::Ptr &sensoryFrame);
+	CObservationsNode(CNode* parent, const mrpt::obs::CSensoryFrame::Ptr &sensoryFrame, const mrpt::poses::CPose3D& pose);
 	~CObservationsNode();
 	// CNode interface
 	int childCount() const override;

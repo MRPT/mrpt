@@ -17,7 +17,6 @@ if(CMAKE_MRPT_HAS_Qt5 AND CMAKE_MRPT_HAS_OPENGL_GLUT)
 	set(CPP_FILES
 		robot-map-gui_main.cpp
 		CDocument.cpp
-
 		gui/CMainWindow.cpp
 		gui/CGLWidget.cpp
 		gui/observationTree/CObservationTreeModel.cpp

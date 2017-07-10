@@ -33,19 +33,25 @@ CGlWidget::CGlWidget(QWidget *parent)
 	, m_observationSize(10.)
 	, m_doc(nullptr)
 	, m_isShowObs(false)
+	, m_miniMapSize(-1.0)
+	, m_minimapPercentSize(0.25)
 {
-	COpenGLViewport::Ptr view = m_openGLScene->getViewport("main");
-	ASSERT_(view);
+	clearColorR = 1.0;
+	clearColorG = 1.0;
+	clearColorB = 1.0;
 
-	setMouseTracking(true);
+	m_miniMapViewport = m_openGLScene->createViewport("miniMap");
+	updateCamerasParams();
+	m_miniMapViewport->setBorderSize(2);
+	m_miniMapViewport->setViewportPosition(0.01,0.01, m_minimapPercentSize, m_minimapPercentSize);
+	m_miniMapViewport->setTransparent(false);
+
+
 	// The ground:
 	mrpt::opengl::CGridPlaneXY::Ptr groundPlane = mrpt::opengl::CGridPlaneXY::Create(-200,200,-200,200,0,5);
 	groundPlane->setColor(0.4,0.4,0.4);
-	view->insert( groundPlane );
+	insertToMap(groundPlane);
 
-	// The camera pointing to the current robot pose:
-	CCamera &cam = view->getCamera();
-	updateCameraParams(cam);
 }
 
 CGlWidget::~CGlWidget()
@@ -55,10 +61,7 @@ CGlWidget::~CGlWidget()
 
 void CGlWidget::fillMap(const CSetOfObjects::Ptr &renderizableMap)
 {
-	COpenGLViewport::Ptr view = m_openGLScene->getViewport("main");
-	ASSERT_(view);
-	view->insert(renderizableMap);
-
+	insertToMap(renderizableMap);
 	m_map = renderizableMap;
 
 	if (m_isShowObs)
@@ -72,11 +75,18 @@ void CGlWidget::setSelected(const math::TPose3D &pose)
 	if (!m_map)
 		return;
 
-	CPointCloud::Ptr points = CPointCloud::Create();
-	points->insertPoint(pose.x, pose.y, pose.z);
-	points->setColor(mrpt::utils::TColorf(mrpt::utils::TColor::red));
-	points->setPointSize(10.);
-	m_map->insert(points);
+	if (m_currentObs)
+		m_map->removeObject(m_currentObs);
+
+	if (m_currentLaserScan)
+		m_map->removeObject(m_currentLaserScan);
+
+	m_currentObs = CPointCloud::Create();
+	m_currentObs->setColor(mrpt::utils::TColorf(mrpt::utils::TColor::green));
+	m_currentObs->setPointSize(10.);
+
+	m_currentObs->insertPoint(pose.x, pose.y, pose.z);
+	m_map->insert(m_currentObs);
 
 	update();
 }
@@ -109,9 +119,59 @@ void CGlWidget::setSelectedObservation(bool is)
 	update();
 }
 
+void CGlWidget::setLaserScan(CPlanarLaserScan::Ptr laserScan)
+{
+	if (m_currentLaserScan)
+		m_map->removeObject(m_currentLaserScan);
+
+	m_currentLaserScan = laserScan;
+	m_map->insert(m_currentLaserScan);
+
+	update();
+}
+
 void CGlWidget::setDocument(CDocument *doc)
 {
 	m_doc = doc;
 	if (m_isShowObs)
 		setSelectedObservation(m_isShowObs);
+}
+
+void CGlWidget::resizeGL(int width, int height)
+{
+	CQtGlCanvasBase::resizeGL(width, height);
+
+	if (m_miniMapSize == -1.0)
+	{
+		GLint	win_dims[4];
+		glGetIntegerv( GL_VIEWPORT, win_dims );
+		m_miniMapSize = std::min(win_dims[2], win_dims[3]) * m_minimapPercentSize;
+	}
+	updateMinimapPos();
+}
+
+void CGlWidget::updateCamerasParams()
+{
+	CQtGlCanvasBase::updateCamerasParams();
+	CCamera &camMiniMap = m_miniMapViewport->getCamera();
+	updateCameraParams(camMiniMap);
+}
+
+void CGlWidget::insertToMap(const CRenderizable::Ptr &newObject)
+{
+	CQtGlCanvasBase::insertToMap(newObject);
+	assert(m_miniMapViewport);
+	m_miniMapViewport->insert(newObject);
+}
+
+void CGlWidget::updateMinimapPos()
+{
+	GLint	win_dims[4];
+	glGetIntegerv( GL_VIEWPORT, win_dims );
+
+	COpenGLViewport::Ptr miniMap = m_openGLScene->getViewport("miniMap");
+	float w = m_miniMapSize/win_dims[2];
+	float h = m_miniMapSize/win_dims[3];
+	miniMap->setViewportPosition(0.01,0.01, w, h);
+
 }
