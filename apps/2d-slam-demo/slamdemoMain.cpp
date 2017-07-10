@@ -9,7 +9,6 @@
 
 #include "slamdemoApp.h"
 #include "slamdemoMain.h"
-#include "CAboutBox.h"
 #include "CDlgParams.h"
 #include "CLogView.h"
 #include <wx/msgdlg.h>
@@ -31,6 +30,7 @@
 #include <mrpt/system/vector_loadsave.h>
 #include <mrpt/random.h>
 #include <mrpt/obs/CObservationComment.h>
+#include <mrpt/gui/about_box.h>
 
 using namespace std;
 using namespace mrpt;
@@ -1059,10 +1059,12 @@ void slamdemoFrame::OnQuit(wxCommandEvent& event)
 /*---------------------------------------------------------------
 						About
   ---------------------------------------------------------------*/
-void slamdemoFrame::OnAbout(wxCommandEvent& event)
+void slamdemoFrame::OnAbout(wxCommandEvent& )
 {
-	CAboutBox dlg(this);
-	dlg.ShowModal();
+	mrpt::gui::show_mrpt_about_box_wxWidgets(this, "2d-slam-demo",
+		"Invoke with --help to see command line arguments.\n"
+		"This program was inspired by a MATLAB version written by J. "
+		"Neira and J. Tardos.\n");
 }
 
 /*---------------------------------------------------------------

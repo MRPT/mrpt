@@ -16,7 +16,6 @@ IF(CMAKE_MRPT_HAS_WXWIDGETS)
 	SET(SRCS
 		kinect_calibrate_guiApp.cpp kinect_calibrate_guiApp.h
 		kinect_calibrate_guiMain.cpp kinect_calibrate_guiMain.h
-		CAboutBox.cpp  CAboutBox.h
 		MyGLCanvas.cpp MyGLCanvas.h
 		)
 

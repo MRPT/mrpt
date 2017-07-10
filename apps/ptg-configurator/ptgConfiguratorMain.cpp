@@ -9,7 +9,7 @@
 
 #include "ptgConfiguratorMain.h"
 #include <wx/msgdlg.h>
-#include "CAboutBox.h"
+#include <mrpt/gui/about_box.h>
 
 //(*InternalHeaders(ptgConfiguratorframe)
 #include <wx/artprov.h>
@@ -900,8 +900,14 @@ void ptgConfiguratorframe::prepareRobotPathPlot(
 	plot->AddLayer(*graph);
 }
 
-void ptgConfiguratorframe::OnAbout(wxCommandEvent& event) {}
-void ptgConfiguratorframe::OnQuit(wxCommandEvent& event) { Close(); }
+void ptgConfiguratorframe::OnAbout(wxCommandEvent& )
+{
+	mrpt::gui::show_mrpt_about_box_wxWidgets(this, "ptg-configurator");
+}
+void ptgConfiguratorframe::OnQuit(wxCommandEvent& )
+{
+	Close();
+}
 void ptgConfiguratorframe::OnbtnReloadParamsClick(wxCommandEvent& event)
 {
 	WX_START_TRY;

@@ -17,7 +17,7 @@
 #include "kinect_calibrate_guiMain.h"
 #include <wx/msgdlg.h>
 #include <wx/progdlg.h>
-#include "CAboutBox.h"
+#include <mrpt/gui/about_box.h>
 
 //(*InternalHeaders(kinect_calibrate_guiDialog)
 #include <wx/settings.h>
@@ -1364,11 +1364,13 @@ kinect_calibrate_guiDialog::~kinect_calibrate_guiDialog()
 	//*)
 }
 
-void kinect_calibrate_guiDialog::OnQuit(wxCommandEvent& event) { Close(); }
+void kinect_calibrate_guiDialog::OnQuit(wxCommandEvent& event)
+{
+	Close();
+}
 void kinect_calibrate_guiDialog::OnAbout(wxCommandEvent& event)
 {
-	CAboutBox dlg(this);
-	dlg.ShowModal();
+	mrpt::gui::show_mrpt_about_box_wxWidgets(this, "kinect-stereo-calib");
 }
 
 // Don't allow the user to change tab by hand:

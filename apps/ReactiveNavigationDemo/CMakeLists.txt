@@ -19,7 +19,6 @@ IF(CMAKE_MRPT_HAS_WXWIDGETS)
 	 reactive_navigator_demoApp.cpp  reactive_navigator_demoApp.h
 	 reactive_navigator_demoMain.cpp  reactive_navigator_demoMain.h
 	 DEFAULT_GRIDMAP_DATA.h
-	 CAboutBox.cpp  CAboutBox.h
 	 MyGLCanvas.cpp MyGLCanvas.h
 	)
 

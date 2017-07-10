@@ -17,7 +17,6 @@ IF(CMAKE_MRPT_HAS_WXWIDGETS)
 	holonomic_navigator_demoApp.cpp holonomic_navigator_demoApp.h
 	holonomic_navigator_demoMain.cpp holonomic_navigator_demoMain.h
 	../ReactiveNavigationDemo/DEFAULT_GRIDMAP_DATA.h
-	CAboutBox.cpp  CAboutBox.h
 	MyGLCanvas.cpp MyGLCanvas.h
 	)
 

@@ -17,7 +17,6 @@ IF(CMAKE_MRPT_HAS_WXWIDGETS)
 	SET(SRCS
 		camera_calib_guiApp.cpp   camera_calib_guiApp.h
 		camera_calib_guiMain.cpp  camera_calib_guiMain.h
-		CAboutBox.h  CAboutBox.cpp
 		CDlgCalibWizardOnline.cpp  CDlgCalibWizardOnline.h
 		CDlgPoseEst.cpp CDlgPoseEst.h
 		MyGLCanvas.cpp MyGLCanvas.h

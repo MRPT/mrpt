@@ -9,7 +9,7 @@
 
 #include "holonomic_navigator_demoMain.h"
 #include <wx/msgdlg.h>
-#include "CAboutBox.h"
+#include <mrpt/gui/about_box.h>
 
 //(*InternalHeaders(holonomic_navigator_demoFrame)
 #include <wx/artprov.h>
@@ -622,11 +622,13 @@ holonomic_navigator_demoFrame::~holonomic_navigator_demoFrame()
 	//*)
 }
 
-void holonomic_navigator_demoFrame::OnQuit(wxCommandEvent& event) { Close(); }
-void holonomic_navigator_demoFrame::OnAbout(wxCommandEvent& event)
+void holonomic_navigator_demoFrame::OnQuit(wxCommandEvent& )
 {
-	CAboutBox dlg(this);
-	dlg.ShowModal();
+	Close();
+}
+void holonomic_navigator_demoFrame::OnAbout(wxCommandEvent& )
+{
+	mrpt::gui::show_mrpt_about_box_wxWidgets(this, "holonomic-navigator-demo");
 }
 
 void holonomic_navigator_demoFrame::updateMap3DView()

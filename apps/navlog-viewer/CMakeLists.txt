@@ -17,7 +17,6 @@ IF(CMAKE_MRPT_HAS_WXWIDGETS)
 	SET(SRCS
 		navlog_viewer_GUI_designMain.h navlog_viewer_GUI_designMain.cpp
 		navlog_viewer_GUI_designApp.h  navlog_viewer_GUI_designApp.cpp
-		CAboutBox.h CAboutBox.cpp
 	 	)
 
 	IF(WIN32)

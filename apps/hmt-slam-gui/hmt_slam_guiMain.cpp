@@ -9,7 +9,7 @@
 
 #include "hmt_slam_guiMain.h"
 #include "MyArtProvider.h"
-#include "CAboutBox.h"
+#include <mrpt/gui/about_box.h>
 
 #include <wx/msgdlg.h>
 
@@ -876,11 +876,13 @@ hmt_slam_guiFrame::~hmt_slam_guiFrame()
 	WX_END_TRY
 }
 
-void hmt_slam_guiFrame::OnQuit(wxCommandEvent& event) { Close(); }
-void hmt_slam_guiFrame::OnAbout(wxCommandEvent& event)
+void hmt_slam_guiFrame::OnQuit(wxCommandEvent& )
 {
-	CAboutBox dlg(this);
-	dlg.ShowModal();
+	Close();
+}
+void hmt_slam_guiFrame::OnAbout(wxCommandEvent& )
+{
+	mrpt::gui::show_mrpt_about_box_wxWidgets(this, "htm-slam-gui");
 }
 
 void hmt_slam_guiFrame::OnNotebook2PageChanged(wxNotebookEvent& event) {}

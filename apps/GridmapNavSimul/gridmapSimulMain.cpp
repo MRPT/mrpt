@@ -35,7 +35,7 @@
 #include "../wx-common/mrpt_logo.xpm"
 #include "imgs/app_icon_gridmapsimul.xpm"
 
-#include "CAboutBox.h"
+#include <mrpt/gui/about_box.h>
 
 #include <mrpt/system/filesystem.h>
 #include <mrpt/utils/CFileOutputStream.h>
@@ -1266,8 +1266,7 @@ void gridmapSimulFrame::OnbtnSetLaserClick(wxCommandEvent& event)
 
 void gridmapSimulFrame::OnAbout(wxCommandEvent& event)
 {
-	CAboutBox dialog(this);
-	dialog.ShowModal();
+	mrpt::gui::show_mrpt_about_box_wxWidgets(this, "GripmapNavSimul");
 }
 
 void gridmapSimulFrame::OnbtnResimulateClick(wxCommandEvent& event)

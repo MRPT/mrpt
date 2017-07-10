@@ -46,8 +46,7 @@ using namespace mrpt::gui;
 using namespace std;
 
 #include <mrpt/gui/CMyRedirector.h>
-
-#include "CAboutBox.h"
+#include <mrpt/gui/about_box.h>
 
 #define USE_EXTERNAL_STORAGE_IMGS 1
 
@@ -678,11 +677,13 @@ void camera_calib_guiDialog::OnbtnRunCalibClick(wxCommandEvent& event)
 	}
 }
 
-void camera_calib_guiDialog::OnbtnCloseClick(wxCommandEvent& event) { Close(); }
-void camera_calib_guiDialog::OnbtnAboutClick(wxCommandEvent& event)
+void camera_calib_guiDialog::OnbtnCloseClick(wxCommandEvent& )
 {
-	CAboutBox dlg(this);
-	dlg.ShowModal();
+	Close();
+}
+void camera_calib_guiDialog::OnbtnAboutClick(wxCommandEvent& )
+{
+	mrpt::gui::show_mrpt_about_box_wxWidgets(this, "camera-calib");
 }
 
 // save matrices:
