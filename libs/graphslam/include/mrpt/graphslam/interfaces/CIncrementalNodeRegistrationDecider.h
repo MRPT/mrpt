@@ -12,8 +12,12 @@
 
 #include <math.h>
 
-namespace mrpt { namespace graphslam { namespace deciders {
-
+namespace mrpt
+{
+namespace graphslam
+{
+namespace deciders
+{
 /**\brief Incremental Node registration decider. Decider adds new nodes in the
  * graph in an incremental fashion (adding nodes at the end of the graph)
  *
@@ -39,11 +43,12 @@ namespace mrpt { namespace graphslam { namespace deciders {
  * \ingroup mrpt_graphslam_grp
  *
  */
-template<class GRAPH_T>
-class CIncrementalNodeRegistrationDecider :
-	public virtual mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_T>
+template <class GRAPH_T>
+class CIncrementalNodeRegistrationDecider
+	: public virtual mrpt::graphslam::deciders::CNodeRegistrationDecider<
+		  GRAPH_T>
 {
-public:
+   public:
 	/**\brief Handy typedefs */
 	/**\{*/
 	/**\brief type of graph constraints */
@@ -51,9 +56,11 @@ public:
 	/**\brief type of underlying poses (2D/3D). */
 	typedef typename GRAPH_T::constraint_t::type_value pose_t;
 	typedef typename GRAPH_T::global_pose_t global_pose_t;
-	typedef CIncrementalNodeRegistrationDecider<GRAPH_T> decider_t; /**< self type - Handy typedef */
+	typedef CIncrementalNodeRegistrationDecider<GRAPH_T>
+		decider_t; /**< self type - Handy typedef */
 	/**\brief Node Registration Decider */
-	typedef mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_T> parent_t;
+	typedef mrpt::graphslam::deciders::CNodeRegistrationDecider<GRAPH_T>
+		parent_t;
 
 	/**\}*/
 
@@ -70,33 +77,31 @@ public:
 	 */
 	virtual bool checkRegistrationCondition();
 	virtual bool checkRegistrationConditionPose(
-			const mrpt::poses::CPose2D& p1,
-			const mrpt::poses::CPose2D& p2) const;
+		const mrpt::poses::CPose2D& p1, const mrpt::poses::CPose2D& p2) const;
 	virtual bool checkRegistrationConditionPose(
-			const mrpt::poses::CPose3D& p1,
-			const mrpt::poses::CPose3D& p2) const;
+		const mrpt::poses::CPose3D& p1, const mrpt::poses::CPose3D& p2) const;
 	/**\} */
 
 	virtual void loadParams(const std::string& source_fname);
 	virtual void printParams() const;
 	virtual void getDescriptiveReport(std::string* report_str) const;
 
-protected:
-
+   protected:
 	/**\brief Parameters structure for managing the relevant to the decider
 	 * variables in a compact manner
 	 */
-	struct TParams: public mrpt::utils::CLoadableOptions {
-		public:
-			TParams();
-			~TParams();
+	struct TParams : public mrpt::utils::CLoadableOptions
+	{
+	   public:
+		TParams();
+		~TParams();
 
-			void loadFromConfigFile(
-					const mrpt::utils::CConfigFileBase &source,
-					const std::string &section);
-			void 	dumpToTextStream(mrpt::utils::CStream &out) const;
-			/**\brief Return a string with the configuration parameters
-			*/
+		void loadFromConfigFile(
+			const mrpt::utils::CConfigFileBase& source,
+			const std::string& section);
+		void dumpToTextStream(mrpt::utils::CStream& out) const;
+		/**\brief Return a string with the configuration parameters
+		*/
 		void getAsString(std::string* params_out) const;
 		std::string getAsString() const;
 
@@ -109,12 +114,12 @@ protected:
 	// ////////////////////////////
 	TParams params;
 
-
-private:
-
+   private:
 };
-
-} } } // end of namespaces
+}
+}
+}  // end of namespaces
 
 #include "CIncrementalNodeRegistrationDecider_impl.h"
-#endif /* end of include guard: CINCREMENTALNODEREGISTRATIONDECIDER_H_WPM0MYXZ */
+#endif /* end of include guard: CINCREMENTALNODEREGISTRATIONDECIDER_H_WPM0MYXZ \
+		  */

@@ -91,7 +91,7 @@ CGraphSlamEngine<GRAPH_T>::~CGraphSlamEngine()
 		MRPT_LOG_DEBUG_STREAM("Releasing CDisplayWindowPlots...");
 		delete m_win_plot;
 	}
-} // end of ~CGraphSlamEngine
+}
 
 // Member functions implementations
 //////////////////////////////////////////////////////////////
@@ -227,42 +227,10 @@ void CGraphSlamEngine<GRAPH_T>::initClass()
 		m_edge_counter.setWindowManagerPtr(m_win_manager);
 	}
 
-	// pass the rawlog filename in all cases - empty filename in case of online
-	// graphSLAM
-	m_node_reg->setRawlogFile(m_rawlog_fname);
-	m_edge_reg->setRawlogFile(m_rawlog_fname);
-	m_optimizer->setRawlogFile(m_rawlog_fname);
-	
-
 	// pass a lock in case of multithreaded implementation
 	m_node_reg->setCriticalSectionPtr(&m_graph_section);
 	m_edge_reg->setCriticalSectionPtr(&m_graph_section);
 	m_optimizer->setCriticalSectionPtr(&m_graph_section);
-
-	// Initialization of possible map structures
-	m_gridmap_cached = mrpt::maps::COccupancyGridMap2D::Create();
-	m_octomap_cached = mrpt::maps::COctoMap::Create();
-	//{
-		//mrpt::maps::COccupancyGridMap2DPtr gridmap = mrpt::maps::COccupancyGridMap2D::Create();
-
-		//m_gridmap_cached = gridmap;
-  //}
-
-  // COctoMap Initialization
-  {
-		mrpt::maps::COctoMapPtr octomap = mrpt::maps::COctoMap::Create();
-
-		// TODO - adjust the insertionoptions...
-		// TODO - Read these from the .ini file
-  	octomap->insertionOptions.setOccupancyThres(0.5);
-  	octomap->insertionOptions.setProbHit(0.7);
-  	octomap->insertionOptions.setProbMiss(0.4);
-  	octomap->insertionOptions.setClampingThresMin(0.1192);
-  	octomap->insertionOptions.setClampingThresMax(0.971);
-
-  	m_octomap_cached = octomap;
-  }
-
 
 	// Load the parameters that each one of the self/deciders/optimizer classes
 	// needs
@@ -334,7 +302,6 @@ void CGraphSlamEngine<GRAPH_T>::initClass()
 		}
 		// estimated trajectory visualization
 		this->initEstimatedTrajectoryVisualization();
-
 		// current robot pose  viewport
 		if (m_enable_curr_pos_viewport)
 		{
@@ -902,7 +869,6 @@ bool CGraphSlamEngine<GRAPH_T>::_execGraphSlamStep(
 		}
 	}
 
-
 	// Query for events and take corresponding actions
 	if (m_enable_visuals)
 	{
@@ -963,7 +929,7 @@ void CGraphSlamEngine<GRAPH_T>::monitorNodeRegistration(
 		}
 	}
 	MRPT_END;
-} // end of monitorNodeRegistration
+}
 
 template <class GRAPH_T>
 void CGraphSlamEngine<GRAPH_T>::getMap(
@@ -990,7 +956,7 @@ void CGraphSlamEngine<GRAPH_T>::getMap(
 		*acquisition_time = m_map_acq_time;
 	}
 	MRPT_END;
-} // end of getMap
+}
 
 template <class GRAPH_T>
 void CGraphSlamEngine<GRAPH_T>::getMap(
@@ -1015,7 +981,7 @@ void CGraphSlamEngine<GRAPH_T>::getMap(
 	}
 
 	MRPT_END;
-} // end of getMap
+}
 
 template <class GRAPH_T>
 inline void CGraphSlamEngine<GRAPH_T>::computeMap() const
@@ -1082,6 +1048,7 @@ void CGraphSlamEngine<GRAPH_T>::loadParams(const std::string& fname)
 		mrpt::system::fileExists(fname),
 		mrpt::format("\nConfiguration file not found: \n%s\n", fname.c_str()));
 
+	MRPT_LOG_INFO_STREAM("Reading the .ini file... ");
 	MRPT_LOG_INFO_STREAM("Reading the .ini file... ");
 	CConfigFile cfg_file(fname);
 
@@ -1191,7 +1158,7 @@ void CGraphSlamEngine<GRAPH_T>::getParamsAsString(std::string* params_out) const
 	*params_out = ss_out.str();
 
 	MRPT_END;
-} // end of getParamsAsString
+}
 
 template <class GRAPH_T>
 void CGraphSlamEngine<GRAPH_T>::printParams() const
@@ -1204,7 +1171,7 @@ void CGraphSlamEngine<GRAPH_T>::printParams() const
 	m_optimizer->printParams();
 
 	MRPT_END;
-} // end of printParams
+}
 
 template <class GRAPH_T>
 void CGraphSlamEngine<GRAPH_T>::initResultsFile(const std::string& fname)
@@ -1410,7 +1377,7 @@ void CGraphSlamEngine<GRAPH_T>::initCurrPosViewport()
 	m_win->forceRepaint();
 
 	MRPT_END;
-} // end of initCurrPosViewport
+}
 
 template <class GRAPH_T>
 inline void CGraphSlamEngine<GRAPH_T>::updateCurrPosViewport()

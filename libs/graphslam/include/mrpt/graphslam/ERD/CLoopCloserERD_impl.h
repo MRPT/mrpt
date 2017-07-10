@@ -27,6 +27,8 @@ CLoopCloserERD<GRAPH_T>::CLoopCloserERD()
 	  m_dijkstra_node_count_thresh(3)
 {
 	this->initializeLoggers("CLoopCloserERD");
+	m_edge_types_to_nums["ICP2D"] = 0;
+	m_edge_types_to_nums["LC"] = 0;
 	MRPT_LOG_DEBUG_STREAM("Initialized class object");
 }
 
@@ -749,7 +751,6 @@ void CLoopCloserERD<GRAPH_T>::generateHypotsPool(
 	MRPT_START;
 	using namespace mrpt::utils;
 	using namespace mrpt;
-	using namespace std;
 
 	ASSERTMSG_(
 		generated_hypots,
@@ -860,7 +861,7 @@ void CLoopCloserERD<GRAPH_T>::generateHypotsPool(
 				//
 				// Goodness Threshold
 				double goodness_thresh =
-					this->m_goodness_threshold_win.getMedian() *
+					m_laser_params.goodness_threshold_win.getMedian() *
 					m_lc_icp_constraint_factor;
 				bool accept_goodness = icp_info.goodness > goodness_thresh;
 				MRPT_LOG_DEBUG_STREAM(
@@ -1747,7 +1748,9 @@ void CLoopCloserERD<GRAPH_T>::registerNewEdge(
 	using namespace std;
 	parent_t::registerNewEdge(from, to, rel_edge);
 
-	this->m_edge_types_to_nums["ICP2D"]++;
+	//  keep track of the registered edges...
+	m_edge_types_to_nums["ICP2D"]++;
+
 	//  keep track of the registered edges...
 	if (absDiff(to, from) > m_lc_params.LC_min_nodeid_diff)
 	{
@@ -1759,6 +1762,10 @@ void CLoopCloserERD<GRAPH_T>::registerNewEdge(
 	{
 		this->m_just_inserted_lc = false;
 	}
+
+	//  actuall registration
+	this->m_graph->insertEdge(from, to, rel_edge);
+
 	MRPT_END;
 }
 
@@ -2249,12 +2256,7 @@ void CLoopCloserERD<GRAPH_T>::initializeVisuals()
 		this->initCurrCovarianceVisualization();
 	}
 
-	// keystrokes
-	this->m_win_observer->registerKeystroke(
-			m_lc_params.keystroke_map_partitions,
-			"Toggle Map Partitions Visualization");
-
-	this->m_time_logger.leave("ERD::Visuals");
+	this->m_time_logger.leave("Visuals");
 	MRPT_END;
 }
 template <class GRAPH_T>
@@ -2278,7 +2280,7 @@ void CLoopCloserERD<GRAPH_T>::updateVisuals()
 		this->updateCurrCovarianceVisualization();
 	}
 
-	this->m_time_logger.leave("ERD::Visuals");
+	this->m_time_logger.leave("Visuals");
 	MRPT_END;
 }
 
@@ -2404,6 +2406,7 @@ void CLoopCloserERD<GRAPH_T>::loadParams(const std::string& source_fname)
 	int min_verbosity_level = source.read_int(
 		"EdgeRegistrationDeciderParameters", "class_verbosity", 1, false);
 
+	this->setMinLoggingLevel(mrpt::utils::VerbosityLevel(min_verbosity_level));
 	MRPT_END;
 }
 template <class GRAPH_T>
@@ -2418,6 +2421,7 @@ void CLoopCloserERD<GRAPH_T>::printParams() const
 
 	parent_t::printParams();
 	m_partitioner.options.dumpToConsole();
+	m_laser_params.dumpToConsole();
 	m_lc_params.dumpToConsole();
 
 	cout << "Scan-matching ICP Constraint factor: "
@@ -2425,6 +2429,7 @@ void CLoopCloserERD<GRAPH_T>::printParams() const
 	cout << "Loop-closure ICP Constraint factor:  "
 		 << m_lc_icp_constraint_factor << endl;
 
+	MRPT_LOG_DEBUG_STREAM("Printed the relevant parameters");
 	MRPT_END;
 }
 
@@ -2623,6 +2628,9 @@ void CLoopCloserERD<GRAPH_T>::TLaserParams::loadFromConfigFile(
 	visualize_laser_scans = source.read_bool(
 		"VisualizationParameters", "visualize_laser_scans", true, false);
 
+	has_read_config = true;
+	MRPT_END;
+}
 // TLoopClosureParams
 // //////////////////////////////////
 

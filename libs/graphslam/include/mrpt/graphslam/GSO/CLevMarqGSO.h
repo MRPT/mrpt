@@ -54,6 +54,11 @@ namespace optimizers
  *
  * \htmlinclude graphslam-engine_config_params_preamble.txt
  *
+ * - \b class_verbosity
+ *   + \a Section       : OptimizerParameters
+ *   + \a Default value : 1 (LVL_INFO)
+ *   + \a Required      : FALSE
+ *
  * - \b optimization_on_second_thread
  *   + \a Section       : OptimizerParameters
  *   + \a Default value :  FALSE

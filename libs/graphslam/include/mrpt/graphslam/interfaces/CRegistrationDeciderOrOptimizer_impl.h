@@ -86,27 +86,11 @@ void CRegistrationDeciderOrOptimizer<GRAPH_T>::setCriticalSectionPtr(
 	this->logFmt(
 		mrpt::utils::LVL_DEBUG, "Fetched the CCRiticalSection successfully");
 }
-template<class GRAPH_T>
-void CRegistrationDeciderOrOptimizer<GRAPH_T>::dumpVisibilityErrorMsg(
-		std::string viz_flag, int sleep_time /* = 500 ms */) {
-	MRPT_START;
-
-	this->logFmt(mrpt::utils::LVL_ERROR,
-			"Cannot toggle visibility of specified object.\n "
-			"Make sure that the corresponding visualization flag ( %s "
-			") is set to true in the .ini file.\n",
-			viz_flag.c_str());
-	mrpt::system::sleep(sleep_time);
-
-	MRPT_END;
-}
-
 
 template <class GRAPH_T>
 void CRegistrationDeciderOrOptimizer<GRAPH_T>::initializeVisuals()
 {
 	this->assertVisualsVars();
-	this->initViewports();
 	m_initialized_visuals = true;
 }
 
@@ -122,18 +106,6 @@ template <class GRAPH_T>
 void CRegistrationDeciderOrOptimizer<GRAPH_T>::updateVisuals()
 {
 	ASSERT_(m_initialized_visuals);
-
-	this->updateViewports();
-}
-
-template<class GRAPH_T>
-void CRegistrationDeciderOrOptimizer<GRAPH_T>::initViewports() {
-	MRPT_LOG_DEBUG_STREAM("Initializing viewports...");
-
-}
-template<class GRAPH_T>
-void CRegistrationDeciderOrOptimizer<GRAPH_T>::updateViewports() {
-	MRPT_LOG_DEBUG_STREAM("Updating viewports...");
 }
 
 template <class GRAPH_T>
