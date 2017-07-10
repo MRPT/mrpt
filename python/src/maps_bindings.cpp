@@ -254,7 +254,7 @@ void CSimpleMap_insert(
 CPose2D CMultiMetricMapPDF_getLastPose(CMultiMetricMapPDF& self, size_t i)
 {
 	bool is_valid;
-	mrpt::math::TPose3D last_pose = self.getLastPose(i,is_valid);
+	mrpt::math::TPose3D last_pose = self.getLastPose(i, is_valid);
 	return CPose2D(CPose3D(last_pose));
 }
 

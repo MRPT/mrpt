@@ -78,13 +78,11 @@ bool PF_implementation<PARTICLE_TYPE, MYSELF>::
 		else  // If there is no 2D action, look for a 3D action:
 		{
 			mrpt::obs::CActionRobotMovement3D::Ptr robotMovement3D =
-				actions
-					->getActionByClass<mrpt::obs::CActionRobotMovement3D>();
+				actions->getActionByClass<mrpt::obs::CActionRobotMovement3D>();
 			if (robotMovement3D)
 			{
 				if (m_accumRobotMovement2DIsValid)
-					THROW_EXCEPTION(
-						"Mixing 2D and 3D actions is not allowed.")
+					THROW_EXCEPTION("Mixing 2D and 3D actions is not allowed.")
 
 				if (!m_accumRobotMovement3DIsValid)
 					m_accumRobotMovement3D = robotMovement3D->poseChange;
@@ -288,8 +286,10 @@ void PF_implementation<PARTICLE_TYPE, MYSELF>::
 				const size_t drawn_idx = me->fastDrawSample(PF_options);
 
 				bool pose_is_valid;
-				const mrpt::poses::CPose3D newPose = mrpt::poses::CPose3D(
-					getLastPose(drawn_idx,pose_is_valid)) + increment_i;
+				const mrpt::poses::CPose3D newPose =
+					mrpt::poses::CPose3D(
+						getLastPose(drawn_idx, pose_is_valid)) +
+					increment_i;
 				const mrpt::math::TPose3D newPose_s = newPose;
 
 				// Add to the new particles list:
@@ -1011,9 +1011,9 @@ void PF_implementation<PARTICLE_TYPE, MYSELF>::
 	}
 
 	bool pose_is_valid;
-	const mrpt::poses::CPose3D oldPose =  mrpt::poses::CPose3D(
-		getLastPose(k, pose_is_valid)); // current pose of the k'th particle
-	//ASSERT_(pose_is_valid); Use the default (0,0,0) if path is empty.
+	const mrpt::poses::CPose3D oldPose = mrpt::poses::CPose3D(
+		getLastPose(k, pose_is_valid));  // current pose of the k'th particle
+	// ASSERT_(pose_is_valid); Use the default (0,0,0) if path is empty.
 
 	//   (b) Rejection-sampling: Draw a new robot pose from x[k],
 	//       and accept it with probability p(zk|x) / maxLikelihood:

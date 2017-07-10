@@ -14,8 +14,8 @@
 	AUTHORS: Jesus Briales Garcia <jesusbriales@gmail.com>
 			 Jose Luis Blanco Claraco <joseluisblancoc@gmail.com>
 
-    For instructions and details, see:
-     http://www.mrpt.org/list-of-mrpt-apps/application-MEX-grabber
+	For instructions and details, see:
+	 http://www.mrpt.org/list-of-mrpt-apps/application-MEX-grabber
   -----------------------------------------------------------------------------*/
 
 #include <mrpt/hwdrivers/CGenericSensor.h>

@@ -208,6 +208,6 @@ of type CMetricMapBuilderRBPF  */
 
 };  // End of class def.
 
-} // end NS
-} // end NS
+}  // end NS
+}  // end NS
 #endif

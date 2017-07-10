@@ -402,7 +402,7 @@ void CPose2D::fromString(const std::string& s)
 	phi(DEG2RAD(m.get_unsafe(0, 2)));
 }
 
-void CPose2D::fromStringRaw(const std::string &s) 
+void CPose2D::fromStringRaw(const std::string& s)
 {
 	this->fromString("[" + s + "]");
 }
@@ -427,10 +427,7 @@ CPose3D CPose2D::operator-(const CPose3D& b) const
 
 CPose2D CPose2D::getOppositeScalar() const
 {
-	return CPose2D(
-			-m_coords[0],
-			-m_coords[1],
-			-m_phi);
+	return CPose2D(-m_coords[0], -m_coords[1], -m_phi);
 }
 
 void CPose2D::asString(std::string& s) const

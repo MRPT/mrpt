@@ -899,7 +899,8 @@ void CObservation3DRangeScan::resizePoints3DVectors(const size_t WH)
 	points3D_idxs_y.resize(WH);
 }
 
-size_t CObservation3DRangeScan::getScanSize() const {
+size_t CObservation3DRangeScan::getScanSize() const
+{
 	// x,y,z vectors have the same size.
 	return points3D_x.size();
 }

@@ -122,8 +122,8 @@ void CMetricMapBuilderRBPF::processActionObservation(
 		{
 			MRPT_LOG_DEBUG_STREAM(
 				"processActionObservation(): Input action is "
-				"CActionRobotMovement3D=" << 
-				act3D->poseChange.getMeanVal().asString());
+				"CActionRobotMovement3D="
+				<< act3D->poseChange.getMeanVal().asString());
 			odoIncrementSinceLastMapUpdate += act3D->poseChange.getMeanVal();
 			odoIncrementSinceLastLocalization += act3D->poseChange;
 		}
@@ -131,11 +131,11 @@ void CMetricMapBuilderRBPF::processActionObservation(
 		{
 			MRPT_LOG_DEBUG_STREAM(
 				"processActionObservation(): Input action is "
-				"CActionRobotMovement2D=" << 
-				act2D->poseChange->getMeanVal().asString());
-			odoIncrementSinceLastMapUpdate += 
+				"CActionRobotMovement2D="
+				<< act2D->poseChange->getMeanVal().asString());
+			odoIncrementSinceLastMapUpdate +=
 				mrpt::poses::CPose3D(act2D->poseChange->getMeanVal());
-			odoIncrementSinceLastLocalization.mean += 
+			odoIncrementSinceLastLocalization.mean +=
 				mrpt::poses::CPose3D(act2D->poseChange->getMeanVal());
 		}
 		else
@@ -289,22 +289,21 @@ MRPT_TODO(
 /*---------------------------------------------------------------
 					initialize
   ---------------------------------------------------------------*/
-void  CMetricMapBuilderRBPF::initialize(
-		const CSimpleMap &initialMap,
-		const CPosePDF  *x0 )
+void CMetricMapBuilderRBPF::initialize(
+	const CSimpleMap& initialMap, const CPosePDF* x0)
 {
 	std::lock_guard<std::mutex> csl(
 		critZoneChangingMap);  // Enter critical section (updating map)
 
 	MRPT_LOG_INFO_STREAM(
-		"[initialize] Called with " << 
-		initialMap.size() << " nodes in fixed map");
+		"[initialize] Called with " << initialMap.size()
+									<< " nodes in fixed map");
 
 	this->clear();
 	mrpt::poses::CPose3D curPose;
 	if (x0)
 	{
-		curPose = mrpt::poses::CPose3D( x0->getMeanVal() );
+		curPose = mrpt::poses::CPose3D(x0->getMeanVal());
 	}
 	else if (!initialMap.empty())
 	{
@@ -325,8 +324,9 @@ CPose3DPDF::Ptr CMetricMapBuilderRBPF::getCurrentPoseEstimation() const
 	CPose3DPDFParticles::Ptr posePDF = std::make_shared<CPose3DPDFParticles>();
 	mapPDF.getEstimatedPosePDF(*posePDF);
 
-	// Adds additional increment from accumulated odometry since last localization update:
-	for (auto &p : posePDF->m_particles)
+	// Adds additional increment from accumulated odometry since last
+	// localization update:
+	for (auto& p : posePDF->m_particles)
 	{
 		(*p.d) = (*p.d) + this->odoIncrementSinceLastLocalization.mean;
 	}

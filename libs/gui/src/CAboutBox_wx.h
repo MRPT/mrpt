@@ -23,8 +23,9 @@
 class CAboutBox : public wxDialog
 {
    public:
-	CAboutBox(wxWindow* parent, const std::string &appName,
-		const std::string &additionalInfo, const bool showStandardInfo);
+	CAboutBox(
+		wxWindow* parent, const std::string& appName,
+		const std::string& additionalInfo, const bool showStandardInfo);
 	virtual ~CAboutBox();
 
 	//(*Identifiers(CAboutBox)

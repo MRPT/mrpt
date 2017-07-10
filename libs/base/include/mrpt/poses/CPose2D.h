@@ -266,7 +266,7 @@ class BASE_IMPEXP CPose2D : public CPose<CPose2D>,
 	void fromString(const std::string& s);
 	/** Same as fromString, but without requiring the square brackets in the
 	 * string */
-	void fromStringRaw(const std::string &s);
+	void fromStringRaw(const std::string& s);
 
 	inline const double& operator[](unsigned int i) const
 	{

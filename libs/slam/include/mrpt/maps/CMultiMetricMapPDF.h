@@ -176,8 +176,8 @@ class SLAM_IMPEXP CMultiMetricMapPDF
 	 * Current robot pose should be normally set to the last keyframe
 	 * in the simplemap. */
 	void clear(
-		const mrpt::maps::CSimpleMap &prevMap,
-		const mrpt::poses::CPose3D &currentPose);
+		const mrpt::maps::CSimpleMap& prevMap,
+		const mrpt::poses::CPose3D& currentPose);
 
 	/** Returns the estimate of the robot pose as a particles PDF for the
 	 * instant of time "timeStep", from 0 to N-1.
@@ -256,7 +256,7 @@ class SLAM_IMPEXP CMultiMetricMapPDF
 
 	// see docs in base
 	mrpt::math::TPose3D getLastPose(
-		const size_t i, bool &pose_is_valid) const override;
+		const size_t i, bool& pose_is_valid) const override;
 
 	void PF_SLAM_implementation_custom_update_particle_with_new_pose(
 		CParticleDataContent* particleData,

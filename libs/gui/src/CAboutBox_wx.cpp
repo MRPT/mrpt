@@ -23,7 +23,7 @@
 //*)
 
 #include <mrpt/gui/CMyRedirector.h>
-#include <mrpt/gui/WxUtils.h> // _U()
+#include <mrpt/gui/WxUtils.h>  // _U()
 
 // For CV_VERSION
 #include <mrpt/config.h>
@@ -52,11 +52,12 @@ BEGIN_EVENT_TABLE(CAboutBox, wxDialog)
 //*)
 END_EVENT_TABLE()
 
-CAboutBox::CAboutBox(wxWindow* parent, const std::string &appName,
-	const std::string &additionalInfo, const bool showStandardInfo) :
-		m_appName(appName),
-		m_additionalInfo(additionalInfo),
-		m_showStandardInfo(showStandardInfo)
+CAboutBox::CAboutBox(
+	wxWindow* parent, const std::string& appName,
+	const std::string& additionalInfo, const bool showStandardInfo)
+	: m_appName(appName),
+	  m_additionalInfo(additionalInfo),
+	  m_showStandardInfo(showStandardInfo)
 {
 	const wxWindowID id = -1;
 	//(*Initialize(CAboutBox)
@@ -231,5 +232,4 @@ void CAboutBox::OnInit(wxInitDialogEvent& event)
 }
 
 void CAboutBox::OnButton1Click(wxCommandEvent& event) { Close(); }
-
-#endif //MRPT_HAS_WXWIDGETS
+#endif  // MRPT_HAS_WXWIDGETS

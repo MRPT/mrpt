@@ -515,11 +515,12 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 
 		for (size_t indexPTG = 0; indexPTG < nPTGs; indexPTG++)
 		{
-			CParameterizedTrajectoryGenerator * ptg = getPTG(indexPTG);
-			TInfoPerPTG &ipf = m_infoPerPTG[indexPTG];
+			CParameterizedTrajectoryGenerator* ptg = getPTG(indexPTG);
+			TInfoPerPTG& ipf = m_infoPerPTG[indexPTG];
 
 			// Ensure the method knows about its associated PTG:
-			m_holonomicMethod[indexPTG]->setAssociatedPTG( this->getPTG(indexPTG) );
+			m_holonomicMethod[indexPTG]->setAssociatedPTG(
+				this->getPTG(indexPTG));
 
 			// The picked movement in TP-Space (to be determined by holonomic
 			// method below)
@@ -591,9 +592,8 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			(NOP_not_too_close_and_have_to_slowdown =
 				 (last_sent_ptg->supportSpeedAtTarget() ||
 				  (relTargetDist >
-				   (slowdowndist =
-						m_holonomicMethod[m_lastSentVelCmd.ptg_index]
-							->getTargetApproachSlowDownDistance())  
+				   (slowdowndist = m_holonomicMethod[m_lastSentVelCmd.ptg_index]
+									   ->getTargetApproachSlowDownDistance())
 				   // slowdowndist is assigned here, inside the if()
 				   // to be sure the index in m_lastSentVelCmd is valid!
 				   )));
@@ -672,7 +672,8 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 						robot_odom_at_send_cmd.asString();
 				}
 
-				// No need to call setAssociatedPTG(), already correctly associated above.
+				// No need to call setAssociatedPTG(), already correctly
+				// associated above.
 
 				ASSERT_(m_navigationParams);
 				build_movement_candidate(

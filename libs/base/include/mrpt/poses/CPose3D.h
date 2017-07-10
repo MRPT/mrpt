@@ -643,7 +643,7 @@ class BASE_IMPEXP CPose3D : public CPose<CPose3D>,
 	}
 	/** Same as fromString, but without requiring the square brackets in the
 	 * string */
-	void fromStringRaw(const std::string &s)
+	void fromStringRaw(const std::string& s)
 	{
 		this->fromString("[" + s + "]");
 	}

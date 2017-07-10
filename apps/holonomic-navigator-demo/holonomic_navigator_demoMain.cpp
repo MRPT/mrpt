@@ -622,11 +622,8 @@ holonomic_navigator_demoFrame::~holonomic_navigator_demoFrame()
 	//*)
 }
 
-void holonomic_navigator_demoFrame::OnQuit(wxCommandEvent& )
-{
-	Close();
-}
-void holonomic_navigator_demoFrame::OnAbout(wxCommandEvent& )
+void holonomic_navigator_demoFrame::OnQuit(wxCommandEvent&) { Close(); }
+void holonomic_navigator_demoFrame::OnAbout(wxCommandEvent&)
 {
 	mrpt::gui::show_mrpt_about_box_wxWidgets(this, "holonomic-navigator-demo");
 }

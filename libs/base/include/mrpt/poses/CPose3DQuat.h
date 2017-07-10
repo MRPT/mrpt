@@ -285,7 +285,7 @@ class BASE_IMPEXP CPose3DQuat : public CPose<CPose3DQuat>,
 	}
 	/** Same as fromString, but without requiring the square brackets in the
 	 * string */
-	void fromStringRaw(const std::string &s);
+	void fromStringRaw(const std::string& s);
 
 	/** Read only [] operator */
 	inline const double& operator[](unsigned int i) const
