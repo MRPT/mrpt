@@ -78,25 +78,25 @@ void CRobot2NavInterface::sendNewWaypointTargetEvent(int waypoint_index)
 }
 void CRobot2NavInterface::sendNavigationEndDueToErrorEvent()
 {
-	MRPT_LOG_INFO(
+	MRPT_LOG_THROTTLE_INFO(1.0,
 		"[sendNavigationEndDueToErrorEvent] Doing nothing: not implemented in "
 		"user's derived class.");
 }
 void CRobot2NavInterface::sendWaySeemsBlockedEvent()
 {
-	MRPT_LOG_INFO(
+	MRPT_LOG_THROTTLE_INFO(1.0,
 		"[sendWaySeemsBlockedEvent] Doing nothing: not implemented in user's "
 		"derived class.");
 }
 void CRobot2NavInterface::sendApparentCollisionEvent()
 {
-	MRPT_LOG_INFO(
+	MRPT_LOG_THROTTLE_INFO(1.0,
 		"[sendApparentCollisionEvent] Doing nothing: not implemented in user's "
 		"derived class.");
 }
-void CRobot2NavInterface::sendCannotGetCloserToBlockedTargetEvent()
+void CRobot2NavInterface::sendCannotGetCloserToBlockedTargetEvent(bool &do_abort_nav)
 {
-	MRPT_LOG_INFO(
+	MRPT_LOG_THROTTLE_INFO(1.0,
 		"[sendCannotGetCloserToBlockedTargetEvent] Doing nothing: not "
 		"implemented in user's derived class.");
 }

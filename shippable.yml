@@ -19,7 +19,7 @@ build:
     image_name: drydock/u16cppall
     image_tag: v5.6.1
   ci:
-    - sudo add-apt-repository -y ppa:jolting/backport
+    - sudo add-apt-repository -y ppa:jolting/backport-mrpt
     - sudo apt-get update
     - sudo apt-get install -y build-essential
     - sudo apt-get install -y pkg-config
@@ -38,7 +38,7 @@ build:
     - sudo apt-get install -y libgtest-dev
     - sudo apt-get install -y libeigen3-dev
     - sudo apt-get install -y libsuitesparse-dev
-    - sudo apt-get install -y libpcl-dev
+#    - sudo apt-get install -y libpcl-dev   # Disabled: seems to cause problems building with cotire?
     - sudo apt-get install -y libopenni2-dev
     - sudo apt-get install -y libudev-dev
     - sudo apt-get install -y libproj-dev

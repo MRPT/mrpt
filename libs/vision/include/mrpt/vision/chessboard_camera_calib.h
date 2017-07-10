@@ -61,34 +61,34 @@ typedef std::map<std::string, TImageCalibData> TCalibrationImageList;
 
 /** Performs a camera calibration (computation of projection and distortion
  * parameters) from a sequence of captured images of a checkerboard.
-  * \param input_images [IN/OUT] At input, this list must have one entry for
+ * \param input_images [IN/OUT] At input, this list must have one entry for
  * each image to process. At output the original, detected checkboard and
  * rectified images can be found here. See TImageCalibData.
-  * \param check_size_x [IN] The number of squares in the checkerboard in the X
+ * \param check_size_x [IN] The number of squares in the checkerboard in the X
  * direction.
-  * \param check_size_y [IN] The number of squares in the checkerboard in the Y
+ * \param check_size_y [IN] The number of squares in the checkerboard in the Y
  * direction.
-  * \param check_squares_length_X_meters [IN] The size of each square in the
+ * \param check_squares_length_X_meters [IN] The size of each square in the
  * checkerboard, in meters, in the X axis.
-  * \param check_squares_length_Y_meters [IN] This will typically be equal to
+ * \param check_squares_length_Y_meters [IN] This will typically be equal to
  * check_squares_length_X_meters.
-  * \param intrinsicParams [OUT] The 3x3 intrinsic parameters matrix. See
+ * \param intrinsicParams [OUT] The 3x3 intrinsic parameters matrix. See
  * http://www.mrpt.org/Camera_Parameters
-  * \param distortionParams [OUT] The 1x4 vector of distortion parameters: k1 k2
+ * \param distortionParams [OUT] The 1x4 vector of distortion parameters: k1 k2
  * p1 p2. See http://www.mrpt.org/Camera_Parameters
-  * \param normalize_image [IN] Select OpenCV flag
-  * \param out_MSE  [OUT] If set to !=nullptr, the mean square error of the
+ * \param normalize_image [IN] Select OpenCV flag
+ * \param out_MSE  [OUT] If set to !=nullptr, the mean square error of the
  * reprojection will be stored here (in pixel units).
-  * \param skipDrawDetectedImgs [IN] Whether to skip the generation of the
+ * \param skipDrawDetectedImgs [IN] Whether to skip the generation of the
  * undistorted and detected images in each TImageCalibData
-  * \param useScaramuzzaAlternativeDetector [IN] Whether to use an alternative
+ * \param useScaramuzzaAlternativeDetector [IN] Whether to use an alternative
  * detector. See CImage::findChessboardCorners for more deatails and references.
-  * \sa The <a href="http://www.mrpt.org/Application:camera-calib-gui"
+ * \sa The <a href="http://www.mrpt.org/Application:camera-calib-gui"
  * >camera-calib-gui application</a> is a user-friendly GUI to this class.
-  * \return false on any error (more info will be dumped to cout), or true on
+ * \return false on any error (more info will be dumped to cout), or true on
  * success.
-  * \sa CImage::findChessboardCorners, checkerBoardStereoCalibration
-  */
+ * \sa CImage::findChessboardCorners, checkerBoardStereoCalibration
+ */
 bool VISION_IMPEXP checkerBoardCameraCalibration(
 	TCalibrationImageList& images, unsigned int check_size_x,
 	unsigned int check_size_y, double check_squares_length_X_meters,
@@ -97,36 +97,8 @@ bool VISION_IMPEXP checkerBoardCameraCalibration(
 	double* out_MSE = nullptr, bool skipDrawDetectedImgs = false,
 	bool useScaramuzzaAlternativeDetector = false);
 
-/** Performs a camera calibration (computation of projection and distortion
- * parameters) from a sequence of captured images of a checkerboard.
-  * \param input_images [IN/OUT] At input, this list must have one entry for
- * each image to process. At output the original, detected checkboard and
- * rectified images can be found here. See TImageCalibData.
-  * \param check_size_x [IN] The number of squares in the checkerboard in the X
- * direction.
-  * \param check_size_y [IN] The number of squares in the checkerboard in the Y
- * direction.
-  * \param check_squares_length_X_meters [IN] The size of each square in the
- * checkerboard, in meters, in the X axis.
-  * \param check_squares_length_Y_meters [IN] This will typically be equal to
- * check_squares_length_X_meters.
-  * \param intrinsicParams [OUT] The 3x3 intrinsic parameters matrix. See
- * http://www.mrpt.org/Camera_Parameters
-  * \param distortionParams [OUT] The 1x4 vector of distortion parameters: k1 k2
- * p1 p2. See http://www.mrpt.org/Camera_Parameters
-  * \param normalize_image [IN] Select OpenCV flag
-  * \param out_MSE  [OUT] If set to !=nullptr, the mean square error of the
- * reprojection will be stored here (in pixel units).
-  * \param skipDrawDetectedImgs [IN] Whether to skip the generation of the
- * undistorted and detected images in each TImageCalibData
-  * \param useScaramuzzaAlternativeDetector [IN] Whether to use an alternative
- * detector. See CImage::findChessboardCorners for more deatails and references.
-  * \sa The <a href="http://www.mrpt.org/Application:camera-calib-gui"
- * >camera-calib-gui application</a> is a user-friendly GUI to this class.
-  * \return false on any error (more info will be dumped to cout), or true on
- * success.
-  * \sa CImage::findChessboardCorners
-  */
+/** \overload with matrix of intrinsic params instead of mrpt::utils::TCamera
+ */
 bool VISION_IMPEXP checkerBoardCameraCalibration(
 	TCalibrationImageList& images, unsigned int check_size_x,
 	unsigned int check_size_y, double check_squares_length_X_meters,

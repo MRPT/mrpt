@@ -64,6 +64,7 @@ IF(BUILD_EXAMPLES)
 		threadsPipe
 		variant
 		dirs_files_manipulation
+		backtrace-example
 		)
 	SET(CMAKE_EXAMPLE_DEPS mrpt-base)
 	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})

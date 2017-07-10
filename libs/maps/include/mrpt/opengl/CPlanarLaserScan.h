@@ -16,6 +16,7 @@
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/utils/TColor.h>
 
 namespace mrpt
 {
@@ -150,7 +151,5 @@ DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
 	CPlanarLaserScan, CRenderizableDisplayList, MAPS_IMPEXP)
 
 }  // end namespace
-
 }  // End of namespace
-
 #endif

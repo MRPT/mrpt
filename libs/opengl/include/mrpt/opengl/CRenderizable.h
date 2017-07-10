@@ -193,7 +193,6 @@ class OPENGL_IMPEXP CRenderizable : public mrpt::utils::CSerializable
 	{
 		return setColorA_u8(static_cast<uint8_t>(255 * a));
 	}
-
 	/**Color components in the range [0,255] \return a ref to this */
 	virtual CRenderizable& setColorR_u8(const uint8_t r)
 	{
@@ -353,10 +352,6 @@ OPENGL_IMPEXP CRenderizable::Ptr& operator<<(
 	CRenderizable::Ptr& r, const mrpt::poses::CPose3D& p);
 
 }  // end namespace
-
 }  // End of namespace
-
-// This header goes here so there we can use "CRenderizable::Ptr"
-//#include <mrpt/opengl/gl_utils.h>
 
 #endif

@@ -146,14 +146,18 @@
 				- Parameters are no longer passed via a mrpt::utils::TParameters class, but via a mrpt::utils::CConfigFileBase which makes parameter passing to PTGs much more maintainable and consistent.
 				- PTGs now have a score_priority field to manually set hints about preferences for path planning.
 				- PTGs are now mrpt::utils::CLoadableOptions classes
-			- \ref mrpt_graphslam_grp
-				 - Extend mrpt-graphslam lib to execute simulated/real-time graphSLAM.
-				 	 mrpt-graphslam supports 2D/3D execution of graphSLAM, utilizing
-				 	 LaserScans, odometry information.
-				 - Develop application `graphslam-engine` that executes graphSLAM via
-				 	 the mrpt-graphslam lib
 			- New classes:
 				- mrpt::nav::CMultiObjectiveMotionOptimizerBase
+		- \ref mrpt_graphslam_grp
+			- Extend mrpt-graphslam lib to execute simulated/real-time graphSLAM.
+				mrpt-graphslam supports 2D/3D execution of graphSLAM, utilizing
+				LaserScans, odometry information.
+			- Develop application `graphslam-engine` that executes graphSLAM via
+				the mrpt-graphslam lib
+			- mrpt::grpahslam::CGraphSlamEngine as the generic object that
+			   manages graphSLAM, Node/Edge registration decider
+			   classes under the mrpt::graphslam::deciders namesapce, optimizer
+			   wrapper classes under mrpt::graphslam::optimizers
 	- Changes in build system:
 		- [Windows only] `DLL`s/`LIB`s now have the signature `lib-${name}${2-digits-version}${compiler-name}_{x32|x64}.{dll/lib}`, allowing several MRPT versions to coexist in the system PATH.
 		- [Visual Studio only] There are no longer `pragma comment(lib...)` in any MRPT header, so it is the user responsibility to correctly tell user projects to link against MRPT libraries.
@@ -706,16 +710,16 @@
 		- Many bug fixes.
 	- <b>Detailed list of changes:</b>
 		- New apps:
-			- <a href="http://www.mrpt.org/Application:srba-slam" >srba-slam</a>: A command-line frontend for the Relative Bundle Adjustment engine in mrpt-srba.
-			- <a href="http://www.mrpt.org/Application:holonomic-navigator-demo" >holonomic-navigator-demo</a>
-			- <a href="http://www.mrpt.org/Application:robotic-arm-kinematics" >robotic-arm-kinematics</a>: A GUI for experimenting with Denavit-Hartenberg parameters.
+			- <a href="http://www.mrpt.org/list-of-mrpt-apps/application-srba-slam" >srba-slam</a>: A command-line frontend for the Relative Bundle Adjustment engine in mrpt-srba.
+			- <a href="http://www.mrpt.org/list-of-mrpt-apps/application-holonomic-navigator-demo" >holonomic-navigator-demo</a>
+			- <a href="http://www.mrpt.org/list-of-mrpt-apps/application-robotic-arm-kinematics" >robotic-arm-kinematics</a>: A GUI for experimenting with Denavit-Hartenberg parameters.
 		- Changes in apps:
 			- <a href="http://www.mrpt.org/Application%3Anavlog-viewer" >navlog-viewer</a>:
 				- Fixed some minor visualization errors.
 			- <a href="http://www.mrpt.org/Application%3ARawLogViewer" >RawLogViewer</a>:
 				- Import sequence of images as rawlog: Didn't detect "png" file extension as images - <a href="http://code.google.com/p/mrpt/source/detail?r=2940" >r2940</a> - Closes <a href="http://code.google.com/p/mrpt/issues/detail?id=34" >#34</a>
 				- The GUI toolbar has been ported from wxWidget's ToolBar to sets of wxCustomButton's to avoid visualization problems in wx 2.9.X - <a href="http://code.google.com/p/mrpt/source/detail?r=2950" >r2950</a>
-			- <a href="http://www.mrpt.org/Application:ReactiveNavigationDemo" >ReactiveNavigationDemo</a>:
+			- <a href="http://www.mrpt.org/list-of-mrpt-apps/application-ReactiveNavigationDemo" >ReactiveNavigationDemo</a>:
 				- The default holonomic navigation method is now the VFF, since after the last bug fixes and tunes it seems to work quite well.
 			- <a href="http://www.mrpt.org/Application%3ASceneViewer" >SceneViewer3D</a>:
 				- The GUI toolbar has been ported from wxWidget's ToolBar to sets of wxCustomButton's to avoid visualization problems in wx 2.9.X - <a href="http://code.google.com/p/mrpt/source/detail?r=2952" >r2952</a>
@@ -869,21 +873,21 @@
  <a name="0.9.6">
   <h2>Version 0.9.6 - (Version 1.0.0-Release_Candidate_4): Released 30-MAY-2012 (SVN 2930) </h2></a>
 	- New applications:
-		- <a href="http://www.mrpt.org/Application:kinect-stereo-calibrate" >kinect-stereo-calibrate</a>: A GUI tool for calibrating RGB+D and/or stereo cameras, including live Kinect capturing.
+		- <a href="http://www.mrpt.org/list-of-mrpt-apps/application-kinect-stereo-calibrate" >kinect-stereo-calibrate</a>: A GUI tool for calibrating RGB+D and/or stereo cameras, including live Kinect capturing.
 	- Removed applications:
 		- stereo-calib-gui: it's now superseded by kinect-stereo-gui. The old command line tool is still useful, so it's still there as the example "stereo-calib-opencv".
 	- Changes in applications:
-		- <a href="http://www.mrpt.org/Application:icp-slam" >icp-slam</a>:
+		- <a href="http://www.mrpt.org/list-of-mrpt-apps/application-icp-slam" >icp-slam</a>:
 			- Added a new option (SHOW_LASER_SCANS_3D in config files) to draw laser scans in the live 3D view - <a href="http://code.google.com/p/mrpt/source/detail?r=2881" >r2881</a>
-		- <a href="http://www.mrpt.org/Application:rawlog-edit" >rawlog-edit</a>:
+		- <a href="http://www.mrpt.org/list-of-mrpt-apps/application-rawlog-edit" >rawlog-edit</a>:
 			- Operation "--camera-params" now also handles stereo observations.
 			- New operation "--stereo-rectify" for batch rectifying datasets with stereo images.
 			- New operation "--rename-externals".
-		- <a href="http://www.mrpt.org/Application:SceneViewer" >SceneViewer3D</a>:
+		- <a href="http://www.mrpt.org/list-of-mrpt-apps/application-SceneViewer" >SceneViewer3D</a>:
 			- New menu for generating high-resolution renders of any scene directly to imag files - <a href="http://code.google.com/p/mrpt/source/detail?r=2775" >r2775</a>
 			- Many new menus for selective selecting objects and applying operations on them - <a href="http://code.google.com/p/mrpt/source/detail?r=2776" >r2776</a>
 		- stereo-calib-gui: Now generates a report with detailed and clear results from stereo calibration and allows the user to change most parameters interactively - <a href="http://code.google.com/p/mrpt/source/detail?r=2801" >r2801</a>
-		- <a href="http://www.mrpt.org/Application:kinect-3d-view" >kinect-3d-view</a>: New key command: press '9' to grab selected snapshots to disk  - <a href="http://code.google.com/p/mrpt/source/detail?r=2890" >r2890</a>
+		- <a href="http://www.mrpt.org/list-of-mrpt-apps/application-kinect-3d-view" >kinect-3d-view</a>: New key command: press '9' to grab selected snapshots to disk  - <a href="http://code.google.com/p/mrpt/source/detail?r=2890" >r2890</a>
 	- Kinect stuff:
 		- [mrpt-hwdrivers]
 			- mrpt::hwdrivers::CKinect now decodes Bayer color using OpenCV instead of default freenect - <a href="http://code.google.com/p/mrpt/source/detail?r=2721" >r2721</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2762" >r2762</a>
@@ -892,7 +896,7 @@
 		- [mrpt-obs]
 			- New method mrpt::obs::CObservation3DRangeScan::convertTo2DScan() allows simulating a "fake 2D laser scanner" from a Kinect. See the example: http://www.mrpt.org/Example_Kinect_To_2D_laser_scan
 		- [mrpt-vision]
-			- New function mrpt::vision::checkerBoardStereoCalibration() to calibrate stereo and RGB+D cameras. See also the program <a href="http://www.mrpt.org/Application:kinect-stereo-calibrate" >kinect-stereo-calibrate</a>:
+			- New function mrpt::vision::checkerBoardStereoCalibration() to calibrate stereo and RGB+D cameras. See also the program <a href="http://www.mrpt.org/list-of-mrpt-apps/application-kinect-stereo-calibrate" >kinect-stereo-calibrate</a>:
 	- New classes:
 		- [mrpt-gui]
 			- New event generated by GUI windows: mrpt::gui::mrptEventWindowClosed

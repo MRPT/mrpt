@@ -515,8 +515,11 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 
 		for (size_t indexPTG = 0; indexPTG < nPTGs; indexPTG++)
 		{
-			CParameterizedTrajectoryGenerator* ptg = getPTG(indexPTG);
-			TInfoPerPTG& ipf = m_infoPerPTG[indexPTG];
+			CParameterizedTrajectoryGenerator * ptg = getPTG(indexPTG);
+			TInfoPerPTG &ipf = m_infoPerPTG[indexPTG];
+
+			// Ensure the method knows about its associated PTG:
+			m_holonomicMethod[indexPTG]->setAssociatedPTG( this->getPTG(indexPTG) );
 
 			// The picked movement in TP-Space (to be determined by holonomic
 			// method below)
@@ -590,17 +593,9 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				  (relTargetDist >
 				   (slowdowndist =
 						m_holonomicMethod[m_lastSentVelCmd.ptg_index]
-							->getTargetApproachSlowDownDistance())  // slowdowndist
-				   // is
-				   // assigned
-				   // here,
-				   // inside
-				   // the if()
-				   // to be
-				   // sure the
-				   // index in
-				   // m_lastSentVelCmd
-				   // is valid!
+							->getTargetApproachSlowDownDistance())  
+				   // slowdowndist is assigned here, inside the if()
+				   // to be sure the index in m_lastSentVelCmd is valid!
 				   )));
 
 		if (!NOP_not_too_old)
@@ -676,6 +671,8 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 						["robot_odom_at_send_cmd(interp)"] =
 						robot_odom_at_send_cmd.asString();
 				}
+
+				// No need to call setAssociatedPTG(), already correctly associated above.
 
 				ASSERT_(m_navigationParams);
 				build_movement_candidate(
@@ -1868,8 +1865,7 @@ void CAbstractPTGBasedReactive::loadConfigFile(
 	m_PTGsMustBeReInitialized = true;
 
 	// At this point, we have been called from the derived class, who must be
-	// already
-	// loaded all its specific params, including PTGs.
+	// already loaded all its specific params, including PTGs.
 
 	// Load my params:
 	params_abstract_ptg_navigator.loadFromConfigFile(

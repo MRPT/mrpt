@@ -520,8 +520,9 @@ CPose3DPDF::Ptr CMetricMapBuilderICP::getCurrentPoseEstimation() const
 /*---------------------------------------------------------------
 						initialize
   ---------------------------------------------------------------*/
-void CMetricMapBuilderICP::initialize(
-	const CSimpleMap& initialMap, CPosePDF* x0)
+void  CMetricMapBuilderICP::initialize(
+	const CSimpleMap  &initialMap,
+	const CPosePDF *x0 )
 {
 	MRPT_START
 

@@ -137,7 +137,7 @@ MRPT_SVN_NUMBER=""
 if [ -d .svn ]
 then
 	printf "Obtaining SVN number (This may take a *while* the first time, be patient)...\n"
-	printf "Running svnversion..."
+	printf "Running svnversion...\n"
 	MRPT_SVN_NUMBER="SVN:`svnversion .`"
 
 	if [ $? -ne 0 ]
@@ -154,7 +154,7 @@ fi
 if [ -d .git ]
 then
 	printf "Obtaining Git commit id...\n"
-	printf "Running..."
+	printf "Running...\n"
 	MRPT_SVN_NUMBER="Git: `git log --pretty=format:'%h %cd' -n 1`"
 
 	if [ $? -ne 0 ]
@@ -179,7 +179,7 @@ echo "The cwd is: " `pwd`
 MRPT_LIBS_DOT=`cat design_of_images/graph_mrpt_libs.dot`
 
 # Create the new directory:
-printf "Copying images..."
+printf "Copying images...\n"
 mkdir images 2> /dev/null
 rm images/* 2> /dev/null
 mkdir html 2> /dev/null
@@ -227,16 +227,29 @@ CHM_FILENAME="libMRPT-$MRPT_VERSION_STR.chm"
 #   $MRPT_LIST_DIRECTORIES
 #   ...
 #
-printf "Generating DOXYGEN project..."
+export MRPT_VERSION_STR
+export MRPT_LIST_DIRECTORIES
+export VISION_CITATION_FILES
+export MRPT_LIST_INPUT
+export MRPT_EXAMPLE_PATH
+export genHTML
+export outCHM
+export CHM_FILENAME
+export HHC_INVOKING_CODE
+export MRPT_USE_SEARCHENGINE
+export genLATEX
+export genRTF
+
+printf "Generating DOXYGEN project...\n"
 envsubst < doxygen_project.txt.in > doxygen_project.txt
 
 printf "OK\n"
 
-printf "Parsing header (.h.in) files for version variables..."
+printf "Parsing header (.h.in) files for version variables...\n"
 eval "echo \"`cat ../doc/doxygen-pages/mainPage_doc.h.in`\"" > ../doc/doxygen-pages/mainPage_doc.h
 printf "OK\n"
 
-printf "Generating the html footer..."
+printf "Generating the html footer...\n"
 
 if [ "$includeCounter" = "YES" ]
 then

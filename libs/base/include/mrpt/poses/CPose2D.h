@@ -25,10 +25,9 @@ DEFINE_SERIALIZABLE_PRE(CPose2D)
  *  multiple times with the same pose, since this class caches calls to
  * expensive trigronometric functions.
  *
- *  For a complete description of Points/Poses, see mrpt::poses::CPoseOrPoint,
- * or refer
- *    to the <a href="http://www.mrpt.org/2D_3D_Geometry" >2D/3D Geometry
- * tutorial</a> in the wiki.
+ * For a complete description of Points/Poses, see mrpt::poses::CPoseOrPoint,
+ * or refer to [this documentation page]
+ *(http://www.mrpt.org/tutorials/programming/maths-and-geometry/2d_3d_geometry/)
  *
  *  <div align=center>
  *   <img src="CPose2D.gif">
@@ -45,6 +44,30 @@ class BASE_IMPEXP CPose2D : public CPose<CPose2D>,
 {
    public:
 	DEFINE_SERIALIZABLE(CPose2D)
+=======
+	DEFINE_SERIALIZABLE_PRE(CPose2D);
+
+	/** A class used to store a 2D pose, including the 2D coordinate point and a heading (phi) angle.
+	 *  Use this class instead of lightweight mrpt::math::TPose2D when pose/point composition is to be called
+	 *  multiple times with the same pose, since this class caches calls to expensive trigronometric functions.
+	 *
+	 *  For a complete description of Points/Poses, see mrpt::poses::CPoseOrPoint, or refer
+	 *    to the <a href="http://www.mrpt.org/2D_3D_Geometry" >2D/3D Geometry tutorial</a> in the wiki.
+	 *
+	 *  <div align=center>
+	 *   <img src="CPose2D.gif">
+	 *  </div>
+	 *
+	 * \note Read also: "A tutorial on SE(3) transformation parameterizations and on-manifold optimization", Jose-Luis Blanco. http://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf
+	 * \sa CPoseOrPoint,CPoint2D
+	 * \ingroup poses_grp
+	 */
+	class BASE_IMPEXP CPose2D : public CPose<CPose2D>, public mrpt::utils::CSerializable
+	{
+	public:
+		// This must be added to any CSerializable derived class:
+		DEFINE_SERIALIZABLE( CPose2D )
+>>>>>>> master
 
    public:
 	/** [x,y] */

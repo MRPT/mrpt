@@ -84,14 +84,13 @@ CMonteCarloLocalization2D::~CMonteCarloLocalization2D() {}
 /*---------------------------------------------------------------
 						getLastPose
  ---------------------------------------------------------------*/
-const TPose3D* CMonteCarloLocalization2D::getLastPose(const size_t i) const
+TPose3D CMonteCarloLocalization2D::getLastPose(const size_t i, bool &is_valid_pose) const
 {
-	if (i >= m_particles.size())
+	if (i >= m_particles.size()) 
 		THROW_EXCEPTION("Particle index out of bounds!");
-	static TPose3D auxHolder;
-	ASSERTDEB_(m_particles[i].d != NULL)
-	auxHolder = TPose3D(TPose2D(*m_particles[i].d));
-	return &auxHolder;
+	is_valid_pose = true;
+	ASSERTDEB_(m_particles[i].d!=nullptr);
+	return TPose3D( TPose2D(*m_particles[i].d));
 }
 
 /*---------------------------------------------------------------

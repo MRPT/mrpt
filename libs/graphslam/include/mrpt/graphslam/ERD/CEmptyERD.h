@@ -14,6 +14,7 @@
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/CRawlog.h>
 
+#include <mrpt/graphs/CNetworkOfPoses.h>
 #include <mrpt/graphslam/interfaces/CEdgeRegistrationDecider.h>
 
 namespace mrpt

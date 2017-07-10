@@ -30,15 +30,12 @@ CICPCriteriaERD<GRAPH_T>::CICPCriteriaERD()
 	using namespace mrpt::utils;
 
 	this->initializeLoggers("CICPCriteriaERD");
-
-	// start ICP constraint registration only when
-	m_edge_types_to_nums["ICP2D"] = 0;
-	m_edge_types_to_nums["ICP3D"] = 0;
-	m_edge_types_to_nums["LC"] = 0;
-
 	this->m_last_total_num_nodes = 2;
-
 	this->logFmt(LVL_DEBUG, "Initialized class object");
+
+	// do not use this since it affects LCs when we use a radius around the latest
+	// registered node
+	this->m_use_mahal_distance_init_ICP = false;
 
 	MRPT_END;
 }
@@ -98,6 +95,7 @@ bool CICPCriteriaERD<GRAPH_T>::updateState(
 			m_is_using_3DScan = true;
 		}
 
+
 		// New node has been registered.
 		// add the last laser_scan
 		if (registered_new_node)
@@ -123,14 +121,14 @@ bool CICPCriteriaERD<GRAPH_T>::updateState(
 	else
 	{  // action-observations rawlog format
 		// append current laser scan
-		m_last_laser_scan2D =
+		this->m_last_laser_scan2D =
 			observations->getObservationByClass<CObservation2DRangeScan>();
 		if (registered_new_node && m_last_laser_scan2D)
 		{
 			this->m_nodes_to_laser_scans2D[this->m_graph->nodeCount() - 1] =
 				m_last_laser_scan2D;
 		}
-	}
+	} // end else
 
 	// edge registration procedure - same for both rawlog formats
 	if (registered_new_node)
@@ -160,15 +158,14 @@ bool CICPCriteriaERD<GRAPH_T>::updateState(
 
 	return true;
 	MRPT_END;
-}
+} // end of updateState
 
 template <class GRAPH_T>
 void CICPCriteriaERD<GRAPH_T>::checkRegistrationCondition2D(
 	const std::set<mrpt::utils::TNodeID>& nodes_set)
 {
 	MRPT_START;
-	using namespace mrpt;
-	using namespace mrpt::obs;
+	using namespace mrpt::utils;
 	using namespace mrpt::math;
 
 	mrpt::utils::TNodeID curr_nodeID = this->m_graph->nodeCount() - 1;
@@ -251,8 +248,7 @@ void CICPCriteriaERD<GRAPH_T>::checkRegistrationCondition3D(
 {
 	MRPT_START;
 	using namespace std;
-	using namespace mrpt::obs;
-	using namespace mrpt::math;
+	parent_t::registerNewEdge(from, to, rel_edge);
 
 	mrpt::utils::TNodeID curr_nodeID = this->m_graph->nodeCount() - 1;
 	CObservation3DRangeScan::Ptr curr_laser_scan;
@@ -307,9 +303,8 @@ void CICPCriteriaERD<GRAPH_T>::checkRegistrationCondition3D(
 			}
 		}
 	}
-
 	MRPT_END;
-}
+} // end of registerNewEdge
 
 template <class GRAPH_T>
 void CICPCriteriaERD<GRAPH_T>::registerNewEdge(
@@ -350,7 +345,7 @@ void CICPCriteriaERD<GRAPH_T>::getNearbyNodesOf(
 	}
 
 	MRPT_END;
-}
+} // end of getNearbyNodesOf
 
 template <class GRAPH_T>
 void CICPCriteriaERD<GRAPH_T>::notifyOfWindowEvents(
@@ -413,8 +408,7 @@ void CICPCriteriaERD<GRAPH_T>::initializeVisuals()
 {
 	MRPT_START;
 	using namespace mrpt::opengl;
-	this->logFmt(mrpt::utils::LVL_DEBUG, "Initializing visuals");
-	this->m_time_logger.enter("CICPCriteriaERD::Visuals");
+	this->m_time_logger.enter("ERD::Visuals");
 	parent_t::initializeVisuals();
 
 	ASSERTMSG_(
@@ -474,18 +468,14 @@ void CICPCriteriaERD<GRAPH_T>::initializeVisuals()
 			/* unique_index = */ m_text_index_search_disk);
 	}
 
-	this->m_time_logger.leave("CICPCriteriaERD::Visuals");
+	this->m_time_logger.leave("ERD::Visuals");
 	MRPT_END;
 }
 template <class GRAPH_T>
 void CICPCriteriaERD<GRAPH_T>::updateVisuals()
 {
 	MRPT_START;
-	this->m_time_logger.enter("CICPCriteriaERD::Visuals");
-	using namespace mrpt::opengl;
-	using namespace mrpt::utils;
-	using namespace mrpt::math;
-	using namespace mrpt::poses;
+	this->m_time_logger.enter("ERD::Visuals");
 	parent_t::updateVisuals();
 
 	// update ICP_max_distance Disk
@@ -539,13 +529,17 @@ void CICPCriteriaERD<GRAPH_T>::updateVisuals()
 					DEG2RAD(laser_scan_viz->getPoseRoll())));
 		}
 
-		this->m_win->unlockAccess3DScene();
-		this->m_win->forceRepaint();
-	}
+	CDiskPtr obj = CDisk::Create();
+	pose_t initial_pose;
+	obj->setPose(initial_pose);
+	obj->setName(m_ICP_max_distance_obj_name);
+	obj->setColor_u8(m_search_disk_color);
+	obj->setDiskRadius(m_ICP_max_distance, m_ICP_max_distance-0.1);
+	scene->insert(obj);
 
-	this->m_time_logger.leave("CICPCriteriaERD::Visuals");
-	MRPT_END;
-}
+	this->m_win->unlockAccess3DScene();
+	this->m_win->forceRepaint();
+} // end of initICPDistanceVizualization
 
 template <class GRAPH_T>
 void CICPCriteriaERD<GRAPH_T>::dumpVisibilityErrorMsg(
@@ -553,7 +547,8 @@ void CICPCriteriaERD<GRAPH_T>::dumpVisibilityErrorMsg(
 {
 	MRPT_START;
 	using namespace mrpt::utils;
-	using namespace mrpt;
+	using namespace mrpt::math;
+	using namespace mrpt::poses;
 
 	this->logFmt(
 		LVL_ERROR,
@@ -563,8 +558,13 @@ void CICPCriteriaERD<GRAPH_T>::dumpVisibilityErrorMsg(
 		viz_flag.c_str());
 	std::this_thread::sleep_for(std::chrono::milliseconds(sleep_time));
 
-	MRPT_END;
-}
+	CRenderizablePtr obj = scene->getByName(m_ICP_max_distance_obj_name);
+	CDiskPtr disk_obj = static_cast<CDiskPtr>(obj);
+
+	disk_obj->setPose(this->m_graph->nodes.at(this->m_graph->nodeCount()-1));
+
+	this->m_win->unlockAccess3DScene();
+	this->m_win->forceRepaint();
 
 template <class GRAPH_T>
 void CICPCriteriaERD<GRAPH_T>::loadParams(const std::string& source_fname)
@@ -590,10 +590,14 @@ void CICPCriteriaERD<GRAPH_T>::printParams() const
 {
 	MRPT_START;
 	parent_t::printParams();
-	params.dumpToConsole();
+
+	printf("------------------[ Goodness-based ICP Edge Registration ]------------------\n");
+	printf("ICP goodness threshold         = %.2f%% \n", this->getGoodnessThresh()*100);
+	printf("ICP max radius for edge search = %.2f\n", m_ICP_max_distance);
+	printf("Min. node difference for LC    = %lu\n", m_LC_min_nodeid_diff);
 
 	MRPT_END;
-}
+} // end of printParams
 
 template <class GRAPH_T>
 void CICPCriteriaERD<GRAPH_T>::getDescriptiveReport(

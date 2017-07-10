@@ -407,8 +407,12 @@ void CWaypointsNavigator::waypoints_navigationStep()
 void CWaypointsNavigator::navigationStep()
 {
 	MRPT_START
+	m_is_aligning = false;  // the robot is aligning into a waypoint with a desired heading
 
-	waypoints_navigationStep();
+	if (m_navigationState != SUSPENDED)
+	{
+		waypoints_navigationStep();
+	}
 
 	// Call base navigation step to execute one-single waypoint navigation, as
 	// usual:

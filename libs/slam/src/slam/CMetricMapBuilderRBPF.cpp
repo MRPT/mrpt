@@ -117,20 +117,22 @@ void CMetricMapBuilderRBPF::processActionObservation(
 			action.getActionByClass<CActionRobotMovement2D>();
 		if (act3D)
 		{
-			MRPT_LOG_DEBUG(
+			MRPT_LOG_DEBUG_STREAM(
 				"processActionObservation(): Input action is "
-				"CActionRobotMovement3D");
+				"CActionRobotMovement3D=" << 
+				act3D->poseChange.getMeanVal().asString());
 			odoIncrementSinceLastMapUpdate += act3D->poseChange.getMeanVal();
 			odoIncrementSinceLastLocalization += act3D->poseChange;
 		}
 		else if (act2D)
 		{
-			MRPT_LOG_DEBUG(
+			MRPT_LOG_DEBUG_STREAM(
 				"processActionObservation(): Input action is "
-				"CActionRobotMovement2D");
-			odoIncrementSinceLastMapUpdate +=
+				"CActionRobotMovement2D=" << 
+				act2D->poseChange->getMeanVal().asString());
+			odoIncrementSinceLastMapUpdate += 
 				mrpt::poses::CPose3D(act2D->poseChange->getMeanVal());
-			odoIncrementSinceLastLocalization.mean +=
+			odoIncrementSinceLastLocalization.mean += 
 				mrpt::poses::CPose3D(act2D->poseChange->getMeanVal());
 		}
 		else
@@ -284,43 +286,48 @@ MRPT_TODO(
 /*---------------------------------------------------------------
 					initialize
   ---------------------------------------------------------------*/
-void CMetricMapBuilderRBPF::initialize(
-	const CSimpleMap& initialMap, CPosePDF* x0)
+void  CMetricMapBuilderRBPF::initialize(
+		const CSimpleMap &initialMap,
+		const CPosePDF  *x0 )
 {
 	// Enter critical section (updating map)
-	enterCriticalSection();
+	mrpt::synch::CCriticalSectionLocker csl(&critZoneChangingMap);
 
 	MRPT_LOG_INFO_STREAM(
-		"[initialize] Called with " << initialMap.size()
-									<< " nodes in fixed map\n");
-	if (x0)
-	{
-		MRPT_LOG_INFO_STREAM("[initialize] x0: " << x0->getMeanVal() << "\n");
-	}
-	else
-	{
-		MRPT_LOG_INFO_STREAM("[initialize] x0: (Not supplied)\n");
-	}
+		"[initialize] Called with " << 
+		initialMap.size() << " nodes in fixed map");
 
 	this->clear();
+	mrpt::poses::CPose3D curPose;
 	if (x0)
 	{
-		const CPose2D meanPose = x0->getMeanVal();
-		// Clear maps for each particle & set pose:
-		mapPDF.clear(meanPose);
+		curPose = mrpt::poses::CPose3D( x0->getMeanVal() );
 	}
+	else if (!initialMap.empty())
+	{
+		// get pose of last keyframe:
+		curPose = initialMap.rbegin()->first->getMeanVal();
+	}
+	MRPT_LOG_INFO_STREAM("[initialize] Initial pose: " << curPose);
 
-	// Leaving critical section (updating map)
-	leaveCriticalSection();
+	// Clear maps for each particle & set pose:
+	mapPDF.clear(initialMap, curPose);
+
 }
 
 /*---------------------------------------------------------------
-						getMarkovLocalization
+						getCurrentPoseEstimation
   ---------------------------------------------------------------*/
 CPose3DPDF::Ptr CMetricMapBuilderRBPF::getCurrentPoseEstimation() const
 {
 	CPose3DPDFParticles::Ptr posePDF = std::make_shared<CPose3DPDFParticles>();
 	mapPDF.getEstimatedPosePDF(*posePDF);
+
+	// Adds additional increment from accumulated odometry since last localization update:
+	for (auto &p : posePDF->m_particles)
+	{
+		(*p.d) = (*p.d) + this->odoIncrementSinceLastLocalization.mean;
+	}
 	return posePDF;
 }
 

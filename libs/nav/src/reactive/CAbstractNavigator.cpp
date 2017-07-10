@@ -138,6 +138,13 @@ void CAbstractNavigator::suspend()
 {
 	std::lock_guard<std::recursive_mutex> csl(m_nav_cs);
 
+	// Issue an "stop" if we are moving:
+	if (m_curPoseVel.timestamp != INVALID_TIMESTAMP &&
+		(std::abs(m_curPoseVel.velLocal.vx)>1e-4 || std::abs(m_curPoseVel.velLocal.vy)>1e-4 || std::abs(m_curPoseVel.velLocal.omega)>1e-4))
+	{
+		this->stop(false /*not an emergency stop*/);
+	}
+
 	MRPT_LOG_DEBUG("CAbstractNavigator::suspend() called.");
 	if (m_navigationState == NAVIGATING) m_navigationState = SUSPENDED;
 }
@@ -402,6 +409,7 @@ void CAbstractNavigator::TAbstractNavigatorParams::loadFromConfigFile(
 	MRPT_LOAD_CONFIG_VAR_CS(dist_to_target_for_sending_event, double);
 	MRPT_LOAD_CONFIG_VAR_CS(alarm_seems_not_approaching_target_timeout, double);
 	MRPT_LOAD_CONFIG_VAR_CS(dist_check_target_is_blocked, double);
+	MRPT_LOAD_CONFIG_VAR_CS(hysteresis_check_target_is_blocked, int);
 }
 void CAbstractNavigator::TAbstractNavigatorParams::saveToConfigFile(
 	mrpt::utils::CConfigFileBase& c, const std::string& s) const
@@ -417,6 +425,18 @@ void CAbstractNavigator::TAbstractNavigatorParams::saveToConfigFile(
 		dist_check_target_is_blocked,
 		"When closer than this distance, check if the target is blocked to "
 		"abort navigation with an error. [Default=0.6 m]");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(
+		dist_to_target_for_sending_event, 
+		"Default value=0, means use the `targetAllowedDistance` passed by the"
+		" user in the navigation request.");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(alarm_seems_not_approaching_target_timeout, 
+		"navigator timeout (seconds) [Default=30 sec]");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(dist_check_target_is_blocked, 
+		"When closer than this distance, check if the target is blocked to "
+		"abort navigation with an error. [Default=0.6 m]");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(hysteresis_check_target_is_blocked, 
+		"How many steps should the condition for dist_check_target_is_blocked "
+		"be fulfilled to raise an event");
 }
 
 bool mrpt::nav::operator==(
@@ -542,23 +562,45 @@ void CAbstractNavigator::performNavigationStepNavigating(
 
 			// Check if the target seems to be at reach, but it's clearly
 			// occupied by obstacles:
-			if ((!m_navigationParams->target.targetIsIntermediaryWaypoint ||
-				 m_navigationParams->target.targetDesiredRelSpeed < 1) &&
-				targetDist <
-					params_abstract_navigator.dist_check_target_is_blocked)
+			if (targetDist < 
+				params_abstract_navigator.dist_check_target_is_blocked)
 			{
 				const auto rel_trg = m_navigationParams->target.target_coords -
 									 m_curPoseVel.pose;
 				const bool is_col = checkCollisionWithLatestObstacles(rel_trg);
 				if (is_col)
 				{
-					MRPT_LOG_WARN(
-						"Target seems to be blocked by obstacles. Aborting "
-						"navigation.");
-					m_navigationState = NAV_ERROR;
-					m_robot.sendCannotGetCloserToBlockedTargetEvent();
-					m_robot.sendWaySeemsBlockedEvent();
-					return;
+					const bool send_event = (
+						++m_counter_check_target_is_blocked >= 
+						params_abstract_navigator.hysteresis_check_target_is_blocked);
+
+					if (send_event)
+					{
+						MRPT_LOG_THROTTLE_WARN(5.0,
+							"Target seems to be blocked by obstacles. Invoking"
+							" sendCannotGetCloserToBlockedTargetEvent().");
+						bool do_abort_nav = false;
+						m_robot.sendCannotGetCloserToBlockedTargetEvent(
+							do_abort_nav);
+
+						if (do_abort_nav)
+						{
+							MRPT_LOG_WARN(
+								"sendCannotGetCloserToBlockedTargetEvent() "
+								"told me to abort navigation.");
+							m_navigationState = NAV_ERROR;
+							m_robot.sendWaySeemsBlockedEvent();
+							return;
+						}
+						else
+						{
+							m_counter_check_target_is_blocked = 0;
+						}
+					}
+				}
+				else
+				{
+					m_counter_check_target_is_blocked = 0;
 				}
 			}
 		}

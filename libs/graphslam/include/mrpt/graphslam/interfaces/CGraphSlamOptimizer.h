@@ -81,4 +81,6 @@ class CGraphSlamOptimizer
 }
 }  // end of namespaces
 
+#include "CGraphSlamOptimizer_impl.h"
+
 #endif /* end of include guard: CGRAPHSLAMOPTIMIZER_H */

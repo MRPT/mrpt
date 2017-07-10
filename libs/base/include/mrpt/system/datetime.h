@@ -182,7 +182,6 @@ std::string BASE_IMPEXP intervalFormat(const double seconds);
 /** @} */
 
 }  // End of namespace
-
 }  // End of namespace
 
 #endif

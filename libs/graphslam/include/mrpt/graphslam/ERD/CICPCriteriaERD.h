@@ -51,9 +51,9 @@ namespace deciders
  * ## Description
  *
  * Register new edges in the graph with the last inserted node. Criterion for
- * adding new edges should be the goodness of the candidate ICP edge. The
- * nodes for ICP are picked <em>based on the distance from the last
- * inserted node</em>.
+ * adding new edges should be the goodness of the candidate ICP edge. The nodes
+ * for ICP are picked <em>based on the distance from the last inserted
+ * node</em>.
  * \sa  getNearbyNodesOf
  *
  * ### Specifications
@@ -67,11 +67,6 @@ namespace deciders
  * ### .ini Configuration Parameters
  *
  * \htmlinclude graphslam-engine_config_params_preamble.txt
- *
- * - \b class_verbosity
- *   + \a Section       : EdgeRegistrationDeciderParameters
- *   + \a default value : 1 (LVL_INFO)
- *   + \a Required      : FALSE
  *
  * - \b LC_min_nodeid_diff
  *  + \a Section       : GeneralConfiguration
@@ -88,17 +83,15 @@ namespace deciders
  *  align the laser scans of the current node and each of the previous nodes
  *  that are found within the designated ICP_max_distance.
  *
- * - \b ICP_goodness_thresh
- *   + \a Section       : EdgeRegistrationDeciderParameters
- *   + \a Default value : 0.75
- *   + \a Required      : FALSE
- *   + \a Description   : Threshold for accepting a scan-matching edge between
- *   the current and previous nodes
  *
- * - \b visualize_laser_scans
- *   + \a Section       : VisualizationParameters
+ * - \b use_mahal_distance
+ *   + \a section       : EdgeRegistrationDeciderParameters
  *   + \a Default value : TRUE
  *   + \a Required      : FALSE
+ *   + \a Description   : If True, the decider uses the mahalanobis distance of
+ *   the suggested ICP constraint and the current constraint between a set of
+ *   nodes to decide if adding such constraint makes sense or if it is an
+ *   outlier
  *
  * - \b scans_img_external_dir
  *   + \a Section       : EdgeRegistrationDeciderParameters
@@ -106,6 +99,10 @@ namespace deciders
  *   + \a Required      : FALSE
  *   + \a Description   : Only applicable in datasets with 3DRangeScans that
  *   are externally stored (not stored in the given .rawlog file).
+ *
+ * \note Since the decider inherits from the CRangeScanEdgeRegistrationDecider
+ * class, it parses the configuration parameters of the latter as well from the
+ * "ICP" section. Refer to the latter for its list of configuration parameters
  *
  * \ingroup mrpt_graphslam_grp
  */
