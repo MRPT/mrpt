@@ -1,11 +1,11 @@
-/* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          http://www.mrpt.org/                             |
-   |                                                                           |
-   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-   | Released under BSD License. See details in http://www.mrpt.org/License    |
-   +---------------------------------------------------------------------------+ */
+/* +------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)            |
+   |                          http://www.mrpt.org/                          |
+   |                                                                        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file     |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                |
+   | Released under BSD License. See details in http://www.mrpt.org/License |
+   +------------------------------------------------------------------------+ */
 #ifndef CFORMBATCHSENSORPOSE_H
 #define CFORMBATCHSENSORPOSE_H
 
@@ -18,40 +18,37 @@
 #include <wx/textctrl.h>
 //*)
 
-class CFormBatchSensorPose: public wxDialog
+class CFormBatchSensorPose : public wxDialog
 {
-	public:
+   public:
+	CFormBatchSensorPose(wxWindow* parent, wxWindowID id = wxID_ANY);
+	virtual ~CFormBatchSensorPose();
 
-		CFormBatchSensorPose(wxWindow* parent,wxWindowID id=wxID_ANY);
-		virtual ~CFormBatchSensorPose();
+	//(*Declarations(CFormBatchSensorPose)
+	wxStaticText* StaticText1;
+	wxButton* btnApply;
+	wxBitmapButton* btnOpen;
+	wxButton* btnCancel;
+	wxTextCtrl* edText;
+	//*)
 
-		//(*Declarations(CFormBatchSensorPose)
-		wxStaticText* StaticText1;
-		wxButton* btnApply;
-		wxBitmapButton* btnOpen;
-		wxButton* btnCancel;
-		wxTextCtrl* edText;
-		//*)
+   protected:
+	//(*Identifiers(CFormBatchSensorPose)
+	static const long ID_STATICTEXT1;
+	static const long ID_TEXTCTRL1;
+	static const long ID_BITMAPBUTTON1;
+	static const long ID_BUTTON1;
+	static const long ID_BUTTON2;
+	//*)
 
-	protected:
+   private:
+	//(*Handlers(CFormBatchSensorPose)
+	void OnbtnOpenClick(wxCommandEvent& event);
+	void OnbtnApplyClick(wxCommandEvent& event);
+	void OnbtnCancelClick(wxCommandEvent& event);
+	//*)
 
-		//(*Identifiers(CFormBatchSensorPose)
-		static const long ID_STATICTEXT1;
-		static const long ID_TEXTCTRL1;
-		static const long ID_BITMAPBUTTON1;
-		static const long ID_BUTTON1;
-		static const long ID_BUTTON2;
-		//*)
-
-	private:
-
-		//(*Handlers(CFormBatchSensorPose)
-		void OnbtnOpenClick(wxCommandEvent& event);
-		void OnbtnApplyClick(wxCommandEvent& event);
-		void OnbtnCancelClick(wxCommandEvent& event);
-		//*)
-
-		DECLARE_EVENT_TABLE()
+	DECLARE_EVENT_TABLE()
 };
 
 #endif

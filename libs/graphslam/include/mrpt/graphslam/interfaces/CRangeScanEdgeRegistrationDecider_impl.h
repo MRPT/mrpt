@@ -1,3 +1,11 @@
+/* +------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)            |
+   |                          http://www.mrpt.org/                          |
+   |                                                                        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file     |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                |
+   | Released under BSD License. See details in http://www.mrpt.org/License |
+   +------------------------------------------------------------------------+ */
 #ifndef CRANGESCANEDGEREGISTRATIONDECIDER_IMPL_H
 #define CRANGESCANEDGEREGISTRATIONDECIDER_IMPL_H
 
@@ -56,12 +64,12 @@ CRangeScanEdgeRegistrationDecider<GRAPH_T>::~CRangeScanEdgeRegistrationDecider()
 
 	MRPT_LOG_DEBUG_STREAM("Changing back the CImage PATH");
 	mrpt::utils::CImage::IMAGES_PATH_BASE = m_img_prev_path_base;
-
 }
 
-template<class GRAPH_T>
+template <class GRAPH_T>
 void CRangeScanEdgeRegistrationDecider<GRAPH_T>::loadParams(
-		const std::string& source_fname) {
+	const std::string& source_fname)
+{
 	MRPT_START;
 
 	parent_t::loadParams(source_fname);
@@ -114,12 +122,12 @@ void CRangeScanEdgeRegistrationDecider<GRAPH_T>::loadParams(
 			"enable_intensity_viewport",
 			true, false);
 
-
 	MRPT_END;
 } // end of loadParams
 
-template<class GRAPH_T>
-void CRangeScanEdgeRegistrationDecider<GRAPH_T>::printParams() const {
+template <class GRAPH_T>
+void CRangeScanEdgeRegistrationDecider<GRAPH_T>::printParams() const
+{
 	MRPT_START;
 	using namespace std;
 
@@ -713,7 +721,6 @@ void CRangeScanEdgeRegistrationDecider<GRAPH_T>::initMiscActions() {
 
 }
 
-
 template<class GRAPH_T>
 void CRangeScanEdgeRegistrationDecider<GRAPH_T>::fixICPGoodnessThresh(
 		const double goodness) {
@@ -882,5 +889,6 @@ void CRangeScanEdgeRegistrationDecider<GRAPH_T>::TRGBDInfoFileParams::parseFile(
 
 
 } } } // end of namespaces
+>>>>>>> master
 
 #endif /* end of include guard: CRANGESCANEDGEREGISTRATIONDECIDER_IMPL_H */

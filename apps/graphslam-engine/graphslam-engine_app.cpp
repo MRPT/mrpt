@@ -1,12 +1,11 @@
-/* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          http://www.mrpt.org/                             |
-   |                                                                           |
-   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-   | Released under BSD License. See details in http://www.mrpt.org/License    |
-   +---------------------------------------------------------------------------+ */
-
+/* +------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)            |
+   |                          http://www.mrpt.org/                          |
+   |                                                                        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file     |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                |
+   | Released under BSD License. See details in http://www.mrpt.org/License |
+   +------------------------------------------------------------------------+ */
 
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
@@ -53,43 +52,67 @@ using namespace std;
 // command line arguments
 // ////////////////////////////////////////////////////////////
 
-TCLAP::CmdLine cmd_line(/*output message = */ " graphslam-engine - Part of the MRPT\n",
-		/* delimeter = */ ' ', /* version = */ MRPT_getVersion().c_str());
+TCLAP::CmdLine cmd_line(
+	/*output message = */ " graphslam-engine - Part of the MRPT\n",
+	/* delimeter = */ ' ', /* version = */ MRPT_getVersion().c_str());
 
-TCLAP::ValueArg<string> arg_ini_file(/*flag = */ "i", /*name = */ "ini-file",
-		/*desc = */ ".ini configuration file", /* required = */ true,
-		/* default value = */ "", /*typeDesc = */ "config.ini", /*parser = */ cmd_line);
+TCLAP::ValueArg<string> arg_ini_file(
+	/*flag = */ "i", /*name = */ "ini-file",
+	/*desc = */ ".ini configuration file", /* required = */ true,
+	/* default value = */ "", /*typeDesc = */ "config.ini",
+	/*parser = */ cmd_line);
 
-TCLAP::ValueArg<string> arg_rawlog_file("r", "rawlog",
-		"Rawlog dataset file",	true, "", "contents.rawlog", /*parser = */ cmd_line);
+TCLAP::ValueArg<string> arg_rawlog_file(
+	"r", "rawlog", "Rawlog dataset file", true, "", "contents.rawlog",
+	/*parser = */ cmd_line);
 
-
-TCLAP::ValueArg<string> arg_ground_truth_file("g", "ground-truth",
-		"Ground-truth textfile",	false, "", "contents.rawlog.GT.txt", cmd_line);
+TCLAP::ValueArg<string> arg_ground_truth_file(
+	"g", "ground-truth", "Ground-truth textfile", false, "",
+	"contents.rawlog.GT.txt", cmd_line);
 
 // Specify the Registration Deciders to use
-TCLAP::ValueArg<string> arg_node_reg("n"  , "node-reg"  , "Specify Node Registration Decider" , false , "CFixedIntervalsNRD" , "CICPCriteriaNRD" , cmd_line);
-TCLAP::ValueArg<string> arg_edge_reg("e"  , "edge-reg"  , "Specify Edge Registration Decider" , false , "CICPCriteriaERD"    , "CICPCriteriaERD" , cmd_line);
-TCLAP::ValueArg<string> arg_optimizer("o" , "optimizer" , "Specify GraphSlam Optimizer"       , false , "CLevMarqGSO"        , "CLevMarqGSO"     , cmd_line);
+TCLAP::ValueArg<string> arg_node_reg(
+	"n", "node-reg", "Specify Node Registration Decider", false,
+	"CFixedIntervalsNRD", "CICPCriteriaNRD", cmd_line);
+TCLAP::ValueArg<string> arg_edge_reg(
+	"e", "edge-reg", "Specify Edge Registration Decider", false,
+	"CICPCriteriaERD", "CICPCriteriaERD", cmd_line);
+TCLAP::ValueArg<string> arg_optimizer(
+	"o", "optimizer", "Specify GraphSlam Optimizer", false, "CLevMarqGSO",
+	"CLevMarqGSO", cmd_line);
 
 // list available deciders
-TCLAP::SwitchArg list_node_registrars("" , "list-node-regs"  , "List available node registration decider classes"  , cmd_line , false);
-TCLAP::SwitchArg list_edge_registrars("" , "list-edge-regs"  , "List available edge registration decider classes"  , cmd_line , false);
-TCLAP::SwitchArg list_all_registrars(""  , "list-regs"       , "List (all) available registration decider classes" , cmd_line , false);
-TCLAP::SwitchArg list_optimizers(""      , "list-optimizers" , "List (all) available graphslam optimizer classes"  , cmd_line , false);
+TCLAP::SwitchArg list_node_registrars(
+	"", "list-node-regs", "List available node registration decider classes",
+	cmd_line, false);
+TCLAP::SwitchArg list_edge_registrars(
+	"", "list-edge-regs", "List available edge registration decider classes",
+	cmd_line, false);
+TCLAP::SwitchArg list_all_registrars(
+	"", "list-regs", "List (all) available registration decider classes",
+	cmd_line, false);
+TCLAP::SwitchArg list_optimizers(
+	"", "list-optimizers", "List (all) available graphslam optimizer classes",
+	cmd_line, false);
 
 // specify whether to run on headless mode - no visuals
 // flag overrides all visualization related directives of the .ini file
 // handy for usage when no visualization is needed or when running on
 // real-robots in headless mode
-TCLAP::SwitchArg disable_visuals("","disable-visuals","Disable Visualization - Overrides related visualize* directives of the .ini file",cmd_line, false);
+TCLAP::SwitchArg disable_visuals(
+	"", "disable-visuals",
+	"Disable Visualization - Overrides related visualize* directives of the "
+	".ini file",
+	cmd_line, false);
 
-TCLAP::SwitchArg dim_2d("" , "2d"  , "Construct 2D graph of constraints (use CPosePDFGaussianInf)");
-TCLAP::SwitchArg dim_3d("" , "3d"  , "Construct 3D graph of constraints (use CPose3DPDFGaussianInf)");
+TCLAP::SwitchArg dim_2d(
+	"", "2d", "Construct 2D graph of constraints (use CPosePDFGaussianInf)");
+TCLAP::SwitchArg dim_3d(
+	"", "3d", "Construct 3D graph of constraints (use CPose3DPDFGaussianInf)");
 
-template<class GRAPH_T>
-void execGraphSlamEngine(mrpt::utils::COutputLogger* logger) {
-
+template <class GRAPH_T>
+void execGraphSlamEngine(mrpt::utils::COutputLogger* logger)
+{
 	// Instance for managing the available graphslam deciders optimizers
 	TUserOptionsChecker<GRAPH_T> options_checker;
 	options_checker.createDeciderOptimizerMappings();
@@ -102,29 +125,33 @@ void execGraphSlamEngine(mrpt::utils::COutputLogger* logger) {
 	{
 		bool list_registrars = false;
 
-		if (list_all_registrars.getValue()) {
+		if (list_all_registrars.getValue())
+		{
 			options_checker.dumpRegistrarsToConsole("all");
 			list_registrars = true;
 		}
-		if (list_node_registrars.getValue()) {
+		if (list_node_registrars.getValue())
+		{
 			options_checker.dumpRegistrarsToConsole("node");
 			list_registrars = true;
 		}
-		if (list_edge_registrars.getValue()) {
+		if (list_edge_registrars.getValue())
+		{
 			options_checker.dumpRegistrarsToConsole("edge");
 			list_registrars = true;
 		}
 
-		if (list_optimizers.getValue()) {
+		if (list_optimizers.getValue())
+		{
 			options_checker.dumpOptimizersToConsole();
 		}
 
-		if (list_registrars || list_optimizers.getValue()) {
+		if (list_registrars || list_optimizers.getValue())
+		{
 			logger->logFmt(LVL_INFO, "Exiting.. ");
 			return;
 		}
 	}
-
 
 	// fetch the filenames
 	// ini file
@@ -134,11 +161,13 @@ void execGraphSlamEngine(mrpt::utils::COutputLogger* logger) {
 
 	// ground-truth file
 	string ground_truth_fname;
-	if ( arg_ground_truth_file.isSet() ) {
+	if (arg_ground_truth_file.isSet())
+	{
 		ground_truth_fname = arg_ground_truth_file.getValue();
 	}
 
-	if (disable_visuals.getValue()) { // enabling Visualization objects
+	if (disable_visuals.getValue())
+	{  // enabling Visualization objects
 		logger->logFmt(LVL_WARN, "Running on headless mode - Visuals disabled");
 	}
 
@@ -152,9 +181,7 @@ void execGraphSlamEngine(mrpt::utils::COutputLogger* logger) {
 
 	// CGraphSlamHandler initialization
 	CGraphSlamHandler<GRAPH_T> graphslam_handler(
-			logger,
-			&options_checker,
-			!disable_visuals.getValue());
+		logger, &options_checker, !disable_visuals.getValue());
 	graphslam_handler.setFNames(ini_fname, rawlog_fname, ground_truth_fname);
 
 	graphslam_handler.initEngine(node_reg, edge_reg, optimizer);
@@ -164,48 +191,53 @@ void execGraphSlamEngine(mrpt::utils::COutputLogger* logger) {
 
 // Main
 // ////////////////////////////////////////////////////////////
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
 	// initializign the logger instance
 	COutputLogger logger("graphslam-engine_app");
 	logger.logging_enable_keep_record = true;
 
-	try {
-
-		bool showHelp		 = argc>1 && !os::_strcmp(argv[1],"--help");
-		bool showVersion = argc>1 && !os::_strcmp(argv[1],"--version");
+	try
+	{
+		bool showHelp = argc > 1 && !os::_strcmp(argv[1], "--help");
+		bool showVersion = argc > 1 && !os::_strcmp(argv[1], "--version");
 
 		// Input Validation
 		cmd_line.xorAdd(dim_2d, dim_3d);
-		if (!cmd_line.parse( argc, argv ) ||  showVersion || showHelp) {
+		if (!cmd_line.parse(argc, argv) || showVersion || showHelp)
+		{
 			return 0;
 		}
 
 		// CGraphSlamEngine initialization
-		if (dim_2d.getValue()) {
+		if (dim_2d.getValue())
+		{
 			execGraphSlamEngine<CNetworkOfPoses2DInf>(&logger);
 		}
-		else {
+		else
+		{
 			execGraphSlamEngine<CNetworkOfPoses3DInf>(&logger);
 		}
 
 		return 0;
 	}
-	catch (exception& e) {
-		logger.logFmt(LVL_ERROR, "Program finished due to an exception!!\n%s\n",
-				e.what());
+	catch (exception& e)
+	{
+		logger.logFmt(
+			LVL_ERROR, "Program finished due to an exception!!\n%s\n",
+			e.what());
 		printf("%s", e.what());
 
 		mrpt::system::pause();
 		return -1;
 	}
-	catch (...) {
-		logger.logFmt(LVL_ERROR, "Program finished due to an untyped exception!!");
+	catch (...)
+	{
+		logger.logFmt(
+			LVL_ERROR, "Program finished due to an untyped exception!!");
 		mrpt::system::pause();
 		return -1;
 	}
 
 	return 0;
 }
-
-

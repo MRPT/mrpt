@@ -66,7 +66,7 @@ public:
 		, src_file (file)
 		, sep(wrapped->getOsSeparator())
 	{
-		ai_assert(NULL != wrapped);
+		ai_assert(nullptr != wrapped);
 
 		// Determine base directory
 		base = src_file;

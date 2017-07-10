@@ -15,6 +15,7 @@ LIST(APPEND maps_EXTRA_SRCS_NAME 	"octomap" "octomath")
 #INCLUDE_DIRECTORIES("${MRPT_SOURCE_DIR}/otherlibs/octomap/include/")
 # Headers are publicly exposed in <mrpt/otherlibs/octomap/*.h>
 
+# liblas
 IF(CMAKE_MRPT_HAS_LIBLAS)
 	LINK_DIRECTORIES(${LAS_LINK_DIRS})
 	INCLUDE_DIRECTORIES(${LAS_INCLUDE_DIRS})
@@ -44,6 +45,7 @@ IF(BUILD_mrpt-maps)
 	ENDIF()
 
 	IF (CMAKE_MRPT_HAS_VTK)
+        INCLUDE(${VTK_USE_FILE})
 		target_link_libraries(mrpt-maps ${VTK_LIBRARIES})
 	ENDIF()
 

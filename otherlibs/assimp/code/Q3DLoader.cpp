@@ -502,7 +502,7 @@ outer:
 			uv = mesh->mTextureCoords[0] =  new aiVector3D[mesh->mNumVertices];
 			mesh->mNumUVComponents[0]    =  2;
 		}
-		else uv = NULL;
+		else uv = nullptr;
 
 		// Build the final array
 		unsigned int cnt = 0;

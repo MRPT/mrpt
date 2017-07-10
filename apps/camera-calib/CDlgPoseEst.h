@@ -1,12 +1,11 @@
-/* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          http://www.mrpt.org/                             |
-   |                                                                           |
-   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-   | Released under BSD License. See details in http://www.mrpt.org/License    |
-   +---------------------------------------------------------------------------+ */
-
+/* +------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)            |
+   |                          http://www.mrpt.org/                          |
+   |                                                                        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file     |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                |
+   | Released under BSD License. See details in http://www.mrpt.org/License |
+   +------------------------------------------------------------------------+ */
 
 #ifndef CDLGPOSEEST_H
 #define CDLGPOSEEST_H
@@ -42,115 +41,124 @@
 #include <mrpt/math/CQuaternion.h>
 #include <fstream>
 
-#define CAMERA_CALIB_GUI_VERSION  "2.0"
+#define CAMERA_CALIB_GUI_VERSION "2.0"
 
-class CDlgPoseEst: public wxDialog
+class CDlgPoseEst : public wxDialog
 {
-	public:
+   public:
+	CDlgPoseEst(
+		wxWindow* parent, wxWindowID id = wxID_ANY,
+		const wxPoint& pos = wxDefaultPosition,
+		const wxSize& size = wxDefaultSize);
+	virtual ~CDlgPoseEst();
 
-		CDlgPoseEst(wxWindow* parent,wxWindowID id=wxID_ANY,const wxPoint& pos=wxDefaultPosition,const wxSize& size=wxDefaultSize);
-		virtual ~CDlgPoseEst();
+	CMyRedirector* redire;
 
-		CMyRedirector	*redire;
+	//(*Declarations(CDlgCalibWizardOnline)
+	wxStaticText* lbProgress;
+	wxFlexGridSizer* FlexGridSizer1;
+	wxTextCtrl* edLengthY;
+	wxButton* btnClose;
+	wxCheckBox* cbNormalize;
+	wxRadioBox* rbMethod;
+	mrpt::gui::wxMRPTImageControl* m_realtimeview;
+	wxSpinCtrl* edSizeY;
+	wxStaticText* StaticText1;
+	mrpt::gui::CPanelCameraSelection* m_panelCamera;
+	wxStaticText* StaticText3;
+	wxButton* btnStop;
+	wxTimer timCapture;
+	wxSpinCtrl* edSizeX;
+	wxTextCtrl* txtLog;
+	wxStaticText* StaticText4;
+	wxStaticText* StaticText5;
+	wxStaticText* StaticText2;
+	wxSpinCtrl* edNumCapture;
+	wxStaticText* StaticText6;
+	wxTextCtrl* edLengthX;
+	wxButton* btnStart;
+	wxChoice* pnpSelect;
+	wxStaticText* StaticTextAlgo;
+	//*)
 
-		//(*Declarations(CDlgCalibWizardOnline)
-		wxStaticText* lbProgress;
-		wxFlexGridSizer* FlexGridSizer1;
-		wxTextCtrl* edLengthY;
-		wxButton* btnClose;
-		wxCheckBox* cbNormalize;
-		wxRadioBox* rbMethod;
-		mrpt::gui::wxMRPTImageControl* m_realtimeview;
-		wxSpinCtrl* edSizeY;
-		wxStaticText* StaticText1;
-		mrpt::gui::CPanelCameraSelection* m_panelCamera;
-		wxStaticText* StaticText3;
-		wxButton* btnStop;
-		wxTimer timCapture;
-		wxSpinCtrl* edSizeX;
-		wxTextCtrl* txtLog;
-		wxStaticText* StaticText4;
-		wxStaticText* StaticText5;
-		wxStaticText* StaticText2;
-		wxSpinCtrl* edNumCapture;
-		wxStaticText* StaticText6;
-		wxTextCtrl* edLengthX;
-		wxButton* btnStart;
-		wxChoice* pnpSelect;
-		wxStaticText* StaticTextAlgo;
-		//*)
+   protected:
+	//(*Identifiers(CDlgCalibWizardOnline)
+	static const long ID_CUSTOM2;
+	static const long ID_STATICTEXT1;
+	static const long ID_SPINCTRL1;
+	static const long ID_STATICTEXT2;
+	static const long ID_SPINCTRL2;
+	static const long ID_RADIOBOX1;
+	static const long ID_STATICTEXT3;
+	static const long ID_TEXTCTRL1;
+	static const long ID_STATICTEXT4;
+	static const long ID_TEXTCTRL3;
+	static const long ID_CHECKBOX1;
+	static const long ID_STATICTEXT5;
+	static const long ID_SPINCTRL3;
+	static const long ID_STATICTEXT6;
+	static const long ID_STATICTEXT7;
+	static const long ID_TEXTCTRL2;
+	static const long ID_BUTTON1;
+	static const long ID_BUTTON2;
+	static const long ID_BUTTON3;
+	static const long ID_CUSTOM1;
+	static const long ID_TIMER1;
+	static const long ID_ALGOCHOICE;
+	static const long ID_CAMPOSEVIEW;
+	static const long ID_STATICTEXTALGO;
+	//*)
 
-	protected:
+   private:
+	//(*Handlers(CDlgCalibWizardOnline)
+	void OnbtnCloseClick(wxCommandEvent& event);
+	void OnbtnStartClick(wxCommandEvent& event);
+	void OnbtnStopClick(wxCommandEvent& event);
+	void OntimCaptureTrigger(wxTimerEvent& event);
+	//*)
 
-		//(*Identifiers(CDlgCalibWizardOnline)
-		static const long ID_CUSTOM2;
-		static const long ID_STATICTEXT1;
-		static const long ID_SPINCTRL1;
-		static const long ID_STATICTEXT2;
-		static const long ID_SPINCTRL2;
-		static const long ID_RADIOBOX1;
-		static const long ID_STATICTEXT3;
-		static const long ID_TEXTCTRL1;
-		static const long ID_STATICTEXT4;
-		static const long ID_TEXTCTRL3;
-		static const long ID_CHECKBOX1;
-		static const long ID_STATICTEXT5;
-		static const long ID_SPINCTRL3;
-		static const long ID_STATICTEXT6;
-		static const long ID_STATICTEXT7;
-		static const long ID_TEXTCTRL2;
-		static const long ID_BUTTON1;
-		static const long ID_BUTTON2;
-		static const long ID_BUTTON3;
-		static const long ID_CUSTOM1;
-		static const long ID_TIMER1;
-		static const long ID_ALGOCHOICE;
-		static const long ID_CAMPOSEVIEW;
-		static const long ID_STATICTEXTALGO;
-		//*)
+	DECLARE_EVENT_TABLE()
 
-	private:
+	void threadProcessCorners();
 
-		//(*Handlers(CDlgCalibWizardOnline)
-		void OnbtnCloseClick(wxCommandEvent& event);
-		void OnbtnStartClick(wxCommandEvent& event);
-		void OnbtnStopClick(wxCommandEvent& event);
-		void OntimCaptureTrigger(wxTimerEvent& event);
-		//*)
+	/** The thread for corner detection. */
+	std::thread m_threadCorners;
+	/** Input for the thread, null if nothing pending */
+	mrpt::obs::CObservationImage::Ptr m_threadImgToProcess;
+	/** Close signal */
+	bool m_threadMustClose;
+	/** The detected corners, if threadResultsComputed=true */
+	std::vector<mrpt::utils::TPixelCoordf> m_threadResults;
+	/** Put to true by the thread when done with an image */
+	bool m_threadResultsComputed;
+	bool m_threadIsClosed;
 
-		DECLARE_EVENT_TABLE()
+	unsigned int m_check_size_x;
+	unsigned int m_check_size_y;
+	bool m_normalize_image;
+	bool m_useScaramuzzaAlternativeDetector;
+	mrpt::hwdrivers::CCameraSensor::Ptr m_video;
+	CMyGLCanvas* m_3Dview_cam;
+	mrpt::vision::pnp::CPnP pnp_algos;
+	Eigen::MatrixXd obj_pts, img_pts, pose_mat, cam_intrinsic, I3;
 
-		void threadProcessCorners();
+	mrpt::opengl::COpenGLScene::Ptr scene;
+	mrpt::opengl::CSetOfObjects::Ptr cor, cor1;
+	mrpt::opengl::CGridPlaneXY::Ptr grid;
 
-		mrpt::system::TThreadHandle		m_threadCorners;	//!< The thread for corner detection.
-		mrpt::obs::CObservationImagePtr  m_threadImgToProcess;  //!< Input for the thread, null if nothing pending
-		bool m_threadMustClose;  //!< Close signal
-		std::vector<mrpt::utils::TPixelCoordf>	m_threadResults;    //!< The detected corners, if threadResultsComputed=true
-		bool m_threadResultsComputed; //!< Put to true by the thread when done with an image
-		bool m_threadIsClosed;
+   public:
+	typedef bool (mrpt::vision::pnp::CPnP::*CPNP_PTR)(
+		const Eigen::Ref<Eigen::MatrixXd> obj_pts,
+		const Eigen::Ref<Eigen::MatrixXd> img_pts, int n,
+		const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic,
+		Eigen::Ref<Eigen::MatrixXd> pose_mat);
 
-		unsigned int m_check_size_x;
-		unsigned int m_check_size_y;
-		bool m_normalize_image;
-		bool m_useScaramuzzaAlternativeDetector;
-		mrpt::hwdrivers::CCameraSensorPtr m_video;
-		CMyGLCanvas* m_3Dview_cam;
-		mrpt::vision::pnp::CPnP pnp_algos;
-		Eigen::MatrixXd obj_pts, img_pts, pose_mat, cam_intrinsic, I3;
+	/** The list of selected frames to use in camera calibration */
+	mrpt::vision::TCalibrationImageList m_calibFrames;
 
-		mrpt::opengl::COpenGLScenePtr	scene;
-		mrpt::opengl::CSetOfObjectsPtr	cor, cor1;
-		mrpt::opengl::CGridPlaneXYPtr	grid;
+	void showCamPose();
 
-	public:
-		typedef  bool (mrpt::vision::pnp::CPnP::*CPNP_PTR) (const Eigen::Ref<Eigen::MatrixXd> obj_pts, const Eigen::Ref<Eigen::MatrixXd> img_pts, int n, const Eigen::Ref<Eigen::MatrixXd> cam_intrinsic, Eigen::Ref<Eigen::MatrixXd> pose_mat);
-
-		/** The list of selected frames to use in camera calibration */
-		mrpt::vision::TCalibrationImageList	  m_calibFrames;
-
-		void showCamPose();
-
-		bool flag_pose_est;
+	bool flag_pose_est;
 };
 
 #endif

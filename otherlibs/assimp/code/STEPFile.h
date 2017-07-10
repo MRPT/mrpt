@@ -214,7 +214,7 @@ namespace STEP {
 			 */
 			static boost::shared_ptr<const EXPRESS::DataType> Parse(const char*& inout,
 				uint64_t line							= SyntaxError::LINE_NOT_SPECIFIED,
-				const EXPRESS::ConversionSchema* schema = NULL);
+				const EXPRESS::ConversionSchema* schema = nullptr);
 
 		public:
 		};
@@ -345,7 +345,7 @@ namespace STEP {
 			/** @see DaraType::Parse */
 			static boost::shared_ptr<const EXPRESS::LIST> Parse(const char*& inout,
 				uint64_t line							= SyntaxError::LINE_NOT_SPECIFIED,
-				const EXPRESS::ConversionSchema* schema = NULL);
+				const EXPRESS::ConversionSchema* schema = nullptr);
 
 
 		private:
@@ -389,7 +389,7 @@ namespace STEP {
 
 			ConvertObjectProc GetConverterProc(const std::string& name) const {
 				ConverterMap::const_iterator it = converters.find(name);
-				return it == converters.end() ? NULL : (*it).second;
+				return it == converters.end() ? nullptr : (*it).second;
 			}
 
 
@@ -399,7 +399,7 @@ namespace STEP {
 
 			const char* GetStaticStringForToken(const std::string& token) const {
 				ConverterMap::const_iterator it = converters.find(token);
-				return it == converters.end() ? NULL : (*it).first.c_str();
+				return it == converters.end() ? nullptr : (*it).first.c_str();
 			}
 
 
@@ -681,7 +681,7 @@ namespace STEP {
 	struct Lazy
 	{
 		typedef Lazy Out;
-		Lazy(const LazyObject* obj = NULL) : obj(obj) {
+		Lazy(const LazyObject* obj = nullptr) : obj(obj) {
 		}
 
 		operator const T*() const {
@@ -907,7 +907,7 @@ namespace STEP {
 			if (it != objects.end()) {
 				return (*it).second;
 			}
-			return NULL;
+			return nullptr;
 		}
 
 
@@ -917,7 +917,7 @@ namespace STEP {
 			if (it != objects_bytype.end() && (*it).second.size()) {
 				return *(*it).second.begin();
 			}
-			return NULL;
+			return nullptr;
 		}
 
 		// same, but raise an exception if the object doesn't exist and return a reference

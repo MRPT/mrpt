@@ -1,11 +1,11 @@
-/* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          http://www.mrpt.org/                             |
-   |                                                                           |
-   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-   | Released under BSD License. See details in http://www.mrpt.org/License    |
-   +---------------------------------------------------------------------------+ */
+/* +------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)            |
+   |                          http://www.mrpt.org/                          |
+   |                                                                        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file     |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                |
+   | Released under BSD License. See details in http://www.mrpt.org/License |
+   +------------------------------------------------------------------------+ */
 #ifndef CObservationCANBusJ1939_H
 #define CObservationCANBusJ1939_H
 
@@ -16,64 +16,66 @@ namespace mrpt
 {
 namespace obs
 {
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservationCANBusJ1939 , CObservation, OBS_IMPEXP)
+/** This class stores a message from a CAN BUS with the protocol J1939
+ *
+ * \sa CObservation
+ * \ingroup mrpt_obs_grp
+ */
+class OBS_IMPEXP CObservationCANBusJ1939 : public CObservation
+{
+	DEFINE_SERIALIZABLE(CObservationCANBusJ1939)
 
-	/** This class stores a message from a CAN BUS with the protocol J1939
-	 *
-	 * \sa CObservation
-	 * \ingroup mrpt_obs_grp
-	 */
-	class OBS_IMPEXP CObservationCANBusJ1939 : public CObservation
+   public:
+	/** Constructor.
+	*/
+	CObservationCANBusJ1939()
+		: m_pgn(0),
+		  m_src_address(0),
+		  m_priority(0),
+		  m_pdu_format(0),
+		  m_pdu_spec(0),
+		  m_data_length(0)
 	{
-		// This must be added to any CSerializable derived class:
-		DEFINE_SERIALIZABLE( CObservationCANBusJ1939 )
+	}
 
-	 public:
-		/** Constructor.
-		*/
-		CObservationCANBusJ1939(  ) :
-			m_pgn(0), m_src_address(0), m_priority(0), m_pdu_format(0), m_pdu_spec(0), m_data_length(0)
-		{ }
+	/** Destructor
+	*/
+	virtual ~CObservationCANBusJ1939() {}
+	/** The Parameter Group Number within this frame */
+	uint16_t m_pgn;
 
-		/** Destructor
-		*/
-		virtual ~CObservationCANBusJ1939()
-		{ }
+	/** The address of the source node within this frame */
+	uint8_t m_src_address;
 
-		/** The Parameter Group Number within this frame */
-		uint16_t m_pgn;
+	/** The priority */
+	uint8_t m_priority;
 
-		/** The address of the source node within this frame */
-		uint8_t m_src_address;
+	/** PDU Format */
+	uint8_t m_pdu_format;
 
-		/** The priority */
-		uint8_t m_priority;
+	/** PDU Specific */
+	uint8_t m_pdu_spec;
 
-		/** PDU Format */
-		uint8_t m_pdu_format;
+	/** Data length  */
+	uint8_t m_data_length;
 
-		/** PDU Specific */
-		uint8_t m_pdu_spec;
+	/** The data within this frame (0-8 bytes) */
+	std::vector<uint8_t> m_data;
 
-		/** Data length  */
-		uint8_t m_data_length;
+	/** The ASCII frame */
+	std::vector<char> m_raw_frame;
 
-		/** The data within this frame (0-8 bytes) */
-		std::vector<uint8_t> m_data;
+	/** Not used */
+	void getSensorPose(mrpt::poses::CPose3D&) const override {}
+	void setSensorPose(const mrpt::poses::CPose3D&) override {}
+	// See base class docs
+	void getDescriptionAsText(std::ostream& o) const override;
 
-		/** The ASCII frame */
-		std::vector<char> m_raw_frame;
+};  // End of class def.
+DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(
+	CObservationCANBusJ1939, CObservation, OBS_IMPEXP)
 
-		/** Not used */
-		void getSensorPose( mrpt::poses::CPose3D &) const MRPT_OVERRIDE { }
-		void setSensorPose( const mrpt::poses::CPose3D & ) MRPT_OVERRIDE { }
-		// See base class docs
-		void getDescriptionAsText(std::ostream &o) const MRPT_OVERRIDE;
-
-	}; // End of class def.
-	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CObservationCANBusJ1939 , CObservation, OBS_IMPEXP)
-
-	} // End of namespace
-} // End of namespace
+}  // End of namespace
+}  // End of namespace
 
 #endif

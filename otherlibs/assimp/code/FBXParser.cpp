@@ -74,7 +74,7 @@ namespace {
 	}
 
 	// ------------------------------------------------------------------------------------------------
-	void ParseError(const std::string& message, const Element* element = NULL)
+	void ParseError(const std::string& message, const Element* element = nullptr)
 	{
 		if(element) {
 			ParseError(message,element->KeyToken());
@@ -93,7 +93,7 @@ namespace {
 	}
 
 	// ------------------------------------------------------------------------------------------------
-	void ParseWarning(const std::string& message, const Element* element = NULL)
+	void ParseWarning(const std::string& message, const Element* element = nullptr)
 	{
 		if(element) {
 			ParseWarning(message,element->KeyToken());
@@ -122,7 +122,7 @@ namespace FBX {
 Element::Element(const Token& key_token, Parser& parser)
 : key_token(key_token)
 {
-	TokenPtr n = NULL;
+	TokenPtr n = nullptr;
 	do {
 		n = parser.AdvanceToNextToken();
 		if(!n) {
@@ -178,7 +178,7 @@ Scope::Scope(Parser& parser,bool topLevel)
 	}
 
 	TokenPtr n = parser.AdvanceToNextToken();
-	if(n == NULL) {
+	if(n == nullptr) {
 		ParseError("unexpected end of file");
 	}
 
@@ -193,7 +193,7 @@ Scope::Scope(Parser& parser,bool topLevel)
 
 		// Element() should stop at the next Key token (or right after a Close token)
 		n = parser.CurrentToken();
-		if(n == NULL) {
+		if(n == nullptr) {
 			if (topLevel) {
 				return;
 			}
@@ -234,7 +234,7 @@ TokenPtr Parser::AdvanceToNextToken()
 {
 	last = current;
 	if (cursor == tokens.end()) {
-		current = NULL;
+		current = nullptr;
 	}
 	else {
 		current = *cursor++;
@@ -260,7 +260,7 @@ TokenPtr Parser::LastToken() const
 // ------------------------------------------------------------------------------------------------
 uint64_t ParseTokenAsID(const Token& t, const char*& err_out)
 {
-	err_out = NULL;
+	err_out = nullptr;
 
 	if (t.Type() != TokenType_DATA) {
 		err_out = "expected TOK_DATA token";
@@ -301,7 +301,7 @@ uint64_t ParseTokenAsID(const Token& t, const char*& err_out)
 size_t ParseTokenAsDim(const Token& t, const char*& err_out)
 {
 	// same as ID parsing, except there is a trailing asterisk
-	err_out = NULL;
+	err_out = nullptr;
 
 	if (t.Type() != TokenType_DATA) {
 		err_out = "expected TOK_DATA token";
@@ -348,7 +348,7 @@ size_t ParseTokenAsDim(const Token& t, const char*& err_out)
 // ------------------------------------------------------------------------------------------------
 float ParseTokenAsFloat(const Token& t, const char*& err_out)
 {
-	err_out = NULL;
+	err_out = nullptr;
 
 	if (t.Type() != TokenType_DATA) {
 		err_out = "expected TOK_DATA token";
@@ -401,7 +401,7 @@ float ParseTokenAsFloat(const Token& t, const char*& err_out)
 // ------------------------------------------------------------------------------------------------
 int ParseTokenAsInt(const Token& t, const char*& err_out)
 {
-	err_out = NULL;
+	err_out = nullptr;
 
 	if (t.Type() != TokenType_DATA) {
 		err_out = "expected TOK_DATA token";
@@ -438,7 +438,7 @@ int ParseTokenAsInt(const Token& t, const char*& err_out)
 // ------------------------------------------------------------------------------------------------
 std::string ParseTokenAsString(const Token& t, const char*& err_out)
 {
-	err_out = NULL;
+	err_out = nullptr;
 
 	if (t.Type() != TokenType_DATA) {
 		err_out = "expected TOK_DATA token";
@@ -553,9 +553,9 @@ void ReadBinaryDataArray(char type, uint32_t count, const char*& data, const cha
 		// see http://www.ietf.org/rfc/rfc1950.txt
 		
 		z_stream zstream;
-		zstream.opaque = Z_NULL;
-		zstream.zalloc = Z_NULL;
-		zstream.zfree  = Z_NULL;
+        zstream.opaque = Z_NULL;
+        zstream.zalloc = Z_NULL;
+        zstream.zfree  = Z_NULL;
 		zstream.data_type = Z_BINARY;
 
 		// http://hewgill.com/journal/entries/349-how-to-decompress-gzip-stream-with-zlib

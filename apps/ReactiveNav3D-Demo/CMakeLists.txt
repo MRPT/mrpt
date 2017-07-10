@@ -20,6 +20,10 @@ ADD_EXECUTABLE(${PROJECT_NAME}
 			   ReactiveNav3D_demo.h
 			    ${MRPT_VERSION_RC_FILE})
 
+SET(TMP_TARGET_NAME "ReactiveNav3D-Demo")
+
+
+
 # Add the required libraries for linking:
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${MRPT_LINKER_LIBS})
 

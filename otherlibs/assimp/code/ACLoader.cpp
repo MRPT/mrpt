@@ -176,7 +176,7 @@ void AC3DImporter::LoadObjectSection(std::vector<Object>& objects)
 	objects.push_back(Object());
 	Object& obj = objects.back();
 
-	aiLight* light = NULL;
+	aiLight* light = nullptr;
 	if (!ASSIMP_strincmp(buffer,"light",5))
 	{
 		// This is a light source. Add it to the list
@@ -571,7 +571,7 @@ aiNode* AC3DImporter::ConvertObjectSection(Object& object,
 
 				// allocate UV coordinates, but only if the texture name for the
 				// surface is not empty
-				aiVector3D* uv = NULL;
+				aiVector3D* uv = nullptr;
 				if(object.texture.length())
 				{
 					uv = mesh->mTextureCoords[0] = new aiVector3D[mesh->mNumVertices];
@@ -667,10 +667,10 @@ aiNode* AC3DImporter::ConvertObjectSection(Object& object,
 			// collect all meshes using the same material group.
 			if (object.subDiv)	{
 				if (configEvalSubdivision) {
-					boost::scoped_ptr<Subdivider> div(Subdivider::Create(Subdivider::CATMULL_CLARKE));
+					boost::scoped_ptr<Subdivider> div(std::make_shared<Subdivider>(Subdivider::CATMULL_CLARKE));
 					DefaultLogger::get()->info("AC3D: Evaluating subdivision surface: "+object.name);
 
-					std::vector<aiMesh*> cpy(meshes.size()-oldm,NULL);
+					std::vector<aiMesh*> cpy(meshes.size()-oldm,nullptr);
 					div->Subdivide(&meshes[oldm],cpy.size(),&cpy.front(),object.subDiv,true);
 					std::copy(cpy.begin(),cpy.end(),meshes.begin()+oldm);
 
@@ -749,7 +749,7 @@ void AC3DImporter::InternReadFile( const std::string& pFile,
 	boost::scoped_ptr<IOStream> file( pIOHandler->Open( pFile, "rb"));
 
 	// Check whether we can read from the file
-	if( file.get() == NULL)
+	if( file.get() == nullptr)
 		throw DeadlyImportError( "Failed to open AC3D file " + pFile + ".");
 
 	// allocate storage and copy the contents of the file to a memory buffer

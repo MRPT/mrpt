@@ -175,7 +175,7 @@ void KeyIterator::operator ++()
 void TargetAnimationHelper::SetTargetAnimationChannel (
 	const std::vector<aiVectorKey>* _targetPositions)
 {
-	ai_assert(NULL != _targetPositions);
+	ai_assert(nullptr != _targetPositions);
 	targetPositions = _targetPositions;
 }
 
@@ -183,7 +183,7 @@ void TargetAnimationHelper::SetTargetAnimationChannel (
 void TargetAnimationHelper::SetMainAnimationChannel (
 	const std::vector<aiVectorKey>* _objectPositions)
 {
-	ai_assert(NULL != _objectPositions);
+	ai_assert(nullptr != _objectPositions);
 	objectPositions = _objectPositions;
 }
 
@@ -191,14 +191,14 @@ void TargetAnimationHelper::SetMainAnimationChannel (
 void TargetAnimationHelper::SetFixedMainAnimationChannel(
 	const aiVector3D& fixed)
 {
-	objectPositions = NULL; // just to avoid confusion
+	objectPositions = nullptr; // just to avoid confusion
 	fixedMain = fixed;
 }
 
 // ------------------------------------------------------------------------------------------------
 void TargetAnimationHelper::Process(std::vector<aiVectorKey>* distanceTrack)
 {
-	ai_assert(NULL != targetPositions && NULL != distanceTrack);
+	ai_assert(nullptr != targetPositions && nullptr != distanceTrack);
 
 	// TODO: in most cases we won't need the extra array
 	std::vector<aiVectorKey>  real;

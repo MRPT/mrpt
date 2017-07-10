@@ -1,11 +1,11 @@
-/* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          http://www.mrpt.org/                             |
-   |                                                                           |
-   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-   | Released under BSD License. See details in http://www.mrpt.org/License    |
-   +---------------------------------------------------------------------------+ */
+/* +------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)            |
+   |                          http://www.mrpt.org/                          |
+   |                                                                        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file     |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                |
+   | Released under BSD License. See details in http://www.mrpt.org/License |
+   +------------------------------------------------------------------------+ */
 
 #pragma once
 
@@ -17,27 +17,27 @@
 //  PBMAP_IMPEXP, mrpt_xxx_EXPORTS
 
 /*   The macros below for DLL import/export are required for Windows only.
-    Mostly all the definitions in this file are copied or at least topod
-     on the file wx/dlimpexp.h, written by Vadim Zeitlin and published
+	Mostly all the definitions in this file are copied or at least topod
+	 on the file wx/dlimpexp.h, written by Vadim Zeitlin and published
 	 under the wxWindows licence.
 */
 #if defined(MRPT_OS_WINDOWS)
-	#define MRPT_PBMAP_EXPORT __declspec(dllexport)
-	#define MRPT_PBMAP_IMPORT __declspec(dllimport)
+#define MRPT_PBMAP_EXPORT __declspec(dllexport)
+#define MRPT_PBMAP_IMPORT __declspec(dllimport)
 #else
-#    define MRPT_PBMAP_EXPORT
-#    define MRPT_PBMAP_IMPORT
+#define MRPT_PBMAP_EXPORT
+#define MRPT_PBMAP_IMPORT
 #endif
 
 /*  Macros that map to export declaration when building the DLL, to import
-	declaration if using it or to nothing at all if we are not compiling as DLL */
+	declaration if using it or to nothing at all if we are not compiling as DLL
+   */
 #if defined(MRPT_BUILT_AS_DLL)
-#	if defined(mrpt_pbmap_EXPORTS)  /* Building the DLL */
-#		define PBMAP_IMPEXP MRPT_PBMAP_EXPORT
-#	else  /* Using the DLL */
-#		define PBMAP_IMPEXP MRPT_PBMAP_IMPORT
-#	endif
-#else /* not making nor using DLL */
-#    define PBMAP_IMPEXP
+#if defined(mrpt_pbmap_EXPORTS) /* Building the DLL */
+#define PBMAP_IMPEXP MRPT_PBMAP_EXPORT
+#else /* Using the DLL */
+#define PBMAP_IMPEXP MRPT_PBMAP_IMPORT
 #endif
-
+#else /* not making nor using DLL */
+#define PBMAP_IMPEXP
+#endif

@@ -13,6 +13,24 @@
 <p> <b>Note:</b> <i>If you are displaying a local version of this page and you have not built the whole HTML documentation, the links above will be broken. Either build the documentation invoking <code>make documentation_html</code> or [browse it on-line](http://www.mrpt.org/).</i></p>
 
 <hr>
+<a name="2.0.0">
+<h2>Version 2.0.0: (Under development)  </h2></a>
+- <b>Most important changes:</b>
+	- MRPT now requires **C++14** to build and use. See this page for a guide to port existing code to MRPT 2.0: \ref porting_mrpt2
+	- Support for old namespaces `mrpt-scanmatching`, `mrpt-reactivenav` is over.
+	- Backwards compatible headers for "maps" and "observations" in mrpt::slam are removed.
+	  They moved to their own namespaces in MRPT v1.3.0 (Jan 2015).
+	- All pointer typedefs are now in their respective classes.
+	- Using a variant type from the mapbox variant library, and added serialization with variants(To be replaced by std::variant eventually).
+- <b>Detailed list of changes:</b>
+	- Changes in libraries:
+		- \ref mrpt_base_grp
+			- Removed functions (replaced by C++11/14 standard library):
+				- mrpt::math::erf, mrpt::math::erfc, std::isfinite, mrpt::math::std::isnan
+		- \ref mrpt_nav_grp
+			- Removed deprecated mrpt::nav::THolonomicMethod.
+
+<hr>
 <a name="1.5.0">
 <h2>Version 1.5.0: Released 10-JUN-2017</h2></a>
 	- Changes in apps:
@@ -32,7 +50,7 @@
 			- New twist (linear + angular velocity state) classes: mrpt::math::TTwist2D, mrpt::math::TTwist3D
 			- New template method: mrpt::utils::CStream::ReadAsAndCastTo
 			- Added missing method mrpt::poses::CPose2D::inverseComposePoint() for consistency with CPose3D
-			- New class mrpt::synch::CCriticalSectionRecursive
+			- New class std::recursive_mutex
 			- New class mrpt::utils::COutputLogger replaces the classes mrpt::utils::CDebugOutputCapable (deprecated) and mrpt::utils::CLog (removed).
 			- New macros for much more versatily logging:
 				- MRPT_LOG_DEBUG(), MRPT_LOG_INFO(), MRPT_LOG_WARN(), MRPT_LOG_ERROR()

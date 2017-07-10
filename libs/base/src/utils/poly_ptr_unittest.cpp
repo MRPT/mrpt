@@ -1,11 +1,11 @@
-/* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          http://www.mrpt.org/                             |
-   |                                                                           |
-   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-   | Released under BSD License. See details in http://www.mrpt.org/License    |
-   +---------------------------------------------------------------------------+ */
+/* +------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)            |
+   |                          http://www.mrpt.org/                          |
+   |                                                                        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file     |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                |
+   | Released under BSD License. See details in http://www.mrpt.org/License |
+   +------------------------------------------------------------------------+ */
 
 #include <mrpt/utils/poly_ptr.h>
 #include <mrpt/utils/copy_ptr.h>
@@ -26,7 +26,7 @@ TEST(copy_ptr, SimpleOps)
 	EXPECT_TRUE(ptr1);
 
 	*ptr1 = 123;
-	EXPECT_TRUE(*ptr1==123);
+	EXPECT_TRUE(*ptr1 == 123);
 
 	{
 		mrpt::utils::copy_ptr<int> ptr2 = ptr1;
@@ -37,7 +37,7 @@ TEST(copy_ptr, SimpleOps)
 	}
 	{
 		mrpt::utils::copy_ptr<int> ptr2;
-		ptr2= ptr1;
+		ptr2 = ptr1;
 		EXPECT_TRUE(*ptr1 == *ptr2);
 
 		(*ptr2)++;
@@ -47,13 +47,14 @@ TEST(copy_ptr, SimpleOps)
 
 TEST(copy_ptr, StlContainer)
 {
-	typedef mrpt::utils::copy_ptr<std::pair<std::string,int> > str2d_ptr;
+	typedef mrpt::utils::copy_ptr<std::pair<std::string, int>> str2d_ptr;
 
 	str2d_ptr ptr;
 	EXPECT_FALSE(ptr);
 
 	std::vector<str2d_ptr> v;
-	for (int i = 0; i < 10; i++) {
+	for (int i = 0; i < 10; i++)
+	{
 		v.push_back(str2d_ptr(new str2d_ptr::value_type));
 		v[i]->first = "xxx";
 		v[i]->second = i;
@@ -76,7 +77,7 @@ TEST(poly_ptr, SimpleOps)
 	EXPECT_TRUE(ptr1);
 
 	ptr1->x(123.0);
-	EXPECT_NEAR( ptr1->x(), 123.0, 1e-9);
+	EXPECT_NEAR(ptr1->x(), 123.0, 1e-9);
 
 	{
 		mrpt::utils::poly_ptr<mrpt::poses::CPose2D> ptr2 = ptr1;
@@ -97,13 +98,14 @@ TEST(poly_ptr, SimpleOps)
 
 TEST(poly_ptr, StlContainer)
 {
-	typedef mrpt::utils::poly_ptr< mrpt::poses::CPose2D > str2d_ptr;
+	typedef mrpt::utils::poly_ptr<mrpt::poses::CPose2D> str2d_ptr;
 
 	str2d_ptr ptr;
 	EXPECT_FALSE(ptr);
 
 	std::vector<str2d_ptr> v;
-	for (int i = 0; i < 10; i++) {
+	for (int i = 0; i < 10; i++)
+	{
 		v.push_back(str2d_ptr(new str2d_ptr::value_type));
 		v[i]->x(i);
 	}

@@ -8,11 +8,11 @@ ReactiveNav3D-Demo
 
 =head1 DESCRIPTION
 
-A program to demonstrate the usage of the mrpt reactivenav library. It allows the 
-user to set an arbitrary target and then simulate the robot actions to try to reach 
+A program to demonstrate the usage of the mrpt-nav library. It allows the 
+user to set an arbitrary target and then simulate the robot actions to try to reach
 the target.
 
-The movements take into account the arbitrary 3D shape of the robot, and a set of 
+The movements take into account the arbitrary 3D shape of the robot, and a set of
 kinematically-constrained trajectories.
 
 =head1 BUGS
@@ -25,7 +25,7 @@ The application wiki page at http://www.mrpt.org/Applications
 
 =head1 AUTHORS
 
-B<ReactiveNav3D-Demo> is part of the Mobile Robot Programming Toolkit (MRPT), and was originally 
+B<ReactiveNav3D-Demo> is part of the Mobile Robot Programming Toolkit (MRPT), and was originally
 written by the MAPIR laboratory (University of Malaga).
 
 This manual page was written by Jose Luis Blanco <joseluisblancoc@gmail.com>.
@@ -35,8 +35,7 @@ This manual page was written by Jose Luis Blanco <joseluisblancoc@gmail.com>.
 This program is free software; you can redistribute it and/or modify it
 under the terms of the BSD License.
 
-On Debian GNU/Linux systems, the complete text of the BSD License can be 
+On Debian GNU/Linux systems, the complete text of the BSD License can be
 found in `/usr/share/common-licenses/BSD'.
 
 =cut
-

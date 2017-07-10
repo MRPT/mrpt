@@ -57,7 +57,7 @@ struct ThreadData
 };
 
 ThreadData                    td;
-mrpt::synch::CCriticalSection td_cs;
+std::mutex td_cs;
 
 
 void viewerUpdate(pcl::visualization::PCLVisualizer& viewer)
@@ -70,7 +70,7 @@ void viewerUpdate(pcl::visualization::PCLVisualizer& viewer)
     static mrpt::system::TTimeStamp last_time = INVALID_TIMESTAMP;
 
     {  // Mutex protected
-    	mrpt::synch::CCriticalSectionLocker lock(&td_cs);
+    	std::lock_guard<std::mutex> lock(td_cs);
     	if (td.new_timestamp!=last_time)
     	{
     		last_time = td.new_timestamp;
@@ -137,9 +137,9 @@ int main(int argc, char**argv)
 
 		while (!viewer.wasStopped ())
 		{
-			mrpt::obs::CActionCollectionPtr	actions;
-			mrpt::obs::CSensoryFramePtr		SF;
-			mrpt::obs::CObservationPtr			obs;
+			mrpt::obs::CActionCollection::Ptr	actions;
+			mrpt::obs::CSensoryFrame::Ptr		SF;
+			mrpt::obs::CObservation::Ptr			obs;
 
 			if (!rawlog_eof)
 			{
@@ -152,18 +152,18 @@ int main(int argc, char**argv)
 				{
 					// Can generate a point cloud from this data?
 					// TODO: Process Kinect observations differently to extract RGB data.
-					mrpt::maps::CPointsMapPtr  new_map;
+					mrpt::maps::CPointsMap::Ptr  new_map;
 					if (SF)
 					{
-						new_map = mrpt::maps::CSimplePointsMap::Create();
+						new_map = std::make_shared<mrpt::maps::CSimplePointsMap>();
 						// new_map->insertionOptions.minDistBetweenLaserPoints = 0;
 						SF->insertObservationsInto(new_map);
 					}
 					else if (obs)
 					{
-						new_map = mrpt::maps::CSimplePointsMap::Create();
+						new_map = std::make_shared<mrpt::maps::CSimplePointsMap>();
 						// new_map->insertionOptions.minDistBetweenLaserPoints = 0;
-						new_map->insertObservation(obs.pointer());
+						new_map->insertObservation(obs.get());
 					}
 
 					if (new_map)
@@ -174,18 +174,18 @@ int main(int argc, char**argv)
 						new_map->getPCLPointCloud(*cloud);
 
 						{  // Mutex protected
-							mrpt::synch::CCriticalSectionLocker lock(&td_cs);
+							std::lock_guard<std::mutex> lock(td_cs);
 							td.new_timestamp = mrpt::system::now();
 							td.new_cloud = cloud;
 						}
 
-						mrpt::system::sleep(30);  // Delay to allow the point cloud to show up.
+						std::this_thread::sleep_for(30ms);  // Delay to allow the point cloud to show up.
 					}
 
 				}
 			}
 
-			mrpt::system::sleep(1);
+			std::this_thread::sleep_for(1ms);
 		}
 		return 0;
 	}

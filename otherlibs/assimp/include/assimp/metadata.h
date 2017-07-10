@@ -127,10 +127,10 @@ struct aiMetadata
 	/** Length of the mKeys and mValues arrays, respectively */
 	unsigned int mNumProperties;
 
-	/** Arrays of keys, may not be NULL. Entries in this array may not be NULL as well. */
+	/** Arrays of keys, may not be NULL. Entries in this array may not be nullptr as well. */
 	C_STRUCT aiString* mKeys;
 
-	/** Arrays of values, may not be NULL. Entries in this array may be NULL if the
+	/** Arrays of values, may not be NULL. Entries in this array may be nullptr if the
 	  * corresponding property key has no assigned value. */
 	C_STRUCT aiMetadataEntry* mValues;
 
@@ -140,8 +140,8 @@ struct aiMetadata
 	aiMetadata()
 		// set all members to zero by default
 		: mNumProperties(0)
-		, mKeys(NULL)
-		, mValues(NULL)
+		, mKeys(nullptr)
+		, mValues(nullptr)
 	{}
 
 
@@ -149,7 +149,7 @@ struct aiMetadata
 	~aiMetadata()
 	{
         delete[] mKeys;
-        mKeys = NULL;
+        mKeys = nullptr;
 		if (mValues)
 		{
 			// Delete each metadata entry
@@ -184,7 +184,7 @@ struct aiMetadata
 
 			// Delete the metadata array
 			delete [] mValues;
-            mValues = NULL;
+            mValues = nullptr;
 		}
 	}
 

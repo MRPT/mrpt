@@ -1,12 +1,11 @@
-/*
- *  RPLIDAR SDK
- *
- *  Copyright (c) 2009 - 2014 RoboPeak Team
- *  http://www.robopeak.com
- *  Copyright (c) 2014 - 2016 Shanghai Slamtec Co., Ltd.
- *  http://www.slamtec.com
- *
- */
+/* +------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)            |
+   |                          http://www.mrpt.org/                          |
+   |                                                                        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file     |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                |
+   | Released under BSD License. See details in http://www.mrpt.org/License |
+   +------------------------------------------------------------------------+ */
 /*
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -36,49 +35,61 @@
 
 #include "hal/abs_rxtx.h"
 
-namespace rp{ namespace arch{ namespace net{
-
+namespace rp
+{
+namespace arch
+{
+namespace net
+{
 class raw_serial : public rp::hal::serial_rxtx
 {
-public:
-    enum{
-        SERIAL_RX_BUFFER_SIZE = 512,
-        SERIAL_TX_BUFFER_SIZE = 128,
-    };
+   public:
+	enum
+	{
+		SERIAL_RX_BUFFER_SIZE = 512,
+		SERIAL_TX_BUFFER_SIZE = 128,
+	};
 
-    raw_serial();
-    virtual ~raw_serial();
-    virtual bool bind(const char * portname, uint32_t baudrate, uint32_t flags = 0);
-    virtual bool open();
-    virtual void close();
-    virtual void flush( _u32 flags);
-    
-    virtual int waitfordata(_word_size_t data_count,_u32 timeout = -1, _word_size_t * returned_size = NULL);
+	raw_serial();
+	virtual ~raw_serial();
+	virtual bool bind(
+		const char* portname, uint32_t baudrate, uint32_t flags = 0);
+	virtual bool open();
+	virtual void close();
+	virtual void flush(_u32 flags);
 
-    virtual int senddata(const unsigned char * data, _word_size_t size);
-    virtual int recvdata(unsigned char * data, _word_size_t size);
+	virtual int waitfordata(
+		_word_size_t data_count, _u32 timeout = -1,
+		_word_size_t* returned_size = nullptr);
 
-    virtual int waitforsent(_u32 timeout = -1, _word_size_t * returned_size = NULL);
-    virtual int waitforrecv(_u32 timeout = -1, _word_size_t * returned_size = NULL);
+	virtual int senddata(const unsigned char* data, _word_size_t size);
+	virtual int recvdata(unsigned char* data, _word_size_t size);
 
-    virtual size_t rxqueue_count();
+	virtual int waitforsent(
+		_u32 timeout = -1, _word_size_t* returned_size = nullptr);
+	virtual int waitforrecv(
+		_u32 timeout = -1, _word_size_t* returned_size = nullptr);
 
-    virtual void setDTR();
-    virtual void clearDTR();
+	virtual size_t rxqueue_count();
 
-    _u32 getTermBaudBitmap(_u32 baud);
-protected:
-    bool open(const char * portname, uint32_t baudrate, uint32_t flags = 0);
-    void _init();
+	virtual void setDTR();
+	virtual void clearDTR();
 
-    char _portName[200];
-    uint32_t _baudrate;
-    uint32_t _flags;
+	_u32 getTermBaudBitmap(_u32 baud);
 
-    int serial_fd;
+   protected:
+	bool open(const char* portname, uint32_t baudrate, uint32_t flags = 0);
+	void _init();
 
-    size_t required_tx_cnt;
-    size_t required_rx_cnt;
+	char _portName[200];
+	uint32_t _baudrate;
+	uint32_t _flags;
+
+	int serial_fd;
+
+	size_t required_tx_cnt;
+	size_t required_rx_cnt;
 };
-
-}}}
+}
+}
+}

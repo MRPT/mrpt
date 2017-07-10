@@ -1,17 +1,16 @@
-/* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          http://www.mrpt.org/                             |
-   |                                                                           |
-   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-   | Released under BSD License. See details in http://www.mrpt.org/License    |
-   +---------------------------------------------------------------------------+ */
+/* +------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)            |
+   |                          http://www.mrpt.org/                          |
+   |                                                                        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file     |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                |
+   | Released under BSD License. See details in http://www.mrpt.org/License |
+   +------------------------------------------------------------------------+ */
 
 #include "base-precomp.h"  // Precompiled headers
 
-
 #ifdef _MSC_VER
-#	define _SCL_SECURE_NO_WARNINGS
+#define _SCL_SECURE_NO_WARNINGS
 #endif
 
 #include <mrpt/utils/CFileInputStream.h>
@@ -24,14 +23,15 @@ using namespace std;
 /*---------------------------------------------------------------
 							Constructor
  ---------------------------------------------------------------*/
-CFileInputStream::CFileInputStream( const string		&fileName ) : m_if()
+CFileInputStream::CFileInputStream(const string& fileName) : m_if()
 {
 	MRPT_START
 
 	// Try to open the file:
 	// Open for input:
 	if (!open(fileName))
-		THROW_EXCEPTION_FMT( "Error trying to open file: '%s'",fileName.c_str() );
+		THROW_EXCEPTION_FMT(
+			"Error trying to open file: '%s'", fileName.c_str());
 
 	MRPT_END
 }
@@ -39,18 +39,15 @@ CFileInputStream::CFileInputStream( const string		&fileName ) : m_if()
 /*---------------------------------------------------------------
 							Constructor
  ---------------------------------------------------------------*/
-CFileInputStream::CFileInputStream() : m_if()
-{
-}
-
+CFileInputStream::CFileInputStream() : m_if() {}
 /*---------------------------------------------------------------
 							open
  ---------------------------------------------------------------*/
-bool CFileInputStream::open( const string &fileName )
+bool CFileInputStream::open(const string& fileName)
 {
 	// Try to open the file:
 	// Open for input:
-	m_if.open(fileName.c_str(), ios_base::binary | ios_base::in );
+	m_if.open(fileName.c_str(), ios_base::binary | ios_base::in);
 	return m_if.is_open();
 }
 
@@ -65,30 +62,27 @@ void CFileInputStream::close()
 /*---------------------------------------------------------------
 							Destructor
  ---------------------------------------------------------------*/
-CFileInputStream::~CFileInputStream()
-{
-	close();
-}
-
+CFileInputStream::~CFileInputStream() { close(); }
 /*---------------------------------------------------------------
 							Read
 			Reads bytes from the stream into Buffer
  ---------------------------------------------------------------*/
-size_t  CFileInputStream::Read(void *Buffer, size_t Count)
+size_t CFileInputStream::Read(void* Buffer, size_t Count)
 {
 	if (!m_if.is_open()) return 0;
 
-	m_if.read(static_cast<char*>(Buffer),Count);
-	return m_if.fail() ? 0:Count;
+	m_if.read(static_cast<char*>(Buffer), Count);
+	return m_if.fail() ? 0 : Count;
 }
 
 /*---------------------------------------------------------------
 							Write
 			Writes a block of bytes to the stream.
  ---------------------------------------------------------------*/
-size_t  CFileInputStream::Write(const void *Buffer, size_t Count)
+size_t CFileInputStream::Write(const void* Buffer, size_t Count)
 {
-	MRPT_UNUSED_PARAM(Buffer); MRPT_UNUSED_PARAM(Count);
+	MRPT_UNUSED_PARAM(Buffer);
+	MRPT_UNUSED_PARAM(Count);
 	THROW_EXCEPTION("Trying to write to a read file stream.");
 }
 
@@ -101,15 +95,22 @@ uint64_t CFileInputStream::Seek(uint64_t Offset, CStream::TSeekOrigin Origin)
 {
 	if (!m_if.is_open()) return 0;
 
-	ifstream::off_type  offset = Offset;
-	ifstream::seekdir  way;
+	ifstream::off_type offset = Offset;
+	ifstream::seekdir way;
 
-	switch(Origin)
+	switch (Origin)
 	{
-	case sFromBeginning: way = ios_base::beg; break;
-	case sFromCurrent: way = ios_base::cur; break;
-	case sFromEnd: way = ios_base::end; break;
-	default: THROW_EXCEPTION("Invalid value for 'Origin'");
+		case sFromBeginning:
+			way = ios_base::beg;
+			break;
+		case sFromCurrent:
+			way = ios_base::cur;
+			break;
+		case sFromEnd:
+			way = ios_base::end;
+			break;
+		default:
+			THROW_EXCEPTION("Invalid value for 'Origin'");
 	}
 
 	m_if.seekg(offset, way);
@@ -125,8 +126,8 @@ uint64_t CFileInputStream::getTotalBytesCount()
 	if (!fileOpenCorrectly()) return 0;
 
 	uint64_t previousPos = getPosition();
-	uint64_t fileSize = Seek(0,sFromEnd);
-	Seek( previousPos );
+	uint64_t fileSize = Seek(0, sFromEnd);
+	Seek(previousPos);
 	return fileSize;
 }
 
@@ -136,27 +137,24 @@ uint64_t CFileInputStream::getTotalBytesCount()
 uint64_t CFileInputStream::getPosition()
 {
 	if (m_if.is_open())
-			return m_if.tellg();
-	else	return 0;
+		return m_if.tellg();
+	else
+		return 0;
 }
 
 /*---------------------------------------------------------------
 						fileOpenCorrectly
  ---------------------------------------------------------------*/
-bool  CFileInputStream::fileOpenCorrectly()
-{
-	return m_if.is_open();
-}
-
+bool CFileInputStream::fileOpenCorrectly() { return m_if.is_open(); }
 /*---------------------------------------------------------------
 						readLine
  ---------------------------------------------------------------*/
-bool CFileInputStream::readLine( string &str )
+bool CFileInputStream::readLine(string& str)
 {
-	str = string(); // clear() is not defined in VC6
+	str = string();  // clear() is not defined in VC6
 	if (!m_if.is_open()) return false;
 
-	std::getline( m_if, str );
+	std::getline(m_if, str);
 	return !m_if.fail() && !m_if.eof();
 }
 
@@ -165,7 +163,6 @@ bool CFileInputStream::readLine( string &str )
  ---------------------------------------------------------------*/
 bool CFileInputStream::checkEOF()
 {
-	if (!m_if.is_open())
-		return true;
+	if (!m_if.is_open()) return true;
 	return m_if.eof();
 }

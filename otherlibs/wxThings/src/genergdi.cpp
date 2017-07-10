@@ -262,12 +262,12 @@ public:
                         int cap = wxCAP_ROUND, int join = wxJOIN_ROUND)
           : wxObjectRefData(), m_width(width), m_style(style),
                                m_cap(cap), m_join(join),
-                               m_dash_count(0), m_dash(NULL) {}
+                               m_dash_count(0), m_dash(nullptr) {}
 
     wxGenericPenRefData(const wxGenericPenRefData& data) : wxObjectRefData(),
         m_colour(data.m_colour), m_width(data.m_width), m_style(data.m_style),
         m_cap(data.m_cap), m_join(data.m_join),
-        m_dash_count(data.m_dash_count), m_dash(NULL)
+        m_dash_count(data.m_dash_count), m_dash(nullptr)
     {
         if (data.m_dash)
         {
@@ -397,7 +397,7 @@ void wxGenericPen::SetDashes( int number_of_dashes, const wxDash *dash )
     if (M_GPENDATA->m_dash)
     {
         free(M_GPENDATA->m_dash);
-        M_GPENDATA->m_dash = NULL;
+        M_GPENDATA->m_dash = nullptr;
         M_GPENDATA->m_dash_count = 0;
     }
 
@@ -464,7 +464,7 @@ int wxGenericPen::GetDashCount() const
 }
 wxDash* wxGenericPen::GetDash() const
 {
-    wxCHECK_MSG(Ok(), NULL, wxT("Invalid generic pen"));
+    wxCHECK_MSG(Ok(), nullptr, wxT("Invalid generic pen"));
     return M_GPENDATA->m_dash;
 }
 
@@ -688,7 +688,7 @@ int wxGenericBrush::GetStyle() const
 }
 wxBitmap* wxGenericBrush::GetStipple() const
 {
-    wxCHECK_MSG(Ok(), NULL, wxT("Invalid generic brush"));
+    wxCHECK_MSG(Ok(), nullptr, wxT("Invalid generic brush"));
     return &M_GBRUSHDATA->m_stipple;
 }
 

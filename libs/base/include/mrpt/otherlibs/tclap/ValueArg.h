@@ -1,11 +1,11 @@
-/* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          http://www.mrpt.org/                             |
-   |                                                                           |
-   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-   | Released under BSD License. See details in http://www.mrpt.org/License    |
-   +---------------------------------------------------------------------------+ */
+/* +------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)            |
+   |                          http://www.mrpt.org/                          |
+   |                                                                        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file     |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                |
+   | Released under BSD License. See details in http://www.mrpt.org/License |
+   +------------------------------------------------------------------------+ */
 
 
 #ifndef TCLAP_VALUE_ARGUMENT_H
@@ -220,7 +220,7 @@ class ValueArg : public Arg
                   bool req, 
                   T value,
                   const std::string& typeDesc,
-                  Visitor* v = NULL);
+                  Visitor* v = nullptr);
 				 
 				 
         /**
@@ -254,7 +254,7 @@ class ValueArg : public Arg
                   T value,
                   const std::string& typeDesc,
                   CmdLineInterface& parser,
-                  Visitor* v = NULL );
+                  Visitor* v = nullptr );
  
         /**
          * Labeled ValueArg constructor.
@@ -285,7 +285,7 @@ class ValueArg : public Arg
                   T value,
                   Constraint<T>* constraint,
                   CmdLineInterface& parser,
-                  Visitor* v = NULL );
+                  Visitor* v = nullptr );
 	  
         /**
          * Labeled ValueArg constructor.
@@ -314,7 +314,7 @@ class ValueArg : public Arg
                   bool req, 
                   T value,
                   Constraint<T>* constraint,
-                  Visitor* v = NULL );
+                  Visitor* v = nullptr );
 
         /**
          * Handles the processing of the argument.
@@ -361,7 +361,7 @@ ValueArg<T>::ValueArg(const std::string& flag,
 : Arg(flag, name, desc, req, true, v),
   _value( val ),
   _typeDesc( typeDesc ),
-  _constraint( NULL )
+  _constraint( nullptr )
 { }
 
 template<class T>
@@ -376,7 +376,7 @@ ValueArg<T>::ValueArg(const std::string& flag,
 : Arg(flag, name, desc, req, true, v),
   _value( val ),
   _typeDesc( typeDesc ),
-  _constraint( NULL )
+  _constraint( nullptr )
 { 
     parser.add( this );
 }
@@ -500,7 +500,7 @@ void ValueArg<T>::_extractValue( const std::string& val )
 					"More than one valid value parsed from string '" +
 				    val + "'", toString() ) );
 
-	if ( _constraint != NULL )
+	if ( _constraint != nullptr )
 		if ( ! _constraint->check( _value ) )
 			throw( CmdLineParseException( "Value '" + val + 
 									      "' does not meet constraint: " + 

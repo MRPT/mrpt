@@ -25,7 +25,7 @@ using namespace std;
 // ------------------------------------------------------
 void TestCameraCaptureAsk()
 {
-	CCameraSensorPtr cam = prepareVideoSourceFromUserSelection();
+	CCameraSensor::Ptr cam = prepareVideoSourceFromUserSelection();
 
 	if (!cam)
 	{
@@ -45,17 +45,17 @@ void TestCameraCaptureAsk()
 		if( !counter )
 			tictac.Tic();
 
-		mrpt::obs::CObservationPtr  obs = cam->getNextFrame();
+		mrpt::obs::CObservation::Ptr  obs = cam->getNextFrame();
 		ASSERT_(obs);
 
 		if (IS_CLASS(obs,CObservationImage))
 		{
-			CObservationImagePtr o=CObservationImagePtr(obs);
+			CObservationImage::Ptr o=CObservationImage::Ptr(obs);
 			win.showImage(o->image);
 		}
 		else if (IS_CLASS(obs,CObservationStereoImages))
 		{
-			CObservationStereoImagesPtr o=CObservationStereoImagesPtr(obs);
+			CObservationStereoImages::Ptr o=CObservationStereoImages::Ptr(obs);
 			win.showImage(o->imageRight);
 		}
 		if( ++counter == 10 )
@@ -64,7 +64,7 @@ void TestCameraCaptureAsk()
 			cout << "Frame Rate: " << counter/t << " fps" << endl;
 			counter = 0;
 		}
-		mrpt::system::sleep(2);
+		std::this_thread::sleep_for(2ms);
 	}
 
 	cout << "Closing..." << endl;

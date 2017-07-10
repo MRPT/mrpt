@@ -1,11 +1,11 @@
-/* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          http://www.mrpt.org/                             |
-   |                                                                           |
-   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-   | Released under BSD License. See details in http://www.mrpt.org/License    |
-   +---------------------------------------------------------------------------+ */
+/* +------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)            |
+   |                          http://www.mrpt.org/                          |
+   |                                                                        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file     |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                |
+   | Released under BSD License. See details in http://www.mrpt.org/License |
+   +------------------------------------------------------------------------+ */
 #ifndef XSEULER_H
 #define XSEULER_H
 
@@ -14,7 +14,14 @@
 #ifdef __cplusplus
 extern "C" {
 #else
-#define XSEULER_INITIALIZER { { { XsMath_zero,XsMath_zero,XsMath_zero } } }
+#define XSEULER_INITIALIZER                           \
+	{                                                 \
+		{                                             \
+			{                                         \
+				XsMath_zero, XsMath_zero, XsMath_zero \
+			}                                         \
+		}                                             \
+	}
 #endif
 
 struct XsEuler;
@@ -23,20 +30,27 @@ struct XsMatrix;
 
 XSTYPES_DLL_API void XsEuler_destruct(struct XsEuler* thisPtr);
 XSTYPES_DLL_API int XsEuler_empty(const struct XsEuler* thisPtr);
-XSTYPES_DLL_API void XsEuler_fromQuaternion(struct XsEuler* thisPtr, const struct XsQuaternion* quat);
+XSTYPES_DLL_API void XsEuler_fromQuaternion(
+	struct XsEuler* thisPtr, const struct XsQuaternion* quat);
 
 #ifdef __cplusplus
-} // extern "C"
+}  // extern "C"
 #endif
 
-struct XsEuler {
+struct XsEuler
+{
 #ifdef __cplusplus
 	//! \brief Constructor that creates an Euler object with all angles 0
 	inline XsEuler() : m_x(XsMath_zero), m_y(XsMath_zero), m_z(XsMath_zero) {}
 	//! \brief Constructor that creates an Euler object the specified angles
-	inline XsEuler(XsReal x_, XsReal y_, XsReal z_) : m_x(x_), m_y(y_), m_z(z_) {}
+	inline XsEuler(XsReal x_, XsReal y_, XsReal z_) : m_x(x_), m_y(y_), m_z(z_)
+	{
+	}
 	//! \brief Constructor that creates an Euler object from \a other
-	inline XsEuler(const XsEuler& other) : m_x(other.m_x), m_y(other.m_y), m_z(other.m_z) {}
+	inline XsEuler(const XsEuler& other)
+		: m_x(other.m_x), m_y(other.m_y), m_z(other.m_z)
+	{
+	}
 
 	//! \brief \copybrief XsEuler_fromQuaternion
 	inline explicit XsEuler(const XsQuaternion& q)
@@ -56,14 +70,14 @@ struct XsEuler {
 	//! \brief Returns the \a index'th euler angle in the object
 	inline XsReal operator[](XsSize index) const
 	{
-		assert (index <= 2);
+		assert(index <= 2);
 		return m_data[index];
 	}
 
 	//! \brief Returns a reference to the \a index'th euler angle in the object
-	inline XsReal &operator[](XsSize index)
+	inline XsReal& operator[](XsSize index)
 	{
-		assert (index <= 2);
+		assert(index <= 2);
 		return m_data[index];
 	}
 
@@ -74,11 +88,7 @@ struct XsEuler {
 	}
 
 	//! \brief Return a const pointer to the internal data
-	inline const XsReal* data() const
-	{
-		return m_data;
-	}
-	
+	inline const XsReal* data() const { return m_data; }
 	//! \brief \copybrief XsEuler_fromQuaternion
 	inline XsEuler& fromQuaternion(const XsQuaternion& quat)
 	{
@@ -88,16 +98,18 @@ struct XsEuler {
 
 	/*! \brief Returns true if the values in \a other are exactly equal to this
 	*/
-	inline bool operator == (const XsEuler& other) const
+	inline bool operator==(const XsEuler& other) const
 	{
-		return m_roll == other.m_roll && m_pitch == other.m_pitch && m_yaw == other.m_yaw;
+		return m_roll == other.m_roll && m_pitch == other.m_pitch &&
+			   m_yaw == other.m_yaw;
 	}
 
 	/*! \brief Returns true if the values in \a other are different from this
 	*/
-	inline bool operator != (const XsEuler& other) const
+	inline bool operator!=(const XsEuler& other) const
 	{
-		return m_roll != other.m_roll || m_pitch != other.m_pitch || m_yaw != other.m_yaw;
+		return m_roll != other.m_roll || m_pitch != other.m_pitch ||
+			   m_yaw != other.m_yaw;
 	}
 
 	//! \brief Returns the roll or x value
@@ -106,32 +118,39 @@ struct XsEuler {
 	inline XsReal pitch() const { return m_pitch; }
 	//! \brief Returns the yaw or z value
 	inline XsReal yaw() const { return m_yaw; }
-
 	//! \brief Returns the x or roll value
 	inline XsReal x() const { return m_x; }
 	//! \brief Returns the y or pitch value
 	inline XsReal y() const { return m_y; }
 	//! \brief Returns the z or yaw value
 	inline XsReal z() const { return m_z; }
-
-private:
+   private:
 #endif
 
 	union {
-		struct {
-			XsReal m_x;		//!< Stores the x component of the euler triplet
-			XsReal m_y;		//!< Stores the y component of the euler triplet
-			XsReal m_z;		//!< Stores the z component of the euler triplet
+		struct
+		{
+			/** Stores the x component of the euler triplet */
+			XsReal m_x;
+			/** Stores the y component of the euler triplet */
+			XsReal m_y;
+			/** Stores the z component of the euler triplet */
+			XsReal m_z;
 		};
-		struct {
-			XsReal m_roll;		//!< Stores the roll component of the euler triplet
-			XsReal m_pitch;		//!< Stores the pitch component of the euler triplet
-			XsReal m_yaw;		//!< Stores the yaw component of the euler triplet
+		struct
+		{
+			/** Stores the roll component of the euler triplet */
+			XsReal m_roll;
+			/** Stores the pitch component of the euler triplet */
+			XsReal m_pitch;
+			/** Stores the yaw component of the euler triplet */
+			XsReal m_yaw;
 		};
-		XsReal m_data[3];	//!< Stores the euler triplet in an array of three elements
+		/** Stores the euler triplet in an array of three elements */
+		XsReal m_data[3];
 	};
 };
 
 typedef struct XsEuler XsEuler;
 
-#endif // file guard
+#endif  // file guard

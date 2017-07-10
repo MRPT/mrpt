@@ -1,13 +1,11 @@
-/* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          http://www.mrpt.org/                             |
-   |                                                                           |
-   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-   | Released under BSD License. See details in http://www.mrpt.org/License    |
-   +---------------------------------------------------------------------------+ */
-
-
+/* +------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)            |
+   |                          http://www.mrpt.org/                          |
+   |                                                                        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file     |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                |
+   | Released under BSD License. See details in http://www.mrpt.org/License |
+   +------------------------------------------------------------------------+ */
 
 #include "hmt_slam_guiMain.h"  // Needed to avoid UNICODE WX build errors sometimes
 #include "MyArtProvider.h"
@@ -26,7 +24,8 @@
 #include "imgs/icon_exit.xpm"
 
 // CreateBitmap function
-wxBitmap CMyArtProvider::CreateBitmap(const wxArtID& id, const wxArtClient& client, const wxSize& size)
+wxBitmap CMyArtProvider::CreateBitmap(
+	const wxArtID& id, const wxArtClient& client, const wxSize& size)
 {
 	// Icons:
 	if (id == wxART_MAKE_ART_ID(IMG_MRPT_LOGO)) return wxBitmap(mrpt_logo_xpm);
@@ -46,9 +45,7 @@ wxBitmap CMyArtProvider::CreateBitmap(const wxArtID& id, const wxArtClient& clie
 
 	if (id == wxART_MAKE_ART_ID(ICON_QUIT)) return wxBitmap(icon_exit_xpm);
 
-
-
-    // Any wxWidgets icons not implemented here
-    // will be provided by the default art provider.
-    return wxNullBitmap;
+	// Any wxWidgets icons not implemented here
+	// will be provided by the default art provider.
+	return wxNullBitmap;
 }

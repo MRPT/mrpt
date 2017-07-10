@@ -1,11 +1,11 @@
-/* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          http://www.mrpt.org/                             |
-   |                                                                           |
-   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-   | Released under BSD License. See details in http://www.mrpt.org/License    |
-   +---------------------------------------------------------------------------+ */
+/* +------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)            |
+   |                          http://www.mrpt.org/                          |
+   |                                                                        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file     |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                |
+   | Released under BSD License. See details in http://www.mrpt.org/License |
+   +------------------------------------------------------------------------+ */
 #ifndef CABOUTBOX_H
 #define CABOUTBOX_H
 
@@ -24,55 +24,52 @@
 #undef Button1
 #endif
 // To avoid conflicts between Eigen & X11 headers
-#ifdef Success 
-#	undef Success 
+#ifdef Success
+#undef Success
 #endif
 
-class CAboutBox: public wxDialog
+class CAboutBox : public wxDialog
 {
-public:
+   public:
+	CAboutBox(wxWindow* parent, wxWindowID id = -1);
+	virtual ~CAboutBox();
 
-    CAboutBox(wxWindow* parent,wxWindowID id = -1);
-    virtual ~CAboutBox();
+	//(*Identifiers(CAboutBox)
+	static const long ID_STATICTEXT1;
+	static const long ID_STATICTEXT2;
+	static const long ID_STATICBITMAP1;
+	static const long ID_STATICLINE1;
+	static const long ID_TEXTCTRL4;
+	static const long ID_TEXTCTRL1;
+	static const long ID_TEXTCTRL2;
+	static const long ID_TEXTCTRL3;
+	static const long ID_NOTEBOOK1;
+	static const long ID_BUTTON1;
+	//*)
 
-    //(*Identifiers(CAboutBox)
-    static const long ID_STATICTEXT1;
-    static const long ID_STATICTEXT2;
-    static const long ID_STATICBITMAP1;
-    static const long ID_STATICLINE1;
-    static const long ID_TEXTCTRL4;
-    static const long ID_TEXTCTRL1;
-    static const long ID_TEXTCTRL2;
-    static const long ID_TEXTCTRL3;
-    static const long ID_NOTEBOOK1;
-    static const long ID_BUTTON1;
-    //*)
+   protected:
+	//(*Handlers(CAboutBox)
+	void OnInit(wxInitDialogEvent& event);
+	void OnButton1Click(wxCommandEvent& event);
+	//*)
 
-protected:
+	//(*Declarations(CAboutBox)
+	wxFlexGridSizer* FlexGridSizer4;
+	wxNotebook* Notebook1;
+	wxStaticText* lbProgName;
+	wxButton* Button1;
+	wxStaticBitmap* StaticBitmap1;
+	wxTextCtrl* lbLicense;
+	wxTextCtrl* lbInfo;
+	wxStaticText* lbBuild;
+	wxStaticLine* StaticLine1;
+	wxTextCtrl* TextCtrl2;
+	wxTextCtrl* TextCtrl1;
+	wxFlexGridSizer* FlexGridSizer1;
+	//*)
 
-    //(*Handlers(CAboutBox)
-    void OnInit(wxInitDialogEvent& event);
-    void OnButton1Click(wxCommandEvent& event);
-    //*)
-
-    //(*Declarations(CAboutBox)
-    wxFlexGridSizer* FlexGridSizer4;
-    wxNotebook* Notebook1;
-    wxStaticText* lbProgName;
-    wxButton* Button1;
-    wxStaticBitmap* StaticBitmap1;
-    wxTextCtrl* lbLicense;
-    wxTextCtrl* lbInfo;
-    wxStaticText* lbBuild;
-    wxStaticLine* StaticLine1;
-    wxTextCtrl* TextCtrl2;
-    wxTextCtrl* TextCtrl1;
-    wxFlexGridSizer* FlexGridSizer1;
-    //*)
-
-private:
-
-    DECLARE_EVENT_TABLE()
+   private:
+	DECLARE_EVENT_TABLE()
 };
 
 #endif

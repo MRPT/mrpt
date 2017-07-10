@@ -95,7 +95,7 @@ void SceneCombiner::AddNodeHashes(aiNode* node, std::set<unsigned int>& hashes)
 // Add a name prefix to all nodes in a hierarchy
 void SceneCombiner::AddNodePrefixes(aiNode* node, const char* prefix, unsigned int len)
 {
-	ai_assert(NULL != prefix);
+	ai_assert(nullptr != prefix);
 	PrefixString(node->mName,prefix,len);
 
 	// Process all children recursively
@@ -124,7 +124,7 @@ bool SceneCombiner::FindNameMatch(const aiString& name, std::vector<SceneHelper>
 void SceneCombiner::AddNodePrefixesChecked(aiNode* node, const char* prefix, unsigned int len,
 	std::vector<SceneHelper>& input, unsigned int cur)
 {
-	ai_assert(NULL != prefix);
+	ai_assert(nullptr != prefix);
 	const unsigned int hash = SuperFastHash(node->mName.data,node->mName.length);
 
 	// Check whether we find a positive match in one of the given sets
@@ -157,9 +157,9 @@ void SceneCombiner::OffsetNodeMeshIndices (aiNode* node, unsigned int offset)
 void SceneCombiner::MergeScenes(aiScene** _dest,std::vector<aiScene*>& src,
 	unsigned int flags)
 {
-	ai_assert(NULL != _dest);
+	ai_assert(nullptr != _dest);
 
-	// if _dest points to NULL allocate a new scene. Otherwise clear the old and reuse it
+	// if _dest points to nullptr allocate a new scene. Otherwise clear the old and reuse it
 	if (src.empty())
 	{
 		if (*_dest)
@@ -231,7 +231,7 @@ void SceneCombiner::AttachToGraph (aiNode* attach, std::vector<NodeAttachmentInf
 void SceneCombiner::AttachToGraph ( aiScene* master, 
 	std::vector<NodeAttachmentInfo>& src)
 {
-	ai_assert(NULL != master);
+	ai_assert(nullptr != master);
 	AttachToGraph(master->mRootNode,src);
 }
 
@@ -240,9 +240,9 @@ void SceneCombiner::MergeScenes(aiScene** _dest, aiScene* master,
 	std::vector<AttachmentInfo>& srcList,
 	unsigned int flags)
 {
-	ai_assert(NULL != _dest);
+	ai_assert(nullptr != _dest);
 
-	// if _dest points to NULL allocate a new scene. Otherwise clear the old and reuse it
+	// if _dest points to nullptr allocate a new scene. Otherwise clear the old and reuse it
 	if (srcList.empty())	{
 		if (*_dest)	{
 			SceneCombiner::CopySceneFlat(_dest,master);
@@ -470,13 +470,13 @@ void SceneCombiner::MergeScenes(aiScene** _dest, aiScene* master,
 
 	// Allocate space for light sources, cameras and animations
 	aiLight** ppLights = dest->mLights = (dest->mNumLights 
-		? new aiLight*[dest->mNumLights] : NULL);
+		? new aiLight*[dest->mNumLights] : nullptr);
 
 	aiCamera** ppCameras = dest->mCameras = (dest->mNumCameras 
-		? new aiCamera*[dest->mNumCameras] : NULL);
+		? new aiCamera*[dest->mNumCameras] : nullptr);
 
 	aiAnimation** ppAnims = dest->mAnimations = (dest->mNumAnimations 
-		? new aiAnimation*[dest->mNumAnimations] : NULL);
+		? new aiAnimation*[dest->mNumAnimations] : nullptr);
 
 	for ( int n = src.size()-1; n >= 0 ;--n ) /* !!! important !!! */
 	{
@@ -636,13 +636,13 @@ void SceneCombiner::MergeScenes(aiScene** _dest, aiScene* master,
 
 		// We need to delete the arrays before the destructor is called -
 		// we are reusing the array members
-		delete[] deleteMe->mMeshes;     deleteMe->mMeshes     = NULL;
-		delete[] deleteMe->mCameras;    deleteMe->mCameras    = NULL;
-		delete[] deleteMe->mLights;     deleteMe->mLights     = NULL;
-		delete[] deleteMe->mMaterials;  deleteMe->mMaterials  = NULL;
-		delete[] deleteMe->mAnimations; deleteMe->mAnimations = NULL;
+		delete[] deleteMe->mMeshes;     deleteMe->mMeshes     = nullptr;
+		delete[] deleteMe->mCameras;    deleteMe->mCameras    = nullptr;
+		delete[] deleteMe->mLights;     deleteMe->mLights     = nullptr;
+		delete[] deleteMe->mMaterials;  deleteMe->mMaterials  = nullptr;
+		delete[] deleteMe->mAnimations; deleteMe->mAnimations = nullptr;
 
-		deleteMe->mRootNode = NULL;
+		deleteMe->mRootNode = nullptr;
 
 		// Now we can safely delete the scene
 		delete deleteMe;
@@ -697,7 +697,7 @@ void SceneCombiner::BuildUniqueBoneList(std::list<BoneWithHash>& asBones,
 void SceneCombiner::MergeBones(aiMesh* out,std::vector<aiMesh*>::const_iterator it,
 	std::vector<aiMesh*>::const_iterator end)
 {
-	ai_assert(NULL != out && !out->mNumBones);
+	ai_assert(nullptr != out && !out->mNumBones);
 
 	// find we need to build an unique list of all bones.
 	// we work with hashes to make the comparisons MUCH faster,
@@ -751,10 +751,10 @@ void SceneCombiner::MergeMeshes(aiMesh** _out,unsigned int /*flags*/,
 	std::vector<aiMesh*>::const_iterator begin,
 	std::vector<aiMesh*>::const_iterator end)
 {
-	ai_assert(NULL != _out);
+	ai_assert(nullptr != _out);
 
 	if (begin == end)	{
-		*_out = NULL; // no meshes ...
+		*_out = nullptr; // no meshes ...
 		return;
 	}
 
@@ -865,7 +865,7 @@ void SceneCombiner::MergeMeshes(aiMesh** _out,unsigned int /*flags*/,
 					for (unsigned int q = 0; q < face.mNumIndices; ++q)
 						face.mIndices[q] += ofs;	
 				}
-				face.mIndices = NULL;
+				face.mIndices = nullptr;
 			}
 			ofs += (*it)->mNumVertices;
 		}
@@ -885,10 +885,10 @@ void SceneCombiner::MergeMaterials(aiMaterial** dest,
 		std::vector<aiMaterial*>::const_iterator begin,
 		std::vector<aiMaterial*>::const_iterator end)
 {
-	ai_assert(NULL != dest);
+	ai_assert(nullptr != dest);
 
 	if (begin == end)	{
-		*dest = NULL; // no materials ...
+		*dest = nullptr; // no materials ...
 		return;
 	}
 
@@ -939,7 +939,7 @@ inline void CopyPtrArray (Type**& dest, const Type* const * src, unsigned int nu
 {
 	if (!num)
 	{
-		dest = NULL;
+		dest = nullptr;
 		return;
 	}
 	dest = new Type*[num];
@@ -975,7 +975,7 @@ void SceneCombiner::CopySceneFlat(aiScene** _dest,const aiScene* src)
 // ------------------------------------------------------------------------------------------------
 void SceneCombiner::CopyScene(aiScene** _dest,const aiScene* src,bool allocate)
 {
-	ai_assert(NULL != _dest && NULL != src);
+	ai_assert(nullptr != _dest && nullptr != src);
 
 	if (allocate) {
 		*_dest = new aiScene();
@@ -1019,14 +1019,14 @@ void SceneCombiner::CopyScene(aiScene** _dest,const aiScene* src,bool allocate)
 	// and keep the flags ...
 	dest->mFlags = src->mFlags;
 
-	// source private data might be NULL if the scene is user-allocated (i.e. for use with the export API)
+	// source private data might be nullptr if the scene is user-allocated (i.e. for use with the export API)
 	ScenePriv(dest)->mPPStepsApplied = ScenePriv(src) ? ScenePriv(src)->mPPStepsApplied : 0;
 }
 
 // ------------------------------------------------------------------------------------------------
 void SceneCombiner::Copy     (aiMesh** _dest, const aiMesh* src)
 {
-	ai_assert(NULL != _dest && NULL != src);
+	ai_assert(nullptr != _dest && nullptr != src);
 
 	aiMesh* dest = *_dest = new aiMesh();
 
@@ -1062,7 +1062,7 @@ void SceneCombiner::Copy     (aiMesh** _dest, const aiMesh* src)
 // ------------------------------------------------------------------------------------------------
 void SceneCombiner::Copy (aiMaterial** _dest, const aiMaterial* src)
 {
-	ai_assert(NULL != _dest && NULL != src);
+	ai_assert(nullptr != _dest && nullptr != src);
 
 	aiMaterial* dest = (aiMaterial*) ( *_dest = new aiMaterial() );
 
@@ -1092,7 +1092,7 @@ void SceneCombiner::Copy (aiMaterial** _dest, const aiMaterial* src)
 // ------------------------------------------------------------------------------------------------
 void SceneCombiner::Copy  (aiTexture** _dest, const aiTexture* src)
 {
-	ai_assert(NULL != _dest && NULL != src);
+	ai_assert(nullptr != _dest && nullptr != src);
 
 	aiTexture* dest = *_dest = new aiTexture();
 
@@ -1109,7 +1109,7 @@ void SceneCombiner::Copy  (aiTexture** _dest, const aiTexture* src)
 
 		if (!cpy)
 		{
-			dest->pcData = NULL;
+			dest->pcData = nullptr;
 			return;
 		}
 		// the cast is legal, the aiTexel c'tor does nothing important
@@ -1121,7 +1121,7 @@ void SceneCombiner::Copy  (aiTexture** _dest, const aiTexture* src)
 // ------------------------------------------------------------------------------------------------
 void SceneCombiner::Copy     (aiAnimation** _dest, const aiAnimation* src)
 {
-	ai_assert(NULL != _dest && NULL != src);
+	ai_assert(nullptr != _dest && nullptr != src);
 
 	aiAnimation* dest = *_dest = new aiAnimation();
 
@@ -1135,7 +1135,7 @@ void SceneCombiner::Copy     (aiAnimation** _dest, const aiAnimation* src)
 // ------------------------------------------------------------------------------------------------
 void SceneCombiner::Copy     (aiNodeAnim** _dest, const aiNodeAnim* src)
 {
-	ai_assert(NULL != _dest && NULL != src);
+	ai_assert(nullptr != _dest && nullptr != src);
 
 	aiNodeAnim* dest = *_dest = new aiNodeAnim();
 
@@ -1151,7 +1151,7 @@ void SceneCombiner::Copy     (aiNodeAnim** _dest, const aiNodeAnim* src)
 // ------------------------------------------------------------------------------------------------
 void SceneCombiner::Copy   (aiCamera** _dest,const  aiCamera* src)
 {
-	ai_assert(NULL != _dest && NULL != src);
+	ai_assert(nullptr != _dest && nullptr != src);
 
 	aiCamera* dest = *_dest = new aiCamera();
 
@@ -1162,7 +1162,7 @@ void SceneCombiner::Copy   (aiCamera** _dest,const  aiCamera* src)
 // ------------------------------------------------------------------------------------------------
 void SceneCombiner::Copy   (aiLight** _dest, const aiLight* src)
 {
-	ai_assert(NULL != _dest && NULL != src);
+	ai_assert(nullptr != _dest && nullptr != src);
 
 	aiLight* dest = *_dest = new aiLight();
 
@@ -1173,7 +1173,7 @@ void SceneCombiner::Copy   (aiLight** _dest, const aiLight* src)
 // ------------------------------------------------------------------------------------------------
 void SceneCombiner::Copy     (aiBone** _dest, const aiBone* src)
 {
-	ai_assert(NULL != _dest && NULL != src);
+	ai_assert(nullptr != _dest && nullptr != src);
 
 	aiBone* dest = *_dest = new aiBone();
 
@@ -1187,7 +1187,7 @@ void SceneCombiner::Copy     (aiBone** _dest, const aiBone* src)
 // ------------------------------------------------------------------------------------------------
 void SceneCombiner::Copy     (aiNode** _dest, const aiNode* src)
 {
-	ai_assert(NULL != _dest && NULL != src);
+	ai_assert(nullptr != _dest && nullptr != src);
 
 	aiNode* dest = *_dest = new aiNode();
 

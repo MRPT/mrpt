@@ -1,11 +1,11 @@
-/* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          http://www.mrpt.org/                             |
-   |                                                                           |
-   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-   | Released under BSD License. See details in http://www.mrpt.org/License    |
-   +---------------------------------------------------------------------------+ */
+/* +------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)            |
+   |                          http://www.mrpt.org/                          |
+   |                                                                        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file     |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                |
+   | Released under BSD License. See details in http://www.mrpt.org/License |
+   +------------------------------------------------------------------------+ */
 
 #ifndef CRawlogTreeView_H
 #define CRawlogTreeView_H
@@ -21,7 +21,6 @@
 
 #include <mrpt/obs/CRawlog.h>
 
-
 enum TRawlogTreeViewEvent
 {
 	evSelected
@@ -32,116 +31,103 @@ class CRawlogTreeView;
 /** The type for event handler
   */
 typedef void (*wxRawlogTreeEventFunction)(
-	wxWindow*				me,
-	CRawlogTreeView*		the_tree,
-	TRawlogTreeViewEvent	ev,
-	int						item_index,
-	const mrpt::utils::CSerializablePtr &item_data);
-
+	wxWindow* me, CRawlogTreeView* the_tree, TRawlogTreeViewEvent ev,
+	int item_index, const mrpt::utils::CSerializable::Ptr& item_data);
 
 /** A tree view that represents efficiently all rawlog's items.
  */
-class CRawlogTreeView: public wxScrolledWindow
+class CRawlogTreeView : public wxScrolledWindow
 {
-public:
+   public:
 	/** Constructor
 	  */
-    CRawlogTreeView(
-		wxWindow* parent=NULL,
-		wxWindowID id = -1,
+	CRawlogTreeView(
+		wxWindow* parent = nullptr, wxWindowID id = -1,
 		const wxPoint& pos = wxDefaultPosition,
-		const wxSize& size = wxDefaultSize,
-		long style = wxVSCROLL,
-		const wxString& name = wxT("rawlogTreeView") );
+		const wxSize& size = wxDefaultSize, long style = wxVSCROLL,
+		const wxString& name = wxT("rawlogTreeView"));
 
 	virtual ~CRawlogTreeView();
 
-	void OnDraw(wxDC& dc);	//!< Draws the rawlog items
+	/** Draws the rawlog items */
+	void OnDraw(wxDC& dc);
 
-    void AssignImageList(wxImageList *imageList)
-    {
-        m_imageList = imageList;
-    }
-
-	/** Sets the rawlog to be rendered in the control (It's kept as a pointer, so the original object cannot be destroyed).
+	void AssignImageList(wxImageList* imageList) { m_imageList = imageList; }
+	/** Sets the rawlog to be rendered in the control (It's kept as a pointer,
+	 * so the original object cannot be destroyed).
 	  *  It automatically calls "reloadFromRawlog".
 	  */
-	void setRawlogSource( mrpt::obs::CRawlog *rawlog );
+	void setRawlogSource(mrpt::obs::CRawlog* rawlog);
 
 	/** Sets the name of the rawlog file, used for the root item */
-	void setRawlogName(const std::string &s)
-	{
-		m_rawlog_name = s;
-	}
-
-	/** Reloads from the rawlog: it adapts the size of the scroll window and refresh the view.
+	void setRawlogName(const std::string& s) { m_rawlog_name = s; }
+	/** Reloads from the rawlog: it adapts the size of the scroll window and
+	 * refresh the view.
 	  */
-	void reloadFromRawlog( int hint_rawlog_items = -1);
+	void reloadFromRawlog(int hint_rawlog_items = -1);
 
 	/** Sets a handler for the event of selected item changes.
 	  */
-	void ConnectSelectedItemChange( wxRawlogTreeEventFunction func);
+	void ConnectSelectedItemChange(wxRawlogTreeEventFunction func);
 
 	/** This method MUST be called to obtain feedback from events.
 	  */
-	void setWinParent( wxWindow * win )
-	{
-		m_win_parent = win;
-	}
-
+	void setWinParent(wxWindow* win) { m_win_parent = win; }
 	/** Returns the time of the first element in the rawlog. */
 	mrpt::system::TTimeStamp getFirstTimestamp() const
 	{
 		return m_rawlog_start;
 	}
 
-	void SetSelectedItem( int index , bool force_refresh = false );	//!< Changes the selected item, if different, and raises user callback, if any.
+	/** Changes the selected item, if different, and raises user callback, if
+	 * any. */
+	void SetSelectedItem(int index, bool force_refresh = false);
 	int GetSelectedItem() const { return m_selectedItem; }
+   protected:
+	/** A reference to the rawlog to be rendered. */
+	mrpt::obs::CRawlog* m_rawlog;
+	/** We own this pointer */
+	wxImageList* m_imageList;
+	/** Selected row, or -1 if none */
+	int m_selectedItem;
+	/** File name */
+	std::string m_rawlog_name;
+	wxRawlogTreeEventFunction m_event_select_change;
+	wxWindow* m_win_parent;
 
-protected:
-	mrpt::obs::CRawlog		*m_rawlog;	//!< A reference to the rawlog to be rendered.
-	wxImageList				*m_imageList; //!< We own this pointer
-	int						m_selectedItem; //!< Selected row, or -1 if none
-	std::string				m_rawlog_name;	//!< File name
-	wxRawlogTreeEventFunction	m_event_select_change;
-	wxWindow				*m_win_parent;
-
-	mrpt::system::TTimeStamp	m_rawlog_start;
-	mrpt::system::TTimeStamp	m_rawlog_last;
+	mrpt::system::TTimeStamp m_rawlog_start;
+	mrpt::system::TTimeStamp m_rawlog_last;
 
 	struct TNodeData
 	{
-		TNodeData() : level(0), data(), index(0)
-		{ }
-
-		~TNodeData()
-		{
-		}
-
-		uint8_t				level;		//!< Hierarchy level: 0,1,2.
-		mrpt::utils::CSerializablePtr	data;	//!< The object, or NULL
-		size_t		index;
+		TNodeData() : level(0), data(), index(0) {}
+		~TNodeData() {}
+		/** Hierarchy level: 0,1,2. */
+		uint8_t level;
+		/** The object, or nullptr */
+		mrpt::utils::CSerializable::Ptr data;
+		size_t index;
 	};
 
-	std::vector<TNodeData>	m_tree_nodes;	//!< The nuimber of rows to display for the rawlog, used to compute the height
+	/** The nuimber of rows to display for the rawlog, used to compute the
+	 * height */
+	std::vector<TNodeData> m_tree_nodes;
 
-	/** Returns an icon index depending on the class of the object in the tree view
+	/** Returns an icon index depending on the class of the object in the tree
+	 * view
 	  */
-	static int iconIndexFromClass( const mrpt::utils::TRuntimeClassId* class_ID );
+	static int iconIndexFromClass(const mrpt::utils::TRuntimeClassId* class_ID);
 
 	static const int ROW_HEIGHT;
 	static const int TREE_HORZ_STEPS;
 
-
 	// Events:
-    void OnLeftDown(wxMouseEvent& event);
-	void OnMouseWheel( wxMouseEvent &event );
-	void OnKey(wxKeyEvent &event);
+	void OnLeftDown(wxMouseEvent& event);
+	void OnMouseWheel(wxMouseEvent& event);
+	void OnKey(wxKeyEvent& event);
 
-
-    DECLARE_DYNAMIC_CLASS(CRawlogTreeView )
-    DECLARE_EVENT_TABLE()
+	DECLARE_DYNAMIC_CLASS(CRawlogTreeView)
+	DECLARE_EVENT_TABLE()
 };
 
 #endif
-

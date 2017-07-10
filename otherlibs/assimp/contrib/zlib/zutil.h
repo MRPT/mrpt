@@ -125,7 +125,7 @@ extern z_const char * const z_errmsg[10]; /* indexed by 2-zlib_error */
 #      include <unix.h> /* for fdopen */
 #    else
 #      ifndef fdopen
-#        define fdopen(fd,mode) NULL /* No fdopen() */
+#        define fdopen(fd,mode) nullptr /* No fdopen() */
 #      endif
 #    endif
 #  endif
@@ -146,12 +146,12 @@ extern z_const char * const z_errmsg[10]; /* indexed by 2-zlib_error */
 #endif
 
 #if defined(_BEOS_) || defined(RISCOS)
-#  define fdopen(fd,mode) NULL /* No fdopen() */
+#  define fdopen(fd,mode) nullptr /* No fdopen() */
 #endif
 
 #if (defined(_MSC_VER) && (_MSC_VER > 600)) && !defined __INTERIX
 #  if defined(_WIN32_WCE)
-#    define fdopen(fd,mode) NULL /* No fdopen() */
+#    define fdopen(fd,mode) nullptr /* No fdopen() */
 #    ifndef _PTRDIFF_T_DEFINED
        typedef int ptrdiff_t;
 #      define _PTRDIFF_T_DEFINED

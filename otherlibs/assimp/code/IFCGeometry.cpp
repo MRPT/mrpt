@@ -167,7 +167,7 @@ void ProcessPolygonBoundaries(TempMesh& result, const TempMesh& inmesh, size_t m
 		TempOpening& opening = fake_openings.back();
 
 		opening.extrusionDir = master_normal;
-		opening.solid = NULL;
+		opening.solid = nullptr;
 
 		opening.profileMesh = boost::make_shared<TempMesh>();
 		opening.profileMesh->verts.reserve(*iit);

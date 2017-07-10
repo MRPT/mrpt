@@ -176,7 +176,7 @@ void IFCImporter::InternReadFile( const std::string& pFile,
 	if(GetExtension(pFile) == "ifczip") {
 #ifndef ASSIMP_BUILD_NO_COMPRESSED_IFC
 		unzFile zip = unzOpen( pFile.c_str() );
-		if(zip == NULL) {
+		if(zip == nullptr) {
 			ThrowException("Could not open ifczip file for reading, unzip failed");
 		}
 
@@ -380,7 +380,7 @@ void SetUnits(ConversionData& conv)
 // ------------------------------------------------------------------------------------------------
 void SetCoordinateSpace(ConversionData& conv)
 {
-	const IfcRepresentationContext* fav = NULL;
+	const IfcRepresentationContext* fav = nullptr;
 	BOOST_FOREACH(const IfcRepresentationContext& v, conv.proj.RepresentationContexts) {
 		fav = &v;
 		// Model should be the most suitable type of context, hence ignore the others 
@@ -666,7 +666,7 @@ void ProcessMetadata(uint64_t relDefinesByPropertiesID, ConversionData& conv, Me
 }
 
 // ------------------------------------------------------------------------------------------------
-aiNode* ProcessSpatialStructure(aiNode* parent, const IfcProduct& el, ConversionData& conv, std::vector<TempOpening>* collect_openings = NULL)
+aiNode* ProcessSpatialStructure(aiNode* parent, const IfcProduct& el, ConversionData& conv, std::vector<TempOpening>* collect_openings = nullptr)
 {
 	const STEP::DB::RefMap& refs = conv.db.GetRefs();
 
@@ -674,14 +674,14 @@ aiNode* ProcessSpatialStructure(aiNode* parent, const IfcProduct& el, Conversion
 	if(conv.settings.skipSpaceRepresentations) {
 		if(const IfcSpace* const space = el.ToPtr<IfcSpace>()) {
 			IFCImporter::LogDebug("skipping IfcSpace entity due to importer settings");
-			return NULL;
+			return nullptr;
 		}
 	}
 
 	if(conv.settings.skipAnnotations) {
 		if(const IfcAnnotation* const ann = el.ToPtr<IfcAnnotation>()) {
 			IFCImporter::LogDebug("skipping IfcAnnotation entity due to importer settings");
-			return NULL;
+			return nullptr;
 		}
 	}
 
@@ -761,7 +761,7 @@ aiNode* ProcessSpatialStructure(aiNode* parent, const IfcProduct& el, Conversion
 						continue;
 					}
 					
-					aiNode* const ndnew = ProcessSpatialStructure(nd.get(),pro,conv,NULL);
+					aiNode* const ndnew = ProcessSpatialStructure(nd.get(),pro,conv,nullptr);
 					if(ndnew) {
 						subnodes.push_back( ndnew );
 					}
@@ -828,7 +828,7 @@ aiNode* ProcessSpatialStructure(aiNode* parent, const IfcProduct& el, Conversion
 				BOOST_FOREACH(const IfcObjectDefinition& def, aggr->RelatedObjects) {
 					if(const IfcProduct* const prod = def.ToPtr<IfcProduct>()) {
 
-						aiNode* const ndnew = ProcessSpatialStructure(nd_aggr.get(),*prod,conv,NULL);
+						aiNode* const ndnew = ProcessSpatialStructure(nd_aggr.get(),*prod,conv,nullptr);
 						if(ndnew) {
 							nd_aggr->mChildren[nd_aggr->mNumChildren++] = ndnew;
 						}
@@ -845,7 +845,7 @@ aiNode* ProcessSpatialStructure(aiNode* parent, const IfcProduct& el, Conversion
 		}
 
 		ProcessProductRepresentation(el,nd.get(),subnodes,conv);
-		conv.apply_openings = conv.collect_openings = NULL;
+		conv.apply_openings = conv.collect_openings = nullptr;
 
 		if (!subnodes.empty()) {
 			nd->mChildren = new aiNode*[subnodes.size()]();
@@ -908,7 +908,7 @@ void ProcessSpatialStructures(ConversionData& conv)
 					if (def.GetID() == prod->GetID()) { 
 						IFCImporter::LogDebug("selecting this spatial structure as root structure");
 						// got it, this is the primary site.
-						conv.out->mRootNode = ProcessSpatialStructure(NULL,*prod,conv,NULL);
+						conv.out->mRootNode = ProcessSpatialStructure(nullptr,*prod,conv,nullptr);
 						return;
 					}
 				}
@@ -925,7 +925,7 @@ void ProcessSpatialStructures(ConversionData& conv)
 			continue;
 		}
 
-		conv.out->mRootNode = ProcessSpatialStructure(NULL,*prod,conv,NULL);
+		conv.out->mRootNode = ProcessSpatialStructure(nullptr,*prod,conv,nullptr);
 		return;
 	}
 

@@ -1,3 +1,11 @@
+/* +------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)            |
+   |                          http://www.mrpt.org/                          |
+   |                                                                        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file     |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                |
+   | Released under BSD License. See details in http://www.mrpt.org/License |
+   +------------------------------------------------------------------------+ */
 #ifndef CEDGEREGISTRATIONDECIDER_IMPL_H
 #define CEDGEREGISTRATIONDECIDER_IMPL_H
 
@@ -19,12 +27,15 @@ CEdgeRegistrationDecider<GRAPH_T>::CEdgeRegistrationDecider():
 	this->m_edge_types_to_nums["LC"] = 0;
 }
 
-template<class GRAPH_T>
-CEdgeRegistrationDecider<GRAPH_T>::~CEdgeRegistrationDecider() { }
+template <class GRAPH_T>
+CEdgeRegistrationDecider<GRAPH_T>::~CEdgeRegistrationDecider()
+{
+}
 
 template<class GRAPH_T>
 void CEdgeRegistrationDecider<GRAPH_T>::getDescriptiveReport(
-		std::string* report_str) const {
+		std::string* report_str) const 
+{
 	using namespace std;
 	stringstream ss("");
 	parent::getDescriptiveReport(report_str);
@@ -33,7 +44,7 @@ void CEdgeRegistrationDecider<GRAPH_T>::getDescriptiveReport(
 	*report_str += ss.str();
 } // end of getDescriptiveReport
 
-template<class GRAPH_T>
+template <class GRAPH_T>
 void CEdgeRegistrationDecider<GRAPH_T>::registerNewEdge(
     const mrpt::utils::TNodeID& from,
     const mrpt::utils::TNodeID& to,

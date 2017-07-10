@@ -15,16 +15,12 @@ LIST(APPEND nav_EXTRA_SRCS_NAME   "ReactiveNav" "ReactiveNav")
 LIST(APPEND nav_EXTRA_SRCS	      "${NAVDIR}/src/planners/*.cpp" "${NAVDIR}/include/mrpt/nav/planners/*.h")
 LIST(APPEND nav_EXTRA_SRCS_NAME   "Planners" "Planners")
 
-# Compatibility with MRPT <1.3.0
-LIST(APPEND nav_EXTRA_SRCS	      "${NAVDIR}/include/mrpt/reactivenav/*.h")
-LIST(APPEND nav_EXTRA_SRCS_NAME   "bckwrds_compat_hdrs")
-
 #---------------------------------------------
 # Macro declared in "DeclareMRPTLib.cmake":
 #---------------------------------------------
 define_mrpt_lib(
 	# Lib name
-	nav    # Includes old "reactivenav" + new stuff
+	nav
 	# Dependencies
 	mrpt-graphs
 	mrpt-maps
@@ -35,21 +31,4 @@ define_mrpt_lib(
 	mrpt-opengl
 	mrpt-base
 	)
-
-IF(BUILD_mrpt-nav)
-
-	# Declare "meta-lib" for backwards compatibility:
-	define_mrpt_metalib(
-		# Lib name
-		reactivenav
-		# Deps:
-		mrpt-nav
-		# Depts of the deps:
-		mrpt-graphs
-		mrpt-maps
-		mrpt-obs
-		mrpt-opengl
-		mrpt-base
-		)
-ENDIF() 
 

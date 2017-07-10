@@ -417,7 +417,7 @@ public:
                    long style = wxDEFAULT_DIALOG_STYLE,
                    const wxPoint& pos = wxDefaultPosition) : wxDialog(), m_fileData(fileData)
     {
-        m_textCtrl = NULL;
+        m_textCtrl = nullptr;
         Create(parent, winId, fileData, caption, openCommand, style, pos);
     }
     bool Create(wxWindow* parent, wxWindowID winId,
@@ -791,18 +791,18 @@ void wxFileBrowser::Init()
 
     m_path_history_index = 0;
 
-    m_viewToolBar   = NULL;
-    m_pathToolBar   = NULL;
+    m_viewToolBar   = nullptr;
+    m_pathToolBar   = nullptr;
 
-    m_viewButton    = NULL;
-    m_filterCombo   = NULL;
-    m_pathCombo     = NULL;
-    m_splitterWin   = NULL;
-    m_dirCtrl       = NULL;
-    m_fileCtrl      = NULL;
-    m_listMenu      = NULL;
-    m_treeMenu      = NULL;
-    m_viewMenu      = NULL;
+    m_viewButton    = nullptr;
+    m_filterCombo   = nullptr;
+    m_pathCombo     = nullptr;
+    m_splitterWin   = nullptr;
+    m_dirCtrl       = nullptr;
+    m_fileCtrl      = nullptr;
+    m_listMenu      = nullptr;
+    m_treeMenu      = nullptr;
+    m_viewMenu      = nullptr;
 
     m_filterComboSelection = 0;
     m_pathComboSelection = 0;
@@ -941,7 +941,7 @@ bool wxFileBrowser::Create( wxWindow *parent, const wxWindowID id,
     m_filterCombo = new wxComboBox(m_viewToolBar, ID_wxFILEBROWSER_FILTER_COMBO,
                                    wxT("Any file (*.*)"), // sets init size
                                    wxDefaultPosition, wxSize(40, wxDefaultCoord),
-                                   0, NULL,
+                                   0, nullptr,
                                    wxCB_DROPDOWN|wxTE_PROCESS_ENTER);
     m_filterCombo->SetToolTip(wxT("Filter files using wildcards (file1?2.a*)"));
     SetFilters(filter, defaultFilter);
@@ -957,10 +957,10 @@ bool wxFileBrowser::Create( wxWindow *parent, const wxWindowID id,
     m_pathCombo = new wxComboBox(m_pathToolBar, ID_wxFILEBROWSER_PATH_COMBO,
                                  wxT("C: I'm a pretty long dir name so I'm sized big"),
                                  wxDefaultPosition, wxSize(40, wxDefaultCoord),
-                                 0, NULL,
+                                 0, nullptr,
                                  wxCB_DROPDOWN|wxTE_PROCESS_ENTER);
     m_pathCombo->SetToolTip(wxT("Enter path"));
-    m_pathCombo->Append(GetPath(true), (void*)NULL);
+    m_pathCombo->Append(GetPath(true), (void*)nullptr);
     m_pathCombo->SetSelection(0);
     m_pathComboSelection = 0;
     m_pathToolBar->AddControl(m_pathCombo);
@@ -1039,7 +1039,7 @@ void wxFileBrowser::OnSize( wxSizeEvent &event )
 }
 
 // The code in src/gtk/window.cpp wxWindow::DoSetSize fails since
-//  m_parent->m_wxwindow == NULL so nothing is done
+//  m_parent->m_wxwindow == nullptr so nothing is done
 #ifdef __WXGTK__
     #include <gtk/gtk.h>
     void GtkToolbarResizeWindow(wxWindow* win, const wxSize& size)
@@ -1427,7 +1427,7 @@ void wxFileBrowser::UpdateMenu( wxMenu* menu )
     // wxLIST_STATE_FOCUSED ? nah probably selected
     long item = m_fileCtrl->GetNextItem(-1, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
 
-    wxFileData *fd = NULL;
+    wxFileData *fd = nullptr;
     if (item >= 0)
         fd = (wxFileData*)m_fileCtrl->GetItemData(item);
 
@@ -1777,7 +1777,7 @@ wxFileData* wxFileBrowser::GetFocusedListItem() const
     if (item >= 0)
          return (wxFileData*)m_fileCtrl->GetItemData(item);
 
-    return NULL;
+    return nullptr;
 }
 
 wxArrayInt wxFileBrowser::GetSelectedListItems() const
@@ -2150,7 +2150,7 @@ void wxFileBrowser::OnListMenu(wxCommandEvent &event)
 
             if (!cmd.IsEmpty())
             {
-                long ret = wxExecute(cmd, wxEXEC_ASYNC, NULL);
+                long ret = wxExecute(cmd, wxEXEC_ASYNC, nullptr);
                 if (ret == 0)
                 {
                     wxMessageBox(wxT("Error running program"), wxT("Error running program"),
@@ -2386,7 +2386,7 @@ bool wxFileBrowser::InsertComboItem(wxComboBox *combo, const wxString &item, int
     int combo_index = combo->FindString(item);
 
     if (combo_index == wxNOT_FOUND)
-        combo->Insert(item, pos, (void*)NULL);
+        combo->Insert(item, pos, (void*)nullptr);
     else if ((combo_index == pos) || (combo_index < pos))
         return true;
     else if (combo_index > pos)
@@ -2548,7 +2548,7 @@ void wxFileBrowser::LoadConfig(wxConfigBase& config, bool paths, bool filters,
                 //if (wxDirExists(value))
                 {
                     if (m_pathCombo->FindString(value) == wxNOT_FOUND)
-                        m_pathCombo->Append(value, (void*)NULL);
+                        m_pathCombo->Append(value, (void*)nullptr);
                 }
             }
             n++;
@@ -2566,7 +2566,7 @@ void wxFileBrowser::LoadConfig(wxConfigBase& config, bool paths, bool filters,
             if (!value.IsEmpty())
             {
                 if (m_filterCombo->FindString(value) == wxNOT_FOUND)
-                    m_filterCombo->Append(value, (void*)NULL);
+                    m_filterCombo->Append(value, (void*)nullptr);
             }
             n++;
             key = configPath + wxString::Format(wxT("/filter%d"), 1+n);

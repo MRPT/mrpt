@@ -1,14 +1,11 @@
-/*
- * This file is part of the OpenKinect Project. http://www.openkinect.org
- *
- * Copyright (c) 2010-2011 individual OpenKinect contributors. See the CONTRIB
- * file for details.
- *
- * This code is licensed to you under the terms of the Apache License, version
- * 2.0. See the APACHE20 file for the text of the license,
- * or the following URLs:
- * http://www.apache.org/licenses/LICENSE-2.0
- */   
+/* +------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)            |
+   |                          http://www.mrpt.org/                          |
+   |                                                                        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file     |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                |
+   | Released under BSD License. See details in http://www.mrpt.org/License |
+   +------------------------------------------------------------------------+ */
 
 #ifndef USB_LIBUSB10
 #define USB_LIBUSB10
@@ -36,30 +33,33 @@
 #define VIDEO_PKTBUF 2048
 #else
 #ifdef _WIN32
-  #define PKTS_PER_XFER 32
-  #define NUM_XFERS 8
+#define PKTS_PER_XFER 32
+#define NUM_XFERS 8
 #else
-  #define PKTS_PER_XFER 16
-  #define NUM_XFERS 16
+#define PKTS_PER_XFER 16
+#define NUM_XFERS 16
 #endif
 #define DEPTH_PKTBUF 1920
 #define VIDEO_PKTBUF 1920
 #endif
 
-typedef struct {
-	libusb_context *ctx;
+typedef struct
+{
+	libusb_context* ctx;
 	int should_free_ctx;
 } fnusb_ctx;
 
-typedef struct {
-	freenect_device *parent; //so we can go up from the libusb userdata
-	libusb_device_handle *dev;
+typedef struct
+{
+	freenect_device* parent;  // so we can go up from the libusb userdata
+	libusb_device_handle* dev;
 } fnusb_dev;
 
-typedef struct {
-	fnusb_dev *parent; //so we can go up from the libusb userdata
-	struct libusb_transfer **xfers;
-	uint8_t *buffer;
+typedef struct
+{
+	fnusb_dev* parent;  // so we can go up from the libusb userdata
+	struct libusb_transfer** xfers;
+	uint8_t* buffer;
 	fnusb_iso_cb cb;
 	int num_xfers;
 	int pkts;
@@ -68,19 +68,22 @@ typedef struct {
 	int dead_xfers;
 } fnusb_isoc_stream;
 
-int fnusb_num_devices(fnusb_ctx *ctx);
+int fnusb_num_devices(fnusb_ctx* ctx);
 
-int fnusb_init(fnusb_ctx *ctx, freenect_usb_context *usb_ctx);
-int fnusb_shutdown(fnusb_ctx *ctx);
-int fnusb_process_events(fnusb_ctx *ctx);
+int fnusb_init(fnusb_ctx* ctx, freenect_usb_context* usb_ctx);
+int fnusb_shutdown(fnusb_ctx* ctx);
+int fnusb_process_events(fnusb_ctx* ctx);
 
-int fnusb_open_subdevices(freenect_device *dev, int index);
-int fnusb_close_subdevices(freenect_device *dev);
+int fnusb_open_subdevices(freenect_device* dev, int index);
+int fnusb_close_subdevices(freenect_device* dev);
 
-int fnusb_start_iso(fnusb_dev *dev, fnusb_isoc_stream *strm, fnusb_iso_cb cb, int ep, int xfers, int pkts, int len);
-int fnusb_stop_iso(fnusb_dev *dev, fnusb_isoc_stream *strm);
+int fnusb_start_iso(
+	fnusb_dev* dev, fnusb_isoc_stream* strm, fnusb_iso_cb cb, int ep, int xfers,
+	int pkts, int len);
+int fnusb_stop_iso(fnusb_dev* dev, fnusb_isoc_stream* strm);
 
-int fnusb_control(fnusb_dev *dev, uint8_t bmRequestType, uint8_t bRequest, uint16_t wValue, uint16_t wIndex, uint8_t *data, uint16_t wLength);
-
+int fnusb_control(
+	fnusb_dev* dev, uint8_t bmRequestType, uint8_t bRequest, uint16_t wValue,
+	uint16_t wIndex, uint8_t* data, uint16_t wLength);
 
 #endif

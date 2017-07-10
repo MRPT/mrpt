@@ -1,12 +1,11 @@
-/*
- *  RPLIDAR SDK
- *
- *  Copyright (c) 2009 - 2014 RoboPeak Team
- *  http://www.robopeak.com
- *  Copyright (c) 2014 - 2016 Shanghai Slamtec Co., Ltd.
- *  http://www.slamtec.com
- *
- */
+/* +------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)            |
+   |                          http://www.mrpt.org/                          |
+   |                                                                        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file     |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                |
+   | Released under BSD License. See details in http://www.mrpt.org/License |
+   +------------------------------------------------------------------------+ */
 /*
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -36,12 +35,15 @@
 
 #include "rptypes.h"
 
-#define delay(x)   ::Sleep(x)
+#define delay(x) ::Sleep(x)
 
-namespace rp{ namespace arch{
-    void HPtimer_reset();
-    _u32 getHDTimer();
-}}
+namespace rp
+{
+namespace arch
+{
+void HPtimer_reset();
+_u32 getHDTimer();
+}
+}
 
-#define getms()   rp::arch::getHDTimer()
-
+#define getms() rp::arch::getHDTimer()

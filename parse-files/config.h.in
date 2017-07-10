@@ -76,9 +76,6 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 /* PCL (The pointclouds library): */
 #define MRPT_HAS_PCL           ${CMAKE_MRPT_HAS_PCL}
 
-/* TBB (Intel threading lib): */
-#define MRPT_HAS_TBB           ${CMAKE_MRPT_HAS_TBB}
-
 /** The file ftdi.h exists (Linux only) */
 #define MRPT_HAS_FTDI             ${CMAKE_MRPT_HAS_FTDI}
 #define MRPT_FTDI_VERSION         0x${LIBFTDI_VERSION_MAJOR}${LIBFTDI_VERSION_MINOR}0
@@ -287,10 +284,6 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 #cmakedefine HAVE_OPENTHREAD
 #endif
 
-#ifndef HAVE_ERF
-#cmakedefine HAVE_ERF
-#endif
-
 #ifndef HAVE_POSIX_MEMALIGN
 #cmakedefine HAVE_POSIX_MEMALIGN
 #endif
@@ -308,8 +301,8 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 #cmakedefine HAVE_LONG_DOUBLE
 #endif
 
-/* Backwards compatibility of MRPT APIs: */
-#cmakedefine MRPT_BACKCOMPATIB_08X 1
+/* Backwards compatibility of MRPT 1.* smart pointers CFooPtr instead of CFoo::Ptr */
+#cmakedefine MRPT_1X_BACKCOMPATIB_SMARTPTR_NAMES    1
 
 /* Defined only if MRPT is being build/was built with precompiled
     headers enabled */

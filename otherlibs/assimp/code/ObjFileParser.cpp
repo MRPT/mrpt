@@ -59,7 +59,7 @@ const std::string ObjFileParser::DEFAULT_MATERIAL = AI_DEFAULT_MATERIAL_NAME;
 ObjFileParser::ObjFileParser(std::vector<char> &Data,const std::string &strModelName, IOSystem *io ) :
 	m_DataIt(Data.begin()),
 	m_DataItEnd(Data.end()),
-	m_pModel(NULL),
+	m_pModel(nullptr),
 	m_uiLine(0),
 	m_pIO( io )
 {
@@ -84,7 +84,7 @@ ObjFileParser::ObjFileParser(std::vector<char> &Data,const std::string &strModel
 ObjFileParser::~ObjFileParser()
 {
 	delete m_pModel;
-	m_pModel = NULL;
+	m_pModel = nullptr;
 }
 
 // -------------------------------------------------------------------
@@ -416,17 +416,17 @@ void ObjFileParser::getFace(aiPrimitiveType type)
 	ObjFile::Face *face = new ObjFile::Face( pIndices, pNormalID, pTexID, type );
 	
 	// Set active material, if one set
-	if (NULL != m_pModel->m_pCurrentMaterial) 
+	if (nullptr != m_pModel->m_pCurrentMaterial) 
 		face->m_pMaterial = m_pModel->m_pCurrentMaterial;
 	else 
 		face->m_pMaterial = m_pModel->m_pDefaultMaterial;
 
 	// Create a default object, if nothing is there
-	if ( NULL == m_pModel->m_pCurrent )
+	if ( nullptr == m_pModel->m_pCurrent )
 		createObject( "defaultobject" );
 	
 	// Assign face to mesh
-	if ( NULL == m_pModel->m_pCurrentMesh )
+	if ( nullptr == m_pModel->m_pCurrentMesh )
 	{
 		createMesh();
 	}
@@ -450,11 +450,11 @@ void ObjFileParser::getMaterialDesc()
 	// Each material request a new object.
 	// Sometimes the object is already created (see 'o' tag by example), but it is not initialized !
 	// So, we create a new object only if the current on is already initialized !
-	if (m_pModel->m_pCurrent != NULL &&
+	if (m_pModel->m_pCurrent != nullptr &&
 		(	m_pModel->m_pCurrent->m_Meshes.size() > 1 ||
 			(m_pModel->m_pCurrent->m_Meshes.size() == 1 && m_pModel->m_Meshes[m_pModel->m_pCurrent->m_Meshes[0]]->m_Faces.size() != 0)	)
 		)
-		m_pModel->m_pCurrent = NULL;
+		m_pModel->m_pCurrent = nullptr;
 
 	// Get next data for material data
 	m_DataIt = getNextToken<DataArrayIt>(m_DataIt, m_DataItEnd);
@@ -663,7 +663,7 @@ void ObjFileParser::getObjectName()
 	if (!strObjectName.empty()) 
 	{
 		// Reset current object
-		m_pModel->m_pCurrent = NULL;
+		m_pModel->m_pCurrent = nullptr;
 		
 		// Search for actual object
 		for (std::vector<ObjFile::Object*>::const_iterator it = m_pModel->m_Objects.begin();
@@ -678,7 +678,7 @@ void ObjFileParser::getObjectName()
 		}
 
 		// Allocate a new object, if current one was not found before
-		if ( NULL == m_pModel->m_pCurrent )
+		if ( nullptr == m_pModel->m_pCurrent )
 			createObject(strObjectName);
 	}
 	m_DataIt = skipLine<DataArrayIt>( m_DataIt, m_DataItEnd, m_uiLine );
@@ -687,7 +687,7 @@ void ObjFileParser::getObjectName()
 //	Creates a new object instance
 void ObjFileParser::createObject(const std::string &strObjectName)
 {
-	ai_assert( NULL != m_pModel );
+	ai_assert( nullptr != m_pModel );
 	//ai_assert( !strObjectName.empty() );
 
 	m_pModel->m_pCurrent = new ObjFile::Object;
@@ -708,11 +708,11 @@ void ObjFileParser::createObject(const std::string &strObjectName)
 //	Creates a new mesh
 void ObjFileParser::createMesh()
 {
-	ai_assert( NULL != m_pModel );
+	ai_assert( nullptr != m_pModel );
 	m_pModel->m_pCurrentMesh = new ObjFile::Mesh;
 	m_pModel->m_Meshes.push_back( m_pModel->m_pCurrentMesh );
 	unsigned int meshId = m_pModel->m_Meshes.size()-1;
-	if ( NULL != m_pModel->m_pCurrent )
+	if ( nullptr != m_pModel->m_pCurrent )
 	{
 		m_pModel->m_pCurrent->m_Meshes.push_back( meshId );
 	}

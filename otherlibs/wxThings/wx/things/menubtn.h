@@ -90,7 +90,7 @@ public:
                   const wxString& value = wxEmptyString,
                   const wxPoint& pos = wxDefaultPosition,
                   const wxSize& size = wxDefaultSize,
-                  int n = 0, const wxString choices[] = (const wxString *) NULL,
+                  int n = 0, const wxString choices[] = (const wxString *) nullptr,
                   long style = 0,
 				  const wxValidator& val = wxDefaultValidator,
                   const wxString& name = wxT("wxMenuButton"))
@@ -184,6 +184,6 @@ BEGIN_DECLARE_EVENT_TYPES()
     DECLARE_EXPORTED_EVENT_TYPE(WXDLLIMPEXP_THINGS, wxEVT_MENUBUTTON_OPEN, 0)
 END_DECLARE_EVENT_TYPES()
 
-#define EVT_MENUBUTTON_OPEN(id, fn) DECLARE_EVENT_TABLE_ENTRY(wxEVT_MENUBUTTON_OPEN, id, wxID_ANY, (wxObjectEventFunction) (wxEventFunction) (wxCommandEventFunction) (wxNotifyEventFunction) & fn, (wxObject *) NULL ),
+#define EVT_MENUBUTTON_OPEN(id, fn) DECLARE_EVENT_TABLE_ENTRY(wxEVT_MENUBUTTON_OPEN, id, wxID_ANY, (wxObjectEventFunction) (wxEventFunction) (wxCommandEventFunction) (wxNotifyEventFunction) & fn, (wxObject *) nullptr ),
 
 #endif  // _WX_MENUBTN_H_
