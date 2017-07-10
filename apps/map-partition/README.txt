@@ -12,7 +12,7 @@
 This application implements a recursive spectral graph-based bisection of a map, given by a ".simplemap" file.
 
 See the application description page for more information:
- http://www.mrpt.org/Application:Map-Partition
+ http://www.mrpt.org/list-of-mrpt-apps/application-Map-Partition
 
 --------------
  COMPILING

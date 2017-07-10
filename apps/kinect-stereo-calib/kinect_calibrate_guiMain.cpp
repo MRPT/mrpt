@@ -9,9 +9,8 @@
 
 /*
   App      : kinect-stereo-calib
-  Web pages: http://www.mrpt.org/Application:kinect-stereo-calib
-			 http://www.mrpt.org/Kinect_and_MRPT
-
+  Web pages: http://www.mrpt.org/list-of-mrpt-apps/application-kinect-stereo-calib
+             http://www.mrpt.org/Kinect_and_MRPT
   Usage    : Run and follow on-screen instructions
 */
 

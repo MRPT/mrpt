@@ -93,6 +93,15 @@ class VISION_IMPEXP CLandmarksMap : public mrpt::maps::CMetricMap
 	 *"computeLikelihood_RSLC_2007".
 	 *		- "mrpt::obs::CObservationStereoImages": This calls
 	 *"computeLikelihood_SIFT_LandmarkMap".
+	 * <table>
+	 * <tr> <td><b>Observation class:</b></td> <td><b>Generated Landmarks:</b></td> <td><b>Comments:</b></td> </tr>
+	 * <tr> <td>CObservationImage</td> <td>vlSIFT</td> <td>1) A SIFT feature is created for each SIFT detected in the image,
+	 *          <br>2) Correspondences between SIFTs features and existing ones are found by computeMatchingWith3DLandmarks,
+	 *		   <br>3) The corresponding feaures are fused, and the new ones added, with an initial uncertainty according to insertionOptions</td> </tr>
+	 * <tr> <td>CObservationStereoImages</td> <td>vlSIFT</td> <td> Each image is separately procesed by the method for CObservationImage observations </td> </tr>
+	 * <tr> <td>CObservationStereoImages</td> <td>vlColor</td> <td> TODO... </td> </tr>
+	 * <tr> <td>CObservation2DRangeScan</td> <td>glOccupancy</td> <td> A landmark is added for each range in the scan, with its appropiate covariance matrix derived from the jacobians matrixes. </td> </tr>
+	 * </table>
 	 *
 	 * \param takenFrom The robot's pose the observation is supposed to be taken
 	 *from.

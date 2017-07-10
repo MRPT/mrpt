@@ -247,7 +247,6 @@ bool TUserOptionsChecker<GRAPH_t>::checkRegistrationDeciderExists(
 	{
 		TRegistrationDeciderProps* dec = *dec_it;
 
-		// TODO - check this
 		// if decider is not suitable for the selected SLAM type, ignore.
 		pose_t p;
 		if ((!dec->is_slam_2d && IS_CLASS(&p, CPose2D)) ||
@@ -344,6 +343,7 @@ void TUserOptionsChecker<GRAPH_t>::populateDeciderOptimizerProperties()
 		dec->observations_used.push_back("CObservation2DRangeScan - Format #2");
 		dec->observations_used.push_back("CObservation3DRangeScan - Format #2");
 		dec->is_slam_2d = true;
+		dec->is_slam_3d = true;
 
 		regs_descriptions.push_back(dec);
 	}
@@ -373,6 +373,7 @@ void TUserOptionsChecker<GRAPH_t>::populateDeciderOptimizerProperties()
 			"CObservation2DRangeScan - Format #1, #2");
 		dec->observations_used.push_back("CObservation3DRangeScan - Format #2");
 		dec->is_slam_2d = true;
+		dec->is_slam_3d = true;
 
 		regs_descriptions.push_back(dec);
 	}

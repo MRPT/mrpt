@@ -248,9 +248,9 @@ class SLAM_IMPEXP CMultiMetricMapPDF
 	/** \name Virtual methods that the PF_implementations assume exist.
 		@{ */
 
-	/** Return a pointer to the last robot pose in the i'th particle (or nullptr
-	 * if it's a path and it's empty). */
-	const mrpt::math::TPose3D* getLastPose(const size_t i) const override;
+	// see docs in base
+	mrpt::math::TPose3D getLastPose(
+		const size_t i, bool &pose_is_valid) const override;
 
 	void PF_SLAM_implementation_custom_update_particle_with_new_pose(
 		CParticleDataContent* particleData,

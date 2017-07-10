@@ -13,7 +13,7 @@
 	AUTHOR: Jose Luis Blanco Claraco <joseluisblancoc@gmail.com>
 
 	For instructions and more:
-	 http://www.mrpt.org/Application:pf-localization
+	 http://www.mrpt.org/list-of-mrpt-apps/application-pf-localization
   ---------------------------------------------------------------*/
 
 #include <mrpt/slam/CMonteCarloLocalization2D.h>

@@ -14,8 +14,12 @@
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/graphs/CNetworkOfPoses.h>
+#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/utils/COutputLogger.h>
 #include <mrpt/utils/CTimeLogger.h>
+#include <mrpt/system/os.h>
+#include <mrpt/system/threads.h>
 #include <mrpt/graphslam/misc/CWindowManager.h>
 
 #include <string>

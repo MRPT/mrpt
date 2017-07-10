@@ -402,7 +402,7 @@ void CGraphSlamHandler<GRAPH_T>::execute()
 	size_t curr_rawlog_entry;
 
 	// Read the dataset and pass the measurements to CGraphSlamEngine
-	bool cont_exec = true;
+	bool continue_exec = true;
 	while (CRawlog::getActionObservationPairOrObservation(
 			   rawlog_stream, action, observations, observation,
 			   curr_rawlog_entry) &&

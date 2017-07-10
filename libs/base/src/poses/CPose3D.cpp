@@ -410,6 +410,13 @@ void CPose3D::sphericalCoordinates(
 		out_pitch = 0;
 }
 
+CPose3D CPose3D::getOppositeScalar() const
+{
+	return CPose3D(
+			-m_coords[0], -m_coords[1], -m_coords[2],
+			-m_yaw, -m_pitch, -m_roll);
+}
+
 /*---------------------------------------------------------------
 		addComponents
 ---------------------------------------------------------------*/

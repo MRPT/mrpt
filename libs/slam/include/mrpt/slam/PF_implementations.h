@@ -55,50 +55,48 @@ bool PF_implementation<PARTICLE_TYPE, MYSELF>::
 
 	if (actions != nullptr)  // A valid action?
 	{
+		mrpt::obs::CActionRobotMovement2D::Ptr robotMovement2D =
+			actions->getBestMovementEstimation();
+		if (robotMovement2D)
 		{
-			mrpt::obs::CActionRobotMovement2D::Ptr robotMovement2D =
-				actions->getBestMovementEstimation();
-			if (robotMovement2D)
-			{
-				if (m_accumRobotMovement3DIsValid)
-					THROW_EXCEPTION("Mixing 2D and 3D actions is not allowed.")
+			if (m_accumRobotMovement3DIsValid)
+				THROW_EXCEPTION("Mixing 2D and 3D actions is not allowed.")
 
-				if (!m_accumRobotMovement2DIsValid)
-				{  // First time:
-					robotMovement2D->poseChange->getMean(
-						m_accumRobotMovement2D.rawOdometryIncrementReading);
-					m_accumRobotMovement2D.motionModelConfiguration =
-						robotMovement2D->motionModelConfiguration;
-				}
-				else
-					m_accumRobotMovement2D.rawOdometryIncrementReading +=
-						robotMovement2D->poseChange->getMeanVal();
-
-				m_accumRobotMovement2DIsValid = true;
+			if (!m_accumRobotMovement2DIsValid)
+			{  // First time:
+				robotMovement2D->poseChange->getMean(
+					m_accumRobotMovement2D.rawOdometryIncrementReading);
+				m_accumRobotMovement2D.motionModelConfiguration =
+					robotMovement2D->motionModelConfiguration;
 			}
-			else  // If there is no 2D action, look for a 3D action:
+			else
+				m_accumRobotMovement2D.rawOdometryIncrementReading +=
+					robotMovement2D->poseChange->getMeanVal();
+
+			m_accumRobotMovement2DIsValid = true;
+		}
+		else  // If there is no 2D action, look for a 3D action:
+		{
+			mrpt::obs::CActionRobotMovement3D::Ptr robotMovement3D =
+				actions
+					->getActionByClass<mrpt::obs::CActionRobotMovement3D>();
+			if (robotMovement3D)
 			{
-				mrpt::obs::CActionRobotMovement3D::Ptr robotMovement3D =
-					actions
-						->getActionByClass<mrpt::obs::CActionRobotMovement3D>();
-				if (robotMovement3D)
-				{
-					if (m_accumRobotMovement2DIsValid)
-						THROW_EXCEPTION(
-							"Mixing 2D and 3D actions is not allowed.")
+				if (m_accumRobotMovement2DIsValid)
+					THROW_EXCEPTION(
+						"Mixing 2D and 3D actions is not allowed.")
 
-					if (!m_accumRobotMovement3DIsValid)
-						m_accumRobotMovement3D = robotMovement3D->poseChange;
-					else
-						m_accumRobotMovement3D += robotMovement3D->poseChange;
-					// This "+=" takes care of all the Jacobians, etc... You
-					// MUST love C++!!! ;-)
-
-					m_accumRobotMovement3DIsValid = true;
-				}
+				if (!m_accumRobotMovement3DIsValid)
+					m_accumRobotMovement3D = robotMovement3D->poseChange;
 				else
-					return false;  // We have no actions...
+					m_accumRobotMovement3D += robotMovement3D->poseChange;
+				// This "+=" takes care of all the Jacobians, etc... You
+				// MUST love C++!!! ;-)
+
+				m_accumRobotMovement3DIsValid = true;
 			}
+			else
+				return false;  // We have no actions...
 		}
 	}
 
@@ -245,8 +243,10 @@ void PF_implementation<PARTICLE_TYPE, MYSELF>::
 				// Generate gaussian-distributed 2D-pose increments according to
 				// mean-cov:
 				m_movementDrawer.drawSample(incrPose);
-				mrpt::poses::CPose3D finalPose =
-					mrpt::poses::CPose3D(*getLastPose(i)) + incrPose;
+				bool pose_is_valid;
+				const mrpt::poses::CPose3D finalPose =
+					mrpt::poses::CPose3D(getLastPose(i, pose_is_valid)) +
+					incrPose;
 
 				// Update the particle with the new pose: this part is
 				// caller-dependant and must be implemented there:
@@ -286,8 +286,10 @@ void PF_implementation<PARTICLE_TYPE, MYSELF>::
 
 				// generate the new particle:
 				const size_t drawn_idx = me->fastDrawSample(PF_options);
-				const mrpt::poses::CPose3D newPose =
-					mrpt::poses::CPose3D(*getLastPose(drawn_idx)) + increment_i;
+
+				bool pose_is_valid;
+				const mrpt::poses::CPose3D newPose = mrpt::poses::CPose3D(
+					getLastPose(drawn_idx,pose_is_valid)) + increment_i;
 				const mrpt::math::TPose3D newPose_s = newPose;
 
 				// Add to the new particles list:
@@ -344,9 +346,10 @@ void PF_implementation<PARTICLE_TYPE, MYSELF>::
 		// Compute all the likelihood values & update particles weight:
 		for (size_t i = 0; i < M; i++)
 		{
-			const mrpt::math::TPose3D* partPose =
-				getLastPose(i);  // Take the particle data:
-			mrpt::poses::CPose3D partPose2 = mrpt::poses::CPose3D(*partPose);
+			bool pose_is_valid;
+			const mrpt::math::TPose3D partPose =
+				getLastPose(i, pose_is_valid);  // Take the particle data:
+			mrpt::poses::CPose3D partPose2 = mrpt::poses::CPose3D(partPose);
 			const double obs_log_likelihood =
 				PF_SLAM_computeObservationLikelihoodForParticle(
 					PF_options, i, *sf, partPose2);
@@ -418,8 +421,9 @@ double PF_implementation<PARTICLE_TYPE, MYSELF>::
 	size_t N = PF_options.pfAuxFilterOptimal_MaximumSearchSamples;
 	ASSERT_(N > 1)
 
+	bool pose_is_valid;
 	const mrpt::poses::CPose3D oldPose =
-		mrpt::poses::CPose3D(*me->getLastPose(index));
+		mrpt::poses::CPose3D(me->getLastPose(index, pose_is_valid));
 	mrpt::math::CVectorDouble vectLiks(
 		N, 0);  // The vector with the individual log-likelihoods.
 	mrpt::poses::CPose3D drawnSample;
@@ -486,8 +490,9 @@ double PF_implementation<PARTICLE_TYPE, MYSELF>::
 
 	// Take the previous particle weight:
 	const double cur_logweight = myObj->m_particles[index].log_w;
+	bool pose_is_valid;
 	const mrpt::poses::CPose3D oldPose =
-		mrpt::poses::CPose3D(*myObj->getLastPose(index));
+		mrpt::poses::CPose3D(myObj->getLastPose(index, pose_is_valid));
 
 	if (!PF_options.pfAuxFilterStandard_FirstStageWeightsMonteCarlo)
 	{
@@ -1005,8 +1010,10 @@ void PF_implementation<PARTICLE_TYPE, MYSELF>::
 			"Discarding very unlikely particle.");
 	}
 
-	const mrpt::poses::CPose3D oldPose = mrpt::poses::CPose3D(
-		*getLastPose(k));  // Get the current pose of the k'th particle
+	bool pose_is_valid;
+	const mrpt::poses::CPose3D oldPose =  mrpt::poses::CPose3D(
+		getLastPose(k, pose_is_valid)); // current pose of the k'th particle
+	//ASSERT_(pose_is_valid); Use the default (0,0,0) if path is empty.
 
 	//   (b) Rejection-sampling: Draw a new robot pose from x[k],
 	//       and accept it with probability p(zk|x) / maxLikelihood:

@@ -14,15 +14,9 @@
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CRawlog.h>
-#include <mrpt/utils/CLoadableOptions.h>
-#include <mrpt/utils/CConfigFile.h>
-#include <mrpt/utils/CConfigFileBase.h>
-#include <mrpt/utils/CStream.h>
 #include <mrpt/utils/types_simple.h>
 
-#include <mrpt/graphslam/interfaces/CNodeRegistrationDecider.h>
-
-#include <iostream>
+#include <mrpt/graphslam/interfaces/CIncrementalNodeRegistrationDecider.h>
 
 namespace mrpt
 {
@@ -46,30 +40,11 @@ namespace deciders
  *
  * ### Specifications
  *
- * - Map type: 2D
+ * - Map type: 2D, 3D
  * - MRPT rawlog format: #1, #2
  * - Graph Type: CPosePDFGaussianInf
- * - Observations Used: CObservationOdometry, CActionRobotMovement2D
+ * - Observations Used: CObservationOdometry, CActionRobotMovement2D, CActionRobotMovement3D
  * - Node Registration Strategy: Fixed Odometry Intervals
- *
- * ### .ini Configuration Parameters
- *
- * \htmlinclude graphslam-engine_config_params_preamble.txt
- *
- * - \b class_verbosity
- *   + \a Section       : NodeRegistrationDeciderParameters
- *   + \a Default value : 1 (LVL_INFO)
- *   + \a Required      : FALSE
- *
- * - \b registration_max_distance
- *  + \a Section       : NodeRegistrationDeciderParameters
- *  + \a Default value : 0.5 // meters
- *  + \a Required      : FALSE
- *
- * - \b registration_max_angle
- *  + \a Section       : NodeRegistrationDeciderParameters
- *  + \a Default value : 60 // degrees
- *  + \a Required      : FALSE
  *
  * \ingroup mrpt_graphslam_grp
  */

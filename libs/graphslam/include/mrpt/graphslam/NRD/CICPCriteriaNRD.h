@@ -15,23 +15,16 @@
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
-#include <mrpt/poses/CPosePDF.h>
-#include <mrpt/poses/CPose3DPDF.h>
-#include <mrpt/poses/CRobot2DPoseEstimator.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
-#include <mrpt/utils/CLoadableOptions.h>
-#include <mrpt/utils/CConfigFile.h>
-#include <mrpt/utils/CConfigFileBase.h>
-#include <mrpt/utils/CStream.h>
 #include <mrpt/utils/types_simple.h>
 #include <mrpt/slam/CICP.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/system/os.h>
 
-#include <mrpt/graphslam/interfaces/CNodeRegistrationDecider.h>
+#include <mrpt/graphslam/interfaces/CIncrementalNodeRegistrationDecider.h>
 #include <mrpt/graphslam/misc/CRangeScanOps.h>
 #include <mrpt/graphslam/misc/TSlidingWindow.h>
 
@@ -55,7 +48,7 @@ namespace deciders
  * node. If the norm or the angle of the latter surpasses certain thresholds
  * (which are read from an external .ini file) then a new node is added to the
  * graph)
- * \sa loadParams, TParams::loadFromConfigFile
+ * \sa loadParams
  *
  * Decider *does not guarantee* thread safety when accessing the GRAPH_T
  * resource. This is handled by the CGraphSlamEngine class.
@@ -67,25 +60,6 @@ namespace deciders
  * - Graph Type: CPosePDFGaussianInf
  * - Observations Used: CObservation2DRangeScan, CObservation3DRangeScan
  * - Node Registration Strategy: Fixed Intervals
- *
- * ### .ini Configuration Parameters
- *
- * \htmlinclude config_params_preamble.txt
- *
- * - \b class_verbosity
- *   + \a Section       : NodeRegistrationDeciderParameters
- *   + \a default value : 1 (LVL_INFO)
- *   + \a Required      : FALSE
- *
- * - \b registration_max_distance
- *  + \a Section       : NodeRegistrationDeciderParameters
- *  + \a Default value : 0.5 // meters
- *  + \a Required      : FALSE
- *
- * - \b registration_max_angle
- *  + \a Section       : NodeRegistrationDeciderParameters
- *  + \a Default value : 10 // degrees
- *  + \a Required      : FALSE
  *
  * \note Since the decider inherits from the CRangeScanOps
  * class, it parses the configuration parameters of the latter as well from the

@@ -137,7 +137,7 @@ class CGraphPartitioner : public mrpt::utils::COutputLogger
 
 	/** Returns the normaliced cut of a graph, given its adjacency matrix A and
 	 * a bisection:
-	  */
+	 */
 	static num_t nCut(
 		const GRAPH_MATRIX& in_A, const vector_uint& in_part1,
 		const vector_uint& in_part2);

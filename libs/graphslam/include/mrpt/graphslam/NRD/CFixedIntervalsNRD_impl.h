@@ -86,7 +86,7 @@ bool CFixedIntervalsNRD<GRAPH_T>::updateState(
 		}
 	}  // ELSE - FORMAT #1
 
-	bool registered = this->checkRegistrationCondition();
+	bool registered_new_node = this->checkRegistrationCondition();
 
 	if (registered)
 	{
@@ -98,7 +98,7 @@ bool CFixedIntervalsNRD<GRAPH_T>::updateState(
 		}
 	}
 
-	return registered;
+	return registered_new_node;
 
 	MRPT_END;
 }  // end of updateState
@@ -189,9 +189,6 @@ void CFixedIntervalsNRD<GRAPH_T>::printParams() const
 {
 	MRPT_START;
 	parent_t::printParams();
-	params.dumpToConsole();
-
-	MRPT_END;
 }
 
 template <class GRAPH_T>
@@ -200,9 +197,6 @@ void CFixedIntervalsNRD<GRAPH_T>::getDescriptiveReport(
 {
 	MRPT_START;
 	using namespace std;
-
-	const std::string report_sep(2, '\n');
-	const std::string header_sep(80, '#');
 
 	// Report on graph
 	stringstream class_props_ss;
@@ -219,15 +213,11 @@ void CFixedIntervalsNRD<GRAPH_T>::getDescriptiveReport(
 	parent_t::getDescriptiveReport(report_str);
 
 	*report_str += class_props_ss.str();
-	*report_str += report_sep;
-
-	// configuration parameters
-	*report_str += params.getAsString();
-	*report_str += report_sep;
+	*report_str += this->report_sep;
 
 	// loggers results
 	*report_str += time_res;
-	*report_str += report_sep;
+	*report_str += this->report_sep;
 
 	*report_str += output_res;
 	*report_str += report_sep;

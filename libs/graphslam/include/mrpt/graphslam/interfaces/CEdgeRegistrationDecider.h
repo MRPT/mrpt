@@ -84,31 +84,46 @@ class CEdgeRegistrationDecider
 
    protected:
 	/**\name Registration criteria checks
-		 *\brief Check whether a new edge should be registered in the
-		 * graph.
-		 *
-		 * If condition(s) for edge registration is satisfied, method should
-	  *call
-		 * the registerNewEdge method.
-		 */
+	 *\brief Check whether a new edge should be registered in the
+	 * graph.
+	 *
+	 * If condition(s) for edge registration is satisfied, method should
+	 *call
+	 * the registerNewEdge method.
+	 */
 	/**\{*/
 	virtual void checkRegistrationCondition(
-		mrpt::utils::TNodeID from, mrpt::utils::TNodeID to)
-	{
-	}
+			mrpt::utils::TNodeID from,
+			mrpt::utils::TNodeID to ) {}
 	virtual void checkRegistrationCondition(
-		const std::set<mrpt::utils::TNodeID>&)
-	{
-	}
+			const std::set<mrpt::utils::TNodeID>&) {}
 	/**\}*/
 	/**\brief Register a new constraint/edge in the current graph.
 	 *
 	 * Implementations of this class should provide a wrapper around
 	 * GRAPH_T::insertEdge method.
- */
-	virtual void registerNewEdge(
-		const mrpt::utils::TNodeID& from, const mrpt::utils::TNodeID& to,
-		const constraint_t& rel_edge);
+     */
+    virtual void registerNewEdge(
+    		const mrpt::utils::TNodeID& from,
+    		const mrpt::utils::TNodeID& to,
+    		const constraint_t& rel_edge);
+
+	bool m_just_inserted_lc;
+	/**\brief Indicates whether the ERD implementation expects, at most one
+	 * single node to be registered, between successive calls to the
+	 * updateState method.
+	 *
+	 * By default set to false.
+	 */
+	bool m_override_registered_nodes_check;
+	/**\brief Keep track of the registered edge types.
+	 *
+	 * Available types of edges include:
+	 * - ICP2D
+	 * - ICP3D
+	 * - LC
+	 */
+	std::map<std::string, int> m_edge_types_to_nums;
 
 	bool m_just_inserted_lc;
 	/**\brief Indicates whether the ERD implementation expects, at most one
