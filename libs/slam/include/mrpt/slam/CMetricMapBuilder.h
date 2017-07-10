@@ -57,7 +57,7 @@ class SLAM_IMPEXP CMetricMapBuilder : public mrpt::utils::COutputLogger
 	 */
 	virtual void initialize(
 		const mrpt::maps::CSimpleMap& initialMap = mrpt::maps::CSimpleMap(),
-		mrpt::poses::CPosePDF* x0 = nullptr) = 0;
+		const mrpt::poses::CPosePDF* x0 = nullptr) = 0;
 
 	/** Returns a copy of the current best pose estimation as a pose PDF. */
 	virtual mrpt::poses::CPose3DPDF::Ptr getCurrentPoseEstimation() const = 0;

@@ -85,28 +85,6 @@ class SLAM_IMPEXP CMetricMapBuilderRBPF : public mrpt::slam::CMetricMapBuilder
 	 * constructor.
 	  */
 	struct SLAM_IMPEXP TConstructionOptions : public utils::CLoadableOptions
-=======
-	/** This class implements a Rao-Blackwelized Particle Filter (RBPF) approach to map building (SLAM).
-	 *   Internally, the list of particles, each containing a hypothesis for the robot path plus its associated
-	 *    metric map, is stored in an object of class CMultiMetricMapPDF.
-	 *
-	 *  This class processes robot actions and observations sequentially (through the method CMetricMapBuilderRBPF::processActionObservation)
-	 *   and exploits the generic design of metric map classes in MRPT to deal with any number and combination of maps simultaneously: the likelihood
-	 *   of observations is the product of the likelihood in the different maps, etc.
-	 *
-	 *   A number of particle filter methods are implemented as well, by selecting the appropriate values in TConstructionOptions::PF_options.
-	 *   Not all the PF algorithms are implemented for all kinds of maps.
-	 *
-     *  For an example of usage, check the application "rbpf-slam", in "apps/RBPF-SLAM". See also the <a href="http://www.mrpt.org/list-of-mrpt-apps/application-RBPF-SLAM" >wiki page</a>.
-	 *
-	 *  \note Since MRPT 0.7.2, the new variables "localizeLinDistance,localizeAngDistance" are introduced to provide a way to update the robot pose at a different rate than the map is updated.
-	 *  \note Since MRPT 0.7.1 the semantics of the parameters "insertionLinDistance" and "insertionAngDistance" changes: the entire RBFP is now NOT updated unless odometry increments surpass the threshold (previously, only the map was NOT updated). This is done to gain efficiency.
-	 *  \note Since MRPT 0.6.2 this class implements full 6D SLAM. Previous versions worked in 2D + heading only.
-	 *
-	 * \sa CMetricMap   \ingroup metric_slam_grp
-	 */
-	class SLAM_IMPEXP CMetricMapBuilderRBPF : public mrpt::slam::CMetricMapBuilder
->>>>>>> master
 	{
 	   public:
 		/** Constructor */
@@ -149,7 +127,7 @@ of type CMetricMapBuilderRBPF  */
 	 */
 	void initialize(
 		const mrpt::maps::CSimpleMap& initialMap = mrpt::maps::CSimpleMap(),
-		mrpt::poses::CPosePDF* x0 = nullptr);
+		const mrpt::poses::CPosePDF* x0 = nullptr);
 
 	/** Clear all elements of the maps.
 	  */
@@ -230,4 +208,6 @@ of type CMetricMapBuilderRBPF  */
 
 };  // End of class def.
 
+} // end NS
+} // end NS
 #endif

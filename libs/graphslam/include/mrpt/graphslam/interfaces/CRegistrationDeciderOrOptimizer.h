@@ -19,7 +19,6 @@
 #include <mrpt/utils/COutputLogger.h>
 #include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/system/os.h>
-#include <mrpt/system/threads.h>
 #include <mrpt/graphslam/misc/CWindowManager.h>
 
 #include <string>

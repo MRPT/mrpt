@@ -100,9 +100,9 @@ class SLAM_IMPEXP CMonteCarloLocalization3D
 
 	/** \name Virtual methods that the PF_implementations assume exist.
 		@{ */
-	/** Return a pointer to the last robot pose in the i'th particle (or nullptr
-	 * if it's a path and it's empty). */
-	const mrpt::math::TPose3D* getLastPose(const size_t i) const;
+	/** Return the robot pose for the i'th particle. is_valid is
+	 * always true in this class. */
+	mrpt::math::TPose3D getLastPose(const size_t i, bool &is_valid_pose) const override;
 
 	void PF_SLAM_implementation_custom_update_particle_with_new_pose(
 		CParticleDataContent* particleData,

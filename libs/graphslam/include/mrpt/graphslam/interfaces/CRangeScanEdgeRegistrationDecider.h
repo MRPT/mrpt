@@ -25,7 +25,7 @@
 #include <mrpt/utils/CFileInputStream.h>
 #include <mrpt/utils/CImage.h>
 #include <mrpt/utils/TColor.h>
-#include <mrpt/utils/mrpt_stdint.h>
+#include <stdint.h>
 
 namespace mrpt
 {

@@ -417,6 +417,11 @@ class BASE_IMPEXP CPose3D : public CPose<CPose3D>,
 
 	/** @} */  // compositions
 
+	/** Return the opposite of the current pose instance by taking the negative
+	 * of all its components \a individually
+	 */
+	CPose3D getOppositeScalar() const;
+
 	/** @name Access and modify contents
 		@{ */
 
@@ -635,6 +640,12 @@ class BASE_IMPEXP CPose3D : public CPose<CPose3D>,
 			m.get_unsafe(0, 0), m.get_unsafe(0, 1), m.get_unsafe(0, 2),
 			DEG2RAD(m.get_unsafe(0, 3)), DEG2RAD(m.get_unsafe(0, 4)),
 			DEG2RAD(m.get_unsafe(0, 5)));
+	}
+	/** Same as fromString, but without requiring the square brackets in the
+	 * string */
+	void fromStringRaw(const std::string &s)
+	{
+		this->fromString("[" + s + "]");
 	}
 
 	/** Return true if the 6D pose represents a Z axis almost exactly vertical

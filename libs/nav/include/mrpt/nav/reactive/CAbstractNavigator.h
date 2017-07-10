@@ -212,6 +212,9 @@ class NAV_IMPEXP CAbstractNavigator : public mrpt::utils::COutputLogger
 		/** (Default value=0.6) When closer than this distance, check if the
 		 * target is blocked to abort navigation with an error. */
 		double dist_check_target_is_blocked;
+		/** (Default=3) How many steps should the condition for
+		 * dist_check_target_is_blocked be fulfilled to raise an event */
+		int hysteresis_check_target_is_blocked;
 
 		virtual void loadFromConfigFile(
 			const mrpt::utils::CConfigFileBase& c,
@@ -237,6 +240,7 @@ class NAV_IMPEXP CAbstractNavigator : public mrpt::utils::COutputLogger
 	/** Will be false until the navigation end is sent, and it is reset with
 	 * each new command */
 	bool m_navigationEndEventSent;
+	int m_counter_check_target_is_blocked;
 
 	/** Called before starting a new navigation. Internally, it calls to
 	 * child-implemented onStartNewNavigation() */

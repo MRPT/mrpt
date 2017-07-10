@@ -93,6 +93,7 @@ CAbstractNavigator::CAbstractNavigator(CRobot2NavInterface& react_iterf_impl)
 	: mrpt::utils::COutputLogger("MRPT_navigator"),
 	  m_lastNavigationState(IDLE),
 	  m_navigationEndEventSent(false),
+	  m_counter_check_target_is_blocked(0),
 	  m_navigationState(IDLE),
 	  m_robot(react_iterf_impl),
 	  m_frame_tf(nullptr),
@@ -400,7 +401,8 @@ bool CAbstractNavigator::stop(bool isEmergencyStop)
 CAbstractNavigator::TAbstractNavigatorParams::TAbstractNavigatorParams()
 	: dist_to_target_for_sending_event(0),
 	  alarm_seems_not_approaching_target_timeout(30),
-	  dist_check_target_is_blocked(0.6)
+	  dist_check_target_is_blocked(0.6),
+	  hysteresis_check_target_is_blocked(3)
 {
 }
 void CAbstractNavigator::TAbstractNavigatorParams::loadFromConfigFile(

@@ -163,9 +163,10 @@ class PF_implementation : public mrpt::utils::COutputLogger
 	/** \name Virtual methods that the PF_implementations assume exist.
 		@{ */
 
-	/** Return a pointer to the last robot pose in the i'th particle (or nullptr
-	 * if it's a path and it's empty). */
-	virtual const mrpt::math::TPose3D* getLastPose(const size_t i) const = 0;
+	/** Return the last robot pose in the i'th particle; is_valid_pose will be
+	 * false if there is no such last pose.
+	 * \exception std::exception on out-of-range particle index */
+	virtual mrpt::math::TPose3D getLastPose(const size_t i, bool &is_valid_pose) const = 0;
 
 	virtual void PF_SLAM_implementation_custom_update_particle_with_new_pose(
 		PARTICLE_TYPE* particleData,

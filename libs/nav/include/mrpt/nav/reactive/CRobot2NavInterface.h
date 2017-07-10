@@ -177,10 +177,11 @@ class NAV_IMPEXP CRobot2NavInterface : public mrpt::utils::COutputLogger
 	 * point inside the robot shape) */
 	virtual void sendApparentCollisionEvent();
 
-	/** Callback: Target seems to be blocked by an obstacle. This event is
-	 * invoked before ending navigation with an ERROR state and another call to
-	 * sendWaySeemsBlockedEvent(). */
-	virtual void sendCannotGetCloserToBlockedTargetEvent();
+	/** Callback: Target seems to be blocked by an obstacle. If user
+	  * sets `do_abort_nav` to `true` (default is `false`), after this
+	  * callback returns, navigation will end with an ERROR state and
+	  * another call to sendWaySeemsBlockedEvent() will be done. */
+	virtual void sendCannotGetCloserToBlockedTargetEvent(bool &do_abort_nav);
 
 	/** @} */
 

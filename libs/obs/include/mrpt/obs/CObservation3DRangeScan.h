@@ -404,6 +404,10 @@ class OBS_IMPEXP CObservation3DRangeScan : public CObservation
 	 * points3D_y & \a points3D_z to allow the usage of the internal memory
 	 * pool. */
 	void resizePoints3DVectors(const size_t nPoints);
+
+	/** Get the size of the scan pointcloud. \note Method is added for
+	 * compatibility with its CObservation2DRangeScan counterpart */
+	size_t getScanSize() const;
 	/** @} */
 
 	/** \name Point cloud external storage functions

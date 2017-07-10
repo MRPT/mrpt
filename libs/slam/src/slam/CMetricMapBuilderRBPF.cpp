@@ -87,6 +87,9 @@ CMetricMapBuilderRBPF::~CMetricMapBuilderRBPF() {}
   ---------------------------------------------------------------*/
 void CMetricMapBuilderRBPF::clear()
 {
+	std::lock_guard<std::mutex> csl(
+		critZoneChangingMap);  // Enter critical section (updating map)
+
 	MRPT_LOG_DEBUG("CMetricMapBuilderRBPF::clear() called.");
 	static CPose2D nullPose(0, 0, 0);
 
@@ -290,8 +293,8 @@ void  CMetricMapBuilderRBPF::initialize(
 		const CSimpleMap &initialMap,
 		const CPosePDF  *x0 )
 {
-	// Enter critical section (updating map)
-	mrpt::synch::CCriticalSectionLocker csl(&critZoneChangingMap);
+	std::lock_guard<std::mutex> csl(
+		critZoneChangingMap);  // Enter critical section (updating map)
 
 	MRPT_LOG_INFO_STREAM(
 		"[initialize] Called with " << 
@@ -312,7 +315,6 @@ void  CMetricMapBuilderRBPF::initialize(
 
 	// Clear maps for each particle & set pose:
 	mapPDF.clear(initialMap, curPose);
-
 }
 
 /*---------------------------------------------------------------

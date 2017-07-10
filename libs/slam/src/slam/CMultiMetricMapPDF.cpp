@@ -120,8 +120,8 @@ void CMultiMetricMapPDF::clear(const mrpt::maps::CSimpleMap &prevMap, const mrpt
 		p.d->robotPath.resize(nOldKeyframes);
 		for (size_t i = 0; i < nOldKeyframes; i++)
 		{
-			CPose3DPDFPtr       keyframe_pose;
-			CSensoryFramePtr    sfkeyframe_sf;
+			CPose3DPDF::Ptr keyframe_pose;
+			CSensoryFrame::Ptr sfkeyframe_sf;
 			prevMap.get(i, keyframe_pose, sfkeyframe_sf);
 
 			// as pose, use: if the PDF is also a PF with the same number of samples, use those particles;
@@ -130,7 +130,7 @@ void CMultiMetricMapPDF::clear(const mrpt::maps::CSimpleMap &prevMap, const mrpt
 			bool kf_pose_set = false;
 			if (IS_CLASS(keyframe_pose, CPose3DPDFParticles))
 			{
-				const auto pdf_parts = dynamic_cast<const CPose3DPDFParticles*>(keyframe_pose.pointer());
+				const auto pdf_parts = dynamic_cast<const CPose3DPDFParticles*>(keyframe_pose.get());
 				ASSERT_(pdf_parts);
 				if (pdf_parts->particlesCount() == nParts)
 				{
@@ -287,9 +287,7 @@ void CMultiMetricMapPDF::readFromStream(mrpt::utils::CStream& in, int version)
 	};
 }
 
-/*---------------------------------------------------------------
-						getLastPose
- ---------------------------------------------------------------*/
+
 TPose3D CMultiMetricMapPDF::getLastPose(const size_t i, bool &is_valid_pose) const
 {
 	if (i >= m_particles.size())
@@ -444,7 +442,7 @@ bool CMultiMetricMapPDF::insertObservation(CSensoryFrame& sf)
 	const uint32_t new_sf_id = SFs.size();
 	SFs.insert(
 		posePDF,
-		CSensoryFramePtr( new CSensoryFrame(sf) ) );
+		CSensoryFrame::Ptr( new CSensoryFrame(sf) ) );
 	SF2robotPath.resize(new_sf_id+1);
 	SF2robotPath[new_sf_id] = m_particles[0].d->robotPath.size() - 1;
 
