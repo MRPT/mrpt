@@ -49,8 +49,6 @@ void getPoseFromString(const std::string& s, mrpt::poses::CPose3D& p)
 	std::vector<std::string> curr_tokens;
 	mrpt::system::tokenize(s, " ", curr_tokens);
 
-	MRPT_TODO("Is the transformation of frames needed?");
-
 	ASSERTMSG_(
 		curr_tokens.size() == 7,
 		mrpt::format(
