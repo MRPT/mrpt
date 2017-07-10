@@ -193,7 +193,7 @@ SET(MRPT_ENABLE_EMBEDDED_GLOBAL_PROFILER OFF CACHE BOOL "Enable MRPT embedded pr
 # ===================================================
 SET(MRPT_HAS_ASSERT ON CACHE BOOL "Enable ASSERT_ statements (disable it for speed up).")
 
-#   "Clasic" function & headers detection:
+#   "Classic" function & headers detection:
 include(cmakemodules/script_detect_functions_headers.cmake REQUIRED)
 
 # MSVC only:
