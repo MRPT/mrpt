@@ -101,18 +101,20 @@ void CMultiMetricMapPDF::clear(const CPose3D& initialPose)
 	averageMapIsUpdated = false;
 }
 
-void CMultiMetricMapPDF::clear(const mrpt::maps::CSimpleMap &prevMap, const mrpt::poses::CPose3D &currentPose)
+void CMultiMetricMapPDF::clear(
+	const mrpt::maps::CSimpleMap& prevMap,
+	const mrpt::poses::CPose3D& currentPose)
 {
 	const size_t nParts = m_particles.size(), nOldKeyframes = prevMap.size();
-	if(nOldKeyframes == 0)
+	if (nOldKeyframes == 0)
 	{
-		//prevMap is empty, so reset the map
+		// prevMap is empty, so reset the map
 		clear(currentPose);
 		return;
 	}
-	for (size_t idxPart = 0; idxPart<nParts; idxPart++)
+	for (size_t idxPart = 0; idxPart < nParts; idxPart++)
 	{
-		auto &p = m_particles[idxPart];
+		auto& p = m_particles[idxPart];
 		p.log_w = 0;
 
 		p.d->mapTillNow.clear();
@@ -124,13 +126,16 @@ void CMultiMetricMapPDF::clear(const mrpt::maps::CSimpleMap &prevMap, const mrpt
 			CSensoryFrame::Ptr sfkeyframe_sf;
 			prevMap.get(i, keyframe_pose, sfkeyframe_sf);
 
-			// as pose, use: if the PDF is also a PF with the same number of samples, use those particles;
-			// otherwise, simply use the mean for all particles as an approximation (with loss of uncertainty).
+			// as pose, use: if the PDF is also a PF with the same number of
+			// samples, use those particles;
+			// otherwise, simply use the mean for all particles as an
+			// approximation (with loss of uncertainty).
 			mrpt::poses::CPose3D kf_pose;
 			bool kf_pose_set = false;
 			if (IS_CLASS(keyframe_pose, CPose3DPDFParticles))
 			{
-				const auto pdf_parts = dynamic_cast<const CPose3DPDFParticles*>(keyframe_pose.get());
+				const auto pdf_parts = dynamic_cast<const CPose3DPDFParticles*>(
+					keyframe_pose.get());
 				ASSERT_(pdf_parts);
 				if (pdf_parts->particlesCount() == nParts)
 				{
@@ -143,22 +148,20 @@ void CMultiMetricMapPDF::clear(const mrpt::maps::CSimpleMap &prevMap, const mrpt
 				kf_pose = keyframe_pose->getMeanVal();
 			}
 			p.d->robotPath[i] = kf_pose;
-			for (const auto &obs : *sfkeyframe_sf)
+			for (const auto& obs : *sfkeyframe_sf)
 			{
 				p.d->mapTillNow.insertObservation(&(*obs), &kf_pose);
 			}
 		}
 	}
 
-	SFs = prevMap; // copy
+	SFs = prevMap;  // copy
 	SF2robotPath.clear();
 	SF2robotPath.reserve(nOldKeyframes);
-	for (size_t i = 0; i < nOldKeyframes; i++)
-		SF2robotPath.push_back(i);
+	for (size_t i = 0; i < nOldKeyframes; i++) SF2robotPath.push_back(i);
 
 	averageMapIsUpdated = false;
 }
-
 
 /*---------------------------------------------------------------
 						getEstimatedPosePDF
@@ -287,8 +290,8 @@ void CMultiMetricMapPDF::readFromStream(mrpt::utils::CStream& in, int version)
 	};
 }
 
-
-TPose3D CMultiMetricMapPDF::getLastPose(const size_t i, bool &is_valid_pose) const
+TPose3D CMultiMetricMapPDF::getLastPose(
+	const size_t i, bool& is_valid_pose) const
 {
 	if (i >= m_particles.size())
 		THROW_EXCEPTION("Particle index out of bounds!");
@@ -296,7 +299,7 @@ TPose3D CMultiMetricMapPDF::getLastPose(const size_t i, bool &is_valid_pose) con
 	if (m_particles[i].d->robotPath.empty())
 	{
 		is_valid_pose = false;
-		return TPose3D(0,0,0,0,0,0);
+		return TPose3D(0, 0, 0, 0, 0, 0);
 	}
 	else
 	{
@@ -440,10 +443,8 @@ bool CMultiMetricMapPDF::insertObservation(CSensoryFrame& sf)
 
 	// Insert it into the SFs and the SF2robotPath list:
 	const uint32_t new_sf_id = SFs.size();
-	SFs.insert(
-		posePDF,
-		CSensoryFrame::Ptr( new CSensoryFrame(sf) ) );
-	SF2robotPath.resize(new_sf_id+1);
+	SFs.insert(posePDF, CSensoryFrame::Ptr(new CSensoryFrame(sf)));
+	SF2robotPath.resize(new_sf_id + 1);
 	SF2robotPath[new_sf_id] = m_particles[0].d->robotPath.size() - 1;
 
 	bool anymap = false;
@@ -451,9 +452,9 @@ bool CMultiMetricMapPDF::insertObservation(CSensoryFrame& sf)
 	{
 		bool pose_is_valid;
 		const CPose3D robotPose = CPose3D(getLastPose(i, pose_is_valid));
-		//ASSERT_(pose_is_valid); // if not, use the default (0,0,0)
-		const bool map_modified = sf.insertObservationsInto( 
-			&m_particles[i].d->mapTillNow, &robotPose );
+		// ASSERT_(pose_is_valid); // if not, use the default (0,0,0)
+		const bool map_modified = sf.insertObservationsInto(
+			&m_particles[i].d->mapTillNow, &robotPose);
 		anymap = anymap || map_modified;
 	}
 

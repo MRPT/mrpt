@@ -102,7 +102,8 @@ class SLAM_IMPEXP CMonteCarloLocalization3D
 		@{ */
 	/** Return the robot pose for the i'th particle. is_valid is
 	 * always true in this class. */
-	mrpt::math::TPose3D getLastPose(const size_t i, bool &is_valid_pose) const override;
+	mrpt::math::TPose3D getLastPose(
+		const size_t i, bool& is_valid_pose) const override;
 
 	void PF_SLAM_implementation_custom_update_particle_with_new_pose(
 		CParticleDataContent* particleData,

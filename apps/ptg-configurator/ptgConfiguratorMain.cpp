@@ -900,14 +900,11 @@ void ptgConfiguratorframe::prepareRobotPathPlot(
 	plot->AddLayer(*graph);
 }
 
-void ptgConfiguratorframe::OnAbout(wxCommandEvent& )
+void ptgConfiguratorframe::OnAbout(wxCommandEvent&)
 {
 	mrpt::gui::show_mrpt_about_box_wxWidgets(this, "ptg-configurator");
 }
-void ptgConfiguratorframe::OnQuit(wxCommandEvent& )
-{
-	Close();
-}
+void ptgConfiguratorframe::OnQuit(wxCommandEvent&) { Close(); }
 void ptgConfiguratorframe::OnbtnReloadParamsClick(wxCommandEvent& event)
 {
 	WX_START_TRY;

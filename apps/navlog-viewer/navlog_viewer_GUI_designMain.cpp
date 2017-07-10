@@ -586,7 +586,8 @@ void navlog_viewer_GUI_designDialog::loadLogfile(const std::string& filName)
 
 void navlog_viewer_GUI_designDialog::OnbtnHelpClick(wxCommandEvent& event)
 {
-	mrpt::gui::show_mrpt_about_box_wxWidgets(this, "navlog-viewer",
+	mrpt::gui::show_mrpt_about_box_wxWidgets(
+		this, "navlog-viewer",
 		"Invoke with --help to see command line arguments.");
 }
 

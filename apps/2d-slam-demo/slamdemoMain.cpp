@@ -1059,9 +1059,10 @@ void slamdemoFrame::OnQuit(wxCommandEvent& event)
 /*---------------------------------------------------------------
 						About
   ---------------------------------------------------------------*/
-void slamdemoFrame::OnAbout(wxCommandEvent& )
+void slamdemoFrame::OnAbout(wxCommandEvent&)
 {
-	mrpt::gui::show_mrpt_about_box_wxWidgets(this, "2d-slam-demo",
+	mrpt::gui::show_mrpt_about_box_wxWidgets(
+		this, "2d-slam-demo",
 		"Invoke with --help to see command line arguments.\n"
 		"This program was inspired by a MATLAB version written by J. "
 		"Neira and J. Tardos.\n");

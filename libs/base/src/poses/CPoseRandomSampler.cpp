@@ -56,9 +56,8 @@ CPoseRandomSampler& CPoseRandomSampler::operator=(const CPoseRandomSampler& o)
 	return *this;
 }
 
-CPoseRandomSampler::CPoseRandomSampler(CPoseRandomSampler &&o) :
-	m_pdf2D(nullptr),
-	m_pdf3D(nullptr)
+CPoseRandomSampler::CPoseRandomSampler(CPoseRandomSampler&& o)
+	: m_pdf2D(nullptr), m_pdf3D(nullptr)
 {
 	if (o.m_pdf2D)
 	{
@@ -75,7 +74,7 @@ CPoseRandomSampler::CPoseRandomSampler(CPoseRandomSampler &&o) :
 	m_fastdraw_gauss_M_2D = std::move(o.m_fastdraw_gauss_M_2D);
 	m_fastdraw_gauss_M_3D = std::move(o.m_fastdraw_gauss_M_3D);
 }
-CPoseRandomSampler & CPoseRandomSampler::operator =(CPoseRandomSampler &&o)
+CPoseRandomSampler& CPoseRandomSampler::operator=(CPoseRandomSampler&& o)
 {
 	if (this == &o) return *this;
 	this->clear();

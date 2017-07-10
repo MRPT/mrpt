@@ -677,11 +677,8 @@ void camera_calib_guiDialog::OnbtnRunCalibClick(wxCommandEvent& event)
 	}
 }
 
-void camera_calib_guiDialog::OnbtnCloseClick(wxCommandEvent& )
-{
-	Close();
-}
-void camera_calib_guiDialog::OnbtnAboutClick(wxCommandEvent& )
+void camera_calib_guiDialog::OnbtnCloseClick(wxCommandEvent&) { Close(); }
+void camera_calib_guiDialog::OnbtnAboutClick(wxCommandEvent&)
 {
 	mrpt::gui::show_mrpt_about_box_wxWidgets(this, "camera-calib");
 }

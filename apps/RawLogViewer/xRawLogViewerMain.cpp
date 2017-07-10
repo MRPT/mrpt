@@ -1840,10 +1840,7 @@ xRawLogViewerFrame::~xRawLogViewerFrame()
 	winGPSPath.reset();
 }
 
-void xRawLogViewerFrame::OnQuit(wxCommandEvent&)
-{
-	Close();
-}
+void xRawLogViewerFrame::OnQuit(wxCommandEvent&) { Close(); }
 void xRawLogViewerFrame::OnAbout(wxCommandEvent&)
 {
 	mrpt::gui::show_mrpt_about_box_wxWidgets(this, "RawLogViewer");

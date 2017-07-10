@@ -9,8 +9,9 @@
 
 /*
   App      : kinect-stereo-calib
-  Web pages: http://www.mrpt.org/list-of-mrpt-apps/application-kinect-stereo-calib
-             http://www.mrpt.org/Kinect_and_MRPT
+  Web pages:
+  http://www.mrpt.org/list-of-mrpt-apps/application-kinect-stereo-calib
+			 http://www.mrpt.org/Kinect_and_MRPT
   Usage    : Run and follow on-screen instructions
 */
 
@@ -1364,10 +1365,7 @@ kinect_calibrate_guiDialog::~kinect_calibrate_guiDialog()
 	//*)
 }
 
-void kinect_calibrate_guiDialog::OnQuit(wxCommandEvent& event)
-{
-	Close();
-}
+void kinect_calibrate_guiDialog::OnQuit(wxCommandEvent& event) { Close(); }
 void kinect_calibrate_guiDialog::OnAbout(wxCommandEvent& event)
 {
 	mrpt::gui::show_mrpt_about_box_wxWidgets(this, "kinect-stereo-calib");

@@ -1171,11 +1171,8 @@ reactive_navigator_demoframe::~reactive_navigator_demoframe()
 	m_myRedirector = nullptr;
 }
 
-void reactive_navigator_demoframe::OnQuit(wxCommandEvent& )
-{
-	Close();
-}
-void reactive_navigator_demoframe::OnAbout(wxCommandEvent& )
+void reactive_navigator_demoframe::OnQuit(wxCommandEvent&) { Close(); }
+void reactive_navigator_demoframe::OnAbout(wxCommandEvent&)
 {
 	mrpt::gui::show_mrpt_about_box_wxWidgets(this, "ReactiveNavigatorDemo");
 }

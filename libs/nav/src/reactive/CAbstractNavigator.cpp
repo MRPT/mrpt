@@ -141,7 +141,9 @@ void CAbstractNavigator::suspend()
 
 	// Issue an "stop" if we are moving:
 	if (m_curPoseVel.timestamp != INVALID_TIMESTAMP &&
-		(std::abs(m_curPoseVel.velLocal.vx)>1e-4 || std::abs(m_curPoseVel.velLocal.vy)>1e-4 || std::abs(m_curPoseVel.velLocal.omega)>1e-4))
+		(std::abs(m_curPoseVel.velLocal.vx) > 1e-4 ||
+		 std::abs(m_curPoseVel.velLocal.vy) > 1e-4 ||
+		 std::abs(m_curPoseVel.velLocal.omega) > 1e-4))
 	{
 		this->stop(false /*not an emergency stop*/);
 	}
@@ -428,15 +430,18 @@ void CAbstractNavigator::TAbstractNavigatorParams::saveToConfigFile(
 		"When closer than this distance, check if the target is blocked to "
 		"abort navigation with an error. [Default=0.6 m]");
 	MRPT_SAVE_CONFIG_VAR_COMMENT(
-		dist_to_target_for_sending_event, 
+		dist_to_target_for_sending_event,
 		"Default value=0, means use the `targetAllowedDistance` passed by the"
 		" user in the navigation request.");
-	MRPT_SAVE_CONFIG_VAR_COMMENT(alarm_seems_not_approaching_target_timeout, 
+	MRPT_SAVE_CONFIG_VAR_COMMENT(
+		alarm_seems_not_approaching_target_timeout,
 		"navigator timeout (seconds) [Default=30 sec]");
-	MRPT_SAVE_CONFIG_VAR_COMMENT(dist_check_target_is_blocked, 
+	MRPT_SAVE_CONFIG_VAR_COMMENT(
+		dist_check_target_is_blocked,
 		"When closer than this distance, check if the target is blocked to "
 		"abort navigation with an error. [Default=0.6 m]");
-	MRPT_SAVE_CONFIG_VAR_COMMENT(hysteresis_check_target_is_blocked, 
+	MRPT_SAVE_CONFIG_VAR_COMMENT(
+		hysteresis_check_target_is_blocked,
 		"How many steps should the condition for dist_check_target_is_blocked "
 		"be fulfilled to raise an event");
 }
@@ -564,7 +569,7 @@ void CAbstractNavigator::performNavigationStepNavigating(
 
 			// Check if the target seems to be at reach, but it's clearly
 			// occupied by obstacles:
-			if (targetDist < 
+			if (targetDist <
 				params_abstract_navigator.dist_check_target_is_blocked)
 			{
 				const auto rel_trg = m_navigationParams->target.target_coords -
@@ -572,13 +577,15 @@ void CAbstractNavigator::performNavigationStepNavigating(
 				const bool is_col = checkCollisionWithLatestObstacles(rel_trg);
 				if (is_col)
 				{
-					const bool send_event = (
-						++m_counter_check_target_is_blocked >= 
-						params_abstract_navigator.hysteresis_check_target_is_blocked);
+					const bool send_event =
+						(++m_counter_check_target_is_blocked >=
+						 params_abstract_navigator
+							 .hysteresis_check_target_is_blocked);
 
 					if (send_event)
 					{
-						MRPT_LOG_THROTTLE_WARN(5.0,
+						MRPT_LOG_THROTTLE_WARN(
+							5.0,
 							"Target seems to be blocked by obstacles. Invoking"
 							" sendCannotGetCloserToBlockedTargetEvent().");
 						bool do_abort_nav = false;

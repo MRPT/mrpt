@@ -879,11 +879,8 @@ _DSceneViewerFrame::~_DSceneViewerFrame()
 	//*)
 }
 
-void _DSceneViewerFrame::OnQuit(wxCommandEvent& )
-{
-	Close();
-}
-void _DSceneViewerFrame::OnAbout(wxCommandEvent& )
+void _DSceneViewerFrame::OnQuit(wxCommandEvent&) { Close(); }
+void _DSceneViewerFrame::OnAbout(wxCommandEvent&)
 {
 	mrpt::gui::show_mrpt_about_box_wxWidgets(this, "SceneViewer3D");
 }

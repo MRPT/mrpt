@@ -876,11 +876,8 @@ hmt_slam_guiFrame::~hmt_slam_guiFrame()
 	WX_END_TRY
 }
 
-void hmt_slam_guiFrame::OnQuit(wxCommandEvent& )
-{
-	Close();
-}
-void hmt_slam_guiFrame::OnAbout(wxCommandEvent& )
+void hmt_slam_guiFrame::OnQuit(wxCommandEvent&) { Close(); }
+void hmt_slam_guiFrame::OnAbout(wxCommandEvent&)
 {
 	mrpt::gui::show_mrpt_about_box_wxWidgets(this, "htm-slam-gui");
 }

@@ -155,12 +155,13 @@ need to account for this with an extra offset.
 /** \def THROW_STACKED_EXCEPTION
  * \sa MRPT_TRY_START, MRPT_TRY_END
  */
-#define THROW_STACKED_EXCEPTION(e)	                                          \
-	{                                                                         \
-		std::string _tse_str(mrpt::format("%s\n", e.what()));                 \
-		_tse_str+= mrpt::format(" %s:%i: In `%s`\n",                          \
-			__FILE__,__LINE__, __CURRENT_FUNCTION_NAME__);                    \
-		throw std::logic_error( _tse_str );                                   \
+#define THROW_STACKED_EXCEPTION(e)                            \
+	{                                                         \
+		std::string _tse_str(mrpt::format("%s\n", e.what())); \
+		_tse_str += mrpt::format(                             \
+			" %s:%i: In `%s`\n", __FILE__, __LINE__,          \
+			__CURRENT_FUNCTION_NAME__);                       \
+		throw std::logic_error(_tse_str);                     \
 	}
 
 /** \def THROW_STACKED_EXCEPTION_CUSTOM_MSG
