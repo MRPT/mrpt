@@ -124,7 +124,7 @@ void optimize_graph_spa_levmarq(
 	// Make list of node IDs to optimize, since the user may want only a subset
 	// of them to be optimized:
 	profiler.enter(
-		"optimize_graph_spa_levmarq.list_IDs");  // ---------------\  .
+		"optimize_graph_spa_levmarq.list_IDs");
 	const set<TNodeID>* nodes_to_optimize;
 	set<TNodeID> nodes_to_optimize_auxlist;  // Used only if
 	// in_nodes_to_optimize==nullptr
@@ -234,18 +234,17 @@ void optimize_graph_spa_levmarq(
 	// Compute Jacobians & errors
 	// ===================================
 	profiler.enter(
-		"optimize_graph_spa_levmarq.Jacobians&err");  // ------------------------------\
-													  // .
+		"optimize_graph_spa_levmarq.Jacobians&err");
 	double total_sqr_err = computeJacobiansAndErrors<GRAPH_T>(
 		graph, lstObservationData, lstJacobians, errs);
 	profiler.leave(
-		"optimize_graph_spa_levmarq.Jacobians&err");  // ------------------------------/
+		"optimize_graph_spa_levmarq.Jacobians&err");
 
 	// Only once (since this will be static along iterations), build a quick
 	// look-up table with the
 	//  indices of the free nodes associated to the (first_id,second_id) of each
 	//  Jacobian pair:
-	// -----------------------------------------------------------------------------------------------
+	// ------------------------------------------------------------------------
 	vector<pair<size_t, size_t>>
 		observationIndex_to_relatedFreeNodeIndex;  // "relatedFreeNodeIndex"
 	// means into
@@ -296,17 +295,16 @@ void optimize_graph_spa_levmarq(
 		{
 			have_to_recompute_H_and_grad = false;
 
-			// ========================================================================
+			// ======================================================================
 			// Compute the gradient: grad = J^t * errs
-			// ========================================================================
+			// ======================================================================
 			//  "grad" can be seen as composed of N independent arrays, each one
 			//  being:
 			//   grad_i = \sum_k J^t_{k->i} errs_k
 			// that is: g_i is the "dot-product" of the i'th (transposed)
 			// block-column of J and the vector of errors "errs"
 			profiler.enter(
-				"optimize_graph_spa_levmarq.grad");  // ------------------------------\
-													 // .
+				"optimize_graph_spa_levmarq.grad");
 			typename mrpt::aligned_containers<typename gst::Array_O>::vector_t
 				grad_parts(nFreeNodes, array_O_zeros);
 
@@ -367,7 +365,7 @@ void optimize_graph_spa_levmarq(
 				nFreeNodes * DIMS_POSE * sizeof(grad[0]));  // Ohh yeahh!
 			grad /= SCALE_HESSIAN;
 			profiler.leave(
-				"optimize_graph_spa_levmarq.grad");  // ------------------------------/
+				"optimize_graph_spa_levmarq.grad");
 
 			// End condition #1
 			const double grad_norm_inf = math::norm_inf(
@@ -385,8 +383,7 @@ void optimize_graph_spa_levmarq(
 			}
 
 			profiler.enter(
-				"optimize_graph_spa_levmarq.sp_H:build map");  // ------------------------------\
-															   // .
+				"optimize_graph_spa_levmarq.sp_H:build map");
 			// ======================================================================
 			// Build sparse representation of the upper triangular part of
 			//  the Hessian matrix H = J^t * J
@@ -472,7 +469,7 @@ void optimize_graph_spa_levmarq(
 				}
 			}
 			profiler.leave(
-				"optimize_graph_spa_levmarq.sp_H:build map");  // ------------------------------/
+				"optimize_graph_spa_levmarq.sp_H:build map");
 
 			// Just in the first iteration, we need to calculate an estimate for
 			// the first value of "lamdba":
@@ -527,8 +524,7 @@ void optimize_graph_spa_levmarq(
 		}
 
 		profiler.enter(
-			"optimize_graph_spa_levmarq.sp_H:build");  // ------------------------------\
-													   // .
+			"optimize_graph_spa_levmarq.sp_H:build");
 		// Now, build the actual sparse matrix H:
 		// Note: we only need to fill out the upper diagonal part, since
 		// Cholesky will later on ignore the other part.
@@ -572,7 +568,7 @@ void optimize_graph_spa_levmarq(
 
 		sp_H.compressFromTriplet();
 		profiler.leave(
-			"optimize_graph_spa_levmarq.sp_H:build");  // ------------------------------/
+			"optimize_graph_spa_levmarq.sp_H:build");
 
 		// Use the cparse Cholesky decomposition to efficiently solve:
 		//   (H+\lambda*I) \delta = -J^t * (f(x)-z)
@@ -691,12 +687,11 @@ void optimize_graph_spa_levmarq(
 				new_errs;
 
 			profiler.enter(
-				"optimize_graph_spa_levmarq.Jacobians&err");  // ------------------------------\
-															  // .
+				"optimize_graph_spa_levmarq.Jacobians&err");
 			double new_total_sqr_err = computeJacobiansAndErrors<GRAPH_T>(
 				graph, lstObservationData, new_lstJacobians, new_errs);
 			profiler.leave(
-				"optimize_graph_spa_levmarq.Jacobians&err");  // ------------------------------/
+				"optimize_graph_spa_levmarq.Jacobians&err");
 
 			// Now, to decide whether to accept the change:
 			if (new_total_sqr_err < total_sqr_err)  // rho>0)
