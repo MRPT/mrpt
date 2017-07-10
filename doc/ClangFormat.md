@@ -139,7 +139,8 @@ ClangFormat configuration while concurrently modifying/adding code.
     A sample Vim configuration is given in [this
     snippet](https://gist.github.com/bergercookie/9a2e96e19733b32ca55b8e2940eaba2c)
 
-- [Visual Studio](https://marketplace.visualstudio.com/items?itemName=xaver.clang-format)
+- [Visual Studio 2017](https://marketplace.visualstudio.com/items?itemName=HansWennborg.ClangFormat)
+- [Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=xaver.clang-format)
 - [Emacs](https://llvm.org/svn/llvm-project/cfe/trunk/tools/clang-format/clang-format.el)
 - [Sublime](https://github.com/rosshemsley/SublimeClangFormat)
 - [Atom](https://atom.io/packages/formatter-clangformat)
