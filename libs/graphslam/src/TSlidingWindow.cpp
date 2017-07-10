@@ -117,12 +117,13 @@ double TSlidingWindow::getStdDev()
 
 	return std_dev_out;
 	MRPT_END;
-} // end of getStdDev
+}
 
 bool TSlidingWindow::evaluateMeasurementInGaussian(double measurement)
 {
 	// get the boundaries for acceptance of measurements - [-3sigma, 3sigma]
-	// with regards to the mean
+	// with
+	// regards to the mean
 	double low_lim = this->getMean() - 3 * this->getStdDev();
 	double upper_lim = this->getMean() + 3 * this->getStdDev();
 
@@ -140,7 +141,7 @@ bool TSlidingWindow::evaluateMeasurementAbove(double value)
 bool TSlidingWindow::evaluateMeasurementBelow(double value)
 {
 	return !evaluateMeasurementAbove(value);
-} // end of evaluateMeasurementBelow
+}
 
 void TSlidingWindow::addNewMeasurement(double measurement)
 {
@@ -186,8 +187,7 @@ void TSlidingWindow::resizeWindow(size_t new_size)
 	m_win_size = new_size;
 
 	MRPT_END;
-} // end of resizeWindow
-
+}
 void TSlidingWindow::loadFromConfigFile(
 	const mrpt::utils::CConfigFileBase& source, const std::string& section)
 {
@@ -228,7 +228,7 @@ void TSlidingWindow::dumpToTextStream(mrpt::utils::CStream& out) const
 		"m_is_initialized    : %s\n", m_is_initialized ? "TRUE" : "FALSE");
 
 	MRPT_END;
-} // end of dumpToTextStream
+}
 
 size_t TSlidingWindow::getWindowSize() const { return m_win_size; }
 bool TSlidingWindow::windowIsFull() const

@@ -58,8 +58,8 @@
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/utils/types_simple.h>
 #include <mrpt/utils/TColor.h>
+#include <mrpt/utils/CImage.h>
 #include <mrpt/utils/COutputLogger.h>
-#include <mrpt/utils/pose_utils.h>
 
 #include <mrpt/graphslam/misc/CEdgeCounter.h>
 #include <mrpt/graphslam/interfaces/CNodeRegistrationDecider.h>
@@ -88,16 +88,19 @@ namespace graphslam
  * constraints (edges) and solve it to find an estimation of the actual robot
  * trajectory.
  *
+ * // TODO - change this description
  * The template arguments are listed below:
  * - \em GRAPH_T: The type of Graph to be constructed and optimized. Currently
  *   CGraphSlamEngine works only with CPosePDFGaussianInf GRAPH_T instances.
- *
- * Class holds the following decider optimizer instances that change the
- * behavior according to the derived classes that are actually used
- *
- * - CNodeRegistrationDecider
- * - CEdgeRegistrationDecider
- * - CGraphSlamOptimizer
+ * - \em NODE_REGISTRAR: Class responsible of adding new nodes in the graph.
+ *   Class should at least implement the deciders::CNodeRegistrationDecider
+ *   interface provided in CNodeRegistrationDecider.h file.
+ * - \em EDGE_REGISTRAR: Class responsible of adding new edges in the graph.
+ *   Class should at least implement the deciders::CEdgeRegistrationDecider
+ *   interface provided in CEdgeRegistrationDecider.h file.
+ * - \em OPTIMIZER: Class responsible of optimizing the graph. Class should at
+ *   least implement the optimizers::CGraphSlamOptimizer interface provided
+ *   in CGraphSlamOptimizer.h file.
  *
  * \note The GRAPH_T resource is accessed after having locked the relevant
  * section
@@ -123,10 +126,21 @@ namespace graphslam
  *   to do about the new output directory. By default output directory from
  *   previous run is overwritten by the directory of the current run.
  *
+ * - \b ground_truth_file_format
+ *   + \a Section       : GeneralConfiguration
+ *   + \a Default value : NavSimul
+ *   + \a Required      : FALSE
+ *   + \a Description   : Specify the format of the ground-truth file if one is
+ *   provided. Currently CGraphSlamEngine supports ground truth files generated
+ *   by the GridMapNavSimul tool or ground truth files corresponding to
+ *   RGBD-TUM datasets.
+ *   + \a Available Options: NavSimul, RGBD_TUM
+ *
  * - \b class_verbosity
  *   + \a Section       : GeneralConfiguration
  *   + \a Default value : 1 (LVL_INFO)
  *   + \a Required      : FALSE
+ *
  *
  * - \b visualize_map
  *   + \a Section       : VisualizationParameters
@@ -159,15 +173,20 @@ namespace graphslam
  *   + \a Required      : FALSE
  *   + \a Description   : Applicable only when dealing with RGB-D datasets
  *
+ * - \b enable_range_viewport
+ *   + \a Section       : VisualizationParameters
+ *   + \a Default value : TRUE
+ *   + \a Required      : FALSE
+ *   + \a Description   : Applicable only when dealing with RGB-D datasets
+ *
+ * - \b enable_intensity_viewport
+ *   + \a Section       : VisualizationParameters
+ *   + \a Default value : FALSE
+ *   + \a Required      : FALSE
+ *   + \a Description   : Applicable only when dealing with RGB-D datasets
+ *
  *
  * \note Implementation can be found in the file \em CGraphSlamEngine_impl.h
- *
- * \note Class contains an instance of the
- * mrpt::maps::COccupancyGridMap2D and mrpt::maps::COctomap classes and it
- * parses the configuration parameters from the "MappingParameters" section.
- * Refer to those classes for documentation on their .ini configuration
- * parameters
- *
  * \ingroup mrpt_graphslam_grp
  */
 template <class GRAPH_T = typename mrpt::graphs::CNetworkOfPoses2DInf>

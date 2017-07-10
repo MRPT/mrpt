@@ -12,17 +12,23 @@
 
 #include <mrpt/utils/mrpt_macros.h>
 #include <mrpt/math/CMatrix.h>
+#include <mrpt/math/data_utils.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/utils/stl_containers_utils.h>
 #include <mrpt/utils/CLoadableOptions.h>
+#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/utils/types_simple.h>
+#include <mrpt/utils/TColor.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/obs/obs_utils.h>
+#include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CSetOfLines.h>
+#include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/opengl/CSphere.h>
 #include <mrpt/opengl/CEllipsoid.h>
 #include <mrpt/poses/CPoint3D.h>
@@ -33,7 +39,9 @@
 #include <mrpt/system/os.h>
 
 #include <mrpt/graphslam/interfaces/CRangeScanEdgeRegistrationDecider.h>
+#include <mrpt/graphslam/misc/TSlidingWindow.h>
 #include <mrpt/graphslam/misc/TUncertaintyPath.h>
+#include <mrpt/graphslam/misc/TNodeProps.h>
 #include <mrpt/graphs/THypothesis.h>
 #include <mrpt/graphs/CHypothesisNotFoundException.h>
 
@@ -170,6 +178,11 @@ exponential.
  * ### .ini Configuration Parameters
  *
  * \htmlinclude graphslam-engine_config_params_preamble.txt
+ *
+ * - \b class_verbosity
+ *   + \a Section       : EdgeRegistrationDeciderParameters
+ *   + \a Default value : 1 (LVL_INFO)
+ *   + \a Required      : FALSE
  *
  * - \b use_scan_matching
  *   + \a Section       : EdgeRegistrationDeciderParameters

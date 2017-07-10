@@ -145,7 +145,7 @@ struct TUserOptionsChecker
 	 *
 	 */
 	virtual void createDeciderOptimizerMappings();
-	virtual void createDeciderOptimizerMappingsInternal();
+	virtual void _createDeciderOptimizerMappings();
 	/**\brief Populate the available decider, optimizer classes available in
 	 * user applications
 	 */

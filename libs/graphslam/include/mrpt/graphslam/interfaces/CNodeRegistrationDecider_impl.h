@@ -6,11 +6,13 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-
 #ifndef CNODEREGISTRATIONDECIDER_IMPL_H
 #define CNODEREGISTRATIONDECIDER_IMPL_H
 
-namespace mrpt { namespace graphslam { namespace deciders {
+using namespace mrpt::graphslam::deciders;
+using namespace std;
+
+#include <sstream>
 
 // Implementation of classes defined in the CNodeRegistrationDecider class
 // template.
@@ -36,7 +38,6 @@ void CNodeRegistrationDecider<GRAPH_T>::getDescriptiveReport(
 	std::string* report_str) const
 {
 	MRPT_START;
-	using namespace std;
 
 	stringstream ss("");
 	parent_t::getDescriptiveReport(report_str);
@@ -160,20 +161,5 @@ typename GRAPH_T::global_pose_t
 	pose_out += m_since_prev_node_PDF.getMeanVal();
 	return pose_out;
 }
-
-template<class GRAPH_T>
-void CNodeRegistrationDecider<GRAPH_T>::loadParams(
-		const std::string& source_fname) {
-	std::string section("NodeRegistrationDeciderParameters");
-	this->setVerbosityLevelFromSection(source_fname, section);
-}
-
-template<class GRAPH_T>
-void CNodeRegistrationDecider<GRAPH_T>::printParams() const {
-	using namespace std;
-	std::cout << "NRD Verbosity: " << this->getMinLoggingLevelStr() << endl;
-}
-
-} } } // end of namespaces
 
 #endif /* end of include guard: CNODEREGISTRATIONDECIDER_IMPL_H */
