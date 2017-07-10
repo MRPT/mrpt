@@ -301,8 +301,8 @@ class MxArray {
 public:
 	/** Empty MxArray constructor. Use reset() to set a pointer.
    */
-	MxArray() : array_(NULL), owner_(false) {}
-	/** NULL assignment.
+	MxArray() : array_(nullptr), owner_(false) {}
+	/** nullptr assignment.
    */
 	MxArray& operator= (std::nullptr_t) {
 		reset();
@@ -310,7 +310,7 @@ public:
 	}
 	/** Move constructor.
    */
-	MxArray(MxArray&& array) : array_(NULL), owner_(false) {
+	MxArray(MxArray&& array) : array_(nullptr), owner_(false) {
 		*this = std::move(array);
 	}
 	/** Move assignment.
@@ -319,7 +319,7 @@ public:
 		if (this != &rhs) {
 			array_ = rhs.array_;
 			owner_ = rhs.owner_;
-			rhs.array_ = NULL;
+			rhs.array_ = nullptr;
 			rhs.owner_ = false;
 		}
 		return *this;
@@ -369,7 +369,7 @@ public:
    *     foo.toInt(); // Error!
    * @endcode
    */
-	void reset(const mxArray* array = NULL) {
+	void reset(const mxArray* array = nullptr) {
 		if (array_ && owner_)
 			mxDestroyArray(array_);
 		array_ = const_cast<mxArray*>(array);
@@ -381,7 +381,7 @@ public:
 		if (array_ && owner_)
 			mxDestroyArray(array_);
 		array_ = array;
-		owner_ = array!=NULL;
+		owner_ = array!=nullptr;
 	}
 	/** Release managed mxArray* pointer, or clone if not owner.
    * @return Unmanaged mxArray*. Always caller must destroy.
@@ -389,7 +389,7 @@ public:
 	mxArray* release()  {
 		MEXPLUS_CHECK_NOTNULL(array_);
 		mxArray* array = (owner_) ? array_ : clone();
-		array_ = NULL;
+		array_ = nullptr;
 		owner_ = false;
 		return array;
 	}
@@ -408,7 +408,7 @@ public:
 	inline const mxArray* get() const { return array_; }
 	/** Return true if the array is not NULL.
    */
-	operator bool() const { return array_ != NULL; }
+	operator bool() const { return array_ != nullptr; }
 	/** Return true if owner.
    */
 	inline bool isOwner() const { return owner_; }
@@ -460,7 +460,7 @@ public:
    * @endcode
    */
 	static mxArray* Struct(int nfields = 0,
-						   const char** fields = NULL,
+						   const char** fields = nullptr,
 						   int rows = 1,
 						   int columns = 1) {
 		mxArray* struct_array = mxCreateStructMatrix(rows,
@@ -840,7 +840,7 @@ public:
    */
 	bool hasField(const std::string& field_name, mwIndex index = 0) const {
 		return isStruct() &&
-				mxGetField(array_, index, field_name.c_str()) != NULL;
+				mxGetField(array_, index, field_name.c_str()) != nullptr;
 	}
 	/** Determine whether input is NaN (Not-a-Number).
    */

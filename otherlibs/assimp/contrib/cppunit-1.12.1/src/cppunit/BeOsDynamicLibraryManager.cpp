@@ -32,7 +32,7 @@ DynamicLibraryManager::doFindSymbol( const std::string &symbol )
                            B_SYMBOL_TYPE_TEXT, 
                            &symbolPointer ) == B_OK )
     return symnolPointer;
-  return NULL;
+  return nullptr;
 }
 
 

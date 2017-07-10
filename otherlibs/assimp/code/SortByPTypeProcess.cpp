@@ -99,7 +99,7 @@ void UpdateNodes(const std::vector<unsigned int>& replaceMeshIndex, aiNode* node
 		{
 			delete[] node->mMeshes;
 			node->mNumMeshes = 0;
-			node->mMeshes    = NULL;
+			node->mMeshes    = nullptr;
 		}
 		else
 		{
@@ -234,7 +234,7 @@ void SortByPTypeProcess::Execute( aiScene* pScene)
 
 			out->mNumVertices = (3 == real ? numPolyVerts : out->mNumFaces * (real+1));
 
-			aiVector3D *vert(NULL), *nor(NULL), *tan(NULL), *bit(NULL);
+			aiVector3D *vert(nullptr), *nor(nullptr), *tan(nullptr), *bit(nullptr);
 			aiVector3D *uv   [AI_MAX_NUMBER_OF_TEXTURECOORDS];
 			aiColor4D  *cols [AI_MAX_NUMBER_OF_COLOR_SETS];
 		
@@ -254,7 +254,7 @@ void SortByPTypeProcess::Execute( aiScene* pScene)
 			{
 				if (mesh->mTextureCoords[i])
 					uv[i] = out->mTextureCoords[i] = new aiVector3D[out->mNumVertices];
-				else uv[i] = NULL;
+				else uv[i] = nullptr;
 
 				out->mNumUVComponents[i] = mesh->mNumUVComponents[i];
 			}
@@ -263,7 +263,7 @@ void SortByPTypeProcess::Execute( aiScene* pScene)
 			{
 				if (mesh->mColors[i])
 					cols[i] = out->mColors[i] = new aiColor4D[out->mNumVertices];
-				else cols[i] = NULL;
+				else cols[i] = nullptr;
 			}
 
 			typedef std::vector< aiVertexWeight > TempBoneInfo;
@@ -329,7 +329,7 @@ void SortByPTypeProcess::Execute( aiScene* pScene)
 					in.mIndices[q] = outIdx++;
 				}
 
-				in.mIndices = NULL;
+				in.mIndices = nullptr;
 				++outFaces;
 			}
 			ai_assert(outFaces == out->mFaces + out->mNumFaces);
@@ -369,7 +369,7 @@ void SortByPTypeProcess::Execute( aiScene* pScene)
 		delete mesh;
 
         // avoid invalid pointer
-        pScene->mMeshes[i] = NULL;
+        pScene->mMeshes[i] = nullptr;
 	}
 
 	if (outMeshes.empty())

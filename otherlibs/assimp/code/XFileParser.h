@@ -105,7 +105,7 @@ protected:
 	//! reads header of dataobject including the opening brace.
 	//! returns false if error happened, and writes name of object
 	//! if there is one
-	void readHeadOfDataObject( std::string* poName = NULL);
+	void readHeadOfDataObject( std::string* poName = nullptr);
 
 	//! checks for closing curly brace, throws exception if not there
 	void CheckForClosingBrace();

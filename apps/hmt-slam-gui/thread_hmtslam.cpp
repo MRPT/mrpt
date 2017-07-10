@@ -1,12 +1,11 @@
-/* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          http://www.mrpt.org/                             |
-   |                                                                           |
-   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-   | Released under BSD License. See details in http://www.mrpt.org/License    |
-   +---------------------------------------------------------------------------+ */
-
+/* +------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)            |
+   |                          http://www.mrpt.org/                          |
+   |                                                                        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file     |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                |
+   | Released under BSD License. See details in http://www.mrpt.org/License |
+   +------------------------------------------------------------------------+ */
 
 #include "hmt_slam_guiMain.h"
 
@@ -14,6 +13,7 @@
 
 #include <mrpt/utils.h>
 #include <mrpt/system/filesystem.h>
+#include <memory>
 
 using namespace std;
 using namespace mrpt;
@@ -33,24 +33,24 @@ void hmt_slam_guiFrame::thread_HMTSLAM()
 
 		bool is_running_slam = false;
 
-		CFileGZInputStream  *fInRawlog = NULL;
-		std::string 		OUT_DIR="./HMTSLAM_OUT";
-		unsigned int		rawlogEntry = 0; // step = 0;
+		std::unique_ptr<CFileGZInputStream> fInRawlog;
+		std::string OUT_DIR = "./HMTSLAM_OUT";
+		unsigned int rawlogEntry = 0;  // step = 0;
 
 		while (true)
 		{
 			try
 			{
-				bool end=false;
+				bool end = false;
 				const bool old_is_running = is_running_slam;
 				if (!m_thread_in_queue.empty())
 				{
-					TThreadMsg *msg = m_thread_in_queue.get();
+					TThreadMsg* msg = m_thread_in_queue.get();
 
-					switch ( msg->opcode )
+					switch (msg->opcode)
 					{
 						case OP_QUIT_THREAD:
-							end=true;
+							end = true;
 							break;
 						case OP_START_SLAM:
 							is_running_slam = true;
@@ -65,41 +65,51 @@ void hmt_slam_guiFrame::thread_HMTSLAM()
 					}
 					delete msg;
 				}
-				if (end) break; // end thread
+				if (end) break;  // end thread
 
-				// If we are running SLAM, read actions/observations and feed them into the SLAM engine:
+				// If we are running SLAM, read actions/observations and feed
+				// them into the SLAM engine:
 				// ----------------------------------------------------------------------------------------
 				if (is_running_slam && !old_is_running)
 				{
 					// This is the FIRST iteration:
-					if (fInRawlog) delete_safe(fInRawlog);
+					fInRawlog.reset();
 
 					// From the text block:
-					//CConfigFileMemory  cfg( std::string(edRestParams->GetValue().mb_str()) );
-					const string fil =  string(this->edInputRawlog->GetValue().mb_str()); // cfg.read_string("HMT-SLAM","rawlog_file","");
-					if (!mrpt::system::fileExists( fil ))
+					// CConfigFileMemory  cfg(
+					// std::string(edRestParams->GetValue().mb_str()) );
+					const string fil = string(
+						this->edInputRawlog->GetValue()
+							.mb_str());  // cfg.read_string("HMT-SLAM","rawlog_file","");
+					if (!mrpt::system::fileExists(fil))
 					{
 						is_running_slam = false;
-						throw std::runtime_error(format("Rawlog file not found: %s",fil.c_str()));
+						throw std::runtime_error(
+							format("Rawlog file not found: %s", fil.c_str()));
 					}
 					else
 					{
-						fInRawlog = new CFileGZInputStream(fil);
-						m_hmtslam->logFmt(mrpt::utils::LVL_INFO,"RAWLOG FILE: \n%s\n",fil.c_str());
-						OUT_DIR = "HMT_SLAM_OUTPUT"; //cfg.read_string("HMT-SLAM","LOG_OUTPUT_DIR", "HMT_SLAM_OUTPUT");
+						fInRawlog.reset(new CFileGZInputStream(fil));
+						m_hmtslam->logFmt(
+							mrpt::utils::LVL_INFO, "RAWLOG FILE: \n%s\n",
+							fil.c_str());
+						OUT_DIR =
+							"HMT_SLAM_OUTPUT";  // cfg.read_string("HMT-SLAM","LOG_OUTPUT_DIR",
+						// "HMT_SLAM_OUTPUT");
 
-						// Set relative path for externally-stored images in rawlogs:
-						string	rawlog_images_path = extractFileDirectory( fil );
-						rawlog_images_path+="/Images";
-						CImage::IMAGES_PATH_BASE = rawlog_images_path;		// Set it.
+						// Set relative path for externally-stored images in
+						// rawlogs:
+						string rawlog_images_path = extractFileDirectory(fil);
+						rawlog_images_path += "/Images";
+						CImage::IMAGES_PATH_BASE =
+							rawlog_images_path;  // Set it.
 
 						rawlogEntry = 0;
-						//step = 0;
+						// step = 0;
 					}
-				} // end first iteration
+				}  // end first iteration
 
-				if (!is_running_slam && fInRawlog)
-					delete_safe(fInRawlog);
+				if (!is_running_slam && fInRawlog) fInRawlog.reset();
 
 				if (is_running_slam)
 				{
@@ -109,59 +119,72 @@ void hmt_slam_guiFrame::thread_HMTSLAM()
 					// ---------------------------------------------------
 					if (!m_hmtslam->isInputQueueEmpty())
 					{
-						sleep(2);
+						std::this_thread::sleep_for(2ms);
 						continue;
 					}
 
 					// Load next object from the rawlog:
 					// ----------------------------------------
-					CSerializablePtr objFromRawlog;
+					CSerializable::Ptr objFromRawlog;
 					try
 					{
 						(*fInRawlog) >> objFromRawlog;
 						rawlogEntry++;
-						cout << "[HMT-SLAM-GUI] Read rawlog entry " << rawlogEntry << endl;
+						cout << "[HMT-SLAM-GUI] Read rawlog entry "
+							 << rawlogEntry << endl;
 					}
-					catch(std::exception &)
+					catch (std::exception&)
 					{
 						is_running_slam = false;
-						cout << endl << "=============== END OF RAWLOG FILE: ENDING HMT-SLAM ==============\n";
+						cout << endl
+							 << "=============== END OF RAWLOG FILE: ENDING "
+								"HMT-SLAM ==============\n";
 						continue;
 					}
-					catch(...) { printf("Untyped exception reading rawlog file!!\n");break;}
+					catch (...)
+					{
+						printf("Untyped exception reading rawlog file!!\n");
+						break;
+					}
 
 					// Process the action and observations:
 					// --------------------------------------------
-					if (IS_CLASS(objFromRawlog,CActionCollection))
+					if (IS_CLASS(objFromRawlog, CActionCollection))
 					{
-						m_hmtslam->pushAction( CActionCollectionPtr( objFromRawlog) ); // Memory will be freed in mapping class
+						m_hmtslam->pushAction(
+							std::dynamic_pointer_cast<CActionCollection>(
+								objFromRawlog));  // Memory will be freed in
+						// mapping class
 					}
-					else if (IS_CLASS(objFromRawlog,CSensoryFrame))
+					else if (IS_CLASS(objFromRawlog, CSensoryFrame))
 					{
-						m_hmtslam->pushObservations( CSensoryFramePtr( objFromRawlog) ); // Memory will be freed in mapping class
+						m_hmtslam->pushObservations(
+							std::dynamic_pointer_cast<CSensoryFrame>(
+								objFromRawlog));  // Memory will be freed in
+						// mapping class
 					}
-					else if (IS_CLASS(objFromRawlog,CObservation))
+					else if (IS_CLASS(objFromRawlog, CObservation))
 					{
-						m_hmtslam->pushObservation( CObservationPtr( objFromRawlog) ); // Memory will be freed in mapping class
+						m_hmtslam->pushObservation(
+							std::dynamic_pointer_cast<CObservation>(
+								objFromRawlog));  // Memory will be freed in
+						// mapping class
 					}
-					else THROW_EXCEPTION("Invalid object class from rawlog!!")
+					else
+						THROW_EXCEPTION("Invalid object class from rawlog!!")
 
-				} // end is_running_slam
+				}  // end is_running_slam
 
-				mrpt::system::sleep(5);
+				std::this_thread::sleep_for(5ms);
 			}
-			catch (std::exception &e)
+			catch (std::exception& e)
 			{
 				cerr << "[HMTSLAMGUI_THREAD] Exception: \n" << e.what();
 			}
 
-		} // while running
-
-		if (fInRawlog)
-			delete_safe(fInRawlog);
-
+		}  // while running
 	}
-	catch (std::exception &e)
+	catch (std::exception& e)
 	{
 		cerr << "[HMTSLAMGUI_THREAD] Exception: \n" << e.what();
 	}

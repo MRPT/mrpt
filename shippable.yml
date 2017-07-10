@@ -47,7 +47,7 @@ build:
     - sudo apt-get install -y lcov
     - sudo apt-get install -y ruby rubygems-integration
     - sudo gem install coveralls-lcov
-    - bash .travis.sh
+    - bash travis/travis_main.sh
 
 after_success:
  - if [ "$BUILD_TYPE" == "Coverage" ]; then bash scripts/coveralls_submit.sh ; fi

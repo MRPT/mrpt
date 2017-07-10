@@ -30,7 +30,7 @@ int main()
 
 		for (int i=0;i<10;i++)
 		{
-			mrpt::utils::CSerializablePtr obj;
+			mrpt::utils::CSerializable::Ptr obj;
 			size_t rx_len;
 
 			printf ("Waiting %d-th incomming pkt...",i);

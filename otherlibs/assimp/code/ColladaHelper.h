@@ -250,7 +250,7 @@ struct Node
 
 	//! Constructor. Begin with a zero parent
 	Node() { 
-		mParent = NULL;
+		mParent = nullptr;
 	}
 
 	//! Destructor: delete all children subsequently
@@ -279,11 +279,11 @@ struct Accessor
 	size_t mSubOffset[4]; // Suboffset inside the object for the common 4 elements. For a vector, thats XYZ, for a color RGBA and so on.
 						  // For example, SubOffset[0] denotes which of the values inside the object is the vector X component.
 	std::string mSource;   // URL of the source array
-	mutable const Data* mData; // Pointer to the source array, if resolved. NULL else
+	mutable const Data* mData; // Pointer to the source array, if resolved. nullptr else
 
 	Accessor() 
 	{ 
-		mCount = 0; mSize = 0; mOffset = 0; mStride = 0; mData = NULL; 
+		mCount = 0; mSize = 0; mOffset = 0; mStride = 0; mData = nullptr; 
 		mSubOffset[0] = mSubOffset[1] = mSubOffset[2] = mSubOffset[3] = 0;
 	}
 };
@@ -301,9 +301,9 @@ struct InputChannel
 	size_t mIndex;		  // Optional index, if multiple sets of the same data type are given
 	size_t mOffset;       // Index offset in the indices array of per-face indices. Don't ask, can't explain that any better.
 	std::string mAccessor; // ID of the accessor where to read the actual values from.
-	mutable const Accessor* mResolved; // Pointer to the accessor, if resolved. NULL else
+	mutable const Accessor* mResolved; // Pointer to the accessor, if resolved. nullptr else
 
-	InputChannel() { mType = IT_Invalid; mIndex = 0; mOffset = 0; mResolved = NULL; }
+	InputChannel() { mType = IT_Invalid; mIndex = 0; mOffset = 0; mResolved = nullptr; }
 };
 
 /** Subset of a mesh with a certain material */
@@ -595,7 +595,7 @@ struct ChannelEntry
 	const Collada::Accessor* mValueAccessor; ///> Collada accessor to the key value values
 	const Collada::Data* mValueData; ///> Source datat array for the key value values
 
-	ChannelEntry() { mChannel = NULL; mSubElement = 0; }
+	ChannelEntry() { mChannel = nullptr; mSubElement = 0; }
 };
 
 } // end of namespace Collada

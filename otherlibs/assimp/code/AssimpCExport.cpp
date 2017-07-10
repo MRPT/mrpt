@@ -89,7 +89,7 @@ ASSIMP_API void aiFreeScene(const C_STRUCT aiScene* pIn)
 // ------------------------------------------------------------------------------------------------
 ASSIMP_API aiReturn aiExportScene( const aiScene* pScene, const char* pFormatId, const char* pFileName, unsigned int pPreprocessing )
 {
-	return ::aiExportSceneEx(pScene,pFormatId,pFileName,NULL,pPreprocessing);
+	return ::aiExportSceneEx(pScene,pFormatId,pFileName,nullptr,pPreprocessing);
 }
 
 
@@ -110,7 +110,7 @@ ASSIMP_API const C_STRUCT aiExportDataBlob* aiExportSceneToBlob( const aiScene* 
 {
 	Exporter exp;
 	if (!exp.ExportToBlob(pScene,pFormatId,pPreprocessing)) {
-		return NULL;
+		return nullptr;
 	}
 	const aiExportDataBlob* blob = exp.GetOrphanedBlob();
 	ai_assert(blob);

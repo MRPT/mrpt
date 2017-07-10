@@ -95,13 +95,13 @@ struct Face
 	~Face()
 	{	
 		delete m_pVertices;
-		m_pVertices = NULL;
+		m_pVertices = nullptr;
 
 		delete m_pNormals;
-		m_pNormals = NULL;
+		m_pNormals = nullptr;
 
 		delete m_pTexturCoords;
-		m_pTexturCoords = NULL;
+		m_pTexturCoords = nullptr;
 	}
 };
 
@@ -237,7 +237,7 @@ struct Mesh
 	bool m_hasNormals;
 	///	Constructor
 	Mesh() :
-		m_pMaterial(NULL),
+		m_pMaterial(nullptr),
 		m_uiNumIndices(0),
 		m_uiMaterialIndex( NoMaterial ),
 		m_hasNormals(false)
@@ -301,12 +301,12 @@ struct Model
 	//!	\brief	The default class constructor
 	Model() :
 		m_ModelName(""),
-		m_pCurrent(NULL),
-		m_pCurrentMaterial(NULL),
-		m_pDefaultMaterial(NULL),
-        m_pGroupFaceIDs(NULL),
+		m_pCurrent(nullptr),
+		m_pCurrentMaterial(nullptr),
+		m_pDefaultMaterial(nullptr),
+        m_pGroupFaceIDs(nullptr),
 		m_strActiveGroup(""),
-		m_pCurrentMesh(NULL)
+		m_pCurrentMesh(nullptr)
 	{
 		// empty
 	}

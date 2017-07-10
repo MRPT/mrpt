@@ -89,7 +89,7 @@ ASSIMP_API size_t aiGetExportFormatCount(void);
  * to learn how many export formats are supported. 
  * @param pIndex Index of the export format to retrieve information for. Valid range is
  *    0 to #aiGetExportFormatCount()
- * @return A description of that specific export format. NULL if pIndex is out of range.
+ * @return A description of that specific export format. nullptr if pIndex is out of range.
  */
 ASSIMP_API const C_STRUCT aiExportFormatDesc* aiGetExportFormatDescription( size_t pIndex);
 
@@ -213,12 +213,12 @@ struct aiExportDataBlob
 	 */
     C_STRUCT aiString name;
 
-	/** Pointer to the next blob in the chain or NULL if there is none. */
+	/** Pointer to the next blob in the chain or nullptr if there is none. */
 	C_STRUCT aiExportDataBlob * next;
 
 #ifdef __cplusplus
 	/// Default constructor
-	aiExportDataBlob() { size = 0; data = next = NULL; }
+	aiExportDataBlob() { size = 0; data = next = nullptr; }
 	/// Releases the data
 	~aiExportDataBlob() { delete [] static_cast<unsigned char*>( data ); delete next; }
 
@@ -237,7 +237,7 @@ private:
 * @param pFormatId ID string to specify to which format you want to export to. Use 
 * #aiGetExportFormatCount() / #aiGetExportFormatDescription() to learn which export formats are available.
 * @param pPreprocessing Please see the documentation for #aiExportScene
-* @return the exported data or NULL in case of error
+* @return the exported data or nullptr in case of error
 */
 ASSIMP_API const C_STRUCT aiExportDataBlob* aiExportSceneToBlob( const C_STRUCT aiScene* pScene, const char* pFormatId,  unsigned int pPreprocessing );
 

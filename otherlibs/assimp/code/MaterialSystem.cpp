@@ -59,9 +59,9 @@ aiReturn aiGetMaterialProperty(const aiMaterial* pMat,
     unsigned int index,
 	const aiMaterialProperty** pPropOut)
 {
-	ai_assert (pMat != NULL);
-	ai_assert (pKey != NULL);
-	ai_assert (pPropOut != NULL);
+	ai_assert (pMat != nullptr);
+	ai_assert (pKey != nullptr);
+	ai_assert (pPropOut != nullptr);
 
 	/*  Just search for a property with exactly this name ..
 	 *  could be improved by hashing, but it's possibly 
@@ -79,7 +79,7 @@ aiReturn aiGetMaterialProperty(const aiMaterial* pMat,
 			return AI_SUCCESS;
 		}
 	}
-	*pPropOut = NULL;
+	*pPropOut = nullptr;
 	return AI_FAILURE;
 }
 
@@ -92,8 +92,8 @@ aiReturn aiGetMaterialFloatArray(const aiMaterial* pMat,
 	float* pOut,
 	unsigned int* pMax)
 {
-	ai_assert (pOut != NULL);
-	ai_assert (pMat != NULL);
+	ai_assert (pOut != nullptr);
+	ai_assert (pMat != nullptr);
 
 	const aiMaterialProperty* prop;
 	aiGetMaterialProperty(pMat,pKey,type,index, (const aiMaterialProperty**) &prop);
@@ -165,8 +165,8 @@ aiReturn aiGetMaterialIntegerArray(const aiMaterial* pMat,
 	int* pOut,
 	unsigned int* pMax)
 {
-	ai_assert (pOut != NULL);
-	ai_assert (pMat != NULL);
+	ai_assert (pOut != nullptr);
+	ai_assert (pMat != nullptr);
 
 	const aiMaterialProperty* prop;
 	aiGetMaterialProperty(pMat,pKey,type,index,(const aiMaterialProperty**) &prop);
@@ -267,7 +267,7 @@ aiReturn aiGetMaterialString(const aiMaterial* pMat,
 	unsigned int index,
 	aiString* pOut)
 {
-	ai_assert (pOut != NULL);
+	ai_assert (pOut != nullptr);
 
 	const aiMaterialProperty* prop;
 	aiGetMaterialProperty(pMat,pKey,type,index,(const aiMaterialProperty**)&prop);
@@ -298,7 +298,7 @@ aiReturn aiGetMaterialString(const aiMaterial* pMat,
 ASSIMP_API unsigned int aiGetMaterialTextureCount(const C_STRUCT aiMaterial* pMat,  
 	C_ENUM aiTextureType type)
 {
-	ai_assert (pMat != NULL);
+	ai_assert (pMat != nullptr);
 
 	/* Textures are always stored with ascending indices (ValidateDS provides a check, so we don't need to do it again) */
 	unsigned int max = 0;
@@ -328,7 +328,7 @@ aiReturn aiGetMaterialTexture(const C_STRUCT aiMaterial* mat,
 	unsigned int* flags         /*= NULL*/
 	)
 {
-	ai_assert(NULL != mat && NULL != path);
+	ai_assert(nullptr != mat && nullptr != path);
 
 	// Get the path to the texture
 	if (AI_SUCCESS != aiGetMaterialString(mat,AI_MATKEY_TEXTURE(type,index),path))	{
@@ -400,7 +400,7 @@ aiReturn aiMaterial::RemoveProperty (const char* pKey,unsigned int type,
     unsigned int index
 	)
 {
-	ai_assert(NULL != pKey);
+	ai_assert(nullptr != pKey);
 
 	for (unsigned int i = 0; i < mNumProperties;++i) {
 		aiMaterialProperty* prop = mProperties[i];
@@ -432,8 +432,8 @@ aiReturn aiMaterial::AddBinaryProperty (const void* pInput,
 	aiPropertyTypeInfo pType
 	)
 {
-	ai_assert (pInput != NULL);
-	ai_assert (pKey != NULL);
+	ai_assert (pInput != nullptr);
+	ai_assert (pKey != nullptr);
 	ai_assert (0 != pSizeInBytes);
 
 	// first search the list whether there is already an entry with this key
@@ -551,8 +551,8 @@ void aiMaterial::CopyPropertyList(aiMaterial* pcDest,
 	const aiMaterial* pcSrc
 	)
 {
-	ai_assert(NULL != pcDest);
-	ai_assert(NULL != pcSrc);
+	ai_assert(nullptr != pcDest);
+	ai_assert(nullptr != pcSrc);
 
 	unsigned int iOldNum = pcDest->mNumProperties;
 	pcDest->mNumAllocated += pcSrc->mNumAllocated;

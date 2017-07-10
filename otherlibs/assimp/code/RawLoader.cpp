@@ -97,7 +97,7 @@ void RAWImporter::InternReadFile( const std::string& pFile,
 	boost::scoped_ptr<IOStream> file( pIOHandler->Open( pFile, "rb"));
 
 	// Check whether we can read from the file
-	if( file.get() == NULL) {
+	if( file.get() == nullptr) {
 		throw DeadlyImportError( "Failed to open RAW file " + pFile + ".");
 	}
 
@@ -131,7 +131,7 @@ void RAWImporter::InternReadFile( const std::string& pFile,
 			{
 				if (length == (*it).name.length() && !::strcmp(sz,(*it).name.c_str()))
 				{
-					curGroup = it;sz2 = NULL;
+					curGroup = it;sz2 = nullptr;
 					break;
 				}
 			}
@@ -157,7 +157,7 @@ void RAWImporter::InternReadFile( const std::string& pFile,
 				continue;
 			}
 
-			MeshInformation* output = NULL;
+			MeshInformation* output = nullptr;
 
 			const char* sz2 = sz;
 			unsigned int length;

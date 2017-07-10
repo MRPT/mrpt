@@ -74,7 +74,7 @@ class GTEST_API_ DeathTest {
   // The LastMessage method will return a more detailed message in that
   // case.  Otherwise, the DeathTest pointer pointed to by the "test"
   // argument is set.  If the death test should be skipped, the pointer
-  // is set to NULL; otherwise, it is set to the address of a new concrete
+  // is set to nullptr; otherwise, it is set to the address of a new concrete
   // DeathTest object that controls the execution of the current test.
   static bool Create(const char* statement, const RE* regex,
                      const char* file, int line, DeathTest** test);
@@ -191,7 +191,7 @@ GTEST_API_ bool ExitedUnsuccessfully(int exit_status);
         __FILE__, __LINE__, &gtest_dt)) { \
       goto GTEST_CONCAT_TOKEN_(gtest_label_, __LINE__); \
     } \
-    if (gtest_dt != NULL) { \
+    if (gtest_dt != nullptr) { \
       ::testing::internal::scoped_ptr< ::testing::internal::DeathTest> \
           gtest_dt_ptr(gtest_dt); \
       switch (gtest_dt->AssumeRole()) { \

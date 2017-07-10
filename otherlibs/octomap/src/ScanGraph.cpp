@@ -50,9 +50,9 @@ namespace octomap {
 
 
   ScanNode::~ScanNode(){
-    if (scan != NULL){
+    if (scan != nullptr){
       delete scan;
-      scan = NULL;
+      scan = nullptr;
     }
   }
 
@@ -123,9 +123,9 @@ namespace octomap {
     s.read((char*)&second_id, sizeof(second_id));
 
     this->first = graph.getNodeByID(first_id);
-    if (this->first == NULL) OCTOMAP_ERROR("ERROR while reading ScanEdge. first node not found.\n");
+    if (this->first == nullptr) OCTOMAP_ERROR("ERROR while reading ScanEdge. first node not found.\n");
     this->second = graph.getNodeByID(second_id);
-    if (this->second == NULL) OCTOMAP_ERROR("ERROR while reading ScanEdge. second node not found.\n");
+    if (this->second == nullptr) OCTOMAP_ERROR("ERROR while reading ScanEdge. second node not found.\n");
 
     this->constraint.readBinary(s);
     s.read((char*)&weight, sizeof(weight));
@@ -153,9 +153,9 @@ namespace octomap {
     s >> second_id;
 
     this->first = graph.getNodeByID(first_id);
-    if (this->first == NULL) OCTOMAP_ERROR("ERROR while reading ScanEdge. first node %d not found.\n", static_cast<int>(first_id));
+    if (this->first == nullptr) OCTOMAP_ERROR("ERROR while reading ScanEdge. first node %d not found.\n", static_cast<int>(first_id));
     this->second = graph.getNodeByID(second_id);
-    if (this->second == NULL) OCTOMAP_ERROR("ERROR while reading ScanEdge. second node %d not found.\n", static_cast<int>(second_id));
+    if (this->second == nullptr) OCTOMAP_ERROR("ERROR while reading ScanEdge. second node %d not found.\n", static_cast<int>(second_id));
 
     this->constraint.read(s);
     s >> weight;
@@ -186,7 +186,7 @@ namespace octomap {
     }
     else {
       OCTOMAP_ERROR("scan is invalid.\n");
-      return NULL;
+      return nullptr;
     }
   }
 
@@ -200,7 +200,7 @@ namespace octomap {
     }
     else {
       OCTOMAP_ERROR("addEdge:: one or both nodes invalid.\n");
-      return NULL;
+      return nullptr;
     }
   }
 
@@ -209,7 +209,7 @@ namespace octomap {
 
     if ( this->edgeExists(first_id, second_id)) {
       OCTOMAP_ERROR("addEdge:: Edge exists!\n");
-      return NULL;
+      return nullptr;
     }
 
     ScanNode* first = getNodeByID(first_id);
@@ -221,7 +221,7 @@ namespace octomap {
     }
     else {
       OCTOMAP_ERROR("addEdge:: one or both scans invalid.\n");
-      return NULL;
+      return nullptr;
     }
   }
 
@@ -256,7 +256,7 @@ namespace octomap {
     for (size_t i = 0; i < nodes.size(); i++) {
       if (nodes[i]->id == id) return nodes[i];
     }
-    return NULL;
+    return nullptr;
   }
 
   bool ScanGraph::edgeExists(uint64_t first_id, uint64_t second_id) {
@@ -437,7 +437,7 @@ namespace octomap {
 
   std::istream& ScanGraph::readPlainASCII(std::istream& s){
     std::string currentLine;
-    ScanNode* currentNode = NULL;
+    ScanNode* currentNode = nullptr;
     while (true){
       getline(s, currentLine);
       if (s.good() && !s.eof()){
@@ -466,7 +466,7 @@ namespace octomap {
           //std::cout << "Pose "<< pose << " found.\n";
           currentNode->pose = pose;
         } else{
-          if (currentNode == NULL){
+          if (currentNode == nullptr){
             // TODO: allow "simple" pc files by setting initial Scan Pose to (0,0,0)
             OCTOMAP_ERROR_STR("Error parsing log file, no Scan to add point to!");
             break;

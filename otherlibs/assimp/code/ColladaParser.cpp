@@ -58,7 +58,7 @@ using namespace Assimp::Collada;
 ColladaParser::ColladaParser( IOSystem* pIOHandler, const std::string& pFile)
 	: mFileName( pFile)
 {
-	mRootNode = NULL;
+	mRootNode = nullptr;
 	mUnitSize = 1.0f;
 	mUpDirection = UP_Z;
 
@@ -67,7 +67,7 @@ ColladaParser::ColladaParser( IOSystem* pIOHandler, const std::string& pFile)
 
   // open the file
   boost::scoped_ptr<IOStream> file( pIOHandler->Open( pFile));
-  if( file.get() == NULL)
+  if( file.get() == nullptr)
     throw DeadlyImportError( "Failed to open file " + pFile + ".");
 
 	// generate a XML reader for it
@@ -180,7 +180,7 @@ void ColladaParser::ReadStructure()
 			else if( IsElement( "library_cameras"))
 				ReadCameraLibrary();
 			else if( IsElement( "library_nodes"))
-				ReadSceneNode(NULL); /* some hacking to reuse this piece of code */
+				ReadSceneNode(nullptr); /* some hacking to reuse this piece of code */
 			else if( IsElement( "scene"))
 				ReadScene();
 			else
@@ -290,7 +290,7 @@ void ColladaParser::ReadAnimation( Collada::Animation* pParent)
 	typedef std::map<std::string, AnimationChannel> ChannelMap;
 	ChannelMap channels;
 	// this is the anim container in case we're a container
-	Animation* anim = NULL;
+	Animation* anim = nullptr;
 
 	// optional name given as an attribute
 	std::string animName;
@@ -2361,7 +2361,7 @@ void ColladaParser::ReadSceneNode( Node* pNode)
 				ReadNodeTransformation( pNode, TF_SKEW);
 			else if( IsElement( "translate"))
 				ReadNodeTransformation( pNode, TF_TRANSLATE);
-			else if( IsElement( "render") && pNode->mParent == NULL && 0 == pNode->mPrimaryCamera.length())
+			else if( IsElement( "render") && pNode->mParent == nullptr && 0 == pNode->mPrimaryCamera.length())
 			{
 				// ... scene evaluation or, in other words, postprocessing pipeline,
 				// or, again in other words, a turing-complete description how to
@@ -2714,18 +2714,18 @@ const char* ColladaParser::GetTextContent()
 }
 
 // ------------------------------------------------------------------------------------------------
-// Reads the text contents of an element, returns NULL if not given. Skips leading whitespace.
+// Reads the text contents of an element, returns nullptr if not given. Skips leading whitespace.
 const char* ColladaParser::TestTextContent()
 {
 	// present node should be the beginning of an element
 	if( mReader->getNodeType() != irr::io::EXN_ELEMENT || mReader->isEmptyElement())
-		return NULL;
+		return nullptr;
 
 	// read contents of the element
 	if( !mReader->read() )
-		return NULL;
+		return nullptr;
 	if( mReader->getNodeType() != irr::io::EXN_TEXT)
-		return NULL;
+		return nullptr;
 
 	// skip leading whitespace
 	const char* text = mReader->getNodeData();

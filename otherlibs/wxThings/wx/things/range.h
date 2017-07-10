@@ -91,7 +91,7 @@ public:
     //   else if r is inside of this then this is the left side and right is the right
     //   else if r.m_min > m_min then this is the left side
     //   else if r.m_min < m_min this is the right side
-    bool Delete( const wxRangeInt &r, wxRangeInt *right = NULL );
+    bool Delete( const wxRangeInt &r, wxRangeInt *right = nullptr );
 
     // operators
     // no copy ctor or assignment operator - the defaults are ok
@@ -237,7 +237,7 @@ public:
     //   else if r is inside of this then this is the left side and right is the right
     //   else if r.m_min > m_min then this is the left side
     //   else if r.m_min < m_min this is the right side
-    bool Delete( const wxRangeDouble &r, wxRangeDouble *right = NULL );
+    bool Delete( const wxRangeDouble &r, wxRangeDouble *right = nullptr );
 
     // operators
     // no copy ctor or assignment operator - the defaults are ok

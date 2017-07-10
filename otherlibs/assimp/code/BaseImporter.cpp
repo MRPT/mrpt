@@ -91,7 +91,7 @@ aiScene* BaseImporter::ReadFile(const Importer* pImp, const std::string& pFile, 
 		// extract error description
 		mErrorText = err.what();
 		DefaultLogger::get()->error(mErrorText);
-		return NULL;
+		return nullptr;
 	}
 
 	// return what we gathered from the import. 
@@ -109,10 +109,10 @@ void BaseImporter::SetupProperties(const Importer* /*pImp*/)
 void BaseImporter::GetExtensionList(std::set<std::string>& extensions)
 {
 	const aiImporterDesc* desc = GetInfo();
-	ai_assert(desc != NULL);
+	ai_assert(desc != nullptr);
 
 	const char* ext = desc->mFileExtensions;
-	ai_assert(ext != NULL);
+	ai_assert(ext != nullptr);
 
 	const char* last = ext;
 	do {
@@ -136,7 +136,7 @@ void BaseImporter::GetExtensionList(std::set<std::string>& extensions)
 	unsigned int		searchBytes /* = 200 */,
 	bool				tokensSol /* false */)
 {
-	ai_assert(NULL != tokens && 0 != numTokens && 0 != searchBytes);
+	ai_assert(nullptr != tokens && 0 != numTokens && 0 != searchBytes);
 	if (!pIOHandler)
 		return false;
 
@@ -164,7 +164,7 @@ void BaseImporter::GetExtensionList(std::set<std::string>& extensions)
 		*cur2 = '\0';
 
 		for (unsigned int i = 0; i < numTokens;++i)	{
-			ai_assert(NULL != tokens[i]);
+			ai_assert(nullptr != tokens[i]);
 
 
 			const char* r = strstr(buffer,tokens[i]);
@@ -420,7 +420,7 @@ void BaseImporter::ConvertUTF8toISO8859_1(std::string& data)
 void BaseImporter::TextFileToBuffer(IOStream* stream,
 	std::vector<char>& data)
 {
-	ai_assert(NULL != stream);
+	ai_assert(nullptr != stream);
 
 	const size_t fileSize = stream->FileSize();
 	if(!fileSize) {
@@ -446,7 +446,7 @@ namespace Assimp
 	struct LoadRequest
 	{
 		LoadRequest(const std::string& _file, unsigned int _flags,const BatchLoader::PropertyMap* _map, unsigned int _id)
-			: file(_file), flags(_flags), refCnt(1),scene(NULL), loaded(false), id(_id)
+			: file(_file), flags(_flags), refCnt(1),scene(nullptr), loaded(false), id(_id)
 		{
 			if (_map)
 				map = *_map;
@@ -493,7 +493,7 @@ struct Assimp::BatchData
 // ------------------------------------------------------------------------------------------------
 BatchLoader::BatchLoader(IOSystem* pIO)
 {
-	ai_assert(NULL != pIO);
+	ai_assert(nullptr != pIO);
 
 	data = new BatchData();
 	data->pIOSystem = pIO;
@@ -510,7 +510,7 @@ BatchLoader::~BatchLoader()
 
 		delete (*it).scene;
 	}
-	data->pImporter->SetIOHandler(NULL); /* get pointer back into our posession */
+	data->pImporter->SetIOHandler(nullptr); /* get pointer back into our posession */
 	delete data->pImporter;
 	delete data;
 }
@@ -560,7 +560,7 @@ aiScene* BatchLoader::GetImport		(unsigned int which)
 			return sc;
 		}
 	}
-	return NULL;
+	return nullptr;
 }
 
 // ------------------------------------------------------------------------------------------------

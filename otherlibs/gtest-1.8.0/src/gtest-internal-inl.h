@@ -576,14 +576,14 @@ class GTEST_API_ UnitTestImpl {
   // total_test_case_count() - 1. If i is not in that range, returns NULL.
   const TestCase* GetTestCase(int i) const {
     const int index = GetElementOr(test_case_indices_, i, -1);
-    return index < 0 ? NULL : test_cases_[i];
+    return index < 0 ? nullptr : test_cases_[i];
   }
 
   // Gets the i-th test case among all the test cases. i can range from 0 to
   // total_test_case_count() - 1. If i is not in that range, returns NULL.
   TestCase* GetMutableTestCase(int i) {
     const int index = GetElementOr(test_case_indices_, i, -1);
-    return index < 0 ? NULL : test_cases_[index];
+    return index < 0 ? nullptr : test_cases_[index];
   }
 
   // Provides access to the event listener list.
@@ -603,7 +603,7 @@ class GTEST_API_ UnitTestImpl {
   // input the current getter.
   void set_os_stack_trace_getter(OsStackTraceGetterInterface* getter);
 
-  // Returns the current OS stack trace getter if it is not NULL;
+  // Returns the current OS stack trace getter if it is not nullptr;
   // otherwise, creates an OsStackTraceGetter, makes it the current
   // getter, and returns it.
   OsStackTraceGetterInterface* os_stack_trace_getter();
@@ -626,7 +626,7 @@ class GTEST_API_ UnitTestImpl {
   // Arguments:
   //
   //   test_case_name: name of the test case
-  //   type_param:     the name of the test's type parameter, or NULL if
+  //   type_param:     the name of the test's type parameter, or nullptr if
   //                   this is not a typed or a type-parameterized test.
   //   set_up_tc:      pointer to the function that sets up the test case
   //   tear_down_tc:   pointer to the function that tears down the test case
@@ -678,7 +678,7 @@ class GTEST_API_ UnitTestImpl {
   }
 
   // Sets the TestInfo object for the test that's currently running.  If
-  // current_test_info is NULL, the assertion results will be stored in
+  // current_test_info is nullptr, the assertion results will be stored in
   // ad_hoc_test_result_.
   void set_current_test_info(TestInfo* a_current_test_info) {
     current_test_info_ = a_current_test_info;
@@ -751,7 +751,7 @@ class GTEST_API_ UnitTestImpl {
     internal_run_death_test_flag_.reset(ParseInternalRunDeathTestFlag());
   }
   // Returns a pointer to the parsed --gtest_internal_run_death_test
-  // flag, or NULL if that flag was not specified.
+  // flag, or nullptr if that flag was not specified.
   // This information is useful only in a death test child process.
   // Must not be called before a call to InitGoogleTest.
   const InternalRunDeathTestFlag* internal_run_death_test_flag() const {
@@ -859,13 +859,13 @@ class GTEST_API_ UnitTestImpl {
 
   // This points to the TestCase for the currently running test.  It
   // changes as Google Test goes through one test case after another.
-  // When no test is running, this is set to NULL and Google Test
+  // When no test is running, this is set to nullptr and Google Test
   // stores assertion results in ad_hoc_test_result_.  Initially NULL.
   TestCase* current_test_case_;
 
   // This points to the TestInfo for the currently running test.  It
   // changes as Google Test goes through one test after another.  When
-  // no test is running, this is set to NULL and Google Test stores
+  // no test is running, this is set to nullptr and Google Test stores
   // assertion results in ad_hoc_test_result_.  Initially NULL.
   TestInfo* current_test_info_;
 
@@ -1153,7 +1153,7 @@ class GTEST_API_ StreamingListener : public EmptyTestEventListener {
 
   void OnTestPartResult(const TestPartResult& test_part_result) {
     const char* file_name = test_part_result.file_name();
-    if (file_name == NULL)
+    if (file_name == nullptr)
       file_name = "";
     SendLn("event=TestPartResult&file=" + UrlEncode(file_name) +
            "&line=" + StreamableToString(test_part_result.line_number()) +

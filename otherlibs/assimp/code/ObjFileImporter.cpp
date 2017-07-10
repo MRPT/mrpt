@@ -70,7 +70,7 @@ using namespace std;
 //	Default constructor
 ObjFileImporter::ObjFileImporter() :
 	m_Buffer(),	
-	m_pRootObject( NULL ),
+	m_pRootObject( nullptr ),
 	m_strAbsPath( "" )
 {
     DefaultIOSystem io;
@@ -82,7 +82,7 @@ ObjFileImporter::ObjFileImporter() :
 ObjFileImporter::~ObjFileImporter()
 {
 	delete m_pRootObject;
-	m_pRootObject = NULL;
+	m_pRootObject = nullptr;
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -213,9 +213,9 @@ aiNode *ObjFileImporter::createNodes(const ObjFile::Model* pModel, const ObjFile
 									 aiNode *pParent, aiScene* pScene, 
 									 std::vector<aiMesh*> &MeshArray )
 {
-	ai_assert( NULL != pModel );
-    if( NULL == pObject ) {
-        return NULL;
+	ai_assert( nullptr != pModel );
+    if( nullptr == pObject ) {
+        return nullptr;
     }
 	
 	// Store older mesh size to be able to computes mesh offsets for new mesh instances
@@ -225,7 +225,7 @@ aiNode *ObjFileImporter::createNodes(const ObjFile::Model* pModel, const ObjFile
 	pNode->mName = pObject->m_strObjName;
 	
 	// If we have a parent node, store it
-    if( pParent != NULL ) {
+    if( pParent != nullptr ) {
         appendChildToParentNode( pParent, pNode );
     }
 
@@ -280,14 +280,14 @@ void ObjFileImporter::createTopology(const ObjFile::Model* pModel,
 									 aiMesh* pMesh )
 {
 	// Checking preconditions
-	ai_assert( NULL != pModel );
-    if( NULL == pData ) {
+	ai_assert( nullptr != pModel );
+    if( nullptr == pData ) {
         return;
     }
 
 	// Create faces
 	ObjFile::Mesh *pObjMesh = pModel->m_Meshes[ uiMeshIndex ];
-	ai_assert( NULL != pObjMesh );
+	ai_assert( nullptr != pObjMesh );
 
 	pMesh->mNumFaces = 0;
 	for (size_t index = 0; index < pObjMesh->m_Faces.size(); index++)
@@ -366,7 +366,7 @@ void ObjFileImporter::createVertexArray(const ObjFile::Model* pModel,
 										unsigned int uiIdxCount)
 {
 	// Checking preconditions
-	ai_assert( NULL != pCurrentObject );
+	ai_assert( nullptr != pCurrentObject );
 	
 	// Break, if no faces are stored in object
 	if ( pCurrentObject->m_Meshes.empty() )
@@ -374,7 +374,7 @@ void ObjFileImporter::createVertexArray(const ObjFile::Model* pModel,
 
 	// Get current mesh
 	ObjFile::Mesh *pObjMesh = pModel->m_Meshes[ uiMeshIndex ];
-	if ( NULL == pObjMesh || pObjMesh->m_uiNumIndices < 1)
+	if ( nullptr == pObjMesh || pObjMesh->m_uiNumIndices < 1)
 		return;
 
 	// Copy vertices of this mesh instance
@@ -504,7 +504,7 @@ void ObjFileImporter::countObjects(const std::vector<ObjFile::Object*> &rObjects
 //	 Add clamp mode property to material if necessary 
 void ObjFileImporter::addTextureMappingModeProperty(aiMaterial* mat, aiTextureType type, int clampMode)
 {
-	ai_assert( NULL != mat);
+	ai_assert( nullptr != mat);
 	mat->AddProperty<int>(&clampMode, 1, AI_MATKEY_MAPPINGMODE_U(type, 0));
 	mat->AddProperty<int>(&clampMode, 1, AI_MATKEY_MAPPINGMODE_V(type, 0));
 }
@@ -513,8 +513,8 @@ void ObjFileImporter::addTextureMappingModeProperty(aiMaterial* mat, aiTextureTy
 //	Creates the material 
 void ObjFileImporter::createMaterials(const ObjFile::Model* pModel, aiScene* pScene )
 {
-	ai_assert( NULL != pScene );
-	if ( NULL == pScene )
+	ai_assert( nullptr != pScene );
+	if ( nullptr == pScene )
 		return;
 
 	const unsigned int numMaterials = (unsigned int) pModel->m_MaterialLib.size();
@@ -663,15 +663,15 @@ void ObjFileImporter::createMaterials(const ObjFile::Model* pModel, aiScene* pSc
 void ObjFileImporter::appendChildToParentNode(aiNode *pParent, aiNode *pChild)
 {
 	// Checking preconditions
-	ai_assert( NULL != pParent );
-	ai_assert( NULL != pChild );
+	ai_assert( nullptr != pParent );
+	ai_assert( nullptr != pChild );
 
 	// Assign parent to child
 	pChild->mParent = pParent;
 	
 	// If already children was assigned to the parent node, store them in a 
 	std::vector<aiNode*> temp;
-	if (pParent->mChildren != NULL)
+	if (pParent->mChildren != nullptr)
 	{
 		ai_assert( 0 != pParent->mNumChildren );
 		for (size_t index = 0; index < pParent->mNumChildren; index++)

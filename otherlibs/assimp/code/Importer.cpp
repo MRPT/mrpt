@@ -106,7 +106,7 @@ void* AllocateFromAssimpHeap::operator new ( size_t num_bytes, const std::nothro
 		return AllocateFromAssimpHeap::operator new( num_bytes );
 	}
 	catch( ... )	{
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -123,7 +123,7 @@ void* AllocateFromAssimpHeap::operator new[] ( size_t num_bytes, const std::noth
 		return AllocateFromAssimpHeap::operator new[]( num_bytes );
 	}
 	catch( ... )	{
-		return NULL;
+		return nullptr;
 	}
 }
 
@@ -138,7 +138,7 @@ Importer::Importer()
 	// allocate the pimpl first
 	pimpl = new ImporterPimpl();
 
-	pimpl->mScene = NULL;
+	pimpl->mScene = nullptr;
 	pimpl->mErrorString = "";
 
 	// Allocate a default IO handler
@@ -204,7 +204,7 @@ Importer::Importer(const Importer &other)
 // Register a custom post-processing step
 aiReturn Importer::RegisterPPStep(BaseProcess* pImp)
 {
-	ai_assert(NULL != pImp);
+	ai_assert(nullptr != pImp);
 	ASSIMP_BEGIN_EXCEPTION_REGION();
 
 		pimpl->mPostProcessingSteps.push_back(pImp);
@@ -218,7 +218,7 @@ aiReturn Importer::RegisterPPStep(BaseProcess* pImp)
 // Register a custom loader plugin
 aiReturn Importer::RegisterLoader(BaseImporter* pImp)
 {
-	ai_assert(NULL != pImp);
+	ai_assert(nullptr != pImp);
 	ASSIMP_BEGIN_EXCEPTION_REGION();
 
 	// --------------------------------------------------------------------
@@ -253,7 +253,7 @@ aiReturn Importer::RegisterLoader(BaseImporter* pImp)
 aiReturn Importer::UnregisterLoader(BaseImporter* pImp)
 {
 	if(!pImp) {
-		// unregistering a NULL importer is no problem for us ... really!
+		// unregistering a nullptr importer is no problem for us ... really!
 		return AI_SUCCESS;
 	}
 
@@ -280,7 +280,7 @@ aiReturn Importer::UnregisterLoader(BaseImporter* pImp)
 aiReturn Importer::UnregisterPPStep(BaseProcess* pImp)
 {
 	if(!pImp) {
-		// unregistering a NULL ppstep is no problem for us ... really!
+		// unregistering a nullptr ppstep is no problem for us ... really!
 		return AI_SUCCESS;
 	}
 
@@ -391,7 +391,7 @@ void Importer::FreeScene( )
 {
 	ASSIMP_BEGIN_EXCEPTION_REGION();
 	delete pimpl->mScene;
-	pimpl->mScene = NULL;
+	pimpl->mScene = nullptr;
 
 	pimpl->mErrorString = "";
 	ASSIMP_END_EXCEPTION_REGION(void);
@@ -426,7 +426,7 @@ aiScene* Importer::GetOrphanedScene()
 	aiScene* s = pimpl->mScene;
 
 	ASSIMP_BEGIN_EXCEPTION_REGION();
-	pimpl->mScene = NULL;
+	pimpl->mScene = nullptr;
 
 	pimpl->mErrorString = ""; /* reset error string */
 	ASSIMP_END_EXCEPTION_REGION(aiScene*);
@@ -487,12 +487,12 @@ const aiScene* Importer::ReadFileFromMemory( const void* pBuffer,
 
 	if (!pBuffer || !pLength || strlen(pHint) > 100) {
 		pimpl->mErrorString = "Invalid parameters passed to ReadFileFromMemory()";
-		return NULL;
+		return nullptr;
 	}
 
 	// prevent deletion of the previous IOHandler
 	IOSystem* io = pimpl->mIOHandler;
-	pimpl->mIOHandler = NULL;
+	pimpl->mIOHandler = nullptr;
 
 	SetIOHandler(new MemoryIOSystem((const uint8_t*)pBuffer,pLength));
 
@@ -601,16 +601,16 @@ const aiScene* Importer::ReadFile( const char* _pFile, unsigned int pFlags)
 
 			pimpl->mErrorString = "Unable to open file \"" + pFile + "\".";
 			DefaultLogger::get()->error(pimpl->mErrorString);
-			return NULL;
+			return nullptr;
 		}
 
-		boost::scoped_ptr<Profiler> profiler(GetPropertyInteger(AI_CONFIG_GLOB_MEASURE_TIME,0)?new Profiler():NULL);
+		boost::scoped_ptr<Profiler> profiler(GetPropertyInteger(AI_CONFIG_GLOB_MEASURE_TIME,0)?new Profiler():nullptr);
 		if (profiler) {
 			profiler->BeginRegion("total");
 		}
 
 		// Find an worker class which can handle the file
-		BaseImporter* imp = NULL;
+		BaseImporter* imp = nullptr;
 		for( unsigned int a = 0; a < pimpl->mImporter.size(); a++)	{
 
 			if( pimpl->mImporter[a]->CanRead( pFile, pimpl->mIOHandler, false)) {
@@ -636,7 +636,7 @@ const aiScene* Importer::ReadFile( const char* _pFile, unsigned int pFlags)
 			if( !imp)	{
 				pimpl->mErrorString = "No suitable reader found for the file format of file \"" + pFile + "\".";
 				DefaultLogger::get()->error(pimpl->mErrorString);
-				return NULL;
+				return nullptr;
 			}
 		}
 
@@ -665,7 +665,7 @@ const aiScene* Importer::ReadFile( const char* _pFile, unsigned int pFlags)
 				ValidateDSProcess ds;
 				ds.ExecuteOnScene (this);
 				if (!pimpl->mScene) {
-					return NULL;
+					return nullptr;
 				}
 			}
 #endif // no validation
@@ -709,7 +709,7 @@ const aiScene* Importer::ReadFile( const char* _pFile, unsigned int pFlags)
 #endif
 
 		DefaultLogger::get()->error(pimpl->mErrorString);
-		delete pimpl->mScene; pimpl->mScene = NULL;
+		delete pimpl->mScene; pimpl->mScene = nullptr;
 	}
 #endif // ! ASSIMP_CATCH_GLOBAL_EXCEPTIONS
 
@@ -726,7 +726,7 @@ const aiScene* Importer::ApplyPostProcessing(unsigned int pFlags)
 	ASSIMP_BEGIN_EXCEPTION_REGION();
 	// Return immediately if no scene is active
 	if (!pimpl->mScene) {
-		return NULL;
+		return nullptr;
 	}
 
 	// If no flags are given, return the current scene with no further action
@@ -746,7 +746,7 @@ const aiScene* Importer::ApplyPostProcessing(unsigned int pFlags)
 		ValidateDSProcess ds;
 		ds.ExecuteOnScene (this);
 		if (!pimpl->mScene) {
-			return NULL;
+			return nullptr;
 		}
 	}
 #endif // no validation
@@ -764,7 +764,7 @@ const aiScene* Importer::ApplyPostProcessing(unsigned int pFlags)
 	}
 #endif // ! DEBUG
 
-	boost::scoped_ptr<Profiler> profiler(GetPropertyInteger(AI_CONFIG_GLOB_MEASURE_TIME,0)?new Profiler():NULL);
+	boost::scoped_ptr<Profiler> profiler(GetPropertyInteger(AI_CONFIG_GLOB_MEASURE_TIME,0)?new Profiler():nullptr);
 	for( unsigned int a = 0; a < pimpl->mPostProcessingSteps.size(); a++)	{
 
 		BaseProcess* process = pimpl->mPostProcessingSteps[a];
@@ -820,7 +820,7 @@ const aiScene* Importer::ApplyPostProcessing(unsigned int pFlags)
 // Helper function to check whether an extension is supported by ASSIMP
 bool Importer::IsExtensionSupported(const char* szExtension) const
 {
-	return NULL != GetImporter(szExtension);
+	return nullptr != GetImporter(szExtension);
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -833,7 +833,7 @@ size_t Importer::GetImporterCount() const
 const aiImporterDesc* Importer::GetImporterInfo(size_t index) const
 {
 	if (index >= pimpl->mImporter.size()) {
-		return NULL;
+		return nullptr;
 	}
 	return pimpl->mImporter[index]->GetInfo();
 }
@@ -843,7 +843,7 @@ const aiImporterDesc* Importer::GetImporterInfo(size_t index) const
 BaseImporter* Importer::GetImporter (size_t index) const
 {
 	if (index >= pimpl->mImporter.size()) {
-		return NULL;
+		return nullptr;
 	}
 	return pimpl->mImporter[index];
 }

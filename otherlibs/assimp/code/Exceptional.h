@@ -51,7 +51,7 @@ using std::runtime_error;
 // ---------------------------------------------------------------------------
 /** FOR IMPORTER PLUGINS ONLY: Simple exception class to be thrown if an 
  *  unrecoverable error occurs while importing. Loading APIs return
- *  NULL instead of a valid aiScene then.  */
+ *  nullptr instead of a valid aiScene then.  */
 class DeadlyImportError
 	: public runtime_error
 {
@@ -83,7 +83,7 @@ struct ExceptionSwallower	{
 template <typename T>
 struct ExceptionSwallower<T*>	{
 	T* operator ()() const {
-		return NULL;
+		return nullptr;
 	}
 };
 

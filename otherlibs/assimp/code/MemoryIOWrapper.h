@@ -165,7 +165,7 @@ public:
 	/** Open a new file with a given path. */
 	IOStream* Open( const char* pFile, const char* /*pMode*/ = "rb") {
 		if (strncmp(pFile,AI_MEMORYIO_MAGIC_FILENAME,AI_MEMORYIO_MAGIC_FILENAME_LENGTH)) {
-			return NULL;
+			return nullptr;
 		}
 		return new MemoryIOStream(buffer,length);
 	}

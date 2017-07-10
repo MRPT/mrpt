@@ -132,7 +132,7 @@ public:
     std::map<std::string, OperationCreator*>::const_iterator it =
         registry()->find(name);
     if (it == registry()->end())
-      return static_cast<Operation*>(NULL);
+      return static_cast<Operation*>(nullptr);
     else
       return it->second->create();
   }
@@ -314,7 +314,7 @@ void mexFunction(int nlhs, mxArray *plhs[], \
       mxGetChars(prhs[0]) + mxGetNumberOfElements(prhs[0])); \
   std::auto_ptr<mexplus::Operation> operation( \
       mexplus::OperationFactory::create(operation_name)); \
-  if (operation.get() == NULL) \
+  if (operation.get() == nullptr) \
     mexErrMsgIdAndTxt("mexplus:dispatch:argumentError", \
         "Invalid operation: %s", operation_name.c_str()); \
   (*operation)(nlhs, plhs, nrhs - 1, prhs + 1); \

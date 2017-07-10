@@ -78,7 +78,7 @@ public:
 		blob->size = file_size;
 		blob->data = buffer;
 
-		buffer = NULL;
+		buffer = nullptr;
 
 		return blob;
 	}
@@ -231,7 +231,7 @@ public:
 	aiExportDataBlob* GetBlobChain()
 	{
 		// one must be the master
-		aiExportDataBlob* master = NULL, *cur;
+		aiExportDataBlob* master = nullptr, *cur;
 		BOOST_FOREACH(const BlobEntry& blobby, blobs) {
 			if (blobby.first == AI_BLOBIO_MAGIC) {
 				master = blobby.second;
@@ -240,7 +240,7 @@ public:
 		}
 		if (!master) {
 			DefaultLogger::get()->error("BlobIOSystem: no data written or master file was not closed properly.");
-			return NULL;
+			return nullptr;
 		}
 
 		master->name.Set("");
@@ -283,7 +283,7 @@ public:
 		const char* pMode)
 	{
 		if (pMode[0] != 'w') {
-			return NULL;
+			return nullptr;
 		}
 
 		created.insert(std::string(pFile));

@@ -1,11 +1,11 @@
-/* +---------------------------------------------------------------------------+
-	 |                     Mobile Robot Programming Toolkit (MRPT)               |
-	 |                          http://www.mrpt.org/                             |
-	 |                                                                           |
-	 | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
-	 | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-	 | Released under BSD License. See details in http://www.mrpt.org/License    |
-	 +---------------------------------------------------------------------------+ */
+/* +------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)            |
+   |                          http://www.mrpt.org/                          |
+   |                                                                        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file     |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                |
+   | Released under BSD License. See details in http://www.mrpt.org/License |
+   +------------------------------------------------------------------------+ */
 
 #ifndef CNODEREGISTRATIONDECIDER_IMPL_H
 #define CNODEREGISTRATIONDECIDER_IMPL_H
@@ -15,24 +15,26 @@ namespace mrpt { namespace graphslam { namespace deciders {
 // Implementation of classes defined in the CNodeRegistrationDecider class
 // template.
 //
-template<class GRAPH_T>
-CNodeRegistrationDecider<GRAPH_T>::CNodeRegistrationDecider():
-	m_prev_registered_nodeID(INVALID_NODEID) {
-		using namespace mrpt::poses;
+template <class GRAPH_T>
+CNodeRegistrationDecider<GRAPH_T>::CNodeRegistrationDecider()
+	: m_prev_registered_nodeID(INVALID_NODEID)
+{
+	using namespace mrpt::poses;
 
-		m_init_inf_mat.unit();
-		m_init_inf_mat *= 10000;
-		resetPDF(&this->m_since_prev_node_PDF);
-	
+	m_init_inf_mat.unit();
+	m_init_inf_mat *= 10000;
+	resetPDF(&this->m_since_prev_node_PDF);
 }
 
-template<class GRAPH_T>
-CNodeRegistrationDecider<GRAPH_T>::~CNodeRegistrationDecider() {
+template <class GRAPH_T>
+CNodeRegistrationDecider<GRAPH_T>::~CNodeRegistrationDecider()
+{
 }
 
-template<class GRAPH_T>
+template <class GRAPH_T>
 void CNodeRegistrationDecider<GRAPH_T>::getDescriptiveReport(
-		std::string* report_str) const {
+	std::string* report_str) const
+{
 	MRPT_START;
 	using namespace std;
 
@@ -45,32 +47,37 @@ void CNodeRegistrationDecider<GRAPH_T>::getDescriptiveReport(
 	MRPT_END;
 }
 
-template<class GRAPH_T>
-bool CNodeRegistrationDecider<GRAPH_T>::checkRegistrationCondition() { return false; }
+template <class GRAPH_T>
+bool CNodeRegistrationDecider<GRAPH_T>::checkRegistrationCondition()
+{
+	return false;
+}
 
-template<class GRAPH_T>
+template <class GRAPH_T>
 bool CNodeRegistrationDecider<GRAPH_T>::registerNewNodeAtEnd(
-		const typename GRAPH_T::constraint_t& constraint) {
+	const typename GRAPH_T::constraint_t& constraint)
+{
 	MRPT_START;
 	using namespace mrpt::utils;
 	using namespace std;
 
 	// register the initial node if it doesn't exist.
 	// Runs only once.
-	if (this->m_prev_registered_nodeID == INVALID_NODEID) { // root
+	if (this->m_prev_registered_nodeID == INVALID_NODEID)
+	{  // root
 		MRPT_LOG_WARN_STREAM("Registering root node..." << endl);
-		global_pose_t tmp_pose =
-			this->getCurrentRobotPosEstimation();
+		global_pose_t tmp_pose = this->getCurrentRobotPosEstimation();
 		this->addNodeAnnotsToPose(&tmp_pose);
 
 		// make sure that this pair hasn't been registered yet.
 		std::pair<typename GRAPH_T::global_poses_t::const_iterator, bool> res =
-			this->m_graph->nodes.insert(make_pair(
-						this->m_graph->root, tmp_pose));
-		ASSERTMSG_(res.second, 
-				mrpt::format(
-					"nodeID \"%lu\" with pose \"%s\" seems to be already registered.",
-					this->m_graph->root, tmp_pose.asString().c_str()));
+			this->m_graph->nodes.insert(
+				make_pair(this->m_graph->root, tmp_pose));
+		ASSERTMSG_(
+			res.second, mrpt::format(
+							"nodeID \"%lu\" with pose \"%s\" seems to be "
+							"already registered.",
+							this->m_graph->root, tmp_pose.asString().c_str()));
 
 		this->m_prev_registered_nodeID = this->m_graph->root;
 	}
@@ -83,34 +90,35 @@ bool CNodeRegistrationDecider<GRAPH_T>::registerNewNodeAtEnd(
 
 	// add the new pose.
 	{
-		global_pose_t tmp_pose = 
-			this->getCurrentRobotPosEstimation();
+		global_pose_t tmp_pose = this->getCurrentRobotPosEstimation();
 		this->addNodeAnnotsToPose(&tmp_pose);
 
 		// make sure that this pair hasn't been registered yet.
 		std::pair<typename GRAPH_T::global_poses_t::const_iterator, bool> res =
-			this->m_graph->nodes.insert(make_pair(
-						to, tmp_pose));
-		ASSERTMSG_(res.second, 
-				mrpt::format(
-					"nodeID \"%lu\" with pose \"%s\" seems to be already registered.",
-					to, tmp_pose.asString().c_str()));
+			this->m_graph->nodes.insert(make_pair(to, tmp_pose));
+		ASSERTMSG_(
+			res.second, mrpt::format(
+							"nodeID \"%lu\" with pose \"%s\" seems to be "
+							"already registered.",
+							to, tmp_pose.asString().c_str()));
 		this->m_graph->insertEdgeAtEnd(from, to, constraint);
 	}
 
 	m_prev_registered_nodeID = to;
 
-
-	MRPT_LOG_DEBUG_STREAM("Registered new node:" << endl <<
-		"\t" << from << " => " << to << endl <<
-		"\tEdge: " << constraint.getMeanVal().asString());
+	MRPT_LOG_DEBUG_STREAM(
+		"Registered new node:" << endl
+							   << "\t" << from << " => " << to << endl
+							   << "\tEdge: "
+							   << constraint.getMeanVal().asString());
 
 	return true;
 	MRPT_END;
 }
 
-template<class GRAPH_T>
-bool CNodeRegistrationDecider<GRAPH_T>::registerNewNodeAtEnd() {
+template <class GRAPH_T>
+bool CNodeRegistrationDecider<GRAPH_T>::registerNewNodeAtEnd()
+{
 	bool res = this->registerNewNodeAtEnd(this->m_since_prev_node_PDF);
 
 	// reset the PDF since the last registered node position
@@ -119,8 +127,9 @@ bool CNodeRegistrationDecider<GRAPH_T>::registerNewNodeAtEnd() {
 	return res;
 }
 
-template<class GRAPH_T>
-void CNodeRegistrationDecider<GRAPH_T>::resetPDF(constraint_t* c) {
+template <class GRAPH_T>
+void CNodeRegistrationDecider<GRAPH_T>::resetPDF(constraint_t* c)
+{
 	MRPT_START;
 	ASSERT_(c);
 
@@ -129,21 +138,23 @@ void CNodeRegistrationDecider<GRAPH_T>::resetPDF(constraint_t* c) {
 	c->cov_inv = this->m_init_inf_mat;
 
 	MRPT_END;
-} // end of resetPDF
+}  // end of resetPDF
 
-
-template<class GRAPH_T>
+template <class GRAPH_T>
 void CNodeRegistrationDecider<GRAPH_T>::addNodeAnnotsToPose(
-		global_pose_t* pose) const { }
+	global_pose_t* pose) const
+{
+}
 
-template<class GRAPH_T>
-typename GRAPH_T::global_pose_t CNodeRegistrationDecider<GRAPH_T>::
-getCurrentRobotPosEstimation() const {
+template <class GRAPH_T>
+typename GRAPH_T::global_pose_t
+	CNodeRegistrationDecider<GRAPH_T>::getCurrentRobotPosEstimation() const
+{
 	global_pose_t pose_out;
 
-	if (this->m_prev_registered_nodeID != INVALID_NODEID) {
-		pose_out =
-			this->m_graph->nodes.at(this->m_prev_registered_nodeID);
+	if (this->m_prev_registered_nodeID != INVALID_NODEID)
+	{
+		pose_out = this->m_graph->nodes.at(this->m_prev_registered_nodeID);
 	}
 
 	pose_out += m_since_prev_node_PDF.getMeanVal();

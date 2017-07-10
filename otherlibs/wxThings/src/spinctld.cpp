@@ -38,7 +38,7 @@
 #endif // wxCHECK_VERSION(2,5,0)
 
 // NOTES : if the textctrl is focused and the program is ending, a killfocus
-//         event is sent in MSW, this is why m_textCtrl is set to NULL in it's
+//         event is sent in MSW, this is why m_textCtrl is set to nullptr in it's
 //         destructor and there's so many checks for it not being NULL
 
 //----------------------------------------------------------------------------
@@ -60,8 +60,8 @@ public:
     // MSW sends extra kill focus event
     virtual ~wxSpinCtrlDblTextCtrl()
     {
-        if (m_parent) m_parent->m_textCtrl = NULL;
-        m_parent = NULL;
+        if (m_parent) m_parent->m_textCtrl = nullptr;
+        m_parent = nullptr;
     }
 
     wxSpinCtrlDbl *m_parent;
@@ -127,8 +127,8 @@ void wxSpinCtrlDbl::Init()
     m_increment = 1;
     m_digits = wxSPINCTRLDBL_AUTODIGITS;
     m_snap_ticks = false;
-    m_spinButton = NULL;
-    m_textCtrl = NULL;
+    m_spinButton = nullptr;
+    m_textCtrl = nullptr;
 }
 
 bool wxSpinCtrlDbl::Create( wxWindow *parent, wxWindowID id,
@@ -211,15 +211,15 @@ wxSpinCtrlDbl::~wxSpinCtrlDbl()
 {
     if (m_textCtrl) // null this since MSW sends KILL_FOCUS on deletion
     {
-        m_textCtrl->m_parent = NULL;
+        m_textCtrl->m_parent = nullptr;
 
         wxSpinCtrlDblTextCtrl *text = m_textCtrl;
-        m_textCtrl = NULL;
+        m_textCtrl = nullptr;
         delete text;
     }
 
     delete m_spinButton;
-    m_spinButton = NULL;
+    m_spinButton = nullptr;
 }
 
 #define wxSPINCTRLDBL_SPIN_WIDTH  15

@@ -1,11 +1,11 @@
-/* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          http://www.mrpt.org/                             |
-   |                                                                           |
-   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-   | Released under BSD License. See details in http://www.mrpt.org/License    |
-   +---------------------------------------------------------------------------+ */
+/* +------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)            |
+   |                          http://www.mrpt.org/                          |
+   |                                                                        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file     |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                |
+   | Released under BSD License. See details in http://www.mrpt.org/License |
+   +------------------------------------------------------------------------+ */
 
 
 #ifndef TCLAP_MULTIPLE_ARGUMENT_H
@@ -206,7 +206,7 @@ class MultiArg : public Arg
                   const std::string& desc,
                   bool req,
                   const std::string& typeDesc,
-                  Visitor* v = NULL);
+                  Visitor* v = nullptr);
 
 		/**
 		 * Constructor.
@@ -232,7 +232,7 @@ class MultiArg : public Arg
                   bool req,
                   const std::string& typeDesc,
                   CmdLineInterface& parser,
-                  Visitor* v = NULL );
+                  Visitor* v = nullptr );
 
 		/**
 		 * Constructor.
@@ -254,7 +254,7 @@ class MultiArg : public Arg
                   const std::string& desc,
                   bool req,
                   Constraint<T>* constraint,
-                  Visitor* v = NULL );
+                  Visitor* v = nullptr );
 		  
 		/**
 		 * Constructor.
@@ -278,7 +278,7 @@ class MultiArg : public Arg
                   bool req,
                   Constraint<T>* constraint,
                   CmdLineInterface& parser,
-                  Visitor* v = NULL );
+                  Visitor* v = nullptr );
 		  
 		/**
 		 * Handles the processing of the argument.
@@ -327,7 +327,7 @@ MultiArg<T>::MultiArg(const std::string& flag,
                       Visitor* v)
 : Arg( flag, name, desc, req, true, v ),
   _typeDesc( typeDesc ),
-  _constraint( NULL ),
+  _constraint( nullptr ),
   _allowMore(false)
 { 
 	_acceptsMultipleValues = true;
@@ -343,7 +343,7 @@ MultiArg<T>::MultiArg(const std::string& flag,
                       Visitor* v)
 : Arg( flag, name, desc, req, true, v ),
   _typeDesc( typeDesc ),
-  _constraint( NULL ),
+  _constraint( nullptr ),
   _allowMore(false)
 { 
 	parser.add( this );
@@ -495,7 +495,7 @@ void MultiArg<T>::_extractValue( const std::string& val )
 	    throw( ArgParseException("More than one valid value "
                                  "parsed from string '" + val + "'", 
 								 toString() ) );		    
-	if ( _constraint != NULL )
+        if ( _constraint != nullptr )
 		if ( ! _constraint->check( _values.back() ) )
 			throw( CmdLineParseException( "Value '" + val +
                                           "' does not meet constraint: " +

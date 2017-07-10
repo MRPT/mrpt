@@ -139,7 +139,7 @@ int JoinVerticesProcess::ProcessMesh( aiMesh* pMesh, unsigned int meshIndex)
 	// Try to reuse the lookup table from the last step.
 	const static float epsilon = 1e-5f;
 	// float posEpsilonSqr;
-	SpatialSort* vertexFinder = NULL;
+	SpatialSort* vertexFinder = nullptr;
 	SpatialSort _vertexFinder;
 
 	typedef std::pair<SpatialSort,float> SpatPair;

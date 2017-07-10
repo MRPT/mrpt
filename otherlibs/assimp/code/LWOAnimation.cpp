@@ -63,9 +63,9 @@ AnimResolver::AnimResolver(std::list<Envelope>& _envelopes,double tick)
 	: envelopes   (_envelopes)
 	, sample_rate (0.)
 {
-	trans_x = trans_y = trans_z = NULL;
-	rotat_x = rotat_y = rotat_z = NULL;
-	scale_x = scale_y = scale_z = NULL;
+	trans_x = trans_y = trans_z = nullptr;
+	rotat_x = rotat_y = rotat_z = nullptr;
+	scale_x = scale_y = scale_z = nullptr;
 
 	first = last = 150392.;
 
@@ -525,7 +525,7 @@ void AnimResolver::GetKeys(std::vector<aiVectorKey>& out,
 // Extract animation channel
 void AnimResolver::ExtractAnimChannel(aiNodeAnim** out, unsigned int flags /*= 0*/)
 {
-	*out = NULL;
+	*out = nullptr;
 
 
 	//FIXME: crashes if more than one component is animated at different timings, to be resolved.

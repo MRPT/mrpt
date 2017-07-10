@@ -1,3 +1,11 @@
+/* +------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)            |
+   |                          http://www.mrpt.org/                          |
+   |                                                                        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file     |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                |
+   | Released under BSD License. See details in http://www.mrpt.org/License |
+   +------------------------------------------------------------------------+ */
 #ifndef CRANGESCANEDGEREGISTRATIONDECIDER_H
 #define CRANGESCANEDGEREGISTRATIONDECIDER_H
 
@@ -19,8 +27,12 @@
 #include <mrpt/utils/TColor.h>
 #include <mrpt/utils/mrpt_stdint.h>
 
-namespace mrpt { namespace graphslam { namespace deciders {
-
+namespace mrpt
+{
+namespace graphslam
+{
+namespace deciders
+{
 /**\brief Edge Registration Decider Interface from which RangeScanner-based
  * ERDs can inherit from.
  *
@@ -365,8 +377,6 @@ class CRangeScanEdgeRegistrationDecider :
 		 */
 		double m_ICP_goodness_thresh_fixed;
 		bool m_icp_goodness_thresh_is_fixed;
-
-
 	};
 
 } } } // end of namespaces

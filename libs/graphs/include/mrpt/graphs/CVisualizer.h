@@ -1,3 +1,11 @@
+/* +------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)            |
+   |                          http://www.mrpt.org/                          |
+   |                                                                        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file     |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                |
+   | Released under BSD License. See details in http://www.mrpt.org/License |
+   +------------------------------------------------------------------------+ */
 #ifndef CVISUALIZER_H
 #define CVISUALIZER_H
 
@@ -10,28 +18,28 @@
 #include <mrpt/utils/TParameters.h>
 #include <mrpt/graphs/CNetworkOfPoses.h>
 
-namespace mrpt { namespace graphs { namespace detail {
-
+namespace mrpt
+{
+namespace graphs
+{
+namespace detail
+{
 /**\brief Base class for C*Visualizer classes.
  *
  * By default provides visualization for a CNetowrkOfPoses containing nodes and
  * edges as constructed by a single agent/robot. Derived classes can inherit
- * and partially modify the class behavior 
+ * and partially modify the class behavior
 */
-template<
-	class CPOSE, // Type of edges
-	class MAPS_IMPLEMENTATION, // Use std::map<> vs. std::vector<>
-	class NODE_ANNOTATIONS=mrpt::graphs::detail::TNodeAnnotations,
-	class EDGE_ANNOTATIONS=mrpt::graphs::detail::edge_annotations_empty
-	>
+template <class CPOSE,  // Type of edges
+		  class MAPS_IMPLEMENTATION,  // Use std::map<> vs. std::vector<>
+		  class NODE_ANNOTATIONS = mrpt::graphs::detail::TNodeAnnotations,
+		  class EDGE_ANNOTATIONS = mrpt::graphs::detail::edge_annotations_empty>
 class CVisualizer
 {
-public:
-	typedef mrpt::graphs::CNetworkOfPoses<
-		CPOSE, 
-		MAPS_IMPLEMENTATION,
-		NODE_ANNOTATIONS,
-		EDGE_ANNOTATIONS> GRAPH_T; 
+   public:
+	typedef mrpt::graphs::CNetworkOfPoses<CPOSE, MAPS_IMPLEMENTATION,
+										  NODE_ANNOTATIONS, EDGE_ANNOTATIONS>
+		GRAPH_T;
 	/**\brief Constructor
 	*/
 	CVisualizer(const GRAPH_T& graph_in);
@@ -44,38 +52,45 @@ public:
 	 * the user preferences
 	 *
 	 */
-	virtual void 	getAs3DObject(
-			mrpt::opengl::CSetOfObjectsPtr& object,
-			mrpt::utils::TParametersDouble viz_params) const;
+	virtual void getAs3DObject(
+		mrpt::opengl::CSetOfObjects::Ptr& object,
+		mrpt::utils::TParametersDouble viz_params) const;
 
-protected:
+   protected:
 	/**\name Work-splitting methods
-	 * \brief Smaller functions that do add very specific parts to the visual representation
+	 * \brief Smaller functions that do add very specific parts to the visual
+	 * representation
 	 *
-	 * Following functions take an optional TParametersDouble instance containing
+	 * Following functions take an optional TParametersDouble instance
+	 * containing
 	 * visualization parameters
 	 *
 	 */
 	/**\{ */
-	virtual void drawGroundGrid(mrpt::opengl::CSetOfObjectsPtr& object,
-			const mrpt::utils::TParametersDouble* viz_params=NULL) const;
-	virtual void drawNodeCorners(mrpt::opengl::CSetOfObjectsPtr& object,
-			const mrpt::utils::TParametersDouble* viz_params=NULL) const;
-	virtual void drawNodePoints(mrpt::opengl::CSetOfObjectsPtr& object,
-			const mrpt::utils::TParametersDouble* viz_params=NULL) const;
-	virtual void drawEdgeRelPoses(mrpt::opengl::CSetOfObjectsPtr& object,
-			const mrpt::utils::TParametersDouble* viz_params=NULL) const;
-	virtual void drawEdges(mrpt::opengl::CSetOfObjectsPtr& object,
-			const mrpt::utils::TParametersDouble* viz_params=NULL) const;
+	virtual void drawGroundGrid(
+		mrpt::opengl::CSetOfObjects::Ptr& object,
+		const mrpt::utils::TParametersDouble* viz_params = NULL) const;
+	virtual void drawNodeCorners(
+		mrpt::opengl::CSetOfObjects::Ptr& object,
+		const mrpt::utils::TParametersDouble* viz_params = NULL) const;
+	virtual void drawNodePoints(
+		mrpt::opengl::CSetOfObjects::Ptr& object,
+		const mrpt::utils::TParametersDouble* viz_params = NULL) const;
+	virtual void drawEdgeRelPoses(
+		mrpt::opengl::CSetOfObjects::Ptr& object,
+		const mrpt::utils::TParametersDouble* viz_params = NULL) const;
+	virtual void drawEdges(
+		mrpt::opengl::CSetOfObjects::Ptr& object,
+		const mrpt::utils::TParametersDouble* viz_params = NULL) const;
 
 	/**\} */
 
 	bool m_is_3D_graph;
 	const GRAPH_T& m_graph;
 };
-
-
-} } } // end of namespaces
+}
+}
+}  // end of namespaces
 
 #include <mrpt/graphs/CVisualizer_impl.h>
 

@@ -98,7 +98,7 @@ void GenFaceNormalsProcess::Execute( aiScene* pScene)
 // Executes the post processing step on the given imported data.
 bool GenFaceNormalsProcess::GenMeshFaceNormals (aiMesh* pMesh)
 {
-	if (NULL != pMesh->mNormals) {
+	if (nullptr != pMesh->mNormals) {
 		return false;
 	}
 

@@ -1,11 +1,11 @@
-/* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          http://www.mrpt.org/                             |
-   |                                                                           |
-   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-   | Released under BSD License. See details in http://www.mrpt.org/License    |
-   +---------------------------------------------------------------------------+ */
+/* +------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)            |
+   |                          http://www.mrpt.org/                          |
+   |                                                                        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file     |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                |
+   | Released under BSD License. See details in http://www.mrpt.org/License |
+   +------------------------------------------------------------------------+ */
 #ifndef OCTOMAP_ABSTRACT_OCTREE_H
 #define OCTOMAP_ABSTRACT_OCTREE_H
 
@@ -127,7 +127,7 @@ namespace octomap {
      *
      * @param id unique ID of OcTree
      * @param res resolution of OcTree
-     * @return pointer to newly created OcTree (empty). NULL if the ID is unknown!
+     * @return pointer to newly created OcTree (empty). nullptr if the ID is unknown!
      */
     static AbstractOcTree* createTree(const std::string id, double res);
 

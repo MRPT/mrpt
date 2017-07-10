@@ -133,7 +133,7 @@ void DXFImporter::InternReadFile( const std::string& pFile,
 	boost::shared_ptr<IOStream> file = boost::shared_ptr<IOStream>( pIOHandler->Open( pFile) );
 	
 	// Check whether we can read the file
-	if( file.get() == NULL) {
+	if( file.get() == nullptr) {
 		throw DeadlyImportError( "Failed to open DXF file " + pFile + "");
 	}
 

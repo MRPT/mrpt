@@ -58,7 +58,7 @@ using namespace Assimp::MD5;
 // Parse the segment structure fo a MD5 file
 MD5Parser::MD5Parser(char* _buffer, unsigned int _fileSize )
 {
-	ai_assert(NULL != _buffer && 0 != _fileSize);
+	ai_assert(nullptr != _buffer && 0 != _fileSize);
 
 	buffer = _buffer;
 	fileSize = _fileSize;

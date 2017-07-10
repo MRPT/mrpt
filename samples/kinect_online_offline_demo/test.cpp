@@ -1,26 +1,25 @@
-/* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          http://www.mrpt.org/                             |
-   |                                                                           |
-   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-   | Released under BSD License. See details in http://www.mrpt.org/License    |
-   +---------------------------------------------------------------------------+ */
+/* +------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)            |
+   |                          http://www.mrpt.org/                          |
+   |                                                                        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file     |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                |
+   | Released under BSD License. See details in http://www.mrpt.org/License |
+   +------------------------------------------------------------------------+ */
 
 /*
   Example  : kinect-online-offline-demo
-  Web page : http://www.mrpt.org/Switching_between_reading_live_Kinect_RGBD_dataset_for_debugging
+  Web page :
+  http://www.mrpt.org/Switching_between_reading_live_Kinect_RGBD_dataset_for_debugging
 
   Purpose  : Demonstrate how to programatically switch between online Kinect
-              grabbing and offline parsing a Rawlog dataset. Refer to the launch
-              of the grabbing thread in Test_KinectOnlineOffline()
+			  grabbing and offline parsing a Rawlog dataset. Refer to the launch
+			  of the grabbing thread in Test_KinectOnlineOffline()
 */
-
 
 #include <mrpt/hwdrivers/CKinect.h>
 #include <mrpt/gui.h>
 #include <mrpt/maps/CColouredPointsMap.h>
-#include <mrpt/synch/CThreadSafeVariable.h>
 #include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/obs/CRawlog.h>
@@ -29,11 +28,11 @@
 #include <mrpt/opengl/CFrustum.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/stock_objects.h>
-#include <memory> // for std::auto_ptr, unique_ptr
+#include <memory>  // for std::auto_ptr, unique_ptr
 
 // Demonstrate MRPT RGB+D --> PCL point cloud conversion:
 #if MRPT_HAS_PCL
-#	include <mrpt/maps/PCL_adapters.h>
+#include <mrpt/maps/PCL_adapters.h>
 #endif
 
 using namespace mrpt;
@@ -43,31 +42,40 @@ using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace std;
 
-
 // Thread for online/offline capturing: This should be done in another thread
-//   specially in the online mode, but also in offline to emulate the possibility
+//   specially in the online mode, but also in offline to emulate the
+//   possibility
 //   of losing frames if our program doesn't process them quickly.
 struct TThreadParam
 {
 	TThreadParam(
-		bool _is_online,
-		const string &_rawlog_file = string(),
+		bool _is_online, const string& _rawlog_file = string(),
 		bool _generate_3D_pointcloud_in_this_thread = false)
-		:	is_online(_is_online),
-			rawlog_file(_rawlog_file),
-			generate_3D_pointcloud_in_this_thread(_generate_3D_pointcloud_in_this_thread),
-			quit(false),
-			Hz(0)
-	{ }
+		: is_online(_is_online),
+		  rawlog_file(_rawlog_file),
+		  generate_3D_pointcloud_in_this_thread(
+			  _generate_3D_pointcloud_in_this_thread),
+		  quit(false),
+		  Hz(0)
+	{
+	}
 
-	const bool     is_online;   //!< true: live grabbing from the sensor, false: from rawlog
-	const string   rawlog_file; //!< Only when is_online==false
-	const bool generate_3D_pointcloud_in_this_thread; //!< true: populate the 3D point fields in the output observation; false: only RGB and Depth images.
+	/** true: live grabbing from the sensor, false: from rawlog */
+	const bool is_online;
+	/** Only when is_online==false */
+	const string rawlog_file;
+	/** true: populate the 3D point fields in the output observation; false:
+	 * only RGB and Depth images. */
+	const bool generate_3D_pointcloud_in_this_thread;
 
-	volatile bool   quit;       //!< In/Out variable: Forces the thread to exit or indicates an error in the thread that caused it to end.
-	volatile double Hz;         //!< Out variable: Approx. capturing rate from the thread.
+	/** In/Out variable: Forces the thread to exit or indicates an error in the
+	 * thread that caused it to end. */
+	volatile bool quit;
+	/** Out variable: Approx. capturing rate from the thread. */
+	volatile double Hz;
 
-	mrpt::synch::CThreadSafeVariable<CObservation3DRangeScanPtr> new_obs;  //!< RGB+D (+ optionally, 3D point cloud)
+	/** RGB+D (+ optionally, 3D point cloud) */
+	CObservation3DRangeScan::Ptr new_obs;
 };
 
 // Only for offline operation:
@@ -79,28 +87,25 @@ struct TThreadParam
 // ----------------------------------------------------
 // The online/offline grabbing thread
 // ----------------------------------------------------
-void thread_grabbing(TThreadParam &p)
+void thread_grabbing(TThreadParam& p)
 {
 	try
 	{
-#if MRPT_HAS_CXX11
-		typedef std::unique_ptr<CKinect> CKinectPtr;  // This assures automatic destruction
-#else
-		typedef std::auto_ptr<CKinect> CKinectPtr;  // This assures automatic destruction
-#endif
+		typedef std::unique_ptr<CKinect>
+			CKinectPtr;  // This assures automatic destruction
 
 		// Only one of these will be actually used:
-		CKinectPtr          kinect;
-		CFileGZInputStream  dataset;
+		CKinectPtr kinect;
+		CFileGZInputStream dataset;
 
-		mrpt::system::TTimeStamp  dataset_prev_tim     = INVALID_TIMESTAMP;
-		mrpt::system::TTimeStamp  my_last_read_obs_tim = INVALID_TIMESTAMP;
+		mrpt::system::TTimeStamp dataset_prev_tim = INVALID_TIMESTAMP;
+		mrpt::system::TTimeStamp my_last_read_obs_tim = INVALID_TIMESTAMP;
 
 		if (p.is_online)
 		{
 			// Online:
 			// ---------------------
-			kinect = CKinectPtr(new CKinect());
+			kinect.reset(new CKinect());
 
 			// Set params:
 			kinect->enableGrabRGB(true);
@@ -118,10 +123,12 @@ void thread_grabbing(TThreadParam &p)
 			// Offline:
 			// ---------------------
 			if (!dataset.open(p.rawlog_file))
-				throw std::runtime_error("Couldn't open rawlog dataset file for input...");
+				throw std::runtime_error(
+					"Couldn't open rawlog dataset file for input...");
 
 			// Set external images directory:
-			CImage::IMAGES_PATH_BASE = CRawlog::detectImagesDirectory(p.rawlog_file);
+			CImage::IMAGES_PATH_BASE =
+				CRawlog::detectImagesDirectory(p.rawlog_file);
 		}
 
 		CTicTac tictac;
@@ -132,75 +139,93 @@ void thread_grabbing(TThreadParam &p)
 			if (p.is_online)
 			{
 				// Grab new observation from the camera:
-				bool there_is_obs=true, hard_error=false;
+				bool there_is_obs = true, hard_error = false;
 
-				CObservation3DRangeScanPtr  obs = CObservation3DRangeScan::Create(); // Smart pointers to observations. Memory pooling is used internally
-				kinect->getNextObservation(*obs,there_is_obs,hard_error);
+				CObservation3DRangeScan::Ptr obs = std::make_shared<
+					CObservation3DRangeScan>();  // Smart pointers to
+				// observations. Memory pooling
+				// is used internally
+				kinect->getNextObservation(*obs, there_is_obs, hard_error);
 
-				if(hard_error)
-					throw std::runtime_error("Sensor returned 'hardware error'");
+				if (hard_error)
+					throw std::runtime_error(
+						"Sensor returned 'hardware error'");
 				else if (there_is_obs)
 				{
 					// Send object to the main thread:
-					p.new_obs.set(obs);
+					std::atomic_store(&p.new_obs, obs);
 				}
 			}
 			else
 			{
 				// Offline:
-				CObservationPtr obs;
+				CObservation::Ptr obs;
 				do
 				{
-					try {
+					try
+					{
 						dataset >> obs;
 					}
-					catch (std::exception &e) {
-						throw std::runtime_error( string("\nError reading from dataset file (EOF?):\n")+string(e.what()) );
+					catch (std::exception& e)
+					{
+						throw std::runtime_error(
+							string(
+								"\nError reading from dataset file (EOF?):\n") +
+							string(e.what()));
 					}
-					ASSERT_(obs.present())
-				} while (!IS_CLASS(obs,CObservation3DRangeScan));
+					ASSERT_(obs)
+				} while (!IS_CLASS(obs, CObservation3DRangeScan));
 
 				// We have one observation:
-				CObservation3DRangeScanPtr obs3D = CObservation3DRangeScanPtr(obs);
-				obs3D->load(); // *Important* This is needed to load the range image if stored as a separate file.
+				CObservation3DRangeScan::Ptr obs3D =
+					std::dynamic_pointer_cast<CObservation3DRangeScan>(obs);
+				obs3D->load();  // *Important* This is needed to load the range
+				// image if stored as a separate file.
 
 				// Do we have to wait to emulate real-time behavior?
 				const mrpt::system::TTimeStamp cur_tim = obs3D->timestamp;
 				const mrpt::system::TTimeStamp now_tim = mrpt::system::now();
 
-				if (dataset_prev_tim!=INVALID_TIMESTAMP && my_last_read_obs_tim!=INVALID_TIMESTAMP)
+				if (dataset_prev_tim != INVALID_TIMESTAMP &&
+					my_last_read_obs_tim != INVALID_TIMESTAMP)
 				{
 #ifndef FAKE_KINECT_FPS_RATE
-					const double At_dataset = mrpt::system::timeDifference( dataset_prev_tim, cur_tim );
+					const double At_dataset =
+						mrpt::system::timeDifference(dataset_prev_tim, cur_tim);
 #else
-					const double At_dataset = 1.0/FAKE_KINECT_FPS_RATE;
+					const double At_dataset = 1.0 / FAKE_KINECT_FPS_RATE;
 #endif
-					const double At_actual  = mrpt::system::timeDifference( my_last_read_obs_tim, now_tim );
+					const double At_actual = mrpt::system::timeDifference(
+						my_last_read_obs_tim, now_tim);
 
-					const double need_to_wait_ms = 1000.*( At_dataset-At_actual );
-					//cout << "[Kinect grab thread] Need to wait (ms): " << need_to_wait_ms << endl;
-					if (need_to_wait_ms>0)
-						mrpt::system::sleep( need_to_wait_ms );
+					const double need_to_wait_ms =
+						1000. * (At_dataset - At_actual);
+					// cout << "[Kinect grab thread] Need to wait (ms): " <<
+					// need_to_wait_ms << endl;
+					if (need_to_wait_ms > 0)
+						std::this_thread::sleep_for(
+							std::chrono::duration<double, std::milli>(
+								need_to_wait_ms));
 				}
 
 				// Send observation to main thread:
-				p.new_obs.set(obs3D);
+				std::atomic_store(&p.new_obs, obs3D);
 
-				dataset_prev_tim     = cur_tim;
+				dataset_prev_tim = cur_tim;
 				my_last_read_obs_tim = mrpt::system::now();
 			}
 
 			// Update Hz rate estimate
 			nImgs++;
-			if (nImgs>10)
+			if (nImgs > 10)
 			{
 				p.Hz = nImgs / tictac.Tac();
-				nImgs=0;
+				nImgs = 0;
 				tictac.Tic();
 			}
 		}
 	}
-	catch(std::exception &e)
+	catch (std::exception& e)
 	{
 		cout << "Exception in Kinect thread: " << e.what() << endl;
 		p.quit = true;
@@ -210,25 +235,29 @@ void thread_grabbing(TThreadParam &p)
 // ------------------------------------------------------
 //				Test_KinectOnlineOffline
 // ------------------------------------------------------
-void Test_KinectOnlineOffline(bool is_online, const string &rawlog_file = string())
+void Test_KinectOnlineOffline(
+	bool is_online, const string& rawlog_file = string())
 {
 	// Launch grabbing thread:
 	// --------------------------------------------------------
 	TThreadParam thrPar(
-		is_online,
-		rawlog_file,
-		false // generate_3D_pointcloud_in_this_thread -> Don't, we'll do it in this main thread.
+		is_online, rawlog_file,
+		false  // generate_3D_pointcloud_in_this_thread -> Don't, we'll do it in
+		// this main thread.
 		);
 
-	mrpt::system::TThreadHandle thHandle= mrpt::system::createThreadRef(thread_grabbing ,thrPar);
+	std::thread thHandle(thread_grabbing, std::ref(thrPar));
 
-	// Wait until data stream starts so we can say for sure the sensor has been initialized OK:
+	// Wait until data stream starts so we can say for sure the sensor has been
+	// initialized OK:
 	cout << "Waiting for sensor initialization...\n";
-	do {
-		CObservation3DRangeScanPtr newObs = thrPar.new_obs.get();
-		if (newObs && newObs->timestamp!=INVALID_TIMESTAMP)
-				break;
-		else 	mrpt::system::sleep(10);
+	do
+	{
+		CObservation3DRangeScan::Ptr newObs = std::atomic_load(&thrPar.new_obs);
+		if (newObs && newObs->timestamp != INVALID_TIMESTAMP)
+			break;
+		else
+			std::this_thread::sleep_for(10ms);
 	} while (!thrPar.quit);
 
 	// Check error condition:
@@ -237,53 +266,55 @@ void Test_KinectOnlineOffline(bool is_online, const string &rawlog_file = string
 
 	// Create window and prepare OpenGL object in the scene:
 	// --------------------------------------------------------
-	mrpt::gui::CDisplayWindow3D  win3D("Kinect 3D view",800,600);
+	mrpt::gui::CDisplayWindow3D win3D("Kinect 3D view", 800, 600);
 
 	win3D.setCameraAzimuthDeg(140);
 	win3D.setCameraElevationDeg(20);
 	win3D.setCameraZoom(8.0);
 	win3D.setFOV(90);
-	win3D.setCameraPointingToPoint(2.5,0,0);
+	win3D.setCameraPointingToPoint(2.5, 0, 0);
 
-	mrpt::opengl::CPointCloudColouredPtr gl_points = mrpt::opengl::CPointCloudColoured::Create();
+	mrpt::opengl::CPointCloudColoured::Ptr gl_points =
+		std::make_shared<mrpt::opengl::CPointCloudColoured>();
 	gl_points->setPointSize(2.5);
 
-	opengl::COpenGLViewportPtr viewInt; // Extra viewports for the RGB images.
+	opengl::COpenGLViewport::Ptr
+		viewInt;  // Extra viewports for the RGB images.
 	{
-		mrpt::opengl::COpenGLScenePtr &scene = win3D.get3DSceneAndLock();
+		mrpt::opengl::COpenGLScene::Ptr& scene = win3D.get3DSceneAndLock();
 
 		// Create the Opengl object for the point cloud:
-		scene->insert( gl_points );
-		scene->insert( mrpt::opengl::CGridPlaneXY::Create() );
-		scene->insert( mrpt::opengl::stock_objects::CornerXYZ() );
+		scene->insert(gl_points);
+		scene->insert(std::make_shared<mrpt::opengl::CGridPlaneXY>());
+		scene->insert(mrpt::opengl::stock_objects::CornerXYZ());
 
-		const double aspect_ratio =  480.0 / 640.0;
-		const int VW_WIDTH = 400;	// Size of the viewport into the window, in pixel units.
-		const int VW_HEIGHT = aspect_ratio*VW_WIDTH;
+		const double aspect_ratio = 480.0 / 640.0;
+		const int VW_WIDTH =
+			400;  // Size of the viewport into the window, in pixel units.
+		const int VW_HEIGHT = aspect_ratio * VW_WIDTH;
 
 		// Create an extra opengl viewport for the RGB image:
 		viewInt = scene->createViewport("view2d_int");
-		viewInt->setViewportPosition(5, 30, VW_WIDTH,VW_HEIGHT );
-		win3D.addTextMessage(10, 30+VW_HEIGHT+10,"Intensity data",TColorf(1,1,1), 2, mrpt::opengl::MRPT_GLUT_BITMAP_HELVETICA_12 );
+		viewInt->setViewportPosition(5, 30, VW_WIDTH, VW_HEIGHT);
+		win3D.addTextMessage(
+			10, 30 + VW_HEIGHT + 10, "Intensity data", TColorf(1, 1, 1), 2,
+			mrpt::opengl::MRPT_GLUT_BITMAP_HELVETICA_12);
 
-		win3D.addTextMessage(5,5,
-			format("'o'/'i'-zoom out/in, ESC: quit"),
-				TColorf(0,0,1), 110, mrpt::opengl::MRPT_GLUT_BITMAP_HELVETICA_18 );
-
+		win3D.addTextMessage(
+			5, 5, format("'o'/'i'-zoom out/in, ESC: quit"), TColorf(0, 0, 1),
+			110, mrpt::opengl::MRPT_GLUT_BITMAP_HELVETICA_18);
 
 		win3D.unlockAccess3DScene();
 		win3D.repaint();
 	}
 
-
-
-	mrpt::system::TTimeStamp  last_obs_tim = INVALID_TIMESTAMP;
+	mrpt::system::TTimeStamp last_obs_tim = INVALID_TIMESTAMP;
 
 	while (win3D.isOpen() && !thrPar.quit)
 	{
-		CObservation3DRangeScanPtr newObs = thrPar.new_obs.get();
-		if (newObs && newObs->timestamp!=INVALID_TIMESTAMP &&
-			newObs->timestamp!=last_obs_tim )
+		CObservation3DRangeScan::Ptr newObs = std::atomic_load(&thrPar.new_obs);
+		if (newObs && newObs->timestamp != INVALID_TIMESTAMP &&
+			newObs->timestamp != last_obs_tim)
 		{
 			// It IS a new observation:
 			last_obs_tim = newObs->timestamp;
@@ -293,13 +324,25 @@ void Test_KinectOnlineOffline(bool is_online, const string &rawlog_file = string
 			win3D.get3DSceneAndLock();
 
 			// Estimated grabbing rate:
-			win3D.addTextMessage(-350,-13, format("Timestamp: %s", mrpt::system::dateTimeLocalToString(last_obs_tim).c_str()), TColorf(0.6,0.6,0.6),"mono",10,mrpt::opengl::FILL, 100);
-			win3D.addTextMessage(-100,-30, format("%.02f Hz", thrPar.Hz ), TColorf(1,1,1),"mono",10,mrpt::opengl::FILL, 101);
+			win3D.addTextMessage(
+				-350, -13,
+				format(
+					"Timestamp: %s",
+					mrpt::system::dateTimeLocalToString(last_obs_tim).c_str()),
+				TColorf(0.6, 0.6, 0.6), "mono", 10, mrpt::opengl::FILL, 100);
+			win3D.addTextMessage(
+				-100, -30, format("%.02f Hz", thrPar.Hz), TColorf(1, 1, 1),
+				"mono", 10, mrpt::opengl::FILL, 101);
 
 			// Show intensity image:
-			if (newObs->hasIntensityImage )
+			if (newObs->hasIntensityImage)
 			{
-				viewInt->setImageView(newObs->intensityImage); // This is not "_fast" since the intensity image may be needed later on.
+				viewInt->setImageView(newObs->intensityImage);  // This is not
+				// "_fast" since
+				// the intensity
+				// image may be
+				// needed later
+				// on.
 			}
 			win3D.unlockAccess3DScene();
 
@@ -308,7 +351,8 @@ void Test_KinectOnlineOffline(bool is_online, const string &rawlog_file = string
 			//
 			// There are several methods to do this.
 			//  Switch the #if's to select among the options:
-			// See also: http://www.mrpt.org/Generating_3D_point_clouds_from_RGB_D_observations
+			// See also:
+			// http://www.mrpt.org/Generating_3D_point_clouds_from_RGB_D_observations
 			// -------------------------------------------------------
 			if (newObs->hasRangeImage)
 			{
@@ -366,7 +410,8 @@ void Test_KinectOnlineOffline(bool is_online, const string &rawlog_file = string
 				win3D.unlockAccess3DScene();
 #endif
 
-// Pathway: RGB+D --> internal local XYZ pointcloud --> XYZ+RGB point cloud map --> XYZ+RGB opengl
+// Pathway: RGB+D --> internal local XYZ pointcloud --> XYZ+RGB point cloud map
+// --> XYZ+RGB opengl
 #if 0
 				// Project 3D points:
 				if (!newObs->hasPoints3D)
@@ -391,27 +436,26 @@ void Test_KinectOnlineOffline(bool is_online, const string &rawlog_file = string
 			}
 
 			win3D.repaint();
-		} // end update visualization:
-
+		}  // end update visualization:
 
 		// Process possible keyboard commands:
 		// --------------------------------------
 		if (win3D.keyHit())
 		{
-			const int key = tolower( win3D.getPushedKey() );
+			const int key = tolower(win3D.getPushedKey());
 
-			switch(key)
+			switch (key)
 			{
 				// Some of the keys are processed in this thread:
 				case 'o':
-					win3D.setCameraZoom( win3D.getCameraZoom() * 1.2 );
+					win3D.setCameraZoom(win3D.getCameraZoom() * 1.2);
 					win3D.repaint();
 					break;
 				case 'i':
-					win3D.setCameraZoom( win3D.getCameraZoom() / 1.2 );
+					win3D.setCameraZoom(win3D.getCameraZoom() / 1.2);
 					win3D.repaint();
 					break;
-				case 27: // ESC
+				case 27:  // ESC
 					thrPar.quit = true;
 					break;
 				default:
@@ -419,31 +463,29 @@ void Test_KinectOnlineOffline(bool is_online, const string &rawlog_file = string
 			};
 		}
 
-		mrpt::system::sleep(1);
+		std::this_thread::sleep_for(1ms);
 	}
-
 
 	cout << "Waiting for grabbing thread to exit...\n";
 	thrPar.quit = true;
-	mrpt::system::joinThread(thHandle);
+	thHandle.join();
 	cout << "Bye!\n";
 }
 
-
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
 	try
 	{
 		// Determine online/offline operation:
-		if (argc!=1 && argc!=2)
+		if (argc != 1 && argc != 2)
 		{
 			cerr << "Usage:\n"
-			     << argv[0] << "                  --> Online grab from sensor\n"
-			     << argv[0] << " [DATASET.rawlog] --> Offline from dataset\n";
+				 << argv[0] << "                  --> Online grab from sensor\n"
+				 << argv[0] << " [DATASET.rawlog] --> Offline from dataset\n";
 			return 1;
 		}
 
-		if (argc==1)
+		if (argc == 1)
 		{
 			// Online
 			cout << "Using online operation" << endl;
@@ -456,10 +498,10 @@ int main(int argc, char **argv)
 			Test_KinectOnlineOffline(false, string(argv[1]));
 		}
 
-		mrpt::system::sleep(50);
+		std::this_thread::sleep_for(50ms);
 		return 0;
-
-	} catch (std::exception &e)
+	}
+	catch (std::exception& e)
 	{
 		std::cout << "EXCEPCION: " << e.what() << std::endl;
 		return -1;
@@ -469,5 +511,4 @@ int main(int argc, char **argv)
 		printf("Another exception!!");
 		return -1;
 	}
-
 }

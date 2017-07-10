@@ -105,7 +105,7 @@ class UnitTestImpl;                    // Opaque implementation of UnitTest
 GTEST_API_ extern const char kStackTraceMarker[];
 
 // Two overloaded helpers for checking at compile time whether an
-// expression is a null pointer literal (i.e. NULL or any 0-valued
+// expression is a null pointer literal (i.e. nullptr or any 0-valued
 // compile-time integral constant).  Their return values have
 // different sizes, so we can use sizeof() to test which version is
 // picked by the compiler.  These helpers have no implementations, as
@@ -122,10 +122,10 @@ char IsNullLiteralHelper(Secret* p);
 char (&IsNullLiteralHelper(...))[2];  // NOLINT
 
 // A compile-time bool constant that is true if and only if x is a
-// null pointer literal (i.e. NULL or any 0-valued compile-time
+// null pointer literal (i.e. nullptr or any 0-valued compile-time
 // integral constant).
 #ifdef GTEST_ELLIPSIS_NEEDS_POD_
-// We lose support for NULL detection where the compiler doesn't like
+// We lose support for nullptr detection where the compiler doesn't like
 // passing non-POD classes through ellipsis (...).
 # define GTEST_IS_NULL_LITERAL_(x) false
 #else
@@ -515,10 +515,10 @@ struct CodeLocation {
 //
 //   test_case_name:   name of the test case
 //   name:             name of the test
-//   type_param        the name of the test's type parameter, or NULL if
+//   type_param        the name of the test's type parameter, or nullptr if
 //                     this is not a typed or a type-parameterized test.
 //   value_param       text representation of the test's value parameter,
-//                     or NULL if this is not a type-parameterized test.
+//                     or nullptr if this is not a type-parameterized test.
 //   code_location:    code location where the test is defined
 //   fixture_class_id: ID of the test fixture class
 //   set_up_tc:        pointer to the function that sets up the test case
@@ -590,11 +590,11 @@ class GTEST_API_ TypedTestCasePState {
 };
 
 // Skips to the first non-space char after the first comma in 'str';
-// returns NULL if no comma is found in 'str'.
+// returns nullptr if no comma is found in 'str'.
 inline const char* SkipComma(const char* str) {
   const char* comma = strchr(str, ',');
-  if (comma == NULL) {
-    return NULL;
+  if (comma == nullptr) {
+    return nullptr;
   }
   while (IsSpace(*(++comma))) {}
   return comma;
@@ -604,7 +604,7 @@ inline const char* SkipComma(const char* str) {
 // the entire string if it contains no comma.
 inline std::string GetPrefixUntilComma(const char* str) {
   const char* comma = strchr(str, ',');
-  return comma == NULL ? str : std::string(str, comma);
+  return comma == nullptr ? str : std::string(str, comma);
 }
 
 // Splits a given string on a given delimiter, populating a given
@@ -641,7 +641,7 @@ class TypeParameterizedTest {
          + StreamableToString(index)).c_str(),
         StripTrailingSpaces(GetPrefixUntilComma(test_names)).c_str(),
         GetTypeName<Type>().c_str(),
-        NULL,  // No value parameter.
+        nullptr,  // No value parameter.
         code_location,
         GetTypeId<FixtureClass>(),
         TestClass::SetUpTestCase,
@@ -736,7 +736,7 @@ GTEST_API_ bool AlwaysTrue();
 inline bool AlwaysFalse() { return !AlwaysTrue(); }
 
 // Helper for suppressing false warning from Clang on a const char*
-// variable declared in a conditional expression always being NULL in
+// variable declared in a conditional expression always being nullptr in
 // the else branch.
 struct GTEST_API_ ConstCharPtr {
   ConstCharPtr(const char* str) : value(str) {}
@@ -909,7 +909,7 @@ struct IsAProtocolMessage
 // When the compiler sees expression IsContainerTest<C>(0), if C is an
 // STL-style container class, the first overload of IsContainerTest
 // will be viable (since both C::iterator* and C::const_iterator* are
-// valid types and NULL can be implicitly converted to them).  It will
+// valid types and nullptr can be implicitly converted to them).  It will
 // be picked over the second overload as 'int' is a perfect match for
 // the type of argument 0.  If C::iterator or C::const_iterator is not
 // a valid type, the first overload is not viable, and the second
@@ -930,8 +930,8 @@ struct IsAProtocolMessage
 typedef int IsContainer;
 template <class C>
 IsContainer IsContainerTest(int /* dummy */,
-                            typename C::iterator* /* it */ = NULL,
-                            typename C::const_iterator* /* const_it */ = NULL) {
+                            typename C::iterator* /* it */ = nullptr,
+                            typename C::const_iterator* /* const_it */ = nullptr) {
   return 0;
 }
 
@@ -1225,7 +1225,7 @@ class GTEST_TEST_CLASS_NAME_(test_case_name, test_name) : public parent_class {\
 ::testing::TestInfo* const GTEST_TEST_CLASS_NAME_(test_case_name, test_name)\
   ::test_info_ =\
     ::testing::internal::MakeAndRegisterTestInfo(\
-        #test_case_name, #test_name, NULL, NULL, \
+        #test_case_name, #test_name, nullptr, nullptr, \
         ::testing::internal::CodeLocation(__FILE__, __LINE__), \
         (parent_id), \
         parent_class::SetUpTestCase, \

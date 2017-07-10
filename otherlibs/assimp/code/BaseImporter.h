@@ -73,7 +73,7 @@ struct ScopeGuard
 		if (!mdismiss) {
 			delete obj;
 		}
-		obj = NULL;
+		obj = nullptr;
 	} 
 
 	T* dismiss() {
@@ -146,14 +146,14 @@ public:
 	// -------------------------------------------------------------------
 	/** Imports the given file and returns the imported data.
 	 * If the import succeeds, ownership of the data is transferred to 
-	 * the caller. If the import fails, NULL is returned. The function
+	 * the caller. If the import fails, nullptr is returned. The function
 	 * takes care that any partially constructed data is destroyed
 	 * beforehand.
 	 *
 	 * @param pImp #Importer object hosting this loader.
 	 * @param pFile Path of the file to be imported. 
 	 * @param pIOHandler IO-Handler used to open this and possible other files.
-	 * @return The imported data or NULL if failed. If it failed a 
+	 * @return The imported data or nullptr if failed. If it failed a 
 	 * human-readable error description can be retrieved by calling 
 	 * GetErrorText()
 	 *
@@ -224,7 +224,7 @@ protected:
 	 * <li>aiAnimation::mDuration may be -1. Assimp determines the length
 	 *   of the animation automatically in this case as the length of
 	 *   the longest animation channel.</li>
-	 * <li>aiMesh::mBitangents may be NULL if tangents and normals are
+	 * <li>aiMesh::mBitangents may be nullptr if tangents and normals are
 	 *   given. In this case bitangents are computed as the cross product
 	 *   between normal and tangent.</li>
 	 * <li>There needn't be a material. If none is there a default material
@@ -245,9 +245,9 @@ protected:
 	 *
 	 * @param pFile Path of the file to be imported.
 	 * @param pScene The scene object to hold the imported data.
-	 * NULL is not a valid parameter.
+	 * nullptr is not a valid parameter.
 	 * @param pIOHandler The IO handler to use for any file access.
-	 * NULL is not a valid parameter. */
+	 * nullptr is not a valid parameter. */
 	virtual void InternReadFile( 
 		const std::string& pFile, 
 		aiScene* pScene, 
@@ -289,8 +289,8 @@ public: // static utilities
 	static bool SimpleExtensionCheck (
 		const std::string& pFile, 
 		const char* ext0,
-		const char* ext1 = NULL,
-		const char* ext2 = NULL);
+		const char* ext1 = nullptr,
+		const char* ext2 = nullptr);
 
 	// -------------------------------------------------------------------
 	/** @brief Extract file extension from a string

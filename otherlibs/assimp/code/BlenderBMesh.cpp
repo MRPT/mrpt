@@ -63,7 +63,7 @@ using namespace Assimp::Formatter;
 // ------------------------------------------------------------------------------------------------
 BlenderBMeshConverter::BlenderBMeshConverter( const Mesh* mesh ):
 	BMesh( mesh ),
-	triMesh( NULL )
+	triMesh( nullptr )
 {
 	AssertValidMesh( );
 }
@@ -136,7 +136,7 @@ void BlenderBMeshConverter::PrepareTriMesh( )
 void BlenderBMeshConverter::DestroyTriMesh( )
 {
 	delete triMesh;
-	triMesh = NULL;
+	triMesh = nullptr;
 }
 
 // ------------------------------------------------------------------------------------------------

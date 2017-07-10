@@ -99,7 +99,7 @@ void UpdateMeshReferences(aiNode* node, const std::vector<unsigned int>& meshMap
 		if(!(node->mNumMeshes = out))	{
 
 			delete[] node->mMeshes;
-			node->mMeshes = NULL;
+			node->mMeshes = nullptr;
 		}
 	}
 	// recursively update all children
@@ -167,7 +167,7 @@ template <typename T>
 inline const char* ValidateArrayContents(const T* arr, unsigned int size,
 	const std::vector<bool>& dirtyMask, bool mayBeIdentical = false, bool mayBeZero = true)
 {
-	return NULL;
+	return nullptr;
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -196,7 +196,7 @@ inline const char* ValidateArrayContents<aiVector3D>(const aiVector3D* arr, unsi
 	if (cnt > 1 && !b && !mayBeIdentical) {
 		return "All vectors are identical";
 	}
-	return NULL;
+	return nullptr;
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -209,7 +209,7 @@ inline bool ProcessArray(T*& in, unsigned int num,const char* name,
 		DefaultLogger::get()->error(std::string("FindInvalidDataProcess fails on mesh ") + name + ": " + err);
 		
 		delete[] in;
-		in = NULL;
+		in = nullptr;
 		return true;
 	}
 	return false;
@@ -358,7 +358,7 @@ int FindInvalidDataProcess::ProcessMesh (aiMesh* pMesh)
 
 			// delete all subsequent texture coordinate sets.
 			for (unsigned int a = i+1; a < AI_MAX_NUMBER_OF_TEXTURECOORDS;++a)	{
-				delete[] pMesh->mTextureCoords[a]; pMesh->mTextureCoords[a] = NULL;
+				delete[] pMesh->mTextureCoords[a]; pMesh->mTextureCoords[a] = nullptr;
 			}
 			ret = true;
 		}
@@ -402,13 +402,13 @@ int FindInvalidDataProcess::ProcessMesh (aiMesh* pMesh)
 
 		// Process mesh tangents
 		if (pMesh->mTangents && ProcessArray(pMesh->mTangents,pMesh->mNumVertices,"tangents",dirtyMask))	{
-			delete[] pMesh->mBitangents; pMesh->mBitangents = NULL;
+			delete[] pMesh->mBitangents; pMesh->mBitangents = nullptr;
 			ret = true;
 		}
 
 		// Process mesh bitangents
 		if (pMesh->mBitangents && ProcessArray(pMesh->mBitangents,pMesh->mNumVertices,"bitangents",dirtyMask))	{
-			delete[] pMesh->mTangents; pMesh->mTangents = NULL;
+			delete[] pMesh->mTangents; pMesh->mTangents = nullptr;
 			ret = true;
 		}
 	}

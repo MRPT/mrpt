@@ -22,7 +22,7 @@ Test *
 TestLeaf::doGetChildTestAt( int index ) const
 {
   checkIsValidIndex( index );
-  return NULL;    // never called, checkIsValidIndex() always throw.
+  return nullptr;    // never called, checkIsValidIndex() always throw.
 }
 
 CPPUNIT_NS_END

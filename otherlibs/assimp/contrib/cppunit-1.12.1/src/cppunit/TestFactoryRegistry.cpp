@@ -69,7 +69,7 @@ public:
     // validity beforehand using TestFactoryRegistry::isValid() beforehand.
     assert( isValid() );
     if ( !isValid() )         // release mode
-      return NULL;            // => force CRASH
+      return nullptr;            // => force CRASH
 
     return getInstance()->getInternalRegistry( name );
   }

@@ -40,9 +40,9 @@ See mrpt::poses for the complete list of classes here.
 <li><b>RTTI (RunTime Type Information):</b> A cross-platform, compiler-independent RTTI system is built around the base class
 mrpt::utils::CObject.</li>
 
-<li><b>Smart pointers:</b> Based on the STLplus library, any class CFoo inheriting from CObject, automatically has an associated smart
-pointer class CFooPtr. MRPT implements advanced smart pointers capable of multi-thread safe usage and smart pointer typecasting with
-runtime check for correct castings (<a href="http://www.mrpt.org/Smart_pointers" >tutorial</a>).</li>
+<li><b>Smart pointers:</b> Based on std::shared_ptr<>, any class CFoo inheriting from CObject, automatically has associated smart
+pointers types CFoo::Ptr and CFoo::ConstPtr. MRPT implements advanced smart pointers capable of multi-thread safe usage and smart pointer typecasting with
+runtime check for correct castings ([tutorial](http://www.mrpt.org/Smart_pointers)]).</li>
 
 <li><b>Image handling:</b> The class mrpt::utils::CImage represents a wrapper around OpenCV IplImage's, plus extra functionality
 such as on-the-fly loading of images stored in disk upon first usage. The internal IplImage is always available so OpenCV's functions can
@@ -110,4 +110,3 @@ GZip compression methods can be found in this namespace.
 
 
 */
-

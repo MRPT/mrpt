@@ -137,7 +137,7 @@ public:
 
 	const Element* operator[] (const std::string& index) const {
 		ElementMap::const_iterator it = elements.find(index);
-		return it == elements.end() ? NULL : (*it).second;
+		return it == elements.end() ? nullptr : (*it).second;
 	}
 
 	ElementCollection GetCollection(const std::string& index) const {
@@ -228,7 +228,7 @@ void ParseVectorDataArray(std::vector<uint64_t>& out, const Element& e);
 
 
 // extract a required element from a scope, abort if the element cannot be found
-const Element& GetRequiredElement(const Scope& sc, const std::string& index, const Element* element = NULL);
+const Element& GetRequiredElement(const Scope& sc, const std::string& index, const Element* element = nullptr);
 
 // extract required compound scope
 const Scope& GetRequiredScope(const Element& el);

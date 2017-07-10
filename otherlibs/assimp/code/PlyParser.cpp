@@ -52,7 +52,7 @@ using namespace Assimp;
 // ------------------------------------------------------------------------------------------------
 PLY::EDataType PLY::Property::ParseDataType(const char* pCur,const char** pCurOut)
 {
-	ai_assert(NULL != pCur && NULL != pCurOut);
+	ai_assert(nullptr != pCur && nullptr != pCurOut);
 	PLY::EDataType eOut = PLY::EDT_INVALID;
 
 	if (TokenMatch(pCur,"char",4) ||
@@ -103,7 +103,7 @@ PLY::EDataType PLY::Property::ParseDataType(const char* pCur,const char** pCurOu
 // ------------------------------------------------------------------------------------------------
 PLY::ESemantic PLY::Property::ParseSemantic(const char* pCur,const char** pCurOut)
 {
-	ai_assert(NULL != pCur && NULL != pCurOut);
+	ai_assert(nullptr != pCur && nullptr != pCurOut);
 
 	PLY::ESemantic eOut = PLY::EST_INVALID;
 	if (TokenMatch(pCur,"red",3))
@@ -245,7 +245,7 @@ bool PLY::Property::ParseProperty (const char* pCur,
 	const char** pCurOut,
 	PLY::Property* pOut)
 {
-	ai_assert(NULL != pCur && NULL != pCurOut);
+	ai_assert(nullptr != pCur && nullptr != pCurOut);
 
 	// Forms supported:
 	// "property float x"
@@ -317,7 +317,7 @@ bool PLY::Property::ParseProperty (const char* pCur,
 PLY::EElementSemantic PLY::Element::ParseSemantic(const char* pCur,
 	const char** pCurOut)
 {
-	ai_assert(NULL != pCur && NULL != pCurOut);
+	ai_assert(nullptr != pCur && nullptr != pCurOut);
 	PLY::EElementSemantic eOut = PLY::EEST_INVALID;
 	if (TokenMatch(pCur,"vertex",6))
 	{
@@ -355,7 +355,7 @@ bool PLY::Element::ParseElement (const char* pCur,
 	const char** pCurOut,
 	PLY::Element* pOut)
 {
-	ai_assert(NULL != pCur && NULL != pCurOut && NULL != pOut);
+	ai_assert(nullptr != pCur && nullptr != pCurOut && nullptr != pOut);
 
 	// Example format: "element vertex 8"
 	*pCurOut = pCur;
@@ -409,7 +409,7 @@ bool PLY::Element::ParseElement (const char* pCur,
 bool PLY::DOM::SkipComments (const char* pCur,
 	const char** pCurOut)
 {
-	ai_assert(NULL != pCur && NULL != pCurOut);
+	ai_assert(nullptr != pCur && nullptr != pCurOut);
 	*pCurOut = pCur;
 
 	// skip spaces
@@ -429,7 +429,7 @@ bool PLY::DOM::SkipComments (const char* pCur,
 // ------------------------------------------------------------------------------------------------
 bool PLY::DOM::ParseHeader (const char* pCur,const char** pCurOut,bool isBinary)
 {
-	ai_assert(NULL != pCur && NULL != pCurOut);
+	ai_assert(nullptr != pCur && nullptr != pCurOut);
 	DefaultLogger::get()->debug("PLY::DOM::ParseHeader() begin");
 
 	// after ply and format line
@@ -473,7 +473,7 @@ bool PLY::DOM::ParseElementInstanceLists (
 	const char* pCur,
 	const char** pCurOut)
 {
-	ai_assert(NULL != pCur && NULL != pCurOut);
+	ai_assert(nullptr != pCur && nullptr != pCurOut);
 
 	DefaultLogger::get()->debug("PLY::DOM::ParseElementInstanceLists() begin");
 	*pCurOut = pCur;
@@ -501,7 +501,7 @@ bool PLY::DOM::ParseElementInstanceListsBinary (
 	const char** pCurOut,
 	bool p_bBE)
 {
-	ai_assert(NULL != pCur && NULL != pCurOut);
+	ai_assert(nullptr != pCur && nullptr != pCurOut);
 
 	DefaultLogger::get()->debug("PLY::DOM::ParseElementInstanceListsBinary() begin");
 	*pCurOut = pCur;
@@ -526,7 +526,7 @@ bool PLY::DOM::ParseElementInstanceListsBinary (
 // ------------------------------------------------------------------------------------------------
 bool PLY::DOM::ParseInstanceBinary (const char* pCur,DOM* p_pcOut,bool p_bBE)
 {
-	ai_assert(NULL != pCur && NULL != p_pcOut);
+	ai_assert(nullptr != pCur && nullptr != p_pcOut);
 
 	DefaultLogger::get()->debug("PLY::DOM::ParseInstanceBinary() begin");
 
@@ -547,8 +547,8 @@ bool PLY::DOM::ParseInstanceBinary (const char* pCur,DOM* p_pcOut,bool p_bBE)
 // ------------------------------------------------------------------------------------------------
 bool PLY::DOM::ParseInstance (const char* pCur,DOM* p_pcOut)
 {
-	ai_assert(NULL != pCur);
-	ai_assert(NULL != p_pcOut);
+	ai_assert(nullptr != pCur);
+	ai_assert(nullptr != p_pcOut);
 
 	DefaultLogger::get()->debug("PLY::DOM::ParseInstance() begin");
 
@@ -574,7 +574,7 @@ bool PLY::ElementInstanceList::ParseInstanceList (
 	const PLY::Element* pcElement, 
 	PLY::ElementInstanceList* p_pcOut)
 {
-	ai_assert(NULL != pCur && NULL != pCurOut && NULL != pcElement && NULL != p_pcOut);
+	ai_assert(nullptr != pCur && nullptr != pCurOut && nullptr != pcElement && nullptr != p_pcOut);
 
 	if (EEST_INVALID == pcElement->eSemantic || pcElement->alProperties.empty())
 	{
@@ -608,7 +608,7 @@ bool PLY::ElementInstanceList::ParseInstanceListBinary (
 	PLY::ElementInstanceList* p_pcOut,
 	bool p_bBE /* = false */)
 {
-	ai_assert(NULL != pCur && NULL != pCurOut && NULL != pcElement && NULL != p_pcOut);
+	ai_assert(nullptr != pCur && nullptr != pCurOut && nullptr != pcElement && nullptr != p_pcOut);
 
 	// we can add special handling code for unknown element semantics since
 	// we can't skip it as a whole block (we don't know its exact size
@@ -630,7 +630,7 @@ bool PLY::ElementInstance::ParseInstance (
 	const PLY::Element* pcElement,
 	PLY::ElementInstance* p_pcOut)
 {
-	ai_assert(NULL != pCur && NULL != pCurOut && NULL != pcElement && NULL != p_pcOut);
+	ai_assert(nullptr != pCur && nullptr != pCurOut && nullptr != pcElement && nullptr != p_pcOut);
 
 	if (!SkipSpaces(pCur, &pCur))return false;
 
@@ -665,7 +665,7 @@ bool PLY::ElementInstance::ParseInstanceBinary (
 	PLY::ElementInstance* p_pcOut,
 	bool p_bBE /* = false */)
 {
-	ai_assert(NULL != pCur && NULL != pCurOut && NULL != pcElement && NULL != p_pcOut);
+	ai_assert(nullptr != pCur && nullptr != pCurOut && nullptr != pcElement && nullptr != p_pcOut);
 
 	// allocate enough storage
 	p_pcOut->alProperties.resize(pcElement->alProperties.size());
@@ -690,7 +690,7 @@ bool PLY::ElementInstance::ParseInstanceBinary (
 bool PLY::PropertyInstance::ParseInstance (const char* pCur,const char** pCurOut,
 	const PLY::Property* prop, PLY::PropertyInstance* p_pcOut)
 {
-	ai_assert(NULL != pCur && NULL != pCurOut && NULL !=  prop && NULL != p_pcOut);
+	ai_assert(nullptr != pCur && nullptr != pCurOut && nullptr !=  prop && nullptr != p_pcOut);
 
 	*pCurOut = pCur;
 
@@ -735,7 +735,7 @@ bool PLY::PropertyInstance::ParseInstanceBinary (
 	PLY::PropertyInstance* p_pcOut,
 	bool p_bBE)
 {
-	ai_assert(NULL != pCur && NULL != pCurOut && NULL != prop && NULL != p_pcOut);
+	ai_assert(nullptr != pCur && nullptr != pCurOut && nullptr != prop && nullptr != p_pcOut);
 
 	if (prop->bIsList)
 	{
@@ -792,7 +792,7 @@ bool PLY::PropertyInstance::ParseValue(
 	PLY::EDataType eType,
 	PLY::PropertyInstance::ValueUnion* out)
 {
-	ai_assert(NULL != pCur && NULL != pCurOut && NULL != out);
+	ai_assert(nullptr != pCur && nullptr != pCurOut && nullptr != out);
 
 	register bool ret = true;
 	*pCurOut = pCur;
@@ -839,7 +839,7 @@ bool PLY::PropertyInstance::ParseValueBinary(
 	PLY::PropertyInstance::ValueUnion* out, 
 	bool p_bBE)
 {
-	ai_assert(NULL != pCur && NULL != pCurOut && NULL != out);
+	ai_assert(nullptr != pCur && nullptr != pCurOut && nullptr != out);
 
 	register bool ret = true;
 	switch (eType)

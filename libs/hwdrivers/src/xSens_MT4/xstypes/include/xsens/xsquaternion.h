@@ -1,11 +1,11 @@
-/* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          http://www.mrpt.org/                             |
-   |                                                                           |
-   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-   | Released under BSD License. See details in http://www.mrpt.org/License    |
-   +---------------------------------------------------------------------------+ */
+/* +------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)            |
+   |                          http://www.mrpt.org/                          |
+   |                                                                        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file     |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                |
+   | Released under BSD License. See details in http://www.mrpt.org/License |
+   +------------------------------------------------------------------------+ */
 #ifndef XSQUATERNION_H
 #define XSQUATERNION_H
 
@@ -19,55 +19,76 @@ struct XsQuaternion;
 #ifdef __cplusplus
 extern "C" {
 #else
-#define XSQUATERNION_INITIALIZER { { { XsMath_zero, XsMath_zero, XsMath_zero, XsMath_zero } } }
+#define XSQUATERNION_INITIALIZER                                   \
+	{                                                              \
+		{                                                          \
+			{                                                      \
+				XsMath_zero, XsMath_zero, XsMath_zero, XsMath_zero \
+			}                                                      \
+		}                                                          \
+	}
 typedef struct XsQuaternion XsQuaternion;
 #endif
 
 XSTYPES_DLL_API void XsQuaternion_destruct(XsQuaternion* thisPtr);
 XSTYPES_DLL_API int XsQuaternion_empty(const XsQuaternion* thisPtr);
-XSTYPES_DLL_API void XsQuaternion_inverse(const XsQuaternion* thisPtr, XsQuaternion* dest);
-XSTYPES_DLL_API XsReal XsQuaternion_normalized(const XsQuaternion* thisPtr, XsQuaternion* dest);
+XSTYPES_DLL_API void XsQuaternion_inverse(
+	const XsQuaternion* thisPtr, XsQuaternion* dest);
+XSTYPES_DLL_API XsReal
+	XsQuaternion_normalized(const XsQuaternion* thisPtr, XsQuaternion* dest);
 XSTYPES_DLL_API XsReal XsQuaternion_normalize(XsQuaternion* thisPtr);
-XSTYPES_DLL_API void XsQuaternion_fromEulerAngles(XsQuaternion* thisPtr, const struct XsEuler* src);
-XSTYPES_DLL_API void XsQuaternion_fromRotationMatrix(XsQuaternion* thisPtr, const struct XsMatrix* ori);
+XSTYPES_DLL_API void XsQuaternion_fromEulerAngles(
+	XsQuaternion* thisPtr, const struct XsEuler* src);
+XSTYPES_DLL_API void XsQuaternion_fromRotationMatrix(
+	XsQuaternion* thisPtr, const struct XsMatrix* ori);
 XSTYPES_DLL_API const XsQuaternion* XsQuaternion_identity(void);
-XSTYPES_DLL_API void XsQuaternion_multiply(const XsQuaternion* left, const XsQuaternion* right, XsQuaternion* dest);
+XSTYPES_DLL_API void XsQuaternion_multiply(
+	const XsQuaternion* left, const XsQuaternion* right, XsQuaternion* dest);
 XSTYPES_DLL_API void XsQuaternion_swap(XsQuaternion* a, XsQuaternion* b);
-XSTYPES_DLL_API void XsQuaternion_copy(XsQuaternion* copy, XsQuaternion const* src);
-XSTYPES_DLL_API int XsQuaternion_equal(XsQuaternion const* a, XsQuaternion const* b);
+XSTYPES_DLL_API void XsQuaternion_copy(
+	XsQuaternion* copy, XsQuaternion const* src);
+XSTYPES_DLL_API int XsQuaternion_equal(
+	XsQuaternion const* a, XsQuaternion const* b);
 
 #ifdef __cplusplus
-} // extern "C"
+}  // extern "C"
 #endif
 
-struct XsQuaternion {
-XSCPPPROTECTED
+struct XsQuaternion
+{
+	XSCPPPROTECTED
 	union {
-		struct {
-			XsReal m_w;		//!< Stores the w component of the quaternion
-			XsReal m_x;		//!< Stores the x component of the quaternion
-			XsReal m_y;		//!< Stores the y component of the quaternion
-			XsReal m_z;		//!< Stores the z component of the quaternion
+		struct
+		{
+			/** Stores the w component of the quaternion */
+			XsReal m_w;
+			/** Stores the x component of the quaternion */
+			XsReal m_x;
+			/** Stores the y component of the quaternion */
+			XsReal m_y;
+			/** Stores the z component of the quaternion */
+			XsReal m_z;
 		};
-		XsReal m_data[4];	//!< Stores the quaternion in an array of four elements
+		/** Stores the quaternion in an array of four elements */
+		XsReal m_data[4];
 	};
 #ifdef __cplusplus
-public:
-	//! \brief Construct a quaternion with the supplied values, or zero's by default
-	inline explicit XsQuaternion(XsReal w = XsMath_zero, XsReal x = XsMath_zero, XsReal y = XsMath_zero, XsReal z = XsMath_zero)
-		: m_w(w)
-		, m_x(x)
-		, m_y(y)
-		, m_z(z)
-	{}
+   public:
+	//! \brief Construct a quaternion with the supplied values, or zero's by
+	//! default
+	inline explicit XsQuaternion(
+		XsReal w = XsMath_zero, XsReal x = XsMath_zero, XsReal y = XsMath_zero,
+		XsReal z = XsMath_zero)
+		: m_w(w), m_x(x), m_y(y), m_z(z)
+	{
+	}
 
-	//! \brief Construct a quaternion with the supplied values from the \a other Quaternion
+	//! \brief Construct a quaternion with the supplied values from the \a other
+	//! Quaternion
 	inline XsQuaternion(const XsQuaternion& other)
-		: m_w(other.m_w)
-		, m_x(other.m_x)
-		, m_y(other.m_y)
-		, m_z(other.m_z)
-	{}
+		: m_w(other.m_w), m_x(other.m_x), m_y(other.m_y), m_z(other.m_z)
+	{
+	}
 
 	//! \brief Construct a quaternion by converting from an XsEuler object
 	inline explicit XsQuaternion(const XsEuler& euler)
@@ -75,7 +96,8 @@ public:
 		XsQuaternion_fromEulerAngles(this, &euler);
 	}
 
-	//! \brief Construct a quaternion by converting from an XsMatrix rotation matrix object
+	//! \brief Construct a quaternion by converting from an XsMatrix rotation
+	//! matrix object
 	inline explicit XsQuaternion(const XsMatrix& ori)
 	{
 		XsQuaternion_fromRotationMatrix(this, &ori);
@@ -102,15 +124,16 @@ public:
 	}
 
 	/*! \brief Set the Quaternion to the specific values in the supplied array.
-		\param values An array that contains at least 4 items. The first four will be interpreted as w,x,y,z
+		\param values An array that contains at least 4 items. The first four
+	   will be interpreted as w,x,y,z
 	*/
 	inline void assign(const XsReal* values)
 	{
-		for (int i = 0; i < 4; ++i)
-			m_data[i] = values[i];
+		for (int i = 0; i < 4; ++i) m_data[i] = values[i];
 	}
 
-	//! \brief Returns a reference to the \a index'th component of the quaternion
+	//! \brief Returns a reference to the \a index'th component of the
+	//! quaternion
 	inline XsReal& operator[](XsSize index)
 	{
 		assert(index < 4);
@@ -125,12 +148,9 @@ public:
 	}
 
 	//! \brief Return a const pointer to the internal data
-	inline const XsReal* data() const
-	{
-		return m_data;
-	}
-
-	//! \brief \copybrief XsQuaternion_inverse \returns The inverse/conjugate of the quaternion
+	inline const XsReal* data() const { return m_data; }
+	//! \brief \copybrief XsQuaternion_inverse \returns The inverse/conjugate of
+	//! the quaternion
 	inline XsQuaternion inverse() const
 	{
 		XsQuaternion tmp;
@@ -138,7 +158,8 @@ public:
 		return tmp;
 	}
 
-	//! \brief \copybrief XsQuaternion_inverse \returns The inverse/conjugate of the quaternion
+	//! \brief \copybrief XsQuaternion_inverse \returns The inverse/conjugate of
+	//! the quaternion
 	inline XsQuaternion conjugate() const
 	{
 		XsQuaternion tmp;
@@ -146,7 +167,8 @@ public:
 		return tmp;
 	}
 
-	//! \brief Return a normalized version of the quaternion \sa XsQuaternion_normalized \returns The normalized quaternion
+	//! \brief Return a normalized version of the quaternion \sa
+	//! XsQuaternion_normalized \returns The normalized quaternion
 	XsQuaternion normalized() const
 	{
 		XsQuaternion tmp;
@@ -154,18 +176,11 @@ public:
 		return tmp;
 	}
 
-	//! \brief Normalized the quaternion \sa XsQuaternion_normalized \returns The cartesian length of the quaternion before normalization
-	inline XsReal normalize()
-	{
-		return XsQuaternion_normalized(this, this);
-	}
-
+	//! \brief Normalized the quaternion \sa XsQuaternion_normalized \returns
+	//! The cartesian length of the quaternion before normalization
+	inline XsReal normalize() { return XsQuaternion_normalized(this, this); }
 	//! \brief \copybrief XsQuaternion_empty
-	inline bool empty() const
-	{
-		return 0 != XsQuaternion_empty(this);
-	}
-
+	inline bool empty() const { return 0 != XsQuaternion_empty(this); }
 	//! \brief \copybrief XsQuaternion_fromEulerAngles
 	inline XsQuaternion& fromEulerAngles(const XsEuler& src)
 	{
@@ -186,8 +201,10 @@ public:
 		return *XsQuaternion_identity();
 	}
 
-	/*! \brief In-place multiplication of this quaternion with \a other quaternion
-		\param other The other quaternion to multiply with (right side of multiplication)
+	/*! \brief In-place multiplication of this quaternion with \a other
+	   quaternion
+		\param other The other quaternion to multiply with (right side of
+	   multiplication)
 		\sa XsQuaternion_multiply()
 	*/
 	inline void operator*=(const XsQuaternion& other)
@@ -211,20 +228,13 @@ public:
 	inline XsReal& y() { return m_y; }
 	//! \brief Return a reference to the z component of the quaternion
 	inline XsReal& z() { return m_z; }
-
 	//! \brief Swap the contents with \a other
-	inline void swap(XsQuaternion& other)
-	{
-		XsQuaternion_swap(this, &other);
-	}
-
+	inline void swap(XsQuaternion& other) { XsQuaternion_swap(this, &other); }
 	//! \brief Returns true if \a other is numerically identical to this
-	inline bool operator ==(const XsQuaternion& other) const
+	inline bool operator==(const XsQuaternion& other) const
 	{
-		return	m_w == other.m_w &&
-				m_x == other.m_x &&
-				m_y == other.m_y &&
-				m_z == other.m_z;
+		return m_w == other.m_w && m_x == other.m_x && m_y == other.m_y &&
+			   m_z == other.m_z;
 	}
 
 #endif
@@ -232,13 +242,13 @@ public:
 
 #ifdef __cplusplus
 //! \brief Return the negated version of the Quaternion \a q (w,-x,-y,-z)
-inline XsQuaternion operator-(const XsQuaternion &q)
+inline XsQuaternion operator-(const XsQuaternion& q)
 {
 	return XsQuaternion(q.w(), -q.x(), -q.y(), -q.z());
 }
 
 //! \brief Multiply \a lhs by \a rhs and return the result
-inline XsQuaternion operator *(const XsQuaternion& lhs, const XsQuaternion &rhs)
+inline XsQuaternion operator*(const XsQuaternion& lhs, const XsQuaternion& rhs)
 {
 	XsQuaternion tmp(lhs);
 	tmp *= rhs;
@@ -246,4 +256,4 @@ inline XsQuaternion operator *(const XsQuaternion& lhs, const XsQuaternion &rhs)
 }
 #endif
 
-#endif // file guard
+#endif  // file guard

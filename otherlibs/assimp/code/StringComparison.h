@@ -67,7 +67,7 @@ namespace Assimp	{
  */
 inline unsigned int ASSIMP_itoa10( char* out, unsigned int max, int32_t number)
 {
-	ai_assert(NULL != out);
+	ai_assert(nullptr != out);
 
 	// write the unary minus to indicate we have a negative number
 	unsigned int written = 1u;
@@ -127,7 +127,7 @@ inline unsigned int ASSIMP_itoa10( char(& out)[length], int32_t number)
  */
 inline int ASSIMP_stricmp(const char *s1, const char *s2)
 {
-	ai_assert(NULL != s1 && NULL != s2);
+	ai_assert(nullptr != s1 && nullptr != s2);
 
 #if (defined _MSC_VER)
 
@@ -174,7 +174,7 @@ inline int ASSIMP_stricmp(const std::string& a, const std::string& b)
  */
 inline int ASSIMP_strincmp(const char *s1, const char *s2, unsigned int n)
 {
-	ai_assert(NULL != s1 && NULL != s2);
+	ai_assert(nullptr != s1 && nullptr != s2);
 	if (!n)return 0;
 
 #if (defined _MSC_VER)

@@ -66,10 +66,10 @@ namespace octomap {
   }
 
   bool CountingOcTreeNode::createChild(unsigned int i) {
-    if (children == NULL) {
+    if (children == nullptr) {
       allocChildren();
     }
-    assert (children[i] == NULL);
+    assert (children[i] == nullptr);
     children[i] = new CountingOcTreeNode();
     return true;
   }
@@ -81,7 +81,7 @@ namespace octomap {
   CountingOcTreeNode* CountingOcTree::updateNode(const point3d& value) {
 
     OcTreeKey key;
-    if (!coordToKeyChecked(value, key)) return NULL;
+    if (!coordToKeyChecked(value, key)) return nullptr;
     return updateNode(key);
   }
 

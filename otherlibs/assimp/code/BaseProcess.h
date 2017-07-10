@@ -143,7 +143,7 @@ public:
 		THeapData<T>* t = (THeapData<T>*)GetPropertyInternal(name);
 		if(!t)
 		{
-			out = NULL;
+			out = nullptr;
 			return false;
 		}
 		out = t->data;
@@ -162,7 +162,7 @@ public:
 
 	//! Remove a property of a specific type
 	void RemoveProperty( const char* name)	{
-		SetGenericPropertyPtr<Base>(pmap,name,NULL);
+		SetGenericPropertyPtr<Base>(pmap,name,nullptr);
 	}
 
 private:
@@ -172,7 +172,7 @@ private:
 	}
 
 	Base* GetPropertyInternal( const char* name) const	{
-		return GetGenericProperty<Base*>(pmap,name,NULL);
+		return GetGenericProperty<Base*>(pmap,name,nullptr);
 	}
 
 private:
@@ -242,7 +242,7 @@ public:
 	// -------------------------------------------------------------------
 	/** Executes the post processing step on the given imported data.
 	* The function deletes the scene if the postprocess step fails (
-	* the object pointer will be set to NULL).
+	* the object pointer will be set to nullptr).
 	* @param pImp Importer instance (pImp->mScene must be valid)
 	*/
 	void ExecuteOnScene( Importer* pImp);

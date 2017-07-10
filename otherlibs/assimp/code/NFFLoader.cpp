@@ -153,7 +153,7 @@ void NFFImporter::LoadNFF2MaterialTable(std::vector<ShadingInfo>& output,
 		return;
 	}
 
-	ShadingInfo* curShader = NULL;
+	ShadingInfo* curShader = nullptr;
 
 	// No read the file line per line
 	char line[4096];
@@ -259,9 +259,9 @@ void NFFImporter::InternReadFile( const std::string& pFile,
 
 	bool hasCam = false;
 
-	MeshInfo* currentMeshWithNormals = NULL;
-	MeshInfo* currentMesh = NULL;
-	MeshInfo* currentMeshWithUVCoords = NULL;
+	MeshInfo* currentMeshWithNormals = nullptr;
+	MeshInfo* currentMesh = nullptr;
+	MeshInfo* currentMeshWithUVCoords = nullptr;
 
 	ShadingInfo s; // current material info
 
@@ -590,7 +590,7 @@ void NFFImporter::InternReadFile( const std::string& pFile,
 					// search the list of all shaders we have for this object whether
 					// there is an identical one. In this case, we append our mesh
 					// data to it.
-					MeshInfo* mesh = NULL;
+					MeshInfo* mesh = nullptr;
 					for (std::vector<MeshInfo>::iterator it = meshes.begin() + objStart, end = meshes.end();
 						 it != end; ++it)
 					{
@@ -661,12 +661,12 @@ void NFFImporter::InternReadFile( const std::string& pFile,
 			sz = line;
 			if ('p' == line[0] || TokenMatch(sz,"tpp",3))
 			{
-				MeshInfo* out = NULL;
+				MeshInfo* out = nullptr;
 
 				// 'tpp' - texture polygon patch primitive
 				if ('t' == line[0])
 				{
-					currentMeshWithUVCoords = NULL;
+					currentMeshWithUVCoords = nullptr;
 					for (std::vector<MeshInfo>::iterator it = meshesWithUVCoords.begin(), end = meshesWithUVCoords.end();
 						it != end;++it)
 					{
@@ -688,7 +688,7 @@ void NFFImporter::InternReadFile( const std::string& pFile,
 				// 'pp' - polygon patch primitive
 				else if ('p' == line[1])
 				{
-					currentMeshWithNormals = NULL;
+					currentMeshWithNormals = nullptr;
 					for (std::vector<MeshInfo>::iterator it = meshesWithNormals.begin(), end = meshesWithNormals.end();
 						it != end;++it)
 					{
@@ -710,7 +710,7 @@ void NFFImporter::InternReadFile( const std::string& pFile,
 				// 'p' - polygon primitive
 				else
 				{
-					currentMesh = NULL;
+					currentMesh = nullptr;
 					for (std::vector<MeshInfo>::iterator it = meshes.begin(), end = meshes.end();
 						it != end;++it)
 					{
@@ -1066,8 +1066,8 @@ void NFFImporter::InternReadFile( const std::string& pFile,
 	root->mNumChildren = numNamed + (hasCam ? 1 : 0) + (unsigned int) lights.size();
 	root->mNumMeshes = pScene->mNumMeshes-numNamed;
 
-	aiNode** ppcChildren = NULL;
-	unsigned int* pMeshes = NULL;
+	aiNode** ppcChildren = nullptr;
+	unsigned int* pMeshes = nullptr;
 	if (root->mNumMeshes)
 		pMeshes = root->mMeshes = new unsigned int[root->mNumMeshes];
 	if (root->mNumChildren)

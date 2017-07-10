@@ -157,14 +157,14 @@ END_EVENT_TABLE()
 
 wxMenuButton::~wxMenuButton()
 {
-    AssignMenu(NULL, true);
+    AssignMenu(nullptr, true);
 }
 
 void wxMenuButton::Init()
 {
-    m_labelButton    = NULL;
-    m_dropdownButton = NULL;
-    m_menu           = NULL;
+    m_labelButton    = nullptr;
+    m_dropdownButton = nullptr;
+    m_menu           = nullptr;
     m_menu_static    = false;
     m_style          = 0;
 }
@@ -280,7 +280,7 @@ void wxMenuButton::OnButton( wxCommandEvent &event)
 
 int wxMenuButton::GetSelection() const
 {
-    wxCHECK_MSG(m_menu != NULL, wxNOT_FOUND, wxT("No attached menu in wxMenuButton::GetSelection"));
+    wxCHECK_MSG(m_menu != nullptr, wxNOT_FOUND, wxT("No attached menu in wxMenuButton::GetSelection"));
 
     const wxMenuItemList &items = m_menu->GetMenuItems();
 

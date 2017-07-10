@@ -284,7 +284,7 @@ aiNode* COBImporter::BuildNodes(const Node& root,const Scene& scin,aiScene* fill
 					}
 					outmesh->mMaterialIndex = fill->mNumMaterials;
 				}{	// create material
-					const Material* min = NULL;
+					const Material* min = nullptr;
 					for_each(const Material& m, scin.materials) {
 						if (m.parent_id == ndmesh.id && m.matnum == reflist.first) {
 							min = &m;
@@ -377,7 +377,7 @@ aiNode* COBImporter::BuildNodes(const Node& root,const Scene& scin,aiScene* fill
 	}
 
 	// add meshes
-	if (nd->mNumMeshes) { // mMeshes must be NULL if count is 0
+	if (nd->mNumMeshes) { // mMeshes must be nullptr if count is 0
 		nd->mMeshes = new unsigned int[nd->mNumMeshes];
 		for(unsigned int i = 0; i < nd->mNumMeshes;++i) {
 			nd->mMeshes[i] = fill->mNumMeshes-i-1;

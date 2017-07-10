@@ -1,4 +1,4 @@
-# ----------------------------------------------------------------------------
+﻿# ----------------------------------------------------------------------------
 # Root CMake file for the MRPT libraries and applications
 #
 #  Run with "cmake ." at the root directory to build the makefiles for
@@ -14,15 +14,12 @@
 # ----------------------------------------------------------------------------
 PROJECT(MRPT)
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8.7)
-
 # -------------------------
 #        Setup CMake
 # -------------------------
-#include(cmakemodules/script_init_cmake.cmake REQUIRED)		# CMake tweaks
-# Allow empty endif() and such with CMake 2.4.
-SET(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS 1)
-
+CMAKE_MINIMUM_REQUIRED(VERSION 3.1)
+set (CMAKE_CXX_STANDARD 14)  # Require C++14
+SET(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS 1) # Allow empty endif() and such (since CMake 2.4)
 if(COMMAND cmake_policy)
 	cmake_policy(SET CMP0003 NEW) # We don't want to mix relative and absolute paths in linker lib lists.
 	cmake_policy(SET CMP0005 NEW) # Escape definitions (-D) strings
@@ -35,6 +32,7 @@ if(COMMAND cmake_policy)
 	if(POLICY CMP0043)
 		cmake_policy(SET CMP0043 OLD) #  Ignore COMPILE_DEFINITIONS_<Config> properties.
 	endif()
+
 endif()
 # -------------------------
 
@@ -175,6 +173,10 @@ ENDIF()
 SET(MRPT_ENABLE_PRECOMPILED_HDRS ON CACHE BOOL "Enable precompiled headers (thru 'mrpt/LIB.h')")
 MARK_AS_ADVANCED(MRPT_ENABLE_PRECOMPILED_HDRS)
 
+# Backwards-compatible 1.* smart pointer type names
+# ===================================================
+SET(MRPT_1X_BACKCOMPATIB_SMARTPTR_NAMES ON CACHE BOOL "Enable MRPT 1.* backwards-compatible smart pointer names: CFooPtr as CFoo::Ptr")
+
 # Eigen library plugins:
 # ===================================================
 include(cmakemodules/script_eigen.cmake REQUIRED)
@@ -220,9 +222,8 @@ endif()
 # ----------------------------------------------------------------------------
 # Other sub-scripts:
 # ----------------------------------------------------------------------------
-include(cmakemodules/script_gridmap_options.cmake REQUIRED)			# Enable Intel Threading Building Blocks (TBB) lib?
+include(cmakemodules/script_gridmap_options.cmake REQUIRED) # Gridmap options
 
-include(cmakemodules/script_tbb.cmake REQUIRED)         # Enable Intel Threading Building Blocks (TBB) lib?
 include(cmakemodules/script_phidget.cmake REQUIRED)     # Support for phidget Interface Kit with proximity sensor device :
 include(cmakemodules/script_videre_svs.cmake REQUIRED)  # Support for Videre Design stereo camera:
 include(cmakemodules/script_ftdi.cmake REQUIRED)        # Check for the FTDI headers (Linux only, in win32 we use built-in header & dynamic DLL load):
@@ -232,6 +233,7 @@ include(cmakemodules/script_opencv.cmake REQUIRED)      # Check for the OpenCV l
 include(cmakemodules/script_openni2.cmake REQUIRED)     # Check for the OpenNI2 library
 include(cmakemodules/script_ffmpeg.cmake REQUIRED)      # Check for ffmpeg C libraries: libavcodec, libavutil, libavformat, libswscale
 include(cmakemodules/script_wxwidgets.cmake REQUIRED)   # Check for wxWidgets + GL
+include(cmakemodules/script_qt.cmake REQUIRED)          # Check for wxWidgets + GL
 include(cmakemodules/script_libdc1394.cmake REQUIRED)   # Check for libdc1394-2
 include(cmakemodules/script_assimp.cmake REQUIRED)      # Check for system assimp lib (3D models)
 include(cmakemodules/script_lib3ds.cmake REQUIRED)      # Check for system lib3ds
@@ -243,18 +245,18 @@ include(cmakemodules/script_swissrange.cmake REQUIRED)  # Support for SWISSRANGE
 include(cmakemodules/script_SIMD.cmake REQUIRED)        # SSE2/SSE3/... optimization options
 include(cmakemodules/script_gtest.cmake REQUIRED)       # Unit testing lib
 include(cmakemodules/script_national_instruments.cmake REQUIRED)  # NI C library
-include(cmakemodules/script_sift_hess.cmake REQUIRED)  # SIFT Hess implementation
-include(cmakemodules/script_xsens.cmake REQUIRED)      # XSens Motion trackers / IMU drivers
-include(cmakemodules/script_flycapture2.cmake REQUIRED)# Check for PointGreyResearch (PGR) FlyCapture2 library
-include(cmakemodules/script_triclops.cmake REQUIRED)	# Check for PointGreyResearch (PGR) Triclops library
-include(cmakemodules/script_duo3d.cmake REQUIRED)		# Support for DUO3D Camera
-include(cmakemodules/script_matlab.cmake REQUIRED)	# Support for Matlab MEX functions generation
-include(cmakemodules/script_isense.cmake REQUIRED)		# Support for INTERSENSE Sensors
-include(cmakemodules/script_nite2.cmake REQUIRED)		# Check for NITE2 library
-include(cmakemodules/script_yamlcpp.cmake REQUIRED)		# Check for YAMLCPP library
+include(cmakemodules/script_sift_hess.cmake REQUIRED)   # SIFT Hess implementation
+include(cmakemodules/script_xsens.cmake REQUIRED)       # XSens Motion trackers / IMU drivers
+include(cmakemodules/script_flycapture2.cmake REQUIRED) # Check for PointGreyResearch (PGR) FlyCapture2 library
+include(cmakemodules/script_triclops.cmake REQUIRED)    # Check for PointGreyResearch (PGR) Triclops library
+include(cmakemodules/script_duo3d.cmake REQUIRED)       # Support for DUO3D Camera
+include(cmakemodules/script_matlab.cmake REQUIRED)      # Support for Matlab MEX functions generation
+include(cmakemodules/script_isense.cmake REQUIRED)      # Support for INTERSENSE Sensors
+include(cmakemodules/script_nite2.cmake REQUIRED)       # Check for NITE2 library
+include(cmakemodules/script_yamlcpp.cmake REQUIRED)     # Check for YAMLCPP library
 include(cmakemodules/script_pcap.cmake REQUIRED)        # Check for the libpcap library
-#include(cmakemodules/script_ros1.cmake REQUIRED)        # Check for ROS
-include(cmakemodules/script_vtk.cmake REQUIRED)        # Check for VTK
+#include(cmakemodules/script_ros1.cmake REQUIRED)       # Check for ROS
+include(cmakemodules/script_vtk.cmake REQUIRED)         # Check for VTK
 
 # ---------------------------------------------------------------------------
 #			OPTIONS
@@ -426,8 +428,8 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
 	# The -Wno-variadic-macros was needed for Eigen3, StdVector.h
  	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CONFIGURE_CFLAGS} -Wall -Wno-long-long -Wno-variadic-macros")
 
-	# Workaround: Eigen <3.3 produces *tons* of warnings in GCC >=6. See http://eigen.tuxfamily.org/bz/show_bug.cgi?id=1221
-	IF (NOT CMAKE_MRPT_GCC_VERSION LESS 60 AND "${MRPT_EIGEN_VERSION}" VERSION_LESS "3.3")
+	# Workaround: Eigen <3.4 produces *tons* of warnings in GCC >=6. See http://eigen.tuxfamily.org/bz/show_bug.cgi?id=1221
+	IF (NOT CMAKE_MRPT_GCC_VERSION LESS 60 AND "${MRPT_EIGEN_VERSION}" VERSION_LESS "3.4")
 		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-ignored-attributes")
 	ENDIF()
 
@@ -447,13 +449,6 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
  		#SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pedantic")
 	ENDIF()
 
-	# Enable C++11 features in GCC 4.7+
-	IF (NOT CMAKE_MRPT_GCC_VERSION LESS 47)
-		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-	ELSEIF(NOT CMAKE_MRPT_GCC_VERSION LESS 46)
-		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
-	ENDIF ()
-
 	# Parallel stdlibc++?
 	IF(MRPT_ENABLE_LIBSTD_PARALLEL_MODE)
 		SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} -D_GLIBCXX_PARALLEL -fopenmp")
@@ -463,6 +458,11 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
 	SET(CMAKE_CXX_FLAGS_COVERAGE "${CMAKE_CXX_FLAGS_DEBUG} --coverage -fno-inline -fno-inline-small-functions -fno-default-inline")
 	SET(CMAKE_EXE_LINKER_FLAGS_COVERAGE "${CMAKE_EXE_LINKER_FLAGS_DEBUG} --coverage")
 	SET(CMAKE_SHARED_LINKER_FLAGS_COVERAGE "${CMAKE_SHARED_LINKER_FLAGS_DEBUG} --coverage")
+
+	# Trusty error: Boost needs -fext-numeric-literals
+	# /usr/include/boost/math/constants/constants.hpp:260:1148: error: unable to find numeric literal operator ‘operator""Q’
+	# /usr/include/boost/math/constants/constants.hpp:260:1148: note: use -std=gnu++11 or -fext-numeric-literals to enable more built-in suffixes
+	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fext-numeric-literals")
 ENDIF()
 
 # CLang options ================================
@@ -478,8 +478,8 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
 	# Use "modern" C99 ! ;-)
  	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
 
-	# Use modern C++11
- 	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+	# Use modern C++14
+ 	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 
 	IF(NOT APPLE) # any reason for not using it in all platforms?
 	# Use the libstdc++ lib vs. libc++, to avoid some build errors in MacOS

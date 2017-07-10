@@ -212,7 +212,7 @@ void MDCImporter::InternReadFile(
 	boost::scoped_ptr<IOStream> file( pIOHandler->Open( pFile));
 
 	// Check whether we can read from the file
-	if( file.get() == NULL)
+	if( file.get() == nullptr)
 		throw DeadlyImportError( "Failed to open MDC file " + pFile + ".");
 
 	// check whether the mdc file is large enough to contain the file header
@@ -258,7 +258,7 @@ void MDCImporter::InternReadFile(
 
 	// necessary that we don't crash if an exception occurs
 	for (unsigned int i = 0; i < pScene->mNumMeshes;++i)
-		pScene->mMeshes[i] = NULL;
+		pScene->mMeshes[i] = nullptr;
 
 	// now read all surfaces
 	unsigned int iDefaultMatIndex = UINT_MAX;
@@ -346,8 +346,8 @@ void MDCImporter::InternReadFile(
 
 #endif
 
-		const MDC::CompressedVertex* pcCVerts = NULL;
-		int16_t* mdcCompVert = NULL;
+		const MDC::CompressedVertex* pcCVerts = nullptr;
+		int16_t* mdcCompVert = nullptr;
 
 		// access compressed frames for large frame numbers, but never for the first
 		if( this->configFrameID && pcSurface->ulNumCompFrames > 0 )
@@ -359,7 +359,7 @@ void MDCImporter::InternReadFile(
 				pcCVerts = (const MDC::CompressedVertex*)((int8_t*)pcSurface +
 					pcSurface->ulOffsetCompVerts) + *mdcCompVert * pcSurface->ulNumVertices;
 			}
-			else mdcCompVert = NULL;
+			else mdcCompVert = nullptr;
 		}
 
 		// copy all faces
@@ -444,7 +444,7 @@ void MDCImporter::InternReadFile(
 
 	// make sure we invalidate the pointer to the mesh name
 	for (unsigned int i = 0; i < pScene->mNumMeshes;++i)
-		pScene->mMeshes[i]->mTextureCoords[3] = NULL;
+		pScene->mMeshes[i]->mTextureCoords[3] = nullptr;
 
 	// create materials
 	pScene->mNumMaterials = (unsigned int)aszShaders.size();

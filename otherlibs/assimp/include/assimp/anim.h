@@ -283,9 +283,9 @@ struct aiNodeAnim
 #ifdef __cplusplus
 	aiNodeAnim()
 	{
-		mNumPositionKeys = 0; mPositionKeys = NULL; 
-		mNumRotationKeys = 0; mRotationKeys = NULL; 
-		mNumScalingKeys  = 0; mScalingKeys  = NULL; 
+		mNumPositionKeys = 0; mPositionKeys = nullptr; 
+		mNumRotationKeys = 0; mRotationKeys = nullptr; 
+		mNumScalingKeys  = 0; mScalingKeys  = nullptr; 
 
 		mPreState = mPostState = aiAnimBehaviour_DEFAULT;
 	}

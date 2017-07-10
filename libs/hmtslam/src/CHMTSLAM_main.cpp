@@ -1,20 +1,22 @@
-/* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          http://www.mrpt.org/                             |
-   |                                                                           |
-   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-   | Released under BSD License. See details in http://www.mrpt.org/License    |
-   +---------------------------------------------------------------------------+ */
+/* +------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)            |
+   |                          http://www.mrpt.org/                          |
+   |                                                                        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file     |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                |
+   | Released under BSD License. See details in http://www.mrpt.org/License |
+   +------------------------------------------------------------------------+ */
 
 /** An implementation of Hybrid Metric Topological SLAM (HMT-SLAM).
  *
- *   The main entry points for a user are pushAction() and pushObservations(). Several parameters can be modified
+ *   The main entry points for a user are pushAction() and pushObservations().
+ *Several parameters can be modified
  *   through m_options.
  *
  *  The mathematical models of this approach have been reported in:
  *		- Blanco J.L., Fernandez-Madrigal J.A., and Gonzalez J.,
- *		  "Towards a Unified Bayesian Approach to Hybrid Metric-Topological SLAM",
+ *		  "Towards a Unified Bayesian Approach to Hybrid Metric-Topological
+ *SLAM",
  *		    in  IEEE Transactions on Robotics (TRO), Vol. 24, No. 2, April 2008.
  *		- ...
  *
@@ -22,14 +24,12 @@
  *
  */
 
-
-#include "hmtslam-precomp.h" // Precomp header
+#include "hmtslam-precomp.h"  // Precomp header
 
 #include <mrpt/utils/CFileStream.h>
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/utils/stl_serialization.h>
 #include <mrpt/system/filesystem.h>
-#include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/utils/CMemoryStream.h>
 
 #include <mrpt/system/os.h>
@@ -37,53 +37,44 @@
 using namespace mrpt::slam;
 using namespace mrpt::hmtslam;
 using namespace mrpt::utils;
-using namespace mrpt::synch;
 using namespace mrpt::obs;
 using namespace mrpt::maps;
 using namespace mrpt::opengl;
 using namespace std;
 
-
-IMPLEMENTS_SERIALIZABLE(CHMTSLAM, CSerializable,mrpt::hmtslam)
-
+IMPLEMENTS_SERIALIZABLE(CHMTSLAM, CSerializable, mrpt::hmtslam)
 
 // Initialization of static members:
-int64_t			CHMTSLAM::m_nextAreaLabel = 0;
-TPoseID 		CHMTSLAM::m_nextPoseID    = 0;
-THypothesisID	CHMTSLAM::m_nextHypID     = COMMON_TOPOLOG_HYP + 1;
+int64_t CHMTSLAM::m_nextAreaLabel = 0;
+TPoseID CHMTSLAM::m_nextPoseID = 0;
+THypothesisID CHMTSLAM::m_nextHypID = COMMON_TOPOLOG_HYP + 1;
 
 /*---------------------------------------------------------------
 						Constructor
   ---------------------------------------------------------------*/
-CHMTSLAM::CHMTSLAM( )
- :  m_inputQueue_cs("inputQueue_cs"),
-    m_map_cs("map_cs"),
-    m_LMHs_cs("LMHs_cs")
-//	m_semaphoreInputQueueHasData (0 /*Init state*/ ,1 /*Max*/ ),
-//	m_eventNewObservationInserted(0 /*Init state*/ ,10000 /*Max*/ )
+CHMTSLAM::CHMTSLAM()
 {
 	// Initialize data structures:
 	// ----------------------------
-	m_terminateThreads				= false;
-	m_terminationFlag_LSLAM			=
-	m_terminationFlag_TBI			=
-	m_terminationFlag_3D_viewer		= false;
+	m_terminateThreads = false;
+	m_terminationFlag_LSLAM = m_terminationFlag_TBI =
+		m_terminationFlag_3D_viewer = false;
 
 	// Create threads:
 	// -----------------------
-	m_hThread_LSLAM 	= mrpt::system::createThreadFromObjectMethod( this, &CHMTSLAM::thread_LSLAM );
-	m_hThread_TBI 		= mrpt::system::createThreadFromObjectMethod( this, &CHMTSLAM::thread_TBI );
-	m_hThread_3D_viewer	= mrpt::system::createThreadFromObjectMethod( this, &CHMTSLAM::thread_3D_viewer );
-
+	m_hThread_LSLAM = std::thread(&CHMTSLAM::thread_LSLAM, this);
+	m_hThread_TBI = std::thread(&CHMTSLAM::thread_TBI, this);
+	m_hThread_3D_viewer = std::thread(&CHMTSLAM::thread_3D_viewer, this);
 
 	// Other variables:
-	m_LSLAM_method		= NULL;
-
+	m_LSLAM_method = nullptr;
 
 	// Register default LC detectors:
 	// --------------------------------
-	registerLoopClosureDetector("gridmaps", & CTopLCDetector_GridMatching::createNewInstance );
-	registerLoopClosureDetector("fabmap", & CTopLCDetector_FabMap::createNewInstance );
+	registerLoopClosureDetector(
+		"gridmaps", &CTopLCDetector_GridMatching::createNewInstance);
+	registerLoopClosureDetector(
+		"fabmap", &CTopLCDetector_FabMap::createNewInstance);
 
 	// Prepare an empty map:
 	initializeEmptyMap();
@@ -96,15 +87,15 @@ CHMTSLAM::~CHMTSLAM()
 {
 	// Signal to threads that we are closing:
 	// -------------------------------------------
-	m_terminateThreads	= true;
+	m_terminateThreads = true;
 
 	// Wait for threads:
 	// ----------------------------------
 	MRPT_LOG_DEBUG("[CHMTSLAM::destructor] Waiting for threads end...\n");
 
-	mrpt::system::joinThread( m_hThread_3D_viewer );
-	mrpt::system::joinThread( m_hThread_LSLAM );
-	mrpt::system::joinThread( m_hThread_TBI );
+	m_hThread_3D_viewer.join();
+	m_hThread_LSLAM.join();
+	m_hThread_TBI.join();
 
 	MRPT_LOG_DEBUG("[CHMTSLAM::destructor] All threads finished.\n");
 
@@ -114,21 +105,23 @@ CHMTSLAM::~CHMTSLAM()
 	{
 		try
 		{
-/*			// Update the last area(s) in the HMAP:
-			updateHierarchicalMapFromRBPF();
+			/*			// Update the last area(s) in the HMAP:
+						updateHierarchicalMapFromRBPF();
 
-			// Save:
-			os::sprintf(auxFil,1000,"%s/hierarchicalMap.hmap",m_options.logOutputDirectory.c_str());
+						// Save:
+						os::sprintf(auxFil,1000,"%s/hierarchicalMap.hmap",m_options.logOutputDirectory.c_str());
 
-			CFileStream		f(auxFil,fomWrite);
-			f << m_knownAreas;
-			*/
+						CFileStream		f(auxFil,fomWrite);
+						f << m_knownAreas;
+						*/
 		}
-		catch(std::exception &e)
+		catch (std::exception& e)
 		{
-			MRPT_LOG_WARN(mrpt::format("Ignoring exception at ~CHMTSLAM():\n%s",e.what()));
+			MRPT_LOG_WARN(
+				mrpt::format(
+					"Ignoring exception at ~CHMTSLAM():\n%s", e.what()));
 		}
-		catch(...)
+		catch (...)
 		{
 			MRPT_LOG_WARN("Ignoring untyped exception at ~CHMTSLAM()");
 		}
@@ -142,114 +135,114 @@ CHMTSLAM::~CHMTSLAM()
 	if (m_LSLAM_method)
 	{
 		delete m_LSLAM_method;
-		m_LSLAM_method = NULL;
+		m_LSLAM_method = nullptr;
 	}
 
 	// Delete TLC-detectors
 	{
-		synch::CCriticalSectionLocker	lock( &m_topLCdets_cs );
+		std::lock_guard<std::mutex> lock(m_topLCdets_cs);
 
 		// Clear old list:
-		for (std::deque<CTopLCDetectorBase*>::iterator it=m_topLCdets.begin();it!=m_topLCdets.end();++it)
+		for (std::deque<CTopLCDetectorBase*>::iterator it = m_topLCdets.begin();
+			 it != m_topLCdets.end(); ++it)
 			delete *it;
 		m_topLCdets.clear();
 	}
 }
 
-
 /*---------------------------------------------------------------
 						clearInputQueue
   ---------------------------------------------------------------*/
-void  CHMTSLAM::clearInputQueue()
+void CHMTSLAM::clearInputQueue()
 {
 	// Wait for critical section
 	{
-		CCriticalSectionLocker  locker( &m_inputQueue_cs);
+		std::lock_guard<std::mutex> lock(m_inputQueue_cs);
 
 		while (!m_inputQueue.empty())
 		{
-			//delete m_inputQueue.front();
+			// delete m_inputQueue.front();
 			m_inputQueue.pop();
 		};
 	}
 }
 
-
 /*---------------------------------------------------------------
 						pushAction
   ---------------------------------------------------------------*/
-void  CHMTSLAM::pushAction( const CActionCollectionPtr &acts )
+void CHMTSLAM::pushAction(const CActionCollection::Ptr& acts)
 {
 	if (m_terminateThreads)
 	{
 		// Discard it:
-		//delete acts;
+		// delete acts;
 		return;
 	}
 
-	{	// Wait for critical section
-		CCriticalSectionLocker  locker( &m_inputQueue_cs);
-		m_inputQueue.push( acts );
+	{  // Wait for critical section
+		std::lock_guard<std::mutex> lock(m_inputQueue_cs);
+		m_inputQueue.push(acts);
 	}
 }
 
 /*---------------------------------------------------------------
 						pushObservations
   ---------------------------------------------------------------*/
-void  CHMTSLAM::pushObservations( const CSensoryFramePtr &sf )
+void CHMTSLAM::pushObservations(const CSensoryFrame::Ptr& sf)
 {
 	if (m_terminateThreads)
 	{
 		// Discard it:
-		//delete sf;
+		// delete sf;
 		return;
 	}
 
-	{	// Wait for critical section
-		CCriticalSectionLocker  locker( &m_inputQueue_cs);
-		m_inputQueue.push( sf );
+	{  // Wait for critical section
+		std::lock_guard<std::mutex> lock(m_inputQueue_cs);
+		m_inputQueue.push(sf);
 	}
 }
 
 /*---------------------------------------------------------------
 						pushObservation
   ---------------------------------------------------------------*/
-void  CHMTSLAM::pushObservation( const CObservationPtr &obs )
+void CHMTSLAM::pushObservation(const CObservation::Ptr& obs)
 {
 	if (m_terminateThreads)
-	{   // Discard it:
-		//delete obs;
+	{  // Discard it:
+		// delete obs;
 		return;
 	}
 
 	// Add a CSensoryFrame with the obs:
-	CSensoryFramePtr sf = CSensoryFrame::Create();
-	sf->insert(obs);  // memory will be freed when deleting the SF in other thread
+	CSensoryFrame::Ptr sf = std::make_shared<CSensoryFrame>();
+	sf->insert(
+		obs);  // memory will be freed when deleting the SF in other thread
 
-	{	// Wait for critical section
-		CCriticalSectionLocker  locker( &m_inputQueue_cs);
-		m_inputQueue.push( sf );
+	{  // Wait for critical section
+		std::lock_guard<std::mutex> lock(m_inputQueue_cs);
+		m_inputQueue.push(sf);
 	}
 }
 
 /*---------------------------------------------------------------
 						loadOptions
   ---------------------------------------------------------------*/
-void CHMTSLAM::loadOptions( const mrpt::utils::CConfigFileBase &cfg )
+void CHMTSLAM::loadOptions(const mrpt::utils::CConfigFileBase& cfg)
 {
-	m_options.loadFromConfigFile(cfg,"HMT-SLAM");
+	m_options.loadFromConfigFile(cfg, "HMT-SLAM");
 
-	m_options.defaultMapsInitializers.loadFromConfigFile(cfg,"MetricMaps");
+	m_options.defaultMapsInitializers.loadFromConfigFile(cfg, "MetricMaps");
 
-	m_options.pf_options.loadFromConfigFile(cfg,"PARTICLE_FILTER");
+	m_options.pf_options.loadFromConfigFile(cfg, "PARTICLE_FILTER");
 
-	m_options.KLD_params.loadFromConfigFile(cfg,"KLD");
+	m_options.KLD_params.loadFromConfigFile(cfg, "KLD");
 
-	m_options.AA_options.loadFromConfigFile(cfg,"GRAPH_CUT");
+	m_options.AA_options.loadFromConfigFile(cfg, "GRAPH_CUT");
 
 	// Topological Loop Closure detector options:
-	m_options.TLC_grid_options.loadFromConfigFile(cfg,"TLC_GRIDMATCHING");
-	m_options.TLC_fabmap_options.loadFromConfigFile(cfg,"TLC_FABMAP");
+	m_options.TLC_grid_options.loadFromConfigFile(cfg, "TLC_GRIDMATCHING");
+	m_options.TLC_fabmap_options.loadFromConfigFile(cfg, "TLC_FABMAP");
 
 	m_options.dumpToConsole();
 }
@@ -257,10 +250,10 @@ void CHMTSLAM::loadOptions( const mrpt::utils::CConfigFileBase &cfg )
 /*---------------------------------------------------------------
 						loadOptions
   ---------------------------------------------------------------*/
-void CHMTSLAM::loadOptions( const std::string &configFile )
+void CHMTSLAM::loadOptions(const std::string& configFile)
 {
-	ASSERT_( mrpt::system::fileExists(configFile) );
-	CConfigFile		cfg(configFile);
+	ASSERT_(mrpt::system::fileExists(configFile));
+	CConfigFile cfg(configFile);
 	loadOptions(cfg);
 }
 
@@ -269,88 +262,88 @@ void CHMTSLAM::loadOptions( const std::string &configFile )
   ---------------------------------------------------------------*/
 CHMTSLAM::TOptions::TOptions()
 {
-	LOG_OUTPUT_DIR				= "";
-	LOG_FREQUENCY				= 1;
+	LOG_OUTPUT_DIR = "";
+	LOG_FREQUENCY = 1;
 
-	SLAM_METHOD						= lsmRBPF_2DLASER;
+	SLAM_METHOD = lsmRBPF_2DLASER;
 
-	SLAM_MIN_DIST_BETWEEN_OBS	  	= 1.0f;
-	SLAM_MIN_HEADING_BETWEEN_OBS  	= DEG2RAD(25.0f);
+	SLAM_MIN_DIST_BETWEEN_OBS = 1.0f;
+	SLAM_MIN_HEADING_BETWEEN_OBS = DEG2RAD(25.0f);
 
-	MIN_ODOMETRY_STD_XY		= 0;
-	MIN_ODOMETRY_STD_PHI		= 0;
+	MIN_ODOMETRY_STD_XY = 0;
+	MIN_ODOMETRY_STD_PHI = 0;
 
-	VIEW3D_AREA_SPHERES_HEIGHT		= 10.0f;
-	VIEW3D_AREA_SPHERES_RADIUS  	= 1.0f;
+	VIEW3D_AREA_SPHERES_HEIGHT = 10.0f;
+	VIEW3D_AREA_SPHERES_RADIUS = 1.0f;
 
-	random_seed						= 1234;
+	random_seed = 1234;
 
 	TLC_detectors.clear();
 
 	stds_Q_no_odo.resize(3);
-	stds_Q_no_odo[0] =
-	stds_Q_no_odo[1] = 0.10f;
+	stds_Q_no_odo[0] = stds_Q_no_odo[1] = 0.10f;
 	stds_Q_no_odo[2] = DEG2RAD(4.0f);
 }
 
 /*---------------------------------------------------------------
 						loadFromConfigFile
   ---------------------------------------------------------------*/
-void  CHMTSLAM::TOptions::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase	&source,
-	const std::string		&section)
+void CHMTSLAM::TOptions::loadFromConfigFile(
+	const mrpt::utils::CConfigFileBase& source, const std::string& section)
 {
-	MRPT_LOAD_CONFIG_VAR( LOG_OUTPUT_DIR, string,    source, section);
-	MRPT_LOAD_CONFIG_VAR( LOG_FREQUENCY,  int,     	source, section);
+	MRPT_LOAD_CONFIG_VAR(LOG_OUTPUT_DIR, string, source, section);
+	MRPT_LOAD_CONFIG_VAR(LOG_FREQUENCY, int, source, section);
 
-	MRPT_LOAD_CONFIG_VAR_CAST_NO_DEFAULT(SLAM_METHOD, int,  TLSlamMethod,  source, section);
+	MRPT_LOAD_CONFIG_VAR_CAST_NO_DEFAULT(
+		SLAM_METHOD, int, TLSlamMethod, source, section);
 
-	MRPT_LOAD_CONFIG_VAR( SLAM_MIN_DIST_BETWEEN_OBS, float, 		source, section);
-	MRPT_LOAD_CONFIG_VAR_DEGREES( SLAM_MIN_HEADING_BETWEEN_OBS, 	source, section);
+	MRPT_LOAD_CONFIG_VAR(SLAM_MIN_DIST_BETWEEN_OBS, float, source, section);
+	MRPT_LOAD_CONFIG_VAR_DEGREES(SLAM_MIN_HEADING_BETWEEN_OBS, source, section);
 
-	MRPT_LOAD_CONFIG_VAR(MIN_ODOMETRY_STD_XY,float, source,section);
-	MRPT_LOAD_CONFIG_VAR_DEGREES( MIN_ODOMETRY_STD_PHI, source,section);
+	MRPT_LOAD_CONFIG_VAR(MIN_ODOMETRY_STD_XY, float, source, section);
+	MRPT_LOAD_CONFIG_VAR_DEGREES(MIN_ODOMETRY_STD_PHI, source, section);
 
-	MRPT_LOAD_CONFIG_VAR( VIEW3D_AREA_SPHERES_HEIGHT, float,  	source, section);
-	MRPT_LOAD_CONFIG_VAR( VIEW3D_AREA_SPHERES_RADIUS, float,  	source, section);
+	MRPT_LOAD_CONFIG_VAR(VIEW3D_AREA_SPHERES_HEIGHT, float, source, section);
+	MRPT_LOAD_CONFIG_VAR(VIEW3D_AREA_SPHERES_RADIUS, float, source, section);
 
-	MRPT_LOAD_CONFIG_VAR( random_seed, int, source,section);
+	MRPT_LOAD_CONFIG_VAR(random_seed, int, source, section);
 
 	stds_Q_no_odo[2] = RAD2DEG(stds_Q_no_odo[2]);
-	source.read_vector(section,"stds_Q_no_odo", stds_Q_no_odo, stds_Q_no_odo );
-	ASSERT_(stds_Q_no_odo.size()==3)
+	source.read_vector(section, "stds_Q_no_odo", stds_Q_no_odo, stds_Q_no_odo);
+	ASSERT_(stds_Q_no_odo.size() == 3)
 
 	stds_Q_no_odo[2] = DEG2RAD(stds_Q_no_odo[2]);
 
-	std::string sTLC_detectors = source.read_string(section,"TLC_detectors", "", true );
+	std::string sTLC_detectors =
+		source.read_string(section, "TLC_detectors", "", true);
 
-	mrpt::system::tokenize(sTLC_detectors,", ",TLC_detectors);
+	mrpt::system::tokenize(sTLC_detectors, ", ", TLC_detectors);
 
 	std::cout << "TLC_detectors: " << TLC_detectors.size() << std::endl;
 
 	// load other sub-classes:
-	AA_options.loadFromConfigFile(source,section);
+	AA_options.loadFromConfigFile(source, section);
 }
 
 /*---------------------------------------------------------------
 						dumpToTextStream
   ---------------------------------------------------------------*/
-void  CHMTSLAM::TOptions::dumpToTextStream(mrpt::utils::CStream	&out) const
+void CHMTSLAM::TOptions::dumpToTextStream(mrpt::utils::CStream& out) const
 {
 	out.printf("\n----------- [CHMTSLAM::TOptions] ------------ \n\n");
 
-	LOADABLEOPTS_DUMP_VAR( LOG_OUTPUT_DIR,  string );
-	LOADABLEOPTS_DUMP_VAR( LOG_FREQUENCY, int);
+	LOADABLEOPTS_DUMP_VAR(LOG_OUTPUT_DIR, string);
+	LOADABLEOPTS_DUMP_VAR(LOG_FREQUENCY, int);
 
-	LOADABLEOPTS_DUMP_VAR( SLAM_METHOD, int);
+	LOADABLEOPTS_DUMP_VAR(SLAM_METHOD, int);
 
-	LOADABLEOPTS_DUMP_VAR( SLAM_MIN_DIST_BETWEEN_OBS, float );
-	LOADABLEOPTS_DUMP_VAR_DEG( SLAM_MIN_HEADING_BETWEEN_OBS );
+	LOADABLEOPTS_DUMP_VAR(SLAM_MIN_DIST_BETWEEN_OBS, float);
+	LOADABLEOPTS_DUMP_VAR_DEG(SLAM_MIN_HEADING_BETWEEN_OBS);
 
-	LOADABLEOPTS_DUMP_VAR( MIN_ODOMETRY_STD_XY, float );
-	LOADABLEOPTS_DUMP_VAR_DEG( MIN_ODOMETRY_STD_PHI );
+	LOADABLEOPTS_DUMP_VAR(MIN_ODOMETRY_STD_XY, float);
+	LOADABLEOPTS_DUMP_VAR_DEG(MIN_ODOMETRY_STD_PHI);
 
-	LOADABLEOPTS_DUMP_VAR( random_seed, int );
+	LOADABLEOPTS_DUMP_VAR(random_seed, int);
 
 	AA_options.dumpToTextStream(out);
 	pf_options.dumpToTextStream(out);
@@ -363,12 +356,12 @@ void  CHMTSLAM::TOptions::dumpToTextStream(mrpt::utils::CStream	&out) const
 /*---------------------------------------------------------------
 					isInputQueueEmpty
   ---------------------------------------------------------------*/
-bool  CHMTSLAM::isInputQueueEmpty()
+bool CHMTSLAM::isInputQueueEmpty()
 {
-	bool	res;
+	bool res;
 
-	{	// Wait for critical section
-		CCriticalSectionLocker  locker( &m_inputQueue_cs);
+	{  // Wait for critical section
+		std::lock_guard<std::mutex> lock(m_inputQueue_cs);
 		res = m_inputQueue.empty();
 	}
 	return res;
@@ -379,9 +372,9 @@ bool  CHMTSLAM::isInputQueueEmpty()
   ---------------------------------------------------------------*/
 size_t CHMTSLAM::inputQueueSize()
 {
-	size_t  res;
-	{	// Wait for critical section
-		CCriticalSectionLocker  locker( &m_inputQueue_cs);
+	size_t res;
+	{  // Wait for critical section
+		std::lock_guard<std::mutex> lock(m_inputQueue_cs);
 		res = m_inputQueue.size();
 	}
 	return res;
@@ -390,12 +383,12 @@ size_t CHMTSLAM::inputQueueSize()
 /*---------------------------------------------------------------
 					getNextObjectFromInputQueue
   ---------------------------------------------------------------*/
-CSerializablePtr CHMTSLAM::getNextObjectFromInputQueue()
+CSerializable::Ptr CHMTSLAM::getNextObjectFromInputQueue()
 {
-	CSerializablePtr obj;
+	CSerializable::Ptr obj;
 
-	{	// Wait for critical section
-		CCriticalSectionLocker  locker( &m_inputQueue_cs);
+	{  // Wait for critical section
+		std::lock_guard<std::mutex> lock(m_inputQueue_cs);
 		if (!m_inputQueue.empty())
 		{
 			obj = m_inputQueue.front();
@@ -408,64 +401,67 @@ CSerializablePtr CHMTSLAM::getNextObjectFromInputQueue()
 /*---------------------------------------------------------------
 						initializeEmptyMap
   ---------------------------------------------------------------*/
-void  CHMTSLAM::initializeEmptyMap()
+void CHMTSLAM::initializeEmptyMap()
 {
-	THypothesisIDSet		LMH_hyps;
-	THypothesisID			newHypothID = generateHypothesisID();
+	THypothesisIDSet LMH_hyps;
+	THypothesisID newHypothID = generateHypothesisID();
 
-	LMH_hyps.insert( COMMON_TOPOLOG_HYP );
-	LMH_hyps.insert( newHypothID );
+	LMH_hyps.insert(COMMON_TOPOLOG_HYP);
+	LMH_hyps.insert(newHypothID);
 
 	// ------------------------------------
 	// CLEAR HIERARCHICAL MAP
 	// ------------------------------------
-	CHMHMapNode::TNodeID	firstAreaID;
+	CHMHMapNode::TNodeID firstAreaID;
 	{
-		synch::CCriticalSectionLocker	locker( &m_map_cs );
+		std::lock_guard<std::mutex> lock(m_map_cs);
 
 		// Initialize hierarchical structures:
 		// -----------------------------------------------------
 		m_map.clear();
 
 		// Create a single node for the starting area:
-		CHMHMapNodePtr firstArea = CHMHMapNode::Create( &m_map );
+		CHMHMapNode::Ptr firstArea = std::make_shared<CHMHMapNode>(&m_map);
 		firstAreaID = firstArea->getID();
 
 		firstArea->m_hypotheses = LMH_hyps;
-		CMultiMetricMapPtr		emptyMap = CMultiMetricMapPtr(new CMultiMetricMap(&m_options.defaultMapsInitializers) );
+		CMultiMetricMap::Ptr emptyMap = CMultiMetricMap::Ptr(
+			new CMultiMetricMap(&m_options.defaultMapsInitializers));
 
-		firstArea->m_nodeType.setType( "Area" );
+		firstArea->m_nodeType.setType("Area");
 		firstArea->m_label = generateUniqueAreaLabel();
-		firstArea->m_annotations.set( NODE_ANNOTATION_METRIC_MAPS,     emptyMap, 		newHypothID );
-		firstArea->m_annotations.setElemental( NODE_ANNOTATION_REF_POSEID,  POSEID_INVALID , 	newHypothID );
-	} // end of lock m_map_cs
+		firstArea->m_annotations.set(
+			NODE_ANNOTATION_METRIC_MAPS, emptyMap, newHypothID);
+		firstArea->m_annotations.setElemental(
+			NODE_ANNOTATION_REF_POSEID, POSEID_INVALID, newHypothID);
+	}  // end of lock m_map_cs
 
 	// ------------------------------------
 	// CLEAR LIST OF HYPOTHESES
 	// ------------------------------------
 	{
-		synch::CCriticalSectionLocker	lock( &m_LMHs_cs );
+		std::lock_guard<std::mutex> lock(m_LMHs_cs);
 
 		// Add to the list:
 		m_LMHs.clear();
-		CLocalMetricHypothesis	&newLMH = m_LMHs[newHypothID];
+		CLocalMetricHypothesis& newLMH = m_LMHs[newHypothID];
 		newLMH.m_parent = this;
 
-		newLMH.m_currentRobotPose = POSEID_INVALID ;  // Special case: map is empty
-		newLMH.m_log_w			  = 0;
-		newLMH.m_ID 			  = newHypothID;
+		newLMH.m_currentRobotPose =
+			POSEID_INVALID;  // Special case: map is empty
+		newLMH.m_log_w = 0;
+		newLMH.m_ID = newHypothID;
 
 		newLMH.m_neighbors.clear();
-		newLMH.m_neighbors.insert( firstAreaID );
+		newLMH.m_neighbors.insert(firstAreaID);
 
 		newLMH.clearRobotPoses();
-	} // end of cs
-
+	}  // end of cs
 
 	// ------------------------------------------
 	//   Create the local SLAM algorithm object
 	// -----------------------------------------
-	switch( m_options.SLAM_METHOD )
+	switch (m_options.SLAM_METHOD)
 	{
 		case lsmRBPF_2DLASER:
 		{
@@ -473,28 +469,31 @@ void  CHMTSLAM::initializeEmptyMap()
 			m_LSLAM_method = new CLSLAM_RBPF_2DLASER(this);
 		}
 		break;
-	default:
-		THROW_EXCEPTION_FMT("Invalid selection for LSLAM method: %i",(int)m_options.SLAM_METHOD );
+		default:
+			THROW_EXCEPTION_FMT(
+				"Invalid selection for LSLAM method: %i",
+				(int)m_options.SLAM_METHOD);
 	};
 
 	// ------------------------------------
 	//  Topological LC detectors:
 	// ------------------------------------
 	{
-		synch::CCriticalSectionLocker	lock( &m_topLCdets_cs );
+		std::lock_guard<std::mutex> lock(m_topLCdets_cs);
 
 		// Clear old list:
-		for (std::deque<CTopLCDetectorBase*>::iterator it=m_topLCdets.begin();it!=m_topLCdets.end();++it)
+		for (std::deque<CTopLCDetectorBase*>::iterator it = m_topLCdets.begin();
+			 it != m_topLCdets.end(); ++it)
 			delete *it;
 		m_topLCdets.clear();
 
 		// Create new list:
 		//  1: Occupancy Grid matching.
 		//  2: Cummins' image matching.
-		for (vector_string::const_iterator d=m_options.TLC_detectors.begin();d!=m_options.TLC_detectors.end();++d)
-			m_topLCdets.push_back( loopClosureDetector_factory(*d) );
+		for (vector_string::const_iterator d = m_options.TLC_detectors.begin();
+			 d != m_options.TLC_detectors.end(); ++d)
+			m_topLCdets.push_back(loopClosureDetector_factory(*d));
 	}
-
 
 	// ------------------------------------
 	//  Other variables:
@@ -506,68 +505,55 @@ void  CHMTSLAM::initializeEmptyMap()
 	// ------------------------------------
 	if (!m_options.LOG_OUTPUT_DIR.empty())
 	{
-	    mrpt::system::deleteFilesInDirectory( m_options.LOG_OUTPUT_DIR );
-	    mrpt::system::createDirectory( m_options.LOG_OUTPUT_DIR );
-	    mrpt::system::createDirectory( m_options.LOG_OUTPUT_DIR + "/HMAP_txt" );
-	    mrpt::system::createDirectory( m_options.LOG_OUTPUT_DIR + "/HMAP_3D" );
-	    mrpt::system::createDirectory( m_options.LOG_OUTPUT_DIR + "/LSLAM_3D" );
-	    mrpt::system::createDirectory( m_options.LOG_OUTPUT_DIR + "/ASSO" );
-	    mrpt::system::createDirectory( m_options.LOG_OUTPUT_DIR + "/HMTSLAM_state" );
+		mrpt::system::deleteFilesInDirectory(m_options.LOG_OUTPUT_DIR);
+		mrpt::system::createDirectory(m_options.LOG_OUTPUT_DIR);
+		mrpt::system::createDirectory(m_options.LOG_OUTPUT_DIR + "/HMAP_txt");
+		mrpt::system::createDirectory(m_options.LOG_OUTPUT_DIR + "/HMAP_3D");
+		mrpt::system::createDirectory(m_options.LOG_OUTPUT_DIR + "/LSLAM_3D");
+		mrpt::system::createDirectory(m_options.LOG_OUTPUT_DIR + "/ASSO");
+		mrpt::system::createDirectory(
+			m_options.LOG_OUTPUT_DIR + "/HMTSLAM_state");
 	}
-
 }
 
 /*---------------------------------------------------------------
 						generateUniqueAreaLabel
   ---------------------------------------------------------------*/
-std::string	 CHMTSLAM::generateUniqueAreaLabel()
+std::string CHMTSLAM::generateUniqueAreaLabel()
 {
-	return format( "%li", (long int)(m_nextAreaLabel++) );
+	return format("%li", (long int)(m_nextAreaLabel++));
 }
 
 /*---------------------------------------------------------------
 						generatePoseID
   ---------------------------------------------------------------*/
-TPoseID CHMTSLAM::generatePoseID()
-{
-	return m_nextPoseID++;
-}
-
+TPoseID CHMTSLAM::generatePoseID() { return m_nextPoseID++; }
 /*---------------------------------------------------------------
 						generateHypothesisID
   ---------------------------------------------------------------*/
-THypothesisID CHMTSLAM::generateHypothesisID()
-{
-	return m_nextHypID++;
-}
-
-
+THypothesisID CHMTSLAM::generateHypothesisID() { return m_nextHypID++; }
 /*---------------------------------------------------------------
 						getAs3DScene
   ---------------------------------------------------------------*/
-void  CHMTSLAM::getAs3DScene( COpenGLScene	&scene3D )
+void CHMTSLAM::getAs3DScene(COpenGLScene& scene3D)
 {
 	MRPT_UNUSED_PARAM(scene3D);
 }
-
 
 /*---------------------------------------------------------------
 						abortedDueToErrors
   ---------------------------------------------------------------*/
 bool CHMTSLAM::abortedDueToErrors()
 {
-	return  m_terminationFlag_LSLAM ||
-			m_terminationFlag_TBI ||
-			m_terminationFlag_3D_viewer;
+	return m_terminationFlag_LSLAM || m_terminationFlag_TBI ||
+		   m_terminationFlag_3D_viewer;
 }
 
 /*---------------------------------------------------------------
 						registerLoopClosureDetector
   ---------------------------------------------------------------*/
 void CHMTSLAM::registerLoopClosureDetector(
-	const std::string   	&name,
-	CTopLCDetectorBase*		(*ptrCreateObject)(CHMTSLAM*)
-	)
+	const std::string& name, CTopLCDetectorBase* (*ptrCreateObject)(CHMTSLAM*))
 {
 	m_registeredLCDetectors[name] = ptrCreateObject;
 }
@@ -575,22 +561,23 @@ void CHMTSLAM::registerLoopClosureDetector(
 /*---------------------------------------------------------------
 				loopClosureDetector_factory
   ---------------------------------------------------------------*/
-CTopLCDetectorBase* CHMTSLAM::loopClosureDetector_factory(const std::string  &name)
+CTopLCDetectorBase* CHMTSLAM::loopClosureDetector_factory(
+	const std::string& name)
 {
 	MRPT_START
-	std::map<std::string,TLopLCDetectorFactory>::const_iterator it=m_registeredLCDetectors.find( name );
-	if (it==m_registeredLCDetectors.end())
-		THROW_EXCEPTION_FMT("Invalid value for TLC_detectors: %s", name.c_str() );
+	std::map<std::string, TLopLCDetectorFactory>::const_iterator it =
+		m_registeredLCDetectors.find(name);
+	if (it == m_registeredLCDetectors.end())
+		THROW_EXCEPTION_FMT(
+			"Invalid value for TLC_detectors: %s", name.c_str());
 	return it->second(this);
 	MRPT_END
 }
 
-
-
 /*---------------------------------------------------------------
 					saveState
   ---------------------------------------------------------------*/
-bool CHMTSLAM::saveState( CStream &out ) const
+bool CHMTSLAM::saveState(CStream& out) const
 {
 	try
 	{
@@ -606,7 +593,7 @@ bool CHMTSLAM::saveState( CStream &out ) const
 /*---------------------------------------------------------------
 					loadState
   ---------------------------------------------------------------*/
-bool CHMTSLAM::loadState( CStream &in )
+bool CHMTSLAM::loadState(CStream& in)
 {
 	try
 	{
@@ -622,25 +609,25 @@ bool CHMTSLAM::loadState( CStream &in )
 /*---------------------------------------------------------------
 					readFromStream
   ---------------------------------------------------------------*/
-void  CHMTSLAM::readFromStream(mrpt::utils::CStream &in,int version)
+void CHMTSLAM::readFromStream(mrpt::utils::CStream& in, int version)
 {
-	switch(version)
+	switch (version)
 	{
-	case 0:
+		case 0:
 		{
 			// Acquire all critical sections before!
 			// -------------------------------------------
-			//std::map< THypothesisID, CLocalMetricHypothesis >::const_iterator it;
+			// std::map< THypothesisID, CLocalMetricHypothesis >::const_iterator
+			// it;
 
-			//CCriticalSectionLocker LMHs( & m_LMHs_cs );
-			//for (it=m_LMHs.begin();it!=m_LMHs.end();it++) it->second.m_lock.enter();
+			// std::lock_guard<std::mutex> LMHs( & m_LMHs_cs );
+			// for (it=m_LMHs.begin();it!=m_LMHs.end();it++)
+			// it->second.m_lock.lock();
 
-			CCriticalSectionLocker lock_map( &m_map_cs );
+			std::lock_guard<std::mutex> lock_map(m_map_cs);
 
 			// Data:
-			in  >> m_nextAreaLabel
-				>> m_nextPoseID
-				>> m_nextHypID;
+			in >> m_nextAreaLabel >> m_nextPoseID >> m_nextHypID;
 
 			// The HMT-MAP:
 			in >> m_map;
@@ -651,11 +638,12 @@ void  CHMTSLAM::readFromStream(mrpt::utils::CStream &in,int version)
 			// Save options??? Better allow changing them...
 
 			// Release all critical sections:
-			//for (it=m_LMHs.begin();it!=m_LMHs.end();it++) it->second.m_lock.enter();
-
-		} break;
-	default:
-		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+			// for (it=m_LMHs.begin();it!=m_LMHs.end();it++)
+			// it->second.m_lock.lock();
+		}
+		break;
+		default:
+			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
 	};
 }
 
@@ -664,7 +652,7 @@ void  CHMTSLAM::readFromStream(mrpt::utils::CStream &in,int version)
 	Implements the writing to a CStream capability of
 	  CSerializable objects
   ---------------------------------------------------------------*/
-void  CHMTSLAM::writeToStream(mrpt::utils::CStream &out, int *version) const
+void CHMTSLAM::writeToStream(mrpt::utils::CStream& out, int* version) const
 {
 	if (version)
 		*version = 0;
@@ -672,17 +660,16 @@ void  CHMTSLAM::writeToStream(mrpt::utils::CStream &out, int *version) const
 	{
 		// Acquire all critical sections before!
 		// -------------------------------------------
-		//std::map< THypothesisID, CLocalMetricHypothesis >::const_iterator it;
+		// std::map< THypothesisID, CLocalMetricHypothesis >::const_iterator it;
 
-		//CCriticalSectionLocker LMHs( & m_LMHs_cs );
-		//for (it=m_LMHs.begin();it!=m_LMHs.end();it++) it->second.m_lock.enter();
+		// std::lock_guard<std::mutex> LMHs( & m_LMHs_cs );
+		// for (it=m_LMHs.begin();it!=m_LMHs.end();it++)
+		// it->second.m_lock.lock();
 
-		CCriticalSectionLocker lock_map( &m_map_cs );
+		std::lock_guard<std::mutex> lock_map(m_map_cs);
 
 		// Data:
-		out << m_nextAreaLabel
-			<< m_nextPoseID
-			<< m_nextHypID;
+		out << m_nextAreaLabel << m_nextPoseID << m_nextHypID;
 
 		// The HMT-MAP:
 		out << m_map;
@@ -693,10 +680,7 @@ void  CHMTSLAM::writeToStream(mrpt::utils::CStream &out, int *version) const
 		// Save options??? Better allow changing them...
 
 		// Release all critical sections:
-		//for (it=m_LMHs.begin();it!=m_LMHs.end();it++) it->second.m_lock.enter();
-
-
+		// for (it=m_LMHs.begin();it!=m_LMHs.end();it++)
+		// it->second.m_lock.lock();
 	}
 }
-
-

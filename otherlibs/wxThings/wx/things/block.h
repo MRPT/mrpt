@@ -307,9 +307,9 @@ public :
 
     // Add the block to the selection, returns false if nothing was done
     //   use combineNow=false to make quick additions, when done call Minimize()
-    //   addedBlocks (if !NULL) will be filled with the actual changed selections
+    //   addedBlocks (if !nullptr) will be filled with the actual changed selections
     //   by removing the previous selections from the input block
-    bool SelectBlock( const wxBlockInt &block, bool combineNow=true, wxArrayBlockInt *addedBlocks=NULL);
+    bool SelectBlock( const wxBlockInt &block, bool combineNow=true, wxArrayBlockInt *addedBlocks=nullptr);
 
     // Remove the block to the selection, return false if nothing was done
     //   use combineNow=false to make quick additions, when done call Minimize()

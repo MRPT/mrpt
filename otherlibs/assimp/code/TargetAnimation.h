@@ -71,8 +71,8 @@ public:
 	 */
 	KeyIterator(const std::vector<aiVectorKey>* _objPos,
 		const std::vector<aiVectorKey>* _targetObjPos,
-		const aiVector3D*  defaultObjectPos = NULL,
-		const aiVector3D*  defaultTargetPos = NULL);
+		const aiVector3D*  defaultObjectPos = nullptr,
+		const aiVector3D*  defaultTargetPos = nullptr);
 
 	// ------------------------------------------------------------------
 	/** Returns true if all keys have been processed
@@ -131,8 +131,8 @@ class TargetAnimationHelper
 public:
 
 	TargetAnimationHelper()
-		:	targetPositions		(NULL)
-		,	objectPositions		(NULL)
+		:	targetPositions		(nullptr)
+		,	objectPositions		(nullptr)
 	{}
 
 

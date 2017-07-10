@@ -194,7 +194,7 @@ class GTEST_API_ FilePath {
 
   // Returns a pointer to the last occurence of a valid path separator in
   // the FilePath. On Windows, for example, both '/' and '\' are valid path
-  // separators. Returns NULL if no path separator was found.
+  // separators. Returns nullptr if no path separator was found.
   const char* FindLastPathSeparator() const;
 
   std::string pathname_;

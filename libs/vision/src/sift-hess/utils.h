@@ -1,34 +1,31 @@
-/* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          http://www.mrpt.org/                             |
-   |                                                                           |
-   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-   | Released under BSD License. See details in http://www.mrpt.org/License    |
-   +---------------------------------------------------------------------------+ */
+/* +------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)            |
+   |                          http://www.mrpt.org/                          |
+   |                                                                        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file     |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                |
+   | Released under BSD License. See details in http://www.mrpt.org/License |
+   +------------------------------------------------------------------------+ */
 
 #ifndef UTILS_H
 #define UTILS_H
 
 //#include "cxcore.h"
 // Universal include for all versions of OpenCV
-#include <mrpt/otherlibs/do_opencv_includes.h> 
+#include <mrpt/otherlibs/do_opencv_includes.h>
 
 #include <stdio.h>
 
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif
-
 
 /* absolute value */
 #ifndef ABS
-#define ABS(x) ( ( x < 0 )? -x : x )
+#define ABS(x) ((x < 0) ? -x : x)
 #endif
 
-
 /***************************** Inline Functions ******************************/
-
 
 /**
 A function to get a pixel value from an 8-bit unsigned image.
@@ -38,11 +35,10 @@ A function to get a pixel value from an 8-bit unsigned image.
 @param c column
 @return Returns the value of the pixel at (\a r, \a c) in \a img
 */
-static __inline int pixval8( IplImage* img, int r, int c )
+static __inline int pixval8(IplImage* img, int r, int c)
 {
-	return (int)( ( (uchar*)(img->imageData + img->widthStep*r) )[c] );
+	return (int)(((uchar*)(img->imageData + img->widthStep * r))[c]);
 }
-
 
 /**
 A function to set a pixel value in an 8-bit unsigned image.
@@ -52,11 +48,10 @@ A function to set a pixel value in an 8-bit unsigned image.
 @param c column
 @param val pixel value
 */
-static __inline void setpix8( IplImage* img, int r, int c, uchar val)
+static __inline void setpix8(IplImage* img, int r, int c, uchar val)
 {
-	( (uchar*)(img->imageData + img->widthStep*r) )[c] = val;
+	((uchar*)(img->imageData + img->widthStep * r))[c] = val;
 }
-
 
 /**
 A function to get a pixel value from a 32-bit floating-point image.
@@ -66,11 +61,10 @@ A function to get a pixel value from a 32-bit floating-point image.
 @param c column
 @return Returns the value of the pixel at (\a r, \a c) in \a img
 */
-static __inline float pixval32f( IplImage* img, int r, int c )
+static __inline float pixval32f(IplImage* img, int r, int c)
 {
-	return ( (float*)(img->imageData + img->widthStep*r) )[c];
+	return ((float*)(img->imageData + img->widthStep * r))[c];
 }
-
 
 /**
 A function to set a pixel value in a 32-bit floating-point image.
@@ -80,11 +74,10 @@ A function to set a pixel value in a 32-bit floating-point image.
 @param c column
 @param val pixel value
 */
-static __inline void setpix32f( IplImage* img, int r, int c, float val )
+static __inline void setpix32f(IplImage* img, int r, int c, float val)
 {
-	( (float*)(img->imageData + img->widthStep*r) )[c] = val;
+	((float*)(img->imageData + img->widthStep * r))[c] = val;
 }
-
 
 /**
 A function to get a pixel value from a 64-bit floating-point image.
@@ -94,11 +87,10 @@ A function to get a pixel value from a 64-bit floating-point image.
 @param c column
 @return Returns the value of the pixel at (\a r, \a c) in \a img
 */
-static __inline double pixval64f( IplImage* img, int r, int c )
+static __inline double pixval64f(IplImage* img, int r, int c)
 {
-	return (double)( ( (double*)(img->imageData + img->widthStep*r) )[c] );
+	return (double)(((double*)(img->imageData + img->widthStep * r))[c]);
 }
-
 
 /**
 A function to set a pixel value in a 64-bit floating-point image.
@@ -108,14 +100,12 @@ A function to set a pixel value in a 64-bit floating-point image.
 @param c column
 @param val pixel value
 */
-static __inline void setpix64f( IplImage* img, int r, int c, double val )
+static __inline void setpix64f(IplImage* img, int r, int c, double val)
 {
-	( (double*)(img->imageData + img->widthStep*r) )[c] = val;
+	((double*)(img->imageData + img->widthStep * r))[c] = val;
 }
 
-
 /**************************** Function Prototypes ****************************/
-
 
 /**
 Prints an error message and aborts the program.  The error message is
@@ -124,8 +114,7 @@ argument
 
 @param format an error message format string (as with \c printf(3)).
 */
-extern void fatal_error( char* format, ... );
-
+extern void fatal_error(char* format, ...);
 
 /**
 Replaces a file's extension, which is assumed to be everything after the
@@ -140,8 +129,7 @@ last dot ('.') character.
 @return Returns a new string formed as described above.  If \a file does
 	not have an extension, this function simply adds one.
 */
-extern char* replace_extension( const char* file, const char* extn );
-
+extern char* replace_extension(const char* file, const char* extn);
 
 /**
 A function that removes the path from a filename.  Similar to the Unix
@@ -152,7 +140,7 @@ basename command.
 @return Returns the basename of \a pathname.
 */
 // JLBC: Changed for MRPT: It's already declared in string.h
-//extern char* basename( const char* pathname );
+// extern char* basename( const char* pathname );
 
 /**
 Displays progress in the console with a spinning pinwheel.  Every time this
@@ -162,8 +150,7 @@ has four states that loop indefinitely: '|', '/', '-', '\'.
 @param done if 0, this function simply increments the state of the pinwheel;
 	otherwise it prints "done"
 */
-extern void progress( int done );
-
+extern void progress(int done);
 
 /**
 Erases a specified number of characters from a stream.
@@ -171,8 +158,7 @@ Erases a specified number of characters from a stream.
 @param stream the stream from which to erase characters
 @param n the number of characters to erase
 */
-extern void erase_from_stream( FILE* stream, int n );
-
+extern void erase_from_stream(FILE* stream, int n);
 
 /**
 Doubles the size of an array with error checking
@@ -184,8 +170,7 @@ Doubles the size of an array with error checking
 @return Returns the new number of elements allocated for \a array.  If no
 	memory is available, returns 0 and frees array.
 */
-extern int array_double( void** array, int n, int size );
-
+extern int array_double(void** array, int n, int size);
 
 /**
 Calculates the squared distance between two points.
@@ -193,8 +178,7 @@ Calculates the squared distance between two points.
 @param p1 a point
 @param p2 another point
 */
-extern double dist_sq_2D( CvPoint2D64f p1, CvPoint2D64f p2 );
-
+extern double dist_sq_2D(CvPoint2D64f p1, CvPoint2D64f p2);
 
 /**
 Draws an x on an image.
@@ -205,8 +189,7 @@ Draws an x on an image.
 @param w the x's line weight
 @param color the color of the x
 */
-extern void draw_x( IplImage* img, CvPoint pt, int r, int w, CvScalar color );
-
+extern void draw_x(IplImage* img, CvPoint pt, int r, int w, CvScalar color);
 
 /**
 Combines two images by scacking one on top of the other
@@ -216,8 +199,7 @@ Combines two images by scacking one on top of the other
 
 @return Returns the image resulting from stacking \a img1 on top if \a img2
 */
-extern IplImage* stack_imgs( IplImage* img1, IplImage* img2 );
-
+extern IplImage* stack_imgs(IplImage* img1, IplImage* img2);
 
 /**
 Allows user to view an array of images as a video.  Keyboard controls
@@ -238,8 +220,7 @@ are as follows:
 @param n number of images in \a imgs
 @param win_name name of window in which images are displayed
 */
-extern void vid_view( IplImage** imgs, int n, char* win_name );
-
+extern void vid_view(IplImage** imgs, int n, char* win_name);
 
 /**
 Checks if a HighGUI window is still open or not
@@ -248,10 +229,10 @@ Checks if a HighGUI window is still open or not
 
 @return Returns 1 if the window named \a name has been closed or 0 otherwise
 */
-extern int win_closed( char* name );
+extern int win_closed(char* name);
 
 #ifdef __cplusplus
- }
+}
 #endif
 
 #endif

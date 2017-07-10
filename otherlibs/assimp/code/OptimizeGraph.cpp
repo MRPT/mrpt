@@ -102,7 +102,7 @@ void OptimizeGraphProcess::CollectNewChildren(aiNode* nd, std::list<aiNode*>& no
 	for (unsigned int i = 0; i < nd->mNumChildren; ++i) {
 
 		CollectNewChildren(nd->mChildren[i],child_nodes);
-		nd->mChildren[i] = NULL;
+		nd->mChildren[i] = nullptr;
 	}
 
 	// Check whether we need this node; if not we can replace it by our own children (warn, danger of incest).
@@ -133,7 +133,7 @@ void OptimizeGraphProcess::CollectNewChildren(aiNode* nd, std::list<aiNode*>& no
 		nodes.push_back(nd);
 
 		// Now check for possible optimizations in our list of child nodes. join as many as possible
-		aiNode* join_master = NULL;
+		aiNode* join_master = nullptr;
 		aiMatrix4x4 inv;
 
 		const LockedSetType::const_iterator end = locked.end();
@@ -220,7 +220,7 @@ void OptimizeGraphProcess::CollectNewChildren(aiNode* nd, std::list<aiNode*>& no
 
 		if (!child_nodes.empty())
 			nd->mChildren = new aiNode*[child_nodes.size()];
-		else nd->mChildren = NULL;
+		else nd->mChildren = nullptr;
 	}
 
 	nd->mNumChildren = child_nodes.size();
@@ -304,7 +304,7 @@ void OptimizeGraphProcess::Execute( aiScene* pScene)
 	ai_assert(nodes.size() == 1);
 
 	if (dummy_root->mNumChildren == 0) {
-		pScene->mRootNode = NULL;
+		pScene->mRootNode = nullptr;
 		throw DeadlyImportError("After optimizing the scene graph, no data remains");
 	}
 
@@ -319,11 +319,11 @@ void OptimizeGraphProcess::Execute( aiScene* pScene)
 		// Remove the dummy root node again.
 		pScene->mRootNode = dummy_root->mChildren[0];
 
-		dummy_root->mChildren[0] = NULL;
+		dummy_root->mChildren[0] = nullptr;
 		delete dummy_root;
 	}
 
-	pScene->mRootNode->mParent = NULL;
+	pScene->mRootNode->mParent = nullptr;
 	if (!DefaultLogger::isNullLogger()) {
 		if ( nodes_in != nodes_out) {
 

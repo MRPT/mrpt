@@ -1,11 +1,11 @@
-/* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          http://www.mrpt.org/                             |
-   |                                                                           |
-   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-   | Released under BSD License. See details in http://www.mrpt.org/License    |
-   +---------------------------------------------------------------------------+ */
+/* +------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)            |
+   |                          http://www.mrpt.org/                          |
+   |                                                                        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file     |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                |
+   | Released under BSD License. See details in http://www.mrpt.org/License |
+   +------------------------------------------------------------------------+ */
 
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/hwdrivers/CSerialPort.h>
@@ -27,10 +27,10 @@ using namespace std;
 // ------------------------------------------------------
 void TestPLS()
 {
-	CSickLaserUSB	laser;
+	CSickLaserUSB laser;
 
 	// Load config:
-	laser.loadConfig( CConfigFile( "./LASER_SCAN_TEST.ini") ,"PLS#1" );
+	laser.loadConfig(CConfigFile("./LASER_SCAN_TEST.ini"), "PLS#1");
 
 	laser.setDeviceSerialNumber("LASER003");
 
@@ -45,50 +45,50 @@ void TestPLS()
 
 	while (!mrpt::system::os::kbhit())
 	{
-		bool						thereIsObservation,hardError;
-		CObservation2DRangeScan		obs;
+		bool thereIsObservation, hardError;
+		CObservation2DRangeScan obs;
 
 		try
 		{
-			laser.doProcessSimple( thereIsObservation, obs, hardError );
+			laser.doProcessSimple(thereIsObservation, obs, hardError);
 		}
-		catch (std::exception &e)
+		catch (std::exception& e)
 		{
 			cerr << e.what() << endl;
 			hardError = true;
 		}
 
-		if (hardError)
-			printf("[TEST] Hardware error=true!!\n");
+		if (hardError) printf("[TEST] Hardware error=true!!\n");
 
 		if (thereIsObservation)
 		{
-			printf("[TEST] Observation received (%u ranges over %.02fdeg, mid=%.03f)!!\n",
-				(unsigned int)obs.scan.size(),
-				RAD2DEG(obs.aperture),
-				obs.scan[obs.scan.size()/2]);
+			printf(
+				"[TEST] Observation received (%u ranges over %.02fdeg, "
+				"mid=%.03f)!!\n",
+				(unsigned int)obs.scan.size(), RAD2DEG(obs.aperture),
+				obs.scan[obs.scan.size() / 2]);
 
-			obs.sensorPose = CPose3D(0,0,0);
+			obs.sensorPose = CPose3D(0, 0, 0);
 
-			mrpt::maps::CSimplePointsMap		map;
-			map.insertionOptions.minDistBetweenLaserPoints	= 0;
-			map.insertObservation( &obs );
+			mrpt::maps::CSimplePointsMap map;
+			map.insertionOptions.minDistBetweenLaserPoints = 0;
+			map.insertObservation(&obs);
 			map.save2D_to_text_file("_out_scan.txt");
 
-/*			COpenGLScene			scene3D;
-			opengl::CPointCloudPtr points = opengl::CPointCloud::Create();
-			points->loadFromPointsMap(&map);
-			scene3D.insert(points);
-			CFileOutputStream("_out_point_cloud.3Dscene") << scene3D;
-*/
+			/*			COpenGLScene			scene3D;
+						opengl::CPointCloud::Ptr points =
+			   std::make_shared<opengl::CPointCloud>();
+						points->loadFromPointsMap(&map);
+						scene3D.insert(points);
+						CFileOutputStream("_out_point_cloud.3Dscene") <<
+			   scene3D;
+			*/
 		}
 
-		mrpt::system::sleep(10);
+		std::this_thread::sleep_for(10ms);
 	};
 
-
 	laser.turnOff();
-
 }
 
 int main()
@@ -97,8 +97,8 @@ int main()
 	{
 		TestPLS();
 		return 0;
-
-	} catch (std::exception &e)
+	}
+	catch (std::exception& e)
 	{
 		std::cout << "EXCEPCION: " << e.what() << std::endl;
 		return -1;
@@ -108,6 +108,4 @@ int main()
 		printf("Another exception!!");
 		return -1;
 	}
-
 }
-

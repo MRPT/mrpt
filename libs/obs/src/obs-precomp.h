@@ -1,11 +1,11 @@
-/* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          http://www.mrpt.org/                             |
-   |                                                                           |
-   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-   | Released under BSD License. See details in http://www.mrpt.org/License    |
-   +---------------------------------------------------------------------------+ */
+/* +------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)            |
+   |                          http://www.mrpt.org/                          |
+   |                                                                        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file     |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                |
+   | Released under BSD License. See details in http://www.mrpt.org/License |
+   +------------------------------------------------------------------------+ */
 #pragma once
 
 #include <mrpt/config.h>
@@ -18,7 +18,6 @@
 // Very basic classes for maps:
 #include <mrpt/maps/CMetricMap.h>
 
-#include <mrpt/utils/CStream.h> // Will be used in all serialized classes (most of them in mrpt-obs)
+#include <mrpt/utils/CStream.h>  // Will be used in all serialized classes (most of them in mrpt-obs)
 
 #endif
-

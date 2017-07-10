@@ -1,11 +1,11 @@
-/* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          http://www.mrpt.org/                             |
-   |                                                                           |
-   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-   | Released under BSD License. See details in http://www.mrpt.org/License    |
-   +---------------------------------------------------------------------------+ */
+/* +------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)            |
+   |                          http://www.mrpt.org/                          |
+   |                                                                        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file     |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                |
+   | Released under BSD License. See details in http://www.mrpt.org/License |
+   +------------------------------------------------------------------------+ */
 
 #include <mrpt/utils/ts_hash_map.h>
 #include <gtest/gtest.h>
@@ -19,20 +19,10 @@ void simple_test_hash_string()
 	EXPECT_NE(h1, h2);
 }
 
-TEST(ts_hash_map, string_hash_u8) {
-	simple_test_hash_string<uint8_t>();
-}
-TEST(ts_hash_map, string_hash_u16) {
-	simple_test_hash_string<uint16_t>();
-}
-TEST(ts_hash_map, string_hash_u32) {
-	simple_test_hash_string<uint32_t>();
-}
-TEST(ts_hash_map, string_hash_u64) {
-	simple_test_hash_string<uint64_t>();
-}
-
-
+TEST(ts_hash_map, string_hash_u8) { simple_test_hash_string<uint8_t>(); }
+TEST(ts_hash_map, string_hash_u16) { simple_test_hash_string<uint16_t>(); }
+TEST(ts_hash_map, string_hash_u32) { simple_test_hash_string<uint32_t>(); }
+TEST(ts_hash_map, string_hash_u64) { simple_test_hash_string<uint64_t>(); }
 TEST(ts_hash_map, stdstring_key)
 {
 	mrpt::utils::ts_hash_map<std::string, double> m;
@@ -53,21 +43,21 @@ TEST(ts_hash_map, stdstring_key)
 	EXPECT_EQ(3.0, m["tres"]);
 
 	m["tres"]++;
-	EXPECT_EQ(4.0, m["tres"]) << "Fail after ++ operator applied to reference [].";
+	EXPECT_EQ(4.0, m["tres"])
+		<< "Fail after ++ operator applied to reference [].";
 
 	double num = .0;
-	for (const auto &e : m)
-		num += e.second;
-	EXPECT_NEAR(num, 7.0, 1e-10) << "Fail after visiting and summing all entries";
+	for (const auto& e : m) num += e.second;
+	EXPECT_NEAR(num, 7.0, 1e-10)
+		<< "Fail after visiting and summing all entries";
 
 	{
-		const auto &it = m.find("pepe");
+		const auto& it = m.find("pepe");
 		EXPECT_TRUE(it == m.end());
 	}
 
 	{
-		const auto &it = m.find("uno");
-		EXPECT_TRUE( it->second==1.0 );
+		const auto& it = m.find("uno");
+		EXPECT_TRUE(it->second == 1.0);
 	}
 }
-

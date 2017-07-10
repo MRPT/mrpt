@@ -62,8 +62,8 @@ namespace Assimp	{
 struct TTUpdateInfo
 {
 	TTUpdateInfo() :
-			directShortcut	(NULL)
-		,	mat				(NULL)
+			directShortcut	(nullptr)
+		,	mat				(nullptr)
 		,	semantic		(0)
 		,	index			(0)
 	{}

@@ -85,7 +85,7 @@ public:
     // implementation
     void OnDropButton( wxCommandEvent &event );
     wxCustomButton* GetDropDownButton() { return m_dropdownButton; }
-    // Get the popup window, NULL when not shown
+    // Get the popup window, nullptr when not shown
     DropDownPopup* GetPopupWindow() { return m_popupWin; }
 
 protected:
@@ -128,7 +128,7 @@ public:
 
     bool Create(DropDownBase *parent, int style = wxBORDER_NONE);
 
-    virtual void Popup(wxWindow *focus = NULL);
+    virtual void Popup(wxWindow *focus = nullptr);
     virtual void Dismiss();
     virtual bool ProcessLeftDown(wxMouseEvent& event);
 

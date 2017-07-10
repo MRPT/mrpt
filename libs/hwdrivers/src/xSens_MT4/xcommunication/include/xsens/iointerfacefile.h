@@ -1,11 +1,11 @@
-/* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          http://www.mrpt.org/                             |
-   |                                                                           |
-   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-   | Released under BSD License. See details in http://www.mrpt.org/License    |
-   +---------------------------------------------------------------------------+ */
+/* +------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)            |
+   |                          http://www.mrpt.org/                          |
+   |                                                                        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file     |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                |
+   | Released under BSD License. See details in http://www.mrpt.org/License |
+   +------------------------------------------------------------------------+ */
 #ifndef IOINTERFACEFILE_H
 #define IOINTERFACEFILE_H
 
@@ -15,40 +15,45 @@
 enum XsResultValue;
 
 //////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////// IoInterfaceFile  /////////////////////////////////////////
+///////////////////////////////////////// IoInterfaceFile
+////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////
 
 /*! \brief The low-level file communication class.
 */
-class IoInterfaceFile : public IoInterface {
-private:
+class IoInterfaceFile : public IoInterface
+{
+   private:
 	XSENS_DISABLE_COPY(IoInterfaceFile)
 
-protected:
-		//! The file handlem, also indicates if the file is open or not.
+   protected:
+	//! The file handlem, also indicates if the file is open or not.
 	XsFileHandle* m_handle;
-		//! Contains the size of the file
+	//! Contains the size of the file
 	XsFilePos m_fileSize;
-		//! The last read position in the file
+	//! The last read position in the file
 	XsFilePos m_readPos;
-		//! The last write position in the file
+	//! The last write position in the file
 	XsFilePos m_writePos;
-		//! The last result of an operation
+	//! The last result of an operation
 	mutable XsResultValue m_lastResult;
-		//! Contains the name of the file that was last successfully opened.
+	//! Contains the name of the file that was last successfully opened.
 	XsString m_filename;
-	/*! \brief Indicates whether the last operation was a read or write operation.
+	/*! \brief Indicates whether the last operation was a read or write
+	   operation.
 
-		This value is used to check whether or not a seek is required to perform a
+		This value is used to check whether or not a seek is required to perform
+	   a
 		requested read or write operation.
 	*/
 	bool m_reading;
-		//! Indicates if the file was opened in read-only mode
+	//! Indicates if the file was opened in read-only mode
 	bool m_readOnly;
 
 	void gotoRead(void);
 	void gotoWrite(void);
-public:
+
+   public:
 	IoInterfaceFile();
 	~IoInterfaceFile();
 
@@ -58,9 +63,10 @@ public:
 	XsResultValue flushData(void);
 	bool isOpen(void) const;
 	XsResultValue getLastResult(void) const;
-	XsResultValue writeData(const XsByteArray& data, XsSize *written = NULL);
+	XsResultValue writeData(const XsByteArray& data, XsSize* written = nullptr);
 	XsResultValue readData(XsSize maxLength, XsByteArray& data);
-	XsResultValue readTerminatedData(XsSize maxLength, unsigned char terminator, XsByteArray& bdata);
+	XsResultValue readTerminatedData(
+		XsSize maxLength, unsigned char terminator, XsByteArray& bdata);
 
 	// Other functions
 	XsResultValue appendData(const XsByteArray& bdata);
@@ -80,4 +86,4 @@ public:
 	XsResultValue setWritePosition(XsFilePos pos = -1);
 };
 
-#endif	// file guard
+#endif  // file guard

@@ -118,7 +118,7 @@ void CSMImporter::InternReadFile( const std::string& pFile,
 	boost::scoped_ptr<IOStream> file( pIOHandler->Open( pFile, "rb"));
 
 	// Check whether we can read from the file
-	if( file.get() == NULL) {
+	if( file.get() == nullptr) {
 		throw DeadlyImportError( "Failed to open CSM file " + pFile + ".");
 	}
 

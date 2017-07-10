@@ -1,12 +1,11 @@
-/* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          http://www.mrpt.org/                             |
-   |                                                                           |
-   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-   | Released under BSD License. See details in http://www.mrpt.org/License    |
-   +---------------------------------------------------------------------------+ */
-
+/* +------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)            |
+   |                          http://www.mrpt.org/                          |
+   |                                                                        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file     |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                |
+   | Released under BSD License. See details in http://www.mrpt.org/License |
+   +------------------------------------------------------------------------+ */
 
 #include "navlog_viewer_GUI_designApp.h"
 
@@ -27,36 +26,37 @@ std::string global_fileToOpen;
 bool navlog_viewer_GUI_designApp::OnInit()
 {
 	// Starting in wxWidgets 2.9.0, we must reset numerics locale to "C",
-	//  if we want numbers to use "." in all countries. The App::OnInit() is a perfect place to undo
+	//  if we want numbers to use "." in all countries. The App::OnInit() is a
+	//  perfect place to undo
 	//  the default wxWidgets settings. (JL @ Sep-2009)
-	wxSetlocale(LC_NUMERIC,wxString(wxT("C")));
+	wxSetlocale(LC_NUMERIC, wxString(wxT("C")));
 
-	static const wxCmdLineEntryDesc cmdLineDesc[] =
-	{
+	static const wxCmdLineEntryDesc cmdLineDesc[] = {
 #ifdef MRPT_OS_LINUX
-		{wxCMD_LINE_OPTION, wxT_2("l"), wxT_2("load"), wxT_2("load a library"), wxCMD_LINE_VAL_STRING, 0},
+		{wxCMD_LINE_OPTION, wxT_2("l"), wxT_2("load"), wxT_2("load a library"),
+		 wxCMD_LINE_VAL_STRING, 0},
 #endif
-		{wxCMD_LINE_PARAM, nullptr, nullptr, wxT_2("Input File"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL},
-		{wxCMD_LINE_NONE, nullptr, nullptr, nullptr, wxCMD_LINE_VAL_NONE, 0}
-	};
+		{wxCMD_LINE_PARAM, nullptr, nullptr, wxT_2("Input File"),
+		 wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL},
+		{wxCMD_LINE_NONE, nullptr, nullptr, nullptr, wxCMD_LINE_VAL_NONE, 0}};
 
 	wxCmdLineParser parser(cmdLineDesc, argc, argv);
 	parser.Parse(true);
 #ifdef MRPT_OS_LINUX
-        wxString libraryPath;
-        if(parser.Found(wxT_2("l"), &libraryPath))
+	wxString libraryPath;
+	if (parser.Found(wxT_2("l"), &libraryPath))
 		dlopen(libraryPath.mb_str(), RTLD_LAZY);
 #endif
-	if(parser.GetParamCount() == 1)
+	if (parser.GetParamCount() == 1)
 		global_fileToOpen = parser.GetParam().mb_str();
-
 
 	//(*AppInitialize
 	bool wxsOK = true;
 	wxInitAllImageHandlers();
-	if ( wxsOK )
+	if (wxsOK)
 	{
-		navlog_viewer_GUI_designDialog* Frame = new navlog_viewer_GUI_designDialog (NULL);
+		navlog_viewer_GUI_designDialog* Frame =
+			new navlog_viewer_GUI_designDialog(nullptr);
 		Frame->Show();
 		SetTopWindow(Frame);
 		wxsOK = true;
@@ -65,16 +65,15 @@ bool navlog_viewer_GUI_designApp::OnInit()
 	return wxsOK;
 }
 
-
 int navlog_viewer_GUI_designApp::OnRun()
 {
 	try
 	{
 		return wxApp::OnRun();
 	}
-	catch (std::exception &e)
+	catch (std::exception& e)
 	{
-		::wxMessageBox(_U(e.what()),_("Exception:"));
+		::wxMessageBox(_U(e.what()), _("Exception:"));
 		return -1;
 	}
 }

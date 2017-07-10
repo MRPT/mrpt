@@ -105,7 +105,7 @@ void PLYImporter::InternReadFile( const std::string& pFile,
 	boost::scoped_ptr<IOStream> file( pIOHandler->Open( pFile));
 
 	// Check whether we can read from the file
-	if( file.get() == NULL) {
+	if( file.get() == nullptr) {
 		throw DeadlyImportError( "Failed to open PLY file " + pFile + ".");
 	}
 
@@ -256,9 +256,9 @@ void PLYImporter::ConvertMeshes(std::vector<PLY::Face>* avFaces,
 	const std::vector<aiMaterial*>*		avMaterials,
 	std::vector<aiMesh*>* avOut)
 {
-	ai_assert(NULL != avFaces);
-	ai_assert(NULL != avPositions);
-	ai_assert(NULL != avMaterials);
+	ai_assert(nullptr != avFaces);
+	ai_assert(nullptr != avPositions);
+	ai_assert(nullptr != avMaterials);
 
 	// split by materials
 	std::vector<unsigned int>* aiSplit = new std::vector<unsigned int>[avMaterials->size()];
@@ -382,11 +382,11 @@ void PLYImporter::ReplaceDefaultMaterial(std::vector<PLY::Face>* avFaces,
 // ------------------------------------------------------------------------------------------------
 void PLYImporter::LoadTextureCoordinates(std::vector<aiVector2D>* pvOut)
 {
-	ai_assert(NULL != pvOut);
+	ai_assert(nullptr != pvOut);
 
 	unsigned int aiPositions[2] = {0xFFFFFFFF,0xFFFFFFFF};
 	PLY::EDataType aiTypes[2] = {EDT_Char,EDT_Char};
-	PLY::ElementInstanceList* pcList = NULL;
+	PLY::ElementInstanceList* pcList = nullptr;
 	unsigned int cnt = 0;
 
 	// serach in the DOM for a vertex entry
@@ -420,7 +420,7 @@ void PLYImporter::LoadTextureCoordinates(std::vector<aiVector2D>* pvOut)
 		}
 	}
 	// check whether we have a valid source for the texture coordinates data
-	if (NULL != pcList && 0 != cnt)
+	if (nullptr != pcList && 0 != cnt)
 	{
 		pvOut->reserve(pcList->alInstances.size());
 		for (std::vector<ElementInstance>::const_iterator i = pcList->alInstances.begin();
@@ -450,11 +450,11 @@ void PLYImporter::LoadTextureCoordinates(std::vector<aiVector2D>* pvOut)
 // Try to extract vertices from the PLY DOM
 void PLYImporter::LoadVertices(std::vector<aiVector3D>* pvOut, bool p_bNormals)
 {
-	ai_assert(NULL != pvOut);
+	ai_assert(nullptr != pvOut);
 
 	unsigned int aiPositions[3] = {0xFFFFFFFF,0xFFFFFFFF,0xFFFFFFFF};
 	PLY::EDataType aiTypes[3] = {EDT_Char,EDT_Char,EDT_Char};
-	PLY::ElementInstanceList* pcList = NULL;
+	PLY::ElementInstanceList* pcList = nullptr;
 	unsigned int cnt = 0;
 
 	// serach in the DOM for a vertex entry
@@ -529,7 +529,7 @@ void PLYImporter::LoadVertices(std::vector<aiVector3D>* pvOut, bool p_bNormals)
 		}
 	}
 	// check whether we have a valid source for the vertex data
-	if (NULL != pcList && 0 != cnt)
+	if (nullptr != pcList && 0 != cnt)
 	{
 		pvOut->reserve(pcList->alInstances.size());
 		for (std::vector<ElementInstance>::const_iterator
@@ -596,12 +596,12 @@ float PLYImporter::NormalizeColorValue (PLY::PropertyInstance::ValueUnion val,
 // Try to extract proper vertex colors from the PLY DOM
 void PLYImporter::LoadVertexColor(std::vector<aiColor4D>* pvOut)
 {
-	ai_assert(NULL != pvOut);
+	ai_assert(nullptr != pvOut);
 
 	unsigned int aiPositions[4] = {0xFFFFFFFF,0xFFFFFFFF,0xFFFFFFFF,0xFFFFFFFF};
 	PLY::EDataType aiTypes[4] = {EDT_Char, EDT_Char, EDT_Char, EDT_Char}; // silencing gcc
 	unsigned int cnt = 0;
-	PLY::ElementInstanceList* pcList = NULL;
+	PLY::ElementInstanceList* pcList = nullptr;
 
 	// serach in the DOM for a vertex entry
 	unsigned int _i = 0;
@@ -649,7 +649,7 @@ void PLYImporter::LoadVertexColor(std::vector<aiColor4D>* pvOut)
 		}
 	}
 	// check whether we have a valid source for the vertex data
-	if (NULL != pcList && 0 != cnt)
+	if (nullptr != pcList && 0 != cnt)
 	{
 		pvOut->reserve(pcList->alInstances.size());
 		for (std::vector<ElementInstance>::const_iterator i = pcList->alInstances.begin();
@@ -694,9 +694,9 @@ void PLYImporter::LoadVertexColor(std::vector<aiColor4D>* pvOut)
 // Try to extract proper faces from the PLY DOM
 void PLYImporter::LoadFaces(std::vector<PLY::Face>* pvOut)
 {
-	ai_assert(NULL != pvOut);
+	ai_assert(nullptr != pvOut);
 
-	PLY::ElementInstanceList* pcList = NULL;
+	PLY::ElementInstanceList* pcList = nullptr;
 	bool bOne = false;
 
 	// index of the vertex index list
@@ -847,7 +847,7 @@ void PLYImporter::GetMaterialColor(const std::vector<PLY::PropertyInstance>& avL
 	PLY::EDataType aiTypes[4],
 	 aiColor4D* clrOut)
 {
-	ai_assert(NULL != clrOut);
+	ai_assert(nullptr != clrOut);
 
 	if (0xFFFFFFFF == aiPositions[0])clrOut->r = 0.0f;
 	else
@@ -883,7 +883,7 @@ void PLYImporter::GetMaterialColor(const std::vector<PLY::PropertyInstance>& avL
 // Extract a material from the PLY DOM
 void PLYImporter::LoadMaterial(std::vector<aiMaterial*>* pvOut)
 {
-	ai_assert(NULL != pvOut);
+	ai_assert(nullptr != pvOut);
 
 	// diffuse[4], specular[4], ambient[4]
 	// rgba order
@@ -899,7 +899,7 @@ void PLYImporter::LoadMaterial(std::vector<aiMaterial*>* pvOut)
 		{EDT_Char,EDT_Char,EDT_Char,EDT_Char},
 		{EDT_Char,EDT_Char,EDT_Char,EDT_Char}
 	};
-	PLY::ElementInstanceList* pcList = NULL;
+	PLY::ElementInstanceList* pcList = nullptr;
 
 	unsigned int iPhong = 0xFFFFFFFF;
 	PLY::EDataType ePhong = EDT_Char;
@@ -1006,7 +1006,7 @@ void PLYImporter::LoadMaterial(std::vector<aiMaterial*>* pvOut)
 		}
 	}
 	// check whether we have a valid source for the material data
-	if (NULL != pcList)	{
+	if (nullptr != pcList)	{
 		for (std::vector<ElementInstance>::const_iterator i =  pcList->alInstances.begin();i != pcList->alInstances.end();++i)	{
 			aiColor4D clrOut;
 			aiMaterial* pcHelper = new aiMaterial();

@@ -57,7 +57,7 @@ public:
                      const wxString& value = wxEmptyString, // used only if first choice is !null
                      const wxPoint& pos = wxDefaultPosition,
                      const wxSize& size = wxDefaultSize,
-                     int n = 0, const wxString choices[] = (const wxString *) NULL,
+                     int n = 0, const wxString choices[] = (const wxString *) nullptr,
                      long style = wxBMPCOMBO_RIGHT,
                      const wxValidator& val = wxDefaultValidator,
                      const wxString& name = wxT("wxBmpComboBox"))
@@ -185,7 +185,7 @@ private:
 class WXDLLIMPEXP_THINGS wxBmpComboLabel : public wxWindow
 {
 public:
-    wxBmpComboLabel(wxBmpComboBox *parent = NULL, int style = wxSUNKEN_BORDER)
+    wxBmpComboLabel(wxBmpComboBox *parent = nullptr, int style = wxSUNKEN_BORDER)
                     : wxWindow(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, style),
                       m_bmpCombo(parent) {}
 

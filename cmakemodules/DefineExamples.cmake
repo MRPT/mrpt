@@ -56,14 +56,13 @@ IF(BUILD_EXAMPLES)
 		SocketsTest
 		directoryExplorer
 		http_tests
-		critSectionDeadLock
-		threadsTest
 		fileSystemWatcher
 		geometry3D
 		poses
 		se3
 		csparse_demo
 		threadsPipe
+		variant
 		dirs_files_manipulation
 		backtrace-example
 		)

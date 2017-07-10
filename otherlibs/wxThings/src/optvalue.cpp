@@ -241,7 +241,7 @@ bool wxOptionValue::Copy( const wxOptionValue &optValue )
 
 bool wxOptionValue::Ok() const
 {
-    return M_OPTVALUDATA != NULL;
+    return M_OPTVALUDATA != nullptr;
 }
 
 void wxOptionValue::Destroy()
@@ -272,7 +272,7 @@ size_t wxOptionValue::GetChildrenCount() const
 }
 wxArrayOptionValue *wxOptionValue::GetChildren() const
 {
-    wxCHECK_MSG( Ok(), NULL, wxT("Invalid wxOptionValue") );
+    wxCHECK_MSG( Ok(), nullptr, wxT("Invalid wxOptionValue") );
     return &M_OPTVALUDATA->m_children;
 }
 bool wxOptionValue::AddChild( const wxOptionValue& child )

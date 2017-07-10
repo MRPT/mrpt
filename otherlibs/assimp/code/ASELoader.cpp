@@ -124,7 +124,7 @@ void ASEImporter::InternReadFile( const std::string& pFile,
 	boost::scoped_ptr<IOStream> file( pIOHandler->Open( pFile, "rb"));
 
 	// Check whether we can read from the file
-	if( file.get() == NULL) {
+	if( file.get() == nullptr) {
 		throw DeadlyImportError( "Failed to open ASE file " + pFile + ".");
 	}
 
@@ -255,7 +255,7 @@ void ASEImporter::InternReadFile( const std::string& pFile,
 // ------------------------------------------------------------------------------------------------
 void ASEImporter::GenerateDefaultMaterial()
 {
-	ai_assert(NULL != mParser);
+	ai_assert(nullptr != mParser);
 
 	bool bHas = false;
 	for (std::vector<ASE::Mesh>::iterator i =  mParser->m_vMeshes.begin();i != mParser->m_vMeshes.end();++i) {
@@ -635,7 +635,7 @@ void ASEImporter::AddNodes (const std::vector<BaseNode*>& nodes,
 // ------------------------------------------------------------------------------------------------
 // Build the output node graph
 void ASEImporter::BuildNodes(std::vector<BaseNode*>& nodes)	{
-	ai_assert(NULL != pcScene);
+	ai_assert(nullptr != pcScene);
 
 	// allocate the one and only root node
 	aiNode* root = pcScene->mRootNode = new aiNode();
@@ -654,7 +654,7 @@ void ASEImporter::BuildNodes(std::vector<BaseNode*>& nodes)	{
 	}
 
 	// add all nodes
-	AddNodes(nodes,ch,NULL);
+	AddNodes(nodes,ch,nullptr);
 
 	// now iterate through al nodes and find those that have not yet
 	// been added to the nodegraph (= their parent could not be recognized)
@@ -714,9 +714,9 @@ void ASEImporter::BuildNodes(std::vector<BaseNode*>& nodes)	{
 		pcScene->mRootNode->mNumChildren = (unsigned int)apcNodes.size();
 	}
 
-	// Reset the third color set to NULL - we used this field to store a temporary pointer
+	// Reset the third color set to nullptr - we used this field to store a temporary pointer
 	for (unsigned int i = 0; i < pcScene->mNumMeshes;++i)
-		pcScene->mMeshes[i]->mColors[2] = NULL;
+		pcScene->mMeshes[i]->mColors[2] = nullptr;
 
 	// The root node should not have at least one child or the file is valid
 	if (!pcScene->mRootNode->mNumChildren) {
@@ -985,7 +985,7 @@ void ASEImporter::ConvertMeshes(ASE::Mesh& mesh, std::vector<aiMesh*>& avOutMesh
 				p_pcOut->mNumFaces = (unsigned int)aiSplit[p].size();
 
 				// receive output vertex weights
-				std::vector<std::pair<unsigned int, float> > *avOutputBones = NULL;
+				std::vector<std::pair<unsigned int, float> > *avOutputBones = nullptr;
 				if (!mesh.mBones.empty())	{
 					avOutputBones = new std::vector<std::pair<unsigned int, float> >[mesh.mBones.size()];
 				}
@@ -1214,7 +1214,7 @@ void ASEImporter::ConvertMeshes(ASE::Mesh& mesh, std::vector<aiMesh*>& avOutMesh
 // Setup proper material indices and build output materials
 void ASEImporter::BuildMaterialIndices()
 {
-	ai_assert(NULL != pcScene);
+	ai_assert(nullptr != pcScene);
 
 	// iterate through all materials and check whether we need them
 	for (unsigned int iMat = 0; iMat < mParser->m_vMaterials.size();++iMat)
@@ -1245,7 +1245,7 @@ void ASEImporter::BuildMaterialIndices()
 		ASE::Material& mat = mParser->m_vMaterials[iMat];
 		if (mat.bNeed)
 		{
-			ai_assert(NULL != mat.pcInstance);
+			ai_assert(nullptr != mat.pcInstance);
 			pcScene->mMaterials[iNum] = mat.pcInstance;
 
 			// Store the internal material, too
@@ -1260,7 +1260,7 @@ void ASEImporter::BuildMaterialIndices()
 					iMat == (uintptr_t)mesh->mColors[3])
 				{
 					mesh->mMaterialIndex = iNum;
-					mesh->mColors[3] = NULL;
+					mesh->mColors[3] = nullptr;
 				}
 			}
 			iNum++;
@@ -1268,7 +1268,7 @@ void ASEImporter::BuildMaterialIndices()
 		for (unsigned int iSubMat = 0; iSubMat < mat.avSubMaterials.size();++iSubMat)	{
 			ASE::Material& submat = mat.avSubMaterials[iSubMat];
 			if (submat.bNeed)	{
-				ai_assert(NULL != submat.pcInstance);
+				ai_assert(nullptr != submat.pcInstance);
 				pcScene->mMaterials[iNum] = submat.pcInstance;
 
 				// Store the internal material, too
@@ -1281,7 +1281,7 @@ void ASEImporter::BuildMaterialIndices()
 
 					if (iSubMat == mesh->mMaterialIndex && iMat == (uintptr_t)mesh->mColors[3])	{
 						mesh->mMaterialIndex = iNum;
-						mesh->mColors[3]     = NULL;
+						mesh->mColors[3]     = nullptr;
 					}
 				}
 				iNum++;

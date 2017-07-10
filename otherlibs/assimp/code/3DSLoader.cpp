@@ -159,7 +159,7 @@ void Discreet3DSImporter::InternReadFile( const std::string& pFile,
 	mRootNode                  = mCurrentNode;
 	mRootNode->mHierarchyPos   = -1;
 	mRootNode->mHierarchyIndex = -1;
-	mRootNode->mParent         = NULL;
+	mRootNode->mParent         = nullptr;
 	mMasterScale               = 1.0f;
 	mBackgroundImage           = "";
 	bHasBG                     = false;
@@ -229,7 +229,7 @@ void Discreet3DSImporter::ApplyMasterScale(aiScene* pScene)
 // Reads a new chunk from the file
 void Discreet3DSImporter::ReadChunk(Discreet3DS::Chunk* pcOut)
 {
-	ai_assert(pcOut != NULL);
+	ai_assert(pcOut != nullptr);
 
 	pcOut->Flag = stream->GetI2();
 	pcOut->Size = stream->GetI4();
@@ -592,7 +592,7 @@ D3DS::Node* FindNode(D3DS::Node* root, const std::string& name)
 		if (( nd = FindNode(*it,name)))
 			return nd;
 	}
-	return NULL;
+	return nullptr;
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -1334,7 +1334,7 @@ float Discreet3DSImporter::ParsePercentageChunk()
 void Discreet3DSImporter::ParseColorChunk(aiColor3D* out,
 	bool acceptPercent)
 {
-	ai_assert(out != NULL);
+	ai_assert(out != nullptr);
 
 	// error return value
 	const float qnan = get_qnan();

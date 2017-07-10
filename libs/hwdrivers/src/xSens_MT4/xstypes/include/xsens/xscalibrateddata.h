@@ -1,11 +1,11 @@
-/* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          http://www.mrpt.org/                             |
-   |                                                                           |
-   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-   | Released under BSD License. See details in http://www.mrpt.org/License    |
-   +---------------------------------------------------------------------------+ */
+/* +------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)            |
+   |                          http://www.mrpt.org/                          |
+   |                                                                        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file     |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                |
+   | Released under BSD License. See details in http://www.mrpt.org/License |
+   +------------------------------------------------------------------------+ */
 #ifndef XSCALIBRATEDDATA_H
 #define XSCALIBRATEDDATA_H
 
@@ -17,41 +17,44 @@ struct XsCalibratedData;
 #ifdef __cplusplus
 extern "C" {
 #else
-#define XSCALIBRATEDDATA_INITIALIZER {XSVECTOR3_INITIALIZER, XSVECTOR3_INITIALIZER, XSVECTOR3_INITIALIZER}
+#define XSCALIBRATEDDATA_INITIALIZER                                        \
+	{                                                                       \
+		XSVECTOR3_INITIALIZER, XSVECTOR3_INITIALIZER, XSVECTOR3_INITIALIZER \
+	}
 #endif
 
-XSTYPES_DLL_API void XsCalibratedData_construct(struct XsCalibratedData* thisPtr, const XsReal* acc, const XsReal* gyr, const XsReal* mag);
-XSTYPES_DLL_API void XsCalibratedData_destruct(struct XsCalibratedData* thisPtr);
+XSTYPES_DLL_API void XsCalibratedData_construct(
+	struct XsCalibratedData* thisPtr, const XsReal* acc, const XsReal* gyr,
+	const XsReal* mag);
+XSTYPES_DLL_API void XsCalibratedData_destruct(
+	struct XsCalibratedData* thisPtr);
 
 #ifdef __cplusplus
-} // extern "C"
+}  // extern "C"
 #endif
 
 struct XsCalibratedData
 {
-	XsVector3 m_acc;	//!< Accelerometer data
-	XsVector3 m_gyr;	//!< Gyroscope data
-	XsVector3 m_mag;	//!< Magnetometer data
+	/** Accelerometer data */
+	XsVector3 m_acc;
+	/** Gyroscope data */
+	XsVector3 m_gyr;
+	/** Magnetometer data */
+	XsVector3 m_mag;
 
 #ifdef __cplusplus
 	//! \brief Constructor \sa XsCalibratedData_construct
-	inline XsCalibratedData()
-	{}
-
+	inline XsCalibratedData() {}
 	//! \brief Copy constructor, copies the values from \a other to this
 	inline XsCalibratedData(const XsCalibratedData& other)
-		: m_acc(other.m_acc)
-		, m_gyr(other.m_gyr)
-		, m_mag(other.m_mag)
+		: m_acc(other.m_acc), m_gyr(other.m_gyr), m_mag(other.m_mag)
 	{
 	}
 
 	//! \brief Destructor
-	inline ~XsCalibratedData()
-	{}
-
+	inline ~XsCalibratedData() {}
 	//! \brief Assignment operator, copies the values from \a other to this
-	inline const XsCalibratedData& operator = (const XsCalibratedData& other)
+	inline const XsCalibratedData& operator=(const XsCalibratedData& other)
 	{
 		if (this != &other)
 		{
@@ -65,4 +68,4 @@ struct XsCalibratedData
 };
 typedef struct XsCalibratedData XsCalibratedData;
 
-#endif // file guard
+#endif  // file guard

@@ -80,7 +80,7 @@ VertexTriangleAdjacency::VertexTriangleAdjacency(aiFace *pcFaces,
 	else {
 		pi = mOffsetTable = new unsigned int[iNumVertices+2]+1;
 		memset(mOffsetTable,0,sizeof(unsigned int)*(iNumVertices+1));
-		mLiveTriangles = NULL; // important, otherwise the d'tor would crash
+		mLiveTriangles = nullptr; // important, otherwise the d'tor would crash
 	}
 
 	// get a pointer to the end of the buffer

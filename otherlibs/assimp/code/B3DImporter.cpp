@@ -110,7 +110,7 @@ void B3DImporter::InternReadFile( const std::string& pFile, aiScene* pScene, IOS
 	boost::scoped_ptr<IOStream> file( pIOHandler->Open( pFile));
 
 	// Check whether we can read from the file
-	if( file.get() == NULL)
+	if( file.get() == nullptr)
 		throw DeadlyImportError( "Failed to open B3D file " + pFile + ".");
 
 	// check whether the .b3d file is large enough to contain

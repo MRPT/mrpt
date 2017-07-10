@@ -1,12 +1,11 @@
-/*
- *  RPLIDAR SDK
- *
- *  Copyright (c) 2009 - 2014 RoboPeak Team
- *  http://www.robopeak.com
- *  Copyright (c) 2014 - 2016 Shanghai Slamtec Co., Ltd.
- *  http://www.slamtec.com
- *
- */
+/* +------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)            |
+   |                          http://www.mrpt.org/                          |
+   |                                                                        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file     |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                |
+   | Released under BSD License. See details in http://www.mrpt.org/License |
+   +------------------------------------------------------------------------+ */
 /*
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -34,20 +33,22 @@
 
 #include "arch/macOS/arch_macOS.h"
 
-
-namespace rp{ namespace arch{
+namespace rp
+{
+namespace arch
+{
 _u64 getus()
 {
-    timeval now;
-    gettimeofday(&now,NULL);
-    return now.tv_sec*1000000 + now.tv_usec;
+	timeval now;
+	gettimeofday(&now, nullptr);
+	return now.tv_sec * 1000000 + now.tv_usec;
 }
-    
+
 _u32 rp_getms()
 {
-    timeval now;
-    gettimeofday(&now,NULL);
-    return now.tv_sec*1000L + now.tv_usec/1000L;
+	timeval now;
+	gettimeofday(&now, nullptr);
+	return now.tv_sec * 1000L + now.tv_usec / 1000L;
 }
-    
-}}
+}
+}

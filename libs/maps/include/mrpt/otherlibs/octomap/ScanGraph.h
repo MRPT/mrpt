@@ -1,11 +1,11 @@
-/* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          http://www.mrpt.org/                             |
-   |                                                                           |
-   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-   | Released under BSD License. See details in http://www.mrpt.org/License    |
-   +---------------------------------------------------------------------------+ */
+/* +------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)            |
+   |                          http://www.mrpt.org/                          |
+   |                                                                        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file     |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                |
+   | Released under BSD License. See details in http://www.mrpt.org/License |
+   +------------------------------------------------------------------------+ */
 // $Id: ScanGraph.h 245 2011-08-09 10:00:53Z kai_wurm $
 
 /**
@@ -71,7 +71,7 @@ namespace octomap {
     ScanNode (Pointcloud* _scan, pose6d _pose, uint64_t _id)
       : scan(_scan), pose(_pose), id(_id) {}
     ScanNode ()
-      : scan(NULL) {}
+      : scan(nullptr) {}
 
     ~ScanNode();
 
@@ -87,7 +87,8 @@ namespace octomap {
 
     Pointcloud* scan;
     pose6d pose; ///< 6D pose from which the scan was performed
-    uint64_t id;   //!< JLBC: Changed from "unsigned int" so binarized versions are platform-independent.
+    /** JLBC: Changed from "unsigned int" so binarized versions are platform-independent. */
+    uint64_t id;   
 	 
   };
 
@@ -159,7 +160,7 @@ namespace octomap {
 
     ScanEdge* addEdge(uint64_t first_id, uint64_t second_id);
 
-    /// will return NULL if node was not found
+    /// will return nullptr if node was not found
     ScanNode* getNodeByID(uint64_t id);
 
     /// \return true when an edge between first_id and second_id exists

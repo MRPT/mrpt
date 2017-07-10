@@ -87,8 +87,8 @@ ObjFileMtlImporter::ObjFileMtlImporter( std::vector<char> &buffer,
 	m_pModel( pModel ),
 	m_uiLine( 0 )
 {
-	ai_assert( NULL != m_pModel );
-	if ( NULL == m_pModel->m_pDefaultMaterial )
+	ai_assert( nullptr != m_pModel );
+	if ( nullptr == m_pModel->m_pDefaultMaterial )
 	{
 		m_pModel->m_pDefaultMaterial = new ObjFile::Material;
 		m_pModel->m_pDefaultMaterial->MaterialName.Set( "default" );
@@ -219,7 +219,7 @@ void ObjFileMtlImporter::load()
 //	Loads a color definition
 void ObjFileMtlImporter::getColorRGBA( aiColor3D *pColor )
 {
-	ai_assert( NULL != pColor );
+	ai_assert( nullptr != pColor );
 	
 	float r, g, b;
 	m_DataIt = getFloat<DataArrayIt>( m_DataIt, m_DataItEnd, r );
@@ -283,7 +283,7 @@ void ObjFileMtlImporter::createMaterial()
 // -------------------------------------------------------------------
 //	Gets a texture name from data.
 void ObjFileMtlImporter::getTexture() {
-	aiString *out( NULL );
+	aiString *out( nullptr );
 	int clampIndex = -1;
 
 	const char *pPtr( &(*m_DataIt) );

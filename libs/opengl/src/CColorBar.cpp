@@ -1,11 +1,11 @@
-/* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          http://www.mrpt.org/                             |
-   |                                                                           |
-   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-   | Released under BSD License. See details in http://www.mrpt.org/License    |
-   +---------------------------------------------------------------------------+ */
+/* +------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)            |
+   |                          http://www.mrpt.org/                          |
+   |                                                                        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file     |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                |
+   | Released under BSD License. See details in http://www.mrpt.org/License |
+   +------------------------------------------------------------------------+ */
 
 #include "opengl-precomp.h"  // Precompiled header
 #include <mrpt/opengl/CColorBar.h>
@@ -23,34 +23,49 @@ using namespace std;
 IMPLEMENTS_SERIALIZABLE(CColorBar, CRenderizableDisplayList, mrpt::opengl)
 
 CColorBar::CColorBar(
-	const mrpt::utils::TColormap colormap, //!< The colormap to represent.
-	double width, double height,   //!< size of the color bar
-	double min_col, double max_col,  //!< limits for [0,1] colormap indices
-	double min_value, double max_value, //!< limits for values associated to extreme colors
-	const std::string &label_format, //!< sprintf-like format string for values
-	double label_font_size //!< Label text font size
-) :
-	m_colormap(colormap),
-	m_width(width), m_height(height),
-	m_label_format(label_format),
-	m_min_col(min_col), m_max_col(max_col),
-	m_min_value(min_value), m_max_value(max_value),
-	m_label_font_size(label_font_size),
-	m_disable_depth_test(true)
+	/** The colormap to represent. */
+	const mrpt::utils::TColormap colormap,
+	/** size of the color bar */
+	double width, double height,
+	/** limits for [0,1] colormap indices */
+	double min_col, double max_col,
+	/** limits for values associated to extreme colors */
+	double min_value, double max_value,
+	/** sprintf-like format string for values */
+	const std::string& label_format,
+	/** Label text font size */
+	double label_font_size)
+	: m_colormap(colormap),
+	  m_width(width),
+	  m_height(height),
+	  m_label_format(label_format),
+	  m_min_col(min_col),
+	  m_max_col(max_col),
+	  m_min_value(min_value),
+	  m_max_value(max_value),
+	  m_label_font_size(label_font_size),
+	  m_disable_depth_test(true)
 {
-
 }
 
-CColorBarPtr CColorBar::Create(
-	const mrpt::utils::TColormap colormap, //!< The colormap to represent.
-	double width, double height,   //!< size of the color bar
-	double min_col, double max_col,  //!< limits for [0,1] colormap indices
-	double min_value, double max_value, //!< limits for values associated to extreme colors
-	const std::string &label_format, //!< sprintf-like format string for values
-	double label_font_size //!< Label text font size
-)
+CColorBar::Ptr CColorBar::Create(
+	/** The colormap to represent. */
+	const mrpt::utils::TColormap colormap,
+	/** size of the color bar */
+	double width, double height,
+	/** limits for [0,1] colormap indices */
+	double min_col, double max_col,
+	/** limits for values associated to extreme colors */
+	double min_value, double max_value,
+	/** sprintf-like format string for values */
+	const std::string& label_format,
+	/** Label text font size */
+	double label_font_size)
 {
-	return CColorBarPtr(new CColorBar(colormap,width,height,min_col,max_col, min_value, max_value, label_format, label_font_size));
+	return CColorBar::Ptr(
+		new CColorBar(
+			colormap, width, height, min_col, max_col, min_value, max_value,
+			label_format, label_font_size));
 }
 
 void CColorBar::setColormap(const mrpt::utils::TColormap colormap)
@@ -59,7 +74,8 @@ void CColorBar::setColormap(const mrpt::utils::TColormap colormap)
 	CRenderizableDisplayList::notifyChange();
 }
 
-void CColorBar::setColorAndValueLimits(double col_min, double col_max, double value_min, double value_max)
+void CColorBar::setColorAndValueLimits(
+	double col_min, double col_max, double value_min, double value_max)
 {
 	m_min_col = col_min;
 	m_max_col = col_max;
@@ -77,9 +93,12 @@ void mrpt::opengl::CColorBar::enableDepthTest(bool enable)
 /*---------------------------------------------------------------
 							render
   ---------------------------------------------------------------*/
-void CColorBar::render_dl() const	{
+void CColorBar::render_dl() const
+{
 #if MRPT_HAS_OPENGL_GLUT
-	if (m_disable_depth_test) glDisable(GL_DEPTH_TEST); // colobars are typically displayed on-top of the rest of objects!
+	if (m_disable_depth_test)
+		glDisable(GL_DEPTH_TEST);  // colobars are typically displayed on-top of
+	// the rest of objects!
 	glDisable(GL_LIGHTING);
 
 	// solid:
@@ -89,18 +108,21 @@ void CColorBar::render_dl() const	{
 	unsigned int num_labels = 4;
 	unsigned int one_label_each_nth = floor((num_divisions) / num_labels);
 
-	const double x0 = .0, x1 = m_width, x2 = m_width*1.3;
+	const double x0 = .0, x1 = m_width, x2 = m_width * 1.3;
 	const double Ay = m_height / (num_divisions - 1);
 
 	std::vector<mrpt::utils::TColorf> cols(num_divisions);
-	for (unsigned int i = 0; i < num_divisions; i++) {
-		const double col_idx = m_min_col + i*(m_max_col - m_min_col) / (num_divisions - 1);
-		mrpt::utils::colormap(m_colormap, col_idx, cols[i].R, cols[i].G, cols[i].B);
+	for (unsigned int i = 0; i < num_divisions; i++)
+	{
+		const double col_idx =
+			m_min_col + i * (m_max_col - m_min_col) / (num_divisions - 1);
+		mrpt::utils::colormap(
+			m_colormap, col_idx, cols[i].R, cols[i].G, cols[i].B);
 	}
 
-	for (unsigned int i = 0; i < num_divisions-1; i++)
+	for (unsigned int i = 0; i < num_divisions - 1; i++)
 	{
-		const double y0 = Ay*i, y1 = Ay*(i + 1);
+		const double y0 = Ay * i, y1 = Ay * (i + 1);
 		const TPoint3D pt00(x0, y0, 0), pt10(x1, y0, 0);
 		const TPoint3D pt01(x0, y1, 0), pt11(x1, y1, 0);
 
@@ -125,11 +147,13 @@ void CColorBar::render_dl() const	{
 
 	for (unsigned int i = 0; i < num_divisions; i++)
 	{
-		const double val = m_min_value + i*(m_max_value - m_min_value) / (num_divisions - 1);
-		const double y0 = Ay*i; //, y1 = Ay*(i + 1);
+		const double val =
+			m_min_value + i * (m_max_value - m_min_value) / (num_divisions - 1);
+		const double y0 = Ay * i;  //, y1 = Ay*(i + 1);
 
 		// Text label:
-		bool draw_label = (i % one_label_each_nth) == 0 || i == (num_divisions - 1);
+		bool draw_label =
+			(i % one_label_each_nth) == 0 || i == (num_divisions - 1);
 
 		if (draw_label)
 		{
@@ -146,7 +170,8 @@ void CColorBar::render_dl() const	{
 
 			glTranslatef(x2, y0, 0.0);
 			glColor3ub(0xff, 0xff, 0xff);
-			mrpt::opengl::gl_utils::glDrawText(mrpt::format(m_label_format.c_str(), val),m_label_font_size);
+			mrpt::opengl::gl_utils::glDrawText(
+				mrpt::format(m_label_format.c_str(), val), m_label_font_size);
 
 			glPopMatrix();
 		}
@@ -159,19 +184,19 @@ void CColorBar::render_dl() const	{
 
 /*---------------------------------------------------------------
    Implements the writing to a CStream capability of
-     CSerializable objects
+	 CSerializable objects
   ---------------------------------------------------------------*/
-void CColorBar::writeToStream(mrpt::utils::CStream &out,int *version) const	{
-	if (version) *version=0;
-	else	{
+void CColorBar::writeToStream(mrpt::utils::CStream& out, int* version) const
+{
+	if (version)
+		*version = 0;
+	else
+	{
 		writeToStreamRender(out);
-		//version 0
-		out <<
-			uint32_t(m_colormap) <<
-			m_min_col << m_max_col <<
-			m_min_value << m_max_value <<
-			m_label_format <<
-			m_label_font_size << m_disable_depth_test;
+		// version 0
+		out << uint32_t(m_colormap) << m_min_col << m_max_col << m_min_value
+			<< m_max_value << m_label_format << m_label_font_size
+			<< m_disable_depth_test;
 	}
 }
 
@@ -179,18 +204,16 @@ void CColorBar::writeToStream(mrpt::utils::CStream &out,int *version) const	{
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void CColorBar::readFromStream(mrpt::utils::CStream &in,int version)	{
-	switch (version)	{
+void CColorBar::readFromStream(mrpt::utils::CStream& in, int version)
+{
+	switch (version)
+	{
 		case 0:
 			readFromStreamRender(in);
 
 			in.ReadAsAndCastTo<uint32_t, mrpt::utils::TColormap>(m_colormap);
-			in >>
-				m_min_col >> m_max_col >>
-				m_min_value >> m_max_value >>
-				m_label_format >>
-				m_label_font_size >>
-				m_disable_depth_test;
+			in >> m_min_col >> m_max_col >> m_min_value >> m_max_value >>
+				m_label_format >> m_label_font_size >> m_disable_depth_test;
 			break;
 		default:
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
@@ -198,8 +221,8 @@ void CColorBar::readFromStream(mrpt::utils::CStream &in,int version)	{
 	CRenderizableDisplayList::notifyChange();
 }
 
-
-void CColorBar::getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const
+void CColorBar::getBoundingBox(
+	mrpt::math::TPoint3D& bb_min, mrpt::math::TPoint3D& bb_max) const
 {
 	bb_min.x = 0;
 	bb_min.y = 0;

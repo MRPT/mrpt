@@ -152,7 +152,7 @@ void BlenderModifierShowcase::ApplyModifiers(aiNode& out, ConversionData& conv_d
 				modifier->DoIt(out,conv_data,*boost::static_pointer_cast<const ElemBase>(cur),in,orig_object);
 				cnt++;
 
-				curgod = NULL;
+				curgod = nullptr;
 				break;
 			}
 		}
@@ -308,7 +308,7 @@ void  BlenderModifier_Subdivision :: DoIt(aiNode& out, ConversionData& conv_data
 		return;
 	};
 
-	boost::scoped_ptr<Subdivider> subd(Subdivider::Create(algo));
+	boost::scoped_ptr<Subdivider> subd(std::make_shared<Subdivider>(algo));
 	ai_assert(subd);
 
 	aiMesh** const meshes = &conv_data.meshes[conv_data.meshes->size() - out.mNumMeshes];

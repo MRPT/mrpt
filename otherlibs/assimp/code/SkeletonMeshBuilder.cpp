@@ -53,7 +53,7 @@ using namespace Assimp;
 SkeletonMeshBuilder::SkeletonMeshBuilder( aiScene* pScene, aiNode* root, bool bKnobsOnly)
 {
 	// nothing to do if there's mesh data already present at the scene
-	if( pScene->mNumMeshes > 0 || pScene->mRootNode == NULL)
+	if( pScene->mNumMeshes > 0 || pScene->mRootNode == nullptr)
 		return;
 
 	if (!root)
@@ -179,7 +179,7 @@ void SkeletonMeshBuilder::CreateGeometry( const aiNode* pNode)
 
 		// calculate the bone offset matrix by concatenating the inverse transformations of all parents
 		bone->mOffsetMatrix = aiMatrix4x4( pNode->mTransformation).Inverse();
-		for( aiNode* parent = pNode->mParent; parent != NULL; parent = parent->mParent)
+		for( aiNode* parent = pNode->mParent; parent != nullptr; parent = parent->mParent)
 			bone->mOffsetMatrix = aiMatrix4x4( parent->mTransformation).Inverse() * bone->mOffsetMatrix;
 
 		// add all the vertices to the bone's influences

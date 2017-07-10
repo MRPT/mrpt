@@ -1,11 +1,11 @@
-/* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          http://www.mrpt.org/                             |
-   |                                                                           |
-   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-   | Released under BSD License. See details in http://www.mrpt.org/License    |
-   +---------------------------------------------------------------------------+ */
+/* +------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)            |
+   |                          http://www.mrpt.org/                          |
+   |                                                                        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file     |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                |
+   | Released under BSD License. See details in http://www.mrpt.org/License |
+   +------------------------------------------------------------------------+ */
 #ifndef OCTOMAP_OCTREE_STAMPED_H
 #define OCTOMAP_OCTREE_STAMPED_H
 
@@ -75,14 +75,14 @@ namespace octomap {
     }
 
     bool createChild(unsigned int i) {
-      if (children == NULL) allocChildren();
+      if (children == nullptr) allocChildren();
       children[i] = new OcTreeNodeStamped();
       return true;
     }
     
     // timestamp
     inline unsigned int getTimestamp() const { return timestamp; }
-    inline void updateTimestamp() { timestamp = (unsigned int) time(NULL);}
+    inline void updateTimestamp() { timestamp = (unsigned int) time(nullptr);}
     inline void setTimestamp(unsigned int timestamp) {this->timestamp = timestamp; }
 
     // update occupancy and timesteps of inner nodes 

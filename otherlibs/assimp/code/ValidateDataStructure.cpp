@@ -76,7 +76,7 @@ bool ValidateDSProcess::IsActive( unsigned int pFlags) const
 // ------------------------------------------------------------------------------------------------
 AI_WONT_RETURN void ValidateDSProcess::ReportError(const char* msg,...)
 {
-	ai_assert(NULL != msg);
+	ai_assert(nullptr != msg);
 
 	va_list args;
 	va_start(args,msg);
@@ -94,7 +94,7 @@ AI_WONT_RETURN void ValidateDSProcess::ReportError(const char* msg,...)
 // ------------------------------------------------------------------------------------------------
 void ValidateDSProcess::ReportWarning(const char* msg,...)
 {
-	ai_assert(NULL != msg);
+	ai_assert(nullptr != msg);
 
 	va_list args;
 	va_start(args,msg);
@@ -127,14 +127,14 @@ inline void ValidateDSProcess::DoValidation(T** parray, unsigned int size,
 	{
 		if (!parray)
 		{
-			ReportError("aiScene::%s is NULL (aiScene::%s is %i)",
+			ReportError("aiScene::%s is nullptr (aiScene::%s is %i)",
 				firstName, secondName, size);
 		}
 		for (unsigned int i = 0; i < size;++i)
 		{
 			if (!parray[i])
 			{
-				ReportError("aiScene::%s[%i] is NULL (aiScene::%s is %i)",
+				ReportError("aiScene::%s[%i] is nullptr (aiScene::%s is %i)",
 					firstName,i,secondName,size);
 			}
 			Validate(parray[i]);
@@ -151,14 +151,14 @@ inline void ValidateDSProcess::DoValidationEx(T** parray, unsigned int size,
 	if (size)
 	{
 		if (!parray)	{
-			ReportError("aiScene::%s is NULL (aiScene::%s is %i)",
+			ReportError("aiScene::%s is nullptr (aiScene::%s is %i)",
 				firstName, secondName, size);
 		}
 		for (unsigned int i = 0; i < size;++i)
 		{
 			if (!parray[i])
 			{
-				ReportError("aiScene::%s[%i] is NULL (aiScene::%s is %i)",
+				ReportError("aiScene::%s[%i] is nullptr (aiScene::%s is %i)",
 					firstName,i,secondName,size);
 			}
 			Validate(parray[i]);
@@ -378,7 +378,7 @@ void ValidateDSProcess::Validate( const aiMesh* pMesh)
 	}
 
 	// if tangents are there there must also be bitangent vectors ...
-	if ((pMesh->mTangents != NULL) != (pMesh->mBitangents != NULL))	{
+	if ((pMesh->mTangents != nullptr) != (pMesh->mBitangents != nullptr))	{
 		ReportError("If there are tangents, bitangent vectors must be present as well");
 	}
 
@@ -458,10 +458,10 @@ void ValidateDSProcess::Validate( const aiMesh* pMesh)
 	{
 		if (!pMesh->mBones)
 		{
-			ReportError("aiMesh::mBones is NULL (aiMesh::mNumBones is %i)",
+			ReportError("aiMesh::mBones is nullptr (aiMesh::mNumBones is %i)",
 				pMesh->mNumBones);
 		}
-		boost::scoped_array<float> afSum(NULL);
+		boost::scoped_array<float> afSum(nullptr);
 		if (pMesh->mNumVertices)
 		{
 			afSum.reset(new float[pMesh->mNumVertices]);
@@ -479,7 +479,7 @@ void ValidateDSProcess::Validate( const aiMesh* pMesh)
 
 			if (!pMesh->mBones[i])
 			{
-				ReportError("aiMesh::mBones[%i] is NULL (aiMesh::mNumBones is %i)",
+				ReportError("aiMesh::mBones[%i] is nullptr (aiMesh::mNumBones is %i)",
 					i,pMesh->mNumBones);
 			}
 			Validate(pMesh,pMesh->mBones[i],afSum.get());
@@ -539,14 +539,14 @@ void ValidateDSProcess::Validate( const aiAnimation* pAnimation)
 	if (pAnimation->mNumChannels)	
 	{
 		if (!pAnimation->mChannels)	{
-			ReportError("aiAnimation::mChannels is NULL (aiAnimation::mNumChannels is %i)",
+			ReportError("aiAnimation::mChannels is nullptr (aiAnimation::mNumChannels is %i)",
 				pAnimation->mNumChannels);
 		}
 		for (unsigned int i = 0; i < pAnimation->mNumChannels;++i)
 		{
 			if (!pAnimation->mChannels[i])
 			{
-				ReportError("aiAnimation::mChannels[%i] is NULL (aiAnimation::mNumChannels is %i)",
+				ReportError("aiAnimation::mChannels[%i] is nullptr (aiAnimation::mNumChannels is %i)",
 					i, pAnimation->mNumChannels);
 			}
 			Validate(pAnimation, pAnimation->mChannels[i]);
@@ -678,7 +678,7 @@ void ValidateDSProcess::Validate( const aiMaterial* pMaterial)
 	{
 		const aiMaterialProperty* prop = pMaterial->mProperties[i];
 		if (!prop)	{
-			ReportError("aiMaterial::mProperties[%i] is NULL (aiMaterial::mNumProperties is %i)",
+			ReportError("aiMaterial::mProperties[%i] is nullptr (aiMaterial::mNumProperties is %i)",
 				i,pMaterial->mNumProperties);
 		}
 		if (!prop->mDataLength || !prop->mData)	{
@@ -809,7 +809,7 @@ void ValidateDSProcess::Validate( const aiAnimation* pAnimation,
 	{
 		if (!pNodeAnim->mPositionKeys)
 		{
-			this->ReportError("aiNodeAnim::mPositionKeys is NULL (aiNodeAnim::mNumPositionKeys is %i)",
+			this->ReportError("aiNodeAnim::mPositionKeys is nullptr (aiNodeAnim::mNumPositionKeys is %i)",
 				pNodeAnim->mNumPositionKeys);
 		}
 		double dLast = -10e10;
@@ -840,7 +840,7 @@ void ValidateDSProcess::Validate( const aiAnimation* pAnimation,
 	{
 		if (!pNodeAnim->mRotationKeys)
 		{
-			this->ReportError("aiNodeAnim::mRotationKeys is NULL (aiNodeAnim::mNumRotationKeys is %i)",
+			this->ReportError("aiNodeAnim::mRotationKeys is nullptr (aiNodeAnim::mNumRotationKeys is %i)",
 				pNodeAnim->mNumRotationKeys);
 		}
 		double dLast = -10e10;
@@ -867,7 +867,7 @@ void ValidateDSProcess::Validate( const aiAnimation* pAnimation,
 	if (pNodeAnim->mNumScalingKeys)
 	{
 		if (!pNodeAnim->mScalingKeys)	{
-			ReportError("aiNodeAnim::mScalingKeys is NULL (aiNodeAnim::mNumScalingKeys is %i)",
+			ReportError("aiNodeAnim::mScalingKeys is nullptr (aiNodeAnim::mNumScalingKeys is %i)",
 				pNodeAnim->mNumScalingKeys);
 		}
 		double dLast = -10e10;
@@ -903,7 +903,7 @@ void ValidateDSProcess::Validate( const aiNode* pNode)
 {
 	if (!pNode)ReportError("A node of the scenegraph is NULL");
 	if (pNode != mScene->mRootNode && !pNode->mParent)
-		this->ReportError("A node has no valid parent (aiNode::mParent is NULL)");
+		this->ReportError("A node has no valid parent (aiNode::mParent is nullptr)");
 
 	this->Validate(&pNode->mName);
 
@@ -912,7 +912,7 @@ void ValidateDSProcess::Validate( const aiNode* pNode)
 	{
 		if (!pNode->mMeshes)
 		{
-			ReportError("aiNode::mMeshes is NULL (aiNode::mNumMeshes is %i)",
+			ReportError("aiNode::mMeshes is nullptr (aiNode::mNumMeshes is %i)",
 				pNode->mNumMeshes);
 		}
 		std::vector<bool> abHadMesh;
@@ -935,7 +935,7 @@ void ValidateDSProcess::Validate( const aiNode* pNode)
 	if (pNode->mNumChildren)
 	{
 		if (!pNode->mChildren)	{
-			ReportError("aiNode::mChildren is NULL (aiNode::mNumChildren is %i)",
+			ReportError("aiNode::mChildren is nullptr (aiNode::mNumChildren is %i)",
 				pNode->mNumChildren);
 		}
 		for (unsigned int i = 0; i < pNode->mNumChildren;++i)	{

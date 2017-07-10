@@ -1,11 +1,11 @@
-/* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          http://www.mrpt.org/                             |
-   |                                                                           |
-   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-   | Released under BSD License. See details in http://www.mrpt.org/License    |
-   +---------------------------------------------------------------------------+ */
+/* +------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)            |
+   |                          http://www.mrpt.org/                          |
+   |                                                                        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file     |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                |
+   | Released under BSD License. See details in http://www.mrpt.org/License |
+   +------------------------------------------------------------------------+ */
 
 /******************************************************************************
 *
@@ -74,7 +74,7 @@ class MultiSwitchArg : public SwitchArg
 				const std::string& name,
 				const std::string& desc,
 				int init = 0,
-				Visitor* v = NULL);
+                                Visitor* v = nullptr);
 
 
 		/**
@@ -96,7 +96,7 @@ class MultiSwitchArg : public SwitchArg
 				const std::string& desc,
 				CmdLineInterface& parser,
 				int init = 0,
-				Visitor* v = NULL);
+                                Visitor* v = nullptr);
 
 
 		/**

@@ -8,8 +8,8 @@ holonomic-navigator-demo
 
 =head1 DESCRIPTION
 
-A GUI program to demonstrate, test and experiment the usage of the mrpt 
-reactivenav library regarding the navigation of holonomic robots, that is, 
+A GUI program to demonstrate, test and experiment the usage of the mrpt-nav
+library regarding the navigation of holonomic robots, that is, 
 those which can move freely in any direction. These methods do not account
 for the shape of the robot, i.e. it's a point or a circle.
 
@@ -23,7 +23,7 @@ The application wiki page at http://www.mrpt.org/Applications
 
 =head1 AUTHORS
 
-B<holonomic-navigator-demo> is part of the Mobile Robot Programming Toolkit 
+B<holonomic-navigator-demo> is part of the Mobile Robot Programming Toolkit
 (MRPT), and was originally written by the MAPIR laboratory (University of Malaga).
 
 This manual page was written by Jose Luis Blanco <joseluisblancoc@gmail.com>.
@@ -33,8 +33,7 @@ This manual page was written by Jose Luis Blanco <joseluisblancoc@gmail.com>.
 This program is free software; you can redistribute it and/or modify it
 under the terms of the BSD License.
 
-On Debian GNU/Linux systems, the complete text of the BSD License can be 
+On Debian GNU/Linux systems, the complete text of the BSD License can be
 found in `/usr/share/common-licenses/BSD'.
 
 =cut
-

@@ -54,7 +54,7 @@ void wxCustomButton::Init()
     m_labelMargin  = wxSize(4,4);
     m_bitmapMargin = wxSize(2,2);
     m_down         = 0;
-    m_timer        = NULL;
+    m_timer        = nullptr;
     m_eventType    = 0;
     m_button_style = wxCUSTBUT_TOGGLE|wxCUSTBUT_BOTTOM;
 }
@@ -237,7 +237,7 @@ void wxCustomButton::OnTimer( wxTimerEvent &event )
 {
     m_timer->Stop();
     delete m_timer;
-    m_timer = NULL;
+    m_timer = nullptr;
 
     // Clean up the button presses
     // FIXME - GTK eats second left down for a DClick, who know about the others?

@@ -444,7 +444,7 @@ void Discreet3DSImporter::AddNodeToGraph(aiScene* pcSOut,aiNode* pcOut,
 	for (unsigned int a = 0; a < pcSOut->mNumMeshes;++a)
 	{
 		const D3DS::Mesh* pcMesh = (const D3DS::Mesh*)pcSOut->mMeshes[a]->mColors[0];
-		ai_assert(NULL != pcMesh);
+		ai_assert(nullptr != pcMesh);
 
 		if (pcIn->mName == pcMesh->mName)
 			iArray.push_back(a);
@@ -467,7 +467,7 @@ void Discreet3DSImporter::AddNodeToGraph(aiScene* pcSOut,aiNode* pcOut,
 			const unsigned int iIndex = iArray[i];
 			aiMesh* const mesh = pcSOut->mMeshes[iIndex];
 
-			if (mesh->mColors[1] == NULL)
+			if (mesh->mColors[1] == nullptr)
 			{
 				// Transform the vertices back into their local space
 				// fixme: consider computing normals after this, so we don't need to transform them
@@ -563,7 +563,7 @@ void Discreet3DSImporter::AddNodeToGraph(aiScene* pcSOut,aiNode* pcOut,
 		pcIn->aTargetPositionKeys.size() > 1)
 	{
 		aiAnimation* anim = pcSOut->mAnimations[0];
-		ai_assert(NULL != anim);
+		ai_assert(nullptr != anim);
 
 		if (pcIn->aCameraRollKeys.size() > 1)
 		{
@@ -804,8 +804,8 @@ void Discreet3DSImporter::GenerateNodeGraph(aiScene* pcOut)
 	// We used the first and second vertex color set to store some temporary values so we need to cleanup here
 	for (unsigned int a = 0; a < pcOut->mNumMeshes; ++a)
 	{
-		pcOut->mMeshes[a]->mColors[0] = NULL;
-		pcOut->mMeshes[a]->mColors[1] = NULL;
+		pcOut->mMeshes[a]->mColors[0] = nullptr;
+		pcOut->mMeshes[a]->mColors[1] = nullptr;
 	}
 
 	pcOut->mRootNode->mTransformation = aiMatrix4x4(

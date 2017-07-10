@@ -1,11 +1,11 @@
-/* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          http://www.mrpt.org/                             |
-   |                                                                           |
-   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-   | Released under BSD License. See details in http://www.mrpt.org/License    |
-   +---------------------------------------------------------------------------+ */
+/* +------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)            |
+   |                          http://www.mrpt.org/                          |
+   |                                                                        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file     |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                |
+   | Released under BSD License. See details in http://www.mrpt.org/License |
+   +------------------------------------------------------------------------+ */
 
 #include "base-precomp.h"  // Precompiled headers
 
@@ -19,11 +19,11 @@ static long double Power_Series_S(long double x);
 static long double xFresnel_Auxiliary_Cosine_Integral(long double x);
 static long double xFresnel_Auxiliary_Sine_Integral(long double x);
 static long double Power_Series_C(long double x);
-static long double xChebyshev_Tn_Series(long double x, const long double a[], int degree);
+static long double xChebyshev_Tn_Series(
+	long double x, const long double a[], int degree);
 
-//extern long double xFresnel_Sine_Integral(long double x);
-//extern long double xFresnel_Cosine_Integral(long double x);
-
+// extern long double xFresnel_Sine_Integral(long double x);
+// extern long double xFresnel_Cosine_Integral(long double x);
 
 // the integral from 0 to x of sqrt(2 / pi) sin(t ^ 2) dt.
 long double lfresnel_sin_alt(long double x)
@@ -53,32 +53,33 @@ long double lfresnel_cos_alt(long double x)
 	return (x < 0.0L) ? -c : c;
 }
 
-long double mrpt::math::lfresnel_sin_integral(long double x) MRPT_NO_THROWS
+long double mrpt::math::lfresnel_sin_integral(long double x) noexcept
 {
 	long double sqrt_2_o_pi = 7.978845608028653558798921198687637369517e-1L;
-	return lfresnel_sin_alt(x/ sqrt_2_o_pi);
+	return lfresnel_sin_alt(x / sqrt_2_o_pi);
 }
 
-long double mrpt::math::lfresnel_cos_integral(long double x) MRPT_NO_THROWS
+long double mrpt::math::lfresnel_cos_integral(long double x) noexcept
 {
 	long double sqrt_2_o_pi = 7.978845608028653558798921198687637369517e-1L;
 	return lfresnel_cos_alt(x / sqrt_2_o_pi);
 }
 
-double mrpt::math::fresnel_sin_integral(double x) MRPT_NO_THROWS
+double mrpt::math::fresnel_sin_integral(double x) noexcept
 {
-	return static_cast<double>(lfresnel_sin_integral(static_cast<long double>(x)));
+	return static_cast<double>(
+		lfresnel_sin_integral(static_cast<long double>(x)));
 }
 
-double mrpt::math::fresnel_cos_integral(double x) MRPT_NO_THROWS
+double mrpt::math::fresnel_cos_integral(double x) noexcept
 {
-	return static_cast<double>(lfresnel_cos_integral(static_cast<long double>(x)));
+	return static_cast<double>(
+		lfresnel_cos_integral(static_cast<long double>(x)));
 }
 
 //                         Internally Defined Routines                        //
-double      Fresnel_Sine_Integral(double x);
+double Fresnel_Sine_Integral(double x);
 long double xFresnel_Sine_Integral(long double x);
-
 
 ////////////////////////////////////////////////////////////////////////////////
 // double Fresnel_Sine_Integral( double x )                                   //
@@ -105,7 +106,6 @@ double Fresnel_Sine_Integral(double x)
 {
 	return (double)xFresnel_Sine_Integral((long double)x);
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////
 // long double xFresnel_Sine_Integral( long double x )                        //
@@ -184,7 +184,8 @@ static long double Power_Series_S(long double x)
 
 	if (x == 0.0L) return 0.0L;
 	Sn /= 3.0L;
-	while (fabsl(Sn - Sm1) > LDBL_EPSILON * fabsl(Sm1)) {
+	while (fabsl(Sn - Sm1) > LDBL_EPSILON * fabsl(Sm1))
+	{
 		Sm1 = Sn;
 		y += 1;
 		factorial *= (long double)(y + y);
@@ -197,15 +198,12 @@ static long double Power_Series_S(long double x)
 	return x3 * sqrt_2_o_pi * Sn;
 }
 
-
 //                         Internally Defined Routines                        //
-double      Fresnel_Auxiliary_Sine_Integral(double x);
+double Fresnel_Auxiliary_Sine_Integral(double x);
 long double xFresnel_Auxiliary_Sine_Integral(long double x);
-
 
 //                         Internally Defined Constants                       //
 static long double const sqrt_2pi = 2.506628274631000502415765284811045253006L;
-
 
 ////////////////////////////////////////////////////////////////////////////////
 // double Fresnel_Auxiliary_Sine_Integral( double x )                         //
@@ -235,7 +233,6 @@ double Fresnel_Auxiliary_Sine_Integral(double x)
 {
 	return (double)xFresnel_Auxiliary_Sine_Integral((long double)x);
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////
 // long double xFresnel_Auxiliary_Sine_Integral( double x )                   //
@@ -278,8 +275,6 @@ long double xFresnel_Auxiliary_Sine_Integral(long double x)
 	return sin_Asymptotic_Series(x);
 }
 
-
-
 ////////////////////////////////////////////////////////////////////////////////
 // static long double Chebyshev_Expansion_0_1( long double x )                //
 //                                                                            //
@@ -316,8 +311,7 @@ static long double sin_Chebyshev_Expansion_0_1(long double x)
 		-9.959396121060010838331e-14L, +1.312085140393647257714e-14L,
 		-9.240470383522792593305e-16L, +2.472168944148817385152e-17L,
 		+2.834615576069400293894e-18L, -4.650983461314449088349e-19L,
-		+3.544083040732391556797e-20L
-	};
+		+3.544083040732391556797e-20L};
 
 	static const int degree = sizeof(c) / sizeof(long double) - 1;
 	static const long double midpoint = 0.5L;
@@ -325,7 +319,6 @@ static long double sin_Chebyshev_Expansion_0_1(long double x)
 
 	return xChebyshev_Tn_Series((x - midpoint) / scale, c, degree);
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////
 // static long double Chebyshev_Expansion_1_3( long double x )                //
@@ -366,15 +359,13 @@ static long double sin_Chebyshev_Expansion_1_3(long double x)
 		-7.653673328908379651914e-18L, +4.534308864750374603371e-18L,
 		-8.011054486030591219007e-19L, +9.374587915222218230337e-20L,
 		-7.144943099280650363024e-21L, +1.105276695821552769144e-22L,
-		+6.989334213887669628647e-23L
-	};
+		+6.989334213887669628647e-23L};
 
 	static const int degree = sizeof(c) / sizeof(long double) - 1;
 	static const long double midpoint = 2.0L;
 
 	return xChebyshev_Tn_Series((x - midpoint), c, degree);
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////
 // static long double Chebyshev_Expansion_3_5( long double x )                //
@@ -413,15 +404,13 @@ static long double sin_Chebyshev_Expansion_3_5(long double x)
 		-9.577486627424256130607e-17L, +1.428772744117447206807e-17L,
 		-1.715342656474756703926e-18L, +1.753564314320837957805e-19L,
 		-1.526125102356904908532e-20L, +1.070275366865736879194e-21L,
-		-4.783978662888842165071e-23L
-	};
+		-4.783978662888842165071e-23L};
 
 	static const int degree = sizeof(c) / sizeof(long double) - 1;
 	static const long double midpoint = 4.0L;
 
 	return xChebyshev_Tn_Series((x - midpoint), c, degree);
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////
 // static long double Chebyshev_Expansion_5_7( long double x )                //
@@ -459,16 +448,13 @@ static long double sin_Chebyshev_Expansion_5_7(long double x)
 		+8.186068056719295045596e-17L, -6.305153620995673221364e-18L,
 		+4.614110100197028845266e-19L, -3.165914620159266813849e-20L,
 		+1.986716456911232767045e-21L, -1.078418278174434671506e-22L,
-		+4.255983404468350776788e-24L
-	};
+		+4.255983404468350776788e-24L};
 
 	static const int degree = sizeof(c) / sizeof(long double) - 1;
 	static const long double midpoint = 6.0L;
 
 	return xChebyshev_Tn_Series((x - midpoint), c, degree);
-
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////
 // static long double Asymptotic_Series( long double x )                      //
@@ -509,12 +495,14 @@ static long double sin_Asymptotic_Series(long double x)
 
 	term[0] = 1.0L;
 	term[NUM_ASYMPTOTIC_TERMS] = 0.0L;
-	for (i = 1; i < NUM_ASYMPTOTIC_TERMS; i++) {
+	for (i = 1; i < NUM_ASYMPTOTIC_TERMS; i++)
+	{
 		factorial *= ((long double)j * (long double)(j - 2));
 		xn *= x4;
 		term[i] = factorial / xn;
 		j += 4;
-		if (fabsl(term[i]) >= fabsl(term[i - 1])) {
+		if (fabsl(term[i]) >= fabsl(term[i - 1]))
+		{
 			i--;
 			break;
 		}
@@ -527,9 +515,8 @@ static long double sin_Asymptotic_Series(long double x)
 }
 
 //                         Internally Defined Routines                        //
-double      Fresnel_Auxiliary_Cosine_Integral(double x);
+double Fresnel_Auxiliary_Cosine_Integral(double x);
 long double xFresnel_Auxiliary_Cosine_Integral(long double x);
-
 
 ////////////////////////////////////////////////////////////////////////////////
 // double Fresnel_Auxiliary_Cosine_Integral( double x )                       //
@@ -604,9 +591,8 @@ long double xFresnel_Auxiliary_Cosine_Integral(long double x)
 extern long double xFresnel_Auxiliary_Cosine_Integral(long double x);
 extern long double xFresnel_Auxiliary_Sine_Integral(long double x);
 
-
 //                         Internally Defined Routines                        //
-double      Fresnel_Cosine_Integral(double x);
+double Fresnel_Cosine_Integral(double x);
 long double xFresnel_Cosine_Integral(long double x);
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -634,7 +620,6 @@ double Fresnel_Cosine_Integral(double x)
 {
 	return (double)xFresnel_Cosine_Integral((long double)x);
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////
 // long double xFresnel_Cosine_Integral( long double x )                      //
@@ -674,7 +659,6 @@ long double xFresnel_Cosine_Integral(long double x)
 	return (x < 0.0L) ? -c : c;
 }
 
-
 ////////////////////////////////////////////////////////////////////////////////
 // static long double Power_Series_C( long double x )                         //
 //                                                                            //
@@ -702,7 +686,7 @@ long double xFresnel_Cosine_Integral(long double x)
 static long double Power_Series_C(long double x)
 {
 	long double x2 = x * x;
-//	long double x3 = x * x2;
+	//	long double x3 = x * x2;
 	long double x4 = -x2 * x2;
 	long double xn = 1.0L;
 	long double Sn = 1.0L;
@@ -713,7 +697,8 @@ static long double Power_Series_C(long double x)
 	int y = 0;
 
 	if (x == 0.0L) return 0.0L;
-	while (fabsl(Sn - Sm1) > LDBL_EPSILON * fabsl(Sm1)) {
+	while (fabsl(Sn - Sm1) > LDBL_EPSILON * fabsl(Sm1))
+	{
 		Sm1 = Sn;
 		y += 1;
 		factorial *= (long double)(y + y);
@@ -768,7 +753,8 @@ static long double Power_Series_C(long double x)
 //                                                                            //
 //     p = xChebyshev_Tn_Series(x, a, deg);                                   //
 ////////////////////////////////////////////////////////////////////////////////
-static long double xChebyshev_Tn_Series(long double x, const long double a[], int degree)
+static long double xChebyshev_Tn_Series(
+	long double x, const long double a[], int degree)
 {
 	long double yp2 = 0.0L;
 	long double yp1 = 0.0L;
@@ -789,8 +775,6 @@ static long double xChebyshev_Tn_Series(long double x, const long double a[], in
 
 	return x * yp1 - yp2 + a[0];
 }
-
-
 
 ////////////////////////////////////////////////////////////////////////////////
 // static long double Chebyshev_Expansion_0_1( long double x )                //
@@ -828,8 +812,7 @@ static long double cos_Chebyshev_Expansion_0_1(long double x)
 		-1.228919312990171362342e-13L, +2.227139250593818235212e-15L,
 		+5.734729405928016301596e-16L, -8.284965573075354177016e-17L,
 		+6.067422701530157308321e-18L, -1.994908519477689596319e-19L,
-		-1.173365630675305693390e-20L
-	};
+		-1.173365630675305693390e-20L};
 
 	static const int degree = sizeof(c) / sizeof(long double) - 1;
 	static const long double midpoint = 0.5L;
@@ -837,7 +820,6 @@ static long double cos_Chebyshev_Expansion_0_1(long double x)
 
 	return xChebyshev_Tn_Series((x - midpoint) / scale, c, degree);
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////
 // static long double Chebyshev_Expansion_1_3( long double x )                //
@@ -877,16 +859,13 @@ static long double cos_Chebyshev_Expansion_1_3(long double x)
 		-1.946040679213045143184e-15L, +4.151821375667161733612e-16L,
 		-5.642257647205149369594e-17L, +5.266176626521504829010e-18L,
 		-2.299025577897146333791e-19L, -2.952226367506641078731e-20L,
-		+8.760405943193778149078e-21L
-	};
+		+8.760405943193778149078e-21L};
 
 	static const int degree = sizeof(c) / sizeof(long double) - 1;
 	static const long double midpoint = 2.0L;
 
 	return xChebyshev_Tn_Series((x - midpoint), c, degree);
-
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////
 // static long double Chebyshev_Expansion_3_5( long double x )                //
@@ -924,15 +903,13 @@ static long double cos_Chebyshev_Expansion_3_5(long double x)
 		-1.619154679722651005075e-14L, +1.651319588396970446858e-15L,
 		-1.461704569438083772889e-16L, +1.053521559559583268504e-17L,
 		-4.760946403462515858756e-19L, -1.803784084922403924313e-20L,
-		+7.873130866418738207547e-21L
-	};
+		+7.873130866418738207547e-21L};
 
 	static const int degree = sizeof(c) / sizeof(long double) - 1;
 	static const long double midpoint = 4.0L;
 
 	return xChebyshev_Tn_Series((x - midpoint), c, degree);
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////
 // static long double Chebyshev_Expansion_5_7( long double x )                //
@@ -969,16 +946,13 @@ static long double cos_Chebyshev_Expansion_5_7(long double x)
 		+4.419142625999150971878e-15L, -1.759082736751040110146e-16L,
 		-1.307443936270786700760e-18L, +1.362484141039320395814e-18L,
 		-2.055236564763877250559e-19L, +2.329142055084791308691e-20L,
-		-2.282438671525884861970e-21L
-	};
+		-2.282438671525884861970e-21L};
 
 	static const int degree = sizeof(c) / sizeof(long double) - 1;
 	static const long double midpoint = 6.0L;
 
 	return xChebyshev_Tn_Series((x - midpoint), c, degree);
-
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////
 // static long double Asymptotic_Series( long double x )                      //
@@ -1019,12 +993,14 @@ static long double cos_Asymptotic_Series(long double x)
 
 	term[0] = 1.0L;
 	term[NUM_ASYMPTOTIC_TERMS] = 0.0L;
-	for (i = 1; i < NUM_ASYMPTOTIC_TERMS; i++) {
+	for (i = 1; i < NUM_ASYMPTOTIC_TERMS; i++)
+	{
 		factorial *= ((long double)j * (long double)(j - 2));
 		xn *= x4;
 		term[i] = factorial / xn;
 		j += 4;
-		if (fabsl(term[i]) >= fabsl(term[i - 1])) {
+		if (fabsl(term[i]) >= fabsl(term[i - 1]))
+		{
 			i--;
 			break;
 		}
@@ -1035,4 +1011,3 @@ static long double cos_Asymptotic_Series(long double x)
 
 	return f / (x * sqrt_2pi);
 }
-

@@ -273,7 +273,7 @@ class GTEST_API_ AssertionResult {
       const T& success,
       typename internal::EnableIf<
           !internal::ImplicitlyConvertible<T, AssertionResult>::value>::type*
-          /*enabler*/ = NULL)
+          /*enabler*/ = nullptr)
       : success_(success) {}
 
   GTEST_DISABLE_MSC_WARNINGS_POP_()
@@ -295,7 +295,7 @@ class GTEST_API_ AssertionResult {
   // assertion's expectation). When nothing has been streamed into the
   // object, returns an empty string.
   const char* message() const {
-    return message_.get() != NULL ?  message_->c_str() : "";
+    return message_.get() != nullptr ?  message_->c_str() : "";
   }
   // TODO(vladl@google.com): Remove this after making sure no clients use it.
   // Deprecated; please use message() instead.
@@ -318,7 +318,7 @@ class GTEST_API_ AssertionResult {
  private:
   // Appends the contents of message to message_.
   void AppendMessage(const Message& a_message) {
-    if (message_.get() == NULL)
+    if (message_.get() == nullptr)
       message_.reset(new ::std::string);
     message_->append(a_message.GetString().c_str());
   }
@@ -471,7 +471,7 @@ class GTEST_API_ Test {
   // If you see an error about overriding the following function or
   // about it being private, you have mis-spelled SetUp() as Setup().
   struct Setup_should_be_spelled_SetUp {};
-  virtual Setup_should_be_spelled_SetUp* Setup() { return NULL; }
+  virtual Setup_should_be_spelled_SetUp* Setup() { return nullptr; }
 
   // We disallow copying Tests.
   GTEST_DISALLOW_COPY_AND_ASSIGN_(Test);
@@ -653,20 +653,20 @@ class GTEST_API_ TestInfo {
   // Returns the test name.
   const char* name() const { return name_.c_str(); }
 
-  // Returns the name of the parameter type, or NULL if this is not a typed
+  // Returns the name of the parameter type, or nullptr if this is not a typed
   // or a type-parameterized test.
   const char* type_param() const {
-    if (type_param_.get() != NULL)
+    if (type_param_.get() != nullptr)
       return type_param_->c_str();
-    return NULL;
+    return nullptr;
   }
 
-  // Returns the text representation of the value parameter, or NULL if this
+  // Returns the text representation of the value parameter, or nullptr if this
   // is not a value-parameterized test.
   const char* value_param() const {
-    if (value_param_.get() != NULL)
+    if (value_param_.get() != nullptr)
       return value_param_->c_str();
-    return NULL;
+    return nullptr;
   }
 
   // Returns the file name where this test is defined.
@@ -727,8 +727,8 @@ class GTEST_API_ TestInfo {
   // ownership of the factory object.
   TestInfo(const std::string& test_case_name,
            const std::string& name,
-           const char* a_type_param,   // NULL if not a type-parameterized test
-           const char* a_value_param,  // NULL if not a value-parameterized test
+           const char* a_type_param,   // nullptr if not a type-parameterized test
+           const char* a_value_param,  // nullptr if not a value-parameterized test
            internal::CodeLocation a_code_location,
            internal::TypeId fixture_class_id,
            internal::TestFactoryBase* factory);
@@ -750,10 +750,10 @@ class GTEST_API_ TestInfo {
   // These fields are immutable properties of the test.
   const std::string test_case_name_;     // Test case name
   const std::string name_;               // Test name
-  // Name of the parameter type, or NULL if this is not a typed or a
+  // Name of the parameter type, or nullptr if this is not a typed or a
   // type-parameterized test.
   const internal::scoped_ptr<const ::std::string> type_param_;
-  // Text representation of the value parameter, or NULL if this is not a
+  // Text representation of the value parameter, or nullptr if this is not a
   // value-parameterized test.
   const internal::scoped_ptr<const ::std::string> value_param_;
   internal::CodeLocation location_;
@@ -785,7 +785,7 @@ class GTEST_API_ TestCase {
   // Arguments:
   //
   //   name:         name of the test case
-  //   a_type_param: the name of the test's type parameter, or NULL if
+  //   a_type_param: the name of the test's type parameter, or nullptr if
   //                 this is not a type-parameterized test.
   //   set_up_tc:    pointer to the function that sets up the test case
   //   tear_down_tc: pointer to the function that tears down the test case
@@ -799,12 +799,12 @@ class GTEST_API_ TestCase {
   // Gets the name of the TestCase.
   const char* name() const { return name_.c_str(); }
 
-  // Returns the name of the parameter type, or NULL if this is not a
+  // Returns the name of the parameter type, or nullptr if this is not a
   // type-parameterized test case.
   const char* type_param() const {
-    if (type_param_.get() != NULL)
+    if (type_param_.get() != nullptr)
       return type_param_->c_str();
-    return NULL;
+    return nullptr;
   }
 
   // Returns true if any test in this test case should run.
@@ -929,7 +929,7 @@ class GTEST_API_ TestCase {
 
   // Name of the test case.
   std::string name_;
-  // Name of the parameter type, or NULL if this is not a typed or a
+  // Name of the parameter type, or nullptr if this is not a typed or a
   // type-parameterized test.
   const internal::scoped_ptr<const ::std::string> type_param_;
   // The vector of TestInfos in their original order.  It owns the
@@ -983,7 +983,7 @@ class Environment {
   // If you see an error about overriding the following function or
   // about it being private, you have mis-spelled SetUp() as Setup().
   struct Setup_should_be_spelled_SetUp {};
-  virtual Setup_should_be_spelled_SetUp* Setup() { return NULL; }
+  virtual Setup_should_be_spelled_SetUp* Setup() { return nullptr; }
 };
 
 // The interface for tracing execution of tests. The methods are organized in
@@ -1073,14 +1073,14 @@ class GTEST_API_ TestEventListeners {
 
   // Removes the given event listener from the list and returns it.  It then
   // becomes the caller's responsibility to delete the listener. Returns
-  // NULL if the listener is not found in the list.
+  // nullptr if the listener is not found in the list.
   TestEventListener* Release(TestEventListener* listener);
 
   // Returns the standard listener responsible for the default console
   // output.  Can be removed from the listeners list to shut down default
   // console output.  Note that removing this object from the listener list
   // with Release transfers its ownership to the caller and makes this
-  // function return NULL the next time.
+  // function return nullptr the next time.
   TestEventListener* default_result_printer() const {
     return default_result_printer_;
   }
@@ -1090,7 +1090,7 @@ class GTEST_API_ TestEventListeners {
   // listeners list by users who want to shut down the default XML output
   // controlled by this flag and substitute it with custom one.  Note that
   // removing this object from the listener list with Release transfers its
-  // ownership to the caller and makes this function return NULL the next
+  // ownership to the caller and makes this function return nullptr the next
   // time.
   TestEventListener* default_xml_generator() const {
     return default_xml_generator_;
@@ -1111,14 +1111,14 @@ class GTEST_API_ TestEventListeners {
   // Sets the default_result_printer attribute to the provided listener.
   // The listener is also added to the listener list and previous
   // default_result_printer is removed from it and deleted. The listener can
-  // also be NULL in which case it will not be added to the list. Does
+  // also be nullptr in which case it will not be added to the list. Does
   // nothing if the previous and the current listener objects are the same.
   void SetDefaultResultPrinter(TestEventListener* listener);
 
   // Sets the default_xml_generator attribute to the provided listener.  The
   // listener is also added to the listener list and previous
   // default_xml_generator is removed from it and deleted. The listener can
-  // also be NULL in which case it will not be added to the list. Does
+  // also be nullptr in which case it will not be added to the list. Does
   // nothing if the previous and the current listener objects are the same.
   void SetDefaultXmlGenerator(TestEventListener* listener);
 
@@ -1168,12 +1168,12 @@ class GTEST_API_ UnitTest {
   const char* original_working_dir() const;
 
   // Returns the TestCase object for the test that's currently running,
-  // or NULL if no test is running.
+  // or nullptr if no test is running.
   const TestCase* current_test_case() const
       GTEST_LOCK_EXCLUDED_(mutex_);
 
   // Returns the TestInfo object for the test that's currently running,
-  // or NULL if no test is running.
+  // or nullptr if no test is running.
   const TestInfo* current_test_info() const
       GTEST_LOCK_EXCLUDED_(mutex_);
 
@@ -1436,7 +1436,7 @@ class EqHelper {
 };
 
 // This specialization is used when the first argument to ASSERT_EQ()
-// is a null pointer literal, like NULL, false, or 0.
+// is a null pointer literal, like nullptr, false, or 0.
 template <>
 class EqHelper<true> {
  public:
@@ -1451,8 +1451,8 @@ class EqHelper<true> {
       const T1& lhs,
       const T2& rhs,
       // The following line prevents this overload from being considered if T2
-      // is not a pointer type.  We need this because ASSERT_EQ(NULL, my_ptr)
-      // expands to Compare("", "", NULL, my_ptr), which requires a conversion
+      // is not a pointer type.  We need this because ASSERT_EQ(nullptr, my_ptr)
+      // expands to Compare("", "", nullptr, my_ptr), which requires a conversion
       // to match the Secret* in the other overload, which would otherwise make
       // this template match better.
       typename EnableIf<!is_pointer<T2>::value>::type* = 0) {
@@ -1460,7 +1460,7 @@ class EqHelper<true> {
   }
 
   // This version will be picked when the second argument to ASSERT_EQ() is a
-  // pointer, e.g. ASSERT_EQ(NULL, a_pointer).
+  // pointer, e.g. ASSERT_EQ(nullptr, a_pointer).
   template <typename T>
   static AssertionResult Compare(
       const char* lhs_expression,
@@ -1468,14 +1468,14 @@ class EqHelper<true> {
       // We used to have a second template parameter instead of Secret*.  That
       // template parameter would deduce to 'long', making this a better match
       // than the first overload even without the first overload's EnableIf.
-      // Unfortunately, gcc with -Wconversion-null warns when "passing NULL to
+      // Unfortunately, gcc with -Wconversion-null warns when "passing nullptr to
       // non-pointer argument" (even a deduced integral argument), so the old
       // implementation caused warnings in user code.
-      Secret* /* lhs (NULL) */,
+      Secret* /* lhs (nullptr) */,
       T* rhs) {
     // We already know that 'lhs' is a null pointer.
     return CmpHelperEQ(lhs_expression, rhs_expression,
-                       static_cast<T*>(NULL), rhs);
+                       static_cast<T*>(nullptr), rhs);
   }
 };
 
@@ -1585,7 +1585,7 @@ GTEST_API_ AssertionResult CmpHelperSTRNE(const char* s1_expression,
 // IsSubstring() and IsNotSubstring() are intended to be used as the
 // first argument to {EXPECT,ASSERT}_PRED_FORMAT2(), not by
 // themselves.  They check whether needle is a substring of haystack
-// (NULL is considered a substring of itself only), and return an
+// (nullptr is considered a substring of itself only), and return an
 // appropriate error message when they fail.
 //
 // The {needle,haystack}_expr arguments are the stringified
@@ -1753,7 +1753,7 @@ class WithParamInterface {
   // like writing 'WithParamInterface<bool>::GetParam()' for a test that
   // uses a fixture whose parameter type is int.
   const ParamType& GetParam() const {
-    GTEST_CHECK_(parameter_ != NULL)
+    GTEST_CHECK_(parameter_ != nullptr)
         << "GetParam() can only be called inside a value-parameterized test "
         << "-- did you intend to write TEST_P instead of TEST_F?";
     return *parameter_;
@@ -1774,7 +1774,7 @@ class WithParamInterface {
 };
 
 template <typename T>
-const T* WithParamInterface<T>::parameter_ = NULL;
+const T* WithParamInterface<T>::parameter_ = nullptr;
 
 // Most value-parameterized classes can ignore the existence of
 // WithParamInterface, and can just inherit from ::testing::TestWithParam.
@@ -1915,7 +1915,7 @@ class TestWithParam : public Test, public WithParamInterface<T> {
 // Examples:
 //
 //   EXPECT_NE(5, Foo());
-//   EXPECT_EQ(NULL, a_pointer);
+//   EXPECT_EQ(nullptr, a_pointer);
 //   ASSERT_LT(i, array_size);
 //   ASSERT_GT(records.size(), 0) << "There is no record left.";
 
@@ -1976,7 +1976,7 @@ class TestWithParam : public Test, public WithParamInterface<T> {
 # define ASSERT_GT(val1, val2) GTEST_ASSERT_GT(val1, val2)
 #endif
 
-// C-string Comparisons.  All tests treat NULL and any non-NULL string
+// C-string Comparisons.  All tests treat nullptr and any non-NULL string
 // as different.  Two NULLs are equal.
 //
 //    * {ASSERT|EXPECT}_STREQ(s1, s2):     Tests that s1 == s2

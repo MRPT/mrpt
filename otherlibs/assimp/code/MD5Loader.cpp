@@ -182,7 +182,7 @@ void MD5Importer::LoadFileIntoMemory (IOStream* file)
 	// unload the previous buffer, if any
 	UnloadFileFromMemory();
 
-	ai_assert(NULL != file);
+	ai_assert(nullptr != file);
 	fileSize = (unsigned int)file->FileSize();
 	ai_assert(fileSize);
 
@@ -204,7 +204,7 @@ void MD5Importer::UnloadFileFromMemory ()
 {
 	// delete the file buffer
 	delete[] mBuffer;
-	mBuffer = NULL;
+	mBuffer = nullptr;
 	fileSize = 0;
 }
 
@@ -247,7 +247,7 @@ void MD5Importer::MakeDataUnique (MD5::MeshDesc& meshSrc)
 // Recursive node graph construction from a MD5MESH
 void MD5Importer::AttachChilds_Mesh(int iParentID,aiNode* piParent, BoneList& bones)
 {
-	ai_assert(NULL != piParent && !piParent->mNumChildren);
+	ai_assert(nullptr != piParent && !piParent->mNumChildren);
 
 	// First find out how many children we'll have
 	for (int i = 0; i < (int)bones.size();++i)	{
@@ -301,7 +301,7 @@ void MD5Importer::AttachChilds_Mesh(int iParentID,aiNode* piParent, BoneList& bo
 // Recursive node graph construction from a MD5ANIM
 void MD5Importer::AttachChilds_Anim(int iParentID,aiNode* piParent, AnimBoneList& bones,const aiNodeAnim** node_anims)
 {
-	ai_assert(NULL != piParent && !piParent->mNumChildren);
+	ai_assert(nullptr != piParent && !piParent->mNumChildren);
 
 	// First find out how many children we'll have
 	for (int i = 0; i < (int)bones.size();++i)	{
@@ -345,7 +345,7 @@ void MD5Importer::LoadMD5MeshFile ()
 	boost::scoped_ptr<IOStream> file( pIOHandler->Open( pFile, "rb"));
 
 	// Check whether we can read from the file
-	if( file.get() == NULL || !file->FileSize())	{
+	if( file.get() == nullptr || !file->FileSize())	{
 		DefaultLogger::get()->warn("Failed to access MD5MESH file: " + pFile);
 		return;
 	}
@@ -513,7 +513,7 @@ void MD5Importer::LoadMD5MeshFile ()
 		for (unsigned int c = 0; c < mesh->mNumFaces;++c)	{
 			mesh->mFaces[c].mNumIndices = 3;
 			mesh->mFaces[c].mIndices = meshSrc.mFaces[c].mIndices;
-			meshSrc.mFaces[c].mIndices = NULL;
+			meshSrc.mFaces[c].mIndices = nullptr;
 		}
 
 		// generate a material for the mesh

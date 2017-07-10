@@ -58,7 +58,7 @@ public :
     inline wxRay2DDouble GetTranslatedLineByX(wxDouble x) const { return wxRay2DDouble(x, GetYFromX(x), m_slope); }
     inline wxRay2DDouble GetTranslatedLineByY(wxDouble y) const { return wxRay2DDouble(GetXFromY(y), y, m_slope); }
 
-    inline wxDouble GetDistanceToPoint(const wxPoint2DDouble &pt, wxPoint2DDouble *closestPt=NULL) const
+    inline wxDouble GetDistanceToPoint(const wxPoint2DDouble &pt, wxPoint2DDouble *closestPt=nullptr) const
     {
         wxPoint2DDouble l1(m_x, m_y);
         wxPoint2DDouble l2(GetPointOnRayFromX(m_x+pt.m_x));
@@ -207,7 +207,7 @@ public :
     inline wxLine2DInt GetTranslatedLineByY(wxDouble y)
         { return wxLine2DInt(GetXFromY(y), y, m_slope); }
 
-    inline wxDouble GetDistanceToPoint(const wxPoint2DDouble &pt, wxPoint2DDouble *closestPt=NULL) const
+    inline wxDouble GetDistanceToPoint(const wxPoint2DDouble &pt, wxPoint2DDouble *closestPt=nullptr) const
     {
         wxPoint2DDouble l1(m_pt);
         wxPoint2DDouble l2(GetPointOnLineFromX(m_pt.m_x+pt.m_x));
@@ -279,8 +279,8 @@ public :
         { return GetDistance(circle) <= m_r + circle.m_r;  }
 
     int IntersectLine( const wxRay2DDouble &line,
-                       wxPoint2DDouble *pt1=NULL,
-                       wxPoint2DDouble *pt2=NULL ) const;
+                       wxPoint2DDouble *pt1=nullptr,
+                       wxPoint2DDouble *pt2=nullptr ) const;
 
     // Operators
 
@@ -350,8 +350,8 @@ public :
         { return GetDistance(circle) <= m_r + circle.m_r; }
 
 //  int IntersectLine( const wxRay2DDouble &line,
-//                     wxPoint2DInt *pt1=NULL,
-//                     wxPoint2DInt *pt2=NULL ) const;
+//                     wxPoint2DInt *pt1=nullptr,
+//                     wxPoint2DInt *pt2=nullptr ) const;
 
     // Operators
 
@@ -428,8 +428,8 @@ public :
         { return GetPointInEllipse(pt.m_x, pt.m_y); }
 
 //  int IntersectLine( const wxRay2DDouble &line,
-//                     wxPoint2DInt *pt1=NULL,
-//                     wxPoint2DInt *pt2=NULL ) const;
+//                     wxPoint2DInt *pt1=nullptr,
+//                     wxPoint2DInt *pt2=nullptr ) const;
 
 
     inline bool operator==(const wxEllipseInt& c) const { return (m_origin == c.m_origin)&&(m_radius == c.m_radius); }

@@ -57,7 +57,7 @@ public:
     // Destroy the refed data
     void Destroy() { UnRef(); }
     // Is this colour valid, has refed data
-    bool Ok() const { return m_refData != NULL; }
+    bool Ok() const { return m_refData != nullptr; }
 
     // -----------------------------------------------------------------------
     // (re)Create this colour, unrefing this colour first.
@@ -159,7 +159,7 @@ public:
     // Destroy the refed data
     void Destroy() { UnRef(); }
     // Is this colour valid, has refed data
-    bool Ok() const { return m_refData != NULL; }
+    bool Ok() const { return m_refData != nullptr; }
 
     // -----------------------------------------------------------------------
     // (re)Create this pen, unrefing this pen first.
@@ -247,7 +247,7 @@ public:
     // Destroy the refed data
     void Destroy() { UnRef(); }
     // Is this colour valid, has refed data
-    bool Ok() const { return m_refData != NULL; }
+    bool Ok() const { return m_refData != nullptr; }
 
     // -----------------------------------------------------------------------
     // (re)Create this brush, unrefing this pen first.

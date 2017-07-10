@@ -74,9 +74,9 @@ int main(int argc, char **argv)
 		CFileGZInputStream  fil(rawlog_file);
 
 		size_t nEntry = 0;
-		CActionCollectionPtr  acts;
-		CSensoryFramePtr      SF;
-		CObservationPtr       obs;
+		CActionCollection::Ptr  acts;
+		CSensoryFrame::Ptr      SF;
+		CObservation::Ptr       obs;
 
 		cout << "Parsing rawlog...\n";
 
@@ -100,7 +100,7 @@ int main(int argc, char **argv)
 			// Process GPS entries:
 			if (IS_CLASS(obs,CObservationGPS))
 			{
-				CObservationGPSPtr o = CObservationGPSPtr(obs);
+				CObservationGPS::Ptr o = CObservationGPS::Ptr(obs);
 				if (o->has_GGA_datum) 
 				{
 					const mrpt::obs::gnss::Message_NMEA_GGA &gga = o->getMsgByClass<mrpt::obs::gnss::Message_NMEA_GGA>();
@@ -122,13 +122,13 @@ int main(int argc, char **argv)
 			else
 			if (IS_CLASS(obs,CObservation2DRangeScan))
 			{
-				CObservation2DRangeScanPtr o = CObservation2DRangeScanPtr(obs);
+				CObservation2DRangeScan::Ptr o = CObservation2DRangeScan::Ptr(obs);
 				// o->...
 			}
 			else
 			if (IS_CLASS(obs,CObservationStereoImages))
 			{
-			    CObservationStereoImagesPtr o = CObservationStereoImagesPtr(obs);
+			    CObservationStereoImages::Ptr o = CObservationStereoImages::Ptr(obs);
 			    win.setImageView( o->imageLeft ); // Use a 3D window to display a 2D image (exploits OpenGL acceleration)
 			    win.repaint();
 
@@ -141,7 +141,7 @@ int main(int argc, char **argv)
 			else
 			if (IS_CLASS(obs,CObservationIMU))
 			{
-				CObservationIMUPtr o = CObservationIMUPtr(obs);
+				CObservationIMU::Ptr o = CObservationIMU::Ptr(obs);
 				//cout << "IMU: yaw vel.=" << o->rawMeasurements[IMU_YAW_VEL] <<" rad/s" << endl;
 			}
 

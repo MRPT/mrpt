@@ -154,7 +154,7 @@ void BlenderImporter::InternReadFile( const std::string& pFile,
 	aiScene* pScene, IOSystem* pIOHandler)
 {
 #ifndef ASSIMP_BUILD_NO_COMPRESSED_BLEND
-	Bytef* dest = NULL;
+	Bytef* dest = nullptr;
 	free_it free_it_really(dest);
 #endif
 
@@ -189,9 +189,9 @@ void BlenderImporter::InternReadFile( const std::string& pFile,
 
 		// build a zlib stream
 		z_stream zstream;
-		zstream.opaque = Z_NULL;
-		zstream.zalloc = Z_NULL;
-		zstream.zfree  = Z_NULL;
+        zstream.opaque = Z_NULL;
+        zstream.zalloc = Z_NULL;
+        zstream.zfree  = Z_NULL;
 		zstream.data_type = Z_BINARY;
 
 		// http://hewgill.com/journal/entries/349-how-to-decompress-gzip-stream-with-zlib
@@ -260,7 +260,7 @@ void BlenderImporter::ParseBlendFile(FileDatabase& out, boost::shared_ptr<IOStre
 	out.reader = boost::shared_ptr<StreamReaderAny>(new StreamReaderAny(stream,out.little));
 
 	DNAParser dna_reader(out);
-	const DNA* dna = NULL;
+	const DNA* dna = nullptr;
 
 	out.entries.reserve(128); { // even small BLEND files tend to consist of many file blocks
 		SectionParser parser(*out.reader.get(),out.i64bit);
@@ -291,7 +291,7 @@ void BlenderImporter::ParseBlendFile(FileDatabase& out, boost::shared_ptr<IOStre
 // ------------------------------------------------------------------------------------------------
 void BlenderImporter::ExtractScene(Scene& out, const FileDatabase& file) 
 {
-	const FileBlockHead* block = NULL;
+	const FileBlockHead* block = nullptr;
 	std::map<std::string,size_t>::const_iterator it = file.dna.indices.find("Scene");
 	if (it == file.dna.indices.end()) {
 		ThrowException("There is no `Scene` structure record");
@@ -321,7 +321,7 @@ void BlenderImporter::ExtractScene(Scene& out, const FileDatabase& file)
 #ifndef ASSIMP_BUILD_BLENDER_NO_STATS
 	DefaultLogger::get()->info((format(),
 		"(Stats) Fields read: "	,file.stats().fields_read,
-		", pointers resolved: "	,file.stats().pointers_resolved,  
+        ", pointers resolved: "	,file.stats().pointers_resolved,
 		", cache hits: "        ,file.stats().cache_hits,  
 		", cached objects: "	,file.stats().cached_objects
 	));

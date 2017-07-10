@@ -2,11 +2,9 @@
 # ===================================================
 SET(EIGEN_MATRIXBASE_PLUGIN "<mrpt/math/eigen_plugins.h>" CACHE STRING "Eigen plugin header")
 SET(EIGEN_MATRIXBASE_PLUGIN_POST_IMPL "<mrpt/math/eigen_plugins_impl.h>" CACHE STRING "Eigen plugin implementation header")
-SET(EIGEN_EMBEDDED_INCLUDE_DIR "${MRPT_SOURCE_DIR}/otherlibs/eigen3/" CACHE PATH "Eigen path for embedded use")
 
 MARK_AS_ADVANCED(EIGEN_MATRIXBASE_PLUGIN)
 MARK_AS_ADVANCED(EIGEN_MATRIXBASE_PLUGIN_POST_IMPL)
-MARK_AS_ADVANCED(EIGEN_EMBEDDED_INCLUDE_DIR)
 
 # By default: Use system version if pkg-config says it exists:
 SET(DEFAULT_EIGEN_USE_EMBEDDED_VERSION ON)
@@ -22,6 +20,21 @@ ENDIF(PKG_CONFIG_FOUND)
 SET(EIGEN_USE_EMBEDDED_VERSION ${DEFAULT_EIGEN_USE_EMBEDDED_VERSION} CACHE BOOL "Use embedded Eigen3 version or system version")
 IF (EIGEN_USE_EMBEDDED_VERSION)
 	# Include embedded version headers:
+	include(ExternalProject)
+	# download Eigen from bitbucket
+	ExternalProject_Add(eigen3
+	  URL               "https://bitbucket.org/eigen/eigen/get/3.3.3.tar.bz2"
+	  URL_MD5           "b2ddade41040d9cf73b39b4b51e8775b"
+	  SOURCE_DIR        "${MRPT_SOURCE_DIR}/otherlibs/eigen3/"
+	  CONFIGURE_COMMAND ""
+	  BUILD_COMMAND     ""
+	  INSTALL_COMMAND   ""
+	  TEST_COMMAND      ""
+	)
+
+	SET(EIGEN_EMBEDDED_INCLUDE_DIR "${MRPT_SOURCE_DIR}/otherlibs/eigen3/" CACHE PATH "Eigen path for embedded use")
+	MARK_AS_ADVANCED(EIGEN_EMBEDDED_INCLUDE_DIR)
+
 	SET(MRPT_EIGEN_INCLUDE_DIR "${EIGEN_EMBEDDED_INCLUDE_DIR}")
 ELSE(EIGEN_USE_EMBEDDED_VERSION)
 	# Find Eigen headers in the system:
