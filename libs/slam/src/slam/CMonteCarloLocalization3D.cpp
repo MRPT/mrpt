@@ -87,10 +87,8 @@ CMonteCarloLocalization3D::CMonteCarloLocalization3D(size_t M)
 				Dtor
  ---------------------------------------------------------------*/
 CMonteCarloLocalization3D::~CMonteCarloLocalization3D() {}
-/*---------------------------------------------------------------
-						getLastPose
- ---------------------------------------------------------------*/
- TPose3D CMonteCarloLocalization3D::getLastPose(const size_t i, bool &is_valid_pose) const
+
+TPose3D CMonteCarloLocalization3D::getLastPose(const size_t i, bool &is_valid_pose) const
 {
 	if (i >= m_particles.size()) 
 		THROW_EXCEPTION("Particle index out of bounds!");

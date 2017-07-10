@@ -99,7 +99,7 @@ class SLAM_IMPEXP CMetricMapBuilderICP : public mrpt::slam::CMetricMapBuilder
 	  */
 	void initialize(
 		const mrpt::maps::CSimpleMap& initialMap = mrpt::maps::CSimpleMap(),
-		mrpt::poses::CPosePDF* x0 = nullptr) override;
+		const mrpt::poses::CPosePDF* x0 = nullptr) override;
 
 	/** Returns a copy of the current best pose estimation as a pose PDF.
 	  */

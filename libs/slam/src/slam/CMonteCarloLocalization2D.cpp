@@ -81,9 +81,7 @@ CMonteCarloLocalization2D::CMonteCarloLocalization2D(size_t M)
 				Dtor
  ---------------------------------------------------------------*/
 CMonteCarloLocalization2D::~CMonteCarloLocalization2D() {}
-/*---------------------------------------------------------------
-						getLastPose
- ---------------------------------------------------------------*/
+
 TPose3D CMonteCarloLocalization2D::getLastPose(const size_t i, bool &is_valid_pose) const
 {
 	if (i >= m_particles.size()) 
