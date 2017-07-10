@@ -12,8 +12,10 @@
 using namespace mrpt;
 using namespace mrpt::obs;
 
-CRangeScanNode::CRangeScanNode(CNode *parent, CObservation2DRangeScan::Ptr)
+CRangeScanNode::CRangeScanNode(CNode *parent, CObservation2DRangeScan::Ptr observation, const poses::CPose3D &pose)
 	: CBaseObservationNode(parent)
+	, m_observation(observation)
+	, m_pose(pose)
 {
 
 }
@@ -26,4 +28,14 @@ CNode::ObjectType CRangeScanNode::type() const
 std::string CRangeScanNode::displayName() const
 {
 	return "Range scan";
+}
+
+CObservation2DRangeScan::Ptr CRangeScanNode::observation() const
+{
+	return m_observation;
+}
+
+poses::CPose3D CRangeScanNode::getPose() const
+{
+	return m_pose;
 }

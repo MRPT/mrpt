@@ -11,6 +11,9 @@
 #include "CDocument.h"
 #include "observationTree/CObservationTreeModel.h"
 #include "observationTree/CPosesNode.h"
+#include "observationTree/CRangeScanNode.h"
+#include "observationTree/CObservationsNode.h"
+#include "observationTree/CPairNode.h"
 
 #include <QMenu>
 #include <QMenuBar>
@@ -95,10 +98,34 @@ void CMainWindow::openMap()
 void CMainWindow::itemClicked(const QModelIndex &index)
 {
 	CNode* node = m_model->getNodeFromIndexSafe(index);
-	CPoseNode *posesNode = dynamic_cast<CPoseNode *>(node);
+	CNode::ObjectType type = node->type();
 
-	if (posesNode)
+	switch (type) {
+	case CNode::ObjectType::RangeScan:
 	{
+		CRangeScanNode *obsNode = dynamic_cast<CRangeScanNode *>(node);
+		assert(obsNode);
+
+		mrpt::opengl::CPlanarLaserScan::Ptr obj = mrpt::opengl::CPlanarLaserScan::Create();
+		obj->setScan(*(obsNode->observation().get()));
+		obj->setPose( obsNode->getPose() );
+		obj->setSurfaceColor(1.0f,0.0f,0.0f, 0.5f);
+
+		for (int i = 0; i < m_ui->m_tabWidget->count(); ++i)
+		{
+			QWidget *w = m_ui->m_tabWidget->widget(i);
+			CGlWidget *gl = dynamic_cast<CGlWidget *>(w);
+			assert(gl);
+			gl->setSelected(obsNode->getPose());
+			gl->setLaserScan(obj);
+		}
+		break;
+	}
+	case CNode::ObjectType::Pos:
+	{
+		CPoseNode *posesNode = dynamic_cast<CPoseNode *>(node);
+		assert(posesNode);
+
 		for (int i = 0; i < m_ui->m_tabWidget->count(); ++i)
 		{
 			QWidget *w = m_ui->m_tabWidget->widget(i);
@@ -106,6 +133,10 @@ void CMainWindow::itemClicked(const QModelIndex &index)
 			assert(gl);
 			gl->setSelected(posesNode->getPose());
 		}
+		break;
+	}
+	default:
+		break;
 	}
 }
 

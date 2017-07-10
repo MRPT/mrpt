@@ -24,11 +24,15 @@ public:
 	virtual ~CPairNode();
 
 	int childCount() const;
+
 	CNode* child(int id);
+	CNode* child(int id) const;
 	ObjectType type() const override;
 	std::string displayName() const override;
 
 private:
+	CNode* getChild(int id) const;
+
 	std::unique_ptr<CPoseNode>  m_pose;
 	std::unique_ptr<CObservationsNode> m_observations;
 
