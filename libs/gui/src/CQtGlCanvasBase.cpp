@@ -19,12 +19,15 @@ CQtGlCanvasBase::CQtGlCanvasBase(QWidget *parent)
 	, m_isPressLMouseButton(false)
 	, m_isPressRMouseButton(false)
 {
-
+	m_mainViewport = m_openGLScene->getViewport("main");
+	setMouseTracking(true);
 }
 
 void CQtGlCanvasBase::initializeGL()
 {
 	clearColors();
+
+	QGLWidget::initializeGL();
 }
 
 void CQtGlCanvasBase::paintGL()
@@ -36,6 +39,8 @@ void CQtGlCanvasBase::resizeGL(int width, int height)
 {
 	if (height==0) height=1;
 	glViewport(0,0,width,height);
+
+	QGLWidget::resizeGL(width, height);
 }
 
 void CQtGlCanvasBase::mousePressEvent(QMouseEvent *event)
@@ -79,9 +84,7 @@ void CQtGlCanvasBase::mouseMoveEvent(QMouseEvent *event)
 		setMousePos(X, Y);
 		setCameraParams(params);
 
-		mrpt::opengl::COpenGLViewport::Ptr view = m_openGLScene->getViewport("main");
-		mrpt::opengl::CCamera &cam = view->getCamera();
-		updateCameraParams(cam);
+		updateCamerasParams();
 		update();
 	}
 
@@ -102,6 +105,8 @@ void CQtGlCanvasBase::wheelEvent(QWheelEvent *event)
 	params = updateZoom(params, event->delta());
 	setCameraParams(params);
 
+	updateCamerasParams();
+
 	update();
 	QGLWidget::wheelEvent(event);
 }
@@ -109,4 +114,16 @@ void CQtGlCanvasBase::wheelEvent(QWheelEvent *event)
 void CQtGlCanvasBase::renderError(const std::string &err_msg)
 {
 	Q_UNUSED(err_msg);
+}
+
+void CQtGlCanvasBase::updateCamerasParams()
+{
+	mrpt::opengl::CCamera &cam = m_mainViewport->getCamera();
+	updateCameraParams(cam);
+}
+
+void CQtGlCanvasBase::insertToMap(const opengl::CRenderizable::Ptr &newObject)
+{
+	assert(m_mainViewport);
+	m_mainViewport->insert(newObject);
 }

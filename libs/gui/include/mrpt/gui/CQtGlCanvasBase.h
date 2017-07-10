@@ -36,9 +36,14 @@ protected:
 	virtual void postRender() override {}
 	virtual void renderError(const std::string &err_msg) override;
 
+	virtual void updateCamerasParams();
+	virtual void insertToMap( const opengl::CRenderizable::Ptr &newObject );
+
 private:
 	bool m_isPressLMouseButton;
 	bool m_isPressRMouseButton;
+
+	mrpt::opengl::COpenGLViewport::Ptr m_mainViewport;
 
 };// end of class
 
