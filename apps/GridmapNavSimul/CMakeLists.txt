@@ -17,7 +17,6 @@ IF(CMAKE_MRPT_HAS_WXWIDGETS AND CMAKE_MRPT_HAS_OPENGL_GLUT)
 	SET(SRCS
 		gridmapSimulApp.cpp gridmapSimulApp.h
 		gridmapSimulMain.cpp gridmapSimulMain.h
-		CAboutBox.cpp CAboutBox.h
 		)
 	IF(WIN32)
 		SET(SRCS ${SRCS} resource.rc)

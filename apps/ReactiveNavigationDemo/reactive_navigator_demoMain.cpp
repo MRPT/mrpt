@@ -10,7 +10,6 @@
 #include "reactive_navigator_demoMain.h"
 #include <wx/msgdlg.h>
 #include <wx/textdlg.h>
-#include "CAboutBox.h"
 
 //(*InternalHeaders(reactive_navigator_demoframe)
 #include <wx/artprov.h>
@@ -24,6 +23,7 @@
 //*)
 
 #include <mrpt/gui/WxUtils.h>
+#include <mrpt/gui/about_box.h>
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/utils/CFileGZInputStream.h>
@@ -1171,11 +1171,13 @@ reactive_navigator_demoframe::~reactive_navigator_demoframe()
 	m_myRedirector = nullptr;
 }
 
-void reactive_navigator_demoframe::OnQuit(wxCommandEvent& event) { Close(); }
-void reactive_navigator_demoframe::OnAbout(wxCommandEvent& event)
+void reactive_navigator_demoframe::OnQuit(wxCommandEvent& )
 {
-	CAboutBox dlg(this);
-	dlg.ShowModal();
+	Close();
+}
+void reactive_navigator_demoframe::OnAbout(wxCommandEvent& )
+{
+	mrpt::gui::show_mrpt_about_box_wxWidgets(this, "ReactiveNavigatorDemo");
 }
 
 void reactive_navigator_demoframe::updateMap3DView()

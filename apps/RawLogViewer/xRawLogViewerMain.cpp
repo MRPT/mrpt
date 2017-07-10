@@ -8,7 +8,6 @@
    +------------------------------------------------------------------------+ */
 
 #include "xRawLogViewerMain.h"
-#include "CAboutBox.h"
 #include "CFormMotionModel.h"
 #include "CFormPlayVideo.h"
 #include "CFormRawMap.h"
@@ -34,6 +33,7 @@
 #include "xRawLogViewerApp.h"
 
 #include <mrpt/gui/WxUtils.h>
+#include <mrpt/gui/about_box.h>
 #include <mrpt/vision/CVideoFileWriter.h>
 #include <mrpt/utils/stl_containers_utils.h>
 #include <mrpt/utils/CTicTac.h>
@@ -1840,11 +1840,13 @@ xRawLogViewerFrame::~xRawLogViewerFrame()
 	winGPSPath.reset();
 }
 
-void xRawLogViewerFrame::OnQuit(wxCommandEvent& event) { Close(); }
-void xRawLogViewerFrame::OnAbout(wxCommandEvent& event)
+void xRawLogViewerFrame::OnQuit(wxCommandEvent&)
 {
-	CAboutBox aboutbox(this);
-	aboutbox.ShowModal();
+	Close();
+}
+void xRawLogViewerFrame::OnAbout(wxCommandEvent&)
+{
+	mrpt::gui::show_mrpt_about_box_wxWidgets(this, "RawLogViewer");
 }
 
 //------------------------------------------------------------------------

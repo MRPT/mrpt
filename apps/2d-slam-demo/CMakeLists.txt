@@ -18,7 +18,6 @@ IF(CMAKE_MRPT_HAS_WXWIDGETS)
 		slamdemoApp.cpp   slamdemoApp.h
 		slamdemoMain.cpp  slamdemoMain.h
 		batch_experiments.cpp
-		CAboutBox.cpp  CAboutBox.h
 		CDlgParams.cpp CDlgParams.h
 		CLogView.cpp CLogView.h
 	 )

@@ -23,7 +23,6 @@
 //*)
 
 #include "CDialogOptions.h"
-#include "CAboutBox.h"
 
 #include <wx/msgdlg.h>
 #include <wx/numdlg.h>
@@ -52,6 +51,7 @@ const std::string iniFileSect("CONF_LIN");
 #endif
 
 #include <mrpt/gui/CMyGLCanvasBase.h>
+#include <mrpt/gui/about_box.h>
 #include <mrpt/opengl/CFBORender.h>
 
 #include <mrpt/opengl/COpenGLScene.h>
@@ -879,11 +879,13 @@ _DSceneViewerFrame::~_DSceneViewerFrame()
 	//*)
 }
 
-void _DSceneViewerFrame::OnQuit(wxCommandEvent& event) { Close(); }
-void _DSceneViewerFrame::OnAbout(wxCommandEvent& event)
+void _DSceneViewerFrame::OnQuit(wxCommandEvent& )
 {
-	CAboutBox dialog(this);
-	dialog.ShowModal();
+	Close();
+}
+void _DSceneViewerFrame::OnAbout(wxCommandEvent& )
+{
+	mrpt::gui::show_mrpt_about_box_wxWidgets(this, "SceneViewer3D");
 }
 
 void _DSceneViewerFrame::OnNewScene(wxCommandEvent& event)

@@ -20,7 +20,6 @@ IF(CMAKE_MRPT_HAS_WXWIDGETS AND CMAKE_MRPT_HAS_OPENGL_GLUT)
 		MyGLCanvas.cpp  MyGLCanvas.h
 		MyArtProvider.cpp  MyArtProvider.h
 		CDlgLog.cpp CDlgLog.h
-		CAboutBox.cpp  CAboutBox.h
 		generate_3d_views.cpp
 		thread_hmtslam.cpp
 		)

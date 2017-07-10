@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 #include "navlog_viewer_GUI_designMain.h"
-#include "CAboutBox.h"
+#include <mrpt/gui/about_box.h>
 #include <wx/msgdlg.h>
 
 //(*InternalHeaders(navlog_viewer_GUI_designDialog)
@@ -586,8 +586,8 @@ void navlog_viewer_GUI_designDialog::loadLogfile(const std::string& filName)
 
 void navlog_viewer_GUI_designDialog::OnbtnHelpClick(wxCommandEvent& event)
 {
-	CAboutBox dlg(nullptr);  // nullptr so it gets centered on the screen
-	dlg.ShowModal();
+	mrpt::gui::show_mrpt_about_box_wxWidgets(this, "navlog-viewer",
+		"Invoke with --help to see command line arguments.");
 }
 
 void navlog_viewer_GUI_designDialog::OnbtnQuitClick(wxCommandEvent& event)

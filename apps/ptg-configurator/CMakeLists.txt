@@ -12,7 +12,6 @@ IF(CMAKE_MRPT_HAS_WXWIDGETS)
 	SET(SRCS
 	 ptgConfiguratorApp.cpp   ptgConfiguratorApp.h
 	 ptgConfiguratorMain.cpp  ptgConfiguratorMain.h
-	 CAboutBox.cpp  CAboutBox.h
 	 MyGLCanvas.cpp MyGLCanvas.h
 	)
 

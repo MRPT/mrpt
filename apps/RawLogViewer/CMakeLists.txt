@@ -13,7 +13,7 @@ IF(CMAKE_MRPT_HAS_WXWIDGETS)
 	# ---------------------------------------------
 	# TARGET:
 	# ---------------------------------------------
-	SET(SRCS CAboutBox.cpp 	CAboutBox.h
+	SET(SRCS
 	 CFormEdit.cpp	CFormEdit.h
 	 CFormMotionModel.cpp	CFormMotionModel.h
 	 CFormPlayVideo.cpp		CFormPlayVideo.h
