@@ -34,6 +34,10 @@ CPoseRandomSampler::CPoseRandomSampler(const CPoseRandomSampler& o)
 		m_pdf2D.reset(dynamic_cast<const CPosePDF*>(o.m_pdf2D->clone()));
 	if (o.m_pdf3D)
 		m_pdf3D.reset(dynamic_cast<const CPose3DPDF*>(o.m_pdf3D->clone()));
+	m_fastdraw_gauss_Z3 = o.m_fastdraw_gauss_Z3;
+	m_fastdraw_gauss_Z6 = o.m_fastdraw_gauss_Z6;
+	m_fastdraw_gauss_M_2D = o.m_fastdraw_gauss_M_2D;
+	m_fastdraw_gauss_M_3D = o.m_fastdraw_gauss_M_3D;
 }
 
 CPoseRandomSampler& CPoseRandomSampler::operator=(const CPoseRandomSampler& o)
@@ -45,27 +49,6 @@ CPoseRandomSampler& CPoseRandomSampler::operator=(const CPoseRandomSampler& o)
 		m_pdf2D.reset(dynamic_cast<const CPosePDF*>(o.m_pdf2D->clone()));
 	if (o.m_pdf3D)
 		m_pdf3D.reset(dynamic_cast<const CPose3DPDF*>(o.m_pdf3D->clone()));
-	return *this;
-}
-
-CPoseRandomSampler::CPoseRandomSampler(const CPoseRandomSampler &o) :
-	m_pdf2D(NULL),
-	m_pdf3D(NULL)
-{
-	if (o.m_pdf2D) m_pdf2D = dynamic_cast<CPosePDF*>(o.m_pdf2D->duplicate());
-	if (o.m_pdf3D) m_pdf3D = dynamic_cast<CPose3DPDF*>(o.m_pdf3D->duplicate());
-	m_fastdraw_gauss_Z3 = o.m_fastdraw_gauss_Z3;
-	m_fastdraw_gauss_Z6 = o.m_fastdraw_gauss_Z6;
-	m_fastdraw_gauss_M_2D = o.m_fastdraw_gauss_M_2D;
-	m_fastdraw_gauss_M_3D = o.m_fastdraw_gauss_M_3D;
-
-}
-CPoseRandomSampler & CPoseRandomSampler::operator =(const CPoseRandomSampler &o)
-{
-	if (this == &o) return *this;
-	this->clear();
-	if (o.m_pdf2D) m_pdf2D = dynamic_cast<CPosePDF*>(o.m_pdf2D->duplicate()); else m_pdf2D = NULL;
-	if (o.m_pdf3D) m_pdf3D = dynamic_cast<CPose3DPDF*>(o.m_pdf3D->duplicate()); else m_pdf3D = NULL;
 	m_fastdraw_gauss_Z3 = o.m_fastdraw_gauss_Z3;
 	m_fastdraw_gauss_Z6 = o.m_fastdraw_gauss_Z6;
 	m_fastdraw_gauss_M_2D = o.m_fastdraw_gauss_M_2D;
@@ -79,12 +62,12 @@ CPoseRandomSampler::CPoseRandomSampler(CPoseRandomSampler &&o) :
 {
 	if (o.m_pdf2D)
 	{
-		m_pdf2D = o.m_pdf2D;
+		m_pdf2D = std::move(o.m_pdf2D);
 		o.m_pdf2D = nullptr;
 	}
 	if (o.m_pdf3D)
 	{
-		m_pdf3D = o.m_pdf3D;
+		m_pdf3D = std::move(o.m_pdf3D);
 		o.m_pdf3D = nullptr;
 	}
 	m_fastdraw_gauss_Z3 = std::move(o.m_fastdraw_gauss_Z3);
@@ -98,12 +81,12 @@ CPoseRandomSampler & CPoseRandomSampler::operator =(CPoseRandomSampler &&o)
 	this->clear();
 	if (o.m_pdf2D)
 	{
-		m_pdf2D = o.m_pdf2D;
+		m_pdf2D = std::move(o.m_pdf2D);
 		o.m_pdf2D = nullptr;
 	}
 	if (o.m_pdf3D)
 	{
-		m_pdf3D = o.m_pdf3D;
+		m_pdf3D = std::move(o.m_pdf3D);
 		o.m_pdf3D = nullptr;
 	}
 	m_fastdraw_gauss_Z3 = std::move(o.m_fastdraw_gauss_Z3);
