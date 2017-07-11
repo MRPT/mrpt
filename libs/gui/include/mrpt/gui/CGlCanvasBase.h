@@ -40,6 +40,9 @@ public:
 	CGlCanvasBase();
 	virtual ~CGlCanvasBase();
 
+	void setMinimumZoom(float zoom);
+	void setMaximumZoom(float zoom);
+
 	void setMousePos(int x, int y);
 	void setMouseClicked(bool is);
 	void updateLastPos(int x, int y);
@@ -52,8 +55,10 @@ public:
 	CamaraParams updateOrbitCamera(CamaraParams &params, int x, int y);
 	CamaraParams updatePan(CamaraParams &params, int x, int y);
 
-	CamaraParams cameraParams();
+	CamaraParams cameraParams() const;
 	void setCameraParams(const CamaraParams &params);
+
+	float getCameraZoomDistance() const;
 
 	void updateCameraParams(mrpt::opengl::CCamera &cam) const;
 	void setUseCameraFromScene(bool is);
@@ -121,6 +126,9 @@ private:
 	int		m_mouseLastX, m_mouseLastY;
 	int		mouseClickX, mouseClickY;
 	bool	mouseClicked;
+	float m_minZoom;
+	float m_maxZoom;
+
 
 };  // end of class
 
