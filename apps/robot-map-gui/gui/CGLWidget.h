@@ -53,5 +53,5 @@ private:
 	bool m_isShowObs;
 	QVector<mrpt::opengl::CPointCloud::Ptr> m_visiblePoints;
 	mrpt::opengl::CPlanarLaserScan::Ptr m_currentLaserScan;
-	mrpt::opengl::CPointCloud::Ptr m_currentObs;
+	mrpt::opengl::CSetOfObjects::Ptr m_currentObs;
 };
