@@ -61,12 +61,24 @@ CGlCanvasBase::CGlCanvasBase()
 	, mouseClickX(0)
 	, mouseClickY(0)
 	, mouseClicked(false)
+	, m_minZoom(1.0)
+	, m_maxZoom(3200.0)
 {
 }
 
 CGlCanvasBase::~CGlCanvasBase()
 {
 	m_openGLScene.reset();
+}
+
+void CGlCanvasBase::setMinimumZoom(float zoom)
+{
+	m_minZoom = zoom;
+}
+
+void CGlCanvasBase::setMaximumZoom(float zoom)
+{
+	m_maxZoom = zoom;
 }
 
 void CGlCanvasBase::setMousePos(int x, int y)
@@ -82,7 +94,10 @@ void CGlCanvasBase::setMouseClicked(bool is)
 
 CGlCanvasBase::CamaraParams CGlCanvasBase::updateZoom(CamaraParams &params, int x, int y)
 {
-	params.cameraZoomDistance *= exp(0.01*(y - mouseClickY));
+	float zoom = params.cameraZoomDistance * exp(0.01*(y - mouseClickY));
+	if (zoom <= m_minZoom && m_maxZoom >= zoom)
+		return params;
+	params.cameraZoomDistance = zoom;
 	if (params.cameraZoomDistance < 0.01) params.cameraZoomDistance = 0.01f;
 
 	float	Az = -0.05 * (x - mouseClickX);
@@ -94,7 +109,11 @@ CGlCanvasBase::CamaraParams CGlCanvasBase::updateZoom(CamaraParams &params, int 
 
 CGlCanvasBase::CamaraParams CGlCanvasBase::updateZoom(CamaraParams &params, float delta)
 {
-	params.cameraZoomDistance *= 1 - 0.03f*(delta/120.0f);
+	float zoom = params.cameraZoomDistance * 1 - 0.03f*(delta/120.0f);
+	if (zoom <= m_minZoom && m_maxZoom >= zoom)
+		return params;
+
+	params.cameraZoomDistance = zoom;
 	return params;
 }
 
@@ -157,7 +176,7 @@ CGlCanvasBase::CamaraParams CGlCanvasBase::updatePan(CamaraParams &params, int x
 	return params;
 }
 
-CGlCanvasBase::CamaraParams CGlCanvasBase::cameraParams()
+CGlCanvasBase::CamaraParams CGlCanvasBase::cameraParams() const
 {
 	CamaraParams params;
 	params.cameraPointingX = cameraPointingX;
@@ -186,6 +205,11 @@ void CGlCanvasBase::setCameraParams(const CGlCanvasBase::CamaraParams &params)
 
 	cameraIsProjective = params.cameraIsProjective;
 	cameraFOV = params.cameraFOV;
+}
+
+float CGlCanvasBase::getCameraZoomDistance() const
+{
+	return cameraZoomDistance;
 }
 
 void CGlCanvasBase::updateCameraParams(CCamera &cam) const

@@ -39,9 +39,15 @@ CMainWindow::CMainWindow(QWidget *parent)
 	QObject::connect(m_ui->m_configWidget, SIGNAL(removedMap()), SLOT(updateConfig()));
 	QObject::connect(m_ui->m_configWidget, SIGNAL(updatedConfig()), SLOT(updateConfig()));
 	QObject::connect(m_ui->m_observationsTree,	SIGNAL(clicked(const QModelIndex &)),	SLOT(itemClicked(const QModelIndex &)));
-
+	QObject::connect(m_ui->m_actionLoadConfig,	SIGNAL(triggered(bool)), m_ui->m_configWidget, SLOT(openConfig()));
 
 	QObject::connect(m_ui->m_actionShowAllObs, SIGNAL(triggered(bool)), SLOT(showAllObservation(bool)));
+	m_ui->m_configWidget->setVisible(false);
+
+
+	QObject::connect(m_ui->m_zoom, SIGNAL(valueChanged(double)), SLOT(zoomChanged(double)));
+	QObject::connect(m_ui->m_zoomSlider, SIGNAL(valueChanged(int)), SLOT(zoomChanged(int)));
+	QObject::connect(m_ui->m_tabWidget, SIGNAL(currentChanged(int)), SLOT(updateZoomInfo(int)));
 }
 
 CMainWindow::~CMainWindow()
@@ -53,6 +59,46 @@ CMainWindow::~CMainWindow()
 		delete m_model;
 
 	delete m_ui->m_configWidget;
+}
+
+void CMainWindow::updateZoomInfo(int index)
+{
+	if (m_ui->m_tabWidget->count())
+	{
+		CGlWidget *gl = dynamic_cast<CGlWidget *>(m_ui->m_tabWidget->widget(index));
+		assert(gl);
+
+		changeZoomInfo(gl->getZoom());
+	}
+}
+
+void CMainWindow::changeZoomInfo(float zoom)
+{
+	int zoomInt = zoom;
+	m_ui->m_zoomSlider->setValue(zoomInt);
+
+	double zoomDouble = zoom;
+	m_ui->m_zoom->setValue(zoomDouble);
+}
+
+void CMainWindow::zoomChanged(double d)
+{
+	float zoomFloat = d;
+	int zoomInt = zoomFloat;
+	m_ui->m_zoomSlider->setValue(zoomInt);
+	CGlWidget *gl = dynamic_cast<CGlWidget *>(m_ui->m_tabWidget->currentWidget());
+	assert(gl);
+	gl->setZoom(zoomFloat);
+}
+
+void CMainWindow::zoomChanged(int d)
+{
+	double zoomD = d;
+	float zoomFloat = zoomD;
+	m_ui->m_zoom->setValue(zoomD);
+	CGlWidget *gl = dynamic_cast<CGlWidget *>(m_ui->m_tabWidget->currentWidget());
+	assert(gl);
+	gl->setZoom(zoomFloat);
 }
 
 void CMainWindow::showAllObservation(bool is)
@@ -183,6 +229,7 @@ void CMainWindow::applyConfigurationForCurrentMaps()
 	}
 }
 
+
 void CMainWindow::updateRenderMapFromConfig()
 {
 	for (int i = 0; i < m_ui->m_tabWidget->count(); ++i)
@@ -199,8 +246,11 @@ void CMainWindow::updateRenderMapFromConfig()
 		CGlWidget *gl = new CGlWidget();
 		gl->fillMap(it.second);
 		m_ui->m_tabWidget->addTab(gl, QString::fromStdString(it.first));
+		qDebug() << QString::fromStdString(it.first);
+
 		gl->setDocument(m_document);
 		gl->setSelectedObservation(m_ui->m_actionShowAllObs->isChecked());
+		QObject::connect(gl, SIGNAL(zoomChanged(float)), SLOT(changeZoomInfo(float)));
 	}
 }
 

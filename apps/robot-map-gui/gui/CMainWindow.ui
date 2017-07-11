@@ -6,32 +6,73 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>802</width>
-    <height>663</height>
+    <width>828</width>
+    <height>712</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Main Window</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QHBoxLayout" name="horizontalLayout_2">
-    <property name="spacing">
-     <number>0</number>
-    </property>
-    <property name="leftMargin">
-     <number>0</number>
-    </property>
-    <property name="topMargin">
-     <number>0</number>
-    </property>
-    <property name="rightMargin">
-     <number>0</number>
-    </property>
-    <property name="bottomMargin">
-     <number>0</number>
-    </property>
+   <layout class="QVBoxLayout" name="verticalLayout_4">
     <item>
      <widget class="QTabWidget" name="m_tabWidget"/>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QDoubleSpinBox" name="m_zoom">
+        <property name="minimum">
+         <double>1.000000000000000</double>
+        </property>
+        <property name="maximum">
+         <double>3200.000000000000000</double>
+        </property>
+        <property name="value">
+         <double>100.000000000000000</double>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QSlider" name="m_zoomSlider">
+        <property name="minimum">
+         <number>1</number>
+        </property>
+        <property name="maximum">
+         <number>3200</number>
+        </property>
+        <property name="pageStep">
+         <number>1</number>
+        </property>
+        <property name="value">
+         <number>50</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="m_infoUnderCursor">
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </item>
    </layout>
   </widget>
@@ -40,7 +81,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>802</width>
+     <width>828</width>
      <height>19</height>
     </rect>
    </property>
@@ -49,6 +90,7 @@
      <string>File</string>
     </property>
     <addaction name="openAction"/>
+    <addaction name="m_actionLoadConfig"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -63,37 +105,11 @@
     <addaction name="m_actionShowObs"/>
     <addaction name="m_actionShowConfig"/>
     <addaction name="m_actionShowAllObs"/>
+    <addaction name="m_actionShowNavigation"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuTools"/>
    <addaction name="menuHelp"/>
-  </widget>
-  <widget class="QDockWidget" name="m_dockWidgetConfig">
-   <property name="windowTitle">
-    <string>Configuration</string>
-   </property>
-   <attribute name="dockWidgetArea">
-    <number>2</number>
-   </attribute>
-   <widget class="CConfigWidget" name="m_configWidget">
-    <layout class="QHBoxLayout" name="horizontalLayout_3">
-     <property name="spacing">
-      <number>0</number>
-     </property>
-     <property name="leftMargin">
-      <number>6</number>
-     </property>
-     <property name="topMargin">
-      <number>6</number>
-     </property>
-     <property name="rightMargin">
-      <number>6</number>
-     </property>
-     <property name="bottomMargin">
-      <number>6</number>
-     </property>
-    </layout>
-   </widget>
   </widget>
   <widget class="QDockWidget" name="m_dockWidgetObs">
    <property name="windowTitle">
@@ -126,9 +142,26 @@
     </layout>
    </widget>
   </widget>
+  <widget class="QDockWidget" name="m_dockWidgetConfig">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="floating">
+    <bool>false</bool>
+   </property>
+   <property name="windowTitle">
+    <string>Configuration</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="CConfigWidget" name="m_configWidget">
+    <layout class="QVBoxLayout" name="verticalLayout_2"/>
+   </widget>
+  </widget>
   <action name="openAction">
    <property name="text">
-    <string>Open</string>
+    <string>Open simplemap</string>
    </property>
   </action>
   <action name="actionAbout">
@@ -167,7 +200,7 @@
     <bool>true</bool>
    </property>
    <property name="checked">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="text">
     <string>Show configuration</string>
@@ -184,6 +217,22 @@
     <string>Show all observation</string>
    </property>
   </action>
+  <action name="m_actionShowNavigation">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show navigation</string>
+   </property>
+  </action>
+  <action name="m_actionLoadConfig">
+   <property name="text">
+    <string>Load config</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -196,30 +245,14 @@
  <resources/>
  <connections>
   <connection>
-   <sender>m_actionShowConfig</sender>
-   <signal>triggered(bool)</signal>
-   <receiver>m_dockWidgetConfig</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>319</x>
-     <y>369</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>m_dockWidgetConfig</sender>
    <signal>visibilityChanged(bool)</signal>
    <receiver>m_actionShowConfig</receiver>
    <slot>setChecked(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>319</x>
-     <y>369</y>
+     <x>687</x>
+     <y>674</y>
     </hint>
     <hint type="destinationlabel">
      <x>-1</x>
@@ -256,6 +289,22 @@
     <hint type="destinationlabel">
      <x>-1</x>
      <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_actionShowConfig</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>m_dockWidgetConfig</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>687</x>
+     <y>674</y>
     </hint>
    </hints>
   </connection>

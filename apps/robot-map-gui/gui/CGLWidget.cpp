@@ -47,12 +47,10 @@ CGlWidget::CGlWidget(QWidget *parent)
 	m_miniMapViewport->setViewportPosition(0.01,0.01, m_minimapPercentSize, m_minimapPercentSize);
 	m_miniMapViewport->setTransparent(false);
 
-
 	// The ground:
 	mrpt::opengl::CGridPlaneXY::Ptr groundPlane = mrpt::opengl::CGridPlaneXY::Create(-200,200,-200,200,0,5);
 	groundPlane->setColor(0.4,0.4,0.4);
 	insertToMap(groundPlane);
-
 }
 
 CGlWidget::~CGlWidget()
@@ -135,6 +133,22 @@ void CGlWidget::setDocument(CDocument *doc)
 		setSelectedObservation(m_isShowObs);
 }
 
+void CGlWidget::setZoom(float zoom)
+{
+	CamaraParams params = cameraParams();
+	params.cameraZoomDistance = zoom;
+	setCameraParams(params);
+	updateCamerasParams();
+
+	update();
+
+}
+
+float CGlWidget::getZoom() const
+{
+	return getCameraZoomDistance();
+}
+
 void CGlWidget::resizeGL(int width, int height)
 {
 	CQtGlCanvasBase::resizeGL(width, height);
@@ -152,7 +166,10 @@ void CGlWidget::updateCamerasParams()
 {
 	CQtGlCanvasBase::updateCamerasParams();
 	CCamera &camMiniMap = m_miniMapViewport->getCamera();
+	float zoom = camMiniMap.getZoomDistance();
 	updateCameraParams(camMiniMap);
+	if (zoom != camMiniMap.getZoomDistance())
+		emit zoomChanged(camMiniMap.getZoomDistance());
 }
 
 void CGlWidget::insertToMap(const CRenderizable::Ptr &newObject)

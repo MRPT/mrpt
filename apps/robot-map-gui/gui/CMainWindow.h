@@ -32,6 +32,10 @@ public:
 	virtual ~CMainWindow();
 
 private slots:
+	void updateZoomInfo(int index);
+	void changeZoomInfo(float zoom);
+	void zoomChanged(double d);
+	void zoomChanged(int d);
 	void showAllObservation(bool is);
 	void openMap();
 	void itemClicked(const QModelIndex &index);
@@ -39,6 +43,7 @@ private slots:
 	void updateConfig(const std::string str);
 
 	void applyConfigurationForCurrentMaps();
+
 private:
 	void updateRenderMapFromConfig();
 	void createNewDocument();

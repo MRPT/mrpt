@@ -40,11 +40,12 @@ signals:
 	void removedMap();
 	void updatedConfig();
 	void openedConfig(const std::string str);
-
 	void applyConfigurationForCurrentMaps();
 
-private slots:
+public slots:
 	void openConfig();
+
+private slots:
 	void saveConfig();
 	void addMap();
 	void removeMap();

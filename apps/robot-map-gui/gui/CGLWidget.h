@@ -21,6 +21,7 @@ class CDocument;
 
 class CGlWidget : public mrpt::gui::CQtGlCanvasBase
 {
+	Q_OBJECT
 public:
 	CGlWidget(QWidget* parent = nullptr);
 	virtual ~CGlWidget();
@@ -31,6 +32,11 @@ public:
 	void setLaserScan(mrpt::opengl::CPlanarLaserScan::Ptr laserScan);
 
 	void setDocument(CDocument *doc);
+	void setZoom(float zoom);
+	float getZoom() const;
+
+signals:
+	void zoomChanged(float zoom);
 
 protected:
 	virtual void resizeGL(int width, int height) override;
