@@ -15,6 +15,7 @@
 #include "mrpt/opengl/CGridPlaneXY.h"
 #include "mrpt/opengl/CPointCloud.h"
 #include "mrpt/gui/CGlCanvasBase.h"
+#include "mrpt/opengl/stock_objects.h"
 
 #include "CDocument.h"
 
@@ -81,11 +82,8 @@ void CGlWidget::setSelected(const math::TPose3D &pose)
 	if (m_currentLaserScan)
 		m_map->removeObject(m_currentLaserScan);
 
-	m_currentObs = CPointCloud::Create();
-	m_currentObs->setColor(mrpt::utils::TColorf(mrpt::utils::TColor::green));
-	m_currentObs->setPointSize(10.);
-
-	m_currentObs->insertPoint(pose.x, pose.y, pose.z);
+	m_currentObs = opengl::stock_objects::RobotGiraff();
+	m_currentObs->setPose( pose );
 	m_map->insert(m_currentObs);
 
 	update();
