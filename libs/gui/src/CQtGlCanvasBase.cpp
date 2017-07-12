@@ -43,6 +43,11 @@ void CQtGlCanvasBase::resizeGL(int width, int height)
 	QGLWidget::resizeGL(width, height);
 }
 
+opengl::COpenGLViewport::Ptr CQtGlCanvasBase::mainViewport() const
+{
+	return m_mainViewport;
+}
+
 void CQtGlCanvasBase::mousePressEvent(QMouseEvent *event)
 {
 	setMousePos(event->pos().x(), event->pos().y());
