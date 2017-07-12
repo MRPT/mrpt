@@ -50,6 +50,7 @@ if(CMAKE_MRPT_HAS_Qt5 AND CMAKE_MRPT_HAS_OPENGL_GLUT)
 		gui/CMainWindow.h
 		gui/CGLWidget.h
 		gui/configWidget/CConfigWidget.h
+		gui/observationTree/CObservationTree.h
 		)
 
 	set(FILES_TO_UIC

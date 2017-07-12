@@ -26,6 +26,26 @@ void CObservationTree::setModel(QAbstractItemModel *model)
 	QTreeView::setModel(model);
 }
 
+void CObservationTree::expandAll()
+{
+	if (!m_model)
+		return;
+
+	QModelIndexList indexes = m_model->match(m_model->index(0,0, QModelIndex()), Qt::DisplayRole, "*", -1, Qt::MatchWildcard|Qt::MatchRecursive);
+	foreach (QModelIndex index, indexes)
+		expand(index);
+}
+
+void CObservationTree::collapseAll()
+{
+	if (!m_model)
+		return;
+
+	QModelIndexList indexes = m_model->match(m_model->index(0,0, QModelIndex()), Qt::DisplayRole, "*", -1, Qt::MatchWildcard|Qt::MatchRecursive);
+	foreach (QModelIndex index, indexes)
+		collapse(index);
+}
+
 void CObservationTree::contextMenuEvent(QContextMenuEvent *event)
 {
 	if (m_model)

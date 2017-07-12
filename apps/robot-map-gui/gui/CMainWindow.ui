@@ -105,7 +105,6 @@
     <addaction name="m_actionShowObs"/>
     <addaction name="m_actionShowConfig"/>
     <addaction name="m_actionShowAllObs"/>
-    <addaction name="m_actionShowNavigation"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuTools"/>
@@ -120,20 +119,53 @@
    </attribute>
    <widget class="QWidget" name="dockWidgetContents">
     <layout class="QVBoxLayout" name="verticalLayout">
-     <property name="leftMargin">
-      <number>6</number>
-     </property>
-     <property name="topMargin">
-      <number>0</number>
-     </property>
-     <property name="rightMargin">
-      <number>6</number>
-     </property>
-     <property name="bottomMargin">
-      <number>6</number>
-     </property>
      <item>
-      <widget class="QTreeView" name="m_observationsTree">
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item>
+        <widget class="QPushButton" name="m_expandAll">
+         <property name="toolTip">
+          <string>Expand all</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="../resources/resources.qrc">
+           <normaloff>:/expand.png</normaloff>:/expand.png</iconset>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="m_collapseAll">
+         <property name="toolTip">
+          <string>Collapse all</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="../resources/resources.qrc">
+           <normaloff>:/collapse.png</normaloff>:/collapse.png</iconset>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="CObservationTree" name="m_observationsTree">
        <attribute name="headerVisible">
         <bool>false</bool>
        </attribute>
@@ -241,8 +273,15 @@
    <header>gui/configWidget/CConfigWidget.h</header>
    <container>1</container>
   </customwidget>
+  <customwidget>
+   <class>CObservationTree</class>
+   <extends>QTreeView</extends>
+   <header>gui/observationTree/CObservationTree.h</header>
+  </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="../resources/resources.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>m_dockWidgetConfig</sender>
