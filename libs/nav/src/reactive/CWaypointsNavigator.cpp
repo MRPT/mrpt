@@ -107,6 +107,11 @@ void CWaypointsNavigator::waypoints_navigationStep()
 	mrpt::utils::CTimeLoggerEntry tle(m_timlog_delays,"CWaypointsNavigator::navigationStep()");
 	mrpt::synch::CCriticalSectionLocker csl(&m_nav_waypoints_cs);
 
+	// This will be used to detect changes in the list of waypoints, 
+	// from an external user code in an event.
+	const auto orig_nav_status_time = m_waypoint_nav_status.timestamp_nav_started;
+	const auto orig_nav_state = m_navigationState;
+
 	TWaypointStatusSequence &wps = m_waypoint_nav_status; // shortcut to save typing
 
 	if (wps.waypoints.empty() || wps.final_goal_reached)
@@ -197,6 +202,8 @@ void CWaypointsNavigator::waypoints_navigationStep()
 					wp.skipped = false;
 					wp.timestamp_reach = mrpt::system::now();
 					m_robot.sendWaypointReachedEvent(wps.waypoint_index_current_goal, true /* reason: really reached*/);
+					if (orig_nav_status_time != wps.timestamp_nav_started || orig_nav_state != m_navigationState)
+						return; // list of waypoints changed: abort and restart.
 
 					// Was this the final goal??
 					if (wps.waypoint_index_current_goal < int(wps.waypoints.size() - 1)) {
@@ -256,6 +263,8 @@ void CWaypointsNavigator::waypoints_navigationStep()
 					wp.timestamp_reach = mrpt::system::now();
 
 					m_robot.sendWaypointReachedEvent(k, false /* reason: skipped */);
+					if (orig_nav_status_time != wps.timestamp_nav_started || orig_nav_state != m_navigationState)
+						return; // list of waypoints changed: abort and restart.
 				}
 			}
 		}
@@ -273,6 +282,8 @@ void CWaypointsNavigator::waypoints_navigationStep()
 
 			// Notify we have a new "current waypoint"
 			m_robot.sendNewWaypointTargetEvent(wps.waypoint_index_current_goal);
+			if (orig_nav_status_time != wps.timestamp_nav_started || orig_nav_state != m_navigationState)
+				return; // list of waypoints changed: abort and restart.
 
 			// Send the current targets + "multitarget_look_ahead" additional ones to help the local planner.
 			CWaypointsNavigator::TNavigationParamsWaypoints nav_cmd;
@@ -328,7 +339,10 @@ void CWaypointsNavigator::navigationStep()
 	MRPT_START
 	m_is_aligning = false;  // the robot is aligning into a waypoint with a desired heading
 
-	if (m_navigationState != SUSPENDED)
+	// State can be NAVIGATING if we are already heading to a waypoint, 
+	// or IDLE if navigateWaypoints() was called and this is the first
+	// navStep() afterwards:
+	if (m_navigationState == NAVIGATING || m_navigationState == IDLE)
 	{
 		waypoints_navigationStep();
 	}

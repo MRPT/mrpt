@@ -23,6 +23,8 @@
 				- mrpt::synch::CCriticalSectionRecursive::try_enter()
 		- \ref mrpt_slam_grp
 			- rbpf-slam: Add support for simplemap continuation.
+	- BUG FIXES:
+		- Fix reactive navigator inconsistent state if navigation API is called from within rnav callbacks.
 
 <hr>
 <a name="1.5.1">
