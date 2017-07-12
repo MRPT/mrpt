@@ -12,6 +12,7 @@
 
 CObservationStereoImagesNode::CObservationStereoImagesNode(CNode *parent, mrpt::obs::CObservationStereoImages::Ptr observation, const mrpt::poses::CPose3D &pose)
 	: CBaseObservationNode(parent, pose)
+	, m_observation(observation)
 {
 
 }
