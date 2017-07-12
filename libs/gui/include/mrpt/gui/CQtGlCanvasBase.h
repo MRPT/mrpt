@@ -25,6 +25,8 @@ public:
 	virtual void paintGL() override;
 	virtual void resizeGL(int width, int height) override;
 
+	mrpt::opengl::COpenGLViewport::Ptr mainViewport() const;
+
 protected:
 	virtual void mousePressEvent(QMouseEvent *event) override;
 	virtual void mouseMoveEvent(QMouseEvent *event) override;
