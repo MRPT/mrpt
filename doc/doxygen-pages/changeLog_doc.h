@@ -17,6 +17,10 @@
 <h2>Version 1.5.2: (Under development)  </h2></a>
 - <b>Detailed list of changes:</b>
 	- Changes in libraries:
+		- \ref mrpt_base_grp
+			- Added methods:
+				- mrpt::synch::CCriticalSection::try_enter()
+				- mrpt::synch::CCriticalSectionRecursive::try_enter()
 		- \ref mrpt_slam_grp
 			- rbpf-slam: Add support for simplemap continuation.
 

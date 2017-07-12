@@ -31,6 +31,7 @@ namespace mrpt
 			virtual ~CAbstractMutex();
 			virtual void  enter() const =0;
 			virtual void  leave() const =0;
+			virtual bool  try_enter() const = 0; //!< Returns true if adquired; false otherwise.
 		};
 
 		/** This class provides simple critical sections functionality.
@@ -40,8 +41,7 @@ namespace mrpt
 		class BASE_IMPEXP CCriticalSection : public CAbstractMutex
 		{
 		private:
-			mrpt::utils::CReferencedMemBlock m_data;   //!< The OS-dependent descriptors
-
+			void *m_data;  //!< std::mutex*. Opaque ptr until MRPT 2.0.0 in which we could expose C++11 to user headers
 			std::string		m_name;
 		public:
 			CCriticalSection(const char *name = NULL);   //!< Ctor
@@ -49,6 +49,7 @@ namespace mrpt
 
 			void  enter() const MRPT_OVERRIDE; //!< Enter. \exception If the calling thread already possesses this critical section (it would be a dead-lock).
 			void  leave() const MRPT_OVERRIDE; //!< Leave. \exception If the calling thread is not the current owner of the critical section.
+			bool  try_enter() const MRPT_OVERRIDE;
 
 			/** Returns the name used in the constructor. */
 			std::string getName() const { return m_name; }
@@ -72,6 +73,7 @@ namespace mrpt
 
 			void  enter() const MRPT_OVERRIDE; //!< Enter. \exception If the calling thread already possesses this critical section (it would be a dead-lock).
 			void  leave() const MRPT_OVERRIDE; //!< Leave. \exception If the calling thread is not the current owner of the critical section.
+			bool  try_enter() const MRPT_OVERRIDE;
 		};
 
 		/** A class acquiring a CCriticalSection at its constructor, and releasing it at destructor.
