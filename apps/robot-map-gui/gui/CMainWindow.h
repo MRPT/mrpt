@@ -47,6 +47,7 @@ private slots:
 private:
 	void updateRenderMapFromConfig();
 	void createNewDocument();
+	void clearObservationsViewer();
 
 	CDocument *m_document;
 	CObservationTreeModel *m_model;

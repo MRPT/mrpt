@@ -13,6 +13,7 @@
 #include "observationTree/CPosesNode.h"
 #include "observationTree/CRangeScanNode.h"
 #include "observationTree/CObservationImageNode.h"
+#include "observationTree/CObservationStereoImageNode.h"
 #include "observationTree/CObservationsNode.h"
 #include "observationTree/CPairNode.h"
 
@@ -51,10 +52,15 @@ CMainWindow::CMainWindow(QWidget *parent)
 
 	QObject::connect(m_ui->m_expandAll, SIGNAL(released()), m_ui->m_observationsTree, SLOT(expandAll()));
 	QObject::connect(m_ui->m_collapseAll, SIGNAL(released()), m_ui->m_observationsTree, SLOT(collapseAll()));
+
+
+	m_ui->m_dockWidgetNodeViewer->setVisible(false);
 }
 
 CMainWindow::~CMainWindow()
 {
+	clearObservationsViewer();
+
 	if (m_document)
 		delete m_document;
 
@@ -149,6 +155,9 @@ void CMainWindow::itemClicked(const QModelIndex &index)
 	CNode* node = m_model->getNodeFromIndexSafe(index);
 	CNode::ObjectType type = node->type();
 
+	m_ui->m_dockWidgetNodeViewer->setVisible(false);
+	clearObservationsViewer();
+
 	switch (type) {
 	case CNode::ObjectType::RangeScan:
 	{
@@ -186,9 +195,34 @@ void CMainWindow::itemClicked(const QModelIndex &index)
 	}
 	case CNode::ObjectType::Image:
 	{
+		m_ui->m_dockWidgetNodeViewer->setVisible(true);
 		CObservationImageNode *imageNode = dynamic_cast<CObservationImageNode *>(node);
 		assert(imageNode);
+		mrpt::gui::CQtGlCanvasBase *gl = new mrpt::gui::CQtGlCanvasBase();
+		gl->mainViewport()->setImageView(imageNode->observation()->image);
+		m_ui->m_contentsNodeViewer->layout()->addWidget(gl);
+		break;
+	}
+	case CNode::ObjectType::StereoImage:
+	{
+		m_ui->m_dockWidgetNodeViewer->setVisible(true);
+		CObservationStereoImagesNode *stereoImageNode = dynamic_cast<CObservationStereoImagesNode *>(node);
+		assert(stereoImageNode);
 
+		mrpt::obs::CObservationStereoImages::Ptr observation = stereoImageNode->observation();
+
+		mrpt::gui::CQtGlCanvasBase *gl1 = new mrpt::gui::CQtGlCanvasBase();
+		gl1->mainViewport()->setImageView(observation->imageLeft);
+
+		QLayout *layout = m_ui->m_contentsNodeViewer->layout();
+		layout->addWidget(gl1);
+
+		if (observation->hasImageRight)
+		{
+			mrpt::gui::CQtGlCanvasBase *gl2 = new mrpt::gui::CQtGlCanvasBase();
+			gl2->mainViewport()->setImageView(observation->imageRight);
+			layout->addWidget(gl2);
+		}
 		break;
 	}
 	default:
@@ -278,4 +312,12 @@ void CMainWindow::createNewDocument()
 
 		gl->setDocument(m_document);
 	}
+}
+
+void CMainWindow::clearObservationsViewer()
+{
+	QLayout *layout = m_ui->m_contentsNodeViewer->layout();
+	QLayoutItem *child;
+	while ((child = layout->takeAt(0)) != 0)
+		delete child;
 }

@@ -174,6 +174,17 @@
     </layout>
    </widget>
   </widget>
+  <widget class="QDockWidget" name="m_dockWidgetNodeViewer">
+   <property name="windowTitle">
+    <string>Observations viewer</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="QWidget" name="m_contentsNodeViewer">
+    <layout class="QHBoxLayout" name="horizontalLayout_3"/>
+   </widget>
+  </widget>
   <widget class="QDockWidget" name="m_dockWidgetConfig">
    <property name="enabled">
     <bool>true</bool>
