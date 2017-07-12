@@ -47,6 +47,10 @@ CMainWindow::CMainWindow(QWidget *parent)
 	QObject::connect(m_ui->m_zoom, SIGNAL(valueChanged(double)), SLOT(zoomChanged(double)));
 	QObject::connect(m_ui->m_zoomSlider, SIGNAL(valueChanged(int)), SLOT(zoomChanged(int)));
 	QObject::connect(m_ui->m_tabWidget, SIGNAL(currentChanged(int)), SLOT(updateZoomInfo(int)));
+
+
+	QObject::connect(m_ui->m_expandAll, SIGNAL(released()), m_ui->m_observationsTree, SLOT(expandAll()));
+	QObject::connect(m_ui->m_collapseAll, SIGNAL(released()), m_ui->m_observationsTree, SLOT(collapseAll()));
 }
 
 CMainWindow::~CMainWindow()
@@ -178,6 +182,13 @@ void CMainWindow::itemClicked(const QModelIndex &index)
 			assert(gl);
 			gl->setSelected(posesNode->getPose());
 		}
+		break;
+	}
+	case CNode::ObjectType::Image:
+	{
+		CObservationImageNode *imageNode = dynamic_cast<CObservationImageNode *>(node);
+		assert(imageNode);
+
 		break;
 	}
 	default:

@@ -14,10 +14,15 @@ class CObservationTreeModel;
 
 class CObservationTree : public QTreeView
 {
+	Q_OBJECT
 public:
 	CObservationTree(QWidget *parent = nullptr);
 	virtual ~CObservationTree() = default;
 	virtual void setModel(QAbstractItemModel *model);
+
+public slots:
+	void expandAll();
+	void collapseAll();
 
 protected:
 	virtual void contextMenuEvent(QContextMenuEvent *event);
