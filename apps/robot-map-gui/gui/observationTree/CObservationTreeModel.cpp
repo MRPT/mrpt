@@ -84,6 +84,15 @@ QModelIndex CObservationTreeModel::parent(const QModelIndex &index) const
 
 }
 
+CNode *CObservationTreeModel::getNode(const QModelIndex &index) const
+{
+	CNode* node = nullptr;
+	if (index.isValid() && index.internalPointer())
+		node = static_cast<CNode*>(index.internalPointer());
+
+	return node;
+}
+
 CNode *CObservationTreeModel::getNodeFromIndexSafe(const QModelIndex &index) const
 {
 	CNode* node;

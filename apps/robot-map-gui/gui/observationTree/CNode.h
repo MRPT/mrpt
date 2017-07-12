@@ -20,7 +20,9 @@ public:
 		PosWithObservationPair = 1,
 		Observations = 3,
 		Pos = 4,
-		RangeScan = 5
+		RangeScan = 5,
+		Image = 6,
+		StereoImage = 7
 
 	};
 

@@ -7,22 +7,21 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 #pragma once
-#include "CNode.h"
+#include "CBaseObservationNode.h"
 
-#include "mrpt/poses/CPose3D.h"
+#include "mrpt/obs/CObservationImage.h"
 
 
-class CBaseObservationNode : public CNode
+class CObservationImageNode : public CBaseObservationNode
 {
 public:
-	CBaseObservationNode(CNode* parent, const mrpt::poses::CPose3D &pose);
-	virtual ~CBaseObservationNode() = default;
-	// CNode interface
-	int childCount() const override;
-	CNode *child(int id) override;
+	CObservationImageNode(CNode* parent, mrpt::obs::CObservationImage::Ptr observation, const mrpt::poses::CPose3D &pose);
 
-	mrpt::poses::CPose3D getPose() const;
+	// CNode interface
+	ObjectType type() const override;
+	std::string displayName() const override;
+	mrpt::obs::CObservationImage::Ptr observation() const;
 
 private:
-	mrpt::poses::CPose3D m_pose;
+	mrpt::obs::CObservationImage::Ptr m_observation;
 };

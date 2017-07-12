@@ -9,9 +9,11 @@
 #include "CBaseObservationNode.h"
 
 
-CBaseObservationNode::CBaseObservationNode(CNode *parent)
+CBaseObservationNode::CBaseObservationNode(CNode *parent, const mrpt::poses::CPose3D &pose)
 	: CNode(parent)
+	, m_pose(pose)
 {
+
 }
 
 int CBaseObservationNode::childCount() const
@@ -22,4 +24,9 @@ int CBaseObservationNode::childCount() const
 CNode *CBaseObservationNode::child(int id)
 {
 	return nullptr;
+}
+
+mrpt::poses::CPose3D CBaseObservationNode::getPose() const
+{
+	return m_pose;
 }

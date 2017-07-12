@@ -7,7 +7,6 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 #pragma once
-
 #include "CBaseObservationNode.h"
 
 #include "mrpt/obs/CObservation2DRangeScan.h"
@@ -23,11 +22,8 @@ public:
 	std::string displayName() const override;
 
 	mrpt::obs::CObservation2DRangeScan::Ptr observation() const;
-	mrpt::poses::CPose3D getPose() const;
 
 private:
 	mrpt::obs::CObservation2DRangeScan::Ptr m_observation;
-	mrpt::poses::CPose3D m_pose;
-
 };
 
