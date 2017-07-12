@@ -6,23 +6,38 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
-#pragma once
+#include "CObservationTree.h"
+#include "CObservationTreeModel.h"
 #include "CNode.h"
 
-#include "mrpt/poses/CPose3D.h"
+#include <QContextMenuEvent>
+#include <QMenu>
 
 
-class CBaseObservationNode : public CNode
+CObservationTree::CObservationTree(QWidget *parent)
+	: QTreeView(parent)
+	, m_model(nullptr)
 {
-public:
-	CBaseObservationNode(CNode* parent, const mrpt::poses::CPose3D &pose);
-	virtual ~CBaseObservationNode() = default;
-	// CNode interface
-	int childCount() const override;
-	CNode *child(int id) override;
+}
 
-	mrpt::poses::CPose3D getPose() const;
+void CObservationTree::setModel(QAbstractItemModel *model)
+{
+	m_model = dynamic_cast<CObservationTreeModel*>(model);
+	QTreeView::setModel(model);
+}
 
-private:
-	mrpt::poses::CPose3D m_pose;
-};
+void CObservationTree::contextMenuEvent(QContextMenuEvent *event)
+{
+	if (m_model)
+	{
+		QModelIndex index = indexAt(event->pos());
+		CNode *node = m_model->getNode(index);
+		if (node)
+		{
+			QMenu menu(this);
+			menu.exec(event->globalPos());
+
+		}
+	}
+	QWidget::contextMenuEvent(event);
+}

@@ -6,23 +6,27 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
-#pragma once
-#include "CNode.h"
-
-#include "mrpt/poses/CPose3D.h"
+#include "CObservationStereoImageNode.h"
 
 
-class CBaseObservationNode : public CNode
+
+CObservationStereoImagesNode::CObservationStereoImagesNode(CNode *parent, mrpt::obs::CObservationStereoImages::Ptr observation, const mrpt::poses::CPose3D &pose)
+	: CBaseObservationNode(parent, pose)
 {
-public:
-	CBaseObservationNode(CNode* parent, const mrpt::poses::CPose3D &pose);
-	virtual ~CBaseObservationNode() = default;
-	// CNode interface
-	int childCount() const override;
-	CNode *child(int id) override;
 
-	mrpt::poses::CPose3D getPose() const;
+}
 
-private:
-	mrpt::poses::CPose3D m_pose;
-};
+CNode::ObjectType CObservationStereoImagesNode::type() const
+{
+	return ObjectType::StereoImage;
+}
+
+std::string CObservationStereoImagesNode::displayName() const
+{
+	return "Stereo Image";
+}
+
+mrpt::obs::CObservationStereoImages::Ptr CObservationStereoImagesNode::observation() const
+{
+	return m_observation;
+}

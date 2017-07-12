@@ -14,11 +14,13 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 if(CMAKE_MRPT_HAS_Qt5 AND CMAKE_MRPT_HAS_OPENGL_GLUT)
 
 	add_definitions(-DMRPT_HAS_Qt5)
+
 	set(CPP_FILES
 		robot-map-gui_main.cpp
 		CDocument.cpp
 		gui/CMainWindow.cpp
 		gui/CGLWidget.cpp
+		gui/observationTree/CObservationTree.cpp
 		gui/observationTree/CObservationTreeModel.cpp
 		gui/observationTree/CNode.cpp
 		gui/observationTree/CRootNode.cpp
@@ -27,6 +29,8 @@ if(CMAKE_MRPT_HAS_Qt5 AND CMAKE_MRPT_HAS_OPENGL_GLUT)
 		gui/observationTree/CObservationsNode.cpp
 		gui/observationTree/CBaseObservationNode.cpp
 		gui/observationTree/CRangeScanNode.cpp
+		gui/observationTree/CObservationImageNode.cpp
+		gui/observationTree/CObservationStereoImageNode.cpp
 		gui/configWidget/CConfigWidget.cpp
 		gui/configWidget/CSelectType.cpp
 		gui/configWidget/CBaseConfig.cpp

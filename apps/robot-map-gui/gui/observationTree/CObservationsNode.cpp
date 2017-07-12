@@ -9,9 +9,15 @@
 #include "CObservationsNode.h"
 
 #include "CRangeScanNode.h"
+#include "CObservationImageNode.h"
+#include "CObservationStereoImageNode.h"
 #include "CBaseObservationNode.h"
 
 #include "mrpt/obs/CObservation2DRangeScan.h"
+#include "mrpt/obs/CObservationImage.h"
+#include "mrpt/obs/CObservationStereoImages.h"
+
+#include <QDebug>
 
 
 using namespace mrpt;
@@ -20,11 +26,18 @@ using namespace mrpt::obs;
 CObservationsNode::CObservationsNode(CNode *parent, const CSensoryFrame::Ptr &sensoryFrame, const poses::CPose3D &pose)
 	: CNode(parent)
 {
-	auto scanPtr = sensoryFrame->getObservationByClass<CObservation2DRangeScan>();
-	if (scanPtr)
-	{
-		m_observations.emplace_back(std::make_unique<CRangeScanNode>(this, scanPtr, pose));
-	}
+	auto scanRangeScan = sensoryFrame->getObservationByClass<CObservation2DRangeScan>();
+	if (scanRangeScan)
+		m_observations.emplace_back(std::make_unique<CRangeScanNode>(this, scanRangeScan, pose));
+
+	auto scanImg = sensoryFrame->getObservationByClass<CObservationImage>();
+	if (scanImg)
+		m_observations.emplace_back(std::make_unique<CObservationImageNode>(this, scanImg, pose));
+
+	auto scanStereo = sensoryFrame->getObservationByClass<CObservationStereoImages>();
+	if (scanStereo)
+		m_observations.emplace_back(std::make_unique<CObservationStereoImagesNode>(this, scanStereo, pose));
+
 }
 
 CObservationsNode::~CObservationsNode()

@@ -32,8 +32,11 @@ public:
 	virtual QModelIndex index(int row, int column, const QModelIndex &parent) const override;
 	virtual QModelIndex parent(const QModelIndex &index) const override;
 
+
+	CNode* getNode(const QModelIndex& index) const;
 	CNode* getNodeFromIndexSafe(const QModelIndex& index) const;
 	const std::vector<mrpt::poses::CPose3D> &poses() const;
+
 private:
 	int findMyRowId(const CNode* node) const;
 

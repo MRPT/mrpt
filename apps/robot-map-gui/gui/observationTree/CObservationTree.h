@@ -7,22 +7,21 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 #pragma once
-#include "CNode.h"
-
-#include "mrpt/poses/CPose3D.h"
+#include <QTreeView>
 
 
-class CBaseObservationNode : public CNode
+class CObservationTreeModel;
+
+class CObservationTree : public QTreeView
 {
 public:
-	CBaseObservationNode(CNode* parent, const mrpt::poses::CPose3D &pose);
-	virtual ~CBaseObservationNode() = default;
-	// CNode interface
-	int childCount() const override;
-	CNode *child(int id) override;
+	CObservationTree(QWidget *parent = nullptr);
+	virtual ~CObservationTree() = default;
+	virtual void setModel(QAbstractItemModel *model);
 
-	mrpt::poses::CPose3D getPose() const;
+protected:
+	virtual void contextMenuEvent(QContextMenuEvent *event);
 
 private:
-	mrpt::poses::CPose3D m_pose;
+	CObservationTreeModel *m_model;
 };

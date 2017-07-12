@@ -12,6 +12,7 @@
 #include "observationTree/CObservationTreeModel.h"
 #include "observationTree/CPosesNode.h"
 #include "observationTree/CRangeScanNode.h"
+#include "observationTree/CObservationImageNode.h"
 #include "observationTree/CObservationsNode.h"
 #include "observationTree/CPairNode.h"
 
@@ -42,8 +43,6 @@ CMainWindow::CMainWindow(QWidget *parent)
 	QObject::connect(m_ui->m_actionLoadConfig,	SIGNAL(triggered(bool)), m_ui->m_configWidget, SLOT(openConfig()));
 
 	QObject::connect(m_ui->m_actionShowAllObs, SIGNAL(triggered(bool)), SLOT(showAllObservation(bool)));
-	m_ui->m_configWidget->setVisible(false);
-
 
 	QObject::connect(m_ui->m_zoom, SIGNAL(valueChanged(double)), SLOT(zoomChanged(double)));
 	QObject::connect(m_ui->m_zoomSlider, SIGNAL(valueChanged(int)), SLOT(zoomChanged(int)));
