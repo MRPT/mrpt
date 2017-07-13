@@ -26,9 +26,9 @@
 #include <mrpt/slam/link_pragmas.h>
 
 /** \file PF_implementations.h
-  *  This file contains the implementations of the template members declared in
+ *  This file contains the implementations of the template members declared in
  * mrpt::slam::PF_implementation
-  */
+ */
 
 namespace mrpt
 {
@@ -36,14 +36,14 @@ namespace slam
 {
 /** Auxiliary method called by PF implementations: return true if we have both
  * action & observation,
-  *   otherwise, return false AND accumulate the odometry so when we have an
+ *   otherwise, return false AND accumulate the odometry so when we have an
  * observation we didn't lose a thing.
-  *   On return=true, the "m_movementDrawer" member is loaded and ready to draw
+ *   On return=true, the "m_movementDrawer" member is loaded and ready to draw
  * samples of the increment of pose since last step.
-  *  This method is smart enough to accumulate CActionRobotMovement2D or
+ *  This method is smart enough to accumulate CActionRobotMovement2D or
  * CActionRobotMovement3D, whatever comes in.
-  *   \ingroup mrpt_slam_grp
-  */
+ *   \ingroup mrpt_slam_grp
+ */
 template <class PARTICLE_TYPE, class MYSELF>
 template <class BINTYPE>
 bool PF_implementation<PARTICLE_TYPE, MYSELF>::
@@ -60,8 +60,9 @@ bool PF_implementation<PARTICLE_TYPE, MYSELF>::
 		if (robotMovement2D)
 		{
 			if (m_accumRobotMovement3DIsValid)
-				THROW_EXCEPTION("Mixing 2D and 3D actions is not allowed.")
+				THROW_EXCEPTION("Mixing 2D and 3D actions is not allowed.");
 
+			ASSERT_(robotMovement2D->poseChange);
 			if (!m_accumRobotMovement2DIsValid)
 			{  // First time:
 				robotMovement2D->poseChange->getMean(
@@ -124,6 +125,7 @@ bool PF_implementation<PARTICLE_TYPE, MYSELF>::
 			m_accumRobotMovement2D.rawOdometryIncrementReading,
 			m_accumRobotMovement2D.motionModelConfiguration);
 
+		ASSERT_(theResultingRobotMov.poseChange);
 		m_movementDrawer.setPosePDF(
 			theResultingRobotMov.poseChange.get_ptr());  // <--- Set mov. drawer
 		m_accumRobotMovement2DIsValid =
@@ -135,20 +137,20 @@ bool PF_implementation<PARTICLE_TYPE, MYSELF>::
 /** A generic implementation of the PF method
  * "prediction_and_update_pfAuxiliaryPFOptimal" (optimal sampling with rejection
  * sampling approximation),
-  *  common to both localization and mapping.
-  *
-  * - BINTYPE: TPoseBin or whatever to discretize the sample space for
+ *  common to both localization and mapping.
+ *
+ * - BINTYPE: TPoseBin or whatever to discretize the sample space for
  * KLD-sampling.
-  *
-  *  This method implements optimal sampling with a rejection sampling-based
+ *
+ *  This method implements optimal sampling with a rejection sampling-based
  * approximation of the true posterior.
-  *  For details, see the papers:
-  *
-  *  J.-L. Blanco, J. Gonzalez, and J.-A. Fernandez-Madrigal,
-  *    "An Optimal Filtering Algorithm for Non-Parametric Observation Models in
-  *     Robot Localization," in Proc. IEEE International Conference on Robotics
-  *     and Automation (ICRA'08), 2008, pp. 461466.
-  */
+ *  For details, see the papers:
+ *
+ *  J.-L. Blanco, J. Gonzalez, and J.-A. Fernandez-Madrigal,
+ *    "An Optimal Filtering Algorithm for Non-Parametric Observation Models in
+ *     Robot Localization," in Proc. IEEE International Conference on Robotics
+ *     and Automation (ICRA'08), 2008, pp. 461466.
+ */
 template <class PARTICLE_TYPE, class MYSELF>
 template <class BINTYPE>
 void PF_implementation<PARTICLE_TYPE, MYSELF>::
@@ -166,11 +168,11 @@ void PF_implementation<PARTICLE_TYPE, MYSELF>::
 
 /** A generic implementation of the PF method "pfStandardProposal" (standard
  * proposal distribution, that is, a simple SIS particle filter),
-  *  common to both localization and mapping.
-  *
-  * - BINTYPE: TPoseBin or whatever to discretize the sample space for
+ *  common to both localization and mapping.
+ *
+ * - BINTYPE: TPoseBin or whatever to discretize the sample space for
  * KLD-sampling.
-  */
+ */
 template <class PARTICLE_TYPE, class MYSELF>
 template <class BINTYPE>
 void PF_implementation<PARTICLE_TYPE, MYSELF>::
@@ -203,6 +205,7 @@ void PF_implementation<PARTICLE_TYPE, MYSELF>::
 			// If there is no 2D action, look for a 3D action:
 			if (robotMovement2D)
 			{
+				ASSERT_(robotMovement2D->poseChange);
 				m_movementDrawer.setPosePDF(
 					robotMovement2D->poseChange.get_ptr());
 				motionModelMeanIncr = mrpt::poses::CPose3D(
@@ -367,18 +370,18 @@ void PF_implementation<PARTICLE_TYPE, MYSELF>::
 /** A generic implementation of the PF method
  * "prediction_and_update_pfAuxiliaryPFStandard" (Auxiliary particle filter with
  * the standard proposal),
-  *  common to both localization and mapping.
-  *
-  * - BINTYPE: TPoseBin or whatever to discretize the sample space for
+ *  common to both localization and mapping.
+ *
+ * - BINTYPE: TPoseBin or whatever to discretize the sample space for
  * KLD-sampling.
-  *
-  *  This method is described in the paper:
-  *   Pitt, M.K.; Shephard, N. (1999). "Filtering Via Simulation: Auxiliary
+ *
+ *  This method is described in the paper:
+ *   Pitt, M.K.; Shephard, N. (1999). "Filtering Via Simulation: Auxiliary
  * Particle Filters".
-  *    Journal of the American Statistical Association 94 (446): 590-591.
+ *    Journal of the American Statistical Association 94 (446): 590-591.
  * doi:10.2307/2670179.
-  *
-  */
+ *
+ */
 template <class PARTICLE_TYPE, class MYSELF>
 template <class BINTYPE>
 void PF_implementation<PARTICLE_TYPE, MYSELF>::
@@ -469,11 +472,11 @@ double PF_implementation<PARTICLE_TYPE, MYSELF>::
 }  // end of PF_SLAM_particlesEvaluator_AuxPFOptimal
 
 /**  Compute w[i]*p(z_t | mu_t^i), with mu_t^i being
-  *    the mean of the new robot pose
-  *
-  * \param action MUST be a "const mrpt::poses::CPose3D*"
-  * \param observation MUST be a "const CSensoryFrame*"
-  */
+ *    the mean of the new robot pose
+ *
+ * \param action MUST be a "const mrpt::poses::CPose3D*"
+ * \param observation MUST be a "const CSensoryFrame*"
+ */
 template <class PARTICLE_TYPE, class MYSELF>
 template <class BINTYPE>
 double PF_implementation<PARTICLE_TYPE, MYSELF>::
@@ -864,10 +867,9 @@ void PF_implementation<PARTICLE_TYPE, MYSELF>::
 					ASSERT_(k < me->m_particles.size());
 
 					// Also erase it from the other permutation vector list:
-					oldPartIdxsStillNotPropragated.erase(
-						std::find(
-							oldPartIdxsStillNotPropragated.begin(),
-							oldPartIdxsStillNotPropragated.end(), k));
+					oldPartIdxsStillNotPropragated.erase(std::find(
+						oldPartIdxsStillNotPropragated.begin(),
+						oldPartIdxsStillNotPropragated.end(), k));
 				}
 				else
 				{
