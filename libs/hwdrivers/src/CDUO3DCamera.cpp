@@ -30,11 +30,7 @@ std::map<const mrpt::hwdrivers::TCaptureOptions_DUO3D*,TDUOParams> duo_params;
 // duo3d header files
 #if MRPT_HAS_DUO3D
 #	include <DUOLib.h>
-//#	ifdef _MSC_VER  // this pragma only works for MSVC:
-//#		pragma comment(lib, "DUOLib.lib")
-//#	endif
 #endif
-MRPT_TODO("FIXME: Try to remove the pragma lib above ==> TARGET_LINK_LIBRARIES() in hwdrivers/CMakeLists.txt, so it can work seamlessly on Linux in the future")
 
 // m_duo: Opaque pointer to DUO3D's "DUOInstance":
 #define M_DUO_PTR    ( reinterpret_cast<DUOInstance*>(m_duo))
