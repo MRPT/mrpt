@@ -67,28 +67,6 @@ TEST(Synch, CriticalSections_Simple )
 	launchTestWithTimeout(my_CriticalSections_Simple, 5.0, "CriticalSections_Simple");
 }
 
-// TEST 2: Assure that a double-enter in a CS will raise an exception
-// ----------------------------------------------------------------------------
-void my_CriticalSections_NoDoubleEnter()
-{
-	CCriticalSection  cs;
-	cs.enter();
-	try{
-		cs.enter(); // Must fail!
-		// Shouldn't reach here.
-		EXPECT_TRUE(false) << "Fail to detect a double 'enter()' into a critical section!\n";
-	}
-	catch(std::exception&)
-	{
-		// OK
-	}
-}
-TEST(Synch, CriticalSections_NoDoubleEnter)
-{
-	launchTestWithTimeout(my_CriticalSections_NoDoubleEnter, 2.0, "CriticalSections_NoDoubleEnter");
-}
-
-
 // TEST 3: Test with several threads competing for a CS:
 // ----------------------------------------------------------------------------
 CCriticalSection  csCounter;
