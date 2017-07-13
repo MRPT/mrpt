@@ -37,12 +37,14 @@ public:
 
 signals:
 	void zoomChanged(float zoom);
+	void mousePosChanged(double x, double y);
 
 
 protected:
 	virtual void resizeGL(int width, int height) override;
 	virtual void updateCamerasParams() override;
 	virtual void insertToMap( const mrpt::opengl::CRenderizable::Ptr &newObject ) override;
+	virtual void mouseMoveEvent(QMouseEvent *event) override;
 
 private:
 	void updateMinimapPos();

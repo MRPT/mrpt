@@ -180,6 +180,25 @@ void CGlWidget::insertToMap(const CRenderizable::Ptr &newObject)
 	m_miniMapViewport->insert(newObject);
 }
 
+void CGlWidget::mouseMoveEvent(QMouseEvent *event)
+{
+	CQtGlCanvasBase::mouseMoveEvent(event);
+	QPoint pos = event->pos();
+	mrpt::math::TLine3D outRay;
+	mainViewport()->get3DRayForPixelCoord(pos.x(), pos.y(), outRay);
+
+	const mrpt::math::TPlane ground_plane(mrpt::math::TPoint3D(0, 0, 0), mrpt::math::TPoint3D(1, 0, 0), mrpt::math::TPoint3D(0, 1, 0));
+	// Intersection of the line with the plane:
+	mrpt::math::TObject3D inters;
+	mrpt::math::intersect(outRay, ground_plane, inters);
+	// Interpret the intersection as a point, if there is an intersection:
+	mrpt::math::TPoint3D inters_pt;
+	if (inters.getPoint(inters_pt))
+	{
+		emit mousePosChanged(inters_pt.x, inters_pt.y);
+	}
+}
+
 void CGlWidget::updateMinimapPos()
 {
 	GLint	win_dims[4];
