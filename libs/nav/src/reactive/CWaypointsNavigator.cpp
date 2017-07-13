@@ -114,6 +114,11 @@ void CWaypointsNavigator::waypoints_navigationStep()
 		TWaypointStatusSequence& wps =
 			m_waypoint_nav_status;  // shortcut to save typing
 
+		// This will be used to detect changes in the list of waypoints,
+		// from an external user code in an event.
+		const auto orig_nav_status_time = wps.timestamp_nav_started;
+		const auto orig_nav_state = m_navigationState;
+
 		if (wps.waypoints.empty() || wps.final_goal_reached)
 		{
 			// No nav request is pending or it was canceled
@@ -231,6 +236,12 @@ void CWaypointsNavigator::waypoints_navigationStep()
 						m_robot.sendWaypointReachedEvent(
 							wps.waypoint_index_current_goal,
 							true /* reason: really reached*/);
+						// list of waypoints changed? abort and restart
+						if (orig_nav_status_time != wps.timestamp_nav_started ||
+							orig_nav_state != m_navigationState)
+						{
+							return;
+						}
 
 						// Was this the final goal??
 						if (wps.waypoint_index_current_goal <
@@ -311,6 +322,12 @@ void CWaypointsNavigator::waypoints_navigationStep()
 
 						m_robot.sendWaypointReachedEvent(
 							k, false /* reason: skipped */);
+						// list of waypoints changed? abort and restart
+						if (orig_nav_status_time != wps.timestamp_nav_started ||
+							orig_nav_state != m_navigationState)
+						{
+							return;
+						}
 					}
 				}
 			}
@@ -333,6 +350,12 @@ void CWaypointsNavigator::waypoints_navigationStep()
 				// Notify we have a new "current waypoint"
 				m_robot.sendNewWaypointTargetEvent(
 					wps.waypoint_index_current_goal);
+				// list of waypoints changed? abort and restart
+				if (orig_nav_status_time != wps.timestamp_nav_started ||
+					orig_nav_state != m_navigationState)
+				{
+					return;
+				}
 
 				// Send the current targets + "multitarget_look_ahead"
 				// additional ones to help the local planner.
