@@ -77,20 +77,20 @@ namespace mrpt
 
 				T * operator->() {
 					if (m_ptr) return m_ptr;
-					else throw std::runtime_error("dereferencing NULL poly_ptr");
+					else throw std::runtime_error("dereferencing NULL generic_copier_ptr");
 				}
 				const T * operator->() const {
 					if (m_ptr) return m_ptr;
-					else throw std::runtime_error("dereferencing NULL poly_ptr");
+					else throw std::runtime_error("dereferencing NULL generic_copier_ptr");
 				}
 
 				T& operator*(void) {
 					if (m_ptr) return *m_ptr;
-					else throw std::runtime_error("dereferencing NULL poly_ptr");
+					else throw std::runtime_error("dereferencing NULL generic_copier_ptr");
 				}
 				const T& operator*(void) const {
 					if (m_ptr) return *m_ptr;
-					else throw std::runtime_error("dereferencing NULL poly_ptr");
+					else throw std::runtime_error("dereferencing NULL generic_copier_ptr");
 				}
 
 				T * get() { return m_ptr; }
