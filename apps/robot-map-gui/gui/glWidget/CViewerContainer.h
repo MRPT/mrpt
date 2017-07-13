@@ -7,44 +7,37 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 #pragma once
-#include <QMainWindow>
+#include <QWidget>
 
 #include <memory>
 
-#include <mrpt/opengl/CSetOfObjects.h>
+#include "CDocument.h"
+#include "ui_CViewerContainer.h"
 
 
-namespace Ui
-{
-class CMainWindow;
-}
-class CDocument;
-class CObservationTreeModel;
-class QTreeWidgetItem;
+class CNode;
 
-class CMainWindow : public QMainWindow
+class CViewerContainer: public QWidget
 {
 	Q_OBJECT
-
 public:
-	CMainWindow(QWidget *parent = 0);
-	virtual ~CMainWindow();
+	CViewerContainer(QWidget *parent = nullptr);
+	virtual ~CViewerContainer() = default;
+	void showRangeScan(CNode *node);
+	void showRobotDirection(CNode *node);
+	void applyConfigChanges(RenderizableMaps renderizableMaps);
+	void updateConfigChanges(RenderizableMaps renderizableMaps, CDocument *doc, bool isShowAllObs);
+	void setDocument(CDocument *doc);
+
+public slots:
+	void showAllObservation(bool is);
 
 private slots:
-	void openMap();
-	void itemClicked(const QModelIndex &index);
-	void updateConfig();
-	void updateConfig(const std::string str);
-
-	void applyConfigurationForCurrentMaps();
+	void updateZoomInfo(int index);
+	void changeZoomInfo(float zoom);
+	void zoomChanged(double d);
+	void zoomChanged(int d);
 
 private:
-	void updateRenderMapFromConfig();
-	void createNewDocument();
-	void clearObservationsViewer();
-
-	CDocument *m_document;
-	CObservationTreeModel *m_model;
-
-	std::unique_ptr<Ui::CMainWindow> m_ui;
+	std::unique_ptr<Ui::CViewerContainer> m_ui;
 };

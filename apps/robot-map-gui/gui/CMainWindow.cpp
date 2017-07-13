@@ -7,11 +7,9 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 #include "CMainWindow.h"
-#include "CGLWidget.h"
+#include "ui_CMainWindow.h"
 #include "CDocument.h"
 #include "observationTree/CObservationTreeModel.h"
-#include "observationTree/CPosesNode.h"
-#include "observationTree/CRangeScanNode.h"
 #include "observationTree/CObservationImageNode.h"
 #include "observationTree/CObservationStereoImageNode.h"
 #include "observationTree/CObservationsNode.h"
@@ -24,7 +22,7 @@
 #include <QTreeWidgetItem>
 #include <QDebug>
 
-#include "ui_CMainWindow.h"
+#include "mrpt/gui/CQtGlCanvasBase.h"
 
 
 CMainWindow::CMainWindow(QWidget *parent)
@@ -45,9 +43,6 @@ CMainWindow::CMainWindow(QWidget *parent)
 
 	QObject::connect(m_ui->m_actionShowAllObs, SIGNAL(triggered(bool)), SLOT(showAllObservation(bool)));
 
-	QObject::connect(m_ui->m_zoom, SIGNAL(valueChanged(double)), SLOT(zoomChanged(double)));
-	QObject::connect(m_ui->m_zoomSlider, SIGNAL(valueChanged(int)), SLOT(zoomChanged(int)));
-	QObject::connect(m_ui->m_tabWidget, SIGNAL(currentChanged(int)), SLOT(updateZoomInfo(int)));
 
 
 	QObject::connect(m_ui->m_expandAll, SIGNAL(released()), m_ui->m_observationsTree, SLOT(expandAll()));
@@ -68,56 +63,6 @@ CMainWindow::~CMainWindow()
 		delete m_model;
 
 	delete m_ui->m_configWidget;
-}
-
-void CMainWindow::updateZoomInfo(int index)
-{
-	if (m_ui->m_tabWidget->count())
-	{
-		CGlWidget *gl = dynamic_cast<CGlWidget *>(m_ui->m_tabWidget->widget(index));
-		assert(gl);
-
-		changeZoomInfo(gl->getZoom());
-	}
-}
-
-void CMainWindow::changeZoomInfo(float zoom)
-{
-	int zoomInt = zoom;
-	m_ui->m_zoomSlider->setValue(zoomInt);
-
-	double zoomDouble = zoom;
-	m_ui->m_zoom->setValue(zoomDouble);
-}
-
-void CMainWindow::zoomChanged(double d)
-{
-	float zoomFloat = d;
-	int zoomInt = zoomFloat;
-	m_ui->m_zoomSlider->setValue(zoomInt);
-	CGlWidget *gl = dynamic_cast<CGlWidget *>(m_ui->m_tabWidget->currentWidget());
-	assert(gl);
-	gl->setZoom(zoomFloat);
-}
-
-void CMainWindow::zoomChanged(int d)
-{
-	double zoomD = d;
-	float zoomFloat = zoomD;
-	m_ui->m_zoom->setValue(zoomD);
-	CGlWidget *gl = dynamic_cast<CGlWidget *>(m_ui->m_tabWidget->currentWidget());
-	assert(gl);
-	gl->setZoom(zoomFloat);
-}
-
-void CMainWindow::showAllObservation(bool is)
-{
-	for (int i = 0; i < m_ui->m_tabWidget->count(); ++i)
-	{
-		CGlWidget *gl = dynamic_cast<CGlWidget *>(m_ui->m_tabWidget->widget(i));
-		assert(gl);
-		gl->setSelectedObservation(is);
-	}
 }
 
 void CMainWindow::openMap()
@@ -161,36 +106,12 @@ void CMainWindow::itemClicked(const QModelIndex &index)
 	switch (type) {
 	case CNode::ObjectType::RangeScan:
 	{
-		CRangeScanNode *obsNode = dynamic_cast<CRangeScanNode *>(node);
-		assert(obsNode);
-
-		mrpt::opengl::CPlanarLaserScan::Ptr obj = mrpt::opengl::CPlanarLaserScan::Create();
-		obj->setScan(*(obsNode->observation().get()));
-		obj->setPose( obsNode->getPose() );
-		obj->setSurfaceColor(1.0f,0.0f,0.0f, 0.5f);
-
-		for (int i = 0; i < m_ui->m_tabWidget->count(); ++i)
-		{
-			QWidget *w = m_ui->m_tabWidget->widget(i);
-			CGlWidget *gl = dynamic_cast<CGlWidget *>(w);
-			assert(gl);
-			gl->setSelected(obsNode->getPose());
-			gl->setLaserScan(obj);
-		}
+		m_ui->m_viewer->showRangeScan(node);
 		break;
 	}
 	case CNode::ObjectType::Pos:
 	{
-		CPoseNode *posesNode = dynamic_cast<CPoseNode *>(node);
-		assert(posesNode);
-
-		for (int i = 0; i < m_ui->m_tabWidget->count(); ++i)
-		{
-			QWidget *w = m_ui->m_tabWidget->widget(i);
-			CGlWidget *gl = dynamic_cast<CGlWidget *>(w);
-			assert(gl);
-			gl->setSelected(posesNode->getPose());
-		}
+		m_ui->m_viewer->showRobotDirection(node);
 		break;
 	}
 	case CNode::ObjectType::Image:
@@ -260,42 +181,14 @@ void CMainWindow::applyConfigurationForCurrentMaps()
 	m_document->setListOfMaps(mapCfg);
 
 	auto renderizableMaps = m_document->renderizableMaps();
-	for (int i = 0; i < m_ui->m_tabWidget->count(); ++i)
-	{
-		std::string name = m_ui->m_tabWidget->tabText(i).toStdString();
-		auto it = renderizableMaps.find(name);
-		assert(it != renderizableMaps.end());
-
-		CGlWidget *gl = dynamic_cast<CGlWidget *>(m_ui->m_tabWidget->widget(i));
-		assert(gl);
-
-		gl->fillMap(it->second);
-	}
+	m_ui->m_viewer->applyConfigChanges(renderizableMaps);
 }
 
 
 void CMainWindow::updateRenderMapFromConfig()
 {
-	for (int i = 0; i < m_ui->m_tabWidget->count(); ++i)
-	{
-		QWidget *w = m_ui->m_tabWidget->widget(i);
-		delete w;
-	}
-
-	m_ui->m_tabWidget->clear();
-
 	auto renderizableMaps = m_document->renderizableMaps();
-	for(auto &it: renderizableMaps)
-	{
-		CGlWidget *gl = new CGlWidget();
-		gl->fillMap(it.second);
-		m_ui->m_tabWidget->addTab(gl, QString::fromStdString(it.first));
-		qDebug() << QString::fromStdString(it.first);
-
-		gl->setDocument(m_document);
-		gl->setSelectedObservation(m_ui->m_actionShowAllObs->isChecked());
-		QObject::connect(gl, SIGNAL(zoomChanged(float)), SLOT(changeZoomInfo(float)));
-	}
+	m_ui->m_viewer->updateConfigChanges(renderizableMaps, m_document, m_ui->m_actionShowAllObs->isChecked());
 }
 
 void CMainWindow::createNewDocument()
@@ -305,13 +198,8 @@ void CMainWindow::createNewDocument()
 
 	m_document = new CDocument();
 
-	for (int i = 0; i < m_ui->m_tabWidget->count(); ++i)
-	{
-		CGlWidget *gl = dynamic_cast<CGlWidget *>(m_ui->m_tabWidget->widget(i));
-		assert(gl);
 
-		gl->setDocument(m_document);
-	}
+	m_ui->m_viewer->setDocument(m_document);
 }
 
 void CMainWindow::clearObservationsViewer()

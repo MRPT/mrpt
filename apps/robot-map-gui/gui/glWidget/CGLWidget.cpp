@@ -16,6 +16,7 @@
 #include "mrpt/opengl/CPointCloud.h"
 #include "mrpt/gui/CGlCanvasBase.h"
 #include "mrpt/opengl/stock_objects.h"
+#include "mrpt/math/geometry.h"
 
 #include "CDocument.h"
 

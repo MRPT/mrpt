@@ -38,6 +38,7 @@ public:
 signals:
 	void zoomChanged(float zoom);
 
+
 protected:
 	virtual void resizeGL(int width, int height) override;
 	virtual void updateCamerasParams() override;
