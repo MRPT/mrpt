@@ -68,11 +68,11 @@ namespace mrpt
 
 			typename T::value_type * pointer() {
 				if (m_smartptr) return m_smartptr.pointer();
-				else throw std::runtime_error("dereferencing NULL poly_ptr");
+				else throw std::runtime_error("dereferencing NULL poly_ptr_ptr");
 			}
 			const typename T::value_type * pointer() const {
 				if (m_smartptr) return m_smartptr.pointer();
-				else throw std::runtime_error("dereferencing NULL poly_ptr");
+				else throw std::runtime_error("dereferencing NULL poly_ptr_ptr");
 			}
 
 			typename T::value_type * operator->() { return pointer(); }
