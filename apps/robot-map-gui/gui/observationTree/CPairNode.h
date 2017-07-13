@@ -15,7 +15,7 @@
 
 
 class CObservationsNode;
-class CPoseNode;
+class CPosesNode;
 
 class CPairNode :public CNode
 {
@@ -33,7 +33,7 @@ public:
 private:
 	CNode* getChild(int id) const;
 
-	std::unique_ptr<CPoseNode>  m_pose;
+	std::unique_ptr<CPosesNode>  m_pose;
 	std::unique_ptr<CObservationsNode> m_observations;
 
 };

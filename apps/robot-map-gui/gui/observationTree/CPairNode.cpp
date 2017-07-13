@@ -19,7 +19,7 @@ CPairNode::CPairNode(CNode *parent, const CSimpleMap::TPosePDFSensFramePair &pos
 	: CNode(parent)
 {
 	mrpt::poses::CPose3D pos = poseSensFramePair.first->getMeanVal();
-	m_pose = std::make_unique<CPoseNode>(this, pos);
+	m_pose = std::make_unique<CPosesNode>(this, pos);
 	m_observations = std::make_unique<CObservationsNode>(this, poseSensFramePair.second, pos);
 }
 

@@ -22,7 +22,8 @@ if(CMAKE_MRPT_HAS_Qt5 AND CMAKE_MRPT_HAS_OPENGL_GLUT)
 		robot-map-gui_main.cpp
 		CDocument.cpp
 		gui/CMainWindow.cpp
-		gui/CGLWidget.cpp
+		gui/glWidget/CGLWidget.cpp
+		gui/glWidget/CViewerContainer.cpp
 		gui/observationTree/CObservationTree.cpp
 		gui/observationTree/CObservationTreeModel.cpp
 		gui/observationTree/CNode.cpp
@@ -48,9 +49,10 @@ if(CMAKE_MRPT_HAS_Qt5 AND CMAKE_MRPT_HAS_OPENGL_GLUT)
 
 	set(FILES_TO_MOC
 		gui/CMainWindow.h
-		gui/CGLWidget.h
+		gui/glWidget/CGLWidget.h
 		gui/configWidget/CConfigWidget.h
 		gui/observationTree/CObservationTree.h
+		gui/glWidget/CViewerContainer.h
 		)
 
 	set(FILES_TO_UIC
@@ -62,6 +64,7 @@ if(CMAKE_MRPT_HAS_Qt5 AND CMAKE_MRPT_HAS_OPENGL_GLUT)
 		gui/configWidget/CBeaconConfig.ui
 		gui/configWidget/CGasGridConfig.ui
 		gui/configWidget/CLandmarksConfig.ui
+		gui/glWidget/CViewerContainer.ui
 		)
 	qt5_wrap_cpp(moc_cpps ${FILES_TO_MOC})
 	qt5_wrap_ui(uic_cpps ${FILES_TO_UIC})

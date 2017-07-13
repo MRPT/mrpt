@@ -14,11 +14,11 @@
 #include "mrpt/poses.h"
 
 
-class CPoseNode :public CNode
+class CPosesNode :public CNode
 {
 public:
-	CPoseNode(CNode *parent, const mrpt::poses::CPose3D &pose);
-	~CPoseNode() = default;
+	CPosesNode(CNode *parent, const mrpt::poses::CPose3D &pose);
+	~CPosesNode() = default;
 
 	int childCount() const override;
 	CNode* child(int id) override;
