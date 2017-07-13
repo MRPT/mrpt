@@ -37,6 +37,7 @@ private slots:
 	void changeZoomInfo(float zoom);
 	void zoomChanged(double d);
 	void zoomChanged(int d);
+	void updateMouseInfo(double x, double y);
 
 private:
 	std::unique_ptr<Ui::CViewerContainer> m_ui;

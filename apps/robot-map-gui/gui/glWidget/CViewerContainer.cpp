@@ -93,6 +93,7 @@ void CViewerContainer::updateConfigChanges(RenderizableMaps renderizableMaps, CD
 		gl->setDocument(doc);
 		gl->setSelectedObservation(isShowAllObs);
 		QObject::connect(gl, SIGNAL(zoomChanged(float)), SLOT(changeZoomInfo(float)));
+		QObject::connect(gl, SIGNAL(mousePosChanged(double, double)), SLOT(updateMouseInfo(double, double)));
 	}
 }
 
@@ -155,4 +156,10 @@ void CViewerContainer::zoomChanged(int d)
 	CGlWidget *gl = dynamic_cast<CGlWidget *>(m_ui->m_tabWidget->currentWidget());
 	assert(gl);
 	gl->setZoom(zoomFloat);
+}
+
+void CViewerContainer::updateMouseInfo(double x, double y)
+{
+	QString str = "x: " + QString::number(x) + "; y: " + QString::number(y);
+	m_ui->m_infoUnderCursor->setText(str);
 }
