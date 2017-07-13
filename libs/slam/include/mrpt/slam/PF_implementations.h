@@ -54,6 +54,7 @@ namespace mrpt
 					if (robotMovement2D.present())
 					{
 						if (m_accumRobotMovement3DIsValid) THROW_EXCEPTION("Mixing 2D and 3D actions is not allowed.")
+						ASSERT_(robotMovement2D->poseChange);
 
 						if (!m_accumRobotMovement2DIsValid)
 						{		// First time:
@@ -104,6 +105,7 @@ namespace mrpt
 					m_accumRobotMovement2D.rawOdometryIncrementReading,
 					m_accumRobotMovement2D.motionModelConfiguration );
 
+				ASSERT_(theResultingRobotMov.poseChange);
 				m_movementDrawer.setPosePDF( theResultingRobotMov.poseChange.get_ptr() );  // <--- Set mov. drawer
 				m_accumRobotMovement2DIsValid = false; // Reset odometry for next iteration
 			}
@@ -169,6 +171,7 @@ namespace mrpt
 					// If there is no 2D action, look for a 3D action:
 					if (robotMovement2D.present())
 					{
+						ASSERT_(robotMovement2D->poseChange);
 						m_movementDrawer.setPosePDF( robotMovement2D->poseChange.get_ptr() );
 						motionModelMeanIncr = mrpt::poses::CPose3D(robotMovement2D->poseChange->getMeanVal());
 					}
