@@ -100,7 +100,8 @@ class VISION_IMPEXP CLandmarksMap : public mrpt::maps::CMetricMap
 	 *created for each SIFT detected in the image,
 	 *          <br>2) Correspondences between SIFTs features and existing ones
 	 *are found by computeMatchingWith3DLandmarks,
-	 *		   <br>3) The corresponding feaures are fused, and the new ones added,
+	 *		   <br>3) The corresponding feaures are fused, and the new ones
+	 * added,
 	 *with an initial uncertainty according to insertionOptions</td> </tr>
 	 * <tr> <td>CObservationStereoImages</td> <td>vlSIFT</td> <td> Each image is
 	 *separately procesed by the method for CObservationImage observations </td>
