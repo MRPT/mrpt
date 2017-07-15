@@ -1,8 +1,8 @@
 # ClangFormat - Developer Instructions
 
-This file primarily outlies the procedure of formatting the entire MRPT codebase
-with ClangFormat in case this is needed again, or in case we upgrade to a more
-recent version of ClangFormat.
+This file primarily outlines the procedure of formatting the entire MRPT
+codebase with ClangFormat in case this is needed again, or in case we upgrade to
+a more recent version of ClangFormat.
 
 ## Notes on formatting the codebase - clang-format 3.8
 
@@ -17,8 +17,9 @@ keeps reindenting comments between successive ClangFormat runs.
 
 ## Porting to a new ClangForamt version
 
-Change occurrences of old version in `doc/ClangFormat.md`
-
-
+- Change the version specified in
+    [clang_git_format/config.py](https://github.com/MRPT/mrpt/blob/master/scripts/clang_git_format/clang_git_format/config.py)
+- Rerun the [clang_format_codebase.sh script](https://github.com/MRPT/mrpt/blob/master/scripts/clang_format_codebase.sh)
+- Change occurrences of old version in `doc/ClangFormat.md`.
 
 
