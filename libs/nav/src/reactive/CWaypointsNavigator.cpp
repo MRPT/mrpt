@@ -522,6 +522,20 @@ CWaypointsNavigator::TWaypointsNavigatorParams::TWaypointsNavigatorParams()
 
 bool CWaypointsNavigator::checkHasReachedTarget(const double targetDist) const
 {
-	return (!m_navigationParams->target.targetIsIntermediaryWaypoint) &&
-		   (targetDist < m_navigationParams->target.targetAllowedDistance);
+	if (targetDist > m_navigationParams->target.targetAllowedDistance)
+		return false;
+	if (m_navigationParams->target.targetIsIntermediaryWaypoint)
+		return false;
+
+	const auto &wps = m_waypoint_nav_status;
+	const TWaypointStatus *wp = (!wps.waypoints.empty() &&
+		wps.waypoint_index_current_goal >= 0 && 
+		wps.waypoint_index_current_goal < wps.waypoints.size()
+		)
+		?
+		&wps.waypoints[wps.waypoint_index_current_goal]
+		:
+		nullptr;
+
+	return ( wp==nullptr || wp->target_heading==TWaypoint::INVALID_NUM);
 }
