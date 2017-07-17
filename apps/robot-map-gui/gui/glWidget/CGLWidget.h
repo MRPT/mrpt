@@ -23,7 +23,7 @@ class CGlWidget : public mrpt::gui::CQtGlCanvasBase
 {
 	Q_OBJECT
 public:
-	CGlWidget(QWidget* parent = nullptr);
+	CGlWidget(bool is2D, QWidget* parent = nullptr);
 	virtual ~CGlWidget();
 
 	void fillMap(const mrpt::opengl::CSetOfObjects::Ptr &renderizableMap);
@@ -39,7 +39,6 @@ signals:
 	void zoomChanged(float zoom);
 	void mousePosChanged(double x, double y);
 
-
 protected:
 	virtual void resizeGL(int width, int height) override;
 	virtual void updateCamerasParams() override;
@@ -51,10 +50,9 @@ private:
 
 
 	mrpt::opengl::COpenGLViewport::Ptr m_miniMapViewport;
-
 	mrpt::opengl::CSetOfObjects::Ptr m_map;
-	CDocument* m_doc;
 
+	CDocument* m_doc;
 	float m_miniMapSize;
 	const float m_minimapPercentSize;
 	const float m_observationSize;
@@ -63,4 +61,6 @@ private:
 	QVector<mrpt::opengl::CPointCloud::Ptr> m_visiblePoints;
 	mrpt::opengl::CPlanarLaserScan::Ptr m_currentLaserScan;
 	mrpt::opengl::CSetOfObjects::Ptr m_currentObs;
+
+	bool m_is2D;
 };

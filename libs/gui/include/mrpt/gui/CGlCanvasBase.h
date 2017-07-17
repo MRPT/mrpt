@@ -63,6 +63,10 @@ public:
 	void updateCameraParams(mrpt::opengl::CCamera &cam) const;
 	void setUseCameraFromScene(bool is);
 
+	void setAzimuthDegrees(float ang);
+	void setElevationDegrees(float ang);
+
+
 	// Visualization params:
 	float	cameraPointingX, cameraPointingY, cameraPointingZ;
 	float	cameraZoomDistance;

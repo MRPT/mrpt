@@ -135,7 +135,6 @@ void CDocument::addMapToRenderizableMaps(TypeOfConfig type, RenderizableMaps &re
 	auto iter = m_typeConfigs.find(type);
 	if (iter != m_typeConfigs.end())
 	{
-		std::string name = typeToName(type);
 		int index = 0;
 		for (auto &map: iter->second)
 		{
@@ -144,7 +143,7 @@ void CDocument::addMapToRenderizableMaps(TypeOfConfig type, RenderizableMaps &re
 			{
 				CSetOfObjects::Ptr obj = CSetOfObjects::Create();
 				ptr->getAs3DObject(obj);
-				renderMaps.emplace(name + std::to_string(index), obj);
+				renderMaps.emplace(SType(type, index), obj);
 			}
 			++index;
 		}

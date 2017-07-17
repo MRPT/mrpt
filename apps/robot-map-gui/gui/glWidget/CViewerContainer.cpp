@@ -25,6 +25,14 @@ CViewerContainer::CViewerContainer(QWidget *parent)
 	QObject::connect(m_ui->m_tabWidget, SIGNAL(currentChanged(int)), SLOT(updateZoomInfo(int)));
 }
 
+CViewerContainer::~CViewerContainer()
+{
+	for (int i = 0; i < m_ui->m_tabWidget->count(); ++i)
+	{
+		delete m_ui->m_tabWidget->widget(i);
+	}
+}
+
 void CViewerContainer::showRangeScan(CNode *node)
 {
 	CRangeScanNode *obsNode = dynamic_cast<CRangeScanNode *>(node);
@@ -63,8 +71,10 @@ void CViewerContainer::applyConfigChanges(RenderizableMaps renderizableMaps)
 {
 	for (int i = 0; i < m_ui->m_tabWidget->count(); ++i)
 	{
-		std::string name = m_ui->m_tabWidget->tabText(i).toStdString();
-		auto it = renderizableMaps.find(name);
+		auto sTypeIter = m_tabsInfo.find(i);
+		assert(sTypeIter != m_tabsInfo.end());
+
+		auto it = renderizableMaps.find(sTypeIter->second);
 		assert(it != renderizableMaps.end());
 
 		CGlWidget *gl = dynamic_cast<CGlWidget *>(m_ui->m_tabWidget->widget(i));
@@ -81,14 +91,19 @@ void CViewerContainer::updateConfigChanges(RenderizableMaps renderizableMaps, CD
 		QWidget *w = m_ui->m_tabWidget->widget(i);
 		delete w;
 	}
+	m_tabsInfo.clear();
 
 	m_ui->m_tabWidget->clear();
 
 	for(auto &it: renderizableMaps)
 	{
-		CGlWidget *gl = new CGlWidget();
+		bool is2D = it.first.type == TypeOfConfig::PointsMap || it.first.type == TypeOfConfig::Occupancy;
+		CGlWidget *gl = new CGlWidget(is2D);
 		gl->fillMap(it.second);
-		m_ui->m_tabWidget->addTab(gl, QString::fromStdString(it.first));
+
+		QString name = QString::fromStdString(typeToName(it.first.type)) + QString::number(it.first.index);
+		int tabIndex = m_ui->m_tabWidget->addTab(gl, name);
+		m_tabsInfo.emplace(tabIndex, it.first);
 
 		gl->setDocument(doc);
 		gl->setSelectedObservation(isShowAllObs);
