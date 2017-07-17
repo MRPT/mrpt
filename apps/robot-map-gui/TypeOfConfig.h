@@ -40,3 +40,21 @@ inline std::string typeToName(TypeOfConfig type)
 
 	return "";
 }
+
+
+
+struct SType
+{
+	SType() : type(None), index(-1) {}
+	SType(TypeOfConfig _type, int _index) : type(_type), index(_index) {}
+
+	inline bool operator<(const SType &i) const
+	{
+		if (type != i.type) return type < i.type;
+		return index < i.index;
+	}
+
+	TypeOfConfig type;
+	int index;
+};
+

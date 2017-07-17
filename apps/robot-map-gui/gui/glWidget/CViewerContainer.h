@@ -22,7 +22,7 @@ class CViewerContainer: public QWidget
 	Q_OBJECT
 public:
 	CViewerContainer(QWidget *parent = nullptr);
-	virtual ~CViewerContainer() = default;
+	virtual ~CViewerContainer();
 	void showRangeScan(CNode *node);
 	void showRobotDirection(CNode *node);
 	void applyConfigChanges(RenderizableMaps renderizableMaps);
@@ -41,4 +41,6 @@ private slots:
 
 private:
 	std::unique_ptr<Ui::CViewerContainer> m_ui;
+	std::map<int, SType> m_tabsInfo;
+
 };

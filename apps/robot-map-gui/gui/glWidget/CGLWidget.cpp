@@ -14,6 +14,7 @@
 #include "mrpt/utils/CFileGZInputStream.h"
 #include "mrpt/opengl/CGridPlaneXY.h"
 #include "mrpt/opengl/CPointCloud.h"
+#include "mrpt/opengl/CTexturedPlane.h"
 #include "mrpt/gui/CGlCanvasBase.h"
 #include "mrpt/opengl/stock_objects.h"
 #include "mrpt/math/geometry.h"
@@ -30,24 +31,36 @@
 using namespace mrpt;
 using namespace mrpt::opengl;
 
-CGlWidget::CGlWidget(QWidget *parent)
+CGlWidget::CGlWidget(bool is2D, QWidget *parent)
 	: CQtGlCanvasBase(parent)
-	, m_observationSize(10.)
 	, m_doc(nullptr)
-	, m_isShowObs(false)
 	, m_miniMapSize(-1.0)
 	, m_minimapPercentSize(0.25)
+	, m_observationSize(10.)
+	, m_isShowObs(false)
+	, m_is2D(is2D)
 {
 	clearColorR = 1.0;
 	clearColorG = 1.0;
 	clearColorB = 1.0;
 
-	m_miniMapViewport = m_openGLScene->createViewport("miniMap");
-	updateCamerasParams();
-	m_miniMapViewport->setBorderSize(2);
-	m_miniMapViewport->setViewportPosition(0.01,0.01, m_minimapPercentSize, m_minimapPercentSize);
-	m_miniMapViewport->setTransparent(false);
 
+	if (m_is2D)
+	{
+		m_miniMapViewport = m_openGLScene->createViewport("miniMap");
+		m_miniMapViewport->setBorderSize(2);
+		m_miniMapViewport->setViewportPosition(0.01,0.01, m_minimapPercentSize, m_minimapPercentSize);
+		m_miniMapViewport->setTransparent(false);
+
+		setAzimuthDegrees(-90);
+		setElevationDegrees(90);
+
+		CCamera &camMiniMap = m_miniMapViewport->getCamera();
+		updateCameraParams(camMiniMap);
+		camMiniMap.setOrthogonal();
+	}
+
+	updateCamerasParams();
 	// The ground:
 	mrpt::opengl::CGridPlaneXY::Ptr groundPlane = mrpt::opengl::CGridPlaneXY::Create(-200,200,-200,200,0,5);
 	groundPlane->setColor(0.4,0.4,0.4);
@@ -63,6 +76,52 @@ void CGlWidget::fillMap(const CSetOfObjects::Ptr &renderizableMap)
 {
 	insertToMap(renderizableMap);
 	m_map = renderizableMap;
+	float xMin = 0;
+	float xMax = 0;
+	float yMin = 0;
+	float yMax = 0;
+
+	if (m_is2D)
+	{
+		if (m_map->size() == 1)
+		{
+			CRenderizable *ren = m_map->begin()->get();
+			CTexturedPlane *textured = dynamic_cast<CTexturedPlane *>(ren);
+			if (textured)
+			{
+				textured->getPlaneCorners(xMin, xMax, yMin, yMax);
+			}
+			else
+			{
+				CPointCloud *points = dynamic_cast<CPointCloud *>(ren);
+				if (points)
+				{
+					const std::vector<float> &arrayX = points->getArrayX();
+					const std::vector<float> &arrayY = points->getArrayY();
+
+					for (auto &itX: arrayX)
+					{
+						xMin = std::min(xMin, itX);
+						xMax = std::max(xMax, itX);
+					}
+					for (auto &itY: arrayY)
+					{
+						yMin = std::min(yMin, itY);
+						yMax = std::max(yMax, itY);
+					}
+				}
+
+			}
+		}
+
+		float xDist = xMax - xMin;
+		float yDist = yMax - yMin;
+
+		CCamera &camMiniMap = m_miniMapViewport->getCamera();
+		updateCameraParams(camMiniMap);
+		camMiniMap.setZoomDistance(std::max(xDist, yDist));
+		updateCamerasParams();
+	}
 
 	if (m_isShowObs)
 		setSelectedObservation(m_isShowObs);
@@ -81,7 +140,7 @@ void CGlWidget::setSelected(const math::TPose3D &pose)
 	if (m_currentLaserScan)
 		m_map->removeObject(m_currentLaserScan);
 
-	m_currentObs = opengl::stock_objects::RobotGiraff();
+	m_currentObs = opengl::stock_objects::CornerXYZSimple();
 	m_currentObs->setPose( pose );
 	m_map->insert(m_currentObs);
 
@@ -154,7 +213,7 @@ void CGlWidget::resizeGL(int width, int height)
 {
 	CQtGlCanvasBase::resizeGL(width, height);
 
-	if (m_miniMapSize == -1.0)
+	if (m_is2D)
 	{
 		GLint	win_dims[4];
 		glGetIntegerv( GL_VIEWPORT, win_dims );
@@ -165,19 +224,31 @@ void CGlWidget::resizeGL(int width, int height)
 
 void CGlWidget::updateCamerasParams()
 {
+	float zoom = getCameraZoomDistance();
 	CQtGlCanvasBase::updateCamerasParams();
-	CCamera &camMiniMap = m_miniMapViewport->getCamera();
-	float zoom = camMiniMap.getZoomDistance();
-	updateCameraParams(camMiniMap);
-	if (zoom != camMiniMap.getZoomDistance())
-		emit zoomChanged(camMiniMap.getZoomDistance());
+
+	if (m_is2D)
+	{
+		CCamera &camMiniMap = m_miniMapViewport->getCamera();
+		float zoomMiniMap = camMiniMap.getZoomDistance();
+		updateCameraParams(camMiniMap);
+		camMiniMap.setProjectiveModel(false);
+		camMiniMap.setZoomDistance(zoomMiniMap);
+	}
+
+	if (zoom != getCameraZoomDistance())
+		emit zoomChanged(getCameraZoomDistance());
+
 }
 
 void CGlWidget::insertToMap(const CRenderizable::Ptr &newObject)
 {
 	CQtGlCanvasBase::insertToMap(newObject);
-	assert(m_miniMapViewport);
-	m_miniMapViewport->insert(newObject);
+	if (m_is2D)
+	{
+		assert(m_miniMapViewport);
+		m_miniMapViewport->insert(newObject);
+	}
 }
 
 void CGlWidget::mouseMoveEvent(QMouseEvent *event)
@@ -201,6 +272,9 @@ void CGlWidget::mouseMoveEvent(QMouseEvent *event)
 
 void CGlWidget::updateMinimapPos()
 {
+	if (!m_is2D)
+		return;
+
 	GLint	win_dims[4];
 	glGetIntegerv( GL_VIEWPORT, win_dims );
 

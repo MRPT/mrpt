@@ -19,7 +19,7 @@
 
 
 typedef mrpt::utils::poly_ptr_ptr<mrpt::maps::CMetricMap::Ptr> MetricPolyPtr;
-typedef std::map<std::string, mrpt::opengl::CSetOfObjects::Ptr> RenderizableMaps;
+typedef std::map<SType, mrpt::opengl::CSetOfObjects::Ptr> RenderizableMaps;
 typedef std::map<TypeOfConfig, std::vector<MetricPolyPtr> > TypeConfig;
 
 class CDocument

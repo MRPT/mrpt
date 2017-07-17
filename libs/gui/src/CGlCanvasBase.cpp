@@ -109,7 +109,7 @@ CGlCanvasBase::CamaraParams CGlCanvasBase::updateZoom(CamaraParams &params, int 
 
 CGlCanvasBase::CamaraParams CGlCanvasBase::updateZoom(CamaraParams &params, float delta)
 {
-	float zoom = params.cameraZoomDistance * 1 - 0.03f*(delta/120.0f);
+	float zoom = params.cameraZoomDistance * (1 - 0.03f*(delta/120.0f));
 	if (zoom <= m_minZoom && m_maxZoom >= zoom)
 		return params;
 
@@ -225,6 +225,16 @@ void CGlCanvasBase::updateCameraParams(CCamera &cam) const
 void CGlCanvasBase::setUseCameraFromScene(bool is)
 {
 	useCameraFromScene = is;
+}
+
+void CGlCanvasBase::setAzimuthDegrees(float ang)
+{
+	cameraAzimuthDeg = ang;
+}
+
+void CGlCanvasBase::setElevationDegrees(float ang)
+{
+	cameraElevationDeg = ang;
 }
 
 double CGlCanvasBase::renderCanvas(int width, int height)
