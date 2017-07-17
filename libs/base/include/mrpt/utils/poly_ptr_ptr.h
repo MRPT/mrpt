@@ -88,7 +88,7 @@ class poly_ptr_ptr
 	typename T::element_type& operator*(void) { return *get(); }
 	const typename T::element_type& operator*(void)const { return *get(); }
 	operator bool() const { return m_smartptr ? true : false; }
-	bool operator!(void)const { return !m_smartptr(); }
+	bool operator!(void)const { return m_smartptr ? false : true; }
 	const T& get_ptr() const { return m_smartptr; }
 	T& get_ptr() { return m_smartptr; }
 	void reset() { m_smartptr.reset(); }
