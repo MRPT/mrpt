@@ -15,8 +15,6 @@ namespace mrpt
 {
 namespace poses
 {
-DEFINE_SERIALIZABLE_PRE(CPoint3D)
-
 /** A class used to store a 3D point.
  *
  *  For a complete description of Points/Poses, see mrpt::poses::CPoseOrPoint,

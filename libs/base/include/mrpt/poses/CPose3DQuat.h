@@ -20,8 +20,6 @@ namespace mrpt
 {
 namespace poses
 {
-DEFINE_SERIALIZABLE_PRE(CPose3DQuat)
-
 /** A class used to store a 3D pose as a translation (x,y,z) and a quaternion
  * (qr,qx,qy,qz).
  *

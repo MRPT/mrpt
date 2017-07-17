@@ -19,8 +19,6 @@ namespace poses
 {
 class CPose2D;
 
-DEFINE_SERIALIZABLE_PRE(CPoint2D)
-
 /** A class used to store a 2D point.
  *
  *  For a complete description of Points/Poses, see mrpt::poses::CPoseOrPoint,
