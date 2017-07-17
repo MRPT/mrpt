@@ -24,8 +24,6 @@ namespace poses
 class CPose3DQuat;
 class CPose3DRotVec;
 
-DEFINE_SERIALIZABLE_PRE(CPose3D)
-
 /** A class used to store a 3D pose (a 3D translation + a rotation in 3D).
  *   The 6D transformation in SE(3) stored in this class is kept in two
  *   separate containers: a 3-array for the translation, and a 3x3 rotation

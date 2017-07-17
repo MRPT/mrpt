@@ -16,8 +16,6 @@ namespace mrpt
 {
 namespace poses
 {
-DEFINE_SERIALIZABLE_PRE(CPose2D)
-
 /** A class used to store a 2D pose, including the 2D coordinate point and a
  * heading (phi) angle.
  *  Use this class instead of lightweight mrpt::math::TPose2D when pose/point

@@ -191,11 +191,6 @@ void BASE_IMPEXP
 	DEFINE_MRPT_OBJECT_POST_CUSTOM_BASE_LINKAGE2(                      \
 		class_name, mrpt::utils::CSerializable, _LINKAGE_ class_name)
 
-/**  This declaration must be inserted in all CSerializable classes definition,
- * before the class declaration.
-  */
-#define DEFINE_SERIALIZABLE_PRE(class_name)
-
 #define DEFINE_SERIALIZABLE_POST(class_name)      \
 	DEFINE_MRPT_OBJECT_POST_CUSTOM_BASE_LINKAGE2( \
 		class_name, mrpt::utils::CSerializable, BASE_IMPEXP class_name)

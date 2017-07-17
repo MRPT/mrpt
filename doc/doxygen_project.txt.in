@@ -2071,18 +2071,12 @@ EXPAND_AS_DEFINED      = DECLARE_COMMON_CONTAINERS_MEMBERS \
                          DEFINE_MRPT_OBJECT_PRE_CUSTOM_BASE_NO_LINKAGE \
                          DEFINE_MRPT_OBJECT_PRE \
                          DEFINE_SERIALIZABLE \
-                         DEFINE_SERIALIZABLE_PRE \
-                         DEFINE_SERIALIZABLE_PRE_CUSTOM_LINKAGE \
-                         DEFINE_MRPT_OBJECT_PRE_CUSTOM_LINKAGE2 \
-                         DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE \
-                         DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE \
                          DEFINE_VIRTUAL_MRPT_OBJECT \
                          DEFINE_VIRTUAL_SERIALIZABLE \
                          DEFINE_MRPT_OBJECT_CUSTOM_LINKAGE \
                          DEFINE_SERIALIZABLE_CUSTOM_LINKAGE \
                          MRPT_DECLARE_DEPRECATED_FUNCTION \
-                         MRPT_DEPRECATED_PRE \
-                         MRPT_DEPRECATED_POST \
+                         MRPT_DEPRECATED \
                          MAP_DEFINITION_START \
                          MAP_DEFINITION_END \
                          MAP_DEFINITION_REGISTER
