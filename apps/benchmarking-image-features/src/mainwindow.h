@@ -98,6 +98,7 @@ public:
 
     QPushButton *browse_button;
     QPushButton *browse_button2;
+    QPushButton *generateVisualOdometry;
     QGridLayout *layout_grid;
 
     int currentInputIndex;
@@ -338,6 +339,7 @@ public:
     double elapsedTime_descriptor;
     QLabel *detector_info;
     QLabel *descriptor_info;
+    QLabel *descriptor_info2;
     double closest_dist;
 
 
@@ -514,7 +516,7 @@ public slots:
     void onStereoMatchingChecked(int state);
 
     /**
-     * on_next_button_clicked() function is called when the user clicks on the next button to iterate over the images in the dataset
+     * on_next_button_clicked() function is called when the user clicks on the next button t oiterate over the images in the dataset
      * this function calls the readFilesFromFolder(int) and displayImagesWithoutDetector() functions
      */
     void on_next_button_clicked();
@@ -530,6 +532,8 @@ public slots:
      * e.g, entering 0.1 enlarges the image to 110% and -0.2 reduces it to 80% of its actual resolution
      */
     void on_sample_clicked();
+
+    void on_generateVisualOdometry_clicked();
 
 };
 
