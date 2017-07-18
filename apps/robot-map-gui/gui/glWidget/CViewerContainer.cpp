@@ -10,7 +10,6 @@
 #include "ui_CViewerContainer.h"
 #include "CGLWidget.h"
 #include "gui/observationTree/CRangeScanNode.h"
-#include "gui/observationTree/CPosesNode.h"
 
 
 CViewerContainer::CViewerContainer(QWidget *parent)
@@ -56,17 +55,14 @@ void CViewerContainer::showRangeScan(CNode *node)
 	}
 }
 
-void CViewerContainer::showRobotDirection(CNode *node)
+void CViewerContainer::showRobotDirection(const mrpt::poses::CPose3D &pose)
 {
-	CPosesNode *posesNode = dynamic_cast<CPosesNode *>(node);
-	assert(posesNode);
-
 	for (int i = 0; i < m_ui->m_tabWidget->count(); ++i)
 	{
 		QWidget *w = m_ui->m_tabWidget->widget(i);
 		CGlWidget *gl = dynamic_cast<CGlWidget *>(w);
 		assert(gl);
-		gl->setSelected(posesNode->getPose());
+		gl->setSelected(pose);
 	}
 }
 
@@ -135,6 +131,53 @@ void CViewerContainer::showAllObservation(bool is)
 		CGlWidget *gl = dynamic_cast<CGlWidget *>(m_ui->m_tabWidget->widget(i));
 		assert(gl);
 		gl->setSelectedObservation(is);
+	}
+}
+
+void CViewerContainer::changeCurrentBot(int value)
+{
+	for (int i = 0; i < m_ui->m_tabWidget->count(); ++i)
+	{
+		CGlWidget *gl = dynamic_cast<CGlWidget *>(m_ui->m_tabWidget->widget(i));
+		assert(gl);
+		gl->setBot(value);
+	}
+}
+
+void CViewerContainer::setVisibleGrid(bool is)
+{
+	for (int i = 0; i < m_ui->m_tabWidget->count(); ++i)
+	{
+		CGlWidget *gl = dynamic_cast<CGlWidget *>(m_ui->m_tabWidget->widget(i));
+		assert(gl);
+		gl->setVisibleGrid(is);
+	}
+}
+
+void CViewerContainer::changeBackgroundColor(QColor color)
+{
+	float r = color.red()/255.0;
+	float g = color.green()/255.0;
+	float b = color.blue()/255.0;
+	for (int i = 0; i < m_ui->m_tabWidget->count(); ++i)
+	{
+		CGlWidget *gl = dynamic_cast<CGlWidget *>(m_ui->m_tabWidget->widget(i));
+		assert(gl);
+		gl->setBackgroundColor(r, g, b);
+	}
+}
+
+void CViewerContainer::changeGridColor(QColor color)
+{
+	float r = color.red()/255.0;
+	float g = color.green()/255.0;
+	float b = color.blue()/255.0;
+	float a = color.alpha()/255.0;
+	for (int i = 0; i < m_ui->m_tabWidget->count(); ++i)
+	{
+		CGlWidget *gl = dynamic_cast<CGlWidget *>(m_ui->m_tabWidget->widget(i));
+		assert(gl);
+		gl->setGridColor(r, g, b, a);
 	}
 }
 

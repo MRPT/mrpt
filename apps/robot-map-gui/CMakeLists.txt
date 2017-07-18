@@ -43,6 +43,7 @@ if(CMAKE_MRPT_HAS_Qt5 AND CMAKE_MRPT_HAS_OPENGL_GLUT)
 		gui/configWidget/COccupancyConfig.cpp
 		gui/configWidget/CGasGridConfig.cpp
 		gui/configWidget/CLandmarksConfig.cpp
+		gui/configWidget/CGeneralConfig.cpp
 		TypeOfConfig.h
 		)
 
@@ -53,6 +54,7 @@ if(CMAKE_MRPT_HAS_Qt5 AND CMAKE_MRPT_HAS_OPENGL_GLUT)
 		gui/configWidget/CConfigWidget.h
 		gui/observationTree/CObservationTree.h
 		gui/glWidget/CViewerContainer.h
+		gui/configWidget/CGeneralConfig.h
 		)
 
 	set(FILES_TO_UIC
@@ -64,6 +66,7 @@ if(CMAKE_MRPT_HAS_Qt5 AND CMAKE_MRPT_HAS_OPENGL_GLUT)
 		gui/configWidget/CBeaconConfig.ui
 		gui/configWidget/CGasGridConfig.ui
 		gui/configWidget/CLandmarksConfig.ui
+		gui/configWidget/CGeneralConfig.ui
 		gui/glWidget/CViewerContainer.ui
 		)
 	qt5_wrap_cpp(moc_cpps ${FILES_TO_MOC})

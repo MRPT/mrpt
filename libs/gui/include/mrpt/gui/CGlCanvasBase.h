@@ -61,7 +61,7 @@ public:
 
 	void updateCameraParams(mrpt::opengl::CCamera &cam) const;
 
-	float getCameraZoomDistance() const;
+	float getZoomDistance() const;
 
 	virtual void setAzimuthDegrees(float ang);
 	virtual void setElevationDegrees(float ang);

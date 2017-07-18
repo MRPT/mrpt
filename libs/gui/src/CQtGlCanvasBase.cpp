@@ -48,6 +48,12 @@ opengl::COpenGLViewport::Ptr CQtGlCanvasBase::mainViewport() const
 	return m_mainViewport;
 }
 
+float CQtGlCanvasBase::getCameraZoomDistance() const
+{
+	mrpt::opengl::CCamera &cam = m_mainViewport->getCamera();
+	return cam.getZoomDistance();
+}
+
 void CQtGlCanvasBase::mousePressEvent(QMouseEvent *event)
 {
 	setMousePos(event->pos().x(), event->pos().y());
@@ -131,4 +137,10 @@ void CQtGlCanvasBase::insertToMap(const opengl::CRenderizable::Ptr &newObject)
 {
 	assert(m_mainViewport);
 	m_mainViewport->insert(newObject);
+}
+
+void CQtGlCanvasBase::removeFromMap(const opengl::CRenderizable::Ptr &newObject)
+{
+	assert(m_mainViewport);
+	m_mainViewport->removeObject(newObject);
 }

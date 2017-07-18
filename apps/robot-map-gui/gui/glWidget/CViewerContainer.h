@@ -25,13 +25,17 @@ public:
 	CViewerContainer(QWidget *parent = nullptr);
 	virtual ~CViewerContainer();
 	void showRangeScan(CNode *node);
-	void showRobotDirection(CNode *node);
+	void showRobotDirection(const mrpt::poses::CPose3D &pose);
 	void applyConfigChanges(RenderizableMaps renderizableMaps);
 	void updateConfigChanges(RenderizableMaps renderizableMaps, CDocument *doc, bool isShowAllObs);
 	void setDocument(CDocument *doc);
 
 public slots:
 	void showAllObservation(bool is);
+	void changeCurrentBot(int value);
+	void setVisibleGrid(bool is);
+	void changeBackgroundColor(QColor color);
+	void changeGridColor(QColor color);
 
 private slots:
 	void updatePanelInfo(int index);
