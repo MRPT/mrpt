@@ -41,6 +41,11 @@ signals:
 	void updatedConfig();
 	void openedConfig(const std::string str);
 	void applyConfigurationForCurrentMaps();
+	void backgroundColorChanged(QColor col);
+	void gridColorChanged(QColor col);
+	void gridVisibleChanged(bool is);
+	void currentBotChanged(int value);
+
 
 public slots:
 	void openConfig();

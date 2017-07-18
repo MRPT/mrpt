@@ -12,7 +12,6 @@
 #include "mrpt/utils/CConfigFile.h"
 #include "mrpt/utils/CFileGZOutputStream.h"
 #include "mrpt/utils/CFileGZInputStream.h"
-#include "mrpt/opengl/CGridPlaneXY.h"
 #include "mrpt/opengl/CPointCloud.h"
 #include "mrpt/opengl/CTexturedPlane.h"
 #include "mrpt/gui/CGlCanvasBase.h"
@@ -33,12 +32,15 @@ using namespace mrpt::opengl;
 
 CGlWidget::CGlWidget(bool is2D, QWidget *parent)
 	: CQtGlCanvasBase(parent)
+	, m_groundPlane(mrpt::opengl::CGridPlaneXY::Create(-200,200,-200,200,0,5))
 	, m_doc(nullptr)
 	, m_miniMapSize(-1.0)
 	, m_minimapPercentSize(0.25)
 	, m_observationSize(10.)
 	, m_isShowObs(false)
+	, m_currentObs(opengl::stock_objects::CornerXYZSimple())
 	, m_is2D(is2D)
+	, m_showRobot(false)
 {
 	clearColorR = 1.0;
 	clearColorG = 1.0;
@@ -61,10 +63,8 @@ CGlWidget::CGlWidget(bool is2D, QWidget *parent)
 	}
 
 	updateCamerasParams();
-	// The ground:
-	mrpt::opengl::CGridPlaneXY::Ptr groundPlane = mrpt::opengl::CGridPlaneXY::Create(-200,200,-200,200,0,5);
-	groundPlane->setColor(0.4,0.4,0.4);
-	insertToMap(groundPlane);
+	m_groundPlane->setColor(0.4,0.4,0.4);
+	setVisibleGrid(true);
 }
 
 CGlWidget::~CGlWidget()
@@ -134,13 +134,13 @@ void CGlWidget::setSelected(const math::TPose3D &pose)
 	if (!m_map)
 		return;
 
-	if (m_currentObs)
-		m_map->removeObject(m_currentObs);
+	m_map->removeObject(m_currentObs);
 
 	if (m_currentLaserScan)
 		m_map->removeObject(m_currentLaserScan);
 
-	m_currentObs = opengl::stock_objects::CornerXYZSimple();
+	m_showRobot = true;
+
 	m_currentObs->setPose( pose );
 	m_map->insert(m_currentObs);
 
@@ -206,7 +206,7 @@ void CGlWidget::setZoom(float zoom)
 
 float CGlWidget::getZoom() const
 {
-	return getCameraZoomDistance();
+	return getZoomDistance();
 }
 
 void CGlWidget::setAzimuthDegrees(float ang)
@@ -221,6 +221,76 @@ void CGlWidget::setElevationDegrees(float ang)
 	CQtGlCanvasBase::setElevationDegrees(ang);
 	emit elevationChanged(ang);
 	updateCamerasParams();
+}
+
+void CGlWidget::setBackgroundColor(float r, float g, float b)
+{
+	clearColorR = r;
+	clearColorG = g;
+	clearColorB = b;
+
+	update();
+}
+
+void CGlWidget::setGridColor(double r, double g, double b, double a)
+{
+	m_groundPlane->setColor(r, g, b, a);
+	update();
+}
+
+void CGlWidget::setVisibleGrid(bool is)
+{
+	if (is)
+		insertToMap(m_groundPlane);
+	else
+		removeFromMap(m_groundPlane);
+
+	update();
+}
+
+void CGlWidget::setBot(int value)
+{
+	if (!m_map)
+		return;
+
+	math::TPose3D pose;
+
+	if (m_showRobot)
+	{
+		m_map->removeObject(m_currentObs);
+		pose = m_currentObs->getPose();
+	}
+
+	switch (value) {
+	case 0:
+		m_currentObs = opengl::stock_objects::CornerXYZSimple();
+		break;
+	case 1:
+		m_currentObs = opengl::stock_objects::CornerXYZ();
+		break;
+	case 2:
+		m_currentObs = opengl::stock_objects::RobotGiraff();
+		break;
+	case 3:
+		m_currentObs = opengl::stock_objects::RobotRhodon();
+		break;
+	case 4:
+		m_currentObs = opengl::stock_objects::RobotPioneer();
+		break;
+	case 5:
+		m_currentObs = opengl::stock_objects::BumblebeeCamera();
+		break;
+	default:
+		m_currentObs = opengl::stock_objects::CornerXYZSimple();
+		break;
+	}
+	if (m_showRobot)
+	{
+		m_currentObs->setPose( pose );
+		m_map->insert(m_currentObs);
+	}
+
+	update();
 }
 
 void CGlWidget::resizeGL(int width, int height)
@@ -250,8 +320,8 @@ void CGlWidget::updateCamerasParams()
 		camMiniMap.setZoomDistance(zoomMiniMap);
 	}
 
-	if (zoom != getCameraZoomDistance())
-		emit zoomChanged(getCameraZoomDistance());
+	if (zoom != getZoomDistance())
+		emit zoomChanged(getZoomDistance());
 
 }
 
@@ -262,6 +332,16 @@ void CGlWidget::insertToMap(const CRenderizable::Ptr &newObject)
 	{
 		assert(m_miniMapViewport);
 		m_miniMapViewport->insert(newObject);
+	}
+}
+
+void CGlWidget::removeFromMap(const CRenderizable::Ptr &newObject)
+{
+	CQtGlCanvasBase::removeFromMap(newObject);
+	if (m_is2D)
+	{
+		assert(m_miniMapViewport);
+		m_miniMapViewport->removeObject(newObject);
 	}
 }
 

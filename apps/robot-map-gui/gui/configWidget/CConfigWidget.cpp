@@ -10,6 +10,7 @@
 #include "ui_CConfigWidget.h"
 #include "CSelectType.h"
 #include "COccupancyConfig.h"
+#include "CGeneralConfig.h"
 #include "CPointsConfig.h"
 #include "CBeaconConfig.h"
 #include "CLandmarksConfig.h"
@@ -39,15 +40,12 @@ CConfigWidget::CConfigWidget(QWidget *parent)
 	QObject::connect(m_ui->m_add, SIGNAL(released()), SLOT(addMap()));
 	QObject::connect(m_ui->m_remove, SIGNAL(released()), SLOT(removeMap()));
 
-	QListWidgetItem *item = new QListWidgetItem("General", m_ui->m_config);
-	item->setData(Qt::UserRole, TypeOfConfig::General);
-	m_ui->m_config->addItem(item);
-
-	QWidget* w = new QWidget();
-	w->setLayout(new QHBoxLayout(w));
-	w->layout()->addWidget(new QCheckBox("test", w));
-	m_ui->stackedWidget->addWidget(w);
-
+	CGeneralConfig *gen = new CGeneralConfig();
+	addWidget(TypeOfConfig::General, gen);
+	QObject::connect(gen, SIGNAL(backgroundColorChanged(QColor)), this, SIGNAL(backgroundColorChanged(QColor)));
+	QObject::connect(gen, SIGNAL(gridColorChanged(QColor)), this, SIGNAL(gridColorChanged(QColor)));
+	QObject::connect(gen, SIGNAL(gridVisibleChanged(bool)), this, SIGNAL(gridVisibleChanged(bool)));
+	QObject::connect(gen, SIGNAL(currentBotChanged(int)), this, SIGNAL(currentBotChanged(int)));
 
 	QObject::connect(m_ui->m_config, SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)),
 					 this, SLOT(currentConfigChanged(QListWidgetItem *, QListWidgetItem *)));

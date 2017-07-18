@@ -26,6 +26,7 @@ public:
 	virtual void resizeGL(int width, int height) override;
 
 	mrpt::opengl::COpenGLViewport::Ptr mainViewport() const;
+	float getCameraZoomDistance() const;
 
 protected:
 	virtual void mousePressEvent(QMouseEvent *event) override;
@@ -40,6 +41,7 @@ protected:
 
 	virtual void updateCamerasParams();
 	virtual void insertToMap( const opengl::CRenderizable::Ptr &newObject );
+	virtual void removeFromMap( const opengl::CRenderizable::Ptr &newObject );
 
 private:
 	bool m_isPressLMouseButton;

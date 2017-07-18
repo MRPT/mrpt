@@ -15,6 +15,7 @@
 #include "mrpt/maps/CSimpleMap.h"
 #include "mrpt/maps/CMultiMetricMap.h"
 #include "mrpt/opengl/CPlanarLaserScan.h"
+#include "mrpt/opengl/CGridPlaneXY.h"
 
 
 class CDocument;
@@ -38,6 +39,13 @@ public:
 	virtual void setAzimuthDegrees(float ang);
 	virtual void setElevationDegrees(float ang);
 
+	void setBackgroundColor(float r, float g, float b);
+	void setGridColor(double r, double g, double b, double a);
+
+	void setVisibleGrid(bool is);
+
+	void setBot(int value);
+
 signals:
 	void zoomChanged(float zoom);
 	void mousePosChanged(double x, double y);
@@ -48,6 +56,7 @@ protected:
 	virtual void resizeGL(int width, int height) override;
 	virtual void updateCamerasParams() override;
 	virtual void insertToMap( const mrpt::opengl::CRenderizable::Ptr &newObject ) override;
+	virtual void removeFromMap( const mrpt::opengl::CRenderizable::Ptr &newObject ) override;
 	virtual void mouseMoveEvent(QMouseEvent *event) override;
 
 private:
@@ -56,6 +65,7 @@ private:
 
 	mrpt::opengl::COpenGLViewport::Ptr m_miniMapViewport;
 	mrpt::opengl::CSetOfObjects::Ptr m_map;
+	mrpt::opengl::CGridPlaneXY::Ptr m_groundPlane;
 
 	CDocument* m_doc;
 	float m_miniMapSize;
@@ -68,4 +78,5 @@ private:
 	mrpt::opengl::CSetOfObjects::Ptr m_currentObs;
 
 	bool m_is2D;
+	bool m_showRobot;
 };

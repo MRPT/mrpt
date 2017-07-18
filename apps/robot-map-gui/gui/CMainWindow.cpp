@@ -14,6 +14,7 @@
 #include "observationTree/CObservationStereoImageNode.h"
 #include "observationTree/CObservationsNode.h"
 #include "observationTree/CPairNode.h"
+#include "gui/observationTree/CPosesNode.h"
 
 #include <QMenu>
 #include <QMenuBar>
@@ -42,6 +43,11 @@ CMainWindow::CMainWindow(QWidget *parent)
 	QObject::connect(m_ui->m_actionLoadConfig,	SIGNAL(triggered(bool)), m_ui->m_configWidget, SLOT(openConfig()));
 
 	QObject::connect(m_ui->m_actionShowAllObs, SIGNAL(triggered(bool)), m_ui->m_viewer, SLOT(showAllObservation(bool)));
+	QObject::connect(m_ui->m_configWidget, SIGNAL(backgroundColorChanged(QColor)), m_ui->m_viewer, SLOT(changeBackgroundColor(QColor)));
+	QObject::connect(m_ui->m_configWidget, SIGNAL(gridColorChanged(QColor)), m_ui->m_viewer, SLOT(changeGridColor(QColor)));
+	QObject::connect(m_ui->m_configWidget, SIGNAL(gridVisibleChanged(bool)), m_ui->m_viewer, SLOT(setVisibleGrid(bool)));
+	QObject::connect(m_ui->m_configWidget, SIGNAL(currentBotChanged(int)), m_ui->m_viewer, SLOT(changeCurrentBot(int)));
+
 	QObject::connect(m_ui->m_actionMapConfiguration, SIGNAL(triggered(bool)), SLOT(showMapConfiguration()));
 
 
@@ -113,7 +119,9 @@ void CMainWindow::itemClicked(const QModelIndex &index)
 	}
 	case CNode::ObjectType::Pos:
 	{
-		m_ui->m_viewer->showRobotDirection(node);
+		CPosesNode *posesNode = dynamic_cast<CPosesNode *>(node);
+		assert(posesNode);
+		m_ui->m_viewer->showRobotDirection(posesNode->getPose());
 		break;
 	}
 	case CNode::ObjectType::Image:
@@ -124,6 +132,7 @@ void CMainWindow::itemClicked(const QModelIndex &index)
 		mrpt::gui::CQtGlCanvasBase *gl = new mrpt::gui::CQtGlCanvasBase();
 		gl->mainViewport()->setImageView(imageNode->observation()->image);
 		m_ui->m_contentsNodeViewer->layout()->addWidget(gl);
+		m_ui->m_viewer->showRobotDirection(imageNode->getPose());
 		break;
 	}
 	case CNode::ObjectType::StereoImage:
@@ -146,6 +155,7 @@ void CMainWindow::itemClicked(const QModelIndex &index)
 			gl2->mainViewport()->setImageView(observation->imageRight);
 			layout->addWidget(gl2);
 		}
+		m_ui->m_viewer->showRobotDirection(stereoImageNode->getPose());
 		break;
 	}
 	default:

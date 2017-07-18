@@ -207,7 +207,7 @@ void CGlCanvasBase::setCameraParams(const CGlCanvasBase::CamaraParams &params)
 	cameraFOV = params.cameraFOV;
 }
 
-float CGlCanvasBase::getCameraZoomDistance() const
+float CGlCanvasBase::getZoomDistance() const
 {
 	return cameraZoomDistance;
 }
