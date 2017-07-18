@@ -33,6 +33,13 @@ QLabel *featureMatchingInfo[MAX_DESC];
 int min_dist_indexes[MAX_DESC];
 double min_distances[MAX_DESC];
 
+int successful_matches = 0;
+float threshold_dist1 = 0.9;
+float threshold_dist2 = 0.1;
+
+
+float dist1_p[MAX_DESC], dist2_p[MAX_DESC];
+
 string evaluation_info;
 
 string detector_names[] = {"KLT Detector", "Harris Corner Detector",
@@ -61,6 +68,12 @@ void MainWindow::on_button_generate_clicked()
 
     //ReadInputFormat();
 
+    CFeatureList featsImage2_2;
+
+
+    float temp_dist1 = 0, temp_dist2 = 0;
+    float o1x = 0, o1y = 0, o2x = 0, o2y = 0;
+
     double min_dist = 0, max_dist = 0;
     size_t min_dist_idx = 0, max_dist_idx = 0;
     numDesc1 = featsImage1.size();
@@ -79,6 +92,13 @@ void MainWindow::on_button_generate_clicked()
             }
 
 
+
+
+            //featsImage2.kdTreeTwoClosestPoint2D(featsImage1[i1]->x, featsImage1[i1]->y, o1x, o1y, o2x, o2y, temp_dist1, temp_dist2);
+            //dist1_p[i1] = temp_dist1;
+            //dist2_p[i1] = temp_dist2;
+
+
             distances.minimum_maximum(min_dist, max_dist, &min_dist_idx, &max_dist_idx);
 
             const double dist_std = mrpt::math::stddev(distances);
@@ -86,6 +106,24 @@ void MainWindow::on_button_generate_clicked()
             cout << "Min Distance : " << min_dist << " for image2 feature # " << min_dist_idx << "Distances sigma " << dist_std << endl;
             min_dist_indexes[i1] = min_dist_idx;
             min_distances[i1] = min_dist;
+
+
+
+            // compute the second closest descriptor
+            float temp_second = 99999;
+            for(int i=0 ; i<featsImage2.size() ; i++)
+            {
+                if(distances[i] == min_dist)
+                    continue;
+                if(temp_second > distances[i])
+                {
+                    temp_second = distances[i];
+                }
+            }
+            dist1_p[i1] = min_dist;
+            dist2_p[i1] = temp_second;
+
+            //cout << dist1_p[i1] << " dist1_p " << dist2_p[i1] << " dist2_p " << min_distances[i1] << " min distances" << endl;
 
             stringstream info;
             info << "<b>Feature (Image1) # " << i1 <<" matches Feature (Image2) # " << min_dist_idx <<  "<br/> with distance " << min_dist << ", Distances sigma <b> " << dist_std;
@@ -371,6 +409,42 @@ void MainWindow::on_button_generate_clicked()
                 break;
         }
     }// end of for loop
+
+    // computing % of descriptor matches here
+    for(int i=0 ; i <featsImage1.size() ; i++)
+    {
+        if (dist1_p[i] < threshold_dist1 && dist2_p[i] > threshold_dist2)
+            successful_matches++;
+    }
+
+    int numKeypoints1 = featsImage1.size();
+    double percent_success = ((double)successful_matches / (double)numKeypoints1) *100;
+
+    stringstream descript_info ;
+    descript_info << "<br/>Number of successful matches: "
+                  << successful_matches
+                  << "<br/>Number of Keypoints: "
+                  << numKeypoints1
+                  << "<br/>Percentage of successful matches: "
+                  <<  percent_success << endl;
+
+    string temp_info1 = descriptor_info->text().toStdString();
+    string temp_info2 = descript_info.str();
+
+    stringstream concat;
+    concat << temp_info1 << " " << temp_info2 ;
+
+    descriptor_info2->setText(QString::fromStdString(concat.str()));
+
+    // setting the older label for descriptor to false
+    descriptor_info->setVisible(false);
+    descriptor_info2->setVisible(true);
+
+
+
+
+
+
 }
 
 /************************************************************************************************
@@ -1163,12 +1237,35 @@ void MainWindow::on_detector_button_clicked()
 
     }
 
+    // compute dispersion of the image // maybe change the following to a function and do it for both image 1 and 2
+    double mean_x =0, mean_y = 0;
+    int numKeypoints1 = featsImage1.size();
+    for(int i=0 ; i<numKeypoints1 ; i++)
+    {
+        mean_x += featsImage1.getFeatureX(i);
+        mean_y += featsImage1.getFeatureY(i);
+    }
+    mean_x = mean_x/numKeypoints1;
+    mean_y = mean_y/numKeypoints1;
+    double standard_dev_x = 0;
+    double standard_dev_y = 0;
+
+    for(int i=0 ; i<numKeypoints1 ; i++)
+    {
+        standard_dev_x += pow( (featsImage1.getFeatureX(i) - mean_x), 2);
+        standard_dev_y += pow( (featsImage1.getFeatureY(i) - mean_y), 2);
+    }
+    standard_dev_x = sqrt(standard_dev_x/numKeypoints1);
+    standard_dev_y = sqrt(standard_dev_y/numKeypoints1);
 
     stringstream detect_info;
     detect_info << "<b> Detector Info </b>"
                 << "<br/>Detector_Selected: " << detector_names[detector_selected]
                 << "<br/>Time Taken: " << elapsedTime_detector
                 << "<br/>Number of Detected Key-points in Image 1: " << featsImage1.size()
+                << "<br/>Resolution of the Image: " << cvImg1.rows << ", " << cvImg1.cols
+                << "<br/>Dispersion of keypoints in Image1 in X direction: " << standard_dev_x
+                << "<br/>Dispersion of keypoints in Image1 in Y direction: " << standard_dev_y
                 ;
     if(currentInputIndex == 1 || currentInputIndex == 4)
         detect_info << "<br/>Number of Detected Key-points in Image 2: " << featsImage2.size();
@@ -1632,6 +1729,11 @@ void MainWindow::initializeParameters()
     param5_desc->setBaseSize(WIDGET_WIDTH, WIDGET_HEIGHT);
 }
 
+void MainWindow::on_generateVisualOdometry_clicked()
+{
+
+}
+
 /************************************************************************************************
 *								Main Window Constructor   								        *
 ************************************************************************************************/
@@ -1739,10 +1841,14 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
 
     detector_info = new QLabel;
     descriptor_info = new QLabel;
+    descriptor_info2 = new QLabel;
+
 
     stringstream detect_info;
     detector_info->setText("");
     descriptor_info->setText("");
+    descriptor_info2->setText("");
+
 
 
 
@@ -1760,6 +1866,8 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
     hbox_images->addWidget(image2,0,1,1,1);
     hbox_images->addWidget(detector_info,0,2,1,1);
     hbox_images->addWidget(descriptor_info,0,2,1,1);
+    hbox_images->addWidget(descriptor_info2,0,2,1,1);
+
 
     groupBox_images->setLayout(hbox_images);
 
@@ -1791,6 +1899,11 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
     browse_button2->setFixedSize(BUTTON_WIDTH,BUTTON_HEIGHT);
 
     connect(browse_button2, SIGNAL(clicked()), this, SLOT(on_browse_button_clicked2()));
+
+    generateVisualOdometry = new QPushButton("Generate Visual Odometry");
+    generateVisualOdometry->setFixedSize(BUTTON_WIDTH*2,BUTTON_HEIGHT);
+    connect(generateVisualOdometry, SIGNAL(clicked()), this, SLOT(on_generateVisualOdometry_clicked()));
+
     //initially have the buttons hidden as single image selected by default
     inputFilePath2->setVisible(false);
     browse_button2->setVisible(false);
@@ -1819,6 +1932,8 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
 
     inputVbox->addWidget(numFeaturesLabel,6,0);
     inputVbox->addWidget(numFeaturesLineEdit,6,1);
+
+    inputVbox->addWidget(generateVisualOdometry,7,0);
 
 
     // provide user with some additional functions
