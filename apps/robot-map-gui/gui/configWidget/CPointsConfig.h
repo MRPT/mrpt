@@ -21,7 +21,7 @@ class CPointsConfig;
 class CPointsConfig: public CBaseConfig
 {
 public:
-	CPointsConfig(QWidget *parent);
+	CPointsConfig();
 	virtual ~CPointsConfig();
 
 	virtual const QString getName() override;

@@ -37,6 +37,7 @@ private slots:
 	void updateConfig(const std::string str);
 
 	void applyConfigurationForCurrentMaps();
+	void showMapConfiguration();
 
 private:
 	void updateRenderMapFromConfig();

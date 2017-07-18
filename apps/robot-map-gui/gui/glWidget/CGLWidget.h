@@ -35,9 +35,14 @@ public:
 	void setZoom(float zoom);
 	float getZoom() const;
 
+	virtual void setAzimuthDegrees(float ang);
+	virtual void setElevationDegrees(float ang);
+
 signals:
 	void zoomChanged(float zoom);
 	void mousePosChanged(double x, double y);
+	void azimuthChanged(float ang);
+	void elevationChanged(float ang);
 
 protected:
 	virtual void resizeGL(int width, int height) override;

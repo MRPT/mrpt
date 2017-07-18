@@ -49,22 +49,25 @@ public:
 	void resizeViewport(int w, int h);
 	void clearColors();
 
-	CamaraParams updateZoom(CamaraParams &params, int x, int y);
-	CamaraParams updateZoom(CamaraParams &params, float delta);
-	CamaraParams updateRotate(CamaraParams &params, int x, int y);
-	CamaraParams updateOrbitCamera(CamaraParams &params, int x, int y);
-	CamaraParams updatePan(CamaraParams &params, int x, int y);
+	CamaraParams updateZoom(CamaraParams &params, int x, int y) const;
+	CamaraParams updateZoom(CamaraParams &params, float delta) const;
+	CamaraParams updateRotate(CamaraParams &params, int x, int y) const;
+	CamaraParams updateOrbitCamera(CamaraParams &params, int x, int y) const;
+	CamaraParams updatePan(CamaraParams &params, int x, int y) const;
 
 	CamaraParams cameraParams() const;
 	void setCameraParams(const CamaraParams &params);
+	void setUseCameraFromScene(bool is);
+
+	void updateCameraParams(mrpt::opengl::CCamera &cam) const;
 
 	float getCameraZoomDistance() const;
 
-	void updateCameraParams(mrpt::opengl::CCamera &cam) const;
-	void setUseCameraFromScene(bool is);
+	virtual void setAzimuthDegrees(float ang);
+	virtual void setElevationDegrees(float ang);
 
-	void setAzimuthDegrees(float ang);
-	void setElevationDegrees(float ang);
+	float getAzimuthDegrees() const;
+	float getElevationDegrees() const;
 
 
 	// Visualization params:

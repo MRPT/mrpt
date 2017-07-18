@@ -41,7 +41,8 @@ CMainWindow::CMainWindow(QWidget *parent)
 	QObject::connect(m_ui->m_observationsTree,	SIGNAL(clicked(const QModelIndex &)),	SLOT(itemClicked(const QModelIndex &)));
 	QObject::connect(m_ui->m_actionLoadConfig,	SIGNAL(triggered(bool)), m_ui->m_configWidget, SLOT(openConfig()));
 
-	QObject::connect(m_ui->m_actionShowAllObs, SIGNAL(triggered(bool)), SLOT(showAllObservation(bool)));
+	QObject::connect(m_ui->m_actionShowAllObs, SIGNAL(triggered(bool)), m_ui->m_viewer, SLOT(showAllObservation(bool)));
+	QObject::connect(m_ui->m_actionMapConfiguration, SIGNAL(triggered(bool)), SLOT(showMapConfiguration()));
 
 
 
@@ -50,6 +51,7 @@ CMainWindow::CMainWindow(QWidget *parent)
 
 
 	m_ui->m_dockWidgetNodeViewer->setVisible(false);
+	m_ui->m_dockWidgetConfig->setVisible(false);
 }
 
 CMainWindow::~CMainWindow()
@@ -182,6 +184,19 @@ void CMainWindow::applyConfigurationForCurrentMaps()
 
 	auto renderizableMaps = m_document->renderizableMaps();
 	m_ui->m_viewer->applyConfigChanges(renderizableMaps);
+}
+
+void CMainWindow::showMapConfiguration()
+{
+	QDialog *d = new QDialog();
+	QBoxLayout * lay = new QBoxLayout(QBoxLayout::LeftToRight);
+
+	QWidget *w = m_ui->m_dockWidgetConfig->widget();
+	lay->addWidget(w);
+	d->setLayout(lay);
+	d->exec();
+	m_ui->m_dockWidgetConfig->setWidget(w);
+	delete d;
 }
 
 

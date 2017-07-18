@@ -21,8 +21,8 @@ class CLandmarksConfig;
 class CLandmarksConfig: public CBaseConfig
 {
 public:
-	CLandmarksConfig(QWidget *parent);
-	virtual ~CLandmarksConfig();
+	CLandmarksConfig();
+	virtual ~CLandmarksConfig() = default;
 
 	virtual const QString getName() override;
 	virtual void updateConfiguration(mrpt::maps::TMetricMapInitializer *options) override;

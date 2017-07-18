@@ -22,7 +22,10 @@ CViewerContainer::CViewerContainer(QWidget *parent)
 	QObject::connect(m_ui->m_zoom, SIGNAL(valueChanged(double)), SLOT(zoomChanged(double)));
 	QObject::connect(m_ui->m_zoomSlider, SIGNAL(valueChanged(int)), SLOT(zoomChanged(int)));
 
-	QObject::connect(m_ui->m_tabWidget, SIGNAL(currentChanged(int)), SLOT(updateZoomInfo(int)));
+	QObject::connect(m_ui->m_tabWidget, SIGNAL(currentChanged(int)), SLOT(updatePanelInfo(int)));
+
+	QObject::connect(m_ui->m_azimDeg, SIGNAL(valueChanged(double)), SLOT(updateAzimuthDegrees(double)));
+	QObject::connect(m_ui->m_elevationDeg, SIGNAL(valueChanged(double)), SLOT(updateElevationDegrees(double)));
 }
 
 CViewerContainer::~CViewerContainer()
@@ -109,6 +112,8 @@ void CViewerContainer::updateConfigChanges(RenderizableMaps renderizableMaps, CD
 		gl->setSelectedObservation(isShowAllObs);
 		QObject::connect(gl, SIGNAL(zoomChanged(float)), SLOT(changeZoomInfo(float)));
 		QObject::connect(gl, SIGNAL(mousePosChanged(double, double)), SLOT(updateMouseInfo(double, double)));
+		QObject::connect(gl, SIGNAL(azimuthChanged(float)), SLOT(changeAzimuthDeg(float)));
+		QObject::connect(gl, SIGNAL(elevationChanged(float)), SLOT(changeElevationDeg(float)));
 	}
 }
 
@@ -133,7 +138,7 @@ void CViewerContainer::showAllObservation(bool is)
 	}
 }
 
-void CViewerContainer::updateZoomInfo(int index)
+void CViewerContainer::updatePanelInfo(int index)
 {
 	if (m_ui->m_tabWidget->count())
 	{
@@ -141,16 +146,36 @@ void CViewerContainer::updateZoomInfo(int index)
 		assert(gl);
 
 		changeZoomInfo(gl->getZoom());
+		changeAzimuthDeg(gl->getAzimuthDegrees());
+		changeElevationDeg(gl->getElevationDegrees());
 	}
 }
 
 void CViewerContainer::changeZoomInfo(float zoom)
 {
 	int zoomInt = zoom;
+	m_ui->m_zoomSlider->blockSignals(true);
 	m_ui->m_zoomSlider->setValue(zoomInt);
+	m_ui->m_zoomSlider->blockSignals(false);
 
 	double zoomDouble = zoom;
+	m_ui->m_zoom->blockSignals(true);
 	m_ui->m_zoom->setValue(zoomDouble);
+	m_ui->m_zoom->blockSignals(false);
+}
+
+void CViewerContainer::changeAzimuthDeg(float deg)
+{
+	m_ui->m_azimDeg->blockSignals(true);
+	m_ui->m_azimDeg->setValue(deg);
+	m_ui->m_azimDeg->blockSignals(false);
+}
+
+void CViewerContainer::changeElevationDeg(float deg)
+{
+	m_ui->m_elevationDeg->blockSignals(true);
+	m_ui->m_elevationDeg->setValue(deg);
+	m_ui->m_elevationDeg->blockSignals(false);
 }
 
 void CViewerContainer::zoomChanged(double d)
@@ -177,4 +202,37 @@ void CViewerContainer::updateMouseInfo(double x, double y)
 {
 	QString str = "x: " + QString::number(x) + "; y: " + QString::number(y);
 	m_ui->m_infoUnderCursor->setText(str);
+}
+
+void CViewerContainer::updateAzimuthDegrees(double deg)
+{
+	CGlWidget *gl = getCurrentTabWidget();
+	if (!gl) return;
+
+	gl->blockSignals(true);
+	gl->setAzimuthDegrees(deg);
+	gl->blockSignals(false);
+	gl->update();
+}
+
+void CViewerContainer::updateElevationDegrees(double deg)
+{
+	CGlWidget *gl = getCurrentTabWidget();
+	if (!gl) return;
+
+	gl->blockSignals(true);
+	gl->setElevationDegrees(deg);
+	gl->blockSignals(false);
+	gl->update();
+}
+
+CGlWidget *CViewerContainer::getCurrentTabWidget() const
+{
+	if (m_ui->m_tabWidget->count() <= 0)
+		return nullptr;
+
+	CGlWidget *gl = dynamic_cast<CGlWidget *>(m_ui->m_tabWidget->currentWidget());
+	assert(gl);
+
+	return gl;
 }

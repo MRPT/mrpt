@@ -16,6 +16,7 @@
 
 
 class CNode;
+class CGlWidget;
 
 class CViewerContainer: public QWidget
 {
@@ -33,13 +34,19 @@ public slots:
 	void showAllObservation(bool is);
 
 private slots:
-	void updateZoomInfo(int index);
+	void updatePanelInfo(int index);
 	void changeZoomInfo(float zoom);
+	void changeAzimuthDeg(float deg);
+	void changeElevationDeg(float deg);
 	void zoomChanged(double d);
 	void zoomChanged(int d);
 	void updateMouseInfo(double x, double y);
+	void updateAzimuthDegrees(double deg);
+	void updateElevationDegrees(double deg);
 
 private:
+	CGlWidget *getCurrentTabWidget() const;
+
 	std::unique_ptr<Ui::CViewerContainer> m_ui;
 	std::map<int, SType> m_tabsInfo;
 

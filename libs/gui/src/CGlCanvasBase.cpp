@@ -92,7 +92,7 @@ void CGlCanvasBase::setMouseClicked(bool is)
 	mouseClicked = is;
 }
 
-CGlCanvasBase::CamaraParams CGlCanvasBase::updateZoom(CamaraParams &params, int x, int y)
+CGlCanvasBase::CamaraParams CGlCanvasBase::updateZoom(CamaraParams &params, int x, int y) const
 {
 	float zoom = params.cameraZoomDistance * exp(0.01*(y - mouseClickY));
 	if (zoom <= m_minZoom && m_maxZoom >= zoom)
@@ -107,7 +107,7 @@ CGlCanvasBase::CamaraParams CGlCanvasBase::updateZoom(CamaraParams &params, int 
 	return params;
 }
 
-CGlCanvasBase::CamaraParams CGlCanvasBase::updateZoom(CamaraParams &params, float delta)
+CGlCanvasBase::CamaraParams CGlCanvasBase::updateZoom(CamaraParams &params, float delta) const
 {
 	float zoom = params.cameraZoomDistance * (1 - 0.03f*(delta/120.0f));
 	if (zoom <= m_minZoom && m_maxZoom >= zoom)
@@ -117,7 +117,7 @@ CGlCanvasBase::CamaraParams CGlCanvasBase::updateZoom(CamaraParams &params, floa
 	return params;
 }
 
-CGlCanvasBase::CamaraParams CGlCanvasBase::updateRotate(CamaraParams &params, int x, int y)
+CGlCanvasBase::CamaraParams CGlCanvasBase::updateRotate(CamaraParams &params, int x, int y) const
 {
 	const float dis = max(0.01f,(params.cameraZoomDistance));
 	float	eye_x = params.cameraPointingX +  dis * cos(DEG2RAD(params.cameraAzimuthDeg))*cos(DEG2RAD(params.cameraElevationDeg));
@@ -139,7 +139,7 @@ CGlCanvasBase::CamaraParams CGlCanvasBase::updateRotate(CamaraParams &params, in
 	return params;
 }
 
-CGlCanvasBase::CamaraParams CGlCanvasBase::updateOrbitCamera(CamaraParams &params, int x, int y)
+CGlCanvasBase::CamaraParams CGlCanvasBase::updateOrbitCamera(CamaraParams &params, int x, int y) const
 {
 	params.cameraAzimuthDeg -= 0.2*(x - mouseClickX);
 	params.setElevationDeg(params.cameraElevationDeg + 0.2*(y - mouseClickY));
@@ -166,7 +166,7 @@ void CGlCanvasBase::clearColors()
 	glClearColor(clearColorR,clearColorG,clearColorB,1.0);
 }
 
-CGlCanvasBase::CamaraParams CGlCanvasBase::updatePan(CamaraParams &params, int x, int y)
+CGlCanvasBase::CamaraParams CGlCanvasBase::updatePan(CamaraParams &params, int x, int y) const
 {
 	float	Ay = -(x - mouseClickX);
 	float	Ax = -(y - mouseClickY);
@@ -200,8 +200,8 @@ void CGlCanvasBase::setCameraParams(const CGlCanvasBase::CamaraParams &params)
 	cameraPointingZ = params.cameraPointingZ;
 
 	cameraZoomDistance = params.cameraZoomDistance;
-	cameraElevationDeg = params.cameraElevationDeg;
-	cameraAzimuthDeg = params.cameraAzimuthDeg;
+	setElevationDegrees(params.cameraElevationDeg);
+	setAzimuthDegrees(params.cameraAzimuthDeg);
 
 	cameraIsProjective = params.cameraIsProjective;
 	cameraFOV = params.cameraFOV;
@@ -235,6 +235,16 @@ void CGlCanvasBase::setAzimuthDegrees(float ang)
 void CGlCanvasBase::setElevationDegrees(float ang)
 {
 	cameraElevationDeg = ang;
+}
+
+float CGlCanvasBase::getAzimuthDegrees() const
+{
+	return cameraAzimuthDeg;
+}
+
+float CGlCanvasBase::getElevationDegrees() const
+{
+	return cameraElevationDeg;
 }
 
 double CGlCanvasBase::renderCanvas(int width, int height)

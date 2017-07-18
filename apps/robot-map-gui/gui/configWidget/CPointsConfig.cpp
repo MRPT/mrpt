@@ -11,8 +11,8 @@
 #include "TypeOfConfig.h"
 
 
-CPointsConfig::CPointsConfig(QWidget *parent)
-	: CBaseConfig(parent)
+CPointsConfig::CPointsConfig()
+	: CBaseConfig()
 	, m_ui(std::make_unique<Ui::CPointsConfig>())
 {
 	m_ui->setupUi(this);

@@ -22,8 +22,8 @@ class CBeaconConfig;
 class CBeaconConfig: public CBaseConfig
 {
 public:
-	CBeaconConfig(QWidget *parent);
-	virtual ~CBeaconConfig();
+	CBeaconConfig();
+	virtual ~CBeaconConfig() = default;
 
 	virtual void updateConfiguration(mrpt::maps::TMetricMapInitializer *options) override;
 	virtual const QString getName() override;

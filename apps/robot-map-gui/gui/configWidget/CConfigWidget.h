@@ -53,6 +53,8 @@ private slots:
 
 private:
 	CBaseConfig *configByType(TypeOfConfig type) const;
+	void clearConfig(bool deleteGeneral = false);
+
 
 	std::unique_ptr<Ui::CConfigWidget> m_ui;
 	std::map<TypeOfConfig, std::vector< CBaseConfig *>> m_configs;

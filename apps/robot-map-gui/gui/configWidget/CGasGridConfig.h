@@ -21,8 +21,8 @@ class CGasGridConfig;
 class CGasGridConfig: public CBaseConfig
 {
 public:
-	CGasGridConfig(QWidget *parent);
-	virtual ~CGasGridConfig();
+	CGasGridConfig();
+	virtual ~CGasGridConfig() = default;
 
 	virtual const QString getName() override;
 	virtual void updateConfiguration(mrpt::maps::TMetricMapInitializer *options) override;

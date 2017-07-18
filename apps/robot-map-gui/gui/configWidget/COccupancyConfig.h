@@ -22,8 +22,8 @@ namespace utils{class CFileOutputStream;}
 class COccupancyConfig: public CBaseConfig
 {
 public:
-	COccupancyConfig(QWidget *parent);
-	virtual ~COccupancyConfig();
+	COccupancyConfig();
+	virtual ~COccupancyConfig() = default;
 
 	virtual const QString getName() override;
 	virtual void updateConfiguration(mrpt::maps::TMetricMapInitializer *options) override;
