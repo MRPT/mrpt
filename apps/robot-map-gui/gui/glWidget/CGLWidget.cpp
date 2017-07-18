@@ -209,6 +209,20 @@ float CGlWidget::getZoom() const
 	return getCameraZoomDistance();
 }
 
+void CGlWidget::setAzimuthDegrees(float ang)
+{
+	CQtGlCanvasBase::setAzimuthDegrees(ang);
+	emit azimuthChanged(ang);
+	updateCamerasParams();
+}
+
+void CGlWidget::setElevationDegrees(float ang)
+{
+	CQtGlCanvasBase::setElevationDegrees(ang);
+	emit elevationChanged(ang);
+	updateCamerasParams();
+}
+
 void CGlWidget::resizeGL(int width, int height)
 {
 	CQtGlCanvasBase::resizeGL(width, height);

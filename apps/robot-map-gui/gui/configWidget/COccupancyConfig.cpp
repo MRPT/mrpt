@@ -16,8 +16,8 @@
 using namespace mrpt;
 using namespace maps;
 
-COccupancyConfig::COccupancyConfig(QWidget *parent)
-	: CBaseConfig(parent)
+COccupancyConfig::COccupancyConfig()
+	: CBaseConfig()
 	, m_ui(std::make_unique<Ui::COccupancyConfig>())
 {
 	m_ui->setupUi(this);
@@ -34,11 +34,6 @@ COccupancyConfig::COccupancyConfig(QWidget *parent)
 	setCreationOpt(def->min_x, def->max_x, def->min_y, def->max_y, def->resolution);
 	setInsertOpt(def->insertionOpts);
 	setLikelihoodOpt(def->likelihoodOpts);
-}
-
-COccupancyConfig::~COccupancyConfig()
-{
-
 }
 
 const QString COccupancyConfig::getName()

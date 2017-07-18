@@ -21,7 +21,7 @@ namespace utils {class CLoadableOptions;}
 class CBaseConfig: public QWidget
 {
 public:
-	CBaseConfig(QWidget *parent);
+	CBaseConfig();
 	virtual ~CBaseConfig() = default;
 
 	virtual const QString getName() = 0;

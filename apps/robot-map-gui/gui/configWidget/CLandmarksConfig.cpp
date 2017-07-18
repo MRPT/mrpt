@@ -15,8 +15,8 @@ using namespace mrpt;
 using namespace maps;
 using namespace vision;
 
-CLandmarksConfig::CLandmarksConfig(QWidget *parent)
-	: CBaseConfig(parent)
+CLandmarksConfig::CLandmarksConfig()
+	: CBaseConfig()
 	, m_ui(std::make_unique<Ui::CLandmarksConfig>())
 {
 	m_ui->setupUi(this);
@@ -41,11 +41,6 @@ CLandmarksConfig::CLandmarksConfig(QWidget *parent)
 
 	setInsertOpt();
 	setLikelihoodOpt();
-}
-
-CLandmarksConfig::~CLandmarksConfig()
-{
-
 }
 
 const QString CLandmarksConfig::getName()

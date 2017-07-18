@@ -39,7 +39,6 @@ CConfigWidget::CConfigWidget(QWidget *parent)
 	QObject::connect(m_ui->m_add, SIGNAL(released()), SLOT(addMap()));
 	QObject::connect(m_ui->m_remove, SIGNAL(released()), SLOT(removeMap()));
 
-
 	QListWidgetItem *item = new QListWidgetItem("General", m_ui->m_config);
 	item->setData(Qt::UserRole, TypeOfConfig::General);
 	m_ui->m_config->addItem(item);
@@ -53,13 +52,11 @@ CConfigWidget::CConfigWidget(QWidget *parent)
 	QObject::connect(m_ui->m_config, SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)),
 					 this, SLOT(currentConfigChanged(QListWidgetItem *, QListWidgetItem *)));
 	QObject::connect(m_ui->m_apply, SIGNAL(released()), this, SIGNAL(applyConfigurationForCurrentMaps()));
-
-	m_ui->m_config->setCurrentItem(item);
 }
 
 CConfigWidget::~CConfigWidget()
 {
-
+	clearConfig(true);
 }
 
 void CConfigWidget::openConfig()
@@ -95,6 +92,7 @@ void CConfigWidget::saveConfig()
 		QWidget *w = m_ui->stackedWidget->widget(i);
 		COccupancyConfig *o = dynamic_cast<COccupancyConfig*>(w);
 		Q_UNUSED(o);
+		// TODO: saving configurations
 	}
 
 }
@@ -130,10 +128,17 @@ void CConfigWidget::removeMap()
 	auto it = m_configs.find(type);
 	if (it != m_configs.end())
 	{
-		m_configs.erase(it);
-		m_ui->m_config->takeItem(m_ui->m_config->currentRow());
+
+		for (auto vectorIter = it->second.begin(); vectorIter != it->second.end(); ++vectorIter)
+			if (*vectorIter == base)
+			{
+				it->second.erase(vectorIter);
+				break;
+			}
+		delete (m_ui->m_config->takeItem(m_ui->m_config->currentRow()));
 		emit removedMap();
 	}
+	delete base;
 }
 
 void CConfigWidget::currentConfigChanged(QListWidgetItem *current, QListWidgetItem */*previous*/)
@@ -150,29 +155,49 @@ CBaseConfig *CConfigWidget::configByType(TypeOfConfig type) const
 	{
 	case TypeOfConfig::PointsMap:
 	{
-		return new CPointsConfig(m_ui->stackedWidget);
+		return new CPointsConfig();
 	}
 	case TypeOfConfig::Occupancy:
 	{
-		return new COccupancyConfig(m_ui->stackedWidget);
+		return new COccupancyConfig();
 	}
 	case TypeOfConfig::Beacon:
 	{
-		return new CBeaconConfig(m_ui->stackedWidget);
+		return new CBeaconConfig();
 	}
 	case TypeOfConfig::GasGrid:
 	{
-		return new CGasGridConfig(m_ui->stackedWidget);
+		return new CGasGridConfig();
 	}
 	case TypeOfConfig::Landmarks:
 	{
-		return new CLandmarksConfig(m_ui->stackedWidget);
+		return new CLandmarksConfig();
 	}
 	default:
 		break;
 	}
 	return nullptr;
 
+}
+
+void CConfigWidget::clearConfig(bool deleteGeneral)
+{
+	for (int i = 0; i < m_ui->stackedWidget->count();)
+	{
+		QWidget *w = m_ui->stackedWidget->widget(i);
+
+		if (deleteGeneral || i != 0)
+		{
+			m_ui->stackedWidget->removeWidget(w);
+			delete w;
+			QListWidgetItem *item = m_ui->m_config->takeItem(i);
+			delete item;
+		}
+		else
+			 ++i;
+	}
+
+	m_configs.clear();
 }
 
 TSetOfMetricMapInitializers CConfigWidget::config()
@@ -195,6 +220,7 @@ TSetOfMetricMapInitializers CConfigWidget::config()
 			mapCfg.push_back(TMetricMapInitializer::Ptr(mi));
 			++index;
 		}
+
 	}
 	MRPT_END
 			return mapCfg;
@@ -202,6 +228,8 @@ TSetOfMetricMapInitializers CConfigWidget::config()
 
 void CConfigWidget::setConfig(const CMultiMetricMap::TListMaps &config)
 {
+	clearConfig();
+
 	for (auto iter = config.begin(); iter != config.end(); ++iter)
 	{
 		bool found = false;
@@ -209,7 +237,7 @@ void CConfigWidget::setConfig(const CMultiMetricMap::TListMaps &config)
 			CSimplePointsMap::Ptr ptr = std::dynamic_pointer_cast<CSimplePointsMap>(iter->get_ptr());
 			if (ptr.get())
 			{
-				CPointsConfig *pConfig = new CPointsConfig(m_ui->stackedWidget);
+				CPointsConfig *pConfig = new CPointsConfig();
 				addWidget(TypeOfConfig::PointsMap, pConfig);
 				pConfig->setInsertOpt(ptr->insertionOptions);
 				pConfig->setLikelihoodOpt(ptr->likelihoodOptions);
@@ -221,7 +249,7 @@ void CConfigWidget::setConfig(const CMultiMetricMap::TListMaps &config)
 			COccupancyGridMap2D::Ptr ptr = std::dynamic_pointer_cast<COccupancyGridMap2D>(iter->get_ptr());
 			if (ptr.get())
 			{
-				COccupancyConfig *pConfig = new COccupancyConfig(m_ui->stackedWidget);
+				COccupancyConfig *pConfig = new COccupancyConfig();
 				addWidget(TypeOfConfig::Occupancy, pConfig);
 				pConfig->setCreationOpt(ptr->getXMin(), ptr->getXMax(), ptr->getYMin(), ptr->getYMax(), ptr->getResolution());
 				pConfig->setInsertOpt(ptr->insertionOptions);
@@ -234,7 +262,7 @@ void CConfigWidget::setConfig(const CMultiMetricMap::TListMaps &config)
 			CGasConcentrationGridMap2D::Ptr ptr = std::dynamic_pointer_cast<CGasConcentrationGridMap2D>(iter->get_ptr());
 			if (ptr.get())
 			{
-				CGasGridConfig *pConfig = new CGasGridConfig(m_ui->stackedWidget);
+				CGasGridConfig *pConfig = new CGasGridConfig();
 				addWidget(TypeOfConfig::GasGrid, pConfig);
 				pConfig->setCreationOpt(ptr->getXMin(), ptr->getXMax(), ptr->getYMin(), ptr->getYMax(), ptr->getResolution());
 				pConfig->setInsertOpt(ptr->insertionOptions);
@@ -247,7 +275,7 @@ void CConfigWidget::setConfig(const CMultiMetricMap::TListMaps &config)
 			CBeaconMap::Ptr ptr = std::dynamic_pointer_cast<CBeaconMap>(iter->get_ptr());
 			if (ptr.get())
 			{
-				CBeaconConfig *pConfig = new CBeaconConfig(m_ui->stackedWidget);
+				CBeaconConfig *pConfig = new CBeaconConfig();
 				addWidget(TypeOfConfig::Beacon, pConfig);
 				pConfig->setInsertOpt(ptr->insertionOptions);
 				pConfig->setLikelihoodOpt(ptr->likelihoodOptions);
@@ -259,7 +287,7 @@ void CConfigWidget::setConfig(const CMultiMetricMap::TListMaps &config)
 			CLandmarksMap::Ptr ptr = std::dynamic_pointer_cast<CLandmarksMap>(iter->get_ptr());
 			if (ptr.get())
 			{
-				CLandmarksConfig *pConfig = new CLandmarksConfig(m_ui->stackedWidget);
+				CLandmarksConfig *pConfig = new CLandmarksConfig();
 				addWidget(TypeOfConfig::Landmarks, pConfig);
 				pConfig->setInsertOpt(ptr->insertionOptions);
 				pConfig->setLikelihoodOpt(ptr->likelihoodOptions);
@@ -271,20 +299,26 @@ void CConfigWidget::setConfig(const CMultiMetricMap::TListMaps &config)
 
 int CConfigWidget::addWidget(TypeOfConfig type, CBaseConfig *w)
 {
+	QString nameListWidgetItem = w->getName();
+
 	auto it = m_configs.find(type);
-	if (it == m_configs.end())
+	if (it == m_configs.end() && type != TypeOfConfig::General)
+	{
 		it = m_configs.emplace(type, std::vector<CBaseConfig *>()).first;
+		nameListWidgetItem += QString::number(it->second.size());
+	}
 
-
-	int numberOfType = it->second.size();
-
-	QListWidgetItem *item = new QListWidgetItem( w->getName() + QString::number(numberOfType), m_ui->m_config);
+	QListWidgetItem *item = new QListWidgetItem( nameListWidgetItem, m_ui->m_config);
 	item->setData(Qt::UserRole, type);
 	m_ui->m_config->addItem(item);
 	m_ui->stackedWidget->addWidget(w);
 
-	int index = it->second.size();
-	it->second.push_back(w);
+	int index = 0;
+	if (type != TypeOfConfig::General)
+	{
+		index = it->second.size();
+		it->second.push_back(w);
+	}
 
 	emit addedMap();
 	return index;

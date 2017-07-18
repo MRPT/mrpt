@@ -13,19 +13,14 @@
 using namespace mrpt;
 using namespace maps;
 
-CBeaconConfig::CBeaconConfig(QWidget *parent)
-	: CBaseConfig(parent)
+CBeaconConfig::CBeaconConfig()
+	: CBaseConfig()
 	, m_ui(std::make_unique<Ui::CBeaconConfig>())
 {
 	m_ui->setupUi(this);
 
 	setInsertOpt();
 	setLikelihoodOpt();
-}
-
-CBeaconConfig::~CBeaconConfig()
-{
-
 }
 
 void CBeaconConfig::updateConfiguration(mrpt::maps::TMetricMapInitializer *options)

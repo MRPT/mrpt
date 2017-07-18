@@ -9,8 +9,8 @@
 #include "CBaseConfig.h"
 
 
-CBaseConfig::CBaseConfig(QWidget *parent)
-	: QWidget(parent)
+CBaseConfig::CBaseConfig()
+	: QWidget()
 {
 
 }

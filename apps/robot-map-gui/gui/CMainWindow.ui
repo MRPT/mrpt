@@ -15,6 +15,21 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout_4">
+    <property name="spacing">
+     <number>0</number>
+    </property>
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
     <item>
      <widget class="CViewerContainer" name="m_viewer" native="true"/>
     </item>
@@ -49,6 +64,8 @@
     <addaction name="m_actionShowObs"/>
     <addaction name="m_actionShowConfig"/>
     <addaction name="m_actionShowAllObs"/>
+    <addaction name="separator"/>
+    <addaction name="m_actionMapConfiguration"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuTools"/>
@@ -63,8 +80,26 @@
    </attribute>
    <widget class="QWidget" name="dockWidgetContents">
     <layout class="QVBoxLayout" name="verticalLayout">
+     <property name="spacing">
+      <number>0</number>
+     </property>
+     <property name="leftMargin">
+      <number>0</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
+      <number>0</number>
+     </property>
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <property name="spacing">
+        <number>0</number>
+       </property>
        <item>
         <widget class="QPushButton" name="m_expandAll">
          <property name="toolTip">
@@ -126,7 +161,23 @@
     <number>2</number>
    </attribute>
    <widget class="QWidget" name="m_contentsNodeViewer">
-    <layout class="QHBoxLayout" name="horizontalLayout_3"/>
+    <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <property name="spacing">
+      <number>0</number>
+     </property>
+     <property name="leftMargin">
+      <number>0</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
+      <number>0</number>
+     </property>
+    </layout>
    </widget>
   </widget>
   <widget class="QDockWidget" name="m_dockWidgetConfig">
@@ -143,12 +194,31 @@
     <number>2</number>
    </attribute>
    <widget class="CConfigWidget" name="m_configWidget">
-    <layout class="QVBoxLayout" name="verticalLayout_2"/>
+    <layout class="QVBoxLayout" name="verticalLayout_2">
+     <property name="spacing">
+      <number>0</number>
+     </property>
+     <property name="leftMargin">
+      <number>0</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
+      <number>0</number>
+     </property>
+    </layout>
    </widget>
   </widget>
   <action name="openAction">
    <property name="text">
     <string>Open simplemap</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
    </property>
   </action>
   <action name="actionAbout">
@@ -218,6 +288,14 @@
   <action name="m_actionLoadConfig">
    <property name="text">
     <string>Load config</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+E</string>
+   </property>
+  </action>
+  <action name="m_actionMapConfiguration">
+   <property name="text">
+    <string>Map configuration</string>
    </property>
   </action>
  </widget>
@@ -305,6 +383,22 @@
     <hint type="destinationlabel">
      <x>687</x>
      <y>674</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_dockWidgetConfig</sender>
+   <signal>visibilityChanged(bool)</signal>
+   <receiver>m_actionMapConfiguration</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>690</x>
+     <y>674</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
     </hint>
    </hints>
   </connection>
