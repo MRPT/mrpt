@@ -87,7 +87,7 @@ TPose3D CMonteCarloLocalization2D::getLastPose(
 	if (i >= m_particles.size())
 		THROW_EXCEPTION("Particle index out of bounds!");
 	is_valid_pose = true;
-	ASSERTDEB_(m_particles[i].d != nullptr);
+	ASSERTDEB_(m_particles[i].d);
 	return TPose3D(TPose2D(*m_particles[i].d));
 }
 
