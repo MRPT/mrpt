@@ -64,6 +64,8 @@
 
 #include "my_qlabel.h"
 
+//#include "visual_odometry.cpp"
+
 using namespace cv;
 using namespace std;
 
@@ -155,6 +157,13 @@ public:
 
     //image decimation options
     QLineEdit *decimateFactor;
+
+
+
+    //visual odom parameters
+    QLineEdit *inputFilePath3;
+    QPushButton *browse_button3;
+    string file_path3;  //!<stores the ground truth for poses
 
 
     QLabel *output1;
@@ -344,6 +353,8 @@ public:
     QLabel *evaluation_info;
     double closest_dist;
 
+    QLabel *visualOdom;
+
 
 signals:
     // None yet
@@ -498,6 +509,8 @@ public slots:
      * it stores the file paths in the appropriate global variables which are then used by other functions to read the images from
      */
     void on_browse_button_clicked2();
+
+    void on_browse_button_clicked3();
 
     /**
      * on_descriptor_choose() slot function is called when the user selects the descriptor from the list of available descriptors from the QComboBox

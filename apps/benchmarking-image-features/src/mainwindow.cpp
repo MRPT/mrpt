@@ -12,6 +12,7 @@
 #include <mrpt/math/data_utils.h>
 
 
+#include "visual_odometry.h"
 
 using namespace cv::line_descriptor;
 using namespace mrpt::vision;
@@ -818,6 +819,17 @@ void MainWindow::on_file_input_choose(int choice)
         browse_button2->setVisible(true);
         image2->setVisible(true);
     }
+    if(choice == 3)
+    {
+        generateVisualOdometry->setVisible(true);
+        inputFilePath3->setVisible(true);
+        browse_button3->setVisible(true);
+    } else
+    {
+        generateVisualOdometry->setVisible(false);
+        inputFilePath3->setVisible(false);
+        browse_button3->setVisible(false);
+    }
     // HIDE previous and next buttons for the cases : single image, stereo image, image raw log
     if(choice == 0 || choice == 1 || choice == 2)
     {
@@ -1510,6 +1522,36 @@ void MainWindow::on_browse_button_clicked2()
 
 }
 
+void MainWindow::on_browse_button_clicked3()
+{
+
+    ReadInputFormat();
+
+    QFileDialog dialog;
+    dialog.setFileMode(QFileDialog::AnyFile);
+
+
+    if(currentInputIndex == 2 || currentInputIndex == 3 || currentInputIndex == 4)
+    {
+        dialog.setNameFilter(tr("Images (*.txt)"));
+    } else
+        return;
+
+    //dialog.setNameFilter(tr("Images (*.png *.xpm *.jpg)"));
+    dialog.setViewMode(QFileDialog::Detail);
+    QStringList fileNames;
+    if(dialog.exec())
+        fileNames = dialog.selectedFiles();
+
+    if(fileNames.size() != 0)
+        inputFilePath3->setText(fileNames.at(0));
+
+
+    file_path3 = inputFilePath3->text().toStdString();
+
+}
+
+
 /************************************************************************************************
 *								Read Input Format           							        *
 ************************************************************************************************/
@@ -1782,6 +1824,20 @@ void MainWindow::initializeParameters()
 void MainWindow::on_generateVisualOdometry_clicked()
 {
 
+    cout << file_path1 << " filepath1 " << file_path3 << " filepath3" << endl;
+
+    Mat display_VO = generateVO(file_path1, file_path3);
+    //imshow("Visual Odom", display_VO);
+    //waitKey(0);
+
+
+    cv::Mat temp2(display_VO.cols, display_VO.rows, display_VO.type());
+    cvtColor(display_VO, temp2, CV_BGR2RGB);
+    QImage dest2 = QImage((uchar *) temp2.data, temp2.cols, temp2.rows, temp2.step, QImage::Format_RGB888);
+    QImage qscaled2 = dest2.scaled(IMAGE_WIDTH, IMAGE_HEIGHT, Qt::KeepAspectRatio);
+    cout << "right before setting  "<<endl;
+    visualOdom->setPixmap(QPixmap::fromImage(qscaled2));
+    visualOdom->setVisible(true);
 }
 
 /************************************************************************************************
@@ -1960,6 +2016,20 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
     generateVisualOdometry->setFixedSize(BUTTON_WIDTH*2,BUTTON_HEIGHT);
     connect(generateVisualOdometry, SIGNAL(clicked()), this, SLOT(on_generateVisualOdometry_clicked()));
 
+
+
+    inputFilePath3 = new QLineEdit;
+    inputFilePath3->setFixedSize(300,WIDGET_HEIGHT);
+    browse_button3 = new QPushButton("Browse Ground Truth");
+    browse_button3->setFixedSize(BUTTON_WIDTH,BUTTON_HEIGHT);
+    connect(browse_button3, SIGNAL(clicked()), this, SLOT(on_browse_button_clicked3()));
+
+    generateVisualOdometry->setVisible(false);
+    inputFilePath3->setVisible(false);
+    browse_button3->setVisible(false);
+
+
+
     //initially have the buttons hidden as single image selected by default
     inputFilePath2->setVisible(false);
     browse_button2->setVisible(false);
@@ -1978,6 +2048,8 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
     inputVbox->addWidget(inputFilePath2,4,0);
     inputVbox->addWidget(browse_button2,5,0);
 
+
+
     inputGroupBox->setLayout(inputVbox);
 
     //ask user for the number of feature
@@ -1989,7 +2061,9 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
     inputVbox->addWidget(numFeaturesLabel,6,0);
     inputVbox->addWidget(numFeaturesLineEdit,6,1);
 
-    inputVbox->addWidget(generateVisualOdometry,7,0);
+    inputVbox->addWidget(inputFilePath3,7,0);
+    inputVbox->addWidget(browse_button3,8,0);
+    inputVbox->addWidget(generateVisualOdometry,9,0);
 
 
     // provide user with some additional functions
@@ -2127,7 +2201,8 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
     numDesc1 = 0;
     numDesc2 = 0;
 
-
+    visualOdom = new QLabel;
+    visualOdom->setVisible(false);
 
     layout_grid = new QGridLayout;
 
@@ -2137,6 +2212,8 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
     layout_grid->addWidget(groupBox_images,0,0,12,2);
     layout_grid->addWidget(groupBox_buttons2,12,0,1,2);
     layout_grid->addWidget(desc_images,13,0,4,4);
+
+    layout_grid->addWidget(visualOdom, 13,0,4,4);
 
     layout_grid->addWidget(groupBox1,2,4,3,2);
     layout_grid->addWidget(inputGroupBox,5,4,6,1);
