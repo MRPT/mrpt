@@ -340,6 +340,8 @@ public:
     QLabel *detector_info;
     QLabel *descriptor_info;
     QLabel *descriptor_info2;
+    QLabel *descriptor_info3;
+    QLabel *evaluation_info;
     double closest_dist;
 
 
@@ -423,6 +425,14 @@ public:
      * @param image_left_right  this indicates the image on which to draw the lines (0: left; 1:right)
      */
     void drawLineLSD(Mat img, int image_left_right);
+
+    string findRepeatability(float mouse_x, float mouse_y);
+
+    bool checkIfSamePoint(float x, float y, float x2, float y2, int threshold);
+
+    string falsePositivesNegatives();
+    void showEvaluation(int mode);
+
 
 
 private slots:
