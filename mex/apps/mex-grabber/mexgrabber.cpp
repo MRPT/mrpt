@@ -35,6 +35,10 @@ MRPT_TODO(
 	"fully functional")
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/maps/CSimplePointsMap.h>
+
+#include <mutex>
+#include <thread>
+
 using namespace mrpt::obs;
 
 // Force here using mexPrintf instead of printf
@@ -59,7 +63,7 @@ struct TThreadParams
 void SensorThread(TThreadParams params);
 
 CGenericSensor::TListObservations global_list_obs;
-synch::CCriticalSection cs_global_list_obs;
+std::mutex cs_global_list_obs;
 
 bool allThreadsMustExit = false;
 
@@ -143,7 +147,7 @@ MEX_DEFINE(new)(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 
 		std::thread thre = std::thread(SensorThread, threParms);
 
-		lstThreads.push_back(thre);
+		lstThreads.emplace_back(std::move(thre));
 		std::this_thread::sleep_for(
 			std::chrono::milliseconds(time_between_launches));
 	}
@@ -164,7 +168,7 @@ MEX_DEFINE(read)(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 
 	// See if we have observations and process them:
 	{
-		std::lock_guard<std::mutex> lock(&cs_global_list_obs);
+		std::lock_guard<std::mutex> lock(cs_global_list_obs);
 		copy_of_global_list_obs.clear();
 
 		if (!global_list_obs.empty())
@@ -192,8 +196,8 @@ MEX_DEFINE(read)(int nlhs, mxArray* plhs[], int nrhs, const mxArray* prhs[])
 		if (IS_CLASS(it->second, CObservation2DRangeScan))
 		{
 			// Get Points Map from 2D Range Scan
-			CObservation2DRangeScanPtr LRF_obs =
-				CObservation2DRangeScanPtr(it->second);
+			CObservation2DRangeScan::Ptr LRF_obs =
+				std::dynamic_pointer_cast<CObservation2DRangeScan>(it->second);
 			struct_obs.set(
 				"map",
 				LRF_obs->buildAuxPointsMap<mrpt::maps::CSimplePointsMap>()
@@ -254,7 +258,7 @@ MEX_DISPATCH  // Don't forget to add this if MEX_DEFINE() is used.
 		string driver_name = params.cfgFile->read_string(
 			params.sensor_label, "driver", "", true);
 
-		CGenericSensorPtr sensor = CGenericSensor::createSensorPtr(driver_name);
+		CGenericSensor::Ptr sensor = CGenericSensor::createSensorPtr(driver_name);
 		if (!sensor)
 		{
 			cerr << endl
@@ -289,7 +293,7 @@ MEX_DISPATCH  // Don't forget to add this if MEX_DEFINE() is used.
 			sensor->getObservations(lstObjs);
 
 			{
-				std::lock_guard<std::mutex> lock(&cs_global_list_obs);
+				std::lock_guard<std::mutex> lock(cs_global_list_obs);
 				// Control maximum number of stored observations to prevent
 				// excesive growth of list between calls
 				if (global_list_obs.size() < 2 * max_num_obs)  // .size() is
@@ -310,7 +314,7 @@ MEX_DISPATCH  // Don't forget to add this if MEX_DEFINE() is used.
 					std::chrono::milliseconds(At_rem_ms));
 		}
 
-		sensor.clear();
+		sensor.reset();
 		cout << format("[thread_%s] Closing...", params.sensor_label.c_str())
 			 << endl;
 	}

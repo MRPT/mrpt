@@ -14,6 +14,7 @@ include_directories(
 )
 
 add_library(pymrpt
+  SHARED # Python lib must be shared
   src/system_bindings.cpp
   src/utils_bindings.cpp
   src/kinematics_bindings.cpp

@@ -44,7 +44,7 @@ IF(NOT CMAKE_MRPT_HAS_MATLAB)
 				APPEND_MRPT_LIBS( ${MATLAB_LIBRARIES} )
 
 				# ----------------------------------------------------
-				# Windows & MSVC: Mark Matlab DLLs as "delay-load", so 
+				# Windows & MSVC: Mark Matlab DLLs as "delay-load", so
 				#  non-mex apps can be run standalone without MATLAB:
 				# ----------------------------------------------------
 				IF (MSVC)
@@ -69,7 +69,7 @@ ENDIF(NOT CMAKE_MRPT_HAS_MATLAB)
 #ENDIF(BUILD_SHARED_LIBS)
 
 ## Since MEX libraries are dynamic but MRPT libraries need to be static, the static libraries must be Position Independent Code (PIC)
-#SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} -fPIC")
+SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} -fPIC")
 
 # Copy all .m files (classes, samples, helpers...) to the build directory
 FILE(COPY ${CMAKE_SOURCE_DIR}/mex/+mrpt   DESTINATION ${CMAKE_BINARY_DIR}/mex)
