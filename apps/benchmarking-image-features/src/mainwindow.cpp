@@ -36,6 +36,17 @@ double min_distances[MAX_DESC];
 int successful_matches = 0;
 float threshold_dist1 = 0.9;
 float threshold_dist2 = 0.1;
+int repeatibility_threshold = 5;
+int repeatability = 0;
+int number_false_positives = 0;
+int number_false_negatives = 0;
+int false_pos_neg_threshold = 5;
+string repeatibility_result = "";
+
+string detector_result ="";
+string descriptor_result ="";  // holds the general descriptor results
+string descriptor_result2 =""; // holds the mathicng results and the false_po_neg_result
+string detector_result2 ="";  // holds the repeatibility result
 
 
 float dist1_p[MAX_DESC], dist2_p[MAX_DESC];
@@ -103,7 +114,7 @@ void MainWindow::on_button_generate_clicked()
 
             const double dist_std = mrpt::math::stddev(distances);
 
-            cout << "Min Distance : " << min_dist << " for image2 feature # " << min_dist_idx << "Distances sigma " << dist_std << endl;
+            cout << "Min Distance : " << min_dist << " for image2 feature # " << min_dist_idx << " Distances sigma " << dist_std << " I Feature X : " << featsImage1.getFeatureX(i1) << " I Feature Y : " << featsImage1.getFeatureY(i1)  << " Feature X : " << featsImage2.getFeatureX(min_dist_idx) << " Feature Y : " << featsImage2.getFeatureY(min_dist_idx)  << endl;
             min_dist_indexes[i1] = min_dist_idx;
             min_distances[i1] = min_dist;
 
@@ -152,7 +163,7 @@ void MainWindow::on_button_generate_clicked()
             {
                 xData.at<double>(i) = i;
                 yData.at<double>(i) = distances.row(i).x();
-                cout << yData.at<double>(i) << "  " << xData.at<double>(i) << endl;
+                //cout << yData.at<double>(i) << "  " << xData.at<double>(i) << endl;
             }
             plot = plot::createPlot2d(xData, yData);
             plot->setPlotSize(len, 1);
@@ -420,6 +431,8 @@ void MainWindow::on_button_generate_clicked()
     int numKeypoints1 = featsImage1.size();
     double percent_success = ((double)successful_matches / (double)numKeypoints1) *100;
 
+    string false_pos_neg_result = falsePositivesNegatives();
+
     stringstream descript_info ;
     descript_info << "<br/>Number of successful matches: "
                   << successful_matches
@@ -428,23 +441,27 @@ void MainWindow::on_button_generate_clicked()
                   << "<br/>Percentage of successful matches: "
                   <<  percent_success << endl;
 
+    successful_matches = 0;
+
     string temp_info1 = descriptor_info->text().toStdString();
     string temp_info2 = descript_info.str();
 
     stringstream concat;
-    concat << temp_info1 << " " << temp_info2 ;
+    concat << temp_info1 << " " << temp_info2 << " " << false_pos_neg_result ;
+
+
+    stringstream temp_concat;
+    temp_concat << temp_info2 << " " << false_pos_neg_result;
+    descriptor_result2 = temp_concat.str();
+
 
     descriptor_info2->setText(QString::fromStdString(concat.str()));
 
     // setting the older label for descriptor to false
+    detector_info->setVisible(false);
     descriptor_info->setVisible(false);
+    evaluation_info->setVisible(false);
     descriptor_info2->setVisible(true);
-
-
-
-
-
-
 }
 
 /************************************************************************************************
@@ -1271,9 +1288,16 @@ void MainWindow::on_detector_button_clicked()
         detect_info << "<br/>Number of Detected Key-points in Image 2: " << featsImage2.size();
     detect_info << endl;
     string temp_info = detect_info.str();
+    detector_result = temp_info;
+
     detector_info->setText(QString::fromStdString(temp_info));
     detector_info->setVisible(true);
     descriptor_info->setVisible(false);
+    descriptor_info2->setVisible(false);
+    descriptor_info3->setVisible(false);
+    evaluation_info->setVisible(false);
+
+
 }
 
 
@@ -1352,7 +1376,7 @@ void MainWindow::on_descriptor_button_clicked()
         numDesc1 = featsImage1.getByID(0).get()->descriptors.LATCH.size(); //!< LATCH image descriptor
     stringstream descript_info;
     descript_info << "<br/><br/><b> Descriptor Info: </b> "
-                  <<"<br/>Descriptor Selected: " << descriptor_names[descriptor_selected]
+                  << "<br/>Descriptor Selected: " << descriptor_names[descriptor_selected]
                   << "<br/>Time Elapsed: " << elapsedTime_descriptor
                   << "<br/>Size of Descriptor: " << numDesc1
                   <<  endl;
@@ -1364,11 +1388,35 @@ void MainWindow::on_descriptor_button_clicked()
     stringstream concat;
     concat << temp_info1 << " " << temp_info2;
 
-    evaluation_info = concat.str();
+    descriptor_result = temp_info2;
+
+
     descriptor_info->setText(QString::fromStdString(concat.str()));
     cout << "Time Elapsed : " << tic.Tac() << endl;
     detector_info->setVisible(false);
+    descriptor_info2->setVisible(false);
+    descriptor_info3->setVisible(false);
     descriptor_info->setVisible(true);
+    evaluation_info->setVisible(false);
+
+
+}
+
+void MainWindow::showEvaluation(int mode)
+{
+
+    stringstream concat;
+    concat << detector_result << detector_result2 << descriptor_result << descriptor_result2;
+
+    string result_eval = concat.str();
+
+    evaluation_info->setText(QString::fromStdString(result_eval));
+
+    detector_info->setVisible(false);
+    descriptor_info2->setVisible(false);
+    descriptor_info3->setVisible(false);
+    descriptor_info->setVisible(false);
+    evaluation_info->setVisible(true);
 
 
 }
@@ -1523,6 +1571,7 @@ void MainWindow::readFilesFromFolder(int next_prev)
             }
         } // end of for
     }
+    sort(files_fullpath.begin(),files_fullpath.end()); //Use the start and end like this
     cout << current_imageIndex << "current IMage index" << endl;
     file_path1 = files_fullpath.at(current_imageIndex);
 
@@ -1548,6 +1597,7 @@ void MainWindow::readFilesFromFolder(int next_prev)
                 j++;
             }
         } // end of for
+        sort(files_fullpath2.begin(),files_fullpath2.end()); //Use the start and end like this
         file_path2 = files_fullpath2.at(current_imageIndex);
     }
     cout << "yoyo" << endl;
@@ -1842,12 +1892,16 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
     detector_info = new QLabel;
     descriptor_info = new QLabel;
     descriptor_info2 = new QLabel;
+    descriptor_info3 = new QLabel;
+    evaluation_info = new QLabel;
 
 
     stringstream detect_info;
     detector_info->setText("");
     descriptor_info->setText("");
     descriptor_info2->setText("");
+    descriptor_info3->setText("");
+    evaluation_info->setText("");
 
 
 
@@ -1867,6 +1921,8 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
     hbox_images->addWidget(detector_info,0,2,1,1);
     hbox_images->addWidget(descriptor_info,0,2,1,1);
     hbox_images->addWidget(descriptor_info2,0,2,1,1);
+    hbox_images->addWidget(descriptor_info3,0,2,1,1);
+    hbox_images->addWidget(evaluation_info,0,2,1,1);
 
 
     groupBox_images->setLayout(hbox_images);
@@ -2150,12 +2206,199 @@ void MainWindow::drawLineLSD(Mat img, int image_left_right)
     }
 }
 
+string MainWindow::findRepeatability(float mouse_x, float mouse_y)
+{
+    cout << " You called me : sortAlphabetically" <<endl;
+    ReadInputFormat();
+
+    string file_path1_temp = inputFilePath->text().toStdString();
+
+    cout << file_path1_temp << endl;
+
+    cout << currentInputIndex << endl;
+    DIR *dir;
+    dirent *pdir;
+    vector<string> files;
+    vector<string> files_fullpath;
+
+    if (currentInputIndex == 3 || currentInputIndex == 4) //meaning stereo dataset or single image dataset
+    {
+        dir = opendir(file_path1_temp.c_str());
+        while(pdir = readdir(dir))
+            files.push_back(pdir->d_name);
+        for(int i=0,j=0 ; i<files.size() ; i++)
+        {
+            if(files.at(i).size() > 4) // this removes the . and .. in linux as all files will have size more than 4 .png .jpg etc.
+            {
+                files_fullpath.push_back(file_path1_temp + "/" + files.at(i));
+                //cout << files_fullpath.at(j) << endl;
+                j++;
+            }
+        } // end of for
+    }
+
+
+
+    sort(files_fullpath.begin(),files_fullpath.end()); //Use the start and end like this
+    int files_length = files_fullpath.size();
+    for(int y = 0; y < files_length; y++){
+        cout << files_fullpath.at(y) << endl;
+    }
+
+// repeatibility_threshold
+
+    //////Detector REpeatability starts here
+
+    ReadInputFormat();
+    if( detector_selected == -1 || file_path1.empty())
+    {
+        QMessageBox::information(this, "Image/Detector/Descriptor read error","Please specify a valid inputs for the image / detector..");
+        return " ";
+    }
+
+    fillDetectorInfo();
+
+    // Clearing the features list is very important to avoid mixing subsequent button clicks output
+    CFeatureList temp_featsImage1;//.clear();
+    CImage temp_img1;
+    int consecutive = 0;
+    temp_featsImage1.clear();
+    bool flag_consecutive = false;
+    int max_num = 0;
+    for(int i=0 ; i<files_length ; i++)
+    {
+        temp_featsImage1.clear();
+        temp_img1.loadFromFile(files_fullpath.at(i));
+
+        fext.detectFeatures(temp_img1, temp_featsImage1, 0, numFeats);
+        cout << "Number of Features in image " << i << " : " << temp_featsImage1.size() << endl;
+        bool repeatable = false;
+        for(int j=0 ; j<temp_featsImage1.size() ; j++)
+        {
+            repeatable = checkIfSamePoint(mouse_x, mouse_y, temp_featsImage1.getFeatureX(j), temp_featsImage1.getFeatureY(j), repeatibility_threshold);
+            if(repeatable)
+            {
+                flag_consecutive = true;
+                break;
+            }
+        }
+        if(repeatable)
+        {
+            repeatability++;
+        }
+        else{
+            flag_consecutive = false;
+        }
+        if(flag_consecutive)
+        {
+            consecutive++;
+            if(consecutive > max_num)
+            {
+                max_num = consecutive;
+            }
+        }
+        else
+        {
+            if(consecutive > max_num)
+            {
+                max_num = consecutive;
+            }
+            consecutive = 0;
+        }
+    }
+    double percent_repeat = (double) repeatability / (double) files_length * 100.00 ;
+    cout << "Repeatability : " << repeatability << "Number of files :: "<< files_length  << endl << "Repeatability % " << percent_repeat << endl ;
+    stringstream ss ;
+    ss <<  "<br/> Repeatability of selected keypoint <br/>Repeatability : " << repeatability
+       << "Number of files :: "<< files_length  <<  "<br/>Repeatability % " << percent_repeat
+       << "<br/>Maximum consecutive frames for keypoint being detected: " << max_num << "<br/>"  ;
+    repeatability = 0;
+    consecutive = 0;
+    max_num = 0;
+    repeatibility_result = ss.str();
+    return repeatibility_result;
+}
+
+/**
+ * functions called in on_descriptor clicked method
+ */
+string MainWindow::falsePositivesNegatives()
+{
+    if(currentInputIndex == 1 || currentInputIndex == 4) // implying stereo images or stereo image dataset
+    {
+        // compute homography from img1 and img2
+        // For this case, I was thinking again in the homography approach. If the match is found outside a
+        // small area where it should be according to the homography, it is called a false positive. For the
+        // false negatives, if a keypoint in image1 should be matched to a certain keypoint in image2 according
+        // to the homography AND actually there is a keypoint in that position but the match is not found,
+        // then it's a false negative.
+
+
+        //"i" in featsImage1 matches with min_dist_indexes[i] in featsImage2
+        //computing false positives here
+        for(int i=0 ; i< featsImage1.size() ; i++)
+        {
+            float test_x = featsImage2.getFeatureX(min_dist_indexes[i]);
+            float test_y = featsImage2.getFeatureY(min_dist_indexes[i]);
+
+            float initial_x = featsImage1.getFeatureX(i);
+            float initial_y = featsImage1.getFeatureY(i);
+            cout << "test_x: " << test_x << " test_y: " << test_y <<endl;
+            cout << "initial_x: " << initial_x << " initial_y: " << initial_y <<endl;
+            bool isInNeighborhood = checkIfSamePoint(initial_x, initial_y, test_x, test_y, false_pos_neg_threshold);
+            if(!isInNeighborhood)
+            {
+                number_false_positives++;
+            }
+
+            // now checking false negatives
+            // check if a keypoint match actually exist around the area in image 2
+            bool flag_false_negative = false;
+            for(int j=0 ; j<featsImage2.size() ; j++)
+            {
+                int temp_x = featsImage2.getFeatureX(j);
+                int temp_y = featsImage2.getFeatureY(j);
+                if(checkIfSamePoint(initial_x, initial_y, temp_x, temp_y, false_pos_neg_threshold))
+                {
+                    flag_false_negative = true;
+                    break;
+                }
+            }
+            // if a keypoint exists around the region in image2 but the closest match is found somewhere else instead, its a false negative
+            if(flag_false_negative && !isInNeighborhood)
+                number_false_negatives++;
+
+            flag_false_negative = false;
+        }
+    }
+    cout << "False Positives: " << number_false_positives  << " False Negatives: " << number_false_negatives << endl ;
+
+
+    stringstream ss;
+    ss << "<br/>False Positives: " << number_false_positives  << "<br/>False Negatives: " << number_false_negatives << endl ;
+
+    number_false_positives = 0;
+    number_false_negatives = 0;
+    return ss.str();
+
+}
+
+bool MainWindow::checkIfSamePoint(float x, float y, float x2, float y2, int threshold)
+{
+    if((x2 < (x+threshold)) && (x2 > (x-threshold)))
+    {
+        if( (y2 < (y+threshold)) && (y2 > (y-threshold)))
+            return true;
+    }
+    return false;
+}
 
 /************************************************************************************************
 *								Mouse Pressed Slot         								        *
 ************************************************************************************************/
 void MainWindow::Mouse_Pressed()
 {
+
 
 
     if (!(evaluate_detector_clicked && evaluate_descriptor_clicked && visualize_descriptor_clicked) )
@@ -2201,12 +2444,19 @@ void MainWindow::Mouse_Pressed()
         images_static_sift_surf2->setVisible(false);
     }
      int pos = findClosest(mouse_x, mouse_y, x, y, numDesc1);
+    float temp_x = featsImage1.getFeatureX(pos); // get the descriptor x coordinate corresponding to images1[cnt]
+    float temp_y = featsImage1.getFeatureY(pos);
+
+    // computing th repleatibility of the detector here
+    string repeatability_result = findRepeatability(temp_x, temp_y);
+
+
+    // visualizing the descriptor here
     if(descriptor_selected == 2 || descriptor_selected == 3 || descriptor_selected == 4)
     {
 
 
-        float temp_x = featsImage1.getFeatureX(pos); // get the descriptor x coordinate corresponding to images1[cnt]
-        float temp_y = featsImage1.getFeatureY(pos);
+
         //cout << mouse_x << " mouse _x " << mouse_y << " mouse _y" <<endl;
         //cout << temp_x << " desc _x " << temp_y << " desc _y" <<endl;
         stringstream ss;
@@ -2312,8 +2562,6 @@ void MainWindow::Mouse_Pressed()
 
         if(currentInputIndex == 1 || currentInputIndex == 4)
             desc_VisualizeGrid->addWidget(featureMatched, 1,0,1,1); // add the label telling about the feature matching
-
-
     }
     else if(descriptor_selected == 0 || descriptor_selected == 1 || descriptor_selected == 5 || descriptor_selected == 6 || descriptor_selected == 7)
     {
@@ -2332,7 +2580,6 @@ void MainWindow::Mouse_Pressed()
         if(flag_descriptor_match)
         {
             featureMatched->setVisible(false);
-
         }
 
         flag_descriptor_match = true;
@@ -2371,11 +2618,10 @@ void MainWindow::Mouse_Pressed()
             image2->setPixmap(QPixmap::fromImage(qscaled2));
         }
 
-
         images_label_coordinates_sift_surf = new QLabel;
 
-        float temp_x = featsImage1.getFeatureX(pos); // get the descriptor x coordinate corresponding to images1[cnt]
-        float temp_y = featsImage1.getFeatureY(pos);
+        //float temp_x = featsImage1.getFeatureX(pos); // get the descriptor x coordinate corresponding to images1[cnt]
+        //float temp_y = featsImage1.getFeatureY(pos);
 
         stringstream ss;
         ss << temp_x << " , " << temp_y << endl;
@@ -2383,8 +2629,6 @@ void MainWindow::Mouse_Pressed()
 
         //images_label_coordinates_sift_surf->setText(QString::fromStdString(str));
         cout << str << endl;
-
-
 
         //circle(desc_Ref_img, Point(temp_x, temp_y), 5, Scalar(255,0,0), CIRCLE_THICKNESS, 8, 0); // plot the circles on the appropriate points as per the shown descriptors
         drawMarker(desc_Ref_img, Point(temp_x, temp_y),  Scalar(255, 0, 0), MARKER_CROSS, CROSS_SIZE, CROSS_THICKNESS);
@@ -2394,7 +2638,6 @@ void MainWindow::Mouse_Pressed()
             desc_VisualizeGrid->addWidget(images_static_sift_surf2,0,1,1,1);
             desc_VisualizeGrid->addWidget(plotInfo,1,2,1,1);
             plotInfo->setVisible(true);
-
         }
         desc_VisualizeGrid->removeWidget(featureMatched);
         desc_VisualizeGrid->addWidget(images_static_sift_surf,0,0,1,1);
@@ -2419,13 +2662,32 @@ void MainWindow::Mouse_Pressed()
     QImage qscaled1 = dest1.scaled(IMAGE_WIDTH, IMAGE_HEIGHT, Qt::KeepAspectRatio);
     image1->setPixmap(QPixmap::fromImage(qscaled1));
 
-
     closest_dist = min_distances[pos];
 
-    stringstream str_temp;
-    str_temp << evaluation_info << "<br/>Descriptor Distance between closest match: " << closest_dist << endl;
-    descriptor_info->setText(QString::fromStdString(str_temp.str()));
+    //stringstream str_temp;
+    //str_temp << evaluation_info << "<br/>Descriptor Distance between closest match: " << closest_dist << endl;
+    //descriptor_info->setText(QString::fromStdString(str_temp.str()));
 
+
+
+    string temp_info1 = descriptor_info2->text().toStdString();
+    string temp_info2 = repeatability_result;
+
+    stringstream concat;
+    concat << temp_info1 << " " << temp_info2 ;
+
+    detector_result2 = temp_info2;
+
+    descriptor_info3->setText(QString::fromStdString(concat.str()));
+
+    // setting the older label for descriptor to false
+    detector_info->setVisible(false);
+    descriptor_info->setVisible(false);
+    descriptor_info2->setVisible(false);
+    descriptor_info3->setVisible(true);
+    evaluation_info->setVisible(false);
+
+    showEvaluation(1);
 }
 
 /************************************************************************************************
