@@ -258,7 +258,8 @@ MEX_DISPATCH  // Don't forget to add this if MEX_DEFINE() is used.
 		string driver_name = params.cfgFile->read_string(
 			params.sensor_label, "driver", "", true);
 
-		CGenericSensor::Ptr sensor = CGenericSensor::createSensorPtr(driver_name);
+		CGenericSensor::Ptr sensor =
+			CGenericSensor::createSensorPtr(driver_name);
 		if (!sensor)
 		{
 			cerr << endl

@@ -81,10 +81,11 @@ struct OBS_IMPEXP Message_TOPCON_PZS : public gnss_message
 	void dumpToStream(
 		mrpt::utils::CStream& out) const override;  // See docs in base
 
-protected:
+   protected:
 	void internal_writeToStream(mrpt::utils::CStream& out) const override;
 	void internal_readFromStream(mrpt::utils::CStream& in) override;
-public:
+
+   public:
 	MRPT_MAKE_ALIGNED_OPERATOR_NEW
 };
 

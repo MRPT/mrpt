@@ -127,7 +127,8 @@ class BASE_IMPEXP CPosePDF
 		typedef typename OPENGL_SETOFOBJECTSPTR::element_type SETOFOBJECTS;
 		return SETOFOBJECTS::posePDF2opengl(*this);
 	}
-public:
+
+   public:
 	MRPT_MAKE_ALIGNED_OPERATOR_NEW
 };  // End of class def.
 DEFINE_SERIALIZABLE_POST_CUSTOM_BASE(CPosePDF, mrpt::utils::CSerializable)
