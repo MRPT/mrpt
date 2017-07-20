@@ -10,8 +10,13 @@ CMAKE_CXX_FLAGS="-Wall -Wextra -Wabi -O2"
 
 function build ()
 {
+  # Make sure we dont have spurious files:
+  cd $MRPT_DIR
+  git clean -fd || true
+
   #env
-  mkdir $BUILD_DIR && cd $BUILD_DIR
+  rm -fr $BUILD_DIR || true
+  mkdir -p $BUILD_DIR && cd $BUILD_DIR
 
   # gcc is too slow and we have a time limit in Travis CI: exclude examples when building with gcc
   if [ "$CC" == "gcc" ]; then
