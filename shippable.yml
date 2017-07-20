@@ -14,7 +14,6 @@ matrix:
     env: TASK="test" BUILD_TYPE=Coverage CCACHE_SLOPPINESS=pch_defines,time_macros
 
 build:
-  cache: true
   pre_ci_boot:
     image_name: drydock/u16cppall
     image_tag: v5.6.1
