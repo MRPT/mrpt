@@ -427,5 +427,5 @@ bool CWaypointsNavigator::checkHasReachedTarget(const double targetDist) const
 		:
 		nullptr;
 
-	return ( wp==nullptr || wp->target_heading==TWaypoint::INVALID_NUM);
+	return ( wp==nullptr || wp->reached);
 }
