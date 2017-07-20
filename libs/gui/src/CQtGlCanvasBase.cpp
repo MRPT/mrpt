@@ -85,7 +85,7 @@ void CQtGlCanvasBase::mouseMoveEvent(QMouseEvent *event)
 			else if (event->modifiers() == Qt::ControlModifier)
 				params = updateRotate(params, X, Y);
 
-			else
+			else if (event->modifiers() == Qt::NoModifier)
 				params = updateOrbitCamera(params, X, Y);
 
 		}
@@ -143,4 +143,14 @@ void CQtGlCanvasBase::removeFromMap(const opengl::CRenderizable::Ptr &newObject)
 {
 	assert(m_mainViewport);
 	m_mainViewport->removeObject(newObject);
+}
+
+bool CQtGlCanvasBase::isPressLMouseButton() const
+{
+	return m_isPressLMouseButton;
+}
+
+bool CQtGlCanvasBase::isPressRMouseButton() const
+{
+	return m_isPressRMouseButton;
 }

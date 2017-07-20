@@ -38,7 +38,9 @@ CGlWidget::CGlWidget(bool is2D, QWidget *parent)
 	, m_minimapPercentSize(0.25)
 	, m_observationSize(10.)
 	, m_isShowObs(false)
+	, m_visiblePoints(CPointCloud::Create())
 	, m_currentObs(opengl::stock_objects::CornerXYZSimple())
+	, m_line(CSetOfLines::Create())
 	, m_is2D(is2D)
 	, m_showRobot(false)
 {
@@ -69,7 +71,6 @@ CGlWidget::CGlWidget(bool is2D, QWidget *parent)
 
 CGlWidget::~CGlWidget()
 {
-	m_visiblePoints.clear();
 }
 
 void CGlWidget::fillMap(const CSetOfObjects::Ptr &renderizableMap)
@@ -154,23 +155,11 @@ void CGlWidget::setSelectedObservation(bool is)
 		return;
 
 	if (is)
-		for (auto iter = m_doc->simplemap().begin(); iter != m_doc->simplemap().end(); ++iter)
-		{
-			CPointCloud::Ptr points = CPointCloud::Create();
-			math::TPose3D pose = iter->first->getMeanVal();
-			points->insertPoint(pose.x, pose.y, pose.z);
-			points->setColor(mrpt::utils::TColorf(mrpt::utils::TColor::red));
-			points->setPointSize(m_observationSize);
+		m_map->insert(m_visiblePoints);
 
-			m_map->insert(points);
-			m_visiblePoints.push_back(points);
-		}
 	else
-	{
-		for (auto &iter: m_visiblePoints)
-			m_map->removeObject(iter);
-		m_visiblePoints.clear();
-	}
+		m_map->removeObject(m_visiblePoints);
+
 
 	update();
 }
@@ -189,6 +178,19 @@ void CGlWidget::setLaserScan(CPlanarLaserScan::Ptr laserScan)
 void CGlWidget::setDocument(CDocument *doc)
 {
 	m_doc = doc;
+
+	if (m_isShowObs)
+		m_map->removeObject(m_visiblePoints);
+
+	m_visiblePoints = CPointCloud::Create();
+	m_visiblePoints->setColor(mrpt::utils::TColorf(mrpt::utils::TColor::red));
+	m_visiblePoints->setPointSize(m_observationSize);
+	for (auto iter = m_doc->simplemap().begin(); iter != m_doc->simplemap().end(); ++iter)
+	{
+		math::TPose3D pose = iter->first->getMeanVal();
+		m_visiblePoints->insertPoint(pose.x, pose.y, pose.z);
+	}
+
 	if (m_isShowObs)
 		setSelectedObservation(m_isShowObs);
 }
@@ -348,20 +350,67 @@ void CGlWidget::removeFromMap(const CRenderizable::Ptr &newObject)
 void CGlWidget::mouseMoveEvent(QMouseEvent *event)
 {
 	CQtGlCanvasBase::mouseMoveEvent(event);
+
+	std::pair<bool, math::TPoint3D> scenePos = sceneToWorld(event->pos());
+	if (scenePos.first)
+		emit mousePosChanged(scenePos.second.x, scenePos.second.y);
+}
+
+void CGlWidget::mousePressEvent(QMouseEvent *event)
+{
+	CQtGlCanvasBase::mousePressEvent(event);
+	if (!m_isShowObs) return;
+
 	QPoint pos = event->pos();
+	QPoint otherPos(pos.x() + m_observationSize, pos.y() + m_observationSize);
+
+	auto scenePos = sceneToWorld(pos);
+	auto sceneOtherPos = sceneToWorld(otherPos);
+
+	if (scenePos.first && sceneOtherPos.first)
+	{
+		auto xs = m_visiblePoints->getArrayX();
+		if (xs.empty()) return;
+		auto ys = m_visiblePoints->getArrayY();
+		assert(xs.size() == ys.size());
+
+		bool foundPose = false;
+		math::TPose3D clickedPose(0.0, 0.0, m_visiblePoints->getArrayZ()[0], 0.0, 0.0, 0.0);
+
+		double xDistPow = std::pow(sceneOtherPos.second.x - scenePos.second.x, 2);
+		double yDistPow = std::pow(sceneOtherPos.second.y - scenePos.second.y, 2);
+		double maxRadius = xDistPow + yDistPow;
+
+		for (size_t i = 0; i < xs.size(); ++i)
+		{
+			double dist = std::pow(scenePos.second.x - xs[i], 2) + std::pow(scenePos.second.y - ys[i], 2);
+
+			if (dist < maxRadius)
+			{
+				clickedPose.x = xs[i];
+				clickedPose.y = ys[i];
+				foundPose = true;
+			}
+		}
+
+		if (foundPose)
+			setSelected(clickedPose);
+	}
+}
+
+std::pair<bool, math::TPoint3D> CGlWidget::sceneToWorld(const QPoint &pos) const
+{
 	mrpt::math::TLine3D outRay;
 	mainViewport()->get3DRayForPixelCoord(pos.x(), pos.y(), outRay);
 
-	const mrpt::math::TPlane ground_plane(mrpt::math::TPoint3D(0, 0, 0), mrpt::math::TPoint3D(1, 0, 0), mrpt::math::TPoint3D(0, 1, 0));
+	const mrpt::math::TPlane groundPlane(mrpt::math::TPoint3D(0, 0, 0), mrpt::math::TPoint3D(1, 0, 0), mrpt::math::TPoint3D(0, 1, 0));
 	// Intersection of the line with the plane:
 	mrpt::math::TObject3D inters;
-	mrpt::math::intersect(outRay, ground_plane, inters);
+	mrpt::math::intersect(outRay, groundPlane, inters);
 	// Interpret the intersection as a point, if there is an intersection:
-	mrpt::math::TPoint3D inters_pt;
-	if (inters.getPoint(inters_pt))
-	{
-		emit mousePosChanged(inters_pt.x, inters_pt.y);
-	}
+	mrpt::math::TPoint3D intersPt;
+	bool converted = inters.getPoint(intersPt);
+	return std::make_pair(converted, intersPt);
 }
 
 void CGlWidget::updateMinimapPos()
