@@ -11,12 +11,13 @@ if(CMAKE_MRPT_HAS_Qt5)
         src/mainwindow.cpp
 	src/my_qlabel.cpp
 	#src/visualizedialog.cpp 
-                src/visual_odometry.h)#src/vo_features.h)
+                src/visual_odometry.h src/visual_odometry.cpp)#src/vo_features.h)
 
 
         set(FILES_TO_MOC
                 src/mainwindow.h
 		src/my_qlabel.h
+                src/visual_odometry.h
                 #src/visualizedialog.h
                 )
 
