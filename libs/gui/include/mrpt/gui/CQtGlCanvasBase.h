@@ -43,6 +43,9 @@ protected:
 	virtual void insertToMap( const opengl::CRenderizable::Ptr &newObject );
 	virtual void removeFromMap( const opengl::CRenderizable::Ptr &newObject );
 
+	bool isPressLMouseButton() const;
+	bool isPressRMouseButton() const;
+
 private:
 	bool m_isPressLMouseButton;
 	bool m_isPressRMouseButton;

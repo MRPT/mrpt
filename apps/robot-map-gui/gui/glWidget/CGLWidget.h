@@ -11,6 +11,7 @@
 
 #include "mrpt/gui/CQtGlCanvasBase.h"
 #include "mrpt/opengl/CSetOfObjects.h"
+#include "mrpt/opengl/CSetOfLines.h"
 #include "mrpt/opengl/CPointCloud.h"
 #include "mrpt/maps/CSimpleMap.h"
 #include "mrpt/maps/CMultiMetricMap.h"
@@ -58,8 +59,10 @@ protected:
 	virtual void insertToMap( const mrpt::opengl::CRenderizable::Ptr &newObject ) override;
 	virtual void removeFromMap( const mrpt::opengl::CRenderizable::Ptr &newObject ) override;
 	virtual void mouseMoveEvent(QMouseEvent *event) override;
+	virtual void mousePressEvent(QMouseEvent *event) override;
 
 private:
+	std::pair<bool, mrpt::math::TPoint3D> sceneToWorld(const QPoint &pos) const;
 	void updateMinimapPos();
 
 
@@ -73,9 +76,10 @@ private:
 	const float m_observationSize;
 
 	bool m_isShowObs;
-	QVector<mrpt::opengl::CPointCloud::Ptr> m_visiblePoints;
+	mrpt::opengl::CPointCloud::Ptr m_visiblePoints;
 	mrpt::opengl::CPlanarLaserScan::Ptr m_currentLaserScan;
 	mrpt::opengl::CSetOfObjects::Ptr m_currentObs;
+	mrpt::opengl::CSetOfLines::Ptr m_line;
 
 	bool m_is2D;
 	bool m_showRobot;
