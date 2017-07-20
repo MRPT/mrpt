@@ -49,6 +49,7 @@ string descriptor_result ="";  // holds the general descriptor results
 string descriptor_result2 =""; // holds the mathicng results and the false_po_neg_result
 string detector_result2 ="";  // holds the repeatibility result
 
+string single_dataset_path = "";
 
 float dist1_p[MAX_DESC], dist2_p[MAX_DESC];
 
@@ -1308,8 +1309,6 @@ void MainWindow::on_detector_button_clicked()
     descriptor_info2->setVisible(false);
     descriptor_info3->setVisible(false);
     evaluation_info->setVisible(false);
-
-
 }
 
 
@@ -1465,6 +1464,7 @@ void MainWindow::on_browse_button_clicked()
         inputFilePath->setText(fileNames.at(0));
 
     file_path1 = inputFilePath->text().toStdString();
+    single_dataset_path = inputFilePath->text().toStdString();
     if(currentInputIndex == 0)
     {
         file_path1 = inputFilePath->text().toStdString();
@@ -1824,9 +1824,30 @@ void MainWindow::initializeParameters()
 void MainWindow::on_generateVisualOdometry_clicked()
 {
 
-    cout << file_path1 << " filepath1 " << file_path3 << " filepath3" << endl;
 
-    Mat display_VO = generateVO(file_path1, file_path3);
+    evaluate_detector_clicked = true;
+
+    //read inputs from user
+    ReadInputFormat();
+    if( detector_selected == -1 || file_path1.empty())
+    {
+        QMessageBox::information(this, "Image/Detector/Descriptor read error","Please specify a valid inputs for the image / detector..");
+        return;
+    }
+    cout << "before filling in Detector Info" << endl;
+    fillDetectorInfo();
+    cout << "after filling in Detector Info " << endl;
+    // Clearing the features list is very important to avoid mixing subsequent button clicks output
+    //featsImage1.clear();
+    //fext.detectFeatures(img1, featsImage1, 0, numFeats);
+
+
+    //on_detector_button_clicked();
+
+    cout << file_path1 << " filepath1 " << file_path3 << " filepath3" << endl;
+    int feat_type = detector_selected;
+    VisualOdometry visual_odom(detector_selected, fext, numFeats);
+    Mat display_VO = visual_odom.generateVO(single_dataset_path, file_path3, feat_type);
     //imshow("Visual Odom", display_VO);
     //waitKey(0);
 
