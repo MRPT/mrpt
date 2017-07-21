@@ -45,6 +45,7 @@ protected:
 
 	bool isPressLMouseButton() const;
 	bool isPressRMouseButton() const;
+	void unpressMouseButtons();
 
 private:
 	bool m_isPressLMouseButton;

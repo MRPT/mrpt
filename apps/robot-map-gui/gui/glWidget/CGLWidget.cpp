@@ -37,8 +37,12 @@ CGlWidget::CGlWidget(bool is2D, QWidget *parent)
 	, m_miniMapSize(-1.0)
 	, m_minimapPercentSize(0.25)
 	, m_observationSize(10.)
+	, m_observationColor(mrpt::utils::TColor::red)
+	, m_selectedObsSize(15.0)
+	, m_selectedColor(mrpt::utils::TColor::green)
 	, m_isShowObs(false)
 	, m_visiblePoints(CPointCloud::Create())
+	, m_selectedPointsCloud(CPointCloud::Create())
 	, m_currentObs(opengl::stock_objects::CornerXYZSimple())
 	, m_line(CSetOfLines::Create())
 	, m_is2D(is2D)
@@ -48,6 +52,11 @@ CGlWidget::CGlWidget(bool is2D, QWidget *parent)
 	clearColorG = 1.0;
 	clearColorB = 1.0;
 
+	m_visiblePoints->setColor(m_observationColor);
+	m_visiblePoints->setPointSize(m_observationSize);
+
+	m_selectedPointsCloud->setColor(m_selectedColor);
+	m_selectedPointsCloud->setPointSize(m_selectedObsSize);
 
 	if (m_is2D)
 	{
@@ -155,10 +164,16 @@ void CGlWidget::setSelectedObservation(bool is)
 		return;
 
 	if (is)
+	{
 		m_map->insert(m_visiblePoints);
+		m_map->insert(m_selectedPointsCloud);
+	}
 
 	else
+	{
 		m_map->removeObject(m_visiblePoints);
+		m_map->removeObject(m_selectedPointsCloud);
+	}
 
 
 	update();
@@ -182,9 +197,8 @@ void CGlWidget::setDocument(CDocument *doc)
 	if (m_isShowObs)
 		m_map->removeObject(m_visiblePoints);
 
-	m_visiblePoints = CPointCloud::Create();
-	m_visiblePoints->setColor(mrpt::utils::TColorf(mrpt::utils::TColor::red));
-	m_visiblePoints->setPointSize(m_observationSize);
+	m_selectedPointsCloud->clear();
+	m_visiblePoints->clear();
 	for (auto iter = m_doc->simplemap().begin(); iter != m_doc->simplemap().end(); ++iter)
 	{
 		math::TPose3D pose = iter->first->getMeanVal();
@@ -295,6 +309,34 @@ void CGlWidget::setBot(int value)
 	update();
 }
 
+void CGlWidget::setObservationSize(double s)
+{
+	m_observationSize = s;
+	m_visiblePoints->setPointSize(m_observationSize);
+	update();
+}
+
+void CGlWidget::setObservationColor(int type)
+{
+	m_observationColor = typeToColor(type);
+	m_visiblePoints->setColor(m_observationColor);
+	update();
+}
+
+void CGlWidget::setSelectedObservationSize(double s)
+{
+	m_selectedObsSize = s;
+	m_selectedPointsCloud->setPointSize(m_observationSize);
+	update();
+}
+
+void CGlWidget::setSelectedObservationColor(int type)
+{
+	m_selectedColor = typeToColor(type);
+	m_selectedPointsCloud->setColor(m_selectedColor);
+	update();
+}
+
 void CGlWidget::resizeGL(int width, int height)
 {
 	CQtGlCanvasBase::resizeGL(width, height);
@@ -362,6 +404,7 @@ void CGlWidget::mousePressEvent(QMouseEvent *event)
 	if (!m_isShowObs) return;
 
 	QPoint pos = event->pos();
+	bool isPressCtrl = event->modifiers() == Qt::ControlModifier;
 	QPoint otherPos(pos.x() + m_observationSize, pos.y() + m_observationSize);
 
 	auto scenePos = sceneToWorld(pos);
@@ -369,33 +412,69 @@ void CGlWidget::mousePressEvent(QMouseEvent *event)
 
 	if (scenePos.first && sceneOtherPos.first)
 	{
-		auto xs = m_visiblePoints->getArrayX();
-		if (xs.empty()) return;
-		auto ys = m_visiblePoints->getArrayY();
-		assert(xs.size() == ys.size());
-
-		bool foundPose = false;
-		math::TPose3D clickedPose(0.0, 0.0, m_visiblePoints->getArrayZ()[0], 0.0, 0.0, 0.0);
-
 		double xDistPow = std::pow(sceneOtherPos.second.x - scenePos.second.x, 2);
 		double yDistPow = std::pow(sceneOtherPos.second.y - scenePos.second.y, 2);
-		double maxRadius = xDistPow + yDistPow;
+		double maxDist = xDistPow + yDistPow;
 
-		for (size_t i = 0; i < xs.size(); ++i)
+		bool updateScene = false;
+		if (isPressCtrl)
 		{
-			double dist = std::pow(scenePos.second.x - xs[i], 2) + std::pow(scenePos.second.y - ys[i], 2);
-
-			if (dist < maxRadius)
+			int i = searchSelectedPose(scenePos.second.x, scenePos.second.y, maxDist);
+			if (i != -1)
 			{
-				clickedPose.x = xs[i];
-				clickedPose.y = ys[i];
-				foundPose = true;
+				auto point = removeFromSelected(i);
+				setVisiblePose(point.x, point.y, point.z);
+				updateScene = true;
 			}
 		}
+		else if (deselectAll())
+			update();
 
-		if (foundPose)
-			setSelected(clickedPose);
+		if (!updateScene)
+		{
+			int i = searchPose(scenePos.second.x, scenePos.second.y, maxDist);
+			if (i != -1)
+			{
+				removeFromVisible(i);
+				selectPose(scenePos.second.x, scenePos.second.y, getSafeZPose());
+				updateScene = true;
+			}
+		}
+		if (updateScene)
+		{
+			update();
+			unpressMouseButtons();
+		}
+
 	}
+}
+
+utils::TColorf CGlWidget::typeToColor(int type) const
+{
+	mrpt::utils::TColor color = mrpt::utils::TColor::red;;
+	switch (type) {
+	case 0:
+		color = mrpt::utils::TColor::red;
+		break;
+	case 1:
+		color = mrpt::utils::TColor::green;
+		break;
+	case 2:
+		color = mrpt::utils::TColor::blue;
+		break;
+	case 3:
+		color = mrpt::utils::TColor::white;
+		break;
+	case 4:
+		color = mrpt::utils::TColor::black;
+		break;
+	case 5:
+		color = mrpt::utils::TColor::gray;
+		break;
+	default:
+		break;
+	}
+	return mrpt::utils::TColorf(color);
 }
 
 std::pair<bool, math::TPoint3D> CGlWidget::sceneToWorld(const QPoint &pos) const
@@ -413,6 +492,50 @@ std::pair<bool, math::TPoint3D> CGlWidget::sceneToWorld(const QPoint &pos) const
 	return std::make_pair(converted, intersPt);
 }
 
+int CGlWidget::searchPoseFromList(float x, float y, double maxDist, const std::vector<float> &xs, const std::vector<float> &ys) const
+{
+	assert(xs.size() == ys.size());
+
+	std::map<double, int> minDistPos;
+	for (size_t i = 0; i < xs.size(); ++i)
+	{
+		double dist = std::pow(x - xs[i], 2) + std::pow(y - ys[i], 2);
+		if (dist < maxDist)
+			minDistPos.emplace(dist, i);
+	}
+
+	if (minDistPos.empty())
+		return -1;
+
+	return minDistPos.begin()->second;
+}
+
+math::TPoint3D CGlWidget::removePoseFromPointsCloud(CPointCloud::Ptr pointsCloud, int index) const
+{
+	auto xs = pointsCloud->getArrayX();
+	auto ys = pointsCloud->getArrayY();
+	auto zs = pointsCloud->getArrayZ();
+	assert(xs.size() == ys.size() && xs.size() == zs.size());
+
+	assert(index < xs.size());
+	math::TPoint3D point;
+
+	auto itX = xs.begin() + index;
+	point.x = *itX;
+	xs.erase(itX);
+
+	auto itY = ys.begin() + index;
+	point.y = *itY;
+	ys.erase(itY);
+
+	auto itZ = zs.begin() + index;
+	point.z = *itZ;
+	zs.erase(itZ);
+
+	pointsCloud->setAllPoints(xs, ys, zs);
+	return point;
+}
+
 void CGlWidget::updateMinimapPos()
 {
 	if (!m_is2D)
@@ -426,4 +549,87 @@ void CGlWidget::updateMinimapPos()
 	float h = m_miniMapSize/win_dims[3];
 	miniMap->setViewportPosition(0.01,0.01, w, h);
 
+}
+
+int CGlWidget::searchSelectedPose(float x, float y, double maxDist)
+{
+	auto xs = m_selectedPointsCloud->getArrayX();
+	auto ys = m_selectedPointsCloud->getArrayY();
+
+	return searchPoseFromList(x, y, maxDist, xs, ys);
+}
+
+int CGlWidget::searchPose(float x, float y, double maxDist)
+{
+	auto xs = m_visiblePoints->getArrayX();
+	auto ys = m_visiblePoints->getArrayY();
+
+	return searchPoseFromList(x, y, maxDist, xs, ys);
+}
+
+math::TPoint3D CGlWidget::removeFromSelected(int index)
+{
+	return removePoseFromPointsCloud(m_selectedPointsCloud, index);
+}
+
+void CGlWidget::selectPose(float x, float y, float z)
+{
+	m_selectedPointsCloud->insertPoint(x, y, z);
+	math::TPose3D clickedPose(x, y, z, 0.0, 0.0, 0.0);
+	setSelected(clickedPose);
+}
+
+void CGlWidget::setVisiblePose(float x, float y, float z)
+{
+	m_visiblePoints->insertPoint(x, y, z);
+}
+
+bool CGlWidget::deselectAll()
+{
+	auto xs = m_selectedPointsCloud->getArrayX();
+	auto ys = m_selectedPointsCloud->getArrayY();
+	auto zs = m_selectedPointsCloud->getArrayZ();
+	assert(xs.size() == ys.size() && xs.size() == zs.size());
+
+	auto xv = m_visiblePoints->getArrayX();
+	auto yv = m_visiblePoints->getArrayY();
+	auto zv = m_visiblePoints->getArrayZ();
+
+	assert(xv.size() == yv.size() && xv.size() == zv.size());
+
+	for (int i = 0; i < xs.size(); ++i)
+	{
+		xv.push_back(xs[i]);
+		yv.push_back(ys[i]);
+		zv.push_back(zs[i]);
+	}
+	m_visiblePoints->setAllPoints(xv, yv, zv);
+
+	bool changedVectors = xs.size();
+	xs.clear();
+	ys.clear();
+	zs.clear();
+	m_selectedPointsCloud->setAllPoints(xs, ys, zs);
+
+	return changedVectors;
+}
+
+float CGlWidget::getSafeZPose() const
+{
+	auto zs = m_visiblePoints->getArrayZ();
+	float z = 0.0;
+	if (!zs.empty())
+		z = zs[0];
+	else
+	{
+		zs = m_selectedPointsCloud->getArrayZ();
+		if (!zs.empty())
+			z = zs[0];
+	}
+	return z;
+}
+
+math::TPoint3D CGlWidget::removeFromVisible(int index)
+{
+	return removePoseFromPointsCloud(m_visiblePoints, index);
 }

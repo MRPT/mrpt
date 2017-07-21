@@ -154,3 +154,9 @@ bool CQtGlCanvasBase::isPressRMouseButton() const
 {
 	return m_isPressRMouseButton;
 }
+
+void CQtGlCanvasBase::unpressMouseButtons()
+{
+	m_isPressLMouseButton = false;
+	m_isPressRMouseButton = false;
+}

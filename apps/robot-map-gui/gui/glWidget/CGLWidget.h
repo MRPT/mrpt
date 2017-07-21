@@ -29,11 +29,13 @@ public:
 	virtual ~CGlWidget();
 
 	void fillMap(const mrpt::opengl::CSetOfObjects::Ptr &renderizableMap);
+	void setDocument(CDocument *doc);
+
+
 	void setSelected(const mrpt::math::TPose3D &pose);
 	void setSelectedObservation(bool is);
 	void setLaserScan(mrpt::opengl::CPlanarLaserScan::Ptr laserScan);
 
-	void setDocument(CDocument *doc);
 	void setZoom(float zoom);
 	float getZoom() const;
 
@@ -46,6 +48,12 @@ public:
 	void setVisibleGrid(bool is);
 
 	void setBot(int value);
+
+	void setObservationSize(double s);
+	void setObservationColor(int type);
+
+	void setSelectedObservationSize(double s);
+	void setSelectedObservationColor(int type);
 
 signals:
 	void zoomChanged(float zoom);
@@ -62,8 +70,20 @@ protected:
 	virtual void mousePressEvent(QMouseEvent *event) override;
 
 private:
+	mrpt::utils::TColorf typeToColor(int type) const;
 	std::pair<bool, mrpt::math::TPoint3D> sceneToWorld(const QPoint &pos) const;
+	int searchPoseFromList(float x, float y, double maxDist, const std::vector<float> &xs, const std::vector<float> &ys) const;
+	mrpt::math::TPoint3D removePoseFromPointsCloud(mrpt::opengl::CPointCloud::Ptr pointsCloud, int index) const;
+
 	void updateMinimapPos();
+	int searchSelectedPose(float x, float y, double maxDist);
+	int searchPose(float x, float y, double maxDist);
+	mrpt::math::TPoint3D removeFromSelected(int index);
+	void selectPose(float x, float y, float z);
+	void setVisiblePose(float x, float y, float z);
+	bool deselectAll();
+	float getSafeZPose() const;
+	mrpt::math::TPoint3D removeFromVisible(int index);
 
 
 	mrpt::opengl::COpenGLViewport::Ptr m_miniMapViewport;
@@ -73,10 +93,14 @@ private:
 	CDocument* m_doc;
 	float m_miniMapSize;
 	const float m_minimapPercentSize;
-	const float m_observationSize;
+	double m_observationSize;
+	mrpt::utils::TColorf m_observationColor;
+	double m_selectedObsSize;
+	mrpt::utils::TColorf m_selectedColor;
 
 	bool m_isShowObs;
 	mrpt::opengl::CPointCloud::Ptr m_visiblePoints;
+	mrpt::opengl::CPointCloud::Ptr m_selectedPointsCloud;
 	mrpt::opengl::CPlanarLaserScan::Ptr m_currentLaserScan;
 	mrpt::opengl::CSetOfObjects::Ptr m_currentObs;
 	mrpt::opengl::CSetOfLines::Ptr m_line;
