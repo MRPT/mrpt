@@ -162,6 +162,8 @@ class NAV_IMPEXP CWaypointsNavigator : public mrpt::nav::CAbstractNavigator
 	virtual bool checkHasReachedTarget(const double targetDist) const override;
 	/** The waypoints-specific part of navigationStep() */
 	virtual void waypoints_navigationStep();
+	
+	bool waypoints_isAligning() const { return m_is_aligning; }
 
    private:
 	/** Whether the last timestep was "is_aligning" in a waypoint with heading
