@@ -9,7 +9,11 @@ int ground_truth_y[MAX_FRAME];
 
 int predicted_x[MAX_FRAME];
 int predicted_y[MAX_FRAME];
-void display()
+
+/************************************************************************************************
+*					    Display function                                                        *
+************************************************************************************************/
+void VisualOdometry::display()
 {
     for(int i=2 ; i <MAX_FRAME ; i++)
     {
@@ -40,7 +44,8 @@ double VisualOdometry::computeOdomError()
 /************************************************************************************************
 *					    Get Absolute Scale                                                      *
 ************************************************************************************************/
-double VisualOdometry::getAbsoluteScale(int frame_id, int sequence_id, double z_cal, string poses_ground_truth)	{
+double VisualOdometry::getAbsoluteScale(int frame_id, int sequence_id, double z_cal, string poses_ground_truth)
+{
 
     string line;
     int i = 0;
@@ -85,7 +90,6 @@ double VisualOdometry::getAbsoluteScale(int frame_id, int sequence_id, double z_
     return sqrt((x-x_prev)*(x-x_prev) + (y-y_prev)*(y-y_prev) + (z-z_prev)*(z-z_prev)) ;
 
 }
-
 
 /************************************************************************************************
 *					    Store Ground Truth                                                      *
@@ -141,7 +145,6 @@ VisualOdometry::VisualOdometry(int detector_selected, CFeatureExtraction fext, i
     this->fext = fext;
     this->numFeats = numFeats;
 }
-
 
 /************************************************************************************************
 *					    Generate VO main funciton                                               *
@@ -337,7 +340,8 @@ void VisualOdometry::featureTracking(Mat img_1, Mat img_2, vector<Point2f>& poin
     //getting rid of points for which the KLT tracking failed or those who have gone outside the frame
     int indexCorrection = 0;
     for( int i=0; i<status.size(); i++)
-    {  Point2f pt = points2.at(i- indexCorrection);
+    {
+        Point2f pt = points2.at(i- indexCorrection);
         if ((status.at(i) == 0)||(pt.x<0)||(pt.y<0))	{
             if((pt.x<0)||(pt.y<0))	{
                 status.at(i) = 0;

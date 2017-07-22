@@ -52,6 +52,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
+#include <sstream>
+#include <fstream>
+
 #include "opencv2/core.hpp"
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/calib3d/calib3d.hpp>
@@ -97,6 +100,7 @@ public:
     QPushButton *prev_button;
     QPushButton *next_button;
     int current_imageIndex;
+
 
     QPushButton *browse_button;
     QPushButton *browse_button2;
@@ -152,8 +156,21 @@ public:
     QLineEdit *param4_edit_desc;
     QLineEdit *param5_edit_desc;
 
-    //provide user options like stereo matching, activate/deactivate non-maximal suppression, image decimation, step-by-step playback of images.
-    QCheckBox *stereo_matching;
+    //provide user options like repeatability, activate/deactivate non-maximal suppression, image decimation, step-by-step playback of images.
+    QCheckBox *homography_enable;
+    QLineEdit *inputHomogrpahyPath;
+    string homography_path;
+    QPushButton *browseHomography;
+    bool homography_activated;
+
+
+    // widgets / options for tracking vision task
+    QCheckBox *tracking_enable;
+    bool tracking_activated;
+    int current_imageIndex_tracking;
+    QPushButton *trackIt;
+    vector<string> files_fullpath_tracking;
+    int tracking_image_counter;
 
     //image decimation options
     QLineEdit *decimateFactor;
@@ -339,7 +356,7 @@ public:
     bool evaluate_detector_clicked;
     bool evaluate_descriptor_clicked;
     bool visualize_descriptor_clicked;
-    bool activate_stereo_matching;
+    bool activate_homogrphy_repeatability;
 
 
     //! <Parameters for Evaluations Characteristiscs
@@ -437,12 +454,63 @@ public:
      */
     void drawLineLSD(Mat img, int image_left_right);
 
+    /**
+     * findRepearability this function computes the repeatability for the selected key-point in the image
+     * it goes through all the images inside the selected folder and computes how many times the selected key-point
+     * repeat in all the images based on a spatial window of say +/-5 pixels
+     * @param mouse_x the x-coordinate of the selected key-point
+     * @param mouse_y the y-coordinate of the selected key-point
+     * @return
+     */
     string findRepeatability(float mouse_x, float mouse_y);
 
+    /**
+     * findRepearabilityHomograhy this function computes the repeatability for the selected key-point in the image
+     * it goes through all the images inside the selected folder and computes how many times the selected key-point
+     * repeat in all the images based on a spatial window of say +/-5 pixels based on the homography transformation of the i'th
+     * frame w.r.t. to the first frame
+     * @param mouse_x the x-coordinate of the selected key-point
+     * @param mouse_y the y-coordinate of the selected key-point
+     * @return
+     */
+    string findRepeatabilityHomography(float mouse_x, float mouse_y);
+
+    /**
+     * checkIfSamePoint this checks if the point (x2,y2) appears within +/- threshold pixels around the point (x,y)
+     * this function is mainly used by repeatability computation method
+     * @param x input point x-coordinate
+     * @param y input point y-coordinate
+     * @param x2 input point x-coordinate
+     * @param y2 input point y-coordinate
+     * @param threshold threshold
+     * @return
+     */
     bool checkIfSamePoint(float x, float y, float x2, float y2, int threshold);
 
+    /**
+     * falsePositivesNegatives function computes the false positives and negatives and returns the string representation of the
+     * result to be displayed as the text for evaluation metric for the descriptor selected. Mainly used for stereo images only
+     */
     string falsePositivesNegatives();
+
+    /**
+     * showEvaluation this function exists to show the evaluation info, function created just for simplicity
+     * @param mode variable not currently being used
+     */
     void showEvaluation(int mode);
+
+    /**
+     * trackKeyPoint function finds the corresponding key-point from the first image in the second image
+     * it basically finds the new position of the key-point in the second image to track it
+     * @param img_org the first image which has the initial key-point
+     * @param img_test  the seconds image on which the key-point needs to be found out
+     * @param feat_test the key-points from the second-image, the corresponding key-point is one of these key-points
+     * @param org_x the x-coordinate of the key-point to be tracked from the first image
+     * @param org_y the y-coordinate of the key-point to be tracked from the first image
+     * @return
+     */
+    Point2d trackKeyPoint(CImage img_org, CImage img_test, CFeatureList feat_in, int x, int y);
+
 
 
 
@@ -468,6 +536,20 @@ private slots:
 
 
 public slots:
+
+    /**
+     * on_trackIt_clicked function is called when the user clicks on the trackIt button to iterate over subsequent frames
+     * this method tracks the key-points from the first image in the subsequent image
+     * CURRENTLY UNDER CONSTRUCTION
+     */
+    void on_trackIt_clicked();
+
+    /**
+     * on_browse_button_clicked3 this function is called when the user needs to browse for the homogrphy ground truth files for the Grafitti
+     * dataset for the task of homography based repeatability, the user needs to select the foler for the appropriate homographyoes. The homographies
+     * need to be in a text files and separated from the images, only text files in the folder should be there, no images should be present
+     */
+    void on_browse_homography_clicked3();
 
     /**
      * on_button_generate_clicked() is called when user clicks on visualize descriptor.
@@ -510,6 +592,10 @@ public slots:
      */
     void on_browse_button_clicked2();
 
+    /**
+     * on_browse_button_clicked3 this function is called when the user needs to browse for the ground truth files for the KITTI
+     * visual odometry, the user needs to select the files for the appropriate sequence like 00.txt, 01.txt, etc..
+     */
     void on_browse_button_clicked3();
 
     /**
@@ -533,10 +619,10 @@ public slots:
     void on_file_input_choose(int choice);
 
     /**
-     * this function is currently not required as stereo matching is done by mouse clicks
+     * this function is for enabling homogrphy option for repeatability
      * @param state
      */
-    void onStereoMatchingChecked(int state);
+    void onHomographyChecked(int state);
 
     /**
      * on_next_button_clicked() function is called when the user clicks on the next button t oiterate over the images in the dataset
@@ -556,7 +642,20 @@ public slots:
      */
     void on_sample_clicked();
 
+    /**
+     * on_generateVisualOdometry_clicked this function is called when the user clicks on the generate visual odometry button, this
+     * instantiates the visual odometry class and calls the required function which stores the output of the visual odomtery result
+     * and finally show the output of the KITTI odometry dataset result
+     */
     void on_generateVisualOdometry_clicked();
+
+    /**
+     * onTrackingEnabled functino is called when the user checks / enables the tracking mode, after checking this, the user has the option
+     * to track the key-points in the subsequent frames by clickin on the trackIt button to iterate over the images and view the tracking results
+     * one by one in the subsequent frames
+     * @param state this holds the state of the checkbox being ticked or unticked
+     */
+    void onTrackingEnabled(int state);
 
 };
 

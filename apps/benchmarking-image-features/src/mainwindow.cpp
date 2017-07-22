@@ -37,7 +37,7 @@ double min_distances[MAX_DESC];
 int successful_matches = 0;
 float threshold_dist1 = 0.9;
 float threshold_dist2 = 0.1;
-int repeatibility_threshold = 5;
+int repeatibility_threshold = 10;
 int repeatability = 0;
 int number_false_positives = 0;
 int number_false_negatives = 0;
@@ -476,7 +476,6 @@ void MainWindow::button_close_clicked()
     return;
 }
 
-
 /************************************************************************************************
 *								On Descriptor Choose    								        *
 ************************************************************************************************/
@@ -601,7 +600,6 @@ void MainWindow::on_descriptor_choose(int choice)
         param1_desc->setVisible(true);
     }
 }
-
 
 /************************************************************************************************
 *								On Detector Choose      								        *
@@ -746,11 +744,16 @@ void MainWindow::on_detector_choose(int choice)
 /************************************************************************************************
 *								On StereoMatching Checked   							        *
 ************************************************************************************************/
-void MainWindow::onStereoMatchingChecked(int state)
+void MainWindow::onHomographyChecked(int state)
 {
-    if(stereo_matching->isChecked() && (currentInputIndex == 1 || currentInputIndex == 4))
+
+    if(homography_enable->isChecked() && (currentInputIndex == 3))
     {
-        activate_stereo_matching = true;
+        homography_activated = true;
+        inputHomogrpahyPath->setVisible(true);
+        browseHomography->setVisible(true);
+
+        activate_homogrphy_repeatability = true;
         cout << " You clicked me .!!" << endl;
         /*
          * CMatchedFeatureList mHarris, mSIFT, mHarris_SAD, mFAST_CC, mFAST_SAD;
@@ -764,6 +767,9 @@ void MainWindow::onStereoMatchingChecked(int state)
         cout << "featsImage1 size" << featsImage1.size() << " featsImage2.seze " << featsImage2.size() << endl;
         cout << "SAD matches found: " << mHarris_SAD.size() <<" in seconds" << tic.Tac()*1000.0f << endl;
 */
+    } else
+    {
+        homography_activated = false;
     }
 
 }
@@ -1311,7 +1317,6 @@ void MainWindow::on_detector_button_clicked()
     evaluation_info->setVisible(false);
 }
 
-
 /************************************************************************************************
 *								On Descriptor Button Clicked 							        *
 ************************************************************************************************/
@@ -1413,6 +1418,9 @@ void MainWindow::on_descriptor_button_clicked()
 
 }
 
+/************************************************************************************************
+*								Show Evaluation                							        *
+************************************************************************************************/
 void MainWindow::showEvaluation(int mode)
 {
 
@@ -1522,6 +1530,9 @@ void MainWindow::on_browse_button_clicked2()
 
 }
 
+/************************************************************************************************
+*								On Browse Button3 Clicked    							        *
+************************************************************************************************/
 void MainWindow::on_browse_button_clicked3()
 {
 
@@ -1551,6 +1562,35 @@ void MainWindow::on_browse_button_clicked3()
 
 }
 
+/************************************************************************************************
+*								On Browse Homography Clicked   							        *
+************************************************************************************************/
+void MainWindow::on_browse_homography_clicked3()
+{
+    ReadInputFormat();
+
+    QFileDialog dialog;
+    dialog.setFileMode(QFileDialog::AnyFile);
+
+
+    if(currentInputIndex == 2 || currentInputIndex == 3 || currentInputIndex == 4)
+    {
+        dialog.setFileMode(QFileDialog::Directory);
+    }
+    else
+        return;
+
+    //dialog.setNameFilter(tr("Images (*.png *.xpm *.jpg)"));
+    dialog.setViewMode(QFileDialog::Detail);
+    QStringList fileNames;
+    if(dialog.exec())
+        fileNames = dialog.selectedFiles();
+
+    if(fileNames.size() != 0)
+        inputHomogrpahyPath->setText(fileNames.at(0));
+
+    homography_path = inputHomogrpahyPath->text().toStdString();
+}
 
 /************************************************************************************************
 *								Read Input Format           							        *
@@ -1608,7 +1648,7 @@ void MainWindow::readFilesFromFolder(int next_prev)
             if(files.at(i).size() > 4) // this removes the . and .. in linux as all files will have size more than 4 .png .jpg etc.
             {
                 files_fullpath.push_back(file_path1 + "/" + files.at(i));
-                cout << files_fullpath.at(j) << endl;
+                //cout << files_fullpath.at(j) << endl;
                 j++;
             }
         } // end of for
@@ -1618,7 +1658,8 @@ void MainWindow::readFilesFromFolder(int next_prev)
     file_path1 = files_fullpath.at(current_imageIndex);
 
 
-    //DO the following only if user selects option for providing a STEREO image dataset
+    /// DO the following only if user selects option for providing a STEREO image dataset
+    /// also It is assumed user selects Stereo images folder with same number of images, else app might behave weirdly.
     if(currentInputIndex == 4)
     {
         file_path2 = inputFilePath2->text().toStdString();
@@ -1635,7 +1676,7 @@ void MainWindow::readFilesFromFolder(int next_prev)
             if (files2.at(i).size() > 4) // this removes the . and .. in linux as all files will have size more than 4 .png .jpg etc.
             {
                 files_fullpath2.push_back(file_path2 + "/" + files2.at(i));
-                cout << files_fullpath2.at(j) << endl;
+                //cout << files_fullpath2.at(j) << endl;
                 j++;
             }
         } // end of for
@@ -1710,7 +1751,6 @@ void MainWindow::on_prev_button_clicked()
     //display the next images without the detectors on the screen
     displayImagesWithoutDetector();
 }
-
 
 /************************************************************************************************
 *								On Sample Clicked (Image Decimation)   					        *
@@ -1821,6 +1861,9 @@ void MainWindow::initializeParameters()
     param5_desc->setBaseSize(WIDGET_WIDTH, WIDGET_HEIGHT);
 }
 
+/************************************************************************************************
+*						On Generate Visual Odometry button clicked						        *
+************************************************************************************************/
 void MainWindow::on_generateVisualOdometry_clicked()
 {
 
@@ -1846,6 +1889,8 @@ void MainWindow::on_generateVisualOdometry_clicked()
 
     cout << file_path1 << " filepath1 " << file_path3 << " filepath3" << endl;
     int feat_type = detector_selected;
+
+    /// following creates an object of the visual odometry class and performs the VO task on the monocular images dataset
     VisualOdometry visual_odom(detector_selected, fext, numFeats);
     Mat display_VO = visual_odom.generateVO(single_dataset_path, file_path3, feat_type);
     //imshow("Visual Odom", display_VO);
@@ -1862,11 +1907,195 @@ void MainWindow::on_generateVisualOdometry_clicked()
 }
 
 /************************************************************************************************
+*								On Tracking Enabled mehtod 								        *
+************************************************************************************************/
+void MainWindow::onTrackingEnabled(int state)
+{
+    ReadInputFormat();
+    if(inputFilePath->text().toStdString().size() < 1 )
+    {
+        QMessageBox::information(this, "Dataset read error","Please specify a valid input file for the dataset!!");
+
+        return;
+    }
+    cout << currentInputIndex << " current Input Index" << endl;
+    if(tracking_enable->isChecked() && (currentInputIndex == 3))
+    {
+        tracking_activated = true;
+        trackIt->setVisible(true);
+        cout << " You clicked me .!!" << endl;
+
+
+
+        ///read all the files in the dataset
+
+        string file_path_temp = inputFilePath->text().toStdString();
+        cout << file_path_temp << endl;
+        cout << currentInputIndex << endl;
+        DIR *dir;
+        dirent *pdir;
+        vector<string> files;
+        //vector<string> files_fullpath_tracking;
+
+        /// clearing the vector files_full_path_tracking is important as it needs to flush out the older dataset
+        files_fullpath_tracking.clear();
+
+        if (currentInputIndex == 3 || currentInputIndex == 4) //meaning stereo dataset or single image dataset
+        {
+            dir = opendir(file_path_temp.c_str());
+            while(pdir = readdir(dir))
+                files.push_back(pdir->d_name);
+            for(int i=0,j=0 ; i<files.size() ; i++)
+            {
+                if(files.at(i).size() > 4) // this removes the . and .. in linux as all files will have size more than 4 .png .jpg etc.
+                {
+                    files_fullpath_tracking.push_back(file_path_temp + "/" + files.at(i));
+                    //cout << files_fullpath_tracking.at(j) << endl;
+                    j++;
+                }
+            } // end of for
+        }
+        sort(files_fullpath_tracking.begin(),files_fullpath_tracking.end()); //Use the start and end like this
+        cout << current_imageIndex << "current Image index" << endl;
+        //file_path1 = files_fullpath_tracking.at(current_imageIndex);
+
+    }
+    else
+    {
+        trackIt->setVisible(false);
+        tracking_activated = false;
+    }
+}
+
+/************************************************************************************************
+*								Track Key-Point method  								        *
+************************************************************************************************/
+Point2d MainWindow::trackKeyPoint(CImage img_org, CImage img_test, CFeatureList feat_test, int org_x, int org_y)
+{
+    Point2d pt;
+
+    int patch_size = 11;
+    int response_pos = 0;
+
+    /// org_x,org_y belong to the key-point in image_org and the corresponding key-point in img_test needs to be computed
+    /// iterate over all key-points to find the best matching key-point in the test image
+    for(int i=0 ; i<feat_test.size() ; i++)
+    {
+        int temp_x = (int)feat_test.getFeatureX(i);
+        int temp_y = (int)feat_test.getFeatureY(i);
+        cv::Mat cvImg_org = cv::cvarrToMat(img_org.getAs<IplImage>());
+        cv::Mat cvImg_test = cv::cvarrToMat(img_test.getAs<IplImage>());
+
+        int temp_patch = patch_size/2;
+        double response = 0;
+        double min_response = 99999;
+
+        for(int j=-temp_patch ; j<(temp_patch+1) ; j++)
+        {
+            for(int k=-temp_patch; k<(temp_patch+1) ; k++)
+            {
+                response = response + pow((cvImg_org.at<double>(org_x+j,org_y+k)-cvImg_test.at<double>(temp_x+j, temp_y+k)),2);
+
+            }
+        }
+        if(min_response > response)
+        {
+            response_pos = i;
+            min_response = response;
+        }
+    }
+    pt.x = feat_test.getFeatureX(response_pos);
+    pt.y = feat_test.getFeatureY(response_pos);
+    return pt;
+}
+
+/************************************************************************************************
+*								On TrackIt button clicked  								        *
+************************************************************************************************/
+void MainWindow::on_trackIt_clicked()
+{
+    if(tracking_activated == true)
+    {
+        long current_num = tracking_image_counter%files_fullpath_tracking.size();
+        CImage image1_temp;
+        image1_temp.loadFromFile(files_fullpath_tracking.at(current_num));
+        cv::Mat cvImg1 = cv::cvarrToMat(image1_temp.getAs<IplImage>());
+
+        ///////////$$$$$$
+
+        fillDetectorInfo();
+
+        // Clearing the features list is very important to avoid mixing subsequent button clicks output
+        ///featsImage1.clear();
+
+        /// do key-point detection only in first frame
+        if(current_num == 0)
+        {
+            fext.detectFeatures(image1_temp, featsImage1, 0, numFeats);
+            // Drawing a circle around corners for image 1
+            //C++: void circle(Mat& img, Point center, int radius, const Scalar& color, int thickness=1, int lineType=8, int shift=0)
+            for(int i=0 ; i<featsImage1.size() ; i++)
+            {
+                int temp_x = (int) featsImage1.getFeatureX(i);
+                int temp_y = (int) featsImage1.getFeatureY(i);
+                //circle(cvImg1, Point(temp_x, temp_y), 5, Scalar(0,255,0), CIRCLE_THICKNESS, 8, 0);
+                drawMarker(cvImg1, Point(temp_x, temp_y),  Scalar(0, 255, 0), MARKER_CROSS, CROSS_SIZE, CROSS_THICKNESS);
+            }
+            drawLineLSD(cvImg1, 0); // 0 means draw line on left image
+        }
+        else
+        {
+            CImage temp_img, temp_img2;
+            CFeatureList feats_temp;
+            vector<double> key_x, key_y;
+
+            temp_img.loadFromFile(files_fullpath_tracking.at(current_num));
+            temp_img2.loadFromFile(files_fullpath_tracking.at(current_num+1)); // need to add condition for breaking-part, overflowing at the end of the limit
+
+            fext.detectFeatures(temp_img,feats_temp, 0, numFeats);
+            /// call the tracking function to test the tracker
+            Point2d pts[numFeats];
+            for(int i=0 ; i<featsImage1.size() ; i++)
+            {
+                pts[i] = trackKeyPoint(image1_temp, temp_img, feats_temp, (int)featsImage1.getFeatureX(i), (int)featsImage1.getFeatureY(i));
+            }
+
+            // Drawing a circle around corners for subsequent images
+            //C++: void circle(Mat& img, Point center, int radius, const Scalar& color, int thickness=1, int lineType=8, int shift=0)
+            for(int i=0 ; i<featsImage1.size() ; i++)
+            {
+                int temp_x = (int)pts[i].x;
+                int temp_y = (int)pts[i].y;
+                //circle(cvImg1, Point(temp_x, temp_y), 5, Scalar(0,255,0), CIRCLE_THICKNESS, 8, 0);
+                drawMarker(cvImg1, Point(temp_x, temp_y),  Scalar(0, 255, 0), MARKER_CROSS, CROSS_SIZE, CROSS_THICKNESS);
+            }
+            drawLineLSD(cvImg1, 0); // 0 means draw line on left image
+
+            image1_temp = temp_img;
+            temp_img = temp_img2;
+        }
+
+        // converting the cv::Mat to a QImage and changing the resolution of the output images
+        cv::Mat temp1 (cvImg1.cols,cvImg1.rows,cvImg1.type());
+        cvtColor(cvImg1, temp1, CV_BGR2RGB);
+        QImage dest1 = QImage((uchar*) temp1.data, temp1.cols, temp1.rows, temp1.step, QImage::Format_RGB888);
+        QImage qscaled1 = dest1.scaled(IMAGE_WIDTH, IMAGE_HEIGHT, Qt::KeepAspectRatio);
+        image1->setPixmap(QPixmap::fromImage(qscaled1));
+
+        ///////////$$$$$$
+        tracking_image_counter++;
+    }
+}
+
+/************************************************************************************************
 *								Main Window Constructor   								        *
 ************************************************************************************************/
 MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
 {
     current_imageIndex = 0;
+    current_imageIndex_tracking = 0;
+    tracking_image_counter = 0;
+
     currentInputIndex = 0;
     detector_selected = 0;
     descriptor_selected = 0;
@@ -1881,11 +2110,13 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
     elapsedTime_descriptor = 0;
     closest_dist = 0;
 
+    homography_activated = false;
+
 
     window_gui = new QWidget;
     window_gui->setWindowTitle("GUI app for benchmarking image detectors and descriptors");
 
-    //Initialize the detectors here
+    ///Initialize the detectors here
     groupBox1 = new QGroupBox;
 
 
@@ -1904,7 +2135,7 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
 
 
 
-    //Initialize the descriptors here
+    ///Initialize the descriptors here
 
     descriptors_select = new QComboBox;
     for(int i=0 ; i<NUM_DESCRIPTORS ; i++)
@@ -1954,7 +2185,7 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
 
 
 
-    //Displaying the pair of images here
+    ///Displaying the pair of images here
     groupBox_images = new QGroupBox ("Single Image");
     image1 = new my_qlabel;
     qimage1.load("../../apps/benchmarking-image-features/images/1.png"); // replace this with initial image of select an image by specifying path
@@ -2045,13 +2276,14 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
     browse_button3->setFixedSize(BUTTON_WIDTH,BUTTON_HEIGHT);
     connect(browse_button3, SIGNAL(clicked()), this, SLOT(on_browse_button_clicked3()));
 
+    ///initially have the visual odometry widgets hidden, only displayed when user selects input as single image dataset
     generateVisualOdometry->setVisible(false);
     inputFilePath3->setVisible(false);
     browse_button3->setVisible(false);
 
 
 
-    //initially have the buttons hidden as single image selected by default
+    ///initially have the buttons hidden as single image selected by default
     inputFilePath2->setVisible(false);
     browse_button2->setVisible(false);
 
@@ -2073,7 +2305,7 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
 
     inputGroupBox->setLayout(inputVbox);
 
-    //ask user for the number of feature
+    ///ask user for the number of feature
     QLabel *numFeaturesLabel = new QLabel("Enter the number of features to be detected: ");
     numFeaturesLineEdit = new QLineEdit;
     numFeaturesLineEdit->setFixedSize(PARAMS_WIDTH, WIDGET_HEIGHT);
@@ -2087,13 +2319,44 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
     inputVbox->addWidget(generateVisualOdometry,9,0);
 
 
-    // provide user with some additional functions
+    /// provide user with some additional functions for HOMOGRAPHY
     QGroupBox *userOptionsGroupBox = new QGroupBox;
-    stereo_matching = new QCheckBox;
-    stereo_matching->setText("Activate Stereo Matching");
-    connect(stereo_matching, SIGNAL(stateChanged(int)), this, SLOT(onStereoMatchingChecked(int)));
-    QVBoxLayout *userOptionsVBox = new QVBoxLayout;
-    userOptionsVBox->addWidget(stereo_matching);
+    homography_enable = new QCheckBox;
+    homography_enable->setText("Activate Homography based Reapeatability ");
+    connect(homography_enable, SIGNAL(stateChanged(int)), this, SLOT(onHomographyChecked(int)));
+
+
+    inputHomogrpahyPath = new QLineEdit;
+    inputHomogrpahyPath->setFixedSize(300,WIDGET_HEIGHT);
+    browseHomography = new QPushButton("Browse Homogrpahy");
+    browseHomography->setFixedSize(BUTTON_WIDTH,BUTTON_HEIGHT);
+    connect(browseHomography, SIGNAL(clicked()), this, SLOT(on_browse_homography_clicked3()));
+
+    ///initially have the homography widgets hidden, to be displayed when the user selects the "Activate Homography based Reapeatability"
+    inputHomogrpahyPath->setVisible(false);
+    browseHomography->setVisible(false);
+
+
+
+    ///tracking options
+    tracking_enable = new QCheckBox;
+    tracking_enable->setText("Activate Tracking of Key-points");
+    tracking_enable->setVisible(true);
+    connect(tracking_enable, SIGNAL(stateChanged(int)), this, SLOT(onTrackingEnabled(int)));
+    trackIt = new QPushButton("Track Points");
+    trackIt->setFixedSize(BUTTON_WIDTH,BUTTON_HEIGHT);
+    trackIt->setVisible(false);
+    connect(trackIt, SIGNAL(clicked()), this, SLOT(on_trackIt_clicked()));
+
+
+
+
+    QGridLayout *userOptionsVBox = new QGridLayout;
+    userOptionsVBox->addWidget(homography_enable,0,0);
+    userOptionsVBox->addWidget(inputHomogrpahyPath,1,0);
+    userOptionsVBox->addWidget(browseHomography,2,0);
+    userOptionsVBox->addWidget(tracking_enable,3,0);
+    userOptionsVBox->addWidget(trackIt,4,0);
     userOptionsGroupBox->setLayout(userOptionsVBox);
 
 
@@ -2141,7 +2404,7 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
 
 
 
-    // initializing the buttons here
+    /// initializing the buttons here
     QGroupBox *groupBox_buttons = new QGroupBox;
     button_generate = new QPushButton("Visualize Descriptors");
     button_generate->setFixedSize(BUTTON_WIDTH,BUTTON_HEIGHT);
@@ -2196,7 +2459,7 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
 
 
 
-    //ADD DESCRIPTOR IMAGES FOR VISUALIZATION
+    ///ADD DESCRIPTOR IMAGES FOR VISUALIZATION
     QGroupBox *desc_images = new QGroupBox;
     desc_VisualizeGrid = new QGridLayout;
 
@@ -2239,8 +2502,9 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
     layout_grid->addWidget(groupBox1,2,4,3,2);
     layout_grid->addWidget(inputGroupBox,5,4,6,1);
     layout_grid->addWidget(decimateImage,11,4,2,1);
-    //layout_grid->addWidget(userOptionsGroupBox,13,4,1,1);
-    layout_grid->addWidget(paramsGroupBox,14,4,12,2);
+
+    layout_grid->addWidget(userOptionsGroupBox,14,4,1,1);
+    layout_grid->addWidget(paramsGroupBox,19,4,12,2);
 
     layout_grid->setSizeConstraint(QLayout::SetMinimumSize);
     flag_descriptor_match = false;
@@ -2304,16 +2568,19 @@ void MainWindow::drawLineLSD(Mat img, int image_left_right)
     }
 }
 
+/************************************************************************************************
+*								Find Repeatability         								        *
+************************************************************************************************/
 string MainWindow::findRepeatability(float mouse_x, float mouse_y)
 {
-    cout << " You called me : sortAlphabetically" <<endl;
+    cout << " You called me : findRepeatability" <<endl;
     ReadInputFormat();
 
     string file_path1_temp = inputFilePath->text().toStdString();
 
-    cout << file_path1_temp << endl;
+    //cout << file_path1_temp << endl;
 
-    cout << currentInputIndex << endl;
+    //cout << currentInputIndex << endl;
     DIR *dir;
     dirent *pdir;
     vector<string> files;
@@ -2340,7 +2607,7 @@ string MainWindow::findRepeatability(float mouse_x, float mouse_y)
     sort(files_fullpath.begin(),files_fullpath.end()); //Use the start and end like this
     int files_length = files_fullpath.size();
     for(int y = 0; y < files_length; y++){
-        cout << files_fullpath.at(y) << endl;
+        //cout << files_fullpath.at(y) << endl;
     }
 
 // repeatibility_threshold
@@ -2363,6 +2630,8 @@ string MainWindow::findRepeatability(float mouse_x, float mouse_y)
     temp_featsImage1.clear();
     bool flag_consecutive = false;
     int max_num = 0;
+
+
     for(int i=0 ; i<files_length ; i++)
     {
         temp_featsImage1.clear();
@@ -2417,9 +2686,220 @@ string MainWindow::findRepeatability(float mouse_x, float mouse_y)
     return repeatibility_result;
 }
 
-/**
- * functions called in on_descriptor clicked method
- */
+/************************************************************************************************
+*								Find Repeatability Homography							        *
+************************************************************************************************/
+string MainWindow::findRepeatabilityHomography(float mouse_x, float mouse_y)
+{
+    cout << " You called me : findRepeatabilityHomography" <<endl;
+    ReadInputFormat();
+
+    string file_path1_temp = inputFilePath->text().toStdString();
+
+    //cout << file_path1_temp << endl;
+
+    cout << currentInputIndex << endl;
+    DIR *dir;
+    dirent *pdir;
+    vector<string> files;
+    vector<string> files_fullpath;
+
+    if (currentInputIndex == 3 || currentInputIndex == 4) //meaning stereo dataset or single image dataset
+    {
+        dir = opendir(file_path1_temp.c_str());
+        while(pdir = readdir(dir))
+            files.push_back(pdir->d_name);
+        for(int i=0,j=0 ; i<files.size() ; i++)
+        {
+            if(files.at(i).size() > 4) // this removes the . and .. in linux as all files will have size more than 4 .png .jpg etc.
+            {
+                files_fullpath.push_back(file_path1_temp + "/" + files.at(i));
+                //cout << files_fullpath.at(j) << endl;
+                j++;
+            }
+        } // end of for
+    }
+
+
+    ///Reading the homography for each file
+    DIR *dir2;
+    dirent *pdir2;
+    vector<string> files2;
+    vector<string> files_fullpath2;
+
+    string file_path2_temp = inputHomogrpahyPath->text().toStdString();
+    if (currentInputIndex == 3) //meaning single image dataset for repeatability
+    {
+        dir2 = opendir(file_path2_temp.c_str());
+        while(pdir2 = readdir(dir2))
+            files2.push_back(pdir2->d_name);
+        for(int i=0,j=0 ; i<files2.size() ; i++)
+        {
+            if(files2.at(i).size() > 4) // this removes the . and .. in linux as all files will have size more than 4 .png .jpg etc.
+            {
+                /// might be a dumb way, but works. checking if the image is not png so as to read only text files
+                //long len_file_name = files2.at(i).length();
+                //if(files2.at(i).at(len_file_name-1) != 'g')
+                files_fullpath2.push_back(file_path2_temp + "/" + files2.at(i));
+                //cout << files_fullpath.at(j) << endl;
+                j++;
+            }
+        } // end of for
+    }
+
+
+    ///Sorting happens here to sort the images in sequential order
+    sort(files_fullpath.begin(),files_fullpath.end()); //Use the start and end like this
+    sort(files_fullpath2.begin(),files_fullpath2.end()); //Use the start and end like this
+
+
+    ///Now reading each of the homographies and storing them in appropriate variables
+
+    double homographies[files_fullpath2.size()][3][3];
+
+    for(int k=0 ; k<files_fullpath2.size() ; k++)
+    {
+        string line;
+        ifstream myfile(files_fullpath2.at(k));
+        double temp_val = 0.0;
+        if (myfile.is_open())
+        {
+            for (int i = 0; (getline(myfile, line)) && (i <= MAX_FRAME); i++)
+            {
+                std::istringstream in(line);
+                //cout << line << '\n';
+                for (int j = 0; j < 3; j++)
+                {
+                    in >> temp_val;
+                    homographies[k][i][j] = temp_val;
+                }
+            }
+            myfile.close();
+        }
+        else
+        {
+            cout << "Unable to open file";
+        }
+    }
+    for(int k=0 ; k<6 ; k++) {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++)
+                cout << homographies[k][i][j] << " ";
+        }
+        cout << endl;
+    }
+
+    /// Simply displaying the files here for checking purposes
+    int files_length = files_fullpath.size();
+    for(int y = 0; y < files_length; y++){
+        //cout << files_fullpath.at(y) << endl;
+    }
+    int files_length2 = files_fullpath2.size();
+    for(int y = 0; y < files_length2; y++){
+        //cout << files_fullpath2.at(y) << endl;
+    }
+
+// repeatibility_threshold
+
+    ///Detector Repeatability starts here
+
+    ReadInputFormat();
+    if( detector_selected == -1 || file_path1.empty())
+    {
+        QMessageBox::information(this, "Image/Detector/Descriptor read error","Please specify a valid inputs for the image / detector..");
+        return " ";
+    }
+
+    fillDetectorInfo();
+
+    // Clearing the features list is very important to avoid mixing subsequent button clicks output
+    CFeatureList temp_featsImage1;//.clear();
+    CImage temp_img1;
+    int consecutive = 0;
+    temp_featsImage1.clear();
+    bool flag_consecutive = false;
+    int max_num = 0;
+
+    /// start checking the repeatability based on the homographies stored in the homograph
+    for(int i=1 ; i<files_length ; i++)  // i starts from 1 as we do not want to find the repeatability for the first image as that is where the key-point comes from
+    {
+        double temp_x_before = mouse_x; // (mouse_x, mouse_y) is the key-point selected in image 1
+        double temp_y_before = mouse_y;
+
+        // temp_x_after, temp_y_after is the expected corresponding key-point in the second image after applying the homography.
+        // temp_z_after should be ideally be zero as it is a 2D image.. so its actually not required here.
+        // i-1 because 5 homographies w.r.t to the first reference frame
+
+        double temp_x_after = homographies[i-1][0][0]*temp_x_before + homographies[i-1][0][1]*temp_y_before + homographies[i-1][0][2];
+        double temp_y_after = homographies[i-1][1][0]*temp_x_before + homographies[i-1][1][1]*temp_y_before + homographies[i-1][1][2];
+        double temp_z_after = homographies[i-1][2][0]*temp_x_before + homographies[i-1][2][1]*temp_y_before + homographies[i-1][2][2];
+
+        cout << temp_x_after << " afterX " << temp_y_after << " afterY " << endl;
+
+        temp_featsImage1.clear();
+        temp_img1.loadFromFile(files_fullpath.at(i));
+
+        fext.detectFeatures(temp_img1, temp_featsImage1, 0, numFeats);
+        cout << "Number of Features in image " << i << " : " << temp_featsImage1.size() << endl;
+        bool repeatable = false;
+
+
+
+        for(int j=0 ; j<temp_featsImage1.size() ; j++)
+        {
+            repeatable = checkIfSamePoint(temp_x_after, temp_y_after, temp_featsImage1.getFeatureX(j), temp_featsImage1.getFeatureY(j), repeatibility_threshold);
+            if(repeatable)
+            {
+                flag_consecutive = true;
+                break;
+            }
+        }
+        if(repeatable)
+        {
+            repeatability++;
+        }
+        else{
+            flag_consecutive = false;
+        }
+        if(flag_consecutive)
+        {
+            consecutive++;
+            if(consecutive > max_num)
+            {
+                max_num = consecutive;
+            }
+        }
+        else
+        {
+            if(consecutive > max_num)
+            {
+                max_num = consecutive;
+            }
+            consecutive = 0;
+        }
+    }
+
+
+
+
+
+
+    double percent_repeat = (double) repeatability / (double) (files_length-1) * 100.00 ;  // files_length-1 because the first file is referene frame
+    cout << "Repeatability (Homography Based) : " << repeatability << "Number of files :: "<< files_length  << endl << "Repeatability % " << percent_repeat << endl ;
+    stringstream ss ;
+    ss <<  "<br/> Repeatability of selected keypoint (Homography Based) <br/>Repeatability : " << repeatability
+       << "Number of files :: "<< files_length  <<  "<br/>Repeatability % " << percent_repeat
+       << "<br/>Maximum consecutive frames for keypoint being detected: " << max_num << "<br/>"  ;
+    repeatability = 0;
+    consecutive = 0;
+    max_num = 0;
+    repeatibility_result = ss.str();
+    return repeatibility_result;
+}
+
+/************************************************************************************************
+*								False Positives Negatives   							        *
+************************************************************************************************/
 string MainWindow::falsePositivesNegatives()
 {
     if(currentInputIndex == 1 || currentInputIndex == 4) // implying stereo images or stereo image dataset
@@ -2481,6 +2961,9 @@ string MainWindow::falsePositivesNegatives()
 
 }
 
+/************************************************************************************************
+*								Check if Same Point            							        *
+************************************************************************************************/
 bool MainWindow::checkIfSamePoint(float x, float y, float x2, float y2, int threshold)
 {
     if((x2 < (x+threshold)) && (x2 > (x-threshold)))
@@ -2548,13 +3031,15 @@ void MainWindow::Mouse_Pressed()
     // computing th repleatibility of the detector here
     string repeatability_result = findRepeatability(temp_x, temp_y);
 
+    string repeatability_result2 = "";
+    if(homography_activated == true && homography_path.size() >1)
+        repeatability_result2 = findRepeatabilityHomography(temp_x, temp_y);
+
+
 
     // visualizing the descriptor here
     if(descriptor_selected == 2 || descriptor_selected == 3 || descriptor_selected == 4)
     {
-
-
-
         //cout << mouse_x << " mouse _x " << mouse_y << " mouse _y" <<endl;
         //cout << temp_x << " desc _x " << temp_y << " desc _y" <<endl;
         stringstream ss;
@@ -2770,11 +3255,12 @@ void MainWindow::Mouse_Pressed()
 
     string temp_info1 = descriptor_info2->text().toStdString();
     string temp_info2 = repeatability_result;
+    string temp_info3 = repeatability_result2;
 
     stringstream concat;
-    concat << temp_info1 << " " << temp_info2 ;
+    concat << temp_info1 << " " << temp_info2 << " " << temp_info3 ;
 
-    detector_result2 = temp_info2;
+    detector_result2 = temp_info2 + " " + temp_info3;
 
     descriptor_info3->setText(QString::fromStdString(concat.str()));
 
