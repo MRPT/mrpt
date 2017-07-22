@@ -136,4 +136,9 @@ public:
      * @return
      */
     double computeOdomError();
+
+    /**
+     * display function is there just for testing/debugging purposes, maybe deleted later
+     */
+    void display();
 };
