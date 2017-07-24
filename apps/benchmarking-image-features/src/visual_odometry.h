@@ -64,7 +64,7 @@ using namespace mrpt;
 using namespace cv;
 using namespace std;
 
-#define MAX_FRAME 2000
+#define MAX_FRAME 1000
 #define MIN_NUM_FEAT 2000
 
 

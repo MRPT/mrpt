@@ -11,7 +11,9 @@ if(CMAKE_MRPT_HAS_Qt5)
         src/mainwindow.cpp
 	src/my_qlabel.cpp
 	#src/visualizedialog.cpp 
-                src/visual_odometry.h src/visual_odometry.cpp)#src/vo_features.h)
+                src/visual_odometry.h
+                src/visual_odometry.cpp
+                src/tracker.cpp src/tracker.h)#src/vo_features.h)
 
 
         set(FILES_TO_MOC
@@ -32,6 +34,7 @@ if(CMAKE_MRPT_HAS_Qt5)
                 ${moc_cpps}
                 ${MRPT_VERSION_RC_FILE}
                 )
+
 
         # Add the required libraries for linking:
         qt5_use_modules(${PROJECT_NAME} Widgets OpenGL)

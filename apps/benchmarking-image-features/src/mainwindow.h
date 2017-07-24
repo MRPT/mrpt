@@ -66,6 +66,8 @@
 #include <mrpt/vision/CFeatureExtraction.h>
 
 #include "my_qlabel.h"
+#include "tracker.h"
+#include "visual_odometry.h"
 
 //#include "visual_odometry.cpp"
 
@@ -172,12 +174,31 @@ public:
     vector<string> files_fullpath_tracking;
     int tracking_image_counter;
 
+    Tracker tracker_obj;
+
+    /// tracker parameter variables
+    QLabel *tracker_param1;
+    QLabel *tracker_param2;
+    QLabel *tracker_param3;
+    QLabel *tracker_param4;
+    QLabel *tracker_param5;
+    QLabel *tracker_param6;
+
+    QLineEdit *tracker_param1_edit;
+    QLineEdit *tracker_param2_edit;
+    QLineEdit *tracker_param3_edit;
+    QLineEdit *tracker_param4_edit;
+    QLineEdit *tracker_param5_edit;
+    QLineEdit *tracker_param6_edit;
+
+
     //image decimation options
     QLineEdit *decimateFactor;
 
 
 
     //visual odom parameters
+    QCheckBox *visual_odom_enable;
     QLineEdit *inputFilePath3;
     QPushButton *browse_button3;
     string file_path3;  //!<stores the ground truth for poses
@@ -502,6 +523,7 @@ public:
     /**
      * trackKeyPoint function finds the corresponding key-point from the first image in the second image
      * it basically finds the new position of the key-point in the second image to track it
+     * THIS FUNCTION IS CURRENTLY NOT BEING USED
      * @param img_org the first image which has the initial key-point
      * @param img_test  the seconds image on which the key-point needs to be found out
      * @param feat_test the key-points from the second-image, the corresponding key-point is one of these key-points
@@ -509,7 +531,26 @@ public:
      * @param org_y the y-coordinate of the key-point to be tracked from the first image
      * @return
      */
-    Point2d trackKeyPoint(CImage img_org, CImage img_test, CFeatureList feat_in, int x, int y);
+    Point trackKeyPoint(CImage img_org, CImage img_test, int x, int y);
+
+    /**
+     * initializeTrackerParams this function initializes all the widgets (labels, textboxes, etc.) associated with the tracker
+     */
+    void initializeTrackerParams();
+
+
+    /**
+     * makeVisualOdomParamsVisible this function makes all the widgets (parameters) associated with the tracker visible/hidden
+     * @param flag stores if the variables need to hidden/visible
+     */
+    void makeTrackerParamVisible(bool flag);
+
+    /**
+  * makeVisualOdomParamsVisible this function makes all the widgets (parameters) associated with the visual odometry visible/hidden
+  * @param flag stores if the variables need to hidden/visible
+  */
+    void makeVisualOdomParamsVisible(bool flag);
+
 
 
 
@@ -536,6 +577,12 @@ private slots:
 
 
 public slots:
+
+    /**
+     * onVisualOdomChecked this function makes the parameters visible / hidden based on the state of the checkbox "Perform Visual Odometry"
+     * @param state holds if checkbox is ticked or not
+     */
+    void onVisualOdomChecked(int state);
 
     /**
      * on_trackIt_clicked function is called when the user clicks on the trackIt button to iterate over subsequent frames
