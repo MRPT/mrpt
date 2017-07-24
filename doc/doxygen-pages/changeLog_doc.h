@@ -21,6 +21,8 @@
 			- Added methods:
 				- mrpt::synch::CCriticalSection::try_enter()
 				- mrpt::synch::CCriticalSectionRecursive::try_enter()
+		- \ref mrpt_nav_grp
+			- mrpt::nav::CAbstractNavigator: callbacks in mrpt::nav::CRobot2NavInterface are now invoked *after* `navigationStep()` to avoid problems if user code invokes the navigator API to change its state.
 		- \ref mrpt_slam_grp
 			- rbpf-slam: Add support for simplemap continuation.
 	- BUG FIXES:

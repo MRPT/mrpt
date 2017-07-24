@@ -164,7 +164,29 @@ namespace mrpt
 
 		/** Called before starting a new navigation. Internally, it calls to child-implemented onStartNewNavigation() */
 		void internal_onStartNewNavigation();
+
 	protected:
+		struct NAV_IMPEXP TPendingEvent
+		{
+			typedef void (CRobot2NavInterface::*functor_event_void_t)();
+			functor_event_void_t event_noargs; //!< event w/o arguments
+
+			bool event_wp_reached;
+			int event_wp_reached_index;
+			bool event_wp_reached_reached;
+
+			bool event_new_wp;
+			int event_new_wp_index;
+
+			bool event_cannot_get_closer_target;
+
+			TPendingEvent();
+		};
+		/** Events generated during navigationStep(), enqueued to be called
+		* at the end of the method execution to avoid user code to change
+		* the navigator state. */
+		std::vector<TPendingEvent> m_pending_events;
+
 		/** To be implemented in derived classes */
 		virtual void  performNavigationStep( )=0;
 
