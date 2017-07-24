@@ -201,9 +201,13 @@ void CWaypointsNavigator::waypoints_navigationStep()
 					wp.reached = true;
 					wp.skipped = false;
 					wp.timestamp_reach = mrpt::system::now();
-					m_robot.sendWaypointReachedEvent(wps.waypoint_index_current_goal, true /* reason: really reached*/);
-					if (orig_nav_status_time != wps.timestamp_nav_started || orig_nav_state != m_navigationState)
-						return; // list of waypoints changed: abort and restart.
+					{
+						TPendingEvent ev;
+						ev.event_wp_reached = true;
+						ev.event_wp_reached_index = wps.waypoint_index_current_goal;
+						ev.event_wp_reached_reached = true /* reason: really reached*/;
+						m_pending_events.push_back(ev);
+					}
 
 					// Was this the final goal??
 					if (wps.waypoint_index_current_goal < int(wps.waypoints.size() - 1)) {
@@ -262,9 +266,13 @@ void CWaypointsNavigator::waypoints_navigationStep()
 					wp.skipped = true;
 					wp.timestamp_reach = mrpt::system::now();
 
-					m_robot.sendWaypointReachedEvent(k, false /* reason: skipped */);
-					if (orig_nav_status_time != wps.timestamp_nav_started || orig_nav_state != m_navigationState)
-						return; // list of waypoints changed: abort and restart.
+					{
+						TPendingEvent ev;
+						ev.event_wp_reached = true;
+						ev.event_wp_reached_index = wps.waypoint_index_current_goal;
+						ev.event_wp_reached_reached = false /* reason: skipped */;
+						m_pending_events.push_back(ev);
+					}
 				}
 			}
 		}
@@ -281,9 +289,12 @@ void CWaypointsNavigator::waypoints_navigationStep()
 			ASSERT_( params_waypoints_navigator.multitarget_look_ahead>=0);
 
 			// Notify we have a new "current waypoint"
-			m_robot.sendNewWaypointTargetEvent(wps.waypoint_index_current_goal);
-			if (orig_nav_status_time != wps.timestamp_nav_started || orig_nav_state != m_navigationState)
-				return; // list of waypoints changed: abort and restart.
+			{
+				TPendingEvent ev;
+				ev.event_new_wp = true;
+				ev.event_new_wp_index = wps.waypoint_index_current_goal;
+				m_pending_events.push_back(ev);
+			}
 
 			// Send the current targets + "multitarget_look_ahead" additional ones to help the local planner.
 			CWaypointsNavigator::TNavigationParamsWaypoints nav_cmd;

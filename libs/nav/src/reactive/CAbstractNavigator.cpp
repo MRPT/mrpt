@@ -218,8 +218,12 @@ void CAbstractNavigator::navigationStep()
 		try
 		{
 			// Send end-of-navigation event:
-			if ( m_lastNavigationState == NAVIGATING && m_navigationState == NAV_ERROR)
-				m_robot.sendNavigationEndDueToErrorEvent();
+			if (m_lastNavigationState == NAVIGATING && m_navigationState == NAV_ERROR)
+			{
+				TPendingEvent ev;
+				ev.event_noargs = &CRobot2NavInterface::sendNavigationEndDueToErrorEvent;
+				m_pending_events.push_back(ev);
+			}
 
 			// If we just arrived at this state, stop the robot:
 			if ( m_lastNavigationState == NAVIGATING )
@@ -236,6 +240,35 @@ void CAbstractNavigator::navigationStep()
 		break;	// End case NAVIGATING
 	};
 	m_lastNavigationState = prevState;
+
+	// Invoke pending events:
+	for (auto &ev : m_pending_events)
+	{
+		if (ev.event_noargs != nullptr) {
+			(m_robot.*(ev.event_noargs))();
+		}
+		else if (ev.event_wp_reached) {
+			m_robot.sendWaypointReachedEvent(ev.event_wp_reached_index, ev.event_wp_reached_reached);
+		}
+		else if (ev.event_new_wp) {
+			m_robot.sendNewWaypointTargetEvent(ev.event_new_wp_index);
+		}
+		else if (ev.event_cannot_get_closer_target) {
+			bool do_abort_nav;
+			m_robot.sendCannotGetCloserToBlockedTargetEvent(do_abort_nav);
+
+			if (do_abort_nav)
+			{
+				MRPT_LOG_WARN("sendCannotGetCloserToBlockedTargetEvent() told me to abort navigation.");
+				m_navigationState = NAV_ERROR;
+
+				TPendingEvent ev;
+				ev.event_noargs = &CRobot2NavInterface::sendWaySeemsBlockedEvent;
+				m_pending_events.push_back(ev);
+			}
+		}
+	} // end for each pending event
+	m_pending_events.clear();
 }
 
 void CAbstractNavigator::doEmergencyStop( const std::string &msg )
@@ -414,7 +447,11 @@ void CAbstractNavigator::performNavigationStepNavigating(bool call_virtual_nav_m
 
 		// Have we just started the navigation?
 		if (m_lastNavigationState == IDLE)
-			m_robot.sendNavigationStartEvent();
+		{
+			TPendingEvent ev;
+			ev.event_noargs = &CRobot2NavInterface::sendNavigationStartEvent;
+			m_pending_events.push_back(ev);
+		}
 
 		/* ----------------------------------------------------------------
 		Get current robot dyn state:
@@ -442,7 +479,9 @@ void CAbstractNavigator::performNavigationStepNavigating(bool call_virtual_nav_m
 			if (!m_navigationParams->target.targetIsIntermediaryWaypoint && !m_navigationEndEventSent && targetDist < params_abstract_navigator.dist_to_target_for_sending_event)
 			{
 				m_navigationEndEventSent = true;
-				m_robot.sendNavigationEndEvent();
+				TPendingEvent ev;
+				ev.event_noargs = &CRobot2NavInterface::sendNavigationEndEvent;
+				m_pending_events.push_back(ev);
 			}
 
 			// Have we really reached the target?
@@ -457,7 +496,9 @@ void CAbstractNavigator::performNavigationStepNavigating(bool call_virtual_nav_m
 					if (!m_navigationEndEventSent)
 					{
 						m_navigationEndEventSent = true;
-						m_robot.sendNavigationEndEvent();
+						TPendingEvent ev;
+						ev.event_noargs = &CRobot2NavInterface::sendNavigationEndEvent;
+						m_pending_events.push_back(ev);
 					}
 				}
 				return;
@@ -478,7 +519,10 @@ void CAbstractNavigator::performNavigationStepNavigating(bool call_virtual_nav_m
 					MRPT_LOG_WARN("Timeout approaching the target. Aborting navigation.");
 
 					m_navigationState = NAV_ERROR;
-					m_robot.sendWaySeemsBlockedEvent();
+
+					TPendingEvent ev;
+					ev.event_noargs = &CRobot2NavInterface::sendWaySeemsBlockedEvent;
+					m_pending_events.push_back(ev);
 					return;
 				}
 			}
@@ -495,20 +539,12 @@ void CAbstractNavigator::performNavigationStepNavigating(bool call_virtual_nav_m
 					if (send_event)
 					{
 						MRPT_LOG_THROTTLE_WARN(5.0,"Target seems to be blocked by obstacles. Invoking sendCannotGetCloserToBlockedTargetEvent().");
-						bool do_abort_nav = false;
-						m_robot.sendCannotGetCloserToBlockedTargetEvent(do_abort_nav);
 
-						if (do_abort_nav)
-						{
-							MRPT_LOG_WARN("sendCannotGetCloserToBlockedTargetEvent() told me to abort navigation.");
-							m_navigationState = NAV_ERROR;
-							m_robot.sendWaySeemsBlockedEvent();
-							return;
-						}
-						else
-						{
-							m_counter_check_target_is_blocked = 0;
-						}
+						TPendingEvent ev;
+						ev.event_cannot_get_closer_target = true;
+						m_pending_events.push_back(ev);
+
+						m_counter_check_target_is_blocked = 0;
 					}
 				}
 				else
@@ -538,3 +574,12 @@ bool CAbstractNavigator::checkCollisionWithLatestObstacles(const mrpt::math::TPo
 	// Default impl:
 	return false;
 }
+
+CAbstractNavigator::TPendingEvent::TPendingEvent() :
+	event_noargs(nullptr),
+	event_wp_reached(false),
+	event_new_wp(false),
+	event_cannot_get_closer_target(false)
+{
+}
+
