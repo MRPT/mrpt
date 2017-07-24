@@ -97,8 +97,7 @@ void CRobot2NavInterface::sendApparentCollisionEvent()
 		"[sendApparentCollisionEvent] Doing nothing: not implemented in user's "
 		"derived class.");
 }
-void CRobot2NavInterface::sendCannotGetCloserToBlockedTargetEvent(
-	bool& do_abort_nav)
+void CRobot2NavInterface::sendCannotGetCloserToBlockedTargetEvent()
 {
 	MRPT_LOG_THROTTLE_INFO(
 		1.0,

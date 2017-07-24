@@ -31,6 +31,7 @@
 			- rbpf-slam: Add support for simplemap continuation.
 		- \ref mrpt_nav_grp
 			- Removed deprecated mrpt::nav::THolonomicMethod.
+			- mrpt::nav::CAbstractNavigator: callbacks in mrpt::nav::CRobot2NavInterface are now invoked *after* `navigationStep()` to avoid problems if user code invokes the navigator API to change its state.
 	- BUG FIXES:
 		- Fix reactive navigator inconsistent state if navigation API is called from within rnav callbacks.
 

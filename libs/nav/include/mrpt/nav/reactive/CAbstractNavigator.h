@@ -21,6 +21,7 @@
 
 #include <mutex>
 #include <memory>  // unique_ptr
+#include <functional>
 
 namespace mrpt
 {
@@ -247,6 +248,11 @@ class NAV_IMPEXP CAbstractNavigator : public mrpt::utils::COutputLogger
 	void internal_onStartNewNavigation();
 
    protected:
+	/** Events generated during navigationStep(), enqueued to be called at the 
+	 * end of the method execution to avoid user code to change the navigator 
+	 * state. */
+	std::vector<std::function<void(void)> > m_pending_events;
+
 	/** To be implemented in derived classes */
 	virtual void performNavigationStep() = 0;
 
