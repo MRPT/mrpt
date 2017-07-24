@@ -12,7 +12,7 @@ namespace mrpt
 {
 namespace opengl
 {
-#define FWRD_DECL(_CLASS) class _CLASS;
+#define FWRD_DECL(_CLASS) class _CLASS
 
 FWRD_DECL(C3DSScene);
 FWRD_DECL(CArrow);

@@ -537,7 +537,7 @@ bool CWaypointsNavigator::checkHasReachedTarget(const double targetDist) const
 	const auto& wps = m_waypoint_nav_status;
 	const TWaypointStatus* wp =
 		(!wps.waypoints.empty() && wps.waypoint_index_current_goal >= 0 &&
-		 wps.waypoint_index_current_goal < wps.waypoints.size())
+		 wps.waypoint_index_current_goal < int(wps.waypoints.size()))
 			? &wps.waypoints[wps.waypoint_index_current_goal]
 			: nullptr;
 
