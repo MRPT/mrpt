@@ -269,7 +269,7 @@ void CWaypointsNavigator::waypoints_navigationStep()
 					{
 						TPendingEvent ev;
 						ev.event_wp_reached = true;
-						ev.event_wp_reached_index = wps.waypoint_index_current_goal;
+						ev.event_wp_reached_index = k;
 						ev.event_wp_reached_reached = false /* reason: skipped */;
 						m_pending_events.push_back(ev);
 					}
