@@ -11,8 +11,9 @@
 #include <mrpt/utils/metaprogramming.h>
 #include <mrpt/math/data_utils.h>
 
+#include <mrpt/vision/tracking.h>
 
-#include "visual_odometry.h"
+
 
 using namespace cv::line_descriptor;
 using namespace mrpt::vision;
@@ -20,6 +21,7 @@ using namespace mrpt::utils;
 using namespace mrpt::gui;
 using namespace mrpt::math;
 using namespace mrpt;
+using namespace mrpt::poses;
 
 using namespace std;
 using namespace cv;
@@ -82,6 +84,7 @@ void MainWindow::on_button_generate_clicked()
     //ReadInputFormat();
 
     CFeatureList featsImage2_2;
+
 
 
     float temp_dist1 = 0, temp_dist2 = 0;
@@ -770,6 +773,8 @@ void MainWindow::onHomographyChecked(int state)
     } else
     {
         homography_activated = false;
+        inputHomogrpahyPath->setVisible(false);
+        browseHomography->setVisible(false);
     }
 
 }
@@ -828,9 +833,9 @@ void MainWindow::on_file_input_choose(int choice)
     }
     if(choice == 3)
     {
-        generateVisualOdometry->setVisible(true);
+        /*generateVisualOdometry->setVisible(true);
         inputFilePath3->setVisible(true);
-        browse_button3->setVisible(true);
+        browse_button3->setVisible(true);*/
     } else
     {
         generateVisualOdometry->setVisible(false);
@@ -1907,11 +1912,33 @@ void MainWindow::on_generateVisualOdometry_clicked()
 }
 
 /************************************************************************************************
+*								Make Visual Odom Params Visible							        *
+************************************************************************************************/
+void MainWindow::makeVisualOdomParamsVisible(bool flag)
+{
+    generateVisualOdometry->setVisible(flag);
+    inputFilePath3->setVisible(flag);
+    browse_button3->setVisible(flag);
+}
+
+/************************************************************************************************
+*								On Visual Odometry Checked								        *
+************************************************************************************************/
+void MainWindow::onVisualOdomChecked(int state)
+{
+    if(visual_odom_enable->isChecked())
+        makeVisualOdomParamsVisible(true);
+    else
+        makeVisualOdomParamsVisible(false);
+}
+
+/************************************************************************************************
 *								On Tracking Enabled mehtod 								        *
 ************************************************************************************************/
 void MainWindow::onTrackingEnabled(int state)
 {
     ReadInputFormat();
+    makeTrackerParamVisible(true);
     if(inputFilePath->text().toStdString().size() < 1 )
     {
         QMessageBox::information(this, "Dataset read error","Please specify a valid input file for the dataset!!");
@@ -1963,39 +1990,66 @@ void MainWindow::onTrackingEnabled(int state)
     else
     {
         trackIt->setVisible(false);
+        makeTrackerParamVisible(false);
         tracking_activated = false;
     }
 }
 
 /************************************************************************************************
-*								Track Key-Point method  								        *
+*								Track Key-Point method  (NOT USED   					        *
 ************************************************************************************************/
-Point2d MainWindow::trackKeyPoint(CImage img_org, CImage img_test, CFeatureList feat_test, int org_x, int org_y)
+Point MainWindow::trackKeyPoint(CImage img_org, CImage img_test,  int org_x, int org_y)
 {
-    Point2d pt;
+    Point pt;
 
-    int patch_size = 11;
+    int patch_size = 5;
     int response_pos = 0;
+    CFeatureList feat_test;
+    fext.detectFeatures(img_test, feat_test, 0,numFeats);
 
+
+    cv::Mat cvImg_org = cv::cvarrToMat(img_org.getAs<IplImage>());
+    cv::Mat cvImg_test = cv::cvarrToMat(img_test.getAs<IplImage>());
+
+    Mat cvImg_org_gray, cvImg_test_gray;
+    cvtColor(cvImg_org, cvImg_org_gray, CV_RGB2GRAY);
+    cvtColor(cvImg_test, cvImg_test_gray, CV_RGB2GRAY);
+
+
+
+    int resolution_x = cvImg_org.rows;
+    int resolution_y = cvImg_org.cols;
+
+    cout << resolution_x << " resolution_x " << resolution_y << " resolution_y " << endl;
     /// org_x,org_y belong to the key-point in image_org and the corresponding key-point in img_test needs to be computed
     /// iterate over all key-points to find the best matching key-point in the test image
     for(int i=0 ; i<feat_test.size() ; i++)
     {
         int temp_x = (int)feat_test.getFeatureX(i);
         int temp_y = (int)feat_test.getFeatureY(i);
-        cv::Mat cvImg_org = cv::cvarrToMat(img_org.getAs<IplImage>());
-        cv::Mat cvImg_test = cv::cvarrToMat(img_test.getAs<IplImage>());
+
 
         int temp_patch = patch_size/2;
         double response = 0;
         double min_response = 99999;
 
+
         for(int j=-temp_patch ; j<(temp_patch+1) ; j++)
         {
             for(int k=-temp_patch; k<(temp_patch+1) ; k++)
             {
-                response = response + pow((cvImg_org.at<double>(org_x+j,org_y+k)-cvImg_test.at<double>(temp_x+j, temp_y+k)),2);
+                int temp_org_x = org_x+j;
+                int temp_org_y = org_y+k;
+                int temp_test_x = temp_x+j;
+                int temp_test_y = temp_y+k;
 
+                ///MAYBE INTERCHANGE resolution_x AND resolution_y
+                if(temp_org_x > resolution_x || temp_org_y > resolution_y || temp_test_x > resolution_x || temp_test_y > resolution_y)
+                    break;
+
+                //cout << cvImg_org.dims << "  "  << resolution_x << " res_x " << resolution_y << " res_y " << cvImg_org_gray.at<double>(temp_org_x,temp_org_y) << " image intensity1  " << cvImg_test_gray.at<double>(temp_test_x, temp_test_y) << " image intensity 2 " << temp_org_x << "temp_x " << temp_org_y << "temp_y" << endl;
+                response = response + pow((cvImg_org_gray.at<int>(temp_org_x,temp_org_y)-cvImg_test_gray.at<int>(temp_test_x, temp_test_y)),2);
+                //cout << response << " response " << endl;
             }
         }
         if(min_response > response)
@@ -2004,88 +2058,108 @@ Point2d MainWindow::trackKeyPoint(CImage img_org, CImage img_test, CFeatureList 
             min_response = response;
         }
     }
-    pt.x = feat_test.getFeatureX(response_pos);
-    pt.y = feat_test.getFeatureY(response_pos);
+    pt.x = (int)feat_test.getFeatureX(response_pos);
+    pt.y = (int)feat_test.getFeatureY(response_pos);
     return pt;
 }
+
 
 /************************************************************************************************
 *								On TrackIt button clicked  								        *
 ************************************************************************************************/
 void MainWindow::on_trackIt_clicked()
 {
-    if(tracking_activated == true)
-    {
-        long current_num = tracking_image_counter%files_fullpath_tracking.size();
-        CImage image1_temp;
-        image1_temp.loadFromFile(files_fullpath_tracking.at(current_num));
-        cv::Mat cvImg1 = cv::cvarrToMat(image1_temp.getAs<IplImage>());
 
-        ///////////$$$$$$
+    int remove_lost_feats, add_new_feats,
+    max_feats, patch_size,
+    window_width, window_height;
 
-        fillDetectorInfo();
+    remove_lost_feats       = tracker_param1_edit->text().toInt();
+    add_new_feats           = tracker_param2_edit->text().toInt();
+    max_feats               = tracker_param3_edit->text().toInt();
+    patch_size              = tracker_param4_edit->text().toInt();
+    window_width            = tracker_param5_edit->text().toInt();
+    window_height           = tracker_param6_edit->text().toInt();
 
-        // Clearing the features list is very important to avoid mixing subsequent button clicks output
-        ///featsImage1.clear();
+    cv::Mat cvImg1 = tracker_obj.trackThemAll(files_fullpath_tracking,
+                                              tracking_image_counter,
+                                              remove_lost_feats,
+                                              add_new_feats,
+                                              max_feats,
+                                              patch_size,
+                                              window_width,
+                                              window_height);
 
-        /// do key-point detection only in first frame
-        if(current_num == 0)
-        {
-            fext.detectFeatures(image1_temp, featsImage1, 0, numFeats);
-            // Drawing a circle around corners for image 1
-            //C++: void circle(Mat& img, Point center, int radius, const Scalar& color, int thickness=1, int lineType=8, int shift=0)
-            for(int i=0 ; i<featsImage1.size() ; i++)
-            {
-                int temp_x = (int) featsImage1.getFeatureX(i);
-                int temp_y = (int) featsImage1.getFeatureY(i);
-                //circle(cvImg1, Point(temp_x, temp_y), 5, Scalar(0,255,0), CIRCLE_THICKNESS, 8, 0);
-                drawMarker(cvImg1, Point(temp_x, temp_y),  Scalar(0, 255, 0), MARKER_CROSS, CROSS_SIZE, CROSS_THICKNESS);
-            }
-            drawLineLSD(cvImg1, 0); // 0 means draw line on left image
-        }
-        else
-        {
-            CImage temp_img, temp_img2;
-            CFeatureList feats_temp;
-            vector<double> key_x, key_y;
+    cv::Mat temp1 (cvImg1.cols,cvImg1.rows,cvImg1.type());
+    cvtColor(cvImg1, temp1, CV_BGR2RGB);
+    QImage dest1 = QImage((uchar*) temp1.data, temp1.cols, temp1.rows, temp1.step, QImage::Format_RGB888);
+    QImage qscaled1 = dest1.scaled(2*IMAGE_WIDTH, 2*IMAGE_HEIGHT, Qt::KeepAspectRatio);
+    image1->setPixmap(QPixmap::fromImage(qscaled1));
 
-            temp_img.loadFromFile(files_fullpath_tracking.at(current_num));
-            temp_img2.loadFromFile(files_fullpath_tracking.at(current_num+1)); // need to add condition for breaking-part, overflowing at the end of the limit
-
-            fext.detectFeatures(temp_img,feats_temp, 0, numFeats);
-            /// call the tracking function to test the tracker
-            Point2d pts[numFeats];
-            for(int i=0 ; i<featsImage1.size() ; i++)
-            {
-                pts[i] = trackKeyPoint(image1_temp, temp_img, feats_temp, (int)featsImage1.getFeatureX(i), (int)featsImage1.getFeatureY(i));
-            }
-
-            // Drawing a circle around corners for subsequent images
-            //C++: void circle(Mat& img, Point center, int radius, const Scalar& color, int thickness=1, int lineType=8, int shift=0)
-            for(int i=0 ; i<featsImage1.size() ; i++)
-            {
-                int temp_x = (int)pts[i].x;
-                int temp_y = (int)pts[i].y;
-                //circle(cvImg1, Point(temp_x, temp_y), 5, Scalar(0,255,0), CIRCLE_THICKNESS, 8, 0);
-                drawMarker(cvImg1, Point(temp_x, temp_y),  Scalar(0, 255, 0), MARKER_CROSS, CROSS_SIZE, CROSS_THICKNESS);
-            }
-            drawLineLSD(cvImg1, 0); // 0 means draw line on left image
-
-            image1_temp = temp_img;
-            temp_img = temp_img2;
-        }
-
-        // converting the cv::Mat to a QImage and changing the resolution of the output images
-        cv::Mat temp1 (cvImg1.cols,cvImg1.rows,cvImg1.type());
-        cvtColor(cvImg1, temp1, CV_BGR2RGB);
-        QImage dest1 = QImage((uchar*) temp1.data, temp1.cols, temp1.rows, temp1.step, QImage::Format_RGB888);
-        QImage qscaled1 = dest1.scaled(IMAGE_WIDTH, IMAGE_HEIGHT, Qt::KeepAspectRatio);
-        image1->setPixmap(QPixmap::fromImage(qscaled1));
-
-        ///////////$$$$$$
-        tracking_image_counter++;
-    }
+    tracking_image_counter++;
 }
+
+/************************************************************************************************
+*								Make Tracker Parametrs Visible							        *
+************************************************************************************************/
+void MainWindow::makeTrackerParamVisible(bool flag)
+{
+    tracker_param1->setVisible(flag);
+    tracker_param2->setVisible(flag);
+    tracker_param3->setVisible(flag);
+    tracker_param4->setVisible(flag);
+    tracker_param5->setVisible(flag);
+    tracker_param6->setVisible(flag);
+
+    tracker_param1_edit->setVisible(flag);
+    tracker_param2_edit->setVisible(flag);
+    tracker_param3_edit->setVisible(flag);
+    tracker_param4_edit->setVisible(flag);
+    tracker_param5_edit->setVisible(flag);
+    tracker_param6_edit->setVisible(flag);
+
+}
+
+/************************************************************************************************
+*								Initialize Tracker Parameters   						        *
+************************************************************************************************/
+void MainWindow::initializeTrackerParams()
+{
+    tracker_param1 = new QLabel("RemoveLost Features? (1/0):");
+    tracker_param1_edit = new QLineEdit;
+    tracker_param1_edit->setText("1");
+    tracker_param2 = new QLabel("Add New Features? (1/0):");
+    tracker_param2_edit = new QLineEdit;
+    tracker_param2_edit->setText("1");
+    tracker_param3 = new QLabel("Max Features:");
+    tracker_param3_edit = new QLineEdit;
+    tracker_param3_edit->setText("350");
+    tracker_param4 = new QLabel("Patch Size:");
+    tracker_param4_edit = new QLineEdit;
+    tracker_param4_edit->setText("11");
+    tracker_param5 = new QLabel("Window Width:");
+    tracker_param5_edit = new QLineEdit;
+    tracker_param5_edit->setText("5");
+    tracker_param6 = new QLabel("Window Height:");
+    tracker_param6_edit = new QLineEdit;
+    tracker_param6_edit->setText("5");
+
+    tracker_param1_edit->setFixedSize(PARAMS_WIDTH, PARAMS_HEIGHT);
+    tracker_param2_edit->setFixedSize(PARAMS_WIDTH, PARAMS_HEIGHT);
+    tracker_param3_edit->setFixedSize(PARAMS_WIDTH, PARAMS_HEIGHT);
+    tracker_param4_edit->setFixedSize(PARAMS_WIDTH, PARAMS_HEIGHT);
+    tracker_param5_edit->setFixedSize(PARAMS_WIDTH, PARAMS_HEIGHT);
+    tracker_param6_edit->setFixedSize(PARAMS_WIDTH, PARAMS_HEIGHT);
+    tracker_param1->setFixedHeight(PARAMS_HEIGHT);
+    tracker_param2->setFixedHeight(PARAMS_HEIGHT);
+    tracker_param3->setFixedHeight(PARAMS_HEIGHT);
+    tracker_param4->setFixedHeight(PARAMS_HEIGHT);
+    tracker_param5->setFixedHeight(PARAMS_HEIGHT);
+    tracker_param6->setFixedHeight(PARAMS_HEIGHT);
+
+    makeTrackerParamVisible(false);
+}
+
 
 /************************************************************************************************
 *								Main Window Constructor   								        *
@@ -2213,13 +2287,9 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
 
 
 
-
-
     connect(image1, SIGNAL(Mouse_Pos()), this, SLOT(Mouse_current_pos()));
     connect(image1, SIGNAL(Mouse_Pressed()), this, SLOT(Mouse_Pressed()));
     connect(image1, SIGNAL(Mouse_Left()), this, SLOT(Mouse_left()));
-
-
 
 
 
@@ -2264,32 +2334,12 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
 
     connect(browse_button2, SIGNAL(clicked()), this, SLOT(on_browse_button_clicked2()));
 
-    generateVisualOdometry = new QPushButton("Generate Visual Odometry");
-    generateVisualOdometry->setFixedSize(BUTTON_WIDTH*2,BUTTON_HEIGHT);
-    connect(generateVisualOdometry, SIGNAL(clicked()), this, SLOT(on_generateVisualOdometry_clicked()));
-
-
-
-    inputFilePath3 = new QLineEdit;
-    inputFilePath3->setFixedSize(300,WIDGET_HEIGHT);
-    browse_button3 = new QPushButton("Browse Ground Truth");
-    browse_button3->setFixedSize(BUTTON_WIDTH,BUTTON_HEIGHT);
-    connect(browse_button3, SIGNAL(clicked()), this, SLOT(on_browse_button_clicked3()));
-
-    ///initially have the visual odometry widgets hidden, only displayed when user selects input as single image dataset
-    generateVisualOdometry->setVisible(false);
-    inputFilePath3->setVisible(false);
-    browse_button3->setVisible(false);
 
 
 
     ///initially have the buttons hidden as single image selected by default
     inputFilePath2->setVisible(false);
     browse_button2->setVisible(false);
-
-
-
-
 
     QGridLayout *inputVbox = new QGridLayout;
 
@@ -2314,13 +2364,16 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
     inputVbox->addWidget(numFeaturesLabel,6,0);
     inputVbox->addWidget(numFeaturesLineEdit,6,1);
 
-    inputVbox->addWidget(inputFilePath3,7,0);
+    /*inputVbox->addWidget(inputFilePath3,7,0);
     inputVbox->addWidget(browse_button3,8,0);
     inputVbox->addWidget(generateVisualOdometry,9,0);
-
+*/
 
     /// provide user with some additional functions for HOMOGRAPHY
     QGroupBox *userOptionsGroupBox = new QGroupBox;
+
+
+
     homography_enable = new QCheckBox;
     homography_enable->setText("Activate Homography based Reapeatability ");
     connect(homography_enable, SIGNAL(stateChanged(int)), this, SLOT(onHomographyChecked(int)));
@@ -2349,14 +2402,59 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
     connect(trackIt, SIGNAL(clicked()), this, SLOT(on_trackIt_clicked()));
 
 
+    /// initialize all tracker params
+    initializeTrackerParams();
+
+
+    /// Visual Odometry options
+
+    visual_odom_enable = new QCheckBox;
+    visual_odom_enable->setText("Perform Visual Odometry ");
+    connect(visual_odom_enable, SIGNAL(stateChanged(int)), this, SLOT(onVisualOdomChecked(int)));
+
+    generateVisualOdometry = new QPushButton("Generate Visual Odometry");
+    generateVisualOdometry->setFixedSize(BUTTON_WIDTH*2,BUTTON_HEIGHT);
+    connect(generateVisualOdometry, SIGNAL(clicked()), this, SLOT(on_generateVisualOdometry_clicked()));
+
+    inputFilePath3 = new QLineEdit;
+    inputFilePath3->setFixedSize(300,WIDGET_HEIGHT);
+    browse_button3 = new QPushButton("Browse Ground Truth");
+    browse_button3->setFixedSize(BUTTON_WIDTH,BUTTON_HEIGHT);
+    connect(browse_button3, SIGNAL(clicked()), this, SLOT(on_browse_button_clicked3()));
+
+    ///initially have the visual odometry widgets hidden, only displayed when user selects input as single image dataset
+    makeVisualOdomParamsVisible(false);
+
 
 
     QGridLayout *userOptionsVBox = new QGridLayout;
-    userOptionsVBox->addWidget(homography_enable,0,0);
-    userOptionsVBox->addWidget(inputHomogrpahyPath,1,0);
-    userOptionsVBox->addWidget(browseHomography,2,0);
-    userOptionsVBox->addWidget(tracking_enable,3,0);
-    userOptionsVBox->addWidget(trackIt,4,0);
+
+    userOptionsVBox->addWidget(visual_odom_enable,0,0);
+    userOptionsVBox->addWidget(inputFilePath3,1,0);
+    userOptionsVBox->addWidget(browse_button3,2,0);
+    userOptionsVBox->addWidget(generateVisualOdometry,3,0);
+
+    userOptionsVBox->addWidget(homography_enable,4,0);
+    userOptionsVBox->addWidget(inputHomogrpahyPath,5,0);
+    userOptionsVBox->addWidget(browseHomography,6,0);
+    userOptionsVBox->addWidget(tracking_enable,7,0);
+
+
+
+    userOptionsVBox->addWidget(trackIt,8,0);
+    userOptionsVBox->addWidget(tracker_param1,9,0);
+    userOptionsVBox->addWidget(tracker_param2,10,0);
+    userOptionsVBox->addWidget(tracker_param3,11,0);
+    userOptionsVBox->addWidget(tracker_param4,12,0);
+    userOptionsVBox->addWidget(tracker_param5,13,0);
+    userOptionsVBox->addWidget(tracker_param6,14,0);
+    userOptionsVBox->addWidget(tracker_param1_edit,9,1);
+    userOptionsVBox->addWidget(tracker_param2_edit,10,1);
+    userOptionsVBox->addWidget(tracker_param3_edit,11,1);
+    userOptionsVBox->addWidget(tracker_param4_edit,12,1);
+    userOptionsVBox->addWidget(tracker_param5_edit,13,1);
+    userOptionsVBox->addWidget(tracker_param6_edit,14,1);
+
     userOptionsGroupBox->setLayout(userOptionsVBox);
 
 
@@ -2504,7 +2602,7 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
     layout_grid->addWidget(decimateImage,11,4,2,1);
 
     layout_grid->addWidget(userOptionsGroupBox,14,4,1,1);
-    layout_grid->addWidget(paramsGroupBox,19,4,12,2);
+    layout_grid->addWidget(paramsGroupBox,25,4,12,2);
 
     layout_grid->setSizeConstraint(QLayout::SetMinimumSize);
     flag_descriptor_match = false;
