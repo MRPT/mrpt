@@ -557,7 +557,9 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		}
 		if (is_all_ptg_collision)
 		{
-			m_robot.sendApparentCollisionEvent();
+			m_pending_events.push_back(std::bind(
+				&CRobot2NavInterface::sendApparentCollisionEvent,
+				std::ref(m_robot)));
 		}
 
 		// Round #2: Evaluate dont sending any new velocity command ("NOP"
