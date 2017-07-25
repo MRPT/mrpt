@@ -262,7 +262,7 @@ Mat VisualOdometry::generateVO(string dataset, string groundtruth, int feat_type
         }
 
         scale = getAbsoluteScale(numFrame, 0, t.at<double>(2), groundtruth);
-
+        //scale = 1;
         //cout << "Scale is " << scale << endl;
 
         if ((scale>0.1)&&(t.at<double>(2) > t.at<double>(0)) && (t.at<double>(2) > t.at<double>(1))) {

@@ -162,7 +162,7 @@ cv::Mat Tracker::trackThemAll(vector<string> files_fullpath_tracking,
             const TSimpleFeature &ft = trackedFeats[i];
             std::list<TPixelCoord> &seq = feat_tracks[ft.ID];
 
-            cout << "here bro " << endl;
+            //cout << "here bro " << endl;
             //drawMarker(cvImg1, Point(trackedFeats.getFeatureX(i), trackedFeats.getFeatureY(i)),  Scalar(0, 255, 0), MARKER_CROSS, CROSS_SIZE, CROSS_THICKNESS);
 
             observed_IDs.insert(ft.ID);

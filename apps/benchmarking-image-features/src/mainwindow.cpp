@@ -14,6 +14,10 @@
 #include <mrpt/vision/tracking.h>
 
 
+#include <mrpt/system/os.h>
+#include <mrpt/vision/CFeatureExtraction.h>
+
+
 
 using namespace cv::line_descriptor;
 using namespace mrpt::vision;
@@ -58,7 +62,8 @@ float dist1_p[MAX_DESC], dist2_p[MAX_DESC];
 string evaluation_info;
 
 string detector_names[] = {"KLT Detector", "Harris Corner Detector",
-                           "BCD (Binary Corner Detector)", "SIFT",
+                           //"BCD (Binary Corner Detector)",
+                           "SIFT",
                            "SURF", "FAST Detector",
                            "FASTER9 Detector", "FASTER10 Detector",
                            "FASTER12", "ORB Detector",
@@ -484,10 +489,15 @@ void MainWindow::button_close_clicked()
 ************************************************************************************************/
 void MainWindow::on_descriptor_choose(int choice)
 {
+    makeGraphsVisible(false);
     makeAllDescriptorParamsVisible(true);
 
     if (choice == 0) //!< SIFT descriptors
     {
+#if  !MRPT_HAS_SIFT_HESS
+        QMessageBox::information(this, "SIFT error","MRPT has been compiled without SIFT Hess support");
+        return;
+#endif
         param1_desc->setText("Threshold: ");
         param2_desc->setText("Edge Threshold: ");
         param1_edit_desc->setText("0.04");
@@ -609,7 +619,7 @@ void MainWindow::on_descriptor_choose(int choice)
 ************************************************************************************************/
 void MainWindow::on_detector_choose(int choice)
 {
-
+    makeGraphsVisible(false);
     detector_selected = choice;
     makeAllDetectorParamsVisible(true);
 
@@ -641,12 +651,12 @@ void MainWindow::on_detector_choose(int choice)
         param5_edit->setText("true");
     }
         // BCD Features not implemented yet in MRPT library
-    else if(choice == 2)
+    /*else if(choice == 2)
     {
         makeAllDetectorParamsVisible(false);
-    }
+    }*/
         //for SIFT Features
-    else if (choice == 3)
+    else if (choice == 2)
     {
         param1->setText("Threshold: ");
         param2->setText("Edge Threshold: ");
@@ -661,7 +671,7 @@ void MainWindow::on_detector_choose(int choice)
 
     }
         // for SURF Features
-    else if(choice == 4)
+    else if(choice == 3)
     {
         param1->setText("HessianThreshold: ");
         param2->setText("nLayersPerOctave: ");
@@ -676,7 +686,7 @@ void MainWindow::on_detector_choose(int choice)
         param5_edit->setVisible(false);
     }
         // for FAST, FASTER9, FASTER10, FASTER12 features
-    else if(choice == 5 || choice == 6 || choice==7 || choice == 8)
+    else if(choice == 4 || choice == 5 || choice==6 || choice == 7)
     {
         param1->setText("Threshold: ");
         param2->setText("MinimumDistance: ");
@@ -693,7 +703,7 @@ void MainWindow::on_detector_choose(int choice)
 
     }
         // ORB Features
-    else if (choice == 9)
+    else if (choice == 8)
     {
         param1->setText("Min Distance: ");
         param2->setText("if extract patch true / false: ");
@@ -707,7 +717,7 @@ void MainWindow::on_detector_choose(int choice)
         param5->setVisible(false);
         param5_edit->setVisible(false);
     }
-    else if (choice == 10)
+    else if (choice == 9)
     {
         param1->setText("Descriptor Size: ");
         param2->setText("Descriptor Channels: ");
@@ -721,7 +731,7 @@ void MainWindow::on_detector_choose(int choice)
         param5_edit->setText("4");
 
     }
-    else if (choice == 11)
+    else if (choice == 10)
     {
         param1->setText("Scale: ");
         param4->setText("nOctaves: ");
@@ -813,6 +823,13 @@ void MainWindow::makeAllDescriptorParamsVisible(bool flag)
     param5_edit_desc->setVisible(flag);
 }
 
+void MainWindow::makeVisionOptionsVisible(bool flag)
+{
+    tracking_enable->setVisible(flag);
+    homography_enable->setVisible(flag);
+    visual_odom_enable->setVisible(flag);
+}
+
 /************************************************************************************************
 *								On File Input Choose        							        *
 ************************************************************************************************/
@@ -847,11 +864,13 @@ void MainWindow::on_file_input_choose(int choice)
     {
         next_button->setVisible(false);
         prev_button->setVisible(false);
+        makeVisionOptionsVisible(false);
     }
     else
     {
         next_button->setVisible(true);
         prev_button->setVisible(true);
+        makeVisionOptionsVisible(true);
     }
     currentInputIndex = inputs->currentIndex();
     switch (currentInputIndex)
@@ -886,6 +905,8 @@ void MainWindow::fillDetectorInfo()
     cout << file_path1 << " File Path in fillDetectorInfo " << endl;
 
     img1.loadFromFile(file_path1);
+    resolution_x = img1.getWidth() ;
+    resolution_y = img1.getHeight();
 
     if(currentInputIndex == 1 || currentInputIndex ==4) // stereo image or stereo dataset
         img2.loadFromFile(file_path2);
@@ -931,13 +952,12 @@ void MainWindow::fillDetectorInfo()
 
         cout << "detecting Harris Features " << endl ;
     }
-    else if(detector_selected == 2) // not implemented in MRPT yet
+    /*else if(detector_selected == 2) // not implemented in MRPT yet
     {
         fext.options.featsType = featBCD;
         cout <<"detecting BCD Features" << endl;
-
-    }
-    else if(detector_selected == 3) // SIFT Detector
+    }*/
+    else if(detector_selected == 2) // SIFT Detector
     {
         SIFT_opts.threshold         = param1_edit->text().toFloat();
         SIFT_opts.edge_threshold    = param2_edit->text().toFloat();
@@ -951,7 +971,7 @@ void MainWindow::fillDetectorInfo()
         cout << "detecting SIFT Features " << endl ;
 
     }
-    else if (detector_selected == 4) // 4= SURF Detector
+    else if (detector_selected == 3) // 3= SURF Detector
     {
         fext.options.featsType = featSURF;
         SURF_opts.hessianThreshold      = param1_edit->text().toInt();
@@ -967,7 +987,7 @@ void MainWindow::fillDetectorInfo()
         fext.options.SURFOptions.nOctaves           = SURF_opts.nOctaves;
         fext.options.SURFOptions.rotation_invariant = SURF_opts.rotation_invariant;
     }
-    else if(detector_selected == 5 || detector_selected == 6 || detector_selected == 7 || detector_selected == 8) //FAST detector and its variants
+    else if(detector_selected == 4 || detector_selected == 5 || detector_selected == 6 || detector_selected == 7) //FAST detector and its variants
     {
         fast_opts.threshold         = param1_edit->text().toFloat();
         fast_opts.min_distance      = param2_edit->text().toFloat();
@@ -979,11 +999,11 @@ void MainWindow::fillDetectorInfo()
         temp_bool = temp_str.compare("true") == 0;
         fast_opts.non_max_suppresion = temp_bool;
 
-        if(detector_selected == 5)
+        if(detector_selected == 4)
             fext.options.featsType = featFAST;
-        else if(detector_selected == 6)
+        else if(detector_selected == 5)
             fext.options.featsType = featFASTER9;
-        else if(detector_selected == 7)
+        else if(detector_selected == 6)
             fext.options.featsType =featFASTER10;
         else
             fext.options.featsType = featFASTER12;
@@ -993,7 +1013,7 @@ void MainWindow::fillDetectorInfo()
         fext.options.FASTOptions.use_KLT_response   = fast_opts.use_KLT_response;
         fext.options.FASTOptions.nonmax_suppression = fast_opts.non_max_suppresion;
     }
-    else if(detector_selected == 9) // ORB Feature detector
+    else if(detector_selected == 8) // ORB Feature detector
     {
         fext.options.featsType = featORB;
 
@@ -1011,7 +1031,7 @@ void MainWindow::fillDetectorInfo()
         fext.options.ORBOptions.scale_factor    = ORB_opts.scale_factor;
 
     }
-    else if(detector_selected == 10) // AKAZE Feature detector
+    else if(detector_selected == 9) // AKAZE Feature detector
     {
         fext.options.featsType = featAKAZE;
 
@@ -1028,7 +1048,7 @@ void MainWindow::fillDetectorInfo()
         fext.options.AKAZEOptions.nOctaveLayers         = AKAZE_opts.nOctaveLayers;
 
     }
-    else if(detector_selected == 11) // LSD Feature detector
+    else if(detector_selected == 10) // LSD Feature detector
     {
         fext.options.featsType = featLSD;
 
@@ -1054,6 +1074,8 @@ void MainWindow::fillDescriptorInfo()
     numFeats = numFeaturesLineEdit->text().toInt();
 
     img1.loadFromFile(file_path1);
+    resolution_x = img1.getWidth() ;
+    resolution_y = img1.getHeight();
 
     if(currentInputIndex == 1 || currentInputIndex ==4) // stereo image or stereo dataset
         img2.loadFromFile(file_path2);
@@ -1339,7 +1361,13 @@ void MainWindow::on_descriptor_button_clicked()
 
 
     if(descriptor_selected == 0)
-        desc_to_compute = TDescriptorType (1); //!< SIFT descriptors
+    {
+#if  !MRPT_HAS_SIFT_HESS
+        QMessageBox::information(this, "SIFT error","MRPT has been compiled without SIFT Hess support");
+        return;
+#endif
+        desc_to_compute = TDescriptorType(1); //!< SIFT descriptors
+    }
     else if (descriptor_selected == 1)
         desc_to_compute = TDescriptorType  (2); //!< SURF descriptors
     else if (descriptor_selected == 2)
@@ -1450,6 +1478,8 @@ void MainWindow::showEvaluation(int mode)
 ************************************************************************************************/
 void MainWindow::on_browse_button_clicked()
 {
+    makeGraphsVisible(false);
+
     flag_read_files_bug = true;
     ReadInputFormat();
 
@@ -1482,6 +1512,8 @@ void MainWindow::on_browse_button_clicked()
     {
         file_path1 = inputFilePath->text().toStdString();
         img1.loadFromFile(file_path1);
+        resolution_x = img1.getWidth() ;
+        resolution_y = img1.getHeight();
     }
     else if (currentInputIndex == 1) // only read the single images if a single image or stereo image input is specified
     {
@@ -1489,6 +1521,9 @@ void MainWindow::on_browse_button_clicked()
         file_path2 = inputFilePath2->text().toStdString();
 
         img1.loadFromFile(file_path1);
+        resolution_x = img1.getWidth() ;
+        resolution_y = img1.getHeight();
+
         img2.loadFromFile(file_path2);
     }
 }
@@ -1708,8 +1743,29 @@ void MainWindow::displayImagesWithoutDetector()
     // DISPLAYING THE NEXT IMAGE AS A QIMAGE WITHOUT DETECTOR, DETECTOR WILL APPEAR ON THE IMAGE WHEN EVALUATE DETECTOR BUTTON IS CLICKED
 
     img1.loadFromFile(file_path1);
+    resolution_x = img1.getWidth() ;
+    resolution_y = img1.getHeight();
 
     cv::Mat cvImg1 = cv::cvarrToMat(img1.getAs<IplImage>());
+
+
+    //fillDetectorInfo(); no need to call
+    fext.detectFeatures(img1, featsImage1, 0, numFeats);
+
+    // Drawing a circle around corners for image 1
+    //C++: void circle(Mat& img, Point center, int radius, const Scalar& color, int thickness=1, int lineType=8, int shift=0)
+    for(int i=0 ; i<featsImage1.size() ; i++)
+    {
+        int temp_x = (int) featsImage1.getFeatureX(i);
+        int temp_y = (int) featsImage1.getFeatureY(i);
+        //circle(cvImg1, Point(temp_x, temp_y), 5, Scalar(0,255,0), CIRCLE_THICKNESS, 8, 0);
+        drawMarker(cvImg1, Point(temp_x, temp_y),  Scalar(0, 255, 0), MARKER_CROSS, CROSS_SIZE, CROSS_THICKNESS);
+    }
+    drawLineLSD(cvImg1, 0); // 0 means draw line on left image
+
+
+
+
 
     cv::Mat temp1 (cvImg1.cols,cvImg1.rows,cvImg1.type());
     cvtColor(cvImg1, temp1, CV_BGR2RGB);
@@ -1804,21 +1860,30 @@ void MainWindow::on_sample_clicked()
 void MainWindow::initializeParameters()
 {
     //detector information parameters fill in here from the user
-    param1 = new QLabel("Parameter 1:");
+
+    param1 = new QLabel;
     param1_edit = new QLineEdit;
-    param1_edit->setText("1");
-    param2 = new QLabel("Parameter 2:");
+    param2 = new QLabel;
     param2_edit = new QLineEdit;
-    param2_edit->setText("2");
-    param3 = new QLabel("Parameter 3:");
+    param3 = new QLabel;
     param3_edit = new QLineEdit;
-    param3_edit->setText("3");
-    param4 = new QLabel("Parameter 4:");
+    param4 = new QLabel;
     param4_edit = new QLineEdit;
-    param4_edit->setText("4");
-    param5 = new QLabel("Parameter 5:");
+    param5 = new QLabel;
     param5_edit = new QLineEdit;
-    param5_edit->setText("5");
+
+    param1->setText("Min distance : ");
+    param2->setText("Radius : ");
+    param3->setText("Threshold : ");
+    param4->setText("Tile-image true/false : ");
+    param1_edit->setText("7");
+    param2_edit->setText("7");
+    param3_edit->setText("0.1");
+    param4_edit->setText("true");
+    param5->setVisible(false);
+    param5_edit->setVisible(false);
+
+
 
     param1_edit->setFixedSize(PARAMS_WIDTH, PARAMS_HEIGHT);
     param2_edit->setFixedSize(PARAMS_WIDTH, PARAMS_HEIGHT);
@@ -1833,21 +1898,30 @@ void MainWindow::initializeParameters()
 
 
     // Descriptor Information Fill in here from the user
-    param1_desc = new QLabel("Parameter 1:");
+    param1_desc = new QLabel;
     param1_edit_desc = new QLineEdit;
-    param1_edit_desc->setText("1");
-    param2_desc = new QLabel("Parameter 2:");
+    param2_desc = new QLabel;
     param2_edit_desc = new QLineEdit;
-    param2_edit_desc->setText("2");
-    param3_desc = new QLabel("Parameter 3:");
+    param3_desc = new QLabel;
     param3_edit_desc = new QLineEdit;
-    param3_edit_desc->setText("3");
-    param4_desc = new QLabel("Parameter 4:");
+    param4_desc = new QLabel;
     param4_edit_desc = new QLineEdit;
-    param4_edit_desc->setText("4");
-    param5_desc = new QLabel("Parameter 5:");
+    param5_desc = new QLabel;
     param5_edit_desc = new QLineEdit;
-    param5_edit_desc->setText("5");
+
+
+    // by default initially SURF descriptor is selected
+    param1_desc->setText("hessianThreshold: ");
+    param2_desc->setText("nLayersPerOctave: ");
+    param3_desc->setText("nOctaves: ");
+    param4_desc->setText("if rotation invariant: ");
+    param1_edit_desc->setText("600");
+    param2_edit_desc->setText("4");
+    param3_edit_desc->setText("2");
+    param4_edit_desc->setText("true");
+
+    param5_desc->setVisible(false);
+    param5_edit_desc->setVisible(false);
 
     param1_edit_desc->setFixedSize(PARAMS_WIDTH, PARAMS_HEIGHT);
     param2_edit_desc->setFixedSize(PARAMS_WIDTH, PARAMS_HEIGHT);
@@ -1928,8 +2002,10 @@ void MainWindow::onVisualOdomChecked(int state)
 {
     if(visual_odom_enable->isChecked())
         makeVisualOdomParamsVisible(true);
-    else
+    else {
         makeVisualOdomParamsVisible(false);
+        visualOdom->setVisible(false);
+    }
 }
 
 /************************************************************************************************
@@ -1996,7 +2072,7 @@ void MainWindow::onTrackingEnabled(int state)
 }
 
 /************************************************************************************************
-*								Track Key-Point method  (NOT USED   					        *
+*								Track Key-Point method  (NOT USED)   					        *
 ************************************************************************************************/
 Point MainWindow::trackKeyPoint(CImage img_org, CImage img_test,  int org_x, int org_y)
 {
@@ -2063,7 +2139,6 @@ Point MainWindow::trackKeyPoint(CImage img_org, CImage img_test,  int org_x, int
     return pt;
 }
 
-
 /************************************************************************************************
 *								On TrackIt button clicked  								        *
 ************************************************************************************************/
@@ -2074,8 +2149,8 @@ void MainWindow::on_trackIt_clicked()
     max_feats, patch_size,
     window_width, window_height;
 
-    remove_lost_feats       = tracker_param1_edit->text().toInt();
-    add_new_feats           = tracker_param2_edit->text().toInt();
+    remove_lost_feats       = tracker_param1->isChecked() ? 1 :0;
+    add_new_feats           = tracker_param2->isChecked() ? 1 :0;
     max_feats               = tracker_param3_edit->text().toInt();
     patch_size              = tracker_param4_edit->text().toInt();
     window_width            = tracker_param5_edit->text().toInt();
@@ -2111,8 +2186,8 @@ void MainWindow::makeTrackerParamVisible(bool flag)
     tracker_param5->setVisible(flag);
     tracker_param6->setVisible(flag);
 
-    tracker_param1_edit->setVisible(flag);
-    tracker_param2_edit->setVisible(flag);
+    //tracker_param1_edit->setVisible(flag);
+    //tracker_param2_edit->setVisible(flag);
     tracker_param3_edit->setVisible(flag);
     tracker_param4_edit->setVisible(flag);
     tracker_param5_edit->setVisible(flag);
@@ -2125,12 +2200,12 @@ void MainWindow::makeTrackerParamVisible(bool flag)
 ************************************************************************************************/
 void MainWindow::initializeTrackerParams()
 {
-    tracker_param1 = new QLabel("RemoveLost Features? (1/0):");
-    tracker_param1_edit = new QLineEdit;
-    tracker_param1_edit->setText("1");
-    tracker_param2 = new QLabel("Add New Features? (1/0):");
-    tracker_param2_edit = new QLineEdit;
-    tracker_param2_edit->setText("1");
+    tracker_param1 = new QCheckBox("RemoveLost Features? ");
+    //tracker_param1_edit = new QLineEdit;
+    //tracker_param1_edit->setText("1");
+    tracker_param2 = new QCheckBox("Add New Features? ");
+    //tracker_param2_edit = new QLineEdit;
+    //tracker_param2_edit->setText("1");
     tracker_param3 = new QLabel("Max Features:");
     tracker_param3_edit = new QLineEdit;
     tracker_param3_edit->setText("350");
@@ -2144,8 +2219,8 @@ void MainWindow::initializeTrackerParams()
     tracker_param6_edit = new QLineEdit;
     tracker_param6_edit->setText("5");
 
-    tracker_param1_edit->setFixedSize(PARAMS_WIDTH, PARAMS_HEIGHT);
-    tracker_param2_edit->setFixedSize(PARAMS_WIDTH, PARAMS_HEIGHT);
+    //tracker_param1_edit->setFixedSize(PARAMS_WIDTH, PARAMS_HEIGHT);
+    //tracker_param2_edit->setFixedSize(PARAMS_WIDTH, PARAMS_HEIGHT);
     tracker_param3_edit->setFixedSize(PARAMS_WIDTH, PARAMS_HEIGHT);
     tracker_param4_edit->setFixedSize(PARAMS_WIDTH, PARAMS_HEIGHT);
     tracker_param5_edit->setFixedSize(PARAMS_WIDTH, PARAMS_HEIGHT);
@@ -2166,6 +2241,7 @@ void MainWindow::initializeTrackerParams()
 ************************************************************************************************/
 MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
 {
+
     current_imageIndex = 0;
     current_imageIndex_tracking = 0;
     tracking_image_counter = 0;
@@ -2214,7 +2290,7 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
     descriptors_select = new QComboBox;
     for(int i=0 ; i<NUM_DESCRIPTORS ; i++)
         descriptors_select->addItem(descriptor_names[i].c_str());
-
+    descriptors_select->setCurrentIndex(1);
     connect(descriptors_select, SIGNAL(currentIndexChanged(int)),this,SLOT(on_descriptor_choose(int)) );
 
 
@@ -2294,8 +2370,8 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
 
 
     QGridLayout *hbox_images = new QGridLayout;
-    hbox_images->addWidget(image1,0,0,1,1);
-    hbox_images->addWidget(image2,0,1,1,1);
+    hbox_images->addWidget(image1, 0, 0, 1, 1);
+    hbox_images->addWidget(image2, 0, 1, 1, 1);
     hbox_images->addWidget(detector_info,0,2,1,1);
     hbox_images->addWidget(descriptor_info,0,2,1,1);
     hbox_images->addWidget(descriptor_info2,0,2,1,1);
@@ -2448,14 +2524,16 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
     userOptionsVBox->addWidget(tracker_param4,12,0);
     userOptionsVBox->addWidget(tracker_param5,13,0);
     userOptionsVBox->addWidget(tracker_param6,14,0);
-    userOptionsVBox->addWidget(tracker_param1_edit,9,1);
-    userOptionsVBox->addWidget(tracker_param2_edit,10,1);
+    //userOptionsVBox->addWidget(tracker_param1_edit,9,1);
+    //userOptionsVBox->addWidget(tracker_param2_edit,10,1);
     userOptionsVBox->addWidget(tracker_param3_edit,11,1);
     userOptionsVBox->addWidget(tracker_param4_edit,12,1);
     userOptionsVBox->addWidget(tracker_param5_edit,13,1);
     userOptionsVBox->addWidget(tracker_param6_edit,14,1);
 
     userOptionsGroupBox->setLayout(userOptionsVBox);
+    /// initially have all user options unavailable
+    makeVisionOptionsVisible(false);
 
 
 
@@ -2577,6 +2655,8 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
     images_static_sift_surf = new QLabel;
 
     images_static_sift_surf2 = new QLabel;
+    plotInfo = new QLabel;
+    images_plots_sift_surf = new QLabel;
 
     desc_images->setLayout(desc_VisualizeGrid);
 
@@ -2636,7 +2716,7 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
 ************************************************************************************************/
 void MainWindow::drawLineLSD(Mat img, int image_left_right)
 {
-    if(detector_selected == 11)
+    if(detector_selected == 10)
     {
         if(image_left_right == 0) {
             for (int i = 0; i < featsImage1.size(); i++) {
@@ -3072,14 +3152,41 @@ bool MainWindow::checkIfSamePoint(float x, float y, float x2, float y2, int thre
     return false;
 }
 
+void MainWindow::makeGraphsVisible(bool flag)
+{
+    if(visualize_descriptor_clicked)
+    {
+        if(featureMatched != NULL)
+            featureMatched->setVisible(flag);
+
+        if(detector_info != NULL)
+            detector_info->setVisible(flag);
+
+        if(plotInfo != NULL) {
+            plotInfo->setText("");
+            plotInfo->setVisible(flag);
+        }
+        if(images_static_sift_surf2 != NULL)
+            images_static_sift_surf2->setVisible(flag);
+
+        if(images_static_sift_surf != NULL)
+            images_static_sift_surf->setVisible(flag);
+
+        if(images_static != NULL)
+            images_static->setVisible(flag);
+
+        if(images_static2 != NULL)
+            images_static2->setVisible(flag);
+
+        if(images_plots_sift_surf != NULL)
+            images_plots_sift_surf->setVisible(flag);
+    }
+}
 /************************************************************************************************
 *								Mouse Pressed Slot         								        *
 ************************************************************************************************/
 void MainWindow::Mouse_Pressed()
 {
-
-
-
     if (!(evaluate_detector_clicked && evaluate_descriptor_clicked && visualize_descriptor_clicked) )
     {
         QMessageBox::information(this, "All Buttons need to be clicked","Please click evaluate detector, evaluate descriptor and visualize descriptor before clicking any key-Point for Visualization !!");
@@ -3096,7 +3203,7 @@ void MainWindow::Mouse_Pressed()
 
 
     mouse_x = image1->x;
-    mouse_y = image1->y -40 ; // -40 as it is the padding added due to a hidden reason
+    mouse_y = image1->y; // -40 as it is the padding added due to a hidden reason (hidden reason: mapping was missing from label to image actual frame size)
 
     double x[numDesc1],y[numDesc1];
     for(int i=0 ; i <numDesc1 ; i++)
@@ -3105,7 +3212,8 @@ void MainWindow::Mouse_Pressed()
         y[i] = featsImage1.getFeatureY(i);
     }
 
-    QLabel *plotInfo = new QLabel("<b>Descriptor Distances from selected descriptor<br/> in Image 1 to all other descriptors in Image 2 <b/>");
+
+    plotInfo->setText("<b>Descriptor Distances from selected descriptor<br/> in Image 1 to all other descriptors in Image 2 <b/>");
 
     cv::Mat desc_Ref_img = imread(file_path1, IMREAD_ANYCOLOR); // cv::cvarrToMat(img1.getAs<IplImage>());
     // images1 have all the descriptors
@@ -3117,14 +3225,49 @@ void MainWindow::Mouse_Pressed()
     images_static_sift_surf2->setVisible(false);
     plotInfo->setVisible(false);
 
+
+
     if(currentInputIndex == 1 || currentInputIndex == 4)
     {
         images_static2->setVisible(false);
         images_static_sift_surf2->setVisible(false);
     }
-     int pos = findClosest(mouse_x, mouse_y, x, y, numDesc1);
+
+
+    QRect tqr = image1->contentsRect();//getContentsMargins(a,b,c,d);
+    QMargins qmr = image1->contentsMargins();
+    QSize szt = image1->frameSize();
+    QRect qrect = image1->frameRect();
+    //QFrame::Shadow  shd = image1->frameShadow();
+
+    //cout << qmr.top() << " " << qmr.bottom() << " " << qmr.left() << " " << qmr.right() << endl;
+
+    //cout << tqr.top() << " " << tqr.bottom() << " " << tqr.left() << " " << tqr.right() << endl;
+
+    //cout << szt.height() << "  " << szt.width() << " " << szt.rheight() << " " << szt.rwidth() <<endl;
+
+    //cout << qrect.width() << " " << qrect.height() <<
+      //   " " << qrect.top() << " " << qrect.bottom() <<
+        // " " << qrect.left() << " " << qrect.right() << endl;
+
+
+
+
+    int mapped_mouse_x = mouse_x/IMAGE_WIDTH *resolution_x;
+    //int temp_mouse_y = (double)IMAGE_HEIGHT/resolution_x *resolution_y;
+    //int pseudo_height = qrect.height();
+    int mapped_mouse_y = mouse_y/IMAGE_HEIGHT *resolution_y;
+
+
+
+
+    int pos = findClosest(mapped_mouse_x, mapped_mouse_y, x, y, numDesc1);
     float temp_x = featsImage1.getFeatureX(pos); // get the descriptor x coordinate corresponding to images1[cnt]
     float temp_y = featsImage1.getFeatureY(pos);
+
+    cout << mouse_x << " mouse_x " << mouse_y << " mouse_y " << endl;
+    cout << temp_x << " closest_x " << temp_y << "closest_y" << endl;
+    cout << resolution_x << " res_x " << resolution_y << "res_y" << endl;
 
     // computing th repleatibility of the detector here
     string repeatability_result = findRepeatability(temp_x, temp_y);
@@ -3132,8 +3275,6 @@ void MainWindow::Mouse_Pressed()
     string repeatability_result2 = "";
     if(homography_activated == true && homography_path.size() >1)
         repeatability_result2 = findRepeatabilityHomography(temp_x, temp_y);
-
-
 
     // visualizing the descriptor here
     if(descriptor_selected == 2 || descriptor_selected == 3 || descriptor_selected == 4)
@@ -3211,6 +3352,15 @@ void MainWindow::Mouse_Pressed()
         images_label_coordinates = new QLabel;
 
         images_label_coordinates->setText(QString::fromStdString(str2));
+
+        /// drawing marker all over the image and coloring the selected one with a different color
+        for (int i = 0; i < featsImage1.size(); i++) {
+            int temp_x = (int) featsImage1.getFeatureX(i);
+            int temp_y = (int) featsImage1.getFeatureY(i);
+            //circle(cvImg2, Point(temp_x, temp_y), 5, Scalar(0,255,0), CIRCLE_THICKNESS, 8, 0);
+            drawMarker(desc_Ref_img, Point(temp_x, temp_y),  Scalar(255, 0, 0), MARKER_CROSS, CROSS_SIZE, CROSS_THICKNESS);
+        }
+        drawLineLSD(desc_Ref_img, 0); // 1 means right image
         //circle(desc_Ref_img, Point(temp_x, temp_y), 5, Scalar(0,0,255), CIRCLE_THICKNESS, 8, 0); // plot the circles on the appropriate points as per the shown descriptors
         drawMarker(desc_Ref_img, Point(temp_x, temp_y),  Scalar(0, 255, 0), MARKER_CROSS, CROSS_SIZE, CROSS_THICKNESS);
         //putText(desc_Ref_img, str2, Point(temp_x,temp_y), 5, 2, Scalar(255,0,0),2,8,0);
@@ -3235,6 +3385,8 @@ void MainWindow::Mouse_Pressed()
         desc_VisualizeGrid->addWidget(images_static,0,0,1,1);
 
         images_static->setVisible(true);
+
+
 
         desc_VisualizeGrid->addWidget(images_plots_sift_surf,0,2,1,1);  // add the image distance plot with respect to other features in image 1
         QLabel *detector_info  = new QLabel("Evaluation Metrics shown here");
@@ -3311,6 +3463,16 @@ void MainWindow::Mouse_Pressed()
         //images_label_coordinates_sift_surf->setText(QString::fromStdString(str));
         cout << str << endl;
 
+
+
+        /// drawing marker all over the image and coloring the selected one with a different color
+        for (int i = 0; i < featsImage1.size(); i++) {
+            int temp_x = (int) featsImage1.getFeatureX(i);
+            int temp_y = (int) featsImage1.getFeatureY(i);
+            //circle(cvImg2, Point(temp_x, temp_y), 5, Scalar(0,255,0), CIRCLE_THICKNESS, 8, 0);
+            drawMarker(desc_Ref_img, Point(temp_x, temp_y),  Scalar(0, 255, 0), MARKER_CROSS, CROSS_SIZE, CROSS_THICKNESS);
+        }
+        drawLineLSD(desc_Ref_img, 0); // 1 means right image
         //circle(desc_Ref_img, Point(temp_x, temp_y), 5, Scalar(255,0,0), CIRCLE_THICKNESS, 8, 0); // plot the circles on the appropriate points as per the shown descriptors
         drawMarker(desc_Ref_img, Point(temp_x, temp_y),  Scalar(255, 0, 0), MARKER_CROSS, CROSS_SIZE, CROSS_THICKNESS);
         images_static_sift_surf->setVisible(true);
@@ -3320,6 +3482,8 @@ void MainWindow::Mouse_Pressed()
             desc_VisualizeGrid->addWidget(plotInfo,1,2,1,1);
             plotInfo->setVisible(true);
         }
+
+
         desc_VisualizeGrid->removeWidget(featureMatched);
         desc_VisualizeGrid->addWidget(images_static_sift_surf,0,0,1,1);
         desc_VisualizeGrid->addWidget(images_plots_sift_surf,0,2,1,1);  // add the image distance plot with respect to other features in image 1
@@ -3368,6 +3532,7 @@ void MainWindow::Mouse_Pressed()
     descriptor_info2->setVisible(false);
     descriptor_info3->setVisible(true);
     evaluation_info->setVisible(false);
+
 
     showEvaluation(1);
 }

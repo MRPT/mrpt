@@ -1,9 +1,9 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
-#define NUM_DETECTORS 12
+#define NUM_DETECTORS 11
 #define NUM_DESCRIPTORS 8
-#define IMAGE_WIDTH 400
-#define IMAGE_HEIGHT 400
+#define IMAGE_WIDTH 600     // 400
+#define IMAGE_HEIGHT 600    // 400
 #define WIDGET_HEIGHT 30
 #define PARAMS_HEIGHT 30
 #define PARAMS_WIDTH 80
@@ -132,6 +132,7 @@ public:
     QLabel *image2;
     QImage qimage1;
     QImage qimage2;
+    int resolution_x, resolution_y;
 
     QLabel *param1;
     QLabel *param2;
@@ -177,8 +178,8 @@ public:
     Tracker tracker_obj;
 
     /// tracker parameter variables
-    QLabel *tracker_param1;
-    QLabel *tracker_param2;
+    QCheckBox *tracker_param1;
+    QCheckBox *tracker_param2;
     QLabel *tracker_param3;
     QLabel *tracker_param4;
     QLabel *tracker_param5;
@@ -349,6 +350,7 @@ public:
     QLabel *images_static2;
     QLabel *images_static_sift_surf2;
 
+    QLabel *plotInfo;
     QImage descriptors;
 
     QGridLayout *desc_VisualizeGrid;
@@ -550,6 +552,10 @@ public:
   * @param flag stores if the variables need to hidden/visible
   */
     void makeVisualOdomParamsVisible(bool flag);
+
+    void makeGraphsVisible(bool flag);
+
+    void makeVisionOptionsVisible(bool flag);
 
 
 
