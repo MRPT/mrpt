@@ -1,6 +1,6 @@
 # GUI App for benchmarking Image detectors and descriptors
 
-<<<<<<< HEAD
+ HEAD
 This application is a GUI app to benchmark image detectors and descriptors. The performance of the descriptors and detectors will be evaluated in terms of dispersion, computational cost, number of found features, etc.
 
 To run the code follow the instructions:
@@ -18,7 +18,7 @@ To run the code follow the instructions:
 
 Current Version has the following:
 
-1. Existing detectors/descriptors from CFeatureExtraction class implemented with further modifications requried like visualizing the detectors / descriptors. Detectors currently supported include : KLT, Harris Corner, SIFT, SURF, FAST, FASTER9, FASTER10, FASTER12, ORB, AKAZE and LSD Detectors. Descriptors currently supported include: SIFT, SURF, Intensity Domain Spin Image, Polar Image, Log Polar Image and ORB descriptors. User can tune the parameters for each of the detectors/descriptors
+1. Existing detectors/descriptors from CFeatureExtraction class implemented with further modifications requried like visualizing the detectors / descriptors. Detectors currently supported include : KLT, Harris Corner, SIFT, SURF, FAST, FASTER9, FASTER10, FASTER12 and ORB detectors. Descriptors currently supported include: SIFT, SURF, Intensity Domain Spin Image, Polar Image, Log Polar Image and ORB descriptors. User can tune the parameters for each of the detectors/descriptors
 2. Robust stereo matching is supported currently, User can click on a detected key point in image1 and the best matching key-point in image 2 is displayed. A plot showing descriptor distances to all other descriptors in image 2 is also shown. Descriptors from both the images are also shown for visualization purposes. 
 3. Forward and backward step-by-step play of images for application of detector / descriptor to certain images, to allow user to inpect the evolution of performance
 4. Option for the user to provide input as single image, stereo image or datasets (single/stereo) and perform detection / description on each image is also provided.
@@ -34,4 +34,4 @@ To be done in the immediate future:
 
 =======
 This project is available in the mrpt-2.0-devel branch for development
->>>>>>> 6623600ae98bf3249c5e1eabfe8f4d531359af30
+
