@@ -142,7 +142,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QDoubleSpinBox" name="doubleSpinBox">
+       <widget class="QDoubleSpinBox" name="m_robotPosesSize">
         <property name="maximum">
          <double>999.990000000000009</double>
         </property>
@@ -159,7 +159,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QComboBox" name="comboBox">
+       <widget class="QComboBox" name="m_robotPosesColor">
         <item>
          <property name="text">
           <string>Red</string>
@@ -222,7 +222,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QDoubleSpinBox" name="doubleSpinBox_3">
+       <widget class="QDoubleSpinBox" name="m_selectedRobotPosesSize">
         <property name="maximum">
          <double>999.990000000000009</double>
         </property>
@@ -239,7 +239,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QComboBox" name="comboBox_3">
+       <widget class="QComboBox" name="m_selectedRobotPosesColor">
         <property name="currentIndex">
          <number>1</number>
         </property>

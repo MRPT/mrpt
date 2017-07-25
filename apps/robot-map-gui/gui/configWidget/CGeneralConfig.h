@@ -12,29 +12,37 @@
 
 #include <memory>
 
+struct SGeneralSetting
+{
+	SGeneralSetting();
+	QColor backgroundColor;
+	QColor gridColor;
+	double robotPosesSize;
+	double selectedRobotPosesSize;
+	int robotPosesColor;
+	int selectedRobotPosesColor;
+	bool isGridVisibleChanged;
+	int currentBot;
+};
 
 class CGeneralConfig: public CBaseConfig
 {
 	Q_OBJECT
 public:
+
 	CGeneralConfig();
 	virtual ~CGeneralConfig() = default;
 
 	virtual const QString getName() override;
 	virtual void updateConfiguration(mrpt::maps::TMetricMapInitializer *options) override;
 	virtual TypeOfConfig type() const override;
-
-signals:
-	void backgroundColorChanged(QColor);
-	void gridColorChanged(QColor);
-	void gridVisibleChanged(bool is);
-	void currentBotChanged(int value);
+	const SGeneralSetting &generalSetting();
 
 private slots:
 	void openGridColor();
 	void openBackgroundColor();
-	void stateChanged(int state);
 
 private:
 	std::unique_ptr<Ui::CGeneralConfig> m_ui;
+	SGeneralSetting m_generalSetting;
 };
