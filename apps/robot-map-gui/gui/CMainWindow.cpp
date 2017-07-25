@@ -50,8 +50,6 @@ CMainWindow::CMainWindow(QWidget *parent)
 
 	QObject::connect(m_ui->m_actionMapConfiguration, SIGNAL(triggered(bool)), SLOT(showMapConfiguration()));
 
-
-
 	QObject::connect(m_ui->m_expandAll, SIGNAL(released()), m_ui->m_observationsTree, SLOT(expandAll()));
 	QObject::connect(m_ui->m_collapseAll, SIGNAL(released()), m_ui->m_observationsTree, SLOT(collapseAll()));
 
@@ -69,8 +67,6 @@ CMainWindow::~CMainWindow()
 
 	if (m_model)
 		delete m_model;
-
-	delete m_ui->m_configWidget;
 }
 
 void CMainWindow::openMap()
@@ -194,6 +190,7 @@ void CMainWindow::applyConfigurationForCurrentMaps()
 
 	auto renderizableMaps = m_document->renderizableMaps();
 	m_ui->m_viewer->applyConfigChanges(renderizableMaps);
+	m_ui->m_viewer->setGeneralSetting(m_ui->m_configWidget->generalSetting());
 }
 
 void CMainWindow::showMapConfiguration()

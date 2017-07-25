@@ -11,6 +11,7 @@
 
 #include "CBaseConfig.h"
 #include "TypeOfConfig.h"
+#include "CGeneralConfig.h"
 
 #include <memory>
 
@@ -20,6 +21,7 @@
 
 
 class QListWidgetItem;
+class CGeneralConfig;
 namespace Ui
 {
 class CConfigWidget;
@@ -34,6 +36,7 @@ public:
 	mrpt::maps::TSetOfMetricMapInitializers config();
 	void setConfig(const mrpt::maps::CMultiMetricMap::TListMaps &config);
 
+	const SGeneralSetting &generalSetting();
 
 signals:
 	void addedMap();
@@ -61,6 +64,7 @@ private:
 	void clearConfig(bool deleteGeneral = false);
 
 
+	CGeneralConfig* m_general;
 	std::unique_ptr<Ui::CConfigWidget> m_ui;
 	std::map<TypeOfConfig, std::vector< CBaseConfig *>> m_configs;
 

@@ -9,17 +9,17 @@
 #include "CGeneralConfig.h"
 
 #include <QColorDialog>
+#include <QDebug>
 
 
 CGeneralConfig::CGeneralConfig()
 	: CBaseConfig()
 	, m_ui(std::make_unique<Ui::CGeneralConfig>())
+	, m_generalSetting()
 {
 	m_ui->setupUi(this);
 	QObject::connect(m_ui->m_gridColor, SIGNAL(released()), SLOT(openGridColor()));
 	QObject::connect(m_ui->m_backgroundColor, SIGNAL(released()), SLOT(openBackgroundColor()));
-	QObject::connect(m_ui->m_enableGrid, SIGNAL(stateChanged(int)), SLOT(stateChanged(int)));
-	QObject::connect(m_ui->m_bots, SIGNAL(currentIndexChanged(int)), SIGNAL(currentBotChanged(int)));
 }
 
 const QString CGeneralConfig::getName()
@@ -37,6 +37,18 @@ TypeOfConfig CGeneralConfig::type() const
 	return TypeOfConfig::General;
 }
 
+const SGeneralSetting &CGeneralConfig::generalSetting()
+{
+	m_generalSetting.robotPosesSize = m_ui->m_robotPosesSize->value();
+	m_generalSetting.selectedRobotPosesSize = m_ui->m_selectedRobotPosesSize->value();
+	m_generalSetting.robotPosesColor = m_ui->m_robotPosesColor->currentIndex();
+	m_generalSetting.selectedRobotPosesColor = m_ui->m_selectedRobotPosesColor->currentIndex();
+	m_generalSetting.isGridVisibleChanged = m_ui->m_enableGrid->isChecked();
+	m_generalSetting.currentBot = m_ui->m_bots->currentIndex();
+
+	return m_generalSetting;
+}
+
 void CGeneralConfig::openGridColor()
 {
 	QColor col = QColorDialog::getColor(Qt::white, this);
@@ -45,7 +57,7 @@ void CGeneralConfig::openGridColor()
 	{
 		QString qss = QString("background-color: %1").arg(col.name());
 		m_ui->m_gridColor->setStyleSheet(qss);
-		emit gridColorChanged(col);
+		m_generalSetting.gridColor = col;
 	}
 }
 
@@ -57,11 +69,15 @@ void CGeneralConfig::openBackgroundColor()
 	{
 		QString qss = QString("background-color: %1").arg(col.name());
 		m_ui->m_backgroundColor->setStyleSheet(qss);
-		emit backgroundColorChanged(col);
+		m_generalSetting.backgroundColor = col;
 	}
 }
 
-void CGeneralConfig::stateChanged(int state)
+SGeneralSetting::SGeneralSetting()
+	: backgroundColor(Qt::white)
+	, gridColor(Qt::black)
+	, isGridVisibleChanged(true)
+	, currentBot(0)
 {
-	emit gridVisibleChanged(state == Qt::Checked);
+
 }

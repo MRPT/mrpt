@@ -12,6 +12,7 @@
 #include <memory>
 
 #include "CDocument.h"
+#include "gui/configWidget/CGeneralConfig.h"
 #include "ui_CViewerContainer.h"
 
 
@@ -29,6 +30,14 @@ public:
 	void applyConfigChanges(RenderizableMaps renderizableMaps);
 	void updateConfigChanges(RenderizableMaps renderizableMaps, CDocument *doc, bool isShowAllObs);
 	void setDocument(CDocument *doc);
+
+
+	void setGeneralSetting(const SGeneralSetting &setting);
+	void updateRobotPosesSize(double size);
+	void updateSelectedRobotPosesSize(double size);
+
+	void updateRobotPosesColor(int type);
+	void updateSelectedRobotPosesColor(int type);
 
 public slots:
 	void showAllObservation(bool is);

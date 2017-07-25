@@ -269,6 +269,42 @@ void CViewerContainer::updateElevationDegrees(double deg)
 	gl->update();
 }
 
+
+
+
+void CViewerContainer::setGeneralSetting(const SGeneralSetting &setting)
+{
+	float rBack = setting.backgroundColor.red()/255.0;
+	float gBack = setting.backgroundColor.green()/255.0;
+	float bBack = setting.backgroundColor.blue()/255.0;
+	float r = setting.gridColor.red()/255.0;
+	float g = setting.gridColor.green()/255.0;
+	float b = setting.gridColor.blue()/255.0;
+	float a = setting.gridColor.alpha()/255.0;
+
+	for (int i = 0; i < m_ui->m_tabWidget->count(); ++i)
+	{
+		CGlWidget *gl = dynamic_cast<CGlWidget *>(m_ui->m_tabWidget->widget(i));
+		assert(gl);
+
+		gl->setGridColor(r, g, b, a);
+		gl->setVisibleGrid(setting.isGridVisibleChanged);
+		gl->setBackgroundColor(rBack, gBack, bBack);
+		gl->setBot(setting.currentBot);
+
+		gl->setObservationSize(setting.robotPosesSize);
+		gl->setSelectedObservationSize(setting.selectedRobotPosesSize);
+		gl->setObservationColor(setting.robotPosesColor);
+		gl->setSelectedObservationColor(setting.selectedRobotPosesColor);
+
+	}
+
+	CGlWidget *gl = getCurrentTabWidget();
+	if (gl) gl->update();
+}
+
+
+
 CGlWidget *CViewerContainer::getCurrentTabWidget() const
 {
 	if (m_ui->m_tabWidget->count() <= 0)

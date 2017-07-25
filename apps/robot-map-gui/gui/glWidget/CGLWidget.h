@@ -47,13 +47,13 @@ public:
 
 	void setVisibleGrid(bool is);
 
-	void setBot(int value);
+	bool setBot(int value);
 
-	void setObservationSize(double s);
-	void setObservationColor(int type);
+	bool setObservationSize(double s);
+	bool setObservationColor(int type);
 
-	void setSelectedObservationSize(double s);
-	void setSelectedObservationColor(int type);
+	bool setSelectedObservationSize(double s);
+	bool setSelectedObservationColor(int type);
 
 signals:
 	void zoomChanged(float zoom);
@@ -75,6 +75,7 @@ private:
 	int searchPoseFromList(float x, float y, double maxDist, const std::vector<float> &xs, const std::vector<float> &ys) const;
 	mrpt::math::TPoint3D removePoseFromPointsCloud(mrpt::opengl::CPointCloud::Ptr pointsCloud, int index) const;
 
+	void removeRobotDirection();
 	void updateMinimapPos();
 	int searchSelectedPose(float x, float y, double maxDist);
 	int searchPose(float x, float y, double maxDist);

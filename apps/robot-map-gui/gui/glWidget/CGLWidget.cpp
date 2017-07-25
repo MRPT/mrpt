@@ -144,10 +144,7 @@ void CGlWidget::setSelected(const math::TPose3D &pose)
 	if (!m_map)
 		return;
 
-	m_map->removeObject(m_currentObs);
-
-	if (m_currentLaserScan)
-		m_map->removeObject(m_currentLaserScan);
+	removeRobotDirection();
 
 	m_showRobot = true;
 
@@ -173,6 +170,8 @@ void CGlWidget::setSelectedObservation(bool is)
 	{
 		m_map->removeObject(m_visiblePoints);
 		m_map->removeObject(m_selectedPointsCloud);
+		m_selectedPointsCloud->clear();
+		removeRobotDirection();
 	}
 
 
@@ -195,8 +194,10 @@ void CGlWidget::setDocument(CDocument *doc)
 	m_doc = doc;
 
 	if (m_isShowObs)
+	{
 		m_map->removeObject(m_visiblePoints);
-
+		m_map->removeObject(m_selectedPointsCloud);
+	}
 	m_selectedPointsCloud->clear();
 	m_visiblePoints->clear();
 	for (auto iter = m_doc->simplemap().begin(); iter != m_doc->simplemap().end(); ++iter)
@@ -260,14 +261,12 @@ void CGlWidget::setVisibleGrid(bool is)
 		insertToMap(m_groundPlane);
 	else
 		removeFromMap(m_groundPlane);
-
-	update();
 }
 
-void CGlWidget::setBot(int value)
+bool CGlWidget::setBot(int value)
 {
 	if (!m_map)
-		return;
+		return false;
 
 	math::TPose3D pose;
 
@@ -276,6 +275,7 @@ void CGlWidget::setBot(int value)
 		m_map->removeObject(m_currentObs);
 		pose = m_currentObs->getPose();
 	}
+	mrpt::opengl::CSetOfObjects::Ptr currentObs = m_currentObs;
 
 	switch (value) {
 	case 0:
@@ -302,39 +302,64 @@ void CGlWidget::setBot(int value)
 	}
 	if (m_showRobot)
 	{
-		m_currentObs->setPose( pose );
+		m_currentObs->setPose(pose);
 		m_map->insert(m_currentObs);
+		return currentObs != m_currentObs;
 	}
 
-	update();
+	return false;
 }
 
-void CGlWidget::setObservationSize(double s)
+bool CGlWidget::setObservationSize(double s)
 {
-	m_observationSize = s;
-	m_visiblePoints->setPointSize(m_observationSize);
-	update();
+	if (m_observationSize != s)
+	{
+		m_observationSize = s;
+		m_visiblePoints->setPointSize(m_observationSize);
+		return true;
+	}
+	return false;
 }
 
-void CGlWidget::setObservationColor(int type)
+bool CGlWidget::setObservationColor(int type)
 {
-	m_observationColor = typeToColor(type);
-	m_visiblePoints->setColor(m_observationColor);
-	update();
+	utils::TColorf color = typeToColor(type);
+	if(color.R != m_observationColor.R
+			|| color.B != m_observationColor.B
+			|| color.G != m_observationColor.G
+			|| color.A != m_observationColor.A)
+	{
+		m_observationColor = color;
+		m_visiblePoints->setColor(m_observationColor);
+		return true;
+	}
+	return false;
 }
 
-void CGlWidget::setSelectedObservationSize(double s)
+bool CGlWidget::setSelectedObservationSize(double s)
 {
-	m_selectedObsSize = s;
-	m_selectedPointsCloud->setPointSize(m_observationSize);
-	update();
+	if (m_selectedObsSize != s)
+	{
+		m_selectedObsSize = s;
+		m_selectedPointsCloud->setPointSize(m_selectedObsSize);
+		return true;
+	}
+	return false;
 }
 
-void CGlWidget::setSelectedObservationColor(int type)
+bool CGlWidget::setSelectedObservationColor(int type)
 {
-	m_selectedColor = typeToColor(type);
-	m_selectedPointsCloud->setColor(m_selectedColor);
-	update();
+	utils::TColorf color = typeToColor(type);
+	if(color.R != m_selectedColor.R
+			|| color.B != m_selectedColor.B
+			|| color.G != m_selectedColor.G
+			|| color.A != m_selectedColor.A)
+	{
+		m_selectedColor = color;
+		m_selectedPointsCloud->setColor(m_selectedColor);
+		return true;
+	}
+	return false;
 }
 
 void CGlWidget::resizeGL(int width, int height)
@@ -536,6 +561,16 @@ math::TPoint3D CGlWidget::removePoseFromPointsCloud(CPointCloud::Ptr pointsCloud
 	return point;
 }
 
+void CGlWidget::removeRobotDirection()
+{
+	m_map->removeObject(m_currentObs);
+
+	if (m_currentLaserScan)
+		m_map->removeObject(m_currentLaserScan);
+
+	m_showRobot = false;
+}
+
 void CGlWidget::updateMinimapPos()
 {
 	if (!m_is2D)
@@ -597,7 +632,7 @@ bool CGlWidget::deselectAll()
 
 	assert(xv.size() == yv.size() && xv.size() == zv.size());
 
-	for (int i = 0; i < xs.size(); ++i)
+	for (size_t i = 0; i < xs.size(); ++i)
 	{
 		xv.push_back(xs[i]);
 		yv.push_back(ys[i]);
@@ -610,6 +645,8 @@ bool CGlWidget::deselectAll()
 	ys.clear();
 	zs.clear();
 	m_selectedPointsCloud->setAllPoints(xs, ys, zs);
+
+	removeRobotDirection();
 
 	return changedVectors;
 }
