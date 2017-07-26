@@ -792,7 +792,7 @@ void CPointsMap::getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const
 {
 	if (!genericMapParams.enableSaveAs3DObject) return;
 
-	opengl::CPointCloud::Ptr obj = std::make_aligned_shared<opengl::CPointCloud>();
+	opengl::CPointCloud::Ptr obj = mrpt::make_aligned_shared<opengl::CPointCloud>();
 
 	obj->loadFromPointsMap(this);
 	obj->setColor(
@@ -1584,7 +1584,7 @@ void internal_build_points_map_from_scan2D(
 	// Create on first call:
 	if (out_map) return;  // Already done!
 
-	out_map = std::make_aligned_shared<CSimplePointsMap>();
+	out_map = mrpt::make_aligned_shared<CSimplePointsMap>();
 
 	if (insertOps)
 		static_cast<CSimplePointsMap*>(out_map.get())->insertionOptions =

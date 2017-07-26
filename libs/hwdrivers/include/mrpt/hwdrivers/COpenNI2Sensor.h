@@ -119,7 +119,7 @@ namespace hwdrivers
   *
   *  \code
   *    mrpt::opengl::CPointCloudColoured::Ptr gl_points =
-  *std::make_aligned_shared<mrpt::opengl::CPointCloudColoured>();
+  *mrpt::make_aligned_shared<mrpt::opengl::CPointCloudColoured>();
   *    gl_points->loadFromPointsMap(&pntsMap);
   *  \endcode
   *

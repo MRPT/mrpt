@@ -133,7 +133,7 @@ class BASE_IMPEXP CMHPropertiesValuesList : public mrpt::utils::CSerializable
 	{
 		MRPT_START
 
-		CMemoryChunk::Ptr memChunk = std::make_aligned_shared<CMemoryChunk>();
+		CMemoryChunk::Ptr memChunk = mrpt::make_aligned_shared<CMemoryChunk>();
 		memChunk->setAllocBlockSize(10);
 		(*memChunk) << data;
 

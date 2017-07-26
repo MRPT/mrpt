@@ -236,7 +236,7 @@ bool CVelodyneScanner::getNextObservation(
 		if (pos_pkt_timestamp != INVALID_TIMESTAMP)
 		{
 			mrpt::obs::CObservationGPS::Ptr gps_obs =
-				std::make_aligned_shared<mrpt::obs::CObservationGPS>();
+				mrpt::make_aligned_shared<mrpt::obs::CObservationGPS>();
 			gps_obs->sensorLabel = this->m_sensorLabel + std::string("_GPS");
 			gps_obs->sensorPose = m_sensorPose;
 
@@ -295,7 +295,7 @@ bool CVelodyneScanner::getNextObservation(
 			if (!m_rx_scan)
 			{
 				m_rx_scan =
-					std::make_aligned_shared<mrpt::obs::CObservationVelodyneScan>();
+					mrpt::make_aligned_shared<mrpt::obs::CObservationVelodyneScan>();
 				m_rx_scan->sensorLabel =
 					this->m_sensorLabel + std::string("_SCAN");
 				m_rx_scan->sensorPose = m_sensorPose;

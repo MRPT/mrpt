@@ -204,7 +204,7 @@ void generatePolygon(
 	vector<math::TPolygon3D> convexPolys;
 	if (!math::splitInConvexComponents(p, convexPolys))
 		convexPolys.push_back(p);
-	poly = std::make_aligned_shared<CPolyhedron>(convexPolys);
+	poly = mrpt::make_aligned_shared<CPolyhedron>(convexPolys);
 }
 
 void CGeneralizedCylinder::getOrigin(CPolyhedron::Ptr& poly) const
@@ -276,7 +276,7 @@ void CGeneralizedCylinder::getClosedSection(
 	for (size_t i = 0; i < nr + 1; i++) tmp[i] = i * (nc + 1);
 	faces.push_back(tmp);
 	for (size_t i = 0; i < nr + 1; i++) tmp[i] = i * (nc + 2) - 1;
-	poly = std::make_aligned_shared<CPolyhedron>(vertices, faces);
+	poly = mrpt::make_aligned_shared<CPolyhedron>(vertices, faces);
 }
 
 void CGeneralizedCylinder::removeVisibleSectionAtStart()

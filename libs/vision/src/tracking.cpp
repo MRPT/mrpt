@@ -229,7 +229,7 @@ inline void trackFeatures_addNewFeats<CFeatureList>(
 			feat.pt.y < h_off)
 		{
 			// Add new feature:
-			CFeature::Ptr ft = std::make_aligned_shared<CFeature>();
+			CFeature::Ptr ft = mrpt::make_aligned_shared<CFeature>();
 			ft->type = featFAST;
 			ft->ID = ++max_feat_ID_at_input;
 			ft->x = feat.pt.x;

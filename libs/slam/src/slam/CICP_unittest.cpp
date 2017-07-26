@@ -236,19 +236,19 @@ class ICPTests : public ::testing::Test
 
 	static void generateObjects(CSetOfObjects::Ptr& world)
 	{
-		CSphere::Ptr sph = std::make_aligned_shared<CSphere>(0.5);
+		CSphere::Ptr sph = mrpt::make_aligned_shared<CSphere>(0.5);
 		sph->setLocation(0, 0, 0);
 		sph->setColor(1, 0, 0);
 		world->insert(sph);
 
-		CDisk::Ptr pln = std::make_aligned_shared<opengl::CDisk>();
+		CDisk::Ptr pln = mrpt::make_aligned_shared<opengl::CDisk>();
 		pln->setDiskRadius(2);
 		pln->setPose(CPose3D(0, 0, 0, 0, DEG2RAD(5), DEG2RAD(5)));
 		pln->setColor(0.8, 0, 0);
 		world->insert(pln);
 
 		{
-			CDisk::Ptr pln = std::make_aligned_shared<opengl::CDisk>();
+			CDisk::Ptr pln = mrpt::make_aligned_shared<opengl::CDisk>();
 			pln->setDiskRadius(2);
 			pln->setPose(
 				CPose3D(0, 0, 0, DEG2RAD(30), DEG2RAD(-20), DEG2RAD(-2)));
@@ -282,26 +282,26 @@ TEST_F(ICPTests, RayTracingICP3D)
 	CPose3D SCAN2_POSE_ERROR(0.15, -0.07, 0.10, -0.03, 0.1, 0.1);
 
 	// Create the reference objects:
-	COpenGLScene::Ptr scene1 = std::make_aligned_shared<COpenGLScene>();
-	COpenGLScene::Ptr scene2 = std::make_aligned_shared<COpenGLScene>();
-	COpenGLScene::Ptr scene3 = std::make_aligned_shared<COpenGLScene>();
+	COpenGLScene::Ptr scene1 = mrpt::make_aligned_shared<COpenGLScene>();
+	COpenGLScene::Ptr scene2 = mrpt::make_aligned_shared<COpenGLScene>();
+	COpenGLScene::Ptr scene3 = mrpt::make_aligned_shared<COpenGLScene>();
 
 	opengl::CGridPlaneXY::Ptr plane1 =
-		std::make_aligned_shared<CGridPlaneXY>(-20, 20, -20, 20, 0, 1);
+		mrpt::make_aligned_shared<CGridPlaneXY>(-20, 20, -20, 20, 0, 1);
 	plane1->setColor(0.3, 0.3, 0.3);
 	scene1->insert(plane1);
 	scene2->insert(plane1);
 	scene3->insert(plane1);
 
-	CSetOfObjects::Ptr world = std::make_aligned_shared<CSetOfObjects>();
+	CSetOfObjects::Ptr world = mrpt::make_aligned_shared<CSetOfObjects>();
 	generateObjects(world);
 	scene1->insert(world);
 
 	// Perform the 3D scans:
 	CAngularObservationMesh::Ptr aom1 =
-		std::make_aligned_shared<CAngularObservationMesh>();
+		mrpt::make_aligned_shared<CAngularObservationMesh>();
 	CAngularObservationMesh::Ptr aom2 =
-		std::make_aligned_shared<CAngularObservationMesh>();
+		mrpt::make_aligned_shared<CAngularObservationMesh>();
 
 	CAngularObservationMesh::trace2DSetOfRays(
 		scene1, viewpoint1, aom1,
@@ -343,8 +343,8 @@ TEST_F(ICPTests, RayTracingICP3D)
 	M2_noisy = M2;
 	M2_noisy.changeCoordinatesReference(SCAN2_POSE_ERROR);
 
-	CSetOfObjects::Ptr PTNS1 = std::make_aligned_shared<CSetOfObjects>();
-	CSetOfObjects::Ptr PTNS2 = std::make_aligned_shared<CSetOfObjects>();
+	CSetOfObjects::Ptr PTNS1 = mrpt::make_aligned_shared<CSetOfObjects>();
+	CSetOfObjects::Ptr PTNS2 = mrpt::make_aligned_shared<CSetOfObjects>();
 
 	CPointsMap::COLOR_3DSCENE_R = 1;
 	CPointsMap::COLOR_3DSCENE_G = 0;

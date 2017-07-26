@@ -353,7 +353,7 @@ void CLMS100Eth::doProcessSimple(
 void CLMS100Eth::doProcess()
 {
 	CObservation2DRangeScan::Ptr obs =
-		std::make_aligned_shared<CObservation2DRangeScan>();
+		mrpt::make_aligned_shared<CObservation2DRangeScan>();
 	try
 	{
 		bool isThereObservation, hwError;

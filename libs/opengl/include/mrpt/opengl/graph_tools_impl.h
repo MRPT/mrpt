@@ -38,7 +38,7 @@ CSetOfObjects::Ptr graph_visualize(
 	const bool is_3D_graph = constraint_t::is_3D();
 
 	// create opengl obejct to be filled.
-	CSetOfObjects::Ptr ret = std::make_aligned_shared<CSetOfObjects>();
+	CSetOfObjects::Ptr ret = mrpt::make_aligned_shared<CSetOfObjects>();
 
 	// graph visualization parameters
 	const bool show_ID_labels =
@@ -88,7 +88,7 @@ CSetOfObjects::Ptr graph_visualize(
 
 		// Create ground plane:
 		const double grid_frequency = 5.0;
-		CGridPlaneXY::Ptr grid = std::make_aligned_shared<CGridPlaneXY>(
+		CGridPlaneXY::Ptr grid = mrpt::make_aligned_shared<CGridPlaneXY>(
 			BB_min.x, BB_max.x, BB_min.y, BB_max.y, BB_min.z, grid_frequency);
 		grid->setColor(0.3, 0.3, 0.3);
 		ret->insert(grid);
@@ -97,7 +97,7 @@ CSetOfObjects::Ptr graph_visualize(
 	// Draw nodes as thick points:
 	if (nodes_point_size > 0)
 	{
-		CPointCloud::Ptr pnts = std::make_aligned_shared<CPointCloud>();
+		CPointCloud::Ptr pnts = mrpt::make_aligned_shared<CPointCloud>();
 		pnts->setColor(TColorf(TColor(nodes_point_color)));
 		pnts->setPointSize(nodes_point_size);
 
@@ -132,7 +132,7 @@ CSetOfObjects::Ptr graph_visualize(
 								 nodes_corner_scale, 1.0 /*line width*/)
 						   : stock_objects::CornerXYSimple(
 								 nodes_corner_scale, 1.0 /*line width*/))
-					: std::make_aligned_shared<CSetOfObjects>();
+					: mrpt::make_aligned_shared<CSetOfObjects>();
 			gl_corner->setPose(p);
 			if (show_ID_labels)  // don't show IDs twice!
 			{
@@ -166,7 +166,7 @@ CSetOfObjects::Ptr graph_visualize(
 				// Create a set of objects at that pose and do the rest in
 				// relative coords:
 				mrpt::opengl::CSetOfObjects::Ptr gl_rel_edge =
-					std::make_aligned_shared<mrpt::opengl::CSetOfObjects>();
+					mrpt::make_aligned_shared<mrpt::opengl::CSetOfObjects>();
 				gl_rel_edge->setPose(pSource);
 
 				const typename GRAPH_T::constraint_no_pdf_t& edge_pose =
@@ -185,7 +185,7 @@ CSetOfObjects::Ptr graph_visualize(
 				gl_rel_edge->insert(gl_edge_corner);
 
 				mrpt::opengl::CSimpleLine::Ptr gl_line =
-					std::make_aligned_shared<mrpt::opengl::CSimpleLine>(
+					mrpt::make_aligned_shared<mrpt::opengl::CSimpleLine>(
 						0, 0, 0, edge_pose_pt.x(), edge_pose_pt.y(),
 						edge_pose_pt.z());
 				gl_line->setColor_u8(col8bit);
@@ -199,7 +199,7 @@ CSetOfObjects::Ptr graph_visualize(
 
 	if (show_edges)
 	{
-		CSetOfLines::Ptr gl_edges = std::make_aligned_shared<CSetOfLines>();
+		CSetOfLines::Ptr gl_edges = mrpt::make_aligned_shared<CSetOfLines>();
 		const TColor col8bit(edge_color & 0xffffff, edge_color >> 24);
 
 		gl_edges->setColor_u8(col8bit);

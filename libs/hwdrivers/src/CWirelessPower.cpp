@@ -544,7 +544,7 @@ void CWirelessPower::doProcess()
 {
 	// Wrapper to getObservation
 	mrpt::obs::CObservationWirelessPower::Ptr outObservation =
-		std::make_aligned_shared<mrpt::obs::CObservationWirelessPower>();
+		mrpt::make_aligned_shared<mrpt::obs::CObservationWirelessPower>();
 	getObservation(*outObservation);
 
 	appendObservation(

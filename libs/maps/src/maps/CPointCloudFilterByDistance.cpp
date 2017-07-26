@@ -37,7 +37,7 @@ void CPointCloudFilterByDistance::filter(
 	ASSERT_(pc_timestamp != INVALID_TIMESTAMP);
 	ASSERT_(pc != nullptr);
 
-	CSimplePointsMap::Ptr original_pc = std::make_aligned_shared<CSimplePointsMap>();
+	CSimplePointsMap::Ptr original_pc = mrpt::make_aligned_shared<CSimplePointsMap>();
 	original_pc->copyFrom(*pc);
 
 	// 1) Filter:

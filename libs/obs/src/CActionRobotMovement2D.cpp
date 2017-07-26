@@ -30,7 +30,7 @@ IMPLEMENTS_SERIALIZABLE(CActionRobotMovement2D, CAction, mrpt::obs)
 						Constructor
   ---------------------------------------------------------------*/
 CActionRobotMovement2D::CActionRobotMovement2D()
-	: poseChange(std::make_aligned_shared<CPosePDFGaussian>()),
+	: poseChange(mrpt::make_aligned_shared<CPosePDFGaussian>()),
 	  rawOdometryIncrementReading(),
 	  estimationMethod(emOdometry),
 	  hasEncodersInfo(false),
@@ -452,7 +452,7 @@ void CActionRobotMovement2D::computeFromOdometry_modelGaussian(
 {
 	// The Gaussian PDF:
 	// ---------------------------
-	poseChange = std::make_aligned_shared<CPosePDFGaussian>();
+	poseChange = mrpt::make_aligned_shared<CPosePDFGaussian>();
 	CPosePDFGaussian* aux;
 	aux = static_cast<CPosePDFGaussian*>(poseChange.get());
 
@@ -506,7 +506,7 @@ void CActionRobotMovement2D::computeFromOdometry_modelThrun(
 	CPosePDFParticles* aux;
 	static CPose2D nullPose(0, 0, 0);
 
-	poseChange = std::make_aligned_shared<CPosePDFParticles>();
+	poseChange = mrpt::make_aligned_shared<CPosePDFParticles>();
 	aux = static_cast<CPosePDFParticles*>(poseChange.get());
 
 	// Set the number of particles:

@@ -72,7 +72,7 @@ void C2DRangeFinderAbstract::doProcess()
 	bool thereIs, hwError;
 
 	if (!m_nextObservation)
-		m_nextObservation = std::make_aligned_shared<CObservation2DRangeScan>();
+		m_nextObservation = mrpt::make_aligned_shared<CObservation2DRangeScan>();
 
 	doProcessSimple(thereIs, *m_nextObservation, hwError);
 
@@ -196,14 +196,14 @@ void C2DRangeFinderAbstract::processPreview(
 		if (!m_win)
 		{
 			string caption = string("Preview of ") + m_sensorLabel;
-			m_win = std::make_aligned_shared<mrpt::gui::CDisplayWindow3D>(
+			m_win = mrpt::make_aligned_shared<mrpt::gui::CDisplayWindow3D>(
 				caption, 640, 480);
 			m_win->setCameraAzimuthDeg(180);
 			m_win->setCameraElevationDeg(90);
 			COpenGLScene::Ptr& theScene = m_win->get3DSceneAndLock();
 			theScene->insert(
 				CAxis::Ptr(
-					std::make_aligned_shared<CAxis>(
+					mrpt::make_aligned_shared<CAxis>(
 						-300, -300, -50, 300, 300, 50, 1.0, 3, true)));
 			m_win->unlockAccess3DScene();
 		}
@@ -215,7 +215,7 @@ void C2DRangeFinderAbstract::processPreview(
 			CRenderizable::Ptr obj = theScene->getByName("laser");
 			if (!obj)
 			{
-				laser = std::make_aligned_shared<opengl::CPlanarLaserScan>();
+				laser = mrpt::make_aligned_shared<opengl::CPlanarLaserScan>();
 				laser->setName("laser");
 				laser->setScan(obs);
 				theScene->insert(laser);

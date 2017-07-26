@@ -463,7 +463,7 @@ void CGPSInterface::flushParsedMessagesNow()
 	else
 		m_just_parsed_messages.sensorLabel = m_sensorLabel;
 	// Add observation to the output queue:
-	CObservationGPS::Ptr newObs = std::make_aligned_shared<CObservationGPS>();
+	CObservationGPS::Ptr newObs = mrpt::make_aligned_shared<CObservationGPS>();
 	m_just_parsed_messages.swap(*newObs);
 	CGenericSensor::appendObservation(newObs);
 	m_just_parsed_messages.clear();

@@ -11,21 +11,9 @@
 
 #include <mrpt/system/memory.h>
 #include <mrpt/utils/safe_pointers.h>
-#include <Eigen/src/Core/util/Memory.h>
+#include <mrpt/utils/aligned_allocator.h>
 #include <vector>
 #include <memory>
-
-namespace std
-{
-	/** Creates a `shared_ptr` with 16-byte aligned memory.
-	* \ingroup mrpt_base_grp
-	*/
-	template <typename T, class ...Args>
-	std::shared_ptr<T> make_aligned_shared(Args &&... args)
-	{
-		return std::allocate_shared<T>(Eigen::aligned_allocator<T>(), std::forward<Args>(args)...);
-	}
-}
 
 namespace mrpt
 {
@@ -150,11 +138,11 @@ struct is_shared_ptr<std::shared_ptr<T>> : std::true_type
  *    keeping referencing count smart pointers to objects of that class. By
  * default the base class of all these smart pointers is CObject::Ptr.
  *
- * It is recommended to use MRPT-defined `std::make_aligned_shared<>` instead
+ * It is recommended to use MRPT-defined `mrpt::make_aligned_shared<>` instead
  * of `std::make_shared<>` to create objects, to avoid memory alignment 
  * problems caused by classes containing Eigen vectors or matrices. Example:
  * \code
- * CFoo::Ptr o = std::make_aligned_shared<CFoo>();
+ * CFoo::Ptr o = mrpt::make_aligned_shared<CFoo>();
  * \endcode
  * \sa  mrpt::utils::CSerializable \ingroup mrpt_base_grp
  */

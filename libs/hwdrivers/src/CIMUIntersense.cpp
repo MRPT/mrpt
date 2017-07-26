@@ -106,7 +106,7 @@ void CIMUIntersense::doProcess()
 		// data.Station[0].TimeStampMicroSec;
 		float nowUI = data.Station[0].TimeStamp;  // in seconds
 
-		CObservationIMU::Ptr obs = std::make_aligned_shared<CObservationIMU>();
+		CObservationIMU::Ptr obs = mrpt::make_aligned_shared<CObservationIMU>();
 
 		// euler angles
 		obs->rawMeasurements[IMU_YAW] = DEG2RAD(data.Station[0].Euler[0]);
