@@ -90,12 +90,12 @@ void TestCapture_FlyCapture2_stereo()
 	int cnt = 0;
 
 	CObservationImage::Ptr obsL =
-		std::make_aligned_shared<CObservationImage>();  // Memory will be freed by SF
+		mrpt::make_aligned_shared<CObservationImage>();  // Memory will be freed by SF
 	// destructor in each loop.
 	obsL->sensorLabel = "LEFT";
 
 	CObservationImage::Ptr obsR =
-		std::make_aligned_shared<CObservationImage>();  // Memory will be freed by SF
+		mrpt::make_aligned_shared<CObservationImage>();  // Memory will be freed by SF
 	// destructor in each loop.
 	obsR->sensorLabel = "RIGHT";
 

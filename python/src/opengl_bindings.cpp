@@ -83,12 +83,12 @@ void CSetOfLines_appendLine(
 
 CSetOfLines::Ptr CSetOfLines_Create()
 {
-	return std::make_aligned_shared<CSetOfLines>();
+	return mrpt::make_aligned_shared<CSetOfLines>();
 }
 // end of CSetOfLines
 
 // CEllipsoid
-CEllipsoid::Ptr CEllipsoid_Create() { return std::make_aligned_shared<CEllipsoid>(); }
+CEllipsoid::Ptr CEllipsoid_Create() { return mrpt::make_aligned_shared<CEllipsoid>(); }
 void CEllipsoid_setFromPosePDF(CEllipsoid& self, CPose3DPDF& posePDF)
 {
 	CPose3D meanPose;
@@ -105,7 +105,7 @@ CGridPlaneXY::Ptr CGridPlaneXY_Create(
 	float xMin = -10.0, float xMax = 10.0, float yMin = -10.0,
 	float yMax = 10.0, float z = 0.0, float frequency = 1.0)
 {
-	return std::make_aligned_shared<CGridPlaneXY>(xMin, xMax, yMin, yMax, z, frequency);
+	return mrpt::make_aligned_shared<CGridPlaneXY>(xMin, xMax, yMin, yMax, z, frequency);
 }
 
 BOOST_PYTHON_FUNCTION_OVERLOADS(

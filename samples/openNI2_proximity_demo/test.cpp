@@ -134,7 +134,7 @@ int main(int argc, char** argv)
 	window.setCameraElevationDeg(90);
 	scene = window.get3DSceneAndLock();
 
-	opengl::CSetOfLines::Ptr lines = std::make_aligned_shared<opengl::CSetOfLines>();
+	opengl::CSetOfLines::Ptr lines = mrpt::make_aligned_shared<opengl::CSetOfLines>();
 	lines->setLocation(0, 0, 0);
 	lines->setColor(0, 0, 1);
 	lines->setLineWidth(10);
@@ -145,14 +145,14 @@ int main(int argc, char** argv)
 	scene->insert(lines);
 
 	opengl::CPointCloud::Ptr too_close =
-		std::make_aligned_shared<opengl::CPointCloud>();
+		mrpt::make_aligned_shared<opengl::CPointCloud>();
 	too_close->setPointSize(5);
 	too_close->enablePointSmooth(true);
 	too_close->setColor(1, 0, 0);
 	scene->insert(too_close);
 
 	opengl::CGridPlaneXY::Ptr grid =
-		std::make_aligned_shared<opengl::CGridPlaneXY>(-4, 4, -4, 4, 0);
+		mrpt::make_aligned_shared<opengl::CGridPlaneXY>(-4, 4, -4, 4, 0);
 	scene->insert(grid);
 
 	window.unlockAccess3DScene();

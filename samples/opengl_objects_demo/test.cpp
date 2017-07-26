@@ -49,20 +49,20 @@ void TestOpenGLObjects()
 	{
 		// using mrpt smart pointers so that obj survives outside this scope.
 		opengl::CGridPlaneXY::Ptr obj =
-			std::make_aligned_shared<opengl::CGridPlaneXY>(-7, 7, -7, 7, 0, 1);
+			mrpt::make_aligned_shared<opengl::CGridPlaneXY>(-7, 7, -7, 7, 0, 1);
 		obj->setColor(0.7, 0.7, 0.7);
 		obj->setLocation(off_x, 0, 0);
 		theScene->insert(obj);
 
 		opengl::CGridPlaneXY::Ptr obj2 =
-			std::make_aligned_shared<opengl::CGridPlaneXY>(-7, 7, -7, 7, 0, 1);
+			mrpt::make_aligned_shared<opengl::CGridPlaneXY>(-7, 7, -7, 7, 0, 1);
 		obj2->setColor(0.7, 0.7, 0.7, 0.99);
 		obj2->setLocation(off_x, 15, 0);
 		obj2->enableAntiAliasing();
 		theScene->insert(obj2);
 
 		opengl::CText::Ptr gl_txt =
-			std::make_aligned_shared<opengl::CText>("CGridPlaneXY");
+			mrpt::make_aligned_shared<opengl::CText>("CGridPlaneXY");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -71,13 +71,13 @@ void TestOpenGLObjects()
 	// XZ Grid
 	{
 		opengl::CGridPlaneXZ::Ptr obj =
-			std::make_aligned_shared<opengl::CGridPlaneXZ>(-7, 7, -7, 7, 0, 1);
+			mrpt::make_aligned_shared<opengl::CGridPlaneXZ>(-7, 7, -7, 7, 0, 1);
 		obj->setColor(0.7, 0.7, 0.7);
 		obj->setLocation(off_x, 0, 0);
 		theScene->insert(obj);
 
 		opengl::CText::Ptr gl_txt =
-			std::make_aligned_shared<opengl::CText>("CGridPlaneXZ");
+			mrpt::make_aligned_shared<opengl::CText>("CGridPlaneXZ");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -85,13 +85,13 @@ void TestOpenGLObjects()
 
 	// Arrow
 	{
-		opengl::CArrow::Ptr obj = std::make_aligned_shared<opengl::CArrow>(
+		opengl::CArrow::Ptr obj = mrpt::make_aligned_shared<opengl::CArrow>(
 			0, 0, 0, 3, 0, 0, 0.2f, 0.1f, 0.2f, 0, 0, 0);
 		obj->setLocation(off_x, 0, 0);
 		obj->setColor(1, 0, 0);
 		theScene->insert(obj);
 
-		opengl::CText::Ptr gl_txt = std::make_aligned_shared<opengl::CText>("CArrow");
+		opengl::CText::Ptr gl_txt = mrpt::make_aligned_shared<opengl::CText>("CArrow");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -100,11 +100,11 @@ void TestOpenGLObjects()
 	// Axis
 	{
 		opengl::CAxis::Ptr obj =
-			std::make_aligned_shared<opengl::CAxis>(-6, -6, -6, 6, 6, 6, 2, 2, true);
+			mrpt::make_aligned_shared<opengl::CAxis>(-6, -6, -6, 6, 6, 6, 2, 2, true);
 		obj->setLocation(off_x, 0, 0);
 		theScene->insert(obj);
 
-		opengl::CText::Ptr gl_txt = std::make_aligned_shared<opengl::CText>("CAxis");
+		opengl::CText::Ptr gl_txt = mrpt::make_aligned_shared<opengl::CText>("CAxis");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -112,24 +112,24 @@ void TestOpenGLObjects()
 
 	// Box
 	{
-		opengl::CBox::Ptr obj = std::make_aligned_shared<opengl::CBox>(
+		opengl::CBox::Ptr obj = mrpt::make_aligned_shared<opengl::CBox>(
 			TPoint3D(0, 0, 0), TPoint3D(1, 1, 1), true, 3.0);
 		obj->setLocation(off_x, 0, 0);
 		theScene->insert(obj);
 
-		opengl::CBox::Ptr obj2 = std::make_aligned_shared<opengl::CBox>(
+		opengl::CBox::Ptr obj2 = mrpt::make_aligned_shared<opengl::CBox>(
 			TPoint3D(0, 0, 0), TPoint3D(1, 1, 1), false);
 		obj2->setLocation(off_x, 4, 0);
 		theScene->insert(obj2);
 
-		opengl::CBox::Ptr obj3 = std::make_aligned_shared<opengl::CBox>(
+		opengl::CBox::Ptr obj3 = mrpt::make_aligned_shared<opengl::CBox>(
 			TPoint3D(0, 0, 0), TPoint3D(1, 1, 1), false);
 		obj3->enableBoxBorder(true);
 		obj3->setLineWidth(3);
 		obj3->setLocation(off_x, 8, 0);
 		theScene->insert(obj3);
 
-		opengl::CText::Ptr gl_txt = std::make_aligned_shared<opengl::CText>("CBox");
+		opengl::CText::Ptr gl_txt = mrpt::make_aligned_shared<opengl::CText>("CBox");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -138,16 +138,16 @@ void TestOpenGLObjects()
 	// Frustum
 	{
 		opengl::CFrustum::Ptr obj =
-			std::make_aligned_shared<opengl::CFrustum>(1, 5, 60, 45, 1.5f, true, false);
+			mrpt::make_aligned_shared<opengl::CFrustum>(1, 5, 60, 45, 1.5f, true, false);
 		obj->setLocation(off_x, 0, 0);
 		theScene->insert(obj);
 
 		opengl::CFrustum::Ptr obj2 =
-			std::make_aligned_shared<opengl::CFrustum>(1, 5, 60, 45, 2.5f, true, true);
+			mrpt::make_aligned_shared<opengl::CFrustum>(1, 5, 60, 45, 2.5f, true, true);
 		obj2->setLocation(off_x, 6, 0);
 		theScene->insert(obj2);
 
-		opengl::CText::Ptr gl_txt = std::make_aligned_shared<opengl::CText>("CFrustum");
+		opengl::CText::Ptr gl_txt = mrpt::make_aligned_shared<opengl::CText>("CFrustum");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -156,25 +156,25 @@ void TestOpenGLObjects()
 	// Cylinder
 	{
 		opengl::CCylinder::Ptr obj =
-			std::make_aligned_shared<opengl::CCylinder>(2, 2, 4, 20, 10);
+			mrpt::make_aligned_shared<opengl::CCylinder>(2, 2, 4, 20, 10);
 		obj->setLocation(off_x, 0, 0);
 		obj->setColor(0, 0, 0.8);
 		theScene->insert(obj);
 
 		opengl::CCylinder::Ptr obj2 =
-			std::make_aligned_shared<opengl::CCylinder>(2, 1, 4, 20, 10);
+			mrpt::make_aligned_shared<opengl::CCylinder>(2, 1, 4, 20, 10);
 		obj2->setLocation(off_x, 6, 0);
 		obj2->setColor(0, 0, 0.8);
 		theScene->insert(obj2);
 
 		opengl::CCylinder::Ptr obj3 =
-			std::make_aligned_shared<opengl::CCylinder>(2, 0, 4, 20, 10);
+			mrpt::make_aligned_shared<opengl::CCylinder>(2, 0, 4, 20, 10);
 		obj3->setLocation(off_x, -6, 0);
 		obj3->setColor(0, 0, 0.8);
 		theScene->insert(obj3);
 
 		opengl::CText::Ptr gl_txt =
-			std::make_aligned_shared<opengl::CText>("CCylinder");
+			mrpt::make_aligned_shared<opengl::CText>("CCylinder");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -184,7 +184,7 @@ void TestOpenGLObjects()
 	{
 		{
 			opengl::CDisk::Ptr obj =
-				std::make_aligned_shared<opengl::CDisk>(2.0f, 1.8f, 50);
+				mrpt::make_aligned_shared<opengl::CDisk>(2.0f, 1.8f, 50);
 			obj->setLocation(off_x, 0, 0);
 			obj->setColor(0.8, 0, 0);
 			theScene->insert(obj);
@@ -192,13 +192,13 @@ void TestOpenGLObjects()
 
 		{
 			opengl::CDisk::Ptr obj =
-				std::make_aligned_shared<opengl::CDisk>(2.0f, 0, 50);
+				mrpt::make_aligned_shared<opengl::CDisk>(2.0f, 0, 50);
 			obj->setLocation(off_x, 5, 0);
 			obj->setColor(0.8, 0, 0);
 			theScene->insert(obj);
 		}
 
-		opengl::CText::Ptr gl_txt = std::make_aligned_shared<opengl::CText>("CDisk");
+		opengl::CText::Ptr gl_txt = mrpt::make_aligned_shared<opengl::CText>("CDisk");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -214,7 +214,7 @@ void TestOpenGLObjects()
 
 		{
 			opengl::CEllipsoid::Ptr obj =
-				std::make_aligned_shared<opengl::CEllipsoid>();
+				mrpt::make_aligned_shared<opengl::CEllipsoid>();
 			obj->setCovMatrix(cov2d);
 			obj->setLocation(off_x, 6, 0);
 			obj->setQuantiles(2.0);
@@ -222,7 +222,7 @@ void TestOpenGLObjects()
 		}
 		{
 			opengl::CEllipsoid::Ptr obj =
-				std::make_aligned_shared<opengl::CEllipsoid>();
+				mrpt::make_aligned_shared<opengl::CEllipsoid>();
 			obj->setCovMatrix(cov3d);
 			obj->setQuantiles(2.0);
 			obj->enableDrawSolid3D(false);
@@ -231,7 +231,7 @@ void TestOpenGLObjects()
 		}
 		{
 			opengl::CEllipsoid::Ptr obj =
-				std::make_aligned_shared<opengl::CEllipsoid>();
+				mrpt::make_aligned_shared<opengl::CEllipsoid>();
 			obj->setCovMatrix(cov3d);
 			obj->setQuantiles(2.0);
 			obj->enableDrawSolid3D(true);
@@ -240,7 +240,7 @@ void TestOpenGLObjects()
 		}
 
 		opengl::CText::Ptr gl_txt =
-			std::make_aligned_shared<opengl::CText>("CEllipsoid");
+			mrpt::make_aligned_shared<opengl::CText>("CEllipsoid");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -257,7 +257,7 @@ void TestOpenGLObjects()
 
 		{
 			opengl::CEllipsoidRangeBearing2D::Ptr obj =
-				std::make_aligned_shared<opengl::CEllipsoidRangeBearing2D>();
+				mrpt::make_aligned_shared<opengl::CEllipsoidRangeBearing2D>();
 			obj->setCovMatrixAndMean(cov_params, mean_params);
 			obj->setLocation(off_x, 6, 0);
 			obj->setQuantiles(2.0f);
@@ -280,7 +280,7 @@ void TestOpenGLObjects()
 
 		{
 			opengl::CEllipsoidRangeBearing2D::Ptr obj =
-				std::make_aligned_shared<opengl::CEllipsoidRangeBearing2D>();
+				mrpt::make_aligned_shared<opengl::CEllipsoidRangeBearing2D>();
 			obj->setCovMatrixAndMean(cov_params, mean_params);
 			obj->setLocation(off_x, 0, 0);
 			obj->setQuantiles(2.0f);
@@ -294,7 +294,7 @@ void TestOpenGLObjects()
 		}
 
 		opengl::CText::Ptr gl_txt =
-			std::make_aligned_shared<opengl::CText>("CEllipsoidRangeBearing2D");
+			mrpt::make_aligned_shared<opengl::CText>("CEllipsoidRangeBearing2D");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -318,7 +318,7 @@ void TestOpenGLObjects()
 
 		{
 			opengl::CEllipsoidInverseDepth2D::Ptr obj =
-				std::make_aligned_shared<opengl::CEllipsoidInverseDepth2D>();
+				mrpt::make_aligned_shared<opengl::CEllipsoidInverseDepth2D>();
 			obj->setCovMatrixAndMean(cov_params, mean_params);
 			obj->setLocation(off_x, 6, 0);
 			obj->setQuantiles(3.f);
@@ -332,7 +332,7 @@ void TestOpenGLObjects()
 		}
 
 		opengl::CText::Ptr gl_txt =
-			std::make_aligned_shared<opengl::CText>("CEllipsoidInverseDepth2D");
+			mrpt::make_aligned_shared<opengl::CText>("CEllipsoidInverseDepth2D");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -357,7 +357,7 @@ void TestOpenGLObjects()
 
 		{
 			opengl::CEllipsoidInverseDepth3D::Ptr obj =
-				std::make_aligned_shared<opengl::CEllipsoidInverseDepth3D>();
+				mrpt::make_aligned_shared<opengl::CEllipsoidInverseDepth3D>();
 			obj->setCovMatrixAndMean(cov_params, mean_params);
 			obj->setLocation(off_x, 0, 0);
 			obj->setQuantiles(3.f);
@@ -371,7 +371,7 @@ void TestOpenGLObjects()
 		}
 
 		opengl::CText::Ptr gl_txt =
-			std::make_aligned_shared<opengl::CText>("CEllipsoidInverseDepth3D");
+			mrpt::make_aligned_shared<opengl::CText>("CEllipsoidInverseDepth3D");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -379,7 +379,7 @@ void TestOpenGLObjects()
 
 	// CMesh
 	{
-		opengl::CMesh::Ptr obj = std::make_aligned_shared<opengl::CMesh>();
+		opengl::CMesh::Ptr obj = mrpt::make_aligned_shared<opengl::CMesh>();
 		obj->setLocation(off_x, 0, 0);
 
 		mrpt::math::CMatrixFloat Zs(40, 40);  // Height
@@ -402,7 +402,7 @@ void TestOpenGLObjects()
 		obj->enableColorFromZ(true, mrpt::utils::cmJET);
 		theScene->insert(obj);
 
-		opengl::CText::Ptr gl_txt = std::make_aligned_shared<opengl::CText>("CMesh");
+		opengl::CText::Ptr gl_txt = mrpt::make_aligned_shared<opengl::CText>("CMesh");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -410,7 +410,7 @@ void TestOpenGLObjects()
 
 	// CMesh3D
 	{
-		opengl::CMesh3D::Ptr obj = std::make_aligned_shared<opengl::CMesh3D>();
+		opengl::CMesh3D::Ptr obj = mrpt::make_aligned_shared<opengl::CMesh3D>();
 		obj->enableShowEdges(false);
 		obj->enableShowFaces(true);
 		obj->enableShowVertices(false);
@@ -462,7 +462,7 @@ void TestOpenGLObjects()
 			num_verts, num_faces, vert_per_face, face_verts, vert_coords);
 		theScene->insert(obj);
 
-		opengl::CText::Ptr gl_txt = std::make_aligned_shared<opengl::CText>("CMesh3D");
+		opengl::CText::Ptr gl_txt = mrpt::make_aligned_shared<opengl::CText>("CMesh3D");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -470,7 +470,7 @@ void TestOpenGLObjects()
 
 	// CPointCloud
 	{
-		opengl::CPointCloud::Ptr obj = std::make_aligned_shared<opengl::CPointCloud>();
+		opengl::CPointCloud::Ptr obj = mrpt::make_aligned_shared<opengl::CPointCloud>();
 		obj->setLocation(off_x, 0, 0);
 		theScene->insert(obj);
 
@@ -485,7 +485,7 @@ void TestOpenGLObjects()
 				mrpt::random::randomGenerator.drawUniform(-5, 5));
 
 		opengl::CText::Ptr gl_txt =
-			std::make_aligned_shared<opengl::CText>("CPointCloud");
+			mrpt::make_aligned_shared<opengl::CText>("CPointCloud");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -494,7 +494,7 @@ void TestOpenGLObjects()
 	// CPointCloudColoured
 	{
 		opengl::CPointCloudColoured::Ptr obj =
-			std::make_aligned_shared<opengl::CPointCloudColoured>();
+			mrpt::make_aligned_shared<opengl::CPointCloudColoured>();
 		obj->setLocation(off_x, 0, 0);
 		theScene->insert(obj);
 
@@ -511,7 +511,7 @@ void TestOpenGLObjects()
 				mrpt::random::randomGenerator.drawUniform(0, 1));
 
 		opengl::CText::Ptr gl_txt =
-			std::make_aligned_shared<opengl::CText>("CPointCloudColoured");
+			mrpt::make_aligned_shared<opengl::CText>("CPointCloudColoured");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -539,7 +539,7 @@ void TestOpenGLObjects()
 		}
 
 		opengl::CText::Ptr gl_txt =
-			std::make_aligned_shared<opengl::CText>("CPolyhedron");
+			mrpt::make_aligned_shared<opengl::CText>("CPolyhedron");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -548,12 +548,12 @@ void TestOpenGLObjects()
 	// CSphere
 	{
 		{
-			opengl::CSphere::Ptr obj = std::make_aligned_shared<opengl::CSphere>(3.0);
+			opengl::CSphere::Ptr obj = mrpt::make_aligned_shared<opengl::CSphere>(3.0);
 			obj->setLocation(off_x, 0, 0);
 			theScene->insert(obj);
 		}
 
-		opengl::CText::Ptr gl_txt = std::make_aligned_shared<opengl::CText>("CSphere");
+		opengl::CText::Ptr gl_txt = mrpt::make_aligned_shared<opengl::CText>("CSphere");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -563,14 +563,14 @@ void TestOpenGLObjects()
 	// CText
 	{
 		{
-			opengl::CText::Ptr obj = std::make_aligned_shared<opengl::CText>(
+			opengl::CText::Ptr obj = mrpt::make_aligned_shared<opengl::CText>(
 				"This is a CText example! My size is invariant to "
 				"eye-distance");
 			obj->setLocation(off_x, 0, 0);
 			theScene->insert(obj);
 		}
 
-		opengl::CText::Ptr gl_txt = std::make_aligned_shared<opengl::CText>("CText");
+		opengl::CText::Ptr gl_txt = mrpt::make_aligned_shared<opengl::CText>("CText");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -580,12 +580,12 @@ void TestOpenGLObjects()
 	{
 		{
 			opengl::CText3D::Ptr obj =
-				std::make_aligned_shared<opengl::CText3D>("I'm a cool CText3D!");
+				mrpt::make_aligned_shared<opengl::CText3D>("I'm a cool CText3D!");
 			obj->setLocation(off_x, 0, 0);
 			theScene->insert(obj);
 		}
 
-		opengl::CText::Ptr gl_txt = std::make_aligned_shared<opengl::CText>("CText3D");
+		opengl::CText::Ptr gl_txt = mrpt::make_aligned_shared<opengl::CText>("CText3D");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -594,7 +594,7 @@ void TestOpenGLObjects()
 	// CColorMap
 	{
 		{
-			opengl::CColorBar::Ptr obj = std::make_aligned_shared<opengl::CColorBar>(
+			opengl::CColorBar::Ptr obj = mrpt::make_aligned_shared<opengl::CColorBar>(
 				mrpt::utils::cmHOT, 0.2, 1.0, 0.0, 1.0, -50.0, 100.0,
 				"%7.02f m/s");
 			obj->setLocation(off_x, 0, 0);
@@ -602,7 +602,7 @@ void TestOpenGLObjects()
 		}
 
 		opengl::CText::Ptr gl_txt =
-			std::make_aligned_shared<opengl::CText>("CColorBar");
+			mrpt::make_aligned_shared<opengl::CText>("CColorBar");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -612,7 +612,7 @@ void TestOpenGLObjects()
 	{
 		{
 			opengl::CSetOfLines::Ptr obj =
-				std::make_aligned_shared<opengl::CSetOfLines>();
+				mrpt::make_aligned_shared<opengl::CSetOfLines>();
 			obj->setLocation(off_x, 0, 0);
 
 			for (int i = 0; i < 15; i++)
@@ -628,7 +628,7 @@ void TestOpenGLObjects()
 		}
 
 		opengl::CText::Ptr gl_txt =
-			std::make_aligned_shared<opengl::CText>("CSetOfLines");
+			mrpt::make_aligned_shared<opengl::CText>("CSetOfLines");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -638,7 +638,7 @@ void TestOpenGLObjects()
 	{
 		{
 			opengl::CSimpleLine::Ptr obj =
-				std::make_aligned_shared<opengl::CSimpleLine>();
+				mrpt::make_aligned_shared<opengl::CSimpleLine>();
 			obj->setLocation(off_x, 0, 0);
 
 			obj->setLineCoords(
@@ -653,7 +653,7 @@ void TestOpenGLObjects()
 		}
 
 		opengl::CText::Ptr gl_txt =
-			std::make_aligned_shared<opengl::CText>("CSimpleLine");
+			mrpt::make_aligned_shared<opengl::CText>("CSimpleLine");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -663,7 +663,7 @@ void TestOpenGLObjects()
 	{
 		{
 			opengl::CVectorField2D::Ptr obj =
-				std::make_aligned_shared<opengl::CVectorField2D>();
+				mrpt::make_aligned_shared<opengl::CVectorField2D>();
 			obj->setLocation(off_x, 0, 0);
 
 			CMatrixFloat x(16, 16), y(16, 16);
@@ -684,7 +684,7 @@ void TestOpenGLObjects()
 		}
 
 		opengl::CText::Ptr gl_txt =
-			std::make_aligned_shared<opengl::CText>("CVectorField2D");
+			mrpt::make_aligned_shared<opengl::CText>("CVectorField2D");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -696,7 +696,7 @@ void TestOpenGLObjects()
 			const unsigned int num = 20;
 			const float scale = 0.8 * STEP_X / num;
 			opengl::CVectorField3D::Ptr obj =
-				std::make_aligned_shared<opengl::CVectorField3D>();
+				mrpt::make_aligned_shared<opengl::CVectorField3D>();
 			obj->setLocation(off_x, -0.5 * scale * num, 0);  //
 
 			CMatrixFloat x(num, num), y(num, num), z(num, num);
@@ -724,7 +724,7 @@ void TestOpenGLObjects()
 		}
 
 		opengl::CText::Ptr gl_txt =
-			std::make_aligned_shared<opengl::CText>("CVectorField3D");
+			mrpt::make_aligned_shared<opengl::CText>("CVectorField3D");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -740,7 +740,7 @@ void TestOpenGLObjects()
 		}
 
 		opengl::CText::Ptr gl_txt =
-			std::make_aligned_shared<opengl::CText>("stock_objects::BumblebeeCamera()");
+			mrpt::make_aligned_shared<opengl::CText>("stock_objects::BumblebeeCamera()");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -756,7 +756,7 @@ void TestOpenGLObjects()
 		}
 
 		opengl::CText::Ptr gl_txt =
-			std::make_aligned_shared<opengl::CText>("stock_objects::CornerXYSimple()");
+			mrpt::make_aligned_shared<opengl::CText>("stock_objects::CornerXYSimple()");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -772,7 +772,7 @@ void TestOpenGLObjects()
 		}
 
 		opengl::CText::Ptr gl_txt =
-			std::make_aligned_shared<opengl::CText>("stock_objects::CornerXYZSimple()");
+			mrpt::make_aligned_shared<opengl::CText>("stock_objects::CornerXYZSimple()");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -787,7 +787,7 @@ void TestOpenGLObjects()
 		}
 
 		opengl::CText::Ptr gl_txt =
-			std::make_aligned_shared<opengl::CText>("stock_objects::CornerXYZ()");
+			mrpt::make_aligned_shared<opengl::CText>("stock_objects::CornerXYZ()");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -803,7 +803,7 @@ void TestOpenGLObjects()
 		}
 
 		opengl::CText::Ptr gl_txt =
-			std::make_aligned_shared<opengl::CText>("stock_objects::RobotPioneer()");
+			mrpt::make_aligned_shared<opengl::CText>("stock_objects::RobotPioneer()");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -819,7 +819,7 @@ void TestOpenGLObjects()
 		}
 
 		opengl::CText::Ptr gl_txt =
-			std::make_aligned_shared<opengl::CText>("stock_objects::Hokuyo_URG()");
+			mrpt::make_aligned_shared<opengl::CText>("stock_objects::Hokuyo_URG()");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -835,7 +835,7 @@ void TestOpenGLObjects()
 		}
 
 		opengl::CText::Ptr gl_txt =
-			std::make_aligned_shared<opengl::CText>("stock_objects::Hokuyo_UTM()");
+			mrpt::make_aligned_shared<opengl::CText>("stock_objects::Hokuyo_UTM()");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}
@@ -850,7 +850,7 @@ void TestOpenGLObjects()
 			theScene->insert(obj);
 		}
 
-		opengl::CText::Ptr gl_txt = std::make_aligned_shared<opengl::CText>(
+		opengl::CText::Ptr gl_txt = mrpt::make_aligned_shared<opengl::CText>(
 			"stock_objects::Househam_Sprayer()");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
@@ -867,7 +867,7 @@ void TestOpenGLObjects()
 		}
 
 		opengl::CText::Ptr gl_txt =
-			std::make_aligned_shared<opengl::CText>("stock_objects::RobotRhodon()");
+			mrpt::make_aligned_shared<opengl::CText>("stock_objects::RobotRhodon()");
 		gl_txt->setLocation(off_x, off_y_label, 0);
 		theScene->insert(gl_txt);
 	}

@@ -41,10 +41,10 @@ int main()
 		COpenGLScene::Ptr& scene = wind.get3DSceneAndLock();
 
 		scene->insert(
-			std::make_aligned_shared<mrpt::opengl::CGridPlaneXY>(
+			mrpt::make_aligned_shared<mrpt::opengl::CGridPlaneXY>(
 				-20, 20, -20, 20, 0, 1));
 		scene->insert(mrpt::opengl::stock_objects::RobotPioneer());
-		// scene->insert( std::make_aligned_shared<mrpt::opengl::CCylinder>(1, 1, 2.0f)
+		// scene->insert( mrpt::make_aligned_shared<mrpt::opengl::CCylinder>(1, 1, 2.0f)
 		// );
 		wind.unlockAccess3DScene();
 
@@ -105,7 +105,7 @@ int main()
 						if (!objPtr)
 						{
 							sonarRange =
-								std::make_aligned_shared<mrpt::opengl::CCylinder>(
+								mrpt::make_aligned_shared<mrpt::opengl::CCylinder>(
 									0.0f, 0.0f, 1.0f, 30, 10);
 							sonarRange->setName(obj);
 							scene->insert(sonarRange);

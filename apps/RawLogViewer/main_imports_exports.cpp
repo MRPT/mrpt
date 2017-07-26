@@ -141,7 +141,7 @@ void xRawLogViewerFrame::OnImportCARMEN(wxCommandEvent& event)
 		bool isRearLaser = line.find("RLASER ") == 0;
 		if (isFrontLaser || isRearLaser)
 		{
-			obsScan = std::make_aligned_shared<CObservation2DRangeScan>();
+			obsScan = mrpt::make_aligned_shared<CObservation2DRangeScan>();
 			obsScan->aperture = M_PIf;
 			obsScan->rightToLeft = true;
 			obsScan->maxRange = maxValidLaserRange;
@@ -321,9 +321,9 @@ void xRawLogViewerFrame::OnImportSequenceOfImages(wxCommandEvent& event)
 				!os::_strcmpi("ras", filExt.c_str()))
 			{
 				// Add SF:
-				CSensoryFrame::Ptr sf = std::make_aligned_shared<CSensoryFrame>();
+				CSensoryFrame::Ptr sf = mrpt::make_aligned_shared<CSensoryFrame>();
 				CObservationImage::Ptr im =
-					std::make_aligned_shared<CObservationImage>();
+					mrpt::make_aligned_shared<CObservationImage>();
 				im->cameraPose = CPose3D(0, 0, 0);
 				im->image.loadFromFile(filName);
 				im->timestamp = fakeTimeStamp;
@@ -345,7 +345,7 @@ void xRawLogViewerFrame::OnImportSequenceOfImages(wxCommandEvent& event)
 
 				// Add emppty action:
 				CActionCollection::Ptr acts =
-					std::make_aligned_shared<CActionCollection>();
+					mrpt::make_aligned_shared<CActionCollection>();
 				rawlog.addActionsMemoryReference(acts);
 
 				// for the next step:
@@ -1118,7 +1118,7 @@ void xRawLogViewerFrame::saveImportedLogToRawlog(
 					// 2D/3D LASER
 					// ----------------
 					CObservation2DRangeScan::Ptr obs =
-						std::make_aligned_shared<CObservation2DRangeScan>();
+						mrpt::make_aligned_shared<CObservation2DRangeScan>();
 					newObs = obs;
 
 					obs->aperture = M_PIf;
@@ -1156,7 +1156,7 @@ void xRawLogViewerFrame::saveImportedLogToRawlog(
 					if (fileExists(img_file))
 					{
 						CObservationImage::Ptr obs =
-							std::make_aligned_shared<CObservationImage>();
+							mrpt::make_aligned_shared<CObservationImage>();
 						newObs = obs;
 
 						obs->cameraPose.setFromValues(
@@ -1743,7 +1743,7 @@ void xRawLogViewerFrame::OnMenuItemImportBremenDLRLog(wxCommandEvent& event)
 				//  so we have the observation, even if it's empty:
 				// Create upon first landmark:
 				CObservationBearingRange::Ptr obs =
-					std::make_aligned_shared<CObservationBearingRange>();
+					mrpt::make_aligned_shared<CObservationBearingRange>();
 				obs->sensorLabel = "CIRCLE_DETECTOR";
 				obs->timestamp = cur_timestamp;
 				obs->minSensorDistance = 0;
@@ -1769,7 +1769,7 @@ void xRawLogViewerFrame::OnMenuItemImportBremenDLRLog(wxCommandEvent& event)
 
 			// Add the image to be inserted before the next odometry entry:
 			CObservationImage::Ptr newImg =
-				std::make_aligned_shared<CObservationImage>();
+				mrpt::make_aligned_shared<CObservationImage>();
 			newImg->timestamp = cur_timestamp;
 			newImg->sensorLabel = "CAMERA";
 			newImg->image.setExternalStorage(words[1] + std::string(".jpg"));
@@ -1807,7 +1807,7 @@ void xRawLogViewerFrame::OnMenuItemImportBremenDLRLog(wxCommandEvent& event)
 				obs_odo.timestamp = cur_timestamp;
 				obs_odo.odometry += odoIncr;
 				newRawlog.addObservationMemoryReference(
-					std::make_aligned_shared<CObservationOdometry>(obs_odo));
+					mrpt::make_aligned_shared<CObservationOdometry>(obs_odo));
 			}
 		}
 		else if (words[0] == "LANDMARK_C")

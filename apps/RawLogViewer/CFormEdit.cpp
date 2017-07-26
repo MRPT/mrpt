@@ -1002,7 +1002,7 @@ void CFormEdit::executeOperationOnRawlog(
 	string errorMsg;
 	wxString auxStr;
 
-	CSensoryFrame::Ptr dummy_sf = std::make_aligned_shared<CSensoryFrame>();
+	CSensoryFrame::Ptr dummy_sf = mrpt::make_aligned_shared<CSensoryFrame>();
 
 	// Apply changes:
 	int changes = 0;

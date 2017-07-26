@@ -362,11 +362,11 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 				// this->m_gl3DRangeScan->m_openGLScene->insert(
 				// mrpt::opengl::stock_objects::CornerXYZ() );
 				this->m_gl3DRangeScan->m_openGLScene->insert(
-					std::make_aligned_shared<mrpt::opengl::CAxis>(
+					mrpt::make_aligned_shared<mrpt::opengl::CAxis>(
 						-20, -20, -20, 20, 20, 20, 1, 2, true));
 
 				mrpt::opengl::CPointCloudColoured::Ptr pnts =
-					std::make_aligned_shared<mrpt::opengl::CPointCloudColoured>();
+					mrpt::make_aligned_shared<mrpt::opengl::CPointCloudColoured>();
 				CColouredPointsMap pointMap;
 				pointMap.colorScheme.scheme =
 					CColouredPointsMap::cmFromIntensityImage;
@@ -514,11 +514,11 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 				// this->m_gl3DRangeScan->m_openGLScene->insert(
 				// mrpt::opengl::stock_objects::CornerXYZ() );
 				this->m_gl3DRangeScan->m_openGLScene->insert(
-					std::make_aligned_shared<mrpt::opengl::CAxis>(
+					mrpt::make_aligned_shared<mrpt::opengl::CAxis>(
 						-20, -20, -20, 20, 20, 20, 1, 2, true));
 
 				mrpt::opengl::CPointCloudColoured::Ptr pnts =
-					std::make_aligned_shared<mrpt::opengl::CPointCloudColoured>();
+					mrpt::make_aligned_shared<mrpt::opengl::CPointCloudColoured>();
 
 				CColouredPointsMap pntsMap;
 				pntsMap.loadFromVelodyneScan(*obs);

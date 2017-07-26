@@ -84,7 +84,7 @@ void TestGuiWindowsEvents()
 
 	{
 		mrpt::opengl::COpenGLScene::Ptr& scene = win3D.get3DSceneAndLock();
-		scene->insert(std::make_aligned_shared<mrpt::opengl::CGridPlaneXY>());
+		scene->insert(mrpt::make_aligned_shared<mrpt::opengl::CGridPlaneXY>());
 		win3D.unlockAccess3DScene();
 		win3D.repaint();
 	}

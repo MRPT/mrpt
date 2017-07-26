@@ -215,7 +215,7 @@ void CHMTSLAM::pushObservation(const CObservation::Ptr& obs)
 	}
 
 	// Add a CSensoryFrame with the obs:
-	CSensoryFrame::Ptr sf = std::make_aligned_shared<CSensoryFrame>();
+	CSensoryFrame::Ptr sf = mrpt::make_aligned_shared<CSensoryFrame>();
 	sf->insert(
 		obs);  // memory will be freed when deleting the SF in other thread
 
@@ -421,7 +421,7 @@ void CHMTSLAM::initializeEmptyMap()
 		m_map.clear();
 
 		// Create a single node for the starting area:
-		CHMHMapNode::Ptr firstArea = std::make_aligned_shared<CHMHMapNode>(&m_map);
+		CHMHMapNode::Ptr firstArea = mrpt::make_aligned_shared<CHMHMapNode>(&m_map);
 		firstAreaID = firstArea->getID();
 
 		firstArea->m_hypotheses = LMH_hyps;
