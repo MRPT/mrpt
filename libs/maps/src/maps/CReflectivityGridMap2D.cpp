@@ -370,7 +370,7 @@ void CReflectivityGridMap2D::getAs3DObject(
 	MRPT_START
 
 	opengl::CTexturedPlane::Ptr outObj =
-		std::make_shared<opengl::CTexturedPlane>();
+		mrpt::make_aligned_shared<opengl::CTexturedPlane>();
 
 	outObj->setPlaneCorners(m_x_min, m_x_max, m_y_min, m_y_max);
 

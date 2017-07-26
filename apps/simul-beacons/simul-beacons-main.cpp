@@ -200,7 +200,7 @@ int main(int argc, char** argv)
 
 			// Simulate observations:
 			CObservationBeaconRanges::Ptr obs =
-				std::make_shared<CObservationBeaconRanges>();
+				std::make_aligned_shared<CObservationBeaconRanges>();
 			obs->minSensorDistance = minSensorDistance;
 			obs->maxSensorDistance = maxSensorDistance;
 			obs->stdError = stdError;

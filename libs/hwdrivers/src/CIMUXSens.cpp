@@ -121,7 +121,7 @@ void CIMUXSens::doProcess()
 			nowUI = packet.getRtc();
 			m_state = ssWorking;
 
-			CObservationIMU::Ptr obs = std::make_shared<CObservationIMU>();
+			CObservationIMU::Ptr obs = mrpt::make_aligned_shared<CObservationIMU>();
 
 			// ANGLE MEASUREMENTS:
 			if (packet.containsOriEuler())

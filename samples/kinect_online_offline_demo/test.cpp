@@ -141,7 +141,7 @@ void thread_grabbing(TThreadParam& p)
 				// Grab new observation from the camera:
 				bool there_is_obs = true, hard_error = false;
 
-				CObservation3DRangeScan::Ptr obs = std::make_shared<
+				CObservation3DRangeScan::Ptr obs = std::make_aligned_shared<
 					CObservation3DRangeScan>();  // Smart pointers to
 				// observations. Memory pooling
 				// is used internally
@@ -275,7 +275,7 @@ void Test_KinectOnlineOffline(
 	win3D.setCameraPointingToPoint(2.5, 0, 0);
 
 	mrpt::opengl::CPointCloudColoured::Ptr gl_points =
-		std::make_shared<mrpt::opengl::CPointCloudColoured>();
+		std::make_aligned_shared<mrpt::opengl::CPointCloudColoured>();
 	gl_points->setPointSize(2.5);
 
 	opengl::COpenGLViewport::Ptr
@@ -285,7 +285,7 @@ void Test_KinectOnlineOffline(
 
 		// Create the Opengl object for the point cloud:
 		scene->insert(gl_points);
-		scene->insert(std::make_shared<mrpt::opengl::CGridPlaneXY>());
+		scene->insert(std::make_aligned_shared<mrpt::opengl::CGridPlaneXY>());
 		scene->insert(mrpt::opengl::stock_objects::CornerXYZ());
 
 		const double aspect_ratio = 480.0 / 640.0;

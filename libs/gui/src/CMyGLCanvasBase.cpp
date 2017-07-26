@@ -208,7 +208,7 @@ CMyGLCanvasBase::CMyGLCanvasBase(
 	  m_mouseLastX(0),
 	  m_mouseLastY(0)
 {
-	m_openGLScene = std::make_shared<COpenGLScene>();
+	m_openGLScene = mrpt::make_aligned_shared<COpenGLScene>();
 
 	mouseClickX = 0;
 	mouseClickY = 0;

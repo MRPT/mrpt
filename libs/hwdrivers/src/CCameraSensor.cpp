@@ -755,7 +755,7 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 
 	if (m_cap_cv)
 	{
-		obs = std::make_shared<CObservationImage>();
+		obs = mrpt::make_aligned_shared<CObservationImage>();
 		if (!m_cap_cv->getObservation(*obs))
 		{  // Error
 			m_state = CGenericSensor::ssError;
@@ -766,7 +766,7 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 	}
 	else if (m_cap_dc1394)
 	{
-		obs = std::make_shared<CObservationImage>();
+		obs = mrpt::make_aligned_shared<CObservationImage>();
 		if (!m_cap_dc1394->getObservation(*obs))
 		{  // Error
 			m_state = CGenericSensor::ssError;
@@ -777,7 +777,7 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 	}
 	else if (m_cap_swissranger)
 	{
-		obs3D = std::make_shared<CObservation3DRangeScan>();
+		obs3D = mrpt::make_aligned_shared<CObservation3DRangeScan>();
 
 		bool there_is_obs, hardware_error;
 		m_cap_swissranger->getNextObservation(
@@ -793,7 +793,7 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 	}
 	else if (m_cap_kinect)
 	{
-		obs3D = std::make_shared<CObservation3DRangeScan>();
+		obs3D = mrpt::make_aligned_shared<CObservation3DRangeScan>();
 
 		// Specially at start-up, there may be a delay grabbing so a few calls
 		// return false: add a timeout.
@@ -825,7 +825,7 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 	}
 	else if (m_cap_openni2)
 	{
-		obs3D = std::make_shared<CObservation3DRangeScan>();
+		obs3D = mrpt::make_aligned_shared<CObservation3DRangeScan>();
 		// Specially at start-up, there may be a delay grabbing so a few calls
 		// return false: add a timeout.
 		const mrpt::system::TTimeStamp t0 = mrpt::system::now();
@@ -850,7 +850,7 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 	}
 	else if (m_cap_bumblebee_dc1394)
 	{
-		stObs = std::make_shared<CObservationStereoImages>();
+		stObs = mrpt::make_aligned_shared<CObservationStereoImages>();
 		if (!m_cap_bumblebee_dc1394->getStereoObservation(*stObs))
 		{
 			m_state = CGenericSensor::ssError;
@@ -863,7 +863,7 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 	}
 	else if (m_cap_svs)
 	{
-		stObs = std::make_shared<CObservationStereoImages>();
+		stObs = mrpt::make_aligned_shared<CObservationStereoImages>();
 
 		if (!m_cap_svs->getStereoObservation(*stObs))
 		{
@@ -876,7 +876,7 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 	}
 	else if (m_cap_ffmpeg)
 	{
-		obs = std::make_shared<CObservationImage>();
+		obs = mrpt::make_aligned_shared<CObservationImage>();
 
 		if (!m_cap_ffmpeg->retrieveFrame(obs->image))
 		{  // Error
@@ -898,7 +898,7 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 			"%s/%s", m_img_dir_url.c_str(), m_img_dir_left_format.c_str());
 		if (m_img_dir_is_stereo)
 		{
-			stObs = std::make_shared<CObservationStereoImages>();
+			stObs = mrpt::make_aligned_shared<CObservationStereoImages>();
 			if (!stObs->imageLeft.loadFromFile(
 					format(auxL.c_str(), m_img_dir_counter)))
 			{
@@ -919,7 +919,7 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 		else
 		{
 			// use only left image prefix
-			obs = std::make_shared<CObservationImage>();
+			obs = mrpt::make_aligned_shared<CObservationImage>();
 			if (!obs->image.loadFromFile(
 					format(auxL.c_str(), m_img_dir_counter++)))
 			{
@@ -1035,12 +1035,12 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 		bool ok;
 		if (!m_cap_flycap->isStereo())  // Mono image
 		{
-			obs = std::make_shared<CObservationImage>();
+			obs = mrpt::make_aligned_shared<CObservationImage>();
 			ok = m_cap_flycap->getObservation(*obs);
 		}
 		else  // Stereo camera connected
 		{
-			stObs = std::make_shared<CObservationStereoImages>();
+			stObs = mrpt::make_aligned_shared<CObservationStereoImages>();
 			ok = m_cap_flycap->getObservation(*stObs);
 		}
 
@@ -1054,7 +1054,7 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 	}
 	else if (m_cap_flycap_stereo_l && m_cap_flycap_stereo_r)
 	{
-		stObs = std::make_shared<CObservationStereoImages>();
+		stObs = mrpt::make_aligned_shared<CObservationStereoImages>();
 
 		CObservationImage obsL, obsR;
 
@@ -1092,8 +1092,8 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 	}
 	else if (m_cap_duo3d)
 	{
-		stObs = std::make_shared<CObservationStereoImages>();
-		obsIMU = std::make_shared<CObservationIMU>();
+		stObs = mrpt::make_aligned_shared<CObservationStereoImages>();
+		obsIMU = mrpt::make_aligned_shared<CObservationIMU>();
 
 		bool thereIsIMG, thereIsIMU;
 		m_cap_duo3d->getObservations(*stObs, *obsIMU, thereIsIMG, thereIsIMU);
@@ -1291,7 +1291,7 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 					caption +=
 						format(" (decimation: %i)", m_preview_decimation);
 				m_preview_win1 =
-					std::make_shared<mrpt::gui::CDisplayWindow>(caption);
+					mrpt::make_aligned_shared<mrpt::gui::CDisplayWindow>(caption);
 			}
 			if (stObs && !m_preview_win2)
 			{
@@ -1301,7 +1301,7 @@ void CCameraSensor::getNextFrame(vector<CSerializable::Ptr>& out_obs)
 					caption +=
 						format(" (decimation: %i)", m_preview_decimation);
 				m_preview_win2 =
-					std::make_shared<mrpt::gui::CDisplayWindow>(caption);
+					mrpt::make_aligned_shared<mrpt::gui::CDisplayWindow>(caption);
 			}
 			// Monocular image or Left from a stereo pair:
 			if (m_preview_win1->isOpen())
@@ -1491,7 +1491,7 @@ CCameraSensor::Ptr mrpt::hwdrivers::prepareVideoSourceFromUserSelection()
 	// If the user didn't accept the dialog, return now:
 	if (!future.get().accepted_by_user) return CCameraSensor::Ptr();
 
-	CCameraSensor::Ptr cam = std::make_shared<CCameraSensor>();
+	CCameraSensor::Ptr cam = mrpt::make_aligned_shared<CCameraSensor>();
 	cam->loadConfig(future.get().selectedConfig, "CONFIG");
 	cam->initialize();  // This will raise an exception if neccesary
 
@@ -1514,7 +1514,7 @@ CCameraSensor::Ptr mrpt::hwdrivers::prepareVideoSourceFromPanel(void* _panel)
 		writeConfigFromVideoSourcePanel(_panel, "CONFIG", &cfg);
 
 		// Try to open the camera:
-		CCameraSensor::Ptr video = std::make_shared<CCameraSensor>();
+		CCameraSensor::Ptr video = mrpt::make_aligned_shared<CCameraSensor>();
 		video->loadConfig(cfg, "CONFIG");
 
 		// This will raise an exception if neccesary

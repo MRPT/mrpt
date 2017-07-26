@@ -908,7 +908,7 @@ void COpenGLViewport::internal_setImageView_fast(
 {
 	// If this is the first time, we have to create the quad object:
 	if (!m_isImageView || !m_imageview_img)
-		m_imageview_img = std::make_shared<mrpt::utils::CImage>();
+		m_imageview_img = mrpt::make_aligned_shared<mrpt::utils::CImage>();
 	m_isImageView = true;
 
 	// Update texture image:

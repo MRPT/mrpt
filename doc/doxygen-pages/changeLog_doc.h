@@ -27,6 +27,7 @@
 		- \ref mrpt_base_grp
 			- Removed functions (replaced by C++11/14 standard library):
 				- mrpt::math::erf, mrpt::math::erfc, std::isfinite, mrpt::math::std::isnan
+			- Added: mrpt::make_aligned_shared<> template
 		- \ref mrpt_slam_grp
 			- rbpf-slam: Add support for simplemap continuation.
 		- \ref mrpt_nav_grp

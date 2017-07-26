@@ -141,7 +141,7 @@ int main(int argc, char** argv)
 			// Only if we have a valid pose, save it to the simple map:
 			if (has_gt_pose)
 			{
-				CSensoryFrame::Ptr SF = std::make_shared<CSensoryFrame>();
+				CSensoryFrame::Ptr SF = std::make_aligned_shared<CSensoryFrame>();
 
 				for (size_t i = 0; i < importedObservations.size(); i++)
 				{
@@ -156,7 +156,7 @@ int main(int argc, char** argv)
 
 				// Insert (observations, pose) pair:
 				CPosePDFGaussian::Ptr pos =
-					std::make_shared<CPosePDFGaussian>();
+					std::make_aligned_shared<CPosePDFGaussian>();
 				pos->mean = gt_pose;
 				theSimpleMap.insert(pos, SF);
 			}

@@ -181,7 +181,7 @@ int main(int argc, char** argv)
 							gd_est.eNosePoseOnTheRobot = MOXmodel_pose;
 
 							mrpt::obs::CObservationGasSensors::Ptr obs_GDM =
-								std::make_shared<CObservationGasSensors>();
+								std::make_aligned_shared<CObservationGasSensors>();
 							obs_GDM->sensorLabel = "GDM";
 							// modify timestamp to deal with the delay of the
 							// model

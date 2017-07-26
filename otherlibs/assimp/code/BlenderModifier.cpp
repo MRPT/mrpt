@@ -308,7 +308,7 @@ void  BlenderModifier_Subdivision :: DoIt(aiNode& out, ConversionData& conv_data
 		return;
 	};
 
-	boost::scoped_ptr<Subdivider> subd(std::make_shared<Subdivider>(algo));
+	boost::scoped_ptr<Subdivider> subd(std::make_aligned_shared<Subdivider>(algo));
 	ai_assert(subd);
 
 	aiMesh** const meshes = &conv_data.meshes[conv_data.meshes->size() - out.mNumMeshes];

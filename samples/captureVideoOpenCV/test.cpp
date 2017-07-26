@@ -69,7 +69,7 @@ void TestCapture_OpenCV()
 		}
 
 		CObservationImage::Ptr obs =
-			std::make_shared<CObservationImage>();  // Memory will be freed by
+			std::make_aligned_shared<CObservationImage>();  // Memory will be freed by
 		// SF destructor in each
 		// loop.
 		if (!capture->getObservation(*obs))

@@ -93,9 +93,9 @@ void COpenNI2_RGBD360::doProcess()
 
 	bool thereIs, hwError;
 
-	CObservationRGBD360::Ptr newObs = std::make_shared<CObservationRGBD360>();
+	CObservationRGBD360::Ptr newObs = mrpt::make_aligned_shared<CObservationRGBD360>();
 	//	CObservation3DRangeScan::Ptr newObs =
-	// std::make_shared<CObservation3DRangeScan>();
+	// mrpt::make_aligned_shared<CObservation3DRangeScan>();
 
 	assert(getNumDevices() > 0);
 	//  unsigned sensor_id = COpenNI2Generic::vOpenDevices.front();
@@ -215,7 +215,7 @@ void COpenNI2_RGBD360::getNextObservation(
 					if (!m_win_range[sensor_id])
 					{
 						m_win_range[sensor_id] =
-							std::make_shared<mrpt::gui::CDisplayWindow>(
+							mrpt::make_aligned_shared<mrpt::gui::CDisplayWindow>(
 								"Preview RANGE");
 						m_win_range[sensor_id]->setPos(5, 5 + 250 * sensor_id);
 					}
@@ -236,7 +236,7 @@ void COpenNI2_RGBD360::getNextObservation(
 					if (!m_win_int[sensor_id])
 					{
 						m_win_int[sensor_id] =
-							std::make_shared<mrpt::gui::CDisplayWindow>(
+							mrpt::make_aligned_shared<mrpt::gui::CDisplayWindow>(
 								"Preview INTENSITY");
 						m_win_int[sensor_id]->setPos(330, 5 + 250 * sensor_id);
 					}

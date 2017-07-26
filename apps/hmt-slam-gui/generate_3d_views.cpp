@@ -66,14 +66,14 @@ void hmt_slam_guiFrame::updateLocalMapView()
 	{
 		// The 3D view:
 		opengl::CSetOfObjects::Ptr objs =
-			std::make_shared<opengl::CSetOfObjects>();
+			std::make_aligned_shared<opengl::CSetOfObjects>();
 
 		// -------------------------------------------
 		// Draw a grid on the ground:
 		// -------------------------------------------
 		{
 			opengl::CGridPlaneXY::Ptr obj =
-				std::make_shared<opengl::CGridPlaneXY>(
+				std::make_aligned_shared<opengl::CGridPlaneXY>(
 					-100, 100, -100, 100, 0, 5);
 			obj->setColor(0.4, 0.4, 0.4);
 			objs->insert(obj);  // it will free the memory
@@ -135,7 +135,7 @@ void hmt_slam_guiFrame::updateLocalMapView()
 				if (nRound == 0)
 				{
 					opengl::CSetOfObjects::Ptr objMap =
-						std::make_shared<opengl::CSetOfObjects>();
+						std::make_aligned_shared<opengl::CSetOfObjects>();
 					obj_mmap->getAs3DObject(objMap);
 					objMap->setPose(refPoseThisArea.mean);
 					objs->insert(objMap);
@@ -154,7 +154,7 @@ void hmt_slam_guiFrame::updateLocalMapView()
 						float y_max = obj_mmap->m_gridMaps[0]->getYMax();
 
 						opengl::CSetOfLines::Ptr objBB =
-							std::make_shared<opengl::CSetOfLines>();
+							std::make_aligned_shared<opengl::CSetOfLines>();
 						objBB->setColor(0, 0, 1);
 						objBB->setLineWidth(4.0f);
 
@@ -190,7 +190,7 @@ void hmt_slam_guiFrame::updateLocalMapView()
 						refPoseThisArea.cov(1, 1) != 0)
 					{
 						opengl::CEllipsoid::Ptr ellip =
-							std::make_shared<opengl::CEllipsoid>();
+							std::make_aligned_shared<opengl::CEllipsoid>();
 						ellip->setPose(refPoseThisArea.mean);
 						ellip->enableDrawSolid3D(false);
 

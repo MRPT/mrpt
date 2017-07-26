@@ -136,7 +136,7 @@ void CFeatureExtraction::extractFeaturesKLT(
 			((xBorderSup < (int)imgW) && (xBorderInf > 0) &&
 			 (yBorderSup < (int)imgH) && (yBorderInf > 0)))
 		{
-			CFeature::Ptr ft = std::make_shared<CFeature>();
+			CFeature::Ptr ft = mrpt::make_aligned_shared<CFeature>();
 
 			ft->type = featKLT;
 			ft->x = points[i].x;  // X position
