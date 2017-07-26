@@ -418,7 +418,7 @@ void CColouredPointsMap::getAs3DObject(
 	if (!genericMapParams.enableSaveAs3DObject) return;
 
 	opengl::CPointCloudColoured::Ptr obj =
-		std::make_shared<opengl::CPointCloudColoured>();
+		std::make_aligned_shared<opengl::CPointCloudColoured>();
 
 	obj->loadFromPointsMap(this);
 	obj->setColor(1, 1, 1, 1.0);

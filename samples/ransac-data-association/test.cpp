@@ -106,15 +106,15 @@ void TestRANSAC()
 	const size_t nObs = NUM_OBSERVATIONS_TO_SIMUL;
 
 	mrpt::opengl::CPointCloud::Ptr gl_obs_map =
-		std::make_shared<mrpt::opengl::CPointCloud>();
+		std::make_aligned_shared<mrpt::opengl::CPointCloud>();
 	mrpt::opengl::CPointCloud::Ptr gl_result =
-		std::make_shared<mrpt::opengl::CPointCloud>();
+		std::make_aligned_shared<mrpt::opengl::CPointCloud>();
 	mrpt::opengl::CSetOfObjects::Ptr gl_obs =
-		std::make_shared<mrpt::opengl::CSetOfObjects>();
+		std::make_aligned_shared<mrpt::opengl::CSetOfObjects>();
 	mrpt::opengl::CSetOfObjects::Ptr gl_obs_txts =
-		std::make_shared<mrpt::opengl::CSetOfObjects>();
+		std::make_aligned_shared<mrpt::opengl::CSetOfObjects>();
 	mrpt::opengl::CSetOfLines::Ptr gl_lines =
-		std::make_shared<mrpt::opengl::CSetOfLines>();
+		std::make_aligned_shared<mrpt::opengl::CSetOfLines>();
 	{
 		mrpt::opengl::COpenGLScene::Ptr& scene = win.get3DSceneAndLock();
 
@@ -128,7 +128,7 @@ void TestRANSAC()
 
 		//
 		mrpt::opengl::CPointCloud::Ptr gl_map =
-			std::make_shared<mrpt::opengl::CPointCloud>();
+			std::make_aligned_shared<mrpt::opengl::CPointCloud>();
 		gl_map->loadFromPointsMap(&the_map);
 		gl_map->setColor(0, 0, 1);
 		gl_map->setPointSize(3);
@@ -139,7 +139,7 @@ void TestRANSAC()
 		for (size_t i = 0; i < the_map.size(); i++)
 		{
 			mrpt::opengl::CText::Ptr gl_txt =
-				std::make_shared<mrpt::opengl::CText>(
+				std::make_aligned_shared<mrpt::opengl::CText>(
 					mrpt::format("%u", static_cast<unsigned int>(i)));
 			double x, y;
 			the_map.getPoint(i, x, y);
@@ -328,7 +328,7 @@ void TestRANSAC()
 			for (size_t i = 0; i < nObs; i++)
 			{
 				mrpt::opengl::CText::Ptr gl_txt =
-					std::make_shared<mrpt::opengl::CText>(
+					std::make_aligned_shared<mrpt::opengl::CText>(
 						mrpt::format("%u", static_cast<unsigned int>(i)));
 				const double x = observations[i].x;
 				const double y = observations[i].y;

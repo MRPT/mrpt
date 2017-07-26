@@ -1008,7 +1008,7 @@ void CFeatureList::loadFromTextFile(const std::string& filename)
 	{
 		try
 		{
-			CFeature::Ptr feat_ptr = std::make_shared<CFeature>();
+			CFeature::Ptr feat_ptr = std::make_aligned_shared<CFeature>();
 			CFeature* feat = feat_ptr.get();  // for faster access
 
 			int _ID;

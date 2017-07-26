@@ -201,7 +201,7 @@ void CFeatureExtraction::extractFeaturesORB(
 		}
 
 		// All tests passed: add new feature:
-		CFeature::Ptr ft = std::make_shared<CFeature>();
+		CFeature::Ptr ft = std::make_aligned_shared<CFeature>();
 		ft->type = featORB;
 		ft->ID = f_id++;
 		ft->x = kp.pt.x;

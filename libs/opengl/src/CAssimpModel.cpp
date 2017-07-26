@@ -146,7 +146,7 @@ void CAssimpModel::readFromStream(mrpt::utils::CStream& in, int version)
 CAssimpModel::CAssimpModel()
 	: m_bbox_min(0, 0, 0), m_bbox_max(0, 0, 0), m_textures_loaded(false)
 {
-	m_assimp_scene = std::make_shared<TImplAssimp>();
+	m_assimp_scene = std::make_aligned_shared<TImplAssimp>();
 }
 
 CAssimpModel::~CAssimpModel() { clear(); }
@@ -156,7 +156,7 @@ CAssimpModel::~CAssimpModel() { clear(); }
 void CAssimpModel::clear()
 {
 	CRenderizableDisplayList::notifyChange();
-	m_assimp_scene = std::make_shared<TImplAssimp>();
+	m_assimp_scene = std::make_aligned_shared<TImplAssimp>();
 	m_modelPath.clear();
 	m_textures_loaded = false;
 
@@ -579,8 +579,8 @@ void load_textures(
 		const std::string fileloc =
 			mrpt::system::filePathSeparatorsToNative(basepath + filename);
 
-		ipt.img_rgb = std::make_shared<mrpt::utils::CImage>();
-		ipt.img_alpha = std::make_shared<mrpt::utils::CImage>();
+		ipt.img_rgb = std::make_aligned_shared<mrpt::utils::CImage>();
+		ipt.img_alpha = std::make_aligned_shared<mrpt::utils::CImage>();
 		mrpt::utils::CImage* img_rgb = ipt.img_rgb.get();
 		mrpt::utils::CImage* img_a = ipt.img_alpha.get();
 

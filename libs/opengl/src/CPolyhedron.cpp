@@ -1382,7 +1382,7 @@ CPolyhedron::Ptr CPolyhedron::getDual() const
 			index++;
 		}
 	}
-	return std::make_shared<CPolyhedron>(vertices, faces);
+	return std::make_aligned_shared<CPolyhedron>(vertices, faces);
 }
 
 CPolyhedron::Ptr CPolyhedron::truncate(double factor) const
@@ -1457,7 +1457,7 @@ CPolyhedron::Ptr CPolyhedron::truncate(double factor) const
 				}
 			}
 		}
-		return std::make_shared<CPolyhedron>(vertices, faces);
+		return std::make_aligned_shared<CPolyhedron>(vertices, faces);
 	}
 	else if (factor == 1)
 	{
@@ -1512,7 +1512,7 @@ CPolyhedron::Ptr CPolyhedron::truncate(double factor) const
 				f.push_back(where);
 			}
 		}
-		return std::make_shared<CPolyhedron>(vertices, faces);
+		return std::make_aligned_shared<CPolyhedron>(vertices, faces);
 	}
 	else
 		return CreateEmpty();
@@ -1604,7 +1604,7 @@ CPolyhedron::Ptr CPolyhedron::cantellate(double factor) const
 					f.push_back(tmp);
 				}
 	}
-	return std::make_shared<CPolyhedron>(vertices, faces);
+	return std::make_aligned_shared<CPolyhedron>(vertices, faces);
 }
 
 CPolyhedron::Ptr CPolyhedron::augment(double height) const

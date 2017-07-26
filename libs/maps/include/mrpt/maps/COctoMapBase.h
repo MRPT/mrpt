@@ -321,7 +321,7 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 		mrpt::opengl::CSetOfObjects::Ptr& outObj) const override
 	{
 		mrpt::opengl::COctoMapVoxels::Ptr gl_obj =
-			std::make_shared<mrpt::opengl::COctoMapVoxels>();
+			std::make_aligned_shared<mrpt::opengl::COctoMapVoxels>();
 		this->getAsOctoMapVoxels(*gl_obj);
 		outObj->insert(gl_obj);
 	}

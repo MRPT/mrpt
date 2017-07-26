@@ -235,7 +235,7 @@ TEST(SerializeTestBase, CastSmartPointers)
 	using namespace mrpt::poses;
 
 	// Create:
-	CPose2D::Ptr p1 = std::make_shared<CPose2D>();
+	CPose2D::Ptr p1 = std::make_aligned_shared<CPose2D>();
 	// Upcast:
 	mrpt::utils::CSerializable::Ptr p2 = p1;
 	// Downcast:

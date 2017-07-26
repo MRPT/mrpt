@@ -59,7 +59,7 @@ CHMTSLAM::TMessageLSLAMfromAA::Ptr CHMTSLAM::areaAbstraction(
 		// Get SF & pose pdf for the new pose.
 		const CSensoryFrame* sf;
 		CPose3DPDFParticles::Ptr posePDF =
-			std::make_shared<CPose3DPDFParticles>();
+			std::make_aligned_shared<CPose3DPDFParticles>();
 
 		{
 			// std::lock_guard<std::mutex>	lock( LMH->m_lock ); // We are

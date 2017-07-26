@@ -1005,7 +1005,7 @@ void CRangeBearingKFSLAM::getAs3DObject(
 	pointGauss.cov = COV;
 
 	{
-		opengl::CEllipsoid::Ptr ellip = std::make_shared<opengl::CEllipsoid>();
+		opengl::CEllipsoid::Ptr ellip = std::make_aligned_shared<opengl::CEllipsoid>();
 
 		ellip->setPose(pointGauss.mean);
 		ellip->setCovMatrix(pointGauss.cov);
@@ -1033,7 +1033,7 @@ void CRangeBearingKFSLAM::getAs3DObject(
 			get_feature_size(), COV);
 		pointGauss.cov = COV;
 
-		opengl::CEllipsoid::Ptr ellip = std::make_shared<opengl::CEllipsoid>();
+		opengl::CEllipsoid::Ptr ellip = std::make_aligned_shared<opengl::CEllipsoid>();
 
 		ellip->setName(format("%u", static_cast<unsigned int>(i)));
 		ellip->enableShowName(true);

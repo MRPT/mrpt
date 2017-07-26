@@ -117,7 +117,7 @@ class TSetOfMetricMapInitializers;
  * mrpt::maps::CMultiMetricMap theMap;
  * {
  *  mrpt::maps::CSimplePointsMap::Ptr ptMap =
- *std::make_shared<mrpt::maps::CSimplePointsMap>();
+ *std::make_aligned_shared<mrpt::maps::CSimplePointsMap>();
  *  theMap.maps.push_back(ptMap);
  * }
  * \endcode

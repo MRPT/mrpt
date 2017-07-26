@@ -740,7 +740,7 @@ class CMyReactInterface
 
 		// Maps are inserted
 		{
-			CSetOfObjects::Ptr gl_grid = std::make_shared<CSetOfObjects>();
+			CSetOfObjects::Ptr gl_grid = std::make_aligned_shared<CSetOfObjects>();
 			for (unsigned int i = 0; i < maps.size(); i++)
 			{
 				maps[i].getAs3DObject(gl_grid);
@@ -758,7 +758,7 @@ class CMyReactInterface
 		////A reference grid is inserted
 		//{
 		//	CGridPlaneXY::Ptr obj =
-		// std::make_shared<opengl::CGridPlaneXY>(-16,16,-16,16,0,1);
+		// std::make_aligned_shared<opengl::CGridPlaneXY>(-16,16,-16,16,0,1);
 		//	obj->setColor(0.4,0.4,0.4);
 		//	obj->setLocation(0,0,0);
 		//	obj->setName("gridref");
@@ -767,7 +767,7 @@ class CMyReactInterface
 
 		// The target is inserted
 		{
-			CDisk::Ptr obj = std::make_shared<opengl::CDisk>(0.4f, 0.3f);
+			CDisk::Ptr obj = std::make_aligned_shared<opengl::CDisk>(0.4f, 0.3f);
 			obj->setLocation(0, 0, 0);
 			obj->setColor(0.2, 0.3, 0.9);
 			scene->insert(obj);
@@ -814,7 +814,7 @@ class CMyReactInterface
 			for (unsigned int i = 0; i < lasers.size(); i++)
 			{
 				gl_scan.push_back(gl_scanind);
-				gl_scan[i] = std::make_shared<CPlanarLaserScan>();
+				gl_scan[i] = std::make_aligned_shared<CPlanarLaserScan>();
 
 				gl_scan[i]->enableLine(true);
 				gl_scan[i]->enableSurface(false);
@@ -836,7 +836,7 @@ class CMyReactInterface
 			for (unsigned int i = 0; i < kinects.size(); i++)
 			{
 				obj.push_back(indobj);
-				obj[i] = std::make_shared<opengl::CPointCloud>();
+				obj[i] = std::make_aligned_shared<opengl::CPointCloud>();
 				obj[i]->setPose(robotpose3d);
 				obj[i]->setName(format("Kinect%d", i + 1));
 				scene->insert(obj[i]);
@@ -853,7 +853,7 @@ class CMyReactInterface
 
 		// Virtual obstacles from STM are inserted
 		{
-			CPointCloud::Ptr obj = std::make_shared<CPointCloud>();
+			CPointCloud::Ptr obj = std::make_aligned_shared<CPointCloud>();
 			obj->setPose(robotpose3d);
 			obj->setPointSize(5.0);
 			obj->setColor(0, 1, 0);

@@ -299,7 +299,7 @@ CDlgPoseEst::CDlgPoseEst(
 	pose_mat << -25, 25, 100, -0.1, 0.25, 0.5;
 	//*)
 
-	scene = std::make_shared<mrpt::opengl::COpenGLScene>();
+	scene = std::make_aligned_shared<mrpt::opengl::COpenGLScene>();
 	cor = mrpt::opengl::stock_objects::CornerXYZ();
 	cor1 = mrpt::opengl::stock_objects::CornerXYZ();
 
@@ -310,7 +310,7 @@ CDlgPoseEst::CDlgPoseEst(
 	const double check_squares_length_Y_meters =
 		0.005 * atof(string(edLengthY->GetValue().mb_str()).c_str());
 
-	grid = std::make_shared<opengl::CGridPlaneXY>(
+	grid = std::make_aligned_shared<opengl::CGridPlaneXY>(
 		0, check_size_y * check_squares_length_Y_meters, 0,
 		check_size_x * check_squares_length_X_meters, 0,
 		check_squares_length_Y_meters);
@@ -444,7 +444,7 @@ void CDlgPoseEst::OntimCaptureTrigger(wxTimerEvent& event)
 				std::dynamic_pointer_cast<CObservation3DRangeScan>(obs);
 
 			CObservationImage::Ptr obsImg =
-				std::make_shared<CObservationImage>();
+				std::make_aligned_shared<CObservationImage>();
 			obsImg->timestamp = obs3D->timestamp;
 			ASSERT_(obs3D->hasIntensityImage)
 			obsImg->image = obs3D->intensityImage;

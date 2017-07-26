@@ -249,7 +249,7 @@ bool CEnoseModular::getObservation(mrpt::obs::CObservationGasSensors& obs)
 void CEnoseModular::doProcess()
 {
 	CObservationGasSensors::Ptr obs =
-		std::make_shared<CObservationGasSensors>();
+		std::make_aligned_shared<CObservationGasSensors>();
 
 	if (getObservation(*obs))
 	{

@@ -206,7 +206,7 @@ class BASE_IMPEXP CStream
 	CSerializable::Ptr ReadObject() { return ReadObject<CSerializable>(); }
 	/** Reads an object from stream, its class determined at runtime, and
 	 * returns a smart pointer to the object. This version is similar to
-	 * std::make_shared<T>.
+	 * std::make_aligned_shared<T>.
 	 * \exception std::exception On I/O error or undefined class.
 	 * \exception mrpt::utils::CExceptionEOF On an End-Of-File condition found
 	 * at a correct place: an EOF that abruptly finishes in the middle of one

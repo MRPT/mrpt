@@ -61,7 +61,7 @@ void TestDisplay3D()
 	// And another transparent viewport just to show 3D text:
 	if (0)
 	{
-		mrpt::opengl::CText::Ptr txt1 = std::make_shared<mrpt::opengl::CText>();
+		mrpt::opengl::CText::Ptr txt1 = std::make_aligned_shared<mrpt::opengl::CText>();
 		COpenGLViewport::Ptr vi = theScene->createViewport("flat_viewport");
 		vi->setViewportPosition(0, 0, 0.3, 0.3);
 		vi->setTransparent(true);
@@ -78,13 +78,13 @@ void TestDisplay3D()
 	// ------------------------------------------------------
 	{
 		opengl::CGridPlaneXY::Ptr obj =
-			std::make_shared<opengl::CGridPlaneXY>(-20, 20, -20, 20, 0, 1);
+			std::make_aligned_shared<opengl::CGridPlaneXY>(-20, 20, -20, 20, 0, 1);
 		obj->setColor(0.8, 0.8, 0.8);
 		theScene->insert(obj);
 	}
 
 	{
-		opengl::CAxis::Ptr obj = std::make_shared<opengl::CAxis>();
+		opengl::CAxis::Ptr obj = std::make_aligned_shared<opengl::CAxis>();
 		obj->setFrequency(5);
 		obj->enableTickMarks();
 		obj->setAxisLimits(-10, -10, -10, 10, 10, 10);
@@ -92,7 +92,7 @@ void TestDisplay3D()
 	}
 
 	{
-		opengl::CBox::Ptr obj = std::make_shared<opengl::CBox>();
+		opengl::CBox::Ptr obj = std::make_aligned_shared<opengl::CBox>();
 		obj->setWireframe(false);
 		obj->setColor(1, 0, 0);
 		obj->setLineWidth(3.0);
@@ -101,7 +101,7 @@ void TestDisplay3D()
 	}
 
 	{
-		opengl::CSphere::Ptr obj = std::make_shared<opengl::CSphere>();
+		opengl::CSphere::Ptr obj = std::make_aligned_shared<opengl::CSphere>();
 		obj->setColor(0, 0, 1);
 		obj->setRadius(0.3);
 		obj->setLocation(0, 0, 1);
@@ -109,7 +109,7 @@ void TestDisplay3D()
 		theScene->insert(obj);
 	}
 	{
-		opengl::CSphere::Ptr obj = std::make_shared<opengl::CSphere>();
+		opengl::CSphere::Ptr obj = std::make_aligned_shared<opengl::CSphere>();
 		obj->setColor(1, 0, 0);
 		obj->setRadius(0.3);
 		obj->setLocation(-1, -1, 1);
@@ -118,7 +118,7 @@ void TestDisplay3D()
 	}
 
 	{
-		opengl::CSphere::Ptr obj = std::make_shared<opengl::CSphere>();
+		opengl::CSphere::Ptr obj = std::make_aligned_shared<opengl::CSphere>();
 		obj->setColor(0, 1, 0);
 		obj->setRadius(0.5);
 		obj->setLocation(0, 0, 0);

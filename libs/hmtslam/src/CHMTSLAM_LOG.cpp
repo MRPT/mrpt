@@ -59,7 +59,7 @@ void CHMTSLAM::generateLogFiles(unsigned int nIteration)
 			string filLocalAreas = format(
 				"%s/LSLAM_3D/mostLikelyLMH_LSLAM_%05u.3Dscene",
 				m_options.LOG_OUTPUT_DIR.c_str(), nIteration);
-			COpenGLScene::Ptr sceneLSLAM = std::make_shared<COpenGLScene>();
+			COpenGLScene::Ptr sceneLSLAM = std::make_aligned_shared<COpenGLScene>();
 
 			// Look for the most likely LMH:
 			aligned_containers<THypothesisID,
@@ -86,7 +86,7 @@ void CHMTSLAM::generateLogFiles(unsigned int nIteration)
 				{
 					// Generate the metric maps 3D view...
 					opengl::CSetOfObjects::Ptr maps3D =
-						std::make_shared<opengl::CSetOfObjects>();
+						std::make_aligned_shared<opengl::CSetOfObjects>();
 					maps3D->setName("metric-maps");
 					bestLMH->getMostLikelyParticle()
 						->d->metricMaps.getAs3DObject(maps3D);
@@ -94,7 +94,7 @@ void CHMTSLAM::generateLogFiles(unsigned int nIteration)
 
 					// ...and the robot poses, areas, etc:
 					opengl::CSetOfObjects::Ptr LSLAM_3D =
-						std::make_shared<opengl::CSetOfObjects>();
+						std::make_aligned_shared<opengl::CSetOfObjects>();
 					LSLAM_3D->setName("LSLAM_3D");
 					bestLMH->getAs3DScene(LSLAM_3D);
 					sceneLSLAM->insert(LSLAM_3D);
@@ -111,7 +111,7 @@ void CHMTSLAM::generateLogFiles(unsigned int nIteration)
 					std::lock_guard<std::mutex>  lock(bestLMH->m_robotPosesGraph.lock );
 					string filSSO = format("%s/ASSO/mostLikelyLMH_ASSO_%05u.3Dscene", m_options.LOG_OUTPUT_DIR.c_str(), nIteration );
 					COpenGLScene	sceneSSO;
-					opengl::CSetOfObjects::Ptr sso3D = std::make_shared<opengl::CSetOfObjects>();
+					opengl::CSetOfObjects::Ptr sso3D = std::make_aligned_shared<opengl::CSetOfObjects>();
 					bestLMH->m_robotPosesGraph.partitioner.getAs3DScene( sso3D, &bestLMH->m_robotPosesGraph.idx2pose );
 					sceneSSO.insert(sso3D);
 					CFileGZOutputStream(filSSO) << sceneSSO;

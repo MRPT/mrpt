@@ -170,7 +170,7 @@ int main(int argc, char** argv)
 	scene = window.get3DSceneAndLock();
 
 	opengl::CPointCloudColoured::Ptr kinectp =
-		std::make_shared<opengl::CPointCloudColoured>();
+		std::make_aligned_shared<opengl::CPointCloudColoured>();
 	kinectp->enablePointSmooth(true);
 	kinectp->setPointSize(2);
 	scene->insert(kinectp);

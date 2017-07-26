@@ -40,17 +40,17 @@ void TestOpenGLVideo()
 
 	// XY Grid
 	opengl::CGridPlaneXY::Ptr gl_ground =
-		std::make_shared<opengl::CGridPlaneXY>(-7, 7, -7, 7, 0, 1);
+		std::make_aligned_shared<opengl::CGridPlaneXY>(-7, 7, -7, 7, 0, 1);
 	gl_ground->setColor(0.7, 0.7, 0.7);
 
 	// An opengl plane with the video texture
 	opengl::CTexturedPlane::Ptr gl_plane1 =
-		std::make_shared<opengl::CTexturedPlane>(
+		std::make_aligned_shared<opengl::CTexturedPlane>(
 			0, 1, 0, 0.75);  // 4/3 aspect ratio
 	opengl::CTexturedPlane::Ptr gl_plane2 =
-		std::make_shared<opengl::CTexturedPlane>(0, 1, 0, 0.75);
+		std::make_aligned_shared<opengl::CTexturedPlane>(0, 1, 0, 0.75);
 	opengl::CTexturedPlane::Ptr gl_plane3 =
-		std::make_shared<opengl::CTexturedPlane>(0, 1, 0, 0.75);
+		std::make_aligned_shared<opengl::CTexturedPlane>(0, 1, 0, 0.75);
 
 	gl_plane1->setPose(
 		mrpt::poses::CPose3D(0, 0, 1, DEG2RAD(0), DEG2RAD(0), DEG2RAD(-90)));
