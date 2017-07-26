@@ -3,6 +3,9 @@
 //
 
 #include "visual_odometry.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <QLabel>
 
 int ground_truth_x[MAX_FRAME];
 int ground_truth_y[MAX_FRAME];
@@ -92,6 +95,67 @@ double VisualOdometry::getAbsoluteScale(int frame_id, int sequence_id, double z_
 }
 
 /************************************************************************************************
+*					    Get Calibration Params                                                  *
+************************************************************************************************/
+vector<double> VisualOdometry::getCalibrationParams(string calibration_file)
+{
+
+    string line;
+    vector<double> params;
+    int i = 0;
+    //ifstream myfile ("/home/raghavender/Downloads/dataset4/sequences/00/calib.txt");
+    ifstream myfile (calibration_file);
+
+
+    double focal =0, point_x=0, point_y = 0;
+    string z;
+
+
+    if (myfile.is_open())
+    {
+        cout << " before while " << endl;
+        while (( getline (myfile,line) ) && (i<1))
+        {
+            cout << line << " file line " << endl;
+            std::istringstream in(line);
+
+            //cout << line << '\n';
+            for (int j=0; j<12; j++)  {
+                in >> z ;
+                cout << z << " zzz " << endl;
+                if (j==7)
+                {
+                    point_y = std::stod(z);
+                    // ground_truth_y[i] = y;
+                }
+                if (j==3)
+                {
+                    point_x = std::stod(z);
+                    // ground_truth_x[i] = x;
+                }
+                if(j == 1)
+                {
+                    focal = std::stod(z);
+                }
+            }
+            i++;
+        }
+        myfile.close();
+    }
+
+    else {
+        cout << "Unable to open file";
+        return params;
+    }
+    cout << focal << " f " << point_x << " p_X " << point_y << " p_Y " << endl;
+    params.push_back(focal);
+    params.push_back(point_x);
+    params.push_back(point_y);
+    return params ;
+
+}
+
+/************************************************************************************************
 *					    Store Ground Truth                                                      *
 ************************************************************************************************/
 void VisualOdometry::storeGroundTruth(string poses_ground_truth)	{
@@ -139,18 +203,37 @@ void VisualOdometry::storeGroundTruth(string poses_ground_truth)	{
 /************************************************************************************************
 *					    Visual Odometry Constructor                                             *
 ************************************************************************************************/
-VisualOdometry::VisualOdometry(int detector_selected, CFeatureExtraction fext, int numFeats)
+VisualOdometry::VisualOdometry()
 {
-    this->detector_selected = detector_selected;
-    this->fext = fext;
-    this->numFeats = numFeats;
+    current_frame = 0;
+    curr_frame = QString::fromStdString(std::to_string(current_frame));
+
+    /*dialog_gui = new QWidget;
+    dialog_gui->setWindowTitle("Visual Odometry progress");
+
+
+    layout_grid = new QGridLayout;
+    VO_progress = new QLabel;
+    VO_progress->setText("0 frames processed");
+    VO_progress->setVisible(true);
+
+    layout_grid->addWidget(VO_progress,0,0);
+
+
+    dialog_gui->setLayout(layout_grid);
+    //dialog_gui->show();
+*/
 }
 
 /************************************************************************************************
 *					    Generate VO main funciton                                               *
 ************************************************************************************************/
-Mat VisualOdometry::generateVO(string dataset, string groundtruth, int feat_type )	{
-
+Mat VisualOdometry::generateVO(CFeatureExtraction fext, int numFeats, string dataset, string groundtruth, string calibration_file, int feat_type )
+{
+    cnt.setValue(0);
+    //this->detector_selected = detector_selected;
+    this->fext = fext;
+    this->numFeats = numFeats;
     Mat img_1, img_2;
     Mat R_f, t_f; //the final rotation and tranlation vectors containing the transform
 
@@ -176,7 +259,7 @@ Mat VisualOdometry::generateVO(string dataset, string groundtruth, int feat_type
     int fontFace = FONT_HERSHEY_PLAIN;
     double fontScale = 1.5;
     int thickness = 1;
-    cv::Point textOrg(10, 50);
+    cv::Point textOrg(10, 500);
 
     //read the first two frames from the dataset
     Mat img_1_c = imread(filename1);
@@ -206,8 +289,16 @@ Mat VisualOdometry::generateVO(string dataset, string groundtruth, int feat_type
 
     //TODO: add a fucntion to load these values directly from KITTI's calib files
     // WARNING: different sequences in the KITTI VO dataset have different intrinsic/extrinsic parameters
-    double focal = 718.8560;
-    cv::Point2d pp(607.1928, 185.2157);
+    cout << calibration_file << " calibration file " << endl;
+    vector<double>cameraParams = getCalibrationParams(calibration_file);
+
+
+    double focal = cameraParams.at(0); //718.8560;
+    cv::Point2d pp(cameraParams.at(1), cameraParams.at(2)); //pp(607.1928, 185.2157);
+
+    cout << focal << "focal " << pp.x << " x " << pp.y << " y " << endl;
+    //double focal = 718.8560;
+    //cv::Point2d pp(607.1928, 185.2157);
     //recovering the pose and the essential matrix
     Mat E, R, t, mask;
     E = findEssentialMat(points2, points1, focal, pp, RANSAC, 0.999, 1.0, mask);
@@ -232,6 +323,7 @@ Mat VisualOdometry::generateVO(string dataset, string groundtruth, int feat_type
 
     for(int numFrame=2; numFrame < MAX_FRAME; numFrame++)
     {
+
         stringstream temp3;
         temp3 << dataset << "/%06d.png" ;
         string temp4 = temp3.str();
@@ -291,18 +383,25 @@ Mat VisualOdometry::generateVO(string dataset, string groundtruth, int feat_type
         prevImage = currImage.clone();
         prevFeatures = currFeatures;
 
-        int x = int(t_f.at<double>(0)) + 300;
-        int y = int(t_f.at<double>(2)) + 100;
+        char ch = groundtruth.at(groundtruth.length()-5);
+        cout << ch << endl;
+        vector<int> shifts = computeStartingPoint(ch);
+
+        int x = int(t_f.at<double>(0)) + shifts.at(0);
+        int y = int(t_f.at<double>(2)) + shifts.at(1);
         circle(traj, Point(x, y) ,1, CV_RGB(255,0,0), 2);
 
         //cout << "predict: " << x << " x " << y << " y " << endl;
         predicted_x[numFrame] = x;
         predicted_y[numFrame] = y;
 
-        rectangle( traj, Point(10, 30), Point(550, 50), CV_RGB(0,0,0), CV_FILLED);
+        //rectangle( traj, Point(10, 30), Point(550, 50), CV_RGB(0,0,0), CV_FILLED);
         //sprintf(text, "Coordinates: x = %02fm y = %02fm z = %02fm", t_f.at<double>(0), t_f.at<double>(1), t_f.at<double>(2));
         sprintf(text, "Green: ground truth ; Red: Actual path");
         putText(traj, text, textOrg, fontFace, fontScale, Scalar::all(255), thickness, 8);
+
+        cnt.setValue(numFrame);
+
     }
 
     clock_t end = clock();
@@ -319,10 +418,74 @@ Mat VisualOdometry::generateVO(string dataset, string groundtruth, int feat_type
         circle(traj, Point(x, y) ,1, CV_RGB(0,255,0), 2);
     }
 
+    current_frame++;
+
+    curr_frame = QString::fromStdString(std::to_string(current_frame));
     computeOdomError();
     return traj;
 }
 
+/**
+ * need to change the values based on eah sequence starting point
+ * @param ch
+ * @return
+ */
+vector<int> VisualOdometry::computeStartingPoint(char ch)
+{
+    int x = 300;
+    int y = 100;
+    if(ch == '0')
+    {
+        x = 300;y=100;
+    }
+    else if(ch == '1')
+    {
+        x=300 ; y=100;
+    }
+    else if(ch == '2')
+    {
+        x=300 ; y=100;
+    }
+    else if(ch == '3')
+    {
+        x=300 ; y=100;
+    }
+    else if(ch == '4')
+    {
+        x=300 ; y=100;
+    }
+    else if(ch == '5')
+    {
+        x=300 ; y=100;
+    }
+    else if(ch == '6')
+    {
+        x=300 ; y=100;
+    }
+    else if(ch == '7')
+    {
+        x=300 ; y=100;
+    }
+    else if(ch == '8')
+    {
+        x=300 ; y=100;
+    }
+    else if(ch == '9')
+    {
+        x=300 ; y=100;
+    }
+    else //(ch == '10')
+    {
+        x=300 ; y=100;
+    }
+
+    vector<int> shifts;
+    shifts.push_back(x);
+    shifts.push_back(y);
+    return shifts;
+
+
+}
 
 /************************************************************************************************
 *					    Feature Tracking method                                                 *

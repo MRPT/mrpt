@@ -49,11 +49,23 @@
 #include <QMouseEvent>
 #include <QEvent>
 
+
+#include <QThread>
+
+#include <QtCore>
+#include <QProgressBar>
+//#include <QtConcurrent>
+#include <QFutureWatcher>
+#include <QtConcurrent/QtConcurrent>
+#include <QtConcurrent/QtConcurrentRun>
+#include <boost/bind.hpp>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
 #include <sstream>
 #include <fstream>
+#include <iostream>
 
 #include "opencv2/core.hpp"
 #include <opencv2/highgui/highgui.hpp>
@@ -86,188 +98,194 @@ class MainWindow : public QMainWindow
 
 
 public:
-    QWidget *window_gui;
-    //VisualizeDialog *visualize_dialog;
+    QWidget *window_gui;                //!< main window_gui widget
 
-    QLabel *sample_image;
-    QImage my_image;
+    double sampling_rate;               //!< sampling rate/factor for image decimation
 
-    // for image decimation
-    double sampling_rate;
+    QPushButton *button_generate;       //!< this is the button for visualize descriptor option
+    QPushButton *button_close;          //!< this is button for closing the gui, currently not being used
+    QPushButton *next_desc;             //!< unsued variable
 
-    QPushButton *button_generate;
-    QPushButton *button_close;
-    QPushButton *next_desc;
-
-    QPushButton *prev_button;
-    QPushButton *next_button;
-    int current_imageIndex;
+    QPushButton *prev_button;           //!< previous button to go back to previous image when loading image datasets
+    QPushButton *next_button;           //!< previous button to go forward one image when loading image datasets
+    int current_imageIndex;             //!< used as a counter variable in readFilesFromFolder function
 
 
-    QPushButton *browse_button;
-    QPushButton *browse_button2;
-    QPushButton *generateVisualOdometry;
-    QGridLayout *layout_grid;
+    QPushButton *browse_button;         //!< browse button to load image/folder for first image
+    QPushButton *browse_button2;        //!< browse button to load image/folder for second image
+    QPushButton *generateVisualOdometry;//!< button which generates visual odometry for monocular datasets
+    QGridLayout *layout_grid;           //!< main layut for the GUI app
 
-    int currentInputIndex;
-    int detector_selected;
-    int descriptor_selected;
+    int currentInputIndex;              //!< stores the users selected choice among single image, stereo image, rawlog, single dataset or stereo dataset
+    int detector_selected;              //!< stores the users selection for the chosen detector
+    int descriptor_selected;            //!< stores the users selection for the chosen descriptor
 
-    QGroupBox *groupBox1; // has the
+    QGroupBox *groupBox1;               //!< stores detector, descriptor comboboxes and buttons
     QGroupBox *groupBox2;
-    QGroupBox *groupBox_images;
+    QGroupBox *groupBox_images;         //!< stores the images
 
-    QComboBox *inputs;
-    QLineEdit *inputFilePath;
-    QLineEdit *inputFilePath2;
-    string file_path1;
-    string file_path2;
+    QComboBox *inputs;                  //!< combobox contains type of input data specified by the user
+    QLineEdit *inputFilePath;           //!< text field which takes the input for the first image / dataset file path
+    QLineEdit *inputFilePath2;          //!< text field which takes the input for the second image / dataset file path
+    string file_path1;                  //!< string reads from inputFilePath to store file path entered by used
+    string file_path2;                  //!< string reads from inputFilePath2 to store file path entered by used
 
-    QLineEdit *numFeaturesLineEdit;
+    QLineEdit *numFeaturesLineEdit;     //!< Text field to ask user for number of features
 
-    QComboBox *detectors_select;
-    QComboBox *descriptors_select;
+    QComboBox *detectors_select;        //! asks type of detector from the user
+    QComboBox *descriptors_select;      //!< asks type of descriptor from the user
 
-    my_qlabel *image1;
-    QLabel *image2;
-    QImage qimage1;
-    QImage qimage2;
-    int resolution_x, resolution_y;
+    my_qlabel *image1;                  //!< QLabel which stores the first image which can be clicked to select the keypoint from it
+    QLabel *image2;                     //!< QLabel to hold the second image
+    QImage qimage1;                     //!< stores the first image
+    QImage qimage2;                     //!< store the second image
+    int resolution_x, resolution_y;     //!< stores the resolution of the image
 
-    QLabel *param1;
-    QLabel *param2;
-    QLabel *param3;
-    QLabel *param4;
-    QLabel *param5;
+    QLabel *param1;                     //!< QLabel for detector parameter 1
+    QLabel *param2;                     //!< QLabel for detector parameter 2
+    QLabel *param3;                     //!< QLabel for detector parameter 3
+    QLabel *param4;                     //!< QLabel for detector parameter 4
+    QLabel *param5;                     //!< QLabel for detector parameter 5
 
-    QLineEdit *param1_edit;
-    QLineEdit *param2_edit;
-    QLineEdit *param3_edit;
-    QLineEdit *param4_edit;
-    QLineEdit *param5_edit;
-
-
-    QLabel *param1_desc;
-    QLabel *param2_desc;
-    QLabel *param3_desc;
-    QLabel *param4_desc;
-    QLabel *param5_desc;
-
-    QLineEdit *param1_edit_desc;
-    QLineEdit *param2_edit_desc;
-    QLineEdit *param3_edit_desc;
-    QLineEdit *param4_edit_desc;
-    QLineEdit *param5_edit_desc;
-
-    //provide user options like repeatability, activate/deactivate non-maximal suppression, image decimation, step-by-step playback of images.
-    QCheckBox *homography_enable;
-    QLineEdit *inputHomogrpahyPath;
-    string homography_path;
-    QPushButton *browseHomography;
-    bool homography_activated;
+    QLineEdit *param1_edit;             //!< TextField for detector parameter 1
+    QLineEdit *param2_edit;             //!< TextField for detector parameter 2
+    QLineEdit *param3_edit;             //!< TextField for detector parameter 3
+    QLineEdit *param4_edit;             //!< TextField for detector parameter 4
+    QLineEdit *param5_edit;             //!< TextField for detector parameter 5
 
 
-    // widgets / options for tracking vision task
-    QCheckBox *tracking_enable;
-    bool tracking_activated;
-    int current_imageIndex_tracking;
-    QPushButton *trackIt;
-    vector<string> files_fullpath_tracking;
-    int tracking_image_counter;
+    QLabel *param1_desc;                //!< QLabel for descriptor parameter 1
+    QLabel *param2_desc;                //!< QLabel for descriptor parameter 2
+    QLabel *param3_desc;                //!< QLabel for descriptor parameter 3
+    QLabel *param4_desc;                //!< QLabel for descriptor parameter 4
+    QLabel *param5_desc;                //!< QLabel for descriptor parameter 5
 
-    Tracker tracker_obj;
+    QLineEdit *param1_edit_desc;        //!< TextField for descriptor parameter 1
+    QLineEdit *param2_edit_desc;        //!< TextField for descriptor parameter 2
+    QLineEdit *param3_edit_desc;        //!< TextField for descriptor parameter 3
+    QLineEdit *param4_edit_desc;        //!< TextField for descriptor parameter 4
+    QLineEdit *param5_edit_desc;        //!< TextField for descriptor parameter 5
+
+    ///provide user options like repeatability, activate/deactivate non-maximal suppression, image decimation, step-by-step playback of images.
+    QCheckBox *homography_enable;       //!< Checkbox to activate homography based repeatability
+    QLineEdit *inputHomogrpahyPath;     //!< Text field for the homographies folder path
+    string homography_path;             //!< string which stores the folder path of the homographies from the text field
+    QPushButton *browseHomography;      //!< button to browse for the homography containing folder
+    bool homography_activated;          //!< indicates if homography based repeatability is activated or not
+
+
+    /// widgets / options for tracking vision task
+    QCheckBox *tracking_enable;         //!< Checkbox to activate tracking of keypoints
+    bool tracking_activated;            //!< indicates if tracking is activated or not (currently not used)
+    //int current_imageIndex_tracking;
+    QPushButton *trackIt;               //!< button which tracks the key-points in subseuent frames
+    vector<string> files_fullpath_tracking;     //!< vector which stores all files_paths for the selected monocular single dataset
+    int tracking_image_counter;         //!< counter for moving forward in the dataset
+
+    Tracker tracker_obj;                //<! tracker oject which calls the tracking method to perform tracking
 
     /// tracker parameter variables
-    QCheckBox *tracker_param1;
-    QCheckBox *tracker_param2;
-    QLabel *tracker_param3;
-    QLabel *tracker_param4;
-    QLabel *tracker_param5;
-    QLabel *tracker_param6;
+    QCheckBox *tracker_param1;          //! Checkbox for tracking parameter 1
+    QCheckBox *tracker_param2;          //! Checkbox for tracking parameter 2
+    QLabel *tracker_param3;             //! Label for tracking parameter 3
+    QLabel *tracker_param4;             //! Label for tracking parameter 4
+    QLabel *tracker_param5;             //! Label for tracking parameter 5
+    QLabel *tracker_param6;             //! Label for tracking parameter 6
 
-    QLineEdit *tracker_param1_edit;
-    QLineEdit *tracker_param2_edit;
-    QLineEdit *tracker_param3_edit;
-    QLineEdit *tracker_param4_edit;
-    QLineEdit *tracker_param5_edit;
-    QLineEdit *tracker_param6_edit;
-
-
-    //image decimation options
-    QLineEdit *decimateFactor;
+    QLineEdit *tracker_param1_edit;     //!< not used
+    QLineEdit *tracker_param2_edit;     //!< not used
+    QLineEdit *tracker_param3_edit;     //!< Text field for tracking parameter 3
+    QLineEdit *tracker_param4_edit;     //!< Text field for tracking parameter 4
+    QLineEdit *tracker_param5_edit;     //!< Text field for tracking parameter 5
+    QLineEdit *tracker_param6_edit;     //!< Text field for tracking parameter 6
 
 
-
-    //visual odom parameters
-    QCheckBox *visual_odom_enable;
-    QLineEdit *inputFilePath3;
-    QPushButton *browse_button3;
-    string file_path3;  //!<stores the ground truth for poses
+    ///image decimation options
+    QLineEdit *decimateFactor;          //!< Text field to enter Decimation factor from the user
 
 
-    QLabel *output1;
 
-    CFeatureExtraction fext;
-    CFeatureList featsImage1, featsImage2;
-    CImage img1, img2;
-    TDescriptorType desc_to_compute;
+    ///visual odom parameters
 
-    int numFeats; //  number of features
+    VisualOdometry visual_odom;         //!< visual odometry object to perform the vision task of estimating camera trajector for Monocular Datasets like KITTI
+    QCheckBox *visual_odom_enable;      //!< Checkbox to activate/deactivate VO
+    QLineEdit *inputFilePath3;          //!< Text field to store ground truth for VO task
+    QPushButton *browse_button3;        //!< browse button to look for the ground truth Odometry file
+    string file_path3;                  //!< stores the ground truth for poses
+
+    string calibration_file;
+    QLineEdit *inputCalibration;
+    QPushButton *browseCalibration;
+
+    QLabel *visualOdom;                 //!< Label which stores and displays the image for the VO output
+
+    QFutureWatcher<cv::Mat> FutureWatcher; //!< Future for showing prgress bar
+    QProgressBar *progressBar;             //!< progress bar to show VO progress
+
+
+    QLabel *VO_progress;                //!< Label to show VO progress
+
+    CFeatureExtraction fext;                    //!< CFeatureExtraction object to hold/store all parameters for detectors/descriptors
+    CFeatureList featsImage1, featsImage2;      //!< stores the features in image 1 and 2
+    CImage img1, img2;                          //!< stores image 1 and 2
+    TDescriptorType desc_to_compute;            //!< stores the type of the descriptor to be computed
+
+    int numFeats;                       //!< stores the number of features to be computed
 
     // Detector OPTIONS
 
     /** FAST Options */
     struct FASTOptions
     {
-        float threshold;
-        float min_distance;
-        bool non_max_suppresion;
-        bool use_KLT_response;
+        float threshold;            //!< default value = 20
+        float min_distance;         //!< default value = 5
+        bool non_max_suppresion;    //!< default value = true
+        bool use_KLT_response;      //!< default value = true
     }fast_opts;
 
     /** KLT Options */
     struct KLTOptions
     {
-        float threshold;
-        int radius;
-        float min_distance;
-        bool tile_image;
+        float threshold;    //!< default value = 0.1
+        int radius;         //!< default value = 7
+        float min_distance; //!< default value = 7
+        bool tile_image;    //!< default value = true
     }klt_opts;
 
     /** Harris Options */
     struct HarrisOptions
     {
-        float threshold;
-        float k;
-        float sigma;
-        float radius;
-        float min_distance;
-        bool tile_image;
+        float threshold;    //!< default value = 0.005
+        float k;            //!< default value = 0.04
+        float sigma;        //!< default value = 1.5
+        float radius;       //!< default value = 3
+        float min_distance; //!< default value = 100, not asked from user
+        bool tile_image;    //!< default value = true
     }harris_opts;
 
     /** SIFT Options */
     struct SIFTOptions
     {
-        float edge_threshold;
-        float threshold;
+        float edge_threshold;   //!< default value = 0.04
+        float threshold;        //!< default value = 10
     }SIFT_opts;
 
     /** SURF Options */
     struct SURFOptions
     {
-        int hessianThreshold;
-        int nLayersPerOctave;
-        int nOctaves;
-        bool rotation_invariant;
+        int hessianThreshold;   //!< default value = 600
+        int nLayersPerOctave;   //!< default value = 4
+        int nOctaves;           //!< default value = 2
+        bool rotation_invariant;//!< default value = true
     }SURF_opts;
 
     /** ORB Options */
     struct ORBOptions
     {
-        int min_distance;
-        int n_levels;
-        float scale_factor;
-        bool extract_patch;
+        int min_distance;       //!< default value = 0
+        int n_levels;           //!< default value = 8
+        float scale_factor;     //!< default value = 1.2
+        bool extract_patch;     //!< default value = false
     }ORB_opts;
 
     // not providing option to choose descriptor_type and diffusivity, using default values currently
@@ -275,19 +293,19 @@ public:
     struct AKAZEOptions
     {
         //int descriptor_type
-        int  	descriptor_size;
-        int  	descriptor_channels;
-        float  	threshold ;
-        int  	nOctaves;
-        int  	nOctaveLayers;
+        int  	descriptor_size;    //!< default value = 0
+        int  	descriptor_channels;//!< default value = 3
+        float  	threshold ;         //!< default value = 0.001
+        int  	nOctaves;           //!< default value = 4
+        int  	nOctaveLayers;      //!< default value = 4
         //int  	diffusivity;
     }AKAZE_opts;
 
     /** LSD Options */
     struct LSDOptions
     {
-        int  	scale;
-        int  	nOctaves;
+        int  	scale;      //!< default value = 2
+        int  	nOctaves;   //!< default value = 1
     }LSD_opts;
 
     //DESCRIPTOR OPTIONS
@@ -295,29 +313,29 @@ public:
                     */
     struct SpinImageOptions
     {
-        int radius;
-        int hist_size_intensity;
-        int hist_size_distance;
-        float std_dist;
-        float std_intensity;
+        int radius;             //!< default value = 20
+        int hist_size_intensity;//!< default value = 10
+        int hist_size_distance; //!< default value = 10
+        float std_dist;         //!< default value = 0.4
+        float std_intensity;    //!< default value = 20
     }spin_opts;
 
     /** PolarImagesOptions Options
 				  */
     struct PolarImageOptions
     {
-        int radius;
-        int bins_angle;
-        int bins_distance;
+        int radius;         //!< default value = 20
+        int bins_angle;     //!< default value = 8
+        int bins_distance;  //!< default value = 6
     }polar_opts;
 
     /** LogPolarImagesOptions Options
 				  */
     struct LogPolarOptions
     {
-        int radius;
-        int num_angles;
-        float rho_scale;
+        int radius;         //!< default value = 30
+        int num_angles;     //!< default value = 16
+        float rho_scale;    //!< default value = 5
 
     }log_polar_opts;
 
@@ -325,80 +343,80 @@ public:
 				  */
     struct BLDOptions
     {
-        int ksize_;
-        int reductionRatio;
-        int numOfOctave;
-        int widthOfBand;
+        int ksize_;         //!< default value = 1
+        int reductionRatio; //!< default value = 2
+        int numOfOctave;    //!< default value = 7
+        int widthOfBand;    //!< default value = 1
     }BLD_opts;
 
     /** LATCHOptions Options
 				  */
     struct LATCHOptions
     {
-        int bytes;
-        bool rotationInvariance;
-        int half_ssd_size;
+        int bytes;                  //!< default value = 32
+        bool rotationInvariance;    //!< default value = true
+        int half_ssd_size;          //!< default value = 3
     }LATCH_opts;
 
 
 
-    //FOR THE VISUALIZE DESCRIPTOR PART
+    ///FOR THE VISUALIZE DESCRIPTOR PART
 public:
-    QLabel *images_static;
-    QLabel *images_static_sift_surf;
+    QLabel *images_static;                  //!< For Image1, stores the image associated with the first class of descriptors (Spin, Polar, Log polar images, etc.)
+    QLabel *images_static_sift_surf;        //!< For Image1, stores the image associated with the second class of descriptors (SIFT, SURF, ORB, etc.)
 
-    QLabel *images_static2;
-    QLabel *images_static_sift_surf2;
+    QLabel *images_static2;                 //!< For Image2, stores the image associated with the first class of descriptors (Spin, Polar, Log polar images, etc.)
+    QLabel *images_static_sift_surf2;       //!< For Image2, stores the image associated with the second class of descriptors (SIFT, SURF, ORB, etc.)
 
-    QLabel *plotInfo;
-    QImage descriptors;
-
-    QGridLayout *desc_VisualizeGrid;
-
-    long numDesc1, numDesc2;
-    int cnt; // counter to iterate over all the descriptors
+    QLabel *plotInfo;                       //!< stores the plot of distances of descriptors
 
 
-    QLabel *images_label_coordinates;
-    QLabel *images_label_coordinates_sift_surf;
-    QLabel *featureMatched;
+    QGridLayout *desc_VisualizeGrid;        //!< grid layout to hold the widgets associated with the descriptor visualization part
 
-    QLabel *images_plots_sift_surf;
+    long numDesc1, numDesc2;                //!< stores the current size of the descriptors like for SIFT=128
+    int cnt;                                //!< counter to iterate over all the descriptors
 
-    double  mouse_x, mouse_y;
-    int old, newer;
-    bool flag_descriptor_match;
-    bool flag_read_files_bug;
+    QLabel *images_label_coordinates;           //!< NOT USED
+    QLabel *images_label_coordinates_sift_surf; //!< NOT USED
 
+    QLabel *featureMatched;                     //!< Label to show feature matches information
 
-    my_qlabel *sample2;
+    QLabel *images_plots_sift_surf;             //!< Label which holds the image to show the descriptor distance splot
 
+    double  mouse_x, mouse_y;                   //!< stores the coordinates of the mouse click
 
-    // variables for bug fixes
-
-    bool evaluate_detector_clicked;
-    bool evaluate_descriptor_clicked;
-    bool visualize_descriptor_clicked;
-    bool activate_homogrphy_repeatability;
+    bool flag_descriptor_match;                 //!< this is used to fix the overlaying of labels on top of each other.
+    bool flag_read_files_bug;                   //!< used to get rid of a bug while reading files
 
 
-    //! <Parameters for Evaluations Characteristiscs
 
-    double elapsedTime_detector;
-    double elapsedTime_descriptor;
-    QLabel *detector_info;
-    QLabel *descriptor_info;
-    QLabel *descriptor_info2;
-    QLabel *descriptor_info3;
-    QLabel *evaluation_info;
-    double closest_dist;
 
-    QLabel *visualOdom;
+    /// variables for bug fixes
+
+    bool evaluate_detector_clicked;             //!< variable to see if user pressed detector button
+    bool evaluate_descriptor_clicked;           //!< variable to see if user pressed descriptor button
+    bool visualize_descriptor_clicked;          //!< variable to see if user pressed visualize descriptor button
+
+    bool activate_homogrphy_repeatability;      //!< variable to store if user has currently activated homography based repeatability or not
+
+
+    //! <Parameters for Evaluations Characteritics
+
+    double elapsedTime_detector;                //!< stores the time taken to compute detector key-points
+    double elapsedTime_descriptor;              //!< stores the time taken to compute the descriptors around the key-points
+    QLabel *detector_info;                      //!< Label to show detector evaluation info
+    QLabel *descriptor_info;                    //!< Label to show descriptor evaluation info
+    QLabel *descriptor_info2;                   //!< Label to show descriptor evaluaiton info2
+    QLabel *descriptor_info3;                   //!< Label to show descriptor evaluation info3
+    QLabel *evaluation_info;                    //!< Label to show detector evaluation info
+    double closest_dist;                        //!< NOT USED
+
+
 
 
 signals:
     // None yet
-
+    //void valueChanged(int newValue);
 public:
 
     /**
@@ -548,14 +566,28 @@ public:
     void makeTrackerParamVisible(bool flag);
 
     /**
-  * makeVisualOdomParamsVisible this function makes all the widgets (parameters) associated with the visual odometry visible/hidden
-  * @param flag stores if the variables need to hidden/visible
-  */
+      * makeVisualOdomParamsVisible this function makes all the widgets (parameters) associated with the visual odometry visible/hidden
+      * @param flag stores if the variables need to hidden/visible
+      */
     void makeVisualOdomParamsVisible(bool flag);
 
+    /**
+      * makeGraphsVisible this function makes all the widgets (parameters) associated with the visualiztion of descriptor visible/hidden
+      * @param flag stores if the variables need to hidden/visible
+      */
     void makeGraphsVisible(bool flag);
 
+    /**
+      * makeVisionOptionsVisible this function makes all the widgets (check boxes for VO, tracking and homography) Vision tasks visible/hidden
+      * @param flag stores if the variables need to hidden/visible
+      */
     void makeVisionOptionsVisible(bool flag);
+
+    /**
+      * makeHomographyParamsVisible this function makes all the widgets (parameters) associated with the homography based repeatability visible/hidden
+      * @param flag stores if the variables need to hidden/visible
+      */
+    void makeHomographyParamsVisible(bool flag);
 
 
 
@@ -703,13 +735,28 @@ public slots:
     void on_generateVisualOdometry_clicked();
 
     /**
-     * onTrackingEnabled functino is called when the user checks / enables the tracking mode, after checking this, the user has the option
+     * on_browse_calibration_clicked function gets the calibration parameters the focal length and the principal point from the
+     * file specified
+     */
+    void on_browse_calibration_clicked();
+
+    /**
+     * onTrackingEnabled function is called when the user checks / enables the tracking mode, after checking this, the user has the option
      * to track the key-points in the subsequent frames by clickin on the trackIt button to iterate over the images and view the tracking results
      * one by one in the subsequent frames
      * @param state this holds the state of the checkbox being ticked or unticked
      */
     void onTrackingEnabled(int state);
 
+    /**
+     * updateVOProgress Slot function called to change a label, currently FUNCITON NOT USED
+     */
+    void updateVOProgress();
+
+    /**
+     * slot_function used for progress bar visualization
+     */
+    void slot_finished();
 };
 
 #endif // MAINWINDOW_H

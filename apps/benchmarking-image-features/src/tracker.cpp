@@ -37,7 +37,7 @@ cv::Mat Tracker::trackThemAll(vector<string> files_fullpath_tracking,
                               int patch_size,
                               int window_width,
                               int window_height
-                               )
+)
 {
 
 
@@ -74,6 +74,8 @@ cv::Mat Tracker::trackThemAll(vector<string> files_fullpath_tracking,
     long current_num = tracking_image_counter%files_fullpath_tracking.size();
     CImage theImg;  // The grabbed image:
     theImg.loadFromFile(files_fullpath_tracking.at(current_num));
+
+    cout << theImg.isColor() << " color check"<< endl;
 
 
 

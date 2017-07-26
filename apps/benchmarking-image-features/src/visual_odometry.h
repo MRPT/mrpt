@@ -56,6 +56,14 @@ THE SOFTWARE.
 #include <mrpt/utils/metaprogramming.h>
 #include <mrpt/math/data_utils.h>
 
+#include <QMainWindow>
+#include <QDialog>
+#include <QGridLayout>
+#include <QLabel>
+#include <QString>
+
+//#include "Counter.h"
+
 using namespace mrpt::vision;
 using namespace mrpt::utils;
 using namespace mrpt::gui;
@@ -69,14 +77,54 @@ using namespace std;
 
 
 
-
-class VisualOdometry
+class Counter : public QObject
 {
+Q_OBJECT
 
 public:
+    int m_value;
+
+public:
+    Counter() {m_value = 0;};
+    //~Counter();
+
+    int value() const
+    {
+        return m_value;
+    };
+public slots:
+    void setValue(int value)
+    {
+
+        m_value = value;
+        emit valueChanged(value);
+        cout << value <<  " you called me slot yo" << endl;
+
+    };
+
+signals:
+    void valueChanged(int newValue);
+
+
+};
+
+
+class VisualOdometry //: public QDialog
+{
+    //Q_OBJECT
+
+public:
+    QWidget *dialog_gui;
+    QLabel *VO_progress;
+
+    QGridLayout *layout_grid;
     int detector_selected;
     CFeatureExtraction fext;
     int numFeats;
+
+    int current_frame;
+    QString curr_frame;
+    Counter cnt;
 
 public:
     /**
@@ -86,7 +134,7 @@ public:
      * @param fext this variable holds the selected detector information
      * @param numFeats this holds the number of features to be selected
      */
-    VisualOdometry(int detector_selected, CFeatureExtraction fext, int numFeats);
+    VisualOdometry();
 
     /**
      * this tracks the features in subsequent frames using a KLT tracker as described in https://avisingh599.github.io/vision/monocular-vo/
@@ -123,7 +171,7 @@ public:
      * @param feat_type type of the feature
      * @return
      */
-    Mat generateVO(string dataset, string groundtruth, int feat_type );
+     Mat generateVO(CFeatureExtraction fext, int numFeats, string dataset, string groundtruth, string calibration_file, int feat_type );
 
     /**
      * this function stores the ground truth in an appropriate arrat
@@ -141,4 +189,11 @@ public:
      * display function is there just for testing/debugging purposes, maybe deleted later
      */
     void display();
+
+
+    vector<double> getCalibrationParams(string calibratin_file);
+
+    vector<int> computeStartingPoint(char ch);
 };
+
+
