@@ -173,8 +173,9 @@ CScanAnimation::CScanAnimation(wxWindow* parent,wxWindowID id,const wxPoint& pos
 	//*)
 
 	// Initialize 3D view:
-	m_plot3D->m_openGLScene->insert( mrpt::opengl::CGridPlaneXY::Create(-50,50, -50,50, 0 /* z */, 5 /* freq */) );
-	m_plot3D->m_openGLScene->insert( mrpt::opengl::stock_objects::CornerXYZSimple(1.0 /*scale*/, 3.0 /*line width*/) );
+	auto openGLSceneRef = m_plot3D->getOpenGLSceneRef();
+	openGLSceneRef->insert( mrpt::opengl::CGridPlaneXY::Create(-50,50, -50,50, 0 /* z */, 5 /* freq */) );
+	openGLSceneRef->insert( mrpt::opengl::stock_objects::CornerXYZSimple(1.0 /*scale*/, 3.0 /*line width*/) );
 
 	m_mixlasers = cbAllowMix->GetValue();
 
@@ -245,7 +246,7 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame *sf)
 		for (TListGlObjects::iterator it = m_gl_objects.begin();it!=m_gl_objects.end();++it)
 		{
 			TRenderObject &ro = it->second;
-			m_plot3D->m_openGLScene->removeObject(ro.obj);  // Remove from the opengl viewport
+			m_plot3D->getOpenGLSceneRef()->removeObject(ro.obj);  // Remove from the opengl viewport
 		}
 		m_gl_objects.clear();
 	}
@@ -282,7 +283,7 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame *sf)
 				ro.obj = gl_obj;
 				ro.timestamp = obs->timestamp;
 				m_gl_objects[sNameInMap]=ro;
-				m_plot3D->m_openGLScene->insert( gl_obj );
+				m_plot3D->getOpenGLSceneRef()->insert( gl_obj );
 			}
 		}
 		else
@@ -320,7 +321,7 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame *sf)
 				ro.obj = gl_obj;
 				ro.timestamp = obs->timestamp;
 				m_gl_objects[sNameInMap]=ro;
-				m_plot3D->m_openGLScene->insert( gl_obj );
+				m_plot3D->getOpenGLSceneRef()->insert( gl_obj );
 			}
 			// Add to list:
 //				m_lstScans[obs->sensorLabel] = obs;
@@ -359,7 +360,7 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame *sf)
 				ro.obj = gl_obj;
 				ro.timestamp = obs->timestamp;
 				m_gl_objects[sNameInMap]=ro;
-				m_plot3D->m_openGLScene->insert( gl_obj );
+				m_plot3D->getOpenGLSceneRef()->insert( gl_obj );
 			}
 		}
 	}
@@ -384,7 +385,7 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame *sf)
 	{
 		TRenderObject &ro = m_gl_objects[*s];
 
-		m_plot3D->m_openGLScene->removeObject(ro.obj);  // Remove from the opengl viewport
+		m_plot3D->getOpenGLSceneRef()->removeObject(ro.obj);  // Remove from the opengl viewport
 		m_gl_objects.erase(*s); // and from my list
 	}
 

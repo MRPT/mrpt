@@ -750,7 +750,7 @@ void camera_calib_guiDialog::show3Dview()
 
 	//scene->insert( mrpt::opengl::stock_objects::CornerXYZ() );
 
-	this->m_3Dview->m_openGLScene = scene;
+	this->m_3Dview->setOpenGLSceneRef(scene);
 	this->m_3Dview->Refresh();
 
 }

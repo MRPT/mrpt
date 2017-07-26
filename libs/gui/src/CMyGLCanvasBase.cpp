@@ -111,16 +111,16 @@ void CMyGLCanvasBase::OnMouseMove(wxMouseEvent& event)
 		if (leftIsDown)
 		{
 			if ( event.ShiftDown()  )
-				params = updateZoom(params, X, Y);
+				updateZoom(params, X, Y);
 
 			else if (event.ControlDown())
-				params = updateRotate(params, X, Y);
+				updateRotate(params, X, Y);
 
 			else
-				params = updateOrbitCamera(params, X, Y);
+				updateOrbitCamera(params, X, Y);
 		}
 		else
-			params = updatePan(params, X, Y);
+			updatePan(params, X, Y);
 
 
 		setMousePos(X, Y);
@@ -139,7 +139,7 @@ void CMyGLCanvasBase::OnMouseMove(wxMouseEvent& event)
 void CMyGLCanvasBase::OnMouseWheel(wxMouseEvent& event)
 {
 	CamaraParams params = cameraParams();
-	params = updateZoom(params, event.GetWheelRotation());
+	updateZoom(params, event.GetWheelRotation());
 	setCameraParams(params);
 
 	Refresh(false);

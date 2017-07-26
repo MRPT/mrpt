@@ -42,7 +42,7 @@ public:
 	virtual void setAzimuthDegrees(float ang);
 	virtual void setElevationDegrees(float ang);
 
-	void setBackgroundColor(float r, float g, float b);
+	void setBackgroundColor(float r, float g, float b, float a);
 	void setGridColor(double r, double g, double b, double a);
 
 	void setVisibleGrid(bool is);

@@ -39,9 +39,9 @@
 #include <wx/dcmemory.h>
 
 #if defined(__WXMSW__)
-    const std::string             iniFileSect("CONF_WIN");
+const std::string             iniFileSect("CONF_WIN");
 #elif defined(__UNIX__)
-    const std::string             iniFileSect("CONF_LIN");
+const std::string             iniFileSect("CONF_LIN");
 #endif
 
 #include "imgs/icono_main.xpm"
@@ -75,22 +75,22 @@ const mrpt::maps::CColouredPointsMap dummy_map; // this is to enforce to load th
 class MyArtProvider : public wxArtProvider
 {
 protected:
-    virtual wxBitmap CreateBitmap(const wxArtID& id,
-                                  const wxArtClient& client,
-                                  const wxSize& size);
+	virtual wxBitmap CreateBitmap(const wxArtID& id,
+								  const wxArtClient& client,
+								  const wxSize& size);
 };
 
 // CreateBitmap function
 wxBitmap MyArtProvider::CreateBitmap(const wxArtID& id,
-                                     const wxArtClient& client,
-                                     const wxSize& size)
+									 const wxArtClient& client,
+									 const wxSize& size)
 {
-    if (id == wxART_MAKE_ART_ID(MAIN_ICON))   return wxBitmap(icono_main_xpm);
-    if (id == wxART_MAKE_ART_ID(IMG_MRPT_LOGO))  return wxBitmap(mrpt_logo_xpm);
+	if (id == wxART_MAKE_ART_ID(MAIN_ICON))   return wxBitmap(icono_main_xpm);
+	if (id == wxART_MAKE_ART_ID(IMG_MRPT_LOGO))  return wxBitmap(mrpt_logo_xpm);
 
-    // Any wxWidgets icons not implemented here
-    // will be provided by the default art provider.
-    return wxNullBitmap;
+	// Any wxWidgets icons not implemented here
+	// will be provided by the default art provider.
+	return wxNullBitmap;
 }
 
 // Used for feedback from the glcanvas component to its parent.
@@ -108,16 +108,16 @@ using namespace mrpt::opengl;
 using namespace std;
 
 #ifdef MRPT_OS_WINDOWS
-	// Windows:
-    #include <windows.h>
+// Windows:
+#include <windows.h>
 #endif
 
 #ifdef MRPT_OS_APPLE
-  #include <OpenGL/gl.h>
-  #include <OpenGL/glu.h>
+#include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
 #else
-  #include <GL/gl.h>
-  #include <GL/glu.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
 #endif
 
 // Critical section for updating the scene:
@@ -148,14 +148,14 @@ wxLogWindow *logWin=nullptr;
 
 void saveLastUsedDirectoryToCfgFile(const std::string &fil)
 {
-    try
-    {
-        iniFile->write(iniFileSect,"LastDir", extractFileDirectory(fil) );
-    }
-    catch(std::exception &e)
-    {
-        wxMessageBox( _U(e.what()), _("Exception"), wxOK );
-    }
+	try
+	{
+		iniFile->write(iniFileSect,"LastDir", extractFileDirectory(fil) );
+	}
+	catch(std::exception &e)
+	{
+		wxMessageBox( _U(e.what()), _("Exception"), wxOK );
+	}
 }
 
 
@@ -173,8 +173,8 @@ void CMyGLCanvas::OnPreRender()
 {
 	// This was used to receive scenes from a TCP stream, but it's not used anymore now:
 	// Do we have to update the scene??
-//	std::lock_guard<std::mutex>   lock(critSec_UpdateScene );
-//	if (newOpenGLScene) { m_openGLScene.reset(); m_openGLScene = newOpenGLScene; newOpenGLScene.reset(); }
+	//	std::lock_guard<std::mutex>   lock(critSec_UpdateScene );
+	//	if (newOpenGLScene) { m_openGLScene.reset(); m_openGLScene = newOpenGLScene; newOpenGLScene.reset(); }
 }
 
 void CMyGLCanvas::OnPostRenderSwapBuffers(double At, wxPaintDC &dc)
@@ -208,18 +208,18 @@ void CMyGLCanvas::OnPostRenderSwapBuffers(double At, wxPaintDC &dc)
 	meanEstimatedFPS = 0.8*meanEstimatedFPS + 0.2*estimatedFPS;
 
 	string str = format("Center=(%.02f,%.02f,%.02f) Zoom:%.02f AZ=%.02f deg EL:%.02f deg",
-						cameraPointingX,
-						cameraPointingY,
-						cameraPointingZ,
-						cameraZoomDistance,
-						cameraAzimuthDeg,
-						cameraElevationDeg);
+						getCameraPointingX(),
+						getCameraPointingY(),
+						getCameraPointingZ(),
+						getZoomDistance(),
+						getAzimuthDegrees(),
+						getElevationDegrees());
 	theWindow->StatusBar1->SetStatusText( _U(str.c_str()) ,1);
 
 	str = format("%.02f FPS", meanEstimatedFPS );
 	theWindow->StatusBar1->SetStatusText( _U(str.c_str()) ,2);
 
-	str = format("%u viewports", (unsigned)m_openGLScene->viewportsCount() );
+	str = format("%u viewports", (unsigned)getOpenGLSceneRef()->viewportsCount() );
 	theWindow->StatusBar1->SetStatusText( _U(str.c_str()) ,3);
 }
 
@@ -237,14 +237,14 @@ void CMyGLCanvas::OnPostRender()
 
 void CMyGLCanvas::OnCharCustom( wxKeyEvent& event )
 {
-    long evkey = event.GetKeyCode();
+	long evkey = event.GetKeyCode();
 
-    if (evkey==WXK_LEFT || evkey==WXK_RIGHT)
-    {
-    	try
-    	{
-    		CTicTac		tictac;
-    		tictac.Tic();
+	if (evkey==WXK_LEFT || evkey==WXK_RIGHT)
+	{
+		try
+		{
+			CTicTac		tictac;
+			tictac.Tic();
 
 			// Load a different file:
 
@@ -256,9 +256,9 @@ void CMyGLCanvas::OnCharCustom( wxKeyEvent& event )
 			if ( lastUpdateOfList == INVALID_TIMESTAMP || timeDifference(lastUpdateOfList,curTime)>2)
 			{
 				CDirectoryExplorer::explore(
-					extractFileDirectory(loadedFileName),	// path
-					FILE_ATTRIB_ARCHIVE, // mask
-					lstFiles );
+							extractFileDirectory(loadedFileName),	// path
+							FILE_ATTRIB_ARCHIVE, // mask
+							lstFiles );
 
 				// Sort and remove non 3Dscene files:
 				CDirectoryExplorer::sortByName(lstFiles);
@@ -297,21 +297,21 @@ void CMyGLCanvas::OnCharCustom( wxKeyEvent& event )
 				}
 			}
 		}
-    	catch (std::exception &)
-    	{
-    		//cerr << "*EXCEPTION* while determining next/previous file:\n" << e.what() << endl;
-    	}
-    	catch(...)
-    	{
-    	}
-    }
+		catch (std::exception &)
+		{
+			//cerr << "*EXCEPTION* while determining next/previous file:\n" << e.what() << endl;
+		}
+		catch(...)
+		{
+		}
+	}
 
-    if (evkey==WXK_UP || evkey==WXK_DOWN)
-    {
-    	// Move the camera forward-backward:
-    	// ...
-    	//Refresh(false);
-    }
+	if (evkey==WXK_UP || evkey==WXK_DOWN)
+	{
+		// Move the camera forward-backward:
+		// ...
+		//Refresh(false);
+	}
 
 }
 
@@ -372,8 +372,8 @@ const long _DSceneViewerFrame::ID_TIMER_AUTOPLAY = wxNewId();
 
 
 BEGIN_EVENT_TABLE(_DSceneViewerFrame,wxFrame)
-    //(*EventTable(_DSceneViewerFrame)
-    //*)
+//(*EventTable(_DSceneViewerFrame)
+//*)
 END_EVENT_TABLE()
 
 
@@ -384,263 +384,263 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent,wxWindowID id)
 
 	// Load my custom icons:
 #if wxCHECK_VERSION(2, 8, 0)
-    wxArtProvider::Push(new MyArtProvider);
+	wxArtProvider::Push(new MyArtProvider);
 #else
-    wxArtProvider::PushProvider(new MyArtProvider);
+	wxArtProvider::PushProvider(new MyArtProvider);
 #endif
 
-    //(*Initialize(_DSceneViewerFrame)
-    wxMenuItem* MenuItem2;
-    wxMenu* MenuItem15;
-    wxMenuItem* MenuItem1;
-    wxMenuItem* MenuItem4;
-    wxFlexGridSizer* FlexGridSizer2;
-    wxMenuItem* MenuItem13;
-    wxMenu* Menu1;
-    wxMenuItem* MenuItem12;
-    wxMenuItem* MenuItem3;
-    wxMenuBar* MenuBar1;
-    wxFlexGridSizer* FlexGridSizer1;
-    wxMenu* Menu2;
+	//(*Initialize(_DSceneViewerFrame)
+	wxMenuItem* MenuItem2;
+	wxMenu* MenuItem15;
+	wxMenuItem* MenuItem1;
+	wxMenuItem* MenuItem4;
+	wxFlexGridSizer* FlexGridSizer2;
+	wxMenuItem* MenuItem13;
+	wxMenu* Menu1;
+	wxMenuItem* MenuItem12;
+	wxMenuItem* MenuItem3;
+	wxMenuBar* MenuBar1;
+	wxFlexGridSizer* FlexGridSizer1;
+	wxMenu* Menu2;
 
-    Create(parent, id, _("3DSceneViewer - Part of the MRPT project"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE, _T("id"));
-    SetMinSize(wxSize(150,100));
-    {
-    	wxIcon FrameIcon;
-    	FrameIcon.CopyFromBitmap(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("MAIN_ICON")),wxART_FRAME_ICON));
-    	SetIcon(FrameIcon);
-    }
-    FlexGridSizer1 = new wxFlexGridSizer(1, 2, 0, 0);
-    FlexGridSizer1->AddGrowableCol(1);
-    FlexGridSizer1->AddGrowableRow(0);
-    FlexGridSizer2 = new wxFlexGridSizer(0, 1, 0, 0);
-    btnNew = new wxCustomButton(this,ID_BUTTON1,_("  New  "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_NORMAL_FILE")),wxART_TOOLBAR),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON1"));
-    btnNew->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_NORMAL_FILE")),wxART_TOOLBAR));
-    btnNew->SetMargins(wxSize(5,5));
-    FlexGridSizer2->Add(btnNew, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 1);
-    btnToolbarOpen = new wxCustomButton(this,ID_BUTTON2,_("  Open... "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FILE_OPEN")),wxART_TOOLBAR),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON2"));
-    btnToolbarOpen->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FILE_OPEN")),wxART_TOOLBAR));
-    btnToolbarOpen->SetMargins(wxSize(5,5));
-    FlexGridSizer2->Add(btnToolbarOpen, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 1);
-    StaticLine1 = new wxStaticLine(this, ID_STATICLINE1, wxDefaultPosition, wxSize(50,-1), wxLI_HORIZONTAL, _T("ID_STATICLINE1"));
-    FlexGridSizer2->Add(StaticLine1, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
-    btnPrev = new wxCustomButton(this,ID_BUTTON3,_("  Previous  "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_GO_BACK")),wxART_TOOLBAR),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON3"));
-    btnPrev->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_GO_BACK")),wxART_TOOLBAR));
-    btnPrev->SetMargins(wxSize(5,5));
-    FlexGridSizer2->Add(btnPrev, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 1);
-    btnNext = new wxCustomButton(this,ID_BUTTON4,_("  Next  "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_GO_FORWARD")),wxART_TOOLBAR),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON4"));
-    btnNext->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_GO_FORWARD")),wxART_TOOLBAR));
-    btnNext->SetMargins(wxSize(5,5));
-    FlexGridSizer2->Add(btnNext, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 1);
-    btnReload = new wxCustomButton(this,ID_BUTTON5,_("  Reload  "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_REDO")),wxART_TOOLBAR),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON5"));
-    btnReload->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_REDO")),wxART_TOOLBAR));
-    btnReload->SetMargins(wxSize(5,5));
-    FlexGridSizer2->Add(btnReload, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, wxDLG_UNIT(this,wxSize(1,0)).GetWidth());
-    StaticLine2 = new wxStaticLine(this, ID_STATICLINE2, wxDefaultPosition, wxSize(50,-1), wxLI_HORIZONTAL, _T("ID_STATICLINE2"));
-    FlexGridSizer2->Add(StaticLine2, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
-    btnOptions = new wxCustomButton(this,ID_BUTTON6,_("  Options  "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FIND")),wxART_TOOLBAR),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON6"));
-    btnOptions->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FIND")),wxART_TOOLBAR));
-    btnOptions->SetMargins(wxSize(5,5));
-    FlexGridSizer2->Add(btnOptions, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 1);
-    btnOrtho = new wxCustomButton(this,ID_BUTTON7,_("  Ortho  "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_TICK_MARK")),wxART_TOOLBAR),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_TOGGLE|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON7"));
-    btnOrtho->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_TICK_MARK")),wxART_TOOLBAR));
-    btnOrtho->SetMargins(wxSize(5,5));
-    FlexGridSizer2->Add(btnOrtho, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 1);
-    btnAutoplay = new wxCustomButton(this,ID_BUTTON8,_("  Autoplay  "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_REMOVABLE")),wxART_TOOLBAR),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_TOGGLE|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON8"));
-    btnAutoplay->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_REMOVABLE")),wxART_TOOLBAR));
-    btnAutoplay->SetMargins(wxSize(5,5));
-    FlexGridSizer2->Add(btnAutoplay, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 1);
-    btnCapture = new wxCustomButton(this,ID_BUTTON9,_("  Capture  "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_HARDDISK")),wxART_TOOLBAR),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_TOGGLE|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON9"));
-    btnCapture->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_HARDDISK")),wxART_TOOLBAR));
-    btnCapture->SetMargins(wxSize(5,5));
-    FlexGridSizer2->Add(btnCapture, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 1);
-    StaticLine3 = new wxStaticLine(this, ID_STATICLINE3, wxDefaultPosition, wxSize(50,-1), wxLI_HORIZONTAL, _T("ID_STATICLINE3"));
-    FlexGridSizer2->Add(StaticLine3, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
-    btnAbout = new wxCustomButton(this,ID_BUTTON10,_("  About..."),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_HELP_BOOK")),wxART_TOOLBAR),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON10"));
-    btnAbout->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_HELP_BOOK")),wxART_TOOLBAR));
-    btnAbout->SetMargins(wxSize(5,5));
-    FlexGridSizer2->Add(btnAbout, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 1);
-    btnQuit = new wxCustomButton(this,ID_BUTTON11,_("  Quit  "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_QUIT")),wxART_TOOLBAR),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON11"));
-    btnQuit->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_QUIT")),wxART_TOOLBAR));
-    btnQuit->SetMargins(wxSize(5,5));
-    FlexGridSizer2->Add(btnQuit, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 1);
-    FlexGridSizer1->Add(FlexGridSizer2, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
-    SetSizer(FlexGridSizer1);
-    MenuBar1 = new wxMenuBar();
-    Menu1 = new wxMenu();
-    MenuItem3 = new wxMenuItem(Menu1, ID_MENUITEM1, _("New scene"), wxEmptyString, wxITEM_NORMAL);
-    Menu1->Append(MenuItem3);
-    MenuItem4 = new wxMenuItem(Menu1, ID_MENUITEM2, _("Open..."), wxEmptyString, wxITEM_NORMAL);
-    Menu1->Append(MenuItem4);
-    MenuItem7 = new wxMenuItem(Menu1, ID_MENUITEM5, _("Reload file\tF5"), wxEmptyString, wxITEM_NORMAL);
-    Menu1->Append(MenuItem7);
-    MenuItem9 = new wxMenuItem(Menu1, ID_MENUITEM7, _("Save..."), wxEmptyString, wxITEM_NORMAL);
-    Menu1->Append(MenuItem9);
-    Menu1->AppendSeparator();
-    MenuItem18 = new wxMenu();
-    MenuItem8 = new wxMenuItem(MenuItem18, ID_MENUITEM6, _("a 3D model (any Assimp format)..."), wxEmptyString, wxITEM_NORMAL);
-    MenuItem18->Append(MenuItem8);
-    MenuItem19 = new wxMenuItem(MenuItem18, ID_MENUITEM20, _("a PLY point cloud..."), wxEmptyString, wxITEM_NORMAL);
-    MenuItem18->Append(MenuItem19);
-    mnuImportLAS = new wxMenuItem(MenuItem18, ID_MENUITEM25, _("a LAS LiDAR file..."), wxEmptyString, wxITEM_NORMAL);
-    MenuItem18->Append(mnuImportLAS);
-    Menu1->Append(ID_MENUITEM19, _("Import"), MenuItem18, wxEmptyString);
-    MenuItem20 = new wxMenu();
-    MenuItem21 = new wxMenuItem(MenuItem20, ID_MENUITEM22, _("point clouds to PLY file..."), wxEmptyString, wxITEM_NORMAL);
-    MenuItem20->Append(MenuItem21);
-    Menu1->Append(ID_MENUITEM21, _("Export"), MenuItem20, wxEmptyString);
-    Menu1->AppendSeparator();
-    MenuItem23 = new wxMenuItem(Menu1, ID_MENUITEM29, _("Previous file\tF7"), wxEmptyString, wxITEM_NORMAL);
-    Menu1->Append(MenuItem23);
-    MenuItem24 = new wxMenuItem(Menu1, ID_MENUITEM30, _("Next file\tF8"), wxEmptyString, wxITEM_NORMAL);
-    Menu1->Append(MenuItem24);
-    Menu1->AppendSeparator();
-    MenuItem14 = new wxMenuItem(Menu1, ID_MENUITEM12, _("Take snapshot...\tF2"), _("Saves the current window image to a file"), wxITEM_NORMAL);
-    Menu1->Append(MenuItem14);
-    MenuItem22 = new wxMenuItem(Menu1, ID_MENUITEM23, _("High-resolution render to file..."), wxEmptyString, wxITEM_NORMAL);
-    Menu1->Append(MenuItem22);
-    mnuSceneStats = new wxMenuItem(Menu1, ID_MENUITEM18, _("Scene stats"), wxEmptyString, wxITEM_NORMAL);
-    Menu1->Append(mnuSceneStats);
-    Menu1->AppendSeparator();
-    MenuItem1 = new wxMenuItem(Menu1, idMenuQuit, _("Quit\tAlt-F4"), _("Quit the application"), wxITEM_NORMAL);
-    Menu1->Append(MenuItem1);
-    MenuBar1->Append(Menu1, _("&File"));
-    Menu4 = new wxMenu();
-    mnuSelectNone = new wxMenuItem(Menu4, ID_MENUITEM24, _("Select none"), wxEmptyString, wxITEM_NORMAL);
-    Menu4->Append(mnuSelectNone);
-    mnuSelectByClass = new wxMenuItem(Menu4, ID_MENUITEM26, _("Select by class..."), wxEmptyString, wxITEM_NORMAL);
-    Menu4->Append(mnuSelectByClass);
-    Menu4->AppendSeparator();
-    mnuSelectionScale = new wxMenuItem(Menu4, ID_MENUITEM27, _("Re-scale selected..."), wxEmptyString, wxITEM_NORMAL);
-    Menu4->Append(mnuSelectionScale);
-    mnuSelectionDelete = new wxMenuItem(Menu4, ID_MENUITEM28, _("Delete selected"), wxEmptyString, wxITEM_NORMAL);
-    Menu4->Append(mnuSelectionDelete);
-    MenuBar1->Append(Menu4, _("&Edit"));
-    Menu3 = new wxMenu();
-    MenuItem6 = new wxMenuItem(Menu3, ID_MENUITEM4, _("Background color..."), wxEmptyString, wxITEM_NORMAL);
-    Menu3->Append(MenuItem6);
-    MenuItem5 = new wxMenuItem(Menu3, ID_MENUITEM3, _("Options..."), wxEmptyString, wxITEM_NORMAL);
-    Menu3->Append(MenuItem5);
-    Menu3->AppendSeparator();
-    MenuItem17 = new wxMenu();
-    mnuItemShowCloudOctrees = new wxMenuItem(MenuItem17, ID_MENUITEM15, _("Show/hide bounding boxes"), wxEmptyString, wxITEM_CHECK);
-    MenuItem17->Append(mnuItemShowCloudOctrees);
-    mnuItemChangeMaxPointsPerOctreeNode = new wxMenuItem(MenuItem17, ID_MENUITEM17, _("Change octree parameters..."), wxEmptyString, wxITEM_NORMAL);
-    MenuItem17->Append(mnuItemChangeMaxPointsPerOctreeNode);
-    Menu3->Append(ID_MENUITEM16, _("Point clouds octrees..."), MenuItem17, wxEmptyString);
-    Menu3->AppendSeparator();
-    MenuItem13 = new wxMenuItem(Menu3, ID_MENUITEM11, _("Delete all objects"), wxEmptyString, wxITEM_NORMAL);
-    Menu3->Append(MenuItem13);
-    MenuItem11 = new wxMenu();
-    MenuItem12 = new wxMenuItem(MenuItem11, ID_MENUITEM9, _("Simple robot model"), wxEmptyString, wxITEM_NORMAL);
-    MenuItem11->Append(MenuItem12);
-    Menu3->Append(ID_MENUITEM8, _("Insert stock object"), MenuItem11, wxEmptyString);
-    Menu3->AppendSeparator();
-    MenuItem15 = new wxMenu();
-    MenuItem10 = new wxMenuItem(MenuItem15, ID_MENUITEM10, _("Circular"), wxEmptyString, wxITEM_NORMAL);
-    MenuItem15->Append(MenuItem10);
-    MenuItem16 = new wxMenuItem(MenuItem15, ID_MENUITEM14, _("Arbitrary path..."), wxEmptyString, wxITEM_NORMAL);
-    MenuItem15->Append(MenuItem16);
-    Menu3->Append(ID_MENUITEM13, _("Camera tracking"), MenuItem15, wxEmptyString);
-    MenuBar1->Append(Menu3, _("&Tools"));
-    Menu2 = new wxMenu();
-    MenuItem2 = new wxMenuItem(Menu2, idMenuAbout, _("About\tF1"), _("Show info about this application"), wxITEM_NORMAL);
-    Menu2->Append(MenuItem2);
-    MenuBar1->Append(Menu2, _("&Help"));
-    SetMenuBar(MenuBar1);
-    StatusBar1 = new wxStatusBar(this, ID_STATUSBAR1, 0, _T("ID_STATUSBAR1"));
-    int __wxStatusBarWidths_1[4] = { -10, -10, -4, -5 };
-    int __wxStatusBarStyles_1[4] = { wxSB_NORMAL, wxSB_NORMAL, wxSB_NORMAL, wxSB_NORMAL };
-    StatusBar1->SetFieldsCount(4,__wxStatusBarWidths_1);
-    StatusBar1->SetStatusStyles(4,__wxStatusBarStyles_1);
-    SetStatusBar(StatusBar1);
-    timLoadFileCmdLine.SetOwner(this, ID_TIMER1);
-    timLoadFileCmdLine.Start(50, false);
-    FlexGridSizer1->Fit(this);
-    FlexGridSizer1->SetSizeHints(this);
-    Center();
+	Create(parent, id, _("3DSceneViewer - Part of the MRPT project"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE, _T("id"));
+	SetMinSize(wxSize(150,100));
+	{
+		wxIcon FrameIcon;
+		FrameIcon.CopyFromBitmap(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("MAIN_ICON")),wxART_FRAME_ICON));
+		SetIcon(FrameIcon);
+	}
+	FlexGridSizer1 = new wxFlexGridSizer(1, 2, 0, 0);
+	FlexGridSizer1->AddGrowableCol(1);
+	FlexGridSizer1->AddGrowableRow(0);
+	FlexGridSizer2 = new wxFlexGridSizer(0, 1, 0, 0);
+	btnNew = new wxCustomButton(this,ID_BUTTON1,_("  New  "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_NORMAL_FILE")),wxART_TOOLBAR),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON1"));
+	btnNew->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_NORMAL_FILE")),wxART_TOOLBAR));
+	btnNew->SetMargins(wxSize(5,5));
+	FlexGridSizer2->Add(btnNew, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 1);
+	btnToolbarOpen = new wxCustomButton(this,ID_BUTTON2,_("  Open... "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FILE_OPEN")),wxART_TOOLBAR),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON2"));
+	btnToolbarOpen->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FILE_OPEN")),wxART_TOOLBAR));
+	btnToolbarOpen->SetMargins(wxSize(5,5));
+	FlexGridSizer2->Add(btnToolbarOpen, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 1);
+	StaticLine1 = new wxStaticLine(this, ID_STATICLINE1, wxDefaultPosition, wxSize(50,-1), wxLI_HORIZONTAL, _T("ID_STATICLINE1"));
+	FlexGridSizer2->Add(StaticLine1, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
+	btnPrev = new wxCustomButton(this,ID_BUTTON3,_("  Previous  "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_GO_BACK")),wxART_TOOLBAR),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON3"));
+	btnPrev->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_GO_BACK")),wxART_TOOLBAR));
+	btnPrev->SetMargins(wxSize(5,5));
+	FlexGridSizer2->Add(btnPrev, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 1);
+	btnNext = new wxCustomButton(this,ID_BUTTON4,_("  Next  "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_GO_FORWARD")),wxART_TOOLBAR),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON4"));
+	btnNext->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_GO_FORWARD")),wxART_TOOLBAR));
+	btnNext->SetMargins(wxSize(5,5));
+	FlexGridSizer2->Add(btnNext, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 1);
+	btnReload = new wxCustomButton(this,ID_BUTTON5,_("  Reload  "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_REDO")),wxART_TOOLBAR),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON5"));
+	btnReload->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_REDO")),wxART_TOOLBAR));
+	btnReload->SetMargins(wxSize(5,5));
+	FlexGridSizer2->Add(btnReload, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, wxDLG_UNIT(this,wxSize(1,0)).GetWidth());
+	StaticLine2 = new wxStaticLine(this, ID_STATICLINE2, wxDefaultPosition, wxSize(50,-1), wxLI_HORIZONTAL, _T("ID_STATICLINE2"));
+	FlexGridSizer2->Add(StaticLine2, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
+	btnOptions = new wxCustomButton(this,ID_BUTTON6,_("  Options  "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FIND")),wxART_TOOLBAR),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON6"));
+	btnOptions->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FIND")),wxART_TOOLBAR));
+	btnOptions->SetMargins(wxSize(5,5));
+	FlexGridSizer2->Add(btnOptions, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 1);
+	btnOrtho = new wxCustomButton(this,ID_BUTTON7,_("  Ortho  "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_TICK_MARK")),wxART_TOOLBAR),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_TOGGLE|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON7"));
+	btnOrtho->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_TICK_MARK")),wxART_TOOLBAR));
+	btnOrtho->SetMargins(wxSize(5,5));
+	FlexGridSizer2->Add(btnOrtho, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 1);
+	btnAutoplay = new wxCustomButton(this,ID_BUTTON8,_("  Autoplay  "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_REMOVABLE")),wxART_TOOLBAR),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_TOGGLE|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON8"));
+	btnAutoplay->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_REMOVABLE")),wxART_TOOLBAR));
+	btnAutoplay->SetMargins(wxSize(5,5));
+	FlexGridSizer2->Add(btnAutoplay, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 1);
+	btnCapture = new wxCustomButton(this,ID_BUTTON9,_("  Capture  "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_HARDDISK")),wxART_TOOLBAR),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_TOGGLE|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON9"));
+	btnCapture->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_HARDDISK")),wxART_TOOLBAR));
+	btnCapture->SetMargins(wxSize(5,5));
+	FlexGridSizer2->Add(btnCapture, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 1);
+	StaticLine3 = new wxStaticLine(this, ID_STATICLINE3, wxDefaultPosition, wxSize(50,-1), wxLI_HORIZONTAL, _T("ID_STATICLINE3"));
+	FlexGridSizer2->Add(StaticLine3, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
+	btnAbout = new wxCustomButton(this,ID_BUTTON10,_("  About..."),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_HELP_BOOK")),wxART_TOOLBAR),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON10"));
+	btnAbout->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_HELP_BOOK")),wxART_TOOLBAR));
+	btnAbout->SetMargins(wxSize(5,5));
+	FlexGridSizer2->Add(btnAbout, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 1);
+	btnQuit = new wxCustomButton(this,ID_BUTTON11,_("  Quit  "),wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_QUIT")),wxART_TOOLBAR),wxDefaultPosition,wxDefaultSize,wxCUSTBUT_BUTTON|wxCUSTBUT_BOTTOM,wxDefaultValidator,_T("ID_BUTTON11"));
+	btnQuit->SetBitmapDisabled(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_QUIT")),wxART_TOOLBAR));
+	btnQuit->SetMargins(wxSize(5,5));
+	FlexGridSizer2->Add(btnQuit, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 1);
+	FlexGridSizer1->Add(FlexGridSizer2, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
+	SetSizer(FlexGridSizer1);
+	MenuBar1 = new wxMenuBar();
+	Menu1 = new wxMenu();
+	MenuItem3 = new wxMenuItem(Menu1, ID_MENUITEM1, _("New scene"), wxEmptyString, wxITEM_NORMAL);
+	Menu1->Append(MenuItem3);
+	MenuItem4 = new wxMenuItem(Menu1, ID_MENUITEM2, _("Open..."), wxEmptyString, wxITEM_NORMAL);
+	Menu1->Append(MenuItem4);
+	MenuItem7 = new wxMenuItem(Menu1, ID_MENUITEM5, _("Reload file\tF5"), wxEmptyString, wxITEM_NORMAL);
+	Menu1->Append(MenuItem7);
+	MenuItem9 = new wxMenuItem(Menu1, ID_MENUITEM7, _("Save..."), wxEmptyString, wxITEM_NORMAL);
+	Menu1->Append(MenuItem9);
+	Menu1->AppendSeparator();
+	MenuItem18 = new wxMenu();
+	MenuItem8 = new wxMenuItem(MenuItem18, ID_MENUITEM6, _("a 3D model (any Assimp format)..."), wxEmptyString, wxITEM_NORMAL);
+	MenuItem18->Append(MenuItem8);
+	MenuItem19 = new wxMenuItem(MenuItem18, ID_MENUITEM20, _("a PLY point cloud..."), wxEmptyString, wxITEM_NORMAL);
+	MenuItem18->Append(MenuItem19);
+	mnuImportLAS = new wxMenuItem(MenuItem18, ID_MENUITEM25, _("a LAS LiDAR file..."), wxEmptyString, wxITEM_NORMAL);
+	MenuItem18->Append(mnuImportLAS);
+	Menu1->Append(ID_MENUITEM19, _("Import"), MenuItem18, wxEmptyString);
+	MenuItem20 = new wxMenu();
+	MenuItem21 = new wxMenuItem(MenuItem20, ID_MENUITEM22, _("point clouds to PLY file..."), wxEmptyString, wxITEM_NORMAL);
+	MenuItem20->Append(MenuItem21);
+	Menu1->Append(ID_MENUITEM21, _("Export"), MenuItem20, wxEmptyString);
+	Menu1->AppendSeparator();
+	MenuItem23 = new wxMenuItem(Menu1, ID_MENUITEM29, _("Previous file\tF7"), wxEmptyString, wxITEM_NORMAL);
+	Menu1->Append(MenuItem23);
+	MenuItem24 = new wxMenuItem(Menu1, ID_MENUITEM30, _("Next file\tF8"), wxEmptyString, wxITEM_NORMAL);
+	Menu1->Append(MenuItem24);
+	Menu1->AppendSeparator();
+	MenuItem14 = new wxMenuItem(Menu1, ID_MENUITEM12, _("Take snapshot...\tF2"), _("Saves the current window image to a file"), wxITEM_NORMAL);
+	Menu1->Append(MenuItem14);
+	MenuItem22 = new wxMenuItem(Menu1, ID_MENUITEM23, _("High-resolution render to file..."), wxEmptyString, wxITEM_NORMAL);
+	Menu1->Append(MenuItem22);
+	mnuSceneStats = new wxMenuItem(Menu1, ID_MENUITEM18, _("Scene stats"), wxEmptyString, wxITEM_NORMAL);
+	Menu1->Append(mnuSceneStats);
+	Menu1->AppendSeparator();
+	MenuItem1 = new wxMenuItem(Menu1, idMenuQuit, _("Quit\tAlt-F4"), _("Quit the application"), wxITEM_NORMAL);
+	Menu1->Append(MenuItem1);
+	MenuBar1->Append(Menu1, _("&File"));
+	Menu4 = new wxMenu();
+	mnuSelectNone = new wxMenuItem(Menu4, ID_MENUITEM24, _("Select none"), wxEmptyString, wxITEM_NORMAL);
+	Menu4->Append(mnuSelectNone);
+	mnuSelectByClass = new wxMenuItem(Menu4, ID_MENUITEM26, _("Select by class..."), wxEmptyString, wxITEM_NORMAL);
+	Menu4->Append(mnuSelectByClass);
+	Menu4->AppendSeparator();
+	mnuSelectionScale = new wxMenuItem(Menu4, ID_MENUITEM27, _("Re-scale selected..."), wxEmptyString, wxITEM_NORMAL);
+	Menu4->Append(mnuSelectionScale);
+	mnuSelectionDelete = new wxMenuItem(Menu4, ID_MENUITEM28, _("Delete selected"), wxEmptyString, wxITEM_NORMAL);
+	Menu4->Append(mnuSelectionDelete);
+	MenuBar1->Append(Menu4, _("&Edit"));
+	Menu3 = new wxMenu();
+	MenuItem6 = new wxMenuItem(Menu3, ID_MENUITEM4, _("Background color..."), wxEmptyString, wxITEM_NORMAL);
+	Menu3->Append(MenuItem6);
+	MenuItem5 = new wxMenuItem(Menu3, ID_MENUITEM3, _("Options..."), wxEmptyString, wxITEM_NORMAL);
+	Menu3->Append(MenuItem5);
+	Menu3->AppendSeparator();
+	MenuItem17 = new wxMenu();
+	mnuItemShowCloudOctrees = new wxMenuItem(MenuItem17, ID_MENUITEM15, _("Show/hide bounding boxes"), wxEmptyString, wxITEM_CHECK);
+	MenuItem17->Append(mnuItemShowCloudOctrees);
+	mnuItemChangeMaxPointsPerOctreeNode = new wxMenuItem(MenuItem17, ID_MENUITEM17, _("Change octree parameters..."), wxEmptyString, wxITEM_NORMAL);
+	MenuItem17->Append(mnuItemChangeMaxPointsPerOctreeNode);
+	Menu3->Append(ID_MENUITEM16, _("Point clouds octrees..."), MenuItem17, wxEmptyString);
+	Menu3->AppendSeparator();
+	MenuItem13 = new wxMenuItem(Menu3, ID_MENUITEM11, _("Delete all objects"), wxEmptyString, wxITEM_NORMAL);
+	Menu3->Append(MenuItem13);
+	MenuItem11 = new wxMenu();
+	MenuItem12 = new wxMenuItem(MenuItem11, ID_MENUITEM9, _("Simple robot model"), wxEmptyString, wxITEM_NORMAL);
+	MenuItem11->Append(MenuItem12);
+	Menu3->Append(ID_MENUITEM8, _("Insert stock object"), MenuItem11, wxEmptyString);
+	Menu3->AppendSeparator();
+	MenuItem15 = new wxMenu();
+	MenuItem10 = new wxMenuItem(MenuItem15, ID_MENUITEM10, _("Circular"), wxEmptyString, wxITEM_NORMAL);
+	MenuItem15->Append(MenuItem10);
+	MenuItem16 = new wxMenuItem(MenuItem15, ID_MENUITEM14, _("Arbitrary path..."), wxEmptyString, wxITEM_NORMAL);
+	MenuItem15->Append(MenuItem16);
+	Menu3->Append(ID_MENUITEM13, _("Camera tracking"), MenuItem15, wxEmptyString);
+	MenuBar1->Append(Menu3, _("&Tools"));
+	Menu2 = new wxMenu();
+	MenuItem2 = new wxMenuItem(Menu2, idMenuAbout, _("About\tF1"), _("Show info about this application"), wxITEM_NORMAL);
+	Menu2->Append(MenuItem2);
+	MenuBar1->Append(Menu2, _("&Help"));
+	SetMenuBar(MenuBar1);
+	StatusBar1 = new wxStatusBar(this, ID_STATUSBAR1, 0, _T("ID_STATUSBAR1"));
+	int __wxStatusBarWidths_1[4] = { -10, -10, -4, -5 };
+	int __wxStatusBarStyles_1[4] = { wxSB_NORMAL, wxSB_NORMAL, wxSB_NORMAL, wxSB_NORMAL };
+	StatusBar1->SetFieldsCount(4,__wxStatusBarWidths_1);
+	StatusBar1->SetStatusStyles(4,__wxStatusBarStyles_1);
+	SetStatusBar(StatusBar1);
+	timLoadFileCmdLine.SetOwner(this, ID_TIMER1);
+	timLoadFileCmdLine.Start(50, false);
+	FlexGridSizer1->Fit(this);
+	FlexGridSizer1->SetSizeHints(this);
+	Center();
 
-    Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&_DSceneViewerFrame::OnNewScene);
-    Connect(ID_BUTTON2,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&_DSceneViewerFrame::OnOpenFile);
-    Connect(ID_BUTTON3,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&_DSceneViewerFrame::OnPrevious);
-    Connect(ID_BUTTON4,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&_DSceneViewerFrame::OnNext);
-    Connect(ID_BUTTON5,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&_DSceneViewerFrame::OnReload);
-    Connect(ID_BUTTON6,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuOptions);
-    Connect(ID_BUTTON7,wxEVT_COMMAND_TOGGLEBUTTON_CLICKED,(wxObjectEventFunction)&_DSceneViewerFrame::OnbtnOrthoClicked);
-    Connect(ID_BUTTON8,wxEVT_COMMAND_TOGGLEBUTTON_CLICKED,(wxObjectEventFunction)&_DSceneViewerFrame::OnbtnAutoplayClicked);
-    Connect(ID_BUTTON9,wxEVT_COMMAND_TOGGLEBUTTON_CLICKED,(wxObjectEventFunction)&_DSceneViewerFrame::OnBtnRecordClicked);
-    Connect(ID_BUTTON10,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&_DSceneViewerFrame::OnAbout);
-    Connect(ID_BUTTON11,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&_DSceneViewerFrame::OnQuit);
-    Connect(ID_MENUITEM1,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnNewScene);
-    Connect(ID_MENUITEM2,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnOpenFile);
-    Connect(ID_MENUITEM5,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnReload);
-    Connect(ID_MENUITEM7,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuSave);
-    Connect(ID_MENUITEM6,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnInsert3DS);
-    Connect(ID_MENUITEM20,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuItemImportPLYPointCloud);
-    Connect(ID_MENUITEM25,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnmnuImportLASSelected);
-    Connect(ID_MENUITEM22,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuItemExportPointsPLY);
-    Connect(ID_MENUITEM29,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnPrevious);
-    Connect(ID_MENUITEM30,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnNext);
-    Connect(ID_MENUITEM12,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuItem14Selected);
-    Connect(ID_MENUITEM23,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuItemHighResRender);
-    Connect(ID_MENUITEM18,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnmnuSceneStatsSelected);
-    Connect(idMenuQuit,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnQuit);
-    Connect(ID_MENUITEM24,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnmnuSelectNoneSelected);
-    Connect(ID_MENUITEM26,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnmnuSelectByClassSelected);
-    Connect(ID_MENUITEM27,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnmnuSelectionScaleSelected);
-    Connect(ID_MENUITEM28,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnmnuSelectionDeleteSelected);
-    Connect(ID_MENUITEM4,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuBackColor);
-    Connect(ID_MENUITEM3,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuOptions);
-    Connect(ID_MENUITEM15,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnmnuItemShowCloudOctreesSelected);
-    Connect(ID_MENUITEM17,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnmnuItemChangeMaxPointsPerOctreeNodeSelected);
-    Connect(ID_MENUITEM11,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuDeleteAll);
-    Connect(ID_MENUITEM9,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuAddSICK);
-    Connect(ID_MENUITEM10,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnStartCameraTravelling);
-    Connect(idMenuAbout,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnAbout);
-    Connect(ID_TIMER1,wxEVT_TIMER,(wxObjectEventFunction)&_DSceneViewerFrame::OntimLoadFileCmdLineTrigger);
-    //*)
+	Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&_DSceneViewerFrame::OnNewScene);
+	Connect(ID_BUTTON2,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&_DSceneViewerFrame::OnOpenFile);
+	Connect(ID_BUTTON3,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&_DSceneViewerFrame::OnPrevious);
+	Connect(ID_BUTTON4,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&_DSceneViewerFrame::OnNext);
+	Connect(ID_BUTTON5,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&_DSceneViewerFrame::OnReload);
+	Connect(ID_BUTTON6,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuOptions);
+	Connect(ID_BUTTON7,wxEVT_COMMAND_TOGGLEBUTTON_CLICKED,(wxObjectEventFunction)&_DSceneViewerFrame::OnbtnOrthoClicked);
+	Connect(ID_BUTTON8,wxEVT_COMMAND_TOGGLEBUTTON_CLICKED,(wxObjectEventFunction)&_DSceneViewerFrame::OnbtnAutoplayClicked);
+	Connect(ID_BUTTON9,wxEVT_COMMAND_TOGGLEBUTTON_CLICKED,(wxObjectEventFunction)&_DSceneViewerFrame::OnBtnRecordClicked);
+	Connect(ID_BUTTON10,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&_DSceneViewerFrame::OnAbout);
+	Connect(ID_BUTTON11,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&_DSceneViewerFrame::OnQuit);
+	Connect(ID_MENUITEM1,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnNewScene);
+	Connect(ID_MENUITEM2,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnOpenFile);
+	Connect(ID_MENUITEM5,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnReload);
+	Connect(ID_MENUITEM7,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuSave);
+	Connect(ID_MENUITEM6,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnInsert3DS);
+	Connect(ID_MENUITEM20,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuItemImportPLYPointCloud);
+	Connect(ID_MENUITEM25,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnmnuImportLASSelected);
+	Connect(ID_MENUITEM22,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuItemExportPointsPLY);
+	Connect(ID_MENUITEM29,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnPrevious);
+	Connect(ID_MENUITEM30,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnNext);
+	Connect(ID_MENUITEM12,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuItem14Selected);
+	Connect(ID_MENUITEM23,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuItemHighResRender);
+	Connect(ID_MENUITEM18,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnmnuSceneStatsSelected);
+	Connect(idMenuQuit,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnQuit);
+	Connect(ID_MENUITEM24,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnmnuSelectNoneSelected);
+	Connect(ID_MENUITEM26,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnmnuSelectByClassSelected);
+	Connect(ID_MENUITEM27,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnmnuSelectionScaleSelected);
+	Connect(ID_MENUITEM28,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnmnuSelectionDeleteSelected);
+	Connect(ID_MENUITEM4,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuBackColor);
+	Connect(ID_MENUITEM3,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuOptions);
+	Connect(ID_MENUITEM15,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnmnuItemShowCloudOctreesSelected);
+	Connect(ID_MENUITEM17,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnmnuItemChangeMaxPointsPerOctreeNodeSelected);
+	Connect(ID_MENUITEM11,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuDeleteAll);
+	Connect(ID_MENUITEM9,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuAddSICK);
+	Connect(ID_MENUITEM10,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnStartCameraTravelling);
+	Connect(idMenuAbout,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnAbout);
+	Connect(ID_TIMER1,wxEVT_TIMER,(wxObjectEventFunction)&_DSceneViewerFrame::OntimLoadFileCmdLineTrigger);
+	//*)
 
-    Connect(ID_MENUITEM14,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuCameraTrackingArbitrary);
+	Connect(ID_MENUITEM14,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuCameraTrackingArbitrary);
 
 
-    Connect(ID_TIMER_AUTOPLAY,wxEVT_TIMER,(wxObjectEventFunction)&_DSceneViewerFrame::OntimAutoplay);
-    Connect(ID_TRAVELLING_TIMER,wxEVT_TIMER,(wxObjectEventFunction)&_DSceneViewerFrame::OnTravellingTrigger);
+	Connect(ID_TIMER_AUTOPLAY,wxEVT_TIMER,(wxObjectEventFunction)&_DSceneViewerFrame::OntimAutoplay);
+	Connect(ID_TRAVELLING_TIMER,wxEVT_TIMER,(wxObjectEventFunction)&_DSceneViewerFrame::OnTravellingTrigger);
 
-    // Create the wxCanvas object:
+	// Create the wxCanvas object:
 	m_canvas = new CMyGLCanvas( this, wxID_ANY, wxDefaultPosition, wxDefaultSize );
 #if wxCHECK_VERSION(2, 9, 0)
 	m_canvas->SetMinClientSize( wxSize(100,100));
 #endif
-    FlexGridSizer1->Add(m_canvas, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
+	FlexGridSizer1->Add(m_canvas, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
 
 	// Load an empty scene:
-    wxCommandEvent dummEvent;
-    OnNewScene(dummEvent);
+	wxCommandEvent dummEvent;
+	OnNewScene(dummEvent);
 
 
-    m_autoplayTimer = new wxTimer(this, ID_TIMER_AUTOPLAY );
+	m_autoplayTimer = new wxTimer(this, ID_TIMER_AUTOPLAY );
 
-    m_tTravelling.SetOwner(this, ID_TRAVELLING_TIMER);
+	m_tTravelling.SetOwner(this, ID_TRAVELLING_TIMER);
 
-    m_dlg_tracking= new CDlgCamTracking(this);
+	m_dlg_tracking= new CDlgCamTracking(this);
 
 
-    Maximize();
+	Maximize();
 }
 
 _DSceneViewerFrame::~_DSceneViewerFrame()
 {
-        theWindow = nullptr;
+	theWindow = nullptr;
 
 	delete m_autoplayTimer;
 
-    //(*Destroy(_DSceneViewerFrame)
-    //*)
+	//(*Destroy(_DSceneViewerFrame)
+	//*)
 }
 
 void _DSceneViewerFrame::OnQuit(wxCommandEvent& event)
 {
-    Close();
+	Close();
 }
 
 void _DSceneViewerFrame::OnAbout(wxCommandEvent& event)
@@ -651,63 +651,60 @@ void _DSceneViewerFrame::OnAbout(wxCommandEvent& event)
 
 void _DSceneViewerFrame::OnNewScene(wxCommandEvent& event)
 {
-	m_canvas->m_openGLScene->clear();
+	auto openGLSceneRef = m_canvas->getOpenGLSceneRef();
+	openGLSceneRef->clear();
 
 	// Default file name:
 	loadedFileName = "no-name.3Dscene";
 	updateTitle();
 
-    {
+	{
 		mrpt::opengl::CGridPlaneXY::Ptr obj = mrpt::opengl::CGridPlaneXY::Create( -50,50,-50,50,0,1 );
-	    obj->setColor(0.3,0.3,0.3);
-	    m_canvas->m_openGLScene->insert( obj );
-    }
+		obj->setColor(0.3,0.3,0.3);
+		openGLSceneRef->insert( obj );
+	}
 
-    m_canvas->cameraPointingX 	= 0;
-    m_canvas->cameraPointingY 	= 0;
-    m_canvas->cameraPointingZ 	= 0;
+	m_canvas->setCameraPointing(0.0f, 0.0f, 0.0f);
+	m_canvas->setZoomDistance(20.0f);
+	m_canvas->setElevationDegrees(45.0f);
+	m_canvas->setAzimuthDegrees(45.0f);
 
-    m_canvas->cameraZoomDistance	= 20;
-
-    m_canvas->cameraElevationDeg 	= 45;
-    m_canvas->cameraAzimuthDeg	= 45;
-
-    m_canvas->m_openGLScene->insert( stock_objects::CornerXYZ() );
+	openGLSceneRef->insert( stock_objects::CornerXYZ() );
 
 	// Add a clone viewport:
-	COpenGLViewport::Ptr vi= m_canvas->m_openGLScene->createViewport("clone");
+	COpenGLViewport::Ptr vi= openGLSceneRef->createViewport("clone");
 	vi->setViewportPosition(0.05,0.05,0.2,0.2);
 	vi->setCloneView("main");
 	vi->setCloneCamera(true);
 	vi->setBorderSize(1);
 
-    Refresh(false);
+	Refresh(false);
 }
 
 void _DSceneViewerFrame::OnOpenFile(wxCommandEvent& event)
 {
-    wxString caption = wxT("Choose a file to open");
-    wxString wildcard = wxT("3D scene files (*.3Dscene)|*.3Dscene|All files (*.*)|*.*");
+	wxString caption = wxT("Choose a file to open");
+	wxString wildcard = wxT("3D scene files (*.3Dscene)|*.3Dscene|All files (*.*)|*.*");
 
-    wxString defaultDir( _U( iniFile->read_string(iniFileSect,"LastDir",".").c_str() ) );
+	wxString defaultDir( _U( iniFile->read_string(iniFileSect,"LastDir",".").c_str() ) );
 
-    wxString defaultFilename = wxT("");
-    wxFileDialog dialog(this, caption, defaultDir, defaultFilename,wildcard, wxFD_OPEN | wxFD_FILE_MUST_EXIST );
+	wxString defaultFilename = wxT("");
+	wxFileDialog dialog(this, caption, defaultDir, defaultFilename,wildcard, wxFD_OPEN | wxFD_FILE_MUST_EXIST );
 
-    if (dialog.ShowModal() == wxID_OK)
-    {
-        wxString fileName = dialog.GetPath();
+	if (dialog.ShowModal() == wxID_OK)
+	{
+		wxString fileName = dialog.GetPath();
 
-        loadFromFile( std::string(fileName.mb_str()) );
-    }
+		loadFromFile( std::string(fileName.mb_str()) );
+	}
 
 }
 
 void _DSceneViewerFrame::loadFromFile( const std::string &fil, bool isInASequence )
 {
-    try
-    {
-        // Save the path
+	try
+	{
+		// Save the path
 		saveLastUsedDirectoryToCfgFile(fil);
 
 		//static float	old_cam_pX,old_cam_pY,old_cam_pZ,old_cam_d,old_cam_az,old_cam_el;
@@ -721,96 +718,95 @@ void _DSceneViewerFrame::loadFromFile( const std::string &fil, bool isInASequenc
 
 		CFileGZInputStream	   	f( fil);
 
-        static utils::CTicTac		tictac;
-        {
-            std::lock_guard<std::mutex>   lock(critSec_UpdateScene);
+		static utils::CTicTac		tictac;
+		auto openGLSceneRef = m_canvas->getOpenGLSceneRef();
+		{
+			std::lock_guard<std::mutex>   lock(critSec_UpdateScene);
 
-            tictac.Tic();
+			tictac.Tic();
 
-            m_canvas->m_openGLScene->clear();
-            f >> m_canvas->m_openGLScene;
-        }
+			openGLSceneRef->clear();
+			f >> openGLSceneRef;
+		}
 
 		double timeToLoad = tictac.Tac();
 
-		if (m_canvas->m_openGLScene->viewportsCount()==0  ||
-			!m_canvas->m_openGLScene->getViewport("main") ||
-			m_canvas->m_openGLScene->getViewport("main")->size()==0
-			)
+		if (openGLSceneRef->viewportsCount()==0  ||
+				!openGLSceneRef->getViewport("main") ||
+				openGLSceneRef->getViewport("main")->size()==0
+				)
 		{
 			wxMessageBox( _("File is empty or format unrecognized."), _("Warning"), wxOK, this);
 			btnAutoplay->SetValue( false );
 		}
 
 
-        // Change the camera if necesary:
-		if ( m_canvas->m_openGLScene->followCamera() )
+		// Change the camera if necesary:
+		if ( openGLSceneRef->followCamera() )
 		{
-			COpenGLViewport::Ptr view = m_canvas->m_openGLScene->getViewport("main");
+			COpenGLViewport::Ptr view = openGLSceneRef->getViewport("main");
 			if (!view)
 				THROW_EXCEPTION("Fatal error: there is no 'main' viewport in the 3D scene!");
 
-			CCamera::Ptr cam = m_canvas->m_openGLScene->getByClass<CCamera>();
+			CCamera::Ptr cam = openGLSceneRef->getByClass<CCamera>();
 
 			bool  camIsCCameraObj = cam ? true : false;
 			if ( !camIsCCameraObj )
 				cam = CCamera::Ptr( new CCamera( view->getCamera() ) );
 
-			m_canvas->cameraPointingX = cam->getPointingAtX();
-			m_canvas->cameraPointingY = cam->getPointingAtY();
-			m_canvas->cameraPointingZ = cam->getPointingAtZ();
+			m_canvas->setCameraPointing(cam->getPointingAtX(), cam->getPointingAtY(), cam->getPointingAtZ());
 
 			// If it's not loaded thru arrow keys or a timed sequence, take camera:
 			if (!isInASequence || !freeCameraAlways || !freeCameraAlwaysNoAzimuth)
 			{
 				if (!freeCameraAlwaysNoAzimuth)
 				{
-					m_canvas->cameraZoomDistance = cam->getZoomDistance();
-					m_canvas->cameraElevationDeg = cam->getElevationDegrees();
+					m_canvas->setZoomDistance(cam->getZoomDistance());
+					m_canvas->setElevationDegrees(cam->getElevationDegrees());
 				}
-				m_canvas->cameraAzimuthDeg = cam->getAzimuthDegrees();
+				m_canvas->setAzimuthDegrees(cam->getAzimuthDegrees());
 			}
 
 			// Remove the camera from the object:
 			if ( camIsCCameraObj )
-				m_canvas->m_openGLScene->removeObject( cam );
+				openGLSceneRef->removeObject( cam );
 		}
 
-        loadedFileName = fil;
+		loadedFileName = fil;
 
-        // Set the file name as window title:
-        updateTitle();
+		// Set the file name as window title:
+		updateTitle();
 
 		theWindow->StatusBar1->SetStatusText( _U(format("File loaded in %.03fs", timeToLoad ).c_str()) ,0);
 
-        Refresh(false);
-    }
-    catch(std::exception &e)
-    {
-        std::cerr << e.what() << std::endl;
+		Refresh(false);
+	}
+	catch(std::exception &e)
+	{
+		std::cerr << e.what() << std::endl;
 		btnAutoplay->SetValue( false );
-        wxMessageBox( _U(e.what()), _("Exception"), wxOK, this);
-    }
-    catch(...)
-    {
+		wxMessageBox( _U(e.what()), _("Exception"), wxOK, this);
+	}
+	catch(...)
+	{
 		btnAutoplay->SetValue( false );
-        wxMessageBox( _("Runtime error!"), _("Exception"), wxOK, this);
-    }
+		wxMessageBox( _("Runtime error!"), _("Exception"), wxOK, this);
+	}
 }
 
 void _DSceneViewerFrame::updateTitle()
 {
 	SetTitle(_U(format("3DSceneViewer - Part of the MRPT project [%s]",
-		( extractFileName(loadedFileName) + string(".") + extractFileExtension(loadedFileName)
-		).c_str() ).c_str() ));
+					   ( extractFileName(loadedFileName) + string(".") + extractFileExtension(loadedFileName)
+						 ).c_str() ).c_str() ));
 }
 
 void _DSceneViewerFrame::OntimLoadFileCmdLineTrigger(wxTimerEvent& event)
 {
 	timLoadFileCmdLine.Stop(); // One shot only.
-    // Open file if passed by the command line:
-    if (global_fileToOpen.size())
-        loadFromFile( global_fileToOpen );
+	// Open file if passed by the command line:
+	if (global_fileToOpen.size())
+		loadFromFile( global_fileToOpen );
 }
 
 
@@ -836,7 +832,7 @@ void _DSceneViewerFrame::OnMenuBackColor(wxCommandEvent& event)
 {
 	wxColourData	colourData;
 	wxColour			color;
-	color.Set( (int)(255*m_canvas->clearColorR),(int)(255*m_canvas->clearColorG),(int)(255*m_canvas->clearColorB) );
+	color.Set( (int)(255*m_canvas->getClearColorR()),(int)(255*m_canvas->getClearColorG()),(int)(255*m_canvas->getClearColorB()) );
 
 	colourData.SetColour( color );
 	colourData.SetChooseFull(true);
@@ -846,9 +842,7 @@ void _DSceneViewerFrame::OnMenuBackColor(wxCommandEvent& event)
 	if (wxID_OK==colDial.ShowModal())
 	{
 		wxColour col = colDial.GetColourData().GetColour();
-		m_canvas->clearColorR = col.Red()/255.0f;
-		m_canvas->clearColorG = col.Green()/255.0f;
-		m_canvas->clearColorB = col.Blue()/255.0f;
+		m_canvas->setClearColors( col.Red()/255.0f, col.Green()/255.0f, col.Blue()/255.0f);
 
 		int w,h;
 		m_canvas->GetSize(&w,&h);
@@ -881,16 +875,16 @@ void _DSceneViewerFrame::OnMenuOptions(wxCommandEvent& event)
 
 void _DSceneViewerFrame::OnPrevious(wxCommandEvent& event)
 {
-    wxKeyEvent  evn;
-    evn.m_keyCode = WXK_LEFT;
-    m_canvas->OnChar(evn);
+	wxKeyEvent  evn;
+	evn.m_keyCode = WXK_LEFT;
+	m_canvas->OnChar(evn);
 }
 
 void _DSceneViewerFrame::OnNext(wxCommandEvent& event)
 {
-    wxKeyEvent  evn;
-    evn.m_keyCode = WXK_RIGHT;
-    m_canvas->OnChar(evn);
+	wxKeyEvent  evn;
+	evn.m_keyCode = WXK_RIGHT;
+	m_canvas->OnChar(evn);
 }
 
 void _DSceneViewerFrame::OnClose(wxCloseEvent& event)
@@ -901,36 +895,36 @@ void _DSceneViewerFrame::OnBtnRecordClicked(wxCommandEvent& event)
 {
 	if ( btnCapture->GetValue() )
 	{
-	    // Starting recording:
-        wxDirDialog dirDialog(
-            this,
-            _("Choose the directory where to save the screenshots:"),
-            _U( extractFileDirectory(loadedFileName).c_str() ), 0, wxDefaultPosition );
+		// Starting recording:
+		wxDirDialog dirDialog(
+					this,
+					_("Choose the directory where to save the screenshots:"),
+					_U( extractFileDirectory(loadedFileName).c_str() ), 0, wxDefaultPosition );
 
-        if (dirDialog.ShowModal()==wxID_OK)
-        {
-            capturingDir = string( dirDialog.GetPath().mb_str() );
-            isCapturing = true;
-            captureCount=0;
-            btnCapture->SetValue(true);
-        }
-        else
-        {
-            btnCapture->SetValue(false);
-        }
+		if (dirDialog.ShowModal()==wxID_OK)
+		{
+			capturingDir = string( dirDialog.GetPath().mb_str() );
+			isCapturing = true;
+			captureCount=0;
+			btnCapture->SetValue(true);
+		}
+		else
+		{
+			btnCapture->SetValue(false);
+		}
 	}
 	else
 	{
-        isCapturing = false;
+		isCapturing = false;
 	}
 }
 
 void _DSceneViewerFrame::OnbtnOrthoClicked(wxCommandEvent& event)
 {
 	bool ortho = btnOrtho->GetValue();
-	m_canvas->cameraIsProjective = !ortho;
+	m_canvas->setCameraProjective(!ortho);
 
-    m_canvas->Refresh(false);
+	m_canvas->Refresh(false);
 }
 
 void _DSceneViewerFrame::OnReload(wxCommandEvent& event)
@@ -961,21 +955,21 @@ void _DSceneViewerFrame::OnInsert3DS(wxCommandEvent& event)
 		mrpt::opengl::CAssimpModel::Ptr	obj3D = mrpt::opengl::CAssimpModel::Create();
 		obj3D->loadScene( fil );
 		obj3D->setPose( mrpt::math::TPose3D(0,0,0, DEG2RAD(.0),DEG2RAD(0.),DEG2RAD(90.0) ) );
-		m_canvas->m_openGLScene->insert( obj3D );
+		m_canvas->getOpenGLSceneRef()->insert( obj3D );
 
 		m_canvas->Refresh();
-    }
-    catch(std::exception &e)
-    {
-        std::cerr << e.what() << std::endl;
+	}
+	catch(std::exception &e)
+	{
+		std::cerr << e.what() << std::endl;
 		btnAutoplay->SetValue( false );
-        wxMessageBox( _U(e.what()), _("Exception"), wxOK, this);
-    }
-    catch(...)
-    {
+		wxMessageBox( _U(e.what()), _("Exception"), wxOK, this);
+	}
+	catch(...)
+	{
 		btnAutoplay->SetValue( false );
-        wxMessageBox( _("Runtime error!"), _("Exception"), wxOK, this);
-    }
+		wxMessageBox( _("Runtime error!"), _("Exception"), wxOK, this);
+	}
 }
 
 void _DSceneViewerFrame::OnMenuSave(wxCommandEvent& event)
@@ -995,36 +989,37 @@ void _DSceneViewerFrame::OnMenuSave(wxCommandEvent& event)
 		wxString fileName = dialog.GetPath();
 
 		CFileGZOutputStream	fo( string( fileName.mb_str() ) );
-		fo << *m_canvas->m_openGLScene;
+		fo << *m_canvas->getOpenGLSceneRef();
 
-    }
-    catch(std::exception &e)
-    {
-        std::cerr << e.what() << std::endl;
+	}
+	catch(std::exception &e)
+	{
+		std::cerr << e.what() << std::endl;
 		btnAutoplay->SetValue( false );
-        wxMessageBox( _U(e.what()), _("Exception"), wxOK, this);
-    }
-    catch(...)
-    {
+		wxMessageBox( _U(e.what()), _("Exception"), wxOK, this);
+	}
+	catch(...)
+	{
 		btnAutoplay->SetValue( false );
-        wxMessageBox( _("Runtime error!"), _("Exception"), wxOK, this);
-    }
+		wxMessageBox( _("Runtime error!"), _("Exception"), wxOK, this);
+	}
 }
 
 void _DSceneViewerFrame::OnTravellingTrigger(wxTimerEvent& event)
 {
 	try
 	{
-		if ((m_canvas->m_openGLScene->viewportsCount() == 0) ||
-			!m_canvas->m_openGLScene->getViewport("main") ||
-			(m_canvas->m_openGLScene->getViewport("main")->size() == 0))
+		auto openGLSceneRef = m_canvas->getOpenGLSceneRef();
+		if ((openGLSceneRef->viewportsCount() == 0) ||
+				!openGLSceneRef->getViewport("main") ||
+				(openGLSceneRef->getViewport("main")->size() == 0))
 		{
 			wxMessageBox( _("Canvas is empty"), _("Warning"), wxOK, this);
 		}
 		else
 		{
 			// Change the camera
-			COpenGLViewport::Ptr view = m_canvas->m_openGLScene->getViewport("main");
+			COpenGLViewport::Ptr view = openGLSceneRef->getViewport("main");
 
 			if (!view)
 				THROW_EXCEPTION("Fatal error: there is no 'main' viewport in the 3D scene!");
@@ -1056,12 +1051,8 @@ void _DSceneViewerFrame::OnTravellingTrigger(wxTimerEvent& event)
 				}
 
 				if (valid)
-				{
-					m_canvas->cameraPointingX = p.x();
-					m_canvas->cameraPointingY = p.y();
-					m_canvas->cameraPointingZ = p.z();
+					m_canvas->setCameraPointing(p.x(), p.y(), p.z());
 
-				}
 				else
 				{
 					// end of path:
@@ -1076,8 +1067,8 @@ void _DSceneViewerFrame::OnTravellingTrigger(wxTimerEvent& event)
 				// ===============================
 				double step = atof(iniFile->read_string("Spherical travelling","Step","5").c_str());
 
-				if ((m_canvas->cameraAzimuthDeg + step) < maxv)
-					m_canvas->cameraAzimuthDeg += step/10;
+				if ((m_canvas->getAzimuthDegrees() + step) < maxv)
+					m_canvas->setAzimuthDegrees(m_canvas->getAzimuthDegrees() + step/10.0);
 				else
 					m_tTravelling.Stop();
 
@@ -1085,32 +1076,33 @@ void _DSceneViewerFrame::OnTravellingTrigger(wxTimerEvent& event)
 
 			Refresh(false);
 		}
-    }
-    catch(std::exception &e)
-    {
-        std::cerr << e.what() << std::endl;
-        wxMessageBox( _U(e.what()), _("Exception"), wxOK, this);
-    }
-    catch(...)
-    {
-        wxMessageBox( _("Runtime error!"), _("Exception"), wxOK, this);
-    }
+	}
+	catch(std::exception &e)
+	{
+		std::cerr << e.what() << std::endl;
+		wxMessageBox( _U(e.what()), _("Exception"), wxOK, this);
+	}
+	catch(...)
+	{
+		wxMessageBox( _("Runtime error!"), _("Exception"), wxOK, this);
+	}
 }
 
 void _DSceneViewerFrame::OnStartCameraTravelling(wxCommandEvent& event)
 {
 	try
 	{
-		if ((m_canvas->m_openGLScene->viewportsCount() == 0) ||
-			!m_canvas->m_openGLScene->getViewport("main") ||
-			(m_canvas->m_openGLScene->getViewport("main")->size() == 0))
+		auto openGLSceneRef = m_canvas->getOpenGLSceneRef();
+		if ((openGLSceneRef->viewportsCount() == 0) ||
+				!openGLSceneRef->getViewport("main") ||
+				(openGLSceneRef->getViewport("main")->size() == 0))
 		{
 			wxMessageBox( _("Canvas is empty"), _("Warning"), wxOK, this);
 		}
 		else
 		{
 			// Change the camera
-			COpenGLViewport::Ptr view = m_canvas->m_openGLScene->getViewport("main");
+			COpenGLViewport::Ptr view = openGLSceneRef->getViewport("main");
 
 			if (!view)
 				THROW_EXCEPTION("Fatal error: there is no 'main' viewport in the 3D scene!");
@@ -1126,12 +1118,10 @@ void _DSceneViewerFrame::OnStartCameraTravelling(wxCommandEvent& event)
 			double min_value = atof(iniFile->read_string("Spherical travelling","Min value","90").c_str());
 			double max_value = atof(iniFile->read_string("Spherical travelling","Max value","90").c_str());
 
-			m_canvas->cameraPointingX = target_x;
-			m_canvas->cameraPointingY = target_y;
-			m_canvas->cameraPointingZ = target_z;
-			m_canvas->cameraZoomDistance = zoom;
-			m_canvas->cameraElevationDeg = elevation;
-			m_canvas->cameraAzimuthDeg   = azimuth - min_value;
+			m_canvas->setCameraPointing(target_x, target_y, target_z);
+			m_canvas->setZoomDistance(zoom);
+			m_canvas->setElevationDegrees(elevation);
+			m_canvas->setAzimuthDegrees(azimuth - min_value);
 
 			maxv = azimuth + max_value;
 
@@ -1140,16 +1130,16 @@ void _DSceneViewerFrame::OnStartCameraTravelling(wxCommandEvent& event)
 
 			Refresh(false);
 		}
-    }
-    catch(std::exception &e)
-    {
-        std::cerr << e.what() << std::endl;
-        wxMessageBox( _U(e.what()), _("Exception"), wxOK, this);
-    }
-    catch(...)
-    {
-        wxMessageBox( _("Runtime error!"), _("Exception"), wxOK, this);
-    }
+	}
+	catch(std::exception &e)
+	{
+		std::cerr << e.what() << std::endl;
+		wxMessageBox( _U(e.what()), _("Exception"), wxOK, this);
+	}
+	catch(...)
+	{
+		wxMessageBox( _("Runtime error!"), _("Exception"), wxOK, this);
+	}
 }
 
 
@@ -1162,23 +1152,23 @@ void _DSceneViewerFrame::OnMenuAddSICK(wxCommandEvent& event)
 	try
 	{
 		mrpt::opengl::CSetOfObjects::Ptr obj = mrpt::opengl::stock_objects::RobotPioneer();
-		m_canvas->m_openGLScene->insert( obj );
+		m_canvas->getOpenGLSceneRef()->insert( obj );
 		m_canvas->Refresh();
-    }
-    catch(std::exception &e)
-    {
-        std::cerr << e.what() << std::endl;
-        wxMessageBox( _U(e.what()), _("Exception"), wxOK, this);
-    }
-    catch(...)
-    {
-        wxMessageBox( _("Runtime error!"), _("Exception"), wxOK, this);
-    }
+	}
+	catch(std::exception &e)
+	{
+		std::cerr << e.what() << std::endl;
+		wxMessageBox( _U(e.what()), _("Exception"), wxOK, this);
+	}
+	catch(...)
+	{
+		wxMessageBox( _("Runtime error!"), _("Exception"), wxOK, this);
+	}
 }
 
 void _DSceneViewerFrame::OnMenuDeleteAll(wxCommandEvent& event)
 {
-	m_canvas->m_openGLScene->clear();
+	m_canvas->getOpenGLSceneRef()->clear();
 	m_canvas->Refresh();
 }
 
@@ -1221,16 +1211,16 @@ void _DSceneViewerFrame::OnMenuCameraTrackingArbitrary(wxCommandEvent& event)
 void _DSceneViewerFrame::OnmnuItemChangeMaxPointsPerOctreeNodeSelected(wxCommandEvent& event)
 {
 	wxString sRet1 = wxGetTextFromUser(
-		_("Max. number of points in an octree node before split:"),
-		_("Enter new value"),
-		wxString::Format(_("%e"),(double)mrpt::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE),
-		this);
+				_("Max. number of points in an octree node before split:"),
+				_("Enter new value"),
+				wxString::Format(_("%e"),(double)mrpt::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE),
+				this);
 
 	wxString sRet2 = wxGetTextFromUser(
-		_("Max. density of points in each octree (points/pixel^2):"),
-		_("Enter new value"),
-		wxString::Format(_("%e"),(double)mrpt::global_settings::OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL),
-		this);
+				_("Max. density of points in each octree (points/pixel^2):"),
+				_("Enter new value"),
+				wxString::Format(_("%e"),(double)mrpt::global_settings::OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL),
+				this);
 
 	double N1,N2;
 	if (sRet1.ToDouble(&N1) && sRet2.ToDouble(&N2))
@@ -1257,18 +1247,18 @@ void func_clear_octrees(const mrpt::opengl::CRenderizable::Ptr &o)
 		obj->octree_mark_as_outdated();
 	}
 	else
-	if (IS_CLASS(o,CPointCloudColoured))
-	{
-		CPointCloudColoured::Ptr obj = std::dynamic_pointer_cast<CPointCloudColoured>(o);
-		obj->octree_mark_as_outdated();
-	}
+		if (IS_CLASS(o,CPointCloudColoured))
+		{
+			CPointCloudColoured::Ptr obj = std::dynamic_pointer_cast<CPointCloudColoured>(o);
+			obj->octree_mark_as_outdated();
+		}
 }
 
 void _DSceneViewerFrame::clear_all_octrees_in_scene()
 {
 	{
 		std::lock_guard<std::mutex> lock(critSec_UpdateScene);
-		m_canvas->m_openGLScene->visitAllObjects( &func_clear_octrees );
+		m_canvas->getOpenGLSceneRef()->visitAllObjects( &func_clear_octrees );
 	}
 }
 
@@ -1301,26 +1291,26 @@ void func_gather_stats(const mrpt::opengl::CRenderizable::Ptr &o)
 		sceneStats.nOctreeTotal+=obj->octree_get_node_count();
 	}
 	else
-	if (IS_CLASS(o,CPointCloudColoured))
-	{
-		CPointCloudColoured::Ptr obj = std::dynamic_pointer_cast<CPointCloudColoured>(o);
-		sceneStats.nPoints +=obj->size();
-		sceneStats.nOctreeVisible+=obj->octree_get_visible_nodes();
-		sceneStats.nOctreeTotal+=obj->octree_get_node_count();
-	}
+		if (IS_CLASS(o,CPointCloudColoured))
+		{
+			CPointCloudColoured::Ptr obj = std::dynamic_pointer_cast<CPointCloudColoured>(o);
+			sceneStats.nPoints +=obj->size();
+			sceneStats.nOctreeVisible+=obj->octree_get_visible_nodes();
+			sceneStats.nOctreeTotal+=obj->octree_get_node_count();
+		}
 }
 
 // Gather stats on the scene:
 void _DSceneViewerFrame::OnmnuSceneStatsSelected(wxCommandEvent& event)
 {
-    try
-    {
+	try
+	{
 		wxBusyCursor wait;
 		sceneStats.clear();
 
 		{
 			std::lock_guard<std::mutex> lock(critSec_UpdateScene);
-			m_canvas->m_openGLScene->visitAllObjects( &func_gather_stats );
+			m_canvas->getOpenGLSceneRef()->visitAllObjects( &func_gather_stats );
 		}
 
 		std::stringstream  ss;
@@ -1330,11 +1320,11 @@ void _DSceneViewerFrame::OnmnuSceneStatsSelected(wxCommandEvent& event)
 		   << "Visible octree nodes (in point clouds): " << sceneStats.nOctreeVisible << endl;
 
 		wxMessageBox(_U(ss.str().c_str()), _("Scene statistics"));
-    }
-    catch(std::exception &e)
-    {
-        wxMessageBox( _U(e.what()), _("Exception"), wxOK, this);
-    }
+	}
+	catch(std::exception &e)
+	{
+		wxMessageBox( _U(e.what()), _("Exception"), wxOK, this);
+	}
 }
 
 
@@ -1351,13 +1341,13 @@ void func_get_octbb(const mrpt::opengl::CRenderizable::Ptr &o)
 		aux_gl_octrees_bb->insert(new_bb );
 	}
 	else
-	if (IS_CLASS(o,CPointCloudColoured))
-	{
-		CPointCloudColoured::Ptr obj = std::dynamic_pointer_cast<CPointCloudColoured>(o);
-		CSetOfObjects::Ptr new_bb = CSetOfObjects::Create();
-		obj->octree_get_graphics_boundingboxes(*new_bb);
-		aux_gl_octrees_bb->insert(new_bb );
-	}
+		if (IS_CLASS(o,CPointCloudColoured))
+		{
+			CPointCloudColoured::Ptr obj = std::dynamic_pointer_cast<CPointCloudColoured>(o);
+			CSetOfObjects::Ptr new_bb = CSetOfObjects::Create();
+			obj->octree_get_graphics_boundingboxes(*new_bb);
+			aux_gl_octrees_bb->insert(new_bb );
+		}
 }
 
 
@@ -1366,26 +1356,27 @@ void _DSceneViewerFrame::OnmnuItemShowCloudOctreesSelected(wxCommandEvent& event
 {
 	const bool show_hide = mnuItemShowCloudOctrees->IsChecked();
 
-    try
-    {
+	try
+	{
 		wxBusyCursor wait;
 
 		{
+			auto openGLSceneRef = m_canvas->getOpenGLSceneRef();
 			std::lock_guard<std::mutex> lock(critSec_UpdateScene);
-			m_canvas->m_openGLScene->visitAllObjects( &func_gather_stats );
+			openGLSceneRef->visitAllObjects( &func_gather_stats );
 
 			CSetOfObjects::Ptr gl_octrees_bb;
 
 			// Get object from scene, or creat upon first usage:
 			{
-				CRenderizable::Ptr obj = m_canvas->m_openGLScene->getByName(name_octrees_bb_globj);
+				CRenderizable::Ptr obj = openGLSceneRef->getByName(name_octrees_bb_globj);
 				if (obj)
 					gl_octrees_bb = std::dynamic_pointer_cast<CSetOfObjects>(obj);
 				else
 				{
 					gl_octrees_bb = CSetOfObjects::Create();
 					gl_octrees_bb->setName( name_octrees_bb_globj );
-					m_canvas->m_openGLScene->insert(gl_octrees_bb);
+					openGLSceneRef->insert(gl_octrees_bb);
 				}
 			}
 
@@ -1397,18 +1388,18 @@ void _DSceneViewerFrame::OnmnuItemShowCloudOctreesSelected(wxCommandEvent& event
 				// Show:
 				aux_gl_octrees_bb = gl_octrees_bb;
 
-				m_canvas->m_openGLScene->visitAllObjects( func_get_octbb );
+				openGLSceneRef->visitAllObjects( func_get_octbb );
 
 				aux_gl_octrees_bb.reset();
 			}
 		}
 
 		Refresh(false);
-    }
-    catch(std::exception &e)
-    {
-        wxMessageBox( _U(e.what()), _("Exception"), wxOK, this);
-    }
+	}
+	catch(std::exception &e)
+	{
+		wxMessageBox( _U(e.what()), _("Exception"), wxOK, this);
+	}
 }
 
 // ----------------------------------------------------------
@@ -1419,12 +1410,12 @@ void _DSceneViewerFrame::OnMenuItemImportPLYPointCloud(wxCommandEvent& event)
 	try
 	{
 		wxFileDialog dialog(
-			this,
-			_("Choose the PLY file to import"),
-			_U( iniFile->read_string(iniFileSect,"LastDir",".").c_str() ),
-			_("*.ply"),
-			_("PLY files (*.ply, *.PLY)|*.ply;*.PLY|All files (*.*)|*.*"),
-			wxFD_OPEN | wxFD_FILE_MUST_EXIST );
+					this,
+					_("Choose the PLY file to import"),
+					_U( iniFile->read_string(iniFileSect,"LastDir",".").c_str() ),
+					_("*.ply"),
+					_("PLY files (*.ply, *.PLY)|*.ply;*.PLY|All files (*.*)|*.*"),
+					wxFD_OPEN | wxFD_FILE_MUST_EXIST );
 
 		if (dialog.ShowModal() != wxID_OK)
 			return;
@@ -1438,12 +1429,12 @@ void _DSceneViewerFrame::OnMenuItemImportPLYPointCloud(wxCommandEvent& event)
 
 		opengl::CPointCloud::Ptr gl_points;
 		opengl::CPointCloudColoured::Ptr gl_points_col;
-                mrpt::utils::PLY_Importer *ply_obj=nullptr;
+		mrpt::utils::PLY_Importer *ply_obj=nullptr;
 
 		if (dlgPLY.rbClass->GetSelection()==0)
 		{
-		     gl_points     = opengl::CPointCloud::Create();
-			 ply_obj = gl_points.get();
+			gl_points     = opengl::CPointCloud::Create();
+			ply_obj = gl_points.get();
 		}
 		else
 		{
@@ -1460,22 +1451,23 @@ void _DSceneViewerFrame::OnMenuItemImportPLYPointCloud(wxCommandEvent& event)
 		}
 		if (!res)
 		{
-	        wxMessageBox( _("Error loading or parsing the PLY file"), _("Exception"), wxOK, this);
+			wxMessageBox( _("Error loading or parsing the PLY file"), _("Exception"), wxOK, this);
 		}
 		else
 		{
+			auto openGLSceneRef = m_canvas->getOpenGLSceneRef();
 			// Set the point cloud as the only object in scene:
-			m_canvas->m_openGLScene = opengl::COpenGLScene::Create();
+			openGLSceneRef = opengl::COpenGLScene::Create();
 
 			if (dlgPLY.cbXYGrid->GetValue())
 			{
 				mrpt::opengl::CGridPlaneXY::Ptr obj = mrpt::opengl::CGridPlaneXY::Create( -50,50,-50,50,0,1 );
 				obj->setColor(0.3,0.3,0.3);
-				m_canvas->m_openGLScene->insert( obj );
+				openGLSceneRef->insert( obj );
 			}
 
 			if (dlgPLY.cbXYZ->GetValue())
-				m_canvas->m_openGLScene->insert( mrpt::opengl::stock_objects::CornerXYZ() );
+				openGLSceneRef->insert( mrpt::opengl::stock_objects::CornerXYZ() );
 
 			double ptSize;
 			dlgPLY.cbPointSize->GetStringSelection().ToDouble(&ptSize);
@@ -1486,9 +1478,9 @@ void _DSceneViewerFrame::OnMenuItemImportPLYPointCloud(wxCommandEvent& event)
 			{
 				switch(dlgPLY.rbIntFromXYZ->GetSelection())
 				{
-					case 1: gl_points->enableColorFromX(); break;
-					case 2: gl_points->enableColorFromY(); break;
-					case 3: gl_points->enableColorFromZ(); break;
+				case 1: gl_points->enableColorFromX(); break;
+				case 2: gl_points->enableColorFromY(); break;
+				case 3: gl_points->enableColorFromZ(); break;
 				};
 			}
 
@@ -1505,17 +1497,14 @@ void _DSceneViewerFrame::OnMenuItemImportPLYPointCloud(wxCommandEvent& event)
 			if (gl_points_col) gl_points_col->setPose(CPose3D(ptCloudPose));
 
 			// Insert point cloud into scene:
-            if (gl_points)     m_canvas->m_openGLScene->insert(gl_points);
-            if (gl_points_col) m_canvas->m_openGLScene->insert(gl_points_col);
+			if (gl_points)     openGLSceneRef->insert(gl_points);
+			if (gl_points_col) openGLSceneRef->insert(gl_points_col);
 
 
-			m_canvas->cameraPointingX = 0;
-			m_canvas->cameraPointingY = 0;
-			m_canvas->cameraPointingZ = 0;
-
-			m_canvas->cameraZoomDistance = 4;
-			m_canvas->cameraAzimuthDeg   = 45;
-			m_canvas->cameraElevationDeg = 30;
+			m_canvas->setCameraPointing(0.0f, 0.0f, 0.0f);
+			m_canvas->setZoomDistance(4.0f);
+			m_canvas->setAzimuthDegrees(45.0f);
+			m_canvas->setElevationDegrees(30.0f);
 
 			loadedFileName = std::string("Imported_")+fil+std::string(".3Dscene");
 			updateTitle();
@@ -1523,18 +1512,18 @@ void _DSceneViewerFrame::OnMenuItemImportPLYPointCloud(wxCommandEvent& event)
 			Refresh(false);
 
 			wxMessageBox(
-				_U(format(
-					"Comments:\n--------------------\n%s\nObject info:\n--------------------\n%s",
-					file_comments.getText().c_str(), file_info.getText().c_str()).c_str()),
-				_("File info"),
-				wxOK,
-				this);
+						_U(format(
+							   "Comments:\n--------------------\n%s\nObject info:\n--------------------\n%s",
+							   file_comments.getText().c_str(), file_info.getText().c_str()).c_str()),
+						_("File info"),
+						wxOK,
+						this);
 		}
-    }
-    catch(std::exception &e)
-    {
-        wxMessageBox( _U(e.what()), _("Exception"), wxOK, this);
-    }
+	}
+	catch(std::exception &e)
+	{
+		wxMessageBox( _U(e.what()), _("Exception"), wxOK, this);
+	}
 }
 
 
@@ -1553,11 +1542,11 @@ struct visitor_export_PLY : public unary_function<mrpt::opengl::CRenderizable::P
 			o->saveToPlyFile(format("%s_%03u.ply",filename.c_str(),++count));
 		}
 		else
-		if (IS_CLASS(obj,CPointCloudColoured))
-		{
-			CPointCloudColoured::Ptr o = std::dynamic_pointer_cast<CPointCloudColoured>(obj);
-			o->saveToPlyFile(format("%s_%03u.ply",filename.c_str(),++count));
-		}
+			if (IS_CLASS(obj,CPointCloudColoured))
+			{
+				CPointCloudColoured::Ptr o = std::dynamic_pointer_cast<CPointCloudColoured>(obj);
+				o->saveToPlyFile(format("%s_%03u.ply",filename.c_str(),++count));
+			}
 	}
 };
 
@@ -1571,12 +1560,12 @@ void _DSceneViewerFrame::OnMenuItemExportPointsPLY(wxCommandEvent& event)
 		wxMessageBox(_("Each point cloud object in the scene will be exported as a separate PLY file."),_("Notice") );
 
 		wxFileDialog dialog(
-			this,
-			_("Choose the target PLY filename"),
-			_U( iniFile->read_string(iniFileSect,"LastDir",".").c_str() ),
-			_("*.ply"),
-			_("PLY files (*.ply, *.PLY)|*.ply;*.PLY|All files (*.*)|*.*"),
-			wxFD_SAVE | wxFD_OVERWRITE_PROMPT   );
+					this,
+					_("Choose the target PLY filename"),
+					_U( iniFile->read_string(iniFileSect,"LastDir",".").c_str() ),
+					_("*.ply"),
+					_("PLY files (*.ply, *.PLY)|*.ply;*.PLY|All files (*.*)|*.*"),
+					wxFD_SAVE | wxFD_OVERWRITE_PROMPT   );
 
 		if (dialog.ShowModal() != wxID_OK)
 			return;
@@ -1590,16 +1579,16 @@ void _DSceneViewerFrame::OnMenuItemExportPointsPLY(wxCommandEvent& event)
 
 		{
 			wxBusyCursor busy;
-			m_canvas->m_openGLScene->visitAllObjects( visitor );
+			m_canvas->getOpenGLSceneRef()->visitAllObjects( visitor );
 		}
 
 		wxMessageBox(wxString::Format(_("%u point cloud(s) exported to PLY files."),counter), _("Result"));
 
-    }
-    catch(std::exception &e)
-    {
-        wxMessageBox( _U(e.what()), _("Exception"), wxOK, this);
-    }
+	}
+	catch(std::exception &e)
+	{
+		wxMessageBox( _U(e.what()), _("Exception"), wxOK, this);
+	}
 }
 
 // Off-screen high-resolution render to image file:
@@ -1608,12 +1597,12 @@ void _DSceneViewerFrame::OnMenuItemHighResRender(wxCommandEvent& event)
 	try
 	{
 		wxFileDialog dialog(
-			this,
-			_("Choose target image file"),
-			_U( iniFile->read_string(iniFileSect,"LastDir",".").c_str() ),
-			_("render.png"),
-			_("Image files (*.png,*.tif,*.jpg,...)|*.png;*.tif;*.jpg;*.bmp|All files (*.*)|*.*"),
-			wxFD_SAVE | wxFD_OVERWRITE_PROMPT );
+					this,
+					_("Choose target image file"),
+					_U( iniFile->read_string(iniFileSect,"LastDir",".").c_str() ),
+					_("render.png"),
+					_("Image files (*.png,*.tif,*.jpg,...)|*.png;*.tif;*.jpg;*.bmp|All files (*.*)|*.*"),
+					wxFD_SAVE | wxFD_OVERWRITE_PROMPT );
 		if (dialog.ShowModal() != wxID_OK)
 			return;
 
@@ -1636,19 +1625,19 @@ void _DSceneViewerFrame::OnMenuItemHighResRender(wxCommandEvent& event)
 			CFBORender render(width, height, true /* skip Glut extra window */);
 			CImage frame(width, height, 3, false);
 
-			render.setBackgroundColor(mrpt::utils::TColorf(m_canvas->clearColorR,m_canvas->clearColorG,m_canvas->clearColorB,1));
+			render.setBackgroundColor(mrpt::utils::TColorf(m_canvas->getClearColorR(),m_canvas->getClearColorG(),m_canvas->getClearColorB(),1.0));
 
 			// render the scene
-			render.getFrame(*m_canvas->m_openGLScene, frame);
+			render.getFrame(*m_canvas->getOpenGLSceneRef(), frame);
 
 			frame.saveToFile(sTargetFil);
 		}
 
-    }
-    catch(std::exception &e)
-    {
-        wxMessageBox( _U(e.what()), _("Exception"), wxOK, this);
-    }
+	}
+	catch(std::exception &e)
+	{
+		wxMessageBox( _U(e.what()), _("Exception"), wxOK, this);
+	}
 
 }
 
@@ -1679,8 +1668,8 @@ class OpenGlObjectsFilter_ByClass : public OpenGlObjectsFilterVirtual
 {
 public:
 	OpenGlObjectsFilter_ByClass(
-		std::vector<mrpt::opengl::CRenderizable::Ptr> &out_list,
-		const vector<const TRuntimeClassId*> &selected_classes)
+			std::vector<mrpt::opengl::CRenderizable::Ptr> &out_list,
+			const vector<const TRuntimeClassId*> &selected_classes)
 		: OpenGlObjectsFilterVirtual(out_list),
 		  m_selected_classes(selected_classes)
 	{
@@ -1732,7 +1721,7 @@ void _DSceneViewerFrame::OnmnuSelectByClassSelected(wxCommandEvent& event)
 
 	// Go thru objects and do filter:
 	OpenGlObjectsFilter_ByClass filter(m_selected_gl_objects, selected_classes);
-	m_canvas->m_openGLScene->visitAllObjects( filter );
+	m_canvas->getOpenGLSceneRef()->visitAllObjects( filter );
 
 	theWindow->StatusBar1->SetStatusText( _U(mrpt::format("%u objects selected",static_cast<unsigned int>(m_selected_gl_objects.size())).c_str()), 0);
 }
@@ -1743,7 +1732,7 @@ void _DSceneViewerFrame::OnmnuSelectionDeleteSelected(wxCommandEvent& event)
 {
 	for (size_t i=0;i<m_selected_gl_objects.size();i++)
 		m_selected_gl_objects[i].reset();
-    Refresh(false);
+	Refresh(false);
 }
 
 // On selection: re-scale
@@ -1761,7 +1750,7 @@ void _DSceneViewerFrame::OnmnuSelectionScaleSelected(wxCommandEvent& event)
 			const float sz = m_selected_gl_objects[i]->getScaleZ();
 			m_selected_gl_objects[i]->setScale( s*sx,s*sy,s*sz );
 		}
-    Refresh(false);
+	Refresh(false);
 }
 
 
@@ -1772,12 +1761,12 @@ void _DSceneViewerFrame::OnmnuImportLASSelected(wxCommandEvent& event)
 	{
 #if MRPT_HAS_LIBLAS
 		wxFileDialog dialog(
-			this,
-			_("Choose the LAS file to import"),
-			_U( iniFile->read_string(iniFileSect,"LastDir",".").c_str() ),
-			_("*.las"),
-			_("LAS files (*.las, *.laz)|*.las;*.LAS;*.laz;*.LAZ|All files (*.*)|*.*"),
-			wxFD_OPEN | wxFD_FILE_MUST_EXIST );
+					this,
+					_("Choose the LAS file to import"),
+					_U( iniFile->read_string(iniFileSect,"LastDir",".").c_str() ),
+					_("*.las"),
+					_("LAS files (*.las, *.laz)|*.las;*.LAS;*.laz;*.LAZ|All files (*.*)|*.*"),
+					wxFD_OPEN | wxFD_FILE_MUST_EXIST );
 
 		if (dialog.ShowModal() != wxID_OK)
 			return;
@@ -1814,8 +1803,8 @@ void _DSceneViewerFrame::OnmnuImportLASSelected(wxCommandEvent& event)
 
 		if (!res)
 		{
-	        wxMessageBox( _("Error loading or parsing the LAS file"), _("Exception"), wxOK, this);
-	        return;
+			wxMessageBox( _("Error loading or parsing the LAS file"), _("Exception"), wxOK, this);
+			return;
 		}
 
 		mrpt::math::TPoint3D bb_min,bb_max;
@@ -1855,9 +1844,9 @@ void _DSceneViewerFrame::OnmnuImportLASSelected(wxCommandEvent& event)
 		{
 			switch(dlgPLY.rbIntFromXYZ->GetSelection())
 			{
-				case 1: gl_points->enableColorFromX(); break;
-				case 2: gl_points->enableColorFromY(); break;
-				case 3: gl_points->enableColorFromZ(); break;
+			case 1: gl_points->enableColorFromX(); break;
+			case 2: gl_points->enableColorFromY(); break;
+			case 3: gl_points->enableColorFromZ(); break;
 			};
 		}
 
@@ -1913,18 +1902,18 @@ void _DSceneViewerFrame::OnmnuImportLASSelected(wxCommandEvent& event)
 		   << "Creation date      : Year=" << las_hdr.creation_year << " DOY=" << las_hdr.creation_DOY<< endl;
 
 		wxMessageBox(
-			_U(ss.str().c_str()),
-			_("File info"),
-			wxOK,
-			this);
+					_U(ss.str().c_str()),
+					_("File info"),
+					wxOK,
+					this);
 #else
 		throw std::runtime_error("MRPT was built without libLAS support!");
 #endif
 	}
-    catch(std::exception &e)
-    {
-        wxMessageBox( _U(e.what()), _("Exception"), wxOK, this);
-    }
+	catch(std::exception &e)
+	{
+		wxMessageBox( _U(e.what()), _("Exception"), wxOK, this);
+	}
 }
 
 void _DSceneViewerFrame::OnmnuImportLASSelected1(wxCommandEvent& event)

@@ -83,10 +83,10 @@ CHMTSLAM       *hmt_map = nullptr;
 class CMyGLCanvas : public CMyGLCanvasBase
 {
 public:
-    CMyGLCanvas( wxWindow *parent, wxWindowID id = wxID_ANY,
-                 const wxPoint& pos = wxDefaultPosition,
-                 const wxSize& size = wxDefaultSize,
-                 long style = 0, const wxString& name = _T("CMyGLCanvasBase") )
+	CMyGLCanvas( wxWindow *parent, wxWindowID id = wxID_ANY,
+				 const wxPoint& pos = wxDefaultPosition,
+				 const wxSize& size = wxDefaultSize,
+				 long style = 0, const wxString& name = _T("CMyGLCanvasBase") )
 		: CMyGLCanvasBase(parent,id,pos,size,style,name)
 	{
 	}
@@ -111,12 +111,12 @@ void CMyGLCanvas::OnRenderError( const wxString &str )
 void CMyGLCanvas::OnPreRender()
 {
 	// Do we have to update the scene??
-/*	std::lock_guard<std::mutex>   lock(critSec_UpdateScene );
+	/*	std::lock_guard<std::mutex>   lock(critSec_UpdateScene );
 	if (newOpenGLScene)
 	{
 		if (m_openGLScene) delete m_openGLScene;
 		m_openGLScene = newOpenGLScene;
-                newOpenGLScene = nullptr;
+				newOpenGLScene = nullptr;
 	}*/
 }
 
@@ -128,9 +128,9 @@ void CMyGLCanvas::OnPostRenderSwapBuffers(double At, wxPaintDC &dc)
 void CMyGLCanvas::OnPostRender()
 {
 	// Show filename over the screen??
-//	if (showFileNameInViewport)
+	//	if (showFileNameInViewport)
 	{
-//		renderTextBitmap( 20,20, extractFileName(loadedFileName).c_str() );
+		//		renderTextBitmap( 20,20, extractFileName(loadedFileName).c_str() );
 	}
 }
 
@@ -187,201 +187,201 @@ const long hmtMapViewerFrame::ID_TIMER1 = wxNewId();
 
 
 BEGIN_EVENT_TABLE(hmtMapViewerFrame,wxFrame)
-    //(*EventTable(hmtMapViewerFrame)
-    //*)
+//(*EventTable(hmtMapViewerFrame)
+//*)
 END_EVENT_TABLE()
 
 hmtMapViewerFrame::hmtMapViewerFrame(wxWindow* parent,wxWindowID id)
 {
 	hmt_map = new CHMTSLAM();
 
-    //(*Initialize(hmtMapViewerFrame)
-    wxMenuItem* MenuItem2;
-    wxMenuItem* MenuItem1;
-    wxFlexGridSizer* FlexGridSizer8;
-    wxFlexGridSizer* FlexGridSizer1;
-    wxFlexGridSizer* FlexGridSizer2;
-    wxMenu* Menu1;
-    wxFlexGridSizer* FlexGridSizer7;
-    wxBoxSizer* BoxSizer2;
-    wxFlexGridSizer* FlexGridSizer4;
-    wxFlexGridSizer* FlexGridSizer9;
-    wxFlexGridSizer* FlexGridSizer6;
-    wxFlexGridSizer* FlexGridSizer3;
-    wxBoxSizer* BoxSizer1;
-    wxMenuBar* MenuBar1;
-    wxMenu* Menu2;
-    wxFlexGridSizer* FlexGridSizer5;
+	//(*Initialize(hmtMapViewerFrame)
+	wxMenuItem* MenuItem2;
+	wxMenuItem* MenuItem1;
+	wxFlexGridSizer* FlexGridSizer8;
+	wxFlexGridSizer* FlexGridSizer1;
+	wxFlexGridSizer* FlexGridSizer2;
+	wxMenu* Menu1;
+	wxFlexGridSizer* FlexGridSizer7;
+	wxBoxSizer* BoxSizer2;
+	wxFlexGridSizer* FlexGridSizer4;
+	wxFlexGridSizer* FlexGridSizer9;
+	wxFlexGridSizer* FlexGridSizer6;
+	wxFlexGridSizer* FlexGridSizer3;
+	wxBoxSizer* BoxSizer1;
+	wxMenuBar* MenuBar1;
+	wxMenu* Menu2;
+	wxFlexGridSizer* FlexGridSizer5;
 
-    Create(parent, wxID_ANY, _("HMT Maps Viewer - Part of the MRPT project"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE, _T("wxID_ANY"));
-    SetClientSize(wxSize(740,606));
-    SplitterWindow1 = new wxSplitterWindow(this, ID_SPLITTERWINDOW1, wxPoint(176,320), wxDefaultSize, wxSP_3D|wxSP_LIVE_UPDATE, _T("ID_SPLITTERWINDOW1"));
-    SplitterWindow1->SetMinSize(wxSize(10,10));
-    SplitterWindow1->SetMinimumPaneSize(10);
-    Panel1 = new wxPanel(SplitterWindow1, ID_PANEL1, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL1"));
-    FlexGridSizer1 = new wxFlexGridSizer(2, 1, 0, 0);
-    FlexGridSizer1->AddGrowableCol(0);
-    FlexGridSizer1->AddGrowableRow(1);
-    Panel5 = new wxPanel(Panel1, ID_PANEL5, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL5"));
-    FlexGridSizer4 = new wxFlexGridSizer(5, 1, 0, 0);
-    FlexGridSizer4->AddGrowableCol(0);
-    BoxSizer2 = new wxBoxSizer(wxHORIZONTAL);
-    StaticText1 = new wxStaticText(Panel5, ID_STATICTEXT1, _("Tree view of HMT map"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE, _T("ID_STATICTEXT1"));
-    wxFont StaticText1Font = wxSystemSettings::GetFont(wxSYS_SYSTEM_FONT);
-    if ( !StaticText1Font.Ok() ) StaticText1Font = wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
-    StaticText1Font.SetPointSize((int)(StaticText1Font.GetPointSize() * 1.000000));
-    StaticText1Font.SetWeight(wxFONTWEIGHT_BOLD);
-    StaticText1->SetFont(StaticText1Font);
-    BoxSizer2->Add(StaticText1, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
-    FlexGridSizer4->Add(BoxSizer2, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
-    FlexGridSizer5 = new wxFlexGridSizer(0, 2, 0, 0);
-    StaticText2 = new wxStaticText(Panel5, ID_STATICTEXT2, _("Select hypothesis:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT2"));
-    FlexGridSizer5->Add(StaticText2, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    cbHypos = new wxChoice(Panel5, ID_CHOICE1, wxDefaultPosition, wxDefaultSize, 0, 0, 0, wxDefaultValidator, _T("ID_CHOICE1"));
-    FlexGridSizer5->Add(cbHypos, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    FlexGridSizer4->Add(FlexGridSizer5, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
-    Panel5->SetSizer(FlexGridSizer4);
-    FlexGridSizer4->Fit(Panel5);
-    FlexGridSizer4->SetSizeHints(Panel5);
-    FlexGridSizer1->Add(Panel5, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
-    SplitterWindow3 = new wxSplitterWindow(Panel1, ID_SPLITTERWINDOW3, wxDefaultPosition, wxDefaultSize, wxSP_3D|wxSP_LIVE_UPDATE, _T("ID_SPLITTERWINDOW3"));
-    SplitterWindow3->SetMinSize(wxSize(10,10));
-    SplitterWindow3->SetMinimumPaneSize(10);
-    Panel9 = new wxPanel(SplitterWindow3, ID_PANEL9, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL9"));
-    FlexGridSizer9 = new wxFlexGridSizer(0, 0, 0, 0);
-    FlexGridSizer9->AddGrowableCol(0);
-    FlexGridSizer9->AddGrowableRow(0);
-    treeView = new wxTreeCtrl(Panel9, ID_TREECTRL1, wxDefaultPosition, wxDefaultSize, wxTR_LINES_AT_ROOT|wxTR_MULTIPLE|wxTR_DEFAULT_STYLE|wxVSCROLL|wxHSCROLL, wxDefaultValidator, _T("ID_TREECTRL1"));
-    FlexGridSizer9->Add(treeView, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
-    Panel9->SetSizer(FlexGridSizer9);
-    FlexGridSizer9->Fit(Panel9);
-    FlexGridSizer9->SetSizeHints(Panel9);
-    Panel8 = new wxPanel(SplitterWindow3, ID_PANEL8, wxPoint(0,305), wxSize(370,235), wxTAB_TRAVERSAL, _T("ID_PANEL8"));
-    FlexGridSizer8 = new wxFlexGridSizer(0, 1, 0, 0);
-    FlexGridSizer8->AddGrowableCol(0);
-    FlexGridSizer8->AddGrowableRow(0);
-    edLog = new wxTextCtrl(Panel8, ID_TEXTCTRL1, _("Log window"), wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER|wxTE_PROCESS_TAB|wxTE_MULTILINE|wxTE_READONLY|wxHSCROLL|wxVSCROLL, wxDefaultValidator, _T("ID_TEXTCTRL1"));
-    wxFont edLogFont = wxSystemSettings::GetFont(wxSYS_OEM_FIXED_FONT);
-    if ( !edLogFont.Ok() ) edLogFont = wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
-    edLogFont.SetPointSize((int)(edLogFont.GetPointSize() * 1.000000));
-    edLog->SetFont(edLogFont);
-    FlexGridSizer8->Add(edLog, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 1);
-    Panel8->SetSizer(FlexGridSizer8);
-    FlexGridSizer8->SetSizeHints(Panel8);
-    SplitterWindow3->SplitHorizontally(Panel9, Panel8);
-    FlexGridSizer1->Add(SplitterWindow3, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
-    Panel1->SetSizer(FlexGridSizer1);
-    FlexGridSizer1->Fit(Panel1);
-    FlexGridSizer1->SetSizeHints(Panel1);
-    Panel2 = new wxPanel(SplitterWindow1, ID_PANEL2, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL2"));
-    BoxSizer1 = new wxBoxSizer(wxHORIZONTAL);
-    SplitterWindow2 = new wxSplitterWindow(Panel2, ID_SPLITTERWINDOW2, wxDefaultPosition, wxDefaultSize, wxSP_3D|wxSP_LIVE_UPDATE, _T("ID_SPLITTERWINDOW2"));
-    SplitterWindow2->SetMinSize(wxSize(10,10));
-    SplitterWindow2->SetMinimumPaneSize(10);
-    Panel3 = new wxPanel(SplitterWindow2, ID_PANEL3, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL3"));
-    FlexGridSizer2 = new wxFlexGridSizer(0, 1, 0, 0);
-    FlexGridSizer2->AddGrowableCol(0);
-    FlexGridSizer2->AddGrowableRow(1);
-    StaticText3 = new wxStaticText(Panel3, ID_STATICTEXT3, _("Global HMT map"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE, _T("ID_STATICTEXT3"));
-    wxFont StaticText3Font = wxSystemSettings::GetFont(wxSYS_SYSTEM_FONT);
-    if ( !StaticText3Font.Ok() ) StaticText3Font = wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
-    StaticText3Font.SetPointSize((int)(StaticText3Font.GetPointSize() * 1.000000));
-    StaticText3Font.SetWeight(wxFONTWEIGHT_BOLD);
-    StaticText3->SetFont(StaticText3Font);
-    FlexGridSizer2->Add(StaticText3, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    Panel6 = new wxPanel(Panel3, ID_PANEL6, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL6"));
-    FlexGridSizer6 = new wxFlexGridSizer(0, 1, 0, 0);
-    FlexGridSizer6->AddGrowableCol(0);
-    FlexGridSizer6->AddGrowableRow(0);
-    Panel6->SetSizer(FlexGridSizer6);
-    FlexGridSizer6->Fit(Panel6);
-    FlexGridSizer6->SetSizeHints(Panel6);
-    FlexGridSizer2->Add(Panel6, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
-    Panel3->SetSizer(FlexGridSizer2);
-    FlexGridSizer2->Fit(Panel3);
-    FlexGridSizer2->SetSizeHints(Panel3);
-    Panel4 = new wxPanel(SplitterWindow2, ID_PANEL4, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL4"));
-    FlexGridSizer3 = new wxFlexGridSizer(0, 1, 0, 0);
-    FlexGridSizer3->AddGrowableCol(0);
-    FlexGridSizer3->AddGrowableRow(1);
-    StaticText4 = new wxStaticText(Panel4, ID_STATICTEXT4, _("Selected area local map"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE, _T("ID_STATICTEXT4"));
-    wxFont StaticText4Font = wxSystemSettings::GetFont(wxSYS_SYSTEM_FONT);
-    if ( !StaticText4Font.Ok() ) StaticText4Font = wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
-    StaticText4Font.SetPointSize((int)(StaticText4Font.GetPointSize() * 1.000000));
-    StaticText4Font.SetWeight(wxFONTWEIGHT_BOLD);
-    StaticText4->SetFont(StaticText4Font);
-    FlexGridSizer3->Add(StaticText4, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    Panel7 = new wxPanel(Panel4, ID_PANEL7, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL7"));
-    FlexGridSizer7 = new wxFlexGridSizer(0, 1, 0, 0);
-    FlexGridSizer7->AddGrowableCol(0);
-    FlexGridSizer7->AddGrowableRow(0);
-    Panel7->SetSizer(FlexGridSizer7);
-    FlexGridSizer7->Fit(Panel7);
-    FlexGridSizer7->SetSizeHints(Panel7);
-    FlexGridSizer3->Add(Panel7, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
-    Panel4->SetSizer(FlexGridSizer3);
-    FlexGridSizer3->Fit(Panel4);
-    FlexGridSizer3->SetSizeHints(Panel4);
-    SplitterWindow2->SplitHorizontally(Panel3, Panel4);
-    BoxSizer1->Add(SplitterWindow2, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
-    Panel2->SetSizer(BoxSizer1);
-    BoxSizer1->Fit(Panel2);
-    BoxSizer1->SetSizeHints(Panel2);
-    SplitterWindow1->SplitVertically(Panel1, Panel2);
-    MenuBar1 = new wxMenuBar();
-    Menu1 = new wxMenu();
-    MenuItem3 = new wxMenuItem(Menu1, ID_MENUITEM1, _("Load..."), _("Loads a \"hmtmap\" file"), wxITEM_NORMAL);
-    Menu1->Append(MenuItem3);
-    Menu1->AppendSeparator();
-    menuExportLocalMaps = new wxMenuItem(Menu1, ID_MENUITEM4, _("Export local maps..."), wxEmptyString, wxITEM_NORMAL);
-    Menu1->Append(menuExportLocalMaps);
-    Menu1->AppendSeparator();
-    MenuItem1 = new wxMenuItem(Menu1, idMenuQuit, _("Quit\tAlt-F4"), _("Quit the application"), wxITEM_NORMAL);
-    Menu1->Append(MenuItem1);
-    MenuBar1->Append(Menu1, _("&File"));
-    Menu3 = new wxMenu();
-    MenuItem4 = new wxMenuItem(Menu3, ID_MENUITEM2, _("Translation btw. 2 areas..."), wxEmptyString, wxITEM_NORMAL);
-    Menu3->Append(MenuItem4);
-    MenuItem5 = new wxMenuItem(Menu3, ID_MENUITEM3, _("Overlap probability btw. 2 areas..."), wxEmptyString, wxITEM_NORMAL);
-    Menu3->Append(MenuItem5);
-    MenuItem6 = new wxMenu();
-    MenuItem7 = new wxMenuItem(MenuItem6, ID_MENUITEM6, _("Grid matching"), wxEmptyString, wxITEM_NORMAL);
-    MenuItem6->Append(MenuItem7);
-    MenuItem8 = new wxMenuItem(MenuItem6, ID_MENUITEM7, _("FabMap"), wxEmptyString, wxITEM_NORMAL);
-    MenuItem6->Append(MenuItem8);
-    Menu3->Append(ID_MENUITEM5, _("Topological transition models..."), MenuItem6, wxEmptyString);
-    MenuBar1->Append(Menu3, _("&Compute"));
-    Menu2 = new wxMenu();
-    MenuItem2 = new wxMenuItem(Menu2, idMenuAbout, _("About\tF1"), _("Show info about this application"), wxITEM_NORMAL);
-    Menu2->Append(MenuItem2);
-    MenuBar1->Append(Menu2, _("Help"));
-    SetMenuBar(MenuBar1);
-    StatusBar1 = new wxStatusBar(this, ID_STATUSBAR1, 0, _T("ID_STATUSBAR1"));
-    int __wxStatusBarWidths_1[1] = { -1 };
-    int __wxStatusBarStyles_1[1] = { wxSB_NORMAL };
-    StatusBar1->SetFieldsCount(1,__wxStatusBarWidths_1);
-    StatusBar1->SetStatusStyles(1,__wxStatusBarStyles_1);
-    SetStatusBar(StatusBar1);
-    ToolBar1 = new wxToolBar(this, ID_TOOLBAR1, wxDefaultPosition, wxDefaultSize, wxTB_FLAT|wxTB_VERTICAL|wxTB_TEXT|wxNO_BORDER, _T("ID_TOOLBAR1"));
-    ToolBarItem1 = ToolBar1->AddTool(ID_TOOLBARITEM1, _("Load..."), wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FILE_OPEN")),wxART_TOOLBAR), wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FILE_OPEN")),wxART_TOOLBAR), wxITEM_NORMAL, wxEmptyString, wxEmptyString);
-    ToolBar1->AddSeparator();
-    ToolBarItem2 = ToolBar1->AddTool(ID_TOOLBARITEM2, _("Exit"), wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_CROSS_MARK")),wxART_TOOLBAR), wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_CROSS_MARK")),wxART_TOOLBAR), wxITEM_NORMAL, wxEmptyString, wxEmptyString);
-    ToolBar1->Realize();
-    SetToolBar(ToolBar1);
-    Center();
+	Create(parent, wxID_ANY, _("HMT Maps Viewer - Part of the MRPT project"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE, _T("wxID_ANY"));
+	SetClientSize(wxSize(740,606));
+	SplitterWindow1 = new wxSplitterWindow(this, ID_SPLITTERWINDOW1, wxPoint(176,320), wxDefaultSize, wxSP_3D|wxSP_LIVE_UPDATE, _T("ID_SPLITTERWINDOW1"));
+	SplitterWindow1->SetMinSize(wxSize(10,10));
+	SplitterWindow1->SetMinimumPaneSize(10);
+	Panel1 = new wxPanel(SplitterWindow1, ID_PANEL1, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL1"));
+	FlexGridSizer1 = new wxFlexGridSizer(2, 1, 0, 0);
+	FlexGridSizer1->AddGrowableCol(0);
+	FlexGridSizer1->AddGrowableRow(1);
+	Panel5 = new wxPanel(Panel1, ID_PANEL5, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL5"));
+	FlexGridSizer4 = new wxFlexGridSizer(5, 1, 0, 0);
+	FlexGridSizer4->AddGrowableCol(0);
+	BoxSizer2 = new wxBoxSizer(wxHORIZONTAL);
+	StaticText1 = new wxStaticText(Panel5, ID_STATICTEXT1, _("Tree view of HMT map"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE, _T("ID_STATICTEXT1"));
+	wxFont StaticText1Font = wxSystemSettings::GetFont(wxSYS_SYSTEM_FONT);
+	if ( !StaticText1Font.Ok() ) StaticText1Font = wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
+	StaticText1Font.SetPointSize((int)(StaticText1Font.GetPointSize() * 1.000000));
+	StaticText1Font.SetWeight(wxFONTWEIGHT_BOLD);
+	StaticText1->SetFont(StaticText1Font);
+	BoxSizer2->Add(StaticText1, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 5);
+	FlexGridSizer4->Add(BoxSizer2, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
+	FlexGridSizer5 = new wxFlexGridSizer(0, 2, 0, 0);
+	StaticText2 = new wxStaticText(Panel5, ID_STATICTEXT2, _("Select hypothesis:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT2"));
+	FlexGridSizer5->Add(StaticText2, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	cbHypos = new wxChoice(Panel5, ID_CHOICE1, wxDefaultPosition, wxDefaultSize, 0, 0, 0, wxDefaultValidator, _T("ID_CHOICE1"));
+	FlexGridSizer5->Add(cbHypos, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	FlexGridSizer4->Add(FlexGridSizer5, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
+	Panel5->SetSizer(FlexGridSizer4);
+	FlexGridSizer4->Fit(Panel5);
+	FlexGridSizer4->SetSizeHints(Panel5);
+	FlexGridSizer1->Add(Panel5, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
+	SplitterWindow3 = new wxSplitterWindow(Panel1, ID_SPLITTERWINDOW3, wxDefaultPosition, wxDefaultSize, wxSP_3D|wxSP_LIVE_UPDATE, _T("ID_SPLITTERWINDOW3"));
+	SplitterWindow3->SetMinSize(wxSize(10,10));
+	SplitterWindow3->SetMinimumPaneSize(10);
+	Panel9 = new wxPanel(SplitterWindow3, ID_PANEL9, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL9"));
+	FlexGridSizer9 = new wxFlexGridSizer(0, 0, 0, 0);
+	FlexGridSizer9->AddGrowableCol(0);
+	FlexGridSizer9->AddGrowableRow(0);
+	treeView = new wxTreeCtrl(Panel9, ID_TREECTRL1, wxDefaultPosition, wxDefaultSize, wxTR_LINES_AT_ROOT|wxTR_MULTIPLE|wxTR_DEFAULT_STYLE|wxVSCROLL|wxHSCROLL, wxDefaultValidator, _T("ID_TREECTRL1"));
+	FlexGridSizer9->Add(treeView, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
+	Panel9->SetSizer(FlexGridSizer9);
+	FlexGridSizer9->Fit(Panel9);
+	FlexGridSizer9->SetSizeHints(Panel9);
+	Panel8 = new wxPanel(SplitterWindow3, ID_PANEL8, wxPoint(0,305), wxSize(370,235), wxTAB_TRAVERSAL, _T("ID_PANEL8"));
+	FlexGridSizer8 = new wxFlexGridSizer(0, 1, 0, 0);
+	FlexGridSizer8->AddGrowableCol(0);
+	FlexGridSizer8->AddGrowableRow(0);
+	edLog = new wxTextCtrl(Panel8, ID_TEXTCTRL1, _("Log window"), wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER|wxTE_PROCESS_TAB|wxTE_MULTILINE|wxTE_READONLY|wxHSCROLL|wxVSCROLL, wxDefaultValidator, _T("ID_TEXTCTRL1"));
+	wxFont edLogFont = wxSystemSettings::GetFont(wxSYS_OEM_FIXED_FONT);
+	if ( !edLogFont.Ok() ) edLogFont = wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
+	edLogFont.SetPointSize((int)(edLogFont.GetPointSize() * 1.000000));
+	edLog->SetFont(edLogFont);
+	FlexGridSizer8->Add(edLog, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 1);
+	Panel8->SetSizer(FlexGridSizer8);
+	FlexGridSizer8->SetSizeHints(Panel8);
+	SplitterWindow3->SplitHorizontally(Panel9, Panel8);
+	FlexGridSizer1->Add(SplitterWindow3, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
+	Panel1->SetSizer(FlexGridSizer1);
+	FlexGridSizer1->Fit(Panel1);
+	FlexGridSizer1->SetSizeHints(Panel1);
+	Panel2 = new wxPanel(SplitterWindow1, ID_PANEL2, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL2"));
+	BoxSizer1 = new wxBoxSizer(wxHORIZONTAL);
+	SplitterWindow2 = new wxSplitterWindow(Panel2, ID_SPLITTERWINDOW2, wxDefaultPosition, wxDefaultSize, wxSP_3D|wxSP_LIVE_UPDATE, _T("ID_SPLITTERWINDOW2"));
+	SplitterWindow2->SetMinSize(wxSize(10,10));
+	SplitterWindow2->SetMinimumPaneSize(10);
+	Panel3 = new wxPanel(SplitterWindow2, ID_PANEL3, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL3"));
+	FlexGridSizer2 = new wxFlexGridSizer(0, 1, 0, 0);
+	FlexGridSizer2->AddGrowableCol(0);
+	FlexGridSizer2->AddGrowableRow(1);
+	StaticText3 = new wxStaticText(Panel3, ID_STATICTEXT3, _("Global HMT map"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE, _T("ID_STATICTEXT3"));
+	wxFont StaticText3Font = wxSystemSettings::GetFont(wxSYS_SYSTEM_FONT);
+	if ( !StaticText3Font.Ok() ) StaticText3Font = wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
+	StaticText3Font.SetPointSize((int)(StaticText3Font.GetPointSize() * 1.000000));
+	StaticText3Font.SetWeight(wxFONTWEIGHT_BOLD);
+	StaticText3->SetFont(StaticText3Font);
+	FlexGridSizer2->Add(StaticText3, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	Panel6 = new wxPanel(Panel3, ID_PANEL6, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL6"));
+	FlexGridSizer6 = new wxFlexGridSizer(0, 1, 0, 0);
+	FlexGridSizer6->AddGrowableCol(0);
+	FlexGridSizer6->AddGrowableRow(0);
+	Panel6->SetSizer(FlexGridSizer6);
+	FlexGridSizer6->Fit(Panel6);
+	FlexGridSizer6->SetSizeHints(Panel6);
+	FlexGridSizer2->Add(Panel6, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
+	Panel3->SetSizer(FlexGridSizer2);
+	FlexGridSizer2->Fit(Panel3);
+	FlexGridSizer2->SetSizeHints(Panel3);
+	Panel4 = new wxPanel(SplitterWindow2, ID_PANEL4, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL4"));
+	FlexGridSizer3 = new wxFlexGridSizer(0, 1, 0, 0);
+	FlexGridSizer3->AddGrowableCol(0);
+	FlexGridSizer3->AddGrowableRow(1);
+	StaticText4 = new wxStaticText(Panel4, ID_STATICTEXT4, _("Selected area local map"), wxDefaultPosition, wxDefaultSize, wxALIGN_CENTRE, _T("ID_STATICTEXT4"));
+	wxFont StaticText4Font = wxSystemSettings::GetFont(wxSYS_SYSTEM_FONT);
+	if ( !StaticText4Font.Ok() ) StaticText4Font = wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
+	StaticText4Font.SetPointSize((int)(StaticText4Font.GetPointSize() * 1.000000));
+	StaticText4Font.SetWeight(wxFONTWEIGHT_BOLD);
+	StaticText4->SetFont(StaticText4Font);
+	FlexGridSizer3->Add(StaticText4, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	Panel7 = new wxPanel(Panel4, ID_PANEL7, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL7"));
+	FlexGridSizer7 = new wxFlexGridSizer(0, 1, 0, 0);
+	FlexGridSizer7->AddGrowableCol(0);
+	FlexGridSizer7->AddGrowableRow(0);
+	Panel7->SetSizer(FlexGridSizer7);
+	FlexGridSizer7->Fit(Panel7);
+	FlexGridSizer7->SetSizeHints(Panel7);
+	FlexGridSizer3->Add(Panel7, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
+	Panel4->SetSizer(FlexGridSizer3);
+	FlexGridSizer3->Fit(Panel4);
+	FlexGridSizer3->SetSizeHints(Panel4);
+	SplitterWindow2->SplitHorizontally(Panel3, Panel4);
+	BoxSizer1->Add(SplitterWindow2, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
+	Panel2->SetSizer(BoxSizer1);
+	BoxSizer1->Fit(Panel2);
+	BoxSizer1->SetSizeHints(Panel2);
+	SplitterWindow1->SplitVertically(Panel1, Panel2);
+	MenuBar1 = new wxMenuBar();
+	Menu1 = new wxMenu();
+	MenuItem3 = new wxMenuItem(Menu1, ID_MENUITEM1, _("Load..."), _("Loads a \"hmtmap\" file"), wxITEM_NORMAL);
+	Menu1->Append(MenuItem3);
+	Menu1->AppendSeparator();
+	menuExportLocalMaps = new wxMenuItem(Menu1, ID_MENUITEM4, _("Export local maps..."), wxEmptyString, wxITEM_NORMAL);
+	Menu1->Append(menuExportLocalMaps);
+	Menu1->AppendSeparator();
+	MenuItem1 = new wxMenuItem(Menu1, idMenuQuit, _("Quit\tAlt-F4"), _("Quit the application"), wxITEM_NORMAL);
+	Menu1->Append(MenuItem1);
+	MenuBar1->Append(Menu1, _("&File"));
+	Menu3 = new wxMenu();
+	MenuItem4 = new wxMenuItem(Menu3, ID_MENUITEM2, _("Translation btw. 2 areas..."), wxEmptyString, wxITEM_NORMAL);
+	Menu3->Append(MenuItem4);
+	MenuItem5 = new wxMenuItem(Menu3, ID_MENUITEM3, _("Overlap probability btw. 2 areas..."), wxEmptyString, wxITEM_NORMAL);
+	Menu3->Append(MenuItem5);
+	MenuItem6 = new wxMenu();
+	MenuItem7 = new wxMenuItem(MenuItem6, ID_MENUITEM6, _("Grid matching"), wxEmptyString, wxITEM_NORMAL);
+	MenuItem6->Append(MenuItem7);
+	MenuItem8 = new wxMenuItem(MenuItem6, ID_MENUITEM7, _("FabMap"), wxEmptyString, wxITEM_NORMAL);
+	MenuItem6->Append(MenuItem8);
+	Menu3->Append(ID_MENUITEM5, _("Topological transition models..."), MenuItem6, wxEmptyString);
+	MenuBar1->Append(Menu3, _("&Compute"));
+	Menu2 = new wxMenu();
+	MenuItem2 = new wxMenuItem(Menu2, idMenuAbout, _("About\tF1"), _("Show info about this application"), wxITEM_NORMAL);
+	Menu2->Append(MenuItem2);
+	MenuBar1->Append(Menu2, _("Help"));
+	SetMenuBar(MenuBar1);
+	StatusBar1 = new wxStatusBar(this, ID_STATUSBAR1, 0, _T("ID_STATUSBAR1"));
+	int __wxStatusBarWidths_1[1] = { -1 };
+	int __wxStatusBarStyles_1[1] = { wxSB_NORMAL };
+	StatusBar1->SetFieldsCount(1,__wxStatusBarWidths_1);
+	StatusBar1->SetStatusStyles(1,__wxStatusBarStyles_1);
+	SetStatusBar(StatusBar1);
+	ToolBar1 = new wxToolBar(this, ID_TOOLBAR1, wxDefaultPosition, wxDefaultSize, wxTB_FLAT|wxTB_VERTICAL|wxTB_TEXT|wxNO_BORDER, _T("ID_TOOLBAR1"));
+	ToolBarItem1 = ToolBar1->AddTool(ID_TOOLBARITEM1, _("Load..."), wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FILE_OPEN")),wxART_TOOLBAR), wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_FILE_OPEN")),wxART_TOOLBAR), wxITEM_NORMAL, wxEmptyString, wxEmptyString);
+	ToolBar1->AddSeparator();
+	ToolBarItem2 = ToolBar1->AddTool(ID_TOOLBARITEM2, _("Exit"), wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_CROSS_MARK")),wxART_TOOLBAR), wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("wxART_CROSS_MARK")),wxART_TOOLBAR), wxITEM_NORMAL, wxEmptyString, wxEmptyString);
+	ToolBar1->Realize();
+	SetToolBar(ToolBar1);
+	Center();
 
-    Connect(ID_TREECTRL1,wxEVT_COMMAND_TREE_SEL_CHANGED,(wxObjectEventFunction)&hmtMapViewerFrame::OntreeViewSelectionChanged);
-    Connect(ID_MENUITEM1,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&hmtMapViewerFrame::OnMenuLoad);
-    Connect(ID_MENUITEM4,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&hmtMapViewerFrame::OnmenuExportLocalMapsSelected);
-    Connect(idMenuQuit,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&hmtMapViewerFrame::OnQuit);
-    Connect(ID_MENUITEM2,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&hmtMapViewerFrame::OnMenuTranslationBtw2);
-    Connect(ID_MENUITEM3,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&hmtMapViewerFrame::OnMenuOverlapBtw2);
-    Connect(ID_MENUITEM6,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&hmtMapViewerFrame::OnTopologicalModel_Gridmap);
-    Connect(ID_MENUITEM7,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&hmtMapViewerFrame::OnTopologicalModel_Fabmap);
-    Connect(idMenuAbout,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&hmtMapViewerFrame::OnAbout);
-    Connect(ID_TOOLBARITEM1,wxEVT_COMMAND_TOOL_CLICKED,(wxObjectEventFunction)&hmtMapViewerFrame::OnMenuLoad);
-    Connect(ID_TOOLBARITEM2,wxEVT_COMMAND_TOOL_CLICKED,(wxObjectEventFunction)&hmtMapViewerFrame::OnQuit);
-    //*)
+	Connect(ID_TREECTRL1,wxEVT_COMMAND_TREE_SEL_CHANGED,(wxObjectEventFunction)&hmtMapViewerFrame::OntreeViewSelectionChanged);
+	Connect(ID_MENUITEM1,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&hmtMapViewerFrame::OnMenuLoad);
+	Connect(ID_MENUITEM4,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&hmtMapViewerFrame::OnmenuExportLocalMapsSelected);
+	Connect(idMenuQuit,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&hmtMapViewerFrame::OnQuit);
+	Connect(ID_MENUITEM2,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&hmtMapViewerFrame::OnMenuTranslationBtw2);
+	Connect(ID_MENUITEM3,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&hmtMapViewerFrame::OnMenuOverlapBtw2);
+	Connect(ID_MENUITEM6,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&hmtMapViewerFrame::OnTopologicalModel_Gridmap);
+	Connect(ID_MENUITEM7,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&hmtMapViewerFrame::OnTopologicalModel_Fabmap);
+	Connect(idMenuAbout,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&hmtMapViewerFrame::OnAbout);
+	Connect(ID_TOOLBARITEM1,wxEVT_COMMAND_TOOL_CLICKED,(wxObjectEventFunction)&hmtMapViewerFrame::OnMenuLoad);
+	Connect(ID_TOOLBARITEM2,wxEVT_COMMAND_TOOL_CLICKED,(wxObjectEventFunction)&hmtMapViewerFrame::OnQuit);
+	//*)
 
 	// Fix sizes:
 	SplitterWindow1->SetMinSize(wxSize(200,200));
@@ -390,32 +390,30 @@ hmtMapViewerFrame::hmtMapViewerFrame(wxWindow* parent,wxWindowID id)
 	Fit();
 	Refresh();
 
-    // Create GL canvas:
-    // -------------------------------
+	// Create GL canvas:
+	// -------------------------------
 	m_canvas_HMAP = new CMyGLCanvas( Panel6, wxID_ANY, wxDefaultPosition, wxDefaultSize );
 	Panel6->SetMinSize( wxSize(200,200) );
 	m_canvas_HMAP->SetMinSize( wxSize(200,200) );
-	m_canvas_HMAP->m_openGLScene->insert( opengl::CGridPlaneXY::Create() );
+	m_canvas_HMAP->getOpenGLSceneRef()->insert( opengl::CGridPlaneXY::Create() );
 
-    FlexGridSizer6->Add(m_canvas_HMAP, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
+	FlexGridSizer6->Add(m_canvas_HMAP, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
 
 
 	m_canvas_LMH = new CMyGLCanvas( Panel7, wxID_ANY, wxDefaultPosition, wxDefaultSize );
 	Panel7->SetMinSize( wxSize(200,200) );
 	m_canvas_LMH->SetMinSize( wxSize(200,200) );
-	m_canvas_LMH->m_openGLScene->insert( opengl::CGridPlaneXY::Create() );
-    FlexGridSizer7->Add(m_canvas_LMH, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
+	m_canvas_LMH->getOpenGLSceneRef()->insert( opengl::CGridPlaneXY::Create() );
+	FlexGridSizer7->Add(m_canvas_LMH, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_TOP, 0);
 
-	m_canvas_LMH->cameraPointingX = 0;
-	m_canvas_LMH->cameraPointingY = 0;
-	m_canvas_LMH->cameraPointingZ = 0;
-	m_canvas_LMH->cameraZoomDistance = 100;
-	m_canvas_LMH->cameraElevationDeg=90;
-	m_canvas_LMH->cameraAzimuthDeg=0;
-	m_canvas_LMH->cameraIsProjective = false;
+	m_canvas_LMH->setCameraPointing(0.0f, 0.0f, 0.0f);
+	m_canvas_LMH->setZoomDistance(100.0f);
+	m_canvas_LMH->setElevationDegrees(90.0f);
+	m_canvas_LMH->setAzimuthDegrees(0.0f);
+	m_canvas_LMH->setCameraProjective(false);
 
 
-    Maximize();
+	Maximize();
 
 	// Splitters:
 	SplitterWindow1->SetSashPosition(300);
@@ -433,15 +431,15 @@ hmtMapViewerFrame::hmtMapViewerFrame(wxWindow* parent,wxWindowID id)
 
 hmtMapViewerFrame::~hmtMapViewerFrame()
 {
-    //(*Destroy(hmtMapViewerFrame)
-    //*)
+	//(*Destroy(hmtMapViewerFrame)
+	//*)
 
-    WX_START_TRY
+	WX_START_TRY
 
-	delete hmt_map;
-        hmt_map = nullptr;
+			delete hmt_map;
+	hmt_map = nullptr;
 
-    WX_END_TRY
+	WX_END_TRY
 }
 
 //------------------------------------------------------------------------
@@ -457,13 +455,13 @@ void hmtMapViewerFrame::OntimAutoLoadTrigger(wxTimerEvent& event)
 
 void hmtMapViewerFrame::OnQuit(wxCommandEvent& event)
 {
-    Close();
+	Close();
 }
 
 void hmtMapViewerFrame::OnAbout(wxCommandEvent& event)
 {
-//    wxString msg = wxbuildinfo(long_f);
-//    wxMessageBox(msg, _("Welcome to..."));
+	//    wxString msg = wxbuildinfo(long_f);
+	//    wxMessageBox(msg, _("Welcome to..."));
 }
 
 void hmtMapViewerFrame::OnMenuLoad(wxCommandEvent& event)
@@ -476,9 +474,9 @@ void hmtMapViewerFrame::OnMenuLoad(wxCommandEvent& event)
 
 bool hmtMapViewerFrame::loadHTMSLAMFromFile( const std::string &filePath )
 {
-    WX_START_TRY
+	WX_START_TRY
 
-    if (!fileExists(filePath))
+			if (!fileExists(filePath))
 	{
 		wxMessageBox(_U( string(string("File doesn't exist:\n")+filePath).c_str() ),_("Error loading file"),wxOK,this);
 		return false;
@@ -488,30 +486,30 @@ bool hmtMapViewerFrame::loadHTMSLAMFromFile( const std::string &filePath )
 
 	// Save the path
 	WX_START_TRY
-        string the_path( extractFileDirectory(filePath) );
-        iniFile->write(iniFileSect,"LastDir", the_path );
+			string the_path( extractFileDirectory(filePath) );
+	iniFile->write(iniFileSect,"LastDir", the_path );
 	WX_END_TRY
 
-    // Load
-    CFileGZInputStream(filePath) >> *hmt_map;
+			// Load
+			CFileGZInputStream(filePath) >> *hmt_map;
 
 
-    m_curFileOpen = filePath;
+	m_curFileOpen = filePath;
 
-    // Refresh views:
-    // ---------------------------
+	// Refresh views:
+	// ---------------------------
 
-    // The tree:
-    rebuildTreeView();
+	// The tree:
+	rebuildTreeView();
 
-    // The global map:
-    updateGlobalMapView();
+	// The global map:
+	updateGlobalMapView();
 
-    return true;
+	return true;
 
-    WX_END_TRY
+	WX_END_TRY
 
-    return false;
+			return false;
 }
 
 
@@ -519,13 +517,13 @@ void hmtMapViewerFrame::rebuildTreeView()
 {
 	WX_START_TRY
 
-	wxBusyCursor        waitCursor;
+			wxBusyCursor        waitCursor;
 	treeView->DeleteAllItems();
 
 	treeView->SetQuickBestSize(true);
 
 	// Root element & Areas:
-        wxTreeItemId root = treeView->AddRoot(_("Areas"),0,-1,nullptr);
+	wxTreeItemId root = treeView->AddRoot(_("Areas"),0,-1,nullptr);
 
 	CHierarchicalMHMap::const_iterator it;
 	size_t i;
@@ -536,10 +534,10 @@ void hmtMapViewerFrame::rebuildTreeView()
 
 		//wxTreeItemId treeNode =
 		treeView->AppendItem(
-			root,
-			_U(str.c_str()),
-			0,-1,
-			new CItemData(it->second,i));
+					root,
+					_U(str.c_str()),
+					0,-1,
+					new CItemData(it->second,i));
 	}
 
 	treeView->ExpandAll();
@@ -552,7 +550,7 @@ void hmtMapViewerFrame::rebuildTreeView()
 
 	cbHypos->SetSelection(0);
 
-    WX_END_TRY
+	WX_END_TRY
 }
 
 //------------------------------------------------------------------------
@@ -577,11 +575,11 @@ bool hmtMapViewerFrame::AskForOpenHMTMap( std::string &fil )
 
 void hmtMapViewerFrame::updateLocalMapView()
 {
-    WX_START_TRY
+	WX_START_TRY
 
-	CMyRedirector	redir( edLog );
+			CMyRedirector	redir( edLog );
 
-	m_canvas_LMH->m_openGLScene->clear();
+	m_canvas_LMH->getOpenGLSceneRef()->clear();
 
 	// Get the hypothesis ID:
 	THypothesisID	hypID = (THypothesisID	)atoi( cbHypos->GetStringSelection().mb_str() );
@@ -642,12 +640,12 @@ void hmtMapViewerFrame::updateLocalMapView()
 					CPose3DPDFParticles		pdf;
 
 					hmt_map->m_map.computeCoordinatesTransformationBetweenNodes(
-						firstArea->getID(),
-						area->getID(),
-						pdf,
-						hypID,
-						200 );
-						/*0.15f,
+								firstArea->getID(),
+								area->getID(),
+								pdf,
+								hypID,
+								200 );
+					/*0.15f,
 						DEG2RAD(5.0f) );*/
 
 					refPoseThisArea.copyFrom( pdf );
@@ -724,7 +722,7 @@ void hmtMapViewerFrame::updateLocalMapView()
 						CMatrixDouble C = CMatrixDouble(refPoseThisArea.cov);
 
 						if (C(2,2)<1e6)
-								C.setSize(2,2);
+							C.setSize(2,2);
 						else	C.setSize(3,3);
 
 						ellip->setCovMatrix(C);
@@ -750,14 +748,14 @@ void hmtMapViewerFrame::updateLocalMapView()
 		} // two pass
 
 		// Add to the scene:
-		m_canvas_LMH->m_openGLScene->insert(objs);
+		m_canvas_LMH->getOpenGLSceneRef()->insert(objs);
 	}
 	else
-	if (obj->GetRuntimeClass()==CLASS_ID( CLocalMetricHypothesis ))
-	{
-		//CLocalMetricHypothesis *lmh = static_cast<CLocalMetricHypothesis*>( obj );
+		if (obj->GetRuntimeClass()==CLASS_ID( CLocalMetricHypothesis ))
+		{
+			//CLocalMetricHypothesis *lmh = static_cast<CLocalMetricHypothesis*>( obj );
 
-	}
+		}
 
 	m_canvas_LMH->Refresh();
 
@@ -766,7 +764,7 @@ void hmtMapViewerFrame::updateLocalMapView()
 
 void hmtMapViewerFrame::updateGlobalMapView()
 {
-	m_canvas_HMAP->m_openGLScene->clear();
+	m_canvas_HMAP->getOpenGLSceneRef()->clear();
 
 	wxBusyCursor busy;
 
@@ -794,12 +792,12 @@ void hmtMapViewerFrame::updateGlobalMapView()
 			wxMessageBox(_U( format("No LMH has hypothesis ID %i!", (int)hypID).c_str() ), _("Error with topological hypotesis"));
 			return;
 		}
-//		cout << "Showing hypothesis ID: " << hypID  << endl;
+		//		cout << "Showing hypothesis ID: " << hypID  << endl;
 
 		hmt_map->m_map.getAs3DScene(
-			*m_canvas_HMAP->m_openGLScene,
-			refID,
-			hypID );
+					*m_canvas_HMAP->getOpenGLSceneRef(),
+					refID,
+					hypID );
 
 		m_canvas_HMAP->Refresh();
 	}
@@ -807,9 +805,9 @@ void hmtMapViewerFrame::updateGlobalMapView()
 
 void hmtMapViewerFrame::OnMenuOverlapBtw2(wxCommandEvent& event)
 {
-    WX_START_TRY
+	WX_START_TRY
 
-    wxArrayTreeItemIds	lstSelect;
+			wxArrayTreeItemIds	lstSelect;
 
 	size_t	nSel = treeView->GetSelections(lstSelect);
 
@@ -835,16 +833,16 @@ void hmtMapViewerFrame::OnMenuOverlapBtw2(wxCommandEvent& event)
 	const size_t monteCarloSamples = 100;
 
 	double prob12 = hmt_map->m_map.computeOverlapProbabilityBetweenNodes(
-		area1->getID(),
-		area2->getID(),
-		hypID,
-		monteCarloSamples);
+				area1->getID(),
+				area2->getID(),
+				hypID,
+				monteCarloSamples);
 
 	double prob21 = hmt_map->m_map.computeOverlapProbabilityBetweenNodes(
-		area2->getID(),
-		area1->getID(),
-		hypID,
-		monteCarloSamples);
+				area2->getID(),
+				area1->getID(),
+				hypID,
+				monteCarloSamples);
 
 
 	{
@@ -854,14 +852,14 @@ void hmtMapViewerFrame::OnMenuOverlapBtw2(wxCommandEvent& event)
 		cout << "Overlap probability: " << area2->getID() << " - " << area1->getID() << ": " << prob21 << endl;
 	}
 
-    WX_END_TRY
+	WX_END_TRY
 }
 
 void hmtMapViewerFrame::OnMenuTranslationBtw2(wxCommandEvent& event)
 {
-    WX_START_TRY
+	WX_START_TRY
 
-    wxArrayTreeItemIds	lstSelect;
+			wxArrayTreeItemIds	lstSelect;
 
 	size_t	nSel = treeView->GetSelections(lstSelect);
 
@@ -889,12 +887,12 @@ void hmtMapViewerFrame::OnMenuTranslationBtw2(wxCommandEvent& event)
 	CPose3DPDFParticles		pdf12;
 
 	hmt_map->m_map.computeCoordinatesTransformationBetweenNodes(
-		area1->getID(),
-		area2->getID(),
-		pdf12,
-		hypID,
-		monteCarloSamples,
-		0,0);
+				area1->getID(),
+				area2->getID(),
+				pdf12,
+				hypID,
+				monteCarloSamples,
+				0,0);
 
 	CPose3DPDFGaussian	pdfGauss;
 	pdfGauss.copyFrom(pdf12);
@@ -906,7 +904,7 @@ void hmtMapViewerFrame::OnMenuTranslationBtw2(wxCommandEvent& event)
 		cout << pdfGauss << endl;
 	}
 
-    WX_END_TRY
+	WX_END_TRY
 }
 
 
@@ -917,10 +915,10 @@ void hmtMapViewerFrame::OntreeViewSelectionChanged(wxTreeEvent& event)
 
 void hmtMapViewerFrame::OnmenuExportLocalMapsSelected(wxCommandEvent& event)
 {
-    WX_START_TRY
+	WX_START_TRY
 
-	// Get the hypothesis ID:
-	THypothesisID	hypID = (THypothesisID	)atoi( cbHypos->GetStringSelection().mb_str() );
+			// Get the hypothesis ID:
+			THypothesisID	hypID = (THypothesisID	)atoi( cbHypos->GetStringSelection().mb_str() );
 	if ( hmt_map->m_LMHs.find(hypID)==hmt_map->m_LMHs.end() )
 	{
 		wxMessageBox(_U( format("No LMH has hypothesis ID %i!", (int)hypID).c_str() ), _("Error with topological hypotesis"));
@@ -957,7 +955,7 @@ void hmtMapViewerFrame::OnmenuExportLocalMapsSelected(wxCommandEvent& event)
 		CFileGZOutputStream(map_file) << simpleMap;		// Save simplemap
 	}
 
-    WX_END_TRY
+	WX_END_TRY
 }
 
 
@@ -965,15 +963,15 @@ void hmtMapViewerFrame::OnTopologicalModel_Gridmap(wxCommandEvent& event)
 {
 	WX_START_TRY
 
-	// Get the hypothesis ID:
-	const THypothesisID	hypID = (THypothesisID	)atoi( cbHypos->GetStringSelection().mb_str() );
+			// Get the hypothesis ID:
+			const THypothesisID	hypID = (THypothesisID	)atoi( cbHypos->GetStringSelection().mb_str() );
 	if ( hmt_map->m_LMHs.find(hypID)==hmt_map->m_LMHs.end() )
 	{
 		wxMessageBox(_U( format("No LMH has hypothesis ID %i!", (int)hypID).c_str() ), _("Error with topological hypotesis"));
 		return;
 	}
 
-    wxArrayTreeItemIds	lstSelect;
+	wxArrayTreeItemIds	lstSelect;
 
 	size_t	nSel = treeView->GetSelections(lstSelect);
 	if (nSel!=2)
@@ -1002,10 +1000,10 @@ void hmtMapViewerFrame::OnTopologicalModel_Gridmap(wxCommandEvent& event)
 
 	// get the output from this LC detector:
 	CPose3DPDF::Ptr pdf = TLCD->computeTopologicalObservationModel(
-		hypID,
-		area2,
-		area1,
-		this_log_lik );
+				hypID,
+				area2,
+				area1,
+				this_log_lik );
 
 	CPose3DPDFSOG::Ptr pdfSOG = std::dynamic_pointer_cast<CPose3DPDFSOG>(pdf);
 
@@ -1016,7 +1014,7 @@ void hmtMapViewerFrame::OnTopologicalModel_Gridmap(wxCommandEvent& event)
 	}
 
 
-    WX_END_TRY
+	WX_END_TRY
 }
 
 void hmtMapViewerFrame::OnTopologicalModel_Fabmap(wxCommandEvent& event)
