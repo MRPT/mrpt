@@ -304,7 +304,7 @@ void TestBayesianTracking()
 		// Process with PF:
 		CSensoryFrame SF;
 		CObservationBearingRange::Ptr obsRangeBear =
-			std::make_aligned_shared<CObservationBearingRange>();
+			mrpt::make_aligned_shared<CObservationBearingRange>();
 		obsRangeBear->sensedData.resize(1);
 		obsRangeBear->sensedData[0].range = obsRange;
 		obsRangeBear->sensedData[0].yaw = obsBearing;

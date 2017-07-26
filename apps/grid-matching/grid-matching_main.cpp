@@ -269,7 +269,7 @@ void do_grid_align()
 				if (NOISE_IN_POSE)
 				{
 					CPosePDFGaussian::Ptr newPDF =
-						std::make_aligned_shared<CPosePDFGaussian>();
+						mrpt::make_aligned_shared<CPosePDFGaussian>();
 					newPDF->copyFrom(*PDF);
 
 					// Change the pose:
@@ -413,10 +413,10 @@ void do_grid_align()
 					{
 						COpenGLScene scene3D;
 						opengl::CSetOfObjects::Ptr thePDF3D =
-							std::make_aligned_shared<opengl::CSetOfObjects>();
+							mrpt::make_aligned_shared<opengl::CSetOfObjects>();
 						pdf_SOG->getAs3DObject(thePDF3D);
 						opengl::CGridPlaneXY::Ptr gridXY =
-							std::make_aligned_shared<opengl::CGridPlaneXY>(
+							mrpt::make_aligned_shared<opengl::CGridPlaneXY>(
 								-10, 10, -10, 10, 0, 1);
 						scene3D.insert(gridXY);
 						scene3D.insert(thePDF3D);
@@ -503,14 +503,14 @@ void do_grid_align()
 							CPointsMap::COLOR_3DSCENE_G = 0;
 							CPointsMap::COLOR_3DSCENE_B = 1;
 							CSetOfObjects::Ptr obj1 =
-								std::make_aligned_shared<CSetOfObjects>();
+								mrpt::make_aligned_shared<CSetOfObjects>();
 							the_map1.getAs3DObject(obj1);
 
 							CPointsMap::COLOR_3DSCENE_R = 1;
 							CPointsMap::COLOR_3DSCENE_G = 0;
 							CPointsMap::COLOR_3DSCENE_B = 0;
 							CSetOfObjects::Ptr obj2 =
-								std::make_aligned_shared<CSetOfObjects>();
+								mrpt::make_aligned_shared<CSetOfObjects>();
 							the_map2.getAs3DObject(obj2);
 
 							obj2->setPose(x);
@@ -520,7 +520,7 @@ void do_grid_align()
 
 							// Add also the borders of the maps:
 							CSetOfLines::Ptr lines =
-								std::make_aligned_shared<CSetOfLines>();
+								mrpt::make_aligned_shared<CSetOfLines>();
 							lines->setLineWidth(3);
 							lines->setColor(0, 0, 1);
 
@@ -613,8 +613,8 @@ void do_grid_align()
 				// only for the case of non "--match":
 				if (!lm1 && !lm2)
 				{
-					lm1 = std::make_aligned_shared<CLandmarksMap>();
-					lm2 = std::make_aligned_shared<CLandmarksMap>();
+					lm1 = mrpt::make_aligned_shared<CLandmarksMap>();
+					lm2 = mrpt::make_aligned_shared<CLandmarksMap>();
 
 					gridfeatextract.extractFeatures(
 						*grid1, *lm1, N1, gridAlign.options.feature_descriptor,

@@ -738,21 +738,21 @@ gridmapSimulFrame::gridmapSimulFrame(wxWindow* parent, wxWindowID id)
 
 	// Populate scene:
 	m_canvas->m_openGLScene->insert(
-		std::make_aligned_shared<mrpt::opengl::CGridPlaneXY>(
+		mrpt::make_aligned_shared<mrpt::opengl::CGridPlaneXY>(
 			-100, 100, -100, 100, 0, 5));
 
 	update_grid_map_3d();
 	m_canvas->m_openGLScene->insert(gl_grid);
 
 	// paths:
-	gl_path_GT = std::make_aligned_shared<mrpt::opengl::CPointCloud>();
+	gl_path_GT = mrpt::make_aligned_shared<mrpt::opengl::CPointCloud>();
 	gl_path_GT->setColor(0, 0, 0, 0.7);
 	gl_path_GT->setLocation(0, 0, 0.01);
 	gl_path_GT->setPointSize(3);
 
 	m_canvas->m_openGLScene->insert(gl_path_GT);
 
-	gl_path_ODO = std::make_aligned_shared<mrpt::opengl::CPointCloud>();
+	gl_path_ODO = mrpt::make_aligned_shared<mrpt::opengl::CPointCloud>();
 	gl_path_ODO->setColor(0, 1, 0, 0.7);
 	gl_path_ODO->setLocation(0, 0, 0.01);
 	gl_path_ODO->setPointSize(2);
@@ -763,7 +763,7 @@ gridmapSimulFrame::gridmapSimulFrame(wxWindow* parent, wxWindowID id)
 	gl_robot = mrpt::opengl::stock_objects::RobotPioneer();
 	m_canvas->m_openGLScene->insert(gl_robot);
 
-	gl_scan = std::make_aligned_shared<mrpt::opengl::CPlanarLaserScan>();
+	gl_scan = mrpt::make_aligned_shared<mrpt::opengl::CPlanarLaserScan>();
 	gl_robot->insert(gl_scan);
 
 	// Redirect all keystrokes in this box to the gl canvas:
@@ -786,7 +786,7 @@ gridmapSimulFrame::~gridmapSimulFrame()
 
 void gridmapSimulFrame::update_grid_map_3d()
 {
-	if (!gl_grid) gl_grid = std::make_aligned_shared<CSetOfObjects>();
+	if (!gl_grid) gl_grid = mrpt::make_aligned_shared<CSetOfObjects>();
 	gl_grid->clear();
 	the_grid.getAs3DObject(gl_grid);
 }

@@ -292,7 +292,7 @@ CScanAnimation::CScanAnimation(
 
 	// Initialize 3D view:
 	m_plot3D->m_openGLScene->insert(
-		std::make_aligned_shared<mrpt::opengl::CGridPlaneXY>(
+		mrpt::make_aligned_shared<mrpt::opengl::CGridPlaneXY>(
 			-50, 50, -50, 50, 0 /* z */, 5 /* freq */));
 	m_plot3D->m_openGLScene->insert(
 		mrpt::opengl::stock_objects::CornerXYZSimple(
@@ -323,7 +323,7 @@ void CScanAnimation::RebuildMaps()
 		}
 		else if (rawlog.getType(idx) == CRawlog::etObservation)
 		{
-			CSensoryFrame::Ptr sf = std::make_aligned_shared<CSensoryFrame>();
+			CSensoryFrame::Ptr sf = mrpt::make_aligned_shared<CSensoryFrame>();
 			sf->insert(rawlog.getAsObservation(idx));
 			BuildMapAndRefresh(sf.get());
 		}
@@ -403,7 +403,7 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame* sf)
 			{
 				// Create object:
 				CPlanarLaserScan::Ptr gl_obj =
-					std::make_aligned_shared<CPlanarLaserScan>();
+					mrpt::make_aligned_shared<CPlanarLaserScan>();
 				gl_obj->setScan(*obs);
 
 				TRenderObject ro;
@@ -443,7 +443,7 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame* sf)
 			{
 				// Create object:
 				CPointCloudColoured::Ptr gl_obj =
-					std::make_aligned_shared<CPointCloudColoured>();
+					mrpt::make_aligned_shared<CPointCloudColoured>();
 				gl_obj->setPointSize(3.0);
 				gl_obj->loadFromPointsMap(&pointMap);
 
@@ -484,7 +484,7 @@ void CScanAnimation::BuildMapAndRefresh(CSensoryFrame* sf)
 			{
 				// Create object:
 				CPointCloudColoured::Ptr gl_obj =
-					std::make_aligned_shared<CPointCloudColoured>();
+					mrpt::make_aligned_shared<CPointCloudColoured>();
 				gl_obj->setPointSize(3.0);
 				gl_obj->loadFromPointsMap(&pointMap);
 

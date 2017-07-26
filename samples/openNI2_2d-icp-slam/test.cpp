@@ -73,12 +73,12 @@ int main(int argc, char** argv)
 		win3D.setCameraPointingToPoint(2.5, 0, 0);
 
 		mrpt::opengl::CPointCloudColoured::Ptr gl_points =
-			std::make_aligned_shared<mrpt::opengl::CPointCloudColoured>();
+			mrpt::make_aligned_shared<mrpt::opengl::CPointCloudColoured>();
 		gl_points->setPointSize(2.5);
 
 		// The 2D "laser scan" OpenGL object:
 		mrpt::opengl::CPlanarLaserScan::Ptr gl_2d_scan =
-			std::make_aligned_shared<mrpt::opengl::CPlanarLaserScan>();
+			mrpt::make_aligned_shared<mrpt::opengl::CPlanarLaserScan>();
 		gl_2d_scan->enablePoints(true);
 		gl_2d_scan->enableLine(true);
 		gl_2d_scan->enableSurface(true);
@@ -91,7 +91,7 @@ int main(int argc, char** argv)
 
 			// Create the Opengl object for the point cloud:
 			scene->insert(gl_points);
-			scene->insert(std::make_aligned_shared<mrpt::opengl::CGridPlaneXY>());
+			scene->insert(mrpt::make_aligned_shared<mrpt::opengl::CGridPlaneXY>());
 			scene->insert(mrpt::opengl::stock_objects::CornerXYZ());
 			scene->insert(gl_2d_scan);
 
@@ -125,7 +125,7 @@ int main(int argc, char** argv)
 		{
 			//    cout << "Get new observation\n";
 			CObservation3DRangeScan::Ptr newObs =
-				std::make_aligned_shared<CObservation3DRangeScan>();
+				mrpt::make_aligned_shared<CObservation3DRangeScan>();
 			rgbd_sensor.getNextObservation(*newObs, bObs, bError);
 
 			CObservation2DRangeScan::Ptr obs_2d;  // The equivalent 2D scan
@@ -141,7 +141,7 @@ int main(int argc, char** argv)
 				if (newObs->hasRangeImage)
 				{
 					// Convert to scan:
-					obs_2d = std::make_aligned_shared<CObservation2DRangeScan>();
+					obs_2d = mrpt::make_aligned_shared<CObservation2DRangeScan>();
 
 					T3DPointsTo2DScanParams p2s;
 					p2s.angle_sup = .5f * vert_FOV;

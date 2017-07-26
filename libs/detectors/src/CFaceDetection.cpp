@@ -1426,13 +1426,13 @@ void CFaceDetection::experimental_viewFacePointsScanned(
 	win3D.setCameraPointingToPoint(2.5, 0, 0);
 
 	mrpt::opengl::CPointCloudColoured::Ptr gl_points =
-		std::make_aligned_shared<mrpt::opengl::CPointCloudColoured>();
+		mrpt::make_aligned_shared<mrpt::opengl::CPointCloudColoured>();
 	gl_points->setPointSize(4.5);
 
 	mrpt::opengl::COpenGLScene::Ptr scene = win3D.get3DSceneAndLock();
 
 	scene->insert(gl_points);
-	scene->insert(std::make_aligned_shared<mrpt::opengl::CGridPlaneXY>());
+	scene->insert(mrpt::make_aligned_shared<mrpt::opengl::CGridPlaneXY>());
 
 	CColouredPointsMap pntsMap;
 
@@ -1514,12 +1514,12 @@ void CFaceDetection::experimental_viewFacePointsAndEigenVects(
 	win3D.setCameraPointingToPoint(2.5, 0, 0);
 
 	mrpt::opengl::CPointCloudColoured::Ptr gl_points =
-		std::make_aligned_shared<mrpt::opengl::CPointCloudColoured>();
+		mrpt::make_aligned_shared<mrpt::opengl::CPointCloudColoured>();
 	gl_points->setPointSize(4.5);
 
 	mrpt::opengl::COpenGLScene::Ptr scene = win3D.get3DSceneAndLock();
 
-	CSphere::Ptr sphere = std::make_aligned_shared<CSphere>(0.005f);
+	CSphere::Ptr sphere = mrpt::make_aligned_shared<CSphere>(0.005f);
 	sphere->setLocation(center);
 	sphere->setColor(TColorf(0, 1, 0));
 	scene->insert(sphere);
@@ -1547,11 +1547,11 @@ void CFaceDetection::experimental_viewFacePointsAndEigenVects(
 	TPoint3D p2(center + E2 * eigenVal[1] * 100);
 	TPoint3D p3(center + E3 * eigenVal[2] * 100);
 
-	CArrow::Ptr arrow1 = std::make_aligned_shared<CArrow>(
+	CArrow::Ptr arrow1 = mrpt::make_aligned_shared<CArrow>(
 		center.x, center.y, center.z, p1.x, p1.y, p1.z);
-	CArrow::Ptr arrow2 = std::make_aligned_shared<CArrow>(
+	CArrow::Ptr arrow2 = mrpt::make_aligned_shared<CArrow>(
 		center.x, center.y, center.z, p2.x, p2.y, p2.z);
-	CArrow::Ptr arrow3 = std::make_aligned_shared<CArrow>(
+	CArrow::Ptr arrow3 = mrpt::make_aligned_shared<CArrow>(
 		center.x, center.y, center.z, p3.x, p3.y, p3.z);
 
 	arrow1->setColor(TColorf(0, 1, 0));
@@ -1566,14 +1566,14 @@ void CFaceDetection::experimental_viewFacePointsAndEigenVects(
 	// sgms.push_back( TSegment3D(center,center + E2*eigenVal[1]*100) );
 	// sgms.push_back( TSegment3D(center,center + E3*eigenVal[2]*100) );
 	// mrpt::opengl::CSetOfLines::Ptr lines =
-	// std::make_aligned_shared<mrpt::opengl::CSetOfLines>( sgms );
+	// mrpt::make_aligned_shared<mrpt::opengl::CSetOfLines>( sgms );
 	// lines->setColor(0,0,1,1);
 	// lines->setLineWidth( 10 );
 
 	// scene->insert( lines );
 
 	scene->insert(gl_points);
-	scene->insert(std::make_aligned_shared<mrpt::opengl::CGridPlaneXY>());
+	scene->insert(mrpt::make_aligned_shared<mrpt::opengl::CGridPlaneXY>());
 
 	CColouredPointsMap pntsMap;
 
@@ -1606,7 +1606,7 @@ void CFaceDetection::experimental_viewRegions(
 	win3D.setCameraPointingToPoint(2.5, 0, 0);
 
 	mrpt::opengl::CPointCloudColoured::Ptr gl_points =
-		std::make_aligned_shared<mrpt::opengl::CPointCloudColoured>();
+		mrpt::make_aligned_shared<mrpt::opengl::CPointCloudColoured>();
 	gl_points->setPointSize(6);
 
 	mrpt::opengl::COpenGLScene::Ptr scene = win3D.get3DSceneAndLock();
@@ -1616,7 +1616,7 @@ void CFaceDetection::experimental_viewRegions(
 		for (size_t i = 0; i < 3; i++)
 			for (size_t j = 0; j < 3; j++)
 			{
-				CSphere::Ptr sphere = std::make_aligned_shared<CSphere>(0.005f);
+				CSphere::Ptr sphere = mrpt::make_aligned_shared<CSphere>(0.005f);
 				sphere->setLocation(meanPos[i][j]);
 				sphere->setColor(TColorf(0, 1, 0));
 				scene->insert(sphere);
@@ -1635,16 +1635,16 @@ void CFaceDetection::experimental_viewRegions(
 	sgms.push_back(TSegment3D(meanPos[2][0], meanPos[1][1]));
 	sgms.push_back(TSegment3D(meanPos[1][1], meanPos[0][2]));
 	mrpt::opengl::CSetOfLines::Ptr lines =
-		std::make_aligned_shared<mrpt::opengl::CSetOfLines>(sgms);
+		mrpt::make_aligned_shared<mrpt::opengl::CSetOfLines>(sgms);
 	lines->setColor(0, 0, 1, 1);
 	lines->setLineWidth(10);
 
 	scene->insert(lines);
 
 	scene->insert(gl_points);
-	scene->insert(std::make_aligned_shared<mrpt::opengl::CGridPlaneXY>());
+	scene->insert(mrpt::make_aligned_shared<mrpt::opengl::CGridPlaneXY>());
 	scene->insert(
-		std::make_aligned_shared<mrpt::opengl::CAxis>(
+		mrpt::make_aligned_shared<mrpt::opengl::CAxis>(
 			-5, -5, -5, 5, 5, 5, 2.5, 3, true));
 
 	CColouredPointsMap pntsMap;

@@ -77,7 +77,7 @@ void TestPLS()
 
 			/*			COpenGLScene			scene3D;
 						opengl::CPointCloud::Ptr points =
-			   std::make_aligned_shared<opengl::CPointCloud>();
+			   mrpt::make_aligned_shared<opengl::CPointCloud>();
 						points->loadFromPointsMap(&map);
 						scene3D.insert(points);
 						CFileOutputStream("_out_point_cloud.3Dscene") <<
