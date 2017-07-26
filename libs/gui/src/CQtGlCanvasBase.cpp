@@ -19,7 +19,7 @@ CQtGlCanvasBase::CQtGlCanvasBase(QWidget *parent)
 	, m_isPressLMouseButton(false)
 	, m_isPressRMouseButton(false)
 {
-	m_mainViewport = m_openGLScene->getViewport("main");
+	m_mainViewport = getOpenGLSceneRef()->getViewport("main");
 	setMouseTracking(true);
 }
 
@@ -80,17 +80,17 @@ void CQtGlCanvasBase::mouseMoveEvent(QMouseEvent *event)
 		if (m_isPressLMouseButton)
 		{
 			if (event->modifiers() == Qt::ShiftModifier)
-				params = updateZoom(params, X, Y);
+				updateZoom(params, X, Y);
 
 			else if (event->modifiers() == Qt::ControlModifier)
-				params = updateRotate(params, X, Y);
+				updateRotate(params, X, Y);
 
 			else if (event->modifiers() == Qt::NoModifier)
-				params = updateOrbitCamera(params, X, Y);
+				updateOrbitCamera(params, X, Y);
 
 		}
 		else
-			params = updatePan(params, X, Y);
+			updatePan(params, X, Y);
 
 		setMousePos(X, Y);
 		setCameraParams(params);
@@ -113,7 +113,7 @@ void CQtGlCanvasBase::mouseReleaseEvent(QMouseEvent *event)
 void CQtGlCanvasBase::wheelEvent(QWheelEvent *event)
 {
 	CamaraParams params = cameraParams();
-	params = updateZoom(params, event->delta());
+	updateZoom(params, event->delta());
 	setCameraParams(params);
 
 	updateCamerasParams();

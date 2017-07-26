@@ -14,17 +14,15 @@ using namespace std;
 #if APP_HAS_3D
 
 CMyGLCanvas::CMyGLCanvas( wxWindow *parent, wxWindowID id,
-                 const wxPoint& pos, const wxSize& size,
-                 long style, const wxString& name )
-		: CMyGLCanvasBase(parent,id,pos,size,style,name)
+						  const wxPoint& pos, const wxSize& size,
+						  long style, const wxString& name )
+	: CMyGLCanvasBase(parent,id,pos,size,style,name)
 {
-	cameraPointingX = 0;
-	cameraPointingY = 0;
-	cameraPointingZ = 0;
-	cameraZoomDistance = 20;
-	cameraElevationDeg = 45;
-	cameraAzimuthDeg   = 135;
-	cameraIsProjective = true;
+	setCameraPointing(0.0f, 0.0f, 0.0f);
+	setZoomDistance(20.0f);
+	setElevationDegrees(45.0f);
+	setAzimuthDegrees(135.0f);
+	setCameraProjective(true);
 }
 
 CMyGLCanvas::~CMyGLCanvas()

@@ -27,23 +27,23 @@ using namespace mrpt::math;
 using namespace std;
 
 #if MRPT_HAS_OPENGL_GLUT
-	#ifdef MRPT_OS_WINDOWS
-		// Windows:
-		#include <windows.h>
-	#endif
+#ifdef MRPT_OS_WINDOWS
+// Windows:
+#include <windows.h>
+#endif
 
-	#ifdef MRPT_OS_APPLE
-		#include <OpenGL/gl.h>
-		#include <OpenGL/glu.h>
-		#include <GLUT/glut.h>
-	#else
-		#include <GL/gl.h>
-		#include <GL/glu.h>
-		#include <GL/glut.h>
-	  #ifdef HAVE_FREEGLUT_EXT_H
-	  	#include <GL/freeglut_ext.h>
-	  #endif
-	#endif
+#ifdef MRPT_OS_APPLE
+#include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
+#include <GLUT/glut.h>
+#else
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include <GL/glut.h>
+#ifdef HAVE_FREEGLUT_EXT_H
+#include <GL/freeglut_ext.h>
+#endif
+#endif
 #endif
 
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
@@ -57,47 +57,47 @@ using namespace std;
 
 namespace mrpt
 {
-	namespace gui
+namespace gui
+{
+class CMyGLCanvas_DisplayWindow3D : public mrpt::gui::CMyGLCanvasBase
+{
+public:
+	CMyGLCanvas_DisplayWindow3D( CDisplayWindow3D *win3D,
+								 wxWindow *parent, wxWindowID id = wxID_ANY,
+								 const wxPoint& pos = wxDefaultPosition,
+								 const wxSize& size = wxDefaultSize,
+								 long style = 0, const wxString& name = _T("CMyGLCanvas_DisplayWindow3D") );
+
+	virtual ~CMyGLCanvas_DisplayWindow3D();
+
+
+	CDisplayWindow3D *m_win3D;
+
+	// The idea is that CMyGLCanvas_DisplayWindow3D was derived from CTextMessageCapable, but
+	//  that raises errors in MSVC when converting method pointers to wxObjectEventFunction...
+	struct THubClass : public mrpt::opengl::CTextMessageCapable
 	{
-		class CMyGLCanvas_DisplayWindow3D : public mrpt::gui::CMyGLCanvasBase
-		{
-		public:
-			CMyGLCanvas_DisplayWindow3D( CDisplayWindow3D *win3D,
-						 wxWindow *parent, wxWindowID id = wxID_ANY,
-						 const wxPoint& pos = wxDefaultPosition,
-						 const wxSize& size = wxDefaultSize,
-						 long style = 0, const wxString& name = _T("CMyGLCanvas_DisplayWindow3D") );
+		void render_text_messages_public(const int w, const int h) const { render_text_messages(w,h); }
+	};
+	THubClass m_text_msgs;
 
-			virtual ~CMyGLCanvas_DisplayWindow3D();
+	void OnCharCustom( wxKeyEvent& event );
+	void OnMouseDown(wxMouseEvent& event);
 
+	void OnPreRender();
+	void OnPostRender();
+	void OnPostRenderSwapBuffers(double At, wxPaintDC &dc);
 
-			CDisplayWindow3D *m_win3D;
-
-			// The idea is that CMyGLCanvas_DisplayWindow3D was derived from CTextMessageCapable, but
-			//  that raises errors in MSVC when converting method pointers to wxObjectEventFunction...
-			struct THubClass : public mrpt::opengl::CTextMessageCapable
-			{
-				void render_text_messages_public(const int w, const int h) const { render_text_messages(w,h); }
-			};
-			THubClass m_text_msgs;
-
-			void OnCharCustom( wxKeyEvent& event );
-			void OnMouseDown(wxMouseEvent& event);
-
-			void OnPreRender();
-			void OnPostRender();
-			void OnPostRenderSwapBuffers(double At, wxPaintDC &dc);
-
-			static void display3D_processKeyEvent(CDisplayWindow3D *m_win3D, wxKeyEvent&ev);
-		};
-	}
+	static void display3D_processKeyEvent(CDisplayWindow3D *m_win3D, wxKeyEvent&ev);
+};
+}
 }
 
 CMyGLCanvas_DisplayWindow3D::CMyGLCanvas_DisplayWindow3D(
-    CDisplayWindow3D *win3D,
-    wxWindow *parent, wxWindowID id,
-    const wxPoint& pos, const wxSize& size, long style, const wxString& name)
-    : CMyGLCanvasBase(parent,id,pos,size,style,name)
+		CDisplayWindow3D *win3D,
+		wxWindow *parent, wxWindowID id,
+		const wxPoint& pos, const wxSize& size, long style, const wxString& name)
+	: CMyGLCanvasBase(parent,id,pos,size,style,name)
 {
 	m_win3D = win3D;
 	Connect(wxEVT_CHAR,(wxObjectEventFunction)&CMyGLCanvas_DisplayWindow3D::OnCharCustom);
@@ -165,22 +165,23 @@ void CMyGLCanvas_DisplayWindow3D::OnMouseDown(wxMouseEvent& event)
 
 CMyGLCanvas_DisplayWindow3D::~CMyGLCanvas_DisplayWindow3D()
 {
-	m_openGLScene.reset();	// Avoid the base class to free this object (it's freed by CDisplayWindow3D)
+	getOpenGLSceneRef().reset();	// Avoid the base class to free this object (it's freed by CDisplayWindow3D)
 }
 
 void CMyGLCanvas_DisplayWindow3D::OnPreRender()
 {
-    if (m_openGLScene) m_openGLScene.reset();
+	auto openGLSceneRef = getOpenGLSceneRef();
+	if (openGLSceneRef) openGLSceneRef.reset();
 
 	COpenGLScene::Ptr ptrScene = m_win3D->get3DSceneAndLock();
 	if (ptrScene)
-		m_openGLScene = ptrScene;
+		openGLSceneRef = ptrScene;
 }
 
 void CMyGLCanvas_DisplayWindow3D::OnPostRender()
 {
 	// Avoid the base class to free this object (it's freed by CDisplayWindow3D)
-	m_openGLScene.reset();
+	getOpenGLSceneRef().reset();
 	m_win3D->unlockAccess3DScene();
 
 	// If any, draw the 2D text messages:
@@ -195,14 +196,14 @@ void CMyGLCanvas_DisplayWindow3D::OnPostRenderSwapBuffers(double At, wxPaintDC &
 	if (m_win3D) m_win3D->internal_setRenderingFPS(At>0 ? 1.0/At : 1e9);
 
 	// If we are requested to do so, grab images to disk as they are rendered:
-	string grabFile; 
-	if (m_win3D) 
+	string grabFile;
+	if (m_win3D)
 		grabFile = m_win3D->grabImageGetNextFile();
 	if (m_win3D && (!grabFile.empty() || m_win3D->isCapturingImgs()) )
 	{
 		int w,h;
 		dc.GetSize(&w, &h);
-			
+
 		//Save image directly from OpenGL - It could also use 4 channels and save with GL_BGRA_EXT
 		CImage::Ptr frame(new CImage(w, h, 3, false));
 		glReadBuffer(GL_FRONT);
@@ -238,49 +239,49 @@ const long C3DWindowDialog::ID_MENUITEM1 = wxNewId();
 const long C3DWindowDialog::ID_MENUITEM2 = wxNewId();
 
 C3DWindowDialog::C3DWindowDialog(
-    CDisplayWindow3D *win3D,
-    WxSubsystem::CWXMainFrame* parent,
-    wxWindowID id,
-    const std::string &caption,
-    wxSize initialSize ) :
-    m_win3D( win3D ),
-    m_mainFrame(parent)
+		CDisplayWindow3D *win3D,
+		WxSubsystem::CWXMainFrame* parent,
+		wxWindowID id,
+		const std::string &caption,
+		wxSize initialSize ) :
+	m_win3D( win3D ),
+	m_mainFrame(parent)
 {
 #if MRPT_HAS_OPENGL_GLUT
 
-    Create(parent, id, _U(caption.c_str()), wxDefaultPosition, initialSize, wxDEFAULT_FRAME_STYLE, _T("id"));
+	Create(parent, id, _U(caption.c_str()), wxDefaultPosition, initialSize, wxDEFAULT_FRAME_STYLE, _T("id"));
 
 	wxIcon FrameIcon;
 	FrameIcon.CopyFromBitmap(mrpt::gui::WxSubsystem::getMRPTDefaultIcon());
 	SetIcon(FrameIcon);
 
-    // Create the wxCanvas object:
-    m_canvas = new CMyGLCanvas_DisplayWindow3D( win3D, this, wxID_ANY, wxDefaultPosition, wxDefaultSize );
+	// Create the wxCanvas object:
+	m_canvas = new CMyGLCanvas_DisplayWindow3D( win3D, this, wxID_ANY, wxDefaultPosition, wxDefaultSize );
 
 
-    // Events:
-    Connect(wxID_ANY,wxEVT_CLOSE_WINDOW,(wxObjectEventFunction)&C3DWindowDialog::OnClose);
-    Connect(ID_MENUITEM1,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&C3DWindowDialog::OnMenuClose);
-    Connect(ID_MENUITEM2,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&C3DWindowDialog::OnMenuAbout);
+	// Events:
+	Connect(wxID_ANY,wxEVT_CLOSE_WINDOW,(wxObjectEventFunction)&C3DWindowDialog::OnClose);
+	Connect(ID_MENUITEM1,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&C3DWindowDialog::OnMenuClose);
+	Connect(ID_MENUITEM2,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&C3DWindowDialog::OnMenuAbout);
 
 	Connect(wxID_ANY,wxEVT_CHAR,(wxObjectEventFunction)&C3DWindowDialog::OnChar);
 
 	Connect(wxID_ANY,wxEVT_SIZE,(wxObjectEventFunction)&C3DWindowDialog::OnResize);
 
-    // Increment number of windows:
-    //int winCount =
-    WxSubsystem::CWXMainFrame::notifyWindowCreation();
-    //cout << "[C3DWindowDialog] Notifying new window: " << winCount << endl;
+	// Increment number of windows:
+	//int winCount =
+	WxSubsystem::CWXMainFrame::notifyWindowCreation();
+	//cout << "[C3DWindowDialog] Notifying new window: " << winCount << endl;
 #else
 	THROW_EXCEPTION("MRPT was compiled without OpenGL support")
-#endif
-	//this->Iconize(false);
+		#endif
+			//this->Iconize(false);
 }
 
 // Destructor
 C3DWindowDialog::~C3DWindowDialog()
 {
-//	cout << "[C3DWindowDialog::~C3DWindowDialog]" << endl;
+	//	cout << "[C3DWindowDialog::~C3DWindowDialog]" << endl;
 }
 
 // OnClose event:
@@ -296,27 +297,27 @@ void C3DWindowDialog::OnClose(wxCloseEvent& event)
 	if (!allow_close) return; // Don't process this close event.
 
 	//	cout << "[C3DWindowDialog::OnClose]" << endl;
-    // Set the m_hwnd=nullptr in our parent object.
-    m_win3D->notifyChildWindowDestruction();
+	// Set the m_hwnd=nullptr in our parent object.
+	m_win3D->notifyChildWindowDestruction();
 
-    // Decrement number of windows:
-    WxSubsystem::CWXMainFrame::notifyWindowDestruction();
+	// Decrement number of windows:
+	WxSubsystem::CWXMainFrame::notifyWindowDestruction();
 
 	// Signal we are destroyed:
-    m_win3D->m_windowDestroyed.set_value();
+	m_win3D->m_windowDestroyed.set_value();
 
-    event.Skip(); // keep processing by parent classes.
+	event.Skip(); // keep processing by parent classes.
 }
 
 // Menu: Close
 void C3DWindowDialog::OnMenuClose(wxCommandEvent& event)
 {
-    Close();
+	Close();
 }
 // Menu: About
 void C3DWindowDialog::OnMenuAbout(wxCommandEvent& event)
 {
-    ::wxMessageBox(_("3D Scene viewer\n Class gui::CDisplayWindow3D\n MRPT C++ library"),_("About..."));
+	::wxMessageBox(_("3D Scene viewer\n Class gui::CDisplayWindow3D\n MRPT C++ library"),_("About..."));
 }
 
 void C3DWindowDialog::OnChar(wxKeyEvent& ev)
@@ -349,13 +350,13 @@ void C3DWindowDialog::clearTextMessages()
 }
 
 void C3DWindowDialog::addTextMessage(
-	const double x_frac,
-	const double y_frac,
-	const std::string &text,
-	const mrpt::utils::TColorf &color,
-	const size_t unique_index,
-	const mrpt::opengl::TOpenGLFont font
-	)
+		const double x_frac,
+		const double y_frac,
+		const std::string &text,
+		const mrpt::utils::TColorf &color,
+		const size_t unique_index,
+		const mrpt::opengl::TOpenGLFont font
+		)
 {
 #if MRPT_HAS_OPENGL_GLUT
 	m_canvas->m_text_msgs.addTextMessage( x_frac, y_frac, text,color,unique_index,font );
@@ -363,19 +364,19 @@ void C3DWindowDialog::addTextMessage(
 }
 
 void C3DWindowDialog::addTextMessage(
-	const double x_frac,
-	const double y_frac,
-	const std::string &text,
-	const mrpt::utils::TColorf &color,
-	const std::string  &font_name,
-	const double  font_size,
-	const mrpt::opengl::TOpenGLFontStyle font_style,
-	const size_t  unique_index,
-	const double  font_spacing,
-	const double  font_kerning,
-	const bool has_shadow,
-	const mrpt::utils::TColorf &shadow_color
-	)
+		const double x_frac,
+		const double y_frac,
+		const std::string &text,
+		const mrpt::utils::TColorf &color,
+		const std::string  &font_name,
+		const double  font_size,
+		const mrpt::opengl::TOpenGLFontStyle font_style,
+		const size_t  unique_index,
+		const double  font_spacing,
+		const double  font_kerning,
+		const bool has_shadow,
+		const mrpt::utils::TColorf &shadow_color
+		)
 {
 #if MRPT_HAS_OPENGL_GLUT
 	m_canvas->m_text_msgs.addTextMessage( x_frac, y_frac, text,color, font_name, font_size, font_style, unique_index, font_spacing, font_kerning,has_shadow,shadow_color );
@@ -390,27 +391,27 @@ void C3DWindowDialog::addTextMessage(
 					Constructor
  ---------------------------------------------------------------*/
 CDisplayWindow3D::CDisplayWindow3D(
-	const std::string	&windowCaption,
-	unsigned int		initialWindowWidth,
-	unsigned int		initialWindowHeight )
+		const std::string	&windowCaption,
+		unsigned int		initialWindowWidth,
+		unsigned int		initialWindowHeight )
 	: CBaseGUIWindow(static_cast<void*>(this),300,399, windowCaption),
-      m_grab_imgs_prefix(),
-      m_grab_imgs_idx(0),
-      m_is_capturing_imgs(false),
-      m_lastFullScreen (mrpt::system::now()),
-      m_last_FPS(10)
+	  m_grab_imgs_prefix(),
+	  m_grab_imgs_idx(0),
+	  m_is_capturing_imgs(false),
+	  m_lastFullScreen (mrpt::system::now()),
+	  m_last_FPS(10)
 {
-//	static mrpt::utils::CStdOutStream oo;
-//	m_csAccess3DScene.m_debugOut = &oo;
+	//	static mrpt::utils::CStdOutStream oo;
+	//	m_csAccess3DScene.m_debugOut = &oo;
 
 	m_3Dscene = COpenGLScene::Create();
 	CBaseGUIWindow::createWxWindow(initialWindowWidth,initialWindowHeight);
 }
 
 CDisplayWindow3D::Ptr CDisplayWindow3D::Create(
-	const std::string	&windowCaption,
-	unsigned int		initialWindowWidth,
-	unsigned int		initialWindowHeight )
+		const std::string	&windowCaption,
+		unsigned int		initialWindowWidth,
+		unsigned int		initialWindowHeight )
 {
 	return CDisplayWindow3D::Ptr(new CDisplayWindow3D(windowCaption,initialWindowWidth,initialWindowHeight));
 }
@@ -431,8 +432,8 @@ CDisplayWindow3D::~CDisplayWindow3D( )
 					resize
  ---------------------------------------------------------------*/
 void  CDisplayWindow3D::resize(
-	unsigned int width,
-	unsigned int height )
+		unsigned int width,
+		unsigned int height )
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
 	if (!isOpen())
@@ -441,13 +442,13 @@ void  CDisplayWindow3D::resize(
 		return;
 	}
 
-    // Send a request to destroy this object:
-    WxSubsystem::TRequestToWxMainThread *REQ = new WxSubsystem::TRequestToWxMainThread[1];
-    REQ->source3D = this;
-    REQ->OPCODE   = 303;
-    REQ->x        = width;
-    REQ->y        = height;
-    WxSubsystem::pushPendingWxRequest( REQ );
+	// Send a request to destroy this object:
+	WxSubsystem::TRequestToWxMainThread *REQ = new WxSubsystem::TRequestToWxMainThread[1];
+	REQ->source3D = this;
+	REQ->OPCODE   = 303;
+	REQ->x        = width;
+	REQ->y        = height;
+	WxSubsystem::pushPendingWxRequest( REQ );
 #else
 	MRPT_UNUSED_PARAM(width);
 	MRPT_UNUSED_PARAM(height);
@@ -466,13 +467,13 @@ void  CDisplayWindow3D::setPos( int x, int y )
 		return;
 	}
 
-    // Send a request to destroy this object:
-    WxSubsystem::TRequestToWxMainThread *REQ = new WxSubsystem::TRequestToWxMainThread[1];
-    REQ->source3D = this;
-    REQ->OPCODE   = 302;
-    REQ->x        = x;
-    REQ->y        = y;
-    WxSubsystem::pushPendingWxRequest( REQ );
+	// Send a request to destroy this object:
+	WxSubsystem::TRequestToWxMainThread *REQ = new WxSubsystem::TRequestToWxMainThread[1];
+	REQ->source3D = this;
+	REQ->OPCODE   = 302;
+	REQ->x        = x;
+	REQ->y        = y;
+	WxSubsystem::pushPendingWxRequest( REQ );
 #else
 	MRPT_UNUSED_PARAM(x); MRPT_UNUSED_PARAM(y);
 #endif
@@ -490,14 +491,14 @@ void  CDisplayWindow3D::setWindowTitle( const std::string &str )
 		return;
 	}
 
-    // Send a request to destroy this object:
-    WxSubsystem::TRequestToWxMainThread *REQ = new WxSubsystem::TRequestToWxMainThread[1];
-    REQ->source3D = this;
-    REQ->OPCODE   = 304;
-    REQ->str      = str;
-    WxSubsystem::pushPendingWxRequest( REQ );
+	// Send a request to destroy this object:
+	WxSubsystem::TRequestToWxMainThread *REQ = new WxSubsystem::TRequestToWxMainThread[1];
+	REQ->source3D = this;
+	REQ->OPCODE   = 304;
+	REQ->str      = str;
+	WxSubsystem::pushPendingWxRequest( REQ );
 #else
-	MRPT_UNUSED_PARAM(str); 
+	MRPT_UNUSED_PARAM(str);
 #endif
 }
 
@@ -528,14 +529,14 @@ void  CDisplayWindow3D::forceRepaint()
 	C3DWindowDialog *win = (C3DWindowDialog*) m_hwnd.get();
 	if (win)
 	{
-        //win->Refresh(false); // Do not erase background
-        // We must do this from the wx thread!
+		//win->Refresh(false); // Do not erase background
+		// We must do this from the wx thread!
 
-        // Send refresh request:
-        WxSubsystem::TRequestToWxMainThread  *REQ = new WxSubsystem::TRequestToWxMainThread[1];
-        REQ->source3D = this;
-        REQ->OPCODE   = 350;
-        WxSubsystem::pushPendingWxRequest( REQ );
+		// Send refresh request:
+		WxSubsystem::TRequestToWxMainThread  *REQ = new WxSubsystem::TRequestToWxMainThread[1];
+		REQ->source3D = this;
+		REQ->OPCODE   = 350;
+		WxSubsystem::pushPendingWxRequest( REQ );
 	}
 #endif
 }
@@ -548,9 +549,9 @@ void CDisplayWindow3D::setCameraElevationDeg( float deg )
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
 	C3DWindowDialog *win = (C3DWindowDialog*) m_hwnd.get();
 	if (win)
-        win->m_canvas->cameraElevationDeg = deg;
+		win->m_canvas->setElevationDegrees(deg);
 #else
-	MRPT_UNUSED_PARAM(deg); 
+	MRPT_UNUSED_PARAM(deg);
 #endif
 }
 
@@ -559,7 +560,7 @@ void CDisplayWindow3D::useCameraFromScene(bool useIt)
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
 	C3DWindowDialog *win = (C3DWindowDialog*) m_hwnd.get();
 	if (win)
-        win->m_canvas->useCameraFromScene = useIt;
+		win->m_canvas->setUseCameraFromScene(useIt);
 #else
 	MRPT_UNUSED_PARAM(useIt);
 #endif
@@ -573,7 +574,7 @@ void CDisplayWindow3D::setCameraAzimuthDeg( float deg )
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
 	C3DWindowDialog *win = (C3DWindowDialog*) m_hwnd.get();
 	if (win)
-        win->m_canvas->cameraAzimuthDeg = deg;
+		win->m_canvas->setAzimuthDegrees(deg);
 #else
 	MRPT_UNUSED_PARAM(deg);
 #endif
@@ -588,9 +589,7 @@ void CDisplayWindow3D::setCameraPointingToPoint( float x,float y, float z )
 	C3DWindowDialog *win = (C3DWindowDialog*) m_hwnd.get();
 	if (win)
 	{
-        win->m_canvas->cameraPointingX = x;
-        win->m_canvas->cameraPointingY = y;
-        win->m_canvas->cameraPointingZ = z;
+		win->m_canvas->setCameraPointing(x, y, z);
 	}
 #else
 	MRPT_UNUSED_PARAM(x); MRPT_UNUSED_PARAM(y); MRPT_UNUSED_PARAM(z);
@@ -605,7 +604,7 @@ void CDisplayWindow3D::setCameraZoom( float zoom )
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
 	C3DWindowDialog *win = (C3DWindowDialog*) m_hwnd.get();
 	if (win)
-        win->m_canvas->cameraZoomDistance = zoom;
+		win->m_canvas->setZoomDistance(zoom);
 #else
 	MRPT_UNUSED_PARAM(zoom);
 #endif
@@ -619,7 +618,7 @@ void CDisplayWindow3D::setCameraProjective( bool isProjective )
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
 	C3DWindowDialog *win = (C3DWindowDialog*) m_hwnd.get();
 	if (win)
-		win->m_canvas->cameraIsProjective = isProjective;
+		win->m_canvas->setCameraProjective(isProjective);
 #else
 	MRPT_UNUSED_PARAM(isProjective);
 #endif
@@ -657,7 +656,7 @@ float CDisplayWindow3D::getFOV() const
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
 	C3DWindowDialog *win = (C3DWindowDialog*) m_hwnd.get();
 	if (win)
-		return win->m_canvas->cameraFOV;
+		return win->m_canvas->cameraFOV();
 #endif
 	return .0f;
 }
@@ -667,7 +666,7 @@ void CDisplayWindow3D::setFOV(float v)
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
 	C3DWindowDialog *win = (C3DWindowDialog*) m_hwnd.get();
 	if (win)
-		win->m_canvas->cameraFOV = v;
+		win->m_canvas->setCameraFOV(v);
 #endif
 }
 
@@ -678,9 +677,9 @@ float CDisplayWindow3D::getCameraElevationDeg() const
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
 	const C3DWindowDialog *win = (const C3DWindowDialog*) m_hwnd.get();
-	return win ? win->m_canvas->cameraElevationDeg : 0;
+	return win ? win->m_canvas->getElevationDegrees() : 0;
 #else
-    return 0;
+	return 0;
 #endif
 }
 
@@ -691,9 +690,9 @@ float CDisplayWindow3D::getCameraAzimuthDeg() const
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
 	const C3DWindowDialog *win = (const C3DWindowDialog*) m_hwnd.get();
-	return win ? win->m_canvas->cameraAzimuthDeg : 0;
+	return win ? win->m_canvas->getAzimuthDegrees() : 0;
 #else
-    return 0;
+	return 0;
 #endif
 }
 
@@ -706,9 +705,9 @@ void CDisplayWindow3D::getCameraPointingToPoint( float &x,float &y, float &z ) c
 	const C3DWindowDialog *win = (const C3DWindowDialog*) m_hwnd.get();
 	if (win)
 	{
-        x = win->m_canvas->cameraPointingX;
-        y = win->m_canvas->cameraPointingY;
-        z = win->m_canvas->cameraPointingZ;
+		x = win->m_canvas->getCameraPointingX();
+		y = win->m_canvas->getCameraPointingY();
+		z = win->m_canvas->getCameraPointingZ();
 	}
 	else
 		x=y=z=0;
@@ -724,9 +723,9 @@ float CDisplayWindow3D::getCameraZoom() const
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
 	const C3DWindowDialog *win = (const C3DWindowDialog*) m_hwnd.get();
-	return win ? win->m_canvas->cameraZoomDistance : 0;
+	return win ? win->m_canvas->getZoomDistance() : 0;
 #else
-    return 0;
+	return 0;
 #endif
 }
 
@@ -737,9 +736,9 @@ bool CDisplayWindow3D::isCameraProjective() const
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
 	const C3DWindowDialog *win = (const C3DWindowDialog*) m_hwnd.get();
-	return win ? win->m_canvas->cameraIsProjective : true;
+	return win ? win->m_canvas->isCameraProjective() : true;
 #else
-    return true;
+	return true;
 #endif
 }
 
@@ -755,7 +754,7 @@ bool CDisplayWindow3D::getLastMousePosition(int &x, int &y) const
 	return true;
 #else
 	MRPT_UNUSED_PARAM(x); MRPT_UNUSED_PARAM(y);
-    return false;
+	return false;
 #endif
 }
 
@@ -814,7 +813,7 @@ void CDisplayWindow3D::grabImagesStop()
 std::string CDisplayWindow3D::grabImageGetNextFile()
 {
 	if ( m_grab_imgs_prefix.empty() )
-			return string();
+		return string();
 	else 	return format( "%s%06u.png",m_grab_imgs_prefix.c_str(), m_grab_imgs_idx++ );
 }
 
@@ -867,35 +866,35 @@ CImage::Ptr CDisplayWindow3D::getLastWindowImagePtr() const
 					addTextMessage
  ---------------------------------------------------------------*/
 void CDisplayWindow3D::addTextMessage(
-	const double x_frac,
-	const double y_frac,
-	const std::string &text,
-	const mrpt::utils::TColorf &color,
-	const size_t unique_index,
-	const TOpenGLFont font
-	)
+		const double x_frac,
+		const double y_frac,
+		const std::string &text,
+		const mrpt::utils::TColorf &color,
+		const size_t unique_index,
+		const TOpenGLFont font
+		)
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
 	C3DWindowDialog *win = (C3DWindowDialog*) m_hwnd.get();
 	if (win)
 	{
-        // Send request:
-        // Add a 2D text message:
-        //  vector_x: [0]:x, [1]:y, [2,3,4]:R G B, "x": enum of desired font. "y": unique index, "str": String.
-        WxSubsystem::TRequestToWxMainThread  *REQ = new WxSubsystem::TRequestToWxMainThread[1];
-        REQ->source3D = this;
-        REQ->OPCODE   = 360;
-        REQ->str 		= text;
-        REQ->vector_x.resize(5);
-        REQ->vector_x[0] = x_frac;
-        REQ->vector_x[1] = y_frac;
-        REQ->vector_x[2] = color.R;
-        REQ->vector_x[3] = color.G;
-        REQ->vector_x[4] = color.B;
-        REQ->x 			= int(font);
-        REQ->y			= int(unique_index);
+		// Send request:
+		// Add a 2D text message:
+		//  vector_x: [0]:x, [1]:y, [2,3,4]:R G B, "x": enum of desired font. "y": unique index, "str": String.
+		WxSubsystem::TRequestToWxMainThread  *REQ = new WxSubsystem::TRequestToWxMainThread[1];
+		REQ->source3D = this;
+		REQ->OPCODE   = 360;
+		REQ->str 		= text;
+		REQ->vector_x.resize(5);
+		REQ->vector_x[0] = x_frac;
+		REQ->vector_x[1] = y_frac;
+		REQ->vector_x[2] = color.R;
+		REQ->vector_x[3] = color.G;
+		REQ->vector_x[4] = color.B;
+		REQ->x 			= int(font);
+		REQ->y			= int(unique_index);
 
-        WxSubsystem::pushPendingWxRequest( REQ );
+		WxSubsystem::pushPendingWxRequest( REQ );
 	}
 #else
 	MRPT_UNUSED_PARAM(x_frac); MRPT_UNUSED_PARAM(y_frac); MRPT_UNUSED_PARAM(text);
@@ -907,49 +906,49 @@ void CDisplayWindow3D::addTextMessage(
 					addTextMessage
  ---------------------------------------------------------------*/
 void CDisplayWindow3D::addTextMessage(
-	const double x_frac,
-	const double y_frac,
-	const std::string &text,
-	const mrpt::utils::TColorf &color,
-	const std::string  &font_name,
-	const double  font_size,
-	const mrpt::opengl::TOpenGLFontStyle font_style,
-	const size_t  unique_index,
-	const double  font_spacing,
-	const double  font_kerning,
-	const bool draw_shadow,
-	const mrpt::utils::TColorf &shadow_color
-	)
+		const double x_frac,
+		const double y_frac,
+		const std::string &text,
+		const mrpt::utils::TColorf &color,
+		const std::string  &font_name,
+		const double  font_size,
+		const mrpt::opengl::TOpenGLFontStyle font_style,
+		const size_t  unique_index,
+		const double  font_spacing,
+		const double  font_kerning,
+		const bool draw_shadow,
+		const mrpt::utils::TColorf &shadow_color
+		)
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
 	C3DWindowDialog *win = (C3DWindowDialog*) m_hwnd.get();
 	if (win)
 	{
-        // Send request:
-        // Add a 2D text message:
-        WxSubsystem::TRequestToWxMainThread  *REQ = new WxSubsystem::TRequestToWxMainThread[1];
-        REQ->source3D = this;
-        REQ->OPCODE   = 362;
-        REQ->str 		= text;
-        REQ->plotName   = font_name;
-        REQ->vector_x.resize(12);
-        REQ->vector_x[0] = x_frac;
-        REQ->vector_x[1] = y_frac;
-        REQ->vector_x[2] = color.R;
-        REQ->vector_x[3] = color.G;
-        REQ->vector_x[4] = color.B;
-        REQ->vector_x[5] = font_size;
-        REQ->vector_x[6] = font_spacing;
-        REQ->vector_x[7] = font_kerning;
+		// Send request:
+		// Add a 2D text message:
+		WxSubsystem::TRequestToWxMainThread  *REQ = new WxSubsystem::TRequestToWxMainThread[1];
+		REQ->source3D = this;
+		REQ->OPCODE   = 362;
+		REQ->str 		= text;
+		REQ->plotName   = font_name;
+		REQ->vector_x.resize(12);
+		REQ->vector_x[0] = x_frac;
+		REQ->vector_x[1] = y_frac;
+		REQ->vector_x[2] = color.R;
+		REQ->vector_x[3] = color.G;
+		REQ->vector_x[4] = color.B;
+		REQ->vector_x[5] = font_size;
+		REQ->vector_x[6] = font_spacing;
+		REQ->vector_x[7] = font_kerning;
 		REQ->vector_x[8] = draw_shadow ? 1:0;
-        REQ->vector_x[9] = shadow_color.R;
-        REQ->vector_x[10] = shadow_color.G;
-        REQ->vector_x[11] = shadow_color.B;
+		REQ->vector_x[9] = shadow_color.R;
+		REQ->vector_x[10] = shadow_color.G;
+		REQ->vector_x[11] = shadow_color.B;
 
-        REQ->x			= int(font_style);
-        REQ->y			= int(unique_index);
+		REQ->x			= int(font_style);
+		REQ->y			= int(unique_index);
 
-        WxSubsystem::pushPendingWxRequest( REQ );
+		WxSubsystem::pushPendingWxRequest( REQ );
 	}
 #else
 	MRPT_UNUSED_PARAM(x_frac);
@@ -976,11 +975,11 @@ void CDisplayWindow3D::clearTextMessages()
 	C3DWindowDialog *win = (C3DWindowDialog*) m_hwnd.get();
 	if (win)
 	{
-        // Send request:
-        WxSubsystem::TRequestToWxMainThread  *REQ = new WxSubsystem::TRequestToWxMainThread[1];
-        REQ->source3D = this;
-        REQ->OPCODE   = 361;
-        WxSubsystem::pushPendingWxRequest( REQ );
+		// Send request:
+		WxSubsystem::TRequestToWxMainThread  *REQ = new WxSubsystem::TRequestToWxMainThread[1];
+		REQ->source3D = this;
+		REQ->OPCODE   = 361;
+		WxSubsystem::pushPendingWxRequest( REQ );
 	}
 #endif
 }

@@ -43,27 +43,22 @@ float  CGlCanvasBase::SENSIBILITY_DEG_PER_PIXEL = 0.1f;
 
 
 CGlCanvasBase::CGlCanvasBase()
-	: cameraPointingX(0)
-	, cameraPointingY(0)
-	, cameraPointingZ(0)
-	, cameraZoomDistance(40)
-	, cameraElevationDeg(45)
-	, cameraAzimuthDeg(45)
-	, cameraIsProjective(true)
-	, cameraFOV(30)
-	, clearColorR(0.4f)
+	: clearColorR(0.4f)
 	, clearColorG(0.4f)
 	, clearColorB(0.4f)
+	, clearColorA(1.0)
 	, useCameraFromScene(false)
 	, m_openGLScene(COpenGLScene::Create())
 	, m_mouseLastX(0)
 	, m_mouseLastY(0)
-	, mouseClickX(0)
-	, mouseClickY(0)
+	, m_mouseClickX(0)
+	, m_mouseClickY(0)
 	, mouseClicked(false)
 	, m_minZoom(1.0)
 	, m_maxZoom(3200.0)
+	, m_cameraParams()
 {
+	setCameraPointing(0.0, 0.0, 0.0);
 }
 
 CGlCanvasBase::~CGlCanvasBase()
@@ -83,8 +78,8 @@ void CGlCanvasBase::setMaximumZoom(float zoom)
 
 void CGlCanvasBase::setMousePos(int x, int y)
 {
-	mouseClickX = x;
-	mouseClickY = y;
+	m_mouseClickX = x;
+	m_mouseClickY = y;
 }
 
 void CGlCanvasBase::setMouseClicked(bool is)
@@ -92,32 +87,29 @@ void CGlCanvasBase::setMouseClicked(bool is)
 	mouseClicked = is;
 }
 
-CGlCanvasBase::CamaraParams CGlCanvasBase::updateZoom(CamaraParams &params, int x, int y) const
+void CGlCanvasBase::updateZoom(CamaraParams &params, int x, int y) const
 {
-	float zoom = params.cameraZoomDistance * exp(0.01*(y - mouseClickY));
-	if (zoom <= m_minZoom && m_maxZoom >= zoom)
-		return params;
+	float zoom = params.cameraZoomDistance * exp(0.01*(y - m_mouseClickY));
+	if (zoom <= m_minZoom || m_maxZoom <= zoom)
+		return;
 	params.cameraZoomDistance = zoom;
 	if (params.cameraZoomDistance < 0.01) params.cameraZoomDistance = 0.01f;
 
-	float	Az = -0.05 * (x - mouseClickX);
+	float	Az = -0.05 * (x - m_mouseClickX);
 	float	D = 0.001 * params.cameraZoomDistance;
 	params.cameraPointingZ += D*Az;
-
-	return params;
 }
 
-CGlCanvasBase::CamaraParams CGlCanvasBase::updateZoom(CamaraParams &params, float delta) const
+void CGlCanvasBase::updateZoom(CamaraParams &params, float delta) const
 {
 	float zoom = params.cameraZoomDistance * (1 - 0.03f*(delta/120.0f));
-	if (zoom <= m_minZoom && m_maxZoom >= zoom)
-		return params;
+	if (zoom <= m_minZoom || m_maxZoom <= zoom)
+		return;
 
 	params.cameraZoomDistance = zoom;
-	return params;
 }
 
-CGlCanvasBase::CamaraParams CGlCanvasBase::updateRotate(CamaraParams &params, int x, int y) const
+void CGlCanvasBase::updateRotate(CamaraParams &params, int x, int y) const
 {
 	const float dis = max(0.01f,(params.cameraZoomDistance));
 	float	eye_x = params.cameraPointingX +  dis * cos(DEG2RAD(params.cameraAzimuthDeg))*cos(DEG2RAD(params.cameraElevationDeg));
@@ -125,26 +117,22 @@ CGlCanvasBase::CamaraParams CGlCanvasBase::updateRotate(CamaraParams &params, in
 	float	eye_z = params.cameraPointingZ +  dis * sin(DEG2RAD(params.cameraElevationDeg));
 
 	// Orbit camera:
-	float A_AzimuthDeg = -SENSIBILITY_DEG_PER_PIXEL*(x - mouseClickX);
+	float A_AzimuthDeg = -SENSIBILITY_DEG_PER_PIXEL*(x - m_mouseClickX);
 	params.cameraAzimuthDeg += A_AzimuthDeg;
 
-	float A_ElevationDeg = SENSIBILITY_DEG_PER_PIXEL*(y - mouseClickY);
+	float A_ElevationDeg = SENSIBILITY_DEG_PER_PIXEL*(y - m_mouseClickY);
 	params.setElevationDeg(params.cameraElevationDeg + A_ElevationDeg);
 
 	// Move cameraPointing pos:
 	params.cameraPointingX = eye_x - dis * cos(DEG2RAD(params.cameraAzimuthDeg))*cos(DEG2RAD(params.cameraElevationDeg));
 	params.cameraPointingY = eye_y - dis * sin(DEG2RAD(params.cameraAzimuthDeg))*cos(DEG2RAD(params.cameraElevationDeg));
 	params.cameraPointingZ = eye_z - dis * sin(DEG2RAD(params.cameraElevationDeg));
-
-	return params;
 }
 
-CGlCanvasBase::CamaraParams CGlCanvasBase::updateOrbitCamera(CamaraParams &params, int x, int y) const
+void CGlCanvasBase::updateOrbitCamera(CamaraParams &params, int x, int y) const
 {
-	params.cameraAzimuthDeg -= 0.2*(x - mouseClickX);
-	params.setElevationDeg(params.cameraElevationDeg + 0.2*(y - mouseClickY));
-
-	return params;
+	params.cameraAzimuthDeg -= 0.2*(x - m_mouseClickX);
+	params.setElevationDeg(params.cameraElevationDeg + 0.2*(y - m_mouseClickY));
 }
 
 void CGlCanvasBase::updateLastPos(int x, int y)
@@ -163,63 +151,53 @@ void CGlCanvasBase::resizeViewport(int w, int h)
 
 void CGlCanvasBase::clearColors()
 {
-	glClearColor(clearColorR,clearColorG,clearColorB,1.0);
+	glClearColor(clearColorR,clearColorG,clearColorB,clearColorA);
 }
 
-CGlCanvasBase::CamaraParams CGlCanvasBase::updatePan(CamaraParams &params, int x, int y) const
+void CGlCanvasBase::updatePan(CamaraParams &params, int x, int y) const
 {
-	float	Ay = -(x - mouseClickX);
-	float	Ax = -(y - mouseClickY);
+	float	Ay = -(x - m_mouseClickX);
+	float	Ax = -(y - m_mouseClickY);
 	float	D = 0.001 * params.cameraZoomDistance;
 	params.cameraPointingX += D*(Ax*cos(DEG2RAD(params.cameraAzimuthDeg)) - Ay*sin(DEG2RAD(params.cameraAzimuthDeg)));
 	params.cameraPointingY += D*(Ax*sin(DEG2RAD(params.cameraAzimuthDeg)) + Ay*cos(DEG2RAD(params.cameraAzimuthDeg)));
-	return params;
 }
 
 CGlCanvasBase::CamaraParams CGlCanvasBase::cameraParams() const
 {
-	CamaraParams params;
-	params.cameraPointingX = cameraPointingX;
-	params.cameraPointingY = cameraPointingY;
-	params.cameraPointingZ = cameraPointingZ;
+	return m_cameraParams;
+}
 
-	params.cameraZoomDistance = cameraZoomDistance;
-	params.cameraElevationDeg = cameraElevationDeg;
-	params.cameraAzimuthDeg = cameraAzimuthDeg;
-
-	params.cameraIsProjective = cameraIsProjective;
-	params.cameraFOV = cameraFOV;
-
-	return params;
+const CGlCanvasBase::CamaraParams &CGlCanvasBase::getRefCameraParams() const
+{
+	return m_cameraParams;
 }
 
 void CGlCanvasBase::setCameraParams(const CGlCanvasBase::CamaraParams &params)
 {
-	cameraPointingX = params.cameraPointingX;
-	cameraPointingY = params.cameraPointingY;
-	cameraPointingZ = params.cameraPointingZ;
-
-	cameraZoomDistance = params.cameraZoomDistance;
-	setElevationDegrees(params.cameraElevationDeg);
-	setAzimuthDegrees(params.cameraAzimuthDeg);
-
-	cameraIsProjective = params.cameraIsProjective;
-	cameraFOV = params.cameraFOV;
+	m_cameraParams = params;
 }
 
 float CGlCanvasBase::getZoomDistance() const
 {
-	return cameraZoomDistance;
+	return m_cameraParams.cameraZoomDistance;
 }
 
-void CGlCanvasBase::updateCameraParams(CCamera &cam) const
+void CGlCanvasBase::setZoomDistance(float zoom)
 {
-	cam.setPointingAt( cameraPointingX, cameraPointingY, cameraPointingZ );
-	cam.setZoomDistance(cameraZoomDistance);
-	cam.setAzimuthDegrees( cameraAzimuthDeg );
-	cam.setElevationDegrees(cameraElevationDeg);
-	cam.setProjectiveModel( cameraIsProjective );
-	cam.setProjectiveFOVdeg( cameraFOV );
+	m_cameraParams.cameraZoomDistance = zoom;
+}
+
+CCamera &CGlCanvasBase::updateCameraParams(CCamera &cam) const
+{
+	cam.setPointingAt( m_cameraParams.cameraPointingX, m_cameraParams.cameraPointingY, m_cameraParams.cameraPointingZ );
+	cam.setZoomDistance(m_cameraParams.cameraZoomDistance);
+	cam.setAzimuthDegrees( m_cameraParams.cameraAzimuthDeg );
+	cam.setElevationDegrees(m_cameraParams.cameraElevationDeg);
+	cam.setProjectiveModel( m_cameraParams.cameraIsProjective );
+	cam.setProjectiveFOVdeg( m_cameraParams.cameraFOV );
+
+	return cam;
 }
 
 void CGlCanvasBase::setUseCameraFromScene(bool is)
@@ -227,24 +205,109 @@ void CGlCanvasBase::setUseCameraFromScene(bool is)
 	useCameraFromScene = is;
 }
 
+bool CGlCanvasBase::getUseCameraFromScene() const
+{
+	return useCameraFromScene;
+}
+
 void CGlCanvasBase::setAzimuthDegrees(float ang)
 {
-	cameraAzimuthDeg = ang;
+	m_cameraParams.cameraAzimuthDeg = ang;
 }
 
 void CGlCanvasBase::setElevationDegrees(float ang)
 {
-	cameraElevationDeg = ang;
+	m_cameraParams.cameraElevationDeg = ang;
 }
 
 float CGlCanvasBase::getAzimuthDegrees() const
 {
-	return cameraAzimuthDeg;
+	return m_cameraParams.cameraAzimuthDeg;
 }
 
 float CGlCanvasBase::getElevationDegrees() const
 {
-	return cameraElevationDeg;
+	return m_cameraParams.cameraElevationDeg;
+}
+
+void CGlCanvasBase::setCameraProjective(bool is)
+{
+	m_cameraParams.cameraIsProjective = is;
+}
+
+bool CGlCanvasBase::isCameraProjective() const
+{
+	return m_cameraParams.cameraIsProjective;
+}
+
+void CGlCanvasBase::setCameraFOV(float FOV)
+{
+	m_cameraParams.cameraFOV = FOV;
+}
+
+float CGlCanvasBase::cameraFOV() const
+{
+	return m_cameraParams.cameraFOV;
+}
+
+void CGlCanvasBase::setClearColors(float r, float g, float b, float a)
+{
+	clearColorR = r;
+	clearColorG = g;
+	clearColorB = b;
+	clearColorA = a;
+}
+
+float CGlCanvasBase::getClearColorR() const
+{
+	return clearColorR;
+}
+
+float CGlCanvasBase::getClearColorG() const
+{
+	return clearColorG;
+}
+
+float CGlCanvasBase::getClearColorB() const
+{
+	return clearColorB;
+}
+
+float CGlCanvasBase::getClearColorA() const
+{
+	return clearColorA;
+}
+
+COpenGLScene::Ptr CGlCanvasBase::getOpenGLSceneRef() const
+{
+	return m_openGLScene;
+}
+
+void CGlCanvasBase::setOpenGLSceneRef(COpenGLScene::Ptr scene)
+{
+	m_openGLScene = scene;
+}
+
+void CGlCanvasBase::setCameraPointing(float pointX, float pointY, float pointZ)
+{
+	m_cameraParams.cameraPointingX = pointX;
+	m_cameraParams.cameraPointingY = pointY;
+	m_cameraParams.cameraPointingZ = pointZ;
+}
+
+float CGlCanvasBase::getCameraPointingX() const
+{
+	return m_cameraParams.cameraPointingX;
+}
+
+float CGlCanvasBase::getCameraPointingY() const
+{
+	return m_cameraParams.cameraPointingY;
+}
+
+float CGlCanvasBase::getCameraPointingZ() const
+{
+	return m_cameraParams.cameraPointingZ;
 }
 
 double CGlCanvasBase::renderCanvas(int width, int height)
@@ -284,7 +347,7 @@ double CGlCanvasBase::renderCanvas(int width, int height)
 					THROW_EXCEPTION("Fatal error: there is no 'main' viewport in the 3D scene!");
 				}
 
-				mrpt::opengl::CCamera & cam = view->getCamera();
+				mrpt::opengl::CCamera &cam = view->getCamera();
 				updateCameraParams(cam);
 			}
 
@@ -329,14 +392,14 @@ double CGlCanvasBase::renderCanvas(int width, int height)
 
 
 CGlCanvasBase::CamaraParams::CamaraParams()
-	: cameraPointingX(0)
-	, cameraPointingY(0)
-	, cameraPointingZ(0)
-	, cameraZoomDistance(40)
-	, cameraElevationDeg(45)
-	, cameraAzimuthDeg(45)
+	: cameraPointingX(0.0f)
+	, cameraPointingY(0.0f)
+	, cameraPointingZ(0.0f)
+	, cameraZoomDistance(40.0f)
+	, cameraElevationDeg(45.0f)
+	, cameraAzimuthDeg(45.0f)
 	, cameraIsProjective(true)
-	, cameraFOV(30)
+	, cameraFOV(30.0f)
 {
 }
 
@@ -344,8 +407,8 @@ void CGlCanvasBase::CamaraParams::setElevationDeg(float deg)
 {
 	cameraElevationDeg = deg;
 
-	if (cameraElevationDeg < -90)
-		cameraElevationDeg = -90;
-	else if (cameraElevationDeg > 90)
-		cameraElevationDeg = 90;
+	if (cameraElevationDeg < -90.0f)
+		cameraElevationDeg = -90.0f;
+	else if (cameraElevationDeg > 90.0f)
+		cameraElevationDeg = 90.0f;
 }

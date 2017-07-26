@@ -26,6 +26,9 @@ public:
 	virtual void resizeGL(int width, int height) override;
 
 	mrpt::opengl::COpenGLViewport::Ptr mainViewport() const;
+
+	/** Returns the zoom distance of the camera
+	 * See also setZoomDistance(float), getZoomDistance()*/
 	float getCameraZoomDistance() const;
 
 protected:
@@ -45,6 +48,8 @@ protected:
 
 	bool isPressLMouseButton() const;
 	bool isPressRMouseButton() const;
+	/** m_isPressLMouseButton and m_isPressRMouseButton are saved in mousePressEvent for mouseMoveEvent as true
+	 * This function sets it as false */
 	void unpressMouseButtons();
 
 private:

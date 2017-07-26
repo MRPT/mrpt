@@ -432,6 +432,7 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(wxWindow* parent,wxWind
 	m_robot.addLink(0,0.2,0,0, false);
 
 
+	auto openGLSceneRef = m_plot3D->getOpenGLSceneRef();
 	// Initialize 3D scene:
 	{
 		mrpt::opengl::CGridPlaneXY::Ptr grid_10cm = mrpt::opengl::CGridPlaneXY::Create(-5,5, -5, 5, 0, 0.1f);
@@ -440,17 +441,17 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(wxWindow* parent,wxWind
 		grid_10cm->setColor_u8( mrpt::utils::TColor(0xC0,0xC0,0xC0,0xA0) );
 		grid_1m->setColor_u8( mrpt::utils::TColor(0xFF,0xFF,0xFF) );
 
-		m_plot3D->m_openGLScene->insert(grid_10cm);
-		m_plot3D->m_openGLScene->insert(grid_1m);
+		openGLSceneRef->insert(grid_10cm);
+		openGLSceneRef->insert(grid_1m);
 	}
 
 	m_gl_robot = mrpt::opengl::CSetOfObjects::Create();
-	m_plot3D->m_openGLScene->insert(m_gl_robot);
+	openGLSceneRef->insert(m_gl_robot);
 
 	this->Regenerate3DView();
 
 	{
-		mrpt::opengl::COpenGLViewport::Ptr gl_view = m_plot3D->m_openGLScene->createViewport("small-view");
+		mrpt::opengl::COpenGLViewport::Ptr gl_view = openGLSceneRef->createViewport("small-view");
 
 		gl_view->setViewportPosition(0,0, 0.2,0.3);
 		gl_view->setTransparent(true);
@@ -472,7 +473,7 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(wxWindow* parent,wxWind
 		gl_view->insert( mrpt::opengl::stock_objects::CornerXYZ() );
 	}
 
-	m_plot3D->cameraZoomDistance = 3;
+	m_plot3D->setZoomDistance(3.0f);
 
 	m_plot3D->Refresh();
 

@@ -493,14 +493,15 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
 
 	// Populate 3D views:
 	// -------------------------------
+	auto openGLSceneRef = m_plot3D->getOpenGLSceneRef();
 	{
 		mrpt::opengl::CGridPlaneXY::Ptr obj = mrpt::opengl::CGridPlaneXY::Create(-50,50, -50,50, 0, 1);
 		obj->setColor_u8(TColor(30,30,30,50));
-		m_plot3D->m_openGLScene->insert( obj );
+		openGLSceneRef->insert( obj );
 	}
 
 	gl_grid = mrpt::opengl::CSetOfObjects::Create();
-	m_plot3D->m_openGLScene->insert(gl_grid);
+	openGLSceneRef->insert(gl_grid);
 	this->updateMap3DView();
 
 	// Robot viz is built in OnrbKinTypeSelect()
@@ -511,7 +512,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
 		gl_robot_render->setName("robot_render");
 		gl_robot->insert(gl_robot_render);
 	}
-	m_plot3D->m_openGLScene->insert(gl_robot);
+	openGLSceneRef->insert(gl_robot);
 
 	gl_scan3D = mrpt::opengl::CPlanarLaserScan::Create();
 	gl_scan3D->enableLine(false);
@@ -527,7 +528,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
 	gl_robot_path = mrpt::opengl::CSetOfLines::Create();
 	gl_robot_path->setLineWidth(1);
 	gl_robot_path->setColor_u8( TColor(40,40,40, 200));
-	m_plot3D->m_openGLScene->insert(gl_robot_path);
+	openGLSceneRef->insert(gl_robot_path);
 
 	gl_target = mrpt::opengl::CSetOfObjects::Create();
 	gl_target->setVisibility(false);
@@ -537,15 +538,15 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
 		obj = mrpt::opengl::CArrow::Create(-1,0,0, -0.2f,0,0, 0.4f,0.05f, 0.15f ); obj->setColor_u8( TColor(0,0,255) ); gl_target->insert(obj);
 		obj = mrpt::opengl::CArrow::Create( 0,1,0,  0,0.2f,0, 0.4f,0.05f, 0.15f ); obj->setColor_u8( TColor(0,0,255) ); gl_target->insert(obj);
 		obj = mrpt::opengl::CArrow::Create(0,-1,0,  0,-0.2f,0, 0.4f,0.05f, 0.15f ); obj->setColor_u8( TColor(0,0,255) ); gl_target->insert(obj);
-		m_plot3D->m_openGLScene->insert(gl_target);
+		openGLSceneRef->insert(gl_target);
 	}
 
 	{
 		gl_waypoints_clicking = opengl::CSetOfObjects::Create();
-		m_plot3D->m_openGLScene->insert(gl_waypoints_clicking);
+		openGLSceneRef->insert(gl_waypoints_clicking);
 
 		gl_waypoints_status= opengl::CSetOfObjects::Create();
-		m_plot3D->m_openGLScene->insert(gl_waypoints_status);
+		openGLSceneRef->insert(gl_waypoints_status);
 	}
 
 	{	// Sign of "picking a navigation target":
@@ -557,7 +558,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
 		obj = mrpt::opengl::CArrow::Create( 0,1,0,  0,0.2f,0, 0.4f,0.05f, 0.15f ); obj->setColor_u8( TColor(0,0,255) ); m_gl_placing_nav_target->insert(obj);
 		obj = mrpt::opengl::CArrow::Create(0,-1,0,  0,-0.2f,0, 0.4f,0.05f, 0.15f ); obj->setColor_u8( TColor(0,0,255) ); m_gl_placing_nav_target->insert(obj);
 		m_gl_placing_nav_target->setVisibility(false); // Start invisible.
-		m_plot3D->m_openGLScene->insert(m_gl_placing_nav_target);
+		openGLSceneRef->insert(m_gl_placing_nav_target);
 	}
 	{	// Sign of "replacing the robot":
 		m_gl_placing_robot = opengl::CSetOfObjects::Create();
@@ -566,7 +567,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
 		m_gl_placing_robot->insert(obj);
 
 		m_gl_placing_robot->setVisibility(false); // Start invisible.
-		m_plot3D->m_openGLScene->insert(m_gl_placing_robot);
+		openGLSceneRef->insert(m_gl_placing_robot);
 	}
 	{	// Sign of "drawing obstacles":
 		m_gl_drawing_obs = opengl::CSetOfObjects::Create();
@@ -576,10 +577,10 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
 		m_gl_drawing_obs->insert(obj);
 
 		m_gl_drawing_obs->setVisibility(false); // Start invisible.
-		m_plot3D->m_openGLScene->insert(m_gl_drawing_obs);
+		openGLSceneRef->insert(m_gl_drawing_obs);
 	}
 
-	m_plot3D->m_openGLScene->insert( mrpt::opengl::stock_objects::CornerXYZ(1) );
+	openGLSceneRef->insert( mrpt::opengl::stock_objects::CornerXYZ(1) );
 
 	gl_robot_ptg_prediction = mrpt::opengl::CSetOfLines::Create();
 	gl_robot_ptg_prediction->setName("ptg_prediction");
@@ -588,13 +589,11 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
 	gl_robot->insert(gl_robot_ptg_prediction);
 
 	// Set camera:
-	m_plot3D->cameraPointingX=0;
-	m_plot3D->cameraPointingY=0;
-	m_plot3D->cameraPointingZ=0;
-	m_plot3D->cameraZoomDistance = 40;
-	m_plot3D->cameraElevationDeg = 70;
-	m_plot3D->cameraAzimuthDeg = -100;
-	m_plot3D->cameraIsProjective = true;
+	m_plot3D->setCameraPointing(0.0f, 0.0f, 0.0f);
+	m_plot3D->setZoomDistance(40.0f);
+	m_plot3D->setElevationDegrees(70.0f);
+	m_plot3D->setAzimuthDegrees(-100.0f);
+	m_plot3D->setCameraProjective(true);
 
 	// Init simulator & its adaptor to the navigator
 	{
@@ -603,53 +602,50 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(wxWindow* parent,wxWi
 	}
 
 	// 2D view ==============
+	auto openGLSceneLocalViewRef = m_plotLocalView->getOpenGLSceneRef();
 	{
 		mrpt::opengl::CGridPlaneXY::Ptr obj = mrpt::opengl::CGridPlaneXY::Create(-1,1.001f, -1,1.001f, 0, 1);
 		obj->setColor_u8(TColor(30,30,30,50));
-		m_plotLocalView->m_openGLScene->insert( obj );
+		openGLSceneLocalViewRef->insert( obj );
 	}
 
 	gl_line_direction = mrpt::opengl::CSimpleLine::Create();
 	gl_line_direction->setLineWidth(4);
 	gl_line_direction->setColor_u8(TColor(0,0,0));
-	m_plotLocalView->m_openGLScene->insert(gl_line_direction);
+	openGLSceneLocalViewRef->insert(gl_line_direction);
 
 	gl_rel_target = mrpt::opengl::CPointCloud::Create();
 	gl_rel_target->setPointSize(7);
 	gl_rel_target->setColor_u8(TColor(0,0,255));
-	m_plotLocalView->m_openGLScene->insert(gl_rel_target);
+	openGLSceneLocalViewRef->insert(gl_rel_target);
 
 	gl_rel_robot = mrpt::opengl::CPointCloud::Create();
 	gl_rel_robot->setPointSize(5);
 	gl_rel_robot->setColor_u8(TColor(0, 0, 0));
 	gl_rel_robot->insertPoint(0, 0, 0);
-	m_plotLocalView->m_openGLScene->insert(gl_rel_robot);
+	openGLSceneLocalViewRef->insert(gl_rel_robot);
 
-	m_plotLocalView->m_openGLScene->insert( mrpt::opengl::stock_objects::CornerXYSimple(0.1f,2) );
-	m_plotLocalView->m_openGLScene->insert( gl_robot_local );
+	openGLSceneLocalViewRef->insert( mrpt::opengl::stock_objects::CornerXYSimple(0.1f,2) );
+	openGLSceneLocalViewRef->insert( gl_robot_local );
 
 	gl_tp_obstacles = mrpt::opengl::CSetOfLines::Create();
 	gl_tp_obstacles->setLineWidth(3);
 	gl_tp_obstacles->setColor_u8( TColor(0,0,0) );
-	m_plotLocalView->m_openGLScene->insert(gl_tp_obstacles);
+	openGLSceneLocalViewRef->insert(gl_tp_obstacles);
 
 	gl_nd_gaps = mrpt::opengl::CSetOfLines::Create();
 	gl_nd_gaps->setLineWidth(1);
 	gl_nd_gaps->setColor_u8( TColor(255,0,0) );
-	m_plotLocalView->m_openGLScene->insert(gl_nd_gaps);
+	openGLSceneRef->insert(gl_nd_gaps);
 
-	m_plotLocalView->clearColorR = 0.9f;
-	m_plotLocalView->clearColorG = 0.9f;
-	m_plotLocalView->clearColorB = 0.9f;
+	m_plotLocalView->setClearColors(0.9f, 0.9f, 0.9f);
 
 	// Set camera:
-	m_plotLocalView->cameraPointingX=0;
-	m_plotLocalView->cameraPointingY=0;
-	m_plotLocalView->cameraPointingZ=0;
-	m_plotLocalView->cameraZoomDistance = 2.2f;
-	m_plotLocalView->cameraElevationDeg = 90;
-	m_plotLocalView->cameraAzimuthDeg = -90;
-	m_plotLocalView->cameraIsProjective = false;
+	m_plotLocalView->setCameraPointing(0.0f, 0.0f, 0.0f);
+	m_plotLocalView->setZoomDistance(2.2f);
+	m_plotLocalView->setElevationDegrees(90.0f);
+	m_plotLocalView->setAzimuthDegrees(-90.0f);
+	m_plotLocalView->setCameraProjective(true);
 
 
 	// Update positions of stuff:
@@ -1167,7 +1163,7 @@ void reactive_navigator_demoframe::Onplot3DMouseMove(wxMouseEvent& event)
 
 	// Intersection of 3D ray with ground plane ====================
 	TLine3D ray;
-	m_plot3D->m_openGLScene->getViewport("main")->get3DRayForPixelCoord( X,Y,ray);
+	m_plot3D->getOpenGLSceneRef()->getViewport("main")->get3DRayForPixelCoord( X,Y,ray);
 	// Create a 3D plane, e.g. Z=0
 	const TPlane ground_plane(TPoint3D(0,0,0),TPoint3D(1,0,0),TPoint3D(0,1,0));
 	// Intersection of the line with the plane:

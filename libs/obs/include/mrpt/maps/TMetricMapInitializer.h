@@ -50,7 +50,7 @@ namespace mrpt
 			const mrpt::utils::TRuntimeClassId::Ptr & getMetricMapClassType() const { return metricMapClassType; }
 
 			/** Looks up in the registry of known map types and call the corresponding `<metric_map_class>::MapDefinition()`. */
-			static TMetricMapInitializer* factory(const std::string &mapClassName);			
+			static TMetricMapInitializer* factory(const std::string &mapClassName);
 
 		protected:
 			TMetricMapInitializer(const mrpt::utils::TRuntimeClassId* classID );

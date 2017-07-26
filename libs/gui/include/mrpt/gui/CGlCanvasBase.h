@@ -40,47 +40,147 @@ public:
 	CGlCanvasBase();
 	virtual ~CGlCanvasBase();
 
+	/** Sets the minimum of the zoom
+	 * See also setMaximumZoom(float) */
 	void setMinimumZoom(float zoom);
+
+	/** Sets the maximum of the zoom
+	 * See also setMinimumZoom(float) */
 	void setMaximumZoom(float zoom);
 
+	/** Saves the click position of the mouse
+	 * See also setMouseClicked(bool) */
 	void setMousePos(int x, int y);
+
+	/** Sets the property mouseClicked
+	 * By default, this property is false.
+	 * See also setMousePos(int, int) */
 	void setMouseClicked(bool is);
+
+	/** Sets the last mouse position */
 	void updateLastPos(int x, int y);
+	/** Calls the glViewport function*/
 	void resizeViewport(int w, int h);
+	/** Calls the glClearColor function
+	 * See also setClearColors(float, float, float, float)*/
 	void clearColors();
 
-	CamaraParams updateZoom(CamaraParams &params, int x, int y) const;
-	CamaraParams updateZoom(CamaraParams &params, float delta) const;
-	CamaraParams updateRotate(CamaraParams &params, int x, int y) const;
-	CamaraParams updateOrbitCamera(CamaraParams &params, int x, int y) const;
-	CamaraParams updatePan(CamaraParams &params, int x, int y) const;
+	/** This function for the mouse event
+	 * It gets a reference to CamaraParams, x, y
+	 * and updates the zoom of the CameraParams.
+	 * See also updateZoom(CamaraParams &, float)*/
+	void updateZoom(CamaraParams &params, int x, int y) const;
+	/** This function for the wheel event
+	 * It gets a reference to CamaraParams, delta
+	 * and updates the zoom of the CameraParams.
+	 * See also updateZoom(CamaraParams &, int, int)*/
+	void updateZoom(CamaraParams &params, float delta) const;
+	/** This function for the mouse event
+	 * It gets a reference to CamaraParams, x, y
+	 * and updates the elevation and azimuth.
+	 * See also getElevationDegrees(), getAzimuthDegrees()*/
+	void updateRotate(CamaraParams &params, int x, int y) const;
+	/** This function for the mouse event
+	 * It gets a reference to CamaraParams, x, y
+	 * and updates the elevation and azimuth.
+	 * See also getElevationDegrees(), getAzimuthDegrees()*/
+	void updateOrbitCamera(CamaraParams &params, int x, int y) const;
+	/** This function for the mouse event
+	 * It gets a reference to CamaraParams, x, y
+	 * and updates the pointing of the camera.
+	 * See also getCameraPointingX(), getCameraPointingY(), getCameraPointingZ()*/
+	void updatePan(CamaraParams &params, int x, int y) const;
 
+	/** Returns a copy of CamaraParams
+	 * See also getRefCameraParams(), setCameraParams(const CamaraParams &)*/
 	CamaraParams cameraParams() const;
+	/** Returns a reference to CamaraParams
+	 * See also cameraParams(), setCameraParams(const CamaraParams &) */
+	const CamaraParams &getRefCameraParams() const;
+	/** Sets the CamaraParams
+	 * See also cameraParams(), getRefCameraParams()*/
 	void setCameraParams(const CamaraParams &params);
-	void setUseCameraFromScene(bool is);
 
-	void updateCameraParams(mrpt::opengl::CCamera &cam) const;
-
-	float getZoomDistance() const;
-
-	virtual void setAzimuthDegrees(float ang);
-	virtual void setElevationDegrees(float ang);
-
-	float getAzimuthDegrees() const;
-	float getElevationDegrees() const;
-
-
-	// Visualization params:
-	float	cameraPointingX, cameraPointingY, cameraPointingZ;
-	float	cameraZoomDistance;
-	float	cameraElevationDeg,cameraAzimuthDeg;
-	bool	cameraIsProjective;
-	float	cameraFOV;
-	float	clearColorR,clearColorG,clearColorB;
+	/** This function gets a reference to mrpt::opengl::CCamera and
+	 * updates the camera parameters(pointing, zoom, azimuth, elevation, IsProjective, FOV)
+	*/
+	mrpt::opengl::CCamera &updateCameraParams(mrpt::opengl::CCamera &cam) const;
 
 	/** If set to true (default=false), the cameraPointingX,... parameters are ignored and the camera stored in the 3D scene is used instead.
+	 * See also void bool getUseCameraFromScene()
 	  */
-	bool	useCameraFromScene;
+	void setUseCameraFromScene(bool is);
+
+	/** See also void setUseCameraFromScene(bool)
+	*/
+	bool getUseCameraFromScene() const;
+
+	// Visualization params:
+	/** Saves the pointing of the camera
+	 * See also getCameraPointingX(), getCameraPointingY(), getCameraPointingZ()
+	*/
+	virtual void setCameraPointing(float pointX, float pointY, float pointZ);
+
+	/** Returns the x pointing of the camera
+	 * See also setCameraPointing(float, float, float)
+	*/
+	float getCameraPointingX() const;
+
+	/** Returns the y pointing of the camera
+	 * See also setCameraPointing(float, float, float)
+	*/
+	float getCameraPointingY() const;
+
+	/** Returns the z pointing of the camera
+	 * See also setCameraPointing(float, float, float)
+	*/
+	float getCameraPointingZ() const;
+
+	/** Saves camera zooming
+	 * See also getZoomDistance()
+	*/
+	virtual void setZoomDistance(float zoom);
+
+	/** Returns a zoom
+	 * See also setZoomDistance(float)
+	*/
+	float getZoomDistance() const;
+
+	/** Saves the degrees of the azimuth camera
+	 * See also getAzimuthDegrees()
+	*/
+	virtual void setAzimuthDegrees(float ang);
+
+	/** Returns a azimuth degrees
+	 * See also setAzimuthDegrees(float)
+	*/
+	float getAzimuthDegrees() const;
+
+	/** Saves the degrees of the elevation camera
+	 * See also getElevationDegrees()
+	*/
+	virtual void setElevationDegrees(float ang);
+
+	/** Returns a elevation degrees
+	 * See also setElevationDegrees(float)
+	*/
+	float getElevationDegrees() const;
+
+	virtual void setCameraProjective(bool is);
+	bool isCameraProjective() const;
+
+	virtual void setCameraFOV(float FOV);
+	float cameraFOV() const;
+
+	/** Sets the RGBA colors for glClearColor
+	 * See also clearColors(), getClearColorR(), getClearColorG(),getClearColorB(), getClearColorA()
+	*/
+	void setClearColors(float r, float g, float b, float a = 1.0f);
+	float getClearColorR() const;
+	float getClearColorG() const;
+	float getClearColorB() const;
+	float getClearColorA() const;
+
 
 	static float  SENSIBILITY_DEG_PER_PIXEL;		// Default = 0.1
 
@@ -105,12 +205,12 @@ public:
 			float	new_cameraElevationDeg,
 			float	new_cameraAzimuthDeg )
 	{
-		cameraPointingX 	= new_cameraPointingX;
-		cameraPointingY 	= new_cameraPointingY;
-		cameraPointingZ 	= new_cameraPointingZ;
-		cameraZoomDistance	= new_cameraZoomDistance;
-		cameraElevationDeg	= new_cameraElevationDeg;
-		cameraAzimuthDeg 	= new_cameraAzimuthDeg;
+		m_cameraParams.cameraPointingX 	= new_cameraPointingX;
+		m_cameraParams.cameraPointingY 	= new_cameraPointingY;
+		m_cameraParams.cameraPointingZ 	= new_cameraPointingZ;
+		m_cameraParams.cameraZoomDistance	= new_cameraZoomDistance;
+		m_cameraParams.cameraElevationDeg	= new_cameraElevationDeg;
+		m_cameraParams.cameraAzimuthDeg 	= new_cameraAzimuthDeg;
 	}
 
 	inline void getLastMousePosition(int &x,int& y) const
@@ -120,8 +220,10 @@ public:
 	}
 
 	/**  At constructor an empty scene is created. The object is freed at GL canvas destructor.
-			  */
-	mrpt::opengl::COpenGLScene::Ptr		m_openGLScene;
+	 * This function returns a smart pointer to the opengl scene
+	getOpenGLSceneRef		  */
+	mrpt::opengl::COpenGLScene::Ptr getOpenGLSceneRef() const;
+	void setOpenGLSceneRef(mrpt::opengl::COpenGLScene::Ptr scene);
 protected:
 	virtual void swapBuffers() = 0;
 	virtual void preRender() = 0;
@@ -129,16 +231,18 @@ protected:
 	virtual void renderError(const std::string &err_msg) = 0;
 
 	virtual double renderCanvas(int width = -1, int height = -1);
+
 private:
+	float	clearColorR,clearColorG,clearColorB, clearColorA;
+	bool	useCameraFromScene;
+	mrpt::opengl::COpenGLScene::Ptr		m_openGLScene;
 	int		m_mouseLastX, m_mouseLastY;
-	int		mouseClickX, mouseClickY;
+	int		m_mouseClickX, m_mouseClickY;
 	bool	mouseClicked;
-	float m_minZoom;
-	float m_maxZoom;
-
-
+	float	m_minZoom;
+	float	m_maxZoom;
+	CamaraParams m_cameraParams;
 };  // end of class
-
 }	// end namespace
 }	// end namespace
 

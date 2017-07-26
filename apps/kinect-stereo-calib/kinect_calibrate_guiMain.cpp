@@ -780,13 +780,14 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(wxWindow* parent,wxWindow
 
 	// Prepare 3D scene: (of live view)
 	// ------------------------------------------
-	m_plot3D->m_openGLScene = mrpt::opengl::COpenGLScene::Create();
+	auto openGLSceneRef = m_plot3D->getOpenGLSceneRef();
+	openGLSceneRef = mrpt::opengl::COpenGLScene::Create();
 
 	// Ground plane:
 	{
 		mrpt::opengl::CGridPlaneXY::Ptr obj = mrpt::opengl::CGridPlaneXY::Create(-10,10, -10,10, 0, 1);
 		obj->setColor_u8( TColor(200,200,200) );
-		m_plot3D->m_openGLScene->insert(obj);
+		openGLSceneRef->insert(obj);
 	}
 	//// XYZ corner:
 	//m_plot3D->m_openGLScene->insert( mrpt::opengl::stock_objects::CornerXYZSimple(0.5,2) );
@@ -794,12 +795,12 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(wxWindow* parent,wxWindow
 	// 3D points:
 	m_gl_3d_points = mrpt::opengl::CPointCloudColoured::Create();
 	m_gl_3d_points->setPointSize(2);
-	m_plot3D->m_openGLScene->insert( m_gl_3d_points );
+	openGLSceneRef->insert( m_gl_3d_points );
 
 	m_gl_corner_left  = mrpt::opengl::stock_objects::CornerXYZSimple(0.03f,2);
 	m_gl_corner_right = mrpt::opengl::stock_objects::CornerXYZSimple(0.03f,2);
-	m_plot3D->m_openGLScene->insert( m_gl_corner_left );
-	m_plot3D->m_openGLScene->insert( m_gl_corner_right );
+	openGLSceneRef->insert( m_gl_corner_left );
+	openGLSceneRef->insert( m_gl_corner_right );
 
 	// Prepare 3D scene: (of calibrate view)
 	// ------------------------------------------
@@ -2226,7 +2227,7 @@ void kinect_calibrate_guiDialog::CalibUpdate3DViewCameras()
 	gl_objs->setPose( mrpt::poses::CPose3D(0,0,0, DEG2RAD(0),DEG2RAD(180),DEG2RAD(0) ) );
 	scene->insert(gl_objs);
 
-	m_plot3D_cameras->m_openGLScene = scene;
+	m_plot3D_cameras->setOpenGLSceneRef(scene);
 
 	WX_END_TRY
 }

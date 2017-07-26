@@ -40,7 +40,7 @@ void hmt_slam_guiFrame::updateLocalMapView()
 {
     WX_START_TRY
 
-	m_glLocalArea->m_openGLScene->clear();
+	m_glLocalArea->getOpenGLSceneRef()->clear();
 
 	// Get the hypothesis ID:
 	THypothesisID	hypID = (THypothesisID	)atoi( cbHypos->GetStringSelection().mb_str() );
@@ -209,7 +209,7 @@ void hmt_slam_guiFrame::updateLocalMapView()
 		} // two pass
 
 		// Add to the scene:
-		m_glLocalArea->m_openGLScene->insert(objs);
+		m_glLocalArea->getOpenGLSceneRef()->insert(objs);
 	}
 	else
 	if (obj->GetRuntimeClass()==CLASS_ID( CLocalMetricHypothesis ))
@@ -225,7 +225,8 @@ void hmt_slam_guiFrame::updateLocalMapView()
 
 void hmt_slam_guiFrame::updateGlobalMapView()
 {
-	m_glGlobalHMTMap->m_openGLScene->clear();
+	auto openGLSceneRef = m_glGlobalHMTMap->getOpenGLSceneRef();
+	openGLSceneRef->clear();
 
 	wxBusyCursor busy;
 
@@ -253,7 +254,7 @@ void hmt_slam_guiFrame::updateGlobalMapView()
 //		cout << "Showing hypothesis ID: " << hypID  << endl;
 
 		m_hmtslam->m_map.getAs3DScene(
-			*m_glGlobalHMTMap->m_openGLScene,
+			*openGLSceneRef,
 			refID,
 			hypID );
 

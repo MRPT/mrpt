@@ -48,9 +48,7 @@ CGlWidget::CGlWidget(bool is2D, QWidget *parent)
 	, m_is2D(is2D)
 	, m_showRobot(false)
 {
-	clearColorR = 1.0;
-	clearColorG = 1.0;
-	clearColorB = 1.0;
+	setClearColors(1.0, 1.0, 1.0);
 
 	m_visiblePoints->setColor(m_observationColor);
 	m_visiblePoints->setPointSize(m_observationSize);
@@ -60,13 +58,13 @@ CGlWidget::CGlWidget(bool is2D, QWidget *parent)
 
 	if (m_is2D)
 	{
-		m_miniMapViewport = m_openGLScene->createViewport("miniMap");
+		m_miniMapViewport = getOpenGLSceneRef()->createViewport("miniMap");
 		m_miniMapViewport->setBorderSize(2);
 		m_miniMapViewport->setViewportPosition(0.01,0.01, m_minimapPercentSize, m_minimapPercentSize);
 		m_miniMapViewport->setTransparent(false);
 
-		setAzimuthDegrees(-90);
-		setElevationDegrees(90);
+		setAzimuthDegrees(-90.0f);
+		setElevationDegrees(90.0f);
 
 		CCamera &camMiniMap = m_miniMapViewport->getCamera();
 		updateCameraParams(camMiniMap);
@@ -240,11 +238,9 @@ void CGlWidget::setElevationDegrees(float ang)
 	updateCamerasParams();
 }
 
-void CGlWidget::setBackgroundColor(float r, float g, float b)
+void CGlWidget::setBackgroundColor(float r, float g, float b, float a)
 {
-	clearColorR = r;
-	clearColorG = g;
-	clearColorB = b;
+	setClearColors(r, g, b, a);
 
 	update();
 }
@@ -579,7 +575,7 @@ void CGlWidget::updateMinimapPos()
 	GLint	win_dims[4];
 	glGetIntegerv( GL_VIEWPORT, win_dims );
 
-	COpenGLViewport::Ptr miniMap = m_openGLScene->getViewport("miniMap");
+	COpenGLViewport::Ptr miniMap = getOpenGLSceneRef()->getViewport("miniMap");
 	float w = m_miniMapSize/win_dims[2];
 	float h = m_miniMapSize/win_dims[3];
 	miniMap->setViewportPosition(0.01,0.01, w, h);
