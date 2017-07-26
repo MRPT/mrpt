@@ -219,7 +219,7 @@ bool CColouredOctoMap::internal_insertObservation(
 
 		// Project 3D points & color:
 		mrpt::opengl::CPointCloudColoured::Ptr pts =
-			std::make_shared<mrpt::opengl::CPointCloudColoured>();
+			mrpt::make_aligned_shared<mrpt::opengl::CPointCloudColoured>();
 		T3DPointsProjectionParams proj_params;
 		proj_params.PROJ3D_USE_LUT = true;
 		proj_params.robotPoseInTheWorld = robotPose;

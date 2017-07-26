@@ -262,7 +262,7 @@ void CBeacon::getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const
 		case pdfMonteCarlo:
 		{
 			opengl::CPointCloud::Ptr obj =
-				std::make_shared<opengl::CPointCloud>();
+				mrpt::make_aligned_shared<opengl::CPointCloud>();
 			obj->setColor(1, 0, 0);
 
 			obj->setPointSize(2.5);
@@ -282,7 +282,7 @@ void CBeacon::getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const
 		case pdfGauss:
 		{
 			opengl::CEllipsoid::Ptr obj =
-				std::make_shared<opengl::CEllipsoid>();
+				mrpt::make_aligned_shared<opengl::CEllipsoid>();
 
 			obj->setPose(m_locationGauss.mean);
 			obj->setLineWidth(3);
@@ -307,7 +307,7 @@ void CBeacon::getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const
 			THROW_EXCEPTION("ERROR: Invalid 'm_typePDF' value");
 	};
 
-	opengl::CText::Ptr obj2 = std::make_shared<opengl::CText>();
+	opengl::CText::Ptr obj2 = mrpt::make_aligned_shared<opengl::CText>();
 	obj2->setString(format("#%d", static_cast<int>(m_ID)));
 
 	CPoint3D meanP;

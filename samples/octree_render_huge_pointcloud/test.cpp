@@ -78,7 +78,7 @@ void TestOctreeRenderHugePointCloud()
 
 	// CPointCloud
 	opengl::CPointCloud::Ptr gl_pointcloud =
-		std::make_shared<opengl::CPointCloud>();
+		std::make_aligned_shared<opengl::CPointCloud>();
 	theScene->insert(gl_pointcloud);
 
 	gl_pointcloud->setPointSize(3.0);
@@ -125,7 +125,7 @@ void TestOctreeRenderHugePointCloud()
 
 	// Draw the octree bounding boxes:
 	mrpt::opengl::CSetOfObjects::Ptr gl_bb =
-		std::make_shared<mrpt::opengl::CSetOfObjects>();
+		std::make_aligned_shared<mrpt::opengl::CSetOfObjects>();
 	gl_pointcloud->octree_get_graphics_boundingboxes(*gl_bb);
 	theScene->insert(gl_bb);
 

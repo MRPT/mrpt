@@ -73,8 +73,8 @@ int main(int argc, char** argv)
 		CObservationRGBD360 newObs;
 		for (unsigned i = 0; i < num_sensors; i++)
 		{
-			win[i] = std::make_shared<mrpt::gui::CDisplayWindow>();
-			//      newObs[i] = std::make_shared<CObservation3DRangeScan>();
+			win[i] = std::make_aligned_shared<mrpt::gui::CDisplayWindow>();
+			//      newObs[i] = std::make_aligned_shared<CObservation3DRangeScan>();
 		}
 
 		cout << "Get observation\n";
@@ -119,7 +119,7 @@ int main(int argc, char** argv)
 		//    win3D.setCameraPointingToPoint(2.5,0,0);
 		//
 		//    mrpt::opengl::CPointCloudColoured::Ptr gl_points =
-		//    std::make_shared<mrpt::opengl::CPointCloudColoured>();
+		//    std::make_aligned_shared<mrpt::opengl::CPointCloudColoured>();
 		//    gl_points->setPointSize(2.5);
 		//
 		//    opengl::COpenGLViewport::Ptr viewInt; // Extra viewports for the
@@ -130,7 +130,7 @@ int main(int argc, char** argv)
 		//
 		//      // Create the Opengl object for the point cloud:
 		//      scene->insert( gl_points );
-		//      scene->insert( std::make_shared<mrpt::opengl::CGridPlaneXY>() );
+		//      scene->insert( std::make_aligned_shared<mrpt::opengl::CGridPlaneXY>() );
 		//      scene->insert( mrpt::opengl::stock_objects::CornerXYZ() );
 		//
 		//      const double aspect_ratio =  480.0 / 640.0;
@@ -163,7 +163,7 @@ int main(int argc, char** argv)
 		//    {
 		////    cout << "Get new observation\n";
 		//      CObservation3DRangeScan::Ptr newObs =
-		//      std::make_shared<CObservation3DRangeScan>();
+		//      std::make_aligned_shared<CObservation3DRangeScan>();
 		//      rgbd360.getNextObservation(*newObs, bObs, bError);
 		//
 		//      if (bObs && !bError && newObs &&

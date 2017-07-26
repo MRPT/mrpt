@@ -119,7 +119,7 @@ namespace hwdrivers
   *
   *  \code
   *    mrpt::opengl::CPointCloudColoured::Ptr gl_points =
-  *std::make_shared<mrpt::opengl::CPointCloudColoured>();
+  *mrpt::make_aligned_shared<mrpt::opengl::CPointCloudColoured>();
   *    gl_points->loadFromPointsMap(&pntsMap);
   *  \endcode
   *
@@ -224,9 +224,11 @@ class HWDRIVERS_IMPEXP COpenNI2Sensor : public mrpt::hwdrivers::CGenericSensor,
 	DEFINE_GENERIC_SENSOR(COpenNI2Sensor)
 
    public:
-	/** Default ctor */
+	/** Default ctor
+ */
 	COpenNI2Sensor();
-	/** Default ctor */
+	/** Default ctor
+ */
 	~COpenNI2Sensor();
 
 	/** Set the serial number of the device to open.
@@ -352,26 +354,34 @@ class HWDRIVERS_IMPEXP COpenNI2Sensor : public mrpt::hwdrivers::CGenericSensor,
 
 	mrpt::poses::CPose3D m_sensorPoseOnRobot;
 
-	/** Show preview window while grabbing */
+	/** Show preview window while grabbing
+ */
 	bool m_preview_window;
-	/** If preview is enabled, only show 1 out of N images. */
+	/** If preview is enabled, only show 1 out of N images.
+ */
 	size_t m_preview_window_decimation;
 	size_t m_preview_decim_counter_range, m_preview_decim_counter_rgb;
 	mrpt::gui::CDisplayWindow::Ptr m_win_range, m_win_int;
 
-	/** Params for the RGB camera */
+	/** Params for the RGB camera
+ */
 	mrpt::utils::TCamera m_cameraParamsRGB;
-	/** Params for the Depth camera */
+	/** Params for the Depth camera
+ */
 	mrpt::utils::TCamera m_cameraParamsDepth;
-	/** See mrpt::obs::CObservation3DRangeScan for a diagram of this pose */
+	/** See mrpt::obs::CObservation3DRangeScan for a diagram of this pose
+ */
 	mrpt::poses::CPose3D m_relativePoseIntensityWRTDepth;
 
-	/** Sensor max range (meters) */
+	/** Sensor max range (meters)
+ */
 	double m_maxRange;
 
-	/** Number of device to open (0:first,...) */
+	/** Number of device to open (0:first,...)
+ */
 	int m_user_device_number;
-	/** Serial number of device to open */
+	/** Serial number of device to open
+ */
 	int m_serial_number;
 
 };  // End of class

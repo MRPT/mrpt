@@ -1093,7 +1093,7 @@ void CObservation3DRangeScan::convertTo2DScan(
 		projParams.takeIntoAccountSensorPoseOnRobot = true;
 
 		mrpt::opengl::CPointCloud::Ptr pc =
-			std::make_shared<mrpt::opengl::CPointCloud>();
+			mrpt::make_aligned_shared<mrpt::opengl::CPointCloud>();
 		this->project3DPointsFromDepthImageInto(*pc, projParams, fp);
 
 		const std::vector<float> &xs = pc->getArrayX(), &ys = pc->getArrayY(),

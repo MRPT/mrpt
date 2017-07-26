@@ -41,7 +41,7 @@
 
 #define MAKE_CREATE(class_name)                 \
 	.def(                                       \
-		"Create", std::make_shared<class_name>, \
+		"Create", std::make_aligned_shared<class_name>, \
 		"Create smart pointer from class.")     \
 		.staticmethod("Create")
 

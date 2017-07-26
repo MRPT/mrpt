@@ -84,9 +84,9 @@ void thread_grabbing(TThreadParam& p)
 		while (!hard_error && !p.quit)
 		{
 			// Grab new observation from the camera:
-			CObservation3DRangeScan::Ptr obs = std::make_shared<
+			CObservation3DRangeScan::Ptr obs = std::make_aligned_shared<
 				CObservation3DRangeScan>();  // Smart pointers to observations
-			CObservationIMU::Ptr obs_imu = std::make_shared<CObservationIMU>();
+			CObservationIMU::Ptr obs_imu = std::make_aligned_shared<CObservationIMU>();
 
 			kinect.getNextObservation(*obs, *obs_imu, there_is_obs, hard_error);
 
@@ -163,19 +163,19 @@ void Test_Kinect()
 
 	// The 3D point cloud OpenGL object:
 	mrpt::opengl::CPointCloudColoured::Ptr gl_points =
-		std::make_shared<mrpt::opengl::CPointCloudColoured>();
+		std::make_aligned_shared<mrpt::opengl::CPointCloudColoured>();
 	gl_points->setPointSize(2.5);
 
 	// The 2D "laser scan" OpenGL object:
 	mrpt::opengl::CPlanarLaserScan::Ptr gl_2d_scan =
-		std::make_shared<mrpt::opengl::CPlanarLaserScan>();
+		std::make_aligned_shared<mrpt::opengl::CPlanarLaserScan>();
 	gl_2d_scan->enablePoints(true);
 	gl_2d_scan->enableLine(true);
 	gl_2d_scan->enableSurface(true);
 	gl_2d_scan->setSurfaceColor(0, 0, 1, 0.3);  // RGBA
 
 	mrpt::opengl::CFrustum::Ptr gl_frustum =
-		std::make_shared<mrpt::opengl::CFrustum>(
+		std::make_aligned_shared<mrpt::opengl::CFrustum>(
 			0.2f, 5.0f, 90.0f, 5.0f, 2.0f, true, true);
 
 	const double aspect_ratio =
@@ -194,7 +194,7 @@ void Test_Kinect()
 
 		{
 			mrpt::opengl::CGridPlaneXY::Ptr gl_grid =
-				std::make_shared<mrpt::opengl::CGridPlaneXY>();
+				std::make_aligned_shared<mrpt::opengl::CGridPlaneXY>();
 			gl_grid->setColor(0.6, 0.6, 0.6);
 			scene->insert(gl_grid);
 		}
@@ -271,7 +271,7 @@ void Test_Kinect()
 			{
 				// Convert to scan:
 				CObservation2DRangeScan::Ptr obs_2d =
-					std::make_shared<CObservation2DRangeScan>();
+					std::make_aligned_shared<CObservation2DRangeScan>();
 				const float vert_FOV = DEG2RAD(gl_frustum->getVertFOV());
 
 				mrpt::obs::T3DPointsTo2DScanParams sp;

@@ -32,7 +32,7 @@ void PlannerTPS_VirtualBase::renderMoveTree(
 
 	// Build a model of the vehicle shape:
 	mrpt::opengl::CSetOfLines::Ptr gl_veh_shape =
-		std::make_shared<mrpt::opengl::CSetOfLines>();
+		mrpt::make_aligned_shared<mrpt::opengl::CSetOfLines>();
 	double
 		xyzcorners_scale;  // Size of XYZ corners (scaled to vehicle dimensions)
 	{
@@ -81,7 +81,7 @@ void PlannerTPS_VirtualBase::renderMoveTree(
 	if (options.ground_xy_grid_frequency > 0)
 	{
 		mrpt::opengl::CGridPlaneXY::Ptr obj =
-			std::make_shared<mrpt::opengl::CGridPlaneXY>(
+			mrpt::make_aligned_shared<mrpt::opengl::CGridPlaneXY>(
 				pi.world_bbox_min.x, pi.world_bbox_max.x, pi.world_bbox_min.y,
 				pi.world_bbox_max.y, 0, options.ground_xy_grid_frequency);
 		obj->setColor_u8(options.color_ground_xy_grid);
@@ -216,7 +216,7 @@ void PlannerTPS_VirtualBase::renderMoveTree(
 
 				// Create the path shape, in relative coords to the parent node:
 				mrpt::opengl::CSetOfLines::Ptr obj =
-					std::make_shared<mrpt::opengl::CSetOfLines>();
+					mrpt::make_aligned_shared<mrpt::opengl::CSetOfLines>();
 				obj->setPose(
 					mrpt::poses::CPose3D(parent_state));  // Points are relative
 				// to this pose: let
@@ -267,7 +267,7 @@ void PlannerTPS_VirtualBase::renderMoveTree(
 	if (options.draw_obstacles)
 	{
 		mrpt::opengl::CPointCloud::Ptr obj =
-			std::make_shared<mrpt::opengl::CPointCloud>();
+			mrpt::make_aligned_shared<mrpt::opengl::CPointCloud>();
 
 		obj->loadFromPointsMap(&pi.obstacles_points);
 		obj->setPose(
@@ -286,7 +286,7 @@ void PlannerTPS_VirtualBase::renderMoveTree(
 		options.x_nearest_pose)
 	{
 		mrpt::opengl::CPointCloud::Ptr obj =
-			std::make_shared<mrpt::opengl::CPointCloud>();
+			mrpt::make_aligned_shared<mrpt::opengl::CPointCloud>();
 
 		obj->loadFromPointsMap(options.local_obs_from_nearest_pose);
 		obj->setPose(*options.x_nearest_pose);  // Points are relative to this
@@ -324,7 +324,7 @@ void PlannerTPS_VirtualBase::renderMoveTree(
 	if (!options.log_msg.empty())
 	{
 		mrpt::opengl::CText3D::Ptr gl_txt =
-			std::make_shared<mrpt::opengl::CText3D>(
+			mrpt::make_aligned_shared<mrpt::opengl::CText3D>(
 				options.log_msg, "sans", options.log_msg_scale);
 		gl_txt->setLocation(options.log_msg_position);
 		scene.insert(gl_txt);

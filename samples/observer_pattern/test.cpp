@@ -115,7 +115,7 @@ class MyObserver : public mrpt::utils::CObserver
 // ------------------------------------------------------
 void TestObserverPattern()
 {
-	CSimplePointsMap::Ptr map1 = std::make_shared<CSimplePointsMap>();
+	CSimplePointsMap::Ptr map1 = std::make_aligned_shared<CSimplePointsMap>();
 
 	CObservation2DRangeScan obs = getScan();
 

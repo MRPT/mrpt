@@ -202,10 +202,10 @@ void do_simulation()
 			// simulate scan:
 			real_pose = CPose2D(GT(i, 1), GT(i, 2), GT(i, 3));
 
-			CSensoryFrame::Ptr sf = std::make_shared<CSensoryFrame>();
+			CSensoryFrame::Ptr sf = std::make_aligned_shared<CSensoryFrame>();
 
 			CObservation2DRangeScan::Ptr the_scan =
-				std::make_shared<CObservation2DRangeScan>();
+				std::make_aligned_shared<CObservation2DRangeScan>();
 			the_scan->aperture = M_PIf;
 			the_scan->timestamp = mrpt::system::now();
 			the_grid.laserScanSimulator(

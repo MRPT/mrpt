@@ -133,14 +133,14 @@ void TestOctoMap()
 	mrpt::gui::CDisplayWindow3D win("OctoMap demo", 640, 480);
 
 	mrpt::opengl::COctoMapVoxels::Ptr gl_map =
-		std::make_shared<mrpt::opengl::COctoMapVoxels>();
+		std::make_aligned_shared<mrpt::opengl::COctoMapVoxels>();
 
 	{
 		mrpt::opengl::COpenGLScene::Ptr& scene = win.get3DSceneAndLock();
 
 		{
 			mrpt::opengl::CGridPlaneXY::Ptr gl_grid =
-				std::make_shared<mrpt::opengl::CGridPlaneXY>(
+				std::make_aligned_shared<mrpt::opengl::CGridPlaneXY>(
 					-20, 20, -20, 20, 0, 1);
 			gl_grid->setColor_u8(mrpt::utils::TColor(0x80, 0x80, 0x80));
 			scene->insert(gl_grid);

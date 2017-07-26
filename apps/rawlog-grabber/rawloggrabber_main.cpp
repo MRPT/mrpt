@@ -240,7 +240,7 @@ int main(int argc, char** argv)
 								it->second);
 
 						CActionRobotMovement2D::Ptr act =
-							std::make_shared<CActionRobotMovement2D>();
+							std::make_aligned_shared<CActionRobotMovement2D>();
 						act->timestamp = odom->timestamp;
 
 						// Compute the increment since the last reading:

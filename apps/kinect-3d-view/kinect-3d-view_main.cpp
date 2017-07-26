@@ -88,9 +88,9 @@ void thread_grabbing(TThreadParam& p)
 		while (!hard_error && !p.quit)
 		{
 			// Grab new observation from the camera:
-			CObservation3DRangeScan::Ptr obs = std::make_shared<
+			CObservation3DRangeScan::Ptr obs = std::make_aligned_shared<
 				CObservation3DRangeScan>();  // Smart pointers to observations
-			CObservationIMU::Ptr obs_imu = std::make_shared<CObservationIMU>();
+			CObservationIMU::Ptr obs_imu = std::make_aligned_shared<CObservationIMU>();
 
 			kinect.getNextObservation(*obs, *obs_imu, there_is_obs, hard_error);
 
@@ -185,11 +185,11 @@ void Test_Kinect()
 
 #if !defined(VIEW_AS_OCTOMAP)
 	mrpt::opengl::CPointCloudColoured::Ptr gl_points =
-		std::make_shared<mrpt::opengl::CPointCloudColoured>();
+		std::make_aligned_shared<mrpt::opengl::CPointCloudColoured>();
 	gl_points->setPointSize(2.5);
 #else
 	mrpt::opengl::COctoMapVoxels::Ptr gl_voxels =
-		std::make_shared<mrpt::opengl::COctoMapVoxels>();
+		std::make_aligned_shared<mrpt::opengl::COctoMapVoxels>();
 #endif
 
 	const double aspect_ratio =
@@ -207,7 +207,7 @@ void Test_Kinect()
 #else
 		scene->insert(gl_voxels);
 #endif
-		scene->insert(std::make_shared<mrpt::opengl::CGridPlaneXY>());
+		scene->insert(std::make_aligned_shared<mrpt::opengl::CGridPlaneXY>());
 		scene->insert(mrpt::opengl::stock_objects::CornerXYZ());
 
 		const int VW_WIDTH =

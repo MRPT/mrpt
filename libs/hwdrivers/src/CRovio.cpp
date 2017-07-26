@@ -232,7 +232,7 @@ void CRovio::thread_video()  // This function takes a frame and waits until
 
 		while (!m_videothread_must_exit)
 		{
-			CObservationImage::Ptr obs = std::make_shared<CObservationImage>();
+			CObservationImage::Ptr obs = mrpt::make_aligned_shared<CObservationImage>();
 
 			if (in_video.retrieveFrame(obs->image))
 			{
