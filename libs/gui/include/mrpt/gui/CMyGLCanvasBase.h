@@ -16,7 +16,6 @@
 #include <mrpt/opengl/CTextMessageCapable.h>
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/gui/link_pragmas.h>
-#include <memory>  // unique_ptr
 
 namespace mrpt
 {
@@ -24,7 +23,7 @@ namespace gui
 {
 }
 }  // At least declare the existence of the namespace mrpt::gui even if we don't
-// have wxWidgets libs
+   // have wxWidgets libs
 
 #if MRPT_HAS_WXWIDGETS
 
@@ -110,8 +109,9 @@ class GUI_IMPEXP CMyGLCanvasBase : public CGlCanvasBase,
 		MRPT_UNUSED_PARAM(dc);
 	}
 
+	virtual void OnRenderError(const wxString& str) { MRPT_UNUSED_PARAM(str); }
    protected:
-	std::unique_ptr<wxGLContext> m_gl_context;
+	wxGLContext* m_gl_context;
 	bool m_init;
 
 	long m_Key;

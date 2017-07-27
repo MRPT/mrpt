@@ -47,7 +47,7 @@ CGlCanvasBase::CGlCanvasBase()
 	  clearColorB(0.4f),
 	  clearColorA(1.0),
 	  useCameraFromScene(false),
-	  m_openGLScene(COpenGLScene::Create()),
+	  m_openGLScene(mrpt::make_aligned_shared<COpenGLScene>()),
 	  m_mouseLastX(0),
 	  m_mouseLastY(0),
 	  m_mouseClickX(0),
