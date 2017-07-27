@@ -1616,7 +1616,8 @@ void CFaceDetection::experimental_viewRegions(
 		for (size_t i = 0; i < 3; i++)
 			for (size_t j = 0; j < 3; j++)
 			{
-				CSphere::Ptr sphere = mrpt::make_aligned_shared<CSphere>(0.005f);
+				CSphere::Ptr sphere =
+					mrpt::make_aligned_shared<CSphere>(0.005f);
 				sphere->setLocation(meanPos[i][j]);
 				sphere->setColor(TColorf(0, 1, 0));
 				scene->insert(sphere);

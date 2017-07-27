@@ -72,7 +72,8 @@ void C2DRangeFinderAbstract::doProcess()
 	bool thereIs, hwError;
 
 	if (!m_nextObservation)
-		m_nextObservation = mrpt::make_aligned_shared<CObservation2DRangeScan>();
+		m_nextObservation =
+			mrpt::make_aligned_shared<CObservation2DRangeScan>();
 
 	doProcessSimple(thereIs, *m_nextObservation, hwError);
 

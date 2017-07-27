@@ -266,7 +266,8 @@ void xRawLogViewerFrame::OnMenuLossLessDecimate(wxCommandEvent& event)
 			// ---------------------------
 
 			// Add observations to the accum. SF:
-			if (!accum_sf) accum_sf = mrpt::make_aligned_shared<CSensoryFrame>();
+			if (!accum_sf)
+				accum_sf = mrpt::make_aligned_shared<CSensoryFrame>();
 
 			// Copy pointers to observations only (fast):
 			accum_sf->moveFrom(*std::dynamic_pointer_cast<CSensoryFrame>(obj));
@@ -401,7 +402,8 @@ void xRawLogViewerFrame::OnMenuLossLessDecFILE(wxCommandEvent& event)
 				// ---------------------------
 
 				// Add observations to the accum. SF:
-				if (!accum_sf) accum_sf = mrpt::make_aligned_shared<CSensoryFrame>();
+				if (!accum_sf)
+					accum_sf = mrpt::make_aligned_shared<CSensoryFrame>();
 
 				// Copy pointers to observations only (fast):
 				accum_sf->moveFrom(

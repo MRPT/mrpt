@@ -1898,7 +1898,8 @@ int main()
 						//CFeatureList::iterator		itFeat;
 						//for( i = 0; i < count ; i++ )
 						//{
-						//	CFeature::Ptr feat = mrpt::make_aligned_shared<CFeature>();
+						//	CFeature::Ptr feat =
+		   mrpt::make_aligned_shared<CFeature>();
 						//		feat->x			= points[1][i].x;
 						//		feat->y			= points[1][i].y;
 						//		feat->ID = i;
@@ -2177,7 +2178,8 @@ int main()
 						distance2 = 0;
 						for(i=0; i<countT; i++)
 						{
-							//CFeature::Ptr feat = mrpt::make_aligned_shared<CFeature>();
+							//CFeature::Ptr feat =
+		   mrpt::make_aligned_shared<CFeature>();
 							//feat->x			= pointsT[1][i].x;
 							//feat->y			= pointsT[1][i].y;
 							//feat->ID		= i;

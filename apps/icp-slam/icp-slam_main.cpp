@@ -360,7 +360,8 @@ void MapBuilding_ICP(
 				CPose3D robotPose;
 				mapBuilder.getCurrentPoseEstimation()->getMean(robotPose);
 
-				COpenGLScene::Ptr scene = mrpt::make_aligned_shared<COpenGLScene>();
+				COpenGLScene::Ptr scene =
+					mrpt::make_aligned_shared<COpenGLScene>();
 
 				COpenGLViewport::Ptr view = scene->getViewport("main");
 				ASSERT_(view);
@@ -441,7 +442,8 @@ void MapBuilding_ICP(
 						// Create opengl object and load scan data from the scan
 						// observation:
 						opengl::CPlanarLaserScan::Ptr obj =
-							mrpt::make_aligned_shared<opengl::CPlanarLaserScan>();
+							mrpt::make_aligned_shared<
+								opengl::CPlanarLaserScan>();
 						obj->setScan(*lst_current_laser_scans[i]);
 						obj->setPose(curRobotPose);
 						obj->setSurfaceColor(1.0f, 0.0f, 0.0f, 0.5f);

@@ -134,7 +134,8 @@ void CMRVisualizer<CPOSE, MAPS_IMPLEMENTATION, TMRSlamNodeAnnotations,
 		{  // CPointCloud not yet registered.
 			// Create CPointCloud
 			strid_to_cloud.insert(
-				make_pair(curr_strid, mrpt::make_aligned_shared<CPointCloud>()));
+				make_pair(
+					curr_strid, mrpt::make_aligned_shared<CPointCloud>()));
 			// Create TColorf
 			strid_to_color.insert(
 				make_pair(curr_strid, nodes_color_mngr.getNextTColorf()));

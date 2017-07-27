@@ -208,14 +208,15 @@ void CMyGLCanvas::OnPostRenderSwapBuffers(double At, wxPaintDC& dc)
 
 	string str = format(
 		"Center=(%.02f,%.02f,%.02f) Zoom:%.02f AZ=%.02f deg EL:%.02f deg",
-		cameraPointingX, cameraPointingY, cameraPointingZ, cameraZoomDistance,
-		cameraAzimuthDeg, cameraElevationDeg);
+		getCameraPointingX(), getCameraPointingY(), getCameraPointingZ(),
+		getZoomDistance(), getAzimuthDegrees(), getElevationDegrees());
 	theWindow->StatusBar1->SetStatusText(_U(str.c_str()), 1);
 
 	str = format("%.02f FPS", meanEstimatedFPS);
 	theWindow->StatusBar1->SetStatusText(_U(str.c_str()), 2);
 
-	str = format("%u viewports", (unsigned)m_openGLScene->viewportsCount());
+	str =
+		format("%u viewports", (unsigned)getOpenGLSceneRef()->viewportsCount());
 	theWindow->StatusBar1->SetStatusText(_U(str.c_str()), 3);
 }
 
@@ -887,7 +888,8 @@ void _DSceneViewerFrame::OnAbout(wxCommandEvent&)
 
 void _DSceneViewerFrame::OnNewScene(wxCommandEvent& event)
 {
-	m_canvas->m_openGLScene->clear();
+	auto openGLSceneRef = m_canvas->getOpenGLSceneRef();
+	openGLSceneRef->clear();
 
 	// Default file name:
 	loadedFileName = "no-name.3Dscene";
@@ -898,22 +900,18 @@ void _DSceneViewerFrame::OnNewScene(wxCommandEvent& event)
 			mrpt::make_aligned_shared<mrpt::opengl::CGridPlaneXY>(
 				-50, 50, -50, 50, 0, 1);
 		obj->setColor(0.3, 0.3, 0.3);
-		m_canvas->m_openGLScene->insert(obj);
+		openGLSceneRef->insert(obj);
 	}
 
-	m_canvas->cameraPointingX = 0;
-	m_canvas->cameraPointingY = 0;
-	m_canvas->cameraPointingZ = 0;
+	m_canvas->setCameraPointing(0.0f, 0.0f, 0.0f);
+	m_canvas->setZoomDistance(20.0f);
+	m_canvas->setElevationDegrees(45.0f);
+	m_canvas->setAzimuthDegrees(45.0f);
 
-	m_canvas->cameraZoomDistance = 20;
-
-	m_canvas->cameraElevationDeg = 45;
-	m_canvas->cameraAzimuthDeg = 45;
-
-	m_canvas->m_openGLScene->insert(stock_objects::CornerXYZ());
+	openGLSceneRef->insert(stock_objects::CornerXYZ());
 
 	// Add a clone viewport:
-	COpenGLViewport::Ptr vi = m_canvas->m_openGLScene->createViewport("clone");
+	COpenGLViewport::Ptr vi = openGLSceneRef->createViewport("clone");
 	vi->setViewportPosition(0.05, 0.05, 0.2, 0.2);
 	vi->setCloneView("main");
 	vi->setCloneCamera(true);
@@ -965,20 +963,21 @@ void _DSceneViewerFrame::loadFromFile(
 		CFileGZInputStream f(fil);
 
 		static utils::CTicTac tictac;
+		auto openGLSceneRef = m_canvas->getOpenGLSceneRef();
 		{
 			std::lock_guard<std::mutex> lock(critSec_UpdateScene);
 
 			tictac.Tic();
 
-			m_canvas->m_openGLScene->clear();
-			f >> m_canvas->m_openGLScene;
+			openGLSceneRef->clear();
+			f >> openGLSceneRef;
 		}
 
 		double timeToLoad = tictac.Tac();
 
-		if (m_canvas->m_openGLScene->viewportsCount() == 0 ||
-			!m_canvas->m_openGLScene->getViewport("main") ||
-			m_canvas->m_openGLScene->getViewport("main")->size() == 0)
+		if (openGLSceneRef->viewportsCount() == 0 ||
+			!openGLSceneRef->getViewport("main") ||
+			openGLSceneRef->getViewport("main")->size() == 0)
 		{
 			wxMessageBox(
 				_("File is empty or format unrecognized."), _("Warning"), wxOK,
@@ -987,24 +986,23 @@ void _DSceneViewerFrame::loadFromFile(
 		}
 
 		// Change the camera if necesary:
-		if (m_canvas->m_openGLScene->followCamera())
+		if (openGLSceneRef->followCamera())
 		{
-			COpenGLViewport::Ptr view =
-				m_canvas->m_openGLScene->getViewport("main");
+			COpenGLViewport::Ptr view = openGLSceneRef->getViewport("main");
 			if (!view)
 				THROW_EXCEPTION(
 					"Fatal error: there is no 'main' viewport in the 3D "
 					"scene!");
 
-			CCamera::Ptr cam = m_canvas->m_openGLScene->getByClass<CCamera>();
+			CCamera::Ptr cam = openGLSceneRef->getByClass<CCamera>();
 
 			bool camIsCCameraObj = cam ? true : false;
 			if (!camIsCCameraObj)
 				cam = CCamera::Ptr(new CCamera(view->getCamera()));
 
-			m_canvas->cameraPointingX = cam->getPointingAtX();
-			m_canvas->cameraPointingY = cam->getPointingAtY();
-			m_canvas->cameraPointingZ = cam->getPointingAtZ();
+			m_canvas->setCameraPointing(
+				cam->getPointingAtX(), cam->getPointingAtY(),
+				cam->getPointingAtZ());
 
 			// If it's not loaded thru arrow keys or a timed sequence, take
 			// camera:
@@ -1013,14 +1011,14 @@ void _DSceneViewerFrame::loadFromFile(
 			{
 				if (!freeCameraAlwaysNoAzimuth)
 				{
-					m_canvas->cameraZoomDistance = cam->getZoomDistance();
-					m_canvas->cameraElevationDeg = cam->getElevationDegrees();
+					m_canvas->setZoomDistance(cam->getZoomDistance());
+					m_canvas->setElevationDegrees(cam->getElevationDegrees());
 				}
-				m_canvas->cameraAzimuthDeg = cam->getAzimuthDegrees();
+				m_canvas->setAzimuthDegrees(cam->getAzimuthDegrees());
 			}
 
 			// Remove the camera from the object:
-			if (camIsCCameraObj) m_canvas->m_openGLScene->removeObject(cam);
+			if (camIsCCameraObj) openGLSceneRef->removeObject(cam);
 		}
 
 		loadedFileName = fil;
@@ -1086,8 +1084,9 @@ void _DSceneViewerFrame::OnMenuBackColor(wxCommandEvent& event)
 	wxColourData colourData;
 	wxColour color;
 	color.Set(
-		(int)(255 * m_canvas->clearColorR), (int)(255 * m_canvas->clearColorG),
-		(int)(255 * m_canvas->clearColorB));
+		(int)(255 * m_canvas->getClearColorR()),
+		(int)(255 * m_canvas->getClearColorG()),
+		(int)(255 * m_canvas->getClearColorB()));
 
 	colourData.SetColour(color);
 	colourData.SetChooseFull(true);
@@ -1097,9 +1096,8 @@ void _DSceneViewerFrame::OnMenuBackColor(wxCommandEvent& event)
 	if (wxID_OK == colDial.ShowModal())
 	{
 		wxColour col = colDial.GetColourData().GetColour();
-		m_canvas->clearColorR = col.Red() / 255.0f;
-		m_canvas->clearColorG = col.Green() / 255.0f;
-		m_canvas->clearColorB = col.Blue() / 255.0f;
+		m_canvas->setClearColors(
+			col.Red() / 255.0f, col.Green() / 255.0f, col.Blue() / 255.0f);
 
 		int w, h;
 		m_canvas->GetSize(&w, &h);
@@ -1176,7 +1174,7 @@ void _DSceneViewerFrame::OnBtnRecordClicked(wxCommandEvent& event)
 void _DSceneViewerFrame::OnbtnOrthoClicked(wxCommandEvent& event)
 {
 	bool ortho = btnOrtho->GetValue();
-	m_canvas->cameraIsProjective = !ortho;
+	m_canvas->setCameraProjective(!ortho);
 
 	m_canvas->Refresh(false);
 }
@@ -1219,7 +1217,7 @@ void _DSceneViewerFrame::OnInsert3DS(wxCommandEvent& event)
 		obj3D->setPose(
 			mrpt::math::TPose3D(
 				0, 0, 0, DEG2RAD(.0), DEG2RAD(0.), DEG2RAD(90.0)));
-		m_canvas->m_openGLScene->insert(obj3D);
+		m_canvas->getOpenGLSceneRef()->insert(obj3D);
 
 		m_canvas->Refresh();
 	}
@@ -1256,7 +1254,7 @@ void _DSceneViewerFrame::OnMenuSave(wxCommandEvent& event)
 		wxString fileName = dialog.GetPath();
 
 		CFileGZOutputStream fo(string(fileName.mb_str()));
-		fo << *m_canvas->m_openGLScene;
+		fo << *m_canvas->getOpenGLSceneRef();
 	}
 	catch (std::exception& e)
 	{
@@ -1275,17 +1273,17 @@ void _DSceneViewerFrame::OnTravellingTrigger(wxTimerEvent& event)
 {
 	try
 	{
-		if ((m_canvas->m_openGLScene->viewportsCount() == 0) ||
-			!m_canvas->m_openGLScene->getViewport("main") ||
-			(m_canvas->m_openGLScene->getViewport("main")->size() == 0))
+		auto openGLSceneRef = m_canvas->getOpenGLSceneRef();
+		if ((openGLSceneRef->viewportsCount() == 0) ||
+			!openGLSceneRef->getViewport("main") ||
+			(openGLSceneRef->getViewport("main")->size() == 0))
 		{
 			wxMessageBox(_("Canvas is empty"), _("Warning"), wxOK, this);
 		}
 		else
 		{
 			// Change the camera
-			COpenGLViewport::Ptr view =
-				m_canvas->m_openGLScene->getViewport("main");
+			COpenGLViewport::Ptr view = openGLSceneRef->getViewport("main");
 
 			if (!view)
 				THROW_EXCEPTION(
@@ -1320,11 +1318,7 @@ void _DSceneViewerFrame::OnTravellingTrigger(wxTimerEvent& event)
 				}
 
 				if (valid)
-				{
-					m_canvas->cameraPointingX = p.x();
-					m_canvas->cameraPointingY = p.y();
-					m_canvas->cameraPointingZ = p.z();
-				}
+					m_canvas->setCameraPointing(p.x(), p.y(), p.z());
 				else
 				{
 					// end of path:
@@ -1341,8 +1335,9 @@ void _DSceneViewerFrame::OnTravellingTrigger(wxTimerEvent& event)
 					iniFile->read_string("Spherical travelling", "Step", "5")
 						.c_str());
 
-				if ((m_canvas->cameraAzimuthDeg + step) < maxv)
-					m_canvas->cameraAzimuthDeg += step / 10;
+				if ((m_canvas->getAzimuthDegrees() + step) < maxv)
+					m_canvas->setAzimuthDegrees(
+						m_canvas->getAzimuthDegrees() + step / 10.0);
 				else
 					m_tTravelling.Stop();
 			}
@@ -1365,17 +1360,17 @@ void _DSceneViewerFrame::OnStartCameraTravelling(wxCommandEvent& event)
 {
 	try
 	{
-		if ((m_canvas->m_openGLScene->viewportsCount() == 0) ||
-			!m_canvas->m_openGLScene->getViewport("main") ||
-			(m_canvas->m_openGLScene->getViewport("main")->size() == 0))
+		auto openGLSceneRef = m_canvas->getOpenGLSceneRef();
+		if ((openGLSceneRef->viewportsCount() == 0) ||
+			!openGLSceneRef->getViewport("main") ||
+			(openGLSceneRef->getViewport("main")->size() == 0))
 		{
 			wxMessageBox(_("Canvas is empty"), _("Warning"), wxOK, this);
 		}
 		else
 		{
 			// Change the camera
-			COpenGLViewport::Ptr view =
-				m_canvas->m_openGLScene->getViewport("main");
+			COpenGLViewport::Ptr view = openGLSceneRef->getViewport("main");
 
 			if (!view)
 				THROW_EXCEPTION(
@@ -1411,12 +1406,10 @@ void _DSceneViewerFrame::OnStartCameraTravelling(wxCommandEvent& event)
 				iniFile->read_string("Spherical travelling", "Max value", "90")
 					.c_str());
 
-			m_canvas->cameraPointingX = target_x;
-			m_canvas->cameraPointingY = target_y;
-			m_canvas->cameraPointingZ = target_z;
-			m_canvas->cameraZoomDistance = zoom;
-			m_canvas->cameraElevationDeg = elevation;
-			m_canvas->cameraAzimuthDeg = azimuth - min_value;
+			m_canvas->setCameraPointing(target_x, target_y, target_z);
+			m_canvas->setZoomDistance(zoom);
+			m_canvas->setElevationDegrees(elevation);
+			m_canvas->setAzimuthDegrees(azimuth - min_value);
 
 			maxv = azimuth + max_value;
 
@@ -1444,7 +1437,7 @@ void _DSceneViewerFrame::OnMenuAddSICK(wxCommandEvent& event)
 	{
 		mrpt::opengl::CSetOfObjects::Ptr obj =
 			mrpt::opengl::stock_objects::RobotPioneer();
-		m_canvas->m_openGLScene->insert(obj);
+		m_canvas->getOpenGLSceneRef()->insert(obj);
 		m_canvas->Refresh();
 	}
 	catch (std::exception& e)
@@ -1460,7 +1453,7 @@ void _DSceneViewerFrame::OnMenuAddSICK(wxCommandEvent& event)
 
 void _DSceneViewerFrame::OnMenuDeleteAll(wxCommandEvent& event)
 {
-	m_canvas->m_openGLScene->clear();
+	m_canvas->getOpenGLSceneRef()->clear();
 	m_canvas->Refresh();
 }
 
@@ -1556,7 +1549,7 @@ void _DSceneViewerFrame::clear_all_octrees_in_scene()
 {
 	{
 		std::lock_guard<std::mutex> lock(critSec_UpdateScene);
-		m_canvas->m_openGLScene->visitAllObjects(&func_clear_octrees);
+		m_canvas->getOpenGLSceneRef()->visitAllObjects(&func_clear_octrees);
 	}
 }
 
@@ -1608,7 +1601,7 @@ void _DSceneViewerFrame::OnmnuSceneStatsSelected(wxCommandEvent& event)
 
 		{
 			std::lock_guard<std::mutex> lock(critSec_UpdateScene);
-			m_canvas->m_openGLScene->visitAllObjects(&func_gather_stats);
+			m_canvas->getOpenGLSceneRef()->visitAllObjects(&func_gather_stats);
 		}
 
 		std::stringstream ss;
@@ -1664,15 +1657,16 @@ void _DSceneViewerFrame::OnmnuItemShowCloudOctreesSelected(
 		wxBusyCursor wait;
 
 		{
+			auto openGLSceneRef = m_canvas->getOpenGLSceneRef();
 			std::lock_guard<std::mutex> lock(critSec_UpdateScene);
-			m_canvas->m_openGLScene->visitAllObjects(&func_gather_stats);
+			openGLSceneRef->visitAllObjects(&func_gather_stats);
 
 			CSetOfObjects::Ptr gl_octrees_bb;
 
 			// Get object from scene, or creat upon first usage:
 			{
 				CRenderizable::Ptr obj =
-					m_canvas->m_openGLScene->getByName(name_octrees_bb_globj);
+					openGLSceneRef->getByName(name_octrees_bb_globj);
 				if (obj)
 					gl_octrees_bb =
 						std::dynamic_pointer_cast<CSetOfObjects>(obj);
@@ -1680,7 +1674,7 @@ void _DSceneViewerFrame::OnmnuItemShowCloudOctreesSelected(
 				{
 					gl_octrees_bb = mrpt::make_aligned_shared<CSetOfObjects>();
 					gl_octrees_bb->setName(name_octrees_bb_globj);
-					m_canvas->m_openGLScene->insert(gl_octrees_bb);
+					openGLSceneRef->insert(gl_octrees_bb);
 				}
 			}
 
@@ -1692,7 +1686,7 @@ void _DSceneViewerFrame::OnmnuItemShowCloudOctreesSelected(
 				// Show:
 				aux_gl_octrees_bb = gl_octrees_bb;
 
-				m_canvas->m_openGLScene->visitAllObjects(func_get_octbb);
+				openGLSceneRef->visitAllObjects(func_get_octbb);
 
 				aux_gl_octrees_bb.reset();
 			}
@@ -1739,7 +1733,8 @@ void _DSceneViewerFrame::OnMenuItemImportPLYPointCloud(wxCommandEvent& event)
 		}
 		else
 		{
-			gl_points_col = mrpt::make_aligned_shared<opengl::CPointCloudColoured>();
+			gl_points_col =
+				mrpt::make_aligned_shared<opengl::CPointCloudColoured>();
 			ply_obj = gl_points_col.get();
 		}
 
@@ -1758,8 +1753,9 @@ void _DSceneViewerFrame::OnMenuItemImportPLYPointCloud(wxCommandEvent& event)
 		}
 		else
 		{
+			auto openGLSceneRef = m_canvas->getOpenGLSceneRef();
 			// Set the point cloud as the only object in scene:
-			m_canvas->m_openGLScene = mrpt::make_aligned_shared<opengl::COpenGLScene>();
+			openGLSceneRef = mrpt::make_aligned_shared<opengl::COpenGLScene>();
 
 			if (dlgPLY.cbXYGrid->GetValue())
 			{
@@ -1767,11 +1763,11 @@ void _DSceneViewerFrame::OnMenuItemImportPLYPointCloud(wxCommandEvent& event)
 					mrpt::make_aligned_shared<mrpt::opengl::CGridPlaneXY>(
 						-50, 50, -50, 50, 0, 1);
 				obj->setColor(0.3, 0.3, 0.3);
-				m_canvas->m_openGLScene->insert(obj);
+				openGLSceneRef->insert(obj);
 			}
 
 			if (dlgPLY.cbXYZ->GetValue())
-				m_canvas->m_openGLScene->insert(
+				openGLSceneRef->insert(
 					mrpt::opengl::stock_objects::CornerXYZ());
 
 			double ptSize;
@@ -1808,16 +1804,13 @@ void _DSceneViewerFrame::OnMenuItemImportPLYPointCloud(wxCommandEvent& event)
 			if (gl_points_col) gl_points_col->setPose(CPose3D(ptCloudPose));
 
 			// Insert point cloud into scene:
-			if (gl_points) m_canvas->m_openGLScene->insert(gl_points);
-			if (gl_points_col) m_canvas->m_openGLScene->insert(gl_points_col);
+			if (gl_points) openGLSceneRef->insert(gl_points);
+			if (gl_points_col) openGLSceneRef->insert(gl_points_col);
 
-			m_canvas->cameraPointingX = 0;
-			m_canvas->cameraPointingY = 0;
-			m_canvas->cameraPointingZ = 0;
-
-			m_canvas->cameraZoomDistance = 4;
-			m_canvas->cameraAzimuthDeg = 45;
-			m_canvas->cameraElevationDeg = 30;
+			m_canvas->setCameraPointing(0.0f, 0.0f, 0.0f);
+			m_canvas->setZoomDistance(4.0f);
+			m_canvas->setAzimuthDegrees(45.0f);
+			m_canvas->setElevationDegrees(30.0f);
 
 			loadedFileName =
 				std::string("Imported_") + fil + std::string(".3Dscene");
@@ -1898,7 +1891,7 @@ void _DSceneViewerFrame::OnMenuItemExportPointsPLY(wxCommandEvent& event)
 
 		{
 			wxBusyCursor busy;
-			m_canvas->m_openGLScene->visitAllObjects(visitor);
+			m_canvas->getOpenGLSceneRef()->visitAllObjects(visitor);
 		}
 
 		wxMessageBox(
@@ -1950,11 +1943,11 @@ void _DSceneViewerFrame::OnMenuItemHighResRender(wxCommandEvent& event)
 
 			render.setBackgroundColor(
 				mrpt::utils::TColorf(
-					m_canvas->clearColorR, m_canvas->clearColorG,
-					m_canvas->clearColorB, 1));
+					m_canvas->getClearColorR(), m_canvas->getClearColorG(),
+					m_canvas->getClearColorB(), 1.0));
 
 			// render the scene
-			render.getFrame(*m_canvas->m_openGLScene, frame);
+			render.getFrame(*m_canvas->getOpenGLSceneRef(), frame);
 
 			frame.saveToFile(sTargetFil);
 		}
@@ -2052,7 +2045,7 @@ void _DSceneViewerFrame::OnmnuSelectByClassSelected(wxCommandEvent& event)
 
 	// Go thru objects and do filter:
 	OpenGlObjectsFilter_ByClass filter(m_selected_gl_objects, selected_classes);
-	m_canvas->m_openGLScene->visitAllObjects(filter);
+	m_canvas->getOpenGLSceneRef()->visitAllObjects(filter);
 
 	theWindow->StatusBar1->SetStatusText(
 		_U(mrpt::format(
@@ -2123,7 +2116,8 @@ void _DSceneViewerFrame::OnmnuImportLASSelected(wxCommandEvent& event)
 		if (dlgPLY.rbClass->GetSelection() == 0)
 			gl_points = mrpt::make_aligned_shared<opengl::CPointCloud>();
 		else
-			gl_points_col = mrpt::make_aligned_shared<opengl::CPointCloudColoured>();
+			gl_points_col =
+				mrpt::make_aligned_shared<opengl::CPointCloudColoured>();
 
 		mrpt::maps::CColouredPointsMap pts_map;
 		mrpt::maps::LAS_HeaderInfo las_hdr;
@@ -2160,7 +2154,8 @@ void _DSceneViewerFrame::OnmnuImportLASSelected(wxCommandEvent& event)
 		const double scene_size = bb_min.distanceTo(bb_max);
 
 		// Set the point cloud as the only object in scene:
-		m_canvas->m_openGLScene = mrpt::make_aligned_shared<opengl::COpenGLScene>();
+		m_canvas->m_openGLScene =
+			mrpt::make_aligned_shared<opengl::COpenGLScene>();
 
 		if (dlgPLY.cbXYGrid->GetValue())
 		{

@@ -321,7 +321,8 @@ void CMetricMapBuilderRBPF::initialize(
   ---------------------------------------------------------------*/
 CPose3DPDF::Ptr CMetricMapBuilderRBPF::getCurrentPoseEstimation() const
 {
-	CPose3DPDFParticles::Ptr posePDF = mrpt::make_aligned_shared<CPose3DPDFParticles>();
+	CPose3DPDFParticles::Ptr posePDF =
+		mrpt::make_aligned_shared<CPose3DPDFParticles>();
 	mapPDF.getEstimatedPosePDF(*posePDF);
 
 	// Adds additional increment from accumulated odometry since last

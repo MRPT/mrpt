@@ -191,22 +191,23 @@ void CMyGLCanvas_DisplayWindow3D::OnMouseDown(wxMouseEvent& event)
 
 CMyGLCanvas_DisplayWindow3D::~CMyGLCanvas_DisplayWindow3D()
 {
-	m_openGLScene.reset();  // Avoid the base class to free this object (it's
-	// freed by CDisplayWindow3D)
+	getOpenGLSceneRef().reset();  // Avoid the base class to free this object
+	// (it's freed by CDisplayWindow3D)
 }
 
 void CMyGLCanvas_DisplayWindow3D::OnPreRender()
 {
-	if (m_openGLScene) m_openGLScene.reset();
+	auto openGLSceneRef = getOpenGLSceneRef();
+	if (openGLSceneRef) openGLSceneRef.reset();
 
 	COpenGLScene::Ptr ptrScene = m_win3D->get3DSceneAndLock();
-	if (ptrScene) m_openGLScene = ptrScene;
+	if (ptrScene) openGLSceneRef = ptrScene;
 }
 
 void CMyGLCanvas_DisplayWindow3D::OnPostRender()
 {
 	// Avoid the base class to free this object (it's freed by CDisplayWindow3D)
-	m_openGLScene.reset();
+	getOpenGLSceneRef().reset();
 	m_win3D->unlockAccess3DScene();
 
 	// If any, draw the 2D text messages:
@@ -580,7 +581,7 @@ void CDisplayWindow3D::setCameraElevationDeg(float deg)
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
 	C3DWindowDialog* win = (C3DWindowDialog*)m_hwnd.get();
-	if (win) win->m_canvas->cameraElevationDeg = deg;
+	if (win) win->m_canvas->setElevationDegrees(deg);
 #else
 	MRPT_UNUSED_PARAM(deg);
 #endif
@@ -590,7 +591,7 @@ void CDisplayWindow3D::useCameraFromScene(bool useIt)
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
 	C3DWindowDialog* win = (C3DWindowDialog*)m_hwnd.get();
-	if (win) win->m_canvas->useCameraFromScene = useIt;
+	if (win) win->m_canvas->setUseCameraFromScene(useIt);
 #else
 	MRPT_UNUSED_PARAM(useIt);
 #endif
@@ -603,7 +604,7 @@ void CDisplayWindow3D::setCameraAzimuthDeg(float deg)
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
 	C3DWindowDialog* win = (C3DWindowDialog*)m_hwnd.get();
-	if (win) win->m_canvas->cameraAzimuthDeg = deg;
+	if (win) win->m_canvas->setAzimuthDegrees(deg);
 #else
 	MRPT_UNUSED_PARAM(deg);
 #endif
@@ -618,9 +619,7 @@ void CDisplayWindow3D::setCameraPointingToPoint(float x, float y, float z)
 	C3DWindowDialog* win = (C3DWindowDialog*)m_hwnd.get();
 	if (win)
 	{
-		win->m_canvas->cameraPointingX = x;
-		win->m_canvas->cameraPointingY = y;
-		win->m_canvas->cameraPointingZ = z;
+		win->m_canvas->setCameraPointing(x, y, z);
 	}
 #else
 	MRPT_UNUSED_PARAM(x);
@@ -636,7 +635,7 @@ void CDisplayWindow3D::setCameraZoom(float zoom)
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
 	C3DWindowDialog* win = (C3DWindowDialog*)m_hwnd.get();
-	if (win) win->m_canvas->cameraZoomDistance = zoom;
+	if (win) win->m_canvas->setZoomDistance(zoom);
 #else
 	MRPT_UNUSED_PARAM(zoom);
 #endif
@@ -649,7 +648,7 @@ void CDisplayWindow3D::setCameraProjective(bool isProjective)
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
 	C3DWindowDialog* win = (C3DWindowDialog*)m_hwnd.get();
-	if (win) win->m_canvas->cameraIsProjective = isProjective;
+	if (win) win->m_canvas->setCameraProjective(isProjective);
 #else
 	MRPT_UNUSED_PARAM(isProjective);
 #endif
@@ -688,7 +687,7 @@ float CDisplayWindow3D::getFOV() const
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
 	C3DWindowDialog* win = (C3DWindowDialog*)m_hwnd.get();
-	if (win) return win->m_canvas->cameraFOV;
+	if (win) return win->m_canvas->cameraFOV();
 #endif
 	return .0f;
 }
@@ -697,7 +696,7 @@ void CDisplayWindow3D::setFOV(float v)
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
 	C3DWindowDialog* win = (C3DWindowDialog*)m_hwnd.get();
-	if (win) win->m_canvas->cameraFOV = v;
+	if (win) win->m_canvas->setCameraFOV(v);
 #endif
 }
 
@@ -708,7 +707,7 @@ float CDisplayWindow3D::getCameraElevationDeg() const
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
 	const C3DWindowDialog* win = (const C3DWindowDialog*)m_hwnd.get();
-	return win ? win->m_canvas->cameraElevationDeg : 0;
+	return win ? win->m_canvas->getElevationDegrees() : 0;
 #else
 	return 0;
 #endif
@@ -721,7 +720,7 @@ float CDisplayWindow3D::getCameraAzimuthDeg() const
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
 	const C3DWindowDialog* win = (const C3DWindowDialog*)m_hwnd.get();
-	return win ? win->m_canvas->cameraAzimuthDeg : 0;
+	return win ? win->m_canvas->getAzimuthDegrees() : 0;
 #else
 	return 0;
 #endif
@@ -737,9 +736,9 @@ void CDisplayWindow3D::getCameraPointingToPoint(
 	const C3DWindowDialog* win = (const C3DWindowDialog*)m_hwnd.get();
 	if (win)
 	{
-		x = win->m_canvas->cameraPointingX;
-		y = win->m_canvas->cameraPointingY;
-		z = win->m_canvas->cameraPointingZ;
+		x = win->m_canvas->getCameraPointingX();
+		y = win->m_canvas->getCameraPointingY();
+		z = win->m_canvas->getCameraPointingZ();
 	}
 	else
 		x = y = z = 0;
@@ -757,7 +756,7 @@ float CDisplayWindow3D::getCameraZoom() const
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
 	const C3DWindowDialog* win = (const C3DWindowDialog*)m_hwnd.get();
-	return win ? win->m_canvas->cameraZoomDistance : 0;
+	return win ? win->m_canvas->getZoomDistance() : 0;
 #else
 	return 0;
 #endif
@@ -770,7 +769,7 @@ bool CDisplayWindow3D::isCameraProjective() const
 {
 #if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
 	const C3DWindowDialog* win = (const C3DWindowDialog*)m_hwnd.get();
-	return win ? win->m_canvas->cameraIsProjective : true;
+	return win ? win->m_canvas->isCameraProjective() : true;
 #else
 	return true;
 #endif

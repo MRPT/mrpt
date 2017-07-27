@@ -134,7 +134,8 @@ int main(int argc, char** argv)
 	window.setCameraElevationDeg(90);
 	scene = window.get3DSceneAndLock();
 
-	opengl::CSetOfLines::Ptr lines = mrpt::make_aligned_shared<opengl::CSetOfLines>();
+	opengl::CSetOfLines::Ptr lines =
+		mrpt::make_aligned_shared<opengl::CSetOfLines>();
 	lines->setLocation(0, 0, 0);
 	lines->setColor(0, 0, 1);
 	lines->setLineWidth(10);

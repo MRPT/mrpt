@@ -358,15 +358,17 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 
 // Update 3D view ==========
 #if RAWLOGVIEWER_HAS_3D
-				this->m_gl3DRangeScan->m_openGLScene->clear();
+				auto openGLSceneRef = m_gl3DRangeScan->getOpenGLSceneRef();
+				openGLSceneRef->clear();
 				// this->m_gl3DRangeScan->m_openGLScene->insert(
 				// mrpt::opengl::stock_objects::CornerXYZ() );
-				this->m_gl3DRangeScan->m_openGLScene->insert(
-					mrpt::make_aligned_shared<mrpt::opengl::CAxis>(
+				openGLSceneRef->insert(
+					mrpt::opengl::CAxis::Create(
 						-20, -20, -20, 20, 20, 20, 1, 2, true));
 
 				mrpt::opengl::CPointCloudColoured::Ptr pnts =
-					mrpt::make_aligned_shared<mrpt::opengl::CPointCloudColoured>();
+					mrpt::make_aligned_shared<
+						mrpt::opengl::CPointCloudColoured>();
 				CColouredPointsMap pointMap;
 				pointMap.colorScheme.scheme =
 					CColouredPointsMap::cmFromIntensityImage;
@@ -430,8 +432,8 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 
 					pnts->setPointSize(4.0);
 				}
-				this->m_gl3DRangeScan->m_openGLScene->insert(pnts);
-				this->m_gl3DRangeScan->Refresh();
+				openGLSceneRef->insert(pnts);
+				m_gl3DRangeScan->Refresh();
 
 				// Free memory:
 				if (generate3Donthefly)
@@ -510,22 +512,24 @@ void xRawLogViewerFrame::SelectObjectInTreeView(
 				obs->generatePointCloud();
 // Update 3D view ==========
 #if RAWLOGVIEWER_HAS_3D
-				this->m_gl3DRangeScan->m_openGLScene->clear();
+				auto openGLSceneRef = m_gl3DRangeScan->getOpenGLSceneRef();
+				openGLSceneRef->clear();
 				// this->m_gl3DRangeScan->m_openGLScene->insert(
 				// mrpt::opengl::stock_objects::CornerXYZ() );
-				this->m_gl3DRangeScan->m_openGLScene->insert(
+				openGLSceneRef->insert(
 					mrpt::make_aligned_shared<mrpt::opengl::CAxis>(
 						-20, -20, -20, 20, 20, 20, 1, 2, true));
 
 				mrpt::opengl::CPointCloudColoured::Ptr pnts =
-					mrpt::make_aligned_shared<mrpt::opengl::CPointCloudColoured>();
+					mrpt::make_aligned_shared<
+						mrpt::opengl::CPointCloudColoured>();
 
 				CColouredPointsMap pntsMap;
 				pntsMap.loadFromVelodyneScan(*obs);
 				pnts->loadFromPointsMap(&pntsMap);
 				pnts->setPointSize(4.0);
 
-				this->m_gl3DRangeScan->m_openGLScene->insert(pnts);
+				openGLSceneRef->insert(pnts);
 				this->m_gl3DRangeScan->Refresh();
 
 				// Free memory:

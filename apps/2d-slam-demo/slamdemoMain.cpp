@@ -1990,7 +1990,8 @@ void slamdemoFrame::executeOneStep()
 		double executionTime;
 		static CTicTac tictac;
 		{
-			CActionCollection::Ptr act = mrpt::make_aligned_shared<CActionCollection>();
+			CActionCollection::Ptr act =
+				mrpt::make_aligned_shared<CActionCollection>();
 			CActionRobotMovement2D actmov;
 			CActionRobotMovement2D::TMotionModelOptions odo_opts;
 			odo_opts.modelSelection = CActionRobotMovement2D::mmGaussian;

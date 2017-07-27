@@ -75,8 +75,8 @@ void TestCapture_1394()
 			tictac.Tic();
 		}
 
-		CObservationImage::Ptr obs =
-			mrpt::make_aligned_shared<CObservationImage>();  // Memory will be freed by
+		CObservationImage::Ptr obs = mrpt::make_aligned_shared<
+			CObservationImage>();  // Memory will be freed by
 		// SF destructor in each
 		// loop.
 		if (!capture.getObservation(*obs))

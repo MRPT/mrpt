@@ -166,7 +166,8 @@ void CDlgCamTracking::OnbtnGrabClick(wxCommandEvent& event)
 	WX_START_TRY
 
 	CPose3D p;
-	m_main_win->m_canvas->m_openGLScene->getViewport("main")
+	m_main_win->m_canvas->getOpenGLSceneRef()
+		->getViewport("main")
 		->getCurrentCameraPose(p);
 
 	if (m_poses.empty())

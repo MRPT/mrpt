@@ -139,7 +139,7 @@ struct is_shared_ptr<std::shared_ptr<T>> : std::true_type
  * default the base class of all these smart pointers is CObject::Ptr.
  *
  * It is recommended to use MRPT-defined `mrpt::make_aligned_shared<>` instead
- * of `std::make_shared<>` to create objects, to avoid memory alignment 
+ * of `std::make_shared<>` to create objects, to avoid memory alignment
  * problems caused by classes containing Eigen vectors or matrices. Example:
  * \code
  * CFoo::Ptr o = mrpt::make_aligned_shared<CFoo>();

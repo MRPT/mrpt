@@ -446,8 +446,8 @@ int main(int argc, char** argv)
 		COpenGLScene::Ptr& scene = win.get3DSceneAndLock();
 
 		{  // Ground plane:
-			CGridPlaneXY::Ptr obj =
-				mrpt::make_aligned_shared<CGridPlaneXY>(-200, 200, -200, 200, 0, 5);
+			CGridPlaneXY::Ptr obj = mrpt::make_aligned_shared<CGridPlaneXY>(
+				-200, 200, -200, 200, 0, 5);
 			obj->setColor(0.7, 0.7, 0.7);
 			scene->insert(obj);
 		}

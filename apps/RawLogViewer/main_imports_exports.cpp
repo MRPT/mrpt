@@ -321,7 +321,8 @@ void xRawLogViewerFrame::OnImportSequenceOfImages(wxCommandEvent& event)
 				!os::_strcmpi("ras", filExt.c_str()))
 			{
 				// Add SF:
-				CSensoryFrame::Ptr sf = mrpt::make_aligned_shared<CSensoryFrame>();
+				CSensoryFrame::Ptr sf =
+					mrpt::make_aligned_shared<CSensoryFrame>();
 				CObservationImage::Ptr im =
 					mrpt::make_aligned_shared<CObservationImage>();
 				im->cameraPose = CPose3D(0, 0, 0);

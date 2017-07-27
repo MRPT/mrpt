@@ -204,7 +204,8 @@ string CSimpleDatabase::tablesName(size_t tableIndex) const
  ---------------------------------------------------------------*/
 CSimpleDatabaseTable::Ptr CSimpleDatabase::createTable(const string& name)
 {
-	CSimpleDatabaseTable::Ptr table = mrpt::make_aligned_shared<CSimpleDatabaseTable>();
+	CSimpleDatabaseTable::Ptr table =
+		mrpt::make_aligned_shared<CSimpleDatabaseTable>();
 	m_tables[name] = table;
 	return table;
 }

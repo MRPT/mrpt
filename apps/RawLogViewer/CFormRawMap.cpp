@@ -575,7 +575,8 @@ void loadMapInto3DScene(COpenGLScene& scene)
 	CPointsMap::COLOR_3DSCENE_R = CPointsMap::COLOR_3DSCENE_G =
 		CPointsMap::COLOR_3DSCENE_B = 0.9;
 
-	opengl::CSetOfObjects::Ptr objs = mrpt::make_aligned_shared<opengl::CSetOfObjects>();
+	opengl::CSetOfObjects::Ptr objs =
+		mrpt::make_aligned_shared<opengl::CSetOfObjects>();
 	theMap.getAs3DObject(objs);
 	scene.insert(objs);
 }

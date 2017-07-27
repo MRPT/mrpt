@@ -282,14 +282,14 @@ CSetOfObjects::Ptr stock_objects::RobotRhodon()
 	obj3->setColor(0.6, 0.6, 0.6);
 	ret->insert(obj3);
 
-	opengl::CCylinder::Ptr obj4 =
-		mrpt::make_aligned_shared<opengl::CCylinder>(0.05f, 0.05f, 0.4f, 20, 20);
+	opengl::CCylinder::Ptr obj4 = mrpt::make_aligned_shared<opengl::CCylinder>(
+		0.05f, 0.05f, 0.4f, 20, 20);
 	obj4->setLocation(0, 0, 0.73);
 	obj4->setColor(0, 0, 0.9);
 	ret->insert(obj4);
 
-	opengl::CCylinder::Ptr obj5 =
-		mrpt::make_aligned_shared<opengl::CCylinder>(0.05f, 0.05f, 0.4f, 20, 20);
+	opengl::CCylinder::Ptr obj5 = mrpt::make_aligned_shared<opengl::CCylinder>(
+		0.05f, 0.05f, 0.4f, 20, 20);
 	obj5->setPose(CPose3D(0.32, 0, 0.89, 0, -1, 0));
 	obj5->setColor(0, 0, 0.9);
 	ret->insert(obj5);
@@ -394,7 +394,8 @@ CSetOfObjects::Ptr stock_objects::CornerXYZEye()
   ---------------------------------------------------------------*/
 CSetOfObjects::Ptr stock_objects::BumblebeeCamera()
 {
-	CSetOfObjects::Ptr camera = mrpt::make_aligned_shared<opengl::CSetOfObjects>();
+	CSetOfObjects::Ptr camera =
+		mrpt::make_aligned_shared<opengl::CSetOfObjects>();
 
 	CPolyhedron::Ptr rect = opengl::CPolyhedron::CreateCubicPrism(
 		-0.02, 0.14, -0.02, 0.02, 0, -0.04);
@@ -402,12 +403,12 @@ CSetOfObjects::Ptr stock_objects::BumblebeeCamera()
 
 	camera->insert(rect);
 
-	CCylinder::Ptr lCam =
-		mrpt::make_aligned_shared<opengl::CCylinder>(0.01f, 0.01f, 0.003f, 10, 10);
+	CCylinder::Ptr lCam = mrpt::make_aligned_shared<opengl::CCylinder>(
+		0.01f, 0.01f, 0.003f, 10, 10);
 	lCam->setColor(1, 0, 0);
 
-	CCylinder::Ptr rCam =
-		mrpt::make_aligned_shared<opengl::CCylinder>(0.01f, 0.01f, 0.003f, 10, 10);
+	CCylinder::Ptr rCam = mrpt::make_aligned_shared<opengl::CCylinder>(
+		0.01f, 0.01f, 0.003f, 10, 10);
 	rCam->setPose(CPose3D(0.12, 0, 0));
 	rCam->setColor(0, 0, 0);
 
@@ -477,7 +478,8 @@ CSetOfObjects::Ptr stock_objects::Hokuyo_URG()
 		ret->insert(base);
 	}
 	{
-		CCylinder::Ptr cyl1 = mrpt::make_aligned_shared<CCylinder>(0.02f, 0.02f, 0.01f);
+		CCylinder::Ptr cyl1 =
+			mrpt::make_aligned_shared<CCylinder>(0.02f, 0.02f, 0.01f);
 		cyl1->setColor(0, 0, 0);
 		cyl1->setPose(CPoint3D(0, 0, -0.014));
 		ret->insert(cyl1);

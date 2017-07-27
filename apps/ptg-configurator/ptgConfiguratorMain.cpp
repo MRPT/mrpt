@@ -727,14 +727,16 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 
 	// Populate 3D views:
 	// ---------------------------
-	gl_view_WS = m_plot->m_openGLScene->getViewport();
-	gl_view_TPSpace = m_plotTPSpace->m_openGLScene->getViewport();
+	gl_view_WS = m_plot->getOpenGLSceneRef()->getViewport();
+	gl_view_TPSpace = m_plotTPSpace->getOpenGLSceneRef()->getViewport();
 
-	gl_TPSpace_TP_obstacles = mrpt::make_aligned_shared<mrpt::opengl::CSetOfObjects>();
-	gl_TPSpace_clearance =
-		mrpt::make_aligned_shared<mrpt::opengl::CMesh>(true, -5.0f, 5.0f, -5.0f, 5.0f);
+	gl_TPSpace_TP_obstacles =
+		mrpt::make_aligned_shared<mrpt::opengl::CSetOfObjects>();
+	gl_TPSpace_clearance = mrpt::make_aligned_shared<mrpt::opengl::CMesh>(
+		true, -5.0f, 5.0f, -5.0f, 5.0f);
 	gl_TPSpace_clearance_interp =
-		mrpt::make_aligned_shared<mrpt::opengl::CMesh>(true, -5.0f, 5.0f, -5.0f, 5.0f);
+		mrpt::make_aligned_shared<mrpt::opengl::CMesh>(
+			true, -5.0f, 5.0f, -5.0f, 5.0f);
 	gl_TPSpace_clearance_interp->setVisibility(false);
 
 	gl_view_TPSpace->insert(gl_TPSpace_TP_obstacles);
@@ -748,7 +750,8 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 		0.01, 5, "TP-Space", mrpt::utils::TColorf(1, 1, 1, 0.75), "sans", 15,
 		mrpt::opengl::NICE, 2);
 
-	gl_robot_ptg_prediction = mrpt::make_aligned_shared<mrpt::opengl::CSetOfLines>();
+	gl_robot_ptg_prediction =
+		mrpt::make_aligned_shared<mrpt::opengl::CSetOfLines>();
 	gl_robot_ptg_prediction->setName("ptg_prediction");
 	gl_robot_ptg_prediction->setLineWidth(1.0);
 	gl_robot_ptg_prediction->setColor_u8(
@@ -776,7 +779,8 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 	gl_WS_target->enableShowName(true);
 	gl_view_WS->insert(gl_WS_target);
 
-	gl_WS_target_reprojected = mrpt::make_aligned_shared<mrpt::opengl::CPointCloud>();
+	gl_WS_target_reprojected =
+		mrpt::make_aligned_shared<mrpt::opengl::CPointCloud>();
 	gl_WS_target_reprojected->setPointSize(5.0);
 	gl_WS_target_reprojected->setColor_u8(0xff, 0xff, 0x00, 0xe0);
 	gl_WS_target_reprojected->insertPoint(0, 0, 0);
@@ -822,13 +826,11 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 	gl_TPSpace_TP_obstacles->insert(gl_tp_obstacles);
 
 	// Set camera:
-	m_plot->cameraPointingX = 0;
-	m_plot->cameraPointingY = 0;
-	m_plot->cameraPointingZ = 0;
-	m_plot->cameraZoomDistance = 10;
-	m_plot->cameraElevationDeg = 90;
-	m_plot->cameraAzimuthDeg = -90;
-	m_plot->cameraIsProjective = false;
+	m_plot->setCameraPointing(0.0f, 0.0f, 0.0f);
+	m_plot->setZoomDistance(10.0f);
+	m_plot->setElevationDegrees(90.0f);
+	m_plot->setAzimuthDegrees(-90.0f);
+	m_plot->setCameraProjective(false);
 
 #if 0
 	// Fixed camera:
@@ -840,13 +842,11 @@ ptgConfiguratorframe::ptgConfiguratorframe(wxWindow* parent, wxWindowID id)
 	gl_view_TPSpace_cam->setZoomDistance(2.1f);
 #else
 	// User can rotate view:
-	m_plotTPSpace->cameraPointingX = 0;
-	m_plotTPSpace->cameraPointingY = 0;
-	m_plotTPSpace->cameraPointingZ = 0;
-	m_plotTPSpace->cameraZoomDistance = 2.1f;
-	m_plotTPSpace->cameraElevationDeg = 90;
-	m_plotTPSpace->cameraAzimuthDeg = -90;
-	m_plotTPSpace->cameraIsProjective = false;
+	m_plotTPSpace->setCameraPointing(0.0f, 0.0f, 0.0f);
+	m_plotTPSpace->setZoomDistance(2.1f);
+	m_plotTPSpace->setElevationDegrees(90.0f);
+	m_plotTPSpace->setAzimuthDegrees(-90.0f);
+	m_plotTPSpace->setCameraProjective(false);
 #endif
 
 	// Populate list of existing PTGs:
@@ -1390,7 +1390,7 @@ void ptgConfiguratorframe::Onplot3DMouseMove(wxMouseEvent& event)
 
 	// Intersection of 3D ray with ground plane ====================
 	TLine3D ray;
-	m_plot->m_openGLScene->getViewport("main")->get3DRayForPixelCoord(
+	m_plot->getOpenGLSceneRef()->getViewport("main")->get3DRayForPixelCoord(
 		X, Y, ray);
 	// Create a 3D plane, e.g. Z=0
 	const TPlane ground_plane(

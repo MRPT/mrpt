@@ -112,7 +112,8 @@ void TestDisplay3D()
 	// ------------------------------------------------------
 	{
 		opengl::CGridPlaneXY::Ptr obj =
-			mrpt::make_aligned_shared<opengl::CGridPlaneXY>(-20, 20, -20, 20, 0, 1);
+			mrpt::make_aligned_shared<opengl::CGridPlaneXY>(
+				-20, 20, -20, 20, 0, 1);
 		obj->setColor(0.8, 0.8, 0.8);
 		theScene->insert(obj);
 	}

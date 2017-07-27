@@ -141,7 +141,8 @@ int main(int argc, char** argv)
 			// Only if we have a valid pose, save it to the simple map:
 			if (has_gt_pose)
 			{
-				CSensoryFrame::Ptr SF = mrpt::make_aligned_shared<CSensoryFrame>();
+				CSensoryFrame::Ptr SF =
+					mrpt::make_aligned_shared<CSensoryFrame>();
 
 				for (size_t i = 0; i < importedObservations.size(); i++)
 				{
