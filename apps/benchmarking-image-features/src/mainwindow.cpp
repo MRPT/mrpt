@@ -2054,13 +2054,13 @@ void MainWindow::on_generateVisualOdometry_clicked()
     // Start the computation.
     //QFuture<void> future = QtConcurrent::run(&this->visual_odom, &VisualOdometry::generateVO(detector_selected, fext, numFeats, single_dataset_path, file_path3, feat_type));
 
-    extern Mat VisualOdometry::generateVO(CFeatureExtraction fext2, int numFeats2, string file_path2[3], int feat_type2);
+    //extern Mat VisualOdometry::generateVO(CFeatureExtraction fext2, int numFeats2, string file_path2[3], int feat_type2);
     //QFuture<Mat> future = QtConcurrent::run(VisualOdometry::generateVO, fext, numFeats, single_dataset_path, file_path3, feat_type);
-    QFuture<Mat> future = QtConcurrent::run(visual_odom->generateVO, fext, numFeats, file_paths, feat_type);
+    //QFuture<Mat> future = QtConcurrent::run(visual_odom->generateVO, fext, numFeats, file_paths, feat_type);
 
-    Mat tttt = future.result();
+    //Mat tttt = future.result();
 
-    FutureWatcher.setFuture(future);
+    //FutureWatcher.setFuture(future);
 
     //VisualOdometry visual_odom;
 
