@@ -512,7 +512,8 @@ CPose3DPDF::Ptr CMetricMapBuilderICP::getCurrentPoseEstimation() const
 	m_lastPoseEst.getLatestRobotPose(pdf2D.mean);
 	pdf2D.cov = m_lastPoseEst_cov;
 
-	CPose3DPDFGaussian::Ptr pdf3D = mrpt::make_aligned_shared<CPose3DPDFGaussian>();
+	CPose3DPDFGaussian::Ptr pdf3D =
+		mrpt::make_aligned_shared<CPose3DPDFGaussian>();
 	pdf3D->copyFrom(pdf2D);
 	return pdf3D;
 }

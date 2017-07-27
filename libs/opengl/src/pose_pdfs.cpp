@@ -42,7 +42,8 @@ CSetOfObjects::Ptr CSetOfObjects::posePDF2opengl(const CPosePDF& o)
 	{
 		const CPosePDFSOG* p = static_cast<const CPosePDFSOG*>(&o);
 
-		opengl::CSetOfLines::Ptr lins = mrpt::make_aligned_shared<opengl::CSetOfLines>();
+		opengl::CSetOfLines::Ptr lins =
+			mrpt::make_aligned_shared<opengl::CSetOfLines>();
 		lins->setColor(0, 0, 1, 0.6);
 		lins->setLineWidth(POSE_TAIL_WIDTH);
 
@@ -70,11 +71,13 @@ CSetOfObjects::Ptr CSetOfObjects::posePDF2opengl(const CPosePDF& o)
 	{
 		const CPosePDFGaussian* p = static_cast<const CPosePDFGaussian*>(&o);
 
-		opengl::CSetOfLines::Ptr lins = mrpt::make_aligned_shared<opengl::CSetOfLines>();
+		opengl::CSetOfLines::Ptr lins =
+			mrpt::make_aligned_shared<opengl::CSetOfLines>();
 		lins->setColor(POSE_COLOR, 0.6);
 		lins->setLineWidth(POSE_TAIL_WIDTH);
 
-		opengl::CEllipsoid::Ptr ellip = mrpt::make_aligned_shared<opengl::CEllipsoid>();
+		opengl::CEllipsoid::Ptr ellip =
+			mrpt::make_aligned_shared<opengl::CEllipsoid>();
 
 		ellip->setPose(CPose3D(p->mean.x(), p->mean.y(), 0));
 		ellip->setCovMatrix(p->cov, 2 /* x y */);
@@ -96,11 +99,13 @@ CSetOfObjects::Ptr CSetOfObjects::posePDF2opengl(const CPosePDF& o)
 	{
 		const CPosePDFParticles* p = static_cast<const CPosePDFParticles*>(&o);
 
-		opengl::CPointCloud::Ptr pnts = mrpt::make_aligned_shared<opengl::CPointCloud>();
+		opengl::CPointCloud::Ptr pnts =
+			mrpt::make_aligned_shared<opengl::CPointCloud>();
 		pnts->setColor(POSE_COLOR, 0.6);
 		pnts->setPointSize(POSE_POINT_SIZE);
 
-		opengl::CSetOfLines::Ptr lins = mrpt::make_aligned_shared<opengl::CSetOfLines>();
+		opengl::CSetOfLines::Ptr lins =
+			mrpt::make_aligned_shared<opengl::CSetOfLines>();
 		lins->setColor(POSE_COLOR, 0.6);
 		lins->setLineWidth(POSE_TAIL_WIDTH);
 
@@ -221,7 +226,8 @@ CSetOfObjects::Ptr CSetOfObjects::posePDF2opengl(const CPose3DPDF& o)
 		const CPose3DPDFGaussian* p =
 			static_cast<const CPose3DPDFGaussian*>(&o);
 
-		opengl::CEllipsoid::Ptr obj = mrpt::make_aligned_shared<opengl::CEllipsoid>();
+		opengl::CEllipsoid::Ptr obj =
+			mrpt::make_aligned_shared<opengl::CEllipsoid>();
 
 		obj->setPose(p->mean);
 		obj->setCovMatrix(CMatrixDouble(p->cov), p->cov(2, 2) == 0 ? 2 : 3);
@@ -266,7 +272,8 @@ CSetOfObjects::Ptr CSetOfObjects::posePDF2opengl(const CPose3DQuatPDF& o)
 		const CPose3DQuatPDFGaussian* p =
 			static_cast<const CPose3DQuatPDFGaussian*>(&o);
 
-		opengl::CEllipsoid::Ptr obj = mrpt::make_aligned_shared<opengl::CEllipsoid>();
+		opengl::CEllipsoid::Ptr obj =
+			mrpt::make_aligned_shared<opengl::CEllipsoid>();
 
 		obj->setPose(CPose3D(p->mean));
 		obj->setCovMatrix(CMatrixDouble(p->cov), p->cov(2, 2) == 0 ? 2 : 3);

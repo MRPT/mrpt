@@ -250,7 +250,8 @@ void CHierarchicalMHMap::loadFromXMLfile(std::string fileName)
 		if (atoi(table->get(j, "bidirectional").c_str()) == 1)
 		{
 			printf("Creating bidirectional arc\n");
-			arcrev = mrpt::make_aligned_shared<CHMHMapArc>(nodeto, nodefrom, 0, this);
+			arcrev = mrpt::make_aligned_shared<CHMHMapArc>(
+				nodeto, nodefrom, 0, this);
 			arcrev->m_arcType.setType(table->get(j, "arctype"));
 			arcrev->m_hypotheses.insert(COMMON_TOPOLOG_HYP);
 		}

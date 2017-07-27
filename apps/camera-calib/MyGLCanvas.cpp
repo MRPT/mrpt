@@ -18,13 +18,11 @@ CMyGLCanvas::CMyGLCanvas(
 	long style, const wxString& name)
 	: CMyGLCanvasBase(parent, id, pos, size, style, name)
 {
-	cameraPointingX = 0;
-	cameraPointingY = 0;
-	cameraPointingZ = 0;
-	cameraZoomDistance = 6;
-	cameraElevationDeg = 25;
-	cameraAzimuthDeg = 135;
-	cameraIsProjective = true;
+	setCameraPointing(0.0f, 0.0f, 0.0f);
+	setZoomDistance(6.0f);
+	setElevationDegrees(25.0f);
+	setAzimuthDegrees(135.0f);
+	setCameraProjective(true);
 }
 
 CMyGLCanvas::~CMyGLCanvas() {}

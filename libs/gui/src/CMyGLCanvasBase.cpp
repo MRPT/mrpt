@@ -21,8 +21,6 @@ using namespace mrpt::gui;
 using namespace mrpt::opengl;
 using namespace std;
 
-float CMyGLCanvasBase::SENSIBILITY_DEG_PER_PIXEL = 0.1f;
-
 #if MRPT_HAS_OPENGL_GLUT
 #ifdef MRPT_OS_WINDOWS
 // Windows:
@@ -65,82 +63,76 @@ void CMyGLCanvasBase::OnWindowCreation(wxWindowCreateEvent& ev)
 	if (!m_gl_context) m_gl_context.reset(new wxGLContext(this));
 }
 
-void CMyGLCanvasBase::OnMouseDown(wxMouseEvent& event)
-{
-	mouseClickX = event.GetX();
-	mouseClickY = event.GetY();
-	mouseClicked = true;
-}
+void CMyGLCanvasBase::swapBuffers() { SwapBuffers(); }
+<<<<<<< HEAD
 void CMyGLCanvasBase::OnMouseUp(wxMouseEvent& event) { mouseClicked = false; }
 void CMyGLCanvasBase::OnMouseMove(wxMouseEvent& event)
+=======
+void CMyGLCanvasBase::preRender() { OnPreRender(); }
+void CMyGLCanvasBase::postRender()
+>>>>>>> 9f6c1fc0f7746eb917e8960e450538e0cede9540
 {
-	int X = m_mouseLastX = event.GetX();
-	int Y = m_mouseLastY = event.GetY();
+	OnPostRender();
+}
 
-	// Proxy variables to cache the changes:
-	float cameraPointingX = this->cameraPointingX;
-	float cameraPointingY = this->cameraPointingY;
-	float cameraPointingZ = this->cameraPointingZ;
-	float cameraZoomDistance = this->cameraZoomDistance;
-	float cameraElevationDeg = this->cameraElevationDeg;
-	float cameraAzimuthDeg = this->cameraAzimuthDeg;
+void CMyGLCanvasBase::renderError(const string& err_msg)
+{
+	OnRenderError(_U(err_msg.c_str()));
+}
+<<<<<<< HEAD
+else if (event.ControlDown())
+{
+	// Rotate camera pointing direction:
+	const float dis = max(0.01f, (cameraZoomDistance));
+	float eye_x =
+		cameraPointingX +
+		dis * cos(DEG2RAD(cameraAzimuthDeg)) * cos(DEG2RAD(cameraElevationDeg));
+	float eye_y =
+		cameraPointingY +
+		dis * sin(DEG2RAD(cameraAzimuthDeg)) * cos(DEG2RAD(cameraElevationDeg));
+	float eye_z = cameraPointingZ + dis * sin(DEG2RAD(cameraElevationDeg));
 
-	if (event.LeftIsDown())
+	float A_AzimuthDeg = -SENSIBILITY_DEG_PER_PIXEL * (X - mouseClickX);
+	float A_ElevationDeg = SENSIBILITY_DEG_PER_PIXEL * (Y - mouseClickY);
+
+	// Orbit camera:
+	cameraAzimuthDeg += A_AzimuthDeg;
+	cameraElevationDeg += A_ElevationDeg;
+	if (cameraElevationDeg < -90) cameraElevationDeg = -90;
+	if (cameraElevationDeg > 90) cameraElevationDeg = 90;
+
+	// Move cameraPointing pos:
+	cameraPointingX =
+		eye_x -
+		dis * cos(DEG2RAD(cameraAzimuthDeg)) * cos(DEG2RAD(cameraElevationDeg));
+	cameraPointingY =
+		eye_y -
+		dis * sin(DEG2RAD(cameraAzimuthDeg)) * cos(DEG2RAD(cameraElevationDeg));
+	cameraPointingZ = eye_z - dis * sin(DEG2RAD(cameraElevationDeg));
+=======
+
+void CMyGLCanvasBase::OnMouseDown(wxMouseEvent& event)
+{
+	setMousePos(event.GetX(), event.GetY());
+	setMouseClicked(true);
+>>>>>>> 9f6c1fc0f7746eb917e8960e450538e0cede9540
+}
+void CMyGLCanvasBase::OnMouseUp(wxMouseEvent& /*event*/)
+{
+	setMouseClicked(false);
+}
+
+void CMyGLCanvasBase::OnMouseMove(wxMouseEvent& event)
+{
+	bool leftIsDown = event.LeftIsDown();
+
+	if (leftIsDown || event.RightIsDown())
 	{
-		if (event.ShiftDown())
-		{
-			// Zoom:
-			cameraZoomDistance *= exp(0.01 * (Y - mouseClickY));
-			if (cameraZoomDistance < 0.01) cameraZoomDistance = 0.01f;
+		int X = event.GetX();
+		int Y = event.GetY();
+		updateLastPos(X, Y);
 
-			float Az = -0.05 * (X - mouseClickX);
-			float D = 0.001 * cameraZoomDistance;
-			cameraPointingZ += D * Az;
-		}
-		else if (event.ControlDown())
-		{
-			// Rotate camera pointing direction:
-			const float dis = max(0.01f, (cameraZoomDistance));
-			float eye_x = cameraPointingX +
-						  dis * cos(DEG2RAD(cameraAzimuthDeg)) *
-							  cos(DEG2RAD(cameraElevationDeg));
-			float eye_y = cameraPointingY +
-						  dis * sin(DEG2RAD(cameraAzimuthDeg)) *
-							  cos(DEG2RAD(cameraElevationDeg));
-			float eye_z =
-				cameraPointingZ + dis * sin(DEG2RAD(cameraElevationDeg));
-
-			float A_AzimuthDeg = -SENSIBILITY_DEG_PER_PIXEL * (X - mouseClickX);
-			float A_ElevationDeg =
-				SENSIBILITY_DEG_PER_PIXEL * (Y - mouseClickY);
-
-			// Orbit camera:
-			cameraAzimuthDeg += A_AzimuthDeg;
-			cameraElevationDeg += A_ElevationDeg;
-			if (cameraElevationDeg < -90) cameraElevationDeg = -90;
-			if (cameraElevationDeg > 90) cameraElevationDeg = 90;
-
-			// Move cameraPointing pos:
-			cameraPointingX = eye_x -
-							  dis * cos(DEG2RAD(cameraAzimuthDeg)) *
-								  cos(DEG2RAD(cameraElevationDeg));
-			cameraPointingY = eye_y -
-							  dis * sin(DEG2RAD(cameraAzimuthDeg)) *
-								  cos(DEG2RAD(cameraElevationDeg));
-			cameraPointingZ = eye_z - dis * sin(DEG2RAD(cameraElevationDeg));
-		}
-		else
-		{
-			// Orbit camera:
-			cameraAzimuthDeg -= 0.2 * (X - mouseClickX);
-			cameraElevationDeg += 0.2 * (Y - mouseClickY);
-			if (cameraElevationDeg < -90) cameraElevationDeg = -90;
-			if (cameraElevationDeg > 90) cameraElevationDeg = 90;
-		}
-
-		mouseClickX = X;
-		mouseClickY = Y;
-
+<<<<<<< HEAD
 		// Potential user filter:
 		OnUserManuallyMovesCamera(
 			cameraPointingX, cameraPointingY, cameraPointingZ,
@@ -160,17 +152,38 @@ void CMyGLCanvasBase::OnMouseMove(wxMouseEvent& event)
 								Ay * sin(DEG2RAD(cameraAzimuthDeg)));
 		cameraPointingY += D * (Ax * sin(DEG2RAD(cameraAzimuthDeg)) +
 								Ay * cos(DEG2RAD(cameraAzimuthDeg)));
+=======
+		// Proxy variables to cache the changes:
+		CamaraParams params = cameraParams();
 
-		mouseClickX = X;
-		mouseClickY = Y;
+		if (leftIsDown)
+		{
+			if (event.ShiftDown())
+				updateZoom(params, X, Y);
 
+			else if (event.ControlDown())
+				updateRotate(params, X, Y);
+
+			else
+				updateOrbitCamera(params, X, Y);
+		}
+		else
+			updatePan(params, X, Y);
+>>>>>>> 9f6c1fc0f7746eb917e8960e450538e0cede9540
+
+
+<<<<<<< HEAD
 		// Potential user filter:
 		OnUserManuallyMovesCamera(
 			cameraPointingX, cameraPointingY, cameraPointingZ,
 			cameraZoomDistance, cameraElevationDeg, cameraAzimuthDeg);
+=======
+		setMousePos(X, Y);
+		setCameraParams(params);
+>>>>>>> 9f6c1fc0f7746eb917e8960e450538e0cede9540
 
-#if wxCHECK_VERSION(2, 9, 5)
-		wxTheApp->SafeYieldFor(nullptr, wxEVT_CATEGORY_TIMER);
+		#if wxCHECK_VERSION(2, 9, 5)
+			wxTheApp->SafeYieldFor(nullptr, wxEVT_CATEGORY_TIMER);
 #endif
 		Refresh(false);
 	}
@@ -181,6 +194,7 @@ void CMyGLCanvasBase::OnMouseMove(wxMouseEvent& event)
 
 void CMyGLCanvasBase::OnMouseWheel(wxMouseEvent& event)
 {
+<<<<<<< HEAD
 	float cameraZoomDistance = this->cameraZoomDistance;
 
 	cameraZoomDistance *= 1 - 0.03f * (event.GetWheelRotation() / 120.0f);
@@ -189,6 +203,11 @@ void CMyGLCanvasBase::OnMouseWheel(wxMouseEvent& event)
 	OnUserManuallyMovesCamera(
 		cameraPointingX, cameraPointingY, cameraPointingZ, cameraZoomDistance,
 		cameraElevationDeg, cameraAzimuthDeg);
+=======
+	CamaraParams params = cameraParams();
+	updateZoom(params, event.GetWheelRotation());
+	setCameraParams(params);
+>>>>>>> 9f6c1fc0f7746eb917e8960e450538e0cede9540
 
 	Refresh(false);
 	// ensure we have the focus so we get keyboard events:
@@ -198,6 +217,7 @@ void CMyGLCanvasBase::OnMouseWheel(wxMouseEvent& event)
 static int WX_GL_ATTR_LIST[] = {WX_GL_DOUBLEBUFFER, WX_GL_RGBA,
 								WX_GL_DEPTH_SIZE, 24, 0};
 
+<<<<<<< HEAD
 CMyGLCanvasBase::CMyGLCanvasBase(
 	wxWindow* parent, wxWindowID id, const wxPoint& pos, const wxSize& size,
 	long style, const wxString& name)
@@ -260,6 +280,46 @@ CMyGLCanvasBase::CMyGLCanvasBase(
 	Connect(
 		wxEVT_CREATE,
 		(wxObjectEventFunction)&CMyGLCanvasBase::OnWindowCreation);
+=======
+CMyGLCanvasBase::CMyGLCanvasBase(
+	wxWindow* parent, wxWindowID id, const wxPoint& pos, const wxSize& size,
+	long style, const wxString& name)
+	: CGlCanvasBase(),
+	  wxGLCanvas(
+		  parent, id, WX_GL_ATTR_LIST, pos, size,
+		  style | wxFULL_REPAINT_ON_RESIZE, name),
+	  m_gl_context(nullptr),
+	  m_init(false)
+{
+	Connect(
+		wxID_ANY, wxEVT_LEFT_DOWN,
+		(wxObjectEventFunction)&CMyGLCanvasBase::OnMouseDown);
+	Connect(
+		wxID_ANY, wxEVT_RIGHT_DOWN,
+		(wxObjectEventFunction)&CMyGLCanvasBase::OnMouseDown);
+	Connect(
+		wxID_ANY, wxEVT_LEFT_UP,
+		(wxObjectEventFunction)&CMyGLCanvasBase::OnMouseUp);
+	Connect(
+		wxID_ANY, wxEVT_RIGHT_UP,
+		(wxObjectEventFunction)&CMyGLCanvasBase::OnMouseUp);
+	Connect(
+		wxID_ANY, wxEVT_MOTION,
+		(wxObjectEventFunction)&CMyGLCanvasBase::OnMouseMove);
+	Connect(
+		wxID_ANY, wxEVT_MOUSEWHEEL,
+		(wxObjectEventFunction)&CMyGLCanvasBase::OnMouseWheel);
+
+	Connect(
+		wxID_ANY, wxEVT_CHAR, (wxObjectEventFunction)&CMyGLCanvasBase::OnChar);
+	Connect(
+		wxID_ANY, wxEVT_CHAR_HOOK,
+		(wxObjectEventFunction)&CMyGLCanvasBase::OnChar);
+
+	Connect(
+		wxEVT_CREATE,
+		(wxObjectEventFunction)&CMyGLCanvasBase::OnWindowCreation);
+>>>>>>> 9f6c1fc0f7746eb917e8960e450538e0cede9540
 
 // JL: There seems to be a problem in MSW we don't receive this event, but
 //      in GTK we do and at the right moment to avoid an X server crash.
@@ -269,13 +329,17 @@ CMyGLCanvasBase::CMyGLCanvasBase(
 #endif
 }
 
+<<<<<<< HEAD
 CMyGLCanvasBase::~CMyGLCanvasBase() {}
 void CMyGLCanvasBase::OnChar(wxKeyEvent& event) { OnCharCustom(event); }
+=======
+
+CMyGLCanvasBase::~CMyGLCanvasBase() { delete_safe(m_gl_context); }
+void CMyGLCanvasBase::OnChar(wxKeyEvent& event) { OnCharCustom(event); }
+
+>>>>>>> 9f6c1fc0f7746eb917e8960e450538e0cede9540
 void CMyGLCanvasBase::Render()
 {
-	CTicTac tictac;
-	double At = 0.1;
-
 	wxPaintDC dc(this);
 
 	if (!m_gl_context)
@@ -292,6 +356,7 @@ void CMyGLCanvasBase::Render()
 		m_init = true;
 	}
 
+<<<<<<< HEAD
 	try
 	{
 		// Call PreRender user code:
@@ -373,6 +438,11 @@ void CMyGLCanvasBase::Render()
 		glPopAttrib();
 		std::cerr << "Runtime error!" << std::endl;
 	}
+=======
+	int width, height;
+	GetClientSize(&width, &height);
+	double At = renderCanvas(width, height);
+>>>>>>> 9f6c1fc0f7746eb917e8960e450538e0cede9540
 
 	OnPostRenderSwapBuffers(At, dc);
 }
@@ -400,7 +470,7 @@ void CMyGLCanvasBase::OnSize(wxSizeEvent& event)
 		else
 			SetCurrent(*m_gl_context);
 
-		glViewport(0, 0, (GLint)w, (GLint)h);
+		resizeViewport(w, h);
 	}
 }
 

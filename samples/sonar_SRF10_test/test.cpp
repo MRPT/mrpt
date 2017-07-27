@@ -44,7 +44,8 @@ int main()
 			mrpt::make_aligned_shared<mrpt::opengl::CGridPlaneXY>(
 				-20, 20, -20, 20, 0, 1));
 		scene->insert(mrpt::opengl::stock_objects::RobotPioneer());
-		// scene->insert( mrpt::make_aligned_shared<mrpt::opengl::CCylinder>(1, 1, 2.0f)
+		// scene->insert( mrpt::make_aligned_shared<mrpt::opengl::CCylinder>(1,
+		// 1, 2.0f)
 		// );
 		wind.unlockAccess3DScene();
 
@@ -104,9 +105,9 @@ int main()
 							scene->getByName(obj);
 						if (!objPtr)
 						{
-							sonarRange =
-								mrpt::make_aligned_shared<mrpt::opengl::CCylinder>(
-									0.0f, 0.0f, 1.0f, 30, 10);
+							sonarRange = mrpt::make_aligned_shared<
+								mrpt::opengl::CCylinder>(
+								0.0f, 0.0f, 1.0f, 30, 10);
 							sonarRange->setName(obj);
 							scene->insert(sonarRange);
 						}

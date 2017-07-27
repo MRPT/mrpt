@@ -1324,7 +1324,8 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(
 
 	// Prepare 3D scene: (of live view)
 	// ------------------------------------------
-	m_plot3D->m_openGLScene = mrpt::make_aligned_shared<mrpt::opengl::COpenGLScene>();
+	auto openGLSceneRef = m_plot3D->getOpenGLSceneRef();
+	openGLSceneRef = mrpt::make_aligned_shared<mrpt::opengl::COpenGLScene>();
 
 	// Ground plane:
 	{
@@ -1332,21 +1333,22 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(
 			mrpt::make_aligned_shared<mrpt::opengl::CGridPlaneXY>(
 				-10, 10, -10, 10, 0, 1);
 		obj->setColor_u8(TColor(200, 200, 200));
-		m_plot3D->m_openGLScene->insert(obj);
+		openGLSceneRef->insert(obj);
 	}
 	//// XYZ corner:
 	// m_plot3D->m_openGLScene->insert(
 	// mrpt::opengl::stock_objects::CornerXYZSimple(0.5,2) );
 
 	// 3D points:
-	m_gl_3d_points = mrpt::make_aligned_shared<mrpt::opengl::CPointCloudColoured>();
+	m_gl_3d_points =
+		mrpt::make_aligned_shared<mrpt::opengl::CPointCloudColoured>();
 	m_gl_3d_points->setPointSize(2);
-	m_plot3D->m_openGLScene->insert(m_gl_3d_points);
+	openGLSceneRef->insert(m_gl_3d_points);
 
 	m_gl_corner_left = mrpt::opengl::stock_objects::CornerXYZSimple(0.03f, 2);
 	m_gl_corner_right = mrpt::opengl::stock_objects::CornerXYZSimple(0.03f, 2);
-	m_plot3D->m_openGLScene->insert(m_gl_corner_left);
-	m_plot3D->m_openGLScene->insert(m_gl_corner_right);
+	openGLSceneRef->insert(m_gl_corner_left);
+	openGLSceneRef->insert(m_gl_corner_right);
 
 	// Prepare 3D scene: (of calibrate view)
 	// ------------------------------------------
@@ -2890,10 +2892,11 @@ void kinect_calibrate_guiDialog::CalibUpdate3DViewCameras()
 	opengl::CSetOfObjects::Ptr gl_objs =
 		mrpt::make_aligned_shared<opengl::CSetOfObjects>();
 
-	opengl::CGridPlaneXY::Ptr grid = mrpt::make_aligned_shared<opengl::CGridPlaneXY>(
-		0, check_size_x * check_squares_length_X_meters, 0,
-		check_size_y * check_squares_length_Y_meters, 0,
-		check_squares_length_X_meters);
+	opengl::CGridPlaneXY::Ptr grid =
+		mrpt::make_aligned_shared<opengl::CGridPlaneXY>(
+			0, check_size_x * check_squares_length_X_meters, 0,
+			check_size_y * check_squares_length_Y_meters, 0,
+			check_squares_length_X_meters);
 	gl_objs->insert(grid);
 
 	const size_t N = m_calib_result.left_cam_poses.size();
@@ -2933,7 +2936,7 @@ void kinect_calibrate_guiDialog::CalibUpdate3DViewCameras()
 		mrpt::poses::CPose3D(0, 0, 0, DEG2RAD(0), DEG2RAD(180), DEG2RAD(0)));
 	scene->insert(gl_objs);
 
-	m_plot3D_cameras->m_openGLScene = scene;
+	m_plot3D_cameras->setOpenGLSceneRef(scene);
 
 	WX_END_TRY
 }

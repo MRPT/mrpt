@@ -629,7 +629,8 @@ void Run_KF_SLAM(CConfigFile& cfgFile, const std::string& rawlogFileName)
 			// Save 3D view of the filter state:
 			if (win3d || (SAVE_3D_SCENES && !(step % SAVE_LOG_FREQUENCY)))
 			{
-				COpenGLScene::Ptr scene3D = mrpt::make_aligned_shared<COpenGLScene>();
+				COpenGLScene::Ptr scene3D =
+					mrpt::make_aligned_shared<COpenGLScene>();
 				{
 					opengl::CGridPlaneXY::Ptr grid =
 						mrpt::make_aligned_shared<opengl::CGridPlaneXY>(

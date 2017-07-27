@@ -2167,7 +2167,8 @@ void CGraphSlamEngine<GRAPH_T>::initOdometryVisualization()
 	using namespace mrpt::opengl;
 
 	// point cloud
-	CPointCloud::Ptr odometry_poses_cloud = mrpt::make_aligned_shared<CPointCloud>();
+	CPointCloud::Ptr odometry_poses_cloud =
+		mrpt::make_aligned_shared<CPointCloud>();
 	odometry_poses_cloud->setPointSize(1.0);
 	odometry_poses_cloud->enablePointSmooth();
 	odometry_poses_cloud->enableColorFromX(false);

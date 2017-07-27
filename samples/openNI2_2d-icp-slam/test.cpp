@@ -91,7 +91,8 @@ int main(int argc, char** argv)
 
 			// Create the Opengl object for the point cloud:
 			scene->insert(gl_points);
-			scene->insert(mrpt::make_aligned_shared<mrpt::opengl::CGridPlaneXY>());
+			scene->insert(
+				mrpt::make_aligned_shared<mrpt::opengl::CGridPlaneXY>());
 			scene->insert(mrpt::opengl::stock_objects::CornerXYZ());
 			scene->insert(gl_2d_scan);
 
@@ -141,7 +142,8 @@ int main(int argc, char** argv)
 				if (newObs->hasRangeImage)
 				{
 					// Convert to scan:
-					obs_2d = mrpt::make_aligned_shared<CObservation2DRangeScan>();
+					obs_2d =
+						mrpt::make_aligned_shared<CObservation2DRangeScan>();
 
 					T3DPointsTo2DScanParams p2s;
 					p2s.angle_sup = .5f * vert_FOV;

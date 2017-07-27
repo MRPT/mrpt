@@ -117,7 +117,8 @@ int main(int argc, char** argv)
 
 				// Create the Opengl object for the point cloud:
 				scene->insert(gl_points);
-				scene->insert(mrpt::make_aligned_shared<mrpt::opengl::CGridPlaneXY>());
+				scene->insert(
+					mrpt::make_aligned_shared<mrpt::opengl::CGridPlaneXY>());
 				scene->insert(mrpt::opengl::stock_objects::CornerXYZ());
 
 				const double aspect_ratio = 480.0 / 640.0;

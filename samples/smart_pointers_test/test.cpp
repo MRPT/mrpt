@@ -24,7 +24,8 @@ void TestSmartPointers()
 	p3D->setFromValues(1, 2, 3, DEG2RAD(30), DEG2RAD(-45), DEG2RAD(-30));
 
 	// And a smart pointer to a CPose2D:
-	CPose2D::Ptr p2D = mrpt::make_aligned_shared<CPose2D>();  // This is exactly the same
+	CPose2D::Ptr p2D =
+		mrpt::make_aligned_shared<CPose2D>();  // This is exactly the same
 	// than calling
 	// mrpt::make_aligned_shared<>()
 	p2D->x(4);

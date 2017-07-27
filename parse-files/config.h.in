@@ -87,6 +87,8 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 /** wxWidgets is present in the system (required for UTILS::CDisplayWindow, etc.) */
 #define MRPT_HAS_WXWIDGETS        ${CMAKE_MRPT_HAS_WXWIDGETS}
 
+#define MRPT_HAS_Qt5              ${CMAKE_MRPT_HAS_Qt5}
+
 /** Has MRPT libjpeg? And whether it's in the system (Linux) or built-in (Windows, some rare cases in Linux). */
 #define MRPT_HAS_JPEG             ${CMAKE_MRPT_HAS_JPEG}
 #define MRPT_HAS_JPEG_SYSTEM      ${CMAKE_MRPT_HAS_JPEG_SYSTEM}

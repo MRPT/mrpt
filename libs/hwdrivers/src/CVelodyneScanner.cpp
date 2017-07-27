@@ -294,8 +294,8 @@ bool CVelodyneScanner::getNextObservation(
 			// Create smart ptr to new in-progress observation:
 			if (!m_rx_scan)
 			{
-				m_rx_scan =
-					mrpt::make_aligned_shared<mrpt::obs::CObservationVelodyneScan>();
+				m_rx_scan = mrpt::make_aligned_shared<
+					mrpt::obs::CObservationVelodyneScan>();
 				m_rx_scan->sensorLabel =
 					this->m_sensorLabel + std::string("_SCAN");
 				m_rx_scan->sensorPose = m_sensorPose;

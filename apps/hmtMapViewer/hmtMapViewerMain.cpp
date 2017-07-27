@@ -507,7 +507,7 @@ hmtMapViewerFrame::hmtMapViewerFrame(wxWindow* parent, wxWindowID id)
 		new CMyGLCanvas(Panel6, wxID_ANY, wxDefaultPosition, wxDefaultSize);
 	Panel6->SetMinSize(wxSize(200, 200));
 	m_canvas_HMAP->SetMinSize(wxSize(200, 200));
-	m_canvas_HMAP->m_openGLScene->insert(
+	m_canvas_HMAP->getOpenGLSceneRef()->insert(
 		mrpt::make_aligned_shared<opengl::CGridPlaneXY>());
 
 	FlexGridSizer6->Add(
@@ -517,18 +517,16 @@ hmtMapViewerFrame::hmtMapViewerFrame(wxWindow* parent, wxWindowID id)
 		new CMyGLCanvas(Panel7, wxID_ANY, wxDefaultPosition, wxDefaultSize);
 	Panel7->SetMinSize(wxSize(200, 200));
 	m_canvas_LMH->SetMinSize(wxSize(200, 200));
-	m_canvas_LMH->m_openGLScene->insert(
+	m_canvas_LMH->getOpenGLSceneRef()->insert(
 		mrpt::make_aligned_shared<opengl::CGridPlaneXY>());
 	FlexGridSizer7->Add(
 		m_canvas_LMH, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
 
-	m_canvas_LMH->cameraPointingX = 0;
-	m_canvas_LMH->cameraPointingY = 0;
-	m_canvas_LMH->cameraPointingZ = 0;
-	m_canvas_LMH->cameraZoomDistance = 100;
-	m_canvas_LMH->cameraElevationDeg = 90;
-	m_canvas_LMH->cameraAzimuthDeg = 0;
-	m_canvas_LMH->cameraIsProjective = false;
+	m_canvas_LMH->setCameraPointing(0.0f, 0.0f, 0.0f);
+	m_canvas_LMH->setZoomDistance(100.0f);
+	m_canvas_LMH->setElevationDegrees(90.0f);
+	m_canvas_LMH->setAzimuthDegrees(0.0f);
+	m_canvas_LMH->setCameraProjective(false);
 
 	Maximize();
 
@@ -696,7 +694,7 @@ void hmtMapViewerFrame::updateLocalMapView()
 
 	CMyRedirector redir(edLog);
 
-	m_canvas_LMH->m_openGLScene->clear();
+	m_canvas_LMH->getOpenGLSceneRef()->clear();
 
 	// Get the hypothesis ID:
 	THypothesisID hypID =
@@ -883,7 +881,7 @@ void hmtMapViewerFrame::updateLocalMapView()
 		}  // two pass
 
 		// Add to the scene:
-		m_canvas_LMH->m_openGLScene->insert(objs);
+		m_canvas_LMH->getOpenGLSceneRef()->insert(objs);
 	}
 	else if (obj->GetRuntimeClass() == CLASS_ID(CLocalMetricHypothesis))
 	{
@@ -898,7 +896,7 @@ void hmtMapViewerFrame::updateLocalMapView()
 
 void hmtMapViewerFrame::updateGlobalMapView()
 {
-	m_canvas_HMAP->m_openGLScene->clear();
+	m_canvas_HMAP->getOpenGLSceneRef()->clear();
 
 	wxBusyCursor busy;
 
@@ -931,7 +929,7 @@ void hmtMapViewerFrame::updateGlobalMapView()
 		//		cout << "Showing hypothesis ID: " << hypID  << endl;
 
 		hmt_map->m_map.getAs3DScene(
-			*m_canvas_HMAP->m_openGLScene, refID, hypID);
+			*m_canvas_HMAP->getOpenGLSceneRef(), refID, hypID);
 
 		m_canvas_HMAP->Refresh();
 	}

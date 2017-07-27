@@ -873,10 +873,11 @@ void camera_calib_guiDialog::show3Dview()
 	if (!check_squares_length_X_meters || !check_squares_length_Y_meters)
 		return;
 
-	opengl::CGridPlaneXY::Ptr grid = mrpt::make_aligned_shared<opengl::CGridPlaneXY>(
-		0, check_size_x * check_squares_length_X_meters, 0,
-		check_size_y * check_squares_length_Y_meters, 0,
-		check_squares_length_X_meters);
+	opengl::CGridPlaneXY::Ptr grid =
+		mrpt::make_aligned_shared<opengl::CGridPlaneXY>(
+			0, check_size_x * check_squares_length_X_meters, 0,
+			check_size_y * check_squares_length_Y_meters, 0,
+			check_squares_length_X_meters);
 	scene->insert(grid);
 
 	for (TCalibrationImageList::iterator it = lst_images.begin();
@@ -897,7 +898,7 @@ void camera_calib_guiDialog::show3Dview()
 
 	// scene->insert( mrpt::opengl::stock_objects::CornerXYZ() );
 
-	this->m_3Dview->m_openGLScene = scene;
+	this->m_3Dview->setOpenGLSceneRef(scene);
 	this->m_3Dview->Refresh();
 }
 
