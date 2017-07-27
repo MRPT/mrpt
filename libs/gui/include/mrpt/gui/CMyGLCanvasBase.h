@@ -23,7 +23,7 @@ namespace gui
 {
 }
 }  // At least declare the existence of the namespace mrpt::gui even if we don't
-   // have wxWidgets libs
+// have wxWidgets libs
 
 #if MRPT_HAS_WXWIDGETS
 

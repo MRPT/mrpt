@@ -47,8 +47,7 @@ void CViewerContainer::showRangeScan(CNode* node)
 	CRangeScanNode* obsNode = dynamic_cast<CRangeScanNode*>(node);
 	assert(obsNode);
 
-	mrpt::opengl::CPlanarLaserScan::Ptr obj =
-		mrpt::opengl::CPlanarLaserScan::Create();
+	auto obj = mrpt::make_aligned_shared<mrpt::opengl::CPlanarLaserScan>();
 	obj->setScan(*(obsNode->observation().get()));
 	obj->setPose(obsNode->getPose());
 	obj->setSurfaceColor(1.0f, 0.0f, 0.0f, 0.5f);

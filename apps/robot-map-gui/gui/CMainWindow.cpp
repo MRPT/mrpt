@@ -1,20 +1,12 @@
-<<<<<<< HEAD
 /* +------------------------------------------------------------------------+
-=======
-/* +---------------------------------------------------------------------------+
->>>>>>> 9f6c1fc0f7746eb917e8960e450538e0cede9540
    |                     Mobile Robot Programming Toolkit (MRPT)            |
    |                          http://www.mrpt.org/                          |
    |                                                                        |
    | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file     |
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
-<<<<<<< HEAD
    +------------------------------------------------------------------------+ */
-=======
-+ -------------------------------------------------------------------------- -
-	+* /
->>>>>>> 9f6c1fc0f7746eb917e8960e450538e0cede9540
+
 #include "CMainWindow.h"
 #include "ui_CMainWindow.h"
 #include "CDocument.h"
@@ -34,11 +26,11 @@
 
 #include "mrpt/gui/CQtGlCanvasBase.h"
 
-<<<<<<< HEAD CMainWindow::CMainWindow(QWidget* parent) : QMainWindow(parent)
-{
-}
-CMainWindow::~CMainWindow() {}
-======= CMainWindow::CMainWindow(QWidget* parent) : QMainWindow(parent), m_document(nullptr), m_model(nullptr), m_ui(std::make_unique < Ui::CMainWindow > ())
+CMainWindow::CMainWindow(QWidget* parent)
+	: QMainWindow(parent),
+	  m_document(nullptr),
+	  m_model(nullptr),
+	  m_ui(std::make_unique<Ui::CMainWindow>())
 {
 	m_ui->setupUi(this);
 	QObject::connect(
@@ -266,4 +258,3 @@ void CMainWindow::clearObservationsViewer()
 	QLayoutItem* child;
 	while ((child = layout->takeAt(0)) != 0) delete child;
 }
->>>>>>> 9f6c1fc0f7746eb917e8960e450538e0cede9540
