@@ -440,6 +440,7 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(
 	CMemoryStream s(DEFAULT_GRIDMAP_DATA, sizeof(DEFAULT_GRIDMAP_DATA));
 	s >> m_gridMap;
 
+	auto openGLSceneRef = m_plot3D->getOpenGLSceneRef();
 	// Populate 3D views:
 	// -------------------------------
 	{
@@ -447,28 +448,30 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(
 			mrpt::make_aligned_shared<mrpt::opengl::CGridPlaneXY>(
 				-50, 50, -50, 50, 0, 1);
 		obj->setColor_u8(TColor(30, 30, 30, 50));
-		m_plot3D->m_openGLScene->insert(obj);
+		openGLSceneRef->insert(obj);
 	}
 
 	gl_grid = mrpt::make_aligned_shared<mrpt::opengl::CSetOfObjects>();
-	m_plot3D->m_openGLScene->insert(gl_grid);
+	openGLSceneRef->insert(gl_grid);
 	this->updateMap3DView();
 
 	gl_robot = mrpt::make_aligned_shared<mrpt::opengl::CSetOfObjects>();
 	{
 		mrpt::opengl::CCylinder::Ptr obj =
-			mrpt::make_aligned_shared<mrpt::opengl::CCylinder>(0.2f, 0.1f, 0.9f);
+			mrpt::make_aligned_shared<mrpt::opengl::CCylinder>(
+				0.2f, 0.1f, 0.9f);
 		obj->setColor_u8(TColor::red);
 		gl_robot->insert(obj);
 	}
-	m_plot3D->m_openGLScene->insert(gl_robot);
+	openGLSceneRef->insert(gl_robot);
 
 	gl_scan3D = mrpt::make_aligned_shared<mrpt::opengl::CPlanarLaserScan>();
 	gl_scan3D->enableLine(false);
 	gl_scan3D->setPointsWidth(3.0);
 	gl_robot->insert(gl_scan3D);
 
-	gl_robot_sensor_range = mrpt::make_aligned_shared<mrpt::opengl::CDisk>(0, 0);
+	gl_robot_sensor_range =
+		mrpt::make_aligned_shared<mrpt::opengl::CDisk>(0, 0);
 	gl_robot_sensor_range->setColor_u8(TColor(0, 0, 255, 90));
 	gl_robot_sensor_range->setLocation(0, 0, 0.01);
 	gl_robot->insert(gl_robot_sensor_range);
@@ -476,7 +479,7 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(
 	gl_robot_path = mrpt::make_aligned_shared<mrpt::opengl::CSetOfLines>();
 	gl_robot_path->setLineWidth(1);
 	gl_robot_path->setColor_u8(TColor(40, 40, 40, 200));
-	m_plot3D->m_openGLScene->insert(gl_robot_path);
+	openGLSceneRef->insert(gl_robot_path);
 
 	gl_target = mrpt::make_aligned_shared<mrpt::opengl::CSetOfObjects>();
 	{
@@ -497,11 +500,12 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(
 			0, -1, 0, 0, -0.2f, 0, 0.4f, 0.05f, 0.15f);
 		obj->setColor_u8(TColor(0, 0, 255));
 		gl_target->insert(obj);
-		m_plot3D->m_openGLScene->insert(gl_target);
+		openGLSceneRef->insert(gl_target);
 	}
 
 	{  // Sign of "picking a navigation target":
-		m_gl_placing_nav_target = mrpt::make_aligned_shared<opengl::CSetOfObjects>();
+		m_gl_placing_nav_target =
+			mrpt::make_aligned_shared<opengl::CSetOfObjects>();
 
 		mrpt::opengl::CArrow::Ptr obj;
 		obj = mrpt::make_aligned_shared<mrpt::opengl::CArrow>(
@@ -521,76 +525,72 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(
 		obj->setColor_u8(TColor(0, 0, 255));
 		m_gl_placing_nav_target->insert(obj);
 		m_gl_placing_nav_target->setVisibility(false);  // Start invisible.
-		m_plot3D->m_openGLScene->insert(m_gl_placing_nav_target);
+		openGLSceneRef->insert(m_gl_placing_nav_target);
 	}
 	{  // Sign of "replacing the robot":
 		m_gl_placing_robot = mrpt::make_aligned_shared<opengl::CSetOfObjects>();
 		mrpt::opengl::CCylinder::Ptr obj =
-			mrpt::make_aligned_shared<mrpt::opengl::CCylinder>(0.2f, 0.1f, 0.9f);
+			mrpt::make_aligned_shared<mrpt::opengl::CCylinder>(
+				0.2f, 0.1f, 0.9f);
 		obj->setColor_u8(TColor(255, 0, 0, 120));
 		m_gl_placing_robot->insert(obj);
 
 		m_gl_placing_robot->setVisibility(false);  // Start invisible.
-		m_plot3D->m_openGLScene->insert(m_gl_placing_robot);
+		openGLSceneRef->insert(m_gl_placing_robot);
 	}
 
-	m_plot3D->m_openGLScene->insert(mrpt::opengl::stock_objects::CornerXYZ(1));
+	openGLSceneRef->insert(mrpt::opengl::stock_objects::CornerXYZ(1));
 
 	// Set camera:
-	m_plot3D->cameraPointingX = 0;
-	m_plot3D->cameraPointingY = 0;
-	m_plot3D->cameraPointingZ = 0;
-	m_plot3D->cameraZoomDistance = 40;
-	m_plot3D->cameraElevationDeg = 70;
-	m_plot3D->cameraAzimuthDeg = -100;
-	m_plot3D->cameraIsProjective = true;
+	m_plot3D->setCameraPointing(0.0f, 0.0f, 0.0f);
+	m_plot3D->setZoomDistance(40.0f);
+	m_plot3D->setElevationDegrees(70.0f);
+	m_plot3D->setAzimuthDegrees(-100.0f);
+	m_plot3D->setCameraProjective(true);
 
 	// 2D view ==============
+	auto openGLScanRef = m_plotScan->getOpenGLSceneRef();
 	{
 		mrpt::opengl::CGridPlaneXY::Ptr obj =
 			mrpt::make_aligned_shared<mrpt::opengl::CGridPlaneXY>(
 				-1, 1.001f, -1, 1.001f, 0, 1);
 		obj->setColor_u8(TColor(30, 30, 30, 50));
-		m_plotScan->m_openGLScene->insert(obj);
+		openGLScanRef->insert(obj);
 	}
 
 	gl_scan2D = mrpt::make_aligned_shared<mrpt::opengl::CPlanarLaserScan>();
 	gl_scan2D->enableLine(false);
 	gl_scan2D->enableSurface(false);
 	gl_scan2D->setPointsWidth(3.0);
-	m_plotScan->m_openGLScene->insert(gl_scan2D);
+	openGLScanRef->insert(gl_scan2D);
 
 	gl_line_direction = mrpt::make_aligned_shared<mrpt::opengl::CSimpleLine>();
 	gl_line_direction->setLineWidth(4);
 	gl_line_direction->setColor_u8(TColor(0, 0, 0));
-	m_plotScan->m_openGLScene->insert(gl_line_direction);
+	openGLScanRef->insert(gl_line_direction);
 
 	gl_rel_target = mrpt::make_aligned_shared<mrpt::opengl::CPointCloud>();
 	gl_rel_target->setPointSize(7);
 	gl_rel_target->setColor_u8(TColor(0, 0, 255));
 	gl_rel_target->insertPoint(0, 0, 0);
-	m_plotScan->m_openGLScene->insert(gl_rel_target);
+	openGLScanRef->insert(gl_rel_target);
 
-	m_plotScan->m_openGLScene->insert(
+	openGLScanRef->m_openGLScene->insert(
 		mrpt::opengl::stock_objects::CornerXYSimple(0.1f, 2));
 
 	gl_nd_gaps = mrpt::make_aligned_shared<mrpt::opengl::CSetOfLines>();
 	gl_nd_gaps->setLineWidth(2);
 	gl_nd_gaps->setColor_u8(TColor(204, 102, 51));
-	m_plotScan->m_openGLScene->insert(gl_nd_gaps);
+	openGLScanRef->insert(gl_nd_gaps);
 
-	m_plotScan->clearColorR = 0.9f;
-	m_plotScan->clearColorG = 0.9f;
-	m_plotScan->clearColorB = 0.9f;
+	m_plotScan->setClearColors(0.9f, 0.9f, 0.9f);
 
 	// Set camera:
-	m_plotScan->cameraPointingX = 0;
-	m_plotScan->cameraPointingY = 0;
-	m_plotScan->cameraPointingZ = 0;
-	m_plotScan->cameraZoomDistance = 2.2f;
-	m_plotScan->cameraElevationDeg = 90;
-	m_plotScan->cameraAzimuthDeg = -90;
-	m_plotScan->cameraIsProjective = false;
+	m_plotScan->setCameraPointing(0.0f, 0.0f, 0.0f);
+	m_plotScan->setZoomDistance(2.2f);
+	m_plotScan->setElevationDegrees(90.0f);
+	m_plotScan->setAzimuthDegrees(-90.0f);
+	m_plotScan->setCameraProjective(false);
 
 	// Update positions of stuff:
 	this->updateViewsDynamicObjects();
@@ -903,7 +903,7 @@ void holonomic_navigator_demoFrame::Onplot3DMouseMove(wxMouseEvent& event)
 
 	// Intersection of 3D ray with ground plane ====================
 	TLine3D ray;
-	m_plot3D->m_openGLScene->getViewport("main")->get3DRayForPixelCoord(
+	m_plot3D->getOpenGLSceneRef()->getViewport("main")->get3DRayForPixelCoord(
 		X, Y, ray);
 	// Create a 3D plane, e.g. Z=0
 	const TPlane ground_plane(

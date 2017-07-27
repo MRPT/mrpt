@@ -734,8 +734,8 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 					scene->getByName("robot_frame");  // Get or create if new
 				if (!gl_rbframe_r)
 				{
-					gl_robot_frame =
-						mrpt::make_aligned_shared<mrpt::opengl::CSetOfObjects>();
+					gl_robot_frame = mrpt::make_aligned_shared<
+						mrpt::opengl::CSetOfObjects>();
 					gl_robot_frame->setName("robot_frame");
 					scene->insert(gl_robot_frame);
 				}
@@ -776,8 +776,8 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 						"relposes");  // Get or create if new
 				if (!gl_relposes_r)
 				{
-					gl_relposes =
-						mrpt::make_aligned_shared<mrpt::opengl::CSetOfObjects>();
+					gl_relposes = mrpt::make_aligned_shared<
+						mrpt::opengl::CSetOfObjects>();
 					gl_relposes->setName("relposes");
 					gl_robot_frame->insert(gl_relposes);
 				}
@@ -820,7 +820,8 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 						"obs-raw");  // Get or create if new
 				if (!gl_obs_r)
 				{
-					gl_obs = mrpt::make_aligned_shared<mrpt::opengl::CPointCloud>();
+					gl_obs =
+						mrpt::make_aligned_shared<mrpt::opengl::CPointCloud>();
 					gl_obs->setName("obs-raw");
 					gl_obs->setPointSize(3);
 					gl_obs->setColor_u8(mrpt::utils::TColor(0xff, 0xff, 0x00));
@@ -844,7 +845,8 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 					gl_robot_frame->getByName("obs");  // Get or create if new
 				if (!gl_obs_r)
 				{
-					gl_obs = mrpt::make_aligned_shared<mrpt::opengl::CPointCloud>();
+					gl_obs =
+						mrpt::make_aligned_shared<mrpt::opengl::CPointCloud>();
 					gl_obs->setName("obs");
 					gl_obs->setPointSize(3.0);
 					gl_obs->setColor_u8(mrpt::utils::TColor(0x00, 0x00, 0xff));
@@ -870,7 +872,8 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 					gl_robot_frame->getByName("path");  // Get or create if new
 				if (!gl_path_r)
 				{
-					gl_path = mrpt::make_aligned_shared<mrpt::opengl::CSetOfLines>();
+					gl_path =
+						mrpt::make_aligned_shared<mrpt::opengl::CSetOfLines>();
 					gl_path->setName("path");
 					gl_path->setLineWidth(2.0);
 					gl_path->setColor_u8(mrpt::utils::TColor(0x00, 0x00, 0xff));
@@ -1009,7 +1012,8 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 						"target");  // Get or create if new
 				if (!gl_trg_r)
 				{
-					gl_trg = mrpt::make_aligned_shared<mrpt::opengl::CPointCloud>();
+					gl_trg =
+						mrpt::make_aligned_shared<mrpt::opengl::CPointCloud>();
 					gl_trg->setName("target");
 					gl_trg->enableShowName(true);
 					gl_trg->setPointSize(9.0);
@@ -1214,7 +1218,8 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 				win->setCameraProjective(false);
 
 				{
-					auto gl_obj = mrpt::make_aligned_shared<mrpt::opengl::CDisk>();
+					auto gl_obj =
+						mrpt::make_aligned_shared<mrpt::opengl::CDisk>();
 					gl_obj->setDiskRadius(1.01f, 1.0);
 					gl_obj->setSlicesCount(30);
 					gl_obj->setColor_u8(
@@ -1222,7 +1227,8 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 					scene->insert(gl_obj);
 				}
 				{
-					auto gl_obj = mrpt::make_aligned_shared<mrpt::opengl::CSetOfLines>();
+					auto gl_obj =
+						mrpt::make_aligned_shared<mrpt::opengl::CSetOfLines>();
 					gl_obj->setName("tp_obstacles");
 					gl_obj->setLineWidth(1.0f);
 					gl_obj->setVerticesPointSize(4.0f);
@@ -1231,7 +1237,8 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 					scene->insert(gl_obj);
 				}
 				{
-					auto gl_obj = mrpt::make_aligned_shared<mrpt::opengl::CSetOfLines>();
+					auto gl_obj =
+						mrpt::make_aligned_shared<mrpt::opengl::CSetOfLines>();
 					gl_obj->setName("score_phase1");
 					gl_obj->setLineWidth(1.0f);
 					gl_obj->setVerticesPointSize(2.0f);
@@ -1240,7 +1247,8 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 					scene->insert(gl_obj);
 				}
 				{
-					auto gl_obj = mrpt::make_aligned_shared<mrpt::opengl::CSetOfLines>();
+					auto gl_obj =
+						mrpt::make_aligned_shared<mrpt::opengl::CSetOfLines>();
 					gl_obj->setName("score_phase2");
 					gl_obj->setLineWidth(1.0f);
 					gl_obj->setVerticesPointSize(2.0f);
@@ -1249,7 +1257,8 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 					scene->insert(gl_obj);
 				}
 				{
-					auto gl_obj = mrpt::make_aligned_shared<mrpt::opengl::CSetOfLines>();
+					auto gl_obj =
+						mrpt::make_aligned_shared<mrpt::opengl::CSetOfLines>();
 					gl_obj->setName("tp_selected_dir");
 					gl_obj->setLineWidth(3.0f);
 					gl_obj->setColor_u8(
@@ -1257,7 +1266,8 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 					scene->insert(gl_obj);
 				}
 				{
-					auto gl_obj = mrpt::make_aligned_shared<mrpt::opengl::CPointCloud>();
+					auto gl_obj =
+						mrpt::make_aligned_shared<mrpt::opengl::CPointCloud>();
 					gl_obj->setName("tp_target");
 					gl_obj->setPointSize(5.0f);
 					gl_obj->setColor_u8(
@@ -1266,7 +1276,8 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 					scene->insert(gl_obj);
 				}
 				{
-					auto gl_obj = mrpt::make_aligned_shared<mrpt::opengl::CPointCloud>();
+					auto gl_obj =
+						mrpt::make_aligned_shared<mrpt::opengl::CPointCloud>();
 					gl_obj->setName("tp_robot");
 					gl_obj->setPointSize(4.0f);
 					gl_obj->setColor_u8(
@@ -1275,8 +1286,9 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 					scene->insert(gl_obj);
 				}
 				{
-					auto gl_obj = mrpt::make_aligned_shared<mrpt::opengl::CMesh>(
-						true /*transparency*/);
+					auto gl_obj =
+						mrpt::make_aligned_shared<mrpt::opengl::CMesh>(
+							true /*transparency*/);
 					gl_obj->setName("tp_clearance");
 					gl_obj->setScale(1.0f, 1.0f, 5.0f);
 					scene->insert(gl_obj);

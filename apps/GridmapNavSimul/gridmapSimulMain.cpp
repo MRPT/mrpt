@@ -730,19 +730,18 @@ gridmapSimulFrame::gridmapSimulFrame(wxWindow* parent, wxWindowID id)
 	m_canvas->SetMinSize(wxSize(200, 200));
 	flexGL->Add(m_canvas, 1, wxALL | wxEXPAND | wxALIGN_LEFT | wxALIGN_TOP, 0);
 
-	m_canvas->cameraPointingX = 0;
-	m_canvas->cameraPointingY = 0;
-	m_canvas->cameraPointingZ = 0;
-	m_canvas->cameraElevationDeg = 60;
-	m_canvas->cameraZoomDistance = 25;
+	m_canvas->setCameraPointing(0.0f, 0.0f, 0.0f);
+	m_canvas->setElevationDegrees(60.0f);
+	m_canvas->setZoomDistance(25.0f);
 
 	// Populate scene:
-	m_canvas->m_openGLScene->insert(
+	auto openGLSceneRef = m_canvas->getOpenGLSceneRef();
+	openGLSceneRef->insert(
 		mrpt::make_aligned_shared<mrpt::opengl::CGridPlaneXY>(
 			-100, 100, -100, 100, 0, 5));
 
 	update_grid_map_3d();
-	m_canvas->m_openGLScene->insert(gl_grid);
+	openGLSceneRef->insert(gl_grid);
 
 	// paths:
 	gl_path_GT = mrpt::make_aligned_shared<mrpt::opengl::CPointCloud>();
@@ -750,18 +749,18 @@ gridmapSimulFrame::gridmapSimulFrame(wxWindow* parent, wxWindowID id)
 	gl_path_GT->setLocation(0, 0, 0.01);
 	gl_path_GT->setPointSize(3);
 
-	m_canvas->m_openGLScene->insert(gl_path_GT);
+	openGLSceneRef->insert(gl_path_GT);
 
 	gl_path_ODO = mrpt::make_aligned_shared<mrpt::opengl::CPointCloud>();
 	gl_path_ODO->setColor(0, 1, 0, 0.7);
 	gl_path_ODO->setLocation(0, 0, 0.01);
 	gl_path_ODO->setPointSize(2);
 
-	m_canvas->m_openGLScene->insert(gl_path_ODO);
+	openGLSceneRef->insert(gl_path_ODO);
 
 	// Robot & scan:
 	gl_robot = mrpt::opengl::stock_objects::RobotPioneer();
-	m_canvas->m_openGLScene->insert(gl_robot);
+	openGLSceneRef->insert(gl_robot);
 
 	gl_scan = mrpt::make_aligned_shared<mrpt::opengl::CPlanarLaserScan>();
 	gl_robot->insert(gl_scan);
@@ -836,10 +835,12 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 				}
 
 				if (btns.size() >= 2 && btns[1])
-					m_canvas->cameraZoomDistance *= 0.99f;
+					m_canvas->setZoomDistance(
+						m_canvas->getZoomDistance() * 0.99f);
 
 				if (btns.size() >= 3 && btns[2])
-					m_canvas->cameraZoomDistance *= 1.01f;
+					m_canvas->setZoomDistance(
+						m_canvas->getZoomDistance() * 1.01f);
 
 				the_robot.movementCommand(v, w);
 			}
@@ -1092,9 +1093,7 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 			gl_path_ODO->insertPoint(this_odo.x(), this_odo.y(), 0);
 		}
 
-		m_canvas->cameraPointingX = p.x;
-		m_canvas->cameraPointingY = p.y;
-
+		m_canvas->setCameraPointing(p.x, p.y, m_canvas->getCameraPointingZ());
 		m_canvas->Refresh();
 
 		// Prepare next interval

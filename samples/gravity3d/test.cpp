@@ -61,8 +61,9 @@ void GravityDemo()
 	// Modify the scene:
 	// ------------------------------------------------------
 	{
-		opengl::CGridPlaneXY::Ptr obj = mrpt::make_aligned_shared<opengl::CGridPlaneXY>(
-			-2000, 2000, -2000, 2000, 0, 100);
+		opengl::CGridPlaneXY::Ptr obj =
+			mrpt::make_aligned_shared<opengl::CGridPlaneXY>(
+				-2000, 2000, -2000, 2000, 0, 100);
 		obj->setColor(0.3, 0.3, 0.3);
 		theScene->insert(obj);
 	}

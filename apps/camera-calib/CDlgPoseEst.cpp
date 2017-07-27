@@ -655,6 +655,6 @@ void CDlgPoseEst::showCamPose()
 	cor1->setPose(mrpt::poses::CPose3D(q_pose));
 	scene->insert(cor1);
 
-	this->m_3Dview_cam->m_openGLScene = scene;
+	this->m_3Dview_cam->setOpenGLSceneRef(scene);
 	this->m_3Dview_cam->Refresh();
 }

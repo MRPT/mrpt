@@ -5,7 +5,7 @@ set(USE_QT ON CACHE BOOL "Build Qt")
 set(CMAKE_MRPT_HAS_Qt5 0)
 
 if (USE_QT)
-	set(QT_MRPT_COMPONENTS_TO_SEARCH "Gui;Widgets;Core" CACHE STRING "Components to search in Qt")
+	set(QT_MRPT_COMPONENTS_TO_SEARCH "Gui;Widgets;Core;OpenGL" CACHE STRING "Components to search in Qt")
 
 	find_package(Qt5 COMPONENTS ${QT_MRPT_COMPONENTS_TO_SEARCH})
 

@@ -624,7 +624,8 @@ void CIncrementalMapPartitioner::getAs3DScene(
 	ASSERT_(m_individualFrames.size() == m_A.getColCount());
 
 	objs->insert(
-		mrpt::make_aligned_shared<opengl::CGridPlaneXY>(-100, 100, -100, 100, 0, 5));
+		mrpt::make_aligned_shared<opengl::CGridPlaneXY>(
+			-100, 100, -100, 100, 0, 5));
 
 	for (size_t i = 0; i < m_individualFrames.size(); i++)
 	{
@@ -635,7 +636,8 @@ void CIncrementalMapPartitioner::getAs3DScene(
 		CPose3D i_mean;
 		i_pdf->getMean(i_mean);
 
-		opengl::CSphere::Ptr i_sph = mrpt::make_aligned_shared<opengl::CSphere>();
+		opengl::CSphere::Ptr i_sph =
+			mrpt::make_aligned_shared<opengl::CSphere>();
 		i_sph->setRadius(0.02f);
 		i_sph->setColor(0, 0, 1);
 

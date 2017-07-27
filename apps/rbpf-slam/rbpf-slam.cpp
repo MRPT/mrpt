@@ -513,7 +513,8 @@ void MapBuilding_RBPF()
 					}
 					// Draw the map(s):
 					mrpt::opengl::CSetOfObjects::Ptr objs =
-						mrpt::make_aligned_shared<mrpt::opengl::CSetOfObjects>();
+						mrpt::make_aligned_shared<
+							mrpt::opengl::CSetOfObjects>();
 					mostLikMap->getAs3DObject(objs);
 					scene->insert(objs);
 

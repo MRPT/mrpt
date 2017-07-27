@@ -131,13 +131,16 @@ void TestRANSAC()
 	// Show GUI
 	// --------------------------
 	mrpt::gui::CDisplayWindow3D win("Set of points", 500, 500);
-	opengl::COpenGLScene::Ptr scene = mrpt::make_aligned_shared<opengl::COpenGLScene>();
+	opengl::COpenGLScene::Ptr scene =
+		mrpt::make_aligned_shared<opengl::COpenGLScene>();
 
 	scene->insert(
-		mrpt::make_aligned_shared<opengl::CGridPlaneXY>(-20, 20, -20, 20, 0, 1));
+		mrpt::make_aligned_shared<opengl::CGridPlaneXY>(
+			-20, 20, -20, 20, 0, 1));
 	scene->insert(opengl::stock_objects::CornerXYZ());
 
-	opengl::CPointCloud::Ptr points = mrpt::make_aligned_shared<opengl::CPointCloud>();
+	opengl::CPointCloud::Ptr points =
+		mrpt::make_aligned_shared<opengl::CPointCloud>();
 	points->setColor(0, 0, 1);
 	points->setPointSize(3);
 	points->enableColorFromZ();

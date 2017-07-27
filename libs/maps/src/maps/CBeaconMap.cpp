@@ -1172,7 +1172,8 @@ void CBeaconMap::saveMetricMapRepresentationToFile(
 
 	getAs3DObject(obj3D);
 	opengl::CGridPlaneXY::Ptr objGround =
-		mrpt::make_aligned_shared<opengl::CGridPlaneXY>(-100, 100, -100, 100, 0, 1);
+		mrpt::make_aligned_shared<opengl::CGridPlaneXY>(
+			-100, 100, -100, 100, 0, 1);
 
 	scene.insert(obj3D);
 	scene.insert(objGround);

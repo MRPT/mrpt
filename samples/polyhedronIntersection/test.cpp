@@ -152,7 +152,8 @@ void display()
 		mrpt::make_aligned_shared<CGridPlaneXY>(-25, 25, -25, 25, 0, 1);
 	plane1->setColor(GRID_R, GRID_G, GRID_B);
 	scene1->insert(plane1);
-	scene1->insert(mrpt::make_aligned_shared<CAxis>(-5, -5, -5, 5, 5, 5, 2.5, 3, true));
+	scene1->insert(
+		mrpt::make_aligned_shared<CAxis>(-5, -5, -5, 5, 5, 5, 2.5, 3, true));
 	CSetOfObjects::Ptr objs = mrpt::make_aligned_shared<CSetOfObjects>();
 	vector<pair<CPolyhedron::Ptr, CPolyhedron::Ptr>> polys;
 	polys.reserve(16);

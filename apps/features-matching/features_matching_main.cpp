@@ -215,11 +215,13 @@ bool DemoFeatures()
 		case descLogPolarImages:
 		case descSpinImages:
 		{
-			winptr2D_descr1 = mrpt::make_aligned_shared<CDisplayWindow>("Descriptor 1");
+			winptr2D_descr1 =
+				mrpt::make_aligned_shared<CDisplayWindow>("Descriptor 1");
 			winptr2D_descr1->setPos(550, 70 + img1.getHeight());
 			winptr2D_descr1->resize(220, 200);
 
-			winptr2D_descr2 = mrpt::make_aligned_shared<CDisplayWindow>("Descriptor 2");
+			winptr2D_descr2 =
+				mrpt::make_aligned_shared<CDisplayWindow>("Descriptor 2");
 			winptr2D_descr2->setPos(760, 70 + img1.getHeight());
 			winptr2D_descr2->resize(220, 200);
 		}

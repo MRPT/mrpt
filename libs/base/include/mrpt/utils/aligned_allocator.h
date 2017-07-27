@@ -15,7 +15,6 @@
 
 namespace mrpt
 {
-
 /** Aligned allocator that is compatible with C++11
  * See: https://bitbucket.org/eigen/eigen/commits/f5b7700
  */
@@ -38,7 +37,6 @@ class aligned_allocator_cpp11 : public std::allocator<T>
 	};
 
 	aligned_allocator_cpp11() : std::allocator<T>() {}
-
 	aligned_allocator_cpp11(const aligned_allocator_cpp11& other)
 		: std::allocator<T>(other)
 	{
@@ -51,14 +49,16 @@ class aligned_allocator_cpp11 : public std::allocator<T>
 	}
 
 	~aligned_allocator_cpp11() {}
-
 	pointer allocate(size_type num, const void* /*hint*/ = nullptr)
 	{
-		return static_cast<pointer>(mrpt::system::os::aligned_malloc(
-			num * sizeof(T), AligmentBytes));
+		return static_cast<pointer>(
+			mrpt::system::os::aligned_malloc(num * sizeof(T), AligmentBytes));
 	}
 
-	void deallocate(pointer p, size_type /*num*/) { mrpt::system::os::aligned_free(p); }
+	void deallocate(pointer p, size_type /*num*/)
+	{
+		mrpt::system::os::aligned_free(p);
+	}
 };
 
 /** Creates a `shared_ptr` with 16-byte aligned memory.
@@ -71,5 +71,4 @@ std::shared_ptr<T> make_aligned_shared(Args&&... args)
 	return std::allocate_shared<T>(
 		mrpt::aligned_allocator_cpp11<T_nc>(), std::forward<Args>(args)...);
 }
-
 }

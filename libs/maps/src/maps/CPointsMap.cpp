@@ -792,7 +792,8 @@ void CPointsMap::getAs3DObject(mrpt::opengl::CSetOfObjects::Ptr& outObj) const
 {
 	if (!genericMapParams.enableSaveAs3DObject) return;
 
-	opengl::CPointCloud::Ptr obj = mrpt::make_aligned_shared<opengl::CPointCloud>();
+	opengl::CPointCloud::Ptr obj =
+		mrpt::make_aligned_shared<opengl::CPointCloud>();
 
 	obj->loadFromPointsMap(this);
 	obj->setColor(

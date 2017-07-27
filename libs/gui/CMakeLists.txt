@@ -59,6 +59,11 @@ IF(BUILD_mrpt-gui)
 		target_link_libraries(mrpt-gui ${wxWidgets_LIBRARIES})
 	ENDIF()
 
+	IF(CMAKE_MRPT_HAS_Qt5)
+		qt5_use_modules(mrpt-gui Widgets)
+		target_link_libraries(mrpt-gui Qt5::Widgets Qt5::OpenGL)
+	ENDIF()
+
 	IF(CMAKE_MRPT_HAS_OPENCV)
 		target_link_libraries(mrpt-gui ${OpenCV_LIBRARIES})
 	ENDIF()

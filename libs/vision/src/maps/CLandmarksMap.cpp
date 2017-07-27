@@ -2640,7 +2640,8 @@ void CLandmarksMap::saveMetricMapRepresentationToFile(
 	getAs3DObject(obj3D);
 
 	opengl::CGridPlaneXY::Ptr objGround =
-		mrpt::make_aligned_shared<opengl::CGridPlaneXY>(-100, 100, -100, 100, 0, 1);
+		mrpt::make_aligned_shared<opengl::CGridPlaneXY>(
+			-100, 100, -100, 100, 0, 1);
 
 	scene.insert(obj3D);
 	scene.insert(objGround);
@@ -2667,7 +2668,8 @@ void CLandmarksMap::getAs3DObject(
 	for (TCustomSequenceLandmarks::const_iterator it = landmarks.begin();
 		 it != landmarks.end(); ++it)
 	{
-		opengl::CEllipsoid::Ptr ellip = mrpt::make_aligned_shared<opengl::CEllipsoid>();
+		opengl::CEllipsoid::Ptr ellip =
+			mrpt::make_aligned_shared<opengl::CEllipsoid>();
 
 		it->getPose(pointGauss);
 
