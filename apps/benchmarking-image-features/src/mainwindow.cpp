@@ -1530,6 +1530,8 @@ void MainWindow::showEvaluation(int mode)
 ************************************************************************************************/
 void MainWindow::on_browse_button_clicked()
 {
+    /// to reset the image counter on selection of a different dataset
+    current_imageIndex = 0;
     makeGraphsVisible(false);
 
     flag_read_files_bug = true;
@@ -1585,6 +1587,8 @@ void MainWindow::on_browse_button_clicked()
 ************************************************************************************************/
 void MainWindow::on_browse_button_clicked2()
 {
+    /// to reset the image counter on selection of a different dataset
+    current_imageIndex = 0;
     flag_read_files_bug = true;
     ReadInputFormat();
 
@@ -2042,18 +2046,27 @@ void MainWindow::on_generateVisualOdometry_clicked()
     int feat_type = detector_selected;
 
     /// following creates an object of the visual odometry class and performs the VO task on the monocular images dataset
+    string file_paths[3];
+    file_paths[0] = single_dataset_path;
+    file_paths[1] = file_path3;
+    file_paths[2] = calibration_file;
+
     // Start the computation.
     //QFuture<void> future = QtConcurrent::run(&this->visual_odom, &VisualOdometry::generateVO(detector_selected, fext, numFeats, single_dataset_path, file_path3, feat_type));
 
-    //extern Mat VisualOdometry::generateVO(CFeatureExtraction fext, int numFeats, string single_dataset_path, string file_path3, int feat_type);
-    //QFuture<Mat> future = QtConcurrent::run(&VisualOdometry::generateVO, fext, numFeats, single_dataset_path, file_path3, feat_type);
+    extern Mat VisualOdometry::generateVO(CFeatureExtraction fext2, int numFeats2, string file_path2[3], int feat_type2);
+    //QFuture<Mat> future = QtConcurrent::run(VisualOdometry::generateVO, fext, numFeats, single_dataset_path, file_path3, feat_type);
+    QFuture<Mat> future = QtConcurrent::run(visual_odom->generateVO, fext, numFeats, file_paths, feat_type);
 
-    //Mat tttt = future.result();
+    Mat tttt = future.result();
 
-    //FutureWatcher.setFuture(future);
+    FutureWatcher.setFuture(future);
 
     //VisualOdometry visual_odom;
-    Mat display_VO = visual_odom.generateVO(fext, numFeats, single_dataset_path, file_path3, calibration_file, feat_type);
+
+
+    Mat display_VO = visual_odom->generateVO(fext, numFeats, file_paths, feat_type);
+    //Mat display_VO = visual_odom.generateVO(fext, numFeats, single_dataset_path, file_path3, calibration_file, feat_type);
     //imshow("Visual Odom", display_VO);
     //waitKey(0);
 
@@ -2361,7 +2374,7 @@ void MainWindow::updateVOProgress()
     //VO_progress->setText(QString::fromStdString(std::to_string(visual_odom.cnt.m_value)));
 
 
-    cout << visual_odom.cnt.m_value << "  updateVOProgress " << endl;
+    cout << visual_odom->cnt.m_value << "  updateVOProgress " << endl;
     //sleep(1);
     //VO_progress->setVisible(false);
     //VO_progress->setVisible(true);
@@ -2388,7 +2401,9 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
     progressBar->setMaximum(0);
     progressBar->hide();
 
+    visual_odom = new VisualOdometry;
     connect(&this->FutureWatcher, SIGNAL (finished()), this, SLOT (slot_finished()));
+
 
     current_imageIndex = 0;
     //current_imageIndex_tracking = 0;
@@ -2665,8 +2680,8 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
     /// create a signal slot for displaying the progress of VO
     //Counter a, b;
     //connect(&visual_odom.current_frame, SIGNAL(valueChanged(int)), this, SLOT(setValue(int)));
-    connect(&visual_odom.cnt, SIGNAL(valueChanged(int)), this, SLOT(setValue(int)));
-    connect(&visual_odom.cnt, SIGNAL(valueChanged(int)), this, SLOT(updateVOProgress()));
+    connect(&visual_odom->cnt, SIGNAL(valueChanged(int)), this, SLOT(setValue(int)));
+    connect(&visual_odom->cnt, SIGNAL(valueChanged(int)), this, SLOT(updateVOProgress()));
 
 
 
