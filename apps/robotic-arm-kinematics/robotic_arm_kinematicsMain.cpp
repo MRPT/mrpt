@@ -686,11 +686,8 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(
 	m_robot.addLink(0, 0.3, 0, DEG2RAD(90), false);
 	m_robot.addLink(0, 0.2, 0, 0, false);
 
-<<<<<<< HEAD
-=======
-
 	auto openGLSceneRef = m_plot3D->getOpenGLSceneRef();
->>>>>>> 9f6c1fc0f7746eb917e8960e450538e0cede9540
+
 	// Initialize 3D scene:
 	{
 		mrpt::opengl::CGridPlaneXY::Ptr grid_10cm =
@@ -707,24 +704,13 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(
 		openGLSceneRef->insert(grid_1m);
 	}
 
-<<<<<<< HEAD
 	m_gl_robot = mrpt::make_aligned_shared<mrpt::opengl::CSetOfObjects>();
-	m_plot3D->m_openGLScene->insert(m_gl_robot);
-=======
-	m_gl_robot = mrpt::opengl::CSetOfObjects::Create();
 	openGLSceneRef->insert(m_gl_robot);
->>>>>>> 9f6c1fc0f7746eb917e8960e450538e0cede9540
 
 	this->Regenerate3DView();
 
 	{
-<<<<<<< HEAD
-		mrpt::opengl::COpenGLViewport::Ptr gl_view =
-			m_plot3D->m_openGLScene->createViewport("small-view");
-=======
-		mrpt::opengl::COpenGLViewport::Ptr gl_view =
-			openGLSceneRef->createViewport("small-view");
->>>>>>> 9f6c1fc0f7746eb917e8960e450538e0cede9540
+		auto gl_view = openGLSceneRef->createViewport("small-view");
 
 		gl_view->setViewportPosition(0, 0, 0.2, 0.3);
 		gl_view->setTransparent(true);
