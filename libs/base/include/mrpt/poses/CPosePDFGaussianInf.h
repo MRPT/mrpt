@@ -36,7 +36,7 @@ class CPose3DPDF;
 class BASE_IMPEXP CPosePDFGaussianInf : public CPosePDF
 {
 	// This must be added to any CSerializable derived class:
-	DEFINE_SERIALIZABLE(CPosePDFGaussianInf);
+	DEFINE_SERIALIZABLE(CPosePDFGaussianInf)
 	typedef CPosePDFGaussianInf self_t;
 
    protected:
@@ -195,7 +195,7 @@ class BASE_IMPEXP CPosePDFGaussianInf : public CPosePDF
 	}
 
 };  // End of class def.
-DEFINE_SERIALIZABLE_POST_CUSTOM_BASE(CPosePDFGaussianInf, CPosePDF);
+DEFINE_SERIALIZABLE_POST_CUSTOM_BASE(CPosePDFGaussianInf, CPosePDF)
 
 bool BASE_IMPEXP
 	operator==(const CPosePDFGaussianInf& p1, const CPosePDFGaussianInf& p2);
