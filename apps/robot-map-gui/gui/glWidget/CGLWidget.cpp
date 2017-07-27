@@ -33,7 +33,7 @@ using namespace mrpt::opengl;
 CGlWidget::CGlWidget(bool is2D, QWidget* parent)
 	: CQtGlCanvasBase(parent),
 	  m_groundPlane(
-		  mrpt::opengl::CGridPlaneXY::Create(-200, 200, -200, 200, 0, 5)),
+		  mrpt::make_aligned_shared<CGridPlaneXY>(-200, 200, -200, 200, 0, 5)),
 	  m_doc(nullptr),
 	  m_miniMapSize(-1.0),
 	  m_minimapPercentSize(0.25),
@@ -42,10 +42,10 @@ CGlWidget::CGlWidget(bool is2D, QWidget* parent)
 	  m_selectedObsSize(15.0),
 	  m_selectedColor(mrpt::utils::TColor::green),
 	  m_isShowObs(false),
-	  m_visiblePoints(CPointCloud::Create()),
-	  m_selectedPointsCloud(CPointCloud::Create()),
+	  m_visiblePoints(mrpt::make_aligned_shared<CPointCloud>()),
+	  m_selectedPointsCloud(mrpt::make_aligned_shared<CPointCloud>()),
 	  m_currentObs(opengl::stock_objects::CornerXYZSimple()),
-	  m_line(CSetOfLines::Create()),
+	  m_line(mrpt::make_aligned_shared<CSetOfLines>()),
 	  m_is2D(is2D),
 	  m_showRobot(false)
 {
