@@ -177,15 +177,15 @@ int CMultiObjectiveMotionOptimizerBase::decide(
 	// For each assert, evaluate it (*after* score normalization)
 	for (unsigned int mov_idx = 0; mov_idx < movs.size(); ++mov_idx)
 	{
-		const auto &m = movs[mov_idx];
+		const auto& m = movs[mov_idx];
 		// Mark all vars as NaN so we detect uninitialized values:
-		for (auto &p : m_expr_vars) 
+		for (auto& p : m_expr_vars)
 		{
 			p.second = std::numeric_limits<double>::quiet_NaN();
 		}
-		for (const auto &prop : m.props) 
+		for (const auto& prop : m.props)
 		{
-			double & var = m_expr_vars[prop.first];
+			double& var = m_expr_vars[prop.first];
 			var = prop.second;
 		}
 

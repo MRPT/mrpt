@@ -155,7 +155,8 @@ void display()
 		mrpt::make_aligned_shared<CGridPlaneXY>(-20, 20, -20, 20, 0, 1);
 	plane1->setColor(GRID_R, GRID_G, GRID_B);
 	scene1->insert(plane1);
-	scene1->insert(mrpt::make_aligned_shared<CAxis>(-5, -5, -5, 5, 5, 5, 2.5, 3, true));
+	scene1->insert(
+		mrpt::make_aligned_shared<CAxis>(-5, -5, -5, 5, 5, 5, 2.5, 3, true));
 	CSetOfObjects::Ptr world = mrpt::make_aligned_shared<CSetOfObjects>();
 	generateObjects(world);
 	scene1->insert(world);
@@ -207,7 +208,8 @@ void display()
 		mrpt::make_aligned_shared<CGridPlaneXY>(-20, 20, -20, 20, 0, 1);
 	plane2->setColor(GRID_R, GRID_G, GRID_B);
 	scene2->insert(plane2);
-	scene2->insert(mrpt::make_aligned_shared<CAxis>(-5, -5, -5, 5, 5, 5, 2.5, 3, true));
+	scene2->insert(
+		mrpt::make_aligned_shared<CAxis>(-5, -5, -5, 5, 5, 5, 2.5, 3, true));
 	window2.unlockAccess3DScene();
 	window2.setCameraElevationDeg(25.0f);
 

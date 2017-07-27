@@ -86,7 +86,8 @@ void thread_grabbing(TThreadParam& p)
 			// Grab new observation from the camera:
 			CObservation3DRangeScan::Ptr obs = mrpt::make_aligned_shared<
 				CObservation3DRangeScan>();  // Smart pointers to observations
-			CObservationIMU::Ptr obs_imu = mrpt::make_aligned_shared<CObservationIMU>();
+			CObservationIMU::Ptr obs_imu =
+				mrpt::make_aligned_shared<CObservationIMU>();
 
 			kinect.getNextObservation(*obs, *obs_imu, there_is_obs, hard_error);
 

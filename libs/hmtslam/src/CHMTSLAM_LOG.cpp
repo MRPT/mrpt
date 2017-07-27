@@ -59,7 +59,8 @@ void CHMTSLAM::generateLogFiles(unsigned int nIteration)
 			string filLocalAreas = format(
 				"%s/LSLAM_3D/mostLikelyLMH_LSLAM_%05u.3Dscene",
 				m_options.LOG_OUTPUT_DIR.c_str(), nIteration);
-			COpenGLScene::Ptr sceneLSLAM = mrpt::make_aligned_shared<COpenGLScene>();
+			COpenGLScene::Ptr sceneLSLAM =
+				mrpt::make_aligned_shared<COpenGLScene>();
 
 			// Look for the most likely LMH:
 			aligned_containers<THypothesisID,

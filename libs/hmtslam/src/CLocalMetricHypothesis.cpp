@@ -68,7 +68,8 @@ void CLocalMetricHypothesis::getAs3DScene(
 	// -------------------------------------------
 	{
 		opengl::CGridPlaneXY::Ptr obj =
-			mrpt::make_aligned_shared<opengl::CGridPlaneXY>(-100, 100, -100, 100, 0, 5);
+			mrpt::make_aligned_shared<opengl::CGridPlaneXY>(
+				-100, 100, -100, 100, 0, 5);
 		obj->setColor(0.4, 0.4, 0.4);
 
 		objs->insert(obj);  // it will free the memory
@@ -125,7 +126,8 @@ void CLocalMetricHypothesis::getAs3DScene(
 
 	for (it = lstPoses.begin(); it != lstPoses.end(); it++)
 	{
-		opengl::CEllipsoid::Ptr ellip = mrpt::make_aligned_shared<opengl::CEllipsoid>();
+		opengl::CEllipsoid::Ptr ellip =
+			mrpt::make_aligned_shared<opengl::CEllipsoid>();
 		// Color depending on being into the current area:
 		if (m_nodeIDmemberships.find(it->first)->second ==
 			m_nodeIDmemberships.find(m_currentRobotPose)->second)
@@ -289,7 +291,8 @@ void CLocalMetricHypothesis::getAs3DScene(
 		for (itMeans = areas_mean.begin(); itMeans != areas_mean.end();
 			 itMeans++)
 		{
-			opengl::CSphere::Ptr sphere = mrpt::make_aligned_shared<opengl::CSphere>();
+			opengl::CSphere::Ptr sphere =
+				mrpt::make_aligned_shared<opengl::CSphere>();
 
 			if (itMeans->first ==
 				m_nodeIDmemberships.find(m_currentRobotPose)->second)

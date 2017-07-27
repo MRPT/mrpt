@@ -9,6 +9,7 @@
 
 #ifndef CLOOPCLOSERERD_IMPL_H
 #define CLOOPCLOSERERD_IMPL_H
+#include <mrpt/math/utils.h>
 
 namespace mrpt
 {
@@ -1590,7 +1591,7 @@ void CLoopCloserERD<GRAPH_T>::getMinUncertaintyPath(
 		CMatrixDouble33 inf_mat;
 		curr_edge.getInformationMatrix(inf_mat);
 
-		if (inf_mat == CMatrixDouble33() || isnan(inf_mat(0, 0)))
+		if (inf_mat == CMatrixDouble33() || std::isnan(inf_mat(0, 0)))
 		{
 			inf_mat.unit();
 			curr_edge.cov_inv = inf_mat;
@@ -1834,7 +1835,8 @@ void CLoopCloserERD<GRAPH_T>::initMapPartitionsVisualization()
 	}
 
 	// just add an empty CSetOfObjects in the scene - going to populate it later
-	CSetOfObjects::Ptr map_partitions_obj = mrpt::make_aligned_shared<CSetOfObjects>();
+	CSetOfObjects::Ptr map_partitions_obj =
+		mrpt::make_aligned_shared<CSetOfObjects>();
 	map_partitions_obj->setName("map_partitions");
 
 	COpenGLScene::Ptr& scene = this->m_win->get3DSceneAndLock();

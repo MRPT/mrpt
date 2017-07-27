@@ -58,7 +58,8 @@ void Test_SoG_Merge()
 		CSetOfObjects::Ptr o = mrpt::make_aligned_shared<CSetOfObjects>();
 		pdf.getAs3DObject(o);
 		scene.insert(o);
-		scene.insert(mrpt::make_aligned_shared<CGridPlaneXY>(-5, 5, -5, 5, 0, 1));
+		scene.insert(
+			mrpt::make_aligned_shared<CGridPlaneXY>(-5, 5, -5, 5, 0, 1));
 		CFileGZOutputStream("sog_before.3Dscene") << scene;
 
 #if MRPT_HAS_WXWIDGETS
@@ -83,7 +84,8 @@ void Test_SoG_Merge()
 		CSetOfObjects::Ptr o = mrpt::make_aligned_shared<CSetOfObjects>();
 		pdf.getAs3DObject(o);
 		scene.insert(o);
-		scene.insert(mrpt::make_aligned_shared<CGridPlaneXY>(-5, 5, -5, 5, 0, 1));
+		scene.insert(
+			mrpt::make_aligned_shared<CGridPlaneXY>(-5, 5, -5, 5, 0, 1));
 		CFileGZOutputStream("sog_after.3Dscene") << scene;
 
 #if MRPT_HAS_WXWIDGETS

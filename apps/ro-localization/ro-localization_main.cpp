@@ -309,7 +309,8 @@ void TestParticlesLocalization()
 			// World Axis
 			{
 				opengl::CAxis::Ptr obj =
-					mrpt::make_aligned_shared<opengl::CAxis>(-20, -10, -1, 20, 10, 4, 1);
+					mrpt::make_aligned_shared<opengl::CAxis>(
+						-20, -10, -1, 20, 10, 4, 1);
 				obj->enableTickMarks();
 				obj->setColor(0, 0, 0);
 #ifdef SHOW_REAL_TIME_3D
@@ -588,7 +589,8 @@ observations->getObservationByClass( CLASS_ID(CObservation2DRangeScan));
 					opengl::CPointCloud::Ptr parts;
 
 					if (!obj)
-						parts = mrpt::make_aligned_shared<opengl::CPointCloud>();
+						parts =
+							mrpt::make_aligned_shared<opengl::CPointCloud>();
 					else
 						parts = std::dynamic_pointer_cast<CPointCloud>(obj);
 #else
@@ -650,7 +652,8 @@ observations->getObservationByClass( CLASS_ID(CObservation2DRangeScan));
 					obj = sceneTR->getByName("laser");
 					opengl::CPointCloud::Ptr scanPts;
 					if (!obj)
-						scanPts = mrpt::make_aligned_shared<opengl::CPointCloud>();
+						scanPts =
+							mrpt::make_aligned_shared<opengl::CPointCloud>();
 					else
 						scanPts = std::dynamic_pointer_cast<CPointCloud>(obj);
 
@@ -694,13 +697,15 @@ observations->getObservationByClass( CLASS_ID(CObservation2DRangeScan));
 								opengl::CDisk::Ptr sphere;
 
 								if (!obj)
-									sphere = mrpt::make_aligned_shared<opengl::CDisk>();
+									sphere = mrpt::make_aligned_shared<
+										opengl::CDisk>();
 								else
 									sphere =
 										std::dynamic_pointer_cast<CDisk>(obj);
 #else
 								opengl::CSphere::Ptr sphere =
-									mrpt::make_aligned_shared<opengl::CSphere>();
+									mrpt::make_aligned_shared<
+										opengl::CSphere>();
 								opengl::CRenderizable::Ptr obj;
 #endif
 
@@ -745,7 +750,8 @@ observations->getObservationByClass( CLASS_ID(CObservation2DRangeScan));
 						opengl::CSphere::Ptr sphere;
 
 						if (!obj)
-							sphere = mrpt::make_aligned_shared<opengl::CSphere>();
+							sphere =
+								mrpt::make_aligned_shared<opengl::CSphere>();
 						else
 							sphere =
 								std::dynamic_pointer_cast<opengl::CSphere>(obj);
@@ -779,7 +785,8 @@ observations->getObservationByClass( CLASS_ID(CObservation2DRangeScan));
 						opengl::CSphere::Ptr sphere;
 
 						if (!obj)
-							sphere = mrpt::make_aligned_shared<opengl::CSphere>();
+							sphere =
+								mrpt::make_aligned_shared<opengl::CSphere>();
 						else
 							sphere =
 								std::dynamic_pointer_cast<opengl::CSphere>(obj);
@@ -813,7 +820,8 @@ observations->getObservationByClass( CLASS_ID(CObservation2DRangeScan));
 						opengl::CSphere::Ptr sphere;
 
 						if (!obj)
-							sphere = mrpt::make_aligned_shared<opengl::CSphere>();
+							sphere =
+								mrpt::make_aligned_shared<opengl::CSphere>();
 						else
 							sphere =
 								std::dynamic_pointer_cast<opengl::CSphere>(obj);
@@ -852,7 +860,8 @@ observations->getObservationByClass( CLASS_ID(CObservation2DRangeScan));
 							double x, y;
 
 							if (!obj)
-								sphere = mrpt::make_aligned_shared<opengl::CEllipsoid>();
+								sphere = mrpt::make_aligned_shared<
+									opengl::CEllipsoid>();
 							else
 								sphere = std::dynamic_pointer_cast<
 									opengl::CEllipsoid>(obj);
@@ -919,7 +928,8 @@ observations->getObservationByClass( CLASS_ID(CObservation2DRangeScan));
 							double x, y;
 
 							if (!obj)
-								sphere = mrpt::make_aligned_shared<opengl::CSphere>();
+								sphere = mrpt::make_aligned_shared<
+									opengl::CSphere>();
 							else
 								sphere =
 									std::dynamic_pointer_cast<opengl::CSphere>(

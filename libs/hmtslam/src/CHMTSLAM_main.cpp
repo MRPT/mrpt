@@ -421,7 +421,8 @@ void CHMTSLAM::initializeEmptyMap()
 		m_map.clear();
 
 		// Create a single node for the starting area:
-		CHMHMapNode::Ptr firstArea = mrpt::make_aligned_shared<CHMHMapNode>(&m_map);
+		CHMHMapNode::Ptr firstArea =
+			mrpt::make_aligned_shared<CHMHMapNode>(&m_map);
 		firstAreaID = firstArea->getID();
 
 		firstArea->m_hypotheses = LMH_hyps;

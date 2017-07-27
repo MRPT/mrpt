@@ -74,7 +74,8 @@ int main(int argc, char** argv)
 		for (unsigned i = 0; i < num_sensors; i++)
 		{
 			win[i] = mrpt::make_aligned_shared<mrpt::gui::CDisplayWindow>();
-			//      newObs[i] = mrpt::make_aligned_shared<CObservation3DRangeScan>();
+			//      newObs[i] =
+			//      mrpt::make_aligned_shared<CObservation3DRangeScan>();
 		}
 
 		cout << "Get observation\n";
@@ -130,7 +131,8 @@ int main(int argc, char** argv)
 		//
 		//      // Create the Opengl object for the point cloud:
 		//      scene->insert( gl_points );
-		//      scene->insert( mrpt::make_aligned_shared<mrpt::opengl::CGridPlaneXY>() );
+		//      scene->insert(
+		//      mrpt::make_aligned_shared<mrpt::opengl::CGridPlaneXY>() );
 		//      scene->insert( mrpt::opengl::stock_objects::CornerXYZ() );
 		//
 		//      const double aspect_ratio =  480.0 / 640.0;

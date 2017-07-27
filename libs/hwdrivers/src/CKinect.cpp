@@ -153,7 +153,8 @@ void CKinect::doProcess()
 
 	CObservation3DRangeScan::Ptr newObs =
 		mrpt::make_aligned_shared<CObservation3DRangeScan>();
-	CObservationIMU::Ptr newObs_imu = mrpt::make_aligned_shared<CObservationIMU>();
+	CObservationIMU::Ptr newObs_imu =
+		mrpt::make_aligned_shared<CObservationIMU>();
 
 	getNextObservation(*newObs, *newObs_imu, thereIs, hwError);
 
@@ -639,8 +640,9 @@ void CKinect::getNextObservation(
 				m_preview_decim_counter_range = 0;
 				if (!m_win_range)
 				{
-					m_win_range = mrpt::make_aligned_shared<mrpt::gui::CDisplayWindow>(
-						"Preview RANGE");
+					m_win_range =
+						mrpt::make_aligned_shared<mrpt::gui::CDisplayWindow>(
+							"Preview RANGE");
 					m_win_range->setPos(5, 5);
 				}
 
@@ -659,8 +661,9 @@ void CKinect::getNextObservation(
 				m_preview_decim_counter_rgb = 0;
 				if (!m_win_int)
 				{
-					m_win_int = mrpt::make_aligned_shared<mrpt::gui::CDisplayWindow>(
-						"Preview INTENSITY");
+					m_win_int =
+						mrpt::make_aligned_shared<mrpt::gui::CDisplayWindow>(
+							"Preview INTENSITY");
 					m_win_int->setPos(300, 5);
 				}
 				m_win_int->showImage(_out_obs.intensityImage);

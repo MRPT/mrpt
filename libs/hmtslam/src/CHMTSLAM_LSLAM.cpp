@@ -517,7 +517,8 @@ void CHMTSLAM::LSLAM_process_message_from_AA(const TMessageLSLAMfromAA& myMsg)
 			// Create new area in the H-MAP:
 			std::lock_guard<std::mutex> lock(m_map_cs);
 
-			CHMHMapNode::Ptr newArea = mrpt::make_aligned_shared<CHMHMapNode>(&m_map);
+			CHMHMapNode::Ptr newArea =
+				mrpt::make_aligned_shared<CHMHMapNode>(&m_map);
 
 			// For now, the area exists in this hypothesis only:
 			newArea->m_hypotheses.insert(LMH->m_ID);

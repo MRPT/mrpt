@@ -19,13 +19,11 @@ CMyGLCanvas::CMyGLCanvas(
 	: CMyGLCanvasBase(parent, id, pos, size, style, name),
 	  last_timestamp(INVALID_TIMESTAMP)
 {
-	cameraPointingX = 0;
-	cameraPointingY = 0;
-	cameraPointingZ = 0;
-	cameraZoomDistance = 20;
-	cameraElevationDeg = 45;
-	cameraAzimuthDeg = 135;
-	cameraIsProjective = true;
+	setCameraPointing(0.0f, 0.0f, 0.0f);
+	setZoomDistance(20.0f);
+	setElevationDegrees(45.0f);
+	setAzimuthDegrees(135.0f);
+	setCameraProjective(true);
 }
 
 CMyGLCanvas::~CMyGLCanvas() {}

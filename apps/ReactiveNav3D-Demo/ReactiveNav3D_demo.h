@@ -740,7 +740,8 @@ class CMyReactInterface
 
 		// Maps are inserted
 		{
-			CSetOfObjects::Ptr gl_grid = mrpt::make_aligned_shared<CSetOfObjects>();
+			CSetOfObjects::Ptr gl_grid =
+				mrpt::make_aligned_shared<CSetOfObjects>();
 			for (unsigned int i = 0; i < maps.size(); i++)
 			{
 				maps[i].getAs3DObject(gl_grid);
@@ -767,7 +768,8 @@ class CMyReactInterface
 
 		// The target is inserted
 		{
-			CDisk::Ptr obj = mrpt::make_aligned_shared<opengl::CDisk>(0.4f, 0.3f);
+			CDisk::Ptr obj =
+				mrpt::make_aligned_shared<opengl::CDisk>(0.4f, 0.3f);
 			obj->setLocation(0, 0, 0);
 			obj->setColor(0.2, 0.3, 0.9);
 			scene->insert(obj);

@@ -734,7 +734,8 @@ void CPosePDFSOG::getMostLikelyCovarianceAndMean(
 //
 //	for (const_iterator it=m_modes.begin();it!=m_modes.end();++it)
 //	{
-//		opengl::CEllipsoid::Ptr ellip = mrpt::make_aligned_shared<opengl::CEllipsoid>();
+//		opengl::CEllipsoid::Ptr ellip =
+// mrpt::make_aligned_shared<opengl::CEllipsoid>();
 //
 //		ellip->setPose( CPose3D((it)->mean.x(), (it)->mean.y(),
 //(it)->mean.phi())

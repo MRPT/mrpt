@@ -61,7 +61,8 @@ void TestDisplay3D()
 	// And another transparent viewport just to show 3D text:
 	if (0)
 	{
-		mrpt::opengl::CText::Ptr txt1 = mrpt::make_aligned_shared<mrpt::opengl::CText>();
+		mrpt::opengl::CText::Ptr txt1 =
+			mrpt::make_aligned_shared<mrpt::opengl::CText>();
 		COpenGLViewport::Ptr vi = theScene->createViewport("flat_viewport");
 		vi->setViewportPosition(0, 0, 0.3, 0.3);
 		vi->setTransparent(true);
@@ -78,7 +79,8 @@ void TestDisplay3D()
 	// ------------------------------------------------------
 	{
 		opengl::CGridPlaneXY::Ptr obj =
-			mrpt::make_aligned_shared<opengl::CGridPlaneXY>(-20, 20, -20, 20, 0, 1);
+			mrpt::make_aligned_shared<opengl::CGridPlaneXY>(
+				-20, 20, -20, 20, 0, 1);
 		obj->setColor(0.8, 0.8, 0.8);
 		theScene->insert(obj);
 	}

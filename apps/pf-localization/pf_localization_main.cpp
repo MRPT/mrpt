@@ -631,7 +631,8 @@ void do_pf_localization(
 									ptrScene->getByName("parts_cov");
 								if (!ellip)
 								{
-									ellip = mrpt::make_aligned_shared<CEllipsoid>();
+									ellip =
+										mrpt::make_aligned_shared<CEllipsoid>();
 									ellip->setName("parts_cov");
 									ellip->setColor(1, 0, 0, 0.6);
 
@@ -653,7 +654,8 @@ void do_pf_localization(
 									ptrScene->getByName("scan");
 								if (!scanPts)
 								{
-									scanPts = mrpt::make_aligned_shared<CPointCloud>();
+									scanPts = mrpt::make_aligned_shared<
+										CPointCloud>();
 									scanPts->setName("scan");
 									scanPts->setColor(1, 0, 0, 0.9);
 									getAs<CPointCloud>(scanPts)
@@ -981,7 +983,8 @@ void do_pf_localization(
 								scene.getByName("scan");
 							if (!scanPts)
 							{
-								scanPts = mrpt::make_aligned_shared<CPointCloud>();
+								scanPts =
+									mrpt::make_aligned_shared<CPointCloud>();
 								scanPts->setName("scan");
 								scanPts->setColor(1, 0, 0, 0.9);
 								getAs<CPointCloud>(scanPts)->enableColorFromZ(

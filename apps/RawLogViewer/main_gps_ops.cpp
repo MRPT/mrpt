@@ -194,7 +194,8 @@ void xRawLogViewerFrame::OnMenuDrawGPSPath(wxCommandEvent& event)
 	scene.insert(gl_path);
 	scene.insert(
 		CGridPlaneXY::Ptr(
-			mrpt::make_aligned_shared<CGridPlaneXY>(-300, 300, -300, 300, 0, 10)));
+			mrpt::make_aligned_shared<CGridPlaneXY>(
+				-300, 300, -300, 300, 0, 10)));
 	scene.insert(
 		CAxis::Ptr(
 			mrpt::make_aligned_shared<CAxis>(
