@@ -98,7 +98,7 @@ public slots:
 
         m_value = value;
         emit valueChanged(value);
-        cout << value <<  " you called me slot yo" << endl;
+        //cout << value <<  " you called me in SLOT 2" << endl;
 
     };
 
@@ -171,7 +171,8 @@ public:
      * @param feat_type type of the feature
      * @return
      */
-     Mat generateVO(CFeatureExtraction fext, int numFeats, string dataset, string groundtruth, string calibration_file, int feat_type );
+    //Mat generateVO(CFeatureExtraction fext, int numFeats, string dataset, string groundtruth, string calibration_file, int feat_type );
+    Mat generateVO(CFeatureExtraction fext, int numFeats, string file_paths[3], int feat_type );
 
     /**
      * this function stores the ground truth in an appropriate arrat

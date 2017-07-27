@@ -207,7 +207,7 @@ public:
 
     ///visual odom parameters
 
-    VisualOdometry visual_odom;         //!< visual odometry object to perform the vision task of estimating camera trajector for Monocular Datasets like KITTI
+    VisualOdometry *visual_odom;         //!< visual odometry object to perform the vision task of estimating camera trajector for Monocular Datasets like KITTI
     QCheckBox *visual_odom_enable;      //!< Checkbox to activate/deactivate VO
     QLineEdit *inputFilePath3;          //!< Text field to store ground truth for VO task
     QPushButton *browse_button3;        //!< browse button to look for the ground truth Odometry file

@@ -3,9 +3,7 @@
 //
 
 #include "visual_odometry.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <QLabel>
+
 
 int ground_truth_x[MAX_FRAME];
 int ground_truth_y[MAX_FRAME];
@@ -160,6 +158,10 @@ vector<double> VisualOdometry::getCalibrationParams(string calibration_file)
 ************************************************************************************************/
 void VisualOdometry::storeGroundTruth(string poses_ground_truth)	{
 
+
+    char ch = poses_ground_truth.at(poses_ground_truth.length()-5);
+    cout << ch << endl;
+    vector<int> shifts = computeStartingPoint(ch);
     string line;
     int i = 0;
     //ifstream myfile ("/home/raghavender/Downloads/dataset3/poses/01c.txt");
@@ -179,14 +181,14 @@ void VisualOdometry::storeGroundTruth(string poses_ground_truth)	{
                 if (j==11)
                 {
                     y = z;
-                    ground_truth_y[i] = (int)y+100;
+                    ground_truth_y[i] = (int)y+shifts.at(1);
                     cout << y << " y ";
                 }
                 if (j==3)
                 {
                     x=z;
 
-                    ground_truth_x[i] = (int)x+300;
+                    ground_truth_x[i] = (int)x+shifts.at(0);
                     cout << x << " x " << endl;
                 }
             }
@@ -228,8 +230,12 @@ VisualOdometry::VisualOdometry()
 /************************************************************************************************
 *					    Generate VO main funciton                                               *
 ************************************************************************************************/
-Mat VisualOdometry::generateVO(CFeatureExtraction fext, int numFeats, string dataset, string groundtruth, string calibration_file, int feat_type )
+//Mat VisualOdometry::generateVO(CFeatureExtraction fext, int numFeats, string dataset, string groundtruth, string calibration_file, int feat_type )
+Mat VisualOdometry::generateVO(CFeatureExtraction fext, int numFeats, string file_paths[3], int feat_type )
 {
+    string dataset = file_paths[0];
+    string groundtruth = file_paths[1];
+    string calibration_file = file_paths[2];
     cnt.setValue(0);
     //this->detector_selected = detector_selected;
     this->fext = fext;
@@ -384,7 +390,7 @@ Mat VisualOdometry::generateVO(CFeatureExtraction fext, int numFeats, string dat
         prevFeatures = currFeatures;
 
         char ch = groundtruth.at(groundtruth.length()-5);
-        cout << ch << endl;
+        //cout << ch << endl;
         vector<int> shifts = computeStartingPoint(ch);
 
         int x = int(t_f.at<double>(0)) + shifts.at(0);
@@ -460,7 +466,7 @@ vector<int> VisualOdometry::computeStartingPoint(char ch)
     }
     else if(ch == '6')
     {
-        x=300 ; y=100;
+        x=300 ; y=200;
     }
     else if(ch == '7')
     {
@@ -468,11 +474,11 @@ vector<int> VisualOdometry::computeStartingPoint(char ch)
     }
     else if(ch == '8')
     {
-        x=300 ; y=100;
+        x=500 ; y=100;
     }
     else if(ch == '9')
     {
-        x=300 ; y=100;
+        x=120 ; y=20;
     }
     else //(ch == '10')
     {
