@@ -341,6 +341,8 @@ void CWaypointsNavigator::waypoints_navigationStep()
 	// Note: navigationStep() called *after* waypoints part to get end-of-navigation events *after*
 	//       waypoints-related events:
 
+	m_was_aligning = m_is_aligning; // Let the next timestep know about this
+
 	MRPT_END
 }
 
@@ -363,8 +365,6 @@ void CWaypointsNavigator::navigationStep()
 	{
 		CAbstractNavigator::navigationStep();  // This internally locks "m_nav_cs"
 	}
-
-	m_was_aligning = m_is_aligning; // Let the next timestep know about this
 
 	MRPT_END
 }
