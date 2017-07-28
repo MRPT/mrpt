@@ -207,7 +207,7 @@ public:
 
     ///visual odom parameters
 
-    VisualOdometry *visual_odom;         //!< visual odometry object to perform the vision task of estimating camera trajector for Monocular Datasets like KITTI
+    VisualOdometry visual_odom;         //!< visual odometry object to perform the vision task of estimating camera trajector for Monocular Datasets like KITTI
     QCheckBox *visual_odom_enable;      //!< Checkbox to activate/deactivate VO
     QLineEdit *inputFilePath3;          //!< Text field to store ground truth for VO task
     QPushButton *browse_button3;        //!< browse button to look for the ground truth Odometry file
@@ -219,10 +219,11 @@ public:
 
     QLabel *visualOdom;                 //!< Label which stores and displays the image for the VO output
 
-    QFutureWatcher<cv::Mat> FutureWatcher; //!< Future for showing prgress bar
+    QFutureWatcher<cv::Mat> FutureWatcher; //!< FutureWatcher for showing progress bar
     QProgressBar *progressBar;             //!< progress bar to show VO progress
-
-
+    QDialog *vo_message_dialog;
+    QGridLayout *vo_layout;
+    QLabel *vo_message_running;
     QLabel *VO_progress;                //!< Label to show VO progress
 
     CFeatureExtraction fext;                    //!< CFeatureExtraction object to hold/store all parameters for detectors/descriptors

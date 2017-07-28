@@ -2019,7 +2019,7 @@ void MainWindow::initializeParameters()
 void MainWindow::on_generateVisualOdometry_clicked()
 {
 
-    //this->progressBar->show();
+
 
 
 
@@ -2055,17 +2055,22 @@ void MainWindow::on_generateVisualOdometry_clicked()
     //QFuture<void> future = QtConcurrent::run(&this->visual_odom, &VisualOdometry::generateVO(detector_selected, fext, numFeats, single_dataset_path, file_path3, feat_type));
 
     //extern Mat VisualOdometry::generateVO(CFeatureExtraction fext2, int numFeats2, string file_path2[3], int feat_type2);
+    //extern Mat VisualOdometry::generateVO(CFeatureExtraction fext2, int numFeats2, string file_path2[3], int feat_type2);
     //QFuture<Mat> future = QtConcurrent::run(VisualOdometry::generateVO, fext, numFeats, single_dataset_path, file_path3, feat_type);
-    //QFuture<Mat> future = QtConcurrent::run(visual_odom->generateVO, fext, numFeats, file_paths, feat_type);
+    this->progressBar->show();
+    vo_message_running->show();
+    vo_message_dialog->show();
+    sleep(4);
+    QFuture<Mat> future = QtConcurrent::run(&this->visual_odom, &VisualOdometry::generateVO, fext, numFeats, file_paths, feat_type);
 
-    //Mat tttt = future.result();
+    Mat display_VO = future.result();
 
-    //FutureWatcher.setFuture(future);
+    this->FutureWatcher.setFuture(future);
 
     //VisualOdometry visual_odom;
 
 
-    Mat display_VO = visual_odom->generateVO(fext, numFeats, file_paths, feat_type);
+    //Mat display_VO = visual_odom.generateVO(fext, numFeats, file_paths, feat_type);
     //Mat display_VO = visual_odom.generateVO(fext, numFeats, single_dataset_path, file_path3, calibration_file, feat_type);
     //imshow("Visual Odom", display_VO);
     //waitKey(0);
@@ -2374,7 +2379,7 @@ void MainWindow::updateVOProgress()
     //VO_progress->setText(QString::fromStdString(std::to_string(visual_odom.cnt.m_value)));
 
 
-    cout << visual_odom->cnt.m_value << "  updateVOProgress " << endl;
+    cout << visual_odom.cnt.m_value << "  updateVOProgress " << endl;
     //sleep(1);
     //VO_progress->setVisible(false);
     //VO_progress->setVisible(true);
@@ -2386,7 +2391,8 @@ void MainWindow::updateVOProgress()
 ************************************************************************************************/
 void MainWindow::slot_finished()
 {
-    progressBar->hide();
+    //progressBar->hide();
+    vo_message_dialog->hide();
 }
 
 
@@ -2397,11 +2403,22 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
 {
 
     progressBar = new QProgressBar;
+    vo_message_dialog = new QDialog;
+    vo_layout = new QGridLayout;
+    vo_message_running = new QLabel;
+    vo_message_running->setText("Visual Odometry is currently running on the selected dataset <br>, Please wait till the process is finished");
     progressBar->setMinimum(0);
     progressBar->setMaximum(0);
+    progressBar->setValue(24);
+    progressBar->setWindowTitle("Please wait, Visual Odometry Running");
+    progressBar->setFixedSize(500, 40);
     progressBar->hide();
-
-    visual_odom = new VisualOdometry;
+    vo_layout->addWidget(progressBar,0,0);
+    vo_layout->addWidget(vo_message_running,1,0);
+    vo_message_dialog->setWindowTitle("Visual Odometry Running Please Wait!!!");
+    vo_message_dialog->setLayout(vo_layout);
+    vo_message_dialog->hide();
+    //visual_odom = new VisualOdometry;
     connect(&this->FutureWatcher, SIGNAL (finished()), this, SLOT (slot_finished()));
 
 
@@ -2680,8 +2697,8 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
     /// create a signal slot for displaying the progress of VO
     //Counter a, b;
     //connect(&visual_odom.current_frame, SIGNAL(valueChanged(int)), this, SLOT(setValue(int)));
-    connect(&visual_odom->cnt, SIGNAL(valueChanged(int)), this, SLOT(setValue(int)));
-    connect(&visual_odom->cnt, SIGNAL(valueChanged(int)), this, SLOT(updateVOProgress()));
+    connect(&visual_odom.cnt, SIGNAL(valueChanged(int)), this, SLOT(setValue(int)));
+    connect(&visual_odom.cnt, SIGNAL(valueChanged(int)), this, SLOT(updateVOProgress()));
 
 
 
