@@ -166,7 +166,6 @@ class GRAPHSLAM_IMPEXP CEdgeCounter
 	 * Tracking number of edges
 	 */
 	std::map<std::string, int> m_name_to_edges_num;
-	;
 	int m_num_loop_closures;
 	int m_unique_edges;
 
