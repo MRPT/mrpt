@@ -1120,7 +1120,7 @@ reactive_navigator_demoframe::reactive_navigator_demoframe(
 	gl_rel_robot->insertPoint(0, 0, 0);
 	openGLSceneLocalViewRef->insert(gl_rel_robot);
 
-	m_plotLocalView->m_openGLScene->insert(
+	m_plotLocalView->getOpenGLSceneRef()->insert(
 		mrpt::opengl::stock_objects::CornerXYSimple(0.1f, 2));
 	openGLSceneLocalViewRef->insert(gl_robot_local);
 

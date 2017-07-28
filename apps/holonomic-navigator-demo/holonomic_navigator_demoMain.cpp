@@ -575,8 +575,7 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(
 	gl_rel_target->insertPoint(0, 0, 0);
 	openGLScanRef->insert(gl_rel_target);
 
-	openGLScanRef->m_openGLScene->insert(
-		mrpt::opengl::stock_objects::CornerXYSimple(0.1f, 2));
+	openGLScanRef->insert(mrpt::opengl::stock_objects::CornerXYSimple(0.1f, 2));
 
 	gl_nd_gaps = mrpt::make_aligned_shared<mrpt::opengl::CSetOfLines>();
 	gl_nd_gaps->setLineWidth(2);

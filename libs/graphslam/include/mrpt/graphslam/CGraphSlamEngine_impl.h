@@ -55,7 +55,7 @@ CGraphSlamEngine<GRAPH_T>::CGraphSlamEngine(
 	  m_is_first_time_node_reg(true)
 {
 	this->initClass();
-};
+}
 
 template <class GRAPH_T>
 CGraphSlamEngine<GRAPH_T>::~CGraphSlamEngine()
