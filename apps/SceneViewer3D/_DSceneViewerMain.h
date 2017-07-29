@@ -27,17 +27,17 @@
 
 class CDlgCamTracking;
 
-#include <mrpt/gui/CMyGLCanvasBase.h>
+#include <mrpt/gui/CWxGLCanvasBase.h>
 
-class CMyGLCanvas : public mrpt::gui::CMyGLCanvasBase
+class CMyGLCanvas : public mrpt::gui::CWxGLCanvasBase
 {
    public:
 	CMyGLCanvas(
 		wxWindow* parent, wxWindowID id = wxID_ANY,
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize, long style = 0,
-		const wxString& name = _T("CMyGLCanvasBase"))
-		: CMyGLCanvasBase(parent, id, pos, size, style, name)
+		const wxString& name = _T("CWxGLCanvasBase"))
+		: CWxGLCanvasBase(parent, id, pos, size, style, name)
 	{
 	}
 

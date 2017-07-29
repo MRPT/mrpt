@@ -96,7 +96,7 @@
 		- \ref mrpt_graphs_grp
 			- New class mrpt::graphs::ScalarFactorGraph, a simple but extensible linear GMRF solver. Refactored from mrpt::maps::CGasConcentrationGridMap2D, etc.
 		- \ref mrpt_gui_grp
-			- mrpt::gui::CMyGLCanvasBase is now derived from mrpt::opengl::CTextMessageCapable so they can draw text labels
+			- mrpt::gui::CWxGLCanvasBase is now derived from mrpt::opengl::CTextMessageCapable so they can draw text labels
 			- New class mrpt::gui::CDisplayWindow3DLocker for exception-safe 3D scene lock in 3D windows.
 		- \ref mrpt_hwdrivers_grp
 			- Using rplidar newest SDK 1.5.6 instead of 1.4.3, which support rplidar A1 and rplidar A2
@@ -441,7 +441,7 @@
 			- New method mrpt::maps::COccupancyGridMap2D::getRawMap()
 			- New method mrpt::maps::CColouredPointsMap::getPCLPointCloudXYZRGB()
 		- [mrpt-opengl]
-			- mrpt::opengl::CMyGLCanvasBase (affects all 3D rendering classes): better handling of internal timers for smoother updates while rendering in multithreading apps.
+			- mrpt::opengl::CWxGLCanvasBase (affects all 3D rendering classes): better handling of internal timers for smoother updates while rendering in multithreading apps.
 		- [mrpt-srba]
 			- New method to recover the global coordinates graph-slam problem for a RBA map: mrpt::srba::RbaEngine::get_global_graphslam_problem() (see example [MRPT]\samples\srba-examples\srba-tutorials\tutorial-srba-how-to-recover-global-map.cpp)
 	- BUG FIXES:

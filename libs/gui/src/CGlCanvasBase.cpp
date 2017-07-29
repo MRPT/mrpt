@@ -341,7 +341,7 @@ double CGlCanvasBase::renderCanvas(int width, int height)
 	{
 		glPopAttrib();
 		const std::string err_msg =
-			std::string("[CMyGLCanvasBase::Render] Exception!: ") +
+			std::string("[CWxGLCanvasBase::Render] Exception!: ") +
 			std::string(e.what());
 		std::cerr << err_msg;
 		renderError(err_msg);

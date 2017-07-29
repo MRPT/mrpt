@@ -24,7 +24,7 @@ namespace mrpt
 namespace gui
 {
 /** This base class implements a working with opengl::Camera and a OpenGL
- * canvas, and it's used in gui::CMyGLCanvasBase and gui::CQtGlCanvasBase.
+ * canvas, and it's used in gui::CWxGLCanvasBase and gui::CQtGlCanvasBase.
 */
 class CGlCanvasBase
 {

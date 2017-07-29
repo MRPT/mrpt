@@ -16,7 +16,7 @@ using namespace std;
 CMyGLCanvas::CMyGLCanvas(
 	wxWindow* parent, wxWindowID id, const wxPoint& pos, const wxSize& size,
 	long style, const wxString& name)
-	: CMyGLCanvasBase(parent, id, pos, size, style, name),
+	: CWxGLCanvasBase(parent, id, pos, size, style, name),
 	  last_timestamp(INVALID_TIMESTAMP)
 {
 	setCameraPointing(0.0f, 0.0f, 0.0f);

@@ -50,7 +50,7 @@ const std::string iniFileSect("CONF_LIN");
 #error "OpenGL required: set wxUSE_GLCANVAS to 1 and rebuild wxWidgets"
 #endif
 
-#include <mrpt/gui/CMyGLCanvasBase.h>
+#include <mrpt/gui/CWxGLCanvasBase.h>
 #include <mrpt/gui/about_box.h>
 #include <mrpt/opengl/CFBORender.h>
 

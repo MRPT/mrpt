@@ -66,18 +66,18 @@ namespace gui
  * the mouse. See OnUserManuallyMovesCamera
   * \ingroup mrpt_gui_grp
   */
-class GUI_IMPEXP CMyGLCanvasBase : public CGlCanvasBase,
+class GUI_IMPEXP CWxGLCanvasBase : public CGlCanvasBase,
 								   public wxGLCanvas,
 								   public mrpt::opengl::CTextMessageCapable
 {
    public:
-	CMyGLCanvasBase(
+	CWxGLCanvasBase(
 		wxWindow* parent, wxWindowID id = wxID_ANY,
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize, long style = 0,
-		const wxString& name = _T("CMyGLCanvasBase"));
+		const wxString& name = _T("CWxGLCanvasBase"));
 
-	virtual ~CMyGLCanvasBase();
+	virtual ~CWxGLCanvasBase();
 
 	void OnPaint(wxPaintEvent& event);
 	void OnSize(wxSizeEvent& event);
