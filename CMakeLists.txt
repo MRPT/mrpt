@@ -640,7 +640,7 @@ STRING(REGEX REPLACE "/STACK:[0-9]+" "/STACK:1000000" CMAKE_SHARED_LINKER_FLAGS 
 #  dependencies stored in "mrpt-${name}_LIB_DEPS"
 SET(ALL_MRPT_LIBS "" CACHE INTERNAL "")  # This emulates global vars
 
-IF (NOT MSVC AND NOT CMAKE_VERSION VERSION_LESS "2.8.12")
+IF (NOT MSVC)
 	include(cmakemodules/cotire.cmake REQUIRED) # COmpiler TIme REducer helper for PCH
 	set_directory_properties(PROPERTIES COTIRE_ADD_UNITY_BUILD FALSE) # Disable unity targets
 ENDIF()
