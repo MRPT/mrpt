@@ -281,6 +281,7 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 					list(APPEND COTIRE_PREFIX_HEADER_IGNORE_PATH
 						"${OpenCV_INCLUDE_DIR}"
 						"${MRPT_LIBS_ROOT}/${name}/src"
+						"/usr/"  # avoid problems with Cotire trying to include internal GCC headers, not suitable for direct use.
 					)
 					set_target_properties(mrpt-${name} PROPERTIES
 						COTIRE_PREFIX_HEADER_IGNORE_PATH "${COTIRE_PREFIX_HEADER_IGNORE_PATH}"
