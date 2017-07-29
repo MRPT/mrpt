@@ -52,14 +52,14 @@ using namespace std;
 #error "OpenGL required: set wxUSE_GLCANVAS to 1 and rebuild wxWidgets"
 #endif
 
-#include <mrpt/gui/CMyGLCanvasBase.h>
+#include <mrpt/gui/CWxGLCanvasBase.h>
 #include <mrpt/opengl/CTextMessageCapable.h>
 
 namespace mrpt
 {
 namespace gui
 {
-class CMyGLCanvas_DisplayWindow3D : public mrpt::gui::CMyGLCanvasBase
+class CMyGLCanvas_DisplayWindow3D : public mrpt::gui::CWxGLCanvasBase
 {
    public:
 	CMyGLCanvas_DisplayWindow3D(
@@ -101,7 +101,7 @@ class CMyGLCanvas_DisplayWindow3D : public mrpt::gui::CMyGLCanvasBase
 CMyGLCanvas_DisplayWindow3D::CMyGLCanvas_DisplayWindow3D(
 	CDisplayWindow3D* win3D, wxWindow* parent, wxWindowID id,
 	const wxPoint& pos, const wxSize& size, long style, const wxString& name)
-	: CMyGLCanvasBase(parent, id, pos, size, style, name)
+	: CWxGLCanvasBase(parent, id, pos, size, style, name)
 {
 	m_win3D = win3D;
 	Connect(

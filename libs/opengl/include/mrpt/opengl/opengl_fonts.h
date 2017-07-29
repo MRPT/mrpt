@@ -20,7 +20,7 @@ namespace mrpt
 namespace opengl
 {
 /** Existing fonts for 2D texts in mrpt::opengl methods.
-  * \sa mrpt::opengl::CMyGLCanvasBase::renderTextBitmap
+  * \sa mrpt::opengl::CWxGLCanvasBase::renderTextBitmap
   * \ingroup mrpt_opengl_grp
   */
 enum TOpenGLFont

@@ -16,7 +16,7 @@ using namespace std;
 CMyGLCanvas::CMyGLCanvas(
 	wxWindow* parent, wxWindowID id, const wxPoint& pos, const wxSize& size,
 	long style, const wxString& name)
-	: CMyGLCanvasBase(parent, id, pos, size, style, name)
+	: CWxGLCanvasBase(parent, id, pos, size, style, name)
 {
 	setCameraPointing(0.0f, 0.0f, 0.0f);
 	setZoomDistance(6.0f);

@@ -42,7 +42,7 @@ extern std::string global_fileToOpen;
 #error "OpenGL required: set wxUSE_GLCANVAS to 1 and rebuild wxWidgets"
 #endif
 
-#include <mrpt/gui/CMyGLCanvasBase.h>
+#include <mrpt/gui/CWxGLCanvasBase.h>
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/utils/CFileOutputStream.h>
@@ -74,15 +74,15 @@ extern CConfigFile* iniFile;
 // HMT map to be displayed.
 CHMTSLAM* hmt_map = nullptr;
 
-class CMyGLCanvas : public CMyGLCanvasBase
+class CMyGLCanvas : public CWxGLCanvasBase
 {
    public:
 	CMyGLCanvas(
 		wxWindow* parent, wxWindowID id = wxID_ANY,
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize, long style = 0,
-		const wxString& name = _T("CMyGLCanvasBase"))
-		: CMyGLCanvasBase(parent, id, pos, size, style, name)
+		const wxString& name = _T("CWxGLCanvasBase"))
+		: CWxGLCanvasBase(parent, id, pos, size, style, name)
 	{
 	}
 

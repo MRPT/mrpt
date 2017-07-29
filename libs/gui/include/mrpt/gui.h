@@ -18,6 +18,6 @@
 // require wxWidget headers:
 // #include "gui/WxSubsystem.h"
 //#include "gui/WxUtils.h"
-//#include "gui/CMyGLCanvasBase.h"
+//#include "gui/CWxGLCanvasBase.h"
 
 #endif

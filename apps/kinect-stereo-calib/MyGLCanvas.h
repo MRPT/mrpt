@@ -10,7 +10,7 @@
 #ifndef MYGLCANVAS_H
 #define MYGLCANVAS_H
 
-#include <mrpt/gui/CMyGLCanvasBase.h>
+#include <mrpt/gui/CWxGLCanvasBase.h>
 
 // This is funny... conflicts with X headers.
 #undef Button1
@@ -28,7 +28,7 @@ using namespace mrpt::gui;
 
 #if KINECTSTEREO_HAS_3D
 
-class CMyGLCanvas : public CMyGLCanvasBase
+class CMyGLCanvas : public CWxGLCanvasBase
 {
    public:
 	CMyGLCanvas(

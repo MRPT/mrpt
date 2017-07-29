@@ -9,7 +9,7 @@
 
 #include "gui-precomp.h"  // Precompiled headers
 
-#include <mrpt/gui/CMyGLCanvasBase.h>
+#include <mrpt/gui/CWxGLCanvasBase.h>
 #include <mrpt/gui/WxSubsystem.h>
 #include <mrpt/utils/CTicTac.h>
 
@@ -50,38 +50,38 @@ using namespace std;
   Implementation of Test-GLCanvas
 -----------------------------------------------------------------*/
 
-BEGIN_EVENT_TABLE(CMyGLCanvasBase, wxGLCanvas)
-EVT_SIZE(CMyGLCanvasBase::OnSize)
-EVT_PAINT(CMyGLCanvasBase::OnPaint)
-EVT_ERASE_BACKGROUND(CMyGLCanvasBase::OnEraseBackground)
-EVT_ENTER_WINDOW(CMyGLCanvasBase::OnEnterWindow)
-EVT_WINDOW_CREATE(CMyGLCanvasBase::OnWindowCreation)
+BEGIN_EVENT_TABLE(CWxGLCanvasBase, wxGLCanvas)
+EVT_SIZE(CWxGLCanvasBase::OnSize)
+EVT_PAINT(CWxGLCanvasBase::OnPaint)
+EVT_ERASE_BACKGROUND(CWxGLCanvasBase::OnEraseBackground)
+EVT_ENTER_WINDOW(CWxGLCanvasBase::OnEnterWindow)
+EVT_WINDOW_CREATE(CWxGLCanvasBase::OnWindowCreation)
 END_EVENT_TABLE()
 
-void CMyGLCanvasBase::OnWindowCreation(wxWindowCreateEvent& ev)
+void CWxGLCanvasBase::OnWindowCreation(wxWindowCreateEvent& ev)
 {
 	if (!m_gl_context) m_gl_context = new wxGLContext(this);
 }
 
-void CMyGLCanvasBase::swapBuffers() { SwapBuffers(); }
-void CMyGLCanvasBase::preRender() { OnPreRender(); }
-void CMyGLCanvasBase::postRender() { OnPostRender(); }
-void CMyGLCanvasBase::renderError(const string& err_msg)
+void CWxGLCanvasBase::swapBuffers() { SwapBuffers(); }
+void CWxGLCanvasBase::preRender() { OnPreRender(); }
+void CWxGLCanvasBase::postRender() { OnPostRender(); }
+void CWxGLCanvasBase::renderError(const string& err_msg)
 {
 	OnRenderError(_U(err_msg.c_str()));
 }
 
-void CMyGLCanvasBase::OnMouseDown(wxMouseEvent& event)
+void CWxGLCanvasBase::OnMouseDown(wxMouseEvent& event)
 {
 	setMousePos(event.GetX(), event.GetY());
 	setMouseClicked(true);
 }
-void CMyGLCanvasBase::OnMouseUp(wxMouseEvent& /*event*/)
+void CWxGLCanvasBase::OnMouseUp(wxMouseEvent& /*event*/)
 {
 	setMouseClicked(false);
 }
 
-void CMyGLCanvasBase::OnMouseMove(wxMouseEvent& event)
+void CWxGLCanvasBase::OnMouseMove(wxMouseEvent& event)
 {
 	bool leftIsDown = event.LeftIsDown();
 
@@ -121,7 +121,7 @@ void CMyGLCanvasBase::OnMouseMove(wxMouseEvent& event)
 	this->SetFocus();
 }
 
-void CMyGLCanvasBase::OnMouseWheel(wxMouseEvent& event)
+void CWxGLCanvasBase::OnMouseWheel(wxMouseEvent& event)
 {
 	CamaraParams params = cameraParams();
 	updateZoom(params, event.GetWheelRotation());
@@ -135,7 +135,7 @@ void CMyGLCanvasBase::OnMouseWheel(wxMouseEvent& event)
 static int WX_GL_ATTR_LIST[] = {WX_GL_DOUBLEBUFFER, WX_GL_RGBA,
 								WX_GL_DEPTH_SIZE, 24, 0};
 
-CMyGLCanvasBase::CMyGLCanvasBase(
+CWxGLCanvasBase::CWxGLCanvasBase(
 	wxWindow* parent, wxWindowID id, const wxPoint& pos, const wxSize& size,
 	long style, const wxString& name)
 	: CGlCanvasBase(),
@@ -147,32 +147,32 @@ CMyGLCanvasBase::CMyGLCanvasBase(
 {
 	Connect(
 		wxID_ANY, wxEVT_LEFT_DOWN,
-		(wxObjectEventFunction)&CMyGLCanvasBase::OnMouseDown);
+		(wxObjectEventFunction)&CWxGLCanvasBase::OnMouseDown);
 	Connect(
 		wxID_ANY, wxEVT_RIGHT_DOWN,
-		(wxObjectEventFunction)&CMyGLCanvasBase::OnMouseDown);
+		(wxObjectEventFunction)&CWxGLCanvasBase::OnMouseDown);
 	Connect(
 		wxID_ANY, wxEVT_LEFT_UP,
-		(wxObjectEventFunction)&CMyGLCanvasBase::OnMouseUp);
+		(wxObjectEventFunction)&CWxGLCanvasBase::OnMouseUp);
 	Connect(
 		wxID_ANY, wxEVT_RIGHT_UP,
-		(wxObjectEventFunction)&CMyGLCanvasBase::OnMouseUp);
+		(wxObjectEventFunction)&CWxGLCanvasBase::OnMouseUp);
 	Connect(
 		wxID_ANY, wxEVT_MOTION,
-		(wxObjectEventFunction)&CMyGLCanvasBase::OnMouseMove);
+		(wxObjectEventFunction)&CWxGLCanvasBase::OnMouseMove);
 	Connect(
 		wxID_ANY, wxEVT_MOUSEWHEEL,
-		(wxObjectEventFunction)&CMyGLCanvasBase::OnMouseWheel);
+		(wxObjectEventFunction)&CWxGLCanvasBase::OnMouseWheel);
 
 	Connect(
-		wxID_ANY, wxEVT_CHAR, (wxObjectEventFunction)&CMyGLCanvasBase::OnChar);
+		wxID_ANY, wxEVT_CHAR, (wxObjectEventFunction)&CWxGLCanvasBase::OnChar);
 	Connect(
 		wxID_ANY, wxEVT_CHAR_HOOK,
-		(wxObjectEventFunction)&CMyGLCanvasBase::OnChar);
+		(wxObjectEventFunction)&CWxGLCanvasBase::OnChar);
 
 	Connect(
 		wxEVT_CREATE,
-		(wxObjectEventFunction)&CMyGLCanvasBase::OnWindowCreation);
+		(wxObjectEventFunction)&CWxGLCanvasBase::OnWindowCreation);
 
 // JL: There seems to be a problem in MSW we don't receive this event, but
 //      in GTK we do and at the right moment to avoid an X server crash.
@@ -182,14 +182,14 @@ CMyGLCanvasBase::CMyGLCanvasBase(
 #endif
 }
 
-CMyGLCanvasBase::~CMyGLCanvasBase() { delete_safe(m_gl_context); }
-void CMyGLCanvasBase::OnChar(wxKeyEvent& event) { OnCharCustom(event); }
-void CMyGLCanvasBase::Render()
+CWxGLCanvasBase::~CWxGLCanvasBase() { delete_safe(m_gl_context); }
+void CWxGLCanvasBase::OnChar(wxKeyEvent& event) { OnCharCustom(event); }
+void CWxGLCanvasBase::Render()
 {
 	wxPaintDC dc(this);
 
 	if (!m_gl_context)
-	{ /*cerr << "[CMyGLCanvasBase::Render] No GL Context!" << endl;*/
+	{ /*cerr << "[CWxGLCanvasBase::Render] No GL Context!" << endl;*/
 		return;
 	}
 	else
@@ -209,13 +209,13 @@ void CMyGLCanvasBase::Render()
 	OnPostRenderSwapBuffers(At, dc);
 }
 
-void CMyGLCanvasBase::OnEnterWindow(wxMouseEvent& WXUNUSED(event))
+void CWxGLCanvasBase::OnEnterWindow(wxMouseEvent& WXUNUSED(event))
 {
 	SetFocus();
 }
 
-void CMyGLCanvasBase::OnPaint(wxPaintEvent& WXUNUSED(event)) { Render(); }
-void CMyGLCanvasBase::OnSize(wxSizeEvent& event)
+void CWxGLCanvasBase::OnPaint(wxPaintEvent& WXUNUSED(event)) { Render(); }
+void CWxGLCanvasBase::OnSize(wxSizeEvent& event)
 {
 	if (!m_parent->IsShown()) return;
 
@@ -226,7 +226,7 @@ void CMyGLCanvasBase::OnSize(wxSizeEvent& event)
 	if (this->IsShownOnScreen())
 	{
 		if (!m_gl_context)
-		{ /*cerr << "[CMyGLCanvasBase::Render] No GL Context!" << endl;*/
+		{ /*cerr << "[CWxGLCanvasBase::Render] No GL Context!" << endl;*/
 			return;
 		}
 		else
@@ -236,15 +236,15 @@ void CMyGLCanvasBase::OnSize(wxSizeEvent& event)
 	}
 }
 
-void CMyGLCanvasBase::OnEraseBackground(wxEraseEvent& WXUNUSED(event))
+void CWxGLCanvasBase::OnEraseBackground(wxEraseEvent& WXUNUSED(event))
 {
 	// Do nothing, to avoid flashing.
 }
 
-void CMyGLCanvasBase::InitGL()
+void CWxGLCanvasBase::InitGL()
 {
 	if (!m_gl_context)
-	{ /*cerr << "[CMyGLCanvasBase::Render] No GL Context!" << endl;*/
+	{ /*cerr << "[CWxGLCanvasBase::Render] No GL Context!" << endl;*/
 		return;
 	}
 	else
@@ -262,7 +262,7 @@ void CMyGLCanvasBase::InitGL()
 	}
 }
 
-void CMyGLCanvasBase::setCameraPose(const mrpt::poses::CPose3D& camPose)
+void CWxGLCanvasBase::setCameraPose(const mrpt::poses::CPose3D& camPose)
 {
 	THROW_EXCEPTION("todo")
 }

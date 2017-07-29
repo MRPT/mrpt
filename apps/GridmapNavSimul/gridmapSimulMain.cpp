@@ -97,7 +97,7 @@ wxBitmap MyArtProvider::CreateBitmap(
 	return wxNullBitmap;
 }
 
-#include <mrpt/gui/CMyGLCanvasBase.h>
+#include <mrpt/gui/CWxGLCanvasBase.h>
 
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/kinematics/CVehicleSimul_DiffDriven.h>
@@ -146,15 +146,15 @@ double LASER_APERTURE = M_PI;
 double LASER_STD_ERROR = 0.01;
 double LASER_BEARING_STD_ERROR = DEG2RAD(0.05);
 
-class CMyGLCanvas : public CMyGLCanvasBase
+class CMyGLCanvas : public CWxGLCanvasBase
 {
    public:
 	CMyGLCanvas(
 		wxWindow* parent, wxWindowID id = wxID_ANY,
 		const wxPoint& pos = wxDefaultPosition,
 		const wxSize& size = wxDefaultSize, long style = 0,
-		const wxString& name = _T("CMyGLCanvasBase"))
-		: CMyGLCanvasBase(parent, id, pos, size, style, name)
+		const wxString& name = _T("CWxGLCanvasBase"))
+		: CWxGLCanvasBase(parent, id, pos, size, style, name)
 	{
 	}
 

@@ -10,7 +10,7 @@
 #ifndef MYGLCANVAS_H
 #define MYGLCANVAS_H
 
-#include <mrpt/gui/CMyGLCanvasBase.h>
+#include <mrpt/gui/CWxGLCanvasBase.h>
 
 using namespace mrpt::gui;
 
@@ -19,7 +19,7 @@ using namespace mrpt::gui;
 
 #if RAWLOGVIEWER_HAS_3D
 
-class CMyGLCanvas : public CMyGLCanvasBase
+class CMyGLCanvas : public CWxGLCanvasBase
 {
    public:
 	CMyGLCanvas(
