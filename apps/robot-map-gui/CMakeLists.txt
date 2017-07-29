@@ -14,8 +14,6 @@ set(CMAKE_AUTORCC ON)
 
 if(CMAKE_MRPT_HAS_Qt5 AND CMAKE_MRPT_HAS_OPENGL_GLUT)
 
-	add_definitions(-DMRPT_HAS_Qt5)
-
 	set(RESOURCES resources/resources.qrc)
 
 	set(CPP_FILES
