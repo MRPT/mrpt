@@ -18,7 +18,7 @@ namespace mrpt
 namespace maps
 {
 class TMapGenericParams;
-class TMetricMapInitializer;
+struct TMetricMapInitializer;
 }
 namespace utils
 {
