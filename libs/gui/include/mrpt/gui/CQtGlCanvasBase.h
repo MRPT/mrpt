@@ -1,21 +1,26 @@
-/* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          http://www.mrpt.org/                             |
-   |                                                                           |
-   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-   | Released under BSD License. See details in http://www.mrpt.org/License    |
-   +---------------------------------------------------------------------------+
-   */
+/* +------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)            |
+   |                          http://www.mrpt.org/                          |
+   |                                                                        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file     |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                |
+   | Released under BSD License. See details in http://www.mrpt.org/License |
+   +------------------------------------------------------------------------+ */
+
 #pragma once
-#include <QGLWidget>
 #include <mrpt/gui/CGlCanvasBase.h>
+#include <mrpt/gui/link_pragmas.h>
+
+#include <mrpt/config.h>
+#if MRPT_HAS_Qt5
+
+#include <QGLWidget>
 
 namespace mrpt
 {
 namespace gui
 {
-class CQtGlCanvasBase : public QGLWidget, public mrpt::gui::CGlCanvasBase
+class GUI_IMPEXP CQtGlCanvasBase : public QGLWidget, public mrpt::gui::CGlCanvasBase
 {
    public:
 	CQtGlCanvasBase(QWidget* parent = nullptr);
@@ -63,3 +68,5 @@ class CQtGlCanvasBase : public QGLWidget, public mrpt::gui::CGlCanvasBase
 
 }  // end namespace
 }  // end namespace
+
+#endif // MRPT_HAS_Qt5

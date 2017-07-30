@@ -75,6 +75,7 @@ if(CMAKE_MRPT_HAS_Qt5 AND CMAKE_MRPT_HAS_OPENGL_GLUT)
 	# ---------------------------------------------
 	# Define the executable target:
 	add_executable(${PROJECT_NAME}
+		WIN32	# Hide console in Windows. Ignored elsewhere
 		${CPP_FILES}
 		${moc_cpps}
 		${uic_cpps}

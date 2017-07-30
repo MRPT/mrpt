@@ -32,7 +32,6 @@ IF(CMAKE_MRPT_HAS_OPENCV)
 	INCLUDE_DIRECTORIES(${OpenCV_INCLUDE_DIR} ${OpenCV_INCLUDE_DIRS} ${OPENCV_INCLUDE_DIRS} ${OPENCV_INCLUDEDIR})
 ENDIF()
 
-
 #---------------------------------------------
 # Macro declared in "DeclareMRPTLib.cmake":
 #---------------------------------------------
@@ -60,11 +59,14 @@ IF(BUILD_mrpt-gui)
 	ENDIF()
 
 	IF(CMAKE_MRPT_HAS_Qt5)
-		qt5_use_modules(mrpt-gui Widgets)
+		qt5_use_modules(mrpt-gui Widgets OpenGL)
 		target_link_libraries(mrpt-gui Qt5::Widgets Qt5::OpenGL)
 	ENDIF()
 
 	IF(CMAKE_MRPT_HAS_OPENCV)
 		target_link_libraries(mrpt-gui ${OpenCV_LIBRARIES})
 	ENDIF()
+
+	# Link against gl:
+	TARGET_LINK_LIBRARIES(mrpt-gui ${MRPT_OPENGL_LIBS})
 ENDIF()

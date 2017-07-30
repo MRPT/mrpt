@@ -1,15 +1,15 @@
-/* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          http://www.mrpt.org/                             |
-   |                                                                           |
-   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-   | Released under BSD License. See details in http://www.mrpt.org/License    |
-   +---------------------------------------------------------------------------+
-   */
+/* +------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)            |
+   |                          http://www.mrpt.org/                          |
+   |                                                                        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file     |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                |
+   | Released under BSD License. See details in http://www.mrpt.org/License |
+   +------------------------------------------------------------------------+ */
 
 #pragma once
-#include "mrpt/opengl/COpenGLScene.h"
+#include <mrpt/opengl/COpenGLScene.h>
+#include <mrpt/gui/link_pragmas.h>
 
 namespace mrpt
 {
@@ -26,7 +26,7 @@ namespace gui
 /** This base class implements a working with opengl::Camera and a OpenGL
  * canvas, and it's used in gui::CWxGLCanvasBase and gui::CQtGlCanvasBase.
 */
-class CGlCanvasBase
+class GUI_IMPEXP CGlCanvasBase
 {
    public:
 	struct CamaraParams

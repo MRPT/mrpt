@@ -27,6 +27,12 @@
 #include <QApplication>
 #include <QDebug>
 
+// Include libraries in linking (needed for Windows)
+#include <mrpt/config.h>
+#if defined(_MSC_VER)
+#pragma comment(lib, "opengl32.lib")
+#endif
+
 using namespace mrpt;
 using namespace mrpt::opengl;
 
@@ -514,7 +520,7 @@ int CGlWidget::searchPoseFromList(
 	for (size_t i = 0; i < xs.size(); ++i)
 	{
 		double dist = std::pow(x - xs[i], 2) + std::pow(y - ys[i], 2);
-		if (dist < maxDist) minDistPos.emplace(dist, i);
+		if (dist < maxDist) minDistPos.emplace(dist, static_cast<int>(i));
 	}
 
 	if (minDistPos.empty()) return -1;
