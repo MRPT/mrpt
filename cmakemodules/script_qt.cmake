@@ -12,6 +12,7 @@ if (USE_QT)
 	if (Qt5Core_FOUND)
 		set(CMAKE_MRPT_HAS_Qt5 1)
 		list(APPEND Qt5_COMPONENTS_LIBS "")
+		list(APPEND Qt5_COMPONENTS_INCLUDE_DIRS "")
 
 		set(location_type LOCATION_RELEASE)
 		if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
@@ -21,7 +22,15 @@ if (USE_QT)
 		foreach(component ${QT_MRPT_COMPONENTS_TO_SEARCH})
 			get_target_property(Qt5_component_lib "Qt5::${component}" ${location_type})
 			list(APPEND Qt5_COMPONENTS_LIBS "${Qt5_component_lib}")
+			
+			get_target_property(Qt5_component_incl "Qt5::${component}" "INTERFACE_INCLUDE_DIRECTORIES")
+			list(APPEND Qt5_COMPONENTS_INCLUDE_DIRS "${Qt5_component_incl}")
 		endforeach()
+		
+		IF($ENV{VERBOSE})
+			MESSAGE(STATUS "Qt5 link libs: ${Qt5_COMPONENTS_LIBS}")
+			MESSAGE(STATUS "Qt5 include dirs: ${Qt5_COMPONENTS_INCLUDE_DIRS}")
+		ENDIF()
 		
 	endif(Qt5Core_FOUND)
 
