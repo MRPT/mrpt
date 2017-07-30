@@ -118,7 +118,8 @@ void CWxGLCanvasBase::OnMouseMove(wxMouseEvent& event)
 	}
 
 	// ensure we have the focus so we get keyboard events:
-	this->SetFocus();
+	// this->SetFocus(); // JLBC: Commented out to avoid a crash after 
+	// refactor with Qt
 }
 
 void CWxGLCanvasBase::OnMouseWheel(wxMouseEvent& event)
