@@ -18,7 +18,7 @@ using namespace mrpt;
 using namespace mrpt::gui;
 
 CQtGlCanvasBase::CQtGlCanvasBase(QWidget* parent)
-	: QGLWidget(parent),
+	: QOpenGLWidget(parent),
 	  mrpt::gui::CGlCanvasBase(),
 	  m_isPressLMouseButton(false),
 	  m_isPressRMouseButton(false)
@@ -31,7 +31,7 @@ void CQtGlCanvasBase::initializeGL()
 {
 	clearColors();
 
-	QGLWidget::initializeGL();
+	QOpenGLWidget::initializeGL();
 }
 
 void CQtGlCanvasBase::paintGL() { renderCanvas(); }
@@ -40,7 +40,7 @@ void CQtGlCanvasBase::resizeGL(int width, int height)
 	if (height == 0) height = 1;
 	glViewport(0, 0, width, height);
 
-	QGLWidget::resizeGL(width, height);
+	QOpenGLWidget::resizeGL(width, height);
 }
 
 opengl::COpenGLViewport::Ptr CQtGlCanvasBase::mainViewport() const
@@ -62,7 +62,7 @@ void CQtGlCanvasBase::mousePressEvent(QMouseEvent* event)
 	m_isPressLMouseButton = (event->button() == Qt::LeftButton);
 	m_isPressRMouseButton = (event->button() == Qt::RightButton);
 
-	QGLWidget::mousePressEvent(event);
+	QOpenGLWidget::mousePressEvent(event);
 }
 
 void CQtGlCanvasBase::mouseMoveEvent(QMouseEvent* event)
@@ -100,7 +100,7 @@ void CQtGlCanvasBase::mouseMoveEvent(QMouseEvent* event)
 		update();
 	}
 
-	QGLWidget::mouseMoveEvent(event);
+	QOpenGLWidget::mouseMoveEvent(event);
 }
 
 void CQtGlCanvasBase::mouseReleaseEvent(QMouseEvent* event)
@@ -108,7 +108,7 @@ void CQtGlCanvasBase::mouseReleaseEvent(QMouseEvent* event)
 	setMouseClicked(false);
 	m_isPressLMouseButton = false;
 	m_isPressRMouseButton = false;
-	QGLWidget::mouseReleaseEvent(event);
+	QOpenGLWidget::mouseReleaseEvent(event);
 }
 
 void CQtGlCanvasBase::wheelEvent(QWheelEvent* event)
@@ -120,7 +120,7 @@ void CQtGlCanvasBase::wheelEvent(QWheelEvent* event)
 	updateCamerasParams();
 
 	update();
-	QGLWidget::wheelEvent(event);
+	QOpenGLWidget::wheelEvent(event);
 }
 
 void CQtGlCanvasBase::renderError(const std::string& err_msg)

@@ -56,7 +56,8 @@ CGlWidget::CGlWidget(bool is2D, QWidget* parent)
 	  m_showRobot(false)
 {
 	setClearColors(1.0, 1.0, 1.0);
-
+	setMinimumZoom(1.0f);
+	setMaximumZoom(3200.0f);
 	m_visiblePoints->setColor(m_observationColor);
 	m_visiblePoints->setPointSize(m_observationSize);
 
@@ -449,9 +450,8 @@ void CGlWidget::mousePressEvent(QMouseEvent* event)
 			int i = searchPose(scenePos.second.x, scenePos.second.y, maxDist);
 			if (i != -1)
 			{
-				removeFromVisible(i);
-				selectPose(
-					scenePos.second.x, scenePos.second.y, getSafeZPose());
+				auto point = removeFromVisible(i);
+				selectPose(point.x, point.y, point.z);
 				updateScene = true;
 			}
 		}

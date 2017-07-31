@@ -310,9 +310,11 @@ int CConfigWidget::addWidget(TypeOfConfig type, CBaseConfig* w)
 	QString nameListWidgetItem = w->getName();
 
 	auto it = m_configs.find(type);
-	if (it == m_configs.end() && type != TypeOfConfig::General)
+	if (type != TypeOfConfig::General)
 	{
-		it = m_configs.emplace(type, std::vector<CBaseConfig*>()).first;
+		if (it == m_configs.end())
+			it = m_configs.emplace(type, std::vector<CBaseConfig*>()).first;
+
 		nameListWidgetItem += QString::number(it->second.size());
 	}
 

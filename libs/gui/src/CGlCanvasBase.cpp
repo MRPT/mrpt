@@ -52,8 +52,8 @@ CGlCanvasBase::CGlCanvasBase()
 	  m_mouseClickX(0),
 	  m_mouseClickY(0),
 	  mouseClicked(false),
-	  m_minZoom(1.0),
-	  m_maxZoom(3200.0),
+	  m_minZoom(-1.0f),
+	  m_maxZoom(-1.0f),
 	  m_cameraParams()
 {
 	setCameraPointing(0.0, 0.0, 0.0);
@@ -72,7 +72,7 @@ void CGlCanvasBase::setMouseClicked(bool is) { mouseClicked = is; }
 void CGlCanvasBase::updateZoom(CamaraParams& params, int x, int y) const
 {
 	float zoom = params.cameraZoomDistance * exp(0.01 * (y - m_mouseClickY));
-	if (zoom <= m_minZoom || m_maxZoom <= zoom) return;
+	if (zoom <= m_minZoom || (m_maxZoom != -1.0f && m_maxZoom <= zoom)) return;
 	params.cameraZoomDistance = zoom;
 	if (params.cameraZoomDistance < 0.01) params.cameraZoomDistance = 0.01f;
 
@@ -84,7 +84,7 @@ void CGlCanvasBase::updateZoom(CamaraParams& params, int x, int y) const
 void CGlCanvasBase::updateZoom(CamaraParams& params, float delta) const
 {
 	float zoom = params.cameraZoomDistance * (1 - 0.03f * (delta / 120.0f));
-	if (zoom <= m_minZoom || m_maxZoom <= zoom) return;
+	if (zoom <= m_minZoom || (m_maxZoom != -1.0f && m_maxZoom <= zoom)) return;
 
 	params.cameraZoomDistance = zoom;
 }
