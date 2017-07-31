@@ -36,8 +36,6 @@ void CDocument::loadSimpleMap(const std::string& fileName)
 
 void CDocument::setListOfMaps(TSetOfMetricMapInitializers& mapCfg)
 {
-	if (mapCfg.size() == 0) return;
-
 	m_metricmap.setListOfMaps(&mapCfg);
 	m_metricmap.loadFromProbabilisticPosesAndObservations(m_simplemap);
 

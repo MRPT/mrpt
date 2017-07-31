@@ -50,6 +50,7 @@
     </property>
     <addaction name="openAction"/>
     <addaction name="m_actionLoadConfig"/>
+    <addaction name="actionExit"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -298,6 +299,11 @@
     <string>Map configuration</string>
    </property>
   </action>
+  <action name="actionExit">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -399,6 +405,22 @@
     <hint type="destinationlabel">
      <x>-1</x>
      <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionExit</sender>
+   <signal>triggered()</signal>
+   <receiver>CMainWindow</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>413</x>
+     <y>355</y>
     </hint>
    </hints>
   </connection>
