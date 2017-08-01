@@ -33,16 +33,18 @@ class CDocument
 	void setListOfMaps(mrpt::maps::TSetOfMetricMapInitializers& mapCfg);
 	void setConfig(const std::string& config);
 
-	const RenderizableMaps renderizableMaps();
+	const RenderizableMaps renderizableMaps() const;
 
 	const mrpt::maps::CSimpleMap& simplemap() const;
 	const mrpt::maps::CMultiMetricMap::TListMaps& config() const;
 
 	const TypeConfig& typeConfig() const;
 
+	void remove(const std::vector<int>& idx);
+
    private:
 	void addMapToRenderizableMaps(
-		TypeOfConfig type, RenderizableMaps& renderMaps);
+		TypeOfConfig type, RenderizableMaps& renderMaps) const;
 
 	mrpt::maps::CSimpleMap m_simplemap;
 	mrpt::maps::CMultiMetricMap m_metricmap;

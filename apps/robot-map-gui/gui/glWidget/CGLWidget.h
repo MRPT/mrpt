@@ -38,8 +38,10 @@ class CGlWidget : public mrpt::gui::CQtGlCanvasBase
 	void setZoom(float zoom);
 	float getZoom() const;
 
-	virtual void setAzimuthDegrees(float ang);
-	virtual void setElevationDegrees(float ang);
+	virtual void setCameraParams(const CamaraParams& params) override;
+
+	virtual void setAzimuthDegrees(float ang) override;
+	virtual void setElevationDegrees(float ang) override;
 
 	void setBackgroundColor(float r, float g, float b, float a);
 	void setGridColor(double r, double g, double b, double a);

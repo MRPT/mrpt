@@ -200,11 +200,9 @@ void CViewerContainer::changeGridColor(QColor color)
 
 void CViewerContainer::updatePanelInfo(int index)
 {
-	if (m_ui->m_tabWidget->count() == 0)
-		return;
+	if (m_ui->m_tabWidget->count() == 0) return;
 
-	CGlWidget* gl =
-			dynamic_cast<CGlWidget*>(m_ui->m_tabWidget->widget(index));
+	CGlWidget* gl = dynamic_cast<CGlWidget*>(m_ui->m_tabWidget->widget(index));
 	assert(gl);
 
 	changeZoomInfo(gl->getZoom());
@@ -241,8 +239,7 @@ void CViewerContainer::changeElevationDeg(float deg)
 
 void CViewerContainer::zoomChanged(double d)
 {
-	if (m_ui->m_tabWidget->count() == 0)
-		return;
+	if (m_ui->m_tabWidget->count() == 0) return;
 
 	float zoomFloat = d;
 	int zoomInt = zoomFloat;
@@ -255,8 +252,7 @@ void CViewerContainer::zoomChanged(double d)
 
 void CViewerContainer::zoomChanged(int d)
 {
-	if (m_ui->m_tabWidget->count() == 0)
-		return;
+	if (m_ui->m_tabWidget->count() == 0) return;
 
 	double zoomD = d;
 	float zoomFloat = zoomD;

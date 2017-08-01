@@ -104,7 +104,7 @@ class GUI_IMPEXP CGlCanvasBase
 	const CamaraParams& getRefCameraParams() const;
 	/** Sets the CamaraParams
 	 * See also cameraParams(), getRefCameraParams()*/
-	void setCameraParams(const CamaraParams& params);
+	virtual void setCameraParams(const CamaraParams& params);
 
 	/** This function gets a reference to mrpt::opengl::CCamera and
 	 * updates the camera parameters(pointing, zoom, azimuth, elevation,

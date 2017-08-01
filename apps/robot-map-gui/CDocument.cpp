@@ -99,7 +99,7 @@ void CDocument::setConfig(const std::string& config)
 	//	mapCfg.dumpToTextStream(f);
 }
 
-const RenderizableMaps CDocument::renderizableMaps()
+const RenderizableMaps CDocument::renderizableMaps() const
 {
 	RenderizableMaps renderizable;
 
@@ -118,8 +118,9 @@ const CMultiMetricMap::TListMaps& CDocument::config() const
 }
 
 const TypeConfig& CDocument::typeConfig() const { return m_typeConfigs; }
+void CDocument::remove(const std::vector<int>& idx) { Q_UNUSED(idx); }
 void CDocument::addMapToRenderizableMaps(
-	TypeOfConfig type, RenderizableMaps& renderMaps)
+	TypeOfConfig type, RenderizableMaps& renderMaps) const
 {
 	auto iter = m_typeConfigs.find(type);
 	if (iter != m_typeConfigs.end())
