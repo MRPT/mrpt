@@ -220,6 +220,17 @@ void CGlWidget::setZoom(float zoom)
 }
 
 float CGlWidget::getZoom() const { return getZoomDistance(); }
+void CGlWidget::setCameraParams(const gui::CGlCanvasBase::CamaraParams& params)
+{
+	CGlCanvasBase::CamaraParams m_cameraParams = cameraParams();
+	if (m_cameraParams.cameraAzimuthDeg != params.cameraAzimuthDeg)
+		emit azimuthChanged(params.cameraAzimuthDeg);
+
+	if (m_cameraParams.cameraElevationDeg != params.cameraElevationDeg)
+		emit elevationChanged(params.cameraElevationDeg);
+
+	CQtGlCanvasBase::setCameraParams(params);
+}
 void CGlWidget::setAzimuthDegrees(float ang)
 {
 	CQtGlCanvasBase::setAzimuthDegrees(ang);
