@@ -89,7 +89,6 @@ class CGlWidget : public mrpt::gui::CQtGlCanvasBase
 	void selectPose(float x, float y, float z);
 	void setVisiblePose(float x, float y, float z);
 	bool deselectAll();
-	float getSafeZPose() const;
 	mrpt::math::TPoint3D removeFromVisible(int index);
 
 	mrpt::opengl::COpenGLViewport::Ptr m_miniMapViewport;
@@ -106,7 +105,7 @@ class CGlWidget : public mrpt::gui::CQtGlCanvasBase
 
 	bool m_isShowObs;
 	mrpt::opengl::CPointCloud::Ptr m_visiblePoints;
-	mrpt::opengl::CPointCloud::Ptr m_selectedPointsCloud;
+	mrpt::opengl::CSetOfObjects::Ptr m_selectedPointsCloud;
 	mrpt::opengl::CPlanarLaserScan::Ptr m_currentLaserScan;
 	mrpt::opengl::CSetOfObjects::Ptr m_currentObs;
 	mrpt::opengl::CSetOfLines::Ptr m_line;

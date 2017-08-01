@@ -49,7 +49,7 @@ CGlWidget::CGlWidget(bool is2D, QWidget* parent)
 	  m_selectedColor(mrpt::utils::TColor::green),
 	  m_isShowObs(false),
 	  m_visiblePoints(mrpt::make_aligned_shared<CPointCloud>()),
-	  m_selectedPointsCloud(mrpt::make_aligned_shared<CPointCloud>()),
+	  m_selectedPointsCloud(mrpt::make_aligned_shared<CSetOfObjects>()),
 	  m_currentObs(opengl::stock_objects::CornerXYZSimple()),
 	  m_line(mrpt::make_aligned_shared<CSetOfLines>()),
 	  m_is2D(is2D),
@@ -60,9 +60,6 @@ CGlWidget::CGlWidget(bool is2D, QWidget* parent)
 	setMaximumZoom(3200.0f);
 	m_visiblePoints->setColor(m_observationColor);
 	m_visiblePoints->setPointSize(m_observationSize);
-
-	m_selectedPointsCloud->setColor(m_selectedColor);
-	m_selectedPointsCloud->setPointSize(m_selectedObsSize);
 
 	if (m_is2D)
 	{
@@ -342,7 +339,6 @@ bool CGlWidget::setSelectedObservationSize(double s)
 	if (m_selectedObsSize != s)
 	{
 		m_selectedObsSize = s;
-		m_selectedPointsCloud->setPointSize(m_selectedObsSize);
 		return true;
 	}
 	return false;
@@ -355,7 +351,6 @@ bool CGlWidget::setSelectedObservationColor(int type)
 		color.G != m_selectedColor.G || color.A != m_selectedColor.A)
 	{
 		m_selectedColor = color;
-		m_selectedPointsCloud->setColor(m_selectedColor);
 		return true;
 	}
 	return false;
@@ -590,10 +585,20 @@ void CGlWidget::updateMinimapPos()
 
 int CGlWidget::searchSelectedPose(float x, float y, double maxDist)
 {
-	auto xs = m_selectedPointsCloud->getArrayX();
-	auto ys = m_selectedPointsCloud->getArrayY();
+	std::map<double, int> minDistPos;
+	int i = 0;
 
-	return searchPoseFromList(x, y, maxDist, xs, ys);
+	for (auto& it : *m_selectedPointsCloud)
+	{
+		mrpt::math::TPose3D pos = it->getPose();
+		double dist = std::pow(x - pos.x, 2) + std::pow(y - pos.y, 2);
+		if (dist < maxDist) minDistPos.emplace(dist, i);
+		++i;
+	}
+
+	if (minDistPos.empty()) return -1;
+
+	return minDistPos.begin()->second;
 }
 
 int CGlWidget::searchPose(float x, float y, double maxDist)
@@ -606,14 +611,30 @@ int CGlWidget::searchPose(float x, float y, double maxDist)
 
 math::TPoint3D CGlWidget::removeFromSelected(int index)
 {
-	return removePoseFromPointsCloud(m_selectedPointsCloud, index);
+	math::TPoint3D point;
+
+	auto it = m_selectedPointsCloud->begin() + index;
+	if (it == m_selectedPointsCloud->end()) return point;
+
+	mrpt::math::TPose3D pos = (*it)->getPose();
+
+	point.x = pos.x;
+	point.y = pos.y;
+	point.z = pos.z;
+
+	m_selectedPointsCloud->removeObject(*it);
+
+	return point;
 }
 
 void CGlWidget::selectPose(float x, float y, float z)
 {
-	m_selectedPointsCloud->insertPoint(x, y, z);
 	math::TPose3D clickedPose(x, y, z, 0.0, 0.0, 0.0);
-	setSelected(clickedPose);
+	mrpt::opengl::CSetOfObjects::Ptr corner =
+		opengl::stock_objects::CornerXYZSimple();
+	corner->setPose(clickedPose);
+	m_selectedPointsCloud->insert(corner);
+	removeRobotDirection();
 }
 
 void CGlWidget::setVisiblePose(float x, float y, float z)
@@ -623,48 +644,27 @@ void CGlWidget::setVisiblePose(float x, float y, float z)
 
 bool CGlWidget::deselectAll()
 {
-	auto xs = m_selectedPointsCloud->getArrayX();
-	auto ys = m_selectedPointsCloud->getArrayY();
-	auto zs = m_selectedPointsCloud->getArrayZ();
-	assert(xs.size() == ys.size() && xs.size() == zs.size());
-
 	auto xv = m_visiblePoints->getArrayX();
 	auto yv = m_visiblePoints->getArrayY();
 	auto zv = m_visiblePoints->getArrayZ();
 
+	bool changedVectors = false;
+
 	assert(xv.size() == yv.size() && xv.size() == zv.size());
 
-	for (size_t i = 0; i < xs.size(); ++i)
+	for (auto& it : *m_selectedPointsCloud)
 	{
-		xv.push_back(xs[i]);
-		yv.push_back(ys[i]);
-		zv.push_back(zs[i]);
+		mrpt::math::TPose3D pos = it->getPose();
+		xv.push_back(pos.x);
+		yv.push_back(pos.y);
+		zv.push_back(pos.z);
+		changedVectors = true;
 	}
+
 	m_visiblePoints->setAllPoints(xv, yv, zv);
-
-	bool changedVectors = xs.size();
-	xs.clear();
-	ys.clear();
-	zs.clear();
-	m_selectedPointsCloud->setAllPoints(xs, ys, zs);
-
+	m_selectedPointsCloud->clear();
 	removeRobotDirection();
-
 	return changedVectors;
-}
-
-float CGlWidget::getSafeZPose() const
-{
-	auto zs = m_visiblePoints->getArrayZ();
-	float z = 0.0;
-	if (!zs.empty())
-		z = zs[0];
-	else
-	{
-		zs = m_selectedPointsCloud->getArrayZ();
-		if (!zs.empty()) z = zs[0];
-	}
-	return z;
 }
 
 math::TPoint3D CGlWidget::removeFromVisible(int index)
