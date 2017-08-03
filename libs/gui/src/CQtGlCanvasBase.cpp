@@ -162,4 +162,4 @@ void CQtGlCanvasBase::unpressMouseButtons()
 	m_isPressRMouseButton = false;
 }
 
-#endif //MRPT_HAS_Qt5
+#endif  // MRPT_HAS_Qt5

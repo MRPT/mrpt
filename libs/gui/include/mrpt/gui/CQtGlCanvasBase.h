@@ -20,7 +20,8 @@ namespace mrpt
 {
 namespace gui
 {
-class GUI_IMPEXP CQtGlCanvasBase : public QGLWidget, public mrpt::gui::CGlCanvasBase
+class GUI_IMPEXP CQtGlCanvasBase : public QGLWidget,
+								   public mrpt::gui::CGlCanvasBase
 {
    public:
 	CQtGlCanvasBase(QWidget* parent = nullptr);
@@ -69,4 +70,4 @@ class GUI_IMPEXP CQtGlCanvasBase : public QGLWidget, public mrpt::gui::CGlCanvas
 }  // end namespace
 }  // end namespace
 
-#endif // MRPT_HAS_Qt5
+#endif  // MRPT_HAS_Qt5
