@@ -13,7 +13,7 @@ if(CMAKE_MRPT_HAS_Qt5)
 	#src/visualizedialog.cpp 
                 src/visual_odometry.h
                 src/visual_odometry.cpp
-                src/tracker.cpp src/tracker.h )#src/Counter.h )#src/Counter.cpp)#src/vo_features.h)
+                src/tracker.cpp src/tracker.h src/place_recognition.cpp src/place_recognition.h)#src/Counter.h )#src/Counter.cpp)#src/vo_features.h)
 
 
         set(FILES_TO_MOC

@@ -844,6 +844,7 @@ void MainWindow::makeVisionOptionsVisible(bool flag)
     tracking_enable->setVisible(flag);
     homography_enable->setVisible(flag);
     visual_odom_enable->setVisible(flag);
+    place_recog_enable->setVisible(flag);
 }
 
 /************************************************************************************************
@@ -889,9 +890,11 @@ void MainWindow::on_file_input_choose(int choice)
         browse_button3->setVisible(false);
         inputCalibration->setVisible(false);
         browseCalibration->setVisible(false);
+        makeTrackerParamVisible(false);
+        makePlaceRecognitionParamVisible(false);
     }
-    // HIDE previous and next buttons for the cases : single image, stereo image, image raw log
-    if(choice == 0 || choice == 1 || choice == 2)
+    // HIDE previous and next buttons for the cases : single image, stereo image, image raw log or stereo image
+    if(choice == 0 || choice == 1 || choice == 2 || choice == 4)
     {
         next_button->setVisible(false);
         prev_button->setVisible(false);
@@ -2146,7 +2149,10 @@ void MainWindow::on_browse_calibration_clicked()
 void MainWindow::onTrackingEnabled(int state)
 {
     ReadInputFormat();
-    makeTrackerParamVisible(true);
+    if(tracking_enable->isChecked())
+        makeTrackerParamVisible(true);
+    else
+        makeTrackerParamVisible(false);
     if(inputFilePath->text().toStdString().size() < 1 )
     {
         QMessageBox::information(this, "Dataset read error","Please specify a valid input file for the dataset!!");
@@ -2395,6 +2401,179 @@ void MainWindow::slot_finished()
     vo_message_dialog->hide();
 }
 
+
+void MainWindow::makePlaceRecognitionParamVisible(bool flag)
+{
+    training_set->setVisible(flag);
+    browse_training->setVisible(flag);
+    testing_set->setVisible(flag);
+    browse_testing->setVisible(flag);
+    perform_place_recog->setVisible(flag);
+}
+
+
+void MainWindow::onPlaceRecogChecked(int status)
+{
+    ReadInputFormat();
+    if(place_recog_enable->isChecked())
+        makePlaceRecognitionParamVisible(true);
+    else
+        makePlaceRecognitionParamVisible(false);
+}
+
+
+void MainWindow::on_browseTraining_clicked()
+{
+    ReadInputFormat();
+
+    QFileDialog dialog;
+    dialog.setFileMode(QFileDialog::AnyFile);
+
+    //0 = single image; 1 = stereo image; 2 = rawlog file ; 3 = image dataset folder
+    if(currentInputIndex == 3)
+    {
+        dialog.setFileMode(QFileDialog::Directory);
+    } else
+        return;
+
+    //dialog.setNameFilter(tr("Images (*.png *.xpm *.jpg)"));
+    dialog.setViewMode(QFileDialog::Detail);
+    QStringList fileNames;
+    if(dialog.exec())
+        fileNames = dialog.selectedFiles();
+
+    if(fileNames.size() != 0)
+        training_set->setText(fileNames.at(0));
+
+    training_set_path = training_set->text().toStdString();
+}
+
+void MainWindow::on_browseTesting_clicked()
+{
+    ReadInputFormat();
+
+    QFileDialog dialog;
+    dialog.setFileMode(QFileDialog::AnyFile);
+
+    //0 = single image; 1 = stereo image; 2 = rawlog file ; 3 = image dataset folder
+    if(currentInputIndex == 3)
+    {
+        dialog.setFileMode(QFileDialog::Directory);
+    } else
+        return;
+
+    //dialog.setNameFilter(tr("Images (*.png *.xpm *.jpg)"));
+    dialog.setViewMode(QFileDialog::Detail);
+    QStringList fileNames;
+    if(dialog.exec())
+        fileNames = dialog.selectedFiles();
+
+    if(fileNames.size() != 0)
+        testing_set->setText(fileNames.at(0));
+
+    testing_set_path = testing_set->text().toStdString();
+}
+
+void MainWindow::displayVector(vector<string> paths)
+{
+    for(int i=0; i<paths.size() ; i++)
+        cout << paths.at(i) << endl;
+}
+void MainWindow::store_Training_TestingSets()
+{
+    if(training_set->text().toStdString().size() < 1 )
+    {
+        QMessageBox::information(this, "Dataset read error","Please specify a valid input file for the dataset!!");
+        return;
+    }
+
+    if(place_recog_enable->isChecked() && (currentInputIndex == 3))
+    {
+        makePlaceRecognitionParamVisible(true);
+        /// does reading and storing the training dataset_files_paths
+        {
+            ///read all the files in the dataset
+
+            string file_path_temp = training_set->text().toStdString();
+            cout << file_path_temp << endl;
+            //cout << currentInputIndex << endl;
+            DIR *dir;
+            dirent *pdir;
+            vector<string> files;
+            //vector<string> files_fullpath_tracking;
+
+            /// clearing the vector files_full_path_tracking is important as it needs to flush out the older dataset
+            training_files_paths.clear();
+
+            if (true) {
+                dir = opendir(file_path_temp.c_str());
+                while (pdir = readdir(dir))
+                    files.push_back(pdir->d_name);
+                for (int i = 0, j = 0; i < files.size(); i++) {
+                    if (files.at(i).size() >
+                        4) // this removes the . and .. in linux as all files will have size more than 4 .png .jpg etc.
+                    {
+                        training_files_paths.push_back(file_path_temp + "/" + files.at(i));
+                        //cout << files_fullpath_tracking.at(j) << endl;
+                        j++;
+                    }
+                } // end of for
+            }
+            sort(training_files_paths.begin(), training_files_paths.end()); //Use the start and end like this
+            //displayVector(training_files_paths);
+        }
+
+        /// does reading and storing the testing dataset_files_paths
+        {
+            ///read all the files in the dataset
+
+            string file_path_temp = testing_set->text().toStdString();
+            cout << file_path_temp << endl;
+
+            DIR *dir;
+            dirent *pdir;
+            vector<string> files;
+
+
+            /// clearing the vector files_full_path_tracking is important as it needs to flush out the older dataset
+            testing_files_paths.clear();
+
+            if (true) {
+                dir = opendir(file_path_temp.c_str());
+                while (pdir = readdir(dir))
+                    files.push_back(pdir->d_name);
+                for (int i = 0, j = 0; i < files.size(); i++) {
+                    if (files.at(i).size() >
+                        4) // this removes the . and .. in linux as all files will have size more than 4 .png .jpg etc.
+                    {
+                        testing_files_paths.push_back(file_path_temp + "/" + files.at(i));
+                        //cout << files_fullpath_tracking.at(j) << endl;
+                        j++;
+                    }
+                } // end of for
+            }
+            sort(testing_files_paths.begin(), testing_files_paths.end()); //Use the start and end like this
+            //displayVector(testing_files_paths);
+        }
+
+    }
+    else
+        makePlaceRecognitionParamVisible(false);
+}
+
+void MainWindow::on_place_recog_clicked()
+{
+    store_Training_TestingSets();
+    fillDetectorInfo();
+    fillDescriptorInfo();
+    PlaceRecognition place_recog_obj(training_files_paths, testing_files_paths,
+                                     fext, desc_to_compute,
+                                     descriptor_selected, numFeats);
+
+    /// return a string here to show the place recognition accuracy on different classes
+    place_recog_obj.startPlaceRecognition();
+
+}
 
 /************************************************************************************************
 *								Main Window Constructor   								        *
@@ -2702,6 +2881,40 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
 
 
 
+    /// options for Place Recognition comes here
+
+    place_recog_enable = new QCheckBox;
+    place_recog_enable->setText("Perform Place Recognition ");
+    connect(place_recog_enable, SIGNAL(stateChanged(int)), this, SLOT(onPlaceRecogChecked(int)));
+
+    perform_place_recog = new QPushButton("Start Place Recognition");
+    perform_place_recog->setFixedSize(BUTTON_WIDTH*1.3,BUTTON_HEIGHT);
+    connect(perform_place_recog, SIGNAL(clicked()), this, SLOT(on_place_recog_clicked()));
+
+    placeRecognition_results = new QLabel;
+    placeRecognition_results->setVisible(true);
+    //VO_progress->setText("1");
+
+    training_set = new QLineEdit;
+    training_set->setFixedSize(300,WIDGET_HEIGHT);
+    browse_training = new QPushButton("Browse Training Set");
+    browse_training->setFixedSize(BUTTON_WIDTH,BUTTON_HEIGHT);
+    connect(browse_training, SIGNAL(clicked()), this, SLOT(on_browseTraining_clicked()));
+
+    testing_set = new QLineEdit;
+    testing_set->setFixedSize(300,WIDGET_HEIGHT);
+    browse_testing = new QPushButton("Browse Testing Set");
+    browse_testing->setFixedSize(BUTTON_WIDTH,BUTTON_HEIGHT);
+    connect(browse_testing, SIGNAL(clicked()), this, SLOT(on_browseTesting_clicked()));
+    makePlaceRecognitionParamVisible(false);
+
+
+
+
+
+
+
+
     QGridLayout *userOptionsVBox = new QGridLayout;
 
     userOptionsVBox->addWidget(visual_odom_enable,0,0);
@@ -2711,7 +2924,7 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
     userOptionsVBox->addWidget(browseCalibration,4,0);
 
     userOptionsVBox->addWidget(generateVisualOdometry,5,0);
-    userOptionsVBox->addWidget(VO_progress,17,0);
+    //userOptionsVBox->addWidget(VO_progress,17,0);
 
     userOptionsVBox->addWidget(homography_enable,6,0);
     userOptionsVBox->addWidget(inputHomogrpahyPath,7,0);
@@ -2733,6 +2946,13 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
     userOptionsVBox->addWidget(tracker_param4_edit,14,1);
     userOptionsVBox->addWidget(tracker_param5_edit,15,1);
     userOptionsVBox->addWidget(tracker_param6_edit,16,1);
+    userOptionsVBox->addWidget(place_recog_enable,17,0);
+    userOptionsVBox->addWidget(training_set,18,0);
+    userOptionsVBox->addWidget(browse_training,19,0);
+    userOptionsVBox->addWidget(testing_set,20,0);
+    userOptionsVBox->addWidget(browse_testing,21,0);
+    userOptionsVBox->addWidget(perform_place_recog,22,0);
+
 
     userOptionsGroupBox->setLayout(userOptionsVBox);
     /// initially have all user options unavailable
