@@ -45,6 +45,7 @@ class CDocument
    private:
 	void addMapToRenderizableMaps(
 		TypeOfConfig type, RenderizableMaps& renderMaps) const;
+	void updateMetricMap();
 
 	mrpt::maps::CSimpleMap m_simplemap;
 	mrpt::maps::CMultiMetricMap m_metricmap;

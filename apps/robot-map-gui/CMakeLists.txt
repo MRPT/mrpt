@@ -21,6 +21,7 @@ if(CMAKE_MRPT_HAS_Qt5 AND CMAKE_MRPT_HAS_OPENGL_GLUT)
 		CDocument.cpp
 		gui/CMainWindow.cpp
 		gui/glWidget/CGLWidget.cpp
+		gui/glWidget/CRobotPose.cpp
 		gui/glWidget/CViewerContainer.cpp
 		gui/observationTree/CObservationTree.cpp
 		gui/observationTree/CObservationTreeModel.cpp
