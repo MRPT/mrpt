@@ -70,6 +70,9 @@ CMainWindow::CMainWindow(QWidget* parent)
 		m_ui->m_configWidget, SIGNAL(currentBotChanged(int)), m_ui->m_viewer,
 		SLOT(changeCurrentBot(int)));
 
+	QObject::connect(m_ui->m_viewer, SIGNAL(deleteRobotPoses(std::vector<int>)),
+					 this , SLOT(deleteRobotPoses(std::vector<int>)));
+
 	QObject::connect(
 		m_ui->m_actionMapConfiguration, SIGNAL(triggered(bool)),
 		SLOT(showMapConfiguration()));
@@ -234,6 +237,15 @@ void CMainWindow::showMapConfiguration()
 	d->exec();
 	m_ui->m_dockWidgetConfig->setWidget(w);
 	delete d;
+}
+
+void CMainWindow::deleteRobotPoses(std::vector<int> idx)
+{
+	if (m_document)
+	{
+		m_document->remove(idx);
+		updateRenderMapFromConfig();
+	}
 }
 
 void CMainWindow::updateRenderMapFromConfig()
