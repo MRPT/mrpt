@@ -26,7 +26,6 @@ using namespace mrpt::system;
  ---------------------------------------------------------------*/
 bool TRuntimeClassId::derivedFrom(const TRuntimeClassId* pBaseClass) const
 {
-	ASSERT_(this != nullptr)
 	ASSERT_(pBaseClass != nullptr)
 
 	// The same class??
@@ -56,8 +55,6 @@ bool TRuntimeClassId::derivedFrom(const TRuntimeClassId* pBaseClass) const
  ---------------------------------------------------------------*/
 bool TRuntimeClassId::derivedFrom(const char* pBaseClass_name) const
 {
-	ASSERT_(this != nullptr)
-
 	// Automatically register all pending classes, just in case:
 	registerAllPendingClasses();
 
