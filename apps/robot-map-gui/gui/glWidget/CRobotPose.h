@@ -7,6 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+
    */
+#pragma once
 #include "mrpt/opengl/CSetOfObjects.h"
 
 class OPENGL_IMPEXP CRobotPose: public mrpt::opengl::CSetOfObjects
