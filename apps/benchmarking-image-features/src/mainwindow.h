@@ -80,6 +80,7 @@
 #include "my_qlabel.h"
 #include "tracker.h"
 #include "visual_odometry.h"
+#include "place_recognition.h"
 
 //#include "visual_odometry.cpp"
 
@@ -226,6 +227,27 @@ public:
     QLabel *vo_message_running;
     QLabel *VO_progress;                //!< Label to show VO progress
 
+
+    /// Place Recognition Parameters
+    //VisualOdometry visual_odom;         //!< visual odometry object to perform the vision task of estimating camera trajector for Monocular Datasets like KITTI
+    QCheckBox *place_recog_enable;
+    QLineEdit *training_set;
+    QPushButton *browse_training;
+    string training_set_path;
+    QLineEdit *testing_set;
+    QPushButton *browse_testing;
+    string testing_set_path;
+
+    vector<string> training_files_paths;
+    vector<string> testing_files_paths;
+
+
+    QPushButton *perform_place_recog;
+
+    QLabel *placeRecognition_results;
+
+
+    /// main Feature Extraction params
     CFeatureExtraction fext;                    //!< CFeatureExtraction object to hold/store all parameters for detectors/descriptors
     CFeatureList featsImage1, featsImage2;      //!< stores the features in image 1 and 2
     CImage img1, img2;                          //!< stores image 1 and 2
@@ -590,6 +612,11 @@ public:
       */
     void makeHomographyParamsVisible(bool flag);
 
+    void makePlaceRecognitionParamVisible(bool flag);
+
+    void store_Training_TestingSets();
+
+    void displayVector(vector<string> paths);
 
 
 
@@ -616,6 +643,14 @@ private slots:
 
 
 public slots:
+
+    void on_browseTraining_clicked();
+
+    void on_browseTesting_clicked();
+
+    void onPlaceRecogChecked(int state);
+
+    void on_place_recog_clicked();
 
     /**
      * onVisualOdomChecked this function makes the parameters visible / hidden based on the state of the checkbox "Perform Visual Odometry"
