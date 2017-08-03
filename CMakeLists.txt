@@ -77,9 +77,6 @@ include(cmakemodules/DeclareAppDependencies.cmake REQUIRED)
 # --------------------------
 
 include(cmakemodules/script_detect_unix_arch.cmake REQUIRED) # Detect machine architecture, on UNIX
-include(cmakemodules/script_detect_gcc.cmake REQUIRED)       # Detect GNU GCC version
-include(cmakemodules/script_detect_clang.cmake REQUIRED)     # Detect clang compiler version
-
 
 # ------------------------------------------
 # We want libraries to be named "libXXX"
@@ -429,8 +426,10 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
  	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CONFIGURE_CFLAGS} -Wall -Wno-long-long -Wno-variadic-macros")
 
 	# Workaround: Eigen <3.4 produces *tons* of warnings in GCC >=6. See http://eigen.tuxfamily.org/bz/show_bug.cgi?id=1221
-	IF (NOT CMAKE_MRPT_GCC_VERSION LESS 60 AND "${MRPT_EIGEN_VERSION}" VERSION_LESS "3.4")
-		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-ignored-attributes")
+	IF (NOT "${CMAKE_CXX_COMPILER_VERSION}" VERSION_LESS "6.0.0")
+		IF ("${MRPT_EIGEN_VERSION}" VERSION_LESS "3.4")
+			add_compile_options("-Wno-ignored-attributes")
+		ENDIF()
 	ENDIF()
 
   IF(NOT APPLE)
