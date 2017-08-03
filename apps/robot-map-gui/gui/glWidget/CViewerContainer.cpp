@@ -156,7 +156,7 @@ void CViewerContainer::changeCurrentBot(int value)
 	{
 		CGlWidget* gl = dynamic_cast<CGlWidget*>(m_ui->m_tabWidget->widget(i));
 		assert(gl);
-		gl->setBot(value);
+		if (gl->setBot(value)) gl->update();
 	}
 }
 
