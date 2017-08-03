@@ -126,6 +126,10 @@ void CViewerContainer::updateConfigChanges(
 		QObject::connect(
 			gl, SIGNAL(elevationChanged(float)),
 			SLOT(changeElevationDeg(float)));
+
+		QObject::connect(
+			gl, SIGNAL(deleteRobotPoses(std::vector<int>)),
+			SIGNAL(deleteRobotPoses(std::vector<int>)));
 	}
 }
 

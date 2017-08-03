@@ -63,6 +63,7 @@ class CGlWidget : public mrpt::gui::CQtGlCanvasBase
 	void mousePosChanged(double x, double y);
 	void azimuthChanged(float ang);
 	void elevationChanged(float ang);
+	void deleteRobotPoses(std::vector<int> idx);
 
    protected:
 	virtual void resizeGL(int width, int height) override;
@@ -73,6 +74,7 @@ class CGlWidget : public mrpt::gui::CQtGlCanvasBase
 		const mrpt::opengl::CRenderizable::Ptr& newObject) override;
 	virtual void mouseMoveEvent(QMouseEvent* event) override;
 	virtual void mousePressEvent(QMouseEvent* event) override;
+	virtual void mouseReleaseEvent(QMouseEvent* event) override;
 	virtual void keyPressEvent(QKeyEvent* event) override;
 
    private:
@@ -114,4 +116,5 @@ class CGlWidget : public mrpt::gui::CQtGlCanvasBase
 
 	bool m_is2D;
 	bool m_showRobot;
+	bool m_moveSelected;
 };

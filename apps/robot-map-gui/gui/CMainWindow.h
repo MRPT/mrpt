@@ -38,6 +38,7 @@ class CMainWindow : public QMainWindow
 
 	void applyConfigurationForCurrentMaps();
 	void showMapConfiguration();
+	void deleteRobotPoses(std::vector<int> idx);
 
    private:
 	void updateRenderMapFromConfig();
