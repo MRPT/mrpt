@@ -59,6 +59,7 @@ void CWaypointsNavigator::navigateWaypoints( const TWaypointSequence & nav_reque
 	m_was_aligning = false;
 	m_waypoint_nav_status = TWaypointStatusSequence();
 	m_waypoint_nav_status.timestamp_nav_started = mrpt::system::now();
+	m_pending_events.clear();
 
 	const size_t N = nav_request.waypoints.size();
 	ASSERTMSG_(N>0,"List of waypoints is empty!");
