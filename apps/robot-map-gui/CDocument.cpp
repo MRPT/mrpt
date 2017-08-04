@@ -75,6 +75,27 @@ void CDocument::remove(const std::vector<int>& idx)
 	updateMetricMap();
 }
 
+void CDocument::insert(const std::vector<int> &idx, CSimpleMap::TPosePDFSensFramePairList &posesObsPairs)
+{
+	assert(idx.size() == posesObsPairs.size());
+	for (size_t i = 0; i < idx.size(); ++i)
+		m_simplemap.insertToPos(idx[i], posesObsPairs[i].first, posesObsPairs[i].second);
+
+	updateMetricMap();
+}
+
+CSimpleMap::TPosePDFSensFramePairList CDocument::get(const std::vector<int> &idx)
+{
+	CSimpleMap::TPosePDFSensFramePairList posesObsPairs;
+	for (auto& it : idx)
+	{
+		CSimpleMap::TPosePDFSensFramePair pair;
+		m_simplemap.get(it, pair.first, pair.second);
+		posesObsPairs.push_back(pair);
+	}
+	return posesObsPairs;
+}
+
 void CDocument::addMapToRenderizableMaps(
 	TypeOfConfig type, RenderizableMaps& renderMaps) const
 {
