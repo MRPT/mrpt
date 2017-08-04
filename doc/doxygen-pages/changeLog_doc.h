@@ -33,6 +33,7 @@
 		- \ref mrpt_nav_grp
 			- Removed deprecated mrpt::nav::THolonomicMethod.
 			- mrpt::nav::CAbstractNavigator: callbacks in mrpt::nav::CRobot2NavInterface are now invoked *after* `navigationStep()` to avoid problems if user code invokes the navigator API to change its state.
+			- Added methods to load/save mrpt::nav::TWaypointSequence to configuration files.
 	- BUG FIXES:
 		- Fix reactive navigator inconsistent state if navigation API is called from within rnav callbacks.
 		- Fix incorrect evaluation of "ASSERT" formulas in mrpt::nav::CMultiObjectiveMotionOptimizerBase
