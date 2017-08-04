@@ -187,6 +187,8 @@ namespace mrpt
 		* the navigator state. */
 		std::vector<TPendingEvent> m_pending_events;
 
+		void dispatchPendingNavEvents();
+
 		/** To be implemented in derived classes */
 		virtual void  performNavigationStep( )=0;
 
