@@ -51,7 +51,7 @@ class PlaceRecognition {
 public:
     vector<string> training_paths;
     vector<string> testing_paths;
-    CFeatureExtraction fext;
+    //CFeatureExtraction fext;
     TDescriptorType desc_to_compute;
     int numFeats;
     int descriptor_selected;
@@ -59,15 +59,17 @@ public:
 public:
     PlaceRecognition(vector<string> training_paths,
                      vector<string> testing_paths,
-                     CFeatureExtraction fext,
+
                      TDescriptorType desc_to_compute,
                      int descriptor_selected,
                      int numFeats);
     //~PlaceRecognition();
 
-    string startPlaceRecognition();
+    string startPlaceRecognition(CFeatureExtraction fext);
 
     void computeLabels(vector<string> file_paths, int counts[NUM_CLASSES], int *labels);
+
+    int predictLabel(CFeatureList feats_testing, vector<float> *training_words, int *training_word_labels, int total_vocab_size);
 
 
 
