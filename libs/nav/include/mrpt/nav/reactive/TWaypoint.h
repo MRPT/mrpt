@@ -78,6 +78,10 @@ namespace mrpt
 		std::string getAsText() const; //!< Gets navigation params as a human-readable format
 		/** Renders the sequence of waypoints (previous contents of `obj` are cleared) */
 		void getAsOpenglVisualization(mrpt::opengl::CSetOfObjects &obj, const mrpt::nav::TWaypointsRenderingParams &params = mrpt::nav::TWaypointsRenderingParams()) const;
+		/** Saves waypoints to a config file section */
+		void save(mrpt::utils::CConfigFileBase &c,const std::string &s) const;
+		/** Loads waypoints to a config file section */
+		void load(const mrpt::utils::CConfigFileBase &c,const std::string &s);
 	};
 
 	/** A waypoint with an execution status. \ingroup nav_reactive */
