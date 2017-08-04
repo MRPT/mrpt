@@ -127,6 +127,11 @@ class OBS_IMPEXP CSimpleMap : public mrpt::utils::CSerializable
 		const mrpt::poses::CPose3DPDF::Ptr& in_posePDF,
 		const mrpt::obs::CSensoryFrame::Ptr& in_SF);
 
+
+	void insertToPos(int index,
+		const mrpt::poses::CPose3DPDF::Ptr& in_posePDF,
+		const mrpt::obs::CSensoryFrame::Ptr& in_SF);
+
 	/** Add a new pair to the sequence. The objects are copied, so original ones
 	 * can be free if desired
 	  *  after insertion.
