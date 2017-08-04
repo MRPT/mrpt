@@ -255,6 +255,11 @@ void CAbstractNavigator::navigationStep()
 	};
 	m_lastNavigationState = prevState;
 
+	dispatchPendingNavEvents();
+}
+
+void CAbstractNavigator::dispatchPendingNavEvents()
+{
 	// Invoke pending events:
 	for (auto& ev : m_pending_events)
 	{

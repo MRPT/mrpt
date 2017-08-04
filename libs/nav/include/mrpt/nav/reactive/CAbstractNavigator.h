@@ -253,6 +253,8 @@ class NAV_IMPEXP CAbstractNavigator : public mrpt::utils::COutputLogger
 	 * state. */
 	std::vector<std::function<void(void)>> m_pending_events;
 
+	void dispatchPendingNavEvents();
+	
 	/** To be implemented in derived classes */
 	virtual void performNavigationStep() = 0;
 
