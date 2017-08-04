@@ -42,7 +42,8 @@ bool CWaypointsNavigator::TNavigationParamsWaypoints::isEqual(const CAbstractNav
 CWaypointsNavigator::CWaypointsNavigator(CRobot2NavInterface &robot_if) :
 	CAbstractNavigator(robot_if),
 	m_was_aligning(false),
-	m_is_aligning(false)
+	m_is_aligning(false),
+	m_last_alignment_cmd(mrpt::system::now())
 {
 }
 
@@ -156,7 +157,11 @@ void CWaypointsNavigator::waypoints_navigationStep()
 				{
 					// Handle pure-rotation robot interface to honor target_heading
 					const double ang_err = mrpt::math::angDistance(m_curPoseVel.pose.phi, wp.target_heading);
-					if (std::abs(ang_err) <= params_waypoints_navigator.waypoint_angle_tolerance)
+					const double tim_since_last_align = mrpt::system::timeDifference(m_last_alignment_cmd, mrpt::system::now());
+					const double ALIGN_WAIT_TIME = 1.5; // seconds
+					if (std::abs(ang_err) <= params_waypoints_navigator.waypoint_angle_tolerance && 
+						tim_since_last_align>ALIGN_WAIT_TIME // give some time for the alignment (if supported in this robot) to finish
+						)
 					{
 						consider_wp_reached = true;
 					}
@@ -164,9 +169,9 @@ void CWaypointsNavigator::waypoints_navigationStep()
 					{
 						m_is_aligning = true;
 
-						if (!m_was_aligning)
+						if (!m_was_aligning || tim_since_last_align> ALIGN_WAIT_TIME)
 						{
-							// 1st time we are aligning:
+							// we must align:
 							// Send vel_cmd to the robot:
 							mrpt::kinematics::CVehicleVelCmdPtr align_cmd = m_robot.getAlignCmd(ang_err);
 
@@ -178,10 +183,14 @@ void CWaypointsNavigator::waypoints_navigationStep()
 								mrpt::utils::RAD2DEG(ang_err),
 								align_cmd ? align_cmd->asString().c_str() : "nullptr (operation not supported by this robot)");
 
-							this->stop(false /*not emergency*/); // In any case, do a "stop"
-							if (align_cmd) {
+							if (align_cmd)
+							{
+								m_last_alignment_cmd = mrpt::system::now();
 								this->changeSpeeds(*align_cmd);
-							} else {
+							}
+							else
+							{
+								this->stop(false /*not emergency*/); // In any case, do a "stop"
 								consider_wp_reached = true; // this robot does not support "in place" alignment
 							}
 						}
