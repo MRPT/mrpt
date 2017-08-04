@@ -13,6 +13,8 @@
 #include <memory>
 
 #include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/maps/CSimpleMap.h>
+
 
 namespace Ui
 {
@@ -30,7 +32,12 @@ class CMainWindow : public QMainWindow
 	CMainWindow(QWidget* parent = 0);
 	virtual ~CMainWindow();
 
+	void addRobotPosesFromMap(std::vector<int> idx, mrpt::maps::CSimpleMap::TPosePDFSensFramePairList posesObsPairs);
+	void deleteRobotPosesFromMap(std::vector<int> idx);
+
    private slots:
+	void undo();
+	void redo();
 	void openMap();
 	void itemClicked(const QModelIndex& index);
 	void updateConfig();
@@ -38,6 +45,7 @@ class CMainWindow : public QMainWindow
 
 	void applyConfigurationForCurrentMaps();
 	void showMapConfiguration();
+
 	void deleteRobotPoses(std::vector<int> idx);
 
    private:
