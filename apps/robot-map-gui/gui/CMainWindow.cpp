@@ -287,11 +287,18 @@ void CMainWindow::deleteRobotPoses(std::vector<int> idx)
 {
 	if (m_document && !idx.empty())
 	{
-		mrpt::maps::CSimpleMap::TPosePDFSensFramePairList posesObsPairs = m_document->get(idx);
-		auto undo = [idx, posesObsPairs, this](){ this->addRobotPosesFromMap(idx, posesObsPairs); };
+		mrpt::maps::CSimpleMap::TPosePDFSensFramePairList posesObsPairs = m_document->getReverse(idx);
+
+		std::vector<int> reverseInd = m_document->remove(idx);
+		updateRenderMapFromConfig();
+
 		auto redo = [idx, this](){ this->deleteRobotPosesFromMap(idx); };
+
+		std::reverse(reverseInd.begin(), reverseInd.end());
+		auto undo = [reverseInd, posesObsPairs, this](){ this->addRobotPosesFromMap(reverseInd, posesObsPairs); };
+
 		CUndoManager::instance().addAction(undo, redo);
-		deleteRobotPosesFromMap(idx);
+
 	}
 }
 
