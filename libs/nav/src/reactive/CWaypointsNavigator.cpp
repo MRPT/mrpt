@@ -44,7 +44,8 @@ bool CWaypointsNavigator::TNavigationParamsWaypoints::isEqual(
 }
 
 CWaypointsNavigator::CWaypointsNavigator(CRobot2NavInterface& robot_if)
-	: CAbstractNavigator(robot_if), m_was_aligning(false), m_is_aligning(false)
+	: CAbstractNavigator(robot_if), m_was_aligning(false), 
+	m_is_aligning(false), m_last_alignment_cmd(mrpt::system::now())
 {
 }
 
@@ -164,8 +165,13 @@ void CWaypointsNavigator::waypoints_navigationStep()
 						// target_heading
 						const double ang_err = mrpt::math::angDistance(
 							m_curPoseVel.pose.phi, wp.target_heading);
+						const double tim_since_last_align = mrpt::system::timeDifference(m_last_alignment_cmd, mrpt::system::now());
+						const double ALIGN_WAIT_TIME = 1.5; // seconds
+
 						if (std::abs(ang_err) <=
-							params_waypoints_navigator.waypoint_angle_tolerance)
+							params_waypoints_navigator.waypoint_angle_tolerance && 
+						/* give some time for the alignment (if supported in this robot) to finish)*/
+						tim_since_last_align>ALIGN_WAIT_TIME 
 						{
 							consider_wp_reached = true;
 						}
