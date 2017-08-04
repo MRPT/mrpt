@@ -366,6 +366,11 @@ void CWaypointsNavigator::navigationStep()
 	{
 		CAbstractNavigator::navigationStep();  // This internally locks "m_nav_cs"
 	}
+	else
+	{
+		// otherwise, at least, process pending events:
+		CAbstractNavigator::dispatchPendingNavEvents();
+	}
 
 	MRPT_END
 }
