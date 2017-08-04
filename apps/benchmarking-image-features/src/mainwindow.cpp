@@ -2567,11 +2567,11 @@ void MainWindow::on_place_recog_clicked()
     fillDetectorInfo();
     fillDescriptorInfo();
     PlaceRecognition place_recog_obj(training_files_paths, testing_files_paths,
-                                     fext, desc_to_compute,
+                                      desc_to_compute,
                                      descriptor_selected, numFeats);
 
     /// return a string here to show the place recognition accuracy on different classes
-    place_recog_obj.startPlaceRecognition();
+    place_recog_obj.startPlaceRecognition(fext);
 
 }
 
