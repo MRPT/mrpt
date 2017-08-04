@@ -68,7 +68,15 @@
     <addaction name="separator"/>
     <addaction name="m_actionMapConfiguration"/>
    </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="m_undoAction"/>
+    <addaction name="m_redoAction"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
    <addaction name="menuTools"/>
    <addaction name="menuHelp"/>
   </widget>
@@ -302,6 +310,16 @@
   <action name="actionExit">
    <property name="text">
     <string>Exit</string>
+   </property>
+  </action>
+  <action name="m_undoAction">
+   <property name="text">
+    <string>Undo</string>
+   </property>
+  </action>
+  <action name="m_redoAction">
+   <property name="text">
+    <string>Redo</string>
    </property>
   </action>
  </widget>

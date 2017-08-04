@@ -10,6 +10,8 @@
 #include "CMainWindow.h"
 #include "ui_CMainWindow.h"
 #include "CDocument.h"
+#include "CUndoManager.h"
+
 #include "observationTree/CObservationTreeModel.h"
 #include "observationTree/CObservationImageNode.h"
 #include "observationTree/CObservationStereoImageNode.h"
@@ -86,6 +88,16 @@ CMainWindow::CMainWindow(QWidget* parent)
 
 	m_ui->m_dockWidgetNodeViewer->setVisible(false);
 	m_ui->m_dockWidgetConfig->setVisible(false);
+
+
+	m_ui->m_undoAction->setShortcut(QKeySequence(QKeySequence::Undo));
+	m_ui->m_redoAction->setShortcut(QKeySequence(QKeySequence::Redo));
+	QObject::connect(
+		m_ui->m_undoAction, SIGNAL(triggered(bool)), this,
+		SLOT(undo()));
+	QObject::connect(
+		m_ui->m_redoAction, SIGNAL(triggered(bool)), this,
+		SLOT(redo()));
 }
 
 CMainWindow::~CMainWindow()
@@ -239,12 +251,47 @@ void CMainWindow::showMapConfiguration()
 	delete d;
 }
 
-void CMainWindow::deleteRobotPoses(std::vector<int> idx)
+void CMainWindow::addRobotPosesFromMap(std::vector<int> idx, mrpt::maps::CSimpleMap::TPosePDFSensFramePairList posesObsPairs)
 {
-	if (m_document)
+	if (m_document && !idx.empty())
+	{
+		m_document->insert(idx, posesObsPairs);
+		updateRenderMapFromConfig();
+	}
+}
+
+void CMainWindow::deleteRobotPosesFromMap(std::vector<int> idx)
+{
+	if (m_document && !idx.empty())
 	{
 		m_document->remove(idx);
 		updateRenderMapFromConfig();
+	}
+}
+
+void CMainWindow::undo()
+{
+	if (!CUndoManager::instance().hasUndo()) return;
+	UserAction action = CUndoManager::instance().undoAction();
+	action();
+}
+
+void CMainWindow::redo()
+{
+	if (!CUndoManager::instance().hasRedo()) return;
+	UserAction action = CUndoManager::instance().redoAction();
+	action();
+}
+
+void CMainWindow::deleteRobotPoses(std::vector<int> idx)
+{
+	if (m_document && !idx.empty())
+	{
+		mrpt::maps::CSimpleMap::TPosePDFSensFramePairList posesObsPairs = m_document->get(idx);
+		auto undo = [idx, posesObsPairs, this](){ this->addRobotPosesFromMap(idx, posesObsPairs); };
+		auto redo = [idx, this](){ this->deleteRobotPosesFromMap(idx); };
+		CUndoManager::instance().addAction(undo, redo);
+		deleteRobotPosesFromMap(idx);
 	}
 }
 
