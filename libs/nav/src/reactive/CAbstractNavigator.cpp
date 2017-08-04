@@ -439,6 +439,7 @@ void CAbstractNavigator::internal_onStartNewNavigation()
 
 void CAbstractNavigator::performNavigationStepNavigating(bool call_virtual_nav_method)
 {
+	const TState prevState = m_navigationState;
 	try
 	{
 		if (m_lastNavigationState != NAVIGATING)
@@ -572,6 +573,7 @@ void CAbstractNavigator::performNavigationStepNavigating(bool call_virtual_nav_m
 	{
 		MRPT_LOG_ERROR("[CAbstractNavigator::navigationStep] Untyped exception!");
 	}
+	m_navigationState = prevState;
 }
 
 bool CAbstractNavigator::checkCollisionWithLatestObstacles(const mrpt::math::TPose2D &relative_robot_pose) const
