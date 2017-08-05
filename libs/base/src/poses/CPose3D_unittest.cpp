@@ -574,8 +574,9 @@ class Pose3DTests : public ::testing::Test
 		p.setFrom12Vector(x);
 		// ensure 3x3 rot vector is orthonormal (Sophus complains otherwise):
 		auto R = p.getRotationMatrix();
-		const auto Rsvd = R.jacobiSvd(Eigen::ComputeFullU | Eigen::ComputeFullV );
-		R = Rsvd.matrixU()*Rsvd.matrixV().transpose();
+		const auto Rsvd =
+			R.jacobiSvd(Eigen::ComputeFullU | Eigen::ComputeFullV);
+		R = Rsvd.matrixU() * Rsvd.matrixV().transpose();
 		p.setRotationMatrix(R);
 
 		Y = p.ln();
