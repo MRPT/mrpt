@@ -16,22 +16,21 @@ CViewerContainer::CViewerContainer(QWidget* parent)
 	: QWidget(parent), m_ui(std::make_unique<Ui::CViewerContainer>())
 {
 	m_ui->setupUi(this);
-
-	QObject::connect(
+	connect(
 		m_ui->m_zoom, SIGNAL(valueChanged(double)), SLOT(zoomChanged(double)));
-	QObject::connect(
+	connect(
 		m_ui->m_zoomSlider, SIGNAL(valueChanged(int)), SLOT(zoomChanged(int)));
 
-	QObject::connect(
-		m_ui->m_tabWidget, SIGNAL(currentChanged(int)),
-		SLOT(updatePanelInfo(int)));
-
-	QObject::connect(
+	connect(
 		m_ui->m_azimDeg, SIGNAL(valueChanged(double)),
 		SLOT(updateAzimuthDegrees(double)));
-	QObject::connect(
+	connect(
 		m_ui->m_elevationDeg, SIGNAL(valueChanged(double)),
 		SLOT(updateElevationDegrees(double)));
+
+	connect(
+		m_ui->m_tabWidget, &QTabWidget::currentChanged, this,
+		&CViewerContainer::updatePanelInfo);
 }
 
 CViewerContainer::~CViewerContainer()
@@ -174,7 +173,7 @@ void CViewerContainer::setVisibleGrid(bool is)
 	}
 }
 
-void CViewerContainer::changeBackgroundColor(QColor color)
+void CViewerContainer::changeBackgroundColor(const QColor& color)
 {
 	float r = color.red() / 255.0;
 	float g = color.green() / 255.0;
@@ -188,7 +187,7 @@ void CViewerContainer::changeBackgroundColor(QColor color)
 	}
 }
 
-void CViewerContainer::changeGridColor(QColor color)
+void CViewerContainer::changeGridColor(const QColor& color)
 {
 	float r = color.red() / 255.0;
 	float g = color.green() / 255.0;

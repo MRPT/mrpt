@@ -10,9 +10,9 @@
 #pragma once
 #include "mrpt/opengl/CSetOfObjects.h"
 
-class OPENGL_IMPEXP CRobotPose: public mrpt::opengl::CSetOfObjects
+class OPENGL_IMPEXP CRobotPose : public mrpt::opengl::CSetOfObjects
 {
-public:
+   public:
 	using Ptr = std::shared_ptr<CRobotPose>;
 	CRobotPose(int id);
 
@@ -21,7 +21,7 @@ public:
 
 	void setSelected(bool is);
 
-private:
+   private:
 	CSetOfObjects::Ptr m_currentObj;
 	int m_id;
 };

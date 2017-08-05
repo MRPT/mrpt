@@ -9,11 +9,7 @@
    */
 #include "CUndoManager.h"
 
-
-CUndoManager::CUndoManager()
-	: m_lastAction(-1)
-{}
-
+CUndoManager::CUndoManager() : m_lastAction(-1) {}
 void CUndoManager::addAction(UserAction undo, UserAction redo)
 {
 	assert(m_undo.size() == m_redo.size());
@@ -32,7 +28,7 @@ UserAction CUndoManager::redoAction()
 {
 	assert(!m_redo.empty());
 	int redoSize = m_redo.size();
-	assert( m_lastAction < redoSize);
+	assert(m_lastAction < redoSize);
 	++m_lastAction;
 	auto it = m_redo.begin() + m_lastAction;
 	assert(it != m_redo.end());
@@ -53,7 +49,7 @@ UserAction CUndoManager::undoAction()
 {
 	assert(!m_undo.empty());
 	int undoSize = m_undo.size();
-	assert( m_lastAction < undoSize);
+	assert(m_lastAction < undoSize);
 	auto it = m_undo.begin() + m_lastAction;
 	assert(it != m_undo.end());
 

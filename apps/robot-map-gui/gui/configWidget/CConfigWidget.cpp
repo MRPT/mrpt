@@ -36,22 +36,26 @@ CConfigWidget::CConfigWidget(QWidget* parent)
 	  m_ui(std::make_unique<Ui::CConfigWidget>())
 {
 	m_ui->setupUi(this);
-	QObject::connect(
-		m_ui->m_loadConfig, SIGNAL(released()), SLOT(openConfig()));
-	QObject::connect(
-		m_ui->m_saveConfig, SIGNAL(released()), SLOT(saveConfig()));
-	QObject::connect(m_ui->m_add, SIGNAL(released()), SLOT(addMap()));
-	QObject::connect(m_ui->m_remove, SIGNAL(released()), SLOT(removeMap()));
 
 	addWidget(TypeOfConfig::General, m_general);
 
-	QObject::connect(
-		m_ui->m_config,
-		SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)), this,
-		SLOT(currentConfigChanged(QListWidgetItem*, QListWidgetItem*)));
-	QObject::connect(
-		m_ui->m_apply, SIGNAL(released()), this,
-		SIGNAL(applyConfigurationForCurrentMaps()));
+	connect(
+		m_ui->m_loadConfig, &QPushButton::released, this,
+		&CConfigWidget::openConfig);
+	connect(
+		m_ui->m_saveConfig, &QPushButton::released, this,
+		&CConfigWidget::saveConfig);
+	connect(m_ui->m_add, &QPushButton::released, this, &CConfigWidget::addMap);
+	connect(
+		m_ui->m_remove, &QPushButton::released, this,
+		&CConfigWidget::removeMap);
+	connect(
+		m_ui->m_apply, &QPushButton::released, this,
+		&CConfigWidget::applyConfigurationForCurrentMaps);
+
+	connect(
+		m_ui->m_config, &QListWidget::currentItemChanged, this,
+		&CConfigWidget::currentConfigChanged);
 }
 
 CConfigWidget::~CConfigWidget() { clearConfig(true); }

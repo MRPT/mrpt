@@ -86,7 +86,6 @@ std::vector<int> CDocument::remove(const std::vector<int>& indexes)
 				auto pos = idx.erase(iter);
 				idx.insert(pos, checkedNumb - 1);
 			}
-
 		}
 	}
 	updateMetricMap();
@@ -94,16 +93,20 @@ std::vector<int> CDocument::remove(const std::vector<int>& indexes)
 	return v;
 }
 
-void CDocument::insert(const std::vector<int> &idx, CSimpleMap::TPosePDFSensFramePairList &posesObsPairs)
+void CDocument::insert(
+	const std::vector<int>& idx,
+	CSimpleMap::TPosePDFSensFramePairList& posesObsPairs)
 {
 	assert(idx.size() == posesObsPairs.size());
 	for (size_t i = 0; i < idx.size(); ++i)
-		m_simplemap.insertToPos(idx[i], posesObsPairs[i].first, posesObsPairs[i].second);
+		m_simplemap.insertToPos(
+			idx[i], posesObsPairs[i].first, posesObsPairs[i].second);
 
 	updateMetricMap();
 }
 
-CSimpleMap::TPosePDFSensFramePairList CDocument::get(const std::vector<int> &idx)
+CSimpleMap::TPosePDFSensFramePairList CDocument::get(
+	const std::vector<int>& idx)
 {
 	CSimpleMap::TPosePDFSensFramePairList posesObsPairs;
 	for (auto& it : idx)
@@ -115,7 +118,8 @@ CSimpleMap::TPosePDFSensFramePairList CDocument::get(const std::vector<int> &idx
 	return posesObsPairs;
 }
 
-CSimpleMap::TPosePDFSensFramePairList CDocument::getReverse(const std::vector<int> &idx)
+CSimpleMap::TPosePDFSensFramePairList CDocument::getReverse(
+	const std::vector<int>& idx)
 {
 	CSimpleMap::TPosePDFSensFramePairList posesObsPairs;
 	for (int i = idx.size() - 1; i >= 0; --i)

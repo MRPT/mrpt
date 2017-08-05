@@ -48,7 +48,7 @@
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="openAction"/>
+    <addaction name="m_actionOpen"/>
     <addaction name="m_actionLoadConfig"/>
     <addaction name="actionExit"/>
    </widget>
@@ -222,7 +222,7 @@
     </layout>
    </widget>
   </widget>
-  <action name="openAction">
+  <action name="m_actionOpen">
    <property name="text">
     <string>Open simplemap</string>
    </property>

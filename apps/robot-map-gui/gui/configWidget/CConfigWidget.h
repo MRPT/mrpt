@@ -42,10 +42,10 @@ class CConfigWidget : public QWidget
 	void addedMap();
 	void removedMap();
 	void updatedConfig();
-	void openedConfig(const std::string str);
+	void openedConfig(const std::string& str);
 	void applyConfigurationForCurrentMaps();
-	void backgroundColorChanged(QColor col);
-	void gridColorChanged(QColor col);
+	void backgroundColorChanged(const QColor& col);
+	void gridColorChanged(const QColor& col);
 	void gridVisibleChanged(bool is);
 	void currentBotChanged(int value);
 

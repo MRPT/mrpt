@@ -15,7 +15,6 @@
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/maps/CSimpleMap.h>
 
-
 namespace Ui
 {
 class CMainWindow;
@@ -32,7 +31,9 @@ class CMainWindow : public QMainWindow
 	CMainWindow(QWidget* parent = 0);
 	virtual ~CMainWindow();
 
-	void addRobotPosesFromMap(std::vector<int> idx, mrpt::maps::CSimpleMap::TPosePDFSensFramePairList posesObsPairs);
+	void addRobotPosesFromMap(
+		std::vector<int> idx,
+		mrpt::maps::CSimpleMap::TPosePDFSensFramePairList posesObsPairs);
 	void deleteRobotPosesFromMap(std::vector<int> idx);
 
    private slots:
@@ -41,12 +42,12 @@ class CMainWindow : public QMainWindow
 	void openMap();
 	void itemClicked(const QModelIndex& index);
 	void updateConfig();
-	void updateConfig(const std::string str);
+	void openConfig(const std::string& str);
 
 	void applyConfigurationForCurrentMaps();
 	void showMapConfiguration();
 
-	void deleteRobotPoses(std::vector<int> idx);
+	void deleteRobotPoses(const std::vector<int>& idx);
 
    private:
 	void updateRenderMapFromConfig();

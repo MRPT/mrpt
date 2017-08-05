@@ -18,7 +18,7 @@ typedef std::function<void()> UserAction;
 
 class CUndoManager
 {
-public:
+   public:
 	static CUndoManager& instance()
 	{
 		static CUndoManager s;
@@ -31,14 +31,13 @@ public:
 	UserAction redoAction();
 	bool hasRedo() const;
 
-private:
+   private:
 	CUndoManager();
 	~CUndoManager() = default;
 	CUndoManager(CUndoManager const&) = delete;
-	CUndoManager& operator= (CUndoManager const&) = delete;
+	CUndoManager& operator=(CUndoManager const&) = delete;
 
 	std::vector<UserAction> m_undo;
 	std::vector<UserAction> m_redo;
 	int m_lastAction;
 };
-
