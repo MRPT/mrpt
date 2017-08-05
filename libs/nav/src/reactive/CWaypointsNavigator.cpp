@@ -173,9 +173,11 @@ void CWaypointsNavigator::waypoints_navigationStep()
 						const double ALIGN_WAIT_TIME = 1.5;  // seconds
 
 						if (std::abs(ang_err) <=
-							params_waypoints_navigator.waypoint_angle_tolerance && 
-						/* give some time for the alignment (if supported in this robot) to finish)*/
-						tim_since_last_align>ALIGN_WAIT_TIME 
+								params_waypoints_navigator
+									.waypoint_angle_tolerance &&
+							/* give some time for the alignment (if supported in
+							   this robot) to finish)*/
+							tim_since_last_align > ALIGN_WAIT_TIME)
 						{
 							consider_wp_reached = true;
 						}
