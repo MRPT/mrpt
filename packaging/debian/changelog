@@ -1,3 +1,9 @@
+mrpt (1:1.5.2-1) unstable; urgency=medium
+
+  * New version of upstream sources.
+
+ -- Jose Luis Blanco (University of Malaga) <joseluisblancoc@gmail.com>  Sun, 06 Aug 2017 01:01:10 +0200
+
 mrpt (1:1.5.1-1) unstable; urgency=medium
 
   * Fix GCC hardening flags (Closes: #865735)
