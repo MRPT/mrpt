@@ -95,7 +95,7 @@ void CViewerContainer::updateConfigChanges(
 	for (int i = 0; i < m_ui->m_tabWidget->count(); ++i)
 	{
 		QWidget* w = m_ui->m_tabWidget->widget(i);
-		delete w;
+		w->deleteLater();
 	}
 	m_tabsInfo.clear();
 
@@ -115,20 +115,31 @@ void CViewerContainer::updateConfigChanges(
 
 		gl->setDocument(doc);
 		gl->setSelectedObservation(isShowAllObs);
-		QObject::connect(
-			gl, SIGNAL(zoomChanged(float)), SLOT(changeZoomInfo(float)));
-		QObject::connect(
-			gl, SIGNAL(mousePosChanged(double, double)),
-			SLOT(updateMouseInfo(double, double)));
-		QObject::connect(
-			gl, SIGNAL(azimuthChanged(float)), SLOT(changeAzimuthDeg(float)));
-		QObject::connect(
-			gl, SIGNAL(elevationChanged(float)),
-			SLOT(changeElevationDeg(float)));
 
-		QObject::connect(
-			gl, SIGNAL(deleteRobotPoses(std::vector<int>)),
-			SIGNAL(deleteRobotPoses(std::vector<int>)));
+		connect(
+			gl, &CGlWidget::zoomChanged, this,
+			&CViewerContainer::changeZoomInfo);
+		connect(
+			gl, &CGlWidget::mousePosChanged, this,
+			&CViewerContainer::updateMouseInfo);
+		connect(
+			gl, &CGlWidget::azimuthChanged, this,
+			&CViewerContainer::changeAzimuthDeg);
+		connect(
+			gl, &CGlWidget::elevationChanged, this,
+			&CViewerContainer::changeElevationDeg);
+
+		connect(
+			gl, SIGNAL(deleteRobotPoses(const std::vector<int>&)),
+			SIGNAL(deleteRobotPoses(const std::vector<int>&)));
+
+		connect(
+			gl, SIGNAL(
+					moveRobotPoses(
+						const std::vector<int>&, const QPoint&, const QPoint&)),
+			SIGNAL(
+				moveRobotPoses(
+					const std::vector<int>&, const QPoint&, const QPoint&)));
 	}
 }
 

@@ -48,6 +48,9 @@ class CMainWindow : public QMainWindow
 	void showMapConfiguration();
 
 	void deleteRobotPoses(const std::vector<int>& idx);
+	void moveRobotPoses(
+		const std::vector<int>& idx, const QPoint& oldPos,
+		const QPoint& newPos);
 
    private:
 	void updateRenderMapFromConfig();
