@@ -757,3 +757,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * exprtk: C++ Mathematical Expression Toolkit Library
  Arash Partow (1999-2016)
   MIT License  http://www.opensource.org/licenses/MIT
+
+ * rplidar: Low-cost LiDAR driver
+ Copyright (c) 2014 - 2016 Shanghai Slamtec Co., Ltd.
+  2-clause BSD License
