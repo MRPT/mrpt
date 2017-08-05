@@ -69,6 +69,7 @@ class SE3Base {
   static int constexpr N = 4;
   using Transformation = Matrix<Scalar, N, N>;
   using Point = Vector3<Scalar>;
+  using Line = ParametrizedLine3<Scalar>;
   using Tangent = Vector<Scalar, DoF>;
   using Adjoint = Matrix<Scalar, DoF, DoF>;
   // Adjoint transformation
@@ -86,6 +87,18 @@ class SE3Base {
     res.block(3, 0, 3, 3) = Matrix3<Scalar>::Zero(3, 3);
     return res;
   }
+
+  // Extract rotation angle about canonical X-axis
+  //
+  Scalar angleX() { return so3().angleX(); }
+
+  // Extract rotation angle about canonical Y-axis
+  //
+  Scalar angleY() { return so3().angleY(); }
+
+  // Extract rotation angle about canonical Z-axis
+  //
+  Scalar angleZ() { return so3().angleZ(); }
 
   // Returns copy of instance casted to NewScalarType.
   //
@@ -198,6 +211,18 @@ class SE3Base {
     return so3() * p + translation();
   }
 
+  // Group action on lines.
+  //
+  // This function rotates and translates a parametrized line
+  // ``l(t) = o + t * d`` by the SE(3) element:
+  //
+  // Origin is transformed using SE(3) action
+  // Direction is transformed using rotation part
+  //
+  SOPHUS_FUNC Line operator*(Line const& l) const {
+    return Line((*this) * l.origin(), so3() * l.direction());
+  }
+
   // In-place group multiplication.
   //
   SOPHUS_FUNC SE3Base<Derived>& operator*=(SE3<Scalar> const& other) {
@@ -232,8 +257,11 @@ class SE3Base {
   //
   // Precondition: ``R`` must be orthogonal and ``det(R)=1``.
   //
-  SOPHUS_FUNC void setRotationMatrix(Matrix3<Scalar> const& rotation_matrix) {
-    so3().setQuaternion(Eigen::Quaternion<Scalar>(rotation_matrix));
+  SOPHUS_FUNC void setRotationMatrix(Matrix3<Scalar> const& R) {
+    SOPHUS_ENSURE(isOrthogonal(R), "R is not orthogonal:\n %", R);
+    SOPHUS_ENSURE(R.determinant() > 0, "det(R) is not positive: %",
+                  R.determinant());
+    so3().setQuaternion(Eigen::Quaternion<Scalar>(R));
   }
 
   // Mutator of translation vector.
