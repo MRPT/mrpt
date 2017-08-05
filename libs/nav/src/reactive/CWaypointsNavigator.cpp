@@ -225,6 +225,10 @@ void CWaypointsNavigator::waypoints_navigationStep()
 					}
 					else {
 						wps.final_goal_reached = true;
+
+						// Make sure the end-navigation event is issued,
+						// navigation state switches to IDLE, etc:
+						this->performNavigationStepNavigating(false);
 					}
 				}
 			}
