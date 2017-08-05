@@ -41,9 +41,13 @@ class CDocument
 	const TypeConfig& typeConfig() const;
 
 	std::vector<int> remove(const std::vector<int>& indexes);
-	void insert(const std::vector<int>& idx, mrpt::maps::CSimpleMap::TPosePDFSensFramePairList& posesObsPairs);
-	mrpt::maps::CSimpleMap::TPosePDFSensFramePairList get(const std::vector<int>& idx);
-	mrpt::maps::CSimpleMap::TPosePDFSensFramePairList getReverse(const std::vector<int>& idx);
+	void insert(
+		const std::vector<int>& idx,
+		mrpt::maps::CSimpleMap::TPosePDFSensFramePairList& posesObsPairs);
+	mrpt::maps::CSimpleMap::TPosePDFSensFramePairList get(
+		const std::vector<int>& idx);
+	mrpt::maps::CSimpleMap::TPosePDFSensFramePairList getReverse(
+		const std::vector<int>& idx);
 
    private:
 	void addMapToRenderizableMaps(

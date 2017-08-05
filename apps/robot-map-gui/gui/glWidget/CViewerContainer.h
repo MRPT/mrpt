@@ -39,15 +39,15 @@ class CViewerContainer : public QWidget
 	void updateRobotPosesColor(int type);
 	void updateSelectedRobotPosesColor(int type);
 
-signals:
-	void deleteRobotPoses(std::vector<int> idx);
+   signals:
+	void deleteRobotPoses(const std::vector<int>& idx);
 
    public slots:
 	void showAllObservation(bool is);
 	void changeCurrentBot(int value);
 	void setVisibleGrid(bool is);
-	void changeBackgroundColor(QColor color);
-	void changeGridColor(QColor color);
+	void changeBackgroundColor(const QColor& color);
+	void changeGridColor(const QColor& color);
 
    private slots:
 	void updatePanelInfo(int index);

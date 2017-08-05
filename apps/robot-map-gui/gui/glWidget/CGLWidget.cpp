@@ -52,8 +52,8 @@ CGlWidget::CGlWidget(bool is2D, QWidget* parent)
 	  m_currentObs(opengl::stock_objects::CornerXYZSimple()),
 	  m_line(mrpt::make_aligned_shared<CSetOfLines>()),
 	  m_is2D(is2D),
-	  m_showRobot(false)
-	, m_moveSelected(false)
+	  m_showRobot(false),
+	  m_moveSelected(false)
 {
 	setClearColors(1.0, 1.0, 1.0);
 	setMinimumZoom(1.0f);
@@ -407,7 +407,6 @@ void CGlWidget::mouseMoveEvent(QMouseEvent* event)
 
 	if (m_moveSelected)
 	{
-
 	}
 }
 
@@ -428,16 +427,16 @@ void CGlWidget::mousePressEvent(QMouseEvent* event)
 	if (scenePos.first && sceneOtherPos.first)
 	{
 		double xDistPow =
-				std::pow(sceneOtherPos.second.x - scenePos.second.x, 2);
+			std::pow(sceneOtherPos.second.x - scenePos.second.x, 2);
 		double yDistPow =
-				std::pow(sceneOtherPos.second.y - scenePos.second.y, 2);
+			std::pow(sceneOtherPos.second.y - scenePos.second.y, 2);
 		double maxDist = xDistPow + yDistPow;
 
 		bool needUnpressMouse = false;
 		bool needUpdateScene = false;
 
-		int selectedIndex = searchSelectedPose(scenePos.second.x, scenePos.second.y, maxDist);
-
+		int selectedIndex =
+			searchSelectedPose(scenePos.second.x, scenePos.second.y, maxDist);
 
 		if (selectedIndex != -1)
 		{
@@ -455,7 +454,8 @@ void CGlWidget::mousePressEvent(QMouseEvent* event)
 
 		if (!needUnpressMouse)
 		{
-			int poseIndex = searchPose(scenePos.second.x, scenePos.second.y, maxDist);
+			int poseIndex =
+				searchPose(scenePos.second.x, scenePos.second.y, maxDist);
 			if (poseIndex != -1)
 			{
 				auto robotPose = getRobotPose(poseIndex);
@@ -468,15 +468,13 @@ void CGlWidget::mousePressEvent(QMouseEvent* event)
 			}
 		}
 
-		if (needUnpressMouse)
-			unpressMouseButtons();
+		if (needUnpressMouse) unpressMouseButtons();
 
-		if (needUpdateScene)
-			update();
+		if (needUpdateScene) update();
 	}
 }
 
-void CGlWidget::mouseReleaseEvent(QMouseEvent *event)
+void CGlWidget::mouseReleaseEvent(QMouseEvent* event)
 {
 	CQtGlCanvasBase::mouseReleaseEvent(event);
 	m_moveSelected = false;
@@ -488,8 +486,7 @@ void CGlWidget::keyPressEvent(QKeyEvent* event)
 	if (event->key() == Qt::Key_Delete)
 	{
 		std::vector<int> idx;
-		for (auto& it : m_selectedPoints)
-			idx.push_back(it->getId());
+		for (auto& it : m_selectedPoints) idx.push_back(it->getId());
 		emit deleteRobotPoses(idx);
 	}
 }

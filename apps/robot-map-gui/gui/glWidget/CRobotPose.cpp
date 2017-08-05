@@ -11,17 +11,13 @@
 
 #include <mrpt/opengl/stock_objects.h>
 
-
-CRobotPose::CRobotPose(int id)
-	: CSetOfObjects()
-	, m_id(id)
+CRobotPose::CRobotPose(int id) : CSetOfObjects(), m_id(id)
 {
 	m_currentObj = mrpt::opengl::stock_objects::CornerXYZSimple();
 	insert(m_currentObj);
 }
 
 int CRobotPose::getId() const { return m_id; }
-
 void CRobotPose::setSelected(bool is)
 {
 	removeObject(m_currentObj);

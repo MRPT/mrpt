@@ -35,69 +35,69 @@ CMainWindow::CMainWindow(QWidget* parent)
 	  m_ui(std::make_unique<Ui::CMainWindow>())
 {
 	m_ui->setupUi(this);
-	QObject::connect(
-		m_ui->openAction, SIGNAL(triggered(bool)), SLOT(openMap()));
-	QObject::connect(
-		m_ui->m_configWidget, SIGNAL(openedConfig(const std::string)),
-		SLOT(updateConfig(const std::string)));
-	QObject::connect(
-		m_ui->m_configWidget, SIGNAL(applyConfigurationForCurrentMaps()),
-		SLOT(applyConfigurationForCurrentMaps()));
-	QObject::connect(
-		m_ui->m_configWidget, SIGNAL(addedMap()), SLOT(updateConfig()));
-	QObject::connect(
-		m_ui->m_configWidget, SIGNAL(removedMap()), SLOT(updateConfig()));
-	QObject::connect(
-		m_ui->m_configWidget, SIGNAL(updatedConfig()), SLOT(updateConfig()));
-	QObject::connect(
-		m_ui->m_observationsTree, SIGNAL(clicked(const QModelIndex&)),
-		SLOT(itemClicked(const QModelIndex&)));
-	QObject::connect(
-		m_ui->m_actionLoadConfig, SIGNAL(triggered(bool)), m_ui->m_configWidget,
-		SLOT(openConfig()));
-
-	QObject::connect(
-		m_ui->m_actionShowAllObs, SIGNAL(triggered(bool)), m_ui->m_viewer,
-		SLOT(showAllObservation(bool)));
-	QObject::connect(
-		m_ui->m_configWidget, SIGNAL(backgroundColorChanged(QColor)),
-		m_ui->m_viewer, SLOT(changeBackgroundColor(QColor)));
-	QObject::connect(
-		m_ui->m_configWidget, SIGNAL(gridColorChanged(QColor)), m_ui->m_viewer,
-		SLOT(changeGridColor(QColor)));
-	QObject::connect(
-		m_ui->m_configWidget, SIGNAL(gridVisibleChanged(bool)), m_ui->m_viewer,
-		SLOT(setVisibleGrid(bool)));
-	QObject::connect(
-		m_ui->m_configWidget, SIGNAL(currentBotChanged(int)), m_ui->m_viewer,
-		SLOT(changeCurrentBot(int)));
-
-	QObject::connect(m_ui->m_viewer, SIGNAL(deleteRobotPoses(std::vector<int>)),
-					 this , SLOT(deleteRobotPoses(std::vector<int>)));
-
-	QObject::connect(
-		m_ui->m_actionMapConfiguration, SIGNAL(triggered(bool)),
-		SLOT(showMapConfiguration()));
-
-	QObject::connect(
-		m_ui->m_expandAll, SIGNAL(released()), m_ui->m_observationsTree,
-		SLOT(expandAll()));
-	QObject::connect(
-		m_ui->m_collapseAll, SIGNAL(released()), m_ui->m_observationsTree,
-		SLOT(collapseAll()));
 
 	m_ui->m_dockWidgetNodeViewer->setVisible(false);
 	m_ui->m_dockWidgetConfig->setVisible(false);
 
-
 	m_ui->m_undoAction->setShortcut(QKeySequence(QKeySequence::Undo));
 	m_ui->m_redoAction->setShortcut(QKeySequence(QKeySequence::Redo));
-	QObject::connect(
-		m_ui->m_undoAction, SIGNAL(triggered(bool)), this,
-		SLOT(undo()));
-	QObject::connect(
-		m_ui->m_redoAction, SIGNAL(triggered(bool)), this,
-		SLOT(redo()));
+
+	connect(
+		m_ui->m_configWidget, &CConfigWidget::openedConfig, this,
+		&CMainWindow::openConfig);
+	connect(
+		m_ui->m_configWidget, &CConfigWidget::applyConfigurationForCurrentMaps,
+		this, &CMainWindow::applyConfigurationForCurrentMaps);
+	connect(
+		m_ui->m_configWidget, &CConfigWidget::addedMap, this,
+		&CMainWindow::updateConfig);
+	connect(
+		m_ui->m_configWidget, &CConfigWidget::removedMap, this,
+		&CMainWindow::updateConfig);
+	connect(
+		m_ui->m_configWidget, &CConfigWidget::updatedConfig, this,
+		&CMainWindow::updateConfig);
+	connect(
+		m_ui->m_configWidget, &CConfigWidget::backgroundColorChanged,
+		m_ui->m_viewer, &CViewerContainer::changeBackgroundColor);
+	connect(
+		m_ui->m_configWidget, &CConfigWidget::gridColorChanged, m_ui->m_viewer,
+		&CViewerContainer::changeGridColor);
+	connect(
+		m_ui->m_configWidget, &CConfigWidget::gridVisibleChanged,
+		m_ui->m_viewer, &CViewerContainer::setVisibleGrid);
+	connect(
+		m_ui->m_configWidget, &CConfigWidget::currentBotChanged, m_ui->m_viewer,
+		&CViewerContainer::changeCurrentBot);
+
+	connect(
+		m_ui->m_observationsTree, &CObservationTree::clicked, this,
+		&CMainWindow::itemClicked);
+
+	connect(
+		m_ui->m_actionOpen, &QAction::triggered, this, &CMainWindow::openMap);
+	connect(m_ui->m_undoAction, &QAction::triggered, this, &CMainWindow::undo);
+	connect(m_ui->m_redoAction, &QAction::triggered, this, &CMainWindow::redo);
+	connect(
+		m_ui->m_actionMapConfiguration, &QAction::triggered, this,
+		&CMainWindow::showMapConfiguration);
+	connect(
+		m_ui->m_actionLoadConfig, &QAction::triggered, m_ui->m_configWidget,
+		&CConfigWidget::openConfig);
+	connect(
+		m_ui->m_actionShowAllObs, &QAction::triggered, m_ui->m_viewer,
+		&CViewerContainer::showAllObservation);
+
+	connect(
+		m_ui->m_expandAll, &QPushButton::released, m_ui->m_observationsTree,
+		&CObservationTree::expandAll);
+	connect(
+		m_ui->m_collapseAll, &QPushButton::released, m_ui->m_observationsTree,
+		&CObservationTree::collapseAll);
+
+	connect(
+		m_ui->m_viewer, &CViewerContainer::deleteRobotPoses, this,
+		&CMainWindow::deleteRobotPoses);
 }
 
 CMainWindow::~CMainWindow()
@@ -214,7 +214,7 @@ void CMainWindow::updateConfig()
 	updateRenderMapFromConfig();
 }
 
-void CMainWindow::updateConfig(const std::string str)
+void CMainWindow::openConfig(const std::string& str)
 {
 	if (!m_document) return;
 
@@ -251,7 +251,9 @@ void CMainWindow::showMapConfiguration()
 	delete d;
 }
 
-void CMainWindow::addRobotPosesFromMap(std::vector<int> idx, mrpt::maps::CSimpleMap::TPosePDFSensFramePairList posesObsPairs)
+void CMainWindow::addRobotPosesFromMap(
+	std::vector<int> idx,
+	mrpt::maps::CSimpleMap::TPosePDFSensFramePairList posesObsPairs)
 {
 	if (m_document && !idx.empty())
 	{
@@ -283,22 +285,24 @@ void CMainWindow::redo()
 	action();
 }
 
-void CMainWindow::deleteRobotPoses(std::vector<int> idx)
+void CMainWindow::deleteRobotPoses(const std::vector<int>& idx)
 {
 	if (m_document && !idx.empty())
 	{
-		mrpt::maps::CSimpleMap::TPosePDFSensFramePairList posesObsPairs = m_document->getReverse(idx);
+		mrpt::maps::CSimpleMap::TPosePDFSensFramePairList posesObsPairs =
+			m_document->getReverse(idx);
 
 		std::vector<int> reverseInd = m_document->remove(idx);
 		updateRenderMapFromConfig();
 
-		auto redo = [idx, this](){ this->deleteRobotPosesFromMap(idx); };
+		auto redo = [idx, this]() { this->deleteRobotPosesFromMap(idx); };
 
 		std::reverse(reverseInd.begin(), reverseInd.end());
-		auto undo = [reverseInd, posesObsPairs, this](){ this->addRobotPosesFromMap(reverseInd, posesObsPairs); };
+		auto undo = [reverseInd, posesObsPairs, this]() {
+			this->addRobotPosesFromMap(reverseInd, posesObsPairs);
+		};
 
 		CUndoManager::instance().addAction(undo, redo);
-
 	}
 }
 

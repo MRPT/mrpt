@@ -18,11 +18,12 @@ CGeneralConfig::CGeneralConfig()
 	  m_generalSetting()
 {
 	m_ui->setupUi(this);
-	QObject::connect(
-		m_ui->m_gridColor, SIGNAL(released()), SLOT(openGridColor()));
-	QObject::connect(
-		m_ui->m_backgroundColor, SIGNAL(released()),
-		SLOT(openBackgroundColor()));
+	connect(
+		m_ui->m_gridColor, &QPushButton::released, this,
+		&CGeneralConfig::openGridColor);
+	connect(
+		m_ui->m_backgroundColor, &QPushButton::released, this,
+		&CGeneralConfig::openBackgroundColor);
 }
 
 const QString CGeneralConfig::getName() { return "General"; }
