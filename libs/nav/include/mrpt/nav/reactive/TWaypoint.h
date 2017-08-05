@@ -102,9 +102,9 @@ struct NAV_IMPEXP TWaypointSequence
 		const mrpt::nav::TWaypointsRenderingParams& params =
 			mrpt::nav::TWaypointsRenderingParams()) const;
 	/** Saves waypoints to a config file section */
-	void save(mrpt::utils::CConfigFileBase& c,const std::string& s) const;
+	void save(mrpt::utils::CConfigFileBase& c, const std::string& s) const;
 	/** Loads waypoints to a config file section */
-	void load(const mrpt::utils::CConfigFileBase& c,const std::string& s);
+	void load(const mrpt::utils::CConfigFileBase& c, const std::string& s);
 };
 
 /** A waypoint with an execution status. \ingroup nav_reactive */
