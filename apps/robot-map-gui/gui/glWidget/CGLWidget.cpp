@@ -53,7 +53,9 @@ CGlWidget::CGlWidget(bool is2D, QWidget* parent)
 	  m_line(mrpt::make_aligned_shared<CSetOfLines>()),
 	  m_is2D(is2D),
 	  m_showRobot(false),
-	  m_moveSelected(false)
+	  m_moveSelected(false),
+	  m_pressedPos(0, 0),
+	  m_lastPos(0, 0)
 {
 	setClearColors(1.0, 1.0, 1.0);
 	setMinimumZoom(1.0f);
@@ -407,19 +409,43 @@ void CGlWidget::mouseMoveEvent(QMouseEvent* event)
 
 	if (m_moveSelected)
 	{
+		auto scenePos = sceneToWorld(m_lastPos);
+		auto sceneOtherPos = sceneToWorld(event->pos());
+		if (scenePos.first && sceneOtherPos.first)
+		{
+			double distX = scenePos.second.x - sceneOtherPos.second.x;
+			double distY = scenePos.second.y - sceneOtherPos.second.y;
+			if (distX != 0.0 || distY != 0.0)
+			{
+				for (auto& it : m_selectedPoints)
+				{
+					CRobotPose::Ptr robotPose =
+						std::dynamic_pointer_cast<CRobotPose>(it);
+					mrpt::math::TPose3D pose = robotPose->getPose();
+					pose.x -= distX;
+					pose.y -= distY;
+					robotPose->setPose(pose);
+				}
+				update();
+			}
+		}
 	}
+	m_lastPos = event->pos();
 }
 
 void CGlWidget::mousePressEvent(QMouseEvent* event)
 {
 	CQtGlCanvasBase::mousePressEvent(event);
+
 	if (!m_isShowObs) return;
 
 	m_moveSelected = false;
 
 	QPoint pos = event->pos();
+	m_pressedPos = pos;
+	m_lastPos = pos;
 	bool isPressCtrl = event->modifiers() == Qt::ControlModifier;
-	bool isPressShift = event->modifiers() == Qt::ShiftModifier;
+	bool noModifier = event->modifiers() == Qt::NoModifier;
 	QPoint otherPos(pos.x() + m_observationSize, pos.y() + m_observationSize);
 
 	auto scenePos = sceneToWorld(pos);
@@ -440,14 +466,14 @@ void CGlWidget::mousePressEvent(QMouseEvent* event)
 
 		if (selectedIndex != -1)
 		{
-			m_moveSelected = isPressShift;
+			m_moveSelected = noModifier;
 
 			if (isPressCtrl)
 			{
 				removePoseFromSelected(selectedIndex);
 				needUpdateScene = true;
 			}
-			needUnpressMouse = isPressShift || isPressCtrl;
+			needUnpressMouse = noModifier || isPressCtrl;
 		}
 		else if (!isPressCtrl)
 			needUpdateScene = deselectAll();
@@ -464,6 +490,7 @@ void CGlWidget::mousePressEvent(QMouseEvent* event)
 				removeRobotDirection();
 
 				needUpdateScene = true;
+				m_moveSelected = true;
 				needUnpressMouse = needUpdateScene;
 			}
 		}
@@ -477,7 +504,27 @@ void CGlWidget::mousePressEvent(QMouseEvent* event)
 void CGlWidget::mouseReleaseEvent(QMouseEvent* event)
 {
 	CQtGlCanvasBase::mouseReleaseEvent(event);
-	m_moveSelected = false;
+
+	if (m_moveSelected)
+	{
+		std::vector<int> idx;
+		for (auto& it : m_selectedPoints) idx.push_back(it->getId());
+
+		auto scenePos = sceneToWorld(m_pressedPos);
+		auto sceneOtherPos = sceneToWorld(event->pos());
+		if (scenePos.first && sceneOtherPos.first)
+		{
+			QPoint oldPos;
+			oldPos.setX(scenePos.second.x);
+			oldPos.setY(scenePos.second.y);
+			QPoint newPos;
+			newPos.setX(sceneOtherPos.second.x);
+			newPos.setY(sceneOtherPos.second.y);
+			if (oldPos != newPos) emit moveRobotPoses(idx, oldPos, newPos);
+		}
+		m_moveSelected = false;
+	}
+	m_pressedPos = event->pos();
 }
 
 void CGlWidget::keyPressEvent(QKeyEvent* event)

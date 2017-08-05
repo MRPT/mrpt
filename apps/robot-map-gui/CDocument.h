@@ -41,6 +41,9 @@ class CDocument
 	const TypeConfig& typeConfig() const;
 
 	std::vector<int> remove(const std::vector<int>& indexes);
+	void move(
+		const std::vector<int>& indexes,
+		const mrpt::maps::CSimpleMap::TPosePDFSensFramePairList& posesObsPairs);
 	void insert(
 		const std::vector<int>& idx,
 		mrpt::maps::CSimpleMap::TPosePDFSensFramePairList& posesObsPairs);

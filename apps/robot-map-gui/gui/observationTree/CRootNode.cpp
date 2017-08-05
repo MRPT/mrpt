@@ -26,7 +26,8 @@ CRootNode::CRootNode(const CSimpleMap& simplemap) : CNode(nullptr)
 int CRootNode::childCount() const { return m_posesNode.size(); }
 CNode* CRootNode::child(int id)
 {
-	assert(id <= m_posesNode.size());
+	int size = m_posesNode.size();
+	assert(id <= size);
 	return m_posesNode[id];
 }
 

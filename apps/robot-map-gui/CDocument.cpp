@@ -93,6 +93,19 @@ std::vector<int> CDocument::remove(const std::vector<int>& indexes)
 	return v;
 }
 
+void CDocument::move(
+	const std::vector<int>& indexes,
+	const CSimpleMap::TPosePDFSensFramePairList& posesObsPairs)
+{
+	for (int i = 0; i < indexes.size(); ++i)
+	{
+		m_simplemap.remove(indexes[i]);
+		m_simplemap.insertToPos(
+			indexes[i], posesObsPairs[i].first, posesObsPairs[i].second);
+	}
+	updateMetricMap();
+}
+
 void CDocument::insert(
 	const std::vector<int>& idx,
 	CSimpleMap::TPosePDFSensFramePairList& posesObsPairs)

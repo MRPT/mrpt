@@ -27,6 +27,7 @@
 #include <QDebug>
 
 #include "mrpt/gui/CQtGlCanvasBase.h"
+#include "mrpt/poses/CPose3D.h"
 
 CMainWindow::CMainWindow(QWidget* parent)
 	: QMainWindow(parent),
@@ -98,6 +99,9 @@ CMainWindow::CMainWindow(QWidget* parent)
 	connect(
 		m_ui->m_viewer, &CViewerContainer::deleteRobotPoses, this,
 		&CMainWindow::deleteRobotPoses);
+	connect(
+		m_ui->m_viewer, &CViewerContainer::moveRobotPoses, this,
+		&CMainWindow::moveRobotPoses);
 }
 
 CMainWindow::~CMainWindow()
@@ -287,23 +291,43 @@ void CMainWindow::redo()
 
 void CMainWindow::deleteRobotPoses(const std::vector<int>& idx)
 {
-	if (m_document && !idx.empty())
+	if (!m_document || idx.empty()) return;
+
+	mrpt::maps::CSimpleMap::TPosePDFSensFramePairList posesObsPairs =
+		m_document->getReverse(idx);
+
+	std::vector<int> reverseInd = m_document->remove(idx);
+	updateRenderMapFromConfig();
+
+	auto redo = [idx, this]() { this->deleteRobotPosesFromMap(idx); };
+
+	std::reverse(reverseInd.begin(), reverseInd.end());
+	auto undo = [reverseInd, posesObsPairs, this]() {
+		this->addRobotPosesFromMap(reverseInd, posesObsPairs);
+	};
+
+	CUndoManager::instance().addAction(undo, redo);
+}
+
+void CMainWindow::moveRobotPoses(
+	const std::vector<int>& idx, const QPoint& oldPos, const QPoint& newPos)
+{
+	mrpt::maps::CSimpleMap::TPosePDFSensFramePairList posesObsPairs =
+		m_document->get(idx);
+	QPoint dist = oldPos - newPos;
+	for (int i = 0; i < idx.size(); ++i)
 	{
-		mrpt::maps::CSimpleMap::TPosePDFSensFramePairList posesObsPairs =
-			m_document->getReverse(idx);
+		mrpt::poses::CPose3DPDF::Ptr posePDF = posesObsPairs.at(i).first;
+		mrpt::poses::CPose3D pose = posePDF->getMeanVal();
 
-		std::vector<int> reverseInd = m_document->remove(idx);
-		updateRenderMapFromConfig();
-
-		auto redo = [idx, this]() { this->deleteRobotPosesFromMap(idx); };
-
-		std::reverse(reverseInd.begin(), reverseInd.end());
-		auto undo = [reverseInd, posesObsPairs, this]() {
-			this->addRobotPosesFromMap(reverseInd, posesObsPairs);
-		};
-
-		CUndoManager::instance().addAction(undo, redo);
+		pose.setFromValues(
+			pose[0] + newPos.x(), pose[1] + newPos.y(), pose[2], pose.yaw(),
+			pose.pitch(), pose.roll());
+		posePDF->changeCoordinatesReference(
+			mrpt::poses::CPose3D(-dist.x(), -dist.y(), 0.0));
 	}
+	m_document->move(idx, posesObsPairs);
+	updateRenderMapFromConfig();
 }
 
 void CMainWindow::updateRenderMapFromConfig()

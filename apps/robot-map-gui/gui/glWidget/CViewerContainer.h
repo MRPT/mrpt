@@ -41,6 +41,9 @@ class CViewerContainer : public QWidget
 
    signals:
 	void deleteRobotPoses(const std::vector<int>& idx);
+	void moveRobotPoses(
+		const std::vector<int>& idx, const QPoint& oldPos,
+		const QPoint& newPos);
 
    public slots:
 	void showAllObservation(bool is);
