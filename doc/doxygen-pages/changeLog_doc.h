@@ -14,7 +14,7 @@
 
 <hr>
 <a name="1.5.2">
-<h2>Version 1.5.2: (Under development)  </h2></a>
+<h2>Version 1.5.2: Released 6/AUG/2017 </h2></a>
 - <b>Detailed list of changes:</b>
 	- Changes in libraries:
 		- \ref mrpt_base_grp
