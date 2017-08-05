@@ -3,7 +3,6 @@ Section: science
 Priority: optional
 Maintainer: Jose Luis Blanco (University of Malaga) <joseluisblancoc@gmail.com>
 Build-Depends: debhelper (>= 9),
-	autotools-dev,
 	cmake,
 	perl,
 	zlib1g-dev,
@@ -36,7 +35,7 @@ Build-Depends: debhelper (>= 9),
 	python-numpy,
 	libeigen3-dev,
 	qtbase5-dev, libqt5opengl5-dev
-Standards-Version: 3.9.8
+Standards-Version: 4.0.0
 Homepage: http://www.mrpt.org/
 
 Package: mrpt-doc
@@ -70,7 +69,6 @@ Description: Mobile Robot Programming Toolkit - Documentation and examples
 Package: libmrpt-base@MRPT_VER_MM@
 Section: libs
 Architecture: any
-Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Multi-Arch: same
 Description: Mobile Robot Programming Toolkit - base library
@@ -87,7 +85,6 @@ Description: Mobile Robot Programming Toolkit - base library
 Package: libmrpt-opengl@MRPT_VER_MM@
 Section: libs
 Architecture: any
-Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, ${misc:Depends},
 	  libmrpt-base@MRPT_VER_MM@
 Multi-Arch: same
@@ -106,7 +103,6 @@ Description: Mobile Robot Programming Toolkit - opengl library
 Package: libmrpt-gui@MRPT_VER_MM@
 Section: libs
 Architecture: any
-Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, ${misc:Depends},
 	  libmrpt-opengl@MRPT_VER_MM@
 Multi-Arch: same
@@ -124,7 +120,6 @@ Description: Mobile Robot Programming Toolkit - gui library
 Package: libmrpt-obs@MRPT_VER_MM@
 Section: libs
 Architecture: any
-Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, ${misc:Depends},
 	  libmrpt-opengl@MRPT_VER_MM@
 Multi-Arch: same
@@ -142,7 +137,6 @@ Description: Mobile Robot Programming Toolkit - obs library
 Package: libmrpt-maps@MRPT_VER_MM@
 Section: libs
 Architecture: any
-Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, ${misc:Depends},
 	  libmrpt-obs@MRPT_VER_MM@
 Multi-Arch: same
@@ -161,7 +155,6 @@ Description: Mobile Robot Programming Toolkit - maps library
 Package: libmrpt-hwdrivers@MRPT_VER_MM@
 Section: libs
 Architecture: any
-Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, ${misc:Depends},
 	  libmrpt-obs@MRPT_VER_MM@,
 	  libmrpt-gui@MRPT_VER_MM@
@@ -180,7 +173,6 @@ Description: Mobile Robot Programming Toolkit - hwdrivers library
 Package: libmrpt-graphslam@MRPT_VER_MM@
 Section: libs
 Architecture: any
-Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, ${misc:Depends},
  	  libmrpt-slam@MRPT_VER_MM@
 Multi-Arch: same
@@ -199,7 +191,6 @@ Description: Mobile Robot Programming Toolkit - graphslam library
 Package: libmrpt-vision@MRPT_VER_MM@
 Section: libs
 Architecture: any
-Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, ${misc:Depends},
 	  libmrpt-obs@MRPT_VER_MM@
 Multi-Arch: same
@@ -217,7 +208,6 @@ Description: Mobile Robot Programming Toolkit - vision library
 Package: libmrpt-tfest@MRPT_VER_MM@
 Section: libs
 Architecture: any
-Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, ${misc:Depends},
           libmrpt-base@MRPT_VER_MM@
 Multi-Arch: same
@@ -236,7 +226,6 @@ Description: Mobile Robot Programming Toolkit - tfest library
 Package: libmrpt-topography@MRPT_VER_MM@
 Section: libs
 Architecture: any
-Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, ${misc:Depends},
 	  libmrpt-tfest@MRPT_VER_MM@,
 	  libmrpt-obs@MRPT_VER_MM@
@@ -256,7 +245,6 @@ Description: Mobile Robot Programming Toolkit - topography library
 Package: libmrpt-detectors@MRPT_VER_MM@
 Section: libs
 Architecture: any
-Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, ${misc:Depends},
 	  libmrpt-maps@MRPT_VER_MM@,
 	  libmrpt-vision@MRPT_VER_MM@,
@@ -277,7 +265,6 @@ Description: Mobile Robot Programming Toolkit - detectors library
 Package: libmrpt-slam@MRPT_VER_MM@
 Section: libs
 Architecture: any
-Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, ${misc:Depends},
 	  libmrpt-maps@MRPT_VER_MM@,
 	  libmrpt-vision@MRPT_VER_MM@,
@@ -298,7 +285,6 @@ Description: Mobile Robot Programming Toolkit - slam library
 Package: libmrpt-nav@MRPT_VER_MM@
 Section: libs
 Architecture: any
-Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, ${misc:Depends},
 	  libmrpt-maps@MRPT_VER_MM@
 Multi-Arch: same
@@ -317,7 +303,6 @@ Description: Mobile Robot Programming Toolkit - nav library
 Package: libmrpt-hmtslam@MRPT_VER_MM@
 Section: libs
 Architecture: any
-Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, ${misc:Depends},
 	  libmrpt-slam@MRPT_VER_MM@
 Multi-Arch: same
@@ -336,7 +321,6 @@ Description: Mobile Robot Programming Toolkit - hmtslam library
 Package: libmrpt-kinematics@MRPT_VER_MM@
 Section: libs
 Architecture: any
-Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, ${misc:Depends},
 	  libmrpt-opengl@MRPT_VER_MM@
 Multi-Arch: same
@@ -355,7 +339,6 @@ Description: Mobile Robot Programming Toolkit - kinematics library
 Package: libmrpt-graphs@MRPT_VER_MM@
 Section: libs
 Architecture: any
-Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, ${misc:Depends},
  	  libmrpt-base@MRPT_VER_MM@
 Multi-Arch: same
@@ -454,4 +437,3 @@ Description: Mobile Robot Programming Toolkit - Console and GUI applications
   - robotic-arm-kinematics: GUI for design of robot arms with
                             Denavit-Hartenberg parameters.
   - velodyne-view: Live display/grabbing of Velodyne scanners.
-  

@@ -9,6 +9,7 @@ mrpt (1:1.5.0-1) unstable; urgency=medium
   * New version of upstream sources.
   * Fix lintian error license-problem-convert-utf-code
   * Builds with newer GCC versions (Closes: #853563)
+  * Remove all debian/patches as they are integrated upstream.
 
  -- Jose Luis Blanco (University of Malaga) <joseluisblancoc@gmail.com>  Sun, 11 Jun 2017 00:06:13 +0200
 
