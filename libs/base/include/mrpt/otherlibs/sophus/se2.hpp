@@ -68,6 +68,7 @@ class SE2Base {
   static int constexpr N = 3;
   using Transformation = Matrix<Scalar, N, N>;
   using Point = Vector2<Scalar>;
+  using Line = ParametrizedLine2<Scalar>;
   using Tangent = Vector<Scalar, DoF>;
   using Adjoint = Matrix<Scalar, DoF, DoF>;
 
@@ -171,6 +172,18 @@ class SE2Base {
     return so2() * p + translation();
   }
 
+  // Group action on lines.
+  //
+  // This function rotates and translates a parametrized line
+  // ``l(t) = o + t * d`` by the SE(2) element:
+  //
+  // Origin ``o`` is rotated and translated using SE(2) action
+  // Direction ``d`` is rotated using SO(2) action
+  //
+  SOPHUS_FUNC Line operator*(Line const& l) const {
+    return Line((*this) * l.origin(), so2() * l.direction());
+  }
+
   // In-place group multiplication.
   //
   SOPHUS_FUNC SE2Base<Derived>& operator*=(SE2<Scalar> const& other) {
@@ -198,6 +211,9 @@ class SE2Base {
   // Precondition: ``R`` must be orthogonal and ``det(R)=1``.
   //
   SOPHUS_FUNC void setRotationMatrix(Matrix<Scalar, 2, 2> const& R) {
+    SOPHUS_ENSURE(isOrthogonal(R), "R is not orthogonal:\n %", R);
+    SOPHUS_ENSURE(R.determinant() > 0, "det(R) is not positive: %",
+                  R.determinant());
     so2().setComplex(Scalar(0.5) * (R(0, 0) + R(1, 1)),
                      Scalar(0.5) * (R(1, 0) - R(0, 1)));
   }
@@ -231,7 +247,7 @@ class SE2Base {
   // Accessor of unit complex number.
   //
   SOPHUS_FUNC
-  typename Eigen::internal::traits<Derived>::SO2Type::Complex const&
+  typename Eigen::internal::traits<Derived>::SO2Type::ComplexT const&
   unit_complex() const {
     return so2().unit_complex();
   }
