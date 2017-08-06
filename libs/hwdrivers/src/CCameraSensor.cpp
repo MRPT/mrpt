@@ -326,12 +326,12 @@ void CCameraSensor::initialize()
 			m_cap_flycap_stereo_r.reset(new CImageGrabber_FlyCapture2());
 
 			cout << "[CCameraSensor::initialize] PGR FlyCapture2 stereo "
-					"camera: Openning LEFT camera...\n";
+					"camera: Opening LEFT camera...\n";
 			m_cap_flycap_stereo_l->open(
 				m_flycap_stereo_options[0], false /* don't start grabbing */);
 
 			cout << "[CCameraSensor::initialize] PGR FlyCapture2 stereo "
-					"camera: Openning RIGHT camera...\n";
+					"camera: Opening RIGHT camera...\n";
 			m_cap_flycap_stereo_r->open(
 				m_flycap_stereo_options[1], false /* don't start grabbing */);
 
