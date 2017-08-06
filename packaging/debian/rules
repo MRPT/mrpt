@@ -22,7 +22,7 @@ endif
 
 # test_gdb runs unit tests showing stack traces on failure:
 # "test_gdb" seems to make build farm machines crash in armhf...
-##ifeq ($(DEB_HOST_ARCH),armhf)
+#ifeq ($(DEB_HOST_ARCH),armhf)
 MRPT_TEST_TARGET = test
 #else
 #MRPT_TEST_TARGET = test_gdb
