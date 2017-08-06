@@ -2,39 +2,33 @@ Source: mrpt
 Section: science
 Priority: optional
 Maintainer: Jose Luis Blanco (University of Malaga) <joseluisblancoc@gmail.com>
-Build-Depends: debhelper (>= 9),
+Build-Depends: debhelper (>= 10),
 	cmake,
 	perl,
 	zlib1g-dev,
 	libjpeg-dev,
 	libwxgtk3.0-dev | libwxgtk2.8-dev,
-	libftdi1-dev [linux-any] | libftdi-dev,
+	libftdi1-dev [linux-any],
 	freeglut3-dev,
-	libopencv-dev | libcv-dev,
-	libopencv-dev | libcvaux-dev,
-	libopencv-dev | libhighgui-dev,
+	libopencv-dev,
 	libavcodec-dev, libavformat-dev, libavutil-dev, libswscale-dev,
 	doxygen,
 	ghostscript,
 	graphviz,
-	texlive | tetex,
-	latexmk,
-	texlive-latex-extra,
-	texlive-science,
-	doxygen-latex | perl,
+	texlive, latexmk, texlive-latex-extra, texlive-science,
+	doxygen-latex,
 	libdc1394-22-dev [linux-any],
 	libusb-1.0-0-dev [linux-any],
 	libudev-dev [linux-any],
 	libjs-jquery,
-	libfreenect-dev (>= 0.2) | perl,
+	libfreenect-dev (>= 0.2),
 	libpcap-dev,
-	libopenni2-dev | perl,
+	libopenni2-dev,
 	gdb,
 	lib3ds-dev,
 	libsuitesparse-dev,
 	python-numpy,
-	libeigen3-dev,
-	qtbase5-dev, libqt5opengl5-dev
+	libeigen3-dev
 Standards-Version: 4.0.0
 Homepage: http://www.mrpt.org/
 
