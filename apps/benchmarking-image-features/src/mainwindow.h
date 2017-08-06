@@ -49,12 +49,10 @@
 #include <QMouseEvent>
 #include <QEvent>
 
-
 #include <QThread>
 
 #include <QtCore>
 #include <QProgressBar>
-//#include <QtConcurrent>
 #include <QFutureWatcher>
 #include <QtConcurrent/QtConcurrent>
 #include <QtConcurrent/QtConcurrentRun>
@@ -82,7 +80,6 @@
 #include "visual_odometry.h"
 #include "place_recognition.h"
 
-//#include "visual_odometry.cpp"
 
 using namespace cv;
 using namespace std;
@@ -214,37 +211,46 @@ public:
     QPushButton *browse_button3;        //!< browse button to look for the ground truth Odometry file
     string file_path3;                  //!< stores the ground truth for poses
 
-    string calibration_file;
-    QLineEdit *inputCalibration;
-    QPushButton *browseCalibration;
+    string calibration_file;            //!< string which stores the calibration fil path
+    QLineEdit *inputCalibration;        //!< textbox which has the input calibration file path to be entered from the user
+    QPushButton *browseCalibration;     //!< browse button to browse the calibration file path
 
     QLabel *visualOdom;                 //!< Label which stores and displays the image for the VO output
 
     QFutureWatcher<cv::Mat> FutureWatcher; //!< FutureWatcher for showing progress bar
     QProgressBar *progressBar;             //!< progress bar to show VO progress
-    QDialog *vo_message_dialog;
-    QGridLayout *vo_layout;
-    QLabel *vo_message_running;
+    QDialog *vo_message_dialog;            //!< vo_message dialog to handle error case
+    QGridLayout *vo_layout;                //!< gridlayout to hold widgets like buttons, textfields specific forVO task
+    QLabel *vo_message_running;            //!< show the message to user to indicate that VO is currently running
     QLabel *VO_progress;                //!< Label to show VO progress
 
 
     /// Place Recognition Parameters
     //VisualOdometry visual_odom;         //!< visual odometry object to perform the vision task of estimating camera trajector for Monocular Datasets like KITTI
-    QCheckBox *place_recog_enable;
-    QLineEdit *training_set;
-    QPushButton *browse_training;
-    string training_set_path;
-    QLineEdit *testing_set;
-    QPushButton *browse_testing;
-    string testing_set_path;
+    QCheckBox *place_recog_enable;      //!< checkbox to enable Place Recognition vision task
+    QLineEdit *training_set;            //!< text box to enter training dataset folder path
+    QPushButton *browse_training;       //!< button to browse for the folder which has the training dataset
+    string training_set_path;           //!< string which has the folder path for training dataset
+    QLineEdit *testing_set;             //!< textbox for he user to enter the folder path for the testing dataset
+    QPushButton *browse_testing;        //!< button to browse for the folder which has the testing dataset
+    string testing_set_path;            //!< string which stores the testing dataset folder path
 
-    vector<string> training_files_paths;
-    vector<string> testing_files_paths;
+    vector<string> training_files_paths;    //!< vector to store the training images file paths
+    vector<string> testing_files_paths;     //!< vector to store the testing images file paths
 
 
-    QPushButton *perform_place_recog;
+    QPushButton *perform_place_recog;       //!< button to start the place recognition task
 
-    QLabel *placeRecognition_results;
+    QLabel *placeRecognition_results;       //!< label which displays the Place Recognition result
+    PlaceRecognition *place_recog_obj;      //!< the main object which is reponsible for performing the PLace Recognition
+
+    QLabel *place_recog_image;              //!< holds the place recognition image, currently NOT used
+    QImage place_recog_qimage;              //!< image which has the current testing image which dispayed in GUI
+    QLabel *place_recog_label;
+    QGroupBox *placeRecogGroupBox;          //!< groupBox to hold the output widgets for the Place Recognition task
+
+    bool placeRecog_clicked_flag;           //!< flag to check if the user pressed place recognition button
+    int current_place_recog_index;          //!< counter to iterate over the testing dataset
 
 
     /// main Feature Extraction params
@@ -612,10 +618,21 @@ public:
       */
     void makeHomographyParamsVisible(bool flag);
 
+    /**
+     * makePlaceRecognitionParamVisible function makes the widgets specific to Place Recognition visible or hidden based on the flag
+     * @param flag the state of the flag indicates if the widgets are currently hidden or visible
+     */
     void makePlaceRecognitionParamVisible(bool flag);
 
+    /**
+     * store_Training_TestingSets function stores the training and testing images paths in the respective variables of vector<string> type
+     */
     void store_Training_TestingSets();
 
+    /**
+     * displayVector function is used to display the contents of the given vector of strings, currently NOT used, only meant for debugging code
+     * @param paths
+     */
     void displayVector(vector<string> paths);
 
 
@@ -644,12 +661,26 @@ private slots:
 
 public slots:
 
+    /**
+     * on_browseTraining_clicked is called when the user wants to browse for the folder which has the training images dataset
+     */
     void on_browseTraining_clicked();
 
+    /**
+     * on_browseTesting_clicked is called when the user wants to browse for the folder which has the testing images dataset
+     */
     void on_browseTesting_clicked();
 
+    /**
+     * onPlaceRecogChecked function is called when the user checks/ticks or unchecks the checkbox, this makes the place recognition specific
+     * widgets hidden or visible based on the checkbox state
+     * @param state
+     */
     void onPlaceRecogChecked(int state);
 
+    /**
+     * on_place_recog_clicked function is called when the user clicks on the Perform Place Recognition button to start the place recog vision task
+     */
     void on_place_recog_clicked();
 
     /**
