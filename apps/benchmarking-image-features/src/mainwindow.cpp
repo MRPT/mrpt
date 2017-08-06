@@ -854,6 +854,12 @@ void MainWindow::on_file_input_choose(int choice)
 {
     //makeGraphsVisible(false);
     // HIDE input file path 2, browse button 2, image2 for cases : single image,  image raw log and single image dataset
+    if(choice == 2)
+    {
+        //QMessageBox::information(this, "RAWLOG format currently not supported..!!");
+        QMessageBox::information(this, "Rawlog error","MRPT rawlog format is currently not supported");
+        return;
+    }
     if (choice == 0 || choice == 2 || choice == 3)
     {
         inputFilePath2->setVisible(false);
@@ -2401,7 +2407,9 @@ void MainWindow::slot_finished()
     vo_message_dialog->hide();
 }
 
-
+/************************************************************************************************
+*						Make Place Recognition Params Visible function                          *
+************************************************************************************************/
 void MainWindow::makePlaceRecognitionParamVisible(bool flag)
 {
     training_set->setVisible(flag);
@@ -2411,17 +2419,27 @@ void MainWindow::makePlaceRecognitionParamVisible(bool flag)
     perform_place_recog->setVisible(flag);
 }
 
-
+/************************************************************************************************
+*						On Place Recognition Checked function                                   *
+************************************************************************************************/
 void MainWindow::onPlaceRecogChecked(int status)
 {
     ReadInputFormat();
     if(place_recog_enable->isChecked())
+    {
         makePlaceRecognitionParamVisible(true);
+        placeRecogGroupBox->setVisible(true);
+    }
     else
+    {
         makePlaceRecognitionParamVisible(false);
+        placeRecogGroupBox->setVisible(false);
+    }
 }
 
-
+/************************************************************************************************
+*						On Browse Training Clicked Slot function                                *
+************************************************************************************************/
 void MainWindow::on_browseTraining_clicked()
 {
     ReadInputFormat();
@@ -2448,6 +2466,9 @@ void MainWindow::on_browseTraining_clicked()
     training_set_path = training_set->text().toStdString();
 }
 
+/************************************************************************************************
+*						On Browse Testing Clicked Slot function                                *
+************************************************************************************************/
 void MainWindow::on_browseTesting_clicked()
 {
     ReadInputFormat();
@@ -2474,11 +2495,18 @@ void MainWindow::on_browseTesting_clicked()
     testing_set_path = testing_set->text().toStdString();
 }
 
+/************************************************************************************************
+*						display Vector function (NOT Used)                                      *
+************************************************************************************************/
 void MainWindow::displayVector(vector<string> paths)
 {
     for(int i=0; i<paths.size() ; i++)
         cout << paths.at(i) << endl;
 }
+
+/************************************************************************************************
+*						Store Training Testing Sets function                                    *
+************************************************************************************************/
 void MainWindow::store_Training_TestingSets()
 {
     if(training_set->text().toStdString().size() < 1 )
@@ -2561,17 +2589,49 @@ void MainWindow::store_Training_TestingSets()
         makePlaceRecognitionParamVisible(false);
 }
 
+/************************************************************************************************
+*						On Place Recognition clicked Slot function                              *
+************************************************************************************************/
 void MainWindow::on_place_recog_clicked()
 {
     store_Training_TestingSets();
     fillDetectorInfo();
     fillDescriptorInfo();
-    PlaceRecognition place_recog_obj(training_files_paths, testing_files_paths,
-                                      desc_to_compute,
-                                     descriptor_selected, numFeats);
+
+    if(!placeRecog_clicked_flag)
+    {
+        place_recog_obj = new PlaceRecognition(training_files_paths, testing_files_paths,
+                                               desc_to_compute,
+                                               descriptor_selected, numFeats);
+        placeRecog_clicked_flag = true;
+    }
+
 
     /// return a string here to show the place recognition accuracy on different classes
-    place_recog_obj.startPlaceRecognition(fext);
+    string result = place_recog_obj->startPlaceRecognition(fext);
+
+
+    cout << " before calling predict label" << endl ;
+
+    //int place_predicted = place_recog_obj->predictLabel(place_recog_obj->feats_testing_org,
+      //                            place_recog_obj->training_words_org,
+        //                          place_recog_obj->training_word_labels_org,
+          //                        place_recog_obj->total_vocab_size_org,
+            //                      place_recog_obj->current_index_test_image);
+
+
+    cout << " after calling predict label" << endl ;
+
+    place_recog_label->setText(QString::fromStdString(result));
+    place_recog_image = new QLabel;
+    place_recog_qimage.load(QString::fromStdString(testing_files_paths.at(current_place_recog_index))); // replace this with initial image of select an image by specifying path
+    QImage qscaled2 = place_recog_qimage.scaled(IMAGE_WIDTH, IMAGE_HEIGHT, Qt::KeepAspectRatio);
+    image1->setPixmap(QPixmap::fromImage(qscaled2));
+    //place_recog_image->setVisible(true);
+
+    placeRecogGroupBox->setVisible(true);
+
+    current_place_recog_index++;
 
 }
 
@@ -2581,6 +2641,8 @@ void MainWindow::on_place_recog_clicked()
 MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
 {
 
+    current_place_recog_index = 0;
+    placeRecog_clicked_flag=false;
     progressBar = new QProgressBar;
     vo_message_dialog = new QDialog;
     vo_layout = new QGridLayout;
@@ -2908,6 +2970,26 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
     connect(browse_testing, SIGNAL(clicked()), this, SLOT(on_browseTesting_clicked()));
     makePlaceRecognitionParamVisible(false);
 
+    place_recog_image = new QLabel;
+    //place_recog_qimage = new QImage;
+    place_recog_label = new QLabel;
+
+
+    place_recog_qimage.load("../../apps/benchmarking-image-features/images/1.png"); // replace this with initial image of select an image by specifying path
+    QImage tqscaled1 = place_recog_qimage.scaled(IMAGE_WIDTH, IMAGE_HEIGHT, Qt::KeepAspectRatio);
+    place_recog_image->setPixmap(QPixmap::fromImage(tqscaled1));
+    place_recog_image->setVisible(false);
+
+
+    placeRecogGroupBox = new QGroupBox;
+
+    QGridLayout *placeRecogBox = new QGridLayout;
+    placeRecogBox->addWidget(place_recog_image,0,0);
+    placeRecogBox->addWidget(place_recog_label,0,1);
+
+    placeRecogGroupBox->setLayout(placeRecogBox);
+    //placeRecogGroupBox->setVisible(false);
+
 
 
 
@@ -3099,6 +3181,8 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
     layout_grid->addWidget(desc_images,13,0,4,4);
 
     layout_grid->addWidget(visualOdom, 13,0,4,4);
+
+    layout_grid->addWidget(placeRecogGroupBox,13,0,4,4);
 
     layout_grid->addWidget(groupBox1,2,4,3,2);
     layout_grid->addWidget(inputGroupBox,5,4,6,1);
