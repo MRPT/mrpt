@@ -287,10 +287,10 @@ void CCameraSensor::initialize()
 			m_cap_flycap_stereo_l = new CImageGrabber_FlyCapture2();
 			m_cap_flycap_stereo_r = new CImageGrabber_FlyCapture2();
 
-			cout << "[CCameraSensor::initialize] PGR FlyCapture2 stereo camera: Openning LEFT camera...\n";
+			cout << "[CCameraSensor::initialize] PGR FlyCapture2 stereo camera: Opening LEFT camera...\n";
 			m_cap_flycap_stereo_l->open(m_flycap_stereo_options[0], false /* don't start grabbing */ );
 
-			cout << "[CCameraSensor::initialize] PGR FlyCapture2 stereo camera: Openning RIGHT camera...\n";
+			cout << "[CCameraSensor::initialize] PGR FlyCapture2 stereo camera: Opening RIGHT camera...\n";
 			m_cap_flycap_stereo_r->open(m_flycap_stereo_options[1], false /* don't start grabbing */ );
 
 			// Now, start grabbing "simultaneously":
@@ -321,7 +321,7 @@ void CCameraSensor::initialize()
 		// Open it:
 		try
 		{
-			m_cap_duo3d = new CDUO3DCamera( m_duo3d_options );		
+			m_cap_duo3d = new CDUO3DCamera( m_duo3d_options );
 		} catch (std::exception &e)
 		{
 			m_state = CGenericSensor::ssError;
@@ -734,7 +734,7 @@ void CCameraSensor::getNextFrame( vector<CSerializablePtr> & out_obs )
 				m_state = CGenericSensor::ssError;
 				THROW_EXCEPTION("Error reading images from directory");
 			}
-			std::string auxR = format( "%s/%s", m_img_dir_url.c_str(), m_img_dir_right_format.c_str() );			
+			std::string auxR = format( "%s/%s", m_img_dir_url.c_str(), m_img_dir_right_format.c_str() );
 			if( !stObs->imageRight.loadFromFile( format(auxR.c_str(), m_img_dir_counter++)) )
 			{
 				m_state = CGenericSensor::ssError;
@@ -1111,7 +1111,7 @@ void CCameraSensor::getNextFrame( vector<CSerializablePtr> & out_obs )
 
 	if (delayed_insertion_in_obs_queue)
 	{
-		if( m_cap_duo3d && m_cap_duo3d->captureIMUIsSet() && obsIMU )	
+		if( m_cap_duo3d && m_cap_duo3d->captureIMUIsSet() && obsIMU )
 			out_obs.push_back( CObservationPtr(obsIMU) );
 	}
 	else
@@ -1119,7 +1119,7 @@ void CCameraSensor::getNextFrame( vector<CSerializablePtr> & out_obs )
 		if( stObs )		out_obs.push_back( CObservationPtr(stObs) );
 		if( obs )		out_obs.push_back( CObservationPtr(obs) );
 		if( obs3D )		out_obs.push_back( CObservationPtr(obs3D) );
-	} 
+	}
 	return;
 }
 
