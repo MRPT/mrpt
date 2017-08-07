@@ -1,12 +1,12 @@
 mrpt (1:1.5.2-1) unstable; urgency=medium
 
   * New version of upstream sources.
-  * Fix GCC hardening flags (Closes: #865735)
-  * Fix lintian error license-problem-convert-utf-code
-  * Builds with newer GCC versions (Closes: #853563)
+  * Fix GCC hardening flags (Closes: #865735).
+  * Fix lintian error license-problem-convert-utf-code.
+  * Builds with GCC 7 (Closes: #853563).
   * Remove all debian/patches as they are integrated upstream.
 
- -- Jose Luis Blanco (University of Malaga) <joseluisblancoc@gmail.com>  Sun, 06 Aug 2017 01:01:10 +0200
+ -- José Luis Blanco Claraco <joseluisblancoc@gmail.com>  Mon, 07 Aug 2017 08:20:39 +0200
 
 mrpt (1:1.4.0-7) unstable; urgency=medium
 
