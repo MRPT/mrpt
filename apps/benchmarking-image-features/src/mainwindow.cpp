@@ -910,10 +910,12 @@ void MainWindow::on_file_input_choose(int choice)
     }
     else
     {
+
         next_button->setVisible(true);
         prev_button->setVisible(true);
         makeVisionOptionsVisible(true);
     }
+
     currentInputIndex = inputs->currentIndex();
     switch (currentInputIndex)
     {
@@ -934,6 +936,11 @@ void MainWindow::on_file_input_choose(int choice)
             break;
         default :
             groupBox_images->setTitle("Invalid Selection");
+    }
+    if(placeRecog_checked_flag == true)
+    {
+        next_button->setVisible(false);
+        prev_button->setVisible(false);
     }
 }
 
@@ -2122,6 +2129,9 @@ void MainWindow::onVisualOdomChecked(int state)
     }
 }
 
+/************************************************************************************************
+*								On Browse Calibration Clicked							        *
+************************************************************************************************/
 void MainWindow::on_browse_calibration_clicked()
 {
     ReadInputFormat();
@@ -2417,6 +2427,7 @@ void MainWindow::makePlaceRecognitionParamVisible(bool flag)
     testing_set->setVisible(flag);
     browse_testing->setVisible(flag);
     perform_place_recog->setVisible(flag);
+    iterate_place_recog->setVisible(flag);
 }
 
 /************************************************************************************************
@@ -2424,16 +2435,22 @@ void MainWindow::makePlaceRecognitionParamVisible(bool flag)
 ************************************************************************************************/
 void MainWindow::onPlaceRecogChecked(int status)
 {
+
     ReadInputFormat();
     if(place_recog_enable->isChecked())
     {
         makePlaceRecognitionParamVisible(true);
         placeRecogGroupBox->setVisible(true);
+        placeRecog_checked_flag = true;
+        place_recog_label->setVisible(true);
     }
     else
     {
         makePlaceRecognitionParamVisible(false);
         placeRecogGroupBox->setVisible(false);
+        placeRecog_clicked_flag = false;
+        placeRecog_checked_flag = false;
+        place_recog_label->setVisible(false);
     }
 }
 
@@ -2538,8 +2555,7 @@ void MainWindow::store_Training_TestingSets()
                 while (pdir = readdir(dir))
                     files.push_back(pdir->d_name);
                 for (int i = 0, j = 0; i < files.size(); i++) {
-                    if (files.at(i).size() >
-                        4) // this removes the . and .. in linux as all files will have size more than 4 .png .jpg etc.
+                    if (files.at(i).size() > 4) // this removes the . and .. in linux as all files will have size more than 4 .png .jpg etc.
                     {
                         training_files_paths.push_back(file_path_temp + "/" + files.at(i));
                         //cout << files_fullpath_tracking.at(j) << endl;
@@ -2594,6 +2610,12 @@ void MainWindow::store_Training_TestingSets()
 ************************************************************************************************/
 void MainWindow::on_place_recog_clicked()
 {
+    if(descriptor_selected == 2 || descriptor_selected == 3 || descriptor_selected == 4)
+    {
+        QMessageBox::information(this, "Choose Correct descriptor","For Place Recognition, Please specify only among the following descriptors:\n SIFT, SURF, ORB, BLD, LATCH");
+        return;
+    }
+    QMessageBox::information(this, "Place Recognition","Please wait while place recognition is training\n Click OK to continue!");
     store_Training_TestingSets();
     fillDetectorInfo();
     fillDescriptorInfo();
@@ -2604,6 +2626,7 @@ void MainWindow::on_place_recog_clicked()
                                                desc_to_compute,
                                                descriptor_selected, numFeats);
         placeRecog_clicked_flag = true;
+        current_place_recog_index = 0;
     }
 
 
@@ -2622,12 +2645,70 @@ void MainWindow::on_place_recog_clicked()
 
     cout << " after calling predict label" << endl ;
 
+
+    place_recog_label->setText(QString::fromStdString(result));
+    place_recog_label->setVisible(true);
+
+    place_recog_image = new QLabel;
+    place_recog_qimage.load(QString::fromStdString(testing_files_paths.at(current_place_recog_index%testing_files_paths.size()))); // replace this with initial image of select an image by specifying path
+
+    QImage qscaled2 = place_recog_qimage.scaled(IMAGE_WIDTH, IMAGE_HEIGHT, Qt::KeepAspectRatio);
+    if(!qscaled2.isNull())
+        image1->setPixmap(QPixmap::fromImage(qscaled2));
+    //place_recog_image->setVisible(true);
+
+    placeRecogGroupBox->setVisible(true);
+
+    current_place_recog_index++;
+
+    /// make the next and prev buttons disappear
+    next_button->setVisible(false);
+    prev_button->setVisible(false);
+
+
+}
+
+/************************************************************************************************
+*						On Place Recognition clicked Slot function                              *
+************************************************************************************************/
+void MainWindow::on_place_recog_clicked_iterate()
+{
+    if(descriptor_selected == 2 || descriptor_selected == 3 || descriptor_selected == 4)
+    {
+        QMessageBox::information(this, "Choose Correct descriptor","For Place Recognition, Please specify only among the following descriptors:\n SIFT, SURF, ORB, BLD, LATCH");
+        return;
+    }
+    store_Training_TestingSets();
+    fillDetectorInfo();
+    fillDescriptorInfo();
+
+    if(!placeRecog_clicked_flag)
+    {
+        place_recog_obj = new PlaceRecognition(training_files_paths, testing_files_paths,
+                                               desc_to_compute,
+                                               descriptor_selected, numFeats);
+        placeRecog_clicked_flag = true;
+        current_place_recog_index = 0;
+    }
+
+
+    /// return a string here to show the place recognition accuracy on different classes
+    string result = place_recog_obj->startPlaceRecognition(fext);
+
+
+    cout << " before calling predict label" << endl ;
+
+
+
+    cout << " after calling predict label" << endl ;
+
     place_recog_label->setText(QString::fromStdString(result));
     place_recog_image = new QLabel;
-    place_recog_qimage.load(QString::fromStdString(testing_files_paths.at(current_place_recog_index))); // replace this with initial image of select an image by specifying path
+    place_recog_qimage.load(QString::fromStdString(testing_files_paths.at(current_place_recog_index%testing_files_paths.size()))); // replace this with initial image of select an image by specifying path
     QImage qscaled2 = place_recog_qimage.scaled(IMAGE_WIDTH, IMAGE_HEIGHT, Qt::KeepAspectRatio);
-    image1->setPixmap(QPixmap::fromImage(qscaled2));
-    //place_recog_image->setVisible(true);
+    if(!qscaled2.isNull())
+        image1->setPixmap(QPixmap::fromImage(qscaled2));
+
 
     placeRecogGroupBox->setVisible(true);
 
@@ -2641,6 +2722,7 @@ void MainWindow::on_place_recog_clicked()
 MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
 {
 
+    placeRecog_checked_flag = false;
     current_place_recog_index = 0;
     placeRecog_clicked_flag=false;
     progressBar = new QProgressBar;
@@ -2915,8 +2997,8 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
     generateVisualOdometry->setFixedSize(BUTTON_WIDTH*2,BUTTON_HEIGHT);
     connect(generateVisualOdometry, SIGNAL(clicked()), this, SLOT(on_generateVisualOdometry_clicked()));
 
-    VO_progress = new QLabel;
-    VO_progress->setVisible(true);
+    //VO_progress = new QLabel;
+    //VO_progress->setVisible(true);
     //VO_progress->setText("1");
 
     inputFilePath3 = new QLineEdit;
@@ -2949,12 +3031,16 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
     place_recog_enable->setText("Perform Place Recognition ");
     connect(place_recog_enable, SIGNAL(stateChanged(int)), this, SLOT(onPlaceRecogChecked(int)));
 
-    perform_place_recog = new QPushButton("Start Place Recognition");
+    perform_place_recog = new QPushButton("Train Place Recognition");
     perform_place_recog->setFixedSize(BUTTON_WIDTH*1.3,BUTTON_HEIGHT);
     connect(perform_place_recog, SIGNAL(clicked()), this, SLOT(on_place_recog_clicked()));
 
+    iterate_place_recog = new QPushButton("Recognize Next Image");
+    iterate_place_recog->setFixedSize(BUTTON_WIDTH*1.3,BUTTON_HEIGHT);
+    connect(iterate_place_recog, SIGNAL(clicked()), this, SLOT(on_place_recog_clicked_iterate()));
+
     placeRecognition_results = new QLabel;
-    placeRecognition_results->setVisible(true);
+    //placeRecognition_results->setVisible(true);
     //VO_progress->setText("1");
 
     training_set = new QLineEdit;
@@ -3034,6 +3120,7 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
     userOptionsVBox->addWidget(testing_set,20,0);
     userOptionsVBox->addWidget(browse_testing,21,0);
     userOptionsVBox->addWidget(perform_place_recog,22,0);
+    userOptionsVBox->addWidget(iterate_place_recog,22,1);
 
 
     userOptionsGroupBox->setLayout(userOptionsVBox);

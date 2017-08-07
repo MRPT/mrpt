@@ -76,5 +76,16 @@ Result: Clicking on the Track-KeyPoints button tracks the keypoints in the subse
 Result: The results of the selected keypoint in the image can be seen on the right side of the image.
 
 **Place Recognition**
-to be added later
 
+1. Choose Detector
+2. Just leave the detector parameters to their default values or change if required
+3. Choose Descriptor
+4. Just leave the descriptor parameters to their default values or change if required
+5. Choose input type as single image dataset
+6. Check the Perform Place Recognition CheckBox
+7. Click on the browse training dataset button and choose the folder for the training dataset
+8. Click on the browse testing dataset button and choose the folder for the testing dataset
+9. Click on the Train Place Recognition Button to train the model (extraction of features from the training dataset)
+10. Click on the Recognize Next Image button to classify the subsequent images
+11. Keep clicking on the recognize button to classify subsequent frames
+12. The output of each frame and the accuracy can be seen below the image

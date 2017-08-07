@@ -240,6 +240,7 @@ public:
 
 
     QPushButton *perform_place_recog;       //!< button to start the place recognition task
+    QPushButton *iterate_place_recog;
 
     QLabel *placeRecognition_results;       //!< label which displays the Place Recognition result
     PlaceRecognition *place_recog_obj;      //!< the main object which is reponsible for performing the PLace Recognition
@@ -251,6 +252,8 @@ public:
 
     bool placeRecog_clicked_flag;           //!< flag to check if the user pressed place recognition button
     int current_place_recog_index;          //!< counter to iterate over the testing dataset
+
+    bool placeRecog_checked_flag;
 
 
     /// main Feature Extraction params
@@ -679,10 +682,14 @@ public slots:
     void onPlaceRecogChecked(int state);
 
     /**
-     * on_place_recog_clicked function is called when the user clicks on the Perform Place Recognition button to start the place recog vision task
+     * on_place_recog_clicked function is called when the user clicks on the Train Place Recognition button to train the model for the place recog vision task
      */
     void on_place_recog_clicked();
 
+    /**
+     * on_place_recog_clicked_iterate function is called when the user clicks on the Recognize Place Recognition button to recognize new places in the test set
+     */
+    void on_place_recog_clicked_iterate();
     /**
      * onVisualOdomChecked this function makes the parameters visible / hidden based on the state of the checkbox "Perform Visual Odometry"
      * @param state holds if checkbox is ticked or not
