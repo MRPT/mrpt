@@ -94,17 +94,10 @@ then
 	echo "Exporting git source tree to ${MRPT_DEBSRC_DIR}"
 	git archive  --format=tar HEAD | tar -x -C ${MRPT_DEBSRC_DIR}
 
-	# Generate ./SOURCE_DATE_EPOCH with UNIX time_t
-	SOURCE_DATE_EPOCH=$(git log -1 --pretty=%ct)
 else
 	echo "Copying sources to ${MRPT_DEBSRC_DIR}"
 	cp -R . ${MRPT_DEBSRC_DIR}
-
-	# Generate ./SOURCE_DATE_EPOCH with UNIX time_t
-	SOURCE_DATE_EPOCH=$(date +%s)
 fi
-
-echo $SOURCE_DATE_EPOCH > ${MRPT_DEBSRC_DIR}/SOURCE_DATE_EPOCH
 
 if [ ! -f "${MRPT_DEBSRC_DIR}/CMakeLists.txt" ];
 then
