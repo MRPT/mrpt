@@ -85,7 +85,7 @@ echo "MRPT_DEBSRC_DIR: ${MRPT_DEBSRC_DIR}"
 
 # Prepare a directory for building the debian package:
 # 
-rm -fR $MRPT_DEB_DIR
+rm -fR $MRPT_DEB_DIR || true
 mkdir -p ${MRPT_DEBSRC_DIR}
 
 # Export / copy sources to target dir:
@@ -164,7 +164,7 @@ then
 fi
 
 # Strip my custom files...
-rm mrpt-${MRPT_VERSION_STR}/debian/*.new 
+rm mrpt-${MRPT_VERSION_STR}/debian/*.new || true 
 # debian/source file issues for old Ubuntu distros:
 if [ $IS_FOR_UBUNTU == "1" ];
 then
