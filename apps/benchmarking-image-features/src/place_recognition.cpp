@@ -91,7 +91,14 @@ int PlaceRecognition::predictLabel2(CFeatureList *feats_testingAll, vector<uint8
     {
         double min = 99999;
         vector<uint8_t> temp_feat;
-        temp_feat = feats_testing.getByID(i).get()->descriptors.ORB;
+
+        if(descriptor_selected == 5)
+            temp_feat = feats_testing.getByID(i).get()->descriptors.ORB;
+        else if(descriptor_selected == 6)
+            temp_feat = feats_testing.getByID(i).get()->descriptors.BLD;
+        else if(descriptor_selected == 7)
+            temp_feat = feats_testing.getByID(i).get()->descriptors.LATCH;
+
         long descriptor_size = temp_feat.size();
 
         for(int j=0 ; j<total_vocab_size ; j++)
@@ -147,11 +154,15 @@ int PlaceRecognition::predictLabel(CFeatureList *feats_testingAll, vector<float>
     {
         double min=99999;
         vector<float> temp_feat;
-        temp_feat = feats_testing.getByID(i).get()->descriptors.SURF;
+        if(descriptor_selected == 1)
+            temp_feat = feats_testing.getByID(i).get()->descriptors.SURF;
+        else if(descriptor_selected == 2)
+            temp_feat = feats_testing.getByID(i).get()->descriptors.SpinImg;
+
         long descriptor_size = temp_feat.size();
 
 
-        cout << "before inner for loop" << i << endl;
+        //cout << "before inner for loop" << i << endl;
         for(int j=0 ; j<total_vocab_size ; j++)
         {
             double temp_sum = 0;
@@ -170,19 +181,21 @@ int PlaceRecognition::predictLabel(CFeatureList *feats_testingAll, vector<float>
                 /// computes the best descriptor match with that in the training set.
                 if (temp_sum < min) {
                     //cout << temp_sum << " temp_sum " << min << " MIN " << endl;
+                    //cout << labels[j] << "  L@" ;
                     labels[i] = training_word_labels[j];
+                    //cout << training_word_labels[j] << "  @" ;
                     min = temp_sum;
                 }
             }
 
         }// iterates over each key-point in the training images / dataset
-        cout << "outside inner loop " << endl;
+        //cout << "outside inner loop " << endl;
 
     }// end of outter loop iterates over each key-point
 
-    cout << "outside for loop" << feats_size << endl;
+    //cout << "outside for loop" << feats_size << endl;
 
-    cout << labels[0] << " 0, 1 " << labels[1] << endl;
+    //cout << labels[0] << " 0, 1 " << labels[1] << endl;
 
     for (int i=0 ; i<feats_size ; i++)
         cout << labels[i] << " " ;
@@ -233,9 +246,6 @@ string PlaceRecognition::startPlaceRecognition(CFeatureExtraction fext)
 
     CTicTac feature_time ;
     feature_time.Tic();
-
-
-
     // stores the labels for the i'th image instance for training and testing images
     int training_labels[len_training];
     int testing_labels[len_testing];
@@ -277,16 +287,11 @@ string PlaceRecognition::startPlaceRecognition(CFeatureExtraction fext)
     for(int i=0 ; i<len_training ; i++)
         len_train_words += feats_training[i].size();
 
-
-
-
-
     if (!training_file_written_flag) {
         training_words2 = new vector<float>[len_train_words];
-        //training_words1 = new vector<uint8_t>[len_train_words];
+        training_words1 = new vector<uint8_t>[len_train_words];
     }
     int training_word_labels[len_train_words];
-
 
 
     CTicTac training_time;
@@ -331,10 +336,21 @@ string PlaceRecognition::startPlaceRecognition(CFeatureExtraction fext)
                     }
 
                     //training_file << feats_testing[i].getByID(j).get()->descriptors.SURF.data() << endl; //!< SURF descriptors
-                } else if (descriptor_selected ==
-                           2);//training_file << feats_testing[i].getByID(j).get()->descriptors.SpinImg.size(); //!< Intensity-domain spin image descriptor
-                else if (descriptor_selected ==
-                         3);//training_file << feats_testing[i].getByID(j).get()->descriptors.PolarImg.size(); //!< Polar image descriptor
+                }
+                else if(descriptor_selected == 2)
+                {
+                    //training_file << feats_testing[i].getByID(j).get()->descriptors.SpinImg.size(); //!< Intensity-domain spin image descriptor
+                    vector<float> temp_feat;
+                    temp_feat = feats_training[i].getByID(j).get()->descriptors.SpinImg;
+                    training_words2[kount] = feats_training[i].getByID(j).get()->descriptors.SpinImg;
+                    training_word_labels[kount] = training_labels[i];
+
+                    for (int k = 0; k < temp_feat.size(); k++) {
+                        training_file << temp_feat.at(k) << " ";//  << training_words2[kount].at(k) << " ";
+                        //training_file << training_words2[kount].at(k) << " " ;
+                    }
+                }
+                else if (descriptor_selected == 3);//training_file << feats_testing[i].getByID(j).get()->descriptors.PolarImg.size(); //!< Polar image descriptor
                 else if (descriptor_selected ==
                          4);//training_file << feats_testing[i].getByID(j).get()->descriptors.LogPolarImg.size(); //!< Log-Polar image descriptor
                 else if (descriptor_selected == 5) {
@@ -380,15 +396,19 @@ string PlaceRecognition::startPlaceRecognition(CFeatureExtraction fext)
 
             } // end of inner for loop for number of key-points
 
-
         } // end of outer for loop for number of images
         training_file.close();
         //testing_file.close();
 
 
         this->training_words_org = training_words2;
-        //this->training_words_org2 = training_words1;
+        this->training_words_org2 = training_words1;
         this->training_word_labels_org = training_word_labels;
+        training_word_labels_org = new int[kount];
+        for(int i=0 ; i <kount ; i++)
+        {
+            training_word_labels_org[i] = training_word_labels[i];
+        }
         this->total_vocab_size_org = len_train_words;
 
 
@@ -469,17 +489,18 @@ string PlaceRecognition::startPlaceRecognition(CFeatureExtraction fext)
     stringstream output ;
     output << endl << endl
            //<< "input file : " << current_index_test_image
-           << "<b>actual label : "
-           << findPlaceName(testing_labels[current_index_test_image%len_testing]) << "</br>"<< endl
+           << "PLACE RECOGNITION RESULTS " << endl <<endl << "actual label : "
+           << findPlaceName(testing_labels[current_index_test_image%len_testing]) << ".\n"<< endl
            //<< feats_testing_org[current_index_test_image].size() << " feats_testing_org[current_index_test_image].size " << endl
            //<< training_words_org2[current_index_test_image].size() << "training words org size" << endl
            //<< training_word_labels_org[current_index_test_image] << " training_words_labels_org " << endl
            //<< total_vocab_size_org << " total_vocab_size_org " << endl
-           << " predicted label " << findPlaceName(predicted_Label) << "</br>" << endl
-           <<  " correct = " << correct << "  incorrect = " << incorrect << "</br>"
-           << "Current Accuracy: " << 100.00*(double)correct/(double)(incorrect+correct) << " % </b>" << endl;
+           << " predicted label : " << findPlaceName(predicted_Label) << ".\n" << endl
+           << " correct = " << correct << "  incorrect = " << incorrect << ".\n"
+           << " Current Accuracy: " << 100.00*(double)correct/(double)(incorrect+correct) << " % " << endl
+            << " image " << current_index_test_image << " of " << len_testing << endl;
 
-    cout << " correct = " << correct << "  incorrect = " << incorrect << endl;
+    cout << "<b> correct = " << correct << "  incorrect = " << incorrect << "\n" << endl;
     cout << " % of correct" << (double)correct/(double)(incorrect+correct) << endl;
     cout << " elapsed time for testing dataset: " << testing_time.Tac() << endl;
     cout << "after reading testing images" << endl ;
@@ -497,13 +518,13 @@ string PlaceRecognition::startPlaceRecognition(CFeatureExtraction fext)
 string PlaceRecognition::findPlaceName(int type)
 {
     if(type == 1)
-       return "Priniting Area";
+       return "PRINTING AREA";
     else if(type == 2)
-        return "Corridor";
+        return "CORRIDOR";
     else if(type == 3)
-        return "Basic Office";
+        return "BASIC OFFICE";
     else if(type == 4)
-        return "Kitchen";
+        return "KITCHEN";
     else
-        return "Executive Office";
+        return "EXECUTIVE OFFICE";
 }
