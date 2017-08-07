@@ -1,7 +1,7 @@
 Source: mrpt
 Section: science
 Priority: optional
-Maintainer: Jose Luis Blanco (University of Malaga) <joseluisblancoc@gmail.com>
+Maintainer: José Luis Blanco Claraco <joseluisblancoc@gmail.com>
 Build-Depends: debhelper (>= 10),
 	cmake,
 	perl,
