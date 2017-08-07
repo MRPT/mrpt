@@ -1,13 +1,12 @@
 #!/bin/bash
 # Copies sources from source tree and delete windows-only files, for preparing a Debian package.
-# JLBC, 2008-2010
+# JLBC, 2008-2017
 
-#set -o verbose # echo on
-set +o verbose # echo off
+set -x
+set -e
 
 APPEND_SNAPSHOT_NUM=0
 IS_FOR_UBUNTU=0
-LEAVE_EMBEDDED_EIGEN=0
 SKIP_HEAVY_DOCS=0
 APPEND_LINUX_DISTRO=""
 VALUE_EXTRA_CMAKE_PARAMS=""
@@ -22,9 +21,6 @@ do
              ;;
          d)
              APPEND_LINUX_DISTRO=$OPTARG
-             ;;
-         e)
-             LEAVE_EMBEDDED_EIGEN=1
              ;;
          c)
              VALUE_EXTRA_CMAKE_PARAMS=$OPTARG
@@ -92,7 +88,6 @@ echo "MRPT_DEBSRC_DIR: ${MRPT_DEBSRC_DIR}"
 rm -fR $MRPT_DEB_DIR
 mkdir -p ${MRPT_DEBSRC_DIR}
 
-
 # Export / copy sources to target dir:
 if [ -d "$MRPTSRC/.git" ];
 then
@@ -125,18 +120,14 @@ rm -fR lib
 rm -fR packaging
 
 # Not stable...
-rm -fR apps/hmt-slam
-rm -fR apps/hmtMapViewer
+rm -fR apps/hmt-slam*
 
 rm -fR scripts/Hha.dll scripts/hhc.exe scripts/prepare_*.sh scripts/recompile*
 
 find . -name '.gitignore' | xargs rm 
 
-if [ ${LEAVE_EMBEDDED_EIGEN} == "0" ];
-then
-	# Normal for Debian pkgs: remove embedded copy of Eigen
-	rm -fR otherlibs/eigen3/
-fi
+# Normal for Debian pkgs: remove embedded copy of Eigen
+rm -fR otherlibs/eigen3/
 
 # Don't use embedded version in Debian pkgs: use system pkgs.
 rm -fR otherlibs/assimp
@@ -157,13 +148,6 @@ cp -r ${MRPT_EXTERN_DEBIAN_DIR}/* mrpt-${MRPT_VERSION_STR}/debian
 mv mrpt-${MRPT_VERSION_STR}/debian/control.in mrpt-${MRPT_VERSION_STR}/debian/control
 sed -i "s/@MRPT_VER_MM@/${MRPT_VER_MM}/g" mrpt-${MRPT_VERSION_STR}/debian/control 
 
-
-if [ ${LEAVE_EMBEDDED_EIGEN} == "1" ];
-then
-	# 2) ... and relax the dependency on libeigen3-dev
-	sed -i 's/libeigen3-dev ,/libeigen3-dev | perl ,/g' mrpt-${MRPT_VERSION_STR}/debian/control
-	sed -i 's/libeigen3-dev,//g' mrpt-${MRPT_VERSION_STR}/debian/control
-fi
 
 # Replace the text "REPLACE_HERE_EXTRA_CMAKE_PARAMS" in the "debian/rules" file
 # with: ${${VALUE_EXTRA_CMAKE_PARAMS}}
@@ -223,16 +207,15 @@ else
 fi
 
 echo "Adding a new entry to debian/changelog..."
-echo DEBEMAIL="Jose Luis Blanco (University of Malaga) <joseluisblancoc@gmail.com>" debchange $DEBCHANGE_CMD --distribution unstable --force-distribution New version of upstream sources.
 
-DEBEMAIL="Jose Luis Blanco (University of Malaga) <joseluisblancoc@gmail.com>" debchange $DEBCHANGE_CMD -b --distribution unstable --force-distribution New version of upstream sources.
+DEBEMAIL="José Luis Blanco Claraco <joseluisblancoc@gmail.com>" debchange $DEBCHANGE_CMD -b --distribution unstable --force-distribution New version of upstream sources.
 
 echo "Copying back the new changelog to a temporary file in: ${MRPT_EXTERN_DEBIAN_DIR}changelog.new"
 cp debian/changelog ${MRPT_EXTERN_DEBIAN_DIR}changelog.new
 
-set +o verbose # echo off
-
+echo "=============================================================="
 echo "Now, you can build the source Deb package with 'debuild -S -sa'"
+echo "=============================================================="
 
 cd ..
 ls -lh
