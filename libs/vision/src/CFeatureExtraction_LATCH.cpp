@@ -61,7 +61,7 @@ void  CFeatureExtraction::internal_computeLATCHDescriptors(
 #	else
 
 
-    cout << "I am in LATCH descriptor" << endl;
+    //cout << "I am in LATCH descriptor" << endl;
     if (in_features.empty()) return;
 
     const size_t n_feats = in_features.size();

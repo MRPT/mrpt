@@ -162,7 +162,7 @@ void  CFeatureExtraction::extractFeaturesAKAZE(
             }
             feats.push_back( ft );
             ++cont;
-            cout << ft->x << "  " << ft->y << endl;
+            //cout << ft->x << "  " << ft->y << endl;
         }
         //feats.resize( cont );  // JL: really needed???
 
