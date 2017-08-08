@@ -81,4 +81,5 @@ zip mrpt-${MRPT_VERSION_STR}.zip -q -r mrpt-${MRPT_VERSION_STR}/*
 
 rm -fr mrpt-${MRPT_VERSION_STR}
 
-
+# GPG signature:
+gpg --armor --detach-sign mrpt-${MRPT_VERSION_STR}.tar.gz

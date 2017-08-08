@@ -103,6 +103,10 @@ cd ${MRPT_DEBSRC_DIR}
 mkdir debian
 cp -r ${MRPT_EXTERN_DEBIAN_DIR}/* debian
 
+# Export signing pub key:
+mkdir debian/upstream/
+gpg --export --export-options export-minimal --armor > debian/upstream/signing-key.asc
+
 # Parse debian/ control.in --> control
 mv debian/control.in debian/control
 sed -i "s/@MRPT_VER_MM@/${MRPT_VER_MM}/g" debian/control
