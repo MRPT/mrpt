@@ -1,9 +1,8 @@
 #!/bin/bash
-# Copies sources from SVN tree and delete some in-work projects, for preparing a public release.
-# JLBC, Aug 2008
+# Export sources from a git tree and prepare it for a public release.
+# JLBC, 2008-2017
 
-#set -o verbose # echo on
-set +o verbose # echo off
+set -e  # exit on error
 
 # Checks
 # --------------------------------
@@ -15,90 +14,71 @@ then
 	MRPT_VERSION_PATCH=${MRPT_VERSION_STR:4:1}
 	MRPT_VER_MM="${MRPT_VERSION_MAJOR}.${MRPT_VERSION_MINOR}"
 	MRPT_VER_MMP="${MRPT_VERSION_MAJOR}.${MRPT_VERSION_MINOR}.${MRPT_VERSION_PATCH}"
-	echo "MRPT version: ${MRPT_VER_MMP}"
 else
 	echo "ERROR: Run this script from the MRPT root directory."
 	exit 1
 fi
 
 MRPTSRC=`pwd`
-MRPT_DEB_DIR="$HOME/mrpt_release"
+OUT_RELEASES_DIR="$HOME/mrpt_release"
 
-MRPT_DEBSRC_DIR=$MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}
+OUT_DIR=$OUT_RELEASES_DIR/mrpt-${MRPT_VERSION_STR}
 
-echo "MRPT_VERSION_STR: ${MRPT_VERSION_STR}"
-echo "MRPT_DEBSRC_DIR: ${MRPT_DEBSRC_DIR}"
+echo "=========== Generating MRPT release ${MRPT_VER_MMP} =================="
+echo "MRPT_VERSION_STR   : ${MRPT_VERSION_STR}"
+echo "OUT_DIR            : ${OUT_DIR}"
+echo "============================================================"
+echo
 
-# Prepare a directory for building the debian package:
-#
-rm -fR $MRPT_DEB_DIR
-mkdir -p ${MRPT_DEBSRC_DIR}
+# Prepare output directory:
+rm -fR $OUT_RELEASES_DIR  || true
+mkdir -p ${OUT_DIR}
 
 # Export / copy sources to target dir:
 if [ -d "$MRPTSRC/.git" ];
 then
-	echo "Exporting git source tree to ${MRPT_DEBSRC_DIR}"
-	git archive --format=tar master | tar -x -C ${MRPT_DEBSRC_DIR}
+	echo "# Exporting git source tree to ${OUT_DIR}"
+	git archive --format=tar master | tar -x -C ${OUT_DIR}
 
 	# Generate ./SOURCE_DATE_EPOCH with UNIX time_t
 	SOURCE_DATE_EPOCH=$(git log -1 --pretty=%ct)
 else
-	echo "Copying sources to ${MRPT_DEBSRC_DIR}"
-	cp -R . ${MRPT_DEBSRC_DIR}
+	echo "# Copying sources to ${OUT_DIR}"
+	cp -R . ${OUT_DIR}
 
 	# Generate ./SOURCE_DATE_EPOCH with UNIX time_t
 	SOURCE_DATE_EPOCH=$(date +%s)
 fi
 
-echo $SOURCE_DATE_EPOCH > ${MRPT_DEBSRC_DIR}/SOURCE_DATE_EPOCH
+# See https://reproducible-builds.org/specs/source-date-epoch/
+echo $SOURCE_DATE_EPOCH > ${OUT_DIR}/SOURCE_DATE_EPOCH
 
-# Copy the MRPT book:
-if [ -f /Work/MyBooks/mrpt-book/mrpt-book.ps ];
-then
-	cp  /Work/MyBooks/mrpt-book/mrpt-book.ps ${MRPT_DEBSRC_DIR}/doc/
-	ps2pdf ${MRPT_DEBSRC_DIR}/doc/mrpt-book.ps ${MRPT_DEBSRC_DIR}/doc/mrpt-book.pdf
-	gzip ${MRPT_DEBSRC_DIR}/doc/mrpt-book.ps
-fi
-
-# Try to compile guides now:
-for guide in {pbmap-guide,graphslam-engine-guide}; do
-    make -C $MRPTSRC/doc/$guide/
-    if [ -f $MRPTSRC/doc/$guide/$guide.pdf ];
-    then
-	    cp $MRPTSRC/doc/$guide/$guide.pdf ${MRPT_DEBSRC_DIR}/doc/
-    fi
+# Compile guides now:
+LST_GUIDES=`cat $MRPTSRC/doc/guide-list.txt`
+echo "# Building LaTeX documents..."
+for guide in $LST_GUIDES; do
+	echo "#  * Building $guide..."
+	make -C $MRPTSRC/doc/$guide/ > /dev/null 2>&1
+	cp $MRPTSRC/doc/$guide/$guide.pdf ${OUT_DIR}/doc/
 done
 
-#printf "Generating mrpt.spec ..."
-#eval "echo \"`cat mrpt.spec.in`\"" > ${MRPT_DEBSRC_DIR}/mrpt.spec
-#printf "OK\n"
+cd ${OUT_DIR}
 
-
-cd ${MRPT_DEBSRC_DIR}
-echo "Deleting some files..."
-
-# Deletions:
-rm -fR lib
+# Dont include Debian files in releases:
 rm -fR packaging
-
-# Not stable yet...
-rm -fR apps/hmt-slam
-rm -fR apps/hmt-slam-gui
-rm -fR apps/hmtMapViewer
 
 # Orig tarball:
 cd ..
-echo "Creating orig tarball: mrpt-${MRPT_VERSION_STR}.tar.gz"
+echo "# Creating orig tarball: mrpt-${MRPT_VERSION_STR}.tar.gz"
 tar czf mrpt-${MRPT_VERSION_STR}.tar.gz mrpt-${MRPT_VERSION_STR}
 
 # Create .zip file with DOS line endings
-echo "Creating orig zip in DOS format: mrpt-${MRPT_VERSION_STR}.zip"
+echo "# Creating orig zip in DOS format: mrpt-${MRPT_VERSION_STR}.zip"
 cd mrpt-${MRPT_VERSION_STR}
-bash scripts/all_files_DOS_format.sh
+bash scripts/all_files_change_format.sh todos
 cd ..
 zip mrpt-${MRPT_VERSION_STR}.zip -q -r mrpt-${MRPT_VERSION_STR}/*
 
 rm -fr mrpt-${MRPT_VERSION_STR}
 
-exit 0
 
