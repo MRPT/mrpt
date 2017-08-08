@@ -12,6 +12,11 @@
 
 <p> <b>Note:</b> <i>If you are displaying a local version of this page and you have not built the whole HTML documentation, the links above will be broken. Either build the documentation invoking <code>make documentation_html</code> or [browse it on-line](http://www.mrpt.org/).</i></p>
 
+<a name="1.5.3">
+<h2>Version 1.5.3: (Under development)  </h2></a>
+- <b>Detailed list of changes:</b>
+	- (...)
+
 <hr>
 <a name="1.5.2">
 <h2>Version 1.5.2: Released 6/AUG/2017 </h2></a>
