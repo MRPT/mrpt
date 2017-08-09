@@ -25,8 +25,7 @@
 #endif
 
 /**
-  * \defgroup Polynomials_Module Polynomials module 
- * \ingroup eigen_grp
+  * \defgroup Polynomials_Module Polynomials module
   * \brief This module provides a QR based polynomial solver.
 	*
   * To use this module, add

@@ -229,6 +229,11 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 			)
 	ENDIF (NOT ${headers_only})
 
+	# Special case: embedded eigen3 as dep of "mrpt-base"
+	IF (EIGEN_USE_EMBEDDED_VERSION AND ${name} STREQUAL "base")
+		add_dependencies(mrpt-${name} eigen3)
+	ENDIF()
+	
 	if(ENABLE_SOLUTION_FOLDERS)
 		set_target_properties(mrpt-${name} PROPERTIES FOLDER "modules")
 	else(ENABLE_SOLUTION_FOLDERS)

@@ -18,8 +18,7 @@
 #include <unsupported/Eigen/NumericalDiff>
 
 /**
-  * \defgroup NonLinearOptimization_Module Non linear optimization module 
- * \ingroup eigen_grp
+  * \defgroup NonLinearOptimization_Module Non linear optimization module
   *
   * \code
   * #include <unsupported/Eigen/NonLinearOptimization>

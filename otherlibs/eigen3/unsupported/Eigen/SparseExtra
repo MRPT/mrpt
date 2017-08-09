@@ -27,8 +27,7 @@
 #endif
 
 /**
-  * \defgroup SparseExtra_Module SparseExtra module 
- * \ingroup eigen_grp
+  * \defgroup SparseExtra_Module SparseExtra module
   *
   * This module contains some experimental features extending the sparse module.
   *
@@ -37,9 +36,6 @@
   * \endcode
   */
 
-
-#include "../../Eigen/src/misc/Solve.h"
-#include "../../Eigen/src/misc/SparseSolve.h"
 
 #include "src/SparseExtra/DynamicSparseMatrix.h"
 #include "src/SparseExtra/BlockOfDynamicSparseMatrix.h"

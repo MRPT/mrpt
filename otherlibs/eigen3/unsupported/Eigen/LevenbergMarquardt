@@ -20,8 +20,7 @@
 #include <Eigen/SparseQR>
 
 /**
-  * \defgroup LevenbergMarquardt_Module Levenberg-Marquardt module 
- * \ingroup eigen_grp
+  * \defgroup LevenbergMarquardt_Module Levenberg-Marquardt module
   *
   * \code
   * #include </Eigen/LevenbergMarquardt>
