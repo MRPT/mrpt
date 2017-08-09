@@ -54,6 +54,7 @@ class CMainWindow : public QMainWindow
 
    private:
 	void updateRenderMapFromConfig();
+	void applyMapsChanges();
 	void createNewDocument();
 	void clearObservationsViewer();
 

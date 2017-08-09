@@ -33,6 +33,8 @@ class CGlWidget : public mrpt::gui::CQtGlCanvasBase
 	void fillMap(const mrpt::opengl::CSetOfObjects::Ptr& renderizableMap);
 	void setDocument(CDocument* doc);
 
+	void updateObservations();
+
 	void setSelected(const mrpt::math::TPose3D& pose);
 	void setSelectedObservation(bool is);
 	void setLaserScan(mrpt::opengl::CPlanarLaserScan::Ptr laserScan);
@@ -82,6 +84,10 @@ class CGlWidget : public mrpt::gui::CQtGlCanvasBase
    private:
 	mrpt::utils::TColorf typeToColor(int type) const;
 	std::pair<bool, mrpt::math::TPoint3D> sceneToWorld(const QPoint& pos) const;
+	double maximumSizeObservation(const QPoint &pos) const;
+
+	bool selectPoint(float x, float y, double maxDist);
+
 	template <class Container>
 	int searchPoseFromList(
 		float x, float y, double maxDist, Container list) const;
