@@ -1,8 +1,6 @@
 # Check for system libassimp:
 #  http://assimp.sourceforge.net/
 # ===================================================
-
-
 SET(CMAKE_MRPT_HAS_ASSIMP 0)
 SET(CMAKE_MRPT_HAS_ASSIMP_SYSTEM 0)
 
@@ -28,45 +26,38 @@ IF(PKG_CONFIG_FOUND)
 	ENDIF (ASSIMP_FOUND)
 ENDIF(PKG_CONFIG_FOUND)
 
-IF (NOT ASSIMP_FOUND AND EXISTS "${MRPT_SOURCE_DIR}/otherlibs/assimp/")
+IF (NOT ASSIMP_FOUND)
 	SET(BUILD_ASSIMP ON CACHE BOOL "Build an embedded version of Assimp (3D models importer)")
 	IF (BUILD_ASSIMP)
 
 		# Use embedded version:
 		# --------------------------
-		# Tune cmake vars for assimp build for mrpt:
-		SET (ASSIMP_BUILD_ASSIMP_TOOLS OFF CACHE BOOL "If the supplementary tools for Assimp are built in addition to the library." FORCE)
-		SET (ASSIMP_BUILD_SAMPLES OFF CACHE BOOL "If the official samples are built as well (needs Glut)." FORCE)
-		SET (ASSIMP_BUILD_STATIC_LIB ON CACHE BOOL "Build Assimp static." FORCE)
-		SET (ASSIMP_BUILD_TESTS OFF CACHE BOOL "." FORCE)
-		set(ASSIMP_LIBRARY_SUFFIX "-mrpt" CACHE STRING "Suffix to append to library names" FORCE)
+		# Include embedded version headers:
+		include(ExternalProject)
+		# download from GH
+		ExternalProject_Add(assimp
+		  URL               "https://github.com/assimp/assimp/archive/v4.0.1.tar.gz"
+		  URL_MD5           "23a6301c728a413aafbfa1cca19ba91f"
+		  SOURCE_DIR        "${MRPT_SOURCE_DIR}/otherlibs/assimp/"
+		  CMAKE_ARGS        
+			-DASSIMP_BUILD_ASSIMP_TOOLS=OFF 
+			-DASSIMP_BUILD_SAMPLES=OFF 
+			-DASSIMP_BUILD_STATIC_LIB=ON 
+			-DASSIMP_BUILD_TESTS=OFF 
+			-DASSIMP_LIBRARY_SUFFIX=-mrpt 
+			-DLIBRARY_OUTPUT_PATH=${MRPT_BINARY_DIR}/lib 
+			-DEXECUTABLE_OUTPUT_PATH=${MRPT_BINARY_DIR}/bin
+			-DRUNTIME_OUTPUT_DIRECTORY=${MRPT_BINARY_DIR}/bin
+		  INSTALL_COMMAND   ""
+		  TEST_COMMAND      ""
+		)
 
-		add_subdirectory("${MRPT_SOURCE_DIR}/otherlibs/assimp/")
-		if(ENABLE_SOLUTION_FOLDERS)
-			set_target_properties(assimp PROPERTIES FOLDER "3rd party")
-		else(ENABLE_SOLUTION_FOLDERS)
-			SET_TARGET_PROPERTIES(assimp  PROPERTIES PROJECT_LABEL "(3rdparty) assimp")
-		endif(ENABLE_SOLUTION_FOLDERS)
-		MARK_AS_ADVANCED(
-			ASSIMP_BUILD_ASSIMP_TOOLS
-			ASSIMP_BUILD_SAMPLES
-			ASSIMP_BUILD_TESTS
-			AMD64
-			ASM686
-			ASSIMP_BIN_INSTALL_DIR
-			ASSIMP_BUILD_STATIC_LIB
-			ASSIMP_DEBUG_POSTFIX
-			ASSIMP_ENABLE_BOOST_WORKAROUND
-			ASSIMP_NO_EXPORT
-			ASSIMP_INCLUDE_INSTALL_DIR
-			ASSIMP_LIB_INSTALL_DIR
-			ASSIMP_BIN_INSTALL_DIR
-			ASSIMP_INSTALL_PDB
-			ASSIMP_OPT_BUILD_PACKAGES
-			ASSIMP_PACKAGE_VERSION
-			ASSIMP_LIBRARY_SUFFIX
-			)
-
+#		ExternalProject_Add_Step(
+#			assimp CopyToBin
+#			COMMAND ${CMAKE_COMMAND} -E copy_directory ${GLOBAL_OUTPUT_PATH}/humblelogging/bin ${GLOBAL_OUTPUT_PATH}
+#			COMMAND ${CMAKE_COMMAND} -E copy_directory ${GLOBAL_OUTPUT_PATH}/humblelogging/lib ${GLOBAL_OUTPUT_PATH}
+#			DEPENDEES install
+#		)		
 
 		# 2nd attempt: via cmake
 		SET(ASSIMP_DIR "${EMBEDDED_ASSIMP_DIR}" CACHE PATH "Path to ASSIMP CMake config file" FORCE)

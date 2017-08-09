@@ -71,10 +71,8 @@ IF(BUILD_mrpt-opengl)
 	TARGET_LINK_LIBRARIES(mrpt-opengl ${MRPT_OPENGL_LIBS} ${MRPT_3DS_LIBS})
 
 	# Link against assimp:
-	IF (CMAKE_MRPT_HAS_ASSIMP)
-		IF (NOT CMAKE_MRPT_HAS_ASSIMP_SYSTEM)
-			ADD_DEPENDENCIES(mrpt-opengl assimp)
-		ENDIF ()
+	IF (CMAKE_MRPT_HAS_ASSIMP AND TARGET "assimp")
+		ADD_DEPENDENCIES(mrpt-opengl assimp)
 		TARGET_LINK_LIBRARIES(mrpt-opengl ${ASSIMP_LIBRARIES})
 	ENDIF ()
 
