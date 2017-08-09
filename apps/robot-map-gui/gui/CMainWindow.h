@@ -50,8 +50,7 @@ class CMainWindow : public QMainWindow
 
 	void deleteRobotPoses(const std::vector<int>& idx);
 	void moveRobotPoses(
-		const std::vector<int>& idx, const QPointF& oldPos,
-		const QPointF& newPos);
+		const std::vector<int>& idx, const QPointF& dist);
 
    private:
 	void updateRenderMapFromConfig();
