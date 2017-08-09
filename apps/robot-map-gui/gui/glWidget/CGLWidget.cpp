@@ -514,10 +514,10 @@ void CGlWidget::mouseReleaseEvent(QMouseEvent* event)
 		auto sceneOtherPos = sceneToWorld(event->pos());
 		if (scenePos.first && sceneOtherPos.first)
 		{
-			QPoint oldPos;
+			QPointF oldPos;
 			oldPos.setX(scenePos.second.x);
 			oldPos.setY(scenePos.second.y);
-			QPoint newPos;
+			QPointF newPos;
 			newPos.setX(sceneOtherPos.second.x);
 			newPos.setY(sceneOtherPos.second.y);
 			if (oldPos != newPos) emit moveRobotPoses(idx, oldPos, newPos);

@@ -266,13 +266,32 @@ void CMainWindow::addRobotPosesFromMap(
 	}
 }
 
-void CMainWindow::deleteRobotPosesFromMap(std::vector<int> idx)
+void CMainWindow::deleteRobotPosesFromMap(const std::vector<int> &idx)
 {
 	if (m_document && !idx.empty())
 	{
 		m_document->remove(idx);
 		updateRenderMapFromConfig();
 	}
+}
+
+void CMainWindow::moveRobotPosesOnMap(const std::vector<int> &idx, const QPointF &dist)
+{
+	mrpt::maps::CSimpleMap::TPosePDFSensFramePairList posesObsPairs =
+		m_document->get(idx);
+	for (int i = 0; i < idx.size(); ++i)
+	{
+		mrpt::poses::CPose3DPDF::Ptr posePDF = posesObsPairs.at(i).first;
+		mrpt::poses::CPose3D pose = posePDF->getMeanVal();
+
+		pose.setFromValues(
+			pose[0], pose[1], pose[2], pose.yaw(),
+			pose.pitch(), pose.roll());
+		posePDF->changeCoordinatesReference(
+			mrpt::poses::CPose3D(dist.x(), dist.y(), 0.0));
+	}
+	m_document->move(idx, posesObsPairs);
+	updateRenderMapFromConfig();
 }
 
 void CMainWindow::undo()
@@ -309,25 +328,18 @@ void CMainWindow::deleteRobotPoses(const std::vector<int>& idx)
 	CUndoManager::instance().addAction(undo, redo);
 }
 
-void CMainWindow::moveRobotPoses(
-	const std::vector<int>& idx, const QPoint& oldPos, const QPoint& newPos)
+void CMainWindow::moveRobotPoses(const std::vector<int>& idx, const QPointF &oldPos, const QPointF &newPos)
 {
-	mrpt::maps::CSimpleMap::TPosePDFSensFramePairList posesObsPairs =
-		m_document->get(idx);
-	QPoint dist = oldPos - newPos;
-	for (int i = 0; i < idx.size(); ++i)
-	{
-		mrpt::poses::CPose3DPDF::Ptr posePDF = posesObsPairs.at(i).first;
-		mrpt::poses::CPose3D pose = posePDF->getMeanVal();
+	if (!m_document || idx.empty()) return;
 
-		pose.setFromValues(
-			pose[0] + newPos.x(), pose[1] + newPos.y(), pose[2], pose.yaw(),
-			pose.pitch(), pose.roll());
-		posePDF->changeCoordinatesReference(
-			mrpt::poses::CPose3D(-dist.x(), -dist.y(), 0.0));
-	}
-	m_document->move(idx, posesObsPairs);
-	updateRenderMapFromConfig();
+	QPointF dist = newPos - oldPos;
+
+	moveRobotPosesOnMap(idx, dist);
+	auto redo = [idx, dist, this]() { this->moveRobotPosesOnMap(idx, dist); };
+	auto undo = [idx, dist, this]() {
+		this->moveRobotPosesOnMap(idx, -dist);;
+	};
+	CUndoManager::instance().addAction(undo, redo);
 }
 
 void CMainWindow::updateRenderMapFromConfig()
