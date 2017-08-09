@@ -86,6 +86,7 @@ void CViewerContainer::applyConfigChanges(RenderizableMaps renderizableMaps)
 		assert(gl);
 
 		gl->fillMap(it->second);
+		gl->updateObservations();
 	}
 }
 

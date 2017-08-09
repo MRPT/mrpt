@@ -259,24 +259,24 @@ void CMainWindow::addRobotPosesFromMap(
 	std::vector<int> idx,
 	mrpt::maps::CSimpleMap::TPosePDFSensFramePairList posesObsPairs)
 {
-	if (m_document && !idx.empty())
-	{
-		m_document->insert(idx, posesObsPairs);
-		updateRenderMapFromConfig();
-	}
+	if (!m_document || idx.empty()) return;
+
+	m_document->insert(idx, posesObsPairs);
+	applyMapsChanges();
 }
 
 void CMainWindow::deleteRobotPosesFromMap(const std::vector<int> &idx)
 {
-	if (m_document && !idx.empty())
-	{
-		m_document->remove(idx);
-		updateRenderMapFromConfig();
-	}
+	if (!m_document || idx.empty()) return;
+
+	m_document->remove(idx);
+	applyMapsChanges();
 }
 
 void CMainWindow::moveRobotPosesOnMap(const std::vector<int> &idx, const QPointF &dist)
 {
+	if (!m_document || idx.empty()) return;
+
 	mrpt::maps::CSimpleMap::TPosePDFSensFramePairList posesObsPairs =
 		m_document->get(idx);
 	for (int i = 0; i < idx.size(); ++i)
@@ -291,7 +291,7 @@ void CMainWindow::moveRobotPosesOnMap(const std::vector<int> &idx, const QPointF
 			mrpt::poses::CPose3D(dist.x(), dist.y(), 0.0));
 	}
 	m_document->move(idx, posesObsPairs);
-	updateRenderMapFromConfig();
+	applyMapsChanges();
 }
 
 void CMainWindow::undo()
@@ -316,7 +316,7 @@ void CMainWindow::deleteRobotPoses(const std::vector<int>& idx)
 		m_document->getReverse(idx);
 
 	std::vector<int> reverseInd = m_document->remove(idx);
-	updateRenderMapFromConfig();
+	applyMapsChanges();
 
 	auto redo = [idx, this]() { this->deleteRobotPosesFromMap(idx); };
 
@@ -344,7 +344,13 @@ void CMainWindow::updateRenderMapFromConfig()
 {
 	auto renderizableMaps = m_document->renderizableMaps();
 	m_ui->m_viewer->updateConfigChanges(
-		renderizableMaps, m_document, m_ui->m_actionShowAllObs->isChecked());
+				renderizableMaps, m_document, m_ui->m_actionShowAllObs->isChecked());
+}
+
+void CMainWindow::applyMapsChanges()
+{
+	auto renderizableMaps = m_document->renderizableMaps();
+	m_ui->m_viewer->applyConfigChanges(renderizableMaps);
 }
 
 void CMainWindow::createNewDocument()
