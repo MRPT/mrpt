@@ -328,11 +328,9 @@ void CMainWindow::deleteRobotPoses(const std::vector<int>& idx)
 	CUndoManager::instance().addAction(undo, redo);
 }
 
-void CMainWindow::moveRobotPoses(const std::vector<int>& idx, const QPointF &oldPos, const QPointF &newPos)
+void CMainWindow::moveRobotPoses(const std::vector<int>& idx, const QPointF &dist)
 {
 	if (!m_document || idx.empty()) return;
-
-	QPointF dist = newPos - oldPos;
 
 	moveRobotPosesOnMap(idx, dist);
 	auto redo = [idx, dist, this]() { this->moveRobotPosesOnMap(idx, dist); };
