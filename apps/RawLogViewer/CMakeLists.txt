@@ -22,7 +22,6 @@ IF(CMAKE_MRPT_HAS_WXWIDGETS)
 	 CFormChangeSensorPositions.cpp CFormChangeSensorPositions.h
 	 COdometryParams.cpp 		COdometryParams.h
 	 CScanAnimation.cpp			CScanAnimation.h
-	 resource.h
 	 xRawLogViewerApp.cpp	xRawLogViewerApp.h
 	 xRawLogViewerMain.cpp	xRawLogViewerMain.h
 	 MyGLCanvas.cpp         MyGLCanvas.h
