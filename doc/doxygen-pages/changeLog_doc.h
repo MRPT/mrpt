@@ -15,7 +15,7 @@
 <a name="1.5.3">
 <h2>Version 1.5.3: (Under development)  </h2></a>
 - <b>Detailed list of changes:</b>
-	- (...)
+	- Scripts `scripts/prepare_{debian,release}.sh` have been refactored and simplified.
 
 <hr>
 <a name="1.5.2">
