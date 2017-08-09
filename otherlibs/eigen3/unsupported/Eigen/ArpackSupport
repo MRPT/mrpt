@@ -13,8 +13,7 @@
 
 #include <Eigen/src/Core/util/DisableStupidWarnings.h>
 
-/** \defgroup ArpackSupport_Module Arpack support module 
- * \ingroup eigen_grp
+/** \defgroup ArpackSupport_Module Arpack support module
   *
   * This module provides a wrapper to Arpack, a library for sparse eigenvalue decomposition.
   *

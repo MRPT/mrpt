@@ -25,7 +25,7 @@
 #ifndef NUMBER_DIRECTIONS
 # define NUMBER_DIRECTIONS 2
 #endif
-#include <adolc/adouble.h>
+#include <adolc/adtl.h>
 
 // adolc defines some very stupid macros:
 #if defined(malloc)
@@ -45,8 +45,7 @@
 namespace Eigen {
 
 /**
-  * \defgroup AdolcForward_Module Adolc forward module 
- * \ingroup eigen_grp
+  * \defgroup AdolcForward_Module Adolc forward module
   * This module provides support for adolc's adouble type in forward mode.
   * ADOL-C is a C++ automatic differentiation library,
   * see https://projects.coin-or.org/ADOL-C for more information.

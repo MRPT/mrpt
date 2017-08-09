@@ -13,8 +13,7 @@
 #include <Eigen/Sparse>
 
 /**
-  * \defgroup IterativeSolvers_Module Iterative solvers module 
- * \ingroup eigen_grp
+  * \defgroup IterativeSolvers_Module Iterative solvers module
   * This module aims to provide various iterative linear and non linear solver algorithms.
   * It currently provides:
   *  - a constrained conjugate gradient
@@ -25,9 +24,6 @@
   */
 //@{
 
-#include "../../Eigen/src/misc/Solve.h"
-#include "../../Eigen/src/misc/SparseSolve.h"
-
 #ifndef EIGEN_MPL2_ONLY
 #include "src/IterativeSolvers/IterationController.h"
 #include "src/IterativeSolvers/ConstrainedConjGrad.h"
@@ -37,7 +33,7 @@
 #include "../../Eigen/Jacobi"
 #include "../../Eigen/Householder"
 #include "src/IterativeSolvers/GMRES.h"
-#include "src/IterativeSolvers/IncompleteCholesky.h"
+#include "src/IterativeSolvers/DGMRES.h"
 //#include "src/IterativeSolvers/SSORPreconditioner.h"
 #include "src/IterativeSolvers/MINRES.h"
 

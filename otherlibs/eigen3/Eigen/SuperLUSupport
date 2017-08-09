@@ -1,3 +1,10 @@
+// This file is part of Eigen, a lightweight C++ template library
+// for linear algebra.
+//
+// This Source Code Form is subject to the terms of the Mozilla
+// Public License v. 2.0. If a copy of the MPL was not distributed
+// with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 #ifndef EIGEN_SUPERLUSUPPORT_MODULE_H
 #define EIGEN_SUPERLUSUPPORT_MODULE_H
 
@@ -29,13 +36,14 @@ typedef int int_t;
 namespace Eigen { struct SluMatrix; }
 
 /** \ingroup Support_modules
-  * \defgroup SuperLUSupport_Module SuperLUSupport module 
- * \ingroup eigen_grp
+  * \defgroup SuperLUSupport_Module SuperLUSupport module
   *
   * This module provides an interface to the <a href="http://crd-legacy.lbl.gov/~xiaoye/SuperLU/">SuperLU</a> library.
   * It provides the following factorization class:
   * - class SuperLU: a supernodal sequential LU factorization.
   * - class SuperILU: a supernodal sequential incomplete LU factorization (to be used as a preconditioner for iterative methods).
+  *
+  * \warning This wrapper requires at least versions 4.0 of SuperLU. The 3.x versions are not supported.
   *
   * \warning When including this module, you have to use SUPERLU_EMPTY instead of EMPTY which is no longer defined because it is too polluting.
   *
@@ -49,11 +57,7 @@ namespace Eigen { struct SluMatrix; }
   *
   */
 
-#include "src/misc/Solve.h"
-#include "src/misc/SparseSolve.h"
-
 #include "src/SuperLUSupport/SuperLUSupport.h"
-
 
 #include "src/Core/util/ReenableStupidWarnings.h"
 

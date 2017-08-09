@@ -14,15 +14,11 @@
 #include "SparseCore"
 
 /** 
-  * \defgroup SparseLU_Module SparseLU module 
- * \ingroup eigen_grp
+  * \defgroup SparseLU_Module SparseLU module
   * This module defines a supernodal factorization of general sparse matrices.
   * The code is fully optimized for supernode-panel updates with specialized kernels.
   * Please, see the documentation of the SparseLU class for more details.
   */
-
-#include "src/misc/Solve.h"
-#include "src/misc/SparseSolve.h"
 
 // Ordering interface
 #include "OrderingMethods"

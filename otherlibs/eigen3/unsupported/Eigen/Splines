@@ -13,8 +13,7 @@
 namespace Eigen 
 {
 /**
-  * \defgroup Splines_Module Spline and spline fitting module 
- * \ingroup eigen_grp
+  * \defgroup Splines_Module Spline and spline fitting module
   *
   * This module provides a simple multi-dimensional spline class while
   * offering most basic functionality to fit a spline to point sets.
