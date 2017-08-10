@@ -225,12 +225,11 @@ void CGlWidget::updateObservations()
 
 	double maxDist = maximumSizeObservation(QPoint(0, 0));
 	assert(maxDist != -1.0);
-	for (auto &it: selectedPoints)
+	for (auto& it : selectedPoints)
 	{
 		mrpt::math::TPose3D pose = it->getPose();
 		selectPoint(pose.x, pose.y, maxDist);
 	}
-
 
 	if (m_isShowObs) setSelectedObservation(m_isShowObs);
 }
@@ -507,7 +506,8 @@ void CGlWidget::mousePressEvent(QMouseEvent* event)
 
 		if (!needUnpressMouse)
 		{
-			needUnpressMouse = selectPoint(scenePos.second.x, scenePos.second.y, maxDist);
+			needUnpressMouse =
+				selectPoint(scenePos.second.x, scenePos.second.y, maxDist);
 			if (needUnpressMouse)
 			{
 				needUpdateScene = needUnpressMouse;
@@ -537,7 +537,8 @@ void CGlWidget::mouseReleaseEvent(QMouseEvent* event)
 			QPointF dist;
 			dist.setX(sceneOtherPos.second.x - scenePos.second.x);
 			dist.setY(sceneOtherPos.second.y - scenePos.second.y);
-			if (dist.x() != 0.0 || dist.y() != 0.0) emit moveRobotPoses(idx, dist);
+			if (dist.x() != 0.0 || dist.y() != 0.0)
+				emit moveRobotPoses(idx, dist);
 		}
 		m_moveSelected = false;
 	}
@@ -610,14 +611,11 @@ double CGlWidget::maximumSizeObservation(const QPoint& pos) const
 	auto sceneOtherPos = sceneToWorld(otherPos);
 	if (!scenePos.first || !sceneOtherPos.first) return -1.0;
 
-	double xDistPow =
-		std::pow(sceneOtherPos.second.x - scenePos.second.x, 2);
-	double yDistPow =
-		std::pow(sceneOtherPos.second.y - scenePos.second.y, 2);
+	double xDistPow = std::pow(sceneOtherPos.second.x - scenePos.second.x, 2);
+	double yDistPow = std::pow(sceneOtherPos.second.y - scenePos.second.y, 2);
 	double maxDist = xDistPow + yDistPow;
 
 	return maxDist;
-
 }
 
 bool CGlWidget::selectPoint(float x, float y, double maxDist)
