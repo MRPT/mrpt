@@ -66,8 +66,7 @@ class CGlWidget : public mrpt::gui::CQtGlCanvasBase
 	void azimuthChanged(float ang);
 	void elevationChanged(float ang);
 	void deleteRobotPoses(const std::vector<int>& idx);
-	void moveRobotPoses(
-		const std::vector<int>& idx, const QPointF& dist);
+	void moveRobotPoses(const std::vector<int>& idx, const QPointF& dist);
 
    protected:
 	virtual void resizeGL(int width, int height) override;
@@ -84,7 +83,7 @@ class CGlWidget : public mrpt::gui::CQtGlCanvasBase
    private:
 	mrpt::utils::TColorf typeToColor(int type) const;
 	std::pair<bool, mrpt::math::TPoint3D> sceneToWorld(const QPoint& pos) const;
-	double maximumSizeObservation(const QPoint &pos) const;
+	double maximumSizeObservation(const QPoint& pos) const;
 
 	bool selectPoint(float x, float y, double maxDist);
 

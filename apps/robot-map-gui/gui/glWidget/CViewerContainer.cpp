@@ -135,12 +135,8 @@ void CViewerContainer::updateConfigChanges(
 			SIGNAL(deleteRobotPoses(const std::vector<int>&)));
 
 		connect(
-			gl, SIGNAL(
-					moveRobotPoses(
-						const std::vector<int>&, const QPointF&)),
-			SIGNAL(
-				moveRobotPoses(
-					const std::vector<int>&, const QPointF&)));
+			gl, SIGNAL(moveRobotPoses(const std::vector<int>&, const QPointF&)),
+			SIGNAL(moveRobotPoses(const std::vector<int>&, const QPointF&)));
 	}
 }
 

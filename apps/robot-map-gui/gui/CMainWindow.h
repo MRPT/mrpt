@@ -34,7 +34,7 @@ class CMainWindow : public QMainWindow
 	void addRobotPosesFromMap(
 		std::vector<int> idx,
 		mrpt::maps::CSimpleMap::TPosePDFSensFramePairList posesObsPairs);
-	void deleteRobotPosesFromMap(const std::vector<int> &idx);
+	void deleteRobotPosesFromMap(const std::vector<int>& idx);
 	void moveRobotPosesOnMap(const std::vector<int>& idx, const QPointF& dist);
 
    private slots:
@@ -49,8 +49,7 @@ class CMainWindow : public QMainWindow
 	void showMapConfiguration();
 
 	void deleteRobotPoses(const std::vector<int>& idx);
-	void moveRobotPoses(
-		const std::vector<int>& idx, const QPointF& dist);
+	void moveRobotPoses(const std::vector<int>& idx, const QPointF& dist);
 
    private:
 	void updateRenderMapFromConfig();

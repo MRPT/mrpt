@@ -265,7 +265,7 @@ void CMainWindow::addRobotPosesFromMap(
 	applyMapsChanges();
 }
 
-void CMainWindow::deleteRobotPosesFromMap(const std::vector<int> &idx)
+void CMainWindow::deleteRobotPosesFromMap(const std::vector<int>& idx)
 {
 	if (!m_document || idx.empty()) return;
 
@@ -273,20 +273,20 @@ void CMainWindow::deleteRobotPosesFromMap(const std::vector<int> &idx)
 	applyMapsChanges();
 }
 
-void CMainWindow::moveRobotPosesOnMap(const std::vector<int> &idx, const QPointF &dist)
+void CMainWindow::moveRobotPosesOnMap(
+	const std::vector<int>& idx, const QPointF& dist)
 {
 	if (!m_document || idx.empty()) return;
 
 	mrpt::maps::CSimpleMap::TPosePDFSensFramePairList posesObsPairs =
 		m_document->get(idx);
-	for (int i = 0; i < idx.size(); ++i)
+	for (size_t i = 0; i < idx.size(); ++i)
 	{
 		mrpt::poses::CPose3DPDF::Ptr posePDF = posesObsPairs.at(i).first;
 		mrpt::poses::CPose3D pose = posePDF->getMeanVal();
 
 		pose.setFromValues(
-			pose[0], pose[1], pose[2], pose.yaw(),
-			pose.pitch(), pose.roll());
+			pose[0], pose[1], pose[2], pose.yaw(), pose.pitch(), pose.roll());
 		posePDF->changeCoordinatesReference(
 			mrpt::poses::CPose3D(dist.x(), dist.y(), 0.0));
 	}
@@ -328,14 +328,16 @@ void CMainWindow::deleteRobotPoses(const std::vector<int>& idx)
 	CUndoManager::instance().addAction(undo, redo);
 }
 
-void CMainWindow::moveRobotPoses(const std::vector<int>& idx, const QPointF &dist)
+void CMainWindow::moveRobotPoses(
+	const std::vector<int>& idx, const QPointF& dist)
 {
 	if (!m_document || idx.empty()) return;
 
 	moveRobotPosesOnMap(idx, dist);
 	auto redo = [idx, dist, this]() { this->moveRobotPosesOnMap(idx, dist); };
 	auto undo = [idx, dist, this]() {
-		this->moveRobotPosesOnMap(idx, -dist);;
+		this->moveRobotPosesOnMap(idx, -dist);
+		;
 	};
 	CUndoManager::instance().addAction(undo, redo);
 }
@@ -344,7 +346,7 @@ void CMainWindow::updateRenderMapFromConfig()
 {
 	auto renderizableMaps = m_document->renderizableMaps();
 	m_ui->m_viewer->updateConfigChanges(
-				renderizableMaps, m_document, m_ui->m_actionShowAllObs->isChecked());
+		renderizableMaps, m_document, m_ui->m_actionShowAllObs->isChecked());
 }
 
 void CMainWindow::applyMapsChanges()
