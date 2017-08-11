@@ -45,21 +45,16 @@ IF (NOT ASSIMP_FOUND)
 			-DASSIMP_BUILD_STATIC_LIB=ON 
 			-DASSIMP_BUILD_TESTS=OFF 
 			-DASSIMP_LIBRARY_SUFFIX=-mrpt 
+			-DCMAKE_LIBRARY_OUTPUT_PATH=${MRPT_BINARY_DIR}/lib 
 			-DLIBRARY_OUTPUT_PATH=${MRPT_BINARY_DIR}/lib 
-			-DEXECUTABLE_OUTPUT_PATH=${MRPT_BINARY_DIR}/bin
+			-DCMAKE_RUNTIME_OUTPUT_DIRECTORY=${MRPT_BINARY_DIR}/bin
 			-DRUNTIME_OUTPUT_DIRECTORY=${MRPT_BINARY_DIR}/bin
+			-DCMAKE_DEBUG_POSTFIX=d
 		  INSTALL_COMMAND   ""
 		  TEST_COMMAND      ""
 #		  PATCH_COMMAND 
 #			${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/lua/CMakeLists.txt" <SOURCE_DIR>/CMakeLists.txt
 		)
-
-#		ExternalProject_Add_Step(
-#			assimp CopyToBin
-#			COMMAND ${CMAKE_COMMAND} -E copy_directory ${GLOBAL_OUTPUT_PATH}/humblelogging/bin ${GLOBAL_OUTPUT_PATH}
-#			COMMAND ${CMAKE_COMMAND} -E copy_directory ${GLOBAL_OUTPUT_PATH}/humblelogging/lib ${GLOBAL_OUTPUT_PATH}
-#			DEPENDEES install
-#		)		
 
 		# 2nd attempt: via cmake
 		SET(ASSIMP_DIR "${EMBEDDED_ASSIMP_DIR}" CACHE PATH "Path to ASSIMP CMake config file" FORCE)
@@ -82,7 +77,20 @@ ENDIF()
 IF (ASSIMP_FOUND_VIA_CMAKE)
 	# override wrong target libs in -config.cmake file:
 	set(ASSIMP_LIBRARIES "")
-	LIST(APPEND ASSIMP_LIBRARIES optimized "assimp-mrpt" debug "assimp-mrptd")
+
+	if(MSVC12)
+		SET(ASSIMP_MSVC_VERSION "vc120")
+	elseif(MSVC14)
+		SET(ASSIMP_MSVC_VERSION "vc140")
+	ENDIF(MSVC12)
+
+	if(MSVC12 OR MSVC14)
+		SET(ASSIMP_CUSTOM_LIB_NAME "assimp-mrpt-${ASSIMP_MSVC_VERSION}-mt")
+	else()
+		SET(ASSIMP_CUSTOM_LIB_NAME "assimp-mrpt")
+	endif()
+
+	LIST(APPEND ASSIMP_LIBRARIES optimized "${ASSIMP_CUSTOM_LIB_NAME}" debug "${ASSIMP_CUSTOM_LIB_NAME}d")
 
 	# override wrong include dirs:
 	SET(ASSIMP_INCLUDE_DIRS 
