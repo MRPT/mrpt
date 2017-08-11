@@ -109,11 +109,6 @@ void CWaypointsNavigator::waypoints_navigationStep()
 	mrpt::utils::CTimeLoggerEntry tle(m_timlog_delays,"CWaypointsNavigator::navigationStep()");
 	mrpt::synch::CCriticalSectionLocker csl(&m_nav_waypoints_cs);
 
-	// This will be used to detect changes in the list of waypoints, 
-	// from an external user code in an event.
-	const auto orig_nav_status_time = m_waypoint_nav_status.timestamp_nav_started;
-	const auto orig_nav_state = m_navigationState;
-
 	TWaypointStatusSequence &wps = m_waypoint_nav_status; // shortcut to save typing
 
 	if (wps.waypoints.empty() || wps.final_goal_reached)
@@ -450,7 +445,7 @@ bool CWaypointsNavigator::checkHasReachedTarget(const double targetDist) const
 	const auto &wps = m_waypoint_nav_status;
 	const TWaypointStatus *wp = (!wps.waypoints.empty() &&
 		wps.waypoint_index_current_goal >= 0 && 
-		wps.waypoint_index_current_goal < wps.waypoints.size()
+		wps.waypoint_index_current_goal < (int)wps.waypoints.size()
 		)
 		?
 		&wps.waypoints[wps.waypoint_index_current_goal]
