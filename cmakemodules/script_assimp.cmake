@@ -50,6 +50,8 @@ IF (NOT ASSIMP_FOUND)
 			-DRUNTIME_OUTPUT_DIRECTORY=${MRPT_BINARY_DIR}/bin
 		  INSTALL_COMMAND   ""
 		  TEST_COMMAND      ""
+#		  PATCH_COMMAND 
+#			${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/lua/CMakeLists.txt" <SOURCE_DIR>/CMakeLists.txt
 		)
 
 #		ExternalProject_Add_Step(
@@ -83,7 +85,10 @@ IF (ASSIMP_FOUND_VIA_CMAKE)
 	LIST(APPEND ASSIMP_LIBRARIES optimized "assimp-mrpt" debug "assimp-mrptd")
 
 	# override wrong include dirs:
-	SET(ASSIMP_INCLUDE_DIRS "${MRPT_SOURCE_DIR}/otherlibs/assimp/include/")
+	SET(ASSIMP_INCLUDE_DIRS 
+		"${MRPT_SOURCE_DIR}/otherlibs/assimp/include/"
+		"${MRPT_BINARY_DIR}/assimp-prefix/src/assimp-build/include/"
+	)
 
 ENDIF (ASSIMP_FOUND_VIA_CMAKE)
 
