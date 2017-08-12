@@ -38,7 +38,7 @@ IF (NOT ASSIMP_FOUND)
 		ExternalProject_Add(assimp
 		  URL               "https://github.com/assimp/assimp/archive/v4.0.1.tar.gz"
 		  URL_MD5           "23a6301c728a413aafbfa1cca19ba91f"
-		  SOURCE_DIR        "${MRPT_SOURCE_DIR}/otherlibs/assimp/"
+		  SOURCE_DIR        "${MRPT_BINARY_DIR}/otherlibs/assimp/"
 		  CMAKE_ARGS        
 			-DASSIMP_BUILD_ASSIMP_TOOLS=OFF 
 			-DASSIMP_BUILD_SAMPLES=OFF 
@@ -94,7 +94,7 @@ IF (ASSIMP_FOUND_VIA_CMAKE)
 
 	# override wrong include dirs:
 	SET(ASSIMP_INCLUDE_DIRS 
-		"${MRPT_SOURCE_DIR}/otherlibs/assimp/include/"
+		"${MRPT_BINARY_DIR}/otherlibs/assimp/include/"
 		"${MRPT_BINARY_DIR}/assimp-prefix/src/assimp-build/include/"
 	)
 
