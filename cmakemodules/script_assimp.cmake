@@ -35,7 +35,7 @@ IF (NOT ASSIMP_FOUND)
 		# Include embedded version headers:
 		include(ExternalProject)
 		# download from GH
-		ExternalProject_Add(assimp
+		ExternalProject_Add(EP_assimp
 		  URL               "https://github.com/assimp/assimp/archive/v4.0.1.tar.gz"
 		  URL_MD5           "23a6301c728a413aafbfa1cca19ba91f"
 		  SOURCE_DIR        "${MRPT_BINARY_DIR}/otherlibs/assimp/"
@@ -65,12 +65,6 @@ IF (NOT ASSIMP_FOUND)
 		SET(CMAKE_MRPT_HAS_ASSIMP 1)
 		SET(CMAKE_MRPT_HAS_ASSIMP_SYSTEM 0)
 
-		# Override binary output dir:
-		SET_TARGET_PROPERTIES(assimp PROPERTIES
-			ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/"
-			RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/"
-			)
-
 	ENDIF (BUILD_ASSIMP)
 ENDIF()
 
@@ -95,9 +89,17 @@ IF (ASSIMP_FOUND_VIA_CMAKE)
 	# override wrong include dirs:
 	SET(ASSIMP_INCLUDE_DIRS 
 		"${MRPT_BINARY_DIR}/otherlibs/assimp/include/"
-		"${MRPT_BINARY_DIR}/assimp-prefix/src/assimp-build/include/"
+		"${MRPT_BINARY_DIR}/EP_assimp-prefix/src/EP_assimp-build/include/"
 	)
-
+	
+	# Install assimp DLLs (for binary packages)
+	IF(WIN32)
+		FILE(GLOB_RECURSE EXTRA_DLLS "${MRPT_BINARY_DIR}/bin/Release/assimp-*.dll" "${MRPT_BINARY_DIR}/bin/Debug/assimp-*.dll")
+		FOREACH(F ${EXTRA_DLLS})
+			INSTALL(FILES "${F}" DESTINATION bin)
+		ENDFOREACH(F)
+	ENDIF()
+	
 ENDIF (ASSIMP_FOUND_VIA_CMAKE)
 
 # ASSIMP_ROOT_DIR - the root directory where the installation can be found

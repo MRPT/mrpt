@@ -15,8 +15,9 @@
 <a name="1.5.3">
 <h2>Version 1.5.3: (Under development)  </h2></a>
 - <b>Detailed list of changes:</b>
+	- CMake >=3.1 is now required for use of ExternalProjects.
 	- Scripts `scripts/prepare_{debian,release}.sh` have been refactored and simplified.
-	- Removed embedded version of Eigen. We now use CMake >=3.1 ability to download it if not present in the system.
+	- Removed embedded source code versions of Eigen, assimp and octomap. Downloaded and built as ExternalProjects if not present in the system.
 
 <hr>
 <a name="1.5.2">
