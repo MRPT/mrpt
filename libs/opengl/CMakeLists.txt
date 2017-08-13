@@ -72,9 +72,6 @@ IF(BUILD_mrpt-opengl)
 
 	# Link against assimp:
 	IF (CMAKE_MRPT_HAS_ASSIMP)
-		if (NOT "${ASSIMP_LIBRARY_DIRS}" STREQUAL "")
-			LINK_DIRECTORIES("${ASSIMP_LIBRARY_DIRS}")
-		endif()
 		IF(TARGET "EP_assimp")
 			ADD_DEPENDENCIES(mrpt-opengl EP_assimp)
 		ENDIF()
