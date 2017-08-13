@@ -115,6 +115,7 @@ SHOW_CONFIG_LINE       ("lib3ds (3DStudio scenes)            " CMAKE_MRPT_HAS_LI
 SHOW_CONFIG_LINE_SYSTEM("libjpeg (jpeg)                      " CMAKE_MRPT_HAS_JPEG)
 SHOW_CONFIG_LINE_SYSTEM("liblas (ASPRS LAS LiDAR format)     " CMAKE_MRPT_HAS_LIBLAS)
 SHOW_CONFIG_LINE       ("mexplus                             " CMAKE_MRPT_HAS_MATLAB)
+SHOW_CONFIG_LINE_SYSTEM("Octomap                             " CMAKE_MRPT_HAS_OCTOMAP "[Version: ${OCTOMAP_VERSION}]")
 SHOW_CONFIG_LINE_SYSTEM("OpenCV (Image manipulation)         " CMAKE_MRPT_HAS_OPENCV "[Version: ${MRPT_OPENCV_VERSION}]")
 SHOW_CONFIG_LINE_SYSTEM("OpenGL                              " CMAKE_MRPT_HAS_OPENGL_GLUT)
 SHOW_CONFIG_LINE_SYSTEM("GLUT                                " CMAKE_MRPT_HAS_GLUT)
