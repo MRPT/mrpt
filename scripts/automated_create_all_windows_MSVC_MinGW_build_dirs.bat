@@ -12,8 +12,8 @@ REM                              Jose Luis Blanco, 2011-15
 REM =========================================================
 
 REM  === THIS IS WHERE MRPT SOURCE TREE IS FROM THE CWD ===
-set MRPT_SRC_DIR=c:/code/mrpt
-set MRPT_BASE_DIR=mrpt
+set MRPT_SRC_DIR=d:/code/mrpt-1.5
+set MRPT_BASE_DIR=mrpt-1.5.3
 
 REM =================== SET ALL IMPORTANT PATHS ===================
 
@@ -139,7 +139,7 @@ set PATH_FIL=%PATH_FIL%.bat
 if NOT %COMP%==mingw set EXTRA_MINGW_PATHS=
 if %COMP%==mingw set EXTRA_MINGW_PATHS=;%MINGW_ROOT_BKSLH%-%ARCHN%\bin
 
-echo SET PATH=C:\Windows\system32;C:\Windows%EXTRA_MINGW_PATHS%;C:\Program Files\TortoiseSVN\bin;d:\code\opencv-%COMP%-%ARCH%\bin\Release;d:\code\opencv-%COMP%-%ARCH%\bin\Debug;%WXLIBDIR%;%FFMPEGDIR%/bin;%LIBUSBDIR%\bin\%ARCH_NAME%;%CMAKE_DIR%;%CD%\bin\Release;%CD%\bin\Debug > %PATH_FIL%
+echo SET PATH=C:\Windows\system32;C:\Windows%EXTRA_MINGW_PATHS%;c:\code\opencv-%COMP%-%ARCH%\bin\Release;c:\code\opencv-%COMP%-%ARCH%\bin\Debug;%WXLIBDIR%;%FFMPEGDIR%/bin;%LIBUSBDIR%\bin\%ARCH_NAME%;%CMAKE_DIR%;%CD%\bin\Release;%CD%\bin\Debug > %PATH_FIL%
 
 echo call %PATH_FIL% > AUTOBUILD.bat
 rem ----- COMPILE ----- 
@@ -150,7 +150,7 @@ if %COMP%==mingw echo %MINGW_ROOT_BKSLH%-%ARCHN%\bin\mingw32-make package >> AUT
 
 REM ---------------- Call CMake ----------------
 call %PATH_FIL%
-set ALL_PARAMS=-DDISABLE_SWISSRANGER_3DCAM_LIBS=ON -DDISABLE_PCL=ON -DDISABLE_NationalInstruments=ON -DOpenCV_DIR=d:/code/opencv-%COMP%-%ARCH% -DMRPT_HAS_FFMPEG_WIN32=ON -DFFMPEG_WIN32_ROOT_DIR=%FFMPEGDIR% -DwxWidgets_ROOT_DIR=%WXDIR% -DwxWidgets_LIB_DIR=%WXLIBDIR% -DPCAP_ROOT_DIR=%PCAP_ROOT% -DPCAP_INCLUDE_DIR=%PCAP_ROOT%/include -DPCAP_LIBRARY=%PCAP_LIB%
+set ALL_PARAMS=-DDISABLE_SWISSRANGER_3DCAM_LIBS=ON -DDISABLE_PCL=ON -DDISABLE_NationalInstruments=ON -DOpenCV_DIR=c:/code/opencv-%COMP%-%ARCH% -DMRPT_HAS_FFMPEG_WIN32=ON -DFFMPEG_WIN32_ROOT_DIR=%FFMPEGDIR% -DwxWidgets_ROOT_DIR=%WXDIR% -DwxWidgets_LIB_DIR=%WXLIBDIR% -DPCAP_ROOT_DIR=%PCAP_ROOT% -DPCAP_INCLUDE_DIR=%PCAP_ROOT%/include -DPCAP_LIBRARY=%PCAP_LIB%
 
 if %ARCHN%==32 set LIBUSBLIB=%LIBUSBDIR%\lib\msvc\libusb.lib 
 if %ARCHN%==64 set LIBUSBLIB=%LIBUSBDIR%\lib\msvc_x64\libusb.lib 
