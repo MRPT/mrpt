@@ -52,8 +52,6 @@ IF (NOT ASSIMP_FOUND)
 			-DCMAKE_DEBUG_POSTFIX=d
 		  INSTALL_COMMAND   ""
 		  TEST_COMMAND      ""
-#		  PATCH_COMMAND 
-#			${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/lua/CMakeLists.txt" <SOURCE_DIR>/CMakeLists.txt
 		)
 
 		# 2nd attempt: via cmake
@@ -110,11 +108,6 @@ ENDIF (ASSIMP_FOUND_VIA_CMAKE)
 # ASSIMP_LIBRARIES - libraries to link plugins with
 IF (CMAKE_MRPT_HAS_ASSIMP)
 	MARK_AS_ADVANCED(ASSIMP_DIR)
-
-	# Seems to be needed by all mrpt-* projects
-	IF(NOT ${ASSIMP_LIBRARY_DIRS} STREQUAL "")
-		LINK_DIRECTORIES("${ASSIMP_LIBRARY_DIRS}")
-	ENDIF(NOT ${ASSIMP_LIBRARY_DIRS} STREQUAL "")
 
 	IF ($ENV{VERBOSE})
 		MESSAGE(STATUS "Assimp:")

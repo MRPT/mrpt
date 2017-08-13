@@ -1,1 +1,0 @@
-This include dir of this lib was moved into <mrpt/otherlibs/octomap/*.h> (under module mrpt-maps), so final users can access to its templates and classes.
