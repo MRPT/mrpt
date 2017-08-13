@@ -10,14 +10,14 @@ fi
 
 find . \
 	-name "*.cpp" \
-	-or -name "*.c" \
-	-or -name "*.h" \
-	-or -name "*.in" \
-	-or -name "*.hpp" \
-	-or -name "*.tpp" \
-	-or -name "CMakeLists.txt" \
-	-or -name "AUTHORS" \
-	-or -name "*.ini"
-	-or -name "*.INI"
-	-or -name "*.txt"
+	-o -name "*.c" \
+	-o -name "*.h" \
+	-o -name "*.in" \
+	-o -name "*.hpp" \
+	-o -name "*.tpp" \
+	-o -name "CMakeLists.txt" \
+	-o -name "AUTHORS" \
+	-o -name "*.ini" \
+	-o -name "*.INI" \
+	-o -name "*.txt" \
 	| xargs $1
