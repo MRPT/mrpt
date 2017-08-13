@@ -39,6 +39,43 @@
 		- Fix incorrect evaluation of "ASSERT" formulas in mrpt::nav::CMultiObjectiveMotionOptimizerBase
 
 <hr>
+<a name="1.5.3">
+<h2>Version 1.5.3: Released 13/AUG/2017  </h2></a>
+- <b>Detailed list of changes:</b>
+	- CMake >=3.1 is now required for use of ExternalProjects.
+	- Scripts `scripts/prepare_{debian,release}.sh` have been refactored and simplified.
+	- Removed embedded source code versions of Eigen, assimp and octomap. Downloaded and built as ExternalProjects if not present in the system.
+	- Releases will be signed with PGP from now on and posted as binary attachments to GitHub releases.
+
+<hr>
+<a name="1.5.2">
+<h2>Version 1.5.2: Released 6/AUG/2017 </h2></a>
+- <b>Detailed list of changes:</b>
+	- Changes in libraries:
+		- \ref mrpt_base_grp
+			- Added methods:
+				- mrpt::synch::CCriticalSection::try_enter()
+				- mrpt::synch::CCriticalSectionRecursive::try_enter()
+		- \ref mrpt_nav_grp
+			- mrpt::nav::CAbstractNavigator: callbacks in mrpt::nav::CRobot2NavInterface are now invoked *after* `navigationStep()` to avoid problems if user code invokes the navigator API to change its state.
+			- Added methods to load/save mrpt::nav::TWaypointSequence to configuration files.
+		- \ref mrpt_slam_grp
+			- rbpf-slam: Add support for simplemap continuation.
+	- BUG FIXES:
+		- Fix reactive navigator inconsistent state if navigation API is called from within rnav callbacks.
+		- Fix incorrect evaluation of "ASSERT" formulas in mrpt::nav::CMultiObjectiveMotionOptimizerBase
+
+<hr>
+<a name="1.5.1">
+<h2>Version 1.5.1: Released 21/JUN/2017  </h2></a>
+- <b>Detailed list of changes:</b>
+	- Changes in libraries:
+		- \ref mrpt_nav_grp
+			- fix const-correctness: [commit](https://github.com/MRPT/mrpt/commit/7e79003d2adeb7b170fa04e0bc34d42707e07306)
+			- More flexible callback behavior: [commit](https://github.com/MRPT/mrpt/commit/5b054336a1ac75f6e4f8741e5049971917a2980a)
+
+
+<hr>
 <a name="1.5.0">
 <h2>Version 1.5.0: Released 10-JUN-2017</h2></a>
 	- Changes in apps:
