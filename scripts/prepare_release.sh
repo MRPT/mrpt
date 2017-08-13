@@ -37,8 +37,8 @@ mkdir -p ${MRPT_DEBSRC_DIR}
 # Export / copy sources to target dir:
 if [ -d "$MRPTSRC/.git" ];
 then
-	echo "Exporting git source tree to ${MRPT_DEBSRC_DIR}"
-	git archive --format=tar master | tar -x -C ${MRPT_DEBSRC_DIR}
+	echo "# Exporting git source tree to ${OUT_DIR}"
+	git archive --format=tar HEAD | tar -x -C ${OUT_DIR}
 
 	# Generate ./SOURCE_DATE_EPOCH with UNIX time_t
 	SOURCE_DATE_EPOCH=$(git log -1 --pretty=%ct)
