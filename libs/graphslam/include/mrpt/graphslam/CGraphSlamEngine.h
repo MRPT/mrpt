@@ -694,11 +694,11 @@ class CGraphSlamEngine : public mrpt::utils::COutputLogger {
 		 */
 		/**\{*/
 		static double accumulateAngleDiffs(
-				mrpt::poses::CPose2D p1,
-				mrpt::poses::CPose2D p2);
+				const mrpt::poses::CPose2D &p1,
+				const mrpt::poses::CPose2D &p2);
 		static double accumulateAngleDiffs(
-				mrpt::poses::CPose3D p1,
-				mrpt::poses::CPose3D p2);
+				const mrpt::poses::CPose3D &p1,
+				const mrpt::poses::CPose3D &p2);
 		/**\}*/
 		/**\brief Set the opengl model that indicates the latest position of the
 		 * trajectory at hand
