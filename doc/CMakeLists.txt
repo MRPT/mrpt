@@ -10,7 +10,7 @@ SET(DOC_INDIV_FILES
 SET(all_docs_files ${DOX_HDRS} ${DOC_INDIV_FILES})
 add_custom_target(DocumentationFiles DEPENDS ${all_docs_files} SOURCES ${all_docs_files})
 if(ENABLE_SOLUTION_FOLDERS)
-	set_target_properties(DocumentationFiles PROPERTIES FOLDER "Docs")
+	set_target_properties(DocumentationFiles PROPERTIES FOLDER "documentation")
 endif()
 
 # ----------------------------------------------------------------------------

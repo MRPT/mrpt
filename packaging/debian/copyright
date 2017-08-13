@@ -343,11 +343,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  Copyright (C) 2003-2005 Diego Nehab. MIT License.
   http://w3.impa.br/~diego/software/rply/
 
- * Octomap library.
-  K. M. Wurm and A. Hornung and M. Bennewitz and C. Stachniss and W. Burgard.
-  OctoMap is released under the New BSD License.
-   http://octomap.github.com/
-
  * RoboPeak Lidar SDK.
    https://github.com/robopeak/rplidar_ros
    Copyright (c) 2014, RoboPeak Public Repos
