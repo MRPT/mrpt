@@ -13,11 +13,12 @@
 <p> <b>Note:</b> <i>If you are displaying a local version of this page and you have not built the whole HTML documentation, the links above will be broken. Either build the documentation invoking <code>make documentation_html</code> or [browse it on-line](http://www.mrpt.org/).</i></p>
 
 <a name="1.5.3">
-<h2>Version 1.5.3: (Under development)  </h2></a>
+<h2>Version 1.5.3: Released 13/AUG/2017  </h2></a>
 - <b>Detailed list of changes:</b>
 	- CMake >=3.1 is now required for use of ExternalProjects.
 	- Scripts `scripts/prepare_{debian,release}.sh` have been refactored and simplified.
 	- Removed embedded source code versions of Eigen, assimp and octomap. Downloaded and built as ExternalProjects if not present in the system.
+	- Releases will be signed with PGP from now on and posted as binary attachments to GitHub releases.
 
 <hr>
 <a name="1.5.2">
