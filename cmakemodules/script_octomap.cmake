@@ -36,8 +36,7 @@ IF (NOT OCTOMAP_FOUND)
 		include(ExternalProject)
 		# download from GH
 		ExternalProject_Add(EP_octomap
-		  URL               "https://github.com/jlblancoc/octomap/archive/devel.zip"
-		  #URL_MD5           "ea292f0595d7408e36ab7e545ceda013"
+		  URL               "https://github.com/MRPT/octomap/archive/devel.zip" #TO-DO: Switch back to original repo after next stable release.
 		  SOURCE_DIR        "${MRPT_BINARY_DIR}/otherlibs/octomap/"
 		  CMAKE_ARGS
 			-DBUILD_TESTING=OFF
