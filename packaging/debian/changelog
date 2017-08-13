@@ -1,4 +1,4 @@
-mrpt (1:1.5.2-1) unstable; urgency=medium
+mrpt (1:1.5.3-1) unstable; urgency=medium
 
   * New version of upstream sources.
   * Add signature checking to watch file (fix lintian 
@@ -8,8 +8,10 @@ mrpt (1:1.5.2-1) unstable; urgency=medium
   * Fix lintian error license-problem-convert-utf-code.
   * Builds with GCC 7 (Closes: #853563).
   * Remove all debian/patches as they are integrated upstream.
+  * Update copyright as Eigen, assimp and octomap are no longer shipped in
+    the sources tarball.
 
- -- José Luis Blanco Claraco <joseluisblancoc@gmail.com>  Mon, 07 Aug 2017 08:20:39 +0200
+ -- José Luis Blanco Claraco <joseluisblancoc@gmail.com>  Mon, 14 Aug 2017 01:13:00 +0200
 
 mrpt (1:1.4.0-7) unstable; urgency=medium
 
