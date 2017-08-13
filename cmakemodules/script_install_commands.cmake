@@ -67,7 +67,7 @@ IF(WIN32)
 			INSTALL(FILES "${F}" DESTINATION bin)
 		ENDFOREACH(F)
 	ENDIF (EXISTS "${FFMPEG_WIN32_ROOT_DIR}/bin")
-	
+
 	# Extra optional DLLs to be installed in the "bin" folder:
 	file(TO_CMAKE_PATH "$ENV{MRPT_EXTRA_DLLS_TO_INSTALL}" MRPT_EXTRA_DLLS_TO_INSTALL)
 	IF (NOT "${MRPT_EXTRA_DLLS_TO_INSTALL}" STREQUAL "")
@@ -136,7 +136,7 @@ IF (PACKAGE_INCLUDES_SOURCES)
 	ENDIF(NOT IS_DEBIAN_DBG_PKG)
 ENDIF (PACKAGE_INCLUDES_SOURCES)
 
-# If using embedded version, install embedded version as part of mrpt-base's headers:
+# Using embedded version of libraries that need public headers?
 IF (PACKAGE_INCLUDES_SOURCES)
 	IF (EIGEN_USE_EMBEDDED_VERSION AND NOT IS_DEBIAN_DBG_PKG)
 		IF(WIN32)
@@ -148,10 +148,20 @@ IF (PACKAGE_INCLUDES_SOURCES)
 		ENDIF(WIN32)
 
 		INSTALL(
-			DIRECTORY "${MRPT_SOURCE_DIR}/otherlibs/eigen3/Eigen"
+			DIRECTORY "${MRPT_BINARY_DIR}/otherlibs/eigen3/Eigen"
 			DESTINATION "${MRPT_INSTALL_EIGEN_PREFIX}" )
 		INSTALL(
-			DIRECTORY "${MRPT_SOURCE_DIR}/otherlibs/eigen3/unsupported"
+			DIRECTORY "${MRPT_BINARY_DIR}/otherlibs/eigen3/unsupported"
 			DESTINATION "${MRPT_INSTALL_EIGEN_PREFIX}" )
 	ENDIF (EIGEN_USE_EMBEDDED_VERSION AND NOT IS_DEBIAN_DBG_PKG)
+	
+	IF (CMAKE_MRPT_HAS_OCTOMAP AND NOT CMAKE_MRPT_HAS_OCTOMAP_SYSTEM)
+		# headers must end up in /Program Files/MRPT-X.Y.Z/libs/maps/...
+		SET(MRPT_INSTALL_OCTOMAP_PREFIX "libs/maps/include/")
+
+		INSTALL(
+			DIRECTORY "${MRPT_BINARY_DIR}/otherlibs/octomap/octomap/include/"
+			DESTINATION "${MRPT_INSTALL_OCTOMAP_PREFIX}" )
+	ENDIF()
+	
 ENDIF (PACKAGE_INCLUDES_SOURCES)

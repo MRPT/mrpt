@@ -15,7 +15,7 @@
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/safe_pointers.h>
-#include <mrpt/otherlibs/octomap/octomap.h>
+#include <octomap/octomap.h>
 #include <mrpt/obs/obs_frwds.h>
 
 #include <mrpt/maps/link_pragmas.h>

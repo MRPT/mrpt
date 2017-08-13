@@ -228,6 +228,7 @@ include(cmakemodules/script_videre_svs.cmake REQUIRED)  # Support for Videre Des
 include(cmakemodules/script_ftdi.cmake REQUIRED)        # Check for the FTDI headers (Linux only, in win32 we use built-in header & dynamic DLL load):
 include(cmakemodules/script_inotify.cmake REQUIRED)     # Check for the sys/inotify headers (Linux only, in win32 we use the equivalent API for file system monitoring):
 include(cmakemodules/script_gl_glut.cmake REQUIRED)     # Check for the GL,GLUT libraries
+include(cmakemodules/script_octomap.cmake REQUIRED)     # Check for the octomap library
 include(cmakemodules/script_opencv.cmake REQUIRED)      # Check for the OpenCV libraries (via pkg-config, CMake, with different options)
 include(cmakemodules/script_openni2.cmake REQUIRED)     # Check for the OpenNI2 library
 include(cmakemodules/script_ffmpeg.cmake REQUIRED)      # Check for ffmpeg C libraries: libavcodec, libavutil, libavformat, libswscale

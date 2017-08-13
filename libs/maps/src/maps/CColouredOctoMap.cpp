@@ -195,7 +195,7 @@ bool CColouredOctoMap::internal_insertObservation(const mrpt::obs::CObservation 
 		}
 
 		// Insert rays:
-		m_octomap.insertScan(scan, sensorPt, insertionOptions.maxrange, insertionOptions.pruning);
+		m_octomap.insertPointCloud(scan, sensorPt, insertionOptions.maxrange, insertionOptions.pruning);
 		return true;
 	}
 	else if ( IS_CLASS(obs,CObservation3DRangeScan) )

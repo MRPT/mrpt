@@ -22,17 +22,17 @@ IF (EIGEN_USE_EMBEDDED_VERSION)
 	# Include embedded version headers:
 	include(ExternalProject)
 	# download Eigen from bitbucket
-	ExternalProject_Add(eigen3
+	ExternalProject_Add(EP_eigen3
 	  URL               "https://bitbucket.org/eigen/eigen/get/3.3.4.tar.bz2"
 	  URL_MD5           "a7aab9f758249b86c93221ad417fbe18"
-	  SOURCE_DIR        "${MRPT_SOURCE_DIR}/otherlibs/eigen3/"
+	  SOURCE_DIR        "${MRPT_BINARY_DIR}/otherlibs/eigen3/"
 	  CONFIGURE_COMMAND ""
 	  BUILD_COMMAND     ""
 	  INSTALL_COMMAND   ""
 	  TEST_COMMAND      ""
 	)
 
-	SET(EIGEN_EMBEDDED_INCLUDE_DIR "${MRPT_SOURCE_DIR}/otherlibs/eigen3/" CACHE PATH "Eigen path for embedded use")
+	SET(EIGEN_EMBEDDED_INCLUDE_DIR "${MRPT_BINARY_DIR}/otherlibs/eigen3/" CACHE PATH "Eigen path for embedded use" FORCE)
 	MARK_AS_ADVANCED(EIGEN_EMBEDDED_INCLUDE_DIR)
 
 	SET(MRPT_EIGEN_INCLUDE_DIR "${EIGEN_EMBEDDED_INCLUDE_DIR}")

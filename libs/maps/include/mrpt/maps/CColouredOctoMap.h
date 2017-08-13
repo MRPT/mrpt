@@ -11,8 +11,8 @@
 #define MRPT_CColouredOctoMap_H
 
 #include <mrpt/maps/COctoMapBase.h>
-#include <mrpt/otherlibs/octomap/octomap.h>
-#include <mrpt/otherlibs/octomap/ColorOcTree.h>
+#include <octomap/octomap.h>
+#include <octomap/ColorOcTree.h>
 #include <mrpt/obs/obs_frwds.h>
 
 #include <mrpt/maps/link_pragmas.h>
