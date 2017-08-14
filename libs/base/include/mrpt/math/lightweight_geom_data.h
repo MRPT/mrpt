@@ -1230,7 +1230,7 @@ struct BASE_IMPEXP TLine2D
 	  * Constructor from two points, through which the line will pass.
 	  * \throw logic_error if both points are the same
 	  */
-	TLine2D(const TPoint2D& p1, const TPoint2D& p2) throw(std::logic_error);
+	TLine2D(const TPoint2D& p1, const TPoint2D& p2);
 	/**
 	  * Constructor from a segment.
 	  */
@@ -1307,7 +1307,7 @@ struct BASE_IMPEXP TLine3D
 	  * Constructor from two points, through which the line will pass.
 	  * \throw std::logic_error if both points are the same.
 	  */
-	TLine3D(const TPoint3D& p1, const TPoint3D& p2) throw(std::logic_error);
+	TLine3D(const TPoint3D& p1, const TPoint3D& p2);
 	/**
 	  * Constructor from 3D segment.
 	  */
@@ -1409,18 +1409,17 @@ struct BASE_IMPEXP TPlane
 	  * Gets a plane which contains these three points.
 	  * \throw std::logic_error if the points are linearly dependants.
 	  */
-	TPlane(const TPoint3D& p1, const TPoint3D& p2, const TPoint3D& p3) throw(
-		std::logic_error);
+	TPlane(const TPoint3D& p1, const TPoint3D& p2, const TPoint3D& p3);
 	/**
 	  * Gets a plane which contains this point and this line.
 	  * \throw std::logic_error if the point is inside the line.
 	  */
-	TPlane(const TPoint3D& p1, const TLine3D& r2) throw(std::logic_error);
+	TPlane(const TPoint3D& p1, const TLine3D& r2);
 	/**
 	  * Gets a plane which contains the two lines.
 	  * \throw std::logic_error if the lines do not cross.
 	  */
-	TPlane(const TLine3D& r1, const TLine3D& r2) throw(std::logic_error);
+	TPlane(const TLine3D& r1, const TLine3D& r2);
 	/**
 	  * Fast default constructor. Initializes to garbage.
 	  */

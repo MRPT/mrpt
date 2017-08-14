@@ -134,6 +134,3 @@ void  xsAlignedFree(void* ptr)
 #endif
 	_aligned_free(ptr);
 }
-
-
-
