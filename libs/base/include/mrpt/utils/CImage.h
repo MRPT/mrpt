@@ -1106,7 +1106,6 @@ class BASE_IMPEXP CImage : public mrpt::utils::CSerializable, public CCanvas
 DEFINE_SERIALIZABLE_POST_CUSTOM_BASE(CImage, mrpt::utils::CSerializable)
 
 }  // end of namespace utils
-
 }  // end of namespace mrpt
 
 #endif
