@@ -77,6 +77,8 @@ CMainWindow::CMainWindow(QWidget* parent)
 
 	connect(
 		m_ui->m_actionOpen, &QAction::triggered, this, &CMainWindow::openMap);
+	connect(
+		m_ui->m_actionSave, &QAction::triggered, this, &CMainWindow::saveMap);
 	connect(m_ui->m_undoAction, &QAction::triggered, this, &CMainWindow::undo);
 	connect(m_ui->m_redoAction, &QAction::triggered, this, &CMainWindow::redo);
 	connect(
@@ -142,6 +144,13 @@ void CMainWindow::openMap()
 		createNewDocument();
 		qDebug() << "Unexpected runtime error!";
 	}
+}
+
+void CMainWindow::saveMap()
+{
+	if (!m_document) return;
+
+	m_document->saveSimpleMap();
 }
 
 void CMainWindow::itemClicked(const QModelIndex& index)
