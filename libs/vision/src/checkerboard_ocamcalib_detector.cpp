@@ -104,47 +104,79 @@ bool do_special_dilation(mrpt::utils::CImage &thresh_img, const int dilations,
 	switch(dilations)
 	{
 	case 37:		cvDilate(ipl,ipl, kernel_cross , 1); isLast  = true;
+	// fall through
 	case 36:		cvErode (ipl,ipl, kernel_rect , 1);
+	// fall through
 	case 35:		cvDilate(ipl,ipl, kernel_vert , 1);
+	// fall through
 	case 34:		cvDilate(ipl,ipl, kernel_vert , 1);
+	// fall through
 	case 33:		cvDilate(ipl,ipl, kernel_vert , 1);
+	// fall through
 	case 32:		cvDilate(ipl,ipl, kernel_vert , 1);
+	// fall through
 	case 31:		cvDilate(ipl,ipl, kernel_vert , 1); break;
 
 	case 30:		cvDilate(ipl,ipl, kernel_cross , 1);
+	// fall through
 	case 29:		cvErode (ipl,ipl, kernel_rect , 1);
+	// fall through
 	case 28:		cvDilate(ipl,ipl, kernel_horz , 1);
+	// fall through
 	case 27:		cvDilate(ipl,ipl, kernel_horz , 1);
+	// fall through
 	case 26:		cvDilate(ipl,ipl, kernel_horz , 1);
+	// fall through
 	case 25:		cvDilate(ipl,ipl, kernel_horz , 1);
+	// fall through
 	case 24:		cvDilate(ipl,ipl, kernel_horz , 1); break;
 
 	case 23:		cvDilate(ipl,ipl, kernel_diag2 , 1);
+	// fall through
 	case 22:		cvDilate(ipl,ipl, kernel_diag1 , 1);
+	// fall through
 	case 21:		cvDilate(ipl,ipl, kernel_diag2 , 1);
+	// fall through
 	case 20:		cvDilate(ipl,ipl, kernel_diag1 , 1);
+	// fall through
 	case 19:		cvDilate(ipl,ipl, kernel_diag2 , 1);
+	// fall through
 	case 18:		cvDilate(ipl,ipl, kernel_diag1 , 1); break;
 
 	case 17:		cvDilate(ipl,ipl, kernel_diag2 , 1);
+	// fall through
 	case 16:		cvDilate(ipl,ipl, kernel_diag2 , 1);
+	// fall through
 	case 15:		cvDilate(ipl,ipl, kernel_diag2 , 1);
+	// fall through
 	case 14:		cvDilate(ipl,ipl, kernel_diag2 , 1); break;
 
 	case 13:		cvDilate(ipl,ipl, kernel_diag1 , 1);
+	// fall through
 	case 12:		cvDilate(ipl,ipl, kernel_diag1 , 1);
+	// fall through
 	case 11:		cvDilate(ipl,ipl, kernel_diag1 , 1);
+	// fall through
 	case 10:		cvDilate(ipl,ipl, kernel_diag1 , 1);  break;
 
 	case 9:		cvDilate(ipl,ipl, kernel_cross , 1);
+	// fall through
 	case 8:		cvErode (ipl,ipl, kernel_rect , 1);
+	// fall through
 	case 7:		cvDilate(ipl,ipl, kernel_cross , 1);
+	// fall through
 	case 6:		cvDilate(ipl,ipl, kernel_diag2 , 1);   isLast  = true;
+	// fall through
 	case 5:		cvDilate(ipl,ipl, kernel_diag1 , 1);
+	// fall through
 	case 4:		cvDilate(ipl,ipl, kernel_rect , 1);
+	// fall through
 	case 3:		cvErode (ipl,ipl, kernel_cross , 1);
+	// fall through
 	case 2:		cvDilate(ipl,ipl, kernel_rect , 1);
+	// fall through
 	case 1:		cvDilate(ipl,ipl, kernel_cross , 1);
+	// fall through
 	case 0:		/* first try: do nothing to the image */ break;
 	};
 
@@ -712,12 +744,12 @@ int cvFindChessboardCorners3( const mrpt::utils::CImage & img_, CvSize pattern_s
 
 
 double triangleArea(
-	double x0,double y0, 
-	double x1,double y1, 
+	double x0,double y0,
+	double x1,double y1,
 	double x2,double y2 )
 {
 	return std::abs( 0.5*(x0*(y1-y2)+x1*(y2-y0)+x2*(y0-y1)) );
-}	
+}
 
 double median(const std::vector<double> &vec)
 {
@@ -782,14 +814,14 @@ void icvCleanFoundConnectedQuads( std::vector<CvCBQuadPtr> &quad_group, const Cv
         ci.y *= 0.25f;
 
 		// Quad area:
-		const double a = 
-			triangleArea( 
-				q->corners[0]->pt.x, q->corners[0]->pt.y, 
+		const double a =
+			triangleArea(
+				q->corners[0]->pt.x, q->corners[0]->pt.y,
 				q->corners[1]->pt.x, q->corners[1]->pt.y,
 				q->corners[2]->pt.x, q->corners[2]->pt.y )
 			+
-			triangleArea( 
-				q->corners[0]->pt.x, q->corners[0]->pt.y, 
+			triangleArea(
+				q->corners[0]->pt.x, q->corners[0]->pt.y,
 				q->corners[2]->pt.x, q->corners[2]->pt.y,
 				q->corners[3]->pt.x, q->corners[3]->pt.y );
 
@@ -824,7 +856,7 @@ void icvCleanFoundConnectedQuads( std::vector<CvCBQuadPtr> &quad_group, const Cv
 	// quadrange that causes the biggest reduction in pattern size until we
 	// have the correct number
 
-	// JLBC (2014): Additional preliminary filter: remove quads that are too 
+	// JLBC (2014): Additional preliminary filter: remove quads that are too
 	// small or too large
 
 	// In the following, use "quad_group.size()" since the size will change with iterations
@@ -2325,4 +2357,3 @@ void quadListMakeUnique( std::vector<CvCBQuadPtr> &quads)
 //===========================================================================
 
 #endif // MRPT_HAS_OPENCV
-

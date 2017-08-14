@@ -1287,8 +1287,8 @@ void reactive_navigator_demoframe::Onplot3DMouseClick(wxMouseEvent& event)
 
 			m_plot3D->SetCursor( *wxSTANDARD_CURSOR ); // End of cross cursor
 			m_cursorPickState = cpsNone; // end of mode
-			break;
 		}
+		break;
 	case cpsPlaceRobot:
 		if (event.ButtonIsDown( wxMOUSE_BTN_LEFT ))
 		{
@@ -1299,8 +1299,8 @@ void reactive_navigator_demoframe::Onplot3DMouseClick(wxMouseEvent& event)
 			m_gl_placing_robot->setVisibility(false);
 			m_plot3D->SetCursor( *wxSTANDARD_CURSOR ); // End of cross cursor
 			m_cursorPickState = cpsNone; // end of mode
-			break;
 		}
+		break;
 	case cpsDrawObstacles:
 	case cpsDrawClear:
 		if (event.ButtonIsDown( wxMOUSE_BTN_LEFT ))
@@ -1313,8 +1313,8 @@ void reactive_navigator_demoframe::Onplot3DMouseClick(wxMouseEvent& event)
 				m_plot3D->Refresh();
 			}
 			skip_normal_process = true;
-			break;
 		}
+		break;
 	default:
 		break;
 	}

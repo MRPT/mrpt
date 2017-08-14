@@ -27,7 +27,7 @@ struct TAux
 
 	void (*m_func)(void);
 
-	void run(int ) 
+	void run(int )
 	{
 		if (m_func) (*m_func)(); else throw std::runtime_error("functor is NULL!!");
 		terminated = true;
@@ -39,18 +39,19 @@ struct TAux
 void launchTestWithTimeout(void (*func)(void), double timeout_secs, const std::string &fail_msg )
 {
 	TAux obj(func);
-	//mrpt::system::TThreadHandle th = 
+	//mrpt::system::TThreadHandle th =
 	mrpt::system::createThreadFromObjectMethod<TAux>( &obj, &TAux::run, 0 );
 
 	mrpt::utils::CTicTac tim;
 	tim.Tic();
-	
+
 	while (!obj.terminated && tim.Tac()<timeout_secs) {
 		mrpt::system::sleep(1);
 	}
 
-	if (!obj.terminated)
+	if (!obj.terminated) {
 		EXPECT_TRUE(false) << "Thread didn't finished in timeout! While testing: " << fail_msg;
+	}
 }
 
 
@@ -91,7 +92,7 @@ void thread_example(int id)
 		//int remaining;
 		{
 			CCriticalSectionLocker lock(&csCounter);
-			//remaining = 
+			//remaining =
 			--counter;
 		}
 	}
@@ -126,4 +127,3 @@ TEST(Synch, CriticalSections_Multi)
 {
 	launchTestWithTimeout(my_CriticalSections_Multi, 6.0, "CriticalSections_Multi");
 }
-

@@ -1932,7 +1932,7 @@ void CImage::releaseIpl(bool thisIsExternalImgUnload) MRPT_NO_THROWS
 /*---------------------------------------------------------------
 				makeSureImageIsLoaded
  ---------------------------------------------------------------*/
-void CImage::makeSureImageIsLoaded() const throw (std::exception,utils::CExceptionExternalImageNotFound )
+void CImage::makeSureImageIsLoaded() const
 {
 	if (img!=NULL) return;  // OK, continue
 
@@ -2803,4 +2803,3 @@ bool CImage::loadTGA(const std::string& fileName, mrpt::utils::CImage &out_RGB, 
 	return false;
 #endif // MRPT_HAS_OPENCV
 }
-

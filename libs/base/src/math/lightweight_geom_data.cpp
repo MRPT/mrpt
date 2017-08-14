@@ -446,7 +446,7 @@ void TLine2D::getAsPose2DForcingOrigin(const TPoint2D &origin,mrpt::poses::CPose
 	//Line's director vector is (-coefs[1],coefs[0]).
 	outPose.phi( atan2(coefs[0],-coefs[1]) );
 }
-TLine2D::TLine2D(const TPoint2D &p1,const TPoint2D &p2) throw(std::logic_error)	{
+TLine2D::TLine2D(const TPoint2D &p1,const TPoint2D &p2)	{
 	if (p1==p2) throw logic_error("Both points are the same");
 	coefs[0]=p2.y-p1.y;
 	coefs[1]=p1.x-p2.x;
@@ -492,7 +492,7 @@ void TLine3D::unitarize()	{
 	double s=sqrt(squareNorm<3,double>(director));
 	for (size_t i=0;i<3;i++) director[i]/=s;
 }
-TLine3D::TLine3D(const TPoint3D &p1,const TPoint3D &p2) throw(std::logic_error)	{
+TLine3D::TLine3D(const TPoint3D &p1,const TPoint3D &p2){
 	if (abs(math::distance(p1,p2))<geometryEpsilon) throw logic_error("Both points are the same");
 	pBase=p1;
 	director[0]=p2.x-p1.x;
@@ -568,7 +568,7 @@ void TPlane::getAsPose3DForcingOrigin(const TPoint3D &newOrigin,mrpt::poses::CPo
 	for (size_t i=0;i<3;i++) AXIS.set_unsafe(i,3,newOrigin[i]);
 	pose=mrpt::poses::CPose3D(AXIS);
 }
-TPlane::TPlane(const TPoint3D &p1,const TPoint3D &p2,const TPoint3D &p3)  throw(std::logic_error) {
+TPlane::TPlane(const TPoint3D &p1,const TPoint3D &p2,const TPoint3D &p3) {
 	double dx1=p2.x-p1.x;
 	double dy1=p2.y-p1.y;
 	double dz1=p2.z-p1.z;
@@ -581,7 +581,7 @@ TPlane::TPlane(const TPoint3D &p1,const TPoint3D &p2,const TPoint3D &p3)  throw(
 	if (abs(coefs[0])<geometryEpsilon&&abs(coefs[1])<geometryEpsilon&&abs(coefs[2])<geometryEpsilon) throw logic_error("Points are linearly dependent");
 	coefs[3]=-coefs[0]*p1.x-coefs[1]*p1.y-coefs[2]*p1.z;
 }
-TPlane::TPlane(const TPoint3D &p1,const TLine3D &r2) throw(std::logic_error)	{
+TPlane::TPlane(const TPoint3D &p1,const TLine3D &r2) {
 	double dx1=p1.x-r2.pBase.x;
 	double dy1=p1.y-r2.pBase.y;
 	double dz1=p1.z-r2.pBase.z;
@@ -591,7 +591,7 @@ TPlane::TPlane(const TPoint3D &p1,const TLine3D &r2) throw(std::logic_error)	{
 	if (abs(coefs[0])<geometryEpsilon&&abs(coefs[1])<geometryEpsilon&&abs(coefs[2])<geometryEpsilon) throw logic_error("Point is contained in the line");
 	coefs[3]=-coefs[0]*p1.x-coefs[1]*p1.y-coefs[2]*p1.z;
 }
-TPlane::TPlane(const TLine3D &r1,const TLine3D &r2) throw(std::logic_error)	{
+TPlane::TPlane(const TLine3D &r1,const TLine3D &r2) {
 	crossProduct3D(r1.director,r2.director,coefs);
 	coefs[3]=-coefs[0]*r1.pBase.x-coefs[1]*r1.pBase.y-coefs[2]*r1.pBase.z;
 	if (abs(coefs[0])<geometryEpsilon&&abs(coefs[1])<geometryEpsilon&&abs(coefs[2])<geometryEpsilon)	{

@@ -13,7 +13,7 @@
 
 
 // Universal include for all versions of OpenCV
-#include <mrpt/otherlibs/do_opencv_includes.h> 
+#include <mrpt/otherlibs/do_opencv_includes.h>
 
 #ifdef HAVE_OPENCV_NONFREE  //MRPT_HAS_OPENCV_NONFREE
 # include <opencv2/nonfree/nonfree.hpp>
@@ -33,7 +33,11 @@ using namespace mrpt::utils;
 using namespace std;
 
 //Was: MRPT_HAS_OPENCV_NONFREE
-#define HAVE_OPENCV_WITH_SURF defined(HAVE_OPENCV_XFEATURES2D) || (MRPT_OPENCV_VERSION_NUM < 0x300 && MRPT_OPENCV_VERSION_NUM >= 0x240)
+#if defined(HAVE_OPENCV_XFEATURES2D) || (MRPT_OPENCV_VERSION_NUM < 0x300 && MRPT_OPENCV_VERSION_NUM >= 0x240)
+# define HAVE_OPENCV_WITH_SURF 1
+#else
+# define HAVE_OPENCV_WITH_SURF 0
+#endif
 
 /************************************************************************************************
 *								extractFeaturesSURF  									        *
@@ -56,7 +60,7 @@ void  CFeatureExtraction::extractFeaturesSURF(
 
 //gb redesign start -make sure that the Algorithm::create is used only for older openCV versions
 #	if MRPT_OPENCV_VERSION_NUM < 0x300 && MRPT_OPENCV_VERSION_NUM >= 0x240
-	
+
 		Ptr<Feature2D> surf = Algorithm::create<Feature2D>("Feature2D.SURF");
 		if( surf.empty() )
 			CV_Error(CV_StsNotImplemented, "OpenCV <v3.0 was built without SURF support");
@@ -71,7 +75,7 @@ void  CFeatureExtraction::extractFeaturesSURF(
 
 	#else
 		Ptr<xfeatures2d::SURF> surf = xfeatures2d::SURF::create(100.0, 4, 3, 0, 0);//gb
-		
+
 		if( surf.empty() )
 			CV_Error(CV_StsNotImplemented, "OpenCV 3.0 was built without SURF support");
 		surf->setHessianThreshold(options.SURFOptions.hessianThreshold);
@@ -79,7 +83,7 @@ void  CFeatureExtraction::extractFeaturesSURF(
 		surf->setNOctaveLayers(options.SURFOptions.nLayersPerOctave);
 		//surf->setUpright(params.upright != 0);
 		surf->setExtended(options.SURFOptions.rotation_invariant);
-//gb redesign end		
+//gb redesign end
 		surf->detectAndCompute(img, Mat(), cv_feats, cv_descs);
 	#endif
 
@@ -92,11 +96,11 @@ void  CFeatureExtraction::extractFeaturesSURF(
 	unsigned int	imgH		= inImg.getHeight();
 	unsigned int	imgW		= inImg.getWidth();
 
-	const size_t n_feats = (nDesiredFeatures== 0) ? 
+	const size_t n_feats = (nDesiredFeatures== 0) ?
 		cv_feats.size()
 		:
 		std::min((size_t)nDesiredFeatures, cv_feats.size());
-	
+
 	for(size_t i = 0; i < n_feats; i++ )
 	{
 		// Get the OpenCV SURF point
@@ -139,7 +143,7 @@ void  CFeatureExtraction::extractFeaturesSURF(
 	} // end for
 
 #else
-	
+
 	THROW_EXCEPTION("Method not available: MRPT compiled without OpenCV, or against a version of OpenCV without SURF")
 #endif //MRPT_HAS_OPENCV
 } // end extractFeaturesSURF
@@ -171,11 +175,11 @@ void  CFeatureExtraction::internal_computeSurfDescriptors(
 		cv_feats[i].pt.y = in_features[i]->y;
 		cv_feats[i].size = 16;  //sizes[layer];
 	}
-	
+
 	// Only computes the descriptors:
 	//gb redesign
 #	if MRPT_OPENCV_VERSION_NUM < 0x300	&& MRPT_OPENCV_VERSION_NUM >= 0x240
-	
+
 		Ptr<Feature2D> surf = Algorithm::create<Feature2D>("Feature2D.SURF");
 		if( surf.empty() )
 			CV_Error(CV_StsNotImplemented, "OpenCV was built without SURF support");
@@ -188,9 +192,9 @@ void  CFeatureExtraction::internal_computeSurfDescriptors(
 		surf->compute(img, cv_feats, cv_descs); //is that correct? the version from above is:
 		//surf->operator()(img, Mat(), cv_feats, cv_descs);
 	#else
-	
+
 		Ptr<xfeatures2d::SURF> surf = xfeatures2d::SURF::create(100.0, 4, 3, 0, 0);//gb
-	
+
 		if( surf.empty() )
 			CV_Error(CV_StsNotImplemented, "OpenCV was built without SURF support");
 			surf->setHessianThreshold(options.SURFOptions.hessianThreshold);
@@ -198,10 +202,10 @@ void  CFeatureExtraction::internal_computeSurfDescriptors(
 			surf->setNOctaveLayers(options.SURFOptions.nLayersPerOctave);
 			//surf->setUpright(params.upright != 0);
 			surf->setExtended(options.SURFOptions.rotation_invariant);
-	
+
 		surf->detectAndCompute(img, Mat(), cv_feats, cv_descs);
-	#endif	
-//gb redesign end	
+	#endif
+//gb redesign end
 	// -----------------------------------------------------------------
 	// MRPT Wrapping
 	// -----------------------------------------------------------------
@@ -226,4 +230,3 @@ void  CFeatureExtraction::internal_computeSurfDescriptors(
 	THROW_EXCEPTION("Method not available: MRPT compiled without OpenCV, or against a version of OpenCV without SURF")
 #endif //MRPT_HAS_OPENCV
 }  // end internal_computeSurfDescriptors
-

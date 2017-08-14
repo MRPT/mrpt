@@ -81,7 +81,7 @@ namespace stlplus
     // create a pointer containing a *copy* of the object using the template parameter C
     // this copy is taken because the pointer class maintains a dynamically allocated object
     // and the T& may not be (usually is not) dynamically allocated
-    explicit smart_ptr_base(const T& data) throw(illegal_copy);
+    explicit smart_ptr_base(const T& data);
 
     // create a pointer containing a dynamically created object
     // Note: the object must be allocated *by the user* with new
@@ -109,21 +109,21 @@ namespace stlplus
     // dereference operators and functions
 
     // dereference the smart pointer to get the object - use in the form *p1
-    T& operator*(void) throw(null_dereference);
-    const T& operator*(void) const throw(null_dereference);
+    T& operator*(void);
+    const T& operator*(void) const;
 
     // used as a prefix to a member access to the contained object e.g. p1->print() calls T::print()
-    T* operator->(void) throw(null_dereference);
-    const T* operator->(void) const throw(null_dereference);
+    T* operator->(void);
+    const T* operator->(void) const;
 
     //////////////////////////////////////////////////////////////////////////////
     // explicit function forms of the above assignment and dereference operators
 
     // set the value - note that this does a copy using the C template parameter
-    void set_value(const T& data) throw(illegal_copy);
+    void set_value(const T& data);
     // get the value
-    T& value(void) throw(null_dereference);
-    const T& value(void) const throw(null_dereference);
+    T& value(void);
+    const T& value(void) const;
 
     // set the pointer
     // deletes the previous pointer and adopts the passed pointer instead
@@ -165,11 +165,11 @@ namespace stlplus
 
     // make this pointer unique with respect to any other references to the same object
     // if this pointer is already unique, it does nothing - otherwise it copies the object
-    inline void make_unique(void) throw(illegal_copy);
+    inline void make_unique(void);
 
     // make this pointer a unique copy of the parameter
     // useful for expressions like p1.copy(p2) which makes p1 a pointer to a unique copy of the contents of p2
-    void copy(const smart_ptr_base<T,C,COUNTER>&) throw(illegal_copy);
+    void copy(const smart_ptr_base<T,C,COUNTER>&);
 
   protected:
     smart_ptr_holder<T,COUNTER>* m_holder;
@@ -190,7 +190,7 @@ namespace stlplus
   class constructor_copy
   {
   public:
-    T* operator() (const T& from) throw()
+    T* operator() (const T& from)
       {
         return new T(from);
       }
@@ -202,7 +202,7 @@ namespace stlplus
   class clone_copy
   {
   public:
-    T* operator() (const T& from) throw()
+    T* operator() (const T& from)
       {
         return from.clone();
       }
@@ -214,7 +214,7 @@ namespace stlplus
   class no_copy
   {
   public:
-    T* operator() (const T& ) throw(illegal_copy)
+    T* operator() (const T& )
       {
         throw illegal_copy("no_copy functor called");
         return 0;

@@ -504,7 +504,7 @@ namespace mrpt
 				return const_reverse_iterator(*this,-1);
 			}
 			inline size_t size() const	{
-				return howMany();
+				return howMany;
 			}
 			inline void resize(size_t N)	{
 				if (N!=size()) throw std::logic_error("Tried to resize a fixed-size vector");
