@@ -233,7 +233,7 @@
     <bool>false</bool>
    </attribute>
    <addaction name="m_actionOpen"/>
-   <addaction name="saveAction"/>
+   <addaction name="m_actionSave"/>
    <addaction name="separator"/>
    <addaction name="m_undoAction"/>
    <addaction name="m_redoAction"/>
@@ -262,13 +262,16 @@
     <string>About</string>
    </property>
   </action>
-  <action name="saveAction">
+  <action name="m_actionSave">
    <property name="icon">
     <iconset resource="../resources/resources.qrc">
      <normaloff>:/save.png</normaloff>:/save.png</iconset>
    </property>
    <property name="text">
     <string>Save</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
    </property>
   </action>
   <action name="m_aboutAction">

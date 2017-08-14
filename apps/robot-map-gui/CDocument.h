@@ -29,6 +29,8 @@ class CDocument
 	~CDocument();
 
 	void loadSimpleMap(const std::string& fileName);
+	void saveSimpleMap() const;
+	const std::string& getFileName() const;
 
 	void setListOfMaps(mrpt::maps::TSetOfMetricMapInitializers& mapCfg);
 	void setConfig(const std::string& config);
@@ -60,4 +62,5 @@ class CDocument
 	mrpt::maps::CSimpleMap m_simplemap;
 	mrpt::maps::CMultiMetricMap m_metricmap;
 	TypeConfig m_typeConfigs;
+	std::string m_fileName;
 };

@@ -41,6 +41,7 @@ class CMainWindow : public QMainWindow
 	void undo();
 	void redo();
 	void openMap();
+	void saveMap();
 	void itemClicked(const QModelIndex& index);
 	void updateConfig();
 	void openConfig(const std::string& str);

@@ -30,8 +30,19 @@ CDocument::CDocument()
 CDocument::~CDocument() {}
 void CDocument::loadSimpleMap(const std::string& fileName)
 {
+	m_fileName = fileName;
 	CFileGZInputStream file(fileName.c_str());
 	file >> m_simplemap;
+}
+
+void CDocument::saveSimpleMap() const
+{
+	m_simplemap.saveToFile(m_fileName);
+}
+
+const std::string &CDocument::getFileName() const
+{
+	return m_fileName;
 }
 
 void CDocument::setListOfMaps(TSetOfMetricMapInitializers& mapCfg)
