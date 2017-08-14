@@ -23,11 +23,16 @@ using namespace mrpt::maps;
 using namespace mrpt::utils;
 
 CDocument::CDocument()
-	: m_simplemap(CSimpleMap()), m_metricmap(CMultiMetricMap())
+	: m_simplemap(CSimpleMap()), m_metricmap(CMultiMetricMap()), m_changedFile(false)
 {
 }
 
 CDocument::~CDocument() {}
+
+bool CDocument::isFileChanged() const
+{
+	return m_changedFile;
+}
 void CDocument::loadSimpleMap(const std::string& fileName)
 {
 	m_fileName = fileName;
@@ -35,9 +40,15 @@ void CDocument::loadSimpleMap(const std::string& fileName)
 	file >> m_simplemap;
 }
 
-void CDocument::saveSimpleMap() const
+void CDocument::saveSimpleMap()
 {
-	m_simplemap.saveToFile(m_fileName);
+	m_changedFile = !m_simplemap.saveToFile(m_fileName);
+}
+
+void CDocument::saveAsText(TypeOfConfig type, int index)
+{
+
+	//save3D_to_text_file;
 }
 
 const std::string &CDocument::getFileName() const
@@ -100,7 +111,7 @@ std::vector<int> CDocument::remove(const std::vector<int>& indexes)
 		}
 	}
 	updateMetricMap();
-
+	m_changedFile = true;
 	return v;
 }
 
@@ -108,12 +119,13 @@ void CDocument::move(
 	const std::vector<int>& indexes,
 	const CSimpleMap::TPosePDFSensFramePairList& posesObsPairs)
 {
-	for (int i = 0; i < indexes.size(); ++i)
+	for (size_t i = 0; i < indexes.size(); ++i)
 	{
 		m_simplemap.remove(indexes[i]);
 		m_simplemap.insertToPos(
 			indexes[i], posesObsPairs[i].first, posesObsPairs[i].second);
 	}
+	m_changedFile = true;
 	updateMetricMap();
 }
 
@@ -130,7 +142,7 @@ void CDocument::insert(
 }
 
 CSimpleMap::TPosePDFSensFramePairList CDocument::get(
-	const std::vector<int>& idx)
+	const std::vector<int>& idx) const
 {
 	CSimpleMap::TPosePDFSensFramePairList posesObsPairs;
 	for (auto& it : idx)
@@ -143,7 +155,7 @@ CSimpleMap::TPosePDFSensFramePairList CDocument::get(
 }
 
 CSimpleMap::TPosePDFSensFramePairList CDocument::getReverse(
-	const std::vector<int>& idx)
+	const std::vector<int>& idx) const
 {
 	CSimpleMap::TPosePDFSensFramePairList posesObsPairs;
 	for (int i = idx.size() - 1; i >= 0; --i)

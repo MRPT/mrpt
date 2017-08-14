@@ -104,6 +104,8 @@ CMainWindow::CMainWindow(QWidget* parent)
 	connect(
 		m_ui->m_viewer, &CViewerContainer::moveRobotPoses, this,
 		&CMainWindow::moveRobotPoses);
+
+	m_ui->m_actionSave->setDisabled(true);
 }
 
 CMainWindow::~CMainWindow()
@@ -151,6 +153,7 @@ void CMainWindow::saveMap()
 	if (!m_document) return;
 
 	m_document->saveSimpleMap();
+	m_ui->m_actionSave->setDisabled(!m_document->isFileChanged());
 }
 
 void CMainWindow::itemClicked(const QModelIndex& index)
@@ -271,6 +274,7 @@ void CMainWindow::addRobotPosesFromMap(
 	if (!m_document || idx.empty()) return;
 
 	m_document->insert(idx, posesObsPairs);
+	m_ui->m_actionSave->setDisabled(!m_document->isFileChanged());
 	applyMapsChanges();
 }
 
@@ -279,6 +283,7 @@ void CMainWindow::deleteRobotPosesFromMap(const std::vector<int>& idx)
 	if (!m_document || idx.empty()) return;
 
 	m_document->remove(idx);
+	m_ui->m_actionSave->setDisabled(!m_document->isFileChanged());
 	applyMapsChanges();
 }
 
@@ -300,6 +305,7 @@ void CMainWindow::moveRobotPosesOnMap(
 			mrpt::poses::CPose3D(dist.x(), dist.y(), 0.0));
 	}
 	m_document->move(idx, posesObsPairs);
+	m_ui->m_actionSave->setDisabled(!m_document->isFileChanged());
 	applyMapsChanges();
 }
 
@@ -325,6 +331,7 @@ void CMainWindow::deleteRobotPoses(const std::vector<int>& idx)
 		m_document->getReverse(idx);
 
 	std::vector<int> reverseInd = m_document->remove(idx);
+	m_ui->m_actionSave->setDisabled(!m_document->isFileChanged());
 	applyMapsChanges();
 
 	auto redo = [idx, this]() { this->deleteRobotPosesFromMap(idx); };

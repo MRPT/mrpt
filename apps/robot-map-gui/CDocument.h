@@ -28,8 +28,12 @@ class CDocument
 	CDocument();
 	~CDocument();
 
+	bool isFileChanged() const;
+
 	void loadSimpleMap(const std::string& fileName);
-	void saveSimpleMap() const;
+	void saveSimpleMap();
+	void saveAsText(TypeOfConfig type, int index);
+
 	const std::string& getFileName() const;
 
 	void setListOfMaps(mrpt::maps::TSetOfMetricMapInitializers& mapCfg);
@@ -50,9 +54,9 @@ class CDocument
 		const std::vector<int>& idx,
 		mrpt::maps::CSimpleMap::TPosePDFSensFramePairList& posesObsPairs);
 	mrpt::maps::CSimpleMap::TPosePDFSensFramePairList get(
-		const std::vector<int>& idx);
+		const std::vector<int>& idx) const;
 	mrpt::maps::CSimpleMap::TPosePDFSensFramePairList getReverse(
-		const std::vector<int>& idx);
+		const std::vector<int>& idx) const;
 
    private:
 	void addMapToRenderizableMaps(
@@ -63,4 +67,5 @@ class CDocument
 	mrpt::maps::CMultiMetricMap m_metricmap;
 	TypeConfig m_typeConfigs;
 	std::string m_fileName;
+	bool m_changedFile;
 };
