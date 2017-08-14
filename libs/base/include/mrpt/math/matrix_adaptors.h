@@ -630,7 +630,7 @@ class CMatrixColumnAccessorExtended
 	{
 		return const_reverse_iterator(*this, -1);
 	}
-	inline size_t size() const { return howMany(); }
+	inline size_t size() const { return howMany; }
 	inline void resize(size_t N)
 	{
 		if (N != size())
