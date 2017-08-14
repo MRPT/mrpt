@@ -55,7 +55,7 @@ namespace mrpt
 		 *  File I/O is supported as:
 		 *		- Binary dump using the CSerializable interface(<< and >> operators), just as most objects
 		 *          in the MRPT library. This format is not compatible with any standarized image format.
-		 *		- Saving/loading from files of different formats (bmp,jpg,png,...) using the methods CImage::loadFromFile and CImage::saveToFile. 
+		 *		- Saving/loading from files of different formats (bmp,jpg,png,...) using the methods CImage::loadFromFile and CImage::saveToFile.
 		 *        Available formats are all those supported by OpenCV
 		 *		- Importing from an XPM array (.xpm file format) using CImage::loadFromXPM
 		 *		- Importing TGA images. See CImage::loadTGA()
@@ -933,8 +933,9 @@ namespace mrpt
 			/** Release the internal IPL image, if not NULL or read-only. */
 			void releaseIpl(bool thisIsExternalImgUnload = false) MRPT_NO_THROWS;
 
-			/** Checks if the image is of type "external storage", and if so and not loaded yet, load it. */
-			void makeSureImageIsLoaded() const throw (std::exception,utils::CExceptionExternalImageNotFound );
+			/** Checks if the image is of type "external storage", and if so and not loaded yet, load it.
+			  * \exception mrpt::utils::CExceptionExternalImageNotFound */
+			void makeSureImageIsLoaded() const;
 
 		}; // End of class
 		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE( CImage, mrpt::utils::CSerializable )

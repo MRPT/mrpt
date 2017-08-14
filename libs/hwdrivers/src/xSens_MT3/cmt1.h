@@ -61,8 +61,8 @@ private:
 	#endif
 
 	/*! \brief The bytes received function.
-	
-		This function is automatically called every time binary data is read from the 
+
+		This function is automatically called every time binary data is read from the
 		connected COM port.
 	*/
 	CmtCallbackFunction m_onBytesReceived;
@@ -81,7 +81,7 @@ protected:
 	mutable XsensResultValue m_lastResult;
 		//! The opened COM port nr
 	uint8_t m_port;
-	char m_portname[32];
+	char m_portname[257];
 	/*! The default timeout value to use during blocking operations.
 		A value of 0 means that all operations become non-blocking.
 	*/
@@ -104,7 +104,7 @@ public:
 	XsensResultValue close (void);
 	/*! \brief Manipulate the Serial control lines
 
-		The function manipulates the serial control lines that are indicated by the 
+		The function manipulates the serial control lines that are indicated by the
 		mask parameter. Note that only the DTR and RTS lines can be set by win32.
 		\param mask		Indicates which lines are to be manipulated and which should be
 						left alone.
@@ -112,8 +112,8 @@ public:
 	*/
 	XsensResultValue escape (const CmtControlLine mask, const CmtControlLine state);
 	/*! \brief Flush all data to be transmitted / received.
-	
-		This function tries to send and receive any remaining data immediately 
+
+		This function tries to send and receive any remaining data immediately
 		and does not return until the buffers are empty.
 	*/
 	XsensResultValue flushData (void);
@@ -131,9 +131,9 @@ public:
 	uint32_t getTimeout (void) const { return m_timeout; }
 		//! Return whether the communication port is open or not.
 	bool isOpen (void) const { return m_isOpen; }
-	
+
 	/*! \brief Open a communcation channel to the given serial port name.
-	
+
 		The port is automatically initialized to the given baudrate.
 		If the baudrate is set to 0, the baud rate is automatically detected. If possible.
 	*/
@@ -144,7 +144,7 @@ public:
 
 #ifdef _WIN32
 	/*! \brief Open a communication channel to the given COM port number.
-	
+
 		The port is automatically initialized to the given baud rate.
 		If the baudrate is set to 0, the baud rate is automatically detected. If possible.
 	*/
@@ -155,10 +155,10 @@ public:
 #endif
 	/*! \brief Read data from the serial port and put it into the data buffer.
 
-		This function reads as much data as possible from the com port (non-blocking) and 
-		put as much data as will fit into the data buffer. Any excess data is stored in 
-		the \c m_readBuffer member variable. If there was enough data in m_readBuffer to 
-		fulfill the request, the data parameter is first filled and the port is polled 
+		This function reads as much data as possible from the com port (non-blocking) and
+		put as much data as will fit into the data buffer. Any excess data is stored in
+		the \c m_readBuffer member variable. If there was enough data in m_readBuffer to
+		fulfill the request, the data parameter is first filled and the port is polled
 		afterwards.
 		\param maxLength	The maximum amount of data read.
 		\param data			Pointer to a buffer that will store the received data.
@@ -170,16 +170,16 @@ public:
 	XsensResultValue setCallbackFunction(CmtCallbackSelector tp, int32_t instance, CmtCallbackFunction func, void* param);
 	/*! \brief Set the default timeout value to use in blocking operations.
 
-		This function sets the value of m_timeout. There is no infinity value. The value 0 
-		means that all blocking operations now become polling (non-blocking) operations. 
-		If the value is set to or from 0, the low-level serial port settings may be 
+		This function sets the value of m_timeout. There is no infinity value. The value 0
+		means that all blocking operations now become polling (non-blocking) operations.
+		If the value is set to or from 0, the low-level serial port settings may be
 		changed in addition to the m_timeout value.
 	*/
 	XsensResultValue setTimeout (const uint32_t ms = CMT1_DEFAULT_TIMEOUT);
 	/*! \brief Wait for data to arrive or a timeout to occur.
 
 		The function waits until \c maxLength data is available or until a timeout occurs.
-		The function returns success if data is available or XsensResultValue::TIMEOUT if a 
+		The function returns success if data is available or XsensResultValue::TIMEOUT if a
 		timeout occurred. A timeout value of 0 indicates that the default timeout stored
 		in the class should be used.
 	*/
@@ -227,7 +227,7 @@ protected:
 	bool m_unicode;
 	/*! \brief Indicates whether the last operation was a read or write operation.
 
-		This value is used to check whether or not a seek is required to perform a 
+		This value is used to check whether or not a seek is required to perform a
 		requested read or write operation.
 	*/
 	bool m_reading;
@@ -257,7 +257,7 @@ public:
 		//! Open an empty file using a unicode path + filename.
 	XsensResultValue create(const wchar_t* filename);
 	/*! \brief Delete the given data from the file.
-	
+
 		The function erases the given data from the file at the given write position. This
 		operation may take a while to complete, but is faster than insertData.
 
@@ -266,7 +266,7 @@ public:
 	XsensResultValue deleteData(const CmtFilePos start, const uint32_t length);
 	/*! \brief Find a string of bytes in the file
 
-		The function searches from the current read position until the given \c needle is 
+		The function searches from the current read position until the given \c needle is
 		found. If the needle is not found, XsensResultValue::NOT_FOUND is returned. The function
 		will update the seek position to the first character of the found needle.
 		\param needle		The byte string to find.
@@ -286,13 +286,13 @@ public:
 	XsensResultValue getLastResult(void) const	{ return m_lastResult; }
 	/*! \brief Retrieve the filename that was last successfully opened.
 
-		\param filename	A buffer for storing the filename. The buffer should be able 
+		\param filename	A buffer for storing the filename. The buffer should be able
 				to hold the filename. A safe size is to make it at least 256 bytes.
 	*/
 	XsensResultValue getName(char* filename) const;
 	/*! \brief Retrieve the filename that was last successfully opened in unicode.
 
-		\param filename	A buffer for storing the filename. The buffer should be able 
+		\param filename	A buffer for storing the filename. The buffer should be able
 				to hold the filename. A safe size is to make it at least 256 wide characters.
 	*/
 	XsensResultValue getName(wchar_t* filename) const;
@@ -301,10 +301,10 @@ public:
 		//! Return the current write position.
 	CmtFilePos getWritePos(void) const { return m_writePos; }
 	/*! \brief Insert the given data into the file.
-	
+
 		The function writes the given data to the file at the current write position. This
 		operation may take a while to complete.
-		
+
 		The write position is placed at the end of the inserted data.
 	*/
 	XsensResultValue insertData(const CmtFilePos start, const uint32_t length,

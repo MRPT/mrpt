@@ -45,13 +45,13 @@
 */
 
 /*
-    Modified version of STL+ sources shipped with the Mobile Robot 
+    Modified version of STL+ sources shipped with the Mobile Robot
 	Programming Toolkit (MRPT).
-	
+
 	Sources have been modified to support thred-safe smart pointers
 	through atomic operations.
-	
-	2009, Jose Luis Blanco. University of Malaga. 
+
+	2009, Jose Luis Blanco. University of Malaga.
 */
 
 #ifndef MRPT_SMARTPTR_H
@@ -91,7 +91,7 @@ namespace stlplus
       }
 
   public:
-    inline smart_ptr_holder(T* p = 0) : 
+    inline smart_ptr_holder(T* p = 0) :
       m_count(1), m_data(p)
       {
       }
@@ -171,7 +171,7 @@ namespace stlplus
 
   // create a pointer containing a *copy* of the object pointer
   template <typename T, typename C, typename COUNTER>
-  smart_ptr_base<T,C,COUNTER>::smart_ptr_base(const T& data) throw(illegal_copy) :
+  smart_ptr_base<T,C,COUNTER>::smart_ptr_base(const T& data) :
     m_holder(new smart_ptr_holder<T,COUNTER>)
   {
     m_holder->set(C()(data));
@@ -235,28 +235,28 @@ namespace stlplus
   // dereference operators and functions
 
   template <typename T, typename C, typename COUNTER>
-  inline T& smart_ptr_base<T,C,COUNTER>::operator*(void) throw(null_dereference)
+  inline T& smart_ptr_base<T,C,COUNTER>::operator*(void)
   {
     if (m_holder->null()) throw null_dereference("null pointer dereferenced in smart_ptr::operator*");
     return m_holder->value();
   }
 
   template <typename T, typename C, typename COUNTER>
-  inline const T& smart_ptr_base<T,C,COUNTER>::operator*(void) const throw(null_dereference)
+  inline const T& smart_ptr_base<T,C,COUNTER>::operator*(void) const
   {
     if (m_holder->null()) throw null_dereference("null pointer dereferenced in smart_ptr::operator*");
     return m_holder->value();
   }
 
   template <typename T, typename C, typename COUNTER>
-  inline T* smart_ptr_base<T,C,COUNTER>::operator->(void) throw(null_dereference)
+  inline T* smart_ptr_base<T,C,COUNTER>::operator->(void)
   {
     if (m_holder->null()) throw null_dereference("null pointer dereferenced in smart_ptr::operator->");
     return m_holder->pointer();
   }
 
   template <typename T, typename C, typename COUNTER>
-  inline const T* smart_ptr_base<T,C,COUNTER>::operator->(void) const throw(null_dereference)
+  inline const T* smart_ptr_base<T,C,COUNTER>::operator->(void) const
   {
     if (m_holder->null()) throw null_dereference("null pointer dereferenced in smart_ptr::operator->");
     return m_holder->pointer();
@@ -266,20 +266,20 @@ namespace stlplus
   // explicit function forms of the above assignment dereference operators
 
   template <typename T, typename C, typename COUNTER>
-  inline void smart_ptr_base<T,C,COUNTER>::set_value(const T& data) throw(illegal_copy)
+  inline void smart_ptr_base<T,C,COUNTER>::set_value(const T& data)
   {
     m_holder->set(C()(data));
   }
 
   template <typename T, typename C, typename COUNTER>
-  inline T& smart_ptr_base<T,C,COUNTER>::value(void) throw(null_dereference)
+  inline T& smart_ptr_base<T,C,COUNTER>::value(void)
   {
     if (m_holder->null()) throw null_dereference("null pointer dereferenced in smart_ptr::value");
     return m_holder->value();
   }
 
   template <typename T, typename C, typename COUNTER>
-  inline const T& smart_ptr_base<T,C,COUNTER>::value(void) const throw(null_dereference)
+  inline const T& smart_ptr_base<T,C,COUNTER>::value(void) const
   {
     if (m_holder->null()) throw null_dereference("null pointer dereferenced in smart_ptr::value");
     return m_holder->value();
@@ -352,7 +352,7 @@ namespace stlplus
   }
 
   template <typename T, typename C, typename COUNTER>
-  void smart_ptr_base<T,C,COUNTER>::make_unique(void) throw(illegal_copy)
+  void smart_ptr_base<T,C,COUNTER>::make_unique(void)
   {
     if (m_holder->count() > 1)
     {
@@ -366,7 +366,7 @@ namespace stlplus
   }
 
   template <typename T, typename C, typename COUNTER>
-  void smart_ptr_base<T,C,COUNTER>::copy(const smart_ptr_base<T,C,COUNTER>& data) throw(illegal_copy)
+  void smart_ptr_base<T,C,COUNTER>::copy(const smart_ptr_base<T,C,COUNTER>& data)
   {
     alias(data);
     make_unique();
@@ -399,4 +399,3 @@ namespace stlplus
 } // end namespace stlplus
 
 #endif
-
