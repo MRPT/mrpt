@@ -23,7 +23,7 @@ using namespace mrpt::maps;
 using namespace mrpt::utils;
 
 CDocument::CDocument()
-	: m_simplemap(CSimpleMap()), m_metricmap(CMultiMetricMap()), m_changedFile(false)
+	: m_simplemap(CSimpleMap()), m_metricmap(CMultiMetricMap()), m_changedFile(false), m_hasPointsMap(false)
 {
 }
 
@@ -45,10 +45,22 @@ void CDocument::saveSimpleMap()
 	m_changedFile = !m_simplemap.saveToFile(m_fileName);
 }
 
-void CDocument::saveAsText(TypeOfConfig type, int index)
+bool CDocument::hasPointsMap() const
 {
+	return m_hasPointsMap;
+}
 
-	//save3D_to_text_file;
+void CDocument::saveAsText(const std::string& fileName) const
+{
+	for (auto iter = m_metricmap.begin(); iter != m_metricmap.end(); ++iter)
+	{
+		auto ptr = std::dynamic_pointer_cast<CSimplePointsMap>(iter->get_ptr());
+		if (ptr.get())
+		{
+			ptr->save3D_to_text_file(fileName);
+			break;
+		}
+	}
 }
 
 const std::string &CDocument::getFileName() const
@@ -203,13 +215,18 @@ void CDocument::updateMetricMap()
 	m_typeConfigs.emplace(TypeOfConfig::Beacon, std::vector<MetricPolyPtr>());
 	m_typeConfigs.emplace(TypeOfConfig::GasGrid, std::vector<MetricPolyPtr>());
 
+	bool addedPointsMap = false;
 	for (auto iter = m_metricmap.begin(); iter != m_metricmap.end(); ++iter)
 	{
 		TypeOfConfig type = TypeOfConfig::None;
 		{
 			CSimplePointsMap::Ptr ptr =
 				std::dynamic_pointer_cast<CSimplePointsMap>(iter->get_ptr());
-			if (ptr.get()) type = TypeOfConfig::PointsMap;
+			if (ptr.get())
+			{
+				type = TypeOfConfig::PointsMap;
+				addedPointsMap = true;
+			}
 		}
 		if (type == TypeOfConfig::None)
 		{
@@ -241,4 +258,6 @@ void CDocument::updateMetricMap()
 			m_typeConfigs.find(type)->second.push_back(iter->get_ptr());
 		}
 	}
+
+	m_hasPointsMap = addedPointsMap;
 }

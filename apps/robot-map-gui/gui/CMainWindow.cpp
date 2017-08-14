@@ -79,6 +79,8 @@ CMainWindow::CMainWindow(QWidget* parent)
 		m_ui->m_actionOpen, &QAction::triggered, this, &CMainWindow::openMap);
 	connect(
 		m_ui->m_actionSave, &QAction::triggered, this, &CMainWindow::saveMap);
+	connect(
+		m_ui->m_actionSaveAsText, &QAction::triggered, this, &CMainWindow::saveAsText);
 	connect(m_ui->m_undoAction, &QAction::triggered, this, &CMainWindow::undo);
 	connect(m_ui->m_redoAction, &QAction::triggered, this, &CMainWindow::redo);
 	connect(
@@ -106,6 +108,7 @@ CMainWindow::CMainWindow(QWidget* parent)
 		&CMainWindow::moveRobotPoses);
 
 	m_ui->m_actionSave->setDisabled(true);
+	m_ui->m_actionSaveAsText->setDisabled(true);
 }
 
 CMainWindow::~CMainWindow()
@@ -154,6 +157,18 @@ void CMainWindow::saveMap()
 
 	m_document->saveSimpleMap();
 	m_ui->m_actionSave->setDisabled(!m_document->isFileChanged());
+}
+
+void CMainWindow::saveAsText()
+{
+	if (!m_document) return;
+
+	QString fileName = QFileDialog::getSaveFileName(
+		this, tr("Save as txt"), "", tr("Files (*.txt)"));
+
+	if (fileName.size() == 0) return;
+
+	m_document->saveAsText(fileName.toStdString());
 }
 
 void CMainWindow::itemClicked(const QModelIndex& index)
@@ -363,6 +378,8 @@ void CMainWindow::updateRenderMapFromConfig()
 	auto renderizableMaps = m_document->renderizableMaps();
 	m_ui->m_viewer->updateConfigChanges(
 		renderizableMaps, m_document, m_ui->m_actionShowAllObs->isChecked());
+
+	m_ui->m_actionSaveAsText->setDisabled(!m_document->hasPointsMap());
 }
 
 void CMainWindow::applyMapsChanges()

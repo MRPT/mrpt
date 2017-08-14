@@ -32,7 +32,9 @@ class CDocument
 
 	void loadSimpleMap(const std::string& fileName);
 	void saveSimpleMap();
-	void saveAsText(TypeOfConfig type, int index);
+
+	bool hasPointsMap() const;
+	void saveAsText(const std::string& fileName) const;
 
 	const std::string& getFileName() const;
 
@@ -68,4 +70,5 @@ class CDocument
 	TypeConfig m_typeConfigs;
 	std::string m_fileName;
 	bool m_changedFile;
+	bool m_hasPointsMap;
 };
