@@ -29,6 +29,7 @@ Build-Depends: debhelper (>= 10),
 	libsuitesparse-dev,
 	python-numpy,
 	libeigen3-dev,
+	libassimp-dev,
 	liboctomap-dev
 Standards-Version: 4.0.0
 Homepage: http://www.mrpt.org/
