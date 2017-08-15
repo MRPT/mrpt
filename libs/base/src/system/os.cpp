@@ -173,7 +173,7 @@ string mrpt::system::MRPT_getCompilationDate()
 	const int month = build_time->tm_mon + 1;
 	const int day = build_time->tm_mday;
 
-	return mrpt::format("%i-%02i-%02i", year, month, day);
+	return mrpt::format("%i-%02i-%02i %02i:%02i:%02i UTC",year,month,day, build_time->tm_hour,build_time->tm_min, build_time->tm_sec);
 }
 
 /*---------------------------------------------------------------
