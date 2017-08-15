@@ -301,7 +301,7 @@ string PlaceRecognition::startPlaceRecognition(CFeatureExtraction fext)
     //training_file << "Writing this to a file.\n";
 
     cout << "len training " << len_training << endl;
-    cout << "feats_training[i].size() " << feats_training[99].size() <<endl;
+    //cout << "feats_training[i].size() " << feats_training[99].size() <<endl;
     cout << "descriptor selected : " << descriptor_selected << endl ;
 
     if (!training_file_written_flag)
@@ -469,18 +469,9 @@ string PlaceRecognition::startPlaceRecognition(CFeatureExtraction fext)
 
     cout << time_prediction.Tac() << " elapsed time " << endl;
 
-    int confusion_matrix[NUM_CLASSES][NUM_CLASSES];
-    for(int i=0 ; i<NUM_CLASSES ; i++)
-    {
-        for(int j=0 ; j<NUM_CLASSES; j++)
-        {
-            //CURRENTLY NOT REQUIRED
-        }
-    }
-
+    /// use a bag of words kind of framework here
 
     predicted_classes[current_index_test_image] = predicted_Label;
-
     if(predicted_classes[current_index_test_image] == testing_labels[current_index_test_image])
         correct++;
     else
@@ -506,10 +497,7 @@ string PlaceRecognition::startPlaceRecognition(CFeatureExtraction fext)
     cout << "after reading testing images" << endl ;
 
 
-    /// use a bag of words framework here
-
     return output.str();
-
 }
 
 /************************************************************************************************

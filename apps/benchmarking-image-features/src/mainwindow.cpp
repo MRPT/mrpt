@@ -17,8 +17,65 @@
 #include <mrpt/system/os.h>
 #include <mrpt/vision/CFeatureExtraction.h>
 
+#include <mrpt/obs/CRawlog.h>
+#include <mrpt/obs.h>
+#include <mrpt/obs/CObservationImage.h>
+#include <mrpt/obs/CObservationStereoImages.h>
+#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/obs/CActionCollection.h>
+#include <mrpt/obs/CObservation.h>
+#include <mrpt/obs/CSensoryFrame.h>
+#include <mrpt/obs/CAction.h>
 
 
+#include <mrpt/system/filesystem.h>
+#include <mrpt/obs/CObservation3DRangeScan.h>
+
+
+#   include <mrpt/obs/CSensoryFrame.h>
+#	include <mrpt/obs/CRawlog.h>
+#	include <mrpt/obs/CObservation2DRangeScan.h>
+#	include <mrpt/obs/CObservationBeaconRanges.h>
+#	include <mrpt/obs/CObservationBearingRange.h>
+
+
+
+
+///
+//#include "../../../../../catkin_ws/src/mrpt_navigation/mrpt_rawlog/include/rawlog_play_node.h"
+#include <boost/interprocess/sync/scoped_lock.hpp>
+/*#include <../../../../../catkin_ws/src/mrpt_navigation/mrpt_bridge/include/mrpt_bridge/pose.h>
+#include <../../../../../catkin_ws/src/mrpt_navigation/mrpt_bridge/include/mrpt_bridge/laser_scan.h>
+#include <../../../../../catkin_ws/src/mrpt_navigation/mrpt_bridge/include/mrpt_bridge/time.h>
+#include <../../../../../catkin_ws/src/mrpt_navigation/mrpt_bridge/include/mrpt_bridge/beacon.h>
+#include <../../../../../catkin_ws/src/mrpt_navigation/mrpt_bridge/include/mrpt_bridge/landmark.h>
+*/
+
+
+#include <mrpt/version.h>
+#if MRPT_VERSION>=0x130
+#	include <mrpt/obs/CSensoryFrame.h>
+#	include <mrpt/obs/CRawlog.h>
+#	include <mrpt/obs/CObservation2DRangeScan.h>
+#	include <mrpt/obs/CObservationBeaconRanges.h>
+#	include <mrpt/obs/CObservationBearingRange.h>
+using namespace mrpt::obs;
+#else
+#	include <mrpt/slam/CSensoryFrame.h>
+#	include <mrpt/slam/CRawlog.h>
+#	include <mrpt/slam/CObservation2DRangeScan.h>
+#	include <mrpt/slam/CObservationBeaconRanges.h>
+#	include <mrpt/slam/CObservationBearingRange.h>
+	using namespace mrpt::slam;
+#endif
+///
+
+
+
+
+using namespace mrpt::obs;
+
+using namespace mrpt::system;
 using namespace cv::line_descriptor;
 using namespace mrpt::vision;
 using namespace mrpt::utils;
@@ -852,14 +909,311 @@ void MainWindow::makeVisionOptionsVisible(bool flag)
 ************************************************************************************************/
 void MainWindow::on_file_input_choose(int choice)
 {
-    //makeGraphsVisible(false);
-    // HIDE input file path 2, browse button 2, image2 for cases : single image,  image raw log and single image dataset
-    if(choice == 2)
+
+    if(choice == 2 )
+    {
+        /*
+        mrpt::utils::CFileGZInputStream rawlog_stream_;// = new CFileGZInputStream
+
+        rawlog_stream_.open("/home/raghavender/Desktop/GSoC/datasets/malaga-urban-dataset-extract-01/malaga-urban-dataset-extract-01_CAM_GPS.rawlog");
+
+        CSensoryFrame frames;
+        CActionCollection actions;
+        CObservation ooobs;
+
+        mrpt::obs::CActionCollection::Ptr action ;
+        CSensoryFrame::Ptr    observations;
+        CObservation::Ptr      obs;
+        size_t entry_ = 0;
+
+        //cout << CRawlog::getActionObservationPairOrObservation( rawlog_stream_, action, observations, obs, entry_) << endl;
+
+        //cout << ("end of stream!") << endl;
+        //cout << observations->size() << endl;
+*/
+
+        CRawlog dataset;
+        dataset.loadFromRawLogFile("/home/raghavender/Desktop/GSoC/datasets/dataset_monoslam_davison/dataset_monoslam_davison.rawlog");
+        //dataset.loadFromRawLogFile("/home/raghavender/Desktop/GSoC/datasets/malaga-urban-dataset-extract-01/malaga-urban-dataset-extract-01_all-sensors.rawlog");
+        cout << dataset.size() << " entries loaded." << endl;
+
+        stringstream outDir;
+        outDir << "/home/raghavender/Desktop/GSoC/datasets/malaga-urban-dataset-extract-01/outputs/";
+
+        CActionCollection::Ptr action ;
+        CSensoryFrame::Ptr    observations;
+        CObservation::Ptr      obs;
+        size_t entry_ = 0;
+
+        string errorMsg;
+        ofstream ostream1;
+        for(unsigned int i=0 ; i<dataset.size() ; i++)
+        {
+            //try
+            {
+
+                //CSensoryFrame::Ptr sensP = dataset.getAsObservations(i);
+
+                //std::ostream rstream;
+                //ptr->getDescriptionAsText(rstfream);
+
+                //cout << ptr->sensorLabel << "  type: " << dataset.getType(i) << "  " <<dataset. << endl ;
+
+                switch (dataset.getType(i))
+                {
+                    case CRawlog::etSensoryFrame:
+                    {
+                        cout << "etSensoryFrame " << i << endl;
+                        CSensoryFrame::Ptr SF = dataset.getAsObservations(i);
+
+                        for (unsigned int k = 0; k < SF->size(); k++)
+                        {
+                            if (SF->getObservationByIndex(k)->GetRuntimeClass() ==
+                                CLASS_ID(CObservationStereoImages))
+                            {
+                                CObservationStereoImages::Ptr obsSt =
+                                        SF->getObservationByIndexAs<
+                                                CObservationStereoImages::Ptr>(k);
+                                cout << " inide stereo Sensory Frame" << obsSt->imageLeft.getHeight() << endl;
+
+
+
+                            }
+                            if (SF->getObservationByIndex(k)->GetRuntimeClass() ==
+                                CLASS_ID(CObservationImage))
+                            {
+                                CObservationImage::Ptr obsIm =
+                                        SF->getObservationByIndexAs<
+                                                CObservationImage::Ptr>(k);
+
+                                cout << " inide monocular Sensory Frame" << obsIm->image.getHeight() << endl;
+                                Mat cvImg = cv::cvarrToMat(obsIm->image.getAs<IplImage>());
+                                imshow("view", cvImg);
+                                waitKey(1);
+                            }
+                        }
+
+
+
+                        break;
+                    }
+                    case CRawlog::etObservation:
+                    {
+                        cout << "etObservation " << i << endl;
+
+                        CObservation::Ptr o = dataset.getAsObservation(i);
+
+                        cout << o->sensorLabel << " type : etObs" << dataset.getType(i) << " index: " << i << endl;
+
+                        if(IS_CLASS(o, CObservationStereoImages))
+                        {
+                            cout << " inside if condition " << endl;
+                            CObservationStereoImages::Ptr obsSt = std::dynamic_pointer_cast<CObservationStereoImages>(o);
+
+                            CImage temp_im = obsSt->imageLeft;
+
+                            //Mat cvImg = cv::cvarrToMat(temp_im.getAs<IplImage>());
+
+                           // obsSt->imageLeft.saveToFile("/home/raghavender/Desktop/GSoC/datasets/malaga-urban-dataset-extract-01/outputs/img_stereo_left_%05u.jpg", i);
+
+
+                            cout << "Hello Patron " << endl;
+                            cout << temp_im.getHeight() << " 43285y892y52568263432647253%@#%@$!#$2" << endl;
+
+                            //CObservationImage::Ptr obsImg = std::dynamic_pointer_cast<CObservationImage>(o);
+
+                            //CImage image_C = obsImg->image;
+                            //cout << "In switch case " << image_C.getWidth() << " " << image_C.isColor() << endl;
+                        }
+                        else if(IS_CLASS(o, CObservationImage))
+                        {
+                            CObservationImage::Ptr obsIm = std::dynamic_pointer_cast<CObservationImage>(o);
+
+                            CImage immg = obsIm->image;
+                            cout << immg.getHeight() << endl;
+                            cout << " outside" << endl;
+                        }
+                        cout << "$#%#%^#^$^#&#^*$%*#&@%&@&#$&%#^$#!@%!%^%&@^#&$*(&^%" << endl;
+
+
+                        /*if(o.get()->sensorLabel.compare("CAMERA1") == 0)
+                        {
+                            cout << " in if condition $%%$# "  << endl;
+                        } else{
+                            cout << " in else part #$##@" << endl;
+                        }
+                        ostream1.open("./output2.txt");
+                        o.get()->getDescriptionAsText(ostream1);
+                        ostream1.close();
+                        //CObservationImage::Ptr obsImg = std::dynamic_pointer_cast<CObservationImage>(o);
+                        //CImage image_C = obsImg->image;
+                        //cout << "In switch case " << image_C.getWidth() << " " << image_C.isColor() << endl;
+
+
+
+
+                        cout << ptr->sensorLabel << " type : etObs" << dataset.getType(i) << " index: " << i << endl;
+                        */break;
+                    }
+                    case CRawlog::etActionCollection:
+                    {
+                        cout << "etActionCollection " << i << endl;
+                        cout << " type : etAC " << dataset.getType(i) << " index: " << i << endl;
+                        break;
+                    }
+                    default:
+                        cout << " I am in default block" << endl;
+                }
+
+                //ptr->load();
+
+            }
+            /*catch (exception& e)
+            {
+                cout << " CATCH CATCH CATCH BLOCK %$#@%($@*%(&@(%&@(%@(#$%(@#^$%" << endl;
+                errorMsg = e.what();
+                break;
+            }*/
+
+        }
+        //CObservationImage::Ptr p2 = std::dynamic_pointer_cast<CObservationImage>(dataset.getAsObservations(3));
+
+
+        //dataset.getActionObservationPair(action, observations, entry_);
+
+        //CSensoryFrame *f =  observations.get();//size();
+
+        //CObservationImage::Ptr im = f->getObservationByClass<CObservationImage>();
+
+        //CObservationImage ooo = im.get();
+        //CImage im2 = im.get()->image;
+        //Mat cvImg = cv::cvarrToMat(im2.getAs<IplImage>());
+
+
+
+        /*size_t      nImgs=0,count=0;
+        bool m_nowPlaying = true;
+
+        // Repeat until EOF exception or cancel.
+        while (m_nowPlaying)
+        {
+            CSerializable::Ptr obj;
+            if (fil)
+            {
+                (*fil) >> obj;
+            }
+
+            bool doDelay = false;
+
+            if (IS_CLASS(obj,CSensoryFrame))
+            {
+                //doDelay = showSensoryFrame(obj.get(), nImgs);
+            }
+            else if (IS_DERIVED(obj,CObservation))
+            {
+                CSensoryFrame	sf;
+                sf.insert( std::dynamic_pointer_cast<CObservation>(obj) );
+                //doDelay = showSensoryFrame( &sf, nImgs);
+            }
+
+            // Free the loaded object!
+            if (fil) obj.reset();
+
+            // Update UI
+            if ((count++)%100==0)
+            {
+                //progressBar->SetValue( fil ? (int)fil->getPosition():(int)count );
+                //wxString str;
+                //str.sprintf(_("Processed: %d images"),nImgs);
+                //lbProgress->SetLabel( str );
+                //if (!doDelay) wxTheApp->Yield();
+            }
+
+            //if (doDelay || (count % 100)==0)
+            //edIndex->SetValue(count);
+
+            // End?
+            if (!fil && count>=rawlog.size()) m_nowPlaying=false;
+
+            // Time to process stop button press and redraw image.
+
+
+
+        }*/
+
+
+
+
+
+
+        /*CRawlog dataset;
+        dataset.loadFromRawLogFile("/home/raghavender/Desktop/GSoC/datasets/malaga-urban-dataset-extract-01/malaga-urban-dataset-extract-01_rectified_1024x768.rawlog");
+        cout << dataset.size() << " entries loaded." << endl;
+
+        CActionCollection::Ptr actionCollection;
+        CSensoryFrame::Ptr sensP;
+        size_t raw_size;
+
+        dataset.getActionObservationPair(actionCollection, sensP, raw_size);
+
+
+        cout << "got the obs"  << endl;
+
+        CSensoryFrame	sf;
+        CSensoryFrame *csf = sensP.get();
+        cout << "got the frame ptr"  << endl;
+*/
+        //mrpt::utils::CFileGZInputStream *rawlog_stream_ = new CFileGZInputStream("/home/raghavender/Desktop/GSoC/datasets/malaga-urban-dataset-extract-01/malaga-urban-dataset-extract-01_rectified_800x600.rawlog");
+        //rawlog_stream_->open("/home/raghavender/Desktop/GSoC/datasets/malaga-urban-dataset-extract-01/malaga-urban-dataset-extract-01_rectified_800x600.rawlog");
+        //rawlog_stream_.open("/home/raghavender/Desktop/GSoC/datasets/malaga-urban-dataset-extract-01");
+
+        /*mrpt::obs::CActionCollection::Ptr action;
+        CSensoryFrame::Ptr    observations;
+        CObservation::Ptr      obs;
+
+        //dataset.getActionObservationPairOrObservation(rawlog_stream_,);
+
+        size_t entry_ = 0;
+
+        cout << "uouo" << endl;
+        cout << "hello " << observations->size() << endl ;
+
+        if(!CRawlog::getActionObservationPairOrObservation( rawlog_stream_, action, observations, obs, entry_)) {
+            cout << ("end of stream!") << endl;
+
+        }
+
+        cout << "hello " << observations->size() << endl ;
+        CObservationImage::Ptr cimage =  observations->getObservationByClass<CObservationImage>(0);
+*/
+        //CImage img = &cimage->image;
+
+
+        /*CObservationImage::Ptr obsImg = csf->getObservationByClass<CObservationImage>();
+
+        cout << "got the obs img"  << endl;
+        CImage *temp_image = &obsImg->image;
+
+        cv::Mat cvImg2 = cv::cvarrToMat(temp_image->getAs<IplImage>());
+
+        imshow("hello",cvImg2);
+        waitKey(1);
+*/
+
+
+
+        //CObservation::Ptr c_obs = csf->getObservationByIndex(3);
+    }
+    else if(choice == 2)
     {
         //QMessageBox::information(this, "RAWLOG format currently not supported..!!");
         QMessageBox::information(this, "Rawlog error","MRPT rawlog format is currently not supported");
         return;
     }
+
+
+    //makeGraphsVisible(false);
+    // HIDE input file path 2, browse button 2, image2 for cases : single image,  image raw log and single image dataset
     if (choice == 0 || choice == 2 || choice == 3)
     {
         inputFilePath2->setVisible(false);
