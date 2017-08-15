@@ -78,6 +78,15 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
 	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-long-long -Wno-variadic-macros")
 ENDIF()
 
+# ================================================================
+# Include directories where octomap headers are, if not embedded 
+# under mrpt-maps headers:
+# ================================================================
+IF (NOT @MRPT_CONFIGFILE_IS_INSTALL@ AND NOT @CMAKE_MRPT_HAS_OCTOMAP_SYSTEM@)
+	INCLUDE_DIRECTORIES("@OCTOMAP_INCLUDE_DIRS@")
+	LIST(APPEND MRPT_INCLUDE_DIRS "@OCTOMAP_INCLUDE_DIRS@")
+ENDIF ()
+
 
 # ======================================================
 # Include directories to add to the user project:
