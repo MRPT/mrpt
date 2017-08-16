@@ -34,7 +34,8 @@ class GUI_IMPEXP CGlCanvasBase
 		CamaraParams() {}
 		void setElevationDeg(float deg);
 
-		float cameraPointingX = .0f, cameraPointingY = .0f, cameraPointingZ = .0f;
+		float cameraPointingX = .0f, cameraPointingY = .0f,
+			  cameraPointingZ = .0f;
 		float cameraZoomDistance = 40.f;
 		float cameraElevationDeg = 45.f, cameraAzimuthDeg = 45.f;
 		bool cameraIsProjective = true;
@@ -43,7 +44,6 @@ class GUI_IMPEXP CGlCanvasBase
 
 	CGlCanvasBase() {}
 	virtual ~CGlCanvasBase() {}
-
 	/** Sets the minimum of the zoom
 	 * See also setMaximumZoom(float) */
 	void setMinimumZoom(float zoom);
@@ -231,7 +231,8 @@ class GUI_IMPEXP CGlCanvasBase
 	canvas destructor.
 	 * This function returns a smart pointer to the opengl scene
 	getOpenGLSceneRef		  */
-	mrpt::opengl::COpenGLScene::Ptr &getOpenGLSceneRef() {
+	mrpt::opengl::COpenGLScene::Ptr& getOpenGLSceneRef()
+	{
 		return m_openGLScene;
 	}
 	void setOpenGLSceneRef(mrpt::opengl::COpenGLScene::Ptr scene);
@@ -245,9 +246,11 @@ class GUI_IMPEXP CGlCanvasBase
 	virtual double renderCanvas(int width = -1, int height = -1);
 
    private:
-	float clearColorR = .4f, clearColorG = .4f, clearColorB = .4f, clearColorA = 1.f;
+	float clearColorR = .4f, clearColorG = .4f, clearColorB = .4f,
+		  clearColorA = 1.f;
 	bool useCameraFromScene = false;
-	mrpt::opengl::COpenGLScene::Ptr m_openGLScene = mrpt::make_aligned_shared<mrpt::opengl::COpenGLScene>();
+	mrpt::opengl::COpenGLScene::Ptr m_openGLScene =
+		mrpt::make_aligned_shared<mrpt::opengl::COpenGLScene>();
 	int m_mouseLastX = 0, m_mouseLastY = 0;
 	int m_mouseClickX = 0, m_mouseClickY = 0;
 	bool mouseClicked = false;

@@ -220,7 +220,6 @@ float CGlCanvasBase::getClearColorR() const { return clearColorR; }
 float CGlCanvasBase::getClearColorG() const { return clearColorG; }
 float CGlCanvasBase::getClearColorB() const { return clearColorB; }
 float CGlCanvasBase::getClearColorA() const { return clearColorA; }
-
 void CGlCanvasBase::setOpenGLSceneRef(COpenGLScene::Ptr scene)
 {
 	m_openGLScene = scene;
