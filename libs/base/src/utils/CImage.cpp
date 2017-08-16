@@ -1929,10 +1929,6 @@ void CImage::releaseIpl(bool thisIsExternalImgUnload) noexcept
 				makeSureImageIsLoaded
  ---------------------------------------------------------------*/
 void CImage::makeSureImageIsLoaded() const
-<<<<<<< HEAD
-	throw(std::exception, utils::CExceptionExternalImageNotFound)
-=======
->>>>>>> 92a4bb0... fix errors and warnings for gcc-7
 {
 	if (img != nullptr) return;  // OK, continue
 
