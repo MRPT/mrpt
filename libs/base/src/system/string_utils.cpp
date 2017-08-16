@@ -101,7 +101,7 @@ void mrpt::system::decodeUTF8(const std::string& input, vector_word& output)
 	output.reserve(input.size());
 	for (size_t i = 0; i < input.size();)
 	{
-		uint16_t ch;
+		uint16_t ch = 0;
 
 		// 1110xxxx 10xxxxxx 10xxxxxx
 		if ((input[i] & MASK3BYTES) == MASK3BYTES)
