@@ -110,8 +110,7 @@ void CWxGLCanvasBase::OnMouseMove(wxMouseEvent& event)
 	}
 
 	// ensure we have the focus so we get keyboard events:
-	// this->SetFocus(); // JLBC: Commented out to avoid a crash after
-	// refactor with Qt
+	this->SetFocus();
 }
 
 void CWxGLCanvasBase::OnMouseWheel(wxMouseEvent& event)
@@ -148,7 +147,8 @@ CWxGLCanvasBase::CWxGLCanvasBase(
 
 	this->Bind(wxEVT_SIZE, &CWxGLCanvasBase::OnSize, this);
 	this->Bind(wxEVT_PAINT, &CWxGLCanvasBase::OnPaint, this);
-	this->Bind(wxEVT_ERASE_BACKGROUND, &CWxGLCanvasBase::OnEraseBackground, this);
+	this->Bind(
+		wxEVT_ERASE_BACKGROUND, &CWxGLCanvasBase::OnEraseBackground, this);
 	this->Bind(wxEVT_ENTER_WINDOW, &CWxGLCanvasBase::OnEnterWindow, this);
 
 // JL: There seems to be a problem in MSW we don't receive this event, but
