@@ -104,9 +104,12 @@ CMyGLCanvas_DisplayWindow3D::CMyGLCanvas_DisplayWindow3D(
 	: CWxGLCanvasBase(parent, id, pos, size, style, name), m_win3D(win3D)
 {
 	this->Bind(wxEVT_CHAR, &CMyGLCanvas_DisplayWindow3D::OnCharCustom, this);
-	this->Bind(wxEVT_CHAR_HOOK, &CMyGLCanvas_DisplayWindow3D::OnCharCustom, this);
-	this->Bind(wxEVT_LEFT_DOWN, &CMyGLCanvas_DisplayWindow3D::OnMouseDown, this);
-	this->Bind(wxEVT_RIGHT_DOWN, &CMyGLCanvas_DisplayWindow3D::OnMouseDown, this);
+	this->Bind(
+		wxEVT_CHAR_HOOK, &CMyGLCanvas_DisplayWindow3D::OnCharCustom, this);
+	this->Bind(
+		wxEVT_LEFT_DOWN, &CMyGLCanvas_DisplayWindow3D::OnMouseDown, this);
+	this->Bind(
+		wxEVT_RIGHT_DOWN, &CMyGLCanvas_DisplayWindow3D::OnMouseDown, this);
 }
 
 void CMyGLCanvas_DisplayWindow3D::display3D_processKeyEvent(
@@ -187,11 +190,11 @@ CMyGLCanvas_DisplayWindow3D::~CMyGLCanvas_DisplayWindow3D()
 
 void CMyGLCanvas_DisplayWindow3D::OnPreRender()
 {
-	auto &openGLSceneRef = getOpenGLSceneRef();
+	auto& openGLSceneRef = getOpenGLSceneRef();
 	if (openGLSceneRef) openGLSceneRef.reset();
 
-	COpenGLScene::Ptr &ptrScene = m_win3D->get3DSceneAndLock();
-	if (ptrScene)  openGLSceneRef = ptrScene;
+	COpenGLScene::Ptr& ptrScene = m_win3D->get3DSceneAndLock();
+	if (ptrScene) openGLSceneRef = ptrScene;
 }
 
 void CMyGLCanvas_DisplayWindow3D::OnPostRender()
@@ -276,8 +279,12 @@ C3DWindowDialog::C3DWindowDialog(
 
 	// Events:
 	this->Bind(wxEVT_CLOSE_WINDOW, &C3DWindowDialog::OnClose, this);
-	this->Bind(wxEVT_COMMAND_MENU_SELECTED, &C3DWindowDialog::OnMenuClose, this, ID_MENUITEM1);
-	this->Bind(wxEVT_COMMAND_MENU_SELECTED, &C3DWindowDialog::OnMenuAbout, this, ID_MENUITEM2);
+	this->Bind(
+		wxEVT_COMMAND_MENU_SELECTED, &C3DWindowDialog::OnMenuClose, this,
+		ID_MENUITEM1);
+	this->Bind(
+		wxEVT_COMMAND_MENU_SELECTED, &C3DWindowDialog::OnMenuAbout, this,
+		ID_MENUITEM2);
 	this->Bind(wxEVT_CHAR, &C3DWindowDialog::OnChar, this);
 	this->Bind(wxEVT_SIZE, &C3DWindowDialog::OnResize, this);
 

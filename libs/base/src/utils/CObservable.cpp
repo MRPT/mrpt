@@ -47,8 +47,7 @@ void CObservable::internal_observer_end(CObserver* o)
 void CObservable::publishEvent(const mrptEvent& e) const
 {
 	MRPT_START
-	for (auto &s : m_subscribers)
-		if (s)
-			s->internal_on_event(e);
+	for (auto& s : m_subscribers)
+		if (s) s->internal_on_event(e);
 	MRPT_END
 }
