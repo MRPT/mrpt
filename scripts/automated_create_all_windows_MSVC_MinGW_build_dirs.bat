@@ -12,13 +12,13 @@ REM                              Jose Luis Blanco, 2011-15
 REM =========================================================
 
 REM  === THIS IS WHERE MRPT SOURCE TREE IS FROM THE CWD ===
-set MRPT_SRC_DIR=d:/code/mrpt-1.5
+set MRPT_SRC_DIR=D:\BACKUPS\mrpt\mrpt_releases\MRPT-RELEASE-1.5.3\mrpt-1.5.3
 set MRPT_BASE_DIR=mrpt-1.5.3
 
 REM =================== SET ALL IMPORTANT PATHS ===================
 
 set msvc14_DIR=C:\Program Files (x86)\Microsoft Visual Studio 14.0
-set msvc15_DIR=D:\Program Files (x86)\Microsoft Visual Studio\2017\Community
+set msvc141_DIR=D:\Program Files (x86)\Microsoft Visual Studio\2017\Community
 
 set CMAKE_DIR=C:\Program Files\CMake\bin\
 set LIBUSBDIR=D:\code\libusb-win32-bin
@@ -51,9 +51,9 @@ call :subGen
 
 goto End
 
-REM msvc15 ========================
-:gen15
-set COMP=msvc15
+REM msvc141 ========================
+:gen141
+set COMP=msvc141
 
 set ARCHN=32
 call :subGen
@@ -90,11 +90,11 @@ if %COMP%==mingw GOTO :subGen_mingw
 REM Visual Studio --------------------------
 if %COMP%==msvc12 set MSVC_DIR=%msvc12_DIR%
 if %COMP%==msvc14 set MSVC_DIR=%msvc14_DIR%
-if %COMP%==msvc15 set MSVC_DIR=%msvc15_DIR%
+if %COMP%==msvc141 set MSVC_DIR=%msvc141_DIR%
 
 if %COMP%==msvc12 set CMAKE_GEN=Visual Studio 12 2013
 if %COMP%==msvc14 set CMAKE_GEN=Visual Studio 14 2015
-if %COMP%==msvc15 set CMAKE_GEN=Visual Studio 15 2017
+if %COMP%==msvc141 set CMAKE_GEN=Visual Studio 15 2017
 if %ARCHN%==64 set CMAKE_GEN=%CMAKE_GEN% Win64
 
 set CMAKE_EXTRA1=-DINSTALL_MSVC_REDISTRIBUTABLE=%MSVC_REDIST%
@@ -102,7 +102,7 @@ set CMAKE_EXTRA2=
 set CMAKE_EXTRA3=
 
 if %COMP%==msvc14 set WXLIB_DIR=vc140
-if %COMP%==msvc15 set WXLIB_DIR=vc141
+if %COMP%==msvc141 set WXLIB_DIR=vc141
 if %ARCHN%==64 set WXLIB_DIR=%WXLIB_DIR%_x64
 
 
