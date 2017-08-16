@@ -70,7 +70,7 @@ class CMyGLCanvas_DisplayWindow3D : public mrpt::gui::CWxGLCanvasBase
 
 	virtual ~CMyGLCanvas_DisplayWindow3D();
 
-	CDisplayWindow3D* m_win3D;
+	CDisplayWindow3D* m_win3D = nullptr;
 
 	// The idea is that CMyGLCanvas_DisplayWindow3D was derived from
 	// CTextMessageCapable, but
@@ -101,22 +101,12 @@ class CMyGLCanvas_DisplayWindow3D : public mrpt::gui::CWxGLCanvasBase
 CMyGLCanvas_DisplayWindow3D::CMyGLCanvas_DisplayWindow3D(
 	CDisplayWindow3D* win3D, wxWindow* parent, wxWindowID id,
 	const wxPoint& pos, const wxSize& size, long style, const wxString& name)
-	: CWxGLCanvasBase(parent, id, pos, size, style, name)
+	: CWxGLCanvasBase(parent, id, pos, size, style, name), m_win3D(win3D)
 {
-	m_win3D = win3D;
-	Connect(
-		wxEVT_CHAR,
-		(wxObjectEventFunction)&CMyGLCanvas_DisplayWindow3D::OnCharCustom);
-	Connect(
-		wxEVT_CHAR_HOOK,
-		(wxObjectEventFunction)&CMyGLCanvas_DisplayWindow3D::OnCharCustom);
-
-	Connect(
-		wxEVT_LEFT_DOWN,
-		(wxObjectEventFunction)&CMyGLCanvas_DisplayWindow3D::OnMouseDown);
-	Connect(
-		wxEVT_RIGHT_DOWN,
-		(wxObjectEventFunction)&CMyGLCanvas_DisplayWindow3D::OnMouseDown);
+	this->Bind(wxEVT_CHAR, &CMyGLCanvas_DisplayWindow3D::OnCharCustom, this);
+	this->Bind(wxEVT_CHAR_HOOK, &CMyGLCanvas_DisplayWindow3D::OnCharCustom, this);
+	this->Bind(wxEVT_LEFT_DOWN, &CMyGLCanvas_DisplayWindow3D::OnMouseDown, this);
+	this->Bind(wxEVT_RIGHT_DOWN, &CMyGLCanvas_DisplayWindow3D::OnMouseDown, this);
 }
 
 void CMyGLCanvas_DisplayWindow3D::display3D_processKeyEvent(
@@ -197,11 +187,11 @@ CMyGLCanvas_DisplayWindow3D::~CMyGLCanvas_DisplayWindow3D()
 
 void CMyGLCanvas_DisplayWindow3D::OnPreRender()
 {
-	auto openGLSceneRef = getOpenGLSceneRef();
+	auto &openGLSceneRef = getOpenGLSceneRef();
 	if (openGLSceneRef) openGLSceneRef.reset();
 
-	COpenGLScene::Ptr ptrScene = m_win3D->get3DSceneAndLock();
-	if (ptrScene) openGLSceneRef = ptrScene;
+	COpenGLScene::Ptr &ptrScene = m_win3D->get3DSceneAndLock();
+	if (ptrScene)  openGLSceneRef = ptrScene;
 }
 
 void CMyGLCanvas_DisplayWindow3D::OnPostRender()
@@ -285,22 +275,11 @@ C3DWindowDialog::C3DWindowDialog(
 		win3D, this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
 
 	// Events:
-	Connect(
-		wxID_ANY, wxEVT_CLOSE_WINDOW,
-		(wxObjectEventFunction)&C3DWindowDialog::OnClose);
-	Connect(
-		ID_MENUITEM1, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&C3DWindowDialog::OnMenuClose);
-	Connect(
-		ID_MENUITEM2, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction)&C3DWindowDialog::OnMenuAbout);
-
-	Connect(
-		wxID_ANY, wxEVT_CHAR, (wxObjectEventFunction)&C3DWindowDialog::OnChar);
-
-	Connect(
-		wxID_ANY, wxEVT_SIZE,
-		(wxObjectEventFunction)&C3DWindowDialog::OnResize);
+	this->Bind(wxEVT_CLOSE_WINDOW, &C3DWindowDialog::OnClose, this);
+	this->Bind(wxEVT_COMMAND_MENU_SELECTED, &C3DWindowDialog::OnMenuClose, this, ID_MENUITEM1);
+	this->Bind(wxEVT_COMMAND_MENU_SELECTED, &C3DWindowDialog::OnMenuAbout, this, ID_MENUITEM2);
+	this->Bind(wxEVT_CHAR, &C3DWindowDialog::OnChar, this);
+	this->Bind(wxEVT_SIZE, &C3DWindowDialog::OnResize, this);
 
 	// Increment number of windows:
 	// int winCount =

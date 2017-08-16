@@ -40,26 +40,6 @@ float CGlCanvasBase::SENSIBILITY_DEG_PER_PIXEL = 0.1f;
 
 #endif
 
-CGlCanvasBase::CGlCanvasBase()
-	: clearColorR(0.4f),
-	  clearColorG(0.4f),
-	  clearColorB(0.4f),
-	  clearColorA(1.0),
-	  useCameraFromScene(false),
-	  m_openGLScene(mrpt::make_aligned_shared<COpenGLScene>()),
-	  m_mouseLastX(0),
-	  m_mouseLastY(0),
-	  m_mouseClickX(0),
-	  m_mouseClickY(0),
-	  mouseClicked(false),
-	  m_minZoom(1.0),
-	  m_maxZoom(3200.0),
-	  m_cameraParams()
-{
-	setCameraPointing(0.0, 0.0, 0.0);
-}
-
-CGlCanvasBase::~CGlCanvasBase() { m_openGLScene.reset(); }
 void CGlCanvasBase::setMinimumZoom(float zoom) { m_minZoom = zoom; }
 void CGlCanvasBase::setMaximumZoom(float zoom) { m_maxZoom = zoom; }
 void CGlCanvasBase::setMousePos(int x, int y)
@@ -240,10 +220,6 @@ float CGlCanvasBase::getClearColorR() const { return clearColorR; }
 float CGlCanvasBase::getClearColorG() const { return clearColorG; }
 float CGlCanvasBase::getClearColorB() const { return clearColorB; }
 float CGlCanvasBase::getClearColorA() const { return clearColorA; }
-COpenGLScene::Ptr CGlCanvasBase::getOpenGLSceneRef() const
-{
-	return m_openGLScene;
-}
 
 void CGlCanvasBase::setOpenGLSceneRef(COpenGLScene::Ptr scene)
 {
@@ -352,18 +328,6 @@ double CGlCanvasBase::renderCanvas(int width, int height)
 	}
 
 	return At;
-}
-
-CGlCanvasBase::CamaraParams::CamaraParams()
-	: cameraPointingX(0.0f),
-	  cameraPointingY(0.0f),
-	  cameraPointingZ(0.0f),
-	  cameraZoomDistance(40.0f),
-	  cameraElevationDeg(45.0f),
-	  cameraAzimuthDeg(45.0f),
-	  cameraIsProjective(true),
-	  cameraFOV(30.0f)
-{
 }
 
 void CGlCanvasBase::CamaraParams::setElevationDeg(float deg)
