@@ -348,7 +348,7 @@ MARK_AS_ADVANCED(MRPT_WHOLE_PROGRAM_OPTIMIZATION)
 # Even more warnings for different compilers
 IF(MRPT_EXTRA_WARNINGS)
    IF (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
-      SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wreturn-type -Wextra -Wtype-limits -Wcast-align -Wparentheses -Wno-unused-parameter") # -Wold-style-cast  -Woverloaded-virtual
+      add_compile_options(-Wreturn-type -Wextra -Wtype-limits -Wcast-align -Wparentheses -Wno-unused-parameter) # -Wold-style-cast  -Woverloaded-virtual
    ENDIF()
 ENDIF()
 
@@ -356,7 +356,9 @@ ENDIF()
 SET(MRPT_ENABLE_PROFILING OFF CACHE BOOL "Enable profiling (add -g -pg in GCC/CLANG, /PROFILE in Visual C++)")
 
 IF(MSVC)
-	SET(EXTRA_CPP_FLAGS "/W3 /D _CRT_SECURE_NO_DEPRECATE /D _CRT_NONSTDC_NO_DEPRECATE")
+	add_compile_options(/W3)
+	add_definitions(-D_CRT_SECURE_NO_DEPRECATE)
+	add_definitions(-D_CRT_NONSTDC_NO_DEPRECATE)
 
 	LINK_DIRECTORIES("${CMAKE_BINARY_DIR}/lib")  # Required to find libraries
 
@@ -374,38 +376,21 @@ IF(MSVC)
 		SET(CMAKE_MODULE_LINKER_FLAGS_DEBUG "${CMAKE_MODULE_LINKER_FLAGS_DEBUG} /DEBUG ")
 	endif()
 
-	# "In earlier versions of Visual C++, the compiler used several discrete
-	#   heaps, and each had a finite limit. Currently, the compiler dynamically
-	#   grows the heaps as necessary up to a total heap size limit, and requires
-	#   a fixed-size buffer only to construct precompiled headers. Consequently,
-	#   the /Zm compiler option is rarely necessary."
- 	# http://msdn.microsoft.com/en-us/library/bdscwf1c.aspx
-	#
-	if(MSVC_VERSION LESS 1800) # <=VS 2012
-		SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} /Zm1000")
-	endif()
-
 	# Whole program optimization
 	IF(MRPT_WHOLE_PROGRAM_OPTIMIZATION)
-		SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} /GL")
+		add_compile_options(/GL)
 		SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /LTCG ")
 		SET(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} /LTCG ")
 		SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /LTCG ")
 	ENDIF()
 
 	# Remove unreferenced functions: function level linking
-	SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} /Gy")
-	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /W3 ")
+	add_compile_options(/Gy)
 
 	# SSE2 for MSVC?
 	IF (CMAKE_MRPT_HAS_SSE2 AND NOT CMAKE_MRPT_WORD_SIZE EQUAL 64)
-		SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} /arch:SSE2")
+		add_compile_options(/arch:SSE2)
 	ENDIF()
-
-	# SSE3: any flag needed?
-
-	# Fast math:
-	#SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} /fp:fast")
 
 	# Profiling?
 	IF(MRPT_ENABLE_PROFILING)
@@ -424,24 +409,24 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
 	# High level of warnings.
 	# The -Wno-long-long is required in 64bit systems when including sytem headers.
 	# The -Wno-variadic-macros was needed for Eigen3, StdVector.h
- 	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CONFIGURE_CFLAGS} -Wall -Wno-long-long -Wno-variadic-macros")
+ 	add_compile_options(${CMAKE_CONFIGURE_CFLAGS} -Wall -Wno-long-long -Wno-variadic-macros)
 
 	# Workaround: Eigen <3.4 produces *tons* of warnings in GCC >=6. See http://eigen.tuxfamily.org/bz/show_bug.cgi?id=1221
 	IF (NOT ${CMAKE_CXX_COMPILER_VERSION} LESS "6.0" AND "${MRPT_EIGEN_VERSION}" VERSION_LESS "3.4")
-		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-ignored-attributes -Wno-int-in-bool-context")
+		add_compile_options(-Wno-ignored-attributes -Wno-int-in-bool-context)
 	ENDIF()
 
-  IF(NOT APPLE)
-    # This causes the option "-Wnorite-strings" to be set on gcc-4.9 on OS X
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-write-strings")
-  ENDIF()
+	IF(NOT APPLE)
+		# This causes the option "-Wnowrite-strings" to be set on gcc-4.9 on OS X
+		add_compile_options(-Wno-write-strings)
+	ENDIF()
  	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_CONFIGURE_CFLAGS}")
 
 	# Use "modern" C99 ! ;-)
  	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
 
-
 	IF(MRPT_BUILD_GCC_PEDANTIC)
+		# Only for C++ sources:
 		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic")
 		# No need to be pendantic in old C files, most of them from 3rd parties anyway...
  		#SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pedantic")
@@ -449,7 +434,8 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
 
 	# Parallel stdlibc++?
 	IF(MRPT_ENABLE_LIBSTD_PARALLEL_MODE)
-		SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} -D_GLIBCXX_PARALLEL -fopenmp")
+		add_compile_options(-fopenmp)
+		add_definitions(-D_GLIBCXX_PARALLEL)
 	ENDIF()
 
 	# BUILD_TYPE: Coverage
@@ -460,7 +446,7 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
 	# Trusty error: Boost needs -fext-numeric-literals
 	# /usr/include/boost/math/constants/constants.hpp:260:1148: error: unable to find numeric literal operator ‘operator""Q’
 	# /usr/include/boost/math/constants/constants.hpp:260:1148: note: use -std=gnu++11 or -fext-numeric-literals to enable more built-in suffixes
-	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fext-numeric-literals")
+	add_compile_options(-fext-numeric-literals)
 ENDIF()
 
 # CLang options ================================
@@ -470,14 +456,11 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
 
 	# High level of warnings.
 	# no-unused-private-field: clang seems to complain in templates without reason.
- 	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CONFIGURE_CFLAGS} -Wall -Wno-unused-private-field")
+	add_compile_options(${CMAKE_CONFIGURE_CFLAGS} -Wall -Wno-unused-private-field)
  	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_CONFIGURE_CFLAGS}")
 
 	# Use "modern" C99 ! ;-)
  	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
-
-	# Use modern C++14
- 	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 
 	IF(NOT APPLE) # any reason for not using it in all platforms?
 	# Use the libstdc++ lib vs. libc++, to avoid some build errors in MacOS
@@ -492,33 +475,31 @@ endif()
 # ======================================
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
 	IF(MRPT_WARNINGS_ARE_ERRORS)
-		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
-		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror")
+		add_compile_options(-Werror)
 	ENDIF()
 
 	IF(CMAKE_BUILD_TYPE MATCHES "Debug")
-		SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} -g")
+		add_compile_options(-g)
 		ADD_DEFINITIONS( -D_DEBUG)
 		ADD_DEFINITIONS( -DDEBUG)
 	ENDIF()
 
 	# Profiling?
 	IF(MRPT_ENABLE_PROFILING)
-		SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} -pg -g")
+		add_compile_options(-pg -g)
 	ELSEIF()
 		# Remove unreferenced functions: function level linking
 		# Remove unreferenced functions: function level linking
 		if(NOT APPLE)
-			SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ffunction-sections")
+			add_compile_options(-ffunction-sections)
 		endif()
 	ENDIF()
 
 	# Whole program optimization
 	IF(MRPT_WHOLE_PROGRAM_OPTIMIZATION)
-		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --combine")
+		add_compile_options(--combine)
 		SET(MRPT_EXES_CXX_FLAGS "${MRPT_EXES_CXX_FLAGS} -fwhole-program --combine")
 	ENDIF()
-
 
 	# "-mtune=native" generates code optimized for the detected current processor.
 	if (WIN32 OR "${CMAKE_MRPT_ARCH}" MATCHES ".*86" OR "${CMAKE_MRPT_ARCH}" MATCHES "amd64")
@@ -533,50 +514,41 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
 
 	IF(CMAKE_MRPT_USE_DEB_POSTFIXS OR CMAKE_MRPT_IS_RPM_PACKAGE)
 		# If we're building a Debian package, just DO NOT use -mtune=native
-		SET(EXTRA_CPP_FLAGS ${CFLAGS})
 	ELSE()
 		IF(MRPT_OPTIMIZE_NATIVE AND NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
-			SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} -O3 -mtune=native ")
+			add_compile_options(-O3 -mtune=native)
 		ENDIF()
-	ENDIF()
-
-	# "-ffast-math"
-	SET( MRPT_OPTIMIZE_FFAST-MATH OFF CACHE BOOL "GCC/clang optimization for floating math (-ffast-math).")
-	IF(MRPT_OPTIMIZE_FFAST-MATH)
-		SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} -ffast-math")
 	ENDIF()
 
 	# SSE2?
 	IF (CMAKE_MRPT_HAS_SSE2)
-		SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} -msse2 -funroll-loops")
+		add_compile_options(-msse2 -funroll-loops)
 		IF (CMAKE_COMPILER_IS_GNUCXX)
-			SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} -mfpmath=sse")
+			add_compile_options(-mfpmath=sse)
 		ENDIF()
 	ENDIF()
 
 	# SSE3?
 	IF (CMAKE_MRPT_HAS_SSE3)
-		SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} -msse3 -mssse3")
+		add_compile_options(-msse3 -mssse3)
 	ENDIF()
 
 	# SSE4*?
 	IF (CMAKE_MRPT_HAS_SSE4_1)
-		SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} -msse4.1")
+		add_compile_options(-msse4.1)
 	ENDIF()
 	IF (CMAKE_MRPT_HAS_SSE4_2)
-		SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} -msse4.2")
+		add_compile_options(-msse4.2)
 	ENDIF()
 	IF (CMAKE_MRPT_HAS_SSE4_A)
-		SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} -msse4a")
+		add_compile_options(-msse4a)
 	ENDIF()
-
 endif ()
 
 # Add user supplied extra options (optimization, etc...)
 # ==========================================================
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${EXTRA_CPP_FLAGS} ${USER_EXTRA_CPP_FLAGS}")
-SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${EXTRA_CPP_FLAGS} ${USER_EXTRA_CPP_FLAGS}")
-
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${USER_EXTRA_CPP_FLAGS}")
+SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${USER_EXTRA_CPP_FLAGS}")
 
 # Some tricks for MSVC:
 if(MSVC)
