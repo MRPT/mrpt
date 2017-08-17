@@ -256,6 +256,10 @@ public:
     bool placeRecog_checked_flag;
 
 
+    /// Rawlog support parameters
+    //int rawlog_image_counter;
+
+
     /// main Feature Extraction params
     CFeatureExtraction fext;                    //!< CFeatureExtraction object to hold/store all parameters for detectors/descriptors
     CFeatureList featsImage1, featsImage2;      //!< stores the features in image 1 and 2
@@ -494,6 +498,7 @@ public:
       * readFilesFromFolder(int) reads the files from a folder, the function is called when the user presses the next or previous button
       * it iterates over the images present in the image dataset folder specified by the user
       * the function works under the assumption both the stereo image datasets have the same number of images
+      * the function also supports rawlog images datasets, has implementations for both single and stereo datasets
       * @param next_prev indicates 1 for next image and 0 for previous button being pressed
       */
     void readFilesFromFolder(int next_prev);
@@ -638,6 +643,18 @@ public:
      */
     void displayVector(vector<string> paths);
 
+    /**
+     * readRawlofFiles stores the base folder of the rawlog files containing the images into appropriate variables in the GUI
+     * @param rawlog
+     */
+    void readRawlogFiles(string rawlog);
+
+    /**
+     * getImageDir this simply returns the base image Dir by breaking it based on the last '/' character to separate the image
+     * @param path
+     * @return the required base folder storing the images
+     */
+    string getImageDir(string path);
 
 
 

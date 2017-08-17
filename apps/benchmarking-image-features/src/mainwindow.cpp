@@ -59,6 +59,8 @@
 #	include <mrpt/obs/CObservation2DRangeScan.h>
 #	include <mrpt/obs/CObservationBeaconRanges.h>
 #	include <mrpt/obs/CObservationBearingRange.h>
+
+
 using namespace mrpt::obs;
 #else
 #	include <mrpt/slam/CSensoryFrame.h>
@@ -114,6 +116,9 @@ string detector_result2 ="";  // holds the repeatibility result
 
 string single_dataset_path = "";
 
+string rawlogPath = "";
+int rawlog_type = 0; // 0 for single, 1 for stereo
+
 float dist1_p[MAX_DESC], dist2_p[MAX_DESC];
 
 
@@ -158,7 +163,7 @@ void MainWindow::on_button_generate_clicked()
     for (unsigned int i1 = 0; i1 < numDesc1; i1++)
     {
         // do the following only if stereo images
-        if(currentInputIndex == 1 || currentInputIndex == 4)
+        if(currentInputIndex == 1 || currentInputIndex == 4 || (currentInputIndex==2 && rawlog_type==1))
         {
             CVectorDouble distances(featsImage2.size());
             if (descriptor_selected != -1) {
@@ -275,20 +280,20 @@ void MainWindow::on_button_generate_clicked()
                 if (descriptor_selected == -1) // descAny
                 {
                     auxImg1 = featsImage1[i1]->patch;
-                    if(currentInputIndex == 1 || currentInputIndex == 4) {
+                    if(currentInputIndex == 1 || currentInputIndex == 4 || (currentInputIndex==2 && rawlog_type==1)) {
                         auxImg2 = featsImage2[min_dist_idx]->patch;
                     }
                 } else if (descriptor_selected == 3) // descPolarImages
                 {
                     auxImg1.setFromMatrix(featsImage1[i1]->descriptors.PolarImg);
-                    if(currentInputIndex == 1 || currentInputIndex == 4) {
+                    if(currentInputIndex == 1 || currentInputIndex == 4 || (currentInputIndex==2 && rawlog_type==1)) {
                         auxImg2.setFromMatrix(featsImage2[min_dist_idx]->descriptors.PolarImg);
                     }
 
                 } else if (descriptor_selected == 4)  // descLogPolarImages
                 {
                     auxImg1.setFromMatrix(featsImage1[i1]->descriptors.LogPolarImg);
-                    if(currentInputIndex == 1 || currentInputIndex == 4) {
+                    if(currentInputIndex == 1 || currentInputIndex == 4 || (currentInputIndex==2 && rawlog_type==1)) {
                         auxImg2.setFromMatrix(featsImage2[min_dist_idx]->descriptors.LogPolarImg);
                     }
 
@@ -303,7 +308,7 @@ void MainWindow::on_button_generate_clicked()
                         for (size_t c = 0; c < nC1; c++)
                             M1(r, c) = featsImage1[i1]->descriptors.SpinImg[c + r * nC1];
                     auxImg1.setFromMatrix(M1);
-                    if(currentInputIndex == 1 || currentInputIndex == 4)
+                    if(currentInputIndex == 1 || currentInputIndex == 4 || (currentInputIndex==2 && rawlog_type==1))
                     {
                         const size_t nR = featsImage2[min_dist_idx]->descriptors.SpinImg_range_rows;
                         const size_t nC = featsImage2[min_dist_idx]->descriptors.SpinImg.size()/featsImage2[min_dist_idx]->descriptors.SpinImg_range_rows;
@@ -318,7 +323,7 @@ void MainWindow::on_button_generate_clicked()
                 //cout << "before the while loop" << auxImg1.getWidth() << "  "<< auxImg1.getHeight() << "  " <<  endl;
                 while (auxImg1.getWidth() < 100 && auxImg1.getHeight() < 100)
                     auxImg1.scaleImage(auxImg1.getWidth() * 2, auxImg1.getHeight() * 2, IMG_INTERP_NN);
-                if(currentInputIndex == 1 || currentInputIndex == 4)
+                if(currentInputIndex == 1 || currentInputIndex == 4 || (currentInputIndex==2 && rawlog_type==1))
                 {
                     while (auxImg2.getWidth() < 100 && auxImg2.getHeight() < 100)
                         auxImg2.scaleImage(auxImg2.getWidth() * 2, auxImg2.getHeight() * 2, IMG_INTERP_NN);
@@ -336,7 +341,7 @@ void MainWindow::on_button_generate_clicked()
                 images1[i1] = new QLabel;
                 images1[i1]->setPixmap(QPixmap::fromImage(qimage_1[i1]));
 
-                if(currentInputIndex == 1 || currentInputIndex == 4)
+                if(currentInputIndex == 1 || currentInputIndex == 4 || (currentInputIndex==2 && rawlog_type==1))
                 {
                     cv::Mat cvImg2 = cv::cvarrToMat(auxImg2.getAs<IplImage>());
                     cv::Mat temp2(cvImg2.cols, cvImg2.rows, cvImg2.type());
@@ -424,7 +429,7 @@ void MainWindow::on_button_generate_clicked()
                 images1[i1]->setPixmap(QPixmap::fromImage(qimage_1[i1]));
 
 
-                if(currentInputIndex == 1 || currentInputIndex == 4)
+                if(currentInputIndex == 1 || currentInputIndex == 4 || (currentInputIndex==2 && rawlog_type==1))
                 {
                     if(descriptor_selected == 0)
                         v2 = featsImage2[min_dist_idx]->descriptors.SIFT;
@@ -894,6 +899,23 @@ void MainWindow::makeAllDescriptorParamsVisible(bool flag)
 }
 
 /************************************************************************************************
+*								Get Image Directory          							        *
+************************************************************************************************/
+string MainWindow::getImageDir(string path)
+{
+    long i = path.size()-1;
+    for(; i>=0 ; i--)
+    {
+        if(path.at(i) == '/')
+        {
+            break;
+        }
+    }
+    string temp = path.substr(0,i);;
+    return temp;
+}
+
+/************************************************************************************************
 *								Make Vision Options Visible 							        *
 ************************************************************************************************/
 void MainWindow::makeVisionOptionsVisible(bool flag)
@@ -905,313 +927,164 @@ void MainWindow::makeVisionOptionsVisible(bool flag)
 }
 
 /************************************************************************************************
+*								Reade RawLog Files           							        *
+************************************************************************************************/
+void MainWindow::readRawlogFiles(string rawlog)
+{
+    cout << "I got : " << rawlog << endl;
+
+    /// APPROACH 1: not required
+    /*mrpt::utils::CFileGZInputStream rawlog_stream_;// = new CFileGZInputStream
+
+    rawlog_stream_.open(rawlog);
+
+    CSensoryFrame frames;
+    CActionCollection actions;
+    //CObservation ooobs;
+
+    mrpt::obs::CActionCollection::Ptr action ;
+    CSensoryFrame::Ptr    observations;
+    CObservation::Ptr      obs;
+    size_t entry1_ = 0;
+
+    rawlog_stream_.close();
+
+    //cout << CRawlog::getActionObservationPairOrObservation( rawlog_stream_, action, observations, obs, entry_) << endl;
+
+    //cout << ("end of stream!") << endl;
+    //cout << observations->size() << endl;
+    */
+
+    /// APPROACH 2
+    CRawlog dataset;
+    dataset.loadFromRawLogFile(rawlog);
+    cout << dataset.size() << " entries loaded." << endl;
+
+
+    string errorMsg;
+    ofstream ostream1;
+    int flag_path = 0;
+    int flag_path2 = 0;
+    for(unsigned int i=0 ; i<dataset.size() ; i++)
+    {
+        try
+        {
+            switch (dataset.getType(i))
+            {
+
+                /// current version of the GUI does not require etSensoryFrames to be implemented
+                case CRawlog::etSensoryFrame:
+                {
+                    cout << "etSensoryFrame " << i << endl;
+                    CSensoryFrame::Ptr SF = dataset.getAsObservations(i);
+
+                    for (unsigned int k = 0; k < SF->size(); k++)
+                    {
+                        if (SF->getObservationByIndex(k)->GetRuntimeClass() == CLASS_ID(CObservationStereoImages))
+                        {
+                            CObservationStereoImages::Ptr obsSt = SF->getObservationByIndexAs<CObservationStereoImages::Ptr>(k);
+                            cout << " inside stereo Sensory Frame" << obsSt->imageLeft.getHeight() << endl;
+                        }
+                        if (SF->getObservationByIndex(k)->GetRuntimeClass() == CLASS_ID(CObservationImage))
+                        {
+                            CObservationImage::Ptr obsIm = SF->getObservationByIndexAs<CObservationImage::Ptr>(k);
+
+                            cout << " inside monocular Sensory Frame" << obsIm->image.getHeight() << endl;
+                            Mat cvImg = cv::cvarrToMat(obsIm->image.getAs<IplImage>());
+                            imshow("view", cvImg);
+                            waitKey(1);
+                        }
+                    }
+                }
+                    break;
+                case CRawlog::etObservation:
+                {
+                    cout << "etObservation " << i << endl;
+                    CObservation::Ptr o = dataset.getAsObservation(i);
+                    //cout << o->sensorLabel << " type : etObs" << dataset.getType(i) << " index: " << i << endl;
+
+                    if (IS_CLASS(o, CObservationStereoImages))
+                    {
+                        cout << " stereo Image detected " << endl;
+                        CObservationStereoImages::Ptr obsSt = std::dynamic_pointer_cast<CObservationStereoImages>(o);
+
+                        ///similar to common practice of reading images-->  https://github.com/MRPT/mrpt/search?utf8=%E2%9C%93&q=IMAGES_PATH_BASE&type=
+                        stringstream str;
+                        str << getImageDir(rawlog) << "/Images";
+                        obsSt->imageLeft.IMAGES_PATH_BASE = str.str();
+                        file_path1 = str.str();
+                        flag_path2++;
+                        inputFilePath->setText(QString::fromStdString(str.str()));
+
+                        cout << obsSt->imageLeft.getExternalStorageFileAbsolutePath() << " external " << endl;
+
+                        rawlog_type = 1;
+
+                        CImage image_c = obsSt->imageLeft;
+                        Mat cvImg1 = cv::cvarrToMat(image_c.getAs<IplImage>());
+                        //imshow("view", cvImg1);
+                        //waitKey(1);
+                    }
+                    else if (IS_CLASS(o, CObservationImage))
+                    {
+                        cout << "monocular image detected " << endl;
+                        CObservationImage::Ptr obsIm = std::dynamic_pointer_cast<CObservationImage>(o);
+
+                        ///similar to common practice of reading images-->  https://github.com/MRPT/mrpt/search?utf8=%E2%9C%93&q=IMAGES_PATH_BASE&type=
+                        stringstream str;
+                        str << getImageDir(rawlog) << "/Images";
+                        obsIm->image.IMAGES_PATH_BASE = str.str();
+                        file_path1 = str.str();
+                        flag_path++;
+                        //cout << obsIm->image.getExternalStorageFileAbsolutePath() << " external " << rawlog_image_counter << endl;
+                        //rawlog_image_counter++;
+
+                        inputFilePath->setText(QString::fromStdString(str.str()));
+                        rawlog_type = 0;
+
+                        //cout << "Height: " << obsIm->image.getHeight() << endl;
+                    }
+                }break;
+                case CRawlog::etActionCollection:
+                {
+                    cout << "etActionCollection " << i << endl;
+                    cout << " type : etAC " << dataset.getType(i) << " index: " << i << endl;
+                    break;
+                }
+                default:
+                    cout << " I am in default block" << endl;
+            }
+            /// this breaks out of the for loop as only the path of the folder storing the images is required.
+            /// for loop iterates over the observations till it finds an image observation using which the image
+            /// base folder is computed and stored in appropriate variables
+            if(flag_path > 0 || flag_path2>0)
+                break;
+
+
+        }// end of the try block
+        catch (exception& e)
+        {
+            cout << " CATCH CATCH CATCH BLOCK %$#@%($@*%(&@(%&@(%@(#$%(@#^$%" << endl;
+            errorMsg = e.what();
+            break;
+        }
+
+    } // end of for loop
+
+    if(rawlog_type == 0)
+    {
+        image2->setVisible(false);
+    }
+    else
+    {
+        image2->setVisible(true);
+    }
+}
+/************************************************************************************************
 *								On File Input Choose        							        *
 ************************************************************************************************/
 void MainWindow::on_file_input_choose(int choice)
 {
-
-    if(choice == 2 )
-    {
-        /*
-        mrpt::utils::CFileGZInputStream rawlog_stream_;// = new CFileGZInputStream
-
-        rawlog_stream_.open("/home/raghavender/Desktop/GSoC/datasets/malaga-urban-dataset-extract-01/malaga-urban-dataset-extract-01_CAM_GPS.rawlog");
-
-        CSensoryFrame frames;
-        CActionCollection actions;
-        CObservation ooobs;
-
-        mrpt::obs::CActionCollection::Ptr action ;
-        CSensoryFrame::Ptr    observations;
-        CObservation::Ptr      obs;
-        size_t entry_ = 0;
-
-        //cout << CRawlog::getActionObservationPairOrObservation( rawlog_stream_, action, observations, obs, entry_) << endl;
-
-        //cout << ("end of stream!") << endl;
-        //cout << observations->size() << endl;
-*/
-
-        CRawlog dataset;
-        dataset.loadFromRawLogFile("/home/raghavender/Desktop/GSoC/datasets/dataset_monoslam_davison/dataset_monoslam_davison.rawlog");
-        //dataset.loadFromRawLogFile("/home/raghavender/Desktop/GSoC/datasets/malaga-urban-dataset-extract-01/malaga-urban-dataset-extract-01_all-sensors.rawlog");
-        cout << dataset.size() << " entries loaded." << endl;
-
-        stringstream outDir;
-        outDir << "/home/raghavender/Desktop/GSoC/datasets/malaga-urban-dataset-extract-01/outputs/";
-
-        CActionCollection::Ptr action ;
-        CSensoryFrame::Ptr    observations;
-        CObservation::Ptr      obs;
-        size_t entry_ = 0;
-
-        string errorMsg;
-        ofstream ostream1;
-        for(unsigned int i=0 ; i<dataset.size() ; i++)
-        {
-            //try
-            {
-
-                //CSensoryFrame::Ptr sensP = dataset.getAsObservations(i);
-
-                //std::ostream rstream;
-                //ptr->getDescriptionAsText(rstfream);
-
-                //cout << ptr->sensorLabel << "  type: " << dataset.getType(i) << "  " <<dataset. << endl ;
-
-                switch (dataset.getType(i))
-                {
-                    case CRawlog::etSensoryFrame:
-                    {
-                        cout << "etSensoryFrame " << i << endl;
-                        CSensoryFrame::Ptr SF = dataset.getAsObservations(i);
-
-                        for (unsigned int k = 0; k < SF->size(); k++)
-                        {
-                            if (SF->getObservationByIndex(k)->GetRuntimeClass() ==
-                                CLASS_ID(CObservationStereoImages))
-                            {
-                                CObservationStereoImages::Ptr obsSt =
-                                        SF->getObservationByIndexAs<
-                                                CObservationStereoImages::Ptr>(k);
-                                cout << " inide stereo Sensory Frame" << obsSt->imageLeft.getHeight() << endl;
-
-
-
-                            }
-                            if (SF->getObservationByIndex(k)->GetRuntimeClass() ==
-                                CLASS_ID(CObservationImage))
-                            {
-                                CObservationImage::Ptr obsIm =
-                                        SF->getObservationByIndexAs<
-                                                CObservationImage::Ptr>(k);
-
-                                cout << " inide monocular Sensory Frame" << obsIm->image.getHeight() << endl;
-                                Mat cvImg = cv::cvarrToMat(obsIm->image.getAs<IplImage>());
-                                imshow("view", cvImg);
-                                waitKey(1);
-                            }
-                        }
-
-
-
-                        break;
-                    }
-                    case CRawlog::etObservation:
-                    {
-                        cout << "etObservation " << i << endl;
-
-                        CObservation::Ptr o = dataset.getAsObservation(i);
-
-                        cout << o->sensorLabel << " type : etObs" << dataset.getType(i) << " index: " << i << endl;
-
-                        if(IS_CLASS(o, CObservationStereoImages))
-                        {
-                            cout << " inside if condition " << endl;
-                            CObservationStereoImages::Ptr obsSt = std::dynamic_pointer_cast<CObservationStereoImages>(o);
-
-                            CImage temp_im = obsSt->imageLeft;
-
-                            //Mat cvImg = cv::cvarrToMat(temp_im.getAs<IplImage>());
-
-                           // obsSt->imageLeft.saveToFile("/home/raghavender/Desktop/GSoC/datasets/malaga-urban-dataset-extract-01/outputs/img_stereo_left_%05u.jpg", i);
-
-
-                            cout << "Hello Patron " << endl;
-                            cout << temp_im.getHeight() << " 43285y892y52568263432647253%@#%@$!#$2" << endl;
-
-                            //CObservationImage::Ptr obsImg = std::dynamic_pointer_cast<CObservationImage>(o);
-
-                            //CImage image_C = obsImg->image;
-                            //cout << "In switch case " << image_C.getWidth() << " " << image_C.isColor() << endl;
-                        }
-                        else if(IS_CLASS(o, CObservationImage))
-                        {
-                            CObservationImage::Ptr obsIm = std::dynamic_pointer_cast<CObservationImage>(o);
-
-                            CImage immg = obsIm->image;
-                            cout << immg.getHeight() << endl;
-                            cout << " outside" << endl;
-                        }
-                        cout << "$#%#%^#^$^#&#^*$%*#&@%&@&#$&%#^$#!@%!%^%&@^#&$*(&^%" << endl;
-
-
-                        /*if(o.get()->sensorLabel.compare("CAMERA1") == 0)
-                        {
-                            cout << " in if condition $%%$# "  << endl;
-                        } else{
-                            cout << " in else part #$##@" << endl;
-                        }
-                        ostream1.open("./output2.txt");
-                        o.get()->getDescriptionAsText(ostream1);
-                        ostream1.close();
-                        //CObservationImage::Ptr obsImg = std::dynamic_pointer_cast<CObservationImage>(o);
-                        //CImage image_C = obsImg->image;
-                        //cout << "In switch case " << image_C.getWidth() << " " << image_C.isColor() << endl;
-
-
-
-
-                        cout << ptr->sensorLabel << " type : etObs" << dataset.getType(i) << " index: " << i << endl;
-                        */break;
-                    }
-                    case CRawlog::etActionCollection:
-                    {
-                        cout << "etActionCollection " << i << endl;
-                        cout << " type : etAC " << dataset.getType(i) << " index: " << i << endl;
-                        break;
-                    }
-                    default:
-                        cout << " I am in default block" << endl;
-                }
-
-                //ptr->load();
-
-            }
-            /*catch (exception& e)
-            {
-                cout << " CATCH CATCH CATCH BLOCK %$#@%($@*%(&@(%&@(%@(#$%(@#^$%" << endl;
-                errorMsg = e.what();
-                break;
-            }*/
-
-        }
-        //CObservationImage::Ptr p2 = std::dynamic_pointer_cast<CObservationImage>(dataset.getAsObservations(3));
-
-
-        //dataset.getActionObservationPair(action, observations, entry_);
-
-        //CSensoryFrame *f =  observations.get();//size();
-
-        //CObservationImage::Ptr im = f->getObservationByClass<CObservationImage>();
-
-        //CObservationImage ooo = im.get();
-        //CImage im2 = im.get()->image;
-        //Mat cvImg = cv::cvarrToMat(im2.getAs<IplImage>());
-
-
-
-        /*size_t      nImgs=0,count=0;
-        bool m_nowPlaying = true;
-
-        // Repeat until EOF exception or cancel.
-        while (m_nowPlaying)
-        {
-            CSerializable::Ptr obj;
-            if (fil)
-            {
-                (*fil) >> obj;
-            }
-
-            bool doDelay = false;
-
-            if (IS_CLASS(obj,CSensoryFrame))
-            {
-                //doDelay = showSensoryFrame(obj.get(), nImgs);
-            }
-            else if (IS_DERIVED(obj,CObservation))
-            {
-                CSensoryFrame	sf;
-                sf.insert( std::dynamic_pointer_cast<CObservation>(obj) );
-                //doDelay = showSensoryFrame( &sf, nImgs);
-            }
-
-            // Free the loaded object!
-            if (fil) obj.reset();
-
-            // Update UI
-            if ((count++)%100==0)
-            {
-                //progressBar->SetValue( fil ? (int)fil->getPosition():(int)count );
-                //wxString str;
-                //str.sprintf(_("Processed: %d images"),nImgs);
-                //lbProgress->SetLabel( str );
-                //if (!doDelay) wxTheApp->Yield();
-            }
-
-            //if (doDelay || (count % 100)==0)
-            //edIndex->SetValue(count);
-
-            // End?
-            if (!fil && count>=rawlog.size()) m_nowPlaying=false;
-
-            // Time to process stop button press and redraw image.
-
-
-
-        }*/
-
-
-
-
-
-
-        /*CRawlog dataset;
-        dataset.loadFromRawLogFile("/home/raghavender/Desktop/GSoC/datasets/malaga-urban-dataset-extract-01/malaga-urban-dataset-extract-01_rectified_1024x768.rawlog");
-        cout << dataset.size() << " entries loaded." << endl;
-
-        CActionCollection::Ptr actionCollection;
-        CSensoryFrame::Ptr sensP;
-        size_t raw_size;
-
-        dataset.getActionObservationPair(actionCollection, sensP, raw_size);
-
-
-        cout << "got the obs"  << endl;
-
-        CSensoryFrame	sf;
-        CSensoryFrame *csf = sensP.get();
-        cout << "got the frame ptr"  << endl;
-*/
-        //mrpt::utils::CFileGZInputStream *rawlog_stream_ = new CFileGZInputStream("/home/raghavender/Desktop/GSoC/datasets/malaga-urban-dataset-extract-01/malaga-urban-dataset-extract-01_rectified_800x600.rawlog");
-        //rawlog_stream_->open("/home/raghavender/Desktop/GSoC/datasets/malaga-urban-dataset-extract-01/malaga-urban-dataset-extract-01_rectified_800x600.rawlog");
-        //rawlog_stream_.open("/home/raghavender/Desktop/GSoC/datasets/malaga-urban-dataset-extract-01");
-
-        /*mrpt::obs::CActionCollection::Ptr action;
-        CSensoryFrame::Ptr    observations;
-        CObservation::Ptr      obs;
-
-        //dataset.getActionObservationPairOrObservation(rawlog_stream_,);
-
-        size_t entry_ = 0;
-
-        cout << "uouo" << endl;
-        cout << "hello " << observations->size() << endl ;
-
-        if(!CRawlog::getActionObservationPairOrObservation( rawlog_stream_, action, observations, obs, entry_)) {
-            cout << ("end of stream!") << endl;
-
-        }
-
-        cout << "hello " << observations->size() << endl ;
-        CObservationImage::Ptr cimage =  observations->getObservationByClass<CObservationImage>(0);
-*/
-        //CImage img = &cimage->image;
-
-
-        /*CObservationImage::Ptr obsImg = csf->getObservationByClass<CObservationImage>();
-
-        cout << "got the obs img"  << endl;
-        CImage *temp_image = &obsImg->image;
-
-        cv::Mat cvImg2 = cv::cvarrToMat(temp_image->getAs<IplImage>());
-
-        imshow("hello",cvImg2);
-        waitKey(1);
-*/
-
-
-
-        //CObservation::Ptr c_obs = csf->getObservationByIndex(3);
-    }
-    else if(choice == 2)
-    {
-        //QMessageBox::information(this, "RAWLOG format currently not supported..!!");
-        QMessageBox::information(this, "Rawlog error","MRPT rawlog format is currently not supported");
-        return;
-    }
-
-
     //makeGraphsVisible(false);
     // HIDE input file path 2, browse button 2, image2 for cases : single image,  image raw log and single image dataset
     if (choice == 0 || choice == 2 || choice == 3)
@@ -1238,6 +1111,26 @@ void MainWindow::on_file_input_choose(int choice)
             image2->setVisible(true);
     }
 
+
+    // HIDE previous and next buttons for the cases : single image, stereo image or stereo image
+    if(choice == 0 || choice == 1)// || choice == 4)
+    {
+        next_button->setVisible(false);
+        prev_button->setVisible(false);
+        makeVisionOptionsVisible(false);
+        makeHomographyParamsVisible(false);
+        makeTrackerParamVisible(false);
+    }
+    else
+    {
+
+        next_button->setVisible(true);
+        prev_button->setVisible(true);
+        if(choice != 4 || choice != 2) // no need of vision options for stereo datasets and rawlog formats
+        makeVisionOptionsVisible(true);
+    }
+
+
     if(choice == 3)
     {
         /*generateVisualOdometry->setVisible(true);
@@ -1252,23 +1145,9 @@ void MainWindow::on_file_input_choose(int choice)
         browseCalibration->setVisible(false);
         makeTrackerParamVisible(false);
         makePlaceRecognitionParamVisible(false);
-    }
-    // HIDE previous and next buttons for the cases : single image, stereo image, image raw log or stereo image
-    if(choice == 0 || choice == 1 || choice == 2 || choice == 4)
-    {
-        next_button->setVisible(false);
-        prev_button->setVisible(false);
         makeVisionOptionsVisible(false);
-        makeHomographyParamsVisible(false);
-        makeTrackerParamVisible(false);
     }
-    else
-    {
 
-        next_button->setVisible(true);
-        prev_button->setVisible(true);
-        makeVisionOptionsVisible(true);
-    }
 
     currentInputIndex = inputs->currentIndex();
     switch (currentInputIndex)
@@ -1280,7 +1159,7 @@ void MainWindow::on_file_input_choose(int choice)
             groupBox_images->setTitle("Stereo Image Pair");
             break;
         case 2:
-            groupBox_images->setTitle("Image RawLog File <br> NOT IMPLEMENTED YET");
+            groupBox_images->setTitle("Image RawLog File");
             break;
         case 3:
             groupBox_images->setTitle("Single Image Dataset");
@@ -1311,7 +1190,7 @@ void MainWindow::fillDetectorInfo()
     resolution_x = img1.getWidth() ;
     resolution_y = img1.getHeight();
 
-    if(currentInputIndex == 1 || currentInputIndex ==4) // stereo image or stereo dataset
+    if(currentInputIndex == 1 || currentInputIndex ==4 || (currentInputIndex==2 && rawlog_type == 1)) // stereo image or stereo dataset
         img2.loadFromFile(file_path2);
 
     cout << file_path1 << " File Path in fillDetectorInfo AFTER IMAGE READ " << endl;
@@ -1481,7 +1360,7 @@ void MainWindow::fillDescriptorInfo()
     resolution_x = img1.getWidth() ;
     resolution_y = img1.getHeight();
 
-    if(currentInputIndex == 1 || currentInputIndex ==4) // stereo image or stereo dataset
+    if(currentInputIndex == 1 || currentInputIndex ==4 || (currentInputIndex==2 && rawlog_type==1)) // stereo image or stereo dataset
         img2.loadFromFile(file_path2);
 
     if(descriptor_selected == 0) //!< SIFT Descriptors
@@ -1611,7 +1490,6 @@ void MainWindow::fillDescriptorInfo()
 ************************************************************************************************/
 void MainWindow::on_detector_button_clicked()
 {
-
     if(detector_selected == 2)
     {
 #if  !MRPT_HAS_SIFT_HESS
@@ -1635,7 +1513,7 @@ void MainWindow::on_detector_button_clicked()
     }
     //if(file_path1.empty() || file_path2.empty())
     {
-        if(currentInputIndex == 3 || currentInputIndex == 4) // read files from folder for datasets
+        if(currentInputIndex == 3 || currentInputIndex == 4 || currentInputIndex == 2) // read files from folder for datasets
         {
             if(flag_read_files_bug)
             {
@@ -1688,7 +1566,7 @@ void MainWindow::on_detector_button_clicked()
     cout << "Number of Features in image 1: " << featsImage1.size() << endl;
 
 
-    if(currentInputIndex == 1 || currentInputIndex == 4)
+    if(currentInputIndex == 1 || currentInputIndex == 4 || (currentInputIndex==2 && rawlog_type==1))
     {
         featsImage2.clear();
         fext.detectFeatures(img2, featsImage2, 0, numFeats);
@@ -1751,7 +1629,7 @@ void MainWindow::on_detector_button_clicked()
                 << "<br/>Dispersion of keypoints in Image1 in X direction: " << standard_dev_x
                 << "<br/>Dispersion of keypoints in Image1 in Y direction: " << standard_dev_y
             ;
-    if(currentInputIndex == 1 || currentInputIndex == 4)
+    if(currentInputIndex == 1 || currentInputIndex == 4 || (currentInputIndex==2 && rawlog_type==1))
         detect_info << "<br/>Number of Detected Key-points in Image 2: " << featsImage2.size();
     detect_info << endl;
     string temp_info = detect_info.str();
@@ -1816,7 +1694,7 @@ void MainWindow::on_descriptor_button_clicked()
     {
         fext.computeDescriptors(img1, featsImage1, desc_to_compute);
         elapsedTime_descriptor = clock_describe.Tac();
-        if (currentInputIndex == 1 || currentInputIndex == 4)
+        if (currentInputIndex == 1 || currentInputIndex == 4 || (currentInputIndex==2 && rawlog_type==1))
         {
             fext.computeDescriptors(img2, featsImage2, desc_to_compute);
             featsImage2.saveToTextFile("./Key_Descriptors2");
@@ -1911,11 +1789,16 @@ void MainWindow::on_browse_button_clicked()
     dialog.setFileMode(QFileDialog::AnyFile);
 
     //0 = single image; 1 = stereo image; 2 = rawlog file ; 3 = image dataset folder ; 4 = stereo dataset folder
-    if(currentInputIndex == 0 || currentInputIndex == 1)
+    if(currentInputIndex == 2)
+    {
+        //dialog.setFileMode(QFileDialog::AnyFile);
+        dialog.setNameFilter(QString::fromStdString("*.rawlog"));
+    }
+    else if(currentInputIndex == 0 || currentInputIndex == 1)
     {
         dialog.setNameFilter(tr("Images (*.png *.xpm *.jpg *.tiff *.gif)"));
     }
-    else if(currentInputIndex == 2 || currentInputIndex == 3 || currentInputIndex == 4)
+    else if(currentInputIndex == 3 || currentInputIndex == 4)
     {
         dialog.setFileMode(QFileDialog::Directory);
     } else
@@ -1932,6 +1815,14 @@ void MainWindow::on_browse_button_clicked()
 
     file_path1 = inputFilePath->text().toStdString();
     single_dataset_path = inputFilePath->text().toStdString();
+    if(currentInputIndex == 2) //rawlog
+    {
+        rawlogPath = inputFilePath->text().toStdString();
+        readRawlogFiles(rawlogPath);
+
+        /// inputFilePath is set to the folder ./Images in the rawlog dataset
+        return;
+    }
     if(currentInputIndex == 0)
     {
         file_path1 = inputFilePath->text().toStdString();
@@ -2094,7 +1985,8 @@ void MainWindow::readFilesFromFolder(int next_prev)
     ReadInputFormat();
     flag_read_files_bug = false;
 
-    file_path1 = inputFilePath->text().toStdString();
+    //if(currentInputIndex != 2)
+        file_path1 = inputFilePath->text().toStdString();
 
     cout << file_path1 << endl;
 
@@ -2104,7 +1996,61 @@ void MainWindow::readFilesFromFolder(int next_prev)
     vector<string> files;
     vector<string> files_fullpath;
 
-    if (currentInputIndex == 3 || currentInputIndex == 4) //meaning stereo dataset or single image dataset
+
+    /// only used for stereo images dataset case
+    DIR *dir2;
+    dirent *pdir2;
+    vector<string> files2;
+    vector<string> files_fullpath2;
+
+    /// handling the case for Stereo Rawlog datasets
+    if(currentInputIndex == 2 && rawlog_type == 1) // meaning stereo datasets for rawlog input type
+    {
+        dir = opendir(file_path1.c_str());
+        while(pdir = readdir(dir))
+        {
+            char *temp_filepath  = pdir->d_name;
+            //temp_filepath.substr(0,3);
+            for(int i=0 ; temp_filepath[i] != '\0' ; i++)
+            {
+                if(temp_filepath[i] == 'l' && temp_filepath[i+1] == 'e' && temp_filepath[i+2] == 'f' && temp_filepath[i+3] == 't')
+                {
+                    files.push_back(pdir->d_name);
+                    break;
+                }
+                else if(temp_filepath[i] == 'r' && temp_filepath[i+1] == 'i' && temp_filepath[i+2] == 'g' && temp_filepath[i+3] == 'h' && temp_filepath[i+4] == 't')
+                {
+                    files2.push_back(pdir->d_name);
+                    break;
+                }
+            }
+        }
+
+        /// this loop simply pushes absolute paths for the left images
+        for(int i=0,j=0 ; i<files.size() ; i++)
+        {
+            if(files.at(i).size() > 4) // this removes the . and .. in linux as all files will have size more than 4 .png .jpg etc.
+            {
+                files_fullpath.push_back(file_path1 + "/" + files.at(i));
+                //cout << files_fullpath.at(j) << endl;
+                j++;
+            }
+        } // end of for
+
+        /// this loop simply pushes absolute paths for the right images
+        for(int i=0,j=0 ; i<files2.size() ; i++)
+        {
+            if(files2.at(i).size() > 4) // this removes the . and .. in linux as all files will have size more than 4 .png .jpg etc.
+            {
+                files_fullpath2.push_back(file_path1 + "/" + files2.at(i));
+                //cout << files_fullpath2.at(j) << endl;
+                j++;
+            }
+        } // end of for
+        sort(files_fullpath2.begin(),files_fullpath2.end()); //Use the start and end like this
+        file_path2 = files_fullpath2.at(current_imageIndex);
+    }
+    else if (currentInputIndex == 3 || currentInputIndex == 4 || currentInputIndex == 2) //meaning stereo dataset or single image dataset
     {
         dir = opendir(file_path1.c_str());
         while(pdir = readdir(dir))
@@ -2129,10 +2075,7 @@ void MainWindow::readFilesFromFolder(int next_prev)
     if(currentInputIndex == 4)
     {
         file_path2 = inputFilePath2->text().toStdString();
-        DIR *dir2;
-        dirent *pdir2;
-        vector<string> files2;
-        vector<string> files_fullpath2;
+
         dir2 = opendir(file_path2.c_str());
         while (pdir2 = readdir(dir2))
             files2.push_back(pdir2->d_name);
@@ -2202,12 +2145,27 @@ void MainWindow::displayImagesWithoutDetector()
     image1->setPixmap(QPixmap::fromImage(qscaled1));
 
 
-    // DO the following only if user selects STEREO image dataset
-    if(currentInputIndex == 4)
+    // DO the following only if user selects STEREO image dataset or rawlog file has stereo images in the dataset
+    if(currentInputIndex == 4 || (currentInputIndex==2 && rawlog_type==1))
     {
         img2.loadFromFile(file_path2);
 
         cv::Mat cvImg2 = cv::cvarrToMat(img2.getAs<IplImage>());
+
+        featsImage2.clear();
+        fext.detectFeatures(img2, featsImage2, 0, numFeats);
+
+        // Drawing a circle around corners for image 1
+        //C++: void circle(Mat& img, Point center, int radius, const Scalar& color, int thickness=1, int lineType=8, int shift=0)
+        for(int i=0 ; i<featsImage2.size() ; i++)
+        {
+            int temp_x = (int) featsImage2.getFeatureX(i);
+            int temp_y = (int) featsImage2.getFeatureY(i);
+            //circle(cvImg1, Point(temp_x, temp_y), 5, Scalar(0,255,0), CIRCLE_THICKNESS, 8, 0);
+            drawMarker(cvImg2, Point(temp_x, temp_y),  Scalar(0, 255, 0), MARKER_CROSS, CROSS_SIZE, CROSS_THICKNESS);
+        }
+        drawLineLSD(cvImg2, 0); // 0 means draw line on left image
+
 
         cv::Mat temp2(cvImg2.cols, cvImg2.rows, cvImg2.type());
 
@@ -2388,11 +2346,6 @@ void MainWindow::initializeParameters()
 ************************************************************************************************/
 void MainWindow::on_generateVisualOdometry_clicked()
 {
-
-
-
-
-
     evaluate_detector_clicked = true;
 
     //read inputs from user
@@ -3764,7 +3717,7 @@ string MainWindow::findRepeatability(float mouse_x, float mouse_y)
         temp_img1.loadFromFile(files_fullpath.at(i));
 
         fext.detectFeatures(temp_img1, temp_featsImage1, 0, numFeats);
-        cout << "Number of Features in image " << i << " : " << temp_featsImage1.size() << endl;
+        //cout << "Number of Features in image " << i << " : " << temp_featsImage1.size() << endl;
         bool repeatable = false;
         for(int j=0 ; j<temp_featsImage1.size() ; j++)
         {
@@ -4028,7 +3981,7 @@ string MainWindow::findRepeatabilityHomography(float mouse_x, float mouse_y)
 ************************************************************************************************/
 string MainWindow::falsePositivesNegatives()
 {
-    if(currentInputIndex == 1 || currentInputIndex == 4) // implying stereo images or stereo image dataset
+    if(currentInputIndex == 1 || currentInputIndex == 4 || (currentInputIndex==2 && rawlog_type==1)) // implying stereo images or stereo image dataset
     {
         // compute homography from img1 and img2
         // For this case, I was thinking again in the homography approach. If the match is found outside a
@@ -4190,7 +4143,7 @@ void MainWindow::Mouse_Pressed()
 
 
 
-    if(currentInputIndex == 1 || currentInputIndex == 4)
+    if(currentInputIndex == 1 || currentInputIndex == 4 || (currentInputIndex==2 && rawlog_type==1))
     {
         if(images_static2 != NULL)
             images_static2->setVisible(false);
@@ -4263,7 +4216,7 @@ void MainWindow::Mouse_Pressed()
         // THE VAriable images_plots_sift_surf is common for both classes SIFT/SURF/ORB and Polar/LogPolar/SpinImage
         images_plots_sift_surf = images1_plots_distances[pos];
         images_static= images1[pos];
-        if(currentInputIndex == 1 || currentInputIndex == 4) {
+        if(currentInputIndex == 1 || currentInputIndex == 4 || (currentInputIndex==2 && rawlog_type==1)) {
             cout << "going to set the iamges2[pos] " << endl;
             images_static2 = images2[pos];
             cout<<" successfully set images2[pos]" << endl;
@@ -4279,7 +4232,7 @@ void MainWindow::Mouse_Pressed()
 
         flag_descriptor_match = true;
         featureMatched = new QLabel;
-        if(currentInputIndex == 1 || currentInputIndex == 4)
+        if(currentInputIndex == 1 || currentInputIndex == 4 || (currentInputIndex==2 && rawlog_type==1))
         {
             featureMatched = featureMatchingInfo[pos];
             featureMatched->setVisible(true);
@@ -4344,7 +4297,7 @@ void MainWindow::Mouse_Pressed()
         cout << "after static" << endl;
 
 
-        if(currentInputIndex == 1 || currentInputIndex == 4)
+        if(currentInputIndex == 1 || currentInputIndex == 4 || (currentInputIndex==2 && rawlog_type==1))
         {
 
             images_static2->setVisible(true);
@@ -4363,7 +4316,7 @@ void MainWindow::Mouse_Pressed()
         cout << "after adding images_static widget " << endl ;
 
 
-        if(currentInputIndex == 1 || currentInputIndex == 4) {
+        if(currentInputIndex == 1 || currentInputIndex == 4 || (currentInputIndex==2 && rawlog_type==1)) {
             desc_VisualizeGrid->addWidget(images_plots_sift_surf, 0, 2, 1,
                                           1);  // add the image distance plot with respect to other features in image 1
             images_plots_sift_surf->setVisible(true);
@@ -4373,7 +4326,7 @@ void MainWindow::Mouse_Pressed()
         if(currentInputIndex == 0 || currentInputIndex == 3)
             desc_VisualizeGrid->addWidget(detector_info,0,1,1,1);
 
-        if(currentInputIndex == 1 || currentInputIndex == 4)
+        if(currentInputIndex == 1 || currentInputIndex == 4 || (currentInputIndex==2 && rawlog_type==1))
             desc_VisualizeGrid->addWidget(featureMatched, 1,0,1,1); // add the label telling about the feature matching
         cout << "end of additions " << endl;
     }
@@ -4385,7 +4338,7 @@ void MainWindow::Mouse_Pressed()
         //featureMatched->destroyed();
         images_plots_sift_surf = images1_plots_distances[pos];
         images_static_sift_surf = images1[pos];
-        if(currentInputIndex == 1 || currentInputIndex == 4) {
+        if(currentInputIndex == 1 || currentInputIndex == 4 || (currentInputIndex==2 && rawlog_type==1)) {
             images_static_sift_surf2 = images2[pos];
         }
         //featureMatched = new QLabel;
@@ -4399,7 +4352,7 @@ void MainWindow::Mouse_Pressed()
         flag_descriptor_match = true;
         featureMatched = new QLabel;
         cout << " inside 0,1,5,6,7 descriptor" << endl;
-        if(currentInputIndex == 1 || currentInputIndex == 4)
+        if(currentInputIndex == 1 || currentInputIndex == 4 || (currentInputIndex==2 && rawlog_type==1))
         {
             featureMatched = featureMatchingInfo[pos];
             featureMatched->setVisible(true);
@@ -4461,7 +4414,7 @@ void MainWindow::Mouse_Pressed()
         //circle(desc_Ref_img, Point(temp_x, temp_y), 5, Scalar(255,0,0), CIRCLE_THICKNESS, 8, 0); // plot the circles on the appropriate points as per the shown descriptors
         drawMarker(desc_Ref_img, Point(temp_x, temp_y),  Scalar(255, 0, 0), MARKER_CROSS, CROSS_SIZE, CROSS_THICKNESS);
         images_static_sift_surf->setVisible(true);
-        if(currentInputIndex == 1 || currentInputIndex == 4) {
+        if(currentInputIndex == 1 || currentInputIndex == 4 || (currentInputIndex==2 && rawlog_type==1)) {
             images_static_sift_surf2->setVisible(true);
             desc_VisualizeGrid->addWidget(images_static_sift_surf2,0,1,1,1);
             desc_VisualizeGrid->addWidget(plotInfo,1,2,1,1);
@@ -4484,7 +4437,7 @@ void MainWindow::Mouse_Pressed()
         QLabel *detector_info  = new QLabel("Evaluation Metrics shown here");
         if(currentInputIndex == 0 || currentInputIndex == 3)
             desc_VisualizeGrid->addWidget(detector_info,0,1,1,1);
-        if(currentInputIndex == 1 || currentInputIndex == 4)
+        if(currentInputIndex == 1 || currentInputIndex == 4 || (currentInputIndex==2 && rawlog_type==1))
             desc_VisualizeGrid->addWidget(featureMatched, 1,0,1,1); // add the label telling about the feature matching
 
         //featureMatched->clear();
