@@ -78,10 +78,11 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
 ENDIF()
 
 # ================================================================
-# Include directories where octomap headers are, if not embedded 
-# under mrpt-maps headers:
+# Include directories where octomap headers are, if:
+#  - they are available in the system, or
+#  - they are embedded and this config file is for local.
 # ================================================================
-IF (NOT @MRPT_CONFIGFILE_IS_INSTALL@ AND NOT @CMAKE_MRPT_HAS_OCTOMAP_SYSTEM@)
+IF ( (NOT @MRPT_CONFIGFILE_IS_INSTALL@ AND NOT @CMAKE_MRPT_HAS_OCTOMAP_SYSTEM@) OR @CMAKE_MRPT_HAS_OCTOMAP_SYSTEM@ )
 	INCLUDE_DIRECTORIES("@OCTOMAP_INCLUDE_DIRS@")
 	LIST(APPEND MRPT_INCLUDE_DIRS "@OCTOMAP_INCLUDE_DIRS@")
 ENDIF ()
