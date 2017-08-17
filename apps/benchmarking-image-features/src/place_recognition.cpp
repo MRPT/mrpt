@@ -89,7 +89,8 @@ int PlaceRecognition::predictLabel2(CFeatureList *feats_testingAll, vector<uint8
 
     for(int i=0 ; i<feats_size ; i++) // feat_size is the number of key-points
     {
-        double min = 99999;
+
+        double min = std::numeric_limits<double>::max();// 99999;
         vector<uint8_t> temp_feat;
 
         if(descriptor_selected == 5)
@@ -113,6 +114,8 @@ int PlaceRecognition::predictLabel2(CFeatureList *feats_testingAll, vector<uint8
                 //   << training_words[j].size() << endl;
                 //cout << descriptor_size << " descriptor size " << endl;
                 for (int k = 0; k < descriptor_size; k++) {
+                    /// Use abs if better results
+                    //temp_sum = temp_sum + abs((temp_feat.at(k) - training_words[j].at(k)))
                     temp_sum = temp_sum + pow((temp_feat.at(k) - (int)training_words[j].at(k)), 2);
                     //cout << temp_feat.at(k) - training_words[j].at(k) << " result, i : " << i << " , j : " << j << endl;
                 }
@@ -152,7 +155,7 @@ int PlaceRecognition::predictLabel(CFeatureList *feats_testingAll, vector<float>
     cout << "before outter for loop" << endl;
     for(int i=0 ; i<feats_size ; i++) // feat_size is the number of key-points
     {
-        double min=99999;
+        double min =  std::numeric_limits<double>::max() ;//99999;
         vector<float> temp_feat;
         if(descriptor_selected == 1)
             temp_feat = feats_testing.getByID(i).get()->descriptors.SURF;
@@ -174,6 +177,8 @@ int PlaceRecognition::predictLabel(CFeatureList *feats_testingAll, vector<float>
                 //cout << "temp_feat size: " << temp_feat.size() << " training_words[j] " << j << " : "
                     // << training_words[j].size() << endl;
                 for (int k = 0; k < descriptor_size; k++) {
+                    ///Use abs if better results
+                    //temp_sum = temp_sum + abs((temp_feat.at(k) - training_words[j].at(k)));
                     temp_sum = temp_sum + pow((temp_feat.at(k) - training_words[j].at(k)), 2);
                     //cout << temp_feat.at(k) - training_words[j].at(k) << " result, i : " << i << " , j : " << j << endl;
                 }
