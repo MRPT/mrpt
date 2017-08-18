@@ -23,16 +23,15 @@ using namespace mrpt::maps;
 using namespace mrpt::utils;
 
 CDocument::CDocument()
-	: m_simplemap(CSimpleMap()), m_metricmap(CMultiMetricMap()), m_changedFile(false), m_hasPointsMap(false)
+	: m_simplemap(CSimpleMap()),
+	  m_metricmap(CMultiMetricMap()),
+	  m_changedFile(false),
+	  m_hasPointsMap(false)
 {
 }
 
 CDocument::~CDocument() {}
-
-bool CDocument::isFileChanged() const
-{
-	return m_changedFile;
-}
+bool CDocument::isFileChanged() const { return m_changedFile; }
 void CDocument::loadSimpleMap(const std::string& fileName)
 {
 	m_fileName = fileName;
@@ -45,21 +44,16 @@ void CDocument::saveSimpleMap()
 	m_changedFile = !m_simplemap.saveToFile(m_fileName);
 }
 
-void CDocument::saveAsPng(const std::string &fileName)
+void CDocument::saveAsPng(const std::string& fileName)
 {
 	auto iter = m_typeConfigs.find(Occupancy);
-	if (iter == m_typeConfigs.end() || iter->second.empty())
-		return;
+	if (iter == m_typeConfigs.end() || iter->second.empty()) return;
 
 	auto mapIter = iter->second.begin();
 	mapIter->get_ptr()->saveMetricMapRepresentationToFile(fileName);
 }
 
-bool CDocument::hasPointsMap() const
-{
-	return m_hasPointsMap;
-}
-
+bool CDocument::hasPointsMap() const { return m_hasPointsMap; }
 void CDocument::saveAsText(const std::string& fileName) const
 {
 	for (auto iter = m_metricmap.begin(); iter != m_metricmap.end(); ++iter)
@@ -73,11 +67,7 @@ void CDocument::saveAsText(const std::string& fileName) const
 	}
 }
 
-const std::string &CDocument::getFileName() const
-{
-	return m_fileName;
-}
-
+const std::string& CDocument::getFileName() const { return m_fileName; }
 void CDocument::setListOfMaps(TSetOfMetricMapInitializers& mapCfg)
 {
 	m_metricmap.setListOfMaps(&mapCfg);
