@@ -12,11 +12,6 @@ IF(CMAKE_MRPT_HAS_LIBLAS)
 	INCLUDE_DIRECTORIES(${LAS_INCLUDE_DIRS})
 ENDIF()
 
-IF (CMAKE_MRPT_HAS_OCTOMAP)
-	INCLUDE_DIRECTORIES(${OCTOMAP_INCLUDE_DIRS})
-ENDIF()
-
-
 #---------------------------------------------
 # Macro declared in "DeclareMRPTLib.cmake":
 #---------------------------------------------
