@@ -80,9 +80,11 @@ CMainWindow::CMainWindow(QWidget* parent)
 	connect(
 		m_ui->m_actionSave, &QAction::triggered, this, &CMainWindow::saveMap);
 	connect(
-		m_ui->m_actionSaveAsText, &QAction::triggered, this, &CMainWindow::saveAsText);
+		m_ui->m_actionSaveAsText, &QAction::triggered, this,
+		&CMainWindow::saveAsText);
 	connect(
-		m_ui->m_actionSaveAsPNG, &QAction::triggered, this, &CMainWindow::saveAsPNG);
+		m_ui->m_actionSaveAsPNG, &QAction::triggered, this,
+		&CMainWindow::saveAsPNG);
 	connect(m_ui->m_undoAction, &QAction::triggered, this, &CMainWindow::undo);
 	connect(m_ui->m_redoAction, &QAction::triggered, this, &CMainWindow::redo);
 	connect(
