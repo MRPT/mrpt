@@ -43,6 +43,7 @@ class CMainWindow : public QMainWindow
 	void openMap();
 	void saveMap();
 	void saveAsText();
+	void saveAsPNG();
 	void itemClicked(const QModelIndex& index);
 	void updateConfig();
 	void openConfig(const std::string& str);

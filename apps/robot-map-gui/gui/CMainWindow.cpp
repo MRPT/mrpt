@@ -81,6 +81,8 @@ CMainWindow::CMainWindow(QWidget* parent)
 		m_ui->m_actionSave, &QAction::triggered, this, &CMainWindow::saveMap);
 	connect(
 		m_ui->m_actionSaveAsText, &QAction::triggered, this, &CMainWindow::saveAsText);
+	connect(
+		m_ui->m_actionSaveAsPNG, &QAction::triggered, this, &CMainWindow::saveAsPNG);
 	connect(m_ui->m_undoAction, &QAction::triggered, this, &CMainWindow::undo);
 	connect(m_ui->m_redoAction, &QAction::triggered, this, &CMainWindow::redo);
 	connect(
@@ -169,6 +171,18 @@ void CMainWindow::saveAsText()
 	if (fileName.size() == 0) return;
 
 	m_document->saveAsText(fileName.toStdString());
+}
+
+void CMainWindow::saveAsPNG()
+{
+	if (!m_document) return;
+
+	QString fileName = QFileDialog::getSaveFileName(
+		this, tr("Save as txt"), "", tr("Files (*.png)"));
+
+	if (fileName.size() == 0) return;
+
+	m_document->saveAsPng(fileName.toStdString());
 }
 
 void CMainWindow::itemClicked(const QModelIndex& index)

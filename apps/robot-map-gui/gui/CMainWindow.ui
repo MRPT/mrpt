@@ -51,6 +51,7 @@
     <addaction name="m_actionOpen"/>
     <addaction name="m_actionSave"/>
     <addaction name="m_actionSaveAsText"/>
+    <addaction name="m_actionSaveAsPNG"/>
     <addaction name="separator"/>
     <addaction name="m_actionLoadConfig"/>
     <addaction name="separator"/>
@@ -371,6 +372,11 @@
   <action name="m_actionSaveAsText">
    <property name="text">
     <string>Save points map as text</string>
+   </property>
+  </action>
+  <action name="m_actionSaveAsPNG">
+   <property name="text">
+    <string>Save gridmap as PNG</string>
    </property>
   </action>
  </widget>

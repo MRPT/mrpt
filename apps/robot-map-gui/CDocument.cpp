@@ -45,6 +45,16 @@ void CDocument::saveSimpleMap()
 	m_changedFile = !m_simplemap.saveToFile(m_fileName);
 }
 
+void CDocument::saveAsPng(const std::string &fileName)
+{
+	auto iter = m_typeConfigs.find(Occupancy);
+	if (iter == m_typeConfigs.end() || iter->second.empty())
+		return;
+
+	auto mapIter = iter->second.begin();
+	mapIter->get_ptr()->saveMetricMapRepresentationToFile(fileName);
+}
+
 bool CDocument::hasPointsMap() const
 {
 	return m_hasPointsMap;
