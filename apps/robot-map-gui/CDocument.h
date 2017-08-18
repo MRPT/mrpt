@@ -33,6 +33,8 @@ class CDocument
 	void loadSimpleMap(const std::string& fileName);
 	void saveSimpleMap();
 
+	void saveAsPng(const std::string& fileName);
+
 	bool hasPointsMap() const;
 	void saveAsText(const std::string& fileName) const;
 
