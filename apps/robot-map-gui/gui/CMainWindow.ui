@@ -48,7 +48,13 @@
     <property name="title">
      <string>File</string>
     </property>
+    <widget class="QMenu" name="m_menuRecentFiles">
+     <property name="title">
+      <string>Recent files</string>
+     </property>
+    </widget>
     <addaction name="m_actionOpen"/>
+    <addaction name="m_menuRecentFiles"/>
     <addaction name="m_actionSave"/>
     <addaction name="m_actionSaveAsText"/>
     <addaction name="m_actionSaveAsPNG"/>
