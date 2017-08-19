@@ -22,6 +22,8 @@
 int main(int argc, char** argv)
 {
 	setlocale(LC_NUMERIC, "C");
+	QLocale::setDefault(QLocale::C);
+
 	QApplication app(argc, argv);
 
 	QCommandLineParser parser;
