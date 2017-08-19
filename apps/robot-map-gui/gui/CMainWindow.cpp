@@ -124,7 +124,7 @@ CMainWindow::~CMainWindow()
 	if (m_model) delete m_model;
 }
 
-void CMainWindow::loadMap(const QString &fileName)
+void CMainWindow::loadMap(const QString& fileName)
 {
 	if (fileName.size() == 0) return;
 
