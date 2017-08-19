@@ -9,6 +9,7 @@
 
 #pragma once
 #include <QMainWindow>
+#include <QSettings>
 
 #include <memory>
 
@@ -55,14 +56,22 @@ class CMainWindow : public QMainWindow
 	void deleteRobotPoses(const std::vector<int>& idx);
 	void moveRobotPoses(const std::vector<int>& idx, const QPointF& dist);
 
+	void openRecent();
+
    private:
 	void updateRenderMapFromConfig();
 	void applyMapsChanges();
 	void createNewDocument();
 	void clearObservationsViewer();
 
+	void addToRecent(const QString& fileName);
+	void addRecentFilesToMenu();
+
 	CDocument* m_document;
 	CObservationTreeModel* m_model;
 
 	std::unique_ptr<Ui::CMainWindow> m_ui;
+
+	QSettings m_settings;
+	QStringList m_recentFiles;
 };

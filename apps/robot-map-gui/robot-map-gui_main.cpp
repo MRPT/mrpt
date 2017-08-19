@@ -25,6 +25,9 @@ int main(int argc, char** argv)
 	QLocale::setDefault(QLocale::C);
 
 	QApplication app(argc, argv);
+	QApplication::setOrganizationName("MRPT");
+	QApplication::setOrganizationDomain("mrpt.org");
+	QApplication::setApplicationName("robot-map-gui");
 
 	QCommandLineParser parser;
 	parser.parse(QApplication::arguments());

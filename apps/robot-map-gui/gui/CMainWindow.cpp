@@ -113,6 +113,9 @@ CMainWindow::CMainWindow(QWidget* parent)
 
 	m_ui->m_actionSave->setDisabled(true);
 	m_ui->m_actionSaveAsText->setDisabled(true);
+
+	m_recentFiles = m_settings.value("Recent").toStringList();
+	addRecentFilesToMenu();
 }
 
 CMainWindow::~CMainWindow()
@@ -122,11 +125,15 @@ CMainWindow::~CMainWindow()
 	if (m_document) delete m_document;
 
 	if (m_model) delete m_model;
+
+	m_settings.setValue("Recent", m_recentFiles);
 }
 
 void CMainWindow::loadMap(const QString& fileName)
 {
 	if (fileName.size() == 0) return;
+
+	addToRecent(fileName);
 
 	createNewDocument();
 
@@ -154,8 +161,15 @@ void CMainWindow::loadMap(const QString& fileName)
 
 void CMainWindow::openMap()
 {
+	QString path;
+	if (!m_recentFiles.empty())
+	{
+		QFileInfo fi(m_recentFiles.front());
+		path = fi.absolutePath();
+	}
+
 	QString fileName = QFileDialog::getOpenFileName(
-		this, tr("Open File"), "", tr("Files (*.simplemap *.simplemap.gz)"));
+		this, tr("Open File"), path, tr("Files (*.simplemap *.simplemap.gz)"));
 
 	loadMap(fileName);
 }
@@ -394,6 +408,12 @@ void CMainWindow::moveRobotPoses(
 	CUndoManager::instance().addAction(undo, redo);
 }
 
+void CMainWindow::openRecent()
+{
+	QAction* action = qobject_cast<QAction*>(sender());
+	loadMap(action->text());
+}
+
 void CMainWindow::updateRenderMapFromConfig()
 {
 	auto renderizableMaps = m_document->renderizableMaps();
@@ -423,4 +443,27 @@ void CMainWindow::clearObservationsViewer()
 	QLayout* layout = m_ui->m_contentsNodeViewer->layout();
 	QLayoutItem* child;
 	while ((child = layout->takeAt(0)) != 0) delete child;
+}
+
+void CMainWindow::addToRecent(const QString& fileName)
+{
+	auto iter = std::find(m_recentFiles.begin(), m_recentFiles.end(), fileName);
+
+	if (iter != m_recentFiles.end()) m_recentFiles.erase(iter);
+
+	m_recentFiles.push_front(fileName);
+
+	if (m_recentFiles.size() > 10) m_recentFiles.pop_back();
+
+	addRecentFilesToMenu();
+}
+
+void CMainWindow::addRecentFilesToMenu()
+{
+	m_ui->m_menuRecentFiles->clear();
+	for (auto& recent : m_recentFiles)
+	{
+		auto action = m_ui->m_menuRecentFiles->addAction(recent);
+		connect(action, &QAction::triggered, this, &CMainWindow::openRecent);
+	}
 }
