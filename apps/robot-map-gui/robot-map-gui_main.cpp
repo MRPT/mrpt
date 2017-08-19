@@ -15,6 +15,7 @@
 	See README.txt for instructions.
   ---------------------------------------------------------------*/
 #include <QApplication>
+#include <QCommandLineParser>
 
 #include "gui/CMainWindow.h"
 
@@ -22,7 +23,16 @@ int main(int argc, char** argv)
 {
 	setlocale(LC_NUMERIC, "C");
 	QApplication app(argc, argv);
+
+	QCommandLineParser parser;
+	parser.parse(QApplication::arguments());
+	const QStringList args = parser.positionalArguments();
+
 	CMainWindow mainWindow;
+
+	if (!args.isEmpty())
+		mainWindow.loadMap(args.first());
+
 	mainWindow.show();
 	return app.exec();
 }
