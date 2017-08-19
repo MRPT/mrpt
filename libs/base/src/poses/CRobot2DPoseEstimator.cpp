@@ -161,8 +161,12 @@ bool CRobot2DPoseEstimator::getCurrentEstimate(
 */
 bool CRobot2DPoseEstimator::getLatestRobotPose(TPose2D &pose) const
 {
-	if (m_last_odo_time==INVALID_TIMESTAMP && m_last_loc_time==INVALID_TIMESTAMP )
+	if (m_last_odo_time == INVALID_TIMESTAMP &&
+		m_last_loc_time == INVALID_TIMESTAMP)
+	{
+		pose = TPose2D(0, 0, 0);
 		return false;
+	}
 
 	bool ret_odo;
 	if (m_last_odo_time!=INVALID_TIMESTAMP && m_last_loc_time!=INVALID_TIMESTAMP)
