@@ -32,8 +32,7 @@ int main(int argc, char** argv)
 
 	CMainWindow mainWindow;
 
-	if (!args.isEmpty())
-		mainWindow.loadMap(args.first());
+	if (!args.isEmpty()) mainWindow.loadMap(args.first());
 
 	mainWindow.show();
 	return app.exec();
