@@ -124,11 +124,8 @@ CMainWindow::~CMainWindow()
 	if (m_model) delete m_model;
 }
 
-void CMainWindow::openMap()
+void CMainWindow::loadMap(const QString &fileName)
 {
-	QString fileName = QFileDialog::getOpenFileName(
-		this, tr("Open File"), "", tr("Files (*.simplemap *.simplemap.gz)"));
-
 	if (fileName.size() == 0) return;
 
 	createNewDocument();
@@ -153,6 +150,14 @@ void CMainWindow::openMap()
 		createNewDocument();
 		qDebug() << "Unexpected runtime error!";
 	}
+}
+
+void CMainWindow::openMap()
+{
+	QString fileName = QFileDialog::getOpenFileName(
+		this, tr("Open File"), "", tr("Files (*.simplemap *.simplemap.gz)"));
+
+	loadMap(fileName);
 }
 
 void CMainWindow::saveMap()

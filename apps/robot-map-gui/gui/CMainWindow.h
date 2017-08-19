@@ -36,6 +36,7 @@ class CMainWindow : public QMainWindow
 		mrpt::maps::CSimpleMap::TPosePDFSensFramePairList posesObsPairs);
 	void deleteRobotPosesFromMap(const std::vector<int>& idx);
 	void moveRobotPosesOnMap(const std::vector<int>& idx, const QPointF& dist);
+	void loadMap(const QString &fileName);
 
    private slots:
 	void undo();
