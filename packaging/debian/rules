@@ -2,10 +2,6 @@
 # -*- makefile -*-
 # Makefile for MRPT Debian package.
 
-# Uncomment this to turn on verbose mode.
-export DH_DEBUG=1
-export DH_VERBOSE=1
-
 export DEB_BUILD_MAINT_OPTIONS=hardening=+all,+fortify
 
 # For multiarch support:
@@ -20,13 +16,9 @@ else
 CMAKE_ARCH_FLAGS = -DMRPT_AUTODETECT_SSE=OFF -DDISABLE_SSE2=ON -DDISABLE_SSE3=ON -DDISABLE_SSE4_1=ON -DDISABLE_SSE4_2=ON  -DDISABLE_SSE4_A=ON
 endif
 
-# test_gdb runs unit tests showing stack traces on failure:
-# "test_gdb" seems to make build farm machines crash in armhf...
-#ifeq ($(DEB_HOST_ARCH),armhf)
+# Unit tests can be run with target "test", or "test_gdb", which shows stack 
+# traces on failure:
 MRPT_TEST_TARGET = test
-#else
-#MRPT_TEST_TARGET = test_gdb
-#endif
 
 CMAKE_FLAGS = \
 	-DCMAKE_INSTALL_PREFIX="$(CURDIR)/debian/" \
@@ -51,7 +43,7 @@ CMAKE_FLAGS = \
 	dh $@ --buildsystem=cmake
 
 override_dh_auto_build:
-	dh_auto_build -O--buildsystem=cmake -- # -j4
+	dh_auto_build -O--buildsystem=cmake --
 
 	# Also build doc targets:
 	dh_auto_build -O--buildsystem=cmake -- \
@@ -62,7 +54,6 @@ override_dh_auto_build:
 
 	# clean useless doxygen files:
 	find $(CURDIR)/doc/ -name '*.md5' | xargs -I FIL rm FIL
-
 
 override_dh_auto_configure:
 	dh_auto_configure -- $(CMAKE_FLAGS)
@@ -87,3 +78,4 @@ override_dh_install:
 	# Fix Doxygen's embedded JQuery lib:
 	rm $(CURDIR)/debian/mrpt-doc/usr/share/doc/mrpt-doc/html/jquery.js || true
 	ln -s /usr/share/javascript/jquery/jquery.js $(CURDIR)/debian/mrpt-doc/usr/share/doc/mrpt-doc/html/jquery.js  || true
+
