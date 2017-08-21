@@ -73,11 +73,13 @@ void CViewerContainer::showRangeScan(CNode* node)
 	obj->setPose(obsNode->getPose());
 	obj->setSurfaceColor(1.0f, 0.0f, 0.0f, 0.5f);
 
-	forEachGl([obsNode, obj](CGlWidget* gl){ gl->setSelected(obsNode->getPose());
-		gl->setLaserScan(obj); });
+	forEachGl([obsNode, obj](CGlWidget* gl) {
+		gl->setSelected(obsNode->getPose());
+		gl->setLaserScan(obj);
+	});
 }
 
-void CViewerContainer::forEachGl(const std::function<void (CGlWidget *)> &func)
+void CViewerContainer::forEachGl(const std::function<void(CGlWidget*)>& func)
 {
 	if (containsHelpInfo()) return;
 
@@ -91,7 +93,7 @@ void CViewerContainer::forEachGl(const std::function<void (CGlWidget *)> &func)
 
 void CViewerContainer::showRobotDirection(const mrpt::poses::CPose3D& pose)
 {
-	forEachGl([pose](CGlWidget* gl){ gl->setSelected(pose); });
+	forEachGl([pose](CGlWidget* gl) { gl->setSelected(pose); });
 }
 
 void CViewerContainer::applyConfigChanges(RenderizableMaps renderizableMaps)
@@ -110,7 +112,6 @@ void CViewerContainer::applyConfigChanges(RenderizableMaps renderizableMaps)
 
 		gl->fillMap(it->second);
 		gl->updateObservations();
-
 	}
 }
 
@@ -171,12 +172,12 @@ void CViewerContainer::updateConfigChanges(
 
 void CViewerContainer::setDocument(CDocument* doc)
 {
-	forEachGl([doc](CGlWidget* gl){ gl->setDocument(doc); });
+	forEachGl([doc](CGlWidget* gl) { gl->setDocument(doc); });
 }
 
 void CViewerContainer::showAllObservation(bool is)
 {
-	forEachGl([is](CGlWidget* gl){ gl->setSelectedObservation(is); });
+	forEachGl([is](CGlWidget* gl) { gl->setSelectedObservation(is); });
 }
 
 void CViewerContainer::updatePanelInfo(int index)
@@ -283,9 +284,7 @@ void CViewerContainer::setGeneralSetting(const SGeneralSetting& setting)
 	float b = setting.gridColor.blue() / 255.0;
 	float a = setting.gridColor.alpha() / 255.0;
 
-
-	forEachGl([r, g, b, a, rBack, gBack, bBack, aBack, setting](CGlWidget* gl)
-	{
+	forEachGl([r, g, b, a, rBack, gBack, bBack, aBack, setting](CGlWidget* gl) {
 		gl->setGridColor(r, g, b, a);
 		gl->setVisibleGrid(setting.isGridVisibleChanged);
 		gl->setBackgroundColor(rBack, gBack, bBack, aBack);
