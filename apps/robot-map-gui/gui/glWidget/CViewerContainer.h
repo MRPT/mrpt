@@ -18,6 +18,7 @@
 
 class CNode;
 class CGlWidget;
+class QTextEdit;
 
 class CViewerContainer : public QWidget
 {
@@ -63,7 +64,10 @@ class CViewerContainer : public QWidget
 
    private:
 	CGlWidget* getCurrentTabWidget() const;
+	bool containsHelpInfo() const;
 
 	std::unique_ptr<Ui::CViewerContainer> m_ui;
 	std::map<int, SType> m_tabsInfo;
+	QTextEdit* m_information;
+	const QString m_help;
 };

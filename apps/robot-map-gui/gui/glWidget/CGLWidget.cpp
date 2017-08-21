@@ -665,6 +665,7 @@ CRobotPose::Ptr CGlWidget::removePoseFromPointsCloud(
 
 void CGlWidget::removeRobotDirection()
 {
+	if (!m_map.get()) return;
 	m_map->removeObject(m_currentObs);
 
 	if (m_currentLaserScan) m_map->removeObject(m_currentLaserScan);
