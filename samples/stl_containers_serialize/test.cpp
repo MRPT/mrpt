@@ -14,7 +14,6 @@
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/math/lightweight_geom_data.h>
-#include <mrpt/math/utils.h>  // make_vector
 
 using namespace mrpt;
 using namespace mrpt::utils;
@@ -87,13 +86,12 @@ void Test_STL_containers_serialize()
 			"read OK"
 		 << endl;
 
-	std::vector<double> v2, v1;
-	v1 = make_vector<5, double>(1.0, 2.0, 3.0, 4.0, 5.0);
-
+	const std::vector<double> v1{ 1.0, 2.0, 3.0, 4.0, 5.0};
 	{
 		CFileOutputStream f("v1.bin");
 		f << v1;
 	}
+	std::vector<double> v2;
 	{
 		CFileInputStream f("v1.bin");
 		f >> v2;
