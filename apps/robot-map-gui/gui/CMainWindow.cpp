@@ -24,7 +24,7 @@
 #include <QAction>
 #include <QFileDialog>
 #include <QTreeWidgetItem>
-#include <QDebug>
+#include <QErrorMessage>
 
 #include "mrpt/gui/CQtGlCanvasBase.h"
 #include "mrpt/poses/CPose3D.h"
@@ -133,10 +133,16 @@ void CMainWindow::loadMap(const QString& fileName)
 {
 	if (fileName.size() == 0) return;
 
-	addToRecent(fileName);
-
 	createNewDocument();
 
+	{
+		QFile file(fileName);
+		if (!file.exists())
+		{
+			showErrorMessage("File doesn't exist!");
+			return;
+		}
+	}
 	try
 	{
 		m_document->loadSimpleMap(fileName.toStdString());
@@ -151,11 +157,14 @@ void CMainWindow::loadMap(const QString& fileName)
 		m_model = new CObservationTreeModel(
 			m_document->simplemap(), m_ui->m_observationsTree);
 		m_ui->m_observationsTree->setModel(m_model);
+
+		addToRecent(fileName);
 	}
 	catch (std::exception&)
 	{
 		createNewDocument();
-		qDebug() << "Unexpected runtime error!";
+
+		showErrorMessage("The file is corrupted and cannot be opened!");
 	}
 }
 
@@ -466,4 +475,11 @@ void CMainWindow::addRecentFilesToMenu()
 		auto action = m_ui->m_menuRecentFiles->addAction(recent);
 		connect(action, &QAction::triggered, this, &CMainWindow::openRecent);
 	}
+}
+
+void CMainWindow::showErrorMessage(const QString& str) const
+{
+	QErrorMessage msg;
+	msg.showMessage(str);
+	msg.exec();
 }

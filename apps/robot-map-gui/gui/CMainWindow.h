@@ -67,6 +67,8 @@ class CMainWindow : public QMainWindow
 	void addToRecent(const QString& fileName);
 	void addRecentFilesToMenu();
 
+	void showErrorMessage(const QString& str) const;
+
 	CDocument* m_document;
 	CObservationTreeModel* m_model;
 
