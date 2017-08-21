@@ -18,11 +18,11 @@ CViewerContainer::CViewerContainer(QWidget* parent)
 	: QWidget(parent),
 	  m_ui(std::make_unique<Ui::CViewerContainer>()),
 	  m_information(new QTextEdit(this)),
-	  m_help(
+	  m_helpLoadMap(
 		  tr("For loading the map, press File -> Open simplemap or Ctrl + "
-			 "O.\n\n\n"
-			 "Also, to display any maps you must download the configuration "
-			 "file. "
+			 "O.\n\n\n")),
+	  m_helpLoadConfig(
+		  tr("For display any maps you must download the configuration file. "
 			 "For this press File -> Load config or Ctrl + E.\n\n\n"
 			 "If you loaded simplemap, you can yourself add the map from "
 			 "Configuration widget"))
@@ -45,7 +45,7 @@ CViewerContainer::CViewerContainer(QWidget* parent)
 		&CViewerContainer::updatePanelInfo);
 
 	m_information->setReadOnly(true);
-	m_information->setText(m_help);
+	m_information->setText(m_helpLoadMap);
 
 	m_ui->m_tabWidget->addTab(m_information, "Welcome!");
 }
@@ -56,6 +56,11 @@ CViewerContainer::~CViewerContainer()
 	{
 		delete m_ui->m_tabWidget->widget(i);
 	}
+}
+
+void CViewerContainer::changeHelpTextToAboutConfig()
+{
+	m_information->setText(m_helpLoadConfig);
 }
 
 void CViewerContainer::showRangeScan(CNode* node)
@@ -122,7 +127,7 @@ void CViewerContainer::updateConfigChanges(
 
 	if (renderizableMaps.empty())
 	{
-		m_ui->m_tabWidget->addTab(m_information, "tttt");
+		m_ui->m_tabWidget->addTab(m_information, "Welcome!");
 		return;
 	}
 

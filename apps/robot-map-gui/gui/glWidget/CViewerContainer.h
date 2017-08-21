@@ -26,6 +26,9 @@ class CViewerContainer : public QWidget
    public:
 	CViewerContainer(QWidget* parent = nullptr);
 	virtual ~CViewerContainer();
+
+	void changeHelpTextToAboutConfig();
+
 	void showRangeScan(CNode* node);
 	void showRobotDirection(const mrpt::poses::CPose3D& pose);
 	void applyConfigChanges(RenderizableMaps renderizableMaps);
@@ -66,5 +69,6 @@ class CViewerContainer : public QWidget
 	std::unique_ptr<Ui::CViewerContainer> m_ui;
 	std::map<int, SType> m_tabsInfo;
 	QTextEdit* m_information;
-	const QString m_help;
+	const QString m_helpLoadMap;
+	const QString m_helpLoadConfig;
 };

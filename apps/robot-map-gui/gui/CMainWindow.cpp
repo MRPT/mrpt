@@ -139,6 +139,7 @@ void CMainWindow::loadMap(const QString& fileName)
 		m_document->setListOfMaps(mapCfg);
 
 		updateRenderMapFromConfig();
+		m_ui->m_viewer->changeHelpTextToAboutConfig();
 
 		if (m_model) delete m_model;
 		m_model = new CObservationTreeModel(
