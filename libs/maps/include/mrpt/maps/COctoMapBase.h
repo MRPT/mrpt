@@ -417,7 +417,7 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 	/// \return Memory usage of a full grid of the same size as the OcTree in
 	/// bytes (for comparison)
 	size_t memoryFullGrid() const { return m_octomap.memoryFullGrid(); }
-	double volume() const { return m_octomap.volume(); }
+	double volume() { return m_octomap.volume(); }
 	/// Size of OcTree (all known space) in meters for x, y and z dimension
 	void getMetricSize(double& x, double& y, double& z)
 	{
