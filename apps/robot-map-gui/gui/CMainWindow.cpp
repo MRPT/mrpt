@@ -411,13 +411,42 @@ void CMainWindow::openRecent()
 	loadMap(action->text());
 }
 
+void CMainWindow::saveMetricMapRepresentation()
+{
+	if (!m_document) return;
+
+	QString fileName = QFileDialog::getSaveFileName(
+		this, tr("Save as representation"), "", tr("Files (*)"));
+
+	if (fileName.size() == 0) return;
+
+	QAction* action = qobject_cast<QAction*>(sender());
+	m_document->saveMetricMapRepresentationToFile(
+		fileName.toStdString(), action->text().toStdString());
+}
+
 void CMainWindow::updateRenderMapFromConfig()
 {
+	if (!m_document) return;
+
 	auto renderizableMaps = m_document->renderizableMaps();
 	m_ui->m_viewer->updateConfigChanges(
 		renderizableMaps, m_document, m_ui->m_actionShowAllObs->isChecked());
 
 	m_ui->m_actionSaveAsText->setDisabled(!m_document->hasPointsMap());
+
+	m_ui->m_saveMetricMapRepresentation->clear();
+
+	for (auto& it : renderizableMaps)
+	{
+		QString name = QString::fromStdString(typeToName(it.first.type)) +
+					   QString::number(it.first.index);
+
+		auto action = m_ui->m_saveMetricMapRepresentation->addAction(name);
+		connect(
+			action, &QAction::triggered, this,
+			&CMainWindow::saveMetricMapRepresentation);
+	}
 }
 
 void CMainWindow::applyMapsChanges()

@@ -57,6 +57,7 @@ class CMainWindow : public QMainWindow
 	void moveRobotPoses(const std::vector<int>& idx, const QPointF& dist);
 
 	void openRecent();
+	void saveMetricMapRepresentation();
 
    private:
 	void updateRenderMapFromConfig();

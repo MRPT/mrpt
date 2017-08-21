@@ -42,6 +42,21 @@ inline std::string typeToName(TypeOfConfig type)
 	return "";
 }
 
+inline TypeOfConfig nameToType(const std::string& str)
+{
+	std::size_t found = str.find(typeToName(PointsMap));
+	if (found != std::string::npos) return PointsMap;
+	found = str.find(typeToName(Occupancy));
+	if (found != std::string::npos) return Occupancy;
+	found = str.find(typeToName(Landmarks));
+	if (found != std::string::npos) return Landmarks;
+	found = str.find(typeToName(Beacon));
+	if (found != std::string::npos) return Beacon;
+	found = str.find(typeToName(GasGrid));
+	if (found != std::string::npos) return GasGrid;
+	return None;
+}
+
 struct SType
 {
 	SType() : type(None), index(-1) {}

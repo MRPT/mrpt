@@ -44,13 +44,26 @@ void CDocument::saveSimpleMap()
 	m_changedFile = !m_simplemap.saveToFile(m_fileName);
 }
 
-void CDocument::saveAsPng(const std::string& fileName)
+void CDocument::saveMetricMapRepresentationToFile(
+	const std::string& fileName, const std::string& mapName) const
 {
-	auto iter = m_typeConfigs.find(Occupancy);
+	TypeOfConfig type = nameToType(mapName);
+	if (type == TypeOfConfig::None) return;
+
+	std::string number = mapName.substr(typeToName(type).size());
+	int index = std::atoi(number.c_str());
+
+	auto iter = m_typeConfigs.find(type);
 	if (iter == m_typeConfigs.end() || iter->second.empty()) return;
 
-	auto mapIter = iter->second.begin();
+	auto mapIter = iter->second.begin() + index;
 	mapIter->get_ptr()->saveMetricMapRepresentationToFile(fileName);
+}
+
+void CDocument::saveAsPng(const std::string& fileName) const
+{
+	std::string str = typeToName(Occupancy) + "0";
+	saveMetricMapRepresentationToFile(fileName, str);
 }
 
 bool CDocument::hasPointsMap() const { return m_hasPointsMap; }

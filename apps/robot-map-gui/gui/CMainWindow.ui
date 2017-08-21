@@ -53,11 +53,17 @@
       <string>Recent files</string>
      </property>
     </widget>
+    <widget class="QMenu" name="m_saveMetricMapRepresentation">
+     <property name="title">
+      <string>Save metric map representation</string>
+     </property>
+    </widget>
     <addaction name="m_actionOpen"/>
     <addaction name="m_menuRecentFiles"/>
     <addaction name="m_actionSave"/>
     <addaction name="m_actionSaveAsText"/>
     <addaction name="m_actionSaveAsPNG"/>
+    <addaction name="m_saveMetricMapRepresentation"/>
     <addaction name="separator"/>
     <addaction name="m_actionLoadConfig"/>
     <addaction name="separator"/>
