@@ -38,7 +38,6 @@ CMainWindow::CMainWindow(QWidget* parent)
 	m_ui->setupUi(this);
 
 	m_ui->m_dockWidgetNodeViewer->setVisible(false);
-	m_ui->m_dockWidgetConfig->setVisible(false);
 
 	m_ui->m_undoAction->setShortcut(QKeySequence(QKeySequence::Undo));
 	m_ui->m_redoAction->setShortcut(QKeySequence(QKeySequence::Redo));

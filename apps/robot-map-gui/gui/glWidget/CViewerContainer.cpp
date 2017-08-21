@@ -12,8 +12,20 @@
 #include "CGLWidget.h"
 #include "gui/observationTree/CRangeScanNode.h"
 
+#include <QTextEdit>
+
 CViewerContainer::CViewerContainer(QWidget* parent)
-	: QWidget(parent), m_ui(std::make_unique<Ui::CViewerContainer>())
+	: QWidget(parent),
+	  m_ui(std::make_unique<Ui::CViewerContainer>()),
+	  m_information(new QTextEdit(this)),
+	  m_help(
+		  tr("For loading the map, press File -> Open simplemap or Ctrl + "
+			 "O.\n\n\n"
+			 "Also, to display any maps you must download the configuration "
+			 "file. "
+			 "For this press File -> Load config or Ctrl + E.\n\n\n"
+			 "If you loaded simplemap, you can yourself add the map from "
+			 "Configuration widget"))
 {
 	m_ui->setupUi(this);
 	connect(
@@ -31,6 +43,11 @@ CViewerContainer::CViewerContainer(QWidget* parent)
 	connect(
 		m_ui->m_tabWidget, &QTabWidget::currentChanged, this,
 		&CViewerContainer::updatePanelInfo);
+
+	m_information->setReadOnly(true);
+	m_information->setText(m_help);
+
+	m_ui->m_tabWidget->addTab(m_information, "Welcome!");
 }
 
 CViewerContainer::~CViewerContainer()
@@ -43,6 +60,8 @@ CViewerContainer::~CViewerContainer()
 
 void CViewerContainer::showRangeScan(CNode* node)
 {
+	if (containsHelpInfo()) return;
+
 	CRangeScanNode* obsNode = dynamic_cast<CRangeScanNode*>(node);
 	assert(obsNode);
 
@@ -63,6 +82,8 @@ void CViewerContainer::showRangeScan(CNode* node)
 
 void CViewerContainer::showRobotDirection(const mrpt::poses::CPose3D& pose)
 {
+	if (containsHelpInfo()) return;
+
 	for (int i = 0; i < m_ui->m_tabWidget->count(); ++i)
 	{
 		QWidget* w = m_ui->m_tabWidget->widget(i);
@@ -74,6 +95,8 @@ void CViewerContainer::showRobotDirection(const mrpt::poses::CPose3D& pose)
 
 void CViewerContainer::applyConfigChanges(RenderizableMaps renderizableMaps)
 {
+	if (containsHelpInfo()) return;
+
 	for (int i = 0; i < m_ui->m_tabWidget->count(); ++i)
 	{
 		auto sTypeIter = m_tabsInfo.find(i);
@@ -96,11 +119,16 @@ void CViewerContainer::updateConfigChanges(
 	for (int i = 0; i < m_ui->m_tabWidget->count(); ++i)
 	{
 		QWidget* w = m_ui->m_tabWidget->widget(i);
-		w->deleteLater();
+		if (w != m_information) w->deleteLater();
 	}
 	m_tabsInfo.clear();
-
 	m_ui->m_tabWidget->clear();
+
+	if (renderizableMaps.empty())
+	{
+		m_ui->m_tabWidget->addTab(m_information, "tttt");
+		return;
+	}
 
 	for (auto& it : renderizableMaps)
 	{
@@ -142,6 +170,8 @@ void CViewerContainer::updateConfigChanges(
 
 void CViewerContainer::setDocument(CDocument* doc)
 {
+	if (containsHelpInfo()) return;
+
 	for (int i = 0; i < m_ui->m_tabWidget->count(); ++i)
 	{
 		CGlWidget* gl = dynamic_cast<CGlWidget*>(m_ui->m_tabWidget->widget(i));
@@ -153,6 +183,8 @@ void CViewerContainer::setDocument(CDocument* doc)
 
 void CViewerContainer::showAllObservation(bool is)
 {
+	if (containsHelpInfo()) return;
+
 	for (int i = 0; i < m_ui->m_tabWidget->count(); ++i)
 	{
 		CGlWidget* gl = dynamic_cast<CGlWidget*>(m_ui->m_tabWidget->widget(i));
@@ -163,6 +195,8 @@ void CViewerContainer::showAllObservation(bool is)
 
 void CViewerContainer::changeCurrentBot(int value)
 {
+	if (containsHelpInfo()) return;
+
 	for (int i = 0; i < m_ui->m_tabWidget->count(); ++i)
 	{
 		CGlWidget* gl = dynamic_cast<CGlWidget*>(m_ui->m_tabWidget->widget(i));
@@ -173,6 +207,8 @@ void CViewerContainer::changeCurrentBot(int value)
 
 void CViewerContainer::setVisibleGrid(bool is)
 {
+	if (containsHelpInfo()) return;
+
 	for (int i = 0; i < m_ui->m_tabWidget->count(); ++i)
 	{
 		CGlWidget* gl = dynamic_cast<CGlWidget*>(m_ui->m_tabWidget->widget(i));
@@ -183,6 +219,8 @@ void CViewerContainer::setVisibleGrid(bool is)
 
 void CViewerContainer::changeBackgroundColor(const QColor& color)
 {
+	if (containsHelpInfo()) return;
+
 	float r = color.red() / 255.0;
 	float g = color.green() / 255.0;
 	float b = color.blue() / 255.0;
@@ -197,6 +235,8 @@ void CViewerContainer::changeBackgroundColor(const QColor& color)
 
 void CViewerContainer::changeGridColor(const QColor& color)
 {
+	if (containsHelpInfo()) return;
+
 	float r = color.red() / 255.0;
 	float g = color.green() / 255.0;
 	float b = color.blue() / 255.0;
@@ -211,7 +251,7 @@ void CViewerContainer::changeGridColor(const QColor& color)
 
 void CViewerContainer::updatePanelInfo(int index)
 {
-	if (m_ui->m_tabWidget->count() == 0) return;
+	if (containsHelpInfo() || m_ui->m_tabWidget->count() == 0) return;
 
 	CGlWidget* gl = dynamic_cast<CGlWidget*>(m_ui->m_tabWidget->widget(index));
 	assert(gl);
@@ -250,7 +290,7 @@ void CViewerContainer::changeElevationDeg(float deg)
 
 void CViewerContainer::zoomChanged(double d)
 {
-	if (m_ui->m_tabWidget->count() == 0) return;
+	if (containsHelpInfo() || m_ui->m_tabWidget->count() == 0) return;
 
 	float zoomFloat = d;
 	int zoomInt = zoomFloat;
@@ -263,7 +303,7 @@ void CViewerContainer::zoomChanged(double d)
 
 void CViewerContainer::zoomChanged(int d)
 {
-	if (m_ui->m_tabWidget->count() == 0) return;
+	if (containsHelpInfo() || m_ui->m_tabWidget->count() == 0) return;
 
 	double zoomD = d;
 	float zoomFloat = zoomD;
@@ -304,6 +344,8 @@ void CViewerContainer::updateElevationDegrees(double deg)
 
 void CViewerContainer::setGeneralSetting(const SGeneralSetting& setting)
 {
+	if (containsHelpInfo()) return;
+
 	float rBack = setting.backgroundColor.red() / 255.0;
 	float gBack = setting.backgroundColor.green() / 255.0;
 	float bBack = setting.backgroundColor.blue() / 255.0;
@@ -335,11 +377,16 @@ void CViewerContainer::setGeneralSetting(const SGeneralSetting& setting)
 
 CGlWidget* CViewerContainer::getCurrentTabWidget() const
 {
-	if (m_ui->m_tabWidget->count() <= 0) return nullptr;
+	if (containsHelpInfo() || m_ui->m_tabWidget->count() <= 0) return nullptr;
 
 	CGlWidget* gl =
 		dynamic_cast<CGlWidget*>(m_ui->m_tabWidget->currentWidget());
 	assert(gl);
 
 	return gl;
+}
+
+bool CViewerContainer::containsHelpInfo() const
+{
+	return m_ui->m_tabWidget->widget(0) == m_information;
 }
