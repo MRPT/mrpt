@@ -46,10 +46,6 @@ class CViewerContainer : public QWidget
 
    public slots:
 	void showAllObservation(bool is);
-	void changeCurrentBot(int value);
-	void setVisibleGrid(bool is);
-	void changeBackgroundColor(const QColor& color);
-	void changeGridColor(const QColor& color);
 
    private slots:
 	void updatePanelInfo(int index);
@@ -65,6 +61,7 @@ class CViewerContainer : public QWidget
    private:
 	CGlWidget* getCurrentTabWidget() const;
 	bool containsHelpInfo() const;
+	void forEachGl(const std::function<void(CGlWidget*)>& func);
 
 	std::unique_ptr<Ui::CViewerContainer> m_ui;
 	std::map<int, SType> m_tabsInfo;

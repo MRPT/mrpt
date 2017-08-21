@@ -44,10 +44,6 @@ class CConfigWidget : public QWidget
 	void updatedConfig();
 	void openedConfig(const std::string& str);
 	void applyConfigurationForCurrentMaps();
-	void backgroundColorChanged(const QColor& col);
-	void gridColorChanged(const QColor& col);
-	void gridVisibleChanged(bool is);
-	void currentBotChanged(int value);
 
    public slots:
 	void openConfig();

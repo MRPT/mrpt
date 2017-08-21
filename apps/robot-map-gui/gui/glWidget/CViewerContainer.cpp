@@ -60,8 +60,6 @@ CViewerContainer::~CViewerContainer()
 
 void CViewerContainer::showRangeScan(CNode* node)
 {
-	if (containsHelpInfo()) return;
-
 	CRangeScanNode* obsNode = dynamic_cast<CRangeScanNode*>(node);
 	assert(obsNode);
 
@@ -70,27 +68,25 @@ void CViewerContainer::showRangeScan(CNode* node)
 	obj->setPose(obsNode->getPose());
 	obj->setSurfaceColor(1.0f, 0.0f, 0.0f, 0.5f);
 
-	for (int i = 0; i < m_ui->m_tabWidget->count(); ++i)
-	{
-		QWidget* w = m_ui->m_tabWidget->widget(i);
-		CGlWidget* gl = dynamic_cast<CGlWidget*>(w);
-		assert(gl);
-		gl->setSelected(obsNode->getPose());
-		gl->setLaserScan(obj);
-	}
+	forEachGl([obsNode, obj](CGlWidget* gl){ gl->setSelected(obsNode->getPose());
+		gl->setLaserScan(obj); });
 }
 
-void CViewerContainer::showRobotDirection(const mrpt::poses::CPose3D& pose)
+void CViewerContainer::forEachGl(const std::function<void (CGlWidget *)> &func)
 {
 	if (containsHelpInfo()) return;
 
 	for (int i = 0; i < m_ui->m_tabWidget->count(); ++i)
 	{
-		QWidget* w = m_ui->m_tabWidget->widget(i);
-		CGlWidget* gl = dynamic_cast<CGlWidget*>(w);
+		CGlWidget* gl = dynamic_cast<CGlWidget*>(m_ui->m_tabWidget->widget(i));
 		assert(gl);
-		gl->setSelected(pose);
+		func(gl);
 	}
+}
+
+void CViewerContainer::showRobotDirection(const mrpt::poses::CPose3D& pose)
+{
+	forEachGl([pose](CGlWidget* gl){ gl->setSelected(pose); });
 }
 
 void CViewerContainer::applyConfigChanges(RenderizableMaps renderizableMaps)
@@ -104,12 +100,12 @@ void CViewerContainer::applyConfigChanges(RenderizableMaps renderizableMaps)
 
 		auto it = renderizableMaps.find(sTypeIter->second);
 		assert(it != renderizableMaps.end());
-
 		CGlWidget* gl = dynamic_cast<CGlWidget*>(m_ui->m_tabWidget->widget(i));
 		assert(gl);
 
 		gl->fillMap(it->second);
 		gl->updateObservations();
+
 	}
 }
 
@@ -170,83 +166,12 @@ void CViewerContainer::updateConfigChanges(
 
 void CViewerContainer::setDocument(CDocument* doc)
 {
-	if (containsHelpInfo()) return;
-
-	for (int i = 0; i < m_ui->m_tabWidget->count(); ++i)
-	{
-		CGlWidget* gl = dynamic_cast<CGlWidget*>(m_ui->m_tabWidget->widget(i));
-		assert(gl);
-
-		gl->setDocument(doc);
-	}
+	forEachGl([doc](CGlWidget* gl){ gl->setDocument(doc); });
 }
 
 void CViewerContainer::showAllObservation(bool is)
 {
-	if (containsHelpInfo()) return;
-
-	for (int i = 0; i < m_ui->m_tabWidget->count(); ++i)
-	{
-		CGlWidget* gl = dynamic_cast<CGlWidget*>(m_ui->m_tabWidget->widget(i));
-		assert(gl);
-		gl->setSelectedObservation(is);
-	}
-}
-
-void CViewerContainer::changeCurrentBot(int value)
-{
-	if (containsHelpInfo()) return;
-
-	for (int i = 0; i < m_ui->m_tabWidget->count(); ++i)
-	{
-		CGlWidget* gl = dynamic_cast<CGlWidget*>(m_ui->m_tabWidget->widget(i));
-		assert(gl);
-		if (gl->setBot(value)) gl->update();
-	}
-}
-
-void CViewerContainer::setVisibleGrid(bool is)
-{
-	if (containsHelpInfo()) return;
-
-	for (int i = 0; i < m_ui->m_tabWidget->count(); ++i)
-	{
-		CGlWidget* gl = dynamic_cast<CGlWidget*>(m_ui->m_tabWidget->widget(i));
-		assert(gl);
-		gl->setVisibleGrid(is);
-	}
-}
-
-void CViewerContainer::changeBackgroundColor(const QColor& color)
-{
-	if (containsHelpInfo()) return;
-
-	float r = color.red() / 255.0;
-	float g = color.green() / 255.0;
-	float b = color.blue() / 255.0;
-	float a = color.alpha() / 255.0;
-	for (int i = 0; i < m_ui->m_tabWidget->count(); ++i)
-	{
-		CGlWidget* gl = dynamic_cast<CGlWidget*>(m_ui->m_tabWidget->widget(i));
-		assert(gl);
-		gl->setBackgroundColor(r, g, b, a);
-	}
-}
-
-void CViewerContainer::changeGridColor(const QColor& color)
-{
-	if (containsHelpInfo()) return;
-
-	float r = color.red() / 255.0;
-	float g = color.green() / 255.0;
-	float b = color.blue() / 255.0;
-	float a = color.alpha() / 255.0;
-	for (int i = 0; i < m_ui->m_tabWidget->count(); ++i)
-	{
-		CGlWidget* gl = dynamic_cast<CGlWidget*>(m_ui->m_tabWidget->widget(i));
-		assert(gl);
-		gl->setGridColor(r, g, b, a);
-	}
+	forEachGl([is](CGlWidget* gl){ gl->setSelectedObservation(is); });
 }
 
 void CViewerContainer::updatePanelInfo(int index)
@@ -344,8 +269,6 @@ void CViewerContainer::updateElevationDegrees(double deg)
 
 void CViewerContainer::setGeneralSetting(const SGeneralSetting& setting)
 {
-	if (containsHelpInfo()) return;
-
 	float rBack = setting.backgroundColor.red() / 255.0;
 	float gBack = setting.backgroundColor.green() / 255.0;
 	float bBack = setting.backgroundColor.blue() / 255.0;
@@ -355,11 +278,9 @@ void CViewerContainer::setGeneralSetting(const SGeneralSetting& setting)
 	float b = setting.gridColor.blue() / 255.0;
 	float a = setting.gridColor.alpha() / 255.0;
 
-	for (int i = 0; i < m_ui->m_tabWidget->count(); ++i)
-	{
-		CGlWidget* gl = dynamic_cast<CGlWidget*>(m_ui->m_tabWidget->widget(i));
-		assert(gl);
 
+	forEachGl([r, g, b, a, rBack, gBack, bBack, aBack, setting](CGlWidget* gl)
+	{
 		gl->setGridColor(r, g, b, a);
 		gl->setVisibleGrid(setting.isGridVisibleChanged);
 		gl->setBackgroundColor(rBack, gBack, bBack, aBack);
@@ -369,7 +290,7 @@ void CViewerContainer::setGeneralSetting(const SGeneralSetting& setting)
 		gl->setSelectedObservationSize(setting.selectedRobotPosesSize);
 		gl->setObservationColor(setting.robotPosesColor);
 		gl->setSelectedObservationColor(setting.selectedRobotPosesColor);
-	}
+	});
 
 	CGlWidget* gl = getCurrentTabWidget();
 	if (gl) gl->update();

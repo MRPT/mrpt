@@ -57,18 +57,6 @@ CMainWindow::CMainWindow(QWidget* parent)
 	connect(
 		m_ui->m_configWidget, &CConfigWidget::updatedConfig, this,
 		&CMainWindow::updateConfig);
-	connect(
-		m_ui->m_configWidget, &CConfigWidget::backgroundColorChanged,
-		m_ui->m_viewer, &CViewerContainer::changeBackgroundColor);
-	connect(
-		m_ui->m_configWidget, &CConfigWidget::gridColorChanged, m_ui->m_viewer,
-		&CViewerContainer::changeGridColor);
-	connect(
-		m_ui->m_configWidget, &CConfigWidget::gridVisibleChanged,
-		m_ui->m_viewer, &CViewerContainer::setVisibleGrid);
-	connect(
-		m_ui->m_configWidget, &CConfigWidget::currentBotChanged, m_ui->m_viewer,
-		&CViewerContainer::changeCurrentBot);
 
 	connect(
 		m_ui->m_observationsTree, &CObservationTree::clicked, this,
