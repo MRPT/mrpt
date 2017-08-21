@@ -1,10 +1,10 @@
 #-----------------------------------------------------------------------------------------------
-# CMake file for the MRPT example:  /joystick
+# CMake file for the MRPT example:  /backtrace-example
 #
 #  Run with "ccmake ." at the root directory, or use it as a template for 
 #   starting your own programs
 #-----------------------------------------------------------------------------------------------
-SET(sampleName joystick)
+SET(sampleName backtrace-example)
 SET(PRJ_NAME "EXAMPLE_${sampleName}")
 
 # ---------------------------------------
@@ -30,7 +30,7 @@ SET(EXECUTABLE_OUTPUT_PATH ".")
 #   The dependencies of a library are automatically added, so you only 
 #    need to specify the top-most libraries your code depend on.
 # --------------------------------------------------------------------------
-FIND_PACKAGE(MRPT REQUIRED hwdrivers;gui)
+FIND_PACKAGE(MRPT REQUIRED base)
 
 # ---------------------------------------------
 # TARGET:
@@ -65,7 +65,7 @@ ENDIF()
 #  the MRPT tree:
 # -------------------------------------------------------------------------
 IF(${CMAKE_PROJECT_NAME} STREQUAL "MRPT") # Fails if build outside of MRPT project.
-	DeclareAppDependencies(${sampleName} mrpt-hwdrivers;mrpt-gui) # Dependencies
+	DeclareAppDependencies(${sampleName} mrpt-base) # Dependencies
 ENDIF()
 # -------------------------------------------------------------------------
 
