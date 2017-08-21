@@ -27,13 +27,18 @@ IF(WIN32)
 	IF (PACKAGE_INCLUDES_SOURCES)
 		INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/cmakemodules" DESTINATION ./ )
 		INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/otherlibs" DESTINATION ./ )
-		INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/samples"  DESTINATION ./ COMPONENT Examples )
+		INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/samples"  DESTINATION ./
+			COMPONENT Examples
+			PATTERN ".gitignore" EXCLUDE)
 		INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/scripts" DESTINATION ./  )
 		INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/tests" DESTINATION ./  )
 	ENDIF (PACKAGE_INCLUDES_SOURCES)
-		
+
 	INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/parse-files" DESTINATION ./ )
-	INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/share" DESTINATION ./  )
+	INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/share"
+		DESTINATION ./
+		PATTERN ".gitignore" EXCLUDE
+	)
 
 	# Smart determination of the dependencies DLLs so they are also copied when installing:
 	# ---------------------------------------------------------------------------------------
@@ -154,7 +159,7 @@ IF (PACKAGE_INCLUDES_SOURCES)
 			DIRECTORY "${MRPT_BINARY_DIR}/otherlibs/eigen3/unsupported"
 			DESTINATION "${MRPT_INSTALL_EIGEN_PREFIX}" )
 	ENDIF (EIGEN_USE_EMBEDDED_VERSION AND NOT IS_DEBIAN_DBG_PKG)
-	
+
 	IF (CMAKE_MRPT_HAS_OCTOMAP AND NOT CMAKE_MRPT_HAS_OCTOMAP_SYSTEM)
 		# headers must end up in /Program Files/MRPT-X.Y.Z/libs/maps/...
 		SET(MRPT_INSTALL_OCTOMAP_PREFIX "libs/maps/include/")
@@ -163,5 +168,5 @@ IF (PACKAGE_INCLUDES_SOURCES)
 			DIRECTORY "${MRPT_BINARY_DIR}/otherlibs/octomap/octomap/include/"
 			DESTINATION "${MRPT_INSTALL_OCTOMAP_PREFIX}" )
 	ENDIF()
-	
+
 ENDIF (PACKAGE_INCLUDES_SOURCES)
