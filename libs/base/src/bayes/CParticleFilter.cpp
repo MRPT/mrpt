@@ -216,13 +216,12 @@ void CParticleFilter::TParticleFilterOptions::loadFromConfigFile(
 	MRPT_LOAD_CONFIG_VAR(powFactor, double, iniFile, section.c_str());
 	MRPT_LOAD_CONFIG_VAR(
 		max_loglikelihood_dyn_range, double, iniFile, section.c_str());
-	ASSERT_(max_loglikelihood_dyn_range >= 0)
+	ASSERT_(max_loglikelihood_dyn_range >= 0);
 
-	MRPT_LOAD_CONFIG_VAR_CAST_NO_DEFAULT(
-		PF_algorithm, int, TParticleFilterAlgorithm, iniFile, section.c_str());
-	MRPT_LOAD_CONFIG_VAR_CAST_NO_DEFAULT(
-		resamplingMethod, int, TParticleResamplingAlgorithm, iniFile,
-		section.c_str());
+	PF_algorithm = iniFile.read_enum<TParticleFilterAlgorithm>(section,
+		"PF_algorithm", PF_algorithm, true);
+	resamplingMethod = iniFile.read_enum<TParticleResamplingAlgorithm>(section,
+		"resamplingMethod", resamplingMethod, true);
 
 	if (PF_algorithm == pfAuxiliaryPFOptimal)
 	{

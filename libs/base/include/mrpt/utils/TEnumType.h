@@ -27,6 +27,10 @@ struct TEnumTypeFiller
 	static void fill(mrpt::utils::bimap<enum_t, std::string>& m_map);
 };
 
+/** For use in specializations of TEnumTypeFiller */
+#define MRPT_FILL_ENUM(_X) m_map.insert(_X, #_X)
+#define MRPT_FILL_ENUM_MEMBER(_CLASS,_VALUE) m_map.insert(_CLASS::_VALUE, #_VALUE)
+
 /** A helper class that can convert an enum value into its textual
  * representation, and viceversa. \ingroup mrpt_base_grp */
 template <typename ENUMTYPE>

@@ -22,6 +22,7 @@
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/obs/CObservation2DRangeScanWithUncertainty.h>
 #include <mrpt/obs/obs_frwds.h>
+#include <mrpt/utils/TEnumType.h>
 
 #include <mrpt/maps/link_pragmas.h>
 
@@ -563,6 +564,7 @@ class MAPS_IMPEXP COccupancyGridMap2D : public CMetricMap,
 		lmLikelihoodField_Thrun,
 		lmLikelihoodField_II,
 		lmConsensusOWA
+		// Remember: Update TEnumType below if new values are added here!
 	};
 
 	/** With this struct options are provided to the observation likelihood
@@ -1183,6 +1185,25 @@ bool MAPS_IMPEXP operator<(
 	const COccupancyGridMap2D::TPairLikelihoodIndex& e2);
 
 }  // End of namespace
+namespace utils
+{
+template <>
+struct TEnumTypeFiller<mrpt::maps::COccupancyGridMap2D::TLikelihoodMethod>
+{
+	typedef mrpt::maps::COccupancyGridMap2D::TLikelihoodMethod enum_t;
+	static void fill(bimap<enum_t, std::string>& m_map)
+	{
+		using namespace mrpt::maps;
+		MRPT_FILL_ENUM_MEMBER(COccupancyGridMap2D, lmMeanInformation);
+		MRPT_FILL_ENUM_MEMBER(COccupancyGridMap2D, lmRayTracing);
+		MRPT_FILL_ENUM_MEMBER(COccupancyGridMap2D, lmConsensus);
+		MRPT_FILL_ENUM_MEMBER(COccupancyGridMap2D, lmCellsDifference);
+		MRPT_FILL_ENUM_MEMBER(COccupancyGridMap2D, lmLikelihoodField_Thrun);
+		MRPT_FILL_ENUM_MEMBER(COccupancyGridMap2D, lmLikelihoodField_II);
+		MRPT_FILL_ENUM_MEMBER(COccupancyGridMap2D, lmConsensusOWA);
+	}
+};
+}
 }  // End of namespace
 
 #endif
