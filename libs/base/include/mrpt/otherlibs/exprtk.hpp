@@ -67,6 +67,20 @@ namespace exprtk
    #define exprtk_error_location             \
    "exprtk.hpp:" + details::to_str(__LINE__) \
 
+   #if __GNUC__  >= 7
+
+      #define exprtk_disable_fallthrough_begin                      \
+      _Pragma ("GCC diagnostic push")                               \
+      _Pragma ("GCC diagnostic ignored \"-Wimplicit-fallthrough\"") \
+
+      #define exprtk_disable_fallthrough_end                        \
+      _Pragma ("GCC diagnostic pop")                                \
+
+   #else
+      #define exprtk_disable_fallthrough_begin (void)0;
+      #define exprtk_disable_fallthrough_end   (void)0;
+   #endif
+
    namespace details
    {
       typedef unsigned char uchar_t;
@@ -1666,6 +1680,7 @@ namespace exprtk
 
          if (length <= 4)
          {
+            exprtk_disable_fallthrough_begin
             switch (length)
             {
                #ifdef exprtk_use_lut
@@ -1699,6 +1714,7 @@ namespace exprtk
 
                #undef exprtk_process_digit
             }
+            exprtk_disable_fallthrough_end
          }
          else
             return_result = false;
@@ -8115,6 +8131,7 @@ namespace exprtk
 
                   int i = 0;
 
+                  exprtk_disable_fallthrough_begin
                   switch (lud.remainder)
                   {
                      #define case_stmt(N)                      \
@@ -8131,6 +8148,7 @@ namespace exprtk
                      case_stmt( 3) case_stmt( 2)
                      case_stmt( 1)
                   }
+                  exprtk_disable_fallthrough_end
 
                   #undef exprtk_loop
                   #undef case_stmt
@@ -9622,6 +9640,7 @@ namespace exprtk
                   vec += lud.batch_size;
                }
 
+               exprtk_disable_fallthrough_begin
                switch (lud.remainder)
                {
                   #define case_stmt(N) \
@@ -9638,6 +9657,7 @@ namespace exprtk
                   case_stmt( 3) case_stmt( 2)
                   case_stmt( 1)
                }
+               exprtk_disable_fallthrough_end
 
                #undef exprtk_loop
                #undef case_stmt
@@ -9770,6 +9790,7 @@ namespace exprtk
                   vec1 += lud.batch_size;
                }
 
+               exprtk_disable_fallthrough_begin
                switch (lud.remainder)
                {
                   #define case_stmt(N)        \
@@ -9786,6 +9807,7 @@ namespace exprtk
                   case_stmt( 3) case_stmt( 2)
                   case_stmt( 1)
                }
+               exprtk_disable_fallthrough_end
 
                #undef exprtk_loop
                #undef case_stmt
@@ -10036,6 +10058,7 @@ namespace exprtk
                   vec += lud.batch_size;
                }
 
+               exprtk_disable_fallthrough_begin
                switch (lud.remainder)
                {
                   #define case_stmt(N)                  \
@@ -10052,6 +10075,8 @@ namespace exprtk
                   case_stmt( 3) case_stmt( 2)
                   case_stmt( 1)
                }
+               exprtk_disable_fallthrough_end
+
 
                #undef exprtk_loop
                #undef case_stmt
@@ -10183,6 +10208,7 @@ namespace exprtk
 
                int i = 0;
 
+               exprtk_disable_fallthrough_begin
                switch (lud.remainder)
                {
                   #define case_stmt(N)                                             \
@@ -10199,6 +10225,7 @@ namespace exprtk
                   case_stmt( 3) case_stmt( 2)
                   case_stmt( 1)
                }
+               exprtk_disable_fallthrough_end
 
                #undef exprtk_loop
                #undef case_stmt
@@ -10368,6 +10395,7 @@ namespace exprtk
 
                int i = 0;
 
+               exprtk_disable_fallthrough_begin
                switch (lud.remainder)
                {
                   #define case_stmt(N)                                             \
@@ -10384,6 +10412,7 @@ namespace exprtk
                   case_stmt( 3) case_stmt( 2)
                   case_stmt( 1)
                }
+               exprtk_disable_fallthrough_end
 
                #undef exprtk_loop
                #undef case_stmt
@@ -10523,6 +10552,7 @@ namespace exprtk
 
                int i = 0;
 
+               exprtk_disable_fallthrough_begin
                switch (lud.remainder)
                {
                   #define case_stmt(N)                                       \
@@ -10539,6 +10569,7 @@ namespace exprtk
                   case_stmt( 3) case_stmt( 2)
                   case_stmt( 1)
                }
+               exprtk_disable_fallthrough_end
 
                #undef exprtk_loop
                #undef case_stmt
@@ -10676,6 +10707,7 @@ namespace exprtk
 
                int i = 0;
 
+               exprtk_disable_fallthrough_begin
                switch (lud.remainder)
                {
                   #define case_stmt(N)                                       \
@@ -10692,6 +10724,7 @@ namespace exprtk
                   case_stmt( 3) case_stmt( 2)
                   case_stmt( 1)
                }
+               exprtk_disable_fallthrough_end
 
                #undef exprtk_loop
                #undef case_stmt
@@ -10826,6 +10859,7 @@ namespace exprtk
 
                int i = 0;
 
+               exprtk_disable_fallthrough_begin
                switch (lud.remainder)
                {
                   #define case_stmt(N)                                     \
@@ -10842,6 +10876,7 @@ namespace exprtk
                   case_stmt( 3) case_stmt( 2)
                   case_stmt( 1)
                }
+               exprtk_disable_fallthrough_end
 
                #undef exprtk_loop
                #undef case_stmt
@@ -12768,6 +12803,7 @@ namespace exprtk
                T result = T(0);
                int i    = 0;
 
+               exprtk_disable_fallthrough_begin
                switch (vec_size)
                {
                   #define case_stmt(N)         \
@@ -12784,6 +12820,7 @@ namespace exprtk
                   case_stmt( 4) case_stmt( 3)
                   case_stmt( 2) case_stmt( 1)
                }
+               exprtk_disable_fallthrough_end
 
                #undef case_stmt
 
@@ -12818,6 +12855,7 @@ namespace exprtk
 
             int i = 0;
 
+            exprtk_disable_fallthrough_begin
             switch (lud.remainder)
             {
                #define case_stmt(N)       \
@@ -12834,6 +12872,7 @@ namespace exprtk
                case_stmt( 3) case_stmt( 2)
                case_stmt( 1)
             }
+            exprtk_disable_fallthrough_end
 
             #undef exprtk_loop
             #undef case_stmt
@@ -12865,6 +12904,7 @@ namespace exprtk
                T result = T(1);
                int i    = 0;
 
+               exprtk_disable_fallthrough_begin
                switch (vec_size)
                {
                   #define case_stmt(N)         \
@@ -12881,6 +12921,7 @@ namespace exprtk
                   case_stmt( 4) case_stmt( 3)
                   case_stmt( 2) case_stmt( 1)
                }
+               exprtk_disable_fallthrough_end
 
                #undef case_stmt
 
@@ -12915,6 +12956,7 @@ namespace exprtk
 
             int i = 0;
 
+            exprtk_disable_fallthrough_begin
             switch (lud.remainder)
             {
                #define case_stmt(N)       \
@@ -12931,6 +12973,7 @@ namespace exprtk
                case_stmt( 3) case_stmt( 2)
                case_stmt( 1)
             }
+            exprtk_disable_fallthrough_end
 
             #undef exprtk_loop
             #undef case_stmt
