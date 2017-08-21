@@ -20,6 +20,7 @@
 		- MRPT_getCompilationDate() returns time as well
 	- Build system:
 		- Fix MRPTConfig.cmake for system octomap libraries.
+		- Fix package-contains-vcs-control-file (.gitingore) Lintian error.
 
 <hr>
 <a name="1.5.3">
