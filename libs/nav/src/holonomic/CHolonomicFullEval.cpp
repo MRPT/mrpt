@@ -13,7 +13,6 @@
 #include <mrpt/utils/CStream.h>
 #include <mrpt/utils/round.h>
 #include <mrpt/math/geometry.h>
-#include <mrpt/math/utils.h>  // make_vector()
 #include <mrpt/math/ops_containers.h>
 #include <mrpt/utils/stl_serialization.h>
 #include <cmath>
@@ -654,19 +653,14 @@ CHolonomicFullEval::TOptions::TOptions()
 	  TARGET_SLOW_APPROACHING_DISTANCE(0.60),
 	  OBSTACLE_SLOW_DOWN_DISTANCE(0.15),
 	  HYSTERESIS_SECTOR_COUNT(5),
+	  factorWeights{ 0.1, 0.5, 0.5, 0.01, 1 },
+	  factorNormalizeOrNot{0, 0, 0, 0, 1},
+	  PHASE_FACTORS{ {1,2}, {4}, {0,2} },
+	  PHASE_THRESHOLDS{ 0.5, 0.6, 0.7 },
 	  LOG_SCORE_MATRIX(false),
 	  clearance_threshold_ratio(0.05),
 	  gap_width_ratio_threshold(0.25)
 {
-	factorWeights = mrpt::math::make_vector<5, double>(0.1, 0.5, 0.5, 0.01, 1);
-	factorNormalizeOrNot = mrpt::math::make_vector<5, int>(0, 0, 0, 0, 1);
-
-	PHASE_FACTORS.resize(3);
-	PHASE_FACTORS[0] = mrpt::math::make_vector<2, int>(1, 2);
-	PHASE_FACTORS[1] = mrpt::math::make_vector<1, int>(4);
-	PHASE_FACTORS[2] = mrpt::math::make_vector<1, int>(0, 2);
-
-	PHASE_THRESHOLDS = mrpt::math::make_vector<3, double>(0.5, 0.6, 0.7);
 }
 
 void CHolonomicFullEval::TOptions::loadFromConfigFile(
