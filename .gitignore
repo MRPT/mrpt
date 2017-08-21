@@ -1,5 +1,5 @@
 *~
-samples/CMakeLists.txt
+/samples/CMakeLists.txt
 build*
 install*
 *.layout
