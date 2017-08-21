@@ -34,7 +34,6 @@ CMAKE_FLAGS = \
 	-DCMAKE_SHARED_LINKER_FLAGS_RELEASE="$(LDFLAGS)" \
 	-DCMAKE_EXE_LINKER_FLAGS_RELEASE="$(LDFLAGS)" \
 	$(CMAKE_ARCH_FLAGS) \
-	REPLACE_HERE_EXTRA_CMAKE_PARAMS
 
 # Don't set: CMAKE_SKIP_RPATH=ON --> it makes unit tests to fail,
 # and the rpath is removed anyway by cmake's install target.
@@ -43,7 +42,7 @@ CMAKE_FLAGS = \
 	dh $@ --buildsystem=cmake
 
 override_dh_auto_build:
-	dh_auto_build -O--buildsystem=cmake --
+	dh_auto_build -O--buildsystem=cmake
 
 	# Also build doc targets:
 	dh_auto_build -O--buildsystem=cmake -- \
@@ -78,4 +77,3 @@ override_dh_install:
 	# Fix Doxygen's embedded JQuery lib:
 	rm $(CURDIR)/debian/mrpt-doc/usr/share/doc/mrpt-doc/html/jquery.js || true
 	ln -s /usr/share/javascript/jquery/jquery.js $(CURDIR)/debian/mrpt-doc/usr/share/doc/mrpt-doc/html/jquery.js  || true
-
