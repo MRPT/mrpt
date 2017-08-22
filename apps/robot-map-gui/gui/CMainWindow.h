@@ -58,6 +58,7 @@ class CMainWindow : public QMainWindow
 
 	void openRecent();
 	void saveMetricMapRepresentation();
+	void saveMetricmapInBinaryFormat();
 
    private:
 	void updateRenderMapFromConfig();

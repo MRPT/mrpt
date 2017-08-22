@@ -58,12 +58,18 @@
       <string>Save metric map representation</string>
      </property>
     </widget>
+    <widget class="QMenu" name="m_saveMetricmapInBinaryFormat">
+     <property name="title">
+      <string>Save metric map in binary format</string>
+     </property>
+    </widget>
     <addaction name="m_actionOpen"/>
     <addaction name="m_menuRecentFiles"/>
     <addaction name="m_actionSave"/>
     <addaction name="m_actionSaveAsText"/>
     <addaction name="m_actionSaveAsPNG"/>
     <addaction name="m_saveMetricMapRepresentation"/>
+    <addaction name="m_saveMetricmapInBinaryFormat"/>
     <addaction name="separator"/>
     <addaction name="m_actionLoadConfig"/>
     <addaction name="separator"/>

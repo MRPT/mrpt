@@ -24,7 +24,6 @@
 #include <QListWidget>
 #include <QListWidgetItem>
 #include <QCheckBox>
-#include <QDebug>
 
 using namespace mrpt;
 using namespace maps;

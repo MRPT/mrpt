@@ -425,6 +425,21 @@ void CMainWindow::saveMetricMapRepresentation()
 		fileName.toStdString(), action->text().toStdString());
 }
 
+void CMainWindow::saveMetricmapInBinaryFormat()
+{
+	if (!m_document) return;
+
+	QString fileName = QFileDialog::getSaveFileName(
+		this, tr("Save in binary format"), "", tr("Files (*)"));
+
+	if (fileName.size() == 0) return;
+
+	QAction* action = qobject_cast<QAction*>(sender());
+
+	m_document->saveMetricmapInBinaryFormat(
+		fileName.toStdString(), action->text().toStdString());
+}
+
 void CMainWindow::updateRenderMapFromConfig()
 {
 	if (!m_document) return;
@@ -436,6 +451,7 @@ void CMainWindow::updateRenderMapFromConfig()
 	m_ui->m_actionSaveAsText->setDisabled(!m_document->hasPointsMap());
 
 	m_ui->m_saveMetricMapRepresentation->clear();
+	m_ui->m_saveMetricmapInBinaryFormat->clear();
 
 	for (auto& it : renderizableMaps)
 	{
@@ -446,6 +462,12 @@ void CMainWindow::updateRenderMapFromConfig()
 		connect(
 			action, &QAction::triggered, this,
 			&CMainWindow::saveMetricMapRepresentation);
+
+		auto actionBinary =
+			m_ui->m_saveMetricmapInBinaryFormat->addAction(name);
+		connect(
+			actionBinary, &QAction::triggered, this,
+			&CMainWindow::saveMetricmapInBinaryFormat);
 	}
 }
 

@@ -10,10 +10,9 @@
 #include "CDocument.h"
 
 #include "mrpt/utils/CFileGZInputStream.h"
+#include "mrpt/utils/CFileGZOutputStream.h"
 #include "mrpt/utils/CFileOutputStream.h"
 #include "mrpt/utils/CConfigFile.h"
-
-#include <QDebug>
 
 const std::string METRIC_MAP_CONFIG_SECTION = "MappingApplication";
 
@@ -58,6 +57,24 @@ void CDocument::saveMetricMapRepresentationToFile(
 
 	auto mapIter = iter->second.begin() + index;
 	mapIter->get_ptr()->saveMetricMapRepresentationToFile(fileName);
+}
+
+void CDocument::saveMetricmapInBinaryFormat(
+	const std::string& fileName, const std::string& mapName) const
+{
+	TypeOfConfig type = nameToType(mapName);
+	if (type == TypeOfConfig::None) return;
+
+	std::string number = mapName.substr(typeToName(type).size());
+	int index = std::atoi(number.c_str());
+
+	auto iter = m_typeConfigs.find(type);
+	if (iter == m_typeConfigs.end() || iter->second.empty()) return;
+
+	auto mapIter = iter->second.begin() + index;
+
+	mrpt::utils::CFileGZOutputStream fil(fileName);
+	fil << *mapIter->get_ptr();
 }
 
 void CDocument::saveAsPng(const std::string& fileName) const
