@@ -38,18 +38,9 @@
 #	include <mrpt/obs/CObservationBeaconRanges.h>
 #	include <mrpt/obs/CObservationBearingRange.h>
 
-
-
-
 ///
-//#include "../../../../../catkin_ws/src/mrpt_navigation/mrpt_rawlog/include/rawlog_play_node.h"
 #include <boost/interprocess/sync/scoped_lock.hpp>
-/*#include <../../../../../catkin_ws/src/mrpt_navigation/mrpt_bridge/include/mrpt_bridge/pose.h>
-#include <../../../../../catkin_ws/src/mrpt_navigation/mrpt_bridge/include/mrpt_bridge/laser_scan.h>
-#include <../../../../../catkin_ws/src/mrpt_navigation/mrpt_bridge/include/mrpt_bridge/time.h>
-#include <../../../../../catkin_ws/src/mrpt_navigation/mrpt_bridge/include/mrpt_bridge/beacon.h>
-#include <../../../../../catkin_ws/src/mrpt_navigation/mrpt_bridge/include/mrpt_bridge/landmark.h>
-*/
+
 
 
 #include <mrpt/version.h>
@@ -59,7 +50,6 @@
 #	include <mrpt/obs/CObservation2DRangeScan.h>
 #	include <mrpt/obs/CObservationBeaconRanges.h>
 #	include <mrpt/obs/CObservationBearingRange.h>
-
 
 using namespace mrpt::obs;
 #else
@@ -73,10 +63,7 @@ using namespace mrpt::obs;
 ///
 
 
-
-
 using namespace mrpt::obs;
-
 using namespace mrpt::system;
 using namespace cv::line_descriptor;
 using namespace mrpt::vision;

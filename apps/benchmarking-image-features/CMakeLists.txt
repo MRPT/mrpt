@@ -8,19 +8,18 @@ project(benchmarkingImageFeatures_GUI)
 if(CMAKE_MRPT_HAS_Qt5)
 
         set(CPP_FILES src/main.cpp
-        src/mainwindow.cpp
-	src/my_qlabel.cpp
-	#src/visualizedialog.cpp 
-                src/visual_odometry.h
-                src/visual_odometry.cpp
-                src/tracker.cpp src/tracker.h src/place_recognition.cpp src/place_recognition.h)#src/Counter.h )#src/Counter.cpp)#src/vo_features.h)
+            src/mainwindow.cpp
+	        src/my_qlabel.cpp
+            src/visual_odometry.h
+            src/visual_odometry.cpp
+            src/tracker.cpp src/tracker.h
+            src/place_recognition.cpp src/place_recognition.h)#src/Counter.h )#src/Counter.cpp)#src/vo_features.h)
 
 
         set(FILES_TO_MOC
                 src/mainwindow.h
-		src/my_qlabel.h
+                src/my_qlabel.h
                 src/visual_odometry.h
-                #src/visualizedialog.h
                 )
 
         qt5_wrap_cpp(moc_cpps ${FILES_TO_MOC})
