@@ -35,6 +35,10 @@ class CDocument
 
 	void saveMetricMapRepresentationToFile(
 		const std::string& fileName, const std::string& mapName) const;
+
+	void saveMetricmapInBinaryFormat(
+		const std::string& fileName, const std::string& mapName) const;
+
 	void saveAsPng(const std::string& fileName) const;
 
 	bool hasPointsMap() const;

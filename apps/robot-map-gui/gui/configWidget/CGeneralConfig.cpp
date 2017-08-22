@@ -10,7 +10,6 @@
 #include "CGeneralConfig.h"
 
 #include <QColorDialog>
-#include <QDebug>
 
 CGeneralConfig::CGeneralConfig()
 	: CBaseConfig(),

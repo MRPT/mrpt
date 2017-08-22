@@ -25,7 +25,6 @@
 
 #include <QMouseEvent>
 #include <QApplication>
-#include <QDebug>
 
 // Include libraries in linking (needed for Windows)
 #include <mrpt/config.h>
