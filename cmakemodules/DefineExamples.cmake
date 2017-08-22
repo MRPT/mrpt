@@ -37,7 +37,7 @@ IF(BUILD_EXAMPLES)
 
 	MACRO(ADD_SAMPLES_DIRECTORY dir)
 		SET(CMAKE_COMMANDS_INCLUDE_EXAMPLE_DIRS_ROOT "${CMAKE_COMMANDS_INCLUDE_EXAMPLE_DIRS_ROOT}\nadd_subdirectory(${dir})")
-	ENDMACRO(ADD_SAMPLES_DIRECTORY)
+	ENDMACRO()
 	# ---------------------------------------------------------------
 	#  END OF MACRO for samples directories
 	# ---------------------------------------------------------------
@@ -105,7 +105,6 @@ IF(BUILD_EXAMPLES)
 	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
-
 	# === Depending on: base, obs, maps, etc... ===
 	#  list of examples for each directory:
 	SET(LIST_EXAMPLES_IN_THIS_DIR
@@ -164,9 +163,9 @@ IF(BUILD_EXAMPLES)
 	# === Depending on: obs ===
 	#  list of examples for each directory:
 	SET(LIST_EXAMPLES_IN_THIS_DIR
-	rgbd_dataset2rawlog
-	kitti_dataset2rawlog
-	)
+		rgbd_dataset2rawlog
+		kitti_dataset2rawlog
+		)
 	SET(CMAKE_EXAMPLE_DEPS mrpt-obs)
 	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
@@ -316,15 +315,14 @@ IF(BUILD_EXAMPLES)
 
 	# === PbMap examples ===
 	IF(BUILD_mrpt-pbmap)
-		ADD_SAMPLES_DIRECTORY(pbmap-examples)
-#		SET(LIST_EXAMPLES_IN_THIS_DIR
-#			pbmap_example
-#			pbmap_visualizer
-#			)
-#		SET(CMAKE_EXAMPLE_DEPS mrpt-pbmap mrpt-gui)
-#		SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
-#		GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
-	ENDIF(BUILD_mrpt-pbmap)
+		SET(LIST_EXAMPLES_IN_THIS_DIR
+			pbmap-tutorial-construction
+			pbmap-tutorial-visualizer
+			)
+		SET(CMAKE_EXAMPLE_DEPS mrpt-pbmap mrpt-gui)
+		SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
+		GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
+	ENDIF()
 
 	# === Navigation examples ===
 	IF(BUILD_mrpt-nav)
@@ -334,11 +332,10 @@ IF(BUILD_EXAMPLES)
 		SET(CMAKE_EXAMPLE_DEPS mrpt-nav mrpt-gui)
 		SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
 		GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
-	ENDIF(BUILD_mrpt-nav)
-
+	ENDIF()
 
 	# Generate the CMakeLists.txt in the "/samples" directory
 	SET(CMAKE_COMMANDS_INCLUDE_EXAMPLE_DIRS ${CMAKE_COMMANDS_INCLUDE_EXAMPLE_DIRS_ROOT})
 	CONFIGURE_FILE(${CMAKE_SOURCE_DIR}/samples/CMakeLists_list_template.txt.in "${CMAKE_SOURCE_DIR}/samples/CMakeLists.txt" )
 	add_subdirectory(samples)
-ENDIF(BUILD_EXAMPLES)
+ENDIF()
