@@ -1,5 +1,4 @@
 /*
-
 The MIT License
 
 Copyright (c) 2015 Avi Singh
@@ -32,7 +31,6 @@ THE SOFTWARE.
 #include "opencv2/calib3d/calib3d.hpp"
 #include "opencv2/core.hpp"
 #include "opencv2/xfeatures2d.hpp"
-
 
 #include <mrpt/vision/CFeatureExtraction.h>
 
@@ -74,7 +72,6 @@ using namespace std;
 
 #define MAX_FRAME 1000
 #define MIN_NUM_FEAT 2000
-
 
 
 class Counter : public QObject
