@@ -7,13 +7,14 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include "base-precomp.h"  // Precompiled headers
+#include "comms-precomp.h"  // Precompiled headers
 
-#include <mrpt/utils/CServerTCPSocket.h>
-#include <mrpt/utils/CClientTCPSocket.h>
+#include <mrpt/comms/CServerTCPSocket.h>
+#include <mrpt/comms/CClientTCPSocket.h>
+#include <mrpt/comms/net_utils.h>
 #include <mrpt/system/os.h>
 #include <cstdio>  // stderr
-using namespace mrpt::utils;
+using namespace mrpt::comms;
 
 #if defined(MRPT_OS_LINUX) || defined(MRPT_OS_APPLE)
 #define INVALID_SOCKET (-1)
@@ -34,9 +35,11 @@ using namespace mrpt::utils;
 typedef int socklen_t;
 #endif
 
-/*---------------------------------------------------------------
-					setupSocket
- ---------------------------------------------------------------*/
+std::string CServerTCPSocket::getLastErrorStr()
+{
+	return mrpt::comms::net::getLastSocketErrorStr();
+}
+
 void CServerTCPSocket::setupSocket(
 	unsigned short listenPort, const std::string& IPaddress,
 	int maxConnectionsWaiting)

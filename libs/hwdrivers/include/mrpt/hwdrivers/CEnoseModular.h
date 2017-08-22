@@ -10,8 +10,8 @@
 #ifndef CEnoseModular_H
 #define CEnoseModular_H
 
-#include <mrpt/hwdrivers/CInterfaceFTDI.h>
-#include <mrpt/hwdrivers/CSerialPort.h>
+#include <mrpt/comms/CInterfaceFTDI.h>
+#include <mrpt/comms/CSerialPort.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/obs/CObservationGasSensors.h>
 #include <mrpt/utils/CConfigFileBase.h>
@@ -73,9 +73,9 @@ class HWDRIVERS_IMPEXP CEnoseModular : public mrpt::hwdrivers::CGenericSensor
 	// Only one of these two streams will be !=nullptr and open for each
 	// specific eNose board!
 	/** FTDI comms pipe (when not in serial port mode) */
-	std::unique_ptr<CInterfaceFTDI> m_stream_FTDI;
+	std::unique_ptr<mrpt::comms::CInterfaceFTDI> m_stream_FTDI;
 	/** Serial port comms */
-	std::unique_ptr<CSerialPort> m_stream_SERIAL;
+	std::unique_ptr<mrpt::comms::CSerialPort> m_stream_SERIAL;
 
 	/** The 3D pose of the master + N slave eNoses on the robot (meters &
 	 * radians) */

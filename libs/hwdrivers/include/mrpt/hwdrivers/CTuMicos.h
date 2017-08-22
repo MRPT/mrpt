@@ -10,7 +10,7 @@
 #ifndef CTuMicos_H
 #define CTuMicos_H
 
-#include <mrpt/hwdrivers/CSerialPort.h>
+#include <mrpt/comms/CSerialPort.h>
 #include <mrpt/hwdrivers/CPtuBase.h>
 #include <mrpt/utils/COutputLogger.h>
 

@@ -29,6 +29,7 @@ IMPLEMENTS_GENERIC_SENSOR(CSickLaserSerial, mrpt::hwdrivers)
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::utils;
+using namespace mrpt::comms;
 using namespace mrpt::obs;
 using namespace mrpt::poses;
 using namespace mrpt::hwdrivers;

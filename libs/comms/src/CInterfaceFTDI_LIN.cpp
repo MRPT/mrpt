@@ -26,11 +26,11 @@ using namespace mrpt::utils;
 #endif
 #endif
 
-#include <mrpt/hwdrivers/CInterfaceFTDI.h>
+#include <mrpt/comms/CInterfaceFTDI.h>
 
 #include <iostream>
 
-using namespace mrpt::hwdrivers;
+using namespace mrpt::comms;
 using namespace std;
 
 /*-------------------------------------------------------------
@@ -498,7 +498,7 @@ void CInterfaceFTDI::SetTimeouts(
 /*-------------------------------------------------------------
 					OpenByDescription
 -------------------------------------------------------------*/
-std::ostream& mrpt::hwdrivers::operator<<(std::ostream& o, const TFTDIDevice& d)
+std::ostream& mrpt::comms::operator<<(std::ostream& o, const TFTDIDevice& d)
 {
 	o << "Manufacturer            : " << d.ftdi_manufacturer << endl
 	  << "Description             : " << d.ftdi_description << endl

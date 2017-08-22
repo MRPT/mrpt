@@ -38,7 +38,7 @@ namespace hwdrivers
   *   points want to be ignored (see
  * C2DRangeFinderAbstract::loadExclusionAreas).
   *
-  * \sa hwdrivers::CSerialPort
+  * \sa comms::CSerialPort
   * \ingroup mrpt_hwdrivers_grp
   */
 class HWDRIVERS_IMPEXP C2DRangeFinderAbstract
@@ -123,7 +123,7 @@ class HWDRIVERS_IMPEXP C2DRangeFinderAbstract
 	/** Binds the object to a given I/O channel.
 	  *  The stream object must not be deleted before the destruction of this
 	 * class.
-	  * \sa hwdrivers::CSerialPort
+	  * \sa comms::CSerialPort
 	  */
 	void bindIO(mrpt::utils::CStream* streamIO);
 

@@ -1,0 +1,10 @@
+#---------------------------------------------
+# Macro declared in "DeclareMRPTLib.cmake":
+#---------------------------------------------
+define_mrpt_lib(
+	# Lib name
+	comms
+	# Dependencies
+	mrpt-base
+	)
+

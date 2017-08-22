@@ -6,24 +6,24 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef MRPT_NET_UTILS_H
-#define MRPT_NET_UTILS_H
+#pragma once
 
 #include <mrpt/utils/core_defs.h>
 #include <mrpt/utils/types_simple.h>
 #include <mrpt/utils/TParameters.h>
+#include <mrpt/comms/link_pragmas.h>
 
 namespace mrpt
 {
-namespace utils
+namespace comms
 {
 /** A set of useful routines for networking. (in #include
- * <mrpt/utils/net_utils.h>)
- * \ingroup network_grp
+ * <mrpt/comms/net_utils.h>)
+ * \ingroup mrpt_comms_grp
  */
 namespace net
 {
-/** \addtogroup network_grp
+/** \addtogroup mrpt_comms_grp
   * @{ */
 
 using std::string;
@@ -58,7 +58,7 @@ enum ERRORCODE_HTTP
  * \return The error or success code.
  * \sa mrpt::utils::vectorToBinaryFile
  */
-ERRORCODE_HTTP BASE_IMPEXP http_get(
+ERRORCODE_HTTP COMMS_IMPEXP http_get(
 	const string& url, vector_byte& out_content, string& out_errormsg,
 	int port = 80, const string& auth_user = string(),
 	const string& auth_pass = string(), int* out_http_responsecode = nullptr,
@@ -85,7 +85,7 @@ ERRORCODE_HTTP BASE_IMPEXP http_get(
  * \return The error or success code.
  * \sa mrpt::utils::vectorToBinaryFile
  */
-ERRORCODE_HTTP BASE_IMPEXP http_get(
+ERRORCODE_HTTP COMMS_IMPEXP http_get(
 	const string& url, string& out_content, string& out_errormsg, int port = 80,
 	const string& auth_user = string(), const string& auth_pass = string(),
 	int* out_http_responsecode = nullptr,
@@ -94,7 +94,7 @@ ERRORCODE_HTTP BASE_IMPEXP http_get(
 	int timeout_ms = 1000);
 
 /** Generic function for HTTP GET & POST methods. \sa http_get */
-ERRORCODE_HTTP BASE_IMPEXP http_request(
+ERRORCODE_HTTP COMMS_IMPEXP http_request(
 	const string& http_method, const string& http_send_content,
 	const string& url, vector_byte& out_content, string& out_errormsg,
 	int port = 80, const string& auth_user = string(),
@@ -110,12 +110,12 @@ ERRORCODE_HTTP BASE_IMPEXP http_request(
  *
  * \return true on success, false on timeout or other error.
  */
-bool BASE_IMPEXP DNS_resolve_async(
+bool COMMS_IMPEXP DNS_resolve_async(
 	const std::string& server_name, std::string& out_ip,
 	const unsigned int timeout_ms = 3000);
 
 /** Returns a description of the last Sockets error */
-std::string BASE_IMPEXP getLastSocketErrorStr();
+std::string COMMS_IMPEXP getLastSocketErrorStr();
 
 /** @brief Ping an IP address
  *
@@ -131,7 +131,7 @@ std::string BASE_IMPEXP getLastSocketErrorStr();
  * }
  *
  */
-bool BASE_IMPEXP Ping(
+bool COMMS_IMPEXP Ping(
 	const std::string& address, const int& max_attempts,
 	std::string* output_str = NULL);
 
@@ -140,5 +140,3 @@ bool BASE_IMPEXP Ping(
 }  // End of namespace
 }  // End of namespace
 }  // end of namespace
-
-#endif

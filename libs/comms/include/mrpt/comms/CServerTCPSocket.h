@@ -6,25 +6,24 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CServerTCPSocket_H
-#define CServerTCPSocket_H
+#pragma once
 
 #include <mrpt/utils/core_defs.h>
 #include <mrpt/utils/COutputLogger.h>
-#include <mrpt/utils/net_utils.h>
 #include <string>
+#include <mrpt/comms/link_pragmas.h>
 
 namespace mrpt
 {
-namespace utils
+namespace comms
 {
 class CClientTCPSocket;
 
 /** A TCP socket that can be wait for client connections to enter.
   *  Unless otherwise noticed, operations are blocking.
- * \ingroup network_grp
+ * \ingroup mrpt_comms_grp
   */
-class BASE_IMPEXP CServerTCPSocket : public utils::COutputLogger
+class COMMS_IMPEXP CServerTCPSocket : public utils::COutputLogger
 {
    public:
 	/** Constructor that creates the socket, performs binding, and start
@@ -70,10 +69,7 @@ class BASE_IMPEXP CServerTCPSocket : public utils::COutputLogger
 		m_serverSock;
 
 	/** Returns a description of the last Sockets error */
-	std::string getLastErrorStr()
-	{
-		return mrpt::utils::net::getLastSocketErrorStr();
-	}
+	std::string getLastErrorStr();
 
 	/** Common code called from the platform-dependant constructor */
 	void setupSocket(
@@ -85,4 +81,3 @@ class BASE_IMPEXP CServerTCPSocket : public utils::COutputLogger
 }  // End of namespace
 }  // End of namespace
 
-#endif  // file
