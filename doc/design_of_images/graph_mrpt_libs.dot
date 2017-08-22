@@ -3,6 +3,7 @@ digraph MRPT_LIBS {
 	node [shape=box,style=filled, fillcolor="#D0D0D0"];
 
 	base       [label="mrpt-base",URL="group__mrpt__base__grp.html"];
+	comms      [label="mrpt-comms",URL="group__mrpt__comms__grp.html"];
 	graphs     [label="mrpt-graphs",URL="group__mrpt__graphs__grp.html"];
 	bayes      [label="mrpt-bayes (.h)",URL="group__mrpt__bayes__grp.html"];
 	opengl     [label="mrpt-opengl", URL="group__mrpt__opengl__grp.html"];
@@ -32,6 +33,7 @@ digraph MRPT_LIBS {
 
 	graphs -> base;
 	tfest -> base;
+	comms -> base;
 
 	bayes -> base;
 
@@ -43,6 +45,7 @@ digraph MRPT_LIBS {
 
 	hwdrivers -> gui;
 	hwdrivers -> maps;
+	hwdrivers -> comms;
 
 	topography -> obs;
 	topography -> tfest;

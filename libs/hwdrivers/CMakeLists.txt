@@ -152,6 +152,7 @@ define_mrpt_lib(
 	hwdrivers
 	# Dependencies
 	mrpt-base
+	mrpt-comms # serial ports, etc.
 	mrpt-maps  # used to laser preview, etc.
 	mrpt-obs
 	mrpt-gui    # used to camera preview, etc.

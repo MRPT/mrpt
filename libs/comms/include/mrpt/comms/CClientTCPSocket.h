@@ -6,24 +6,21 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-#ifndef CClientTCPSocket_H
-#define CClientTCPSocket_H
+#pragma once
 
 #include <mrpt/utils/core_defs.h>
 #include <cstdint>
 #include <mrpt/utils/CStream.h>
-#include <mrpt/utils/net_utils.h>
 #include <string>
+#include <mrpt/comms/link_pragmas.h>
 
 namespace mrpt
 {
-namespace utils
+namespace utils { class CMessage; }
+/** Serial and networking devices and utilities */
+namespace comms
 {
 class CServerTCPSocket;
-class CMessage;
-
-/** \defgroup network_grp Networking, sockets, DNS
-  * \ingroup mrpt_base_grp */
 
 /** A TCP socket that can be connected to a TCP server, implementing MRPT's
  * CStream interface for passing objects as well as generic read/write methods.
@@ -32,9 +29,9 @@ class CMessage;
   *  Note that for convenience, DNS lookup is performed with a timeout
  * (default=3000ms), which can be changed by the static member
  * CClientTCPSocket::DNS_LOOKUP_TIMEOUT_MS
-  * \ingroup network_grp
+  * \ingroup mrpt_comms_grp
   */
-class BASE_IMPEXP CClientTCPSocket : public CStream
+class COMMS_IMPEXP CClientTCPSocket : public mrpt::utils::CStream
 {
 	friend class CServerTCPSocket;
 
@@ -77,10 +74,7 @@ class BASE_IMPEXP CClientTCPSocket : public CStream
 	size_t Write(const void* Buffer, size_t Count) override;
 
 	/** Returns a description of the last Sockets error */
-	std::string getLastErrorStr()
-	{
-		return mrpt::utils::net::getLastSocketErrorStr();
-	}
+	std::string getLastErrorStr();
 
    public:
 	/** Default constructor \sa connect  */
@@ -179,7 +173,8 @@ class BASE_IMPEXP CClientTCPSocket : public CStream
 	 * socket in each write operation.
 	  * \return Returns false on any error, or true if everything goes fine.
 	  */
-	bool sendMessage(const CMessage& outMsg, const int timeout_ms = -1);
+	bool sendMessage(const mrpt::utils::CMessage& outMsg,
+		const int timeout_ms = -1);
 
 	/** Waits for an incoming message through the TCP stream.
 	  * \param inMsg The received message is placed here.
@@ -191,7 +186,7 @@ class BASE_IMPEXP CClientTCPSocket : public CStream
 	 * goes fine.
 	  */
 	bool receiveMessage(
-		CMessage& inMsg, const unsigned int timeoutStart_ms = 100,
+		mrpt::utils::CMessage& inMsg, const unsigned int timeoutStart_ms = 100,
 		const unsigned int timeoutBetween_ms = 1000);
 
 	/** Return the number of bytes already in the receive queue (they can be
@@ -221,4 +216,3 @@ class BASE_IMPEXP CClientTCPSocket : public CStream
 
 }  // End of namespace
 }  // end of namespace
-#endif

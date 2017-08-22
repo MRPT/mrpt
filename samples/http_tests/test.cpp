@@ -7,12 +7,12 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/utils/net_utils.h>
+#include <mrpt/comms/net_utils.h>
 #include <iostream>
 
 using namespace mrpt;
-using namespace mrpt::utils;
-using namespace mrpt::utils::net;
+using namespace mrpt::comms;
+using namespace mrpt::comms::net;
 using namespace std;
 
 string url = "http://www.google.es/";

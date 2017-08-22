@@ -35,6 +35,8 @@
 			- Removed deprecated mrpt::nav::THolonomicMethod.
 			- mrpt::nav::CAbstractNavigator: callbacks in mrpt::nav::CRobot2NavInterface are now invoked *after* `navigationStep()` to avoid problems if user code invokes the navigator API to change its state.
 			- Added methods to load/save mrpt::nav::TWaypointSequence to configuration files.
+		- \ref mrpt_comms_grp [NEW IN MRPT 2.0.0]
+			- This new module has been created to hold all serial devices & networking classes, with minimal dependencies.
 	- BUG FIXES:
 		- Fix reactive navigator inconsistent state if navigation API is called from within rnav callbacks.
 		- Fix incorrect evaluation of "ASSERT" formulas in mrpt::nav::CMultiObjectiveMotionOptimizerBase
@@ -131,7 +133,7 @@
 			- New colormap: mrpt::utils::hot2rgb()
 			- New function mrpt::system::find_mrpt_shared_dir()
 			- New class mrpt::utils::CDynamicGrid3D<>
-			- New function mrpt::utils::net::http_request()
+			- New function mrpt::comms::net::http_request()
 			- New function mrpt::system::now_double()
 			- New function mrpt::utils::getAllRegisteredClassesChildrenOf()
 			- Safer CClassRegistry: detect and warn on attempts to duplicated class registration.
@@ -317,7 +319,7 @@
 			- mrpt::math::CQuaternion<> did not check for unit norm in Release builds.
 			- Fix build errors against OpenCV 3.0.0+ without opencv_contrib modules.
 			- mrpt::hwdrivers::CHokuyoURG now correctly handles opening both USB and Ethernet Hokuyo devices (Closes Github issue #180)
-			- Fixed mrpt::utils::net::DNS_resolve_async() may SIGSEGV in slow networks.
+			- Fixed mrpt::comms::net::DNS_resolve_async() may SIGSEGV in slow networks.
 			- mrpt::opengl::CMesh::updateColorsMatrix() did not ignore cells masked out.
 			- Wrong weights used in mrpt::poses::CPosePDFSOG::getMean()
 			- Removed ad-hoc bias addition in range-only predictions in landmarks maps.

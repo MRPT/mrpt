@@ -10,8 +10,8 @@
 #include "hwdrivers-precomp.h"  // Precompiled headers
 
 #include <mrpt/hwdrivers/CHokuyoURG.h>
-#include <mrpt/hwdrivers/CSerialPort.h>
-#include <mrpt/utils/CClientTCPSocket.h>
+#include <mrpt/comms/CSerialPort.h>
+#include <mrpt/comms/CClientTCPSocket.h>
 #include <mrpt/system/os.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>  // in library mrpt-maps
 #include <mrpt/opengl/CAxis.h>
@@ -21,6 +21,7 @@ IMPLEMENTS_GENERIC_SENSOR(CHokuyoURG, mrpt::hwdrivers)
 using namespace mrpt::utils;
 using namespace mrpt::obs;
 using namespace mrpt::hwdrivers;
+using namespace mrpt::comms;
 using namespace mrpt::system;
 using namespace mrpt::opengl;
 using namespace std;

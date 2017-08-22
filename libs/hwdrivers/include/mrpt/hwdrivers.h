@@ -34,11 +34,9 @@ MRPT_WARNING(
 #include <mrpt/hwdrivers/CIbeoLuxETH.h>
 #include <mrpt/hwdrivers/CRoboPeakLidar.h>
 #include <mrpt/hwdrivers/CGPSInterface.h>
-#include <mrpt/hwdrivers/CInterfaceFTDIMessages.h>
 #include <mrpt/hwdrivers/CWirelessPower.h>
 #include <mrpt/hwdrivers/CRaePID.h>
 #include <mrpt/hwdrivers/CImpinjRFID.h>
-#include <mrpt/hwdrivers/CSerialPort.h>
 #include <mrpt/hwdrivers/CIMUXSens.h>
 #include <mrpt/hwdrivers/CIMUXSens_MT4.h>
 #include <mrpt/hwdrivers/CJoystick.h>

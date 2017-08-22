@@ -7,14 +7,14 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include "base-precomp.h"  // Precompiled headers
+#include "comms-precomp.h"  // Precompiled headers
 
 #include <mrpt/config.h>
 
 #if defined(MRPT_OS_LINUX) || defined(MRPT_OS_APPLE)
 
-#include <mrpt/utils/CServerTCPSocket.h>
-#include <mrpt/utils/CClientTCPSocket.h>
+#include <mrpt/comms/CServerTCPSocket.h>
+#include <mrpt/comms/CClientTCPSocket.h>
 #include <mrpt/system.h>
 
 // Platform specific headers:
@@ -32,6 +32,7 @@
 
 using namespace mrpt;
 using namespace mrpt::utils;
+using namespace mrpt::comms;
 
 /*---------------------------------------------------------------
 					Constructor

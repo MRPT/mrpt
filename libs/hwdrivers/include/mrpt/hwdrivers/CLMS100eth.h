@@ -11,7 +11,7 @@
 #define CLMS100ETH_H
 
 #include <mrpt/hwdrivers/C2DRangeFinderAbstract.h>
-#include <mrpt/utils/CClientTCPSocket.h>
+#include <mrpt/comms/CClientTCPSocket.h>
 
 namespace mrpt
 {
@@ -128,7 +128,7 @@ class HWDRIVERS_IMPEXP CLMS100Eth : public C2DRangeFinderAbstract
    private:
 	std::string m_ip;
 	unsigned int m_port;
-	mrpt::utils::CClientTCPSocket m_client;
+	mrpt::comms::CClientTCPSocket m_client;
 	bool m_turnedOn;
 	std::string m_cmd;
 	bool m_connected;

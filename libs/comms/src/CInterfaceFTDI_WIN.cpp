@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include "hwdrivers-precomp.h"  // Precompiled headers
+#include "comms-precomp.h"  // Precompiled headers
 
 #ifdef MRPT_OS_WINDOWS
 
@@ -16,7 +16,7 @@
 								START OF FTD2XX.H
 	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   ===========================================================================*/
-namespace hwdrivers
+namespace comms
 {
 // The following ifdef block is the standard way of creating macros which make
 // exporting
@@ -131,7 +131,7 @@ typedef void (*PFT_EVENT_HANDLER)(unsigned long, unsigned long);
 #define FT_DEFAULT_RX_TIMEOUT 300
 #define FT_DEFAULT_TX_TIMEOUT 300
 
-}  // end namespace hwdrivers
+}  // end namespace comms
 /*===========================================================================
 	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 								END OF FTD2XX.H
@@ -140,11 +140,11 @@ typedef void (*PFT_EVENT_HANDLER)(unsigned long, unsigned long);
 
 #include <windows.h>
 
-#include <mrpt/hwdrivers/CInterfaceFTDI.h>
+#include <mrpt/comms/CInterfaceFTDI.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
-using namespace mrpt::hwdrivers;
+using namespace mrpt::comms;
 using namespace std;
 
 /*-------------------------------------------------------------
@@ -466,7 +466,7 @@ void CInterfaceFTDI::OpenByDescription(const std::string& description)
 /*-------------------------------------------------------------
 					OpenByDescription
 -------------------------------------------------------------*/
-std::ostream& mrpt::hwdrivers::operator<<(std::ostream& o, const TFTDIDevice& d)
+std::ostream& mrpt::comms::operator<<(std::ostream& o, const TFTDIDevice& d)
 {
 	o << "Manufacturer            : " << d.ftdi_manufacturer << endl
 	  << "Description             : " << d.ftdi_description << endl

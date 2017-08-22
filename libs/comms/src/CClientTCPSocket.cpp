@@ -7,11 +7,11 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include "base-precomp.h"  // Precompiled headers
+#include "comms-precomp.h"  // Precompiled headers
 
-#include <mrpt/utils/CClientTCPSocket.h>
+#include <mrpt/comms/CClientTCPSocket.h>
 #include <mrpt/utils/CMessage.h>
-#include <mrpt/utils/net_utils.h>
+#include <mrpt/comms/net_utils.h>
 #include <mrpt/system/os.h>
 #include <cstring>
 
@@ -39,6 +39,7 @@
 #endif
 
 using namespace mrpt::utils;
+using namespace mrpt::comms;
 using namespace mrpt::system;
 using namespace mrpt;
 using namespace std;
@@ -624,3 +625,9 @@ int CClientTCPSocket::getSOSendBufffer()
 
 	return value;
 }
+
+std::string CClientTCPSocket::getLastErrorStr()
+{
+	return mrpt::comms::net::getLastSocketErrorStr();
+}
+

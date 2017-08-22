@@ -7,9 +7,9 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include "hwdrivers-precomp.h"  // Precompiled headers
+#include "comms-precomp.h"  // Precompiled headers
 
-#include <mrpt/hwdrivers/CSerialPort.h>
+#include <mrpt/comms/CSerialPort.h>
 #include <mrpt/system/os.h>
 #include <mrpt/utils/utils_defs.h>
 
@@ -44,8 +44,8 @@
 #include <thread>
 
 using namespace mrpt;
+using namespace mrpt::comms;
 using namespace mrpt::utils;
-using namespace mrpt::hwdrivers;
 using namespace std;
 using namespace std::literals;
 

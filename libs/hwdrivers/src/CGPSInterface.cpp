@@ -12,7 +12,7 @@
 #include <mrpt/system/os.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/hwdrivers/CGPSInterface.h>
-#include <mrpt/utils/CClientTCPSocket.h>
+#include <mrpt/comms/CClientTCPSocket.h>
 
 #include <list>
 #include <mutex>
@@ -22,6 +22,7 @@ using namespace mrpt::hwdrivers;
 using namespace mrpt::obs;
 using namespace mrpt::system;
 using namespace mrpt::utils;
+using namespace mrpt::comms;
 using namespace std;
 
 IMPLEMENTS_GENERIC_SENSOR(CGPSInterface, mrpt::hwdrivers)
@@ -229,7 +230,7 @@ void CGPSInterface::setSerialPortName(const std::string& COM_port)
 	if (m_data_stream)
 	{
 		std::lock_guard<std::mutex> lock(*m_data_stream_cs);
-		CSerialPort* serial = dynamic_cast<CSerialPort*>(m_data_stream);
+		auto serial = dynamic_cast<mrpt::comms::CSerialPort*>(m_data_stream);
 		if (serial && serial->isOpen())
 			THROW_EXCEPTION(
 				"Cannot change serial port name when it is already open")
@@ -251,11 +252,11 @@ bool CGPSInterface::tryToOpenTheCOM()
 	// If this is the first use of the COM port, create it:
 	if (!m_data_stream)
 	{
-		m_data_stream = new CSerialPort();
+		m_data_stream = new mrpt::comms::CSerialPort();
 		m_data_stream_is_external = false;
 	}
 
-	CSerialPort* serial = dynamic_cast<CSerialPort*>(m_data_stream);
+	auto serial = dynamic_cast<CSerialPort*>(m_data_stream);
 	if (serial)
 	{
 		std::lock_guard<std::mutex> lock(*m_data_stream_cs);
