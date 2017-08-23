@@ -126,8 +126,7 @@ CAboutBox::CAboutBox(
 	lbLicense->SetFont(lbLicenseFont);
 	TextCtrl1 = new wxTextCtrl(
 		Notebook1, ID_TEXTCTRL3,
-		_("Up to date documentation and tutorials are maintained at the MRPT "
-		  "website:\n\nhttp://www.mrpt.org/\n\n\n\n"),
+		_(tutorial()),
 		wxPoint(4, 24), wxSize(545, 222),
 		wxTE_MULTILINE | wxTE_READONLY | wxTE_AUTO_URL, wxDefaultValidator,
 		_T("ID_TEXTCTRL3"));
@@ -157,7 +156,7 @@ CAboutBox::CAboutBox(
 		wxID_ANY, wxEVT_INIT_DIALOG, (wxObjectEventFunction)&CAboutBox::OnInit);
 	//*)
 
-	lbLicense->SetValue(_U(mrpt::system::getMRPTLicense().c_str()));
+	lbLicense->SetValue(_U(license().c_str()));
 }
 
 CAboutBox::~CAboutBox()
@@ -185,45 +184,7 @@ void CAboutBox::OnInit(wxInitDialogEvent& event)
 		CMyRedirector myRedirector(lbInfo);
 		wxString wxVer(wxVERSION_STRING);
 		cout << information(
-			"wxWidgets", std::string(wxVer.mb_str())); /*
-
-
-cout << m_appName << endl;
-cout << "----------------------------------\n";
-cout << "Part of the MRPT project.\n";
-cout << "For bug reports and source code, visit:"
-  " https:://github.com/MRPT/mrpt \n\n";
-if (!m_additionalInfo.empty())
-{
-cout << m_additionalInfo << endl;
-}
-cout << "MRPT version:           " << MRPT_getVersion() << endl;
-cout << "MRPT source timestamp:  " << MRPT_getCompilationDate() << endl;
-if (m_showStandardInfo)
-{
-wxString wxVer(wxVERSION_STRING);
-#if defined(__WXMSW__)
-wxVer << _T("-Windows");
-#elif defined(__UNIX__)
-wxVer << _T("-Linux");
-#endif
-#if wxUSE_UNICODE
-wxVer << _T("-Unicode build");
-#else
-wxVer << _T("-ANSI build");
-#endif  // wxUSE_UNICODE
-
-cout << "Eigen version:          " << EIGEN_WORLD_VERSION << "."
-   << EIGEN_MAJOR_VERSION << "." << EIGEN_MINOR_VERSION << endl;
-cout << "wxWidgets version:      " << std::string(wxVer.mb_str())
-   << endl;
-cout << "OpenCV version:         ";
-#if MRPT_HAS_OPENCV
-cout << MRPT_OPENCV_VERSION << endl;
-#else
-cout << "None" << endl;
-#endif
-}*/
+			"wxWidgets", std::string(wxVer.mb_str()));
 	}
 
 	lbProgName->SetLabel(_U(m_appName.c_str()));

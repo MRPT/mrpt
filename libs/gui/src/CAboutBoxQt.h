@@ -7,23 +7,22 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 #pragma once
-#include <string>
+#include "CAboutBoxBase.h"
+
+#include <QDialog>
 
 
-class CAboutBoxBase
+class QTextEdit;
+class QTabWidget;
+
+class CAboutBoxQt: public QDialog, public CAboutBoxBase
 {
 public:
-	CAboutBoxBase(const std::string& appName,
-				  const std::string& additionalInfo, const bool showStandardInfo);
-	virtual ~CAboutBoxBase();
+	CAboutBoxQt(const std::string& appName,
+				const std::string& additionalInfo, const bool showStandardInfo);
+	virtual ~CAboutBoxQt() = default;
 
-protected:
-	std::string MRPTBuildVersion() const;
-	std::string tutorial() const;
-	std::string license() const;
-	std::string information(const std::string &guiLibName, const std::string &guiLibVersion) const;
+private:
+	QTextEdit* widgetForTabs(const std::string &str, QTabWidget* parent) const;
 
-	const std::string m_appName;
-	const std::string m_additionalInfo;
-	const bool m_showStandardInfo;
 };
