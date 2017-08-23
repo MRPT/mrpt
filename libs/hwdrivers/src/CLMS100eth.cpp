@@ -255,15 +255,17 @@ bool CLMS100Eth::decodeScan(char* buff, CObservation2DRangeScan& outObservation)
 			case 6:
 				if (!strcmp(next, "1"))
 				{
-					THROW_EXCEPTION("STATUS error on LMS100");
-					return false;
+					MRPT_LOG_ERROR_FMT("STATUS error on LMS100: '%s'", next);
 				}
 				else if (!strcmp(next, "4"))
 				{
-					THROW_EXCEPTION("Contamination error on LMS100");
-					return false;
+					MRPT_LOG_ERROR_FMT(
+						"Contamination error on LMS100: '%s'", next);
 				}
-				MRPT_LOG_DEBUG("STATUS Ok.\n");
+				else
+				{
+					MRPT_LOG_DEBUG("STATUS Ok.\n");
+				}
 				break;
 			case 21:
 				if (strcmp(next, "DIST1"))

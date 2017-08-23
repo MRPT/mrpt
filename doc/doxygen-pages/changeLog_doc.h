@@ -39,6 +39,7 @@
 	- BUG FIXES:
 		- Fix reactive navigator inconsistent state if navigation API is called from within rnav callbacks.
 		- Fix incorrect evaluation of "ASSERT" formulas in mrpt::nav::CMultiObjectiveMotionOptimizerBase
+		- Fix aborting reading from LMS111 scanner on first error.
 
 <hr>
 <a name="1.5.4">
