@@ -13,12 +13,11 @@
 
 #if MRPT_HAS_WXWIDGETS
 #include "CAboutBox_wx.h"
-#include "CAboutBoxQt.h"
 #endif
 
-//#if MRPT_HAS_QT
-// #include "CAboutBox_qt.h" // TODO
-//#endif
+#if MRPT_HAS_Qt5
+#include "CAboutBoxQt.h"
+#endif
 
 void GUI_IMPEXP mrpt::gui::show_mrpt_about_box_wxWidgets(
 	void* parent_wx_window, const std::string& appName,
