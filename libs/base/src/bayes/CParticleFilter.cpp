@@ -116,19 +116,39 @@ CParticleFilter::TParticleFilterOptions::TParticleFilterOptions()
 }
 
 void CParticleFilter::TParticleFilterOptions::saveToConfigFile(
-		mrpt::utils::CConfigFileBase& c, const std::string& s) const
+	mrpt::utils::CConfigFileBase& c, const std::string& s) const
 {
-	MRPT_SAVE_CONFIG_VAR_COMMENT(PF_algorithm,"The PF algorithm to use. See TParticleFilterAlgorithm");
-	MRPT_SAVE_CONFIG_VAR_COMMENT(resamplingMethod,"The resampling algorithm to use. See TParticleResamplingAlgorithm");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(
+		PF_algorithm, "The PF algorithm to use. See TParticleFilterAlgorithm");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(
+		resamplingMethod,
+		"The resampling algorithm to use. See TParticleResamplingAlgorithm");
 
-	MRPT_SAVE_CONFIG_VAR_COMMENT(adaptiveSampleSize,"A flag that indicates whether the CParticleFilterCapable object should perform adative sample size (default=false)");
-	MRPT_SAVE_CONFIG_VAR_COMMENT(BETA,"The resampling of particles will be performed when ESS (in range [0,1]) < BETA (default is 0.5)");
-	MRPT_SAVE_CONFIG_VAR_COMMENT(sampleSize,"The initial number of particles in the filter (it can change only if adaptiveSampleSize=true) (default=1)");
-	MRPT_SAVE_CONFIG_VAR_COMMENT(pfAuxFilterOptimal_MaximumSearchSamples,"See Doxygen docs");
-	MRPT_SAVE_CONFIG_VAR_COMMENT(powFactor,"An optional step to smooth dramatic changes in the observation model to affect the variance of the particle weights (default=1)");
-	MRPT_SAVE_CONFIG_VAR_COMMENT(max_loglikelihood_dyn_range, "Only for PF_algorithm=pfAuxiliaryPFOptimal");
-	MRPT_SAVE_CONFIG_VAR_COMMENT(pfAuxFilterStandard_FirstStageWeightsMonteCarlo,"Only for PF_algorithm==pfAuxiliaryPFStandard");
-	MRPT_SAVE_CONFIG_VAR_COMMENT(pfAuxFilterOptimal_MLE,"See doxygen docs.");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(
+		adaptiveSampleSize,
+		"A flag that indicates whether the CParticleFilterCapable object "
+		"should perform adative sample size (default=false)");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(
+		BETA,
+		"The resampling of particles will be performed when ESS (in range "
+		"[0,1]) < BETA (default is 0.5)");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(
+		sampleSize,
+		"The initial number of particles in the filter (it can change only if "
+		"adaptiveSampleSize=true) (default=1)");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(
+		pfAuxFilterOptimal_MaximumSearchSamples, "See Doxygen docs");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(
+		powFactor,
+		"An optional step to smooth dramatic changes in the observation model "
+		"to affect the variance of the particle weights (default=1)");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(
+		max_loglikelihood_dyn_range,
+		"Only for PF_algorithm=pfAuxiliaryPFOptimal");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(
+		pfAuxFilterStandard_FirstStageWeightsMonteCarlo,
+		"Only for PF_algorithm==pfAuxiliaryPFStandard");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(pfAuxFilterOptimal_MLE, "See doxygen docs.");
 }
 
 /*---------------------------------------------------------------
