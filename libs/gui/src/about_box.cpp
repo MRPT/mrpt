@@ -30,8 +30,9 @@ void GUI_IMPEXP mrpt::gui::show_mrpt_about_box_wxWidgets(
 #endif
 }
 
-void GUI_IMPEXP mrpt::gui::show_mrpt_about_box_Qt(const std::string& appName,
-	const std::string& additionalInfo, const bool showStandardInfo)
+void GUI_IMPEXP mrpt::gui::show_mrpt_about_box_Qt(
+	const std::string& appName, const std::string& additionalInfo,
+	const bool showStandardInfo)
 {
 #if MRPT_HAS_Qt5
 	CAboutBoxQt dlg(appName, additionalInfo, showStandardInfo);
