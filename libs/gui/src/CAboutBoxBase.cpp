@@ -32,6 +32,17 @@ std::string CAboutBoxBase::MRPTBuildVersion() const
 	return "Build: " + MRPT_getVersion() + mrpt::system::MRPT_getCompilationDate();
 }
 
+std::string CAboutBoxBase::tutorial() const
+{
+	return "Up to date documentation and tutorials are maintained at the MRPT "
+		   "website:\n\nhttp://www.mrpt.org/\n\n\n\n";
+}
+
+std::string CAboutBoxBase::license() const
+{
+	return mrpt::system::getMRPTLicense();
+}
+
 std::string CAboutBoxBase::information(const std::string& guiLibName, const std::string& guiLibVersion) const
 {
 	std::string str = m_appName + "\n";

@@ -13,6 +13,7 @@
 
 #if MRPT_HAS_WXWIDGETS
 #include "CAboutBox_wx.h"
+#include "CAboutBoxQt.h"
 #endif
 
 //#if MRPT_HAS_QT
@@ -27,5 +28,14 @@ void GUI_IMPEXP mrpt::gui::show_mrpt_about_box_wxWidgets(
 	wxWindow* parent = reinterpret_cast<wxWindow*>(parent_wx_window);
 	CAboutBox dlg(parent, appName, additionalInfo, showStandardInfo);
 	dlg.ShowModal();
+#endif
+}
+
+void GUI_IMPEXP mrpt::gui::show_mrpt_about_box_Qt(const std::string& appName,
+	const std::string& additionalInfo, const bool showStandardInfo)
+{
+#if MRPT_HAS_Qt5
+	CAboutBoxQt dlg(appName, additionalInfo, showStandardInfo);
+	dlg.exec();
 #endif
 }
