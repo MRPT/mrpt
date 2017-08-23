@@ -40,6 +40,7 @@ class CMainWindow : public QMainWindow
 	void loadMap(const QString& fileName);
 
    private slots:
+	void about();
 	void undo();
 	void redo();
 	void openMap();

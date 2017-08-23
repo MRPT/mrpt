@@ -28,6 +28,7 @@
 
 #include "mrpt/gui/CQtGlCanvasBase.h"
 #include "mrpt/poses/CPose3D.h"
+#include "mrpt/gui/about_box.h"
 
 CMainWindow::CMainWindow(QWidget* parent)
 	: QMainWindow(parent),
@@ -62,6 +63,8 @@ CMainWindow::CMainWindow(QWidget* parent)
 		m_ui->m_observationsTree, &CObservationTree::clicked, this,
 		&CMainWindow::itemClicked);
 
+	connect(
+		m_ui->m_actionAbout, &QAction::triggered, this, &CMainWindow::about);
 	connect(
 		m_ui->m_actionOpen, &QAction::triggered, this, &CMainWindow::openMap);
 	connect(
@@ -154,6 +157,11 @@ void CMainWindow::loadMap(const QString& fileName)
 
 		showErrorMessage("The file is corrupted and cannot be opened!");
 	}
+}
+
+void CMainWindow::about()
+{
+	mrpt::gui::show_mrpt_about_box_Qt("Robot-made maps viewer");
 }
 
 void CMainWindow::openMap()
