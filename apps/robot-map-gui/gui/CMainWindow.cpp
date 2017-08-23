@@ -29,6 +29,7 @@
 #include "mrpt/gui/CQtGlCanvasBase.h"
 #include "mrpt/poses/CPose3D.h"
 #include "mrpt/gui/about_box.h"
+#include "mrpt/gui/error_box.h"
 
 CMainWindow::CMainWindow(QWidget* parent)
 	: QMainWindow(parent),
@@ -63,6 +64,9 @@ CMainWindow::CMainWindow(QWidget* parent)
 		m_ui->m_observationsTree, &CObservationTree::clicked, this,
 		&CMainWindow::itemClicked);
 
+	connect(
+		m_ui->m_actionGraphSlam, &QAction::triggered, this,
+		&CMainWindow::graphSlam);
 	connect(
 		m_ui->m_actionAbout, &QAction::triggered, this, &CMainWindow::about);
 	connect(
@@ -133,30 +137,25 @@ void CMainWindow::loadMap(const QString& fileName)
 			return;
 		}
 	}
-	try
-	{
-		m_document->loadSimpleMap(fileName.toStdString());
+	std::string file = fileName.toStdString();
 
-		mrpt::maps::TSetOfMetricMapInitializers mapCfg =
-			m_ui->m_configWidget->config();
-		m_document->setListOfMaps(mapCfg);
+	mrpt::gui::tryCatch(
+		[file, this]() {
+			m_document->loadSimpleMap(file);
+			mrpt::maps::TSetOfMetricMapInitializers mapCfg =
+				m_ui->m_configWidget->config();
+			m_document->setListOfMaps(mapCfg);
+			updateRenderMapFromConfig();
+			m_ui->m_viewer->changeHelpTextToAboutConfig();
 
-		updateRenderMapFromConfig();
-		m_ui->m_viewer->changeHelpTextToAboutConfig();
+			if (m_model) delete m_model;
+			m_model = new CObservationTreeModel(
+				m_document->simplemap(), m_ui->m_observationsTree);
+			m_ui->m_observationsTree->setModel(m_model);
 
-		if (m_model) delete m_model;
-		m_model = new CObservationTreeModel(
-			m_document->simplemap(), m_ui->m_observationsTree);
-		m_ui->m_observationsTree->setModel(m_model);
-
-		addToRecent(fileName);
-	}
-	catch (std::exception&)
-	{
-		createNewDocument();
-
-		showErrorMessage("The file is corrupted and cannot be opened!");
-	}
+			addToRecent(file);
+		},
+		"The file is corrupted and cannot be opened!");
 }
 
 void CMainWindow::about()
@@ -499,6 +498,11 @@ void CMainWindow::clearObservationsViewer()
 	QLayout* layout = m_ui->m_contentsNodeViewer->layout();
 	QLayoutItem* child;
 	while ((child = layout->takeAt(0)) != 0) delete child;
+}
+
+void CMainWindow::addToRecent(const std::string& fileName)
+{
+	addToRecent(QString::fromStdString(fileName));
 }
 
 void CMainWindow::addToRecent(const QString& fileName)

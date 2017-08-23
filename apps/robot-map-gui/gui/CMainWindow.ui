@@ -74,6 +74,7 @@
     <addaction name="m_actionLoadConfig"/>
     <addaction name="separator"/>
     <addaction name="actionExit"/>
+    <addaction name="m_actionGraphSlam"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -395,6 +396,11 @@
   <action name="m_actionSaveAsPNG">
    <property name="text">
     <string>Save gridmap as PNG</string>
+   </property>
+  </action>
+  <action name="m_actionGraphSlam">
+   <property name="text">
+    <string>graph-slam</string>
    </property>
   </action>
  </widget>

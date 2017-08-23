@@ -67,6 +67,7 @@ class CMainWindow : public QMainWindow
 	void createNewDocument();
 	void clearObservationsViewer();
 
+	void addToRecent(const std::string& fileName);
 	void addToRecent(const QString& fileName);
 	void addRecentFilesToMenu();
 

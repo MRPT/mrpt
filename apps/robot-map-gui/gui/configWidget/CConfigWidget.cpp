@@ -17,7 +17,8 @@
 #include "CLandmarksConfig.h"
 #include "CGasGridConfig.h"
 
-#include <mrpt/utils/CFileOutputStream.h>
+#include "mrpt/utils/CFileOutputStream.h"
+#include "mrpt/gui/error_box.h"
 
 #include <QFileDialog>
 #include <QMessageBox>
@@ -60,17 +61,17 @@ CConfigWidget::CConfigWidget(QWidget* parent)
 CConfigWidget::~CConfigWidget() { clearConfig(true); }
 void CConfigWidget::openConfig()
 {
-	QString configName = QFileDialog::getOpenFileName(
-		this, tr("Open Config File"), "", tr("Files (*.ini)"));
-	if (configName.isEmpty()) return;
-	QFile file(configName);
-	if (!file.open(QIODevice::ReadOnly))
-	{
-		QMessageBox::information(
-			this, tr("Unable to open file"), file.errorString());
-		return;
-	}
-	emit openedConfig(configName.toStdString());
+	mrpt::gui::tryCatch(
+		[this]() {
+			QString configName = QFileDialog::getOpenFileName(
+				this, tr("Open Config File"), "", tr("Files (*.ini)"));
+			if (configName.isEmpty()) return;
+			QFile file(configName);
+			if (!file.open(QIODevice::ReadOnly)) throw "";
+
+			emit openedConfig(configName.toStdString());
+		},
+		"The file is corrupted and cannot be opened!");
 }
 
 void CConfigWidget::saveConfig()
