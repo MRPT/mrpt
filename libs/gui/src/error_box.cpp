@@ -1,0 +1,46 @@
+/* +---------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)               |
+   |                          http://www.mrpt.org/                             |
+   |                                                                           |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file        |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
+   | Released under BSD License. See details in http://www.mrpt.org/License    |
+   +---------------------------------------------------------------------------+
+   */
+
+#include "../include/mrpt/gui/error_box.h"
+#if MRPT_HAS_Qt5
+#include <QErrorMessage>
+#include <QString>
+#else
+#include <iostream>
+#endif  // MRPT_HAS_Qt5
+
+
+void GUI_IMPEXP mrpt::gui::tryCatch(const std::function<void()> &tryPart, const std::string &catchMessage)
+{
+	try
+	{
+		tryPart();
+	}
+	catch (std::exception & e)
+	{
+		showErrorMessage(catchMessage + e.what());
+	}
+	catch (...)
+	{
+		showErrorMessage("Untyped exception!");
+	}
+
+}
+
+void GUI_IMPEXP mrpt::gui::showErrorMessage(const std::string &str)
+{
+#if MRPT_HAS_Qt5
+	QErrorMessage msg;
+	msg.showMessage(QString::fromStdString(str));
+	msg.exec();
+#else
+	std::cout << str << std::endl;
+#endif  // MRPT_HAS_Qt5
+}
