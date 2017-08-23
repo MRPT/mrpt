@@ -76,14 +76,16 @@ class BASE_IMPEXP CConfigFileBase
 	/** Checks if a given section exists (name is case insensitive) */
 	bool sectionExists(const std::string& section_name) const;
 
-	template <typename enum_t, class = typename std::enable_if<std::is_enum<enum_t>::value,enum_t>::value>
+	template <typename enum_t, class = typename std::enable_if<
+								   std::is_enum<enum_t>::value, enum_t>::value>
 	void write(
 		const std::string& section, const std::string& name, enum_t value,
 		const int name_padding_width = -1, const int value_padding_width = -1,
 		const std::string& comment = std::string())
 	{
-		this->write(section, name, mrpt::utils::TEnumType<enum_t>::value2name(value),
-		name_padding_width, value_padding_width, comment);
+		this->write(
+			section, name, mrpt::utils::TEnumType<enum_t>::value2name(value),
+			name_padding_width, value_padding_width, comment);
 	}
 	/** @name Save a configuration parameter. Optionally pads with spaces up to
 	 * the desired width in number of characters (-1: no fill), and add a final

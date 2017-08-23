@@ -9,6 +9,7 @@
 #pragma once
 
 #include <mrpt/utils/core_defs.h>
+#include <functional>
 
 namespace mrpt
 {
@@ -29,7 +30,8 @@ template <class VECTORLIKE, class VECTORLIKE2, class VECTORLIKE3,
 		  class MATRIXLIKE, class USERPARAM>
 void estimateJacobian(
 	const VECTORLIKE& x,
-	void (*functor)(const VECTORLIKE& x, const USERPARAM& y, VECTORLIKE3& out),
+	std::function<
+		void(const VECTORLIKE& x, const USERPARAM& y, VECTORLIKE3& out)>,
 	const VECTORLIKE2& increments, const USERPARAM& userParam,
 	MATRIXLIKE& out_Jacobian)
 {

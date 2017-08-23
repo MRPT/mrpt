@@ -112,7 +112,8 @@ class BASE_IMPEXP CParticleFilter : public mrpt::utils::COutputLogger
 			const mrpt::utils::CConfigFileBase& source,
 			const std::string& section) override;
 		virtual void saveToConfigFile(
-			mrpt::utils::CConfigFileBase& target, const std::string& section) const override;
+			mrpt::utils::CConfigFileBase& target,
+			const std::string& section) const override;
 
 		/** A flag that indicates whether the CParticleFilterCapable object
 		 * should perform adative sample size (default=false). */

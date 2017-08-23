@@ -31,6 +31,7 @@
 
 #include <mrpt/gui/CDisplayWindow.h>
 #include <memory>  // unique_ptr
+#include <functional>
 
 namespace mrpt
 {
@@ -402,8 +403,8 @@ class HWDRIVERS_IMPEXP CCameraSensor : public mrpt::utils::COutputLogger,
 	};
 
 	/** Functor type */
-	typedef void (*TPreSaveUserHook)(
-		const mrpt::obs::CObservation::Ptr& obs, void* user_ptr);
+	using TPreSaveUserHook = std::function<void(
+		const mrpt::obs::CObservation::Ptr& obs, void* user_ptr)>;
 
 	/** Provides a "hook" for user-code to be run BEFORE an image is going to be
 	 * saved to disk if external storage is enabled (e.g. to rectify images,

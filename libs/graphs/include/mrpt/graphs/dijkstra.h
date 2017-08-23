@@ -19,6 +19,7 @@
 #include <vector>
 #include <utility>
 #include <exception>
+#include <functional>
 
 namespace mrpt
 {
@@ -159,6 +160,13 @@ class CDijkstra
 	/** A list of edges used to describe a path on the graph */
 	typedef std::list<TPairNodeIDs> edge_list_t;
 
+	using functor_edge_weight_t = std::function<double(
+		const graph_t& graph, const TNodeID id_from, const TNodeID id_to,
+		const edge_t& edge)>;
+
+	using functor_on_progress_t =
+		std::function<void(const graph_t& graph, size_t visitedCount)>;
+
 	/** @} */
 
 	/** Constructor which takes the input graph and executes the entire
@@ -180,11 +188,8 @@ class CDijkstra
 	 */
 	CDijkstra(
 		const graph_t& graph, const TNodeID source_node_ID,
-		double (*functor_edge_weight)(
-			const graph_t& graph, const TNodeID id_from, const TNodeID id_to,
-			const edge_t& edge) = nullptr,
-		void (*functor_on_progress)(const graph_t& graph, size_t visitedCount) =
-			nullptr)
+		functor_edge_weight_t functor_edge_weight = functor_edge_weight_t,
+		functor_on_progress_t functor_on_progress = functor_on_progress_t())
 		: m_cached_graph(graph), m_source_node_ID(source_node_ID)
 	{
 		/*

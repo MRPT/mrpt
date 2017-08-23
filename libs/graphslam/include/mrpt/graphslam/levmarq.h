@@ -82,7 +82,7 @@ void optimize_graph_spa_levmarq(
 	const mrpt::utils::TParametersDouble& extra_params =
 		mrpt::utils::TParametersDouble(),
 	typename graphslam_traits<GRAPH_T>::TFunctorFeedback functor_feedback =
-		nullptr)
+		typename graphslam_traits<GRAPH_T>::TFunctorFeedback)
 {
 	using namespace mrpt;
 	using namespace mrpt::poses;

@@ -17,6 +17,7 @@
 #include <mrpt/math/jacobians.h>
 #include <mrpt/math/data_utils.h>
 #include <mrpt/random.h>
+#include <functional>
 
 namespace mrpt
 {
@@ -46,8 +47,9 @@ template <class VECTORLIKE1, class MATLIKE1, class USERPARAM, class VECTORLIKE2,
 		  class VECTORLIKE3, class MATLIKE2>
 void transform_gaussian_unscented(
 	const VECTORLIKE1& x_mean, const MATLIKE1& x_cov,
-	void (*functor)(
-		const VECTORLIKE1& x, const USERPARAM& fixed_param, VECTORLIKE3& y),
+	std::function<void(
+		const VECTORLIKE1& x, const USERPARAM& fixed_param, VECTORLIKE3& y)>
+		functor,
 	const USERPARAM& fixed_param, VECTORLIKE2& y_mean, MATLIKE2& y_cov,
 	const bool* elem_do_wrap2pi = nullptr, const double alpha = 1e-3,
 	const double K = 0, const double beta = 2.0)
@@ -114,8 +116,9 @@ template <class VECTORLIKE1, class MATLIKE1, class USERPARAM, class VECTORLIKE2,
 		  class VECTORLIKE3, class MATLIKE2>
 void transform_gaussian_montecarlo(
 	const VECTORLIKE1& x_mean, const MATLIKE1& x_cov,
-	void (*functor)(
-		const VECTORLIKE1& x, const USERPARAM& fixed_param, VECTORLIKE3& y),
+	std::function<void(
+		const VECTORLIKE1& x, const USERPARAM& fixed_param, VECTORLIKE3& y)>
+		functor,
 	const USERPARAM& fixed_param, VECTORLIKE2& y_mean, MATLIKE2& y_cov,
 	const size_t num_samples = 1000,
 	typename mrpt::aligned_containers<VECTORLIKE3>::vector_t* out_samples_y =
@@ -152,8 +155,9 @@ template <class VECTORLIKE1, class MATLIKE1, class USERPARAM, class VECTORLIKE2,
 		  class VECTORLIKE3, class MATLIKE2>
 void transform_gaussian_linear(
 	const VECTORLIKE1& x_mean, const MATLIKE1& x_cov,
-	void (*functor)(
-		const VECTORLIKE1& x, const USERPARAM& fixed_param, VECTORLIKE3& y),
+	std::function<void(
+		const VECTORLIKE1& x, const USERPARAM& fixed_param, VECTORLIKE3& y)>
+		functor,
 	const USERPARAM& fixed_param, VECTORLIKE2& y_mean, MATLIKE2& y_cov,
 	const VECTORLIKE1& x_increments)
 {

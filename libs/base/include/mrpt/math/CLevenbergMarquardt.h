@@ -14,6 +14,7 @@
 #include <mrpt/math/num_jacobian.h>
 #include <mrpt/utils/printf_vector.h>
 #include <mrpt/math/ops_containers.h>
+#include <functional>
 
 namespace mrpt
 {
@@ -55,15 +56,15 @@ class CLevenbergMarquardtTempl : public mrpt::utils::COutputLogger
 	 * root error, for the given "x". The functor code must set the size of this
 	 * vector.
 	  */
-	typedef void (*TFunctorEval)(
-		const VECTORTYPE& x, const USERPARAM& y, VECTORTYPE& out);
+	using TFunctorEval = std::function<void(
+		const VECTORTYPE& x, const USERPARAM& y, VECTORTYPE& out)>;
 
 	/** The type of an optional functor passed to \a execute to replace the
 	 * Euclidean addition "x_new = x_old + x_incr" by any other operation.
 	  */
-	typedef void (*TFunctorIncrement)(
+	using TFunctorIncrement = std::function<void(
 		VECTORTYPE& x_new, const VECTORTYPE& x_old, const VECTORTYPE& x_incr,
-		const USERPARAM& user_param);
+		const USERPARAM& user_param)>;
 
 	struct TResultInfo
 	{

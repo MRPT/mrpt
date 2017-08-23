@@ -138,8 +138,9 @@ void mrpt::math::ransac_detect_3D_planes(
 		math::RANSAC_Template<NUMTYPE> ransac;
 		ransac.setVerbosityLevel(mrpt::utils::LVL_INFO);
 		ransac.execute(
-			remainingPoints, ransac3Dplane_fit, ransac3Dplane_distance,
-			ransac3Dplane_degenerate, threshold,
+			remainingPoints, mrpt::math::ransac3Dplane_fit<NUMTYPE>,
+			mrpt::math::ransac3Dplane_distance<NUMTYPE>,
+			mrpt::math::ransac3Dplane_degenerate<NUMTYPE>, threshold,
 			3,  // Minimum set of points
 			this_best_inliers, this_best_model,
 			0.999  // Prob. of good result
