@@ -10,26 +10,23 @@
 #include <mrpt/config.h>
 #include <mrpt/system/os.h>
 
-
 using namespace mrpt;
 using namespace mrpt::system;
 
-CAboutBoxBase::CAboutBoxBase(const std::string &appName, const std::string &additionalInfo, const bool showStandardInfo)
-	: m_appName(appName)
-	, m_additionalInfo(additionalInfo)
-	, m_showStandardInfo(showStandardInfo)
+CAboutBoxBase::CAboutBoxBase(
+	const std::string& appName, const std::string& additionalInfo,
+	const bool showStandardInfo)
+	: m_appName(appName),
+	  m_additionalInfo(additionalInfo),
+	  m_showStandardInfo(showStandardInfo)
 {
-
 }
 
-CAboutBoxBase::~CAboutBoxBase()
-{
-
-}
-
+CAboutBoxBase::~CAboutBoxBase() {}
 std::string CAboutBoxBase::MRPTBuildVersion() const
 {
-	return "Build: " + MRPT_getVersion() + mrpt::system::MRPT_getCompilationDate();
+	return "Build: " + MRPT_getVersion() +
+		   mrpt::system::MRPT_getCompilationDate();
 }
 
 std::string CAboutBoxBase::tutorial() const
@@ -43,13 +40,16 @@ std::string CAboutBoxBase::license() const
 	return mrpt::system::getMRPTLicense();
 }
 
-std::string CAboutBoxBase::information(const std::string& guiLibName, const std::string& guiLibVersion) const
+std::string CAboutBoxBase::information(
+	const std::string& guiLibName, const std::string& guiLibVersion) const
 {
 	std::string str = m_appName + "\n";
-	str += "----------------------------------\n"
-		   "Part of the MRPT project.\n"
-		   "For bug reports and source code, visit:"
-		   " https:://github.com/MRPT/mrpt \n\n";;
+	str +=
+		"----------------------------------\n"
+		"Part of the MRPT project.\n"
+		"For bug reports and source code, visit:"
+		" https:://github.com/MRPT/mrpt \n\n";
+	;
 	if (!m_additionalInfo.empty())
 	{
 		str += m_additionalInfo + "\n";
@@ -71,11 +71,10 @@ std::string CAboutBoxBase::information(const std::string& guiLibName, const std:
 		str += "-Linux";
 #endif
 #if wxUSE_UNICODE
-		str +=  "-Unicode build";
+		str += "-Unicode build";
 #else
 		str += "-ANSI build";
 #endif  // wxUSE_UNICODE
-
 
 		str += "\nOpenCV version:         ";
 #if MRPT_HAS_OPENCV

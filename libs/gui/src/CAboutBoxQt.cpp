@@ -12,9 +12,9 @@
 #include <QTextEdit>
 #include <QTabWidget>
 
-
-
-CAboutBoxQt::CAboutBoxQt(const std::string &appName, const std::string &additionalInfo, const bool showStandardInfo)
+CAboutBoxQt::CAboutBoxQt(
+	const std::string& appName, const std::string& additionalInfo,
+	const bool showStandardInfo)
 	: CAboutBoxBase(appName, additionalInfo, showStandardInfo)
 {
 	auto lay = new QVBoxLayout();
@@ -34,7 +34,8 @@ CAboutBoxQt::CAboutBoxQt(const std::string &appName, const std::string &addition
 	setLayout(lay);
 }
 
-QTextEdit *CAboutBoxQt::widgetForTabs(const std::string &str, QTabWidget *parent) const
+QTextEdit* CAboutBoxQt::widgetForTabs(
+	const std::string& str, QTabWidget* parent) const
 {
 	auto text = QString::fromStdString(str);
 	auto action = new QTextEdit(parent);

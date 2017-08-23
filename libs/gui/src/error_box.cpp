@@ -16,14 +16,14 @@
 #include <iostream>
 #endif  // MRPT_HAS_Qt5
 
-
-void GUI_IMPEXP mrpt::gui::tryCatch(const std::function<void()> &tryPart, const std::string &catchMessage)
+void GUI_IMPEXP mrpt::gui::tryCatch(
+	const std::function<void()>& tryPart, const std::string& catchMessage)
 {
 	try
 	{
 		tryPart();
 	}
-	catch (std::exception & e)
+	catch (std::exception& e)
 	{
 		showErrorMessage(catchMessage + e.what());
 	}
@@ -31,10 +31,9 @@ void GUI_IMPEXP mrpt::gui::tryCatch(const std::function<void()> &tryPart, const 
 	{
 		showErrorMessage("Untyped exception!");
 	}
-
 }
 
-void GUI_IMPEXP mrpt::gui::showErrorMessage(const std::string &str)
+void GUI_IMPEXP mrpt::gui::showErrorMessage(const std::string& str)
 {
 #if MRPT_HAS_Qt5
 	QErrorMessage msg;

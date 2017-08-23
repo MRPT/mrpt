@@ -125,11 +125,9 @@ CAboutBox::CAboutBox(
 		wxFONTENCODING_DEFAULT);
 	lbLicense->SetFont(lbLicenseFont);
 	TextCtrl1 = new wxTextCtrl(
-		Notebook1, ID_TEXTCTRL3,
-		_(tutorial()),
-		wxPoint(4, 24), wxSize(545, 222),
-		wxTE_MULTILINE | wxTE_READONLY | wxTE_AUTO_URL, wxDefaultValidator,
-		_T("ID_TEXTCTRL3"));
+		Notebook1, ID_TEXTCTRL3, _(tutorial()), wxPoint(4, 24),
+		wxSize(545, 222), wxTE_MULTILINE | wxTE_READONLY | wxTE_AUTO_URL,
+		wxDefaultValidator, _T("ID_TEXTCTRL3"));
 	wxFont TextCtrl1Font(
 		10, wxSWISS, wxFONTSTYLE_NORMAL, wxNORMAL, false, _T("Courier New"),
 		wxFONTENCODING_DEFAULT);
@@ -183,8 +181,7 @@ void CAboutBox::OnInit(wxInitDialogEvent& event)
 	{
 		CMyRedirector myRedirector(lbInfo);
 		wxString wxVer(wxVERSION_STRING);
-		cout << information(
-			"wxWidgets", std::string(wxVer.mb_str()));
+		cout << information("wxWidgets", std::string(wxVer.mb_str()));
 	}
 
 	lbProgName->SetLabel(_U(m_appName.c_str()));

@@ -11,18 +11,17 @@
 
 #include <QDialog>
 
-
 class QTextEdit;
 class QTabWidget;
 
-class CAboutBoxQt: public QDialog, public CAboutBoxBase
+class CAboutBoxQt : public QDialog, public CAboutBoxBase
 {
-public:
-	CAboutBoxQt(const std::string& appName,
-				const std::string& additionalInfo, const bool showStandardInfo);
+   public:
+	CAboutBoxQt(
+		const std::string& appName, const std::string& additionalInfo,
+		const bool showStandardInfo);
 	virtual ~CAboutBoxQt() = default;
 
-private:
-	QTextEdit* widgetForTabs(const std::string &str, QTabWidget* parent) const;
-
+   private:
+	QTextEdit* widgetForTabs(const std::string& str, QTabWidget* parent) const;
 };
