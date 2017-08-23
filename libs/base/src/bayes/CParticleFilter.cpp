@@ -218,10 +218,10 @@ void CParticleFilter::TParticleFilterOptions::loadFromConfigFile(
 		max_loglikelihood_dyn_range, double, iniFile, section.c_str());
 	ASSERT_(max_loglikelihood_dyn_range >= 0);
 
-	PF_algorithm = iniFile.read_enum<TParticleFilterAlgorithm>(section,
-		"PF_algorithm", PF_algorithm, true);
-	resamplingMethod = iniFile.read_enum<TParticleResamplingAlgorithm>(section,
-		"resamplingMethod", resamplingMethod, true);
+	PF_algorithm = iniFile.read_enum<TParticleFilterAlgorithm>(
+		section, "PF_algorithm", PF_algorithm, true);
+	resamplingMethod = iniFile.read_enum<TParticleResamplingAlgorithm>(
+		section, "resamplingMethod", resamplingMethod, true);
 
 	if (PF_algorithm == pfAuxiliaryPFOptimal)
 	{

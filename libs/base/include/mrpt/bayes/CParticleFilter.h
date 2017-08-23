@@ -228,17 +228,17 @@ struct TEnumTypeFiller<mrpt::bayes::CParticleFilter::TParticleFilterAlgorithm>
 	static void fill(bimap<enum_t, std::string>& m_map)
 	{
 		using namespace mrpt::bayes;
-		m_map.insert(CParticleFilter::pfStandardProposal,
-			"pfStandardProposal");
-		m_map.insert(CParticleFilter::pfAuxiliaryPFOptimal,
-			"pfAuxiliaryPFOptimal");
-		m_map.insert(CParticleFilter::pfAuxiliaryPFStandard,
-			"pfAuxiliaryPFStandard");
+		m_map.insert(CParticleFilter::pfStandardProposal, "pfStandardProposal");
+		m_map.insert(
+			CParticleFilter::pfAuxiliaryPFOptimal, "pfAuxiliaryPFOptimal");
+		m_map.insert(
+			CParticleFilter::pfAuxiliaryPFStandard, "pfAuxiliaryPFStandard");
 		m_map.insert(CParticleFilter::pfOptimalProposal, "pfOptimalProposal");
 	}
 };
 template <>
-struct TEnumTypeFiller<mrpt::bayes::CParticleFilter::TParticleResamplingAlgorithm>
+struct TEnumTypeFiller<
+	mrpt::bayes::CParticleFilter::TParticleResamplingAlgorithm>
 {
 	typedef mrpt::bayes::CParticleFilter::TParticleResamplingAlgorithm enum_t;
 	static void fill(bimap<enum_t, std::string>& m_map)

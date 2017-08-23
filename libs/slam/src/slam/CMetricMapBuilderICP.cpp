@@ -178,7 +178,7 @@ void CMetricMapBuilderICP::processObservation(const CObservation::Ptr& obs)
 		// Current robot pose given the timestamp of the observation (this can
 		// include a small extrapolation
 		//  using the latest known robot velocities):
-		TPose2D initialEstimatedRobotPose(0,0,0);
+		TPose2D initialEstimatedRobotPose(0, 0, 0);
 		{
 			mrpt::math::TTwist2D robotVelLocal, robotVelGlobal;
 			if (obs->timestamp != INVALID_TIMESTAMP)

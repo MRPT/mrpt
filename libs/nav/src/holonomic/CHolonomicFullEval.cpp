@@ -653,10 +653,10 @@ CHolonomicFullEval::TOptions::TOptions()
 	  TARGET_SLOW_APPROACHING_DISTANCE(0.60),
 	  OBSTACLE_SLOW_DOWN_DISTANCE(0.15),
 	  HYSTERESIS_SECTOR_COUNT(5),
-	  factorWeights{ 0.1, 0.5, 0.5, 0.01, 1 },
+	  factorWeights{0.1, 0.5, 0.5, 0.01, 1},
 	  factorNormalizeOrNot{0, 0, 0, 0, 1},
-	  PHASE_FACTORS{ {1,2}, {4}, {0,2} },
-	  PHASE_THRESHOLDS{ 0.5, 0.6, 0.7 },
+	  PHASE_FACTORS{{1, 2}, {4}, {0, 2}},
+	  PHASE_THRESHOLDS{0.5, 0.6, 0.7},
 	  LOG_SCORE_MATRIX(false),
 	  clearance_threshold_ratio(0.05),
 	  gap_width_ratio_threshold(0.25)
