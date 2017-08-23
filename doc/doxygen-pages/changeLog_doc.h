@@ -21,6 +21,7 @@
 	- Build system:
 		- Fix MRPTConfig.cmake for system octomap libraries.
 		- Fix package-contains-vcs-control-file (.gitingore) Lintian error.
+		- Fix aborting reading from LMS111 scanner on first error.
 
 <hr>
 <a name="1.5.3">

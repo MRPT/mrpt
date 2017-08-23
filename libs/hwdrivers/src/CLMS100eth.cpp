@@ -218,68 +218,70 @@ void CLMS100Eth::generateCmd(const char *cmd)
 
 bool CLMS100Eth::decodeScan(char* buff, CObservation2DRangeScan& outObservation)
 {
-    char *next;
-    unsigned int idx = 0;
-    unsigned int scanCount=0;
-    char* tmp;
-    //double factor;
+	char* next;
+	unsigned int idx = 0;
+	unsigned int scanCount = 0;
+	char* tmp;
+	// double factor;
 
-    next = strtok(buff, " ", &tmp);
+	next = strtok(buff, " ", &tmp);
 
-    while(next && scanCount==0)
-    {
-
-        //cout << "Interpreting : " << next << endl;
-        switch(++idx)
-        {
-        case 1:
-            if(strncmp(&next[1], "sRA", 3) && strncmp(&next[1], "sSN", 3)) return false;
-            break;
-        case 2 :
-            if(strcmp(next, "LMDscandata")) return false;
-            break;
-        case 6 :
-            if(!strcmp(next, "1"))
-            {
-                THROW_EXCEPTION("STATUS error on LMS100");
-                return false;
-            }
-			else
-			if(!strcmp(next, "4"))
-			{
-				THROW_EXCEPTION("Contamination error on LMS100");
-				return false;
-			}
-            MRPT_LOG_DEBUG("STATUS Ok.\n");
-            break;
-        case 21 :
-            if(strcmp(next, "DIST1"))
-            {
-                THROW_EXCEPTION("LMS100 is not configured to send distances.");
-                return false;
-            }
-            MRPT_LOG_DEBUG("Distance : OK\n");
-            break;
-        case 22 :
-            //factor = strtod(next, NULL);
-            break;
-        case 26 :
-            scanCount = strtoul(next, NULL, 16);
-            MRPT_LOG_DEBUG_FMT("Scan Count : %d\n", scanCount);
-            break;
-        default :
-                break;
-    }
-        next = strtok(NULL, " ", &tmp);
-    }
-    outObservation.aperture = (float)APPERTURE;
-    outObservation.rightToLeft = false;
-    outObservation.stdError = 0.012f;
-    outObservation.sensorPose = m_sensorPose;
-    outObservation.beamAperture = m_beamApperture;
-    outObservation.maxRange = m_maxRange;
-	outObservation.timestamp				= mrpt::system::getCurrentTime();
-	outObservation.sensorLabel             = m_sensorLabel;
+	while (next && scanCount == 0)
+	{
+		// cout << "Interpreting : " << next << endl;
+		switch (++idx)
+		{
+			case 1:
+				if (strncmp(&next[1], "sRA", 3) && strncmp(&next[1], "sSN", 3))
+					return false;
+				break;
+			case 2:
+				if (strcmp(next, "LMDscandata")) return false;
+				break;
+			case 6:
+				if (!strcmp(next, "1"))
+				{
+					MRPT_LOG_ERROR_FMT("STATUS error on LMS100: '%s'", next);
+				}
+				else if (!strcmp(next, "4"))
+				{
+					MRPT_LOG_ERROR_FMT(
+						"Contamination error on LMS100: '%s'", next);
+				}
+				else
+				{
+					MRPT_LOG_DEBUG("STATUS Ok.\n");
+				}
+				break;
+			case 21:
+				if (strcmp(next, "DIST1"))
+				{
+					THROW_EXCEPTION(
+						"LMS100 is not configured to send distances.");
+					return false;
+				}
+				MRPT_LOG_DEBUG("Distance : OK\n");
+				break;
+			case 22:
+				// factor = strtod(next, nullptr);
+				break;
+			case 26:
+				scanCount = strtoul(next, nullptr, 16);
+				MRPT_LOG_DEBUG_FMT("Scan Count : %d\n", scanCount);
+				break;
+			default:
+				break;
+		}
+		next = strtok(nullptr, " ", &tmp);
+	}
+	outObservation.aperture = (float)APPERTURE;
+	outObservation.rightToLeft = false;
+	outObservation.stdError = 0.012f;
+	outObservation.sensorPose = m_sensorPose;
+	outObservation.beamAperture = m_beamApperture;
+	outObservation.maxRange = m_maxRange;
+	outObservation.timestamp = mrpt::system::getCurrentTime();
+	outObservation.sensorLabel = m_sensorLabel;
 
 	outObservation.resizeScan(scanCount);
     unsigned int i;
