@@ -76,8 +76,8 @@ class BASE_IMPEXP CConfigFileBase
 	/** Checks if a given section exists (name is case insensitive) */
 	bool sectionExists(const std::string& section_name) const;
 
-	template <typename enum_t, class = typename std::enable_if<
-								   std::is_enum<enum_t>::value, enum_t>::value>
+	template <typename enum_t,
+			  typename = std::enable_if_t<std::is_enum<enum_t>::value>>
 	void write(
 		const std::string& section, const std::string& name, enum_t value,
 		const int name_padding_width = -1, const int value_padding_width = -1,
@@ -92,7 +92,8 @@ class BASE_IMPEXP CConfigFileBase
 	 * comment field at the end of the line (a "// " prefix is automatically
 	 * inserted).
 	  * @{ */
-	template <typename data_t>
+	template <typename data_t,
+			  typename = std::enable_if_t<!std::is_enum<data_t>::value>>
 	void write(
 		const std::string& section, const std::string& name,
 		const data_t& value, const int name_padding_width = -1,
