@@ -55,9 +55,7 @@ END_EVENT_TABLE()
 CAboutBox::CAboutBox(
 	wxWindow* parent, const std::string& appName,
 	const std::string& additionalInfo, const bool showStandardInfo)
-	: m_appName(appName),
-	  m_additionalInfo(additionalInfo),
-	  m_showStandardInfo(showStandardInfo)
+	: CAboutBoxBase(appName, additionalInfo, showStandardInfo)
 {
 	const wxWindowID id = -1;
 	//(*Initialize(CAboutBox)
@@ -185,43 +183,47 @@ void CAboutBox::OnInit(wxInitDialogEvent& event)
 
 	{
 		CMyRedirector myRedirector(lbInfo);
+		wxString wxVer(wxVERSION_STRING);
+		cout << information(
+			"wxWidgets", std::string(wxVer.mb_str())); /*
 
-		cout << m_appName << endl;
-		cout << "----------------------------------\n";
-		cout << "Part of the MRPT project.\n";
-		cout << "For bug reports and source code, visit:"
-				" https:://github.com/MRPT/mrpt \n\n";
-		if (!m_additionalInfo.empty())
-		{
-			cout << m_additionalInfo << endl;
-		}
-		cout << "MRPT version:           " << MRPT_getVersion() << endl;
-		cout << "MRPT source timestamp:  " << MRPT_getCompilationDate() << endl;
-		if (m_showStandardInfo)
-		{
-			wxString wxVer(wxVERSION_STRING);
+
+cout << m_appName << endl;
+cout << "----------------------------------\n";
+cout << "Part of the MRPT project.\n";
+cout << "For bug reports and source code, visit:"
+  " https:://github.com/MRPT/mrpt \n\n";
+if (!m_additionalInfo.empty())
+{
+cout << m_additionalInfo << endl;
+}
+cout << "MRPT version:           " << MRPT_getVersion() << endl;
+cout << "MRPT source timestamp:  " << MRPT_getCompilationDate() << endl;
+if (m_showStandardInfo)
+{
+wxString wxVer(wxVERSION_STRING);
 #if defined(__WXMSW__)
-			wxVer << _T("-Windows");
+wxVer << _T("-Windows");
 #elif defined(__UNIX__)
-			wxVer << _T("-Linux");
+wxVer << _T("-Linux");
 #endif
 #if wxUSE_UNICODE
-			wxVer << _T("-Unicode build");
+wxVer << _T("-Unicode build");
 #else
-			wxVer << _T("-ANSI build");
+wxVer << _T("-ANSI build");
 #endif  // wxUSE_UNICODE
 
-			cout << "Eigen version:          " << EIGEN_WORLD_VERSION << "."
-				 << EIGEN_MAJOR_VERSION << "." << EIGEN_MINOR_VERSION << endl;
-			cout << "wxWidgets version:      " << std::string(wxVer.mb_str())
-				 << endl;
-			cout << "OpenCV version:         ";
+cout << "Eigen version:          " << EIGEN_WORLD_VERSION << "."
+   << EIGEN_MAJOR_VERSION << "." << EIGEN_MINOR_VERSION << endl;
+cout << "wxWidgets version:      " << std::string(wxVer.mb_str())
+   << endl;
+cout << "OpenCV version:         ";
 #if MRPT_HAS_OPENCV
-			cout << MRPT_OPENCV_VERSION << endl;
+cout << MRPT_OPENCV_VERSION << endl;
 #else
-			cout << "None" << endl;
+cout << "None" << endl;
 #endif
-		}
+}*/
 	}
 
 	lbProgName->SetLabel(_U(m_appName.c_str()));

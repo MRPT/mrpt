@@ -18,9 +18,10 @@
 #include <wx/statbmp.h>
 #include <wx/button.h>
 #include <wx/dialog.h>
+#include "CAboutBoxBase.h"
 //*)
 
-class CAboutBox : public wxDialog
+class CAboutBox : public wxDialog, public CAboutBoxBase
 {
    public:
 	CAboutBox(
@@ -63,10 +64,6 @@ class CAboutBox : public wxDialog
 
    private:
 	DECLARE_EVENT_TABLE()
-
-	const std::string m_appName;
-	const std::string m_additionalInfo;
-	const bool m_showStandardInfo;
 };
 
 #endif
