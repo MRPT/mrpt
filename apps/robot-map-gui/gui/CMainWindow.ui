@@ -79,7 +79,7 @@
     <property name="title">
      <string>Help</string>
     </property>
-    <addaction name="m_aboutAction"/>
+    <addaction name="m_actionAbout"/>
    </widget>
    <widget class="QMenu" name="menuTools">
     <property name="title">
@@ -285,7 +285,7 @@
     <string>About</string>
    </property>
   </action>
-  <action name="m_aboutAction">
+  <action name="m_actionAbout">
    <property name="text">
     <string>About</string>
    </property>
