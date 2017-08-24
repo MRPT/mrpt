@@ -27,6 +27,7 @@ namespace Ui
 class CConfigWidget;
 }
 
+/** This class contains configuration*/
 class CConfigWidget : public QWidget
 {
 	Q_OBJECT

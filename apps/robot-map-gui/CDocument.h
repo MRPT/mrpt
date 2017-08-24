@@ -18,6 +18,11 @@
 #include "gui/configWidget/CConfigWidget.h"
 #include "TypeOfConfig.h"
 
+/** This class gets *.simplemap and *.ini, and convert it to name of the map -
+CSetOfObjects.
+Also, it provides work with *.simplemap.
+*/
+
 typedef mrpt::utils::poly_ptr_ptr<mrpt::maps::CMetricMap::Ptr> MetricPolyPtr;
 typedef std::map<SType, mrpt::opengl::CSetOfObjects::Ptr> RenderizableMaps;
 typedef std::map<TypeOfConfig, std::vector<MetricPolyPtr>> TypeConfig;

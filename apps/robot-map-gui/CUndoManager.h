@@ -16,6 +16,9 @@
 
 typedef std::function<void()> UserAction;
 
+/** Singleton for undo and redo user actions
+*/
+
 class CUndoManager
 {
    public:
