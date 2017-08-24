@@ -6,7 +6,7 @@ then
 	exit 1
 fi
 
-echo "Running format change with command: $1"
+#echo "Running format change with command: $1"
 
 find . \
 	-name "*.cpp" \
@@ -21,4 +21,3 @@ find . \
 	-o -name "*.INI" \
 	-o -name "*.txt" \
 	| xargs $1
-
