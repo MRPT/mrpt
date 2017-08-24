@@ -74,6 +74,7 @@ if [ -z "$MRPT_DEB_DIR" ]; then
         MRPT_DEB_DIR="$HOME/mrpt_debian"
 fi
 MRPT_EXTERN_DEBIAN_DIR="$MRPTSRC/packaging/debian/"
+MRPT_EXTERN_UBUNTU_PPA_DIR="$MRPTSRC/packaging/ubuntu-ppa/"
 
 if [ -f ${MRPT_EXTERN_DEBIAN_DIR}/control.in ];
 then
@@ -111,6 +112,13 @@ cd ${MRPT_DEBSRC_DIR}
 mkdir debian
 cp -r ${MRPT_EXTERN_DEBIAN_DIR}/* debian
 
+# Use modified control file for Ubuntu PPA packages:
+if [ $IS_FOR_UBUNTU == "1" ];
+then
+	cp ${MRPT_EXTERN_UBUNTU_PPA_DIR}/control.in debian/
+fi
+
+
 # Export signing pub key:
 mkdir debian/upstream/
 gpg --export --export-options export-minimal --armor > debian/upstream/signing-key.asc
@@ -136,10 +144,10 @@ fi
 # Strip my custom files...
 rm debian/*.new || true
 # debian/source file issues for old Ubuntu distros:
-if [ $IS_FOR_UBUNTU == "1" ];
-then
-	rm -fr debian/source
-fi
+#if [ $IS_FOR_UBUNTU == "1" ];
+#then
+#	rm -fr debian/source
+#fi
 
 # Prepare install files:
 # For each library, create its "<lib>.install" file:
