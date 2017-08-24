@@ -63,10 +63,6 @@ CMainWindow::CMainWindow(QWidget* parent)
 	connect(
 		m_ui->m_observationsTree, &CObservationTree::clicked, this,
 		&CMainWindow::itemClicked);
-
-	connect(
-		m_ui->m_actionGraphSlam, &QAction::triggered, this,
-		&CMainWindow::graphSlam);
 	connect(
 		m_ui->m_actionAbout, &QAction::triggered, this, &CMainWindow::about);
 	connect(
