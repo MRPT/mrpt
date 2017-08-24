@@ -1112,10 +1112,11 @@ void reactive_navigator_demoframe::simulateOneStep(double time_step)
 		const std::string sWpLog = wp_status.getAsText();
 
 		if (!wp_status.waypoints.empty())
-		{
-			if (!wxFrWpInfo->IsShown()) wxFrWpInfo->Show();
+			if (!wxFrWpInfo->IsShown())
+				wxFrWpInfo->Show();
+
+		if (wxFrWpInfo->IsShown())
 			edWpLog->SetValue( _U(sWpLog.c_str()) );
-		}
 
 		// Plot waypoints being clicked by the user graphically:
 		m_waypoints_clicked.getAsOpenglVisualization(*gl_waypoints_clicking);

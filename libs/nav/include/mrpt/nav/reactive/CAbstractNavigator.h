@@ -195,6 +195,12 @@ namespace mrpt
 		/** Called whenever a new navigation has been started. Can be used to reset state variables, etc. */
 		virtual void onStartNewNavigation() = 0;
 
+		/** Called after each call to CAbstractNavigator::navigate() */
+		virtual void onNavigateCommandReceived();
+
+		/** Does the job of navigate(), except the call to onNavigateCommandReceived() */
+		void processNavigateCommand(const TNavigationParams *params);
+
 		/** Call to the robot getCurrentPoseAndSpeeds() and updates members m_curPoseVel accordingly.
 		  * If an error is returned by the user callback, first, it calls robot.stop() ,then throws an std::runtime_error exception. */
 		void updateCurrentPoseAndSpeeds();
