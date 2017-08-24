@@ -52,17 +52,28 @@ CWaypointsNavigator::CWaypointsNavigator(CRobot2NavInterface& robot_if)
 }
 
 CWaypointsNavigator::~CWaypointsNavigator() {}
-/** \callergraph */
-void CWaypointsNavigator::navigateWaypoints(
-	const TWaypointSequence& nav_request)
+
+void CWaypointsNavigator::onNavigateCommandReceived()
 {
-	MRPT_START
+	CAbstractNavigator::onNavigateCommandReceived();
 
 	std::lock_guard<std::recursive_mutex> csl(m_nav_waypoints_cs);
 
 	m_was_aligning = false;
 	m_waypoint_nav_status = TWaypointStatusSequence();
-	m_waypoint_nav_status.timestamp_nav_started = mrpt::system::now();
+	m_waypoint_nav_status.timestamp_nav_started = INVALID_TIMESTAMP;
+	m_waypoint_nav_status.waypoint_index_current_goal = -1;  // Not started yet.
+}
+
+void CWaypointsNavigator::navigateWaypoints(
+	const TWaypointSequence& nav_request)
+{
+	MRPT_START
+
+	this->onNavigateCommandReceived();
+
+	std::lock_guard<std::recursive_mutex> csl(m_nav_waypoints_cs);
+
 	m_pending_events.clear();
 
 	const size_t N = nav_request.waypoints.size();
@@ -416,7 +427,7 @@ void CWaypointsNavigator::waypoints_navigationStep()
 					// Append to list of targets:
 					nav_cmd.multiple_targets.emplace_back(ti);
 				}
-				this->navigate(&nav_cmd);
+				this->processNavigateCommand(&nav_cmd);
 
 				MRPT_LOG_DEBUG_STREAM(
 					"[CWaypointsNavigator::navigationStep] Active waypoint "

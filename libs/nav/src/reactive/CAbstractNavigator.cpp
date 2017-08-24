@@ -272,9 +272,15 @@ void CAbstractNavigator::doEmergencyStop(const std::string& msg)
 	MRPT_LOG_ERROR(msg);
 }
 
-/** \callergraph */
-void CAbstractNavigator::navigate(
-	const CAbstractNavigator::TNavigationParams* params)
+void CAbstractNavigator::onNavigateCommandReceived()
+{
+	std::lock_guard<std::recursive_mutex> csl(m_nav_cs);
+
+	m_navigationEndEventSent = false;
+	m_navigationParams.reset();
+}
+
+void CAbstractNavigator::processNavigateCommand(const TNavigationParams* params)
 {
 	MRPT_START;
 	std::lock_guard<std::recursive_mutex> csl(m_nav_cs);
@@ -284,12 +290,8 @@ void CAbstractNavigator::navigate(
 		params->target.targetDesiredRelSpeed >= .0 &&
 		params->target.targetDesiredRelSpeed <= 1.0);
 
-	m_navigationEndEventSent = false;
-
 	// Copy data:
-	m_navigationParams.reset(
-		dynamic_cast<CAbstractNavigator::TNavigationParams*>(params->clone()));
-	ASSERT_(m_navigationParams);
+	m_navigationParams.reset(params->clone());
 
 	// Transform: relative -> absolute, if needed.
 	if (m_navigationParams->target.targetIsRelative)
@@ -311,7 +313,15 @@ void CAbstractNavigator::navigate(
 	MRPT_END;
 }
 
-/** \callergraph */
+void CAbstractNavigator::navigate(
+	const CAbstractNavigator::TNavigationParams* params)
+{
+	MRPT_START;
+	this->onNavigateCommandReceived();
+	this->processNavigateCommand(params);
+	MRPT_END;
+}
+
 void CAbstractNavigator::updateCurrentPoseAndSpeeds()
 {
 	// Ignore calls too-close in time, e.g. from the navigationStep() methods of

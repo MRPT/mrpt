@@ -262,6 +262,9 @@ class NAV_IMPEXP CAbstractNavigator : public mrpt::utils::COutputLogger
 	 * state variables, etc. */
 	virtual void onStartNewNavigation() = 0;
 
+  /** Called after each call to CAbstractNavigator::navigate() */
+  virtual void onNavigateCommandReceived();
+
 	/** Call to the robot getCurrentPoseAndSpeeds() and updates members
 	 * m_curPoseVel accordingly.
 	  * If an error is returned by the user callback, first, it calls
@@ -277,6 +280,10 @@ class NAV_IMPEXP CAbstractNavigator : public mrpt::utils::COutputLogger
 	  */
 	virtual void performNavigationStepNavigating(
 		bool call_virtual_nav_method = true);
+
+	/** Does the job of navigate(), except the call to
+	 * onNavigateCommandReceived() */
+	void processNavigateCommand(const TNavigationParams* params);
 
 	/** Stops the robot and set navigation state to error */
 	void doEmergencyStop(const std::string& msg);
