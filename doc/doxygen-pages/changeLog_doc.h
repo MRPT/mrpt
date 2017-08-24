@@ -61,6 +61,7 @@
 		- Fix waypoint reactive navigator edge case in which "end event" won't be issued.
 		- Fix waypoint reactive navigator error while doing final aligning (missing and dupplicated nav-end events).
 		- Fix aborting reading from LMS111 scanner on first error.
+		- Fix waypoint reactive navigator edge case in which "end event" won't be issued.
 		- Fix corrupted pointers in CNetworkOfPoses after copy or move operations.
 		- Fix invalid TP-targets generated during reactive navigation.
 

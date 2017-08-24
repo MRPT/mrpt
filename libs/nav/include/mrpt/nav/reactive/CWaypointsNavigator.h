@@ -159,6 +159,8 @@ class NAV_IMPEXP CWaypointsNavigator : public mrpt::nav::CAbstractNavigator
 
 	virtual void onStartNewNavigation() override;
 
+	virtual void onNavigateCommandReceived() override;
+
 	virtual bool checkHasReachedTarget(const double targetDist) const override;
 	/** The waypoints-specific part of navigationStep() */
 	virtual void waypoints_navigationStep();

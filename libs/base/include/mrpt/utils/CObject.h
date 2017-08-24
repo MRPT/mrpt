@@ -350,7 +350,7 @@ void BASE_IMPEXP registerAllPendingClasses();
 
 }  // End of namespace
 
-/** Converts a smart pointer Base::Ptr to Derived::Ptr, in a way compatible 
+/** Converts a smart pointer Base::Ptr to Derived::Ptr, in a way compatible
 * with MRPT >=1.5.4 and MRPT 2.x series.
 * \ingroup mrpt_base_grp
 */
@@ -358,7 +358,7 @@ template <typename CAST_TO>
 struct ptr_cast
 {
 	template <typename CAST_FROM_PTR>
-	static typename CAST_TO::Ptr from(const CAST_FROM_PTR &ptr)
+	static typename CAST_TO::Ptr from(const CAST_FROM_PTR& ptr)
 	{
 		return std::dynamic_pointer_cast<CAST_TO>(ptr);
 	}
