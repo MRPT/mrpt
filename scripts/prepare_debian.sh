@@ -34,6 +34,26 @@ do
      esac
 done
 
+if [ -f version_prefix.txt ];
+then
+	MRPT_VERSION_STR=`head -n 1 version_prefix.txt`
+else
+	echo "Error: cannot find version_prefix.txt!!"
+	exit 1
+fi
+
+# Append snapshot?
+if [ $APPEND_SNAPSHOT_NUM == "1" ];
+then
+        MRPT_SNAPSHOT_VERSION=`date +%Y%m%d-%H%M`
+        MRPT_SNAPSHOT_VERSION+="-git-"
+        MRPT_SNAPSHOT_VERSION+=`git rev-parse --short=8 HEAD`
+        MRPT_SNAPSHOT_VERSION+="-"
+        MRPT_VERSION_STR="${MRPT_VERSION_STR}~snapshot${MRPT_SNAPSHOT_VERSION}${APPEND_LINUX_DISTRO}"
+else
+        MRPT_VERSION_STR="${MRPT_VERSION_STR}${APPEND_LINUX_DISTRO}"
+fi
+
 # Call prepare_release, which also detects MRPT version and exports it
 # in MRPT_VERSION_STR, etc.
 if [ -f version_prefix.txt ];
@@ -61,18 +81,6 @@ then
 else
 	echo "ERROR: Cannot find ${MRPT_EXTERN_DEBIAN_DIR}"
 	exit 1
-fi
-
-# Append snapshot?
-if [ $APPEND_SNAPSHOT_NUM == "1" ];
-then
-	MRPT_SNAPSHOT_VERSION=`date +%Y%m%d-%H%M`
-	MRPT_SNAPSHOT_VERSION+="-git-"
-	MRPT_SNAPSHOT_VERSION+=`git rev-parse --short=8 HEAD`
-	MRPT_SNAPSHOT_VERSION+="-"
-	MRPT_VERSION_STR="${MRPT_VERSION_STR}~snapshot${MRPT_SNAPSHOT_VERSION}${APPEND_LINUX_DISTRO}"
-else
-	MRPT_VERSION_STR="${MRPT_VERSION_STR}${APPEND_LINUX_DISTRO}"
 fi
 
 MRPT_DEBSRC_DIR=$MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}

@@ -11,6 +11,8 @@
 #  MRPT_PKG_CUSTOM_CMAKE_PARAMS="\"-DDISABLE_SSE3=ON\""
 #
 
+set -e
+
 # Checks
 # --------------------------------
 if [ -f version_prefix.txt ];

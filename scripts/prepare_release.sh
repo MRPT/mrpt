@@ -8,7 +8,11 @@ set -e  # exit on error
 # --------------------------------
 if [ -f version_prefix.txt ];
 then
-	MRPT_VERSION_STR=`head -n 1 version_prefix.txt`
+	if [ -z ${MRPT_VERSION_STR+x} ];
+	then
+		# MRPT_VERSION_STR is not set by caller: load it
+		MRPT_VERSION_STR=`head -n 1 version_prefix.txt`
+	fi
 	MRPT_VERSION_MAJOR=${MRPT_VERSION_STR:0:1}
 	MRPT_VERSION_MINOR=${MRPT_VERSION_STR:2:1}
 	MRPT_VERSION_PATCH=${MRPT_VERSION_STR:4:1}
