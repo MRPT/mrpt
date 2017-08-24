@@ -287,24 +287,28 @@ void CAbstractNavigator::doEmergencyStop( const std::string &msg )
 }
 
 
-void CAbstractNavigator::navigate(const CAbstractNavigator::TNavigationParams *params )
+void CAbstractNavigator::onNavigateCommandReceived()
 {
-	MRPT_START;
-
 	mrpt::synch::CCriticalSectionLocker csl(&m_nav_cs);
 
-	ASSERT_(params!=nullptr);
+	m_navigationEndEventSent = false;
+	mrpt::utils::delete_safe(m_navigationParams);
+}
+
+void CAbstractNavigator::processNavigateCommand(const TNavigationParams *params)
+{
+	MRPT_START;
+	mrpt::synch::CCriticalSectionLocker csl(&m_nav_cs);
+
+	ASSERT_(params != nullptr);
 	ASSERT_(params->target.targetDesiredRelSpeed >= .0 && params->target.targetDesiredRelSpeed <= 1.0);
 
-	m_navigationEndEventSent = false;
-
 	// Copy data:
-	mrpt::utils::delete_safe(m_navigationParams);
 	m_navigationParams = dynamic_cast<CAbstractNavigator::TNavigationParams *>(params->clone());
-	ASSERT_(m_navigationParams!=nullptr);
+	ASSERT_(m_navigationParams != nullptr);
 
 	// Transform: relative -> absolute, if needed.
-	if ( m_navigationParams->target.targetIsRelative )
+	if (m_navigationParams->target.targetIsRelative)
 	{
 		this->updateCurrentPoseAndSpeeds();
 		m_navigationParams->target.target_coords = m_curPoseVel.pose + m_navigationParams->target.target_coords;
@@ -318,6 +322,14 @@ void CAbstractNavigator::navigate(const CAbstractNavigator::TNavigationParams *p
 	m_badNavAlarm_minDistTarget = std::numeric_limits<double>::max();
 	m_badNavAlarm_lastMinDistTime = mrpt::system::getCurrentTime();
 
+	MRPT_END;
+}
+
+void CAbstractNavigator::navigate(const CAbstractNavigator::TNavigationParams *params )
+{
+	MRPT_START;
+	this->onNavigateCommandReceived();
+	this->processNavigateCommand(params);
 	MRPT_END;
 }
 

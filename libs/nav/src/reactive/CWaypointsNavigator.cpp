@@ -51,15 +51,26 @@ CWaypointsNavigator::~CWaypointsNavigator()
 {
 }
 
-void CWaypointsNavigator::navigateWaypoints( const TWaypointSequence & nav_request )
+void CWaypointsNavigator::onNavigateCommandReceived()
 {
-	MRPT_START
+	CAbstractNavigator::onNavigateCommandReceived();
 
 	mrpt::synch::CCriticalSectionLocker csl(&m_nav_waypoints_cs);
 
 	m_was_aligning = false;
 	m_waypoint_nav_status = TWaypointStatusSequence();
-	m_waypoint_nav_status.timestamp_nav_started = mrpt::system::now();
+	m_waypoint_nav_status.timestamp_nav_started = INVALID_TIMESTAMP;
+	m_waypoint_nav_status.waypoint_index_current_goal = -1;  // Not started yet.
+}
+
+void CWaypointsNavigator::navigateWaypoints( const TWaypointSequence & nav_request )
+{
+	MRPT_START
+
+	this->onNavigateCommandReceived();
+
+	mrpt::synch::CCriticalSectionLocker csl(&m_nav_waypoints_cs);
+
 	m_pending_events.clear();
 
 	const size_t N = nav_request.waypoints.size();
@@ -72,8 +83,6 @@ void CWaypointsNavigator::navigateWaypoints( const TWaypointSequence & nav_reque
 		ASSERT_( nav_request.waypoints[i].isValid() );
 		m_waypoint_nav_status.waypoints[i] = nav_request.waypoints[i];
 	}
-
-	m_waypoint_nav_status.waypoint_index_current_goal = -1;  // Not started yet.
 
 	// The main loop navigationStep() will iterate over waypoints and send them to navigate()
 	MRPT_END
@@ -340,7 +349,7 @@ void CWaypointsNavigator::waypoints_navigationStep()
 				// Append to list of targets:
 				nav_cmd.multiple_targets.emplace_back(ti);
 			}
-			this->navigate( &nav_cmd );
+			this->processNavigateCommand( &nav_cmd );
 
 			MRPT_LOG_DEBUG_STREAM( "[CWaypointsNavigator::navigationStep] Active waypoint changed. Current status:\n" << this->getWaypointNavStatus().getAsText());
 		}
@@ -437,20 +446,33 @@ CWaypointsNavigator::TWaypointsNavigatorParams::TWaypointsNavigatorParams() :
 
 bool CWaypointsNavigator::checkHasReachedTarget(const double targetDist) const
 {
-	if (targetDist > m_navigationParams->target.targetAllowedDistance)
-		return false;
-	if (m_navigationParams->target.targetIsIntermediaryWaypoint)
-		return false;
-
+	bool ret;
+	const TWaypointStatus *wp = nullptr;
 	const auto &wps = m_waypoint_nav_status;
-	const TWaypointStatus *wp = (!wps.waypoints.empty() &&
-		wps.waypoint_index_current_goal >= 0 && 
-		wps.waypoint_index_current_goal < (int)wps.waypoints.size()
-		)
-		?
-		&wps.waypoints[wps.waypoint_index_current_goal]
-		:
-		nullptr;
+	if (m_navigationParams->target.targetIsIntermediaryWaypoint)
+	{
+		ret = false;
+	}
+	else if (wps.timestamp_nav_started != INVALID_TIMESTAMP)
+	{
+		wp = (!wps.waypoints.empty() &&
+			wps.waypoint_index_current_goal >= 0 &&
+			wps.waypoint_index_current_goal < (int)wps.waypoints.size()
+			)
+			?
+			&wps.waypoints[wps.waypoint_index_current_goal]
+			:
+			nullptr;
+		ret = (targetDist <= m_navigationParams->target.targetAllowedDistance) ||
+			(wp == nullptr || wp->reached);
+	}
+	else
+	{
+		ret = (targetDist <= m_navigationParams->target.targetAllowedDistance);
+	}
+	MRPT_LOG_DEBUG_STREAM("CWaypointsNavigator::checkHasReachedTarget() called"
+		"with targetDist=" << targetDist << " return=" << ret << " waypoint: " <<
+		(wp == nullptr ? std::string("") : wp->getAsText()) );
 
-	return ( wp==nullptr || wp->reached);
+	return ret;
 }

@@ -13,7 +13,7 @@
 <p> <b>Note:</b> <i>If you are displaying a local version of this page and you have not built the whole HTML documentation, the links above will be broken. Either build the documentation invoking <code>make documentation_html</code> or [browse it on-line](http://www.mrpt.org/).</i></p>
 
 <a name="1.5.4">
-<h2>Version 1.5.3: Released 13/AUG/2017  </h2></a>
+<h2>Version 1.5.4: (Under development)  </h2></a>
 - <b>Detailed list of changes:</b>
 	- \ref mrpt_base_grp
 		- Fix potential uninitialized value in CRobot2DPoseEstimator::getLatestRobotPose()
@@ -22,6 +22,8 @@
 		- Fix MRPTConfig.cmake for system octomap libraries.
 		- Fix package-contains-vcs-control-file (.gitingore) Lintian error.
 		- Fix aborting reading from LMS111 scanner on first error.
+	- BUG FIXES:
+		- Fix waypoint reactive navigator edge case in which "end event" won't be issued.
 
 <hr>
 <a name="1.5.3">

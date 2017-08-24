@@ -106,6 +106,7 @@ namespace mrpt
 		virtual bool impl_waypoint_is_reachable(const mrpt::math::TPoint2D &wp_local_wrt_robot) const = 0;
 
 		virtual void onStartNewNavigation() MRPT_OVERRIDE;
+		virtual void onNavigateCommandReceived() MRPT_OVERRIDE;
 
 		virtual bool checkHasReachedTarget(const double targetDist) const MRPT_OVERRIDE;
 		virtual void waypoints_navigationStep(); //!< The waypoints-specific part of navigationStep()
