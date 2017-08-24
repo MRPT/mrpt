@@ -20,6 +20,7 @@ class CNode;
 class CGlWidget;
 class QTextEdit;
 
+/** This class implements work with all maps, which open*/
 class CViewerContainer : public QWidget
 {
 	Q_OBJECT

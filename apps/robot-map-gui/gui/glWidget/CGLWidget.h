@@ -23,6 +23,7 @@
 
 class CDocument;
 
+/** This class implements the work with map*/
 class CGlWidget : public mrpt::gui::CQtGlCanvasBase
 {
 	Q_OBJECT
