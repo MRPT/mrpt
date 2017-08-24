@@ -1,7 +1,18 @@
-//
-// Created by raghavender on 26/06/17.
-//
+/* +------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)            |
+   |                          http://www.mrpt.org/                          |
+   |                                                                        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file     |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                |
+   | Released under BSD License. See details in http://www.mrpt.org/License |
+   +------------------------------------------------------------------------+ */
 
+/*---------------------------------------------------------------
+	APPLICATION: benchmarkingImageFeatures_gui
+	FILE: my_qlabel.cpp
+	AUTHOR: Raghavender Sahdev <raghavendersahdev@gmail.com>
+	See README.txt for instructions.
+  ---------------------------------------------------------------*/
 #include "my_qlabel.h"
 
 my_qlabel::my_qlabel(QWidget *parent) : QLabel(parent)

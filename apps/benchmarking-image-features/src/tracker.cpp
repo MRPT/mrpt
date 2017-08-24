@@ -1,7 +1,20 @@
-//
-// Created by raghavender on 23/07/17.
-// this code has been build on top of that from existing tracking code in mrpt/apps/track-video-feats_main.cpp
-//
+/* +------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)            |
+   |                          http://www.mrpt.org/                          |
+   |                                                                        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file     |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                |
+   | Released under BSD License. See details in http://www.mrpt.org/License |
+   +------------------------------------------------------------------------+ */
+
+/*---------------------------------------------------------------
+	APPLICATION: benchmarkingImageFeatures_gui
+	FILE: tracker.cpp
+	AUTHOR: Raghavender Sahdev <raghavendersahdev@gmail.com>
+	See README.txt for instructions.
+  ---------------------------------------------------------------*/
+
+
 #include "tracker.h"
 
 /************************************************************************************************

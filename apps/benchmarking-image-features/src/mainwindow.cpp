@@ -1,68 +1,30 @@
+/* +------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)            |
+   |                          http://www.mrpt.org/                          |
+   |                                                                        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file     |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                |
+   | Released under BSD License. See details in http://www.mrpt.org/License |
+   +------------------------------------------------------------------------+ */
+
+/*---------------------------------------------------------------
+	APPLICATION: benchmarkingImageFeatures_gui
+	FILE: mainwindow.cpp
+	AUTHOR: Raghavender Sahdev <raghavendersahdev@gmail.com>
+	See README.txt for instructions.
+  ---------------------------------------------------------------*/
+
 #include "mainwindow.h"
-#include <QButtonGroup>
-#include <QtWidgets>
-#include <dirent.h>
-#include <mrpt/utils/CMemoryStream.h>
-#include <mrpt/gui/CDisplayWindow.h>
-#include <mrpt/gui/CDisplayWindowPlots.h>
-#include <opencv2/line_descriptor.hpp>
 
-#include <opencv2/plot.hpp>
-#include <mrpt/utils/metaprogramming.h>
-#include <mrpt/math/data_utils.h>
-
-#include <mrpt/vision/tracking.h>
-
-
-#include <mrpt/system/os.h>
-#include <mrpt/vision/CFeatureExtraction.h>
-
-#include <mrpt/obs/CRawlog.h>
-#include <mrpt/obs.h>
+/// MRPT includes
+#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/obs/CObservation.h>
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/CObservationStereoImages.h>
-#include <mrpt/utils/CFileGZInputStream.h>
-#include <mrpt/obs/CActionCollection.h>
-#include <mrpt/obs/CObservation.h>
-#include <mrpt/obs/CSensoryFrame.h>
-#include <mrpt/obs/CAction.h>
+#include <mrpt/obs/CRawlog.h>
 
 
-#include <mrpt/system/filesystem.h>
-#include <mrpt/obs/CObservation3DRangeScan.h>
-
-
-#   include <mrpt/obs/CSensoryFrame.h>
-#	include <mrpt/obs/CRawlog.h>
-#	include <mrpt/obs/CObservation2DRangeScan.h>
-#	include <mrpt/obs/CObservationBeaconRanges.h>
-#	include <mrpt/obs/CObservationBearingRange.h>
-
-///
-#include <boost/interprocess/sync/scoped_lock.hpp>
-
-
-
-#include <mrpt/version.h>
-#if MRPT_VERSION>=0x130
-#	include <mrpt/obs/CSensoryFrame.h>
-#	include <mrpt/obs/CRawlog.h>
-#	include <mrpt/obs/CObservation2DRangeScan.h>
-#	include <mrpt/obs/CObservationBeaconRanges.h>
-#	include <mrpt/obs/CObservationBearingRange.h>
-
-using namespace mrpt::obs;
-#else
-#	include <mrpt/slam/CSensoryFrame.h>
-#	include <mrpt/slam/CRawlog.h>
-#	include <mrpt/slam/CObservation2DRangeScan.h>
-#	include <mrpt/slam/CObservationBeaconRanges.h>
-#	include <mrpt/slam/CObservationBearingRange.h>
-	using namespace mrpt::slam;
-#endif
-///
-
-
+/// using namespaces
 using namespace mrpt::obs;
 using namespace mrpt::system;
 using namespace cv::line_descriptor;
@@ -72,7 +34,6 @@ using namespace mrpt::gui;
 using namespace mrpt::math;
 using namespace mrpt;
 using namespace mrpt::poses;
-
 using namespace std;
 using namespace cv;
 using namespace cv::xfeatures2d;
@@ -3414,7 +3375,7 @@ MainWindow::MainWindow(QWidget *window_gui) : QMainWindow(window_gui)
     userOptionsVBox->addWidget(testing_set,20,0);
     userOptionsVBox->addWidget(browse_testing,21,0);
     userOptionsVBox->addWidget(perform_place_recog,22,0);
-    userOptionsVBox->addWidget(iterate_place_recog,22,1);
+    userOptionsVBox->addWidget(iterate_place_recog,23,0);
 
 
     userOptionsGroupBox->setLayout(userOptionsVBox);
@@ -4309,7 +4270,7 @@ void MainWindow::Mouse_Pressed()
             images_plots_sift_surf->setVisible(true);
         }
 
-        QLabel *detector_info  = new QLabel("Evaluation Metrics shown here");
+        QLabel *detector_info  = new QLabel("");
         if(currentInputIndex == 0 || currentInputIndex == 3)
             desc_VisualizeGrid->addWidget(detector_info,0,1,1,1);
 
@@ -4418,10 +4379,7 @@ void MainWindow::Mouse_Pressed()
         desc_VisualizeGrid->addWidget(images_static_sift_surf,0,0,1,1);
         cout << "before adding images_plots_sift_surf" << endl;
 
-
-
-
-        QLabel *detector_info  = new QLabel("Evaluation Metrics shown here");
+        QLabel *detector_info  = new QLabel("");
         if(currentInputIndex == 0 || currentInputIndex == 3)
             desc_VisualizeGrid->addWidget(detector_info,0,1,1,1);
         if(currentInputIndex == 1 || currentInputIndex == 4 || (currentInputIndex==2 && rawlog_type==1))

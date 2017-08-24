@@ -1,3 +1,19 @@
+/* +------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)            |
+   |                          http://www.mrpt.org/                          |
+   |                                                                        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file     |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                |
+   | Released under BSD License. See details in http://www.mrpt.org/License |
+   +------------------------------------------------------------------------+ */
+
+/*---------------------------------------------------------------
+	APPLICATION: benchmarkingImageFeatures_gui
+	FILE: visual_odometry.h
+	AUTHOR: Raghavender Sahdev <raghavendersahdev@gmail.com>
+	See README.txt for instructions.
+  ---------------------------------------------------------------*/
+
 /*
 The MIT License
 
@@ -23,7 +39,7 @@ THE SOFTWARE.
 
 */
 
-
+/// OpenCV includes
 #include "opencv2/video/tracking.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/highgui/highgui.hpp"
@@ -31,9 +47,10 @@ THE SOFTWARE.
 #include "opencv2/calib3d/calib3d.hpp"
 #include "opencv2/core.hpp"
 #include "opencv2/xfeatures2d.hpp"
+#include <opencv2/line_descriptor.hpp>
+#include <opencv2/plot.hpp>
 
-#include <mrpt/vision/CFeatureExtraction.h>
-
+/// basic C++ includes
 #include <iostream>
 #include <ctype.h>
 #include <algorithm> // for copy
@@ -44,23 +61,20 @@ THE SOFTWARE.
 #include <fstream>
 #include <string>
 
-
+/// MRPT includes
+#include <mrpt/vision/CFeatureExtraction.h>
 #include <mrpt/utils/CMemoryStream.h>
 #include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
-#include <opencv2/line_descriptor.hpp>
-
-#include <opencv2/plot.hpp>
 #include <mrpt/utils/metaprogramming.h>
 #include <mrpt/math/data_utils.h>
 
+/// Qt includes
 #include <QMainWindow>
 #include <QDialog>
 #include <QGridLayout>
 #include <QLabel>
 #include <QString>
-
-//#include "Counter.h"
 
 using namespace mrpt::vision;
 using namespace mrpt::utils;
@@ -96,7 +110,6 @@ public slots:
         m_value = value;
         emit valueChanged(value);
         //cout << value <<  " you called me in SLOT 2" << endl;
-
     };
 
 signals:
@@ -189,8 +202,19 @@ public:
     void display();
 
 
+    /**
+     * getCalibrationParams reads the camera calibration parameters from the calibration file and loads into the required variables
+     * @param calibratin_file input path to the calibration file
+     * @return returns the calibration parameters
+     */
     vector<double> getCalibrationParams(string calibratin_file);
 
+    /**
+     * need to change the values based on eah sequence starting point the starting point of each
+     * trajectory in KITTI goes here
+     * @param ch
+     * @return
+     */
     vector<int> computeStartingPoint(char ch);
 };
 

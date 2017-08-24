@@ -1,9 +1,20 @@
-//
-// Created by raghavender on 02/08/17.
-//
+/* +------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)            |
+   |                          http://www.mrpt.org/                          |
+   |                                                                        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file     |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                |
+   | Released under BSD License. See details in http://www.mrpt.org/License |
+   +------------------------------------------------------------------------+ */
+
+/*---------------------------------------------------------------
+	APPLICATION: benchmarkingImageFeatures_gui
+	FILE: place_recognition.cpp
+	AUTHOR: Raghavender Sahdev <raghavendersahdev@gmail.com>
+	See README.txt for instructions.
+  ---------------------------------------------------------------*/
 
 #include "place_recognition.h"
-#include <omp.h>
 
 /************************************************************************************************
 *								Place Recognition Constructor          					        *
@@ -23,9 +34,7 @@ PlaceRecognition::PlaceRecognition(vector<string> training_paths,
     this->descriptor_selected = descriptor_selected;
 
     current_index_test_image = 0;
-
     trained_flag = false;
-
     training_file_written_flag = false;
 
     len_training = training_paths.size();
@@ -46,14 +55,16 @@ PlaceRecognition::PlaceRecognition(vector<string> training_paths,
 ************************************************************************************************/
 void PlaceRecognition::computeLabels(vector<string> file_paths, int counts[NUM_CLASSES], int *labels)
 {
+    // initialize all labels to zero.
     for(int i=0 ; i<NUM_CLASSES ; i++ )
         counts[i] = 0;
+
+    /// assign labels based on the label/place name that appears in the file name
     for(int i=0; i<file_paths.size() ; i++)
     {
         if(file_paths.at(i).find("rPA") != std::string::npos) {
             labels[i] = 1;
             counts[0]++;
-
         }
         else if(file_paths.at(i).find("rCR") != std::string::npos) {
             labels[i] = 2;
@@ -87,9 +98,10 @@ int PlaceRecognition::predictLabel2(CFeatureList *feats_testingAll, vector<uint8
     for (int i=0 ; i< feats_size ; i++)
         labels[i] = 0;
 
+    /// following for loop iterates over all key-points in the given  feats_testingAll CFeatureList and assigns a place label
+    /// associated with the descriptor around each key-point
     for(int i=0 ; i<feats_size ; i++) // feat_size is the number of key-points
     {
-
         double min = std::numeric_limits<double>::max();// 99999;
         vector<uint8_t> temp_feat;
 
@@ -101,28 +113,20 @@ int PlaceRecognition::predictLabel2(CFeatureList *feats_testingAll, vector<uint8
             temp_feat = feats_testing.getByID(i).get()->descriptors.LATCH;
 
         long descriptor_size = temp_feat.size();
-
+        /// following for loop iterates over the entire vocabulary in the training images and computes the best matching descriptor
+        /// from the training descriptors for each i'th key-point
         for(int j=0 ; j<total_vocab_size ; j++)
         {
             double temp_sum = 0;
-            //long descriptor_size = training_words[0].size();
-            //cout << descriptor_size << " desrcip" << endl;
-
             if(training_words[j].size() != 0)
             {
-                //cout << "temp_feat size: " << temp_feat.size() << " training_words[j] " << j << " : "
-                //   << training_words[j].size() << endl;
-                //cout << descriptor_size << " descriptor size " << endl;
                 for (int k = 0; k < descriptor_size; k++) {
                     /// Use abs if better results
                     //temp_sum = temp_sum + abs((temp_feat.at(k) - training_words[j].at(k)))
                     temp_sum = temp_sum + pow((temp_feat.at(k) - (int)training_words[j].at(k)), 2);
-                    //cout << temp_feat.at(k) - training_words[j].at(k) << " result, i : " << i << " , j : " << j << endl;
                 }
-                //cout << temp_sum  << " temp_sum JJJJ =" << j  << " vocab size " << total_vocab_size   << endl;
                 /// computes the best descriptor match with that in the training set.
                 if (temp_sum < min) {
-                    //cout << temp_sum << " temp_sum " << min << " MINNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN " << endl;
                     labels[i] = training_word_labels[j];
                     min = temp_sum;
                 }
@@ -163,7 +167,6 @@ int PlaceRecognition::predictLabel(CFeatureList *feats_testingAll, vector<float>
             temp_feat = feats_testing.getByID(i).get()->descriptors.SpinImg;
 
         long descriptor_size = temp_feat.size();
-
 
         //cout << "before inner for loop" << i << endl;
         for(int j=0 ; j<total_vocab_size ; j++)
@@ -221,9 +224,7 @@ int PlaceRecognition::findMax(int *labels, int feats_size)
         temp_labels[i] = 0;
 
     for(int i=0 ;i < feats_size ; i++)
-    {
         temp_labels[labels[i]-1]++;
-    }
 
     /// find out maximum out of the temp_labels array
     int max=0, pos=0;
@@ -244,8 +245,6 @@ int PlaceRecognition::findMax(int *labels, int feats_size)
 ************************************************************************************************/
 string PlaceRecognition::startPlaceRecognition(CFeatureExtraction fext)
 {
-
-
     ofstream training_file;
     //ofstream testing_file;
 
@@ -258,15 +257,16 @@ string PlaceRecognition::startPlaceRecognition(CFeatureExtraction fext)
     cout << len_training << " train "  << len_testing << " test"  << endl;
 
     /// The training model is built here all features are extracted in this part, takes 30 seconds for 900+900 images
-    if(!trained_flag) {
-
-        for (int i = 0; i < len_training; i++) {
+    if(!trained_flag)
+    {
+        for (int i = 0; i < len_training; i++)
+        {
             training[i].loadFromFile(training_paths.at(i));
             fext.detectFeatures(training[i], feats_training[i], 0, numFeats);
             fext.computeDescriptors(training[i], feats_training[i], desc_to_compute);
         }
-
-        for (int i = 0; i < len_testing; i++) {
+        for (int i = 0; i < len_testing; i++)
+        {
             testing[i].loadFromFile(testing_paths.at(i));
             fext.detectFeatures(testing[i], feats_testing[i], 0, numFeats);
             fext.computeDescriptors(testing[i], feats_testing[i], desc_to_compute);
@@ -277,7 +277,6 @@ string PlaceRecognition::startPlaceRecognition(CFeatureExtraction fext)
 
     }/// end of if feature extraction flag (trained flag)
 
-    //cout << feats_training[0].size() << " 0 " << feats_training[1].size() << " 1 " << feats_training[0].getByID(1).get()->descriptors.ORB << endl;;
     CTicTac label_time;
     label_time.Tic();
 
@@ -312,15 +311,14 @@ string PlaceRecognition::startPlaceRecognition(CFeatureExtraction fext)
     if (!training_file_written_flag)
     {
         training_file.clear();
-
-
         int kount = 0;
         for (int i = 0; i < len_training; i++) {
             training_file << feats_training[i].size();
             //cout << "kount is : " << kount << endl;
             for (int j = 0; j < feats_training[i].size(); j++, kount++)
             {
-                if (descriptor_selected == 0) {
+                if (descriptor_selected == 0)
+                {
                     vector<uint8_t> temp_feat;
                     temp_feat = feats_training[i].getByID(j).get()->descriptors.SIFT;
                     training_words1[kount] = feats_training[i].getByID(j).get()->descriptors.SIFT;
@@ -329,7 +327,9 @@ string PlaceRecognition::startPlaceRecognition(CFeatureExtraction fext)
                         training_file << (int) temp_feat.at(k) << " ";
 
                     //training_file << feats_testing[i].getByID(j).get()->descriptors.SIFT.data() << endl; //!< SIFT descriptors
-                } else if (descriptor_selected == 1) {
+                }
+                else if (descriptor_selected == 1)
+                {
                     vector<float> temp_feat;
                     temp_feat = feats_training[i].getByID(j).get()->descriptors.SURF;
                     training_words2[kount] = feats_training[i].getByID(j).get()->descriptors.SURF;
@@ -356,9 +356,9 @@ string PlaceRecognition::startPlaceRecognition(CFeatureExtraction fext)
                     }
                 }
                 else if (descriptor_selected == 3);//training_file << feats_testing[i].getByID(j).get()->descriptors.PolarImg.size(); //!< Polar image descriptor
-                else if (descriptor_selected ==
-                         4);//training_file << feats_testing[i].getByID(j).get()->descriptors.LogPolarImg.size(); //!< Log-Polar image descriptor
-                else if (descriptor_selected == 5) {
+                else if (descriptor_selected == 4);//training_file << feats_testing[i].getByID(j).get()->descriptors.LogPolarImg.size(); //!< Log-Polar image descriptor
+                else if (descriptor_selected == 5)
+                {
                     vector<uint8_t> temp_feat;
                     temp_feat = feats_training[i].getByID(j).get()->descriptors.ORB;
                     training_words1[kount] = feats_training[i].getByID(j).get()->descriptors.ORB;
@@ -369,14 +369,10 @@ string PlaceRecognition::startPlaceRecognition(CFeatureExtraction fext)
                         int temp_var ;//= (int) temp_feat.at(k);
                         temp_var = (int) training_words1[kount].at(k);
                         training_file << temp_var << " " ;
-                        //training_file << (int) temp_feat.at(k) << " ";
-                        //cout << temp_var << " " ;
-
-                        //cout << feats_training[i].getByID(j).get()->descriptors.ORB.at(k) << " ";
                     }
-                    //cout << endl;
-                    //training_file << feats_testing[i].getByID(j).get()->descriptors.ORB.data() << endl; //!< ORB image descriptor
-                } else if (descriptor_selected == 6) {
+                }
+                else if (descriptor_selected == 6)
+                {
                     vector<uint8_t> temp_feat;
                     temp_feat = feats_training[i].getByID(j).get()->descriptors.BLD;
                     training_words1[kount] = feats_training[i].getByID(j).get()->descriptors.BLD;
@@ -385,7 +381,9 @@ string PlaceRecognition::startPlaceRecognition(CFeatureExtraction fext)
                         training_file << (int) temp_feat.at(k) << " ";
 
                     //training_file << feats_testing[i].getByID(j).get()->descriptors.BLD.data() << endl; //!< BLD image descriptor
-                } else if (descriptor_selected == 7) {
+                }
+                else if (descriptor_selected == 7)
+                {
                     vector<uint8_t> temp_feat;
                     temp_feat = feats_training[i].getByID(j).get()->descriptors.LATCH;
                     training_words1[kount] = feats_training[i].getByID(j).get()->descriptors.LATCH;
@@ -400,12 +398,10 @@ string PlaceRecognition::startPlaceRecognition(CFeatureExtraction fext)
                 training_file << " #" << training_labels[i] << " $" << training_word_labels[kount] << endl;
 
             } // end of inner for loop for number of key-points
-
         } // end of outer for loop for number of images
+
         training_file.close();
         //testing_file.close();
-
-
         this->training_words_org = training_words2;
         this->training_words_org2 = training_words1;
         this->training_word_labels_org = training_word_labels;
@@ -414,29 +410,19 @@ string PlaceRecognition::startPlaceRecognition(CFeatureExtraction fext)
         {
             training_word_labels_org[i] = training_word_labels[i];
         }
+
         this->total_vocab_size_org = len_train_words;
-
-
         this->training_file_written_flag = true;
-
     } // end of writting training features to a file
 
-
-
     cout << " elapsed time for training dataset: " << training_time.Tac() << endl; // " and kount is : " << kount << endl;
-
-
-
     CTicTac testing_time;
     testing_time.Tic();
-
-
 
     /// now extracting features for Place Recognition for testing dataset
     //testing_file.open ("testing_images_features.txt");
     //testing_file.clear();
     cout << "len testing " << len_testing << endl;
-
     int predicted_classes[len_testing];
     int predicted_class_labels[NUM_CLASSES];
 
@@ -460,22 +446,9 @@ string PlaceRecognition::startPlaceRecognition(CFeatureExtraction fext)
     cout << testing_paths.at(0) << endl;
     current_index_test_image++;
 
-    /*for (int i = 0; i < len_testing; i++) {
-        //CTicTac key_point_clock;
-        //key_point_clock.Tic();
-        int predicted = predictLabel(feats_testing_org, training_words_org, training_word_labels_org, total_vocab_size_org, current_index_test_image);
-        cout << testing_paths.at(i) << endl;
-        predicted_classes[i] = predicted;
-
-        predicted_class_labels[predicted]++;
-
-        //cout << "elapsed time for image " << i << " is : " << key_point_clock.Tac() << endl;
-    }*/
-
     cout << time_prediction.Tac() << " elapsed time " << endl;
 
     /// use a bag of words kind of framework here
-
     predicted_classes[current_index_test_image] = predicted_Label;
     if(predicted_classes[current_index_test_image] == testing_labels[current_index_test_image])
         correct++;
@@ -500,7 +473,6 @@ string PlaceRecognition::startPlaceRecognition(CFeatureExtraction fext)
     cout << " % of correct" << (double)correct/(double)(incorrect+correct) << endl;
     cout << " elapsed time for testing dataset: " << testing_time.Tac() << endl;
     cout << "after reading testing images" << endl ;
-
 
     return output.str();
 }
