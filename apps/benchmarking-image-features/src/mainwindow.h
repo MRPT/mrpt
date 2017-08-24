@@ -1,5 +1,22 @@
+/* +------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)            |
+   |                          http://www.mrpt.org/                          |
+   |                                                                        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file     |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                |
+   | Released under BSD License. See details in http://www.mrpt.org/License |
+   +------------------------------------------------------------------------+ */
+
+/*---------------------------------------------------------------
+	APPLICATION: benchmarkingImageFeatures_gui
+	FILE: mainwindow.h
+	AUTHOR: Raghavender Sahdev <raghavendersahdev@gmail.com>
+	See README.txt for instructions.
+  ---------------------------------------------------------------*/
+
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
+
 #define NUM_DETECTORS 11
 #define NUM_DESCRIPTORS 8
 #define IMAGE_WIDTH 600     // 400
@@ -15,21 +32,21 @@
 #define CROSS_SIZE 20
 
 
-
-//for the visualize descriptor part
+///for the visualize descriptor part
 #define DESCRIPTOR_WIDTH 100
 #define DESCRIPTOR_HEIGHT 100
 #define DESCRIPTOR_GRID_SIZE 9
 #define DESCRIPTOR_ROW_SIZE 3
-
 #define DESCRIPTOR_GRID_SIZE2 9
 #define MAX_DESC 500
 
-
+/// Qt includes
 #include <QMainWindow>
 #include <QObject>
 #include <QWidget>
 #include <QApplication>
+#include <QtWidgets>
+#include <QButtonGroup>
 #include <QLabel>
 #include <QPushButton>
 #include <QHBoxLayout>
@@ -45,36 +62,40 @@
 #include <QMap>
 #include <QtGui>
 #include <QVector>
-
 #include <QMouseEvent>
 #include <QEvent>
-
 #include <QThread>
-
 #include <QtCore>
 #include <QProgressBar>
 #include <QFutureWatcher>
 #include <QtConcurrent/QtConcurrent>
 #include <QtConcurrent/QtConcurrentRun>
-#include <boost/bind.hpp>
 
+/// standard c++ includes
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
 #include <sstream>
 #include <fstream>
 #include <iostream>
+#include <dirent.h>
+#include <boost/bind.hpp>
+#include <boost/interprocess/sync/scoped_lock.hpp>
 
+/// opencv includes
 #include "opencv2/core.hpp"
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/calib3d/calib3d.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include "opencv2/features2d.hpp"
 #include "opencv2/xfeatures2d.hpp"
+#include <opencv2/line_descriptor.hpp>
+#include <opencv2/plot.hpp>
 
-
+/// MRPT includes
 #include <mrpt/vision/CFeatureExtraction.h>
 
+/// vision tasks includes
 #include "my_qlabel.h"
 #include "tracker.h"
 #include "visual_odometry.h"
@@ -83,10 +104,8 @@
 
 using namespace cv;
 using namespace std;
-
 using namespace mrpt::vision;
 using namespace mrpt::utils;
-
 using namespace mrpt::math;
 using namespace mrpt;
 

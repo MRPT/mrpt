@@ -1,12 +1,31 @@
+/* +------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)            |
+   |                          http://www.mrpt.org/                          |
+   |                                                                        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file     |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                |
+   | Released under BSD License. See details in http://www.mrpt.org/License |
+   +------------------------------------------------------------------------+ */
+
+/*---------------------------------------------------------------
+	APPLICATION: benchmarkingImageFeatures_gui
+	FILE: tracker.h
+	AUTHOR: Raghavender Sahdev <raghavendersahdev@gmail.com>
+	See README.txt for instructions.
+  ---------------------------------------------------------------*/
+
 //
 // Created by raghavender on 23/07/17.
+// this code has been build on top of that from existing tracking code in mrpt/apps/track-video-feats_main.cpp
 //
-
 #ifndef MRPT_TRACKER_H
 #define MRPT_TRACKER_H
 
 #endif //MRPT_TRACKER_H
 
+/// OpenCV includes
+#include <opencv2/line_descriptor.hpp>
+#include <opencv2/plot.hpp>
 #include "opencv2/video/tracking.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/highgui/highgui.hpp"
@@ -15,9 +34,7 @@
 #include "opencv2/core.hpp"
 #include "opencv2/xfeatures2d.hpp"
 
-
-#include <mrpt/vision/CFeatureExtraction.h>
-
+/// standard C++ includes
 #include <iostream>
 #include <ctype.h>
 #include <algorithm> // for copy
@@ -28,17 +45,10 @@
 #include <fstream>
 #include <string>
 
-
-#include <mrpt/utils/CMemoryStream.h>
-#include <mrpt/gui/CDisplayWindow.h>
-#include <mrpt/gui/CDisplayWindowPlots.h>
-#include <opencv2/line_descriptor.hpp>
-
-#include <opencv2/plot.hpp>
+/// MRPT includes
 #include <mrpt/utils/metaprogramming.h>
 #include <mrpt/math/data_utils.h>
-
-
+#include <mrpt/vision/CFeatureExtraction.h>
 #include <mrpt/vision/tracking.h>
 #include <mrpt/vision/CVideoFileWriter.h>
 #include <mrpt/system/filesystem.h>
@@ -47,7 +57,6 @@
 
 using namespace mrpt::vision;
 using namespace mrpt::utils;
-using namespace mrpt::gui;
 using namespace mrpt::math;
 using namespace mrpt;
 using namespace cv;

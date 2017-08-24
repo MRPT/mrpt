@@ -1,9 +1,21 @@
-//
-// Created by raghavender on 19/07/17.
-//
+/* +------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)            |
+   |                          http://www.mrpt.org/                          |
+   |                                                                        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file     |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                |
+   | Released under BSD License. See details in http://www.mrpt.org/License |
+   +------------------------------------------------------------------------+ */
+
+/*---------------------------------------------------------------
+	APPLICATION: benchmarkingImageFeatures_gui
+	FILE: visual_odometry.cpp
+	AUTHOR: Raghavender Sahdev <raghavendersahdev@gmail.com>
+	See README.txt for instructions.
+  ---------------------------------------------------------------*/
+
 
 #include "visual_odometry.h"
-
 
 int ground_truth_x[MAX_FRAME];
 int ground_truth_y[MAX_FRAME];
@@ -230,7 +242,6 @@ VisualOdometry::VisualOdometry()
 /************************************************************************************************
 *					    Generate VO main funciton                                               *
 ************************************************************************************************/
-//Mat VisualOdometry::generateVO(CFeatureExtraction fext, int numFeats, string dataset, string groundtruth, string calibration_file, int feat_type )
 Mat VisualOdometry::generateVO(CFeatureExtraction fext, int numFeats, string file_paths[3], int feat_type )
 {
     string dataset = file_paths[0];
@@ -431,11 +442,9 @@ Mat VisualOdometry::generateVO(CFeatureExtraction fext, int numFeats, string fil
     return traj;
 }
 
-/**
- * need to change the values based on eah sequence starting point
- * @param ch
- * @return
- */
+/************************************************************************************************
+*					    Compute Starting Point                                                  *
+************************************************************************************************/
 vector<int> VisualOdometry::computeStartingPoint(char ch)
 {
     int x = 300;
