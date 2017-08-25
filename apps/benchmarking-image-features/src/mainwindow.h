@@ -27,17 +27,12 @@
 #define WIDGET_WIDTH 160
 #define BUTTON_WIDTH 150
 #define BUTTON_HEIGHT 30
-#define CIRCLE_THICKNESS 4
 #define CROSS_THICKNESS 3
 #define CROSS_SIZE 20
-
 
 ///for the visualize descriptor part
 #define DESCRIPTOR_WIDTH 100
 #define DESCRIPTOR_HEIGHT 100
-#define DESCRIPTOR_GRID_SIZE 9
-#define DESCRIPTOR_ROW_SIZE 3
-#define DESCRIPTOR_GRID_SIZE2 9
 #define MAX_DESC 500
 
 /// Qt includes
