@@ -17,6 +17,7 @@
 #ifndef MRPT_PLACERECOGNITION_H
 #define MRPT_PLACERECOGNITION_H
 
+///openCV includes
 #include "opencv2/video/tracking.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/highgui/highgui.hpp"
@@ -24,9 +25,10 @@
 #include "opencv2/calib3d/calib3d.hpp"
 #include "opencv2/core.hpp"
 #include "opencv2/xfeatures2d.hpp"
+#include <opencv2/line_descriptor.hpp>
+#include <opencv2/plot.hpp>
 
-#include <mrpt/vision/CFeatureExtraction.h>
-
+/// standard C++ includes
 #include <iostream>
 #include <ctype.h>
 #include <algorithm> // for copy
@@ -37,33 +39,30 @@
 #include <fstream>
 #include <string>
 
-#include <opencv2/line_descriptor.hpp>
-
-#include <opencv2/plot.hpp>
+/// MRPT includes
+#include <mrpt/vision/CFeatureExtraction.h>
 #include <mrpt/utils/metaprogramming.h>
 #include <mrpt/math/data_utils.h>
-
-
 #include <mrpt/vision/tracking.h>
 #include <mrpt/vision/CVideoFileWriter.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
+
 #define NUM_CLASSES 5
 
 using namespace mrpt::vision;
 using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt;
-
 using namespace cv;
 using namespace std;
 
-class PlaceRecognition {
+class PlaceRecognition
+{
 
 public:
     vector<string> training_paths;              //!< this holds the training image paths for the training dataset
     vector<string> testing_paths;               //!< this holds the testing image paths for the testing dataset
-    //CFeatureExtraction fext;
     TDescriptorType desc_to_compute;            //!< this holds the type of the descriptor which the user selects from the GUI
     int numFeats;                               //!< the number of features which the user wants to extract from each image
     int descriptor_selected;                    //!< the type of descriptor the user selects from the GUI
@@ -85,7 +84,7 @@ public:
     CFeatureList *feats_training2;
     CFeatureList *feats_testing2;
 
-    // stores the number of i'th class instances at the position index 'i'
+    /// stores the number of i'th class instances at the position index 'i'
     int training_count[NUM_CLASSES];            //!< this has the class specific counts for the occurrence of each class type in the training dataset
     int testing_count[NUM_CLASSES];             //!< this has the class specific counts for the occurrence of each class type in the testing dataset
 
@@ -101,11 +100,8 @@ public:
     CImage *training;                           //!< the images present in the training images dataset
     CImage *testing;                            //!< the images present in the testing images dataset
 
-
     vector<float> *training_words2;             //!< holds training words/descriptors for all points in the training dataset for SURF
     vector<uint8_t> *training_words1;           //!< holds training words/descriptors for all points in the training dataset for SIFT,ORB,BLD,LATCH
-
-
 
 public:
 
@@ -123,8 +119,6 @@ public:
                      TDescriptorType desc_to_compute,
                      int descriptor_selected,
                      int numFeats);
-    //~PlaceRecognition();
-
 
     /**
      * startPlaceRecognition function starts the place recognition code, it does the training by extracting features only the first time

@@ -179,15 +179,18 @@ int PlaceRecognition::predictLabel(CFeatureList *feats_testingAll, vector<float>
             {
                 //cout << "temp_feat size: " << temp_feat.size() << " training_words[j] " << j << " : "
                     // << training_words[j].size() << endl;
-                for (int k = 0; k < descriptor_size; k++) {
+                for (int k = 0; k < descriptor_size; k++)
+                {
                     ///Use abs if better results
                     //temp_sum = temp_sum + abs((temp_feat.at(k) - training_words[j].at(k)));
                     temp_sum = temp_sum + pow((temp_feat.at(k) - training_words[j].at(k)), 2);
                     //cout << temp_feat.at(k) - training_words[j].at(k) << " result, i : " << i << " , j : " << j << endl;
                 }
                 //cout << temp_sum  << " temp_sum JJJJ =" << j  << " vocab size " << total_vocab_size   << endl;
+
                 /// computes the best descriptor match with that in the training set.
-                if (temp_sum < min) {
+                if (temp_sum < min)
+                {
                     //cout << temp_sum << " temp_sum " << min << " MIN " << endl;
                     //cout << labels[j] << "  L@" ;
                     labels[i] = training_word_labels[j];
@@ -195,15 +198,10 @@ int PlaceRecognition::predictLabel(CFeatureList *feats_testingAll, vector<float>
                     min = temp_sum;
                 }
             }
-
         }// iterates over each key-point in the training images / dataset
         //cout << "outside inner loop " << endl;
-
     }// end of outter loop iterates over each key-point
 
-    //cout << "outside for loop" << feats_size << endl;
-
-    //cout << labels[0] << " 0, 1 " << labels[1] << endl;
 
     for (int i=0 ; i<feats_size ; i++)
         cout << labels[i] << " " ;
@@ -246,11 +244,11 @@ int PlaceRecognition::findMax(int *labels, int feats_size)
 string PlaceRecognition::startPlaceRecognition(CFeatureExtraction fext)
 {
     ofstream training_file;
-    //ofstream testing_file;
 
     CTicTac feature_time ;
     feature_time.Tic();
-    // stores the labels for the i'th image instance for training and testing images
+
+    /// stores the labels for the i'th image instance for training and testing images
     int training_labels[len_training];
     int testing_labels[len_testing];
 
@@ -297,24 +295,21 @@ string PlaceRecognition::startPlaceRecognition(CFeatureExtraction fext)
     }
     int training_word_labels[len_train_words];
 
-
     CTicTac training_time;
     training_time.Tic();
     training_file.open ("training_images_features.txt");
 
-    //training_file << "Writing this to a file.\n";
 
     cout << "len training " << len_training << endl;
-    //cout << "feats_training[i].size() " << feats_training[99].size() <<endl;
     cout << "descriptor selected : " << descriptor_selected << endl ;
 
     if (!training_file_written_flag)
     {
         training_file.clear();
         int kount = 0;
-        for (int i = 0; i < len_training; i++) {
+        for (int i = 0; i < len_training; i++)
+        {
             training_file << feats_training[i].size();
-            //cout << "kount is : " << kount << endl;
             for (int j = 0; j < feats_training[i].size(); j++, kount++)
             {
                 if (descriptor_selected == 0)
@@ -326,7 +321,6 @@ string PlaceRecognition::startPlaceRecognition(CFeatureExtraction fext)
                     for (int k = 0; k < temp_feat.size(); k++)
                         training_file << (int) temp_feat.at(k) << " ";
 
-                    //training_file << feats_testing[i].getByID(j).get()->descriptors.SIFT.data() << endl; //!< SIFT descriptors
                 }
                 else if (descriptor_selected == 1)
                 {
@@ -335,12 +329,10 @@ string PlaceRecognition::startPlaceRecognition(CFeatureExtraction fext)
                     training_words2[kount] = feats_training[i].getByID(j).get()->descriptors.SURF;
                     training_word_labels[kount] = training_labels[i];
 
-                    for (int k = 0; k < temp_feat.size(); k++) {
+                    for (int k = 0; k < temp_feat.size(); k++)
+                    {
                         training_file << temp_feat.at(k) << " ";//  << training_words2[kount].at(k) << " ";
-                        //training_file << training_words2[kount].at(k) << " " ;
                     }
-
-                    //training_file << feats_testing[i].getByID(j).get()->descriptors.SURF.data() << endl; //!< SURF descriptors
                 }
                 else if(descriptor_selected == 2)
                 {
@@ -350,7 +342,8 @@ string PlaceRecognition::startPlaceRecognition(CFeatureExtraction fext)
                     training_words2[kount] = feats_training[i].getByID(j).get()->descriptors.SpinImg;
                     training_word_labels[kount] = training_labels[i];
 
-                    for (int k = 0; k < temp_feat.size(); k++) {
+                    for (int k = 0; k < temp_feat.size(); k++)
+                    {
                         training_file << temp_feat.at(k) << " ";//  << training_words2[kount].at(k) << " ";
                         //training_file << training_words2[kount].at(k) << " " ;
                     }
@@ -420,8 +413,6 @@ string PlaceRecognition::startPlaceRecognition(CFeatureExtraction fext)
     testing_time.Tic();
 
     /// now extracting features for Place Recognition for testing dataset
-    //testing_file.open ("testing_images_features.txt");
-    //testing_file.clear();
     cout << "len testing " << len_testing << endl;
     int predicted_classes[len_testing];
     int predicted_class_labels[NUM_CLASSES];
@@ -442,10 +433,8 @@ string PlaceRecognition::startPlaceRecognition(CFeatureExtraction fext)
 
 
     cout << " after calling predict label function " << endl;
-
     cout << testing_paths.at(0) << endl;
     current_index_test_image++;
-
     cout << time_prediction.Tac() << " elapsed time " << endl;
 
     /// use a bag of words kind of framework here
@@ -457,17 +446,12 @@ string PlaceRecognition::startPlaceRecognition(CFeatureExtraction fext)
 
     stringstream output ;
     output << endl << endl
-           //<< "input file : " << current_index_test_image
            << "PLACE RECOGNITION RESULTS " << endl <<endl << "actual label : "
            << findPlaceName(testing_labels[current_index_test_image%len_testing]) << ".\n"<< endl
-           //<< feats_testing_org[current_index_test_image].size() << " feats_testing_org[current_index_test_image].size " << endl
-           //<< training_words_org2[current_index_test_image].size() << "training words org size" << endl
-           //<< training_word_labels_org[current_index_test_image] << " training_words_labels_org " << endl
-           //<< total_vocab_size_org << " total_vocab_size_org " << endl
            << " predicted label : " << findPlaceName(predicted_Label) << ".\n" << endl
            << " correct = " << correct << "  incorrect = " << incorrect << ".\n"
            << " Current Accuracy: " << 100.00*(double)correct/(double)(incorrect+correct) << " % " << endl
-            << " image " << current_index_test_image << " of " << len_testing << endl;
+           << " image " << current_index_test_image << " of " << len_testing << endl;
 
     cout << "<b> correct = " << correct << "  incorrect = " << incorrect << "\n" << endl;
     cout << " % of correct" << (double)correct/(double)(incorrect+correct) << endl;

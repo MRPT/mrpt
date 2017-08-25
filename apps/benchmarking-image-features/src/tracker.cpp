@@ -136,7 +136,6 @@ cv::Mat Tracker::trackThemAll(vector<string> files_fullpath_tracking,
     // Convert to color so we can draw color marks, etc.
     theImg.colorImageInPlace();
 
-    //double extra_tim_to_wait = 0;
 
     {    // FPS:
         static CTicTac tictac;
@@ -147,19 +146,6 @@ cv::Mat Tracker::trackThemAll(vector<string> files_fullpath_tracking,
 
         const int current_adapt_thres = tracker->getDetectorAdaptiveThreshold();
 
-        /* theImg.selectTextFont("6x13B");
-         theImg.textOut(3, 3, format("FPS: %.03f Hz", fps), TColor(200, 200, 0));
-         theImg.textOut(3, 22, format("# feats: %u - Adaptive threshold: %i", (unsigned int) trackedFeats.size(),
-                                      current_adapt_thres), TColor(200, 200, 0));
-
-         theImg.textOut(3, 41,
-                        format("# raw feats: %u - Removed: %u",
-                               (unsigned int) tracker->last_execution_extra_info.raw_FAST_feats_detected,
-                               (unsigned int) tracker->last_execution_extra_info.num_deleted_feats),
-                        TColor(200, 200, 0));
-
-         extra_tim_to_wait = 1.0 / MAX_FPS - 1.0 / fps;
-         */
     }
 
     // Draw feature tracks
