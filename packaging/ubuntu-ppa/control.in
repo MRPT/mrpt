@@ -27,7 +27,8 @@ Build-Depends: debhelper (>= 9),
 	libsuitesparse-dev,
 	python-numpy,
 	libeigen3-dev,
-	libassimp-dev
+	libassimp-dev,
+	liboctomap-dev | perl
 Standards-Version: 4.0.0
 Homepage: http://www.mrpt.org/
 
