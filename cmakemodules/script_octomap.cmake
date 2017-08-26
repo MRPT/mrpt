@@ -34,9 +34,16 @@ IF (NOT OCTOMAP_FOUND)
 
 		# Include embedded version headers:
 		include(ExternalProject)
-		# download from GH
+
+		# download from GH or use embedded ZIPed version (used only for old Ubuntu PPAs):
+		IF (EXISTS "${MRPT_SOURCE_DIR}/otherlibs/octomap.zip")
+			SET(OCTOMAP_EP_URL "${MRPT_SOURCE_DIR}/otherlibs/octomap.zip")
+		ELSE()
+			SET(OCTOMAP_EP_URL "https://github.com/MRPT/octomap/archive/devel.zip")
+		ENDIF()
+
 		ExternalProject_Add(EP_octomap
-		  URL               "https://github.com/MRPT/octomap/archive/devel.zip" #TO-DO: Switch back to original repo after next stable release.
+		  URL               "${OCTOMAP_EP_URL}" #TO-DO: Switch back to original repo after next stable release.
 		  SOURCE_DIR        "${MRPT_BINARY_DIR}/otherlibs/octomap/"
 		  CMAKE_ARGS
 			-DBUILD_TESTING=OFF
