@@ -100,6 +100,8 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 /** VTK libs are available */
 #define MRPT_HAS_VTK ${CMAKE_MRPT_HAS_VTK}
 
+/** liboctomap, ROS octomap pkg, or octomap external project available */
+#define MRPT_HAS_OCTOMAP          ${CMAKE_MRPT_HAS_OCTOMAP}
 
 /* Automatic definition of OS-macros */
 #if defined(_WIN32) || defined(_WIN32_)  || defined(WIN32) || defined(_WIN64)

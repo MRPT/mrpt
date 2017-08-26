@@ -37,7 +37,7 @@ namespace mrpt
 		 *     in Proc. of the ICRA 2010 Workshop on Best Practice in 3D Perception and Modeling for Mobile Manipulation, 2010. Software available at http://octomap.sf.net/.
 		 *
 		 * \sa CMetricMap, the example in "MRPT/samples/octomap_simple"
-	  	 * \ingroup mrpt_maps_grp
+		 * \ingroup mrpt_maps_grp
 		 */
 		template <class OCTREE,class OCTREE_NODE>
 		class COctoMapBase : public mrpt::maps::CMetricMap

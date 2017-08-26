@@ -59,6 +59,7 @@ fi
 if [ -f version_prefix.txt ];
 then
 	MRPTSRC=`pwd`
+
 	source scripts/prepare_release.sh
 	echo
 	echo "## Done prepare_release.sh"
