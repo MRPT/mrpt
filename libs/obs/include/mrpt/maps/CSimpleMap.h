@@ -127,8 +127,13 @@ class OBS_IMPEXP CSimpleMap : public mrpt::utils::CSerializable
 		const mrpt::poses::CPose3DPDF::Ptr& in_posePDF,
 		const mrpt::obs::CSensoryFrame::Ptr& in_SF);
 
+	/** Insert a new pair to the sequence, making a copy of the smart pointer
+	(it's
+	 * not made unique) to
+	\param index Position in the simplemap where new element will be inserted to
+	*/
 	void insertToPos(
-		int index, const mrpt::poses::CPose3DPDF::Ptr& in_posePDF,
+		size_t index, const mrpt::poses::CPose3DPDF::Ptr& in_posePDF,
 		const mrpt::obs::CSensoryFrame::Ptr& in_SF);
 
 	/** Add a new pair to the sequence. The objects are copied, so original ones

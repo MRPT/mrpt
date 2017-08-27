@@ -234,11 +234,10 @@ void CSimpleMap::insert(
 }
 
 void CSimpleMap::insertToPos(
-	int index, const CPose3DPDF::Ptr& in_posePDF,
+	size_t index, const CPose3DPDF::Ptr& in_posePDF,
 	const CSensoryFrame::Ptr& in_SF)
 {
-	int size = m_posesObsPairs.size();
-	if (index > size) return;
+	if (index >= m_posesObsPairs.size()) return;
 
 	MRPT_START
 

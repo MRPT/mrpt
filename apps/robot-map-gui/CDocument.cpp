@@ -133,10 +133,10 @@ const CMultiMetricMap::TListMaps& CDocument::config() const
 }
 
 const TypeConfig& CDocument::typeConfig() const { return m_typeConfigs; }
-std::vector<int> CDocument::remove(const std::vector<int>& indexes)
+std::vector<size_t> CDocument::remove(const std::vector<size_t>& indexes)
 {
-	std::vector<int> idx = indexes;
-	std::vector<int> v;
+	std::vector<size_t> idx = indexes;
+	std::vector<size_t> v;
 	for (auto it = idx.begin(); it != idx.end(); ++it)
 	{
 		int current = *it;
@@ -158,7 +158,7 @@ std::vector<int> CDocument::remove(const std::vector<int>& indexes)
 }
 
 void CDocument::move(
-	const std::vector<int>& indexes,
+	const std::vector<size_t>& indexes,
 	const CSimpleMap::TPosePDFSensFramePairList& posesObsPairs)
 {
 	for (size_t i = 0; i < indexes.size(); ++i)
@@ -172,7 +172,7 @@ void CDocument::move(
 }
 
 void CDocument::insert(
-	const std::vector<int>& idx,
+	const std::vector<size_t>& idx,
 	CSimpleMap::TPosePDFSensFramePairList& posesObsPairs)
 {
 	assert(idx.size() == posesObsPairs.size());
@@ -184,7 +184,7 @@ void CDocument::insert(
 }
 
 CSimpleMap::TPosePDFSensFramePairList CDocument::get(
-	const std::vector<int>& idx) const
+	const std::vector<size_t>& idx) const
 {
 	CSimpleMap::TPosePDFSensFramePairList posesObsPairs;
 	for (auto& it : idx)
@@ -197,7 +197,7 @@ CSimpleMap::TPosePDFSensFramePairList CDocument::get(
 }
 
 CSimpleMap::TPosePDFSensFramePairList CDocument::getReverse(
-	const std::vector<int>& idx) const
+	const std::vector<size_t>& idx) const
 {
 	CSimpleMap::TPosePDFSensFramePairList posesObsPairs;
 	for (int i = idx.size() - 1; i >= 0; --i)

@@ -190,7 +190,7 @@ void CGlWidget::setDocument(CDocument* doc)
 	deselectAll();
 	m_visiblePoints->clear();
 
-	int id = 0;
+	size_t id = 0;
 	for (auto iter = m_doc->simplemap().begin();
 		 iter != m_doc->simplemap().end(); ++iter)
 	{
@@ -526,7 +526,7 @@ void CGlWidget::mouseReleaseEvent(QMouseEvent* event)
 
 	if (m_moveSelected)
 	{
-		std::vector<int> idx;
+		std::vector<size_t> idx;
 		for (auto& it : m_selectedPoints) idx.push_back(it->getId());
 
 		auto scenePos = sceneToWorld(m_pressedPos);
@@ -549,7 +549,7 @@ void CGlWidget::keyPressEvent(QKeyEvent* event)
 	CQtGlCanvasBase::keyPressEvent(event);
 	if (event->key() == Qt::Key_Delete)
 	{
-		std::vector<int> idx;
+		std::vector<size_t> idx;
 		for (auto& it : m_selectedPoints) idx.push_back(it->getId());
 		emit deleteRobotPoses(idx);
 	}

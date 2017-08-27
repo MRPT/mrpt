@@ -318,7 +318,7 @@ void CMainWindow::showMapConfiguration()
 }
 
 void CMainWindow::addRobotPosesFromMap(
-	std::vector<int> idx,
+	std::vector<size_t> idx,
 	mrpt::maps::CSimpleMap::TPosePDFSensFramePairList posesObsPairs)
 {
 	if (!m_document || idx.empty()) return;
@@ -328,7 +328,7 @@ void CMainWindow::addRobotPosesFromMap(
 	applyMapsChanges();
 }
 
-void CMainWindow::deleteRobotPosesFromMap(const std::vector<int>& idx)
+void CMainWindow::deleteRobotPosesFromMap(const std::vector<size_t>& idx)
 {
 	if (!m_document || idx.empty()) return;
 
@@ -338,7 +338,7 @@ void CMainWindow::deleteRobotPosesFromMap(const std::vector<int>& idx)
 }
 
 void CMainWindow::moveRobotPosesOnMap(
-	const std::vector<int>& idx, const QPointF& dist)
+	const std::vector<size_t>& idx, const QPointF& dist)
 {
 	if (!m_document || idx.empty()) return;
 
@@ -373,14 +373,14 @@ void CMainWindow::redo()
 	action();
 }
 
-void CMainWindow::deleteRobotPoses(const std::vector<int>& idx)
+void CMainWindow::deleteRobotPoses(const std::vector<size_t>& idx)
 {
 	if (!m_document || idx.empty()) return;
 
 	mrpt::maps::CSimpleMap::TPosePDFSensFramePairList posesObsPairs =
 		m_document->getReverse(idx);
 
-	std::vector<int> reverseInd = m_document->remove(idx);
+	auto reverseInd = m_document->remove(idx);
 	m_ui->m_actionSave->setDisabled(!m_document->isFileChanged());
 	applyMapsChanges();
 
@@ -395,7 +395,7 @@ void CMainWindow::deleteRobotPoses(const std::vector<int>& idx)
 }
 
 void CMainWindow::moveRobotPoses(
-	const std::vector<int>& idx, const QPointF& dist)
+	const std::vector<size_t>& idx, const QPointF& dist)
 {
 	if (!m_document || idx.empty()) return;
 
