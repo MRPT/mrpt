@@ -109,14 +109,17 @@ bool mrpt::vision::pnp::CPnP::dls(
 		{
 			case -1:
 				std::cout << "Please install OpenCV for DLS-PnP" << std::endl;
+				break;
 			case 2:
 				std::cout << "2d/3d correspondences mismatch\n Check dimension "
 							 "of obj_pts and img_pts"
 						  << std::endl;
+				break;
 			case 3:
 				std::cout
 					<< "Camera intrinsic matrix does not have 3x3 dimensions "
 					<< std::endl;
+				break;
 		}
 		return false;
 	}
@@ -189,14 +192,17 @@ bool mrpt::vision::pnp::CPnP::epnp(
 		{
 			case -1:
 				std::cout << "Please install OpenCV for DLS-PnP" << std::endl;
+				break;
 			case 2:
 				std::cout << "2d/3d correspondences mismatch\n Check dimension "
 							 "of obj_pts and img_pts"
 						  << std::endl;
+				break;
 			case 3:
 				std::cout
 					<< "Camera intrinsic matrix does not have 3x3 dimensions "
 					<< std::endl;
+				break;
 		}
 		return false;
 	}
@@ -268,14 +274,17 @@ bool mrpt::vision::pnp::CPnP::upnp(
 		{
 			case -1:
 				std::cout << "Please install OpenCV for DLS-PnP" << std::endl;
+				break;
 			case 2:
 				std::cout << "2d/3d correspondences mismatch\n Check dimension "
 							 "of obj_pts and img_pts"
 						  << std::endl;
+				break;
 			case 3:
 				std::cout
 					<< "Camera intrinsic matrix does not have 3x3 dimensions "
 					<< std::endl;
+				break;
 		}
 		return false;
 	}
@@ -334,10 +343,12 @@ bool mrpt::vision::pnp::CPnP::p3p(
 				std::cout << "2d/3d correspondences mismatch\n Check dimension "
 							 "of obj_pts and img_pts"
 						  << std::endl;
+				break;
 			case 3:
 				std::cout
 					<< "Camera intrinsic matrix does not have 3x3 dimensions "
 					<< std::endl;
+				break;
 		}
 		return false;
 	}
@@ -396,10 +407,12 @@ bool mrpt::vision::pnp::CPnP::rpnp(
 				std::cout << "2d/3d correspondences mismatch\n Check dimension "
 							 "of obj_pts and img_pts"
 						  << std::endl;
+				break;
 			case 3:
 				std::cout
 					<< "Camera intrinsic matrix does not have 3x3 dimensions "
 					<< std::endl;
+				break;
 		}
 		return false;
 	}
@@ -459,10 +472,12 @@ bool mrpt::vision::pnp::CPnP::ppnp(
 				std::cout << "2d/3d correspondences mismatch\n Check dimension "
 							 "of obj_pts and img_pts"
 						  << std::endl;
+				break;
 			case 3:
 				std::cout
 					<< "Camera intrinsic matrix does not have 3x3 dimensions "
 					<< std::endl;
+				break;
 		}
 		return false;
 	}
@@ -522,10 +537,12 @@ bool mrpt::vision::pnp::CPnP::posit(
 				std::cout << "2d/3d correspondences mismatch\n Check dimension "
 							 "of obj_pts and img_pts"
 						  << std::endl;
+				break;
 			case 3:
 				std::cout
 					<< "Camera intrinsic matrix does not have 3x3 dimensions "
 					<< std::endl;
+				break;
 		}
 		return false;
 	}
@@ -585,10 +602,12 @@ bool mrpt::vision::pnp::CPnP::lhm(
 				std::cout << "2d/3d correspondences mismatch\n Check dimension "
 							 "of obj_pts and img_pts"
 						  << std::endl;
+				break;
 			case 3:
 				std::cout
 					<< "Camera intrinsic matrix does not have 3x3 dimensions "
 					<< std::endl;
+				break;
 		}
 		return false;
 	}

@@ -74,8 +74,22 @@ ENDIF ()
 
 # If using GCC and -Wall, eigen3 headers raise some warnings: silent them:
 IF(CMAKE_COMPILER_IS_GNUCXX)
-	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-long-long -Wno-variadic-macros")
+	add_compile_options(-Wno-long-long -Wno-variadic-macros)
+	# Workaround: Eigen <3.4 produces *tons* of warnings in GCC >=6. See http://eigen.tuxfamily.org/bz/show_bug.cgi?id=1221
+	IF (NOT ${CMAKE_CXX_COMPILER_VERSION} LESS "6.0")
+		add_compile_options(-Wno-ignored-attributes -Wno-int-in-bool-context)
+	ENDIF()
 ENDIF()
+
+# ================================================================
+# Include directories where octomap headers are, if:
+#  - they are available in the system, or
+#  - they are embedded and this config file is for local.
+# ================================================================
+IF ( (NOT @MRPT_CONFIGFILE_IS_INSTALL@ AND NOT @CMAKE_MRPT_HAS_OCTOMAP_SYSTEM@) OR @CMAKE_MRPT_HAS_OCTOMAP_SYSTEM@ )
+	INCLUDE_DIRECTORIES("@OCTOMAP_INCLUDE_DIRS@")
+	LIST(APPEND MRPT_INCLUDE_DIRS "@OCTOMAP_INCLUDE_DIRS@")
+ENDIF ()
 
 
 # ======================================================

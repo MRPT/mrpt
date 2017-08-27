@@ -177,7 +177,7 @@ void XsTime_getDateAsString(char* dest, const struct tm* date)
 
 	year = dt.tm_year + 1900;
 	month = dt.tm_mon + 1;
-	snprintf(dest, 8, "%04d%02d%02d", year, month, dt.tm_mday);		//lint !e534
+	snprintf(dest, 9, "%04d%02d%02d", year, month, dt.tm_mday);		//lint !e534
 }
 
 /*! \brief Retrieves the time as binary

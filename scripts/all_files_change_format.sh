@@ -6,19 +6,18 @@ then
 	exit 1
 fi
 
-echo "Running format change with command: $1"
+#echo "Running format change with command: $1"
 
-find . -name "*.cpp" | xargs $1
-find . -name "*.c" | xargs $1
-find . -name "*.h" | xargs $1
-find . -name "*.in" | xargs $1
-find . -name "*.hpp" | xargs $1 
-find . -name "*.tpp" | xargs $1 
-find . -name "CMakeLists.txt" | xargs $1 
-find . -name "AUTHORS" | xargs $1 
-find samples -name "*.txt" | xargs $1 
-find samples -name "*.ini" | xargs $1 
-find samples -name "*.INI" | xargs $1 
-find doc -name "*.js" | xargs $1 
-find doc -name "*.txt" | xargs $1 
-
+find . \
+	-name "*.cpp" \
+	-o -name "*.c" \
+	-o -name "*.h" \
+	-o -name "*.in" \
+	-o -name "*.hpp" \
+	-o -name "*.tpp" \
+	-o -name "CMakeLists.txt" \
+	-o -name "AUTHORS" \
+	-o -name "*.ini" \
+	-o -name "*.INI" \
+	-o -name "*.txt" \
+	| xargs $1

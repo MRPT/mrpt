@@ -14,6 +14,7 @@
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/math/CMatrix.h>
+#include <mrpt/utils/TEnumType.h>
 
 #include <mrpt/maps/link_pragmas.h>
 
@@ -251,6 +252,7 @@ class MAPS_IMPEXP CColouredPointsMap : public CPointsMap
 		cmFromHeightRelativeToSensorJet = 0,
 		cmFromHeightRelativeToSensorGray = 1,
 		cmFromIntensityImage = 2
+		// Remember: if new values are added, also update TEnumType below!
 	};
 
 	/** The definition of parameters for generating colors from laser scans */
@@ -483,8 +485,22 @@ class PointCloudAdapter<mrpt::maps::CColouredPointsMap>
 	}
 
 };  // end of PointCloudAdapter<mrpt::maps::CColouredPointsMap>
-}
 
+template <>
+struct TEnumTypeFiller<mrpt::maps::CColouredPointsMap::TColouringMethod>
+{
+	typedef mrpt::maps::CColouredPointsMap::TColouringMethod enum_t;
+	static void fill(bimap<enum_t, std::string>& m_map)
+	{
+		using namespace mrpt::maps;
+		MRPT_FILL_ENUM_MEMBER(CColouredPointsMap, cmFromHeightRelativeToSensor);
+		MRPT_FILL_ENUM_MEMBER(
+			CColouredPointsMap, cmFromHeightRelativeToSensorJet);
+		MRPT_FILL_ENUM_MEMBER(
+			CColouredPointsMap, cmFromHeightRelativeToSensorGray);
+		MRPT_FILL_ENUM_MEMBER(CColouredPointsMap, cmFromIntensityImage);
+	}
+};
 }  // End of namespace
-
+}  // End of namespace
 #endif

@@ -436,21 +436,15 @@ CColouredPointsMap::TColourOptions::TColourOptions()
 {
 }
 
-/*---------------------------------------------------------------
-					TColourOptions
- ---------------------------------------------------------------*/
 void CColouredPointsMap::TColourOptions::loadFromConfigFile(
 	const mrpt::utils::CConfigFileBase& source, const std::string& section)
 {
-	MRPT_LOAD_CONFIG_VAR_CAST(scheme, int, TColouringMethod, source, section)
+	scheme = source.read_enum(section, "scheme", scheme);
 	MRPT_LOAD_CONFIG_VAR(z_min, float, source, section)
 	MRPT_LOAD_CONFIG_VAR(z_max, float, source, section)
 	MRPT_LOAD_CONFIG_VAR(d_max, float, source, section)
 }
 
-/*---------------------------------------------------------------
-					TColourOptions
- ---------------------------------------------------------------*/
 void CColouredPointsMap::TColourOptions::dumpToTextStream(
 	mrpt::utils::CStream& out) const
 {

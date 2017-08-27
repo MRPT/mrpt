@@ -10,7 +10,7 @@
 #define CNTRIPEmitter_H
 
 #include <mrpt/hwdrivers/CNTRIPClient.h>
-#include <mrpt/hwdrivers/CSerialPort.h>
+#include <mrpt/comms/CSerialPort.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/utils/CTicTac.h>
 #include <fstream>
@@ -71,7 +71,7 @@ class HWDRIVERS_IMPEXP CNTRIPEmitter : public CGenericSensor
 	/** The NTRIP comms object. */
 	CNTRIPClient m_client;
 	/** The output serial port. */
-	CSerialPort m_out_COM;
+	mrpt::comms::CSerialPort m_out_COM;
 
 	/** If set to non-empty, the serial port will be attempted to be opened
 	 * automatically when this class is first used to request data from the

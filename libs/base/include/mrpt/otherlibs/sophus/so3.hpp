@@ -1,6 +1,8 @@
 #ifndef SOPHUS_SO3_HPP
 #define SOPHUS_SO3_HPP
 
+#include "rotation_matrix.hpp"
+#include "so2.hpp"
 #include "types.hpp"
 
 // Include only the selective set of Eigen headers that we need.
@@ -80,6 +82,7 @@ class SO3Base {
   static int constexpr N = 3;
   using Transformation = Matrix<Scalar, N, N>;
   using Point = Vector3<Scalar>;
+  using Line = ParametrizedLine3<Scalar>;
   using Tangent = Vector<Scalar, DoF>;
   using Adjoint = Matrix<Scalar, DoF, DoF>;
 
@@ -92,6 +95,36 @@ class SO3Base {
   // For SO(3), it simply returns the rotation matrix corresponding to ``A``.
   //
   SOPHUS_FUNC Adjoint Adj() const { return matrix(); }
+
+  // Extract rotation angle about canonical X-axis
+  //
+  Scalar angleX() {
+    Sophus::Matrix3<Scalar> R = matrix();
+    Sophus::Matrix2<Scalar> Rx = R.template block<2, 2>(1, 1);
+    return SO2<Scalar>(makeRotationMatrix(Rx)).log();
+  }
+
+  // Extract rotation angle about canonical Y-axis
+  //
+  Scalar angleY() {
+    Sophus::Matrix3<Scalar> R = matrix();
+    Sophus::Matrix2<Scalar> Ry;
+    // clang-format off
+    Ry <<
+      R(0, 0), R(2, 0),
+      R(0, 2), R(2, 2);
+    // clang-format on
+    return SO2<Scalar>(makeRotationMatrix(Ry)).log();
+  }
+
+  // Extract rotation angle about canonical Z-axis
+  //
+  Scalar angleZ() {
+    Sophus::Matrix3<Scalar> R = matrix();
+    Sophus::Matrix2<Scalar> Rz = R.template block<2, 2>(0, 0);
+    return SO2<Scalar>(makeRotationMatrix(Rz)).log();
+  }
+
 
   // Returns copy of instance casted to NewScalarType.
   //
@@ -205,6 +238,17 @@ class SO3Base {
   //
   SOPHUS_FUNC Point operator*(Point const& p) const {
     return unit_quaternion()._transformVector(p);
+  }
+
+  // Group action on lines.
+  //
+  // This function rotates a parametrized line ``l(t) = o + t * d`` by the SO3
+  // element:
+  //
+  // Both direction ``d`` and origin ``o`` are rotated as a 3 dimensional point
+  //
+  SOPHUS_FUNC Line operator*(Line const& l) const {
+    return Line((*this) * l.origin(), (*this) * l.direction());
   }
 
   // In-place group multiplication.
@@ -516,7 +560,16 @@ class SO3 : public SO3Base<SO3<Scalar_, Options>> {
   //
   // Precondition: rotation matrix needs to be orthogonal with determinant of 1.
   //
-  SOPHUS_FUNC SO3(Transformation const& R) : unit_quaternion_(R) {}
+  SOPHUS_FUNC SO3(Transformation const& R) : unit_quaternion_(R) {
+    SOPHUS_ENSURE(isOrthogonal(R), "R is not orthogonal:\n %", R);
+    SOPHUS_ENSURE(R.determinant() > 0, "det(R) is not positive: %",
+                  R.determinant());
+  }
+
+  // Returns closed SO3 given arbirary 3x3 matrix.
+  static SOPHUS_FUNC SO3 fromNonOrthogonal(Transformation const& R) {
+    return SO3(::Sophus::makeRotationMatrix(R));
+  }
 
   // Constructor from quaternion
   //

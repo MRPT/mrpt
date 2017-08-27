@@ -10,8 +10,7 @@
 #ifndef CRoboticHeadInterface_H
 #define CRoboticHeadInterface_H
 
-#include <mrpt/hwdrivers/CInterfaceFTDI.h>
-#include <mrpt/hwdrivers/CInterfaceFTDIMessages.h>
+#include <mrpt/comms/CInterfaceFTDI.h>
 #include <mrpt/utils/CMessage.h>
 #include <mrpt/math/CMatrixTemplate.h>
 #include <mrpt/utils/COutputLogger.h>
@@ -49,13 +48,13 @@ namespace hwdrivers
 class HWDRIVERS_IMPEXP CRoboticHeadInterface : public mrpt::utils::COutputLogger
 {
    private:
-	CInterfaceFTDIMessages m_usbConnection;
+	mrpt::comms::CInterfaceFTDI m_usbConnection;
 	utils::CMessage msg;
 	std::string m_serialNumber;
 	std::vector<int32_t> gain;
 	int head_yaw, head_pitch;
 
-	bool checkControllerIsConnected();
+	//bool checkControllerIsConnected();
 
    protected:
 	/** Loads specific configuration for the device from a given source of

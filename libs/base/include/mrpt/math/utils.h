@@ -229,34 +229,6 @@ std::vector<T>& loadVector(std::vector<T>& v, At (&theArray)[N])
 	return v;
 }
 
-/** A versatile template to build vectors on-the-fly in a style close to
- * MATLAB's  v=[a b c d ...]
-  *  The first argument of the template is the vector length, and the second the
- * type of the numbers.
-  *  Some examples:
-  *
-  *  \code
-  *    std::vector<double> = make_vector<4,double>(1.0,3.0,4.0,5.0);
-  *    std::vector<float>  = make_vector<2,float>(-8.12, 3e4);
-  *  \endcode
-  */
-template <size_t N, typename T>
-std::vector<T> make_vector(const T val1, ...)
-{
-	MRPT_COMPILE_TIME_ASSERT(N > 0)
-	std::vector<T> ret;
-	ret.reserve(N);
-
-	ret.push_back(val1);
-
-	va_list args;
-	va_start(args, val1);
-	for (size_t i = 1; i < N; i++) ret.push_back(va_arg(args, T));
-
-	va_end(args);
-	return ret;
-}
-
 /**  @} */  // end of grouping container_ops_grp
 
 /** \defgroup mrpt_math_io Custom I/O for math containers

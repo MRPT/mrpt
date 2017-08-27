@@ -33,7 +33,7 @@ void CObservable::internal_observer_begin(CObserver* o)
 void CObservable::internal_observer_end(CObserver* o)
 {
 	MRPT_START
-	set<CObserver*>::iterator it = m_subscribers.find(o);
+	auto it = m_subscribers.find(o);
 	ASSERTMSG_(
 		it != m_subscribers.end(),
 		"Ending subscription from an observer not subscribed to this object!")
@@ -47,8 +47,7 @@ void CObservable::internal_observer_end(CObserver* o)
 void CObservable::publishEvent(const mrptEvent& e) const
 {
 	MRPT_START
-	for (set<CObserver*>::const_iterator it = m_subscribers.begin();
-		 it != m_subscribers.end(); ++it)
-		(*it)->internal_on_event(e);
+	for (auto& s : m_subscribers)
+		if (s) s->internal_on_event(e);
 	MRPT_END
 }

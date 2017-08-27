@@ -38,25 +38,11 @@ class CSensoryFrame;
 using namespace mrpt::bayes;
 using namespace mrpt::utils;
 
-/*---------------------------------------------------------------
-						Default Constructor
-  ---------------------------------------------------------------*/
 CParticleFilter::CParticleFilter()
 	: mrpt::utils::COutputLogger("CParticleFilter"), m_options()
 {
 }
 
-/*---------------------------------------------------------------
-					executeOn
-Executes a prediction-update stage of particle filtering. This includes:
-	- Check if ESS is below a given threshold, and if it is true resample
-particles.
-	- Executes a prediction with the given "action".
-	- Executes an update stage with:
-		- The PDF class update member, if updateFunctor is NULL.
-		- Using updateFunctor if one is provided.
-	- Normalization of weights.
-  ---------------------------------------------------------------*/
 void CParticleFilter::executeOn(
 	CParticleFilterCapable& obj, const mrpt::obs::CActionCollection* action,
 	const mrpt::obs::CSensoryFrame* observation, TParticleFilterStats* stats)
@@ -129,76 +115,40 @@ CParticleFilter::TParticleFilterOptions::TParticleFilterOptions()
 {
 }
 
-/*---------------------------------------------------------------
-					dumpToTextStream
-  ---------------------------------------------------------------*/
-void CParticleFilter::TParticleFilterOptions::dumpToTextStream(
-	mrpt::utils::CStream& out) const
+void CParticleFilter::TParticleFilterOptions::saveToConfigFile(
+	mrpt::utils::CConfigFileBase& c, const std::string& s) const
 {
-	out.printf(
-		"\n----------- [CParticleFilter::TParticleFilterOptions] ------------ "
-		"\n\n");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(
+		PF_algorithm, "The PF algorithm to use. See TParticleFilterAlgorithm");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(
+		resamplingMethod,
+		"The resampling algorithm to use. See TParticleResamplingAlgorithm");
 
-	out.printf("PF_algorithm                            = ");
-	switch (PF_algorithm)
-	{
-		case CParticleFilter::pfStandardProposal:
-			out.printf("pfStandardProposal\n");
-			break;
-		case CParticleFilter::pfAuxiliaryPFStandard:
-			out.printf("pfAuxiliaryPFStandard\n");
-			break;
-		case CParticleFilter::pfOptimalProposal:
-			out.printf("pfOptimalProposal\n");
-			break;
-		case CParticleFilter::pfAuxiliaryPFOptimal:
-			out.printf("pfAuxiliaryPFOptimal\n");
-			break;
-		default:
-			out.printf("UNKNOWN!!\n");
-			break;
-	};
-
-	out.printf("m_resamplingMethod                      = ");
-	switch (resamplingMethod)
-	{
-		case CParticleFilter::prMultinomial:
-			out.printf("prMultinomial\n");
-			break;
-		case CParticleFilter::prResidual:
-			out.printf("prResidual\n");
-			break;
-		case CParticleFilter::prStratified:
-			out.printf("prStratified\n");
-			break;
-		case CParticleFilter::prSystematic:
-			out.printf("prSystematic\n");
-			break;
-		default:
-			out.printf("UNKNOWN!!\n");
-			break;
-	};
-
-	out.printf(
-		"adaptiveSampleSize                      = %c\n",
-		adaptiveSampleSize ? 'Y' : 'N');
-	out.printf("sampleSize                              = %i\n", sampleSize);
-	out.printf("BETA                                    = %f\n", BETA);
-	out.printf(
-		"pfAuxFilterOptimal_MaximumSearchSamples = %i\n",
-		pfAuxFilterOptimal_MaximumSearchSamples);
-	out.printf("powFactor                               = %f\n", powFactor);
-	out.printf(
-		"max_loglikelihood_dyn_range             = %f\n",
-		max_loglikelihood_dyn_range);
-	out.printf(
-		"pfAuxFilterStandard_FirstStageWeightsMonteCarlo = %c\n",
-		pfAuxFilterStandard_FirstStageWeightsMonteCarlo ? 'Y' : 'N');
-	out.printf(
-		"pfAuxFilterOptimal_MLE                  = %c\n",
-		pfAuxFilterOptimal_MLE ? 'Y' : 'N');
-
-	out.printf("\n");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(
+		adaptiveSampleSize,
+		"A flag that indicates whether the CParticleFilterCapable object "
+		"should perform adative sample size (default=false)");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(
+		BETA,
+		"The resampling of particles will be performed when ESS (in range "
+		"[0,1]) < BETA (default is 0.5)");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(
+		sampleSize,
+		"The initial number of particles in the filter (it can change only if "
+		"adaptiveSampleSize=true) (default=1)");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(
+		pfAuxFilterOptimal_MaximumSearchSamples, "See Doxygen docs");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(
+		powFactor,
+		"An optional step to smooth dramatic changes in the observation model "
+		"to affect the variance of the particle weights (default=1)");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(
+		max_loglikelihood_dyn_range,
+		"Only for PF_algorithm=pfAuxiliaryPFOptimal");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(
+		pfAuxFilterStandard_FirstStageWeightsMonteCarlo,
+		"Only for PF_algorithm==pfAuxiliaryPFStandard");
+	MRPT_SAVE_CONFIG_VAR_COMMENT(pfAuxFilterOptimal_MLE, "See doxygen docs.");
 }
 
 /*---------------------------------------------------------------
@@ -216,13 +166,12 @@ void CParticleFilter::TParticleFilterOptions::loadFromConfigFile(
 	MRPT_LOAD_CONFIG_VAR(powFactor, double, iniFile, section.c_str());
 	MRPT_LOAD_CONFIG_VAR(
 		max_loglikelihood_dyn_range, double, iniFile, section.c_str());
-	ASSERT_(max_loglikelihood_dyn_range >= 0)
+	ASSERT_(max_loglikelihood_dyn_range >= 0);
 
-	MRPT_LOAD_CONFIG_VAR_CAST_NO_DEFAULT(
-		PF_algorithm, int, TParticleFilterAlgorithm, iniFile, section.c_str());
-	MRPT_LOAD_CONFIG_VAR_CAST_NO_DEFAULT(
-		resamplingMethod, int, TParticleResamplingAlgorithm, iniFile,
-		section.c_str());
+	PF_algorithm = iniFile.read_enum<TParticleFilterAlgorithm>(
+		section, "PF_algorithm", PF_algorithm, true);
+	resamplingMethod = iniFile.read_enum<TParticleResamplingAlgorithm>(
+		section, "resamplingMethod", resamplingMethod, true);
 
 	if (PF_algorithm == pfAuxiliaryPFOptimal)
 	{

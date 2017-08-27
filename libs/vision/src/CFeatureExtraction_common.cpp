@@ -422,7 +422,7 @@ void CFeatureExtraction::TOptions::dumpToTextStream(
 void CFeatureExtraction::TOptions::loadFromConfigFile(
 	const mrpt::utils::CConfigFileBase& iniFile, const std::string& section)
 {
-	MRPT_LOAD_CONFIG_VAR_CAST(featsType, int, TFeatureType, iniFile, section)
+	featsType = iniFile.read_enum(section, "featsType", featsType);
 	MRPT_LOAD_CONFIG_VAR(patchSize, int, iniFile, section)
 	MRPT_LOAD_CONFIG_VAR(FIND_SUBPIXEL, bool, iniFile, section)
 	MRPT_LOAD_CONFIG_VAR(useMask, bool, iniFile, section)

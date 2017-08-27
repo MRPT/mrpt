@@ -18,7 +18,7 @@
 // We only need this to be on this translation unit, hence the advantage of
 // using our MRPT wrapper instead
 // of the original exprtk sources.
-PIMPL_IMPLEMENT(exprtk::expression<double>);
+PIMPL_IMPLEMENT(exprtk::expression<double>)
 
 using namespace mrpt;
 using namespace mrpt::math;

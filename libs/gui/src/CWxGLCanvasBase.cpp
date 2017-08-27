@@ -50,14 +50,6 @@ using namespace std;
   Implementation of Test-GLCanvas
 -----------------------------------------------------------------*/
 
-BEGIN_EVENT_TABLE(CWxGLCanvasBase, wxGLCanvas)
-EVT_SIZE(CWxGLCanvasBase::OnSize)
-EVT_PAINT(CWxGLCanvasBase::OnPaint)
-EVT_ERASE_BACKGROUND(CWxGLCanvasBase::OnEraseBackground)
-EVT_ENTER_WINDOW(CWxGLCanvasBase::OnEnterWindow)
-EVT_WINDOW_CREATE(CWxGLCanvasBase::OnWindowCreation)
-END_EVENT_TABLE()
-
 void CWxGLCanvasBase::OnWindowCreation(wxWindowCreateEvent& ev)
 {
 	if (!m_gl_context) m_gl_context = new wxGLContext(this);
@@ -118,8 +110,7 @@ void CWxGLCanvasBase::OnMouseMove(wxMouseEvent& event)
 	}
 
 	// ensure we have the focus so we get keyboard events:
-	// this->SetFocus(); // JLBC: Commented out to avoid a crash after
-	// refactor with Qt
+	this->SetFocus();
 }
 
 void CWxGLCanvasBase::OnMouseWheel(wxMouseEvent& event)
@@ -142,38 +133,23 @@ CWxGLCanvasBase::CWxGLCanvasBase(
 	: CGlCanvasBase(),
 	  wxGLCanvas(
 		  parent, id, WX_GL_ATTR_LIST, pos, size,
-		  style | wxFULL_REPAINT_ON_RESIZE, name),
-	  m_gl_context(nullptr),
-	  m_init(false)
+		  style | wxFULL_REPAINT_ON_RESIZE, name)
 {
-	Connect(
-		wxID_ANY, wxEVT_LEFT_DOWN,
-		(wxObjectEventFunction)&CWxGLCanvasBase::OnMouseDown);
-	Connect(
-		wxID_ANY, wxEVT_RIGHT_DOWN,
-		(wxObjectEventFunction)&CWxGLCanvasBase::OnMouseDown);
-	Connect(
-		wxID_ANY, wxEVT_LEFT_UP,
-		(wxObjectEventFunction)&CWxGLCanvasBase::OnMouseUp);
-	Connect(
-		wxID_ANY, wxEVT_RIGHT_UP,
-		(wxObjectEventFunction)&CWxGLCanvasBase::OnMouseUp);
-	Connect(
-		wxID_ANY, wxEVT_MOTION,
-		(wxObjectEventFunction)&CWxGLCanvasBase::OnMouseMove);
-	Connect(
-		wxID_ANY, wxEVT_MOUSEWHEEL,
-		(wxObjectEventFunction)&CWxGLCanvasBase::OnMouseWheel);
+	this->Bind(wxEVT_LEFT_DOWN, &CWxGLCanvasBase::OnMouseDown, this);
+	this->Bind(wxEVT_RIGHT_DOWN, &CWxGLCanvasBase::OnMouseDown, this);
+	this->Bind(wxEVT_LEFT_UP, &CWxGLCanvasBase::OnMouseUp, this);
+	this->Bind(wxEVT_RIGHT_UP, &CWxGLCanvasBase::OnMouseUp, this);
+	this->Bind(wxEVT_MOTION, &CWxGLCanvasBase::OnMouseMove, this);
+	this->Bind(wxEVT_MOUSEWHEEL, &CWxGLCanvasBase::OnMouseWheel, this);
+	this->Bind(wxEVT_CHAR, &CWxGLCanvasBase::OnChar, this);
+	this->Bind(wxEVT_CHAR_HOOK, &CWxGLCanvasBase::OnChar, this);
+	this->Bind(wxEVT_CREATE, &CWxGLCanvasBase::OnWindowCreation, this);
 
-	Connect(
-		wxID_ANY, wxEVT_CHAR, (wxObjectEventFunction)&CWxGLCanvasBase::OnChar);
-	Connect(
-		wxID_ANY, wxEVT_CHAR_HOOK,
-		(wxObjectEventFunction)&CWxGLCanvasBase::OnChar);
-
-	Connect(
-		wxEVT_CREATE,
-		(wxObjectEventFunction)&CWxGLCanvasBase::OnWindowCreation);
+	this->Bind(wxEVT_SIZE, &CWxGLCanvasBase::OnSize, this);
+	this->Bind(wxEVT_PAINT, &CWxGLCanvasBase::OnPaint, this);
+	this->Bind(
+		wxEVT_ERASE_BACKGROUND, &CWxGLCanvasBase::OnEraseBackground, this);
+	this->Bind(wxEVT_ENTER_WINDOW, &CWxGLCanvasBase::OnEnterWindow, this);
 
 // JL: There seems to be a problem in MSW we don't receive this event, but
 //      in GTK we do and at the right moment to avoid an X server crash.
