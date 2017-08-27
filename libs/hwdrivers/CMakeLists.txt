@@ -152,6 +152,7 @@ define_mrpt_lib(
 	hwdrivers
 	# Dependencies
 	mrpt-base
+	mrpt-comms # serial ports, etc.
 	mrpt-maps  # used to laser preview, etc.
 	mrpt-obs
 	mrpt-gui    # used to camera preview, etc.
@@ -219,10 +220,6 @@ IF(BUILD_mrpt-hwdrivers)
 
 	IF(CMAKE_MRPT_HAS_SWISSRANGE)
 		TARGET_LINK_LIBRARIES(mrpt-hwdrivers ${MRPT_SWR_LIBS})
-	ENDIF()
-
-	IF(CMAKE_MRPT_HAS_FTDI_SYSTEM)
-		TARGET_LINK_LIBRARIES(mrpt-hwdrivers ${FTDI_LIBS})
 	ENDIF()
 
 	IF(CMAKE_MRPT_HAS_DUO3D)

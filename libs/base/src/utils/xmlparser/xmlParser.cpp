@@ -898,12 +898,16 @@ XMLSTR ToXMLStringTool::toXMLUnSafe(XMLSTR dest, XMLCSTR source)
 		{
 			case 4:
 				*(dest++) = *(source++);
+			/*FALLTHROUGH*/
 			case 3:
 				*(dest++) = *(source++);
+			/*FALLTHROUGH*/
 			case 2:
 				*(dest++) = *(source++);
+			/*FALLTHROUGH*/
 			case 1:
 				*(dest++) = *(source++);
+				/*FALLTHROUGH*/
 		}
 #endif
 	out_of_loop1:;
@@ -1120,14 +1124,18 @@ XMLSTR fromXMLString(XMLCSTR s, int lo, XML* pXML)
 				case 4:
 					*(d++) = *(ss++);
 					ll--;
+				/*FALLTHROUGH*/
 				case 3:
 					*(d++) = *(ss++);
 					ll--;
+				/*FALLTHROUGH*/
 				case 2:
 					*(d++) = *(ss++);
 					ll--;
+				/*FALLTHROUGH*/
 				case 1:
 					*(d++) = *(ss++);
+					/*FALLTHROUGH*/
 			}
 #endif
 		}
@@ -1298,6 +1306,7 @@ static NextToken GetNextToken(
 					*pType = eTokenShortHandClose;
 					break;
 				}
+			/*FALLTHROUGH*/
 
 			// If we haven't found a short hand closing tag then drop into the
 			// text process
@@ -3554,6 +3563,7 @@ XMLNode::XMLCharEncoding XMLNode::guessCharEncoding(
 					bestGuess = char_encoding_legacy;
 					i = l;
 				}  // 10bbbbbb ?
+			/*FALLTHROUGH*/
 			case 3:
 				i++;
 				if ((i < l) && (b[i] & 0xC0) != 0x80)
@@ -3561,6 +3571,7 @@ XMLNode::XMLCharEncoding XMLNode::guessCharEncoding(
 					bestGuess = char_encoding_legacy;
 					i = l;
 				}  // 10bbbbbb ?
+			/*FALLTHROUGH*/
 			case 2:
 				i++;
 				if ((i < l) && (b[i] & 0xC0) != 0x80)
@@ -3568,11 +3579,13 @@ XMLNode::XMLCharEncoding XMLNode::guessCharEncoding(
 					bestGuess = char_encoding_legacy;
 					i = l;
 				}  // 10bbbbbb ?
+			/*FALLTHROUGH*/
 			case 1:
 				i++;
 				break;
 			case 0:
 				i = l;
+				/*FALLTHROUGH*/
 		}
 	if (!useXMLEncodingAttribute) return bestGuess;
 	// if encoding is specified and different from utf-8 than it's non-utf8

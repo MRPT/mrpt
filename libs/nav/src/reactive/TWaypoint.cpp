@@ -241,3 +241,58 @@ void TWaypointStatusSequence::getAsOpenglVisualization(
 		}
 	}
 }
+
+void TWaypointSequence::save(
+	mrpt::utils::CConfigFileBase& c, const std::string& s) const
+{
+	const unsigned int N = waypoints.size();
+	c.write(s, "waypoint_count", N);
+
+	const int NP = 27;  // name padding
+
+	for (unsigned int i = 0; i < N; i++)
+	{
+		const auto& wp = waypoints[i];
+
+		c.write(
+			s, mrpt::format("wp%03u_allowed_distance", i), wp.allowed_distance,
+			NP);
+		c.write(s, mrpt::format("wp%03u_allow_skip", i), wp.allow_skip, NP);
+		c.write(s, mrpt::format("wp%03u_target_x", i), wp.target.x, NP);
+		c.write(s, mrpt::format("wp%03u_target_y", i), wp.target.y, NP);
+		c.write(
+			s, mrpt::format("wp%03u_target_frame_id", i), wp.target_frame_id,
+			NP);
+		c.write(
+			s, mrpt::format("wp%03u_target_heading", i), wp.target_heading, NP);
+	}
+}
+
+void TWaypointSequence::load(
+	const mrpt::utils::CConfigFileBase& c, const std::string& s)
+{
+	this->clear();
+
+	const unsigned int N = c.read_int(s, "waypoint_count", 0, true);
+	waypoints.resize(N);
+
+	for (unsigned int i = 0; i < N; i++)
+	{
+		auto& wp = waypoints[i];
+
+		wp.allowed_distance = c.read_double(
+			s, mrpt::format("wp%03u_allowed_distance", i), 0, true);
+		wp.allow_skip =
+			c.read_bool(s, mrpt::format("wp%03u_allow_skip", i), true, true);
+		wp.target.x =
+			c.read_double(s, mrpt::format("wp%03u_target_x", i), 0, true);
+		wp.target.y =
+			c.read_double(s, mrpt::format("wp%03u_target_y", i), 0, true);
+		wp.target_frame_id = c.read_string(
+			s, mrpt::format("wp%03u_target_frame_id", i), "map", false);
+		double hd = c.read_double(
+			s, mrpt::format("wp%03u_target_heading", i),
+			mrpt::nav::TWaypoint::INVALID_NUM);
+		wp.target_heading = (hd > 100) ? mrpt::nav::TWaypoint::INVALID_NUM : hd;
+	}
+}

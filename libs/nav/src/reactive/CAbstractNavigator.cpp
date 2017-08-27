@@ -255,6 +255,11 @@ void CAbstractNavigator::navigationStep()
 	};
 	m_lastNavigationState = prevState;
 
+	dispatchPendingNavEvents();
+}
+
+void CAbstractNavigator::dispatchPendingNavEvents()
+{
 	// Invoke pending events:
 	for (auto& ev : m_pending_events)
 	{
@@ -482,6 +487,7 @@ void CAbstractNavigator::internal_onStartNewNavigation()
 void CAbstractNavigator::performNavigationStepNavigating(
 	bool call_virtual_nav_method)
 {
+	const TState prevState = m_navigationState;
 	try
 	{
 		if (m_lastNavigationState != NAVIGATING)
@@ -650,6 +656,7 @@ void CAbstractNavigator::performNavigationStepNavigating(
 		MRPT_LOG_ERROR(
 			"[CAbstractNavigator::navigationStep] Untyped exception!");
 	}
+	m_navigationState = prevState;
 }
 
 bool CAbstractNavigator::checkCollisionWithLatestObstacles(

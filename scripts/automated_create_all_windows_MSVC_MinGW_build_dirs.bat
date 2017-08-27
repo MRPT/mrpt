@@ -12,13 +12,13 @@ REM                              Jose Luis Blanco, 2011-15
 REM =========================================================
 
 REM  === THIS IS WHERE MRPT SOURCE TREE IS FROM THE CWD ===
-set MRPT_SRC_DIR=c:/code/mrpt
-set MRPT_BASE_DIR=mrpt
+set MRPT_SRC_DIR=D:\BACKUPS\mrpt\mrpt_releases\MRPT-RELEASE-1.5.3\mrpt-1.5.3
+set MRPT_BASE_DIR=mrpt-1.5.3
 
 REM =================== SET ALL IMPORTANT PATHS ===================
 
 set msvc14_DIR=C:\Program Files (x86)\Microsoft Visual Studio 14.0
-set msvc15_DIR=D:\Program Files (x86)\Microsoft Visual Studio\2017\Community
+set msvc141_DIR=D:\Program Files (x86)\Microsoft Visual Studio\2017\Community
 
 set CMAKE_DIR=C:\Program Files\CMake\bin\
 set LIBUSBDIR=D:\code\libusb-win32-bin
@@ -51,9 +51,9 @@ call :subGen
 
 goto End
 
-REM msvc15 ========================
-:gen15
-set COMP=msvc15
+REM msvc141 ========================
+:gen141
+set COMP=msvc141
 
 set ARCHN=32
 call :subGen
@@ -90,11 +90,11 @@ if %COMP%==mingw GOTO :subGen_mingw
 REM Visual Studio --------------------------
 if %COMP%==msvc12 set MSVC_DIR=%msvc12_DIR%
 if %COMP%==msvc14 set MSVC_DIR=%msvc14_DIR%
-if %COMP%==msvc15 set MSVC_DIR=%msvc15_DIR%
+if %COMP%==msvc141 set MSVC_DIR=%msvc141_DIR%
 
 if %COMP%==msvc12 set CMAKE_GEN=Visual Studio 12 2013
 if %COMP%==msvc14 set CMAKE_GEN=Visual Studio 14 2015
-if %COMP%==msvc15 set CMAKE_GEN=Visual Studio 15 2017
+if %COMP%==msvc141 set CMAKE_GEN=Visual Studio 15 2017
 if %ARCHN%==64 set CMAKE_GEN=%CMAKE_GEN% Win64
 
 set CMAKE_EXTRA1=-DINSTALL_MSVC_REDISTRIBUTABLE=%MSVC_REDIST%
@@ -102,7 +102,7 @@ set CMAKE_EXTRA2=
 set CMAKE_EXTRA3=
 
 if %COMP%==msvc14 set WXLIB_DIR=vc140
-if %COMP%==msvc15 set WXLIB_DIR=vc141
+if %COMP%==msvc141 set WXLIB_DIR=vc141
 if %ARCHN%==64 set WXLIB_DIR=%WXLIB_DIR%_x64
 
 
@@ -139,7 +139,7 @@ set PATH_FIL=%PATH_FIL%.bat
 if NOT %COMP%==mingw set EXTRA_MINGW_PATHS=
 if %COMP%==mingw set EXTRA_MINGW_PATHS=;%MINGW_ROOT_BKSLH%-%ARCHN%\bin
 
-echo SET PATH=C:\Windows\system32;C:\Windows%EXTRA_MINGW_PATHS%;C:\Program Files\TortoiseSVN\bin;d:\code\opencv-%COMP%-%ARCH%\bin\Release;d:\code\opencv-%COMP%-%ARCH%\bin\Debug;%WXLIBDIR%;%FFMPEGDIR%/bin;%LIBUSBDIR%\bin\%ARCH_NAME%;%CMAKE_DIR%;%CD%\bin\Release;%CD%\bin\Debug > %PATH_FIL%
+echo SET PATH=C:\Windows\system32;C:\Windows%EXTRA_MINGW_PATHS%;c:\code\opencv-%COMP%-%ARCH%\bin\Release;c:\code\opencv-%COMP%-%ARCH%\bin\Debug;%WXLIBDIR%;%FFMPEGDIR%/bin;%LIBUSBDIR%\bin\%ARCH_NAME%;%CMAKE_DIR%;%CD%\bin\Release;%CD%\bin\Debug > %PATH_FIL%
 
 echo call %PATH_FIL% > AUTOBUILD.bat
 rem ----- COMPILE ----- 
@@ -150,7 +150,7 @@ if %COMP%==mingw echo %MINGW_ROOT_BKSLH%-%ARCHN%\bin\mingw32-make package >> AUT
 
 REM ---------------- Call CMake ----------------
 call %PATH_FIL%
-set ALL_PARAMS=-DDISABLE_SWISSRANGER_3DCAM_LIBS=ON -DDISABLE_PCL=ON -DDISABLE_NationalInstruments=ON -DOpenCV_DIR=d:/code/opencv-%COMP%-%ARCH% -DMRPT_HAS_FFMPEG_WIN32=ON -DFFMPEG_WIN32_ROOT_DIR=%FFMPEGDIR% -DwxWidgets_ROOT_DIR=%WXDIR% -DwxWidgets_LIB_DIR=%WXLIBDIR% -DPCAP_ROOT_DIR=%PCAP_ROOT% -DPCAP_INCLUDE_DIR=%PCAP_ROOT%/include -DPCAP_LIBRARY=%PCAP_LIB%
+set ALL_PARAMS=-DDISABLE_SWISSRANGER_3DCAM_LIBS=ON -DDISABLE_PCL=ON -DDISABLE_NationalInstruments=ON -DOpenCV_DIR=c:/code/opencv-%COMP%-%ARCH% -DMRPT_HAS_FFMPEG_WIN32=ON -DFFMPEG_WIN32_ROOT_DIR=%FFMPEGDIR% -DwxWidgets_ROOT_DIR=%WXDIR% -DwxWidgets_LIB_DIR=%WXLIBDIR% -DPCAP_ROOT_DIR=%PCAP_ROOT% -DPCAP_INCLUDE_DIR=%PCAP_ROOT%/include -DPCAP_LIBRARY=%PCAP_LIB%
 
 if %ARCHN%==32 set LIBUSBLIB=%LIBUSBDIR%\lib\msvc\libusb.lib 
 if %ARCHN%==64 set LIBUSBLIB=%LIBUSBDIR%\lib\msvc_x64\libusb.lib 

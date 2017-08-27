@@ -35,7 +35,7 @@ observer/observed will put an end to the process
 \sa observeBegin  */
 void CObserver::observeEnd(CObservable& obj)
 {
-	set<CObservable*>::iterator it = m_subscribed.find(&obj);
+	auto it = m_subscribed.find(&obj);
 	if (it != m_subscribed.end())
 	{
 		(*it)->internal_observer_end(this);

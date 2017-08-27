@@ -12,6 +12,7 @@
 #include <mrpt/utils/core_defs.h>
 #include <mrpt/utils/COutputLogger.h>
 #include <mrpt/utils/CLoadableOptions.h>
+#include <mrpt/utils/TEnumType.h>
 
 namespace mrpt
 {
@@ -106,11 +107,13 @@ class BASE_IMPEXP CParticleFilter : public mrpt::utils::COutputLogger
 	   public:
 		/** Initilization of default parameters */
 		TParticleFilterOptions();
+		// See base docs:
 		void loadFromConfigFile(
 			const mrpt::utils::CConfigFileBase& source,
-			const std::string& section) override;  // See base docs
-		void dumpToTextStream(
-			mrpt::utils::CStream& out) const override;  // See base docs
+			const std::string& section) override;
+		virtual void saveToConfigFile(
+			mrpt::utils::CConfigFileBase& target,
+			const std::string& section) const override;
 
 		/** A flag that indicates whether the CParticleFilterCapable object
 		 * should perform adative sample size (default=false). */
@@ -217,5 +220,38 @@ class BASE_IMPEXP CParticleFilter : public mrpt::utils::COutputLogger
 };  // End of class def.
 
 }  // end namespace
+// Specializations MUST occur at the same namespace:
+namespace utils
+{
+template <>
+struct TEnumTypeFiller<mrpt::bayes::CParticleFilter::TParticleFilterAlgorithm>
+{
+	typedef mrpt::bayes::CParticleFilter::TParticleFilterAlgorithm enum_t;
+	static void fill(bimap<enum_t, std::string>& m_map)
+	{
+		using namespace mrpt::bayes;
+		m_map.insert(CParticleFilter::pfStandardProposal, "pfStandardProposal");
+		m_map.insert(
+			CParticleFilter::pfAuxiliaryPFOptimal, "pfAuxiliaryPFOptimal");
+		m_map.insert(
+			CParticleFilter::pfAuxiliaryPFStandard, "pfAuxiliaryPFStandard");
+		m_map.insert(CParticleFilter::pfOptimalProposal, "pfOptimalProposal");
+	}
+};
+template <>
+struct TEnumTypeFiller<
+	mrpt::bayes::CParticleFilter::TParticleResamplingAlgorithm>
+{
+	typedef mrpt::bayes::CParticleFilter::TParticleResamplingAlgorithm enum_t;
+	static void fill(bimap<enum_t, std::string>& m_map)
+	{
+		using namespace mrpt::bayes;
+		m_map.insert(CParticleFilter::prMultinomial, "prMultinomial");
+		m_map.insert(CParticleFilter::prResidual, "prResidual");
+		m_map.insert(CParticleFilter::prStratified, "prStratified");
+		m_map.insert(CParticleFilter::prSystematic, "prSystematic");
+	}
+};
+}
 }  // end namespace
 #endif

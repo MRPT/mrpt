@@ -85,7 +85,8 @@ WxSubsystem::CAuxWxSubsystemShutdowner::~CAuxWxSubsystemShutdowner()
 	printf("[~CAuxWxSubsystemShutdowner] Deleting static objects.\n");
 #endif
 	// This is the final point where all dynamic memory must be deleted:
-	delete &WxSubsystem::GetWxMainThreadInstance();
+	// delete &WxSubsystem::GetWxMainThreadInstance(); // may cause crashes at
+	// app end...
 	delete WxSubsystem::listPendingWxRequests;
 	delete WxSubsystem::cs_listPendingWxRequests;
 }

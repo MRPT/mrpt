@@ -12,7 +12,7 @@
 #include <mrpt/obs/CObservationCANBusJ1939.h>
 #include <mrpt/utils/COutputLogger.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
-#include <mrpt/hwdrivers/CSerialPort.h>
+#include <mrpt/comms/CSerialPort.h>
 
 namespace mrpt
 {
@@ -97,7 +97,7 @@ class HWDRIVERS_IMPEXP CCANBusReader : public mrpt::utils::COutputLogger,
 	std::string m_com_port;
 	/** Will be !=nullptr only if I created it, so I must destroy it at the end.
 	 */
-	CSerialPort* m_mySerialPort;
+	mrpt::comms::CSerialPort* m_mySerialPort;
 	/** Baudrate: 9600, 38400, 500000 */
 	int m_com_baudRate;
 	/** Default = 1 */

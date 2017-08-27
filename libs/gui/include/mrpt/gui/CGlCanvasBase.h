@@ -31,19 +31,19 @@ class GUI_IMPEXP CGlCanvasBase
    public:
 	struct CamaraParams
 	{
-		CamaraParams();
+		CamaraParams() {}
 		void setElevationDeg(float deg);
 
-		float cameraPointingX, cameraPointingY, cameraPointingZ;
-		float cameraZoomDistance;
-		float cameraElevationDeg, cameraAzimuthDeg;
-		bool cameraIsProjective;
-		float cameraFOV;
+		float cameraPointingX = .0f, cameraPointingY = .0f,
+			  cameraPointingZ = .0f;
+		float cameraZoomDistance = 40.f;
+		float cameraElevationDeg = 45.f, cameraAzimuthDeg = 45.f;
+		bool cameraIsProjective = true;
+		float cameraFOV = 30.f;
 	};
 
-	CGlCanvasBase();
-	virtual ~CGlCanvasBase();
-
+	CGlCanvasBase() {}
+	virtual ~CGlCanvasBase() {}
 	/** Sets the minimum of the zoom
 	 * See also setMaximumZoom(float) */
 	void setMinimumZoom(float zoom);
@@ -231,7 +231,10 @@ class GUI_IMPEXP CGlCanvasBase
 	canvas destructor.
 	 * This function returns a smart pointer to the opengl scene
 	getOpenGLSceneRef		  */
-	mrpt::opengl::COpenGLScene::Ptr getOpenGLSceneRef() const;
+	mrpt::opengl::COpenGLScene::Ptr& getOpenGLSceneRef()
+	{
+		return m_openGLScene;
+	}
 	void setOpenGLSceneRef(mrpt::opengl::COpenGLScene::Ptr scene);
 
    protected:
@@ -243,14 +246,16 @@ class GUI_IMPEXP CGlCanvasBase
 	virtual double renderCanvas(int width = -1, int height = -1);
 
    private:
-	float clearColorR, clearColorG, clearColorB, clearColorA;
-	bool useCameraFromScene;
-	mrpt::opengl::COpenGLScene::Ptr m_openGLScene;
-	int m_mouseLastX, m_mouseLastY;
-	int m_mouseClickX, m_mouseClickY;
-	bool mouseClicked;
-	float m_minZoom;
-	float m_maxZoom;
+	float clearColorR = .4f, clearColorG = .4f, clearColorB = .4f,
+		  clearColorA = 1.f;
+	bool useCameraFromScene = false;
+	mrpt::opengl::COpenGLScene::Ptr m_openGLScene =
+		mrpt::make_aligned_shared<mrpt::opengl::COpenGLScene>();
+	int m_mouseLastX = 0, m_mouseLastY = 0;
+	int m_mouseClickX = 0, m_mouseClickY = 0;
+	bool mouseClicked = false;
+	float m_minZoom = 1.f;
+	float m_maxZoom = 3200.f;
 	CamaraParams m_cameraParams;
 };  // end of class
 }  // end namespace

@@ -1,0 +1,36 @@
+=head1 NAME
+
+hmt-slam - Robotic Hybrid Metric Topological (HMT) mappping CLI
+
+=head1 SYNOPSIS
+
+hmt-slam
+
+=head1 DESCRIPTION
+
+B<hmt-slam> is a CLI application which allows building complex HMT maps.
+
+=head1 BUGS
+
+Please report bugs at https://github.com/MRPT/mrpt/issues
+
+=head1 SEE ALSO
+
+The application wiki page at http://www.mrpt.org/Applications
+
+=head1 AUTHORS
+
+B<hmt-slam> is part of the Mobile Robot Programming Toolkit (MRPT), and was
+originally written by the MAPIR laboratory (University of Malaga).
+
+This manual page was written by Jose Luis Blanco <joseluisblancoc@gmail.com>.
+
+=head1 COPYRIGHT
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the BSD License.
+
+On Debian GNU/Linux systems, the complete text of the BSD License can be
+found in `/usr/share/common-licenses/BSD'.
+
+=cut

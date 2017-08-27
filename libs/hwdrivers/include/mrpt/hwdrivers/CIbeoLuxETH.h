@@ -13,7 +13,7 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
-#include <mrpt/utils/CClientTCPSocket.h>
+#include <mrpt/comms/CClientTCPSocket.h>
 
 #include <thread>
 
@@ -78,7 +78,7 @@ class HWDRIVERS_IMPEXP CIbeoLuxETH : public mrpt::hwdrivers::CGenericSensor
    private:
 	std::string m_ip;
 	unsigned int m_port;
-	mrpt::utils::CClientTCPSocket m_client;
+	mrpt::comms::CClientTCPSocket m_client;
 	unsigned int m_scanFrequency;  // in hertz
 	double m_angleResolution;  // in degrees
 	double m_startAngle;  // degrees

@@ -7,10 +7,10 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/hwdrivers/CSerialPort.h>
+#include <mrpt/comms/CSerialPort.h>
 #include <mrpt/utils.h>
 
-using namespace mrpt::hwdrivers;
+using namespace mrpt::comms;
 using namespace mrpt::utils;
 using namespace std;
 

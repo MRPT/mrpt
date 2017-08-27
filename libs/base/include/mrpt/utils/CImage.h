@@ -1098,15 +1098,14 @@ class BASE_IMPEXP CImage : public mrpt::utils::CSerializable, public CCanvas
 	void releaseIpl(bool thisIsExternalImgUnload = false) noexcept;
 
 	/** Checks if the image is of type "external storage", and if so and not
-	 * loaded yet, load it. */
-	void makeSureImageIsLoaded() const
-		throw(std::exception, utils::CExceptionExternalImageNotFound);
+	 * loaded yet, load it.
+	 * \exception CExceptionExternalImageNotFound */
+	void makeSureImageIsLoaded() const;
 
 };  // End of class
 DEFINE_SERIALIZABLE_POST_CUSTOM_BASE(CImage, mrpt::utils::CSerializable)
 
 }  // end of namespace utils
-
 }  // end of namespace mrpt
 
 #endif

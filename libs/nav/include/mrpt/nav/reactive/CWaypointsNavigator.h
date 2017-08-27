@@ -169,6 +169,7 @@ class NAV_IMPEXP CWaypointsNavigator : public mrpt::nav::CAbstractNavigator
 	 */
 	bool m_was_aligning;
 	bool m_is_aligning;
+	mrpt::system::TTimeStamp m_last_alignment_cmd;
 };
 }
 }

@@ -114,89 +114,121 @@ bool do_special_dilation(
 		case 37:
 			cvDilate(ipl, ipl, kernel_cross, 1);
 			isLast = true;
+		// fall through
 		case 36:
 			cvErode(ipl, ipl, kernel_rect, 1);
+		// fall through
 		case 35:
 			cvDilate(ipl, ipl, kernel_vert, 1);
+		// fall through
 		case 34:
 			cvDilate(ipl, ipl, kernel_vert, 1);
+		// fall through
 		case 33:
 			cvDilate(ipl, ipl, kernel_vert, 1);
+		// fall through
 		case 32:
 			cvDilate(ipl, ipl, kernel_vert, 1);
+		// fall through
 		case 31:
 			cvDilate(ipl, ipl, kernel_vert, 1);
 			break;
 
 		case 30:
 			cvDilate(ipl, ipl, kernel_cross, 1);
+		// fall through
 		case 29:
 			cvErode(ipl, ipl, kernel_rect, 1);
+		// fall through
 		case 28:
 			cvDilate(ipl, ipl, kernel_horz, 1);
+		// fall through
 		case 27:
 			cvDilate(ipl, ipl, kernel_horz, 1);
+		// fall through
 		case 26:
 			cvDilate(ipl, ipl, kernel_horz, 1);
+		// fall through
 		case 25:
 			cvDilate(ipl, ipl, kernel_horz, 1);
+		// fall through
 		case 24:
 			cvDilate(ipl, ipl, kernel_horz, 1);
 			break;
 
 		case 23:
 			cvDilate(ipl, ipl, kernel_diag2, 1);
+		// fall through
 		case 22:
 			cvDilate(ipl, ipl, kernel_diag1, 1);
+		// fall through
 		case 21:
 			cvDilate(ipl, ipl, kernel_diag2, 1);
+		// fall through
 		case 20:
 			cvDilate(ipl, ipl, kernel_diag1, 1);
+		// fall through
 		case 19:
 			cvDilate(ipl, ipl, kernel_diag2, 1);
+		// fall through
 		case 18:
 			cvDilate(ipl, ipl, kernel_diag1, 1);
 			break;
 
 		case 17:
 			cvDilate(ipl, ipl, kernel_diag2, 1);
+		// fall through
 		case 16:
 			cvDilate(ipl, ipl, kernel_diag2, 1);
+		// fall through
 		case 15:
 			cvDilate(ipl, ipl, kernel_diag2, 1);
+		// fall through
 		case 14:
 			cvDilate(ipl, ipl, kernel_diag2, 1);
 			break;
 
 		case 13:
 			cvDilate(ipl, ipl, kernel_diag1, 1);
+		// fall through
 		case 12:
 			cvDilate(ipl, ipl, kernel_diag1, 1);
+		// fall through
 		case 11:
 			cvDilate(ipl, ipl, kernel_diag1, 1);
+		// fall through
 		case 10:
 			cvDilate(ipl, ipl, kernel_diag1, 1);
 			break;
 
 		case 9:
 			cvDilate(ipl, ipl, kernel_cross, 1);
+		// fall through
 		case 8:
 			cvErode(ipl, ipl, kernel_rect, 1);
+		// fall through
 		case 7:
 			cvDilate(ipl, ipl, kernel_cross, 1);
+		// fall through
 		case 6:
 			cvDilate(ipl, ipl, kernel_diag2, 1);
 			isLast = true;
+		// fall through
 		case 5:
 			cvDilate(ipl, ipl, kernel_diag1, 1);
+		// fall through
 		case 4:
 			cvDilate(ipl, ipl, kernel_rect, 1);
+		// fall through
 		case 3:
 			cvErode(ipl, ipl, kernel_cross, 1);
+		// fall through
 		case 2:
 			cvDilate(ipl, ipl, kernel_rect, 1);
+		// fall through
 		case 1:
 			cvDilate(ipl, ipl, kernel_cross, 1);
+		// fall through
 		case 0: /* first try: do nothing to the image */
 			break;
 	};

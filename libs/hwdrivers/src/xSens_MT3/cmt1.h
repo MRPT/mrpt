@@ -91,7 +91,7 @@ class Cmt1s
 	mutable XsensResultValue m_lastResult;
 	//! The opened COM port nr
 	uint8_t m_port;
-	char m_portname[32];
+	char m_portname[257];
 	/*! The default timeout value to use during blocking operations.
 		A value of 0 means that all operations become non-blocking.
 	*/
@@ -264,11 +264,8 @@ class Cmt1f
 	//! Indicates if we're using the unicode filename or the regular filename
 	bool m_unicode;
 	/*! \brief Indicates whether the last operation was a read or write
-	   operation.
-
-		This value is used to check whether or not a seek is required to perform
-	   a
-		requested read or write operation.
+	   operation. This value is used to check whether or not a seek is
+		   required to perform a requested read or write operation.
 	*/
 	bool m_reading;
 	//! Indicates if the file was opened in read-only mode
@@ -299,7 +296,6 @@ class Cmt1f
 	//! Open an empty file using a unicode path + filename.
 	XsensResultValue create(const wchar_t* filename);
 	/*! \brief Delete the given data from the file.
-
 		The function erases the given data from the file at the given write
 	   position. This
 		operation may take a while to complete, but is faster than insertData.
@@ -355,7 +351,6 @@ class Cmt1f
 	//! Return the current write position.
 	CmtFilePos getWritePos(void) const { return m_writePos; }
 	/*! \brief Insert the given data into the file.
-
 		The function writes the given data to the file at the current write
 	   position. This
 		operation may take a while to complete.
