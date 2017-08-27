@@ -31,9 +31,12 @@ using namespace mrpt::utils;
 using namespace std;
 
 // Was: MRPT_HAS_OPENCV_NONFREE
-#define HAVE_OPENCV_WITH_SURF           \
-	defined(HAVE_OPENCV_XFEATURES2D) || \
-		(MRPT_OPENCV_VERSION_NUM < 0x300 && MRPT_OPENCV_VERSION_NUM >= 0x240)
+#if defined(HAVE_OPENCV_XFEATURES2D) || \
+	(MRPT_OPENCV_VERSION_NUM < 0x300 && MRPT_OPENCV_VERSION_NUM >= 0x240)
+#define HAVE_OPENCV_WITH_SURF 1
+#else
+#define HAVE_OPENCV_WITH_SURF 0
+#endif
 
 /************************************************************************************************
 *								extractFeaturesSURF *
@@ -141,7 +144,6 @@ void CFeatureExtraction::extractFeaturesSURF(
 	}  // end for
 
 #else
-
 	THROW_EXCEPTION(
 		"Method not available: MRPT compiled without OpenCV, or against a "
 		"version of OpenCV without SURF")

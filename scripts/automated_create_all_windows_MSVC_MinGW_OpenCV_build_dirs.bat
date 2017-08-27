@@ -10,44 +10,36 @@ REM                              Jose Luis Blanco, 2012
 REM =========================================================
 
 REM  === THIS IS WHERE OpenCV SOURCE TREE IS FROM THE CWD ===
-set OPENCV_BASE_DIR=opencv
-set OPENCV_CONTRIB_DIR=opencv_contrib
+set OPENCV_BASE_DIR=opencv-3.1.0
+set OPENCV_CONTRIB_DIR=opencv_contrib-3.1.0
 
 REM =================== SET ALL IMPORTANT PATHS ===================
 
-set msvc11_DIR=C:\Program Files (x86)\Microsoft Visual Studio 11.0
-set msvc12_DIR=C:\Program Files (x86)\Microsoft Visual Studio 12.0
 set msvc14_DIR=C:\Program Files (x86)\Microsoft Visual Studio 14.0
+set msvc141_DIR=D:\Program Files (x86)\Microsoft Visual Studio\2017\Community
 REM MinGW directories will be: %MINGW_ROOT%-32 and %MINGW_ROOT%-64  
 REM  (NOTE: Use "/" for paths in this one)
 set MINGW_ROOT=d:/MinGW
 set MINGW_ROOT_BKSLH=d:\MinGW
-set CMAKE_DIR=C:\Program Files (x86)\CMake\bin\
+set CMAKE_DIR=C:\Program Files\CMake\bin\
 REM ==============================================================
 
 del BUILD_ALL_OPENCV.bat 2> NUL
 
-REM msvc11 ========================
-:gen11
-set COMP=msvc11
-set ARCHN=32
-call :subGen
-
-set ARCHN=64
-call :subGen
-
-REM msvc12 ========================
-:gen12
-set COMP=msvc12
-set ARCHN=32
-call :subGen
-
-set ARCHN=64
-call :subGen
+goto gen141
 
 REM msvc14 ========================
 :gen14
 set COMP=msvc14
+set ARCHN=32
+call :subGen
+
+set ARCHN=64
+call :subGen
+
+REM msvc141 ========================
+:gen141
+set COMP=msvc141
 set ARCHN=32
 call :subGen
 
@@ -79,16 +71,12 @@ if %ARCHN%==64 set ARCH_NAME=amd64
 
 if %COMP%==mingw GOTO :subGen_mingw
 REM Visual Studio --------------------------
-if %COMP%==msvc9 set MSVC_DIR=%msvc9_DIR%
-if %COMP%==msvc10 set MSVC_DIR=%msvc10_DIR%
-if %COMP%==msvc11 set MSVC_DIR=%msvc11_DIR%
-if %COMP%==msvc12 set MSVC_DIR=%msvc12_DIR%
 if %COMP%==msvc14 set MSVC_DIR=%msvc14_DIR%
-if %COMP%==msvc9 set CMAKE_GEN=Visual Studio 9 2008
-if %COMP%==msvc10 set CMAKE_GEN=Visual Studio 10 2010
-if %COMP%==msvc11 set CMAKE_GEN=Visual Studio 11 2012
-if %COMP%==msvc12 set CMAKE_GEN=Visual Studio 12 2013
 if %COMP%==msvc14 set CMAKE_GEN=Visual Studio 14 2015
+
+if %COMP%==msvc141 set MSVC_DIR=%msvc15_DIR%
+if %COMP%==msvc141 set CMAKE_GEN=Visual Studio 15 2017
+
 if %ARCHN%==64 set CMAKE_GEN=%CMAKE_GEN% Win64
 
 set CMAKE_EXTRA1=
@@ -119,7 +107,7 @@ set PATH_FIL=%PATH_FIL%.bat
 if NOT %COMP%==mingw set EXTRA_MINGW_PATHS=
 if %COMP%==mingw set EXTRA_MINGW_PATHS=;%MINGW_ROOT_BKSLH%-%ARCHN%\bin
 
-echo SET PATH=C:\Windows\system32;C:\Windows%EXTRA_MINGW_PATHS%;%CMAKE_DIR%;C:\Program Files\TortoiseSVN\bin;%CD%\bin\Release;%CD%\bin\Debug > %PATH_FIL%
+echo SET PATH=C:\Windows\system32;C:\Windows%EXTRA_MINGW_PATHS%;%CMAKE_DIR%;%CD%\bin\Release;%CD%\bin\Debug > %PATH_FIL%
 
 echo call %PATH_FIL% > AUTOBUILD.bat
 if NOT %COMP%==mingw echo cmake --build . --config Release >> AUTOBUILD.bat

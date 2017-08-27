@@ -69,7 +69,7 @@ ENDIF(NOT CMAKE_MRPT_HAS_MATLAB)
 #ENDIF(BUILD_SHARED_LIBS)
 
 ## Since MEX libraries are dynamic but MRPT libraries need to be static, the static libraries must be Position Independent Code (PIC)
-SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} -fPIC")
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # Copy all .m files (classes, samples, helpers...) to the build directory
 FILE(COPY ${CMAKE_SOURCE_DIR}/mex/+mrpt   DESTINATION ${CMAKE_BINARY_DIR}/mex)

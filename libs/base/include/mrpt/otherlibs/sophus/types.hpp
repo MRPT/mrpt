@@ -1,7 +1,6 @@
 #ifndef SOPHUS_TYEPES_HPP
 #define SOPHUS_TYEPES_HPP
 
-#include <Eigen/Geometry>
 #include "common.hpp"
 
 namespace Sophus {
@@ -61,6 +60,19 @@ template <class Scalar>
 using Matrix7 = Matrix<Scalar, 7, 7>;
 using Matrix7f = Matrix7<float>;
 using Matrix7d = Matrix7<double>;
+
+template <class Scalar, int N, int Options = 0>
+using ParametrizedLine = Eigen::ParametrizedLine<Scalar, N, Options>;
+
+template <class Scalar, int Options = 0>
+using ParametrizedLine3 = ParametrizedLine<Scalar, 3, Options>;
+using ParametrizedLine3f = ParametrizedLine3<float>;
+using ParametrizedLine3d = ParametrizedLine3<double>;
+
+template <class Scalar, int Options = 0>
+using ParametrizedLine2 = ParametrizedLine<Scalar, 2, Options>;
+using ParametrizedLine2f = ParametrizedLine2<float>;
+using ParametrizedLine2d = ParametrizedLine2<double>;
 
 namespace details {
 template <class Scalar>

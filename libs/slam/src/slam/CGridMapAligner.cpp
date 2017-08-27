@@ -1243,8 +1243,8 @@ void CGridMapAligner::TConfigParams::dumpToTextStream(
 void CGridMapAligner::TConfigParams::loadFromConfigFile(
 	const mrpt::utils::CConfigFileBase& iniFile, const std::string& section)
 {
-	MRPT_LOAD_CONFIG_VAR_CAST(
-		methodSelection, int, TAlignerMethod, iniFile, section)
+	methodSelection =
+		iniFile.read_enum(section, "methodSelection", methodSelection);
 
 	MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(
 		featsPerSquareMeter, float, iniFile, section)
@@ -1270,8 +1270,8 @@ void CGridMapAligner::TConfigParams::loadFromConfigFile(
 	MRPT_LOAD_CONFIG_VAR(debug_show_corrs, bool, iniFile, section)
 	MRPT_LOAD_CONFIG_VAR(debug_save_map_pairs, bool, iniFile, section)
 
-	MRPT_LOAD_CONFIG_VAR_CAST_NO_DEFAULT(
-		feature_descriptor, int, TDescriptorType, iniFile, section)
+	feature_descriptor = iniFile.read_enum(
+		section, "feature_descriptor", feature_descriptor, true);
 	feature_detector_options.loadFromConfigFile(iniFile, section);
 }
 

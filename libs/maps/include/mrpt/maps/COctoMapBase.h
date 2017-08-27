@@ -13,7 +13,7 @@
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/safe_pointers.h>
-#include <mrpt/otherlibs/octomap/octomap.h>
+#include <octomap/octomap.h>
 #include <mrpt/opengl/COctoMapVoxels.h>
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/obs/obs_frwds.h>
@@ -417,7 +417,7 @@ class COctoMapBase : public mrpt::maps::CMetricMap
 	/// \return Memory usage of a full grid of the same size as the OcTree in
 	/// bytes (for comparison)
 	size_t memoryFullGrid() const { return m_octomap.memoryFullGrid(); }
-	double volume() const { return m_octomap.volume(); }
+	double volume() { return m_octomap.volume(); }
 	/// Size of OcTree (all known space) in meters for x, y and z dimension
 	void getMetricSize(double& x, double& y, double& z)
 	{

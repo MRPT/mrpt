@@ -27,15 +27,70 @@
 		- \ref mrpt_base_grp
 			- Removed functions (replaced by C++11/14 standard library):
 				- mrpt::math::erf, mrpt::math::erfc, std::isfinite, mrpt::math::std::isnan
+				- `mrpt::math::make_vector<>` => `std::vector<>{...}` braced initializator
 			- Added: mrpt::make_aligned_shared<> template
+			- mrpt::utils::CConfigFileBase::write() now supports enum types.
 		- \ref mrpt_slam_grp
 			- rbpf-slam: Add support for simplemap continuation.
 		- \ref mrpt_nav_grp
 			- Removed deprecated mrpt::nav::THolonomicMethod.
 			- mrpt::nav::CAbstractNavigator: callbacks in mrpt::nav::CRobot2NavInterface are now invoked *after* `navigationStep()` to avoid problems if user code invokes the navigator API to change its state.
+			- Added methods to load/save mrpt::nav::TWaypointSequence to configuration files.
+		- \ref mrpt_comms_grp [NEW IN MRPT 2.0.0]
+			- This new module has been created to hold all serial devices & networking classes, with minimal dependencies.
 	- BUG FIXES:
 		- Fix reactive navigator inconsistent state if navigation API is called from within rnav callbacks.
 		- Fix incorrect evaluation of "ASSERT" formulas in mrpt::nav::CMultiObjectiveMotionOptimizerBase
+		- Fix aborting reading from LMS111 scanner on first error.
+		- Fix == operator on CPose3D: it now uses an epsilon for comparing the rotation matrices.
+
+<hr>
+<a name="1.5.4">
+<h2>Version 1.5.3: Released 13/AUG/2017  </h2></a>
+- <b>Detailed list of changes:</b>
+        - \ref mrpt_base_grp
+                - Fix potential uninitialized value in CRobot2DPoseEstimator::getLatestRobotPose()
+                - MRPT_getCompilationDate() returns time as well
+        - Build system:
+                - Fix MRPTConfig.cmake for system octomap libraries.
+                - Fix package-contains-vcs-control-file (.gitingore) Lintian error.
+
+<hr>
+<a name="1.5.3">
+<h2>Version 1.5.3: Released 13/AUG/2017  </h2></a>
+- <b>Detailed list of changes:</b>
+	- CMake >=3.1 is now required for use of ExternalProjects.
+	- Scripts `scripts/prepare_{debian,release}.sh` have been refactored and simplified.
+	- Removed embedded source code versions of Eigen, assimp and octomap. Downloaded and built as ExternalProjects if not present in the system.
+	- Releases will be signed with PGP from now on and posted as binary attachments to GitHub releases.
+
+<hr>
+<a name="1.5.2">
+<h2>Version 1.5.2: Released 6/AUG/2017 </h2></a>
+- <b>Detailed list of changes:</b>
+	- Changes in libraries:
+		- \ref mrpt_base_grp
+			- Added methods:
+				- mrpt::synch::CCriticalSection::try_enter()
+				- mrpt::synch::CCriticalSectionRecursive::try_enter()
+		- \ref mrpt_nav_grp
+			- mrpt::nav::CAbstractNavigator: callbacks in mrpt::nav::CRobot2NavInterface are now invoked *after* `navigationStep()` to avoid problems if user code invokes the navigator API to change its state.
+			- Added methods to load/save mrpt::nav::TWaypointSequence to configuration files.
+		- \ref mrpt_slam_grp
+			- rbpf-slam: Add support for simplemap continuation.
+	- BUG FIXES:
+		- Fix reactive navigator inconsistent state if navigation API is called from within rnav callbacks.
+		- Fix incorrect evaluation of "ASSERT" formulas in mrpt::nav::CMultiObjectiveMotionOptimizerBase
+
+<hr>
+<a name="1.5.1">
+<h2>Version 1.5.1: Released 21/JUN/2017  </h2></a>
+- <b>Detailed list of changes:</b>
+	- Changes in libraries:
+		- \ref mrpt_nav_grp
+			- fix const-correctness: [commit](https://github.com/MRPT/mrpt/commit/7e79003d2adeb7b170fa04e0bc34d42707e07306)
+			- More flexible callback behavior: [commit](https://github.com/MRPT/mrpt/commit/5b054336a1ac75f6e4f8741e5049971917a2980a)
+
 
 <hr>
 <a name="1.5.0">
@@ -81,7 +136,7 @@
 			- New colormap: mrpt::utils::hot2rgb()
 			- New function mrpt::system::find_mrpt_shared_dir()
 			- New class mrpt::utils::CDynamicGrid3D<>
-			- New function mrpt::utils::net::http_request()
+			- New function mrpt::comms::net::http_request()
 			- New function mrpt::system::now_double()
 			- New function mrpt::utils::getAllRegisteredClassesChildrenOf()
 			- Safer CClassRegistry: detect and warn on attempts to duplicated class registration.
@@ -267,7 +322,7 @@
 			- mrpt::math::CQuaternion<> did not check for unit norm in Release builds.
 			- Fix build errors against OpenCV 3.0.0+ without opencv_contrib modules.
 			- mrpt::hwdrivers::CHokuyoURG now correctly handles opening both USB and Ethernet Hokuyo devices (Closes Github issue #180)
-			- Fixed mrpt::utils::net::DNS_resolve_async() may SIGSEGV in slow networks.
+			- Fixed mrpt::comms::net::DNS_resolve_async() may SIGSEGV in slow networks.
 			- mrpt::opengl::CMesh::updateColorsMatrix() did not ignore cells masked out.
 			- Wrong weights used in mrpt::poses::CPosePDFSOG::getMean()
 			- Removed ad-hoc bias addition in range-only predictions in landmarks maps.

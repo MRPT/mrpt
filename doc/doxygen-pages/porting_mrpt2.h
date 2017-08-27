@@ -55,6 +55,7 @@
 *    - `mrpt::system::sleep(5);` --> `std::this_thread::sleep_for(5ms);`
 *    - `mrpt::synch::CSemaphore sem; sem.waitForSignal(timeout); sem.release();` --> `std::promise<void> sem; auto fut = sem.get_future(); fut.wait_for(...); sem.set_value();`
 *  - `mrpt::utils::CObject::duplicate()` has been removed, use the equivalent (redundant) `mrpt::utils::CObject::clone()`.
+*  - CSerialPort, `mrpt::utils::net`, sockets: have been moved to its own new module \ref mrpt_comms_grp under namespace `mrpt::comms`.
 *
 * **Optional changes**
 *   - Use the `Foo::ConstPtr` smart pointers when possible instead of its non-const counterpart.

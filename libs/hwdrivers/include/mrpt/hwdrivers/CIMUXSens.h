@@ -11,7 +11,7 @@
 #define CIMUXSens_H
 
 #include <mrpt/hwdrivers/CGenericSensor.h>
-#include <mrpt/hwdrivers/CSerialPort.h>
+#include <mrpt/comms/CSerialPort.h>
 
 #include <mrpt/poses/CPose3D.h>
 
@@ -59,7 +59,7 @@ class HWDRIVERS_IMPEXP CIMUXSens : public hwdrivers::CGenericSensor
    protected:
 	/** This serial port will be attempted to be opened automatically when this
 	 * class is first used to request data from the device.
-	  * \sa hwdrivers::CSerialPort
+	  * \sa comms::CSerialPort
 	  */
 	int m_COMbauds;
 	std::string m_com_port;
@@ -71,8 +71,6 @@ class HWDRIVERS_IMPEXP CIMUXSens : public hwdrivers::CGenericSensor
 	/** Search the port where the sensor is located and connect to it
 	  */
 	bool searchPortAndConnect();
-
-	// CSerialPort		m_serial_port;			//!< The serial port connection
 
 	void* /*xsens::Cmt3 */ m_cmt3_ptr;
 	void* /*CmtDeviceId */ m_deviceId_ptr;

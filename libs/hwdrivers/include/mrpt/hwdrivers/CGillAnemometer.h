@@ -10,7 +10,7 @@
 #define CGillAnemometer_H
 
 #include <mrpt/hwdrivers/CGenericSensor.h>
-#include <mrpt/hwdrivers/CSerialPort.h>
+#include <mrpt/comms/CSerialPort.h>
 #include <mrpt/obs/CObservationWindSensor.h>
 #include <mrpt/utils/CConfigFileBase.h>
 
@@ -39,7 +39,7 @@ class HWDRIVERS_IMPEXP CGillAnemometer : public mrpt::hwdrivers::CGenericSensor
 
 	/** COM port
 	 */
-	CSerialPort COM;
+	mrpt::comms::CSerialPort COM;
 
 	/** Poses
 	 */

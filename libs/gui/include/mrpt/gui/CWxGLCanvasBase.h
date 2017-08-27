@@ -111,13 +111,13 @@ class GUI_IMPEXP CWxGLCanvasBase : public CGlCanvasBase,
 
 	virtual void OnRenderError(const wxString& str) { MRPT_UNUSED_PARAM(str); }
    protected:
-	wxGLContext* m_gl_context;
-	bool m_init;
+	wxGLContext* m_gl_context = nullptr;
+	bool m_init = false;
 
-	long m_Key;
-	unsigned long m_StartTime;
-	unsigned long m_LastTime;
-	unsigned long m_LastRedraw;
+	long m_Key = 0;
+	unsigned long m_StartTime = 0;
+	unsigned long m_LastTime = 0;
+	unsigned long m_LastRedraw = 0;
 
 	// Used to create the gl context at startup.
 	void OnWindowCreation(wxWindowCreateEvent& ev);
@@ -125,8 +125,6 @@ class GUI_IMPEXP CWxGLCanvasBase : public CGlCanvasBase,
 	virtual void preRender() override;
 	virtual void postRender() override;
 	virtual void renderError(const std::string& err_msg) override;
-
-	DECLARE_EVENT_TABLE()
 
 };  // end of class
 

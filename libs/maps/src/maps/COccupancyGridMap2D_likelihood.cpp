@@ -854,8 +854,8 @@ COccupancyGridMap2D::TLikelihoodOptions::TLikelihoodOptions()
 void COccupancyGridMap2D::TLikelihoodOptions::loadFromConfigFile(
 	const mrpt::utils::CConfigFileBase& iniFile, const std::string& section)
 {
-	MRPT_LOAD_CONFIG_VAR_CAST(
-		likelihoodMethod, int, TLikelihoodMethod, iniFile, section);
+	likelihoodMethod =
+		iniFile.read_enum(section, "likelihoodMethod", likelihoodMethod);
 
 	enableLikelihoodCache = iniFile.read_bool(
 		section, "enableLikelihoodCache", enableLikelihoodCache);

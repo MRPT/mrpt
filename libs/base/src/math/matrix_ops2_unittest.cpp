@@ -144,7 +144,7 @@ TEST(Matrices, multiply_A_skew3)
 	{
 		const double dat_A[] = {1, 2, 3, 4, 5, 6};
 		const CMatrixDouble A(2, 3, dat_A);
-		const std::vector<double> v = make_vector<3>(1.0, 2.0, 3.0);
+		const std::vector<double> v{1.0, 2.0, 3.0};
 		const CMatrixDouble S = CMatrixDouble(mrpt::math::skew_symmetric3(v));
 
 		CMatrixDouble R;
@@ -170,7 +170,7 @@ TEST(Matrices, multiply_skew3_A)
 	{
 		const double dat_A[] = {1, 2, 3, 4, 5, 6};
 		const CMatrixDouble A(3, 2, dat_A);
-		const std::vector<double> v = make_vector<3>(1.0, 2.0, 3.0);
+		const std::vector<double> v{1.0, 2.0, 3.0};
 		const CMatrixDouble S = CMatrixDouble(mrpt::math::skew_symmetric3(v));
 
 		CMatrixDouble R;

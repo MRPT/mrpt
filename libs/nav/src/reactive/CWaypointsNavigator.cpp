@@ -44,7 +44,10 @@ bool CWaypointsNavigator::TNavigationParamsWaypoints::isEqual(
 }
 
 CWaypointsNavigator::CWaypointsNavigator(CRobot2NavInterface& robot_if)
-	: CAbstractNavigator(robot_if), m_was_aligning(false), m_is_aligning(false)
+	: CAbstractNavigator(robot_if),
+	  m_was_aligning(false),
+	  m_is_aligning(false),
+	  m_last_alignment_cmd(mrpt::system::now())
 {
 }
 
@@ -115,11 +118,6 @@ void CWaypointsNavigator::waypoints_navigationStep()
 		TWaypointStatusSequence& wps =
 			m_waypoint_nav_status;  // shortcut to save typing
 
-		// This will be used to detect changes in the list of waypoints,
-		// from an external user code in an event.
-		const auto orig_nav_status_time = wps.timestamp_nav_started;
-		const auto orig_nav_state = m_navigationState;
-
 		if (wps.waypoints.empty() || wps.final_goal_reached)
 		{
 			// No nav request is pending or it was canceled
@@ -164,8 +162,17 @@ void CWaypointsNavigator::waypoints_navigationStep()
 						// target_heading
 						const double ang_err = mrpt::math::angDistance(
 							m_curPoseVel.pose.phi, wp.target_heading);
+						const double tim_since_last_align =
+							mrpt::system::timeDifference(
+								m_last_alignment_cmd, mrpt::system::now());
+						const double ALIGN_WAIT_TIME = 1.5;  // seconds
+
 						if (std::abs(ang_err) <=
-							params_waypoints_navigator.waypoint_angle_tolerance)
+								params_waypoints_navigator
+									.waypoint_angle_tolerance &&
+							/* give some time for the alignment (if supported in
+							   this robot) to finish)*/
+							tim_since_last_align > ALIGN_WAIT_TIME)
 						{
 							consider_wp_reached = true;
 						}
@@ -242,13 +249,6 @@ void CWaypointsNavigator::waypoints_navigationStep()
 								wps.waypoint_index_current_goal,
 								true /*reason: really reached*/));
 
-						// list of waypoints changed? abort and restart
-						if (orig_nav_status_time != wps.timestamp_nav_started ||
-							orig_nav_state != m_navigationState)
-						{
-							return;
-						}
-
 						// Was this the final goal??
 						if (wps.waypoint_index_current_goal <
 							int(wps.waypoints.size() - 1))
@@ -258,6 +258,9 @@ void CWaypointsNavigator::waypoints_navigationStep()
 						else
 						{
 							wps.final_goal_reached = true;
+							// Make sure the end-navigation event is issued,
+							// navigation state switches to IDLE, etc:
+							this->performNavigationStepNavigating(false);
 						}
 					}
 				}
@@ -331,13 +334,6 @@ void CWaypointsNavigator::waypoints_navigationStep()
 								&CRobot2NavInterface::sendWaypointReachedEvent,
 								std::ref(m_robot), k,
 								false /*reason: skipped*/));
-
-						// list of waypoints changed? abort and restart
-						if (orig_nav_status_time != wps.timestamp_nav_started ||
-							orig_nav_state != m_navigationState)
-						{
-							return;
-						}
 					}
 				}
 			}
@@ -362,13 +358,6 @@ void CWaypointsNavigator::waypoints_navigationStep()
 					std::bind(
 						&CRobot2NavInterface::sendNewWaypointTargetEvent,
 						std::ref(m_robot), wps.waypoint_index_current_goal));
-
-				// list of waypoints changed? abort and restart
-				if (orig_nav_status_time != wps.timestamp_nav_started ||
-					orig_nav_state != m_navigationState)
-				{
-					return;
-				}
 
 				// Send the current targets + "multitarget_look_ahead"
 				// additional ones to help the local planner.
@@ -459,6 +448,11 @@ void CWaypointsNavigator::navigationStep()
 	{
 		CAbstractNavigator::navigationStep();  // This internally locks
 		// "m_nav_cs"
+	}
+	else
+	{
+		// otherwise, at least, process pending events:
+		CAbstractNavigator::dispatchPendingNavEvents();
 	}
 
 	MRPT_END

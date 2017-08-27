@@ -1929,7 +1929,6 @@ void CImage::releaseIpl(bool thisIsExternalImgUnload) noexcept
 				makeSureImageIsLoaded
  ---------------------------------------------------------------*/
 void CImage::makeSureImageIsLoaded() const
-	throw(std::exception, utils::CExceptionExternalImageNotFound)
 {
 	if (img != nullptr) return;  // OK, continue
 

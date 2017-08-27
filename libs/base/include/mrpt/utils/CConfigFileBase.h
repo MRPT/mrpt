@@ -13,6 +13,8 @@
 #include <mrpt/system/string_utils.h>
 #include <sstream>
 #include <iomanip>
+#include <mrpt/utils/TEnumType.h>
+#include <type_traits>
 
 namespace mrpt
 {
@@ -74,12 +76,24 @@ class BASE_IMPEXP CConfigFileBase
 	/** Checks if a given section exists (name is case insensitive) */
 	bool sectionExists(const std::string& section_name) const;
 
+	template <typename enum_t,
+			  typename = std::enable_if_t<std::is_enum<enum_t>::value>>
+	void write(
+		const std::string& section, const std::string& name, enum_t value,
+		const int name_padding_width = -1, const int value_padding_width = -1,
+		const std::string& comment = std::string())
+	{
+		this->write(
+			section, name, mrpt::utils::TEnumType<enum_t>::value2name(value),
+			name_padding_width, value_padding_width, comment);
+	}
 	/** @name Save a configuration parameter. Optionally pads with spaces up to
 	 * the desired width in number of characters (-1: no fill), and add a final
 	 * comment field at the end of the line (a "// " prefix is automatically
 	 * inserted).
 	  * @{ */
-	template <typename data_t>
+	template <typename data_t,
+			  typename = std::enable_if_t<!std::is_enum<data_t>::value>>
 	void write(
 		const std::string& section, const std::string& name,
 		const data_t& value, const int name_padding_width = -1,
@@ -117,6 +131,7 @@ class BASE_IMPEXP CConfigFileBase
 		const std::string& section, const std::string& name, float value,
 		const int name_padding_width = -1, const int value_padding_width = -1,
 		const std::string& comment = std::string());
+
 	/** @} */
 
 	/** @name Read a configuration parameter, launching exception if key name is

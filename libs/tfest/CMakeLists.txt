@@ -1,5 +1,3 @@
-SET(TFESTDIR "${MRPT_SOURCE_DIR}/libs/tfest")
-
 #---------------------------------------------
 # Macro declared in "DeclareMRPTLib.cmake":
 #---------------------------------------------

@@ -1,15 +1,17 @@
 #!/bin/bash
-# Creates a set of packages for each different Ubuntu distribution, with the 
-# intention of uploading them to: 
+# Creates a set of packages for each different Ubuntu distribution, with the
+# intention of uploading them to:
 #   https://launchpad.net/~joseluisblancoc/+archive/mrpt
 #
 # JLBC, 2010
 # [Addition 2012:]
 #
-# You can declare a variable (in the caller shell) with extra flags for the 
-# CMake in the final ./configure like: 
+# You can declare a variable (in the caller shell) with extra flags for the
+# CMake in the final ./configure like:
 #  MRPT_PKG_CUSTOM_CMAKE_PARAMS="\"-DDISABLE_SSE3=ON\""
 #
+
+set -e
 
 # Checks
 # --------------------------------
@@ -44,7 +46,8 @@ rm -fr $MRPT_UBUNTU_OUT_DIR/
 # -------------------------------------------------------------------
 # And now create the custom packages for each Ubuntu distribution:
 # -------------------------------------------------------------------
-LST_DISTROS=(zesty xenial)
+LST_DISTROS=(zesty xenial artful)
+
 
 count=${#LST_DISTROS[@]}
 IDXS=$(seq 0 $(expr $count - 1))
@@ -54,12 +57,12 @@ cp ${MRPT_EXTERN_DEBIAN_DIR}/changelog /tmp/my_changelog
 for IDX in ${IDXS};
 do
 	DEBIAN_DIST=${LST_DISTROS[$IDX]}
-	
+
 	# -------------------------------------------------------------------
 	# Call the standard "prepare_debian.sh" script:
 	# -------------------------------------------------------------------
 	cd ${MRPTSRC}
-	bash scripts/prepare_debian.sh -s -u -h -d ${DEBIAN_DIST} -c "${MRPT_PKG_CUSTOM_CMAKE_PARAMS}" 
+	bash scripts/prepare_debian.sh -s -u -h -d ${DEBIAN_DIST} -c "${MRPT_PKG_CUSTOM_CMAKE_PARAMS}"
 
 	MRPT_SNAPSHOT_VERSION=`date +%Y%m%d-%H%M`
 	MRPT_SNAPSHOT_VERSION+="-git-"
@@ -75,12 +78,12 @@ do
 	echo "Adding a new entry to debian/changelog for distribution ${DEBIAN_DIST}"
 	DEBEMAIL=${EMAIL4DEB} debchange $DEBCHANGE_CMD -b --distribution ${DEBIAN_DIST} --force-distribution New version of upstream sources.
 
-	cp changelog /tmp/my_changelog 
+	cp changelog /tmp/my_changelog
 
 	echo "Now, let's build the source Deb package with 'debuild -S -sa':"
 	cd ..
 	debuild -S -sa
-	
+
 	# Make a copy of all these packages:
 	cd ..
 	mkdir -p $MRPT_UBUNTU_OUT_DIR/$DEBIAN_DIST
@@ -90,4 +93,3 @@ done
 
 
 exit 0
-
