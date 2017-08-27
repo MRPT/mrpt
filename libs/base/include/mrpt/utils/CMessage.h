@@ -43,7 +43,7 @@ class BASE_IMPEXP CMessage
 	 * object serialization.
 	  *  Member "type" is unmodified in this method.
 	  */
-	void serializeObject(CSerializable* obj);
+	void serializeObject(const CSerializable* obj);
 
 	/** A method that parse the data in the message into an existing object.
 	  *  Note that the class of the object must be known and must match the one
