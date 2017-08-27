@@ -35,7 +35,7 @@ and [much more](http://www.mrpt.org/list-of-mrpt-apps/).
 
 ### 3.1. Ubuntu PPA
 
-See [PPA](https://launchpad.net/~joseluisblancoc/+archive/ubuntu/mrpt) for mrpt 2.0 branch:
+See [PPA](https://launchpad.net/~joseluisblancoc/+archive/ubuntu/mrpt) for mrpt 2.0 branch (for mrpt 1.5.* [read here](https://github.com/MRPT/mrpt/tree/mrpt-1.5#31-ubuntu-ppa)).
 
         sudo add-apt-repository ppa:joseluisblancoc/mrpt
         sudo apt-get update
