@@ -40,6 +40,7 @@
 	- BUG FIXES:
 		- Fix reactive navigator inconsistent state if navigation API is called from within rnav callbacks.
 		- Fix incorrect evaluation of "ASSERT" formulas in mrpt::nav::CMultiObjectiveMotionOptimizerBase
+		- Fix == operator on CPose3D: it now uses an epsilon for comparing the rotation matrices.
 
 <hr>
 <a name="1.5.4">
