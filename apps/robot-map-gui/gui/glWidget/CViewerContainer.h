@@ -45,8 +45,8 @@ class CViewerContainer : public QWidget
 	void updateSelectedRobotPosesColor(int type);
 
    signals:
-	void deleteRobotPoses(const std::vector<int>& idx);
-	void moveRobotPoses(const std::vector<int>& idx, const QPointF& dist);
+	void deleteRobotPoses(const std::vector<size_t>& idx);
+	void moveRobotPoses(const std::vector<size_t>& idx, const QPointF& dist);
 
    public slots:
 	void showAllObservation(bool is);

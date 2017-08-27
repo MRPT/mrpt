@@ -14,14 +14,14 @@ class OPENGL_IMPEXP CRobotPose : public mrpt::opengl::CSetOfObjects
 {
    public:
 	using Ptr = std::shared_ptr<CRobotPose>;
-	CRobotPose(int id);
+	CRobotPose(size_t id);
 
 	virtual ~CRobotPose() = default;
-	int getId() const;
+	size_t getId() const;
 
 	void setSelected(bool is);
 
    private:
 	CSetOfObjects::Ptr m_currentObj;
-	int m_id;
+	size_t m_id;
 };

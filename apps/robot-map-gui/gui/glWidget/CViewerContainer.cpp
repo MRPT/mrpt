@@ -161,12 +161,13 @@ void CViewerContainer::updateConfigChanges(
 			&CViewerContainer::changeElevationDeg);
 
 		connect(
-			gl, SIGNAL(deleteRobotPoses(const std::vector<int>&)),
-			SIGNAL(deleteRobotPoses(const std::vector<int>&)));
+			gl, SIGNAL(deleteRobotPoses(const std::vector<size_t>&)),
+			SIGNAL(deleteRobotPoses(const std::vector<size_t>&)));
 
 		connect(
-			gl, SIGNAL(moveRobotPoses(const std::vector<int>&, const QPointF&)),
-			SIGNAL(moveRobotPoses(const std::vector<int>&, const QPointF&)));
+			gl,
+			SIGNAL(moveRobotPoses(const std::vector<size_t>&, const QPointF&)),
+			SIGNAL(moveRobotPoses(const std::vector<size_t>&, const QPointF&)));
 	}
 }
 

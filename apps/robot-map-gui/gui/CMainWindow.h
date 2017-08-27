@@ -36,10 +36,11 @@ class CMainWindow : public QMainWindow
 	virtual ~CMainWindow();
 
 	void addRobotPosesFromMap(
-		std::vector<int> idx,
+		std::vector<size_t> idx,
 		mrpt::maps::CSimpleMap::TPosePDFSensFramePairList posesObsPairs);
-	void deleteRobotPosesFromMap(const std::vector<int>& idx);
-	void moveRobotPosesOnMap(const std::vector<int>& idx, const QPointF& dist);
+	void deleteRobotPosesFromMap(const std::vector<size_t>& idx);
+	void moveRobotPosesOnMap(
+		const std::vector<size_t>& idx, const QPointF& dist);
 	void loadMap(const QString& fileName);
 
    private slots:
@@ -57,8 +58,8 @@ class CMainWindow : public QMainWindow
 	void applyConfigurationForCurrentMaps();
 	void showMapConfiguration();
 
-	void deleteRobotPoses(const std::vector<int>& idx);
-	void moveRobotPoses(const std::vector<int>& idx, const QPointF& dist);
+	void deleteRobotPoses(const std::vector<size_t>& idx);
+	void moveRobotPoses(const std::vector<size_t>& idx, const QPointF& dist);
 
 	void openRecent();
 	void saveMetricMapRepresentation();
