@@ -39,6 +39,8 @@ void GUI_IMPEXP mrpt::gui::showErrorMessage(const std::string& str)
 	QErrorMessage msg;
 	msg.showMessage(QString::fromStdString(str));
 	msg.exec();
+#elif MRPT_HAS_WXWIDGETS
+	wxMessageBox(_U(str), _("Exception"));
 #else
 	std::cout << str << std::endl;
 #endif  // MRPT_HAS_Qt5
