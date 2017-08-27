@@ -108,15 +108,16 @@ void thread_client()
 				"  MSG Length: %u bytes\n", (unsigned int)msg.content.size());
 			printf("[Client] Parsing payload...\n");
 #endif
-			mrpt::poses::CPose3D rx_p;
-			msg.deserializeIntoExistingObject(&rx_p);
+			mrpt::poses::CPose3D p_rx;
+			msg.deserializeIntoExistingObject(&p_rx);
 
 #ifdef SOCKET_TEST_VERBOSE
-			printf("[Client] Received payload: %s\n", rx_p.asString().c_str());
+			printf("[Client] Received payload: %s\n", p_rx.asString().c_str());
+			printf("[Client] tx payload: %s\n", p_tx.asString().c_str());
 			printf("[Client] Done!!\n");
 #endif
 
-			sockets_test_passed_ok = (rx_p==p_tx);
+			sockets_test_passed_ok = (p_rx==p_tx);
 		}
 
 #ifdef SOCKET_TEST_VERBOSE
@@ -139,9 +140,11 @@ void thread_client()
 // ------------------------------------------------------
 void SocketsTest()
 {
-	std::thread(thread_server).detach();
-	std::thread(thread_client).detach();
-
 	using namespace std::chrono_literals;
+
+	std::thread(thread_server).detach();
+	std::this_thread::sleep_for(100ms);
+
+	std::thread(thread_client).detach();
 	std::this_thread::sleep_for(1000ms);
 }

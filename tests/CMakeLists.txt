@@ -28,6 +28,9 @@ ENDIF()
 
 ADD_DEFINITIONS(-DCMAKE_MRPT_GLOBAL_UNITTEST_SRC_DIR="${MRPT_SOURCE_DIR}")
 
+# Allow tests to include sources from examples directory:
+INCLUDE_DIRECTORIES("${MRPT_SOURCE_DIR}")
+
 # Tests based on Google gtest:
 # -----------------------------
 
