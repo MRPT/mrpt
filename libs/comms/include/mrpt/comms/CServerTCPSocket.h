@@ -11,6 +11,7 @@
 #include <mrpt/utils/core_defs.h>
 #include <mrpt/utils/COutputLogger.h>
 #include <string>
+#include <memory> // unique_ptr
 #include <mrpt/comms/link_pragmas.h>
 
 namespace mrpt
@@ -57,7 +58,7 @@ class COMMS_IMPEXP CServerTCPSocket : public utils::COutputLogger
 	 * to "-1" to disable timeout (i.e. timeout=infinite)
 	  * \return The incoming connection, or nullptr on timeout or error.
 	  */
-	CClientTCPSocket* accept(int timeout_ms = -1);
+	std::unique_ptr<CClientTCPSocket> accept(int timeout_ms = -1);
 
    private:
 /** The handle for the listening server TCP socket. */
@@ -80,4 +81,3 @@ class COMMS_IMPEXP CServerTCPSocket : public utils::COutputLogger
 
 }  // End of namespace
 }  // End of namespace
-

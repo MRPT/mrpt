@@ -53,7 +53,6 @@ IF(BUILD_EXAMPLES)
 	SET(LIST_EXAMPLES_IN_THIS_DIR
 		db
 		times
-		SocketsTest
 		directoryExplorer
 		fileSystemWatcher
 		geometry3D
@@ -73,6 +72,7 @@ IF(BUILD_EXAMPLES)
 	SET(LIST_EXAMPLES_IN_THIS_DIR
 		http_tests
 		SerialPort_test
+		SocketsTest
 		)
 	SET(CMAKE_EXAMPLE_DEPS mrpt-base mrpt-comms)
 	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})

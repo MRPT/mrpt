@@ -8,3 +8,6 @@ define_mrpt_lib(
 	mrpt-base
 	)
 
+IF(CMAKE_MRPT_HAS_FTDI_SYSTEM)
+	TARGET_LINK_LIBRARIES(mrpt-comms ${FTDI_LIBS})
+ENDIF()
