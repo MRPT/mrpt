@@ -28,7 +28,7 @@ Build-Depends: debhelper (>= 9),
 	python-numpy,
 	libeigen3-dev,
 	libassimp-dev,
-	liboctomap-dev
+	liboctomap-dev [!armhf]
 Standards-Version: 4.0.0
 Homepage: http://www.mrpt.org/
 
