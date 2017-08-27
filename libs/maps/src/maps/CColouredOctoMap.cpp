@@ -201,7 +201,7 @@ bool CColouredOctoMap::internal_insertObservation(
 		}
 
 		// Insert rays:
-		m_octomap.insertScan(
+		m_octomap.insertPointCloud(
 			scan, sensorPt, insertionOptions.maxrange,
 			insertionOptions.pruning);
 		return true;

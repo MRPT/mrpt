@@ -151,7 +151,7 @@ bool COctoMap::internal_insertObservation(
 			obs, robotPose, sensorPt, scan))
 		return false;  // Nothing to do.
 	// Insert rays:
-	m_octomap.insertScan(
+	m_octomap.insertPointCloud(
 		scan, sensorPt, insertionOptions.maxrange, insertionOptions.pruning);
 	return true;
 }

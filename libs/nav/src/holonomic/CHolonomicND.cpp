@@ -684,13 +684,9 @@ CHolonomicND::TOptions::TOptions()
 	  RISK_EVALUATION_SECTORS_PERCENT(0.10),
 	  RISK_EVALUATION_DISTANCE(0.4),
 	  MAX_SECTOR_DIST_FOR_D2_PERCENT(0.25),
-	  TARGET_SLOW_APPROACHING_DISTANCE(0.60)
+	  TARGET_SLOW_APPROACHING_DISTANCE(0.60),
+	  factorWeights{1.0, 0.5, 2.0, 0.4}
 {
-	factorWeights.resize(4);
-	factorWeights[0] = 1.0;
-	factorWeights[1] = 0.5;
-	factorWeights[2] = 2.0;
-	factorWeights[3] = 0.4;
 }
 
 void CHolonomicND::TOptions::loadFromConfigFile(

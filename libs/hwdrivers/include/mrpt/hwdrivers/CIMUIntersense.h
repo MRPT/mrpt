@@ -11,7 +11,7 @@
 #define CIMUIntersense_H
 
 #include <mrpt/hwdrivers/CGenericSensor.h>
-#include <mrpt/hwdrivers/CSerialPort.h>
+#include <mrpt/comms/CSerialPort.h>
 #include <mrpt/poses/CPose3D.h>
 
 namespace mrpt

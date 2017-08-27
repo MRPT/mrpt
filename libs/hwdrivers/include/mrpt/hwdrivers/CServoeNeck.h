@@ -12,7 +12,7 @@
 
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/hwdrivers/link_pragmas.h>
-#include <mrpt/hwdrivers/CInterfaceFTDIMessages.h>
+#include <mrpt/comms/CInterfaceFTDI.h>
 
 namespace mrpt
 {
@@ -20,7 +20,7 @@ namespace hwdrivers
 {
 /** A USB-interface for a custom "robotic neck" designed at MAPIR lab.
   * \ingroup mrpt_hwdrivers_grp */
-class HWDRIVERS_IMPEXP CServoeNeck : public hwdrivers::CInterfaceFTDIMessages
+class HWDRIVERS_IMPEXP CServoeNeck : public mrpt::comms::CInterfaceFTDI
 {
    public:
 	CServoeNeck();

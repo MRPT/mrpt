@@ -136,19 +136,20 @@ class CMonteCarlo
 		}
 		NUM res = accumulate(errorData.begin(), errorData.end(), NUM(0)) /
 				  errorData.size();
-		// if (showInWindow)	{
-		//	CStatisticalAnalyzer st(errorData);
-		//	mrpt::gui::CDisplayWindowPlots wnd("Error results from Monte Carlo
-		// simulation");
-		//	std::vector<NUM> errorX,errorY;
-		//	st.getDistribution(errorX,errorY,0.1);
-		//	wnd.plot(errorX,errorY,"b-","Plot1");
-		//	NUM maxVal=*std::max_element(errorY.begin(),errorY.end());
-		//	std::vector<NUM>
-		// dx(2,res),dy(mrpt::utils::make_vector<2,NUM>(0,maxVal));
-		//	wnd.plot(dx,dy,"r-","Plot2");
-		//	while (wnd.isOpen());
-		//}
+#if 0
+		if (showInWindow)
+		{
+			CStatisticalAnalyzer st(errorData);
+			mrpt::gui::CDisplayWindowPlots wnd("Error results from Monte Carlo simulation");
+			std::vector<NUM> errorX,errorY;
+			st.getDistribution(errorX,errorY,0.1);
+			wnd.plot(errorX,errorY,"b-","Plot1");
+			NUM maxVal=*std::max_element(errorY.begin(),errorY.end());
+			const std::vector<NUM> dx{res, res}, dy{.0, maxVal};
+			wnd.plot(dx,dy,"r-","Plot2");
+			while (wnd.isOpen()) {};
+		}
+#endif
 		return res;
 	}
 };

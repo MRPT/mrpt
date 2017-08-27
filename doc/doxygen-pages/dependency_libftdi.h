@@ -19,7 +19,7 @@
 This optional library is needed for interfacing FTDI USB chips in the FIFO parallel mode. 
 
 If not present, the following classes will raise exceptions upon usage:
-- mrpt::hwdrivers::CInterfaceFTDI
+- mrpt::comms::CInterfaceFTDI
 - All its children classes.
 
 */

@@ -20,7 +20,7 @@ using namespace mrpt::utils;
 /*---------------------------------------------------------------
 					serializeObject
  ---------------------------------------------------------------*/
-void CMessage::serializeObject(CSerializable* obj)
+void CMessage::serializeObject(const CSerializable* obj)
 {
 	MRPT_START
 	CMemoryStream auxStream;

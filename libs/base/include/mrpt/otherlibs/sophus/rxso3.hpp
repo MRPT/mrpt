@@ -76,6 +76,7 @@ class RxSO3Base {
   static int constexpr N = 3;
   using Transformation = Matrix<Scalar, N, N>;
   using Point = Vector3<Scalar>;
+  using Line = ParametrizedLine3<Scalar>;
   using Tangent = Vector<Scalar, DoF>;
   using Adjoint = Matrix<Scalar, DoF, DoF>;
 
@@ -128,14 +129,6 @@ class RxSO3Base {
   // Returns tangent space representation of the instance.
   //
   SOPHUS_FUNC Tangent log() const { return RxSO3<Scalar>::log(*this); }
-
-  /**
-   * \returns 3x3 matrix representation of instance
-   *
-   * For RxSO3, the matrix representation is a scaled orthogonal
-   * matrix \f$ sR \f$ with \f$ det(sR)=s^3 \f$, thus a scaled rotation
-   * matrix \f$ R \f$  with scale s.
-   */
 
   // Returns 3x3 matrix representation of the instance.
   //
@@ -208,6 +201,19 @@ class RxSO3Base {
     two_vec_cross_p += two_vec_cross_p;
     return scale * p + (quaternion().w() * two_vec_cross_p +
                         quaternion().vec().cross(two_vec_cross_p));
+  }
+
+  // Group action on lines.
+  //
+  // This function rotates a parametrized line ``l(t) = o + t * d`` by the SO3
+  // element ans scales it by the scale factor:
+  //
+  // Origin ``o`` is rotated and scaled
+  // Direction ``d`` is rotated (preserving it's norm)
+  //
+  SOPHUS_FUNC Line operator*(Line const& l) const {
+    return Line((*this) * l.origin(),
+                (*this) * l.direction() / quaternion().squaredNorm());
   }
 
   // In-place group multiplication.

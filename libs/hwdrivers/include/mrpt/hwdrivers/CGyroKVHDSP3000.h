@@ -11,7 +11,7 @@
 #define CGyroKVHDSP3000_H
 
 #include <mrpt/hwdrivers/CGenericSensor.h>
-#include <mrpt/hwdrivers/CSerialPort.h>
+#include <mrpt/comms/CSerialPort.h>
 
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/obs/CObservationIMU.h>
@@ -75,7 +75,7 @@ class HWDRIVERS_IMPEXP CGyroKVHDSP3000 : public hwdrivers::CGenericSensor
    protected:
 	/** This serial port will be attempted to be opened automatically when this
 	 * class is first used to request data from the device.
-	  * \sa hwdrivers::CSerialPort
+	  * \sa comms::CSerialPort
 	  */
 	int m_COMbauds;
 	std::string m_com_port;
@@ -84,10 +84,10 @@ class HWDRIVERS_IMPEXP CGyroKVHDSP3000 : public hwdrivers::CGenericSensor
 
 	/** Search the port where the sensor is located and connect to it
 	  */
-	bool searchPortAndConnect();
+	//bool searchPortAndConnect();
 
 	/** The serial port connection */
-	CSerialPort* m_serialPort;
+	mrpt::comms::CSerialPort* m_serialPort;
 	GYRO_MODE m_mode;
 	bool m_firstInteration;
 

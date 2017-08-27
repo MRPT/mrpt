@@ -9,7 +9,7 @@
 #ifndef CBoardSonars_H
 #define CBoardSonars_H
 
-#include <mrpt/hwdrivers/CInterfaceFTDIMessages.h>
+#include <mrpt/comms/CInterfaceFTDI.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/obs/CObservationRange.h>
@@ -53,7 +53,7 @@ namespace hwdrivers
   *
   * \ingroup mrpt_hwdrivers_grp
   */
-class HWDRIVERS_IMPEXP CBoardSonars : public hwdrivers::CInterfaceFTDIMessages,
+class HWDRIVERS_IMPEXP CBoardSonars : public mrpt::comms::CInterfaceFTDI,
 									  public CGenericSensor
 {
 	DEFINE_GENERIC_SENSOR(CBoardSonars)

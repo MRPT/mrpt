@@ -12,14 +12,10 @@ SET(PRJ_NAME "EXAMPLE_${sampleName}")
 # ---------------------------------------
 PROJECT(${PRJ_NAME})
 
-# These commands are needed by modern versions of CMake:
-CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
-if(COMMAND cmake_policy)
-    cmake_policy(SET CMP0003 NEW)  # Required by CMake 2.7+
-	if(POLICY CMP0043)
-		cmake_policy(SET CMP0043 OLD) #  Ignore COMPILE_DEFINITIONS_<Config> properties.
-	endif()
-endif(COMMAND cmake_policy)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.1)
+set (CMAKE_CXX_STANDARD 14)  # Require C++14
+cmake_policy(SET CMP0003 NEW)  # Required by CMake 2.7+
+#cmake_policy(SET CMP0043 OLD) #  Ignore COMPILE_DEFINITIONS_<Config> properties.
 
 # ---------------------------------------------------------------------------
 # Set the output directory of each example to its corresponding subdirectory
@@ -34,7 +30,7 @@ SET(EXECUTABLE_OUTPUT_PATH ".")
 #   The dependencies of a library are automatically added, so you only 
 #    need to specify the top-most libraries your code depend on.
 # --------------------------------------------------------------------------
-FIND_PACKAGE(MRPT REQUIRED hwdrivers;gui)
+FIND_PACKAGE(MRPT REQUIRED base;comms)
 
 # ---------------------------------------------
 # TARGET:
@@ -60,17 +56,16 @@ TARGET_LINK_LIBRARIES(${sampleName}
 	)
 
 # Set optimized building:
-IF(CMAKE_COMPILER_IS_GNUCXX AND NOT CMAKE_BUILD_TYPE MATCHES "Debug")
-	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
-ENDIF(CMAKE_COMPILER_IS_GNUCXX AND NOT CMAKE_BUILD_TYPE MATCHES "Debug")
-
+IF((${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX) AND NOT CMAKE_BUILD_TYPE MATCHES "Debug")
+	add_compile_options(-O3)
+ENDIF()
 
 # -------------------------------------------------------------------------
 # This part can be removed if you are compiling this program outside of 
 #  the MRPT tree:
 # -------------------------------------------------------------------------
 IF(${CMAKE_PROJECT_NAME} STREQUAL "MRPT") # Fails if build outside of MRPT project.
-	DeclareAppDependencies(${sampleName} mrpt-hwdrivers;mrpt-gui) # Dependencies
-ENDIF(${CMAKE_PROJECT_NAME} STREQUAL "MRPT")
+	DeclareAppDependencies(${sampleName} mrpt-base;mrpt-comms) # Dependencies
+ENDIF()
 # -------------------------------------------------------------------------
 
