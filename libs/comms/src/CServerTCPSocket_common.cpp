@@ -83,7 +83,7 @@ bool CServerTCPSocket::isListening() { return INVALID_SOCKET != m_serverSock; }
 /*---------------------------------------------------------------
 					accept
  ---------------------------------------------------------------*/
-CClientTCPSocket* CServerTCPSocket::accept(int timeout_ms)
+std::unique_ptr<CClientTCPSocket> CServerTCPSocket::accept(int timeout_ms)
 {
 	MRPT_START
 
@@ -140,7 +140,6 @@ CClientTCPSocket* CServerTCPSocket::accept(int timeout_ms)
 			"[CServerTCPSocket::accept] Incoming connection accepted\n");
 
 		// We have a new connection:
-		CClientTCPSocket* ret = new CClientTCPSocket();
 
 		sockaddr_in otherPart;
 		socklen_t otherPartSize = sizeof(otherPart);
@@ -150,20 +149,20 @@ CClientTCPSocket* CServerTCPSocket::accept(int timeout_ms)
 
 		if (aceptdSock == INVALID_SOCKET)
 		{
-			fprintf(stderr, "%s\n", getLastErrorStr().c_str());
-			delete ret;
-			return nullptr;
+			MRPT_LOG_ERROR_FMT("%s\n", getLastErrorStr().c_str());
+			return std::unique_ptr<CClientTCPSocket>();
 		}
+
+		auto ret = std::make_unique<CClientTCPSocket>();
 
 		ret->m_hSock = aceptdSock;
 
 		ret->m_remotePartIP = std::string(inet_ntoa(otherPart.sin_addr));
 		ret->m_remotePartPort = ntohs(otherPart.sin_port);
 
-		MRPT_LOG_DEBUG(
-			format(
+		MRPT_LOG_DEBUG_FMT(
 				"[CServerTCPSocket::accept] Connection accepted from %s:%u\n",
-				ret->m_remotePartIP.c_str(), ret->m_remotePartPort));
+				ret->m_remotePartIP.c_str(), ret->m_remotePartPort);
 
 		return ret;
 	}
