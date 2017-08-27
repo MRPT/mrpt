@@ -494,8 +494,10 @@ struct TEnumTypeFiller<mrpt::maps::CColouredPointsMap::TColouringMethod>
 	{
 		using namespace mrpt::maps;
 		MRPT_FILL_ENUM_MEMBER(CColouredPointsMap, cmFromHeightRelativeToSensor);
-		MRPT_FILL_ENUM_MEMBER(CColouredPointsMap, cmFromHeightRelativeToSensorJet);
-		MRPT_FILL_ENUM_MEMBER(CColouredPointsMap, cmFromHeightRelativeToSensorGray);
+		MRPT_FILL_ENUM_MEMBER(
+			CColouredPointsMap, cmFromHeightRelativeToSensorJet);
+		MRPT_FILL_ENUM_MEMBER(
+			CColouredPointsMap, cmFromHeightRelativeToSensorGray);
 		MRPT_FILL_ENUM_MEMBER(CColouredPointsMap, cmFromIntensityImage);
 	}
 };

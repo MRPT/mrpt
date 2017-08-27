@@ -249,7 +249,7 @@ class BASE_IMPEXP CStream
 	template <typename RET, typename T, typename... R>
 	RET ReadVariant_helper(
 		CSerializable::Ptr& ptr,
-		typename std::enable_if<is_shared_ptr<T>::value>::type* = nullptr)
+		std::enable_if_t<is_shared_ptr<T>::value>* = nullptr)
 	{
 		if (IS_CLASS(ptr, typename T::element_type))
 			return std::dynamic_pointer_cast<typename T::element_type>(ptr);
@@ -259,7 +259,7 @@ class BASE_IMPEXP CStream
 	template <typename RET, typename T, typename... R>
 	RET ReadVariant_helper(
 		CSerializable::Ptr& ptr,
-		typename std::enable_if<!is_shared_ptr<T>::value>::type* = nullptr)
+		std::enable_if_t<!is_shared_ptr<T>::value>* = nullptr)
 	{
 		if (IS_CLASS(ptr, T)) return dynamic_cast<T&>(*ptr);
 		return ReadVariant_helper<RET, R...>(ptr);
@@ -494,9 +494,8 @@ CStream BASE_IMPEXP& operator>>(
 	mrpt::utils::CStream& s, std::vector<size_t>& a);
 #endif
 //
-template <typename T,
-		  typename std::enable_if<std::is_base_of<mrpt::utils::CSerializable,
-												  T>::value>::type* = nullptr>
+template <typename T, std::enable_if_t<std::is_base_of<
+						  mrpt::utils::CSerializable, T>::value>* = nullptr>
 mrpt::utils::CStream& operator>>(
 	mrpt::utils::CStream& in, typename std::shared_ptr<T>& pObj)
 {

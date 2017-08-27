@@ -31,11 +31,30 @@ and [much more](http://www.mrpt.org/list-of-mrpt-apps/).
     A more complete dataset repository is [available online](http://www.mrpt.org/robotics_datasets).
   * [How to contribute](https://github.com/MRPT/mrpt/blob/master/.github/CONTRIBUTING.md) with your code for new feaures, bug fixes, etc.
 
-## 3. Compiling
+## 3. Install
+
+### 3.1. Ubuntu PPA
+
+See [PPA](https://launchpad.net/~joseluisblancoc/+archive/ubuntu/mrpt) for mrpt 2.0 branch (for mrpt 1.5.* [read here](https://github.com/MRPT/mrpt/tree/mrpt-1.5#31-ubuntu-ppa)).
+
+        sudo add-apt-repository ppa:joseluisblancoc/mrpt
+        sudo apt-get update
+        sudo apt-get install libmrpt-dev mrpt-apps
+
+Supported distributions:
+  * Ubuntu 16.04LTS Xenial.
+  * Ubuntu 17.04 Zesty.
+  * Ubuntu 17.10 Artful.
+
+### 3.2. Build from sources
 
 Minimum compiler requisites:
-  * Ubuntu 16.04 default gcc/clang versions, or
-  * Windows: Visual Studio 2015/2017.
+  * mrpt >=2.0 (`master` branch):
+    * Ubuntu 16.04LTS Xenial: default gcc/clang versions
+    * Windows: Visual Studio 2015/2017.
+  * mrpt 1.5.* and maintenance `mrpt-1.5` branch:
+    * Ubuntu 14.04LTS Trusty: default gcc/clang versions
+    * Windows: Visual Studio 2012
 
 To build in Debian/Ubuntu follow the steps below. See [full build docs](http://www.mrpt.org/Building_and_Installing_Instructions) online
 for Windows instructions or to learn all the details.
