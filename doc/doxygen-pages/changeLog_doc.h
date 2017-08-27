@@ -27,8 +27,9 @@
 		- \ref mrpt_base_grp
 			- Removed functions (replaced by C++11/14 standard library):
 				- mrpt::math::erf, mrpt::math::erfc, std::isfinite, mrpt::math::std::isnan
-				- `mrpt::math::make_vector<>` => `std::vector<>{...}` braced initializator 
+				- `mrpt::math::make_vector<>` => `std::vector<>{...}` braced initializator
 			- Added: mrpt::make_aligned_shared<> template
+			- mrpt::utils::CConfigFileBase::write() now supports enum types.
 		- \ref mrpt_slam_grp
 			- rbpf-slam: Add support for simplemap continuation.
 		- \ref mrpt_nav_grp
@@ -40,6 +41,7 @@
 	- BUG FIXES:
 		- Fix reactive navigator inconsistent state if navigation API is called from within rnav callbacks.
 		- Fix incorrect evaluation of "ASSERT" formulas in mrpt::nav::CMultiObjectiveMotionOptimizerBase
+		- Fix aborting reading from LMS111 scanner on first error.
 		- Fix == operator on CPose3D: it now uses an epsilon for comparing the rotation matrices.
 
 <hr>

@@ -86,7 +86,7 @@ void Test_STL_containers_serialize()
 			"read OK"
 		 << endl;
 
-	const std::vector<double> v1{ 1.0, 2.0, 3.0, 4.0, 5.0};
+	const std::vector<double> v1{1.0, 2.0, 3.0, 4.0, 5.0};
 	{
 		CFileOutputStream f("v1.bin");
 		f << v1;
