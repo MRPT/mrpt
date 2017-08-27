@@ -11,7 +11,7 @@
 
 #include <mrpt/hwdrivers/CRovio.h>
 #include <mrpt/hwdrivers/CFFMPEG_InputStream.h>
-#include <mrpt/utils/net_utils.h>
+#include <mrpt/comms/net_utils.h>
 #include <mrpt/utils/CMemoryStream.h>
 #include <mrpt/obs/CObservationImage.h>
 
@@ -20,7 +20,7 @@
 using namespace mrpt::utils;
 using namespace mrpt::obs;
 using namespace mrpt::hwdrivers;
-using namespace mrpt::utils::net;
+using namespace mrpt::comms::net;
 using namespace std;
 
 CRovio::TOptions::TOptions()

@@ -10,7 +10,7 @@
 #define CSickLaserUSB_H
 
 #include <mrpt/hwdrivers/C2DRangeFinderAbstract.h>
-#include <mrpt/hwdrivers/CInterfaceFTDI.h>
+#include <mrpt/comms/CInterfaceFTDI.h>
 
 namespace mrpt
 {
@@ -67,7 +67,7 @@ class HWDRIVERS_IMPEXP CSickLaserUSB : public C2DRangeFinderAbstract
 	DEFINE_GENERIC_SENSOR(CSickLaserUSB)
 
    private:
-	CInterfaceFTDI* m_usbConnection;
+	mrpt::comms::CInterfaceFTDI* m_usbConnection;
 	std::string m_serialNumber;
 
 	/** Time of the first data packet, for synchronization purposes. */

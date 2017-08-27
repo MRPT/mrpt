@@ -11,7 +11,7 @@
 
 #include <mrpt/hwdrivers/CVelodyneScanner.h>
 #include <mrpt/utils/CStream.h>
-#include <mrpt/utils/net_utils.h>
+#include <mrpt/comms/net_utils.h>
 #include <mrpt/hwdrivers/CGPSInterface.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/utils/bits.h>  // for reverseBytesInPlace()
@@ -439,7 +439,7 @@ void CVelodyneScanner::initialize()
 			THROW_EXCEPTION(
 				format(
 					"Error creating UDP socket:\n%s",
-					mrpt::utils::net::getLastSocketErrorStr().c_str()));
+					mrpt::comms::net::getLastSocketErrorStr().c_str()));
 
 		struct sockaddr_in bindAddr;
 		memset(&bindAddr, 0, sizeof(bindAddr));
@@ -450,7 +450,7 @@ void CVelodyneScanner::initialize()
 		if (int(INVALID_SOCKET) ==
 			::bind(
 				m_hDataSock, (struct sockaddr*)(&bindAddr), sizeof(sockaddr)))
-			THROW_EXCEPTION(mrpt::utils::net::getLastSocketErrorStr());
+			THROW_EXCEPTION(mrpt::comms::net::getLastSocketErrorStr());
 
 #ifdef MRPT_OS_WINDOWS
 		unsigned long non_block_mode = 1;
@@ -473,7 +473,7 @@ void CVelodyneScanner::initialize()
 			THROW_EXCEPTION(
 				format(
 					"Error creating UDP socket:\n%s",
-					mrpt::utils::net::getLastSocketErrorStr().c_str()));
+					mrpt::comms::net::getLastSocketErrorStr().c_str()));
 
 		bindAddr.sin_port = htons(VELODYNE_POSITION_UDP_PORT);
 
@@ -481,7 +481,7 @@ void CVelodyneScanner::initialize()
 									   m_hPositionSock,
 									   (struct sockaddr*)(&bindAddr),
 									   sizeof(sockaddr)))
-			THROW_EXCEPTION(mrpt::utils::net::getLastSocketErrorStr());
+			THROW_EXCEPTION(mrpt::comms::net::getLastSocketErrorStr());
 
 #ifdef MRPT_OS_WINDOWS
 		if (ioctlsocket(m_hPositionSock, FIONBIO, &non_block_mode))
@@ -855,7 +855,7 @@ mrpt::system::TTimeStamp CVelodyneScanner::internal_receive_UDP_packet(
 					THROW_EXCEPTION(
 						format(
 							"Error in UDP poll():\n%s",
-							mrpt::utils::net::getLastSocketErrorStr().c_str()));
+							mrpt::comms::net::getLastSocketErrorStr().c_str()));
 			}
 			if (retval == 0)  // poll() timeout?
 			{
@@ -1099,7 +1099,7 @@ bool CVelodyneScanner::internal_send_http_post(const std::string& post_data)
 	ASSERTMSG_(
 		!m_device_ip.empty(), "A device IP address must be specified first!");
 
-	using namespace mrpt::utils::net;
+	using namespace mrpt::comms::net;
 
 	vector_byte post_out;
 	string post_err_str;
@@ -1118,7 +1118,7 @@ bool CVelodyneScanner::internal_send_http_post(const std::string& post_data)
 		post_err_str, 80 /* port */, string(), string(),  // user,pass
 		&http_rep_code, &extra_headers, &out_headers);
 
-	return mrpt::utils::net::erOk == ret &&
+	return mrpt::comms::net::erOk == ret &&
 		   (http_rep_code == 200 || http_rep_code == 204);  // OK codes
 
 	MRPT_END;

@@ -67,9 +67,9 @@ CStream* CEnoseModular::checkConnectionAndConnect()
 	if (!m_stream_FTDI && !m_stream_SERIAL)
 	{
 		if (!m_COM_port.empty())
-			m_stream_SERIAL.reset(new CSerialPort);
+			m_stream_SERIAL.reset(new mrpt::comms::CSerialPort);
 		else
-			m_stream_FTDI.reset(new CInterfaceFTDI);
+			m_stream_FTDI.reset(new mrpt::comms::CInterfaceFTDI);
 	}
 
 	if (m_stream_FTDI)

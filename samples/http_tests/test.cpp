@@ -7,16 +7,15 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include <mrpt/utils/net_utils.h>
+#include <mrpt/comms/net_utils.h>
 #include <iostream>
 
 using namespace mrpt;
-using namespace mrpt::utils;
-using namespace mrpt::utils::net;
+using namespace mrpt::comms;
+using namespace mrpt::comms::net;
 using namespace std;
 
 string url = "http://www.google.es/";
-// string url = "http://static.meneame.net/cache/avatars/101/50898-20.jpg";
 
 /* ------------------------------------------------------------------------
 					Test: HTTP get
@@ -25,7 +24,7 @@ void Test_HTTP_get()
 {
 	string content;
 	string errmsg;
-	TParameters<string> out_headers;
+	mrpt::utils::TParameters<string> out_headers;
 
 	cout << "Retrieving " << url << "..." << endl;
 

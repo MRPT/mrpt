@@ -6,26 +6,24 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-
-#ifndef CInterfaceFTDI_H
-#define CInterfaceFTDI_H
+#pragma once
 
 #include <mrpt/config.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/utils/circular_buffer.h>
 
-#include <mrpt/hwdrivers/link_pragmas.h>
+#include <mrpt/comms/link_pragmas.h>
 #include <deque>
 
 namespace mrpt
 {
-namespace hwdrivers
+namespace comms
 {
 /** A list of FTDI devices and their descriptors.
   * \sa CInterfaceFTDI::ListAllDevices
-  * \ingroup mrpt_hwdrivers_grp
+  * \ingroup mrpt_comms_grp
   */
-struct HWDRIVERS_IMPEXP TFTDIDevice
+struct COMMS_IMPEXP TFTDIDevice
 {
 	std::string ftdi_manufacturer;
 	std::string ftdi_description;
@@ -43,7 +41,7 @@ struct HWDRIVERS_IMPEXP TFTDIDevice
 };
 
 /** Print out all the information of a FTDI device in textual form. */
-std::ostream HWDRIVERS_IMPEXP& operator<<(
+std::ostream COMMS_IMPEXP& operator<<(
 	std::ostream& o, const TFTDIDevice& d);
 
 /** Used in  CInterfaceFTDI::ListAllDevices */
@@ -61,9 +59,7 @@ typedef std::deque<TFTDIDevice> TFTDIDeviceList;
  *  If there is any error during the communications (or loading the Windows
  *DLL), a std::exception will be raised.
  *
- *  To write bulk data, use CStream::ReadBuffer and CStream::WriteBuffer. See
- *also the derived classes for
- *   higher level communication: CInterfaceFTDIMessages
+ *  To write bulk data, use CStream::ReadBuffer and CStream::WriteBuffer.
  *
  * Warning: Avoid defining an object of this class in a global scope if you want
  *to catch all potential
@@ -75,10 +71,10 @@ typedef std::deque<TFTDIDevice> TFTDIDeviceList;
  *serial numbers. JLBC
  *		- 15/APR/2008: Implemented for Linux using libftdi. JLBC
  *
- * \sa CInterfaceFTDIMessages, CStream
-  * \ingroup mrpt_hwdrivers_grp
+ * \sa CStream
+ * \ingroup mrpt_comms_grp
  */
-class HWDRIVERS_IMPEXP CInterfaceFTDI : public utils::CStream
+class COMMS_IMPEXP CInterfaceFTDI : public utils::CStream
 {
    public:
 	/** Constructor, which loads driver interface (the DLL under Windows).
@@ -258,5 +254,3 @@ class HWDRIVERS_IMPEXP CInterfaceFTDI : public utils::CStream
 
 }  // end of namespace
 }  // end of namespace
-
-#endif

@@ -53,9 +53,7 @@ IF(BUILD_EXAMPLES)
 	SET(LIST_EXAMPLES_IN_THIS_DIR
 		db
 		times
-		SocketsTest
 		directoryExplorer
-		http_tests
 		fileSystemWatcher
 		geometry3D
 		poses
@@ -67,6 +65,16 @@ IF(BUILD_EXAMPLES)
 		backtrace-example
 		)
 	SET(CMAKE_EXAMPLE_DEPS mrpt-base)
+	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
+	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
+
+	# === Depending on: mrpt-base, mrpt-comms ===
+	SET(LIST_EXAMPLES_IN_THIS_DIR
+		http_tests
+		SerialPort_test
+		SocketsTest
+		)
+	SET(CMAKE_EXAMPLE_DEPS mrpt-base mrpt-comms)
 	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
@@ -237,7 +245,6 @@ IF(BUILD_EXAMPLES)
 			GPS_test
 			sonar_SRF10_test
 			eNoses_test
-			SerialPort_test
 			FTDI_USB_enumerate_test
 			joystick
 			captureVideoFFmpeg

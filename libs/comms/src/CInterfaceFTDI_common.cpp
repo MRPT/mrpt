@@ -7,12 +7,13 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include "hwdrivers-precomp.h"  // Precompiled headers
+#include "comms-precomp.h"  // Precompiled headers
 
-#include <mrpt/hwdrivers/CInterfaceFTDI.h>
+#include <mrpt/comms/CInterfaceFTDI.h>
+#include <algorithm> // min()
 
 using namespace mrpt;
-using namespace mrpt::hwdrivers;
+using namespace mrpt::comms;
 
 /*-------------------------------------------------------------
 					Read

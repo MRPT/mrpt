@@ -6,18 +6,16 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-
-#ifndef CSERIALPORT_H
-#define CSERIALPORT_H
+#pragma once
 
 #include <mrpt/config.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/utils/CTicTac.h>
-#include <mrpt/hwdrivers/link_pragmas.h>
+#include <mrpt/comms/link_pragmas.h>
 
 namespace mrpt
 {
-namespace hwdrivers
+namespace comms
 {
 /** A communications serial port built as an implementation of a utils::CStream.
  * On communication errors (eg. the given port number does not exist,
@@ -42,11 +40,12 @@ namespace hwdrivers
  *    - 1/DEC/2005:  (JLBC) First version
  *    - 20/DEC/2006: (JLBC) Integration into the MRPT framework
  *    - 12/DEC/2007: (JLBC) Added support for Linux.
+ *    - 22/AUG/2017: (JLBC) Moved to new module mrpt-comms
  *
  * \todo Add the internal buffer to the Windows implementation also
- * \ingroup mrpt_hwdrivers_grp
+ * \ingroup mrpt_comms_grp
  */
-class HWDRIVERS_IMPEXP CSerialPort : public mrpt::utils::CStream
+class COMMS_IMPEXP CSerialPort : public mrpt::utils::CStream
 {
 	friend class PosixSignalDispatcherImpl;
 
@@ -235,5 +234,3 @@ class HWDRIVERS_IMPEXP CSerialPort : public mrpt::utils::CStream
 
 }  // end of namespace
 }  // end of namespace
-
-#endif

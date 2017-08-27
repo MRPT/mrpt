@@ -7,13 +7,14 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include "base-precomp.h"  // Precompiled headers
+#include "comms-precomp.h"  // Precompiled headers
 
-#include <mrpt/utils/CServerTCPSocket.h>
-#include <mrpt/utils/CClientTCPSocket.h>
+#include <mrpt/comms/CServerTCPSocket.h>
+#include <mrpt/comms/CClientTCPSocket.h>
+#include <mrpt/comms/net_utils.h>
 #include <mrpt/system/os.h>
 #include <cstdio>  // stderr
-using namespace mrpt::utils;
+using namespace mrpt::comms;
 
 #if defined(MRPT_OS_LINUX) || defined(MRPT_OS_APPLE)
 #define INVALID_SOCKET (-1)
@@ -34,9 +35,11 @@ using namespace mrpt::utils;
 typedef int socklen_t;
 #endif
 
-/*---------------------------------------------------------------
-					setupSocket
- ---------------------------------------------------------------*/
+std::string CServerTCPSocket::getLastErrorStr()
+{
+	return mrpt::comms::net::getLastSocketErrorStr();
+}
+
 void CServerTCPSocket::setupSocket(
 	unsigned short listenPort, const std::string& IPaddress,
 	int maxConnectionsWaiting)
@@ -80,7 +83,7 @@ bool CServerTCPSocket::isListening() { return INVALID_SOCKET != m_serverSock; }
 /*---------------------------------------------------------------
 					accept
  ---------------------------------------------------------------*/
-CClientTCPSocket* CServerTCPSocket::accept(int timeout_ms)
+std::unique_ptr<CClientTCPSocket> CServerTCPSocket::accept(int timeout_ms)
 {
 	MRPT_START
 
@@ -137,7 +140,6 @@ CClientTCPSocket* CServerTCPSocket::accept(int timeout_ms)
 			"[CServerTCPSocket::accept] Incoming connection accepted\n");
 
 		// We have a new connection:
-		CClientTCPSocket* ret = new CClientTCPSocket();
 
 		sockaddr_in otherPart;
 		socklen_t otherPartSize = sizeof(otherPart);
@@ -147,20 +149,20 @@ CClientTCPSocket* CServerTCPSocket::accept(int timeout_ms)
 
 		if (aceptdSock == INVALID_SOCKET)
 		{
-			fprintf(stderr, "%s\n", getLastErrorStr().c_str());
-			delete ret;
-			return nullptr;
+			MRPT_LOG_ERROR_FMT("%s\n", getLastErrorStr().c_str());
+			return std::unique_ptr<CClientTCPSocket>();
 		}
+
+		auto ret = std::make_unique<CClientTCPSocket>();
 
 		ret->m_hSock = aceptdSock;
 
 		ret->m_remotePartIP = std::string(inet_ntoa(otherPart.sin_addr));
 		ret->m_remotePartPort = ntohs(otherPart.sin_port);
 
-		MRPT_LOG_DEBUG(
-			format(
+		MRPT_LOG_DEBUG_FMT(
 				"[CServerTCPSocket::accept] Connection accepted from %s:%u\n",
-				ret->m_remotePartIP.c_str(), ret->m_remotePartPort));
+				ret->m_remotePartIP.c_str(), ret->m_remotePartPort);
 
 		return ret;
 	}

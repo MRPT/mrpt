@@ -7,11 +7,11 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-#include "base-precomp.h"  // Precompiled headers
+#include "comms-precomp.h"  // Precompiled headers
 
-#include <mrpt/utils/net_utils.h>
-#include <mrpt/utils/CClientTCPSocket.h>
-#include <mrpt/utils/CServerTCPSocket.h>
+#include <mrpt/comms/net_utils.h>
+#include <mrpt/comms/CClientTCPSocket.h>
+#include <mrpt/comms/CServerTCPSocket.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/system/string_utils.h>
 
@@ -40,13 +40,14 @@
 using namespace mrpt;
 using namespace mrpt::system;
 using namespace mrpt::utils;
-using namespace mrpt::utils::net;
+using namespace mrpt::comms;
+using namespace mrpt::comms::net;
 using namespace std;
 
 /*---------------------------------------------------------------
 							http_get
   ---------------------------------------------------------------*/
-ERRORCODE_HTTP BASE_IMPEXP mrpt::utils::net::http_get(
+ERRORCODE_HTTP COMMS_IMPEXP mrpt::comms::net::http_get(
 	const string& url, string& out_content, string& out_errormsg, int port,
 	const string& auth_user, const string& auth_pass,
 	int* out_http_responsecode, mrpt::utils::TParameters<string>* extra_headers,
@@ -63,7 +64,7 @@ ERRORCODE_HTTP BASE_IMPEXP mrpt::utils::net::http_get(
 	return ret;
 }
 
-ERRORCODE_HTTP BASE_IMPEXP mrpt::utils::net::http_request(
+ERRORCODE_HTTP COMMS_IMPEXP mrpt::comms::net::http_request(
 	const string& http_method, const string& http_send_content,
 	const string& url, vector_byte& out_content, string& out_errormsg, int port,
 	const string& auth_user, const string& auth_pass,
@@ -379,7 +380,7 @@ ERRORCODE_HTTP BASE_IMPEXP mrpt::utils::net::http_request(
 /*---------------------------------------------------------------
 	http_get
 ---------------------------------------------------------------*/
-ERRORCODE_HTTP BASE_IMPEXP mrpt::utils::net::http_get(
+ERRORCODE_HTTP COMMS_IMPEXP mrpt::comms::net::http_get(
 	const string& url, vector_byte& out_content, string& out_errormsg, int port,
 	const string& auth_user, const string& auth_pass,
 	int* out_http_responsecode, mrpt::utils::TParameters<string>* extra_headers,
@@ -471,7 +472,7 @@ bool net::DNS_resolve_async(
 }
 
 /** Returns a description of the last Sockets error */
-std::string mrpt::utils::net::getLastSocketErrorStr()
+std::string mrpt::comms::net::getLastSocketErrorStr()
 {
 #ifdef MRPT_OS_WINDOWS
 	const int errnum = WSAGetLastError();
@@ -490,7 +491,7 @@ std::string mrpt::utils::net::getLastSocketErrorStr()
 }
 
 MRPT_TODO("Modify ping to run on Windows + Test this");
-bool mrpt::utils::net::Ping(
+bool mrpt::comms::net::Ping(
 	const std::string& address, const int& max_attempts,
 	std::string* output_str /*=NULL*/)
 {
