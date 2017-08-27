@@ -9,14 +9,14 @@
 
 #include "hwdrivers-precomp.h"  // Precompiled headers
 
-#include <mrpt/utils/net_utils.h>
+#include <mrpt/comms/net_utils.h>
 #include <mrpt/hwdrivers/CServoeNeck.h>
+#include <mrpt/utils/CMessage.h>
 
 #include <thread>
 
-// const double MAX_VALUE = 10000;					// ICR value in the ATMEGA16
-
 using namespace mrpt::utils;
+using namespace mrpt::comms;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::math;
 using namespace std::literals;

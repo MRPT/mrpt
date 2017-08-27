@@ -12,7 +12,7 @@
 
 #include <mrpt/obs/CObservationGPS.h>
 #include <mrpt/poses/CPoint3D.h>
-#include <mrpt/hwdrivers/CSerialPort.h>
+#include <mrpt/comms/CSerialPort.h>
 #include <mrpt/utils/COutputLogger.h>
 #include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/utils/TEnumType.h>

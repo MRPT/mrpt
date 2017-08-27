@@ -10,8 +10,8 @@
 #include "hwdrivers-precomp.h"  // Precompiled headers
 
 #include <mrpt/hwdrivers/CNTRIPClient.h>
-#include <mrpt/utils/CClientTCPSocket.h>
-#include <mrpt/utils/net_utils.h>
+#include <mrpt/comms/CClientTCPSocket.h>
+#include <mrpt/comms/net_utils.h>
 #include <mrpt/utils/CStringList.h>
 #include <mrpt/math/wrap2pi.h>
 
@@ -19,6 +19,7 @@
 
 using namespace mrpt;
 using namespace mrpt::utils;
+using namespace mrpt::comms;
 using namespace mrpt::system;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::math;
@@ -59,7 +60,6 @@ void CNTRIPClient::close()
 	m_upload_data.clear();
 	if (!m_thread_do_process) return;
 	m_thread_do_process = false;
-	MRPT_TODO("Is this a race condition if we are not checking for timeout?");
 	m_sem_sock_closed.get_future().wait_for(500ms);
 }
 
