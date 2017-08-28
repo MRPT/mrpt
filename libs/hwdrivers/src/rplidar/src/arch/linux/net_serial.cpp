@@ -297,32 +297,31 @@ void raw_serial::_init()
 
 _u32 raw_serial::getTermBaudBitmap(_u32 baud)
 {
-#define BAUD_CONV( _baud_) case _baud_:  return B##_baud_ 
-switch (baud) {
-        BAUD_CONV(1200);
-        BAUD_CONV(1800);
-        BAUD_CONV(2400);
-        BAUD_CONV(4800);
-        BAUD_CONV(9600);
-        BAUD_CONV(19200);
-        BAUD_CONV(38400);
-        BAUD_CONV(57600);
-        BAUD_CONV(115200);
-        BAUD_CONV(230400);
-        BAUD_CONV(460800);
-        BAUD_CONV(500000);
-        BAUD_CONV(576000);
-        BAUD_CONV(921600);
-        BAUD_CONV(1000000);
-        BAUD_CONV(1152000);
-        BAUD_CONV(1500000);
-        BAUD_CONV(2000000);
-        BAUD_CONV(2500000);
-        BAUD_CONV(3000000);
-        BAUD_CONV(3500000);
-        BAUD_CONV(4000000);
-    }
-    return -1;
+#define BAUD_CONV(_baud_) \
+	case _baud_:          \
+		return B##_baud_
+	switch (baud)
+	{
+		BAUD_CONV(1200);
+		BAUD_CONV(1800);
+		BAUD_CONV(2400);
+		BAUD_CONV(4800);
+		BAUD_CONV(9600);
+		BAUD_CONV(19200);
+		BAUD_CONV(38400);
+		BAUD_CONV(57600);
+		BAUD_CONV(115200);
+		BAUD_CONV(230400);
+		BAUD_CONV(460800);
+		BAUD_CONV(500000);
+		BAUD_CONV(576000);
+		BAUD_CONV(921600);
+		BAUD_CONV(1000000);
+		BAUD_CONV(1152000);
+		BAUD_CONV(1500000);
+		BAUD_CONV(2000000);
+	}
+	return -1;
 }
 
 }}} //end rp::arch::net
