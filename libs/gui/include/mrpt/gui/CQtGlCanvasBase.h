@@ -14,13 +14,13 @@
 #include <mrpt/config.h>
 #if MRPT_HAS_Qt5
 
-#include <QGLWidget>
+#include <QOpenGLWidget>
 
 namespace mrpt
 {
 namespace gui
 {
-class GUI_IMPEXP CQtGlCanvasBase : public QGLWidget,
+class GUI_IMPEXP CQtGlCanvasBase : public QOpenGLWidget,
 								   public mrpt::gui::CGlCanvasBase
 {
    public:

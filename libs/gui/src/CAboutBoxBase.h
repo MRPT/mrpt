@@ -6,24 +6,25 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
-
 #pragma once
-
-#include <mrpt/gui/link_pragmas.h>
 #include <string>
 
-namespace mrpt
+class CAboutBoxBase
 {
-namespace gui
-{
-/** Shows the standard MRPT GUI "About Box" (wxWidgets version) */
-void GUI_IMPEXP show_mrpt_about_box_wxWidgets(
-	void* parent_wx_window, const std::string& appName,
-	const std::string& additionalInfo = std::string(),
-	const bool showStandardInfo = true);
-void GUI_IMPEXP show_mrpt_about_box_Qt(
-	const std::string& appName,
-	const std::string& additionalInfo = std::string(),
-	const bool showStandardInfo = true);
-}
-}
+   public:
+	CAboutBoxBase(
+		const std::string& appName, const std::string& additionalInfo,
+		const bool showStandardInfo);
+	virtual ~CAboutBoxBase();
+
+   protected:
+	std::string MRPTBuildVersion() const;
+	std::string tutorial() const;
+	std::string license() const;
+	std::string information(
+		const std::string& guiLibName, const std::string& guiLibVersion) const;
+
+	const std::string m_appName;
+	const std::string m_additionalInfo;
+	const bool m_showStandardInfo;
+};

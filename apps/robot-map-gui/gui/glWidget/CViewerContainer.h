@@ -18,13 +18,18 @@
 
 class CNode;
 class CGlWidget;
+class QTextEdit;
 
+/** This class implements work with all maps, which open*/
 class CViewerContainer : public QWidget
 {
 	Q_OBJECT
    public:
 	CViewerContainer(QWidget* parent = nullptr);
 	virtual ~CViewerContainer();
+
+	void changeHelpTextToAboutConfig();
+
 	void showRangeScan(CNode* node);
 	void showRobotDirection(const mrpt::poses::CPose3D& pose);
 	void applyConfigChanges(RenderizableMaps renderizableMaps);
@@ -39,12 +44,12 @@ class CViewerContainer : public QWidget
 	void updateRobotPosesColor(int type);
 	void updateSelectedRobotPosesColor(int type);
 
+   signals:
+	void deleteRobotPoses(const std::vector<size_t>& idx);
+	void moveRobotPoses(const std::vector<size_t>& idx, const QPointF& dist);
+
    public slots:
 	void showAllObservation(bool is);
-	void changeCurrentBot(int value);
-	void setVisibleGrid(bool is);
-	void changeBackgroundColor(QColor color);
-	void changeGridColor(QColor color);
 
    private slots:
 	void updatePanelInfo(int index);
@@ -59,7 +64,12 @@ class CViewerContainer : public QWidget
 
    private:
 	CGlWidget* getCurrentTabWidget() const;
+	bool containsHelpInfo() const;
+	void forEachGl(const std::function<void(CGlWidget*)>& func);
 
 	std::unique_ptr<Ui::CViewerContainer> m_ui;
 	std::map<int, SType> m_tabsInfo;
+	QTextEdit* m_information;
+	const QString m_helpLoadMap;
+	const QString m_helpLoadConfig;
 };
