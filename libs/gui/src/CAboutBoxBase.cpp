@@ -60,10 +60,7 @@ std::string CAboutBoxBase::information(
 	if (m_showStandardInfo)
 	{
 		str += "Eigen version:          ";
-		str += EIGEN_WORLD_VERSION + ".";
-		str += EIGEN_MAJOR_VERSION + ".";
-		str += EIGEN_MINOR_VERSION + "\n";
-
+		str += mrpt::format("%u.%u.%u\n",EIGEN_WORLD_VERSION, EIGEN_MAJOR_VERSION, EIGEN_MINOR_VERSION);
 		str += guiLibName + " version:      " + guiLibVersion;
 #if defined(__WXMSW__)
 		str += "-Windows";
