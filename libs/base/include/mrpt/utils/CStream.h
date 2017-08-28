@@ -18,6 +18,7 @@
 
 #include <mrpt/otherlibs/mapbox/variant.hpp>
 #include <vector>
+#include <type_traits>  // remove_reference_t
 
 namespace mrpt
 {
@@ -313,6 +314,21 @@ class BASE_IMPEXP CStream
 		t.match([&](auto& o) { this->WriteObject(o); });
 	}
 
+	/** Reads a simple POD type and returns by value. Useful when `stream >>
+	 * var;`
+	  * cannot be used becuase of errors of misaligned reference binding.
+	  * Use with macro `MRPT_READ_POD` to avoid typing the type T yourself.
+	  * \note [New in MRPT 2.0.0]
+	  * \note Write operator `s << var;` is safe for misaligned variables.
+	  */
+	template <typename T>
+	T ReadPOD()
+	{
+		T ret;
+		ReadBufferFixEndianness(&ret, sizeof(T));
+		return ret;
+	}
+
 	/** Reads an object from stream, where its class must be the same
 	 *    as the supplied object, where the loaded object will be stored in.
 	 * \exception std::exception On I/O error or different class found.
@@ -412,8 +428,10 @@ class BASE_IMPEXP CStream
 
 };  // End of class def.
 
-#define DECLARE_CSTREAM_READ_WRITE_SIMPLE_TYPE(T)                           \
-	CStream BASE_IMPEXP& operator<<(mrpt::utils::CStream& out, const T& a); \
+// Note: write op accepts parameters by value on purpose, to avoid misaligned
+// reference binding errors.
+#define DECLARE_CSTREAM_READ_WRITE_SIMPLE_TYPE(T)                          \
+	CStream BASE_IMPEXP& operator<<(mrpt::utils::CStream& out, const T a); \
 	CStream BASE_IMPEXP& operator>>(mrpt::utils::CStream& in, T& a);
 
 // Definitions:
@@ -431,6 +449,10 @@ DECLARE_CSTREAM_READ_WRITE_SIMPLE_TYPE(double)
 #ifdef HAVE_LONG_DOUBLE
 DECLARE_CSTREAM_READ_WRITE_SIMPLE_TYPE(long double)
 #endif
+
+#define MRPT_READ_POD(_STREAM, _VARIABLE) \
+	_VARIABLE = _STREAM.ReadPOD<          \
+		std::remove_cv_t<std::remove_reference_t<decltype(_VARIABLE)>>>()
 
 // Why this shouldn't be templatized?: There's a more modern system
 // in MRPT that serializes any kind of vector<T>, deque<T>, etc... but

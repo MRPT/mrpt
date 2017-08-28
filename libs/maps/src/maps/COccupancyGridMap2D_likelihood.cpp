@@ -556,7 +556,7 @@ double COccupancyGridMap2D::computeLikelihoodField_Thrun(
 	unsigned int size_y_1 = size_y - 1;
 
 	// Aux. variables for the "for j" loop:
-	double thisLik;
+	double thisLik = LIK_LF_CACHE_INVALID;
 	double maxCorrDist_sq = square(likelihoodOptions.LF_maxCorrsDistance);
 	double minimumLik = zRandomTerm + zHit * exp(Q * maxCorrDist_sq);
 	double ccos, ssin;
