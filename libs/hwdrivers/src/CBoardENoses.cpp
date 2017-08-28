@@ -294,8 +294,13 @@ bool CBoardENoses::getObservation( mrpt::obs::CObservationGasSensors &obs )
 			obs.sensorLabel = m_sensorLabel;
 
 			// Set Timestamp
-			uint32_t *p = (uint32_t*)&readings[readings.size()-2];	//Get readings time from frame (always last 2 words)
-			obs.timestamp = mrpt::system::secondsToTimestamp(((double)*p)/1000);
+			uint16_t* p =
+				(uint16_t*)&readings[readings.size() - 2];  // Get readings time
+			// from frame
+			// (always last 2
+			// words)
+			obs.timestamp =
+				mrpt::system::secondsToTimestamp(((double)*p) / 1000);
 
 			if (first_reading)
 			{
