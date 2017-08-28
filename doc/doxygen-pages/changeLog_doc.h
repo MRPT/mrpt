@@ -30,6 +30,7 @@
 				- `mrpt::math::make_vector<>` => `std::vector<>{...}` braced initializator
 			- Added: mrpt::make_aligned_shared<> template
 			- mrpt::utils::CConfigFileBase::write() now supports enum types.
+			- New method mrpt::utils::CStream::ReadPOD() and macro `MRPT_READ_POD()` for reading unaligned POD variables.-
 		- \ref mrpt_slam_grp
 			- rbpf-slam: Add support for simplemap continuation.
 		- \ref mrpt_nav_grp
@@ -43,6 +44,7 @@
 		- Fix incorrect evaluation of "ASSERT" formulas in mrpt::nav::CMultiObjectiveMotionOptimizerBase
 		- Fix aborting reading from LMS111 scanner on first error.
 		- Fix == operator on CPose3D: it now uses an epsilon for comparing the rotation matrices.
+		- Fix accessing unaligned POD variables deserializing CObservationGPS (via the new `MRPT_READ_POD()` macro).
 
 <hr>
 <a name="1.5.4">

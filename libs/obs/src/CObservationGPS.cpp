@@ -144,15 +144,18 @@ void CObservationGPS::readFromStream(mrpt::utils::CStream& in, int version)
 				gnss::Message_NMEA_GGA datum;
 				gnss::Message_NMEA_GGA::content_t& GGA_datum = datum.fields;
 
-				in >> GGA_datum.UTCTime.hour >> GGA_datum.UTCTime.minute >>
-					GGA_datum.UTCTime.sec >> GGA_datum.latitude_degrees >>
-					GGA_datum.longitude_degrees >> GGA_datum.fix_quality >>
-					GGA_datum.altitude_meters;
+				MRPT_READ_POD(in, GGA_datum.UTCTime.hour);
+				MRPT_READ_POD(in, GGA_datum.UTCTime.minute);
+				MRPT_READ_POD(in, GGA_datum.UTCTime.sec);
+				MRPT_READ_POD(in, GGA_datum.latitude_degrees);
+				MRPT_READ_POD(in, GGA_datum.longitude_degrees);
+				MRPT_READ_POD(in, GGA_datum.fix_quality);
+				MRPT_READ_POD(in, GGA_datum.altitude_meters);
 				if (version >= 9)
 				{
-					in >> GGA_datum.geoidal_distance >>
-						GGA_datum.orthometric_altitude >>
-						GGA_datum.corrected_orthometric_altitude;
+					MRPT_READ_POD(in, GGA_datum.geoidal_distance);
+					MRPT_READ_POD(in, GGA_datum.orthometric_altitude);
+					MRPT_READ_POD(in, GGA_datum.corrected_orthometric_altitude);
 				}
 				else
 				{
@@ -161,8 +164,9 @@ void CObservationGPS::readFromStream(mrpt::utils::CStream& in, int version)
 					GGA_datum.corrected_orthometric_altitude = 0.0f;
 				}
 
-				in >> GGA_datum.satellitesUsed >> GGA_datum.thereis_HDOP >>
-					GGA_datum.HDOP;
+				MRPT_READ_POD(in, GGA_datum.satellitesUsed);
+				MRPT_READ_POD(in, GGA_datum.thereis_HDOP);
+				MRPT_READ_POD(in, GGA_datum.HDOP);
 				this->setMsg(datum);
 			}
 
@@ -173,10 +177,14 @@ void CObservationGPS::readFromStream(mrpt::utils::CStream& in, int version)
 				gnss::Message_NMEA_RMC datum;
 				gnss::Message_NMEA_RMC::content_t& RMC_datum = datum.fields;
 
-				in >> RMC_datum.UTCTime.hour >> RMC_datum.UTCTime.minute >>
-					RMC_datum.UTCTime.sec >> RMC_datum.validity_char >>
-					RMC_datum.latitude_degrees >> RMC_datum.longitude_degrees >>
-					RMC_datum.speed_knots >> RMC_datum.direction_degrees;
+				MRPT_READ_POD(in, RMC_datum.UTCTime.hour);
+				MRPT_READ_POD(in, RMC_datum.UTCTime.minute);
+				MRPT_READ_POD(in, RMC_datum.UTCTime.sec);
+				MRPT_READ_POD(in, RMC_datum.validity_char);
+				MRPT_READ_POD(in, RMC_datum.latitude_degrees);
+				MRPT_READ_POD(in, RMC_datum.longitude_degrees);
+				MRPT_READ_POD(in, RMC_datum.speed_knots);
+				MRPT_READ_POD(in, RMC_datum.direction_degrees);
 				this->setMsg(datum);
 			}
 			if (version > 1)
@@ -198,27 +206,36 @@ void CObservationGPS::readFromStream(mrpt::utils::CStream& in, int version)
 					messages[gnss::TOPCON_PZS] = gnss::gnss_message_ptr(datum);
 					gnss::Message_TOPCON_PZS& PZS_datum = *datum;
 
-					in >> PZS_datum.latitude_degrees >>
-						PZS_datum.longitude_degrees >>
-						PZS_datum.height_meters >>
-						PZS_datum.RTK_height_meters >> PZS_datum.PSigma >>
-						PZS_datum.angle_transmitter >> PZS_datum.nId >>
-						PZS_datum.Fix >> PZS_datum.TXBattery >>
-						PZS_datum.RXBattery >> PZS_datum.error;
+					MRPT_READ_POD(in, PZS_datum.latitude_degrees);
+					MRPT_READ_POD(in, PZS_datum.longitude_degrees);
+					MRPT_READ_POD(in, PZS_datum.height_meters);
+					MRPT_READ_POD(in, PZS_datum.RTK_height_meters);
+					MRPT_READ_POD(in, PZS_datum.PSigma);
+					MRPT_READ_POD(in, PZS_datum.angle_transmitter);
+					MRPT_READ_POD(in, PZS_datum.nId);
+					MRPT_READ_POD(in, PZS_datum.Fix);
+					MRPT_READ_POD(in, PZS_datum.TXBattery);
+					MRPT_READ_POD(in, PZS_datum.RXBattery);
+					MRPT_READ_POD(in, PZS_datum.error);
 					// extra data?
 					if (version >= 6)
 					{
-						in >> PZS_datum.hasCartesianPosVel >>
-							PZS_datum.cartesian_x >> PZS_datum.cartesian_y >>
-							PZS_datum.cartesian_z >> PZS_datum.cartesian_vx >>
-							PZS_datum.cartesian_vy >> PZS_datum.cartesian_vz >>
-							PZS_datum.hasPosCov >> PZS_datum.pos_covariance >>
-							PZS_datum.hasVelCov >> PZS_datum.vel_covariance >>
-							PZS_datum.hasStats >>
-							PZS_datum.stats_GPS_sats_used >>
-							PZS_datum.stats_GLONASS_sats_used;
+						MRPT_READ_POD(in, PZS_datum.hasCartesianPosVel);
+						MRPT_READ_POD(in, PZS_datum.cartesian_x);
+						MRPT_READ_POD(in, PZS_datum.cartesian_y);
+						MRPT_READ_POD(in, PZS_datum.cartesian_z);
+						MRPT_READ_POD(in, PZS_datum.cartesian_vx);
+						MRPT_READ_POD(in, PZS_datum.cartesian_vy);
+						MRPT_READ_POD(in, PZS_datum.cartesian_vz);
+						MRPT_READ_POD(in, PZS_datum.hasPosCov);
+						MRPT_READ_POD(in, PZS_datum.pos_covariance);
+						MRPT_READ_POD(in, PZS_datum.hasVelCov);
+						MRPT_READ_POD(in, PZS_datum.vel_covariance);
+						MRPT_READ_POD(in, PZS_datum.hasStats);
+						MRPT_READ_POD(in, PZS_datum.stats_GPS_sats_used);
+						MRPT_READ_POD(in, PZS_datum.stats_GLONASS_sats_used);
 						if (version >= 8)
-							in >> PZS_datum.stats_rtk_fix_progress;
+							MRPT_READ_POD(in, PZS_datum.stats_rtk_fix_progress);
 						else
 							PZS_datum.stats_rtk_fix_progress = 0;
 					}
@@ -241,7 +258,9 @@ void CObservationGPS::readFromStream(mrpt::utils::CStream& in, int version)
 				in >> has_SATS_datum_;
 				if (has_SATS_datum_)
 				{
-					in >> SATS_datum.USIs >> SATS_datum.ELs >> SATS_datum.AZs;
+					MRPT_READ_POD(in, SATS_datum.USIs);
+					MRPT_READ_POD(in, SATS_datum.ELs);
+					MRPT_READ_POD(in, SATS_datum.AZs);
 				}
 			}
 		}
