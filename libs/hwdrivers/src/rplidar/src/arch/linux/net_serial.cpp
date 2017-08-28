@@ -304,10 +304,6 @@ _u32 raw_serial::getTermBaudBitmap(_u32 baud)
 		BAUD_CONV(1152000);
 		BAUD_CONV(1500000);
 		BAUD_CONV(2000000);
-		BAUD_CONV(2500000);
-		BAUD_CONV(3000000);
-		BAUD_CONV(3500000);
-		BAUD_CONV(4000000);
 	}
 	return -1;
 }
