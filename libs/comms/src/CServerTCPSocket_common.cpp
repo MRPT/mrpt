@@ -161,8 +161,8 @@ std::unique_ptr<CClientTCPSocket> CServerTCPSocket::accept(int timeout_ms)
 		ret->m_remotePartPort = ntohs(otherPart.sin_port);
 
 		MRPT_LOG_DEBUG_FMT(
-				"[CServerTCPSocket::accept] Connection accepted from %s:%u\n",
-				ret->m_remotePartIP.c_str(), ret->m_remotePartPort);
+			"[CServerTCPSocket::accept] Connection accepted from %s:%u\n",
+			ret->m_remotePartIP.c_str(), ret->m_remotePartPort);
 
 		return ret;
 	}

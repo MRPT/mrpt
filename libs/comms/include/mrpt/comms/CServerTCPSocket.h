@@ -11,7 +11,7 @@
 #include <mrpt/utils/core_defs.h>
 #include <mrpt/utils/COutputLogger.h>
 #include <string>
-#include <memory> // unique_ptr
+#include <memory>  // unique_ptr
 #include <mrpt/comms/link_pragmas.h>
 
 namespace mrpt

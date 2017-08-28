@@ -206,7 +206,8 @@ bool CCANBusReader::tryToOpenComms(std::string* err_msg)
 			if (!m_com_port.empty())
 			{
 				//			    cout << "Creating port" << endl;
-				m_mySerialPort = new mrpt::comms::CSerialPort();  // Create the port myself:
+				m_mySerialPort =
+					new mrpt::comms::CSerialPort();  // Create the port myself:
 			}
 			else
 				throw std::logic_error(

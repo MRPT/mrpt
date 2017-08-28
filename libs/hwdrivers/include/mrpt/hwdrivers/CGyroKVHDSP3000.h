@@ -84,7 +84,7 @@ class HWDRIVERS_IMPEXP CGyroKVHDSP3000 : public hwdrivers::CGenericSensor
 
 	/** Search the port where the sensor is located and connect to it
 	  */
-	//bool searchPortAndConnect();
+	// bool searchPortAndConnect();
 
 	/** The serial port connection */
 	mrpt::comms::CSerialPort* m_serialPort;

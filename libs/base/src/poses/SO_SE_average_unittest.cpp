@@ -71,7 +71,8 @@ TEST(SE2_SE3_avrg, SO2_average)
 }
 
 void run_test_so3_avrg(
-	const double* angs, const size_t N, const Eigen::Matrix3d& correct_avr)
+	const double* angs, const size_t N,
+	const mrpt::math::CMatrixDouble33 correct_avr)
 {
 	SO_average<3> so_avr;
 	for (size_t i = 0; i < N; i++)
@@ -89,28 +90,28 @@ TEST(SE2_SE3_avrg, SO3_average)
 	// Simple tests:
 	{
 		const double angs[] = {.0, .0, .0};
-		const Eigen::Matrix3d correct_avr =
+		const auto correct_avr =
 			mrpt::poses::CPose3D(0, 0, 0, 0, 0, 0).getRotationMatrix();
 		run_test_so3_avrg(
 			angs, sizeof(angs) / (3 * sizeof(angs[0])), correct_avr);
 	}
 	{
 		const double angs[] = {-.75 * M_PI, .0, .0, .75 * M_PI, .0, .0};
-		const Eigen::Matrix3d correct_avr =
+		const auto correct_avr =
 			mrpt::poses::CPose3D(0, 0, 0, M_PI, 0, 0).getRotationMatrix();
 		run_test_so3_avrg(
 			angs, sizeof(angs) / (3 * sizeof(angs[0])), correct_avr);
 	}
 	{
 		const double angs[] = {.0, -0.2, .0, .0, 0.2, .0};
-		const Eigen::Matrix3d correct_avr =
+		const auto correct_avr =
 			mrpt::poses::CPose3D(0, 0, 0, 0, 0, 0).getRotationMatrix();
 		run_test_so3_avrg(
 			angs, sizeof(angs) / (3 * sizeof(angs[0])), correct_avr);
 	}
 	{
 		const double angs[] = {.0, .0, .3, .0, .0, -.3};
-		const Eigen::Matrix3d correct_avr =
+		const auto correct_avr =
 			mrpt::poses::CPose3D(0, 0, 0, 0, 0, 0).getRotationMatrix();
 		run_test_so3_avrg(
 			angs, sizeof(angs) / (3 * sizeof(angs[0])), correct_avr);

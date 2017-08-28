@@ -630,4 +630,3 @@ std::string CClientTCPSocket::getLastErrorStr()
 {
 	return mrpt::comms::net::getLastSocketErrorStr();
 }
-

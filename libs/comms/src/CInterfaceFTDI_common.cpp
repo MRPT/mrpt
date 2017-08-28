@@ -10,7 +10,7 @@
 #include "comms-precomp.h"  // Precompiled headers
 
 #include <mrpt/comms/CInterfaceFTDI.h>
-#include <algorithm> // min()
+#include <algorithm>  // min()
 
 using namespace mrpt;
 using namespace mrpt::comms;
