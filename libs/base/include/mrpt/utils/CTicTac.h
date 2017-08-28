@@ -35,7 +35,7 @@ class BASE_IMPEXP CTicTac
 	double Tac();
 
    private:
-	unsigned char largeInts[64];
+	alignas(16) unsigned char largeInts[64];
 };  // End of class def.
 static_assert(
 	!std::is_copy_constructible<CTicTac>::value &&
