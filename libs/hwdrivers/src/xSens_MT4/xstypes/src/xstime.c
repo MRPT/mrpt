@@ -180,6 +180,7 @@ void XsTime_getDateAsString(char* dest, const struct tm* date)
 	snprintf(dest, 9, "%04d%02d%02d", year, month, dt.tm_mday);		//lint !e534
 }
 
+#if 0
 /*! \brief Retrieves the time as binary
 	The format is HHMMSShh (where H is hour and 'h' is hundredths)
 	so 14:25:01.23 is stored as an array dest[8] = { '1', '4', '2', '5', '0',  '1', '2', '3'}
@@ -198,7 +199,6 @@ void XsTime_getTimeAsString(char* dest, const struct tm* date)
 
 	snprintf(dest, 8, "%02d%02d%02d%02d", dt.tm_hour, dt.tm_min, dt.tm_sec, 0);	//lint !e534
 }
-
 /*! \brief Retrieves the date as wstring representation
 	The format is YYYYMMDD
 	so 25 dec 2010 is stored as an array dest[8] = {'2', '0', '1', '0', '1', '2', '2', '5' }
@@ -219,6 +219,7 @@ void XsTime_getDateAsWString(wchar_t* dest, const struct tm* date)
 	month = dt.tm_mon + 1;
 	swprintf(dest, 8, L"%04d%02d%02d", year, month, dt.tm_mday);	//lint !e534
 }
+#endif
 
 /*! \brief Retrieves the time as binary
 	The format is HHMMSShh (where H is hour and 'h' is hundredths)

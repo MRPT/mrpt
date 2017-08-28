@@ -561,7 +561,7 @@ void CLogFileRecord::readFromStream(mrpt::utils::CStream& in, int version)
 			}
 			else
 			{
-				relPoseSense = relPoseVelCmd = mrpt::math::TPose2D();
+				relPoseSense = relPoseVelCmd = mrpt::math::TPose2D(0, 0, 0);
 			}
 
 			if (version >= 18)
