@@ -54,7 +54,7 @@ class HWDRIVERS_IMPEXP CRoboticHeadInterface : public mrpt::utils::COutputLogger
 	std::vector<int32_t> gain;
 	int head_yaw, head_pitch;
 
-	//bool checkControllerIsConnected();
+	// bool checkControllerIsConnected();
 
    protected:
 	/** Loads specific configuration for the device from a given source of

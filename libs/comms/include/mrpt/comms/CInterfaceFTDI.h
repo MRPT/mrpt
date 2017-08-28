@@ -41,8 +41,7 @@ struct COMMS_IMPEXP TFTDIDevice
 };
 
 /** Print out all the information of a FTDI device in textual form. */
-std::ostream COMMS_IMPEXP& operator<<(
-	std::ostream& o, const TFTDIDevice& d);
+std::ostream COMMS_IMPEXP& operator<<(std::ostream& o, const TFTDIDevice& d);
 
 /** Used in  CInterfaceFTDI::ListAllDevices */
 typedef std::deque<TFTDIDevice> TFTDIDeviceList;
