@@ -325,7 +325,7 @@ class BASE_IMPEXP CStream
 	T ReadPOD()
 	{
 		T ret;
-		ReadBufferFixEndianness(&ret, sizeof(T));
+		ReadBufferFixEndianness(&ret, 1);
 		return ret;
 	}
 
@@ -450,9 +450,14 @@ DECLARE_CSTREAM_READ_WRITE_SIMPLE_TYPE(double)
 DECLARE_CSTREAM_READ_WRITE_SIMPLE_TYPE(long double)
 #endif
 
-#define MRPT_READ_POD(_STREAM, _VARIABLE) \
-	_VARIABLE = _STREAM.ReadPOD<          \
-		std::remove_cv_t<std::remove_reference_t<decltype(_VARIABLE)>>>()
+#define MRPT_READ_POD(_STREAM, _VARIABLE)                                    \
+	do                                                                       \
+	{                                                                        \
+		const std::remove_cv_t<std::remove_reference_t<decltype(_VARIABLE)>> \
+			val = _STREAM.ReadPOD<std::remove_cv_t<                          \
+				std::remove_reference_t<decltype(_VARIABLE)>>>();            \
+		::memcpy(&_VARIABLE, &val, sizeof(val));                             \
+	} while (0)
 
 // Why this shouldn't be templatized?: There's a more modern system
 // in MRPT that serializes any kind of vector<T>, deque<T>, etc... but
