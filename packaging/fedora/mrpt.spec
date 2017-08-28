@@ -4,7 +4,7 @@ Version: 0.9.5
 Release: 0.1.20110916svn2655%{?dist}
 License: GPLv3+
 Group: Development/Libraries
-URL: http://www.mrpt.org/
+URL: https://www.mrpt.org/
 
 # Tarballs at http://babel.isa.uma.es/mrpt/src-repo/ are the same that those
 # at SourceForge (http://downloads.sourceforge.net/mrpt/mrpt-%{version}.tar.gz) 
