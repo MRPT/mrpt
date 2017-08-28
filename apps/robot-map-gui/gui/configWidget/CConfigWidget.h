@@ -27,6 +27,7 @@ namespace Ui
 class CConfigWidget;
 }
 
+/** This class contains configuration*/
 class CConfigWidget : public QWidget
 {
 	Q_OBJECT
@@ -42,12 +43,8 @@ class CConfigWidget : public QWidget
 	void addedMap();
 	void removedMap();
 	void updatedConfig();
-	void openedConfig(const std::string str);
+	void openedConfig(const std::string& str);
 	void applyConfigurationForCurrentMaps();
-	void backgroundColorChanged(QColor col);
-	void gridColorChanged(QColor col);
-	void gridVisibleChanged(bool is);
-	void currentBotChanged(int value);
 
    public slots:
 	void openConfig();

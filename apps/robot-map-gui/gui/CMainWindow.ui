@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>828</width>
-    <height>712</height>
+    <width>1072</width>
+    <height>902</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -40,7 +40,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>828</width>
+     <width>1072</width>
      <height>19</height>
     </rect>
    </property>
@@ -48,14 +48,39 @@
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="openAction"/>
+    <widget class="QMenu" name="m_menuRecentFiles">
+     <property name="title">
+      <string>Recent files</string>
+     </property>
+    </widget>
+    <widget class="QMenu" name="m_saveMetricMapRepresentation">
+     <property name="title">
+      <string>Save metric map representation</string>
+     </property>
+    </widget>
+    <widget class="QMenu" name="m_saveMetricmapInBinaryFormat">
+     <property name="title">
+      <string>Save metric map in binary format</string>
+     </property>
+    </widget>
+    <addaction name="m_actionOpen"/>
+    <addaction name="m_menuRecentFiles"/>
+    <addaction name="m_actionSave"/>
+    <addaction name="m_actionSaveAsText"/>
+    <addaction name="m_actionSaveAsPNG"/>
+    <addaction name="m_saveMetricMapRepresentation"/>
+    <addaction name="m_saveMetricmapInBinaryFormat"/>
+    <addaction name="separator"/>
     <addaction name="m_actionLoadConfig"/>
+    <addaction name="separator"/>
+    <addaction name="actionExit"/>
+    <addaction name="m_actionGraphSlam"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
      <string>Help</string>
     </property>
-    <addaction name="m_aboutAction"/>
+    <addaction name="m_actionAbout"/>
    </widget>
    <widget class="QMenu" name="menuTools">
     <property name="title">
@@ -67,7 +92,15 @@
     <addaction name="separator"/>
     <addaction name="m_actionMapConfiguration"/>
    </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="m_undoAction"/>
+    <addaction name="m_redoAction"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
    <addaction name="menuTools"/>
    <addaction name="menuHelp"/>
   </widget>
@@ -213,7 +246,34 @@
     </layout>
    </widget>
   </widget>
-  <action name="openAction">
+  <widget class="QToolBar" name="m_toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="m_actionOpen"/>
+   <addaction name="m_actionSave"/>
+   <addaction name="separator"/>
+   <addaction name="m_undoAction"/>
+   <addaction name="m_redoAction"/>
+   <addaction name="separator"/>
+   <addaction name="m_actionShowObs"/>
+   <addaction name="m_actionShowAllObs"/>
+   <addaction name="separator"/>
+   <addaction name="m_actionLoadConfig"/>
+   <addaction name="m_actionShowConfig"/>
+   <addaction name="m_actionMapConfiguration"/>
+  </widget>
+  <action name="m_actionOpen">
+   <property name="icon">
+    <iconset resource="../resources/resources.qrc">
+     <normaloff>:/openSimplemap.png</normaloff>:/openSimplemap.png</iconset>
+   </property>
    <property name="text">
     <string>Open simplemap</string>
    </property>
@@ -226,19 +286,9 @@
     <string>About</string>
    </property>
   </action>
-  <action name="saveAction">
-   <property name="text">
-    <string>Save</string>
-   </property>
-  </action>
-  <action name="m_aboutAction">
+  <action name="m_actionAbout">
    <property name="text">
     <string>About</string>
-   </property>
-  </action>
-  <action name="tsvAction">
-   <property name="text">
-    <string>Load Tsv table</string>
    </property>
   </action>
   <action name="m_actionShowObs">
@@ -247,6 +297,10 @@
    </property>
    <property name="checked">
     <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../resources/resources.qrc">
+     <normaloff>:/showObservationsTree.png</normaloff>:/showObservationsTree.png</iconset>
    </property>
    <property name="text">
     <string>Show observations tree</string>
@@ -259,6 +313,10 @@
    <property name="checked">
     <bool>false</bool>
    </property>
+   <property name="icon">
+    <iconset resource="../resources/resources.qrc">
+     <normaloff>:/showConfig.png</normaloff>:/showConfig.png</iconset>
+   </property>
    <property name="text">
     <string>Show configuration</string>
    </property>
@@ -270,19 +328,12 @@
    <property name="checked">
     <bool>false</bool>
    </property>
+   <property name="icon">
+    <iconset resource="../resources/resources.qrc">
+     <normaloff>:/showObservations.png</normaloff>:/showObservations.png</iconset>
+   </property>
    <property name="text">
     <string>Show all observation</string>
-   </property>
-  </action>
-  <action name="m_actionShowNavigation">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Show navigation</string>
    </property>
   </action>
   <action name="m_actionLoadConfig">
@@ -294,8 +345,62 @@
    </property>
   </action>
   <action name="m_actionMapConfiguration">
+   <property name="icon">
+    <iconset resource="../resources/resources.qrc">
+     <normaloff>:/showConfigInWindow.png</normaloff>:/showConfigInWindow.png</iconset>
+   </property>
    <property name="text">
     <string>Map configuration</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+  </action>
+  <action name="m_undoAction">
+   <property name="icon">
+    <iconset resource="../resources/resources.qrc">
+     <normaloff>:/undo.png</normaloff>:/undo.png</iconset>
+   </property>
+   <property name="text">
+    <string>Undo</string>
+   </property>
+  </action>
+  <action name="m_redoAction">
+   <property name="icon">
+    <iconset resource="../resources/resources.qrc">
+     <normaloff>:/redo.png</normaloff>:/redo.png</iconset>
+   </property>
+   <property name="text">
+    <string>Redo</string>
+   </property>
+  </action>
+  <action name="m_actionSave">
+   <property name="icon">
+    <iconset resource="../resources/resources.qrc">
+     <normaloff>:/save.png</normaloff>:/save.png</iconset>
+   </property>
+   <property name="text">
+    <string>Save as simplemap</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="m_actionSaveAsText">
+   <property name="text">
+    <string>Save points map as text</string>
+   </property>
+  </action>
+  <action name="m_actionSaveAsPNG">
+   <property name="text">
+    <string>Save gridmap as PNG</string>
+   </property>
+  </action>
+  <action name="m_actionGraphSlam">
+   <property name="text">
+    <string>graph-slam</string>
    </property>
   </action>
  </widget>
@@ -399,6 +504,22 @@
     <hint type="destinationlabel">
      <x>-1</x>
      <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionExit</sender>
+   <signal>triggered()</signal>
+   <receiver>CMainWindow</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>413</x>
+     <y>355</y>
     </hint>
    </hints>
   </connection>

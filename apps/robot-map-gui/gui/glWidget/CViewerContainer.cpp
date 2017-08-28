@@ -12,26 +12,42 @@
 #include "CGLWidget.h"
 #include "gui/observationTree/CRangeScanNode.h"
 
+#include <QTextEdit>
+
 CViewerContainer::CViewerContainer(QWidget* parent)
-	: QWidget(parent), m_ui(std::make_unique<Ui::CViewerContainer>())
+	: QWidget(parent),
+	  m_ui(std::make_unique<Ui::CViewerContainer>()),
+	  m_information(new QTextEdit(this)),
+	  m_helpLoadMap(
+		  tr("For loading the map, press File -> Open simplemap or Ctrl + "
+			 "O.\n\n\n")),
+	  m_helpLoadConfig(
+		  tr("For display any maps you must download the configuration file. "
+			 "For this press File -> Load config or Ctrl + E.\n\n\n"
+			 "If you loaded simplemap, you can yourself add the map from "
+			 "Configuration widget"))
 {
 	m_ui->setupUi(this);
-
-	QObject::connect(
+	connect(
 		m_ui->m_zoom, SIGNAL(valueChanged(double)), SLOT(zoomChanged(double)));
-	QObject::connect(
+	connect(
 		m_ui->m_zoomSlider, SIGNAL(valueChanged(int)), SLOT(zoomChanged(int)));
 
-	QObject::connect(
-		m_ui->m_tabWidget, SIGNAL(currentChanged(int)),
-		SLOT(updatePanelInfo(int)));
-
-	QObject::connect(
+	connect(
 		m_ui->m_azimDeg, SIGNAL(valueChanged(double)),
 		SLOT(updateAzimuthDegrees(double)));
-	QObject::connect(
+	connect(
 		m_ui->m_elevationDeg, SIGNAL(valueChanged(double)),
 		SLOT(updateElevationDegrees(double)));
+
+	connect(
+		m_ui->m_tabWidget, &QTabWidget::currentChanged, this,
+		&CViewerContainer::updatePanelInfo);
+
+	m_information->setReadOnly(true);
+	m_information->setText(m_helpLoadMap);
+
+	m_ui->m_tabWidget->addTab(m_information, "Welcome!");
 }
 
 CViewerContainer::~CViewerContainer()
@@ -40,6 +56,11 @@ CViewerContainer::~CViewerContainer()
 	{
 		delete m_ui->m_tabWidget->widget(i);
 	}
+}
+
+void CViewerContainer::changeHelpTextToAboutConfig()
+{
+	m_information->setText(m_helpLoadConfig);
 }
 
 void CViewerContainer::showRangeScan(CNode* node)
@@ -52,29 +73,33 @@ void CViewerContainer::showRangeScan(CNode* node)
 	obj->setPose(obsNode->getPose());
 	obj->setSurfaceColor(1.0f, 0.0f, 0.0f, 0.5f);
 
-	for (int i = 0; i < m_ui->m_tabWidget->count(); ++i)
-	{
-		QWidget* w = m_ui->m_tabWidget->widget(i);
-		CGlWidget* gl = dynamic_cast<CGlWidget*>(w);
-		assert(gl);
+	forEachGl([obsNode, obj](CGlWidget* gl) {
 		gl->setSelected(obsNode->getPose());
 		gl->setLaserScan(obj);
+	});
+}
+
+void CViewerContainer::forEachGl(const std::function<void(CGlWidget*)>& func)
+{
+	if (containsHelpInfo()) return;
+
+	for (int i = 0; i < m_ui->m_tabWidget->count(); ++i)
+	{
+		CGlWidget* gl = dynamic_cast<CGlWidget*>(m_ui->m_tabWidget->widget(i));
+		assert(gl);
+		func(gl);
 	}
 }
 
 void CViewerContainer::showRobotDirection(const mrpt::poses::CPose3D& pose)
 {
-	for (int i = 0; i < m_ui->m_tabWidget->count(); ++i)
-	{
-		QWidget* w = m_ui->m_tabWidget->widget(i);
-		CGlWidget* gl = dynamic_cast<CGlWidget*>(w);
-		assert(gl);
-		gl->setSelected(pose);
-	}
+	forEachGl([pose](CGlWidget* gl) { gl->setSelected(pose); });
 }
 
 void CViewerContainer::applyConfigChanges(RenderizableMaps renderizableMaps)
 {
+	if (containsHelpInfo()) return;
+
 	for (int i = 0; i < m_ui->m_tabWidget->count(); ++i)
 	{
 		auto sTypeIter = m_tabsInfo.find(i);
@@ -82,11 +107,11 @@ void CViewerContainer::applyConfigChanges(RenderizableMaps renderizableMaps)
 
 		auto it = renderizableMaps.find(sTypeIter->second);
 		assert(it != renderizableMaps.end());
-
 		CGlWidget* gl = dynamic_cast<CGlWidget*>(m_ui->m_tabWidget->widget(i));
 		assert(gl);
 
 		gl->fillMap(it->second);
+		gl->updateObservations();
 	}
 }
 
@@ -96,11 +121,16 @@ void CViewerContainer::updateConfigChanges(
 	for (int i = 0; i < m_ui->m_tabWidget->count(); ++i)
 	{
 		QWidget* w = m_ui->m_tabWidget->widget(i);
-		delete w;
+		if (w != m_information) w->deleteLater();
 	}
 	m_tabsInfo.clear();
-
 	m_ui->m_tabWidget->clear();
+
+	if (renderizableMaps.empty())
+	{
+		m_ui->m_tabWidget->addTab(m_information, "Welcome!");
+		return;
+	}
 
 	for (auto& it : renderizableMaps)
 	{
@@ -116,100 +146,51 @@ void CViewerContainer::updateConfigChanges(
 
 		gl->setDocument(doc);
 		gl->setSelectedObservation(isShowAllObs);
-		QObject::connect(
-			gl, SIGNAL(zoomChanged(float)), SLOT(changeZoomInfo(float)));
-		QObject::connect(
-			gl, SIGNAL(mousePosChanged(double, double)),
-			SLOT(updateMouseInfo(double, double)));
-		QObject::connect(
-			gl, SIGNAL(azimuthChanged(float)), SLOT(changeAzimuthDeg(float)));
-		QObject::connect(
-			gl, SIGNAL(elevationChanged(float)),
-			SLOT(changeElevationDeg(float)));
+
+		connect(
+			gl, &CGlWidget::zoomChanged, this,
+			&CViewerContainer::changeZoomInfo);
+		connect(
+			gl, &CGlWidget::mousePosChanged, this,
+			&CViewerContainer::updateMouseInfo);
+		connect(
+			gl, &CGlWidget::azimuthChanged, this,
+			&CViewerContainer::changeAzimuthDeg);
+		connect(
+			gl, &CGlWidget::elevationChanged, this,
+			&CViewerContainer::changeElevationDeg);
+
+		connect(
+			gl, SIGNAL(deleteRobotPoses(const std::vector<size_t>&)),
+			SIGNAL(deleteRobotPoses(const std::vector<size_t>&)));
+
+		connect(
+			gl,
+			SIGNAL(moveRobotPoses(const std::vector<size_t>&, const QPointF&)),
+			SIGNAL(moveRobotPoses(const std::vector<size_t>&, const QPointF&)));
 	}
 }
 
 void CViewerContainer::setDocument(CDocument* doc)
 {
-	for (int i = 0; i < m_ui->m_tabWidget->count(); ++i)
-	{
-		CGlWidget* gl = dynamic_cast<CGlWidget*>(m_ui->m_tabWidget->widget(i));
-		assert(gl);
-
-		gl->setDocument(doc);
-	}
+	forEachGl([doc](CGlWidget* gl) { gl->setDocument(doc); });
 }
 
 void CViewerContainer::showAllObservation(bool is)
 {
-	for (int i = 0; i < m_ui->m_tabWidget->count(); ++i)
-	{
-		CGlWidget* gl = dynamic_cast<CGlWidget*>(m_ui->m_tabWidget->widget(i));
-		assert(gl);
-		gl->setSelectedObservation(is);
-	}
-}
-
-void CViewerContainer::changeCurrentBot(int value)
-{
-	for (int i = 0; i < m_ui->m_tabWidget->count(); ++i)
-	{
-		CGlWidget* gl = dynamic_cast<CGlWidget*>(m_ui->m_tabWidget->widget(i));
-		assert(gl);
-		gl->setBot(value);
-	}
-}
-
-void CViewerContainer::setVisibleGrid(bool is)
-{
-	for (int i = 0; i < m_ui->m_tabWidget->count(); ++i)
-	{
-		CGlWidget* gl = dynamic_cast<CGlWidget*>(m_ui->m_tabWidget->widget(i));
-		assert(gl);
-		gl->setVisibleGrid(is);
-	}
-}
-
-void CViewerContainer::changeBackgroundColor(QColor color)
-{
-	float r = color.red() / 255.0;
-	float g = color.green() / 255.0;
-	float b = color.blue() / 255.0;
-	float a = color.alpha() / 255.0;
-	for (int i = 0; i < m_ui->m_tabWidget->count(); ++i)
-	{
-		CGlWidget* gl = dynamic_cast<CGlWidget*>(m_ui->m_tabWidget->widget(i));
-		assert(gl);
-		gl->setBackgroundColor(r, g, b, a);
-	}
-}
-
-void CViewerContainer::changeGridColor(QColor color)
-{
-	float r = color.red() / 255.0;
-	float g = color.green() / 255.0;
-	float b = color.blue() / 255.0;
-	float a = color.alpha() / 255.0;
-	for (int i = 0; i < m_ui->m_tabWidget->count(); ++i)
-	{
-		CGlWidget* gl = dynamic_cast<CGlWidget*>(m_ui->m_tabWidget->widget(i));
-		assert(gl);
-		gl->setGridColor(r, g, b, a);
-	}
+	forEachGl([is](CGlWidget* gl) { gl->setSelectedObservation(is); });
 }
 
 void CViewerContainer::updatePanelInfo(int index)
 {
-	if (m_ui->m_tabWidget->count())
-	{
-		CGlWidget* gl =
-			dynamic_cast<CGlWidget*>(m_ui->m_tabWidget->widget(index));
-		assert(gl);
+	if (containsHelpInfo() || m_ui->m_tabWidget->count() == 0) return;
 
-		changeZoomInfo(gl->getZoom());
-		changeAzimuthDeg(gl->getAzimuthDegrees());
-		changeElevationDeg(gl->getElevationDegrees());
-	}
+	CGlWidget* gl = dynamic_cast<CGlWidget*>(m_ui->m_tabWidget->widget(index));
+	assert(gl);
+
+	changeZoomInfo(gl->getZoom());
+	changeAzimuthDeg(gl->getAzimuthDegrees());
+	changeElevationDeg(gl->getElevationDegrees());
 }
 
 void CViewerContainer::changeZoomInfo(float zoom)
@@ -241,6 +222,8 @@ void CViewerContainer::changeElevationDeg(float deg)
 
 void CViewerContainer::zoomChanged(double d)
 {
+	if (containsHelpInfo() || m_ui->m_tabWidget->count() == 0) return;
+
 	float zoomFloat = d;
 	int zoomInt = zoomFloat;
 	m_ui->m_zoomSlider->setValue(zoomInt);
@@ -252,6 +235,8 @@ void CViewerContainer::zoomChanged(double d)
 
 void CViewerContainer::zoomChanged(int d)
 {
+	if (containsHelpInfo() || m_ui->m_tabWidget->count() == 0) return;
+
 	double zoomD = d;
 	float zoomFloat = zoomD;
 	m_ui->m_zoom->setValue(zoomD);
@@ -300,11 +285,7 @@ void CViewerContainer::setGeneralSetting(const SGeneralSetting& setting)
 	float b = setting.gridColor.blue() / 255.0;
 	float a = setting.gridColor.alpha() / 255.0;
 
-	for (int i = 0; i < m_ui->m_tabWidget->count(); ++i)
-	{
-		CGlWidget* gl = dynamic_cast<CGlWidget*>(m_ui->m_tabWidget->widget(i));
-		assert(gl);
-
+	forEachGl([r, g, b, a, rBack, gBack, bBack, aBack, setting](CGlWidget* gl) {
 		gl->setGridColor(r, g, b, a);
 		gl->setVisibleGrid(setting.isGridVisibleChanged);
 		gl->setBackgroundColor(rBack, gBack, bBack, aBack);
@@ -314,7 +295,7 @@ void CViewerContainer::setGeneralSetting(const SGeneralSetting& setting)
 		gl->setSelectedObservationSize(setting.selectedRobotPosesSize);
 		gl->setObservationColor(setting.robotPosesColor);
 		gl->setSelectedObservationColor(setting.selectedRobotPosesColor);
-	}
+	});
 
 	CGlWidget* gl = getCurrentTabWidget();
 	if (gl) gl->update();
@@ -322,11 +303,16 @@ void CViewerContainer::setGeneralSetting(const SGeneralSetting& setting)
 
 CGlWidget* CViewerContainer::getCurrentTabWidget() const
 {
-	if (m_ui->m_tabWidget->count() <= 0) return nullptr;
+	if (containsHelpInfo() || m_ui->m_tabWidget->count() <= 0) return nullptr;
 
 	CGlWidget* gl =
 		dynamic_cast<CGlWidget*>(m_ui->m_tabWidget->currentWidget());
 	assert(gl);
 
 	return gl;
+}
+
+bool CViewerContainer::containsHelpInfo() const
+{
+	return m_ui->m_tabWidget->widget(0) == m_information;
 }

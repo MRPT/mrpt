@@ -7,30 +7,25 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+
    */
-#pragma once
-#include <QTreeView>
+#include "CRobotPose.h"
 
-/** This class implements tree view for storage observations matching robot
- * poses
-*/
+#include <mrpt/opengl/stock_objects.h>
 
-class CObservationTreeModel;
-
-class CObservationTree : public QTreeView
+CRobotPose::CRobotPose(size_t id) : CSetOfObjects(), m_id(id)
 {
-	Q_OBJECT
-   public:
-	CObservationTree(QWidget* parent = nullptr);
-	virtual ~CObservationTree() = default;
-	virtual void setModel(QAbstractItemModel* model);
+	m_currentObj = mrpt::opengl::stock_objects::CornerXYZSimple();
+	insert(m_currentObj);
+}
 
-   public slots:
-	void expandAll();
-	void collapseAll();
+size_t CRobotPose::getId() const { return m_id; }
+void CRobotPose::setSelected(bool is)
+{
+	removeObject(m_currentObj);
 
-   protected:
-	virtual void contextMenuEvent(QContextMenuEvent* event);
+	if (is)
+		m_currentObj = mrpt::opengl::stock_objects::CornerXYZEye();
+	else
+		m_currentObj = mrpt::opengl::stock_objects::CornerXYZSimple();
 
-   private:
-	CObservationTreeModel* m_model;
-};
+	insert(m_currentObj);
+}

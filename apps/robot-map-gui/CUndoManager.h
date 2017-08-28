@@ -8,29 +8,39 @@
    +---------------------------------------------------------------------------+
    */
 #pragma once
-#include <QTreeView>
+#include <functional>
 
-/** This class implements tree view for storage observations matching robot
- * poses
+#include "mrpt/poses/CPose3DPDF.h"
+#include "mrpt/poses/CPose3DPDF.h"
+#include "mrpt/obs/CSensoryFrame.h"
+
+typedef std::function<void()> UserAction;
+
+/** Singleton for undo and redo user actions
 */
 
-class CObservationTreeModel;
-
-class CObservationTree : public QTreeView
+class CUndoManager
 {
-	Q_OBJECT
    public:
-	CObservationTree(QWidget* parent = nullptr);
-	virtual ~CObservationTree() = default;
-	virtual void setModel(QAbstractItemModel* model);
+	static CUndoManager& instance()
+	{
+		static CUndoManager s;
+		return s;
+	}
 
-   public slots:
-	void expandAll();
-	void collapseAll();
-
-   protected:
-	virtual void contextMenuEvent(QContextMenuEvent* event);
+	void addAction(UserAction undo, UserAction redo);
+	UserAction undoAction();
+	bool hasUndo() const;
+	UserAction redoAction();
+	bool hasRedo() const;
 
    private:
-	CObservationTreeModel* m_model;
+	CUndoManager();
+	~CUndoManager() = default;
+	CUndoManager(CUndoManager const&) = delete;
+	CUndoManager& operator=(CUndoManager const&) = delete;
+
+	std::vector<UserAction> m_undo;
+	std::vector<UserAction> m_redo;
+	int m_lastAction;
 };

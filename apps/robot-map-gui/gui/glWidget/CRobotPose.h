@@ -8,29 +8,20 @@
    +---------------------------------------------------------------------------+
    */
 #pragma once
-#include <QTreeView>
+#include "mrpt/opengl/CSetOfObjects.h"
 
-/** This class implements tree view for storage observations matching robot
- * poses
-*/
-
-class CObservationTreeModel;
-
-class CObservationTree : public QTreeView
+class OPENGL_IMPEXP CRobotPose : public mrpt::opengl::CSetOfObjects
 {
-	Q_OBJECT
    public:
-	CObservationTree(QWidget* parent = nullptr);
-	virtual ~CObservationTree() = default;
-	virtual void setModel(QAbstractItemModel* model);
+	using Ptr = std::shared_ptr<CRobotPose>;
+	CRobotPose(size_t id);
 
-   public slots:
-	void expandAll();
-	void collapseAll();
+	virtual ~CRobotPose() = default;
+	size_t getId() const;
 
-   protected:
-	virtual void contextMenuEvent(QContextMenuEvent* event);
+	void setSelected(bool is);
 
    private:
-	CObservationTreeModel* m_model;
+	CSetOfObjects::Ptr m_currentObj;
+	size_t m_id;
 };

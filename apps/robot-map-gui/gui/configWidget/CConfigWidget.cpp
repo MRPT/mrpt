@@ -17,14 +17,14 @@
 #include "CLandmarksConfig.h"
 #include "CGasGridConfig.h"
 
-#include <mrpt/utils/CFileOutputStream.h>
+#include "mrpt/utils/CFileOutputStream.h"
+#include "mrpt/gui/error_box.h"
 
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QListWidget>
 #include <QListWidgetItem>
 #include <QCheckBox>
-#include <QDebug>
 
 using namespace mrpt;
 using namespace maps;
@@ -36,38 +36,42 @@ CConfigWidget::CConfigWidget(QWidget* parent)
 	  m_ui(std::make_unique<Ui::CConfigWidget>())
 {
 	m_ui->setupUi(this);
-	QObject::connect(
-		m_ui->m_loadConfig, SIGNAL(released()), SLOT(openConfig()));
-	QObject::connect(
-		m_ui->m_saveConfig, SIGNAL(released()), SLOT(saveConfig()));
-	QObject::connect(m_ui->m_add, SIGNAL(released()), SLOT(addMap()));
-	QObject::connect(m_ui->m_remove, SIGNAL(released()), SLOT(removeMap()));
 
 	addWidget(TypeOfConfig::General, m_general);
 
-	QObject::connect(
-		m_ui->m_config,
-		SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)), this,
-		SLOT(currentConfigChanged(QListWidgetItem*, QListWidgetItem*)));
-	QObject::connect(
-		m_ui->m_apply, SIGNAL(released()), this,
-		SIGNAL(applyConfigurationForCurrentMaps()));
+	connect(
+		m_ui->m_loadConfig, &QPushButton::released, this,
+		&CConfigWidget::openConfig);
+	connect(
+		m_ui->m_saveConfig, &QPushButton::released, this,
+		&CConfigWidget::saveConfig);
+	connect(m_ui->m_add, &QPushButton::released, this, &CConfigWidget::addMap);
+	connect(
+		m_ui->m_remove, &QPushButton::released, this,
+		&CConfigWidget::removeMap);
+	connect(
+		m_ui->m_apply, &QPushButton::released, this,
+		&CConfigWidget::applyConfigurationForCurrentMaps);
+
+	connect(
+		m_ui->m_config, &QListWidget::currentItemChanged, this,
+		&CConfigWidget::currentConfigChanged);
 }
 
 CConfigWidget::~CConfigWidget() { clearConfig(true); }
 void CConfigWidget::openConfig()
 {
-	QString configName = QFileDialog::getOpenFileName(
-		this, tr("Open Config File"), "", tr("Files (*.ini)"));
-	if (configName.isEmpty()) return;
-	QFile file(configName);
-	if (!file.open(QIODevice::ReadOnly))
-	{
-		QMessageBox::information(
-			this, tr("Unable to open file"), file.errorString());
-		return;
-	}
-	emit openedConfig(configName.toStdString());
+	mrpt::gui::tryCatch(
+		[this]() {
+			QString configName = QFileDialog::getOpenFileName(
+				this, tr("Open Config File"), "", tr("Files (*.ini)"));
+			if (configName.isEmpty()) return;
+			QFile file(configName);
+			if (!file.open(QIODevice::ReadOnly)) throw "";
+
+			emit openedConfig(configName.toStdString());
+		},
+		"The file is corrupted and cannot be opened!");
 }
 
 void CConfigWidget::saveConfig()
@@ -310,9 +314,11 @@ int CConfigWidget::addWidget(TypeOfConfig type, CBaseConfig* w)
 	QString nameListWidgetItem = w->getName();
 
 	auto it = m_configs.find(type);
-	if (it == m_configs.end() && type != TypeOfConfig::General)
+	if (type != TypeOfConfig::General)
 	{
-		it = m_configs.emplace(type, std::vector<CBaseConfig*>()).first;
+		if (it == m_configs.end())
+			it = m_configs.emplace(type, std::vector<CBaseConfig*>()).first;
+
 		nameListWidgetItem += QString::number(it->second.size());
 	}
 

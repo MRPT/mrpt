@@ -22,6 +22,8 @@ class CSimpleMap;
 }
 }
 
+/** This class is a model for a tree view*/
+
 class CObservationTreeModel : public QAbstractTableModel
 {
    public:

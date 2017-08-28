@@ -18,8 +18,6 @@
 #include "mrpt/obs/CObservationImage.h"
 #include "mrpt/obs/CObservationStereoImages.h"
 
-#include <QDebug>
-
 using namespace mrpt;
 using namespace mrpt::obs;
 
