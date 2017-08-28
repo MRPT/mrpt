@@ -30,9 +30,10 @@ XSTYPES_DLL_API extern const XsTimeStamp XsTime_timeStampMax;
 XSTYPES_DLL_API uint32_t XsTime_getTimeOfDay(struct tm* date_, time_t* secs_);
 XSTYPES_DLL_API int64_t XsTime_getDateTime(struct tm* date);
 XSTYPES_DLL_API void XsTime_getDateAsString(char* dest, struct tm const* date);
-XSTYPES_DLL_API void XsTime_getTimeAsString(char* dest, struct tm const* time);
-XSTYPES_DLL_API void XsTime_getDateAsWString(
-	wchar_t* dest, struct tm const* date);
+// XSTYPES_DLL_API void XsTime_getTimeAsString(char* dest, struct tm const*
+// time);
+// XSTYPES_DLL_API void XsTime_getDateAsWString(
+//	wchar_t* dest, struct tm const* date);
 XSTYPES_DLL_API void XsTime_getTimeAsWString(
 	wchar_t* dest, struct tm const* time);
 XSTYPES_DLL_API void XsTime_msleep(uint32_t ms);
@@ -66,6 +67,7 @@ inline void getDateAsString(char* dest, tm const* date = 0)
 	XsTime_getDateAsString(dest, date);
 }
 
+#if 0
 //! \copydoc XsTime_getTimeAsString
 inline void getTimeAsString(char* dest, tm const* date = 0)
 {
@@ -84,6 +86,7 @@ inline XsString getDateAsString(tm const* date = 0)
 	wcharBuf[8] = 0;
 	return XsString(wcharBuf);
 }
+#endif
 
 /*! \brief Returns the time as a readable string
 	\param time to convert to string

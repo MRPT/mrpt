@@ -91,7 +91,7 @@ class Cmt1s
 	mutable XsensResultValue m_lastResult;
 	//! The opened COM port nr
 	uint8_t m_port;
-	char m_portname[257];
+	char m_portname[260];
 	/*! The default timeout value to use during blocking operations.
 		A value of 0 means that all operations become non-blocking.
 	*/
