@@ -107,7 +107,7 @@ void CImpinjRFID::connect()
 	if (!connected)
 	{
 		// Start the server
-		server = new mrpt::comms::CServerTCPSocket(port);
+		server = std::make_unique<mrpt::comms::CServerTCPSocket>(port);
 	}
 
 	client = server->accept();
