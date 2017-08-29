@@ -30,7 +30,9 @@ Build-Depends: debhelper (>= 10),
 	python-numpy,
 	libeigen3-dev,
 	libassimp-dev,
-	liboctomap-dev
+	liboctomap-dev,
+	qtbase5-dev,
+	libqt5opengl5-dev
 Standards-Version: 4.0.0
 Homepage: https://www.mrpt.org/
 
