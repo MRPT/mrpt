@@ -34,6 +34,10 @@
 
 #include <iterator>
 #include <algorithm>
+#if MRPT_HAS_CXX11
+#include <type_traits>  // is_base_of()
+#endif
+#include <memory>
 
 namespace mrpt
 {
@@ -230,11 +234,30 @@ namespace mrpt
 			 * Method makes the call to the corresponding method of the CVisualizer
 			 * class instance.
 			 */
-			inline void getAs3DObject(
+			void getAs3DObject(
 					mrpt::opengl::CSetOfObjectsPtr object,
-					const mrpt::utils::TParametersDouble& viz_params) const {
+					const mrpt::utils::TParametersDouble& viz_params) const
+			{
+				typedef mrpt::graphs::detail::CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS, EDGE_ANNOTATIONS> visualizer_t;
+				typedef mrpt::graphs::detail::CMRVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS, EDGE_ANNOTATIONS> visualizer_multirobot_t;
 
-				visualizer->getAs3DObject(object, viz_params);
+				bool is_multirobot=false;
+#if MRPT_HAS_CXX11
+				std::unique_ptr<visualizer_t> viz;
+				is_multirobot = (std::is_base_of<mrpt::graphs::detail::TMRSlamNodeAnnotations,global_pose_t>::value);
+#else
+				std::auto_ptr<visualizer_t> viz;
+				// Initialize instance of class visualizer
+				global_pose_t n;
+				is_multirobot = dynamic_cast<mrpt::graphs::detail::TMRSlamNodeAnnotations*>(&n)!=NULL;
+#endif
+				if (is_multirobot) {
+					viz.reset(new visualizer_multirobot_t(*this));
+				}
+				else {
+					viz.reset(new visualizer_t(*this));
+				}
+				viz->getAs3DObject(object, viz_params);
 			}
 
 			/** Spanning tree computation of a simple estimation of the global
@@ -542,7 +565,7 @@ namespace mrpt
 			 * \param[in] Hypotheses that join own and other graph.
 			 * \param[in] hypots_from_other_to_self Specify the direction of the
 			 * THypothesis objects in the common_hypots. If true (default) they are
-			 * directed from other to own graph (other \rightarrow own), 
+			 * directed from other to own graph (other \rightarrow own),
 			 *
 			 * \param[out] old_to_new_nodeID_mappings_out Map from the old nodeIDs
 			 * that are in the given graph to the new nodeIDs that have been inserted
@@ -766,33 +789,6 @@ namespace mrpt
 				root(0),
 				edges_store_inverse_poses(false)
 			{
-				// Initialize instance of class visualizer
-				// TODO - delete afterwards
-				global_pose_t* n = new global_pose_t();
-				mrpt::graphs::detail::TMRSlamNodeAnnotations* node_annots =
-					dynamic_cast<mrpt::graphs::detail::TMRSlamNodeAnnotations*>(n);
-				if (node_annots) {
-					visualizer =
-						new mrpt::graphs::detail::CMRVisualizer<
-							CPOSE,
-							MAPS_IMPLEMENTATION,
-							NODE_ANNOTATIONS,
-							EDGE_ANNOTATIONS>(*this);
-				}
-				else {
-					visualizer =
-						new mrpt::graphs::detail::CVisualizer<
-							CPOSE,
-							MAPS_IMPLEMENTATION,
-							NODE_ANNOTATIONS,
-							EDGE_ANNOTATIONS>(*this);
-				}
-				delete n;
-
-			}
-			~CNetworkOfPoses() {
-				//delete visualizer;
-
 			}
 			/** @} */
 
@@ -815,12 +811,7 @@ namespace mrpt
 				graph->insertEdge(from, to, virt_edge);
 			}
 
-			/**\brief Pointer to the CVisualizer instance used to visualize the graph in the opengl window
-			 */
-			mrpt::graphs::detail::CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS, EDGE_ANNOTATIONS>* visualizer;
-
-		};
-
+		};  // end class
 
 		/** Binary serialization (write) operator "stream << graph" */
 		template <class CPOSE,class MAPS_IMPLEMENTATION,class NODE_ANNOTATIONS,class EDGE_ANNOTATIONS>

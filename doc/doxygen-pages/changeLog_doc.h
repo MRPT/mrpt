@@ -25,6 +25,7 @@
 	- BUG FIXES:
 		- Fix waypoint reactive navigator edge case in which "end event" won't be issued.
 		- Fix aborting reading from LMS111 scanner on first error.
+		- Fix corrupted pointers in CNetworkOfPoses after copy or move operations.
 
 <hr>
 <a name="1.5.3">
