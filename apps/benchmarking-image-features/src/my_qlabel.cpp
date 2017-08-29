@@ -11,7 +11,7 @@
 	APPLICATION: benchmarkingImageFeatures_gui
 	FILE: my_qlabel.cpp
 	AUTHOR: Raghavender Sahdev <raghavendersahdev@gmail.com>
-	See README.txt for instructions.
+	See ReadMe.md for instructions.
   ---------------------------------------------------------------*/
 #include "my_qlabel.h"
 
