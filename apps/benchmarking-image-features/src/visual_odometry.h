@@ -11,8 +11,12 @@
 	APPLICATION: benchmarkingImageFeatures_gui
 	FILE: visual_odometry.h
 	AUTHOR: Raghavender Sahdev <raghavendersahdev@gmail.com>
-	See README.txt for instructions.
+	See ReadMe.md for instructions.
   ---------------------------------------------------------------*/
+
+/** part of this code is built on top of Avi Singh's code for monocular visual odometry, hence the following license is attached
+ * 156+62 = 218 lines of code have been used as the starting point from from https://github.com/avisingh599/mono-vo
+ */
 
 /*
 The MIT License

@@ -11,7 +11,7 @@
 	APPLICATION: benchmarkingImageFeatures_gui
 	FILE: place_recognition.cpp
 	AUTHOR: Raghavender Sahdev <raghavendersahdev@gmail.com>
-	See README.txt for instructions.
+	See ReadMe.md for instructions.
   ---------------------------------------------------------------*/
 
 #include "place_recognition.h"

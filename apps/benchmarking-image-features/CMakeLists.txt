@@ -1,19 +1,18 @@
 INCLUDE(../../cmakemodules/AssureCMakeRootFile.cmake)
-INCLUDE(../../cmakemodules/script_qt.cmake)
 
 project(benchmarkingImageFeatures_GUI)
 
 
 
-if(CMAKE_MRPT_HAS_Qt5)
+if(CMAKE_MRPT_HAS_Qt5 AND CMAKE_MRPT_HAS_OPENCV)
 
         set(CPP_FILES src/main.cpp
             src/mainwindow.cpp
-	        src/my_qlabel.cpp
+            src/my_qlabel.cpp
             src/visual_odometry.h
             src/visual_odometry.cpp
             src/tracker.cpp src/tracker.h
-            src/place_recognition.cpp src/place_recognition.h)#src/Counter.h )#src/Counter.cpp)#src/vo_features.h)
+            src/place_recognition.cpp src/place_recognition.h)
 
 
         set(FILES_TO_MOC
