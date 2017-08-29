@@ -48,14 +48,19 @@
 
 <hr>
 <a name="1.5.4">
-<h2>Version 1.5.3: Released 13/AUG/2017  </h2></a>
+<h2>Version 1.5.4: (Under development)  </h2></a>
 - <b>Detailed list of changes:</b>
-        - \ref mrpt_base_grp
-                - Fix potential uninitialized value in CRobot2DPoseEstimator::getLatestRobotPose()
-                - MRPT_getCompilationDate() returns time as well
-        - Build system:
-                - Fix MRPTConfig.cmake for system octomap libraries.
-                - Fix package-contains-vcs-control-file (.gitingore) Lintian error.
+	- \ref mrpt_base_grp
+		- Fix potential uninitialized value in CRobot2DPoseEstimator::getLatestRobotPose()
+		- MRPT_getCompilationDate() returns time as well
+	- Build system:
+		- Fix MRPTConfig.cmake for system octomap libraries.
+		- Fix package-contains-vcs-control-file (.gitingore) Lintian error.
+		- Fix compiling without liboctomap-dev in Ubuntu PPA.
+	- BUG FIXES:
+		- Fix waypoint reactive navigator edge case in which "end event" won't be issued.
+		- Fix aborting reading from LMS111 scanner on first error.
+		- Fix corrupted pointers in CNetworkOfPoses after copy or move operations.
 
 <hr>
 <a name="1.5.3">
