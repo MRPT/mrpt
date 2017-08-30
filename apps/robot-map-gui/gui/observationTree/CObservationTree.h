@@ -23,6 +23,7 @@ class CObservationTree : public QTreeView
 	CObservationTree(QWidget* parent = nullptr);
 	virtual ~CObservationTree() = default;
 	virtual void setModel(QAbstractItemModel* model);
+	void changeSelected(const std::vector<size_t>& idx);
 
    public slots:
 	void expandAll();

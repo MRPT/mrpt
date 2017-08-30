@@ -13,6 +13,7 @@
 #include "gui/observationTree/CRangeScanNode.h"
 
 #include <QTextEdit>
+#include <QDebug>
 
 CViewerContainer::CViewerContainer(QWidget* parent)
 	: QWidget(parent),
@@ -168,6 +169,10 @@ void CViewerContainer::updateConfigChanges(
 			gl,
 			SIGNAL(moveRobotPoses(const std::vector<size_t>&, const QPointF&)),
 			SIGNAL(moveRobotPoses(const std::vector<size_t>&, const QPointF&)));
+
+		connect(
+			gl, &CGlWidget::selectedChanged, this,
+			&CViewerContainer::changedSelected);
 	}
 }
 
@@ -179,6 +184,14 @@ void CViewerContainer::setDocument(CDocument* doc)
 void CViewerContainer::showAllObservation(bool is)
 {
 	forEachGl([is](CGlWidget* gl) { gl->setSelectedObservation(is); });
+}
+
+void CViewerContainer::changedSelected(const std::vector<CRobotPose::Ptr> &robotPoses)
+{
+	std::vector<size_t> indexes;
+	for (auto& pose: robotPoses)
+		indexes.push_back(pose->getId());
+	emit selectedChanged(indexes);
 }
 
 void CViewerContainer::updatePanelInfo(int index)

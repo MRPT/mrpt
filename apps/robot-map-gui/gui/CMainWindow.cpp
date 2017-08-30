@@ -25,6 +25,7 @@
 #include <QFileDialog>
 #include <QTreeWidgetItem>
 #include <QErrorMessage>
+#include <QDebug>
 
 #include "mrpt/gui/CQtGlCanvasBase.h"
 #include "mrpt/poses/CPose3D.h"
@@ -94,6 +95,9 @@ CMainWindow::CMainWindow(QWidget* parent)
 		m_ui->m_collapseAll, &QPushButton::released, m_ui->m_observationsTree,
 		&CObservationTree::collapseAll);
 
+	connect(
+		m_ui->m_viewer, &CViewerContainer::selectedChanged, this,
+		&CMainWindow::selectedChanged);
 	connect(
 		m_ui->m_viewer, &CViewerContainer::deleteRobotPoses, this,
 		&CMainWindow::deleteRobotPoses);
@@ -315,6 +319,11 @@ void CMainWindow::showMapConfiguration()
 	d->exec();
 	m_ui->m_dockWidgetConfig->setWidget(w);
 	delete d;
+}
+
+void CMainWindow::selectedChanged(const std::vector<size_t> &idx)
+{
+	m_ui->m_observationsTree->changeSelected(idx);
 }
 
 void CMainWindow::addRobotPosesFromMap(

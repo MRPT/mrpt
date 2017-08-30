@@ -62,6 +62,7 @@ class CGlWidget : public mrpt::gui::CQtGlCanvasBase
 	bool setSelectedObservationColor(int type);
 
    signals:
+	void selectedChanged(const std::vector<CRobotPose::Ptr>& idx);
 	void zoomChanged(float zoom);
 	void mousePosChanged(double x, double y);
 	void azimuthChanged(float ang);

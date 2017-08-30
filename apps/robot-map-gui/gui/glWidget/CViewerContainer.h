@@ -13,6 +13,7 @@
 #include <memory>
 
 #include "CDocument.h"
+#include "CRobotPose.h"
 #include "gui/configWidget/CGeneralConfig.h"
 #include "ui_CViewerContainer.h"
 
@@ -45,6 +46,7 @@ class CViewerContainer : public QWidget
 	void updateSelectedRobotPosesColor(int type);
 
    signals:
+	void selectedChanged(const std::vector<size_t>& idx);
 	void deleteRobotPoses(const std::vector<size_t>& idx);
 	void moveRobotPoses(const std::vector<size_t>& idx, const QPointF& dist);
 
@@ -52,6 +54,7 @@ class CViewerContainer : public QWidget
 	void showAllObservation(bool is);
 
    private slots:
+	void changedSelected(const std::vector<CRobotPose::Ptr>& robotPoses);
 	void updatePanelInfo(int index);
 	void changeZoomInfo(float zoom);
 	void changeAzimuthDeg(float deg);

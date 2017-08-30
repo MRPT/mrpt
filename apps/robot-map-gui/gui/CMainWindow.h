@@ -58,6 +58,7 @@ class CMainWindow : public QMainWindow
 	void applyConfigurationForCurrentMaps();
 	void showMapConfiguration();
 
+	void selectedChanged(const std::vector<size_t>& idx);
 	void deleteRobotPoses(const std::vector<size_t>& idx);
 	void moveRobotPoses(const std::vector<size_t>& idx, const QPointF& dist);
 
