@@ -40,6 +40,6 @@ void GUI_IMPEXP mrpt::gui::show_mrpt_about_box_Qt(
 	CAboutBoxQt dlg(appName, additionalInfo, showStandardInfo);
 	dlg.exec();
 #else
-		THROW_EXCEPTION("MRPT compiled without Qt support");
+	THROW_EXCEPTION("MRPT compiled without Qt support");
 #endif
 }
