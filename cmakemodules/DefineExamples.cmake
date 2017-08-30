@@ -63,6 +63,9 @@ IF(BUILD_EXAMPLES)
 		variant
 		dirs_files_manipulation
 		backtrace-example
+		params-by-name
+		quaternions
+		optimize-lm
 		)
 	SET(CMAKE_EXAMPLE_DEPS mrpt-base)
 	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
@@ -95,7 +98,6 @@ IF(BUILD_EXAMPLES)
 		matrix
 		displayPlots
 		textFonts
-		optimize-lm
 		kmeans
 		slerp_demo
 		texture_sizes_test
@@ -145,11 +147,9 @@ IF(BUILD_EXAMPLES)
 		polygonSplit
 		setOfTexturedTrianglesTest
 		gui_windows_events
-		quaternions
 		unscented_transform_test
 		grab3Dvideo
 		coordinate_conversions
-		params-by-name
 		checkerboardDetectors
 		multipleCheckerboards
 		voronoi_test

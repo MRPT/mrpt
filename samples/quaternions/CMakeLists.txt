@@ -30,7 +30,7 @@ SET(EXECUTABLE_OUTPUT_PATH ".")
 #   The dependencies of a library are automatically added, so you only 
 #    need to specify the top-most libraries your code depend on.
 # --------------------------------------------------------------------------
-FIND_PACKAGE(MRPT REQUIRED slam;vision;gui;topography)
+FIND_PACKAGE(MRPT REQUIRED base)
 
 # ---------------------------------------------
 # TARGET:
@@ -65,7 +65,7 @@ ENDIF()
 #  the MRPT tree:
 # -------------------------------------------------------------------------
 IF(${CMAKE_PROJECT_NAME} STREQUAL "MRPT") # Fails if build outside of MRPT project.
-	DeclareAppDependencies(${sampleName} mrpt-slam;mrpt-vision;mrpt-gui;mrpt-topography) # Dependencies
+	DeclareAppDependencies(${sampleName} mrpt-base) # Dependencies
 ENDIF()
 # -------------------------------------------------------------------------
 
