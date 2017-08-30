@@ -11,13 +11,13 @@
 #include <mrpt/comms/CClientTCPSocket.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/utils/CMessage.h>
-#include <cstdio> // printf()
+#include <cstdio>  // printf()
 #include <thread>
 #include <chrono>
 
 bool sockets_test_passed_ok = false;
 // Test payload:
-const mrpt::poses::CPose3D p_tx(1.0,2.0,3.0, 0.2, 0.4, 0.6);
+const mrpt::poses::CPose3D p_tx(1.0, 2.0, 3.0, 0.2, 0.4, 0.6);
 
 void thread_server()
 {
@@ -31,13 +31,14 @@ void thread_server()
 		printf("[Server] Started\n");
 #endif
 
-		CServerTCPSocket server(15000, "127.0.0.1", 10,
+		CServerTCPSocket server(
+			15000, "127.0.0.1", 10,
 #ifdef SOCKET_TEST_VERBOSE
-		mrpt::utils::LVL_DEBUG
+			mrpt::utils::LVL_DEBUG
 #else
-		mrpt::utils::LVL_ERROR
+			mrpt::utils::LVL_ERROR
 #endif
-	);
+			);
 		std::unique_ptr<CClientTCPSocket> client = server.accept(2000);
 
 		if (client)
@@ -117,7 +118,7 @@ void thread_client()
 			printf("[Client] Done!!\n");
 #endif
 
-			sockets_test_passed_ok = (p_rx==p_tx);
+			sockets_test_passed_ok = (p_rx == p_tx);
 		}
 
 #ifdef SOCKET_TEST_VERBOSE

@@ -14,7 +14,13 @@
 #include <mrpt/config.h>
 #if MRPT_HAS_Qt5
 
+#include <QtGlobal>
+#if QT_VERSION < QT_VERSION_CHECK(5, 4, 0)
+#include <QGLWidget>
+#define QOpenGLWidget QGLWidget
+#else
 #include <QOpenGLWidget>
+#endif
 
 namespace mrpt
 {

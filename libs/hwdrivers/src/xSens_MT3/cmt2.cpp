@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-/*! \file Cmt2.cpp
+/*! \file cmt2.cpp
 
 	For information about objects in this file, see the appropriate header:
 	\ref Cmt2.h

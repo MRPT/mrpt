@@ -6,6 +6,9 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
+
+#include "gui-precomp.h"  // Precompiled headers
+
 #include "CAboutBoxBase.h"
 #include <mrpt/config.h>
 #include <mrpt/system/os.h>
@@ -60,7 +63,9 @@ std::string CAboutBoxBase::information(
 	if (m_showStandardInfo)
 	{
 		str += "Eigen version:          ";
-		str += mrpt::format("%u.%u.%u\n",EIGEN_WORLD_VERSION, EIGEN_MAJOR_VERSION, EIGEN_MINOR_VERSION);
+		str += mrpt::format(
+			"%u.%u.%u\n", EIGEN_WORLD_VERSION, EIGEN_MAJOR_VERSION,
+			EIGEN_MINOR_VERSION);
 		str += guiLibName + " version:      " + guiLibVersion;
 #if defined(__WXMSW__)
 		str += "-Windows";

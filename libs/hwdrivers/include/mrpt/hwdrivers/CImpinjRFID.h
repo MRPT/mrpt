@@ -15,6 +15,7 @@
 
 #include <mrpt/comms/CClientTCPSocket.h>
 #include <mrpt/comms/CServerTCPSocket.h>
+#include <memory>
 
 namespace mrpt
 {
@@ -52,11 +53,11 @@ class HWDRIVERS_IMPEXP CImpinjRFID : public mrpt::hwdrivers::CGenericSensor
 
 	/** Server socket (listens for the incoming connection)
 	 */
-	mrpt::comms::CServerTCPSocket* server;
+	std::unique_ptr<mrpt::comms::CServerTCPSocket> server;
 
 	/** Client socket (handles the connection to the client)
 	 */
-	mrpt::comms::CClientTCPSocket* client;
+	std::unique_ptr<mrpt::comms::CClientTCPSocket> client;
 
 	/** Driver executable path
 	 */

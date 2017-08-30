@@ -30,9 +30,11 @@ Build-Depends: debhelper (>= 10),
 	python-numpy,
 	libeigen3-dev,
 	libassimp-dev,
-	liboctomap-dev
+	liboctomap-dev,
+	qtbase5-dev,
+	libqt5opengl5-dev
 Standards-Version: 4.0.0
-Homepage: http://www.mrpt.org/
+Homepage: https://www.mrpt.org/
 
 Package: mrpt-doc
 Section: doc
@@ -76,7 +78,7 @@ Description: Mobile Robot Programming Toolkit - base library
  .
  This package includes the mrpt-base library.
  .
- More about MRPT libraries in: http://www.mrpt.org/Libraries
+ More about MRPT libraries in: https://www.mrpt.org/Libraries
 
 Package: libmrpt-opengl@MRPT_VER_MM@
 Section: libs
@@ -93,7 +95,7 @@ Description: Mobile Robot Programming Toolkit - opengl library
  .
  This package includes the mrpt-opengl library.
  .
- More about MRPT libraries in: http://www.mrpt.org/Libraries
+ More about MRPT libraries in: https://www.mrpt.org/Libraries
 
 
 Package: libmrpt-gui@MRPT_VER_MM@
@@ -111,7 +113,7 @@ Description: Mobile Robot Programming Toolkit - gui library
  .
  This package includes the mrpt-gui library.
  .
- More about MRPT libraries in: http://www.mrpt.org/Libraries
+ More about MRPT libraries in: https://www.mrpt.org/Libraries
 
 Package: libmrpt-obs@MRPT_VER_MM@
 Section: libs
@@ -128,7 +130,7 @@ Description: Mobile Robot Programming Toolkit - obs library
  .
  This package includes the mrpt-obs library.
  .
- More about MRPT libraries in: http://www.mrpt.org/Libraries
+ More about MRPT libraries in: https://www.mrpt.org/Libraries
 
 Package: libmrpt-maps@MRPT_VER_MM@
 Section: libs
@@ -145,7 +147,7 @@ Description: Mobile Robot Programming Toolkit - maps library
  .
  This package includes the mrpt-maps library.
  .
- More about MRPT libraries in: http://www.mrpt.org/Libraries
+ More about MRPT libraries in: https://www.mrpt.org/Libraries
 
 
 Package: libmrpt-hwdrivers@MRPT_VER_MM@
@@ -164,7 +166,7 @@ Description: Mobile Robot Programming Toolkit - hwdrivers library
  .
  This package includes the mrpt-hwdrivers library.
  .
- More about MRPT libraries in: http://www.mrpt.org/Libraries
+ More about MRPT libraries in: https://www.mrpt.org/Libraries
 
 Package: libmrpt-graphslam@MRPT_VER_MM@
 Section: libs
@@ -181,7 +183,7 @@ Description: Mobile Robot Programming Toolkit - graphslam library
  .
  This package includes the mrpt-graphslam library.
  .
- More about MRPT libraries in: http://www.mrpt.org/Libraries
+ More about MRPT libraries in: https://www.mrpt.org/Libraries
 
 Package: libmrpt-comms@MRPT_VER_MM@
 Section: libs
@@ -198,7 +200,7 @@ Description: Mobile Robot Programming Toolkit - comms library
  .
  This package includes the mrpt-comms library.
  .
- More about MRPT libraries in: http://www.mrpt.org/Libraries
+ More about MRPT libraries in: https://www.mrpt.org/Libraries
 
 Package: libmrpt-vision@MRPT_VER_MM@
 Section: libs
@@ -215,7 +217,7 @@ Description: Mobile Robot Programming Toolkit - vision library
  .
  This package includes the mrpt-vision library.
  .
- More about MRPT libraries in: http://www.mrpt.org/Libraries
+ More about MRPT libraries in: https://www.mrpt.org/Libraries
 
 Package: libmrpt-tfest@MRPT_VER_MM@
 Section: libs
@@ -232,7 +234,7 @@ Description: Mobile Robot Programming Toolkit - tfest library
  .
  This package includes the mrpt-tfest library.
  .
- More about MRPT libraries in: http://www.mrpt.org/Libraries
+ More about MRPT libraries in: https://www.mrpt.org/Libraries
 
 
 Package: libmrpt-topography@MRPT_VER_MM@
@@ -251,7 +253,7 @@ Description: Mobile Robot Programming Toolkit - topography library
  .
  This package includes the mrpt-topography library.
  .
- More about MRPT libraries in: http://www.mrpt.org/Libraries
+ More about MRPT libraries in: https://www.mrpt.org/Libraries
 
 
 Package: libmrpt-detectors@MRPT_VER_MM@
@@ -271,7 +273,7 @@ Description: Mobile Robot Programming Toolkit - detectors library
  .
  This package includes the mrpt-detectors library.
  .
- More about MRPT libraries in: http://www.mrpt.org/Libraries
+ More about MRPT libraries in: https://www.mrpt.org/Libraries
 
 
 Package: libmrpt-slam@MRPT_VER_MM@
@@ -291,7 +293,7 @@ Description: Mobile Robot Programming Toolkit - slam library
  .
  This package includes the mrpt-slam library.
  .
- More about MRPT libraries in: http://www.mrpt.org/Libraries
+ More about MRPT libraries in: https://www.mrpt.org/Libraries
 
 
 Package: libmrpt-nav@MRPT_VER_MM@
@@ -309,7 +311,7 @@ Description: Mobile Robot Programming Toolkit - nav library
  .
  This package includes the mrpt-nav library.
  .
- More about MRPT libraries in: http://www.mrpt.org/Libraries
+ More about MRPT libraries in: https://www.mrpt.org/Libraries
 
 
 Package: libmrpt-hmtslam@MRPT_VER_MM@
@@ -327,7 +329,7 @@ Description: Mobile Robot Programming Toolkit - hmtslam library
  .
  This package includes the mrpt-hmtslam library.
  .
- More about MRPT libraries in: http://www.mrpt.org/Libraries
+ More about MRPT libraries in: https://www.mrpt.org/Libraries
 
 
 Package: libmrpt-kinematics@MRPT_VER_MM@
@@ -345,7 +347,7 @@ Description: Mobile Robot Programming Toolkit - kinematics library
  .
  This package includes the mrpt-kinematics library.
  .
- More about MRPT libraries in: http://www.mrpt.org/Libraries
+ More about MRPT libraries in: https://www.mrpt.org/Libraries
 
 
 Package: libmrpt-graphs@MRPT_VER_MM@
@@ -363,7 +365,7 @@ Description: Mobile Robot Programming Toolkit - graphs library
  .
  This package includes the mrpt-graphs library.
  .
- More about MRPT libraries in: http://www.mrpt.org/Libraries
+ More about MRPT libraries in: https://www.mrpt.org/Libraries
 
 
 Package: libmrpt-dev

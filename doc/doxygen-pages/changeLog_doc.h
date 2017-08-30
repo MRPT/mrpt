@@ -30,6 +30,7 @@
 				- `mrpt::math::make_vector<>` => `std::vector<>{...}` braced initializator
 			- Added: mrpt::make_aligned_shared<> template
 			- mrpt::utils::CConfigFileBase::write() now supports enum types.
+			- New method mrpt::utils::CStream::ReadPOD() and macro `MRPT_READ_POD()` for reading unaligned POD variables.-
 		- \ref mrpt_slam_grp
 			- rbpf-slam: Add support for simplemap continuation.
 		- \ref mrpt_nav_grp
@@ -43,17 +44,23 @@
 		- Fix incorrect evaluation of "ASSERT" formulas in mrpt::nav::CMultiObjectiveMotionOptimizerBase
 		- Fix aborting reading from LMS111 scanner on first error.
 		- Fix == operator on CPose3D: it now uses an epsilon for comparing the rotation matrices.
+		- Fix accessing unaligned POD variables deserializing CObservationGPS (via the new `MRPT_READ_POD()` macro).
 
 <hr>
 <a name="1.5.4">
-<h2>Version 1.5.3: Released 13/AUG/2017  </h2></a>
+<h2>Version 1.5.4: (Under development)  </h2></a>
 - <b>Detailed list of changes:</b>
-        - \ref mrpt_base_grp
-                - Fix potential uninitialized value in CRobot2DPoseEstimator::getLatestRobotPose()
-                - MRPT_getCompilationDate() returns time as well
-        - Build system:
-                - Fix MRPTConfig.cmake for system octomap libraries.
-                - Fix package-contains-vcs-control-file (.gitingore) Lintian error.
+	- \ref mrpt_base_grp
+		- Fix potential uninitialized value in CRobot2DPoseEstimator::getLatestRobotPose()
+		- MRPT_getCompilationDate() returns time as well
+	- Build system:
+		- Fix MRPTConfig.cmake for system octomap libraries.
+		- Fix package-contains-vcs-control-file (.gitingore) Lintian error.
+		- Fix compiling without liboctomap-dev in Ubuntu PPA.
+	- BUG FIXES:
+		- Fix waypoint reactive navigator edge case in which "end event" won't be issued.
+		- Fix aborting reading from LMS111 scanner on first error.
+		- Fix corrupted pointers in CNetworkOfPoses after copy or move operations.
 
 <hr>
 <a name="1.5.3">

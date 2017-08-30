@@ -35,6 +35,8 @@
 
 #include <iterator>
 #include <algorithm>
+#include <type_traits>  // is_base_of()
+#include <memory>
 
 namespace mrpt
 {
@@ -225,14 +227,14 @@ class CNetworkOfPoses
 	/** The ID of the node that is the origin of coordinates, used as
 	 * reference by all coordinates in \a nodes. By default, root is the ID
 	 * "0". */
-	mrpt::utils::TNodeID root;
+	mrpt::utils::TNodeID root{0};
 
 	/** False (default) if an edge i->j stores the normal relative pose of j
 	 * as seen from i: \f$ \Delta_i^j = j \ominus i \f$ True if an edge i->j
 	 * stores the inverse relateive pose, that is, i as seen from j: \f$
 	 * \Delta_i^j = i \ominus j \f$
 	 */
-	bool edges_store_inverse_poses;
+	bool edges_store_inverse_poses{false};
 
 	/** @} */
 
@@ -296,7 +298,25 @@ class CNetworkOfPoses
 		mrpt::opengl::CSetOfObjects::Ptr object,
 		const mrpt::utils::TParametersDouble& viz_params) const
 	{
-		visualizer->getAs3DObject(object, viz_params);
+		using visualizer_t = mrpt::graphs::detail::CVisualizer<
+			CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS, EDGE_ANNOTATIONS>;
+		using visualizer_multirobot_t = mrpt::graphs::detail::CMRVisualizer<
+			CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS, EDGE_ANNOTATIONS>;
+
+		bool is_multirobot = false;
+		std::unique_ptr<visualizer_t> viz;
+		is_multirobot =
+			(std::is_base_of<mrpt::graphs::detail::TMRSlamNodeAnnotations,
+							 global_pose_t>::value);
+		if (is_multirobot)
+		{
+			viz.reset(new visualizer_multirobot_t(*this));
+		}
+		else
+		{
+			viz.reset(new visualizer_t(*this));
+		}
+		viz->getAs3DObject(object, viz_params);
 	}
 
 	/** Spanning tree computation of a simple estimation of the global
@@ -900,38 +920,6 @@ class CNetworkOfPoses
 	inline size_t nodeCount() const { return nodes.size(); }
 	/**  @} */
 
-	/** @name Ctors & Dtors
-	  @{ */
-
-	/** Default constructor (just sets root to "0" and
-	 * edges_store_inverse_poses to "false") */
-	inline CNetworkOfPoses() : root(0), edges_store_inverse_poses(false)
-	{
-		// Initialize instance of class visualizer
-		// TODO - delete afterwards
-		global_pose_t* n = new global_pose_t();
-		mrpt::graphs::detail::TMRSlamNodeAnnotations* node_annots =
-			dynamic_cast<mrpt::graphs::detail::TMRSlamNodeAnnotations*>(n);
-		if (node_annots)
-		{
-			visualizer = new mrpt::graphs::detail::CMRVisualizer<
-				CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS, EDGE_ANNOTATIONS>(
-				*this);
-		}
-		else
-		{
-			visualizer = new mrpt::graphs::detail::CVisualizer<
-				CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS, EDGE_ANNOTATIONS>(
-				*this);
-		}
-		delete n;
-	}
-	~CNetworkOfPoses()
-	{
-		// delete visualizer;
-	}
-	/** @} */
-
    private:
 	/**\brief Add a virtual edge between two nodes in the given graph.
 	 *
@@ -950,13 +938,6 @@ class CNetworkOfPoses
 
 		graph->insertEdge(from, to, virt_edge);
 	}
-
-	/**\brief Pointer to the CVisualizer instance used to visualize the graph in
-	 * the opengl window
-	 */
-	mrpt::graphs::detail::CVisualizer<CPOSE, MAPS_IMPLEMENTATION,
-									  NODE_ANNOTATIONS,
-									  EDGE_ANNOTATIONS>* visualizer;
 };
 
 /** Binary serialization (write) operator "stream << graph" */

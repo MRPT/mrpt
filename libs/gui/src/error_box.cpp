@@ -8,7 +8,9 @@
    +---------------------------------------------------------------------------+
    */
 
-#include "../include/mrpt/gui/error_box.h"
+#include "gui-precomp.h"  // Precompiled headers
+
+#include <mrpt/gui/error_box.h>
 #if MRPT_HAS_Qt5
 #include <QErrorMessage>
 #include <QString>
@@ -42,6 +44,6 @@ void GUI_IMPEXP mrpt::gui::showErrorMessage(const std::string& str)
 #elif MRPT_HAS_WXWIDGETS
 	wxMessageBox(_U(str), _("Exception"));
 #else
-	std::cout << str << std::endl;
+	std::cerr << str << std::endl;
 #endif  // MRPT_HAS_Qt5
 }

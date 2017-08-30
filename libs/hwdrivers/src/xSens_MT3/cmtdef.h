@@ -1174,7 +1174,7 @@ struct CmtPortInfo
 	/** The port number */
 	uint8_t m_portNr;
 	/** The port name */
-	char m_portName[32];
+	char m_portName[270];
 
 	CmtPortInfo() : m_baudrate(0), m_deviceId(0), m_portNr(0) {}
 #ifdef __cplusplus

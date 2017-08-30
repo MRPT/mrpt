@@ -74,35 +74,33 @@ void CStream::WriteBuffer(const void* Buffer, size_t Count)
  ---------------------------------------------------------------*/
 #if MRPT_IS_BIG_ENDIAN
 // Big endian system: Convert into little-endian for streaming
-#define IMPLEMENT_CSTREAM_READ_WRITE_SIMPLE_TYPE(T)                   \
-	CStream& utils::operator<<(mrpt::utils::CStream& out, const T& a) \
-	{                                                                 \
-		T b;                                                          \
-		::memcpy(&b, &a, sizeof(b));                                  \
-		mrpt::utils::reverseBytesInPlace(b);                          \
-		out.WriteBuffer((void*)&b, sizeof(b));                        \
-		return out;                                                   \
-	}                                                                 \
-	CStream& utils::operator>>(mrpt::utils::CStream& in, T& a)        \
-	{                                                                 \
-		T b;                                                          \
-		in.ReadBuffer((void*)&b, sizeof(a));                          \
-		mrpt::utils::reverseBytesInPlace(b);                          \
-		::memcpy(&a, &b, sizeof(b));                                  \
-		return in;                                                    \
+#define IMPLEMENT_CSTREAM_READ_WRITE_SIMPLE_TYPE(T)                  \
+	CStream& utils::operator<<(mrpt::utils::CStream& out, const T a) \
+	{                                                                \
+		mrpt::utils::reverseBytesInPlace(a);                         \
+		out.WriteBuffer((void*)&a, sizeof(a));                       \
+		return out;                                                  \
+	}                                                                \
+	CStream& utils::operator>>(mrpt::utils::CStream& in, T& a)       \
+	{                                                                \
+		T b;                                                         \
+		in.ReadBuffer((void*)&b, sizeof(a));                         \
+		mrpt::utils::reverseBytesInPlace(b);                         \
+		::memcpy(&a, &b, sizeof(b));                                 \
+		return in;                                                   \
 	}
 #else
 // Little endian system:
-#define IMPLEMENT_CSTREAM_READ_WRITE_SIMPLE_TYPE(T)                   \
-	CStream& utils::operator<<(mrpt::utils::CStream& out, const T& a) \
-	{                                                                 \
-		out.WriteBuffer((void*)&a, sizeof(a));                        \
-		return out;                                                   \
-	}                                                                 \
-	CStream& utils::operator>>(mrpt::utils::CStream& in, T& a)        \
-	{                                                                 \
-		in.ReadBuffer((void*)&a, sizeof(a));                          \
-		return in;                                                    \
+#define IMPLEMENT_CSTREAM_READ_WRITE_SIMPLE_TYPE(T)                  \
+	CStream& utils::operator<<(mrpt::utils::CStream& out, const T a) \
+	{                                                                \
+		out.WriteBuffer((void*)&a, sizeof(a));                       \
+		return out;                                                  \
+	}                                                                \
+	CStream& utils::operator>>(mrpt::utils::CStream& in, T& a)       \
+	{                                                                \
+		in.ReadBuffer((void*)&a, sizeof(a));                         \
+		return in;                                                   \
 	}
 #endif
 

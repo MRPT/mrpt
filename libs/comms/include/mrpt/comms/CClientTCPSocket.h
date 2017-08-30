@@ -16,7 +16,10 @@
 
 namespace mrpt
 {
-namespace utils { class CMessage; }
+namespace utils
+{
+class CMessage;
+}
 /** Serial and networking devices and utilities */
 namespace comms
 {
@@ -173,8 +176,8 @@ class COMMS_IMPEXP CClientTCPSocket : public mrpt::utils::CStream
 	 * socket in each write operation.
 	  * \return Returns false on any error, or true if everything goes fine.
 	  */
-	bool sendMessage(const mrpt::utils::CMessage& outMsg,
-		const int timeout_ms = -1);
+	bool sendMessage(
+		const mrpt::utils::CMessage& outMsg, const int timeout_ms = -1);
 
 	/** Waits for an incoming message through the TCP stream.
 	  * \param inMsg The received message is placed here.

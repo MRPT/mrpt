@@ -6,6 +6,12 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                |
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
+
+#include "gui-precomp.h"  // Precompiled headers
+
+#include <mrpt/config.h>
+#if MRPT_HAS_Qt5
+
 #include "CAboutBoxQt.h"
 #include <QVBoxLayout>
 #include <QLabel>
@@ -42,3 +48,5 @@ QTextEdit* CAboutBoxQt::widgetForTabs(
 	action->setText(text);
 	return action;
 }
+
+#endif  // MRPT_HAS_Qt5

@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-/*! \file ScanPorts.cpp
+/*! \file cmtscan.cpp
 
 	For information about objects in this file, see the appropriate header:
 	\ref ScanPorts.h
