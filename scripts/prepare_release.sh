@@ -68,6 +68,17 @@ done
 
 cd ${OUT_DIR}
 
+# Patch for extra External Projects in old Ubuntu PPAs:
+TMP_EXTRA_OTHERLIBS="/tmp/mrpt_release_extra_otherlibs.zip"
+if [ ! -z "$MRPT_RELEASE_EXTRA_OTHERLIBS_URL" ];
+then
+	if [ ! -f "$TMP_EXTRA_OTHERLIBS" ];
+	then
+		wget $MRPT_RELEASE_EXTRA_OTHERLIBS_URL -O $TMP_EXTRA_OTHERLIBS
+	fi
+	cp $TMP_EXTRA_OTHERLIBS $MRPT_RELEASE_EXTRA_OTHERLIBS_PATH
+fi
+
 # Dont include Debian files in releases:
 rm -fR packaging
 

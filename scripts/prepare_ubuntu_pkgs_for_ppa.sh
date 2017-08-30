@@ -48,6 +48,9 @@ rm -fr $MRPT_UBUNTU_OUT_DIR/
 # -------------------------------------------------------------------
 LST_DISTROS=(zesty xenial artful)
 
+# Xenial:armhf does not have any version of liboctomap-dev:
+export MRPT_RELEASE_EXTRA_OTHERLIBS_URL="https://github.com/MRPT/octomap/archive/devel.zip"
+export MRPT_RELEASE_EXTRA_OTHERLIBS_PATH="otherlibs/octomap.zip"
 
 count=${#LST_DISTROS[@]}
 IDXS=$(seq 0 $(expr $count - 1))
