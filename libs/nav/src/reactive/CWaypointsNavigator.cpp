@@ -52,7 +52,6 @@ CWaypointsNavigator::CWaypointsNavigator(CRobot2NavInterface& robot_if)
 }
 
 CWaypointsNavigator::~CWaypointsNavigator() {}
-
 /** \callergraph */
 void CWaypointsNavigator::navigateWaypoints(
 	const TWaypointSequence& nav_request)

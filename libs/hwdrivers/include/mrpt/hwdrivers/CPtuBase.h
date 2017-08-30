@@ -11,6 +11,7 @@
 #define CPtuBase_H
 
 #include <mrpt/comms/CSerialPort.h>
+#include <mrpt/hwdrivers/link_pragmas.h>
 
 namespace mrpt
 {
