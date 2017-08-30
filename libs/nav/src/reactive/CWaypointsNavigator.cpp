@@ -52,6 +52,8 @@ CWaypointsNavigator::CWaypointsNavigator(CRobot2NavInterface& robot_if)
 }
 
 CWaypointsNavigator::~CWaypointsNavigator() {}
+
+/** \callergraph */
 void CWaypointsNavigator::navigateWaypoints(
 	const TWaypointSequence& nav_request)
 {
@@ -89,6 +91,7 @@ void CWaypointsNavigator::getWaypointNavStatus(
 	out_nav_status = m_waypoint_nav_status;
 }
 
+/** \callergraph */
 void CWaypointsNavigator::cancel()
 {
 	{
@@ -98,6 +101,7 @@ void CWaypointsNavigator::cancel()
 	CAbstractNavigator::cancel();
 }
 
+/** \callergraph */
 void CWaypointsNavigator::waypoints_navigationStep()
 {
 	MRPT_START
@@ -458,7 +462,9 @@ void CWaypointsNavigator::navigationStep()
 	MRPT_END
 }
 
+/** \callergraph */
 void CWaypointsNavigator::onStartNewNavigation() {}
+/** \callergraph */
 bool CWaypointsNavigator::isRelativePointReachable(
 	const mrpt::math::TPoint2D& wp_local_wrt_robot) const
 {
@@ -527,6 +533,7 @@ CWaypointsNavigator::TWaypointsNavigatorParams::TWaypointsNavigatorParams()
 {
 }
 
+/** \callergraph */
 bool CWaypointsNavigator::checkHasReachedTarget(const double targetDist) const
 {
 	if (targetDist > m_navigationParams->target.targetAllowedDistance)

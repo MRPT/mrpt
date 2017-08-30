@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-/*! \file Cmt3.cpp
+/*! \file cmt3.cpp
 
 	For information about objects in this file, see the appropriate header:
 	\ref Cmt3.h
@@ -845,7 +845,7 @@ XsensResultValue Cmt3::getFilterSettings(CmtFilterSettings& settings, const CmtD
 	uint8_t bid = getBusIdInternal(deviceId);
 	if (bid == CMT_BID_INVALID)
 		return (m_lastResult = XRV_INVALIDID);
-	
+
 	bool xm = isXm();
 
 	if (xm && deviceId == m_config.m_masterDeviceId)
