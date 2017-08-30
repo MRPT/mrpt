@@ -2168,8 +2168,7 @@ void _DSceneViewerFrame::OnmnuImportLASSelected(wxCommandEvent& event)
 		}
 
 		if (dlgPLY.cbXYZ->GetValue())
-			scene->insert(
-				mrpt::opengl::stock_objects::CornerXYZ());
+			scene->insert(mrpt::opengl::stock_objects::CornerXYZ());
 
 		double ptSize;
 		dlgPLY.cbPointSize->GetStringSelection().ToDouble(&ptSize);
@@ -2209,12 +2208,10 @@ void _DSceneViewerFrame::OnmnuImportLASSelected(wxCommandEvent& event)
 		if (gl_points_col) scene->insert(gl_points_col);
 
 		m_canvas->setCameraPointing(
-			(bb_min.x + bb_max.x) * 0.5,
-			(bb_min.y + bb_max.y) * 0.5,
-			(bb_min.z + bb_max.z) * 0.5
-		);
+			(bb_min.x + bb_max.x) * 0.5, (bb_min.y + bb_max.y) * 0.5,
+			(bb_min.z + bb_max.z) * 0.5);
 
-		m_canvas->setZoomDistance (2 * scene_size);
+		m_canvas->setZoomDistance(2 * scene_size);
 		m_canvas->setAzimuthDegrees(45);
 		m_canvas->setElevationDegrees(30);
 

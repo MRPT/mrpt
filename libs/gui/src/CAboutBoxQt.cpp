@@ -49,4 +49,4 @@ QTextEdit* CAboutBoxQt::widgetForTabs(
 	return action;
 }
 
-#endif // MRPT_HAS_Qt5
+#endif  // MRPT_HAS_Qt5

@@ -227,14 +227,14 @@ class CNetworkOfPoses
 	/** The ID of the node that is the origin of coordinates, used as
 	 * reference by all coordinates in \a nodes. By default, root is the ID
 	 * "0". */
-	mrpt::utils::TNodeID root { 0 };
+	mrpt::utils::TNodeID root{0};
 
 	/** False (default) if an edge i->j stores the normal relative pose of j
 	 * as seen from i: \f$ \Delta_i^j = j \ominus i \f$ True if an edge i->j
 	 * stores the inverse relateive pose, that is, i as seen from j: \f$
 	 * \Delta_i^j = i \ominus j \f$
 	 */
-	bool edges_store_inverse_poses { false };
+	bool edges_store_inverse_poses{false};
 
 	/** @} */
 
@@ -298,16 +298,22 @@ class CNetworkOfPoses
 		mrpt::opengl::CSetOfObjects::Ptr object,
 		const mrpt::utils::TParametersDouble& viz_params) const
 	{
-		using visualizer_t = mrpt::graphs::detail::CVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS, EDGE_ANNOTATIONS>;
-		using visualizer_multirobot_t = mrpt::graphs::detail::CMRVisualizer<CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS, EDGE_ANNOTATIONS>;
+		using visualizer_t = mrpt::graphs::detail::CVisualizer<
+			CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS, EDGE_ANNOTATIONS>;
+		using visualizer_multirobot_t = mrpt::graphs::detail::CMRVisualizer<
+			CPOSE, MAPS_IMPLEMENTATION, NODE_ANNOTATIONS, EDGE_ANNOTATIONS>;
 
-		bool is_multirobot=false;
+		bool is_multirobot = false;
 		std::unique_ptr<visualizer_t> viz;
-		is_multirobot = (std::is_base_of<mrpt::graphs::detail::TMRSlamNodeAnnotations,global_pose_t>::value);
-		if (is_multirobot) {
+		is_multirobot =
+			(std::is_base_of<mrpt::graphs::detail::TMRSlamNodeAnnotations,
+							 global_pose_t>::value);
+		if (is_multirobot)
+		{
 			viz.reset(new visualizer_multirobot_t(*this));
 		}
-		else {
+		else
+		{
 			viz.reset(new visualizer_t(*this));
 		}
 		viz->getAs3DObject(object, viz_params);

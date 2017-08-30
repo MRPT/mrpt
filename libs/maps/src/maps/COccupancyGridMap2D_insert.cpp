@@ -277,8 +277,10 @@ bool COccupancyGridMap2D::internal_insertObservation(
 					float N_1 = 1.0f / nStepsRay;  // Avoid division twice.
 
 					// Increments at each raytracing step:
-					int frAcx = (Acx<0 ? -1:+1)*round((Acx_ << FRBITS) * N_1);
-					int frAcy = (Acy<0 ? -1:+1)*round((Acy_ << FRBITS) * N_1);
+					int frAcx =
+						(Acx < 0 ? -1 : +1) * round((Acx_ << FRBITS) * N_1);
+					int frAcy =
+						(Acy < 0 ? -1 : +1) * round((Acy_ << FRBITS) * N_1);
 
 					int frCX = cx << FRBITS;
 					int frCY = cy << FRBITS;
