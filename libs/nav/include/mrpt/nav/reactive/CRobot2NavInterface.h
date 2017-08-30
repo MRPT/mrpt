@@ -95,7 +95,7 @@ class NAV_IMPEXP CRobot2NavInterface : public mrpt::utils::COutputLogger
 	 * this callback would be resetting the watchdog timer.
 	  * \return false on any error.
 	  * \sa changeSpeeds(), startWatchdog()
-    * \callergraph */
+	* \callergraph */
 	virtual bool changeSpeedsNOP();
 
 	/** Stop the robot right now.

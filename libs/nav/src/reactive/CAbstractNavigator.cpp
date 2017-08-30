@@ -110,7 +110,6 @@ CAbstractNavigator::CAbstractNavigator(CRobot2NavInterface& react_iterf_impl)
 
 // Dtor:
 CAbstractNavigator::~CAbstractNavigator() {}
-
 /** \callergraph */
 void CAbstractNavigator::cancel()
 {
