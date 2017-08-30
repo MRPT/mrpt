@@ -28,8 +28,11 @@ CAboutBoxBase::CAboutBoxBase(
 CAboutBoxBase::~CAboutBoxBase() {}
 std::string CAboutBoxBase::MRPTBuildVersion() const
 {
-	return "Build: " + MRPT_getVersion() +
-		   mrpt::system::MRPT_getCompilationDate();
+	std::string s("Build: ");
+	s+= MRPT_getVersion();
+	s+= " ";
+	s+= mrpt::system::MRPT_getCompilationDate();
+	return s;
 }
 
 std::string CAboutBoxBase::tutorial() const
@@ -51,7 +54,7 @@ std::string CAboutBoxBase::information(
 		"----------------------------------\n"
 		"Part of the MRPT project.\n"
 		"For bug reports and source code, visit:"
-		" https:://github.com/MRPT/mrpt \n\n";
+		" https://github.com/MRPT/mrpt \n\n";
 	;
 	if (!m_additionalInfo.empty())
 	{
