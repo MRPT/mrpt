@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License |
    +------------------------------------------------------------------------+ */
 
-/*! \file Cmtpacket.cpp
+/*! \file cmtpacket.cpp
 
 	For information about objects in this file, see the appropriate header:
 	\ref Cmtpacket.h

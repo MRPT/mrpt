@@ -133,6 +133,7 @@ void CReactiveNavigationSystem::loadConfigFile(
 	MRPT_END
 }
 
+/** \callergraph */
 void CReactiveNavigationSystem::STEP1_InitPTGs()
 {
 	if (m_PTGsMustBeReInitialized)
@@ -179,6 +180,7 @@ void CReactiveNavigationSystem::STEP1_InitPTGs()
 	}
 }
 
+/** \callergraph */
 bool CReactiveNavigationSystem::implementSenseObstacles(
 	mrpt::system::TTimeStamp& obstacles_timestamp)
 {
@@ -218,6 +220,7 @@ bool CReactiveNavigationSystem::implementSenseObstacles(
 	}
 }
 
+/** \callergraph */
 void CReactiveNavigationSystem::STEP3_WSpaceToTPSpace(
 	const size_t ptg_idx, std::vector<double>& out_TPObstacles,
 	mrpt::nav::ClearanceDiagram& out_clearance,
@@ -256,7 +259,8 @@ void CReactiveNavigationSystem::STEP3_WSpaceToTPSpace(
 }
 
 /** Generates a pointcloud of obstacles, and the robot shape, to be saved in the
- * logging record for the current timestep */
+ * logging record for the current timestep
+ * \callergraph */
 void CReactiveNavigationSystem::loggingGetWSObstaclesAndShape(
 	CLogFileRecord& out_log)
 {

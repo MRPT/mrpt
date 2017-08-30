@@ -110,9 +110,8 @@ CAbstractNavigator::CAbstractNavigator(CRobot2NavInterface& react_iterf_impl)
 
 // Dtor:
 CAbstractNavigator::~CAbstractNavigator() {}
-/*---------------------------------------------------------------
-							cancel
-  ---------------------------------------------------------------*/
+
+/** \callergraph */
 void CAbstractNavigator::cancel()
 {
 	std::lock_guard<std::recursive_mutex> csl(m_nav_cs);
@@ -121,9 +120,7 @@ void CAbstractNavigator::cancel()
 	this->stop(false /*not emergency*/);
 }
 
-/*---------------------------------------------------------------
-							resume
-  ---------------------------------------------------------------*/
+/** \callergraph */
 void CAbstractNavigator::resume()
 {
 	std::lock_guard<std::recursive_mutex> csl(m_nav_cs);
@@ -132,9 +129,7 @@ void CAbstractNavigator::resume()
 	if (m_navigationState == SUSPENDED) m_navigationState = NAVIGATING;
 }
 
-/*---------------------------------------------------------------
-							suspend
-  ---------------------------------------------------------------*/
+/** \callergraph */
 void CAbstractNavigator::suspend()
 {
 	std::lock_guard<std::recursive_mutex> csl(m_nav_cs);
@@ -152,6 +147,7 @@ void CAbstractNavigator::suspend()
 	if (m_navigationState == NAVIGATING) m_navigationState = SUSPENDED;
 }
 
+/** \callergraph */
 void CAbstractNavigator::resetNavError()
 {
 	std::lock_guard<std::recursive_mutex> csl(m_nav_cs);
@@ -187,9 +183,7 @@ void CAbstractNavigator::saveConfigFile(mrpt::utils::CConfigFileBase& c) const
 	params_abstract_navigator.saveToConfigFile(c, "CAbstractNavigator");
 }
 
-/*---------------------------------------------------------------
-					navigationStep
-  ---------------------------------------------------------------*/
+/** \callergraph */
 void CAbstractNavigator::navigationStep()
 {
 	std::lock_guard<std::recursive_mutex> csl(m_nav_cs);
@@ -258,6 +252,7 @@ void CAbstractNavigator::navigationStep()
 	dispatchPendingNavEvents();
 }
 
+/** \callergraph */
 void CAbstractNavigator::dispatchPendingNavEvents()
 {
 	// Invoke pending events:
@@ -268,6 +263,7 @@ void CAbstractNavigator::dispatchPendingNavEvents()
 	m_pending_events.clear();
 }
 
+/** \callergraph */
 void CAbstractNavigator::doEmergencyStop(const std::string& msg)
 {
 	try
@@ -281,6 +277,7 @@ void CAbstractNavigator::doEmergencyStop(const std::string& msg)
 	MRPT_LOG_ERROR(msg);
 }
 
+/** \callergraph */
 void CAbstractNavigator::navigate(
 	const CAbstractNavigator::TNavigationParams* params)
 {
@@ -319,6 +316,7 @@ void CAbstractNavigator::navigate(
 	MRPT_END;
 }
 
+/** \callergraph */
 void CAbstractNavigator::updateCurrentPoseAndSpeeds()
 {
 	// Ignore calls too-close in time, e.g. from the navigationStep() methods of
@@ -407,12 +405,15 @@ void CAbstractNavigator::updateCurrentPoseAndSpeeds()
 	}
 }
 
+/** \callergraph */
 bool CAbstractNavigator::changeSpeeds(
 	const mrpt::kinematics::CVehicleVelCmd& vel_cmd)
 {
 	return m_robot.changeSpeeds(vel_cmd);
 }
+/** \callergraph */
 bool CAbstractNavigator::changeSpeedsNOP() { return m_robot.changeSpeedsNOP(); }
+/** \callergraph */
 bool CAbstractNavigator::stop(bool isEmergencyStop)
 {
 	return m_robot.stop(isEmergencyStop);
@@ -471,11 +472,13 @@ bool mrpt::nav::operator==(
 	return typeid(a) == typeid(b) && a.isEqual(b);
 }
 
+/** \callergraph */
 bool CAbstractNavigator::checkHasReachedTarget(const double targetDist) const
 {
 	return (targetDist < m_navigationParams->target.targetAllowedDistance);
 }
 
+/** \callergraph */
 void CAbstractNavigator::internal_onStartNewNavigation()
 {
 	m_robot.startWatchdog(1000);  // Watchdog = 1 seg
@@ -484,6 +487,7 @@ void CAbstractNavigator::internal_onStartNewNavigation()
 	onStartNewNavigation();
 }
 
+/** \callergraph */
 void CAbstractNavigator::performNavigationStepNavigating(
 	bool call_virtual_nav_method)
 {

@@ -145,6 +145,7 @@ void CReactiveNavigationSystem3D::loadConfigFile(
 	MRPT_END
 }
 
+/** \callergraph */
 void CReactiveNavigationSystem3D::STEP1_InitPTGs()
 {
 	if (m_PTGsMustBeReInitialized)
@@ -193,14 +194,7 @@ void CReactiveNavigationSystem3D::STEP1_InitPTGs()
 	}
 }
 
-/*************************************************************************
-
-						 STEP2_SortObstacles
-
-		Load the obstacles and sort them accorging to the height
-				sections used to model the robot.
-
-*************************************************************************/
+/** \callergraph */
 bool CReactiveNavigationSystem3D::implementSenseObstacles(
 	mrpt::system::TTimeStamp& obstacles_timestamp)
 {
@@ -260,9 +254,8 @@ bool CReactiveNavigationSystem3D::implementSenseObstacles(
 	return true;
 }
 
-/*************************************************************************
-		Transform the obstacle into TP-Obstacles in TP-Spaces
-*************************************************************************/
+/** Transform the obstacle into TP-Obstacles in TP-Spaces
+  * \callergraph */
 void CReactiveNavigationSystem3D::STEP3_WSpaceToTPSpace(
 	const size_t ptg_idx, std::vector<double>& out_TPObstacles,
 	mrpt::nav::ClearanceDiagram& out_clearance,
@@ -303,7 +296,8 @@ void CReactiveNavigationSystem3D::STEP3_WSpaceToTPSpace(
 }
 
 /** Generates a pointcloud of obstacles to be saved in the logging record for
- * the current timestep */
+ * the current timestep
+ * \callergraph */
 void CReactiveNavigationSystem3D::loggingGetWSObstaclesAndShape(
 	CLogFileRecord& out_log)
 {
