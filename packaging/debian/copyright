@@ -34,6 +34,10 @@ Copyright 2011-2017 Hauke Strasdat
           2012-2017 Steven Lovegrove
 License: Expat
 
+Files: libs/base/include/mrpt/utils/bit_cast.h
+Copyright: 2016, The Chromium Authors
+License: BSD-3-clause
+
 Files: libs/config/src/simpleini/*
 Copyright: 2006, Brodie Thiesfield
 License: Expat
@@ -247,3 +251,4 @@ License: WXwindows
   whether to permit this exception to apply to your modifications. If you do
   not wish that, you must delete the exception notice from such code and/or
   adjust the licensing conditions notice accordingly.
+
