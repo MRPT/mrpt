@@ -49,7 +49,7 @@ install:
     fi
   - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$CXX" = "g++" ]; then export CXX="g++-6"; fi
   - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$CXX" == "clang++" ]; then export CXX="clang++-3.8"; fi
-  - pip install -r travis/python_reqs.txt
+  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then pip install -r travis/python_reqs.txt; fi
 
 script:
   - bash travis/check_style.sh
