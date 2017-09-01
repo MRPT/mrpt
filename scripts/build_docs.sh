@@ -74,7 +74,7 @@ VISION_EXTRA_DIR="$CUR_DIR/libs/vision/src/pnp"
 VISION_CITATION_FILES="$CUR_DIR/doc/pnp_algos.bib"
 if ( [ "$skipMAINMRPTDOCS" -eq "0" ] )
 then
-	MRPT_LIST_DIRECTORIES=$(echo $CUR_DIR/doc/doxygen-pages $CUR_DIR/libs/*/include/)
+	MRPT_LIST_DIRECTORIES=$(echo $CUR_DIR/doc/doxygen-pages $CUR_DIR/libs/*/include/ $CUR_DIR/libs/*/src/)
 else
 	MRPT_LIST_DIRECTORIES=$(echo $CUR_DIR/doc/doxygen-pages)
 fi
