@@ -79,10 +79,6 @@ IF (PROG_GZIP AND PROG_POD2MAN)
 
 	CREATE_MANPAGE_PROJECT(DifOdometry-Datasets)
 	CREATE_MANPAGE_PROJECT(DifOdometry-Camera)
-<<<<<<< 4390b72e090a6cb71b43afba82b51eb88da2641d
-	CREATE_MANPAGE_PROJECT(robot-map-gui)
-=======
-	CREATE_MANPAGE_PROJECT(benchmarking-image-features)
->>>>>>> work from June 1 to June 23: \n added visualization of descriptors for Polar, LogPolar and Spin Images, Detectors/Descriptors added to GUI with user specified parameters
 
+	CREATE_MANPAGE_PROJECT(benchmarking-image-features)
 ENDIF (PROG_GZIP AND PROG_POD2MAN)
