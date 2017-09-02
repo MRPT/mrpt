@@ -1,34 +1,34 @@
-//
-// Created by raghavender on 28/06/17.
-//
+/* +------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)            |
+   |                          http://www.mrpt.org/                          |
+   |                                                                        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file     |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                |
+   | Released under BSD License. See details in http://www.mrpt.org/License |
+   +------------------------------------------------------------------------+ */
 
-#include <vector>
-#include <iostream>
-
+/*---------------------------------------------------------------
+	APPLICATION: CFeatureExtraction
+	FILE: CFeatureExtraction_LSD_BLD.cpp
+	AUTHOR: Raghavender Sahdev <raghavendersahdev@gmail.com>
+  ---------------------------------------------------------------*/
 
 #include "vision-precomp.h"   // Precompiled headers
-
 #include <mrpt/system/os.h>
 #include <mrpt/vision/CFeatureExtraction.h> // important import
 #include <mrpt/utils/CMemoryStream.h>
 #include <mrpt/otherlibs/do_opencv_includes.h>
 
-#ifdef HAVE_OPENCV_FEATURES2D
-# include <opencv2/features2d/features2d.hpp>
-#endif
 #ifdef HAVE_OPENCV_XFEATURES2D
 # include <opencv2/xfeatures2d.hpp>
 # include <opencv2/line_descriptor.hpp>
 using namespace cv::line_descriptor;
 #endif
 
-
 using namespace mrpt::vision;
 using namespace mrpt::utils;
-
 using namespace mrpt::math;
 using namespace mrpt;
-
 using namespace std;
 
 
@@ -36,12 +36,13 @@ void  CFeatureExtraction::extractFeaturesLSD(const mrpt::utils::CImage &inImg, C
                                              unsigned int init_ID, unsigned int nDesiredFeatures,
                                              const TImageROI &ROI) const
 {
+    //function is tested with opencv 3.1
 
     MRPT_UNUSED_PARAM(ROI);
     MRPT_START
 #if MRPT_HAS_OPENCV
-#	if MRPT_OPENCV_VERSION_NUM < 0x210
-        THROW_EXCEPTION("This function requires OpenCV > 2.1.0")
+#	if MRPT_OPENCV_VERSION_NUM < 0x300
+        THROW_EXCEPTION("This function requires OpenCV > 3.0.0")
 #	else
 
         using namespace cv;
@@ -49,41 +50,28 @@ void  CFeatureExtraction::extractFeaturesLSD(const mrpt::utils::CImage &inImg, C
         vector<KeyPoint> cv_feats; // The opencv keypoint output vector
         vector<KeyLine> cv_line;
 
+#if MRPT_OPENCV_VERSION_NUM >= 0x300
+
         // Make sure we operate on a gray-scale version of the image:
         const CImage inImg_gray( inImg, FAST_REF_OR_CONVERT_TO_GRAY );
-
-
-#if MRPT_OPENCV_VERSION_NUM >= 0x211
-
 
         const Mat theImg = cvarrToMat( inImg_gray.getAs<IplImage>() );
         /* create a random binary mask */
         cv::Mat mask = Mat::ones( theImg.size(), CV_8UC1 );
 
-
         Ptr<LSDDetector> bd = LSDDetector::createLSDDetector();
-
-        /* create a structure to store extracted lines */
-
 
         /* extract lines */
         cv::Mat output = theImg.clone();
         bd->detect( theImg, cv_line, options.LSDOptions.scale, options.LSDOptions.nOctaves, mask );
 
-
         // *All* the features have been extracted.
         const size_t N = cv_line.size();
-
+        
 #endif
 
-
         // Now:
-        //  1) Sort them by "response": It's ~100 times faster to sort a list of
-        //      indices "sorted_indices" than sorting directly the actual list of features "cv_feats"
-        //std::vector<size_t> sorted_indices(N);
-        //for (size_t i=0;i<N;i++)  sorted_indices[i]=i;
-        //std::sort( sorted_indices.begin(), sorted_indices.end(), KeypointResponseSorter<vector<KeyLine> >(cv_line) );
-
+        //  1) Sort them by "response":
         // sort the LSD features by line length
         for(int i=0; i<N ;i++)
         {
@@ -105,9 +93,6 @@ void  CFeatureExtraction::extractFeaturesLSD(const mrpt::utils::CImage &inImg, C
         // feature falls within it. This is not exactly the same than a pure "min-distance" but is pretty close
         // and for large numbers of features is much faster than brute force search of kd-trees.
         // (An intermediate approach would be the creation of a mask image updated for each accepted feature, etc.)
-
-
-
 
         unsigned int	nMax		= (nDesiredFeatures!=0 && N > nDesiredFeatures) ? nDesiredFeatures : N;
         const int 		offset		= (int)this->options.patchSize/2 + 1;
@@ -179,13 +164,10 @@ void  CFeatureExtraction::extractFeaturesLSD(const mrpt::utils::CImage &inImg, C
             ++cont;
             //cout << ft->x << "  " << ft->y << endl;
         }
-        //feats.resize( cont );  // JL: really needed???
 
 #	endif
 #endif
     MRPT_END
-
-
 }
 
 
@@ -196,7 +178,13 @@ void  CFeatureExtraction::internal_computeBLDLineDescriptors(
         const mrpt::utils::CImage &in_img,
         CFeatureList &in_features) const
 {
-//#if HAVE_OPENCV_WITH_SURF
+    //function is tested with opencv 3.1
+
+#if MRPT_HAS_OPENCV
+#	if MRPT_OPENCV_VERSION_NUM < 0x300
+    THROW_EXCEPTION("This function requires OpenCV > 3.0.0")
+#	else
+
     using namespace cv;
 
     if (in_features.empty()) return;
@@ -223,15 +211,9 @@ void  CFeatureExtraction::internal_computeBLDLineDescriptors(
     bd2->detect( img, keylines, mask );
 
     /* compute descriptors */
-
     bd2->compute( img, keylines, cv_descs);
-
-
     keylines.resize(in_features.size());
 
-
-
-//gb redesign end
 	// -----------------------------------------------------------------
 	// MRPT Wrapping
 	// -----------------------------------------------------------------
@@ -247,9 +229,9 @@ void  CFeatureExtraction::internal_computeBLDLineDescriptors(
 			ft->descriptors.BLD[m] = cv_descs.at<int>(i,m);		// Get the SURF descriptor
 	} // end for
 
-//#else
-  //  THROW_EXCEPTION("Method not available: MRPT compiled without OpenCV, or against a version of OpenCV without SURF")
-//#endif //MRPT_HAS_OPENCV
+#endif // end of opencv3 version check
+
+#endif //MRPT_HAS_OPENCV
 }  // end internal_computeBLDDescriptors
 
 

@@ -1,41 +1,36 @@
-//
-// Created by raghavender on 28/06/17.
-//
+/* +------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)            |
+   |                          http://www.mrpt.org/                          |
+   |                                                                        |
+   | Copyright (c) 2005-2017, Individual contributors, see AUTHORS file     |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                |
+   | Released under BSD License. See details in http://www.mrpt.org/License |
+   +------------------------------------------------------------------------+ */
 
-#include <opencv2/features2d.hpp>
-#include <opencv2/imgcodecs.hpp>
-#include <opencv2/opencv.hpp>
+/*---------------------------------------------------------------
+	APPLICATION: CFeatureExtraction
+	FILE: CFeatureExtraction_AKAZE.cpp
+	AUTHOR: Raghavender Sahdev <raghavendersahdev@gmail.com>
+  ---------------------------------------------------------------*/
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string>
-#include "opencv2/core.hpp"
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/calib3d/calib3d.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-#include "opencv2/features2d.hpp"
-#include "opencv2/xfeatures2d.hpp"
 
-#include <vector>
-#include <iostream>
 
+
+// Universal include for all versions of OpenCV
+#include <mrpt/otherlibs/do_opencv_includes.h>
 
 #include "vision-precomp.h"   // Precompiled headers
-
 #include <mrpt/system/os.h>
 #include <mrpt/vision/CFeatureExtraction.h> // important import
 #include <mrpt/utils/CMemoryStream.h>
-#include <mrpt/otherlibs/do_opencv_includes.h>
-
 
 using namespace mrpt::vision;
 using namespace mrpt::utils;
-
 using namespace mrpt::math;
 using namespace mrpt;
-
 using namespace std;
-using namespace cv;
+
+
 
 void  CFeatureExtraction::extractFeaturesAKAZE(
         const mrpt::utils::CImage	& inImg,
@@ -48,28 +43,19 @@ void  CFeatureExtraction::extractFeaturesAKAZE(
     MRPT_UNUSED_PARAM(ROI);
     MRPT_START
 #if MRPT_HAS_OPENCV
-#	if MRPT_OPENCV_VERSION_NUM < 0x210
-        THROW_EXCEPTION("This function requires OpenCV > 2.1.0")
+#	if MRPT_OPENCV_VERSION_NUM < 0x300
+        THROW_EXCEPTION("This function requires OpenCV > 3.0.0")
 #	else
 
         using namespace cv;
-
         vector<KeyPoint> cv_feats; // The opencv keypoint output vector
-
         // Make sure we operate on a gray-scale version of the image:
         const CImage inImg_gray( inImg, FAST_REF_OR_CONVERT_TO_GRAY );
 
 
-
-#if MRPT_OPENCV_VERSION_NUM >= 0x211
-
-//    cv::Mat *mask ;
-//    if( _mask )
-//       mask = static_cast<cv::Mat*>(_mask);
+#if MRPT_OPENCV_VERSION_NUM >= 0x300
 
         const Mat theImg = cvarrToMat( inImg_gray.getAs<IplImage>() );
-
-
         Ptr<AKAZE> akaze = AKAZE::create(options.AKAZEOptions.descriptor_type , options.AKAZEOptions.descriptor_size ,
         options.AKAZEOptions.descriptor_channels , options.AKAZEOptions.threshold , options.AKAZEOptions.nOctaves ,
         options.AKAZEOptions.nOctaveLayers , options.AKAZEOptions.diffusivity);
@@ -80,13 +66,6 @@ void  CFeatureExtraction::extractFeaturesAKAZE(
         const size_t N = cv_feats.size();
 
 #endif
-
-        // Now:
-        //  1) Sort them by "response": It's ~100 times faster to sort a list of
-        //      indices "sorted_indices" than sorting directly the actual list of features "cv_feats"
-        //std::vector<size_t> sorted_indices(N);
-        //for (size_t i=0;i<N;i++)  sorted_indices[i]=i;
-        //std::sort( sorted_indices.begin(), sorted_indices.end(), KeypointResponseSorter<vector<KeyPoint> >(cv_feats) );
         // sort the AKAZE features by line length
         for(int i=0; i<N ;i++)
         {
@@ -100,16 +79,6 @@ void  CFeatureExtraction::extractFeaturesAKAZE(
                 }
             }
         }
-
-        //  2) Filter by "min-distance" (in options.FASTOptions.min_distance) // not REQUIRED FOR LSD FEATYRES
-        //  3) Convert to MRPT CFeatureList format.
-        // Steps 2 & 3 are done together in the while() below.
-        // The "min-distance" filter is done by means of a 2D binary matrix where each cell is marked when one
-        // feature falls within it. This is not exactly the same than a pure "min-distance" but is pretty close
-        // and for large numbers of features is much faster than brute force search of kd-trees.
-        // (An intermediate approach would be the creation of a mask image updated for each accepted feature, etc.)
-
-
 
 
         unsigned int	nMax		= (nDesiredFeatures!=0 && N > nDesiredFeatures) ? nDesiredFeatures : N;
@@ -126,7 +95,7 @@ void  CFeatureExtraction::extractFeaturesAKAZE(
 
         while( cont != nMax && i!=N )
         {
-            // Take the next feature fromt the ordered list of good features:
+            // Take the next feature from the ordered list of good features:
             const KeyPoint &kp = cv_feats[i];
             i++;
 
@@ -164,11 +133,8 @@ void  CFeatureExtraction::extractFeaturesAKAZE(
             ++cont;
             //cout << ft->x << "  " << ft->y << endl;
         }
-        //feats.resize( cont );  // JL: really needed???
 
 #	endif
 #endif
     MRPT_END
-
-
 }

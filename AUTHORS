@@ -154,5 +154,9 @@ the GitHub contributors page (https://github.com/MRPT/mrpt/graphs/contributors).
 * Alisa Chukaeva (LisGein), Moscow Technological University (2017)
   - The application robot-map-gui.
 
+* Raghavender Sahdev, York University, Canada (GSoC 2017) https://github.com/raghavendersahdev
+  - The application benchmarking-image-features
+  - added files in the mrpt/libs/vision (detectors: AKAZE, LSD line detectors; descriptors: LATCH, BLD)
+
 Several bug reports have been provided from MRPT users world-wide. We kindly thank all of
 them for this valuable feedback, and they are usually mentioned in changelogs.
