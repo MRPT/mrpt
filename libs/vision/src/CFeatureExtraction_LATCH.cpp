@@ -39,8 +39,6 @@ using namespace mrpt::math;
 using namespace mrpt;
 using namespace std;
 
-
-
 /************************************************************************************************
 *						internal_computeLATCHDescriptors
 ************************************************************************************************/
@@ -100,5 +98,3 @@ void  CFeatureExtraction::internal_computeLATCHDescriptors(
 #endif
     MRPT_END
 }  // end internal_computeLatchDescriptors
-
-
