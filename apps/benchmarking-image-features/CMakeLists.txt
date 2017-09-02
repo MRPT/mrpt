@@ -45,4 +45,4 @@ if(CMAKE_MRPT_HAS_Qt5 AND CMAKE_MRPT_HAS_OPENCV)
         DeclareAppDependencies(${PROJECT_NAME} mrpt-gui mrpt-vision)
         DeclareAppForInstall(${PROJECT_NAME})
 
-endif(CMAKE_MRPT_HAS_Qt5)
+endif()
