@@ -67,7 +67,7 @@ void  CFeatureExtraction::extractFeaturesLSD(const mrpt::utils::CImage &inImg, C
 
         // *All* the features have been extracted.
         const size_t N = cv_line.size();
-
+        
 #endif
 
         // Now:
