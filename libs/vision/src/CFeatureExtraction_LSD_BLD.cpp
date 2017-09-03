@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 /*---------------------------------------------------------------
-	APPLICATION: CFeatureExtraction
+	CLASS: CFeatureExtraction
 	FILE: CFeatureExtraction_LSD_BLD.cpp
 	AUTHOR: Raghavender Sahdev <raghavendersahdev@gmail.com>
   ---------------------------------------------------------------*/
@@ -21,6 +21,8 @@
 
 #ifdef HAVE_OPENCV_XFEATURES2D
 #include <opencv2/xfeatures2d.hpp>
+#endif
+#ifdef HAVE_OPENCV_LINE_DESCRIPTOR
 #include <opencv2/line_descriptor.hpp>
 using namespace cv::line_descriptor;
 #endif
@@ -31,25 +33,25 @@ using namespace mrpt::math;
 using namespace mrpt;
 using namespace std;
 
+#if defined(HAVE_OPENCV_XFEATURES2D) && defined(HAVE_OPENCV_LINE_DESCRIPTOR)
+#define HAVE_OPENCV_WITH_LSD 1
+#else
+#define HAVE_OPENCV_WITH_LSD 0
+#endif
+
+
 void CFeatureExtraction::extractFeaturesLSD(
 	const mrpt::utils::CImage& inImg, CFeatureList& feats, unsigned int init_ID,
 	unsigned int nDesiredFeatures, const TImageROI& ROI) const
 {
-	// function is tested with opencv 3.1
-
-	MRPT_UNUSED_PARAM(ROI);
 	MRPT_START
-#if MRPT_HAS_OPENCV
-#if MRPT_OPENCV_VERSION_NUM < 0x300
-	THROW_EXCEPTION("This function requires OpenCV > 3.0.0")
+#if (!HAVE_OPENCV_WITH_LSD)
+	THROW_EXCEPTION("This function requires OpenCV modules: xfeatures2d, line_descriptor");
 #else
-
 	using namespace cv;
 
 	vector<KeyPoint> cv_feats;  // The opencv keypoint output vector
 	vector<KeyLine> cv_line;
-
-#if MRPT_OPENCV_VERSION_NUM >= 0x300
 
 	// Make sure we operate on a gray-scale version of the image:
 	const CImage inImg_gray(inImg, FAST_REF_OR_CONVERT_TO_GRAY);
@@ -68,8 +70,6 @@ void CFeatureExtraction::extractFeaturesLSD(
 
 	// *All* the features have been extracted.
 	const size_t N = cv_line.size();
-
-#endif
 
 	// Now:
 	//  1) Sort them by "response":
@@ -168,7 +168,6 @@ void CFeatureExtraction::extractFeaturesLSD(
 	}
 
 #endif
-#endif
 	MRPT_END
 }
 
@@ -178,13 +177,9 @@ void CFeatureExtraction::extractFeaturesLSD(
 void CFeatureExtraction::internal_computeBLDLineDescriptors(
 	const mrpt::utils::CImage& in_img, CFeatureList& in_features) const
 {
-// function is tested with opencv 3.1
-
-#if MRPT_HAS_OPENCV
-#if MRPT_OPENCV_VERSION_NUM < 0x300
-	THROW_EXCEPTION("This function requires OpenCV > 3.0.0")
+#if (!HAVE_OPENCV_WITH_LSD)
+	THROW_EXCEPTION("This function requires OpenCV modules: xfeatures2d, line_descriptor");
 #else
-
 	using namespace cv;
 
 	if (in_features.empty()) return;
@@ -232,6 +227,4 @@ void CFeatureExtraction::internal_computeBLDLineDescriptors(
 	}  // end for
 
 #endif  // end of opencv3 version check
-
-#endif  // MRPT_HAS_OPENCV
 }  // end internal_computeBLDDescriptors

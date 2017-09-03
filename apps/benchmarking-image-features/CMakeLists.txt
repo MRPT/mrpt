@@ -4,8 +4,7 @@ project(benchmarkingImageFeatures_GUI)
 
 
 
-if(CMAKE_MRPT_HAS_Qt5 AND CMAKE_MRPT_HAS_OPENCV)
-
+if(CMAKE_MRPT_HAS_Qt5 AND CMAKE_MRPT_HAS_OPENCV AND NOT "${MRPT_OPENCV_VERSION}" VERSION_LESS "3.2")
         set(CPP_FILES src/main.cpp
             src/mainwindow.cpp
             src/my_qlabel.cpp
