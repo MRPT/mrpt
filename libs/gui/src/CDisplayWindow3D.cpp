@@ -422,7 +422,7 @@ CDisplayWindow3D::CDisplayWindow3D(
 	//	static mrpt::utils::CStdOutStream oo;
 	//	m_csAccess3DScene.m_debugOut = &oo;
 
-	m_3Dscene = mrpt::make_aligned_shared<COpenGLScene>();
+	m_3Dscene = COpenGLScene::Create();
 	CBaseGUIWindow::createWxWindow(initialWindowWidth, initialWindowHeight);
 }
 
