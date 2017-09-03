@@ -165,15 +165,15 @@ namespace maps
 		  * By default (ith=0), the first observation is returned.
 		  */
 		template <typename T>
-		typename T::SmartPtr getMapByClass( const size_t &ith = 0 ) const
+		typename T::Ptr getMapByClass( const size_t &ith = 0 ) const
 		{
 			size_t  foundCount = 0;
 			const mrpt::utils::TRuntimeClassId*	class_ID = T::classinfo;
 			for (const_iterator it = begin();it!=end();++it)
 				if ( (*it)->GetRuntimeClass()->derivedFrom( class_ID ) )
 					if (foundCount++ == ith)
-						return typename T::SmartPtr(it->get_ptr());
-			return typename T::SmartPtr();	// Not found: return empty smart pointer
+						return typename T::Ptr(it->get_ptr());
+			return typename T::Ptr();	// Not found: return empty smart pointer
 		}
 
 		/** Takes a const ref of a STL non-associative container of smart pointers at construction and exposes an interface 

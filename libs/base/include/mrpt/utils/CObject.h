@@ -156,7 +156,8 @@ namespace mrpt
 			_STATIC_LINKAGE_ mrpt::utils::CLASSINIT _init_##class_name;\
 		public: \
 			/*! A typedef for the associated smart pointer */ \
-			typedef class_name##Ptr SmartPtr; \
+			typedef class_name##Ptr Ptr; \
+			typedef class_name##Ptr ConstPtr; \
 			_STATIC_LINKAGE_ mrpt::utils::TRuntimeClassId  class##class_name; \
 			_STATIC_LINKAGE_ const mrpt::utils::TRuntimeClassId *classinfo; \
 			_VIRTUAL_LINKAGE_ const mrpt::utils::TRuntimeClassId* GetRuntimeClass() const MRPT_OVERRIDE; \

@@ -74,19 +74,19 @@ namespace mrpt
             /** Returns the value of the property (case insensitive) for some given hypothesis ID checking its class in runtime, or a NULL smart pointer if it does not exist.
               */
 			template <typename T>
-            typename T::SmartPtr getAs(const char *propertyName, const int64_t & hypothesis_ID, bool allowNullPointer = true) const
+            typename T::Ptr getAs(const char *propertyName, const int64_t & hypothesis_ID, bool allowNullPointer = true) const
 			{
 				MRPT_START
 				CSerializablePtr obj = get(propertyName,hypothesis_ID);
 				if (!obj)
 				{
 					if (allowNullPointer)
-							return typename T::SmartPtr();
+							return typename T::Ptr();
 					else	THROW_EXCEPTION("Null pointer")
 				}
 				const mrpt::utils::TRuntimeClassId*	class_ID = T::classinfo;
 				ASSERT_( class_ID == obj->GetRuntimeClass() );
-				return typename T::SmartPtr( obj );
+				return typename T::Ptr( obj );
 				MRPT_END
 			}
 
