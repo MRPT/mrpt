@@ -659,6 +659,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 				} else {
 					gl_path = mrpt::opengl::CSetOfLinesPtr(gl_path_r);
 				}
+				gl_path->clear();
 				if (sel_ptg_idx<int(m_logdata_ptg_paths.size()) && sel_ptg_idx>=0)
 				{
 					mrpt::nav::CParameterizedTrajectoryGeneratorPtr ptg = m_logdata_ptg_paths[sel_ptg_idx];
@@ -677,7 +678,6 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 							:
 							log.ptg_last_k_NOP;
 						float max_dist = ptg->getRefDistance();
-						gl_path->clear();
 						ptg->add_robotShape_to_setOfLines(*gl_path);
 
 						ptg->renderPathAsSimpleLine(selected_k,*gl_path,0.10, max_dist);
