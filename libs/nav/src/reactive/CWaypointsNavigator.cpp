@@ -537,35 +537,36 @@ CWaypointsNavigator::TWaypointsNavigatorParams::TWaypointsNavigatorParams()
 bool CWaypointsNavigator::checkHasReachedTarget(const double targetDist) const
 {
 	bool ret;
-	const TWaypointStatus *wp = nullptr;
-	const auto &wps = m_waypoint_nav_status;
+	const TWaypointStatus* wp = nullptr;
+	const auto& wps = m_waypoint_nav_status;
 	if (m_navigationParams->target.targetIsIntermediaryWaypoint)
 	{
 		ret = false;
 	}
 	else if (wps.timestamp_nav_started != INVALID_TIMESTAMP)
 	{
-		wp = (!wps.waypoints.empty() &&
-			wps.waypoint_index_current_goal >= 0 &&
-			wps.waypoint_index_current_goal < (int)wps.waypoints.size()
-			)
-			?
-			&wps.waypoints[wps.waypoint_index_current_goal]
-			:
-			nullptr;
-		ret = (wp == nullptr && targetDist <= m_navigationParams->target.targetAllowedDistance) ||
+		wp = (!wps.waypoints.empty() && wps.waypoint_index_current_goal >= 0 &&
+			  wps.waypoint_index_current_goal < (int)wps.waypoints.size())
+				 ? &wps.waypoints[wps.waypoint_index_current_goal]
+				 : nullptr;
+		ret =
+			(wp == nullptr &&
+			 targetDist <= m_navigationParams->target.targetAllowedDistance) ||
 			(wp->reached);
 	}
 	else
 	{
 		ret = (targetDist <= m_navigationParams->target.targetAllowedDistance);
 	}
-	MRPT_LOG_DEBUG_STREAM("CWaypointsNavigator::checkHasReachedTarget() called "
-		"with targetDist=" << targetDist << " return=" << ret << " waypoint: " <<
-		(wp == nullptr ? std::string("") : wp->getAsText()) <<
-		"wps.timestamp_nav_started=" << 
-		(wps.timestamp_nav_started==INVALID_TIMESTAMP ? 
-			"INVALID_TIMESTAMP" : mrpt::system::dateTimeLocalToString(wps.timestamp_nav_started) )
-		);
+	MRPT_LOG_DEBUG_STREAM(
+		"CWaypointsNavigator::checkHasReachedTarget() called "
+		"with targetDist="
+		<< targetDist << " return=" << ret
+		<< " waypoint: " << (wp == nullptr ? std::string("") : wp->getAsText())
+		<< "wps.timestamp_nav_started="
+		<< (wps.timestamp_nav_started == INVALID_TIMESTAMP
+				? "INVALID_TIMESTAMP"
+				: mrpt::system::dateTimeLocalToString(
+					  wps.timestamp_nav_started)));
 	return ret;
 }

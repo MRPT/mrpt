@@ -21,12 +21,11 @@
 using namespace std;
 using namespace cv;
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
+	QApplication app(argc, argv);
 
-    QApplication app(argc, argv);
+	MainWindow w;
 
-    MainWindow w;
-
-    return app.exec();
+	return app.exec();
 }
