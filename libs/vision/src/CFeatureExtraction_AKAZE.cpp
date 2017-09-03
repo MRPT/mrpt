@@ -60,9 +60,9 @@ void CFeatureExtraction::extractFeaturesAKAZE(
 
 #endif
 	// sort the AKAZE features by line length
-	for (int i = 0; i < N; i++)
+	for (size_t i = 0; i < N; i++)
 	{
-		for (int j = i + 1; j < N; j++)
+		for (size_t j = i + 1; j < N; j++)
 		{
 			if (cv_feats.at(j).response > cv_feats.at(i).response)
 			{
