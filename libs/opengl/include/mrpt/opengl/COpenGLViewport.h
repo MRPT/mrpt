@@ -239,7 +239,7 @@ namespace mrpt
 			   * By default (ith=0), the first observation is returned.
 			   */
 			 template <typename T>
-			 typename T::SmartPtr getByClass( const size_t &ith = 0 ) const
+			 typename T::Ptr getByClass( const size_t &ith = 0 ) const
 			 {
 				MRPT_START
 				size_t  foundCount = 0;
@@ -247,18 +247,18 @@ namespace mrpt
 				for (CListOpenGLObjects::const_iterator it = m_objects.begin();it!=m_objects.end();++it)
 					if ( (*it).present() &&  (*it)->GetRuntimeClass()->derivedFrom( class_ID ) )
 						if (foundCount++ == ith)
-							return typename T::SmartPtr(*it);
+							return typename T::Ptr(*it);
 
 				// If not found directly, search recursively:
 				for (CListOpenGLObjects::const_iterator it=m_objects.begin();it!=m_objects.end();++it)
 				{
 					if ( (*it).present() && (*it)->GetRuntimeClass() == CLASS_ID_NAMESPACE(CSetOfObjects,mrpt::opengl))
 					{
-						typename T::SmartPtr  o = CSetOfObjectsPtr(*it)->getByClass<T>(ith);
+						typename T::Ptr  o = CSetOfObjectsPtr(*it)->getByClass<T>(ith);
 						if (o.present()) return o;
 					}
 				}
-				return typename T::SmartPtr();	// Not found: return empty smart pointer
+				return typename T::Ptr();	// Not found: return empty smart pointer
 				MRPT_END
 			 }
 

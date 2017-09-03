@@ -175,7 +175,7 @@ namespace mrpt
 			   * By default (ith=0), the first observation is returned.
 			   */
 			 template <typename T>
-			 typename T::SmartPtr getObservationByClass( const size_t &ith = 0 ) const
+			 typename T::Ptr getObservationByClass( const size_t &ith = 0 ) const
 			 {
 				MRPT_START
 				size_t  foundCount = 0;
@@ -183,8 +183,8 @@ namespace mrpt
 				for (const_iterator it = begin();it!=end();++it)
 					if ( (*it)->GetRuntimeClass()->derivedFrom( class_ID ) )
 						if (foundCount++ == ith)
-							return typename T::SmartPtr(*it);
-				return typename T::SmartPtr();	// Not found: return empty smart pointer
+							return typename T::Ptr(*it);
+				return typename T::Ptr();	// Not found: return empty smart pointer
 				MRPT_END
 			 }
 

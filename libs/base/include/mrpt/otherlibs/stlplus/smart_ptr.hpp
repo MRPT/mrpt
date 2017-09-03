@@ -133,6 +133,10 @@ namespace stlplus
     // get the pointer
     T* pointer(void);
     const T* pointer(void) const;
+    // C++11 shared_ptr-compatible methods (to ease transitioning towards MRPT 2.0)
+    void reset(T* data = 0) { this->set(data); }
+    T* get() { return this->pointer(); }
+    const T* get() const { return this->pointer(); }
 
     //////////////////////////////////////////////////////////////////////////////
     // functions to manage aliases

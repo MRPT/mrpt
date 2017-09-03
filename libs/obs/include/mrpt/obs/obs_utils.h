@@ -24,17 +24,17 @@ namespace mrpt { namespace obs { namespace utils {
 	 * is decided by the \a priority_to_sf flag 
 	 *
 	 * \return Pointer to the observation of the given type. Otherwise, an empty
-	 * SmartPtr object is returned if a valid observation is not found.
+	 * Ptr object is returned if a valid observation is not found.
 	 *
 	 * \ingroup mrpt_obs_grp 
 	 */
 	template<class OBSERVATION_T>
-	typename OBSERVATION_T::SmartPtr getObservation(
+	typename OBSERVATION_T::Ptr getObservation(
 		mrpt::obs::CSensoryFramePtr& observations,
 		mrpt::obs::CObservationPtr& observation,
 		bool priority_to_sf=true) {
 
-		typedef typename OBSERVATION_T::SmartPtr obs_t;
+		typedef typename OBSERVATION_T::Ptr obs_t;
 
 		obs_t cobs_ptr;
 		obs_t sf_ptr;
@@ -64,7 +64,7 @@ namespace mrpt { namespace obs { namespace utils {
 			obs_out = sf_ptr;
 		}
 		else {
-			obs_out = typename OBSERVATION_T::SmartPtr();
+			obs_out = typename OBSERVATION_T::Ptr();
 		}
 
 		return obs_out;
