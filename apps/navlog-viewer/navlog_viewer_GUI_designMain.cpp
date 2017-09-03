@@ -880,7 +880,8 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 					gl_robot_frame->insert(gl_path);
 				}
 				gl_path->clear();
-				if (sel_ptg_idx<int(m_logdata_ptg_paths.size()) && sel_ptg_idx>=0)
+				if (sel_ptg_idx < int(m_logdata_ptg_paths.size()) &&
+					sel_ptg_idx >= 0)
 				{
 					mrpt::nav::CParameterizedTrajectoryGenerator::Ptr ptg =
 						m_logdata_ptg_paths[sel_ptg_idx];

@@ -29,9 +29,9 @@ CAboutBoxBase::~CAboutBoxBase() {}
 std::string CAboutBoxBase::MRPTBuildVersion() const
 {
 	std::string s("Build: ");
-	s+= MRPT_getVersion();
-	s+= " ";
-	s+= mrpt::system::MRPT_getCompilationDate();
+	s += MRPT_getVersion();
+	s += " ";
+	s += mrpt::system::MRPT_getCompilationDate();
 	return s;
 }
 
