@@ -75,6 +75,7 @@ void CWaypointsNavigator::navigateWaypoints(
 		ASSERT_(nav_request.waypoints[i].isValid());
 		m_waypoint_nav_status.waypoints[i] = nav_request.waypoints[i];
 	}
+	m_waypoint_nav_status.timestamp_nav_started = mrpt::system::now();
 
 	m_waypoint_nav_status.waypoint_index_current_goal = -1;  // Not started yet.
 
@@ -535,16 +536,36 @@ CWaypointsNavigator::TWaypointsNavigatorParams::TWaypointsNavigatorParams()
 /** \callergraph */
 bool CWaypointsNavigator::checkHasReachedTarget(const double targetDist) const
 {
-	if (targetDist > m_navigationParams->target.targetAllowedDistance)
-		return false;
-	if (m_navigationParams->target.targetIsIntermediaryWaypoint) return false;
-
-	const auto& wps = m_waypoint_nav_status;
-	const TWaypointStatus* wp =
-		(!wps.waypoints.empty() && wps.waypoint_index_current_goal >= 0 &&
-		 wps.waypoint_index_current_goal < int(wps.waypoints.size()))
-			? &wps.waypoints[wps.waypoint_index_current_goal]
-			: nullptr;
-
-	return (wp == nullptr || wp->reached);
+	bool ret;
+	const TWaypointStatus *wp = nullptr;
+	const auto &wps = m_waypoint_nav_status;
+	if (m_navigationParams->target.targetIsIntermediaryWaypoint)
+	{
+		ret = false;
+	}
+	else if (wps.timestamp_nav_started != INVALID_TIMESTAMP)
+	{
+		wp = (!wps.waypoints.empty() &&
+			wps.waypoint_index_current_goal >= 0 &&
+			wps.waypoint_index_current_goal < (int)wps.waypoints.size()
+			)
+			?
+			&wps.waypoints[wps.waypoint_index_current_goal]
+			:
+			nullptr;
+		ret = (wp == nullptr && targetDist <= m_navigationParams->target.targetAllowedDistance) ||
+			(wp->reached);
+	}
+	else
+	{
+		ret = (targetDist <= m_navigationParams->target.targetAllowedDistance);
+	}
+	MRPT_LOG_DEBUG_STREAM("CWaypointsNavigator::checkHasReachedTarget() called "
+		"with targetDist=" << targetDist << " return=" << ret << " waypoint: " <<
+		(wp == nullptr ? std::string("") : wp->getAsText()) <<
+		"wps.timestamp_nav_started=" << 
+		(wps.timestamp_nav_started==INVALID_TIMESTAMP ? 
+			"INVALID_TIMESTAMP" : mrpt::system::dateTimeLocalToString(wps.timestamp_nav_started) )
+		);
+	return ret;
 }
