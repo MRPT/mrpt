@@ -8,7 +8,7 @@
    +------------------------------------------------------------------------+ */
 
 /*---------------------------------------------------------------
-	APPLICATION: CFeatureExtraction
+	CLASS: CFeatureExtraction
 	FILE: CFeatureExtraction_LATCH.cpp
 	AUTHOR: Raghavender Sahdev <raghavendersahdev@gmail.com>
   ---------------------------------------------------------------*/
@@ -27,7 +27,7 @@
 #ifdef HAVE_OPENCV_XFEATURES2D
 #include <opencv2/xfeatures2d.hpp>
 #endif
-#ifdef HAVE_OPENCV_FEATURES2D
+#ifdef HAVE_OPENCV_LINE_DESCRIPTOR
 #include <opencv2/line_descriptor.hpp>
 using namespace cv::line_descriptor;
 #endif
@@ -38,19 +38,24 @@ using namespace mrpt::math;
 using namespace mrpt;
 using namespace std;
 
+#if defined(HAVE_OPENCV_XFEATURES2D) && defined(HAVE_OPENCV_LINE_DESCRIPTOR)
+#define HAVE_OPENCV_WITH_LATCH 1
+#else
+#define HAVE_OPENCV_WITH_LATCH 0
+#endif
+
+
+
 /************************************************************************************************
 *						internal_computeLATCHDescriptors
 ************************************************************************************************/
 void CFeatureExtraction::internal_computeLATCHDescriptors(
 	const mrpt::utils::CImage& in_img, CFeatureList& in_features) const
 {
-	// function is tested with opencv 3.1
 	MRPT_START
-#if MRPT_HAS_OPENCV
-#if MRPT_OPENCV_VERSION_NUM < 0x300
-	THROW_EXCEPTION("This function requires OpenCV > 3.0.0")
+#if (!HAVE_OPENCV_WITH_LATCH)
+	THROW_EXCEPTION("This function requires OpenCV modules: xfeatures2d,line_descriptor");
 #else
-
 	using namespace cv;
 
 	if (in_features.empty()) return;
@@ -95,7 +100,6 @@ void CFeatureExtraction::internal_computeLATCHDescriptors(
 				cv_descs.at<int>(i, m);  // Get the LATCH descriptor
 	}  // end for-
 
-#endif
 #endif
 	MRPT_END
 }  // end internal_computeLatchDescriptors

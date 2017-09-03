@@ -74,18 +74,11 @@
 #include <fstream>
 #include <iostream>
 #include <dirent.h>
-#include <boost/bind.hpp>
-#include <boost/interprocess/sync/scoped_lock.hpp>
+#include <functional> // bind
+#include <mutex> // scoped_lock
 
 /// opencv includes
-#include "opencv2/core.hpp"
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/calib3d/calib3d.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-#include "opencv2/features2d.hpp"
-#include "opencv2/xfeatures2d.hpp"
-#include <opencv2/line_descriptor.hpp>
-#include <opencv2/plot.hpp>
+#include <mrpt/otherlibs/do_opencv_includes.h>
 
 /// MRPT includes
 #include <mrpt/vision/CFeatureExtraction.h>

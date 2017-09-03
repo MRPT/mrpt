@@ -28,6 +28,9 @@
 #		include <opencv2/highgui/highgui_c.h>
 #		include <opencv2/imgproc/imgproc_c.h>
 #	else
+#		if (MRPT_OPENCV_VERSION_NUM>=0x240)
+#		include <opencv2/opencv_modules.hpp>
+#		endif
 #		include <opencv2/core/core.hpp>
 #		include <opencv2/core/core_c.h>
 #		include <opencv2/highgui/highgui.hpp>
@@ -36,6 +39,17 @@
 #		include <opencv2/imgproc/imgproc_c.h>
 #		include <opencv2/features2d/features2d.hpp>
 #		include <opencv2/video/tracking.hpp>
+/// start added by Raghavender Sahdev
+#		ifdef HAVE_OPENCV_XFEATURES2D
+#		include <opencv2/xfeatures2d.hpp>
+#		endif
+#		ifdef HAVE_OPENCV_LINE_DESCRIPTOR
+#		include <opencv2/line_descriptor.hpp>
+#		endif
+#		ifdef HAVE_OPENCV_PLOT
+#		include <opencv2/plot.hpp>
+#		endif
+/// end added by Raghavender Sahdev
 #		if MRPT_OPENCV_VERSION_NUM>=0x300
 #			include <opencv2/video/tracking_c.h>
 #		endif
@@ -43,9 +57,6 @@
 #		include <opencv2/objdetect/objdetect.hpp>
 //#		include <opencv2/core/eigen.hpp>  // Removed: opencv 2.3 had this file broken in Ubuntu 14.04 Trusty (??)
 #		// These ones dissapeared in 3.0.0:  <opencv2/legacy/{legacy,compat}.hpp>  // CvImage
-#		if (MRPT_OPENCV_VERSION_NUM>=0x240)
-#		include <opencv2/opencv_modules.hpp>
-#		endif
 #	endif
 #	else
 		// For OpenCV <=2.1
