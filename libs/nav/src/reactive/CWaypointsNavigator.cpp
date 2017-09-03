@@ -83,6 +83,7 @@ void CWaypointsNavigator::navigateWaypoints( const TWaypointSequence & nav_reque
 		ASSERT_( nav_request.waypoints[i].isValid() );
 		m_waypoint_nav_status.waypoints[i] = nav_request.waypoints[i];
 	}
+	m_waypoint_nav_status.timestamp_nav_started = mrpt::system::now();
 
 	// The main loop navigationStep() will iterate over waypoints and send them to navigate()
 	MRPT_END
@@ -463,16 +464,19 @@ bool CWaypointsNavigator::checkHasReachedTarget(const double targetDist) const
 			&wps.waypoints[wps.waypoint_index_current_goal]
 			:
 			nullptr;
-		ret = (targetDist <= m_navigationParams->target.targetAllowedDistance) ||
-			(wp == nullptr || wp->reached);
+		ret = (wp == nullptr && targetDist <= m_navigationParams->target.targetAllowedDistance) ||
+			(wp->reached);
 	}
 	else
 	{
 		ret = (targetDist <= m_navigationParams->target.targetAllowedDistance);
 	}
-	MRPT_LOG_DEBUG_STREAM("CWaypointsNavigator::checkHasReachedTarget() called"
+	MRPT_LOG_DEBUG_STREAM("CWaypointsNavigator::checkHasReachedTarget() called "
 		"with targetDist=" << targetDist << " return=" << ret << " waypoint: " <<
-		(wp == nullptr ? std::string("") : wp->getAsText()) );
-
+		(wp == nullptr ? std::string("") : wp->getAsText()) <<
+		"wps.timestamp_nav_started=" << 
+		(wps.timestamp_nav_started==INVALID_TIMESTAMP ? 
+			"INVALID_TIMESTAMP" : mrpt::system::dateTimeLocalToString(wps.timestamp_nav_started) )
+		);
 	return ret;
 }
