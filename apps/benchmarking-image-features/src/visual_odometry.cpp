@@ -260,7 +260,7 @@ Mat VisualOdometry::generateVO(
 	this->numFeats = numFeats;
 	Mat img_1, img_2;
 	Mat R_f, t_f;  // the final rotation and tranlation vectors containing the
-				   // transform
+	// transform
 
 	ofstream myfile;
 	myfile.open("results1_1.txt");
@@ -382,7 +382,7 @@ Mat VisualOdometry::generateVO(
 
 		for (int i = 0; i < prevFeatures.size(); i++)
 		{  // this (x,y) combination makes sense as observed from the source
-		   // code of triangulatePoints on GitHub
+			// code of triangulatePoints on GitHub
 			prevPts.at<double>(0, i) = prevFeatures.at(i).x;
 			prevPts.at<double>(1, i) = prevFeatures.at(i).y;
 

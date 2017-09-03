@@ -119,8 +119,8 @@ void CFeatureExtraction::detectFeatures(
 				unsigned int o_n_per_tile = floor(new_nDesiredFeatures / 8.0f);
 				feats.clear();
 				if (tt > new_nDesiredFeatures)  // We have found too many
-												// features, we have to select
-												// them
+				// features, we have to select
+				// them
 				{
 					// Order the size vector
 					std::sort(tam.begin(), tam.end(), sort_pred());
@@ -372,14 +372,13 @@ CFeatureExtraction::TOptions::TOptions(const TFeatureType _featsType)
 	LogPolarImagesOptions.radius = 30;
 	LogPolarImagesOptions.num_angles =
 		16;  // Log-Polar image patch will have dimensions WxH, with:
-			 // W=num_angles,  H= rho_scale * log(radius)
+	// W=num_angles,  H= rho_scale * log(radius)
 	LogPolarImagesOptions.rho_scale = 5;
 
 	// added by Raghavender Sahdev
 	// AKAZEOptions
-	AKAZEOptions.diffusivity =
-		1;  // KAZE::DIFF_PM_G2 maps to 1;
-			// http://docs.opencv.org/trunk/d3/d61/classcv_1_1KAZE.html
+	AKAZEOptions.diffusivity = 1;  // KAZE::DIFF_PM_G2 maps to 1;
+	// http://docs.opencv.org/trunk/d3/d61/classcv_1_1KAZE.html
 	AKAZEOptions.nOctaveLayers = 4;
 	AKAZEOptions.nOctaves = 4;
 	AKAZEOptions.threshold = 0.001f;
@@ -387,7 +386,7 @@ CFeatureExtraction::TOptions::TOptions(const TFeatureType _featsType)
 	AKAZEOptions.descriptor_size = 0;
 	AKAZEOptions.descriptor_type =
 		5;  // AKAZE::DESCRIPTOR_MLDB maps to 5 in open cv;
-			// http://docs.opencv.org/trunk/d8/d30/classcv_1_1AKAZE.html
+	// http://docs.opencv.org/trunk/d8/d30/classcv_1_1AKAZE.html
 
 	// LSD Options
 	LSDOptions.scale = 2;

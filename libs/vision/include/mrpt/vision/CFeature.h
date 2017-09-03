@@ -64,44 +64,44 @@ class VISION_IMPEXP CFeature : public mrpt::utils::CSerializable
 	mrpt::utils::CImage
 		patch;  //!< A patch of the image surrounding the feature
 	uint16_t patchSize;  //!< Size of the patch (patchSize x patchSize) (it must
-						 //!be an odd number)
+	//! be an odd number)
 	TFeatureType type;  //!< Type of the feature: featNotDefined, featSIFT,
-						//!featKLT,	featHarris, featSURF, featBeacon
+	//! featKLT,	featHarris, featSURF, featBeacon
 	TFeatureTrackStatus track_status;  //!< Status of the feature tracking
-									   //!process (old name: KLT_status)
+	//! process (old name: KLT_status)
 	float response;  //!< A measure of the "goodness" of the feature (old name:
-					 //!KLT_val)
+	//! KLT_val)
 	float orientation;  //!< Main orientation of the feature
 	float scale;  //!< Feature scale into the scale space
 	uint8_t user_flags;  //!< A field for any other flags needed by the user
-						 //!(this has not a predefined meaning)
+	//!(this has not a predefined meaning)
 	uint16_t nTimesSeen;  //!< Number of frames it has been seen in a sequence
-						  //!of images.
+	//! of images.
 	uint16_t nTimesNotSeen;  //!< Number of frames it has not been seen in a
-							 //!sequence of images.
+	//! sequence of images.
 	uint16_t nTimesLastSeen;  //!< Number of frames since it was seen for the
-							  //!last time.
+	//! last time.
 
 	// # added by Raghavender Sahdev
 	float x2[2], y2[2];  //!< Coordinates for a LSD Detector to represent a line
 
 	double depth;  //!< The estimated depth in 3D of this feature wrt the camera
-				   //!in the current frame
+	//! in the current frame
 	double initialDepth;  //!< The estimated depth in 3D of this feature wrt the
-						  //!camera that took its image
+	//! camera that took its image
 	mrpt::math::TPoint3D
 		p3D;  //!< The estimated 3D point of this feature wrt its camera
 	std::deque<double> multiScales;  //!< A set of scales where the
-									 //!multi-resolution descriptor has been
-									 //!computed
+	//! multi-resolution descriptor has been
+	//! computed
 	std::deque<std::vector<double>> multiOrientations;  //!< A vector of main
-														//!orientations (there
-														//!is a vector of
-														//!orientations for each
-														//!scale)
+	//! orientations (there
+	//! is a vector of
+	//! orientations for each
+	//! scale)
 	std::deque<std::vector<std::vector<int32_t>>>
 		multiHashCoeffs;  //!< A set of vectors containing the coefficients for
-						  //!a HASH table of descriptors
+	//! a HASH table of descriptors
 	bool isPointFeature()
 		const;  //!< Return false only for Blob detectors (SIFT, SURF)
 
@@ -114,23 +114,23 @@ class VISION_IMPEXP CFeature : public mrpt::utils::CSerializable
 		std::vector<float> SURF;  //!< SURF feature descriptor
 		std::vector<float> SpinImg;  //!< The 2D histogram as a single row
 		uint16_t SpinImg_range_rows;  //!< The number of rows (corresponding to
-									  //!range bins in the 2D histogram) of the
-									  //!original matrix from which SpinImg was
-									  //!extracted as a vector.
+		//! range bins in the 2D histogram) of the
+		//! original matrix from which SpinImg was
+		//! extracted as a vector.
 		mrpt::math::CMatrix
 			PolarImg;  //!< A polar image centered at the interest point
 		mrpt::math::CMatrix
 			LogPolarImg;  //!< A log-polar image centered at the interest point
 		bool polarImgsNoRotation;  //!< If set to true (manually, default=false)
-								   //!the call to "descriptorDistanceTo" will
-								   //!not consider all the rotations between
-								   //!polar image descriptors (PolarImg,
-								   //!LogPolarImg)
+		//! the call to "descriptorDistanceTo" will
+		//! not consider all the rotations between
+		//! polar image descriptors (PolarImg,
+		//! LogPolarImg)
 		std::deque<std::vector<std::vector<int32_t>>>
 			multiSIFTDescriptors;  //!< A set of SIFT-like descriptors for each
-								   //!orientation and scale of the
-								   //!multiResolution feature (there is a vector
-								   //!of descriptors for each scale)
+		//! orientation and scale of the
+		//! multiResolution feature (there is a vector
+		//! of descriptors for each scale)
 		std::vector<uint8_t> ORB;  //!< ORB feature descriptor
 		// # added by Raghavender Sadev
 		std::vector<uint8_t> BLD;  //!< BLD feature descriptor

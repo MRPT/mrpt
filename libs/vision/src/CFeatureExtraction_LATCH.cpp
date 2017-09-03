@@ -44,8 +44,6 @@ using namespace std;
 #define HAVE_OPENCV_WITH_LATCH 0
 #endif
 
-
-
 /************************************************************************************************
 *						internal_computeLATCHDescriptors
 ************************************************************************************************/
@@ -54,7 +52,8 @@ void CFeatureExtraction::internal_computeLATCHDescriptors(
 {
 	MRPT_START
 #if (!HAVE_OPENCV_WITH_LATCH)
-	THROW_EXCEPTION("This function requires OpenCV modules: xfeatures2d,line_descriptor");
+	THROW_EXCEPTION(
+		"This function requires OpenCV modules: xfeatures2d,line_descriptor");
 #else
 	using namespace cv;
 

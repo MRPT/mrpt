@@ -53,7 +53,7 @@ cv::Mat Tracker::trackThemAll(
 	// mrpt::vision::CGenericFeatureTracker
 	tracker->extra_params["remove_lost_features"] =
 		remove_lost_feats;  //;1;   // automatically remove out-of-image and
-							//badly tracked features
+	// badly tracked features
 
 	tracker->extra_params["add_new_features"] =
 		add_new_feats;  // 1;   // track, AND ALSO, add new features
