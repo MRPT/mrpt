@@ -151,7 +151,8 @@ void CFeatureExtraction::extractFeaturesLSD(
 			ft->response = kl.response;
 			// ft->orientation		= kp.angle;
 			ft->scale = kl.octave;
-			// ft->patchSize		= options.patchSize;		// The size of the
+			// ft->patchSize		= options.patchSize;		// The size of
+			// the
 			// feature
 			// patch
 
