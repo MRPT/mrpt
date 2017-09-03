@@ -627,7 +627,7 @@ float CFeature::descriptorSURFDistanceTo(
 	dist = sqrt(dist);
 	if (normalize_distances)
 		dist /= 0.20f;  // JL: Ad-hoc value! Investigate where does this come
-						// from...
+	// from...
 	return dist;
 }  // end descriptorSURFDistanceTo
 
@@ -854,8 +854,8 @@ uint8_t CFeature::descriptorORBDistanceTo(const CFeature& oFeature) const
 	{
 		uint8_t x_or = t_desc[k] ^ o_desc[k];
 		uint8_t count;  // from : Wegner, Peter (1960), "A technique for
-						// counting ones in a binary computer", Communications
-						// of the ACM 3 (5): 322, doi:10.1145/367236.367286
+		// counting ones in a binary computer", Communications
+		// of the ACM 3 (5): 322, doi:10.1145/367236.367286
 		for (count = 0; x_or; count++)  // ...
 			x_or &= x_or - 1;  // ...
 		distance += count;
@@ -1155,7 +1155,7 @@ void CFeatureList::loadFromTextFile(const std::string& filename)
 					line >> val;
 					feat->descriptors.SIFT[i] =
 						val;  // DON'T read directly SIFT[i] since it's a
-							  // uint8_t, interpreted as a cha
+					// uint8_t, interpreted as a cha
 				}
 
 				if (!line) throw std::string("SIFT-data");
@@ -1175,8 +1175,8 @@ void CFeatureList::loadFromTextFile(const std::string& filename)
 					line >> val;
 					feat->descriptors.BLD[i] =
 						val;  // comment copied from SIFT, DON'T read directly
-							  // SIFT[i] since it's a uint8_t, interpreted as a
-							  // cha
+					// SIFT[i] since it's a uint8_t, interpreted as a
+					// cha
 				}
 
 				if (!line) throw std::string("BLD-data");
@@ -1195,8 +1195,8 @@ void CFeatureList::loadFromTextFile(const std::string& filename)
 					line >> val;
 					feat->descriptors.LATCH[i] =
 						val;  // comment copied from SIFT, DON'T read directly
-							  // SIFT[i] since it's a uint8_t, interpreted as a
-							  // cha
+					// SIFT[i] since it's a uint8_t, interpreted as a
+					// cha
 				}
 
 				if (!line) throw std::string("LATCH-data");

@@ -55,13 +55,15 @@ namespace vision
   *   <b>descriptors</b> can be computed for each point by calling
   *CFeatureExtraction::computeDescriptors :
   *		- SIFT descriptor (Lowe's descriptors).
-  *		- SURF descriptor (OpenCV's implementation - Requires OpenCV 1.1.0 from SVN
+  *		- SURF descriptor (OpenCV's implementation - Requires OpenCV 1.1.0 from
+  *SVN
   *or later).
   *		- Intensity-domain spin images (SpinImage): Creates a vector descriptor
   *with the 2D histogram as a single row.
   *		- A circular patch in polar coordinates (Polar images): The matrix
   *descriptor is a 2D polar image centered at the interest point.
-  *		- A log-polar image patch (Log-polar images): The matrix descriptor is the
+  *		- A log-polar image patch (Log-polar images): The matrix descriptor is
+  *the
   *2D log-polar image centered at the interest point.
   *
   *
@@ -130,26 +132,26 @@ class VISION_IMPEXP CFeatureExtraction
 		{
 			int radius;  // size of the block of pixels used
 			float threshold;  // (default=0.1) for rejecting weak local maxima
-							  // (with min_eig < threshold*max(eig_image))
+			// (with min_eig < threshold*max(eig_image))
 			float min_distance;  // minimum distance between features
 			bool tile_image;  // splits the image into 8 tiles and search for
-							  // the best points in all of them (distribute the
-							  // features over all the image)
+			// the best points in all of them (distribute the
+			// features over all the image)
 		} KLTOptions;
 
 		/** Harris Options */
 		struct VISION_IMPEXP THarrisOptions
 		{
 			float threshold;  // (default=0.005) for rejecting weak local maxima
-							  // (with min_eig < threshold*max(eig_image))
+			// (with min_eig < threshold*max(eig_image))
 			float k;  // k factor for the Harris algorithm
 			float sigma;  // standard deviation for the gaussian smoothing
-						  // function
+			// function
 			int radius;  // size of the block of pixels used
 			float min_distance;  // minimum distance between features
 			bool tile_image;  // splits the image into 8 tiles and search for
-							  // the best points in all of them (distribute the
-							  // features over all the image)
+			// the best points in all of them (distribute the
+			// features over all the image)
 		} harrisOptions;
 
 		/** BCD Options */
@@ -162,12 +164,12 @@ class VISION_IMPEXP CFeatureExtraction
 		{
 			int threshold;  //!< default= 20
 			float min_distance;  //!< (default=5) minimum distance between
-								 //!features (in pixels)
+			//! features (in pixels)
 			bool nonmax_suppression;  //!< Default = true
 			bool use_KLT_response;  //!< (default=false) If true, use
-									//!CImage::KLT_response to compute the
-									//!response at each point instead of the
-									//!FAST "standard response".
+			//! CImage::KLT_response to compute the
+			//! response at each point instead of the
+			//! FAST "standard response".
 		} FASTOptions;
 
 		/** ORB Options */
@@ -192,10 +194,10 @@ class VISION_IMPEXP CFeatureExtraction
 		{
 			TSIFTOptions() : threshold(0.04), edgeThreshold(10) {}
 			TSIFTImplementation implementation;  //!< Default: Hess (OpenCV
-												 //!should be preferred, but its
-												 //!nonfree module is not always
-												 //!available by default in all
-												 //!systems)
+			//! should be preferred, but its
+			//! nonfree module is not always
+			//! available by default in all
+			//! systems)
 			double threshold;  //!< default= 0.04
 			double edgeThreshold;  //!< default= 10
 		} SIFTOptions;
@@ -213,8 +215,8 @@ class VISION_IMPEXP CFeatureExtraction
 			/** SURF Options
 			  */
 			bool rotation_invariant;  //!< Compute the rotation invariant SURF
-									  //!(dim=128) if set to true (default), or
-									  //!the smaller uSURF otherwise (dim=64)
+			//!(dim=128) if set to true (default), or
+			//! the smaller uSURF otherwise (dim=64)
 			int hessianThreshold;  //!< Default: 600
 			int nOctaves;  //!< Default: 2
 			int nLayersPerOctave;  //!< Default: 4
@@ -225,19 +227,19 @@ class VISION_IMPEXP CFeatureExtraction
 			/** SpinImages Options
 			  */
 			unsigned int hist_size_intensity;  //!< Number of bins in the
-											   //!"intensity" axis of the 2D
-											   //!histogram (default=10).
+			//!"intensity" axis of the 2D
+			//! histogram (default=10).
 			unsigned int hist_size_distance;  //!< Number of bins in the
-											  //!"distance" axis of the 2D
-											  //!histogram (default=10).
+			//!"distance" axis of the 2D
+			//! histogram (default=10).
 			float std_dist;  //!< Standard deviation in "distance", used for the
-							 //!"soft histogram" (default=0.4 pixels)
+			//!"soft histogram" (default=0.4 pixels)
 			float std_intensity;  //!< Standard deviation in "intensity", used
-								  //!for the "soft histogram" (default=20 units
-								  //![0,255])
+			//! for the "soft histogram" (default=20 units
+			//![0,255])
 			unsigned int radius;  //!< Maximum radius of the area of which the
-								  //!histogram is built, in pixel units
-								  //!(default=20 pixels)
+			//! histogram is built, in pixel units
+			//!(default=20 pixels)
 		} SpinImagesOptions;
 
 		/** PolarImagesOptions Options
@@ -245,12 +247,12 @@ class VISION_IMPEXP CFeatureExtraction
 		struct VISION_IMPEXP TPolarImagesOptions
 		{
 			unsigned int bins_angle;  //!< Number of bins in the "angular" axis
-									  //!of the polar image (default=8).
+			//! of the polar image (default=8).
 			unsigned int bins_distance;  //!< Number of bins in the "distance"
-										 //!axis of the polar image (default=6).
+			//! axis of the polar image (default=6).
 			unsigned int radius;  //!< Maximum radius of the area of which the
-								  //!polar image is built, in pixel units
-								  //!(default=20 pixels)
+			//! polar image is built, in pixel units
+			//!(default=20 pixels)
 		} PolarImagesOptions;
 
 		/** LogPolarImagesOptions Options
@@ -258,15 +260,15 @@ class VISION_IMPEXP CFeatureExtraction
 		struct VISION_IMPEXP TLogPolarImagesOptions
 		{
 			unsigned int radius;  //!< Maximum radius of the area of which the
-								  //!log polar image is built, in pixel units
-								  //!(default=30 pixels)
+			//! log polar image is built, in pixel units
+			//!(default=30 pixels)
 			unsigned int num_angles;  //!< (default=16) Log-Polar image patch
-									  //!will have dimensions WxH, with:
-									  //!W=num_angles,  H= rho_scale *
-									  //!log(radius)
+			//! will have dimensions WxH, with:
+			//! W=num_angles,  H= rho_scale *
+			//! log(radius)
 			double rho_scale;  //!< (default=5) Log-Polar image patch will have
-							   //!dimensions WxH, with:  W=num_angles,  H=
-							   //!rho_scale * log(radius)
+			//! dimensions WxH, with:  W=num_angles,  H=
+			//! rho_scale * log(radius)
 		} LogPolarImagesOptions;
 
 		// # added by Raghavender Sahdev
@@ -313,7 +315,7 @@ class VISION_IMPEXP CFeatureExtraction
 	};
 
 	TOptions options;  //!< Set all the parameters of the desired method here
-					   //!before calling "detectFeatures"
+	//! before calling "detectFeatures"
 
 	/** Constructor
 	*/

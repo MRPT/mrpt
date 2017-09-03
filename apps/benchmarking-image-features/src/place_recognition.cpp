@@ -389,12 +389,12 @@ string PlaceRecognition::startPlaceRecognition(CFeatureExtraction fext)
 				}
 				else if (descriptor_selected == 3)
 					;  // training_file <<
-					   // feats_testing[i].getByID(j).get()->descriptors.PolarImg.size();
-					   // //!< Polar image descriptor
+				// feats_testing[i].getByID(j).get()->descriptors.PolarImg.size();
+				// //!< Polar image descriptor
 				else if (descriptor_selected == 4)
 					;  // training_file <<
-					   // feats_testing[i].getByID(j).get()->descriptors.LogPolarImg.size();
-					   // //!< Log-Polar image descriptor
+				// feats_testing[i].getByID(j).get()->descriptors.LogPolarImg.size();
+				// //!< Log-Polar image descriptor
 				else if (descriptor_selected == 5)
 				{
 					vector<uint8_t> temp_feat;

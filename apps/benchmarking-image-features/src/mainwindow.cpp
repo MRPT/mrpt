@@ -38,36 +38,36 @@ using namespace cv;
 using namespace cv::xfeatures2d;
 
 QImage qimage_1[MAX_DESC], qimage_2[MAX_DESC];  //!< qimage1 and qimage2 stores
-												//!the descriptor visualizations
+//! the descriptor visualizations
 QLabel *images1[MAX_DESC], *images2[MAX_DESC];  //!< images1 and images2 store
-												//!the descriptor image as a
-												//!qlabel
+//! the descriptor image as a
+//! qlabel
 QImage qimage_1_plots_distances[MAX_DESC];  //!< stores the distances of the
-											//!i'th descriptor from other
-											//!descriptors in image2
+//! i'th descriptor from other
+//! descriptors in image2
 QLabel* images1_plots_distances[MAX_DESC];  //!< stores the image of distances
-											//!of the i'th descriptor as a
-											//!qlabel
+//! of the i'th descriptor as a
+//! qlabel
 QLabel* featureMatchingInfo[MAX_DESC];  //!< stores the matching information for
-										//!the i'th descriptor in image1
+//! the i'th descriptor in image1
 int min_dist_indexes[MAX_DESC];  //!< stores the index of the minimum distance
-								 //!for the best matching descriptor
+//! for the best matching descriptor
 double min_distances[MAX_DESC];  //!< stores the minimum distance for the best
-								 //!matching descriptor
+//! matching descriptor
 
 int successful_matches = 0;
 float threshold_dist1 = 0.9;  //!< first threshold of descriptor distance for
-							  //!finding if its a good match
+//! finding if its a good match
 float threshold_dist2 = 0.1;  //!< second threshold of descriptor distance for
-							  //!finding if its a good match
+//! finding if its a good match
 int repeatibility_threshold = 10;  //!< the repeatability window threshold in
-								   //!pixels for key-points to be detected in
-								   //!subsequent frames
+//! pixels for key-points to be detected in
+//! subsequent frames
 int repeatability = 0;  //!< stores the general repeatability based on threshold
 int number_false_positives = 0;  //!< stores the number of false negatives
 int number_false_negatives = 0;  //!< stores the number of false positives
 int false_pos_neg_threshold = 5;  //!< stores the false positive negative
-								  //!threshold, can be changed if required
+//! threshold, can be changed if required
 
 string repeatibility_result = "";  //!< holds the repeatability result
 string detector_result = "";  //!< holds the detector result
@@ -80,8 +80,8 @@ string rawlogPath = "";  //!< stores the path of the rawlog file dataset
 
 int rawlog_type = 0;  //!< 0 for single, 1 for stereo
 float dist1_p[MAX_DESC], dist2_p[MAX_DESC];  //!< stores the best and the second
-											 //!best matching descriptor
-											 //!distance
+//! best matching descriptor
+//! distance
 
 string detector_names[] = {"KLT Detector",
 						   "Harris Corner Detector",
@@ -1144,7 +1144,7 @@ void MainWindow::on_file_input_choose(int choice)
 		next_button->setVisible(true);
 		prev_button->setVisible(true);
 		if (choice != 4 || choice != 2)  // no need of vision options for stereo
-										 // datasets and rawlog formats
+			// datasets and rawlog formats
 			makeVisionOptionsVisible(true);
 	}
 
@@ -1878,8 +1878,8 @@ void MainWindow::on_browse_button_clicked()
 		resolution_y = img1.getHeight();
 	}
 	else if (currentInputIndex == 1)  // only read the single images if a single
-									  // image or stereo image input is
-									  // specified
+	// image or stereo image input is
+	// specified
 	{
 		file_path1 = inputFilePath->text().toStdString();
 		file_path2 = inputFilePath2->text().toStdString();
@@ -1996,8 +1996,8 @@ void MainWindow::ReadInputFormat()
 		file_path1 = inputFilePath->text().toStdString();
 	}
 	else if (currentInputIndex == 1)  // only read the single images if a single
-									  // image or stereo image input is
-									  // specified
+	// image or stereo image input is
+	// specified
 	{
 		file_path1 = inputFilePath->text().toStdString();
 		file_path2 = inputFilePath2->text().toStdString();
@@ -2062,8 +2062,8 @@ void MainWindow::readFilesFromFolder(int next_prev)
 		for (int i = 0, j = 0; i < files.size(); i++)
 		{
 			if (files.at(i).size() > 4)  // this removes the . and .. in linux
-										 // as all files will have size more
-										 // than 4 .png .jpg etc.
+			// as all files will have size more
+			// than 4 .png .jpg etc.
 			{
 				files_fullpath.push_back(file_path1 + "/" + files.at(i));
 				// cout << files_fullpath.at(j) << endl;
@@ -2075,8 +2075,8 @@ void MainWindow::readFilesFromFolder(int next_prev)
 		for (int i = 0, j = 0; i < files2.size(); i++)
 		{
 			if (files2.at(i).size() > 4)  // this removes the . and .. in linux
-										  // as all files will have size more
-										  // than 4 .png .jpg etc.
+			// as all files will have size more
+			// than 4 .png .jpg etc.
 			{
 				files_fullpath2.push_back(file_path1 + "/" + files2.at(i));
 				// cout << files_fullpath2.at(j) << endl;
@@ -2098,8 +2098,8 @@ void MainWindow::readFilesFromFolder(int next_prev)
 		for (int i = 0, j = 0; i < files.size(); i++)
 		{
 			if (files.at(i).size() > 4)  // this removes the . and .. in linux
-										 // as all files will have size more
-										 // than 4 .png .jpg etc.
+			// as all files will have size more
+			// than 4 .png .jpg etc.
 			{
 				files_fullpath.push_back(file_path1 + "/" + files.at(i));
 				// cout << files_fullpath.at(j) << endl;
@@ -2127,8 +2127,8 @@ void MainWindow::readFilesFromFolder(int next_prev)
 		for (int i = 0, j = 0; i < files2.size(); i++)
 		{
 			if (files2.at(i).size() > 4)  // this removes the . and .. in linux
-										  // as all files will have size more
-										  // than 4 .png .jpg etc.
+			// as all files will have size more
+			// than 4 .png .jpg etc.
 			{
 				files_fullpath2.push_back(file_path2 + "/" + files2.at(i));
 				// cout << files_fullpath2.at(j) << endl;
@@ -2572,8 +2572,8 @@ void MainWindow::onTrackingEnabled(int state)
 			for (int i = 0, j = 0; i < files.size(); i++)
 			{
 				if (files.at(i).size() > 4)  // this removes the . and .. in
-											 // linux as all files will have
-											 // size more than 4 .png .jpg etc.
+				// linux as all files will have
+				// size more than 4 .png .jpg etc.
 				{
 					files_fullpath_tracking.push_back(
 						file_path_temp + "/" + files.at(i));
@@ -2920,9 +2920,9 @@ void MainWindow::store_Training_TestingSets()
 				for (int i = 0, j = 0; i < files.size(); i++)
 				{
 					if (files.at(i).size() > 4)  // this removes the . and .. in
-												 // linux as all files will have
-												 // size more than 4 .png .jpg
-												 // etc.
+					// linux as all files will have
+					// size more than 4 .png .jpg
+					// etc.
 					{
 						training_files_paths.push_back(
 							file_path_temp + "/" + files.at(i));
@@ -2959,9 +2959,9 @@ void MainWindow::store_Training_TestingSets()
 				for (int i = 0, j = 0; i < files.size(); i++)
 				{
 					if (files.at(i).size() > 4)  // this removes the . and .. in
-												 // linux as all files will have
-												 // size more than 4 .png .jpg
-												 // etc.
+					// linux as all files will have
+					// size more than 4 .png .jpg
+					// etc.
 					{
 						testing_files_paths.push_back(
 							file_path_temp + "/" + files.at(i));
@@ -3031,8 +3031,8 @@ void MainWindow::on_place_recog_clicked()
 			testing_files_paths.at(
 				current_place_recog_index %
 				testing_files_paths.size())));  // replace this with initial
-												// image of select an image by
-												// specifying path
+	// image of select an image by
+	// specifying path
 
 	QImage qscaled2 = place_recog_qimage.scaled(
 		IMAGE_WIDTH, IMAGE_HEIGHT, Qt::KeepAspectRatio);
@@ -3083,8 +3083,8 @@ void MainWindow::on_place_recog_clicked_iterate()
 			testing_files_paths.at(
 				current_place_recog_index %
 				testing_files_paths.size())));  // replace this with initial
-												// image of select an image by
-												// specifying path
+	// image of select an image by
+	// specifying path
 	QImage qscaled2 = place_recog_qimage.scaled(
 		IMAGE_WIDTH, IMAGE_HEIGHT, Qt::KeepAspectRatio);
 	if (!qscaled2.isNull()) image1->setPixmap(QPixmap::fromImage(qscaled2));
@@ -3202,12 +3202,12 @@ MainWindow::MainWindow(QWidget* window_gui) : QMainWindow(window_gui)
 	image1 = new my_qlabel;
 	qimage1.load(
 		"../../apps/benchmarking-image-features/images/1.png");  // replace this
-																 // with initial
-																 // image of
-																 // select an
-																 // image by
-																 // specifying
-																 // path
+	// with initial
+	// image of
+	// select an
+	// image by
+	// specifying
+	// path
 	QImage qscaled1 =
 		qimage1.scaled(IMAGE_WIDTH, IMAGE_HEIGHT, Qt::KeepAspectRatio);
 	image1->setPixmap(QPixmap::fromImage(qscaled1));
@@ -3215,12 +3215,12 @@ MainWindow::MainWindow(QWidget* window_gui) : QMainWindow(window_gui)
 	image2 = new QLabel;
 	qimage2.load(
 		"../../apps/benchmarking-image-features/images/2.png");  // replace this
-																 // with initial
-																 // image of
-																 // select an
-																 // image by
-																 // specifying
-																 // path
+	// with initial
+	// image of
+	// select an
+	// image by
+	// specifying
+	// path
 	QImage qscaled2 =
 		qimage2.scaled(IMAGE_WIDTH, IMAGE_HEIGHT, Qt::KeepAspectRatio);
 	image2->setPixmap(QPixmap::fromImage(qimage2));
@@ -3430,12 +3430,12 @@ MainWindow::MainWindow(QWidget* window_gui) : QMainWindow(window_gui)
 
 	place_recog_qimage.load(
 		"../../apps/benchmarking-image-features/images/1.png");  // replace this
-																 // with initial
-																 // image of
-																 // select an
-																 // image by
-																 // specifying
-																 // path
+	// with initial
+	// image of
+	// select an
+	// image by
+	// specifying
+	// path
 	QImage tqscaled1 = place_recog_qimage.scaled(
 		IMAGE_WIDTH, IMAGE_HEIGHT, Qt::KeepAspectRatio);
 	place_recog_image->setPixmap(QPixmap::fromImage(tqscaled1));
@@ -3691,8 +3691,8 @@ string MainWindow::findRepeatability(float mouse_x, float mouse_y)
 		for (int i = 0, j = 0; i < files.size(); i++)
 		{
 			if (files.at(i).size() > 4)  // this removes the . and .. in linux
-										 // as all files will have size more
-										 // than 4 .png .jpg etc.
+			// as all files will have size more
+			// than 4 .png .jpg etc.
 			{
 				files_fullpath.push_back(file_path1_temp + "/" + files.at(i));
 				// cout << files_fullpath.at(j) << endl;
@@ -3825,8 +3825,8 @@ string MainWindow::findRepeatabilityHomography(float mouse_x, float mouse_y)
 		for (int i = 0, j = 0; i < files.size(); i++)
 		{
 			if (files.at(i).size() > 4)  // this removes the . and .. in linux
-										 // as all files will have size more
-										 // than 4 .png .jpg etc.
+			// as all files will have size more
+			// than 4 .png .jpg etc.
 			{
 				files_fullpath.push_back(file_path1_temp + "/" + files.at(i));
 				// cout << files_fullpath.at(j) << endl;
@@ -3850,8 +3850,8 @@ string MainWindow::findRepeatabilityHomography(float mouse_x, float mouse_y)
 		for (int i = 0, j = 0; i < files2.size(); i++)
 		{
 			if (files2.at(i).size() > 4)  // this removes the . and .. in linux
-										  // as all files will have size more
-										  // than 4 .png .jpg etc.
+			// as all files will have size more
+			// than 4 .png .jpg etc.
 			{
 				/// might be a dumb way, but works. checking if the image is not
 				/// png so as to read only text files
@@ -3949,9 +3949,9 @@ string MainWindow::findRepeatabilityHomography(float mouse_x, float mouse_y)
 	/// start checking the repeatability based on the homographies stored in the
 	/// homograph
 	for (int i = 1; i < files_length; i++)  // i starts from 1 as we do not want
-											// to find the repeatability for the
-											// first image as that is where the
-											// key-point comes from
+	// to find the repeatability for the
+	// first image as that is where the
+	// key-point comes from
 	{
 		double temp_x_before =
 			mouse_x;  // (mouse_x, mouse_y) is the key-point selected in image 1
@@ -4183,8 +4183,8 @@ void MainWindow::Mouse_Pressed()
 
 	mouse_x = image1->x;
 	mouse_y = image1->y;  // -40 as it is the padding added due to a hidden
-						  // reason (hidden reason: mapping was missing from
-						  // label to image actual frame size)
+	// reason (hidden reason: mapping was missing from
+	// label to image actual frame size)
 
 	double x[numDesc1], y[numDesc1];
 	for (int i = 0; i < numDesc1; i++)
@@ -4378,9 +4378,9 @@ void MainWindow::Mouse_Pressed()
 		{
 			desc_VisualizeGrid->addWidget(
 				images_plots_sift_surf, 0, 2, 1, 1);  // add the image distance
-													  // plot with respect to
-													  // other features in image
-													  // 1
+			// plot with respect to
+			// other features in image
+			// 1
 			images_plots_sift_surf->setVisible(true);
 		}
 
@@ -4481,9 +4481,9 @@ void MainWindow::Mouse_Pressed()
 			plotInfo->setVisible(true);
 			desc_VisualizeGrid->addWidget(
 				images_plots_sift_surf, 0, 2, 1, 1);  // add the image distance
-													  // plot with respect to
-													  // other features in image
-													  // 1
+			// plot with respect to
+			// other features in image
+			// 1
 			images_plots_sift_surf->setVisible(true);
 		}
 

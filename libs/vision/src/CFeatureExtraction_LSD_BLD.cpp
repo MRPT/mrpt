@@ -39,14 +39,14 @@ using namespace std;
 #define HAVE_OPENCV_WITH_LSD 0
 #endif
 
-
 void CFeatureExtraction::extractFeaturesLSD(
 	const mrpt::utils::CImage& inImg, CFeatureList& feats, unsigned int init_ID,
 	unsigned int nDesiredFeatures, const TImageROI& ROI) const
 {
 	MRPT_START
 #if (!HAVE_OPENCV_WITH_LSD)
-	THROW_EXCEPTION("This function requires OpenCV modules: xfeatures2d, line_descriptor");
+	THROW_EXCEPTION(
+		"This function requires OpenCV modules: xfeatures2d, line_descriptor");
 #else
 	using namespace cv;
 
@@ -151,7 +151,8 @@ void CFeatureExtraction::extractFeaturesLSD(
 			ft->response = kl.response;
 			// ft->orientation		= kp.angle;
 			ft->scale = kl.octave;
-			// ft->patchSize		= options.patchSize;		// The size of the feature
+			// ft->patchSize		= options.patchSize;		// The size of the
+			// feature
 			// patch
 
 			if (options.patchSize > 0)
@@ -178,7 +179,8 @@ void CFeatureExtraction::internal_computeBLDLineDescriptors(
 	const mrpt::utils::CImage& in_img, CFeatureList& in_features) const
 {
 #if (!HAVE_OPENCV_WITH_LSD)
-	THROW_EXCEPTION("This function requires OpenCV modules: xfeatures2d, line_descriptor");
+	THROW_EXCEPTION(
+		"This function requires OpenCV modules: xfeatures2d, line_descriptor");
 #else
 	using namespace cv;
 

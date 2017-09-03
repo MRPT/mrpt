@@ -53,80 +53,80 @@ class PlaceRecognition
 {
    public:
 	vector<string> training_paths;  //!< this holds the training image paths for
-									//!the training dataset
+	//! the training dataset
 	vector<string> testing_paths;  //!< this holds the testing image paths for
-								   //!the testing dataset
+	//! the testing dataset
 	TDescriptorType desc_to_compute;  //!< this holds the type of the descriptor
-									  //!which the user selects from the GUI
+	//! which the user selects from the GUI
 	int numFeats;  //!< the number of features which the user wants to extract
-				   //!from each image
+	//! from each image
 	int descriptor_selected;  //!< the type of descriptor the user selects from
-							  //!the GUI
+	//! the GUI
 
 	vector<float>* training_words_org;  //!< the training words/descriptors
-										//!extracted from the training dataset
-										//!for descriptor SURF
+	//! extracted from the training dataset
+	//! for descriptor SURF
 	vector<uint8_t>* training_words_org2;  //!< the training words/descriptors
-										   //!extracted from the training
-										   //!dataset for descriptors SIFT,
-										   //!ORB,BLD,LATCH
+	//! extracted from the training
+	//! dataset for descriptors SIFT,
+	//! ORB,BLD,LATCH
 
 	int* training_word_labels_org;  //!< this holds the training labels
-									//!associated with each word in
-									//!training_words_org / training_words_org2
-									//!variables
+	//! associated with each word in
+	//! training_words_org / training_words_org2
+	//! variables
 	int total_vocab_size_org;  //!< the total number of words/descriptors
-							   //!extracted from the training dataset
+	//! extracted from the training dataset
 
 	CFeatureList* feats_testing_org;  //!< this is pointer to all the features
-									  //!extracted from the testing images
-									  //!dataset
+	//! extracted from the testing images
+	//! dataset
 	int current_index_test_image;  //!< this is variable to iterate over the
-								   //!testing images when the user wants to
-								   //!perform place recognition over the testing
-								   //!dataset
+	//! testing images when the user wants to
+	//! perform place recognition over the testing
+	//! dataset
 
 	bool
 		trained_flag;  //!< this flag is to perform feature extraction only once
 
 	bool training_file_written_flag;  //!< this flag is to write the features to
-									  //!the files only once
+	//! the files only once
 
 	CFeatureList* feats_training2;
 	CFeatureList* feats_testing2;
 
 	/// stores the number of i'th class instances at the position index 'i'
 	int training_count[NUM_CLASSES];  //!< this has the class specific counts
-									  //!for the occurrence of each class type
-									  //!in the training dataset
+	//! for the occurrence of each class type
+	//! in the training dataset
 	int testing_count[NUM_CLASSES];  //!< this has the class specific counts for
-									 //!the occurrence of each class type in the
-									 //!testing dataset
+	//! the occurrence of each class type in the
+	//! testing dataset
 
 	int len_training;  //!< the length of the training images dataset / number
-					   //!of images
+	//! of images
 	int len_testing;  //!< the length of the testing images dataset / number of
-					  //!images
+	//! images
 
 	int correct;  //!< counter to count the current number of correct
-				  //!classifications of the place
+	//! classifications of the place
 	int incorrect;  //!< counter to count the current number of incorrect
-					//!classifications of the place
+	//! classifications of the place
 
 	CFeatureList* feats_training;  //!< the features extracted from all the
-								   //!training images dataset
+	//! training images dataset
 	CFeatureList* feats_testing;  //!< the features extracted from all the
-								  //!testing images dataset
+	//! testing images dataset
 
 	CImage* training;  //!< the images present in the training images dataset
 	CImage* testing;  //!< the images present in the testing images dataset
 
 	vector<float>* training_words2;  //!< holds training words/descriptors for
-									 //!all points in the training dataset for
-									 //!SURF
+	//! all points in the training dataset for
+	//! SURF
 	vector<uint8_t>* training_words1;  //!< holds training words/descriptors for
-									   //!all points in the training dataset for
-									   //!SIFT,ORB,BLD,LATCH
+	//! all points in the training dataset for
+	//! SIFT,ORB,BLD,LATCH
 
    public:
 	/**
