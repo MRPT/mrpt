@@ -29,10 +29,11 @@ void VisualOdometry::display()
 {
 	for (int i = 2; i < MAX_FRAME; i++)
 	{
-		cout << ground_truth_x[i] << " gt_x " << predicted_x[i] << " pd_x"
+		/*cout << ground_truth_x[i] << " gt_x " << predicted_x[i] << " pd_x"
 			 << endl;
 		cout << ground_truth_y[i] << " gt_y " << predicted_y[i] << " pd_y"
 			 << endl;
+			 */
 	}
 }
 
@@ -54,8 +55,8 @@ double VisualOdometry::computeOdomError()
 						 pow((ground_truth_y[i] - ground_truth_y[i + 1]), 2)));
 	}
 	double percentage = abs(error - total) / (double)total * 100.00;
-	cout << error << " error " << total << " total " << percentage
-		 << " % accuracy" << endl;
+	//cout << error << " error " << total << " total " << percentage
+	//	 << " % accuracy" << endl;
 	// display();
 	return percentage;
 }
@@ -103,7 +104,7 @@ double VisualOdometry::getAbsoluteScale(
 
 	else
 	{
-		cout << "Unable to open file";
+		cout << "Unable to open ground truth file for Visual Odometry";
 		return 0;
 	}
 
@@ -129,17 +130,17 @@ vector<double> VisualOdometry::getCalibrationParams(string calibration_file)
 
 	if (myfile.is_open())
 	{
-		cout << " before while " << endl;
+		//cout << " before while " << endl;
 		while ((getline(myfile, line)) && (i < 1))
 		{
-			cout << line << " file line " << endl;
+			//cout << line << " file line " << endl;
 			std::istringstream in(line);
 
 			// cout << line << '\n';
 			for (int j = 0; j < 12; j++)
 			{
 				in >> z;
-				cout << z << " zzz " << endl;
+				//cout << z << " zzz " << endl;
 				if (j == 7)
 				{
 					point_y = std::stod(z);
@@ -162,10 +163,10 @@ vector<double> VisualOdometry::getCalibrationParams(string calibration_file)
 
 	else
 	{
-		cout << "Unable to open file";
+		cout << "Unable to open calibration file for Visual Odometry";
 		return params;
 	}
-	cout << focal << " f " << point_x << " p_X " << point_y << " p_Y " << endl;
+	//cout << focal << " f " << point_x << " p_X " << point_y << " p_Y " << endl;
 	params.push_back(focal);
 	params.push_back(point_x);
 	params.push_back(point_y);
@@ -178,7 +179,7 @@ vector<double> VisualOdometry::getCalibrationParams(string calibration_file)
 void VisualOdometry::storeGroundTruth(string poses_ground_truth)
 {
 	char ch = poses_ground_truth.at(poses_ground_truth.length() - 5);
-	cout << ch << endl;
+	//cout << ch << endl;
 	vector<int> shifts = computeStartingPoint(ch);
 	string line;
 	int i = 0;
@@ -200,14 +201,14 @@ void VisualOdometry::storeGroundTruth(string poses_ground_truth)
 				{
 					y = z;
 					ground_truth_y[i] = (int)y + shifts.at(1);
-					cout << y << " y ";
+					//cout << y << " y ";
 				}
 				if (j == 3)
 				{
 					x = z;
 
 					ground_truth_x[i] = (int)x + shifts.at(0);
-					cout << x << " x " << endl;
+					//cout << x << " x " << endl;
 				}
 			}
 			i++;
@@ -216,7 +217,7 @@ void VisualOdometry::storeGroundTruth(string poses_ground_truth)
 	}
 	else
 	{
-		cout << "Unable to open file";
+		cout << "Unable to open ground truth file";
 	}
 }
 
@@ -265,7 +266,7 @@ Mat VisualOdometry::generateVO(
 	ofstream myfile;
 	myfile.open("results1_1.txt");
 
-	cout << "in generateVO method" << endl;
+	//cout << "in generateVO method" << endl;
 
 	double scale = 1.00;
 	// char filename1[200];
@@ -321,14 +322,14 @@ Mat VisualOdometry::generateVO(
 	// files
 	// WARNING: different sequences in the KITTI VO dataset have different
 	// intrinsic/extrinsic parameters
-	cout << calibration_file << " calibration file " << endl;
+	//cout << calibration_file << " calibration file " << endl;
 	vector<double> cameraParams = getCalibrationParams(calibration_file);
 
 	double focal = cameraParams.at(0);  // 718.8560;
 	cv::Point2d pp(
 		cameraParams.at(1), cameraParams.at(2));  // pp(607.1928, 185.2157);
 
-	cout << focal << "focal " << pp.x << " x " << pp.y << " y " << endl;
+	//cout << focal << "focal " << pp.x << " x " << pp.y << " y " << endl;
 	// double focal = 718.8560;
 	// cv::Point2d pp(607.1928, 185.2157);
 	// recovering the pose and the essential matrix
@@ -451,14 +452,14 @@ Mat VisualOdometry::generateVO(
 
 	clock_t end = clock();
 	double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-	cout << "Total time taken: " << elapsed_secs << "s" << endl;
+	//cout << "Total time taken: " << elapsed_secs << "s" << endl;
 
 	storeGroundTruth(groundtruth);
 	for (int i = 0; i < MAX_FRAME; i++)
 	{
 		int x = (int)ground_truth_x[i];
 		int y = (int)ground_truth_y[i];
-		cout << "x: " << x << " y: " << y << endl;
+		//cout << "x: " << x << " y: " << y << endl;
 
 		circle(traj, Point(x, y), 1, CV_RGB(0, 255, 0), 2);
 	}

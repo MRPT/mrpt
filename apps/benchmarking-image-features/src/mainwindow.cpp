@@ -34,6 +34,8 @@ using namespace mrpt::math;
 using namespace mrpt;
 using namespace mrpt::poses;
 using namespace std;
+
+
 using namespace cv;
 using namespace cv::xfeatures2d;
 
@@ -147,13 +149,13 @@ void MainWindow::on_button_generate_clicked()
 				min_dist, max_dist, &min_dist_idx, &max_dist_idx);
 
 			const double dist_std = mrpt::math::stddev(distances);
-			cout << "Min Distance : " << min_dist << " for image2 feature # "
-				 << min_dist_idx << " Distances sigma " << dist_std
-				 << " I Feature X : " << featsImage1.getFeatureX(i1)
-				 << " I Feature Y : " << featsImage1.getFeatureY(i1)
-				 << " Feature X : " << featsImage2.getFeatureX(min_dist_idx)
-				 << " Feature Y : " << featsImage2.getFeatureY(min_dist_idx)
-				 << endl;
+			//cout << "Min Distance : " << min_dist << " for image2 feature # "
+			//	 << min_dist_idx << " Distances sigma " << dist_std
+			//	 << " I Feature X : " << featsImage1.getFeatureX(i1)
+			//	 << " I Feature Y : " << featsImage1.getFeatureY(i1)
+			//	 << " Feature X : " << featsImage2.getFeatureX(min_dist_idx)
+			//	 << " Feature Y : " << featsImage2.getFeatureY(min_dist_idx)
+			//	 << endl;
 			min_dist_indexes[i1] = min_dist_idx;
 			min_distances[i1] = min_dist;
 
@@ -512,7 +514,7 @@ void MainWindow::on_button_generate_clicked()
 
 	stringstream descript_info;
 	descript_info << "<br/>Number of successful matches: " << successful_matches
-				  << "<br/>Number of Keypoints: " << numKeypoints1
+				  << "<br/>Number of Key-points: " << numKeypoints1
 				  << "<br/>Percentage of successful matches: "
 				  << percent_success << endl;
 
@@ -630,8 +632,8 @@ void MainWindow::on_descriptor_choose(int choice)
 	}
 	else if (choice == 5)  // ORB Descriptor
 	{
-		param1_desc->setText("Extract Patch ");
-		param2_desc->setText("Min Distance:: ");
+		param1_desc->setText("Min Distance ");
+		param2_desc->setText("If extract patch true/false: ");
 		param3_desc->setText("Number of levels: ");
 		param4_desc->setText("Scale factor: ");
 		param1_edit_desc->setText("0");
@@ -920,7 +922,7 @@ void MainWindow::makeVisionOptionsVisible(bool flag)
 ************************************************************************************************/
 void MainWindow::readRawlogFiles(string rawlog)
 {
-	cout << "I got : " << rawlog << endl;
+	//cout << "Rawlog file selected: " << rawlog << endl;
 
 	/// APPROACH 1: not required
 	/*mrpt::utils::CFileGZInputStream rawlog_stream_;// = new CFileGZInputStream
@@ -948,7 +950,7 @@ void MainWindow::readRawlogFiles(string rawlog)
 	/// APPROACH 2 this is what we need
 	CRawlog dataset;
 	dataset.loadFromRawLogFile(rawlog);
-	cout << dataset.size() << " entries loaded." << endl;
+	//cout << "Rawlog dataset size: " << dataset.size() << " entries loaded." << endl;
 
 	string errorMsg;
 	ofstream ostream1;
@@ -964,7 +966,7 @@ void MainWindow::readRawlogFiles(string rawlog)
 				/// to be implemented
 				case CRawlog::etSensoryFrame:
 				{
-					cout << "etSensoryFrame " << i << endl;
+					//cout << "etSensoryFrame " << i << endl;
 					CSensoryFrame::Ptr SF = dataset.getAsObservations(i);
 
 					for (unsigned int k = 0; k < SF->size(); k++)
@@ -975,8 +977,8 @@ void MainWindow::readRawlogFiles(string rawlog)
 							CObservationStereoImages::Ptr obsSt =
 								SF->getObservationByIndexAs<
 									CObservationStereoImages::Ptr>(k);
-							cout << " inside stereo Sensory Frame"
-								 << obsSt->imageLeft.getHeight() << endl;
+							//cout << " inside stereo Sensory Frame"
+							//	 << obsSt->imageLeft.getHeight() << endl;
 						}
 						if (SF->getObservationByIndex(k)->GetRuntimeClass() ==
 							CLASS_ID(CObservationImage))
@@ -985,26 +987,26 @@ void MainWindow::readRawlogFiles(string rawlog)
 								SF->getObservationByIndexAs<
 									CObservationImage::Ptr>(k);
 
-							cout << " inside monocular Sensory Frame"
-								 << obsIm->image.getHeight() << endl;
+							//cout << " inside monocular Sensory Frame"
+							//	 << obsIm->image.getHeight() << endl;
 							Mat cvImg =
 								cv::cvarrToMat(obsIm->image.getAs<IplImage>());
-							imshow("view", cvImg);
-							waitKey(1);
+							//imshow("view", cvImg);
+							//waitKey(1);
 						}
 					}
 				}  // end of etSensoryFrame case
 				break;
 				case CRawlog::etObservation:
 				{
-					cout << "etObservation " << i << endl;
+					//cout << "etObservation " << i << endl;
 					CObservation::Ptr o = dataset.getAsObservation(i);
 					// cout << o->sensorLabel << " type : etObs" <<
 					// dataset.getType(i) << " index: " << i << endl;
 
 					if (IS_CLASS(o, CObservationStereoImages))
 					{
-						cout << " stereo Image detected " << endl;
+						//cout << " stereo Image detected " << endl;
 						CObservationStereoImages::Ptr obsSt =
 							std::dynamic_pointer_cast<CObservationStereoImages>(
 								o);
@@ -1019,9 +1021,9 @@ void MainWindow::readRawlogFiles(string rawlog)
 						inputFilePath->setText(
 							QString::fromStdString(str.str()));
 
-						cout << obsSt->imageLeft
-									.getExternalStorageFileAbsolutePath()
-							 << " external " << endl;
+						//cout << obsSt->imageLeft
+						//			.getExternalStorageFileAbsolutePath()
+						//	 << " external " << endl;
 
 						rawlog_type = 1;
 
@@ -1032,7 +1034,7 @@ void MainWindow::readRawlogFiles(string rawlog)
 					}
 					else if (IS_CLASS(o, CObservationImage))
 					{
-						cout << "monocular image detected " << endl;
+						//cout << "monocular image detected " << endl;
 						CObservationImage::Ptr obsIm =
 							std::dynamic_pointer_cast<CObservationImage>(o);
 
@@ -1059,14 +1061,15 @@ void MainWindow::readRawlogFiles(string rawlog)
 				break;
 				case CRawlog::etActionCollection:
 				{
-					cout << "etActionCollection " << i << endl;
-					cout << " type : etAC " << dataset.getType(i)
-						 << " index: " << i << endl;
+					//cout << "etActionCollection " << i << endl;
+					//cout << " type : etAC " << dataset.getType(i)
+					//	 << " index: " << i << endl;
 					break;
 				}  // end of etActionCollection
 
 				default:
-					cout << " I am in default block" << endl;
+                    ;// nothing goes here;
+					//cout << " I am in default block" << endl;
 			}  // end of switch case block
 			/// this breaks out of the for loop as only the path of the folder
 			/// storing the images is required.
@@ -1078,8 +1081,8 @@ void MainWindow::readRawlogFiles(string rawlog)
 		}  // end of the try block
 		catch (exception& e)
 		{
-			cout << " CATCH CATCH CATCH BLOCK %$#@%($@*%(&@(%&@(%@(#$%(@#^$%"
-				 << endl;
+			//cout << " CATCH CATCH CATCH BLOCK %$#@%($@*%(&@(%&@(%@(#$%(@#^$%"
+			//	 << endl;
 			errorMsg = e.what();
 			break;
 		}
@@ -1202,7 +1205,7 @@ void MainWindow::on_file_input_choose(int choice)
 void MainWindow::fillDetectorInfo()
 {
 	numFeats = numFeaturesLineEdit->text().toInt();
-	cout << file_path1 << " File Path in fillDetectorInfo " << endl;
+	//cout << file_path1 << " File Path in fillDetectorInfo " << endl;
 
 	img1.loadFromFile(file_path1);
 	resolution_x = img1.getWidth();
@@ -1213,8 +1216,8 @@ void MainWindow::fillDetectorInfo()
 		 rawlog_type == 1))  // stereo image or stereo dataset
 		img2.loadFromFile(file_path2);
 
-	cout << file_path1 << " File Path in fillDetectorInfo AFTER IMAGE READ "
-		 << endl;
+	//cout << file_path1 << " File Path in fillDetectorInfo AFTER IMAGE READ "
+	//	 << endl;
 
 	if (detector_selected == 0)  // 0 = KLT Detector
 	{
@@ -1231,7 +1234,7 @@ void MainWindow::fillDetectorInfo()
 		fext.options.KLTOptions.threshold = klt_opts.threshold;
 		fext.options.KLTOptions.tile_image = klt_opts.tile_image;
 
-		cout << "detecting KLT Features " << endl;
+		//cout << "detecting KLT Features " << endl;
 	}
 	else if (detector_selected == 1)  // Harris Features
 	{
@@ -1253,7 +1256,7 @@ void MainWindow::fillDetectorInfo()
 		// fext.options.harrisOptions.min_distance = 100;
 		fext.options.harrisOptions.tile_image = harris_opts.tile_image;
 
-		cout << "detecting Harris Features " << endl;
+		//cout << "detecting Harris Features " << endl;
 	}
 
 	else if (detector_selected == 2)  // SIFT Detector
@@ -1267,7 +1270,7 @@ void MainWindow::fillDetectorInfo()
 		// fext.options.SIFTOptions.implementation =
 		// CFeatureExtraction::CSBinary;
 
-		cout << "detecting SIFT Features " << endl;
+		//cout << "detecting SIFT Features " << endl;
 	}
 	else if (detector_selected == 3)  // 3= SURF Detector
 	{
@@ -1278,7 +1281,7 @@ void MainWindow::fillDetectorInfo()
 		string temp_str = param4_edit->text().toStdString();
 		bool temp_bool = temp_str.compare("true") == 0;
 		SURF_opts.rotation_invariant = temp_bool;
-		cout << temp_bool << endl;
+		//cout << temp_bool << endl;
 
 		fext.options.SURFOptions.hessianThreshold = SURF_opts.hessianThreshold;
 		fext.options.SURFOptions.nLayersPerOctave = SURF_opts.nLayersPerOctave;
@@ -1399,7 +1402,7 @@ void MainWindow::fillDescriptorInfo()
 		string temp_str = param4_edit_desc->text().toStdString();
 		bool temp_bool = temp_str.compare("true") == 0;
 		SURF_opts.rotation_invariant = temp_bool;
-		cout << temp_bool << endl;
+		//cout << temp_bool << endl;
 
 		fext.options.SURFOptions.hessianThreshold = SURF_opts.hessianThreshold;
 		fext.options.SURFOptions.nLayersPerOctave = SURF_opts.nLayersPerOctave;
@@ -1459,7 +1462,7 @@ void MainWindow::fillDescriptorInfo()
 		string temp_str = param1_edit_desc->text().toStdString();
 		bool temp_bool = temp_str.compare("true") == 0;
 		ORB_opts.extract_patch = temp_bool;
-		cout << temp_bool << endl;
+		//cout << temp_bool << endl;
 
 		ORB_opts.min_distance = param2_edit_desc->text().toInt();
 		ORB_opts.n_levels = param3_edit_desc->text().toInt();
@@ -1491,7 +1494,7 @@ void MainWindow::fillDescriptorInfo()
 		string temp_str = param2_edit_desc->text().toStdString();
 		bool temp_bool = temp_str.compare("true") == 0;
 		LATCH_opts.rotationInvariance = temp_bool;
-		cout << temp_bool << endl;
+		//cout << temp_bool << endl;
 
 		LATCH_opts.bytes = param1_edit_desc->text().toInt();
 		LATCH_opts.half_ssd_size = param3_edit_desc->text().toInt();
@@ -1560,11 +1563,20 @@ void MainWindow::on_detector_button_clicked()
 	elapsedTime_detector = clock.Tac();
 
 	/// save to file
-	cout << "before saving to file" << endl;
+	//cout << "before saving to file" << endl;
 	featsImage1.saveToTextFile("./KeyPoints1.txt");
 
-	cout << "after saving to file" << endl;
+	//cout << "after saving to file" << endl;
 	cvImg1 = cv::cvarrToMat(img1.getAs<IplImage>());
+
+
+    /// converting to color images to draw markers in correct color
+    cv::Mat temp1(cvImg1.cols, cvImg1.rows, cvImg1.type());
+    //cout << "channels " << temp1.channels() << " dims" << temp1.dims << endl;
+    if (temp1.channels() == 3)
+        cvtColor(cvImg1, temp1, CV_BGR2RGB);
+    else
+        cvtColor(cvImg1, temp1, CV_GRAY2RGB);
 
 	/// Drawing a marker around key-points for image 1
 	for (int i = 0; i < featsImage1.size(); i++)
@@ -1574,19 +1586,14 @@ void MainWindow::on_detector_button_clicked()
 		// circle(cvImg1, Point(temp_x, temp_y), 5, Scalar(0,255,0),
 		// CIRCLE_THICKNESS, 8, 0);
 		drawMarker(
-			cvImg1, Point(temp_x, temp_y), Scalar(0, 255, 0), MARKER_CROSS,
+			temp1, Point(temp_x, temp_y), Scalar(0, 255, 0), MARKER_CROSS,
 			CROSS_SIZE, CROSS_THICKNESS);
 	}
-	drawLineLSD(cvImg1, 0);  /// 0 means draw line on left image
+	drawLineLSD(temp1, 0);  /// 0 means draw line on left image
 
-	/// converting the cv::Mat to a QImage and changing the resolution of the
-	/// output images
-	cv::Mat temp1(cvImg1.cols, cvImg1.rows, cvImg1.type());
-	cout << "channels " << temp1.channels() << " dims" << temp1.dims << endl;
-	if (temp1.channels() == 3)
-		cvtColor(cvImg1, temp1, CV_BGR2RGB);
-	else
-		cvtColor(cvImg1, temp1, CV_GRAY2RGB);
+
+    /// converting the cv::Mat to a QImage and changing the resolution of the
+    /// output images
 
 	QImage dest1 = QImage(
 		(uchar*)temp1.data, temp1.cols, temp1.rows, temp1.step,
@@ -1595,7 +1602,7 @@ void MainWindow::on_detector_button_clicked()
 		dest1.scaled(IMAGE_WIDTH, IMAGE_HEIGHT, Qt::KeepAspectRatio);
 	image1->setPixmap(QPixmap::fromImage(qscaled1));
 
-	cout << "Number of Features in image 1: " << featsImage1.size() << endl;
+	//cout << "Number of Features in image 1: " << featsImage1.size() << endl;
 
 	if (currentInputIndex == 1 || currentInputIndex == 4 ||
 		(currentInputIndex == 2 && rawlog_type == 1))
@@ -1607,6 +1614,16 @@ void MainWindow::on_detector_button_clicked()
 		// img2.loadFromFile(file_path2);
 		cv::Mat cvImg2 = cv::cvarrToMat(img2.getAs<IplImage>());
 
+        /// converting to color to draw coloured markers
+        cv::Mat temp2(cvImg2.cols, cvImg2.rows, cvImg2.type());
+        //cout << "dimensions " << temp2.dims << endl;
+        if (temp2.channels() == 3)
+            cvtColor(cvImg2, temp2, CV_BGR2RGB);
+        else
+            cvtColor(cvImg2, temp2, CV_GRAY2RGB);
+
+
+
 		/// Drawing a marker around key-points for image 2
 		for (int i = 0; i < featsImage2.size(); i++)
 		{
@@ -1615,17 +1632,12 @@ void MainWindow::on_detector_button_clicked()
 			// circle(cvImg2, Point(temp_x, temp_y), 5, Scalar(0,255,0),
 			// CIRCLE_THICKNESS, 8, 0);
 			drawMarker(
-				cvImg2, Point(temp_x, temp_y), Scalar(0, 255, 0), MARKER_CROSS,
+				temp2, Point(temp_x, temp_y), Scalar(0, 255, 0), MARKER_CROSS,
 				CROSS_SIZE, CROSS_THICKNESS);
 		}
-		drawLineLSD(cvImg2, 1);  // 1 means draw on right image
+		drawLineLSD(temp2, 1);  // 1 means draw on right image
 
-		cv::Mat temp2(cvImg2.cols, cvImg2.rows, cvImg2.type());
-		cout << "dimensions " << temp2.dims << endl;
-		if (temp2.channels() == 3)
-			cvtColor(cvImg2, temp2, CV_BGR2RGB);
-		else
-			cvtColor(cvImg2, temp2, CV_GRAY2RGB);
+
 
 		QImage dest2 = QImage(
 			(uchar*)temp2.data, temp2.cols, temp2.rows, temp2.step,
@@ -1633,7 +1645,7 @@ void MainWindow::on_detector_button_clicked()
 		QImage qscaled2 =
 			dest2.scaled(IMAGE_WIDTH, IMAGE_HEIGHT, Qt::KeepAspectRatio);
 		image2->setPixmap(QPixmap::fromImage(qscaled2));
-		cout << "Number of Features in image 2: " << featsImage2.size() << endl;
+		//cout << "Number of Features in image 2: " << featsImage2.size() << endl;
 	}
 
 	/// compute dispersion of the image // maybe change the following to a
@@ -1660,16 +1672,16 @@ void MainWindow::on_detector_button_clicked()
 
 	stringstream detect_info;
 	detect_info << "<b> Detector Info </b>"
-				<< "<br/>Detector_Selected: "
+				<< "<br/>Detector Selected: "
 				<< detector_names[detector_selected]
 				<< "<br/>Time Taken: " << elapsedTime_detector
 				<< "<br/>Number of Detected Key-points in Image 1: "
 				<< featsImage1.size()
 				<< "<br/>Resolution of the Image: " << cvImg1.rows << ", "
 				<< cvImg1.cols
-				<< "<br/>Dispersion of keypoints in Image1 in X direction: "
+				<< "<br/>Dispersion of Key-points in Image1 in X direction: "
 				<< standard_dev_x
-				<< "<br/>Dispersion of keypoints in Image1 in Y direction: "
+				<< "<br/>Dispersion of Key-points in Image1 in Y direction: "
 				<< standard_dev_y;
 	if (currentInputIndex == 1 || currentInputIndex == 4 ||
 		(currentInputIndex == 2 && rawlog_type == 1))
@@ -1747,7 +1759,7 @@ void MainWindow::on_descriptor_button_clicked()
 		}
 		featsImage1.saveToTextFile("./Key_Descriptors1.txt");
 
-		cout << featsImage1.size() << endl;
+		//cout << featsImage1.size() << endl;
 	}
 	// storing size of descriptors for visualizer
 	if (descriptor_selected == 0)
@@ -1801,7 +1813,7 @@ void MainWindow::on_descriptor_button_clicked()
 	descriptor_result = temp_info2;
 
 	descriptor_info->setText(QString::fromStdString(concat.str()));
-	cout << "Time Elapsed : " << tic.Tac() << endl;
+	//cout << "Time Elapsed : " << tic.Tac() << endl;
 	detector_info->setVisible(false);
 	descriptor_info2->setVisible(false);
 	descriptor_info3->setVisible(false);
@@ -1825,7 +1837,7 @@ void MainWindow::showEvaluation(int mode)
 	descriptor_info->setVisible(false);
 	evaluation_info->setVisible(true);
 
-	cout << "end of show evaluation function" << endl;
+	//cout << "end of show evaluation function" << endl;
 }
 
 /************************************************************************************************
@@ -2009,14 +2021,14 @@ void MainWindow::ReadInputFormat()
 ************************************************************************************************/
 void MainWindow::readFilesFromFolder(int next_prev)
 {
-	cout << " You clicked me" << endl;
+	//cout << " You clicked me" << endl;
 	ReadInputFormat();
 	flag_read_files_bug = false;
 
 	file_path1 = inputFilePath->text().toStdString();
 
-	cout << file_path1 << endl;
-	cout << currentInputIndex << endl;
+	//cout << file_path1 << endl;
+	//cout << currentInputIndex << endl;
 
 	/// used for the single images dataset case
 	DIR* dir;
@@ -2110,7 +2122,7 @@ void MainWindow::readFilesFromFolder(int next_prev)
 	sort(
 		files_fullpath.begin(),
 		files_fullpath.end());  // Use the start and end like this
-	cout << current_imageIndex << "current IMage index" << endl;
+	//cout << current_imageIndex << "current IMage index" << endl;
 	file_path1 = files_fullpath.at(current_imageIndex);
 
 	/// DO the following only if user selects option for providing a STEREO
@@ -2123,7 +2135,7 @@ void MainWindow::readFilesFromFolder(int next_prev)
 
 		dir2 = opendir(file_path2.c_str());
 		while (pdir2 = readdir(dir2)) files2.push_back(pdir2->d_name);
-		cout << "after while before for" << endl;
+		//cout << "after while before for" << endl;
 		for (int i = 0, j = 0; i < files2.size(); i++)
 		{
 			if (files2.at(i).size() > 4)  // this removes the . and .. in linux
@@ -2173,6 +2185,14 @@ void MainWindow::displayImagesWithoutDetector()
 	featsImage1.clear();
 	fext.detectFeatures(img1, featsImage1, 0, numFeats);
 
+    /// converting to color to draw markers in color for both color and grayscale images
+    cv::Mat temp1(cvImg1.cols, cvImg1.rows, cvImg1.type());
+    //cout << "dimensions " << temp1.dims << endl;
+    if (temp1.channels() == 3)
+        cvtColor(cvImg1, temp1, CV_BGR2RGB);
+    else
+        cvtColor(cvImg1, temp1, CV_GRAY2RGB);
+
 	/// draw a marker for key-points in image 1
 	for (int i = 0; i < featsImage1.size(); i++)
 	{
@@ -2181,17 +2201,12 @@ void MainWindow::displayImagesWithoutDetector()
 		// circle(cvImg1, Point(temp_x, temp_y), 5, Scalar(0,255,0),
 		// CIRCLE_THICKNESS, 8, 0);
 		drawMarker(
-			cvImg1, Point(temp_x, temp_y), Scalar(0, 255, 0), MARKER_CROSS,
+			temp1, Point(temp_x, temp_y), Scalar(0, 255, 0), MARKER_CROSS,
 			CROSS_SIZE, CROSS_THICKNESS);
 	}
-	drawLineLSD(cvImg1, 0);  // 0 means draw line on left image
+	drawLineLSD(temp1, 0);  // 0 means draw line on left image
 
-	cv::Mat temp1(cvImg1.cols, cvImg1.rows, cvImg1.type());
-	cout << "dimensions " << temp1.dims << endl;
-	if (temp1.channels() == 3)
-		cvtColor(cvImg1, temp1, CV_BGR2RGB);
-	else
-		cvtColor(cvImg1, temp1, CV_GRAY2RGB);
+
 	QImage dest1 = QImage(
 		(uchar*)temp1.data, temp1.cols, temp1.rows, temp1.step,
 		QImage::Format_RGB888);
@@ -2211,6 +2226,15 @@ void MainWindow::displayImagesWithoutDetector()
 		featsImage2.clear();
 		fext.detectFeatures(img2, featsImage2, 0, numFeats);
 
+        /// converting to color to draw markers in color for both color and grayscale images
+        cv::Mat temp2(cvImg2.cols, cvImg2.rows, cvImg2.type());
+
+        //cout << "dimensions " << temp2.dims << endl;
+        if (temp2.channels() == 3)
+            cvtColor(cvImg2, temp2, CV_BGR2RGB);
+        else
+            cvtColor(cvImg2, temp2, CV_GRAY2RGB);
+
 		/// draw a marker for key-points in image 2
 		for (int i = 0; i < featsImage2.size(); i++)
 		{
@@ -2219,18 +2243,12 @@ void MainWindow::displayImagesWithoutDetector()
 			// circle(cvImg1, Point(temp_x, temp_y), 5, Scalar(0,255,0),
 			// CIRCLE_THICKNESS, 8, 0);
 			drawMarker(
-				cvImg2, Point(temp_x, temp_y), Scalar(0, 255, 0), MARKER_CROSS,
+				temp2, Point(temp_x, temp_y), Scalar(0, 255, 0), MARKER_CROSS,
 				CROSS_SIZE, CROSS_THICKNESS);
 		}
-		drawLineLSD(cvImg2, 0);  // 0 means draw line on left image
+		drawLineLSD(temp2, 0);  // 0 means draw line on left image
 
-		cv::Mat temp2(cvImg2.cols, cvImg2.rows, cvImg2.type());
 
-		cout << "dimensions " << temp2.dims << endl;
-		if (temp2.channels() == 3)
-			cvtColor(cvImg2, temp2, CV_BGR2RGB);
-		else
-			cvtColor(cvImg2, temp2, CV_GRAY2RGB);
 
 		QImage dest2 = QImage(
 			(uchar*)temp2.data, temp2.cols, temp2.rows, temp2.step,
@@ -2279,7 +2297,7 @@ void MainWindow::on_sample_clicked()
 	cv::Mat cvImg1 = cv::cvarrToMat(img1.getAs<IplImage>());
 
 	cv::Mat temp1(cvImg1.cols, cvImg1.rows, cvImg1.type());
-	cout << "dimensions " << temp1.dims << endl;
+	//cout << "dimensions " << temp1.dims << endl;
 	if (temp1.channels() == 3)
 		cvtColor(cvImg1, temp1, CV_BGR2RGB);
 	else
@@ -2302,7 +2320,7 @@ void MainWindow::on_sample_clicked()
 		// Size(int(downsampled_clicked*cvImg1.cols),int(downsampled_clicked*cvImg1.rows);
 
 		cv::Mat temp2(cvImg2.cols, cvImg2.rows, cvImg2.type());
-		cout << "dimensions " << temp2.dims << endl;
+		//cout << "dimensions " << temp2.dims << endl;
 		if (temp2.channels() == 3)
 			cvtColor(cvImg2, temp2, CV_BGR2RGB);
 		else
@@ -2310,7 +2328,7 @@ void MainWindow::on_sample_clicked()
 		QImage disp2 = QImage(
 			(uchar*)temp2.data, temp2.cols, temp2.rows, temp2.step,
 			QImage::Format_RGB888);
-		cout << "right before scaling the qimage" << endl;
+		//cout << "right before scaling the qimage" << endl;
 		QImage qscaled2 = disp2.scaled(
 			int(IMAGE_WIDTH * sampling_rate), int(IMAGE_HEIGHT * sampling_rate),
 			Qt::KeepAspectRatio);
@@ -2412,13 +2430,20 @@ void MainWindow::on_generateVisualOdometry_clicked()
 	if (detector_selected == -1 || file_path1.empty())
 	{
 		QMessageBox::information(
-			this, "Image/Detector/Descriptor read error",
-			"Please specify a valid inputs for the image / detector..");
+			this, "Image Dataset read error",
+			"Please specify a valid inputs for the single image dataset");
 		return;
 	}
+    if (calibration_file.empty() || file_path3.empty())
+    {
+        QMessageBox::information(
+                this, "Calibration / Ground truth File read error",
+                "Please specify valid inputs for the ground truth and calibration files");
+        return;
+    }
 
 	fillDetectorInfo();
-	cout << file_path1 << " filepath1 " << file_path3 << " filepath3" << endl;
+	//cout << file_path1 << " filepath1 " << file_path3 << " filepath3" << endl;
 
 	int feat_type = detector_selected;
 
@@ -2465,7 +2490,7 @@ void MainWindow::on_generateVisualOdometry_clicked()
 		QImage::Format_RGB888);
 	QImage qscaled2 =
 		dest2.scaled(IMAGE_WIDTH, IMAGE_HEIGHT, Qt::KeepAspectRatio);
-	cout << "right before setting  " << endl;
+	//cout << "right before setting  " << endl;
 	visualOdom->setPixmap(QPixmap::fromImage(qscaled2));
 	visualOdom->setVisible(true);
 }
@@ -2543,17 +2568,17 @@ void MainWindow::onTrackingEnabled(int state)
 			"Please specify a valid input file for the dataset!!");
 		return;
 	}
-	cout << currentInputIndex << " current Input Index" << endl;
+	//cout << currentInputIndex << " current Input Index" << endl;
 	if (tracking_enable->isChecked() && (currentInputIndex == 3))
 	{
 		tracking_activated = true;
 		trackIt->setVisible(true);
-		cout << " You clicked me .!!" << endl;
+		//cout << " You clicked me .!!" << endl;
 
 		/// read all the files in the dataset
 		string file_path_temp = inputFilePath->text().toStdString();
-		cout << file_path_temp << endl;
-		cout << currentInputIndex << endl;
+		//cout << file_path_temp << endl;
+		//cout << currentInputIndex << endl;
 		DIR* dir;
 		dirent* pdir;
 		vector<string> files;
@@ -2585,7 +2610,7 @@ void MainWindow::onTrackingEnabled(int state)
 		sort(
 			files_fullpath_tracking.begin(),
 			files_fullpath_tracking.end());  // Use the start and end like this
-		cout << current_imageIndex << "current Image index" << endl;
+		//cout << current_imageIndex << "current Image index" << endl;
 	}
 	else
 	{
@@ -2769,7 +2794,7 @@ void MainWindow::updateVOProgress()
 	// QMessageBox::information(this, "SIFT error","MRPT has been compiled
 	// without SIFT Hess support");
 	// VO_progress->setText(QString::fromStdString(std::to_string(visual_odom.cnt.m_value)));
-	cout << visual_odom.cnt.m_value << "  updateVOProgress " << endl;
+	//cout << visual_odom.cnt.m_value << "  updateVOProgress " << endl;
 	// sleep(1);
 	// VO_progress->setVisible(false);
 	// VO_progress->setVisible(true);
@@ -2902,7 +2927,7 @@ void MainWindow::store_Training_TestingSets()
 			/// read all the files in the dataset
 
 			string file_path_temp = training_set->text().toStdString();
-			cout << file_path_temp << endl;
+			//cout << file_path_temp << endl;
 			// cout << currentInputIndex << endl;
 			DIR* dir;
 			dirent* pdir;
@@ -2942,7 +2967,7 @@ void MainWindow::store_Training_TestingSets()
 			/// read all the files in the dataset
 
 			string file_path_temp = testing_set->text().toStdString();
-			cout << file_path_temp << endl;
+			//cout << file_path_temp << endl;
 
 			DIR* dir;
 			dirent* pdir;
@@ -3381,8 +3406,8 @@ MainWindow::MainWindow(QWidget* window_gui) : QMainWindow(window_gui)
 	// Counter a, b;
 	// connect(&visual_odom.current_frame, SIGNAL(valueChanged(int)), this,
 	// SLOT(setValue(int)));
-	connect(
-		&visual_odom.cnt, SIGNAL(valueChanged(int)), this, SLOT(setValue(int)));
+	//connect(
+	//	&visual_odom.cnt, SIGNAL(valueChanged(int)), this, SLOT(setValue(int)));
 	connect(
 		&visual_odom.cnt, SIGNAL(valueChanged(int)), this,
 		SLOT(updateVOProgress()));
@@ -3636,9 +3661,9 @@ void MainWindow::drawLineLSD(Mat img, int image_left_right)
 				float temp_y1 = featsImage1.getByID(i).get()->y2[0];
 				float temp_y2 = featsImage1.getByID(i).get()->y2[1];
 				/* get a random color */
-				int R = (rand() % (int)(255 + 1));
-				int G = (rand() % (int)(255 + 1));
-				int B = (rand() % (int)(255 + 1));
+				int R = (i*5 % (255 + 1));
+				int G = (i*10 % (255 + 1));
+				int B = (i*15 % (255 + 1));
 				line(
 					img, Point(temp_x1, temp_y1), Point(temp_x2, temp_y2),
 					Scalar(R, G, B), 3);
@@ -3653,9 +3678,9 @@ void MainWindow::drawLineLSD(Mat img, int image_left_right)
 				float temp_y1 = featsImage2.getByID(i).get()->y2[0];
 				float temp_y2 = featsImage2.getByID(i).get()->y2[1];
 				/* get a random color */
-				int R = (rand() % (int)(255 + 1));
-				int G = (rand() % (int)(255 + 1));
-				int B = (rand() % (int)(255 + 1));
+                int R = (i*5 % (255 + 1));
+                int G = (i*10 % (255 + 1));
+                int B = (i*15 % (255 + 1));
 				line(
 					img, Point(temp_x1, temp_y1), Point(temp_x2, temp_y2),
 					Scalar(R, G, B), 3);
@@ -3669,7 +3694,7 @@ void MainWindow::drawLineLSD(Mat img, int image_left_right)
 ************************************************************************************************/
 string MainWindow::findRepeatability(float mouse_x, float mouse_y)
 {
-	cout << " You called me : findRepeatability" << endl;
+	//cout << " You called me : findRepeatability" << endl;
 	ReadInputFormat();
 
 	string file_path1_temp = inputFilePath->text().toStdString();
@@ -3781,12 +3806,12 @@ string MainWindow::findRepeatability(float mouse_x, float mouse_y)
 	}
 	double percent_repeat =
 		(double)repeatability / (double)(files_length - 1) * 100.00;
-	cout << "Repeatability : " << repeatability
-		 << "Number of files :: " << files_length << endl
-		 << "Repeatability % " << percent_repeat << endl;
+	//cout << "Repeatability : " << repeatability
+	//	 << "Number of files : " << files_length << endl
+	//	 << "Repeatability % " << percent_repeat << endl;
 	stringstream ss;
 	ss << "<br/> Repeatability of selected keypoint <br/>Repeatability : "
-	   << repeatability << "Number of files :: " << files_length
+	   << repeatability << " Number of files : " << files_length
 	   << "<br/>Repeatability % " << percent_repeat
 	   << "<br/>Maximum consecutive frames for keypoint being detected: "
 	   << max_num << "<br/>";
@@ -3803,14 +3828,14 @@ string MainWindow::findRepeatability(float mouse_x, float mouse_y)
 ************************************************************************************************/
 string MainWindow::findRepeatabilityHomography(float mouse_x, float mouse_y)
 {
-	cout << " You called me : findRepeatabilityHomography" << endl;
+	//cout << " You called me : findRepeatabilityHomography" << endl;
 	ReadInputFormat();
 
 	string file_path1_temp = inputFilePath->text().toStdString();
 
 	// cout << file_path1_temp << endl;
 
-	cout << currentInputIndex << endl;
+	//cout << currentInputIndex << endl;
 	DIR* dir;
 	dirent* pdir;
 	vector<string> files;
@@ -3898,7 +3923,7 @@ string MainWindow::findRepeatabilityHomography(float mouse_x, float mouse_y)
 		}
 		else
 		{
-			cout << "Unable to open file";
+			cout << "Unable to open homography file";
 		}
 	}
 	for (int k = 0; k < 6; k++)
@@ -3909,18 +3934,21 @@ string MainWindow::findRepeatabilityHomography(float mouse_x, float mouse_y)
 		}
 		cout << endl;
 	}
-
+    int files_length = files_fullpath.size();
+    int files_length2 = files_fullpath2.size();
+    /*
 	/// Simply displaying the files here for checking purposes
-	int files_length = files_fullpath.size();
+
 	for (int y = 0; y < files_length; y++)
 	{
 		// cout << files_fullpath.at(y) << endl;
 	}
-	int files_length2 = files_fullpath2.size();
+
 	for (int y = 0; y < files_length2; y++)
 	{
 		// cout << files_fullpath2.at(y) << endl;
 	}
+    */
 
 	// repeatibility_threshold
 
@@ -3973,15 +4001,15 @@ string MainWindow::findRepeatabilityHomography(float mouse_x, float mouse_y)
 							  homographies[i - 1][2][1] * temp_y_before +
 							  homographies[i - 1][2][2];
 
-		cout << temp_x_after << " afterX " << temp_y_after << " afterY "
-			 << endl;
+		//cout << temp_x_after << " afterX " << temp_y_after << " afterY "
+		//	 << endl;
 
 		temp_featsImage1.clear();
 		temp_img1.loadFromFile(files_fullpath.at(i));
 
 		fext.detectFeatures(temp_img1, temp_featsImage1, 0, numFeats);
-		cout << "Number of Features in image " << i << " : "
-			 << temp_featsImage1.size() << endl;
+		//cout << "Number of Features in image " << i << " : "
+		//	 << temp_featsImage1.size() << endl;
 		bool repeatable = false;
 
 		for (int j = 0; j < temp_featsImage1.size(); j++)
@@ -4024,13 +4052,13 @@ string MainWindow::findRepeatabilityHomography(float mouse_x, float mouse_y)
 	double percent_repeat =
 		(double)repeatability / (double)(files_length - 1) *
 		100.00;  // files_length-1 because the first file is referene frame
-	cout << "Repeatability (Homography Based) : " << repeatability
-		 << "Number of files :: " << files_length << endl
-		 << "Repeatability % " << percent_repeat << endl;
+	//cout << "Repeatability (Homography Based) : " << repeatability
+	//	 << "Number of files : " << files_length << endl
+	//	 << "Repeatability % " << percent_repeat << endl;
 	stringstream ss;
 	ss << "<br/> Repeatability of selected keypoint (Homography Based) "
 		  "<br/>Repeatability : "
-	   << repeatability << "Number of files :: " << files_length
+	   << repeatability << "Number of files : " << files_length
 	   << "<br/>Repeatability % " << percent_repeat
 	   << "<br/>Maximum consecutive frames for keypoint being detected: "
 	   << max_num << "<br/>";
@@ -4070,9 +4098,9 @@ string MainWindow::falsePositivesNegatives()
 
 			float initial_x = featsImage1.getFeatureX(i);
 			float initial_y = featsImage1.getFeatureY(i);
-			cout << "test_x: " << test_x << " test_y: " << test_y << endl;
-			cout << "initial_x: " << initial_x << " initial_y: " << initial_y
-				 << endl;
+			//cout << "test_x: " << test_x << " test_y: " << test_y << endl;
+			//cout << "initial_x: " << initial_x << " initial_y: " << initial_y
+			//	 << endl;
 			bool isInNeighborhood = checkIfSamePoint(
 				initial_x, initial_y, test_x, test_y, false_pos_neg_threshold);
 			if (!isInNeighborhood)
@@ -4104,8 +4132,8 @@ string MainWindow::falsePositivesNegatives()
 			flag_false_negative = false;
 		}
 	}
-	cout << "False Positives: " << number_false_positives
-		 << " False Negatives: " << number_false_negatives << endl;
+	//cout << "False Positives: " << number_false_positives
+	//	 << " False Negatives: " << number_false_negatives << endl;
 
 	stringstream ss;
 	ss << "<br/>False Positives: " << number_false_positives
@@ -4201,6 +4229,12 @@ void MainWindow::Mouse_Pressed()
 		file_path1,
 		IMREAD_ANYCOLOR);  // cv::cvarrToMat(img1.getAs<IplImage>());
 
+    cv::Mat temp_desc_ref(desc_Ref_img.cols, desc_Ref_img.rows, desc_Ref_img.type());
+    if (temp_desc_ref.channels() == 3)
+        cvtColor(desc_Ref_img, temp_desc_ref, CV_BGR2RGB);
+    else
+        cvtColor(desc_Ref_img, temp_desc_ref, CV_GRAY2RGB);
+
 	/// images1 have all the descriptors
 	if (images_static_sift_surf != NULL)
 		images_static_sift_surf->setVisible(false);
@@ -4230,7 +4264,7 @@ void MainWindow::Mouse_Pressed()
 	QRect qrect = image1->frameRect();
 	// QFrame::Shadow  shd = image1->frameShadow();
 
-	cout << qmr.top() << " " << qmr.bottom() << " " << qmr.left() << " "
+	/*cout << qmr.top() << " " << qmr.bottom() << " " << qmr.left() << " "
 		 << qmr.right() << endl;
 	cout << tqr.top() << " " << tqr.bottom() << " " << tqr.left() << " "
 		 << tqr.right() << endl;
@@ -4239,7 +4273,7 @@ void MainWindow::Mouse_Pressed()
 	cout << qrect.width() << " " << qrect.height() << " " << qrect.top() << " "
 		 << qrect.bottom() << " " << qrect.left() << " " << qrect.right()
 		 << endl;
-
+*/
 	int mapped_mouse_x = mouse_x / IMAGE_WIDTH * resolution_x;
 	int mapped_mouse_y = mouse_y / IMAGE_HEIGHT * resolution_y;
 
@@ -4248,16 +4282,16 @@ void MainWindow::Mouse_Pressed()
 		pos);  // get the descriptor x coordinate corresponding to images1[cnt]
 	float temp_y = featsImage1.getFeatureY(pos);
 
-	cout << mouse_x << " mouse_x " << mouse_y << " mouse_y " << endl;
+	/*cout << mouse_x << " mouse_x " << mouse_y << " mouse_y " << endl;
 	cout << mapped_mouse_x << " mapped_mouse_x " << mapped_mouse_y
 		 << " mapped_mouse_y " << endl;
 	cout << temp_x << " closest_x " << temp_y << "closest_y" << endl;
 	cout << resolution_x << " res_x " << resolution_y << "res_y" << endl;
-
+*/
 	// computing th repleatibility of the detector here
 	string repeatability_result = findRepeatability(temp_x, temp_y);
 
-	cout << "after repeatability " << endl;
+	//cout << "after repeatability " << endl;
 
 	string repeatability_result2 = "";
 	if (homography_activated == true && homography_path.size() > 1)
@@ -4284,9 +4318,9 @@ void MainWindow::Mouse_Pressed()
 		if (currentInputIndex == 1 || currentInputIndex == 4 ||
 			(currentInputIndex == 2 && rawlog_type == 1))
 		{
-			cout << "going to set the iamges2[pos] " << endl;
+			//cout << "going to set the iamges2[pos] " << endl;
 			images_static2 = images2[pos];
-			cout << " successfully set images2[pos]" << endl;
+			//cout << " successfully set images2[pos]" << endl;
 		}
 
 		/// this is done to fix the overlaying of labels on top of each other.
@@ -4307,7 +4341,13 @@ void MainWindow::Mouse_Pressed()
 			// featsImage2.saveToTextFile("./KeyPoints2.txt");
 			cv::Mat cvImg2 = cv::cvarrToMat(img2.getAs<IplImage>());
 
-			cout << " Before the for loop " << endl;
+			//cout << " Before the for loop " << endl;
+
+            cv::Mat temp2(cvImg2.cols, cvImg2.rows, cvImg2.type());
+            if (temp2.channels() == 3)
+                cvtColor(cvImg2, temp2, CV_BGR2RGB);
+            else
+                cvtColor(cvImg2, temp2, CV_GRAY2RGB);
 
 			/// draw a marker around image 1 keypoints
 			for (int i = 0; i < featsImage2.size(); i++)
@@ -4317,27 +4357,23 @@ void MainWindow::Mouse_Pressed()
 				// circle(cvImg2, Point(temp_x, temp_y), 5, Scalar(0,255,0),
 				// CIRCLE_THICKNESS, 8, 0);
 				drawMarker(
-					cvImg2, Point(temp_x, temp_y), Scalar(0, 255, 0),
+					temp2, Point(temp_x, temp_y), Scalar(0, 255, 0),
 					MARKER_CROSS, CROSS_SIZE, CROSS_THICKNESS);
 			}
-			drawLineLSD(cvImg2, 1);  // 1 means right image
+			drawLineLSD(temp2, 1);  // 1 means right image
 			drawMarker(
-				cvImg2, Point(
+				temp2, Point(
 							featsImage2.getFeatureX(temp_idx),
 							featsImage2.getFeatureY(temp_idx)),
 				Scalar(255, 0, 0), MARKER_CROSS, CROSS_SIZE, CROSS_THICKNESS);
 
-			cv::Mat temp2(cvImg2.cols, cvImg2.rows, cvImg2.type());
-			if (temp2.channels() == 3)
-				cvtColor(cvImg2, temp2, CV_BGR2RGB);
-			else
-				cvtColor(cvImg2, temp2, CV_GRAY2RGB);
+
 			QImage dest2 = QImage(
 				(uchar*)temp2.data, temp2.cols, temp2.rows, temp2.step,
 				QImage::Format_RGB888);
 			QImage qscaled2 =
 				dest2.scaled(IMAGE_WIDTH, IMAGE_HEIGHT, Qt::KeepAspectRatio);
-			cout << "right before setting  " << endl;
+			//cout << "right before setting  " << endl;
 			image2->setPixmap(QPixmap::fromImage(qscaled2));
 		}
 
@@ -4350,13 +4386,13 @@ void MainWindow::Mouse_Pressed()
 			int temp_x = (int)featsImage1.getFeatureX(i);
 			int temp_y = (int)featsImage1.getFeatureY(i);
 			drawMarker(
-				desc_Ref_img, Point(temp_x, temp_y), Scalar(255, 0, 0),
+				temp_desc_ref, Point(temp_x, temp_y), Scalar(0, 255, 0),
 				MARKER_CROSS, CROSS_SIZE, CROSS_THICKNESS);
 		}
 
-		drawLineLSD(desc_Ref_img, 0);  // 1 means right image
+		drawLineLSD(temp_desc_ref, 0);  // 1 means right image
 		drawMarker(
-			desc_Ref_img, Point(temp_x, temp_y), Scalar(0, 255, 0),
+			temp_desc_ref, Point(temp_x, temp_y), Scalar(255, 0, 0),
 			MARKER_CROSS, CROSS_SIZE, CROSS_THICKNESS);
 
 		if (currentInputIndex == 1 || currentInputIndex == 4 ||
@@ -4368,10 +4404,10 @@ void MainWindow::Mouse_Pressed()
 			plotInfo->setVisible(true);
 		}
 
-		cout << "before adding images_static widget " << endl;
+		//cout << "before adding images_static widget " << endl;
 		desc_VisualizeGrid->addWidget(images_static, 0, 0, 1, 1);
 		images_static->setVisible(true);
-		cout << "after adding images_static widget " << endl;
+		//cout << "after adding images_static widget " << endl;
 
 		if (currentInputIndex == 1 || currentInputIndex == 4 ||
 			(currentInputIndex == 2 && rawlog_type == 1))
@@ -4393,7 +4429,7 @@ void MainWindow::Mouse_Pressed()
 			desc_VisualizeGrid->addWidget(
 				featureMatched, 1, 0, 1,
 				1);  // add the label telling about the feature matching
-		cout << "end of additions " << endl;
+		//cout << "end of additions " << endl;
 	}
 	else if (
 		descriptor_selected == 0 || descriptor_selected == 1 ||
@@ -4411,7 +4447,7 @@ void MainWindow::Mouse_Pressed()
 
 		flag_descriptor_match = true;
 		featureMatched = new QLabel;
-		cout << " inside 0,1,5,6,7 descriptor" << endl;
+		//cout << " inside 0,1,5,6,7 descriptor" << endl;
 		if (currentInputIndex == 1 || currentInputIndex == 4 ||
 			(currentInputIndex == 2 && rawlog_type == 1))
 		{
@@ -4422,27 +4458,30 @@ void MainWindow::Mouse_Pressed()
 			int temp_idx = min_dist_indexes[pos];
 			cv::Mat cvImg2 = cv::cvarrToMat(img2.getAs<IplImage>());
 
+            /// converting to colour image to show markers in color for grayscale images too
+            cv::Mat temp2(cvImg2.cols, cvImg2.rows, cvImg2.type());
+            if (temp2.channels() == 3)
+                cvtColor(cvImg2, temp2, CV_BGR2RGB);
+            else
+                cvtColor(cvImg2, temp2, CV_GRAY2RGB);
+
 			/// draw a marker around image 2 keypoints
 			for (int i = 0; i < featsImage2.size(); i++)
 			{
 				int temp_x = (int)featsImage2.getFeatureX(i);
 				int temp_y = (int)featsImage2.getFeatureY(i);
 				drawMarker(
-					cvImg2, Point(temp_x, temp_y), Scalar(0, 255, 0),
+					temp2, Point(temp_x, temp_y), Scalar(0, 255, 0),
 					MARKER_CROSS, CROSS_SIZE, CROSS_THICKNESS);
 			}
-			drawLineLSD(cvImg2, 1);  // 1 means draw on right image
+			drawLineLSD(temp2, 1);  // 1 means draw on right image
 			drawMarker(
-				cvImg2, Point(
+				temp2, Point(
 							featsImage2.getFeatureX(temp_idx),
 							featsImage2.getFeatureY(temp_idx)),
 				Scalar(255, 0, 0), MARKER_CROSS, CROSS_SIZE, CROSS_THICKNESS);
 
-			cv::Mat temp2(cvImg2.cols, cvImg2.rows, cvImg2.type());
-			if (temp2.channels() == 3)
-				cvtColor(cvImg2, temp2, CV_BGR2RGB);
-			else
-				cvtColor(cvImg2, temp2, CV_GRAY2RGB);
+
 			QImage dest2 = QImage(
 				(uchar*)temp2.data, temp2.cols, temp2.rows, temp2.step,
 				QImage::Format_RGB888);
@@ -4454,7 +4493,7 @@ void MainWindow::Mouse_Pressed()
 		stringstream ss;
 		ss << temp_x << " , " << temp_y << endl;
 		string str = ss.str();
-		cout << str << endl;
+		//cout << str << endl;
 
 		/// drawing marker all over the image and coloring the selected one with
 		/// a different color
@@ -4463,12 +4502,12 @@ void MainWindow::Mouse_Pressed()
 			int temp_x = (int)featsImage1.getFeatureX(i);
 			int temp_y = (int)featsImage1.getFeatureY(i);
 			drawMarker(
-				desc_Ref_img, Point(temp_x, temp_y), Scalar(0, 255, 0),
+				temp_desc_ref, Point(temp_x, temp_y), Scalar(0, 255, 0),
 				MARKER_CROSS, CROSS_SIZE, CROSS_THICKNESS);
 		}
-		drawLineLSD(desc_Ref_img, 0);  // 1 means right image
+		drawLineLSD(temp_desc_ref, 0);  // 1 means right image
 		drawMarker(
-			desc_Ref_img, Point(temp_x, temp_y), Scalar(255, 0, 0),
+			temp_desc_ref, Point(temp_x, temp_y), Scalar(255, 0, 0),
 			MARKER_CROSS, CROSS_SIZE, CROSS_THICKNESS);
 		images_static_sift_surf->setVisible(true);
 
@@ -4488,7 +4527,7 @@ void MainWindow::Mouse_Pressed()
 		}
 
 		desc_VisualizeGrid->addWidget(images_static_sift_surf, 0, 0, 1, 1);
-		cout << "before adding images_plots_sift_surf" << endl;
+		//cout << "before adding images_plots_sift_surf" << endl;
 
 		QLabel* detector_info = new QLabel("");
 		if (currentInputIndex == 0 || currentInputIndex == 3)
@@ -4500,14 +4539,10 @@ void MainWindow::Mouse_Pressed()
 				1);  // add the label telling about the feature matching
 	}
 
-	cout << "before storing the images " << endl;
-	cv::Mat temp1(desc_Ref_img.cols, desc_Ref_img.rows, desc_Ref_img.type());
-	if (temp1.channels() == 3)
-		cvtColor(desc_Ref_img, temp1, CV_BGR2RGB);
-	else
-		cvtColor(desc_Ref_img, temp1, CV_GRAY2RGB);
+	//cout << "before storing the images " << endl;
+
 	QImage dest1 = QImage(
-		(uchar*)temp1.data, temp1.cols, temp1.rows, temp1.step,
+		(uchar*)temp_desc_ref.data, temp_desc_ref.cols, temp_desc_ref.rows, temp_desc_ref.step,
 		QImage::Format_RGB888);
 	QImage qscaled1 =
 		dest1.scaled(IMAGE_WIDTH, IMAGE_HEIGHT, Qt::KeepAspectRatio);
@@ -4532,7 +4567,7 @@ void MainWindow::Mouse_Pressed()
 	descriptor_info2->setVisible(false);
 	descriptor_info3->setVisible(true);
 	evaluation_info->setVisible(false);
-	cout << "end of mouse press event " << endl;
+	//cout << "end of mouse press event " << endl;
 
 	showEvaluation(1);
 }
@@ -4542,8 +4577,8 @@ void MainWindow::Mouse_Pressed()
 ************************************************************************************************/
 void MainWindow::Mouse_current_pos()
 {
-	cout << "Mouse Pressed" << endl;
-	cout << image1->x << " x " << image1->y << endl;
+	//cout << "Mouse Pressed" << endl;
+	//cout << image1->x << " x " << image1->y << endl;
 }
 
 /************************************************************************************************

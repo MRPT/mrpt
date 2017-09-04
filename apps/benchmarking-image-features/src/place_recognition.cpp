@@ -154,7 +154,7 @@ int PlaceRecognition::predictLabel2(
 
 	for (int i = 0; i < feats_size; i++) cout << labels[i] << " ";
 	int predicted_label = findMax(labels, feats_size);
-	cout << "Maximum occurence: " << predicted_label << endl;
+	//cout << "Maximum occurence: " << predicted_label << endl;
 	return predicted_label;
 }
 
@@ -173,7 +173,7 @@ int PlaceRecognition::predictLabel(
 	int labels[feats_size];
 	for (int i = 0; i < feats_size; i++) labels[i] = 0;
 
-	cout << "before outter for loop" << endl;
+	//cout << "before outter for loop" << endl;
 	for (int i = 0; i < feats_size;
 		 i++)  // feat_size is the number of key-points
 	{
@@ -230,9 +230,9 @@ int PlaceRecognition::predictLabel(
 
 	for (int i = 0; i < feats_size; i++) cout << labels[i] << " ";
 
-	cout << "after label printing" << endl;
+	//cout << "after label printing" << endl;
 	int predicted_label = findMax(labels, feats_size);
-	cout << "Maximum occurence: " << predicted_label << endl;
+	//cout << "Maximum occurence: " << predicted_label << endl;
 	return predicted_label;
 }
 
@@ -275,7 +275,7 @@ string PlaceRecognition::startPlaceRecognition(CFeatureExtraction fext)
 	int training_labels[len_training];
 	int testing_labels[len_testing];
 
-	cout << len_training << " train " << len_testing << " test" << endl;
+	//cout << len_training << " train " << len_testing << " test" << endl;
 
 	/// The training model is built here all features are extracted in this
 	/// part, takes 30 seconds for 900+900 images
@@ -295,8 +295,8 @@ string PlaceRecognition::startPlaceRecognition(CFeatureExtraction fext)
 			fext.computeDescriptors(
 				testing[i], feats_testing[i], desc_to_compute);
 		}
-		cout << "Feature Time (key-points+description): " << feature_time.Tac()
-			 << endl;
+		//cout << "Feature Time (key-points+description): " << feature_time.Tac()
+		//	 << endl;
 		trained_flag = true;
 		feats_testing_org = feats_testing;
 
@@ -308,7 +308,7 @@ string PlaceRecognition::startPlaceRecognition(CFeatureExtraction fext)
 	computeLabels(training_paths, training_count, training_labels);
 	computeLabels(testing_paths, testing_count, testing_labels);
 
-	cout << " Label computation time : " << label_time.Tac() << endl;
+	//cout << " Label computation time : " << label_time.Tac() << endl;
 
 	int len_train_words;
 	len_train_words = 0;
@@ -327,8 +327,8 @@ string PlaceRecognition::startPlaceRecognition(CFeatureExtraction fext)
 	training_time.Tic();
 	training_file.open("training_images_features.txt");
 
-	cout << "len training " << len_training << endl;
-	cout << "descriptor selected : " << descriptor_selected << endl;
+	//cout << "len training " << len_training << endl;
+	//cout << "descriptor selected : " << descriptor_selected << endl;
 
 	if (!training_file_written_flag)
 	{
@@ -466,13 +466,13 @@ string PlaceRecognition::startPlaceRecognition(CFeatureExtraction fext)
 		this->training_file_written_flag = true;
 	}  // end of writting training features to a file
 
-	cout << " elapsed time for training dataset: " << training_time.Tac()
-		 << endl;  // " and kount is : " << kount << endl;
+	//cout << " elapsed time for training dataset: " << training_time.Tac()
+	//	 << endl;  // " and kount is : " << kount << endl;
 	CTicTac testing_time;
 	testing_time.Tic();
 
 	/// now extracting features for Place Recognition for testing dataset
-	cout << "len testing " << len_testing << endl;
+	//cout << "len testing " << len_testing << endl;
 	int predicted_classes[len_testing];
 	int predicted_class_labels[NUM_CLASSES];
 
@@ -481,7 +481,7 @@ string PlaceRecognition::startPlaceRecognition(CFeatureExtraction fext)
 	CTicTac time_prediction;
 	time_prediction.Tic();
 
-	cout << " before calling predict label function " << endl;
+	//cout << " before calling predict label function " << endl;
 
 	int predicted_Label = 1;
 	if (descriptor_selected == 1)
@@ -493,10 +493,10 @@ string PlaceRecognition::startPlaceRecognition(CFeatureExtraction fext)
 			feats_testing_org, training_words_org2, training_word_labels_org,
 			total_vocab_size_org, current_index_test_image);
 
-	cout << " after calling predict label function " << endl;
-	cout << testing_paths.at(0) << endl;
+	//cout << " after calling predict label function " << endl;
+	//cout << testing_paths.at(0) << endl;
 	current_index_test_image++;
-	cout << time_prediction.Tac() << " elapsed time " << endl;
+	//cout << time_prediction.Tac() << " elapsed time " << endl;
 
 	/// use a bag of words kind of framework here
 	predicted_classes[current_index_test_image] = predicted_Label;
@@ -525,13 +525,13 @@ string PlaceRecognition::startPlaceRecognition(CFeatureExtraction fext)
 		   << " image " << current_index_test_image << " of " << len_testing
 		   << endl;
 
-	cout << "<b> correct = " << correct << "  incorrect = " << incorrect << "\n"
+	/*cout << "<b> correct = " << correct << "  incorrect = " << incorrect << "\n"
 		 << endl;
 	cout << " % of correct" << (double)correct / (double)(incorrect + correct)
 		 << endl;
 	cout << " elapsed time for testing dataset: " << testing_time.Tac() << endl;
 	cout << "after reading testing images" << endl;
-
+*/
 	return output.str();
 }
 
