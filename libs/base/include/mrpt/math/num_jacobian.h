@@ -30,8 +30,8 @@ template <class VECTORLIKE, class VECTORLIKE2, class VECTORLIKE3,
 		  class MATRIXLIKE, class USERPARAM>
 void estimateJacobian(
 	const VECTORLIKE& x,
-	std::function<
-		void(const VECTORLIKE& x, const USERPARAM& y, VECTORLIKE3& out)>,
+	const std::function<void(
+		const VECTORLIKE& x, const USERPARAM& y, VECTORLIKE3& out)>& functor,
 	const VECTORLIKE2& increments, const USERPARAM& userParam,
 	MATRIXLIKE& out_Jacobian)
 {

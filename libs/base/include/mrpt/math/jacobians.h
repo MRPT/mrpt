@@ -144,7 +144,8 @@ template <class VECTORLIKE, class VECTORLIKE2, class VECTORLIKE3,
 inline void jacob_numeric_estimate(
 	const VECTORLIKE& x,
 	std::function<
-		void(const VECTORLIKE& x, const USERPARAM& y, VECTORLIKE3& out)>,
+		void(const VECTORLIKE& x, const USERPARAM& y, VECTORLIKE3& out)>
+		functor,
 	const VECTORLIKE2& increments, const USERPARAM& userParam,
 	MATRIXLIKE& out_Jacobian)
 {
