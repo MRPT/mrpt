@@ -95,9 +95,10 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE,
 
 			mrpt::math::estimateJacobian(
 				xkk_vehicle,
-				&KF_aux_estimate_trans_jacobian,  //(const VECTORLIKE &x,const
-				// USERPARAM &y, VECTORLIKE3
-				//&out),
+				std::function<void(
+					const KFArray_VEH& x,
+					const std::pair<KFCLASS*, KFArray_ACT>& dat,
+					KFArray_VEH& out_x)>(&KF_aux_estimate_trans_jacobian),
 				xkk_veh_increments, std::pair<KFCLASS*, KFArray_ACT>(this, u),
 				dfv_dxv);
 
@@ -289,7 +290,11 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE,
 					xkk_veh_increments, feat_increments);
 
 				mrpt::math::estimateJacobian(
-					x_vehicle, &KF_aux_estimate_obs_Hx_jacobian,
+					x_vehicle,
+					std::function<void(
+						const KFArray_VEH& x,
+						const std::pair<KFCLASS*, size_t>& dat,
+						KFArray_OBS& out_x)>(&KF_aux_estimate_obs_Hx_jacobian),
 					xkk_veh_increments,
 					std::pair<KFCLASS*, size_t>(this, lm_idx), Hx);
 				// The state vector was temporarily modified by
@@ -297,8 +302,13 @@ void CKalmanFilterCapable<VEH_SIZE, OBS_SIZE, FEAT_SIZE, ACT_SIZE,
 				::memcpy(&m_xkk[0], &x_vehicle[0], sizeof(m_xkk[0]) * VEH_SIZE);
 
 				mrpt::math::estimateJacobian(
-					x_feat, &KF_aux_estimate_obs_Hy_jacobian, feat_increments,
-					std::pair<KFCLASS*, size_t>(this, lm_idx), Hy);
+					x_feat,
+					std::function<void(
+						const KFArray_FEAT& x,
+						const std::pair<KFCLASS*, size_t>& dat,
+						KFArray_OBS& out_x)>(&KF_aux_estimate_obs_Hy_jacobian),
+					feat_increments, std::pair<KFCLASS*, size_t>(this, lm_idx),
+					Hy);
 				// The state vector was temporarily modified by
 				// KF_aux_estimate_*, restore it:
 				::memcpy(

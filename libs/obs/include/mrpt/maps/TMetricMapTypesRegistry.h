@@ -14,6 +14,7 @@
 #include <mrpt/obs/obs_frwds.h>
 #include <map>
 #include <string>
+#include <functional>
 
 namespace mrpt
 {
@@ -22,9 +23,10 @@ namespace maps
 struct TMetricMapInitializer;
 namespace internal
 {
-typedef mrpt::maps::TMetricMapInitializer* (*MapDefCtorFunctor)(void);
-typedef mrpt::maps::CMetricMap* (*MapCtorFromDefFunctor)(
-	const mrpt::maps::TMetricMapInitializer&);
+using MapDefCtorFunctor =
+	std::function<mrpt::maps::TMetricMapInitializer*(void)>;
+using MapCtorFromDefFunctor = std::function<mrpt::maps::CMetricMap*(
+	const mrpt::maps::TMetricMapInitializer&)>;
 
 /** Class factory & registry for map classes. Used from
  * mrpt::maps::TMetricMapInitializer */

@@ -164,7 +164,10 @@ class Pose3DQuatTests : public ::testing::Test
 			x_incrs.assign(1e-7);
 			CMatrixDouble numJacobs;
 			mrpt::math::jacobians::jacob_numeric_estimate(
-				x_mean, func_compose_point, x_incrs, DUMMY, numJacobs);
+				x_mean, std::function<void(
+							const CArrayDouble<7 + 3>& x, const double& dummy,
+							CArrayDouble<3>& Y)>(&func_compose_point),
+				x_incrs, DUMMY, numJacobs);
 
 			numJacobs.extractMatrix(0, 0, num_df_dpose);
 			numJacobs.extractMatrix(0, 7, num_df_dpoint);
@@ -288,7 +291,10 @@ class Pose3DQuatTests : public ::testing::Test
 			x_incrs.assign(1e-7);
 			CMatrixDouble numJacobs;
 			mrpt::math::jacobians::jacob_numeric_estimate(
-				x_mean, func_inv_compose_point, x_incrs, DUMMY, numJacobs);
+				x_mean, std::function<void(
+							const CArrayDouble<7 + 3>& x, const double& dummy,
+							CArrayDouble<3>& Y)>(&func_inv_compose_point),
+				x_incrs, DUMMY, numJacobs);
 
 			numJacobs.extractMatrix(0, 0, num_df_dpose);
 			numJacobs.extractMatrix(0, 7, num_df_dpoint);
@@ -493,7 +499,10 @@ class Pose3DQuatTests : public ::testing::Test
 			x_incrs.assign(1e-7);
 			CMatrixDouble numJacobs;
 			mrpt::math::jacobians::jacob_numeric_estimate(
-				x_mean, func_spherical_coords, x_incrs, DUMMY, numJacobs);
+				x_mean, std::function<void(
+							const CArrayDouble<7 + 3>& x, const double& dummy,
+							CArrayDouble<3>& Y)>(&func_spherical_coords),
+				x_incrs, DUMMY, numJacobs);
 
 			numJacobs.extractMatrix(0, 0, num_df_dpose);
 			numJacobs.extractMatrix(0, 7, num_df_dpoint);
@@ -551,7 +560,10 @@ class Pose3DQuatTests : public ::testing::Test
 			x_incrs.assign(1e-5);
 			CMatrixDouble numJacobs;
 			mrpt::math::jacobians::jacob_numeric_estimate(
-				x_mean, func_normalizeJacob, x_incrs, DUMMY, numJacobs);
+				x_mean, std::function<void(
+							const CArrayDouble<4>& x, const double& dummy,
+							CArrayDouble<4>& Y)>(&func_normalizeJacob),
+				x_incrs, DUMMY, numJacobs);
 
 			numJacobs.extractMatrix(0, 0, num_df_dpose);
 		}

@@ -17,6 +17,7 @@
 #include <mrpt/math/jacobians.h>
 #include <mrpt/math/data_utils.h>
 #include <mrpt/random.h>
+#include <functional>
 
 namespace mrpt
 {
@@ -165,7 +166,10 @@ void transform_gaussian_linear(
 				  VECTORLIKE1::RowsAtCompileTime>
 		H;
 	mrpt::math::jacobians::jacob_numeric_estimate(
-		x_mean, functor, x_increments, fixed_param, H);
+		x_mean, std::function<void(
+					const VECTORLIKE1& x, const USERPARAM& fixed_param,
+					VECTORLIKE3& y)>(functor),
+		x_increments, fixed_param, H);
 	H.multiply_HCHt(x_cov, y_cov);
 	MRPT_END
 }

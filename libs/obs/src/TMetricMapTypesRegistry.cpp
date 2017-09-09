@@ -42,8 +42,8 @@ mrpt::maps::TMetricMapInitializer*
 {
 	TListRegisteredMaps::const_iterator it = m_registry.find(className);
 	if (it == m_registry.end()) return nullptr;
-	ASSERT_(it->second.first != nullptr)
-	return (*it->second.first)();
+	ASSERT_(it->second.first);
+	return (it->second.first)();
 }
 
 mrpt::maps::CMetricMap* TMetricMapTypesRegistry::factoryMapObjectFromDefinition(
@@ -59,8 +59,8 @@ mrpt::maps::CMetricMap* TMetricMapTypesRegistry::factoryMapObjectFromDefinition(
 			mi.getMetricMapClassType()->className);
 	}
 
-	ASSERT_(it->second.second != nullptr)
-	mrpt::maps::CMetricMap* theMap = (*it->second.second)(mi);
+	ASSERT_(it->second.second);
+	mrpt::maps::CMetricMap* theMap = (it->second.second)(mi);
 
 	// Common params for all maps:
 	theMap->genericMapParams = mi.genericMapParams;

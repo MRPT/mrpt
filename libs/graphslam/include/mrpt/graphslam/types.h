@@ -11,6 +11,7 @@
 
 #include <mrpt/graphs/CNetworkOfPoses.h>
 #include <mrpt/poses/SE_traits.h>
+#include <functional>
 
 namespace mrpt
 {
@@ -58,9 +59,9 @@ struct graphslam_traits
 		typename gst::graph_t::constraint_t::type_value *P1, *P2;
 	};
 
-	typedef void (*TFunctorFeedback)(
+	using TFunctorFeedback = std::function<void(
 		const GRAPH_T& graph, const size_t iter, const size_t max_iter,
-		const double cur_sq_error);
+		const double cur_sq_error)>;
 };
 
 /** Output information for mrpt::graphslam::optimize_graph_spa_levmarq() */

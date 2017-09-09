@@ -23,9 +23,10 @@ using namespace std;
  ---------------------------------------------------------------*/
 template <typename NUMTYPE>
 bool RANSAC_Template<NUMTYPE>::execute(
-	const CMatrixTemplateNumeric<NUMTYPE>& data, TRansacFitFunctor fit_func,
-	TRansacDistanceFunctor dist_func, TRansacDegenerateFunctor degen_func,
-	const double distanceThreshold, const unsigned int minimumSizeSamplesToFit,
+	const CMatrixTemplateNumeric<NUMTYPE>& data,
+	const TRansacFitFunctor& fit_func, const TRansacDistanceFunctor& dist_func,
+	const TRansacDegenerateFunctor& degen_func, const double distanceThreshold,
+	const unsigned int minimumSizeSamplesToFit,
 	mrpt::vector_size_t& out_best_inliers,
 	CMatrixTemplateNumeric<NUMTYPE>& out_best_model, const double p,
 	const size_t maxIter) const
