@@ -15,6 +15,7 @@
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/poses/CPose3DQuatPDF.h>
 #include <mrpt/poses/CPose3DPDF.h>
+#include <functional>
 
 namespace mrpt
 {
@@ -142,7 +143,9 @@ template <class VECTORLIKE, class VECTORLIKE2, class VECTORLIKE3,
 		  class MATRIXLIKE, class USERPARAM>
 inline void jacob_numeric_estimate(
 	const VECTORLIKE& x,
-	void (*functor)(const VECTORLIKE& x, const USERPARAM& y, VECTORLIKE3& out),
+	std::function<
+		void(const VECTORLIKE& x, const USERPARAM& y, VECTORLIKE3& out)>
+		functor,
 	const VECTORLIKE2& increments, const USERPARAM& userParam,
 	MATRIXLIKE& out_Jacobian)
 {
@@ -151,9 +154,6 @@ inline void jacob_numeric_estimate(
 }
 
 }  // End of jacobians namespace
-
 }  // End of MATH namespace
-
 }  // End of namespace
-
 #endif

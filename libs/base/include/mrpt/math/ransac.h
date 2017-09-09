@@ -12,6 +12,7 @@
 #include <mrpt/utils/COutputLogger.h>
 #include <mrpt/math/CMatrixD.h>
 #include <set>
+#include <functional>
 
 namespace mrpt
 {
@@ -33,24 +34,24 @@ class BASE_IMPEXP RANSAC_Template : public mrpt::utils::COutputLogger
 	RANSAC_Template() : mrpt::utils::COutputLogger("RANSAC_Template") {}
 	/** The type of the function passed to mrpt::math::ransac - See the
 	 * documentation for that method for more info. */
-	typedef void (*TRansacFitFunctor)(
+	using TRansacFitFunctor = std::function<void(
 		const CMatrixTemplateNumeric<NUMTYPE>& allData,
 		const mrpt::vector_size_t& useIndices,
-		std::vector<CMatrixTemplateNumeric<NUMTYPE>>& fitModels);
+		std::vector<CMatrixTemplateNumeric<NUMTYPE>>& fitModels)>;
 
 	/** The type of the function passed to mrpt::math::ransac  - See the
 	 * documentation for that method for more info. */
-	typedef void (*TRansacDistanceFunctor)(
+	using TRansacDistanceFunctor = std::function<void(
 		const CMatrixTemplateNumeric<NUMTYPE>& allData,
 		const std::vector<CMatrixTemplateNumeric<NUMTYPE>>& testModels,
 		const NUMTYPE distanceThreshold, unsigned int& out_bestModelIndex,
-		mrpt::vector_size_t& out_inlierIndices);
+		mrpt::vector_size_t& out_inlierIndices)>;
 
 	/** The type of the function passed to mrpt::math::ransac  - See the
 	 * documentation for that method for more info. */
-	typedef bool (*TRansacDegenerateFunctor)(
+	using TRansacDegenerateFunctor = std::function<bool(
 		const CMatrixTemplateNumeric<NUMTYPE>& allData,
-		const mrpt::vector_size_t& useIndices);
+		const mrpt::vector_size_t& useIndices)>;
 
 	/** An implementation of the RANSAC algorithm for robust fitting of models
 	 * to data.
@@ -66,8 +67,10 @@ class BASE_IMPEXP RANSAC_Template : public mrpt::utils::COutputLogger
 	 * COutputLogger settings.
 	  */
 	bool execute(
-		const CMatrixTemplateNumeric<NUMTYPE>& data, TRansacFitFunctor fit_func,
-		TRansacDistanceFunctor dist_func, TRansacDegenerateFunctor degen_func,
+		const CMatrixTemplateNumeric<NUMTYPE>& data,
+		const TRansacFitFunctor& fit_func,
+		const TRansacDistanceFunctor& dist_func,
+		const TRansacDegenerateFunctor& degen_func,
 		const double distanceThreshold,
 		const unsigned int minimumSizeSamplesToFit,
 		mrpt::vector_size_t& out_best_inliers,

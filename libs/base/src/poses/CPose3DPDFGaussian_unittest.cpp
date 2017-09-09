@@ -179,7 +179,10 @@ class Pose3DPDFGaussTests : public ::testing::Test
 			x_incrs.assign(1e-7);
 			CMatrixDouble numJacobs;
 			mrpt::math::jacobians::jacob_numeric_estimate(
-				x_mean, func_compose, x_incrs, DUMMY, numJacobs);
+				x_mean, std::function<void(
+							const CArrayDouble<12>& x, const double& dummy,
+							CArrayDouble<6>& Y)>(&func_compose),
+				x_incrs, DUMMY, numJacobs);
 
 			numJacobs.extractMatrix(0, 0, num_df_dx);
 			numJacobs.extractMatrix(0, 6, num_df_du);

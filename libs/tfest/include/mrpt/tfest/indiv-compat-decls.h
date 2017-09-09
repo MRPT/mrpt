@@ -29,7 +29,7 @@ struct TFEST_IMPEXP TPotentialMatch
 	size_t idx_this, idx_other;
 };
 
-typedef std::function<bool(const TPotentialMatch&)> TFunctorCheckPotentialMatch;
+using TFunctorCheckPotentialMatch = std::function<bool(const TPotentialMatch&)>;
 
 /** @} */  // end of grouping
 }

@@ -101,7 +101,12 @@ class SE_traits_tests : public ::testing::Test
 			x_incrs.assign(1e-4);
 			CMatrixDouble numJacobs;
 			mrpt::math::jacobians::jacob_numeric_estimate(
-				x_mean, func_numeric, x_incrs, params, numJacobs);
+				x_mean,
+				std::function<void(
+					const CArrayDouble<2 * SE_TYPE::VECTOR_SIZE>& x,
+					const TParams& params,
+					CArrayDouble<SE_TYPE::VECTOR_SIZE>& Y)>(&func_numeric),
+				x_incrs, params, numJacobs);
 
 			numJacobs.extractMatrix(0, 0, num_J1);
 			numJacobs.extractMatrix(0, DIMS, num_J2);

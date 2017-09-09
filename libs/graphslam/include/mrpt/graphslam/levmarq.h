@@ -82,7 +82,7 @@ void optimize_graph_spa_levmarq(
 	const mrpt::utils::TParametersDouble& extra_params =
 		mrpt::utils::TParametersDouble(),
 	typename graphslam_traits<GRAPH_T>::TFunctorFeedback functor_feedback =
-		nullptr)
+		typename graphslam_traits<GRAPH_T>::TFunctorFeedback())
 {
 	using namespace mrpt;
 	using namespace mrpt::poses;
@@ -513,7 +513,7 @@ void optimize_graph_spa_levmarq(
 		// Feedback to the user:
 		if (functor_feedback)
 		{
-			(*functor_feedback)(graph, iter, max_iters, total_sqr_err);
+			functor_feedback(graph, iter, max_iters, total_sqr_err);
 		}
 
 		profiler.enter("optimize_graph_spa_levmarq.sp_H:build");

@@ -15,6 +15,7 @@
 #include <mrpt/utils/TParameters.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/utils/CArray.h>
+#include <functional>
 
 // The methods declared in this file are implemented in separate files in:
 // vision/src/ba_*.cpp
@@ -30,12 +31,12 @@ namespace vision
 	@{ */
 
 /** A functor type for BA methods \sa bundle_adj_full */
-typedef void (*TBundleAdjustmentFeedbackFunctor)(
+using TBundleAdjustmentFeedbackFunctor = std::function<void(
 	const size_t cur_iter, const double cur_total_sq_error,
 	const size_t max_iters,
 	const mrpt::vision::TSequenceFeatureObservations& input_observations,
 	const mrpt::vision::TFramePosesVec& current_frame_estimate,
-	const mrpt::vision::TLandmarkLocationsVec& current_landmark_estimate);
+	const mrpt::vision::TLandmarkLocationsVec& current_landmark_estimate)>;
 
 /** Sparse Levenberg-Marquart solution to bundle adjustment - optimizes all the
   *camera frames & the landmark locations.
@@ -102,7 +103,7 @@ double VISION_IMPEXP bundle_adj_full(
 	const mrpt::utils::TParametersDouble& extra_params =
 		mrpt::utils::TParametersDouble(),
 	const mrpt::vision::TBundleAdjustmentFeedbackFunctor user_feedback =
-		nullptr);
+		mrpt::vision::TBundleAdjustmentFeedbackFunctor());
 
 /** @} */
 
